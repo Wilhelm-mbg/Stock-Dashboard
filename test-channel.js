@@ -113,5 +113,63 @@ ok(rD.trades.every(function (t) { return t.dir === 'put'; }), 'im Abwärtskanal 
   if (!f2) fails++;
 })();
 
+
+console.log('7) Kanal-Güteprüfung: Zufallspfad vs. echter Kanal');
+function rndGen(seed) { var s = seed >>> 0; return function () { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; }; }
+function gaussOf(r) { var u = 0, v = 0; while (!u) u = r(); while (!v) v = r(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); }
+function zufallspfad(n, seed) { var r = rndGen(seed), o = [300]; for (var i = 1; i < n; i++) o.push(o[i - 1] * (1 + gaussOf(r) * 0.0004)); return o; }
+function echterKanal(n, seed, theta) { var r = rndGen(seed), o = [], d = 0; for (var i = 0; i < n; i++) { d += -(theta || 0.18) * d + gaussOf(r) * 0.35; o.push(300 * (1 + 0.005 * i / n) + d); } return o; }
+
+var trefferZufall = 0, trefferKanal = 0, LAEUFE = 200;
+for (var sd = 1; sd <= LAEUFE; sd++) {
+  if (Q.bestChannel(zufallspfad(260, sd))) trefferZufall++;
+  if (Q.bestChannel(echterKanal(260, sd))) trefferKanal++;
+}
+var qZ = Math.round(trefferZufall / LAEUFE * 100), qK = Math.round(trefferKanal / LAEUFE * 100);
+ok(qZ <= 20, 'Zufallspfad wird selten als Kanal erkannt (Fehlalarm ≤ 20 %)', qZ + ' %');
+ok(qK >= 60, 'Echter Kanal wird erkannt (≥ 60 %)', qK + ' %');
+ok(qK - qZ >= 40, 'Trennschärfe zwischen Zufall und Kanal', (qK - qZ) + ' Prozentpunkte');
+// Zum Vergleich: das alte Verfahren nahm jeden Fit ohne Prüfung
+var altTreffer = 0;
+for (var sd2 = 1; sd2 <= LAEUFE; sd2++) if (Q.channelFit(zufallspfad(260, sd2), 260)) altTreffer++;
+ok(altTreffer === LAEUFE, 'Altes Verfahren hätte jeden Zufallspfad als Kanal gezeichnet', Math.round(altTreffer / LAEUFE * 100) + ' %');
+
+console.log('8) Regimewechsel: kürzeres Fenster oder gar kein Kanal');
+function sprungReihe(n, seed) {
+  var r = rndGen(seed), o = [], p = 305.4;
+  for (var i = 0; i < n; i++) { p *= 1 + gaussOf(r) * 0.0003; if (i === Math.floor(n * 0.45)) p *= 1.0028; o.push(p); }
+  return o;
+}
+var langFenster = 0, sprungTreffer = 0;
+for (var sd3 = 1; sd3 <= LAEUFE; sd3++) {
+  var bc = Q.bestChannel(sprungReihe(260, sd3));
+  if (bc) { sprungTreffer++; if (bc.N >= 280) langFenster++; }
+}
+ok(Math.round(sprungTreffer / LAEUFE * 100) <= 20, 'Serie mit Sprung wird meist abgelehnt', Math.round(sprungTreffer / LAEUFE * 100) + ' %');
+ok(langFenster <= sprungTreffer * 0.5, 'Wenn überhaupt, dann kein langes Fenster über den Sprung hinweg', langFenster + ' von ' + sprungTreffer);
+
+console.log('9) Kanten an Hoch/Tief statt nur Schlusskursen');
+var r9 = rndGen(11);
+var basis = echterKanal(300, 5, 0.20);
+var hoch = basis.map(function (c) { return c + Math.abs(gaussOf(r9)) * 0.30; });
+var tief = basis.map(function (c) { return c - Math.abs(gaussOf(r9)) * 0.30; });
+var cSchluss = Q.bestChannel(basis);
+var cHL = Q.bestChannel(basis, undefined, { highs: hoch, lows: tief });
+ok(!!cSchluss && !!cHL, 'beide Varianten liefern einen Kanal');
+ok(cHL.widthPct > cSchluss.widthPct, 'Kanal mit Hoch/Tief ist breiter (umschließt die echten Extreme)', cHL.widthPct + ' % vs ' + cSchluss.widthPct + ' %');
+ok(cHL.hl === true, 'Kanal meldet, dass Hoch/Tief benutzt wurden');
+
+console.log('10) Steigung nur bei statistischer Belastbarkeit');
+var flach = [];
+var r10 = rndGen(23);
+for (var i10 = 0; i10 < 300; i10++) flach.push(200 + Math.sin(i10 / 9) * 1.2 + gaussOf(r10) * 0.15);
+var cFlach = Q.bestChannel(flach);
+ok(!cFlach || cFlach.trend === 'flat', 'Seitwärts-Schwingung wird nicht als Trendkanal ausgegeben', cFlach ? cFlach.trend + ' (t=' + cFlach.t + ')' : 'kein Kanal');
+var steigend = [];
+var r11 = rndGen(29);
+for (var i11 = 0; i11 < 300; i11++) steigend.push(200 * (1 + 0.02 * i11 / 300) + Math.sin(i11 / 9) * 1.2 + gaussOf(r11) * 0.15);
+var cSteig = Q.bestChannel(steigend);
+ok(cSteig && cSteig.trend === 'up', 'klarer Aufwärtskanal wird als aufwärts erkannt', cSteig ? cSteig.trend + ' (t=' + cSteig.t + ')' : 'kein Kanal');
+
 console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
 process.exit(fails ? 1 : 0);

@@ -99,10 +99,19 @@ const path = require('path');
   check('Kanal-Schalter #idChannel existiert', chVisible === 1);
   check('Kanal standardmäßig AN', await page.locator('#idChannel').isChecked());
 
-  // Wellenreiter-Modus wählen
-  await page.selectOption('#idMode', 'wave');
+  // Setup „Umkehr" mit Auslöser „Wellental" über die neuen Bedienelemente wählen
+  check('Setup-Pillen vorhanden', await page.locator('#idSetupPills button').count() === 2);
+  await page.click('#idSetupPills button[data-setup="umkehr"]');
   await page.waitForTimeout(400);
-  check('Modus Wellenreiter wählbar', (await page.locator('#idMode').inputValue()) === 'wave');
+  check('Umkehr-Setup aktiv', await page.locator('#idSetupPills button[data-setup="umkehr"]').evaluate(el => el.classList.contains('active')));
+  const trigOpts = await page.locator('#idTrigger option').count();
+  check('Umkehr hat zwei Auslöser', trigOpts === 2);
+  await page.selectOption('#idTrigger', 'welle');
+  await page.waitForTimeout(400);
+  check('Auslöser Wellental → interner Modus wave', (await page.locator('#idMode').inputValue()) === 'wave');
+  const depSetup = await page.evaluate(async () => (await window.api.storeGet('depot')).intraday);
+  check('Setup wird gespeichert', depSetup.setup === 'umkehr' && depSetup.trigger === 'welle' && depSetup.mode === 'wave');
+  check('Ausstieg-Feld nur beim Ausbruch sichtbar', !(await page.locator('#lblExit').isVisible()));
 
   // Kanal-Schalter togglen (Knob klicken, Checkbox ist opacity 0)
   await page.locator('#idChannel').locator('xpath=following-sibling::span[1]').click();
@@ -120,7 +129,7 @@ const path = require('path');
   await page.click('#depotPills button[data-sub="auswertung"]');
   await page.waitForTimeout(400);
   const labTxt = (await page.locator('#tab-depot').innerText()).replace(/ /g, ' ');
-  check('Labor listet Wellenreiter + Kanal', labTxt.indexOf('Wellenreiter + Kanal') !== -1);
+  check('Labor nennt die beiden Setups', labTxt.indexOf('Ausbruch') !== -1 && labTxt.indexOf('Umkehr') !== -1);
 
   // Quant im Seitenkontext: Kanalfunktion da & konsistent
   const q = await page.evaluate(() => {
@@ -172,7 +181,11 @@ const path = require('path');
   // v6: neue Bedienelemente vorhanden
   await page.click('#depotPills button[data-sub="strategien"]');
   await page.waitForTimeout(300);
-  check('ORB-Modus im Dropdown', await page.locator('#idMode option[value="orb"]').count() === 1);
+  check('Eröffnungs-Range als Auslöser wählbar', await page.evaluate(async () => {
+    document.querySelector('#idSetupPills button[data-setup="ausbruch"]').click();
+    await new Promise(r => setTimeout(r, 200));
+    return Array.from(document.querySelectorAll('#idTrigger option')).some(o => o.value === 'range');
+  }));
   check('auto-Stop im Dropdown', await page.locator('#idScalpSL option[value="auto"]').count() === 1);
   check('Sizing-Auswahl da', await page.locator('#idSizing').count() === 1);
   check('MTF-Schalter da (an)', await page.locator('#idMtf').isChecked());

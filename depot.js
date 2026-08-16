@@ -334,12 +334,12 @@
       var bars = fd.series.slice(-260);
       var closes = bars.map(function (b2) { return b2[1]; });
       var line = (cfg.lineType === 'vwap' ? Q.vwapLine(bars) : null) || Q.emaSeries(closes, cfg.period);
-      // Kanal (nur wenn im Wellenreiter-Modus mit Kanal aktiv)
-      var chan = null;
+      // Kanal (nur im Umkehr-Setup mit Auslöser Wellental und aktivem Kanalfilter)
+      var chan = null, chanFail = '';
       if (cfg.mode === 'wave' && cfg.channel !== false) {
-        var wq = Q.waveQuality(bars, cfg.lineType || 'ema', cfg.period, zOf(cfg.confirmBps));
-        var chN = Math.max(100, Math.min(320, Math.round(2.5 * ((wq && wq.waveLen) || 72))));
-        chan = Q.regressionChannel(Q.degapCloses(bars), Math.min(chN, bars.length - 2));
+        var dgS = Q.degapBars(bars);
+        chan = Q.bestChannel(dgS.closes, undefined, { highs: dgS.highs, lows: dgS.lows });
+        if (!chan) chanFail = ' · 📐 Kein belastbarer Kanal – die Güteprüfung ist durchgefallen (kein Kanal ist ehrlicher als ein erfundener).';
       }
       var t0 = bars[0][0], t1 = bars[bars.length - 1][0];
       var marks = D.trades.filter(function (t) { return t.sym === sym && t.openT >= t0 && t.openT <= t1; });
@@ -347,7 +347,12 @@
       drawSignalChart(out, bars, line, chan, marks, cfg);
       var info = document.getElementById('scInfo');
       info.innerHTML = 'Leitlinie: <b>' + (cfg.lineType === 'vwap' ? 'VWAP' : 'EMA' + cfg.period) + '</b> · Zeitrahmen ' + (cfg.interval || '5m') +
-        (chan ? ' · 📐 Kanal: Position <b>' + Math.round(chan.pos * 100) + ' %</b>, Steigung <b>' + chan.steep + '</b>, Breite ' + chan.widthPct + ' %' : ' · Kanal nur im 🏄 Wellenreiter-Modus') +
+        (chan
+          ? ' · 📐 Kanal über <b>' + chan.N + ' Bars</b> (' + { up: 'aufwärts', down: 'abwärts', flat: 'seitwärts' }[chan.trend] + ')' +
+            ': Position <b>' + Math.round(chan.pos * 100) + ' %</b>, Breite ' + chan.widthPct + ' %, Güte <b>' + chan.quality + '/100</b>' +
+            ' <span style="color:var(--muted);">(Berührungen ' + chan.touchUp + '/' + chan.touchLo + ' · Wechsel ' + chan.wechsel +
+            ' · Rückkehr-Maß ' + chan.vr + ' · R² ' + chan.r2 + (chan.hl ? ' · Kanten an Hoch/Tief' : '') + ')</span>'
+          : (chanFail || ' · Kanal nur im 🔄 Umkehr-Setup mit Auslöser Wellental')) +
         ' · eigene Trades im Bild: <b>' + marks.length + '</b>';
     } catch (e) {
       st.textContent = 'Fehler: ' + (e.message || e);
@@ -441,7 +446,7 @@
       if (Object.keys(map).length < 3) { st.textContent = 'Zu wenig Daten.'; return; }
       st.textContent = 'Rechne beide Varianten …';
       var base = labCommonOpts(cfg, iv);
-      var modeOpts = labModes(cfg).filter(function (m) { return m.key === (cfg.mode === 'wave' && cfg.channel !== false ? 'wave_ch' : cfg.mode); })[0];
+      var modeOpts = labModes(cfg).filter(function (m) { return m.key === cfg.mode; })[0];
       modeOpts = modeOpts ? modeOpts.opts : { entryMode: 'cross' };
       var mit = Object.assign({}, base, modeOpts, { period: cfg.period, confirmBps: cfg.confirmBps, zThr: zOf(cfg.confirmBps) });
       var ohne = Object.assign({}, mit, { minEdge: 0, trendFilter: false, channel: false, mtf: false, window: 'all', minQuality: 0 });
@@ -563,7 +568,7 @@
         '<td>' + (g.spot != null ? U.nf2.format(g.spot) : '–') + '</td>' +
         '<td>' + (g.score != null ? g.score + '/100' : '–') + '</td>' +
         '<td>' + (g.z != null ? g.z : '–') + '</td>' +
-        '<td>' + (g.chanPos != null ? Math.round(g.chanPos * 100) + ' % · Steig. ' + g.chanSteep : '–') + '</td>' +
+        '<td>' + (g.chanPos != null ? Math.round(g.chanPos * 100) + ' % · Güte ' + (g.chanQ != null ? g.chanQ : '–') : '–') + '</td>' +
         '<td class="' + (g.ok ? 'pos' : '') + '">' + U.esc(g.grund || (g.ok ? '✅ gehandelt' : 'kein Signal')) + '</td>' +
         '<td style="color:var(--muted);">' + (g.t ? new Date(g.t).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }) : '–') + '</td></tr>';
     });
@@ -1010,7 +1015,36 @@
     '60m': { range: '1mo', btRange: '3mo', barMin: 60 }
   };
 
-  /** z-Score-Schwelle aus der Bestätigungs-Einstellung (Rücksetzer-Modus) */
+  /* ================= Setups: zwei Grundideen statt sechs Modi =================
+   * Nach außen gibt es „Ausbruch" und „Umkehr" mit je zwei Auslösern. Intern bleibt
+   * das bewährte mode-Feld erhalten – so bleiben Backtests, Historie und Kennzahlen
+   * vergleichbar, und es gibt keine zweite Rechenlogik, die auseinanderlaufen kann. */
+  var SETUPS = {
+    ausbruch: { name: '🎯 Ausbruch', trigger: { kreuzung: 'EMA-Kreuzung', range: 'Eröffnungs-Range' } },
+    umkehr:   { name: '🔄 Umkehr',   trigger: { ueberdehnung: 'Überdehnung', welle: 'Wellental' } }
+  };
+  function modeFromSetup(setup, trigger, exitStyle) {
+    if (setup === 'umkehr') return trigger === 'welle' ? 'wave' : 'reversion';
+    if (trigger === 'range') return 'orb';
+    return exitStyle === 'kurz' ? 'waves' : 'breakout';
+  }
+  function setupFromMode(mode) {
+    if (mode === 'wave') return { setup: 'umkehr', trigger: 'welle', exitStyle: 'laufen' };
+    if (mode === 'reversion') return { setup: 'umkehr', trigger: 'ueberdehnung', exitStyle: 'laufen' };
+    if (mode === 'orb') return { setup: 'ausbruch', trigger: 'range', exitStyle: 'laufen' };
+    if (mode === 'waves') return { setup: 'ausbruch', trigger: 'kreuzung', exitStyle: 'kurz' };
+    return { setup: 'ausbruch', trigger: 'kreuzung', exitStyle: 'laufen' };
+  }
+  /** Klartext-Name einer Konfiguration – für Protokoll, Ranking und Empfehlungen. */
+  function setupName(mode, channel) {
+    var s = setupFromMode(mode);
+    var t = SETUPS[s.setup].trigger[s.trigger];
+    return SETUPS[s.setup].name + ' · ' + t
+      + (s.exitStyle === 'kurz' ? ' · kurz' : '')
+      + (mode === 'wave' && channel ? ' + 📐 Kanal' : '');
+  }
+
+  /** z-Score-Schwelle aus der Bestätigungs-Einstellung (Umkehr-Setup) */
   function zOf(confirmBps) { return confirmBps <= 5 ? 1.5 : confirmBps <= 15 ? 2.0 : 2.5; }
 
   /** Modus-abhängige Handelsparameter */
@@ -1066,11 +1100,14 @@
       var r = JSON.parse(res.body).chart.result[0];
       var q = r.indicators.quote[0];
       var ts = r.timestamp || [], closes = q.close || [], vols = q.volume || [];
+      var his = q.high || [], los = q.low || [];
       var series = [];
       var dollarSum = 0, days = {};
       for (var i = 0; i < ts.length; i++) {
         if (closes[i] == null) continue;
-        series.push([ts[i] * 1000, closes[i], vols[i] || 0]);
+        // Hoch/Tief mitführen: Kanalkanten werden daran ausgerichtet, nicht nur an Schlusskursen
+        series.push([ts[i] * 1000, closes[i], vols[i] || 0,
+          his[i] == null ? closes[i] : his[i], los[i] == null ? closes[i] : los[i]]);
         if (vols[i]) { dollarSum += vols[i] * closes[i]; days[new Date(ts[i] * 1000).toISOString().slice(0, 10)] = 1; }
       }
       var nDays = Object.keys(days).length || 1;
@@ -1146,9 +1183,12 @@
           else if (open.maxHoldMin && now - open.openT >= open.maxHoldMin * 60000) why = 'Max-Haltedauer ' + open.maxHoldMin + ' Min erreicht';
           else if (nearClose) why = 'Tagesschluss-Glattstellung (kein Übernacht-Risiko)';
           else if (xm === 'crest') {
-            if (open.chN) { // Kanal-Exits (Wellenreiter mit Trendkanal, Übernacht-Gaps herausgerechnet)
-              var chM = Q.regressionChannel(Q.degapCloses(bars), open.chN);
+            if (open.chan) { // Kanal vom Einstieg fortschreiben, nicht jede Minute neu zeichnen
+              var barMinX = (INTERVAL_CFG[cfg.interval] || INTERVAL_CFG['5m']).barMin;
+              var iNow = open.chan.i + Math.round((now - open.chan.t) / (barMinX * 60000));
+              var chM = Q.projectChannel(open.chan, iNow, spot);
               if (chM) {
+                chM.pos = Math.round(chM.pos * 1000) / 1000;
                 if (open.dir === 'call' && chM.pos >= 0.80) why = 'Kanaloberkante erreicht – Ziel (Position ' + Math.round(chM.pos * 100) + ' % im Kanal)';
                 else if (open.dir === 'put' && chM.pos <= 0.20) why = 'Kanalunterkante erreicht – Ziel (Position ' + Math.round(chM.pos * 100) + ' % im Kanal)';
                 else if (open.dir === 'call' && chM.pos <= -0.125) why = 'Kanalbruch nach unten – Schutz-Exit (mögl. Trendwechsel)';
@@ -1175,7 +1215,7 @@
         var isRev = cfg.mode === 'reversion';
         var isWave = cfg.mode === 'wave';
         var isOrb = cfg.mode === 'orb';
-        var dir = null, revZ = null, waveQ = null, chE = null, chN = 0, orbInfo = null;
+        var dir = null, revZ = null, waveQ = null, chE = null, chN = 0, chRef = null, orbInfo = null;
         var useChan = isWave && cfg.channel !== false;
         if (isOrb) {
           // Opening-Range-Breakout: Range der ersten 30 Min, 1 Trade je Richtung/Tag
@@ -1198,13 +1238,19 @@
           if (wq.signal && wq.score >= 60) { dir = wq.signal; revZ = wq.z; waveQ = wq; }
           else if (wq.signal) patienceAdd('Wellen-Qualität zu niedrig (' + wq.score + '/100)', sym);
           if (dir && useChan) {
-            // Kanal-Fenster: 2,5 gemessene Wellenlängen (nie ≈ 1 Wellenperiode – Verzerrungsgefahr)
-            chN = Math.max(100, Math.min(320, Math.round(2.5 * (wq.waveLen || 72))));
-            chE = Q.regressionChannel(Q.degapCloses(bars), chN);
-            if (chE) { SIG[sym].chanPos = chE.pos; SIG[sym].chanSteep = chE.steep; }
-            if (!chE) dir = null; // zu wenig Historie für den Kanal
-            else if (dir === 'call' && (chE.pos > 0.30 || chE.steep < -0.8)) { patienceAdd('Kanal: Lage/Gegensteigung', sym); dir = null; }  // nur an der Unterkante, nie gegen einen klaren Abwärtskanal
-            else if (dir === 'put' && (chE.pos < 0.70 || chE.steep > 0.8)) { patienceAdd('Kanal: Lage/Gegensteigung', sym); dir = null; }    // nur an der Oberkante, nie gegen einen klaren Aufwärtskanal
+            // Fenster nach Güte wählen statt starr setzen; ohne belastbaren Kanal wird nicht gehandelt.
+            var dg = Q.degapBars(bars);
+            chE = Q.bestChannel(dg.closes, undefined, { highs: dg.highs, lows: dg.lows });
+            if (chE) {
+              SIG[sym].chanPos = chE.pos; SIG[sym].chanSteep = chE.steep; SIG[sym].chanQ = chE.quality; chN = chE.N;
+              chRef = Q.channelRef(chE, 0, spot, dg.closes[dg.closes.length - 1]);
+              chRef.t = now;
+            }
+            if (!chE) { patienceAdd('Kein belastbarer Kanal (Güteprüfung)', sym); dir = null; }
+            else if (dir === 'call' && chE.pos > 0.30) { patienceAdd('Kanal: nicht an der Unterkante', sym); dir = null; }
+            else if (dir === 'put' && chE.pos < 0.70) { patienceAdd('Kanal: nicht an der Oberkante', sym); dir = null; }
+            else if (dir === 'call' && chE.trend === 'down') { patienceAdd('Kanal zeigt abwärts', sym); dir = null; }
+            else if (dir === 'put' && chE.trend === 'up') { patienceAdd('Kanal zeigt aufwärts', sym); dir = null; }
           }
         } else if (isRev) {
           var rsig = Q.reversionSignal(bars, cfg.lineType || 'ema', cfg.period, zOf(cfg.confirmBps));
@@ -1231,9 +1277,9 @@
         var lsFactor = lsN >= 3 ? 0.5 : 1;
         if (isWave || (!isRev && cfg.trendFilter)) { // Trend: beim Wellenreiter Pflicht, sonst optional
           if (chE) {
-            // Kanal-Steigung als Regime-Filter: nur in Richtung des Kanals handeln
-            if (dir === 'call' && chE.steep < 0.3) { patienceAdd('Regime: Kanal nicht aufwärts', sym); continue; }
-            if (dir === 'put' && chE.steep > -0.3) { patienceAdd('Regime: Kanal nicht abwärts', sym); continue; }
+            // Nur handeln, wenn die Kanalrichtung statistisch belegt ist (t-Wert), sonst zählt sie nicht.
+            if (dir === 'call' && chE.trend === 'down') { patienceAdd('Regime: Kanal zeigt abwärts', sym); continue; }
+            if (dir === 'put' && chE.trend === 'up') { patienceAdd('Regime: Kanal zeigt aufwärts', sym); continue; }
           } else {
             var tc = bars.slice(-240).map(function (b) { return b[1]; });
             if (tc.length >= 100) {
@@ -1316,7 +1362,7 @@
           entrySpot: spot, entry: ask, qty: qty, cost: cost, orderFee: fee, spx: Math.round(spx2 * 10000) / 10000,
           strike: w.strike, expiry: w.expiry, iv: Math.round(iv * 1000) / 1000,
           omega: Math.round(omega * 10) / 10,
-          sl: slT, tp: mp.tp, trail: mp.trail || 0, maxHoldMin: mp.maxHoldMin || 0, exitMode: mp.exitMode, peak: ask, chN: chN || 0,
+          sl: slT, tp: mp.tp, trail: mp.trail || 0, maxHoldMin: mp.maxHoldMin || 0, exitMode: mp.exitMode, peak: ask, chN: chN || 0, chan: chRef,
           sources: ki.approved ? { intraday: dir === 'call' ? 1 : -1, ki: dir === 'call' ? 1 : -1 } : { intraday: dir === 'call' ? 1 : -1 },
           reason: ki.note.replace(/^ · /, '') + (ki.note ? ' · ' : '') + (isOrb
               ? '🚀 ORB: Ausbruch aus der Eröffnungs-Range (' + U.nf2.format(orbInfo.lo) + '–' + U.nf2.format(orbInfo.hi) + ', 30 Min) nach ' + (dir === 'call' ? 'OBEN' : 'UNTEN') + ' bei ' + U.nf2.format(spot) + '. '
@@ -2574,14 +2620,29 @@
       riskPct: parseFloat(cfg.sizing) > 0 ? parseFloat(cfg.sizing) : 0
     };
   }
+  /** Die vier Kandidaten: zwei Setups mit je zwei Auslösern.
+   *  Bewusst wenige – jeder zusätzliche Kandidat kostet Aussagekraft, weil der beste
+   *  von vielen zufällig gut aussehen kann (Mehrfachvergleich). */
   function labModes(cfg) {
+    var slV = (cfg.scalpSL === "auto" ? "auto" : -(cfg.scalpSL || 20) / 100);
+    var kanal = cfg.channel !== false;
     return [
-        { key: 'breakout', name: '🎯 Ausbrüche', opts: { entryMode: 'cross', exitMode: 'confirmed', sl: -0.25, tp: 0.35, trailPct: 0, maxHoldMin: 0, cooldownMin: 45, maxPerDay: 10, trendFilter: !!cfg.trendFilter } },
-        { key: 'waves', name: '🌊 Scalping', opts: { entryMode: 'cross', exitMode: 'recross', sl: (cfg.scalpSL === "auto" ? "auto" : -(cfg.scalpSL || 20) / 100), tp: null, trailPct: (cfg.scalpTrail || 0) / 100, maxHoldMin: cfg.scalpHold || 60, cooldownMin: 5, maxPerDay: 40, trendFilter: !!cfg.trendFilter } },
-        { key: 'reversion', name: '🔄 Rücksetzer', opts: { entryMode: 'reversion', sl: (cfg.scalpSL === "auto" ? "auto" : -(cfg.scalpSL || 20) / 100), tp: null, trailPct: 0, maxHoldMin: cfg.scalpHold || 60, cooldownMin: 5, maxPerDay: 40 } },
-        { key: 'wave', name: '🏄 Wellenreiter', opts: { entryMode: 'wave', sl: (cfg.scalpSL === "auto" ? "auto" : -(cfg.scalpSL || 20) / 100), tp: null, trailPct: 0, maxHoldMin: cfg.scalpHold || 60, cooldownMin: 3, maxPerDay: 40, trendFilter: true, minQuality: 60 } },
-        { key: 'wave_ch', name: '🏄📐 Wellenreiter + Kanal', opts: { entryMode: 'wave', channel: true, sl: (cfg.scalpSL === "auto" ? "auto" : -(cfg.scalpSL || 20) / 100), tp: null, trailPct: 0, maxHoldMin: cfg.scalpHold || 60, cooldownMin: 3, maxPerDay: 40, trendFilter: true, minQuality: 60 } },
-        { key: 'orb', name: '🚀 ORB (Eröffnungs-Range)', opts: { entryMode: 'orb', exitMode: 'confirmed', orbMin: 30, sl: (cfg.scalpSL === "auto" ? "auto" : -0.25), tp: null, trailPct: 0.15, maxHoldMin: 0, cooldownMin: 10, maxPerDay: 10 } }
+      { key: 'breakout', setup: 'ausbruch', trigger: 'kreuzung', name: '🎯 Ausbruch · EMA-Kreuzung',
+        opts: { entryMode: 'cross', exitMode: cfg.exitStyle === 'kurz' ? 'recross' : 'confirmed',
+          sl: cfg.exitStyle === 'kurz' ? slV : -0.25, tp: cfg.exitStyle === 'kurz' ? null : 0.35,
+          trailPct: cfg.exitStyle === 'kurz' ? (cfg.scalpTrail || 0) / 100 : 0,
+          maxHoldMin: cfg.exitStyle === 'kurz' ? (cfg.scalpHold || 60) : 0,
+          cooldownMin: cfg.exitStyle === 'kurz' ? 5 : 45, maxPerDay: cfg.exitStyle === 'kurz' ? 40 : 10,
+          trendFilter: !!cfg.trendFilter } },
+      { key: 'orb', setup: 'ausbruch', trigger: 'range', name: '🎯 Ausbruch · Eröffnungs-Range',
+        opts: { entryMode: 'orb', exitMode: 'confirmed', orbMin: 30, sl: (cfg.scalpSL === "auto" ? "auto" : -0.25),
+          tp: null, trailPct: 0.15, maxHoldMin: 0, cooldownMin: 10, maxPerDay: 10 } },
+      { key: 'reversion', setup: 'umkehr', trigger: 'ueberdehnung', name: '🔄 Umkehr · Überdehnung',
+        opts: { entryMode: 'reversion', sl: slV, tp: null, trailPct: 0, maxHoldMin: cfg.scalpHold || 60,
+          cooldownMin: 5, maxPerDay: 40 } },
+      { key: 'wave', setup: 'umkehr', trigger: 'welle', name: '🔄 Umkehr · Wellental' + (kanal ? ' + 📐 Kanal' : ''),
+        opts: { entryMode: 'wave', channel: kanal, sl: slV, tp: null, trailPct: 0, maxHoldMin: cfg.scalpHold || 60,
+          cooldownMin: 3, maxPerDay: 40, trendFilter: true, minQuality: 60 } }
     ];
   }
 
@@ -2733,7 +2794,8 @@
       var rec = {
         modeKey: top.mode.key, modeName: top.mode.name, interval: top.interval,
         period: pick.period, confirmBps: pick.confirmBps, lineType: pick.lineType || (cfg.lineType || 'ema'),
-        channel: top.mode.key === 'wave_ch',
+        channel: top.mode.key === 'wave' && cfg.channel !== false,
+        setup: top.mode.setup, trigger: top.mode.trigger,
         window: winPreset, avoidHours: avoidHours,
         wfRet: top.wfRet, posSegs: top.posSegs, n: top.n, winRate: top.winRate, pf: top.pf, verdict: top.verdict,
         fine: bestFine ? { train: bestFine.train.retPct, valid: fineValid ? fineValid.retPct : null, used: !!useFine } : null,
@@ -2764,8 +2826,9 @@
       D.intraday[k] = v;
       applied.push(label);
     }
-    set('mode', r.modeKey === 'wave_ch' ? 'wave' : r.modeKey, 'Modus → ' + r.modeName);
-    set('channel', r.modeKey === 'wave_ch', 'Trendkanal → ' + (r.modeKey === 'wave_ch' ? 'an' : 'aus'));
+    var mKey = r.modeKey === 'wave_ch' ? 'wave' : r.modeKey;
+    set('mode', mKey, 'Setup → ' + setupName(mKey, r.channel !== false));
+    if (r.modeKey === 'wave_ch') set('channel', true, 'Trendkanal → an');   // Empfehlung aus einer älteren Version
     set('interval', r.interval, 'Zeitrahmen → ' + r.interval);
     set('period', r.period, 'Periode → ' + r.period);
     set('confirmBps', r.confirmBps, 'Bestätigung → ' + (r.confirmBps / 100).toFixed(2) + ' %');
@@ -2957,12 +3020,7 @@
         b.addEventListener('click', function () {
           var r0 = results[parseInt(b.getAttribute('data-labapply'), 10)];
           if (!r0 || !r0.best) return;
-          D.intraday.mode = r0.mode.key === 'wave_ch' ? 'wave' : r0.mode.key;
-          if (r0.mode.key === 'wave' || r0.mode.key === 'wave_ch') {
-            D.intraday.channel = r0.mode.key === 'wave_ch';
-            var chEl = document.getElementById('idChannel');
-            if (chEl) chEl.checked = D.intraday.channel;
-          }
+          D.intraday.mode = r0.mode.key;
           D.intraday.interval = r0.interval;
           D.intraday.period = r0.best.period;
           D.intraday.confirmBps = r0.best.confirmBps;
@@ -2971,6 +3029,7 @@
           document.getElementById('idInterval').value = r0.interval;
           document.getElementById('idPeriod').value = String(r0.best.period);
           document.getElementById('idConfirm').value = String(r0.best.confirmBps);
+          if (window.__updateParamVis) window.__updateParamVis();
           st.textContent = '✅ Übernommen: ' + r0.mode.name + ' · ' + r0.interval + ' · P' + r0.best.period + '.';
           render();
         });
@@ -3131,14 +3190,53 @@
         var any = Array.prototype.some.call(pg.querySelectorAll('.params > label'), function (l) { return l.style.display !== 'none'; });
         pg.style.display = any ? '' : 'none';
       }
+      if (window.__syncSetupUI) window.__syncSetupUI();
     }
-    idM.addEventListener('change', function () {
-      // Sinnvolle Voreinstellungen je Modus
-      if (idM.value === 'waves') { idI.value = '1m'; idC.value = '5'; }
-      else if (idM.value === 'wave') { idI.value = '1m'; idC.value = '15'; idTr.value = '1'; }
-      else if (idM.value === 'orb') { idI.value = '1m'; idC.value = '15'; }
+    /* ===== Setup-Bedienung: zwei Pillen + Auslöser + Ausstieg ===== */
+    var idTg = document.getElementById('idTrigger'), idEx = document.getElementById('idExit');
+    var setupPills = document.querySelectorAll('#idSetupPills button');
+    function fillTrigger(setup, sel) {
+      var tr = SETUPS[setup].trigger;
+      idTg.innerHTML = '';
+      Object.keys(tr).forEach(function (k) {
+        var o = document.createElement('option'); o.value = k; o.textContent = tr[k]; idTg.appendChild(o);
+      });
+      idTg.value = tr[sel] ? sel : Object.keys(tr)[0];
+    }
+    /** Bedienelemente aus dem internen Modus nachziehen (auch nach Auto-Tuning). */
+    function syncSetupUI() {
+      var st2 = setupFromMode(idM.value);
+      setupPills.forEach(function (b) { b.classList.toggle('active', b.getAttribute('data-setup') === st2.setup); });
+      fillTrigger(st2.setup, st2.trigger);
+      idEx.value = st2.exitStyle;
+      var lx = document.getElementById('lblExit');
+      if (lx) lx.style.display = (st2.setup === 'ausbruch' && st2.trigger === 'kreuzung') ? '' : 'none';
+    }
+    function applySetup(setup, trigger, exitStyle) {
+      idM.value = modeFromSetup(setup, trigger, exitStyle);
+      // Sinnvolle Voreinstellungen, aber nur beim echten Wechsel
+      if (setup === 'umkehr') { idI.value = '1m'; idC.value = '15'; if (trigger === 'welle') idTr.value = '1'; }
+      else if (trigger === 'range') { idI.value = '1m'; idC.value = '15'; }
+      else if (exitStyle === 'kurz') { idI.value = '1m'; idC.value = '5'; }
       else { idI.value = '5m'; idC.value = '15'; }
+      syncSetupUI();
       idSave();
+    }
+    setupPills.forEach(function (b) {
+      b.addEventListener('click', function () {
+        var sNew = b.getAttribute('data-setup');
+        if (setupFromMode(idM.value).setup === sNew) return;
+        var firstTrigger = Object.keys(SETUPS[sNew].trigger)[0];
+        applySetup(sNew, firstTrigger, 'laufen');
+      });
+    });
+    idTg.addEventListener('change', function () {
+      var st2 = setupFromMode(idM.value);
+      applySetup(st2.setup, idTg.value, idEx.value);
+    });
+    idEx.addEventListener('change', function () {
+      var st2 = setupFromMode(idM.value);
+      applySetup(st2.setup, st2.trigger, idEx.value);
     });
     idE.checked = !!D.intraday.enabled;
     idP.value = String(D.intraday.period);
@@ -3171,6 +3269,8 @@
       D.intraday.mtf = idMt.checked;
       D.intraday.sizing = idSz.value;
       D.intraday.screener = idScr.checked;
+      var stS = setupFromMode(idM.value);
+      D.intraday.setup = stS.setup; D.intraday.trigger = stS.trigger; D.intraday.exitStyle = stS.exitStyle;
       updateParamVis();
       save();
       document.getElementById('idStatus').textContent = D.intraday.enabled
@@ -3181,6 +3281,8 @@
     [idP, idC, idI, idPr, idF, idL, idLn, idTr, idW, idH, idTl, idSS, idCh, idMt, idSz, idScr, document.getElementById('idBlackout')].forEach(function (el) { el.addEventListener('change', idSave); });
     document.getElementById('screenBtn').addEventListener('click', function () { runScreener(true); });
     renderScreen();
+    window.__syncSetupUI = syncSetupUI;
+    syncSetupUI();
     updateParamVis();
     window.__updateParamVis = updateParamVis;
     document.getElementById('centralBtn').addEventListener('click', function () { runCentral(); });

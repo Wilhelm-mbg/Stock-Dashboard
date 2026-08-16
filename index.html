@@ -433,35 +433,50 @@
 
       <div class="strat-card intraday">
         <div class="head">
-          <h3>⚡ Intraday: MA-Durchbruch</h3>
+          <h3>⚡ Intraday-Strategie</h3>
           <span class="state off" id="idState">aus</span>
           <label class="switch"><input type="checkbox" id="idEnabled"><span class="knob"></span></label>
         </div>
-        <details class="how"><summary>So funktionieren die Modi</summary>
+        <details class="how"><summary>So funktionieren die beiden Setups</summary>
         <div class="desc">
-          <b>🎯 Ausbrüche:</b> bestätigter Durchbruch durch die Leitlinie → Trade in Bewegungsrichtung.
-          <b>🌊 Scalping:</b> jede Welle – rein beim Kreuzen, raus bei der Rückkehr zur Linie (Scan alle 90 s).
-          <b>🔄 Rücksetzer:</b> umgekehrt – Einstieg, wenn der Kurs <i>überdehnt</i> von der Linie entfernt ist (z-Score über der Schwelle),
-          Ziel ist die Rückkehr zur Linie.
-          <b>🏄 Wellenreiter:</b> die Kombi – Einstieg am Wellental (nur wenn der <b>Wellen-Qualitäts-Score</b> ≥ 60/100 ist),
-          Ausstieg am Wellenkamm. Mit <b>📐 Trendkanal</b>: Einstieg nur an der Kanalunterkante (Long) bzw. Oberkante (Short),
-          Ziel ist die Gegenkante, die Kanal-Steigung entscheidet als Regime-Filter, ein Kanalbruch löst einen Schutz-Exit aus.
-          <b>🚀 ORB:</b> Range der ersten 30 Handelsminuten, gehandelt wird der erste Ausbruch daraus
-          (max. 1 Trade je Richtung/Tag, Trailing-Stop −15 %).<br><br>
-          Alle Modi: <b>Kosten-Breakeven-Filter</b>, Liquiditätsfilter, Glattstellung zum Tagesschluss.
-          Die „Bestätigung“ wirkt im Rücksetzer-/Wellenreiter-Modus als z-Score-Schwelle (0,05 % → z 1,5 · 0,15 % → z 2,0 · 0,30 % → z 2,5).
+          Es gibt nur noch <b>zwei</b> Grundideen – alles andere sind Filter, die für beide gleich funktionieren.<br><br>
+          <b>🎯 Ausbruch (mit der Bewegung):</b> Der Kurs verlässt eine Marke und läuft weiter. Auslöser wahlweise die
+          <b>EMA-Kreuzung</b> (bestätigter Durchbruch durch die Leitlinie) oder die <b>Eröffnungs-Range</b> – die Spanne der
+          ersten 30 Handelsminuten, gehandelt wird der erste Ausbruch daraus (max. 1 Trade je Richtung und Tag).
+          Beim Ausstieg entscheidest du zwischen <b>laufen lassen</b> (bis zum Gegen-Durchbruch, mit Trailing-Stop)
+          und <b>kurz</b> (raus bei der Rückkehr zur Linie – das frühere Scalping).<br><br>
+          <b>🔄 Umkehr (gegen die Übertreibung):</b> Der Kurs hat sich zu weit entfernt und kommt zurück. Auslöser wahlweise
+          <b>Überdehnung</b> (z-Score-Abstand zur Leitlinie, Ziel ist die Rückkehr zur Linie) oder <b>Wellental</b> –
+          Einstieg am Tief einer Welle, nur wenn der Wellen-Qualitäts-Score ≥ 60/100 liegt, Ausstieg am Wellenkamm.
+          Der <b>📐 Trendkanal</b> ist dabei kein eigener Modus mehr, sondern ein Filter: Einstieg nur an der Kanalunterkante
+          (Long) bzw. Oberkante (Short), Ziel ist die Gegenkante, ein Kanalbruch löst einen Schutz-Exit aus.
+          Der Kanal wird nicht mehr über ein festes Fenster gelegt: Die App probiert mehrere Fensterlängen durch und nimmt die,
+          die die aktuelle Struktur am besten beschreibt – und nur dann, wenn beide Kanten mehrfach abwechselnd angelaufen wurden
+          und der Kurs nachweislich zur Mitte zurückkehrt. Besteht kein Fenster diese Prüfung, gibt es keinen Kanal und damit
+          keinen Kanal-Trade. Die Kanten liegen an den echten Hochs und Tiefs, nicht nur an den Schlusskursen.<br><br>
+          Für beide Setups gilt: <b>Kosten-Breakeven-Filter</b>, Liquiditätsfilter, Event-Blackout, Glattstellung zum Tagesschluss.
+          Die „Bestätigung“ wirkt im Umkehr-Setup als z-Score-Schwelle (0,05 % → z 1,5 · 0,15 % → z 2,0 · 0,30 % → z 2,5).
           <b>🫁 auto-Stop</b> passt sich an Schwankungsbreite und Hebel an. Nach 3 Verlusten in Folge wird die Positionsgröße
-          automatisch halbiert, nach 5 pausiert der Tag (Tilt-Schutz).
+          halbiert, nach 5 pausiert der Tag (Tilt-Schutz).
         </div>
         </details>
         <div id="idParams">
           <div class="pgroup">
             <div class="pgroup-title">📶 Signal</div>
             <div class="params">
-              <label>Modus<select id="idMode"><option value="breakout" selected>🎯 Ausbrüche</option><option value="waves">🌊 Scalping</option><option value="reversion">🔄 Rücksetzer</option><option value="wave">🏄 Wellenreiter</option><option value="orb">🚀 ORB</option></select></label>
+              <div style="grid-column:1/-1; margin-bottom:2px;">
+                <div style="font-size:11px; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:.04em; margin-bottom:4px;">Setup</div>
+                <div class="pills small" id="idSetupPills" style="margin:0 0 8px;">
+                  <button type="button" data-setup="ausbruch" class="active">🎯 Ausbruch</button>
+                  <button type="button" data-setup="umkehr">🔄 Umkehr</button>
+                </div>
+              </div>
+              <label title="Was den Trade auslöst">Auslöser<select id="idTrigger"></select></label>
+              <label id="lblExit" title="Wie lange der Trade laufen darf">Ausstieg<select id="idExit"><option value="laufen" selected>laufen lassen</option><option value="kurz">kurz (Rückkehr zur Linie)</option></select></label>
+              <select id="idMode" style="display:none;"><option value="breakout">breakout</option><option value="waves">waves</option><option value="reversion">reversion</option><option value="wave">wave</option><option value="orb">orb</option></select>
               <label>Zeitrahmen<select id="idInterval"><option value="1m">1 Min</option><option value="5m" selected>5 Min</option><option value="15m">15 Min</option><option value="60m">60 Min</option></select></label>
               <label>EMA-Periode<select id="idPeriod"><option value="9">9</option><option value="20" selected>20</option><option value="50">50</option></select></label>
-              <label title="Mindestabstand jenseits der Leitlinie; wirkt im Rücksetzer/Wellenreiter als z-Score-Schwelle (1,5 / 2,0 / 2,5)">Bestätigung<select id="idConfirm"><option value="5">0,05 %</option><option value="15" selected>0,15 %</option><option value="30">0,30 %</option></select></label>
+              <label title="Mindestabstand jenseits der Leitlinie; wirkt im Umkehr-Setup als z-Score-Schwelle (1,5 / 2,0 / 2,5)">Bestätigung<select id="idConfirm"><option value="5">0,05 %</option><option value="15" selected>0,15 %</option><option value="30">0,30 %</option></select></label>
               <label>Leitlinie<select id="idLine"><option value="ema" selected>EMA</option><option value="vwap">VWAP</option></select></label>
             </div>
           </div>
@@ -482,7 +497,7 @@
               <label title="Mindest-Tagesumsatz des Basiswerts">Liquidität min.<select id="idLiq"><option value="0">aus</option><option value="10">10 Mio $</option><option value="50" selected>50 Mio $</option><option value="200">200 Mio $</option></select></label>
               <label>Event-Blackout<select id="idBlackout"><option value="off">aus</option><option value="block" selected>±45 Min</option><option value="flat">+ glattstellen</option></select></label>
               <label data-iv="1m" title="1-Min-Signale müssen zusätzlich zur EMA20-Richtung auf dem 5-Min-Chart passen (Rauschfilter)">5-Min-Bestätigung<span class="switch"><input type="checkbox" id="idMtf" checked><span class="knob"></span></span></label>
-              <label data-modes="wave" title="Regressionskanal (2,5 Wellenlängen) – Einstieg an der Kanalunterkante, Ziel Oberkante, Kanal-Steigung als Regime-Filter, Kanalbruch als Schutz-Exit">📐 Trendkanal<span class="switch"><input type="checkbox" id="idChannel" checked><span class="knob"></span></span></label>
+              <label data-modes="wave" title="Nur im Umkehr-Setup mit Auslöser Wellental. Der Kanal wird auf Güte geprüft (Kanten-Berührungen, Seitenwechsel, Rückkehr zur Mitte) und das Fenster automatisch gewählt. Besteht kein Fenster die Prüfung, gibt es keinen Kanal – und keinen Trade.">📐 Trendkanal<span class="switch"><input type="checkbox" id="idChannel" checked><span class="knob"></span></span></label>
               <label title="Einmal täglich ~30 zusätzliche Kandidaten nach Wellen-Qualität und Liquidität ranken – die Top-5 werden mitgescannt">🔎 Wellen-Screener<span class="switch"><input type="checkbox" id="idScreener"><span class="knob"></span></span></label>
               <label title="Claude wertet stündlich die Analyse-Daten aus und schreibt geprüfte Parameter-Empfehlungen in den Daten-Ordner – die App übernimmt sie automatisch (nur sichere Felder, jede Änderung wird hier angezeigt)">🛰 Auto-Tuning<span class="switch"><input type="checkbox" id="idAutoTune" checked><span class="knob"></span></span></label>
             </div>
@@ -598,7 +613,7 @@
         <span id="centralStatus" style="color:var(--muted); font-size:12px;"></span>
       </div>
       <div style="color:var(--muted); font-size:11.5px; margin-top:6px;">
-        Führt nacheinander aus: <b>1.</b> Walk-Forward-Labor über alle 6 Modi × 3 Zeitrahmen · <b>2.</b> Parameter-Feinschliff
+        Führt nacheinander aus: <b>1.</b> Walk-Forward-Labor über beide Setups (4 Auslöser) × 3 Zeitrahmen · <b>2.</b> Parameter-Feinschliff
         des Gewinners (18 Kombinationen, out-of-sample validiert) · <b>3.</b> Stunden-/Zeitfenster-/Symbol-Diagnose.
         Ergebnis: <b>eine</b> vollständige Empfehlung (Modus, Zeitrahmen, Parameter, Zeitfenster, Meide-Stunden) mit
         Übernehmen-Knopf. Rechnet parallel auf allen CPU-Kernen, dauert 3–6 Minuten.
@@ -716,13 +731,14 @@
   </div>
 
   <div class="panel" style="margin-bottom:12px;">
-    <h3>🔬 Strategie-Labor (Komplettprüfung aller Intraday-Modi per Walk-Forward)</h3>
+    <h3>🔬 Strategie-Labor (beide Setups per Walk-Forward geprüft)</h3>
     <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
       <button class="btn" id="labRunBtn">Alle Strategien prüfen (Walk-Forward)</button>
       <span id="labStatus" style="color:var(--muted); font-size:12px;"></span>
     </div>
     <div style="color:var(--muted); font-size:11.5px; margin-top:6px;">
-      Prüft 🎯 Ausbrüche, 🌊 Scalping, 🔄 Rücksetzer, 🏄 Wellenreiter und 🏄📐 Wellenreiter&nbsp;+&nbsp;Kanal über je 1/5/15-Minuten-Daten mit der ehrlichsten Methode:
+      Prüft die vier Kandidaten – 🎯 Ausbruch (EMA-Kreuzung · Eröffnungs-Range) und 🔄 Umkehr (Überdehnung · Wellental) –
+      über je 1/5/15-Minuten-Daten mit der ehrlichsten Methode:
       Die Historie wird in 4 Zeitscheiben geteilt – auf jeder werden die Parameter (EMA-Periode × Schwelle) neu bestimmt und
       dann <b>nur auf der nächsten, ungesehenen Scheibe</b> gehandelt. Bewertet wird ausschließlich das Out-of-Sample-Ergebnis,
       inkl. Konsistenz über die Scheiben und Diagnose nach Uhrzeit, Wochentag und Symbol. Nutzt deine aktuellen Exits, Kosten

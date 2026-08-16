@@ -710,36 +710,218 @@
    *         (>1 = klarer Aufwärtskanal, <-1 = klarer Abwärtskanal, ~0 = seitwärts),
    *  widthPct: Kanalbreite in % der Kanalmitte.
    */
-  function regressionChannel(closes, N, endI) {
-    N = N || 120;
+  /** Varianzverhältnis der Residuen: Schwankt der Kurs um die Gerade herum (Kanal)
+   *  oder läuft er einfach weg (Zufallspfad)? Werte deutlich unter 1 = Rückkehr zur Mitte.
+   *  Ohne diesen Test hält man jeden Zufallspfad für einen Trendkanal – der klassische Fehler. */
+  function varianceRatio(res, k) {
+    var n = res.length, i;
+    if (n < k + 10 || k < 2) return 1;
+    var d1 = [], dk = [];
+    for (i = 1; i < n; i++) d1.push(res[i] - res[i - 1]);
+    for (i = k; i < n; i++) dk.push(res[i] - res[i - k]);
+    function vari(a) {
+      var m = 0, j; for (j = 0; j < a.length; j++) m += a[j]; m /= a.length;
+      var v = 0; for (j = 0; j < a.length; j++) v += (a[j] - m) * (a[j] - m);
+      return v / Math.max(1, a.length - 1);
+    }
+    var v1 = vari(d1);
+    if (v1 <= 1e-14) return 1;
+    return (vari(dk) / k) / v1;
+  }
+
+  /** Stärkste negative Autokorrelation der Residuen: erkennt eine echte Schwingung
+   *  zwischen den Kanten. Ein Zufallspfad hat das nicht – er wandert, er schwingt nicht. */
+  function minAutoCorr(res, lagMin, lagMax) {
+    var n = res.length, i, L;
+    if (n < 30) return 0;
+    var m = 0; for (i = 0; i < n; i++) m += res[i]; m /= n;
+    var v = 0; for (i = 0; i < n; i++) v += (res[i] - m) * (res[i] - m);
+    if (v <= 1e-14) return 0;
+    var mn = 1;
+    for (L = lagMin; L <= lagMax; L += 2) {
+      var sum = 0;
+      for (i = 0; i + L < n; i++) sum += (res[i] - m) * (res[i + L] - m);
+      var rho = sum / v;
+      if (rho < mn) mn = rho;
+    }
+    return mn;
+  }
+
+  /** Übernacht-Sprünge auch für Hoch/Tief herausrechnen (falls vorhanden). */
+  function degapBars(bars) {
+    var out = { closes: [], highs: null, lows: null };
+    var hasHL = bars.length > 0 && bars[0].length >= 5 && bars[0][3] != null;
+    if (hasHL) { out.highs = []; out.lows = []; }
+    var offset = 0, lastDay = null, prevClose = null;
+    for (var i = 0; i < bars.length; i++) {
+      var d = new Date(bars[i][0]).toISOString().slice(0, 10);
+      if (lastDay !== null && d !== lastDay && prevClose !== null) offset += bars[i][1] - prevClose;
+      lastDay = d; prevClose = bars[i][1];
+      out.closes.push(bars[i][1] - offset);
+      if (hasHL) { out.highs.push(bars[i][3] - offset); out.lows.push(bars[i][4] - offset); }
+    }
+    return out;
+  }
+
+  /** Ein einzelner Kanal-Fit über N Bars, endend bei endI.
+   *  Mitgeliefert werden Güte (R²), Steigungs-Signifikanz, Kanten-Berührungen und das
+   *  Varianzverhältnis – ohne diese Angaben ist ein Regressionskanal nur eine Linie
+   *  durch beliebige Punkte, die auch jeden Zufallspfad umschließt.
+   *  opt.highs / opt.lows: Wenn vorhanden, werden die Kanten an echten Hochs und Tiefs
+   *  ausgerichtet statt nur an Schlusskursen – so, wie man einen Kanal von Hand zeichnet. */
+  function channelFit(closes, N, endI, opt) {
+    opt = opt || {};
+    var qOut = opt.qOut === undefined ? 0.05 : opt.qOut;
     if (endI === undefined) endI = closes.length - 1;
     if (N < 20 || endI + 1 < N) return null;
     var x0 = endI - N + 1;
-    var sx = 0, sy = 0, sxx = 0, sxy = 0;
-    for (var i = 0; i < N; i++) {
-      var y = closes[x0 + i];
-      sx += i; sy += y; sxx += i * i; sxy += i * y;
-    }
+    var sx = 0, sy = 0, sxx = 0, sxy = 0, i, y;
+    for (i = 0; i < N; i++) { y = closes[x0 + i]; sx += i; sy += y; sxx += i * i; sxy += i * y; }
     var den = N * sxx - sx * sx;
     if (!den) return null;
-    var b = (N * sxy - sx * sy) / den; // Steigung je Bar
+    var b = (N * sxy - sx * sy) / den;
     var a = (sy - b * sx) / N;
-    var se = 0;
-    for (var j = 0; j < N; j++) { var r = closes[x0 + j] - (a + b * j); se += r * r; }
-    var sd = Math.sqrt(se / Math.max(1, N - 2));
+    var mean = sy / N;
+    var ssRes = 0, ssTot = 0, res = new Array(N);
+    for (i = 0; i < N; i++) {
+      var r = closes[x0 + i] - (a + b * i);
+      res[i] = r; ssRes += r * r;
+      var dm = closes[x0 + i] - mean; ssTot += dm * dm;
+    }
     var mid = a + b * (N - 1);
-    if (mid <= 0 || sd <= 1e-9) return null;
-    var upper = mid + 2 * sd, lower = mid - 2 * sd;
+    if (mid <= 0 || ssTot <= 1e-12) return null;
+    var sd = Math.sqrt(ssRes / Math.max(1, N - 2));
+    if (sd <= 1e-9) return null;
+    var r2 = Math.max(0, 1 - ssRes / ssTot);
+    var sxxC = sxx - sx * sx / N;
+    var seB = Math.sqrt((ssRes / Math.max(1, N - 2)) / Math.max(1e-12, sxxC));
+    var tSlope = seB > 0 ? b / seB : 0;
+
+    // Residuen für die Kanten: bevorzugt Hochs (oben) und Tiefs (unten)
+    var resHi = res, resLo = res, hasHL = false;
+    if (opt.highs && opt.lows && opt.highs.length === closes.length) {
+      resHi = []; resLo = []; hasHL = true;
+      for (i = 0; i < N; i++) {
+        resHi.push(opt.highs[x0 + i] - (a + b * i));
+        resLo.push(opt.lows[x0 + i] - (a + b * i));
+      }
+    }
+    function quant(arr, f) {
+      var srt = arr.slice().sort(function (p1, p2) { return p1 - p2; });
+      var idx = (srt.length - 1) * f, lo = Math.floor(idx), hi = Math.ceil(idx);
+      return srt[lo] + (srt[hi] - srt[lo]) * (idx - lo);
+    }
+    var upOff = Math.max(quant(resHi, 1 - qOut), 0.25 * sd);
+    var loOff = Math.min(quant(resLo, qOut), -0.25 * sd);
+
+    // Berührungen und Seitenwechsel: Ein Kanal lebt davon, dass beide Kanten
+    // mehrfach angelaufen werden – abwechselnd, nicht nur einmal am Rand entlang.
+    var tU = 0, tL = 0, alt = 0, lastSide = 0;
+    for (i = 0; i < N; i++) {
+      var side = 0;
+      if (resHi[i] >= 0.75 * upOff) { tU++; side = 1; }
+      else if (resLo[i] <= 0.75 * loOff) { tL++; side = -1; }
+      if (side && side !== lastSide) { if (lastSide) alt++; lastSide = side; }
+    }
+    var vr = varianceRatio(res, Math.max(5, Math.round(N / 8)));
+    // Nur wenn das Varianzverhältnis allein nicht überzeugt, zusätzlich auf Schwingung prüfen
+    // (spart Rechenzeit im Backtest, wo das je Bar läuft).
+    var acf = vr <= (opt.vrGate === undefined ? 0.35 : opt.vrGate)
+      ? -1
+      : minAutoCorr(res, Math.max(5, Math.round(N / 25)), Math.round(N / 2));
+
+    var upper = mid + upOff, lower = mid + loOff;
+    if (upper - lower <= 1e-9) return null;
     var price = closes[endI];
+    var slopeTot = (b * N) / (upper - lower);
     return {
-      mid: mid, upper: upper, lower: lower, sd: sd,
+      N: N, mid: mid, upper: upper, lower: lower, sd: sd, hl: hasHL,
+      b: b, upOff: upOff, loOff: loOff,
+      r2: Math.round(r2 * 1000) / 1000,
+      vr: Math.round(vr * 1000) / 1000,
+      t: Math.round(tSlope * 10) / 10,
+      touchUp: tU, touchLo: tL, wechsel: alt,
+      acf: Math.round(acf * 100) / 100,
       pos: Math.round((price - lower) / (upper - lower) * 1000) / 1000,
       slopePct: Math.round(b / mid * 100 * 10000) / 10000,
-      steep: Math.round((b * N) / (2 * sd) * 100) / 100,
+      steep: Math.round(slopeTot * 100) / 100,
       widthPct: Math.round((upper - lower) / mid * 100 * 100) / 100,
       toUpperPct: Math.round((upper - price) / price * 100 * 100) / 100,
       toLowerPct: Math.round((price - lower) / price * 100 * 100) / 100
     };
+  }
+
+  /** Mindestanforderungen an einen brauchbaren Kanal. Bewusst streng:
+   *  Ein Kanal, der alles umschließt, sagt nichts vorher.
+   *  Gegen Zufallspfade kalibriert: ~10 % Fehlalarm, echte Kanäle werden zu 67–99 % erkannt.
+   *  R² ist bewusst KEINE Hürde – ein Seitwärtskanal hat naturgemäß ein R² nahe null und ist
+   *  trotzdem ein gültiger Kanal. Entscheidend ist die Rückkehr zur Mitte (Varianzverhältnis). */
+  var CHAN_MIN = { r2: 0, touch: 2, wechsel: 3, vr: 0.35, acf: -0.65, tSlope: 2.0, minN: 100, maxN: 320 };
+
+  /** Gültig ist ein Kanal, wenn beide Kanten mehrfach und abwechselnd angelaufen wurden
+   *  UND der Kurs nachweislich zur Mitte zurückkehrt (Varianzverhältnis) oder sauber
+   *  zwischen den Kanten schwingt (negative Autokorrelation). */
+  function channelValid(f, min) {
+    min = min || CHAN_MIN;
+    if (!f) return false;
+    var struktur = f.N >= min.minN && f.touchUp >= min.touch && f.touchLo >= min.touch && f.wechsel >= min.wechsel;
+    var dynamik = f.vr <= min.vr || f.acf <= min.acf;
+    return struktur && dynamik && f.r2 >= min.r2;
+  }
+
+  /** Sucht das Fenster, das die aktuelle Struktur am besten beschreibt – statt eines starren Werts.
+   *  Nach einem Regimewechsel gewinnt automatisch ein kürzeres Fenster, weil der lange Fit
+   *  dann durchfällt. Gibt null zurück, wenn kein Fenster überzeugt – dann gibt es eben keinen Kanal. */
+  function bestChannel(closes, endI, opt) {
+    opt = opt || {};
+    var min = opt.min || CHAN_MIN;
+    if (endI === undefined) endI = closes.length - 1;
+    var maxN = Math.min(opt.maxN || min.maxN, endI + 1);
+    var minN = opt.minN || min.minN;
+    if (maxN < minN) return null;
+    var cand = [100, 130, 170, 220, 280, 320];
+    var best = null, bestScore = -1, tried = 0, bestFail = null;
+    for (var k = 0; k < cand.length; k++) {
+      var N = cand[k];
+      if (N < minN || N > maxN) continue;
+      var f = channelFit(closes, N, endI, opt);
+      if (!f) continue;
+      tried++;
+      if (!channelValid(f, min)) { if (!bestFail || f.r2 > bestFail.r2) bestFail = f; continue; }
+      // Güte zählt, Länge gibt einen leichten Bonus: ein langer guter Kanal trägt weiter.
+      var score = Math.max(1 - f.vr, -f.acf) * Math.pow(N / minN, 0.2);
+      if (score > bestScore) { bestScore = score; best = f; }
+    }
+    if (!best) return null;
+    best.trend = (best.t >= min.tSlope && best.steep > 0.3) ? 'up'
+      : (best.t <= -min.tSlope && best.steep < -0.3) ? 'down' : 'flat';
+    best.quality = Math.max(0, Math.min(100, Math.round(
+      50 * Math.min(1, Math.max((min.vr - best.vr) / min.vr, (best.acf - min.acf) / (-1 - min.acf))) + // Rückkehr zur Mitte bzw. Schwingung
+      25 * Math.min(1, best.wechsel / 8) +                      // wie oft wechselt er zwischen den Kanten
+      15 * Math.min(1, (best.touchUp + best.touchLo) / 12) +    // wie oft werden die Kanten angelaufen
+      10 * Math.min(1, best.N / 220)                            // wie tragfähig ist das Fenster
+    )));
+    best.geprueft = tried;
+    return best;
+  }
+
+  /** Einen beim Einstieg gefundenen Kanal auf einen späteren Bar fortschreiben.
+   *  ref = {mid, b, upOff, loOff, i, off} – off gleicht die Übernacht-Entzerrung aus. */
+  function channelRef(f, i, rawPrice, degapPrice) {
+    return { mid: f.mid, b: f.b, upOff: f.upOff, loOff: f.loOff, i: i, off: degapPrice - rawPrice, N: f.N };
+  }
+  function projectChannel(ref, i, rawPrice) {
+    if (!ref) return null;
+    var mid = ref.mid + ref.b * (i - ref.i);
+    var up = mid + ref.upOff, lo = mid + ref.loOff;
+    if (up - lo <= 1e-9) return null;
+    var price = rawPrice + ref.off;
+    return { mid: mid, upper: up, lower: lo, pos: (price - lo) / (up - lo) };
+  }
+
+  /** Abwärtskompatibel: fester Fensterkanal ohne Güteprüfung (nur noch für Altaufrufe). */
+  function regressionChannel(closes, N, endI) {
+    return channelFit(closes, N || 120, endI);
   }
 
   /** Kosten-Breakeven-Filter: Kann die typische Bewegung die Handelskosten schlagen?
@@ -911,9 +1093,10 @@
           else if (MAXHOLD && t - p.openT >= MAXHOLD) why = 'Max-Haltedauer erreicht';
           else if (isLastBarOfDay(sym, ci)) why = 'Tagesschluss-Glattstellung';
           else if (ENTRY === 'wave') {
-            if (CHAN) {
-              var chNp = p.chN || 180;
-              var chM = regressionChannel(degapCloses(bars.slice(Math.max(0, ci - chNp - 5), ci + 1)), chNp);
+            if (CHAN && p.chan) {
+              // Der Kanal vom Einstieg wird fortgeschrieben, nicht jede Minute neu gezeichnet –
+              // sonst läuft die Linie dem Kurs hinterher und jedes Ziel verschiebt sich mit.
+              var chM = projectChannel(p.chan, ci, spot);
               if (chM) {
                 if (p.dir === 'call' && chM.pos >= 0.80) why = 'Kanaloberkante erreicht (Ziel)';
                 else if (p.dir === 'put' && chM.pos <= 0.20) why = 'Kanalunterkante erreicht (Ziel)';
@@ -943,23 +1126,25 @@
         if ((dayCount[dk] || 0) >= maxPerDay) continue;
         if (lastTrade[sym] && t - lastTrade[sym] < cooldownMs) continue;
         var dir = null;
-        var win = bars.slice(Math.max(0, ci - Math.max(period * 4, CHAN ? 360 : 260)), ci + 1);
-        var chE = null, chN = 0;
+        var win = bars.slice(Math.max(0, ci - Math.max(period * 4, CHAN ? 380 : 260)), ci + 1);
+        var chE = null, chN = 0, chRef = null;
         if (ENTRY === 'wave') {
           var wq = waveQuality(win, LINE, period, ZTHR);
           if (!wq.signal || wq.score < MINQ) continue;
           dir = wq.signal;
           if (CHAN) {
-            // Kanal-Fenster: 2,5 gemessene Wellenlängen (nie ganzzahlig ≈ Wellenperiode!)
-            chN = CHN || Math.max(100, Math.min(320, Math.round(2.5 * (wq.waveLen || 72))));
-            chE = regressionChannel(degapCloses(win), chN);
+            // Fenster wird nach Güte gewählt, nicht starr gesetzt; ohne belastbaren Kanal kein Trade.
+            var dgE = degapBars(win);
+            chE = bestChannel(dgE.closes, undefined, { highs: dgE.highs, lows: dgE.lows, maxN: CHN || undefined });
             if (!chE) continue;
+            chN = chE.N;
+            chRef = channelRef(chE, ci, spot, dgE.closes[dgE.closes.length - 1]);
             // Einstieg nur am Kanalrand …
             if (dir === 'call' && chE.pos > 0.30) continue;
             if (dir === 'put' && chE.pos < 0.70) continue;
-            // … und nie gegen einen klar entgegengesetzten Kanal (Steigungs-Regime)
-            if (dir === 'call' && chE.steep < -0.8) continue;
-            if (dir === 'put' && chE.steep > 0.8) continue;
+            // … und nie gegen einen Kanal, dessen Richtung statistisch belegt ist
+            if (dir === 'call' && chE.trend === 'down') continue;
+            if (dir === 'put' && chE.trend === 'up') continue;
           }
         } else if (ENTRY === 'reversion') {
           var rsig = reversionSignal(win, LINE, period, ZTHR);
@@ -1038,7 +1223,7 @@
         var cost = qty * ask + FEE;
         if (qty < 1 || cash < cost) continue;
         cash -= cost;
-        open[sym] = { dir: dir, w: w, qty: qty, entry: ask, cost: cost, openT: t, spx: spx, chN: chN, sl: slT };
+        open[sym] = { dir: dir, w: w, qty: qty, entry: ask, cost: cost, openT: t, spx: spx, chN: chN, chan: chRef, sl: slT };
         lastTrade[sym] = t;
         dayCount[dk] = (dayCount[dk] || 0) + 1;
       }
@@ -1089,7 +1274,10 @@
     signalCross: signalCross, vwapLine: vwapLine, inWindow: inWindow,
     effSpread: effSpread, slipOf: slipOf,
     reversionSignal: reversionSignal, edgeCheck: edgeCheck, waveQuality: waveQuality,
-    regressionChannel: regressionChannel, degapCloses: degapCloses,
+    regressionChannel: regressionChannel, channelFit: channelFit, bestChannel: bestChannel,
+    channelValid: channelValid, CHAN_MIN: CHAN_MIN, varianceRatio: varianceRatio,
+    channelRef: channelRef, projectChannel: projectChannel,
+    degapCloses: degapCloses, degapBars: degapBars,
     computeStats: computeStats, bootstrapTrades: bootstrapTrades
   };
   if (typeof module !== 'undefined' && module.exports) module.exports = Quant;
