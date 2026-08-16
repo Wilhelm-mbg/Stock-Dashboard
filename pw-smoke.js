@@ -254,6 +254,18 @@ const path = require('path');
   const centTxt = await page.locator('#centralResult').innerText();
   check('Zentrale zeigt Leerzustand', centTxt.indexOf('Noch keine Analyse') !== -1);
 
+  // Selbst-Optimierung: Bedienelemente + Status
+  check('Selbst-Optimierung: Schalter vorhanden', await page.locator('#aoOn').count() === 1);
+  check('Selbst-Optimierung: Takt-Auswahl vorhanden', await page.locator('#aoEvery').count() === 1);
+  check('Selbst-Optimierung: Robustheits-Schalter vorhanden', await page.locator('#aoRobust').count() === 1);
+  check('Selbst-Optimierung: Sofort-Knopf vorhanden', await page.locator('#aoBtn').count() === 1);
+  const aoTxt = await page.locator('#autoOptStatus').innerText();
+  check('Selbst-Optimierung: Status zeigt nächsten Lauf', aoTxt.indexOf('Nächster Durchlauf') !== -1 || aoTxt.indexOf('Noch kein Durchlauf') !== -1);
+  await page.selectOption('#aoEvery', '24');
+  await page.waitForTimeout(200);
+  const aoSaved = await page.evaluate(async () => (await window.api.storeGet('depot')).autoOpt);
+  check('Selbst-Optimierung: Takt wird gespeichert', !!aoSaved && aoSaved.everyH === 24);
+
   // Analyse-Export: Button vorhanden, Payload ohne Zugangsdaten
   await page.click('#depotPills button[data-sub="auswertung"]');
   await page.waitForTimeout(300);

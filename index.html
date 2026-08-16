@@ -604,6 +604,30 @@
         Übernehmen-Knopf. Rechnet parallel auf allen CPU-Kernen, dauert 3–6 Minuten.
       </div>
       <div id="centralResult" style="margin-top:12px;"></div>
+
+      <div style="margin-top:14px; padding-top:12px; border-top:1px solid var(--line);">
+        <h4 style="margin:0 0 6px;">🤖 Selbst-Optimierung – die App verbessert sich allein</h4>
+        <div style="color:var(--muted); font-size:11.5px; margin-bottom:8px;">
+          Läuft komplett lokal: In festem Takt startet die App die Komplett-Analyse selbst und übernimmt die Empfehlung –
+          aber nur, wenn sie den Robustheitstest besteht (🟢 im Walk-Forward, mindestens 12 ungesehene Trades).
+          Jede Übernahme landet unten im Verlauf und lässt sich zurücknehmen. Braucht keine Cloud und keinen Internet-Dienst.
+        </div>
+        <div class="params" style="display:flex; gap:14px; flex-wrap:wrap; align-items:center;">
+          <label title="Schaltet den automatischen Takt an oder aus">Automatik<span class="switch"><input type="checkbox" id="aoOn" checked><span class="knob"></span></span></label>
+          <label>Takt
+            <select id="aoEvery">
+              <option value="4">alle 4 Stunden</option>
+              <option value="8" selected>alle 8 Stunden</option>
+              <option value="12">alle 12 Stunden</option>
+              <option value="24">einmal täglich</option>
+            </select>
+          </label>
+          <label title="Nur Empfehlungen übernehmen, die im Walk-Forward als robust gelten. Aus = auch gemischte Ergebnisse übernehmen (riskanter)">Nur robuste übernehmen<span class="switch"><input type="checkbox" id="aoRobust" checked><span class="knob"></span></span></label>
+          <label title="Rechnet nicht, während die US-Börse offen ist – so bleibt die Rechenleistung beim Handel">Pause bei offener Börse<span class="switch"><input type="checkbox" id="aoMarket" checked><span class="knob"></span></span></label>
+          <button class="btn ghost" id="aoBtn">Jetzt einmal durchlaufen</button>
+        </div>
+        <div id="autoOptStatus" style="font-size:12px; margin-top:8px;"></div>
+      </div>
     </div>
 
     <div class="panel" style="margin-bottom:12px;">

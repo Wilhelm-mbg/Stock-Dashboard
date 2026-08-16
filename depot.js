@@ -245,6 +245,8 @@
   function btIntraday(map, opts) { return BTPool.run('intraday', map, opts); }
   function btDaily(map, opts) { return BTPool.run('daily', map, opts); }
 
+  var WINDOW_NAMES = { all: 'ganzer Handelstag', open2: '15:30–17:30 Uhr', open4: '15:30–19:30 Uhr', close2: '20–22 Uhr' };
+
   /* ================= 🛰 Auto-Tuning (empfehlung.json von Claude) ================= */
   var TUNE_ALLOW = {
     mode: ['breakout', 'waves', 'reversion', 'wave', 'orb'],
@@ -609,7 +611,7 @@
     if (!el) return;
     var rows = tuneRanking();
     if (!rows.length) {
-      el.innerHTML = '<div class="empty"><span class="ico">🛰</span>Noch keine automatischen Anpassungen. Die stündliche Analyse schreibt Empfehlungen in den Daten-Ordner – die App übernimmt sie hier sichtbar.</div>';
+      el.innerHTML = '<div class="empty"><span class="ico">🛰</span>Noch keine automatischen Anpassungen. Sobald die Selbst-Optimierung eine <b>robuste</b> Verbesserung findet, steht sie hier – mit gemessener Wirkung.</div>';
       return;
     }
     var html = '<table class="tbl"><tr><th>Rang</th><th>Wann</th><th>Änderung</th><th>Ø P/L je Trade davor → danach</th><th>Trades danach</th><th>Wirkung</th><th></th></tr>';
@@ -617,7 +619,7 @@
       var e = r.e;
       html += '<tr' + (r.laufend ? ' style="font-weight:600;"' : '') + '>' +
         '<td>' + (r.rang ? '#' + r.rang : '–') + '</td>' +
-        '<td>' + U.dt(e.at) + (r.laufend ? '<br><span style="color:var(--muted); font-weight:400; font-size:11px;">läuft aktuell</span>' : '') + '</td>' +
+        '<td>' + U.dt(e.at) + '<br><span style="color:var(--muted); font-weight:400; font-size:11px;">' + (e.quelle === 'lokal' ? '🤖 Selbst-Optimierung' : e.quelle === 'manuell' ? '👤 manuell übernommen' : '🛰 Cloud-Analyse') + (r.laufend ? ' · läuft aktuell' : '') + '</span></td>' +
         '<td>' + (e.applied && e.applied.length ? U.esc(e.applied.join(' · ')) : '<span style="color:var(--muted);">keine Feldänderung</span>') +
           (e.txt ? '<div style="color:var(--muted); font-size:11px; margin-top:2px;">' + U.esc(e.txt) + '</div>' : '') + '</td>' +
         '<td>' + (r.vor.avg != null ? U.signTxt(r.vor.avg, ' $') : '–') + ' → ' + (r.nach.avg != null ? '<b class="' + U.signCls(r.nach.avg) + '">' + U.signTxt(r.nach.avg, ' $') + '</b>' : '–') +
@@ -2658,10 +2660,18 @@
 
   /* ================= 🎛 Analyse-Zentrale ================= */
   var centralRunning = false;
-  async function runCentral() {
-    if (centralRunning || labRunning) return;
+  /** opts: {silent:true, status:fn} → rechnet ohne UI und meldet den Fortschritt per Callback. */
+  async function runCentral(opts) {
+    opts = (opts && typeof opts === 'object' && !opts.type) ? opts : {};
+    var silent = !!opts.silent;
+    if (centralRunning || labRunning) return null;
     centralRunning = true;
-    var btn = document.getElementById('centralBtn'), st = document.getElementById('centralStatus'), out = document.getElementById('centralResult');
+    var dummy = { textContent: '', innerHTML: '', disabled: false };
+    var btn = (!silent && document.getElementById('centralBtn')) || Object.assign({}, dummy);
+    var out = (!silent && document.getElementById('centralResult')) || Object.assign({}, dummy);
+    var st = silent
+      ? { set textContent(v) { if (opts.status) opts.status(v); }, get textContent() { return ''; } }
+      : document.getElementById('centralStatus');
     btn.disabled = true;
     try {
       var cfg = D.intraday;
@@ -2669,7 +2679,7 @@
       var ld = await loadLabData(st);
       var results = await labCompute(ld, st);
       st.textContent = '';
-      if (!results.length) { out.innerHTML = '<div class="empty"><span class="ico">🎛</span>Zu wenig Daten für eine Analyse.</div>'; return; }
+      if (!results.length) { out.innerHTML = '<div class="empty"><span class="ico">🎛</span>Zu wenig Daten für eine Analyse.</div>'; return null; }
       var top = results[0];
 
       // Schritt 2: Feinschliff für den Gewinner (Grid, 70/30 out-of-sample)
@@ -2731,17 +2741,136 @@
       };
       D.central = { at: Date.now(), rec: rec, ranking: results.slice(0, 6).map(function (r0) { return { name: r0.mode.name, interval: r0.interval, wfRet: r0.wfRet, posSegs: r0.posSegs, n: r0.n, verdict: r0.verdict }; }) };
       await save();
-      renderCentral();
+      if (!silent) renderCentral();
       exportAnalysis(true);
+      return rec;
     } catch (e) {
       out.innerHTML = '<div class="empty"><span class="ico">⚠</span>Fehler: ' + U.esc(e.message || e) + '</div>';
+      if (silent) throw e;
+      return null;
     } finally {
       btn.disabled = false;
       centralRunning = false;
     }
   }
 
-  var WINDOW_NAMES = { all: 'ganzer Handelstag', open2: '15:30–17:30 Uhr', open4: '15:30–19:30 Uhr', close2: '20–22 Uhr' };
+  /* ======= Empfehlung anwenden (gemeinsam für Knopf und Selbst-Optimierung) ======= */
+  /** Übernimmt eine Zentrale-Empfehlung, protokolliert sie im Auto-Tuning-Verlauf. Gibt die Liste der Änderungen zurück. */
+  function applyCentralRec(r, quelle) {
+    var vorher = JSON.parse(JSON.stringify(D.intraday));
+    var applied = [];
+    function set(k, v, label) {
+      if (JSON.stringify(D.intraday[k]) === JSON.stringify(v)) return;
+      D.intraday[k] = v;
+      applied.push(label);
+    }
+    set('mode', r.modeKey === 'wave_ch' ? 'wave' : r.modeKey, 'Modus → ' + r.modeName);
+    set('channel', r.modeKey === 'wave_ch', 'Trendkanal → ' + (r.modeKey === 'wave_ch' ? 'an' : 'aus'));
+    set('interval', r.interval, 'Zeitrahmen → ' + r.interval);
+    set('period', r.period, 'Periode → ' + r.period);
+    set('confirmBps', r.confirmBps, 'Bestätigung → ' + (r.confirmBps / 100).toFixed(2) + ' %');
+    set('lineType', r.lineType, 'Leitlinie → ' + String(r.lineType).toUpperCase());
+    set('window', r.window, 'Zeitfenster → ' + (WINDOW_NAMES[r.window] || r.window));
+    set('avoidHours', (r.avoidHours || []).slice(), 'Meide-Stunden → ' + ((r.avoidHours || []).join(', ') || 'keine'));
+    if (applied.length) {
+      if (!D.tuneLog) D.tuneLog = [];
+      var closedNow = D.trades.filter(function (t) { return t.status === 'closed'; });
+      var txt = (quelle === 'lokal' ? 'Selbst-Optimierung: ' : '') + r.modeName + ' · ' + r.interval + ' · Walk-Forward ' +
+        (r.wfRet > 0 ? '+' : '') + r.wfRet + ' % · ' + r.posSegs + '/4 Scheiben · ' + r.n + ' Trades · PF ' + r.pf + ' · ' + r.verdict;
+      D.tuneLog.unshift({
+        id: (quelle === 'lokal' ? 'lokal-' : 'manuell-') + Date.now(), at: Date.now(), quelle: quelle || 'manuell',
+        applied: applied, txt: txt, konfigVorher: vorher,
+        equityBei: Math.round(equityNow() * 100) / 100,
+        tradesBei: closedNow.length,
+        pnlBei: Math.round(closedNow.reduce(function (a2, t) { return a2 + t.pnl; }, 0) * 100) / 100,
+        konfigNachher: JSON.parse(JSON.stringify(D.intraday))
+      });
+      if (D.tuneLog.length > 60) D.tuneLog = D.tuneLog.slice(0, 60);
+    }
+    // UI nachziehen
+    [['idMode', D.intraday.mode], ['idInterval', D.intraday.interval], ['idPeriod', String(D.intraday.period)],
+     ['idConfirm', String(D.intraday.confirmBps)], ['idLine', D.intraday.lineType], ['idWindow', D.intraday.window]].forEach(function (kv) {
+      var el = document.getElementById(kv[0]);
+      if (el) el.value = kv[1];
+    });
+    var chEl = document.getElementById('idChannel');
+    if (chEl) chEl.checked = !!D.intraday.channel;
+    if (window.__updateParamVis) window.__updateParamVis();
+    return applied;
+  }
+
+  /* ================= 🤖 Selbst-Optimierung (läuft in der App, ohne Cloud) ================= */
+  function autoOptCfg() {
+    if (!D.autoOpt) D.autoOpt = { on: true, everyH: 8, onlyRobust: true, marketPause: true, lastRun: 0, lastCheck: null };
+    if (D.autoOpt.everyH == null) D.autoOpt.everyH = 8;
+    return D.autoOpt;
+  }
+  var autoOptRunning = false, autoOptPhase = '';
+  async function autoOptimize(manual) {
+    var a = autoOptCfg();
+    if (autoOptRunning || centralRunning || labRunning || jobRunning) return;
+    if (!manual && a.on === false) return;
+    autoOptRunning = true;
+    autoOptPhase = 'startet …';
+    renderAutoOpt();
+    var t0 = Date.now();
+    try {
+      var rec = await runCentral({ silent: true, status: function (t) { autoOptPhase = t; renderAutoOpt(); } });
+      a.lastRun = Date.now();
+      if (!rec) {
+        a.lastCheck = { at: Date.now(), ok: false, applied: [], txt: 'Zu wenig Kursdaten für eine belastbare Auswertung – Einstellungen unverändert.' };
+      } else {
+        var robust = String(rec.verdict).indexOf('🟢') === 0;
+        var enough = rec.n >= 12;
+        var gutGenug = robust && enough;
+        if (a.onlyRobust !== false && !gutGenug) {
+          a.lastCheck = {
+            at: Date.now(), ok: true, applied: [], geprueft: true,
+            txt: 'Bester Kandidat: ' + rec.modeName + ' · ' + rec.interval + ' (' + rec.verdict + ', ' + rec.n + ' Trades, PF ' + rec.pf + '). ' +
+              (!robust ? 'Nicht robust genug' : 'Zu wenige Out-of-Sample-Trades') + ' → nichts geändert. Das ist Absicht: lieber unverändert als überangepasst.'
+          };
+        } else {
+          var applied = applyCentralRec(rec, 'lokal');
+          a.lastCheck = {
+            at: Date.now(), ok: true, applied: applied, geprueft: true,
+            txt: applied.length
+              ? 'Übernommen: ' + applied.join(' · ') + ' (Walk-Forward ' + (rec.wfRet > 0 ? '+' : '') + rec.wfRet + ' %, ' + rec.posSegs + '/4 Scheiben, ' + rec.n + ' Trades)'
+              : 'Geprüft – die aktuellen Einstellungen sind bereits die beste Kombination (' + rec.verdict + ').'
+          };
+        }
+      }
+      a.lastCheck.dauerMin = Math.round((Date.now() - t0) / 60000 * 10) / 10;
+      await save();
+      renderTuneLog();
+      renderCentral();
+      render();
+    } catch (e) {
+      a.lastRun = Date.now();
+      a.lastCheck = { at: Date.now(), ok: false, applied: [], txt: 'Fehler: ' + (e && e.message ? e.message : e) };
+      try { await save(); } catch (e2) { /* egal */ }
+    } finally {
+      autoOptRunning = false;
+      autoOptPhase = '';
+      renderAutoOpt();
+    }
+  }
+  function renderAutoOpt() {
+    var el = document.getElementById('autoOptStatus');
+    if (!el || !D) return;
+    var a = autoOptCfg();
+    if (autoOptRunning) {
+      el.innerHTML = '<span style="color:var(--acc);">🤖 Selbst-Optimierung läuft … ' + U.esc(autoOptPhase || '') + '</span>';
+      return;
+    }
+    var next = a.on === false ? null : (a.lastRun || 0) + (a.everyH || 8) * 3600000;
+    var c = a.lastCheck;
+    var txt = c
+      ? '<b>' + U.dt(c.at) + '</b> · ' + (c.ok ? (c.applied && c.applied.length ? '✅ ' : 'ℹ ') : '⚠ ') + U.esc(c.txt) +
+        (c.dauerMin ? ' <span style="color:var(--muted);">(' + c.dauerMin + ' Min Rechenzeit)</span>' : '')
+      : 'Noch kein Durchlauf – der erste startet automatisch.';
+    el.innerHTML = txt + (next ? '<div style="color:var(--muted); margin-top:3px;">Nächster Durchlauf: ' + U.dt(next) + (a.marketPause !== false ? ' (pausiert, solange die US-Börse offen ist)' : '') + '</div>' : '<div style="color:var(--muted); margin-top:3px;">Automatik ist aus.</div>');
+  }
+
   function renderCentral() {
     var out = document.getElementById('centralResult');
     if (!out) return;
@@ -2768,23 +2897,10 @@
     out.innerHTML = html;
     var ab = document.getElementById('centralApplyBtn');
     if (ab) ab.addEventListener('click', function () {
-      D.intraday.mode = r.modeKey === 'wave_ch' ? 'wave' : r.modeKey;
-      D.intraday.channel = r.modeKey === 'wave_ch';
-      D.intraday.interval = r.interval;
-      D.intraday.period = r.period;
-      D.intraday.confirmBps = r.confirmBps;
-      D.intraday.lineType = r.lineType;
-      D.intraday.window = r.window;
-      D.intraday.avoidHours = r.avoidHours.slice();
+      var applied = applyCentralRec(r, 'manuell');
       save();
-      ['idMode|' + D.intraday.mode, 'idInterval|' + r.interval, 'idPeriod|' + r.period, 'idConfirm|' + r.confirmBps, 'idLine|' + r.lineType, 'idWindow|' + r.window].forEach(function (kv) {
-        var p = kv.split('|'), el = document.getElementById(p[0]);
-        if (el) el.value = p[1];
-      });
-      var chEl = document.getElementById('idChannel');
-      if (chEl) chEl.checked = D.intraday.channel;
-      if (window.__updateParamVis) window.__updateParamVis();
-      document.getElementById('centralApplyStatus').textContent = '✅ Übernommen – gilt ab dem nächsten Scan' + (r.avoidHours.length ? ' (Meide-Stunden aktiv: ' + r.avoidHours.join(', ') + ' Uhr)' : '') + '.';
+      document.getElementById('centralApplyStatus').textContent = (applied.length ? '✅ Übernommen (' + applied.length + ' Änderungen)' : '✅ Nichts zu ändern – läuft bereits so') + ' – gilt ab dem nächsten Scan' + (r.avoidHours.length ? ' (Meide-Stunden aktiv: ' + r.avoidHours.join(', ') + ' Uhr)' : '') + '.';
+      renderTuneLog();
       render();
     });
   }
@@ -3067,8 +3183,42 @@
     renderScreen();
     updateParamVis();
     window.__updateParamVis = updateParamVis;
-    document.getElementById('centralBtn').addEventListener('click', runCentral);
+    document.getElementById('centralBtn').addEventListener('click', function () { runCentral(); });
     renderCentral();
+
+    /* 🤖 Selbst-Optimierung verkabeln */
+    (function () {
+      var a = autoOptCfg();
+      var aoOn = document.getElementById('aoOn'), aoEvery = document.getElementById('aoEvery');
+      var aoRobust = document.getElementById('aoRobust'), aoMarket = document.getElementById('aoMarket');
+      var aoBtn = document.getElementById('aoBtn');
+      if (!aoOn) return;
+      aoOn.checked = a.on !== false;
+      aoEvery.value = String(a.everyH || 8);
+      aoRobust.checked = a.onlyRobust !== false;
+      aoMarket.checked = a.marketPause !== false;
+      function aoSave() {
+        a.on = aoOn.checked;
+        a.everyH = parseInt(aoEvery.value, 10);
+        a.onlyRobust = aoRobust.checked;
+        a.marketPause = aoMarket.checked;
+        save();
+        renderAutoOpt();
+      }
+      [aoOn, aoEvery, aoRobust, aoMarket].forEach(function (el) { el.addEventListener('change', aoSave); });
+      aoBtn.addEventListener('click', function () { autoOptimize(true); });
+      renderAutoOpt();
+    })();
+    // Takt: alle 5 Min prüfen, ob ein Durchlauf fällig ist
+    function autoOptDue() {
+      var a = autoOptCfg();
+      if (a.on === false || autoOptRunning || centralRunning || labRunning || jobRunning) return false;
+      if (Date.now() - (a.lastRun || 0) < (a.everyH || 8) * 3600000) return false;
+      if (a.marketPause !== false && window.Dash.marketOpen()) return false; // Rechenlast weg vom Handel
+      return true;
+    }
+    setInterval(function () { if (autoOptDue()) autoOptimize(false); }, 5 * 60000);
+    setTimeout(function () { if (autoOptDue()) autoOptimize(false); }, 90000);
     var idAt = document.getElementById('idAutoTune');
     idAt.checked = D.intraday.autoTune !== false;
     idAt.addEventListener('change', function () { D.intraday.autoTune = idAt.checked; save(); });
