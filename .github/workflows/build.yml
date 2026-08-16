@@ -1,0 +1,7 @@
+# Baut den Windows-Installer automatisch und haengt ihn an das Release.
+# Ausloeser: ein neuer Versions-Tag (z. B. v7.0.0) oder manuell unter "Actions".
+# Bewusst in Flow-Schreibweise (alles linksbuendig), damit der Web-Editor die Einrueckung nicht verschiebt.
+name: Installer bauen
+on: {push: {tags: ['v*']}, workflow_dispatch: {}}
+permissions: {contents: write}
+jobs: {build: {runs-on: windows-latest, steps: [{uses: actions/checkout@v4}, {uses: actions/setup-node@v4, with: {node-version: '20'}}, {name: Abhaengigkeiten, run: npm install}, {name: Tests, run: 'node test-channel.js && node test-v6.js'}, {name: Installer bauen, run: 'npx electron-builder --win nsis --x64 --publish never'}, {name: An Release anhaengen, if: "startsWith(github.ref, 'refs/tags/')", env: {GH_TOKEN: '${{ github.token }}'}, run: 'gh release upload ${{ github.ref_name }} dist/Markt-Dashboard-Setup.exe --clobber'}, {name: Installer als Artefakt sichern, uses: actions/upload-artifact@v4, with: {name: Markt-Dashboard-Setup, path: dist/Markt-Dashboard-Setup.exe}}]}}
