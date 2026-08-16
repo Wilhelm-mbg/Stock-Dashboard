@@ -93,6 +93,11 @@
     document.getElementById('setUpdateRepo').value = SETTINGS.updateRepo || 'Wilhelm-mbg/Stock-Dashboard';
     if (window.api.getAutostart) window.api.getAutostart().then(function (r) { document.getElementById('setAutostart').checked = !!(r && r.on); });
     document.getElementById('setUpdateStatus').textContent = '';
+    var auEl = document.getElementById('setAutoUpdate');
+    if (auEl) {
+      auEl.checked = SETTINGS.autoUpdate !== false;
+      if (window.api.updateState) window.api.updateState().then(updRender);
+    }
     var ms = document.getElementById('setOllamaModel');
     if (SETTINGS.ollamaModel && !Array.prototype.some.call(ms.options, function (o) { return o.value === SETTINGS.ollamaModel; })) {
       var o0 = document.createElement('option'); o0.value = SETTINGS.ollamaModel; o0.textContent = SETTINGS.ollamaModel; ms.appendChild(o0);
@@ -116,6 +121,50 @@
       else st.textContent = '⚠ Ollama läuft, aber kein Modell installiert – z. B.: ollama pull qwen2.5:7b';
     });
   });
+  /* ================= Automatische Updates ================= */
+  function updRender(st) {
+    var el = document.getElementById('setUpdAutoStatus');
+    var ib = document.getElementById('setUpdInstallBtn');
+    if (!el || !st) return;
+    if (st.packaged === false) {
+      el.textContent = 'Läuft aus dem Quellcode – automatische Updates gibt es nur in der installierten Version.';
+      if (ib) ib.style.display = 'none';
+      return;
+    }
+    var txt = {
+      idle: 'Noch nicht geprüft.',
+      checking: 'Suche nach Updates …',
+      current: '✅ ' + (st.msg || 'Aktuell'),
+      available: '⬇ ' + (st.msg || 'Update gefunden'),
+      downloading: '⬇ ' + (st.msg || 'Lade …'),
+      ready: '🔔 ' + (st.msg || 'Update bereit'),
+      error: '⚠ ' + (st.msg || 'Fehler')
+    }[st.state] || (st.msg || '');
+    el.textContent = txt;
+    if (ib) ib.style.display = st.state === 'ready' ? '' : 'none';
+  }
+  if (window.api.onUpdate) window.api.onUpdate(updRender);
+  (function () {
+    var nowBtn = document.getElementById('setUpdNowBtn');
+    var insBtn = document.getElementById('setUpdInstallBtn');
+    var chk = document.getElementById('setAutoUpdate');
+    if (!nowBtn) return;
+    nowBtn.addEventListener('click', async function () {
+      document.getElementById('setUpdAutoStatus').textContent = 'Suche nach Updates …';
+      var r = await window.api.updateCheck();
+      if (r && !r.ok) document.getElementById('setUpdAutoStatus').textContent = '⚠ ' + (r.msg || 'Update-Prüfung fehlgeschlagen');
+    });
+    insBtn.addEventListener('click', async function () {
+      var r = await window.api.updateInstall();
+      if (r && !r.ok) document.getElementById('setUpdAutoStatus').textContent = '⚠ ' + (r.msg || 'Installation nicht möglich');
+    });
+    chk.addEventListener('change', function () {
+      SETTINGS.autoUpdate = chk.checked;
+      window.api.storeSet('settings', SETTINGS);
+      if (window.api.updateSetAuto) window.api.updateSetAuto(chk.checked);
+    });
+  })();
+
   // Update-Check über GitHub-Releases
   function cmpVer(a, b) {
     var x = String(a).split('.').map(Number), y = String(b).split('.').map(Number);
@@ -160,6 +209,8 @@
     SETTINGS.kiProvider = document.getElementById('setKiProvider').value;
     SETTINGS.kiRules = document.getElementById('setKiRules').value.trim().slice(0, 1200);
     SETTINGS.updateRepo = document.getElementById('setUpdateRepo').value.trim();
+    SETTINGS.autoUpdate = document.getElementById('setAutoUpdate').checked;
+    if (window.api.updateSetAuto) window.api.updateSetAuto(SETTINGS.autoUpdate);
     var au = document.getElementById('setAutostart').checked;
     if (window.api.setAutostart) window.api.setAutostart(au);
     if (au && window.api.setTrayMode) { SETTINGS.tray = true; document.getElementById('setTray').checked = true; window.api.setTrayMode(true); }

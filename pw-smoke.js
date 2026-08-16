@@ -73,7 +73,12 @@ const path = require('path');
       readRecommendation: async () => ({ ok: false }),
       setAutostart: async () => ({ ok: true, on: true }),
       getAutostart: async () => ({ ok: true, on: false }),
-      readReport: async () => ({ ok: true, mtime: Date.now(), body: '# Analyse-Bericht\n\nTestinhalt aus dem Daten-Ordner.\n\n## HISTORIE\n\n- 2026-08-16 | Nacht-Audit | keine Änderung' })
+      readReport: async () => ({ ok: true, mtime: Date.now(), body: '# Analyse-Bericht\n\nTestinhalt aus dem Daten-Ordner.\n\n## HISTORIE\n\n- 2026-08-16 | Nacht-Audit | keine Änderung' }),
+      updateState: async () => ({ packaged: true, current: '6.2.0', state: 'idle', version: null, pct: 0, msg: '' }),
+      updateCheck: async () => { window.__updCb && window.__updCb({ packaged: true, state: 'ready', version: '9.9.9', pct: 100, msg: 'Version 9.9.9 ist heruntergeladen – wird beim nächsten Beenden eingespielt.' }); return { ok: true }; },
+      updateInstall: async () => { window.__updInstalled = true; return { ok: true }; },
+      updateSetAuto: async (on) => { window.__updAuto = on; return { ok: true, on: on }; },
+      onUpdate: (cb) => { window.__updCb = cb; }
     };
   });
 
@@ -253,6 +258,26 @@ const path = require('path');
   check('Zentrale-Button vorhanden', await page.locator('#centralBtn').count() === 1);
   const centTxt = await page.locator('#centralResult').innerText();
   check('Zentrale zeigt Leerzustand', centTxt.indexOf('Noch keine Analyse') !== -1);
+
+  // Automatische Updates: Schalter, Prüfung, Installations-Knopf
+  await page.click('#settingsBtn');
+  await page.waitForTimeout(400);
+  check('Auto-Update: Schalter vorhanden', await page.locator('#setAutoUpdate').count() === 1);
+  check('Auto-Update: Standard ist an', await page.locator('#setAutoUpdate').isChecked());
+  await page.click('#setUpdNowBtn');
+  await page.waitForTimeout(400);
+  const updAutoTxt = await page.locator('#setUpdAutoStatus').innerText();
+  check('Auto-Update: meldet fertiges Update', updAutoTxt.indexOf('9.9.9') !== -1);
+  check('Auto-Update: Installations-Knopf erscheint', await page.locator('#setUpdInstallBtn').isVisible());
+  await page.click('#setUpdInstallBtn');
+  await page.waitForTimeout(300);
+  check('Auto-Update: Installation wird ausgelöst', await page.evaluate(() => window.__updInstalled === true));
+  await page.locator('#setModalBg [data-close]').first().click();
+  await page.waitForTimeout(300);
+  await page.click('nav.tabs button[data-tab="depot"]');
+  await page.waitForTimeout(300);
+  await page.click('#depotPills button[data-sub="auswertung"]');
+  await page.waitForTimeout(400);
 
   // Selbst-Optimierung: Bedienelemente + Status
   check('Selbst-Optimierung: Schalter vorhanden', await page.locator('#aoOn').count() === 1);

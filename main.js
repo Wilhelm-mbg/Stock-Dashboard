@@ -268,8 +268,58 @@ function createWindow() {
   });
 }
 
+/* ================= Automatische Updates (electron-updater über GitHub-Releases) ================= */
+let autoUpd = null;
+let updState = { state: 'idle', version: null, pct: 0, msg: '', at: Date.now() };
+function updSend(patch) {
+  updState = Object.assign({}, updState, patch, { at: Date.now() });
+  if (mainWin && !mainWin.isDestroyed()) {
+    try { mainWin.webContents.send('update-state', updState); } catch (e) { /* Fenster weg */ }
+  }
+}
+function setupUpdater() {
+  if (autoUpd || !app.isPackaged) return null;   // im Entwicklungsmodus gibt es nichts zu aktualisieren
+  try {
+    autoUpd = require('electron-updater').autoUpdater;
+  } catch (e) {
+    updState = { state: 'error', version: null, pct: 0, msg: 'Update-Modul fehlt', at: Date.now() };
+    return null;
+  }
+  autoUpd.autoDownload = true;            // still im Hintergrund laden …
+  autoUpd.autoInstallOnAppQuit = true;    // … und beim nächsten Beenden einspielen
+  autoUpd.allowPrerelease = false;
+  autoUpd.on('checking-for-update', () => updSend({ state: 'checking', msg: 'Suche nach Updates …' }));
+  autoUpd.on('update-available', (i) => updSend({ state: 'available', version: i && i.version, pct: 0, msg: 'Version ' + ((i && i.version) || '?') + ' gefunden – wird geladen …' }));
+  autoUpd.on('update-not-available', () => updSend({ state: 'current', version: app.getVersion(), msg: 'Aktuell (' + app.getVersion() + ')' }));
+  autoUpd.on('download-progress', (p) => updSend({ state: 'downloading', pct: Math.round((p && p.percent) || 0), msg: 'Lade … ' + Math.round((p && p.percent) || 0) + ' %' }));
+  autoUpd.on('update-downloaded', (i) => updSend({ state: 'ready', version: i && i.version, pct: 100, msg: 'Version ' + ((i && i.version) || '?') + ' ist heruntergeladen – wird beim nächsten Beenden eingespielt.' }));
+  autoUpd.on('error', (e) => updSend({ state: 'error', msg: 'Update-Fehler: ' + ((e && e.message) || e) }));
+  return autoUpd;
+}
+ipcMain.handle('update-state', async () => Object.assign({ packaged: app.isPackaged, current: app.getVersion() }, updState));
+ipcMain.handle('update-check', async () => {
+  const u = setupUpdater();
+  if (!u) return { ok: false, packaged: app.isPackaged, msg: app.isPackaged ? 'Update-Modul nicht verfügbar' : 'Läuft aus dem Quellcode – Updates gibt es nur in der installierten Version.' };
+  try { await u.checkForUpdates(); return { ok: true }; }
+  catch (e) { updSend({ state: 'error', msg: 'Update-Fehler: ' + ((e && e.message) || e) }); return { ok: false, msg: String((e && e.message) || e) }; }
+});
+ipcMain.handle('update-install', async () => {
+  if (!autoUpd || updState.state !== 'ready') return { ok: false, msg: 'Es liegt kein fertig geladenes Update bereit.' };
+  quitting = true;
+  setTimeout(() => { try { autoUpd.quitAndInstall(false, true); } catch (e) { /* egal */ } }, 300);
+  return { ok: true };
+});
+ipcMain.handle('update-set-auto', async (_ev, on) => {
+  const u = setupUpdater();
+  if (u) { u.autoDownload = !!on; u.autoInstallOnAppQuit = !!on; }
+  return { ok: true, on: !!on };
+});
+
 app.whenReady().then(() => {
   createWindow();
   app.on('activate', () => { if (BrowserWindow.getAllWindows().length === 0) createWindow(); });
+  // Kurz nach dem Start und danach alle 6 Stunden nach Updates sehen
+  setTimeout(() => { const u = setupUpdater(); if (u) u.checkForUpdates().catch(() => {}); }, 25000);
+  setInterval(() => { const u = setupUpdater(); if (u) u.checkForUpdates().catch(() => {}); }, 6 * 3600000);
 });
 app.on('window-all-closed', () => { if (process.platform !== 'darwin' && !trayMode) app.quit(); });

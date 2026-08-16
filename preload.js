@@ -15,5 +15,10 @@ contextBridge.exposeInMainWorld('api', {
   readReport: () => ipcRenderer.invoke('read-report'),
   setAutostart: (v) => ipcRenderer.invoke('set-autostart', v),
   getAutostart: () => ipcRenderer.invoke('get-autostart'),
-  openExternal: (url) => ipcRenderer.invoke('open-external', url)
+  openExternal: (url) => ipcRenderer.invoke('open-external', url),
+  updateState: () => ipcRenderer.invoke('update-state'),
+  updateCheck: () => ipcRenderer.invoke('update-check'),
+  updateInstall: () => ipcRenderer.invoke('update-install'),
+  updateSetAuto: (on) => ipcRenderer.invoke('update-set-auto', on),
+  onUpdate: (cb) => ipcRenderer.on('update-state', (_ev, st) => cb(st))
 });
