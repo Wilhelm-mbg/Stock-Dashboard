@@ -47,6 +47,16 @@ function fetchText(url, redirectsLeft) {
 
 ipcMain.handle('fetch-text', async (_ev, url) => fetchText(url));
 ipcMain.handle('app-version', async () => app.getVersion());
+// Autostart mit Windows (minimiert im Tray)
+ipcMain.handle('set-autostart', async (_ev, on) => {
+  try {
+    app.setLoginItemSettings({ openAtLogin: !!on, args: on ? ['--hidden'] : [] });
+    return { ok: true, on: app.getLoginItemSettings().openAtLogin };
+  } catch (e) { return { ok: false, msg: String(e.message || e) }; }
+});
+ipcMain.handle('get-autostart', async () => {
+  try { return { ok: true, on: app.getLoginItemSettings().openAtLogin }; } catch (e) { return { ok: false, on: false }; }
+});
 // Analyse-Export: schreibt Depot-Daten (OHNE Zugangsdaten) in den Downloads-Ordner,
 // damit sie z. B. von Claude zur Auswertung gelesen werden können.
 // Auto-Tuning: von Claude geschriebene Empfehlung aus dem Daten-Ordner lesen
@@ -55,6 +65,15 @@ ipcMain.handle('read-recommendation', async () => {
     const p = path.join(app.getPath('downloads'), 'Markt-Dashboard-Daten', 'empfehlung.json');
     if (!fs.existsSync(p)) return { ok: false };
     return { ok: true, body: fs.readFileSync(p, 'utf8'), mtime: fs.statSync(p).mtimeMs };
+  } catch (e) { return { ok: false, msg: String(e.message || e) }; }
+});
+// Claude-Auswertungsbericht aus dem Daten-Ordner lesen (Anzeige in der App)
+ipcMain.handle('read-report', async () => {
+  try {
+    const p = path.join(app.getPath('downloads'), 'Markt-Dashboard-Daten', 'auswertung-bericht.md');
+    if (!fs.existsSync(p)) return { ok: false };
+    const txt = fs.readFileSync(p, 'utf8');
+    return { ok: true, body: txt.length > 120000 ? txt.slice(0, 120000) + '\n\n… (gekürzt)' : txt, mtime: fs.statSync(p).mtimeMs };
   } catch (e) { return { ok: false, msg: String(e.message || e) }; }
 });
 ipcMain.handle('export-analysis', async (_ev, payload) => {
@@ -211,8 +230,10 @@ function ensureTray() {
   tray.on('double-click', () => { if (mainWin) { mainWin.show(); mainWin.focus(); } });
 }
 
+const STARTED_HIDDEN = process.argv.includes('--hidden');
 function createWindow() {
   const win = new BrowserWindow({
+    show: !STARTED_HIDDEN,   // beim Autostart minimiert im Tray starten
     width: 1240,
     height: 940,
     minWidth: 720,
@@ -228,6 +249,7 @@ function createWindow() {
     }
   });
   mainWin = win;
+  if (STARTED_HIDDEN) { trayMode = true; ensureTray(); }
   win.on('close', (e) => {
     if (trayMode && !quitting) {
       e.preventDefault();

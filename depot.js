@@ -29,6 +29,7 @@
   // Gesundheits-Telemetrie (für das externe Audit)
   var HEALTH = { scans: 0, scanErrors: 0, fetchFail: 0, fetchOk: 0, kiFail: 0, kiOk: 0, capFail: 0, capOk: 0, lastScanT: 0, scanTimes: [], startedAt: Date.now() };
   var LASTBARS = {}; // sym -> zuletzt geladene Intraday-Serie (für den Kursdaten-Export)
+  var SIG = {};      // sym -> letzter Signal-/Blocker-Zustand (Live-Monitor)
   var lastEqPoint = 0;
   var SENT = {}; // Sentiment-Historie je Symbol
 
@@ -57,6 +58,7 @@
   var patLast = {}; // Drossel: dieselbe Ablehnung (Symbol+Grund) max. alle 15 Min zählen
   function patienceAdd(reason, sym) {
     if (!D) return;
+    if (sym) { SIG[sym] = SIG[sym] || {}; SIG[sym].grund = reason; SIG[sym].t = Date.now(); SIG[sym].ok = false; }
     var key = (sym || '') + '|' + reason;
     var nowT = Date.now();
     if (patLast[key] && nowT - patLast[key] < 15 * 60000) return;
@@ -263,6 +265,7 @@
       var rec = JSON.parse(res.body);
       if (!rec || rec.quelle !== 'claude' || !rec.id || rec.id === D.lastTuneId) return;
       D.lastTuneId = rec.id;
+      var vorher = JSON.parse(JSON.stringify(D.intraday));
       var applied = [];
       var it = rec.intraday || {};
       Object.keys(TUNE_ALLOW).forEach(function (k) {
@@ -283,6 +286,7 @@
       var closedNow = D.trades.filter(function (t) { return t.status === 'closed'; });
       D.tuneLog.unshift({
         id: rec.id, at: Date.now(), applied: applied, txt: String(rec.begruendung || '').slice(0, 300),
+        konfigVorher: vorher,
         equityBei: Math.round(equityNow() * 100) / 100,
         tradesBei: closedNow.length,
         pnlBei: Math.round(closedNow.reduce(function (a2, t) { return a2 + t.pnl; }, 0) * 100) / 100,
@@ -299,6 +303,7 @@
       if (chEl) chEl.checked = D.intraday.channel !== false;
       if (window.__updateParamVis) window.__updateParamVis();
       renderTune();
+      renderTuneLog();
       render();
     } catch (e) { /* fehlerhafte Datei ignorieren */ }
   }
@@ -308,6 +313,319 @@
     el.textContent = D.lastTune
       ? '🛰 Auto-Tuning ' + U.dt(D.lastTune.at) + ': ' + (D.lastTune.applied.length ? D.lastTune.applied.join(' · ') : 'geprüft, keine Änderung nötig') + (D.lastTune.txt ? ' — ' + D.lastTune.txt : '')
       : '';
+  }
+
+  /* ================= 📈 Signal-Chart: was die Strategie sieht ================= */
+  var sigChartRunning = false;
+  async function runSigChart() {
+    if (sigChartRunning) return;
+    sigChartRunning = true;
+    var sel = document.getElementById('scSym'), st = document.getElementById('scStatus'), out = document.getElementById('scChart');
+    var btn = document.getElementById('scBtn');
+    btn.disabled = true;
+    try {
+      var cfg = D.intraday;
+      var sym = sel.value;
+      st.textContent = 'Lade ' + sym + ' …';
+      var fd = await fetchIntraday(sym, cfg.interval || '5m', false);
+      if (!fd || fd.series.length < 40) { st.textContent = 'Keine Daten für ' + sym + '.'; return; }
+      var bars = fd.series.slice(-260);
+      var closes = bars.map(function (b2) { return b2[1]; });
+      var line = (cfg.lineType === 'vwap' ? Q.vwapLine(bars) : null) || Q.emaSeries(closes, cfg.period);
+      // Kanal (nur wenn im Wellenreiter-Modus mit Kanal aktiv)
+      var chan = null;
+      if (cfg.mode === 'wave' && cfg.channel !== false) {
+        var wq = Q.waveQuality(bars, cfg.lineType || 'ema', cfg.period, zOf(cfg.confirmBps));
+        var chN = Math.max(100, Math.min(320, Math.round(2.5 * ((wq && wq.waveLen) || 72))));
+        chan = Q.regressionChannel(Q.degapCloses(bars), Math.min(chN, bars.length - 2));
+      }
+      var t0 = bars[0][0], t1 = bars[bars.length - 1][0];
+      var marks = D.trades.filter(function (t) { return t.sym === sym && t.openT >= t0 && t.openT <= t1; });
+      st.textContent = '';
+      drawSignalChart(out, bars, line, chan, marks, cfg);
+      var info = document.getElementById('scInfo');
+      info.innerHTML = 'Leitlinie: <b>' + (cfg.lineType === 'vwap' ? 'VWAP' : 'EMA' + cfg.period) + '</b> · Zeitrahmen ' + (cfg.interval || '5m') +
+        (chan ? ' · 📐 Kanal: Position <b>' + Math.round(chan.pos * 100) + ' %</b>, Steigung <b>' + chan.steep + '</b>, Breite ' + chan.widthPct + ' %' : ' · Kanal nur im 🏄 Wellenreiter-Modus') +
+        ' · eigene Trades im Bild: <b>' + marks.length + '</b>';
+    } catch (e) {
+      st.textContent = 'Fehler: ' + (e.message || e);
+    } finally {
+      btn.disabled = false;
+      sigChartRunning = false;
+    }
+  }
+
+  function drawSignalChart(svg, bars, line, chan, marks, cfg) {
+    var W = svg.clientWidth || 900, H = svg.clientHeight || 300;
+    var padL = 8, padR = 54, padT = 10, padB = 20;
+    svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+    var closes = bars.map(function (b) { return b[1]; });
+    var lo = Math.min.apply(null, closes), hi = Math.max.apply(null, closes);
+    if (chan) { lo = Math.min(lo, chan.lower); hi = Math.max(hi, chan.upper); }
+    var pad = (hi - lo) * 0.08 || 1;
+    lo -= pad; hi += pad;
+    var x0 = bars[0][0], x1 = bars[bars.length - 1][0];
+    var plotW = W - padL - padR, plotH = H - padT - padB;
+    function X(t) { return padL + (t - x0) / Math.max(1, x1 - x0) * plotW; }
+    function Y(v) { return H - padB - (v - lo) / (hi - lo) * plotH; }
+    var html = '';
+    niceTicks(lo, hi, 4).forEach(function (tv) {
+      html += '<line x1="' + padL + '" x2="' + (padL + plotW) + '" y1="' + Y(tv).toFixed(1) + '" y2="' + Y(tv).toFixed(1) + '" stroke="var(--grid)" stroke-width="1"></line>' +
+        '<text x="' + (padL + 2) + '" y="' + (Y(tv) - 3).toFixed(1) + '" fill="var(--muted)" font-size="9.5">' + fmtTick(tv, hi - lo) + '</text>';
+    });
+    for (var xi = 0; xi <= 3; xi++) {
+      var tx = x0 + (x1 - x0) * xi / 3;
+      html += '<text x="' + X(tx).toFixed(1) + '" y="' + (H - 5) + '" text-anchor="' + (xi === 0 ? 'start' : xi === 3 ? 'end' : 'middle') + '" fill="var(--muted)" font-size="9.5">' + fmtTimeTick(tx, x1 - x0) + '</text>';
+    }
+    // Trendkanal als Band (Gerade über das gesamte Fenster rekonstruiert)
+    if (chan) {
+      var n = bars.length, span = Math.min(n - 1, 300);
+      var stepPx = plotW / Math.max(1, n - 1);
+      var slopePerBar = chan.slopePct / 100 * chan.mid;
+      function bandY(i, off) { return Y(chan.mid + off + slopePerBar * (i - (n - 1))); }
+      var up = [], dn = [];
+      for (var i = 0; i < n; i++) {
+        up.push((i ? 'L' : 'M') + (padL + i * stepPx).toFixed(1) + ' ' + bandY(i, 2 * chan.sd).toFixed(1));
+        dn.push((padL + (n - 1 - i) * stepPx).toFixed(1) + ' ' + bandY(n - 1 - i, -2 * chan.sd).toFixed(1));
+      }
+      html += '<path d="' + up.join(' ') + ' L' + dn.join(' L') + ' Z" fill="var(--series3)" opacity="0.10"></path>';
+      html += '<path d="' + up.join(' ') + '" fill="none" stroke="var(--series3)" stroke-width="1.5" opacity="0.8"></path>';
+      html += '<path d="M' + dn.slice().reverse().join(' L') + '" fill="none" stroke="var(--series3)" stroke-width="1.5" opacity="0.8"></path>';
+    }
+    // Leitlinie
+    if (line && line.length === bars.length) {
+      html += '<path d="' + bars.map(function (b, i) { return (i ? 'L' : 'M') + X(b[0]).toFixed(1) + ' ' + Y(line[i]).toFixed(1); }).join(' ') +
+        '" fill="none" stroke="var(--series2)" stroke-width="1.5" stroke-dasharray="5 4"></path>';
+    }
+    // Kurs
+    html += '<path d="' + bars.map(function (b, i) { return (i ? 'L' : 'M') + X(b[0]).toFixed(1) + ' ' + Y(b[1]).toFixed(1); }).join(' ') +
+      '" fill="none" stroke="var(--series)" stroke-width="2" stroke-linejoin="round"></path>';
+    // Eigene Trades: Einstieg ▲/▼, Ausstieg ✕
+    (marks || []).forEach(function (t) {
+      var ex = X(t.openT), ey = Y(t.entrySpot || bars[0][1]);
+      var col = t.dir === 'call' ? 'var(--up)' : 'var(--down)';
+      html += '<circle cx="' + ex.toFixed(1) + '" cy="' + ey.toFixed(1) + '" r="5" fill="' + col + '" stroke="var(--surface)" stroke-width="2"></circle>' +
+        '<text x="' + (ex + 7).toFixed(1) + '" y="' + (ey - 6).toFixed(1) + '" fill="var(--ink-2)" font-size="9.5" font-weight="600">' + (t.dir === 'call' ? 'CALL' : 'PUT') + '</text>';
+      if (t.status === 'closed' && t.closeT <= x1 && t.exitSpot) {
+        var cx2 = X(t.closeT), cy2 = Y(t.exitSpot);
+        html += '<path d="M' + (cx2 - 4).toFixed(1) + ' ' + (cy2 - 4).toFixed(1) + ' L' + (cx2 + 4).toFixed(1) + ' ' + (cy2 + 4).toFixed(1) +
+          ' M' + (cx2 + 4).toFixed(1) + ' ' + (cy2 - 4).toFixed(1) + ' L' + (cx2 - 4).toFixed(1) + ' ' + (cy2 + 4).toFixed(1) +
+          '" stroke="' + (t.pnl > 0 ? 'var(--up)' : 'var(--down)') + '" stroke-width="2"></path>';
+      }
+    });
+    svg.innerHTML = html;
+    svg.__chart = null;
+  }
+
+  /* ================= 🧹 Filter-Nutzen: mit vs. ohne Filter ================= */
+  var filterRunning = false;
+  async function runFilterCheck() {
+    if (filterRunning) return;
+    filterRunning = true;
+    var btn = document.getElementById('filterBtn'), st = document.getElementById('filterStatus'), out = document.getElementById('filterResult');
+    btn.disabled = true;
+    try {
+      var cfg = D.intraday;
+      var iv = cfg.interval || '5m';
+      st.textContent = 'Lade ' + iv + '-Historie …';
+      var map = {}, done = 0;
+      var syms = universe();
+      await pmap(syms, async function (sy) {
+        var fd = await fetchIntraday(sy, iv, true);
+        done++;
+        st.textContent = 'Lade Historie … (' + done + '/' + syms.length + ')';
+        if (fd && fd.series.length > 200) map[sy] = fd.series;
+      }, 6);
+      if (Object.keys(map).length < 3) { st.textContent = 'Zu wenig Daten.'; return; }
+      st.textContent = 'Rechne beide Varianten …';
+      var base = labCommonOpts(cfg, iv);
+      var modeOpts = labModes(cfg).filter(function (m) { return m.key === (cfg.mode === 'wave' && cfg.channel !== false ? 'wave_ch' : cfg.mode); })[0];
+      modeOpts = modeOpts ? modeOpts.opts : { entryMode: 'cross' };
+      var mit = Object.assign({}, base, modeOpts, { period: cfg.period, confirmBps: cfg.confirmBps, zThr: zOf(cfg.confirmBps) });
+      var ohne = Object.assign({}, mit, { minEdge: 0, trendFilter: false, channel: false, mtf: false, window: 'all', minQuality: 0 });
+      var res = await Promise.all([btIntraday(map, mit), btIntraday(map, ohne)]);
+      st.textContent = '';
+      var a2 = res[0], b2 = res[1];
+      if (a2.error || b2.error) { st.textContent = a2.error || b2.error; return; }
+      function row(n, r) {
+        var avg = r.summary.nTrades ? Math.round(r.trades.reduce(function (s, t) { return s + t.pnl; }, 0) / r.summary.nTrades * 100) / 100 : 0;
+        return '<tr><td>' + n + '</td><td class="' + U.signCls(r.summary.retPct) + '">' + U.signTxt(r.summary.retPct, ' %') + '</td>' +
+          '<td>' + r.summary.nTrades + '</td><td>' + r.summary.winRate + ' %</td><td>' + U.signTxt(avg, ' $') + '</td>' +
+          '<td>' + U.nf2.format(r.summary.feesTotal || 0) + ' $</td><td>−' + r.summary.maxDrawdownPct + ' %</td></tr>';
+      }
+      var nutzen = Math.round((a2.summary.retPct - b2.summary.retPct) * 100) / 100;
+      out.innerHTML = '<table class="tbl"><tr><th>Variante</th><th>Rendite</th><th>Trades</th><th>Treffer</th><th>Ø je Trade</th><th>Gebühren</th><th>Drawdown</th></tr>' +
+        row('🧹 <b>mit</b> deinen Filtern', a2) + row('🔓 <b>ohne</b> Filter (jedes Signal)', b2) + '</table>' +
+        '<div style="margin-top:8px; font-size:13px;">Filter-Nutzen: <b class="' + U.signCls(nutzen) + '">' + U.signTxt(nutzen, ' Prozentpunkte' ) + '</b> · ' +
+        (nutzen > 0 ? 'Die Filter haben in diesem Zeitraum Geld gespart.' : nutzen < 0 ? 'Achtung: Die Filter haben hier Rendite gekostet – prüfen, welcher zu streng ist.' : 'Kein messbarer Unterschied.') + '</div>' +
+        '<div style="color:var(--muted); font-size:11.5px; margin-top:6px;">„Ohne Filter" heißt: kein Kosten-Check, kein Trendfilter, kein Kanal, keine 5-Min-Bestätigung, kein Zeitfenster, keine Qualitätsschwelle – nur das reine Einstiegssignal. Gleiche Kosten, gleicher Zeitraum, gleiche Werte.</div>';
+    } catch (e) {
+      st.textContent = 'Fehler: ' + (e.message || e);
+    } finally {
+      btn.disabled = false;
+      filterRunning = false;
+    }
+  }
+
+  /* ================= 🚫 Symbol-Sperre (dauerhafte Verlustbringer) ================= */
+  /** Wertet je Symbol die geschlossenen Intraday-Trades aus und sperrt klare Verlustbringer. */
+  function updateSymBlocks() {
+    if (!D || D.intraday.symBlock === false) return;
+    var by = {};
+    D.trades.forEach(function (t) {
+      if (t.status !== 'closed' || t.strategy !== 'intraday') return;
+      var b2 = (by[t.sym] = by[t.sym] || { n: 0, pnl: 0, w: 0 });
+      b2.n++; b2.pnl += t.pnl; if (t.pnl > 0) b2.w++;
+    });
+    if (!D.symBlock) D.symBlock = {};
+    Object.keys(by).forEach(function (sym) {
+      var s = by[sym];
+      var manuell = D.symBlock[sym] && D.symBlock[sym].manuell;
+      if (manuell) return; // von Hand gesetzt/aufgehoben: nicht überschreiben
+      var schlecht = s.n >= 6 && s.pnl < 0 && (s.w / s.n) <= 0.34;
+      if (schlecht && !D.symBlock[sym]) {
+        D.symBlock[sym] = { seit: Date.now(), n: s.n, pnl: Math.round(s.pnl * 100) / 100, quote: Math.round(s.w / s.n * 100) };
+      } else if (!schlecht && D.symBlock[sym] && !D.symBlock[sym].manuell) {
+        delete D.symBlock[sym]; // Erholung: Sperre fällt automatisch weg
+      }
+    });
+  }
+  function renderSymBlocks() {
+    var el = document.getElementById('symBlocks');
+    if (!el) return;
+    var keys = Object.keys(D.symBlock || {});
+    if (!keys.length) { el.innerHTML = '<span style="color:var(--muted); font-size:12px;">Keine gesperrten Werte.</span>'; return; }
+    el.innerHTML = keys.map(function (s) {
+      var b2 = D.symBlock[s];
+      return '<span class="chip down" style="margin-right:6px;">🚫 ' + U.esc(s) + (b2.n ? ' · ' + b2.n + ' Trades, ' + U.signTxt(b2.pnl, ' $') + ', ' + b2.quote + ' % Treffer' : ' · manuell') +
+        ' <a href="#" data-unblock="' + U.esc(s) + '" style="color:var(--ink-2); font-weight:700; margin-left:4px;">✕</a></span>';
+    }).join('');
+    el.querySelectorAll('[data-unblock]').forEach(function (a2) {
+      a2.addEventListener('click', function (ev) {
+        ev.preventDefault();
+        var s = a2.getAttribute('data-unblock');
+        D.symBlock[s] = { manuell: true, frei: true, seit: Date.now() }; // dauerhaft freigegeben
+        delete D.symBlock[s];
+        D.symFree = D.symFree || {};
+        D.symFree[s] = Date.now(); // nicht sofort automatisch wieder sperren
+        save(); renderSymBlocks();
+      });
+    });
+  }
+
+  /* ================= 📡 Live-Signal-Monitor ================= */
+  function renderSigMonitor() {
+    var el = document.getElementById('sigMonitor');
+    if (!el) return;
+    var syms = Object.keys(SIG);
+    if (!syms.length) {
+      el.innerHTML = '<div class="empty"><span class="ico">📡</span>Noch kein Scan gelaufen – der Monitor füllt sich, sobald die Intraday-Strategie aktiv ist und die US-Börse geöffnet hat.</div>';
+      return;
+    }
+    syms.sort(function (a2, b2) { return (SIG[b2].score || 0) - (SIG[a2].score || 0); });
+    var html = '<table class="tbl"><tr><th>Wert</th><th>Kurs</th><th>Wellen-Score</th><th>z</th><th>Kanal</th><th>Status</th><th>Geprüft</th></tr>';
+    syms.slice(0, 30).forEach(function (s) {
+      var g = SIG[s];
+      html += '<tr><td><b>' + U.esc(s) + '</b></td>' +
+        '<td>' + (g.spot != null ? U.nf2.format(g.spot) : '–') + '</td>' +
+        '<td>' + (g.score != null ? g.score + '/100' : '–') + '</td>' +
+        '<td>' + (g.z != null ? g.z : '–') + '</td>' +
+        '<td>' + (g.chanPos != null ? Math.round(g.chanPos * 100) + ' % · Steig. ' + g.chanSteep : '–') + '</td>' +
+        '<td class="' + (g.ok ? 'pos' : '') + '">' + U.esc(g.grund || (g.ok ? '✅ gehandelt' : 'kein Signal')) + '</td>' +
+        '<td style="color:var(--muted);">' + (g.t ? new Date(g.t).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }) : '–') + '</td></tr>';
+    });
+    html += '</table><div style="color:var(--muted); font-size:11.5px; margin-top:6px;">Zeigt für jeden gescannten Wert, was die Strategie zuletzt gesehen hat – und warum sie nicht gehandelt hat. So wird die Geduld-Bilanz nachvollziehbar.</div>';
+    el.innerHTML = html;
+  }
+
+  /* ================= 🛰 Auto-Tuning-Verlauf & Wirkungs-Ranking ================= */
+  /** Bewertet jede automatische Änderung: Ø P/L je Intraday-Trade davor vs. danach. */
+  function tuneRanking() {
+    var log = (D.tuneLog || []).slice(); // neu → alt
+    if (!log.length) return [];
+    var closed = D.trades.filter(function (t) { return t.status === 'closed' && t.strategy === 'intraday'; });
+    function windowStats(from, to) {
+      var sel = closed.filter(function (t) { return t.closeT >= from && t.closeT < to; });
+      if (!sel.length) return { n: 0, avg: null, pnl: 0, win: null };
+      var sum = sel.reduce(function (a2, t) { return a2 + t.pnl; }, 0);
+      var w = sel.filter(function (t) { return t.pnl > 0; }).length;
+      return { n: sel.length, avg: Math.round(sum / sel.length * 100) / 100, pnl: Math.round(sum * 100) / 100, win: Math.round(w / sel.length * 100) };
+    }
+    var out = [];
+    for (var i = 0; i < log.length; i++) {
+      var e = log[i];
+      var nachBis = i === 0 ? Date.now() : log[i - 1].at;      // bis zur nächsten Änderung
+      var vorAb = (i + 1 < log.length) ? log[i + 1].at : 0;    // seit der vorherigen Änderung
+      var vor = windowStats(vorAb, e.at), nach = windowStats(e.at, nachBis);
+      var delta = (vor.avg != null && nach.avg != null) ? Math.round((nach.avg - vor.avg) * 100) / 100 : null;
+      var urteil, cls;
+      if (nach.n < 5) { urteil = '🟡 zu wenig Daten'; cls = ''; }
+      else if (delta == null) { urteil = nach.avg > 0 ? '🟢 positiv (kein Vergleich)' : '🔴 negativ (kein Vergleich)'; cls = nach.avg > 0 ? 'pos' : 'neg'; }
+      else if (delta > 0.5) { urteil = '🟢 wirkt'; cls = 'pos'; }
+      else if (delta < -0.5) { urteil = '🔴 schadet'; cls = 'neg'; }
+      else { urteil = '⚪ neutral'; cls = ''; }
+      out.push({ e: e, vor: vor, nach: nach, delta: delta, urteil: urteil, cls: cls, laufend: i === 0, idx: i });
+    }
+    // Rang nach Wirkung (nur bewertbare)
+    var rankable = out.filter(function (r) { return r.nach.n >= 5; }).slice()
+      .sort(function (a2, b2) { return ((b2.delta != null ? b2.delta : b2.nach.avg) - (a2.delta != null ? a2.delta : a2.nach.avg)); });
+    rankable.forEach(function (r, i2) { r.rang = i2 + 1; });
+    return out;
+  }
+
+  function renderTuneLog() {
+    var el = document.getElementById('tuneLog');
+    if (!el) return;
+    var rows = tuneRanking();
+    if (!rows.length) {
+      el.innerHTML = '<div class="empty"><span class="ico">🛰</span>Noch keine automatischen Anpassungen. Die stündliche Analyse schreibt Empfehlungen in den Daten-Ordner – die App übernimmt sie hier sichtbar.</div>';
+      return;
+    }
+    var html = '<table class="tbl"><tr><th>Rang</th><th>Wann</th><th>Änderung</th><th>Ø P/L je Trade davor → danach</th><th>Trades danach</th><th>Wirkung</th><th></th></tr>';
+    rows.forEach(function (r) {
+      var e = r.e;
+      html += '<tr' + (r.laufend ? ' style="font-weight:600;"' : '') + '>' +
+        '<td>' + (r.rang ? '#' + r.rang : '–') + '</td>' +
+        '<td>' + U.dt(e.at) + (r.laufend ? '<br><span style="color:var(--muted); font-weight:400; font-size:11px;">läuft aktuell</span>' : '') + '</td>' +
+        '<td>' + (e.applied && e.applied.length ? U.esc(e.applied.join(' · ')) : '<span style="color:var(--muted);">keine Feldänderung</span>') +
+          (e.txt ? '<div style="color:var(--muted); font-size:11px; margin-top:2px;">' + U.esc(e.txt) + '</div>' : '') + '</td>' +
+        '<td>' + (r.vor.avg != null ? U.signTxt(r.vor.avg, ' $') : '–') + ' → ' + (r.nach.avg != null ? '<b class="' + U.signCls(r.nach.avg) + '">' + U.signTxt(r.nach.avg, ' $') + '</b>' : '–') +
+          (r.delta != null ? ' <span class="' + U.signCls(r.delta) + '">(' + U.signTxt(r.delta, ' $') + ')</span>' : '') + '</td>' +
+        '<td>' + r.nach.n + (r.nach.win != null ? ' · ' + r.nach.win + ' % Treffer' : '') + '</td>' +
+        '<td>' + r.urteil + '</td>' +
+        '<td>' + (e.konfigVorher ? '<button class="btn ghost" style="padding:2px 8px; font-size:11px;" data-undo="' + r.idx + '">Rückgängig</button>' : '') + '</td></tr>';
+    });
+    html += '</table><div style="color:var(--muted); font-size:11.5px; margin-top:8px;">Bewertet wird der durchschnittliche Gewinn je Intraday-Trade im Zeitraum <b>nach</b> der Änderung gegen den Zeitraum davor. Unter 5 Trades ist keine Aussage möglich (🟡). Der Rang sortiert nach Wirkung – so siehst du, welche Anpassungen wirklich etwas gebracht haben.</div>';
+    el.innerHTML = html;
+    el.querySelectorAll('[data-undo]').forEach(function (b2) {
+      b2.addEventListener('click', function () {
+        var r = rows[parseInt(b2.getAttribute('data-undo'), 10)];
+        if (!r || !r.e.konfigVorher) return;
+        var keys = ['mode', 'interval', 'period', 'confirmBps', 'lineType', 'window', 'scalpSL', 'sizing', 'channel', 'mtf', 'avoidHours'];
+        keys.forEach(function (k) { if (r.e.konfigVorher[k] !== undefined) D.intraday[k] = r.e.konfigVorher[k]; });
+        if (!D.tuneLog) D.tuneLog = [];
+        D.tuneLog.unshift({ id: 'undo-' + r.e.id, at: Date.now(), applied: ['↩ Rücknahme von ' + U.dt(r.e.at)], txt: 'Manuell zurückgenommen', konfigVorher: null, konfigNachher: JSON.parse(JSON.stringify(D.intraday)) });
+        save();
+        if (window.__updateParamVis) window.__updateParamVis();
+        renderTuneLog();
+        render();
+      });
+    });
+  }
+
+  /* ================= Claude-Bericht anzeigen ================= */
+  async function showReport() {
+    var st = document.getElementById('reportStatus');
+    st.textContent = 'Lade Bericht …';
+    var r = window.api.readReport ? await window.api.readReport() : { ok: false };
+    st.textContent = '';
+    if (!r.ok) {
+      st.textContent = 'Noch kein Bericht vorhanden – die automatische Analyse legt ihn im Daten-Ordner an.';
+      return;
+    }
+    document.getElementById('aiTitle').textContent = '📋 Analyse-Bericht (Stand: ' + U.dt(r.mtime) + ')';
+    document.getElementById('aiBody').innerHTML = U.md(r.body) + '<div class="warn">⚠ Simulation – keine Anlageberatung.</div>';
+    window.openModal('aiModalBg');
   }
 
   /* ================= Analyse-Export (Downloads\Markt-Dashboard-Daten) ================= */
@@ -510,8 +828,20 @@
     };
     D.positions.push(trade);
     D.trades.unshift(trade);
+    if (D.trades.length > 1000) D.trades = D.trades.slice(0, 1000); // Store schlank halten
     notifyTrade(trade, 'open');
     return trade;
+  }
+
+  /** Position sofort schließen (manuelle Notbremse) – inkl. Capital.com-Demo-Spiegelung. */
+  async function closeNow(pos) {
+    var spot = spotOf(pos.sym) || pos.entrySpot;
+    if (pos.capDealId && window.CapAPI && window.CapAPI.enabled()) {
+      try { await window.CapAPI.closePosition(pos.capDealId); } catch (e) { /* Demo-Konto optional */ }
+    }
+    closeTrade(pos, spot, Date.now(), 'Manuell geschlossen');
+    await save();
+    render();
   }
 
   function closeTrade(pos, spot, now, why) {
@@ -758,6 +1088,8 @@
         var spot = bars[bars.length - 1][1];
         var sig = Q.signalCross(bars, cfg.lineType || 'ema', cfg.period, cfg.confirmBps);
         var liquid = !cfg.minDollarVol || fd.dollarVolDay == null || fd.dollarVolDay >= cfg.minDollarVol * 1e6;
+        SIG[sym] = { t: now, spot: spot, ok: false, grund: 'kein Signal', score: null, z: null, chanPos: null, chanSteep: null };
+        if (D.symBlock && D.symBlock[sym]) { patienceAdd('Symbol gesperrt (Verlustbringer)', sym); continue; }
 
         // Offene Intraday-Position dieses Symbols managen
         var open = null;
@@ -829,12 +1161,14 @@
           }
         } else if (isWave) {
           var wq = Q.waveQuality(bars, cfg.lineType || 'ema', cfg.period, zOf(cfg.confirmBps));
+          SIG[sym].score = wq.score; SIG[sym].z = wq.z;
           if (wq.signal && wq.score >= 60) { dir = wq.signal; revZ = wq.z; waveQ = wq; }
-          else if (wq.signal) patienceAdd('Wellen-Qualität zu niedrig', sym);
+          else if (wq.signal) patienceAdd('Wellen-Qualität zu niedrig (' + wq.score + '/100)', sym);
           if (dir && useChan) {
             // Kanal-Fenster: 2,5 gemessene Wellenlängen (nie ≈ 1 Wellenperiode – Verzerrungsgefahr)
             chN = Math.max(100, Math.min(320, Math.round(2.5 * (wq.waveLen || 72))));
             chE = Q.regressionChannel(Q.degapCloses(bars), chN);
+            if (chE) { SIG[sym].chanPos = chE.pos; SIG[sym].chanSteep = chE.steep; }
             if (!chE) dir = null; // zu wenig Historie für den Kanal
             else if (dir === 'call' && (chE.pos > 0.30 || chE.steep < -0.8)) { patienceAdd('Kanal: Lage/Gegensteigung', sym); dir = null; }  // nur an der Unterkante, nie gegen einen klaren Abwärtskanal
             else if (dir === 'put' && (chE.pos < 0.70 || chE.steep > 0.8)) { patienceAdd('Kanal: Lage/Gegensteigung', sym); dir = null; }    // nur an der Oberkante, nie gegen einen klaren Aufwärtskanal
@@ -991,10 +1325,14 @@
             });
           })(trade, spot);
         }
+        SIG[sym] = { t: now, spot: spot, ok: true, grund: '✅ Trade eröffnet (' + (dir === 'call' ? 'CALL' : 'PUT') + ')', score: waveQ ? waveQ.score : null, z: revZ, chanPos: chE ? chE.pos : null, chanSteep: chE ? chE.steep : null };
         D.intradayCooldown[sym] = now;
         D.intradayCount++;
       }
       D.intradayLastScan = now;
+      updateSymBlocks();
+      renderSigMonitor();
+      renderSymBlocks();
       await save();
       st.textContent = 'Letzter Scan: ' + new Date(now).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }) + ' Uhr · Trades heute: ' + D.intradayCount + '/' + cfg.maxPerDay;
     } catch (e) {
@@ -1128,7 +1466,7 @@
       b.addEventListener('click', function () {
         var id = parseInt(b.getAttribute('data-closepos'), 10);
         var pos = D.positions.filter(function (p) { return p.id === id; })[0];
-        if (pos) { closeTrade(pos, spotOf(pos.sym) || pos.entrySpot, Date.now(), 'Manuell geschlossen'); save(); render(); }
+        if (pos) { b.disabled = true; closeNow(pos); }
       });
     });
 
@@ -1741,6 +2079,7 @@
     renderSentiment();
     renderBenchmark();
     renderPatience();
+    renderTuneLog();
   }
 
   /* ================= KI-Retrospektive ================= */
@@ -2532,6 +2871,15 @@
     // Retrospektive & Wochenreport
     document.getElementById('retroBtn').addEventListener('click', runRetro);
     document.getElementById('weeklyBtn').addEventListener('click', runWeekly);
+    document.getElementById('reportShowBtn').addEventListener('click', showReport);
+    document.getElementById('scBtn').addEventListener('click', runSigChart);
+    document.getElementById('filterBtn').addEventListener('click', runFilterCheck);
+    (function () {
+      var sc = document.getElementById('scSym');
+      universe().forEach(function (s) { var o = document.createElement('option'); o.value = s; o.textContent = s; sc.appendChild(o); });
+    })();
+    renderSigMonitor();
+    renderSymBlocks();
     document.getElementById('exportDataBtn').addEventListener('click', async function () {
       var stE = document.getElementById('reportStatus');
       stE.textContent = 'Exportiere …';

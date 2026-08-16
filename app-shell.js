@@ -91,6 +91,7 @@
     document.getElementById('setKiProvider').value = SETTINGS.kiProvider || '';
     document.getElementById('setKiRules').value = SETTINGS.kiRules || '';
     document.getElementById('setUpdateRepo').value = SETTINGS.updateRepo || 'Wilhelm-mbg/Stock-Dashboard';
+    if (window.api.getAutostart) window.api.getAutostart().then(function (r) { document.getElementById('setAutostart').checked = !!(r && r.on); });
     document.getElementById('setUpdateStatus').textContent = '';
     var ms = document.getElementById('setOllamaModel');
     if (SETTINGS.ollamaModel && !Array.prototype.some.call(ms.options, function (o) { return o.value === SETTINGS.ollamaModel; })) {
@@ -159,6 +160,9 @@
     SETTINGS.kiProvider = document.getElementById('setKiProvider').value;
     SETTINGS.kiRules = document.getElementById('setKiRules').value.trim().slice(0, 1200);
     SETTINGS.updateRepo = document.getElementById('setUpdateRepo').value.trim();
+    var au = document.getElementById('setAutostart').checked;
+    if (window.api.setAutostart) window.api.setAutostart(au);
+    if (au && window.api.setTrayMode) { SETTINGS.tray = true; document.getElementById('setTray').checked = true; window.api.setTrayMode(true); }
     window.api.storeSet('settings', SETTINGS).then(function () {
       document.getElementById('setStatus').textContent = 'Gespeichert.';
       document.dispatchEvent(new CustomEvent('settings-saved'));

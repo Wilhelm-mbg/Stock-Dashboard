@@ -542,6 +542,32 @@
       </div>
     </div>
 
+    <div class="panel" style="margin-top:12px; margin-bottom:12px;">
+      <h3>📈 Signal-Chart – was die Strategie sieht</h3>
+      <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+        <select id="scSym"></select>
+        <button class="btn ghost" id="scBtn">Chart laden</button>
+        <span id="scStatus" style="color:var(--muted); font-size:12px;"></span>
+      </div>
+      <div id="scInfo" style="font-size:12px; color:var(--ink-2); margin-top:8px;"></div>
+      <svg id="scChart" style="width:100%; height:300px; display:block; margin-top:6px;"></svg>
+      <div style="color:var(--muted); font-size:11.5px;">
+        <span style="color:var(--series);">━</span> Kurs ·
+        <span style="color:var(--series2);">╌</span> Leitlinie (EMA/VWAP) ·
+        <span style="color:var(--series3);">▬</span> Trendkanal ·
+        ● Einstieg (grün Call / rot Put) · ✕ Ausstieg
+      </div>
+    </div>
+
+    <div class="panel" style="margin-bottom:12px;">
+      <h3>📡 Live-Signal-Monitor</h3>
+      <div id="sigMonitor"></div>
+      <div style="margin-top:10px; padding-top:10px; border-top:1px solid var(--grid);">
+        <div style="font-size:12.5px; font-weight:600; margin-bottom:6px;">🚫 Gesperrte Werte <span style="color:var(--muted); font-weight:400;">(automatisch ab 6 Trades mit klarer Negativbilanz – Klick auf ✕ gibt wieder frei)</span></div>
+        <div id="symBlocks"></div>
+      </div>
+    </div>
+
     <div class="panel" style="margin-top:12px;">
       <h3>Eigene Watchlist (wird zusätzlich zu den 15 Standard-Werten gehandelt &amp; überwacht)</h3>
       <div id="watchChips" style="display:flex; gap:6px; flex-wrap:wrap;"></div>
@@ -579,9 +605,19 @@
       <div id="centralResult" style="margin-top:12px;"></div>
     </div>
 
+    <div class="panel" style="margin-bottom:12px;">
+      <h3>🛰 Automatische Anpassungen – was hat gewirkt?</h3>
+      <div style="color:var(--muted); font-size:11.5px; margin-bottom:8px;">
+        Jede Änderung, welche die automatische Analyse an der Strategie vorgenommen hat – mit Wirkungs-Messung und Rangliste.
+        Verglichen wird der durchschnittliche Gewinn je Intraday-Trade vor und nach der Anpassung. Jede Änderung lässt sich einzeln zurücknehmen.
+      </div>
+      <div id="tuneLog"></div>
+    </div>
+
     <div style="display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap; align-items:center;">
       <button class="btn" id="retroBtn">🧠 KI-Retrospektive erstellen</button>
       <button class="btn ghost" id="weeklyBtn">📄 Wochenreport erstellen</button>
+      <button class="btn ghost" id="reportShowBtn" title="Zeigt den Bericht der automatischen Analyse aus dem Daten-Ordner">📋 Analyse-Bericht</button>
       <button class="btn ghost" id="exportDataBtn" title="Schreibt analyse-daten.json + trades.csv nach Downloads\Markt-Dashboard-Daten – ohne Zugangsdaten. Läuft zusätzlich automatisch alle 10 Minuten.">📤 Analyse-Export</button>
       <span id="reportStatus" style="color:var(--muted); font-size:12px;"></span>
     </div>
@@ -622,6 +658,19 @@
       <div style="color:var(--muted); font-size:11.5px; margin-bottom:8px;">„An der Börse gilt: Wer nicht weiß, was er tut, muss wissen, wann er nichts tut.“ – Kostolany. Hier siehst du, wie oft die Filter ein Signal bewusst <b>verworfen</b> haben – und warum. Dieselbe Ablehnung (Wert + Grund) wird höchstens alle 15 Minuten gezählt.</div>
       <div id="patience"><div class="loading">Noch keine verworfenen Signale erfasst – entsteht, sobald der Intraday-Scanner läuft.</div></div>
     </div>
+
+  <div class="panel" style="margin-bottom:12px;">
+    <h3>🧹 Filter-Nutzen – bringen die Filter wirklich etwas?</h3>
+    <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+      <button class="btn" id="filterBtn">Mit vs. ohne Filter vergleichen</button>
+      <span id="filterStatus" style="color:var(--muted); font-size:12px;"></span>
+    </div>
+    <div style="color:var(--muted); font-size:11.5px; margin-top:6px;">
+      Rechnet denselben Zeitraum zweimal: einmal mit deinen Filtern (Kosten-Check, Trend, Kanal, 5-Min-Bestätigung, Zeitfenster, Qualitätsschwelle)
+      und einmal ohne – jedes Einstiegssignal wird gehandelt. Zeigt schwarz auf weiß, ob die Zurückhaltung Geld spart oder Rendite kostet.
+    </div>
+    <div id="filterResult" style="margin-top:12px;"></div>
+  </div>
 
   <div class="panel" style="margin-bottom:12px;">
     <h3>📉 Backtest (gleiche Logik über historische Daten)</h3>
@@ -792,6 +841,12 @@
         ausführen (gutes, schnelles Modell mit solidem Deutsch, ~4,7 GB). Danach hier „Modelle laden“.
       </div>
     </div>
+    <div style="margin:14px 0; border-top:1px solid var(--grid); padding-top:14px;">
+      <div style="font-weight:600; font-size:13px; margin-bottom:8px;">🖥 Dauerbetrieb</div>
+      <label style="display:flex; align-items:flex-start; gap:8px; font-size:12.5px;"><input type="checkbox" id="setAutostart" style="margin-top:3px;"><span>Mit Windows starten und <b>minimiert im Tray</b> laufen – die Strategien handeln dann durchgehend und der Analyse-Export bleibt lückenlos</span></label>
+      <div style="font-size:11.5px; color:var(--muted); margin-top:6px;">Empfohlen, wenn die automatische Analyse zuverlässig Daten auswerten soll: Ohne laufende App entstehen keine Kurse, keine Trades und keine Auswertung.</div>
+    </div>
+
     <div style="margin:14px 0; border-top:1px solid var(--grid); padding-top:14px;">
       <div style="font-weight:600; font-size:13px; margin-bottom:8px;">🔄 Update-Check (über GitHub-Releases)</div>
       <div style="display:flex; gap:8px;">

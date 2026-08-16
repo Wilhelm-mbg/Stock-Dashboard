@@ -14,7 +14,21 @@ const path = require('path');
   // window.api mocken (Preload-Bridge existiert im Browser nicht)
   await page.addInitScript(() => {
     const today = new Date().toISOString().slice(0, 10);
-    const store = { depot: { patience: { [today]: { 'KI-Veto': 3, 'Event-Blackout': 2, 'Kosten-Check: Bewegung deckt Kosten nicht': 5 } } } };
+    const nowS = Date.now();
+    const seedTrades = [];
+    for (let i = 0; i < 12; i++) {
+      const alt = i < 6;
+      seedTrades.push({ id: 100 + i, sym: 'AAA', dir: 'call', status: 'closed', strategy: 'intraday',
+        openT: nowS - (alt ? 5 : 1) * 86400000, closeT: nowS - (alt ? 5 : 1) * 86400000 + 600000,
+        entry: 1, exit: 1, qty: 10, cost: 10, orderFee: 1, strike: 100, expiry: nowS + 20 * 86400000,
+        pnl: alt ? -3 : 6, why: 'Test-Exit', reason: 'Test', scenario: 'Test', sources: { intraday: 1 } });
+    }
+    const store = { depot: {
+      patience: { [today]: { 'KI-Veto': 3, 'Event-Blackout': 2, 'Kosten-Check: Bewegung deckt Kosten nicht': 5 } },
+      trades: seedTrades,
+      tuneLog: [{ id: 'x1', at: nowS - 3 * 86400000, applied: ['period → 50'], txt: 'Testanpassung',
+        konfigVorher: { period: 20 }, konfigNachher: { period: 50 } }]
+    } };
     // Deterministische Yahoo-Chart-Mock-Antwort
     function chartBody(interval) {
       const now = Math.floor(Date.now() / 1000);
@@ -49,7 +63,11 @@ const path = require('path');
       setTrayMode: () => {},
       appVersion: async () => '6.2.0',
       openExternal: async () => true,
-      exportAnalysis: async (payload) => { window.__lastExport = payload; return { ok: true, dir: 'C:\\Users\\Test\\Downloads\\Markt-Dashboard-Daten' }; }
+      exportAnalysis: async (payload) => { window.__lastExport = payload; return { ok: true, dir: 'C:\\Users\\Test\\Downloads\\Markt-Dashboard-Daten' }; },
+      readRecommendation: async () => ({ ok: false }),
+      setAutostart: async () => ({ ok: true, on: true }),
+      getAutostart: async () => ({ ok: true, on: false }),
+      readReport: async () => ({ ok: true, mtime: Date.now(), body: '# Analyse-Bericht\n\nTestinhalt aus dem Daten-Ordner.\n\n## HISTORIE\n\n- 2026-08-16 | Nacht-Audit | keine Änderung' })
     };
   });
 
@@ -173,6 +191,43 @@ const path = require('path');
     return { a1, a2, rules: window.getSettings().kiRules };
   });
   check('appendKiRules fügt hinzu + dedupliziert', addRes.a1 === 2 && addRes.a2 === 0 && addRes.rules.indexOf('NVDA') !== -1);
+
+  // v7: Signal-Chart, Live-Monitor, Symbol-Sperre, Filter-Nutzen, Autostart
+  await page.click('#depotPills button[data-sub="strategien"]');
+  await page.waitForTimeout(400);
+  check('Signal-Chart-Auswahl gefüllt', await page.locator('#scSym option').count() > 5);
+  check('Live-Monitor vorhanden', (await page.locator('#sigMonitor').innerText()).indexOf('Noch kein Scan') !== -1);
+  check('Symbol-Sperren-Anzeige vorhanden', (await page.locator('#symBlocks').innerText()).indexOf('Keine gesperrten') !== -1);
+  await page.click('#scBtn');
+  await page.waitForTimeout(2500);
+  const scPaths = await page.locator('#scChart path').count();
+  check('Signal-Chart zeichnet Linien', scPaths >= 2);
+  check('Signal-Chart-Info gefüllt', (await page.locator('#scInfo').innerText()).indexOf('Leitlinie') !== -1);
+  await page.click('#depotPills button[data-sub="auswertung"]');
+  await page.waitForTimeout(300);
+  check('Filter-Nutzen-Knopf vorhanden', await page.locator('#filterBtn').count() === 1);
+  await page.click('#settingsBtn');
+  await page.waitForTimeout(300);
+  check('Autostart-Schalter vorhanden', await page.locator('#setAutostart').count() === 1);
+  await page.locator('#setModalBg [data-close]').first().click();
+  await page.waitForTimeout(300);
+
+  // Auto-Tuning-Verlauf: Panel listet und bewertet die Änderung
+  await page.click('#depotPills button[data-sub="auswertung"]');
+  await page.waitForTimeout(700);
+  const tuneTxt2 = await page.locator('#tuneLog').innerText();
+  check('Tuning-Verlauf listet Änderung', tuneTxt2.indexOf('period → 50') !== -1);
+  check('Tuning-Verlauf bewertet Wirkung', /wirkt|schadet|neutral|zu wenig Daten/.test(tuneTxt2));
+  check('Tuning-Verlauf zeigt Rang', tuneTxt2.indexOf('#1') !== -1);
+  check('Rückgängig-Knopf vorhanden', await page.locator('[data-undo]').count() > 0);
+
+  // Bericht-Anzeige
+  await page.click('#reportShowBtn');
+  await page.waitForTimeout(700);
+  const repTxt2 = await page.locator('#aiBody').innerText();
+  check('Analyse-Bericht wird angezeigt', repTxt2.indexOf('Testinhalt aus dem Daten-Ordner') !== -1);
+  await page.locator('#aiModalBg [data-close]').first().click();
+  await page.waitForTimeout(300);
 
   // Analyse-Zentrale: Panel + Leerzustand vorhanden
   check('Zentrale-Button vorhanden', await page.locator('#centralBtn').count() === 1);

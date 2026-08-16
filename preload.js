@@ -12,5 +12,8 @@ contextBridge.exposeInMainWorld('api', {
   appVersion: () => ipcRenderer.invoke('app-version'),
   exportAnalysis: (payload) => ipcRenderer.invoke('export-analysis', payload),
   readRecommendation: () => ipcRenderer.invoke('read-recommendation'),
+  readReport: () => ipcRenderer.invoke('read-report'),
+  setAutostart: (v) => ipcRenderer.invoke('set-autostart', v),
+  getAutostart: () => ipcRenderer.invoke('get-autostart'),
   openExternal: (url) => ipcRenderer.invoke('open-external', url)
 });
