@@ -1,0 +1,210 @@
+'use strict';
+/* Playwright-Smoke-Test: App laden mit gemocktem window.api, JS-Fehler sammeln,
+   neue Kanal-Elemente prüfen, Wellenreiter-Modus + Kanal-Schalter durchklicken. */
+const { chromium } = require('playwright');
+const path = require('path');
+
+(async () => {
+  const browser = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium', headless: true });
+  const page = await browser.newPage({ viewport: { width: 1440, height: 950 } });
+  const errors = [];
+  page.on('pageerror', e => errors.push('pageerror: ' + e.message));
+  page.on('console', m => { if (m.type() === 'error') errors.push('console: ' + m.text()); });
+
+  // window.api mocken (Preload-Bridge existiert im Browser nicht)
+  await page.addInitScript(() => {
+    const today = new Date().toISOString().slice(0, 10);
+    const store = { depot: { patience: { [today]: { 'KI-Veto': 3, 'Event-Blackout': 2, 'Kosten-Check: Bewegung deckt Kosten nicht': 5 } } } };
+    // Deterministische Yahoo-Chart-Mock-Antwort
+    function chartBody(interval) {
+      const now = Math.floor(Date.now() / 1000);
+      const step = interval === '1d' ? 86400 : 300;
+      const n = interval === '1d' ? 320 : 400;
+      const ts = [], closes = [], vols = [];
+      for (let i = 0; i < n; i++) {
+        ts.push(now - (n - i) * step);
+        closes.push(100 + 8 * Math.sin(i / 25) + i * 0.02);
+        vols.push(1500000);
+      }
+      return JSON.stringify({ chart: { result: [{ meta: { regularMarketPrice: closes[n - 1], previousClose: closes[n - 2], currency: 'USD' }, timestamp: ts, indicators: { quote: [{ close: closes, volume: vols }] } }] } });
+    }
+    window.api = {
+      fetchText: async (url) => {
+        if (url.indexOf('/v8/finance/chart/') !== -1) {
+          const m = url.match(/interval=([a-z0-9]+)/);
+          return { ok: true, status: 200, body: chartBody(m ? m[1] : '1d') };
+        }
+        if (url.indexOf('news.google.com') !== -1 || url.indexOf('feeds.finance') !== -1) {
+          return { ok: true, status: 200, body: '<rss><channel><item><title>Testmeldung: Aktie übertrifft Erwartungen</title><link>https://example.com</link><pubDate>' + new Date().toUTCString() + '</pubDate></item></channel></rss>' };
+        }
+        if (url.indexOf('/v1/finance/search') !== -1) return { ok: true, status: 200, body: JSON.stringify({ quotes: [] }) };
+        if (url.indexOf('api.github.com') !== -1) return { ok: true, status: 200, body: JSON.stringify({ tag_name: 'v9.9.9', assets: [{ name: 'Markt-Dashboard-Setup.exe', browser_download_url: 'https://github.com/x/y/releases/download/v9.9.9/Markt-Dashboard-Setup.exe' }] }) };
+        return { ok: false, status: 403, body: '' };
+      },
+      postJson: async () => ({ ok: false, status: 401, body: '{}' }),
+      capFetch: async () => ({ ok: false, status: 0, body: '{}', headers: {} }),
+      ollamaFetch: async () => ({ ok: false, status: 0, body: '{}' }),
+      storeGet: async (k) => store[k] || null,
+      storeSet: async (k, v) => { store[k] = v; return true; },
+      setTrayMode: () => {},
+      appVersion: async () => '6.2.0',
+      openExternal: async () => true,
+      exportAnalysis: async (payload) => { window.__lastExport = payload; return { ok: true, dir: 'C:\\Users\\Test\\Downloads\\Markt-Dashboard-Daten' }; }
+    };
+  });
+
+  await page.goto('file://' + path.join(__dirname, 'index.html'));
+  await page.waitForTimeout(2500);
+
+  // Optionsscheine-Tab öffnen und zur Strategie-Ansicht wechseln
+  await page.click('nav.tabs button[data-tab="depot"]');
+  await page.waitForTimeout(500);
+  await page.click('#depotPills button[data-sub="strategien"]');
+  await page.waitForTimeout(500);
+
+  const results = [];
+  function check(name, cond) { results.push((cond ? '✅ ' : '❌ ') + name); if (!cond) process.exitCode = 1; }
+
+  // Kanal-Schalter vorhanden & standardmäßig an
+  const chVisible = await page.locator('#idChannel').count();
+  check('Kanal-Schalter #idChannel existiert', chVisible === 1);
+  check('Kanal standardmäßig AN', await page.locator('#idChannel').isChecked());
+
+  // Wellenreiter-Modus wählen
+  await page.selectOption('#idMode', 'wave');
+  await page.waitForTimeout(400);
+  check('Modus Wellenreiter wählbar', (await page.locator('#idMode').inputValue()) === 'wave');
+
+  // Kanal-Schalter togglen (Knob klicken, Checkbox ist opacity 0)
+  await page.locator('#idChannel').locator('xpath=following-sibling::span[1]').click();
+  await page.waitForTimeout(300);
+  const offNow = !(await page.locator('#idChannel').isChecked());
+  check('Kanal-Schalter lässt sich ausschalten', offNow);
+  const saved1 = await page.evaluate(async () => (await window.api.storeGet('depot')).intraday.channel);
+  check('Einstellung wird gespeichert (channel=false)', saved1 === false);
+  await page.locator('#idChannel').locator('xpath=following-sibling::span[1]').click();
+  await page.waitForTimeout(300);
+  const saved2 = await page.evaluate(async () => (await window.api.storeGet('depot')).intraday.channel);
+  check('Wieder einschalten (channel=true)', saved2 === true);
+
+  // Labor-Beschreibung erwähnt die neue Variante (Auswertung-Ansicht)
+  await page.click('#depotPills button[data-sub="auswertung"]');
+  await page.waitForTimeout(400);
+  const labTxt = (await page.locator('#tab-depot').innerText()).replace(/ /g, ' ');
+  check('Labor listet Wellenreiter + Kanal', labTxt.indexOf('Wellenreiter + Kanal') !== -1);
+
+  // Quant im Seitenkontext: Kanalfunktion da & konsistent
+  const q = await page.evaluate(() => {
+    const closes = [];
+    for (let i = 0; i < 200; i++) closes.push(100 + 0.5 * i + (i % 2 ? -1 : 1));
+    const ch = window.Quant.regressionChannel(closes, 120);
+    return ch ? { pos: ch.pos, steep: ch.steep } : null;
+  });
+  check('Quant.regressionChannel im Renderer verfügbar', !!q);
+
+  // Geduld-Bilanz rendert die gesäten Daten (wir sind bereits in der Auswertung-Ansicht)
+  await page.waitForTimeout(600);
+  const patTxt = await page.locator('#patience').innerText();
+  check('Geduld-Bilanz zeigt Gründe', patTxt.indexOf('KI-Veto') !== -1 && patTxt.indexOf('5×') !== -1);
+  check('Geduld-Bilanz zeigt Gesamtzahl', patTxt.indexOf('10') !== -1);
+
+  // Wochenreport: Kostolany-Zitat + Geduld-Abschnitt
+  await page.click('#weeklyBtn');
+  await page.waitForTimeout(1500);
+  const repTxt = await page.locator('#aiBody').innerText();
+  check('Wochenreport zitiert Kostolany', repTxt.indexOf('Kostolany') !== -1);
+  check('Wochenreport enthält Geduld-Bilanz', repTxt.indexOf('Geduld-Bilanz') !== -1 && repTxt.indexOf('10 Signale bewusst verworfen') !== -1);
+  await page.locator('#aiModalBg [data-close]').first().click();
+  await page.waitForTimeout(300);
+
+  // Einstellungen: eigenes KI-Regelfeld speichert
+  await page.click('#settingsBtn');
+  await page.waitForTimeout(300);
+  await page.fill('#setKiRules', 'Keine Trades in TSLA. Bei Hebel über 25 immer nein.');
+  await page.click('#setSaveBtn');
+  await page.waitForTimeout(400);
+  const kiRules = await page.evaluate(async () => (await window.api.storeGet('settings')).kiRules);
+  check('Eigene KI-Regeln werden gespeichert', kiRules && kiRules.indexOf('TSLA') !== -1);
+
+  // decide() hängt die Nutzer-Regeln an den Prompt an
+  const promptSent = await page.evaluate(async () => {
+    let captured = null;
+    const orig = window.api.ollamaFetch;
+    window.api.ollamaFetch = async (m, u, b) => { captured = b; return { ok: true, status: 200, body: JSON.stringify({ message: { content: '{"entscheidung":"nein","groesse":1.0,"begruendung":"Test"}' } }) }; };
+    await window.LocalKI.decide({ symbol: 'TEST' });
+    window.api.ollamaFetch = orig;
+    return captured ? captured.messages[0].content : '';
+  });
+  check('Prompt enthält eingebaute Prüfregeln', promptSent.indexOf('PRÜFREGELN') !== -1);
+  check('Prompt enthält Nutzer-Regeln', promptSent.indexOf('ZUSÄTZLICHE REGELN') !== -1 && promptSent.indexOf('TSLA') !== -1);
+  check('Prompt enthält Kostolany-Merksatz', promptSent.indexOf('wann er nichts tut') !== -1);
+  await page.locator('#setModalBg [data-close]').first().click();
+
+  // v6: neue Bedienelemente vorhanden
+  await page.click('#depotPills button[data-sub="strategien"]');
+  await page.waitForTimeout(300);
+  check('ORB-Modus im Dropdown', await page.locator('#idMode option[value="orb"]').count() === 1);
+  check('auto-Stop im Dropdown', await page.locator('#idScalpSL option[value="auto"]').count() === 1);
+  check('Sizing-Auswahl da', await page.locator('#idSizing').count() === 1);
+  check('MTF-Schalter da (an)', await page.locator('#idMtf').isChecked());
+  check('Screener-Schalter da (aus)', !(await page.locator('#idScreener').isChecked()));
+  check('Screener-Button da', await page.locator('#screenBtn').count() === 1);
+  await page.selectOption('#idSizing', '0.5');
+  await page.selectOption('#idScalpSL', 'auto');
+  await page.waitForTimeout(300);
+  const dep2 = await page.evaluate(async () => (await window.api.storeGet('depot')).intraday);
+  check('Sizing + auto-SL gespeichert', dep2.sizing === '0.5' && dep2.scalpSL === 'auto');
+
+  // Update-Check (gemockte GitHub-Antwort v9.9.9)
+  await page.click('#settingsBtn');
+  await page.waitForTimeout(300);
+  await page.fill('#setUpdateRepo', 'wilhelm/markt-dashboard');
+  await page.click('#setUpdateBtn');
+  await page.waitForTimeout(600);
+  const updTxt = await page.locator('#setUpdateStatus').innerText();
+  check('Update-Check findet v9.9.9', updTxt.indexOf('9.9.9') !== -1 && updTxt.indexOf('verfügbar') !== -1);
+  await page.locator('#setModalBg [data-close]').first().click();
+  await page.waitForTimeout(200);
+
+  // Lernschleife: appendKiRules dedupliziert
+  const addRes = await page.evaluate(() => {
+    const a1 = window.appendKiRules(['Keine TSLA Puts.', 'Keine NVDA Calls.']);
+    const a2 = window.appendKiRules(['Keine TSLA Puts.']);
+    return { a1, a2, rules: window.getSettings().kiRules };
+  });
+  check('appendKiRules fügt hinzu + dedupliziert', addRes.a1 === 2 && addRes.a2 === 0 && addRes.rules.indexOf('NVDA') !== -1);
+
+  // Analyse-Zentrale: Panel + Leerzustand vorhanden
+  check('Zentrale-Button vorhanden', await page.locator('#centralBtn').count() === 1);
+  const centTxt = await page.locator('#centralResult').innerText();
+  check('Zentrale zeigt Leerzustand', centTxt.indexOf('Noch keine Analyse') !== -1);
+
+  // Analyse-Export: Button vorhanden, Payload ohne Zugangsdaten
+  await page.click('#depotPills button[data-sub="auswertung"]');
+  await page.waitForTimeout(300);
+  check('Export-Button vorhanden', await page.locator('#exportDataBtn').count() === 1);
+  await page.click('#exportDataBtn');
+  await page.waitForTimeout(500);
+  const exp = await page.evaluate(() => {
+    const p = window.__lastExport;
+    if (!p) return null;
+    const txt = JSON.stringify(p.json);
+    return { hasTrades: Array.isArray(p.json.trades), hasCsv: typeof p.csv === 'string' && p.csv.indexOf('Symbol') !== -1, leaks: /apiKey|capKey|capPass|kiRules/i.test(txt),
+      health: !!(p.json.gesundheit && typeof p.json.gesundheit.scansGesamt === 'number'), kurse: !!(p.kurse && p.kurse.bars && p.kurse.tages), journal: Array.isArray(p.json.experimentJournal), kontext: p.json.marktkontext !== undefined };
+  });
+  check('Export enthält Gesundheitsdaten', !!exp && exp.health);
+  check('Export enthält Kursdaten-Block', !!exp && exp.kurse);
+  check('Export enthält Experiment-Journal', !!exp && exp.journal);
+  check('Export enthält Trades + CSV', !!exp && exp.hasTrades && exp.hasCsv);
+  check('Export enthält KEINE Zugangsdaten', !!exp && !exp.leaks);
+  const expStatus = await page.locator('#reportStatus').innerText();
+  check('Export-Status zeigt Zielordner', expStatus.indexOf('Markt-Dashboard-Daten') !== -1);
+
+  // Screenshot für die Doku
+  await page.screenshot({ path: 'smoke-optionsscheine.png', fullPage: false });
+
+  console.log(results.join('\n'));
+  console.log(errors.length ? '❌ JS-Fehler:\n' + errors.join('\n') : '✅ JS-Fehler: keine');
+  if (errors.length) process.exitCode = 1;
+  await browser.close();
+})();

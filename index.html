@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:;">
+<title>Markt-Dashboard</title>
+<style>
+  :root {
+    color-scheme: light;
+    --page:        #f9f9f7;
+    --surface:     #fcfcfb;
+    --ink:         #0b0b0b;
+    --ink-2:       #52514e;
+    --muted:       #898781;
+    --grid:        #e1e0d9;
+    --baseline:    #c3c2b7;
+    --border:      rgba(11,11,11,0.10);
+    --series:      #2a78d6;
+    --series-soft: rgba(42,120,214,0.12);
+    --series2:     #eb6834;
+    --series3:     #1baf7a;
+    --up:          #006300;
+    --up-soft:     rgba(12,163,12,0.12);
+    --down:        #d03b3b;
+    --down-soft:   rgba(208,59,59,0.10);
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --page:        #0d0d0d;
+    --surface:     #1a1a19;
+    --ink:         #ffffff;
+    --ink-2:       #c3c2b7;
+    --muted:       #898781;
+    --grid:        #2c2c2a;
+    --baseline:    #383835;
+    --border:      rgba(255,255,255,0.10);
+    --series:      #3987e5;
+    --series-soft: rgba(57,135,229,0.16);
+    --series2:     #d95926;
+    --series3:     #199e70;
+    --up:          #0ca30c;
+    --up-soft:     rgba(12,163,12,0.16);
+    --down:        #d03b3b;
+    --down-soft:   rgba(208,59,59,0.16);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--page);
+    color: var(--ink);
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: 14px;
+    line-height: 1.45;
+    padding: 20px;
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+  a { color: var(--series); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 16px; margin-bottom: 6px; }
+  header h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; }
+  .stamp { color: var(--ink-2); font-size: 12.5px; }
+  .stamp .dot { display:inline-block; width:7px; height:7px; border-radius:50%; margin-right:5px; vertical-align: 1px; }
+  .dot.closed { background: var(--muted); }
+  .dot.open   { background: #0ca30c; }
+  .hbtn {
+    background: var(--surface); color: var(--ink-2);
+    border: 1px solid var(--border); border-radius: 8px; padding: 4px 10px;
+    font: inherit; font-size: 12px; cursor: pointer;
+  }
+  .hbtns { margin-left: auto; display: flex; gap: 6px; }
+  .subnote { color: var(--muted); font-size: 12px; margin-bottom: 18px; }
+  .err { color: var(--down); font-size: 12px; margin-left: 8px; }
+
+  h2 { font-size: 13px; font-weight: 600; color: var(--ink-2); text-transform: uppercase; letter-spacing: 0.06em; margin: 22px 0 10px; }
+
+  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(165px, 1fr)); gap: 10px; }
+  .tile { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px 10px; }
+  .tile .name { font-size: 12px; color: var(--ink-2); margin-bottom: 2px; }
+  .tile .val  { font-size: 21px; font-weight: 700; letter-spacing: -0.01em; }
+  .tile .sub  { margin-top: 2px; }
+  .tile svg   { display: block; margin-top: 8px; width: 100%; height: 34px; }
+
+  .chip { display: inline-flex; align-items: center; gap: 3px; font-size: 12px; font-weight: 600; border-radius: 6px; padding: 1px 7px; }
+  .chip.up   { color: var(--up);   background: var(--up-soft); }
+  .chip.down { color: var(--down); background: var(--down-soft); }
+  .chip.flat { color: var(--ink-2); background: var(--series-soft); }
+
+  .movers { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  @media (max-width: 640px) { .movers { grid-template-columns: 1fr; } }
+  .mover-col { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; }
+  .mover-col h3 { font-size: 12.5px; font-weight: 600; margin-bottom: 8px; color: var(--ink-2); }
+  .mover-row { display: flex; align-items: baseline; gap: 8px; padding: 5px 0; border-top: 1px solid var(--grid); }
+  .mover-row:first-of-type { border-top: none; }
+  .mover-row .sym { font-weight: 700; min-width: 52px; }
+  .mover-row .nm  { color: var(--muted); font-size: 12px; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(255px, 1fr)); gap: 10px; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; }
+  .card .top { display: flex; align-items: baseline; gap: 8px; }
+  .card .sym { font-weight: 700; font-size: 15px; }
+  .card .nm  { color: var(--muted); font-size: 12px; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .card .prc-row { display: flex; align-items: baseline; gap: 8px; margin-top: 4px; }
+  .card .prc { font-size: 19px; font-weight: 700; }
+  .card svg.spark { display: block; width: 100%; height: 44px; margin-top: 8px; }
+  .meta { display: flex; gap: 14px; margin-top: 8px; font-size: 12px; color: var(--ink-2); }
+  .meta b { color: var(--ink); font-weight: 600; }
+  .range { margin-top: 9px; }
+  .range .lbl { display: flex; justify-content: space-between; font-size: 10.5px; color: var(--muted); margin-bottom: 3px; }
+  .range .track { position: relative; height: 4px; border-radius: 2px; background: var(--grid); }
+  .range .mark { position: absolute; top: -3px; width: 10px; height: 10px; border-radius: 50%; background: var(--series); border: 2px solid var(--surface); transform: translateX(-50%); }
+
+  .news { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 6px 16px; }
+  .news-item { display: flex; gap: 10px; padding: 10px 0; border-top: 1px solid var(--grid); }
+  .news-item:first-child { border-top: none; }
+  .news-item .t { flex: 1; }
+  .news-item .src { color: var(--muted); font-size: 11.5px; white-space: nowrap; text-align: right; }
+
+  footer { margin-top: 22px; color: var(--muted); font-size: 11.5px; line-height: 1.6; }
+
+  #tip {
+    position: fixed; pointer-events: none; z-index: 10; display: none;
+    background: var(--surface); color: var(--ink); border: 1px solid var(--border);
+    border-radius: 8px; padding: 5px 9px; font-size: 12px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+  }
+  #tip .tv { font-weight: 700; }
+  #tip .tt { color: var(--muted); font-size: 11px; }
+
+  .loading { color: var(--muted); padding: 30px 0; text-align: center; }
+
+  /* ---- Tabs ---- */
+  nav.tabs { display: flex; gap: 4px; margin: 14px 0 4px; border-bottom: 1px solid var(--grid); }
+  nav.tabs button {
+    background: none; border: none; border-bottom: 2px solid transparent;
+    color: var(--ink-2); font: inherit; font-size: 13.5px; font-weight: 600;
+    padding: 8px 14px; cursor: pointer;
+  }
+  nav.tabs button:hover { color: var(--ink); }
+  nav.tabs button.active { color: var(--ink); border-bottom-color: var(--series); }
+  .tab { display: none; }
+  .tab.active { display: block; }
+
+  /* ---- Sub-Navigation (Pills) & Unterbereiche ---- */
+  .pills { display: flex; gap: 6px; margin: 16px 0 16px; flex-wrap: wrap; }
+  .pills button {
+    background: var(--surface); border: 1px solid var(--border); color: var(--ink-2);
+    border-radius: 999px; padding: 6px 15px; font: inherit; font-size: 12.5px; font-weight: 600; cursor: pointer;
+  }
+  .pills button:hover { color: var(--ink); }
+  .pills button.active { background: var(--series); border-color: var(--series); color: #fff; }
+  .pills.small button { padding: 3px 11px; font-size: 11.5px; font-weight: 500; }
+  .sub { display: none; }
+  .sub.active { display: block; }
+
+  /* ---- Strategie-Karten & Schalter ---- */
+  .strategy-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 12px; align-items: start; }
+  .strat-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+    padding: 16px 18px; border-top: 3px solid var(--series);
+  }
+  .strat-card.intraday { border-top-color: #d95926; }
+  .strat-card .head { display: flex; align-items: center; gap: 10px; }
+  .strat-card .head h3 { font-size: 14.5px; font-weight: 700; color: var(--ink); margin: 0; }
+  .strat-card .state { font-size: 11px; font-weight: 700; border-radius: 5px; padding: 1px 7px; }
+  .strat-card .state.on  { color: var(--up); background: var(--up-soft); }
+  .strat-card .state.off { color: var(--muted); background: var(--series-soft); }
+  .strat-card .desc { color: var(--muted); font-size: 12px; margin: 8px 0 14px; line-height: 1.55; }
+  .params { display: grid; grid-template-columns: repeat(auto-fill, minmax(108px, 1fr)); gap: 10px 12px; }
+  @media (max-width: 560px) { .params { grid-template-columns: 1fr 1fr; } }
+  .params label { display: flex; flex-direction: column; gap: 4px; font-size: 10.5px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; }
+  .params select { width: 100%; font-size: 12px; padding: 6px 7px; }
+  .strat-foot { margin-top: 12px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; font-size: 12px; color: var(--muted); }
+
+  .switch { position: relative; display: inline-block; width: 42px; height: 23px; flex-shrink: 0; margin-left: auto; }
+  .switch input { opacity: 0; width: 0; height: 0; }
+  .switch .knob { position: absolute; inset: 0; background: var(--grid); border-radius: 999px; transition: background 0.2s; cursor: pointer; }
+  .switch .knob:before { content: ""; position: absolute; width: 17px; height: 17px; left: 3px; top: 3px; border-radius: 50%; background: #fff; transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.35); }
+  .switch input:checked + .knob { background: var(--up); }
+  .switch input:checked + .knob:before { transform: translateX(19px); }
+
+  /* ---- Buttons & Inputs ---- */
+  .btn {
+    background: var(--series); color: #fff; border: none; border-radius: 8px;
+    padding: 7px 14px; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer;
+  }
+  .btn:disabled { opacity: 0.5; cursor: default; }
+  .btn.ghost { background: var(--surface); color: var(--ink-2); border: 1px solid var(--border); }
+  .btn.danger { background: var(--down); }
+  input[type="text"], input[type="password"], select {
+    background: var(--surface); color: var(--ink); border: 1px solid var(--border);
+    border-radius: 8px; padding: 7px 10px; font: inherit; font-size: 13.5px;
+  }
+  input[type="range"] { accent-color: var(--series); }
+
+  /* ---- Tabellen ---- */
+  table.tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
+  table.tbl th { text-align: left; color: var(--muted); font-weight: 600; font-size: 11.5px;
+    text-transform: uppercase; letter-spacing: 0.04em; padding: 6px 8px; border-bottom: 1px solid var(--grid); }
+  table.tbl td { padding: 7px 8px; border-bottom: 1px solid var(--grid); vertical-align: top; }
+  table.tbl tr:last-child td { border-bottom: none; }
+  .pos { color: var(--up); font-weight: 600; }
+  .neg { color: var(--down); font-weight: 600; }
+  .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; }
+  .panel h3 { font-size: 12.5px; font-weight: 600; color: var(--ink-2); margin-bottom: 10px; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  @media (max-width: 800px) { .grid2 { grid-template-columns: 1fr; } }
+
+  .depot-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 12px; }
+  .badge { display: inline-block; font-size: 11px; font-weight: 700; border-radius: 5px; padding: 1px 6px; margin-right: 4px; }
+  .badge.call { color: var(--up); background: var(--up-soft); }
+  .badge.put  { color: var(--down); background: var(--down-soft); }
+  .badge.src  { color: var(--ink-2); background: var(--series-soft); font-weight: 600; }
+  .trade-entry { border-top: 1px solid var(--grid); padding: 9px 0; font-size: 12.5px; }
+  .trade-entry:first-child { border-top: none; }
+  .trade-entry .why { color: var(--muted); font-size: 11.5px; margin-top: 2px; }
+  .hitbar { height: 8px; border-radius: 4px; background: var(--grid); overflow: hidden; margin-top: 3px; }
+  .hitbar > span { display: block; height: 100%; background: var(--series); }
+  .wrow { display: flex; align-items: center; gap: 10px; margin: 6px 0; font-size: 12.5px; }
+  .wrow label { width: 130px; color: var(--ink-2); }
+  .wrow output { width: 42px; text-align: right; font-weight: 600; }
+
+  /* ---- Explorer ---- */
+  .exp-search { display: flex; gap: 8px; margin-bottom: 10px; }
+  .exp-search input { flex: 1; }
+  .exp-results { position: relative; }
+  .exp-results .panel { padding: 4px 0; }
+  .exp-hit { padding: 8px 14px; cursor: pointer; display: flex; gap: 10px; align-items: baseline; }
+  .exp-hit:hover { background: var(--series-soft); }
+  .exp-hit .s { font-weight: 700; min-width: 70px; }
+  .exp-hit .n { flex: 1; color: var(--ink-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .exp-hit .x { color: var(--muted); font-size: 11.5px; }
+  .rangebtns { display: flex; gap: 4px; flex-wrap: wrap; }
+  .rangebtns button { background: none; border: 1px solid var(--border); border-radius: 6px;
+    color: var(--ink-2); font: inherit; font-size: 11.5px; padding: 3px 9px; cursor: pointer; }
+  .rangebtns button.active { background: var(--series); border-color: var(--series); color: #fff; }
+  #bigchart { width: 100%; height: 300px; display: block; }
+  .kv { display: grid; grid-template-columns: auto 1fr; gap: 3px 14px; font-size: 12.5px; }
+  .kv dt { color: var(--muted); }
+  .kv dd { text-align: right; font-weight: 600; }
+
+  /* ---- Modal ---- */
+  .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.55); display: none; z-index: 20; }
+  .modal-bg.open { display: flex; align-items: flex-start; justify-content: center; padding: 40px 16px; }
+  .modal { background: var(--page); border: 1px solid var(--border); border-radius: 14px;
+    max-width: 760px; width: 100%; max-height: 85vh; overflow: auto; padding: 20px 22px; }
+  .modal h2 { margin-top: 0; }
+  .modal .close { float: right; }
+  .analysis { font-size: 13.5px; line-height: 1.6; }
+  .analysis h4 { margin: 14px 0 4px; font-size: 13px; }
+  .analysis ul { margin: 4px 0 4px 18px; }
+  .analysis .warn { color: var(--muted); font-size: 12px; border-top: 1px solid var(--grid); margin-top: 12px; padding-top: 8px; }
+  .simnote { color: var(--muted); font-size: 11.5px; margin: 6px 0 14px; }
+
+  /* ---- UI-Politur v6.1 ---- */
+  :focus-visible { outline: 2px solid var(--series); outline-offset: 2px; border-radius: 4px; }
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--grid); border-radius: 5px; border: 2px solid var(--page); }
+  ::-webkit-scrollbar-thumb:hover { background: var(--baseline); }
+  .btn:not(:disabled):hover { filter: brightness(1.08); }
+  .btn.ghost:hover { color: var(--ink); border-color: var(--baseline); filter: none; }
+  .hbtn:hover, .pills button:not(.active):hover { border-color: var(--baseline); }
+  .chip { transition: filter 0.15s; }
+
+  .tile .delta { font-size: 12px; font-weight: 600; margin-top: 2px; color: var(--muted); }
+  .tile .delta.pos { color: var(--up); }
+  .tile .delta.neg { color: var(--down); }
+
+  /* Aufklappbare Erklärungen */
+  details.how { margin: 8px 0 12px; }
+  details.how summary {
+    cursor: pointer; list-style: none; display: inline-flex; align-items: center; gap: 6px;
+    color: var(--series); font-size: 12px; font-weight: 600; user-select: none;
+  }
+  details.how summary::-webkit-details-marker { display: none; }
+  details.how summary:before { content: "▸"; transition: transform 0.15s; font-size: 10px; }
+  details.how[open] summary:before { transform: rotate(90deg); }
+  details.how .desc { margin: 8px 0 4px; }
+
+  /* Parameter-Gruppen */
+  .pgroup { margin-top: 12px; }
+  .pgroup:first-child { margin-top: 0; }
+  .pgroup-title {
+    font-size: 10.5px; font-weight: 700; color: var(--muted); text-transform: uppercase;
+    letter-spacing: 0.08em; margin-bottom: 8px; padding-bottom: 4px; border-bottom: 1px solid var(--grid);
+  }
+  .params label .switch { margin: 5px auto 2px 0; }
+  .params label { justify-content: flex-start; min-height: 0; }
+
+  /* Leere Zustände */
+  .empty {
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    padding: 22px 16px; color: var(--muted); font-size: 12.5px; text-align: center;
+  }
+  .empty .ico { font-size: 22px; opacity: 0.7; }
+
+  /* Protokoll-Karten */
+  .trade-entry .thead { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .trade-entry .thead .tsym { font-weight: 700; font-size: 13px; }
+  .trade-entry .thead .twhen { color: var(--muted); font-size: 11.5px; }
+  .trade-entry .thead .tpl { margin-left: auto; font-size: 12.5px; font-weight: 700; border-radius: 6px; padding: 1px 8px; }
+  .trade-entry .thead .tpl.pos { color: var(--up); background: var(--up-soft); }
+  .trade-entry .thead .tpl.neg { color: var(--down); background: var(--down-soft); }
+  .trade-entry .tmeta { color: var(--ink-2); font-size: 12px; margin-top: 3px; }
+  .trade-entry details { margin-top: 4px; }
+  .trade-entry details summary {
+    cursor: pointer; list-style: none; color: var(--muted); font-size: 11.5px; user-select: none; display: inline-flex; align-items: center; gap: 5px;
+  }
+  .trade-entry details summary::-webkit-details-marker { display: none; }
+  .trade-entry details summary:before { content: "▸"; font-size: 9px; }
+  .trade-entry details[open] summary:before { content: "▾"; }
+  .trade-entry details .why { margin-top: 4px; line-height: 1.55; }
+
+  /* Lade-Skeletons */
+  @keyframes skel { 0% { opacity: 0.45; } 50% { opacity: 0.85; } 100% { opacity: 0.45; } }
+  .skel { border-radius: 12px; background: var(--surface); border: 1px solid var(--border); animation: skel 1.4s ease-in-out infinite; }
+  .skel .bar { height: 10px; border-radius: 5px; background: var(--grid); margin: 10px 14px; }
+  .skel .bar.w40 { width: 40%; } .skel .bar.w60 { width: 60%; } .skel .bar.w80 { width: 80%; }
+
+  /* Modal: Speichern-Leiste unten fixiert */
+  .modal .modal-foot {
+    position: sticky; bottom: -20px; margin: 18px -22px -20px; padding: 12px 22px 16px;
+    background: var(--page); border-top: 1px solid var(--grid); display: flex; gap: 8px; align-items: center;
+  }
+
+  /* Geduld-Bilanz */
+  .patrow { display: grid; grid-template-columns: minmax(170px, 250px) 1fr 44px; gap: 10px; align-items: center; margin: 4px 0; font-size: 12px; line-height: 1.3; }
+  .patrow .pbar { height: 8px; border-radius: 4px; background: var(--grid); overflow: hidden; }
+  .patrow .pbar > span { display: block; height: 100%; background: var(--series); border-radius: 4px; }
+  .patrow b { text-align: right; }
+
+  /* Explorer-Startseite */
+  .exp-start .popchips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+  .exp-start .popchips button {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 999px;
+    color: var(--ink); font: inherit; font-size: 12.5px; font-weight: 600; padding: 5px 13px; cursor: pointer;
+  }
+  .exp-start .popchips button:hover { border-color: var(--series); color: var(--series); }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Markt-Dashboard</h1>
+  <span class="stamp" id="stamp"><span class="dot closed"></span>Lade Daten …</span>
+  <span class="err" id="err"></span>
+  <div class="hbtns">
+    <button class="hbtn" id="refreshBtn" type="button">↻ Aktualisieren</button>
+    <button class="hbtn" id="themeBtn" type="button">Hell/Dunkel</button>
+    <button class="hbtn" id="settingsBtn" type="button">⚙ Einstellungen</button>
+  </div>
+</header>
+<div class="subnote" id="subnote">Big Tech · Chip-Sektor · Marktüberblick – aktualisiert sich automatisch (1 Min während des US-Handels, sonst 5 Min). Charts: 1 Monat, Tagesschluss.</div>
+
+<nav class="tabs">
+  <button data-tab="dashboard" class="active">Dashboard</button>
+  <button data-tab="depot">Optionsscheine</button>
+  <button data-tab="explorer">Aktien-Explorer</button>
+</nav>
+
+<div id="tab-dashboard" class="tab active">
+<h2>Marktüberblick</h2>
+<div class="tiles" id="tiles"><div class="loading">Lade Kurse …</div></div>
+
+<h2>Gewinner &amp; Verlierer des Tages</h2>
+<div class="movers">
+  <div class="mover-col"><h3>▲ Top-Gewinner</h3><div id="winners"></div></div>
+  <div class="mover-col"><h3>▼ Top-Verlierer</h3><div id="losers"></div></div>
+</div>
+
+<h2>Big Tech</h2>
+<div class="cards" id="bigtech"></div>
+
+<h2>Chip-Sektor</h2>
+<div class="cards" id="chips"></div>
+
+<h2>📅 Wirtschaftskalender (marktbewegende Termine)</h2>
+<div class="news" id="calendar"><div class="loading">Lade Termine …</div></div>
+
+<h2>Markt-News</h2>
+<div class="news" id="news"><div class="loading">Lade News …</div></div>
+</div><!-- /tab-dashboard -->
+
+<div id="tab-depot" class="tab">
+  <div class="simnote">⚠ <b>Simulation mit virtuellem Kapital – keine Anlageberatung.</b> Synthetische Optionsscheine (Black-Scholes): Hebel und Zeitwertverfall realistisch, aber keine echten Emittenten-Preise. Läuft, solange die App geöffnet ist.</div>
+
+  <div class="pills" id="depotPills">
+    <button data-sub="depot" class="active">📊 Depot</button>
+    <button data-sub="strategien">🎯 Strategien</button>
+    <button data-sub="protokoll">🧾 Protokoll</button>
+    <button data-sub="auswertung">📈 Auswertung</button>
+  </div>
+
+  <!-- ============ DEPOT ============ -->
+  <div class="sub active" id="sub-depot">
+    <div class="depot-stats" id="depotStats"></div>
+    <div id="calWarn"></div>
+    <div class="panel" style="margin-bottom:14px;">
+      <h3>Depotverlauf (seit Start der Simulation)</h3>
+      <svg id="equityChart" style="width:100%; height:150px; display:block;"></svg>
+    </div>
+    <div style="display:flex; gap:14px; align-items:center; flex-wrap:wrap; margin-bottom:10px;">
+      <h2 style="margin:0;">Offene Positionen</h2>
+      <label style="font-size:12px; display:flex; align-items:center; gap:6px; margin-left:auto; color:var(--ink-2);"><input type="checkbox" id="notifyEnabled" checked> 🔔 Benachrichtigung bei Trades</label>
+    </div>
+    <div class="panel" id="positionsPanel"><div class="loading">Noch keine Positionen – aktiviere unter „🎯 Strategien“ eine Strategie oder starte dort einen Prüf-Lauf.</div></div>
+  </div>
+
+  <!-- ============ STRATEGIEN ============ -->
+  <div class="sub" id="sub-strategien">
+    <div class="strategy-grid">
+      <div class="strat-card">
+        <div class="head">
+          <h3>🧠 Stunden-Strategie</h3>
+          <span class="state on" id="hourlyState">aktiv</span>
+          <label class="switch"><input type="checkbox" id="hourlyEnabled" checked><span class="knob"></span></label>
+        </div>
+        <details class="how"><summary>So funktioniert's</summary>
+        <div class="desc">
+          Prüft stündlich alle 15 Watchlist-Werte: <b>News-Sentiment</b> mit Ereignistyp (Earnings, Übernahme, Prognose …),
+          <b>Technik</b> (SMA-Trend, RSI, Momentum, MACD) und <b>Elliott-Wellen</b> – gewichtet kombiniert.
+          Kauft Call/Put (5 % OTM, 60 Tage) ab Gesamtscore ±0,35. Exits: SL −40 % · TP +80 % · Zeit-Exit · Gegensignal.
+        </div>
+        </details>
+        <div style="font-size:11px; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:0.04em; margin-bottom:6px;">Signal-Gewichtung</div>
+        <div id="weightsPanel"></div>
+        <div class="strat-foot">
+          <button class="btn" id="runJobBtn">▶ Jetzt prüfen</button>
+          <span id="jobStatus"></span>
+        </div>
+      </div>
+
+      <div class="strat-card intraday">
+        <div class="head">
+          <h3>⚡ Intraday: MA-Durchbruch</h3>
+          <span class="state off" id="idState">aus</span>
+          <label class="switch"><input type="checkbox" id="idEnabled"><span class="knob"></span></label>
+        </div>
+        <details class="how"><summary>So funktionieren die Modi</summary>
+        <div class="desc">
+          <b>🎯 Ausbrüche:</b> bestätigter Durchbruch durch die Leitlinie → Trade in Bewegungsrichtung.
+          <b>🌊 Scalping:</b> jede Welle – rein beim Kreuzen, raus bei der Rückkehr zur Linie (Scan alle 90 s).
+          <b>🔄 Rücksetzer:</b> umgekehrt – Einstieg, wenn der Kurs <i>überdehnt</i> von der Linie entfernt ist (z-Score über der Schwelle),
+          Ziel ist die Rückkehr zur Linie.
+          <b>🏄 Wellenreiter:</b> die Kombi – Einstieg am Wellental (nur wenn der <b>Wellen-Qualitäts-Score</b> ≥ 60/100 ist),
+          Ausstieg am Wellenkamm. Mit <b>📐 Trendkanal</b>: Einstieg nur an der Kanalunterkante (Long) bzw. Oberkante (Short),
+          Ziel ist die Gegenkante, die Kanal-Steigung entscheidet als Regime-Filter, ein Kanalbruch löst einen Schutz-Exit aus.
+          <b>🚀 ORB:</b> Range der ersten 30 Handelsminuten, gehandelt wird der erste Ausbruch daraus
+          (max. 1 Trade je Richtung/Tag, Trailing-Stop −15 %).<br><br>
+          Alle Modi: <b>Kosten-Breakeven-Filter</b>, Liquiditätsfilter, Glattstellung zum Tagesschluss.
+          Die „Bestätigung“ wirkt im Rücksetzer-/Wellenreiter-Modus als z-Score-Schwelle (0,05 % → z 1,5 · 0,15 % → z 2,0 · 0,30 % → z 2,5).
+          <b>🫁 auto-Stop</b> passt sich an Schwankungsbreite und Hebel an. Nach 3 Verlusten in Folge wird die Positionsgröße
+          automatisch halbiert, nach 5 pausiert der Tag (Tilt-Schutz).
+        </div>
+        </details>
+        <div id="idParams">
+          <div class="pgroup">
+            <div class="pgroup-title">📶 Signal</div>
+            <div class="params">
+              <label>Modus<select id="idMode"><option value="breakout" selected>🎯 Ausbrüche</option><option value="waves">🌊 Scalping</option><option value="reversion">🔄 Rücksetzer</option><option value="wave">🏄 Wellenreiter</option><option value="orb">🚀 ORB</option></select></label>
+              <label>Zeitrahmen<select id="idInterval"><option value="1m">1 Min</option><option value="5m" selected>5 Min</option><option value="15m">15 Min</option><option value="60m">60 Min</option></select></label>
+              <label>EMA-Periode<select id="idPeriod"><option value="9">9</option><option value="20" selected>20</option><option value="50">50</option></select></label>
+              <label title="Mindestabstand jenseits der Leitlinie; wirkt im Rücksetzer/Wellenreiter als z-Score-Schwelle (1,5 / 2,0 / 2,5)">Bestätigung<select id="idConfirm"><option value="5">0,05 %</option><option value="15" selected>0,15 %</option><option value="30">0,30 %</option></select></label>
+              <label>Leitlinie<select id="idLine"><option value="ema" selected>EMA</option><option value="vwap">VWAP</option></select></label>
+            </div>
+          </div>
+          <div class="pgroup">
+            <div class="pgroup-title">💰 Risiko &amp; Kosten</div>
+            <div class="params">
+              <label title="Fix: immer gleicher Kapitaleinsatz. Risiko: Einsatz so bemessen, dass ein ausgelöster Stop immer ~X % vom Depot kostet">Positionsgröße<select id="idSizing"><option value="fix" selected>fix 3 %</option><option value="0.25">Risiko 0,25 %</option><option value="0.5">Risiko 0,5 %</option><option value="1">Risiko 1 %</option></select></label>
+              <label title="🫁 automatisch = passt sich an Schwankungsbreite und Hebel an">Not-Stop-Loss<select id="idScalpSL"><option value="15">−15 %</option><option value="20" selected>−20 %</option><option value="30">−30 %</option><option value="auto">🫁 auto</option></select></label>
+              <label title="Moderat: ATM, 21 Tage · Spekulativ: 3 % OTM, 14 Tage · Heiß: 5 % OTM, 10 Tage">Hebel-Profil<select id="idProfile"><option value="atm21" selected>Moderat</option><option value="otm3_14">Spekulativ</option><option value="otm5_10">Heiß</option></select></label>
+              <label>Ordergebühr<select id="idFee"><option value="0">0 $</option><option value="1.5" selected>1,50 $</option><option value="5">5 $</option></select></label>
+            </div>
+          </div>
+          <div class="pgroup">
+            <div class="pgroup-title">🧹 Filter &amp; Schutz</div>
+            <div class="params">
+              <label data-modes="breakout,waves,orb">Trendfilter<select id="idTrend"><option value="0" selected>aus</option><option value="1">nur mit Trend</option></select></label>
+              <label>Zeitfenster<select id="idWindow"><option value="all" selected>ganzer Tag</option><option value="open2">15:30–17:30</option><option value="open4">15:30–19:30</option><option value="close2">20–22 Uhr</option></select></label>
+              <label title="Mindest-Tagesumsatz des Basiswerts">Liquidität min.<select id="idLiq"><option value="0">aus</option><option value="10">10 Mio $</option><option value="50" selected>50 Mio $</option><option value="200">200 Mio $</option></select></label>
+              <label>Event-Blackout<select id="idBlackout"><option value="off">aus</option><option value="block" selected>±45 Min</option><option value="flat">+ glattstellen</option></select></label>
+              <label data-iv="1m" title="1-Min-Signale müssen zusätzlich zur EMA20-Richtung auf dem 5-Min-Chart passen (Rauschfilter)">5-Min-Bestätigung<span class="switch"><input type="checkbox" id="idMtf" checked><span class="knob"></span></span></label>
+              <label data-modes="wave" title="Regressionskanal (2,5 Wellenlängen) – Einstieg an der Kanalunterkante, Ziel Oberkante, Kanal-Steigung als Regime-Filter, Kanalbruch als Schutz-Exit">📐 Trendkanal<span class="switch"><input type="checkbox" id="idChannel" checked><span class="knob"></span></span></label>
+              <label title="Einmal täglich ~30 zusätzliche Kandidaten nach Wellen-Qualität und Liquidität ranken – die Top-5 werden mitgescannt">🔎 Wellen-Screener<span class="switch"><input type="checkbox" id="idScreener"><span class="knob"></span></span></label>
+              <label title="Claude wertet stündlich die Analyse-Daten aus und schreibt geprüfte Parameter-Empfehlungen in den Daten-Ordner – die App übernimmt sie automatisch (nur sichere Felder, jede Änderung wird hier angezeigt)">🛰 Auto-Tuning<span class="switch"><input type="checkbox" id="idAutoTune" checked><span class="knob"></span></span></label>
+            </div>
+          </div>
+          <div class="pgroup" id="pgScalp">
+            <div class="pgroup-title">⏱ Haltedauer &amp; Ausstieg</div>
+            <div class="params">
+              <label data-modes="waves,reversion,wave">Max. Haltedauer<select id="idHold"><option value="15">15 Min</option><option value="30">30 Min</option><option value="60" selected>60 Min</option><option value="0">aus</option></select></label>
+              <label data-modes="waves,orb" title="Ausstieg, wenn der Schein X % unter sein Hoch fällt (Gewinn sichern)">Trailing-Stop<select id="idTrail"><option value="0">aus</option><option value="10">−10 %</option><option value="15" selected>−15 %</option><option value="25">−25 %</option></select></label>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-top:12px;">
+          <button class="btn ghost" id="screenBtn" style="padding:4px 12px; font-size:12px;">🔎 Screener jetzt laufen lassen</button>
+          <span id="screenStatus" style="color:var(--muted); font-size:11.5px;"></span>
+        </div>
+        <div id="screenChips" style="display:flex; gap:6px; flex-wrap:wrap; margin-top:6px;"></div>
+        <div class="strat-foot" style="flex-direction:column; align-items:flex-start; gap:4px;"><span id="idStatus"></span><span id="tuneStatus"></span><span id="capStatus"></span></div>
+      </div>
+
+      <div style="display:grid; gap:12px; align-content:start;">
+      <div class="strat-card" style="border-top-color: #9085e9;">
+        <div class="head">
+          <h3>🧠 KI-Prüfung (lokal)</h3>
+          <span class="state off" id="kiState">aus</span>
+        </div>
+        <details class="how"><summary>So funktioniert's</summary>
+        <div class="desc">
+          Ein <b>lokales Sprachmodell</b> (Ollama, läuft auf deinem PC) prüft jeden geplanten Trade als letzte Instanz:
+          bestätigen, ablehnen (Veto) oder Positionsgröße anpassen (×0,5 / ×1 / ×1,5) – mit Begründung im Protokoll.
+          Fällt die KI aus, handelt die Strategie normal weiter. Einrichten: ⚙ Einstellungen → Lokale KI.
+        </div>
+        </details>
+        <div id="kiInfo" style="font-size:12px; color:var(--ink-2);"></div>
+        <div id="kiLog" style="font-size:11.5px; margin-top:8px;"></div>
+      </div>
+
+      <div class="strat-card" style="border-top-color: var(--muted);">
+        <div class="head">
+          <h3>🛡 Risikomanagement</h3>
+          <span class="state on" id="riskState">ok</span>
+        </div>
+        <details class="how"><summary>So funktioniert's</summary>
+        <div class="desc">
+          Gilt für <b>beide Strategien parallel</b>. Wird das Tagesverlust-Limit erreicht, stoppt die App neue Käufe bis zum
+          nächsten Handelstag (offene Positionen werden weiter gemanagt und abgesichert). Das Exposure-Limit begrenzt,
+          wie viel des Depots gleichzeitig in Scheinen stecken darf.
+        </div>
+        </details>
+        <div class="params">
+          <label>Max. offene Positionen<select id="rkMaxPos"><option value="4">4</option><option value="8" selected>8</option><option value="12">12</option></select></label>
+          <label>Max. Tagesverlust<select id="rkDayLoss"><option value="3">3 %</option><option value="5" selected>5 %</option><option value="10">10 %</option><option value="0">aus</option></select></label>
+          <label>Max. Schein-Anteil<select id="rkExposure"><option value="20">20 %</option><option value="40" selected>40 %</option><option value="60">60 %</option><option value="0">aus</option></select></label>
+        </div>
+        <div class="strat-foot"><span id="riskStatus"></span></div>
+      </div>
+      </div>
+    </div>
+
+    <div class="panel" style="margin-top:12px;">
+      <h3>Eigene Watchlist (wird zusätzlich zu den 15 Standard-Werten gehandelt &amp; überwacht)</h3>
+      <div id="watchChips" style="display:flex; gap:6px; flex-wrap:wrap;"></div>
+      <div style="color:var(--muted); font-size:11.5px; margin-top:8px;">Hinzufügen: Wert im Aktien-Explorer suchen → „➕ Zur Handels-Watchlist“.</div>
+    </div>
+  </div>
+
+  <!-- ============ PROTOKOLL ============ -->
+  <div class="sub" id="sub-protokoll">
+    <div class="pills small" id="logFilter">
+      <button data-lf="all" class="active">Alle</button>
+      <button data-lf="hourly">🧠 Stunden-Strategie</button>
+      <button data-lf="intraday">⚡ Intraday</button>
+      <button data-lf="open">Offen</button>
+      <button data-lf="replicated">📌 Nachgebildet</button>
+      <button id="csvBtn" style="margin-left:auto;">⬇ CSV-Export</button>
+    </div>
+    <div class="panel" id="tradeLog"><div class="loading">Noch keine Trades.</div></div>
+  </div>
+
+  <!-- ============ AUSWERTUNG ============ -->
+  <div class="sub" id="sub-auswertung">
+    <div class="panel" style="margin-bottom:12px; border-top:3px solid var(--series);">
+      <h3>🎛 Analyse-Zentrale – ein Klick: alles prüfen, eine Empfehlung</h3>
+      <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+        <button class="btn" id="centralBtn">Komplett-Analyse starten</button>
+        <span id="centralStatus" style="color:var(--muted); font-size:12px;"></span>
+      </div>
+      <div style="color:var(--muted); font-size:11.5px; margin-top:6px;">
+        Führt nacheinander aus: <b>1.</b> Walk-Forward-Labor über alle 6 Modi × 3 Zeitrahmen · <b>2.</b> Parameter-Feinschliff
+        des Gewinners (18 Kombinationen, out-of-sample validiert) · <b>3.</b> Stunden-/Zeitfenster-/Symbol-Diagnose.
+        Ergebnis: <b>eine</b> vollständige Empfehlung (Modus, Zeitrahmen, Parameter, Zeitfenster, Meide-Stunden) mit
+        Übernehmen-Knopf. Rechnet parallel auf allen CPU-Kernen, dauert 3–6 Minuten.
+      </div>
+      <div id="centralResult" style="margin-top:12px;"></div>
+    </div>
+
+    <div style="display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap; align-items:center;">
+      <button class="btn" id="retroBtn">🧠 KI-Retrospektive erstellen</button>
+      <button class="btn ghost" id="weeklyBtn">📄 Wochenreport erstellen</button>
+      <button class="btn ghost" id="exportDataBtn" title="Schreibt analyse-daten.json + trades.csv nach Downloads\Markt-Dashboard-Daten – ohne Zugangsdaten. Läuft zusätzlich automatisch alle 10 Minuten.">📤 Analyse-Export</button>
+      <span id="reportStatus" style="color:var(--muted); font-size:12px;"></span>
+    </div>
+
+    <div class="grid2" style="margin-bottom:12px;">
+      <div class="panel">
+        <h3>Parallel-Strategien im Vergleich (realisierte P/L)</h3>
+        <div id="stratCompare"><div class="loading">Noch keine geschlossenen Trades.</div></div>
+        <svg id="stratChart" style="width:100%; height:150px; display:block;"></svg>
+        <div id="stratLegend" style="font-size:11.5px; color:var(--ink-2); margin-top:4px;"></div>
+      </div>
+      <div class="panel">
+        <h3>Benchmark: Depot vs. Buy &amp; Hold</h3>
+        <div id="benchInfo" style="font-size:12px; color:var(--muted); margin-bottom:6px;">Wird beim Öffnen dieses Bereichs geladen …</div>
+        <svg id="benchChart" style="width:100%; height:150px; display:block;"></svg>
+        <div id="benchLegend" style="font-size:11.5px; color:var(--ink-2); margin-top:4px;"></div>
+      </div>
+    </div>
+
+    <div class="panel" style="margin-bottom:12px;">
+      <h3>Sentiment-Verlauf (News-Score je Wert, −1 bis +1, ein Punkt je Stunden-Lauf)</h3>
+      <div style="display:flex; gap:10px; align-items:center; margin-bottom:8px; flex-wrap:wrap;">
+        <select id="sentSym"></select>
+        <span id="sentInfo" style="font-size:12px; color:var(--muted);"></span>
+      </div>
+      <svg id="sentChart" style="width:100%; height:130px; display:block;"></svg>
+      <div id="sentRank" style="font-size:12px; margin-top:8px;"></div>
+    </div>
+
+    <div class="panel" style="margin-bottom:12px;">
+      <h3>Trefferquote je Signalquelle (geschlossene Trades)</h3>
+      <div id="hitrates"><div class="loading">Noch keine geschlossenen Trades.</div></div>
+      <div style="margin-top:8px; color:var(--muted); font-size:11.5px;">Tipp: Justiere die Gewichte der Stunden-Strategie (unter „🎯 Strategien“) anhand dieser Quoten datenbasiert nach.</div>
+    </div>
+
+    <div class="panel" style="margin-bottom:12px;">
+      <h3>🧘 Geduld-Bilanz (letzte 7 Tage)</h3>
+      <div style="color:var(--muted); font-size:11.5px; margin-bottom:8px;">„An der Börse gilt: Wer nicht weiß, was er tut, muss wissen, wann er nichts tut.“ – Kostolany. Hier siehst du, wie oft die Filter ein Signal bewusst <b>verworfen</b> haben – und warum. Dieselbe Ablehnung (Wert + Grund) wird höchstens alle 15 Minuten gezählt.</div>
+      <div id="patience"><div class="loading">Noch keine verworfenen Signale erfasst – entsteht, sobald der Intraday-Scanner läuft.</div></div>
+    </div>
+
+  <div class="panel" style="margin-bottom:12px;">
+    <h3>📉 Backtest (gleiche Logik über historische Daten)</h3>
+    <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+      <label style="font-size:12.5px; color:var(--ink-2);">Strategie:</label>
+      <select id="btMode">
+        <option value="daily">Stunden-Strategie (Technik + Elliott, Tagesdaten)</option>
+        <option value="intraday">Intraday MA-Durchbruch (gewählter Zeitrahmen)</option>
+        <option value="intradayCompare">⚖ Zeitrahmen-Vergleich: 5 vs. 15 vs. 60 Min</option>
+      </select>
+      <label style="font-size:12.5px; color:var(--ink-2);">Zeitraum:</label>
+      <select id="btRange"><option value="1y">1 Jahr</option><option value="2y">2 Jahre</option><option value="5y">5 Jahre</option></select>
+      <button class="btn" id="btRunBtn">Backtest starten</button>
+      <span id="btStatus" style="color:var(--muted); font-size:12px;"></span>
+    </div>
+    <div style="color:var(--muted); font-size:11.5px; margin-top:6px;">Hinweis: Historische News sind nicht verfügbar – der Backtest nutzt Technik + Elliott (Gewichte entsprechend renormiert). Er testet also den technischen Kern der Strategie.</div>
+    <div id="btResult" style="margin-top:12px;"></div>
+  </div>
+
+  <div class="panel" style="margin-bottom:12px;">
+    <h3>🔬 Strategie-Labor (Komplettprüfung aller Intraday-Modi per Walk-Forward)</h3>
+    <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+      <button class="btn" id="labRunBtn">Alle Strategien prüfen (Walk-Forward)</button>
+      <span id="labStatus" style="color:var(--muted); font-size:12px;"></span>
+    </div>
+    <div style="color:var(--muted); font-size:11.5px; margin-top:6px;">
+      Prüft 🎯 Ausbrüche, 🌊 Scalping, 🔄 Rücksetzer, 🏄 Wellenreiter und 🏄📐 Wellenreiter&nbsp;+&nbsp;Kanal über je 1/5/15-Minuten-Daten mit der ehrlichsten Methode:
+      Die Historie wird in 4 Zeitscheiben geteilt – auf jeder werden die Parameter (EMA-Periode × Schwelle) neu bestimmt und
+      dann <b>nur auf der nächsten, ungesehenen Scheibe</b> gehandelt. Bewertet wird ausschließlich das Out-of-Sample-Ergebnis,
+      inkl. Konsistenz über die Scheiben und Diagnose nach Uhrzeit, Wochentag und Symbol. Nutzt deine aktuellen Exits, Kosten
+      und Filter. Dauert 2–5 Minuten.
+    </div>
+    <div id="labResult" style="margin-top:12px;"></div>
+  </div>
+
+  <div class="panel">
+    <h3>🧪 Parameter-Optimierer (Grid-Backtest mit Out-of-Sample-Validierung)</h3>
+    <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+      <button class="btn" id="optRunBtn">Optimierung starten (48 Kombinationen inkl. Modus-Vergleich)</button>
+      <span id="optStatus" style="color:var(--muted); font-size:12px;"></span>
+    </div>
+    <div style="color:var(--muted); font-size:11.5px; margin-top:6px;">
+      Testet Zeitrahmen × Leitlinie × EMA-Periode × Bestätigung × Trendfilter mit deinen aktuellen Exits und Kosten.
+      Optimiert wird auf den ersten 70 % der Historie, validiert auf den letzten 30 % – ein Setting, das nur im
+      Optimierungszeitraum gut aussieht, ist überangepasst und wird markiert. Dauert 1–3 Minuten.
+    </div>
+    <div id="optResult" style="margin-top:12px;"></div>
+  </div>
+  </div><!-- /sub-auswertung -->
+</div><!-- /tab-depot -->
+
+<div id="tab-explorer" class="tab">
+  <div class="exp-search">
+    <input type="text" id="expQuery" placeholder="Aktie, ETF oder Index suchen – Ticker oder Name (z. B. „Rheinmetall“, „SAP“, „PLTR“) …">
+    <button class="btn" id="expSearchBtn">Suchen</button>
+  </div>
+  <div class="exp-results" id="expResults"></div>
+  <div id="expStart"></div>
+  <div id="expDetail" style="display:none;">
+    <div style="display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; margin:14px 0 4px;">
+      <span style="font-size:20px; font-weight:700;" id="expName"></span>
+      <span style="color:var(--muted);" id="expMeta"></span>
+      <span style="font-size:20px; font-weight:700; margin-left:auto;" id="expPrice"></span>
+      <span id="expChg"></span>
+    </div>
+    <div class="panel">
+      <div class="rangebtns" id="expRanges"></div>
+      <svg id="bigchart"></svg>
+    </div>
+    <div class="grid2" style="margin-top:12px;">
+      <div class="panel">
+        <h3>Kennzahlen</h3>
+        <dl class="kv" id="expStats"></dl>
+        <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+          <button class="btn" id="aiBtn">✨ KI-Analyse anfordern</button>
+          <button class="btn ghost" id="watchBtn">➕ Zur Handels-Watchlist</button>
+          <span id="aiStatus" style="color:var(--muted); font-size:12px;"></span>
+        </div>
+      </div>
+      <div class="panel">
+        <h3>News zu diesem Wert</h3>
+        <div id="expNews"><div class="loading">–</div></div>
+      </div>
+    </div>
+  </div>
+</div><!-- /tab-explorer -->
+
+<!-- KI-Analyse-Modal -->
+<div class="modal-bg" id="aiModalBg">
+  <div class="modal">
+    <button class="btn ghost close" data-close="aiModalBg">Schließen ✕</button>
+    <h2 id="aiTitle">KI-Analyse</h2>
+    <div class="analysis" id="aiBody"></div>
+  </div>
+</div>
+
+<!-- Order-Ticket-Modal (Trade nachbilden) -->
+<div class="modal-bg" id="ticketModalBg">
+  <div class="modal" style="max-width:620px;">
+    <button class="btn ghost close" data-close="ticketModalBg">Schließen ✕</button>
+    <h2 id="ticketTitle">Trade nachbilden</h2>
+    <div id="ticketBody" class="analysis"></div>
+    <div style="display:flex; gap:8px; margin-top:14px; flex-wrap:wrap;">
+      <button class="btn" id="ticketCopyBtn">📋 Order-Daten kopieren</button>
+      <label style="display:flex; align-items:center; gap:6px; font-size:12.5px;"><input type="checkbox" id="ticketReplicated"> Hab ich real nachgebildet</label>
+      <span id="ticketStatus" style="color:var(--muted); font-size:12px; align-self:center;"></span>
+    </div>
+    <div class="warn" style="margin-top:12px; font-size:11.5px; color:var(--muted); border-top:1px solid var(--grid); padding-top:8px;">
+      ⚠ Hebelprodukte können zum Totalverlust führen. Die simulierten Kurse (Black-Scholes) weichen von echten Emittenten-Preisen ab
+      (implizite Vola, Spread, Aufgeld je nach Anbieter). Die Strategie hat keinen nachgewiesenen Vorteil – wenn überhaupt, nur mit
+      Beträgen testen, deren Verlust dich nicht schmerzt. Keine Anlageberatung.
+    </div>
+  </div>
+</div>
+
+<!-- Einstellungen-Modal -->
+<div class="modal-bg" id="setModalBg">
+  <div class="modal" style="max-width:560px;">
+    <button class="btn ghost close" data-close="setModalBg">Schließen ✕</button>
+    <h2>Einstellungen</h2>
+    <div style="margin:14px 0;">
+      <label style="display:block; font-size:12.5px; color:var(--ink-2); margin-bottom:4px;">Anthropic-API-Key (für „KI-Analyse anfordern“; ohne Key gibt es eine regelbasierte Analyse)</label>
+      <input type="password" id="setApiKey" style="width:100%;" placeholder="sk-ant-…">
+      <div style="font-size:11.5px; color:var(--muted); margin-top:4px;">Wird nur lokal auf diesem PC gespeichert und ausschließlich an api.anthropic.com gesendet. Key erstellen: console.anthropic.com</div>
+    </div>
+    <div style="margin:14px 0;">
+      <label style="display:block; font-size:12.5px; color:var(--ink-2); margin-bottom:4px;">Modell</label>
+      <select id="setModel">
+        <option value="claude-sonnet-4-5">Claude Sonnet (empfohlen)</option>
+        <option value="claude-haiku-4-5">Claude Haiku (schneller/günstiger)</option>
+      </select>
+    </div>
+    <div style="margin:14px 0;">
+      <label style="display:flex; align-items:center; gap:8px; font-size:12.5px;"><input type="checkbox" id="setTray"> Beim Schließen im Hintergrund weiterlaufen (Tray-Symbol neben der Uhr) – Strategien handeln dann weiter</label>
+    </div>
+    <div style="margin:14px 0; border-top:1px solid var(--grid); padding-top:14px;">
+      <div style="font-weight:600; font-size:13px; margin-bottom:8px;">🅲 Capital.com Demo-Konto (Paper-Trading mit echten Kursen)</div>
+      <div style="display:grid; gap:8px;">
+        <input type="password" id="setCapKey" placeholder="API-Key (bei Capital.com: Einstellungen → API-Integrationen)" style="width:100%;">
+        <input type="text" id="setCapId" placeholder="E-Mail / Kennung deines Capital.com-Kontos" style="width:100%;">
+        <input type="password" id="setCapPass" placeholder="API-Passwort (beim Erstellen des Keys festgelegt)" style="width:100%;">
+        <label style="display:flex; align-items:flex-start; gap:8px; font-size:12.5px;"><input type="checkbox" id="setCapEnabled" style="margin-top:3px;"><span>⚡ Intraday-Signale zusätzlich auf dem <b>Demo-Konto</b> ausführen (echte CFD-Paper-Trades mit Stop-Loss)</span></label>
+      </div>
+      <div style="font-size:11.5px; color:var(--muted); margin-top:6px;">
+        Die App kennt ausschließlich den Demo-Server – Live-Handel mit echtem Geld ist technisch nicht möglich.
+        Zugangsdaten werden nur lokal gespeichert und nur an demo-api-capital.backend-capital.com gesendet.
+      </div>
+    </div>
+    <div style="margin:14px 0; border-top:1px solid var(--grid); padding-top:14px;">
+      <div style="font-weight:600; font-size:13px; margin-bottom:8px;">🧠 Lokale KI (Ollama – läuft komplett auf deinem PC, kostenlos)</div>
+      <div style="display:grid; gap:8px;">
+        <input type="text" id="setOllamaUrl" placeholder="http://127.0.0.1:11434 (Standard)" style="width:100%;">
+        <div style="display:flex; gap:8px;">
+          <select id="setOllamaModel" style="flex:1;"><option value="">– erst „Modelle laden“ klicken –</option></select>
+          <button class="btn ghost" id="ollamaRefreshBtn" type="button">Modelle laden</button>
+        </div>
+        <label style="display:flex; align-items:flex-start; gap:8px; font-size:12.5px;"><input type="checkbox" id="setKiVeto" style="margin-top:3px;"><span>🧠 <b>KI-Prüfung vor jedem Trade</b> – das lokale Modell bestätigt, lehnt ab oder passt die Größe an (gilt für beide Strategien)</span></label>
+        <label style="font-size:12.5px; display:flex; align-items:center; gap:8px;">Analysen &amp; Retrospektive erstellen mit
+          <select id="setKiProvider"><option value="">Automatisch</option><option value="anthropic">Anthropic-API</option><option value="ollama">Lokal (Ollama)</option></select>
+        </label>
+        <label style="font-size:12.5px; display:block;">Eigene Regeln für die KI-Prüfung <span style="color:var(--muted);">(optional – wird an die eingebauten Prüfregeln angehängt)</span>
+          <textarea id="setKiRules" rows="4" maxlength="1200" placeholder="z. B.:&#10;- Keine Trades in TSLA.&#10;- Freitags nach 20 Uhr nur noch groesse 0.5.&#10;- Bei Hebel über 25 immer nein." style="width:100%; margin-top:4px; resize:vertical; font-family:inherit; font-size:12px;"></textarea>
+        </label>
+        <span id="ollamaStatus" style="font-size:12px; color:var(--muted);"></span>
+      </div>
+      <div style="font-size:11.5px; color:var(--muted); margin-top:6px;">
+        Einrichtung (einmalig): Ollama von <b>ollama.com</b> installieren, dann in der Eingabeaufforderung <b>ollama pull qwen2.5:7b</b>
+        ausführen (gutes, schnelles Modell mit solidem Deutsch, ~4,7 GB). Danach hier „Modelle laden“.
+      </div>
+    </div>
+    <div style="margin:14px 0; border-top:1px solid var(--grid); padding-top:14px;">
+      <div style="font-weight:600; font-size:13px; margin-bottom:8px;">🔄 Update-Check (über GitHub-Releases)</div>
+      <div style="display:flex; gap:8px;">
+        <input type="text" id="setUpdateRepo" placeholder="nutzer/repo (z. B. wilhelm/markt-dashboard)" style="flex:1;">
+        <button class="btn ghost" id="setUpdateBtn" type="button">Nach Update suchen</button>
+      </div>
+      <span id="setUpdateStatus" style="font-size:12px; color:var(--muted); display:block; margin-top:6px;"></span>
+      <div style="font-size:11.5px; color:var(--muted); margin-top:6px;">
+        Sobald ein (kostenloses) GitHub-Repo mit Releases existiert, prüft die App hier die neueste Version und öffnet den
+        Download im Browser – kein Zusammensetzen von Teil-Dateien mehr. Es wird nur lesend auf api.github.com zugegriffen.
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" id="setSaveBtn">Speichern</button>
+      <button class="btn danger" id="depotResetBtn" title="Setzt das KI-Depot auf 10.000 $ zurück und löscht alle Trades">Depot zurücksetzen</button>
+      <span id="setStatus" style="color:var(--muted); font-size:12px;"></span>
+    </div>
+  </div>
+</div>
+
+<footer>
+  Datenquelle Kurse: Yahoo Finance (inoffizielle Schnittstelle, Kurse können bis zu 15&nbsp;Minuten verzögert sein) ·
+  News: Google News. Marktkapitalisierung und KGV werden aus dem Live-Kurs näherungsweise berechnet (Basis: Aktienanzahl bzw. Gewinn je Aktie, Stand Juli 2026).
+  Keine Anlageberatung.
+</footer>
+<div id="tip"></div>
+
+<script src="quant.js"></script>
+<script src="renderer.js"></script>
+<script src="app-shell.js"></script>
+<script src="ollama.js"></script>
+<script src="capital.js"></script>
+<script src="calendar.js"></script>
+<script src="explorer.js"></script>
+<script src="depot.js"></script>
+</body>
+</html>

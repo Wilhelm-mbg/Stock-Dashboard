@@ -1,0 +1,62 @@
+{
+  "name": "markt-dashboard",
+  "productName": "Markt-Dashboard",
+  "version": "6.5.0",
+  "description": "Aktien-Dashboard: Big Tech, Chip-Sektor, Marktüberblick & News – aktualisiert sich selbst",
+  "main": "main.js",
+  "author": "Wilhelm",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win portable"
+  },
+  "devDependencies": {
+    "electron": "^37.2.0",
+    "electron-builder": "^26.15.3"
+  },
+  "build": {
+    "appId": "de.wilhelm.marktdashboard",
+    "productName": "Markt-Dashboard",
+    "files": [
+      "main.js",
+      "preload.js",
+      "bt-worker.js",
+      "index.html",
+      "renderer.js",
+      "app-shell.js",
+      "ollama.js",
+      "calendar.js",
+      "capital.js",
+      "explorer.js",
+      "depot.js",
+      "quant.js",
+      "icon.png",
+      "icon.ico"
+    ],
+    "win": {
+      "icon": "icon.ico",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "artifactName": "Markt-Dashboard-Setup.exe",
+      "oneClick": true,
+      "perMachine": false,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "runAfterFinish": true,
+      "deleteAppDataOnUninstall": true,
+      "differentialPackage": false
+    },
+    "portable": {
+      "artifactName": "Markt-Dashboard.exe"
+    },
+    "publish": null
+  }
+}
