@@ -23,9 +23,15 @@ const path = require('path');
         entry: 1, exit: 1, qty: 10, cost: 10, orderFee: 1, strike: 100, expiry: nowS + 20 * 86400000,
         pnl: alt ? -3 : 6, why: 'Test-Exit', reason: 'Test', scenario: 'Test', sources: { intraday: 1 } });
     }
+    seedTrades.push({ id: 900, sym: 'ZZZ', dir: 'call', status: 'open', strategy: 'intraday',
+      openT: nowS - 4 * 86400000, entry: 0.5, qty: 100, cost: 50, orderFee: 1, strike: 100,
+      expiry: nowS + 10 * 86400000, iv: 0.4, reason: 'Verwaister Test-Trade', scenario: 'Test' });
+    seedTrades.push({ id: 901, sym: 'YYY', dir: 'put', status: 'open', strategy: 'hourly',
+      openT: nowS - 5 * 86400000, entry: 0, qty: 0, cost: 25, strike: 0, expiry: 0, reason: 'Kaputt', scenario: 'Test' });
     const store = { depot: {
       patience: { [today]: { 'KI-Veto': 3, 'Event-Blackout': 2, 'Kosten-Check: Bewegung deckt Kosten nicht': 5 } },
       trades: seedTrades,
+      positions: [],
       tuneLog: [{ id: 'x1', at: nowS - 3 * 86400000, applied: ['period → 50'], txt: 'Testanpassung',
         konfigVorher: { period: 20 }, konfigNachher: { period: 50 } }]
     } };
@@ -191,6 +197,20 @@ const path = require('path');
     return { a1, a2, rules: window.getSettings().kiRules };
   });
   check('appendKiRules fügt hinzu + dedupliziert', addRes.a1 === 2 && addRes.a2 === 0 && addRes.rules.indexOf('NVDA') !== -1);
+
+  // v7.1: Reparatur verwaister Trades
+  await page.click('#depotPills button[data-sub="depot"]');
+  await page.waitForTimeout(600);
+  const repTxt3 = await page.locator('#positionsPanel').innerText();
+  check('Reparatur-Hinweis erscheint', repTxt3.indexOf('Buchhaltung repariert') !== -1);
+  const repState = await page.evaluate(async () => {
+    const dep = await window.api.storeGet('depot');
+    const t900 = dep.trades.find(t => t.id === 900), t901 = dep.trades.find(t => t.id === 901);
+    return { inPos: dep.positions.some(p => p.id === 900), t901closed: t901 && t901.status === 'closed', note: !!dep.repairNote };
+  });
+  check('Vollständiger Trade zurück in Positionen', repState.inPos);
+  check('Kaputter Datensatz sauber abgeschrieben', repState.t901closed);
+  check('Reparatur wird gespeichert', repState.note);
 
   // v7: Signal-Chart, Live-Monitor, Symbol-Sperre, Filter-Nutzen, Autostart
   await page.click('#depotPills button[data-sub="strategien"]');

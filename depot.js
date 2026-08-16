@@ -467,6 +467,37 @@
     }
   }
 
+  /* ================= 🩹 Reparatur: verwaiste Trades ================= */
+  /** Trades, die im Protokoll als "offen" stehen, aber in keiner Position mehr liegen
+   *  (z. B. nach einem Absturz, Doppelstart oder Versionswechsel), zurück in die
+   *  Positionsverwaltung holen – sonst ist das Kapital gebunden und niemand managt sie. */
+  function repairOrphans() {
+    if (!D || !D.trades) return 0;
+    var have = {};
+    (D.positions || []).forEach(function (p) { have[p.id] = 1; });
+    var adopted = 0, written = 0;
+    D.trades.forEach(function (t) {
+      if (t.status === 'closed' || have[t.id]) return;
+      if (!(t.sym && t.qty > 0 && t.entry > 0 && t.strike > 0 && t.expiry)) {
+        // Daten unbrauchbar: sauber abschreiben, damit die Buchhaltung stimmt
+        t.status = 'closed'; t.closeT = Date.now(); t.exit = 0;
+        t.pnl = -(t.cost != null ? t.cost : t.entry * t.qty || 0);
+        t.why = 'Verwaist – Datensatz unvollständig, abgeschrieben';
+        written++;
+        return;
+      }
+      if (t.peak == null) t.peak = t.entry;
+      if (t.exitMode == null) t.exitMode = t.strategy === 'intraday' ? 'confirmed' : undefined;
+      D.positions.push(t);
+      have[t.id] = 1;
+      adopted++;
+    });
+    if (adopted || written) {
+      D.repairNote = { at: Date.now(), adopted: adopted, written: written };
+    }
+    return adopted + written;
+  }
+
   /* ================= 🚫 Symbol-Sperre (dauerhafte Verlustbringer) ================= */
   /** Wertet je Symbol die geschlossenen Intraday-Trades aus und sperrt klare Verlustbringer. */
   function updateSymBlocks() {
@@ -1457,6 +1488,14 @@
       ph += '</table><div style="color:var(--muted); font-size:11px; margin-top:6px;">Stunden-Strategie: SL −40 % / TP +80 %, Zeit-Exit 10 Tage vor Fälligkeit. ⚡ Intraday: SL −25 % / TP +35 %, Glattstellung zum Tagesschluss. Bezugsverhältnis 0,1 · Spread 2 % · Ordergebühr je Kauf/Verkauf simuliert. Hebel = Omega (Maus über den Wert zeigt das aktuelle Aufgeld).</div>';
     } else {
       ph = '<div class="empty"><span class="ico">💼</span>Keine offenen Positionen. Unter „🎯 Strategien“ den Lauf starten oder auf den Stunden-Takt warten.</div>';
+    }
+    if (D.repairNote && Date.now() - D.repairNote.at < 7 * 86400000) {
+      var rn = D.repairNote;
+      ph = '<div style="border:1px solid var(--border); border-left:3px solid var(--series2); border-radius:8px; padding:8px 12px; margin-bottom:10px; font-size:12.5px;">' +
+        '🩹 <b>Buchhaltung repariert</b> (' + U.dt(rn.at) + '): ' +
+        (rn.adopted ? rn.adopted + ' verwaiste Position(en) zurückgeholt – sie werden ab sofort wieder normal überwacht und nach den Exit-Regeln geschlossen. ' : '') +
+        (rn.written ? rn.written + ' unvollständige(r) Datensatz/Datensätze abgeschrieben. ' : '') +
+        '<span style="color:var(--muted);">Ursache: Trades standen im Protokoll als „offen", lagen aber in keiner Position mehr (Absturz, Doppelstart oder Versionswechsel).</span></div>' + ph;
     }
     document.getElementById('positionsPanel').innerHTML = ph;
     document.querySelectorAll('[data-ticket]').forEach(function (b) {
@@ -2831,9 +2870,13 @@
   /* ================= Init & Loop ================= */
   async function init() {
     D = (await window.api.storeGet('depot')) || defaultDepot();
+    if (!D.positions) D.positions = [];
+    if (!D.trades) D.trades = [];
+    var repaired = repairOrphans(); // Buchhaltung geradeziehen, bevor irgendetwas rechnet
     // Abwärtskompatibel, falls Felder fehlen
     var def = defaultDepot();
     Object.keys(def).forEach(function (k) { if (D[k] === undefined) D[k] = def[k]; });
+    if (repaired) save();
     render();
     document.getElementById('jobStatus').textContent = D.lastRun ? 'Letzter Lauf: ' + U.dt(D.lastRun) : 'Noch kein Lauf – „Jetzt prüfen“ klicken oder auf den Auto-Lauf warten.';
     // Sub-Navigation (Pills)
@@ -2880,6 +2923,10 @@
     })();
     renderSigMonitor();
     renderSymBlocks();
+    (function () {
+      var fw = document.getElementById('feeWarn');
+      if (fw && D.intraday.orderFee === 0) fw.textContent = '⚠ Ordergebühr 0 $ macht die Simulation unrealistisch – echte Broker kosten Geld. Backtests sehen damit besser aus, als sie sind.';
+    })();
     document.getElementById('exportDataBtn').addEventListener('click', async function () {
       var stE = document.getElementById('reportStatus');
       stE.textContent = 'Exportiere …';
@@ -2992,6 +3039,10 @@
       D.intraday.interval = idI.value;
       D.intraday.profile = idPr.value;
       D.intraday.orderFee = parseFloat(idF.value);
+      var feeWarn = document.getElementById('feeWarn');
+      if (feeWarn) feeWarn.textContent = D.intraday.orderFee === 0
+        ? '⚠ Ordergebühr 0 $ macht die Simulation unrealistisch – echte Broker kosten Geld. Backtests sehen damit besser aus, als sie sind.'
+        : '';
       D.intraday.minDollarVol = parseInt(idL.value, 10);
       D.intraday.lineType = idLn.value;
       D.intraday.trendFilter = idTr.value === '1';
