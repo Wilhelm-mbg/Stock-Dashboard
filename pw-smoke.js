@@ -29,6 +29,7 @@ const path = require('path');
     seedTrades.push({ id: 901, sym: 'YYY', dir: 'put', status: 'open', strategy: 'hourly',
       openT: nowS - 5 * 86400000, entry: 0, qty: 0, cost: 25, strike: 0, expiry: 0, reason: 'Kaputt', scenario: 'Test' });
     const store = { depot: {
+      messStart: 0,   // Messschnitt liegt in der Vergangenheit -> Seed-Trades zählen mit
       patience: { [today]: { 'KI-Veto': 3, 'Event-Blackout': 2, 'Kosten-Check: Bewegung deckt Kosten nicht': 5 } },
       trades: seedTrades,
       positions: [],
@@ -271,6 +272,32 @@ const path = require('path');
   check('Zentrale-Button vorhanden', await page.locator('#centralBtn').count() === 1);
   const centTxt = await page.locator('#centralResult').innerText();
   check('Zentrale zeigt Leerzustand', centTxt.indexOf('Noch keine Analyse') !== -1);
+
+  // Messschnitt: Altbestand bleibt sichtbar, zählt aber nicht mehr mit
+  const messTest = await page.evaluate(async () => {
+    const d = await window.api.storeGet('depot');
+    return { messStart: d.messStart, legacy: (d.trades||[]).filter(t=>t.legacy).length, total: (d.trades||[]).length };
+  });
+  check('Messschnitt vorhanden', messTest.messStart !== undefined);
+  check('Seed-Trades zählen mit (Schnitt in der Vergangenheit)', messTest.legacy === 0);
+
+  // Regime-Automatik: Bedienelemente, Whitelist-Prüfung, Rückfallregel
+  check('Regime-Schalter vorhanden', await page.locator('#aoRegime').count() === 1);
+  check('Regime standardmäßig an', await page.locator('#aoRegime').isChecked());
+  check('Regime-Knopf vorhanden', await page.locator('#regimeBtn').count() === 1);
+  const regTxt = await page.locator('#regimeStatus').innerText();
+  check('Regime-Status zeigt Leerzustand', regTxt.indexOf('Noch kein Durchlauf') !== -1);
+  check('Hinweis an der Strategie-Karte', (await page.locator('#regimeHint').innerText()).indexOf('automatisch gesetzt') !== -1);
+  await page.click('#regimeBtn');
+  await page.waitForTimeout(6000);
+  const regTxt2 = await page.locator('#regimeStatus').innerText();
+  check('Regime-Durchlauf liefert eine Entscheidung', /Quelle:/.test(regTxt2));
+  check('Ohne lokales Modell greift die feste Regel', /Regel/.test(regTxt2));
+  check('Regime nennt die gemessenen Zahlen', /Trendanteil/.test(regTxt2));
+  const cfgAfter = await page.evaluate(async () => (await window.api.storeGet('depot')).regime);
+  check('Regime-Entscheidung wird gespeichert', !!cfgAfter && cfgAfter.ok === true && !!cfgAfter.fakten);
+  check('Nur erlaubte Setups', ['ausbruch','umkehr'].indexOf(cfgAfter.wahl.setup) !== -1);
+  check('Nur erlaubte Zeitrahmen', ['1m','5m'].indexOf(cfgAfter.wahl.zeitrahmen) !== -1);
 
   // Automatische Updates: Schalter, Prüfung, Installations-Knopf
   await page.click('#settingsBtn');

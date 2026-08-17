@@ -34,6 +34,56 @@
       try { return JSON.parse(res.body).message.content; } catch (e) { return null; }
     },
 
+    /** Regime-Entscheidung: Welches Setup passt zur aktuellen Marktlage?
+     *  Bekommt ausschließlich gemessene Fakten, keine Meinungen. Antwortet mit einem
+     *  von vier Kandidaten. Die App prüft die Antwort danach gegen eine Whitelist. */
+    decideSetup: async function (fakten) {
+      var userRules = (window.getSettings().kiRules || '').trim();
+      var prompt = 'Du bist ein nüchterner Markt-Analyst für ein SIMULIERTES Intraday-Depot. ' +
+        'Wähle anhand der gemessenen Marktlage GENAU EIN Handels-Setup für die nächste Stunde. ' +
+        'Antworte AUSSCHLIESSLICH mit gültigem JSON, exakt so: ' +
+        '{"setup":"ausbruch" oder "umkehr","ausloeser":"kreuzung" oder "range" oder "ueberdehnung" oder "welle",' +
+        '"zeitrahmen":"1m" oder "5m","trendfilter":true oder false,"kanal":true oder false,' +
+        '"begruendung":"max. 20 Wörter auf Deutsch, nenne die entscheidende Kennzahl"}.\n\n' +
+        'DIE VIER KANDIDATEN:\n' +
+        '- ausbruch/kreuzung: Kurs durchbricht die Leitlinie und läuft weiter. Passt, wenn der Markt RICHTUNG hat ' +
+        '(trendAnteilPct deutlich über 65 oder unter 35) und die Werte weit von ihrer Leitlinie weg sind.\n' +
+        '- ausbruch/range: Ausbruch aus der Eröffnungsspanne. Nur sinnvoll in den ersten zwei Handelsstunden ' +
+        '(minutenSeitEroeffnung unter 120) und bei erhöhter Vola.\n' +
+        '- umkehr/ueberdehnung: Kauf gegen die Übertreibung, Ziel ist die Rückkehr zur Leitlinie. ' +
+        'Passt, wenn mittleresAbsZ hoch ist (über 1,5) UND der Markt KEINE klare Richtung hat.\n' +
+        '- umkehr/welle: Kauf am Wellental. Passt nur, wenn mittlererWellenScore über 50 liegt – sonst gibt es kein Wellenmuster.\n\n' +
+        'REGELN:\n' +
+        '1. Trendmarkt (trendAnteilPct über 70 oder unter 30) → niemals umkehr. Einer fahrenden Straßenbahn läuft man nicht hinterher.\n' +
+        '2. mittlererWellenScore unter 45 → niemals umkehr/welle. Ohne Wellen kein Wellenreiten.\n' +
+        '3. kanalAnteilPct unter 20 → kanal auf false. Ohne belastbare Kanäle bringt der Kanalfilter nichts.\n' +
+        '4. trendfilter im Zweifel true: lieber weniger Trades als Trades gegen den Trend.\n' +
+        '5. zeitrahmen 5m, wenn vola1mPct hoch ist (über 0,15) – 1-Minuten-Signale sind dann überwiegend Rauschen.\n' +
+        '6. letzteWalkForward zeigt gemessene Ergebnisse aus der Vergangenheit. Weiche nur davon ab, wenn die ' +
+        'aktuelle Marktlage klar dagegen spricht, und nenne den Grund.\n' +
+        '7. Im Zweifel: ausbruch/kreuzung mit trendfilter true. Das ist die konservative Vorgabe.\n' +
+        (userRules ? '\nZUSÄTZLICHE REGELN DES NUTZERS (haben Vorrang, außer sie erhöhen das Risiko):\n' + userRules.slice(0, 1200) + '\n' : '') +
+        '\nGEMESSENE MARKTLAGE:\n' + JSON.stringify(fakten);
+      var res = await window.api.ollamaFetch('POST', base() + '/api/chat', {
+        model: model(), stream: false, format: 'json',
+        messages: [{ role: 'user', content: prompt }],
+        options: { temperature: 0.1, num_predict: 250 }
+      });
+      if (!res.ok) return { ok: false, msg: res.body };
+      try {
+        var j = JSON.parse(JSON.parse(res.body).message.content);
+        return {
+          ok: true,
+          setup: String(j.setup || '').toLowerCase(),
+          ausloeser: String(j.ausloeser || '').toLowerCase(),
+          zeitrahmen: String(j.zeitrahmen || '').toLowerCase(),
+          trendfilter: j.trendfilter === true || String(j.trendfilter) === 'true',
+          kanal: j.kanal === true || String(j.kanal) === 'true',
+          begruendung: String(j.begruendung || '').slice(0, 160)
+        };
+      } catch (e3) { return { ok: false, msg: 'JSON unlesbar' }; }
+    },
+
     /** Trade-Prüfung: {ok, entscheidung 'ja'|'nein', groesse, begruendung} */
     decide: async function (ctx) {
       var userRules = (window.getSettings().kiRules || '').trim();

@@ -395,6 +395,7 @@
   <!-- ============ DEPOT ============ -->
   <div class="sub active" id="sub-depot">
     <div class="depot-stats" id="depotStats"></div>
+    <div id="messNote" style="color:var(--muted); font-size:11.5px; margin:8px 0 0;"></div>
     <div id="calWarn"></div>
     <div class="panel" style="margin-bottom:14px;">
       <h3>Depotverlauf (seit Start der Simulation)</h3>
@@ -516,7 +517,7 @@
           <span id="screenStatus" style="color:var(--muted); font-size:11.5px;"></span>
         </div>
         <div id="screenChips" style="display:flex; gap:6px; flex-wrap:wrap; margin-top:6px;"></div>
-        <div class="strat-foot" style="flex-direction:column; align-items:flex-start; gap:4px;"><span id="idStatus"></span><span id="tuneStatus"></span><span id="capStatus"></span></div>
+        <div class="strat-foot" style="flex-direction:column; align-items:flex-start; gap:4px;"><span id="idStatus"></span><span id="tuneStatus"></span><span id="regimeHint" style="color:var(--muted); font-size:11.5px;"></span><span id="capStatus"></span></div>
       </div>
 
       <div style="display:grid; gap:12px; align-content:start;">
@@ -642,6 +643,23 @@
           <button class="btn ghost" id="aoBtn">Jetzt einmal durchlaufen</button>
         </div>
         <div id="autoOptStatus" style="font-size:12px; margin-top:8px;"></div>
+      </div>
+
+      <div style="margin-top:14px; padding-top:12px; border-top:1px solid var(--line);">
+        <h4 style="margin:0 0 6px;">🧭 Regime-Automatik – die lokale KI wählt das Setup</h4>
+        <div style="color:var(--muted); font-size:11.5px; margin-bottom:8px;">
+          Du musst nichts mehr von Hand einstellen. Stündlich während der Handelszeit <b>misst</b> die App die Marktlage
+          (Trendanteil, Überdehnung, Wellen-Score, Anteil belastbarer Kanäle, Volatilität), das <b>lokale Modell wählt</b>
+          daraus eines der vier Setups, und die App <b>prüft</b> die Antwort gegen feste Sperren – Umkehr im Trendmarkt,
+          Wellental ohne Wellenmuster und Eröffnungs-Range am Nachmittag werden abgelehnt. Ist Ollama nicht erreichbar oder
+          die Antwort unbrauchbar, entscheidet eine feste Regel. Jede Umstellung landet mit den gemessenen Zahlen und der
+          Begründung im Verlauf unten und wird dort später an ihrer Wirkung gemessen.
+        </div>
+        <div class="params" style="display:flex; gap:14px; flex-wrap:wrap; align-items:center;">
+          <label title="Setup, Zeitrahmen, Trendfilter und Kanalfilter werden automatisch gesetzt">Automatik<span class="switch"><input type="checkbox" id="aoRegime" checked><span class="knob"></span></span></label>
+          <button class="btn ghost" id="regimeBtn">Jetzt Marktlage beurteilen</button>
+        </div>
+        <div id="regimeStatus" style="font-size:12px; margin-top:8px; line-height:1.55;"></div>
       </div>
     </div>
 
