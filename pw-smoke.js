@@ -30,6 +30,8 @@ const path = require('path');
       openT: nowS - 5 * 86400000, entry: 0, qty: 0, cost: 25, strike: 0, expiry: 0, reason: 'Kaputt', scenario: 'Test' });
     const store = { depot: {
       messStart: 0,   // Messschnitt liegt in der Vergangenheit -> Seed-Trades zählen mit
+      autoOpt: { on: true, everyH: 8, onlyRobust: true, marketPause: true, regime: true, regimeMin: 60,
+                 farm: true, farmH: 12, farmPop: 12, farmGens: 1, lastRun: 0, lastRegime: 0, lastFarm: 0, lastCheck: null },
       patience: { [today]: { 'KI-Veto': 3, 'Event-Blackout': 2, 'Kosten-Check: Bewegung deckt Kosten nicht': 5 } },
       trades: seedTrades,
       positions: [],
@@ -298,6 +300,22 @@ const path = require('path');
   check('Regime-Entscheidung wird gespeichert', !!cfgAfter && cfgAfter.ok === true && !!cfgAfter.fakten);
   check('Nur erlaubte Setups', ['ausbruch','umkehr'].indexOf(cfgAfter.wahl.setup) !== -1);
   check('Nur erlaubte Zeitrahmen', ['1m','5m'].indexOf(cfgAfter.wahl.zeitrahmen) !== -1);
+
+  // Strategie-Farm: Bedienelemente + eine echte Zuchtrunde auf den Mock-Daten
+  check('Farm-Schalter vorhanden', await page.locator('#aoFarm').count() === 1);
+  check('Farm-Population wählbar', await page.locator('#aoFarmPop').count() === 1);
+  check('Farm-Status zeigt Leerzustand', (await page.locator('#farmStatus').innerText()).indexOf('Noch keine Zuchtrunde') !== -1);
+  await page.selectOption('#aoFarmPop', '12');
+  await page.click('#farmBtn');
+  await page.waitForTimeout(90000);
+  const farmTxt = await page.locator('#farmStatus').innerText();
+  if (process.env.FARMDBG) console.log('--- FARM ---\n' + farmTxt + '\n--- ENDE ---');
+  check('Farm liefert einen Champion', farmTxt.indexOf('Champion') !== -1);
+  check('Farm listet die Bestenliste', (await page.locator('#farmStatus table').count()) === 1);
+  const farmData = await page.evaluate(async () => (await window.api.storeGet('depot')).farm);
+  check('Farm speichert das Ergebnis', !!farmData && !!farmData.champion && farmData.geprueft > 0);
+  check('Farm hat mehrere Varianten geprüft', farmData.geprueft >= 5);
+  check('Herausforderer wird NICHT sofort übernommen', !farmData.challenger || farmData.challenger.pruefungen.length <= 1);
 
   // Automatische Updates: Schalter, Prüfung, Installations-Knopf
   await page.click('#settingsBtn');

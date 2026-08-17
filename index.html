@@ -661,6 +661,30 @@
         </div>
         <div id="regimeStatus" style="font-size:12px; margin-top:8px; line-height:1.55;"></div>
       </div>
+
+      <div style="margin-top:14px; padding-top:12px; border-top:1px solid var(--line);">
+        <h4 style="margin:0 0 6px;">🧬 Strategie-Farm – züchten, prüfen, bewähren</h4>
+        <div style="color:var(--muted); font-size:11.5px; margin-bottom:8px;">
+          Außerhalb der Handelszeit lässt die App eine Population von Strategie-Varianten gegeneinander antreten:
+          Jede wird auf <b>ungesehenen</b> Zeitscheiben bewertet, die Besten paaren sich und mutieren, das lokale Modell
+          steuert je Generation einen begründeten Vorschlag bei (🧠). Der Generationssieger wird aber <b>nicht übernommen</b> –
+          er wird <b>Herausforderer</b> und muss den amtierenden Champion mindestens dreimal auf Daten schlagen, die es bei
+          seiner Entstehung noch gar nicht gab. Erst dann wechselt der Champion. Ohne diese Bewährung findet man garantiert
+          einen Zufallssieger: Wer lange genug sucht, findet immer etwas, das rückwärts großartig aussieht.
+        </div>
+        <div class="params" style="display:flex; gap:14px; flex-wrap:wrap; align-items:center;">
+          <label title="Züchtet alle 12 Stunden, wenn die US-Börse geschlossen ist">Automatik<span class="switch"><input type="checkbox" id="aoFarm" checked><span class="knob"></span></span></label>
+          <label>Population
+            <select id="aoFarmPop">
+              <option value="12">12 Varianten (schnell)</option>
+              <option value="24" selected>24 Varianten</option>
+              <option value="40">40 Varianten (gründlich)</option>
+            </select>
+          </label>
+          <button class="btn ghost" id="farmBtn">Jetzt eine Zuchtrunde starten</button>
+        </div>
+        <div id="farmStatus" style="font-size:12px; margin-top:10px; line-height:1.55;"></div>
+      </div>
     </div>
 
     <div class="panel" style="margin-bottom:12px;">

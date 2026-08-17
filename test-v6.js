@@ -97,5 +97,30 @@ var wKanal = { setup: 'ausbruch', ausloeser: 'kreuzung', zeitrahmen: '5m', kanal
 regimeValidate(wKanal, { trendAnteilPct: 50, mittlererWellenScore: 50, kanalAnteilPct: 5, minutenSeitEroeffnung: 60 });
 ok(wKanal.kanal === false, 'Kanalfilter wird abgeschaltet, wenn es kaum gültige Kanäle gibt');
 
+
+console.log('8) Strategie-Farm: Bewährung entscheidet, nicht der Backtest');
+var U2 = Q.bewaehrungsUrteil;
+ok(U2([]) === 'weiter', 'ohne Prüfung wird nichts übernommen');
+ok(U2([{ champ: 1, hera: 5, trades: 20, sieger: 'herausforderer' }]) === 'weiter', 'ein einzelner Sieg reicht nicht');
+ok(U2([{ champ: 1, hera: 5, trades: 20, sieger: 'herausforderer' },
+       { champ: 1, hera: 5, trades: 20, sieger: 'herausforderer' }]) === 'weiter', 'zwei Siege reichen noch nicht (3 Prüfungen nötig)');
+ok(U2([{ champ: 1, hera: 5, trades: 6, sieger: 'herausforderer' },
+       { champ: 1, hera: 5, trades: 5, sieger: 'herausforderer' },
+       { champ: 1, hera: 5, trades: 6, sieger: 'herausforderer' }]) === 'uebernehmen', 'drei Siege mit genug Trades → Übernahme');
+ok(U2([{ champ: 1, hera: 5, trades: 2, sieger: 'herausforderer' },
+       { champ: 1, hera: 5, trades: 2, sieger: 'herausforderer' },
+       { champ: 1, hera: 5, trades: 2, sieger: 'herausforderer' }]) === 'weiter', 'zu wenige Trades → keine Übernahme');
+ok(U2([{ champ: 9, hera: 10, trades: 20, sieger: 'herausforderer' },
+       { champ: 9, hera: 10, trades: 20, sieger: 'herausforderer' },
+       { champ: 50, hera: 1, trades: 20, sieger: 'champion' }]) === 'weiter', 'zwei knappe Siege wiegen einen klaren Verlust nicht auf');
+ok(U2([{ champ: 5, hera: 1, trades: 20, sieger: 'champion' },
+       { champ: 5, hera: 1, trades: 20, sieger: 'champion' },
+       { champ: 5, hera: 1, trades: 20, sieger: 'champion' },
+       { champ: 5, hera: 1, trades: 20, sieger: 'champion' }]) === 'verwerfen', 'vier Niederlagen → Herausforderer wird verworfen');
+ok(U2([{ champ: 1, hera: 5, trades: 20, sieger: 'herausforderer' },
+       { champ: 5, hera: 1, trades: 20, sieger: 'champion' },
+       { champ: 5, hera: 1, trades: 20, sieger: 'champion' },
+       { champ: 5, hera: 1, trades: 20, sieger: 'champion' }]) === 'verwerfen', 'ein Sieg von vier reicht nicht');
+
 console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
 process.exit(fails ? 1 : 0);

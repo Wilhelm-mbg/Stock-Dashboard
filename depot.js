@@ -216,42 +216,105 @@
   var BTPool = (function () {
     var size = Math.max(2, Math.min(8, Math.floor((navigator.hardwareConcurrency || 4) * 0.75))); // CPU-Deckel ~75 %
     var workers = [], queue = [], nextId = 1, pending = {}, ok = typeof Worker !== 'undefined';
-    function spawn() {
+    var fehler = 0;
+    function fertig(id, res) {
+      var job = pending[id];
+      if (!job) return;
+      delete pending[id];
+      if (job.timer) clearTimeout(job.timer);
+      job.cb(res);
+    }
+    /** Rechnet im Hauptthread weiter – langsamer, aber es bleibt nie etwas hängen. */
+    function selbstRechnen(job) {
       try {
-        var w = new Worker('bt-worker.js');
-      } catch (e) { ok = false; return null; }
-      w.busy = false;
+        job.cb(job.fn === 'daily' ? Q.backtest(job.histMap, job.opts) : Q.backtestIntraday(job.histMap, job.opts));
+      } catch (e) { job.cb({ error: String(e && e.message ? e.message : e) }); }
+    }
+    function spawn() {
+      var w;
+      try { w = new Worker('bt-worker.js'); } catch (e) { ok = false; return null; }
+      w.busy = false; w.jobId = 0;
+      // Erstkontakt-Wächter: Antwortet ein frisch gestarteter Worker nicht (z. B. weil das
+      // Hintergrund-Rechnen in dieser Umgebung gesperrt ist), wird endgültig auf den
+      // Hauptthread umgeschaltet, statt ewig zu warten.
+      w.probe = setTimeout(function () { if (!w.hatGeantwortet) w.onerror(); }, 8000);
       w.onmessage = function (e2) {
-        var cb = pending[e2.data.id];
-        delete pending[e2.data.id];
-        w.busy = false;
-        if (cb) cb(e2.data.ok ? e2.data.res : { error: e2.data.msg || 'Worker-Fehler' });
+        w.hatGeantwortet = true;
+        if (w.probe) { clearTimeout(w.probe); w.probe = null; }
+        w.busy = false; w.jobId = 0;
+        fertig(e2.data.id, e2.data.ok ? e2.data.res : { error: e2.data.msg || 'Worker-Fehler' });
         pump();
       };
-      w.onerror = function () { w.busy = false; pump(); };
+      // Stirbt ein Worker, darf der Auftrag NICHT verloren gehen – sonst wartet die Analyse ewig.
+      w.onerror = function () {
+        var id = w.jobId;
+        if (w.probe) { clearTimeout(w.probe); w.probe = null; }
+        w.busy = false; w.jobId = 0;
+        fehler++;
+        var idx = workers.indexOf(w);
+        if (idx !== -1) workers.splice(idx, 1);
+        try { w.terminate(); } catch (e3) { /* egal */ }
+        if (fehler >= 1) ok = false;   // Hintergrund-Rechnen klappt hier nicht → Hauptthread
+        var job = pending[id];
+        if (job) { delete pending[id]; if (job.timer) clearTimeout(job.timer); selbstRechnen(job); }
+        // wartende Aufträge ebenfalls retten
+        if (!ok) {
+          workers.slice().forEach(function (ww) { try { ww.terminate(); } catch (e4) { /* egal */ } });
+          workers.length = 0;
+          Object.keys(pending).forEach(function (pid) {
+            var pj = pending[pid]; delete pending[pid];
+            if (pj.timer) clearTimeout(pj.timer);
+            selbstRechnen(pj);
+          });
+          var q = queue.splice(0, queue.length);
+          q.forEach(selbstRechnen);
+        } else pump();
+      };
       workers.push(w);
       return w;
     }
     function pump() {
+      // Ist das Hintergrund-Rechnen ausgefallen, dürfen wartende Aufträge nicht liegenbleiben.
+      if (!ok) { var rest = queue.splice(0, queue.length); rest.forEach(selbstRechnen); return; }
       while (queue.length) {
         var free = null;
         for (var i = 0; i < workers.length; i++) if (!workers[i].busy) { free = workers[i]; break; }
         if (!free && workers.length < size) free = spawn();
-        if (!free) return;
+        if (!free) {
+          // Kein Worker verfügbar: entweder alle beschäftigt (warten) oder gar keiner möglich (selbst rechnen)
+          if (!ok) { var rest2 = queue.splice(0, queue.length); rest2.forEach(selbstRechnen); }
+          return;
+        }
         var job = queue.shift();
-        free.busy = true;
-        pending[job.id] = job.cb;
+        free.busy = true; free.jobId = job.id;
+        pending[job.id] = job;
+        // Sicherheitsnetz: Ein Auftrag, der nach 3 Minuten nicht zurück ist, gilt als verloren.
+        job.timer = setTimeout((function (jid, wk) {
+          return function () {
+            var j = pending[jid];
+            if (!j) return;
+            delete pending[jid];
+            wk.busy = false; wk.jobId = 0;
+            j.cb({ error: 'Zeitüberschreitung im Hintergrund-Rechner' });
+            pump();
+          };
+        })(job.id, free), 90000);
         free.postMessage({ id: job.id, fn: job.fn, histMap: job.histMap, opts: job.opts });
       }
     }
     function run(fn, histMap, opts) {
-      if (!ok) return Promise.resolve(fn === 'daily' ? Q.backtest(histMap, opts) : Q.backtestIntraday(histMap, opts));
+      if (!ok) {
+        return new Promise(function (resolve) {
+          // Hauptthread nicht blockieren: Aufträge nacheinander im Leerlauf abarbeiten
+          setTimeout(function () { selbstRechnen({ fn: fn, histMap: histMap, opts: opts, cb: resolve }); }, 0);
+        });
+      }
       return new Promise(function (resolve) {
         queue.push({ id: nextId++, fn: fn, histMap: histMap, opts: opts, cb: resolve });
         pump();
       });
     }
-    return { run: run, size: size };
+    return { run: run, size: size, hintergrund: function () { return ok; } };
   })();
   function btIntraday(map, opts) { return BTPool.run('intraday', map, opts); }
   function btDaily(map, opts) { return BTPool.run('daily', map, opts); }
@@ -2882,6 +2945,334 @@
     return applied;
   }
 
+  /* ================= 🧬 Strategie-Farm: züchten, prüfen, bewähren =================
+   * Eine Population von Strategie-Varianten wird über Generationen gezüchtet. Bewertet wird
+   * ausschließlich auf ungesehenen Zeitscheiben. Der Generationssieger wird NICHT übernommen –
+   * er wird Herausforderer und muss den amtierenden Champion mehrfach auf Daten schlagen, die
+   * es bei seiner Entstehung noch nicht gab. Sonst findet man garantiert einen Zufallssieger. */
+  var GEN_SPACE = {
+    setup: ['ausbruch', 'umkehr'],
+    trigger: { ausbruch: ['kreuzung', 'range'], umkehr: ['ueberdehnung', 'welle'] },
+    interval: ['1m', '5m'],
+    period: [9, 20, 50],
+    confirmBps: [5, 15, 30],
+    lineType: ['ema', 'vwap'],
+    window: ['all', 'open2', 'open4', 'close2'],
+    scalpSL: [15, 20, 30, 'auto'],
+    scalpHold: [15, 30, 60],
+    trendFilter: [true, false],
+    channel: [true, false],
+    mtf: [true, false]
+  };
+  function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
+  function randGene() {
+    var setup = pick(GEN_SPACE.setup);
+    return {
+      setup: setup, trigger: pick(GEN_SPACE.trigger[setup]),
+      interval: pick(GEN_SPACE.interval), period: pick(GEN_SPACE.period),
+      confirmBps: pick(GEN_SPACE.confirmBps), lineType: pick(GEN_SPACE.lineType),
+      window: pick(GEN_SPACE.window), scalpSL: pick(GEN_SPACE.scalpSL),
+      scalpHold: pick(GEN_SPACE.scalpHold), trendFilter: pick(GEN_SPACE.trendFilter),
+      channel: pick(GEN_SPACE.channel), mtf: pick(GEN_SPACE.mtf)
+    };
+  }
+  /** Aktuelle Einstellung als Gen – der amtierende Champion. */
+  function geneFromConfig(c) {
+    var st = setupFromMode(c.mode);
+    return {
+      setup: st.setup, trigger: st.trigger, interval: c.interval === '15m' ? '5m' : (c.interval || '5m'),
+      period: c.period, confirmBps: c.confirmBps, lineType: c.lineType || 'ema',
+      window: c.window || 'all', scalpSL: c.scalpSL === 'auto' ? 'auto' : (c.scalpSL || 20),
+      scalpHold: c.scalpHold || 60, trendFilter: !!c.trendFilter, channel: c.channel !== false, mtf: c.mtf !== false
+    };
+  }
+  function geneKey(g) {
+    return [g.setup, g.trigger, g.interval, g.period, g.confirmBps, g.lineType, g.window,
+      g.scalpSL, g.scalpHold, g.trendFilter ? 1 : 0, g.channel ? 1 : 0, g.mtf ? 1 : 0].join('|');
+  }
+  function geneName(g) {
+    return setupName(modeFromSetup(g.setup, g.trigger, 'laufen'), g.channel) + ' · ' + g.interval +
+      ' · ' + String(g.lineType).toUpperCase() + g.period + ' · ' + (g.confirmBps / 100).toFixed(2) + ' %' +
+      ' · SL ' + (g.scalpSL === 'auto' ? 'auto' : g.scalpSL + ' %') +
+      (g.trendFilter ? ' · Trendfilter' : '') + (g.mtf && g.interval === '1m' ? ' · 5-Min-Bestätigung' : '') +
+      ' · ' + (WINDOW_NAMES[g.window] || g.window);
+  }
+  function mutate(g) {
+    var k = randGene();
+    var out = JSON.parse(JSON.stringify(g));
+    var felder = ['setup', 'interval', 'period', 'confirmBps', 'lineType', 'window', 'scalpSL', 'scalpHold', 'trendFilter', 'channel', 'mtf'];
+    var n = 1 + Math.floor(Math.random() * 2);
+    for (var i = 0; i < n; i++) {
+      var f = pick(felder);
+      out[f] = k[f];
+      if (f === 'setup') out.trigger = pick(GEN_SPACE.trigger[out.setup]);
+    }
+    if (Math.random() < 0.3) out.trigger = pick(GEN_SPACE.trigger[out.setup]);
+    return out;
+  }
+  function crossover(a, b) {
+    var out = {};
+    Object.keys(a).forEach(function (f) { out[f] = Math.random() < 0.5 ? a[f] : b[f]; });
+    if (GEN_SPACE.trigger[out.setup].indexOf(out.trigger) === -1) out.trigger = pick(GEN_SPACE.trigger[out.setup]);
+    return out;
+  }
+  /** Backtest-Optionen eines Gens (identische Rechenlogik wie im Livebetrieb). */
+  function geneOpts(g) {
+    var mode = modeFromSetup(g.setup, g.trigger, 'laufen');
+    var slV = g.scalpSL === 'auto' ? 'auto' : -(g.scalpSL) / 100;
+    var base;
+    if (mode === 'orb') base = { entryMode: 'orb', exitMode: 'confirmed', orbMin: 30, sl: slV, tp: null, trailPct: 0.15, maxHoldMin: 0, cooldownMin: 10, maxPerDay: 10 };
+    else if (mode === 'reversion') base = { entryMode: 'reversion', sl: slV, tp: null, trailPct: 0, maxHoldMin: g.scalpHold, cooldownMin: 5, maxPerDay: 40 };
+    else if (mode === 'wave') base = { entryMode: 'wave', channel: !!g.channel, sl: slV, tp: null, trailPct: 0, maxHoldMin: g.scalpHold, cooldownMin: 3, maxPerDay: 40, trendFilter: true, minQuality: 60 };
+    else base = { entryMode: 'cross', exitMode: 'confirmed', sl: -0.25, tp: 0.35, trailPct: 0, maxHoldMin: 0, cooldownMin: 45, maxPerDay: 10, trendFilter: !!g.trendFilter };
+    var common = labCommonOpts(D.intraday, g.interval);
+    return Object.assign({}, common, base, {
+      period: g.period, confirmBps: g.confirmBps, zThr: zOf(g.confirmBps),
+      lineType: g.lineType, window: g.window, mtf: g.interval === '1m' && !!g.mtf
+    });
+  }
+  /** Fitness: Ergebnis auf ungesehenen Zeitscheiben, bestraft für zu dünne Stichproben. */
+  async function geneFitness(g, ld, folds) {
+    var map = ld.data[g.interval];
+    if (!map || Object.keys(map).length < 3) return null;
+    var span = mapSpan(map);
+    if (!(span[1] > span[0])) return null;
+    var chunk = (span[1] - span[0]) / 5;
+    var warm = 160 * INTERVAL_CFG[g.interval].barMin * 60000;
+    var opts = geneOpts(g);
+    var list = folds || [1, 2, 3, 4];
+    var rets = [], nTr = 0, wins = 0, gw = 0, gl = 0;
+    for (var fi = 0; fi < list.length; fi++) {
+      var f = list[fi];
+      var a = span[0] + chunk * f, b = span[0] + chunk * (f + 1);
+      var r = await btIntraday(sliceMap(map, a, b, warm), opts);
+      if (!r || r.error) { rets.push(null); continue; }
+      var tr = (r.trades || []).filter(function (x) { return x.openT >= a; });
+      var pnl = tr.reduce(function (s, x) { return s + x.pnl; }, 0);
+      rets.push(Math.round(pnl / START_CAPITAL * 10000) / 100);
+      nTr += tr.length;
+      tr.forEach(function (x) { if (x.pnl > 0) { wins++; gw += x.pnl; } else gl += -x.pnl; });
+    }
+    var valid = rets.filter(function (x) { return x !== null; });
+    if (!valid.length) return null;
+    var sum = Math.round(valid.reduce(function (a2, b2) { return a2 + b2; }, 0) * 100) / 100;
+    var pos = valid.filter(function (x) { return x > 0; }).length;
+    var pf = gl > 0 ? Math.round(gw / gl * 100) / 100 : (gw > 0 ? 99 : 0);
+    // Dünne Stichproben werden heruntergewichtet, Konsistenz über die Scheiben belohnt.
+    var fit = sum * (nTr >= 8 ? 1 : nTr / 8) + pos * 0.5;
+    return { fit: Math.round(fit * 100) / 100, ret: sum, folds: rets, trades: nTr,
+      winRate: nTr ? Math.round(wins / nTr * 100) : 0, pf: pf, posFolds: pos };
+  }
+
+  var farmRunning = false, farmPhase = '';
+  function farmCfg() {
+    if (!D.farm) D.farm = { champion: null, challenger: null, top: [], historie: [], generation: 0, at: 0 };
+    return D.farm;
+  }
+  /** Eine Zuchtrunde: Population bewerten, Beste paaren, Sieger als Herausforderer prüfen. */
+  async function runFarm(manual) {
+    var a = autoOptCfg();
+    if (farmRunning || centralRunning || labRunning || autoOptRunning) return;
+    if (!manual && a.farm === false) return;
+    farmRunning = true;
+    var F = farmCfg();
+    var t0 = Date.now();
+    function ph(t) { farmPhase = t; renderFarm(); }
+    try {
+      ph('lädt Kursdaten …');
+      var ld = await loadLabData({ set textContent(v) { ph(v); }, get textContent() { return ''; } });
+      var POP = (a.farmPop || 24), GENS = (a.farmGens || 4);
+      // Startpopulation: Champion, bisherige Bestenliste, Rest zufällig
+      var champ = F.champion ? F.champion.gene : geneFromConfig(D.intraday);
+      var pop = [champ].concat((F.top || []).slice(0, 5).map(function (x) { return x.gene; }));
+      while (pop.length < POP) pop.push(randGene());
+      var seen = {}, bewertet = [];
+      for (var gen = 1; gen <= GENS; gen++) {
+        ph('Generation ' + gen + '/' + GENS + ' – bewertet ' + pop.length + ' Varianten …');
+        var res = await Promise.all(pop.map(function (g) {
+          var k = geneKey(g);
+          if (seen[k]) return Promise.resolve(seen[k]);
+          return geneFitness(g, ld).then(function (r) { seen[k] = r ? { gene: g, res: r } : null; return seen[k]; });
+        }));
+        res.filter(Boolean).forEach(function (x) { if (bewertet.indexOf(x) === -1) bewertet.push(x); });
+        bewertet.sort(function (x, y) { return y.res.fit - x.res.fit; });
+        if (gen === GENS) break;
+        // Nächste Generation: Elite + Kreuzungen + Mutationen + frisches Blut
+        var elite = bewertet.slice(0, 4).map(function (x) { return x.gene; });
+        pop = elite.slice();
+        while (pop.length < POP) {
+          var r1 = Math.random();
+          if (r1 < 0.45 && elite.length >= 2) pop.push(mutate(crossover(pick(elite), pick(elite))));
+          else if (r1 < 0.85 && elite.length) pop.push(mutate(pick(elite)));
+          else pop.push(randGene());
+        }
+        // Ein Vorschlag vom lokalen Modell, mit Begründung
+        if (window.LocalKI && window.LocalKI.model() && bewertet.length) {
+          var vorschlag = await kiGeneVorschlag(bewertet.slice(0, 5));
+          if (vorschlag) pop[pop.length - 1] = vorschlag;
+        }
+      }
+      F.top = bewertet.slice(0, 8).map(function (x) { return { gene: x.gene, res: x.res }; });
+      F.generation = (F.generation || 0) + GENS;
+      F.at = Date.now();
+      F.dauerMin = Math.round((Date.now() - t0) / 60000 * 10) / 10;
+      F.geprueft = Object.keys(seen).length;
+      if (!F.champion) F.champion = { gene: champ, res: (bewertet.filter(function (x) { return geneKey(x.gene) === geneKey(champ); })[0] || {}).res || null, seit: Date.now() };
+      var best = bewertet[0];
+      // Herausforderer aufstellen: nur, wenn er den Champion klar und mit Substanz schlägt
+      if (best && geneKey(best.gene) !== geneKey(F.champion.gene)) {
+        var champRes = (bewertet.filter(function (x) { return geneKey(x.gene) === geneKey(F.champion.gene); })[0] || {}).res;
+        var besser = !champRes || best.res.fit > champRes.fit + 1.0;
+        var genug = best.res.trades >= 12 && best.res.posFolds >= 2;
+        if (besser && genug && (!F.challenger || best.res.fit > F.challenger.res.fit)) {
+          F.challenger = { gene: best.gene, res: best.res, seit: Date.now(), pruefungen: [] };
+        }
+      }
+      F.historie = (F.historie || []);
+      if (best) {
+        F.historie.unshift({ at: Date.now(), name: geneName(best.gene), fit: best.res.fit, ret: best.res.ret, trades: best.res.trades });
+        if (F.historie.length > 40) F.historie = F.historie.slice(0, 40);
+      }
+      // Bewährung: Champion und Herausforderer auf der FRISCHESTEN Scheibe gegeneinander
+      if (F.challenger) {
+        ph('Bewährungsprüfung auf der neuesten Zeitscheibe …');
+        var cR = await geneFitness(F.champion.gene, ld, [4]);
+        var hR = await geneFitness(F.challenger.gene, ld, [4]);
+        if (cR && hR) {
+          F.challenger.pruefungen.push({ at: Date.now(), champ: cR.ret, hera: hR.ret, trades: hR.trades,
+            sieger: hR.ret > cR.ret ? 'herausforderer' : 'champion' });
+          var pr = F.challenger.pruefungen;
+          var urteil = Q.bewaehrungsUrteil(pr);
+          if (urteil === 'uebernehmen') {
+            farmPromote(F);
+          } else if (urteil === 'verwerfen') {
+            var siegeV = pr.filter(function (x) { return x.sieger === 'herausforderer'; }).length;
+            F.challengerVerworfen = { at: Date.now(), name: geneName(F.challenger.gene), grund: 'Bewährung nicht bestanden (' + siegeV + '/' + pr.length + ' Prüfungen gewonnen)' };
+            F.challenger = null;
+          }
+        }
+      }
+      await save();
+      renderFarm();
+      renderTuneLog();
+    } catch (e) {
+      D.farm.fehler = { at: Date.now(), msg: (e && e.message) ? e.message : String(e) };
+    } finally {
+      farmRunning = false; farmPhase = '';
+      renderFarm();
+    }
+  }
+
+  /** Herausforderer übernimmt: Einstellungen setzen, Champion wechseln, alles protokollieren. */
+  function farmPromote(F) {
+    var g = F.challenger.gene;
+    var vorher = JSON.parse(JSON.stringify(D.intraday));
+    D.intraday.mode = modeFromSetup(g.setup, g.trigger, 'laufen');
+    D.intraday.interval = g.interval;
+    D.intraday.period = g.period;
+    D.intraday.confirmBps = g.confirmBps;
+    D.intraday.lineType = g.lineType;
+    D.intraday.window = g.window;
+    D.intraday.scalpSL = g.scalpSL;
+    D.intraday.scalpHold = g.scalpHold;
+    D.intraday.trendFilter = !!g.trendFilter;
+    D.intraday.channel = !!g.channel;
+    D.intraday.mtf = !!g.mtf;
+    var pr = F.challenger.pruefungen;
+    if (!D.tuneLog) D.tuneLog = [];
+    var closedNow = D.trades.filter(function (t) { return t.status === 'closed' && istMess(t); });
+    D.tuneLog.unshift({
+      id: 'farm-' + Date.now(), at: Date.now(), quelle: 'farm',
+      applied: ['🧬 Neuer Champion: ' + geneName(g)],
+      txt: 'Bewährung bestanden: ' + pr.filter(function (x) { return x.sieger === 'herausforderer'; }).length + ' von ' + pr.length +
+        ' Prüfungen gewonnen, zusammen ' + Math.round(pr.reduce(function (s, x) { return s + x.hera; }, 0) * 100) / 100 + ' % gegen ' +
+        Math.round(pr.reduce(function (s, x) { return s + x.champ; }, 0) * 100) / 100 + ' % des Champions, auf Daten nach dem ' + U.dt(F.challenger.seit),
+      konfigVorher: vorher,
+      equityBei: Math.round(equityNow() * 100) / 100,
+      tradesBei: closedNow.length,
+      pnlBei: Math.round(closedNow.reduce(function (a2, t) { return a2 + t.pnl; }, 0) * 100) / 100,
+      konfigNachher: JSON.parse(JSON.stringify(D.intraday))
+    });
+    if (D.tuneLog.length > 60) D.tuneLog = D.tuneLog.slice(0, 60);
+    F.abgeloest = { at: Date.now(), name: geneName(F.champion.gene) };
+    F.champion = { gene: g, res: F.challenger.res, seit: Date.now(), pruefungen: pr };
+    F.challenger = null;
+    syncStrategyUI();
+  }
+
+  /** Das lokale Modell schlägt eine Variante vor – begründet, aber gegen die Whitelist geprüft. */
+  async function kiGeneVorschlag(besten) {
+    try {
+      var kurz = besten.map(function (x) {
+        return { variante: geneName(x.gene), gen: x.gene, wfRenditePct: x.res.ret, trades: x.res.trades, scheibenPlus: x.res.posFolds, profitFaktor: x.res.pf };
+      });
+      var txt = await window.LocalKI.ask(
+        'Du optimierst eine SIMULIERTE Intraday-Strategie. Hier sind die fünf besten Varianten der aktuellen Generation ' +
+        'mit ihren Ergebnissen auf ungesehenen Daten:\n' + JSON.stringify(kurz) + '\n\n' +
+        'Schlage EINE neue Variante vor, die du für aussichtsreicher hältst. Erlaubte Werte:\n' +
+        JSON.stringify(GEN_SPACE) + '\n' +
+        'Antworte ausschließlich mit JSON in exakt dieser Form: ' +
+        '{"setup":"...","trigger":"...","interval":"...","period":9,"confirmBps":15,"lineType":"ema","window":"all",' +
+        '"scalpSL":20,"scalpHold":60,"trendFilter":true,"channel":false,"mtf":true}', 300);
+      if (!txt) return null;
+      var m = txt.match(/\{[\s\S]*\}/);
+      if (!m) return null;
+      var g = JSON.parse(m[0]);
+      // Gegen die Whitelist prüfen – unzulässige Felder werden zufällig ersetzt, nicht übernommen
+      var ok = GEN_SPACE.setup.indexOf(g.setup) !== -1 && GEN_SPACE.trigger[g.setup] &&
+        GEN_SPACE.trigger[g.setup].indexOf(g.trigger) !== -1;
+      if (!ok) return null;
+      var r = randGene();
+      ['interval', 'period', 'confirmBps', 'lineType', 'window', 'scalpSL', 'scalpHold'].forEach(function (f) {
+        if (GEN_SPACE[f].indexOf(g[f]) === -1) g[f] = r[f];
+      });
+      g.trendFilter = g.trendFilter === true; g.channel = g.channel === true; g.mtf = g.mtf === true;
+      g.vonKI = true;
+      return g;
+    } catch (e) { return null; }
+  }
+
+  function renderFarm() {
+    var el = document.getElementById('farmStatus');
+    if (!el || !D) return;
+    var F = farmCfg();
+    if (farmRunning) { el.innerHTML = '<span style="color:var(--acc);">🧬 Farm läuft … ' + U.esc(farmPhase || '') + '</span>'; return; }
+    var h = '';
+    if (F.champion) {
+      h += '<div><b>👑 Champion</b> (seit ' + U.dt(F.champion.seit) + '): ' + U.esc(geneName(F.champion.gene)) +
+        (F.champion.res ? ' <span style="color:var(--muted);">· WF ' + U.signTxt(F.champion.res.ret, ' %') + ' · ' + F.champion.res.trades + ' Trades</span>' : '') + '</div>';
+    }
+    if (F.challenger) {
+      var pr = F.challenger.pruefungen || [];
+      var siege = pr.filter(function (x) { return x.sieger === 'herausforderer'; }).length;
+      h += '<div style="margin-top:4px;"><b>🥊 Herausforderer</b> (seit ' + U.dt(F.challenger.seit) + '): ' + U.esc(geneName(F.challenger.gene)) +
+        '<div style="color:var(--muted);">Bewährung: ' + siege + ' von ' + pr.length + ' Prüfungen gewonnen' +
+        (pr.length ? ' · zuletzt ' + U.signTxt(pr[pr.length - 1].hera, ' %') + ' gegen ' + U.signTxt(pr[pr.length - 1].champ, ' %') : '') +
+        ' · Übernahme ab 3 Prüfungen mit 2 Siegen und 15 Trades</div></div>';
+    } else if (F.challengerVerworfen) {
+      h += '<div style="margin-top:4px; color:var(--muted);">Letzter Herausforderer verworfen (' + U.dt(F.challengerVerworfen.at) + '): ' + U.esc(F.challengerVerworfen.grund) + '</div>';
+    } else if (F.champion) {
+      h += '<div style="margin-top:4px; color:var(--muted);">Kein Herausforderer – bisher hat keine Variante den Champion klar geschlagen.</div>';
+    }
+    if (F.at) {
+      h += '<div style="color:var(--muted); margin-top:4px;">Letzte Zucht ' + U.dt(F.at) + ' · ' + (F.geprueft || 0) +
+        ' Varianten geprüft · Generation ' + (F.generation || 0) + ' · ' + (F.dauerMin || 0) + ' Min Rechenzeit</div>';
+    } else {
+      h += '<div style="color:var(--muted);">Noch keine Zuchtrunde gelaufen.</div>';
+    }
+    if (F.top && F.top.length) {
+      h += '<table class="tbl" style="margin-top:10px;"><tr><th>Rang</th><th>Variante</th><th>WF-Rendite</th><th>Scheiben +</th><th>Trades</th><th>Treffer</th><th>PF</th></tr>';
+      F.top.slice(0, 6).forEach(function (x, i) {
+        h += '<tr' + (i === 0 ? ' style="font-weight:600;"' : '') + '><td>#' + (i + 1) + '</td><td>' + U.esc(geneName(x.gene)) +
+          (x.gene.vonKI ? ' <span style="color:var(--acc);">🧠</span>' : '') + '</td>' +
+          '<td class="' + U.signCls(x.res.ret) + '">' + U.signTxt(x.res.ret, ' %') + '</td>' +
+          '<td>' + x.res.posFolds + '/4</td><td>' + x.res.trades + '</td><td>' + x.res.winRate + ' %</td><td>' + x.res.pf + '</td></tr>';
+      });
+      h += '</table>';
+    }
+    el.innerHTML = h;
+  }
+
   /* ================= 🧭 Regime-Automatik: die lokale KI wählt das Setup =================
    * Ablauf: Die App MISST die Marktlage (Trendanteil, Überdehnung, Wellen-Score, Kanal-Anteil,
    * Vola), das lokale Modell WÄHLT daraus eines von vier Setups, die App PRÜFT die Antwort
@@ -3076,6 +3467,10 @@
     if (D.autoOpt.everyH == null) D.autoOpt.everyH = 8;
     if (D.autoOpt.regime == null) D.autoOpt.regime = true;
     if (D.autoOpt.regimeMin == null) D.autoOpt.regimeMin = 60;
+    if (D.autoOpt.farm == null) D.autoOpt.farm = true;
+    if (D.autoOpt.farmH == null) D.autoOpt.farmH = 12;
+    if (D.autoOpt.farmPop == null) D.autoOpt.farmPop = 24;
+    if (D.autoOpt.farmGens == null) D.autoOpt.farmGens = 4;
     return D.autoOpt;
   }
   var autoOptRunning = false, autoOptPhase = '';
@@ -3550,6 +3945,28 @@
       rBtn.addEventListener('click', function () { runRegime(true); });
       renderRegime();
     })();
+    /* 🧬 Strategie-Farm verkabeln */
+    (function () {
+      var fOn = document.getElementById('aoFarm'), fBtn = document.getElementById('farmBtn'), fPop = document.getElementById('aoFarmPop');
+      if (!fOn) return;
+      var a2 = autoOptCfg();
+      fOn.checked = a2.farm !== false;
+      fPop.value = String(a2.farmPop || 24);
+      fOn.addEventListener('change', function () { autoOptCfg().farm = fOn.checked; save(); renderFarm(); });
+      fPop.addEventListener('change', function () { autoOptCfg().farmPop = parseInt(fPop.value, 10); save(); });
+      fBtn.addEventListener('click', function () { runFarm(true); });
+      renderFarm();
+    })();
+    // Farm-Takt: rechenintensiv, deshalb nur außerhalb der Handelszeit
+    setInterval(function () {
+      var a3 = autoOptCfg();
+      if (a3.farm === false || farmRunning || autoOptRunning || centralRunning || labRunning) return;
+      if (window.Dash.marketOpen()) return;
+      if (Date.now() - (a3.lastFarm || 0) < (a3.farmH || 12) * 3600000) return;
+      a3.lastFarm = Date.now();
+      runFarm(false);
+    }, 5 * 60000);
+
     // Takt: kurz nach Handelsbeginn und danach stündlich, solange die Börse offen ist
     setInterval(function () {
       var a = autoOptCfg();

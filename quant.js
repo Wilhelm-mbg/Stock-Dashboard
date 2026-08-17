@@ -924,6 +924,24 @@
     return channelFit(closes, N || 120, endI);
   }
 
+  /** Bewährungs-Urteil für die Strategie-Farm.
+   *  pruefungen: [{champ, hera, trades, sieger}] – jede Prüfung auf Daten, die es bei der
+   *  Entstehung des Herausforderers noch nicht gab.
+   *  Rückgabe: 'uebernehmen' | 'verwerfen' | 'weiter'.
+   *  Bewusst streng: Ein einzelner Sieg ist Zufall, erst die Wiederholung ist ein Argument. */
+  function bewaehrungsUrteil(pruefungen, min) {
+    min = min || { pruefungen: 3, siege: 2, trades: 15, abbruchNach: 4, maxSiegeAbbruch: 1 };
+    var pr = pruefungen || [];
+    var siege = 0, sumH = 0, sumC = 0, trades = 0;
+    for (var i = 0; i < pr.length; i++) {
+      if (pr[i].sieger === 'herausforderer') siege++;
+      sumH += pr[i].hera || 0; sumC += pr[i].champ || 0; trades += pr[i].trades || 0;
+    }
+    if (pr.length >= min.pruefungen && siege >= min.siege && sumH > sumC && trades >= min.trades) return 'uebernehmen';
+    if (pr.length >= min.abbruchNach && siege <= min.maxSiegeAbbruch) return 'verwerfen';
+    return 'weiter';
+  }
+
   /** Kosten-Breakeven-Filter: Kann die typische Bewegung die Handelskosten schlagen?
    *  Rückgabe: {ok, needPct, havePct} – Bewegungen in % des Basiswerts. */
   function edgeCheck(closes, barsInHold, roundTripPct, omega, minEdge) {
@@ -1276,7 +1294,7 @@
     reversionSignal: reversionSignal, edgeCheck: edgeCheck, waveQuality: waveQuality,
     regressionChannel: regressionChannel, channelFit: channelFit, bestChannel: bestChannel,
     channelValid: channelValid, CHAN_MIN: CHAN_MIN, varianceRatio: varianceRatio,
-    channelRef: channelRef, projectChannel: projectChannel,
+    channelRef: channelRef, projectChannel: projectChannel, bewaehrungsUrteil: bewaehrungsUrteil,
     degapCloses: degapCloses, degapBars: degapBars,
     computeStats: computeStats, bootstrapTrades: bootstrapTrades
   };
