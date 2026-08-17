@@ -122,5 +122,39 @@ ok(U2([{ champ: 1, hera: 5, trades: 20, sieger: 'herausforderer' },
        { champ: 5, hera: 1, trades: 20, sieger: 'champion' },
        { champ: 5, hera: 1, trades: 20, sieger: 'champion' }]) === 'verwerfen', 'ein Sieg von vier reicht nicht');
 
+
+console.log('9) Zeitfenster kennen die US-Winterzeit');
+// Sommer: Eröffnung 13:30 UTC · Winter: 14:30 UTC
+var sommer = Date.UTC(2026, 6, 15, 13, 45);   // 15.07., 15 Min nach Eröffnung
+var winter = Date.UTC(2026, 11, 15, 14, 45);  // 15.12., 15 Min nach Eröffnung
+ok(Q.usSommerzeit(new Date(sommer)) === true, 'Juli ist Sommerzeit');
+ok(Q.usSommerzeit(new Date(winter)) === false, 'Dezember ist Winterzeit');
+ok(Q.minutenSeitOeffnung(sommer) === 15, 'Sommer: 15 Minuten nach Eröffnung', Q.minutenSeitOeffnung(sommer));
+ok(Q.minutenSeitOeffnung(winter) === 15, 'Winter: 15 Minuten nach Eröffnung', Q.minutenSeitOeffnung(winter));
+ok(Q.inWindow(sommer, 'open2') === true, 'Sommer: früher Handel liegt in open2');
+ok(Q.inWindow(winter, 'open2') === true, 'Winter: früher Handel liegt in open2');
+ok(Q.inWindow(Date.UTC(2026, 11, 15, 18, 30), 'close2') === false, 'Winter: 18:30 UTC ist NICHT die Schlussphase');
+ok(Q.inWindow(Date.UTC(2026, 11, 15, 20, 30), 'close2') === true, 'Winter: 20:30 UTC IST die Schlussphase');
+ok(Q.inWindow(Date.UTC(2026, 6, 15, 19, 30), 'close2') === true, 'Sommer: 19:30 UTC ist die Schlussphase');
+// Grenzfälle der Umstellung
+ok(Q.usSommerzeit(new Date(Date.UTC(2026, 2, 7, 12, 0))) === false, 'vor der Märzumstellung: Winterzeit');
+ok(Q.usSommerzeit(new Date(Date.UTC(2026, 2, 9, 12, 0))) === true, 'nach der Märzumstellung: Sommerzeit');
+ok(Q.usSommerzeit(new Date(Date.UTC(2026, 10, 2, 12, 0))) === false, 'nach der Novemberumstellung: Winterzeit');
+
+console.log('10) Volatilität wird auf das Bar-Raster hochgerechnet');
+function reihe(stepMs) {
+  var r = lcg2(7), b = [], t = Date.UTC(2026, 5, 1, 13, 30), p = 100;
+  for (var i = 0; i < 400; i++) { p *= 1 + r() * 0.002; b.push([t + i * stepMs, p, 900000]); }
+  return b;
+}
+function lcg2(seed) { var s = seed; return function () { s = (s * 1103515245 + 12345) % 2147483648; return s / 2147483648 - 0.5; }; }
+ok(Q.barMinOf(reihe(60000)) === 1, '1-Minuten-Raster wird erkannt');
+ok(Q.barMinOf(reihe(300000)) === 5, '5-Minuten-Raster wird erkannt');
+var cl = reihe(60000).map(function (b) { return b[1]; });
+var ivFalsch = Q.histVolIntraday(cl, 78), ivRichtig = Q.histVolIntraday(cl, 390);
+// (der 78er-Wert läuft hier in die Untergrenze von 10 % – der Unterschied ist real noch größer)
+ok(ivRichtig > ivFalsch * 1.8, 'Vola auf 1-Min-Basis ist deutlich höher als mit 5-Min-Annahme',
+  (ivFalsch * 100).toFixed(1) + ' % vs ' + (ivRichtig * 100).toFixed(1) + ' %');
+
 console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
 process.exit(fails ? 1 : 0);

@@ -1176,18 +1176,39 @@
     return { ok: havePct >= needPct * minEdge, needPct: Math.round(needPct * 100) / 100, havePct: Math.round(havePct * 100) / 100 };
   }
 
-  /** Handelszeitfenster (UTC-Minuten, US-Sommerzeit) */
+  /** Handelszeitfenster – relativ zur tatsächlichen US-Eröffnung, nicht fest in UTC.
+   *  Die USA schalten am zweiten Sonntag im März auf Sommerzeit und am ersten Sonntag im
+   *  November zurück; die Börse öffnet dann 14:30 statt 13:30 UTC. Feste UTC-Grenzen
+   *  verschieben die Fenster im Winter um eine volle Stunde. */
   var WINDOWS = {
     all:    null,
-    open2:  [13 * 60 + 30, 15 * 60 + 30], // 15:30–17:30 Berlin
-    open4:  [13 * 60 + 30, 17 * 60 + 30], // 15:30–19:30 Berlin
-    close2: [18 * 60, 20 * 60]            // 20:00–22:00 Berlin
+    open2:  [0, 120],      // erste 2 Stunden nach Eröffnung
+    open4:  [0, 240],      // erste 4 Stunden
+    close2: [270, 390]     // letzte 2 Stunden (Handelstag = 390 Minuten)
   };
+  /** Sommerzeit in den USA? (2. Sonntag März – 1. Sonntag November) */
+  function usSommerzeit(d) {
+    var jahr = d.getUTCFullYear(), m = d.getUTCMonth();
+    if (m < 2 || m > 10) return false;
+    if (m > 2 && m < 10) return true;
+    function nterSonntag(monat, n) {
+      var t = new Date(Date.UTC(jahr, monat, 1));
+      var tage = (7 - t.getUTCDay()) % 7 + 1 + (n - 1) * 7;   // 1-basierter Tag des n-ten Sonntags
+      return Date.UTC(jahr, monat, tage, 7, 0);               // Umstellung 2 Uhr Ortszeit ≈ 7 UTC
+    }
+    if (m === 2) return d.getTime() >= nterSonntag(2, 2);
+    return d.getTime() < nterSonntag(10, 1);
+  }
+  /** Minuten seit US-Handelsbeginn (negativ vor der Eröffnung). */
+  function minutenSeitOeffnung(tMs) {
+    var d = new Date(tMs);
+    var oeffnung = (usSommerzeit(d) ? 13 : 14) * 60 + 30;
+    return d.getUTCHours() * 60 + d.getUTCMinutes() - oeffnung;
+  }
   function inWindow(tMs, preset) {
     var w = WINDOWS[preset || 'all'];
     if (!w) return true;
-    var d = new Date(tMs);
-    var m = d.getUTCHours() * 60 + d.getUTCMinutes();
+    var m = minutenSeitOeffnung(tMs);
     return m >= w[0] && m < w[1];
   }
 
@@ -1237,6 +1258,18 @@
    * histMap: {SYM: [[t,close]]} (5-Min-Bars, mehrere Tage/Wochen)
    * opts: {capital, period, confirmBps, budgetPct, sl, tp, cooldownMin, maxPerDay}
    */
+  /** Bar-Länge in Minuten aus der Serie ableiten – Median der Abstände innerhalb eines Tages. */
+  function barMinOf(bars, ci) {
+    var d = [], i, von = Math.max(1, (ci || bars.length - 1) - 40);
+    for (i = von; i <= Math.min(bars.length - 1, (ci || bars.length - 1)); i++) {
+      var dt = (bars[i][0] - bars[i - 1][0]) / 60000;
+      if (dt > 0 && dt <= 120) d.push(dt);
+    }
+    if (!d.length) return 5;
+    d.sort(function (a, b) { return a - b; });
+    return d[Math.floor(d.length / 2)] || 5;
+  }
+
   function backtestIntraday(histMap, opts) {
     opts = opts || {};
     var capital = opts.capital || 10000;
@@ -1394,8 +1427,10 @@
           var os2 = orbState[sym];
           if (!os2 || !os2.done) continue;
           var confO = confirmBps / 10000;
-          if (spot > os2.high * (1 + confO) && !os2.traded.call) { dir = 'call'; os2.traded.call = true; }
-          else if (spot < os2.low * (1 - confO) && !os2.traded.put) { dir = 'put'; os2.traded.put = true; }
+          // WICHTIG: Die Tageschance wird erst nach dem tatsächlichen Kauf als verbraucht
+          // markiert. Sonst frisst ein von einem Filter abgelehnter Ausbruch den Trade des Tages.
+          if (spot > os2.high * (1 + confO) && !os2.traded.call) dir = 'call';
+          else if (spot < os2.low * (1 - confO) && !os2.traded.put) dir = 'put';
           else continue;
         } else {
           var sig = signalCross(win, LINE, period, confirmBps);
@@ -1427,7 +1462,11 @@
           }
         }
         var closesUpto = bars.slice(Math.max(0, ci - 300), ci + 1).map(function (b) { return b[1]; });
-        var iv = Math.min(1.5, Math.max(0.15, histVolIntraday(closesUpto, 78) * 1.1));
+        // Volatilität muss auf das Bar-Raster hochgerechnet werden: 390 Handelsminuten je Tag
+        // geteilt durch die Bar-Länge. Ein fester Wert (78 = 5-Min-Bars) unterschätzt die Vola
+        // auf 1-Min-Daten um den Faktor √5 – und macht damit die Scheine zu billig.
+        var barsProTag = Math.max(1, Math.round(390 / Math.max(1, barMinOf(bars, ci))));
+        var iv = Math.min(1.5, Math.max(0.15, histVolIntraday(closesUpto, barsProTag) * 1.1));
         var strike = spot * (1 + (dir === 'call' ? OTM : -OTM));
         var w = { strike: strike, expiry: t + EXPD * 86400000, iv: iv, ratio: RATIO };
         var spx = effSpread(iv, SP) + slipOf(iv, SLIPB); // vola-abhängiger Spread + Slippage
@@ -1466,6 +1505,7 @@
         if (qty < 1 || cash < cost) continue;
         cash -= cost;
         open[sym] = { dir: dir, w: w, qty: qty, entry: ask, cost: cost, openT: t, spx: spx, chN: chN, chan: chRef, sl: slT };
+        if (ENTRY === 'orb' && orbState[sym]) orbState[sym].traded[dir] = true;   // Tageschance erst jetzt verbraucht
         lastTrade[sym] = t;
         dayCount[dk] = (dayCount[dk] || 0) + 1;
       }
@@ -1511,7 +1551,8 @@
     warrantOmega: warrantOmega, warrantAufgeld: warrantAufgeld, PROFILES: PROFILES,
     underlyingAtTarget: underlyingAtTarget,
     backtest: backtest, RATIO: RATIO,
-    maCross: maCross, histVolIntraday: histVolIntraday, backtestIntraday: backtestIntraday,
+    maCross: maCross, histVolIntraday: histVolIntraday, barMinOf: barMinOf, backtestIntraday: backtestIntraday,
+    usSommerzeit: usSommerzeit, minutenSeitOeffnung: minutenSeitOeffnung,
     resampleBars: resampleBars, mtfAgrees: mtfAgrees, autoStop: autoStop,
     signalCross: signalCross, vwapLine: vwapLine, inWindow: inWindow,
     effSpread: effSpread, slipOf: slipOf,

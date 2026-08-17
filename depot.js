@@ -821,13 +821,15 @@
           return out;
         })()
       },
-      kurse: {
+      // Kursdaten nur schreiben, wenn wirklich welche da sind – sonst überschreibt ein
+      // Export direkt nach dem Start die guten Daten des Vortags mit einer leeren Datei.
+      kurse: (Object.keys(LASTBARS).length || Object.keys(TAGES_CACHE).length) ? {
         exportiert: new Date().toISOString(),
         intervall: D.intraday.interval || '5m',
         hinweis: 'bars = Serien des letzten Intraday-Scans [t,close,volumen]; tages = Tagesschluss-Historie [t,close]. Mit engine.js (identische Rechenlogik der App) direkt backtestbar.',
         bars: LASTBARS,
         tages: TAGES_CACHE
-      },
+      } : null,
       csv: csvString()
     };
     try { return await window.api.exportAnalysis(payload); } catch (e) { return null; }
@@ -1313,8 +1315,10 @@
               rb.forEach(function (b) { if (b[1] > orbHi) orbHi = b[1]; if (b[1] < orbLo) orbLo = b[1]; });
               var confO = (cfg.confirmBps || 15) / 10000;
               if (!D.orb || D.orb.day !== today) D.orb = { day: today, traded: {} };
-              if (spot > orbHi * (1 + confO) && !D.orb.traded[sym + '|call']) { dir = 'call'; D.orb.traded[sym + '|call'] = true; orbInfo = { hi: orbHi, lo: orbLo }; }
-              else if (spot < orbLo * (1 - confO) && !D.orb.traded[sym + '|put']) { dir = 'put'; D.orb.traded[sym + '|put'] = true; orbInfo = { hi: orbHi, lo: orbLo }; }
+              // Die Tageschance wird erst nach dem tatsächlichen Kauf verbraucht (siehe unten),
+              // sonst frisst ein von einem Filter abgelehnter Ausbruch den Trade des Tages.
+              if (spot > orbHi * (1 + confO) && !D.orb.traded[sym + '|call']) { dir = 'call'; orbInfo = { hi: orbHi, lo: orbLo }; }
+              else if (spot < orbLo * (1 - confO) && !D.orb.traded[sym + '|put']) { dir = 'put'; orbInfo = { hi: orbHi, lo: orbLo }; }
             }
           }
         } else if (isWave) {
@@ -1475,6 +1479,7 @@
               : 'Szenario: kurzfristige ' + (dir === 'call' ? 'Aufwärts' : 'Abwärts') + 'bewegung nach Durchbruch. Exit-Regeln: Stop-Loss −25 % / Take-Profit +35 %, Gegen-Durchbruch, Glattstellung zum Tagesschluss.',
           status: 'open'
         };
+        if (isOrb && D.orb) D.orb.traded[sym + '|' + dir] = true;   // Tageschance erst jetzt verbraucht
         D.positions.push(trade);
         D.trades.unshift(trade);
         notifyTrade(trade, 'open');

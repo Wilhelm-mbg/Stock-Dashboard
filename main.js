@@ -277,12 +277,18 @@ function updSend(patch) {
     try { mainWin.webContents.send('update-state', updState); } catch (e) { /* Fenster weg */ }
   }
 }
+let updFehler = null;
 function setupUpdater() {
-  if (autoUpd || !app.isPackaged) return null;   // im Entwicklungsmodus gibt es nichts zu aktualisieren
+  // WICHTIG: Ein bereits eingerichteter Updater wird ZURÜCKGEGEBEN, nicht mit null quittiert.
+  // Vorher meldete der Knopf "Update-Modul nicht verfügbar", sobald der Start-Timer den
+  // Updater schon angelegt hatte – obwohl alles funktionierte.
+  if (autoUpd) return autoUpd;
+  if (!app.isPackaged) return null;              // im Entwicklungsmodus gibt es nichts zu aktualisieren
   try {
     autoUpd = require('electron-updater').autoUpdater;
   } catch (e) {
-    updState = { state: 'error', version: null, pct: 0, msg: 'Update-Modul fehlt', at: Date.now() };
+    updFehler = (e && e.message) ? e.message : String(e);
+    updState = { state: 'error', version: null, pct: 0, msg: 'Update-Modul fehlt: ' + updFehler, at: Date.now() };
     return null;
   }
   autoUpd.autoDownload = true;            // still im Hintergrund laden …
@@ -299,7 +305,9 @@ function setupUpdater() {
 ipcMain.handle('update-state', async () => Object.assign({ packaged: app.isPackaged, current: app.getVersion() }, updState));
 ipcMain.handle('update-check', async () => {
   const u = setupUpdater();
-  if (!u) return { ok: false, packaged: app.isPackaged, msg: app.isPackaged ? 'Update-Modul nicht verfügbar' : 'Läuft aus dem Quellcode – Updates gibt es nur in der installierten Version.' };
+  if (!u) return { ok: false, packaged: app.isPackaged,
+    msg: !app.isPackaged ? 'Läuft aus dem Quellcode – Updates gibt es nur in der installierten Version.'
+      : ('Update-Modul nicht ladbar' + (updFehler ? ': ' + updFehler : '')) };
   try { await u.checkForUpdates(); return { ok: true }; }
   catch (e) { updSend({ state: 'error', msg: 'Update-Fehler: ' + ((e && e.message) || e) }); return { ok: false, msg: String((e && e.message) || e) }; }
 });
