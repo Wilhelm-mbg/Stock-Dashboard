@@ -655,7 +655,7 @@
 
       <div class="auto-row">
         <div class="auto-head">
-          <label title="Züchtet außerhalb der Handelszeit Strategie-Varianten und stellt Herausforderer auf">🧬 Strategie-Farm<span class="switch"><input type="checkbox" id="aoFarm" checked><span class="knob"></span></span></label>
+          <label title="Züchtet alle 12 Stunden bei geschlossener Börse. Der Suchraum erweitert sich selbst, wenn der Sieger am Rand einer Werteliste sitzt.">🧬 Strategie-Farm<span class="switch"><input type="checkbox" id="aoFarm" checked><span class="knob"></span></span></label>
           <select id="aoFarmPop" class="tiny-sel">
             <option value="12">12 Varianten</option>
             <option value="24" selected>24 Varianten</option>
@@ -663,6 +663,11 @@
           </select>
           <button class="btn ghost tiny" id="farmBtn">jetzt züchten</button>
         </div>
+        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-top:8px;">
+          <input type="text" id="farmIdee" placeholder="Eigene Idee testen, z. B. „Umkehr am Wellental, 5 Min, EMA50, Stop 30 %“" style="flex:1; min-width:280px; font-size:12px;">
+          <button class="btn ghost tiny" id="farmSaatBtn">einreichen</button>
+        </div>
+        <div id="farmSaatStatus" style="font-size:11.5px; color:var(--muted); margin-top:4px;"></div>
         <div id="farmStatus" class="auto-status"></div>
       </div>
 

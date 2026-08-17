@@ -95,7 +95,8 @@
         '1. Richtung widerspricht trendEMA100 oder der Trendkanal-Steigung → nein.\n' +
         '2. kostenCheck: typischeBewegungPct unter dem 1,5-fachen von noetigPct → nein (Kosten fressen den Vorteil).\n' +
         '3. eventIn24h ist ein wichtiges Makro-Event (FOMC, CPI, NFP) → nein.\n' +
-        '4. tagesPnlPct unter −3 → nein (nie Verlusten hinterherhandeln).\n' +
+        '4. tagesPnlPct unter −3 UND tradesHeute mindestens 3 → nein (nie Verlusten hinterherhandeln). ' +
+        'Bei weniger als 3 eigenen Trades heute ist der Tageswert nicht aussagekräftig – dann ignoriere Regel 4.\n' +
         '5. zScore extrem (Betrag über 3,5) → eher Absturz/Nachricht als Welle → nein.\n' +
         '6. letzteBewegungenPct zeigen einen einseitigen Sturz ohne Stabilisierung → nein.\n' +
         '7. wellenScore unter 65 oder trendkanal.positionImKanal nicht nahe am Rand → groesse höchstens 1.0.\n' +

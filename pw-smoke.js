@@ -323,6 +323,21 @@ const path = require('path');
   check('Farm hat mehrere Varianten geprüft', farmData.geprueft >= 5);
   check('Herausforderer wird NICHT sofort übernommen', !farmData.challenger || farmData.challenger.pruefungen.length <= 1);
 
+  // Farm-Saat: eigene Idee einreichen (ohne lokales Modell greift die Textauswertung)
+  check('Eingabefeld für eigene Ideen vorhanden', await page.locator('#farmIdee').count() === 1);
+  await page.fill('#farmIdee', 'Umkehr am Wellental, 5m, EMA50, Stop 30 %');
+  await page.click('#farmSaatBtn');
+  await page.waitForTimeout(1200);
+  const saatTxt = await page.locator('#farmSaatStatus').innerText();
+  check('Idee wird angenommen und übersetzt', saatTxt.indexOf('Aufgenommen') !== -1);
+  check('Idee trifft das gewünschte Setup', /Umkehr/.test(saatTxt) && /5m/.test(saatTxt));
+  const saatD = await page.evaluate(async () => (await window.api.storeGet('depot')).farm);
+  check('Idee steht auf der Warteliste', !!saatD && Array.isArray(saatD.saat) && saatD.saat.length === 1);
+  check('Idee ist als Saat markiert', !!saatD.saat[0].saat && saatD.saat[0].period === 50);
+  await page.click('#farmSaatBtn');
+  await page.waitForTimeout(600);
+  check('Leere Eingabe wird abgewiesen', (await page.locator('#farmSaatStatus').innerText()).indexOf('Beschreibe') !== -1);
+
   // Automatische Updates: Schalter, Prüfung, Installations-Knopf
   await page.click('#settingsBtn');
   await page.waitForTimeout(400);

@@ -994,6 +994,11 @@
     return buf[buf.length - 1];
   }
 
+  /** Stand der Rechengrundlage. Wird hochgezählt, sobald sich etwas ändert, das alte
+   *  Backtest-Ergebnisse ungültig macht (z. B. die Vola-Skalierung in 7.10). Die Farm
+   *  verwirft dann ihren Champion-Nachweis und lässt ihn neu antreten. */
+  var RECHENSTAND = 3;
+
   var KANAL_MIN = { touchJeSeite: 3, dichte: 2.5, wechsel: 2, deckung: 0.90, enge: 0.85, vr: 0.35, acf: -0.65, score: 50 };
 
   /** Kanal-Erkennung: Der Chart wird gedanklich so lange gedreht, bis das Kursband am
@@ -1152,14 +1157,19 @@
    *  Rückgabe: 'uebernehmen' | 'verwerfen' | 'weiter'.
    *  Bewusst streng: Ein einzelner Sieg ist Zufall, erst die Wiederholung ist ein Argument. */
   function bewaehrungsUrteil(pruefungen, min) {
-    min = min || { pruefungen: 3, siege: 2, trades: 15, abbruchNach: 4, maxSiegeAbbruch: 1 };
+    min = min || { pruefungen: 3, siege: 2, trades: 15, abbruchNach: 4, maxSiegeAbbruch: 1, spanneStd: 20 };
     var pr = pruefungen || [];
     var siege = 0, sumH = 0, sumC = 0, trades = 0;
     for (var i = 0; i < pr.length; i++) {
       if (pr[i].sieger === 'herausforderer') siege++;
       sumH += pr[i].hera || 0; sumC += pr[i].champ || 0; trades += pr[i].trades || 0;
     }
-    if (pr.length >= min.pruefungen && siege >= min.siege && sumH > sumC && trades >= min.trades) return 'uebernehmen';
+    // Drei Prüfungen innerhalb weniger Minuten sind KEINE Bewährung – sie laufen auf
+    // praktisch denselben Daten. Zwischen erster und letzter Prüfung muss echte Zeit liegen.
+    var spanneStd = (pr.length >= 2 && pr[0].at && pr[pr.length - 1].at)
+      ? (pr[pr.length - 1].at - pr[0].at) / 3600000 : 0;
+    var langGenug = spanneStd >= (min.spanneStd === undefined ? 20 : min.spanneStd);
+    if (pr.length >= min.pruefungen && siege >= min.siege && sumH > sumC && trades >= min.trades && langGenug) return 'uebernehmen';
     if (pr.length >= min.abbruchNach && siege <= min.maxSiegeAbbruch) return 'verwerfen';
     return 'weiter';
   }
@@ -1561,7 +1571,7 @@
     channelValid: channelValid, CHAN_MIN: CHAN_MIN, varianceRatio: varianceRatio,
     channelRef: channelRef, projectChannel: projectChannel, bewaehrungsUrteil: bewaehrungsUrteil,
     trendChannel: trendChannel, projectTrendChannel: projectTrendChannel, findPivots: findPivots,
-    KANAL_MIN: KANAL_MIN, degapBarArray: degapBarArray,
+    KANAL_MIN: KANAL_MIN, RECHENSTAND: RECHENSTAND, degapBarArray: degapBarArray,
     degapCloses: degapCloses, degapBars: degapBars,
     computeStats: computeStats, bootstrapTrades: bootstrapTrades
   };
