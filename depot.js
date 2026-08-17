@@ -411,9 +411,10 @@
       // Kanal (nur im Umkehr-Setup mit Auslöser Wellental und aktivem Kanalfilter)
       var chan = null, chanFail = '';
       if (cfg.mode === 'wave' && cfg.channel !== false) {
-        var dgS = Q.degapBars(bars);
-        chan = Q.bestChannel(dgS.closes, undefined, { highs: dgS.highs, lows: dgS.lows });
-        if (!chan) chanFail = ' · 📐 Kein belastbarer Kanal – die Güteprüfung ist durchgefallen (kein Kanal ist ehrlicher als ein erfundener).';
+        var dgS = Q.degapBarArray(bars);
+        chan = Q.trendChannel(dgS);
+        if (chan && !chan.gueltig) { chanFail = ' · 📐 Kanal-Entwurf vorhanden, aber durchgefallen (Güte ' + chan.score + '/100, Berührungen ' + chan.touchUnten + '/' + chan.touchOben + ').'; chan = null; }
+        else if (!chan) chanFail = ' · 📐 Kein Kanal erkennbar – kein Kanal ist ehrlicher als ein erfundener.';
       }
       var t0 = bars[0][0], t1 = bars[bars.length - 1][0];
       var marks = D.trades.filter(function (t) { return t.sym === sym && t.openT >= t0 && t.openT <= t1; });
@@ -422,10 +423,11 @@
       var info = document.getElementById('scInfo');
       info.innerHTML = 'Leitlinie: <b>' + (cfg.lineType === 'vwap' ? 'VWAP' : 'EMA' + cfg.period) + '</b> · Zeitrahmen ' + (cfg.interval || '5m') +
         (chan
-          ? ' · 📐 Kanal über <b>' + chan.N + ' Bars</b> (' + { up: 'aufwärts', down: 'abwärts', flat: 'seitwärts' }[chan.trend] + ')' +
-            ': Position <b>' + Math.round(chan.pos * 100) + ' %</b>, Breite ' + chan.widthPct + ' %, Güte <b>' + chan.quality + '/100</b>' +
-            ' <span style="color:var(--muted);">(Berührungen ' + chan.touchUp + '/' + chan.touchLo + ' · Wechsel ' + chan.wechsel +
-            ' · Rückkehr-Maß ' + chan.vr + ' · R² ' + chan.r2 + (chan.hl ? ' · Kanten an Hoch/Tief' : '') + ')</span>'
+          ? ' · 📐 <b>' + { aufwaerts: 'Aufwärtskanal', abwaerts: 'Abwärtskanal', seitwaerts: 'Seitwärtskorridor' }[chan.typ] +
+            '</b> über ' + chan.N + ' Bars: Position <b>' + Math.round(chan.pos * 100) + ' %</b>, Breite ' + chan.breitePct +
+            ' %, Güte <b>' + chan.score + '/100</b>' + (chan.ausbruch ? ' · <b>Ausbruch nach ' + chan.ausbruch + '</b>' : '') +
+            ' <span style="color:var(--muted);">(Berührungen ' + chan.touchUnten + '/' + chan.touchOben + ' · Seitenwechsel ' + chan.wechsel +
+            ' · Deckung ' + Math.round(chan.deckung * 100) + ' % · Enge ' + chan.enge + (chan.hl ? ' · Linien an Hoch/Tief' : '') + ')</span>'
           : (chanFail || ' · Kanal nur im 🔄 Umkehr-Setup mit Auslöser Wellental')) +
         ' · eigene Trades im Bild: <b>' + marks.length + '</b>';
     } catch (e) {
@@ -458,20 +460,29 @@
       var tx = x0 + (x1 - x0) * xi / 3;
       html += '<text x="' + X(tx).toFixed(1) + '" y="' + (H - 5) + '" text-anchor="' + (xi === 0 ? 'start' : xi === 3 ? 'end' : 'middle') + '" fill="var(--muted)" font-size="9.5">' + fmtTimeTick(tx, x1 - x0) + '</text>';
     }
-    // Trendkanal als Band (Gerade über das gesamte Fenster rekonstruiert)
+    // Trendkanal: die beiden Geraden über das Fenster, in dem sie ermittelt wurden
     if (chan) {
-      var n = bars.length, span = Math.min(n - 1, 300);
+      var n = bars.length;
       var stepPx = plotW / Math.max(1, n - 1);
-      var slopePerBar = chan.slopePct / 100 * chan.mid;
-      function bandY(i, off) { return Y(chan.mid + off + slopePerBar * (i - (n - 1))); }
-      var up = [], dn = [];
-      for (var i = 0; i < n; i++) {
-        up.push((i ? 'L' : 'M') + (padL + i * stepPx).toFixed(1) + ' ' + bandY(i, 2 * chan.sd).toFixed(1));
-        dn.push((padL + (n - 1 - i) * stepPx).toFixed(1) + ' ' + bandY(n - 1 - i, -2 * chan.sd).toFixed(1));
+      // chan.endI ist der letzte Bar des Kanal-Fensters, gerechnet ab dessen Anfang
+      var startI = n - chan.N;                       // Index im Chart, an dem der Kanal beginnt
+      function kanalY(i, welche) {                   // i = Chart-Index
+        var ki = i - startI;
+        return Y((welche === 'o' ? chan.cOben : chan.cUnten) + chan.mOben * ki);
       }
-      html += '<path d="' + up.join(' ') + ' L' + dn.join(' L') + ' Z" fill="var(--series3)" opacity="0.10"></path>';
-      html += '<path d="' + up.join(' ') + '" fill="none" stroke="var(--series3)" stroke-width="1.5" opacity="0.8"></path>';
-      html += '<path d="M' + dn.slice().reverse().join(' L') + '" fill="none" stroke="var(--series3)" stroke-width="1.5" opacity="0.8"></path>';
+      var up = [], dn = [];
+      for (var i = Math.max(0, startI); i < n; i++) {
+        up.push((up.length ? 'L' : 'M') + (padL + i * stepPx).toFixed(1) + ' ' + kanalY(i, 'o').toFixed(1));
+      }
+      for (var i2 = n - 1; i2 >= Math.max(0, startI); i2--) {
+        dn.push((padL + i2 * stepPx).toFixed(1) + ' ' + kanalY(i2, 'u').toFixed(1));
+      }
+      if (!up.length || !dn.length) { up = []; dn = []; }
+      if (up.length && dn.length) {
+        html += '<path d="' + up.join(' ') + ' L' + dn.join(' L') + ' Z" fill="var(--series3)" opacity="0.10"></path>';
+        html += '<path d="' + up.join(' ') + '" fill="none" stroke="var(--series3)" stroke-width="1.5" opacity="0.85"></path>';
+        html += '<path d="M' + dn.slice().reverse().join(' L') + '" fill="none" stroke="var(--series3)" stroke-width="1.5" opacity="0.85"></path>';
+      }
     }
     // Leitlinie
     if (line && line.length === bars.length) {
@@ -1312,15 +1323,17 @@
           if (wq.signal && wq.score >= 60) { dir = wq.signal; revZ = wq.z; waveQ = wq; }
           else if (wq.signal) patienceAdd('Wellen-Qualität zu niedrig (' + wq.score + '/100)', sym);
           if (dir && useChan) {
-            // Fenster nach Güte wählen statt starr setzen; ohne belastbaren Kanal wird nicht gehandelt.
-            var dg = Q.degapBars(bars);
-            chE = Q.bestChannel(dg.closes, undefined, { highs: dg.highs, lows: dg.lows });
+            // Chart-technische Erkennung: Linien ohne die letzten Bars gelegt, damit ein
+            // Ausbruch überhaupt sichtbar werden kann.
+            var dgB = Q.degapBarArray(bars);
+            chE = Q.trendChannel(dgB);
             if (chE) {
-              SIG[sym].chanPos = chE.pos; SIG[sym].chanSteep = chE.steep; SIG[sym].chanQ = chE.quality; chN = chE.N;
-              chRef = Q.channelRef(chE, 0, spot, dg.closes[dg.closes.length - 1]);
-              chRef.t = now;
+              SIG[sym].chanPos = chE.pos; SIG[sym].chanSteep = chE.steigung; SIG[sym].chanQ = chE.score;
+              SIG[sym].chanTyp = chE.typ; SIG[sym].chanAus = chE.ausbruch; chN = chE.N;
+              chRef = { kanal: chE, t: now, off: dgB[dgB.length - 1][1] - spot };
             }
-            if (!chE) { patienceAdd('Kein belastbarer Kanal (Güteprüfung)', sym); dir = null; }
+            if (!chE || !chE.gueltig) { patienceAdd('Kein gültiger Kanal (Chart-Prüfung)', sym); dir = null; }
+            else if (chE.ausbruch) { patienceAdd('Kanalausbruch – der Kanal gilt nicht mehr', sym); dir = null; }
             else if (dir === 'call' && chE.pos > 0.30) { patienceAdd('Kanal: nicht an der Unterkante', sym); dir = null; }
             else if (dir === 'put' && chE.pos < 0.70) { patienceAdd('Kanal: nicht an der Oberkante', sym); dir = null; }
             else if (dir === 'call' && chE.trend === 'down') { patienceAdd('Kanal zeigt abwärts', sym); dir = null; }
@@ -1350,11 +1363,13 @@
         if (lsN >= 5) { patienceAdd('Verlustserie (5+) – Pause bis Tagesende', sym); continue; }
         var lsFactor = lsN >= 3 ? 0.5 : 1;
         if (isWave || (!isRev && cfg.trendFilter)) { // Trend: beim Wellenreiter Pflicht, sonst optional
+          // Kanalrichtung UND übergeordneter Trend müssen passen – ein Seitwärtskorridor
+          // innerhalb eines Abwärtstrends ist kein Freibrief für Long-Einstiege.
           if (chE) {
-            // Nur handeln, wenn die Kanalrichtung statistisch belegt ist (t-Wert), sonst zählt sie nicht.
             if (dir === 'call' && chE.trend === 'down') { patienceAdd('Regime: Kanal zeigt abwärts', sym); continue; }
             if (dir === 'put' && chE.trend === 'up') { patienceAdd('Regime: Kanal zeigt aufwärts', sym); continue; }
-          } else {
+          }
+          {
             var tc = bars.slice(-240).map(function (b) { return b[1]; });
             if (tc.length >= 100) {
               var e100 = Q.emaSeries(tc, 100);
@@ -3289,7 +3304,7 @@
     var syms = scanUniverse().slice(0, 14);
     var iv = '5m';
     var fds = await pmap(syms, function (sy) { return fetchIntraday(sy, iv, false); }, 6);
-    var n = 0, ueberEma = 0, absZ = 0, wave = 0, kanal = 0, vol = 0, kanalTrendUp = 0, kanalTrendDown = 0;
+    var n = 0, ueberEma = 0, absZ = 0, wave = 0, kanal = 0, vol = 0, kanalTrendUp = 0, kanalTrendDown = 0, ausbrueche = 0;
     fds.forEach(function (fd) {
       if (!fd || fd.series.length < 120) return;
       n++;
@@ -3301,9 +3316,14 @@
       absZ += Math.abs(rs.z || 0);
       var wq = Q.waveQuality(bars, 'ema', 20, 2.0);
       wave += (wq && wq.score) || 0;
-      var dg = Q.degapBars(bars);
-      var ch = Q.bestChannel(dg.closes, undefined, { highs: dg.highs, lows: dg.lows });
-      if (ch) { kanal++; if (ch.trend === 'up') kanalTrendUp++; if (ch.trend === 'down') kanalTrendDown++; }
+      var dgR = Q.degapBarArray(bars);
+      var ch = Q.trendChannel(dgR);
+      if (ch && ch.gueltig) {
+        kanal++;
+        if (ch.trend === 'up') kanalTrendUp++;
+        if (ch.trend === 'down') kanalTrendDown++;
+        if (ch.ausbruch) ausbrueche++;
+      }
       var r = [];
       for (var i = Math.max(1, closes.length - 120); i < closes.length; i++) r.push(Math.log(closes[i] / closes[i - 1]));
       var m = r.reduce(function (a, b) { return a + b; }, 0) / Math.max(1, r.length);
@@ -3327,6 +3347,7 @@
       mittlererWellenScore: Math.round(wave / n),
       kanalAnteilPct: Math.round(kanal / n * 100),
       kanalRichtung: kanalTrendUp > kanalTrendDown ? 'aufwaerts' : (kanalTrendDown > kanalTrendUp ? 'abwaerts' : 'gemischt'),
+      kanalAusbruecheAnteilPct: Math.round(ausbrueche / n * 100),
       vola1mPct: Math.round(vol / n * 1000) / 1000,
       minutenSeitEroeffnung: minsOpen,
       vixTagesPct: q('^VIX'), sp500TagesPct: q('^GSPC'), nasdaqTagesPct: q('^IXIC'),

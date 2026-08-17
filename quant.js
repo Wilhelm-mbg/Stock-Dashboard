@@ -763,6 +763,18 @@
     return out;
   }
 
+  /** Entzerrte Bars als fertiges Array [t, close, vol, high, low] – für die Kanal-Erkennung. */
+  function degapBarArray(bars) {
+    var dg = degapBars(bars);
+    var out = new Array(bars.length);
+    for (var i = 0; i < bars.length; i++) {
+      out[i] = [bars[i][0], dg.closes[i], bars[i][2],
+        dg.highs ? dg.highs[i] : dg.closes[i], dg.lows ? dg.lows[i] : dg.closes[i]];
+    }
+    out.versatz = bars.length ? bars[bars.length - 1][1] - dg.closes[bars.length - 1] : 0;
+    return out;
+  }
+
   /** Ein einzelner Kanal-Fit über N Bars, endend bei endI.
    *  Mitgeliefert werden Güte (R²), Steigungs-Signifikanz, Kanten-Berührungen und das
    *  Varianzverhältnis – ohne diese Angaben ist ein Regressionskanal nur eine Linie
@@ -922,6 +934,216 @@
   /** Abwärtskompatibel: fester Fensterkanal ohne Güteprüfung (nur noch für Altaufrufe). */
   function regressionChannel(closes, N, endI) {
     return channelFit(closes, N || 120, endI);
+  }
+
+  /* ================= Trendkanal nach Chart-Technik =================
+   * Nicht mehr eine Regressionsgerade mit Bändern, sondern das, was ein Chartist zeichnet:
+   * Wendepunkte suchen, Geraden durch die tatsächlichen Hochs und Tiefs legen, Berührungen
+   * zählen, Verletzungen bestrafen – und am Ende Aufwärtskanal, Abwärtskanal, Seitwärts-
+   * korridor und Keil unterscheiden, samt Ausbruch. Gegen Zufallsdaten kalibriert. */
+
+  /** Wendepunkte: ein Hoch, das in seiner Umgebung das höchste ist (und umgekehrt).
+   *  Die letzten `strength` Bars können keine Pivots sein – ein Wendepunkt braucht Bestätigung. */
+  function findPivots(H, L, strength) {
+    var hoch = [], tief = [], n = H.length, i, j;
+    for (i = strength; i < n - strength; i++) {
+      var istH = true, istT = true;
+      for (j = i - strength; j <= i + strength; j++) {
+        if (j === i) continue;
+        if (H[j] >= H[i]) istH = false;
+        if (L[j] <= L[i]) istT = false;
+        if (!istH && !istT) break;
+      }
+      if (istH) hoch.push({ i: i, p: H[i] });
+      if (istT) tief.push({ i: i, p: L[i] });
+    }
+    return { hoch: hoch, tief: tief };
+  }
+
+  /** Mittlere Spannweite je Bar – Maßstab für „nah genug an der Linie". */
+  function spannweite(H, L, C) {
+    var n = C.length, sum = 0, k = 0, i;
+    if (H && L) { for (i = 0; i < n; i++) { sum += H[i] - L[i]; k++; } }
+    else { for (i = 1; i < n; i++) { sum += Math.abs(C[i] - C[i - 1]); k++; } }
+    return k ? sum / k : 0;
+  }
+
+  function quantil(arr, f) {
+    var srt = arr.slice().sort(function (a, b) { return a - b; });
+    var idx = (srt.length - 1) * f, lo = Math.floor(idx), hi = Math.ceil(idx);
+    return srt[lo] + (srt[hi] - srt[lo]) * (idx - lo);
+  }
+  /** k-kleinster bzw. k-größter Wert ohne vollständiges Sortieren – im Backtest läuft das
+   *  je Einstiegskandidat, deshalb lohnt die Abkürzung. */
+  function kSmallest(arr, k) {
+    var buf = [], i, j;
+    for (i = 0; i < arr.length; i++) {
+      var v = arr[i];
+      if (buf.length < k) { buf.push(v); buf.sort(function (a, b) { return a - b; }); }
+      else if (v < buf[k - 1]) { buf[k - 1] = v; for (j = k - 1; j > 0 && buf[j] < buf[j - 1]; j--) { var t = buf[j]; buf[j] = buf[j - 1]; buf[j - 1] = t; } }
+    }
+    return buf[buf.length - 1];
+  }
+  function kLargest(arr, k) {
+    var buf = [], i, j;
+    for (i = 0; i < arr.length; i++) {
+      var v = arr[i];
+      if (buf.length < k) { buf.push(v); buf.sort(function (a, b) { return b - a; }); }
+      else if (v > buf[k - 1]) { buf[k - 1] = v; for (j = k - 1; j > 0 && buf[j] > buf[j - 1]; j--) { var t2 = buf[j]; buf[j] = buf[j - 1]; buf[j - 1] = t2; } }
+    }
+    return buf[buf.length - 1];
+  }
+
+  var KANAL_MIN = { touchJeSeite: 3, dichte: 2.5, wechsel: 2, deckung: 0.90, enge: 0.85, vr: 0.35, acf: -0.65, score: 50 };
+
+  /** Kanal-Erkennung: Der Chart wird gedanklich so lange gedreht, bis das Kursband am
+   *  schmalsten liegt – genau das tut ein Chartist, wenn er zwei parallele Linien anlegt.
+   *  Entscheidend für die Gültigkeit ist danach, ob das Band SCHMALER ist, als es ein
+   *  Zufallspfad gleicher Schwankung hergeben würde. Sonst ist es kein Kanal, nur ein Rahmen.
+   *  bars: [t, close, vol, high?, low?] */
+  function trendChannel(bars, opt) {
+    opt = opt || {};
+    var min = opt.min || KANAL_MIN;
+    var nAll = bars.length;
+    if (nAll < 50) return null;
+    var fenster = (opt.fenster || [60, 90, 130, 180, 250]).filter(function (w) { return w <= nAll; });
+    if (!fenster.length) return null;
+    var hatHL = bars[0].length >= 5 && bars[0][3] != null;
+    var best = null;
+    for (var fi = 0; fi < fenster.length; fi++) {
+      var N = fenster[fi];
+      var sl = bars.slice(nAll - N);
+      // Die letzten Bars fließen NICHT in die Linienlage ein. Sonst wandert der Kanal mit dem
+      // Kurs mit und ein Ausbruch wäre per Konstruktion unsichtbar.
+      var puffer = opt.puffer === undefined ? 3 : opt.puffer;
+      var NF = N - puffer;
+      if (NF < 40) continue;
+      var C = sl.map(function (b) { return b[1]; });
+      var H = hatHL ? sl.map(function (b) { return b[3]; }) : C;
+      var L = hatHL ? sl.map(function (b) { return b[4]; }) : C;
+      var i, k;
+      // Schwankung je Bar – daraus folgt, wie breit ein Zufallspfad dieses Fenster füllen würde
+      var d1 = [];
+      for (i = 1; i < NF; i++) d1.push(C[i] - C[i - 1]);
+      var mD = 0; for (i = 0; i < d1.length; i++) mD += d1[i]; mD /= Math.max(1, d1.length);
+      var vD = 0; for (i = 0; i < d1.length; i++) vD += (d1[i] - mD) * (d1[i] - mD);
+      var sigma = Math.sqrt(vD / Math.max(1, d1.length - 1));
+      if (!(sigma > 0)) continue;
+      var erwartet = sigma * Math.sqrt(NF) * 1.9;    // typische Spannweite eines Zufallspfads
+      var atr = spannweite(H, L, C);
+      // Kandidaten-Steigungen: Regressionssteigung plus ein Fächer darum herum
+      var sx = 0, sy = 0, sxx = 0, sxy = 0;
+      for (i = 0; i < NF; i++) { sx += i; sy += C[i]; sxx += i * i; sxy += i * C[i]; }
+      var den = NF * sxx - sx * sx;
+      var mReg = den ? (NF * sxy - sx * sy) / den : 0;
+      var spanne = (erwartet / NF) * 2.2;
+      var kand = [];
+      for (k = -7; k <= 7; k++) kand.push(mReg + spanne * (k / 7));
+      var bestF = null;
+      for (k = 0; k < kand.length; k++) {
+        var m = kand[k];
+        var rU = [], rO = [];
+        for (i = 0; i < NF; i++) { rU.push(L[i] - m * i); rO.push(H[i] - m * i); }
+        var kq = Math.max(1, Math.round(NF * 0.02));
+        var offU = kSmallest(rU, kq), offO = kLargest(rO, kq);
+        var br = offO - offU;
+        if (!(br > 0)) continue;
+        if (!bestF || br < bestF.br) bestF = { m: m, offU: offU, offO: offO, br: br };
+      }
+      if (!bestF) continue;
+      var breite = bestF.br;
+      var tol = Math.max(0.45 * atr, 0.07 * breite);
+      // Berührungen (zusammenhängende Bars an einer Kante zählen als EINE Berührung),
+      // Deckung und – entscheidend – wie oft der Kurs von einer Kante zur anderen wandert.
+      var tU = 0, tO = 0, drin = 0, minU = 1e9, maxU = -1, minO = 1e9, maxO = -1, viol = 0;
+      var letzteSeite = 0, wechsel = 0, vorSeite = 0;
+      for (i = 0; i < NF; i++) {
+        var u = bestF.offU + bestF.m * i, o = bestF.offO + bestF.m * i;
+        var anU = L[i] <= u + tol, anO = H[i] >= o - tol;
+        if (anU && !anO) {
+          if (vorSeite !== -1) { tU++; if (i < minU) minU = i; if (i > maxU) maxU = i; }
+          if (letzteSeite === 1) wechsel++;
+          letzteSeite = -1; vorSeite = -1;
+        } else if (anO && !anU) {
+          if (vorSeite !== 1) { tO++; if (i < minO) minO = i; if (i > maxO) maxO = i; }
+          if (letzteSeite === -1) wechsel++;
+          letzteSeite = 1; vorSeite = 1;
+        } else vorSeite = 0;
+        if (L[i] >= u - tol && H[i] <= o + tol) drin++; else viol++;
+      }
+      var deckung = drin / NF;
+      var enge = breite / erwartet;                  // < 1 heißt: enger als reiner Zufall
+      var strU = maxU > minU ? (maxU - minU) / (NF - 1) : 0;
+      var strO = maxO > minO ? (maxO - minO) / (NF - 1) : 0;
+      var preis = C[N - 1];
+      var uEnd = bestF.offU + bestF.m * (N - 1), oEnd = bestF.offO + bestF.m * (N - 1);
+      var stMit = bestF.m * NF / breite;
+      var typ = stMit > 0.5 ? 'aufwaerts' : stMit < -0.5 ? 'abwaerts' : 'seitwaerts';
+      // Ausbruch: jetzt jenseits der Linie, vorher innen
+      var ausbruch = null, vorherDrin = true;
+      for (k = Math.max(0, NF - 6); k < NF; k++) {
+        var uk = bestF.offU + bestF.m * k, ok2 = bestF.offO + bestF.m * k;
+        if (C[k] > ok2 + tol || C[k] < uk - tol) vorherDrin = false;
+      }
+      if (vorherDrin && preis > oEnd + tol) ausbruch = 'oben';
+      else if (vorherDrin && preis < uEnd - tol) ausbruch = 'unten';
+      // Der harte Test: Kehrt der Kurs innerhalb des Bandes wirklich zur Mitte zurück?
+      // Ein Zufallspfad lässt sich immer einrahmen – er pendelt nur nicht.
+      var mitte = [], mLine = (bestF.offU + bestF.offO) / 2;
+      for (i = 0; i < NF; i++) mitte.push(C[i] - (mLine + bestF.m * i));
+      var vr = varianceRatio(mitte, Math.max(5, Math.round(NF / 8)));
+      var acf = vr <= 0.35 ? -1 : minAutoCorr(mitte, Math.max(5, Math.round(NF / 25)), Math.round(NF / 2));
+      var pendelt = vr <= (min.vr === undefined ? 0.35 : min.vr) || acf <= (min.acf === undefined ? -0.65 : min.acf);
+      var touchGes = tU + tO;
+      // Berührungsdichte: Wie oft je 100 Bars trägt die schwächere Seite? Ein Zufallspfad
+      // streift die Kanten seltener als ein Kurs, der wirklich zwischen ihnen pendelt.
+      var dichte = Math.min(tU, tO) / (NF / 100);
+      var score = Math.max(0, Math.min(100, Math.round(
+        30 * Math.max(0, Math.min(1, Math.max((0.35 - vr) / 0.35, (acf + 0.5) / -0.5))) +  // Rückkehr zur Mitte
+        0 * wechsel +
+        20 * Math.min(1, dichte / 5) +                         // wie dicht die Linien getragen werden
+        18 * Math.min(1, (strU + strO) / 1.5) +                // über wie viel Zeit verteilt
+        14 * Math.max(0, (deckung - 0.8) / 0.2) +              // wie sauber eingefasst
+        10 * Math.min(1, Math.min(tU, tO) / 3) +               // beide Seiten müssen tragen
+        8 * Math.min(1, N / 200)                               // Tragfähigkeit des Fensters
+      )));
+      var gueltig = tU >= min.touchJeSeite && tO >= min.touchJeSeite && dichte >= min.dichte &&
+        wechsel >= min.wechsel && deckung >= min.deckung && enge <= min.enge &&
+        pendelt && score >= min.score;
+      var cand = {
+        N: N, typ: typ, gueltig: gueltig, score: score, hl: hatHL,
+        unten: uEnd, oben: oEnd, mid: (uEnd + oEnd) / 2,
+        mUnten: bestF.m, mOben: bestF.m, cUnten: bestF.offU, cOben: bestF.offO, endI: N - 1,
+        touchUnten: tU, touchOben: tO, wechsel: wechsel, dichte: Math.round(dichte * 100) / 100, viol: viol,
+        vr: Math.round(vr * 1000) / 1000, acf: Math.round(acf * 100) / 100,
+        deckung: Math.round(deckung * 1000) / 1000,
+        enge: Math.round(enge * 1000) / 1000,
+        streuung: Math.round((strU + strO) / 2 * 100) / 100,
+        steigung: Math.round(stMit * 100) / 100,
+        breitePct: Math.round(breite / preis * 100 * 100) / 100,
+        pos: Math.round((preis - uEnd) / breite * 1000) / 1000,
+        zuObenPct: Math.round((oEnd - preis) / preis * 100 * 100) / 100,
+        zuUntenPct: Math.round((preis - uEnd) / preis * 100 * 100) / 100,
+        ausbruch: ausbruch, tol: tol
+      };
+      // Auswahl: Gültigkeit zuerst, dann Güte – mit einem Bonus für längere Fenster.
+      // Ein kurzes Fenster beschreibt sonst nur ein Bruchstück einer Welle und gewinnt zu leicht.
+      cand.rang = (cand.gueltig ? 1000 : 0) + cand.score + 14 * (N / 250);
+      if (!best || cand.rang > best.rang) best = cand;
+    }
+    if (!best) return null;
+    best.trend = best.typ === 'aufwaerts' ? 'up' : best.typ === 'abwaerts' ? 'down' : 'flat';
+    return best;
+  }
+
+  /** Kanal auf einen späteren Bar fortschreiben (Linien laufen weiter). */
+  function projectTrendChannel(ref, schritte, preis) {
+    if (!ref) return null;
+    var i = ref.endI + (schritte || 0);
+    var u = ref.cUnten + ref.mUnten * i, o = ref.cOben + ref.mOben * i;
+    if (o - u <= 1e-9) return null;
+    return { unten: u, oben: o, mid: (u + o) / 2, pos: (preis - u) / (o - u),
+      ausbruch: preis > o + ref.tol ? 'oben' : (preis < u - ref.tol ? 'unten' : null) };
   }
 
   /** Bewährungs-Urteil für die Strategie-Farm.
@@ -1114,7 +1336,7 @@
             if (CHAN && p.chan) {
               // Der Kanal vom Einstieg wird fortgeschrieben, nicht jede Minute neu gezeichnet –
               // sonst läuft die Linie dem Kurs hinterher und jedes Ziel verschiebt sich mit.
-              var chM = projectChannel(p.chan, ci, spot);
+              var chM = projectTrendChannel(p.chan.kanal, ci - p.chan.i0, spot + p.chan.off);
               if (chM) {
                 if (p.dir === 'call' && chM.pos >= 0.80) why = 'Kanaloberkante erreicht (Ziel)';
                 else if (p.dir === 'put' && chM.pos <= 0.20) why = 'Kanalunterkante erreicht (Ziel)';
@@ -1151,12 +1373,12 @@
           if (!wq.signal || wq.score < MINQ) continue;
           dir = wq.signal;
           if (CHAN) {
-            // Fenster wird nach Güte gewählt, nicht starr gesetzt; ohne belastbaren Kanal kein Trade.
-            var dgE = degapBars(win);
-            chE = bestChannel(dgE.closes, undefined, { highs: dgE.highs, lows: dgE.lows, maxN: CHN || undefined });
-            if (!chE) continue;
+            // Chart-technische Kanal-Erkennung; ohne gültigen Kanal kein Trade.
+            var dgE = degapBarArray(win);
+            chE = trendChannel(dgE);
+            if (!chE || !chE.gueltig) continue;
             chN = chE.N;
-            chRef = channelRef(chE, ci, spot, dgE.closes[dgE.closes.length - 1]);
+            chRef = { kanal: chE, i0: ci, off: dgE[dgE.length - 1][1] - spot };
             // Einstieg nur am Kanalrand …
             if (dir === 'call' && chE.pos > 0.30) continue;
             if (dir === 'put' && chE.pos < 0.70) continue;
@@ -1182,11 +1404,13 @@
         }
         if (MTF && !mtfAgrees(win, dir, 5)) continue; // 5-Min-Chart widerspricht
         if (TREND && ENTRY !== 'reversion') { // übergeordneter Trend (Pflicht beim Wellenreiter)
+          // Kanalrichtung UND übergeordneter Trend müssen passen. Ein Seitwärtskanal
+          // innerhalb eines Abwärtstrends ist kein Freibrief für Long-Einstiege.
           if (chE) {
-            // Kanal-Steigung als Regime-Filter: nur in Richtung des Kanals handeln
-            if (dir === 'call' && chE.steep < 0.3) continue;
-            if (dir === 'put' && chE.steep > -0.3) continue;
-          } else {
+            if (dir === 'call' && chE.trend === 'down') continue;
+            if (dir === 'put' && chE.trend === 'up') continue;
+          }
+          {
             var trendCloses = bars.slice(Math.max(0, ci - 240), ci + 1).map(function (b) { return b[1]; });
             if (trendCloses.length >= 100) {
               var e100 = emaSeries(trendCloses, 100);
@@ -1295,6 +1519,8 @@
     regressionChannel: regressionChannel, channelFit: channelFit, bestChannel: bestChannel,
     channelValid: channelValid, CHAN_MIN: CHAN_MIN, varianceRatio: varianceRatio,
     channelRef: channelRef, projectChannel: projectChannel, bewaehrungsUrteil: bewaehrungsUrteil,
+    trendChannel: trendChannel, projectTrendChannel: projectTrendChannel, findPivots: findPivots,
+    KANAL_MIN: KANAL_MIN, degapBarArray: degapBarArray,
     degapCloses: degapCloses, degapBars: degapBars,
     computeStats: computeStats, bootstrapTrades: bootstrapTrades
   };

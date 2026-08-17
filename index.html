@@ -451,10 +451,12 @@
           Einstieg am Tief einer Welle, nur wenn der Wellen-Qualitäts-Score ≥ 60/100 liegt, Ausstieg am Wellenkamm.
           Der <b>📐 Trendkanal</b> ist dabei kein eigener Modus mehr, sondern ein Filter: Einstieg nur an der Kanalunterkante
           (Long) bzw. Oberkante (Short), Ziel ist die Gegenkante, ein Kanalbruch löst einen Schutz-Exit aus.
-          Der Kanal wird nicht mehr über ein festes Fenster gelegt: Die App probiert mehrere Fensterlängen durch und nimmt die,
-          die die aktuelle Struktur am besten beschreibt – und nur dann, wenn beide Kanten mehrfach abwechselnd angelaufen wurden
-          und der Kurs nachweislich zur Mitte zurückkehrt. Besteht kein Fenster diese Prüfung, gibt es keinen Kanal und damit
-          keinen Kanal-Trade. Die Kanten liegen an den echten Hochs und Tiefs, nicht nur an den Schlusskursen.<br><br>
+          Die Erkennung arbeitet wie ein Chartist: Der Kurs wird gedanklich so lange gedreht, bis das Band am schmalsten liegt –
+          genau das tut man beim Anlegen zweier paralleler Linien. Die Linien entstehen aus den echten Hochs und Tiefs, und die
+          <b>letzten Bars fließen bewusst nicht in die Linienlage ein</b>, sonst wäre ein Ausbruch per Konstruktion unsichtbar.
+          Gültig ist ein Kanal nur, wenn beide Linien mehrfach und über die Zeit verteilt getragen haben, der Kurs zwischen ihnen
+          pendelt statt wegzulaufen, und das Band enger ist als bei reinem Zufall. Unterschieden werden <b>Aufwärtskanal,
+          Abwärtskanal und Seitwärtskorridor</b>; ein <b>Ausbruch</b> wird gemeldet und setzt den Kanal außer Kraft.<br><br>
           Für beide Setups gilt: <b>Kosten-Breakeven-Filter</b>, Liquiditätsfilter, Event-Blackout, Glattstellung zum Tagesschluss.
           Die „Bestätigung“ wirkt im Umkehr-Setup als z-Score-Schwelle (0,05 % → z 1,5 · 0,15 % → z 2,0 · 0,30 % → z 2,5).
           <b>🫁 auto-Stop</b> passt sich an Schwankungsbreite und Hebel an. Nach 3 Verlusten in Folge wird die Positionsgröße
@@ -498,7 +500,7 @@
               <label title="Mindest-Tagesumsatz des Basiswerts">Liquidität min.<select id="idLiq"><option value="0">aus</option><option value="10">10 Mio $</option><option value="50" selected>50 Mio $</option><option value="200">200 Mio $</option></select></label>
               <label>Event-Blackout<select id="idBlackout"><option value="off">aus</option><option value="block" selected>±45 Min</option><option value="flat">+ glattstellen</option></select></label>
               <label data-iv="1m" title="1-Min-Signale müssen zusätzlich zur EMA20-Richtung auf dem 5-Min-Chart passen (Rauschfilter)">5-Min-Bestätigung<span class="switch"><input type="checkbox" id="idMtf" checked><span class="knob"></span></span></label>
-              <label data-modes="wave" title="Nur im Umkehr-Setup mit Auslöser Wellental. Der Kanal wird auf Güte geprüft (Kanten-Berührungen, Seitenwechsel, Rückkehr zur Mitte) und das Fenster automatisch gewählt. Besteht kein Fenster die Prüfung, gibt es keinen Kanal – und keinen Trade.">📐 Trendkanal<span class="switch"><input type="checkbox" id="idChannel" checked><span class="knob"></span></span></label>
+              <label data-modes="wave" title="Nur im Umkehr-Setup mit Auslöser Wellental. Chart-technische Erkennung: Linien an echten Hochs und Tiefs, Fenster automatisch gewählt, Ausbruch wird erkannt. Ohne gültigen Kanal gibt es keinen Trade.">📐 Trendkanal<span class="switch"><input type="checkbox" id="idChannel" checked><span class="knob"></span></span></label>
               <label title="Einmal täglich ~30 zusätzliche Kandidaten nach Wellen-Qualität und Liquidität ranken – die Top-5 werden mitgescannt">🔎 Wellen-Screener<span class="switch"><input type="checkbox" id="idScreener"><span class="knob"></span></span></label>
               <label title="Claude wertet stündlich die Analyse-Daten aus und schreibt geprüfte Parameter-Empfehlungen in den Daten-Ordner – die App übernimmt sie automatisch (nur sichere Felder, jede Änderung wird hier angezeigt)">🛰 Auto-Tuning<span class="switch"><input type="checkbox" id="idAutoTune" checked><span class="knob"></span></span></label>
             </div>
