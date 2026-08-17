@@ -130,9 +130,13 @@ const path = require('path');
 
   // Labor-Beschreibung erwähnt die neue Variante (Auswertung-Ansicht)
   await page.click('#depotPills button[data-sub="auswertung"]');
+  await page.evaluate(() => document.querySelectorAll('#sub-auswertung details').forEach(d => { d.open = true; }));
   await page.waitForTimeout(400);
   const labTxt = (await page.locator('#tab-depot').innerText()).replace(/ /g, ' ');
-  check('Labor nennt die beiden Setups', labTxt.indexOf('Ausbruch') !== -1 && labTxt.indexOf('Umkehr') !== -1);
+  check('Automatik-Panel nennt die drei Ebenen', labTxt.indexOf('Regime-Automatik') !== -1 && labTxt.indexOf('Selbst-Optimierung') !== -1 && labTxt.indexOf('Strategie-Farm') !== -1);
+  check('Auswertung ist verschlankt (keine Doppel-Werkzeuge mehr)',
+    labTxt.indexOf('Parameter-Optimierer') === -1 && labTxt.indexOf('Strategie-Labor') === -1 && labTxt.indexOf('Sentiment-Verlauf') === -1);
+  check('Auswertung hat höchstens 5 Überschriften', await page.locator('#sub-auswertung h3').count() <= 5);
 
   // Quant im Seitenkontext: Kanalfunktion da & konsistent
   const q = await page.evaluate(() => {
@@ -245,6 +249,7 @@ const path = require('path');
   check('Signal-Chart zeichnet Linien', scPaths >= 2);
   check('Signal-Chart-Info gefüllt', (await page.locator('#scInfo').innerText()).indexOf('Leitlinie') !== -1);
   await page.click('#depotPills button[data-sub="auswertung"]');
+  await page.evaluate(() => document.querySelectorAll('#sub-auswertung details').forEach(d => { d.open = true; }));
   await page.waitForTimeout(300);
   check('Filter-Nutzen-Knopf vorhanden', await page.locator('#filterBtn').count() === 1);
   await page.click('#settingsBtn');
@@ -255,6 +260,7 @@ const path = require('path');
 
   // Auto-Tuning-Verlauf: Panel listet und bewertet die Änderung
   await page.click('#depotPills button[data-sub="auswertung"]');
+  await page.evaluate(() => document.querySelectorAll('#sub-auswertung details').forEach(d => { d.open = true; }));
   await page.waitForTimeout(700);
   const tuneTxt2 = await page.locator('#tuneLog').innerText();
   check('Tuning-Verlauf listet Änderung', tuneTxt2.indexOf('period → 50') !== -1);
@@ -335,6 +341,7 @@ const path = require('path');
   await page.click('nav.tabs button[data-tab="depot"]');
   await page.waitForTimeout(300);
   await page.click('#depotPills button[data-sub="auswertung"]');
+  await page.evaluate(() => document.querySelectorAll('#sub-auswertung details').forEach(d => { d.open = true; }));
   await page.waitForTimeout(400);
 
   // Selbst-Optimierung: Bedienelemente + Status
@@ -351,6 +358,7 @@ const path = require('path');
 
   // Analyse-Export: Button vorhanden, Payload ohne Zugangsdaten
   await page.click('#depotPills button[data-sub="auswertung"]');
+  await page.evaluate(() => document.querySelectorAll('#sub-auswertung details').forEach(d => { d.open = true; }));
   await page.waitForTimeout(300);
   check('Export-Button vorhanden', await page.locator('#exportDataBtn').count() === 1);
   await page.click('#exportDataBtn');

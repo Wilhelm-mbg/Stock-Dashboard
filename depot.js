@@ -701,7 +701,7 @@
     if (!el) return;
     var rows = tuneRanking();
     if (!rows.length) {
-      el.innerHTML = '<div class="empty"><span class="ico">🛰</span>Noch keine automatischen Anpassungen. Sobald die Selbst-Optimierung eine <b>robuste</b> Verbesserung findet, steht sie hier – mit gemessener Wirkung.</div>';
+      el.innerHTML = '<div class="empty"><span class="ico">🛰</span>Noch keine automatischen Anpassungen – sie erscheinen hier, sobald die Automatik eine robuste Verbesserung findet.</div>';
       return;
     }
     var html = '<table class="tbl"><tr><th>Rang</th><th>Wann</th><th>Änderung</th><th>Ø P/L je Trade davor → danach</th><th>Trades danach</th><th>Wirkung</th><th></th></tr>';
@@ -2127,39 +2127,6 @@
   /* ================= Parallel-Strategien-Auswertung ================= */
   function stratOf(t) { return t.strategy === 'intraday' ? 'intraday' : 'hourly'; }
 
-  function renderStratCompare() {
-    var el = document.getElementById('stratCompare');
-    if (!el) return;
-    var closed = D.trades.filter(function (t) { return t.status === 'closed' && istMess(t); }).slice().reverse(); // alt → neu
-    var agg = { hourly: { n: 0, w: 0, pnl: 0, fees: 0, openN: 0 }, intraday: { n: 0, w: 0, pnl: 0, fees: 0, openN: 0 } };
-    closed.forEach(function (t) {
-      var a = agg[stratOf(t)];
-      a.n++; if (t.pnl > 0) a.w++; a.pnl += t.pnl; a.fees += (t.orderFee ? t.orderFee * 2 : 0);
-    });
-    D.positions.forEach(function (p) { agg[stratOf(p)].openN++; });
-    var names = { hourly: '🧠 Stunden-Strategie', intraday: '⚡ Intraday' };
-    var rows = '<table class="tbl"><tr><th>Strategie</th><th>Trades</th><th>Trefferquote</th><th>Realisierte P/L</th><th>Gebühren</th><th>Offen</th></tr>';
-    ['hourly', 'intraday'].forEach(function (k) {
-      var a = agg[k];
-      rows += '<tr><td>' + names[k] + '</td><td>' + a.n + '</td><td>' + (a.n ? Math.round(a.w / a.n * 100) + ' %' : '–') + '</td>' +
-        '<td class="' + U.signCls(a.pnl) + '">' + U.signTxt(a.pnl, ' $') + '</td><td>' + U.nf2.format(a.fees) + ' $</td><td>' + a.openN + '</td></tr>';
-    });
-    rows += '</table>';
-    el.innerHTML = closed.length ? rows : '<div class="loading">Noch keine geschlossenen Trades.</div>';
-
-    // Kumulative realisierte P/L je Strategie
-    var cum = { hourly: 0, intraday: 0 };
-    var pts = { hourly: [], intraday: [] };
-    closed.forEach(function (t) {
-      var k = stratOf(t);
-      cum[k] += t.pnl;
-      pts[k].push([t.closeT, Math.round(cum[k] * 100) / 100]);
-    });
-    drawLines(document.getElementById('stratChart'), [
-      { name: 'Stunden-Strategie', short: '🧠', color: 'var(--series)', pts: pts.hourly },
-      { name: 'Intraday', short: '⚡', color: 'var(--series2)', pts: pts.intraday }
-    ], document.getElementById('stratLegend'), 0, { unit: ' $' });
-  }
 
   /* ================= Benchmark-Vergleich ================= */
   var benchLoadedAt = 0;
@@ -2191,46 +2158,6 @@
     drawLines(document.getElementById('benchChart'), series, document.getElementById('benchLegend'), base, { unit: ' $' });
   }
 
-  /* ================= Sentiment-Verlauf ================= */
-  function renderSentiment() {
-    var sel = document.getElementById('sentSym');
-    if (!sel) return;
-    if (!sel.options.length) {
-      window.Dash.STOCKS.forEach(function (s) {
-        var o = document.createElement('option'); o.value = s.y; o.textContent = s.y + ' – ' + s.name; sel.appendChild(o);
-      });
-      (D.watchlist || []).forEach(function (w) {
-        var o = document.createElement('option'); o.value = w.y; o.textContent = w.y + ' – ' + w.name + ' (Watchlist)'; sel.appendChild(o);
-      });
-      sel.addEventListener('change', renderSentiment);
-    }
-    var sym = sel.value || window.Dash.STOCKS[0].y;
-    var pts = SENT[sym] || [];
-    document.getElementById('sentInfo').textContent = pts.length
-      ? pts.length + ' Messpunkte · aktuell: ' + pts[pts.length - 1][1].toFixed(2)
-      : 'Noch keine Daten – entsteht mit jedem Lauf der Stunden-Strategie.';
-    var sentWrap = document.getElementById('sentChart');
-    if (!pts.length) {
-      sentWrap.style.height = '56px';
-      sentWrap.innerHTML = '<text x="50%" y="34" text-anchor="middle" fill="var(--muted)" font-size="12">Noch keine Daten – entsteht mit jedem Lauf der Stunden-Strategie.</text>';
-    } else {
-      sentWrap.style.height = '130px';
-      drawLines(sentWrap, [{ name: 'News-Sentiment ' + sym, short: sym, color: 'var(--series)', pts: pts }], null, 0);
-    }
-    // Ranking: aktuell stärkste / schwächste Sentiments
-    var cur = [];
-    Object.keys(SENT).forEach(function (k) {
-      var a = SENT[k];
-      if (a && a.length) cur.push([k, a[a.length - 1][1]]);
-    });
-    cur.sort(function (a, b) { return b[1] - a[1]; });
-    var rank = document.getElementById('sentRank');
-    if (cur.length >= 2) {
-      var top = cur.slice(0, 3).map(function (x) { return '<span class="chip up" style="margin-right:4px;">' + x[0] + ' ' + (x[1] > 0 ? '+' : '') + x[1].toFixed(2) + '</span>'; }).join('');
-      var flop = cur.slice(-3).reverse().map(function (x) { return '<span class="chip down" style="margin-right:4px;">' + x[0] + ' ' + (x[1] > 0 ? '+' : '') + x[1].toFixed(2) + '</span>'; }).join('');
-      rank.innerHTML = 'Stärkste: ' + top + ' &nbsp; Schwächste: ' + flop;
-    } else rank.innerHTML = '';
-  }
 
   function renderPatience() {
     var el = document.getElementById('patience');
@@ -2260,8 +2187,6 @@
   }
 
   function renderAnalytics() {
-    renderStratCompare();
-    renderSentiment();
     renderBenchmark();
     renderPatience();
     renderTuneLog();
@@ -2553,119 +2478,6 @@
 
   /* ================= Parameter-Optimierer ================= */
   var optRunning = false;
-  async function runOptimizer() {
-    if (optRunning) return;
-    optRunning = true;
-    var btn = document.getElementById('optRunBtn'), st = document.getElementById('optStatus'), out = document.getElementById('optResult');
-    btn.disabled = true;
-    try {
-      var intervals = ['1m', '5m', '15m'];
-      var entries = ['cross', 'reversion'];
-      var lineTypes = ['ema', 'vwap'];
-      var periods = [20, 50];
-      var confirms = [5, 15];
-      // Historie je Zeitrahmen einmal laden, dann 70/30 in Optimierung/Validierung teilen
-      var data = {};
-      for (var ii = 0; ii < intervals.length; ii++) {
-        st.textContent = 'Lade ' + intervals[ii] + '-Historie …';
-        var full = {};
-        var syms = universe();
-        await pmap(syms, async function (sy) {
-          var fd = await fetchIntraday(sy, intervals[ii], true);
-          if (fd && fd.series.length > 300) full[sy] = fd.series;
-        }, 6);
-        var train = {}, test = {};
-        Object.keys(full).forEach(function (s) {
-          var n = full[s].length, cut = Math.floor(n * 0.7);
-          train[s] = full[s].slice(0, cut);
-          test[s] = full[s].slice(Math.max(0, cut - 150)); // Warmup-Überlappung
-        });
-        data[intervals[ii]] = { train: train, test: test };
-      }
-      // Grid rechnen
-      var mp = modeParams();
-      var baseOpts = {
-        capital: START_CAPITAL, budgetPct: D.intraday.budgetPct,
-        sl: mp.sl, tp: mp.tp, exitMode: mp.exitMode, trailPct: mp.trail, maxHoldMin: mp.maxHoldMin,
-        cooldownMin: mp.cooldownMin, maxPerDay: mp.maxPerDay,
-        orderFee: D.intraday.orderFee, window: D.intraday.window || 'all',
-        otmPct: (Q.PROFILES[D.intraday.profile] || Q.PROFILES.atm21).otmPct,
-        expiryDays: (Q.PROFILES[D.intraday.profile] || Q.PROFILES.atm21).days
-      };
-      baseOpts.minEdge = 1.5;
-      baseOpts.trendFilter = !!D.intraday.trendFilter;
-      var combos = [];
-      intervals.forEach(function (iv) { entries.forEach(function (en) { lineTypes.forEach(function (lt) { periods.forEach(function (p) { confirms.forEach(function (c) {
-        combos.push({ interval: iv, entryMode: en, lineType: lt, period: p, confirmBps: c, zThr: zOf(c) });
-      }); }); }); }); });
-      var results = [];
-      var doneC = 0;
-      st.textContent = 'Rechne ' + combos.length + ' Kombinationen parallel (auf ' + BTPool.size + ' CPU-Kernen) …';
-      var allRes = await Promise.all(combos.map(function (cb) {
-        return btIntraday(data[cb.interval].train, Object.assign({}, baseOpts, cb)).then(function (res) {
-          doneC++;
-          if (doneC % 6 === 0) st.textContent = 'Rechne Kombination ' + doneC + '/' + combos.length + ' …';
-          return res;
-        });
-      }));
-      combos.forEach(function (cb, ci) {
-        var res = allRes[ci];
-        if (res && !res.error && res.summary.nTrades >= 5) results.push({ cb: cb, train: res.summary });
-      });
-      if (!results.length) { st.textContent = 'Keine Kombination erzeugte genug Trades (min. 5).'; return; }
-      results.sort(function (a, b) { return b.train.retPct - a.train.retPct; });
-      // Top 8 out-of-sample validieren
-      var top = results.slice(0, 8);
-      st.textContent = 'Validiere Top-Settings out-of-sample …';
-      var valRes = await Promise.all(top.map(function (t0) {
-        return btIntraday(data[t0.cb.interval].test, Object.assign({}, baseOpts, t0.cb));
-      }));
-      top.forEach(function (t0, ti) { t0.valid = (valRes[ti] && !valRes[ti].error) ? valRes[ti].summary : null; });
-      top.sort(function (a, b) { return ((b.valid && b.valid.retPct) || -999) - ((a.valid && a.valid.retPct) || -999); });
-      st.textContent = '';
-      var html = '<table class="tbl"><tr><th>Setting</th><th>Optimierung (70 %)</th><th>Validierung (30 %)</th><th>Trades (V)</th><th>Urteil</th><th></th></tr>';
-      top.forEach(function (r0, idx) {
-        var cb = r0.cb;
-        var label = (cb.entryMode === 'reversion' ? '🔄 Rücksetzer' : '🌊/🎯 Durchbruch') + ' · ' + cb.interval + ' · ' + cb.lineType.toUpperCase() + ' · P' + cb.period + ' · ' +
-          (cb.entryMode === 'reversion' ? 'z ' + cb.zThr : (cb.confirmBps / 100).toFixed(2) + ' %');
-        var v = r0.valid;
-        var overfit = v && r0.train.retPct > 0 && v.retPct < 0;
-        var verdict = !v ? '–' : overfit ? '⚠ überangepasst' : v.retPct > 0 ? '✅ robust' : 'neutral';
-        html += '<tr' + (idx === 0 ? ' style="font-weight:600;"' : '') + '><td>' + label + '</td>' +
-          '<td class="' + U.signCls(r0.train.retPct) + '">' + U.signTxt(r0.train.retPct, ' %') + ' (' + r0.train.nTrades + ' T.)</td>' +
-          '<td class="' + (v ? U.signCls(v.retPct) : '') + '">' + (v ? U.signTxt(v.retPct, ' %') : '–') + '</td>' +
-          '<td>' + (v ? v.nTrades : '–') + '</td><td>' + verdict + '</td>' +
-          '<td><button class="btn ghost" style="padding:2px 8px; font-size:11px;" data-applyopt="' + results.indexOf(r0) + '">Übernehmen</button></td></tr>';
-      });
-      html += '</table><div style="color:var(--muted); font-size:11.5px; margin-top:8px;">Sortiert nach Validierungs-Rendite. „Übernehmen“ setzt Zeitrahmen, Leitlinie, EMA-Periode, Bestätigung und Trendfilter der ⚡-Strategie. Kurze Historie = begrenzte Aussagekraft; regelmäßig neu optimieren.</div>';
-      out.innerHTML = html;
-      out.querySelectorAll('[data-applyopt]').forEach(function (b) {
-        b.addEventListener('click', function () {
-          var r0 = results[parseInt(b.getAttribute('data-applyopt'), 10)];
-          if (!r0) return;
-          D.intraday.interval = r0.cb.interval;
-          D.intraday.lineType = r0.cb.lineType;
-          D.intraday.period = r0.cb.period;
-          D.intraday.confirmBps = r0.cb.confirmBps;
-          if (r0.cb.entryMode === 'reversion') D.intraday.mode = 'reversion';
-          else if (D.intraday.mode === 'reversion') D.intraday.mode = 'waves';
-          save();
-          // UI nachziehen
-          document.getElementById('idMode').value = D.intraday.mode;
-          document.getElementById('idInterval').value = r0.cb.interval;
-          document.getElementById('idLine').value = r0.cb.lineType;
-          document.getElementById('idPeriod').value = String(r0.cb.period);
-          document.getElementById('idConfirm').value = String(r0.cb.confirmBps);
-          st.textContent = '✅ Übernommen: ' + (r0.cb.entryMode === 'reversion' ? 'Rücksetzer' : 'Durchbruch') + ' / ' + r0.cb.interval + ' / ' + r0.cb.lineType.toUpperCase() + ' / P' + r0.cb.period + '.';
-        });
-      });
-    } catch (e) {
-      st.textContent = 'Fehler: ' + (e.message || e);
-    } finally {
-      btn.disabled = false;
-      optRunning = false;
-    }
-  }
 
   /* ================= Strategie-Labor (Walk-Forward über alle Modi) ================= */
   var labRunning = false;
@@ -3597,79 +3409,6 @@
     });
   }
 
-  async function runLab() {
-    if (labRunning) return;
-    labRunning = true;
-    var btn = document.getElementById('labRunBtn'), st = document.getElementById('labStatus'), out = document.getElementById('labResult');
-    btn.disabled = true;
-    try {
-      var ld = await loadLabData(st);
-      var results = await labCompute(ld, st);
-      st.textContent = '';
-      if (!results.length) { out.innerHTML = '<div class="loading">Zu wenig Daten für den Walk-Forward-Test.</div>'; return; }
-
-      var html = '<table class="tbl"><tr><th>Strategie</th><th>Zeitrahmen</th><th>WF-Rendite (nur ungesehen)</th><th>Scheiben +</th><th>Trades</th><th>Treffer</th><th>PF</th><th>Urteil</th><th></th></tr>';
-      results.forEach(function (r0, idx) {
-        html += '<tr' + (idx === 0 ? ' style="font-weight:600;"' : '') + '><td>' + r0.mode.name + '</td><td>' + r0.interval + '</td>' +
-          '<td class="' + U.signCls(r0.wfRet) + '">' + U.signTxt(r0.wfRet, ' %') + ' <span style="color:var(--muted); font-weight:400;">[' + r0.foldRets.map(function (x) { return x === null ? '·' : (x > 0 ? '+' : '') + x.toFixed(1); }).join(' | ') + ']</span></td>' +
-          '<td>' + r0.posSegs + '/4</td><td>' + r0.n + '</td><td>' + r0.winRate + ' %</td><td>' + r0.pf + '</td><td>' + r0.verdict + '</td>' +
-          '<td>' + (r0.best ? '<button class="btn ghost" style="padding:2px 8px; font-size:11px;" data-labapply="' + idx + '">Übernehmen</button>' : '') + '</td></tr>';
-      });
-      html += '</table>';
-
-      // Diagnose des besten Kandidaten
-      var top = results[0];
-      if (top.trades.length >= 5) {
-        function bucketTable(title, keyFn, fmtKey) {
-          var b = {};
-          top.trades.forEach(function (t) { var k = keyFn(t); (b[k] = b[k] || { n: 0, pnl: 0 }).n++; b[k].pnl += t.pnl; });
-          var keys = Object.keys(b).sort(function (a, b2) { return parseFloat(a) - parseFloat(b2); });
-          var rows = keys.map(function (k) {
-            return '<tr><td>' + (fmtKey ? fmtKey(k) : k) + '</td><td>' + b[k].n + '</td><td class="' + U.signCls(b[k].pnl) + '">' + U.signTxt(Math.round(b[k].pnl * 100) / 100, ' $') + '</td></tr>';
-          }).join('');
-          return '<div><div style="font-size:12px; color:var(--ink-2); margin:8px 0 4px;">' + title + '</div><table class="tbl" style="font-size:11.5px;"><tr><th></th><th>Trades</th><th>P/L</th></tr>' + rows + '</table></div>';
-        }
-        html += '<div style="margin-top:12px; font-size:12.5px; font-weight:600;">Diagnose des Spitzenreiters (' + top.mode.name + ' · ' + top.interval + ', nur Out-of-Sample-Trades):</div>';
-        html += '<div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px;">';
-        html += bucketTable('Nach Uhrzeit (Berlin)', function (t) { return (new Date(t.openT).getUTCHours() + 2) % 24; }, function (k) { return k + ' Uhr'; });
-        html += bucketTable('Nach Wochentag', function (t) { return new Date(t.openT).getDay(); }, function (k) { return ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'][k]; });
-        // Symbol-Ranking
-        var bs = {};
-        top.trades.forEach(function (t) { (bs[t.sym] = bs[t.sym] || { n: 0, pnl: 0 }).n++; bs[t.sym].pnl += t.pnl; });
-        var symArr = Object.keys(bs).map(function (k) { return [k, bs[k].pnl, bs[k].n]; }).sort(function (a, b2) { return b2[1] - a[1]; });
-        html += '<div><div style="font-size:12px; color:var(--ink-2); margin:8px 0 4px;">Nach Symbol (Top/Flop)</div><table class="tbl" style="font-size:11.5px;"><tr><th></th><th>Trades</th><th>P/L</th></tr>' +
-          symArr.slice(0, 4).concat(symArr.slice(-3)).map(function (x) {
-            return '<tr><td><b>' + U.esc(x[0]) + '</b></td><td>' + x[2] + '</td><td class="' + U.signCls(x[1]) + '">' + U.signTxt(Math.round(x[1] * 100) / 100, ' $') + '</td></tr>';
-          }).join('') + '</table></div>';
-        html += '</div>';
-      }
-      html += '<div style="color:var(--muted); font-size:11.5px; margin-top:10px;">WF-Rendite = Summe der Ergebnisse auf ausschließlich ungesehenen Zeitscheiben (je Scheibe wurden EMA-Periode × Schwelle auf den Vordaten neu bestimmt). 🟢 = positiv, ≥3/4 Scheiben im Plus, Profit-Faktor &gt; 1. Kurze Historie (1m: ~5 Tage) = begrenzte Aussagekraft – Test regelmäßig wiederholen.</div>';
-      out.innerHTML = html;
-      out.querySelectorAll('[data-labapply]').forEach(function (b) {
-        b.addEventListener('click', function () {
-          var r0 = results[parseInt(b.getAttribute('data-labapply'), 10)];
-          if (!r0 || !r0.best) return;
-          D.intraday.mode = r0.mode.key;
-          D.intraday.interval = r0.interval;
-          D.intraday.period = r0.best.period;
-          D.intraday.confirmBps = r0.best.confirmBps;
-          save();
-          document.getElementById('idMode').value = D.intraday.mode;
-          document.getElementById('idInterval').value = r0.interval;
-          document.getElementById('idPeriod').value = String(r0.best.period);
-          document.getElementById('idConfirm').value = String(r0.best.confirmBps);
-          if (window.__updateParamVis) window.__updateParamVis();
-          st.textContent = '✅ Übernommen: ' + r0.mode.name + ' · ' + r0.interval + ' · P' + r0.best.period + '.';
-          render();
-        });
-      });
-    } catch (e) {
-      st.textContent = 'Fehler: ' + (e.message || e);
-    } finally {
-      btn.disabled = false;
-      labRunning = false;
-    }
-  }
 
   /* ================= Init & Loop ================= */
   async function init() {
@@ -3745,8 +3484,6 @@
     });
 
     // Optimierer, CSV, Watchlist, Strategie-Labor
-    document.getElementById('labRunBtn').addEventListener('click', runLab);
-    document.getElementById('optRunBtn').addEventListener('click', runOptimizer);
     document.getElementById('csvBtn').addEventListener('click', exportCsv);
     renderWatchChips();
 
