@@ -454,8 +454,10 @@
           <b>🎯 Ausbruch (mit der Bewegung):</b> Der Kurs verlässt eine Marke und läuft weiter. Auslöser wahlweise die
           <b>EMA-Kreuzung</b> (bestätigter Durchbruch durch die Leitlinie) oder die <b>Eröffnungs-Range</b> – die Spanne der
           ersten 30 Handelsminuten, gehandelt wird der erste Ausbruch daraus (max. 1 Trade je Richtung und Tag).
-          Beim Ausstieg entscheidest du zwischen <b>laufen lassen</b> (bis zum Gegen-Durchbruch, mit Trailing-Stop)
-          und <b>kurz</b> (raus bei der Rückkehr zur Linie – das frühere Scalping).<br><br>
+          Beim Ausstieg entscheidest du zwischen <b>laufen lassen</b> (bis zum Gegen-Durchbruch, mit Trailing-Stop),
+          <b>kurz</b> (raus bei der Rückkehr zur Linie) und <b>⚡ blitz</b> – maximal 3 Minuten halten, raus bei der ersten
+          Gegenbar oder der EMA9-Rückkreuzung. Blitz lebt von kleinen, schnellen Gewinnen; Achtung: Bei sehr kurzer
+          Haltezeit frisst der Spread einen großen Teil der Bewegung – der Kosten-Check bleibt deshalb an.<br><br>
           <b>🔄 Umkehr (gegen die Übertreibung):</b> Der Kurs hat sich zu weit entfernt und kommt zurück. Auslöser wahlweise
           <b>Überdehnung</b> (z-Score-Abstand zur Leitlinie, Ziel ist die Rückkehr zur Linie) oder <b>Wellental</b> –
           Einstieg am Tief einer Welle, nur wenn der Wellen-Qualitäts-Score ≥ 60/100 liegt, Ausstieg am Wellenkamm.
@@ -485,7 +487,7 @@
                 </div>
               </div>
               <label title="Was den Trade auslöst">Auslöser<select id="idTrigger"></select></label>
-              <label id="lblExit" title="Wie lange der Trade laufen darf">Ausstieg<select id="idExit"><option value="laufen" selected>laufen lassen</option><option value="kurz">kurz (Rückkehr zur Linie)</option></select></label>
+              <label id="lblExit" title="Wie lange der Trade laufen darf">Ausstieg<select id="idExit"><option value="laufen" selected>laufen lassen</option><option value="kurz">kurz (Rückkehr zur Linie)</option><option value="blitz">⚡ blitz (max. 3 Min)</option></select></label>
               <select id="idMode" style="display:none;"><option value="breakout">breakout</option><option value="waves">waves</option><option value="reversion">reversion</option><option value="wave">wave</option><option value="orb">orb</option></select>
               <label>Zeitrahmen<select id="idInterval"><option value="1m">1 Min</option><option value="5m" selected>5 Min</option><option value="15m">15 Min</option><option value="60m">60 Min</option></select></label>
               <label>EMA-Periode<select id="idPeriod"><option value="9">9</option><option value="20" selected>20</option><option value="50">50</option></select></label>
@@ -519,7 +521,7 @@
           <div class="pgroup" id="pgScalp">
             <div class="pgroup-title">⏱ Haltedauer &amp; Ausstieg</div>
             <div class="params">
-              <label data-modes="waves,reversion,wave">Max. Haltedauer<select id="idHold"><option value="15">15 Min</option><option value="30">30 Min</option><option value="60" selected>60 Min</option><option value="0">aus</option></select></label>
+              <label data-modes="waves,reversion,wave">Max. Haltedauer<select id="idHold"><option value="3">3 Min</option><option value="5">5 Min</option><option value="15">15 Min</option><option value="30">30 Min</option><option value="60" selected>60 Min</option><option value="0">aus</option></select></label>
               <label data-modes="waves,orb" title="Ausstieg, wenn der Schein X % unter sein Hoch fällt (Gewinn sichern)">Trailing-Stop<select id="idTrail"><option value="0">aus</option><option value="10">−10 %</option><option value="15" selected>−15 %</option><option value="25">−25 %</option></select></label>
             </div>
           </div>

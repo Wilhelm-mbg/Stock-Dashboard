@@ -112,6 +112,20 @@ const path = require('path');
   check('Umkehr-Setup aktiv', await page.locator('#idSetupPills button[data-setup="umkehr"]').evaluate(el => el.classList.contains('active')));
   const trigOpts = await page.locator('#idTrigger option').count();
   check('Umkehr hat zwei Auslöser', trigOpts === 2);
+
+  // ⚡ Blitz-Ausstieg: Option existiert, wird gespeichert und überlebt den UI-Sync
+  await page.click('#idSetupPills button[data-setup="ausbruch"]');
+  await page.waitForTimeout(400);
+  check('Ausstieg hat drei Optionen (inkl. Blitz)', await page.locator('#idExit option').count() === 3);
+  await page.selectOption('#idExit', 'blitz');
+  await page.waitForTimeout(400);
+  const depBlitz = await page.evaluate(async () => (await window.api.storeGet('depot')).intraday);
+  check('Blitz wird gespeichert (exitStyle=blitz, mode=waves)', depBlitz.exitStyle === 'blitz' && depBlitz.mode === 'waves');
+  check('Blitz bleibt im Formular sichtbar', (await page.locator('#idExit').inputValue()) === 'blitz');
+  await page.selectOption('#idExit', 'laufen');
+  await page.waitForTimeout(300);
+  await page.click('#idSetupPills button[data-setup="umkehr"]');
+  await page.waitForTimeout(400);
   await page.selectOption('#idTrigger', 'welle');
   await page.waitForTimeout(400);
   check('Auslöser Wellental → interner Modus wave', (await page.locator('#idMode').inputValue()) === 'wave');

@@ -51,6 +51,28 @@ ok(rO.trades.length >= 2 && rO.trades.length <= 6, '~1 Trade je Tag (1 je Richtu
 ok(rO.trades.every(function (t) { return t.dir === 'call'; }), 'Gap-and-Go: nur Calls');
 ok(rO.summary.retPct > 0, 'Trendtage → ORB im Plus', rO.summary.retPct + ' %');
 
+console.log('3b) ⚡ Blitz-Ausstieg: nie länger als 3 Minuten im Markt');
+// Sägezahn-Tag: Aufwärts-Kreuzungen, die sofort wieder drehen – Blitz muss binnen Minuten raus sein
+var barsB = [];
+var rndB = lcg(21);
+for (var dB = 0; dB < 2; dB++) {
+  var dsB = t0 + dB * 86400000;
+  for (var bB = 0; bB < 390; bB++) {
+    // Wellen mit ~14-Minuten-Periode: regelmäßige Kreuzungen in beide Richtungen
+    var pB = 100 + 1.5 * Math.sin(bB / 4.5) + rndB() * 0.15;
+    barsB.push([dsB + bB * 60000, pB, 900000]);
+  }
+}
+var rB = Q.backtestIntraday({ TEST: barsB }, {
+  capital: 10000, period: 9, budgetPct: 0.03, orderFee: 1, confirmBps: 5,
+  entryMode: 'cross', exitMode: 'blitz', sl: -0.30, tp: null, trailPct: 0.10,
+  maxHoldMin: 3, cooldownMin: 2, maxPerDay: 40, minEdge: 0
+});
+ok(!rB.error, 'Blitz-Backtest läuft', rB.error);
+ok(rB.trades.length >= 5, 'Blitz handelt oft (viele kleine Versuche)', rB.trades.length);
+ok(rB.trades.every(function (t) { return t.holdMin <= 3; }), 'KEIN Trade länger als 3 Minuten gehalten', Math.max.apply(null, rB.trades.map(function (t) { return t.holdMin; })) + ' Min max');
+ok(rB.trades.some(function (t) { return /Blitz/.test(t.why || ''); }), 'Blitz-Exits werden als solche benannt');
+
 console.log('4) Risiko-Sizing');
 var rFix = Q.backtestIntraday({ TEST: barsO }, { capital: 10000, period: 20, budgetPct: 0.03, orderFee: 1, entryMode: 'orb', orbMin: 30, sl: -0.25, tp: null, trailPct: 0.15, cooldownMin: 10, maxPerDay: 10, minEdge: 0 });
 var rRisk = Q.backtestIntraday({ TEST: barsO }, { capital: 10000, period: 20, budgetPct: 0.03, orderFee: 1, entryMode: 'orb', orbMin: 30, sl: -0.25, tp: null, trailPct: 0.15, cooldownMin: 10, maxPerDay: 10, minEdge: 0, riskPct: 0.5 });

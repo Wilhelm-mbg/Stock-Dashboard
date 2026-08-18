@@ -1,7 +1,7 @@
 {
   "name": "markt-dashboard",
   "productName": "Markt-Dashboard",
-  "version": "7.13.0",
+  "version": "7.14.0",
   "description": "Aktien-Dashboard: Big Tech, Chip-Sektor, Marktüberblick & News – aktualisiert sich selbst",
   "main": "main.js",
   "author": "Wilhelm",

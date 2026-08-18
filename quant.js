@@ -1376,6 +1376,13 @@
             }
           } else if (ENTRY === 'reversion') {
             if ((p.dir === 'call' && sig0.above) || (p.dir === 'put' && !sig0.above)) why = 'Ziel erreicht: Rückkehr zur Leitlinie';
+          } else if (EXIT_MODE === 'blitz') {
+            // ⚡ Blitz: raus bei der ersten Gegenbar oder der EMA9-Rückkreuzung – langes Halten
+            // ist im Daytrade Gift; kleine Gewinne, viele Versuche.
+            var gb1 = ci >= 2 ? bars[ci][1] : null, gb0 = ci >= 2 ? bars[ci - 1][1] : null;
+            var sig9 = signalCross(bars.slice(Math.max(0, ci - 60), ci + 1), 'ema', 9, 0);
+            if (gb1 != null && ((p.dir === 'call' && gb1 < gb0) || (p.dir === 'put' && gb1 > gb0))) why = 'Blitz: Gegenbar';
+            else if ((p.dir === 'call' && !sig9.above) || (p.dir === 'put' && sig9.above)) why = 'Blitz: EMA9-Rückkreuzung';
           } else if (EXIT_MODE === 'recross') {
             if ((p.dir === 'call' && !sig0.above) || (p.dir === 'put' && sig0.above)) why = 'EMA-Rückkreuzung (Wellen-Ende)';
           } else if ((p.dir === 'call' && sig0.crossed === 'down') || (p.dir === 'put' && sig0.crossed === 'up')) {

@@ -1087,7 +1087,10 @@
     }
     var win = pos.pnl > 0;
     // Verlustserien-Zähler (Tilt-Schutz, nur Intraday)
-    if (pos.strategy === 'intraday') {
+    // Nur echte Trades seit dem Messschnitt zählen – am 18.08. haben Zombie-Abwicklungen
+    // von Altlasten die Serie auf 5 getrieben und den Tag gesperrt, obwohl erst 3 echte
+    // Trades gelaufen waren.
+    if (pos.strategy === 'intraday' && istMess(pos)) {
       var dToday = new Date().toISOString().slice(0, 10);
       if (!D.lossStreak || D.lossStreak.day !== dToday) D.lossStreak = { day: dToday, n: 0 };
       D.lossStreak.n = win ? 0 : D.lossStreak.n + 1;
@@ -1224,7 +1227,7 @@
   function modeFromSetup(setup, trigger, exitStyle) {
     if (setup === 'umkehr') return trigger === 'welle' ? 'wave' : 'reversion';
     if (trigger === 'range') return 'orb';
-    return exitStyle === 'kurz' ? 'waves' : 'breakout';
+    return (exitStyle === 'kurz' || exitStyle === 'blitz') ? 'waves' : 'breakout';
   }
   function setupFromMode(mode) {
     if (mode === 'wave') return { setup: 'umkehr', trigger: 'welle', exitStyle: 'laufen' };
@@ -1259,6 +1262,16 @@
       };
     }
     if (c.mode === 'waves') {
+      if (c.exitStyle === 'blitz') {
+        // ⚡ Blitz: Daytrade-These "langes Halten ist Gift" – raus nach spätestens 3 Minuten,
+        // vorher schon bei der ersten Gegenbar oder der EMA9-Rückkreuzung. Kleine Gewinne,
+        // viele Versuche; der Hebel kommt erst, wenn die Quote stimmt.
+        return {
+          exitMode: 'blitz', sl: slOf(c), tp: null,
+          trail: 0.10, maxHoldMin: Math.min(3, c.scalpHold > 0 ? c.scalpHold : 3),
+          cooldownMin: c.cooldownMin != null ? c.cooldownMin : 2, maxPerDay: c.maxPerDay != null ? c.maxPerDay : 40, scanMs: 30000
+        };
+      }
       return {
         exitMode: 'recross', sl: slOf(c), tp: null,
         trail: (c.scalpTrail || 0) / 100, maxHoldMin: c.scalpHold || 0,
@@ -1402,6 +1415,13 @@
             }
           } else if (xm === 'target') {
             if ((open.dir === 'call' && sig.above) || (open.dir === 'put' && !sig.above)) why = 'Ziel erreicht: Rückkehr zur Leitlinie';
+          } else if (xm === 'blitz') {
+            // ⚡ Blitz-Ausstieg: erste abgeschlossene Gegenbar ODER Rückkreuzung der schnellen EMA9.
+            var b1 = bars.length >= 3 ? bars[bars.length - 2][1] : null;   // letzter abgeschlossener Bar
+            var b0 = bars.length >= 3 ? bars[bars.length - 3][1] : null;
+            var sig9 = Q.signalCross(bars.slice(-60), 'ema', 9, 0);
+            if (b1 != null && ((open.dir === 'call' && b1 < b0) || (open.dir === 'put' && b1 > b0))) why = '⚡ Blitz: Gegenbar – sofort raus';
+            else if ((open.dir === 'call' && !sig9.above) || (open.dir === 'put' && sig9.above)) why = '⚡ Blitz: EMA9-Rückkreuzung';
           } else if (xm === 'recross') {
             if ((open.dir === 'call' && !sig.above) || (open.dir === 'put' && sig.above)) why = 'EMA-Rückkreuzung – Welle zu Ende';
           } else if ((open.dir === 'call' && sig.crossed === 'down') || (open.dir === 'put' && sig.crossed === 'up')) {
@@ -2679,12 +2699,15 @@
     var kanal = cfg.channel !== false;
     return [
       { key: 'breakout', setup: 'ausbruch', trigger: 'kreuzung', name: '🎯 Ausbruch · EMA-Kreuzung',
-        opts: { entryMode: 'cross', exitMode: cfg.exitStyle === 'kurz' ? 'recross' : 'confirmed',
-          sl: cfg.exitStyle === 'kurz' ? slV : -0.25, tp: cfg.exitStyle === 'kurz' ? null : 0.35,
-          trailPct: cfg.exitStyle === 'kurz' ? (cfg.scalpTrail || 0) / 100 : 0,
-          maxHoldMin: cfg.exitStyle === 'kurz' ? (cfg.scalpHold || 60) : 0,
-          cooldownMin: cfg.exitStyle === 'kurz' ? 5 : 45, maxPerDay: cfg.exitStyle === 'kurz' ? 40 : 10,
-          trendFilter: !!cfg.trendFilter } },
+        opts: cfg.exitStyle === 'blitz'
+          ? { entryMode: 'cross', exitMode: 'blitz', sl: slV, tp: null, trailPct: 0.10, maxHoldMin: 3,
+              cooldownMin: 2, maxPerDay: 40, trendFilter: !!cfg.trendFilter }
+          : { entryMode: 'cross', exitMode: cfg.exitStyle === 'kurz' ? 'recross' : 'confirmed',
+              sl: cfg.exitStyle === 'kurz' ? slV : -0.25, tp: cfg.exitStyle === 'kurz' ? null : 0.35,
+              trailPct: cfg.exitStyle === 'kurz' ? (cfg.scalpTrail || 0) / 100 : 0,
+              maxHoldMin: cfg.exitStyle === 'kurz' ? (cfg.scalpHold || 60) : 0,
+              cooldownMin: cfg.exitStyle === 'kurz' ? 5 : 45, maxPerDay: cfg.exitStyle === 'kurz' ? 40 : 10,
+              trendFilter: !!cfg.trendFilter } },
       { key: 'orb', setup: 'ausbruch', trigger: 'range', name: '🎯 Ausbruch · Eröffnungs-Range',
         opts: { entryMode: 'orb', exitMode: 'confirmed', orbMin: 30, sl: (cfg.scalpSL === "auto" ? "auto" : -0.25),
           tp: null, trailPct: 0.15, maxHoldMin: 0, cooldownMin: 10, maxPerDay: 10 } },
@@ -2924,13 +2947,14 @@
     setup: ['ausbruch', 'umkehr'],
     trigger: { ausbruch: ['kreuzung', 'range'], umkehr: ['ueberdehnung', 'welle'] },
     interval: ['1m', '5m'],
+    exitStil: ['laufen', 'kurz', 'blitz'],
     period: [9, 20, 50],
     confirmBps: [5, 15, 30],
     lineType: ['ema', 'vwap'],
     window: ['all', 'open2', 'open4', 'close2'],
     scalpSL: [15, 20, 30, 'auto'],
-    scalpHold: [15, 30, 60],
-    cooldownMin: [3, 10, 30, 45],
+    scalpHold: [3, 5, 15, 30, 60],
+    cooldownMin: [2, 3, 10, 30, 45],
     maxPerDay: [5, 10, 20, 40],
     profile: ['atm21', 'otm3_14', 'otm5_10'],
     sizing: ['fix', '0.25', '0.5', '1'],
@@ -2940,7 +2964,7 @@
   };
   /* Harte Grenzen – die dürfen auch selbstausdehnende Listen nie überschreiten. */
   var GEN_GRENZEN = {
-    period: [5, 200], confirmBps: [2, 80], scalpHold: [5, 240],
+    period: [5, 200], confirmBps: [2, 80], scalpHold: [2, 240],
     cooldownMin: [1, 120], maxPerDay: [2, 60], scalpSL: [10, 60]
   };
   /** Sitzt der Sieger am Rand einer Zahlenliste, wird die Liste um einen Schritt
@@ -2972,6 +2996,7 @@
     var setup = pick(GEN_SPACE.setup);
     return {
       setup: setup, trigger: pick(GEN_SPACE.trigger[setup]),
+      exitStil: setup === 'ausbruch' ? pick(GEN_SPACE.exitStil) : 'laufen',
       interval: pick(GEN_SPACE.interval), period: pick(GEN_SPACE.period),
       confirmBps: pick(GEN_SPACE.confirmBps), lineType: pick(GEN_SPACE.lineType),
       window: pick(GEN_SPACE.window), scalpSL: pick(GEN_SPACE.scalpSL),
@@ -2985,7 +3010,9 @@
   function geneFromConfig(c) {
     var st = setupFromMode(c.mode);
     return {
-      setup: st.setup, trigger: st.trigger, interval: c.interval === '60m' ? '15m' : (c.interval || '5m'),
+      setup: st.setup, trigger: st.trigger,
+      exitStil: st.setup === 'ausbruch' && st.trigger === 'kreuzung' ? (c.exitStyle || st.exitStyle || 'laufen') : 'laufen',
+      interval: c.interval === '60m' ? '15m' : (c.interval || '5m'),
       period: c.period, confirmBps: c.confirmBps, lineType: c.lineType || 'ema',
       window: c.window || 'all', scalpSL: c.scalpSL === 'auto' ? 'auto' : (c.scalpSL || 20),
       scalpHold: c.scalpHold || 60, cooldownMin: c.cooldownMin || 45, maxPerDay: c.maxPerDay || 10,
@@ -2994,12 +3021,13 @@
     };
   }
   function geneKey(g) {
-    return [g.setup, g.trigger, g.interval, g.period, g.confirmBps, g.lineType, g.window,
+    return [g.setup, g.trigger, g.exitStil || 'laufen', g.interval, g.period, g.confirmBps, g.lineType, g.window,
       g.scalpSL, g.scalpHold, g.cooldownMin, g.maxPerDay, g.profile, g.sizing,
       g.trendFilter ? 1 : 0, g.channel ? 1 : 0, g.mtf ? 1 : 0].join('|');
   }
   function geneName(g) {
-    return setupName(modeFromSetup(g.setup, g.trigger, 'laufen'), g.channel) + ' · ' + g.interval +
+    var stil = g.exitStil === 'blitz' ? ' · ⚡ Blitz' : (g.exitStil === 'kurz' ? ' · kurz' : '');
+    return setupName(modeFromSetup(g.setup, g.trigger, 'laufen'), g.channel) + stil + ' · ' + g.interval +
       ' · ' + String(g.lineType).toUpperCase() + g.period + ' · ' + (g.confirmBps / 100).toFixed(2) + ' %' +
       ' · SL ' + (g.scalpSL === 'auto' ? 'auto' : g.scalpSL + ' %') +
       (g.profile && g.profile !== 'atm21' ? ' · ' + (Q.PROFILES[g.profile] || {}).name : '') +
@@ -3010,7 +3038,7 @@
   function mutate(g) {
     var k = randGene();
     var out = JSON.parse(JSON.stringify(g));
-    var felder = ['setup', 'interval', 'period', 'confirmBps', 'lineType', 'window', 'scalpSL', 'scalpHold',
+    var felder = ['setup', 'exitStil', 'interval', 'period', 'confirmBps', 'lineType', 'window', 'scalpSL', 'scalpHold',
       'cooldownMin', 'maxPerDay', 'profile', 'sizing', 'trendFilter', 'channel', 'mtf'];
     var n = 1 + Math.floor(Math.random() * 2);
     for (var i = 0; i < n; i++) {
@@ -3029,12 +3057,15 @@
   }
   /** Backtest-Optionen eines Gens (identische Rechenlogik wie im Livebetrieb). */
   function geneOpts(g) {
-    var mode = modeFromSetup(g.setup, g.trigger, 'laufen');
+    var mode = modeFromSetup(g.setup, g.trigger, g.exitStil || 'laufen');
     var slV = g.scalpSL === 'auto' ? 'auto' : -(g.scalpSL) / 100;
     var base;
     if (mode === 'orb') base = { entryMode: 'orb', exitMode: 'confirmed', orbMin: 30, sl: slV, tp: null, trailPct: 0.15, maxHoldMin: 0 };
     else if (mode === 'reversion') base = { entryMode: 'reversion', sl: slV, tp: null, trailPct: 0, maxHoldMin: g.scalpHold };
     else if (mode === 'wave') base = { entryMode: 'wave', channel: !!g.channel, sl: slV, tp: null, trailPct: 0, maxHoldMin: g.scalpHold, trendFilter: true, minQuality: 60 };
+    else if (mode === 'waves') base = g.exitStil === 'blitz'
+      ? { entryMode: 'cross', exitMode: 'blitz', sl: slV, tp: null, trailPct: 0.10, maxHoldMin: Math.min(3, g.scalpHold > 0 ? g.scalpHold : 3), trendFilter: !!g.trendFilter }
+      : { entryMode: 'cross', exitMode: 'recross', sl: slV, tp: null, trailPct: 0, maxHoldMin: g.scalpHold, trendFilter: !!g.trendFilter };
     else base = { entryMode: 'cross', exitMode: 'confirmed', sl: -0.25, tp: 0.35, trailPct: 0, maxHoldMin: 0, trendFilter: !!g.trendFilter };
     var common = labCommonOpts(D.intraday, g.interval);
     var prof = Q.PROFILES[g.profile] || Q.PROFILES.atm21;
@@ -3309,7 +3340,8 @@
   function farmPromote(F) {
     var g = F.challenger.gene;
     var vorher = JSON.parse(JSON.stringify(D.intraday));
-    D.intraday.mode = modeFromSetup(g.setup, g.trigger, 'laufen');
+    D.intraday.mode = modeFromSetup(g.setup, g.trigger, g.exitStil || 'laufen');
+    if (g.setup === 'ausbruch' && g.trigger === 'kreuzung') D.intraday.exitStyle = g.exitStil || 'laufen';
     D.intraday.interval = g.interval;
     D.intraday.period = g.period;
     D.intraday.confirmBps = g.confirmBps;
@@ -3986,7 +4018,7 @@
       var st2 = setupFromMode(idM.value);
       setupPills.forEach(function (b) { b.classList.toggle('active', b.getAttribute('data-setup') === st2.setup); });
       fillTrigger(st2.setup, st2.trigger);
-      idEx.value = st2.exitStyle;
+      idEx.value = (st2.setup === 'ausbruch' && st2.trigger === 'kreuzung' && D.intraday.exitStyle) ? D.intraday.exitStyle : st2.exitStyle;
       var lx = document.getElementById('lblExit');
       if (lx) lx.style.display = (st2.setup === 'ausbruch' && st2.trigger === 'kreuzung') ? '' : 'none';
     }
@@ -3995,10 +4027,12 @@
       // Sinnvolle Voreinstellungen, aber nur beim echten Wechsel
       if (setup === 'umkehr') { idI.value = '1m'; idC.value = '15'; if (trigger === 'welle') idTr.value = '1'; }
       else if (trigger === 'range') { idI.value = '1m'; idC.value = '15'; }
-      else if (exitStyle === 'kurz') { idI.value = '1m'; idC.value = '5'; }
+      else if (exitStyle === 'kurz' || exitStyle === 'blitz') { idI.value = '1m'; idC.value = '5'; }
       else { idI.value = '5m'; idC.value = '15'; }
-      syncSetupUI();
+      // Erst speichern, dann anzeigen: syncSetupUI liest den gespeicherten Ausstiegsstil –
+      // in der alten Reihenfolge setzte es die frische Blitz-Auswahl auf den alten Wert zurück.
       idSave();
+      syncSetupUI();
     }
     setupPills.forEach(function (b) {
       b.addEventListener('click', function () {
@@ -4027,7 +4061,7 @@
     var HAND_FELDER = { mode: 'Setup', period: 'Periode', confirmBps: 'Bestätigung', interval: 'Zeitrahmen',
       profile: 'Schein-Profil', lineType: 'Leitlinie', trendFilter: 'Trendfilter', window: 'Zeitfenster', scalpHold: 'Max-Halten',
       scalpTrail: 'Trailing', scalpSL: 'Not-Stop', blackout: 'Event-Blackout', channel: 'Trendkanal', mtf: '5-Min-Bestätigung',
-      sizing: 'Positionsgröße', screener: 'Screener' };
+      sizing: 'Positionsgröße', screener: 'Screener', exitStyle: 'Ausstieg' };
     function idSave() {
       var vorherHand = JSON.parse(JSON.stringify(D.intraday));
       D.intraday.enabled = idE.checked;
@@ -4054,7 +4088,8 @@
       D.intraday.sizing = idSz.value;
       D.intraday.screener = idScr.checked;
       var stS = setupFromMode(idM.value);
-      D.intraday.setup = stS.setup; D.intraday.trigger = stS.trigger; D.intraday.exitStyle = stS.exitStyle;
+      D.intraday.setup = stS.setup; D.intraday.trigger = stS.trigger;
+      D.intraday.exitStyle = (stS.setup === 'ausbruch' && stS.trigger === 'kreuzung') ? (idEx.value || stS.exitStyle) : stS.exitStyle;
       // Journal: Was hat sich von Hand geändert? Ohne Eintrag ist das Experiment-Journal
       // unvollständig und Konfig-Drift nicht mehr nachvollziehbar.
       var handDiff = [];
