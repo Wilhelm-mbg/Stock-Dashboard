@@ -37,7 +37,7 @@ function fetchText(url, redirectsLeft) {
       }
       let data = '';
       res.setEncoding('utf8');
-      res.on('data', (c) => { data += c; if (data.length > 8 * 1024 * 1024) { req.destroy(); } });
+      res.on('data', (c) => { data += c; if (data.length > 8 * 1024 * 1024) { req.destroy(); resolve({ ok: false, status: res.statusCode || 0, body: 'Antwort zu groß (über 8 MB) – abgebrochen' }); } });
       res.on('end', () => resolve({ ok: res.statusCode >= 200 && res.statusCode < 300, status: res.statusCode || 0, body: data }));
     });
     req.on('timeout', () => { req.destroy(); resolve({ ok: false, status: 0, body: 'Timeout' }); });
@@ -87,7 +87,7 @@ ipcMain.handle('export-analysis', async (_ev, payload) => {
     try {
       var eng = fs.readFileSync(path.join(__dirname, 'quant.js'), 'utf8');
       var engPath = path.join(dir, 'engine.js');
-      if (!fs.existsSync(engPath) || fs.readFileSync(engPath, 'utf8').length !== eng.length) fs.writeFileSync(engPath, eng, 'utf8');
+      if (!fs.existsSync(engPath) || fs.readFileSync(engPath, 'utf8') !== eng) fs.writeFileSync(engPath, eng, 'utf8');
     } catch (e) { /* Engine-Kopie ist optional */ }
     return { ok: true, dir };
   } catch (e) { return { ok: false, msg: String(e.message || e) }; }
@@ -119,7 +119,7 @@ function postJson(url, headers, bodyObj) {
     }, (res) => {
       let data = '';
       res.setEncoding('utf8');
-      res.on('data', (c) => { data += c; });
+      res.on('data', (c) => { data += c; if (data.length > 8 * 1024 * 1024) { req.destroy(); resolve({ ok: false, status: res.statusCode || 0, body: 'Antwort zu groß – abgebrochen' }); } });
       res.on('end', () => resolve({ ok: res.statusCode >= 200 && res.statusCode < 300, status: res.statusCode || 0, body: data }));
     });
     req.on('timeout', () => { req.destroy(); resolve({ ok: false, status: 0, body: 'Timeout' }); });
@@ -145,7 +145,7 @@ function capFetch(method, url, headers, bodyObj) {
     const req = https.request(u, { method: method || 'GET', headers: h, timeout: 20000 }, (res) => {
       let data = '';
       res.setEncoding('utf8');
-      res.on('data', (c) => { data += c; });
+      res.on('data', (c) => { data += c; if (data.length > 8 * 1024 * 1024) { req.destroy(); resolve({ ok: false, status: res.statusCode || 0, body: 'Antwort zu groß – abgebrochen', headers: {} }); } });
       res.on('end', () => {
         const lower = {};
         Object.keys(res.headers || {}).forEach((k) => { lower[k.toLowerCase()] = res.headers[k]; });
@@ -162,12 +162,32 @@ ipcMain.handle('cap-fetch', async (_ev, method, url, headers, bodyObj) => capFet
 
 // ---- Ollama (lokale KI – NUR localhost) ----
 const http = require('http');
+function gespeicherteSettings() {
+  try {
+    const f = path.join(app.getPath('userData'), 'store', 'settings.json');
+    if (fs.existsSync(f)) return JSON.parse(fs.readFileSync(f, 'utf8')) || {};
+  } catch (e) { /* defekte Datei: Defaults */ }
+  return {};
+}
+function ollamaPortErlaubt(port) {
+  if (port === '11434') return true;
+  try {
+    const st = gespeicherteSettings();
+    if (st.ollamaUrl) { const ou = new URL(st.ollamaUrl); return (ou.port || '80') === port; }
+  } catch (e) { /* ignorieren */ }
+  return false;
+}
 function ollamaFetch(method, url, bodyObj) {
   return new Promise((resolve) => {
     let u;
     try { u = new URL(url); } catch (e) { return resolve({ ok: false, status: 0, body: 'Ungültige URL' }); }
     if (u.protocol !== 'http:' || (u.hostname !== '127.0.0.1' && u.hostname !== 'localhost')) {
       return resolve({ ok: false, status: 0, body: 'Nur localhost erlaubt' });
+    }
+    // Nur der Ollama-Port (Standard 11434 bzw. der in den Einstellungen hinterlegte) –
+    // sonst könnte der Renderer beliebige lokale Dienste mit POSTs ansprechen.
+    if (!ollamaPortErlaubt(u.port || '80')) {
+      return resolve({ ok: false, status: 0, body: 'Port nicht erlaubt (nur der eingestellte Ollama-Port)' });
     }
     const payload = bodyObj != null ? JSON.stringify(bodyObj) : null;
     const req = http.request(u, {
@@ -177,7 +197,7 @@ function ollamaFetch(method, url, bodyObj) {
     }, (res) => {
       let data = '';
       res.setEncoding('utf8');
-      res.on('data', (c) => { data += c; });
+      res.on('data', (c) => { data += c; if (data.length > 8 * 1024 * 1024) { req.destroy(); resolve({ ok: false, status: res.statusCode || 0, body: 'Antwort zu groß – abgebrochen' }); } });
       res.on('end', () => resolve({ ok: res.statusCode >= 200 && res.statusCode < 300, status: res.statusCode || 0, body: data }));
     });
     req.on('timeout', () => { req.destroy(); resolve({ ok: false, status: 0, body: 'Timeout – Modell zu langsam?' }); });
@@ -288,14 +308,15 @@ function setupUpdater() {
     autoUpd = require('electron-updater').autoUpdater;
   } catch (e) {
     updFehler = (e && e.message) ? e.message : String(e);
-    updState = { state: 'error', version: null, pct: 0, msg: 'Update-Modul fehlt: ' + updFehler, at: Date.now() };
+    updSend({ state: 'error', version: null, pct: 0, msg: 'Update-Modul fehlt: ' + updFehler });
     return null;
   }
-  autoUpd.autoDownload = true;            // still im Hintergrund laden …
-  autoUpd.autoInstallOnAppQuit = true;    // … und beim nächsten Beenden einspielen
+  const updAus = gespeicherteSettings().autoUpdate === false;   // Opt-out gilt ab dem Start
+  autoUpd.autoDownload = !updAus;         // still im Hintergrund laden …
+  autoUpd.autoInstallOnAppQuit = !updAus; // … und beim nächsten Beenden einspielen
   autoUpd.allowPrerelease = false;
   autoUpd.on('checking-for-update', () => updSend({ state: 'checking', msg: 'Suche nach Updates …' }));
-  autoUpd.on('update-available', (i) => updSend({ state: 'available', version: i && i.version, pct: 0, msg: 'Version ' + ((i && i.version) || '?') + ' gefunden – wird geladen …' }));
+  autoUpd.on('update-available', (i) => updSend({ state: 'available', version: i && i.version, pct: 0, msg: 'Version ' + ((i && i.version) || '?') + ' gefunden' + (autoUpd.autoDownload ? ' – wird geladen …' : ' (automatisches Laden ist ausgeschaltet)') }));
   autoUpd.on('update-not-available', () => updSend({ state: 'current', version: app.getVersion(), msg: 'Aktuell (' + app.getVersion() + ')' }));
   autoUpd.on('download-progress', (p) => updSend({ state: 'downloading', pct: Math.round((p && p.percent) || 0), msg: 'Lade … ' + Math.round((p && p.percent) || 0) + ' %' }));
   autoUpd.on('update-downloaded', (i) => updSend({ state: 'ready', version: i && i.version, pct: 100, msg: 'Version ' + ((i && i.version) || '?') + ' ist heruntergeladen – wird beim nächsten Beenden eingespielt.' }));
@@ -314,7 +335,10 @@ ipcMain.handle('update-check', async () => {
 ipcMain.handle('update-install', async () => {
   if (!autoUpd || updState.state !== 'ready') return { ok: false, msg: 'Es liegt kein fertig geladenes Update bereit.' };
   quitting = true;
-  setTimeout(() => { try { autoUpd.quitAndInstall(false, true); } catch (e) { /* egal */ } }, 300);
+  setTimeout(() => {
+    try { autoUpd.quitAndInstall(false, true); }
+    catch (e) { quitting = false; updSend({ state: 'error', msg: 'Installation fehlgeschlagen: ' + ((e && e.message) || e) }); }
+  }, 300);
   return { ok: true };
 });
 ipcMain.handle('update-set-auto', async (_ev, on) => {

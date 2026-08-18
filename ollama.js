@@ -48,13 +48,13 @@
         'DIE VIER KANDIDATEN:\n' +
         '- ausbruch/kreuzung: Kurs durchbricht die Leitlinie und läuft weiter. Passt, wenn der Markt RICHTUNG hat ' +
         '(trendAnteilPct deutlich über 65 oder unter 35) und die Werte weit von ihrer Leitlinie weg sind.\n' +
-        '- ausbruch/range: Ausbruch aus der Eröffnungsspanne. Nur sinnvoll in den ersten zwei Handelsstunden ' +
-        '(minutenSeitEroeffnung unter 120) und bei erhöhter Vola.\n' +
+        '- ausbruch/range: Ausbruch aus der Eröffnungsspanne. Nur sinnvoll früh am Tag ' +
+        '(minutenSeitEroeffnung bis 150) und bei erhöhter Vola.\n' +
         '- umkehr/ueberdehnung: Kauf gegen die Übertreibung, Ziel ist die Rückkehr zur Leitlinie. ' +
         'Passt, wenn mittleresAbsZ hoch ist (über 1,5) UND der Markt KEINE klare Richtung hat.\n' +
         '- umkehr/welle: Kauf am Wellental. Passt nur, wenn mittlererWellenScore über 50 liegt – sonst gibt es kein Wellenmuster.\n\n' +
         'REGELN:\n' +
-        '1. Trendmarkt (trendAnteilPct über 70 oder unter 30) → niemals umkehr. Einer fahrenden Straßenbahn läuft man nicht hinterher.\n' +
+        '1. Trendmarkt (trendAnteilPct 70 oder mehr, oder 30 oder weniger) → niemals umkehr. Einer fahrenden Straßenbahn läuft man nicht hinterher.\n' +
         '2. mittlererWellenScore unter 45 → niemals umkehr/welle. Ohne Wellen kein Wellenreiten.\n' +
         '3. kanalAnteilPct unter 20 → kanal auf false. Ohne belastbare Kanäle bringt der Kanalfilter nichts.\n' +
         '4. trendfilter im Zweifel true: lieber weniger Trades als Trades gegen den Trend.\n' +

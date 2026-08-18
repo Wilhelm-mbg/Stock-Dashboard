@@ -35,7 +35,17 @@
     var res = await window.api.capFetch(method, BASE + path, {
       'X-CAP-API-KEY': cfg().key, 'CST': tokens.cst, 'X-SECURITY-TOKEN': tokens.sec
     }, body);
-    if (res.status === 401) { tokens = null; }
+    if (res.status === 401) {
+      // Session serverseitig abgelaufen: einmal neu einloggen und den Aufruf wiederholen –
+      // vorher schlug genau dieser eine Aufruf fehl und erst der nächste kam wieder durch.
+      tokens = null;
+      if (await login()) {
+        res = await window.api.capFetch(method, BASE + path, {
+          'X-CAP-API-KEY': cfg().key, 'CST': tokens.cst, 'X-SECURITY-TOKEN': tokens.sec
+        }, body);
+        if (res.ok) tokenTime = Date.now();
+      }
+    }
     else if (res.ok) { tokenTime = Date.now(); }
     return res;
   }

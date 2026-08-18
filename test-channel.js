@@ -230,5 +230,18 @@ ok(Math.abs(p0.pos - 0.5) < 0.02, 'Mitte entspricht Position 50 %', Math.round(p
 ok(p10.oben > p0.oben && p10.unten > p0.unten, 'Aufwärtskanal wandert nach oben');
 ok(Math.abs((p10.oben - p10.unten) - (p0.oben - p0.unten)) < 1e-6, 'Kanalbreite bleibt gleich');
 
+console.log('14) Feldnamen & Wächter (Regression: Kanal-Edge las nicht existente Felder)');
+// Genau dieser Fehler stand live: Einstieg/Backtest lasen chE.toUpperPct/toLowerPct,
+// trendChannel liefert aber zuObenPct/zuUntenPct → undefined → Kanal-Setup handelte nie.
+ok(typeof cRef.zuObenPct === 'number' && typeof cRef.zuUntenPct === 'number',
+  'trendChannel liefert zuObenPct/zuUntenPct als Zahlen', cRef.zuObenPct + ' / ' + cRef.zuUntenPct);
+ok(cRef.toUpperPct === undefined, 'Altfeld toUpperPct existiert bewusst NICHT mehr');
+ok(typeof cRef.steigung === 'number' && typeof cRef.breitePct === 'number',
+  'steigung/breitePct vorhanden (Anzeige & KI-Kontext lasen steep/widthPct)');
+// Die Altfunktionen, die den Live-Exit-Bug verursacht haben, sind bewusst entfernt –
+// wer sie wieder einführt, soll hier stolpern.
+ok(Q.projectChannel === undefined && Q.channelRef === undefined, 'Altfunktionen projectChannel/channelRef sind entfernt');
+ok(Q.projectTrendChannel(null, 5, 100) === null, 'projectTrendChannel: null-ref → null');
+
 console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
 process.exit(fails ? 1 : 0);

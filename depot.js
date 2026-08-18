@@ -88,7 +88,15 @@
   }
   /** Fragt die lokale KI. Rückgabe: {go, factor, note} – bei KI-Ausfall: durchwinken (fail-open). */
   async function kiCheck(ctx) {
-    if (!(window.LocalKI && window.LocalKI.vetoEnabled())) return { go: true, factor: 1, note: '' };
+    if (!(window.LocalKI && window.LocalKI.vetoEnabled())) {
+      // Angehakt, aber kein Ollama-Modell hinterlegt (z. B. Provider Anthropic): das war
+      // vorher STILL wirkungslos – jetzt steht es sichtbar am Trade.
+      var sK = window.getSettings ? window.getSettings() : {};
+      if (sK.kiVeto && !(window.LocalKI && window.LocalKI.model())) {
+        return { go: true, factor: 1, note: ' · 🧠 KI-Prüfung übersprungen: kein lokales Modell eingestellt (nur Ollama kann das Veto)' };
+      }
+      return { go: true, factor: 1, note: '' };
+    }
     var r = await window.LocalKI.decide(ctx);
     if (r.ok) HEALTH.kiOk++; else HEALTH.kiFail++;
     if (!r.ok) return { go: true, factor: 1, note: ' · 🧠 KI nicht erreichbar (' + (r.msg || '?').slice(0, 40) + ') – ohne Prüfung gehandelt' };
@@ -300,16 +308,20 @@
         free.busy = true; free.jobId = job.id;
         pending[job.id] = job;
         // Sicherheitsnetz: Ein Auftrag, der nach 3 Minuten nicht zurück ist, gilt als verloren.
+        // Der Worker wird dabei beendet und ersetzt – er rechnete sonst weiter und alle
+        // Folgejobs stauten sich bei ihm und liefen kaskadierend in denselben Timeout.
         job.timer = setTimeout((function (jid, wk) {
           return function () {
             var j = pending[jid];
             if (!j) return;
             delete pending[jid];
-            wk.busy = false; wk.jobId = 0;
+            try { wk.terminate(); } catch (e0) {}
+            var wi = workers.indexOf(wk);
+            if (wi >= 0) workers.splice(wi, 1);
             j.cb({ error: 'Zeitüberschreitung im Hintergrund-Rechner' });
             pump();
           };
-        })(job.id, free), 90000);
+        })(job.id, free), 180000);
         free.postMessage({ id: job.id, fn: job.fn, histMap: job.histMap, opts: job.opts });
       }
     }
@@ -455,7 +467,7 @@
     svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
     var closes = bars.map(function (b) { return b[1]; });
     var lo = Math.min.apply(null, closes), hi = Math.max.apply(null, closes);
-    if (chan) { lo = Math.min(lo, chan.lower); hi = Math.max(hi, chan.upper); }
+    if (chan) { lo = Math.min(lo, chan.unten != null ? chan.unten : chan.lower); hi = Math.max(hi, chan.oben != null ? chan.oben : chan.upper); }
     var pad = (hi - lo) * 0.08 || 1;
     lo -= pad; hi += pad;
     var x0 = bars[0][0], x1 = bars[bars.length - 1][0];
@@ -542,7 +554,8 @@
       if (Object.keys(map).length < 3) { st.textContent = 'Zu wenig Daten.'; return; }
       st.textContent = 'Rechne beide Varianten …';
       var base = labCommonOpts(cfg, iv);
-      var modeOpts = labModes(cfg).filter(function (m) { return m.key === cfg.mode; })[0];
+      var modeKeyFC = cfg.mode === 'waves' ? 'breakout' : cfg.mode; // Altmodus 'waves' = Ausbruch mit kurzem Ausstieg
+      var modeOpts = labModes(cfg).filter(function (m) { return m.key === modeKeyFC; })[0];
       modeOpts = modeOpts ? modeOpts.opts : { entryMode: 'cross' };
       var mit = Object.assign({}, base, modeOpts, { period: cfg.period, confirmBps: cfg.confirmBps, zThr: zOf(cfg.confirmBps) });
       var ohne = Object.assign({}, mit, { minEdge: 0, trendFilter: false, channel: false, mtf: false, window: 'all', minQuality: 0 });
@@ -581,6 +594,7 @@
     var adopted = 0, written = 0;
     D.trades.forEach(function (t) {
       if (t.status === 'closed' || have[t.id]) return;
+      if (t.legacy) return; // Altbestand vor dem Messschnitt: nie erneut adoptieren (Doppel-Gutschrift)
       if (!(t.sym && t.qty > 0 && t.entry > 0 && t.strike > 0 && t.expiry)) {
         // Daten unbrauchbar: sauber abschreiben, damit die Buchhaltung stimmt
         t.status = 'closed'; t.closeT = Date.now(); t.exit = 0;
@@ -607,7 +621,7 @@
     if (!D || D.intraday.symBlock === false) return;
     var by = {};
     D.trades.forEach(function (t) {
-      if (t.status !== 'closed' || t.strategy !== 'intraday') return;
+      if (t.status !== 'closed' || t.strategy !== 'intraday' || !istMess(t)) return; // legacy: Buchungsfehler-Aera zaehlt nicht
       var b2 = (by[t.sym] = by[t.sym] || { n: 0, pnl: 0, w: 0 });
       b2.n++; b2.pnl += t.pnl; if (t.pnl > 0) b2.w++;
     });
@@ -631,6 +645,7 @@
     if (!keys.length) { el.innerHTML = '<span style="color:var(--muted); font-size:12px;">Keine gesperrten Werte.</span>'; return; }
     el.innerHTML = keys.map(function (s) {
       var b2 = D.symBlock[s];
+      if (b2.frei) return '<span class="chip" style="margin-right:6px;">✅ ' + U.esc(s) + ' · manuell freigegeben</span>';
       return '<span class="chip down" style="margin-right:6px;">🚫 ' + U.esc(s) + (b2.n ? ' · ' + b2.n + ' Trades, ' + U.signTxt(b2.pnl, ' $') + ', ' + b2.quote + ' % Treffer' : ' · manuell') +
         ' <a href="#" data-unblock="' + U.esc(s) + '" style="color:var(--ink-2); font-weight:700; margin-left:4px;">✕</a></span>';
     }).join('');
@@ -638,10 +653,8 @@
       a2.addEventListener('click', function (ev) {
         ev.preventDefault();
         var s = a2.getAttribute('data-unblock');
-        D.symBlock[s] = { manuell: true, frei: true, seit: Date.now() }; // dauerhaft freigegeben
-        delete D.symBlock[s];
-        D.symFree = D.symFree || {};
-        D.symFree[s] = Date.now(); // nicht sofort automatisch wieder sperren
+        // Manuelle Freigabe bleibt gespeichert – sonst sperrt der nächste Scan sofort wieder
+        D.symBlock[s] = { manuell: true, frei: true, seit: Date.now() };
         save(); renderSymBlocks();
       });
     });
@@ -765,7 +778,7 @@
   /* ================= Analyse-Export (Downloads\Markt-Dashboard-Daten) ================= */
   var lastAnalysisExport = 0;
   function csvString() {
-    var head = ['ID', 'Strategie', 'Symbol', 'Typ', 'Eröffnet', 'Geschlossen', 'Stück', 'Basispreis', 'Fällig', 'Einstieg', 'Exit', 'P/L ($)', 'Haltedauer (Min)', 'Exit-Grund', 'Nachgebildet', 'Auslöser'];
+    var head = ['ID', 'Strategie', 'Symbol', 'Typ', 'Eröffnet', 'Geschlossen', 'Stück', 'Basispreis', 'Fällig', 'Einstieg', 'Exit', 'P/L ($)', 'Haltedauer (Min)', 'Exit-Grund', 'Nachgebildet', 'Auslöser', 'Vor Messschnitt'];
     function f(v) { return '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"'; }
     function num(v) { return v == null ? '' : String(Math.round(v * 10000) / 10000).replace('.', ','); }
     var rows = D.trades.slice().reverse().map(function (t) {
@@ -773,7 +786,7 @@
         new Date(t.openT).toLocaleString('de-DE'), t.closeT ? new Date(t.closeT).toLocaleString('de-DE') : '',
         t.qty, num(t.strike), new Date(t.expiry).toLocaleDateString('de-DE'),
         num(t.entry), num(t.exit), num(t.pnl), t.closeT ? Math.round((t.closeT - t.openT) / 60000) : '',
-        t.why || (t.status === 'open' ? 'offen' : ''), t.replicated ? 'ja' : '', t.reason || ''
+        t.why || (t.status === 'open' ? 'offen' : ''), t.replicated ? 'ja' : '', t.reason || '', t.legacy ? 'ja' : ''
       ].map(f).join(';');
     });
     return '﻿' + head.map(f).join(';') + '\n' + rows.join('\n');
@@ -804,6 +817,11 @@
         equityVerlauf: (D.equityHist || []).slice(-2000),
         sentimentVerlauf: SENT,
         analyseZentrale: D.central || null,
+        symbolSperren: D.symBlock || {},
+        strategieFarm: D.farm || null,
+        marktRegime: D.regime || null,
+        automatik: D.autoOpt || null,
+        messschnitt: D.messStart ? { seit: new Date(D.messStart).toISOString(), grund: D.messGrund || '' } : null,
         experimentJournal: D.tuneLog || [],
         letzteAnpassung: D.lastTune || null,
         gesundheit: (function () {
@@ -837,7 +855,7 @@
       kurse: (Object.keys(LASTBARS).length || Object.keys(TAGES_CACHE).length) ? {
         exportiert: new Date().toISOString(),
         intervall: D.intraday.interval || '5m',
-        hinweis: 'bars = Serien des letzten Intraday-Scans [t,close,volumen]; tages = Tagesschluss-Historie [t,close]. Mit engine.js (identische Rechenlogik der App) direkt backtestbar.',
+        hinweis: 'bars = Serien des letzten Intraday-Scans [t,close,volumen,high,low]; tages = Tagesschluss-Historie [t,close]. Mit engine.js (identische Rechenlogik der App) direkt backtestbar.',
         bars: LASTBARS,
         tages: TAGES_CACHE
       } : null,
@@ -964,7 +982,7 @@
     };
     D.positions.push(trade);
     D.trades.unshift(trade);
-    if (D.trades.length > 1000) D.trades = D.trades.slice(0, 1000); // Store schlank halten
+    if (D.trades.length > 1000) D.trades = D.trades.filter(function (tt, i2) { return i2 < 1000 || tt.status !== 'closed'; }); // Store schlank halten, Offenes nie verwerfen
     notifyTrade(trade, 'open');
     return trade;
   }
@@ -972,9 +990,8 @@
   /** Position sofort schließen (manuelle Notbremse) – inkl. Capital.com-Demo-Spiegelung. */
   async function closeNow(pos) {
     var spot = spotOf(pos.sym) || pos.entrySpot;
-    if (pos.capDealId && window.CapAPI && window.CapAPI.enabled()) {
-      try { await window.CapAPI.closePosition(pos.capDealId); } catch (e) { /* Demo-Konto optional */ }
-    }
+    // Capital-Demo-Spiegelung übernimmt closeTrade – ein zweiter Aufruf hier schlug fehl
+    // und hängte irreführend „Schließen fehlgeschlagen“ an die Position.
     closeTrade(pos, spot, Date.now(), 'Manuell geschlossen');
     await save();
     render();
@@ -992,6 +1009,12 @@
     pos.pnl = (bid * pos.qty - fee) - (pos.cost !== undefined ? pos.cost : pos.entry * pos.qty);
     D.cash -= fee; // Verkaufsgebühr (proceeds wurden oben brutto gutgeschrieben)
     pos.why = why;
+    // Nach einem Neustart sind Position und Protokoll-Eintrag getrennte Objekte (JSON-Kopie).
+    // Ohne Abgleich bliebe der Protokoll-Eintrag „offen“ – repairOrphans würde ihn später
+    // erneut adoptieren und die Erlöse ein zweites Mal gutschreiben (der alte Buchungsfehler).
+    for (var ti2 = 0; ti2 < D.trades.length; ti2++) {
+      if (D.trades[ti2] !== pos && D.trades[ti2].id === pos.id) { D.trades[ti2] = pos; break; }
+    }
     var win = pos.pnl > 0;
     // Verlustserien-Zähler (Tilt-Schutz, nur Intraday)
     if (pos.strategy === 'intraday') {
@@ -1048,8 +1071,8 @@
         var scores = { news: sent.score, tech: tech.score, elliott: ell.score };
         var S = Q.combine(scores, D.weights);
 
-        var open = null;
-        for (var p = 0; p < D.positions.length; p++) if (D.positions[p].sym === sym) open = D.positions[p];
+        var open = null; // nur Positionen der Stunden-Strategie – Intraday managt der eigene Scan
+        for (var p = 0; p < D.positions.length; p++) if (D.positions[p].sym === sym && D.positions[p].strategy !== 'intraday') open = D.positions[p];
 
         // Exits prüfen (SL/TP/Zeit/Gegensignal)
         if (open) {
@@ -1152,32 +1175,34 @@
   function slOf(c) { return c.scalpSL === 'auto' ? 'auto' : -(c.scalpSL || 20) / 100; }
   function modeParams() {
     var c = D.intraday;
+    // cooldownMin/maxPerDay: konfigurierter Wert gewinnt – die Farm misst Gene damit,
+    // also müssen promotete Werte auch live gelten (vorher: hart verdrahtete Modus-Defaults).
     if (c.mode === 'orb') {
       return {
         exitMode: 'confirmed', sl: slOf(c) === 'auto' ? 'auto' : slOf(c), tp: null,
         trail: 0.15, maxHoldMin: 0,
-        cooldownMin: 10, maxPerDay: 10, scanMs: 60000
+        cooldownMin: c.cooldownMin != null ? c.cooldownMin : 10, maxPerDay: c.maxPerDay != null ? c.maxPerDay : 10, scanMs: 60000
       };
     }
     if (c.mode === 'waves') {
       return {
         exitMode: 'recross', sl: slOf(c), tp: null,
         trail: (c.scalpTrail || 0) / 100, maxHoldMin: c.scalpHold || 0,
-        cooldownMin: 5, maxPerDay: 40, scanMs: 90000
+        cooldownMin: c.cooldownMin != null ? c.cooldownMin : 5, maxPerDay: c.maxPerDay != null ? c.maxPerDay : 40, scanMs: 90000
       };
     }
     if (c.mode === 'reversion') {
       return {
         exitMode: 'target', sl: slOf(c), tp: null,
         trail: 0, maxHoldMin: c.scalpHold || 60,
-        cooldownMin: 5, maxPerDay: 40, scanMs: 90000
+        cooldownMin: c.cooldownMin != null ? c.cooldownMin : 5, maxPerDay: c.maxPerDay != null ? c.maxPerDay : 40, scanMs: 90000
       };
     }
     if (c.mode === 'wave') {
       return {
         exitMode: 'crest', sl: slOf(c), tp: null,
         trail: 0, maxHoldMin: c.scalpHold || 60,
-        cooldownMin: 3, maxPerDay: 40, scanMs: 60000
+        cooldownMin: c.cooldownMin != null ? c.cooldownMin : 3, maxPerDay: c.maxPerDay != null ? c.maxPerDay : 40, scanMs: 60000
       };
     }
     return { exitMode: 'confirmed', sl: c.sl, tp: c.tp, trail: 0, maxHoldMin: 0, cooldownMin: c.cooldownMin, maxPerDay: c.maxPerDay, scanMs: 5 * 60000 };
@@ -1217,9 +1242,11 @@
   }
 
   function isNearUsClose() {
-    var now = new Date();
-    var mins = now.getUTCHours() * 60 + now.getUTCMinutes();
-    return mins >= 19 * 60 + 45 && mins < 21 * 60; // ~15 Min vor US-Schluss (Sommerzeit)
+    // Sommer-/winterzeitfest: 15 Minuten vor US-Schluss (Handelstag = 390 Minuten).
+    // Vorher war 19:45–21:00 UTC hart verdrahtet – im Winter begann die Glattstellung
+    // damit 75 Minuten zu früh und blockierte so lange alle Einstiege.
+    var m = Q.minutenSeitOeffnung(Date.now());
+    return m >= 375 && m < 390;
   }
 
   async function intradayScan() {
@@ -1229,9 +1256,7 @@
     var cfg = D.intraday;
     // Wellen-Screener: einmal täglich vor dem ersten Scan die besten Kandidaten holen
     if (cfg.screener && (!D.screen || D.screen.day !== new Date().toISOString().slice(0, 10))) {
-      intradayScanning = false;
-      await runScreener(false);
-      intradayScanning = true;
+      await runScreener(false); // Scan-Sperre bleibt gesetzt – sonst startet der 30-s-Takt parallel einen zweiten Scan
     }
     var st = document.getElementById('idStatus');
     var now = Date.now();
@@ -1260,7 +1285,7 @@
         var sig = Q.signalCross(bars, cfg.lineType || 'ema', cfg.period, cfg.confirmBps);
         var liquid = !cfg.minDollarVol || fd.dollarVolDay == null || fd.dollarVolDay >= cfg.minDollarVol * 1e6;
         SIG[sym] = { t: now, spot: spot, ok: false, grund: 'kein Signal', score: null, z: null, chanPos: null, chanSteep: null };
-        if (D.symBlock && D.symBlock[sym]) { patienceAdd('Symbol gesperrt (Verlustbringer)', sym); continue; }
+        if (D.symBlock && D.symBlock[sym] && !D.symBlock[sym].frei) { patienceAdd('Symbol gesperrt (Verlustbringer)', sym); continue; }
 
         // Offene Intraday-Position dieses Symbols managen
         var open = null;
@@ -1286,8 +1311,8 @@
           else if (xm === 'crest') {
             if (open.chan) { // Kanal vom Einstieg fortschreiben, nicht jede Minute neu zeichnen
               var barMinX = (INTERVAL_CFG[cfg.interval] || INTERVAL_CFG['5m']).barMin;
-              var iNow = open.chan.i + Math.round((now - open.chan.t) / (barMinX * 60000));
-              var chM = Q.projectChannel(open.chan, iNow, spot);
+              var schritteK = Math.round((now - open.chan.t) / (barMinX * 60000));
+              var chM = Q.projectTrendChannel(open.chan.kanal, schritteK, spot + (open.chan.off || 0));
               if (chM) {
                 chM.pos = Math.round(chM.pos * 1000) / 1000;
                 if (open.dir === 'call' && chM.pos >= 0.80) why = 'Kanaloberkante erreicht – Ziel (Position ' + Math.round(chM.pos * 100) + ' % im Kanal)';
@@ -1423,7 +1448,7 @@
         var ec;
         if (chE) {
           // Kanal-Edge: Der Weg bis zur Gegenkante muss die Kosten decken.
-          var toEdge = dir === 'call' ? chE.toUpperPct : chE.toLowerPct;
+          var toEdge = dir === 'call' ? chE.zuObenPct : chE.zuUntenPct;
           var needPctC = omegaPre > 0 ? (roundTrip / omegaPre) * 100 : Infinity;
           ec = { ok: toEdge >= needPctC * 1.5, havePct: Math.round(toEdge * 100) / 100, needPct: Math.round(needPctC * 100) / 100 };
         } else {
@@ -1440,11 +1465,12 @@
           wochentag: ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'][new Date().getDay()],
           zScore: revZ, wellenScore: waveQ ? waveQ.score : undefined, scoreTeile: waveQ ? waveQ.parts : undefined,
           trendEMA100: trendUp,
-          trendkanal: chE ? { positionImKanal: Math.round(chE.pos * 100) + ' %', steigung: chE.steep, breitePct: chE.widthPct } : undefined,
+          trendkanal: chE ? { positionImKanal: Math.round(chE.pos * 100) + ' %', steigung: chE.steigung, breitePct: chE.breitePct } : undefined,
           letzteBewegungenPct: bars.slice(-10).map(function (b) { return Math.round((b[1] / spot - 1) * 10000) / 100; }),
           kostenCheck: { typischeBewegungPct: ec.havePct, noetigPct: ec.needPct },
           eventIn24h: (window.Cal && window.Cal.within24h().length) ? window.Cal.within24h()[0].name : 'nein',
-          tagesPnlPct: D.dayStartEq ? Math.round((equityNow() / D.dayStartEq - 1) * 10000) / 100 : 0
+          tagesPnlPct: D.dayStartEq ? Math.round(tagesPnl() / D.dayStartEq * 10000) / 100 : 0,
+          tradesHeute: D.intradayCount || 0
         });
         if (!ki.go) { patienceAdd('KI-Veto', sym); continue; }
         var fee = cfg.orderFee || 0;
@@ -1496,6 +1522,7 @@
         if (isOrb && D.orb) D.orb.traded[sym + '|' + dir] = true;   // Tageschance erst jetzt verbraucht
         D.positions.push(trade);
         D.trades.unshift(trade);
+        if (D.trades.length > 1000) D.trades = D.trades.filter(function (tt, i2) { return i2 < 1000 || tt.status !== 'closed'; }); // Store schlank halten, Offenes nie verwerfen
         notifyTrade(trade, 'open');
         // Spiegelung auf dem Capital.com-Demo-Konto (CFD-Paper-Trade mit Stop-Loss)
         if (window.CapAPI && window.CapAPI.enabled()) {
@@ -1521,7 +1548,7 @@
       renderSigMonitor();
       renderSymBlocks();
       await save();
-      st.textContent = 'Letzter Scan: ' + new Date(now).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }) + ' Uhr · Trades heute: ' + D.intradayCount + '/' + cfg.maxPerDay;
+      st.textContent = 'Letzter Scan: ' + new Date(now).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }) + ' Uhr · Trades heute: ' + D.intradayCount + '/' + (modeParams().maxPerDay || cfg.maxPerDay);
     } catch (e) {
       HEALTH.scanErrors++;
       HEALTH.lastError = { t: Date.now(), msg: String(e.message || e).slice(0, 200) };
@@ -2495,11 +2522,7 @@
     a.click();
   }
 
-  /* ================= Parameter-Optimierer ================= */
-  var optRunning = false;
-
   /* ================= Strategie-Labor (Walk-Forward über alle Modi) ================= */
-  var labRunning = false;
 
   function sliceMap(map, from, to, warmupMs) {
     var out = {};
@@ -2654,7 +2677,7 @@
   async function runCentral(opts) {
     opts = (opts && typeof opts === 'object' && !opts.type) ? opts : {};
     var silent = !!opts.silent;
-    if (centralRunning || labRunning) return null;
+    if (centralRunning) return null;
     centralRunning = true;
     var dummy = { textContent: '', innerHTML: '', disabled: false };
     var btn = (!silent && document.getElementById('centralBtn')) || Object.assign({}, dummy);
@@ -2819,7 +2842,7 @@
   /* Harte Grenzen – die dürfen auch selbstausdehnende Listen nie überschreiten. */
   var GEN_GRENZEN = {
     period: [5, 200], confirmBps: [2, 80], scalpHold: [5, 240],
-    cooldownMin: [1, 120], maxPerDay: [2, 60]
+    cooldownMin: [1, 120], maxPerDay: [2, 60], scalpSL: [10, 60]
   };
   /** Sitzt der Sieger am Rand einer Zahlenliste, wird die Liste um einen Schritt
    *  nach außen erweitert. So findet die Farm Werte, die anfangs gar nicht vorgesehen waren. */
@@ -2863,7 +2886,7 @@
   function geneFromConfig(c) {
     var st = setupFromMode(c.mode);
     return {
-      setup: st.setup, trigger: st.trigger, interval: c.interval === '15m' ? '5m' : (c.interval || '5m'),
+      setup: st.setup, trigger: st.trigger, interval: c.interval === '60m' ? '15m' : (c.interval || '5m'),
       period: c.period, confirmBps: c.confirmBps, lineType: c.lineType || 'ema',
       window: c.window || 'all', scalpSL: c.scalpSL === 'auto' ? 'auto' : (c.scalpSL || 20),
       scalpHold: c.scalpHold || 60, cooldownMin: c.cooldownMin || 45, maxPerDay: c.maxPerDay || 10,
@@ -2986,8 +3009,9 @@
     if (/umkehr|reversion|rücksetzer|ruecksetzer|welle/.test(t)) { g.setup = 'umkehr'; g.trigger = /welle|tal/.test(t) ? 'welle' : 'ueberdehnung'; traf = true; }
     if (/ausbruch|breakout|kreuz/.test(t)) { g.setup = 'ausbruch'; g.trigger = /range|eröffnung|eroeffnung|orb/.test(t) ? 'range' : 'kreuzung'; traf = true; }
     var iv = t.match(/\b(1|5)\s*m(in)?\b/); if (iv) { g.interval = iv[1] + 'm'; traf = true; }
-    var per = t.match(/ema\s*(\d{1,3})|periode\s*(\d{1,3})/); if (per) { g.period = parseInt(per[1] || per[2], 10); traf = true; }
-    var sl = t.match(/stop\s*(\d{1,2})/); if (sl) { g.scalpSL = parseInt(sl[1], 10); traf = true; }
+    function klemm(f, wert) { var gr = GEN_GRENZEN[f]; return gr ? Math.max(gr[0], Math.min(gr[1], wert)) : wert; }
+    var per = t.match(/ema\s*(\d{1,3})|periode\s*(\d{1,3})/); if (per) { g.period = klemm('period', parseInt(per[1] || per[2], 10)); traf = true; }
+    var sl = t.match(/stop\s*(\d{1,2})/); if (sl) { g.scalpSL = klemm('scalpSL', parseInt(sl[1], 10)); traf = true; }
     if (/vwap/.test(t)) { g.lineType = 'vwap'; traf = true; }
     if (/trendfilter/.test(t)) { g.trendFilter = !/ohne trendfilter|trendfilter aus/.test(t); traf = true; }
     if (/kanal/.test(t)) { g.channel = !/ohne kanal|kanal aus/.test(t); traf = true; }
@@ -3009,15 +3033,26 @@
       D.farm.top = [];
       D.farm.challenger = null;
       if (D.farm.champion) { D.farm.champion.res = null; D.farm.champion.nachweisVeraltet = true; }
+      D.farm.genRaum = null; // selbst ausgedehnter Suchraum beruhte auf alten Messwerten
       D.farm.hinweis = { at: Date.now(), txt: 'Rechengrundlage hat sich geändert – alle früheren Messwerte verworfen, der Champion muss seinen Vorsprung neu belegen.' };
+    }
+    // Selbst ausgedehnten Suchraum aus früheren Läufen wieder anwenden (übersteht so den Neustart)
+    if (D.farm.genRaum) {
+      Object.keys(D.farm.genRaum).forEach(function (fG) {
+        var gr = GEN_GRENZEN[fG], liste = GEN_SPACE[fG];
+        if (!gr || !liste) return;
+        D.farm.genRaum[fG].forEach(function (w) {
+          if (typeof w === 'number' && w >= gr[0] && w <= gr[1] && liste.indexOf(w) === -1) liste.push(w);
+        });
+      });
     }
     return D.farm;
   }
   /** Eine Zuchtrunde: Population bewerten, Beste paaren, Sieger als Herausforderer prüfen. */
   async function runFarm(manual) {
     var a = autoOptCfg();
-    if (farmRunning || centralRunning || labRunning || autoOptRunning) return;
-    if (!manual && a.farm === false) return;
+    if (farmRunning || centralRunning || autoOptRunning) return false;
+    if (!manual && a.farm === false) return false;
     farmRunning = true;
     var F = farmCfg();
     var t0 = Date.now();
@@ -3072,6 +3107,11 @@
       // Selbstausdehnung: Sitzt die Spitze am Rand einer Werteliste, wird sie erweitert
       var erweitert = raumErweitern(bewertet.slice(0, 5).map(function (x) { return x.gene; }));
       if (erweitert.length) F.raumErweitert = { at: Date.now(), neu: erweitert };
+      // Erweiterte Listen persistieren – sonst vergisst die Farm sie beim Neustart
+      F.genRaum = {};
+      Object.keys(GEN_GRENZEN).forEach(function (fG) {
+        if (GEN_SPACE[fG]) F.genRaum[fG] = GEN_SPACE[fG].slice();
+      });
       F.top = bewertet.slice(0, 8).map(function (x) { return { gene: x.gene, res: x.res }; });
       F.generation = (F.generation || 0) + GENS;
       F.at = Date.now();
@@ -3273,10 +3313,8 @@
    * Vola), das lokale Modell WÄHLT daraus eines von vier Setups, die App PRÜFT die Antwort
    * gegen eine Whitelist und protokolliert Fakten, Begründung und die spätere Wirkung.
    * Ist Ollama nicht erreichbar oder die Antwort unbrauchbar, entscheidet eine feste Regel. */
-  var SETUP_ALLOW = {
-    ausbruch: ['kreuzung', 'range'],
-    umkehr: ['ueberdehnung', 'welle']
-  };
+  // Whitelist + Prüf-Logik leben in quant.js, damit die Unit-Tests die echte Funktion testen
+  var SETUP_ALLOW = Q.SETUP_ALLOW;
   var regimeRunning = false;
 
   /** Marktlage messen – rein rechnerisch, ohne Modell. */
@@ -3355,24 +3393,14 @@
       begruendung: 'Vorgabe: Trendfolge mit Trendfilter (Trendanteil ' + f.trendAnteilPct + ' %)' };
   }
 
-  /** KI-Antwort gegen Whitelist und harte Plausibilitätsregeln prüfen. */
-  function regimeValidate(w, f) {
-    if (!w || !SETUP_ALLOW[w.setup]) return { ok: false, grund: 'Setup unbekannt' };
-    if (SETUP_ALLOW[w.setup].indexOf(w.ausloeser) === -1) return { ok: false, grund: 'Auslöser passt nicht zum Setup' };
-    if (['1m', '5m'].indexOf(w.zeitrahmen) === -1) return { ok: false, grund: 'Zeitrahmen unzulässig' };
-    // Harte Sperren – die gelten auch dann, wenn das Modell etwas anderes will
-    if (w.setup === 'umkehr' && (f.trendAnteilPct >= 70 || f.trendAnteilPct <= 30)) return { ok: false, grund: 'Umkehr im Trendmarkt gesperrt' };
-    if (w.ausloeser === 'welle' && f.mittlererWellenScore < 45) return { ok: false, grund: 'Wellental ohne Wellenmuster gesperrt' };
-    if (w.ausloeser === 'range' && !(f.minutenSeitEroeffnung != null && f.minutenSeitEroeffnung <= 150)) return { ok: false, grund: 'Eröffnungs-Range nur früh am Tag' };
-    if (w.kanal && f.kanalAnteilPct < 20) w.kanal = false;
-    return { ok: true };
-  }
+  /** KI-Antwort gegen Whitelist und harte Plausibilitätsregeln prüfen (echte Logik in quant.js). */
+  var regimeValidate = Q.regimeValidate;
 
   /** Kompletter Durchlauf: messen → entscheiden lassen → prüfen → anwenden → protokollieren. */
   async function runRegime(manual) {
     var a = autoOptCfg();
-    if (regimeRunning || centralRunning || labRunning) return;
-    if (!manual && a.regime === false) return;
+    if (regimeRunning || centralRunning) return false;
+    if (!manual && a.regime === false) return false;
     regimeRunning = true;
     renderRegime('misst die Marktlage …');
     try {
@@ -3477,7 +3505,7 @@
   var autoOptRunning = false, autoOptPhase = '';
   async function autoOptimize(manual) {
     var a = autoOptCfg();
-    if (autoOptRunning || centralRunning || labRunning || jobRunning) return;
+    if (autoOptRunning || centralRunning || jobRunning) return;
     if (!manual && a.on === false) return;
     autoOptRunning = true;
     autoOptPhase = 'startet …';
@@ -3583,6 +3611,14 @@
     D = (await window.api.storeGet('depot')) || defaultDepot();
     if (!D.positions) D.positions = [];
     if (!D.trades) D.trades = [];
+    // Nach dem Laden sind Position und Protokoll-Eintrag getrennte JSON-Kopien.
+    // Wieder auf dasselbe Objekt zeigen lassen – sonst bleibt der Protokoll-Eintrag beim
+    // Schließen „offen“ und repairOrphans erzeugt daraus später eine Doppel-Gutschrift.
+    (function () {
+      var byId = {};
+      D.trades.forEach(function (t) { if (t.id != null) byId[t.id] = t; });
+      D.positions = D.positions.map(function (p) { return (p.id != null && byId[p.id]) ? byId[p.id] : p; });
+    })();
     var repaired = repairOrphans(); // Buchhaltung geradeziehen, bevor irgendetwas rechnet
     // Einmaliger Messschnitt: Alles, was vor dieser Version entstanden ist, war durch den
     // Buchungsfehler verfälscht. Es bleibt erhalten, zählt aber in keiner Statistik mehr mit.
@@ -3590,9 +3626,16 @@
     if (D.messStart === undefined) {
       messNeu = messSchnittSetzen('Automatischer Schnitt beim Update – Altbestand aus der Zeit des Buchungsfehlers');
     }
-    // Abwärtskompatibel, falls Felder fehlen
+    // Abwärtskompatibel, falls Felder fehlen – auch eine Ebene tief (z. B. stats.ki,
+    // intraday.budgetPct), sonst bekommt ein alter Store neue Unterfelder nie und
+    // nachgelagerte Rechnungen laufen still auf undefined/NaN.
     var def = defaultDepot();
-    Object.keys(def).forEach(function (k) { if (D[k] === undefined) D[k] = def[k]; });
+    Object.keys(def).forEach(function (k) {
+      if (D[k] === undefined) { D[k] = def[k]; return; }
+      if (def[k] && typeof def[k] === 'object' && !Array.isArray(def[k]) && D[k] && typeof D[k] === 'object' && !Array.isArray(D[k])) {
+        Object.keys(def[k]).forEach(function (k2) { if (D[k][k2] === undefined) D[k][k2] = def[k][k2]; });
+      }
+    });
     // Einmalig: Das Event-Blackout ist eine Sicherung, keine Stellschraube. Steht es aus,
     // wird es beim Update einmal zurückgesetzt – sichtbar im Verlauf, danach nie wieder automatisch.
     if (D.blackoutGeprueft === undefined) {
@@ -3604,6 +3647,19 @@
           applied: ['Event-Blackout → ±45 Min'], txt: 'Sicherheitsfilter war ausgeschaltet und wurde einmalig zurückgesetzt. Keine Automatik darf ihn abschalten.',
           konfigVorher: null, konfigNachher: JSON.parse(JSON.stringify(D.intraday)) });
       }
+    }
+    // Einmalig: Die Trefferquoten-Zähler (D.stats) stammen noch aus der Zeit vor dem
+    // Messschnitt – die Trades wurden markiert, die kumulierten Zähler aber nie geleert.
+    if (D.messStart && !D.statsBereinigt) {
+      D.statsBereinigt = Date.now();
+      Object.keys(D.stats || {}).forEach(function (sk) {
+        if (D.stats[sk] && typeof D.stats[sk].r === 'number') { D.stats[sk].r = 0; D.stats[sk].w = 0; }
+      });
+      if (!D.tuneLog) D.tuneLog = [];
+      D.tuneLog.unshift({ id: 'sicherung-stats-' + Date.now(), at: Date.now(), quelle: 'sicherung',
+        applied: ['Trefferquoten-Zähler geleert'], txt: 'Die Trefferquoten zählten noch Trades aus der Zeit des Buchungsfehlers mit. Einmalig auf null gesetzt – ab jetzt zählen nur saubere Messdaten.',
+        konfigVorher: null, konfigNachher: null });
+      messNeu = messNeu || 1;
     }
     if (repaired || messNeu) save();
     render();
@@ -3866,7 +3922,7 @@
     // Takt: alle 5 Min prüfen, ob ein Durchlauf fällig ist
     function autoOptDue() {
       var a = autoOptCfg();
-      if (a.on === false || autoOptRunning || centralRunning || labRunning || jobRunning) return false;
+      if (a.on === false || autoOptRunning || centralRunning || jobRunning) return false;
       if (Date.now() - (a.lastRun || 0) < (a.everyH || 8) * 3600000) return false;
       if (a.marketPause !== false && window.Dash.marketOpen()) return false; // Rechenlast weg vom Handel
       return true;
@@ -3912,11 +3968,10 @@
     // Farm-Takt: rechenintensiv, deshalb nur außerhalb der Handelszeit
     setInterval(function () {
       var a3 = autoOptCfg();
-      if (a3.farm === false || farmRunning || autoOptRunning || centralRunning || labRunning) return;
+      if (a3.farm === false || farmRunning || autoOptRunning || centralRunning) return;
       if (window.Dash.marketOpen()) return;
       if (Date.now() - (a3.lastFarm || 0) < (a3.farmH || 12) * 3600000) return;
-      a3.lastFarm = Date.now();
-      runFarm(false);
+      runFarm(false).then(function (lief) { if (lief !== false) a3.lastFarm = Date.now(); });
     }, 5 * 60000);
 
     // Takt: kurz nach Handelsbeginn und danach stündlich, solange die Börse offen ist
@@ -3925,8 +3980,8 @@
       if (a.regime === false || regimeRunning) return;
       if (!window.Dash.marketOpen()) return;
       if (Date.now() - (a.lastRegime || 0) < (a.regimeMin || 60) * 60000) return;
-      a.lastRegime = Date.now();
-      runRegime(false);
+      a.lastRegime = Date.now(); // vor dem Start setzen; bei Abbruch gibt runRegime den Slot zurück
+      runRegime(false).then(function (lief) { if (lief === false) a.lastRegime = 0; });
     }, 60000);
     var idAt = document.getElementById('idAutoTune');
     idAt.checked = D.intraday.autoTune !== false;
@@ -3954,6 +4009,9 @@
     D = defaultDepot();
     weightsBuilt = false;
     save();
+    // Formularfelder auf die frischen Werte stellen – sonst schreibt das nächste
+    // change-Event die alten UI-Werte zurück ins zurückgesetzte Depot.
+    try { syncStrategyUI(); } catch (e0) { /* UI-Sync optional */ }
     render();
     document.getElementById('setStatus').textContent = 'Depot zurückgesetzt (10.000 $).';
   });

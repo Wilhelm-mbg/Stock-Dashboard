@@ -72,18 +72,9 @@ ok(rMtf.trades.length <= rNo.trades.length, 'MTF filtert (nicht mehr Trades)', r
 
 
 console.log('7) Regime-Whitelist: harte Sperren gelten auch gegen das Modell');
-// Die Prüflogik aus depot.js hier gespiegelt testen (gleiche Regeln, reine Funktion)
-var SETUP_ALLOW = { ausbruch: ['kreuzung', 'range'], umkehr: ['ueberdehnung', 'welle'] };
-function regimeValidate(w, f) {
-  if (!w || !SETUP_ALLOW[w.setup]) return { ok: false, grund: 'Setup unbekannt' };
-  if (SETUP_ALLOW[w.setup].indexOf(w.ausloeser) === -1) return { ok: false, grund: 'Auslöser passt nicht zum Setup' };
-  if (['1m', '5m'].indexOf(w.zeitrahmen) === -1) return { ok: false, grund: 'Zeitrahmen unzulässig' };
-  if (w.setup === 'umkehr' && (f.trendAnteilPct >= 70 || f.trendAnteilPct <= 30)) return { ok: false, grund: 'Umkehr im Trendmarkt gesperrt' };
-  if (w.ausloeser === 'welle' && f.mittlererWellenScore < 45) return { ok: false, grund: 'Wellental ohne Wellenmuster gesperrt' };
-  if (w.ausloeser === 'range' && !(f.minutenSeitEroeffnung != null && f.minutenSeitEroeffnung <= 150)) return { ok: false, grund: 'Eröffnungs-Range nur früh am Tag' };
-  if (w.kanal && f.kanalAnteilPct < 20) w.kanal = false;
-  return { ok: true };
-}
+// Es wird die ECHTE Funktion aus quant.js getestet – keine Spiegelkopie mehr,
+// die bei Änderungen am Produktcode niemals rot werden konnte.
+var regimeValidate = Q.regimeValidate;
 var trendMarkt = { trendAnteilPct: 85, mittlererWellenScore: 70, kanalAnteilPct: 40, minutenSeitEroeffnung: 60 };
 var seitwaerts = { trendAnteilPct: 50, mittlererWellenScore: 70, kanalAnteilPct: 40, minutenSeitEroeffnung: 60 };
 ok(!regimeValidate({ setup: 'umkehr', ausloeser: 'welle', zeitrahmen: '1m' }, trendMarkt).ok, 'Umkehr im Trendmarkt wird abgelehnt');

@@ -185,6 +185,10 @@
         if (w1d > 0 && four[2] < four[0] && last < four[1]) {
           var c3d = 0.5 + 0.5 * fibScore(retrD, 0.3, 0.8);
           cands.push({ label: 'Abwärtsimpuls: Welle 3 läuft', phase: 'Welle 3 abwärts (stärkste Phase)', conf: c3d, score: -0.7 * c3d });
+        } else if (w1d > 0 && four[2] < four[0] && last >= four[1]) {
+          // Spiegelfall zum Aufwärts-Zweig – ohne ihn war der Elliott-Score systematisch bullisch verzerrt
+          var c2d = 0.4 + 0.4 * fibScore(retrD, 0.3, 0.8);
+          cands.push({ label: 'Abwärtsimpuls: Welle-2-Erholung', phase: 'Welle 2 → Welle 3 abwärts voraus, Bestätigung unter Welle-1-Tief nötig', conf: c2d, score: -0.5 * c2d });
         }
       }
     }
@@ -350,7 +354,7 @@
     var sorted = trades.slice().sort(function (a, b) { return a.closeT - b.closeT; });
     sorted.forEach(function (t) {
       if (t.pnl > 0) { gw += t.pnl; wins.push(t.pnl); streak = 0; }
-      else { gl += -t.pnl; losses.push(t.pnl); streak++; if (streak > maxStreak) maxStreak = streak; }
+      else if (t.pnl < 0) { gl += -t.pnl; losses.push(t.pnl); streak++; if (streak > maxStreak) maxStreak = streak; }
     });
     out.profitFactor = gl > 0 ? Math.round(gw / gl * 100) / 100 : (gw > 0 ? 99 : 0);
     out.avgWin = wins.length ? Math.round(wins.reduce(function (a, b) { return a + b; }, 0) / wins.length * 100) / 100 : 0;
@@ -398,7 +402,7 @@
     var pnls = trades.map(function (t) { return t.pnl; });
     var n = pnls.length, ends = [];
     var seed = 123456789;
-    function rnd() { seed = (seed * 1103515245 + 12345) % 2147483648; return seed / 2147483648; }
+    function rnd() { seed = (Math.imul(seed, 1103515245) + 12345) & 2147483647; return seed / 2147483648; }
     for (var r = 0; r < runs; r++) {
       var eq = capital;
       for (var i = 0; i < n; i++) eq += pnls[Math.floor(rnd() * n)];
@@ -562,12 +566,6 @@
     return { crossed: crossed, above: price > ma, ma: ma, price: price, distBps: Math.round(distBps * 10) / 10 };
   }
 
-  function maCross(series, period, confirmBps, lookback) {
-    confirmBps = confirmBps === undefined ? 15 : confirmBps;
-    var closes = series.map(function (p) { return p[1]; });
-    return crossCore(closes, emaSeries(closes, period), confirmBps, lookback || 3, period);
-  }
-
   /** VWAP-Linie mit Tages-Reset. bars: [t, close, volumen] – ohne Volumen: null */
   function vwapLine(bars) {
     if (!bars.length || bars[0].length < 3) return null;
@@ -587,7 +585,7 @@
     var closes = bars.map(function (p) { return p[1]; });
     var line = lineType === 'vwap' ? vwapLine(bars) : null;
     if (!line) line = emaSeries(closes, period);
-    return crossCore(closes, line, confirmBps === undefined ? 15 : confirmBps, lookback || 3, Math.min(period, 15));
+    return crossCore(closes, line, confirmBps === undefined ? 15 : confirmBps, lookback || 3, period);
   }
 
   /** Mean-Reversion-Signal: Kurs überdehnt von der Leitlinie entfernt (z-Score der Distanz).
@@ -892,14 +890,14 @@
     var minN = opt.minN || min.minN;
     if (maxN < minN) return null;
     var cand = [100, 130, 170, 220, 280, 320];
-    var best = null, bestScore = -1, tried = 0, bestFail = null;
+    var best = null, bestScore = -1, tried = 0;
     for (var k = 0; k < cand.length; k++) {
       var N = cand[k];
       if (N < minN || N > maxN) continue;
       var f = channelFit(closes, N, endI, opt);
       if (!f) continue;
       tried++;
-      if (!channelValid(f, min)) { if (!bestFail || f.r2 > bestFail.r2) bestFail = f; continue; }
+      if (!channelValid(f, min)) continue;
       // Güte zählt, Länge gibt einen leichten Bonus: ein langer guter Kanal trägt weiter.
       var score = Math.max(1 - f.vr, -f.acf) * Math.pow(N / minN, 0.2);
       if (score > bestScore) { bestScore = score; best = f; }
@@ -917,20 +915,6 @@
     return best;
   }
 
-  /** Einen beim Einstieg gefundenen Kanal auf einen späteren Bar fortschreiben.
-   *  ref = {mid, b, upOff, loOff, i, off} – off gleicht die Übernacht-Entzerrung aus. */
-  function channelRef(f, i, rawPrice, degapPrice) {
-    return { mid: f.mid, b: f.b, upOff: f.upOff, loOff: f.loOff, i: i, off: degapPrice - rawPrice, N: f.N };
-  }
-  function projectChannel(ref, i, rawPrice) {
-    if (!ref) return null;
-    var mid = ref.mid + ref.b * (i - ref.i);
-    var up = mid + ref.upOff, lo = mid + ref.loOff;
-    if (up - lo <= 1e-9) return null;
-    var price = rawPrice + ref.off;
-    return { mid: mid, upper: up, lower: lo, pos: (price - lo) / (up - lo) };
-  }
-
   /** Abwärtskompatibel: fester Fensterkanal ohne Güteprüfung (nur noch für Altaufrufe). */
   function regressionChannel(closes, N, endI) {
     return channelFit(closes, N || 120, endI);
@@ -942,37 +926,17 @@
    * zählen, Verletzungen bestrafen – und am Ende Aufwärtskanal, Abwärtskanal, Seitwärts-
    * korridor und Keil unterscheiden, samt Ausbruch. Gegen Zufallsdaten kalibriert. */
 
-  /** Wendepunkte: ein Hoch, das in seiner Umgebung das höchste ist (und umgekehrt).
-   *  Die letzten `strength` Bars können keine Pivots sein – ein Wendepunkt braucht Bestätigung. */
-  function findPivots(H, L, strength) {
-    var hoch = [], tief = [], n = H.length, i, j;
-    for (i = strength; i < n - strength; i++) {
-      var istH = true, istT = true;
-      for (j = i - strength; j <= i + strength; j++) {
-        if (j === i) continue;
-        if (H[j] >= H[i]) istH = false;
-        if (L[j] <= L[i]) istT = false;
-        if (!istH && !istT) break;
-      }
-      if (istH) hoch.push({ i: i, p: H[i] });
-      if (istT) tief.push({ i: i, p: L[i] });
-    }
-    return { hoch: hoch, tief: tief };
-  }
-
   /** Mittlere Spannweite je Bar – Maßstab für „nah genug an der Linie". */
   function spannweite(H, L, C) {
     var n = C.length, sum = 0, k = 0, i;
     if (H && L) { for (i = 0; i < n; i++) { sum += H[i] - L[i]; k++; } }
-    else { for (i = 1; i < n; i++) { sum += Math.abs(C[i] - C[i - 1]); k++; } }
+    if (!(sum > 0)) { // Close-only-Daten: H/L fehlen oder sind nur kopierte Closes
+      sum = 0; k = 0;
+      for (i = 1; i < n; i++) { sum += Math.abs(C[i] - C[i - 1]); k++; }
+    }
     return k ? sum / k : 0;
   }
 
-  function quantil(arr, f) {
-    var srt = arr.slice().sort(function (a, b) { return a - b; });
-    var idx = (srt.length - 1) * f, lo = Math.floor(idx), hi = Math.ceil(idx);
-    return srt[lo] + (srt[hi] - srt[lo]) * (idx - lo);
-  }
   /** k-kleinster bzw. k-größter Wert ohne vollständiges Sortieren – im Backtest läuft das
    *  je Einstiegskandidat, deshalb lohnt die Abkürzung. */
   function kSmallest(arr, k) {
@@ -1105,7 +1069,6 @@
       var dichte = Math.min(tU, tO) / (NF / 100);
       var score = Math.max(0, Math.min(100, Math.round(
         30 * Math.max(0, Math.min(1, Math.max((0.35 - vr) / 0.35, (acf + 0.5) / -0.5))) +  // Rückkehr zur Mitte
-        0 * wechsel +
         20 * Math.min(1, dichte / 5) +                         // wie dicht die Linien getragen werden
         18 * Math.min(1, (strU + strO) / 1.5) +                // über wie viel Zeit verteilt
         14 * Math.max(0, (deckung - 0.8) / 0.2) +              // wie sauber eingefasst
@@ -1149,6 +1112,26 @@
     if (o - u <= 1e-9) return null;
     return { unten: u, oben: o, mid: (u + o) / 2, pos: (preis - u) / (o - u),
       ausbruch: preis > o + ref.tol ? 'oben' : (preis < u - ref.tol ? 'unten' : null) };
+  }
+
+  /* ================= Regime-Whitelist (reine Prüf-Logik) =================
+   * Lebt hier statt in depot.js, damit die Unit-Tests die ECHTE Funktion prüfen –
+   * die gespiegelte Kopie im Test konnte durch Änderungen am Produktcode nie rot werden. */
+  var SETUP_ALLOW = {
+    ausbruch: ['kreuzung', 'range'],
+    umkehr: ['ueberdehnung', 'welle']
+  };
+  /** KI-Antwort gegen Whitelist und harte Plausibilitätsregeln prüfen. */
+  function regimeValidate(w, f) {
+    if (!w || !SETUP_ALLOW[w.setup]) return { ok: false, grund: 'Setup unbekannt' };
+    if (SETUP_ALLOW[w.setup].indexOf(w.ausloeser) === -1) return { ok: false, grund: 'Auslöser passt nicht zum Setup' };
+    if (['1m', '5m'].indexOf(w.zeitrahmen) === -1) return { ok: false, grund: 'Zeitrahmen unzulässig' };
+    // Harte Sperren – die gelten auch dann, wenn das Modell etwas anderes will
+    if (w.setup === 'umkehr' && (f.trendAnteilPct >= 70 || f.trendAnteilPct <= 30)) return { ok: false, grund: 'Umkehr im Trendmarkt gesperrt' };
+    if (w.ausloeser === 'welle' && f.mittlererWellenScore < 45) return { ok: false, grund: 'Wellental ohne Wellenmuster gesperrt' };
+    if (w.ausloeser === 'range' && !(f.minutenSeitEroeffnung != null && f.minutenSeitEroeffnung <= 150)) return { ok: false, grund: 'Eröffnungs-Range nur früh am Tag' };
+    if (w.kanal && f.kanalAnteilPct < 20) w.kanal = false;
+    return { ok: true };
   }
 
   /** Bewährungs-Urteil für die Strategie-Farm.
@@ -1201,13 +1184,13 @@
     var jahr = d.getUTCFullYear(), m = d.getUTCMonth();
     if (m < 2 || m > 10) return false;
     if (m > 2 && m < 10) return true;
-    function nterSonntag(monat, n) {
+    function nterSonntag(monat, n, stundeUtc) {
       var t = new Date(Date.UTC(jahr, monat, 1));
       var tage = (7 - t.getUTCDay()) % 7 + 1 + (n - 1) * 7;   // 1-basierter Tag des n-ten Sonntags
-      return Date.UTC(jahr, monat, tage, 7, 0);               // Umstellung 2 Uhr Ortszeit ≈ 7 UTC
+      return Date.UTC(jahr, monat, tage, stundeUtc, 0);
     }
-    if (m === 2) return d.getTime() >= nterSonntag(2, 2);
-    return d.getTime() < nterSonntag(10, 1);
+    if (m === 2) return d.getTime() >= nterSonntag(2, 2, 7);  // Beginn: 2 Uhr EST = 7 UTC
+    return d.getTime() < nterSonntag(10, 1, 6);               // Ende: 2 Uhr EDT = 6 UTC
   }
   /** Minuten seit US-Handelsbeginn (negativ vor der Eröffnung). */
   function minutenSeitOeffnung(tMs) {
@@ -1494,9 +1477,9 @@
           var barsHold = MAXHOLD ? MAXHOLD / barMs : 12;
           if (chE) {
             // Kanal-Edge: Der Weg bis zur Gegenkante muss die Kosten decken.
-            var toEdge = dir === 'call' ? chE.toUpperPct : chE.toLowerPct;
+            var toEdge = dir === 'call' ? chE.zuObenPct : chE.zuUntenPct;
             var needPctC = omegaE > 0 ? (roundTrip / omegaE) * 100 : Infinity;
-            if (toEdge < needPctC * MINEDGE) continue;
+            if (!(toEdge >= needPctC * MINEDGE)) continue;
           } else {
             var ec = edgeCheck(closesUpto, barsHold, roundTrip, omegaE, MINEDGE);
             if (!ec.ok) continue;
@@ -1530,10 +1513,13 @@
       }
     }
     // Rest glattstellen
+    var letztT = times.length ? times[times.length - 1] : Date.now();
     Object.keys(open).forEach(function (s3) {
       var bars3 = idx[s3];
       closePos(s3, bars3[bars3.length - 1][1], bars3[bars3.length - 1][0], 'Backtest-Ende');
     });
+    // Endstand NACH der Glattstellung aufzeichnen, sonst fehlen die letzten Exit-Kosten in end/retPct
+    equity.push([letztT, cash]);
 
     var wins = trades.filter(function (tr) { return tr.pnl > 0; }).length;
     var final = equity.length ? equity[equity.length - 1][1] : capital;
@@ -1561,16 +1547,17 @@
     warrantOmega: warrantOmega, warrantAufgeld: warrantAufgeld, PROFILES: PROFILES,
     underlyingAtTarget: underlyingAtTarget,
     backtest: backtest, RATIO: RATIO,
-    maCross: maCross, histVolIntraday: histVolIntraday, barMinOf: barMinOf, backtestIntraday: backtestIntraday,
+    histVolIntraday: histVolIntraday, barMinOf: barMinOf, backtestIntraday: backtestIntraday,
     usSommerzeit: usSommerzeit, minutenSeitOeffnung: minutenSeitOeffnung,
+    SETUP_ALLOW: SETUP_ALLOW, regimeValidate: regimeValidate,
     resampleBars: resampleBars, mtfAgrees: mtfAgrees, autoStop: autoStop,
     signalCross: signalCross, vwapLine: vwapLine, inWindow: inWindow,
     effSpread: effSpread, slipOf: slipOf,
     reversionSignal: reversionSignal, edgeCheck: edgeCheck, waveQuality: waveQuality,
     regressionChannel: regressionChannel, channelFit: channelFit, bestChannel: bestChannel,
     channelValid: channelValid, CHAN_MIN: CHAN_MIN, varianceRatio: varianceRatio,
-    channelRef: channelRef, projectChannel: projectChannel, bewaehrungsUrteil: bewaehrungsUrteil,
-    trendChannel: trendChannel, projectTrendChannel: projectTrendChannel, findPivots: findPivots,
+    bewaehrungsUrteil: bewaehrungsUrteil,
+    trendChannel: trendChannel, projectTrendChannel: projectTrendChannel,
     KANAL_MIN: KANAL_MIN, RECHENSTAND: RECHENSTAND, degapBarArray: degapBarArray,
     degapCloses: degapCloses, degapBars: degapBars,
     computeStats: computeStats, bootstrapTrades: bootstrapTrades
