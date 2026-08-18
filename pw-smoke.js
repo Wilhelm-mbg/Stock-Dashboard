@@ -33,6 +33,9 @@ const path = require('path');
       autoOpt: { on: true, everyH: 8, onlyRobust: true, marketPause: true, regime: true, regimeMin: 60,
                  farm: true, farmH: 12, farmPop: 12, farmGens: 1, lastRun: 0, lastRegime: 0, lastFarm: 0, lastCheck: null },
       patience: { [today]: { 'KI-Veto': 3, 'Event-Blackout': 2, 'Kosten-Check: Bewegung deckt Kosten nicht': 5 } },
+      schattenStat: { 'KI-Veto': { n: 6, sumPct: -12.4, gerettet: 4, verhindert: 1 }, 'Zeitfenster': { n: 8, sumPct: 21.0, gerettet: 1, verhindert: 6 } },
+      schatten: [{ id: 'schTest', t: nowS - 3600000, sym: 'ZZZ', dir: 'call', grund: 'Kosten-Check', spot0: 100, ask: 1,
+        w: { strike: 100, expiry: nowS + 5 * 86400000, iv: 0.4 }, spx: 0.03, sl: -0.2, tp: null, trail: 0, maxHoldMin: 600, peak: 1, lastBid: null, status: 'open' }],
       trades: seedTrades,
       positions: [],
       tuneLog: [{ id: 'x1', at: nowS - 3 * 86400000, applied: ['period → 50'], txt: 'Testanpassung',
@@ -152,6 +155,11 @@ const path = require('path');
   const patTxt = await page.locator('#patience').innerText();
   check('Geduld-Bilanz zeigt Gründe', patTxt.indexOf('KI-Veto') !== -1 && patTxt.indexOf('5×') !== -1);
   check('Geduld-Bilanz zeigt Gesamtzahl', patTxt.indexOf('10') !== -1);
+
+  // 🕯️ Schattenbuch: Bilanz je Verwerfungsgrund samt Urteil
+  check('Schattenbuch wird angezeigt', patTxt.indexOf('Schattenbuch') !== -1);
+  check('Schattenbuch fällt Urteile', patTxt.indexOf('rettet Geld') !== -1 && patTxt.indexOf('verhindert eher Gewinne') !== -1);
+  check('Schattenbuch zählt offene Schatten', patTxt.indexOf('1 Schatten laufen noch') !== -1);
 
   // Wochenreport: Kostolany-Zitat + Geduld-Abschnitt
   await page.click('#weeklyBtn');

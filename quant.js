@@ -961,7 +961,7 @@
   /** Stand der Rechengrundlage. Wird hochgezählt, sobald sich etwas ändert, das alte
    *  Backtest-Ergebnisse ungültig macht (z. B. die Vola-Skalierung in 7.10). Die Farm
    *  verwirft dann ihren Champion-Nachweis und lässt ihn neu antreten. */
-  var RECHENSTAND = 3;
+  var RECHENSTAND = 4;
 
   var KANAL_MIN = { touchJeSeite: 3, dichte: 2.5, wechsel: 2, deckung: 0.90, enge: 0.85, vr: 0.35, acf: -0.65, score: 50 };
 

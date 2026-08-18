@@ -80,6 +80,74 @@
     return { byReason: out, total: total };
   }
 
+  /* ================= 🕯️ Schattenbuch (verworfene Trades virtuell weiterverfolgen) =================
+   * Jeder verworfene Trade mit bekannter Richtung wird als virtueller Schein weitergerechnet.
+   * Nach ein paar Tagen steht je Verwerfungsgrund fest: Geld gerettet oder Gewinn verhindert?
+   * Ein Filter, der nachweislich nur Gewinne verhindert, verliert sein Argument. */
+  function schattenNeu(grund, sym, dir, spot, bars, mp, cfg, now, ivOpt) {
+    try {
+      if (!D || !dir || !(spot > 0) || !bars || bars.length < 30) return;
+      if (!D.schatten) D.schatten = [];
+      for (var i0 = 0; i0 < D.schatten.length; i0++) {
+        var s0 = D.schatten[i0];
+        if (s0.status === 'open' && s0.sym === sym && s0.grund === grund) return; // je Symbol+Grund nur ein offener Schatten
+      }
+      var closes = bars.map(function (b) { return b[1]; });
+      var iv;
+      if (ivOpt) iv = Math.min(1.5, Math.max(0.15, ivOpt));
+      else {
+        var barsProTagS = Math.max(1, Math.round(390 / Math.max(1, Q.barMinOf(bars, bars.length - 1))));
+        iv = Math.min(1.5, Math.max(0.15, Q.histVolIntraday(closes.slice(-300), barsProTagS) * 1.1));
+      }
+      var prof = Q.PROFILES[(cfg && cfg.profile) || 'atm21'] || Q.PROFILES.atm21;
+      var w = { strike: spot * (1 + (dir === 'call' ? prof.otmPct : -prof.otmPct)), expiry: now + prof.days * 86400000, iv: iv, ratio: Q.RATIO };
+      var spx = Q.effSpread(iv) + Q.slipOf(iv);
+      var ask = Q.warrantValue(dir, w, spot, now) * (1 + spx);
+      if (!(ask > 0.001)) return;
+      var slT = mp && mp.sl != null
+        ? (mp.sl === 'auto' ? Q.autoStop(closes, Q.warrantOmega(dir, w, spot, now), (mp.maxHoldMin || 60) / Math.max(1, Q.barMinOf(bars, bars.length - 1))) : mp.sl)
+        : -0.25;
+      D.schatten.unshift({ id: 'sch' + now + '-' + sym, t: now, sym: sym, dir: dir, grund: grund,
+        spot0: spot, ask: Math.round(ask * 10000) / 10000,
+        w: { strike: Math.round(w.strike * 100) / 100, expiry: w.expiry, iv: Math.round(iv * 1000) / 1000 },
+        spx: Math.round(spx * 10000) / 10000, sl: slT, tp: mp && mp.tp != null ? mp.tp : null,
+        trail: (mp && mp.trail) || 0, maxHoldMin: (mp && mp.maxHoldMin) || 240,
+        peak: ask, lastBid: null, status: 'open' });
+      if (D.schatten.length > 400) D.schatten = D.schatten.filter(function (x, ix) { return ix < 400 || x.status === 'open'; });
+    } catch (eS) { /* Das Schattenbuch darf den Handel nie stören */ }
+  }
+  function schattenSchliessen(sEintrag, retPct, why, now) {
+    sEintrag.status = 'closed'; sEintrag.closeT = now;
+    sEintrag.pnlPct = Math.round(retPct * 10000) / 100; sEintrag.why = why;
+    var st = D.schattenStat = D.schattenStat || {};
+    var g2 = st[sEintrag.grund] = st[sEintrag.grund] || { n: 0, sumPct: 0, gerettet: 0, verhindert: 0 };
+    g2.n++; g2.sumPct = Math.round((g2.sumPct + sEintrag.pnlPct) * 100) / 100;
+    if (sEintrag.pnlPct <= -1) g2.gerettet++;           // Filter hat Geld gerettet
+    else if (sEintrag.pnlPct >= 1) g2.verhindert++;     // Filter hat Gewinn verhindert (±1 % Totzone)
+  }
+  function schattenUpdate(sym, spot, now, nearCloseFlag) {
+    if (!D || !D.schatten || !D.schatten.length) return;
+    for (var i1 = 0; i1 < D.schatten.length; i1++) {
+      var sE = D.schatten[i1];
+      if (sE.status !== 'open' || sE.sym !== sym) continue;
+      try {
+        var wS = { strike: sE.w.strike, expiry: sE.w.expiry, iv: sE.w.iv, ratio: Q.RATIO };
+        var bidS = Math.max(0.001, Q.warrantValue(sE.dir, wS, spot, now) * (1 - sE.spx));
+        sE.lastBid = Math.round(bidS * 10000) / 10000;
+        if (bidS > sE.peak) sE.peak = bidS;
+        var retS = bidS / sE.ask - 1;
+        var whyS = null;
+        if (retS <= sE.sl) whyS = 'Stop';
+        else if (sE.tp != null && retS >= sE.tp) whyS = 'Ziel';
+        else if (sE.trail && sE.peak > sE.ask && bidS <= sE.peak * (1 - sE.trail)) whyS = 'Trailing';
+        else if (sE.maxHoldMin && now - sE.t >= sE.maxHoldMin * 60000) whyS = 'Zeit';
+        else if (nearCloseFlag) whyS = 'Tagesschluss';
+        else if (now - sE.t > 5 * 86400000) whyS = 'Verwaist';
+        if (whyS) schattenSchliessen(sE, retS, whyS, now);
+      } catch (eU) { /* einzelner Schatten defekt: ignorieren */ }
+    }
+  }
+
   /* ================= Lokale KI-Prüfung (Veto/Boost) ================= */
   function kiLogAdd(sym, dir, entscheidung, begruendung, mode) {
     if (!D.kiLog) D.kiLog = [];
@@ -818,6 +886,8 @@
         sentimentVerlauf: SENT,
         analyseZentrale: D.central || null,
         symbolSperren: D.symBlock || {},
+        schattenbuch: { bilanz: D.schattenStat || {}, offen: (D.schatten || []).filter(function (x) { return x.status === 'open'; }).length,
+          letzte: (D.schatten || []).slice(0, 60) },
         strategieFarm: D.farm || null,
         marktRegime: D.regime || null,
         automatik: D.autoOpt || null,
@@ -1058,6 +1128,7 @@
         var hist = await getHistory(sym, '2y');
         if (!hist || hist.length < 120) continue;
         var spot = spotOf(sym, hist);
+        schattenUpdate(sym, spot, now, false);
         var news = await getSymbolNews(sym);
         var closes = hist.map(function (p) { return p[1]; });
 
@@ -1113,7 +1184,10 @@
           tagesPnlPct: tagesPnl().pct, tradesHeute: tagesPnl().n
           });
           if (kiH.go) openTrade(sym, dir, spot, vol, scores, { reason: reason, scenario: scenario, elliottLabel: ell.label }, now, kiH);
-          else patienceAdd('KI-Veto (Stunden-Strategie)', sym);
+          else {
+            patienceAdd('KI-Veto (Stunden-Strategie)', sym);
+            schattenNeu('KI-Veto (Stunden)', sym, dir, spot, hist, { sl: SL, tp: TP, trail: 0, maxHoldMin: 7 * 1440 }, { profile: 'atm21' }, now, vol);
+          }
         }
         await new Promise(function (r) { setTimeout(r, 250); });
       }
@@ -1282,6 +1356,7 @@
         if (!fd) continue;
         var bars = fd.series;
         var spot = bars[bars.length - 1][1];
+        schattenUpdate(sym, spot, now, nearClose); // Schattenbuch mit frischem Kurs weiterrechnen
         var sig = Q.signalCross(bars, cfg.lineType || 'ema', cfg.period, cfg.confirmBps);
         var liquid = !cfg.minDollarVol || fd.dollarVolDay == null || fd.dollarVolDay >= cfg.minDollarVol * 1e6;
         SIG[sym] = { t: now, spot: spot, ok: false, grund: 'kein Signal', score: null, z: null, chanPos: null, chanSteep: null };
@@ -1375,12 +1450,12 @@
               SIG[sym].chanTyp = chE.typ; SIG[sym].chanAus = chE.ausbruch; chN = chE.N;
               chRef = { kanal: chE, t: now, off: dgB[dgB.length - 1][1] - spot };
             }
-            if (!chE || !chE.gueltig) { patienceAdd('Kein gültiger Kanal (Chart-Prüfung)', sym); dir = null; }
-            else if (chE.ausbruch) { patienceAdd('Kanalausbruch – der Kanal gilt nicht mehr', sym); dir = null; }
-            else if (dir === 'call' && chE.pos > 0.30) { patienceAdd('Kanal: nicht an der Unterkante', sym); dir = null; }
-            else if (dir === 'put' && chE.pos < 0.70) { patienceAdd('Kanal: nicht an der Oberkante', sym); dir = null; }
-            else if (dir === 'call' && chE.trend === 'down') { patienceAdd('Kanal zeigt abwärts', sym); dir = null; }
-            else if (dir === 'put' && chE.trend === 'up') { patienceAdd('Kanal zeigt aufwärts', sym); dir = null; }
+            if (!chE || !chE.gueltig) { patienceAdd('Kein gültiger Kanal (Chart-Prüfung)', sym); schattenNeu('Kanal-Filter', sym, dir, spot, bars, mp, cfg, now); dir = null; }
+            else if (chE.ausbruch) { patienceAdd('Kanalausbruch – der Kanal gilt nicht mehr', sym); schattenNeu('Kanal-Filter', sym, dir, spot, bars, mp, cfg, now); dir = null; }
+            else if (dir === 'call' && chE.pos > 0.30) { patienceAdd('Kanal: nicht an der Unterkante', sym); schattenNeu('Kanal-Filter', sym, dir, spot, bars, mp, cfg, now); dir = null; }
+            else if (dir === 'put' && chE.pos < 0.70) { patienceAdd('Kanal: nicht an der Oberkante', sym); schattenNeu('Kanal-Filter', sym, dir, spot, bars, mp, cfg, now); dir = null; }
+            else if (dir === 'call' && chE.trend === 'down') { patienceAdd('Kanal zeigt abwärts', sym); schattenNeu('Kanal-Filter', sym, dir, spot, bars, mp, cfg, now); dir = null; }
+            else if (dir === 'put' && chE.trend === 'up') { patienceAdd('Kanal zeigt aufwärts', sym); schattenNeu('Kanal-Filter', sym, dir, spot, bars, mp, cfg, now); dir = null; }
           }
         } else if (isRev) {
           var rsig = Q.reversionSignal(bars, cfg.lineType || 'ema', cfg.period, zOf(cfg.confirmBps));
@@ -1395,22 +1470,22 @@
           var hourB = parseInt(new Date(now).toLocaleString('de-DE', { hour: '2-digit', hour12: false, timeZone: 'Europe/Berlin' }), 10);
           if (cfg.avoidHours.indexOf(hourB) !== -1) { patienceAdd('Meide-Stunde (Analyse-Zentrale)', sym); continue; }
         }
-        if (!Q.inWindow(now, cfg.window || 'all')) { patienceAdd('Außerhalb des Zeitfensters', sym); continue; }
+        if (!Q.inWindow(now, cfg.window || 'all')) { patienceAdd('Außerhalb des Zeitfensters', sym); schattenNeu('Zeitfenster', sym, dir, spot, bars, mp, cfg, now); continue; }
         if (!liquid) { patienceAdd('Zu wenig Liquidität', sym); continue; }
-        if (D.intradayCount >= mp.maxPerDay) { patienceAdd('Tageslimit erreicht', sym); continue; }
+        if (D.intradayCount >= mp.maxPerDay) { patienceAdd('Tageslimit erreicht', sym); schattenNeu('Tageslimit', sym, dir, spot, bars, mp, cfg, now); continue; }
         if (!canOpen(equityNow()).ok) { patienceAdd('Risiko-Limit', sym); continue; } // Risikomanagement
         // 5-Min-Bestätigung für 1-Min-Signale (Multi-Timeframe)
-        if (cfg.mtf !== false && (cfg.interval || '5m') === '1m' && !Q.mtfAgrees(bars, dir, 5)) { patienceAdd('5-Min-Chart widerspricht', sym); continue; }
+        if (cfg.mtf !== false && (cfg.interval || '5m') === '1m' && !Q.mtfAgrees(bars, dir, 5)) { patienceAdd('5-Min-Chart widerspricht', sym); schattenNeu('MTF-Widerspruch', sym, dir, spot, bars, mp, cfg, now); continue; }
         // Verlustserien-Drossel (Tilt-Schutz)
         var lsN = (D.lossStreak && D.lossStreak.day === today) ? D.lossStreak.n : 0;
-        if (lsN >= 5) { patienceAdd('Verlustserie (5+) – Pause bis Tagesende', sym); continue; }
+        if (lsN >= 5) { patienceAdd('Verlustserie (5+) – Pause bis Tagesende', sym); schattenNeu('Verlustserie', sym, dir, spot, bars, mp, cfg, now); continue; }
         var lsFactor = lsN >= 3 ? 0.5 : 1;
         if (isWave || (!isRev && cfg.trendFilter)) { // Trend: beim Wellenreiter Pflicht, sonst optional
           // Kanalrichtung UND übergeordneter Trend müssen passen – ein Seitwärtskorridor
           // innerhalb eines Abwärtstrends ist kein Freibrief für Long-Einstiege.
           if (chE) {
-            if (dir === 'call' && chE.trend === 'down') { patienceAdd('Regime: Kanal zeigt abwärts', sym); continue; }
-            if (dir === 'put' && chE.trend === 'up') { patienceAdd('Regime: Kanal zeigt aufwärts', sym); continue; }
+            if (dir === 'call' && chE.trend === 'down') { patienceAdd('Regime: Kanal zeigt abwärts', sym); schattenNeu('Kanal-Filter', sym, dir, spot, bars, mp, cfg, now); continue; }
+            if (dir === 'put' && chE.trend === 'up') { patienceAdd('Regime: Kanal zeigt aufwärts', sym); schattenNeu('Kanal-Filter', sym, dir, spot, bars, mp, cfg, now); continue; }
           }
           {
             var tc = bars.slice(-240).map(function (b) { return b[1]; });
@@ -1454,7 +1529,7 @@
         } else {
           ec = Q.edgeCheck(closes5, (mp.maxHoldMin || 60) / barMin, roundTrip, omegaPre, 1.5);
         }
-        if (!ec.ok) { patienceAdd('Kosten-Check: Bewegung deckt Kosten nicht', sym); continue; }
+        if (!ec.ok) { patienceAdd('Kosten-Check: Bewegung deckt Kosten nicht', sym); schattenNeu('Kosten-Check', sym, dir, spot, bars, mp, cfg, now); continue; }
         // 🧠 Lokale KI als letzte Prüfinstanz (Veto/Boost)
         var trendUp = (function () { var tc2 = bars.slice(-240).map(function (b) { return b[1]; }); if (tc2.length < 100) return '?'; var e2 = Q.emaSeries(tc2, 100); return spot > e2[e2.length - 1] ? 'aufwärts' : 'abwärts'; })();
         var ki = await kiCheck({
@@ -1472,7 +1547,7 @@
           tagesPnlPct: D.dayStartEq ? Math.round(tagesPnl() / D.dayStartEq * 10000) / 100 : 0,
           tradesHeute: D.intradayCount || 0
         });
-        if (!ki.go) { patienceAdd('KI-Veto', sym); continue; }
+        if (!ki.go) { patienceAdd('KI-Veto', sym); schattenNeu('KI-Veto', sym, dir, spot, bars, mp, cfg, now); continue; }
         var fee = cfg.orderFee || 0;
         var qty;
         var sizingR = parseFloat(cfg.sizing);
@@ -2229,7 +2304,31 @@
       '<span>✅ Ausgeführte Intraday-Trades: <b>' + taken + '</b></span>' +
       '<span>🧘 Bewusst verworfen: <b>' + agg.total + '</b></span>' +
       (agg.total + taken > 0 ? '<span>Geduld-Quote: <b>' + Math.round(agg.total / (agg.total + taken) * 100) + ' %</b></span>' : '') +
-      '</div>' + rows;
+      '</div>' + rows + renderSchattenHtml();
+  }
+
+  /** 🕯️ Schattenbuch-Bilanz: Was wäre aus den verworfenen Trades geworden? */
+  function renderSchattenHtml() {
+    var st = D.schattenStat || {};
+    var gr = Object.keys(st).sort(function (a, b) { return st[b].n - st[a].n; });
+    var offen = (D.schatten || []).filter(function (x) { return x.status === 'open'; }).length;
+    if (!gr.length && !offen) return '';
+    var h = '<div style="margin-top:12px; border-top:1px solid var(--line); padding-top:8px;">' +
+      '<div style="font-weight:700; margin-bottom:4px;">🕯️ Schattenbuch – was aus den verworfenen Trades geworden wäre</div>' +
+      '<div style="color:var(--muted); font-size:11.5px; margin-bottom:6px;">Jeder verworfene Trade läuft virtuell weiter (gleiche Stop-/Ausstiegsregeln). ' +
+      '„Gerettet“ = der Filter hat einen Verlust verhindert, „verhindert“ = er hat einen Gewinn gekostet (±1 % Totzone). Simulation, keine Anlageberatung.</div>';
+    if (!gr.length) h += '<div style="color:var(--muted); font-size:12px;">' + offen + ' Schatten laufen – noch keiner abgeschlossen.</div>';
+    gr.forEach(function (g3) {
+      var x = st[g3];
+      var avg = x.n ? Math.round(x.sumPct / x.n * 10) / 10 : 0;
+      var urteil = x.n < 5 ? '⏳ zu früh für ein Urteil'
+        : (x.gerettet > x.verhindert * 1.5 ? '🟢 rettet Geld' : (x.verhindert > x.gerettet * 1.5 ? '🔴 verhindert eher Gewinne' : '🟡 unentschieden'));
+      h += '<div class="patrow"><span>' + U.esc(g3) + '</span>' +
+        '<span style="color:var(--muted);">' + x.n + ' Schatten · Ø ' + U.signTxt(avg, ' %') + ' · gerettet ' + x.gerettet + ' · verhindert ' + x.verhindert + '</span>' +
+        '<b>' + urteil + '</b></div>';
+    });
+    if (offen) h += '<div style="color:var(--muted); font-size:11.5px; margin-top:4px;">' + offen + ' Schatten laufen noch.</div>';
+    return h + '</div>';
   }
 
   function renderAnalytics() {
@@ -2948,15 +3047,15 @@
       riskPct: risk > 0 ? risk : 0
     });
   }
-  /** Fitness: Ergebnis auf ungesehenen Zeitscheiben, bestraft für zu dünne Stichproben. */
-  async function geneFitness(g, ld, folds) {
-    var map = ld.data[g.interval];
+  /** Eine Messung auf einem festen Zeitrahmen: Walk-Forward über ungesehene Zeitscheiben. */
+  async function messungAuf(g, iv, ld, folds) {
+    var map = ld.data[iv];
     if (!map || Object.keys(map).length < 3) return null;
     var span = mapSpan(map);
     if (!(span[1] > span[0])) return null;
     var chunk = (span[1] - span[0]) / 5;
-    var warm = 160 * INTERVAL_CFG[g.interval].barMin * 60000;
-    var opts = geneOpts(g);
+    var warm = 160 * INTERVAL_CFG[iv].barMin * 60000;
+    var opts = geneOpts(Object.assign({}, g, { interval: iv }));
     var list = folds || [1, 2, 3, 4];
     var rets = [], nTr = 0, wins = 0, gw = 0, gl = 0;
     for (var fi = 0; fi < list.length; fi++) {
@@ -2979,6 +3078,21 @@
     var fit = sum * (nTr >= 8 ? 1 : nTr / 8) + pos * 0.5;
     return { fit: Math.round(fit * 100) / 100, ret: sum, folds: rets, trades: nTr,
       winRate: nTr ? Math.round(wins / nTr * 100) : 0, pf: pf, posFolds: pos };
+  }
+  /** Fitness eines Gens. Pflichtbasis ist der 5m-Zeitrahmen mit einem Monat Historie –
+   *  auf 1m gibt es nur 5 Tage Daten, dort messen verschiedene Gene praktisch identisch
+   *  (flache Fitness = Zufallszucht). Der eigene Zeitrahmen des Gens zählt als Zusatz. */
+  async function geneFitness(g, ld, folds) {
+    var basis = await messungAuf(g, '5m', ld, folds);
+    var eigen = g.interval === '5m' ? null : await messungAuf(g, g.interval, ld, folds);
+    if (!basis && !eigen) return null;
+    if (!basis) return eigen;
+    if (!eigen) return basis;
+    var fit = Math.round((0.7 * basis.fit + 0.3 * eigen.fit) * 100) / 100;
+    return { fit: fit, ret: basis.ret, folds: basis.folds, trades: basis.trades + eigen.trades,
+      winRate: basis.winRate, pf: basis.pf, posFolds: basis.posFolds,
+      basis: { interval: '5m', ret: basis.ret, trades: basis.trades },
+      eigen: { interval: g.interval, ret: eigen.ret, trades: eigen.trades, fit: eigen.fit } };
   }
 
   /** Eigene Idee als Gen in die Farm geben. Freitext → lokales Modell → Whitelist-Prüfung.
@@ -3032,9 +3146,21 @@
       D.farm.rechenstand = Q.RECHENSTAND;
       D.farm.top = [];
       D.farm.challenger = null;
-      if (D.farm.champion) { D.farm.champion.res = null; D.farm.champion.nachweisVeraltet = true; }
+      if (D.farm.champion) { D.farm.champion.res = null; D.farm.champion.nachweisVeraltet = true; D.farm.champion.entwertetAt = Date.now(); }
       D.farm.genRaum = null; // selbst ausgedehnter Suchraum beruhte auf alten Messwerten
       D.farm.hinweis = { at: Date.now(), txt: 'Rechengrundlage hat sich geändert – alle früheren Messwerte verworfen, der Champion muss seinen Vorsprung neu belegen.' };
+    }
+    // Ein entthronter Champion ohne neuen Nachweis regiert nicht ewig: Nach 3 Tagen dankt
+    // er ab. Die Live-Konfiguration bleibt unangetastet – nur der Farm-Thron wird frei,
+    // damit die nächste Runde wieder von der echten Konfiguration ausgeht.
+    var chAlt = D.farm.champion;
+    if (chAlt && chAlt.nachweisVeraltet && !chAlt.res) {
+      if (!chAlt.entwertetAt) chAlt.entwertetAt = Date.now();
+      else if (Date.now() - chAlt.entwertetAt > 3 * 86400000) {
+        D.farm.abgedankt = { gene: chAlt.gene, seit: chAlt.seit, am: Date.now() };
+        D.farm.champion = null;
+        D.farm.hinweis = { at: Date.now(), txt: 'Champion abgedankt: 3 Tage ohne neuen Nachweis nach Änderung der Rechengrundlage. Die Farm startet wieder von der Live-Konfiguration.' };
+      }
     }
     // Selbst ausgedehnten Suchraum aus früheren Läufen wieder anwenden (übersteht so den Neustart)
     if (D.farm.genRaum) {
@@ -3104,8 +3230,15 @@
         }).concat(F.saatErgebnis || []).slice(0, 12);
         F.saat = (F.saat || []).filter(function (g) { return !saatDiesmal.some(function (x) { return geneKey(x) === geneKey(g); }); });
       }
-      // Selbstausdehnung: Sitzt die Spitze am Rand einer Werteliste, wird sie erweitert
-      var erweitert = raumErweitern(bewertet.slice(0, 5).map(function (x) { return x.gene; }));
+      // Flache Fitness: messen die Spitzengene praktisch identisch, unterscheidet die
+      // Datenbasis sie nicht – dann ist jede "Erkenntnis" (Rangfolge, Randlage) Zufall.
+      var kennungen = {};
+      bewertet.slice(0, 8).forEach(function (x) { if (x.res) kennungen[x.res.ret + '|' + x.res.trades] = 1; });
+      var flach = bewertet.length >= 8 && Object.keys(kennungen).length <= 2;
+      F.messWarnung = flach ? { at: Date.now(), txt: 'Die Spitzengene messen nahezu identisch – die Datenbasis unterscheidet sie nicht. Selbstausdehnung und Herausforderer-Kür ausgesetzt.' } : null;
+      // Selbstausdehnung: Sitzt die Spitze am Rand einer Werteliste, wird sie erweitert –
+      // aber nur, wenn die Messung überhaupt unterscheidet (sonst ist Randlage Rauschen).
+      var erweitert = flach ? [] : raumErweitern(bewertet.slice(0, 5).map(function (x) { return x.gene; }));
       if (erweitert.length) F.raumErweitert = { at: Date.now(), neu: erweitert };
       // Erweiterte Listen persistieren – sonst vergisst die Farm sie beim Neustart
       F.genRaum = {};
@@ -3123,7 +3256,7 @@
       if (best && geneKey(best.gene) !== geneKey(F.champion.gene)) {
         var champRes = (bewertet.filter(function (x) { return geneKey(x.gene) === geneKey(F.champion.gene); })[0] || {}).res;
         var besser = !champRes || best.res.fit > champRes.fit + 1.0;
-        var genug = best.res.trades >= 12 && best.res.posFolds >= 2;
+        var genug = !flach && best.res.trades >= 12 && best.res.posFolds >= 2;
         if (besser && genug && (!F.challenger || best.res.fit > F.challenger.res.fit)) {
           F.challenger = { gene: best.gene, res: best.res, seit: Date.now(), pruefungen: [] };
         }
@@ -3277,6 +3410,12 @@
     } else {
       h += '<div style="color:var(--muted);">Noch keine Zuchtrunde gelaufen.</div>';
     }
+    if (F.messWarnung) {
+      h += '<div style="margin-top:6px; color:var(--warn);">📏 ' + U.esc(F.messWarnung.txt) + '</div>';
+    }
+    if (F.abgedankt) {
+      h += '<div style="margin-top:4px; color:var(--muted);">Vorheriger Champion abgedankt am ' + U.dt(F.abgedankt.am) + ' (kein neuer Nachweis nach Änderung der Rechengrundlage).</div>';
+    }
     if (F.hinweis) {
       h += '<div style="margin-top:6px; color:var(--warn);">⚠ ' + U.esc(F.hinweis.txt) + '</div>';
     }
@@ -3421,6 +3560,20 @@
         quelle = ki && ki.ok ? 'Regel (KI-Vorschlag abgelehnt: ' + geprueft.grund + ')'
           : (window.LocalKI && window.LocalKI.model() ? 'Regel (Ollama nicht erreichbar)' : 'Regel (kein lokales Modell eingerichtet)');
       }
+      // Hysterese: Eine einzelne Messung ist eine Meinung, keine Marktlage. Erst wenn die
+      // nächste Messung dasselbe empfiehlt, wird umgestellt (am 17.08. wurde der Trend-
+      // filter sonst viermal am Tag umgeschaltet). Manuelle Läufe gelten sofort.
+      var wahlKey = [wahl.setup, wahl.ausloeser, wahl.zeitrahmen, !!wahl.trendfilter, !!wahl.kanal].join('|');
+      var istKey = [D.intraday.setup, D.intraday.trigger, D.intraday.interval, !!D.intraday.trendFilter, !!D.intraday.channel].join('|');
+      if (!manual && wahlKey !== istKey && (!D.regimePending || D.regimePending.key !== wahlKey)) {
+        D.regimePending = { key: wahlKey, at: Date.now() };
+        D.regime = { at: Date.now(), ok: true, quelle: quelle, wahl: wahl, fakten: f, applied: [],
+          txt: setupName(modeFromSetup(wahl.setup, wahl.ausloeser, 'laufen'), wahl.kanal) + ' · ' + wahl.zeitrahmen +
+               ' — Vorschlag notiert, wartet auf Bestätigung durch die nächste Messung (' + (wahl.begruendung || '') + ')' };
+        await save(); renderTuneLog(); render();
+        return;
+      }
+      D.regimePending = null;
       var vorher = JSON.parse(JSON.stringify(D.intraday));
       var mode = modeFromSetup(wahl.setup, wahl.ausloeser, 'laufen');
       var applied = [];
@@ -3459,12 +3612,25 @@
 
   /** Bedienelemente an den aktuellen (automatisch gesetzten) Stand angleichen. */
   function syncStrategyUI() {
-    [['idMode', D.intraday.mode], ['idInterval', D.intraday.interval], ['idTrend', D.intraday.trendFilter ? '1' : '0']].forEach(function (kv) {
+    // ALLE Strategie-Felder angleichen. Vorher wurden nur vier synchronisiert – die
+    // restlichen Formularfelder blieben stehen und das nächste change-Event schrieb
+    // sie zurück in den Store: Automatik-Entscheidungen wurden still zurückgedreht.
+    var c = D.intraday;
+    [['idMode', c.mode], ['idInterval', c.interval || '5m'], ['idTrend', c.trendFilter ? '1' : '0'],
+     ['idPeriod', String(c.period)], ['idConfirm', String(c.confirmBps)], ['idLine', c.lineType || 'ema'],
+     ['idWindow', c.window || 'all'], ['idHold', String(c.scalpHold != null ? c.scalpHold : 60)],
+     ['idTrail', String(c.scalpTrail != null ? c.scalpTrail : 15)],
+     ['idScalpSL', c.scalpSL === 'auto' ? 'auto' : String(c.scalpSL != null ? c.scalpSL : 20)],
+     ['idProfile', c.profile || 'atm21'], ['idSizing', parseFloat(c.sizing) > 0 ? String(c.sizing) : 'fix'],
+     ['idBlackout', c.blackout || 'block']].forEach(function (kv) {
       var el = document.getElementById(kv[0]);
       if (el) el.value = kv[1];
     });
-    var ch = document.getElementById('idChannel');
-    if (ch) ch.checked = !!D.intraday.channel;
+    [['idChannel', !!c.channel], ['idMtf', c.mtf !== false], ['idScreener', !!c.screener], ['idEnabled', !!c.enabled]].forEach(function (kv) {
+      var el = document.getElementById(kv[0]);
+      if (el) el.checked = kv[1];
+    });
+    if (window.__syncSetupUI) window.__syncSetupUI();   // Setup-Pillen + Auslöser + Ausstieg
     if (window.__updateParamVis) window.__updateParamVis();
   }
 
@@ -3597,6 +3763,10 @@
     out.innerHTML = html;
     var ab = document.getElementById('centralApplyBtn');
     if (ab) ab.addEventListener('click', function () {
+      if (r.verdict && r.verdict.indexOf('🔴') !== -1) {
+        document.getElementById('centralApplyStatus').textContent = '⛔ Gesperrt: Dieses Setup hat im Test KEINEN Vorteil gezeigt (' + r.verdict + '). Ein Setup ohne nachgewiesenen Vorteil wird nicht übernommen.';
+        return;
+      }
       var applied = applyCentralRec(r, 'manuell');
       save();
       document.getElementById('centralApplyStatus').textContent = (applied.length ? '✅ Übernommen (' + applied.length + ' Änderungen)' : '✅ Nichts zu ändern – läuft bereits so') + ' – gilt ab dem nächsten Scan' + (r.avoidHours.length ? ' (Meide-Stunden aktiv: ' + r.avoidHours.join(', ') + ' Uhr)' : '') + '.';
@@ -3853,7 +4023,13 @@
     idPr.value = D.intraday.profile || 'atm21';
     idF.value = String(D.intraday.orderFee != null ? D.intraday.orderFee : 1.5);
     idL.value = String(D.intraday.minDollarVol != null ? D.intraday.minDollarVol : 50);
+    // 'enabled' bewusst nicht dabei: An/Aus ist Alltag, kein Experiment – das würde das Journal fluten.
+    var HAND_FELDER = { mode: 'Setup', period: 'Periode', confirmBps: 'Bestätigung', interval: 'Zeitrahmen',
+      profile: 'Schein-Profil', lineType: 'Leitlinie', trendFilter: 'Trendfilter', window: 'Zeitfenster', scalpHold: 'Max-Halten',
+      scalpTrail: 'Trailing', scalpSL: 'Not-Stop', blackout: 'Event-Blackout', channel: 'Trendkanal', mtf: '5-Min-Bestätigung',
+      sizing: 'Positionsgröße', screener: 'Screener' };
     function idSave() {
+      var vorherHand = JSON.parse(JSON.stringify(D.intraday));
       D.intraday.enabled = idE.checked;
       D.intraday.mode = idM.value;
       D.intraday.period = parseInt(idP.value, 10);
@@ -3879,6 +4055,18 @@
       D.intraday.screener = idScr.checked;
       var stS = setupFromMode(idM.value);
       D.intraday.setup = stS.setup; D.intraday.trigger = stS.trigger; D.intraday.exitStyle = stS.exitStyle;
+      // Journal: Was hat sich von Hand geändert? Ohne Eintrag ist das Experiment-Journal
+      // unvollständig und Konfig-Drift nicht mehr nachvollziehbar.
+      var handDiff = [];
+      Object.keys(HAND_FELDER).forEach(function (fk) {
+        if (String(vorherHand[fk]) !== String(D.intraday[fk])) handDiff.push(HAND_FELDER[fk] + ' → ' + D.intraday[fk]);
+      });
+      if (handDiff.length) {
+        if (!D.tuneLog) D.tuneLog = [];
+        D.tuneLog.unshift({ id: 'hand-' + Date.now(), at: Date.now(), quelle: 'hand', applied: handDiff,
+          txt: '✋ Von Hand geändert (Formular).', konfigVorher: vorherHand, konfigNachher: JSON.parse(JSON.stringify(D.intraday)) });
+        if (D.tuneLog.length > 60) D.tuneLog = D.tuneLog.slice(0, 60);
+      }
       updateParamVis();
       save();
       document.getElementById('idStatus').textContent = D.intraday.enabled
