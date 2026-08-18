@@ -35,11 +35,11 @@
       var ref = new Date(now.getFullYear(), now.getMonth() + m, 1);
       var nfp = nthWeekday(ref.getFullYear(), ref.getMonth(), 5, 1);
       var nfpDt = new Date(iso(nfp) + 'T14:30:00');
-      if (nfpDt >= now && nfpDt <= horizon) out.push({ dt: nfpDt, name: 'US-Arbeitsmarktbericht (NFP, vorauss.)', impact: 3 });
+      if (nfpDt >= new Date(now.getTime() - 12 * 3600000) && nfpDt <= horizon) out.push({ dt: nfpDt, name: 'US-Arbeitsmarktbericht (NFP, vorauss.)', impact: 3 });
       if ([2, 5, 8, 11].indexOf(ref.getMonth()) !== -1) {
         var tw = nthWeekday(ref.getFullYear(), ref.getMonth(), 5, 3);
         var twDt = new Date(iso(tw) + 'T15:30:00');
-        if (twDt >= now && twDt <= horizon) out.push({ dt: twDt, name: 'Großer Verfallstag (Triple Witching)', impact: 2 });
+        if (twDt >= new Date(now.getTime() - 12 * 3600000) && twDt <= horizon) out.push({ dt: twDt, name: 'Großer Verfallstag (Triple Witching)', impact: 2 });
       }
     }
     out.sort(function (a, b) { return a.dt - b.dt; });
@@ -47,18 +47,28 @@
   }
 
   function fmtCountdown(dt) {
-    var days = Math.floor((dt - Date.now()) / 86400000);
     var isToday = new Date(dt).toDateString() === new Date().toDateString();
-    if (isToday) return 'HEUTE';
-    if (days <= 0) return 'morgen';
-    if (days === 1) return 'in 1–2 Tagen';
-    return 'in ' + (days + 1) + ' Tagen';
+    if (isToday) return dt.getTime() < Date.now() ? 'HEUTE (vorbei)' : 'HEUTE';
+    if (dt.getTime() < Date.now()) return 'vorbei';
+    // Kalendertage statt 24-h-Blöcke zählen
+    var heute0 = new Date(); heute0.setHours(0, 0, 0, 0);
+    var dann0 = new Date(dt); dann0.setHours(0, 0, 0, 0);
+    var tage = Math.round((dann0 - heute0) / 86400000);
+    if (tage === 1) return 'morgen';
+    return 'in ' + tage + ' Tagen';
   }
 
   function render(el, n) {
     var evs = buildEvents(90).slice(0, n || 6);
-    if (!evs.length) { el.innerHTML = '<div class="loading">Keine anstehenden Termine im Zeitfenster.</div>'; return; }
-    el.innerHTML = evs.map(function (e) {
+    // Veralteter Kalender: Wenn der letzte verifizierte Fix-Termin näher als 14 Tage liegt
+    // (oder vorbei ist), verschwinden CPI/FOMC-Blackouts bald STILL – das muss sichtbar sein.
+    var letzterFix = new Date(FIXED[FIXED.length - 1].d + 'T23:59:00');
+    var warnung = (letzterFix.getTime() - Date.now() < 14 * 86400000)
+      ? '<div class="loading" style="color:var(--warn);">⚠ Die verifizierte Terminliste (CPI/FOMC) endet am ' +
+        letzterFix.toLocaleDateString('de-DE') + ' – danach schützt der Event-Blackout nur noch vor NFP/Verfallstagen. Bitte App-Update laden.</div>'
+      : '';
+    if (!evs.length) { el.innerHTML = warnung + '<div class="loading">Keine anstehenden Termine im Zeitfenster.</div>'; return; }
+    el.innerHTML = warnung + evs.map(function (e) {
       var today = new Date(e.dt).toDateString() === new Date().toDateString();
       var dateStr = e.dt.toLocaleDateString('de-DE', { weekday: 'short', day: '2-digit', month: '2-digit' }) +
         ' · ' + e.dt.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }) + ' Uhr';

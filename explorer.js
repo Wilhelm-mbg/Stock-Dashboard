@@ -93,7 +93,10 @@
   }
 
   /* ================= Detail-Ansicht ================= */
+  var openSeq = 0; // Stale-Antworten verwerfen: schnelles Symbol-Wechseln überschrieb sonst
+                   // Kennzahlen/CURDATA mit den Daten des VORHERIGEN Symbols
   async function openDetail(hit) {
+    var seq = ++openSeq;
     CUR = hit;
     activeRange = '1J';
     var startEl = document.getElementById('expStart');
@@ -110,6 +113,7 @@
 
     // Tagesdaten (2 Jahre) für Kennzahlen/Analyse + aktueller Range-Chart + News parallel
     var daily = await fetchRange(hit.sym, '2y', '1d');
+    if (seq !== openSeq) return; // inzwischen wurde ein anderes Symbol geöffnet
     CURDATA.daily = daily;
     if (daily && daily.meta) {
       var m = daily.meta;
@@ -127,7 +131,7 @@
         ['Währung', m.currency || '–'],
         ['52-Wochen-Hoch', m.fiftyTwoWeekHigh != null ? U.nf2.format(m.fiftyTwoWeekHigh) : '–'],
         ['52-Wochen-Tief', m.fiftyTwoWeekLow != null ? U.nf2.format(m.fiftyTwoWeekLow) : '–'],
-        ['Vola (30T, annualisiert)', Math.round(vol30 * 100) + ' %'],
+        ['Vola (30T, annualisiert)', (closes && closes.length >= 35) ? Math.round(vol30 * 100) + ' %' : '–'], // <35 Tage: histVol liefert nur den 30-%-Platzhalter
         ['RSI (14)', r14 != null ? Math.round(r14) : '–'],
         ['SMA 50', (function () { var s = Q.sma(closes, 50); return s ? U.nf2.format(s) : '–'; })()],
         ['SMA 200', (function () { var s = Q.sma(closes, 200); return s ? U.nf2.format(s) : '–'; })()]
@@ -154,8 +158,10 @@
 
   async function loadRange() {
     if (!CUR) return;
+    var seqR = openSeq;
     var r = RANGES.filter(function (x) { return x.k === activeRange; })[0];
     var data = await fetchRange(CUR.sym, r.range, r.interval);
+    if (seqR !== openSeq) return; // Symbol wurde inzwischen gewechselt
     CURDATA.rangeSeries = data ? data.series : null;
     drawBig(document.getElementById('bigchart'), data ? data.series : [], r.k);
   }

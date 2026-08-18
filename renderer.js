@@ -138,6 +138,10 @@
     items = items.filter(function (it) { var k = it.title.toLowerCase().slice(0, 60); if (seen[k]) return false; seen[k] = 1; return true; });
     items.sort(function (a, b) { return b.t - a.t; });
     if (items.length) { NEWS = items.slice(0, 6); renderNews(); }
+    else if (!NEWS.length) {
+      var nl = document.getElementById('newsList');
+      if (nl) nl.innerHTML = '<div class="loading">News derzeit nicht erreichbar – nächster Versuch in 30 Minuten.</div>';
+    }
   }
 
   /* ================= Markt offen? ================= */
@@ -145,9 +149,11 @@
     var now = new Date();
     var d = now.getUTCDay();
     if (d === 0 || d === 6) return false;
-    var mins = now.getUTCHours() * 60 + now.getUTCMinutes();
-    // 13:30–20:00 UTC ≈ US-Handelszeit (Sommerzeit); im Winter 14:30–21:00 – bewusst großzügig:
-    return mins >= 13 * 60 + 30 && mins < 21 * 60;
+    // Sommer-/winterzeitfest über die Rechen-Engine: 0–390 Minuten nach Börsenöffnung.
+    // Vorher galt die Vereinigung beider Fenster – im Winter lief der Scanner damit eine
+    // Stunde im Premarket auf stalen Kursen. (US-Feiertage kennt die App weiterhin nicht.)
+    var m = window.Quant.minutenSeitOeffnung(now.getTime());
+    return m >= 0 && m < 390;
   }
 
   /* ================= Rendering ================= */
@@ -244,12 +250,13 @@
 
   /* ================= Tooltip ================= */
   var tip = document.getElementById('tip');
+  var tipVonSpark = false; // Explorer/Depot nutzen dasselbe #tip – deren Tooltip nicht wegblenden
   document.addEventListener('mousemove', function (e) {
     var svg = e.target.closest ? e.target.closest('svg[data-spark]') : null;
-    if (!svg) { tip.style.display = 'none'; return; }
+    if (!svg) { if (tipVonSpark) { tip.style.display = 'none'; tipVonSpark = false; } return; }
     var meta = null;
     for (var i = 0; i < SPARKS.length; i++) if (SPARKS[i].id === svg.getAttribute('data-spark')) meta = SPARKS[i];
-    if (!meta) { tip.style.display = 'none'; return; }
+    if (!meta) { if (tipVonSpark) { tip.style.display = 'none'; tipVonSpark = false; } return; }
     var r = svg.getBoundingClientRect();
     var frac = (e.clientX - r.left) / r.width;
     var t = meta.x0 + frac * (meta.x1 - meta.x0);
@@ -257,7 +264,7 @@
     for (var j = 1; j < meta.hist.length; j++) if (Math.abs(meta.hist[j][0] - t) < Math.abs(best[0] - t)) best = meta.hist[j];
     tip.innerHTML = '<span class="tv">' + nfP.format(best[1]) + '</span><br><span class="tt">' +
       new Date(best[0]).toLocaleDateString('de-DE', { day: 'numeric', month: 'short' }) + '</span>';
-    tip.style.display = 'block';
+    tip.style.display = 'block'; tipVonSpark = true;
     tip.style.left = Math.min(window.innerWidth - 130, e.clientX + 14) + 'px';
     tip.style.top = (e.clientY + 14) + 'px';
   });
@@ -287,11 +294,9 @@
 
   // Für andere Module (KI-Depot, Explorer)
   window.Dash = {
-    INDICES: INDICES,
     STOCKS: STOCKS,
     quote: function (ySym) { return Q[ySym]; },
-    marketOpen: usMarketOpen,
-    loadSymbol: loadSymbol
+    marketOpen: usMarketOpen
   };
 
   // Lade-Skeletons, bis die ersten Kurse da sind

@@ -58,8 +58,10 @@
   // ---- Einstellungen ----
   var SETTINGS = { apiKey: '', model: 'claude-sonnet-4-5', tray: false, capKey: '', capId: '', capPass: '', capEnabled: false, ollamaUrl: '', ollamaModel: '', kiVeto: false, kiProvider: '', kiRules: '', updateRepo: '' };
   window.getSettings = function () { return SETTINGS; };
+  var settingsGeladen = false; // Schreiben vor dem Laden würde die gespeicherten Werte überschreiben
   window.api.storeGet('settings').then(function (s) {
     if (s) SETTINGS = Object.assign(SETTINGS, s);
+    settingsGeladen = true;
     if (window.api.setTrayMode) window.api.setTrayMode(!!SETTINGS.tray);
   });
 
@@ -74,7 +76,8 @@
       existing.push(clean);
       added++;
     });
-    if (added) window.api.storeSet('settings', SETTINGS);
+    if (added && settingsGeladen) window.api.storeSet('settings', SETTINGS);
+    // vor dem Laden nur im Speicher anhängen – der nächste reguläre Save persistiert es
     return added;
   };
 

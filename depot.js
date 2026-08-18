@@ -16,7 +16,7 @@
       stats: { news: { r: 0, w: 0 }, tech: { r: 0, w: 0 }, elliott: { r: 0, w: 0 }, maIntraday: { r: 0, w: 0 }, ki: { r: 0, w: 0 } },
       kiLog: [], patience: {},
       weights: { news: 0.35, tech: 0.40, elliott: 0.25 },
-      intraday: { enabled: false, mode: 'breakout', interval: '5m', period: 20, confirmBps: 15, profile: 'atm21', orderFee: 1.5, minDollarVol: 50, budgetPct: 0.03, sl: -0.25, tp: 0.35, cooldownMin: 45, maxPerDay: 10, lineType: 'ema', trendFilter: false, window: 'all', scalpHold: 60, scalpTrail: 15, scalpSL: 20, blackout: 'block', channel: true, mtf: true, sizing: 'fix', screener: false, avoidHours: [], autoTune: true },
+      intraday: { enabled: false, exitStyle: 'laufen', mode: 'breakout', interval: '5m', period: 20, confirmBps: 15, profile: 'atm21', orderFee: 1.5, minDollarVol: 50, budgetPct: 0.03, sl: -0.25, tp: 0.35, cooldownMin: 45, maxPerDay: 10, lineType: 'ema', trendFilter: false, window: 'all', scalpHold: 60, scalpTrail: 15, scalpSL: 20, blackout: 'block', channel: true, mtf: true, sizing: 'fix', screener: false, avoidHours: [], autoTune: true },
       watchlist: [],
       intradayLastScan: 0, intradayDay: '', intradayCount: 0, intradayCooldown: {},
       notify: true, hourlyEnabled: true, equityHist: [],
@@ -104,6 +104,10 @@
       var spx = Q.effSpread(iv) + Q.slipOf(iv);
       var ask = Q.warrantValue(dir, w, spot, now) * (1 + spx);
       if (!(ask > 0.001)) return;
+      var uebernacht = !!(mp && mp.uebernacht);
+      // Kein frischer Intraday-Schatten im Tagesschluss-Fenster – er würde im nächsten
+      // Scan sofort mit 'Tagesschluss' bei ~0 % geschlossen und verwässert nur die Bilanz.
+      if (!uebernacht && Q.minutenSeitOeffnung(now) >= 375) return;
       var slT = mp && mp.sl != null
         ? (mp.sl === 'auto' ? Q.autoStop(closes, Q.warrantOmega(dir, w, spot, now), (mp.maxHoldMin || 60) / Math.max(1, Q.barMinOf(bars, bars.length - 1))) : mp.sl)
         : -0.25;
@@ -111,7 +115,8 @@
         spot0: spot, ask: Math.round(ask * 10000) / 10000,
         w: { strike: Math.round(w.strike * 100) / 100, expiry: w.expiry, iv: Math.round(iv * 1000) / 1000 },
         spx: Math.round(spx * 10000) / 10000, sl: slT, tp: mp && mp.tp != null ? mp.tp : null,
-        trail: (mp && mp.trail) || 0, maxHoldMin: (mp && mp.maxHoldMin) || 240,
+        trail: (mp && mp.trail) || 0, maxHoldMin: mp && mp.maxHoldMin != null ? mp.maxHoldMin : 240,
+        uebernacht: uebernacht,
         peak: ask, lastBid: null, status: 'open' });
       if (D.schatten.length > 400) D.schatten = D.schatten.filter(function (x, ix) { return ix < 400 || x.status === 'open'; });
     } catch (eS) { /* Das Schattenbuch darf den Handel nie stören */ }
@@ -124,6 +129,19 @@
     g2.n++; g2.sumPct = Math.round((g2.sumPct + sEintrag.pnlPct) * 100) / 100;
     if (sEintrag.pnlPct <= -1) g2.gerettet++;           // Filter hat Geld gerettet
     else if (sEintrag.pnlPct >= 1) g2.verhindert++;     // Filter hat Gewinn verhindert (±1 % Totzone)
+  }
+  /** Waisen-Schatten schließen: Symbole, die aus dem Scan-Universum gefallen sind,
+   *  bekommen nie mehr ein Update – nach 5 Tagen werden sie mit dem letzten bekannten
+   *  Kurs (oder 0 %) abgeschlossen, sonst wachsen sie als Unentschiedene ewig weiter. */
+  function schattenAufraeumen(now) {
+    if (!D || !D.schatten) return;
+    for (var iA = 0; iA < D.schatten.length; iA++) {
+      var sA = D.schatten[iA];
+      if (sA.status === 'open' && now - sA.t > 5 * 86400000) {
+        var retA = sA.lastBid != null ? (sA.lastBid / sA.ask - 1) : 0;
+        schattenSchliessen(sA, retA, 'Verwaist', now);
+      }
+    }
   }
   function schattenUpdate(sym, spot, now, nearCloseFlag) {
     if (!D || !D.schatten || !D.schatten.length) return;
@@ -141,7 +159,7 @@
         else if (sE.tp != null && retS >= sE.tp) whyS = 'Ziel';
         else if (sE.trail && sE.peak > sE.ask && bidS <= sE.peak * (1 - sE.trail)) whyS = 'Trailing';
         else if (sE.maxHoldMin && now - sE.t >= sE.maxHoldMin * 60000) whyS = 'Zeit';
-        else if (nearCloseFlag) whyS = 'Tagesschluss';
+        else if (nearCloseFlag && !sE.uebernacht) whyS = 'Tagesschluss';
         else if (now - sE.t > 5 * 86400000) whyS = 'Verwaist';
         if (whyS) schattenSchliessen(sE, retS, whyS, now);
       } catch (eU) { /* einzelner Schatten defekt: ignorieren */ }
@@ -405,7 +423,7 @@
         pump();
       });
     }
-    return { run: run, size: size, hintergrund: function () { return ok; } };
+    return { run: run };
   })();
   function btIntraday(map, opts) { return BTPool.run('intraday', map, opts); }
   function btDaily(map, opts) { return BTPool.run('daily', map, opts); }
@@ -1123,6 +1141,7 @@
     var statusEl = document.getElementById('jobStatus');
     var syms = universe();
     var now = Date.now();
+    schattenAufraeumen(now);
     var blackoutEv = (D.intraday.blackout !== 'off' && window.Cal) ? window.Cal.isBlackout(now, 45, 45) : null;
     try {
       for (var i = 0; i < syms.length; i++) {
@@ -1189,7 +1208,7 @@
           if (kiH.go) openTrade(sym, dir, spot, vol, scores, { reason: reason, scenario: scenario, elliottLabel: ell.label }, now, kiH);
           else {
             patienceAdd('KI-Veto (Stunden-Strategie)', sym);
-            schattenNeu('KI-Veto (Stunden)', sym, dir, spot, hist, { sl: SL, tp: TP, trail: 0, maxHoldMin: 7 * 1440 }, { profile: 'atm21' }, now, vol);
+            schattenNeu('KI-Veto (Stunden)', sym, dir, spot, hist, { sl: SL, tp: TP, trail: 0, maxHoldMin: 7 * 1440, uebernacht: true }, { profile: 'atm21' }, now, vol);
           }
         }
         await new Promise(function (r) { setTimeout(r, 250); });
@@ -1350,6 +1369,7 @@
     var today = new Date().toISOString().slice(0, 10);
     if (D.intradayDay !== today) { D.intradayDay = today; D.intradayCount = 0; }
     var syms = scanUniverse();
+    schattenAufraeumen(now);
     var nearClose = isNearUsClose();
     var blackout = (cfg.blackout !== 'off' && window.Cal) ? window.Cal.isBlackout(now, 45, 45) : null;
     var flattenEv = (cfg.blackout === 'flat' && window.Cal) ? window.Cal.upcoming(15) : null;
@@ -1419,7 +1439,7 @@
             // ⚡ Blitz-Ausstieg: erste abgeschlossene Gegenbar ODER Rückkreuzung der schnellen EMA9.
             var b1 = bars.length >= 3 ? bars[bars.length - 2][1] : null;   // letzter abgeschlossener Bar
             var b0 = bars.length >= 3 ? bars[bars.length - 3][1] : null;
-            var sig9 = Q.signalCross(bars.slice(-60), 'ema', 9, 0);
+            var sig9 = Q.signalCross(bars.slice(-61, -1), 'ema', 9, 0); // ohne den laufenden, unfertigen Bar
             if (b1 != null && ((open.dir === 'call' && b1 < b0) || (open.dir === 'put' && b1 > b0))) why = '⚡ Blitz: Gegenbar – sofort raus';
             else if ((open.dir === 'call' && !sig9.above) || (open.dir === 'put' && sig9.above)) why = '⚡ Blitz: EMA9-Rückkreuzung';
           } else if (xm === 'recross') {
@@ -1595,7 +1615,7 @@
           reason: ki.note.replace(/^ · /, '') + (ki.note ? ' · ' : '') + (isOrb
               ? '🚀 ORB: Ausbruch aus der Eröffnungs-Range (' + U.nf2.format(orbInfo.lo) + '–' + U.nf2.format(orbInfo.hi) + ', 30 Min) nach ' + (dir === 'call' ? 'OBEN' : 'UNTEN') + ' bei ' + U.nf2.format(spot) + '. '
               : isWave
-              ? '🏄 Wellenreiter: Tal erkannt (z ' + revZ + ', ' + barMin + '-Min) bei ' + U.nf2.format(spot) + ' · Wellen-Score ' + waveQ.score + '/100 (Rhythmus ' + waveQ.parts.rhythmus + ' · Amplitude ' + waveQ.parts.amplitude + ' · Tiefe ' + waveQ.parts.tiefe + ' · Umkehr ' + waveQ.parts.umkehr + ' · Volumen ' + waveQ.parts.volumen + ')' + (chE ? ' · 📐 Kanal (' + chN + ' Bars): Position ' + Math.round(chE.pos * 100) + ' %, Steigung ' + chE.steep + ', Breite ' + chE.widthPct + ' %' : '') + '. '
+              ? '🏄 Wellenreiter: Tal erkannt (z ' + revZ + ', ' + barMin + '-Min) bei ' + U.nf2.format(spot) + ' · Wellen-Score ' + waveQ.score + '/100 (Rhythmus ' + waveQ.parts.rhythmus + ' · Amplitude ' + waveQ.parts.amplitude + ' · Tiefe ' + waveQ.parts.tiefe + ' · Umkehr ' + waveQ.parts.umkehr + ' · Volumen ' + waveQ.parts.volumen + ')' + (chE ? ' · 📐 Kanal (' + chN + ' Bars): Position ' + Math.round(chE.pos * 100) + ' %, Steigung ' + chE.steigung + ', Breite ' + chE.breitePct + ' %' : '') + '. '
               : isRev
               ? '🔄 Rücksetzer: Kurs überdehnt ' + (dir === 'call' ? 'UNTER' : 'ÜBER') + ' der ' + (cfg.lineType === 'vwap' ? 'VWAP' : 'EMA' + cfg.period) + ' (z-Score ' + revZ + ', ' + barMin + '-Min-Chart) bei ' + U.nf2.format(spot) + '. '
               : (isWaves ? '🌊 Wellen-Scalp: ' : 'Intraday: ') + 'Kurs kreuzt ' + (cfg.lineType === 'vwap' ? 'VWAP' : 'EMA' + cfg.period) + ' (' + barMin + '-Min-Chart) nach ' + (dir === 'call' ? 'OBEN' : 'UNTEN') + ' bei ' + U.nf2.format(spot) + ' (Abstand ' + (sig.distBps / 100).toFixed(2) + ' %). ') +
@@ -1634,7 +1654,7 @@
             });
           })(trade, spot);
         }
-        SIG[sym] = { t: now, spot: spot, ok: true, grund: '✅ Trade eröffnet (' + (dir === 'call' ? 'CALL' : 'PUT') + ')', score: waveQ ? waveQ.score : null, z: revZ, chanPos: chE ? chE.pos : null, chanSteep: chE ? chE.steep : null };
+        SIG[sym] = { t: now, spot: spot, ok: true, grund: '✅ Trade eröffnet (' + (dir === 'call' ? 'CALL' : 'PUT') + ')', score: waveQ ? waveQ.score : null, z: revZ, chanPos: chE ? chE.pos : null, chanSteep: chE ? chE.steigung : null };
         D.intradayCooldown[sym] = now;
         D.intradayCount++;
       }
@@ -2901,7 +2921,12 @@
       applied.push(label);
     }
     var mKey = r.modeKey === 'wave_ch' ? 'wave' : r.modeKey;
+    // Der 'breakout'-Kandidat wurde mit dem eingestellten Ausstiegsstil GEMESSEN (labModes) –
+    // beim Anwenden muss derselbe Stil gelten (Blitz/kurz laufen als mode 'waves').
+    if (mKey === 'breakout' && (D.intraday.exitStyle === 'blitz' || D.intraday.exitStyle === 'kurz')) mKey = 'waves';
     set('mode', mKey, 'Setup → ' + setupName(mKey, r.channel !== false));
+    var stZ = setupFromMode(mKey);
+    D.intraday.setup = stZ.setup; D.intraday.trigger = stZ.trigger;
     if (r.modeKey === 'wave_ch') set('channel', true, 'Trendkanal → an');   // Empfehlung aus einer älteren Version
     set('interval', r.interval, 'Zeitrahmen → ' + r.interval);
     set('period', r.period, 'Periode → ' + r.period);
@@ -2992,9 +3017,16 @@
     return neu;
   }
   function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
+  function genNormieren(g) {
+    // exitStil wirkt nur beim Ausbruch per Kreuzung – überall sonst auf 'laufen' normieren,
+    // sonst zählt der seen-Cache phänotypisch identische Gene doppelt (Elite-Plätze!).
+    if (!(g.setup === 'ausbruch' && g.trigger === 'kreuzung')) g.exitStil = 'laufen';
+    if (!g.exitStil) g.exitStil = 'laufen';
+    return g;
+  }
   function randGene() {
     var setup = pick(GEN_SPACE.setup);
-    return {
+    return genNormieren({
       setup: setup, trigger: pick(GEN_SPACE.trigger[setup]),
       exitStil: setup === 'ausbruch' ? pick(GEN_SPACE.exitStil) : 'laufen',
       interval: pick(GEN_SPACE.interval), period: pick(GEN_SPACE.period),
@@ -3004,7 +3036,7 @@
       maxPerDay: pick(GEN_SPACE.maxPerDay), profile: pick(GEN_SPACE.profile),
       sizing: pick(GEN_SPACE.sizing), trendFilter: pick(GEN_SPACE.trendFilter),
       channel: pick(GEN_SPACE.channel), mtf: pick(GEN_SPACE.mtf)
-    };
+    });
   }
   /** Aktuelle Einstellung als Gen – der amtierende Champion. */
   function geneFromConfig(c) {
@@ -3047,11 +3079,12 @@
       if (f === 'setup') out.trigger = pick(GEN_SPACE.trigger[out.setup]);
     }
     if (Math.random() < 0.3) out.trigger = pick(GEN_SPACE.trigger[out.setup]);
-    return out;
+    return genNormieren(out);
   }
   function crossover(a, b) {
     var out = {};
     Object.keys(a).forEach(function (f) { out[f] = Math.random() < 0.5 ? a[f] : b[f]; });
+    genNormieren(out);
     if (GEN_SPACE.trigger[out.setup].indexOf(out.trigger) === -1) out.trigger = pick(GEN_SPACE.trigger[out.setup]);
     return out;
   }
@@ -3120,7 +3153,9 @@
     if (!basis) return eigen;
     if (!eigen) return basis;
     var fit = Math.round((0.7 * basis.fit + 0.3 * eigen.fit) * 100) / 100;
-    return { fit: fit, ret: basis.ret, folds: basis.folds, trades: basis.trades + eigen.trades,
+    // trades = NUR die 5m-Basis: sonst zählen Nicht-5m-Gene dieselbe Kalenderzeit doppelt
+    // und nehmen die 12-Trade-Hürde halb so schwer wie 5m-Gene.
+    return { fit: fit, ret: basis.ret, folds: basis.folds, trades: basis.trades,
       winRate: basis.winRate, pf: basis.pf, posFolds: basis.posFolds,
       basis: { interval: '5m', ret: basis.ret, trades: basis.trades },
       eigen: { interval: g.interval, ret: eigen.ret, trades: eigen.trades, fit: eigen.fit } };
@@ -3341,6 +3376,7 @@
     var g = F.challenger.gene;
     var vorher = JSON.parse(JSON.stringify(D.intraday));
     D.intraday.mode = modeFromSetup(g.setup, g.trigger, g.exitStil || 'laufen');
+    D.intraday.setup = g.setup; D.intraday.trigger = g.trigger;
     if (g.setup === 'ausbruch' && g.trigger === 'kreuzung') D.intraday.exitStyle = g.exitStil || 'laufen';
     D.intraday.interval = g.interval;
     D.intraday.period = g.period;
@@ -3596,7 +3632,8 @@
       // nächste Messung dasselbe empfiehlt, wird umgestellt (am 17.08. wurde der Trend-
       // filter sonst viermal am Tag umgeschaltet). Manuelle Läufe gelten sofort.
       var wahlKey = [wahl.setup, wahl.ausloeser, wahl.zeitrahmen, !!wahl.trendfilter, !!wahl.kanal].join('|');
-      var istKey = [D.intraday.setup, D.intraday.trigger, D.intraday.interval, !!D.intraday.trendFilter, !!D.intraday.channel].join('|');
+      var stIst = setupFromMode(D.intraday.mode);
+      var istKey = [stIst.setup, stIst.trigger, D.intraday.interval, !!D.intraday.trendFilter, !!D.intraday.channel].join('|');
       if (!manual && wahlKey !== istKey && (!D.regimePending || D.regimePending.key !== wahlKey)) {
         D.regimePending = { key: wahlKey, at: Date.now() };
         D.regime = { at: Date.now(), ok: true, quelle: quelle, wahl: wahl, fakten: f, applied: [],
@@ -3607,9 +3644,14 @@
       }
       D.regimePending = null;
       var vorher = JSON.parse(JSON.stringify(D.intraday));
-      var mode = modeFromSetup(wahl.setup, wahl.ausloeser, 'laufen');
+      // Ausstiegsstil des Nutzers respektieren – vorher setzte das harte 'laufen' den
+      // Blitz-/Kurz-Stil bei jedem Regime-Lauf still zurück (mode≠waves), während die UI
+      // weiter "Blitz" anzeigte.
+      var stilR = (wahl.setup === 'ausbruch' && wahl.ausloeser === 'kreuzung') ? (D.intraday.exitStyle || 'laufen') : 'laufen';
+      var mode = modeFromSetup(wahl.setup, wahl.ausloeser, stilR);
       var applied = [];
       if (D.intraday.mode !== mode) { D.intraday.mode = mode; applied.push('Setup → ' + setupName(mode, wahl.kanal)); }
+      D.intraday.setup = wahl.setup; D.intraday.trigger = wahl.ausloeser; // istKey-Basis aktuell halten
       if (D.intraday.interval !== wahl.zeitrahmen) { D.intraday.interval = wahl.zeitrahmen; applied.push('Zeitrahmen → ' + wahl.zeitrahmen); }
       if (!!D.intraday.trendFilter !== !!wahl.trendfilter) { D.intraday.trendFilter = !!wahl.trendfilter; applied.push('Trendfilter → ' + (wahl.trendfilter ? 'an' : 'aus')); }
       if (!!D.intraday.channel !== !!wahl.kanal) { D.intraday.channel = !!wahl.kanal; applied.push('Trendkanal → ' + (wahl.kanal ? 'an' : 'aus')); }
