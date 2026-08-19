@@ -120,27 +120,11 @@
     }
   };
 
-  /** Einheitlicher LLM-Zugang: bevorzugt je nach Einstellung Anthropic-API oder lokales Modell */
+  /** Einheitlicher LLM-Zugang: ausschließlich das LOKALE Modell (Ollama) – keine API-Kosten. */
   window.LLM = {
-    provider: function () {
-      var s = window.getSettings();
-      if (s.kiProvider === 'ollama' && model()) return 'ollama';
-      if (s.apiKey) return 'anthropic';
-      if (model()) return 'ollama';
-      return null;
-    },
+    provider: function () { return model() ? 'ollama' : null; },
     ask: async function (prompt, maxTokens) {
-      var p = this.provider();
-      if (p === 'ollama') return await window.LocalKI.ask(prompt, maxTokens);
-      if (p === 'anthropic') {
-        var s = window.getSettings();
-        var res = await window.api.postJson('https://api.anthropic.com/v1/messages', {
-          'x-api-key': s.apiKey, 'anthropic-version': '2023-06-01'
-        }, { model: s.model || 'claude-sonnet-4-5', max_tokens: maxTokens || 1800, messages: [{ role: 'user', content: prompt }] });
-        if (!res.ok) return null;
-        try { return JSON.parse(res.body).content.map(function (b) { return b.text || ''; }).join('\n'); } catch (e) { return null; }
-      }
-      return null;
+      return this.provider() ? await window.LocalKI.ask(prompt, maxTokens) : null;
     }
   };
 })();

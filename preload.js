@@ -3,7 +3,6 @@ const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('api', {
   fetchText: (url) => ipcRenderer.invoke('fetch-text', url),
-  postJson: (url, headers, body) => ipcRenderer.invoke('post-json', url, headers, body),
   storeGet: (name) => ipcRenderer.invoke('store-get', name),
   storeSet: (name, value) => ipcRenderer.invoke('store-set', name, value),
   setTrayMode: (v) => ipcRenderer.send('tray-mode', !!v),

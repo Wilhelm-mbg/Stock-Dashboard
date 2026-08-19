@@ -56,12 +56,18 @@
   window.openModal = function (id) { document.getElementById(id).classList.add('open'); };
 
   // ---- Einstellungen ----
-  var SETTINGS = { apiKey: '', model: 'claude-sonnet-4-5', tray: false, capKey: '', capId: '', capPass: '', capEnabled: false, ollamaUrl: '', ollamaModel: '', kiVeto: false, kiProvider: '', kiRules: '', updateRepo: '' };
+  var SETTINGS = { tray: false, capKey: '', capId: '', capPass: '', capEnabled: false, ollamaUrl: '', ollamaModel: '', kiVeto: false, kiProvider: '', kiRules: '', updateRepo: '' };
   window.getSettings = function () { return SETTINGS; };
   var settingsGeladen = false; // Schreiben vor dem Laden würde die gespeicherten Werte überschreiben
   window.api.storeGet('settings').then(function (s) {
     if (s) SETTINGS = Object.assign(SETTINGS, s);
     settingsGeladen = true;
+    // Kostenpflichtige API abgeschafft: einen evtl. noch gespeicherten Key einmalig
+    // von der Platte löschen – KI läuft ausschließlich lokal über Ollama.
+    if (SETTINGS.apiKey || SETTINGS.model) {
+      delete SETTINGS.apiKey; delete SETTINGS.model;
+      window.api.storeSet('settings', SETTINGS);
+    }
     if (window.api.setTrayMode) window.api.setTrayMode(!!SETTINGS.tray);
   });
 
@@ -82,8 +88,6 @@
   };
 
   document.getElementById('settingsBtn').addEventListener('click', function () {
-    document.getElementById('setApiKey').value = SETTINGS.apiKey || '';
-    document.getElementById('setModel').value = SETTINGS.model || 'claude-sonnet-4-5';
     document.getElementById('setTray').checked = !!SETTINGS.tray;
     document.getElementById('setCapKey').value = SETTINGS.capKey || '';
     document.getElementById('setCapId').value = SETTINGS.capId || '';
@@ -198,8 +202,6 @@
   });
 
   document.getElementById('setSaveBtn').addEventListener('click', function () {
-    SETTINGS.apiKey = document.getElementById('setApiKey').value.trim();
-    SETTINGS.model = document.getElementById('setModel').value;
     SETTINGS.tray = document.getElementById('setTray').checked;
     if (window.api.setTrayMode) window.api.setTrayMode(SETTINGS.tray);
     SETTINGS.capKey = document.getElementById('setCapKey').value.trim();

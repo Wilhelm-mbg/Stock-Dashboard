@@ -12,8 +12,6 @@ const ALLOWED_HOSTS = new Set([
   'news.google.com',
   'api.github.com' // nur für den Update-Check (Releases lesen)
 ]);
-// POST nur für die KI-Analyse:
-const ALLOWED_POST_HOSTS = new Set(['api.anthropic.com']);
 
 function fetchText(url, redirectsLeft) {
   if (redirectsLeft === undefined) redirectsLeft = 3;
@@ -103,32 +101,7 @@ ipcMain.handle('open-external', async (_ev, url) => {
   return false;
 });
 
-// ---- POST (nur api.anthropic.com, für die KI-Analyse) ----
-function postJson(url, headers, bodyObj) {
-  return new Promise((resolve) => {
-    let u;
-    try { u = new URL(url); } catch (e) { return resolve({ ok: false, status: 0, body: 'Ungültige URL' }); }
-    if (u.protocol !== 'https:' || !ALLOWED_POST_HOSTS.has(u.hostname)) {
-      return resolve({ ok: false, status: 0, body: 'POST-Host nicht erlaubt: ' + u.hostname });
-    }
-    const payload = JSON.stringify(bodyObj);
-    const req = https.request(u, {
-      method: 'POST',
-      headers: Object.assign({ 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(payload) }, headers || {}),
-      timeout: 120000
-    }, (res) => {
-      let data = '';
-      res.setEncoding('utf8');
-      res.on('data', (c) => { data += c; if (data.length > 8 * 1024 * 1024) { req.destroy(); resolve({ ok: false, status: res.statusCode || 0, body: 'Antwort zu groß – abgebrochen' }); } });
-      res.on('end', () => resolve({ ok: res.statusCode >= 200 && res.statusCode < 300, status: res.statusCode || 0, body: data }));
-    });
-    req.on('timeout', () => { req.destroy(); resolve({ ok: false, status: 0, body: 'Timeout' }); });
-    req.on('error', (e) => resolve({ ok: false, status: 0, body: String(e.message || e) }));
-    req.write(payload);
-    req.end();
-  });
-}
-ipcMain.handle('post-json', async (_ev, url, headers, bodyObj) => postJson(url, headers, bodyObj));
+// Die kostenpflichtige Anthropic-API wurde entfernt – KI-Analysen laufen lokal über Ollama.
 
 // ---- Capital.com (NUR Demo-Host – Live-Handel ist bewusst nicht möglich) ----
 const CAP_HOSTS = new Set(['demo-api-capital.backend-capital.com']);
