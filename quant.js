@@ -1149,6 +1149,13 @@
     if (w.setup === 'umkehr' && (f.trendAnteilPct >= 70 || f.trendAnteilPct <= 30)) return { ok: false, grund: 'Umkehr im Trendmarkt gesperrt' };
     if (w.ausloeser === 'welle' && f.mittlererWellenScore < 45) return { ok: false, grund: 'Wellental ohne Wellenmuster gesperrt' };
     if (w.ausloeser === 'range' && !(f.minutenSeitEroeffnung != null && f.minutenSeitEroeffnung <= 150)) return { ok: false, grund: 'Eröffnungs-Range nur früh am Tag' };
+    // Regel 5 aus dem Prompt war bisher NICHT durchgesetzt: das Modell durfte bei hoher
+    // Vola 1m wählen, obwohl 1-Minuten-Signale dann überwiegend Rauschen sind – und genau
+    // das tat es auch (gemessen am 19.08.: vola1mPct 0,275 und trotzdem 1m).
+    if (w.zeitrahmen === '1m' && f.vola1mPct != null && f.vola1mPct > 0.15) {
+      w.zeitrahmen = '5m';
+      w.begruendung = (w.begruendung || '') + ' [auf 5m korrigiert: Vola ' + f.vola1mPct + ' über 0,15]';
+    }
     if (w.kanal && f.kanalAnteilPct < 20) w.kanal = false;
     return { ok: true };
   }

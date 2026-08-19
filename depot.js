@@ -453,19 +453,32 @@
       var vorher = JSON.parse(JSON.stringify(D.intraday));
       var applied = [];
       var it = rec.intraday || {};
+      var gesperrtT = [];
       Object.keys(TUNE_ALLOW).forEach(function (k) {
         if (it[k] === undefined) return;
         var v = it[k];
         if (k === 'period' || k === 'confirmBps' || (k === 'scalpSL' && v !== 'auto')) v = parseInt(v, 10);
         if (TUNE_ALLOW[k].indexOf(v) === -1) return;
-        if (D.intraday[k] !== v) { D.intraday[k] = v; applied.push(k + ' → ' + v); }
+        if (D.intraday[k] === v) return;
+        if (!automatikDarf(k)) { gesperrtT.push(HAND_LABEL[k] || k); return; }   // ✋ von Hand gesetzt
+        D.intraday[k] = v; applied.push(k + ' → ' + v);
       });
-      if (typeof it.channel === 'boolean' && D.intraday.channel !== it.channel) { D.intraday.channel = it.channel; applied.push('Trendkanal → ' + (it.channel ? 'an' : 'aus')); }
-      if (typeof it.mtf === 'boolean' && D.intraday.mtf !== it.mtf) { D.intraday.mtf = it.mtf; applied.push('5-Min-Bestätigung → ' + (it.mtf ? 'an' : 'aus')); }
+      if (typeof it.channel === 'boolean' && D.intraday.channel !== it.channel) {
+        if (automatikDarf('channel')) { D.intraday.channel = it.channel; applied.push('Trendkanal → ' + (it.channel ? 'an' : 'aus')); }
+        else gesperrtT.push('Trendkanal');
+      }
+      if (typeof it.mtf === 'boolean' && D.intraday.mtf !== it.mtf) {
+        if (automatikDarf('mtf')) { D.intraday.mtf = it.mtf; applied.push('5-Min-Bestätigung → ' + (it.mtf ? 'an' : 'aus')); }
+        else gesperrtT.push('5-Min-Bestätigung');
+      }
       if (Array.isArray(it.avoidHours)) {
         var ah = it.avoidHours.map(function (x) { return parseInt(x, 10); }).filter(function (x) { return x >= 0 && x <= 23; }).slice(0, 8);
-        if (JSON.stringify(ah) !== JSON.stringify(D.intraday.avoidHours || [])) { D.intraday.avoidHours = ah; applied.push('Meide-Stunden → ' + (ah.join(', ') || 'keine')); }
+        if (JSON.stringify(ah) !== JSON.stringify(D.intraday.avoidHours || [])) {
+          if (automatikDarf('avoidHours')) { D.intraday.avoidHours = ah; applied.push('Meide-Stunden → ' + (ah.join(', ') || 'keine')); }
+          else gesperrtT.push('Meide-Stunden');
+        }
       }
+      if (gesperrtT.length) applied.push('✋ nicht angefasst (von Hand gesetzt): ' + gesperrtT.join(' · '));
       D.lastTune = { id: rec.id, at: Date.now(), txt: String(rec.begruendung || '').slice(0, 300), applied: applied };
       if (!D.tuneLog) D.tuneLog = [];
       var closedNow = D.trades.filter(function (t) { return t.status === 'closed' && istMess(t); });
@@ -1007,6 +1020,13 @@
   function spotOf(sym, hist) {
     var q = window.Dash && window.Dash.quote(sym);
     if (q && q.price != null) return q.price;
+    // Der Kurs-Ticker kennt nur die 21 Standardwerte. Positionen auf Watchlist- oder
+    // Screener-Werten (die der Intraday-Scanner sehr wohl handelt) fielen vorher direkt
+    // auf den Einstiegskurs zurück: P/L stand dauerhaft bei 0 %, und equityNow() – und
+    // damit Risiko-Limits und Depotkurve – rechneten mit einem eingefrorenen Wert.
+    // Der Scanner legt für genau diese Symbole frische Bars in LASTBARS ab.
+    var lb = LASTBARS[sym];
+    if (lb && lb.length) return lb[lb.length - 1][1];
     return hist && hist.length ? hist[hist.length - 1][1] : null;
   }
 
@@ -1164,22 +1184,28 @@
         var scores = { news: sent.score, tech: tech.score, elliott: ell.score };
         var S = Q.combine(scores, D.weights);
 
-        var open = null; // nur Positionen der Stunden-Strategie – Intraday managt der eigene Scan
-        for (var p = 0; p < D.positions.length; p++) if (D.positions[p].sym === sym && D.positions[p].strategy !== 'intraday') open = D.positions[p];
+        // ALLE Positionen der Stunden-Strategie zu diesem Symbol – nicht nur eine.
+        // Vorher überschrieb die Schleife ihren Treffer und behielt nur den letzten: lagen
+        // zwei Positionen auf demselben Wert (entsteht, wenn repairOrphans eine verwaiste
+        // Position nachträglich adoptiert), wurde die andere NIE wieder geprüft – kein
+        // Stop-Loss, kein Take-Profit, kein Zeit-Exit. Sie stand bis in alle Ewigkeit.
+        var offene = D.positions.filter(function (x) { return x.sym === sym && x.strategy !== 'intraday'; });
 
-        // Exits prüfen (SL/TP/Zeit/Gegensignal)
-        if (open) {
-          var bid = bidOf(open, spot, now);
-          var ret = bid / open.entry - 1;
-          var daysLeft = (open.expiry - now) / 86400000;
-          var why = null;
-          if (ret <= SL) why = 'Stop-Loss erreicht (' + Math.round(ret * 100) + ' %)';
-          else if (ret >= TP) why = 'Take-Profit erreicht (+' + Math.round(ret * 100) + ' %)';
-          else if (daysLeft <= 10) why = 'Zeit-Exit: Restlaufzeit unter 10 Tagen (Zeitwertverfall)';
-          else if ((open.dir === 'call' && S < -CLOSE_THR) || (open.dir === 'put' && S > CLOSE_THR)) {
-            why = 'Gegensignal (Gesamtscore ' + S.toFixed(2) + (sent.top ? '; Auslöser u. a.: „' + sent.top.title.slice(0, 90) + '“' : '') + ')';
-          }
-          if (why) closeTrade(open, spot, now, why);
+        // Exits prüfen (SL/TP/Zeit/Gegensignal) – für jede offene Position dieses Symbols
+        if (offene.length) {
+          offene.forEach(function (pos) {
+            var bid = bidOf(pos, spot, now);
+            var ret = bid / pos.entry - 1;
+            var daysLeft = (pos.expiry - now) / 86400000;
+            var why = null;
+            if (ret <= SL) why = 'Stop-Loss erreicht (' + Math.round(ret * 100) + ' %)';
+            else if (ret >= TP) why = 'Take-Profit erreicht (+' + Math.round(ret * 100) + ' %)';
+            else if (daysLeft <= 10) why = 'Zeit-Exit: Restlaufzeit unter 10 Tagen (Zeitwertverfall)';
+            else if ((pos.dir === 'call' && S < -CLOSE_THR) || (pos.dir === 'put' && S > CLOSE_THR)) {
+              why = 'Gegensignal (Gesamtscore ' + S.toFixed(2) + (sent.top ? '; Auslöser u. a.: „' + sent.top.title.slice(0, 90) + '“' : '') + ')';
+            }
+            if (why) closeTrade(pos, spot, now, why);
+          });
         } else if (Math.abs(S) >= OPEN_THR && !blackoutEv && canOpen(equityNow()).ok) {
           var dir = S > 0 ? 'call' : 'put';
           var vol = Q.histVol(closes, 30);
@@ -1266,6 +1292,56 @@
 
   /** z-Score-Schwelle aus der Bestätigungs-Einstellung (Umkehr-Setup) */
   function zOf(confirmBps) { return confirmBps <= 5 ? 1.5 : confirmBps <= 15 ? 2.0 : 2.5; }
+
+  /* ================= ✋ Hand schlägt Automatik =================
+   * Was von Hand eingestellt wurde, bleibt stehen. Vorher schrieben Regime-Automatik,
+   * Analyse-Zentrale, Farm und Cloud-Tuning alle in dieselben Felder – im Journal stand
+   * am 19.08. sechs Handänderungen um 07:52, eine Stunde später drehte das Regime eine
+   * davon zurück. Niemand konnte mehr sagen, warum eine Einstellung gerade so ist. */
+  var HAND_LABEL = { mode: 'Setup', exitStyle: 'Ausstieg', interval: 'Zeitrahmen', period: 'Periode',
+    confirmBps: 'Bestätigung', lineType: 'Leitlinie', window: 'Zeitfenster', trendFilter: 'Trendfilter',
+    channel: 'Trendkanal', mtf: '5-Min-Bestätigung', scalpHold: 'Max-Halten', scalpTrail: 'Trailing',
+    scalpSL: 'Not-Stop', profile: 'Schein-Profil', sizing: 'Positionsgröße', blackout: 'Event-Blackout',
+    screener: 'Screener', cooldownMin: 'Cooldown', maxPerDay: 'Trades je Tag', avoidHours: 'Meide-Stunden' };
+  /** Darf eine Automatik dieses Feld überhaupt anfassen? */
+  function automatikDarf(feld) {
+    return !(D && D.intraday && D.intraday.handSperre && D.intraday.handSperre[feld]);
+  }
+  /** Feld als „von Hand gesetzt" merken. */
+  function handSperren(felder) {
+    if (!D.intraday.handSperre) D.intraday.handSperre = {};
+    (felder || []).forEach(function (f) { D.intraday.handSperre[f] = Date.now(); });
+  }
+  function handFreigeben(feld) {
+    if (!D.intraday.handSperre) return;
+    if (feld) delete D.intraday.handSperre[feld]; else D.intraday.handSperre = {};
+  }
+  /** Zeigt an, welche Felder dir gehören – und lässt sie einzeln wieder freigeben. */
+  function renderHandSperre() {
+    var el = document.getElementById('handSperre');
+    if (!el || !D) return;
+    var sp = D.intraday.handSperre || {};
+    var felder = Object.keys(sp);
+    if (!felder.length) {
+      el.innerHTML = '<span style="color:var(--muted);">Alle Felder werden von der Automatik gepflegt. Sobald du eines von Hand änderst, gehört es dir.</span>';
+      return;
+    }
+    el.innerHTML = '<span style="color:var(--ink-2);">✋ <b>Von dir gesetzt</b> – die Automatik lässt diese Felder in Ruhe:</span> ' +
+      felder.map(function (f) {
+        return '<span class="chip flat" style="margin:2px 4px 2px 0;">' + U.esc(HAND_LABEL[f] || f) +
+          ' <a href="#" data-frei="' + U.esc(f) + '" title="wieder von der Automatik pflegen lassen" style="font-weight:700; margin-left:3px;">✕</a></span>';
+      }).join('') +
+      ' <a href="#" data-frei="*" style="color:var(--muted);">alle freigeben</a>';
+    el.querySelectorAll('[data-frei]').forEach(function (a) {
+      a.addEventListener('click', function (ev) {
+        ev.preventDefault();
+        var f = a.getAttribute('data-frei');
+        handFreigeben(f === '*' ? null : f);
+        save();
+        renderHandSperre();
+      });
+    });
+  }
 
   /** Modus-abhängige Handelsparameter */
   function slOf(c) { return c.scalpSL === 'auto' ? 'auto' : -(c.scalpSL || 20) / 100; }
@@ -2694,10 +2770,63 @@
 
   /* ================= Strategie-Labor (Walk-Forward über alle Modi) ================= */
 
-  function sliceMap(map, from, to, warmupMs) {
-    var out = {};
+  /* Prüfscheiben werden nach HANDELSTAGEN geschnitten, nicht nach Kalenderzeit.
+     Vorher lag bei 1-Minuten-Daten (5 Handelstage Historie) regelmäßig eine ganze Scheibe
+     im Wochenende – gemessen: Scheibe 2 hatte 0 Bars, Scheibe 3 nur 25 und fiel durch die
+     60-Bar-Hürde. Von vier Scheiben blieben zwei übrig, und das Urteil "robust" verlangt
+     drei positive – es war schlicht unerreichbar, die Selbst-Optimierung damit wirkungslos. */
+  var WARMLAUF_BARS = 400;   // deckt Kanal (380), EMA100 und Wellen-Score (120) ab
+  // Hürden für ein belastbares Urteil. Bewusst deutlich höher als früher (12 Trades):
+  // Yahoo gibt Intraday nur ~41 Handelstage (5m/15m) bzw. 5 Tage (1m) her – auf 1-Minuten-
+  // Daten ist damit KEIN belastbares Urteil möglich, und das soll die App auch so sagen,
+  // statt eine Rangliste aus Rauschen zu zeigen.
+  var MIN_OOS_TRADES = 30;
+  var MIN_OOS_TAGE = 12;
+
+  /** Alle Handelstage (UTC) der Datenbasis, aufsteigend. */
+  function handelsTage(map) {
+    var set = {};
     Object.keys(map).forEach(function (s) {
-      var sl = map[s].filter(function (p) { return p[0] >= from - (warmupMs || 0) && p[0] <= to; });
+      map[s].forEach(function (p) { set[new Date(p[0]).toISOString().slice(0, 10)] = 1; });
+    });
+    return Object.keys(set).sort();
+  }
+  /** Teilt die Handelstage in n gleich große Blöcke: [{von, bis, tage}] als ms-Grenzen. */
+  function tagesScheiben(map, n) {
+    var tage = handelsTage(map);
+    if (tage.length < n) return [];
+    var out = [];
+    for (var i = 0; i < n; i++) {
+      var a = Math.floor(tage.length * i / n), b = Math.floor(tage.length * (i + 1) / n);
+      if (b <= a) return [];
+      out.push({ von: Date.parse(tage[a] + 'T00:00:00Z'), bis: Date.parse(tage[b - 1] + 'T23:59:59.999Z'), tage: b - a });
+    }
+    return out;
+  }
+  /** Zeitgrenze nach einem Anteil der Handelstage (0–1). */
+  function tagesGrenze(map, anteil) {
+    var tage = handelsTage(map);
+    if (!tage.length) return null;
+    var i = Math.min(tage.length - 1, Math.max(0, Math.floor(tage.length * anteil)));
+    return Date.parse(tage[i] + 'T00:00:00Z');
+  }
+
+  /** Ausschnitt [from, to] je Symbol – der Warmlauf zählt in BARS, nicht in Millisekunden.
+   *  Vorher war er als Kalenderzeit gerechnet: 160 Bars × 5 Minuten = 13 Stunden Wanduhr,
+   *  die über ein Wochenende NULL zusätzliche Bars ergeben. Jede Scheibe startete dadurch
+   *  kalt – Wellen-Score (120 Bars), EMA100 (100) und Kanal (380) waren am Anfang blind. */
+  function sliceMap(map, from, to, warmupBars) {
+    var out = {};
+    var w = warmupBars || 0;
+    Object.keys(map).forEach(function (s) {
+      var arr = map[s], erst = -1, letzt = -1;
+      for (var i = 0; i < arr.length; i++) {
+        if (arr[i][0] > to) break;
+        if (erst < 0 && arr[i][0] >= from) erst = i;
+        letzt = i;
+      }
+      if (erst < 0 || letzt < erst) return;
+      var sl = arr.slice(Math.max(0, erst - w), letzt + 1);
       if (sl.length > 60) out[s] = sl;
     });
     return out;
@@ -2793,13 +2922,14 @@
           await new Promise(function (r) { setTimeout(r, 20); });
           var span = mapSpan(map);
           if (!(span[1] > span[0])) continue;
-          var chunk = (span[1] - span[0]) / 5;
-          var barMs = INTERVAL_CFG[iv].barMin * 60000;
-          var warm = 160 * barMs;
+          var scheiben = tagesScheiben(map, 5);
+          if (scheiben.length < 5) continue;          // zu wenig Handelstage für einen Walk-Forward
+          var oosTage = 0;
           var foldRets = [], oosTrades = [], lastBest = null;
           for (var f = 1; f <= 4; f++) {
-            var trainEnd = span[0] + chunk * f;
-            var testEnd = span[0] + chunk * (f + 1);
+            var trainEnd = scheiben[f].von;
+            var testEnd = scheiben[f].bis;
+            oosTage += scheiben[f].tage;
             // Parameter auf den bisherigen Daten bestimmen …
             var best = null;
             var trainMap = sliceMap(map, span[0], trainEnd, 0);
@@ -2815,7 +2945,7 @@
             lastBest = best.grid;
             // … und NUR auf der nächsten, ungesehenen Scheibe anwenden
             var optsA = Object.assign({}, commonIv, MODES[mi].opts, best.grid);
-            var rA = await btIntraday(sliceMap(map, trainEnd, testEnd, warm), optsA);
+            var rA = await btIntraday(sliceMap(map, trainEnd, testEnd, WARMLAUF_BARS), optsA);
             if (rA.error) { foldRets.push(null); continue; }
             var tr = (rA.trades || []).filter(function (x) { return x.openT >= trainEnd; });
             var pnl = tr.reduce(function (a, x) { return a + x.pnl; }, 0);
@@ -2831,20 +2961,24 @@
           var gw = 0, gl = 0;
           oosTrades.forEach(function (x) { if (x.pnl > 0) gw += x.pnl; else gl += -x.pnl; });
           var pf = gl > 0 ? Math.round(gw / gl * 100) / 100 : (gw > 0 ? 99 : 0);
-          // Unter 12 Out-of-Sample-Trades ist jedes Urteil Rauschen: PF 0.04 aus 3 Trades
-          // sah wie ein vernichtendes Ergebnis aus, war aber schlicht keine Messung.
-          var verdict = oosTrades.length < 12 ? ('⚪ nicht belastbar (nur ' + oosTrades.length + ' Trades)')
+          // Belastbarkeit ehrlich prüfen: Eine Rangfolge aus 3 Trades ist keine Messung,
+          // sondern eine Münzwurf-Serie mit Nachkommastellen. Es braucht BEIDES – genug
+          // Trades UND genug ungesehene Handelstage, sonst gibt es kein Urteil.
+          var duenn = oosTrades.length < MIN_OOS_TRADES || oosTage < MIN_OOS_TAGE || valid.length < 3;
+          var verdict = duenn
+            ? ('⚪ nicht belastbar (' + oosTrades.length + ' Trades auf ' + oosTage + ' ungesehenen Handelstagen, ' + valid.length + '/4 Scheiben)')
             : (wfRet > 0 && posSegs >= 3 && pf > 1) ? '🟢 robust'
             : (wfRet > 0 || posSegs >= 2) ? '🟡 gemischt' : '🔴 kein Vorteil';
           results.push({
             mode: MODES[mi], interval: iv, wfRet: wfRet, foldRets: foldRets, posSegs: posSegs,
             n: oosTrades.length, winRate: oosTrades.length ? Math.round(wins / oosTrades.length * 100) : 0,
-            pf: pf, verdict: verdict, best: lastBest, trades: oosTrades
+            pf: pf, verdict: verdict, best: lastBest, trades: oosTrades,
+            oosTage: oosTage, scheibenGueltig: valid.length, belastbar: !duenn
           });
         }
       }
       results.sort(function (a, b) {
-        var aB = a.n >= 12 ? 1 : 0, bB = b.n >= 12 ? 1 : 0;
+        var aB = a.belastbar ? 1 : 0, bB = b.belastbar ? 1 : 0;
         if (aB !== bB) return bB - aB;                 // belastbar schlägt unbelastbar
         return b.wfRet - a.wfRet;
       });
@@ -2879,9 +3013,8 @@
       out.innerHTML = '<div class="loading">Schritt 2/3: Feinschliff für ' + U.esc(top.mode.name) + ' · ' + top.interval + ' (18 Kombinationen parallel) …</div>';
       var map = ld.data[top.interval];
       var span = mapSpan(map);
-      var cut = span[0] + (span[1] - span[0]) * 0.7;
-      var warm = 160 * INTERVAL_CFG[top.interval].barMin * 60000;
-      var trainMap = sliceMap(map, span[0], cut, 0), testMap = sliceMap(map, cut, span[1], warm);
+      var cut = tagesGrenze(map, 0.7) || (span[0] + (span[1] - span[0]) * 0.7);   // 70 % der HANDELSTAGE
+      var trainMap = sliceMap(map, span[0], cut, 0), testMap = sliceMap(map, cut, span[1], WARMLAUF_BARS);
       var commonIv = labCommonOpts(cfg, top.interval);
       var fineGrid = [];
       [9, 20, 50].forEach(function (p) { [5, 15, 30].forEach(function (c) { ['ema', 'vwap'].forEach(function (lt) {
@@ -2930,6 +3063,7 @@
         setup: top.mode.setup, trigger: top.mode.trigger,
         window: winPreset, avoidHours: avoidHours,
         wfRet: top.wfRet, posSegs: top.posSegs, n: top.n, winRate: top.winRate, pf: top.pf, verdict: top.verdict,
+        oosTage: top.oosTage, scheibenGueltig: top.scheibenGueltig, belastbar: top.belastbar,
         fine: bestFine ? { train: bestFine.train.retPct, valid: fineValid ? fineValid.retPct : null, used: !!useFine } : null,
         topSymbols: symRank.slice(0, 3).map(function (x) { return x[0]; }),
         datenbasis: { symbole: Object.keys(ld.data[top.interval] || {}).length, zeitrahmen: top.interval,
@@ -2954,9 +3088,11 @@
   /** Übernimmt eine Zentrale-Empfehlung, protokolliert sie im Auto-Tuning-Verlauf. Gibt die Liste der Änderungen zurück. */
   function applyCentralRec(r, quelle) {
     var vorher = JSON.parse(JSON.stringify(D.intraday));
-    var applied = [];
+    var applied = [], gesperrt = [];
     function set(k, v, label) {
       if (JSON.stringify(D.intraday[k]) === JSON.stringify(v)) return;
+      // Von Hand gesetzte Felder rührt die Automatik nicht mehr an
+      if (!automatikDarf(k)) { gesperrt.push((HAND_LABEL[k] || k) + ' (Vorschlag: ' + label.split('→').pop().trim() + ')'); return; }
       D.intraday[k] = v;
       applied.push(label);
     }
@@ -2974,14 +3110,16 @@
     set('lineType', r.lineType, 'Leitlinie → ' + String(r.lineType).toUpperCase());
     set('window', r.window, 'Zeitfenster → ' + (WINDOW_NAMES[r.window] || r.window));
     set('avoidHours', (r.avoidHours || []).slice(), 'Meide-Stunden → ' + ((r.avoidHours || []).join(', ') || 'keine'));
-    if (applied.length) {
+    if (applied.length || gesperrt.length) {
       if (!D.tuneLog) D.tuneLog = [];
       var closedNow = D.trades.filter(function (t) { return t.status === 'closed' && istMess(t); });
       var txt = (quelle === 'lokal' ? 'Selbst-Optimierung: ' : '') + r.modeName + ' · ' + r.interval + ' · Walk-Forward ' +
-        (r.wfRet > 0 ? '+' : '') + r.wfRet + ' % · ' + r.posSegs + '/4 Scheiben · ' + r.n + ' Trades · PF ' + r.pf + ' · ' + r.verdict;
+        (r.wfRet > 0 ? '+' : '') + r.wfRet + ' % · ' + r.posSegs + '/4 Scheiben · ' + r.n + ' Trades · PF ' + r.pf + ' · ' + r.verdict +
+        (gesperrt.length ? ' — ✋ nicht angefasst (von Hand gesetzt): ' + gesperrt.join(' · ') : '');
       D.tuneLog.unshift({
         id: (quelle === 'lokal' ? 'lokal-' : 'manuell-') + Date.now(), at: Date.now(), quelle: quelle || 'manuell',
-        applied: applied, txt: txt, konfigVorher: vorher,
+        applied: applied.length ? applied : ['(nichts geändert – alle Vorschläge betrafen von Hand gesetzte Felder)'],
+        gesperrt: gesperrt, txt: txt, konfigVorher: vorher,
         equityBei: Math.round(equityNow() * 100) / 100,
         tradesBei: closedNow.length,
         pnlBei: Math.round(closedNow.reduce(function (a2, t) { return a2 + t.pnl; }, 0) * 100) / 100,
@@ -3157,16 +3295,17 @@
     if (!map || Object.keys(map).length < 3) return null;
     var span = mapSpan(map);
     if (!(span[1] > span[0])) return null;
-    var chunk = (span[1] - span[0]) / 5;
-    var warm = 160 * INTERVAL_CFG[iv].barMin * 60000;
+    var scheiben = tagesScheiben(map, 5);        // nach Handelstagen, nicht nach Kalenderzeit
+    if (scheiben.length < 5) return null;
     var opts = geneOpts(Object.assign({}, g, { interval: iv }));
     var list = folds || [1, 2, 3, 4];
-    var rets = [], nTr = 0, wins = 0, gw = 0, gl = 0;
+    var rets = [], nTr = 0, wins = 0, gw = 0, gl = 0, tage = 0;
     for (var fi = 0; fi < list.length; fi++) {
       var f = list[fi];
-      var a = span[0] + chunk * f, b = span[0] + chunk * (f + 1);
-      var r = await btIntraday(sliceMap(map, a, b, warm), opts);
+      var a = scheiben[f].von, b = scheiben[f].bis;
+      var r = await btIntraday(sliceMap(map, a, b, WARMLAUF_BARS), opts);
       if (!r || r.error) { rets.push(null); continue; }
+      tage += scheiben[f].tage;
       var tr = (r.trades || []).filter(function (x) { return x.openT >= a; });
       var pnl = tr.reduce(function (s, x) { return s + x.pnl; }, 0);
       rets.push(Math.round(pnl / START_CAPITAL * 10000) / 100);
@@ -3179,8 +3318,11 @@
     var pos = valid.filter(function (x) { return x > 0; }).length;
     var pf = gl > 0 ? Math.round(gw / gl * 100) / 100 : (gw > 0 ? 99 : 0);
     // Dünne Stichproben werden heruntergewichtet, Konsistenz über die Scheiben belohnt.
-    var fit = sum * (nTr >= 8 ? 1 : nTr / 8) + pos * 0.5;
-    return { fit: Math.round(fit * 100) / 100, ret: sum, folds: rets, trades: nTr,
+    // Die Abwertung greift jetzt bis MIN_OOS_TRADES statt schon ab 8 – eine Variante mit
+    // 5 Trades soll nicht mit einer mit 60 um den ersten Platz konkurrieren können.
+    var fit = sum * Math.min(1, nTr / MIN_OOS_TRADES) + pos * 0.5;
+    return { fit: Math.round(fit * 100) / 100, ret: sum, folds: rets, trades: nTr, oosTage: tage,
+      belastbar: nTr >= MIN_OOS_TRADES && tage >= MIN_OOS_TAGE,
       winRate: nTr ? Math.round(wins / nTr * 100) : 0, pf: pf, posFolds: pos };
   }
   /** Fitness eines Gens. Pflichtbasis ist der 5m-Zeitrahmen mit einem Monat Historie –
@@ -3196,6 +3338,7 @@
     // trades = NUR die 5m-Basis: sonst zählen Nicht-5m-Gene dieselbe Kalenderzeit doppelt
     // und nehmen die 12-Trade-Hürde halb so schwer wie 5m-Gene.
     return { fit: fit, ret: basis.ret, folds: basis.folds, trades: basis.trades,
+      oosTage: basis.oosTage, belastbar: basis.belastbar,
       winRate: basis.winRate, pf: basis.pf, posFolds: basis.posFolds,
       basis: { interval: '5m', ret: basis.ret, trades: basis.trades },
       eigen: { interval: g.interval, ret: eigen.ret, trades: eigen.trades, fit: eigen.fit } };
@@ -3366,7 +3509,8 @@
       if (best && geneKey(best.gene) !== geneKey(F.champion.gene)) {
         var champRes = (bewertet.filter(function (x) { return geneKey(x.gene) === geneKey(F.champion.gene); })[0] || {}).res;
         var besser = !champRes || best.res.fit > champRes.fit + 1.0;
-        var genug = !flach && best.res.trades >= 12 && best.res.posFolds >= 2;
+        // Belastbarkeit ist Pflicht: ein Sieger aus 5 Trades ist ein Zufallsgewinner.
+        var genug = !flach && best.res.belastbar && best.res.posFolds >= 2;
         if (besser && genug && (!F.challenger || best.res.fit > F.challenger.res.fit)) {
           F.challenger = { gene: best.gene, res: best.res, seit: Date.now(), pruefungen: [] };
         }
@@ -3419,29 +3563,37 @@
   function farmPromote(F) {
     var g = F.challenger.gene;
     var vorher = JSON.parse(JSON.stringify(D.intraday));
-    D.intraday.mode = modeFromSetup(g.setup, g.trigger, g.exitStil || 'laufen');
-    D.intraday.setup = g.setup; D.intraday.trigger = g.trigger;
-    if (g.setup === 'ausbruch' && g.trigger === 'kreuzung') D.intraday.exitStyle = g.exitStil || 'laufen';
-    D.intraday.interval = g.interval;
-    D.intraday.period = g.period;
-    D.intraday.confirmBps = g.confirmBps;
-    D.intraday.lineType = g.lineType;
-    D.intraday.window = g.window;
-    D.intraday.scalpSL = g.scalpSL;
-    D.intraday.scalpHold = g.scalpHold;
-    if (g.cooldownMin) D.intraday.cooldownMin = g.cooldownMin;
-    if (g.maxPerDay) D.intraday.maxPerDay = g.maxPerDay;
-    if (g.profile) D.intraday.profile = g.profile;
-    if (g.sizing) D.intraday.sizing = g.sizing;
-    D.intraday.trendFilter = !!g.trendFilter;
-    D.intraday.channel = !!g.channel;
-    D.intraday.mtf = !!g.mtf;
+    var gesperrtF = [];
+    // ✋ Auch der Farm-Champion respektiert von Hand gesetzte Felder.
+    function setzeF(feld, wert, klartext) {
+      if (wert === undefined || wert === null) return;
+      if (JSON.stringify(D.intraday[feld]) === JSON.stringify(wert)) return;
+      if (!automatikDarf(feld)) { gesperrtF.push(HAND_LABEL[feld] || feld); return; }
+      D.intraday[feld] = wert;
+    }
+    setzeF('mode', modeFromSetup(g.setup, g.trigger, g.exitStil || 'laufen'));
+    if (automatikDarf('mode')) { D.intraday.setup = g.setup; D.intraday.trigger = g.trigger; }
+    if (g.setup === 'ausbruch' && g.trigger === 'kreuzung') setzeF('exitStyle', g.exitStil || 'laufen');
+    setzeF('interval', g.interval);
+    setzeF('period', g.period);
+    setzeF('confirmBps', g.confirmBps);
+    setzeF('lineType', g.lineType);
+    setzeF('window', g.window);
+    setzeF('scalpSL', g.scalpSL);
+    setzeF('scalpHold', g.scalpHold);
+    if (g.cooldownMin) setzeF('cooldownMin', g.cooldownMin);
+    if (g.maxPerDay) setzeF('maxPerDay', g.maxPerDay);
+    if (g.profile) setzeF('profile', g.profile);
+    if (g.sizing) setzeF('sizing', g.sizing);
+    setzeF('trendFilter', !!g.trendFilter);
+    setzeF('channel', !!g.channel);
+    setzeF('mtf', !!g.mtf);
     var pr = F.challenger.pruefungen;
     if (!D.tuneLog) D.tuneLog = [];
     var closedNow = D.trades.filter(function (t) { return t.status === 'closed' && istMess(t); });
     D.tuneLog.unshift({
       id: 'farm-' + Date.now(), at: Date.now(), quelle: 'farm',
-      applied: ['🧬 Neuer Champion: ' + geneName(g)],
+      applied: ['🧬 Neuer Champion: ' + geneName(g)].concat(gesperrtF.length ? ['✋ nicht angefasst (von Hand gesetzt): ' + gesperrtF.join(' · ')] : []),
       txt: 'Bewährung bestanden: ' + pr.filter(function (x) { return x.sieger === 'herausforderer'; }).length + ' von ' + pr.length +
         ' Prüfungen gewonnen, zusammen ' + Math.round(pr.reduce(function (s, x) { return s + x.hera; }, 0) * 100) / 100 + ' % gegen ' +
         Math.round(pr.reduce(function (s, x) { return s + x.champ; }, 0) * 100) / 100 + ' % des Champions, auf Daten nach dem ' + U.dt(F.challenger.seit),
@@ -3692,12 +3844,27 @@
       // weiter "Blitz" anzeigte.
       var stilR = (wahl.setup === 'ausbruch' && wahl.ausloeser === 'kreuzung') ? (D.intraday.exitStyle || 'laufen') : 'laufen';
       var mode = modeFromSetup(wahl.setup, wahl.ausloeser, stilR);
-      var applied = [];
-      if (D.intraday.mode !== mode) { D.intraday.mode = mode; applied.push('Setup → ' + setupName(mode, wahl.kanal)); }
-      D.intraday.setup = wahl.setup; D.intraday.trigger = wahl.ausloeser; // istKey-Basis aktuell halten
-      if (D.intraday.interval !== wahl.zeitrahmen) { D.intraday.interval = wahl.zeitrahmen; applied.push('Zeitrahmen → ' + wahl.zeitrahmen); }
-      if (!!D.intraday.trendFilter !== !!wahl.trendfilter) { D.intraday.trendFilter = !!wahl.trendfilter; applied.push('Trendfilter → ' + (wahl.trendfilter ? 'an' : 'aus')); }
-      if (!!D.intraday.channel !== !!wahl.kanal) { D.intraday.channel = !!wahl.kanal; applied.push('Trendkanal → ' + (wahl.kanal ? 'an' : 'aus')); }
+      var applied = [], gesperrtR = [];
+      // ✋ Von Hand gesetzte Felder bleiben unangetastet – die Automatik meldet nur noch,
+      // was sie geändert HÄTTE. Vorher drehte sie Handeinstellungen stillschweigend zurück.
+      if (D.intraday.mode !== mode) {
+        if (automatikDarf('mode')) { D.intraday.mode = mode; applied.push('Setup → ' + setupName(mode, wahl.kanal)); }
+        else gesperrtR.push('Setup (Vorschlag: ' + setupName(mode, wahl.kanal) + ')');
+      }
+      if (automatikDarf('mode')) { D.intraday.setup = wahl.setup; D.intraday.trigger = wahl.ausloeser; }
+      if (D.intraday.interval !== wahl.zeitrahmen) {
+        if (automatikDarf('interval')) { D.intraday.interval = wahl.zeitrahmen; applied.push('Zeitrahmen → ' + wahl.zeitrahmen); }
+        else gesperrtR.push('Zeitrahmen (Vorschlag: ' + wahl.zeitrahmen + ')');
+      }
+      if (!!D.intraday.trendFilter !== !!wahl.trendfilter) {
+        if (automatikDarf('trendFilter')) { D.intraday.trendFilter = !!wahl.trendfilter; applied.push('Trendfilter → ' + (wahl.trendfilter ? 'an' : 'aus')); }
+        else gesperrtR.push('Trendfilter (Vorschlag: ' + (wahl.trendfilter ? 'an' : 'aus') + ')');
+      }
+      if (!!D.intraday.channel !== !!wahl.kanal) {
+        if (automatikDarf('channel')) { D.intraday.channel = !!wahl.kanal; applied.push('Trendkanal → ' + (wahl.kanal ? 'an' : 'aus')); }
+        else gesperrtR.push('Trendkanal (Vorschlag: ' + (wahl.kanal ? 'an' : 'aus') + ')');
+      }
+      if (gesperrtR.length) applied.push('✋ nicht angefasst: ' + gesperrtR.join(' · '));
       D.regime = { at: Date.now(), ok: true, quelle: quelle, wahl: wahl, fakten: f, applied: applied,
         txt: setupName(mode, wahl.kanal) + ' · ' + wahl.zeitrahmen + ' — ' + (wahl.begruendung || '') };
       if (applied.length) {
@@ -3808,7 +3975,7 @@
     var hint = document.getElementById('regimeHint');
     if (hint && D) {
       hint.textContent = autoOptCfg().regime !== false
-        ? '🧭 Setup, Zeitrahmen, Trendfilter und Kanal werden stündlich automatisch gesetzt – Änderungen von Hand hält die Automatik beim nächsten Durchlauf nicht fest.'
+        ? '🧭 Setup, Zeitrahmen, Trendfilter und Kanal werden stündlich automatisch gesetzt – außer bei Feldern, die du selbst geändert hast: die bleiben stehen (siehe „✋ Von dir gesetzt“ oben).'
         : '';
     }
     var el = document.getElementById('regimeStatus');
@@ -3854,13 +4021,16 @@
         a.lastCheck = { at: Date.now(), ok: false, applied: [], txt: 'Zu wenig Kursdaten für eine belastbare Auswertung – Einstellungen unverändert.' };
       } else {
         var robust = String(rec.verdict).indexOf('🟢') === 0;
-        var enough = rec.n >= 12;
+        var enough = rec.belastbar !== false && rec.n >= MIN_OOS_TRADES;
         var gutGenug = robust && enough;
         if (a.onlyRobust !== false && !gutGenug) {
           a.lastCheck = {
             at: Date.now(), ok: true, applied: [], geprueft: true,
-            txt: 'Bester Kandidat: ' + rec.modeName + ' · ' + rec.interval + ' (' + rec.verdict + ', ' + rec.n + ' Trades, PF ' + rec.pf + '). ' +
-              (!robust ? 'Nicht robust genug' : 'Zu wenige Out-of-Sample-Trades') + ' → nichts geändert. Das ist Absicht: lieber unverändert als überangepasst.'
+            txt: 'Bester Kandidat: ' + rec.modeName + ' · ' + rec.interval + ' (' + rec.verdict + ', ' + rec.n + ' Trades auf ' +
+              (rec.oosTage != null ? rec.oosTage : '?') + ' ungesehenen Handelstagen, PF ' + rec.pf + '). ' +
+              (!enough ? 'Datenbasis zu dünn für ein Urteil (nötig: ' + MIN_OOS_TRADES + ' Trades und ' + MIN_OOS_TAGE + ' Handelstage)'
+                       : 'Nicht robust genug') +
+              ' → nichts geändert. Das ist Absicht: lieber unverändert als überangepasst.'
           };
         } else {
           var applied = applyCentralRec(rec, 'lokal');
@@ -4232,16 +4402,21 @@
       D.intraday.exitStyle = (stS.setup === 'ausbruch' && stS.trigger === 'kreuzung') ? (idEx.value || stS.exitStyle) : stS.exitStyle;
       // Journal: Was hat sich von Hand geändert? Ohne Eintrag ist das Experiment-Journal
       // unvollständig und Konfig-Drift nicht mehr nachvollziehbar.
-      var handDiff = [];
+      var handDiff = [], handFelder = [];
       Object.keys(HAND_FELDER).forEach(function (fk) {
-        if (String(vorherHand[fk]) !== String(D.intraday[fk])) handDiff.push(HAND_FELDER[fk] + ' → ' + D.intraday[fk]);
+        if (String(vorherHand[fk]) !== String(D.intraday[fk])) { handDiff.push(HAND_FELDER[fk] + ' → ' + D.intraday[fk]); handFelder.push(fk); }
       });
       if (handDiff.length) {
+        // ✋ Ab jetzt gehört dieses Feld dir: keine Automatik überschreibt es mehr,
+        // bis du es unter der Strategie-Karte wieder freigibst.
+        handSperren(handFelder);
         if (!D.tuneLog) D.tuneLog = [];
         D.tuneLog.unshift({ id: 'hand-' + Date.now(), at: Date.now(), quelle: 'hand', applied: handDiff,
-          txt: '✋ Von Hand geändert (Formular).', konfigVorher: vorherHand, konfigNachher: JSON.parse(JSON.stringify(D.intraday)) });
+          txt: '✋ Von Hand geändert (Formular) – diese Felder sind jetzt gegen die Automatik gesperrt.',
+          konfigVorher: vorherHand, konfigNachher: JSON.parse(JSON.stringify(D.intraday)) });
         if (D.tuneLog.length > 60) D.tuneLog = D.tuneLog.slice(0, 60);
       }
+      renderHandSperre();
       updateParamVis();
       save();
       document.getElementById('idStatus').textContent = D.intraday.enabled
@@ -4252,6 +4427,7 @@
     [idP, idC, idI, idPr, idF, idL, idLn, idTr, idW, idH, idTl, idSS, idCh, idMt, idSz, idScr, document.getElementById('idBlackout')].forEach(function (el) { el.addEventListener('change', idSave); });
     document.getElementById('screenBtn').addEventListener('click', function () { runScreener(true); });
     renderScreen();
+    renderHandSperre();
     window.__syncSetupUI = syncSetupUI;
     syncSetupUI();
     updateParamVis();
