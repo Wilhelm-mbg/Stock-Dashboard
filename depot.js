@@ -2788,6 +2788,9 @@
      60-Bar-Hürde. Von vier Scheiben blieben zwei übrig, und das Urteil "robust" verlangt
      drei positive – es war schlicht unerreichbar, die Selbst-Optimierung damit wirkungslos. */
   var WARMLAUF_BARS = 400;   // deckt Kanal (380), EMA100 und Wellen-Score (120) ab
+  /** Warmlauf je Zeitrahmen: 400 Stundenkerzen waeren ~61 Handelstage und wuerden die
+   *  komplette 60m-Historie auffressen - dort reichen 150 Bars (EMA100 + Wellen-Score). */
+  function warmlaufBars(iv) { return iv === '60m' ? 150 : WARMLAUF_BARS; }
   // Hürden für ein belastbares Urteil. Bewusst deutlich höher als früher (12 Trades):
   // Yahoo gibt Intraday nur ~41 Handelstage (5m/15m) bzw. 5 Tage (1m) her – auf 1-Minuten-
   // Daten ist damit KEIN belastbares Urteil möglich, und das soll die App auch so sagen,
@@ -2907,7 +2910,9 @@
 
   async function loadLabData(st) {
     var cfg = D.intraday;
-    var intervals = ['1m', '5m', '15m'];
+    // 60m mit dabei: Yahoo liefert dafuer ~3 Monate Historie, und die Kostenrechnung
+    // (Round-Trip ~6,5 % auf den Schein) geht erst bei laengeren Haltedauern auf.
+    var intervals = ['1m', '5m', '15m', '60m'];
     var data = {};
     var symsL = messUniversum();
     for (var ii = 0; ii < intervals.length; ii++) {
@@ -2958,7 +2963,7 @@
   function labModes(cfg) {
     var slV = (cfg.scalpSL === "auto" ? "auto" : -(cfg.scalpSL || 20) / 100);
     var kanal = cfg.channel !== false;
-    return [
+    var MODESL = [
       { key: 'breakout', setup: 'ausbruch', trigger: 'kreuzung', name: '🎯 Ausbruch · EMA-Kreuzung',
         opts: cfg.exitStyle === 'blitz'
           ? { entryMode: 'cross', exitMode: 'blitz', sl: slV, tp: null, trailPct: 0.10, maxHoldMin: 3,
@@ -2979,6 +2984,16 @@
         opts: { entryMode: 'wave', channel: kanal, sl: slV, tp: null, trailPct: 0, maxHoldMin: cfg.scalpHold || 60,
           cooldownMin: 3, maxPerDay: 40, trendFilter: true, minQuality: 60 } }
     ];
+    // Fährt der Nutzer Blitz/kurz, erbt der Ausbruch-Kandidat diesen schnellen Ausstieg -
+    // die Variante mit Stop/Ziel über Stunden käme sonst NIE ins Rennen. Die Messung von
+    // heute zeigt aber: je länger die Haltedauer, desto kleiner der Verlust - genau diese
+    // Richtung muss mitgemessen werden.
+    if (cfg.exitStyle === 'blitz' || cfg.exitStyle === 'kurz') {
+      MODESL.push({ key: 'breakout_lauf', setup: 'ausbruch', trigger: 'kreuzung', name: '🎯 Ausbruch · EMA-Kreuzung · laufen lassen',
+        opts: { entryMode: 'cross', exitMode: 'confirmed', sl: -0.25, tp: 0.35, trailPct: 0, maxHoldMin: 0,
+          cooldownMin: 45, maxPerDay: 10, trendFilter: !!cfg.trendFilter } });
+    }
+    return MODESL;
   }
 
   /** Walk-Forward über alle Modi × Zeitrahmen. Rückgabe: sortierte Ergebnisliste. */
@@ -3026,7 +3041,7 @@
             lastBest = best.grid;
             // … und NUR auf der nächsten, ungesehenen Scheibe anwenden
             var optsA = Object.assign({}, commonIv, MODES[mi].opts, best.grid);
-            var rA = await btIntraday(sliceMap(map, trainEnd, testEnd, WARMLAUF_BARS), optsA);
+            var rA = await btIntraday(sliceMap(map, trainEnd, testEnd, warmlaufBars(iv)), optsA);
             if (rA.error) { foldRets.push(null); continue; }
             var tr = (rA.trades || []).filter(function (x) { return x.openT >= trainEnd; });
             var pnl = tr.reduce(function (a, x) { return a + x.pnl; }, 0);
@@ -3083,7 +3098,7 @@
     btn.disabled = true;
     try {
       var cfg = D.intraday;
-      out.innerHTML = '<div class="loading">Schritt 1/3: 4 Setups × 3 Zeitrahmen per Walk-Forward prüfen …</div>';
+      out.innerHTML = '<div class="loading">Schritt 1/3: alle Setups × Zeitrahmen (inkl. 60m) per Walk-Forward prüfen …</div>';
       var ld = await loadLabData(st);
       var results = await labCompute(ld, st);
       st.textContent = '';
@@ -3095,7 +3110,7 @@
       var map = ld.data[top.interval];
       var span = mapSpan(map);
       var cut = tagesGrenze(map, 0.7) || (span[0] + (span[1] - span[0]) * 0.7);   // 70 % der HANDELSTAGE
-      var trainMap = sliceMap(map, span[0], cut, 0), testMap = sliceMap(map, cut, span[1], WARMLAUF_BARS);
+      var trainMap = sliceMap(map, span[0], cut, 0), testMap = sliceMap(map, cut, span[1], warmlaufBars(top.interval));
       var commonIv = labCommonOpts(cfg, top.interval);
       var fineGrid = [];
       [9, 20, 50].forEach(function (p) { [5, 15, 30].forEach(function (c) { ['ema', 'vwap'].forEach(function (lt) {
@@ -3228,6 +3243,8 @@
       applied.push(label);
     }
     var mKey = r.modeKey === 'wave_ch' ? 'wave' : r.modeKey;
+    // 'laufen lassen'-Kandidat: Modus ist Ausbruch, der Ausstieg wird explizit mit umgestellt
+    if (mKey === 'breakout_lauf') { mKey = 'breakout'; set('exitStyle', 'laufen', 'Ausstieg → laufen lassen'); }
     // Der 'breakout'-Kandidat wurde mit dem eingestellten Ausstiegsstil GEMESSEN (labModes) –
     // beim Anwenden muss derselbe Stil gelten (Blitz/kurz laufen als mode 'waves').
     if (mKey === 'breakout' && (D.intraday.exitStyle === 'blitz' || D.intraday.exitStyle === 'kurz')) mKey = 'waves';
@@ -3554,7 +3571,7 @@
     z.push('| Zeitrahmen | Werte | Handelstage |');
     z.push('|---|---|---|');
     var dl = c.datenlage || {};
-    ['1m', '5m', '15m'].forEach(function (iv) {
+    ['1m', '5m', '15m', '60m'].forEach(function (iv) {
       var d = dl[iv] || {};
       z.push('| ' + iv + ' | ' + (d.werte || 0) + ' | ' + (d.handelstage || 0) + ' |');
     });
@@ -3639,7 +3656,7 @@
       ' · Zeitrahmen ' + (cfg.interval || '?') + ' · ' + String(cfg.lineType || 'ema').toUpperCase() + (cfg.period || '') +
       ' · Bestätigung ' + (cfg.confirmBps || '?') + ' bps · Zeitfenster ' + (cfg.window || 'all') +
       ' · Stop ' + (cfg.scalpSL === 'auto' ? 'auto' : (cfg.scalpSL || '?') + ' %') +
-      ' · Cooldown ' + (cfg.cooldownMin || '?') + ' Min · max. ' + (cfg.maxPerDay || '?') + ' Trades/Tag' +
+      ' · Cooldown ' + (cfg.cooldownMin != null ? cfg.cooldownMin + ' Min' : 'Modus-Standard') + ' · max. ' + (cfg.maxPerDay || '?') + ' Trades/Tag' +
       ' · Trendfilter ' + (cfg.trendFilter ? 'an' : 'aus') + ' · Kanal ' + (cfg.channel !== false ? 'an' : 'aus'));
     z.push('');
     z.push('## 🤝 Auswertung mit Claude');
@@ -3811,7 +3828,7 @@
     if (c.ranking && c.ranking.length) {
       html += '<div style="font-size:12.5px; font-weight:600; margin-top:14px;">Alle Kandidaten dieser Messung</div>';
       if (c.datenlage) {
-        var dlz = ['1m', '5m', '15m'].map(function (iv2) { var d2 = c.datenlage[iv2] || {}; return iv2 + ': ' + (d2.handelstage || 0) + ' Tage / ' + (d2.werte || 0) + ' Werte'; }).join(' · ');
+        var dlz = ['1m', '5m', '15m', '60m'].map(function (iv2) { var d2 = c.datenlage[iv2] || {}; return iv2 + ': ' + (d2.handelstage || 0) + ' Tage / ' + (d2.werte || 0) + ' Werte'; }).join(' · ');
         html += '<div style="color:var(--muted); font-size:11.5px; margin:2px 0 6px;">Messbasis – ' + dlz + '</div>';
       }
       html += '<table class="tbl" style="font-size:11.5px;"><tr><th>#</th><th>Setup</th><th>Zeitrahmen</th><th>WF-Rendite</th><th>Scheiben+</th><th>Trades</th><th>Tage</th><th>PF</th><th>Woran scheitert es</th></tr>';
