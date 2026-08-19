@@ -67,7 +67,6 @@ const path = require('path');
         if (url.indexOf('api.github.com') !== -1) return { ok: true, status: 200, body: JSON.stringify({ tag_name: 'v9.9.9', assets: [{ name: 'Markt-Dashboard-Setup.exe', browser_download_url: 'https://github.com/x/y/releases/download/v9.9.9/Markt-Dashboard-Setup.exe' }] }) };
         return { ok: false, status: 403, body: '' };
       },
-      postJson: async () => ({ ok: false, status: 401, body: '{}' }),
       capFetch: async () => ({ ok: false, status: 0, body: '{}', headers: {} }),
       ollamaFetch: async () => ({ ok: false, status: 0, body: '{}' }),
       storeGet: async (k) => store[k] || null,
@@ -363,6 +362,11 @@ const path = require('path');
   // Automatische Updates: Schalter, Prüfung, Installations-Knopf
   await page.click('#settingsBtn');
   await page.waitForTimeout(400);
+  // 💸 Keine API-Kosten: Key-Feld ist weg, der Hinweis auf die lokale KI steht drin
+  check('Kein Anthropic-API-Key-Feld mehr', await page.locator('#setApiKey').count() === 0);
+  check('Kein Modell-Auswahlfeld mehr', await page.locator('#setModel').count() === 0);
+  check('Hinweis auf lokale KI ohne API-Kosten', (await page.locator('#setModalBg').innerText()).indexOf('ohne API-Kosten') !== -1);
+
   check('Auto-Update: Schalter vorhanden', await page.locator('#setAutoUpdate').count() === 1);
   check('Auto-Update: Standard ist an', await page.locator('#setAutoUpdate').isChecked());
   await page.click('#setUpdNowBtn');

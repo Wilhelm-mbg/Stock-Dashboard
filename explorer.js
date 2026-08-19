@@ -319,7 +319,7 @@
       if (txt) { body = txt; usedLLM = true; }
       else body = '**KI-Anfrage fehlgeschlagen** – hier die regelbasierte Analyse:\n\n' + localAnalysis(c);
     }
-    if (!body) body = localAnalysis(c) + '\n\n*Tipp: In den Einstellungen (⚙) einen Anthropic-API-Key ODER die lokale KI (Ollama) einrichten, dann erstellt ein Sprachmodell die Analyse aus denselben Daten.*';
+    if (!body) body = localAnalysis(c) + '\n\n*Tipp: In den Einstellungen (⚙) die lokale KI (Ollama) einrichten – dann erstellt ein Sprachmodell die Analyse aus denselben Daten, ohne API-Kosten.*';
     st.textContent = '';
     btn.disabled = false;
     document.getElementById('aiTitle').textContent = 'KI-Analyse: ' + CUR.name + ' (' + CUR.sym + ')' + (usedLLM ? '' : ' – regelbasiert');

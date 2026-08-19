@@ -2452,7 +2452,7 @@
       body = await window.LLM.ask('Du bist Trading-Coach für ein SIMULIERTES Optionsschein-Depot. Erstelle auf DEUTSCH eine ehrliche Retrospektive (Markdown, ##-Überschriften): Kurzfazit, Was lief gut, Was lief schlecht, Muster in den Daten, 3-5 konkrete Empfehlungen (Gewichte/Modus/Zeitrahmen/Risiko). Nutze NUR die Daten, erfinde nichts, nenne Zahlen. Ende: Hinweis Simulation/keine Anlageberatung.\n\nDATEN:\n' + JSON.stringify(d), 1800) || '';
       if (!body) body = '**KI-Anfrage fehlgeschlagen** – regelbasierte Auswertung:\n\n' + retroRules(d);
     } else {
-      body = retroRules(d) + '\n\n*Tipp: Mit Anthropic-API-Key oder lokaler KI (⚙ Einstellungen) schreibt ein Sprachmodell die Retrospektive ausführlicher.*';
+      body = retroRules(d) + '\n\n*Tipp: Mit der lokalen KI (Ollama, ⚙ Einstellungen) schreibt ein Sprachmodell die Retrospektive ausführlicher – ohne API-Kosten.*';
     }
     st.textContent = '';
     document.getElementById('aiTitle').textContent = '🧠 KI-Retrospektive (' + d.closedN + ' Trades)';

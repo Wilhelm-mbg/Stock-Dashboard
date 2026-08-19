@@ -828,17 +828,9 @@
   <div class="modal" style="max-width:560px;">
     <button class="btn ghost close" data-close="setModalBg">Schließen ✕</button>
     <h2>Einstellungen</h2>
-    <div style="margin:14px 0;">
-      <label style="display:block; font-size:12.5px; color:var(--ink-2); margin-bottom:4px;">Anthropic-API-Key (für „KI-Analyse anfordern“; ohne Key gibt es eine regelbasierte Analyse)</label>
-      <input type="password" id="setApiKey" style="width:100%;" placeholder="sk-ant-…">
-      <div style="font-size:11.5px; color:var(--muted); margin-top:4px;">Wird nur lokal auf diesem PC gespeichert und ausschließlich an api.anthropic.com gesendet. Key erstellen: console.anthropic.com</div>
-    </div>
-    <div style="margin:14px 0;">
-      <label style="display:block; font-size:12.5px; color:var(--ink-2); margin-bottom:4px;">Modell</label>
-      <select id="setModel">
-        <option value="claude-sonnet-4-5">Claude Sonnet (empfohlen)</option>
-        <option value="claude-haiku-4-5">Claude Haiku (schneller/günstiger)</option>
-      </select>
+    <div style="margin:14px 0; font-size:12px; color:var(--muted);">
+      🧠 Alle KI-Analysen laufen <b>lokal über Ollama</b> (unten einrichten) – <b>ohne API-Kosten</b>.
+      Ohne lokales Modell gibt es eine regelbasierte Analyse aus denselben Daten.
     </div>
     <div style="margin:14px 0;">
       <label style="display:flex; align-items:center; gap:8px; font-size:12.5px;"><input type="checkbox" id="setTray"> Beim Schließen im Hintergrund weiterlaufen (Tray-Symbol neben der Uhr) – Strategien handeln dann weiter</label>
@@ -866,7 +858,7 @@
         </div>
         <label style="display:flex; align-items:flex-start; gap:8px; font-size:12.5px;"><input type="checkbox" id="setKiVeto" style="margin-top:3px;"><span>🧠 <b>KI-Prüfung vor jedem Trade</b> – das lokale Modell bestätigt, lehnt ab oder passt die Größe an (gilt für beide Strategien)</span></label>
         <label style="font-size:12.5px; display:flex; align-items:center; gap:8px;">Analysen &amp; Retrospektive erstellen mit
-          <select id="setKiProvider"><option value="">Automatisch</option><option value="anthropic">Anthropic-API</option><option value="ollama">Lokal (Ollama)</option></select>
+          <select id="setKiProvider"><option value="">Automatisch</option><option value="ollama">Lokal (Ollama)</option></select>
         </label>
         <label style="font-size:12.5px; display:block;">Eigene Regeln für die KI-Prüfung <span style="color:var(--muted);">(optional – wird an die eingebauten Prüfregeln angehängt)</span>
           <textarea id="setKiRules" rows="4" maxlength="1200" placeholder="z. B.:&#10;- Keine Trades in TSLA.&#10;- Freitags nach 20 Uhr nur noch groesse 0.5.&#10;- Bei Hebel über 25 immer nein." style="width:100%; margin-top:4px; resize:vertical; font-family:inherit; font-size:12px;"></textarea>
