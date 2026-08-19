@@ -1,8 +1,15 @@
 'use strict';
-const { app, BrowserWindow, ipcMain, shell, Tray, Menu } = require('electron');
+const { app, BrowserWindow, ipcMain, shell, Tray, Menu, safeStorage } = require('electron');
 const path = require('path');
 const fs = require('fs');
 const https = require('https');
+
+// Nur EINE Instanz. Autostart (--hidden), Tray-Betrieb und ein Doppelklick auf die Verknüpfung
+// starteten sonst mehrere Prozesse, die sich denselben Depot-Store teilen: beide scannen, beide
+// handeln, der letzte Schreiber gewinnt. Genau daraus entstanden die verwaisten Trades und
+// Doppel-Gutschriften, die repairOrphans() in depot.js bisher nur nachträglich aufräumen konnte.
+const HAT_SPERRE = app.requestSingleInstanceLock();
+if (!HAT_SPERRE) app.quit();
 
 // Nur diese Hosts darf der Renderer über die Bridge abrufen:
 const ALLOWED_HOSTS = new Set([
@@ -188,17 +195,40 @@ function storeDir() {
   return d;
 }
 function safeName(name) { return String(name).replace(/[^a-zA-Z0-9_-]/g, '_').slice(0, 80); }
+
+// Zugangsdaten liegen nicht mehr im Klartext auf der Platte. safeStorage nutzt den
+// Windows-Anmeldedaten-Schutz (DPAPI): entschlüsseln kann nur derselbe Benutzer auf
+// demselben Rechner. Ist der Dienst nicht verfügbar, bleibt es beim alten Verhalten –
+// lieber unverschlüsselt speichern als die Einstellungen gar nicht sichern können.
+const GEHEIME_FELDER = ['capKey', 'capId', 'capPass'];
+function chiffrieren(v) {
+  if (typeof v !== 'string' || !v) return v;
+  try {
+    if (!safeStorage.isEncryptionAvailable()) return v;
+    return { __enc: 'v1', d: safeStorage.encryptString(v).toString('base64') };
+  } catch (e) { return v; }
+}
+function dechiffrieren(v) {
+  if (!v || typeof v !== 'object' || v.__enc !== 'v1') return v;   // Altbestand: Klartext bleibt lesbar
+  try { return safeStorage.decryptString(Buffer.from(v.d, 'base64')); } catch (e) { return ''; }
+}
+function geheimnisseWandeln(name, wert, fn) {
+  if (name !== 'settings' || !wert || typeof wert !== 'object') return wert;
+  const kopie = Object.assign({}, wert);
+  GEHEIME_FELDER.forEach((k) => { if (k in kopie) kopie[k] = fn(kopie[k]); });
+  return kopie;
+}
 ipcMain.handle('store-get', async (_ev, name) => {
   try {
     const f = path.join(storeDir(), safeName(name) + '.json');
     if (!fs.existsSync(f)) return null;
-    return JSON.parse(fs.readFileSync(f, 'utf8'));
+    return geheimnisseWandeln(name, JSON.parse(fs.readFileSync(f, 'utf8')), dechiffrieren);
   } catch (e) { return null; }
 });
 ipcMain.handle('store-set', async (_ev, name, value) => {
   try {
     const f = path.join(storeDir(), safeName(name) + '.json');
-    fs.writeFileSync(f, JSON.stringify(value));
+    fs.writeFileSync(f, JSON.stringify(geheimnisseWandeln(name, value, chiffrieren)));
     return true;
   } catch (e) { return false; }
 });
@@ -320,7 +350,16 @@ ipcMain.handle('update-set-auto', async (_ev, on) => {
   return { ok: true, on: !!on };
 });
 
-app.whenReady().then(() => {
+// Zweiter Startversuch: kein neuer Prozess, sondern das vorhandene Fenster nach vorn holen.
+app.on('second-instance', () => {
+  if (mainWin && !mainWin.isDestroyed()) {
+    if (mainWin.isMinimized()) mainWin.restore();
+    mainWin.show();
+    mainWin.focus();
+  }
+});
+
+if (HAT_SPERRE) app.whenReady().then(() => {
   createWindow();
   app.on('activate', () => { if (BrowserWindow.getAllWindows().length === 0) createWindow(); });
   // Kurz nach dem Start und danach alle 6 Stunden nach Updates sehen

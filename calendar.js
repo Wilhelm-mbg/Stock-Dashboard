@@ -14,12 +14,33 @@
   ];
 
   function nthWeekday(year, month /*0-basiert*/, weekday, n) {
-    var d = new Date(year, month, 1);
-    var add = (weekday - d.getDay() + 7) % 7 + (n - 1) * 7;
-    return new Date(year, month, 1 + add);
+    var d = new Date(Date.UTC(year, month, 1));
+    var add = (weekday - d.getUTCDay() + 7) % 7 + (n - 1) * 7;
+    return new Date(Date.UTC(year, month, 1 + add));
   }
   function iso(dt) {
-    return dt.getFullYear() + '-' + String(dt.getMonth() + 1).padStart(2, '0') + '-' + String(dt.getDate()).padStart(2, '0');
+    return dt.getUTCFullYear() + '-' + String(dt.getUTCMonth() + 1).padStart(2, '0') + '-' + String(dt.getUTCDate()).padStart(2, '0');
+  }
+
+  /* Alle Termine oben sind in BERLINER Zeit angegeben. `new Date('2026-09-11T14:30:00')`
+     liest so etwas aber als Zeit der EINGESTELLTEN Systemzeitzone – auf einem PC außerhalb
+     Deutschlands lagen damit sämtliche Blackout-Fenster falsch. Deshalb wird hier explizit
+     von Berliner Zeit nach UTC gerechnet: Mitteleuropa ist UTC+1, in der Sommerzeit UTC+2.
+     Sommerzeit gilt vom letzten Sonntag im März 01:00 UTC bis zum letzten Sonntag im
+     Oktober 01:00 UTC (EU-weit einheitlich, anders als in den USA). */
+  function letzterSonntagUtc(jahr, monat) {
+    var d = new Date(Date.UTC(jahr, monat + 1, 0));            // letzter Tag des Monats
+    d.setUTCDate(d.getUTCDate() - d.getUTCDay());              // zurück auf Sonntag
+    return Date.UTC(jahr, d.getUTCMonth(), d.getUTCDate(), 1); // Umstellung um 01:00 UTC
+  }
+  function berlinZeit(datumStr, zeitStr) {
+    var d = String(datumStr).split('-').map(Number);
+    var t = String(zeitStr || '00:00').split(':').map(Number);
+    var alsUtc = Date.UTC(d[0], d[1] - 1, d[2], t[0] || 0, t[1] || 0);
+    // Erst mit Winterzeit (+1) annehmen, dann prüfen, ob der Zeitpunkt in die Sommerzeit fällt.
+    var kandidat = alsUtc - 3600000;
+    var sommer = kandidat >= letzterSonntagUtc(d[0], 2) && kandidat < letzterSonntagUtc(d[0], 9);
+    return new Date(sommer ? alsUtc - 2 * 3600000 : kandidat);
   }
 
   function buildEvents(daysAhead) {
@@ -27,18 +48,18 @@
     var now = new Date();
     var horizon = new Date(now.getTime() + (daysAhead || 90) * 86400000);
     FIXED.forEach(function (e) {
-      var dt = new Date(e.d + 'T' + e.t + ':00');
+      var dt = berlinZeit(e.d, e.t);
       if (dt >= new Date(now.getTime() - 12 * 3600000) && dt <= horizon) out.push({ dt: dt, name: e.name, impact: e.impact, fixed: true });
     });
     // Berechnet: Arbeitsmarktbericht (1. Freitag, 14:30) & großer Verfallstag (3. Freitag Mär/Jun/Sep/Dez)
     for (var m = 0; m < 5; m++) {
-      var ref = new Date(now.getFullYear(), now.getMonth() + m, 1);
-      var nfp = nthWeekday(ref.getFullYear(), ref.getMonth(), 5, 1);
-      var nfpDt = new Date(iso(nfp) + 'T14:30:00');
+      var ref = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + m, 1));
+      var nfp = nthWeekday(ref.getUTCFullYear(), ref.getUTCMonth(), 5, 1);
+      var nfpDt = berlinZeit(iso(nfp), '14:30');
       if (nfpDt >= new Date(now.getTime() - 12 * 3600000) && nfpDt <= horizon) out.push({ dt: nfpDt, name: 'US-Arbeitsmarktbericht (NFP, vorauss.)', impact: 3 });
-      if ([2, 5, 8, 11].indexOf(ref.getMonth()) !== -1) {
-        var tw = nthWeekday(ref.getFullYear(), ref.getMonth(), 5, 3);
-        var twDt = new Date(iso(tw) + 'T15:30:00');
+      if ([2, 5, 8, 11].indexOf(ref.getUTCMonth()) !== -1) {
+        var tw = nthWeekday(ref.getUTCFullYear(), ref.getUTCMonth(), 5, 3);
+        var twDt = berlinZeit(iso(tw), '15:30');
         if (twDt >= new Date(now.getTime() - 12 * 3600000) && twDt <= horizon) out.push({ dt: twDt, name: 'Großer Verfallstag (Triple Witching)', impact: 2 });
       }
     }
@@ -62,7 +83,7 @@
     var evs = buildEvents(90).slice(0, n || 6);
     // Veralteter Kalender: Wenn der letzte verifizierte Fix-Termin näher als 14 Tage liegt
     // (oder vorbei ist), verschwinden CPI/FOMC-Blackouts bald STILL – das muss sichtbar sein.
-    var letzterFix = new Date(FIXED[FIXED.length - 1].d + 'T23:59:00');
+    var letzterFix = berlinZeit(FIXED[FIXED.length - 1].d, '23:59');
     var warnung = (letzterFix.getTime() - Date.now() < 14 * 86400000)
       ? '<div class="loading" style="color:var(--warn);">⚠ Die verifizierte Terminliste (CPI/FOMC) endet am ' +
         letzterFix.toLocaleDateString('de-DE') + ' – danach schützt der Event-Blackout nur noch vor NFP/Verfallstagen. Bitte App-Update laden.</div>'
@@ -78,7 +99,7 @@
     }).join('');
   }
 
-  window.Cal = {
+  var Cal = {
     next: function (n) { return buildEvents(90).slice(0, n || 3); },
     within24h: function () {
       return buildEvents(3).filter(function (e) { return e.impact >= 3 && e.dt - Date.now() < 24 * 3600000 && e.dt - Date.now() > -3 * 3600000; });
@@ -96,8 +117,14 @@
       var hit = buildEvents(3).filter(function (e) { return e.impact >= 3 && e.dt.getTime() - ms > 0 && e.dt.getTime() - ms <= (minAhead || 15) * 60000; });
       return hit.length ? hit[0] : null;
     },
-    render: render
+    render: render,
+    // nur für die Tests: die Zeitzonen-Umrechnung prüfbar machen
+    berlinZeit: berlinZeit
   };
+
+  // In Node (Unit-Tests) gibt es kein window/document – dann nur exportieren, nicht rendern.
+  if (typeof module !== 'undefined' && module.exports) { module.exports = Cal; return; }
+  window.Cal = Cal;
 
   // Dashboard-Sektion füllen
   var el = document.getElementById('calendar');

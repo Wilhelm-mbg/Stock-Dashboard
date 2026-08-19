@@ -5,6 +5,17 @@
   var BASE = 'https://demo-api-capital.backend-capital.com/api/v1';
   var tokens = null, tokenTime = 0, lastError = '';
 
+  /** Capital liefert snapshotTimeUTC als "2026-08-19T09:00:00" – OHNE Zeitzonen-Kennung.
+   *  JavaScript liest so etwas als LOKALE Zeit; in Berlin wären alle Kerzen damit um 1–2
+   *  Stunden verschoben und jede Uhrzeit-Logik (Handelsfenster, VWAP-Tagesreset, ORB)
+   *  liefe auf falschen Zeitstempeln. Fehlt die Kennung, wird sie ergänzt. */
+  function zeitUtc(s) {
+    var t = String(s || '').trim().replace(' ', 'T');
+    if (t && !/(Z|[+-]\d{2}:?\d{2})$/.test(t)) t += 'Z';
+    var ms = new Date(t).getTime();
+    return isNaN(ms) ? new Date(s).getTime() : ms;
+  }
+
   function cfg() {
     var s = window.getSettings();
     return {
@@ -13,7 +24,7 @@
     };
   }
 
-  async function login() {
+  async function loginRoh() {
     var c = cfg();
     var res = await window.api.capFetch('POST', BASE + '/session', { 'X-CAP-API-KEY': c.key }, { identifier: c.id, password: c.pass });
     if (res.ok && res.headers && res.headers.cst) {
@@ -25,6 +36,16 @@
     tokens = null;
     try { lastError = JSON.parse(res.body).errorCode || ('HTTP ' + res.status); } catch (e) { lastError = 'HTTP ' + res.status; }
     return false;
+  }
+  // Läuft der Token ab, während mehrere Aufrufe gleichzeitig unterwegs sind, feuerten bisher
+  // alle zusammen POST /session. Capital.com drosselt die Session-Erstellung hart (bis hin zur
+  // zeitweiligen Sperre). Ein laufender Login wird deshalb geteilt statt vervielfacht.
+  var loginLaeuft = null;
+  function login() {
+    if (loginLaeuft) return loginLaeuft;
+    loginLaeuft = loginRoh().then(function (ok) { loginLaeuft = null; return ok; },
+      function (e) { loginLaeuft = null; tokens = null; lastError = String((e && e.message) || e); return false; });
+    return loginLaeuft;
   }
 
   async function call(method, path, body) {
@@ -109,6 +130,7 @@
 
     /** Kursdaten (Kerzen) von der Demo-API – als Reserve, wenn Yahoo ausfällt.
      *  Rückgabe: {series: [[t, mid, vol]], dollarVolDay: null} oder null. */
+    // (siehe zeitUtc oben: Capital liefert "2026-08-19T09:00:00" OHNE Zeitzonen-Kennung)
     prices: async function (sym, interval, max) {
       var RES = { '1m': 'MINUTE', '5m': 'MINUTE_5', '15m': 'MINUTE_15', '60m': 'HOUR' };
       var epic = await this.epicFor(sym);
@@ -122,7 +144,7 @@
           var c = ps[i].closePrice;
           if (!c || c.bid == null) continue;
           var mid = c.ask != null ? (c.bid + c.ask) / 2 : c.bid;
-          series.push([new Date(ps[i].snapshotTimeUTC || ps[i].snapshotTime).getTime(), mid, ps[i].lastTradedVolume || 0]);
+          series.push([zeitUtc(ps[i].snapshotTimeUTC || ps[i].snapshotTime), mid, ps[i].lastTradedVolume || 0]);
         }
         // dollarVolDay: Capital-Volumen ist nicht mit Yahoo vergleichbar → unbekannt (null)
         return series.length > 30 ? { series: series, dollarVolDay: null, source: 'capital' } : null;

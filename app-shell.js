@@ -3,6 +3,13 @@
 (function () {
   var U = {
     esc: function (s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); },
+    // Nur echte Web-Links ins DOM lassen: Feed-URLs kommen von außen. javascript:-Links
+    // blockiert zwar schon die CSP, aber ein Link, der nichts tut, ist besser als einer,
+    // der sich allein auf die CSP verlässt.
+    safeUrl: function (u) {
+      try { var x = new URL(String(u)); return (x.protocol === 'https:' || x.protocol === 'http:') ? x.href : '#'; }
+      catch (e) { return '#'; }
+    },
     nf2: new Intl.NumberFormat('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
     nf0: new Intl.NumberFormat('de-DE', { maximumFractionDigits: 0 }),
     money: function (v) { return U.nf2.format(v) + ' $'; },
@@ -174,7 +181,12 @@
 
   // Update-Check über GitHub-Releases
   function cmpVer(a, b) {
-    var x = String(a).split('.').map(Number), y = String(b).split('.').map(Number);
+    // parseInt statt Number: "7.19.0-beta" ergab als Zahl NaN, die Differenz war NaN und
+    // damit falsy – eine neuere Vorabversion galt dadurch als "gleich" und wurde nie gemeldet.
+    function teile(v) {
+      return String(v).split('.').map(function (t) { var n = parseInt(t, 10); return isNaN(n) ? 0 : n; });
+    }
+    var x = teile(a), y = teile(b);
     for (var i = 0; i < 3; i++) { var d = (x[i] || 0) - (y[i] || 0); if (d) return d; }
     return 0;
   }
@@ -202,6 +214,13 @@
   });
 
   document.getElementById('setSaveBtn').addEventListener('click', function () {
+    // Speichern, bevor der Store geladen ist, würde die gespeicherten Werte mit leeren
+    // Formularfeldern überschreiben. Der Wächter existierte schon, galt aber nur für die
+    // KI-Regeln – hier fehlte er.
+    if (!settingsGeladen) {
+      document.getElementById('setStatus').textContent = 'Einstellungen werden noch geladen – bitte einen Moment und erneut speichern.';
+      return;
+    }
     SETTINGS.tray = document.getElementById('setTray').checked;
     if (window.api.setTrayMode) window.api.setTrayMode(SETTINGS.tray);
     SETTINGS.capKey = document.getElementById('setCapKey').value.trim();
@@ -213,7 +232,13 @@
     SETTINGS.kiVeto = document.getElementById('setKiVeto').checked;
     SETTINGS.kiProvider = document.getElementById('setKiProvider').value;
     SETTINGS.kiRules = document.getElementById('setKiRules').value.trim().slice(0, 1200);
-    SETTINGS.updateRepo = document.getElementById('setUpdateRepo').value.trim();
+    // Gleiche Formatprüfung wie beim Prüf-Knopf – vorher landete hier auch Unsinn im Store.
+    var repoNeu = document.getElementById('setUpdateRepo').value.trim().replace(/^https:\/\/github\.com\//i, '').replace(/\/+$/, '');
+    if (repoNeu && !/^[\w.-]+\/[\w.-]+$/.test(repoNeu)) {
+      document.getElementById('setStatus').textContent = 'Update-Repo bitte als nutzer/repo angeben – nicht gespeichert.';
+      return;
+    }
+    SETTINGS.updateRepo = repoNeu;
     SETTINGS.autoUpdate = document.getElementById('setAutoUpdate').checked;
     if (window.api.updateSetAuto) window.api.updateSetAuto(SETTINGS.autoUpdate);
     var au = document.getElementById('setAutostart').checked;

@@ -136,7 +136,9 @@
         ['SMA 50', (function () { var s = Q.sma(closes, 50); return s ? U.nf2.format(s) : '–'; })()],
         ['SMA 200', (function () { var s = Q.sma(closes, 200); return s ? U.nf2.format(s) : '–'; })()]
       ];
-      document.getElementById('expStats').innerHTML = stats.map(function (s) { return '<dt>' + s[0] + '</dt><dd>' + s[1] + '</dd>'; }).join('');
+      // Börsenname und Währung kommen von Yahoo, also von außen – sie gehören escaped
+      // ins DOM wie jeder andere Fremdtext auch (überall sonst macht die App das bereits).
+      document.getElementById('expStats').innerHTML = stats.map(function (s) { return '<dt>' + U.esc(s[0]) + '</dt><dd>' + U.esc(s[1]) + '</dd>'; }).join('');
     }
     loadRange();
     loadNews();
@@ -242,7 +244,7 @@
     document.getElementById('expNews').innerHTML = items.length
       ? items.map(function (n) {
         var when = n.t ? new Date(n.t).toLocaleString('de-DE', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : '';
-        return '<div class="news-item"><div class="t"><a href="' + U.esc(n.url) + '" target="_blank" rel="noopener">' + U.esc(n.title) + '</a></div><div class="src">' + when + '</div></div>';
+        return '<div class="news-item"><div class="t"><a href="' + U.esc(U.safeUrl(n.url)) + '" target="_blank" rel="noopener">' + U.esc(n.title) + '</a></div><div class="src">' + when + '</div></div>';
       }).join('')
       : '<div class="loading">Keine News gefunden.</div>';
   }

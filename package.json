@@ -1,13 +1,14 @@
 {
   "name": "markt-dashboard",
   "productName": "Markt-Dashboard",
-  "version": "7.18.0",
+  "version": "7.19.0",
   "description": "Aktien-Dashboard: Big Tech, Chip-Sektor, Marktüberblick & News – aktualisiert sich selbst",
   "main": "main.js",
   "author": "Wilhelm",
   "license": "MIT",
   "scripts": {
     "start": "electron .",
+    "test": "node test-channel.js && node test-v6.js",
     "dist": "electron-builder --win portable"
   },
   "devDependencies": {

@@ -1379,6 +1379,7 @@
     var syms = scanUniverse();
     schattenAufraeumen(now);
     var nearClose = isNearUsClose();
+    var barMinScan = (INTERVAL_CFG[cfg.interval] || INTERVAL_CFG['5m']).barMin;
     var blackout = (cfg.blackout !== 'off' && window.Cal) ? window.Cal.isBlackout(now, 45, 45) : null;
     var flattenEv = (cfg.blackout === 'flat' && window.Cal) ? window.Cal.upcoming(15) : null;
     try {
@@ -1397,8 +1398,17 @@
         if (!fd) continue;
         var bars = fd.series;
         var spot = bars[bars.length - 1][1];
+        // Signale ausschließlich auf ABGESCHLOSSENEN Bars rechnen. Yahoo liefert während der
+        // Handelszeit den laufenden, noch unfertigen Bar mit: ein Signal darauf kann bis zum
+        // Bar-Schluss wieder verschwinden (Repainting), und der Backtest wertet grundsätzlich
+        // nur fertige Bars aus – Live und Backtest maßen also Unterschiedliches, obwohl Farm,
+        // Analyse-Zentrale und Selbst-Optimierung genau auf dieser Vergleichbarkeit aufbauen.
+        // Der Preis (spot) bleibt der aktuelle Kurs – gekauft und gestoppt wird zum Jetzt-Kurs.
+        var sigBars = (bars.length > 2 && now - bars[bars.length - 1][0] < barMinScan * 60000)
+          ? bars.slice(0, -1) : bars;
+        var sigSpot = sigBars[sigBars.length - 1][1];
         schattenUpdate(sym, spot, now, nearClose); // Schattenbuch mit frischem Kurs weiterrechnen
-        var sig = Q.signalCross(bars, cfg.lineType || 'ema', cfg.period, cfg.confirmBps);
+        var sig = Q.signalCross(sigBars, cfg.lineType || 'ema', cfg.period, cfg.confirmBps);
         var liquid = !cfg.minDollarVol || fd.dollarVolDay == null || fd.dollarVolDay >= cfg.minDollarVol * 1e6;
         SIG[sym] = { t: now, spot: spot, ok: false, grund: 'kein Signal', score: null, z: null, chanPos: null, chanSteep: null };
         if (D.symBlock && D.symBlock[sym] && !D.symBlock[sym].frei) { patienceAdd('Symbol gesperrt (Verlustbringer)', sym); continue; }
@@ -1438,16 +1448,17 @@
               }
             }
             if (!why) {
-              var zc = (Q.reversionSignal(bars, cfg.lineType || 'ema', cfg.period, 1e9).z) || 0;
+              var zc = (Q.reversionSignal(sigBars, cfg.lineType || 'ema', cfg.period, 1e9).z) || 0;
               if ((open.dir === 'call' && zc >= zOf(cfg.confirmBps) * 0.8) || (open.dir === 'put' && zc <= -zOf(cfg.confirmBps) * 0.8)) why = 'Wellenkamm erreicht – Überdehnung auf der Gegenseite (z ' + zc + ')';
             }
           } else if (xm === 'target') {
             if ((open.dir === 'call' && sig.above) || (open.dir === 'put' && !sig.above)) why = 'Ziel erreicht: Rückkehr zur Leitlinie';
           } else if (xm === 'blitz') {
             // ⚡ Blitz-Ausstieg: erste abgeschlossene Gegenbar ODER Rückkreuzung der schnellen EMA9.
-            var b1 = bars.length >= 3 ? bars[bars.length - 2][1] : null;   // letzter abgeschlossener Bar
-            var b0 = bars.length >= 3 ? bars[bars.length - 3][1] : null;
-            var sig9 = Q.signalCross(bars.slice(-61, -1), 'ema', 9, 0); // ohne den laufenden, unfertigen Bar
+            // sigBars enthält nur fertige Bars, die Sonderbehandlung von früher entfällt damit.
+            var b1 = sigBars.length >= 2 ? sigBars[sigBars.length - 1][1] : null;   // letzter abgeschlossener Bar
+            var b0 = sigBars.length >= 2 ? sigBars[sigBars.length - 2][1] : null;
+            var sig9 = Q.signalCross(sigBars.slice(-60), 'ema', 9, 0);
             if (b1 != null && ((open.dir === 'call' && b1 < b0) || (open.dir === 'put' && b1 > b0))) why = '⚡ Blitz: Gegenbar – sofort raus';
             else if ((open.dir === 'call' && !sig9.above) || (open.dir === 'put' && sig9.above)) why = '⚡ Blitz: EMA9-Rückkreuzung';
           } else if (xm === 'recross') {
@@ -1468,7 +1479,7 @@
         var useChan = isWave && cfg.channel !== false;
         if (isOrb) {
           // Opening-Range-Breakout: Range der ersten 30 Min, 1 Trade je Richtung/Tag
-          var tb = bars.filter(function (b) { return new Date(b[0]).toISOString().slice(0, 10) === today; });
+          var tb = sigBars.filter(function (b) { return new Date(b[0]).toISOString().slice(0, 10) === today; });
           if (tb.length >= 3) {
             var t0b = tb[0][0];
             var rb = tb.filter(function (b) { return b[0] - t0b < 30 * 60000; });
@@ -1479,34 +1490,39 @@
               if (!D.orb || D.orb.day !== today) D.orb = { day: today, traded: {} };
               // Die Tageschance wird erst nach dem tatsächlichen Kauf verbraucht (siehe unten),
               // sonst frisst ein von einem Filter abgelehnter Ausbruch den Trade des Tages.
-              if (spot > orbHi * (1 + confO) && !D.orb.traded[sym + '|call']) { dir = 'call'; orbInfo = { hi: orbHi, lo: orbLo }; }
-              else if (spot < orbLo * (1 - confO) && !D.orb.traded[sym + '|put']) { dir = 'put'; orbInfo = { hi: orbHi, lo: orbLo }; }
+              // Vergleich gegen den letzten ABGESCHLOSSENEN Kurs: eine kurze Spitze innerhalb
+              // der laufenden Kerze, die sich bis zum Bar-Schluss wieder zurückbildet, ist kein
+              // Ausbruch – der Backtest sieht sie auch nicht.
+              if (sigSpot > orbHi * (1 + confO) && !D.orb.traded[sym + '|call']) { dir = 'call'; orbInfo = { hi: orbHi, lo: orbLo }; }
+              else if (sigSpot < orbLo * (1 - confO) && !D.orb.traded[sym + '|put']) { dir = 'put'; orbInfo = { hi: orbHi, lo: orbLo }; }
             }
           }
         } else if (isWave) {
-          var wq = Q.waveQuality(bars, cfg.lineType || 'ema', cfg.period, zOf(cfg.confirmBps));
+          var wq = Q.waveQuality(sigBars, cfg.lineType || 'ema', cfg.period, zOf(cfg.confirmBps));
           SIG[sym].score = wq.score; SIG[sym].z = wq.z;
           if (wq.signal && wq.score >= 60) { dir = wq.signal; revZ = wq.z; waveQ = wq; }
           else if (wq.signal) patienceAdd('Wellen-Qualität zu niedrig (' + wq.score + '/100)', sym);
           if (dir && useChan) {
             // Chart-technische Erkennung: Linien ohne die letzten Bars gelegt, damit ein
             // Ausbruch überhaupt sichtbar werden kann.
-            var dgB = Q.degapBarArray(bars);
+            var dgB = Q.degapBarArray(sigBars);
             chE = Q.trendChannel(dgB);
             if (chE) {
               SIG[sym].chanPos = chE.pos; SIG[sym].chanSteep = chE.steigung; SIG[sym].chanQ = chE.score;
               SIG[sym].chanTyp = chE.typ; SIG[sym].chanAus = chE.ausbruch; chN = chE.N;
-              chRef = { kanal: chE, t: now, off: dgB[dgB.length - 1][1] - spot };
+              // Versatz gegen den Kurs DESSELBEN Bars rechnen, aus dem dgB stammt – sonst
+              // steckt die Bewegung innerhalb der laufenden Kerze mit im Versatz.
+              chRef = { kanal: chE, t: now, off: dgB[dgB.length - 1][1] - sigSpot };
             }
-            if (!chE || !chE.gueltig) { patienceAdd('Kein gültiger Kanal (Chart-Prüfung)', sym); schattenNeu('Kanal-Filter', sym, dir, spot, bars, mp, cfg, now); dir = null; }
-            else if (chE.ausbruch) { patienceAdd('Kanalausbruch – der Kanal gilt nicht mehr', sym); schattenNeu('Kanal-Filter', sym, dir, spot, bars, mp, cfg, now); dir = null; }
-            else if (dir === 'call' && chE.pos > 0.30) { patienceAdd('Kanal: nicht an der Unterkante', sym); schattenNeu('Kanal-Filter', sym, dir, spot, bars, mp, cfg, now); dir = null; }
-            else if (dir === 'put' && chE.pos < 0.70) { patienceAdd('Kanal: nicht an der Oberkante', sym); schattenNeu('Kanal-Filter', sym, dir, spot, bars, mp, cfg, now); dir = null; }
-            else if (dir === 'call' && chE.trend === 'down') { patienceAdd('Kanal zeigt abwärts', sym); schattenNeu('Kanal-Filter', sym, dir, spot, bars, mp, cfg, now); dir = null; }
-            else if (dir === 'put' && chE.trend === 'up') { patienceAdd('Kanal zeigt aufwärts', sym); schattenNeu('Kanal-Filter', sym, dir, spot, bars, mp, cfg, now); dir = null; }
+            if (!chE || !chE.gueltig) { patienceAdd('Kein gültiger Kanal (Chart-Prüfung)', sym); schattenNeu('Kanal-Filter', sym, dir, spot, sigBars, mp, cfg, now); dir = null; }
+            else if (chE.ausbruch) { patienceAdd('Kanalausbruch – der Kanal gilt nicht mehr', sym); schattenNeu('Kanal-Filter', sym, dir, spot, sigBars, mp, cfg, now); dir = null; }
+            else if (dir === 'call' && chE.pos > 0.30) { patienceAdd('Kanal: nicht an der Unterkante', sym); schattenNeu('Kanal-Filter', sym, dir, spot, sigBars, mp, cfg, now); dir = null; }
+            else if (dir === 'put' && chE.pos < 0.70) { patienceAdd('Kanal: nicht an der Oberkante', sym); schattenNeu('Kanal-Filter', sym, dir, spot, sigBars, mp, cfg, now); dir = null; }
+            else if (dir === 'call' && chE.trend === 'down') { patienceAdd('Kanal zeigt abwärts', sym); schattenNeu('Kanal-Filter', sym, dir, spot, sigBars, mp, cfg, now); dir = null; }
+            else if (dir === 'put' && chE.trend === 'up') { patienceAdd('Kanal zeigt aufwärts', sym); schattenNeu('Kanal-Filter', sym, dir, spot, sigBars, mp, cfg, now); dir = null; }
           }
         } else if (isRev) {
-          var rsig = Q.reversionSignal(bars, cfg.lineType || 'ema', cfg.period, zOf(cfg.confirmBps));
+          var rsig = Q.reversionSignal(sigBars, cfg.lineType || 'ema', cfg.period, zOf(cfg.confirmBps));
           if (rsig.signal) { dir = rsig.signal; revZ = rsig.z; }
         } else if (sig.crossed) {
           dir = sig.crossed === 'up' ? 'call' : 'put';
@@ -1518,25 +1534,25 @@
           var hourB = parseInt(new Date(now).toLocaleString('de-DE', { hour: '2-digit', hour12: false, timeZone: 'Europe/Berlin' }), 10);
           if (cfg.avoidHours.indexOf(hourB) !== -1) { patienceAdd('Meide-Stunde (Analyse-Zentrale)', sym); continue; }
         }
-        if (!Q.inWindow(now, cfg.window || 'all')) { patienceAdd('Außerhalb des Zeitfensters', sym); schattenNeu('Zeitfenster', sym, dir, spot, bars, mp, cfg, now); continue; }
+        if (!Q.inWindow(now, cfg.window || 'all')) { patienceAdd('Außerhalb des Zeitfensters', sym); schattenNeu('Zeitfenster', sym, dir, spot, sigBars, mp, cfg, now); continue; }
         if (!liquid) { patienceAdd('Zu wenig Liquidität', sym); continue; }
-        if (D.intradayCount >= mp.maxPerDay) { patienceAdd('Tageslimit erreicht', sym); schattenNeu('Tageslimit', sym, dir, spot, bars, mp, cfg, now); continue; }
+        if (D.intradayCount >= mp.maxPerDay) { patienceAdd('Tageslimit erreicht', sym); schattenNeu('Tageslimit', sym, dir, spot, sigBars, mp, cfg, now); continue; }
         if (!canOpen(equityNow()).ok) { patienceAdd('Risiko-Limit', sym); continue; } // Risikomanagement
         // 5-Min-Bestätigung für 1-Min-Signale (Multi-Timeframe)
-        if (cfg.mtf !== false && (cfg.interval || '5m') === '1m' && !Q.mtfAgrees(bars, dir, 5)) { patienceAdd('5-Min-Chart widerspricht', sym); schattenNeu('MTF-Widerspruch', sym, dir, spot, bars, mp, cfg, now); continue; }
+        if (cfg.mtf !== false && (cfg.interval || '5m') === '1m' && !Q.mtfAgrees(sigBars, dir, 5)) { patienceAdd('5-Min-Chart widerspricht', sym); schattenNeu('MTF-Widerspruch', sym, dir, spot, sigBars, mp, cfg, now); continue; }
         // Verlustserien-Drossel (Tilt-Schutz)
         var lsN = (D.lossStreak && D.lossStreak.day === today) ? D.lossStreak.n : 0;
-        if (lsN >= 5) { patienceAdd('Verlustserie (5+) – Pause bis Tagesende', sym); schattenNeu('Verlustserie', sym, dir, spot, bars, mp, cfg, now); continue; }
+        if (lsN >= 5) { patienceAdd('Verlustserie (5+) – Pause bis Tagesende', sym); schattenNeu('Verlustserie', sym, dir, spot, sigBars, mp, cfg, now); continue; }
         var lsFactor = lsN >= 3 ? 0.5 : 1;
         if (isWave || (!isRev && cfg.trendFilter)) { // Trend: beim Wellenreiter Pflicht, sonst optional
           // Kanalrichtung UND übergeordneter Trend müssen passen – ein Seitwärtskorridor
           // innerhalb eines Abwärtstrends ist kein Freibrief für Long-Einstiege.
           if (chE) {
-            if (dir === 'call' && chE.trend === 'down') { patienceAdd('Regime: Kanal zeigt abwärts', sym); schattenNeu('Kanal-Filter', sym, dir, spot, bars, mp, cfg, now); continue; }
-            if (dir === 'put' && chE.trend === 'up') { patienceAdd('Regime: Kanal zeigt aufwärts', sym); schattenNeu('Kanal-Filter', sym, dir, spot, bars, mp, cfg, now); continue; }
+            if (dir === 'call' && chE.trend === 'down') { patienceAdd('Regime: Kanal zeigt abwärts', sym); schattenNeu('Kanal-Filter', sym, dir, spot, sigBars, mp, cfg, now); continue; }
+            if (dir === 'put' && chE.trend === 'up') { patienceAdd('Regime: Kanal zeigt aufwärts', sym); schattenNeu('Kanal-Filter', sym, dir, spot, sigBars, mp, cfg, now); continue; }
           }
           {
-            var tc = bars.slice(-240).map(function (b) { return b[1]; });
+            var tc = sigBars.slice(-240).map(function (b) { return b[1]; });
             if (tc.length >= 100) {
               var e100 = Q.emaSeries(tc, 100);
               if (isWave) {
@@ -1544,7 +1560,7 @@
                 var rising = e100[e100.length - 1] > e100[Math.max(0, e100.length - 9)];
                 if ((dir === 'call' && !rising) || (dir === 'put' && rising)) { patienceAdd('Gegen den Trend (EMA100)', sym); continue; }
               } else {
-                var up100 = spot > e100[e100.length - 1];
+                var up100 = sigSpot > e100[e100.length - 1];
                 if ((dir === 'call' && !up100) || (dir === 'put' && up100)) { patienceAdd('Gegen den Trend (EMA100)', sym); continue; }
               }
             }
@@ -1554,7 +1570,7 @@
         var effCooldown = Math.max(mp.cooldownMin, barMin * 2) * 60000;
         if (D.intradayCooldown[sym] && now - D.intradayCooldown[sym] < effCooldown) { patienceAdd('Cooldown (Straßenbahn-Regel)', sym); continue; }
         var prof = Q.PROFILES[cfg.profile] || Q.PROFILES.atm21;
-        var closes5 = bars.map(function (b) { return b[1]; });
+        var closes5 = sigBars.map(function (b) { return b[1]; });
         var iv = Math.min(1.5, Math.max(0.15, Q.histVolIntraday(closes5, Math.round(390 / barMin)) * 1.1));
         var strike = Math.round(spot * (1 + (dir === 'call' ? prof.otmPct : -prof.otmPct)) * 100) / 100;
         var w = { strike: strike, expiry: now + prof.days * 86400000, iv: iv, ratio: Q.RATIO };
@@ -1564,10 +1580,9 @@
         // Kosten-Breakeven-Filter: lohnt sich der Trade nach Kosten überhaupt?
         var omegaPre = Q.warrantOmega(dir, w, spot, now);
         // Not-Stop: fix oder „atmend“ (Volatilität × Hebel)
-        var slT = mp.sl === 'auto' ? Q.autoStop(bars.map(function (b) { return b[1]; }), omegaPre, (mp.maxHoldMin || 60) / barMin) : mp.sl;
+        var slT = mp.sl === 'auto' ? Q.autoStop(closes5, omegaPre, (mp.maxHoldMin || 60) / barMin) : mp.sl;
         var budgetAbs = Math.max(1, equityNow() * cfg.budgetPct);
         var roundTrip = 2 * spx2 + (2 * (cfg.orderFee || 0)) / budgetAbs;
-        var closes5 = bars.map(function (b) { return b[1]; });
         var ec;
         if (chE) {
           // Kanal-Edge: Der Weg bis zur Gegenkante muss die Kosten decken.
@@ -1577,9 +1592,9 @@
         } else {
           ec = Q.edgeCheck(closes5, (mp.maxHoldMin || 60) / barMin, roundTrip, omegaPre, 1.5);
         }
-        if (!ec.ok) { patienceAdd('Kosten-Check: Bewegung deckt Kosten nicht', sym); schattenNeu('Kosten-Check', sym, dir, spot, bars, mp, cfg, now); continue; }
+        if (!ec.ok) { patienceAdd('Kosten-Check: Bewegung deckt Kosten nicht', sym); schattenNeu('Kosten-Check', sym, dir, spot, sigBars, mp, cfg, now); continue; }
         // 🧠 Lokale KI als letzte Prüfinstanz (Veto/Boost)
-        var trendUp = (function () { var tc2 = bars.slice(-240).map(function (b) { return b[1]; }); if (tc2.length < 100) return '?'; var e2 = Q.emaSeries(tc2, 100); return spot > e2[e2.length - 1] ? 'aufwärts' : 'abwärts'; })();
+        var trendUp = (function () { var tc2 = sigBars.slice(-240).map(function (b) { return b[1]; }); if (tc2.length < 100) return '?'; var e2 = Q.emaSeries(tc2, 100); return sigSpot > e2[e2.length - 1] ? 'aufwärts' : 'abwärts'; })();
         var ki = await kiCheck({
           symbol: sym, richtung: dir === 'call' ? 'LONG (Call)' : 'SHORT (Put)', modus: cfg.mode, zeitrahmen: cfg.interval,
           hebel: Math.round(omegaPre * 10) / 10,
@@ -1589,13 +1604,16 @@
           zScore: revZ, wellenScore: waveQ ? waveQ.score : undefined, scoreTeile: waveQ ? waveQ.parts : undefined,
           trendEMA100: trendUp,
           trendkanal: chE ? { positionImKanal: Math.round(chE.pos * 100) + ' %', steigung: chE.steigung, breitePct: chE.breitePct } : undefined,
-          letzteBewegungenPct: bars.slice(-10).map(function (b) { return Math.round((b[1] / spot - 1) * 10000) / 100; }),
+          letzteBewegungenPct: sigBars.slice(-10).map(function (b) { return Math.round((b[1] / spot - 1) * 10000) / 100; }),
           kostenCheck: { typischeBewegungPct: ec.havePct, noetigPct: ec.needPct },
           eventIn24h: (window.Cal && window.Cal.within24h().length) ? window.Cal.within24h()[0].name : 'nein',
-          tagesPnlPct: D.dayStartEq ? Math.round(tagesPnl() / D.dayStartEq * 10000) / 100 : 0,
+          // tagesPnl() liefert ein OBJEKT {n, pnl, pct}. Vorher wurde das Objekt geteilt –
+          // Ergebnis NaN, im JSON dann null. Prüfregel 4 des Risk-Managers ("Tagesverlust
+          // unter −3 % → nein") konnte deshalb im Intraday-Betrieb nie greifen.
+          tagesPnlPct: D.dayStartEq ? Math.round(tagesPnl().pnl / D.dayStartEq * 10000) / 100 : 0,
           tradesHeute: D.intradayCount || 0
         });
-        if (!ki.go) { patienceAdd('KI-Veto', sym); schattenNeu('KI-Veto', sym, dir, spot, bars, mp, cfg, now); continue; }
+        if (!ki.go) { patienceAdd('KI-Veto', sym); schattenNeu('KI-Veto', sym, dir, spot, sigBars, mp, cfg, now); continue; }
         var fee = cfg.orderFee || 0;
         var qty;
         var sizingR = parseFloat(cfg.sizing);
@@ -2151,10 +2169,7 @@
       var rows = lastBtTrades.map(function (tr) {
         return [new Date(tr.openT).toLocaleString('de-DE'), tr.sym, tr.dir.toUpperCase(), String(tr.entry).replace('.', ','), String(tr.exit).replace('.', ','), tr.qty, String(Math.round(tr.pnl * 100) / 100).replace('.', ','), (tr.why || '').replace(/;/g, ',')].join(';');
       }).join('\n');
-      var a = document.createElement('a');
-      a.href = URL.createObjectURL(new Blob(['﻿' + head + rows], { type: 'text/csv;charset=utf-8' }));
-      a.download = 'backtest-trades.csv';
-      a.click();
+      dateiSpeichern(new Blob(['﻿' + head + rows], { type: 'text/csv;charset=utf-8' }), 'backtest-trades.csv');
     });
   }
 
@@ -2543,10 +2558,7 @@
       var doc = '<!DOCTYPE html><html lang="de"><head><meta charset="utf-8"><title>Wochenreport KW ' + kw + '</title>' +
         '<style>body{font-family:system-ui,sans-serif;max-width:720px;margin:40px auto;padding:0 20px;line-height:1.6;color:#111}h2{margin-top:24px}</style></head><body>' +
         U.md(body) + '<hr><p style="color:#888;font-size:12px;">Erstellt vom Markt-Dashboard · Simulation, keine Anlageberatung.</p></body></html>';
-      var a = document.createElement('a');
-      a.href = URL.createObjectURL(new Blob([doc], { type: 'text/html' }));
-      a.download = 'Wochenreport-KW' + kw + '.html';
-      a.click();
+      dateiSpeichern(new Blob([doc], { type: 'text/html' }), 'Wochenreport-KW' + kw + '.html');
     });
   }
 
@@ -2662,12 +2674,22 @@
     }
   };
 
+  /* ================= Datei-Download ================= */
+  /** Blob als Datei anbieten und die Objekt-URL wieder freigeben – ohne revokeObjectURL
+   *  hält der Renderer jeden je exportierten Datenbestand bis zum Neustart im Speicher. */
+  function dateiSpeichern(blob, name) {
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = name;
+    a.click();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 60000);
+  }
+
   /* ================= CSV-Export ================= */
   function exportCsv() {
-    var a = document.createElement('a');
-    a.href = URL.createObjectURL(new Blob([csvString()], { type: 'text/csv;charset=utf-8' }));
-    a.download = 'trades-' + new Date().toISOString().slice(0, 10) + '.csv';
-    a.click();
+    dateiSpeichern(new Blob([csvString()], { type: 'text/csv;charset=utf-8' }),
+      'trades-' + new Date().toISOString().slice(0, 10) + '.csv');
   }
 
   /* ================= Strategie-Labor (Walk-Forward über alle Modi) ================= */
@@ -3264,6 +3286,10 @@
     if (farmRunning || centralRunning || autoOptRunning) return false;
     if (!manual && a.farm === false) return false;
     farmRunning = true;
+    // Takt hier setzen statt im Timer: so zählt auch ein manuell gestarteter Lauf, und der
+    // Wert wird vom save() am Ende dieses Laufs mitgeschrieben (vorher lebte er nur im
+    // Speicher und die Farm legte nach jedem Neustart sofort wieder los).
+    a.lastFarm = Date.now();
     var F = farmCfg();
     var t0 = Date.now();
     function ph(t) { farmPhase = t; renderFarm(); }
@@ -3574,11 +3600,10 @@
       vol += sd * 100;
     });
     if (!n) return null;
-    var minsOpen = null;
-    if (window.Dash && window.Dash.marketOpen()) {
-      var nowU = new Date();
-      minsOpen = (nowU.getUTCHours() * 60 + nowU.getUTCMinutes()) - (13 * 60 + 30);
-    }
+    // Öffnungszeit NICHT fest auf 13:30 UTC verdrahten: im Winter öffnet die US-Börse um
+    // 14:30 UTC. Der feste Wert machte die Marktlage jeden Winter um 60 Minuten zu alt und
+    // verschob damit die Sperre "Eröffnungs-Range nur früh am Tag" (regimeValidate).
+    var minsOpen = (window.Dash && window.Dash.marketOpen()) ? Q.minutenSeitOeffnung(Date.now()) : null;
     var q = function (sym) { var x = window.Dash && window.Dash.quote(sym); return x ? Math.round(x.pct * 100) / 100 : null; };
     var wf = (D.central && D.central.ranking) ? D.central.ranking.slice(0, 3).map(function (r0) {
       return { name: r0.name, zeitrahmen: r0.interval, wfRenditePct: r0.wfRet, scheibenPlus: r0.posSegs, trades: r0.n, urteil: r0.verdict };
@@ -4309,7 +4334,7 @@
       if (a3.farm === false || farmRunning || autoOptRunning || centralRunning) return;
       if (window.Dash.marketOpen()) return;
       if (Date.now() - (a3.lastFarm || 0) < (a3.farmH || 12) * 3600000) return;
-      runFarm(false).then(function (lief) { if (lief !== false) a3.lastFarm = Date.now(); });
+      runFarm(false);   // setzt lastFarm selbst und speichert es mit
     }, 5 * 60000);
 
     // Takt: kurz nach Handelsbeginn und danach stündlich, solange die Börse offen ist
@@ -4344,6 +4369,13 @@
   document.getElementById('runJobBtn').addEventListener('click', function () { runJob(true); });
   document.getElementById('btRunBtn').addEventListener('click', runBacktest);
   document.getElementById('depotResetBtn').addEventListener('click', function () {
+    // Ein Klick löschte bisher unwiderruflich Positionen, Trade-Protokoll, Trefferquoten,
+    // Experiment-Journal und Strategie-Farm. Dafür ist eine Rückfrage angemessen.
+    var offen = D && D.positions ? D.positions.length : 0;
+    var geschlossen = D && D.trades ? D.trades.filter(function (t) { return t.status === 'closed'; }).length : 0;
+    if (!window.confirm('Depot wirklich zurücksetzen?\n\nGelöscht werden: ' + offen + ' offene Position(en), ' +
+      geschlossen + ' geschlossene Trades, alle Trefferquoten, das Experiment-Journal und die Strategie-Farm.\n\n' +
+      'Das lässt sich nicht rückgängig machen.')) return;
     D = defaultDepot();
     weightsBuilt = false;
     save();

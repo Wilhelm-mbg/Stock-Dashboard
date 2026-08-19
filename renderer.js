@@ -139,7 +139,8 @@
     items.sort(function (a, b) { return b.t - a.t; });
     if (items.length) { NEWS = items.slice(0, 6); renderNews(); }
     else if (!NEWS.length) {
-      var nl = document.getElementById('newsList');
+      // Das Element heißt #news – unter der alten ID #newsList erschien die Meldung nie.
+      var nl = document.getElementById('news');
       if (nl) nl.innerHTML = '<div class="loading">News derzeit nicht erreichbar – nächster Versuch in 30 Minuten.</div>';
     }
   }
@@ -240,10 +241,18 @@
     document.dispatchEvent(new CustomEvent('quotes-updated'));
   }
 
+  // Nur echte Web-Links ins DOM lassen. Die Feed-Inhalte kommen von außen; javascript:-URLs
+  // blockiert zwar schon die CSP, aber ein Link, der nichts tut, ist besser als einer, der
+  // sich auf die CSP verlässt.
+  function safeUrl(u) {
+    try { var x = new URL(String(u)); return (x.protocol === 'https:' || x.protocol === 'http:') ? x.href : '#'; }
+    catch (e) { return '#'; }
+  }
+
   function renderNews() {
     document.getElementById('news').innerHTML = NEWS.map(function (n) {
       var when = n.t ? new Date(n.t).toLocaleString('de-DE', { weekday: 'short', hour: '2-digit', minute: '2-digit' }) + ' Uhr' : '';
-      return '<div class="news-item"><div class="t"><a href="' + esc(n.url) + '" target="_blank" rel="noopener">' + esc(n.title) + '</a></div>' +
+      return '<div class="news-item"><div class="t"><a href="' + esc(safeUrl(n.url)) + '" target="_blank" rel="noopener">' + esc(n.title) + '</a></div>' +
         '<div class="src">' + esc(n.source) + (when ? '<br>' + esc(when) : '') + '</div></div>';
     }).join('') || '<div class="loading">Keine News gefunden.</div>';
   }
@@ -280,7 +289,11 @@
     if (refreshing) return;
     refreshing = true;
     document.getElementById('refreshBtn').disabled = true;
-    try { await refreshQuotes(); } finally {
+    // Ein Fehler im Abruf oder im Rendern darf den Takt nicht killen: vorher stoppte eine
+    // einzige Ausnahme die Kursaktualisierung dauerhaft bis zum Neustart der App.
+    try { await refreshQuotes(); }
+    catch (e) { document.getElementById('err').textContent = '⚠ Aktualisierung fehlgeschlagen: ' + (e && e.message ? e.message : e); }
+    finally {
       refreshing = false;
       document.getElementById('refreshBtn').disabled = false;
     }
@@ -289,7 +302,7 @@
 
   function scheduleLoop() {
     var interval = usMarketOpen() ? 60000 : 300000;
-    setTimeout(async function () { await doRefresh(); scheduleLoop(); }, interval);
+    setTimeout(function () { doRefresh().then(scheduleLoop, scheduleLoop); }, interval);
   }
 
   // Für andere Module (KI-Depot, Explorer)
@@ -315,8 +328,8 @@
   }
   skeletons();
 
-  // Start
-  doRefresh().then(scheduleLoop);
+  // Start – der Takt startet auch dann, wenn der erste Abruf scheitert
+  doRefresh().then(scheduleLoop, scheduleLoop);
   refreshNews();
   setInterval(refreshNews, 30 * 60000);
 })();
