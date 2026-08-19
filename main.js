@@ -85,9 +85,12 @@ ipcMain.handle('export-analysis', async (_ev, payload) => {
   try {
     const dir = path.join(app.getPath('downloads'), 'Markt-Dashboard-Daten');
     fs.mkdirSync(dir, { recursive: true });
-    fs.writeFileSync(path.join(dir, 'analyse-daten.json'), JSON.stringify(payload.json, null, 1), 'utf8');
+    if (payload.json != null) fs.writeFileSync(path.join(dir, 'analyse-daten.json'), JSON.stringify(payload.json, null, 1), 'utf8');
     if (payload.csv) fs.writeFileSync(path.join(dir, 'trades.csv'), payload.csv, 'utf8');
     if (payload.kurse) fs.writeFileSync(path.join(dir, 'kursdaten.json'), JSON.stringify(payload.kurse), 'utf8');
+    // 🤖 Messbericht des Autopiloten: Klartext, was funktioniert und woran der Rest scheitert –
+    // gedacht zum Nachlesen und für die Auswertung mit Claude (liest denselben Ordner).
+    if (payload.bericht) fs.writeFileSync(path.join(dir, 'messbericht.md'), payload.bericht, 'utf8');
     // Rechen-Engine mitliefern, damit externe Auswertungen exakt dieselbe Logik nutzen
     try {
       var eng = fs.readFileSync(path.join(__dirname, 'quant.js'), 'utf8');

@@ -30,6 +30,7 @@
   var HEALTH = { scans: 0, scanErrors: 0, fetchFail: 0, fetchOk: 0, kiFail: 0, kiOk: 0, capFail: 0, capOk: 0, lastScanT: 0, scanTimes: [], startedAt: Date.now() };
   var LASTBARS = {}; // sym -> zuletzt geladene Intraday-Serie (für den Kursdaten-Export)
   var SIG = {};      // sym -> letzter Signal-/Blocker-Zustand (Live-Monitor)
+  var APP_VER = '';
   var EXPORT_ABDECKUNG = null; // 📚 Archiv-Abdeckung (füllt renderPilot), geht mit in den Analyse-Export
   var lastEqPoint = 0;
   var SENT = {}; // Sentiment-Historie je Symbol
@@ -963,7 +964,8 @@
         bars: LASTBARS,
         tages: TAGES_CACHE
       } : null,
-      csv: csvString()
+      csv: csvString(),
+      bericht: (D.central && D.central.berichtMd) || null
     };
     try { return await window.api.exportAnalysis(payload); } catch (e) { return null; }
   }
@@ -2850,11 +2852,64 @@
     return [t0, t1];
   }
 
+  /** MESS-Universum: bewusst breiter als das HANDELS-Universum. Mehr liquide Werte auf
+   *  denselben Handelstagen bedeuten ein Vielfaches an Out-of-Sample-Trades je Messung –
+   *  die Belastbarkeits-Huerde (30 Trades / 12 Tage) wird in Tagen erreichbar statt in
+   *  Wochen. Gehandelt wird weiterhin nur Watchlist + Standardwerte; der Liquiditaets-
+   *  filter in loadLabData sortiert duenne Kandidaten aus. */
+  function messUniversum() {
+    var syms = universe();
+    SCREEN_CANDS.forEach(function (sy) { if (syms.indexOf(sy) === -1) syms.push(sy); });
+    return syms;
+  }
+
+  /* ================= 🄲 Archiv-Backfill über die Capital.com-Demo-API =================
+   * Yahoo reicht rückwirkend nur ~5 Handelstage (1m) zurück – Capital deutlich weiter.
+   * Der Backfill blättert je Symbol RÜCKWÄRTS durch die Historie (1000 Kerzen je Anfrage)
+   * und speist sie ins Archiv, bis 90 Tage erreicht sind oder das Nacht-Budget aufgebraucht
+   * ist. Der Fortschritt verwaltet sich selbst: der früheste Archiv-Zeitstempel ist der
+   * Zeiger, jede Nacht geht es dort weiter. Zwei Schutzmaßnahmen:
+   *  - CFD-Kerzen laufen fast rund um die Uhr – es werden NUR Kerzen der regulären
+   *    US-Handelszeit übernommen, sonst kippen ORB-, VWAP- und Zeitfenster-Logik.
+   *  - 250 ms Pause je Anfrage, damit die Demo-API nicht drosselt. */
+  async function capBackfill(budget) {
+    if (!(window.CapAPI && window.CapAPI.enabled() && window.Archiv)) return { requests: 0, bars: 0, symbole: 0 };
+    var stat = { requests: 0, bars: 0, symbole: 0 };
+    var ziel = Date.now() - 90 * 86400000;
+    var syms = messUniversum();
+    var ivs = [{ iv: '5m', barMin: 5 }, { iv: '1m', barMin: 1 }];   // 5m zuerst: 1 Anfrage deckt ~13 Handelstage
+    for (var vi = 0; vi < ivs.length && stat.requests < budget; vi++) {
+      var iv = ivs[vi].iv, barMin = ivs[vi].barMin;
+      for (var si = 0; si < syms.length && stat.requests < budget; si++) {
+        var sym = syms[si];
+        var serie = await window.Archiv.serie(iv, sym);
+        var frueh = serie.length ? serie[0][0] : Date.now();
+        if (frueh <= ziel) continue;   // dieses Symbol ist schon voll – nichts zu tun
+        var leer = 0, geholt = false;
+        while (frueh > ziel && stat.requests < budget && leer < 2) {
+          var von = Math.max(ziel, frueh - 1000 * barMin * 60000);
+          var bars = await window.CapAPI.pricesRange(sym, iv, von, frueh - 1, 1000);
+          stat.requests++;
+          if (!bars) break;            // Fehler (Login/Markt unbekannt): Symbol überspringen
+          if (!bars.length) { leer++; frueh = von; continue; }
+          leer = 0;
+          var sess = bars.filter(function (b) { var m = Q.minutenSeitOeffnung(b[0]); return m >= 0 && m < 390; });
+          if (sess.length) { await window.Archiv.fuege(iv, sym, sess); stat.bars += sess.length; geholt = true; }
+          frueh = Math.min(von, bars[0][0]);
+          await new Promise(function (r) { setTimeout(r, 250); });
+        }
+        if (geholt) stat.symbole++;
+      }
+    }
+    if (stat.bars) await window.Archiv.speichere(true);
+    return stat;
+  }
+
   async function loadLabData(st) {
     var cfg = D.intraday;
     var intervals = ['1m', '5m', '15m'];
     var data = {};
-    var symsL = universe();
+    var symsL = messUniversum();
     for (var ii = 0; ii < intervals.length; ii++) {
       var mapL = {}, doneLab = 0;
       var ivLab = intervals[ii];
@@ -3024,7 +3079,7 @@
     btn.disabled = true;
     try {
       var cfg = D.intraday;
-      out.innerHTML = '<div class="loading">Schritt 1/3: Alle 6 Modi × 3 Zeitrahmen per Walk-Forward prüfen …</div>';
+      out.innerHTML = '<div class="loading">Schritt 1/3: 4 Setups × 3 Zeitrahmen per Walk-Forward prüfen …</div>';
       var ld = await loadLabData(st);
       var results = await labCompute(ld, st);
       st.textContent = '';
@@ -3091,7 +3146,22 @@
         datenbasis: { symbole: Object.keys(ld.data[top.interval] || {}).length, zeitrahmen: top.interval,
           spanneTage: (function () { var sp = mapSpan(ld.data[top.interval] || {}); return sp[1] > sp[0] ? Math.round((sp[1] - sp[0]) / 86400000) : 0; })() }
       };
-      D.central = { at: Date.now(), rec: rec, ranking: results.slice(0, 6).map(function (r0) { return { name: r0.mode.name, interval: r0.interval, wfRet: r0.wfRet, posSegs: r0.posSegs, n: r0.n, verdict: r0.verdict }; }) };
+      D.central = {
+        at: Date.now(), rec: rec,
+        // volles Ranking (alle Setups x Zeitrahmen) inkl. der Angaben, WORAN ein Kandidat scheitert
+        ranking: results.map(function (r0) { return { name: r0.mode.name, modeKey: r0.mode.key, interval: r0.interval,
+          wfRet: r0.wfRet, posSegs: r0.posSegs, scheibenGueltig: r0.scheibenGueltig, n: r0.n, oosTage: r0.oosTage,
+          pf: r0.pf, winRate: r0.winRate, verdict: r0.verdict, belastbar: !!r0.belastbar }; }),
+        // Datenlage je Zeitrahmen: Handelstage und Wertezahl der Messbasis
+        datenlage: (function () {
+          var out = {};
+          ld.intervals.forEach(function (iv2) {
+            var m2 = ld.data[iv2] || {};
+            out[iv2] = { werte: Object.keys(m2).length, handelstage: handelsTage(m2).length };
+          });
+          return out;
+        })()
+      };
       await save();
       if (!silent) renderCentral();
       exportAnalysis(true);
@@ -3412,6 +3482,104 @@
     if (a.lastRegime == null) a.lastRegime = 0;
     return a;
   }
+  /** Woran scheitert ein Kandidat? Klartext fuer Ranking, Bericht und Auswertung mit Claude. */
+  function scheiterGrund(r) {
+    if (String(r.verdict).indexOf('🟢') === 0) return 'robust – wird nach einer Bestätigungs-Nacht übernommen';
+    var g = [];
+    if (!r.belastbar) {
+      if ((r.n || 0) < MIN_OOS_TRADES) g.push('nur ' + (r.n || 0) + ' von ' + MIN_OOS_TRADES + ' nötigen OOS-Trades');
+      if ((r.oosTage || 0) < MIN_OOS_TAGE) g.push('nur ' + (r.oosTage || 0) + ' von ' + MIN_OOS_TAGE + ' nötigen ungesehenen Handelstagen');
+      if ((r.scheibenGueltig || 0) < 3) g.push('nur ' + (r.scheibenGueltig || 0) + '/4 Prüfscheiben auswertbar');
+    } else {
+      if (r.wfRet <= 0) g.push('Walk-Forward-Rendite ' + r.wfRet + ' % – verliert auf ungesehenen Daten');
+      if ((r.posSegs || 0) < 3) g.push('nur ' + (r.posSegs || 0) + '/4 Zeitscheiben positiv – nicht konsistent');
+      if ((r.pf || 0) <= 1) g.push('Profit-Faktor ' + r.pf + ' – Verluste überwiegen');
+    }
+    return g.join(' · ') || 'knapp unter der Robustheits-Schwelle';
+  }
+
+  /** 📝 Messbericht als Markdown – landet in Downloads/Markt-Dashboard-Daten/messbericht.md.
+   *  Klartext: für dich zum Nachlesen und für Claude zum Auswerten (die geplanten Claude-
+   *  Aufgaben lesen denselben Ordner). Pure Funktion, testbar über window.__pilotBericht. */
+  function baueMessbericht(c, a, extra) {
+    extra = extra || {};
+    var z = [];
+    z.push('# 🤖 Autopilot-Messbericht');
+    z.push('');
+    z.push('Stand: ' + new Date(c.at || Date.now()).toLocaleString('de-DE') + ' Uhr' +
+      (a.lastCheck && a.lastCheck.dauerMin ? ' · Rechenzeit ' + a.lastCheck.dauerMin + ' Min' : '') +
+      (extra.version ? ' · App ' + extra.version : ''));
+    z.push('');
+    z.push('## 📚 Datenlage (Messbasis dieser Nacht)');
+    z.push('');
+    z.push('| Zeitrahmen | Werte | Handelstage |');
+    z.push('|---|---|---|');
+    var dl = c.datenlage || {};
+    ['1m', '5m', '15m'].forEach(function (iv) {
+      var d = dl[iv] || {};
+      z.push('| ' + iv + ' | ' + (d.werte || 0) + ' | ' + (d.handelstage || 0) + ' |');
+    });
+    z.push('');
+    if (a.lastBackfill) z.push('🄲 Capital-Backfill: zuletzt ' + new Date(a.lastBackfill.at).toLocaleString('de-DE') + ' – ' + a.lastBackfill.bars + ' Kerzen für ' + a.lastBackfill.symbole + ' Werte nachgeladen (' + a.lastBackfill.requests + ' Anfragen).');
+    if (a.lastBackfill) z.push('');
+    z.push('Das 📚 Kursarchiv sammelt rollierend 90 Kalendertage – die Tabelle wächst mit jedem Handelstag, an dem die App läuft. Hürde für ein belastbares Urteil: **' + MIN_OOS_TRADES + ' Out-of-Sample-Trades auf ' + MIN_OOS_TAGE + ' ungesehenen Handelstagen**.');
+    z.push('');
+    z.push('## 🏁 Ergebnis dieser Messung');
+    z.push('');
+    z.push(a.lastCheck ? a.lastCheck.txt : '–');
+    if (a.pending && a.pending.rec) { z.push(''); z.push('⏳ **Vorgemerkt:** ' + a.pending.rec.modeName + ' · ' + a.pending.rec.interval + ' – wird angewendet, sobald die Börse geschlossen ist.'); }
+    if (a.lastApply) { z.push(''); z.push('Zuletzt automatisch übernommen: ' + new Date(a.lastApply.at).toLocaleString('de-DE') + ' – ' + (a.lastApply.name || '')); }
+    z.push('');
+    z.push('## 📋 Ranking – alle Kandidaten und woran sie scheitern');
+    z.push('');
+    z.push('| # | Setup | Zeitrahmen | WF-Rendite | Scheiben+ | Trades | Tage | PF | Treffer | Woran scheitert es |');
+    z.push('|---|---|---|---|---|---|---|---|---|---|');
+    (c.ranking || []).forEach(function (r, i) {
+      z.push('| ' + (i + 1) + ' | ' + r.name + ' | ' + r.interval + ' | ' + (r.wfRet > 0 ? '+' : '') + r.wfRet + ' % | ' +
+        (r.posSegs || 0) + '/4 | ' + (r.n || 0) + ' | ' + (r.oosTage || 0) + ' | ' + (r.pf != null ? r.pf : '–') + ' | ' +
+        (r.winRate != null ? r.winRate + ' %' : '–') + ' | ' + scheiterGrund(r) + ' |');
+    });
+    z.push('');
+    z.push('## 📈 Verlauf der letzten Messungen');
+    z.push('');
+    if ((a.messHistorie || []).length) {
+      z.push('| Datum | bester Kandidat | WF-Rendite | Trades | Tage | belastbar |');
+      z.push('|---|---|---|---|---|---|');
+      a.messHistorie.slice(0, 14).forEach(function (h) {
+        z.push('| ' + new Date(h.at).toLocaleString('de-DE') + ' | ' + h.name + ' · ' + h.interval + ' | ' +
+          (h.wfRet > 0 ? '+' : '') + h.wfRet + ' % | ' + h.n + ' | ' + (h.oosTage || 0) + ' | ' + (h.belastbar ? 'ja' : 'nein') + ' |');
+      });
+      z.push('');
+      z.push('Steigen Trades und Tage von Nacht zu Nacht, wächst das Archiv wie geplant. Bleiben sie stehen, lief die App nachts nicht durch (Tray-Modus reicht).');
+    } else {
+      z.push('Noch keine früheren Messungen – der Verlauf entsteht ab der zweiten Nacht.');
+    }
+    z.push('');
+    var sp = Object.keys(extra.handSperre || {});
+    z.push('## ✋ Von Hand gesetzte Felder (für die Automatik gesperrt)');
+    z.push('');
+    z.push(sp.length ? sp.map(function (f) { return HAND_LABEL[f] || f; }).join(' · ') : 'keine – alle Felder werden vom Autopiloten gepflegt');
+    z.push('');
+    var cfg = extra.intraday || {};
+    z.push('## ⚙ Aktuelle Handels-Konfiguration');
+    z.push('');
+    z.push('Setup ' + (cfg.mode || '?') + (cfg.exitStyle && cfg.exitStyle !== 'laufen' ? '/' + cfg.exitStyle : '') +
+      ' · Zeitrahmen ' + (cfg.interval || '?') + ' · ' + String(cfg.lineType || 'ema').toUpperCase() + (cfg.period || '') +
+      ' · Bestätigung ' + (cfg.confirmBps || '?') + ' bps · Zeitfenster ' + (cfg.window || 'all') +
+      ' · Stop ' + (cfg.scalpSL === 'auto' ? 'auto' : (cfg.scalpSL || '?') + ' %') +
+      ' · Cooldown ' + (cfg.cooldownMin || '?') + ' Min · max. ' + (cfg.maxPerDay || '?') + ' Trades/Tag' +
+      ' · Trendfilter ' + (cfg.trendFilter ? 'an' : 'aus') + ' · Kanal ' + (cfg.channel !== false ? 'an' : 'aus'));
+    z.push('');
+    z.push('## 🤝 Auswertung mit Claude');
+    z.push('');
+    z.push('Im selben Ordner liegen: analyse-daten.json (Depot, Trades, Geduld-Bilanz, Schattenbuch, Gesundheit), kursdaten.json (Bars des letzten Scans + Tageshistorie) und engine.js (identische Rechenlogik der App – eigene Backtests damit exakt vergleichbar). ' +
+      'Verbesserungsvorschläge zurück an die App: empfehlung.json mit {"quelle":"claude","id":"eindeutig","begruendung":"…","intraday":{…}} – die App übernimmt nur Whitelist-Felder und respektiert die ✋ Hand-Sperre.');
+    z.push('');
+    z.push('*Simulation – keine Anlageberatung.*');
+    return z.join('\n');
+  }
+  if (typeof window !== 'undefined') window.__pilotBericht = baueMessbericht;   // fuer Funktionstests
+
   function recKey(r) { return [r.modeKey, r.interval, r.period, r.confirmBps, r.lineType, r.window].join('|'); }
   var pilotRunning = false, pilotPhase = '';
   async function pilotMessen(manual) {
@@ -3423,6 +3591,16 @@
     renderPilot();
     var t0 = Date.now();
     try {
+      // 🄲 Erst das Archiv rückwärts auffüllen (falls Capital.com verbunden ist) –
+      // jede Nacht ein Stück weiter zurück, bis 90 Tage stehen.
+      if (window.CapAPI && window.CapAPI.enabled()) {
+        pilotPhase = '🄲 Capital-Backfill: füllt das Kursarchiv rückwärts auf …';
+        renderPilot();
+        try {
+          var bf = await capBackfill(250);
+          if (bf.requests) a.lastBackfill = { at: Date.now(), requests: bf.requests, bars: bf.bars, symbole: bf.symbole };
+        } catch (eBf) { /* Backfill ist Bonus – die Messung läuft auch ohne */ }
+      }
       var rec = await runCentral({ silent: true, status: function (t) { pilotPhase = t; renderPilot(); } });
       a.lastMess = Date.now();
       if (!rec) {
@@ -3447,8 +3625,19 @@
         }
       }
       a.lastCheck.dauerMin = Math.round((Date.now() - t0) / 60000 * 10) / 10;
+      // 📝 Verlauf + Messbericht: sichtbar machen, was funktioniert und woran der Rest scheitert
+      if (rec) {
+        if (!a.messHistorie) a.messHistorie = [];
+        a.messHistorie.unshift({ at: Date.now(), name: rec.modeName, interval: rec.interval, wfRet: rec.wfRet,
+          n: rec.n, oosTage: rec.oosTage || 0, belastbar: rec.belastbar !== false && rec.n >= MIN_OOS_TRADES });
+        if (a.messHistorie.length > 30) a.messHistorie = a.messHistorie.slice(0, 30);
+      }
+      if (D.central) {
+        D.central.berichtMd = baueMessbericht(D.central, a, { handSperre: D.intraday.handSperre, intraday: D.intraday, version: APP_VER });
+      }
       pilotAnwenden();          // Börse gerade zu? Dann direkt einspielen statt bis morgens zu warten
       await save();
+      exportAnalysis(true);     // messbericht.md + analyse-daten.json sofort in den Daten-Ordner
       renderTuneLog();
       renderCentral();
       render();
@@ -3506,10 +3695,11 @@
         (c.dauerMin ? ' <span style="color:var(--muted);">(' + c.dauerMin + ' Min Rechenzeit)</span>' : '')
       : 'Noch keine Messung – die erste läuft in der nächsten Nacht nach US-Börsenschluss.';
     var pend = a.pending ? '<div style="color:var(--up); margin-top:3px;">⏳ Vorgemerkt: ' + U.esc(a.pending.rec.modeName + ' · ' + a.pending.rec.interval) + ' – wird angewendet, sobald die Börse geschlossen ist.</div>' : '';
+    var bfz = a.lastBackfill ? '<div style="color:var(--muted); margin-top:3px;">🄲 Capital-Backfill: ' + a.lastBackfill.bars + ' Kerzen nachgeladen (' + U.dt(a.lastBackfill.at) + ')</div>' : '';
     var apl = a.lastApply ? '<div style="color:var(--muted); margin-top:3px;">Zuletzt übernommen: ' + U.dt(a.lastApply.at) + ' · ' + U.esc(a.lastApply.name || '') + '</div>' : '';
     var hinweis = a.on === false ? '⚠ Autopilot ist aus – es wird gesammelt, aber nichts gemessen oder geändert.'
       : 'Misst jede Nacht nach US-Börsenschluss und wendet doppelt bestätigte Ergebnisse vor Handelsbeginn an. ✋ Von Hand gesetzte Felder bleiben unangetastet.';
-    el.innerHTML = txt + pend + apl + deck + '<div style="color:var(--muted); margin-top:3px;">' + hinweis + '</div>';
+    el.innerHTML = txt + pend + apl + bfz + deck + '<div style="color:var(--muted); margin-top:3px;">' + hinweis + '</div>';
   }
 
   function renderCentral() {
@@ -3531,6 +3721,23 @@
       '<tr><td>Zeitfenster</td><td><b>' + WINDOW_NAMES[r.window] + '</b></td><td>bestes Out-of-Sample-Fenster nach P/L</td></tr>' +
       '<tr><td>Meide-Stunden</td><td><b>' + (r.avoidHours.length ? r.avoidHours.map(function (h) { return h + ' Uhr'; }).join(', ') : 'keine') + '</b></td><td>Stunden mit ≥3 Trades und negativem P/L (Berlin)</td></tr>' +
       '<tr><td>Stärkste Werte</td><td colspan="2">' + r.topSymbols.map(U.esc).join(' · ') + '</td></tr></table>';
+    // 📋 Volles Ranking: ALLE Kandidaten mit dem Grund, woran sie scheitern – dieselbe
+    // Sicht wie im messbericht.md, damit App und Bericht nie auseinanderlaufen.
+    if (c.ranking && c.ranking.length) {
+      html += '<div style="font-size:12.5px; font-weight:600; margin-top:14px;">Alle Kandidaten dieser Messung</div>';
+      if (c.datenlage) {
+        var dlz = ['1m', '5m', '15m'].map(function (iv2) { var d2 = c.datenlage[iv2] || {}; return iv2 + ': ' + (d2.handelstage || 0) + ' Tage / ' + (d2.werte || 0) + ' Werte'; }).join(' · ');
+        html += '<div style="color:var(--muted); font-size:11.5px; margin:2px 0 6px;">Messbasis – ' + dlz + '</div>';
+      }
+      html += '<table class="tbl" style="font-size:11.5px;"><tr><th>#</th><th>Setup</th><th>Zeitrahmen</th><th>WF-Rendite</th><th>Scheiben+</th><th>Trades</th><th>Tage</th><th>PF</th><th>Woran scheitert es</th></tr>';
+      c.ranking.forEach(function (r2, i2) {
+        html += '<tr><td>' + (i2 + 1) + '</td><td>' + U.esc(r2.name) + '</td><td>' + r2.interval + '</td>' +
+          '<td class="' + U.signCls(r2.wfRet) + '">' + U.signTxt(r2.wfRet, ' %') + '</td>' +
+          '<td>' + (r2.posSegs || 0) + '/4</td><td>' + (r2.n || 0) + '</td><td>' + (r2.oosTage || 0) + '</td><td>' + (r2.pf != null ? r2.pf : '–') + '</td>' +
+          '<td>' + U.esc(scheiterGrund(r2)) + '</td></tr>';
+      });
+      html += '</table>';
+    }
     html += '<div style="display:flex; gap:8px; align-items:center; margin-top:10px; flex-wrap:wrap;">' +
       '<button class="btn" id="centralApplyBtn">✅ Empfehlung komplett übernehmen</button>' +
       '<span id="centralApplyStatus" style="color:var(--muted); font-size:12px;"></span></div>';
@@ -3642,6 +3849,7 @@
       });
     });
 
+    if (window.api.appVersion) window.api.appVersion().then(function (v) { APP_VER = v || ''; });
     // Sentiment-Historie laden
     SENT = (await window.api.storeGet('sentiment')) || {};
 

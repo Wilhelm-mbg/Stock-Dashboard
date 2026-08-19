@@ -151,6 +151,34 @@
       } catch (e) { return null; }
     },
 
+    /** Kerzen für einen ZEITBEREICH – fürs 📚 Archiv-Backfill: Capital reicht deutlich
+     *  weiter zurück als Yahoos Intraday-Fenster. Rückgabe: [[t, mid, vol, high, low]]
+     *  (aufsteigend) oder null bei Fehler; [] wenn der Bereich leer ist. */
+    pricesRange: async function (sym, interval, fromMs, toMs, max) {
+      var RES = { '1m': 'MINUTE', '5m': 'MINUTE_5', '15m': 'MINUTE_15', '60m': 'HOUR' };
+      var epic = await this.epicFor(sym);
+      if (!epic) return null;
+      function iso(ms) { return new Date(ms).toISOString().slice(0, 19); }   // UTC ohne Z – Capitals Format
+      var res = await call('GET', '/prices/' + encodeURIComponent(epic) + '?resolution=' + (RES[interval] || 'MINUTE_5') +
+        '&from=' + iso(fromMs) + '&to=' + iso(toMs) + '&max=' + (max || 1000));
+      if (!res.ok) return null;
+      try {
+        var ps = JSON.parse(res.body).prices || [];
+        var series = [];
+        for (var i = 0; i < ps.length; i++) {
+          var c = ps[i].closePrice;
+          if (!c || c.bid == null) continue;
+          function mid(p) { return p && p.bid != null ? (p.ask != null ? (p.bid + p.ask) / 2 : p.bid) : null; }
+          var m = mid(c);
+          var hi = mid(ps[i].highPrice), lo = mid(ps[i].lowPrice);
+          series.push([zeitUtc(ps[i].snapshotTimeUTC || ps[i].snapshotTime), m, ps[i].lastTradedVolume || 0,
+            hi != null ? hi : m, lo != null ? lo : m]);
+        }
+        series.sort(function (a, b) { return a[0] - b[0]; });
+        return series;
+      } catch (e) { return null; }
+    },
+
     closePosition: async function (dealId) {
       if (!dealId) return { ok: false, msg: 'keine dealId' };
       var res = await call('DELETE', '/positions/' + encodeURIComponent(dealId));
