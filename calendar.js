@@ -85,7 +85,7 @@
     // (oder vorbei ist), verschwinden CPI/FOMC-Blackouts bald STILL – das muss sichtbar sein.
     var letzterFix = berlinZeit(FIXED[FIXED.length - 1].d, '23:59');
     var warnung = (letzterFix.getTime() - Date.now() < 14 * 86400000)
-      ? '<div class="loading" style="color:var(--warn);">⚠ Die verifizierte Terminliste (CPI/FOMC) endet am ' +
+      ? '<div class="loading" style="color:var(--warn);">Die verifizierte Terminliste (CPI/FOMC) endet am ' +
         letzterFix.toLocaleDateString('de-DE') + ' – danach schützt der Event-Blackout nur noch vor NFP/Verfallstagen. Bitte App-Update laden.</div>'
       : '';
     if (!evs.length) { el.innerHTML = warnung + '<div class="loading">Keine anstehenden Termine im Zeitfenster.</div>'; return; }
@@ -94,7 +94,7 @@
       var dateStr = e.dt.toLocaleDateString('de-DE', { weekday: 'short', day: '2-digit', month: '2-digit' }) +
         ' · ' + e.dt.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }) + ' Uhr';
       return '<div class="news-item"><div class="t">' +
-        (e.impact >= 3 ? '🔴' : '🟠') + ' <b>' + e.name + '</b></div>' +
+        (e.impact >= 3 ? '' : '') + ' <b>' + e.name + '</b></div>' +
         '<div class="src">' + dateStr + '<br><span style="' + (today ? 'color:var(--down); font-weight:700;' : '') + '">' + fmtCountdown(e.dt) + '</span></div></div>';
     }).join('');
   }

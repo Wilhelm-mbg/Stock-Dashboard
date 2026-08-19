@@ -1,5 +1,5 @@
 'use strict';
-/* 📚 Kursarchiv: sammelt die Intraday-Bars, die die App ohnehin lädt, dauerhaft im Store.
+/* Kursarchiv: sammelt die Intraday-Bars, die die App ohnehin lädt, dauerhaft im Store.
    Warum: Yahoo liefert rückwirkend nur ~5 Handelstage (1m) bzw. ~41 Handelstage (5m/15m).
    Jede Messung auf diesen Fenstern bleibt für immer gleich dünn – egal wie oft sie läuft.
    Das Archiv führt jeden Abruf zusammen (dedupliziert nach Zeitstempel) und behält

@@ -127,12 +127,12 @@
     SETTINGS.ollamaUrl = document.getElementById('setOllamaUrl').value.trim();
     st.textContent = 'Suche Ollama …';
     window.LocalKI.models().then(function (r) {
-      if (!r.ok) { st.textContent = '❌ ' + r.msg + ' – läuft Ollama? (ollama.com installieren, App starten)'; return; }
+      if (!r.ok) { st.textContent = '' + r.msg + ' – läuft Ollama? (ollama.com installieren, App starten)'; return; }
       var ms2 = document.getElementById('setOllamaModel');
       ms2.innerHTML = '';
       r.models.forEach(function (m) { var o = document.createElement('option'); o.value = m; o.textContent = m; ms2.appendChild(o); });
-      if (r.models.length) { ms2.value = SETTINGS.ollamaModel && r.models.indexOf(SETTINGS.ollamaModel) !== -1 ? SETTINGS.ollamaModel : r.models[0]; st.textContent = '✅ Ollama läuft · ' + r.models.length + ' Modell(e) gefunden.'; }
-      else st.textContent = '⚠ Ollama läuft, aber kein Modell installiert – z. B.: ollama pull qwen2.5:7b';
+      if (r.models.length) { ms2.value = SETTINGS.ollamaModel && r.models.indexOf(SETTINGS.ollamaModel) !== -1 ? SETTINGS.ollamaModel : r.models[0]; st.textContent = 'Ollama läuft · ' + r.models.length + ' Modell(e) gefunden.'; }
+      else st.textContent = 'Ollama läuft, aber kein Modell installiert – z. B.: ollama pull qwen2.5:7b';
     });
   });
   /* ================= Automatische Updates ================= */
@@ -148,11 +148,11 @@
     var txt = {
       idle: 'Noch nicht geprüft.',
       checking: 'Suche nach Updates …',
-      current: '✅ ' + (st.msg || 'Aktuell'),
-      available: '⬇ ' + (st.msg || 'Update gefunden'),
-      downloading: '⬇ ' + (st.msg || 'Lade …'),
-      ready: '🔔 ' + (st.msg || 'Update bereit'),
-      error: '⚠ ' + (st.msg || 'Fehler')
+      current: '' + (st.msg || 'Aktuell'),
+      available: '' + (st.msg || 'Update gefunden'),
+      downloading: '' + (st.msg || 'Lade …'),
+      ready: '' + (st.msg || 'Update bereit'),
+      error: '' + (st.msg || 'Fehler')
     }[st.state] || (st.msg || '');
     el.textContent = txt;
     if (ib) ib.style.display = st.state === 'ready' ? '' : 'none';
@@ -166,11 +166,11 @@
     nowBtn.addEventListener('click', async function () {
       document.getElementById('setUpdAutoStatus').textContent = 'Suche nach Updates …';
       var r = await window.api.updateCheck();
-      if (r && !r.ok) document.getElementById('setUpdAutoStatus').textContent = '⚠ ' + (r.msg || 'Update-Prüfung fehlgeschlagen');
+      if (r && !r.ok) document.getElementById('setUpdAutoStatus').textContent = '' + (r.msg || 'Update-Prüfung fehlgeschlagen');
     });
     insBtn.addEventListener('click', async function () {
       var r = await window.api.updateInstall();
-      if (r && !r.ok) document.getElementById('setUpdAutoStatus').textContent = '⚠ ' + (r.msg || 'Installation nicht möglich');
+      if (r && !r.ok) document.getElementById('setUpdAutoStatus').textContent = '' + (r.msg || 'Installation nicht möglich');
     });
     chk.addEventListener('change', function () {
       SETTINGS.autoUpdate = chk.checked;
@@ -206,10 +206,10 @@
       if (!tag) { st.textContent = 'Kein Release gefunden.'; return; }
       if (cmpVer(tag, cur) > 0) {
         var asset = (j.assets || []).filter(function (a) { return /\.exe$/i.test(a.name || ''); })[0];
-        st.innerHTML = '🔔 Version ' + U.esc(tag) + ' verfügbar (installiert: ' + U.esc(cur) + ').' + (asset ? ' <a href="#" id="updDl">Download im Browser öffnen</a>' : ' (kein .exe-Anhang im Release)');
+        st.innerHTML = 'Version ' + U.esc(tag) + ' verfügbar (installiert: ' + U.esc(cur) + ').' + (asset ? ' <a href="#" id="updDl">Download im Browser öffnen</a>' : ' (kein .exe-Anhang im Release)');
         var dl = document.getElementById('updDl');
         if (dl) dl.addEventListener('click', function (e) { e.preventDefault(); window.api.openExternal(asset.browser_download_url); });
-      } else st.textContent = '✅ Aktuell (installiert: ' + cur + ', neueste: ' + tag + ').';
+      } else st.textContent = 'Aktuell (installiert: ' + cur + ', neueste: ' + tag + ').';
     } catch (e) { st.textContent = 'Antwort unlesbar.'; }
   });
 

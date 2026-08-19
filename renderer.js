@@ -237,7 +237,7 @@
       stampTxt += ' · Stand: ' + lastOk.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + ' Uhr';
     }
     document.getElementById('stamp').innerHTML = '<span class="dot ' + (open ? 'open' : 'closed') + '"></span>' + esc(stampTxt);
-    document.getElementById('err').textContent = fetchErrors > 0 ? '⚠ ' + fetchErrors + ' Wert(e) konnten nicht geladen werden' : '';
+    document.getElementById('err').textContent = fetchErrors > 0 ? '' + fetchErrors + ' Wert(e) konnten nicht geladen werden' : '';
     document.dispatchEvent(new CustomEvent('quotes-updated'));
   }
 
@@ -292,7 +292,7 @@
     // Ein Fehler im Abruf oder im Rendern darf den Takt nicht killen: vorher stoppte eine
     // einzige Ausnahme die Kursaktualisierung dauerhaft bis zum Neustart der App.
     try { await refreshQuotes(); }
-    catch (e) { document.getElementById('err').textContent = '⚠ Aktualisierung fehlgeschlagen: ' + (e && e.message ? e.message : e); }
+    catch (e) { document.getElementById('err').textContent = 'Aktualisierung fehlgeschlagen: ' + (e && e.message ? e.message : e); }
     finally {
       refreshing = false;
       document.getElementById('refreshBtn').disabled = false;

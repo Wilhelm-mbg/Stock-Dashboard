@@ -151,7 +151,7 @@
       } catch (e) { return null; }
     },
 
-    /** Kerzen für einen ZEITBEREICH – fürs 📚 Archiv-Backfill: Capital reicht deutlich
+    /** Kerzen für einen ZEITBEREICH – fürs Archiv-Backfill: Capital reicht deutlich
      *  weiter zurück als Yahoos Intraday-Fenster. Rückgabe: [[t, mid, vol, high, low]]
      *  (aufsteigend) oder null bei Fehler; [] wenn der Bereich leer ist. */
     pricesRange: async function (sym, interval, fromMs, toMs, max) {

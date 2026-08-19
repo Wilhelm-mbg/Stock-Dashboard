@@ -63,10 +63,10 @@
     if (!el) return;
     el.innerHTML =
       '<div class="panel exp-start" style="margin-top:4px;">' +
-      '<h3>🔎 Einen Wert öffnen</h3>' +
+      '<h3>Einen Wert öffnen</h3>' +
       '<div style="color:var(--muted); font-size:12.5px;">Suche nach Ticker oder Name (auch deutsche Aktien, ETFs, Indizes, Krypto) – oder starte mit einem Klick:</div>' +
       '<div class="popchips">' + POPULAR.map(function (p, i) { return '<button type="button" data-pop="' + i + '">' + U.esc(p.sym) + ' · ' + U.esc(p.name) + '</button>'; }).join('') + '</div>' +
-      '<div style="color:var(--muted); font-size:11.5px; margin-top:10px;">In der Detail-Ansicht: Chart von 1 Tag bis Max., Kennzahlen, News, „KI-Analyse anfordern“ und „➕ Zur Handels-Watchlist“ (dann handeln die Strategien den Wert mit).</div>' +
+      '<div style="color:var(--muted); font-size:11.5px; margin-top:10px;">In der Detail-Ansicht: Chart von 1 Tag bis Max., Kennzahlen, News, „KI-Analyse anfordern“ und „Zur Handels-Watchlist“ (dann handeln die Strategien den Wert mit).</div>' +
       '</div>';
     el.querySelectorAll('[data-pop]').forEach(function (b) {
       b.addEventListener('click', function () {
@@ -321,12 +321,12 @@
       if (txt) { body = txt; usedLLM = true; }
       else body = '**KI-Anfrage fehlgeschlagen** – hier die regelbasierte Analyse:\n\n' + localAnalysis(c);
     }
-    if (!body) body = localAnalysis(c) + '\n\n*Tipp: In den Einstellungen (⚙) die lokale KI (Ollama) einrichten – dann erstellt ein Sprachmodell die Analyse aus denselben Daten, ohne API-Kosten.*';
+    if (!body) body = localAnalysis(c) + '\n\n*Tipp: In den Einstellungen () die lokale KI (Ollama) einrichten – dann erstellt ein Sprachmodell die Analyse aus denselben Daten, ohne API-Kosten.*';
     st.textContent = '';
     btn.disabled = false;
     document.getElementById('aiTitle').textContent = 'KI-Analyse: ' + CUR.name + ' (' + CUR.sym + ')' + (usedLLM ? '' : ' – regelbasiert');
     document.getElementById('aiBody').innerHTML = U.md(body) +
-      '<div class="warn">⚠ Simulations-/Informationszweck. Automatische Analysen (insbesondere Elliott-Wellen-Zählungen) sind unsicher und mehrdeutig. Keine Anlageberatung.</div>';
+      '<div class="warn">Simulations-/Informationszweck. Automatische Analysen (insbesondere Elliott-Wellen-Zählungen) sind unsicher und mehrdeutig. Keine Anlageberatung.</div>';
     window.openModal('aiModalBg');
   }
   document.getElementById('aiBtn').addEventListener('click', requestAnalysis);
@@ -336,7 +336,7 @@
     if (!CUR || !window.DepotAPI) return;
     var st = document.getElementById('aiStatus');
     var r = window.DepotAPI.addWatch(CUR.sym, CUR.name);
-    st.textContent = r === true ? '✅ ' + CUR.sym + ' wird jetzt mitgehandelt (siehe Optionsscheine → Strategien).'
+    st.textContent = r === true ? '' + CUR.sym + ' wird jetzt mitgehandelt (siehe Optionsscheine → Strategien).'
       : r === 'standard' ? CUR.sym + ' ist schon in der Standard-Watchlist.'
       : r === 'schon' ? CUR.sym + ' ist bereits auf deiner Watchlist.'
       : 'Konnte nicht hinzugefügt werden.';

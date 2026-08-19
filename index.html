@@ -176,6 +176,10 @@
   .btn.tiny { padding: 3px 10px; font-size: 11.5px; }
   select.tiny-sel { font-size: 11.5px; padding: 3px 6px; }
   .auto-status { font-size: 12px; margin-top: 6px; line-height: 1.55; color: var(--ink-2); }
+  .plog { margin-top: 8px; max-height: 190px; overflow-y: auto; font-family: ui-monospace, Consolas, monospace;
+    font-size: 11px; line-height: 1.6; color: var(--ink-2); background: var(--page);
+    border: 1px solid var(--grid); border-radius: 8px; padding: 8px 10px; }
+  .plog .plz { color: var(--muted); margin-right: 6px; }
   .params { display: grid; grid-template-columns: repeat(auto-fill, minmax(108px, 1fr)); gap: 10px 12px; }
   @media (max-width: 560px) { .params { grid-template-columns: 1fr 1fr; } }
   .params label { display: flex; flex-direction: column; gap: 4px; font-size: 10.5px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; }
@@ -204,15 +208,15 @@
   input[type="range"] { accent-color: var(--series); }
 
   /* ---- Tabellen ---- */
-  table.tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
+  table.tbl { width: 100%; border-collapse: collapse; font-size: 12.5px; }
   table.tbl th { text-align: left; color: var(--muted); font-weight: 600; font-size: 11.5px;
     text-transform: uppercase; letter-spacing: 0.04em; padding: 6px 8px; border-bottom: 1px solid var(--grid); }
-  table.tbl td { padding: 7px 8px; border-bottom: 1px solid var(--grid); vertical-align: top; }
+  table.tbl td { padding: 5px 8px; border-bottom: 1px solid var(--grid); vertical-align: top; }
   table.tbl tr:last-child td { border-bottom: none; }
   .pos { color: var(--up); font-weight: 600; }
   .neg { color: var(--down); font-weight: 600; }
-  .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; }
-  .panel h3 { font-size: 12.5px; font-weight: 600; color: var(--ink-2); margin-bottom: 10px; }
+  .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; }
+  .panel h3 { font-size: 11px; font-weight: 700; color: var(--muted); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.07em; }
   .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   @media (max-width: 800px) { .grid2 { grid-template-columns: 1fr; } }
 
@@ -358,7 +362,7 @@
   <div class="hbtns">
     <button class="hbtn" id="refreshBtn" type="button">↻ Aktualisieren</button>
     <button class="hbtn" id="themeBtn" type="button">Hell/Dunkel</button>
-    <button class="hbtn" id="settingsBtn" type="button">⚙ Einstellungen</button>
+    <button class="hbtn" id="settingsBtn" type="button">Einstellungen</button>
   </div>
 </header>
 <div class="subnote" id="subnote">Big Tech · Chip-Sektor · Marktüberblick – aktualisiert sich automatisch (1 Min während des US-Handels, sonst 5 Min). Charts: 1 Monat, Tagesschluss.</div>
@@ -385,7 +389,7 @@
 <h2>Chip-Sektor</h2>
 <div class="cards" id="chips"></div>
 
-<h2>📅 Wirtschaftskalender (marktbewegende Termine)</h2>
+<h2>Wirtschaftskalender (marktbewegende Termine)</h2>
 <div class="news" id="calendar"><div class="loading">Lade Termine …</div></div>
 
 <h2>Markt-News</h2>
@@ -393,13 +397,13 @@
 </div><!-- /tab-dashboard -->
 
 <div id="tab-depot" class="tab">
-  <div class="simnote">⚠ <b>Simulation mit virtuellem Kapital – keine Anlageberatung.</b> Synthetische Optionsscheine (Black-Scholes): Hebel und Zeitwertverfall realistisch, aber keine echten Emittenten-Preise. Läuft, solange die App geöffnet ist.</div>
+  <div class="simnote"><b>Simulation mit virtuellem Kapital – keine Anlageberatung.</b> Synthetische Optionsscheine (Black-Scholes): Hebel und Zeitwertverfall realistisch, aber keine echten Emittenten-Preise. Läuft, solange die App geöffnet ist.</div>
 
   <div class="pills" id="depotPills">
-    <button data-sub="depot" class="active">📊 Depot</button>
-    <button data-sub="strategien">🎯 Strategien</button>
-    <button data-sub="protokoll">🧾 Protokoll</button>
-    <button data-sub="auswertung">📈 Auswertung</button>
+    <button data-sub="depot" class="active">Depot</button>
+    <button data-sub="strategien">Strategien</button>
+    <button data-sub="protokoll">Protokoll</button>
+    <button data-sub="auswertung">Auswertung</button>
   </div>
 
   <!-- ============ DEPOT ============ -->
@@ -413,9 +417,9 @@
     </div>
     <div style="display:flex; gap:14px; align-items:center; flex-wrap:wrap; margin-bottom:10px;">
       <h2 style="margin:0;">Offene Positionen</h2>
-      <label style="font-size:12px; display:flex; align-items:center; gap:6px; margin-left:auto; color:var(--ink-2);"><input type="checkbox" id="notifyEnabled" checked> 🔔 Benachrichtigung bei Trades</label>
+      <label style="font-size:12px; display:flex; align-items:center; gap:6px; margin-left:auto; color:var(--ink-2);"><input type="checkbox" id="notifyEnabled" checked> Benachrichtigung bei Trades</label>
     </div>
-    <div class="panel" id="positionsPanel"><div class="loading">Noch keine Positionen – aktiviere unter „🎯 Strategien“ eine Strategie oder starte dort einen Prüf-Lauf.</div></div>
+    <div class="panel" id="positionsPanel"><div class="loading">Noch keine Positionen – aktiviere unter „Strategien“ eine Strategie oder starte dort einen Prüf-Lauf.</div></div>
   </div>
 
   <!-- ============ STRATEGIEN ============ -->
@@ -423,7 +427,7 @@
     <div class="strategy-grid">
       <div class="strat-card">
         <div class="head">
-          <h3>🧠 Stunden-Strategie</h3>
+          <h3>Stunden-Strategie</h3>
           <span class="state on" id="hourlyState">aktiv</span>
           <label class="switch"><input type="checkbox" id="hourlyEnabled" checked><span class="knob"></span></label>
         </div>
@@ -444,24 +448,24 @@
 
       <div class="strat-card intraday">
         <div class="head">
-          <h3>⚡ Intraday-Strategie</h3>
+          <h3>Intraday-Strategie</h3>
           <span class="state off" id="idState">aus</span>
           <label class="switch"><input type="checkbox" id="idEnabled"><span class="knob"></span></label>
         </div>
         <details class="how"><summary>So funktionieren die beiden Setups</summary>
         <div class="desc">
           Es gibt nur noch <b>zwei</b> Grundideen – alles andere sind Filter, die für beide gleich funktionieren.<br><br>
-          <b>🎯 Ausbruch (mit der Bewegung):</b> Der Kurs verlässt eine Marke und läuft weiter. Auslöser wahlweise die
+          <b>Ausbruch (mit der Bewegung):</b> Der Kurs verlässt eine Marke und läuft weiter. Auslöser wahlweise die
           <b>EMA-Kreuzung</b> (bestätigter Durchbruch durch die Leitlinie) oder die <b>Eröffnungs-Range</b> – die Spanne der
           ersten 30 Handelsminuten, gehandelt wird der erste Ausbruch daraus (max. 1 Trade je Richtung und Tag).
           Beim Ausstieg entscheidest du zwischen <b>laufen lassen</b> (bis zum Gegen-Durchbruch, mit Trailing-Stop),
-          <b>kurz</b> (raus bei der Rückkehr zur Linie) und <b>⚡ blitz</b> – maximal 3 Minuten halten, raus bei der ersten
+          <b>kurz</b> (raus bei der Rückkehr zur Linie) und <b>blitz</b> – maximal 3 Minuten halten, raus bei der ersten
           Gegenbar oder der EMA9-Rückkreuzung. Blitz lebt von kleinen, schnellen Gewinnen; Achtung: Bei sehr kurzer
           Haltezeit frisst der Spread einen großen Teil der Bewegung – der Kosten-Check bleibt deshalb an.<br><br>
-          <b>🔄 Umkehr (gegen die Übertreibung):</b> Der Kurs hat sich zu weit entfernt und kommt zurück. Auslöser wahlweise
+          <b>Umkehr (gegen die Übertreibung):</b> Der Kurs hat sich zu weit entfernt und kommt zurück. Auslöser wahlweise
           <b>Überdehnung</b> (z-Score-Abstand zur Leitlinie, Ziel ist die Rückkehr zur Linie) oder <b>Wellental</b> –
           Einstieg am Tief einer Welle, nur wenn der Wellen-Qualitäts-Score ≥ 60/100 liegt, Ausstieg am Wellenkamm.
-          Der <b>📐 Trendkanal</b> ist dabei kein eigener Modus mehr, sondern ein Filter: Einstieg nur an der Kanalunterkante
+          Der <b>Trendkanal</b> ist dabei kein eigener Modus mehr, sondern ein Filter: Einstieg nur an der Kanalunterkante
           (Long) bzw. Oberkante (Short), Ziel ist die Gegenkante, ein Kanalbruch löst einen Schutz-Exit aus.
           Die Erkennung arbeitet wie ein Chartist: Der Kurs wird gedanklich so lange gedreht, bis das Band am schmalsten liegt –
           genau das tut man beim Anlegen zweier paralleler Linien. Die Linien entstehen aus den echten Hochs und Tiefs, und die
@@ -471,29 +475,29 @@
           Abwärtskanal und Seitwärtskorridor</b>; ein <b>Ausbruch</b> wird gemeldet und setzt den Kanal außer Kraft.<br><br>
           Für beide Setups gilt: <b>Kosten-Breakeven-Filter</b>, Liquiditätsfilter, Event-Blackout, Glattstellung zum Tagesschluss.
           Die „Bestätigung“ wirkt im Umkehr-Setup als z-Score-Schwelle (0,05 % → z 1,5 · 0,15 % → z 2,0 · 0,30 % → z 2,5).
-          <b>🫁 auto-Stop</b> passt sich an Schwankungsbreite und Hebel an. Nach 3 Verlusten in Folge wird die Positionsgröße
+          <b>auto-Stop</b> passt sich an Schwankungsbreite und Hebel an. Nach 3 Verlusten in Folge wird die Positionsgröße
           halbiert, nach 5 pausiert der Tag (Tilt-Schutz).
         </div>
         </details>
-        <!-- 🧭 Klartext: Was läuft gerade und warum – die Automatik stellt alles ein -->
+        <!-- Klartext: Was läuft gerade und warum – die Automatik stellt alles ein -->
         <div id="idKlartext" style="border:1px solid var(--border); border-radius:10px; padding:12px 14px; margin-bottom:10px; background:rgba(255,255,255,0.02);">
           <div class="loading">Lade Strategie-Stand …</div>
         </div>
         <details id="idExperte" style="margin-bottom:8px;">
-          <summary style="cursor:pointer; font-size:12.5px; color:var(--muted); padding:4px 0;">🔧 Experten-Einstellungen anzeigen (stellt normalerweise die Automatik ein – Änderungen von Hand landen im Experiment-Journal)</summary>
+          <summary style="cursor:pointer; font-size:12.5px; color:var(--muted); padding:4px 0;">Experten-Einstellungen anzeigen (stellt normalerweise die Automatik ein – Änderungen von Hand landen im Experiment-Journal)</summary>
         <div id="idParams">
           <div class="pgroup">
-            <div class="pgroup-title">📶 Signal</div>
+            <div class="pgroup-title">Signal</div>
             <div class="params">
               <div style="grid-column:1/-1; margin-bottom:2px;">
                 <div style="font-size:11px; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:.04em; margin-bottom:4px;">Setup</div>
                 <div class="pills small" id="idSetupPills" style="margin:0 0 8px;">
-                  <button type="button" data-setup="ausbruch" class="active">🎯 Ausbruch</button>
-                  <button type="button" data-setup="umkehr">🔄 Umkehr</button>
+                  <button type="button" data-setup="ausbruch" class="active">Ausbruch</button>
+                  <button type="button" data-setup="umkehr">Umkehr</button>
                 </div>
               </div>
               <label title="Was den Trade auslöst">Auslöser<select id="idTrigger"></select></label>
-              <label id="lblExit" title="Wie lange der Trade laufen darf">Ausstieg<select id="idExit"><option value="laufen" selected>laufen lassen</option><option value="kurz">kurz (Rückkehr zur Linie)</option><option value="blitz">⚡ blitz (max. 3 Min)</option></select></label>
+              <label id="lblExit" title="Wie lange der Trade laufen darf">Ausstieg<select id="idExit"><option value="laufen" selected>laufen lassen</option><option value="kurz">kurz (Rückkehr zur Linie)</option><option value="blitz">blitz (max. 3 Min)</option></select></label>
               <select id="idMode" style="display:none;"><option value="breakout">breakout</option><option value="waves">waves</option><option value="reversion">reversion</option><option value="wave">wave</option><option value="orb">orb</option></select>
               <label>Zeitrahmen<select id="idInterval"><option value="1m">1 Min</option><option value="5m" selected>5 Min</option><option value="15m">15 Min</option><option value="60m">60 Min</option></select></label>
               <label>EMA-Periode<select id="idPeriod"><option value="9">9</option><option value="20" selected>20</option><option value="50">50</option></select></label>
@@ -502,31 +506,31 @@
             </div>
           </div>
           <div class="pgroup">
-            <div class="pgroup-title">💰 Risiko &amp; Kosten</div>
+            <div class="pgroup-title">Risiko &amp; Kosten</div>
             <div class="params">
               <label title="Fix: immer gleicher Kapitaleinsatz. Risiko: Einsatz so bemessen, dass ein ausgelöster Stop immer ~X % vom Depot kostet">Positionsgröße<select id="idSizing"><option value="fix" selected>fix 3 %</option><option value="0.25">Risiko 0,25 %</option><option value="0.5">Risiko 0,5 %</option><option value="1">Risiko 1 %</option></select></label>
-              <label title="🫁 automatisch = passt sich an Schwankungsbreite und Hebel an">Not-Stop-Loss<select id="idScalpSL"><option value="15">−15 %</option><option value="20" selected>−20 %</option><option value="30">−30 %</option><option value="auto">🫁 auto</option></select></label>
+              <label title="automatisch = passt sich an Schwankungsbreite und Hebel an">Not-Stop-Loss<select id="idScalpSL"><option value="15">−15 %</option><option value="20" selected>−20 %</option><option value="30">−30 %</option><option value="auto">auto</option></select></label>
               <label title="Moderat: ATM, 21 Tage · Spekulativ: 3 % OTM, 14 Tage · Heiß: 5 % OTM, 10 Tage">Hebel-Profil<select id="idProfile"><option value="atm21" selected>Moderat</option><option value="otm3_14">Spekulativ</option><option value="otm5_10">Heiß</option></select></label>
               <label>Ordergebühr<select id="idFee"><option value="0">0 $</option><option value="1.5" selected>1,50 $</option><option value="5">5 $</option></select></label>
             </div>
           </div>
           <div class="pgroup">
-            <div class="pgroup-title">🧹 Filter &amp; Schutz</div>
+            <div class="pgroup-title">Filter &amp; Schutz</div>
             <div class="params">
               <label data-modes="breakout,waves,orb">Trendfilter<select id="idTrend"><option value="0" selected>aus</option><option value="1">nur mit Trend</option></select></label>
               <label>Zeitfenster<select id="idWindow"><option value="all" selected>ganzer Tag</option><option value="open2">15:30–17:30</option><option value="open4">15:30–19:30</option><option value="close2">20–22 Uhr</option></select></label>
               <label title="Mindest-Tagesumsatz des Basiswerts">Liquidität min.<select id="idLiq"><option value="0">aus</option><option value="10">10 Mio $</option><option value="50" selected>50 Mio $</option><option value="200">200 Mio $</option></select></label>
               <label>Event-Blackout<select id="idBlackout"><option value="off">aus</option><option value="block" selected>±45 Min</option><option value="flat">+ glattstellen</option></select></label>
               <label data-iv="1m" title="1-Min-Signale müssen zusätzlich zur EMA20-Richtung auf dem 5-Min-Chart passen (Rauschfilter)">5-Min-Bestätigung<span class="switch"><input type="checkbox" id="idMtf" checked><span class="knob"></span></span></label>
-              <label data-modes="wave" title="Nur im Umkehr-Setup mit Auslöser Wellental. Chart-technische Erkennung: Linien an echten Hochs und Tiefs, Fenster automatisch gewählt, Ausbruch wird erkannt. Ohne gültigen Kanal gibt es keinen Trade.">📐 Trendkanal<span class="switch"><input type="checkbox" id="idChannel" checked><span class="knob"></span></span></label>
-              <label title="Einmal täglich ~30 zusätzliche Kandidaten nach Wellen-Qualität und Liquidität ranken – die Top-5 werden mitgescannt">🔎 Wellen-Screener<span class="switch"><input type="checkbox" id="idScreener"><span class="knob"></span></span></label>
-              <label title="Claude wertet stündlich die Analyse-Daten aus und schreibt geprüfte Parameter-Empfehlungen in den Daten-Ordner – die App übernimmt sie automatisch (nur sichere Felder, jede Änderung wird hier angezeigt)">🛰 Auto-Tuning<span class="switch"><input type="checkbox" id="idAutoTune" checked><span class="knob"></span></span></label>
+              <label data-modes="wave" title="Nur im Umkehr-Setup mit Auslöser Wellental. Chart-technische Erkennung: Linien an echten Hochs und Tiefs, Fenster automatisch gewählt, Ausbruch wird erkannt. Ohne gültigen Kanal gibt es keinen Trade.">Trendkanal<span class="switch"><input type="checkbox" id="idChannel" checked><span class="knob"></span></span></label>
+              <label title="Einmal täglich ~30 zusätzliche Kandidaten nach Wellen-Qualität und Liquidität ranken – die Top-5 werden mitgescannt">Wellen-Screener<span class="switch"><input type="checkbox" id="idScreener"><span class="knob"></span></span></label>
+              <label title="Claude wertet stündlich die Analyse-Daten aus und schreibt geprüfte Parameter-Empfehlungen in den Daten-Ordner – die App übernimmt sie automatisch (nur sichere Felder, jede Änderung wird hier angezeigt)">Auto-Tuning<span class="switch"><input type="checkbox" id="idAutoTune" checked><span class="knob"></span></span></label>
             </div>
           </div>
           <div id="feeWarn" style="color:var(--down); font-size:11.5px; margin-top:6px;"></div>
           <div id="handSperre" style="font-size:11.5px; margin-top:6px;"></div>
           <div class="pgroup" id="pgScalp">
-            <div class="pgroup-title">⏱ Haltedauer &amp; Ausstieg</div>
+            <div class="pgroup-title">Haltedauer &amp; Ausstieg</div>
             <div class="params">
               <label data-modes="waves,reversion,wave">Max. Haltedauer<select id="idHold"><option value="3">3 Min</option><option value="5">5 Min</option><option value="15">15 Min</option><option value="30">30 Min</option><option value="60" selected>60 Min</option><option value="0">aus</option></select></label>
               <label data-modes="waves,orb" title="Ausstieg, wenn der Schein X % unter sein Hoch fällt (Gewinn sichern)">Trailing-Stop<select id="idTrail"><option value="0">aus</option><option value="10">−10 %</option><option value="15" selected>−15 %</option><option value="25">−25 %</option></select></label>
@@ -535,7 +539,7 @@
         </div>
         </details>
         <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-top:12px;">
-          <button class="btn ghost" id="screenBtn" style="padding:4px 12px; font-size:12px;">🔎 Screener jetzt laufen lassen</button>
+          <button class="btn ghost" id="screenBtn" style="padding:4px 12px; font-size:12px;">Screener jetzt laufen lassen</button>
           <span id="screenStatus" style="color:var(--muted); font-size:11.5px;"></span>
         </div>
         <div id="screenChips" style="display:flex; gap:6px; flex-wrap:wrap; margin-top:6px;"></div>
@@ -545,14 +549,14 @@
       <div style="display:grid; gap:12px; align-content:start;">
       <div class="strat-card" style="border-top-color: #9085e9;">
         <div class="head">
-          <h3>🧠 KI-Prüfung (lokal)</h3>
+          <h3>KI-Prüfung (lokal)</h3>
           <span class="state off" id="kiState">aus</span>
         </div>
         <details class="how"><summary>So funktioniert's</summary>
         <div class="desc">
           Ein <b>lokales Sprachmodell</b> (Ollama, läuft auf deinem PC) prüft jeden geplanten Trade als letzte Instanz:
           bestätigen, ablehnen (Veto) oder Positionsgröße anpassen (×0,5 / ×1 / ×1,5) – mit Begründung im Protokoll.
-          Fällt die KI aus, handelt die Strategie normal weiter. Einrichten: ⚙ Einstellungen → Lokale KI.
+          Fällt die KI aus, handelt die Strategie normal weiter. Einrichten: Einstellungen → Lokale KI.
         </div>
         </details>
         <div id="kiInfo" style="font-size:12px; color:var(--ink-2);"></div>
@@ -561,7 +565,7 @@
 
       <div class="strat-card" style="border-top-color: var(--muted);">
         <div class="head">
-          <h3>🛡 Risikomanagement</h3>
+          <h3>Risikomanagement</h3>
           <span class="state on" id="riskState">ok</span>
         </div>
         <details class="how"><summary>So funktioniert's</summary>
@@ -582,7 +586,7 @@
     </div>
 
     <div class="panel" style="margin-top:12px; margin-bottom:12px;">
-      <h3>📈 Signal-Chart – was die Strategie sieht</h3>
+      <h3>Signal-Chart – was die Strategie sieht</h3>
       <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
         <select id="scSym"></select>
         <button class="btn ghost" id="scBtn">Chart laden</button>
@@ -594,15 +598,15 @@
         <span style="color:var(--series);">━</span> Kurs ·
         <span style="color:var(--series2);">╌</span> Leitlinie (EMA/VWAP) ·
         <span style="color:var(--series3);">▬</span> Trendkanal ·
-        ● Einstieg (grün Call / rot Put) · ✕ Ausstieg
+        ● Einstieg (grün Call / rot Put) · × Ausstieg
       </div>
     </div>
 
     <div class="panel" style="margin-bottom:12px;">
-      <h3>📡 Live-Signal-Monitor</h3>
+      <h3>Live-Signal-Monitor</h3>
       <div id="sigMonitor"></div>
       <div style="margin-top:10px; padding-top:10px; border-top:1px solid var(--grid);">
-        <div style="font-size:12.5px; font-weight:600; margin-bottom:6px;">🚫 Gesperrte Werte <span style="color:var(--muted); font-weight:400;">(automatisch ab 6 Trades mit klarer Negativbilanz – Klick auf ✕ gibt wieder frei)</span></div>
+        <div style="font-size:12.5px; font-weight:600; margin-bottom:6px;">Gesperrte Werte <span style="color:var(--muted); font-weight:400;">(automatisch ab 6 Trades mit klarer Negativbilanz – Klick auf × gibt wieder frei)</span></div>
         <div id="symBlocks"></div>
       </div>
     </div>
@@ -610,7 +614,7 @@
     <div class="panel" style="margin-top:12px;">
       <h3>Eigene Watchlist (wird zusätzlich zu den 15 Standard-Werten gehandelt &amp; überwacht)</h3>
       <div id="watchChips" style="display:flex; gap:6px; flex-wrap:wrap;"></div>
-      <div style="color:var(--muted); font-size:11.5px; margin-top:8px;">Hinzufügen: Wert im Aktien-Explorer suchen → „➕ Zur Handels-Watchlist“.</div>
+      <div style="color:var(--muted); font-size:11.5px; margin-top:8px;">Hinzufügen: Wert im Aktien-Explorer suchen → „Zur Handels-Watchlist“.</div>
     </div>
   </div>
 
@@ -618,11 +622,11 @@
   <div class="sub" id="sub-protokoll">
     <div class="pills small" id="logFilter">
       <button data-lf="all" class="active">Alle</button>
-      <button data-lf="hourly">🧠 Stunden-Strategie</button>
-      <button data-lf="intraday">⚡ Intraday</button>
+      <button data-lf="hourly">Stunden-Strategie</button>
+      <button data-lf="intraday">Intraday</button>
       <button data-lf="open">Offen</button>
-      <button data-lf="replicated">📌 Nachgebildet</button>
-      <button id="csvBtn" style="margin-left:auto;">⬇ CSV-Export</button>
+      <button data-lf="replicated">Nachgebildet</button>
+      <button id="csvBtn" style="margin-left:auto;">CSV-Export</button>
     </div>
     <div class="panel" id="tradeLog"><div class="loading">Noch keine Trades.</div></div>
   </div>
@@ -632,26 +636,27 @@
 
     <!-- 1 · Was die App von allein tut -->
     <div class="panel" style="margin-bottom:12px; border-top:3px solid var(--series);">
-      <h3>🤖 Autopilot – die App verbessert sich selbst</h3>
+      <h3>Autopilot – die App verbessert sich selbst</h3>
       <div style="color:var(--muted); font-size:11.5px; margin-bottom:10px;">
-        Eine Kette statt drei Automatiken: Das 📚 <b>Kursarchiv</b> sammelt jede geladene Kursreihe dauerhaft
+        Eine Kette statt drei Automatiken: Das <b>Kursarchiv</b> sammelt jede geladene Kursreihe dauerhaft
         (rollierend 90 Tage) – die Messbasis wächst mit jedem Handelstag, statt an Yahoos kurzem Rückblick zu kleben.
         Der <b>Autopilot</b> misst jede Nacht nach US-Börsenschluss alle Setups per Walk-Forward auf dem Archiv und
         übernimmt nur Ergebnisse, die <b>belastbar</b> sind und sich in <b>zwei Nächten hintereinander</b> bestätigen –
-        angewendet wird morgens vor Handelsbeginn, nie mitten im Handel. ✋ Von Hand gesetzte Felder bleiben unangetastet.
+        angewendet wird morgens vor Handelsbeginn, nie mitten im Handel. Von Hand gesetzte Felder bleiben unangetastet.
       </div>
 
       <div class="auto-row">
         <div class="auto-head">
-          <label title="Misst nachts auf dem Kursarchiv und wendet doppelt bestätigte, robuste Ergebnisse morgens an">🤖 Autopilot<span class="switch"><input type="checkbox" id="pilotOn" checked><span class="knob"></span></span></label>
+          <label title="Misst nachts auf dem Kursarchiv und wendet doppelt bestätigte, robuste Ergebnisse morgens an">Autopilot<span class="switch"><input type="checkbox" id="pilotOn" checked><span class="knob"></span></span></label>
           <button class="btn ghost tiny" id="pilotBtn">jetzt messen (10–20 Min)</button>
         </div>
         <div id="pilotStatus" class="auto-status"></div>
+        <div id="pilotLog" class="plog" style="display:none;"></div>
       </div>
 
       <div class="auto-row">
         <div class="auto-head">
-          <label title="Reine Anzeige: misst stündlich die Marktlage, schaltet aber nichts mehr um">🧭 Marktlage (nur Anzeige)<span class="switch"><input type="checkbox" id="aoRegime" checked><span class="knob"></span></span></label>
+          <label title="Reine Anzeige: misst stündlich die Marktlage, schaltet aber nichts mehr um">Marktlage (nur Anzeige)<span class="switch"><input type="checkbox" id="aoRegime" checked><span class="knob"></span></span></label>
           <button class="btn ghost tiny" id="regimeBtn">jetzt messen</button>
         </div>
         <div id="regimeStatus" class="auto-status"></div>
@@ -665,7 +670,7 @@
 
     <!-- 2 · Wirkung -->
     <div class="panel" style="margin-bottom:12px;">
-      <h3>📊 Was hat gewirkt?</h3>
+      <h3>Was hat gewirkt?</h3>
       <div style="color:var(--muted); font-size:11.5px; margin-bottom:8px;">
         Jede automatische Änderung mit gemessener Wirkung: Ø Gewinn je Intraday-Trade davor gegen danach, sortiert nach
         Wirkung, jede einzeln zurücknehmbar.
@@ -673,7 +678,7 @@
       <div id="tuneLog"></div>
 
       <div style="margin-top:14px; padding-top:12px; border-top:1px solid var(--line);">
-        <h4 style="margin:0 0 6px;">🧹 Bringen die Filter etwas?</h4>
+        <h4 style="margin:0 0 6px;">Bringen die Filter etwas?</h4>
         <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
           <button class="btn ghost" id="filterBtn">Mit vs. ohne Filter rechnen</button>
           <span id="filterStatus" style="color:var(--muted); font-size:12px;"></span>
@@ -689,7 +694,7 @@
     <!-- 3 · Ergebnis & Geduld -->
     <div class="grid2" style="margin-bottom:12px;">
       <div class="panel">
-        <h3>🧘 Wann die Strategie nichts getan hat</h3>
+        <h3>Wann die Strategie nichts getan hat</h3>
         <div style="color:var(--muted); font-size:11.5px; margin-bottom:8px;">
           Wie oft die Filter ein Signal bewusst verworfen haben – und warum. Der häufigste Grund ist der stärkste Hebel:
           „Wer nicht weiß, was er tut, muss wissen, wann er nichts tut.“ (Kostolany)
@@ -697,7 +702,7 @@
         <div id="patience"><div class="loading">Noch keine verworfenen Signale erfasst – entsteht, sobald der Intraday-Scanner läuft.</div></div>
       </div>
       <div class="panel">
-        <h3>📈 Depot gegen Buy &amp; Hold</h3>
+        <h3>Depot gegen Buy &amp; Hold</h3>
         <div id="benchInfo" style="font-size:12px; color:var(--muted); margin-bottom:6px;">Wird beim Öffnen dieses Bereichs geladen …</div>
         <svg id="benchChart" style="width:100%; height:150px; display:block;"></svg>
         <div id="benchLegend" style="font-size:11.5px; color:var(--ink-2); margin-top:4px;"></div>
@@ -707,21 +712,21 @@
 
     <!-- 4 · Selten gebraucht -->
     <details class="how" style="margin-bottom:12px;">
-      <summary>🧰 Berichte &amp; Werkzeuge</summary>
+      <summary>Berichte &amp; Werkzeuge</summary>
       <div style="display:flex; gap:8px; margin:10px 0; flex-wrap:wrap; align-items:center;">
-        <button class="btn ghost" id="retroBtn">🧠 KI-Retrospektive</button>
-        <button class="btn ghost" id="weeklyBtn">📄 Wochenreport</button>
-        <button class="btn ghost" id="reportShowBtn" title="Zeigt den Bericht der automatischen Analyse aus dem Daten-Ordner">📋 Analyse-Bericht</button>
-        <button class="btn ghost" id="exportDataBtn" title="Schreibt analyse-daten.json + trades.csv nach Downloads\Markt-Dashboard-Daten – ohne Zugangsdaten. Läuft zusätzlich automatisch alle 10 Minuten.">📤 Analyse-Export</button>
+        <button class="btn ghost" id="retroBtn">KI-Retrospektive</button>
+        <button class="btn ghost" id="weeklyBtn">Wochenreport</button>
+        <button class="btn ghost" id="reportShowBtn" title="Zeigt den Bericht der automatischen Analyse aus dem Daten-Ordner">Analyse-Bericht</button>
+        <button class="btn ghost" id="exportDataBtn" title="Schreibt analyse-daten.json + trades.csv nach Downloads\Markt-Dashboard-Daten – ohne Zugangsdaten. Läuft zusätzlich automatisch alle 10 Minuten.">Analyse-Export</button>
         <span id="reportStatus" style="color:var(--muted); font-size:12px;"></span>
       </div>
       <div class="panel" style="margin:0;">
-        <h4 style="margin:0 0 8px;">📉 Backtest der Stunden-Strategie</h4>
+        <h4 style="margin:0 0 8px;">Backtest der Stunden-Strategie</h4>
         <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
           <select id="btMode">
             <option value="daily">Stunden-Strategie (Technik + Elliott, Tagesdaten)</option>
             <option value="intraday">Intraday (gewählter Zeitrahmen)</option>
-            <option value="intradayCompare">⚖ Zeitrahmen-Vergleich: 5 vs. 15 vs. 60 Min</option>
+            <option value="intradayCompare">Zeitrahmen-Vergleich: 5 vs. 15 vs. 60 Min</option>
           </select>
           <select id="btRange"><option value="1y">1 Jahr</option><option value="2y">2 Jahre</option><option value="5y">5 Jahre</option></select>
           <button class="btn ghost" id="btRunBtn">Backtest starten</button>
@@ -758,8 +763,8 @@
         <h3>Kennzahlen</h3>
         <dl class="kv" id="expStats"></dl>
         <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
-          <button class="btn" id="aiBtn">✨ KI-Analyse anfordern</button>
-          <button class="btn ghost" id="watchBtn">➕ Zur Handels-Watchlist</button>
+          <button class="btn" id="aiBtn">KI-Analyse anfordern</button>
+          <button class="btn ghost" id="watchBtn">Zur Handels-Watchlist</button>
           <span id="aiStatus" style="color:var(--muted); font-size:12px;"></span>
         </div>
       </div>
@@ -774,7 +779,7 @@
 <!-- KI-Analyse-Modal -->
 <div class="modal-bg" id="aiModalBg">
   <div class="modal">
-    <button class="btn ghost close" data-close="aiModalBg">Schließen ✕</button>
+    <button class="btn ghost close" data-close="aiModalBg">Schließen ×</button>
     <h2 id="aiTitle">KI-Analyse</h2>
     <div class="analysis" id="aiBody"></div>
   </div>
@@ -783,16 +788,16 @@
 <!-- Order-Ticket-Modal (Trade nachbilden) -->
 <div class="modal-bg" id="ticketModalBg">
   <div class="modal" style="max-width:620px;">
-    <button class="btn ghost close" data-close="ticketModalBg">Schließen ✕</button>
+    <button class="btn ghost close" data-close="ticketModalBg">Schließen ×</button>
     <h2 id="ticketTitle">Trade nachbilden</h2>
     <div id="ticketBody" class="analysis"></div>
     <div style="display:flex; gap:8px; margin-top:14px; flex-wrap:wrap;">
-      <button class="btn" id="ticketCopyBtn">📋 Order-Daten kopieren</button>
+      <button class="btn" id="ticketCopyBtn">Order-Daten kopieren</button>
       <label style="display:flex; align-items:center; gap:6px; font-size:12.5px;"><input type="checkbox" id="ticketReplicated"> Hab ich real nachgebildet</label>
       <span id="ticketStatus" style="color:var(--muted); font-size:12px; align-self:center;"></span>
     </div>
     <div class="warn" style="margin-top:12px; font-size:11.5px; color:var(--muted); border-top:1px solid var(--grid); padding-top:8px;">
-      ⚠ Hebelprodukte können zum Totalverlust führen. Die simulierten Kurse (Black-Scholes) weichen von echten Emittenten-Preisen ab
+      Hebelprodukte können zum Totalverlust führen. Die simulierten Kurse (Black-Scholes) weichen von echten Emittenten-Preisen ab
       (implizite Vola, Spread, Aufgeld je nach Anbieter). Die Strategie hat keinen nachgewiesenen Vorteil – wenn überhaupt, nur mit
       Beträgen testen, deren Verlust dich nicht schmerzt. Keine Anlageberatung.
     </div>
@@ -802,22 +807,22 @@
 <!-- Einstellungen-Modal -->
 <div class="modal-bg" id="setModalBg">
   <div class="modal" style="max-width:560px;">
-    <button class="btn ghost close" data-close="setModalBg">Schließen ✕</button>
+    <button class="btn ghost close" data-close="setModalBg">Schließen ×</button>
     <h2>Einstellungen</h2>
     <div style="margin:14px 0; font-size:12px; color:var(--muted);">
-      🧠 Alle KI-Analysen laufen <b>lokal über Ollama</b> (unten einrichten) – <b>ohne API-Kosten</b>.
+      Alle KI-Analysen laufen <b>lokal über Ollama</b> (unten einrichten) – <b>ohne API-Kosten</b>.
       Ohne lokales Modell gibt es eine regelbasierte Analyse aus denselben Daten.
     </div>
     <div style="margin:14px 0;">
       <label style="display:flex; align-items:center; gap:8px; font-size:12.5px;"><input type="checkbox" id="setTray"> Beim Schließen im Hintergrund weiterlaufen (Tray-Symbol neben der Uhr) – Strategien handeln dann weiter</label>
     </div>
     <div style="margin:14px 0; border-top:1px solid var(--grid); padding-top:14px;">
-      <div style="font-weight:600; font-size:13px; margin-bottom:8px;">🅲 Capital.com Demo-Konto (Paper-Trading mit echten Kursen)</div>
+      <div style="font-weight:600; font-size:13px; margin-bottom:8px;">Capital.com Demo-Konto (Paper-Trading mit echten Kursen)</div>
       <div style="display:grid; gap:8px;">
         <input type="password" id="setCapKey" placeholder="API-Key (bei Capital.com: Einstellungen → API-Integrationen)" style="width:100%;">
         <input type="text" id="setCapId" placeholder="E-Mail / Kennung deines Capital.com-Kontos" style="width:100%;">
         <input type="password" id="setCapPass" placeholder="API-Passwort (beim Erstellen des Keys festgelegt)" style="width:100%;">
-        <label style="display:flex; align-items:flex-start; gap:8px; font-size:12.5px;"><input type="checkbox" id="setCapEnabled" style="margin-top:3px;"><span>⚡ Intraday-Signale zusätzlich auf dem <b>Demo-Konto</b> ausführen (echte CFD-Paper-Trades mit Stop-Loss)</span></label>
+        <label style="display:flex; align-items:flex-start; gap:8px; font-size:12.5px;"><input type="checkbox" id="setCapEnabled" style="margin-top:3px;"><span>Intraday-Signale zusätzlich auf dem <b>Demo-Konto</b> ausführen (echte CFD-Paper-Trades mit Stop-Loss)</span></label>
       </div>
       <div style="font-size:11.5px; color:var(--muted); margin-top:6px;">
         Die App kennt ausschließlich den Demo-Server – Live-Handel mit echtem Geld ist technisch nicht möglich.
@@ -825,14 +830,14 @@
       </div>
     </div>
     <div style="margin:14px 0; border-top:1px solid var(--grid); padding-top:14px;">
-      <div style="font-weight:600; font-size:13px; margin-bottom:8px;">🧠 Lokale KI (Ollama – läuft komplett auf deinem PC, kostenlos)</div>
+      <div style="font-weight:600; font-size:13px; margin-bottom:8px;">Lokale KI (Ollama – läuft komplett auf deinem PC, kostenlos)</div>
       <div style="display:grid; gap:8px;">
         <input type="text" id="setOllamaUrl" placeholder="http://127.0.0.1:11434 (Standard)" style="width:100%;">
         <div style="display:flex; gap:8px;">
           <select id="setOllamaModel" style="flex:1;"><option value="">– erst „Modelle laden“ klicken –</option></select>
           <button class="btn ghost" id="ollamaRefreshBtn" type="button">Modelle laden</button>
         </div>
-        <label style="display:flex; align-items:flex-start; gap:8px; font-size:12.5px;"><input type="checkbox" id="setKiVeto" style="margin-top:3px;"><span>🧠 <b>KI-Prüfung vor jedem Trade</b> – das lokale Modell bestätigt, lehnt ab oder passt die Größe an (gilt für beide Strategien)</span></label>
+        <label style="display:flex; align-items:flex-start; gap:8px; font-size:12.5px;"><input type="checkbox" id="setKiVeto" style="margin-top:3px;"><span><b>KI-Prüfung vor jedem Trade</b> – das lokale Modell bestätigt, lehnt ab oder passt die Größe an (gilt für beide Strategien)</span></label>
         <label style="font-size:12.5px; display:flex; align-items:center; gap:8px;">Analysen &amp; Retrospektive erstellen mit
           <select id="setKiProvider"><option value="">Automatisch</option><option value="ollama">Lokal (Ollama)</option></select>
         </label>
@@ -847,13 +852,13 @@
       </div>
     </div>
     <div style="margin:14px 0; border-top:1px solid var(--grid); padding-top:14px;">
-      <div style="font-weight:600; font-size:13px; margin-bottom:8px;">🖥 Dauerbetrieb</div>
+      <div style="font-weight:600; font-size:13px; margin-bottom:8px;">Dauerbetrieb</div>
       <label style="display:flex; align-items:flex-start; gap:8px; font-size:12.5px;"><input type="checkbox" id="setAutostart" style="margin-top:3px;"><span>Mit Windows starten und <b>minimiert im Tray</b> laufen – die Strategien handeln dann durchgehend und der Analyse-Export bleibt lückenlos</span></label>
       <div style="font-size:11.5px; color:var(--muted); margin-top:6px;">Empfohlen, wenn die automatische Analyse zuverlässig Daten auswerten soll: Ohne laufende App entstehen keine Kurse, keine Trades und keine Auswertung.</div>
     </div>
 
     <div style="margin:14px 0; border-top:1px solid var(--grid); padding-top:14px;">
-      <div style="font-weight:600; font-size:13px; margin-bottom:8px;">⬇ Automatische Updates</div>
+      <div style="font-weight:600; font-size:13px; margin-bottom:8px;">Automatische Updates</div>
       <label style="display:flex; align-items:flex-start; gap:8px; font-size:12.5px;"><input type="checkbox" id="setAutoUpdate" checked style="margin-top:3px;"><span>Neue Versionen <b>selbst herunterladen</b> und beim nächsten Beenden einspielen – die App prüft beim Start und danach alle 6 Stunden</span></label>
       <div style="display:flex; gap:8px; align-items:center; margin-top:8px; flex-wrap:wrap;">
         <button class="btn ghost" id="setUpdNowBtn" type="button">Jetzt nach Update suchen</button>
@@ -865,7 +870,7 @@
         unterbrochen wird. Eingespielt wird es erst beim Beenden der App (oder sofort per Knopf). Depot und Einstellungen bleiben erhalten.
       </div>
 
-      <div style="font-weight:600; font-size:13px; margin:14px 0 8px;">🔄 Manueller Check (Notnagel)</div>
+      <div style="font-weight:600; font-size:13px; margin:14px 0 8px;">Manueller Check (Notnagel)</div>
       <div style="display:flex; gap:8px;">
         <input type="text" id="setUpdateRepo" placeholder="nutzer/repo (z. B. wilhelm/markt-dashboard)" style="flex:1;">
         <button class="btn ghost" id="setUpdateBtn" type="button">Nach Update suchen</button>

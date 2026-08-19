@@ -31,7 +31,7 @@
   var LASTBARS = {}; // sym -> zuletzt geladene Intraday-Serie (für den Kursdaten-Export)
   var SIG = {};      // sym -> letzter Signal-/Blocker-Zustand (Live-Monitor)
   var APP_VER = '';
-  var EXPORT_ABDECKUNG = null; // 📚 Archiv-Abdeckung (füllt renderPilot), geht mit in den Analyse-Export
+  var EXPORT_ABDECKUNG = null; // Archiv-Abdeckung (füllt renderPilot), geht mit in den Analyse-Export
   var lastEqPoint = 0;
   var SENT = {}; // Sentiment-Historie je Symbol
 
@@ -82,7 +82,7 @@
     return { byReason: out, total: total };
   }
 
-  /* ================= 🕯️ Schattenbuch (verworfene Trades virtuell weiterverfolgen) =================
+  /* ================= Schattenbuch (verworfene Trades virtuell weiterverfolgen) =================
    * Jeder verworfene Trade mit bekannter Richtung wird als virtueller Schein weitergerechnet.
    * Nach ein paar Tagen steht je Verwerfungsgrund fest: Geld gerettet oder Gewinn verhindert?
    * Ein Filter, der nachweislich nur Gewinne verhindert, verliert sein Argument. */
@@ -181,19 +181,19 @@
       // vorher STILL wirkungslos – jetzt steht es sichtbar am Trade.
       var sK = window.getSettings ? window.getSettings() : {};
       if (sK.kiVeto && !(window.LocalKI && window.LocalKI.model())) {
-        return { go: true, factor: 1, note: ' · 🧠 KI-Prüfung übersprungen: kein lokales Modell eingestellt (nur Ollama kann das Veto)' };
+        return { go: true, factor: 1, note: ' · KI-Prüfung übersprungen: kein lokales Modell eingestellt (nur Ollama kann das Veto)' };
       }
       return { go: true, factor: 1, note: '' };
     }
     var r = await window.LocalKI.decide(ctx);
     if (r.ok) HEALTH.kiOk++; else HEALTH.kiFail++;
-    if (!r.ok) return { go: true, factor: 1, note: ' · 🧠 KI nicht erreichbar (' + (r.msg || '?').slice(0, 40) + ') – ohne Prüfung gehandelt' };
+    if (!r.ok) return { go: true, factor: 1, note: ' · KI nicht erreichbar (' + (r.msg || '?').slice(0, 40) + ') – ohne Prüfung gehandelt' };
     if (r.entscheidung === 'nein') {
       kiLogAdd(ctx.symbol, ctx.richtung, 'Veto', r.begruendung, ctx.modus);
       return { go: false, factor: 0, note: '' };
     }
     kiLogAdd(ctx.symbol, ctx.richtung, 'Ja ×' + r.groesse, r.begruendung, ctx.modus);
-    return { go: true, factor: r.groesse, note: ' · 🧠 KI: ja ×' + r.groesse + ' (' + r.begruendung + ')', approved: true };
+    return { go: true, factor: r.groesse, note: ' · KI: ja ×' + r.groesse + ' (' + r.begruendung + ')', approved: true };
   }
 
   /* ================= Benachrichtigungen & Nachbilden ================= */
@@ -203,11 +203,11 @@
     if (!D || D.notify === false) return;
     try {
       var title = action === 'open'
-        ? '📈 KI-Depot: ' + (trade.dir === 'call' ? 'CALL' : 'PUT') + ' ' + trade.sym + ' eröffnet'
-        : '📉 KI-Depot: ' + (trade.dir === 'call' ? 'CALL' : 'PUT') + ' ' + trade.sym + ' geschlossen';
+        ? 'KI-Depot: ' + (trade.dir === 'call' ? 'CALL' : 'PUT') + ' ' + trade.sym + ' eröffnet'
+        : 'KI-Depot: ' + (trade.dir === 'call' ? 'CALL' : 'PUT') + ' ' + trade.sym + ' geschlossen';
       var body = action === 'open'
         ? 'Basispreis ' + U.nf2.format(trade.strike) + ' · fällig ' + U.d(trade.expiry) + (trade.omega ? ' · Hebel ~' + trade.omega + 'x' : '') + '\nZum Nachbilden: App öffnen → Nachbilden-Button.'
-        : 'P/L ' + U.signTxt(trade.pnl, ' $') + ' (' + (trade.why || '') + ')' + (trade.replicated ? '\n⚠ Du hast diesen Trade nachgebildet → reale Position prüfen/schließen!' : '');
+        : 'P/L ' + U.signTxt(trade.pnl, ' $') + ' (' + (trade.why || '') + ')' + (trade.replicated ? '\nDu hast diesen Trade nachgebildet → reale Position prüfen/schließen!' : '');
       var n = new Notification(title, { body: body, silent: false });
       n.onclick = function () { window.focus(); };
     } catch (e) { /* Benachrichtigungen nicht verfügbar */ }
@@ -432,7 +432,7 @@
 
   var WINDOW_NAMES = { all: 'ganzer Handelstag', open2: '15:30–17:30 Uhr', open4: '15:30–19:30 Uhr', close2: '20–22 Uhr' };
 
-  /* ================= 🛰 Auto-Tuning (empfehlung.json von Claude) ================= */
+  /* ================= Auto-Tuning (empfehlung.json von Claude) ================= */
   var TUNE_ALLOW = {
     mode: ['breakout', 'waves', 'reversion', 'wave', 'orb'],
     interval: ['1m', '5m', '15m', '60m'],
@@ -462,7 +462,7 @@
         if (k === 'period' || k === 'confirmBps' || (k === 'scalpSL' && v !== 'auto')) v = parseInt(v, 10);
         if (TUNE_ALLOW[k].indexOf(v) === -1) return;
         if (D.intraday[k] === v) return;
-        if (!automatikDarf(k)) { gesperrtT.push(HAND_LABEL[k] || k); return; }   // ✋ von Hand gesetzt
+        if (!automatikDarf(k)) { gesperrtT.push(HAND_LABEL[k] || k); return; }   // von Hand gesetzt
         D.intraday[k] = v; applied.push(k + ' → ' + v);
       });
       if (typeof it.channel === 'boolean' && D.intraday.channel !== it.channel) {
@@ -480,7 +480,7 @@
           else gesperrtT.push('Meide-Stunden');
         }
       }
-      if (gesperrtT.length) applied.push('✋ nicht angefasst (von Hand gesetzt): ' + gesperrtT.join(' · '));
+      if (gesperrtT.length) applied.push('nicht angefasst (von Hand gesetzt): ' + gesperrtT.join(' · '));
       D.lastTune = { id: rec.id, at: Date.now(), txt: String(rec.begruendung || '').slice(0, 300), applied: applied };
       if (!D.tuneLog) D.tuneLog = [];
       var closedNow = D.trades.filter(function (t) { return t.status === 'closed' && istMess(t); });
@@ -511,11 +511,11 @@
     var el = document.getElementById('tuneStatus');
     if (!el) return;
     el.textContent = D.lastTune
-      ? '🛰 Auto-Tuning ' + U.dt(D.lastTune.at) + ': ' + (D.lastTune.applied.length ? D.lastTune.applied.join(' · ') : 'geprüft, keine Änderung nötig') + (D.lastTune.txt ? ' — ' + D.lastTune.txt : '')
+      ? 'Auto-Tuning ' + U.dt(D.lastTune.at) + ': ' + (D.lastTune.applied.length ? D.lastTune.applied.join(' · ') : 'geprüft, keine Änderung nötig') + (D.lastTune.txt ? ' — ' + D.lastTune.txt : '')
       : '';
   }
 
-  /* ================= 📈 Signal-Chart: was die Strategie sieht ================= */
+  /* ================= Signal-Chart: was die Strategie sieht ================= */
   var sigChartRunning = false;
   async function runSigChart() {
     if (sigChartRunning) return;
@@ -537,8 +537,8 @@
       if (cfg.mode === 'wave' && cfg.channel !== false) {
         var dgS = Q.degapBarArray(bars);
         chan = Q.trendChannel(dgS);
-        if (chan && !chan.gueltig) { chanFail = ' · 📐 Kanal-Entwurf vorhanden, aber durchgefallen (Güte ' + chan.score + '/100, Berührungen ' + chan.touchUnten + '/' + chan.touchOben + ').'; chan = null; }
-        else if (!chan) chanFail = ' · 📐 Kein Kanal erkennbar – kein Kanal ist ehrlicher als ein erfundener.';
+        if (chan && !chan.gueltig) { chanFail = ' · Kanal-Entwurf vorhanden, aber durchgefallen (Güte ' + chan.score + '/100, Berührungen ' + chan.touchUnten + '/' + chan.touchOben + ').'; chan = null; }
+        else if (!chan) chanFail = ' · Kein Kanal erkennbar – kein Kanal ist ehrlicher als ein erfundener.';
       }
       var t0 = bars[0][0], t1 = bars[bars.length - 1][0];
       var marks = D.trades.filter(function (t) { return t.sym === sym && t.openT >= t0 && t.openT <= t1; });
@@ -547,12 +547,12 @@
       var info = document.getElementById('scInfo');
       info.innerHTML = 'Leitlinie: <b>' + (cfg.lineType === 'vwap' ? 'VWAP' : 'EMA' + cfg.period) + '</b> · Zeitrahmen ' + (cfg.interval || '5m') +
         (chan
-          ? ' · 📐 <b>' + { aufwaerts: 'Aufwärtskanal', abwaerts: 'Abwärtskanal', seitwaerts: 'Seitwärtskorridor' }[chan.typ] +
+          ? ' · <b>' + { aufwaerts: 'Aufwärtskanal', abwaerts: 'Abwärtskanal', seitwaerts: 'Seitwärtskorridor' }[chan.typ] +
             '</b> über ' + chan.N + ' Bars: Position <b>' + Math.round(chan.pos * 100) + ' %</b>, Breite ' + chan.breitePct +
             ' %, Güte <b>' + chan.score + '/100</b>' + (chan.ausbruch ? ' · <b>Ausbruch nach ' + chan.ausbruch + '</b>' : '') +
             ' <span style="color:var(--muted);">(Berührungen ' + chan.touchUnten + '/' + chan.touchOben + ' · Seitenwechsel ' + chan.wechsel +
             ' · Deckung ' + Math.round(chan.deckung * 100) + ' % · Enge ' + chan.enge + (chan.hl ? ' · Linien an Hoch/Tief' : '') + ')</span>'
-          : (chanFail || ' · Kanal nur im 🔄 Umkehr-Setup mit Auslöser Wellental')) +
+          : (chanFail || ' · Kanal nur im Umkehr-Setup mit Auslöser Wellental')) +
         ' · eigene Trades im Bild: <b>' + marks.length + '</b>';
     } catch (e) {
       st.textContent = 'Fehler: ' + (e.message || e);
@@ -616,7 +616,7 @@
     // Kurs
     html += '<path d="' + bars.map(function (b, i) { return (i ? 'L' : 'M') + X(b[0]).toFixed(1) + ' ' + Y(b[1]).toFixed(1); }).join(' ') +
       '" fill="none" stroke="var(--series)" stroke-width="2" stroke-linejoin="round"></path>';
-    // Eigene Trades: Einstieg ▲/▼, Ausstieg ✕
+    // Eigene Trades: Einstieg ▲/▼, Ausstieg ×
     (marks || []).forEach(function (t) {
       var ex = X(t.openT), ey = Y(t.entrySpot || bars[0][1]);
       var col = t.dir === 'call' ? 'var(--up)' : 'var(--down)';
@@ -633,7 +633,7 @@
     svg.__chart = null;
   }
 
-  /* ================= 🧹 Filter-Nutzen: mit vs. ohne Filter ================= */
+  /* ================= Filter-Nutzen: mit vs. ohne Filter ================= */
   var filterRunning = false;
   async function runFilterCheck() {
     if (filterRunning) return;
@@ -672,7 +672,7 @@
       }
       var nutzen = Math.round((a2.summary.retPct - b2.summary.retPct) * 100) / 100;
       out.innerHTML = '<table class="tbl"><tr><th>Variante</th><th>Rendite</th><th>Trades</th><th>Treffer</th><th>Ø je Trade</th><th>Gebühren</th><th>Drawdown</th></tr>' +
-        row('🧹 <b>mit</b> deinen Filtern', a2) + row('🔓 <b>ohne</b> Filter (jedes Signal)', b2) + '</table>' +
+        row('<b>mit</b> deinen Filtern', a2) + row('<b>ohne</b> Filter (jedes Signal)', b2) + '</table>' +
         '<div style="margin-top:8px; font-size:13px;">Filter-Nutzen: <b class="' + U.signCls(nutzen) + '">' + U.signTxt(nutzen, ' Prozentpunkte' ) + '</b> · ' +
         (nutzen > 0 ? 'Die Filter haben in diesem Zeitraum Geld gespart.' : nutzen < 0 ? 'Achtung: Die Filter haben hier Rendite gekostet – prüfen, welcher zu streng ist.' : 'Kein messbarer Unterschied.') + '</div>' +
         '<div style="color:var(--muted); font-size:11.5px; margin-top:6px;">„Ohne Filter" heißt: kein Kosten-Check, kein Trendfilter, kein Kanal, keine 5-Min-Bestätigung, kein Zeitfenster, keine Qualitätsschwelle – nur das reine Einstiegssignal. Gleiche Kosten, gleicher Zeitraum, gleiche Werte.</div>';
@@ -684,7 +684,7 @@
     }
   }
 
-  /* ================= 🩹 Reparatur: verwaiste Trades ================= */
+  /* ================= Reparatur: verwaiste Trades ================= */
   /** Trades, die im Protokoll als "offen" stehen, aber in keiner Position mehr liegen
    *  (z. B. nach einem Absturz, Doppelstart oder Versionswechsel), zurück in die
    *  Positionsverwaltung holen – sonst ist das Kapital gebunden und niemand managt sie. */
@@ -716,7 +716,7 @@
     return adopted + written;
   }
 
-  /* ================= 🚫 Symbol-Sperre (dauerhafte Verlustbringer) ================= */
+  /* ================= Symbol-Sperre (dauerhafte Verlustbringer) ================= */
   /** Wertet je Symbol die geschlossenen Intraday-Trades aus und sperrt klare Verlustbringer. */
   function updateSymBlocks() {
     if (!D || D.intraday.symBlock === false) return;
@@ -746,9 +746,9 @@
     if (!keys.length) { el.innerHTML = '<span style="color:var(--muted); font-size:12px;">Keine gesperrten Werte.</span>'; return; }
     el.innerHTML = keys.map(function (s) {
       var b2 = D.symBlock[s];
-      if (b2.frei) return '<span class="chip" style="margin-right:6px;">✅ ' + U.esc(s) + ' · manuell freigegeben</span>';
-      return '<span class="chip down" style="margin-right:6px;">🚫 ' + U.esc(s) + (b2.n ? ' · ' + b2.n + ' Trades, ' + U.signTxt(b2.pnl, ' $') + ', ' + b2.quote + ' % Treffer' : ' · manuell') +
-        ' <a href="#" data-unblock="' + U.esc(s) + '" style="color:var(--ink-2); font-weight:700; margin-left:4px;">✕</a></span>';
+      if (b2.frei) return '<span class="chip" style="margin-right:6px;">' + U.esc(s) + ' · manuell freigegeben</span>';
+      return '<span class="chip down" style="margin-right:6px;">' + U.esc(s) + (b2.n ? ' · ' + b2.n + ' Trades, ' + U.signTxt(b2.pnl, ' $') + ', ' + b2.quote + ' % Treffer' : ' · manuell') +
+        ' <a href="#" data-unblock="' + U.esc(s) + '" style="color:var(--ink-2); font-weight:700; margin-left:4px;">×</a></span>';
     }).join('');
     el.querySelectorAll('[data-unblock]').forEach(function (a2) {
       a2.addEventListener('click', function (ev) {
@@ -761,13 +761,13 @@
     });
   }
 
-  /* ================= 📡 Live-Signal-Monitor ================= */
+  /* ================= Live-Signal-Monitor ================= */
   function renderSigMonitor() {
     var el = document.getElementById('sigMonitor');
     if (!el) return;
     var syms = Object.keys(SIG);
     if (!syms.length) {
-      el.innerHTML = '<div class="empty"><span class="ico">📡</span>Noch kein Scan gelaufen – der Monitor füllt sich, sobald die Intraday-Strategie aktiv ist und die US-Börse geöffnet hat.</div>';
+      el.innerHTML = '<div class="empty"><span class="ico"></span>Noch kein Scan gelaufen – der Monitor füllt sich, sobald die Intraday-Strategie aktiv ist und die US-Börse geöffnet hat.</div>';
       return;
     }
     syms.sort(function (a2, b2) { return (SIG[b2].score || 0) - (SIG[a2].score || 0); });
@@ -779,14 +779,14 @@
         '<td>' + (g.score != null ? g.score + '/100' : '–') + '</td>' +
         '<td>' + (g.z != null ? g.z : '–') + '</td>' +
         '<td>' + (g.chanPos != null ? Math.round(g.chanPos * 100) + ' % · Güte ' + (g.chanQ != null ? g.chanQ : '–') : '–') + '</td>' +
-        '<td class="' + (g.ok ? 'pos' : '') + '">' + U.esc(g.grund || (g.ok ? '✅ gehandelt' : 'kein Signal')) + '</td>' +
+        '<td class="' + (g.ok ? 'pos' : '') + '">' + U.esc(g.grund || (g.ok ? 'gehandelt' : 'kein Signal')) + '</td>' +
         '<td style="color:var(--muted);">' + (g.t ? new Date(g.t).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }) : '–') + '</td></tr>';
     });
     html += '</table><div style="color:var(--muted); font-size:11.5px; margin-top:6px;">Zeigt für jeden gescannten Wert, was die Strategie zuletzt gesehen hat – und warum sie nicht gehandelt hat. So wird die Geduld-Bilanz nachvollziehbar.</div>';
     el.innerHTML = html;
   }
 
-  /* ================= 🛰 Auto-Tuning-Verlauf & Wirkungs-Ranking ================= */
+  /* ================= Auto-Tuning-Verlauf & Wirkungs-Ranking ================= */
   /** Bewertet jede automatische Änderung: Ø P/L je Intraday-Trade davor vs. danach. */
   function tuneRanking() {
     var log = (D.tuneLog || []).slice(); // neu → alt
@@ -807,11 +807,11 @@
       var vor = windowStats(vorAb, e.at), nach = windowStats(e.at, nachBis);
       var delta = (vor.avg != null && nach.avg != null) ? Math.round((nach.avg - vor.avg) * 100) / 100 : null;
       var urteil, cls;
-      if (nach.n < 5) { urteil = '🟡 zu wenig Daten'; cls = ''; }
-      else if (delta == null) { urteil = nach.avg > 0 ? '🟢 positiv (kein Vergleich)' : '🔴 negativ (kein Vergleich)'; cls = nach.avg > 0 ? 'pos' : 'neg'; }
-      else if (delta > 0.5) { urteil = '🟢 wirkt'; cls = 'pos'; }
-      else if (delta < -0.5) { urteil = '🔴 schadet'; cls = 'neg'; }
-      else { urteil = '⚪ neutral'; cls = ''; }
+      if (nach.n < 5) { urteil = 'zu wenig Daten'; cls = ''; }
+      else if (delta == null) { urteil = nach.avg > 0 ? 'positiv (kein Vergleich)' : 'negativ (kein Vergleich)'; cls = nach.avg > 0 ? 'pos' : 'neg'; }
+      else if (delta > 0.5) { urteil = 'wirkt'; cls = 'pos'; }
+      else if (delta < -0.5) { urteil = 'schadet'; cls = 'neg'; }
+      else { urteil = 'neutral'; cls = ''; }
       out.push({ e: e, vor: vor, nach: nach, delta: delta, urteil: urteil, cls: cls, laufend: i === 0, idx: i });
     }
     // Rang nach Wirkung (nur bewertbare)
@@ -826,7 +826,7 @@
     if (!el) return;
     var rows = tuneRanking();
     if (!rows.length) {
-      el.innerHTML = '<div class="empty"><span class="ico">🛰</span>Noch keine automatischen Anpassungen – sie erscheinen hier, sobald die Automatik eine robuste Verbesserung findet.</div>';
+      el.innerHTML = '<div class="empty"><span class="ico"></span>Noch keine automatischen Anpassungen – sie erscheinen hier, sobald die Automatik eine robuste Verbesserung findet.</div>';
       return;
     }
     var html = '<table class="tbl"><tr><th>Rang</th><th>Wann</th><th>Änderung</th><th>Ø P/L je Trade davor → danach</th><th>Trades danach</th><th>Wirkung</th><th></th></tr>';
@@ -834,7 +834,7 @@
       var e = r.e;
       html += '<tr' + (r.laufend ? ' style="font-weight:600;"' : '') + '>' +
         '<td>' + (r.rang ? '#' + r.rang : '–') + '</td>' +
-        '<td>' + U.dt(e.at) + '<br><span style="color:var(--muted); font-weight:400; font-size:11px;">' + ({ pilot: '🤖 Autopilot', lokal: '🤖 Selbst-Optimierung (alt)', manuell: '👤 manuell übernommen', hand: '✋ von Hand', regime: '🧭 Regime (alt)', farm: '🧬 Farm (alt)', sicherung: '🛡 Sicherung' }[e.quelle] || '🛰 Cloud-Analyse') + (r.laufend ? ' · läuft aktuell' : '') + '</span></td>' +
+        '<td>' + U.dt(e.at) + '<br><span style="color:var(--muted); font-weight:400; font-size:11px;">' + ({ pilot: 'Autopilot', lokal: 'Selbst-Optimierung (alt)', manuell: 'manuell übernommen', hand: 'von Hand', regime: 'Regime (alt)', farm: 'Farm (alt)', sicherung: 'Sicherung' }[e.quelle] || 'Cloud-Analyse') + (r.laufend ? ' · läuft aktuell' : '') + '</span></td>' +
         '<td>' + (e.applied && e.applied.length ? U.esc(e.applied.join(' · ')) : '<span style="color:var(--muted);">keine Feldänderung</span>') +
           (e.txt ? '<div style="color:var(--muted); font-size:11px; margin-top:2px;">' + U.esc(e.txt) + '</div>' : '') + '</td>' +
         '<td>' + (r.vor.avg != null ? U.signTxt(r.vor.avg, ' $') : '–') + ' → ' + (r.nach.avg != null ? '<b class="' + U.signCls(r.nach.avg) + '">' + U.signTxt(r.nach.avg, ' $') + '</b>' : '–') +
@@ -843,7 +843,7 @@
         '<td>' + r.urteil + '</td>' +
         '<td>' + (e.konfigVorher ? '<button class="btn ghost" style="padding:2px 8px; font-size:11px;" data-undo="' + r.idx + '">Rückgängig</button>' : '') + '</td></tr>';
     });
-    html += '</table><div style="color:var(--muted); font-size:11.5px; margin-top:8px;">Bewertet wird der durchschnittliche Gewinn je Intraday-Trade im Zeitraum <b>nach</b> der Änderung gegen den Zeitraum davor. Unter 5 Trades ist keine Aussage möglich (🟡). Der Rang sortiert nach Wirkung – so siehst du, welche Anpassungen wirklich etwas gebracht haben.</div>';
+    html += '</table><div style="color:var(--muted); font-size:11.5px; margin-top:8px;">Bewertet wird der durchschnittliche Gewinn je Intraday-Trade im Zeitraum <b>nach</b> der Änderung gegen den Zeitraum davor. Unter 5 Trades ist keine Aussage möglich (). Der Rang sortiert nach Wirkung – so siehst du, welche Anpassungen wirklich etwas gebracht haben.</div>';
     el.innerHTML = html;
     el.querySelectorAll('[data-undo]').forEach(function (b2) {
       b2.addEventListener('click', function () {
@@ -871,8 +871,8 @@
       st.textContent = 'Noch kein Bericht vorhanden – die automatische Analyse legt ihn im Daten-Ordner an.';
       return;
     }
-    document.getElementById('aiTitle').textContent = '📋 Analyse-Bericht (Stand: ' + U.dt(r.mtime) + ')';
-    document.getElementById('aiBody').innerHTML = U.md(r.body) + '<div class="warn">⚠ Simulation – keine Anlageberatung.</div>';
+    document.getElementById('aiTitle').textContent = 'Analyse-Bericht (Stand: ' + U.dt(r.mtime) + ')';
+    document.getElementById('aiBody').innerHTML = U.md(r.body) + '<div class="warn">Simulation – keine Anlageberatung.</div>';
     window.openModal('aiModalBg');
   }
 
@@ -1153,7 +1153,7 @@
     // Gespiegelte Demo-Position beim Broker ebenfalls schließen
     if (pos.capDealId && window.CapAPI && window.CapAPI.enabled()) {
       window.CapAPI.closePosition(pos.capDealId).then(function (r) {
-        pos.why = (pos.why || '') + ' · 🅲 Demo-Position ' + (r.ok ? 'geschlossen' : 'Schließen fehlgeschlagen (' + r.msg + ') – bitte bei Capital.com prüfen');
+        pos.why = (pos.why || '') + ' · Demo-Position ' + (r.ok ? 'geschlossen' : 'Schließen fehlgeschlagen (' + r.msg + ') – bitte bei Capital.com prüfen');
         save();
       });
     }
@@ -1271,8 +1271,8 @@
    * das bewährte mode-Feld erhalten – so bleiben Backtests, Historie und Kennzahlen
    * vergleichbar, und es gibt keine zweite Rechenlogik, die auseinanderlaufen kann. */
   var SETUPS = {
-    ausbruch: { name: '🎯 Ausbruch', trigger: { kreuzung: 'EMA-Kreuzung', range: 'Eröffnungs-Range' } },
-    umkehr:   { name: '🔄 Umkehr',   trigger: { ueberdehnung: 'Überdehnung', welle: 'Wellental' } }
+    ausbruch: { name: 'Ausbruch', trigger: { kreuzung: 'EMA-Kreuzung', range: 'Eröffnungs-Range' } },
+    umkehr:   { name: 'Umkehr',   trigger: { ueberdehnung: 'Überdehnung', welle: 'Wellental' } }
   };
   function modeFromSetup(setup, trigger, exitStyle) {
     if (setup === 'umkehr') return trigger === 'welle' ? 'wave' : 'reversion';
@@ -1292,13 +1292,13 @@
     var t = SETUPS[s.setup].trigger[s.trigger];
     return SETUPS[s.setup].name + ' · ' + t
       + (s.exitStyle === 'kurz' ? ' · kurz' : '')
-      + (mode === 'wave' && channel ? ' + 📐 Kanal' : '');
+      + (mode === 'wave' && channel ? ' + Kanal' : '');
   }
 
   /** z-Score-Schwelle aus der Bestätigungs-Einstellung (Umkehr-Setup) */
   function zOf(confirmBps) { return confirmBps <= 5 ? 1.5 : confirmBps <= 15 ? 2.0 : 2.5; }
 
-  /* ================= ✋ Hand schlägt Automatik =================
+  /* ================= Hand schlägt Automatik =================
    * Was von Hand eingestellt wurde, bleibt stehen. Vorher schrieben Regime-Automatik,
    * Analyse-Zentrale, Farm und Cloud-Tuning alle in dieselben Felder – im Journal stand
    * am 19.08. sechs Handänderungen um 07:52, eine Stunde später drehte das Regime eine
@@ -1331,10 +1331,10 @@
       el.innerHTML = '<span style="color:var(--muted);">Alle Felder werden von der Automatik gepflegt. Sobald du eines von Hand änderst, gehört es dir.</span>';
       return;
     }
-    el.innerHTML = '<span style="color:var(--ink-2);">✋ <b>Von dir gesetzt</b> – die Automatik lässt diese Felder in Ruhe:</span> ' +
+    el.innerHTML = '<span style="color:var(--ink-2);"><b>Von dir gesetzt</b> – die Automatik lässt diese Felder in Ruhe:</span> ' +
       felder.map(function (f) {
         return '<span class="chip flat" style="margin:2px 4px 2px 0;">' + U.esc(HAND_LABEL[f] || f) +
-          ' <a href="#" data-frei="' + U.esc(f) + '" title="wieder von der Automatik pflegen lassen" style="font-weight:700; margin-left:3px;">✕</a></span>';
+          ' <a href="#" data-frei="' + U.esc(f) + '" title="wieder von der Automatik pflegen lassen" style="font-weight:700; margin-left:3px;">×</a></span>';
       }).join('') +
       ' <a href="#" data-frei="*" style="color:var(--muted);">alle freigeben</a>';
     el.querySelectorAll('[data-frei]').forEach(function (a) {
@@ -1363,7 +1363,7 @@
     }
     if (c.mode === 'waves') {
       if (c.exitStyle === 'blitz') {
-        // ⚡ Blitz: Daytrade-These "langes Halten ist Gift" – raus nach spätestens 3 Minuten,
+        // Blitz: Daytrade-These "langes Halten ist Gift" – raus nach spätestens 3 Minuten,
         // vorher schon bei der ersten Gegenbar oder der EMA9-Rückkreuzung. Kleine Gewinne,
         // viele Versuche; der Hebel kommt erst, wenn die Quote stimmt.
         return {
@@ -1416,6 +1416,12 @@
       url = 'https://query1.finance.yahoo.com/v8/finance/chart/' + encodeURIComponent(sym) + '?range=' + (btMode ? ic.btRange : ic.range) + '&interval=' + interval;
     }
     var res = await window.api.fetchText(url);
+    // Yahoo drosselt bei ~200 Anfragen in Folge gern mit 429 - einmal kurz warten und
+    // wiederholen rettet das Symbol, statt es still aus der Messbasis zu werfen.
+    if (!res.ok && res.status === 429) {
+      await new Promise(function (r429) { setTimeout(r429, 5000); });
+      res = await window.api.fetchText(url);
+    }
     if (!res.ok) return null;
     try {
       var r = JSON.parse(res.body).chart.result[0];
@@ -1472,7 +1478,7 @@
         if (f && f.series) {
           HEALTH.fetchOk++;
           LASTBARS[syms[fi]] = f.series.slice(-420);
-          // 📚 Jeder Scan füttert das Kursarchiv – so wächst die Messbasis mit jedem Handelstag,
+          // Jeder Scan füttert das Kursarchiv – so wächst die Messbasis mit jedem Handelstag,
           // statt für immer an Yahoos Rückblick-Fenster (5 Tage auf 1m) zu kleben.
           if (window.Archiv) window.Archiv.fuege(cfg.interval || '5m', syms[fi], f.series);
         }
@@ -1542,13 +1548,13 @@
           } else if (xm === 'target') {
             if ((open.dir === 'call' && sig.above) || (open.dir === 'put' && !sig.above)) why = 'Ziel erreicht: Rückkehr zur Leitlinie';
           } else if (xm === 'blitz') {
-            // ⚡ Blitz-Ausstieg: erste abgeschlossene Gegenbar ODER Rückkreuzung der schnellen EMA9.
+            // Blitz-Ausstieg: erste abgeschlossene Gegenbar ODER Rückkreuzung der schnellen EMA9.
             // sigBars enthält nur fertige Bars, die Sonderbehandlung von früher entfällt damit.
             var b1 = sigBars.length >= 2 ? sigBars[sigBars.length - 1][1] : null;   // letzter abgeschlossener Bar
             var b0 = sigBars.length >= 2 ? sigBars[sigBars.length - 2][1] : null;
             var sig9 = Q.signalCross(sigBars.slice(-60), 'ema', 9, 0);
-            if (b1 != null && ((open.dir === 'call' && b1 < b0) || (open.dir === 'put' && b1 > b0))) why = '⚡ Blitz: Gegenbar – sofort raus';
-            else if ((open.dir === 'call' && !sig9.above) || (open.dir === 'put' && sig9.above)) why = '⚡ Blitz: EMA9-Rückkreuzung';
+            if (b1 != null && ((open.dir === 'call' && b1 < b0) || (open.dir === 'put' && b1 > b0))) why = 'Blitz: Gegenbar – sofort raus';
+            else if ((open.dir === 'call' && !sig9.above) || (open.dir === 'put' && sig9.above)) why = 'Blitz: EMA9-Rückkreuzung';
           } else if (xm === 'recross') {
             if ((open.dir === 'call' && !sig.above) || (open.dir === 'put' && sig.above)) why = 'EMA-Rückkreuzung – Welle zu Ende';
           } else if ((open.dir === 'call' && sig.crossed === 'down') || (open.dir === 'put' && sig.crossed === 'up')) {
@@ -1681,7 +1687,7 @@
           ec = Q.edgeCheck(closes5, (mp.maxHoldMin || 60) / barMin, roundTrip, omegaPre, 1.5);
         }
         if (!ec.ok) { patienceAdd('Kosten-Check: Bewegung deckt Kosten nicht', sym); schattenNeu('Kosten-Check', sym, dir, spot, sigBars, mp, cfg, now); continue; }
-        // 🧠 Lokale KI als letzte Prüfinstanz (Veto/Boost)
+        // Lokale KI als letzte Prüfinstanz (Veto/Boost)
         var trendUp = (function () { var tc2 = sigBars.slice(-240).map(function (b) { return b[1]; }); if (tc2.length < 100) return '?'; var e2 = Q.emaSeries(tc2, 100); return sigSpot > e2[e2.length - 1] ? 'aufwärts' : 'abwärts'; })();
         var ki = await kiCheck({
           symbol: sym, richtung: dir === 'call' ? 'LONG (Call)' : 'SHORT (Put)', modus: cfg.mode, zeitrahmen: cfg.interval,
@@ -1727,12 +1733,12 @@
           sl: slT, tp: mp.tp, trail: mp.trail || 0, maxHoldMin: mp.maxHoldMin || 0, exitMode: mp.exitMode, peak: ask, chN: chN || 0, chan: chRef,
           sources: ki.approved ? { intraday: dir === 'call' ? 1 : -1, ki: dir === 'call' ? 1 : -1 } : { intraday: dir === 'call' ? 1 : -1 },
           reason: ki.note.replace(/^ · /, '') + (ki.note ? ' · ' : '') + (isOrb
-              ? '🚀 ORB: Ausbruch aus der Eröffnungs-Range (' + U.nf2.format(orbInfo.lo) + '–' + U.nf2.format(orbInfo.hi) + ', 30 Min) nach ' + (dir === 'call' ? 'OBEN' : 'UNTEN') + ' bei ' + U.nf2.format(spot) + '. '
+              ? 'ORB: Ausbruch aus der Eröffnungs-Range (' + U.nf2.format(orbInfo.lo) + '–' + U.nf2.format(orbInfo.hi) + ', 30 Min) nach ' + (dir === 'call' ? 'OBEN' : 'UNTEN') + ' bei ' + U.nf2.format(spot) + '. '
               : isWave
-              ? '🏄 Wellenreiter: Tal erkannt (z ' + revZ + ', ' + barMin + '-Min) bei ' + U.nf2.format(spot) + ' · Wellen-Score ' + waveQ.score + '/100 (Rhythmus ' + waveQ.parts.rhythmus + ' · Amplitude ' + waveQ.parts.amplitude + ' · Tiefe ' + waveQ.parts.tiefe + ' · Umkehr ' + waveQ.parts.umkehr + ' · Volumen ' + waveQ.parts.volumen + ')' + (chE ? ' · 📐 Kanal (' + chN + ' Bars): Position ' + Math.round(chE.pos * 100) + ' %, Steigung ' + chE.steigung + ', Breite ' + chE.breitePct + ' %' : '') + '. '
+              ? 'Wellenreiter: Tal erkannt (z ' + revZ + ', ' + barMin + '-Min) bei ' + U.nf2.format(spot) + ' · Wellen-Score ' + waveQ.score + '/100 (Rhythmus ' + waveQ.parts.rhythmus + ' · Amplitude ' + waveQ.parts.amplitude + ' · Tiefe ' + waveQ.parts.tiefe + ' · Umkehr ' + waveQ.parts.umkehr + ' · Volumen ' + waveQ.parts.volumen + ')' + (chE ? ' · Kanal (' + chN + ' Bars): Position ' + Math.round(chE.pos * 100) + ' %, Steigung ' + chE.steigung + ', Breite ' + chE.breitePct + ' %' : '') + '. '
               : isRev
-              ? '🔄 Rücksetzer: Kurs überdehnt ' + (dir === 'call' ? 'UNTER' : 'ÜBER') + ' der ' + (cfg.lineType === 'vwap' ? 'VWAP' : 'EMA' + cfg.period) + ' (z-Score ' + revZ + ', ' + barMin + '-Min-Chart) bei ' + U.nf2.format(spot) + '. '
-              : (isWaves ? '🌊 Wellen-Scalp: ' : 'Intraday: ') + 'Kurs kreuzt ' + (cfg.lineType === 'vwap' ? 'VWAP' : 'EMA' + cfg.period) + ' (' + barMin + '-Min-Chart) nach ' + (dir === 'call' ? 'OBEN' : 'UNTEN') + ' bei ' + U.nf2.format(spot) + ' (Abstand ' + (sig.distBps / 100).toFixed(2) + ' %). ') +
+              ? 'Rücksetzer: Kurs überdehnt ' + (dir === 'call' ? 'UNTER' : 'ÜBER') + ' der ' + (cfg.lineType === 'vwap' ? 'VWAP' : 'EMA' + cfg.period) + ' (z-Score ' + revZ + ', ' + barMin + '-Min-Chart) bei ' + U.nf2.format(spot) + '. '
+              : (isWaves ? 'Wellen-Scalp: ' : 'Intraday: ') + 'Kurs kreuzt ' + (cfg.lineType === 'vwap' ? 'VWAP' : 'EMA' + cfg.period) + ' (' + barMin + '-Min-Chart) nach ' + (dir === 'call' ? 'OBEN' : 'UNTEN') + ' bei ' + U.nf2.format(spot) + ' (Abstand ' + (sig.distBps / 100).toFixed(2) + ' %). ') +
             'Schein: ' + prof.name + ', Hebel ~' + omega.toFixed(1) + 'x, Aufgeld ' + aufgeld.toFixed(1) + ' %, ' +
             'Tagesumsatz ~' + Math.round(fd.dollarVolDay / 1e6) + ' Mio $ · Kosten-Check: Bewegung ' + ec.havePct + ' % vs. nötig ' + ec.needPct + ' %',
           scenario: isOrb
@@ -1762,13 +1768,13 @@
             var sizeC = Math.max(0.1, Math.round((equityNow() * cfg.budgetPct * 5 / spotNow) * 10) / 10);
             window.CapAPI.openPosition(tr.sym, tr.dir, sizeC, slLvl, tpLvl).then(function (r) {
               if (r.ok) { HEALTH.capOk++; } else { HEALTH.capFail++; }
-              if (r.ok) { tr.capDealId = r.dealId; tr.reason += ' · 🅲 Demo-Konto: ' + (tr.dir === 'call' ? 'BUY' : 'SELL') + ' ' + sizeC + '× ' + (r.epic || tr.sym) + ' (SL ' + U.nf2.format(slLvl) + ')'; }
-              else { tr.reason += ' · 🅲 Demo-Order fehlgeschlagen: ' + (r.msg || '?'); }
+              if (r.ok) { tr.capDealId = r.dealId; tr.reason += ' · Demo-Konto: ' + (tr.dir === 'call' ? 'BUY' : 'SELL') + ' ' + sizeC + '× ' + (r.epic || tr.sym) + ' (SL ' + U.nf2.format(slLvl) + ')'; }
+              else { tr.reason += ' · Demo-Order fehlgeschlagen: ' + (r.msg || '?'); }
               save(); render();
             });
           })(trade, spot);
         }
-        SIG[sym] = { t: now, spot: spot, ok: true, grund: '✅ Trade eröffnet (' + (dir === 'call' ? 'CALL' : 'PUT') + ')', score: waveQ ? waveQ.score : null, z: revZ, chanPos: chE ? chE.pos : null, chanSteep: chE ? chE.steigung : null };
+        SIG[sym] = { t: now, spot: spot, ok: true, grund: 'Trade eröffnet (' + (dir === 'call' ? 'CALL' : 'PUT') + ')', score: waveQ ? waveQ.score : null, z: revZ, chanPos: chE ? chE.pos : null, chanSteep: chE ? chE.steigung : null };
         D.intradayCooldown[sym] = now;
         D.intradayCount++;
       }
@@ -1812,7 +1818,7 @@
     if (mn) {
       var altN = D.trades.filter(function (t) { return t.legacy; }).length;
       mn.innerHTML = altN
-        ? '📏 Messschnitt am ' + U.dt(D.messStart) + ': <b>' + altN + ' ältere Trades</b> bleiben im Protokoll, zählen aber in Statistik, Wirkungs-Ranking und Auswertung nicht mehr mit – sie stammen aus der Zeit des Buchungsfehlers und würden jede Messung verfälschen.'
+        ? 'Messschnitt am ' + U.dt(D.messStart) + ': <b>' + altN + ' ältere Trades</b> bleiben im Protokoll, zählen aber in Statistik, Wirkungs-Ranking und Auswertung nicht mehr mit – sie stammen aus der Zeit des Buchungsfehlers und würden jede Messung verfälschen.'
         : '';
     }
 
@@ -1860,7 +1866,7 @@
     if (cw && window.Cal) {
       var evs = window.Cal.within24h();
       cw.innerHTML = evs.length
-        ? '<div class="simnote" style="color:var(--down); font-weight:600;">🔴 ' + evs.map(function (e) {
+        ? '<div class="simnote" style="color:var(--down); font-weight:600;">' + evs.map(function (e) {
             return e.name + ' (' + e.dt.toLocaleString('de-DE', { weekday: 'short', hour: '2-digit', minute: '2-digit' }) + ' Uhr)';
           }).join(' · ') + ' – erhöhte Schwankungen möglich.</div>'
         : '';
@@ -1873,7 +1879,7 @@
       var dayPct = D.dayStartEq ? (eq / D.dayStartEq - 1) * 100 : 0;
       var expo = eq > 0 ? (eq - D.cash) / eq * 100 : 0;
       var co = canOpen(eq);
-      rs.textContent = 'Heute: ' + U.signTxt(dayPct, ' %') + ' · In Scheinen: ' + Math.round(expo) + ' % · Positionen: ' + D.positions.length + '/' + ((D.risk && D.risk.maxPos) || 8) + (co.ok ? '' : ' · ⛔ ' + co.why);
+      rs.textContent = 'Heute: ' + U.signTxt(dayPct, ' %') + ' · In Scheinen: ' + Math.round(expo) + ' % · Positionen: ' + D.positions.length + '/' + ((D.risk && D.risk.maxPos) || 8) + (co.ok ? '' : ' · ' + co.why);
       rb.textContent = co.ok ? 'ok' : 'Stopp';
       rb.className = 'state ' + (co.ok ? 'on' : 'off');
     }
@@ -1894,7 +1900,7 @@
         var omegaNow = Q.warrantOmega(p.dir, wobj, spot, now);
         var aufgeldNow = Q.warrantAufgeld(p.dir, wobj, spot, now);
         var ret = bid / p.entry - 1;
-        ph += '<tr><td><b>' + U.esc(p.sym) + '</b>' + (p.strategy === 'intraday' ? ' <span title="Intraday-Strategie">⚡</span>' : '') + '</td>' +
+        ph += '<tr><td><b>' + U.esc(p.sym) + '</b>' + (p.strategy === 'intraday' ? ' <span title="Intraday-Strategie"></span>' : '') + '</td>' +
           '<td><span class="badge ' + p.dir + '">' + (p.dir === 'call' ? 'CALL' : 'PUT') + '</span></td>' +
           '<td>' + U.nf2.format(p.strike) + '</td>' +
           '<td>' + U.d(p.expiry) + '</td>' +
@@ -1904,17 +1910,17 @@
           '<td>' + U.nf2.format(p.entry) + ' $</td>' +
           '<td>' + U.nf2.format(bid) + ' $</td>' +
           '<td class="' + U.signCls(ret) + '">' + U.signTxt(ret * 100, ' %') + '</td>' +
-          '<td style="white-space:nowrap;"><button class="btn ghost" style="padding:2px 8px; font-size:11px;" data-ticket="' + p.id + '" title="Order-Daten zum Nachbilden">📋 Nachbilden</button> ' +
+          '<td style="white-space:nowrap;"><button class="btn ghost" style="padding:2px 8px; font-size:11px;" data-ticket="' + p.id + '" title="Order-Daten zum Nachbilden">Nachbilden</button> ' +
           '<button class="btn ghost" style="padding:2px 8px; font-size:11px;" data-closepos="' + p.id + '">Schließen</button></td></tr>';
       });
-      ph += '</table><div style="color:var(--muted); font-size:11px; margin-top:6px;">Stunden-Strategie: SL −40 % / TP +80 %, Zeit-Exit 10 Tage vor Fälligkeit. ⚡ Intraday: SL −25 % / TP +35 %, Glattstellung zum Tagesschluss. Bezugsverhältnis 0,1 · Spread 2 % · Ordergebühr je Kauf/Verkauf simuliert. Hebel = Omega (Maus über den Wert zeigt das aktuelle Aufgeld).</div>';
+      ph += '</table><div style="color:var(--muted); font-size:11px; margin-top:6px;">Stunden-Strategie: SL −40 % / TP +80 %, Zeit-Exit 10 Tage vor Fälligkeit. Intraday: SL −25 % / TP +35 %, Glattstellung zum Tagesschluss. Bezugsverhältnis 0,1 · Spread 2 % · Ordergebühr je Kauf/Verkauf simuliert. Hebel = Omega (Maus über den Wert zeigt das aktuelle Aufgeld).</div>';
     } else {
-      ph = '<div class="empty"><span class="ico">💼</span>Keine offenen Positionen. Unter „🎯 Strategien“ den Lauf starten oder auf den Stunden-Takt warten.</div>';
+      ph = '<div class="empty"><span class="ico"></span>Keine offenen Positionen. Unter „Strategien“ den Lauf starten oder auf den Stunden-Takt warten.</div>';
     }
     if (D.repairNote && Date.now() - D.repairNote.at < 7 * 86400000) {
       var rn = D.repairNote;
       ph = '<div style="border:1px solid var(--border); border-left:3px solid var(--series2); border-radius:8px; padding:8px 12px; margin-bottom:10px; font-size:12.5px;">' +
-        '🩹 <b>Buchhaltung repariert</b> (' + U.dt(rn.at) + '): ' +
+        '<b>Buchhaltung repariert</b> (' + U.dt(rn.at) + '): ' +
         (rn.adopted ? rn.adopted + ' verwaiste Position(en) zurückgeholt – sie werden ab sofort wieder normal überwacht und nach den Exit-Regeln geschlossen. ' : '') +
         (rn.written ? rn.written + ' unvollständige(r) Datensatz/Datensätze abgeschrieben. ' : '') +
         '<span style="color:var(--muted);">Ursache: Trades standen im Protokoll als „offen", lagen aber in keiner Position mehr (Absturz, Doppelstart oder Versionswechsel).</span></div>' + ph;
@@ -1937,8 +1943,8 @@
       { k: 'news', n: 'News-Sentiment', weighted: true },
       { k: 'tech', n: 'Technik', weighted: true },
       { k: 'elliott', n: 'Elliott-Wellen', weighted: true },
-      { k: 'maIntraday', n: '⚡ Intraday-MA (eigene Strategie)', weighted: false },
-      { k: 'ki', n: '🧠 KI-Prüfung (von der KI bestätigte Trades)', weighted: false }
+      { k: 'maIntraday', n: 'Intraday-MA (eigene Strategie)', weighted: false },
+      { k: 'ki', n: 'KI-Prüfung (von der KI bestätigte Trades)', weighted: false }
     ];
     srcRows.forEach(function (row) {
       var s = D.stats[row.k] || { r: 0, w: 0 }, tot = s.r + s.w;
@@ -1969,8 +1975,8 @@
           '<span class="twhen">' + U.dt(t.openT) + '</span>' +
           '<span class="tsym">' + U.esc(t.sym) + '</span>' +
           '<span class="badge ' + t.dir + '">' + (t.dir === 'call' ? 'CALL' : 'PUT') + '</span>' +
-          (t.strategy === 'intraday' ? '<span class="badge src">⚡ Intraday</span>' : '<span class="badge src">🧠 Stunden</span>') +
-          (t.replicated ? '<span class="badge src" title="Als real nachgebildet markiert">📌 nachgebildet</span>' : '') +
+          (t.strategy === 'intraday' ? '<span class="badge src">Intraday</span>' : '<span class="badge src">Stunden</span>') +
+          (t.replicated ? '<span class="badge src" title="Als real nachgebildet markiert">nachgebildet</span>' : '') +
           plBadge +
         '</div>' +
         '<div class="tmeta">' + t.qty + ' Stk · Basispreis ' + U.nf2.format(t.strike) + ' · fällig ' + U.d(t.expiry) +
@@ -1980,7 +1986,7 @@
           '<div class="why">' + U.esc(t.scenario || '') + '</div></details>' +
         '</div>';
     });
-    document.getElementById('tradeLog').innerHTML = tl || '<div class="empty"><span class="ico">🧾</span>' + (D.trades.length ? 'Keine Trades in diesem Filter.' : 'Noch keine Trades – sie erscheinen hier, sobald eine Strategie handelt.') + '</div>';
+    document.getElementById('tradeLog').innerHTML = tl || '<div class="empty"><span class="ico"></span>' + (D.trades.length ? 'Keine Trades in diesem Filter.' : 'Noch keine Trades – sie erscheinen hier, sobald eine Strategie handelt.') + '</div>';
     // Filter-Pills mit Trefferzahl
     var counts = { all: D.trades.length, hourly: 0, intraday: 0, open: 0, replicated: 0 };
     D.trades.forEach(function (t) {
@@ -2087,7 +2093,7 @@
         if (resI.error) { st.textContent = resI.error; return; }
         st.textContent = '';
         var profN = (Q.PROFILES[D.intraday.profile] || Q.PROFILES.atm21).name;
-        var modeN = D.intraday.mode === 'waves' ? '🌊 Wellen-Scalping' : '🎯 Ausbrüche';
+        var modeN = D.intraday.mode === 'waves' ? 'Wellen-Scalping' : 'Ausbrüche';
         renderBtResult(resI, modeN + ' · EMA' + D.intraday.period + ' · ' + iv0 + ' · ' + profN +
           ' · Gebühr ' + U.nf2.format(D.intraday.orderFee) + ' $/Order · Ø Haltedauer ' + resI.summary.avgHoldMin + ' Min · Gebühren gesamt ' + U.nf2.format(resI.summary.feesTotal || 0) + ' $');
       } catch (eI) {
@@ -2117,7 +2123,7 @@
           (Q.PROFILES[D.intraday.profile] || Q.PROFILES.atm21).name + ', Gebühr ' + U.nf2.format(D.intraday.orderFee) + ' $/Order). Hinweis: 60-Min nutzt ~3 Monate, 5/15-Min ~1 Monat Historie.</div>';
         html += '<table class="tbl"><tr><th>Zeitrahmen</th><th>Rendite</th><th>Trades</th><th>Trefferquote</th><th>Ø Haltedauer</th><th>Gebühren</th><th>Max. Drawdown</th></tr>';
         rows.forEach(function (r0) {
-          html += '<tr' + (r0 === best ? ' style="font-weight:600;"' : '') + '><td>' + r0.iv + (r0 === best ? ' 🏆' : '') + '</td>' +
+          html += '<tr' + (r0 === best ? ' style="font-weight:600;"' : '') + '><td>' + r0.iv + (r0 === best ? ' ' : '') + '</td>' +
             '<td class="' + U.signCls(r0.s.retPct) + '">' + U.signTxt(r0.s.retPct, ' %') + '</td>' +
             '<td>' + r0.s.nTrades + '</td><td>' + r0.s.winRate + ' %</td><td>' + r0.s.avgHoldMin + ' Min</td>' +
             '<td>' + U.nf2.format(r0.s.feesTotal || 0) + ' $</td><td>−' + r0.s.maxDrawdownPct + ' %</td></tr>';
@@ -2194,7 +2200,7 @@
     // Robustheit (Bootstrap)
     if (res.bootstrap) {
       var bs = res.bootstrap;
-      html += '<div style="font-size:12px; color:var(--ink-2); margin-top:10px;">🎲 Robustheit (400 Neuziehungen der Trades): Endkapital-Bandbreite ' +
+      html += '<div style="font-size:12px; color:var(--ink-2); margin-top:10px;">Robustheit (400 Neuziehungen der Trades): Endkapital-Bandbreite ' +
         '<b>' + U.nf0.format(bs.p5) + ' $</b> (5 %) · <b>' + U.nf0.format(bs.p50) + ' $</b> (Median) · <b>' + U.nf0.format(bs.p95) + ' $</b> (95 %) · ' +
         'Verlust-Wahrscheinlichkeit <b class="' + (bs.lossProb > 50 ? 'neg' : '') + '">' + bs.lossProb + ' %</b></div>';
     }
@@ -2245,7 +2251,7 @@
           '<td>' + tr.dir.toUpperCase() + '</td><td>' + holdTxt + '</td>' +
           '<td class="' + U.signCls(tr.pnl) + '">' + U.signTxt(tr.pnl, ' $') + '</td><td>' + U.esc(tr.why || '') + '</td></tr>';
       });
-      html += '</table></div><button class="btn ghost" id="btCsvBtn" style="margin-top:8px; font-size:12px;">⬇ Backtest-Trades als CSV</button></details>';
+      html += '</table></div><button class="btn ghost" id="btCsvBtn" style="margin-top:8px; font-size:12px;">Backtest-Trades als CSV</button></details>';
     }
     document.getElementById('btResult').innerHTML = html;
     var series = [{ name: 'Strategie', short: 'Strat', color: 'var(--series)', pts: res.equity }];
@@ -2453,28 +2459,28 @@
     }).join('');
     el.innerHTML =
       '<div style="display:flex; gap:16px; flex-wrap:wrap; margin-bottom:8px; font-size:12.5px;">' +
-      '<span>✅ Ausgeführte Intraday-Trades: <b>' + taken + '</b></span>' +
-      '<span>🧘 Bewusst verworfen: <b>' + agg.total + '</b></span>' +
+      '<span>Ausgeführte Intraday-Trades: <b>' + taken + '</b></span>' +
+      '<span>Bewusst verworfen: <b>' + agg.total + '</b></span>' +
       (agg.total + taken > 0 ? '<span>Geduld-Quote: <b>' + Math.round(agg.total / (agg.total + taken) * 100) + ' %</b></span>' : '') +
       '</div>' + rows + renderSchattenHtml();
   }
 
-  /** 🕯️ Schattenbuch-Bilanz: Was wäre aus den verworfenen Trades geworden? */
+  /** Schattenbuch-Bilanz: Was wäre aus den verworfenen Trades geworden? */
   function renderSchattenHtml() {
     var st = D.schattenStat || {};
     var gr = Object.keys(st).sort(function (a, b) { return st[b].n - st[a].n; });
     var offen = (D.schatten || []).filter(function (x) { return x.status === 'open'; }).length;
     if (!gr.length && !offen) return '';
     var h = '<div style="margin-top:12px; border-top:1px solid var(--line); padding-top:8px;">' +
-      '<div style="font-weight:700; margin-bottom:4px;">🕯️ Schattenbuch – was aus den verworfenen Trades geworden wäre</div>' +
+      '<div style="font-weight:700; margin-bottom:4px;">Schattenbuch – was aus den verworfenen Trades geworden wäre</div>' +
       '<div style="color:var(--muted); font-size:11.5px; margin-bottom:6px;">Jeder verworfene Trade läuft virtuell weiter (gleiche Stop-/Ausstiegsregeln). ' +
       '„Gerettet“ = der Filter hat einen Verlust verhindert, „verhindert“ = er hat einen Gewinn gekostet (±1 % Totzone). Simulation, keine Anlageberatung.</div>';
     if (!gr.length) h += '<div style="color:var(--muted); font-size:12px;">' + offen + ' Schatten laufen – noch keiner abgeschlossen.</div>';
     gr.forEach(function (g3) {
       var x = st[g3];
       var avg = x.n ? Math.round(x.sumPct / x.n * 10) / 10 : 0;
-      var urteil = x.n < 5 ? '⏳ zu früh für ein Urteil'
-        : (x.gerettet > x.verhindert * 1.5 ? '🟢 rettet Geld' : (x.verhindert > x.gerettet * 1.5 ? '🔴 verhindert eher Gewinne' : '🟡 unentschieden'));
+      var urteil = x.n < 5 ? 'zu früh für ein Urteil'
+        : (x.gerettet > x.verhindert * 1.5 ? 'rettet Geld' : (x.verhindert > x.gerettet * 1.5 ? 'verhindert eher Gewinne' : 'unentschieden'));
       h += '<div class="patrow"><span>' + U.esc(g3) + '</span>' +
         '<span style="color:var(--muted);">' + x.n + ' Schatten · Ø ' + U.signTxt(avg, ' %') + ' · gerettet ' + x.gerettet + ' · verhindert ' + x.verhindert + '</span>' +
         '<b>' + urteil + '</b></div>';
@@ -2514,7 +2520,7 @@
     lines.push('## Strategien');
     ['hourly', 'intraday'].forEach(function (k) {
       var a = d.agg[k];
-      if (a.n) lines.push('- ' + (k === 'hourly' ? '🧠 Stunden-Strategie' : '⚡ Intraday') + ': ' + a.n + ' Trades, ' + Math.round(a.w / a.n * 100) + ' % Treffer, P/L ' + U.signTxt(a.pnl, ' $'));
+      if (a.n) lines.push('- ' + (k === 'hourly' ? 'Stunden-Strategie' : 'Intraday') + ': ' + a.n + ' Trades, ' + Math.round(a.w / a.n * 100) + ' % Treffer, P/L ' + U.signTxt(a.pnl, ' $'));
     });
     lines.push('## Exit-Gründe (was beendet Trades – und mit welchem Ergebnis?)');
     Object.keys(d.byWhy).forEach(function (k) {
@@ -2556,25 +2562,25 @@
       body = await window.LLM.ask('Du bist Trading-Coach für ein SIMULIERTES Optionsschein-Depot. Erstelle auf DEUTSCH eine ehrliche Retrospektive (Markdown, ##-Überschriften): Kurzfazit, Was lief gut, Was lief schlecht, Muster in den Daten, 3-5 konkrete Empfehlungen (Gewichte/Modus/Zeitrahmen/Risiko). Nutze NUR die Daten, erfinde nichts, nenne Zahlen. Ende: Hinweis Simulation/keine Anlageberatung.\n\nDATEN:\n' + JSON.stringify(d), 1800) || '';
       if (!body) body = '**KI-Anfrage fehlgeschlagen** – regelbasierte Auswertung:\n\n' + retroRules(d);
     } else {
-      body = retroRules(d) + '\n\n*Tipp: Mit der lokalen KI (Ollama, ⚙ Einstellungen) schreibt ein Sprachmodell die Retrospektive ausführlicher – ohne API-Kosten.*';
+      body = retroRules(d) + '\n\n*Tipp: Mit der lokalen KI (Ollama, Einstellungen) schreibt ein Sprachmodell die Retrospektive ausführlicher – ohne API-Kosten.*';
     }
     st.textContent = '';
-    document.getElementById('aiTitle').textContent = '🧠 KI-Retrospektive (' + d.closedN + ' Trades)';
+    document.getElementById('aiTitle').textContent = 'KI-Retrospektive (' + d.closedN + ' Trades)';
     // Lernschleife: konkrete Regel-Vorschläge für die KI-Prüfung
     var sugs = kiSuggestions();
     var sugHtml = '';
     if (sugs.length) {
       sugHtml = '<div style="margin-top:14px; padding:10px 12px; border:1px solid var(--grid); border-radius:10px;">' +
-        '<div style="font-weight:600; font-size:13px; margin-bottom:6px;">🔁 Lernschleife – Regel-Vorschläge aus den letzten 14 Tagen:</div>' +
+        '<div style="font-weight:600; font-size:13px; margin-bottom:6px;">Lernschleife – Regel-Vorschläge aus den letzten 14 Tagen:</div>' +
         '<ul style="margin:0 0 8px 18px; font-size:12.5px;">' + sugs.map(function (s) { return '<li>' + U.esc(s) + '</li>'; }).join('') + '</ul>' +
         '<button class="btn" id="kiSugBtn">→ In meine KI-Regeln übernehmen</button> <span id="kiSugStatus" style="font-size:12px; color:var(--muted);"></span></div>';
     }
-    document.getElementById('aiBody').innerHTML = U.md(body) + sugHtml + '<div class="warn">⚠ Simulation – keine Anlageberatung.</div>';
+    document.getElementById('aiBody').innerHTML = U.md(body) + sugHtml + '<div class="warn">Simulation – keine Anlageberatung.</div>';
     window.openModal('aiModalBg');
     var sb = document.getElementById('kiSugBtn');
     if (sb) sb.addEventListener('click', function () {
       var added = window.appendKiRules ? window.appendKiRules(sugs) : 0;
-      document.getElementById('kiSugStatus').textContent = added ? '✅ ' + added + ' Regel(n) übernommen – gelten ab dem nächsten Trade.' : 'Alle Vorschläge sind schon in deinen Regeln.';
+      document.getElementById('kiSugStatus').textContent = added ? '' + added + ' Regel(n) übernommen – gelten ab dem nächsten Trade.' : 'Alle Vorschläge sind schon in deinen Regeln.';
     });
   }
 
@@ -2614,19 +2620,19 @@
     var kw = (function (dt) { var d1 = new Date(Date.UTC(dt.getFullYear(), dt.getMonth(), dt.getDate())); var dayNum = d1.getUTCDay() || 7; d1.setUTCDate(d1.getUTCDate() + 4 - dayNum); var y0 = new Date(Date.UTC(d1.getUTCFullYear(), 0, 1)); return Math.ceil(((d1 - y0) / 86400000 + 1) / 7); })(new Date());
 
     var lines = [];
-    lines.push('## 📄 Wochenreport KW ' + kw + ' (' + new Date(weekAgo).toLocaleDateString('de-DE') + ' – ' + new Date(now).toLocaleDateString('de-DE') + ')');
+    lines.push('## Wochenreport KW ' + kw + ' (' + new Date(weekAgo).toLocaleDateString('de-DE') + ' – ' + new Date(now).toLocaleDateString('de-DE') + ')');
     lines.push('*' + KOSTOLANY[kw % KOSTOLANY.length] + ' – André Kostolany*');
     lines.push('## Depot');
     lines.push('- Wochen-Performance: **' + U.signTxt((eqEnd / eqStart - 1) * 100, ' %') + '** (' + U.money(eqStart) + ' → ' + U.money(eqEnd) + ')' + (spx ? ' · S&P 500 zur selben Zeit: ' + spx : ''));
     lines.push('- Gesamt seit Start: ' + U.signTxt((eqEnd / START_CAPITAL - 1) * 100, ' %') + ' · Offene Positionen: ' + D.positions.length);
     lines.push('## Trades dieser Woche');
     lines.push('- ' + closed.length + ' geschlossene Trades · Trefferquote ' + (closed.length ? Math.round(wins / closed.length * 100) + ' %' : '–') + ' · P/L ' + U.signTxt(pnlW, ' $') + ' · Gebühren ' + U.nf2.format(feesW) + ' $');
-    if (agg.hourly.n) lines.push('- 🧠 Stunden-Strategie: ' + agg.hourly.n + ' Trades, ' + U.signTxt(agg.hourly.pnl, ' $'));
-    if (agg.intraday.n) lines.push('- ⚡ Intraday: ' + agg.intraday.n + ' Trades, ' + U.signTxt(agg.intraday.pnl, ' $'));
+    if (agg.hourly.n) lines.push('- Stunden-Strategie: ' + agg.hourly.n + ' Trades, ' + U.signTxt(agg.hourly.pnl, ' $'));
+    if (agg.intraday.n) lines.push('- Intraday: ' + agg.intraday.n + ' Trades, ' + U.signTxt(agg.intraday.pnl, ' $'));
     if (best) lines.push('- Bester Trade: ' + best.sym + ' ' + best.dir.toUpperCase() + ' ' + U.signTxt(best.pnl, ' $') + ' · Schwächster: ' + worst.sym + ' ' + worst.dir.toUpperCase() + ' ' + U.signTxt(worst.pnl, ' $'));
     var pat = patienceAgg(7);
     if (pat.total) {
-      lines.push('## 🧘 Geduld-Bilanz („wissen, wann man nichts tut")');
+      lines.push('## Geduld-Bilanz („wissen, wann man nichts tut")');
       var patReasons = Object.keys(pat.byReason).sort(function (a, b) { return pat.byReason[b] - pat.byReason[a]; });
       lines.push('- **' + pat.total + ' Signale bewusst verworfen** – ausgeführt wurden ' + agg.intraday.n + ' Intraday-Trades' + (pat.total + agg.intraday.n > 0 ? ' (Geduld-Quote ' + Math.round(pat.total / (pat.total + agg.intraday.n) * 100) + ' %)' : ''));
       patReasons.slice(0, 6).forEach(function (r) { lines.push('- ' + r + ': ' + pat.byReason[r] + '×'); });
@@ -2637,10 +2643,10 @@
     }
     var body = lines.join('\n');
     st.textContent = '';
-    document.getElementById('aiTitle').textContent = '📄 Wochenreport KW ' + kw;
+    document.getElementById('aiTitle').textContent = 'Wochenreport KW ' + kw;
     document.getElementById('aiBody').innerHTML = U.md(body) +
-      '<div style="margin-top:12px;"><button class="btn" id="weeklySaveBtn">💾 Als HTML-Datei speichern</button></div>' +
-      '<div class="warn">⚠ Simulation – keine Anlageberatung.</div>';
+      '<div style="margin-top:12px;"><button class="btn" id="weeklySaveBtn">Als HTML-Datei speichern</button></div>' +
+      '<div class="warn">Simulation – keine Anlageberatung.</div>';
     window.openModal('aiModalBg');
     document.getElementById('weeklySaveBtn').addEventListener('click', function () {
       var doc = '<!DOCTYPE html><html lang="de"><head><meta charset="utf-8"><title>Wochenreport KW ' + kw + '</title>' +
@@ -2736,7 +2742,7 @@
     el.innerHTML = wl.length
       ? wl.map(function (w, i) {
         return '<span class="chip flat" style="font-size:12px; padding:3px 10px;">' + U.esc(w.y) + ' · ' + U.esc(w.name).slice(0, 24) +
-          ' <a href="#" data-unwatch="' + i + '" style="color:var(--down); font-weight:700; margin-left:4px;">✕</a></span>';
+          ' <a href="#" data-unwatch="' + i + '" style="color:var(--down); font-weight:700; margin-left:4px;">×</a></span>';
       }).join('')
       : '<span style="color:var(--muted); font-size:12px;">Noch keine eigenen Werte.</span>';
     el.querySelectorAll('[data-unwatch]').forEach(function (a) {
@@ -2866,7 +2872,7 @@
     return syms;
   }
 
-  /* ================= 🄲 Archiv-Backfill über die Capital.com-Demo-API =================
+  /* ================= Archiv-Backfill über die Capital.com-Demo-API =================
    * Yahoo reicht rückwirkend nur ~5 Handelstage (1m) zurück – Capital deutlich weiter.
    * Der Backfill blättert je Symbol RÜCKWÄRTS durch die Historie (1000 Kerzen je Anfrage)
    * und speist sie ins Archiv, bis 90 Tage erreicht sind oder das Nacht-Budget aufgebraucht
@@ -2919,7 +2925,7 @@
       var mapL = {}, doneLab = 0;
       var ivLab = intervals[ii];
       await pmap(symsL, async function (sy) {
-        // Frisch von Yahoo holen und ins 📚 Archiv einpflegen – gemessen wird dann auf der
+        // Frisch von Yahoo holen und ins Archiv einpflegen – gemessen wird dann auf der
         // ZUSAMMENGEFÜHRTEN Serie (Archiv ∪ frischer Abruf). Am ersten Tag ist das identisch
         // mit dem Yahoo-Fenster; danach wächst die Messbasis mit jedem Handelstag weiter
         // (rollierend bis 90 Kalendertage), auch auf 1m, wo Yahoo nur ~5 Tage zurückreicht.
@@ -2964,7 +2970,7 @@
     var slV = (cfg.scalpSL === "auto" ? "auto" : -(cfg.scalpSL || 20) / 100);
     var kanal = cfg.channel !== false;
     var MODESL = [
-      { key: 'breakout', setup: 'ausbruch', trigger: 'kreuzung', name: '🎯 Ausbruch · EMA-Kreuzung',
+      { key: 'breakout', setup: 'ausbruch', trigger: 'kreuzung', name: 'Ausbruch · EMA-Kreuzung',
         opts: cfg.exitStyle === 'blitz'
           ? { entryMode: 'cross', exitMode: 'blitz', sl: slV, tp: null, trailPct: 0.10, maxHoldMin: 3,
               cooldownMin: 2, maxPerDay: 40, trendFilter: !!cfg.trendFilter }
@@ -2974,13 +2980,13 @@
               maxHoldMin: cfg.exitStyle === 'kurz' ? (cfg.scalpHold || 60) : 0,
               cooldownMin: cfg.exitStyle === 'kurz' ? 5 : 45, maxPerDay: cfg.exitStyle === 'kurz' ? 40 : 10,
               trendFilter: !!cfg.trendFilter } },
-      { key: 'orb', setup: 'ausbruch', trigger: 'range', name: '🎯 Ausbruch · Eröffnungs-Range',
+      { key: 'orb', setup: 'ausbruch', trigger: 'range', name: 'Ausbruch · Eröffnungs-Range',
         opts: { entryMode: 'orb', exitMode: 'confirmed', orbMin: 30, sl: (cfg.scalpSL === "auto" ? "auto" : -0.25),
           tp: null, trailPct: 0.15, maxHoldMin: 0, cooldownMin: 10, maxPerDay: 10 } },
-      { key: 'reversion', setup: 'umkehr', trigger: 'ueberdehnung', name: '🔄 Umkehr · Überdehnung',
+      { key: 'reversion', setup: 'umkehr', trigger: 'ueberdehnung', name: 'Umkehr · Überdehnung',
         opts: { entryMode: 'reversion', sl: slV, tp: null, trailPct: 0, maxHoldMin: cfg.scalpHold || 60,
           cooldownMin: 5, maxPerDay: 40 } },
-      { key: 'wave', setup: 'umkehr', trigger: 'welle', name: '🔄 Umkehr · Wellental' + (kanal ? ' + 📐 Kanal' : ''),
+      { key: 'wave', setup: 'umkehr', trigger: 'welle', name: 'Umkehr · Wellental' + (kanal ? ' + Kanal' : ''),
         opts: { entryMode: 'wave', channel: kanal, sl: slV, tp: null, trailPct: 0, maxHoldMin: cfg.scalpHold || 60,
           cooldownMin: 3, maxPerDay: 40, trendFilter: true, minQuality: 60 } }
     ];
@@ -2989,7 +2995,7 @@
     // heute zeigt aber: je länger die Haltedauer, desto kleiner der Verlust - genau diese
     // Richtung muss mitgemessen werden.
     if (cfg.exitStyle === 'blitz' || cfg.exitStyle === 'kurz') {
-      MODESL.push({ key: 'breakout_lauf', setup: 'ausbruch', trigger: 'kreuzung', name: '🎯 Ausbruch · EMA-Kreuzung · laufen lassen',
+      MODESL.push({ key: 'breakout_lauf', setup: 'ausbruch', trigger: 'kreuzung', name: 'Ausbruch · EMA-Kreuzung · laufen lassen',
         opts: { entryMode: 'cross', exitMode: 'confirmed', sl: -0.25, tp: 0.35, trailPct: 0, maxHoldMin: 0,
           cooldownMin: 45, maxPerDay: 10, trendFilter: !!cfg.trendFilter } });
     }
@@ -3062,9 +3068,9 @@
           // Trades UND genug ungesehene Handelstage, sonst gibt es kein Urteil.
           var duenn = oosTrades.length < MIN_OOS_TRADES || oosTage < MIN_OOS_TAGE || valid.length < 3;
           var verdict = duenn
-            ? ('⚪ nicht belastbar (' + oosTrades.length + ' Trades auf ' + oosTage + ' ungesehenen Handelstagen, ' + valid.length + '/4 Scheiben)')
-            : (wfRet > 0 && posSegs >= 3 && pf > 1) ? '🟢 robust'
-            : (wfRet > 0 || posSegs >= 2) ? '🟡 gemischt' : '🔴 kein Vorteil';
+            ? ('nicht belastbar (' + oosTrades.length + ' Trades auf ' + oosTage + ' ungesehenen Handelstagen, ' + valid.length + '/4 Scheiben)')
+            : (wfRet > 0 && posSegs >= 3 && pf > 1) ? 'robust'
+            : (wfRet > 0 || posSegs >= 2) ? 'gemischt' : 'kein Vorteil';
           results.push({
             mode: MODES[mi], interval: iv, wfRet: wfRet, foldRets: foldRets, posSegs: posSegs,
             n: oosTrades.length, winRate: oosTrades.length ? Math.round(wins / oosTrades.length * 100) : 0,
@@ -3081,7 +3087,7 @@
       return results;
   }
 
-  /* ================= 🎛 Analyse-Zentrale ================= */
+  /* ================= Analyse-Zentrale ================= */
   var centralRunning = false;
   /** opts: {silent:true, status:fn} → rechnet ohne UI und meldet den Fortschritt per Callback. */
   async function runCentral(opts) {
@@ -3102,7 +3108,7 @@
       var ld = await loadLabData(st);
       var results = await labCompute(ld, st);
       st.textContent = '';
-      if (!results.length) { out.innerHTML = '<div class="empty"><span class="ico">🎛</span>Zu wenig Daten für eine Analyse.</div>'; return null; }
+      if (!results.length) { out.innerHTML = '<div class="empty"><span class="ico"></span>Zu wenig Daten für eine Analyse.</div>'; return null; }
       var top = results[0];
 
       // Schritt 2: Feinschliff für den Gewinner (Grid, 70/30 out-of-sample)
@@ -3133,11 +3139,11 @@
       var useFine = bestFine && fineValid && fineValid.retPct > 0;
       var pick = useFine ? bestFine.g : (top.best ? Object.assign({ lineType: cfg.lineType || 'ema' }, top.best) : { period: cfg.period, confirmBps: cfg.confirmBps, lineType: cfg.lineType || 'ema' });
 
-      // 🧹 Filter-Bilanz: Jeder Filter muss sein Geld verdienen. Für den besten Kandidaten
+      // Filter-Bilanz: Jeder Filter muss sein Geld verdienen. Für den besten Kandidaten
       // wird auf der UNGESEHENEN 30-%-Scheibe jeder Filter einzeln abgeschaltet und
       // nachgerechnet, was er in Prozentpunkten bringt oder kostet. Nur die im Backtest
       // abbildbaren Filter – KI-Veto, Verlustserie und Event-Blackout laufen nur live und
-      // werden vom 🕯 Schattenbuch beurteilt (steht mit im Bericht).
+      // werden vom Schattenbuch beurteilt (steht mit im Bericht).
       var filterBilanz = null;
       try {
         out.innerHTML = '<div class="loading">Schritt 2b/3: Filter-Bilanz – jeden Filter einzeln nachrechnen …</div>';
@@ -3147,7 +3153,7 @@
           var varianten = [
             { name: 'Kosten-Check (Bewegung muss Kosten decken)', opts: { minEdge: 0 }, aktiv: (basisOpts.minEdge || 0) > 0 },
             { name: 'Trendfilter (EMA100)', opts: { trendFilter: false }, aktiv: !!basisOpts.trendFilter },
-            { name: '📐 Trendkanal', opts: { channel: false }, aktiv: !!basisOpts.channel },
+            { name: 'Trendkanal', opts: { channel: false }, aktiv: !!basisOpts.channel },
             { name: '5-Min-Bestätigung (MTF)', opts: { mtf: false }, aktiv: !!basisOpts.mtf },
             { name: 'Wellen-Qualitätsschwelle', opts: { minQuality: 0 }, aktiv: basisOpts.entryMode === 'wave' && (basisOpts.minQuality || 0) > 0 }
           ].filter(function (v) { return v.aktiv; });
@@ -3221,7 +3227,7 @@
       exportAnalysis(true);
       return rec;
     } catch (e) {
-      out.innerHTML = '<div class="empty"><span class="ico">⚠</span>Fehler: ' + U.esc(e.message || e) + '</div>';
+      out.innerHTML = '<div class="empty"><span class="ico"></span>Fehler: ' + U.esc(e.message || e) + '</div>';
       if (silent) throw e;
       return null;
     } finally {
@@ -3263,7 +3269,7 @@
       var closedNow = D.trades.filter(function (t) { return t.status === 'closed' && istMess(t); });
       var txt = (quelle === 'pilot' ? 'Autopilot: ' : quelle === 'lokal' ? 'Selbst-Optimierung: ' : '') + r.modeName + ' · ' + r.interval + ' · Walk-Forward ' +
         (r.wfRet > 0 ? '+' : '') + r.wfRet + ' % · ' + r.posSegs + '/4 Scheiben · ' + r.n + ' Trades · PF ' + r.pf + ' · ' + r.verdict +
-        (gesperrt.length ? ' — ✋ nicht angefasst (von Hand gesetzt): ' + gesperrt.join(' · ') : '');
+        (gesperrt.length ? ' — nicht angefasst (von Hand gesetzt): ' + gesperrt.join(' · ') : '');
       D.tuneLog.unshift({
         id: (quelle || 'manuell') + '-' + Date.now(), at: Date.now(), quelle: quelle || 'manuell',
         applied: applied.length ? applied : ['(nichts geändert – alle Vorschläge betrafen von Hand gesetzte Felder)'],
@@ -3287,7 +3293,7 @@
     return applied;
   }
 
-  /* ================= 🧭 Regime-Automatik: die lokale KI wählt das Setup =================
+  /* ================= Regime-Automatik: die lokale KI wählt das Setup =================
    * Ablauf: Die App MISST die Marktlage (Trendanteil, Überdehnung, Wellen-Score, Kanal-Anteil,
    * Vola), das lokale Modell WÄHLT daraus eines von vier Setups, die App PRÜFT die Antwort
    * gegen eine Whitelist und protokolliert Fakten, Begründung und die spätere Wirkung.
@@ -3409,7 +3415,7 @@
       D.regimePending = null;   // Altlast aus v7 aufräumen
       D.regime = { at: Date.now(), ok: true, quelle: quelle, wahl: wahl, fakten: f, applied: [], nurAnzeige: true,
         txt: setupName(mode, wahl.kanal) + ' · ' + wahl.zeitrahmen + ' — ' + (wahl.begruendung || '') +
-             (passt ? ' · ✅ entspricht der aktuellen Einstellung' : ' · Empfehlung – umgestellt wird nichts') };
+             (passt ? ' · entspricht der aktuellen Einstellung' : ' · Empfehlung – umgestellt wird nichts') };
       await save();
       render();
     } catch (e) {
@@ -3452,29 +3458,29 @@
     var st = setupFromMode(c.mode);
     var name, was;
     if (st.setup === 'umkehr' && st.trigger === 'welle') {
-      name = '🔄 Umkehr am Wellental' + (c.channel !== false ? ' + 📐 Trendkanal' : '');
+      name = 'Umkehr am Wellental' + (c.channel !== false ? ' + Trendkanal' : '');
       was = 'Kauft am Tief einer Welle und verkauft am Wellenkamm' + (c.channel !== false ? ' – aber nur an der Kanalkante, Ziel ist die Gegenkante' : '') + '.';
     } else if (st.setup === 'umkehr') {
-      name = '🔄 Umkehr bei Überdehnung';
+      name = 'Umkehr bei Überdehnung';
       was = 'Kauft gegen die Übertreibung, wenn der Kurs zu weit von seiner Leitlinie weggelaufen ist – Ziel ist die Rückkehr zur Linie.';
     } else if (st.trigger === 'range') {
-      name = '🎯 Ausbruch aus der Eröffnungs-Range';
+      name = 'Ausbruch aus der Eröffnungs-Range';
       was = 'Handelt den ersten Ausbruch aus der Spanne der ersten 30 Handelsminuten – maximal 1 Trade je Richtung und Tag.';
     } else {
-      name = '🎯 Ausbruch an der EMA' + c.period;
+      name = 'Ausbruch an der EMA' + c.period;
       was = 'Kauft (Call), wenn der Kurs die EMA' + c.period + ' nach OBEN durchbricht – Put beim Durchbruch nach unten. Immer in Trendrichtung.';
     }
-    var exitTxt = c.exitStyle === 'blitz' ? '⚡ Blitz-Ausstieg: nach spätestens 3 Minuten raus – bei der ersten Gegenbar oder der EMA9-Rückkreuzung. Kleine Gewinne, viele Versuche.'
+    var exitTxt = c.exitStyle === 'blitz' ? 'Blitz-Ausstieg: nach spätestens 3 Minuten raus – bei der ersten Gegenbar oder der EMA9-Rückkreuzung. Kleine Gewinne, viele Versuche.'
       : c.exitStyle === 'kurz' ? 'Kurzer Ausstieg: raus bei der Rückkehr zur Leitlinie.'
       : st.setup === 'umkehr' ? '' : 'Ausstieg: laufen lassen bis zum Gegensignal, mit Not-Stop und Ziel.';
     // Wer hat das eingestellt? Letzter Journal-Eintrag mit echter Änderung
     var wer = '';
-    var QUELLE_NAME = { pilot: '🤖 Autopilot', regime: '🧭 Regime-Automatik (alt)', farm: '🧬 Strategie-Farm (alt)', hand: '✋ von Hand (Formular)', manuell: '🎛 Analyse-Zentrale', lokal: '🎛 Selbst-Optimierung (alt)', sicherung: '🛡 Sicherung', claude: '📡 Cloud-Empfehlung' };
+    var QUELLE_NAME = { pilot: 'Autopilot', regime: 'Regime-Automatik (alt)', farm: 'Strategie-Farm (alt)', hand: 'von Hand (Formular)', manuell: 'Analyse-Zentrale', lokal: 'Selbst-Optimierung (alt)', sicherung: 'Sicherung', claude: 'Cloud-Empfehlung' };
     var tl = (D.tuneLog || []).filter(function (e) { return (e.applied || []).length && e.quelle !== 'sicherung'; })[0];
     if (tl) wer = 'Zuletzt eingestellt von ' + (QUELLE_NAME[tl.quelle] || tl.quelle || '?') + ' (' + U.dt(tl.at) + '): ' + tl.applied.slice(0, 3).join(' · ') + (tl.applied.length > 3 ? ' …' : '');
     var a = autoOptCfg();
-    var autoTxt = 'Du musst hier nichts einstellen: 🤖 der Autopilot misst nachts auf dem wachsenden Kursarchiv und übernimmt nur doppelt bestätigte, robuste Ergebnisse – morgens vor Handelsbeginn' +
-      (a.regime !== false ? '; 🧭 die Marktlage wird stündlich angezeigt (reine Empfehlung)' : '') +
+    var autoTxt = 'Du musst hier nichts einstellen: der Autopilot misst nachts auf dem wachsenden Kursarchiv und übernimmt nur doppelt bestätigte, robuste Ergebnisse – morgens vor Handelsbeginn' +
+      (a.regime !== false ? '; die Marktlage wird stündlich angezeigt (reine Empfehlung)' : '') +
       '. Jede Änderung steht im Experiment-Journal (Auswertung).';
     var alleAn = a.on !== false;
     el.innerHTML =
@@ -3483,15 +3489,15 @@
       (wer ? '<div style="font-size:11.5px; color:var(--muted); margin-bottom:4px;">' + U.esc(wer) + '</div>' : '') +
       (alleAn
         ? '<div style="font-size:11.5px; color:var(--muted);">' + autoTxt + '</div>'
-        : '<div style="font-size:11.5px; color:var(--warn); margin-bottom:6px;">⚠ Der Autopilot ist ausgeschaltet – die Strategie verbessert sich gerade NICHT von selbst.</div>' +
-          '<button class="btn tiny" id="klartextAutoBtn">🤖 Autopilot einschalten</button>');
+        : '<div style="font-size:11.5px; color:var(--warn); margin-bottom:6px;">Der Autopilot ist ausgeschaltet – die Strategie verbessert sich gerade NICHT von selbst.</div>' +
+          '<button class="btn tiny" id="klartextAutoBtn">Autopilot einschalten</button>');
     var kab = document.getElementById('klartextAutoBtn');
     if (kab) kab.addEventListener('click', function () {
       var a2 = autoOptCfg();
       a2.on = true; a2.regime = true;
       if (!D.tuneLog) D.tuneLog = [];
       D.tuneLog.unshift({ id: 'hand-' + Date.now(), at: Date.now(), quelle: 'hand', applied: ['Autopilot → an'],
-        txt: '✋ Autopilot über die Klartext-Karte eingeschaltet.' });
+        txt: 'Autopilot über die Klartext-Karte eingeschaltet.' });
       save(); renderKlartext(); renderTune(); renderRegime(); renderPilot();
     });
   }
@@ -3500,39 +3506,39 @@
     var hint = document.getElementById('regimeHint');
     if (hint && D) {
       hint.textContent = autoOptCfg().regime !== false
-        ? '🧭 Die Marktlage wird stündlich gemessen und hier angezeigt – umgestellt wird dabei nichts. Das entscheidet der Autopilot nach der Nacht-Messung, oder du selbst.'
+        ? 'Die Marktlage wird stündlich gemessen und hier angezeigt – umgestellt wird dabei nichts. Das entscheidet der Autopilot nach der Nacht-Messung, oder du selbst.'
         : '';
     }
     var el = document.getElementById('regimeStatus');
     if (!el || !D) return;
     var a = autoOptCfg();
-    if (phase) { el.innerHTML = '<span style="color:var(--acc);">🧭 Marktlage ' + U.esc(phase) + '</span>'; return; }
+    if (phase) { el.innerHTML = '<span style="color:var(--acc);">Marktlage ' + U.esc(phase) + '</span>'; return; }
     var r = D.regime;
     if (!r) { el.innerHTML = a.regime === false ? '<span style="color:var(--muted);">Marktlage-Anzeige ist aus.</span>'
       : '<span style="color:var(--muted);">Noch keine Messung – startet automatisch nach Handelsbeginn.</span>'; return; }
     var f = r.fakten;
-    el.innerHTML = (r.ok ? '🧭 <b>' + U.dt(r.at) + '</b> · Quelle: ' + U.esc(r.quelle) + '<br>' + U.esc(r.txt) : '⚠ ' + U.esc(r.txt)) +
+    el.innerHTML = (r.ok ? '<b>' + U.dt(r.at) + '</b> · Quelle: ' + U.esc(r.quelle) + '<br>' + U.esc(r.txt) : '' + U.esc(r.txt)) +
       (f ? '<div style="color:var(--muted); margin-top:4px; font-size:11.5px;">Gemessen an ' + f.geprueft + ' Werten: Trendanteil ' + f.trendAnteilPct +
         ' % · mittleres |z| ' + f.mittleresAbsZ + ' · Wellen-Score ' + f.mittlererWellenScore + ' · gültige Kanäle ' + f.kanalAnteilPct +
         ' % · 5-Min-Vola ' + f.vola1mPct + ' %</div>' : '');
   }
 
-  /* ================= 🤖 Autopilot (v8) =================
+  /* ================= Autopilot (v8) =================
    * Ersetzt Selbst-Optimierung und Strategie-Farm durch EINE Kette:
-   *  1. SAMMELN  – jeder Scan und jeder Messlauf füttert das 📚 Kursarchiv (rollierend 90 Tage).
+   *  1. SAMMELN  – jeder Scan und jeder Messlauf füttert das Kursarchiv (rollierend 90 Tage).
    *  2. MESSEN   – nachts nach US-Börsenschluss: Walk-Forward über die 4 Setups × Parameter-
    *                Raster auf dem Archiv. Die Rechenlast liegt außerhalb der Handelszeit.
    *  3. URTEILEN – nur belastbare Ergebnisse zählen (>= 30 OOS-Trades auf >= 12 ungesehenen
    *                Handelstagen). Eine Empfehlung muss von ZWEI aufeinanderfolgenden Nacht-
    *                Messungen bestätigt werden – ein einzelner Sieg kann eine Münzwurf-Serie
    *                sein (das ersetzt die Bewährungsprüfung der alten Farm).
-   *  4. ANWENDEN – morgens VOR Handelsbeginn, nie mitten im Handel. Die ✋ Hand-Sperre gilt:
+   *  4. ANWENDEN – morgens VOR Handelsbeginn, nie mitten im Handel. Die Hand-Sperre gilt:
    *                von dir gesetzte Felder fasst der Autopilot nicht an. */
   function autoOptCfg() {
     if (!D.autoOpt) D.autoOpt = {};
     var a = D.autoOpt;
     if (a.on == null) a.on = true;             // Autopilot an/aus
-    if (a.regime == null) a.regime = true;     // 🧭 Marktlage-Anzeige an/aus
+    if (a.regime == null) a.regime = true;     // Marktlage-Anzeige an/aus
     if (a.regimeMin == null) a.regimeMin = 60;
     if (a.lastMess == null) a.lastMess = 0;
     if (a.lastRegime == null) a.lastRegime = 0;
@@ -3540,7 +3546,7 @@
   }
   /** Woran scheitert ein Kandidat? Klartext fuer Ranking, Bericht und Auswertung mit Claude. */
   function scheiterGrund(r) {
-    if (String(r.verdict).indexOf('🟢') === 0) return 'robust – wird nach einer Bestätigungs-Nacht übernommen';
+    if (String(r.verdict).indexOf('robust') === 0) return 'robust – wird nach einer Bestätigungs-Nacht übernommen';
     var g = [];
     if (!r.belastbar) {
       if ((r.n || 0) < MIN_OOS_TRADES) g.push('nur ' + (r.n || 0) + ' von ' + MIN_OOS_TRADES + ' nötigen OOS-Trades');
@@ -3554,19 +3560,19 @@
     return g.join(' · ') || 'knapp unter der Robustheits-Schwelle';
   }
 
-  /** 📝 Messbericht als Markdown – landet in Downloads/Markt-Dashboard-Daten/messbericht.md.
+  /** Messbericht als Markdown – landet in Downloads/Markt-Dashboard-Daten/messbericht.md.
    *  Klartext: für dich zum Nachlesen und für Claude zum Auswerten (die geplanten Claude-
    *  Aufgaben lesen denselben Ordner). Pure Funktion, testbar über window.__pilotBericht. */
   function baueMessbericht(c, a, extra) {
     extra = extra || {};
     var z = [];
-    z.push('# 🤖 Autopilot-Messbericht');
+    z.push('# Autopilot-Messbericht');
     z.push('');
     z.push('Stand: ' + new Date(c.at || Date.now()).toLocaleString('de-DE') + ' Uhr' +
       (a.lastCheck && a.lastCheck.dauerMin ? ' · Rechenzeit ' + a.lastCheck.dauerMin + ' Min' : '') +
       (extra.version ? ' · App ' + extra.version : ''));
     z.push('');
-    z.push('## 📚 Datenlage (Messbasis dieser Nacht)');
+    z.push('## Datenlage (Messbasis dieser Nacht)');
     z.push('');
     z.push('| Zeitrahmen | Werte | Handelstage |');
     z.push('|---|---|---|');
@@ -3576,17 +3582,17 @@
       z.push('| ' + iv + ' | ' + (d.werte || 0) + ' | ' + (d.handelstage || 0) + ' |');
     });
     z.push('');
-    if (a.lastBackfill) z.push('🄲 Capital-Backfill: zuletzt ' + new Date(a.lastBackfill.at).toLocaleString('de-DE') + ' – ' + a.lastBackfill.bars + ' Kerzen für ' + a.lastBackfill.symbole + ' Werte nachgeladen (' + a.lastBackfill.requests + ' Anfragen).');
+    if (a.lastBackfill) z.push('Capital-Backfill: zuletzt ' + new Date(a.lastBackfill.at).toLocaleString('de-DE') + ' – ' + a.lastBackfill.bars + ' Kerzen für ' + a.lastBackfill.symbole + ' Werte nachgeladen (' + a.lastBackfill.requests + ' Anfragen).');
     if (a.lastBackfill) z.push('');
-    z.push('Das 📚 Kursarchiv sammelt rollierend 90 Kalendertage – die Tabelle wächst mit jedem Handelstag, an dem die App läuft. Hürde für ein belastbares Urteil: **' + MIN_OOS_TRADES + ' Out-of-Sample-Trades auf ' + MIN_OOS_TAGE + ' ungesehenen Handelstagen**.');
+    z.push('Das Kursarchiv sammelt rollierend 90 Kalendertage – die Tabelle wächst mit jedem Handelstag, an dem die App läuft. Hürde für ein belastbares Urteil: **' + MIN_OOS_TRADES + ' Out-of-Sample-Trades auf ' + MIN_OOS_TAGE + ' ungesehenen Handelstagen**.');
     z.push('');
-    z.push('## 🏁 Ergebnis dieser Messung');
+    z.push('## Ergebnis dieser Messung');
     z.push('');
     z.push(a.lastCheck ? a.lastCheck.txt : '–');
-    if (a.pending && a.pending.rec) { z.push(''); z.push('⏳ **Vorgemerkt:** ' + a.pending.rec.modeName + ' · ' + a.pending.rec.interval + ' – wird angewendet, sobald die Börse geschlossen ist.'); }
+    if (a.pending && a.pending.rec) { z.push(''); z.push('**Vorgemerkt:** ' + a.pending.rec.modeName + ' · ' + a.pending.rec.interval + ' – wird angewendet, sobald die Börse geschlossen ist.'); }
     if (a.lastApply) { z.push(''); z.push('Zuletzt automatisch übernommen: ' + new Date(a.lastApply.at).toLocaleString('de-DE') + ' – ' + (a.lastApply.name || '')); }
     z.push('');
-    z.push('## 📋 Ranking – alle Kandidaten und woran sie scheitern');
+    z.push('## Ranking – alle Kandidaten und woran sie scheitern');
     z.push('');
     z.push('| # | Setup | Zeitrahmen | WF-Rendite | Scheiben+ | Trades | Tage | PF | Treffer | Woran scheitert es |');
     z.push('|---|---|---|---|---|---|---|---|---|---|');
@@ -3597,7 +3603,7 @@
     });
     z.push('');
     var fb = c.rec && c.rec.filterBilanz;
-    z.push('## 🧹 Filter-Bilanz (bester Kandidat, ungesehene Daten)');
+    z.push('## Filter-Bilanz (bester Kandidat, ungesehene Daten)');
     z.push('');
     if (fb && fb.zeilen && fb.zeilen.length) {
       z.push('Basis mit allen Filtern: ' + (fb.basisRet > 0 ? '+' : '') + fb.basisRet + ' % bei ' + fb.basisN + ' Trades. „Nutzen“ = Rendite mit Filter minus ohne – positiv heißt: der Filter spart Geld.');
@@ -3605,8 +3611,8 @@
       z.push('| Filter | mit | ohne | Nutzen | Trades mit/ohne | Urteil |');
       z.push('|---|---|---|---|---|---|');
       fb.zeilen.forEach(function (r) {
-        var urteil = r.duenn ? '⏳ zu wenig Trades für ein Urteil'
-          : r.nutzen > 0.5 ? '🟢 spart Geld' : r.nutzen < -0.5 ? '🔴 kostet Geld – Kandidat zum Lockern' : '⚪ neutral';
+        var urteil = r.duenn ? 'zu wenig Trades für ein Urteil'
+          : r.nutzen > 0.5 ? 'spart Geld' : r.nutzen < -0.5 ? 'kostet Geld – Kandidat zum Lockern' : 'neutral';
         z.push('| ' + r.name + ' | ' + (r.mitRet > 0 ? '+' : '') + r.mitRet + ' % | ' + (r.ohneRet > 0 ? '+' : '') + r.ohneRet + ' % | ' +
           (r.nutzen > 0 ? '+' : '') + r.nutzen + ' Pp | ' + r.mitN + '/' + r.ohneN + ' | ' + urteil + ' |');
       });
@@ -3614,22 +3620,22 @@
       z.push('Keine Filter-Bilanz in dieser Messung (zu wenig Daten auf der Testscheibe).');
     }
     z.push('');
-    z.push('Nur live wirksame Filter (nicht im Backtest abbildbar) – Urteil aus dem 🕯 Schattenbuch:');
+    z.push('Nur live wirksame Filter (nicht im Backtest abbildbar) – Urteil aus dem Schattenbuch:');
     z.push('');
     var sst = extra.schatten || {};
     var sk = Object.keys(sst);
     if (sk.length) {
       sk.forEach(function (g) {
         var x = sst[g];
-        var u = x.n < 5 ? '⏳ zu früh (' + x.n + ' Schatten)'
-          : x.gerettet > x.verhindert * 1.5 ? '🟢 rettet Geld' : x.verhindert > x.gerettet * 1.5 ? '🔴 verhindert eher Gewinne' : '⚪ unentschieden';
+        var u = x.n < 5 ? 'zu früh (' + x.n + ' Schatten)'
+          : x.gerettet > x.verhindert * 1.5 ? 'rettet Geld' : x.verhindert > x.gerettet * 1.5 ? 'verhindert eher Gewinne' : 'unentschieden';
         z.push('- ' + g + ': ' + x.n + ' Schatten · Ø ' + (x.n ? Math.round(x.sumPct / x.n * 10) / 10 : 0) + ' % · gerettet ' + x.gerettet + ' / verhindert ' + x.verhindert + ' → ' + u);
       });
     } else {
       z.push('- noch keine abgeschlossenen Schatten – entsteht im Live-Betrieb.');
     }
     z.push('');
-    z.push('## 📈 Verlauf der letzten Messungen');
+    z.push('## Verlauf der letzten Messungen');
     z.push('');
     if ((a.messHistorie || []).length) {
       z.push('| Datum | bester Kandidat | WF-Rendite | Trades | Tage | belastbar |');
@@ -3645,12 +3651,12 @@
     }
     z.push('');
     var sp = Object.keys(extra.handSperre || {});
-    z.push('## ✋ Von Hand gesetzte Felder (für die Automatik gesperrt)');
+    z.push('## Von Hand gesetzte Felder (für die Automatik gesperrt)');
     z.push('');
     z.push(sp.length ? sp.map(function (f) { return HAND_LABEL[f] || f; }).join(' · ') : 'keine – alle Felder werden vom Autopiloten gepflegt');
     z.push('');
     var cfg = extra.intraday || {};
-    z.push('## ⚙ Aktuelle Handels-Konfiguration');
+    z.push('## Aktuelle Handels-Konfiguration');
     z.push('');
     z.push('Setup ' + (cfg.mode || '?') + (cfg.exitStyle && cfg.exitStyle !== 'laufen' ? '/' + cfg.exitStyle : '') +
       ' · Zeitrahmen ' + (cfg.interval || '?') + ' · ' + String(cfg.lineType || 'ema').toUpperCase() + (cfg.period || '') +
@@ -3659,10 +3665,10 @@
       ' · Cooldown ' + (cfg.cooldownMin != null ? cfg.cooldownMin + ' Min' : 'Modus-Standard') + ' · max. ' + (cfg.maxPerDay || '?') + ' Trades/Tag' +
       ' · Trendfilter ' + (cfg.trendFilter ? 'an' : 'aus') + ' · Kanal ' + (cfg.channel !== false ? 'an' : 'aus'));
     z.push('');
-    z.push('## 🤝 Auswertung mit Claude');
+    z.push('## Auswertung mit Claude');
     z.push('');
     z.push('Im selben Ordner liegen: analyse-daten.json (Depot, Trades, Geduld-Bilanz, Schattenbuch, Gesundheit), kursdaten.json (Bars des letzten Scans + Tageshistorie) und engine.js (identische Rechenlogik der App – eigene Backtests damit exakt vergleichbar). ' +
-      'Verbesserungsvorschläge zurück an die App: empfehlung.json mit {"quelle":"claude","id":"eindeutig","begruendung":"…","intraday":{…}} – die App übernimmt nur Whitelist-Felder und respektiert die ✋ Hand-Sperre.');
+      'Verbesserungsvorschläge zurück an die App: empfehlung.json mit {"quelle":"claude","id":"eindeutig","begruendung":"…","intraday":{…}} – die App übernimmt nur Whitelist-Felder und respektiert die Hand-Sperre.');
     z.push('');
     z.push('*Simulation – keine Anlageberatung.*');
     return z.join('\n');
@@ -3671,31 +3677,59 @@
 
   function recKey(r) { return [r.modeKey, r.interval, r.period, r.confirmBps, r.lineType, r.window].join('|'); }
   var pilotRunning = false, pilotPhase = '';
+  var pilotStartAt = 0;
+  var pilotLog = [];        // [zeit, text] - Live-Protokoll der laufenden/letzten Messung
+  /** Jede Phase der Messung landet sichtbar im Protokoll - keine Blackbox mehr. */
+  function pilotLogAdd(t) {
+    var letzte = pilotLog[pilotLog.length - 1];
+    if (letzte && letzte[1] === String(t)) return;   // identische Wiederholungen nicht stapeln
+    pilotLog.push([Date.now(), String(t)]);
+    if (pilotLog.length > 150) pilotLog = pilotLog.slice(-150);
+    renderPilotLog();
+  }
+  function renderPilotLog() {
+    var el = document.getElementById('pilotLog');
+    if (!el) return;
+    if (!pilotLog.length) { el.style.display = 'none'; return; }
+    el.style.display = '';
+    el.innerHTML = pilotLog.map(function (z) {
+      return '<div><span class="plz">' + new Date(z[0]).toLocaleTimeString('de-DE') + '</span> ' + U.esc(z[1]) + '</div>';
+    }).join('');
+    el.scrollTop = el.scrollHeight;
+  }
   async function pilotMessen(manual) {
     var a = autoOptCfg();
-    if (pilotRunning || centralRunning || jobRunning) return;
+    if (pilotRunning || centralRunning || jobRunning) {
+      // Zweiter Klick ist KEIN Neustart - sichtbar sagen, dass schon gemessen wird
+      if (manual && pilotRunning) pilotLogAdd('Hinweis: Messung läuft bereits (seit ' + Math.round((Date.now() - pilotStartAt) / 60000) + ' Min) - Verlauf siehe unten.');
+      return;
+    }
     if (!manual && a.on === false) return;
     pilotRunning = true;
+    pilotStartAt = Date.now();
+    pilotLog = [];
+    pilotLogAdd(manual ? 'Messung von Hand gestartet.' : 'Nächtliche Messung gestartet.');
     pilotPhase = 'startet …';
     renderPilot();
     var t0 = Date.now();
     try {
-      // 🄲 Erst das Archiv rückwärts auffüllen (falls Capital.com verbunden ist) –
+      // Erst das Archiv rückwärts auffüllen (falls Capital.com verbunden ist) –
       // jede Nacht ein Stück weiter zurück, bis 90 Tage stehen.
       if (window.CapAPI && window.CapAPI.enabled()) {
-        pilotPhase = '🄲 Capital-Backfill: füllt das Kursarchiv rückwärts auf …';
+        pilotPhase = 'Capital-Backfill: füllt das Kursarchiv rückwärts auf …';
+        pilotLogAdd(pilotPhase);
         renderPilot();
         try {
           var bf = await capBackfill(250);
-          if (bf.requests) a.lastBackfill = { at: Date.now(), requests: bf.requests, bars: bf.bars, symbole: bf.symbole };
+          if (bf.requests) { a.lastBackfill = { at: Date.now(), requests: bf.requests, bars: bf.bars, symbole: bf.symbole }; pilotLogAdd('Backfill: ' + bf.bars + ' Kerzen für ' + bf.symbole + ' Werte (' + bf.requests + ' Anfragen).'); }
         } catch (eBf) { /* Backfill ist Bonus – die Messung läuft auch ohne */ }
       }
-      var rec = await runCentral({ silent: true, status: function (t) { pilotPhase = t; renderPilot(); } });
+      var rec = await runCentral({ silent: true, status: function (t) { pilotPhase = t; pilotLogAdd(t); renderPilot(); } });
       a.lastMess = Date.now();
       if (!rec) {
         a.lastCheck = { at: Date.now(), ok: false, txt: 'Zu wenig Kursdaten für eine Messung – das Archiv füllt sich mit jedem Handelstag.' };
       } else {
-        var robust = String(rec.verdict).indexOf('🟢') === 0 && rec.belastbar !== false && rec.n >= MIN_OOS_TRADES;
+        var robust = String(rec.verdict).indexOf('robust') === 0 && rec.belastbar !== false && rec.n >= MIN_OOS_TRADES;
         var k = recKey(rec);
         if (!robust) {
           a.pending = null; a.lastRecKey = null;
@@ -3706,15 +3740,16 @@
           // Zweite Nacht in Folge dasselbe robuste Ergebnis → Bewährung bestanden, vormerken
           a.pending = { rec: rec, seit: Date.now() };
           a.lastCheck = { at: Date.now(), ok: true,
-            txt: '✅ ' + rec.modeName + ' · ' + rec.interval + ' zum zweiten Mal in Folge robust (Walk-Forward ' + (rec.wfRet > 0 ? '+' : '') + rec.wfRet + ' %, ' + rec.n + ' Trades) – wird vor dem nächsten Handelsbeginn übernommen.' };
+            txt: '' + rec.modeName + ' · ' + rec.interval + ' zum zweiten Mal in Folge robust (Walk-Forward ' + (rec.wfRet > 0 ? '+' : '') + rec.wfRet + ' %, ' + rec.n + ' Trades) – wird vor dem nächsten Handelsbeginn übernommen.' };
         } else {
           a.lastRecKey = k; a.pending = null;
           a.lastCheck = { at: Date.now(), ok: true,
-            txt: '🟢 ' + rec.modeName + ' · ' + rec.interval + ' ist robust (Walk-Forward ' + (rec.wfRet > 0 ? '+' : '') + rec.wfRet + ' %, ' + rec.n + ' Trades) – wartet auf Bestätigung durch die nächste Nacht-Messung. Ein einzelner Sieg kann Zufall sein.' };
+            txt: '' + rec.modeName + ' · ' + rec.interval + ' ist robust (Walk-Forward ' + (rec.wfRet > 0 ? '+' : '') + rec.wfRet + ' %, ' + rec.n + ' Trades) – wartet auf Bestätigung durch die nächste Nacht-Messung. Ein einzelner Sieg kann Zufall sein.' };
         }
       }
       a.lastCheck.dauerMin = Math.round((Date.now() - t0) / 60000 * 10) / 10;
-      // 📝 Verlauf + Messbericht: sichtbar machen, was funktioniert und woran der Rest scheitert
+      pilotLogAdd('Fertig nach ' + a.lastCheck.dauerMin + ' Min: ' + a.lastCheck.txt);
+      // Verlauf + Messbericht: sichtbar machen, was funktioniert und woran der Rest scheitert
       if (rec) {
         if (!a.messHistorie) a.messHistorie = [];
         a.messHistorie.unshift({ at: Date.now(), name: rec.modeName, interval: rec.interval, wfRet: rec.wfRet,
@@ -3733,6 +3768,7 @@
     } catch (e) {
       a.lastMess = Date.now();
       a.lastCheck = { at: Date.now(), ok: false, txt: 'Fehler: ' + (e && e.message ? e.message : e) };
+      pilotLogAdd('FEHLER: ' + (e && e.message ? e.message : e));
       try { await save(); } catch (e2) { /* egal */ }
     } finally {
       pilotRunning = false;
@@ -3758,10 +3794,14 @@
     if (!el || !D) return;
     var a = autoOptCfg();
     if (pilotRunning) {
-      el.innerHTML = '<span style="color:var(--acc);">🤖 Autopilot misst … ' + U.esc(pilotPhase || '') + '</span>';
+      var seitMin = pilotStartAt ? Math.round((Date.now() - pilotStartAt) / 6000) / 10 : 0;
+      var letzteAkt = pilotLog.length ? Math.round((Date.now() - pilotLog[pilotLog.length - 1][0]) / 1000) : 0;
+      el.innerHTML = '<b>Messung läuft</b> · seit ' + seitMin + ' Min · letzte Aktivität vor ' + letzteAkt + ' s' +
+        '<div style="color:var(--acc); margin-top:2px;">' + U.esc(pilotPhase || '') + '</div>' +
+        '<div style="color:var(--muted); font-size:11px; margin-top:2px;">Der komplette Verlauf steht im Protokoll darunter. Ein Wächter bricht nach 30 Minuten ab.</div>';
       return;
     }
-    // 📚 Datenlage: Wie viele Handelstage hat das Archiv schon gesammelt?
+    // Datenlage: Wie viele Handelstage hat das Archiv schon gesammelt?
     var deck = '';
     if (window.Archiv) {
       try {
@@ -3774,20 +3814,20 @@
           return '<span class="pbar" style="display:inline-block; width:90px; vertical-align:middle;"><span style="width:' + pct + '%;"></span></span> ' + t + '/' + ziel + ' Tage';
         }
         EXPORT_ABDECKUNG = { at: Date.now(), min1: d1, min5: d5, zielTage: ziel };
-        deck = '<div style="margin-top:4px;">📚 Kursarchiv (Ziel für volle Belastbarkeit: ' + ziel + ' Handelstage):' +
+        deck = '<div style="margin-top:4px;">Kursarchiv (Ziel für volle Belastbarkeit: ' + ziel + ' Handelstage):' +
           '<div>1-Min: ' + balken(d1.tageMedian) + ' · 5-Min: ' + balken(d5.tageMedian) + ' <span style="color:var(--muted);">(' + Math.max(d1.symbole, d5.symbole) + ' Werte, rollierend 90 Kalendertage)</span></div></div>';
       } catch (e) { /* Anzeige ist optional */ }
     }
     var c = a.lastCheck;
     var txt = c
-      ? '<b>' + U.dt(c.at) + '</b> · ' + (c.ok ? '' : '⚠ ') + U.esc(c.txt) +
+      ? '<b>' + U.dt(c.at) + '</b> · ' + (c.ok ? '' : '') + U.esc(c.txt) +
         (c.dauerMin ? ' <span style="color:var(--muted);">(' + c.dauerMin + ' Min Rechenzeit)</span>' : '')
       : 'Noch keine Messung – die erste läuft in der nächsten Nacht nach US-Börsenschluss.';
-    var pend = a.pending ? '<div style="color:var(--up); margin-top:3px;">⏳ Vorgemerkt: ' + U.esc(a.pending.rec.modeName + ' · ' + a.pending.rec.interval) + ' – wird angewendet, sobald die Börse geschlossen ist.</div>' : '';
-    var bfz = a.lastBackfill ? '<div style="color:var(--muted); margin-top:3px;">🄲 Capital-Backfill: ' + a.lastBackfill.bars + ' Kerzen nachgeladen (' + U.dt(a.lastBackfill.at) + ')</div>' : '';
+    var pend = a.pending ? '<div style="color:var(--up); margin-top:3px;">Vorgemerkt: ' + U.esc(a.pending.rec.modeName + ' · ' + a.pending.rec.interval) + ' – wird angewendet, sobald die Börse geschlossen ist.</div>' : '';
+    var bfz = a.lastBackfill ? '<div style="color:var(--muted); margin-top:3px;">Capital-Backfill: ' + a.lastBackfill.bars + ' Kerzen nachgeladen (' + U.dt(a.lastBackfill.at) + ')</div>' : '';
     var apl = a.lastApply ? '<div style="color:var(--muted); margin-top:3px;">Zuletzt übernommen: ' + U.dt(a.lastApply.at) + ' · ' + U.esc(a.lastApply.name || '') + '</div>' : '';
-    var hinweis = a.on === false ? '⚠ Autopilot ist aus – es wird gesammelt, aber nichts gemessen oder geändert.'
-      : 'Misst jede Nacht nach US-Börsenschluss und wendet doppelt bestätigte Ergebnisse vor Handelsbeginn an. ✋ Von Hand gesetzte Felder bleiben unangetastet.';
+    var hinweis = a.on === false ? 'Autopilot ist aus – es wird gesammelt, aber nichts gemessen oder geändert.'
+      : 'Misst jede Nacht nach US-Börsenschluss und wendet doppelt bestätigte Ergebnisse vor Handelsbeginn an. Von Hand gesetzte Felder bleiben unangetastet.';
     el.innerHTML = txt + pend + apl + bfz + deck + '<div style="color:var(--muted); margin-top:3px;">' + hinweis + '</div>';
   }
 
@@ -3795,7 +3835,7 @@
     var out = document.getElementById('centralResult');
     if (!out) return;
     if (!D.central || !D.central.rec) {
-      out.innerHTML = '<div class="empty"><span class="ico">🎛</span>Noch keine Analyse gelaufen – ein Klick oben genügt.</div>';
+      out.innerHTML = '<div class="empty"><span class="ico"></span>Noch keine Analyse gelaufen – ein Klick oben genügt.</div>';
       return;
     }
     var c = D.central, r = c.rec;
@@ -3811,11 +3851,11 @@
       '<tr><td>Meide-Stunden</td><td><b>' + (r.avoidHours.length ? r.avoidHours.map(function (h) { return h + ' Uhr'; }).join(', ') : 'keine') + '</b></td><td>Stunden mit ≥3 Trades und negativem P/L (Berlin)</td></tr>' +
       '<tr><td>Stärkste Werte</td><td colspan="2">' + r.topSymbols.map(U.esc).join(' · ') + '</td></tr></table>';
     if (r.filterBilanz && r.filterBilanz.zeilen && r.filterBilanz.zeilen.length) {
-      html += '<div style="font-size:12.5px; font-weight:600; margin-top:14px;">🧹 Filter-Bilanz (bester Kandidat, ungesehene Daten)</div>';
+      html += '<div style="font-size:12.5px; font-weight:600; margin-top:14px;">Filter-Bilanz (bester Kandidat, ungesehene Daten)</div>';
       html += '<div style="color:var(--muted); font-size:11.5px; margin:2px 0 6px;">Basis mit allen Filtern: ' + U.signTxt(r.filterBilanz.basisRet, ' %') + ' bei ' + r.filterBilanz.basisN + ' Trades. Nutzen = mit minus ohne – positiv heißt: der Filter spart Geld.</div>';
       html += '<table class="tbl" style="font-size:11.5px;"><tr><th>Filter</th><th>mit</th><th>ohne</th><th>Nutzen</th><th>Trades mit/ohne</th><th>Urteil</th></tr>';
       r.filterBilanz.zeilen.forEach(function (fz) {
-        var fu = fz.duenn ? '⏳ zu wenig Trades' : fz.nutzen > 0.5 ? '🟢 spart Geld' : fz.nutzen < -0.5 ? '🔴 kostet Geld' : '⚪ neutral';
+        var fu = fz.duenn ? 'zu wenig Trades' : fz.nutzen > 0.5 ? 'spart Geld' : fz.nutzen < -0.5 ? 'kostet Geld' : 'neutral';
         html += '<tr><td>' + U.esc(fz.name) + '</td><td class="' + U.signCls(fz.mitRet) + '">' + U.signTxt(fz.mitRet, ' %') + '</td>' +
           '<td class="' + U.signCls(fz.ohneRet) + '">' + U.signTxt(fz.ohneRet, ' %') + '</td>' +
           '<td class="' + U.signCls(fz.nutzen) + '"><b>' + U.signTxt(fz.nutzen, ' Pp') + '</b></td>' +
@@ -3823,7 +3863,7 @@
       });
       html += '</table>';
     }
-    // 📋 Volles Ranking: ALLE Kandidaten mit dem Grund, woran sie scheitern – dieselbe
+    // Volles Ranking: ALLE Kandidaten mit dem Grund, woran sie scheitern – dieselbe
     // Sicht wie im messbericht.md, damit App und Bericht nie auseinanderlaufen.
     if (c.ranking && c.ranking.length) {
       html += '<div style="font-size:12.5px; font-weight:600; margin-top:14px;">Alle Kandidaten dieser Messung</div>';
@@ -3841,21 +3881,21 @@
       html += '</table>';
     }
     html += '<div style="display:flex; gap:8px; align-items:center; margin-top:10px; flex-wrap:wrap;">' +
-      '<button class="btn" id="centralApplyBtn">✅ Empfehlung komplett übernehmen</button>' +
+      '<button class="btn" id="centralApplyBtn">Empfehlung komplett übernehmen</button>' +
       '<span id="centralApplyStatus" style="color:var(--muted); font-size:12px;"></span></div>';
     html += '<div style="color:var(--muted); font-size:11.5px; margin-top:8px;">Ehrlichkeit: ' + r.n + ' Out-of-Sample-Trades sind eine kleine Stichprobe – die Empfehlung ist ein Kandidat, kein Beweis. Analyse regelmäßig wiederholen; sie wird mit jedem Handelstag belastbarer. Ergebnis liegt auch im Analyse-Export.</div>';
     out.innerHTML = html;
     var ab = document.getElementById('centralApplyBtn');
     if (ab) ab.addEventListener('click', function () {
-      if (r.verdict && (r.verdict.indexOf('🔴') !== -1 || r.verdict.indexOf('⚪') !== -1)) {
-        document.getElementById('centralApplyStatus').textContent = '⛔ Gesperrt: ' + (r.verdict.indexOf('⚪') !== -1
+      if (r.verdict && (r.verdict.indexOf('kein Vorteil') !== -1 || r.verdict.indexOf('nicht belastbar') !== -1)) {
+        document.getElementById('centralApplyStatus').textContent = 'Gesperrt: ' + (r.verdict.indexOf('nicht belastbar') !== -1
           ? 'Dieses Urteil beruht auf zu wenigen Trades (' + r.n + ') – das ist Rauschen, keine Messung.'
           : 'Dieses Setup hat im Test KEINEN Vorteil gezeigt (' + r.verdict + ').') + ' Es wird nicht übernommen.';
         return;
       }
       var applied = applyCentralRec(r, 'manuell');
       save();
-      document.getElementById('centralApplyStatus').textContent = (applied.length ? '✅ Übernommen (' + applied.length + ' Änderungen)' : '✅ Nichts zu ändern – läuft bereits so') + ' – gilt ab dem nächsten Scan' + (r.avoidHours.length ? ' (Meide-Stunden aktiv: ' + r.avoidHours.join(', ') + ' Uhr)' : '') + '.';
+      document.getElementById('centralApplyStatus').textContent = (applied.length ? 'Übernommen (' + applied.length + ' Änderungen)' : 'Nichts zu ändern – läuft bereits so') + ' – gilt ab dem nächsten Scan' + (r.avoidHours.length ? ' (Meide-Stunden aktiv: ' + r.avoidHours.join(', ') + ' Uhr)' : '') + '.';
       renderTuneLog();
       render();
     });
@@ -3917,7 +3957,7 @@
         konfigVorher: null, konfigNachher: null });
       messNeu = messNeu || 1;
     }
-    // Einmalig: ⚡ Blitz (Trades von max. 3 Minuten) mit einem Cooldown von 30+ Minuten
+    // Einmalig: Blitz (Trades von max. 3 Minuten) mit einem Cooldown von 30+ Minuten
     // widerspricht sich selbst – der Modus-Standard (2 Min) soll gelten. Der Wert stammte
     // aus der alten Ausbruch-Voreinstellung und hatte nie ein eigenes Formularfeld.
     if (!D.cooldownGeprueft) {
@@ -3928,11 +3968,11 @@
         if (!D.tuneLog) D.tuneLog = [];
         D.tuneLog.unshift({ id: 'sicherung-cd-' + Date.now(), at: Date.now(), quelle: 'sicherung',
           applied: ['Cooldown ' + altCd + ' Min → Modus-Standard (Blitz: 2 Min)'],
-          txt: '⚡ Blitz steigt nach spätestens 3 Minuten aus – ein ' + altCd + '-Minuten-Cooldown je Symbol ließ davon fast nichts übrig. Der Wert stammte aus der alten Ausbruch-Voreinstellung.',
+          txt: 'Blitz steigt nach spätestens 3 Minuten aus – ein ' + altCd + '-Minuten-Cooldown je Symbol ließ davon fast nichts übrig. Der Wert stammte aus der alten Ausbruch-Voreinstellung.',
           konfigVorher: null, konfigNachher: JSON.parse(JSON.stringify(D.intraday)) });
       }
     }
-    // v8-Migration: Die Strategie-Farm ist durch den 🤖 Autopiloten ersetzt. Der alte
+    // v8-Migration: Die Strategie-Farm ist durch den Autopiloten ersetzt. Der alte
     // Farm-Stand bleibt als farmAlt einsehbar (Export), steuert aber nichts mehr.
     if (D.farm && !D.v8Migriert) {
       D.v8Migriert = Date.now();
@@ -3944,8 +3984,8 @@
       });
       if (!D.tuneLog) D.tuneLog = [];
       D.tuneLog.unshift({ id: 'sicherung-v8-' + Date.now(), at: Date.now(), quelle: 'sicherung',
-        applied: ['🤖 Autopilot ersetzt Farm + Selbst-Optimierung'],
-        txt: 'v8: Eine Automatik statt drei. Das 📚 Kursarchiv sammelt ab jetzt jede geladene Kursreihe (rollierend 90 Tage) – die nächtliche Messung wird damit von Woche zu Woche belastbarer. Die Marktlage (🧭) ist nur noch Anzeige. Der alte Farm-Stand liegt unverändert im Analyse-Export (strategieFarmAlt).',
+        applied: ['Autopilot ersetzt Farm + Selbst-Optimierung'],
+        txt: 'v8: Eine Automatik statt drei. Das Kursarchiv sammelt ab jetzt jede geladene Kursreihe (rollierend 90 Tage) – die nächtliche Messung wird damit von Woche zu Woche belastbarer. Die Marktlage () ist nur noch Anzeige. Der alte Farm-Stand liegt unverändert im Analyse-Export (strategieFarmAlt).',
         konfigVorher: null, konfigNachher: null });
       messNeu = messNeu || 1;
     }
@@ -4000,13 +4040,13 @@
     renderSymBlocks();
     (function () {
       var fw = document.getElementById('feeWarn');
-      if (fw && D.intraday.orderFee === 0) fw.textContent = '⚠ Ordergebühr 0 $ macht die Simulation unrealistisch – echte Broker kosten Geld. Backtests sehen damit besser aus, als sie sind.';
+      if (fw && D.intraday.orderFee === 0) fw.textContent = 'Ordergebühr 0 $ macht die Simulation unrealistisch – echte Broker kosten Geld. Backtests sehen damit besser aus, als sie sind.';
     })();
     document.getElementById('exportDataBtn').addEventListener('click', async function () {
       var stE = document.getElementById('reportStatus');
       stE.textContent = 'Exportiere …';
       var r = await exportAnalysis(true);
-      stE.textContent = r && r.ok ? '✅ Gespeichert in ' + r.dir : '❌ Export fehlgeschlagen' + (r && r.msg ? ': ' + r.msg : ' (läuft die App als Installation?)');
+      stE.textContent = r && r.ok ? 'Gespeichert in ' + r.dir : 'Export fehlgeschlagen' + (r && r.msg ? ': ' + r.msg : ' (läuft die App als Installation?)');
     });
 
     // Optimierer, CSV, Watchlist, Strategie-Labor
@@ -4018,9 +4058,9 @@
       var el = document.getElementById('capStatus');
       if (!el) return;
       if (!(window.CapAPI && window.CapAPI.enabled())) { el.textContent = ''; return; }
-      el.textContent = '🅲 Capital.com Demo: verbinde …';
+      el.textContent = 'Capital.com Demo: verbinde …';
       var s0 = await window.CapAPI.status();
-      el.textContent = '🅲 ' + s0.msg + (s0.ok ? ' · Intraday-Signale werden gespiegelt.' : '');
+      el.textContent = '' + s0.msg + (s0.ok ? ' · Intraday-Signale werden gespiegelt.' : '');
     }
     setTimeout(updateCapStatus, 3000);
     setInterval(updateCapStatus, 10 * 60000);
@@ -4161,7 +4201,7 @@
       D.intraday.orderFee = parseFloat(idF.value);
       var feeWarn = document.getElementById('feeWarn');
       if (feeWarn) feeWarn.textContent = D.intraday.orderFee === 0
-        ? '⚠ Ordergebühr 0 $ macht die Simulation unrealistisch – echte Broker kosten Geld. Backtests sehen damit besser aus, als sie sind.'
+        ? 'Ordergebühr 0 $ macht die Simulation unrealistisch – echte Broker kosten Geld. Backtests sehen damit besser aus, als sie sind.'
         : '';
       D.intraday.minDollarVol = parseInt(idL.value, 10);
       D.intraday.lineType = idLn.value;
@@ -4185,12 +4225,12 @@
         if (String(vorherHand[fk]) !== String(D.intraday[fk])) { handDiff.push(HAND_FELDER[fk] + ' → ' + D.intraday[fk]); handFelder.push(fk); }
       });
       if (handDiff.length) {
-        // ✋ Ab jetzt gehört dieses Feld dir: keine Automatik überschreibt es mehr,
+        // Ab jetzt gehört dieses Feld dir: keine Automatik überschreibt es mehr,
         // bis du es unter der Strategie-Karte wieder freigibst.
         handSperren(handFelder);
         if (!D.tuneLog) D.tuneLog = [];
         D.tuneLog.unshift({ id: 'hand-' + Date.now(), at: Date.now(), quelle: 'hand', applied: handDiff,
-          txt: '✋ Von Hand geändert (Formular) – diese Felder sind jetzt gegen die Automatik gesperrt.',
+          txt: 'Von Hand geändert (Formular) – diese Felder sind jetzt gegen die Automatik gesperrt.',
           konfigVorher: vorherHand, konfigNachher: JSON.parse(JSON.stringify(D.intraday)) });
         if (D.tuneLog.length > 60) D.tuneLog = D.tuneLog.slice(0, 60);
       }
@@ -4213,7 +4253,7 @@
     // (v8) Die Messung startet nur noch der Autopilot – Knopf oder Nacht-Takt.
     renderCentral();
 
-    /* 🤖 Autopilot verkabeln */
+    /* Autopilot verkabeln */
     (function () {
       var a = autoOptCfg();
       var pOn = document.getElementById('pilotOn'), pBtn = document.getElementById('pilotBtn');
@@ -4227,8 +4267,19 @@
     // einmal je ~20 h – die Nacht-Messung gestartet. So läuft sie genau einmal pro Nacht,
     // die Rechenlast bleibt außerhalb der Handelszeit, und Neustarts überstehen den Takt
     // (lastMess liegt im Store, nicht im Speicher).
+    // Herzschlag: solange gemessen wird, Kopfzeile alle 5 s auffrischen (seit/letzte Aktivität)
+    setInterval(function () { if (pilotRunning) renderPilot(); }, 5000);
     setInterval(function () {
       var a = autoOptCfg();
+      // Wächter: Eine Messung, die nach 30 Minuten nicht zurück ist, gilt als hängend.
+      // Der Zustand wird freigegeben, damit Nächte nicht verloren gehen; der Vorfall
+      // steht sichtbar im Protokoll und im Status.
+      if (pilotRunning && pilotStartAt && Date.now() - pilotStartAt > 30 * 60000) {
+        pilotRunning = false; pilotPhase = '';
+        a.lastCheck = { at: Date.now(), ok: false, txt: 'Wächter-Abbruch: Messung war nach 30 Minuten nicht fertig. Nächster Versuch beim nächsten Takt.' };
+        pilotLogAdd('WÄCHTER: Messung nach 30 Minuten abgebrochen und Zustand freigegeben.');
+        save(); renderPilot();
+      }
       if (window.Dash.marketOpen()) return;
       pilotAnwenden();
       if (a.on === false || pilotRunning || centralRunning || jobRunning) return;
@@ -4238,7 +4289,7 @@
     // Beim Start: Vorgemerktes ggf. sofort einspielen (z. B. App war über Nacht aus)
     setTimeout(function () { if (!window.Dash.marketOpen()) pilotAnwenden(); }, 30000);
 
-    /* 🧭 Regime-Automatik verkabeln */
+    /* Regime-Automatik verkabeln */
     (function () {
       var rOn = document.getElementById('aoRegime'), rBtn = document.getElementById('regimeBtn');
       if (!rOn) return;
