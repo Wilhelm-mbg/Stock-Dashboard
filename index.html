@@ -336,8 +336,8 @@
 
   /* Geduld-Bilanz */
   .patrow { display: grid; grid-template-columns: minmax(170px, 250px) 1fr 44px; gap: 10px; align-items: center; margin: 4px 0; font-size: 12px; line-height: 1.3; }
-  .patrow .pbar { height: 8px; border-radius: 4px; background: var(--grid); overflow: hidden; }
-  .patrow .pbar > span { display: block; height: 100%; background: var(--series); border-radius: 4px; }
+  .patrow .pbar, #pilotStatus .pbar { height: 8px; border-radius: 4px; background: var(--grid); overflow: hidden; }
+  .patrow .pbar > span, #pilotStatus .pbar > span { display: block; height: 100%; background: var(--series); border-radius: 4px; }
   .patrow b { text-align: right; }
 
   /* Explorer-Startseite */
@@ -632,65 +632,33 @@
 
     <!-- 1 · Was die App von allein tut -->
     <div class="panel" style="margin-bottom:12px; border-top:3px solid var(--series);">
-      <h3>🤖 Automatik – was die App von allein tut</h3>
+      <h3>🤖 Autopilot – die App verbessert sich selbst</h3>
       <div style="color:var(--muted); font-size:11.5px; margin-bottom:10px;">
-        Drei Ebenen, die ineinandergreifen: Die <b>Regime-Automatik</b> wählt stündlich das passende Setup zur Marktlage,
-        die <b>Selbst-Optimierung</b> feilt an den Parametern, und die <b>Strategie-Farm</b> züchtet nachts Herausforderer,
-        die sich erst bewähren müssen. Du musst hier nichts bedienen – die Knöpfe sind nur zum Nachhelfen.
+        Eine Kette statt drei Automatiken: Das 📚 <b>Kursarchiv</b> sammelt jede geladene Kursreihe dauerhaft
+        (rollierend 90 Tage) – die Messbasis wächst mit jedem Handelstag, statt an Yahoos kurzem Rückblick zu kleben.
+        Der <b>Autopilot</b> misst jede Nacht nach US-Börsenschluss alle Setups per Walk-Forward auf dem Archiv und
+        übernimmt nur Ergebnisse, die <b>belastbar</b> sind und sich in <b>zwei Nächten hintereinander</b> bestätigen –
+        angewendet wird morgens vor Handelsbeginn, nie mitten im Handel. ✋ Von Hand gesetzte Felder bleiben unangetastet.
       </div>
 
       <div class="auto-row">
         <div class="auto-head">
-          <label title="Setup, Zeitrahmen, Trendfilter und Kanalfilter werden stündlich automatisch gesetzt">🧭 Regime-Automatik<span class="switch"><input type="checkbox" id="aoRegime" checked><span class="knob"></span></span></label>
-          <button class="btn ghost tiny" id="regimeBtn">jetzt beurteilen</button>
+          <label title="Misst nachts auf dem Kursarchiv und wendet doppelt bestätigte, robuste Ergebnisse morgens an">🤖 Autopilot<span class="switch"><input type="checkbox" id="pilotOn" checked><span class="knob"></span></span></label>
+          <button class="btn ghost tiny" id="pilotBtn">jetzt messen (3–6 Min)</button>
+        </div>
+        <div id="pilotStatus" class="auto-status"></div>
+      </div>
+
+      <div class="auto-row">
+        <div class="auto-head">
+          <label title="Reine Anzeige: misst stündlich die Marktlage, schaltet aber nichts mehr um">🧭 Marktlage (nur Anzeige)<span class="switch"><input type="checkbox" id="aoRegime" checked><span class="knob"></span></span></label>
+          <button class="btn ghost tiny" id="regimeBtn">jetzt messen</button>
         </div>
         <div id="regimeStatus" class="auto-status"></div>
       </div>
 
-      <div class="auto-row">
-        <div class="auto-head">
-          <label title="Startet in festem Takt die Komplett-Analyse und übernimmt nur robuste Empfehlungen">🎛 Selbst-Optimierung<span class="switch"><input type="checkbox" id="aoOn" checked><span class="knob"></span></span></label>
-          <select id="aoEvery" class="tiny-sel">
-            <option value="4">alle 4 h</option>
-            <option value="8" selected>alle 8 h</option>
-            <option value="12">alle 12 h</option>
-            <option value="24">täglich</option>
-          </select>
-          <label class="mini" title="Nur Empfehlungen übernehmen, die im Walk-Forward als robust gelten">nur robuste<span class="switch"><input type="checkbox" id="aoRobust" checked><span class="knob"></span></span></label>
-          <label class="mini" title="Rechnet nicht, während die US-Börse offen ist">Pause bei offener Börse<span class="switch"><input type="checkbox" id="aoMarket" checked><span class="knob"></span></span></label>
-          <button class="btn ghost tiny" id="aoBtn">jetzt durchlaufen</button>
-        </div>
-        <div id="autoOptStatus" class="auto-status"></div>
-      </div>
-
-      <div class="auto-row">
-        <div class="auto-head">
-          <label title="Züchtet alle 12 Stunden bei geschlossener Börse. Der Suchraum erweitert sich selbst, wenn der Sieger am Rand einer Werteliste sitzt.">🧬 Strategie-Farm<span class="switch"><input type="checkbox" id="aoFarm" checked><span class="knob"></span></span></label>
-          <select id="aoFarmPop" class="tiny-sel">
-            <option value="12">12 Varianten</option>
-            <option value="24" selected>24 Varianten</option>
-            <option value="40">40 Varianten</option>
-          </select>
-          <button class="btn ghost tiny" id="farmBtn">jetzt züchten</button>
-        </div>
-        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-top:8px;">
-          <input type="text" id="farmIdee" placeholder="Eigene Idee testen, z. B. „Umkehr am Wellental, 5 Min, EMA50, Stop 30 %“" style="flex:1; min-width:280px; font-size:12px;">
-          <button class="btn ghost tiny" id="farmSaatBtn">einreichen</button>
-        </div>
-        <div id="farmSaatStatus" style="font-size:11.5px; color:var(--muted); margin-top:4px;"></div>
-        <div id="farmStatus" class="auto-status"></div>
-      </div>
-
       <details class="how" style="margin-top:10px;">
-        <summary>Einmal-Analyse von Hand starten (dauert 3–6 Minuten)</summary>
-        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-top:8px;">
-          <button class="btn" id="centralBtn">Komplett-Analyse starten</button>
-          <span id="centralStatus" style="color:var(--muted); font-size:12px;"></span>
-        </div>
-        <div style="color:var(--muted); font-size:11.5px; margin-top:6px;">
-          Dasselbe, was die Selbst-Optimierung im Takt erledigt: Walk-Forward über beide Setups × drei Zeitrahmen,
-          Feinschliff des Gewinners out-of-sample validiert, dann Diagnose nach Stunde, Zeitfenster und Symbol.
-        </div>
+        <summary>Letzte Messung im Detail (Ranking, Empfehlung, Datenbasis)</summary>
         <div id="centralResult" style="margin-top:12px;"></div>
       </details>
     </div>
@@ -929,6 +897,7 @@
 <script src="ollama.js"></script>
 <script src="capital.js"></script>
 <script src="calendar.js"></script>
+<script src="archiv.js"></script>
 <script src="explorer.js"></script>
 <script src="depot.js"></script>
 </body>

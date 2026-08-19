@@ -30,6 +30,7 @@
   var HEALTH = { scans: 0, scanErrors: 0, fetchFail: 0, fetchOk: 0, kiFail: 0, kiOk: 0, capFail: 0, capOk: 0, lastScanT: 0, scanTimes: [], startedAt: Date.now() };
   var LASTBARS = {}; // sym -> zuletzt geladene Intraday-Serie (für den Kursdaten-Export)
   var SIG = {};      // sym -> letzter Signal-/Blocker-Zustand (Live-Monitor)
+  var EXPORT_ABDECKUNG = null; // 📚 Archiv-Abdeckung (füllt renderPilot), geht mit in den Analyse-Export
   var lastEqPoint = 0;
   var SENT = {}; // Sentiment-Historie je Symbol
 
@@ -832,7 +833,7 @@
       var e = r.e;
       html += '<tr' + (r.laufend ? ' style="font-weight:600;"' : '') + '>' +
         '<td>' + (r.rang ? '#' + r.rang : '–') + '</td>' +
-        '<td>' + U.dt(e.at) + '<br><span style="color:var(--muted); font-weight:400; font-size:11px;">' + (e.quelle === 'lokal' ? '🤖 Selbst-Optimierung' : e.quelle === 'manuell' ? '👤 manuell übernommen' : '🛰 Cloud-Analyse') + (r.laufend ? ' · läuft aktuell' : '') + '</span></td>' +
+        '<td>' + U.dt(e.at) + '<br><span style="color:var(--muted); font-weight:400; font-size:11px;">' + ({ pilot: '🤖 Autopilot', lokal: '🤖 Selbst-Optimierung (alt)', manuell: '👤 manuell übernommen', hand: '✋ von Hand', regime: '🧭 Regime (alt)', farm: '🧬 Farm (alt)', sicherung: '🛡 Sicherung' }[e.quelle] || '🛰 Cloud-Analyse') + (r.laufend ? ' · läuft aktuell' : '') + '</span></td>' +
         '<td>' + (e.applied && e.applied.length ? U.esc(e.applied.join(' · ')) : '<span style="color:var(--muted);">keine Feldänderung</span>') +
           (e.txt ? '<div style="color:var(--muted); font-size:11px; margin-top:2px;">' + U.esc(e.txt) + '</div>' : '') + '</td>' +
         '<td>' + (r.vor.avg != null ? U.signTxt(r.vor.avg, ' $') : '–') + ' → ' + (r.nach.avg != null ? '<b class="' + U.signCls(r.nach.avg) + '">' + U.signTxt(r.nach.avg, ' $') + '</b>' : '–') +
@@ -919,7 +920,9 @@
         symbolSperren: D.symBlock || {},
         schattenbuch: { bilanz: D.schattenStat || {}, offen: (D.schatten || []).filter(function (x) { return x.status === 'open'; }).length,
           letzte: (D.schatten || []).slice(0, 60) },
-        strategieFarm: D.farm || null,
+        strategieFarmAlt: D.farmAlt || null,
+        autopilot: D.autoOpt || null,
+        archivAbdeckung: EXPORT_ABDECKUNG || null,
         marktRegime: D.regime || null,
         automatik: D.autoOpt || null,
         messschnitt: D.messStart ? { seit: new Date(D.messStart).toISOString(), grund: D.messGrund || '' } : null,
@@ -1464,9 +1467,16 @@
       HEALTH.scans++; HEALTH.lastScanT = now;
       HEALTH.scanTimes.push(now); if (HEALTH.scanTimes.length > 400) HEALTH.scanTimes = HEALTH.scanTimes.slice(-400);
       fds.forEach(function (f, fi) {
-        if (f && f.series) { HEALTH.fetchOk++; LASTBARS[syms[fi]] = f.series.slice(-420); }
+        if (f && f.series) {
+          HEALTH.fetchOk++;
+          LASTBARS[syms[fi]] = f.series.slice(-420);
+          // 📚 Jeder Scan füttert das Kursarchiv – so wächst die Messbasis mit jedem Handelstag,
+          // statt für immer an Yahoos Rückblick-Fenster (5 Tage auf 1m) zu kleben.
+          if (window.Archiv) window.Archiv.fuege(cfg.interval || '5m', syms[fi], f.series);
+        }
         else HEALTH.fetchFail++;
       });
+      if (window.Archiv) window.Archiv.speichere(false);  // gedrosselt: schreibt höchstens alle 10 Min
       for (var i = 0; i < syms.length; i++) {
         var sym = syms[i];
         st.textContent = 'Scan ' + sym + ' (' + (i + 1) + '/' + syms.length + ') …';
@@ -2849,15 +2859,27 @@
       var mapL = {}, doneLab = 0;
       var ivLab = intervals[ii];
       await pmap(symsL, async function (sy) {
+        // Frisch von Yahoo holen und ins 📚 Archiv einpflegen – gemessen wird dann auf der
+        // ZUSAMMENGEFÜHRTEN Serie (Archiv ∪ frischer Abruf). Am ersten Tag ist das identisch
+        // mit dem Yahoo-Fenster; danach wächst die Messbasis mit jedem Handelstag weiter
+        // (rollierend bis 90 Kalendertage), auch auf 1m, wo Yahoo nur ~5 Tage zurückreicht.
         var fdL = await fetchIntraday(sy, ivLab, true);
         doneLab++;
         if (st) st.textContent = 'Lade ' + ivLab + '-Historie … (' + doneLab + '/' + symsL.length + ')';
-        if (fdL && fdL.series.length > 200) {
-          if (!cfg.minDollarVol || fdL.dollarVolDay == null || fdL.dollarVolDay >= cfg.minDollarVol * 1e6) mapL[sy] = fdL.series;
+        var serie = null, dv = null;
+        if (window.Archiv) {
+          if (fdL && fdL.series.length) await window.Archiv.fuege(ivLab, sy, fdL.series);
+          serie = await window.Archiv.serie(ivLab, sy);
+          dv = (fdL && fdL.dollarVolDay != null) ? fdL.dollarVolDay : window.Archiv.dollarVolTag(serie);
+        }
+        if (!serie || serie.length <= 200) { serie = fdL ? fdL.series : null; dv = fdL ? fdL.dollarVolDay : null; }
+        if (serie && serie.length > 200) {
+          if (!cfg.minDollarVol || dv == null || dv >= cfg.minDollarVol * 1e6) mapL[sy] = serie;
         }
       }, 6);
       data[ivLab] = mapL;
     }
+    if (window.Archiv) await window.Archiv.speichere(true);   // Messlauf = guter Moment zum Sichern
     return { intervals: intervals, data: data };
   }
 
@@ -2998,7 +3020,7 @@
     var out = (!silent && document.getElementById('centralResult')) || Object.assign({}, dummy);
     var st = silent
       ? { set textContent(v) { if (opts.status) opts.status(v); }, get textContent() { return ''; } }
-      : document.getElementById('centralStatus');
+      : Object.assign({}, dummy);
     btn.disabled = true;
     try {
       var cfg = D.intraday;
@@ -3113,11 +3135,11 @@
     if (applied.length || gesperrt.length) {
       if (!D.tuneLog) D.tuneLog = [];
       var closedNow = D.trades.filter(function (t) { return t.status === 'closed' && istMess(t); });
-      var txt = (quelle === 'lokal' ? 'Selbst-Optimierung: ' : '') + r.modeName + ' · ' + r.interval + ' · Walk-Forward ' +
+      var txt = (quelle === 'pilot' ? 'Autopilot: ' : quelle === 'lokal' ? 'Selbst-Optimierung: ' : '') + r.modeName + ' · ' + r.interval + ' · Walk-Forward ' +
         (r.wfRet > 0 ? '+' : '') + r.wfRet + ' % · ' + r.posSegs + '/4 Scheiben · ' + r.n + ' Trades · PF ' + r.pf + ' · ' + r.verdict +
         (gesperrt.length ? ' — ✋ nicht angefasst (von Hand gesetzt): ' + gesperrt.join(' · ') : '');
       D.tuneLog.unshift({
-        id: (quelle === 'lokal' ? 'lokal-' : 'manuell-') + Date.now(), at: Date.now(), quelle: quelle || 'manuell',
+        id: (quelle || 'manuell') + '-' + Date.now(), at: Date.now(), quelle: quelle || 'manuell',
         applied: applied.length ? applied : ['(nichts geändert – alle Vorschläge betrafen von Hand gesetzte Felder)'],
         gesperrt: gesperrt, txt: txt, konfigVorher: vorher,
         equityBei: Math.round(equityNow() * 100) / 100,
@@ -3137,578 +3159,6 @@
     if (chEl) chEl.checked = !!D.intraday.channel;
     if (window.__updateParamVis) window.__updateParamVis();
     return applied;
-  }
-
-  /* ================= 🧬 Strategie-Farm: züchten, prüfen, bewähren =================
-   * Eine Population von Strategie-Varianten wird über Generationen gezüchtet. Bewertet wird
-   * ausschließlich auf ungesehenen Zeitscheiben. Der Generationssieger wird NICHT übernommen –
-   * er wird Herausforderer und muss den amtierenden Champion mehrfach auf Daten schlagen, die
-   * es bei seiner Entstehung noch nicht gab. Sonst findet man garantiert einen Zufallssieger. */
-  /* Genraum. Die Zahlenlisten sind STARTWERTE – die Farm darf sie im Rahmen der
-   * harten Grenzen selbst erweitern, wenn der Sieger am Rand einer Liste sitzt. */
-  var GEN_SPACE = {
-    setup: ['ausbruch', 'umkehr'],
-    trigger: { ausbruch: ['kreuzung', 'range'], umkehr: ['ueberdehnung', 'welle'] },
-    interval: ['1m', '5m'],
-    exitStil: ['laufen', 'kurz', 'blitz'],
-    period: [9, 20, 50],
-    confirmBps: [5, 15, 30],
-    lineType: ['ema', 'vwap'],
-    window: ['all', 'open2', 'open4', 'close2'],
-    scalpSL: [15, 20, 30, 'auto'],
-    scalpHold: [3, 5, 15, 30, 60],
-    cooldownMin: [2, 3, 10, 30, 45],
-    maxPerDay: [5, 10, 20, 40],
-    profile: ['atm21', 'otm3_14', 'otm5_10'],
-    sizing: ['fix', '0.25', '0.5', '1'],
-    trendFilter: [true, false],
-    channel: [true, false],
-    mtf: [true, false]
-  };
-  /* Harte Grenzen – die dürfen auch selbstausdehnende Listen nie überschreiten. */
-  var GEN_GRENZEN = {
-    period: [5, 200], confirmBps: [2, 80], scalpHold: [2, 240],
-    cooldownMin: [1, 120], maxPerDay: [2, 60], scalpSL: [10, 60]
-  };
-  /** Sitzt der Sieger am Rand einer Zahlenliste, wird die Liste um einen Schritt
-   *  nach außen erweitert. So findet die Farm Werte, die anfangs gar nicht vorgesehen waren. */
-  function raumErweitern(besteGene) {
-    var neu = [];
-    Object.keys(GEN_GRENZEN).forEach(function (f) {
-      var liste = GEN_SPACE[f];
-      if (!liste || !liste.length) return;
-      var zahlen = liste.filter(function (x) { return typeof x === 'number'; }).sort(function (a, b) { return a - b; });
-      if (zahlen.length < 2) return;
-      var min = zahlen[0], max = zahlen[zahlen.length - 1];
-      var amMin = 0, amMax = 0;
-      besteGene.forEach(function (g) { if (g[f] === min) amMin++; if (g[f] === max) amMax++; });
-      var schritt = Math.max(1, Math.round((max - min) / Math.max(1, zahlen.length - 1)));
-      if (amMin >= 2 && min > GEN_GRENZEN[f][0]) {
-        var kleiner = Math.max(GEN_GRENZEN[f][0], min - schritt);
-        if (liste.indexOf(kleiner) === -1) { liste.push(kleiner); neu.push(f + ' → ' + kleiner); }
-      }
-      if (amMax >= 2 && max < GEN_GRENZEN[f][1]) {
-        var groesser = Math.min(GEN_GRENZEN[f][1], max + schritt);
-        if (liste.indexOf(groesser) === -1) { liste.push(groesser); neu.push(f + ' → ' + groesser); }
-      }
-    });
-    return neu;
-  }
-  function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
-  function genNormieren(g) {
-    // exitStil wirkt nur beim Ausbruch per Kreuzung – überall sonst auf 'laufen' normieren,
-    // sonst zählt der seen-Cache phänotypisch identische Gene doppelt (Elite-Plätze!).
-    if (!(g.setup === 'ausbruch' && g.trigger === 'kreuzung')) g.exitStil = 'laufen';
-    if (!g.exitStil) g.exitStil = 'laufen';
-    return g;
-  }
-  function randGene() {
-    var setup = pick(GEN_SPACE.setup);
-    return genNormieren({
-      setup: setup, trigger: pick(GEN_SPACE.trigger[setup]),
-      exitStil: setup === 'ausbruch' ? pick(GEN_SPACE.exitStil) : 'laufen',
-      interval: pick(GEN_SPACE.interval), period: pick(GEN_SPACE.period),
-      confirmBps: pick(GEN_SPACE.confirmBps), lineType: pick(GEN_SPACE.lineType),
-      window: pick(GEN_SPACE.window), scalpSL: pick(GEN_SPACE.scalpSL),
-      scalpHold: pick(GEN_SPACE.scalpHold), cooldownMin: pick(GEN_SPACE.cooldownMin),
-      maxPerDay: pick(GEN_SPACE.maxPerDay), profile: pick(GEN_SPACE.profile),
-      sizing: pick(GEN_SPACE.sizing), trendFilter: pick(GEN_SPACE.trendFilter),
-      channel: pick(GEN_SPACE.channel), mtf: pick(GEN_SPACE.mtf)
-    });
-  }
-  /** Aktuelle Einstellung als Gen – der amtierende Champion. */
-  function geneFromConfig(c) {
-    var st = setupFromMode(c.mode);
-    return {
-      setup: st.setup, trigger: st.trigger,
-      exitStil: st.setup === 'ausbruch' && st.trigger === 'kreuzung' ? (c.exitStyle || st.exitStyle || 'laufen') : 'laufen',
-      interval: c.interval === '60m' ? '15m' : (c.interval || '5m'),
-      period: c.period, confirmBps: c.confirmBps, lineType: c.lineType || 'ema',
-      window: c.window || 'all', scalpSL: c.scalpSL === 'auto' ? 'auto' : (c.scalpSL || 20),
-      scalpHold: c.scalpHold || 60, cooldownMin: c.cooldownMin || 45, maxPerDay: c.maxPerDay || 10,
-      profile: c.profile || 'atm21', sizing: c.sizing || 'fix',
-      trendFilter: !!c.trendFilter, channel: c.channel !== false, mtf: c.mtf !== false
-    };
-  }
-  function geneKey(g) {
-    return [g.setup, g.trigger, g.exitStil || 'laufen', g.interval, g.period, g.confirmBps, g.lineType, g.window,
-      g.scalpSL, g.scalpHold, g.cooldownMin, g.maxPerDay, g.profile, g.sizing,
-      g.trendFilter ? 1 : 0, g.channel ? 1 : 0, g.mtf ? 1 : 0].join('|');
-  }
-  function geneName(g) {
-    var stil = g.exitStil === 'blitz' ? ' · ⚡ Blitz' : (g.exitStil === 'kurz' ? ' · kurz' : '');
-    return setupName(modeFromSetup(g.setup, g.trigger, 'laufen'), g.channel) + stil + ' · ' + g.interval +
-      ' · ' + String(g.lineType).toUpperCase() + g.period + ' · ' + (g.confirmBps / 100).toFixed(2) + ' %' +
-      ' · SL ' + (g.scalpSL === 'auto' ? 'auto' : g.scalpSL + ' %') +
-      (g.profile && g.profile !== 'atm21' ? ' · ' + (Q.PROFILES[g.profile] || {}).name : '') +
-      (g.sizing && g.sizing !== 'fix' ? ' · Risiko ' + g.sizing + ' %' : '') +
-      (g.trendFilter ? ' · Trendfilter' : '') + (g.mtf && g.interval === '1m' ? ' · 5-Min-Bestätigung' : '') +
-      ' · ' + (WINDOW_NAMES[g.window] || g.window);
-  }
-  function mutate(g) {
-    var k = randGene();
-    var out = JSON.parse(JSON.stringify(g));
-    var felder = ['setup', 'exitStil', 'interval', 'period', 'confirmBps', 'lineType', 'window', 'scalpSL', 'scalpHold',
-      'cooldownMin', 'maxPerDay', 'profile', 'sizing', 'trendFilter', 'channel', 'mtf'];
-    var n = 1 + Math.floor(Math.random() * 2);
-    for (var i = 0; i < n; i++) {
-      var f = pick(felder);
-      out[f] = k[f];
-      if (f === 'setup') out.trigger = pick(GEN_SPACE.trigger[out.setup]);
-    }
-    if (Math.random() < 0.3) out.trigger = pick(GEN_SPACE.trigger[out.setup]);
-    return genNormieren(out);
-  }
-  function crossover(a, b) {
-    var out = {};
-    Object.keys(a).forEach(function (f) { out[f] = Math.random() < 0.5 ? a[f] : b[f]; });
-    genNormieren(out);
-    if (GEN_SPACE.trigger[out.setup].indexOf(out.trigger) === -1) out.trigger = pick(GEN_SPACE.trigger[out.setup]);
-    return out;
-  }
-  /** Backtest-Optionen eines Gens (identische Rechenlogik wie im Livebetrieb). */
-  function geneOpts(g) {
-    var mode = modeFromSetup(g.setup, g.trigger, g.exitStil || 'laufen');
-    var slV = g.scalpSL === 'auto' ? 'auto' : -(g.scalpSL) / 100;
-    var base;
-    if (mode === 'orb') base = { entryMode: 'orb', exitMode: 'confirmed', orbMin: 30, sl: slV, tp: null, trailPct: 0.15, maxHoldMin: 0 };
-    else if (mode === 'reversion') base = { entryMode: 'reversion', sl: slV, tp: null, trailPct: 0, maxHoldMin: g.scalpHold };
-    else if (mode === 'wave') base = { entryMode: 'wave', channel: !!g.channel, sl: slV, tp: null, trailPct: 0, maxHoldMin: g.scalpHold, trendFilter: true, minQuality: 60 };
-    else if (mode === 'waves') base = g.exitStil === 'blitz'
-      ? { entryMode: 'cross', exitMode: 'blitz', sl: slV, tp: null, trailPct: 0.10, maxHoldMin: Math.min(3, g.scalpHold > 0 ? g.scalpHold : 3), trendFilter: !!g.trendFilter }
-      : { entryMode: 'cross', exitMode: 'recross', sl: slV, tp: null, trailPct: 0, maxHoldMin: g.scalpHold, trendFilter: !!g.trendFilter };
-    else base = { entryMode: 'cross', exitMode: 'confirmed', sl: -0.25, tp: 0.35, trailPct: 0, maxHoldMin: 0, trendFilter: !!g.trendFilter };
-    var common = labCommonOpts(D.intraday, g.interval);
-    var prof = Q.PROFILES[g.profile] || Q.PROFILES.atm21;
-    var risk = parseFloat(g.sizing);
-    return Object.assign({}, common, base, {
-      period: g.period, confirmBps: g.confirmBps, zThr: zOf(g.confirmBps),
-      lineType: g.lineType, window: g.window, mtf: g.interval === '1m' && !!g.mtf,
-      cooldownMin: g.cooldownMin, maxPerDay: g.maxPerDay,
-      otmPct: prof.otmPct, expiryDays: prof.days,
-      riskPct: risk > 0 ? risk : 0
-    });
-  }
-  /** Eine Messung auf einem festen Zeitrahmen: Walk-Forward über ungesehene Zeitscheiben. */
-  async function messungAuf(g, iv, ld, folds) {
-    var map = ld.data[iv];
-    if (!map || Object.keys(map).length < 3) return null;
-    var span = mapSpan(map);
-    if (!(span[1] > span[0])) return null;
-    var scheiben = tagesScheiben(map, 5);        // nach Handelstagen, nicht nach Kalenderzeit
-    if (scheiben.length < 5) return null;
-    var opts = geneOpts(Object.assign({}, g, { interval: iv }));
-    var list = folds || [1, 2, 3, 4];
-    var rets = [], nTr = 0, wins = 0, gw = 0, gl = 0, tage = 0;
-    for (var fi = 0; fi < list.length; fi++) {
-      var f = list[fi];
-      var a = scheiben[f].von, b = scheiben[f].bis;
-      var r = await btIntraday(sliceMap(map, a, b, WARMLAUF_BARS), opts);
-      if (!r || r.error) { rets.push(null); continue; }
-      tage += scheiben[f].tage;
-      var tr = (r.trades || []).filter(function (x) { return x.openT >= a; });
-      var pnl = tr.reduce(function (s, x) { return s + x.pnl; }, 0);
-      rets.push(Math.round(pnl / START_CAPITAL * 10000) / 100);
-      nTr += tr.length;
-      tr.forEach(function (x) { if (x.pnl > 0) { wins++; gw += x.pnl; } else gl += -x.pnl; });
-    }
-    var valid = rets.filter(function (x) { return x !== null; });
-    if (!valid.length) return null;
-    var sum = Math.round(valid.reduce(function (a2, b2) { return a2 + b2; }, 0) * 100) / 100;
-    var pos = valid.filter(function (x) { return x > 0; }).length;
-    var pf = gl > 0 ? Math.round(gw / gl * 100) / 100 : (gw > 0 ? 99 : 0);
-    // Dünne Stichproben werden heruntergewichtet, Konsistenz über die Scheiben belohnt.
-    // Die Abwertung greift jetzt bis MIN_OOS_TRADES statt schon ab 8 – eine Variante mit
-    // 5 Trades soll nicht mit einer mit 60 um den ersten Platz konkurrieren können.
-    var fit = sum * Math.min(1, nTr / MIN_OOS_TRADES) + pos * 0.5;
-    return { fit: Math.round(fit * 100) / 100, ret: sum, folds: rets, trades: nTr, oosTage: tage,
-      belastbar: nTr >= MIN_OOS_TRADES && tage >= MIN_OOS_TAGE,
-      winRate: nTr ? Math.round(wins / nTr * 100) : 0, pf: pf, posFolds: pos };
-  }
-  /** Fitness eines Gens. Pflichtbasis ist der 5m-Zeitrahmen mit einem Monat Historie –
-   *  auf 1m gibt es nur 5 Tage Daten, dort messen verschiedene Gene praktisch identisch
-   *  (flache Fitness = Zufallszucht). Der eigene Zeitrahmen des Gens zählt als Zusatz. */
-  async function geneFitness(g, ld, folds) {
-    var basis = await messungAuf(g, '5m', ld, folds);
-    var eigen = g.interval === '5m' ? null : await messungAuf(g, g.interval, ld, folds);
-    if (!basis && !eigen) return null;
-    if (!basis) return eigen;
-    if (!eigen) return basis;
-    var fit = Math.round((0.7 * basis.fit + 0.3 * eigen.fit) * 100) / 100;
-    // trades = NUR die 5m-Basis: sonst zählen Nicht-5m-Gene dieselbe Kalenderzeit doppelt
-    // und nehmen die 12-Trade-Hürde halb so schwer wie 5m-Gene.
-    return { fit: fit, ret: basis.ret, folds: basis.folds, trades: basis.trades,
-      oosTage: basis.oosTage, belastbar: basis.belastbar,
-      winRate: basis.winRate, pf: basis.pf, posFolds: basis.posFolds,
-      basis: { interval: '5m', ret: basis.ret, trades: basis.trades },
-      eigen: { interval: g.interval, ret: eigen.ret, trades: eigen.trades, fit: eigen.fit } };
-  }
-
-  /** Eigene Idee als Gen in die Farm geben. Freitext → lokales Modell → Whitelist-Prüfung.
-   *  Ohne Modell versteht die Funktion auch einfache Angaben direkt ("5m, EMA50, Umkehr"). */
-  async function farmSaat(text) {
-    var F = farmCfg();
-    var g = null, quelle = 'Textauswertung';
-    if (window.LocalKI && window.LocalKI.model()) {
-      g = await kiGeneVorschlag((F.top || []).slice(0, 3), text);
-      if (g) quelle = 'lokale KI';
-    }
-    if (!g) g = geneAusText(text);
-    if (!g) return { ok: false, msg: 'Daraus konnte ich keine Strategie ableiten. Nenne z. B. Setup, Zeitrahmen, Periode oder Stop – etwa: „Umkehr, Wellental, 5m, EMA50, Stop 30 %".' };
-    g.saat = true; g.wunsch = String(text || '').slice(0, 160);
-    if (!F.saat) F.saat = [];
-    if (F.saat.some(function (x) { return geneKey(x) === geneKey(g); })) return { ok: false, msg: 'Diese Variante steht schon auf der Warteliste.' };
-    F.saat.unshift(g);
-    if (F.saat.length > 8) F.saat = F.saat.slice(0, 8);
-    await save();
-    renderFarm();
-    return { ok: true, gene: g, quelle: quelle };
-  }
-  /** Einfache Textauswertung als Rückfallebene, wenn kein lokales Modell da ist. */
-  function geneAusText(text) {
-    var t = String(text || '').toLowerCase();
-    if (!t.trim()) return null;
-    var g = randGene(), traf = false;
-    if (/umkehr|reversion|rücksetzer|ruecksetzer|welle/.test(t)) { g.setup = 'umkehr'; g.trigger = /welle|tal/.test(t) ? 'welle' : 'ueberdehnung'; traf = true; }
-    if (/ausbruch|breakout|kreuz/.test(t)) { g.setup = 'ausbruch'; g.trigger = /range|eröffnung|eroeffnung|orb/.test(t) ? 'range' : 'kreuzung'; traf = true; }
-    var iv = t.match(/\b(1|5)\s*m(in)?\b/); if (iv) { g.interval = iv[1] + 'm'; traf = true; }
-    function klemm(f, wert) { var gr = GEN_GRENZEN[f]; return gr ? Math.max(gr[0], Math.min(gr[1], wert)) : wert; }
-    var per = t.match(/ema\s*(\d{1,3})|periode\s*(\d{1,3})/); if (per) { g.period = klemm('period', parseInt(per[1] || per[2], 10)); traf = true; }
-    var sl = t.match(/stop\s*(\d{1,2})/); if (sl) { g.scalpSL = klemm('scalpSL', parseInt(sl[1], 10)); traf = true; }
-    if (/vwap/.test(t)) { g.lineType = 'vwap'; traf = true; }
-    if (/trendfilter/.test(t)) { g.trendFilter = !/ohne trendfilter|trendfilter aus/.test(t); traf = true; }
-    if (/kanal/.test(t)) { g.channel = !/ohne kanal|kanal aus/.test(t); traf = true; }
-    if (/ganzer tag|ganztag/.test(t)) { g.window = 'all'; traf = true; }
-    if (/eröffnung|eroeffnung|morgens/.test(t)) { g.window = 'open2'; traf = true; }
-    if (/schluss|abend/.test(t)) { g.window = 'close2'; traf = true; }
-    return traf ? g : null;
-  }
-
-  var farmRunning = false, farmPhase = '';
-  function farmCfg() {
-    if (!D.farm) D.farm = { champion: null, challenger: null, top: [], historie: [], generation: 0, at: 0, rechenstand: Q.RECHENSTAND };
-    // Hat sich die Rechengrundlage geändert (z. B. korrigierte Vola-Skalierung), sind alle
-    // bisherigen Messwerte wertlos. Der Champion bleibt im Einsatz, verliert aber seinen
-    // Nachweis und muss sich neu bewähren – Herausforderer und Bestenliste werden verworfen.
-    if (D.farm.rechenstand !== Q.RECHENSTAND) {
-      D.farm.rechenstandAlt = D.farm.rechenstand || 0;
-      D.farm.rechenstand = Q.RECHENSTAND;
-      D.farm.top = [];
-      D.farm.challenger = null;
-      if (D.farm.champion) { D.farm.champion.res = null; D.farm.champion.nachweisVeraltet = true; D.farm.champion.entwertetAt = Date.now(); }
-      D.farm.genRaum = null; // selbst ausgedehnter Suchraum beruhte auf alten Messwerten
-      D.farm.hinweis = { at: Date.now(), txt: 'Rechengrundlage hat sich geändert – alle früheren Messwerte verworfen, der Champion muss seinen Vorsprung neu belegen.' };
-    }
-    // Ein entthronter Champion ohne neuen Nachweis regiert nicht ewig: Nach 3 Tagen dankt
-    // er ab. Die Live-Konfiguration bleibt unangetastet – nur der Farm-Thron wird frei,
-    // damit die nächste Runde wieder von der echten Konfiguration ausgeht.
-    var chAlt = D.farm.champion;
-    if (chAlt && chAlt.nachweisVeraltet && !chAlt.res) {
-      if (!chAlt.entwertetAt) chAlt.entwertetAt = Date.now();
-      else if (Date.now() - chAlt.entwertetAt > 3 * 86400000) {
-        D.farm.abgedankt = { gene: chAlt.gene, seit: chAlt.seit, am: Date.now() };
-        D.farm.champion = null;
-        D.farm.hinweis = { at: Date.now(), txt: 'Champion abgedankt: 3 Tage ohne neuen Nachweis nach Änderung der Rechengrundlage. Die Farm startet wieder von der Live-Konfiguration.' };
-      }
-    }
-    // Selbst ausgedehnten Suchraum aus früheren Läufen wieder anwenden (übersteht so den Neustart)
-    if (D.farm.genRaum) {
-      Object.keys(D.farm.genRaum).forEach(function (fG) {
-        var gr = GEN_GRENZEN[fG], liste = GEN_SPACE[fG];
-        if (!gr || !liste) return;
-        D.farm.genRaum[fG].forEach(function (w) {
-          if (typeof w === 'number' && w >= gr[0] && w <= gr[1] && liste.indexOf(w) === -1) liste.push(w);
-        });
-      });
-    }
-    return D.farm;
-  }
-  /** Eine Zuchtrunde: Population bewerten, Beste paaren, Sieger als Herausforderer prüfen. */
-  async function runFarm(manual) {
-    var a = autoOptCfg();
-    if (farmRunning || centralRunning || autoOptRunning) return false;
-    if (!manual && a.farm === false) return false;
-    farmRunning = true;
-    // Takt hier setzen statt im Timer: so zählt auch ein manuell gestarteter Lauf, und der
-    // Wert wird vom save() am Ende dieses Laufs mitgeschrieben (vorher lebte er nur im
-    // Speicher und die Farm legte nach jedem Neustart sofort wieder los).
-    a.lastFarm = Date.now();
-    var F = farmCfg();
-    var t0 = Date.now();
-    function ph(t) { farmPhase = t; renderFarm(); }
-    try {
-      ph('lädt Kursdaten …');
-      var ld = await loadLabData({ set textContent(v) { ph(v); }, get textContent() { return ''; } });
-      var POP = (a.farmPop || 24), GENS = (a.farmGens || 4);
-      // Startpopulation: Champion, bisherige Bestenliste, Rest zufällig
-      var champ = F.champion ? F.champion.gene : geneFromConfig(D.intraday);
-      var pop = [champ].concat((F.top || []).slice(0, 5).map(function (x) { return x.gene; }));
-      // Eigene Ideen zuerst – sie sollen in jedem Fall gemessen werden
-      var saatDiesmal = (F.saat || []).slice(0, 6);
-      saatDiesmal.forEach(function (g) { pop.push(JSON.parse(JSON.stringify(g))); });
-      while (pop.length < POP) pop.push(randGene());
-      var seen = {}, bewertet = [];
-      for (var gen = 1; gen <= GENS; gen++) {
-        ph('Generation ' + gen + '/' + GENS + ' – bewertet ' + pop.length + ' Varianten …');
-        var res = await Promise.all(pop.map(function (g) {
-          var k = geneKey(g);
-          if (seen[k]) return Promise.resolve(seen[k]);
-          return geneFitness(g, ld).then(function (r) { seen[k] = r ? { gene: g, res: r } : null; return seen[k]; });
-        }));
-        res.filter(Boolean).forEach(function (x) { if (bewertet.indexOf(x) === -1) bewertet.push(x); });
-        bewertet.sort(function (x, y) { return y.res.fit - x.res.fit; });
-        if (gen === GENS) break;
-        // Nächste Generation: Elite + Kreuzungen + Mutationen + frisches Blut
-        var elite = bewertet.slice(0, 4).map(function (x) { return x.gene; });
-        pop = elite.slice();
-        while (pop.length < POP) {
-          var r1 = Math.random();
-          if (r1 < 0.45 && elite.length >= 2) pop.push(mutate(crossover(pick(elite), pick(elite))));
-          else if (r1 < 0.85 && elite.length) pop.push(mutate(pick(elite)));
-          else pop.push(randGene());
-        }
-        // Ein Vorschlag vom lokalen Modell, mit Begründung
-        if (window.LocalKI && window.LocalKI.model() && bewertet.length) {
-          var vorschlag = await kiGeneVorschlag(bewertet.slice(0, 5));
-          if (vorschlag) pop[pop.length - 1] = vorschlag;
-        }
-      }
-      // Ergebnisse der eingereichten Ideen festhalten, danach von der Warteliste nehmen
-      if (saatDiesmal.length) {
-        F.saatErgebnis = saatDiesmal.map(function (g) {
-          var e = bewertet.filter(function (x) { return geneKey(x.gene) === geneKey(g); })[0];
-          var rang = e ? bewertet.indexOf(e) + 1 : null;
-          return { at: Date.now(), wunsch: g.wunsch || '', name: geneName(g), rang: rang, gesamt: bewertet.length,
-            res: e ? e.res : null };
-        }).concat(F.saatErgebnis || []).slice(0, 12);
-        F.saat = (F.saat || []).filter(function (g) { return !saatDiesmal.some(function (x) { return geneKey(x) === geneKey(g); }); });
-      }
-      // Flache Fitness: messen die Spitzengene praktisch identisch, unterscheidet die
-      // Datenbasis sie nicht – dann ist jede "Erkenntnis" (Rangfolge, Randlage) Zufall.
-      var kennungen = {};
-      bewertet.slice(0, 8).forEach(function (x) { if (x.res) kennungen[x.res.ret + '|' + x.res.trades] = 1; });
-      var flach = bewertet.length >= 8 && Object.keys(kennungen).length <= 2;
-      F.messWarnung = flach ? { at: Date.now(), txt: 'Die Spitzengene messen nahezu identisch – die Datenbasis unterscheidet sie nicht. Selbstausdehnung und Herausforderer-Kür ausgesetzt.' } : null;
-      // Selbstausdehnung: Sitzt die Spitze am Rand einer Werteliste, wird sie erweitert –
-      // aber nur, wenn die Messung überhaupt unterscheidet (sonst ist Randlage Rauschen).
-      var erweitert = flach ? [] : raumErweitern(bewertet.slice(0, 5).map(function (x) { return x.gene; }));
-      if (erweitert.length) F.raumErweitert = { at: Date.now(), neu: erweitert };
-      // Erweiterte Listen persistieren – sonst vergisst die Farm sie beim Neustart
-      F.genRaum = {};
-      Object.keys(GEN_GRENZEN).forEach(function (fG) {
-        if (GEN_SPACE[fG]) F.genRaum[fG] = GEN_SPACE[fG].slice();
-      });
-      F.top = bewertet.slice(0, 8).map(function (x) { return { gene: x.gene, res: x.res }; });
-      F.generation = (F.generation || 0) + GENS;
-      F.at = Date.now();
-      F.dauerMin = Math.round((Date.now() - t0) / 60000 * 10) / 10;
-      F.geprueft = Object.keys(seen).length;
-      if (!F.champion) F.champion = { gene: champ, res: (bewertet.filter(function (x) { return geneKey(x.gene) === geneKey(champ); })[0] || {}).res || null, seit: Date.now() };
-      var best = bewertet[0];
-      // Herausforderer aufstellen: nur, wenn er den Champion klar und mit Substanz schlägt
-      if (best && geneKey(best.gene) !== geneKey(F.champion.gene)) {
-        var champRes = (bewertet.filter(function (x) { return geneKey(x.gene) === geneKey(F.champion.gene); })[0] || {}).res;
-        var besser = !champRes || best.res.fit > champRes.fit + 1.0;
-        // Belastbarkeit ist Pflicht: ein Sieger aus 5 Trades ist ein Zufallsgewinner.
-        var genug = !flach && best.res.belastbar && best.res.posFolds >= 2;
-        if (besser && genug && (!F.challenger || best.res.fit > F.challenger.res.fit)) {
-          F.challenger = { gene: best.gene, res: best.res, seit: Date.now(), pruefungen: [] };
-        }
-      }
-      F.historie = (F.historie || []);
-      if (best) {
-        F.historie.unshift({ at: Date.now(), name: geneName(best.gene), fit: best.res.fit, ret: best.res.ret, trades: best.res.trades });
-        if (F.historie.length > 40) F.historie = F.historie.slice(0, 40);
-      }
-      // Bewährung: Champion und Herausforderer auf der FRISCHESTEN Scheibe gegeneinander
-      if (F.challenger) {
-        // Höchstens eine Bewährungsprüfung alle 6 Stunden – sonst prüft man dreimal
-        // dieselben Daten und nennt es Bewährung.
-        var prLetzte = (F.challenger.pruefungen || []).slice(-1)[0];
-        if (prLetzte && Date.now() - prLetzte.at < 6 * 3600000) {
-          F.challenger.wartet = 'Nächste Bewährungsprüfung frühestens ' + U.dt(prLetzte.at + 6 * 3600000);
-          ph('');
-        } else {
-        F.challenger.wartet = null;
-        ph('Bewährungsprüfung auf der neuesten Zeitscheibe …');
-        var cR = await geneFitness(F.champion.gene, ld, [4]);
-        var hR = await geneFitness(F.challenger.gene, ld, [4]);
-        if (cR && hR) {
-          F.challenger.pruefungen.push({ at: Date.now(), champ: cR.ret, hera: hR.ret, trades: hR.trades,
-            sieger: hR.ret > cR.ret ? 'herausforderer' : 'champion' });
-          var pr = F.challenger.pruefungen;
-          var urteil = Q.bewaehrungsUrteil(pr);
-          if (urteil === 'uebernehmen') {
-            farmPromote(F);
-          } else if (urteil === 'verwerfen') {
-            var siegeV = pr.filter(function (x) { return x.sieger === 'herausforderer'; }).length;
-            F.challengerVerworfen = { at: Date.now(), name: geneName(F.challenger.gene), grund: 'Bewährung nicht bestanden (' + siegeV + '/' + pr.length + ' Prüfungen gewonnen)' };
-            F.challenger = null;
-          }
-        }
-        }
-      }
-      await save();
-      renderFarm();
-      renderTuneLog();
-    } catch (e) {
-      D.farm.fehler = { at: Date.now(), msg: (e && e.message) ? e.message : String(e) };
-    } finally {
-      farmRunning = false; farmPhase = '';
-      renderFarm();
-    }
-  }
-
-  /** Herausforderer übernimmt: Einstellungen setzen, Champion wechseln, alles protokollieren. */
-  function farmPromote(F) {
-    var g = F.challenger.gene;
-    var vorher = JSON.parse(JSON.stringify(D.intraday));
-    var gesperrtF = [];
-    // ✋ Auch der Farm-Champion respektiert von Hand gesetzte Felder.
-    function setzeF(feld, wert, klartext) {
-      if (wert === undefined || wert === null) return;
-      if (JSON.stringify(D.intraday[feld]) === JSON.stringify(wert)) return;
-      if (!automatikDarf(feld)) { gesperrtF.push(HAND_LABEL[feld] || feld); return; }
-      D.intraday[feld] = wert;
-    }
-    setzeF('mode', modeFromSetup(g.setup, g.trigger, g.exitStil || 'laufen'));
-    if (automatikDarf('mode')) { D.intraday.setup = g.setup; D.intraday.trigger = g.trigger; }
-    if (g.setup === 'ausbruch' && g.trigger === 'kreuzung') setzeF('exitStyle', g.exitStil || 'laufen');
-    setzeF('interval', g.interval);
-    setzeF('period', g.period);
-    setzeF('confirmBps', g.confirmBps);
-    setzeF('lineType', g.lineType);
-    setzeF('window', g.window);
-    setzeF('scalpSL', g.scalpSL);
-    setzeF('scalpHold', g.scalpHold);
-    if (g.cooldownMin) setzeF('cooldownMin', g.cooldownMin);
-    if (g.maxPerDay) setzeF('maxPerDay', g.maxPerDay);
-    if (g.profile) setzeF('profile', g.profile);
-    if (g.sizing) setzeF('sizing', g.sizing);
-    setzeF('trendFilter', !!g.trendFilter);
-    setzeF('channel', !!g.channel);
-    setzeF('mtf', !!g.mtf);
-    var pr = F.challenger.pruefungen;
-    if (!D.tuneLog) D.tuneLog = [];
-    var closedNow = D.trades.filter(function (t) { return t.status === 'closed' && istMess(t); });
-    D.tuneLog.unshift({
-      id: 'farm-' + Date.now(), at: Date.now(), quelle: 'farm',
-      applied: ['🧬 Neuer Champion: ' + geneName(g)].concat(gesperrtF.length ? ['✋ nicht angefasst (von Hand gesetzt): ' + gesperrtF.join(' · ')] : []),
-      txt: 'Bewährung bestanden: ' + pr.filter(function (x) { return x.sieger === 'herausforderer'; }).length + ' von ' + pr.length +
-        ' Prüfungen gewonnen, zusammen ' + Math.round(pr.reduce(function (s, x) { return s + x.hera; }, 0) * 100) / 100 + ' % gegen ' +
-        Math.round(pr.reduce(function (s, x) { return s + x.champ; }, 0) * 100) / 100 + ' % des Champions, auf Daten nach dem ' + U.dt(F.challenger.seit),
-      konfigVorher: vorher,
-      equityBei: Math.round(equityNow() * 100) / 100,
-      tradesBei: closedNow.length,
-      pnlBei: Math.round(closedNow.reduce(function (a2, t) { return a2 + t.pnl; }, 0) * 100) / 100,
-      konfigNachher: JSON.parse(JSON.stringify(D.intraday))
-    });
-    if (D.tuneLog.length > 60) D.tuneLog = D.tuneLog.slice(0, 60);
-    F.abgeloest = { at: Date.now(), name: geneName(F.champion.gene) };
-    F.champion = { gene: g, res: F.challenger.res, seit: Date.now(), pruefungen: pr };
-    F.challenger = null;
-    syncStrategyUI();
-  }
-
-  /** Das lokale Modell schlägt eine Variante vor – begründet, aber gegen die Whitelist geprüft. */
-  async function kiGeneVorschlag(besten, wunsch) {
-    try {
-      var kurz = (besten || []).map(function (x) {
-        return { variante: geneName(x.gene), gen: x.gene, wfRenditePct: x.res.ret, trades: x.res.trades, scheibenPlus: x.res.posFolds, profitFaktor: x.res.pf };
-      });
-      var txt = await window.LocalKI.ask(
-        'Du optimierst eine SIMULIERTE Intraday-Strategie. Hier sind die besten Varianten der aktuellen Generation ' +
-        'mit ihren Ergebnissen auf ungesehenen Daten:\n' + JSON.stringify(kurz) + '\n\n' +
-        (wunsch ? 'WUNSCH DES NUTZERS – setze ihn so genau wie möglich in eine Variante um: "' + String(wunsch).slice(0, 300) + '"\n\n' : '') +
-        'Schlage EINE ' + (wunsch ? 'dazu passende' : 'aussichtsreiche') + ' Variante vor. Erlaubte Werte:\n' +
-        JSON.stringify(GEN_SPACE) + '\n' +
-        'Antworte ausschließlich mit JSON in exakt dieser Form: ' +
-        '{"setup":"...","trigger":"...","interval":"...","period":9,"confirmBps":15,"lineType":"ema","window":"all",' +
-        '"scalpSL":20,"scalpHold":60,"cooldownMin":10,"maxPerDay":10,"profile":"atm21","sizing":"fix",' +
-        '"trendFilter":true,"channel":false,"mtf":true}', 320);
-      if (!txt) return null;
-      var m = txt.match(/\{[\s\S]*\}/);
-      if (!m) return null;
-      var g = JSON.parse(m[0]);
-      // Gegen die Whitelist prüfen – unzulässige Felder werden zufällig ersetzt, nicht übernommen
-      var ok = GEN_SPACE.setup.indexOf(g.setup) !== -1 && GEN_SPACE.trigger[g.setup] &&
-        GEN_SPACE.trigger[g.setup].indexOf(g.trigger) !== -1;
-      if (!ok) return null;
-      var r = randGene();
-      ['interval', 'period', 'confirmBps', 'lineType', 'window', 'scalpSL', 'scalpHold',
-       'cooldownMin', 'maxPerDay', 'profile', 'sizing'].forEach(function (f) {
-        if (GEN_SPACE[f].indexOf(g[f]) === -1) g[f] = r[f];
-      });
-      g.trendFilter = g.trendFilter === true; g.channel = g.channel === true; g.mtf = g.mtf === true;
-      g.vonKI = true;
-      return g;
-    } catch (e) { return null; }
-  }
-
-  function renderFarm() {
-    var el = document.getElementById('farmStatus');
-    if (!el || !D) return;
-    var F = farmCfg();
-    if (farmRunning) { el.innerHTML = '<span style="color:var(--acc);">🧬 Farm läuft … ' + U.esc(farmPhase || '') + '</span>'; return; }
-    var h = '';
-    if (F.champion) {
-      h += '<div><b>👑 Champion</b> (seit ' + U.dt(F.champion.seit) + '): ' + U.esc(geneName(F.champion.gene)) +
-        (F.champion.res ? ' <span style="color:var(--muted);">· WF ' + U.signTxt(F.champion.res.ret, ' %') + ' · ' + F.champion.res.trades + ' Trades</span>' : '') + '</div>';
-    }
-    if (F.challenger) {
-      var pr = F.challenger.pruefungen || [];
-      var siege = pr.filter(function (x) { return x.sieger === 'herausforderer'; }).length;
-      h += '<div style="margin-top:4px;"><b>🥊 Herausforderer</b> (seit ' + U.dt(F.challenger.seit) + '): ' + U.esc(geneName(F.challenger.gene)) +
-        '<div style="color:var(--muted);">Bewährung: ' + siege + ' von ' + pr.length + ' Prüfungen gewonnen' +
-        (pr.length ? ' · zuletzt ' + U.signTxt(pr[pr.length - 1].hera, ' %') + ' gegen ' + U.signTxt(pr[pr.length - 1].champ, ' %') : '') +
-        ' · Übernahme ab 3 Prüfungen mit 2 Siegen, 15 Trades und mindestens 20 Stunden Abstand' +
-        (F.challenger.wartet ? '<br>' + U.esc(F.challenger.wartet) : '') + '</div></div>';
-    } else if (F.challengerVerworfen) {
-      h += '<div style="margin-top:4px; color:var(--muted);">Letzter Herausforderer verworfen (' + U.dt(F.challengerVerworfen.at) + '): ' + U.esc(F.challengerVerworfen.grund) + '</div>';
-    } else if (F.champion) {
-      h += '<div style="margin-top:4px; color:var(--muted);">Kein Herausforderer – bisher hat keine Variante den Champion klar geschlagen.</div>';
-    }
-    if (F.at) {
-      h += '<div style="color:var(--muted); margin-top:4px;">Letzte Zucht ' + U.dt(F.at) + ' · ' + (F.geprueft || 0) +
-        ' Varianten geprüft · Generation ' + (F.generation || 0) + ' · ' + (F.dauerMin || 0) + ' Min Rechenzeit</div>';
-    } else {
-      h += '<div style="color:var(--muted);">Noch keine Zuchtrunde gelaufen.</div>';
-    }
-    if (F.messWarnung) {
-      h += '<div style="margin-top:6px; color:var(--warn);">📏 ' + U.esc(F.messWarnung.txt) + '</div>';
-    }
-    if (F.abgedankt) {
-      h += '<div style="margin-top:4px; color:var(--muted);">Vorheriger Champion abgedankt am ' + U.dt(F.abgedankt.am) + ' (kein neuer Nachweis nach Änderung der Rechengrundlage).</div>';
-    }
-    if (F.hinweis) {
-      h += '<div style="margin-top:6px; color:var(--warn);">⚠ ' + U.esc(F.hinweis.txt) + '</div>';
-    }
-    if (F.saat && F.saat.length) {
-      h += '<div style="margin-top:6px;">🌱 <b>Warteliste:</b> ' + F.saat.map(function (g) {
-        return U.esc(geneName(g));
-      }).join(' · ') + ' <span style="color:var(--muted);">(wird bei der nächsten Zuchtrunde mitgemessen)</span></div>';
-    }
-    if (F.saatErgebnis && F.saatErgebnis.length) {
-      h += '<div style="margin-top:6px; color:var(--muted);">🌱 Zuletzt eingereicht: ' +
-        F.saatErgebnis.slice(0, 3).map(function (e) {
-          return U.esc(e.wunsch || e.name) + ' → ' + (e.res ? ('Platz ' + e.rang + '/' + e.gesamt + ', WF ' + U.signTxt(e.res.ret, ' %') + ', ' + e.res.trades + ' Trades') : 'nicht bewertbar');
-        }).join(' · ') + '</div>';
-    }
-    if (F.raumErweitert) {
-      h += '<div style="margin-top:4px; color:var(--muted);">🔎 Suchraum erweitert (' + U.dt(F.raumErweitert.at) + '): ' + U.esc(F.raumErweitert.neu.join(' · ')) + '</div>';
-    }
-    if (F.top && F.top.length) {
-      h += '<table class="tbl" style="margin-top:10px;"><tr><th>Rang</th><th>Variante</th><th>WF-Rendite</th><th>Scheiben +</th><th>Trades</th><th>Treffer</th><th>PF</th></tr>';
-      F.top.slice(0, 6).forEach(function (x, i) {
-        h += '<tr' + (i === 0 ? ' style="font-weight:600;"' : '') + '><td>#' + (i + 1) + '</td><td>' + U.esc(geneName(x.gene)) +
-          (x.gene.vonKI ? ' <span style="color:var(--acc);">🧠</span>' : '') +
-          (x.gene.saat ? ' <span title="' + U.esc(x.gene.wunsch || '') + '">🌱</span>' : '') + '</td>' +
-          '<td class="' + U.signCls(x.res.ret) + '">' + U.signTxt(x.res.ret, ' %') + '</td>' +
-          '<td>' + x.res.posFolds + '/4</td><td>' + x.res.trades + '</td><td>' + x.res.winRate + ' %</td><td>' + x.res.pf + '</td></tr>';
-      });
-      h += '</table>';
-    }
-    el.innerHTML = h;
   }
 
   /* ================= 🧭 Regime-Automatik: die lokale KI wählt das Setup =================
@@ -3823,68 +3273,18 @@
         quelle = ki && ki.ok ? 'Regel (KI-Vorschlag abgelehnt: ' + geprueft.grund + ')'
           : (window.LocalKI && window.LocalKI.model() ? 'Regel (Ollama nicht erreichbar)' : 'Regel (kein lokales Modell eingerichtet)');
       }
-      // Hysterese: Eine einzelne Messung ist eine Meinung, keine Marktlage. Erst wenn die
-      // nächste Messung dasselbe empfiehlt, wird umgestellt (am 17.08. wurde der Trend-
-      // filter sonst viermal am Tag umgeschaltet). Manuelle Läufe gelten sofort.
-      var wahlKey = [wahl.setup, wahl.ausloeser, wahl.zeitrahmen, !!wahl.trendfilter, !!wahl.kanal].join('|');
+      // v8: Die Marktlage ist NUR NOCH ANZEIGE. Sie schaltet nichts mehr selbst um –
+      // das stündliche Hin-und-Her hat Handeinstellungen zurückgedreht und stand quer
+      // zum Autopiloten, der auf gemessener Basis entscheidet. Umschalten tut nur noch
+      // der Autopilot (nach doppelt bestätigter Nacht-Messung) – oder du selbst.
+      var mode = modeFromSetup(wahl.setup, wahl.ausloeser, 'laufen');
       var stIst = setupFromMode(D.intraday.mode);
-      var istKey = [stIst.setup, stIst.trigger, D.intraday.interval, !!D.intraday.trendFilter, !!D.intraday.channel].join('|');
-      if (!manual && wahlKey !== istKey && (!D.regimePending || D.regimePending.key !== wahlKey)) {
-        D.regimePending = { key: wahlKey, at: Date.now() };
-        D.regime = { at: Date.now(), ok: true, quelle: quelle, wahl: wahl, fakten: f, applied: [],
-          txt: setupName(modeFromSetup(wahl.setup, wahl.ausloeser, 'laufen'), wahl.kanal) + ' · ' + wahl.zeitrahmen +
-               ' — Vorschlag notiert, wartet auf Bestätigung durch die nächste Messung (' + (wahl.begruendung || '') + ')' };
-        await save(); renderTuneLog(); render();
-        return;
-      }
-      D.regimePending = null;
-      var vorher = JSON.parse(JSON.stringify(D.intraday));
-      // Ausstiegsstil des Nutzers respektieren – vorher setzte das harte 'laufen' den
-      // Blitz-/Kurz-Stil bei jedem Regime-Lauf still zurück (mode≠waves), während die UI
-      // weiter "Blitz" anzeigte.
-      var stilR = (wahl.setup === 'ausbruch' && wahl.ausloeser === 'kreuzung') ? (D.intraday.exitStyle || 'laufen') : 'laufen';
-      var mode = modeFromSetup(wahl.setup, wahl.ausloeser, stilR);
-      var applied = [], gesperrtR = [];
-      // ✋ Von Hand gesetzte Felder bleiben unangetastet – die Automatik meldet nur noch,
-      // was sie geändert HÄTTE. Vorher drehte sie Handeinstellungen stillschweigend zurück.
-      if (D.intraday.mode !== mode) {
-        if (automatikDarf('mode')) { D.intraday.mode = mode; applied.push('Setup → ' + setupName(mode, wahl.kanal)); }
-        else gesperrtR.push('Setup (Vorschlag: ' + setupName(mode, wahl.kanal) + ')');
-      }
-      if (automatikDarf('mode')) { D.intraday.setup = wahl.setup; D.intraday.trigger = wahl.ausloeser; }
-      if (D.intraday.interval !== wahl.zeitrahmen) {
-        if (automatikDarf('interval')) { D.intraday.interval = wahl.zeitrahmen; applied.push('Zeitrahmen → ' + wahl.zeitrahmen); }
-        else gesperrtR.push('Zeitrahmen (Vorschlag: ' + wahl.zeitrahmen + ')');
-      }
-      if (!!D.intraday.trendFilter !== !!wahl.trendfilter) {
-        if (automatikDarf('trendFilter')) { D.intraday.trendFilter = !!wahl.trendfilter; applied.push('Trendfilter → ' + (wahl.trendfilter ? 'an' : 'aus')); }
-        else gesperrtR.push('Trendfilter (Vorschlag: ' + (wahl.trendfilter ? 'an' : 'aus') + ')');
-      }
-      if (!!D.intraday.channel !== !!wahl.kanal) {
-        if (automatikDarf('channel')) { D.intraday.channel = !!wahl.kanal; applied.push('Trendkanal → ' + (wahl.kanal ? 'an' : 'aus')); }
-        else gesperrtR.push('Trendkanal (Vorschlag: ' + (wahl.kanal ? 'an' : 'aus') + ')');
-      }
-      if (gesperrtR.length) applied.push('✋ nicht angefasst: ' + gesperrtR.join(' · '));
-      D.regime = { at: Date.now(), ok: true, quelle: quelle, wahl: wahl, fakten: f, applied: applied,
-        txt: setupName(mode, wahl.kanal) + ' · ' + wahl.zeitrahmen + ' — ' + (wahl.begruendung || '') };
-      if (applied.length) {
-        if (!D.tuneLog) D.tuneLog = [];
-        var closedNow = D.trades.filter(function (t) { return t.status === 'closed' && !t.legacy; });
-        D.tuneLog.unshift({
-          id: 'regime-' + Date.now(), at: Date.now(), quelle: 'regime', applied: applied,
-          txt: '🧭 ' + quelle + ': ' + (wahl.begruendung || '') + ' [Trendanteil ' + f.trendAnteilPct + ' % · z ' + f.mittleresAbsZ +
-               ' · Wellen ' + f.mittlererWellenScore + ' · Kanäle ' + f.kanalAnteilPct + ' % · Vola ' + f.vola1mPct + ']',
-          konfigVorher: vorher, fakten: f,
-          equityBei: Math.round(equityNow() * 100) / 100,
-          tradesBei: closedNow.length,
-          pnlBei: Math.round(closedNow.reduce(function (a2, t) { return a2 + t.pnl; }, 0) * 100) / 100,
-          konfigNachher: JSON.parse(JSON.stringify(D.intraday))
-        });
-        if (D.tuneLog.length > 60) D.tuneLog = D.tuneLog.slice(0, 60);
-      }
+      var passt = stIst.setup === wahl.setup && stIst.trigger === wahl.ausloeser && D.intraday.interval === wahl.zeitrahmen;
+      D.regimePending = null;   // Altlast aus v7 aufräumen
+      D.regime = { at: Date.now(), ok: true, quelle: quelle, wahl: wahl, fakten: f, applied: [], nurAnzeige: true,
+        txt: setupName(mode, wahl.kanal) + ' · ' + wahl.zeitrahmen + ' — ' + (wahl.begruendung || '') +
+             (passt ? ' · ✅ entspricht der aktuellen Einstellung' : ' · Empfehlung – umgestellt wird nichts') };
       await save();
-      syncStrategyUI();
-      renderTuneLog();
       render();
     } catch (e) {
       D.regime = { at: Date.now(), ok: false, txt: 'Fehler: ' + (e && e.message ? e.message : e) };
@@ -3943,31 +3343,30 @@
       : st.setup === 'umkehr' ? '' : 'Ausstieg: laufen lassen bis zum Gegensignal, mit Not-Stop und Ziel.';
     // Wer hat das eingestellt? Letzter Journal-Eintrag mit echter Änderung
     var wer = '';
-    var QUELLE_NAME = { regime: '🧭 Regime-Automatik', farm: '🧬 Strategie-Farm', hand: '✋ von Hand (Formular)', manuell: '🎛 Analyse-Zentrale', lokal: '🎛 Selbst-Optimierung', sicherung: '🛡 Sicherung', claude: '📡 Cloud-Empfehlung' };
+    var QUELLE_NAME = { pilot: '🤖 Autopilot', regime: '🧭 Regime-Automatik (alt)', farm: '🧬 Strategie-Farm (alt)', hand: '✋ von Hand (Formular)', manuell: '🎛 Analyse-Zentrale', lokal: '🎛 Selbst-Optimierung (alt)', sicherung: '🛡 Sicherung', claude: '📡 Cloud-Empfehlung' };
     var tl = (D.tuneLog || []).filter(function (e) { return (e.applied || []).length && e.quelle !== 'sicherung'; })[0];
     if (tl) wer = 'Zuletzt eingestellt von ' + (QUELLE_NAME[tl.quelle] || tl.quelle || '?') + ' (' + U.dt(tl.at) + '): ' + tl.applied.slice(0, 3).join(' · ') + (tl.applied.length > 3 ? ' …' : '');
     var a = autoOptCfg();
-    var autoTxt = 'Du musst hier nichts einstellen: 🧭 Regime prüft stündlich die Marktlage' +
-      (a.farm !== false ? ', 🧬 die Farm züchtet nachts bessere Varianten' : '') +
-      (a.on !== false ? ', 🎛 die Selbst-Optimierung prüft alle ' + (a.everyH || 4) + ' h' : '') +
+    var autoTxt = 'Du musst hier nichts einstellen: 🤖 der Autopilot misst nachts auf dem wachsenden Kursarchiv und übernimmt nur doppelt bestätigte, robuste Ergebnisse – morgens vor Handelsbeginn' +
+      (a.regime !== false ? '; 🧭 die Marktlage wird stündlich angezeigt (reine Empfehlung)' : '') +
       '. Jede Änderung steht im Experiment-Journal (Auswertung).';
-    var alleAn = a.on !== false && a.regime !== false && a.farm !== false;
+    var alleAn = a.on !== false;
     el.innerHTML =
       '<div style="font-size:14px; font-weight:700; margin-bottom:4px;">' + name + ' · ' + (c.interval || '5m') + '-Chart</div>' +
       '<div style="font-size:12.5px; color:var(--ink-2); margin-bottom:4px;">' + was + (exitTxt ? ' ' + exitTxt : '') + '</div>' +
       (wer ? '<div style="font-size:11.5px; color:var(--muted); margin-bottom:4px;">' + U.esc(wer) + '</div>' : '') +
       (alleAn
         ? '<div style="font-size:11.5px; color:var(--muted);">' + autoTxt + '</div>'
-        : '<div style="font-size:11.5px; color:var(--warn); margin-bottom:6px;">⚠ Ein Teil der Automatik ist ausgeschaltet – die Strategie verbessert sich gerade NICHT von selbst.</div>' +
-          '<button class="btn tiny" id="klartextAutoBtn">🤖 Vollautomatik einschalten</button>');
+        : '<div style="font-size:11.5px; color:var(--warn); margin-bottom:6px;">⚠ Der Autopilot ist ausgeschaltet – die Strategie verbessert sich gerade NICHT von selbst.</div>' +
+          '<button class="btn tiny" id="klartextAutoBtn">🤖 Autopilot einschalten</button>');
     var kab = document.getElementById('klartextAutoBtn');
     if (kab) kab.addEventListener('click', function () {
       var a2 = autoOptCfg();
-      a2.on = true; a2.regime = true; a2.farm = true;
+      a2.on = true; a2.regime = true;
       if (!D.tuneLog) D.tuneLog = [];
-      D.tuneLog.unshift({ id: 'hand-' + Date.now(), at: Date.now(), quelle: 'hand', applied: ['Vollautomatik → an'],
-        txt: '✋ Vollautomatik über die Klartext-Karte eingeschaltet.' });
-      save(); renderKlartext(); renderTune(); renderRegime(); renderFarm();
+      D.tuneLog.unshift({ id: 'hand-' + Date.now(), at: Date.now(), quelle: 'hand', applied: ['Autopilot → an'],
+        txt: '✋ Autopilot über die Klartext-Karte eingeschaltet.' });
+      save(); renderKlartext(); renderTune(); renderRegime(); renderPilot();
     });
   }
 
@@ -3975,106 +3374,142 @@
     var hint = document.getElementById('regimeHint');
     if (hint && D) {
       hint.textContent = autoOptCfg().regime !== false
-        ? '🧭 Setup, Zeitrahmen, Trendfilter und Kanal werden stündlich automatisch gesetzt – außer bei Feldern, die du selbst geändert hast: die bleiben stehen (siehe „✋ Von dir gesetzt“ oben).'
+        ? '🧭 Die Marktlage wird stündlich gemessen und hier angezeigt – umgestellt wird dabei nichts. Das entscheidet der Autopilot nach der Nacht-Messung, oder du selbst.'
         : '';
     }
     var el = document.getElementById('regimeStatus');
     if (!el || !D) return;
     var a = autoOptCfg();
-    if (phase) { el.innerHTML = '<span style="color:var(--acc);">🧭 Regime-Automatik ' + U.esc(phase) + '</span>'; return; }
+    if (phase) { el.innerHTML = '<span style="color:var(--acc);">🧭 Marktlage ' + U.esc(phase) + '</span>'; return; }
     var r = D.regime;
-    if (!r) { el.innerHTML = a.regime === false ? '<span style="color:var(--muted);">Regime-Automatik ist aus.</span>'
-      : '<span style="color:var(--muted);">Noch kein Durchlauf – startet automatisch nach Handelsbeginn.</span>'; return; }
+    if (!r) { el.innerHTML = a.regime === false ? '<span style="color:var(--muted);">Marktlage-Anzeige ist aus.</span>'
+      : '<span style="color:var(--muted);">Noch keine Messung – startet automatisch nach Handelsbeginn.</span>'; return; }
     var f = r.fakten;
     el.innerHTML = (r.ok ? '🧭 <b>' + U.dt(r.at) + '</b> · Quelle: ' + U.esc(r.quelle) + '<br>' + U.esc(r.txt) : '⚠ ' + U.esc(r.txt)) +
-      (r.applied && r.applied.length ? '<br><span style="color:var(--up);">Übernommen: ' + U.esc(r.applied.join(' · ')) + '</span>' : (r.ok ? '<br><span style="color:var(--muted);">Keine Änderung nötig.</span>' : '')) +
       (f ? '<div style="color:var(--muted); margin-top:4px; font-size:11.5px;">Gemessen an ' + f.geprueft + ' Werten: Trendanteil ' + f.trendAnteilPct +
         ' % · mittleres |z| ' + f.mittleresAbsZ + ' · Wellen-Score ' + f.mittlererWellenScore + ' · gültige Kanäle ' + f.kanalAnteilPct +
         ' % · 5-Min-Vola ' + f.vola1mPct + ' %</div>' : '');
   }
 
-  /* ================= 🤖 Selbst-Optimierung (läuft in der App, ohne Cloud) ================= */
+  /* ================= 🤖 Autopilot (v8) =================
+   * Ersetzt Selbst-Optimierung und Strategie-Farm durch EINE Kette:
+   *  1. SAMMELN  – jeder Scan und jeder Messlauf füttert das 📚 Kursarchiv (rollierend 90 Tage).
+   *  2. MESSEN   – nachts nach US-Börsenschluss: Walk-Forward über die 4 Setups × Parameter-
+   *                Raster auf dem Archiv. Die Rechenlast liegt außerhalb der Handelszeit.
+   *  3. URTEILEN – nur belastbare Ergebnisse zählen (>= 30 OOS-Trades auf >= 12 ungesehenen
+   *                Handelstagen). Eine Empfehlung muss von ZWEI aufeinanderfolgenden Nacht-
+   *                Messungen bestätigt werden – ein einzelner Sieg kann eine Münzwurf-Serie
+   *                sein (das ersetzt die Bewährungsprüfung der alten Farm).
+   *  4. ANWENDEN – morgens VOR Handelsbeginn, nie mitten im Handel. Die ✋ Hand-Sperre gilt:
+   *                von dir gesetzte Felder fasst der Autopilot nicht an. */
   function autoOptCfg() {
-    if (!D.autoOpt) D.autoOpt = { on: true, everyH: 8, onlyRobust: true, marketPause: true, regime: true, regimeMin: 60, lastRun: 0, lastRegime: 0, lastCheck: null };
-    if (D.autoOpt.everyH == null) D.autoOpt.everyH = 8;
-    if (D.autoOpt.regime == null) D.autoOpt.regime = true;
-    if (D.autoOpt.regimeMin == null) D.autoOpt.regimeMin = 60;
-    if (D.autoOpt.farm == null) D.autoOpt.farm = true;
-    if (D.autoOpt.farmH == null) D.autoOpt.farmH = 12;
-    if (D.autoOpt.farmPop == null) D.autoOpt.farmPop = 24;
-    if (D.autoOpt.farmGens == null) D.autoOpt.farmGens = 4;
-    return D.autoOpt;
+    if (!D.autoOpt) D.autoOpt = {};
+    var a = D.autoOpt;
+    if (a.on == null) a.on = true;             // Autopilot an/aus
+    if (a.regime == null) a.regime = true;     // 🧭 Marktlage-Anzeige an/aus
+    if (a.regimeMin == null) a.regimeMin = 60;
+    if (a.lastMess == null) a.lastMess = 0;
+    if (a.lastRegime == null) a.lastRegime = 0;
+    return a;
   }
-  var autoOptRunning = false, autoOptPhase = '';
-  async function autoOptimize(manual) {
+  function recKey(r) { return [r.modeKey, r.interval, r.period, r.confirmBps, r.lineType, r.window].join('|'); }
+  var pilotRunning = false, pilotPhase = '';
+  async function pilotMessen(manual) {
     var a = autoOptCfg();
-    if (autoOptRunning || centralRunning || jobRunning) return;
+    if (pilotRunning || centralRunning || jobRunning) return;
     if (!manual && a.on === false) return;
-    autoOptRunning = true;
-    autoOptPhase = 'startet …';
-    renderAutoOpt();
+    pilotRunning = true;
+    pilotPhase = 'startet …';
+    renderPilot();
     var t0 = Date.now();
     try {
-      var rec = await runCentral({ silent: true, status: function (t) { autoOptPhase = t; renderAutoOpt(); } });
-      a.lastRun = Date.now();
+      var rec = await runCentral({ silent: true, status: function (t) { pilotPhase = t; renderPilot(); } });
+      a.lastMess = Date.now();
       if (!rec) {
-        a.lastCheck = { at: Date.now(), ok: false, applied: [], txt: 'Zu wenig Kursdaten für eine belastbare Auswertung – Einstellungen unverändert.' };
+        a.lastCheck = { at: Date.now(), ok: false, txt: 'Zu wenig Kursdaten für eine Messung – das Archiv füllt sich mit jedem Handelstag.' };
       } else {
-        var robust = String(rec.verdict).indexOf('🟢') === 0;
-        var enough = rec.belastbar !== false && rec.n >= MIN_OOS_TRADES;
-        var gutGenug = robust && enough;
-        if (a.onlyRobust !== false && !gutGenug) {
-          a.lastCheck = {
-            at: Date.now(), ok: true, applied: [], geprueft: true,
+        var robust = String(rec.verdict).indexOf('🟢') === 0 && rec.belastbar !== false && rec.n >= MIN_OOS_TRADES;
+        var k = recKey(rec);
+        if (!robust) {
+          a.pending = null; a.lastRecKey = null;
+          a.lastCheck = { at: Date.now(), ok: true,
             txt: 'Bester Kandidat: ' + rec.modeName + ' · ' + rec.interval + ' (' + rec.verdict + ', ' + rec.n + ' Trades auf ' +
-              (rec.oosTage != null ? rec.oosTage : '?') + ' ungesehenen Handelstagen, PF ' + rec.pf + '). ' +
-              (!enough ? 'Datenbasis zu dünn für ein Urteil (nötig: ' + MIN_OOS_TRADES + ' Trades und ' + MIN_OOS_TAGE + ' Handelstage)'
-                       : 'Nicht robust genug') +
-              ' → nichts geändert. Das ist Absicht: lieber unverändert als überangepasst.'
-          };
+              (rec.oosTage != null ? rec.oosTage : '?') + ' ungesehenen Handelstagen). Nichts geändert – übernommen wird nur, was robust ist UND sich in zwei Nächten hintereinander bestätigt.' };
+        } else if (a.lastRecKey === k) {
+          // Zweite Nacht in Folge dasselbe robuste Ergebnis → Bewährung bestanden, vormerken
+          a.pending = { rec: rec, seit: Date.now() };
+          a.lastCheck = { at: Date.now(), ok: true,
+            txt: '✅ ' + rec.modeName + ' · ' + rec.interval + ' zum zweiten Mal in Folge robust (Walk-Forward ' + (rec.wfRet > 0 ? '+' : '') + rec.wfRet + ' %, ' + rec.n + ' Trades) – wird vor dem nächsten Handelsbeginn übernommen.' };
         } else {
-          var applied = applyCentralRec(rec, 'lokal');
-          a.lastCheck = {
-            at: Date.now(), ok: true, applied: applied, geprueft: true,
-            txt: applied.length
-              ? 'Übernommen: ' + applied.join(' · ') + ' (Walk-Forward ' + (rec.wfRet > 0 ? '+' : '') + rec.wfRet + ' %, ' + rec.posSegs + '/4 Scheiben, ' + rec.n + ' Trades)'
-              : 'Geprüft – die aktuellen Einstellungen sind bereits die beste Kombination (' + rec.verdict + ').'
-          };
+          a.lastRecKey = k; a.pending = null;
+          a.lastCheck = { at: Date.now(), ok: true,
+            txt: '🟢 ' + rec.modeName + ' · ' + rec.interval + ' ist robust (Walk-Forward ' + (rec.wfRet > 0 ? '+' : '') + rec.wfRet + ' %, ' + rec.n + ' Trades) – wartet auf Bestätigung durch die nächste Nacht-Messung. Ein einzelner Sieg kann Zufall sein.' };
         }
       }
       a.lastCheck.dauerMin = Math.round((Date.now() - t0) / 60000 * 10) / 10;
+      pilotAnwenden();          // Börse gerade zu? Dann direkt einspielen statt bis morgens zu warten
       await save();
       renderTuneLog();
       renderCentral();
       render();
     } catch (e) {
-      a.lastRun = Date.now();
-      a.lastCheck = { at: Date.now(), ok: false, applied: [], txt: 'Fehler: ' + (e && e.message ? e.message : e) };
+      a.lastMess = Date.now();
+      a.lastCheck = { at: Date.now(), ok: false, txt: 'Fehler: ' + (e && e.message ? e.message : e) };
       try { await save(); } catch (e2) { /* egal */ }
     } finally {
-      autoOptRunning = false;
-      autoOptPhase = '';
-      renderAutoOpt();
+      pilotRunning = false;
+      pilotPhase = '';
+      renderPilot();
     }
   }
-  function renderAutoOpt() {
-    var el = document.getElementById('autoOptStatus');
+  /** Vorgemerkte, doppelt bestätigte Empfehlung anwenden – nur bei geschlossener Börse. */
+  function pilotAnwenden() {
+    var a = autoOptCfg();
+    if (!a.pending || !a.pending.rec) return;
+    if (window.Dash && window.Dash.marketOpen()) return;   // nie mitten im Handel die Strategie wechseln
+    var applied = applyCentralRec(a.pending.rec, 'pilot');
+    a.lastApply = { at: Date.now(), applied: applied, name: a.pending.rec.modeName + ' · ' + a.pending.rec.interval };
+    a.pending = null;
+    a.lastRecKey = null;
+    save();
+    renderKlartext();
+    render();
+  }
+  async function renderPilot() {
+    var el = document.getElementById('pilotStatus');
     if (!el || !D) return;
     var a = autoOptCfg();
-    if (autoOptRunning) {
-      el.innerHTML = '<span style="color:var(--acc);">🤖 Selbst-Optimierung läuft … ' + U.esc(autoOptPhase || '') + '</span>';
+    if (pilotRunning) {
+      el.innerHTML = '<span style="color:var(--acc);">🤖 Autopilot misst … ' + U.esc(pilotPhase || '') + '</span>';
       return;
     }
-    var next = (a.on === false || !a.lastRun) ? null : a.lastRun + (a.everyH || 8) * 3600000;
+    // 📚 Datenlage: Wie viele Handelstage hat das Archiv schon gesammelt?
+    var deck = '';
+    if (window.Archiv) {
+      try {
+        var syms = universe();
+        var d1 = await window.Archiv.abdeckung('1m', syms);
+        var d5 = await window.Archiv.abdeckung('5m', syms);
+        var ziel = MIN_OOS_TAGE * 5;   // 4 OOS-Scheiben + Training brauchen ~5× die Mindest-Tage
+        function balken(t) {
+          var pct = Math.min(100, Math.round(t / ziel * 100));
+          return '<span class="pbar" style="display:inline-block; width:90px; vertical-align:middle;"><span style="width:' + pct + '%;"></span></span> ' + t + '/' + ziel + ' Tage';
+        }
+        EXPORT_ABDECKUNG = { at: Date.now(), min1: d1, min5: d5, zielTage: ziel };
+        deck = '<div style="margin-top:4px;">📚 Kursarchiv (Ziel für volle Belastbarkeit: ' + ziel + ' Handelstage):' +
+          '<div>1-Min: ' + balken(d1.tageMedian) + ' · 5-Min: ' + balken(d5.tageMedian) + ' <span style="color:var(--muted);">(' + Math.max(d1.symbole, d5.symbole) + ' Werte, rollierend 90 Kalendertage)</span></div></div>';
+      } catch (e) { /* Anzeige ist optional */ }
+    }
     var c = a.lastCheck;
     var txt = c
-      ? '<b>' + U.dt(c.at) + '</b> · ' + (c.ok ? (c.applied && c.applied.length ? '✅ ' : 'ℹ ') : '⚠ ') + U.esc(c.txt) +
+      ? '<b>' + U.dt(c.at) + '</b> · ' + (c.ok ? '' : '⚠ ') + U.esc(c.txt) +
         (c.dauerMin ? ' <span style="color:var(--muted);">(' + c.dauerMin + ' Min Rechenzeit)</span>' : '')
-      : 'Noch kein Durchlauf – der erste startet automatisch.';
-    var hinweis = a.on === false ? 'Automatik ist aus.'
-      : next ? 'Nächster Durchlauf: ' + U.dt(next) + (a.marketPause !== false ? ' (pausiert, solange die US-Börse offen ist)' : '')
-      : 'Startet beim nächsten fälligen Takt' + (a.marketPause !== false ? ', sobald die US-Börse geschlossen ist' : '') + '.';
-    el.innerHTML = txt + '<div style="color:var(--muted); margin-top:3px;">' + hinweis + '</div>';
+      : 'Noch keine Messung – die erste läuft in der nächsten Nacht nach US-Börsenschluss.';
+    var pend = a.pending ? '<div style="color:var(--up); margin-top:3px;">⏳ Vorgemerkt: ' + U.esc(a.pending.rec.modeName + ' · ' + a.pending.rec.interval) + ' – wird angewendet, sobald die Börse geschlossen ist.</div>' : '';
+    var apl = a.lastApply ? '<div style="color:var(--muted); margin-top:3px;">Zuletzt übernommen: ' + U.dt(a.lastApply.at) + ' · ' + U.esc(a.lastApply.name || '') + '</div>' : '';
+    var hinweis = a.on === false ? '⚠ Autopilot ist aus – es wird gesammelt, aber nichts gemessen oder geändert.'
+      : 'Misst jede Nacht nach US-Börsenschluss und wendet doppelt bestätigte Ergebnisse vor Handelsbeginn an. ✋ Von Hand gesetzte Felder bleiben unangetastet.';
+    el.innerHTML = txt + pend + apl + deck + '<div style="color:var(--muted); margin-top:3px;">' + hinweis + '</div>';
   }
 
   function renderCentral() {
@@ -4173,6 +3608,23 @@
         konfigVorher: null, konfigNachher: null });
       messNeu = messNeu || 1;
     }
+    // v8-Migration: Die Strategie-Farm ist durch den 🤖 Autopiloten ersetzt. Der alte
+    // Farm-Stand bleibt als farmAlt einsehbar (Export), steuert aber nichts mehr.
+    if (D.farm && !D.v8Migriert) {
+      D.v8Migriert = Date.now();
+      D.farmAlt = D.farm;
+      delete D.farm;
+      delete D.regimePending;
+      ['farm', 'farmH', 'farmPop', 'farmGens', 'lastFarm', 'everyH', 'onlyRobust', 'marketPause', 'lastRun'].forEach(function (k) {
+        if (D.autoOpt) delete D.autoOpt[k];
+      });
+      if (!D.tuneLog) D.tuneLog = [];
+      D.tuneLog.unshift({ id: 'sicherung-v8-' + Date.now(), at: Date.now(), quelle: 'sicherung',
+        applied: ['🤖 Autopilot ersetzt Farm + Selbst-Optimierung'],
+        txt: 'v8: Eine Automatik statt drei. Das 📚 Kursarchiv sammelt ab jetzt jede geladene Kursreihe (rollierend 90 Tage) – die nächtliche Messung wird damit von Woche zu Woche belastbarer. Die Marktlage (🧭) ist nur noch Anzeige. Der alte Farm-Stand liegt unverändert im Analyse-Export (strategieFarmAlt).',
+        konfigVorher: null, konfigNachher: null });
+      messNeu = messNeu || 1;
+    }
     if (repaired || messNeu) save();
     render();
     document.getElementById('jobStatus').textContent = D.lastRun ? 'Letzter Lauf: ' + U.dt(D.lastRun) : 'Noch kein Lauf – „Jetzt prüfen“ klicken oder auf den Auto-Lauf warten.';
@@ -4186,6 +3638,7 @@
         document.getElementById('sub-' + b.getAttribute('data-sub')).classList.add('active');
         render();
         if (b.getAttribute('data-sub') === 'auswertung') renderAnalytics();
+        if (b.getAttribute('data-sub') === 'strategien') { renderPilot(); renderRegime(); }
       });
     });
 
@@ -4432,42 +3885,33 @@
     syncSetupUI();
     updateParamVis();
     window.__updateParamVis = updateParamVis;
-    document.getElementById('centralBtn').addEventListener('click', function () { runCentral(); });
+    // (v8) Die Messung startet nur noch der Autopilot – Knopf oder Nacht-Takt.
     renderCentral();
 
-    /* 🤖 Selbst-Optimierung verkabeln */
+    /* 🤖 Autopilot verkabeln */
     (function () {
       var a = autoOptCfg();
-      var aoOn = document.getElementById('aoOn'), aoEvery = document.getElementById('aoEvery');
-      var aoRobust = document.getElementById('aoRobust'), aoMarket = document.getElementById('aoMarket');
-      var aoBtn = document.getElementById('aoBtn');
-      if (!aoOn) return;
-      aoOn.checked = a.on !== false;
-      aoEvery.value = String(a.everyH || 8);
-      aoRobust.checked = a.onlyRobust !== false;
-      aoMarket.checked = a.marketPause !== false;
-      function aoSave() {
-        a.on = aoOn.checked;
-        a.everyH = parseInt(aoEvery.value, 10);
-        a.onlyRobust = aoRobust.checked;
-        a.marketPause = aoMarket.checked;
-        save();
-        renderAutoOpt();
-      }
-      [aoOn, aoEvery, aoRobust, aoMarket].forEach(function (el) { el.addEventListener('change', aoSave); });
-      aoBtn.addEventListener('click', function () { autoOptimize(true); });
-      renderAutoOpt();
+      var pOn = document.getElementById('pilotOn'), pBtn = document.getElementById('pilotBtn');
+      if (!pOn) return;
+      pOn.checked = a.on !== false;
+      pOn.addEventListener('change', function () { a.on = pOn.checked; save(); renderPilot(); renderKlartext(); });
+      pBtn.addEventListener('click', function () { pilotMessen(true); });
+      renderPilot();
     })();
-    // Takt: alle 5 Min prüfen, ob ein Durchlauf fällig ist
-    function autoOptDue() {
+    // Takt: alle 5 Min. Bei geschlossener Börse wird Vorgemerktes angewendet und – höchstens
+    // einmal je ~20 h – die Nacht-Messung gestartet. So läuft sie genau einmal pro Nacht,
+    // die Rechenlast bleibt außerhalb der Handelszeit, und Neustarts überstehen den Takt
+    // (lastMess liegt im Store, nicht im Speicher).
+    setInterval(function () {
       var a = autoOptCfg();
-      if (a.on === false || autoOptRunning || centralRunning || jobRunning) return false;
-      if (Date.now() - (a.lastRun || 0) < (a.everyH || 8) * 3600000) return false;
-      if (a.marketPause !== false && window.Dash.marketOpen()) return false; // Rechenlast weg vom Handel
-      return true;
-    }
-    setInterval(function () { if (autoOptDue()) autoOptimize(false); }, 5 * 60000);
-    setTimeout(function () { if (autoOptDue()) autoOptimize(false); }, 90000);
+      if (window.Dash.marketOpen()) return;
+      pilotAnwenden();
+      if (a.on === false || pilotRunning || centralRunning || jobRunning) return;
+      if (Date.now() - (a.lastMess || 0) < 20 * 3600000) return;
+      pilotMessen(false);
+    }, 5 * 60000);
+    // Beim Start: Vorgemerktes ggf. sofort einspielen (z. B. App war über Nacht aus)
+    setTimeout(function () { if (!window.Dash.marketOpen()) pilotAnwenden(); }, 30000);
 
     /* 🧭 Regime-Automatik verkabeln */
     (function () {
@@ -4478,40 +3922,6 @@
       rBtn.addEventListener('click', function () { runRegime(true); });
       renderRegime();
     })();
-    /* 🧬 Strategie-Farm verkabeln */
-    (function () {
-      var fOn = document.getElementById('aoFarm'), fBtn = document.getElementById('farmBtn'), fPop = document.getElementById('aoFarmPop');
-      if (!fOn) return;
-      var a2 = autoOptCfg();
-      fOn.checked = a2.farm !== false;
-      fPop.value = String(a2.farmPop || 24);
-      fOn.addEventListener('change', function () { autoOptCfg().farm = fOn.checked; save(); renderFarm(); });
-      fPop.addEventListener('change', function () { autoOptCfg().farmPop = parseInt(fPop.value, 10); save(); });
-      fBtn.addEventListener('click', function () { runFarm(true); });
-      var sIn = document.getElementById('farmIdee'), sBtn = document.getElementById('farmSaatBtn'), sSt = document.getElementById('farmSaatStatus');
-      if (sIn && sBtn) {
-        async function einreichen() {
-          var txt = sIn.value.trim();
-          if (!txt) { sSt.textContent = 'Beschreibe kurz, was getestet werden soll.'; return; }
-          sBtn.disabled = true; sSt.textContent = 'Übersetze in eine Strategie-Variante …';
-          var r = await farmSaat(txt);
-          sBtn.disabled = false;
-          if (r.ok) { sIn.value = ''; sSt.textContent = '🌱 Aufgenommen (' + r.quelle + '): ' + geneName(r.gene) + ' – wird bei der nächsten Zuchtrunde gemessen.'; }
-          else sSt.textContent = '⚠ ' + r.msg;
-        }
-        sBtn.addEventListener('click', einreichen);
-        sIn.addEventListener('keydown', function (e) { if (e.key === 'Enter') einreichen(); });
-      }
-      renderFarm();
-    })();
-    // Farm-Takt: rechenintensiv, deshalb nur außerhalb der Handelszeit
-    setInterval(function () {
-      var a3 = autoOptCfg();
-      if (a3.farm === false || farmRunning || autoOptRunning || centralRunning) return;
-      if (window.Dash.marketOpen()) return;
-      if (Date.now() - (a3.lastFarm || 0) < (a3.farmH || 12) * 3600000) return;
-      runFarm(false);   // setzt lastFarm selbst und speichert es mit
-    }, 5 * 60000);
 
     // Takt: kurz nach Handelsbeginn und danach stündlich, solange die Börse offen ist
     setInterval(function () {

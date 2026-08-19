@@ -236,5 +236,24 @@ ok(berlin('2027-06-04', '14:30') === '2027-06-04T12:30:00.000Z', 'gilt auch im F
 var nfp = Cal.next(90).filter(function (e) { return e.name.indexOf('Arbeitsmarktbericht') !== -1; })[0];
 ok(!nfp || nfp.dt.getUTCDay() === 5, 'Arbeitsmarktbericht fällt auf einen Freitag', nfp ? nfp.dt.toISOString() : 'keiner im Fenster');
 
+console.log('13) Kursarchiv: mischen, kappen, Abdeckung');
+var A = require('./archiv.js');
+var T0 = Date.UTC(2026, 7, 10, 13, 30);
+var alt = [[T0, 100, 10], [T0 + 60000, 101, 11]];
+var neu13 = [[T0 + 60000, 101.5, 12], [T0 + 120000, 102, 13]];
+var gem = A.mischeBars(alt, neu13);
+ok(gem.length === 3, 'Duplikate nach Zeitstempel entfernt', gem.length);
+ok(gem[1][1] === 101.5, 'neuere Daten gewinnen (fertiger Bar ersetzt laufenden)', gem[1][1]);
+ok(gem[0][0] < gem[1][0] && gem[1][0] < gem[2][0], 'Serie bleibt aufsteigend sortiert');
+var lang = [];
+for (var d13 = 0; d13 < 120; d13++) lang.push([Date.UTC(2026, 3, 1) + d13 * 86400000, 100 + d13, 1]);
+var gek = A.kappeTage(lang, 90, Date.UTC(2026, 3, 1) + 119 * 86400000);
+ok(gek.length === 91 && A.abdeckungTage(gek) === 91, 'rollierend 90 Kalendertage gekappt', gek.length + ' Bars');
+ok(A.abdeckungTage([[T0, 1], [T0 + 3600000, 1], [T0 + 86400000, 1]]) === 2, 'Abdeckung zaehlt Handelstage, nicht Bars');
+var schl = A.schlank([[T0, 100.123456789, 10.7, 100.99999, 99.00001]]);
+ok(schl[0][1] === 100.1235 && schl[0][2] === 11 && schl[0][3] === 101 && schl[0][4] === 99, 'Speicherform gerundet (4 Nachkommastellen, Volumen ganzzahlig)');
+var dv = A.dollarVolTag([[T0, 100, 1000], [T0 + 60000, 100, 1000], [T0 + 86400000, 200, 500]]);
+ok(dv === 150000, 'Dollar-Umsatz je Tag: (100*1000+100*1000+200*500)/2 Tage', dv);
+
 console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
 process.exit(fails ? 1 : 0);
