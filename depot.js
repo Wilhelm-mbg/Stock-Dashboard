@@ -3118,6 +3118,40 @@
       var useFine = bestFine && fineValid && fineValid.retPct > 0;
       var pick = useFine ? bestFine.g : (top.best ? Object.assign({ lineType: cfg.lineType || 'ema' }, top.best) : { period: cfg.period, confirmBps: cfg.confirmBps, lineType: cfg.lineType || 'ema' });
 
+      // 🧹 Filter-Bilanz: Jeder Filter muss sein Geld verdienen. Für den besten Kandidaten
+      // wird auf der UNGESEHENEN 30-%-Scheibe jeder Filter einzeln abgeschaltet und
+      // nachgerechnet, was er in Prozentpunkten bringt oder kostet. Nur die im Backtest
+      // abbildbaren Filter – KI-Veto, Verlustserie und Event-Blackout laufen nur live und
+      // werden vom 🕯 Schattenbuch beurteilt (steht mit im Bericht).
+      var filterBilanz = null;
+      try {
+        out.innerHTML = '<div class="loading">Schritt 2b/3: Filter-Bilanz – jeden Filter einzeln nachrechnen …</div>';
+        var basisOpts = Object.assign({}, commonIv, top.mode.opts, pick, { zThr: zOf(pick.confirmBps || cfg.confirmBps) });
+        var basisAb = await btIntraday(testMap, basisOpts);
+        if (basisAb && !basisAb.error) {
+          var varianten = [
+            { name: 'Kosten-Check (Bewegung muss Kosten decken)', opts: { minEdge: 0 }, aktiv: (basisOpts.minEdge || 0) > 0 },
+            { name: 'Trendfilter (EMA100)', opts: { trendFilter: false }, aktiv: !!basisOpts.trendFilter },
+            { name: '📐 Trendkanal', opts: { channel: false }, aktiv: !!basisOpts.channel },
+            { name: '5-Min-Bestätigung (MTF)', opts: { mtf: false }, aktiv: !!basisOpts.mtf },
+            { name: 'Wellen-Qualitätsschwelle', opts: { minQuality: 0 }, aktiv: basisOpts.entryMode === 'wave' && (basisOpts.minQuality || 0) > 0 }
+          ].filter(function (v) { return v.aktiv; });
+          var abRes = await Promise.all(varianten.map(function (v) {
+            return btIntraday(testMap, Object.assign({}, basisOpts, v.opts));
+          }));
+          var zeilen = [];
+          varianten.forEach(function (v, i2) {
+            var r2 = abRes[i2];
+            if (!r2 || r2.error) return;
+            var nutzen = Math.round((basisAb.summary.retPct - r2.summary.retPct) * 100) / 100;
+            zeilen.push({ name: v.name, mitRet: basisAb.summary.retPct, ohneRet: r2.summary.retPct,
+              mitN: basisAb.summary.nTrades, ohneN: r2.summary.nTrades, nutzen: nutzen,
+              duenn: (r2.summary.nTrades || 0) + (basisAb.summary.nTrades || 0) < 20 });
+          });
+          filterBilanz = { basisRet: basisAb.summary.retPct, basisN: basisAb.summary.nTrades, zeilen: zeilen };
+        }
+      } catch (eFb) { /* Filter-Bilanz ist Diagnose, kein Pflichtteil */ }
+
       // Schritt 3: Diagnose (Stunden, Zeitfenster, Symbole) aus den Out-of-Sample-Trades
       out.innerHTML = '<div class="loading">Schritt 3/3: Diagnose und Empfehlung …</div>';
       var byHour = {};
@@ -3147,6 +3181,7 @@
         oosTage: top.oosTage, scheibenGueltig: top.scheibenGueltig, belastbar: top.belastbar,
         fine: bestFine ? { train: bestFine.train.retPct, valid: fineValid ? fineValid.retPct : null, used: !!useFine } : null,
         topSymbols: symRank.slice(0, 3).map(function (x) { return x[0]; }),
+        filterBilanz: filterBilanz,
         datenbasis: { symbole: Object.keys(ld.data[top.interval] || {}).length, zeitrahmen: top.interval,
           spanneTage: (function () { var sp = mapSpan(ld.data[top.interval] || {}); return sp[1] > sp[0] ? Math.round((sp[1] - sp[0]) / 86400000) : 0; })() }
       };
@@ -3544,6 +3579,39 @@
         (r.winRate != null ? r.winRate + ' %' : '–') + ' | ' + scheiterGrund(r) + ' |');
     });
     z.push('');
+    var fb = c.rec && c.rec.filterBilanz;
+    z.push('## 🧹 Filter-Bilanz (bester Kandidat, ungesehene Daten)');
+    z.push('');
+    if (fb && fb.zeilen && fb.zeilen.length) {
+      z.push('Basis mit allen Filtern: ' + (fb.basisRet > 0 ? '+' : '') + fb.basisRet + ' % bei ' + fb.basisN + ' Trades. „Nutzen“ = Rendite mit Filter minus ohne – positiv heißt: der Filter spart Geld.');
+      z.push('');
+      z.push('| Filter | mit | ohne | Nutzen | Trades mit/ohne | Urteil |');
+      z.push('|---|---|---|---|---|---|');
+      fb.zeilen.forEach(function (r) {
+        var urteil = r.duenn ? '⏳ zu wenig Trades für ein Urteil'
+          : r.nutzen > 0.5 ? '🟢 spart Geld' : r.nutzen < -0.5 ? '🔴 kostet Geld – Kandidat zum Lockern' : '⚪ neutral';
+        z.push('| ' + r.name + ' | ' + (r.mitRet > 0 ? '+' : '') + r.mitRet + ' % | ' + (r.ohneRet > 0 ? '+' : '') + r.ohneRet + ' % | ' +
+          (r.nutzen > 0 ? '+' : '') + r.nutzen + ' Pp | ' + r.mitN + '/' + r.ohneN + ' | ' + urteil + ' |');
+      });
+    } else {
+      z.push('Keine Filter-Bilanz in dieser Messung (zu wenig Daten auf der Testscheibe).');
+    }
+    z.push('');
+    z.push('Nur live wirksame Filter (nicht im Backtest abbildbar) – Urteil aus dem 🕯 Schattenbuch:');
+    z.push('');
+    var sst = extra.schatten || {};
+    var sk = Object.keys(sst);
+    if (sk.length) {
+      sk.forEach(function (g) {
+        var x = sst[g];
+        var u = x.n < 5 ? '⏳ zu früh (' + x.n + ' Schatten)'
+          : x.gerettet > x.verhindert * 1.5 ? '🟢 rettet Geld' : x.verhindert > x.gerettet * 1.5 ? '🔴 verhindert eher Gewinne' : '⚪ unentschieden';
+        z.push('- ' + g + ': ' + x.n + ' Schatten · Ø ' + (x.n ? Math.round(x.sumPct / x.n * 10) / 10 : 0) + ' % · gerettet ' + x.gerettet + ' / verhindert ' + x.verhindert + ' → ' + u);
+      });
+    } else {
+      z.push('- noch keine abgeschlossenen Schatten – entsteht im Live-Betrieb.');
+    }
+    z.push('');
     z.push('## 📈 Verlauf der letzten Messungen');
     z.push('');
     if ((a.messHistorie || []).length) {
@@ -3637,7 +3705,7 @@
         if (a.messHistorie.length > 30) a.messHistorie = a.messHistorie.slice(0, 30);
       }
       if (D.central) {
-        D.central.berichtMd = baueMessbericht(D.central, a, { handSperre: D.intraday.handSperre, intraday: D.intraday, version: APP_VER });
+        D.central.berichtMd = baueMessbericht(D.central, a, { handSperre: D.intraday.handSperre, intraday: D.intraday, version: APP_VER, schatten: D.schattenStat });
       }
       pilotAnwenden();          // Börse gerade zu? Dann direkt einspielen statt bis morgens zu warten
       await save();
@@ -3725,6 +3793,19 @@
       '<tr><td>Zeitfenster</td><td><b>' + WINDOW_NAMES[r.window] + '</b></td><td>bestes Out-of-Sample-Fenster nach P/L</td></tr>' +
       '<tr><td>Meide-Stunden</td><td><b>' + (r.avoidHours.length ? r.avoidHours.map(function (h) { return h + ' Uhr'; }).join(', ') : 'keine') + '</b></td><td>Stunden mit ≥3 Trades und negativem P/L (Berlin)</td></tr>' +
       '<tr><td>Stärkste Werte</td><td colspan="2">' + r.topSymbols.map(U.esc).join(' · ') + '</td></tr></table>';
+    if (r.filterBilanz && r.filterBilanz.zeilen && r.filterBilanz.zeilen.length) {
+      html += '<div style="font-size:12.5px; font-weight:600; margin-top:14px;">🧹 Filter-Bilanz (bester Kandidat, ungesehene Daten)</div>';
+      html += '<div style="color:var(--muted); font-size:11.5px; margin:2px 0 6px;">Basis mit allen Filtern: ' + U.signTxt(r.filterBilanz.basisRet, ' %') + ' bei ' + r.filterBilanz.basisN + ' Trades. Nutzen = mit minus ohne – positiv heißt: der Filter spart Geld.</div>';
+      html += '<table class="tbl" style="font-size:11.5px;"><tr><th>Filter</th><th>mit</th><th>ohne</th><th>Nutzen</th><th>Trades mit/ohne</th><th>Urteil</th></tr>';
+      r.filterBilanz.zeilen.forEach(function (fz) {
+        var fu = fz.duenn ? '⏳ zu wenig Trades' : fz.nutzen > 0.5 ? '🟢 spart Geld' : fz.nutzen < -0.5 ? '🔴 kostet Geld' : '⚪ neutral';
+        html += '<tr><td>' + U.esc(fz.name) + '</td><td class="' + U.signCls(fz.mitRet) + '">' + U.signTxt(fz.mitRet, ' %') + '</td>' +
+          '<td class="' + U.signCls(fz.ohneRet) + '">' + U.signTxt(fz.ohneRet, ' %') + '</td>' +
+          '<td class="' + U.signCls(fz.nutzen) + '"><b>' + U.signTxt(fz.nutzen, ' Pp') + '</b></td>' +
+          '<td>' + fz.mitN + '/' + fz.ohneN + '</td><td>' + fu + '</td></tr>';
+      });
+      html += '</table>';
+    }
     // 📋 Volles Ranking: ALLE Kandidaten mit dem Grund, woran sie scheitern – dieselbe
     // Sicht wie im messbericht.md, damit App und Bericht nie auseinanderlaufen.
     if (c.ranking && c.ranking.length) {
@@ -3818,6 +3899,21 @@
         applied: ['Trefferquoten-Zähler geleert'], txt: 'Die Trefferquoten zählten noch Trades aus der Zeit des Buchungsfehlers mit. Einmalig auf null gesetzt – ab jetzt zählen nur saubere Messdaten.',
         konfigVorher: null, konfigNachher: null });
       messNeu = messNeu || 1;
+    }
+    // Einmalig: ⚡ Blitz (Trades von max. 3 Minuten) mit einem Cooldown von 30+ Minuten
+    // widerspricht sich selbst – der Modus-Standard (2 Min) soll gelten. Der Wert stammte
+    // aus der alten Ausbruch-Voreinstellung und hatte nie ein eigenes Formularfeld.
+    if (!D.cooldownGeprueft) {
+      D.cooldownGeprueft = 1;
+      if (D.intraday.exitStyle === 'blitz' && D.intraday.cooldownMin != null && D.intraday.cooldownMin >= 30) {
+        var altCd = D.intraday.cooldownMin;
+        D.intraday.cooldownMin = null;   // Modus-Standard greift (Blitz: 2 Min)
+        if (!D.tuneLog) D.tuneLog = [];
+        D.tuneLog.unshift({ id: 'sicherung-cd-' + Date.now(), at: Date.now(), quelle: 'sicherung',
+          applied: ['Cooldown ' + altCd + ' Min → Modus-Standard (Blitz: 2 Min)'],
+          txt: '⚡ Blitz steigt nach spätestens 3 Minuten aus – ein ' + altCd + '-Minuten-Cooldown je Symbol ließ davon fast nichts übrig. Der Wert stammte aus der alten Ausbruch-Voreinstellung.',
+          konfigVorher: null, konfigNachher: JSON.parse(JSON.stringify(D.intraday)) });
+      }
     }
     // v8-Migration: Die Strategie-Farm ist durch den 🤖 Autopiloten ersetzt. Der alte
     // Farm-Stand bleibt als farmAlt einsehbar (Export), steuert aber nichts mehr.
