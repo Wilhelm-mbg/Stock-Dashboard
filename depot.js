@@ -3041,6 +3041,14 @@
       var MODES = labModes(cfg);
       // KI-Vorschlag der letzten Nacht: laeuft als markierter Kandidat mit - gemessen wie
       // alle anderen, mit festen Parametern und nur auf seinem eigenen Zeitrahmen.
+      var entd = (D.autoOpt || {}).entdeckt;
+      if (entd && entd.opts && entd.interval) {
+        MODES.push({ key: 'entdeckt', setup: entd.setup, trigger: entd.trigger,
+          name: 'Tiefensuche-Fund: ' + entd.name, nurInterval: entd.interval,
+          meta: { kiBase: entd.basis, scalpHold: entd.scalpHold, scalpSL: entd.scalpSL, profile: entd.profile },
+          fixedGrid: [{ period: entd.period, confirmBps: entd.confirmBps, zThr: zOf(entd.confirmBps), lineType: entd.lineType }],
+          opts: entd.opts });
+      }
       var kiK = (D.autoOpt || {}).kiKandidat;
       if (kiK && kiK.opts && kiK.interval) {
         MODES.push({ key: 'ki', setup: kiK.setup || 'ausbruch', trigger: kiK.trigger || 'kreuzung',
@@ -3300,11 +3308,12 @@
       applied.push(label);
     }
     var mKey = r.modeKey === 'wave_ch' ? 'wave' : r.modeKey;
-    if (mKey === 'ki') mKey = r.kiBase || 'breakout';                     // KI-Vorschlag: Basis-Modus
+    if (mKey === 'ki' || mKey === 'entdeckt') mKey = r.kiBase || 'breakout';   // KI-/Tiefensuche-Kandidat: Basis-Modus
     if (mKey === 'reversion_lang') mKey = 'reversion';                    // Lang-Varianten: Basis-Modus,
     if (mKey === 'wave_lang') mKey = 'wave';                              // Haltedauer/Stop kommen unten mit
     // 'laufen lassen'-Kandidat: Modus ist Ausbruch, der Ausstieg wird explizit mit umgestellt
     if (mKey === 'breakout_lauf') { mKey = 'breakout'; set('exitStyle', 'laufen', 'Ausstieg → laufen lassen'); }
+    if (mKey === 'pullback' || r.kiBase === 'pullback') { /* Ausstieg steckt im Modus */ }
     // Der 'breakout'-Kandidat wurde mit dem eingestellten Ausstiegsstil GEMESSEN (labModes) –
     // beim Anwenden muss derselbe Stil gelten (Blitz/kurz laufen als mode 'waves').
     if (mKey === 'breakout' && (D.intraday.exitStyle === 'blitz' || D.intraday.exitStyle === 'kurz')) mKey = 'waves';
@@ -3695,6 +3704,22 @@
       z.push('- noch keine abgeschlossenen Schatten – entsteht im Live-Betrieb.');
     }
     z.push('');
+    if (a.tiefensuche) {
+      z.push('## Tiefensuche (Leerlaufstunden, rein aus dem Archiv)');
+      z.push('');
+      z.push('Zuletzt ' + new Date(a.tiefensuche.at).toLocaleString('de-DE') + ' · ' + a.tiefensuche.geprueft + ' Kombinationen in ' + a.tiefensuche.dauerMin + ' Min.');
+      if ((a.tiefensuche.top || []).length) {
+        z.push('');
+        z.push('| Kombination | Training | ungesehen | Trades |');
+        z.push('|---|---|---|---|');
+        a.tiefensuche.top.forEach(function (f) {
+          z.push('| ' + f.name + ' | ' + (f.trainRet > 0 ? '+' : '') + f.trainRet + ' % | ' + (f.testRet > 0 ? '+' : '') + f.testRet + ' % | ' + f.testN + ' |');
+        });
+      }
+      z.push('');
+      z.push(a.entdeckt ? 'Fund tritt in der naechsten Nacht-Messung an: ' + a.entdeckt.name : 'Kein Fund, der out-of-sample positiv war.');
+      z.push('');
+    }
     if (a.kiKandidat) {
       z.push('## KI-Vorschlag (lokales Modell, Whitelist-geprueft)');
       z.push('');
@@ -3745,6 +3770,129 @@
     return z.join('\n');
   }
   if (typeof window !== 'undefined') window.__pilotBericht = baueMessbericht;   // fuer Funktionstests
+
+  /* ================= Tiefensuche (nutzt die brachliegenden Nacht-/Wochenendstunden) ====
+   * Mehr Rechnen auf denselben Daten schafft kein Wissen - TIEFER suchen schon. Nach der
+   * Nacht-Messung durchkaemmt die Tiefensuche auf dem ARCHIV (kein einziger Netzabruf)
+   * einen viel breiteren Parameterraum, als die 15-Minuten-Messung es kann. Der beste Fund
+   * tritt in der naechsten Nacht als markierter Kandidat im regulaeren Walk-Forward an und
+   * muss dieselben Huerden nehmen wie alle anderen. Tagsueber laeuft sie nie: CPU und
+   * Yahoo-Limits gehoeren dann dem Live-Scanner. */
+  var tiefRunning = false;
+  /** Minuten bis zur naechsten US-Boersenoeffnung (Wochenende beruecksichtigt, grob). */
+  function minutenBisOeffnung() {
+    var t = Date.now();
+    for (var k = 0; k < 5 * 96; k++) {           // in 15-Min-Schritten bis zu 5 Tage voraus
+      var d = new Date(t);
+      var wt = d.getUTCDay();
+      var m = Q.minutenSeitOeffnung(t);
+      if (wt >= 1 && wt <= 5 && m >= 0 && m < 15) return Math.round((t - Date.now()) / 60000);
+      t += 15 * 60000;
+    }
+    return 9999;
+  }
+  /** Messbasis NUR aus dem Archiv bauen - fuer Rechenlaeufe ohne Netzlast. */
+  async function ladeArchivDaten(intervals) {
+    var data = {};
+    var syms = messUniversum();
+    for (var ii = 0; ii < intervals.length; ii++) {
+      var iv = intervals[ii], mapA = {};
+      for (var si = 0; si < syms.length; si++) {
+        var serie = await window.Archiv.serie(iv, syms[si]);
+        if (serie && serie.length > 200) mapA[syms[si]] = serie;
+      }
+      data[iv] = mapA;
+    }
+    return { intervals: intervals, data: data };
+  }
+  async function tiefensuche() {
+    var a = autoOptCfg();
+    if (tiefRunning || pilotRunning || centralRunning || jobRunning) return;
+    if (!window.Archiv) return;
+    tiefRunning = true;
+    var t0 = Date.now();
+    try {
+      pilotLogAdd('Tiefensuche gestartet: breite Parametersuche auf dem Archiv (ohne Netzabrufe).');
+      renderPilot();
+      var ivs = ['15m', '60m'];                    // die Richtung, die die Daten zeigen
+      var ld = await ladeArchivDaten(ivs);
+      // Basen: die zwei besten unterschiedlichen Grund-Setups des letzten Rankings + Pullback
+      var basenSet = {};
+      var basen = [];
+      ((D.central || {}).ranking || []).forEach(function (r) {
+        var b = { breakout: 'breakout_lauf', breakout_lauf: 'breakout_lauf', orb: 'orb',
+          reversion: 'reversion', reversion_lang: 'reversion', wave: 'wave', wave_lang: 'wave',
+          pullback: 'pullback', ki: null, entdeckt: null }[r.modeKey];
+        if (b && !basenSet[b] && basen.length < 2) { basenSet[b] = 1; basen.push(b); }
+      });
+      if (!basenSet.pullback && basen.length < 3) basen.push('pullback');
+      if (!basen.length) basen = ['reversion', 'pullback'];
+      var PER = [9, 14, 20, 35, 50], CONF = [5, 15, 30], LT = ['ema', 'vwap'], PROF = ['atm21', D.intraday.profile || 'otm3_14'];
+      PROF = PROF.filter(function (v, i2, arr) { return arr.indexOf(v) === i2; });
+      var funde = [], geprueft = 0;
+      for (var bi = 0; bi < basen.length; bi++) {
+        for (var vi = 0; vi < ivs.length; vi++) {
+          var iv2 = ivs[vi];
+          var map = ld.data[iv2];
+          if (!map || Object.keys(map).length < 3) continue;
+          var span = mapSpan(map);
+          var cut = tagesGrenze(map, 0.7);
+          if (!cut) continue;
+          var trainMap = sliceMap(map, span[0], cut, 0);
+          var testMap = sliceMap(map, cut, span[1], warmlaufBars(iv2));
+          var common = labCommonOpts(D.intraday, iv2);
+          var kombis = [];
+          PER.forEach(function (p) { CONF.forEach(function (c) { LT.forEach(function (lt) { PROF.forEach(function (pr) {
+            kombis.push({ basis: basen[bi], interval: iv2, period: p, confirmBps: c, lineType: lt, profile: pr, scalpSL: 30, scalpHold: 240 });
+          }); }); }); });
+          pilotLogAdd('Tiefensuche: ' + basen[bi] + ' · ' + iv2 + ' · ' + kombis.length + ' Kombinationen …');
+          var trainRes = await Promise.all(kombis.map(function (k) {
+            var kk = kiKandidatBauen(k);
+            return btIntraday(trainMap, Object.assign({}, common, kk.opts, { period: k.period, confirmBps: k.confirmBps, zThr: zOf(k.confirmBps), lineType: k.lineType }));
+          }));
+          geprueft += kombis.length;
+          // die 3 besten Trainings-Kombis je Basis/Zeitrahmen out-of-sample gegenpruefen
+          var kandT = [];
+          kombis.forEach(function (k, ki2) {
+            var r2 = trainRes[ki2];
+            if (!r2 || r2.error || r2.summary.nTrades < 10) return;
+            kandT.push({ k: k, train: r2.summary });
+          });
+          kandT.sort(function (x, y) { return y.train.retPct - x.train.retPct; });
+          for (var ti2 = 0; ti2 < Math.min(3, kandT.length); ti2++) {
+            var kk2 = kiKandidatBauen(kandT[ti2].k);
+            var rv = await btIntraday(testMap, Object.assign({}, labCommonOpts(D.intraday, iv2), kk2.opts,
+              { period: kandT[ti2].k.period, confirmBps: kandT[ti2].k.confirmBps, zThr: zOf(kandT[ti2].k.confirmBps), lineType: kandT[ti2].k.lineType }));
+            if (rv && !rv.error) {
+              funde.push({ k: kandT[ti2].k, name: kk2.name, trainRet: kandT[ti2].train.retPct, trainN: kandT[ti2].train.nTrades,
+                testRet: rv.summary.retPct, testN: rv.summary.nTrades, pf: rv.summary.profitFactor });
+            }
+          }
+          if (minutenBisOeffnung() < 90 || Date.now() - t0 > 25 * 60000) { pilotLogAdd('Tiefensuche: Zeitbudget erreicht – Zwischenstand gespeichert.'); bi = basen.length; break; }
+        }
+      }
+      funde.sort(function (x, y) { return y.testRet - x.testRet; });
+      a.tiefensuche = { at: Date.now(), geprueft: geprueft, dauerMin: Math.round((Date.now() - t0) / 6000) / 10, top: funde.slice(0, 5) };
+      var bester = funde[0];
+      if (bester && bester.testRet > 0 && bester.testN >= 15) {
+        var ek = kiKandidatBauen(bester.k);
+        ek.quelle = 'tiefensuche';
+        a.entdeckt = ek;
+        pilotLogAdd('Tiefensuche-Fund: ' + ek.name + ' (Training ' + bester.trainRet + ' %, ungesehen +' + bester.testRet + ' % bei ' + bester.testN + ' Trades) – tritt in der nächsten Nacht-Messung an.');
+      } else {
+        a.entdeckt = null;
+        pilotLogAdd('Tiefensuche fertig: ' + geprueft + ' Kombinationen, kein Fund, der out-of-sample positiv war. Ehrliches Ergebnis – kein Fund ist besser als ein erfundener.');
+      }
+      a.lastTief = Date.now();
+      await save();
+      renderPilot();
+    } catch (e) {
+      pilotLogAdd('Tiefensuche-Fehler: ' + (e && e.message ? e.message : e));
+      a.lastTief = Date.now();
+    } finally {
+      tiefRunning = false;
+    }
+  }
 
   /* ================= KI-Vorschlags-Slot =================
    * Das lokale Modell sieht nach jeder Messung Ranking und Filter-Bilanz und darf EINEN
@@ -3835,6 +3983,7 @@
   }
   async function pilotMessen(manual) {
     var a = autoOptCfg();
+    if (tiefRunning) { if (manual) pilotLogAdd('Hinweis: Tiefensuche läuft gerade – die Messung startet danach automatisch beim nächsten Takt.'); return; }
     if (pilotRunning || centralRunning || jobRunning) {
       // Zweiter Klick ist KEIN Neustart - sichtbar sagen, dass schon gemessen wird
       if (manual && pilotRunning) pilotLogAdd('Hinweis: Messung läuft bereits (seit ' + Math.round((Date.now() - pilotStartAt) / 60000) + ' Min) - Verlauf siehe unten.');
@@ -3969,11 +4118,12 @@
         (c.dauerMin ? ' <span style="color:var(--muted);">(' + c.dauerMin + ' Min Rechenzeit)</span>' : '')
       : 'Noch keine Messung – die erste läuft in der nächsten Nacht nach US-Börsenschluss.';
     var pend = a.pending ? '<div style="color:var(--up); margin-top:3px;">Vorgemerkt: ' + U.esc(a.pending.rec.modeName + ' · ' + a.pending.rec.interval) + ' – wird angewendet, sobald die Börse geschlossen ist.</div>' : '';
+    var tfz = a.tiefensuche ? '<div style="color:var(--muted); margin-top:3px;">Tiefensuche: ' + a.tiefensuche.geprueft + ' Kombinationen (' + U.dt(a.tiefensuche.at) + ')' + (a.entdeckt ? ' · Fund: ' + U.esc(a.entdeckt.name) : ' · kein Fund') + '</div>' : '';
     var bfz = a.lastBackfill ? '<div style="color:var(--muted); margin-top:3px;">Capital-Backfill: ' + a.lastBackfill.bars + ' Kerzen nachgeladen (' + U.dt(a.lastBackfill.at) + ')</div>' : '';
     var apl = a.lastApply ? '<div style="color:var(--muted); margin-top:3px;">Zuletzt übernommen: ' + U.dt(a.lastApply.at) + ' · ' + U.esc(a.lastApply.name || '') + '</div>' : '';
     var hinweis = a.on === false ? 'Autopilot ist aus – es wird gesammelt, aber nichts gemessen oder geändert.'
       : 'Misst jede Nacht nach US-Börsenschluss und wendet doppelt bestätigte Ergebnisse vor Handelsbeginn an. Von Hand gesetzte Felder bleiben unangetastet.';
-    el.innerHTML = txt + pend + apl + bfz + deck + '<div style="color:var(--muted); margin-top:3px;">' + hinweis + '</div>';
+    el.innerHTML = txt + pend + apl + bfz + tfz + deck + '<div style="color:var(--muted); margin-top:3px;">' + hinweis + '</div>';
   }
 
   function renderCentral() {
@@ -4428,9 +4578,11 @@
       }
       if (window.Dash.marketOpen()) return;
       pilotAnwenden();
-      if (a.on === false || pilotRunning || centralRunning || jobRunning) return;
-      if (Date.now() - (a.lastMess || 0) < 20 * 3600000) return;
-      pilotMessen(false);
+      if (a.on === false || pilotRunning || centralRunning || jobRunning || tiefRunning) return;
+      if (Date.now() - (a.lastMess || 0) >= 20 * 3600000) { pilotMessen(false); return; }
+      // Leerlaufstunden nutzen: Messung fuer diesen Daten-Tag ist erledigt, bis zur
+      // Oeffnung ist reichlich Zeit -> Tiefensuche (hoechstens alle 6 h, rein aus dem Archiv)
+      if (minutenBisOeffnung() > 120 && Date.now() - (a.lastTief || 0) > 6 * 3600000) tiefensuche();
     }, 5 * 60000);
     // Beim Start: Vorgemerktes ggf. sofort einspielen (z. B. App war über Nacht aus)
     setTimeout(function () { if (!window.Dash.marketOpen()) pilotAnwenden(); }, 30000);
