@@ -303,15 +303,24 @@
   function warrantAsk(dir, w, spot, nowMs) { return warrantValue(dir, w, spot, nowMs) * (1 + SPREAD); }
   function warrantBid(dir, w, spot, nowMs) { return Math.max(0.001, warrantValue(dir, w, spot, nowMs) * (1 - SPREAD)); }
 
-  /** Effektiver Spread: skaliert mit der impliziten Vola (hektischer Markt = teurer) */
-  function effSpread(iv, base) {
+  /** Effektiver Spread je Seite. Mit Scheinpreis: realistisches CENT-Modell - Emittenten
+   *  stellen die Geld-Brief-Spanne absolut in Cent (typisch 1-4 ct), nicht prozentual.
+   *  Folge: Ein 45-Cent-Schein zahlt ~2,2 % je Seite, ein 2-Euro-ATM-Schein nur ~0,5 % -
+   *  das alte Pauschal-Prozent-Modell bestrafte teurere Scheine massiv zu Unrecht und
+   *  hat damit JEDE Messung verzerrt. Ohne Preis gilt der alte Pfad (Altaufrufe/Tests). */
+  function effSpread(iv, base, preis) {
     base = base === undefined ? SPREAD : base;
-    return Math.min(base * 2.5, Math.max(base * 0.8, base * (0.7 + iv)));
+    if (preis == null) return Math.min(base * 2.5, Math.max(base * 0.8, base * (0.7 + iv)));
+    var absolut = 0.01 / Math.max(preis, 0.05);        // 1-Cent-Floor des Market Makers
+    var relativ = 0.004 * (0.7 + iv);                  // kleiner vola-abhaengiger Anteil
+    return Math.min(0.08, Math.max(absolut, relativ));
   }
-  /** Slippage-Anteil je Ausführung (auf den Scheinkurs) */
-  function slipOf(iv, base) {
+  /** Slippage-Anteil je Ausführung. Mit Scheinpreis: klein - der Emittent stellt feste
+   *  Quotes, gefuellt wird zum gestellten Kurs; Restrisiko ist die Kursstellung selbst. */
+  function slipOf(iv, base, preis) {
     base = base === undefined ? 0.005 : base;
-    return base * (0.5 + iv);
+    if (preis == null) return base * (0.5 + iv);
+    return Math.min(0.02, Math.max(0.001, 0.002 * (0.5 + iv)));
   }
 
   /** Effektiver Hebel (Omega) = Delta × Spot × Ratio / Scheinpreis */
@@ -1111,7 +1120,7 @@
   /** Stand der Rechengrundlage. Wird hochgezählt, sobald sich etwas ändert, das alte
    *  Backtest-Ergebnisse ungültig macht (z. B. die Vola-Skalierung in 7.10). Die Farm
    *  verwirft dann ihren Champion-Nachweis und lässt ihn neu antreten. */
-  var RECHENSTAND = 4;
+  var RECHENSTAND = 5;   // v8.8: Kostenmodell auf Cent-Spread umgestellt
 
   var KANAL_MIN = { touchJeSeite: 3, dichte: 2.5, wechsel: 2, deckung: 0.90, enge: 0.85, vr: 0.35, acf: -0.65, score: 50 };
 
@@ -1642,9 +1651,10 @@
         var iv = Math.min(1.5, Math.max(0.15, histVolIntraday(closesUpto, barsProTag) * 1.1));
         var strike = spot * (1 + (dir === 'call' ? OTM : -OTM));
         var w = { strike: strike, expiry: t + EXPD * 86400000, iv: iv, ratio: RATIO };
-        var spx = effSpread(iv, SP) + slipOf(iv, SLIPB); // vola-abhängiger Spread + Slippage
-        var ask = warrantValue(dir, w, spot, t) * (1 + spx);
-        if (ask <= 0.001) continue;
+        var wWert = warrantValue(dir, w, spot, t);
+        if (wWert <= 0.001) continue;
+        var spx = effSpread(iv, SP, wWert) + slipOf(iv, SLIPB, wWert); // Cent-Spread + Slippage auf den Scheinwert
+        var ask = wWert * (1 + spx);
         var omegaE = warrantOmega(dir, w, spot, t);
         var barMsX = ci > 0 ? Math.max(60000, bars[ci][0] - bars[ci - 1][0]) : 300000;
         var holdBars = MAXHOLD ? MAXHOLD / barMsX : 12;

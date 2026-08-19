@@ -103,9 +103,10 @@
       }
       var prof = Q.PROFILES[(cfg && cfg.profile) || 'atm21'] || Q.PROFILES.atm21;
       var w = { strike: spot * (1 + (dir === 'call' ? prof.otmPct : -prof.otmPct)), expiry: now + prof.days * 86400000, iv: iv, ratio: Q.RATIO };
-      var spx = Q.effSpread(iv) + Q.slipOf(iv);
-      var ask = Q.warrantValue(dir, w, spot, now) * (1 + spx);
-      if (!(ask > 0.001)) return;
+      var wWertS = Q.warrantValue(dir, w, spot, now);
+      if (!(wWertS > 0.001)) return;
+      var spx = Q.effSpread(iv, undefined, wWertS) + Q.slipOf(iv, undefined, wWertS);
+      var ask = wWertS * (1 + spx);
       var uebernacht = !!(mp && mp.uebernacht);
       // Kein frischer Intraday-Schatten im Tagesschluss-Fenster – er würde im nächsten
       // Scan sofort mit 'Tagesschluss' bei ~0 % geschlossen und verwässert nur die Bilanz.
@@ -323,6 +324,15 @@
   var BTPool = (function () {
     var size = Math.max(2, Math.min(8, Math.floor((navigator.hardwareConcurrency || 4) * 0.75))); // CPU-Deckel ~75 %
     var workers = [], queue = [], nextId = 1, pending = {}, ok = typeof Worker !== 'undefined';
+    // Kurskarten bekommen eine Kennung; jeder Worker cached die letzten 3 Karten und
+    // erhält Folgeauftraege nur noch mit der Kennung statt mit dem kompletten Datensatz.
+    var MAP_IDS = (typeof WeakMap !== 'undefined') ? new WeakMap() : null;
+    var mapIdZaehler = 0;
+    function mapIdVon(m) {
+      if (!MAP_IDS || !m || typeof m !== 'object') return 0;
+      if (!MAP_IDS.has(m)) MAP_IDS.set(m, ++mapIdZaehler);
+      return MAP_IDS.get(m);
+    }
     var fehler = 0;
     function fertig(id, res) {
       var job = pending[id];
@@ -395,6 +405,20 @@
         var job = queue.shift();
         free.busy = true; free.jobId = job.id;
         pending[job.id] = job;
+        // Karte nur mitschicken, wenn dieser Worker sie noch nicht hat
+        if (!free.hatMaps) free.hatMaps = {};
+        var mitDaten = !job.mapId || !free.hatMaps[job.mapId];
+        if (mitDaten && job.mapId) {
+          free.hatMaps[job.mapId] = Date.now();
+          var kIds = Object.keys(free.hatMaps);
+          if (kIds.length > 3) {
+            kIds.sort(function (a2, b2) { return free.hatMaps[a2] - free.hatMaps[b2]; });
+            delete free.hatMaps[kIds[0]];
+            try { free.postMessage({ evict: parseInt(kIds[0], 10) }); } catch (eEv) { /* egal */ }
+          }
+        } else if (job.mapId) {
+          free.hatMaps[job.mapId] = Date.now();   // zuletzt benutzt aktualisieren
+        }
         // Sicherheitsnetz: Ein Auftrag, der nach 3 Minuten nicht zurück ist, gilt als verloren.
         // Der Worker wird dabei beendet und ersetzt – er rechnete sonst weiter und alle
         // Folgejobs stauten sich bei ihm und liefen kaskadierend in denselben Timeout.
@@ -410,7 +434,7 @@
             pump();
           };
         })(job.id, free), 180000);
-        free.postMessage({ id: job.id, fn: job.fn, histMap: job.histMap, opts: job.opts });
+        free.postMessage({ id: job.id, fn: job.fn, mapId: job.mapId, map: mitDaten ? job.histMap : null, opts: job.opts });
       }
     }
     function run(fn, histMap, opts) {
@@ -421,7 +445,7 @@
         });
       }
       return new Promise(function (resolve) {
-        queue.push({ id: nextId++, fn: fn, histMap: histMap, opts: opts, cb: resolve });
+        queue.push({ id: nextId++, fn: fn, histMap: histMap, mapId: mapIdVon(histMap), opts: opts, cb: resolve });
         pump();
       });
     }
@@ -1073,9 +1097,10 @@
   function openTrade(sym, dir, spot, vol, scores, reasonBits, now, kiRes) {
     kiRes = kiRes || { factor: 1, note: '', approved: false };
     var w = Q.makeWarrant(dir, spot, vol, now);
-    var spx = Q.effSpread(w.iv) + Q.slipOf(w.iv);
-    var ask = Q.warrantValue(dir, w, spot, now) * (1 + spx);
-    if (ask <= 0.001) return null;
+    var wWert = Q.warrantValue(dir, w, spot, now);
+    if (wWert <= 0.001) return null;
+    var spx = Q.effSpread(w.iv, undefined, wWert) + Q.slipOf(w.iv, undefined, wWert);
+    var ask = wWert * (1 + spx);
     var qty = Math.floor((equityNow() * BUDGET * (kiRes.factor || 1)) / ask);
     if (qty < 1 || D.cash < qty * ask) return null;
     D.cash -= qty * ask;
@@ -1715,9 +1740,10 @@
         var iv = Math.min(1.5, Math.max(0.15, Q.histVolIntraday(closes5, Math.round(390 / barMin)) * 1.1));
         var strike = Math.round(spot * (1 + (dir === 'call' ? prof.otmPct : -prof.otmPct)) * 100) / 100;
         var w = { strike: strike, expiry: now + prof.days * 86400000, iv: iv, ratio: Q.RATIO };
-        var spx2 = Q.effSpread(iv) + Q.slipOf(iv);
-        var ask = Q.warrantValue(dir, w, spot, now) * (1 + spx2);
-        if (ask <= 0.001) continue;
+        var wWert2 = Q.warrantValue(dir, w, spot, now);
+        if (wWert2 <= 0.001) continue;
+        var spx2 = Q.effSpread(iv, undefined, wWert2) + Q.slipOf(iv, undefined, wWert2);
+        var ask = wWert2 * (1 + spx2);
         // Kosten-Breakeven-Filter: lohnt sich der Trade nach Kosten überhaupt?
         var omegaPre = Q.warrantOmega(dir, w, spot, now);
         // Not-Stop: fix oder „atmend“ (Volatilität × Hebel)
@@ -3129,11 +3155,16 @@
           await new Promise(function (r) { setTimeout(r, 20); });
           var span = mapSpan(map);
           if (!(span[1] > span[0])) continue;
-          var scheiben = tagesScheiben(map, 5);
-          if (scheiben.length < 5) continue;          // zu wenig Handelstage für einen Walk-Forward
+          // Scheibenzahl waechst mit dem Archiv: bei 40 Handelstagen 5 Scheiben (4 Pruef-
+          // scheiben), bei 90 Tagen 9 - mehr ungesehene Abschnitte = stabilere Urteile.
+          var tageGesamt = handelsTage(map).length;
+          var nScheiben = Math.min(9, Math.max(5, Math.floor(tageGesamt / 9) + 1));
+          var scheiben = tagesScheiben(map, nScheiben);
+          if (scheiben.length < nScheiben) continue;   // zu wenig Handelstage für einen Walk-Forward
+          var oosMax = nScheiben - 1;
           var oosTage = 0;
           var foldRets = [], oosTrades = [], lastBest = null;
-          for (var f = 1; f <= 4; f++) {
+          for (var f = 1; f <= oosMax; f++) {
             var trainEnd = scheiben[f].von;
             var testEnd = scheiben[f].bis;
             oosTage += scheiben[f].tage;
@@ -3173,15 +3204,25 @@
           // sondern eine Münzwurf-Serie mit Nachkommastellen. Es braucht BEIDES – genug
           // Trades UND genug ungesehene Handelstage, sonst gibt es kein Urteil.
           var duenn = oosTrades.length < MIN_OOS_TRADES || oosTage < MIN_OOS_TAGE || valid.length < 3;
+          // E1: Bootstrap-Gegenprobe - 400 Neuziehungen der Trades; ist die Verlust-
+          // Wahrscheinlichkeit hoch, ist ein positiver Walk-Forward noch kein Beleg.
+          var bsOOS = oosTrades.length >= 10 ? Q.bootstrapTrades(oosTrades, START_CAPITAL) : null;
+          // E2: Richtungs-Bilanz - manche Setups tragen nur in eine Richtung
+          var rCall = { n: 0, pnl: 0 }, rPut = { n: 0, pnl: 0 };
+          oosTrades.forEach(function (x) { var r3 = x.dir === 'call' ? rCall : rPut; r3.n++; r3.pnl += x.pnl; });
+          var robustSchwelle = Math.ceil(oosMax * 0.7);
           var verdict = duenn
-            ? ('nicht belastbar (' + oosTrades.length + ' Trades auf ' + oosTage + ' ungesehenen Handelstagen, ' + valid.length + '/4 Scheiben)')
-            : (wfRet > 0 && posSegs >= 3 && pf > 1) ? 'robust'
-            : (wfRet > 0 || posSegs >= 2) ? 'gemischt' : 'kein Vorteil';
+            ? ('nicht belastbar (' + oosTrades.length + ' Trades auf ' + oosTage + ' ungesehenen Handelstagen, ' + valid.length + '/' + oosMax + ' Scheiben)')
+            : (wfRet > 0 && posSegs >= robustSchwelle && pf > 1 && (!bsOOS || bsOOS.lossProb <= 45)) ? 'robust'
+            : (wfRet > 0 || posSegs >= Math.ceil(oosMax / 2)) ? 'gemischt' : 'kein Vorteil';
           results.push({
             mode: MODES[mi], interval: iv, wfRet: wfRet, foldRets: foldRets, posSegs: posSegs,
             n: oosTrades.length, winRate: oosTrades.length ? Math.round(wins / oosTrades.length * 100) : 0,
             pf: pf, verdict: verdict, best: lastBest, trades: oosTrades,
-            oosTage: oosTage, scheibenGueltig: valid.length, belastbar: !duenn
+            oosTage: oosTage, scheibenGueltig: valid.length, belastbar: !duenn,
+            scheibenMax: oosMax, bootLossProb: bsOOS ? bsOOS.lossProb : null,
+            callN: rCall.n, callPnl: Math.round(rCall.pnl * 100) / 100,
+            putN: rPut.n, putPnl: Math.round(rPut.pnl * 100) / 100
           });
         }
       }
@@ -3314,6 +3355,8 @@
         kiBase: (top.mode.meta || {}).kiBase || null,
         wfRet: top.wfRet, posSegs: top.posSegs, n: top.n, winRate: top.winRate, pf: top.pf, verdict: top.verdict,
         oosTage: top.oosTage, scheibenGueltig: top.scheibenGueltig, belastbar: top.belastbar,
+        scheibenMax: top.scheibenMax, bootLossProb: top.bootLossProb,
+        richtung: { callN: top.callN, callPnl: top.callPnl, putN: top.putN, putPnl: top.putPnl },
         fine: bestFine ? { train: bestFine.train.retPct, valid: fineValid ? fineValid.retPct : null, used: !!useFine } : null,
         topSymbols: symRank.slice(0, 3).map(function (x) { return x[0]; }),
         filterBilanz: filterBilanz,
@@ -3325,7 +3368,9 @@
         // volles Ranking (alle Setups x Zeitrahmen) inkl. der Angaben, WORAN ein Kandidat scheitert
         ranking: results.map(function (r0) { return { name: r0.mode.name, modeKey: r0.mode.key, interval: r0.interval,
           wfRet: r0.wfRet, posSegs: r0.posSegs, scheibenGueltig: r0.scheibenGueltig, n: r0.n, oosTage: r0.oosTage,
-          pf: r0.pf, winRate: r0.winRate, verdict: r0.verdict, belastbar: !!r0.belastbar }; }),
+          pf: r0.pf, winRate: r0.winRate, verdict: r0.verdict, belastbar: !!r0.belastbar,
+          scheibenMax: r0.scheibenMax, bootLossProb: r0.bootLossProb,
+          callN: r0.callN, callPnl: r0.callPnl, putN: r0.putN, putPnl: r0.putPnl }; }),
         // Datenlage je Zeitrahmen: Handelstage und Wertezahl der Messbasis
         datenlage: (function () {
           var out = {};
@@ -3389,7 +3434,7 @@
       if (!D.tuneLog) D.tuneLog = [];
       var closedNow = D.trades.filter(function (t) { return t.status === 'closed' && istMess(t); });
       var txt = (quelle === 'pilot' ? 'Autopilot: ' : quelle === 'lokal' ? 'Selbst-Optimierung: ' : '') + r.modeName + ' · ' + r.interval + ' · Walk-Forward ' +
-        (r.wfRet > 0 ? '+' : '') + r.wfRet + ' % · ' + r.posSegs + '/4 Scheiben · ' + r.n + ' Trades · PF ' + r.pf + ' · ' + r.verdict +
+        (r.wfRet > 0 ? '+' : '') + r.wfRet + ' % · ' + r.posSegs + '/' + (r.scheibenMax || 4) + ' Scheiben · ' + r.n + ' Trades · PF ' + r.pf + ' · ' + r.verdict +
         (gesperrt.length ? ' — nicht angefasst (von Hand gesetzt): ' + gesperrt.join(' · ') : '');
       D.tuneLog.unshift({
         id: (quelle || 'manuell') + '-' + Date.now(), at: Date.now(), quelle: quelle || 'manuell',
@@ -3681,14 +3726,16 @@
   function scheiterGrund(r) {
     if (String(r.verdict).indexOf('robust') === 0) return 'robust – wird nach einer Bestätigungs-Nacht übernommen';
     var g = [];
+    var smax = r.scheibenMax || 4;
     if (!r.belastbar) {
       if ((r.n || 0) < MIN_OOS_TRADES) g.push('nur ' + (r.n || 0) + ' von ' + MIN_OOS_TRADES + ' nötigen OOS-Trades');
       if ((r.oosTage || 0) < MIN_OOS_TAGE) g.push('nur ' + (r.oosTage || 0) + ' von ' + MIN_OOS_TAGE + ' nötigen ungesehenen Handelstagen');
-      if ((r.scheibenGueltig || 0) < 3) g.push('nur ' + (r.scheibenGueltig || 0) + '/4 Prüfscheiben auswertbar');
+      if ((r.scheibenGueltig || 0) < 3) g.push('nur ' + (r.scheibenGueltig || 0) + '/' + smax + ' Prüfscheiben auswertbar');
     } else {
       if (r.wfRet <= 0) g.push('Walk-Forward-Rendite ' + r.wfRet + ' % – verliert auf ungesehenen Daten');
-      if ((r.posSegs || 0) < 3) g.push('nur ' + (r.posSegs || 0) + '/4 Zeitscheiben positiv – nicht konsistent');
+      if ((r.posSegs || 0) < Math.ceil(smax * 0.7)) g.push('nur ' + (r.posSegs || 0) + '/' + smax + ' Zeitscheiben positiv – nicht konsistent');
       if ((r.pf || 0) <= 1) g.push('Profit-Faktor ' + r.pf + ' – Verluste überwiegen');
+      if (r.bootLossProb != null && r.bootLossProb > 45) g.push('Bootstrap: ' + r.bootLossProb + ' % Verlust-Wahrscheinlichkeit bei Neuziehung der Trades');
     }
     return g.join(' · ') || 'knapp unter der Robustheits-Schwelle';
   }
@@ -3722,6 +3769,12 @@
     z.push('## Ergebnis dieser Messung');
     z.push('');
     z.push(a.lastCheck ? a.lastCheck.txt : '–');
+    if (c.rec && c.rec.richtung && (c.rec.richtung.callN || c.rec.richtung.putN)) {
+      var ri = c.rec.richtung;
+      z.push('');
+      z.push('Richtungs-Bilanz des besten Kandidaten: Calls ' + ri.callN + ' Trades (' + (ri.callPnl > 0 ? '+' : '') + ri.callPnl + ' $) · Puts ' + ri.putN + ' Trades (' + (ri.putPnl > 0 ? '+' : '') + ri.putPnl + ' $)' +
+        (ri.callN >= 10 && ri.putN >= 10 && ((ri.callPnl > 0) !== (ri.putPnl > 0)) ? ' – trägt bisher nur in EINE Richtung, beobachten.' : '.'));
+    }
     if (a.pending && a.pending.rec) { z.push(''); z.push('**Vorgemerkt:** ' + a.pending.rec.modeName + ' · ' + a.pending.rec.interval + ' – wird angewendet, sobald die Börse geschlossen ist.'); }
     if (a.lastApply) { z.push(''); z.push('Zuletzt automatisch übernommen: ' + new Date(a.lastApply.at).toLocaleString('de-DE') + ' – ' + (a.lastApply.name || '')); }
     z.push('');
@@ -3731,7 +3784,7 @@
     z.push('|---|---|---|---|---|---|---|---|---|---|');
     (c.ranking || []).forEach(function (r, i) {
       z.push('| ' + (i + 1) + ' | ' + r.name + ' | ' + r.interval + ' | ' + (r.wfRet > 0 ? '+' : '') + r.wfRet + ' % | ' +
-        (r.posSegs || 0) + '/4 | ' + (r.n || 0) + ' | ' + (r.oosTage || 0) + ' | ' + (r.pf != null ? r.pf : '–') + ' | ' +
+        (r.posSegs || 0) + '/' + (r.scheibenMax || 4) + ' | ' + (r.n || 0) + ' | ' + (r.oosTage || 0) + ' | ' + (r.pf != null ? r.pf : '–') + ' | ' +
         (r.winRate != null ? r.winRate + ' %' : '–') + ' | ' + scheiterGrund(r) + ' |');
     });
     z.push('');
@@ -4002,7 +4055,7 @@
     var prompt = 'Du hilfst, den Kandidaten-Pool einer SIMULIERTEN Handels-Messung zu erweitern. ' +
       'Hier das aktuelle Ranking (Walk-Forward auf ungesehenen Daten) und die Filter-Bilanz:\n' +
       JSON.stringify({ ranking: kurz, filterBilanz: fb || null }) + '\n\n' +
-      'Erkenntnisse bisher: kurze Haltedauern verlieren an den Kosten (~6,5 % Round-Trip auf den Schein); ' +
+      'Erkenntnisse bisher: Handelskosten dominieren; der Spread ist ein Cent-Betrag je Schein, teurere Scheine (ATM, laengere Laufzeit) zahlen daher relativ weniger; ' +
       'laengere Haltedauern und niedrigere Hebel schneiden weniger schlecht ab.\n' +
       'Nominiere EINEN Kandidaten fuer die naechste Nacht-Messung. Erlaubte Werte (STRIKT einhalten):\n' +
       JSON.stringify(KI_ERLAUBT) + '\n' +
@@ -4111,6 +4164,37 @@
       if (D.central) {
         D.central.berichtMd = baueMessbericht(D.central, a, { handSperre: D.intraday.handSperre, intraday: D.intraday, version: APP_VER, schatten: D.schattenStat });
       }
+      // Filter, die in ZWEI aufeinanderfolgenden Messungen nachweislich Geld gekostet
+      // haben, werden gelockert - dieselbe Zwei-Nächte-Disziplin wie bei den Setups.
+      // Der Kosten-Check und die Qualitätsschwelle sind davon bewusst ausgenommen
+      // (Sicherungs-Filter), die Hand-Sperre gilt.
+      try {
+        var fbZeilen = (rec && rec.filterBilanz && rec.filterBilanz.zeilen) || null;
+        if (fbZeilen) {
+          var FILTER_FELD = { 'Trendfilter (EMA100)': 'trendFilter', 'Trendkanal': 'channel', '5-Min-Bestätigung (MTF)': 'mtf' };
+          var vorherFb = a.filterBilanzVorher || {};
+          var gelockert = [];
+          fbZeilen.forEach(function (z9) {
+            var feld9 = FILTER_FELD[z9.name];
+            if (!feld9 || z9.duenn || z9.nutzen > -1) return;
+            if (vorherFb[feld9] != null && vorherFb[feld9] <= -1 && automatikDarf(feld9) && D.intraday[feld9] !== false) {
+              D.intraday[feld9] = false;
+              gelockert.push(z9.name + ' (kostete ' + vorherFb[feld9] + ' und ' + z9.nutzen + ' Pp in zwei Messungen)');
+            }
+          });
+          if (gelockert.length) {
+            if (!D.tuneLog) D.tuneLog = [];
+            D.tuneLog.unshift({ id: 'pilot-filter-' + Date.now(), at: Date.now(), quelle: 'pilot',
+              applied: gelockert.map(function (gtxt) { return 'Filter gelockert: ' + gtxt; }),
+              txt: 'Filter-Bilanz zweier aufeinanderfolgender Messungen: dieser Filter hat auf ungesehenen Daten Geld gekostet.',
+              konfigVorher: null, konfigNachher: JSON.parse(JSON.stringify(D.intraday)) });
+            gelockert.forEach(function (gtxt) { pilotLogAdd('Filter gelockert: ' + gtxt); });
+            syncStrategyUI();
+          }
+          a.filterBilanzVorher = {};
+          fbZeilen.forEach(function (z9) { var f9 = FILTER_FELD[z9.name]; if (f9 && !z9.duenn) a.filterBilanzVorher[f9] = z9.nutzen; });
+        }
+      } catch (eFb2) { /* Diagnose darf die Messung nie kippen */ }
       // Das lokale Modell darf einen Kandidaten fuer die NAECHSTE Nacht nominieren
       try {
         if (window.LocalKI && window.LocalKI.model()) {
@@ -4159,7 +4243,7 @@
       var letzteAkt = pilotLog.length ? Math.round((Date.now() - pilotLog[pilotLog.length - 1][0]) / 1000) : 0;
       el.innerHTML = '<b>Messung läuft</b> · seit ' + seitMin + ' Min · letzte Aktivität vor ' + letzteAkt + ' s' +
         '<div style="color:var(--acc); margin-top:2px;">' + U.esc(pilotPhase || '') + '</div>' +
-        '<div style="color:var(--muted); font-size:11px; margin-top:2px;">Der komplette Verlauf steht im Protokoll darunter. Ein Wächter bricht nach 30 Minuten ab.</div>';
+        '<div style="color:var(--muted); font-size:11px; margin-top:2px;">Der komplette Verlauf steht im Protokoll darunter. Der Wächter greift erst bei 12 Minuten ohne Aktivität.</div>';
       return;
     }
     // Datenlage: Wie viele Handelstage hat das Archiv schon gesammelt?
@@ -4206,7 +4290,7 @@
       '<span style="font-size:14px; font-weight:700;">' + U.esc(r.modeName) + ' · ' + r.interval + '</span>' +
       '<span style="color:var(--muted); font-size:12px;">Stand: ' + U.dt(c.at) + '</span></div>';
     html += '<table class="tbl" style="max-width:680px;"><tr><th>Empfehlung</th><th>Wert</th><th>Begründung</th></tr>' +
-      '<tr><td>Modus / Zeitrahmen</td><td><b>' + U.esc(r.modeName) + ' · ' + r.interval + '</b></td><td>Walk-Forward ' + U.signTxt(r.wfRet, ' %') + ' · ' + r.posSegs + '/4 Scheiben · ' + r.n + ' Trades · ' + r.winRate + ' % Treffer · PF ' + r.pf + (r.datenbasis ? ' · Datenbasis: ' + r.datenbasis.symbole + ' Werte über ' + r.datenbasis.spanneTage + ' Tage' : '') + '</td></tr>' +
+      '<tr><td>Modus / Zeitrahmen</td><td><b>' + U.esc(r.modeName) + ' · ' + r.interval + '</b></td><td>Walk-Forward ' + U.signTxt(r.wfRet, ' %') + ' · ' + r.posSegs + '/' + (r.scheibenMax || 4) + ' Scheiben · ' + r.n + ' Trades · ' + r.winRate + ' % Treffer · PF ' + r.pf + (r.datenbasis ? ' · Datenbasis: ' + r.datenbasis.symbole + ' Werte über ' + r.datenbasis.spanneTage + ' Tage' : '') + '</td></tr>' +
       '<tr><td>Leitlinie / Periode / Bestätigung</td><td><b>' + r.lineType.toUpperCase() + ' · P' + r.period + ' · ' + (r.confirmBps / 100).toFixed(2) + ' %</b></td><td>' +
       (r.fine ? (r.fine.used ? 'Feinschliff validiert: Training ' + U.signTxt(r.fine.train, ' %') + ' → ungesehen ' + U.signTxt(r.fine.valid, ' %') : 'Feinschliff nicht robust (Validierung ' + (r.fine.valid == null ? 'ohne Ergebnis' : U.signTxt(r.fine.valid, ' %')) + ') → Labor-Parameter behalten') : 'aus dem Walk-Forward') + '</td></tr>' +
       '<tr><td>Zeitfenster</td><td><b>' + WINDOW_NAMES[r.window] + '</b></td><td>bestes Out-of-Sample-Fenster nach P/L</td></tr>' +
@@ -4237,7 +4321,7 @@
       c.ranking.forEach(function (r2, i2) {
         html += '<tr><td>' + (i2 + 1) + '</td><td>' + U.esc(r2.name) + '</td><td>' + r2.interval + '</td>' +
           '<td class="' + U.signCls(r2.wfRet) + '">' + U.signTxt(r2.wfRet, ' %') + '</td>' +
-          '<td>' + (r2.posSegs || 0) + '/4</td><td>' + (r2.n || 0) + '</td><td>' + (r2.oosTage || 0) + '</td><td>' + (r2.pf != null ? r2.pf : '–') + '</td>' +
+          '<td>' + (r2.posSegs || 0) + '/' + (r2.scheibenMax || 4) + '</td><td>' + (r2.n || 0) + '</td><td>' + (r2.oosTage || 0) + '</td><td>' + (r2.pf != null ? r2.pf : '–') + '</td>' +
           '<td>' + U.esc(scheiterGrund(r2)) + '</td></tr>';
       });
       html += '</table>';
@@ -4333,6 +4417,18 @@
           txt: 'Blitz steigt nach spätestens 3 Minuten aus – ein ' + altCd + '-Minuten-Cooldown je Symbol ließ davon fast nichts übrig. Der Wert stammte aus der alten Ausbruch-Voreinstellung.',
           konfigVorher: null, konfigNachher: JSON.parse(JSON.stringify(D.intraday)) });
       }
+    }
+    // Kostenmodell v2 (Cent-Spread): fruehere Messwerte sind nicht mehr vergleichbar -
+    // die Zwei-Naechte-Bestaetigung startet neu, damit kein alter Sieger mit neuen Zahlen
+    // gemischt wird. Einmalig, sichtbar im Journal.
+    if (!D.kostenModellV2) {
+      D.kostenModellV2 = Date.now();
+      if (D.autoOpt) { D.autoOpt.lastRecKey = null; D.autoOpt.pending = null; }
+      if (!D.tuneLog) D.tuneLog = [];
+      D.tuneLog.unshift({ id: 'sicherung-kosten-' + Date.now(), at: Date.now(), quelle: 'sicherung',
+        applied: ['Kostenmodell -> Cent-Spread'],
+        txt: 'Spread wird jetzt als Cent-Betrag je Schein simuliert (so stellen Emittenten ihre Kurse), nicht mehr als Pauschal-Prozentsatz. Teurere Scheine (ATM/laengere Laufzeit) zahlen relativ weniger - alle frueheren Messwerte sind damit nicht mehr vergleichbar, die Bestaetigungs-Kette der Nacht-Messung startet neu.',
+        konfigVorher: null, konfigNachher: null });
     }
     // v8-Migration: Die Strategie-Farm ist durch den Autopiloten ersetzt. Der alte
     // Farm-Stand bleibt als farmAlt einsehbar (Export), steuert aber nichts mehr.
@@ -4637,11 +4733,19 @@
       // Wächter: Eine Messung, die nach 30 Minuten nicht zurück ist, gilt als hängend.
       // Der Zustand wird freigegeben, damit Nächte nicht verloren gehen; der Vorfall
       // steht sichtbar im Protokoll und im Status.
-      if (pilotRunning && pilotStartAt && Date.now() - pilotStartAt > 30 * 60000) {
-        pilotRunning = false; pilotPhase = '';
-        a.lastCheck = { at: Date.now(), ok: false, txt: 'Wächter-Abbruch: Messung war nach 30 Minuten nicht fertig. Nächster Versuch beim nächsten Takt.' };
-        pilotLogAdd('WÄCHTER: Messung nach 30 Minuten abgebrochen und Zustand freigegeben.');
-        save(); renderPilot();
+      // Hängend heißt: KEINE Aktivität mehr - nicht: dauert lange. Eine gesunde Messung
+      // schreibt ständig ins Protokoll; mit wachsendem Archiv darf sie auch mal 40 Minuten
+      // brauchen. Abbruch erst bei 12 Minuten Funkstille oder 90 Minuten Gesamtdauer.
+      if (pilotRunning && pilotStartAt) {
+        var letzteAktW = pilotLog.length ? pilotLog[pilotLog.length - 1][0] : pilotStartAt;
+        var funkstille = Date.now() - letzteAktW > 12 * 60000;
+        var ueberlang = Date.now() - pilotStartAt > 90 * 60000;
+        if (funkstille || ueberlang) {
+          pilotRunning = false; pilotPhase = '';
+          a.lastCheck = { at: Date.now(), ok: false, txt: 'Wächter-Abbruch: ' + (funkstille ? '12 Minuten ohne Aktivität' : 'Messung lief über 90 Minuten') + '. Nächster Versuch beim nächsten Takt.' };
+          pilotLogAdd('WÄCHTER: Messung abgebrochen (' + (funkstille ? 'Funkstille' : 'Überlänge') + ') und Zustand freigegeben.');
+          save(); renderPilot();
+        }
       }
       if (window.Dash.marketOpen()) return;
       pilotAnwenden();

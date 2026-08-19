@@ -85,12 +85,12 @@ ipcMain.handle('export-analysis', async (_ev, payload) => {
   try {
     const dir = path.join(app.getPath('downloads'), 'Markt-Dashboard-Daten');
     fs.mkdirSync(dir, { recursive: true });
-    if (payload.json != null) fs.writeFileSync(path.join(dir, 'analyse-daten.json'), JSON.stringify(payload.json, null, 1), 'utf8');
-    if (payload.csv) fs.writeFileSync(path.join(dir, 'trades.csv'), payload.csv, 'utf8');
-    if (payload.kurse) fs.writeFileSync(path.join(dir, 'kursdaten.json'), JSON.stringify(payload.kurse), 'utf8');
+    if (payload.json != null) schreibAtomar(path.join(dir, 'analyse-daten.json'), JSON.stringify(payload.json, null, 1));
+    if (payload.csv) schreibAtomar(path.join(dir, 'trades.csv'), payload.csv);
+    if (payload.kurse) schreibAtomar(path.join(dir, 'kursdaten.json'), JSON.stringify(payload.kurse));
     // 🤖 Messbericht des Autopiloten: Klartext, was funktioniert und woran der Rest scheitert –
     // gedacht zum Nachlesen und für die Auswertung mit Claude (liest denselben Ordner).
-    if (payload.bericht) fs.writeFileSync(path.join(dir, 'messbericht.md'), payload.bericht, 'utf8');
+    if (payload.bericht) schreibAtomar(path.join(dir, 'messbericht.md'), payload.bericht);
     // Rechen-Engine mitliefern, damit externe Auswertungen exakt dieselbe Logik nutzen
     try {
       var eng = fs.readFileSync(path.join(__dirname, 'quant.js'), 'utf8');
@@ -192,6 +192,15 @@ function ollamaFetch(method, url, bodyObj) {
 ipcMain.handle('ollama-fetch', async (_ev, method, url, bodyObj) => ollamaFetch(method, url, bodyObj));
 
 // ---- Lokaler JSON-Store (userData/store/<name>.json) ----
+/** Atomar schreiben: erst Temp-Datei, dann umbenennen. Ein Absturz mitten im Schreiben
+ *  hinterlaesst sonst eine halbe JSON-Datei - und mit ihr waeren Depot, Einstellungen
+ *  oder Wochen an gesammeltem Kursarchiv verloren. */
+function schreibAtomar(pfad, inhalt) {
+  const tmp = pfad + '.tmp';
+  fs.writeFileSync(tmp, inhalt, 'utf8');
+  fs.renameSync(tmp, pfad);
+}
+
 function storeDir() {
   const d = path.join(app.getPath('userData'), 'store');
   if (!fs.existsSync(d)) fs.mkdirSync(d, { recursive: true });
@@ -213,7 +222,10 @@ function chiffrieren(v) {
 }
 function dechiffrieren(v) {
   if (!v || typeof v !== 'object' || v.__enc !== 'v1') return v;   // Altbestand: Klartext bleibt lesbar
-  try { return safeStorage.decryptString(Buffer.from(v.d, 'base64')); } catch (e) { return ''; }
+  // Fehlschlag wird MARKIERT statt als '' getarnt: ein leerer String saehe im Dialog wie
+  // "nichts gespeichert" aus, und das naechste Speichern wuerde die verschluesselten
+  // Zugangsdaten unwiederbringlich mit nichts ueberschreiben.
+  try { return safeStorage.decryptString(Buffer.from(v.d, 'base64')); } catch (e) { return { __encFehler: true }; }
 }
 function geheimnisseWandeln(name, wert, fn) {
   if (name !== 'settings' || !wert || typeof wert !== 'object') return wert;
@@ -231,9 +243,20 @@ ipcMain.handle('store-get', async (_ev, name) => {
 ipcMain.handle('store-set', async (_ev, name, value) => {
   try {
     const f = path.join(storeDir(), safeName(name) + '.json');
-    fs.writeFileSync(f, JSON.stringify(geheimnisseWandeln(name, value, chiffrieren)));
-    return true;
-  } catch (e) { return false; }
+    let wert = geheimnisseWandeln(name, value, chiffrieren);
+    // Keep-Sentinel: {__keep:true} bedeutet "gespeicherten Wert unveraendert lassen" -
+    // der Renderer schickt das fuer Geheimnis-Felder, die er nicht entschluesseln konnte
+    // oder bewusst nicht anfassen will. So kann ein Speichern nie Zugangsdaten vernichten.
+    if (name === 'settings' && wert && typeof wert === 'object' && fs.existsSync(f)) {
+      let alt = null;
+      try { alt = JSON.parse(fs.readFileSync(f, 'utf8')); } catch (e2) { alt = null; }
+      if (alt) GEHEIME_FELDER.forEach((k) => {
+        if (wert[k] && typeof wert[k] === 'object' && wert[k].__keep) wert[k] = alt[k] != null ? alt[k] : '';
+      });
+    }
+    schreibAtomar(f, JSON.stringify(wert));
+    return { ok: true };
+  } catch (e) { return { ok: false, msg: String(e.message || e) }; }
 });
 
 // ---- Tray-Modus (App läuft beim Schließen im Hintergrund weiter) ----

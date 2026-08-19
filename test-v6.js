@@ -319,5 +319,16 @@ console.log('15) Neue Signale: RSI(2)-Extrem, Donchian, Bollinger-Squeeze');
   ok(Q.squeezeSignal(qBreit, 20).signal === null, 'Ausbruch OHNE vorherige Kompression zaehlt nicht');
 })();
 
+console.log('16) Kostenmodell: Cent-Spread statt Pauschal-Prozent');
+(function () {
+  var billig = Q.effSpread(0.45, undefined, 0.45);   // 45-Cent-Schein
+  var teuer = Q.effSpread(0.45, undefined, 2.00);    // 2-Euro-ATM-Schein
+  ok(Math.abs(billig - 0.01 / 0.45) < 1e-9, '45-Cent-Schein zahlt den 1-Cent-Floor (~2,2 %)', (billig * 100).toFixed(2) + ' %');
+  ok(teuer < billig / 3, 'teurer Schein zahlt relativ DEUTLICH weniger', (teuer * 100).toFixed(2) + ' % vs ' + (billig * 100).toFixed(2) + ' %');
+  ok(Q.effSpread(0.45, undefined, 0.02) === 0.08, 'Pfennig-Scheine laufen in die 8-%-Kappe');
+  ok(Math.abs(Q.effSpread(0.45) - Math.min(0.05, Math.max(0.016, 0.02 * 1.15))) < 1e-9, 'Altpfad ohne Preis unveraendert');
+  ok(Q.slipOf(0.45, undefined, 1.0) <= 0.002 * 0.95 + 1e-9 || Q.slipOf(0.45, undefined, 1.0) < 0.0025, 'Slippage mit Emittenten-Quote klein', Q.slipOf(0.45, undefined, 1.0));
+})();
+
 console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
 process.exit(fails ? 1 : 0);

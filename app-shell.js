@@ -66,8 +66,15 @@
   var SETTINGS = { tray: false, capKey: '', capId: '', capPass: '', capEnabled: false, ollamaUrl: '', ollamaModel: '', kiVeto: false, kiProvider: '', kiRules: '', updateRepo: '' };
   window.getSettings = function () { return SETTINGS; };
   var settingsGeladen = false; // Schreiben vor dem Laden würde die gespeicherten Werte überschreiben
+  var geheimBehalten = {};     // Felder, deren gespeicherter Wert nicht entschlüsselbar war:
+                               // im Dialog leer anzeigen, beim Speichern aber UNANGETASTET lassen
   window.api.storeGet('settings').then(function (s) {
-    if (s) SETTINGS = Object.assign(SETTINGS, s);
+    if (s) {
+      ['capKey', 'capId', 'capPass'].forEach(function (k) {
+        if (s[k] && typeof s[k] !== 'string') { geheimBehalten[k] = true; s[k] = ''; }
+      });
+      SETTINGS = Object.assign(SETTINGS, s);
+    }
     settingsGeladen = true;
     // Kostenpflichtige API abgeschafft: einen evtl. noch gespeicherten Key einmalig
     // von der Platte löschen – KI läuft ausschließlich lokal über Ollama.
@@ -76,6 +83,12 @@
       window.api.storeSet('settings', SETTINGS);
     }
     if (window.api.setTrayMode) window.api.setTrayMode(!!SETTINGS.tray);
+  }).catch(function (e) {
+    // Ein Ladefehler darf das Speichern nicht fuer immer blockieren - dann lieber mit
+    // Standardwerten arbeiten und den Fehler sichtbar machen.
+    settingsGeladen = true;
+    var st0 = document.getElementById('setStatus');
+    if (st0) st0.textContent = 'Einstellungen konnten nicht geladen werden (' + (e && e.message ? e.message : e) + ') - es gelten Standardwerte.';
   });
 
   // Lernschleife: neue Regeln an die KI-Prüfregeln anhängen (Duplikate überspringen)
@@ -96,9 +109,12 @@
 
   document.getElementById('settingsBtn').addEventListener('click', function () {
     document.getElementById('setTray').checked = !!SETTINGS.tray;
-    document.getElementById('setCapKey').value = SETTINGS.capKey || '';
-    document.getElementById('setCapId').value = SETTINGS.capId || '';
-    document.getElementById('setCapPass').value = SETTINGS.capPass || '';
+    ['setCapKey', 'setCapId', 'setCapPass'].forEach(function (id, i3) {
+      var feld = ['capKey', 'capId', 'capPass'][i3];
+      var el3 = document.getElementById(id);
+      el3.value = SETTINGS[feld] || '';
+      el3.placeholder = geheimBehalten[feld] ? 'gespeichert - leer lassen = unverändert' : '';
+    });
     document.getElementById('setCapEnabled').checked = !!SETTINGS.capEnabled;
     document.getElementById('setOllamaUrl').value = SETTINGS.ollamaUrl || '';
     document.getElementById('setKiVeto').checked = !!SETTINGS.kiVeto;
@@ -214,6 +230,7 @@
   });
 
   document.getElementById('setSaveBtn').addEventListener('click', function () {
+    try {
     // Speichern, bevor der Store geladen ist, würde die gespeicherten Werte mit leeren
     // Formularfeldern überschreiben. Der Wächter existierte schon, galt aber nur für die
     // KI-Regeln – hier fehlte er.
@@ -223,9 +240,13 @@
     }
     SETTINGS.tray = document.getElementById('setTray').checked;
     if (window.api.setTrayMode) window.api.setTrayMode(SETTINGS.tray);
-    SETTINGS.capKey = document.getElementById('setCapKey').value.trim();
-    SETTINGS.capId = document.getElementById('setCapId').value.trim();
-    SETTINGS.capPass = document.getElementById('setCapPass').value;
+    ['capKey', 'capId', 'capPass'].forEach(function (feld, i4) {
+      var wert4 = document.getElementById(['setCapKey', 'setCapId', 'setCapPass'][i4]).value;
+      if (feld !== 'capPass') wert4 = wert4.trim();
+      // Leeres Feld bei nicht entschlüsselbarem Bestand heißt "behalten", nicht "löschen"
+      SETTINGS[feld] = (wert4 === '' && geheimBehalten[feld]) ? { __keep: true } : wert4;
+      if (wert4 !== '') geheimBehalten[feld] = false;
+    });
     SETTINGS.capEnabled = document.getElementById('setCapEnabled').checked;
     SETTINGS.ollamaUrl = document.getElementById('setOllamaUrl').value.trim();
     SETTINGS.ollamaModel = document.getElementById('setOllamaModel').value;
@@ -244,9 +265,20 @@
     var au = document.getElementById('setAutostart').checked;
     if (window.api.setAutostart) window.api.setAutostart(au);
     if (au && window.api.setTrayMode) { SETTINGS.tray = true; document.getElementById('setTray').checked = true; window.api.setTrayMode(true); }
-    window.api.storeSet('settings', SETTINGS).then(function () {
-      document.getElementById('setStatus').textContent = 'Gespeichert.';
-      document.dispatchEvent(new CustomEvent('settings-saved'));
+    window.api.storeSet('settings', SETTINGS).then(function (res) {
+      // Nie wieder "Gespeichert." anzeigen, wenn nichts geschrieben wurde: das Ergebnis
+      // des Schreibvorgangs entscheidet ueber die Meldung.
+      var ok = res === true || (res && res.ok);
+      document.getElementById('setStatus').textContent = ok
+        ? 'Gespeichert.'
+        : 'FEHLER beim Speichern: ' + ((res && res.msg) || 'unbekannt') + ' - Einstellungen wurden NICHT gesichert.';
+      if (ok) document.dispatchEvent(new CustomEvent('settings-saved'));
+    }, function (e) {
+      document.getElementById('setStatus').textContent = 'FEHLER beim Speichern: ' + (e && e.message ? e.message : e);
     });
+    } catch (eSave) {
+      // Eine Ausnahme im Handler starb frueher STILL - der Nutzer sah einfach nichts.
+      document.getElementById('setStatus').textContent = 'FEHLER beim Speichern: ' + (eSave && eSave.message ? eSave.message : eSave);
+    }
   });
 })();
