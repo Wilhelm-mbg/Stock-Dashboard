@@ -607,6 +607,89 @@
     return crossCore(closes, line, confirmBps === undefined ? 15 : confirmBps, lookback || 3, period);
   }
 
+  /** RSI(2)-Extrem (nach Larry Connors): Der 2-Perioden-RSI ist extrem überverkauft (<= 10)
+   *  im Aufwärtstrend -> Call (Kauf der kurzfristigen Schwäche); >= 90 im Abwärtstrend -> Put.
+   *  Eines der meistgetesteten Mean-Reversion-Setups überhaupt; hier auf Intraday-Bars mit
+   *  EMA100-Richtung als Trendfilter (Original: SMA200 auf Tagesdaten). Bewusst OHNE
+   *  Umkehr-Kerzen-Filter - die Regel kauft die Schwäche, der Not-Stop begrenzt das Risiko. */
+  function rsiExtremSignal(bars, kaufSchwelle, verkaufSchwelle) {
+    kaufSchwelle = kaufSchwelle || 10; verkaufSchwelle = verkaufSchwelle || 90;
+    var closes = bars.map(function (p) { return p[1]; });
+    var n = closes.length;
+    if (n < 120) return { signal: null, wert: null };
+    var r2 = rsi(closes, 2);
+    if (r2 == null) return { signal: null, wert: null };
+    var e100 = emaSeries(closes, 100);
+    var steigt = e100[n - 1] > e100[Math.max(0, n - 9)];
+    var faellt = e100[n - 1] < e100[Math.max(0, n - 9)];
+    var wert = Math.round(r2 * 10) / 10;
+    if (steigt && r2 <= kaufSchwelle) return { signal: 'call', wert: wert };
+    if (faellt && r2 >= verkaufSchwelle) return { signal: 'put', wert: wert };
+    return { signal: null, wert: wert };
+  }
+
+  /** Donchian-Kanal-Ausbruch (Turtle-Klassiker): Schlusskurs bricht über das Hoch der
+   *  letzten N Bars (ohne den aktuellen) -> Call; unter das Tief -> Put. Der Schlusskurs
+   *  muss den Ausbruch tragen ("full-candle commitment"), nicht nur ein Docht.
+   *  Nutzt echte Hochs/Tiefs, wenn die Bars sie mitführen. */
+  function donchianSignal(bars, N, confirmBps) {
+    N = N || 20;
+    var n = bars.length;
+    if (n < N + 10) return { signal: null, hoch: null, tief: null };
+    var conf = (confirmBps === undefined ? 10 : confirmBps) / 10000;
+    var hatHL = bars[0].length >= 5 && bars[0][3] != null;
+    var hoch = -Infinity, tief = Infinity;
+    for (var i = n - 1 - N; i < n - 1; i++) {
+      var h = hatHL ? bars[i][3] : bars[i][1];
+      var l = hatHL ? bars[i][4] : bars[i][1];
+      if (h > hoch) hoch = h;
+      if (l < tief) tief = l;
+    }
+    var schluss = bars[n - 1][1];
+    if (schluss > hoch * (1 + conf)) return { signal: 'call', hoch: hoch, tief: tief };
+    if (schluss < tief * (1 - conf)) return { signal: 'put', hoch: hoch, tief: tief };
+    return { signal: null, hoch: hoch, tief: tief };
+  }
+
+  /** Bollinger-Squeeze-Ausbruch: Erst eine echte Kompressionsphase (Bandbreite deutlich
+   *  unter ihrem jüngeren Normalmaß), dann ein Schlusskurs jenseits des Bandes ->
+   *  Ausbruch in diese Richtung. Die Kompression filtert die Fehlausbrüche, die in ohnehin
+   *  hektischen Phasen entstehen. Bandbreiten-Vergleich an Stützstellen statt je Bar -
+   *  volle Rolling-Fenster wären im Parameter-Raster unbezahlbar. */
+  function squeezeSignal(bars, period, kSigma) {
+    period = period || 20; kSigma = kSigma || 2;
+    var closes = bars.map(function (p) { return p[1]; });
+    var n = closes.length;
+    if (n < period + 100) return { signal: null, enge: null };
+    function band(endI) {
+      var m = sma(closes, period, endI);
+      if (m == null) return null;
+      var st = stdev(closes.slice(endI - period + 1, endI + 1));
+      return { mitte: m, sd: st, breite: m > 0 ? (4 * st) / m : 0 };
+    }
+    // Kompression am VOR-Bar messen: der Ausbruchs-Bar selbst blaeht die aktuelle
+    // Bandbreite auf und wuerde die eigene Kompressions-Bedingung zerstoeren.
+    var jetzt = band(n - 2);
+    if (!jetzt || jetzt.sd <= 1e-9) return { signal: null, enge: null };
+    var refs = [];
+    [10, 30, 50, 70, 90].forEach(function (zurueck) {
+      var b = band(n - 2 - zurueck);
+      if (b) refs.push(b.breite);
+    });
+    if (refs.length < 4) return { signal: null, enge: null };
+    // Vergleich gegen das juengste BREITEN-MAXIMUM (das weite Regime davor): der Median
+    // versagt, sobald die Kompression laenger dauert als die halbe Referenzspanne -
+    // dann sind die meisten Stuetzstellen selbst schon komprimiert.
+    var maxRef = Math.max.apply(null, refs);
+    var enge = maxRef > 0 ? Math.round(jetzt.breite / maxRef * 100) / 100 : null;
+    // Kompression: aktuelles Band hoechstens 55 % der juengsten Maximalbreite
+    if (enge == null || enge > 0.55) return { signal: null, enge: enge };
+    var schluss = closes[n - 1];
+    if (schluss > jetzt.mitte + kSigma * jetzt.sd) return { signal: 'call', enge: enge };
+    if (schluss < jetzt.mitte - kSigma * jetzt.sd) return { signal: 'put', enge: enge };
+    return { signal: null, enge: enge };
+  }
+
   /** Trend-Rücksetzer (Pullback): Im laufenden Trend kommt der Kurs an seine Leitlinie
    *  zurück und dreht dort wieder in Trendrichtung – der Klassiker unter den Trendfolge-
    *  Einstiegen. call = Aufwärtstrend (EMA100 steigt), Kurs war klar über der Leitlinie,
@@ -1501,6 +1584,18 @@
           var psig = pullbackSignal(win, LINE, period, confirmBps);
           if (!psig.signal) continue;
           dir = psig.signal;
+        } else if (ENTRY === 'rsi2') {
+          var xsig = rsiExtremSignal(win);
+          if (!xsig.signal) continue;
+          dir = xsig.signal;
+        } else if (ENTRY === 'donchian') {
+          var dsig = donchianSignal(win, period, confirmBps);
+          if (!dsig.signal) continue;
+          dir = dsig.signal;
+        } else if (ENTRY === 'squeeze') {
+          var qsig = squeezeSignal(win, period);
+          if (!qsig.signal) continue;
+          dir = qsig.signal;
         } else if (ENTRY === 'orb') {
           var os2 = orbState[sym];
           if (!os2 || !os2.done) continue;
@@ -1638,7 +1733,8 @@
     resampleBars: resampleBars, mtfAgrees: mtfAgrees, autoStop: autoStop,
     signalCross: signalCross, vwapLine: vwapLine, inWindow: inWindow,
     effSpread: effSpread, slipOf: slipOf,
-    reversionSignal: reversionSignal, pullbackSignal: pullbackSignal, edgeCheck: edgeCheck, waveQuality: waveQuality,
+    reversionSignal: reversionSignal, pullbackSignal: pullbackSignal, rsiExtremSignal: rsiExtremSignal,
+    donchianSignal: donchianSignal, squeezeSignal: squeezeSignal, edgeCheck: edgeCheck, waveQuality: waveQuality,
     regressionChannel: regressionChannel, channelFit: channelFit, bestChannel: bestChannel,
     channelValid: channelValid, CHAN_MIN: CHAN_MIN, varianceRatio: varianceRatio,
     bewaehrungsUrteil: bewaehrungsUrteil,

@@ -498,7 +498,7 @@
               </div>
               <label title="Was den Trade auslöst">Auslöser<select id="idTrigger"></select></label>
               <label id="lblExit" title="Wie lange der Trade laufen darf">Ausstieg<select id="idExit"><option value="laufen" selected>laufen lassen</option><option value="kurz">kurz (Rückkehr zur Linie)</option><option value="blitz">blitz (max. 3 Min)</option></select></label>
-              <select id="idMode" style="display:none;"><option value="breakout">breakout</option><option value="waves">waves</option><option value="reversion">reversion</option><option value="wave">wave</option><option value="orb">orb</option><option value="pullback">pullback</option></select>
+              <select id="idMode" style="display:none;"><option value="breakout">breakout</option><option value="waves">waves</option><option value="reversion">reversion</option><option value="wave">wave</option><option value="orb">orb</option><option value="pullback">pullback</option><option value="rsi2">rsi2</option><option value="donchian">donchian</option><option value="squeeze">squeeze</option></select>
               <label>Zeitrahmen<select id="idInterval"><option value="1m">1 Min</option><option value="5m" selected>5 Min</option><option value="15m">15 Min</option><option value="60m">60 Min</option></select></label>
               <label>EMA-Periode<select id="idPeriod"><option value="9">9</option><option value="20" selected>20</option><option value="50">50</option></select></label>
               <label title="Mindestabstand jenseits der Leitlinie; wirkt im Umkehr-Setup als z-Score-Schwelle (1,5 / 2,0 / 2,5)">Bestätigung<select id="idConfirm"><option value="5">0,05 %</option><option value="15" selected>0,15 %</option><option value="30">0,30 %</option></select></label>
@@ -532,8 +532,8 @@
           <div class="pgroup" id="pgScalp">
             <div class="pgroup-title">Haltedauer &amp; Ausstieg</div>
             <div class="params">
-              <label data-modes="waves,reversion,wave,pullback">Max. Haltedauer<select id="idHold"><option value="3">3 Min</option><option value="5">5 Min</option><option value="15">15 Min</option><option value="30">30 Min</option><option value="60" selected>60 Min</option><option value="120">2 h</option><option value="240">4 h</option><option value="0">aus</option></select></label>
-              <label data-modes="waves,orb,pullback" title="Ausstieg, wenn der Schein X % unter sein Hoch fällt (Gewinn sichern)">Trailing-Stop<select id="idTrail"><option value="0">aus</option><option value="10">−10 %</option><option value="15" selected>−15 %</option><option value="25">−25 %</option></select></label>
+              <label data-modes="waves,reversion,wave,pullback,rsi2,squeeze">Max. Haltedauer<select id="idHold"><option value="3">3 Min</option><option value="5">5 Min</option><option value="15">15 Min</option><option value="30">30 Min</option><option value="60" selected>60 Min</option><option value="120">2 h</option><option value="240">4 h</option><option value="0">aus</option></select></label>
+              <label data-modes="waves,orb,pullback,donchian,squeeze" title="Ausstieg, wenn der Schein X % unter sein Hoch fällt (Gewinn sichern)">Trailing-Stop<select id="idTrail"><option value="0">aus</option><option value="10">−10 %</option><option value="15" selected>−15 %</option><option value="25">−25 %</option></select></label>
             </div>
           </div>
         </div>

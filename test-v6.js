@@ -288,5 +288,36 @@ console.log('14) Trend-Ruecksetzer (Pullback) an der Leitlinie');
   ok(Q.pullbackSignal(messer, 'ema', 20, 15).signal === null, 'fallendes Messer wird nicht gekauft');
 })();
 
+console.log('15) Neue Signale: RSI(2)-Extrem, Donchian, Bollinger-Squeeze');
+(function () {
+  var t0n = Date.UTC(2026, 5, 1, 13, 30);
+  function serie(fn) { var b = []; for (var i = 0; i < 220; i++) b.push([t0n + i * 60000, fn(i), 1000]); return b; }
+  // RSI(2): Aufwaertstrend mit zwei scharfen Verlusttagen am Ende -> ueberverkauft -> Call
+  var rAuf = serie(function (i) { return 100 + i * 0.05 - (i >= 218 ? (i - 217) * 0.8 : 0); });
+  var x1 = Q.rsiExtremSignal(rAuf);
+  ok(x1.signal === 'call' && x1.wert <= 10, 'RSI(2) ueberverkauft im Aufwaertstrend -> Call', x1.signal + ' (RSI ' + x1.wert + ')');
+  var rNeutral = serie(function (i) { return 100 + i * 0.05; });
+  ok(Q.rsiExtremSignal(rNeutral).signal === null, 'ohne Extrem kein Signal');
+  var rAb = serie(function (i) { return 200 - i * 0.05 + (i >= 218 ? (i - 217) * 0.8 : 0); });
+  ok(Q.rsiExtremSignal(rAb).signal === 'put', 'RSI(2) ueberkauft im Abwaertstrend -> Put');
+  // Donchian: Seitwaertsband, letzter Schluss bricht klar ueber das 20-Bar-Hoch
+  var dSeit = serie(function (i) { return 100 + Math.sin(i / 5) * 0.5 + (i === 219 ? 3 : 0); });
+  var d1 = Q.donchianSignal(dSeit, 20, 10);
+  ok(d1.signal === 'call', 'Schluss ueber dem 20-Bar-Hoch -> Call', d1.signal);
+  ok(Q.donchianSignal(serie(function (i) { return 100 + Math.sin(i / 5) * 0.5; }), 20, 10).signal === null, 'im Band kein Signal');
+  ok(Q.donchianSignal(serie(function (i) { return 100 + Math.sin(i / 5) * 0.5 - (i === 219 ? 3 : 0); }), 20, 10).signal === 'put', 'Schluss unter dem 20-Bar-Tief -> Put');
+  // Squeeze: erst breite Schwankung, dann enge Kompression, dann Ausbruch nach oben
+  function sq(bruch) { return serie(function (i) {
+    if (i < 120) return 100 + Math.sin(i / 4) * 2;          // normale Schwankung
+    if (i < 219) return 100 + Math.sin(i / 4) * 0.15;       // Kompression
+    return bruch;                                            // letzter Bar
+  }); }
+  var q1 = Q.squeezeSignal(sq(102.5), 20);
+  ok(q1.signal === 'call' && q1.enge <= 0.6, 'Kompression + Ausbruch nach oben -> Call', q1.signal + ' (Enge ' + q1.enge + ')');
+  ok(Q.squeezeSignal(sq(100.1), 20).signal === null, 'Kompression ohne Ausbruch: kein Signal');
+  var qBreit = serie(function (i) { return 100 + Math.sin(i / 4) * 2 + (i === 219 ? 4 : 0); });
+  ok(Q.squeezeSignal(qBreit, 20).signal === null, 'Ausbruch OHNE vorherige Kompression zaehlt nicht');
+})();
+
 console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
 process.exit(fails ? 1 : 0);

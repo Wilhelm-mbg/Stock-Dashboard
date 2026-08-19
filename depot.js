@@ -434,7 +434,7 @@
 
   /* ================= Auto-Tuning (empfehlung.json von Claude) ================= */
   var TUNE_ALLOW = {
-    mode: ['breakout', 'waves', 'reversion', 'wave', 'orb', 'pullback'],
+    mode: ['breakout', 'waves', 'reversion', 'wave', 'orb', 'pullback', 'rsi2', 'donchian', 'squeeze'],
     interval: ['1m', '5m', '15m', '60m'],
     period: [9, 20, 50],
     confirmBps: [5, 15, 30],
@@ -1271,13 +1271,16 @@
    * das bewährte mode-Feld erhalten – so bleiben Backtests, Historie und Kennzahlen
    * vergleichbar, und es gibt keine zweite Rechenlogik, die auseinanderlaufen kann. */
   var SETUPS = {
-    ausbruch: { name: 'Ausbruch', trigger: { kreuzung: 'EMA-Kreuzung', range: 'Eröffnungs-Range', ruecksetzer: 'Trend-Rücksetzer' } },
-    umkehr:   { name: 'Umkehr',   trigger: { ueberdehnung: 'Überdehnung', welle: 'Wellental' } }
+    ausbruch: { name: 'Ausbruch', trigger: { kreuzung: 'EMA-Kreuzung', range: 'Eröffnungs-Range', ruecksetzer: 'Trend-Rücksetzer', donchian: 'Kanal-Hoch/Tief (Donchian)', squeeze: 'Vola-Kompression (Squeeze)' } },
+    umkehr:   { name: 'Umkehr',   trigger: { ueberdehnung: 'Überdehnung', welle: 'Wellental', rsi2: 'RSI(2)-Extrem' } }
   };
   function modeFromSetup(setup, trigger, exitStyle) {
+    if (setup === 'umkehr' && trigger === 'rsi2') return 'rsi2';
     if (setup === 'umkehr') return trigger === 'welle' ? 'wave' : 'reversion';
     if (trigger === 'range') return 'orb';
     if (trigger === 'ruecksetzer') return 'pullback';
+    if (trigger === 'donchian') return 'donchian';
+    if (trigger === 'squeeze') return 'squeeze';
     return (exitStyle === 'kurz' || exitStyle === 'blitz') ? 'waves' : 'breakout';
   }
   function setupFromMode(mode) {
@@ -1285,6 +1288,9 @@
     if (mode === 'reversion') return { setup: 'umkehr', trigger: 'ueberdehnung', exitStyle: 'laufen' };
     if (mode === 'orb') return { setup: 'ausbruch', trigger: 'range', exitStyle: 'laufen' };
     if (mode === 'pullback') return { setup: 'ausbruch', trigger: 'ruecksetzer', exitStyle: 'laufen' };
+    if (mode === 'donchian') return { setup: 'ausbruch', trigger: 'donchian', exitStyle: 'laufen' };
+    if (mode === 'squeeze') return { setup: 'ausbruch', trigger: 'squeeze', exitStyle: 'laufen' };
+    if (mode === 'rsi2') return { setup: 'umkehr', trigger: 'rsi2', exitStyle: 'laufen' };
     if (mode === 'waves') return { setup: 'ausbruch', trigger: 'kreuzung', exitStyle: 'kurz' };
     return { setup: 'ausbruch', trigger: 'kreuzung', exitStyle: 'laufen' };
   }
@@ -1378,6 +1384,22 @@
         exitMode: 'recross', sl: slOf(c), tp: null,
         trail: (c.scalpTrail || 0) / 100, maxHoldMin: c.scalpHold || 0,
         cooldownMin: c.cooldownMin != null ? c.cooldownMin : 5, maxPerDay: c.maxPerDay != null ? c.maxPerDay : 40, scanMs: 90000
+      };
+    }
+    if (c.mode === 'rsi2') {
+      // Connors-Logik: Schwaeche kaufen, Ausstieg bei Rueckkehr der Staerke (Leitlinie erreicht)
+      return {
+        exitMode: 'target', sl: slOf(c), tp: null,
+        trail: 0, maxHoldMin: c.scalpHold || 240,
+        cooldownMin: c.cooldownMin != null ? c.cooldownMin : 10, maxPerDay: c.maxPerDay != null ? c.maxPerDay : 20, scanMs: 90000
+      };
+    }
+    if (c.mode === 'donchian' || c.mode === 'squeeze') {
+      // Ausbruchslogik: laufen lassen mit Trailing-Stop, kein festes Ziel
+      return {
+        exitMode: 'confirmed', sl: slOf(c), tp: null,
+        trail: (c.scalpTrail != null ? c.scalpTrail : 15) / 100, maxHoldMin: c.scalpHold || 0,
+        cooldownMin: c.cooldownMin != null ? c.cooldownMin : 30, maxPerDay: c.maxPerDay != null ? c.maxPerDay : 10, scanMs: 90000
       };
     }
     if (c.mode === 'pullback') {
@@ -1579,6 +1601,9 @@
         var isWave = cfg.mode === 'wave';
         var isOrb = cfg.mode === 'orb';
         var isPull = cfg.mode === 'pullback';
+        var isRsi2 = cfg.mode === 'rsi2';
+        var isDon = cfg.mode === 'donchian';
+        var isSq = cfg.mode === 'squeeze';
         var dir = null, revZ = null, waveQ = null, chE = null, chN = 0, chRef = null, orbInfo = null;
         var useChan = isWave && cfg.channel !== false;
         if (isOrb) {
@@ -1631,6 +1656,15 @@
         } else if (isPull) {
           var psigL = Q.pullbackSignal(sigBars, cfg.lineType || 'ema', cfg.period, cfg.confirmBps);
           if (psigL.signal) { dir = psigL.signal; revZ = psigL.distBps / 100; }
+        } else if (isRsi2) {
+          var xsigL = Q.rsiExtremSignal(sigBars);
+          if (xsigL.signal) { dir = xsigL.signal; revZ = xsigL.wert; }
+        } else if (isDon) {
+          var dsigL = Q.donchianSignal(sigBars, cfg.period, cfg.confirmBps);
+          if (dsigL.signal) dir = dsigL.signal;
+        } else if (isSq) {
+          var qsigL = Q.squeezeSignal(sigBars, cfg.period || 20);
+          if (qsigL.signal) { dir = qsigL.signal; revZ = qsigL.enge; }
         } else if (sig.crossed) {
           dir = sig.crossed === 'up' ? 'call' : 'put';
         }
@@ -1749,6 +1783,12 @@
               ? 'ORB: Ausbruch aus der Eröffnungs-Range (' + U.nf2.format(orbInfo.lo) + '–' + U.nf2.format(orbInfo.hi) + ', 30 Min) nach ' + (dir === 'call' ? 'OBEN' : 'UNTEN') + ' bei ' + U.nf2.format(spot) + '. '
               : isWave
               ? 'Wellenreiter: Tal erkannt (z ' + revZ + ', ' + barMin + '-Min) bei ' + U.nf2.format(spot) + ' · Wellen-Score ' + waveQ.score + '/100 (Rhythmus ' + waveQ.parts.rhythmus + ' · Amplitude ' + waveQ.parts.amplitude + ' · Tiefe ' + waveQ.parts.tiefe + ' · Umkehr ' + waveQ.parts.umkehr + ' · Volumen ' + waveQ.parts.volumen + ')' + (chE ? ' · Kanal (' + chN + ' Bars): Position ' + Math.round(chE.pos * 100) + ' %, Steigung ' + chE.steigung + ', Breite ' + chE.breitePct + ' %' : '') + '. '
+              : isRsi2
+              ? 'RSI(2)-Extrem (Connors): 2-Perioden-RSI bei ' + revZ + ' im ' + (dir === 'call' ? 'Aufwärts' : 'Abwärts') + 'trend (' + barMin + '-Min) bei ' + U.nf2.format(spot) + ' – kurzfristige Übertreibung gegen den Trend. '
+              : isDon
+              ? 'Donchian-Ausbruch: Schluss ' + (dir === 'call' ? 'über dem ' + cfg.period + '-Bar-Hoch' : 'unter dem ' + cfg.period + '-Bar-Tief') + ' (' + barMin + '-Min) bei ' + U.nf2.format(spot) + '. '
+              : isSq
+              ? 'Bollinger-Squeeze: Ausbruch nach ' + (dir === 'call' ? 'OBEN' : 'UNTEN') + ' aus einer Kompressionsphase (Enge ' + revZ + ', ' + barMin + '-Min) bei ' + U.nf2.format(spot) + '. '
               : isPull
               ? 'Trend-Rücksetzer: Kurs kommt im laufenden Trend an die ' + (cfg.lineType === 'vwap' ? 'VWAP' : 'EMA' + cfg.period) + ' zurück und dreht wieder (' + barMin + '-Min) bei ' + U.nf2.format(spot) + '. '
               : isRev
@@ -1762,6 +1802,10 @@
             ? (chE
               ? 'Szenario: Welle von der Kanalunterkante bis zur Oberkante reiten (Regressionskanal, ' + chN + ' Bars). Exit: Gegenkante erreicht (Ziel), Kanalbruch (Schutz), Wellenkamm-Überdehnung, Not-SL, max. Haltedauer, Glattstellung zum Tagesschluss. Nur in Kanalrichtung (Steigungs-Regime).'
               : 'Szenario: Welle vom Tal bis zum Kamm reiten. Exit: Überdehnung auf der Gegenseite (Wellenkamm), Not-SL, max. Haltedauer, Glattstellung zum Tagesschluss. Nur in Trendrichtung (EMA100).')
+            : isRsi2
+            ? 'Szenario: Rückkehr nach der kurzfristigen Übertreibung (Connors RSI-2). Exit: Rückkehr zur Leitlinie, Not-SL, max. Haltedauer, Glattstellung zum Tagesschluss.'
+            : (isDon || isSq)
+            ? 'Szenario: Ausbruch läuft weiter. Exit: Trailing-Stop vom Hoch, Gegen-Durchbruch, Not-SL, Glattstellung zum Tagesschluss.'
             : isPull
             ? 'Szenario: Der Trend nimmt nach dem Rücksetzer wieder Fahrt auf. Exit: Trailing-Stop vom Hoch, Gegen-Durchbruch der Leitlinie, Not-SL, max. Haltedauer, Glattstellung zum Tagesschluss.'
             : isRev
@@ -3025,6 +3069,17 @@
       meta: { scalpHold: 240, scalpSL: 30 },
       opts: { entryMode: 'wave', channel: kanal, sl: -0.30, tp: null, trailPct: 0, maxHoldMin: 240,
         cooldownMin: 10, maxPerDay: 20, trendFilter: true, minQuality: 60 } });
+    MODESL.push({ key: 'rsi2', setup: 'umkehr', trigger: 'rsi2', name: 'Umkehr · RSI(2)-Extrem (Connors)',
+      meta: { scalpHold: 240, scalpSL: 30 },
+      opts: { entryMode: 'rsi2', exitMode: 'target', sl: -0.30, tp: null, trailPct: 0, maxHoldMin: 240, cooldownMin: 10, maxPerDay: 20 } });
+    MODESL.push({ key: 'donchian', setup: 'ausbruch', trigger: 'donchian', name: 'Ausbruch · Donchian-Kanal',
+      meta: { scalpSL: 30, scalpTrail: 15 },
+      fixedGrid: [{ period: 20, confirmBps: 10, zThr: 2, lineType: 'ema' }, { period: 55, confirmBps: 10, zThr: 2, lineType: 'ema' }],
+      opts: { entryMode: 'donchian', exitMode: 'confirmed', sl: -0.30, tp: null, trailPct: 0.15, maxHoldMin: 0, cooldownMin: 30, maxPerDay: 10 } });
+    MODESL.push({ key: 'squeeze', setup: 'ausbruch', trigger: 'squeeze', name: 'Ausbruch · Bollinger-Squeeze',
+      meta: { scalpHold: 240, scalpSL: 30, scalpTrail: 15 },
+      fixedGrid: [{ period: 20, confirmBps: 15, zThr: 2, lineType: 'ema' }],
+      opts: { entryMode: 'squeeze', exitMode: 'confirmed', sl: -0.30, tp: null, trailPct: 0.15, maxHoldMin: 240, cooldownMin: 30, maxPerDay: 10 } });
     if (cfg.exitStyle === 'blitz' || cfg.exitStyle === 'kurz') {
       MODESL.push({ key: 'breakout_lauf', setup: 'ausbruch', trigger: 'kreuzung', name: 'Ausbruch · EMA-Kreuzung · laufen lassen',
         opts: { entryMode: 'cross', exitMode: 'confirmed', sl: -0.25, tp: 0.35, trailPct: 0, maxHoldMin: 0,
@@ -3526,9 +3581,18 @@
     if (st.setup === 'umkehr' && st.trigger === 'welle') {
       name = 'Umkehr am Wellental' + (c.channel !== false ? ' + Trendkanal' : '');
       was = 'Kauft am Tief einer Welle und verkauft am Wellenkamm' + (c.channel !== false ? ' – aber nur an der Kanalkante, Ziel ist die Gegenkante' : '') + '.';
+    } else if (st.setup === 'umkehr' && st.trigger === 'rsi2') {
+      name = 'Umkehr am RSI(2)-Extrem (Connors)';
+      was = 'Kauft die kurzfristige Übertreibung gegen den Trend (2-Perioden-RSI unter 10 im Aufwärtstrend) und steigt bei Rückkehr zur Leitlinie aus – eines der meistgetesteten Mean-Reversion-Setups.';
     } else if (st.setup === 'umkehr') {
       name = 'Umkehr bei Überdehnung';
       was = 'Kauft gegen die Übertreibung, wenn der Kurs zu weit von seiner Leitlinie weggelaufen ist – Ziel ist die Rückkehr zur Linie.';
+    } else if (st.trigger === 'donchian') {
+      name = 'Ausbruch über den Donchian-Kanal';
+      was = 'Kauft, wenn der Schlusskurs über das Hoch der letzten ' + c.period + ' Kerzen ausbricht (Put spiegelbildlich) – der Turtle-Klassiker, mit Trailing-Stop.';
+    } else if (st.trigger === 'squeeze') {
+      name = 'Ausbruch nach Vola-Kompression (Squeeze)';
+      was = 'Wartet, bis die Bollinger-Bänder deutlich enger sind als zuletzt, und kauft erst den Ausbruch aus dieser Kompression – filtert Fehlausbrüche in ohnehin hektischen Phasen.';
     } else if (st.trigger === 'ruecksetzer') {
       name = 'Ausbruch am Trend-Rücksetzer';
       was = 'Kauft, wenn der Kurs im laufenden Trend an seine Leitlinie zurückkommt und dort wieder in Trendrichtung dreht – mit Trailing-Stop und längerer Haltedauer.';
@@ -3900,7 +3964,7 @@
    * wird gegen eine strikte Whitelist geprueft, laeuft als markierter Kandidat mit und
    * muss dieselben Huerden nehmen wie alle anderen (belastbar + robust + zwei Naechte). */
   var KI_ERLAUBT = {
-    basis: ['breakout_lauf', 'orb', 'reversion', 'wave', 'pullback'],
+    basis: ['breakout_lauf', 'orb', 'reversion', 'wave', 'pullback', 'rsi2', 'donchian', 'squeeze'],
     interval: ['1m', '5m', '15m', '60m'],
     period: [9, 20, 50], confirmBps: [5, 15, 30], lineType: ['ema', 'vwap'],
     profile: ['atm21', 'otm3_14', 'otm5_10'], scalpSL: [15, 30, 'auto'], scalpHold: [60, 240]
@@ -3913,6 +3977,9 @@
     else if (k.basis === 'reversion') basisO = { entryMode: 'reversion', sl: slV, tp: null, trailPct: 0, maxHoldMin: k.scalpHold, cooldownMin: 10, maxPerDay: 20 };
     else if (k.basis === 'wave') basisO = { entryMode: 'wave', channel: D.intraday.channel !== false, sl: slV, tp: null, trailPct: 0, maxHoldMin: k.scalpHold, cooldownMin: 10, maxPerDay: 20, trendFilter: true, minQuality: 60 };
     else if (k.basis === 'pullback') basisO = { entryMode: 'pullback', exitMode: 'confirmed', sl: slV, tp: null, trailPct: 0.15, maxHoldMin: k.scalpHold, cooldownMin: 10, maxPerDay: 10 };
+    else if (k.basis === 'rsi2') basisO = { entryMode: 'rsi2', exitMode: 'target', sl: slV, tp: null, trailPct: 0, maxHoldMin: k.scalpHold, cooldownMin: 10, maxPerDay: 20 };
+    else if (k.basis === 'donchian') basisO = { entryMode: 'donchian', exitMode: 'confirmed', sl: slV, tp: null, trailPct: 0.15, maxHoldMin: k.scalpHold, cooldownMin: 30, maxPerDay: 10 };
+    else if (k.basis === 'squeeze') basisO = { entryMode: 'squeeze', exitMode: 'confirmed', sl: slV, tp: null, trailPct: 0.15, maxHoldMin: k.scalpHold, cooldownMin: 30, maxPerDay: 10 };
     else basisO = { entryMode: 'cross', exitMode: 'confirmed', sl: slV === 'auto' ? -0.25 : slV, tp: 0.35, trailPct: 0, maxHoldMin: k.scalpHold, cooldownMin: 45, maxPerDay: 10, trendFilter: true };
     basisO.otmPct = prof.otmPct;
     basisO.expiryDays = prof.days;
