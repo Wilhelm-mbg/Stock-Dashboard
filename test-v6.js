@@ -73,6 +73,36 @@ ok(rB.trades.length >= 5, 'Blitz handelt oft (viele kleine Versuche)', rB.trades
 ok(rB.trades.every(function (t) { return t.holdMin <= 3; }), 'KEIN Trade länger als 3 Minuten gehalten', Math.max.apply(null, rB.trades.map(function (t) { return t.holdMin; })) + ' Min max');
 ok(rB.trades.some(function (t) { return /Blitz/.test(t.why || ''); }), 'Blitz-Exits werden als solche benannt');
 
+console.log('3c) Tages-Backtest: Datums-Ausrichtung statt Index-Ausrichtung');
+// Symbol B hat ein 30-Tage-Loch in der Mitte – vorher bekamen B-Signale Kurse fremder Tage.
+var dayMs = 86400000, t0d = Date.UTC(2025, 0, 6);
+function handelsTage(n, lueckeVon, lueckeBis, seed) {
+  var out = [], rnd = lcg(seed), preis = 100, tag = 0, i = 0;
+  while (out.length < n) {
+    var ts = t0d + tag * dayMs; tag++;
+    var wt = new Date(ts).getUTCDay();
+    if (wt === 0 || wt === 6) continue;
+    i++;
+    if (luecke_von != null && i >= luecke_von && i <= luecke_bis) continue;
+    preis = preis * (1 + rnd() * 0.02) + 0.05;
+    out.push([ts, preis]);
+  }
+  return out;
+}
+var luecke_von = null, luecke_bis = null;
+var serieA = handelsTage(320, null, null, 5);
+luecke_von = 150; luecke_bis = 180;
+var serieB = handelsTage(290, 150, 180, 7);
+luecke_von = null; luecke_bis = null;
+var rD = Q.backtest({ AAA: serieA, BBB: serieB }, { capital: 10000, weights: { tech: 1, elliott: 1 }, openThr: 0.2, closeThr: 0.2, maxPos: 4, budgetPct: 0.1 });
+ok(!rD.error, 'Tages-Backtest läuft mit Lücken-Symbol', rD.error);
+var zeitOk = rD.trades.every(function (tr) {
+  var serie = tr.sym === 'AAA' ? serieA : serieB;
+  return serie.some(function (p) { return p[0] === tr.openT; });
+});
+ok(zeitOk, 'Jeder Trade öffnet an einem Tag, den es für SEIN Symbol wirklich gibt', rD.trades.length + ' Trades geprüft');
+ok(rD.equity.length > 100, 'Equity-Kurve über den gemeinsamen Kalender', rD.equity.length);
+
 console.log('4) Risiko-Sizing');
 var rFix = Q.backtestIntraday({ TEST: barsO }, { capital: 10000, period: 20, budgetPct: 0.03, orderFee: 1, entryMode: 'orb', orbMin: 30, sl: -0.25, tp: null, trailPct: 0.15, cooldownMin: 10, maxPerDay: 10, minEdge: 0 });
 var rRisk = Q.backtestIntraday({ TEST: barsO }, { capital: 10000, period: 20, budgetPct: 0.03, orderFee: 1, entryMode: 'orb', orbMin: 30, sl: -0.25, tp: null, trailPct: 0.15, cooldownMin: 10, maxPerDay: 10, minEdge: 0, riskPct: 0.5 });

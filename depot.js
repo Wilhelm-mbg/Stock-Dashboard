@@ -1229,9 +1229,9 @@
   var intradayScanning = false;
 
   var INTERVAL_CFG = {
-    '1m':  { range: '1d',  btRange: '5d',  barMin: 1 },
-    '5m':  { range: '5d',  btRange: '1mo', barMin: 5 },
-    '15m': { range: '5d',  btRange: '1mo', barMin: 15 },
+    '1m':  { range: '1d',  btRange: '5d',  barMin: 1 },                 // Yahoo-Limit: ~7 Tage
+    '5m':  { range: '5d',  btRange: '1mo', btTage: 58, barMin: 5 },     // Yahoo-Limit: ~60 Tage
+    '15m': { range: '5d',  btRange: '1mo', btTage: 58, barMin: 15 },
     '60m': { range: '1mo', btRange: '3mo', barMin: 60 }
   };
 
@@ -1325,7 +1325,15 @@
   }
   async function fetchIntradayYahoo(sym, interval, btMode) {
     var ic = INTERVAL_CFG[interval] || INTERVAL_CFG['5m'];
-    var url = 'https://query1.finance.yahoo.com/v8/finance/chart/' + encodeURIComponent(sym) + '?range=' + (btMode ? ic.btRange : ic.range) + '&interval=' + interval;
+    var url;
+    if (btMode && ic.btTage) {
+      // Volles erlaubtes Fenster über period1/period2 – 'range' kennt kein 2-Monats-Kürzel.
+      // Doppelt so viele Handelstage = doppelt so viele Out-of-Sample-Trades je Urteil.
+      var p2 = Math.floor(Date.now() / 1000), p1 = p2 - ic.btTage * 86400;
+      url = 'https://query1.finance.yahoo.com/v8/finance/chart/' + encodeURIComponent(sym) + '?period1=' + p1 + '&period2=' + p2 + '&interval=' + interval;
+    } else {
+      url = 'https://query1.finance.yahoo.com/v8/finance/chart/' + encodeURIComponent(sym) + '?range=' + (btMode ? ic.btRange : ic.range) + '&interval=' + interval;
+    }
     var res = await window.api.fetchText(url);
     if (!res.ok) return null;
     try {
@@ -2800,7 +2808,10 @@
           var gw = 0, gl = 0;
           oosTrades.forEach(function (x) { if (x.pnl > 0) gw += x.pnl; else gl += -x.pnl; });
           var pf = gl > 0 ? Math.round(gw / gl * 100) / 100 : (gw > 0 ? 99 : 0);
-          var verdict = (wfRet > 0 && posSegs >= 3 && pf > 1) ? '🟢 robust'
+          // Unter 12 Out-of-Sample-Trades ist jedes Urteil Rauschen: PF 0.04 aus 3 Trades
+          // sah wie ein vernichtendes Ergebnis aus, war aber schlicht keine Messung.
+          var verdict = oosTrades.length < 12 ? ('⚪ nicht belastbar (nur ' + oosTrades.length + ' Trades)')
+            : (wfRet > 0 && posSegs >= 3 && pf > 1) ? '🟢 robust'
             : (wfRet > 0 || posSegs >= 2) ? '🟡 gemischt' : '🔴 kein Vorteil';
           results.push({
             mode: MODES[mi], interval: iv, wfRet: wfRet, foldRets: foldRets, posSegs: posSegs,
@@ -2809,7 +2820,11 @@
           });
         }
       }
-      results.sort(function (a, b) { return b.wfRet - a.wfRet; });
+      results.sort(function (a, b) {
+        var aB = a.n >= 12 ? 1 : 0, bB = b.n >= 12 ? 1 : 0;
+        if (aB !== bB) return bB - aB;                 // belastbar schlägt unbelastbar
+        return b.wfRet - a.wfRet;
+      });
       return results;
   }
 
@@ -2893,7 +2908,9 @@
         window: winPreset, avoidHours: avoidHours,
         wfRet: top.wfRet, posSegs: top.posSegs, n: top.n, winRate: top.winRate, pf: top.pf, verdict: top.verdict,
         fine: bestFine ? { train: bestFine.train.retPct, valid: fineValid ? fineValid.retPct : null, used: !!useFine } : null,
-        topSymbols: symRank.slice(0, 3).map(function (x) { return x[0]; })
+        topSymbols: symRank.slice(0, 3).map(function (x) { return x[0]; }),
+        datenbasis: { symbole: Object.keys(ld.data[top.interval] || {}).length, zeitrahmen: top.interval,
+          spanneTage: (function () { var sp = mapSpan(ld.data[top.interval] || {}); return sp[1] > sp[0] ? Math.round((sp[1] - sp[0]) / 86400000) : 0; })() }
       };
       D.central = { at: Date.now(), rec: rec, ranking: results.slice(0, 6).map(function (r0) { return { name: r0.mode.name, interval: r0.interval, wfRet: r0.wfRet, posSegs: r0.posSegs, n: r0.n, verdict: r0.verdict }; }) };
       await save();
@@ -3824,7 +3841,7 @@
       '<span style="font-size:14px; font-weight:700;">' + U.esc(r.modeName) + ' · ' + r.interval + '</span>' +
       '<span style="color:var(--muted); font-size:12px;">Stand: ' + U.dt(c.at) + '</span></div>';
     html += '<table class="tbl" style="max-width:680px;"><tr><th>Empfehlung</th><th>Wert</th><th>Begründung</th></tr>' +
-      '<tr><td>Modus / Zeitrahmen</td><td><b>' + U.esc(r.modeName) + ' · ' + r.interval + '</b></td><td>Walk-Forward ' + U.signTxt(r.wfRet, ' %') + ' · ' + r.posSegs + '/4 Scheiben · ' + r.n + ' Trades · ' + r.winRate + ' % Treffer · PF ' + r.pf + '</td></tr>' +
+      '<tr><td>Modus / Zeitrahmen</td><td><b>' + U.esc(r.modeName) + ' · ' + r.interval + '</b></td><td>Walk-Forward ' + U.signTxt(r.wfRet, ' %') + ' · ' + r.posSegs + '/4 Scheiben · ' + r.n + ' Trades · ' + r.winRate + ' % Treffer · PF ' + r.pf + (r.datenbasis ? ' · Datenbasis: ' + r.datenbasis.symbole + ' Werte über ' + r.datenbasis.spanneTage + ' Tage' : '') + '</td></tr>' +
       '<tr><td>Leitlinie / Periode / Bestätigung</td><td><b>' + r.lineType.toUpperCase() + ' · P' + r.period + ' · ' + (r.confirmBps / 100).toFixed(2) + ' %</b></td><td>' +
       (r.fine ? (r.fine.used ? 'Feinschliff validiert: Training ' + U.signTxt(r.fine.train, ' %') + ' → ungesehen ' + U.signTxt(r.fine.valid, ' %') : 'Feinschliff nicht robust (Validierung ' + (r.fine.valid == null ? 'ohne Ergebnis' : U.signTxt(r.fine.valid, ' %')) + ') → Labor-Parameter behalten') : 'aus dem Walk-Forward') + '</td></tr>' +
       '<tr><td>Zeitfenster</td><td><b>' + WINDOW_NAMES[r.window] + '</b></td><td>bestes Out-of-Sample-Fenster nach P/L</td></tr>' +
@@ -3837,8 +3854,10 @@
     out.innerHTML = html;
     var ab = document.getElementById('centralApplyBtn');
     if (ab) ab.addEventListener('click', function () {
-      if (r.verdict && r.verdict.indexOf('🔴') !== -1) {
-        document.getElementById('centralApplyStatus').textContent = '⛔ Gesperrt: Dieses Setup hat im Test KEINEN Vorteil gezeigt (' + r.verdict + '). Ein Setup ohne nachgewiesenen Vorteil wird nicht übernommen.';
+      if (r.verdict && (r.verdict.indexOf('🔴') !== -1 || r.verdict.indexOf('⚪') !== -1)) {
+        document.getElementById('centralApplyStatus').textContent = '⛔ Gesperrt: ' + (r.verdict.indexOf('⚪') !== -1
+          ? 'Dieses Urteil beruht auf zu wenigen Trades (' + r.n + ') – das ist Rauschen, keine Messung.'
+          : 'Dieses Setup hat im Test KEINEN Vorteil gezeigt (' + r.verdict + ').') + ' Es wird nicht übernommen.';
         return;
       }
       var applied = applyCentralRec(r, 'manuell');

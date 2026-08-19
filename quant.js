@@ -437,6 +437,21 @@
     var minLen = Infinity;
     syms.forEach(function (s) { minLen = Math.min(minLen, histMap[s].length); });
     if (minLen < 120 || !syms.length) return { error: 'Zu wenig Historie (mind. 120 Handelstage nötig).' };
+    // Datums-Ausrichtung: Vorher wurden die Serien per INDEX vom Ende her übereinandergelegt –
+    // bei Feiertagslücken oder ungleich langen Historien bekam ein Signal vom Tag X die Kurse
+    // vom Tag Y. Jetzt läuft ein gemeinsamer Kalender, jedes Symbol hat einen eigenen Zeiger.
+    var zeitSet = {};
+    syms.forEach(function (s) { histMap[s].forEach(function (p) { zeitSet[p[0]] = 1; }); });
+    var kalender = Object.keys(zeitSet).map(Number).sort(function (a, b) { return a - b; });
+    var zeiger = {};
+    syms.forEach(function (s) { zeiger[s] = -1; });
+    function ruecke(s, t) {
+      var arr = histMap[s], c = zeiger[s];
+      while (c + 1 < arr.length && arr[c + 1][0] <= t) c++;
+      zeiger[s] = c;
+      return c;
+    }
+    function spotVon(s) { var c = zeiger[s]; return c >= 0 ? histMap[s][c][1] : null; }
 
     var cash = capital, positions = [], trades = [], equity = [];
     var stats = { tech: { r: 0, w: 0 }, elliott: { r: 0, w: 0 } };
@@ -456,15 +471,17 @@
       trades.push({ sym: pos.sym, dir: pos.dir, openT: pos.openT, closeT: t, entry: pos.entry, exit: bid, qty: pos.qty, pnl: pnl, why: why });
     }
 
-    // Wir iterieren über den Index der (pro Symbol gleich langen End-)Serien
-    for (var i = start; i < minLen; i++) {
-      var t = histMap[syms[0]][histMap[syms[0]].length - minLen + i][0];
+    for (var i = 0; i < kalender.length; i++) {
+      var t = kalender[i];
+      syms.forEach(function (s) { ruecke(s, t); });
+      // Aufwärmphase: erst handeln, wenn genug Historie hinter dem Kalendertag liegt
+      if (i < start) { continue; }
 
-      // Positionen bewerten / schließen
+      // Positionen bewerten / schließen – jedes Symbol zu SEINEM letzten Kurs bis t
       for (var pi = positions.length - 1; pi >= 0; pi--) {
         var pos = positions[pi];
-        var serie = histMap[pos.sym];
-        var spot = serie[serie.length - minLen + i][1];
+        var spot = spotVon(pos.sym);
+        if (spot == null) continue;
         var bid = warrantBid(pos.dir, pos.w, spot, t);
         var ret = bid / pos.entry - 1;
         var daysLeft = (pos.w.expiry - t) / 86400000;
@@ -480,7 +497,9 @@
         for (var si = 0; si < syms.length; si++) {
           var sym = syms[si];
           var full = histMap[sym];
-          var upto = full.slice(0, full.length - minLen + i + 1);
+          if (zeiger[sym] < 70) continue;              // dieses Symbol hat noch zu wenig eigene Historie
+          if (full[zeiger[sym]][0] !== t) continue;    // heute kein Handel (Feiertag/Lücke): kein frisches Signal
+          var upto = full.slice(0, zeiger[sym] + 1);
           var spot2 = upto[upto.length - 1][1];
           var tech = technical(upto);
           var ell = elliott(upto.slice(-260));
@@ -499,7 +518,7 @@
             var w = makeWarrant(dir, spot2, vol, t);
             var ask = warrantAsk(dir, w, spot2, t);
             var equityNow = cash + positions.reduce(function (a, p) {
-              var sr = histMap[p.sym]; return a + warrantBid(p.dir, p.w, sr[sr.length - minLen + i][1], t) * p.qty;
+              var spP = spotVon(p.sym); return a + (spP != null ? warrantBid(p.dir, p.w, spP, t) * p.qty : 0);
             }, 0);
             var qty = Math.floor((equityNow * budgetPct) / ask);
             if (qty >= 1 && cash >= qty * ask) {
@@ -513,8 +532,8 @@
       // Equity-Kurve
       var eq = cash;
       positions.forEach(function (p) {
-        var sr = histMap[p.sym];
-        eq += warrantBid(p.dir, p.w, sr[sr.length - minLen + i][1], t) * p.qty;
+        var spQ = spotVon(p.sym);
+        if (spQ != null) eq += warrantBid(p.dir, p.w, spQ, t) * p.qty;
       });
       equity.push([t, eq]);
     }
