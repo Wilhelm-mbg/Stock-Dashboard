@@ -475,6 +475,12 @@
           halbiert, nach 5 pausiert der Tag (Tilt-Schutz).
         </div>
         </details>
+        <!-- 🧭 Klartext: Was läuft gerade und warum – die Automatik stellt alles ein -->
+        <div id="idKlartext" style="border:1px solid var(--border); border-radius:10px; padding:12px 14px; margin-bottom:10px; background:rgba(255,255,255,0.02);">
+          <div class="loading">Lade Strategie-Stand …</div>
+        </div>
+        <details id="idExperte" style="margin-bottom:8px;">
+          <summary style="cursor:pointer; font-size:12.5px; color:var(--muted); padding:4px 0;">🔧 Experten-Einstellungen anzeigen (stellt normalerweise die Automatik ein – Änderungen von Hand landen im Experiment-Journal)</summary>
         <div id="idParams">
           <div class="pgroup">
             <div class="pgroup-title">📶 Signal</div>
@@ -526,6 +532,7 @@
             </div>
           </div>
         </div>
+        </details>
         <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-top:12px;">
           <button class="btn ghost" id="screenBtn" style="padding:4px 12px; font-size:12px;">🔎 Screener jetzt laufen lassen</button>
           <span id="screenStatus" style="color:var(--muted); font-size:11.5px;"></span>

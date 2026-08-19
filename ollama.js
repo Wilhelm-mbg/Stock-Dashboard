@@ -7,6 +7,12 @@
     return (s.ollamaUrl || 'http://127.0.0.1:11434').replace(/\/$/, '');
   }
   function model() { return window.getSettings().ollamaModel || ''; }
+  /** Manche lokale Modelle (z. B. Qwen) fallen ins Chinesische zurück – solche
+   *  Begründungen sind für Wilhelm unlesbar und fliegen raus. */
+  function nurDeutsch(txt, ersatz) {
+    var t = String(txt || '');
+    return /[\u3400-\u9fff\u3040-\u30ff\uac00-\ud7af]/.test(t) ? (ersatz || 'Begründung nicht auf Deutsch – verworfen') : t;
+  }
   function vetoOn() { var s = window.getSettings(); return !!(s.kiVeto && model()); }
 
   window.LocalKI = {
@@ -41,7 +47,7 @@
       var userRules = (window.getSettings().kiRules || '').trim();
       var prompt = 'Du bist ein nüchterner Markt-Analyst für ein SIMULIERTES Intraday-Depot. ' +
         'Wähle anhand der gemessenen Marktlage GENAU EIN Handels-Setup für die nächste Stunde. ' +
-        'Antworte AUSSCHLIESSLICH mit gültigem JSON, exakt so: ' +
+        'Antworte AUSSCHLIESSLICH auf DEUTSCH (niemals Chinesisch oder Englisch) und AUSSCHLIESSLICH mit gültigem JSON, exakt so: ' +
         '{"setup":"ausbruch" oder "umkehr","ausloeser":"kreuzung" oder "range" oder "ueberdehnung" oder "welle",' +
         '"zeitrahmen":"1m" oder "5m","trendfilter":true oder false,"kanal":true oder false,' +
         '"begruendung":"max. 20 Wörter auf Deutsch, nenne die entscheidende Kennzahl"}.\n\n' +
@@ -79,7 +85,7 @@
           zeitrahmen: String(j.zeitrahmen || '').toLowerCase(),
           trendfilter: j.trendfilter === true || String(j.trendfilter) === 'true',
           kanal: j.kanal === true || String(j.kanal) === 'true',
-          begruendung: String(j.begruendung || '').slice(0, 160)
+          begruendung: nurDeutsch(String(j.begruendung || '')).slice(0, 160)
         };
       } catch (e3) { return { ok: false, msg: 'JSON unlesbar' }; }
     },
@@ -89,7 +95,7 @@
       var userRules = (window.getSettings().kiRules || '').trim();
       var prompt = 'Du bist ein strenger, nüchterner Trading-Risk-Manager für ein SIMULIERTES Optionsschein-Depot (Intraday, gehebelt). ' +
         'Deine einzige Aufgabe: den geplanten Trade freigeben oder ablehnen. ' +
-        'Antworte AUSSCHLIESSLICH mit gültigem JSON, exakt so: ' +
+        'Antworte AUSSCHLIESSLICH auf DEUTSCH (niemals Chinesisch oder Englisch) und AUSSCHLIESSLICH mit gültigem JSON, exakt so: ' +
         '{"entscheidung":"ja" oder "nein","groesse":0.5 oder 1.0 oder 1.5,"begruendung":"max. 15 Wörter auf Deutsch"}.\n\n' +
         'PRÜFREGELN – gehe sie der Reihe nach durch:\n' +
         '1. Richtung widerspricht trendEMA100 oder der Trendkanal-Steigung → nein.\n' +
@@ -115,7 +121,7 @@
         var e = String(j.entscheidung || '').toLowerCase() === 'ja' ? 'ja' : 'nein';
         var g = parseFloat(j.groesse);
         if (!(g === 0.5 || g === 1.0 || g === 1.5)) g = 1.0;
-        return { ok: true, entscheidung: e, groesse: g, begruendung: String(j.begruendung || '').slice(0, 140) };
+        return { ok: true, entscheidung: e, groesse: g, begruendung: nurDeutsch(String(j.begruendung || '')).slice(0, 140) };
       } catch (e2) { return { ok: false, msg: 'JSON unlesbar' }; }
     }
   };

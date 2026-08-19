@@ -1684,6 +1684,7 @@
 
   /* ================= Rendering ================= */
   function render() {
+    renderKlartext();
     if (!D) return;
     var now = Date.now();
     var eq = equityNow();
@@ -3723,6 +3724,59 @@
     });
     if (window.__syncSetupUI) window.__syncSetupUI();   // Setup-Pillen + Auslöser + Ausstieg
     if (window.__updateParamVis) window.__updateParamVis();
+    renderKlartext();
+  }
+
+  function renderKlartext() {
+    var el = document.getElementById('idKlartext');
+    if (!el || !D) return;
+    var c = D.intraday;
+    var st = setupFromMode(c.mode);
+    var name, was;
+    if (st.setup === 'umkehr' && st.trigger === 'welle') {
+      name = '🔄 Umkehr am Wellental' + (c.channel !== false ? ' + 📐 Trendkanal' : '');
+      was = 'Kauft am Tief einer Welle und verkauft am Wellenkamm' + (c.channel !== false ? ' – aber nur an der Kanalkante, Ziel ist die Gegenkante' : '') + '.';
+    } else if (st.setup === 'umkehr') {
+      name = '🔄 Umkehr bei Überdehnung';
+      was = 'Kauft gegen die Übertreibung, wenn der Kurs zu weit von seiner Leitlinie weggelaufen ist – Ziel ist die Rückkehr zur Linie.';
+    } else if (st.trigger === 'range') {
+      name = '🎯 Ausbruch aus der Eröffnungs-Range';
+      was = 'Handelt den ersten Ausbruch aus der Spanne der ersten 30 Handelsminuten – maximal 1 Trade je Richtung und Tag.';
+    } else {
+      name = '🎯 Ausbruch an der EMA' + c.period;
+      was = 'Kauft (Call), wenn der Kurs die EMA' + c.period + ' nach OBEN durchbricht – Put beim Durchbruch nach unten. Immer in Trendrichtung.';
+    }
+    var exitTxt = c.exitStyle === 'blitz' ? '⚡ Blitz-Ausstieg: nach spätestens 3 Minuten raus – bei der ersten Gegenbar oder der EMA9-Rückkreuzung. Kleine Gewinne, viele Versuche.'
+      : c.exitStyle === 'kurz' ? 'Kurzer Ausstieg: raus bei der Rückkehr zur Leitlinie.'
+      : st.setup === 'umkehr' ? '' : 'Ausstieg: laufen lassen bis zum Gegensignal, mit Not-Stop und Ziel.';
+    // Wer hat das eingestellt? Letzter Journal-Eintrag mit echter Änderung
+    var wer = '';
+    var QUELLE_NAME = { regime: '🧭 Regime-Automatik', farm: '🧬 Strategie-Farm', hand: '✋ von Hand (Formular)', manuell: '🎛 Analyse-Zentrale', lokal: '🎛 Selbst-Optimierung', sicherung: '🛡 Sicherung', claude: '📡 Cloud-Empfehlung' };
+    var tl = (D.tuneLog || []).filter(function (e) { return (e.applied || []).length && e.quelle !== 'sicherung'; })[0];
+    if (tl) wer = 'Zuletzt eingestellt von ' + (QUELLE_NAME[tl.quelle] || tl.quelle || '?') + ' (' + U.dt(tl.at) + '): ' + tl.applied.slice(0, 3).join(' · ') + (tl.applied.length > 3 ? ' …' : '');
+    var a = autoOptCfg();
+    var autoTxt = 'Du musst hier nichts einstellen: 🧭 Regime prüft stündlich die Marktlage' +
+      (a.farm !== false ? ', 🧬 die Farm züchtet nachts bessere Varianten' : '') +
+      (a.on !== false ? ', 🎛 die Selbst-Optimierung prüft alle ' + (a.everyH || 4) + ' h' : '') +
+      '. Jede Änderung steht im Experiment-Journal (Auswertung).';
+    var alleAn = a.on !== false && a.regime !== false && a.farm !== false;
+    el.innerHTML =
+      '<div style="font-size:14px; font-weight:700; margin-bottom:4px;">' + name + ' · ' + (c.interval || '5m') + '-Chart</div>' +
+      '<div style="font-size:12.5px; color:var(--ink-2); margin-bottom:4px;">' + was + (exitTxt ? ' ' + exitTxt : '') + '</div>' +
+      (wer ? '<div style="font-size:11.5px; color:var(--muted); margin-bottom:4px;">' + U.esc(wer) + '</div>' : '') +
+      (alleAn
+        ? '<div style="font-size:11.5px; color:var(--muted);">' + autoTxt + '</div>'
+        : '<div style="font-size:11.5px; color:var(--warn); margin-bottom:6px;">⚠ Ein Teil der Automatik ist ausgeschaltet – die Strategie verbessert sich gerade NICHT von selbst.</div>' +
+          '<button class="btn tiny" id="klartextAutoBtn">🤖 Vollautomatik einschalten</button>');
+    var kab = document.getElementById('klartextAutoBtn');
+    if (kab) kab.addEventListener('click', function () {
+      var a2 = autoOptCfg();
+      a2.on = true; a2.regime = true; a2.farm = true;
+      if (!D.tuneLog) D.tuneLog = [];
+      D.tuneLog.unshift({ id: 'hand-' + Date.now(), at: Date.now(), quelle: 'hand', applied: ['Vollautomatik → an'],
+        txt: '✋ Vollautomatik über die Klartext-Karte eingeschaltet.' });
+      save(); renderKlartext(); renderTune(); renderRegime(); renderFarm();
+    });
   }
 
   function renderRegime(phase) {

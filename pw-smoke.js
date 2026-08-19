@@ -96,8 +96,20 @@ const path = require('path');
   await page.click('#depotPills button[data-sub="strategien"]');
   await page.waitForTimeout(500);
 
+  const results0 = [];
+  // 🧭 Klartext-Karte: erklärt Laien-tauglich, was gerade läuft – Experten-Teil ist zugeklappt
+  // (Checks laufen unten über die results-Liste; hier nur Zustand einsammeln)
+  const klartextTxt = await page.locator('#idKlartext').innerText();
+  const experteZu = !(await page.locator('#idExperte').evaluate(el => el.open));
+  // Experten-Bereich für die folgenden Formular-Checks aufklappen
+  await page.click('#idExperte summary');
+  await page.waitForTimeout(300);
+
   const results = [];
   function check(name, cond) { results.push((cond ? '✅ ' : '❌ ') + name); if (!cond) process.exitCode = 1; }
+
+  check('Klartext-Karte erklärt die Strategie', klartextTxt.indexOf('Chart') !== -1 && klartextTxt.indexOf('Du musst hier nichts einstellen') !== -1);
+  check('Experten-Einstellungen standardmäßig zugeklappt', experteZu);
 
   // Kanal-Schalter vorhanden & standardmäßig an
   const chVisible = await page.locator('#idChannel').count();
