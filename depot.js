@@ -2942,7 +2942,11 @@
     var prof = Q.PROFILES[cfg.profile] || Q.PROFILES.atm21;
     return {
       capital: START_CAPITAL, budgetPct: cfg.budgetPct, orderFee: cfg.orderFee,
-      window: cfg.window || 'all', lineType: cfg.lineType || 'ema',
+      // Gemessen wird IMMER auf dem ganzen Handelstag: Erbte die Messung das eingestellte
+      // Zeitfenster (z. B. open2), sah sie nur Trades aus diesen Stunden - die Diagnose
+      // 'bestes Zeitfenster' konnte dann nie etwas anderes empfehlen als das, was schon
+      // eingestellt war. Das beste Fenster wird aus den Out-of-Sample-Trades ERMITTELT.
+      window: 'all', lineType: cfg.lineType || 'ema',
       otmPct: prof.otmPct, expiryDays: prof.days, minEdge: 1.5,
       mtf: iv === '1m' && cfg.mtf !== false,
       riskPct: parseFloat(cfg.sizing) > 0 ? parseFloat(cfg.sizing) : 0
