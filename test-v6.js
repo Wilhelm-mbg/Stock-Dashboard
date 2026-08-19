@@ -255,5 +255,38 @@ ok(schl[0][1] === 100.1235 && schl[0][2] === 11 && schl[0][3] === 101 && schl[0]
 var dv = A.dollarVolTag([[T0, 100, 1000], [T0 + 60000, 100, 1000], [T0 + 86400000, 200, 500]]);
 ok(dv === 150000, 'Dollar-Umsatz je Tag: (100*1000+100*1000+200*500)/2 Tage', dv);
 
+console.log('14) Trend-Ruecksetzer (Pullback) an der Leitlinie');
+(function () {
+  var t0p = Date.UTC(2026, 5, 1, 13, 30);
+  function serie(fn) { var b = []; for (var i = 0; i < 200; i++) b.push([t0p + i * 60000, fn(i), 1000]); return b; }
+  // Aufwaertstrend, Kurs klar ueber EMA20, faellt zuletzt zur Linie zurueck und dreht
+  var auf = serie(function (i) {
+    var basis = 100 + i * 0.06;                       // steigender Trend
+    if (i >= 190 && i < 198) basis -= (i - 189) * 0.12;  // Ruecksetzer Richtung Linie
+    if (i >= 198) basis -= 0.9 - (i - 197) * 0.15;       // dreht wieder nach oben
+    return basis;
+  });
+  var p1 = Q.pullbackSignal(auf, 'ema', 20, 15);
+  ok(p1.signal === 'call', 'Ruecksetzer im Aufwaertstrend -> Call', p1.signal + ' (dist ' + p1.distBps + ' bps)');
+  // Ohne Ruecksetzer (Kurs bleibt weit ueber der Linie): kein Signal
+  var oben = serie(function (i) { return 100 + i * 0.06; });
+  ok(Q.pullbackSignal(oben, 'ema', 20, 15).signal === null, 'ohne Beruehrung kein Signal');
+  // Spiegelbild: Abwaertstrend -> Put
+  var ab = serie(function (i) {
+    var basis = 200 - i * 0.06;
+    if (i >= 190 && i < 198) basis += (i - 189) * 0.12;
+    if (i >= 198) basis += 0.9 - (i - 197) * 0.15;
+    return basis;
+  });
+  ok(Q.pullbackSignal(ab, 'ema', 20, 15).signal === 'put', 'Ruecksetzer im Abwaertstrend -> Put');
+  // Fallendes Messer: Beruehrung, aber letzte Kerze faellt weiter -> kein Einstieg
+  var messer = serie(function (i) {
+    var basis = 100 + i * 0.06;
+    if (i >= 190) basis -= (i - 189) * 0.12;   // faellt durch, ohne zu drehen
+    return basis;
+  });
+  ok(Q.pullbackSignal(messer, 'ema', 20, 15).signal === null, 'fallendes Messer wird nicht gekauft');
+})();
+
 console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
 process.exit(fails ? 1 : 0);

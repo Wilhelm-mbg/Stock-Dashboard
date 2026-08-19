@@ -607,6 +607,54 @@
     return crossCore(closes, line, confirmBps === undefined ? 15 : confirmBps, lookback || 3, period);
   }
 
+  /** Trend-Rücksetzer (Pullback): Im laufenden Trend kommt der Kurs an seine Leitlinie
+   *  zurück und dreht dort wieder in Trendrichtung – der Klassiker unter den Trendfolge-
+   *  Einstiegen. call = Aufwärtstrend (EMA100 steigt), Kurs war klar über der Leitlinie,
+   *  berührt sie jetzt und die letzte Kerze dreht bereits wieder nach oben. put spiegelbildlich.
+   *  Rückgabe: {signal: 'call'|'put'|null, distBps}. */
+  function pullbackSignal(bars, lineType, period, confirmBps) {
+    var closes = bars.map(function (p) { return p[1]; });
+    var n = closes.length;
+    if (n < 120) return { signal: null, distBps: 0 };
+    var line = lineType === 'vwap' ? vwapLine(bars) : null;
+    if (!line) line = emaSeries(closes, period);
+    var e100 = emaSeries(closes, 100);
+    var steigt = e100[n - 1] > e100[Math.max(0, n - 9)];
+    var faellt = e100[n - 1] < e100[Math.max(0, n - 9)];
+    var conf = (confirmBps === undefined ? 15 : confirmBps) / 10000;
+    var preis = closes[n - 1], ma = line[n - 1];
+    var distBps = Math.round((preis / ma - 1) * 100000) / 10;
+    // "War klar auf der Trendseite": VOR dem Rücksetzer, also im Fenster 10-45 Bars zurück -
+    // zählte man die letzten Bars mit, steckte der Rücksetzer selbst in der Zählung und
+    // machte die Bedingung unerfüllbar.
+    // "War klar auf der Trendseite": VOR dem Rücksetzer (10-45 Bars zurück). Gezählt wird
+    // die SEITE (über/unter der Linie); ob der Abstand "klar" war, prüft der mittlere
+    // Abstand separat - eine feste bps-Schwelle skaliert sonst falsch mit dem Kursniveau.
+    var oben = 0, unten = 0, gesamt = 0, distSumme = 0;
+    for (var i = Math.max(0, n - 45); i < n - 10; i++) {
+      gesamt++;
+      if (closes[i] > line[i]) oben++; else if (closes[i] < line[i]) unten++;
+      distSumme += Math.abs(closes[i] / line[i] - 1);
+    }
+    if (gesamt < 25) return { signal: null, distBps: distBps };
+    var quorum = Math.ceil(gesamt * 0.85);
+    var klar = (distSumme / gesamt) >= 1.5 * conf;   // im Schnitt deutlich von der Linie weg
+    // Echte BERÜHRUNG in den letzten 8 Bars: der Kurs muss wirklich an die Linie
+    // zurückgekommen sein - sonst gilt jeder gemütliche Trend als Rücksetzer.
+    var beruehrtCall = false, beruehrtPut = false;
+    for (var j = Math.max(0, n - 8); j < n; j++) {
+      if (closes[j] <= line[j] * (1 + conf)) beruehrtCall = true;
+      if (closes[j] >= line[j] * (1 - conf)) beruehrtPut = true;
+    }
+    // Aktuell nicht zu weit durchgetaucht und nicht schon wieder weit weg
+    var nahCall = preis <= ma * (1 + 5 * conf) && preis >= ma * (1 - 3 * conf);
+    var nahPut = preis >= ma * (1 - 5 * conf) && preis <= ma * (1 + 3 * conf);
+    // … und die letzte Kerze dreht bereits zurück in Trendrichtung (kein fallendes Messer)
+    if (steigt && oben >= quorum && klar && beruehrtCall && nahCall && closes[n - 1] > closes[n - 2]) return { signal: 'call', distBps: distBps };
+    if (faellt && unten >= quorum && klar && beruehrtPut && nahPut && closes[n - 1] < closes[n - 2]) return { signal: 'put', distBps: distBps };
+    return { signal: null, distBps: distBps };
+  }
+
   /** Mean-Reversion-Signal: Kurs überdehnt von der Leitlinie entfernt (z-Score der Distanz).
    *  call = überdehnt UNTER der Linie (Rückkehr nach oben erwartet), put = darüber. */
   function reversionSignal(bars, lineType, period, zThr) {
@@ -1449,6 +1497,10 @@
           var rsig = reversionSignal(win, LINE, period, ZTHR);
           if (!rsig.signal) continue;
           dir = rsig.signal;
+        } else if (ENTRY === 'pullback') {
+          var psig = pullbackSignal(win, LINE, period, confirmBps);
+          if (!psig.signal) continue;
+          dir = psig.signal;
         } else if (ENTRY === 'orb') {
           var os2 = orbState[sym];
           if (!os2 || !os2.done) continue;
@@ -1586,7 +1638,7 @@
     resampleBars: resampleBars, mtfAgrees: mtfAgrees, autoStop: autoStop,
     signalCross: signalCross, vwapLine: vwapLine, inWindow: inWindow,
     effSpread: effSpread, slipOf: slipOf,
-    reversionSignal: reversionSignal, edgeCheck: edgeCheck, waveQuality: waveQuality,
+    reversionSignal: reversionSignal, pullbackSignal: pullbackSignal, edgeCheck: edgeCheck, waveQuality: waveQuality,
     regressionChannel: regressionChannel, channelFit: channelFit, bestChannel: bestChannel,
     channelValid: channelValid, CHAN_MIN: CHAN_MIN, varianceRatio: varianceRatio,
     bewaehrungsUrteil: bewaehrungsUrteil,

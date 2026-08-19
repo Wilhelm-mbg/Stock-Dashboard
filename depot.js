@@ -434,7 +434,7 @@
 
   /* ================= Auto-Tuning (empfehlung.json von Claude) ================= */
   var TUNE_ALLOW = {
-    mode: ['breakout', 'waves', 'reversion', 'wave', 'orb'],
+    mode: ['breakout', 'waves', 'reversion', 'wave', 'orb', 'pullback'],
     interval: ['1m', '5m', '15m', '60m'],
     period: [9, 20, 50],
     confirmBps: [5, 15, 30],
@@ -1271,18 +1271,20 @@
    * das bewährte mode-Feld erhalten – so bleiben Backtests, Historie und Kennzahlen
    * vergleichbar, und es gibt keine zweite Rechenlogik, die auseinanderlaufen kann. */
   var SETUPS = {
-    ausbruch: { name: 'Ausbruch', trigger: { kreuzung: 'EMA-Kreuzung', range: 'Eröffnungs-Range' } },
+    ausbruch: { name: 'Ausbruch', trigger: { kreuzung: 'EMA-Kreuzung', range: 'Eröffnungs-Range', ruecksetzer: 'Trend-Rücksetzer' } },
     umkehr:   { name: 'Umkehr',   trigger: { ueberdehnung: 'Überdehnung', welle: 'Wellental' } }
   };
   function modeFromSetup(setup, trigger, exitStyle) {
     if (setup === 'umkehr') return trigger === 'welle' ? 'wave' : 'reversion';
     if (trigger === 'range') return 'orb';
+    if (trigger === 'ruecksetzer') return 'pullback';
     return (exitStyle === 'kurz' || exitStyle === 'blitz') ? 'waves' : 'breakout';
   }
   function setupFromMode(mode) {
     if (mode === 'wave') return { setup: 'umkehr', trigger: 'welle', exitStyle: 'laufen' };
     if (mode === 'reversion') return { setup: 'umkehr', trigger: 'ueberdehnung', exitStyle: 'laufen' };
     if (mode === 'orb') return { setup: 'ausbruch', trigger: 'range', exitStyle: 'laufen' };
+    if (mode === 'pullback') return { setup: 'ausbruch', trigger: 'ruecksetzer', exitStyle: 'laufen' };
     if (mode === 'waves') return { setup: 'ausbruch', trigger: 'kreuzung', exitStyle: 'kurz' };
     return { setup: 'ausbruch', trigger: 'kreuzung', exitStyle: 'laufen' };
   }
@@ -1376,6 +1378,13 @@
         exitMode: 'recross', sl: slOf(c), tp: null,
         trail: (c.scalpTrail || 0) / 100, maxHoldMin: c.scalpHold || 0,
         cooldownMin: c.cooldownMin != null ? c.cooldownMin : 5, maxPerDay: c.maxPerDay != null ? c.maxPerDay : 40, scanMs: 90000
+      };
+    }
+    if (c.mode === 'pullback') {
+      return {
+        exitMode: 'confirmed', sl: slOf(c), tp: null,
+        trail: (c.scalpTrail != null ? c.scalpTrail : 15) / 100, maxHoldMin: c.scalpHold || 240,
+        cooldownMin: c.cooldownMin != null ? c.cooldownMin : 10, maxPerDay: c.maxPerDay != null ? c.maxPerDay : 10, scanMs: 90000
       };
     }
     if (c.mode === 'reversion') {
@@ -1569,6 +1578,7 @@
         var isRev = cfg.mode === 'reversion';
         var isWave = cfg.mode === 'wave';
         var isOrb = cfg.mode === 'orb';
+        var isPull = cfg.mode === 'pullback';
         var dir = null, revZ = null, waveQ = null, chE = null, chN = 0, chRef = null, orbInfo = null;
         var useChan = isWave && cfg.channel !== false;
         if (isOrb) {
@@ -1618,6 +1628,9 @@
         } else if (isRev) {
           var rsig = Q.reversionSignal(sigBars, cfg.lineType || 'ema', cfg.period, zOf(cfg.confirmBps));
           if (rsig.signal) { dir = rsig.signal; revZ = rsig.z; }
+        } else if (isPull) {
+          var psigL = Q.pullbackSignal(sigBars, cfg.lineType || 'ema', cfg.period, cfg.confirmBps);
+          if (psigL.signal) { dir = psigL.signal; revZ = psigL.distBps / 100; }
         } else if (sig.crossed) {
           dir = sig.crossed === 'up' ? 'call' : 'put';
         }
@@ -1736,6 +1749,8 @@
               ? 'ORB: Ausbruch aus der Eröffnungs-Range (' + U.nf2.format(orbInfo.lo) + '–' + U.nf2.format(orbInfo.hi) + ', 30 Min) nach ' + (dir === 'call' ? 'OBEN' : 'UNTEN') + ' bei ' + U.nf2.format(spot) + '. '
               : isWave
               ? 'Wellenreiter: Tal erkannt (z ' + revZ + ', ' + barMin + '-Min) bei ' + U.nf2.format(spot) + ' · Wellen-Score ' + waveQ.score + '/100 (Rhythmus ' + waveQ.parts.rhythmus + ' · Amplitude ' + waveQ.parts.amplitude + ' · Tiefe ' + waveQ.parts.tiefe + ' · Umkehr ' + waveQ.parts.umkehr + ' · Volumen ' + waveQ.parts.volumen + ')' + (chE ? ' · Kanal (' + chN + ' Bars): Position ' + Math.round(chE.pos * 100) + ' %, Steigung ' + chE.steigung + ', Breite ' + chE.breitePct + ' %' : '') + '. '
+              : isPull
+              ? 'Trend-Rücksetzer: Kurs kommt im laufenden Trend an die ' + (cfg.lineType === 'vwap' ? 'VWAP' : 'EMA' + cfg.period) + ' zurück und dreht wieder (' + barMin + '-Min) bei ' + U.nf2.format(spot) + '. '
               : isRev
               ? 'Rücksetzer: Kurs überdehnt ' + (dir === 'call' ? 'UNTER' : 'ÜBER') + ' der ' + (cfg.lineType === 'vwap' ? 'VWAP' : 'EMA' + cfg.period) + ' (z-Score ' + revZ + ', ' + barMin + '-Min-Chart) bei ' + U.nf2.format(spot) + '. '
               : (isWaves ? 'Wellen-Scalp: ' : 'Intraday: ') + 'Kurs kreuzt ' + (cfg.lineType === 'vwap' ? 'VWAP' : 'EMA' + cfg.period) + ' (' + barMin + '-Min-Chart) nach ' + (dir === 'call' ? 'OBEN' : 'UNTEN') + ' bei ' + U.nf2.format(spot) + ' (Abstand ' + (sig.distBps / 100).toFixed(2) + ' %). ') +
@@ -1747,6 +1762,8 @@
             ? (chE
               ? 'Szenario: Welle von der Kanalunterkante bis zur Oberkante reiten (Regressionskanal, ' + chN + ' Bars). Exit: Gegenkante erreicht (Ziel), Kanalbruch (Schutz), Wellenkamm-Überdehnung, Not-SL, max. Haltedauer, Glattstellung zum Tagesschluss. Nur in Kanalrichtung (Steigungs-Regime).'
               : 'Szenario: Welle vom Tal bis zum Kamm reiten. Exit: Überdehnung auf der Gegenseite (Wellenkamm), Not-SL, max. Haltedauer, Glattstellung zum Tagesschluss. Nur in Trendrichtung (EMA100).')
+            : isPull
+            ? 'Szenario: Der Trend nimmt nach dem Rücksetzer wieder Fahrt auf. Exit: Trailing-Stop vom Hoch, Gegen-Durchbruch der Leitlinie, Not-SL, max. Haltedauer, Glattstellung zum Tagesschluss.'
             : isRev
             ? 'Szenario: Rückkehr zur Leitlinie (Mean-Reversion). Exit: Linien-Berührung (Ziel), Not-SL, max. Haltedauer, Glattstellung zum Tagesschluss.'
             : isWaves
@@ -2994,6 +3011,20 @@
     // die Variante mit Stop/Ziel über Stunden käme sonst NIE ins Rennen. Die Messung von
     // heute zeigt aber: je länger die Haltedauer, desto kleiner der Verlust - genau diese
     // Richtung muss mitgemessen werden.
+    MODESL.push({ key: 'pullback', setup: 'ausbruch', trigger: 'ruecksetzer', name: 'Ausbruch · Trend-Rücksetzer',
+      meta: { scalpHold: 240, scalpTrail: 15 },
+      opts: { entryMode: 'pullback', exitMode: 'confirmed', sl: slV, tp: null, trailPct: 0.15, maxHoldMin: 240,
+        cooldownMin: 10, maxPerDay: 10, trendFilter: false } });
+    // Lang-Varianten: gleiche Einstiege, aber 4 h Haltedauer und weiter Stop. Die erste
+    // belastbare Messung zeigte: je länger die Haltedauer, desto kleiner der Verlust -
+    // diese Richtung muss als eigener Kandidat mitlaufen.
+    MODESL.push({ key: 'reversion_lang', setup: 'umkehr', trigger: 'ueberdehnung', name: 'Umkehr · Überdehnung · lang (4 h)',
+      meta: { scalpHold: 240, scalpSL: 30 },
+      opts: { entryMode: 'reversion', sl: -0.30, tp: null, trailPct: 0, maxHoldMin: 240, cooldownMin: 10, maxPerDay: 20 } });
+    MODESL.push({ key: 'wave_lang', setup: 'umkehr', trigger: 'welle', name: 'Umkehr · Wellental · lang (4 h)' + (kanal ? ' + Kanal' : ''),
+      meta: { scalpHold: 240, scalpSL: 30 },
+      opts: { entryMode: 'wave', channel: kanal, sl: -0.30, tp: null, trailPct: 0, maxHoldMin: 240,
+        cooldownMin: 10, maxPerDay: 20, trendFilter: true, minQuality: 60 } });
     if (cfg.exitStyle === 'blitz' || cfg.exitStyle === 'kurz') {
       MODESL.push({ key: 'breakout_lauf', setup: 'ausbruch', trigger: 'kreuzung', name: 'Ausbruch · EMA-Kreuzung · laufen lassen',
         opts: { entryMode: 'cross', exitMode: 'confirmed', sl: -0.25, tp: 0.35, trailPct: 0, maxHoldMin: 0,
@@ -3008,6 +3039,16 @@
       var intervals = ld.intervals;
       var data = ld.data;
       var MODES = labModes(cfg);
+      // KI-Vorschlag der letzten Nacht: laeuft als markierter Kandidat mit - gemessen wie
+      // alle anderen, mit festen Parametern und nur auf seinem eigenen Zeitrahmen.
+      var kiK = (D.autoOpt || {}).kiKandidat;
+      if (kiK && kiK.opts && kiK.interval) {
+        MODES.push({ key: 'ki', setup: kiK.setup || 'ausbruch', trigger: kiK.trigger || 'kreuzung',
+          name: 'KI-Vorschlag: ' + (kiK.name || kiK.basis), nurInterval: kiK.interval,
+          meta: { kiBase: kiK.basis, scalpHold: kiK.scalpHold, scalpSL: kiK.scalpSL, profile: kiK.profile },
+          fixedGrid: [{ period: kiK.period, confirmBps: kiK.confirmBps, zThr: zOf(kiK.confirmBps), lineType: kiK.lineType }],
+          opts: kiK.opts });
+      }
       var GRID = [];
       [9, 20, 50].forEach(function (p) { [5, 15].forEach(function (c) { GRID.push({ period: p, confirmBps: c, zThr: zOf(c) }); }); });
 
@@ -3017,6 +3058,7 @@
         for (var vi = 0; vi < intervals.length; vi++) {
           done++;
           var iv = intervals[vi];
+          if (MODES[mi].nurInterval && MODES[mi].nurInterval !== iv) continue;
           var map = data[iv];
           if (!map || Object.keys(map).length < 3) continue;
           var commonIv = labCommonOpts(cfg, iv);
@@ -3035,10 +3077,11 @@
             // Parameter auf den bisherigen Daten bestimmen …
             var best = null;
             var trainMap = sliceMap(map, span[0], trainEnd, 0);
-            var gridRes = await Promise.all(GRID.map(function (g0) {
+            var GRIDM = MODES[mi].fixedGrid || GRID;
+            var gridRes = await Promise.all(GRIDM.map(function (g0) {
               return btIntraday(trainMap, Object.assign({}, commonIv, MODES[mi].opts, g0));
             }));
-            GRID.forEach(function (g0, gi) {
+            GRIDM.forEach(function (g0, gi) {
               var rT = gridRes[gi];
               if (!rT || rT.error || rT.summary.nTrades < 4) return;
               if (!best || rT.summary.retPct > best.ret) best = { grid: g0, ret: rT.summary.retPct };
@@ -3118,10 +3161,14 @@
       var cut = tagesGrenze(map, 0.7) || (span[0] + (span[1] - span[0]) * 0.7);   // 70 % der HANDELSTAGE
       var trainMap = sliceMap(map, span[0], cut, 0), testMap = sliceMap(map, cut, span[1], warmlaufBars(top.interval));
       var commonIv = labCommonOpts(cfg, top.interval);
+      // Schein-Profil als eigene Dimension: ATM (moderater Hebel) gegen das eingestellte
+      // Profil - der Hebel bestimmt, wie viel Basiswert-Bewegung die Kosten decken muss.
+      var PROFILE_TEST = ['atm21', cfg.profile || 'otm3_14'].filter(function (v, i2, arr) { return arr.indexOf(v) === i2; });
       var fineGrid = [];
-      [9, 20, 50].forEach(function (p) { [5, 15, 30].forEach(function (c) { ['ema', 'vwap'].forEach(function (lt) {
-        fineGrid.push({ period: p, confirmBps: c, zThr: zOf(c), lineType: lt });
-      }); }); });
+      [9, 20, 50].forEach(function (p) { [5, 15, 30].forEach(function (c) { ['ema', 'vwap'].forEach(function (lt) { PROFILE_TEST.forEach(function (pr2) {
+        var prof2 = Q.PROFILES[pr2];
+        fineGrid.push({ period: p, confirmBps: c, zThr: zOf(c), lineType: lt, profil: pr2, otmPct: prof2.otmPct, expiryDays: prof2.days });
+      }); }); }); });
       var fineRes = await Promise.all(fineGrid.map(function (g) {
         return btIntraday(trainMap, Object.assign({}, commonIv, top.mode.opts, g));
       }));
@@ -3198,6 +3245,10 @@
         channel: top.mode.key === 'wave' && cfg.channel !== false,
         setup: top.mode.setup, trigger: top.mode.trigger,
         window: winPreset, avoidHours: avoidHours,
+        profile: (useFine && pick.profil) ? pick.profil : ((top.mode.meta || {}).profile || null),
+        scalpHold: (top.mode.meta || {}).scalpHold || null,
+        scalpSL: (top.mode.meta || {}).scalpSL || null,
+        kiBase: (top.mode.meta || {}).kiBase || null,
         wfRet: top.wfRet, posSegs: top.posSegs, n: top.n, winRate: top.winRate, pf: top.pf, verdict: top.verdict,
         oosTage: top.oosTage, scheibenGueltig: top.scheibenGueltig, belastbar: top.belastbar,
         fine: bestFine ? { train: bestFine.train.retPct, valid: fineValid ? fineValid.retPct : null, used: !!useFine } : null,
@@ -3249,6 +3300,9 @@
       applied.push(label);
     }
     var mKey = r.modeKey === 'wave_ch' ? 'wave' : r.modeKey;
+    if (mKey === 'ki') mKey = r.kiBase || 'breakout';                     // KI-Vorschlag: Basis-Modus
+    if (mKey === 'reversion_lang') mKey = 'reversion';                    // Lang-Varianten: Basis-Modus,
+    if (mKey === 'wave_lang') mKey = 'wave';                              // Haltedauer/Stop kommen unten mit
     // 'laufen lassen'-Kandidat: Modus ist Ausbruch, der Ausstieg wird explizit mit umgestellt
     if (mKey === 'breakout_lauf') { mKey = 'breakout'; set('exitStyle', 'laufen', 'Ausstieg → laufen lassen'); }
     // Der 'breakout'-Kandidat wurde mit dem eingestellten Ausstiegsstil GEMESSEN (labModes) –
@@ -3263,6 +3317,9 @@
     set('confirmBps', r.confirmBps, 'Bestätigung → ' + (r.confirmBps / 100).toFixed(2) + ' %');
     set('lineType', r.lineType, 'Leitlinie → ' + String(r.lineType).toUpperCase());
     set('window', r.window, 'Zeitfenster → ' + (WINDOW_NAMES[r.window] || r.window));
+    if (r.profile) set('profile', r.profile, 'Schein-Profil → ' + ((Q.PROFILES[r.profile] || {}).name || r.profile));
+    if (r.scalpHold) set('scalpHold', r.scalpHold, 'Max-Halten → ' + r.scalpHold + ' Min');
+    if (r.scalpSL) set('scalpSL', r.scalpSL, 'Not-Stop → ' + (r.scalpSL === 'auto' ? 'auto' : r.scalpSL + ' %'));
     set('avoidHours', (r.avoidHours || []).slice(), 'Meide-Stunden → ' + ((r.avoidHours || []).join(', ') || 'keine'));
     if (applied.length || gesperrt.length) {
       if (!D.tuneLog) D.tuneLog = [];
@@ -3463,6 +3520,9 @@
     } else if (st.setup === 'umkehr') {
       name = 'Umkehr bei Überdehnung';
       was = 'Kauft gegen die Übertreibung, wenn der Kurs zu weit von seiner Leitlinie weggelaufen ist – Ziel ist die Rückkehr zur Linie.';
+    } else if (st.trigger === 'ruecksetzer') {
+      name = 'Ausbruch am Trend-Rücksetzer';
+      was = 'Kauft, wenn der Kurs im laufenden Trend an seine Leitlinie zurückkommt und dort wieder in Trendrichtung dreht – mit Trailing-Stop und längerer Haltedauer.';
     } else if (st.trigger === 'range') {
       name = 'Ausbruch aus der Eröffnungs-Range';
       was = 'Handelt den ersten Ausbruch aus der Spanne der ersten 30 Handelsminuten – maximal 1 Trade je Richtung und Tag.';
@@ -3635,6 +3695,17 @@
       z.push('- noch keine abgeschlossenen Schatten – entsteht im Live-Betrieb.');
     }
     z.push('');
+    if (a.kiKandidat) {
+      z.push('## KI-Vorschlag (lokales Modell, Whitelist-geprueft)');
+      z.push('');
+      var kiErg = (c.ranking || []).filter(function (r) { return r.modeKey === 'ki'; })[0];
+      z.push('- Kandidat: ' + a.kiKandidat.name);
+      if (a.kiKandidat.begruendung) z.push('- Begruendung des Modells: ' + a.kiKandidat.begruendung);
+      z.push(kiErg
+        ? '- Ergebnis dieser Messung: WF ' + (kiErg.wfRet > 0 ? '+' : '') + kiErg.wfRet + ' % · ' + kiErg.n + ' Trades · ' + kiErg.verdict
+        : '- Laeuft ab der naechsten Messung mit.');
+      z.push('');
+    }
     z.push('## Verlauf der letzten Messungen');
     z.push('');
     if ((a.messHistorie || []).length) {
@@ -3675,7 +3746,72 @@
   }
   if (typeof window !== 'undefined') window.__pilotBericht = baueMessbericht;   // fuer Funktionstests
 
-  function recKey(r) { return [r.modeKey, r.interval, r.period, r.confirmBps, r.lineType, r.window].join('|'); }
+  /* ================= KI-Vorschlags-Slot =================
+   * Das lokale Modell sieht nach jeder Messung Ranking und Filter-Bilanz und darf EINEN
+   * Kandidaten fuer die NAECHSTE Messung nominieren. Es entscheidet nichts: Der Vorschlag
+   * wird gegen eine strikte Whitelist geprueft, laeuft als markierter Kandidat mit und
+   * muss dieselben Huerden nehmen wie alle anderen (belastbar + robust + zwei Naechte). */
+  var KI_ERLAUBT = {
+    basis: ['breakout_lauf', 'orb', 'reversion', 'wave', 'pullback'],
+    interval: ['1m', '5m', '15m', '60m'],
+    period: [9, 20, 50], confirmBps: [5, 15, 30], lineType: ['ema', 'vwap'],
+    profile: ['atm21', 'otm3_14', 'otm5_10'], scalpSL: [15, 30, 'auto'], scalpHold: [60, 240]
+  };
+  function kiKandidatBauen(k) {
+    var slV = k.scalpSL === 'auto' ? 'auto' : -(k.scalpSL) / 100;
+    var prof = Q.PROFILES[k.profile] || Q.PROFILES.atm21;
+    var basisO;
+    if (k.basis === 'orb') basisO = { entryMode: 'orb', exitMode: 'confirmed', orbMin: 30, sl: slV, tp: null, trailPct: 0.15, maxHoldMin: 0, cooldownMin: 10, maxPerDay: 10 };
+    else if (k.basis === 'reversion') basisO = { entryMode: 'reversion', sl: slV, tp: null, trailPct: 0, maxHoldMin: k.scalpHold, cooldownMin: 10, maxPerDay: 20 };
+    else if (k.basis === 'wave') basisO = { entryMode: 'wave', channel: D.intraday.channel !== false, sl: slV, tp: null, trailPct: 0, maxHoldMin: k.scalpHold, cooldownMin: 10, maxPerDay: 20, trendFilter: true, minQuality: 60 };
+    else if (k.basis === 'pullback') basisO = { entryMode: 'pullback', exitMode: 'confirmed', sl: slV, tp: null, trailPct: 0.15, maxHoldMin: k.scalpHold, cooldownMin: 10, maxPerDay: 10 };
+    else basisO = { entryMode: 'cross', exitMode: 'confirmed', sl: slV === 'auto' ? -0.25 : slV, tp: 0.35, trailPct: 0, maxHoldMin: k.scalpHold, cooldownMin: 45, maxPerDay: 10, trendFilter: true };
+    basisO.otmPct = prof.otmPct;
+    basisO.expiryDays = prof.days;
+    var st2 = setupFromMode(k.basis === 'breakout_lauf' ? 'breakout' : k.basis);
+    return {
+      basis: k.basis, interval: k.interval, period: k.period, confirmBps: k.confirmBps,
+      lineType: k.lineType, profile: k.profile, scalpSL: k.scalpSL, scalpHold: k.scalpHold,
+      setup: st2.setup, trigger: st2.trigger,
+      name: k.basis + ' · ' + k.interval + ' · ' + String(k.lineType).toUpperCase() + k.period +
+        ' · ' + (prof.name || k.profile) + ' · SL ' + (k.scalpSL === 'auto' ? 'auto' : k.scalpSL + ' %') + ' · Halt ' + k.scalpHold + ' Min',
+      begruendung: String(k.begruendung || '').slice(0, 200),
+      at: Date.now(), opts: basisO
+    };
+  }
+  async function kiKandidatHolen(ranking, fb) {
+    if (!(window.LocalKI && window.LocalKI.model())) return null;
+    var kurz = (ranking || []).slice(0, 10).map(function (r) {
+      return { variante: r.name, zeitrahmen: r.interval, wfRenditePct: r.wfRet, trades: r.n, profitFaktor: r.pf, urteil: r.verdict };
+    });
+    var prompt = 'Du hilfst, den Kandidaten-Pool einer SIMULIERTEN Handels-Messung zu erweitern. ' +
+      'Hier das aktuelle Ranking (Walk-Forward auf ungesehenen Daten) und die Filter-Bilanz:\n' +
+      JSON.stringify({ ranking: kurz, filterBilanz: fb || null }) + '\n\n' +
+      'Erkenntnisse bisher: kurze Haltedauern verlieren an den Kosten (~6,5 % Round-Trip auf den Schein); ' +
+      'laengere Haltedauern und niedrigere Hebel schneiden weniger schlecht ab.\n' +
+      'Nominiere EINEN Kandidaten fuer die naechste Nacht-Messung. Erlaubte Werte (STRIKT einhalten):\n' +
+      JSON.stringify(KI_ERLAUBT) + '\n' +
+      'Antworte AUSSCHLIESSLICH mit JSON, exakt so: ' +
+      '{"basis":"...","interval":"...","period":20,"confirmBps":15,"lineType":"ema","profile":"atm21","scalpSL":30,"scalpHold":240,"begruendung":"max. 25 Woerter auf Deutsch"}';
+    var txt = await window.LocalKI.ask(prompt, 300);
+    if (!txt) return null;
+    var m = txt.match(/{[sS]*}/);
+    if (!m) return null;
+    var k;
+    try { k = JSON.parse(m[0]); } catch (e) { return null; }
+    if (k.basis === 'breakout') k.basis = 'breakout_lauf';   // gemessen wird immer die Laufen-Variante
+    if (k.period != null) k.period = parseInt(k.period, 10);
+    if (k.confirmBps != null) k.confirmBps = parseInt(k.confirmBps, 10);
+    if (k.scalpHold != null) k.scalpHold = parseInt(k.scalpHold, 10);
+    if (k.scalpSL !== 'auto' && k.scalpSL != null) k.scalpSL = parseInt(k.scalpSL, 10);
+    var gueltig = ['basis', 'interval', 'period', 'confirmBps', 'lineType', 'profile', 'scalpSL', 'scalpHold'].every(function (f) {
+      return KI_ERLAUBT[f].indexOf(k[f]) !== -1;
+    });
+    if (!gueltig) return null;
+    return kiKandidatBauen(k);
+  }
+
+  function recKey(r) { return [r.modeKey, r.interval, r.period, r.confirmBps, r.lineType, r.window, r.profile || '', r.scalpHold || '', r.scalpSL || ''].join('|'); }
   var pilotRunning = false, pilotPhase = '';
   var pilotStartAt = 0;
   var pilotLog = [];        // [zeit, text] - Live-Protokoll der laufenden/letzten Messung
@@ -3759,6 +3895,15 @@
       if (D.central) {
         D.central.berichtMd = baueMessbericht(D.central, a, { handSperre: D.intraday.handSperre, intraday: D.intraday, version: APP_VER, schatten: D.schattenStat });
       }
+      // Das lokale Modell darf einen Kandidaten fuer die NAECHSTE Nacht nominieren
+      try {
+        if (window.LocalKI && window.LocalKI.model()) {
+          pilotLogAdd('Frage das lokale Modell nach einem Kandidaten-Vorschlag …');
+          var kiNeu = await kiKandidatHolen((D.central || {}).ranking, rec && rec.filterBilanz);
+          if (kiNeu) { a.kiKandidat = kiNeu; pilotLogAdd('KI-Vorschlag für die nächste Messung: ' + kiNeu.name + (kiNeu.begruendung ? ' – ' + kiNeu.begruendung : '')); }
+          else pilotLogAdd('KI-Vorschlag: keiner (Antwort unbrauchbar oder außerhalb der Whitelist).');
+        }
+      } catch (eKi) { pilotLogAdd('KI-Vorschlag fehlgeschlagen: ' + (eKi && eKi.message ? eKi.message : eKi)); }
       pilotAnwenden();          // Börse gerade zu? Dann direkt einspielen statt bis morgens zu warten
       await save();
       exportAnalysis(true);     // messbericht.md + analyse-daten.json sofort in den Daten-Ordner
@@ -4236,6 +4381,7 @@
       }
       renderHandSperre();
       updateParamVis();
+      renderKlartext();   // Setup-Wechsel sofort in der Klartext-Karte zeigen
       save();
       document.getElementById('idStatus').textContent = D.intraday.enabled
         ? (window.Dash.marketOpen() ? 'Aktiv – nächster Scan in wenigen Minuten.' : 'Aktiv – wartet auf US-Handelsbeginn (15:30 Uhr Berlin).')
