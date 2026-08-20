@@ -1605,6 +1605,143 @@
     });
   }
 
+  /* ================= Trendkanäle: beschreiben statt filtern =================
+   *
+   * Ein Kanal ist eine BESCHREIBUNG des Kursverlaufs, keine Ja/Nein-Entscheidung.
+   * Für fast jeden Abschnitt lässt sich einer zeichnen – die Frage ist nicht OB,
+   * sondern wie gut er passt und was er über die aktuelle Lage sagt.
+   * Der ältere trendChannel() liefert ein Urteil ("gültig/ungültig") und wird für die
+   * Handelslogik weiter gebraucht. Diese Funktionen hier liefern stattdessen die
+   * Geometrie plus ehrliche Gütemaße – für die Anzeige und für Signale, die den Kanal
+   * als Kontext nutzen wollen.
+   *
+   * Zwei Dinge macht sie besser als die frühere Kanalzeichnung:
+   *  1. KANTEN AUS QUANTILEN statt aus dem äußersten Ausreißer. Vorher machte ein
+   *     einzelner Spike den Kanal doppelt so breit; die Kante lag dann dort, wo der
+   *     Kurs genau einmal war, und war als Ziel oder Stopp wertlos.
+   *  2. WENDEPUNKTE statt fester Fenster. Ein Kanal soll dort anfangen, wo die
+   *     Bewegung anfing – nicht 130 Kerzen vor jetzt, weil das eine runde Zahl ist.
+   */
+
+  /** Wendepunkte (Swing-Hochs und -Tiefs): eine Kerze, die im Umkreis von `spanne`
+   *  Kerzen auf beiden Seiten die höchste bzw. tiefste ist. Das sind die Punkte, an
+   *  denen ein Mensch beim Zeichnen ansetzen würde. */
+  function wendepunkte(bars, spanne) {
+    spanne = spanne || 5;
+    var n = bars.length, hoch = [], tief = [];
+    var H = function (i) { return bars[i].length >= 5 && bars[i][3] != null ? bars[i][3] : bars[i][1]; };
+    var T = function (i) { return bars[i].length >= 5 && bars[i][4] != null ? bars[i][4] : bars[i][1]; };
+    for (var i = spanne; i < n - spanne; i++) {
+      var istHoch = true, istTief = true;
+      for (var k = i - spanne; k <= i + spanne; k++) {
+        if (k === i) continue;
+        if (H(k) >= H(i)) istHoch = false;
+        if (T(k) <= T(i)) istTief = false;
+        if (!istHoch && !istTief) break;
+      }
+      if (istHoch) hoch.push({ i: i, preis: H(i) });
+      if (istTief) tief.push({ i: i, preis: T(i) });
+    }
+    return { hoch: hoch, tief: tief };
+  }
+
+  /** Ein Kanal über einen Abschnitt: Regressionsgerade durch die Schlusskurse,
+   *  Kanten aus dem 90.- bzw. 10.-Perzentil der Abweichungen.
+   *  Rückgabe: {von, bis, steigung, mitteJetzt, oben, unten, breite, r2,
+   *             beruehrungenOben, beruehrungenUnten, pos, trend, guete} */
+  function kanalUeber(bars, von, bis, opt) {
+    opt = opt || {};
+    if (bis - von < 15 || bis >= bars.length) return null;
+    var n = bis - von + 1, i, x, y;
+    var c = [];
+    for (i = von; i <= bis; i++) { if (bars[i][1] == null) return null; c.push(bars[i][1]); }
+    // Regressionsgerade
+    var sx = 0, sy = 0, sxx = 0, sxy = 0;
+    for (i = 0; i < n; i++) { sx += i; sy += c[i]; sxx += i * i; sxy += i * c[i]; }
+    var nenner = n * sxx - sx * sx;
+    if (nenner === 0) return null;
+    var steig = (n * sxy - sx * sy) / nenner;
+    var achse = (sy - steig * sx) / n;
+    // Abweichungen und Bestimmtheitsmaß
+    var abw = [], mittelY = sy / n, ssTot = 0, ssRes = 0;
+    for (i = 0; i < n; i++) {
+      var linie = achse + steig * i, d = c[i] - linie;
+      abw.push(d);
+      ssTot += (c[i] - mittelY) * (c[i] - mittelY);
+      ssRes += d * d;
+    }
+    var r2 = ssTot > 0 ? 1 - ssRes / ssTot : 0;
+    // Kanten aus Quantilen - ein einzelner Ausreißer darf den Kanal nicht aufblähen
+    var sortiert = abw.slice().sort(function (a, b) { return a - b; });
+    var qi = function (p) { return sortiert[Math.min(sortiert.length - 1, Math.max(0, Math.round((sortiert.length - 1) * p)))]; };
+    var offOben = qi(opt.quantil === undefined ? 0.92 : opt.quantil);
+    var offUnten = qi(1 - (opt.quantil === undefined ? 0.92 : opt.quantil));
+    var breite = offOben - offUnten;
+    if (!(breite > 0)) return null;
+    // Wie oft berührt der Kurs die Kanten? Ein Kanal, den niemand anfasst, beschreibt nichts.
+    var tolBand = breite * 0.15, tO = 0, tU = 0;
+    for (i = 0; i < n; i++) {
+      if (abw[i] >= offOben - tolBand) tO++;
+      if (abw[i] <= offUnten + tolBand) tU++;
+    }
+    var mitteJetzt = achse + steig * (n - 1);
+    var obenJetzt = mitteJetzt + offOben, untenJetzt = mitteJetzt + offUnten;
+    var pos = breite > 0 ? (c[n - 1] - untenJetzt) / (obenJetzt - untenJetzt) : 0.5;
+    // Richtung: die Steigung über die ganze Strecke, gemessen an der Kanalbreite.
+    // Eine Steigung von einer halben Kanalbreite über den Abschnitt ist noch flach.
+    var hub = steig * (n - 1);
+    var trend = hub > breite * 0.5 ? 'auf' : hub < -breite * 0.5 ? 'ab' : 'seit';
+    // Güte 0-100: Passgenauigkeit, Berührungen beider Kanten, ausreichende Länge.
+    var guete = Math.round(
+      Math.max(0, Math.min(1, r2)) * 45 +
+      Math.min(1, Math.min(tO, tU) / 3) * 35 +
+      Math.min(1, n / 120) * 20
+    );
+    return {
+      von: von, bis: bis, n: n,
+      steigung: steig, mitteJetzt: mitteJetzt, oben: obenJetzt, unten: untenJetzt,
+      breite: breite, breitePct: mitteJetzt > 0 ? breite / mitteJetzt * 100 : 0,
+      r2: Math.round(r2 * 100) / 100,
+      beruehrungenOben: tO, beruehrungenUnten: tU,
+      pos: Math.round(pos * 1000) / 1000,
+      trend: trend, guete: guete,
+      achse: achse   // für das Zeichnen: Wert am Anfang des Abschnitts
+    };
+  }
+
+  /** Mehrere Kanäle zu einem Kursverlauf – kurz, mittel, lang – plus den besten.
+   *  Warum mehrere: Ein 30-Tage-Kanal und ein 300-Tage-Kanal können gegenläufig sein,
+   *  und BEIDES ist wahr. Wer nur einen zeigt, verschweigt die Hälfte. */
+  function kanaele(bars, opt) {
+    opt = opt || {};
+    var n = bars.length;
+    if (n < 30) return [];
+    var raus = [];
+    // 1) Feste Zeitebenen, relativ zur verfügbaren Länge
+    var ebenen = opt.ebenen || [
+      { name: 'kurz', anteil: 0.25 },
+      { name: 'mittel', anteil: 0.55 },
+      { name: 'lang', anteil: 1.0 }
+    ];
+    ebenen.forEach(function (e) {
+      var laenge = Math.max(20, Math.round(n * e.anteil));
+      var k = kanalUeber(bars, Math.max(0, n - laenge), n - 1, opt);
+      if (k) { k.name = e.name; raus.push(k); }
+    });
+    // 2) Zusätzlich ein Kanal, der an einem echten Wendepunkt beginnt – dort, wo die
+    //    aktuelle Bewegung tatsächlich anfing, nicht bei einer runden Kerzenzahl.
+    var wp = wendepunkte(bars, Math.max(3, Math.round(n / 40)));
+    var kandidaten = wp.hoch.concat(wp.tief).filter(function (p) { return p.i < n - 20; });
+    kandidaten.sort(function (a, b) { return b.i - a.i; });
+    var bester = null;
+    for (var q = 0; q < Math.min(6, kandidaten.length); q++) {
+      var k2 = kanalUeber(bars, kandidaten[q].i, n - 1, opt);
+      if (k2 && (!bester || k2.guete > bester.guete)) bester = k2;
+    }
+    if (bester) { bester.name = 'ab Wendepunkt'; raus.push(bester); }
+    return raus;
+  }
+
   /** Volatilitäts-Stop („atmender“ Not-SL) auf den SCHEIN, aus Bar-Rauschen × Hebel.
    *  Rückgabe: negativer Anteil, z. B. -0.22 = −22 %. */
   function autoStop(closes, omega, barsHold) {
@@ -1914,6 +2051,7 @@
     channelValid: channelValid, CHAN_MIN: CHAN_MIN, varianceRatio: varianceRatio,
     bewaehrungsUrteil: bewaehrungsUrteil,
     trendChannel: trendChannel, projectTrendChannel: projectTrendChannel,
+    wendepunkte: wendepunkte, kanalUeber: kanalUeber, kanaele: kanaele,
     KANAL_MIN: KANAL_MIN, RECHENSTAND: RECHENSTAND, degapBarArray: degapBarArray,
     degapCloses: degapCloses, degapBars: degapBars,
     computeStats: computeStats, bootstrapTrades: bootstrapTrades, bestOfN: bestOfN

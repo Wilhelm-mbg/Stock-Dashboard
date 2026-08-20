@@ -358,7 +358,48 @@
             '</title></circle>';
         }
       }
-      if (indAn.kanal && barsI.length >= 60) {
+      var kInfoEl = document.getElementById('expKanalInfo');
+      // Sonst bleibt beim Wechsel auf einen zu kurzen Chart die alte Zeile stehen
+      // und behauptet Kanaele, die gar nicht gezeichnet wurden.
+      if (kInfoEl) kInfoEl.textContent = indAn.kanal && barsI.length < 40
+        ? "Nur " + barsI.length + " Kerzen - fuer einen Kanal zu wenig." : "";
+      if (indAn.kanal && barsI.length >= 40) {
+        var sichtB = [];
+        for (var sv = 0; sv < barsI.length; sv++) if (barsI[sv][0] >= x0 && barsI[sv][0] <= x1) sichtB.push(barsI[sv]);
+        var kListe = (sichtB.length >= 40 && Q.kanaele) ? Q.kanaele(sichtB) : [];
+        var FARBEN = { kurz: '#a78bfa', mittel: '#7c9cf5', lang: '#5eead4', 'ab Wendepunkt': '#fbbf24' };
+        kListe.forEach(function (kk, ki) {
+          var t1 = sichtB[kk.von][0], t2 = sichtB[kk.bis][0];
+          var mit1 = kk.achse, mit2 = kk.achse + kk.steigung * (kk.n - 1);
+          var oben1 = mit1 + (kk.oben - kk.mitteJetzt), oben2 = kk.oben;
+          var unt1 = mit1 + (kk.unten - kk.mitteJetzt), unt2 = kk.unten;
+          var farbe = FARBEN[kk.name] || '#a78bfa';
+          // Schwache Kanaele blasser zeichnen - die Guete soll man SEHEN, nicht lesen muessen
+          var deck = 0.25 + Math.min(0.55, kk.guete / 100 * 0.55);
+          function lin(p1, p2, br, str) {
+            return '<line x1="' + X(t1).toFixed(1) + '" y1="' + Y(p1).toFixed(1) + '" x2="' + X(t2).toFixed(1) +
+              '" y2="' + Y(p2).toFixed(1) + '" stroke="' + farbe + '" stroke-width="' + br + '"' +
+              (str ? ' stroke-dasharray="' + str + '"' : '') + ' opacity="' + deck.toFixed(2) + '"></line>';
+          }
+          var titel = 'Kanal ' + kk.name + ' · ' +
+            (kk.trend === 'auf' ? 'aufwärts' : kk.trend === 'ab' ? 'abwärts' : 'seitwärts') +
+            ' · Güte ' + kk.guete + '/100 (Passgenauigkeit ' + kk.r2 + ', Kanten berührt ' +
+            kk.beruehrungenOben + '× oben / ' + kk.beruehrungenUnten + '× unten)' +
+            ' · Breite ' + kk.breitePct.toFixed(1) + ' % · Kurs steht bei ' + Math.round(kk.pos * 100) + ' % im Kanal';
+          indiPfad += '<g><title>' + titel + '</title>' + lin(mit1, mit2, 1.2) +
+            lin(oben1, oben2, 1, '5 4') + lin(unt1, unt2, 1, '5 4') + '</g>';
+          if (ki === 0 || kk.name === 'lang') {
+            indiPfad += '<text x="' + (X(t2) - 4).toFixed(1) + '" y="' + (Y(oben2) - 3).toFixed(1) +
+              '" fill="' + farbe + '" font-size="9" text-anchor="end">' + kk.name + ' ' +
+              (kk.trend === 'auf' ? '▲' : kk.trend === 'ab' ? '▼' : '▬') + ' ' + kk.guete + '</text>';
+          }
+        });
+        var kEl = document.getElementById('expKanalInfo');
+        if (kEl) kEl.textContent = kListe.length
+          ? kListe.map(function (k5) { return k5.name + ': ' + (k5.trend === 'auf' ? 'aufwärts' : k5.trend === 'ab' ? 'abwärts' : 'seitwärts') + ' (Güte ' + k5.guete + ')'; }).join(' · ')
+          : 'Zu wenige Kerzen im Fenster für einen Kanal.';
+      }
+      if (false) {
         // Regressionskanal ueber das sichtbare Fenster: Gerade durch die Kurse,
         // Ober- und Unterkante im groessten Abstand nach oben bzw. unten.
         var sicht = [];
