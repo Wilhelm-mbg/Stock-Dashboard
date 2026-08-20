@@ -85,10 +85,17 @@
     if (!res.ok) return null;
     try {
       var r = JSON.parse(res.body).chart.result[0];
-      var ts = r.timestamp || [], closes = r.indicators.quote[0].close || [];
-      var series = [];
-      for (var i = 0; i < ts.length; i++) if (closes[i] != null) series.push([ts[i] * 1000, closes[i]]);
-      return { series: series, meta: r.meta || {} };
+      var q = r.indicators.quote[0] || {};
+      var ts = r.timestamp || [], closes = q.close || [], hi = q.high || [], lo = q.low || [], vo = q.volume || [];
+      var series = [], bars = [];
+      for (var i = 0; i < ts.length; i++) {
+        if (closes[i] == null) continue;
+        var t = ts[i] * 1000, c = closes[i];
+        series.push([t, c]);
+        // Vollformat fuer die Signalrechnung: [Zeit, Schluss, Volumen, Hoch, Tief]
+        bars.push([t, c, vo[i] || 0, hi[i] != null ? hi[i] : c, lo[i] != null ? lo[i] : c]);
+      }
+      return { series: series, bars: bars, meta: r.meta || {} };
     } catch (e) { return null; }
   }
 
@@ -110,6 +117,7 @@
     document.getElementById('expNews').innerHTML = '<div class="loading">Lade News …</div>';
     document.getElementById('aiStatus').textContent = '';
     buildRangeButtons();
+    buildChartLeiste();
 
     // Tagesdaten (2 Jahre) für Kennzahlen/Analyse + aktueller Range-Chart + News parallel
     var daily = await fetchRange(hit.sym, '2y', '1d');
@@ -144,6 +152,33 @@
     loadNews();
   }
 
+  /** Zeitraum-, Kerzen- und Signalwahl verdrahten. Einmal beim Start, nicht je Symbol. */
+  function buildChartLeiste() {
+    var zEl = document.getElementById('expZeit'), kEl = document.getElementById('expKerze');
+    if (zEl && !zEl.__bereit) {
+      zEl.__bereit = true;
+      zEl.addEventListener('change', function () {
+        // Schnellwahl-Knoepfe abwaehlen, sobald frei gewaehlt wird - sonst waere unklar, was gilt
+        var rb = document.getElementById('expRanges');
+        if (rb && zEl.value) rb.querySelectorAll('button').forEach(function (x) { x.classList.remove('active'); });
+        loadRange();
+      });
+    }
+    if (kEl && !kEl.__bereit) { kEl.__bereit = true; kEl.addEventListener('change', function () { loadRange(); }); }
+    var leiste = document.getElementById('expSignalLeiste');
+    if (leiste && !leiste.__bereit) {
+      leiste.__bereit = true;
+      leiste.querySelectorAll('input[data-sig]').forEach(function (cb) {
+        cb.addEventListener('change', function () {
+          sigAn[cb.getAttribute('data-sig')] = cb.checked;
+          // Neu zeichnen genuegt - die Kurse sind schon da, es wird nichts nachgeladen
+          drawBig(document.getElementById('bigchart'), CURDATA.rangeSeries || [], letzteBeschriftung);
+        });
+      });
+    }
+  }
+  var letzteBeschriftung = '';
+
   function buildRangeButtons() {
     var el = document.getElementById('expRanges');
     el.innerHTML = RANGES.map(function (r) {
@@ -152,23 +187,93 @@
     el.querySelectorAll('button').forEach(function (b) {
       b.addEventListener('click', function () {
         activeRange = b.getAttribute('data-range');
+        var zEl3 = document.getElementById('expZeit');
+        if (zEl3) zEl3.value = '';        // Schnellwahl hebt die freie Wahl auf
         el.querySelectorAll('button').forEach(function (x) { x.classList.toggle('active', x === b); });
         loadRange();
       });
     });
   }
 
+  /* Yahoo begrenzt Intraday-Daten hart und lehnt zu weite Anfragen mit einem Fehler ab.
+   * Am 20.08.2026 ausgemessen - das sind die tatsaechlichen Obergrenzen, nicht geschaetzt. */
+  var MAX_ZEIT = { '1m': '7d', '5m': '60d', '15m': '60d', '60m': '730d' };
+  var ZEIT_TAGE = { '5d': 5, '1mo': 30, '60d': 60, '6mo': 182, '1y': 365, '2y': 730, '5y': 1825, 'max': 99999, '7d': 7, '730d': 730 };
+
+  /** Passt den Zeitraum an, wenn er fuer die gewaehlte Kerzengroesse zu weit reicht.
+   *  Lieber stillschweigend kuerzen und es DAZUSCHREIBEN, als eine leere Antwort zeigen. */
+  function zeitPruefen(zeit, kerze) {
+    var max = MAX_ZEIT[kerze];
+    if (!max) return { zeit: zeit, hinweis: '' };
+    if ((ZEIT_TAGE[zeit] || 0) <= (ZEIT_TAGE[max] || 0)) return { zeit: zeit, hinweis: '' };
+    var txt = { '7d': '7 Tage', '60d': '60 Tage', '730d': '730 Handelstage' }[max] || max;
+    return { zeit: max, hinweis: 'Bei ' + kerze + '-Kerzen liefert die Quelle höchstens ' + txt + ' – darauf gekürzt.' };
+  }
+
   async function loadRange() {
     if (!CUR) return;
     var seqR = openSeq;
-    var r = RANGES.filter(function (x) { return x.k === activeRange; })[0];
-    var data = await fetchRange(CUR.sym, r.range, r.interval);
+    var zEl = document.getElementById('expZeit'), kEl = document.getElementById('expKerze');
+    var hEl = document.getElementById('expZeitHinweis');
+    var zeit, kerze, beschriftung;
+    if (zEl && zEl.value) {
+      // Freie Wahl hat Vorrang vor den Schnellwahl-Knoepfen
+      var pr = zeitPruefen(zEl.value, kEl.value);
+      zeit = pr.zeit; kerze = kEl.value;
+      if (hEl) hEl.textContent = pr.hinweis;
+      beschriftung = zEl.options[zEl.selectedIndex].text + ' · ' + kEl.options[kEl.selectedIndex].text;
+    } else {
+      var r = RANGES.filter(function (x) { return x.k === activeRange; })[0];
+      zeit = r.range; kerze = r.interval; beschriftung = r.k;
+      if (hEl) hEl.textContent = '';
+      if (kEl) kEl.value = r.interval;
+    }
+    var data = await fetchRange(CUR.sym, zeit, kerze);
     if (seqR !== openSeq) return; // Symbol wurde inzwischen gewechselt
+    if (!data || !data.series.length) {
+      if (hEl) hEl.textContent = 'Für diese Kombination liefert die Quelle keine Daten.';
+    }
     CURDATA.rangeSeries = data ? data.series : null;
-    drawBig(document.getElementById('bigchart'), data ? data.series : [], r.k);
+    CURDATA.rangeBars = data ? data.bars : null;
+    CURDATA.kerze = kerze;
+    letzteBeschriftung = beschriftung;
+    drawBig(document.getElementById('bigchart'), data ? data.series : [], beschriftung);
   }
 
   var bigMeta = null;
+  /* ================= Signale im Chart =================
+   * Berechnet mit denselben Funktionen, die auch die Messung und der Handel benutzen -
+   * es wird nichts fuer die Anzeige nachgebaut. Was hier zu sehen ist, ist exakt das,
+   * worauf die Automatik reagieren wuerde. */
+  var SIGNALE = {
+    cross:     { name: 'EMA-Kreuzung', farbe: '#4a9eff', fn: function (b) { var r = Q.signalCross(b, 'ema', 20, 15); return r.crossed ? (r.crossed === 'up' ? 'call' : 'put') : null; } },
+    reversion: { name: 'Umkehr',       farbe: '#c084fc', fn: function (b) { return Q.reversionSignal(b, 'ema', 20, 1.5).signal; } },
+    pullback:  { name: 'Rücksetzer',   farbe: '#fbbf24', fn: function (b) { return Q.pullbackSignal(b, 'ema', 20, 15).signal; } },
+    rsi2:      { name: 'RSI(2)',       farbe: '#34d399', fn: function (b) { return Q.rsiExtremSignal(b).signal; } },
+    donchian:  { name: 'Donchian',     farbe: '#fb7185', fn: function (b) { return Q.donchianSignal(b, 20, 15).signal; } },
+    squeeze:   { name: 'Squeeze',      farbe: '#f472b6', fn: function (b) { return Q.squeezeSignal(b, 20).signal; } }
+  };
+  var sigAn = {};
+
+  /** Signale ueber die geladene Kursreihe rechnen.
+   *  Jeder Punkt sieht nur die Kerzen BIS zu sich selbst - kein Blick in die Zukunft,
+   *  sonst zeigte der Chart Signale, die es zu dem Zeitpunkt gar nicht gab. */
+  function signalePunkte(bars) {
+    var raus = [];
+    var keys = Object.keys(SIGNALE).filter(function (k) { return sigAn[k]; });
+    if (!keys.length || !bars || bars.length < 130) return raus;
+    var start = Math.max(120, bars.length - 1200);       // Anzeige-Obergrenze: sonst rechnet der Chart ewig
+    for (var i = start; i < bars.length; i++) {
+      var fenster = bars.slice(Math.max(0, i - 300), i + 1);
+      for (var ki = 0; ki < keys.length; ki++) {
+        var def = SIGNALE[keys[ki]], d = null;
+        try { d = def.fn(fenster); } catch (e) { d = null; }
+        if (d) raus.push({ t: bars[i][0], preis: bars[i][1], dir: d, farbe: def.farbe, name: def.name });
+      }
+    }
+    return raus;
+  }
+
   function drawBig(svg, series, rangeKey) {
     var W = svg.clientWidth || 800, H = svg.clientHeight || 300, pad = 8, padB = 18;
     svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
@@ -187,11 +292,46 @@
       grid += '<line x1="' + pad + '" x2="' + (W - pad) + '" y1="' + gy + '" y2="' + gy + '" stroke="var(--grid)" stroke-width="1"></line>' +
         '<text x="' + (W - pad - 2) + '" y="' + (gy - 3) + '" fill="var(--muted)" font-size="10" text-anchor="end">' + U.nf2.format(gv) + '</text>';
     }
+    /* --- Signale und Leitlinie --- */
+    var marker = '', linienPfad = '';
+    var bars = CURDATA.rangeBars;
+    if (bars && bars.length > 130) {
+      if (sigAn.linie) {
+        var closesL = bars.map(function (b) { return b[1]; });
+        var linie = Q.emaSeries(closesL, 20);
+        var lp = [];
+        for (var li = 20; li < bars.length; li++) {
+          if (bars[li][0] < x0 || bars[li][0] > x1) continue;
+          lp.push((lp.length ? 'L' : 'M') + X(bars[li][0]).toFixed(1) + ' ' + Y(linie[li]).toFixed(1));
+        }
+        if (lp.length > 1) linienPfad = '<path d="' + lp.join(' ') + '" fill="none" stroke="var(--muted)" stroke-width="1" stroke-dasharray="3 3" opacity="0.8"></path>';
+      }
+      var punkte = signalePunkte(bars);
+      // Zaehler fuer die Bedienleiste - macht sichtbar, wie oft ein Setup ueberhaupt anschlaegt
+      var zEl2 = document.getElementById('expSigZahl');
+      if (zEl2) zEl2.textContent = punkte.length
+        ? punkte.length + ' Signale im gezeigten Zeitraum'
+        : (Object.keys(sigAn).some(function (k) { return sigAn[k] && k !== 'linie'; }) ? 'kein Signal in diesem Zeitraum' : '');
+      punkte.forEach(function (p) {
+        if (p.t < x0 || p.t > x1) return;
+        var px = X(p.t), py = Y(p.preis);
+        // Call unter dem Kurs (Dreieck nach oben), Put darueber (nach unten) - so ueberdecken
+        // sie den Kursverlauf nicht und die Richtung ist ohne Legende erkennbar.
+        var d2 = p.dir === 'call'
+          ? 'M' + px + ' ' + (py + 6) + ' l4 7 l-8 0 Z'
+          : 'M' + px + ' ' + (py - 6) + ' l4 -7 l-8 0 Z';
+        marker += '<path d="' + d2 + '" fill="' + p.farbe + '" opacity="0.85"><title>' + p.name + ' · ' +
+          (p.dir === 'call' ? 'Kauf' : 'Verkauf') + '\n' +
+          new Date(p.t).toLocaleString('de-DE', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) +
+          '\n' + U.nf2.format(p.preis) + '</title></path>';
+      });
+    }
     var first = series[0][1], last = series[series.length - 1][1];
     var chg = (last / first - 1) * 100;
     svg.innerHTML = grid +
       '<path d="' + d + ' L' + X(x1).toFixed(1) + ' ' + (H - padB) + ' L' + X(x0).toFixed(1) + ' ' + (H - padB) + ' Z" fill="var(--series-soft)"></path>' +
       '<path d="' + d + '" fill="none" stroke="var(--series)" stroke-width="2" vector-effect="non-scaling-stroke"></path>' +
+      linienPfad + marker +
       '<text x="' + pad + '" y="' + (H - 5) + '" fill="var(--muted)" font-size="10">' + rangeKey + ': <tspan class="' + U.signCls(chg) + '" fill="' + (chg >= 0 ? 'var(--up)' : 'var(--down)') + '">' + U.signTxt(chg, ' %') + '</tspan></text>' +
       '<line id="bigCross" y1="' + pad + '" y2="' + (H - padB) + '" stroke="var(--baseline)" stroke-width="1" style="display:none"></line>';
     bigMeta = { series: series, x0: x0, x1: x1, W: W, X: X };

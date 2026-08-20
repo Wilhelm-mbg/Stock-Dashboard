@@ -16,7 +16,13 @@ self.onmessage = function (e) {
     var histMap = m.map || karten[m.mapId];
     if (!histMap) throw new Error('Datensatz ' + m.mapId + ' nicht im Worker-Cache');
     var Q = self.Quant;
-    var res = m.fn === 'daily' ? Q.backtest(histMap, m.opts) : Q.backtestIntraday(histMap, m.opts);
+    var res;
+    if (m.fn === 'daily') res = Q.backtest(histMap, m.opts);
+    // Buendel-Auftrag: viele Varianten, EIN Signalsatz. Spart die Haelfte bis sieben
+    // Achtel der Rechenzeit, weil Not-Stop und Haltedauer die Einstiegssignale nicht
+    // veraendern - nur, was danach mit der Position passiert.
+    else if (m.fn === 'intradayMulti') res = Q.backtestIntradayMulti(histMap, m.opts.basis, m.opts.varianten);
+    else res = Q.backtestIntraday(histMap, m.opts);
     self.postMessage({ id: m.id, ok: true, res: res });
   } catch (err) {
     self.postMessage({ id: m.id, ok: false, msg: String((err && err.message) || err) });

@@ -1,0 +1,185 @@
+'use strict';
+/* Oberfläche für die mittelfristige Querschnitts-Strategie.
+ * Die Rechnung selbst steht in momentum.js (rein, in Node testbar) – hier wird nur
+ * geholt, angezeigt und bedient. */
+(function () {
+  var M = window.Momentum, U = window.U;
+  var DATEN = null;              // {syms, zeiten, map}
+  var UNIVERSUM = (
+    'AAPL MSFT AMZN GOOGL META NVDA TSLA AVGO ORCL CRM ADBE AMD INTC CSCO QCOM TXN IBM NOW INTU MU ' +
+    'JPM BAC WFC GS MS C SCHW BLK AXP USB PNC COF BK SPGI CME ICE MMC AON ' +
+    'JNJ UNH PFE ABBV MRK LLY TMO ABT DHR BMY AMGN GILD CVS CI ELV ISRG SYK BSX MDT ZTS ' +
+    'XOM CVX COP SLB EOG PSX MPC VLO OXY WMB KMI HAL DVN HES ' +
+    'PG KO PEP WMT COST MCD NKE SBUX TGT LOW HD DIS CMCSA VZ T TMUS CL KMB GIS ' +
+    'CAT DE BA HON GE LMT RTX UNP UPS FDX MMM EMR ETN ITW PH CSX NSC WM ' +
+    'LIN APD SHW ECL NEM FCX DOW DD PPG NEE DUK SO D AEP EXC SRE XEL ED PEG ' +
+    'AMT PLD CCI EQIX SPG O PSA WELL AVB EQR ADP FI FIS GPN PAYX CTAS ROP FTV AME ' +
+    'EBAY BKNG ABNB UBER DASH PYPL SHOP SNAP PINS SPOT NFLX ROKU F GM APTV BWA ' +
+    'MAR HLT RCL CCL LVS WYNN MGM DAL UAL LUV ' +
+    'PANW CRWD ZS OKTA NET DDOG SNOW MDB TEAM WDAY VEEV ADSK CDNS SNPS KLAC LRCX AMAT ASML TSM ARM'
+  ).split(/\s+/).filter(Boolean);
+
+  function stat(t) { var e = document.getElementById('mfStatus'); if (e) e.textContent = t || ''; }
+  function opts() {
+    var g = function (id) { return document.getElementById(id); };
+    return {
+      rueckblick: parseInt(g('mfRueck').value, 10),
+      luecke: parseInt(g('mfLuecke').value, 10),
+      halten: parseInt(g('mfHalten').value, 10),
+      anteil: parseFloat(g('mfAnteil').value),
+      kostenBp: parseInt(g('mfKosten').value, 10)
+    };
+  }
+
+  /* Tageskerzen über den vollen verfügbaren Zeitraum. period1=0 statt range=max –
+   * letzteres liefert bei Tageskerzen nur rund 170 Monatswerte. */
+  async function holeTage(sym) {
+    var url = 'https://query1.finance.yahoo.com/v8/finance/chart/' + encodeURIComponent(sym) +
+      '?period1=0&period2=' + Math.floor(Date.now() / 1000) + '&interval=1d';
+    var res = await window.api.fetchText(url);
+    if (!res.ok) return null;
+    try {
+      var r = JSON.parse(res.body).chart.result[0];
+      var ts = r.timestamp || [];
+      var adj = (r.indicators.adjclose || [{}])[0] || {};
+      var q = r.indicators.quote[0] || {};
+      var c = adj.adjclose || q.close || [];
+      var reihe = [];
+      for (var i = 0; i < ts.length; i++) if (c[i] != null) reihe.push([ts[i] * 1000, c[i]]);
+      return reihe.length > 500 ? reihe : null;
+    } catch (e) { return null; }
+  }
+
+  /** Alle Werte holen und auf eine gemeinsame Zeitachse bringen.
+   *  Ohne gemeinsame Achse vergleicht man Werte zu verschiedenen Zeitpunkten. */
+  async function ladeUniversum() {
+    var roh = {}, fertig = 0;
+    var gespeichert = await window.api.storeGet('mf_tagesdaten');
+    var frisch = gespeichert && (Date.now() - (gespeichert.at || 0) < 20 * 3600000);
+    if (frisch) {
+      roh = gespeichert.roh;
+      stat('Gespeicherte Daten von ' + new Date(gespeichert.at).toLocaleString('de-DE') + ' verwendet.');
+    } else {
+      for (var i = 0; i < UNIVERSUM.length; i++) {
+        var r = await holeTage(UNIVERSUM[i]);
+        if (r) roh[UNIVERSUM[i]] = r;
+        fertig++;
+        if (fertig % 10 === 0) stat('Lade Tageskurse … ' + fertig + '/' + UNIVERSUM.length);
+        await new Promise(function (w) { setTimeout(w, 90); });   // Quelle nicht überrennen
+      }
+      await window.api.storeSet('mf_tagesdaten', { at: Date.now(), roh: roh });
+      stat(Object.keys(roh).length + ' Werte geladen.');
+    }
+    var syms = Object.keys(roh);
+    if (syms.length < 30) return null;
+    var zaehler = {};
+    syms.forEach(function (s) { roh[s].forEach(function (b) { zaehler[b[0]] = (zaehler[b[0]] || 0) + 1; }); });
+    var zeiten = Object.keys(zaehler).map(Number).filter(function (t) { return zaehler[t] >= 30; }).sort(function (a, b) { return a - b; });
+    var idx = {}; zeiten.forEach(function (t, i) { idx[t] = i; });
+    var map = {};
+    syms.forEach(function (s) {
+      var a = new Array(zeiten.length).fill(null);
+      roh[s].forEach(function (b) { var i = idx[b[0]]; if (i !== undefined) a[i] = b[1]; });
+      map[s] = a;
+    });
+    return { syms: syms, zeiten: zeiten, map: map };
+  }
+
+  function zeigeRang() {
+    var el = document.getElementById('mfRang');
+    if (!DATEN) { el.innerHTML = '<div class="empty">Noch keine Daten.</div>'; return; }
+    var o = opts();
+    var i = DATEN.zeiten.length - 1;
+    var aus = M.auswahl(DATEN.map, i, o);
+    var rang = M.rangfolge(DATEN.map, i, o);
+    if (!aus || !rang) { el.innerHTML = '<div class="empty">Zu wenige Werte für eine Rangfolge.</div>'; return; }
+    var stand = new Date(DATEN.zeiten[i]).toLocaleDateString('de-DE');
+    el.innerHTML = '<div style="font-size:12px; color:var(--muted); margin-bottom:8px;">Stand ' + stand +
+      ' · stärkste ' + Math.round(o.anteil * 100) + ' % von ' + rang.length + ' Werten · Rückblick ' +
+      o.rueckblick + ' Tage ohne die letzten ' + o.luecke + '</div>' +
+      '<table class="tbl"><thead><tr><th>#</th><th>Wert</th><th style="text-align:right;">Stärke</th></tr></thead><tbody>' +
+      aus.map(function (x, k) {
+        return '<tr><td>' + (k + 1) + '</td><td><b>' + U.esc(x.sym) + '</b></td><td style="text-align:right;" class="' +
+          U.signCls(x.staerke) + '">' + U.signTxt(x.staerke * 100, ' %') + '</td></tr>';
+      }).join('') + '</tbody></table>' +
+      '<div style="font-size:11.5px; color:var(--muted); margin-top:8px;">Die Schwächsten zum Vergleich: ' +
+      rang.slice(-5).map(function (x) { return U.esc(x.sym) + ' ' + Math.round(x.staerke * 100) + ' %'; }).join(', ') + '</div>';
+  }
+
+  /* Der PRUEFZEITRAUM ist die einzige ehrliche Zahl.
+   * Die Parameter (Rueckblick 231, Luecke 21, Halten 63, staerkste 10 %) wurden auf
+   * 1970-2004 ausgesucht. Wer sie danach auf demselben Zeitraum misst, misst sich
+   * selbst - das Ergebnis ueber die ganze Historie sieht deshalb viel besser aus, als
+   * es ist. Angezeigt wird deshalb zuerst 2005-2026, wo nichts mehr angepasst wurde;
+   * die Gesamthistorie steht darunter, ausdruecklich als das gekennzeichnet, was sie
+   * ist. */
+  var PRUEFJAHR = 2005;
+  function zeigeErgebnis() {
+    var el = document.getElementById('mfErgebnis');
+    if (!DATEN) { el.innerHTML = '<div class="empty">Noch keine Daten.</div>'; return; }
+    var o = opts();
+    var jahrVon = function (i) { return new Date(DATEN.zeiten[Math.min(i, DATEN.zeiten.length - 1)]).getFullYear(); };
+    var startPruef = DATEN.zeiten.findIndex(function (t) { return new Date(t).getFullYear() >= PRUEFJAHR; });
+    var d = M.durchlauf(DATEN.map, Object.assign({}, o, { start: Math.max(startPruef, o.rueckblick + o.luecke + 10), jahrVon: jahrVon }));
+    var dAll = M.durchlauf(DATEN.map, Object.assign({}, o, { start: o.rueckblick + o.luecke + 10, jahrVon: jahrVon }));
+    if (!d) { el.innerHTML = '<div class="empty">Zu wenige Daten für einen Durchlauf.</div>'; return; }
+    var vorsprung = d.proJahr - d.marktProJahr;
+    var jahre = Object.keys(d.jahre).map(Number).sort(function (a, b) { return a - b; });
+    var besser = 0, vk = 1, vm = 1;
+    var zeilen = jahre.map(function (j) {
+      var rk = (d.jahre[j].depot / vk - 1) * 100, rm = (d.jahre[j].markt / vm - 1) * 100;
+      vk = d.jahre[j].depot; vm = d.jahre[j].markt;
+      if (rk > rm) besser++;
+      return '<tr><td>' + j + '</td><td style="text-align:right;" class="' + U.signCls(rk) + '">' + U.signTxt(rk, ' %') +
+        '</td><td style="text-align:right;" class="' + U.signCls(rm) + '">' + U.signTxt(rm, ' %') + '</td></tr>';
+    });
+    el.innerHTML =
+      '<div style="font-size:12px; color:var(--muted); margin-bottom:6px;">Prüfzeitraum ab ' + PRUEFJAHR +
+        ' – die Parameter wurden auf den Jahren <b>davor</b> ausgesucht und hier nicht mehr angepasst.</div>' +
+      '<dl class="kv">' +
+      '<dt>Depot</dt><dd><b>' + d.kapital.toFixed(1) + '×</b> (' + U.signTxt(d.proJahr, ' % p. a.') + ')</dd>' +
+      '<dt>Marktdurchschnitt</dt><dd>' + d.markt.toFixed(1) + '× (' + U.signTxt(d.marktProJahr, ' % p. a.') + ')</dd>' +
+      '<dt>Vorsprung</dt><dd class="' + U.signCls(vorsprung) + '"><b>' + U.signTxt(vorsprung, ' Prozentpunkte im Jahr') + '</b></dd>' +
+      '<dt>Größter Rückschlag</dt><dd>' + d.rueckschlag.toFixed(0) + ' %</dd>' +
+      '<dt>Umschichtungen</dt><dd>' + d.schritte + ' · je ' + Math.round(d.umschlag * 100) + ' % des Depots getauscht</dd>' +
+      '<dt>Bessere Jahre</dt><dd>' + besser + ' von ' + jahre.length + '</dd>' +
+      '</dl>' +
+      (dAll ? '<div style="font-size:11.5px; color:var(--muted); border-top:1px solid var(--grid); padding-top:8px; margin-top:4px;">' +
+        'Über die <b>gesamte</b> Historie ab ' + new Date(DATEN.zeiten[0]).getFullYear() + ': ' + dAll.kapital.toFixed(0) + '× (' +
+        U.signTxt(dAll.proJahr, ' % p. a.') + ') gegen ' + dAll.markt.toFixed(0) + '× (' + U.signTxt(dAll.marktProJahr, ' % p. a.') + '). ' +
+        'Diese Zahl enthält den Zeitraum, auf dem die Parameter ausgesucht wurden – sie ist deshalb zu schön und taugt nicht als Beleg.</div>' : '') +
+      '<div style="max-height:240px; overflow:auto; margin-top:8px;">' +
+      '<table class="tbl"><thead><tr><th>Jahr</th><th style="text-align:right;">Depot</th><th style="text-align:right;">Markt</th></tr></thead><tbody>' +
+      zeilen.join('') + '</tbody></table></div>';
+  }
+
+  async function rechnen() {
+    var btn = document.getElementById('mfLadenBtn');
+    btn.disabled = true;
+    try {
+      if (!DATEN) {
+        stat('Lade Tageskurse …');
+        DATEN = await ladeUniversum();
+        if (!DATEN) { stat('Zu wenige Werte geladen – Quelle nicht erreichbar?'); return; }
+      }
+      stat(DATEN.syms.length + ' Werte · ' + DATEN.zeiten.length + ' Handelstage · rechne …');
+      zeigeRang();
+      zeigeErgebnis();
+      stat(DATEN.syms.length + ' Werte · ' + DATEN.zeiten.length + ' Handelstage · ' +
+        new Date(DATEN.zeiten[0]).getFullYear() + ' bis ' + new Date(DATEN.zeiten[DATEN.zeiten.length - 1]).getFullYear());
+    } catch (e) {
+      stat('Fehler: ' + (e && e.message ? e.message : e));
+    } finally { btn.disabled = false; }
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    var btn = document.getElementById('mfLadenBtn');
+    if (btn) btn.addEventListener('click', rechnen);
+    ['mfRueck', 'mfLuecke', 'mfHalten', 'mfAnteil', 'mfKosten'].forEach(function (id) {
+      var e = document.getElementById(id);
+      // Nach dem ersten Laden reicht Neurechnen - die Kurse sind schon da
+      if (e) e.addEventListener('change', function () { if (DATEN) { zeigeRang(); zeigeErgebnis(); } });
+    });
+  });
+  if (typeof window !== 'undefined') window.__mfRechnen = rechnen;
+})();

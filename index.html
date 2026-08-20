@@ -249,6 +249,12 @@
     color: var(--ink-2); font: inherit; font-size: 11.5px; padding: 3px 9px; cursor: pointer; }
   .rangebtns button.active { background: var(--series); border-color: var(--series); color: #fff; }
   #bigchart { width: 100%; height: 300px; display: block; }
+  .chartleiste { display:flex; gap:14px; align-items:center; flex-wrap:wrap; margin:8px 0 6px; font-size:12px; color:var(--ink-2); }
+  .chartleiste label { display:flex; gap:5px; align-items:center; }
+  .chartleiste select { font-size:12px; padding:2px 4px; }
+  .chartleiste .hinweis { color:var(--muted); font-size:11.5px; }
+  .sigbox { cursor:pointer; user-select:none; }
+  .sigbox input { margin:0 3px 0 0; vertical-align:-1px; }
   .kv { display: grid; grid-template-columns: auto 1fr; gap: 3px 14px; font-size: 12.5px; }
   .kv dt { color: var(--muted); }
   .kv dd { text-align: right; font-weight: 600; }
@@ -371,6 +377,7 @@
   <button data-tab="dashboard" class="active">Dashboard</button>
   <button data-tab="depot">Optionsscheine</button>
   <button data-tab="explorer">Aktien-Explorer</button>
+  <button data-tab="mittel">Mittelfristig</button>
 </nav>
 
 <div id="tab-dashboard" class="tab active">
@@ -756,6 +763,43 @@
     </div>
     <div class="panel">
       <div class="rangebtns" id="expRanges"></div>
+      <div class="chartleiste">
+        <label title="Wie weit zurück der Chart reicht. Yahoo begrenzt Intraday-Daten: 1-Minuten höchstens 7 Tage, 5/15-Minuten 60 Tage, Stundenkerzen 730 Tage.">Zeitraum
+          <select id="expZeit">
+            <option value="">– Schnellwahl oben –</option>
+            <option value="5d">5 Tage</option>
+            <option value="1mo">1 Monat</option>
+            <option value="60d">60 Tage</option>
+            <option value="6mo">6 Monate</option>
+            <option value="1y">1 Jahr</option>
+            <option value="2y">2 Jahre</option>
+            <option value="5y">5 Jahre</option>
+            <option value="max">Maximum</option>
+          </select>
+        </label>
+        <label title="Wie fein der Chart aufgelöst ist. Feinere Kerzen reichen weniger weit zurück.">Kerzen
+          <select id="expKerze">
+            <option value="1m">1 Minute</option>
+            <option value="5m">5 Minuten</option>
+            <option value="15m">15 Minuten</option>
+            <option value="60m">1 Stunde</option>
+            <option value="1d" selected>1 Tag</option>
+            <option value="1wk">1 Woche</option>
+          </select>
+        </label>
+        <span id="expZeitHinweis" class="hinweis"></span>
+      </div>
+      <div class="chartleiste" id="expSignalLeiste">
+        <span style="color:var(--muted); font-size:12px;">Signale einblenden:</span>
+        <label class="sigbox"><input type="checkbox" data-sig="cross"> EMA-Kreuzung</label>
+        <label class="sigbox"><input type="checkbox" data-sig="reversion"> Umkehr</label>
+        <label class="sigbox"><input type="checkbox" data-sig="pullback"> Rücksetzer</label>
+        <label class="sigbox"><input type="checkbox" data-sig="rsi2"> RSI(2)</label>
+        <label class="sigbox"><input type="checkbox" data-sig="donchian"> Donchian</label>
+        <label class="sigbox"><input type="checkbox" data-sig="squeeze"> Squeeze</label>
+        <label class="sigbox"><input type="checkbox" data-sig="linie"> Leitlinie</label>
+        <span id="expSigZahl" class="hinweis"></span>
+      </div>
       <svg id="bigchart"></svg>
     </div>
     <div class="grid2" style="margin-top:12px;">
@@ -775,6 +819,71 @@
     </div>
   </div>
 </div><!-- /tab-explorer -->
+
+<div id="tab-mittel" class="tab">
+  <div class="panel">
+    <h3>Momentum im Querschnitt · Aktien, keine Hebelscheine</h3>
+    <div id="mfErklaerung" style="font-size:12.5px; color:var(--ink-2); line-height:1.55;">
+      Diese Strategie vergleicht alle Werte des Universums <b>miteinander</b> und hält das stärkste Zehntel.
+      Kein Chartmuster, kein Ein- und Ausstiegssignal – nur eine Rangfolge, die alle drei Monate neu gebildet wird.
+      Gekauft werden <b>Aktien</b>; mit Hebelscheinen auf 21 Tage ist eine Haltedauer von drei Monaten nicht
+      darstellbar, der Zeitwertverfall frisst sie auf.
+    </div>
+    <div class="chartleiste" style="margin-top:10px;">
+      <label title="Über wie viele Handelstage die Stärke gemessen wird. 231 Tage sind rund elf Monate.">Rückblick
+        <select id="mfRueck">
+          <option value="126">126 Tage (6 Mon.)</option>
+          <option value="189">189 Tage (9 Mon.)</option>
+          <option value="231" selected>231 Tage (11 Mon.)</option>
+          <option value="273">273 Tage (13 Mon.)</option>
+        </select>
+      </label>
+      <label title="Der jüngste Monat wird ausgelassen – dort liegt die kurzfristige Gegenbewegung, die den Effekt schwächt.">Lücke
+        <select id="mfLuecke"><option value="0">keine</option><option value="21" selected>21 Tage</option></select>
+      </label>
+      <label title="Wie lange gehalten wird, bevor die Rangfolge neu gebildet wird.">Halten
+        <select id="mfHalten">
+          <option value="42">42 Tage</option>
+          <option value="63" selected>63 Tage (3 Mon.)</option>
+          <option value="126">126 Tage (6 Mon.)</option>
+        </select>
+      </label>
+      <label title="Wie groß der gehaltene Teil des Universums ist. Zehn Prozent schnitten durchweg besser ab als zwanzig.">Anteil
+        <select id="mfAnteil"><option value="0.10" selected>stärkste 10 %</option><option value="0.15">15 %</option><option value="0.20">20 %</option></select>
+      </label>
+      <label title="Kosten je Kauf oder Verkauf. 20 Basispunkte sind für liquide Aktien realistisch.">Kosten
+        <select id="mfKosten"><option value="0">0 Bp</option><option value="10">10 Bp</option><option value="20" selected>20 Bp</option><option value="40">40 Bp</option></select>
+      </label>
+      <button class="btn" id="mfLadenBtn">Daten holen und rechnen</button>
+      <span id="mfStatus" class="hinweis"></span>
+    </div>
+  </div>
+
+  <div class="grid2" style="margin-top:12px;">
+    <div class="panel">
+      <h3>Was jetzt zu halten wäre</h3>
+      <div id="mfRang"><div class="empty">Noch nicht gerechnet.</div></div>
+    </div>
+    <div class="panel">
+      <h3>Wie es sich geschlagen hat</h3>
+      <div id="mfErgebnis"><div class="empty">Noch nicht gerechnet.</div></div>
+    </div>
+  </div>
+
+  <div class="panel" style="margin-top:12px;">
+    <h3>Was du dabei wissen musst</h3>
+    <div style="font-size:12.5px; color:var(--ink-2); line-height:1.6;">
+      <p style="margin:0 0 8px;"><b>Der größte Rückschlag lag bei 52 Prozent</b> (2008). Das ist kein ruhiges Investment.
+      Wer bei so einem Einbruch aussteigt, hat den Effekt nicht – er entsteht gerade dadurch, dass man dabeibleibt.</p>
+      <p style="margin:0 0 8px;"><b>In 8 von 22 Jahren war das Depot schlechter als der Markt.</b> 2024 lag es bei
+      −0,1 % gegen +7,4 %. Momentum verliert typischerweise genau dann, wenn der Markt scharf dreht.</p>
+      <p style="margin:0 0 8px;"><b>Das Universum enthält nur Firmen, die es heute noch gibt.</b> Pleiten und
+      Übernahmen fehlen in den Daten. Der Vergleich läuft gegen den Durchschnitt derselben Werte, was das dämpft,
+      aber nicht aufhebt. Der gemessene Vorsprung ist eher eine Obergrenze.</p>
+      <p style="margin:0;"><b>Alles hier ist Simulation.</b> Es wird nichts gekauft und nichts verkauft.</p>
+    </div>
+  </div>
+</div><!-- /tab-mittel -->
 
 <!-- KI-Analyse-Modal -->
 <div class="modal-bg" id="aiModalBg">
@@ -904,6 +1013,8 @@
 <script src="calendar.js"></script>
 <script src="archiv.js"></script>
 <script src="explorer.js"></script>
+<script src="momentum.js"></script>
+<script src="mittelfrist.js"></script>
 <script src="depot.js"></script>
 </body>
 </html>

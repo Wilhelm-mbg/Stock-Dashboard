@@ -484,11 +484,150 @@ console.log('\n18) Datenbasis, Suchachsen und Zucht');
 
   // --- 4) Zeitbudget: jede Gruppe kommt dran ---
   function drin(t) { return d.indexOf(t) !== -1; }
-  ok(drin('var GESAMT_MS = 22 * 60000'), 'Zeitbudget mit Puffer unter dem 25-Minuten-Deckel');
-  ok(drin('anteilMs = Math.max(30000, (GESAMT_MS - (Date.now() - t0)) / restGruppen)'), 'Zeitbudget wird auf die verbleibenden Gruppen verteilt');
+  ok(drin('unbegrenzt ? Infinity : 22 * 60000'), 'Nachtlauf hat ein Budget mit Puffer unter dem 25-Minuten-Deckel');
+  ok(drin('Math.max(30000, (GESAMT_MS - (Date.now() - t0)) / restGruppen)'), 'Zeitbudget wird auf die verbleibenden Gruppen verteilt');
   ok(drin('uebersprungen (kommen in einer der naechsten Naechte dran)'), 'Uebersprungene Kombinationen werden GEMELDET, nicht still verschluckt');
   ok(drin('kombis = kombis.slice(0, fertigN)'), 'nur tatsaechlich Gerechnetes geht in die Auswertung');
   ok(drin('gruppenFertig++'), 'jede fertige Gruppe wird gezaehlt (sonst stimmt die Verteilung nicht)');
+  ok(drin('function handelBrauchtRechenzeit()'), 'Boersen-Sperre fragt, ob ueberhaupt gehandelt wird');
+
+  // --- 5) Trendkanal ist eine gemessene Achse, keine Glaubensfrage ---
+  ok(drin('channel:    [true, false]'), 'Kanal an/aus steht in den Zucht-Achsen');
+  ok(drin("['channel', 5]"), 'Kanal wird oft mutiert (greift in Ein- UND Ausstieg ein)');
+  ok(drin('k.scalpHold, k.channel].join'), 'Kanal gehoert zum Schluessel (sonst gelten an/aus als dieselbe Kombination)');
+  ok(drin('channel: (k.channel !== undefined ? !!k.channel : D.intraday.channel !== false)'), 'Kandidat nimmt seinen eigenen Kanal-Schalter mit');
+  ok(drin('HOLD = [60, 120, 240, 390], CHAN = [true, false]'), 'Raster probiert den Kanal durch');
+  ok(drin('channel: [true, false]'), 'Whitelist erlaubt, den Kanal umzustellen');
+  ok(drin("channel: basis === 'wave' ? zuchtWuerfel(ZUCHT_ACHSEN.channel) : false"),
+     'frisches Blut wuerfelt den Kanal nur dort aus, wo er etwas bewirkt');
+  ok(drin('function zuchtNormal(k)'), 'Kandidaten werden normalisiert, bevor sie als neu gelten');
+  ok(drin("if (k.basis !== 'wave') k.channel = false;"), 'ausserhalb des Wellenreiters ist der Kanal immer aus');
+  ok(drin("basisJetzt === 'wave' ? CHAN : [false]"), 'das Raster verdoppelt sich nicht mehr fuer Basen ohne Kanal');
+  ok(drin("if (a === 'channel' && m.basis !== 'wave') a = 'scalpSL';"), 'Mutation dreht nicht an einer wirkungslosen Achse');
+  // Die Normalisierung nachrechnen: Zwillinge muessen als DASSELBE erkannt werden
+  (function () {
+    function norm(k) { if (k.basis !== 'wave') k.channel = false; return k; }
+    function key(k) { return [k.basis, k.interval, k.period, k.confirmBps, k.lineType, k.profile, k.scalpSL, k.scalpHold, k.channel].join('|'); }
+    var a1 = norm({ basis: 'reversion', interval: '15m', period: 14, confirmBps: 15, lineType: 'vwap', profile: 'atm21_b', scalpSL: 30, scalpHold: 390, channel: true });
+    var a2 = norm({ basis: 'reversion', interval: '15m', period: 14, confirmBps: 15, lineType: 'vwap', profile: 'atm21_b', scalpSL: 30, scalpHold: 390, channel: false });
+    ok(key(a1) === key(a2), 'Umkehr mit Kanal AN und AUS ist derselbe Kandidat (war in Gen 1 dreifach in der Population)');
+    var w1 = norm({ basis: 'wave', interval: '15m', period: 14, confirmBps: 15, lineType: 'vwap', profile: 'atm21_b', scalpSL: 30, scalpHold: 390, channel: true });
+    var w2 = norm({ basis: 'wave', interval: '15m', period: 14, confirmBps: 15, lineType: 'vwap', profile: 'atm21_b', scalpSL: 30, scalpHold: 390, channel: false });
+    ok(key(w1) !== key(w2), 'beim Wellenreiter bleiben Kanal AN und AUS zwei verschiedene Kandidaten');
+  })();
+  ok(drin('if (D.rechenstand !== Q.RECHENSTAND) {'), 'Migration haengt am Rechenstand, nicht an Einmal-Marken');
+  ok(drin('D.autoOpt.entdeckt = null; D.autoOpt.kiKandidat = null'), 'aendert sich die Rechenweise, fliegen alte Funde raus');
+  ok(Q.RECHENSTAND >= 7, 'Rechenstand wurde fuer die Kanal-Achse hochgesetzt', Q.RECHENSTAND);
+
+  // --- 6) Zeitlimit: Pflicht fuer die Nacht, abschaltbar fuer die Analyse ---
+  ok(drin('var unbegrenzt = !!opts.unbegrenzt;'), 'Analyselauf kann das Zeitlimit abschalten');
+  ok(drin('unbegrenzt ? Infinity : 22 * 60000'), 'ohne Limit gilt kein Gesamtbudget');
+  ok(drin('if (!unbegrenzt && Date.now() - tBlock > anteilMs'), 'ohne Limit wird keine Gruppe abgeschnitten');
+  ok(drin('boerseDraengt = !unbegrenzt && handelBrauchtRechenzeit()'), 'ohne Limit greift auch die Boersensperre nicht');
+  ok(drin('function restText('), 'Restzeit wird angezeigt');
+  ok(drin('msJeKombiSchnitt * kombisGesamtBisher + msJeKombi * fertigN'), 'Restzeit kommt aus GEMESSENER Geschwindigkeit');
+  // Die Schaetzformel nachrechnen
+  function rest(offenHier, jeGruppe, gruppen, fertig, msJe) {
+    var spaeter = Math.max(0, gruppen - fertig - 1) * jeGruppe;
+    return (offenHier + spaeter) * msJe / 60000;
+  }
+  ok(Math.abs(rest(320, 640, 6, 0, 1000) - 58.67) < 0.1, 'Restzeit: halbe erste Gruppe + 5 volle = 58,7 Min', rest(320,640,6,0,1000).toFixed(1));
+  ok(rest(0, 640, 6, 5, 1000) === 0, 'Restzeit: letzte Gruppe fertig -> 0 Min');
+  ok(rest(640, 640, 6, 5, 1000) > 0, 'Restzeit: letzte Gruppe offen -> mehr als 0');
+
+  // --- 7) Tempo: Stichprobe zum Suchen, alle Werte zum Urteilen ---
+  ok(drin('function screenWerte(m)'), 'Messung: Vorauswahl laeuft auf einer Symbol-Stichprobe');
+  ok(drin('function zuchtStichprobe(m)'), 'Zucht: Suche laeuft auf einer Symbol-Stichprobe');
+  ok(drin('var rv = await btIntraday(testMapAlle,'), 'Zucht: das URTEIL faellt auf allen Werten');
+  ok(drin('if (zu && !handelBrauchtRechenzeit()) return Math.max(2, Math.min(15, kerne - 2));'), 'bei pausiertem Handel werden fast alle Kerne genutzt');
+  // Stichprobe muss stabil und gleichmaessig sein
+  function stichprobe(syms, N2) {
+    syms = syms.slice().sort();
+    if (syms.length <= N2) return syms;
+    var sch = syms.length / N2, out = [];
+    for (var i = 0; i < N2; i++) { var x = syms[Math.floor(i * sch)]; if (x) out.push(x); }
+    return out;
+  }
+  var liste = []; for (var q = 0; q < 48; q++) liste.push('S' + String(q).padStart(2, '0'));
+  var p1 = stichprobe(liste, 16), p2 = stichprobe(liste.slice().reverse(), 16);
+  ok(p1.length === 16, 'Stichprobe zieht genau 16 von 48', p1.length);
+  ok(p1.join() === p2.join(), 'Stichprobe ist stabil - gleiche Werte, egal in welcher Reihenfolge sie kommen');
+  ok(new Set(p1).size === 16, 'Stichprobe enthaelt keine Doppelten');
+  ok(p1[0] === 'S00' && p1[15] === 'S45', 'Stichprobe verteilt sich ueber die ganze Liste', p1[0] + '…' + p1[15]);
+  ok(stichprobe(['A','B','C'], 16).length === 3, 'weniger Werte als die Stichprobe gross ist: alle nehmen');
+
+  // --- 9) Signale einmal rechnen statt zwanzigmal ---
+  ok(typeof Q.backtestIntradayMulti === 'function', 'backtestIntradayMulti existiert');
+  var qsrc = fs.readFileSync(__dirname + '/quant.js', 'utf8');
+  var wsrc = fs.readFileSync(__dirname + '/bt-worker.js', 'utf8');
+  ok(qsrc.indexOf('function einstiegSignal(bars, ci, P)') !== -1, 'Einstiegspruefung ist als reine Funktion herausgezogen');
+  ok(drin("BTPool.run('intradayMulti'"), 'der Pool kennt Buendel-Auftraege');
+  ok(drin("else if (job.fn === 'intradayMulti')"), 'auch der Notpfad ohne Worker kennt sie');
+  ok(wsrc.indexOf("else if (m.fn === 'intradayMulti')") !== -1, 'der Worker kennt sie');
+  ok(drin("[k.basis, k.period, k.confirmBps, k.lineType, k.channel].join('|')"),
+     'gebuendelt wird nach dem SIGNAL-Schluessel (Not-Stop und Haltedauer gehoeren nicht dazu)');
+  ok(qsrc.indexOf('for (var ci = 0; ci < bars.length; ci++) arr[ci] = einstiegSignal') !== -1, 'vorberechnet wird ab der ERSTEN Kerze (ein Start bei 60 verschluckte Ausbruch-Trades)');
+  // Der eigentliche Beweis: gebuendelt muss dasselbe herauskommen wie einzeln
+  (function () {
+    var t0 = Date.UTC(2026, 0, 5, 14, 30), bars = [], px = 100, sd = 7;
+    function r() { sd = (Math.imul(sd, 1103515245) + 12345) & 2147483647; return sd / 2147483648 - 0.5; }
+    for (var i = 0; i < 900; i++) {
+      px += r() * 0.9 + Math.sin(i / 26) * 0.32;
+      var tt = t0 + i * 900000;
+      bars.push([tt, px, 20000, px * 1.003, px * 0.997]);
+    }
+    var map = { AAA: bars, BBB: bars.map(function (b, j) { return [b[0], b[1] * (1 + Math.sin(j / 41) * 0.02), b[2], b[3], b[4]]; }) };
+    var basis = { capital: 10000, budgetPct: 0.03, orderFee: 0, minEdge: 1.5, riskPct: 0.25, window: 'all',
+      entryMode: 'reversion', lineType: 'ema', period: 14, confirmBps: 15, zThr: 1.2, minQuality: 60,
+      channel: false, mtf: false, trendFilter: false, tp: null, trailPct: 0, cooldownMin: 10, maxPerDay: 20,
+      otmPct: 0, expiryDays: 21, ratio: 1 };
+    var varianten = [];
+    [10, 20, 30].forEach(function (sl) { [60, 240].forEach(function (h) { varianten.push({ sl: -sl / 100, maxHoldMin: h }); }); });
+    var einzeln = varianten.map(function (v) { return Q.backtestIntraday(map, Object.assign({}, basis, v)); });
+    var gebuendelt = Q.backtestIntradayMulti(map, basis, varianten);
+    var alleGleich = einzeln.every(function (e, k) { return JSON.stringify(e) === JSON.stringify(gebuendelt[k]); });
+    ok(gebuendelt.length === varianten.length, 'Buendel liefert so viele Ergebnisse wie Varianten', gebuendelt.length);
+    ok(alleGleich, 'gebuendelt ist Ergebnis fuer Ergebnis identisch mit einzeln gerechnet');
+    var unterschiedlich = new Set(einzeln.map(function (e) { return e.summary ? e.summary.nTrades + '/' + e.summary.retPct : 'x'; }));
+    ok(unterschiedlich.size > 1, 'die Varianten liefern wirklich Verschiedenes (sonst waere der Test wertlos)', unterschiedlich.size + ' verschiedene');
+    // Eroeffnungs-Range ist zustandsbehaftet und darf NICHT vorberechnet werden
+    var orbBasis = Object.assign({}, basis, { entryMode: 'orb', orbMin: 30, trailPct: 0.15 });
+    var orbEinzeln = varianten.map(function (v) { return Q.backtestIntraday(map, Object.assign({}, orbBasis, v)); });
+    var orbBuendel = Q.backtestIntradayMulti(map, orbBasis, varianten);
+    ok(orbEinzeln.every(function (e, k) { return JSON.stringify(e) === JSON.stringify(orbBuendel[k]); }),
+       'Eroeffnungs-Range bleibt korrekt, obwohl er nicht vorberechnet werden darf');
+  })();
+
+  // --- 8) Zufallsprobe gegen Mehrfachtestung ---
+  ok(typeof Q.bestOfN === 'function', 'bestOfN existiert');
+  ok(drin('var zufallOk = !zpGesamt || zpGesamt.ueberzufaellig;'), 'ein Fund muss die Zufallslatte nehmen');
+  ok(drin('bester.testN >= 15 && zufallOk'), 'Zufallsprobe ist Bedingung fuer einen Fund, nicht Beiwerk');
+  ok(drin('Zufallsprobe (ungesehene Daten)'), 'die Zufallslatte steht im Protokoll');
+  (function () {
+    function lcg(x) { return function () { x = (Math.imul(x, 1103515245) + 12345) & 2147483647; return (x + 1) / 2147483649; }; }
+    function nrm(r) { var u1 = r(), u2 = r(); return Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2); }
+    var r1 = lcg(42), rausch = []; for (var i = 0; i < 500; i++) rausch.push(nrm(r1) * 5);
+    var a1 = Q.bestOfN(rausch);
+    ok(a1 && a1.ueberzufaellig === false, '500 wertlose Kandidaten: der Beste gilt NICHT als Fund', a1 && a1.bester + ' vs Latte ' + a1.zufallsMedian);
+    var r2 = lcg(42), echt = []; for (var j = 0; j < 500; j++) echt.push(nrm(r2) * 5); echt[123] = 25;
+    var a2 = Q.bestOfN(echt);
+    ok(a2 && a2.ueberzufaellig === true, 'ein echter Ausreisser wird als Fund erkannt', a2 && a2.bester + ' vs Latte ' + a2.zufallsMedian);
+    ok(JSON.stringify(Q.bestOfN(rausch)) === JSON.stringify(a1), 'Zufallsprobe ist deterministisch');
+    ok(Q.bestOfN([1, 2, 3]) === null, 'unter 20 Versuchen gibt es kein Urteil');
+    var klein = [], gross = [];
+    var r3 = lcg(7); for (var k = 0; k < 30; k++) klein.push(nrm(r3) * 5);
+    var r4 = lcg(7); for (var l = 0; l < 2000; l++) gross.push(nrm(r4) * 5);
+    ok(Q.bestOfN(gross).zufallsMedian > Q.bestOfN(klein).zufallsMedian,
+       'die Zufallslatte steigt mit der Zahl der Versuche',
+       Q.bestOfN(klein).zufallsMedian + ' (30) -> ' + Q.bestOfN(gross).zufallsMedian + ' (2000)');
+  })();
+  ok(drin('handelBrauchtRechenzeit() && minutenBisOeffnung() < 90'), 'Sperre greift nur bei laufendem Handel');
+  ok(!drin('if (minutenBisOeffnung() < 90 ||'), 'die unbedingte 90-Minuten-Sperre ist weg');
+  // Die Bedingung nachrechnen
+  function braucht(intra, stunde) { return !!(intra || stunde !== false); }
+  ok(braucht(true, false) === true, 'Sperre: aktiver Intraday-Handel braucht Rechenzeit');
+  ok(braucht(false, true) === true, 'Sperre: aktive Stunden-Strategie braucht Rechenzeit');
+  ok(braucht(false, false) === false, 'Sperre: bei pausiertem Handel gehoert die Maschine der Messung');
   // Die Verteilung nachrechnen: keine Gruppe darf leer ausgehen
   function verteile(gesamtMs, gruppen, bedarf) {
     var t = 0, fertig = 0, bekommen = [];
@@ -535,6 +674,93 @@ console.log('\n18) Datenbasis, Suchachsen und Zucht');
   ok(gueltig, 'Mutation bleibt in den erlaubten Werten und laesst Basis/Zeitrahmen unangetastet');
   ok(anders > 400, 'Mutation veraendert den Elternteil tatsaechlich', anders + '/600');
   ok((zaehl.scalpSL || 0) > (zaehl.period || 0) * 3, 'Mutation trifft scalpSL viel oefter als period', (zaehl.scalpSL||0) + ' vs ' + (zaehl.period||0));
+})();
+
+/* ================= 19) Mittelfristige Querschnitts-Strategie ================= */
+console.log('\n19) Momentum im Querschnitt');
+(function () {
+  var M = require('./momentum.js');
+
+  // --- Grundrechnung ---
+  var reihe = [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
+  ok(Math.abs(M.staerke(reihe, 10, 5, 0) - (20 / 15 - 1)) < 1e-9, 'Stärke: Rendite über 5 Tage');
+  ok(Math.abs(M.staerke(reihe, 10, 5, 2) - (18 / 13 - 1)) < 1e-9, 'Stärke: Lücke lässt die letzten Tage aus');
+  ok(M.staerke(reihe, 2, 5, 0) === null, 'Stärke: zu früh in der Reihe gibt null');
+  ok(M.staerke([null, null, 5, 6], 3, 2, 0) === null, 'Stärke: Lücken in den Daten geben null');
+  ok(M.vorwaerts(reihe, 0, 5) === (15 / 10 - 1), 'Vorwärtsrendite');
+  ok(M.vorwaerts(reihe, 8, 5) === null, 'Vorwärtsrendite über das Ende hinaus gibt null');
+
+  // --- Rangfolge ---
+  var mini = { A: [1,2,3,4,5,6,7,8,9,10], B: [10,9,8,7,6,5,4,3,2,1], C: [5,5,5,5,5,5,5,5,5,5] };
+  var r = M.rangfolge(mini, 9, { rueckblick: 5, luecke: 0, minWerte: 3 });
+  ok(r && r.length === 3 && r[0].sym === 'A' && r[2].sym === 'B',
+     'Rangfolge sortiert vom stärksten zum schwächsten', r ? r.map(function (x) { return x.sym; }).join(' > ') : 'null');
+  ok(M.rangfolge(mini, 9, { rueckblick: 5, luecke: 0, minWerte: 99 }) === null,
+     'Rangfolge verweigert das Urteil bei zu wenigen Werten');
+
+  // --- Die Lücke ist kein Detail: sie muss das Ergebnis verändern ---
+  var mitLuecke = M.rangfolge(mini, 9, { rueckblick: 4, luecke: 2, minWerte: 3 });
+  var ohneLuecke = M.rangfolge(mini, 9, { rueckblick: 4, luecke: 0, minWerte: 3 });
+  ok(mitLuecke[0].staerke !== ohneLuecke[0].staerke, 'die Lücke wird tatsächlich angewandt');
+
+  // --- Auswahl ---
+  var viele = {};
+  for (var v = 0; v < 40; v++) {
+    var reiheV = [];
+    for (var t = 0; t < 300; t++) reiheV.push(100 * Math.pow(1 + v * 0.0002, t));
+    viele['S' + String(v).padStart(2, '0')] = reiheV;
+  }
+  var aus = M.auswahl(viele, 299, { rueckblick: 200, luecke: 21, anteil: 0.10 });
+  ok(aus && aus.length === 5, 'Auswahl nimmt mindestens fünf Werte', aus ? aus.length : 'null');
+  ok(aus && aus[0].sym === 'S39', 'Auswahl beginnt beim stärksten Wert', aus ? aus[0].sym : '-');
+  var aus2 = M.auswahl(viele, 299, { rueckblick: 200, luecke: 21, anteil: 0.25 });
+  ok(aus2.length === 10, 'größerer Anteil nimmt mehr Werte', aus2.length);
+
+  // --- Durchlauf auf konstruierten Reihen, bei denen die Antwort feststeht ---
+  // Zwanzig Werte, deren Stärke von Anfang bis Ende dieselbe Reihenfolge hat:
+  // die Auswahl MUSS den Durchschnitt schlagen, sonst rechnet der Durchlauf falsch.
+  var klar = {};
+  for (var w = 0; w < 30; w++) {
+    var rr = [100];
+    for (var t2 = 1; t2 < 900; t2++) rr.push(rr[t2 - 1] * (1 + (w - 15) * 0.0003));
+    klar['K' + String(w).padStart(2, '0')] = rr;
+  }
+  var d = M.durchlauf(klar, { rueckblick: 231, luecke: 21, halten: 63, anteil: 0.2, kostenBp: 0, start: 260 });
+  ok(d !== null, 'Durchlauf liefert ein Ergebnis');
+  ok(d && d.kapital > d.markt, 'bei eindeutiger Rangfolge schlägt die Auswahl den Durchschnitt',
+     d ? d.kapital.toFixed(2) + 'x vs ' + d.markt.toFixed(2) + 'x' : '-');
+  ok(d && d.schritte > 3, 'es wird mehrfach umgeschichtet', d ? d.schritte : 0);
+
+  // Kosten müssen wirken - eine Strategie, die Kosten ignoriert, lügt
+  var billig = M.durchlauf(klar, { halten: 63, anteil: 0.2, kostenBp: 0, start: 260 });
+  var teuer = M.durchlauf(klar, { halten: 63, anteil: 0.2, kostenBp: 200, start: 260 });
+  ok(billig.kapital >= teuer.kapital, 'höhere Kosten senken das Ergebnis',
+     billig.kapital.toFixed(2) + 'x vs ' + teuer.kapital.toFixed(2) + 'x');
+
+  // GEGENKONTROLLE: reine Zufallspfade ohne jede Struktur. Dort DARF die Auswahl den
+  // Durchschnitt nicht nennenswert schlagen - täte sie es, rechnete der Durchlauf falsch
+  // (etwa indem er die Zukunft kennt). Über mehrere Startwerte gemittelt, damit nicht
+  // ein einzelner Zufallspfad das Urteil bestimmt.
+  var vorsprung = [];
+  for (var seed = 1; seed <= 8; seed++) {
+    var sz = seed * 7919;
+    var wuerfel = function () { sz = (Math.imul(sz, 1103515245) + 12345) & 2147483647; return sz / 2147483648 - 0.5; };
+    var zufall = {};
+    for (var zi = 0; zi < 30; zi++) {
+      var zr = [100];
+      for (var zt = 1; zt < 900; zt++) zr.push(Math.max(1, zr[zt - 1] * (1 + wuerfel() * 0.03)));
+      zufall['Z' + zi] = zr;
+    }
+    var dz = M.durchlauf(zufall, { rueckblick: 231, luecke: 21, halten: 63, anteil: 0.2, kostenBp: 0, start: 260 });
+    if (dz) vorsprung.push(dz.proJahr - dz.marktProJahr);
+  }
+  var mittel = vorsprung.reduce(function (a2, b2) { return a2 + b2; }, 0) / vorsprung.length;
+  ok(Math.abs(mittel) < 8, 'auf reinen Zufallspfaden entsteht KEIN systematischer Vorsprung',
+     mittel.toFixed(2) + ' Pp im Mittel über ' + vorsprung.length + ' Welten');
+
+  // --- Die Standardwerte sind die geprüften ---
+  ok(M.STANDARD.rueckblick === 231 && M.STANDARD.luecke === 21 && M.STANDARD.halten === 63 && M.STANDARD.anteil === 0.10,
+     'Standardparameter sind die auf 1970–2004 gewählten und auf 2005–2026 bestätigten');
 })();
 
 console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');

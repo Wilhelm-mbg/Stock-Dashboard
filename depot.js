@@ -392,6 +392,9 @@
       var kerne = (typeof navigator !== 'undefined' && navigator.hardwareConcurrency) || 4;
       var zu = true;
       try { zu = !(window.Dash && window.Dash.marketOpen && window.Dash.marketOpen()); } catch (e) { zu = true; }
+      // Boerse zu UND Handel pausiert: die Maschine hat nichts Besseres zu tun.
+      // Zwei Threads bleiben dem Betriebssystem und der Oberflaeche.
+      if (zu && !handelBrauchtRechenzeit()) return Math.max(2, Math.min(15, kerne - 2));
       return zu ? Math.max(2, Math.min(12, Math.floor(kerne * 0.75)))
                 : Math.max(2, Math.min(8, Math.floor(kerne * 0.5)));
     }
@@ -416,7 +419,11 @@
     /** Rechnet im Hauptthread weiter – langsamer, aber es bleibt nie etwas hängen. */
     function selbstRechnen(job) {
       try {
-        job.cb(job.fn === 'daily' ? Q.backtest(job.histMap, job.opts) : Q.backtestIntraday(job.histMap, job.opts));
+        // Notpfad ohne Worker - muss dieselben Auftragsarten kennen, sonst faellt
+        // ein Buendel-Auftrag beim Ausfall des Hintergrund-Rechnens lautlos auf die Nase.
+        if (job.fn === 'daily') job.cb(Q.backtest(job.histMap, job.opts));
+        else if (job.fn === 'intradayMulti') job.cb(Q.backtestIntradayMulti(job.histMap, job.opts.basis, job.opts.varianten));
+        else job.cb(Q.backtestIntraday(job.histMap, job.opts));
       } catch (e) { job.cb({ error: String(e && e.message ? e.message : e) }); }
     }
     function spawn() {
@@ -529,6 +536,11 @@
     return { run: run };
   })();
   function btIntraday(map, opts) { return BTPool.run('intraday', map, opts); }
+  /** Mehrere Varianten in einem Auftrag - der Worker berechnet die Einstiegssignale
+   *  einmal und teilt sie. Rueckgabe: Array der Einzelergebnisse. */
+  function btIntradayMulti(map, basis, varianten) {
+    return BTPool.run('intradayMulti', map, { basis: basis, varianten: varianten });
+  }
   function btDaily(map, opts) { return BTPool.run('daily', map, opts); }
 
   var WINDOW_NAMES = { all: 'ganzer Handelstag', open2: '15:30–17:30 Uhr', open4: '15:30–19:30 Uhr', close2: '20–22 Uhr' };
@@ -3243,19 +3255,66 @@
           fixedGrid: [{ period: kiK.period, confirmBps: kiK.confirmBps, zThr: zOf(kiK.confirmBps), lineType: kiK.lineType }],
           opts: kiK.opts });
       }
+      /* Fenster fuer die Vorauswahl. Gewaehlt so, dass jeder Zeitrahmen genug
+       * Handelstage fuer neun Walk-Forward-Scheiben behaelt, ohne dass die Rechnung
+       * explodiert. Der Sieger wird anschliessend auf der VOLLEN Historie geprueft. */
+      var SCREEN_TAGE = { '1m': 7, '5m': 30, '15m': 60, '60m': 260 };
+      /* Zum RANGORDNEN reicht eine Stichprobe der Werte - es geht nur darum, welche
+       * Setups ueberhaupt in Frage kommen, nicht um die genaue Rendite. Der Sieger wird
+       * anschliessend auf ALLEN Werten und der vollen Historie geprueft; erst daran
+       * entscheidet sich, ob er robust ist.
+       * Die Stichprobe ist bewusst NICHT zufaellig, sondern jeder n-te Wert der
+       * alphabetisch sortierten Liste: so misst jeder Lauf dieselben Werte und die
+       * Ranglisten zweier Naechte sind vergleichbar. Eine zufaellige Auswahl haette
+       * genau die Vergleichbarkeit zerstoert, auf der die Zwei-Naechte-Regel beruht. */
+      var SCREEN_WERTE = 16;
+      function screenWerte(m) {
+        var syms = Object.keys(m).sort();
+        if (syms.length <= SCREEN_WERTE) return m;
+        var schritt = syms.length / SCREEN_WERTE, out = {};
+        for (var i4 = 0; i4 < SCREEN_WERTE; i4++) {
+          var sy4 = syms[Math.floor(i4 * schritt)];
+          if (sy4) out[sy4] = m[sy4];
+        }
+        return Object.keys(out).length >= 3 ? out : m;
+      }
+      function screenMap(m, iv3) {
+        var max = SCREEN_TAGE[iv3];
+        if (!max) return m;
+        var tage = handelsTage(m);
+        if (tage.length <= max) return m;
+        var abTag = tage[tage.length - max];
+        var ab = new Date(abTag + 'T00:00:00Z').getTime();
+        var out = {};
+        Object.keys(m).forEach(function (sy3) {
+          var teil = m[sy3].filter(function (b3) { return b3[0] >= ab; });
+          if (teil.length > 200) out[sy3] = teil;
+        });
+        return Object.keys(out).length >= 3 ? out : m;
+      }
+      /* period hat gemessen 0,18 Prozentpunkte Wirkung - drei Stufen im Screening waren
+       * verschwendete Rechenzeit. Zwei genuegen, um grobe Fehlgriffe auszuschliessen. */
       var GRID = [];
-      [9, 20, 50].forEach(function (p) { [5, 15].forEach(function (c) { GRID.push({ period: p, confirmBps: c, zThr: zOf(c) }); }); });
+      [14, 30].forEach(function (p) { [5, 15].forEach(function (c) { GRID.push({ period: p, confirmBps: c, zThr: zOf(c) }); }); });
 
       var results = [];
       var total = MODES.length * intervals.length, done = 0;
+      var tLab = Date.now(), LAB_MS = 18 * 60000, uebersprungen = 0;
       for (var mi = 0; mi < MODES.length; mi++) {
         for (var vi = 0; vi < intervals.length; vi++) {
           done++;
           var iv = intervals[vi];
           if (MODES[mi].nurInterval && MODES[mi].nurInterval !== iv) continue;
-          var map = data[iv];
-          if (!map || Object.keys(map).length < 3) continue;
+          var mapVoll = data[iv];
+          if (!mapVoll || Object.keys(mapVoll).length < 3) continue;
+          var map = screenWerte(screenMap(mapVoll, iv));
           var commonIv = labCommonOpts(cfg, iv);
+          // Zeitbudget: was nicht mehr reinpasst, wird GEMELDET statt still weggelassen.
+          if (Date.now() - tLab > LAB_MS) {
+            uebersprungen++;
+            if (st) st.textContent = 'Zeitbudget der Vorauswahl erreicht – ' + uebersprungen + ' Kandidaten uebersprungen.';
+            continue;
+          }
           if (st) st.textContent = 'Walk-Forward ' + MODES[mi].name + ' · ' + iv + ' (' + done + '/' + total + ') …';
           await new Promise(function (r) { setTimeout(r, 20); });
           var span = mapSpan(map);
@@ -3336,6 +3395,9 @@
         if (aB !== bB) return bB - aB;                 // belastbar schlägt unbelastbar
         return b.wfRet - a.wfRet;
       });
+      results.uebersprungen = uebersprungen;   // ehrlich weiterreichen, nicht still schlucken
+      results.screenTage = SCREEN_TAGE;
+      results.screenWerte = SCREEN_WERTE;
       return results;
   }
 
@@ -3360,6 +3422,9 @@
       var ld = await loadLabData(st);
       var results = await labCompute(ld, st);
       st.textContent = '';
+      if (results.uebersprungen) {
+        st.textContent = 'Hinweis: ' + results.uebersprungen + ' Kandidaten kamen im Zeitbudget nicht dran.';
+      }
       if (!results.length) { out.innerHTML = '<div class="empty"><span class="ico"></span>Zu wenig Daten für eine Analyse.</div>'; return null; }
       var top = results[0];
 
@@ -4063,7 +4128,7 @@
     return z.join('\n');
   }
   if (typeof window !== 'undefined') window.__pilotBericht = baueMessbericht;
-  if (typeof window !== 'undefined') { window.__tiefensuche = function () { return tiefensuche(); }; window.__pilotMessen = function () { return pilotMessen(true); }; }
+  if (typeof window !== 'undefined') { window.__tiefensuche = function (o) { return tiefensuche(o || { unbegrenzt: true }); }; window.__pilotMessen = function () { return pilotMessen(true); }; }
   if (typeof window !== 'undefined') { window.__ladeArchivDaten = ladeArchivDaten; window.__labCommonOpts = labCommonOpts; window.__btIntraday = btIntraday; window.__D = function () { return D; }; }   // fuer Funktionstests
 
   /* ================= Tiefensuche (nutzt die brachliegenden Nacht-/Wochenendstunden) ====
@@ -4075,6 +4140,11 @@
    * Yahoo-Limits gehoeren dann dem Live-Scanner. */
   var tiefRunning = false, tiefStartAt = 0;
   /** Minuten bis zur naechsten US-Boersenoeffnung (Wochenende beruecksichtigt, grob). */
+  /** Muss die Rechnerei fuer den Live-Handel Platz machen? Nur dann, wenn ueberhaupt
+   *  eine Handels-Automatik laeuft - sonst gehoert die Maschine der Messung. */
+  function handelBrauchtRechenzeit() {
+    return !!(D && (D.intraday.enabled || D.hourlyEnabled !== false));
+  }
   function minutenBisOeffnung() {
     var t = Date.now();
     for (var k = 0; k < 5 * 96; k++) {           // in 15-Min-Schritten bis zu 5 Tage voraus
@@ -4115,20 +4185,27 @@
     lineType:   ['ema', 'vwap'],
     profile:    ['atm21_b', 'atm60_b', 'otm3_30b'],
     scalpSL:    [10, 15, 20, 30, 45, 'auto'],
-    scalpHold:  [15, 30, 60, 120, 240, 390]
+    scalpHold:  [15, 30, 60, 120, 240, 390],
+    channel:    [true, false]
   };
   /* Wie oft eine Achse mutiert, richtet sich nach ihrer GEMESSENEN Wirkung
    * (15m-Archiv, 20.08.2026, Spannweite der Rendite ueber die Achse):
    * scalpSL 6,73 Pp | scalpHold 5,06 | lineType 4,03 | confirmBps 2,23 | period 0,18.
    * An einer wirkungslosen Achse zu drehen kostet eine Nacht und bringt nichts. */
-  var ZUCHT_GEWICHT = [['scalpSL', 7], ['scalpHold', 5], ['lineType', 4], ['confirmBps', 2], ['profile', 2], ['period', 1]];
+  var ZUCHT_GEWICHT = [['scalpSL', 7], ['scalpHold', 5], ['channel', 5], ['lineType', 4], ['confirmBps', 2], ['profile', 2], ['period', 1]];
   var ZUCHT_UEBERLEBENDE = 12;     // Groesse der Population
   var ZUCHT_KINDER = 40;           // Nachkommen je Elternteil und Gruppe
   var ZUCHT_ZIEL = 480;            // Kombinationen je Basis/Zeitrahmen und Nacht
   var ZUCHT_GESEHEN_MAX = 40000;   // Gedaechtnis: so viele gepruefte Kombinationen
 
+  /** Kanal wirkt nur beim Wellenreiter - ueberall sonst auf false setzen, damit
+   *  scheinbar verschiedene Kandidaten als das erkannt werden, was sie sind: dieselben. */
+  function zuchtNormal(k) {
+    if (k.basis !== 'wave') k.channel = false;
+    return k;
+  }
   function zuchtKey(k) {
-    return [k.basis, k.interval, k.period, k.confirmBps, k.lineType, k.profile, k.scalpSL, k.scalpHold].join('|');
+    return [k.basis, k.interval, k.period, k.confirmBps, k.lineType, k.profile, k.scalpSL, k.scalpHold, k.channel].join('|');
   }
   function zuchtWuerfel(liste) { return liste[Math.floor(Math.random() * liste.length)]; }
   function zuchtAchse() {
@@ -4140,21 +4217,41 @@
   }
   function zuchtKopie(k) {
     return { basis: k.basis, interval: k.interval, period: k.period, confirmBps: k.confirmBps,
-      lineType: k.lineType, profile: k.profile, scalpSL: k.scalpSL, scalpHold: k.scalpHold };
+      lineType: k.lineType, profile: k.profile, scalpSL: k.scalpSL, scalpHold: k.scalpHold,
+      channel: k.channel };
   }
   /** Nachkomme: wie der Elternteil, aber in ein bis zwei Achsen verschoben. */
   function zuchtMutiere(k) {
     var m = zuchtKopie(k);
     var n = Math.random() < 0.7 ? 1 : 2;      // meist kleine Schritte, manchmal groessere
-    for (var i = 0; i < n; i++) { var a = zuchtAchse(); m[a] = zuchtWuerfel(ZUCHT_ACHSEN[a]); }
-    return m;
+    for (var i = 0; i < n; i++) {
+      var a = zuchtAchse();
+      if (a === 'channel' && m.basis !== 'wave') a = 'scalpSL';   // dort waere es wirkungslos
+      m[a] = zuchtWuerfel(ZUCHT_ACHSEN[a]);
+    }
+    return zuchtNormal(m);
   }
   /** Voellig frischer Kandidat - gegen Inzucht und lokale Optima. */
   function zuchtZufall(basis, interval) {
     return { basis: basis, interval: interval,
       period: zuchtWuerfel(ZUCHT_ACHSEN.period), confirmBps: zuchtWuerfel(ZUCHT_ACHSEN.confirmBps),
       lineType: zuchtWuerfel(ZUCHT_ACHSEN.lineType), profile: zuchtWuerfel(ZUCHT_ACHSEN.profile),
-      scalpSL: zuchtWuerfel(ZUCHT_ACHSEN.scalpSL), scalpHold: zuchtWuerfel(ZUCHT_ACHSEN.scalpHold) };
+      scalpSL: zuchtWuerfel(ZUCHT_ACHSEN.scalpSL), scalpHold: zuchtWuerfel(ZUCHT_ACHSEN.scalpHold),
+      channel: basis === 'wave' ? zuchtWuerfel(ZUCHT_ACHSEN.channel) : false };
+  }
+  /* Gleichmaessige, IMMER GLEICHE Stichprobe: jeder n-te Wert der sortierten Liste.
+   * Eine zufaellige Auswahl haette die Vergleichbarkeit zweier Naechte zerstoert -
+   * und genau darauf beruht die Regel, dass ein Fund zweimal bestaetigt sein muss. */
+  var ZUCHT_WERTE = 16;
+  function zuchtStichprobe(m) {
+    var syms = Object.keys(m).sort();
+    if (syms.length <= ZUCHT_WERTE) return m;
+    var schritt = syms.length / ZUCHT_WERTE, out = {};
+    for (var i5 = 0; i5 < ZUCHT_WERTE; i5++) {
+      var sy5 = syms[Math.floor(i5 * schritt)];
+      if (sy5) out[sy5] = m[sy5];
+    }
+    return Object.keys(out).length >= 3 ? out : m;
   }
   function zuchtStand(a) {
     if (!a.zucht) a.zucht = { gen: 0, ueberlebende: [], gesehen: [] };
@@ -4164,7 +4261,9 @@
   }
 
   var tiefFortschritt = null;   // Live-Stand fuer die Oberflaeche (sonst Blackbox)
-  async function tiefensuche() {
+  async function tiefensuche(opts) {
+    opts = opts || {};
+    var unbegrenzt = !!opts.unbegrenzt;      // Analyselauf: rechnet zu Ende, egal wie lange
     var a = autoOptCfg();
     if (tiefRunning || pilotRunning || centralRunning || jobRunning) return;
     if (!window.Archiv) return;
@@ -4188,20 +4287,30 @@
       });
       if (!basenSet.pullback && basen.length < 3) basen.push('pullback');
       if (!basen.length) basen = ['reversion', 'pullback'];
-      var PER = [14, 30], CONF = [5, 15, 30], LT = ['ema', 'vwap'];
-      var SL = [10, 15, 20, 30, 'auto'], HOLD = [60, 120, 240, 390];
+      var PER = [14, 30], CONF = [5, 15], LT = ['ema', 'vwap'];
+      var SL = [10, 15, 20, 30, 'auto'], HOLD = [60, 120, 240, 390], CHAN = [true, false];
       var PROF = ['atm21_b', 'atm60_b', D.intraday.profile || 'otm3_14'];
       PROF = PROF.filter(function (v, i2, arr) { return arr.indexOf(v) === i2; });
       var funde = [], geprueft = 0;
-      var GESAMT_MS = 22 * 60000;                       // Puffer unter dem 25-Minuten-Deckel
+      var GESAMT_MS = unbegrenzt ? Infinity : 22 * 60000;   // Puffer unter dem 25-Minuten-Deckel
       var gruppenGesamt = basen.length * ivs.length, gruppenFertig = 0;
+      var msJeKombiSchnitt = 0, kombisGesamtBisher = 0;      // gemessene Geschwindigkeit
+      /** Restzeit aus dem, was bisher tatsaechlich gebraucht wurde - keine Schaetzung ins Blaue. */
+      function restText(offenHier, kombisJeGruppe) {
+        if (!msJeKombiSchnitt) return '';
+        var offenSpaeter = Math.max(0, gruppenGesamt - gruppenFertig - 1) * kombisJeGruppe;
+        var ms = (offenHier + offenSpaeter) * msJeKombiSchnitt;
+        var min = ms / 60000;
+        return ' · noch ca. ' + (min >= 60 ? (min / 60).toFixed(1) + ' Std' : Math.max(1, Math.round(min)) + ' Min');
+      }
       // Population und Gedaechtnis dieser Zuchtlinie laden
       var zStand = zuchtStand(a);
       var gesehenSet = {};
       zStand.gesehen.forEach(function (g) { gesehenSet[g] = 1; });
-      var nachwuchs = [];
+      var nachwuchs = [], zufallProGruppe = [];
       pilotLogAdd('Zucht Generation ' + (zStand.gen + 1) + ': ' + zStand.ueberlebende.length +
-        ' Ueberlebende aus der Vornacht, ' + zStand.gesehen.length + ' Kombinationen bereits geprueft (werden nicht wiederholt).');
+        ' Ueberlebende aus der Vornacht, ' + zStand.gesehen.length + ' Kombinationen bereits geprueft (werden nicht wiederholt).' +
+        (unbegrenzt ? ' Analyselauf – rechnet vollstaendig durch, ohne Zeitlimit.' : ''));
       for (var bi = 0; bi < basen.length; bi++) {
         for (var vi = 0; vi < ivs.length; vi++) {
           var iv2 = ivs[vi];
@@ -4210,13 +4319,17 @@
           var span = mapSpan(map);
           var cut = tagesGrenze(map, 0.7);
           if (!cut) continue;
-          var trainMap = sliceMap(map, span[0], cut, 0);
-          var testMap = sliceMap(map, cut, span[1], warmlaufBars(iv2));
+          var trainMapVoll = sliceMap(map, span[0], cut, 0);
+          var testMapVoll = sliceMap(map, cut, span[1], warmlaufBars(iv2));
+          var trainMap = zuchtStichprobe(trainMapVoll);   // Suchen auf der Stichprobe …
+          var testMap = zuchtStichprobe(testMapVoll);     // … Gegenprobe gleich mit
+          var testMapAlle = testMapVoll;                  // … Urteil auf allen Werten
           var common = labCommonOpts(D.intraday, iv2);
           var basisJetzt = basen[bi];
           // 1) Nachkommen der Ueberlebenden dieser Basis/dieses Zeitrahmens
           var kombis = [], gesehenNeu = {};
           function zuchtNimm(k) {
+            zuchtNormal(k);
             var sl3 = zuchtKey(k);
             if (gesehenNeu[sl3] || gesehenSet[sl3]) return false;   // nichts zweimal rechnen
             gesehenNeu[sl3] = 1; kombis.push(k); return true;
@@ -4232,10 +4345,11 @@
           // 2) Systematisches Raster - aber nur, was noch nie gerechnet wurde
           var raster = [];
           PER.forEach(function (p) { CONF.forEach(function (c) { LT.forEach(function (lt) { PROF.forEach(function (pr) {
-            SL.forEach(function (sl2) { HOLD.forEach(function (h2) {
+            var chanListe = basisJetzt === 'wave' ? CHAN : [false];
+            SL.forEach(function (sl2) { HOLD.forEach(function (h2) { chanListe.forEach(function (ch2) {
               raster.push({ basis: basisJetzt, interval: iv2, period: p, confirmBps: c, lineType: lt,
-                profile: pr, scalpSL: sl2, scalpHold: h2 });
-            }); });
+                profile: pr, scalpSL: sl2, scalpHold: h2, channel: ch2 });
+            }); }); });
           }); }); }); });
           for (var rz = raster.length - 1; rz > 0; rz--) {          // mischen, damit nicht immer dieselbe Ecke zuerst drankommt
             var rj = Math.floor(Math.random() * (rz + 1)), rt = raster[rz]; raster[rz] = raster[rj]; raster[rj] = rt;
@@ -4251,28 +4365,52 @@
           var schrittNr = (bi * ivs.length + vi) + 1, schritteGesamt = basen.length * ivs.length;
           pilotLogAdd('Zucht Gen ' + (zStand.gen + 1) + ' – Schritt ' + schrittNr + '/' + schritteGesamt + ': ' + basisJetzt + ' · ' + iv2 +
             ' · ' + kombis.length + ' Kombinationen (' + ausZucht + ' aus ' + eltern.length + ' Eltern, ' +
-            ausRaster + ' neu aus dem Raster' + (ausZufall ? ', ' + ausZufall + ' zufaellig' : '') + ') …');
+            ausRaster + ' neu aus dem Raster' + (ausZufall ? ', ' + ausZufall + ' zufaellig' : '') + ') · gesucht auf ' +
+            Object.keys(trainMap).length + ' Werten, geurteilt auf ' + Object.keys(testMapAlle).length + ' …');
           renderPilot();
           // Jede Gruppe bekommt ihren fairen Anteil an der verbleibenden Zeit.
           var restGruppen = Math.max(1, gruppenGesamt - gruppenFertig);
-          var anteilMs = Math.max(30000, (GESAMT_MS - (Date.now() - t0)) / restGruppen);
-          var trainRes = [], BLOCK = 12, tBlock = Date.now(), abgeschnitten = 0;
-          for (var kb = 0; kb < kombis.length; kb += BLOCK) {
-            var teil = kombis.slice(kb, kb + BLOCK);
-            var rTeil = await Promise.all(teil.map(function (k) {
-              var kk = kiKandidatBauen(k);
-              return btIntraday(trainMap, Object.assign({}, common, kk.opts, { period: k.period, confirmBps: k.confirmBps, zThr: zOf(k.confirmBps), lineType: k.lineType }));
+          var anteilMs = unbegrenzt ? Infinity : Math.max(30000, (GESAMT_MS - (Date.now() - t0)) / restGruppen);
+          // Nach Signal-Schluessel gruppieren; die Reihenfolge der Ergebnisse bleibt erhalten
+          var buendel = {}, reihenfolge = [];
+          kombis.forEach(function (k, ki3) {
+            var sk = [k.basis, k.period, k.confirmBps, k.lineType, k.channel].join('|');
+            if (!buendel[sk]) { buendel[sk] = []; reihenfolge.push(sk); }
+            buendel[sk].push({ k: k, idx: ki3 });
+          });
+          var trainRes = new Array(kombis.length), BLOCK = 3, tBlock = Date.now(), abgeschnitten = 0, fertigN = 0;
+          for (var kb = 0; kb < reihenfolge.length; kb += BLOCK) {
+            var gruppenTeil = reihenfolge.slice(kb, kb + BLOCK);
+            await Promise.all(gruppenTeil.map(function (sk2) {
+              var eintraege = buendel[sk2];
+              var k0 = eintraege[0].k;
+              var kk0 = kiKandidatBauen(k0);
+              var basisOpts = Object.assign({}, common, kk0.opts,
+                { period: k0.period, confirmBps: k0.confirmBps, zThr: zOf(k0.confirmBps), lineType: k0.lineType });
+              // Was sich je Variante unterscheidet: Not-Stop, Haltedauer, Schein-Profil
+              var varianten = eintraege.map(function (e) {
+                var kkv = kiKandidatBauen(e.k);
+                return { sl: kkv.opts.sl, maxHoldMin: kkv.opts.maxHoldMin,
+                  otmPct: kkv.opts.otmPct, expiryDays: kkv.opts.expiryDays, ratio: kkv.opts.ratio };
+              });
+              return btIntradayMulti(trainMap, basisOpts, varianten).then(function (rs) {
+                (rs || []).forEach(function (r3, ri) { trainRes[eintraege[ri].idx] = r3; });
+                fertigN += eintraege.length;
+              });
             }));
-            trainRes = trainRes.concat(rTeil);
-            var fertigN = Math.min(kombis.length, kb + BLOCK);
             var mitTrades = trainRes.filter(function (r0) { return r0 && !r0.error && r0.summary && r0.summary.nTrades >= 10; }).length;
+            fertigN = Math.min(fertigN, kombis.length);
             tiefFortschritt = { basis: basen[bi], iv: iv2, fertig: fertigN, gesamt: kombis.length,
               schritt: schrittNr, schritte: schritteGesamt, brauchbar: mitTrades, at: Date.now() };
+            var msJeKombi = (Date.now() - tBlock) / Math.max(1, fertigN);
+            msJeKombiSchnitt = kombisGesamtBisher
+              ? (msJeKombiSchnitt * kombisGesamtBisher + msJeKombi * fertigN) / (kombisGesamtBisher + fertigN)
+              : msJeKombi;
             pilotLogAdd('… ' + fertigN + '/' + kombis.length + ' gerechnet (' + mitTrades + ' mit genug Trades, ' +
-              Math.round((Date.now() - tBlock) / 1000) + ' s)');
+              Math.round((Date.now() - tBlock) / 1000) + ' s' + restText(kombis.length - fertigN, kombis.length) + ')');
             renderPilot();
             await new Promise(function (r0) { setTimeout(r0, 0); });   // Renderer atmen lassen
-            if (Date.now() - tBlock > anteilMs && fertigN < kombis.length) {
+            if (!unbegrenzt && Date.now() - tBlock > anteilMs && fertigN < kombis.length) {
               abgeschnitten = kombis.length - fertigN;
               kombis = kombis.slice(0, fertigN);      // nur Gerechnetes darf in die Auswertung
               pilotLogAdd('… Zeitanteil dieser Gruppe erreicht: ' + fertigN + ' gerechnet, ' +
@@ -4289,9 +4427,17 @@
             kandT.push({ k: k, train: r2.summary });
           });
           kandT.sort(function (x, y) { return y.train.retPct - x.train.retPct; });
+          // Wie gut waere der Beste dieser Gruppe rein zufaellig geworden?
+          var zpG = Q.bestOfN(kandT.map(function (x) { return x.train.retPct; }));
+          if (zpG) {
+            pilotLogAdd('   Zufallsprobe ' + basisJetzt + '/' + iv2 + ': Bester ' + zpG.bester + ' %, Zufallslatte ' +
+              zpG.zufallsMedian + ' % (95 %: ' + zpG.zufallsP95 + ') aus ' + zpG.n + ' Versuchen – ' +
+              (zpG.ueberzufaellig ? 'ueberzufaellig' : 'im Rahmen des Zufalls'));
+            zufallProGruppe.push({ basis: basisJetzt, iv: iv2, probe: zpG });
+          }
           for (var ti2 = 0; ti2 < Math.min(6, kandT.length); ti2++) {
             var kk2 = kiKandidatBauen(kandT[ti2].k);
-            var rv = await btIntraday(testMap, Object.assign({}, labCommonOpts(D.intraday, iv2), kk2.opts,
+            var rv = await btIntraday(testMapAlle, Object.assign({}, labCommonOpts(D.intraday, iv2), kk2.opts,
               { period: kandT[ti2].k.period, confirmBps: kandT[ti2].k.confirmBps, zThr: zOf(kandT[ti2].k.confirmBps), lineType: kandT[ti2].k.lineType }));
             if (rv && !rv.error) {
               var fund = { k: kandT[ti2].k, name: kk2.name, trainRet: kandT[ti2].train.retPct, trainN: kandT[ti2].train.nTrades,
@@ -4306,7 +4452,13 @@
             }
           }
           gruppenFertig++;
-          if (minutenBisOeffnung() < 90 || Date.now() - t0 > 25 * 60000) { pilotLogAdd('Tiefensuche: Zeitbudget erreicht – Zwischenstand gespeichert.'); bi = basen.length; break; }
+          kombisGesamtBisher += kombis.length;
+          var boerseDraengt = !unbegrenzt && handelBrauchtRechenzeit() && minutenBisOeffnung() < 90;
+          if (boerseDraengt || (!unbegrenzt && Date.now() - t0 > GESAMT_MS + 3 * 60000)) {
+            pilotLogAdd('Zucht: ' + (boerseDraengt ? 'Boerse oeffnet gleich und der Handel laeuft – Zwischenstand gespeichert.'
+                                                   : 'Zeitbudget erreicht – Zwischenstand gespeichert.'));
+            bi = basen.length; break;
+          }
         }
       }
       funde.sort(function (x, y) { return y.testRet - x.testRet; });
@@ -4338,17 +4490,33 @@
       pilotLogAdd('Generation ' + zStand.gen + ' abgeschlossen: ' + nachwuchs.length + ' Nachkommen haben sich ungesehen behauptet, ' +
         neuDrin + ' davon in die Population aufgenommen (Population ' + vorher + ' -> ' + zStand.ueberlebende.length +
         ', Gedaechtnis ' + zStand.gesehen.length + ' Kombinationen).');
+      var zpGesamt = Q.bestOfN(funde.map(function (f) { return f.testRet; }));
+      if (zpGesamt) {
+        pilotLogAdd('Zufallsprobe (ungesehene Daten): Bester ' + zpGesamt.bester + ' %, Zufallslatte ' + zpGesamt.zufallsMedian +
+          ' % aus ' + zpGesamt.n + ' Endkandidaten – ' + (zpGesamt.ueberzufaellig
+            ? 'schlaegt 95 % der Zufallslaeufe (p ' + zpGesamt.pWert + ').'
+            : 'NICHT ueberzufaellig (p ' + zpGesamt.pWert + ') – der Vorsprung erklaert sich durch die Zahl der Versuche.'));
+      }
       a.tiefensuche = { at: Date.now(), geprueft: geprueft, dauerMin: Math.round((Date.now() - t0) / 6000) / 10, top: funde.slice(0, 5),
-        generation: zStand.gen, population: zStand.ueberlebende.length, gedaechtnis: zStand.gesehen.length };
+        generation: zStand.gen, population: zStand.ueberlebende.length, gedaechtnis: zStand.gesehen.length,
+        zufallsprobe: zpGesamt, zufallProGruppe: zufallProGruppe };
       var bester = funde[0];
-      if (bester && bester.testRet > 0 && bester.testN >= 15) {
+      // Positiv UND genug Trades reicht nicht mehr: Wer aus tausenden Versuchen
+      // ausgewaehlt wurde, muss besser sein als der beste Zufallsversuch. Sonst
+      // zuechten wir Rauschen und nennen es Fortschritt.
+      var zufallOk = !zpGesamt || zpGesamt.ueberzufaellig;
+      if (bester && bester.testRet > 0 && bester.testN >= 15 && zufallOk) {
         var ek = kiKandidatBauen(bester.k);
         ek.quelle = 'tiefensuche';
         a.entdeckt = ek;
         pilotLogAdd('Tiefensuche-Fund: ' + ek.name + ' (Training ' + bester.trainRet + ' %, ungesehen +' + bester.testRet + ' % bei ' + bester.testN + ' Trades) – tritt in der nächsten Nacht-Messung an.');
       } else {
         a.entdeckt = null;
-        pilotLogAdd('Tiefensuche fertig: ' + geprueft + ' Kombinationen, kein Fund, der out-of-sample positiv war. Ehrliches Ergebnis – kein Fund ist besser als ein erfundener.');
+        pilotLogAdd('Zucht fertig: ' + geprueft + ' Kombinationen, kein Fund. ' +
+          (bester && bester.testRet > 0 && !zufallOk
+            ? 'Der Beste war zwar positiv (' + bester.testRet + ' %), lag aber innerhalb dessen, was ' + (zpGesamt ? zpGesamt.n : '') +
+              ' Zufallsversuche von selbst hergeben. Kein Fund ist besser als ein erfundener.'
+            : 'Keiner war out-of-sample positiv. Ehrliches Ergebnis.'));
       }
       a.lastTief = Date.now();
       await save();
@@ -4371,7 +4539,7 @@
     interval: ['1m', '5m', '15m', '60m'],
     period: [9, 20, 50], confirmBps: [5, 15, 30], lineType: ['ema', 'vwap'],
     profile: ['atm21', 'otm3_14', 'otm5_10', 'atm21_b', 'atm60_b', 'otm3_30b'],
-    scalpSL: [10, 15, 20, 30, 45, 'auto'], scalpHold: [15, 30, 60, 120, 240, 390]
+    scalpSL: [10, 15, 20, 30, 45, 'auto'], scalpHold: [15, 30, 60, 120, 240, 390], channel: [true, false]
   };
   function kiKandidatBauen(k) {
     var slV = k.scalpSL === 'auto' ? 'auto' : -(k.scalpSL) / 100;
@@ -4379,7 +4547,7 @@
     var basisO;
     if (k.basis === 'orb') basisO = { entryMode: 'orb', exitMode: 'confirmed', orbMin: 30, sl: slV, tp: null, trailPct: 0.15, maxHoldMin: 0, cooldownMin: 10, maxPerDay: 10 };
     else if (k.basis === 'reversion') basisO = { entryMode: 'reversion', sl: slV, tp: null, trailPct: 0, maxHoldMin: k.scalpHold, cooldownMin: 10, maxPerDay: 20 };
-    else if (k.basis === 'wave') basisO = { entryMode: 'wave', channel: D.intraday.channel !== false, sl: slV, tp: null, trailPct: 0, maxHoldMin: k.scalpHold, cooldownMin: 10, maxPerDay: 20, trendFilter: true, minQuality: 60 };
+    else if (k.basis === 'wave') basisO = { entryMode: 'wave', channel: (k.channel !== undefined ? !!k.channel : D.intraday.channel !== false), sl: slV, tp: null, trailPct: 0, maxHoldMin: k.scalpHold, cooldownMin: 10, maxPerDay: 20, trendFilter: true, minQuality: 60 };
     else if (k.basis === 'pullback') basisO = { entryMode: 'pullback', exitMode: 'confirmed', sl: slV, tp: null, trailPct: 0.15, maxHoldMin: k.scalpHold, cooldownMin: 10, maxPerDay: 10 };
     else if (k.basis === 'rsi2') basisO = { entryMode: 'rsi2', exitMode: 'target', sl: slV, tp: null, trailPct: 0, maxHoldMin: k.scalpHold, cooldownMin: 10, maxPerDay: 20 };
     else if (k.basis === 'donchian') basisO = { entryMode: 'donchian', exitMode: 'confirmed', sl: slV, tp: null, trailPct: 0.15, maxHoldMin: k.scalpHold, cooldownMin: 30, maxPerDay: 10 };
@@ -4776,6 +4944,30 @@
     // Kostenmodell v3: an echten Emittenten-Kursen kalibriert (onvista, 20.08.2026) und um
     // das Bezugsverhaeltnis erweitert. Frueher gemessene Ergebnisse sind damit erneut
     // nicht vergleichbar - Bestaetigungs-Kette startet neu, Ordergebuehr auf 0 (Capital.com).
+    // Rechenstand-Kopplung: greift bei JEDER kuenftigen Aenderung der Rechenweise
+    if (D.rechenstand !== Q.RECHENSTAND) {
+      var alterStand = D.rechenstand;
+      D.rechenstand = Q.RECHENSTAND;
+      if (D.autoOpt) {
+        var wegg = [];
+        if (D.autoOpt.entdeckt) wegg.push('Tiefensuche-Fund');
+        if (D.autoOpt.kiKandidat) wegg.push('KI-Kandidat');
+        if (D.autoOpt.pending) wegg.push('vorgemerkte Empfehlung');
+        if (D.autoOpt.zucht && (D.autoOpt.zucht.ueberlebende || []).length) wegg.push('Zucht-Population');
+        D.autoOpt.entdeckt = null; D.autoOpt.kiKandidat = null; D.autoOpt.pending = null;
+        D.autoOpt.tiefensuche = null; D.autoOpt.lastRecKey = null; D.autoOpt.filterBilanzVorher = null;
+        D.autoOpt.zucht = { gen: 0, ueberlebende: [], gesehen: [] };
+        D.autoOpt.lastTief = 0;
+        if (alterStand !== undefined && wegg.length) {
+          if (!D.tuneLog) D.tuneLog = [];
+          D.tuneLog.unshift({ id: 'rechenstand-' + Date.now(), at: Date.now(), quelle: 'sicherung',
+            applied: ['Gespeicherte Ergebnisse verworfen'],
+            txt: 'Die Rechenweise hat sich geaendert (Stand ' + alterStand + ' -> ' + Q.RECHENSTAND + '). ' +
+              'Damit sind alle frueher gemessenen Ergebnisse nicht mehr vergleichbar. Verworfen: ' +
+              wegg.join(', ') + '. Die naechste Messung faengt sauber an.' });
+        }
+      }
+    }
     if (!D.kostenModellV3) {
       D.kostenModellV3 = Date.now();
       // Auch der Tiefensuche-Fund und der KI-Kandidat stammen aus der alten Kostenwelt.

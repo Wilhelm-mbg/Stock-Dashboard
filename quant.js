@@ -424,6 +424,67 @@
     return out;
   }
   /** Bootstrap: Trades mit Zurücklegen neu ziehen → Bandbreite plausibler Endkapitale */
+  /** Wie gut waere der BESTE von n Versuchen rein zufaellig geworden?
+   *
+   *  Das ist die Frage, die bei jeder Rasterssuche fehlt und ohne die jeder Fund eine
+   *  Behauptung bleibt. Wer 3800 Kombinationen durchprobiert, findet mit Sicherheit
+   *  eine, die gut aussieht - auch wenn keine einzige davon etwas kann. Die Frage ist
+   *  nicht "ist der Beste positiv", sondern "ist er BESSER, als der Beste von 3800
+   *  Zufallsversuchen geworden waere".
+   *
+   *  Verfahren: Aus den tatsaechlich gemessenen Ergebnissen aller Kandidaten werden
+   *  Mittelwert und Streuung geschaetzt. Unter der Annahme "keiner kann etwas" waeren
+   *  alle Ergebnisse Ziehungen aus dieser Verteilung, nur ohne systematischen Vorteil -
+   *  also um den Mittelwert zentriert. Daraus wird per Simulation die Verteilung des
+   *  MAXIMUMS von n solchen Ziehungen gebildet und mit dem echten Besten verglichen.
+   *
+   *  Bewusst konservativ: Kandidaten aus derselben Zuchtlinie aehneln einander stark,
+   *  die WIRKSAME Zahl unabhaengiger Versuche ist also kleiner als n. Damit liegt die
+   *  Zufallslatte hier eher zu hoch als zu tief - lieber ein echter Fund faellt durch,
+   *  als ein zufaelliger kommt durch.
+   *
+   *  werte: Ergebnisse ALLER geprueften Kandidaten (z. B. Rendite out-of-sample in %).
+   *  Rueckgabe: {n, bester, zufallsMedian, zufallsP95, vorsprung, ueberzufaellig, pWert}
+   *  oder null, wenn zu wenige Werte fuer eine Aussage vorliegen. */
+  function bestOfN(werte, laeufe) {
+    var w = (werte || []).filter(function (v) { return typeof v === 'number' && isFinite(v); });
+    if (w.length < 20) return null;                 // unter 20 Versuchen ist die Streuung geraten
+    laeufe = laeufe || 2000;
+    var n = w.length, i, r;
+    var m = 0; for (i = 0; i < n; i++) m += w[i]; m /= n;
+    var v = 0; for (i = 0; i < n; i++) v += (w[i] - m) * (w[i] - m);
+    var sd = Math.sqrt(v / Math.max(1, n - 1));
+    var bester = w[0]; for (i = 1; i < n; i++) if (w[i] > bester) bester = w[i];
+    if (!(sd > 0)) return null;
+
+    // Fester Startwert: dieselbe Eingabe ergibt immer dasselbe Urteil.
+    var seed = 987654321;
+    function rnd() { seed = (Math.imul(seed, 1103515245) + 12345) & 2147483647; return (seed + 1) / 2147483649; }
+    function normal() {                              // Box-Muller
+      var u1 = rnd(), u2 = rnd();
+      return Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+    }
+    var maxima = [], schlagen = 0;
+    for (r = 0; r < laeufe; r++) {
+      var mx = -Infinity;
+      for (i = 0; i < n; i++) { var z = m + sd * normal(); if (z > mx) mx = z; }
+      maxima.push(mx);
+      if (mx >= bester) schlagen++;
+    }
+    maxima.sort(function (a, b) { return a - b; });
+    var med = maxima[Math.floor(laeufe * 0.5)];
+    var p95 = maxima[Math.floor(laeufe * 0.95)];
+    return {
+      n: n,
+      bester: Math.round(bester * 100) / 100,
+      zufallsMedian: Math.round(med * 100) / 100,
+      zufallsP95: Math.round(p95 * 100) / 100,
+      vorsprung: Math.round((bester - med) * 100) / 100,
+      ueberzufaellig: bester > p95,                  // schlaegt 95 % der Zufallslaeufe
+      pWert: Math.round(schlagen / laeufe * 1000) / 1000
+    };
+  }
+
   function bootstrapTrades(trades, capital, runs) {
     if (!trades.length) return null;
     runs = runs || 400;
@@ -1139,7 +1200,7 @@
   /** Stand der Rechengrundlage. Wird hochgezählt, sobald sich etwas ändert, das alte
    *  Backtest-Ergebnisse ungültig macht (z. B. die Vola-Skalierung in 7.10). Die Farm
    *  verwirft dann ihren Champion-Nachweis und lässt ihn neu antreten. */
-  var RECHENSTAND = 6;   // v8.9: Cent-Spread an echten Kursen kalibriert + Bezugsverhaeltnis
+  var RECHENSTAND = 7;   // v8.11: Trendkanal ist eine gemessene Achse (an/aus), nicht mehr fest
 
   var KANAL_MIN = { touchJeSeite: 3, dichte: 2.5, wechsel: 2, deckung: 0.90, enge: 0.85, vr: 0.35, acf: -0.65, score: 50 };
 
@@ -1423,6 +1484,127 @@
     return dir === 'call' ? rising : !rising;
   }
 
+  /** Einstiegspruefung fuer EINE Kerze - rein aus Kursen, ohne jeden Depotzustand.
+   *  Rueckgabe: null (kein Einstieg) oder {dir, chE, chRef, chN}.
+   *  P: {ENTRY, LINE, period, confirmBps, ZTHR, MINQ, CHAN, MTF, TREND}
+   *  'orb' wird hier NICHT behandelt (haengt am Handelsverlauf, siehe backtestIntraday). */
+  function einstiegSignal(bars, ci, P) {
+    var spot = bars[ci][1];
+    var dir = null;
+    var win = bars.slice(Math.max(0, ci - Math.max(P.period * 4, P.CHAN ? 380 : 260)), ci + 1);
+    var chE = null, chN = 0, chRef = null;
+    if (P.ENTRY === 'wave') {
+      var wq = waveQuality(win, P.LINE, P.period, P.ZTHR);
+      if (!wq.signal || wq.score < P.MINQ) return null;
+      dir = wq.signal;
+      if (P.CHAN) {
+        var dgE = degapBarArray(win);
+        chE = trendChannel(dgE);
+        if (!chE || !chE.gueltig) return null;
+        chN = chE.N;
+        chRef = { kanal: chE, i0: ci, off: dgE[dgE.length - 1][1] - spot };
+        if (dir === 'call' && chE.pos > 0.30) return null;
+        if (dir === 'put' && chE.pos < 0.70) return null;
+        if (dir === 'call' && chE.trend === 'down') return null;
+        if (dir === 'put' && chE.trend === 'up') return null;
+      }
+    } else if (P.ENTRY === 'reversion') {
+      var rsig = reversionSignal(win, P.LINE, P.period, P.ZTHR);
+      if (!rsig.signal) return null;
+      dir = rsig.signal;
+    } else if (P.ENTRY === 'pullback') {
+      var psig = pullbackSignal(win, P.LINE, P.period, P.confirmBps);
+      if (!psig.signal) return null;
+      dir = psig.signal;
+    } else if (P.ENTRY === 'rsi2') {
+      var xsig = rsiExtremSignal(win);
+      if (!xsig.signal) return null;
+      dir = xsig.signal;
+    } else if (P.ENTRY === 'donchian') {
+      var dsig = donchianSignal(win, P.period, P.confirmBps);
+      if (!dsig.signal) return null;
+      dir = dsig.signal;
+    } else if (P.ENTRY === 'squeeze') {
+      var qsig = squeezeSignal(win, P.period);
+      if (!qsig.signal) return null;
+      dir = qsig.signal;
+    } else {
+      var sig = signalCross(win, P.LINE, P.period, P.confirmBps);
+      if (!sig.crossed) return null;
+      dir = sig.crossed === 'up' ? 'call' : 'put';
+    }
+    if (P.MTF && !mtfAgrees(win, dir, 5)) return null;
+    if (P.TREND && P.ENTRY !== 'reversion') {
+      if (chE) {
+        if (dir === 'call' && chE.trend === 'down') return null;
+        if (dir === 'put' && chE.trend === 'up') return null;
+      }
+      var trendCloses = bars.slice(Math.max(0, ci - 240), ci + 1).map(function (b) { return b[1]; });
+      if (trendCloses.length >= 100) {
+        var e100 = emaSeries(trendCloses, 100);
+        if (P.ENTRY === 'wave') {
+          var rising = e100[e100.length - 1] > e100[Math.max(0, e100.length - 9)];
+          if ((dir === 'call' && !rising) || (dir === 'put' && rising)) return null;
+        } else {
+          var up100 = spot > e100[e100.length - 1];
+          if ((dir === 'call' && !up100) || (dir === 'put' && up100)) return null;
+        }
+      }
+    }
+    return { dir: dir, chE: chE, chRef: chRef, chN: chN };
+  }
+
+  /** Mehrere Varianten in EINEM Durchgang - die Einstiegssignale werden einmal berechnet
+   *  und geteilt.
+   *
+   *  Warum das so viel bringt: Not-Stop, Haltedauer, Schein-Profil und Budget aendern die
+   *  Einstiegssignale nicht - nur, was danach mit der Position passiert. Die Zucht probiert
+   *  aber 5 Not-Stops x 4 Haltedauern durch, rechnet also zwanzigmal exakt dieselben Signale.
+   *  Gemessen sind Signale rund die Haelfte der Rechenzeit eines Backtests; sie einmal statt
+   *  zwanzigmal zu berechnen spart also knapp die Haelfte.
+   *
+   *  basis: gemeinsame Optionen (Signalparameter MUESSEN hier stehen)
+   *  varianten: [{sl, maxHoldMin, otmPct, ...}] - was sich je Lauf unterscheidet
+   *  Rueckgabe: Array der Einzelergebnisse, in derselben Reihenfolge.
+   *
+   *  Die Signalvorberechnung greift nicht beim Eroeffnungs-Range-Einstieg (orb): der haengt
+   *  am Handelsverlauf und wird je Variante neu bestimmt. */
+  function backtestIntradayMulti(histMap, basis, varianten) {
+    basis = basis || {};
+    varianten = varianten || [{}];
+    var entry = basis.entryMode || 'cross';
+    if (entry === 'orb' || varianten.length < 2) {
+      return varianten.map(function (v) { return backtestIntraday(histMap, Object.assign({}, basis, v)); });
+    }
+    var P2 = {
+      ENTRY: entry,
+      LINE: basis.lineType || 'ema',
+      period: basis.period || 20,
+      confirmBps: basis.confirmBps === undefined ? 15 : basis.confirmBps,
+      ZTHR: basis.zThr || 1.5,
+      MINQ: basis.minQuality === undefined ? 60 : basis.minQuality,
+      CHAN: !!basis.channel,
+      MTF: !!basis.mtf,
+      TREND: !!basis.trendFilter
+    };
+    var speicher = {};
+    var syms = Object.keys(histMap);
+    for (var si = 0; si < syms.length; si++) {
+      var bars = histMap[syms[si]];
+      var arr = new Array(bars.length);
+      // AB DER ERSTEN Kerze. Ein frueherer Versuch startete bei 60 mit der Begruendung,
+      // darunter liefere ohnehin keine Signalfunktion etwas - das stimmt fuer die Umkehr
+      // (Fenster 260 Kerzen), aber NICHT fuer die EMA-Kreuzung, die schon nach rund 30
+      // Kerzen ausloest. Der Gleichheitstest fand prompt neun fehlende Trades. Die paar
+      // zusaetzlichen Aufrufe kosten nichts, eine stille Abweichung dagegen alles.
+      for (var ci = 0; ci < bars.length; ci++) arr[ci] = einstiegSignal(bars, ci, P2);
+      speicher[syms[si]] = arr;
+    }
+    return varianten.map(function (v) {
+      return backtestIntraday(histMap, Object.assign({}, basis, v, { __signale: speicher }));
+    });
+  }
+
   /** Volatilitäts-Stop („atmender“ Not-SL) auf den SCHEIN, aus Bar-Rauschen × Hebel.
    *  Rückgabe: negativer Anteil, z. B. -0.22 = −22 %. */
   function autoStop(closes, omega, barsHold) {
@@ -1487,6 +1669,11 @@
     var RISKP = opts.riskPct || 0;                                     // Positionsgröße nach Risiko (% vom Kapital je Stop)
     var ORBMIN = opts.orbMin || 30;                                    // Opening-Range-Dauer in Minuten
     var BV = opts.ratio || RATIO;                                      // Bezugsverhaeltnis (Kostenhebel!)
+    // Alles, woran die Einstiegspruefung haengt - und NICHTS davon aendert sich,
+    // wenn nur Not-Stop, Haltedauer, Schein-Profil oder Budget variieren.
+    var SIGP = { ENTRY: ENTRY, LINE: LINE, period: period, confirmBps: confirmBps,
+      ZTHR: ZTHR, MINQ: MINQ, CHAN: CHAN, MTF: MTF, TREND: TREND };
+    var SIGV = opts.__signale || null;      // von backtestIntradayMulti gefuellt
     var AUTO_SL = SL === 'auto';
     if (AUTO_SL) SL = -0.25; // Fallback, echter Wert je Trade
     var orbState = {};
@@ -1595,47 +1782,8 @@
         if ((dayCount[dk] || 0) >= maxPerDay) continue;
         if (lastTrade[sym] && t - lastTrade[sym] < cooldownMs) continue;
         var dir = null;
-        var win = bars.slice(Math.max(0, ci - Math.max(period * 4, CHAN ? 380 : 260)), ci + 1);
         var chE = null, chN = 0, chRef = null;
-        if (ENTRY === 'wave') {
-          var wq = waveQuality(win, LINE, period, ZTHR);
-          if (!wq.signal || wq.score < MINQ) continue;
-          dir = wq.signal;
-          if (CHAN) {
-            // Chart-technische Kanal-Erkennung; ohne gültigen Kanal kein Trade.
-            var dgE = degapBarArray(win);
-            chE = trendChannel(dgE);
-            if (!chE || !chE.gueltig) continue;
-            chN = chE.N;
-            chRef = { kanal: chE, i0: ci, off: dgE[dgE.length - 1][1] - spot };
-            // Einstieg nur am Kanalrand …
-            if (dir === 'call' && chE.pos > 0.30) continue;
-            if (dir === 'put' && chE.pos < 0.70) continue;
-            // … und nie gegen einen Kanal, dessen Richtung statistisch belegt ist
-            if (dir === 'call' && chE.trend === 'down') continue;
-            if (dir === 'put' && chE.trend === 'up') continue;
-          }
-        } else if (ENTRY === 'reversion') {
-          var rsig = reversionSignal(win, LINE, period, ZTHR);
-          if (!rsig.signal) continue;
-          dir = rsig.signal;
-        } else if (ENTRY === 'pullback') {
-          var psig = pullbackSignal(win, LINE, period, confirmBps);
-          if (!psig.signal) continue;
-          dir = psig.signal;
-        } else if (ENTRY === 'rsi2') {
-          var xsig = rsiExtremSignal(win);
-          if (!xsig.signal) continue;
-          dir = xsig.signal;
-        } else if (ENTRY === 'donchian') {
-          var dsig = donchianSignal(win, period, confirmBps);
-          if (!dsig.signal) continue;
-          dir = dsig.signal;
-        } else if (ENTRY === 'squeeze') {
-          var qsig = squeezeSignal(win, period);
-          if (!qsig.signal) continue;
-          dir = qsig.signal;
-        } else if (ENTRY === 'orb') {
+        if (ENTRY === 'orb') {
           var os2 = orbState[sym];
           if (!os2 || !os2.done) continue;
           var confO = confirmBps / 10000;
@@ -1644,34 +1792,21 @@
           if (spot > os2.high * (1 + confO) && !os2.traded.call) dir = 'call';
           else if (spot < os2.low * (1 - confO) && !os2.traded.put) dir = 'put';
           else continue;
-        } else {
-          var sig = signalCross(win, LINE, period, confirmBps);
-          if (!sig.crossed) continue;
-          dir = sig.crossed === 'up' ? 'call' : 'put';
-        }
-        if (MTF && !mtfAgrees(win, dir, 5)) continue; // 5-Min-Chart widerspricht
-        if (TREND && ENTRY !== 'reversion') { // übergeordneter Trend (Pflicht beim Wellenreiter)
-          // Kanalrichtung UND übergeordneter Trend müssen passen. Ein Seitwärtskanal
-          // innerhalb eines Abwärtstrends ist kein Freibrief für Long-Einstiege.
-          if (chE) {
-            if (dir === 'call' && chE.trend === 'down') continue;
-            if (dir === 'put' && chE.trend === 'up') continue;
-          }
-          {
-            var trendCloses = bars.slice(Math.max(0, ci - 240), ci + 1).map(function (b) { return b[1]; });
-            if (trendCloses.length >= 100) {
-              var e100 = emaSeries(trendCloses, 100);
-              if (ENTRY === 'wave') {
-                // Wellen-Tal liegt naturgemäß oft UNTER der EMA100 – deshalb zählt
-                // die Richtung der EMA (steigend/fallend), nicht die Kurslage.
-                var rising = e100[e100.length - 1] > e100[Math.max(0, e100.length - 9)];
-                if ((dir === 'call' && !rising) || (dir === 'put' && rising)) continue;
-              } else {
-                var up100 = spot > e100[e100.length - 1];
-                if ((dir === 'call' && !up100) || (dir === 'put' && up100)) continue;
-              }
+          // Die reinen Filter gelten fuer orb genauso - nur der Ausloeser ist zustandsbehaftet.
+          var winO = bars.slice(Math.max(0, ci - Math.max(period * 4, CHAN ? 380 : 260)), ci + 1);
+          if (MTF && !mtfAgrees(winO, dir, 5)) continue;
+          if (TREND) {
+            var tcO = bars.slice(Math.max(0, ci - 240), ci + 1).map(function (b) { return b[1]; });
+            if (tcO.length >= 100) {
+              var eO = emaSeries(tcO, 100);
+              if ((dir === 'call' && !(spot > eO[eO.length - 1])) || (dir === 'put' && (spot > eO[eO.length - 1]))) continue;
             }
           }
+        } else {
+          // Vorberechnet, wenn ein Signalspeicher mitgegeben wurde - sonst hier und jetzt.
+          var vor = SIGV ? SIGV[sym][ci] : einstiegSignal(bars, ci, SIGP);
+          if (!vor) continue;
+          dir = vor.dir; chE = vor.chE; chRef = vor.chRef; chN = vor.chN;
         }
         var closesUpto = bars.slice(Math.max(0, ci - 300), ci + 1).map(function (b) { return b[1]; });
         // Volatilität muss auf das Bar-Raster hochgerechnet werden: 390 Handelsminuten je Tag
@@ -1767,7 +1902,7 @@
     warrantOmega: warrantOmega, warrantAufgeld: warrantAufgeld, PROFILES: PROFILES,
     underlyingAtTarget: underlyingAtTarget,
     backtest: backtest, RATIO: RATIO,
-    histVolIntraday: histVolIntraday, barMinOf: barMinOf, backtestIntraday: backtestIntraday,
+    histVolIntraday: histVolIntraday, barMinOf: barMinOf, einstiegSignal: einstiegSignal, backtestIntraday: backtestIntraday, backtestIntradayMulti: backtestIntradayMulti,
     usSommerzeit: usSommerzeit, minutenSeitOeffnung: minutenSeitOeffnung,
     SETUP_ALLOW: SETUP_ALLOW, regimeValidate: regimeValidate,
     resampleBars: resampleBars, mtfAgrees: mtfAgrees, autoStop: autoStop,
@@ -1781,7 +1916,7 @@
     trendChannel: trendChannel, projectTrendChannel: projectTrendChannel,
     KANAL_MIN: KANAL_MIN, RECHENSTAND: RECHENSTAND, degapBarArray: degapBarArray,
     degapCloses: degapCloses, degapBars: degapBars,
-    computeStats: computeStats, bootstrapTrades: bootstrapTrades
+    computeStats: computeStats, bootstrapTrades: bootstrapTrades, bestOfN: bestOfN
   };
   if (typeof module !== 'undefined' && module.exports) module.exports = Quant;
   else root.Quant = Quant;
