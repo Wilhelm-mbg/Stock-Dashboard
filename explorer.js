@@ -87,13 +87,15 @@
       var r = JSON.parse(res.body).chart.result[0];
       var q = r.indicators.quote[0] || {};
       var ts = r.timestamp || [], closes = q.close || [], hi = q.high || [], lo = q.low || [], vo = q.volume || [];
+      var op = q.open || [];
       var series = [], bars = [];
       for (var i = 0; i < ts.length; i++) {
         if (closes[i] == null) continue;
         var t = ts[i] * 1000, c = closes[i];
         series.push([t, c]);
         // Vollformat fuer die Signalrechnung: [Zeit, Schluss, Volumen, Hoch, Tief]
-        bars.push([t, c, vo[i] || 0, hi[i] != null ? hi[i] : c, lo[i] != null ? lo[i] : c]);
+        // [Zeit, Schluss, Volumen, Hoch, Tief, Eroeffnung]
+        bars.push([t, c, vo[i] || 0, hi[i] != null ? hi[i] : c, lo[i] != null ? lo[i] : c, op[i] != null ? op[i] : c]);
       }
       return { series: series, bars: bars, meta: r.meta || {} };
     } catch (e) { return null; }
@@ -174,6 +176,14 @@
           // Neu zeichnen genuegt - die Kurse sind schon da, es wird nichts nachgeladen
           drawBig(document.getElementById('bigchart'), CURDATA.rangeSeries || [], letzteBeschriftung);
         });
+      });
+    }
+    var artL = document.getElementById('expChartArt');
+    if (artL && !artL.__bereit) {
+      artL.__bereit = true;
+      artL.addEventListener('change', function () {
+        chartArt = artL.value;
+        drawBig(document.getElementById('bigchart'), CURDATA.rangeSeries || [], letzteBeschriftung);
       });
     }
     var indL = document.getElementById('expIndiLeiste');
@@ -362,6 +372,7 @@
   var LETZTE_PUNKTE = [];     // Signale des aktuellen Charts - fuer Liste und Auswahl
   var GEWAEHLT = null;        // gerade angeklicktes Signal
   var indAn = {};        // Chartbild: gleitende Durchschnitte, Kanal, Zonen, Volumen
+  var chartArt = 'linie';   // 'linie' oder 'kerzen'
 
   /** Signale ueber die geladene Kursreihe rechnen.
    *  Jeder Punkt sieht nur die Kerzen BIS zu sich selbst - kein Blick in die Zukunft,
@@ -636,10 +647,41 @@
     }
     var first = series[0][1], last = series[series.length - 1][1];
     var chg = (last / first - 1) * 100;
+    /* --- Kerzen --- */
+    var kerzen = '';
+    if (chartArt === 'kerzen' && barsI && barsI.length > 1) {
+      // Breite aus dem Abstand zweier Kerzen, 70 % davon als Koerper - so bleibt ein
+      // sichtbarer Spalt und die Kerzen kleben nicht aneinander.
+      var abst = (W - 2 * pad) / Math.max(1, barsI.length - 1);
+      var kb = Math.max(1, Math.min(14, abst * 0.7));
+      var duenn = kb < 2.5;      // bei sehr vielen Kerzen nur noch Striche zeichnen
+      for (var ki2 = 0; ki2 < barsI.length; ki2++) {
+        var bk = barsI[ki2];
+        if (bk[0] < x0 || bk[0] > x1) continue;
+        var o = bk[5] != null ? bk[5] : bk[1], c2 = bk[1];
+        var h2 = bk[3] != null ? bk[3] : Math.max(o, c2), l2 = bk[4] != null ? bk[4] : Math.min(o, c2);
+        var xk = X(bk[0]);
+        var steigt = c2 >= o;
+        var farbe = steigt ? 'var(--up)' : 'var(--down)';
+        // Docht: Hoch bis Tief
+        kerzen += '<line x1="' + xk.toFixed(1) + '" x2="' + xk.toFixed(1) + '" y1="' + Y(h2).toFixed(1) +
+          '" y2="' + Y(l2).toFixed(1) + '" stroke="' + farbe + '" stroke-width="1"></line>';
+        if (!duenn) {
+          // Koerper: Eroeffnung bis Schluss. Bei gleichem Kurs ein waagerechter Strich,
+          // sonst waere die Kerze unsichtbar.
+          var yo = Y(o), yc = Y(c2);
+          var oben = Math.min(yo, yc), hoehe = Math.max(0.8, Math.abs(yc - yo));
+          kerzen += '<rect x="' + (xk - kb / 2).toFixed(1) + '" y="' + oben.toFixed(1) + '" width="' + kb.toFixed(1) +
+            '" height="' + hoehe.toFixed(1) + '" fill="' + (steigt ? farbe : farbe) + '" opacity="' + (steigt ? '0.9' : '1') + '"></rect>';
+        }
+      }
+    }
     svg.innerHTML = grid +
-      '<path d="' + d + ' L' + X(x1).toFixed(1) + ' ' + (H - padB) + ' L' + X(x0).toFixed(1) + ' ' + (H - padB) + ' Z" fill="var(--series-soft)"></path>' +
-      '<path d="' + d + '" fill="none" stroke="var(--series)" stroke-width="2" vector-effect="non-scaling-stroke"></path>' +
-      volBalken + zonen + indiPfad + linienPfad + kreuze + marker +
+      (chartArt === 'kerzen' ? '' :
+        '<path d="' + d + ' L' + X(x1).toFixed(1) + ' ' + (H - padB) + ' L' + X(x0).toFixed(1) + ' ' + (H - padB) + ' Z" fill="var(--series-soft)"></path>') +
+      (chartArt === 'kerzen' ? '' :
+        '<path d="' + d + '" fill="none" stroke="var(--series)" stroke-width="2" vector-effect="non-scaling-stroke"></path>') +
+      volBalken + zonen + kerzen + indiPfad + linienPfad + kreuze + marker +
       '<text x="' + pad + '" y="' + (H - 5) + '" fill="var(--muted)" font-size="10">' + rangeKey + ': <tspan class="' + U.signCls(chg) + '" fill="' + (chg >= 0 ? 'var(--up)' : 'var(--down)') + '">' + U.signTxt(chg, ' %') + '</tspan></text>' +
       '<line id="bigCross" y1="' + pad + '" y2="' + (H - padB) + '" stroke="var(--baseline)" stroke-width="1" style="display:none"></line>';
     bigMeta = { series: series, x0: x0, x1: x1, W: W, X: X };
