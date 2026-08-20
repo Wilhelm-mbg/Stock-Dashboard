@@ -251,6 +251,101 @@
   }
 
   var bigMeta = null;
+  /** Liste aller Signale des aktuellen Charts. Ohne sie muss man mit der Maus auf
+   *  winzige Dreiecke zielen, um zu sehen, was ein Signal war - auf einem Jahreschart
+   *  mit hunderten Markierungen ist das aussichtslos. */
+  var SIGNAL_ERKLAERT = {
+    'EMA-Kreuzung': 'Der Kurs hat die EMA20 durchbrochen und steht jetzt mindestens 15 Basispunkte jenseits davon. Innerhalb der letzten sechs Kerzen war er noch auf der anderen Seite.',
+    'Umkehr': 'Der Abstand des Kurses zur Leitlinie ist mehr als das 1,5-fache seiner üblichen Schwankung – und die letzte Kerze dreht bereits zurück (kein Griff ins fallende Messer).',
+    'Rücksetzer': 'Im laufenden Trend ist der Kurs an die Leitlinie zurückgekommen und dreht dort wieder in Trendrichtung.',
+    'RSI(2)': 'Der 2-Perioden-RSI steht im Extrem (unter 10 bzw. über 90) und der übergeordnete Trend passt zur Richtung.',
+    'Donchian': 'Der Schlusskurs liegt über dem Hoch (bzw. unter dem Tief) der letzten 20 Kerzen – ein Ausbruch aus der jüngsten Spanne.',
+    'Squeeze': 'Die Bollinger-Bänder waren deutlich enger als zuletzt üblich, und jetzt bricht der Kurs aus dieser Kompression aus.'
+  };
+
+  /** Was das gewählte Signal aussagt – und was danach tatsächlich passiert ist. */
+  function zeigeSignalDetail() {
+    var el = document.getElementById('expSigDetail');
+    if (!el) return;
+    if (GEWAEHLT == null || !LETZTE_PUNKTE[GEWAEHLT]) { el.innerHTML = ''; el.style.display = 'none'; return; }
+    var p = LETZTE_PUNKTE[GEWAEHLT];
+    var bars = CURDATA.rangeBars || [];
+    var idx = -1;
+    for (var i = 0; i < bars.length; i++) if (bars[i][0] === p.t) { idx = i; break; }
+    var danach = '';
+    if (idx >= 0) {
+      // Was danach kam - in Signalrichtung gerechnet, damit "+" immer "richtig gelegen" heisst
+      var zeilen = [4, 8, 16, 26].map(function (h) {
+        if (idx + h >= bars.length) return null;
+        var r = (bars[idx + h][1] / bars[idx][1] - 1) * 100;
+        var inRichtung = p.dir === 'call' ? r : -r;
+        return '<span style="display:inline-block; min-width:104px;">nach ' + h + ' Kerzen: <b class="' +
+          (inRichtung >= 0 ? 'up' : 'down') + '" style="color:' + (inRichtung >= 0 ? 'var(--up)' : 'var(--down)') + '">' +
+          (inRichtung >= 0 ? '+' : '') + inRichtung.toFixed(2) + ' %</b></span>';
+      }).filter(Boolean);
+      danach = zeilen.length
+        ? '<div style="margin-top:8px; font-size:12px;"><span style="color:var(--muted);">Was danach kam, in Signalrichtung:</span><br>' + zeilen.join(' ') + '</div>'
+        : '<div style="margin-top:8px; font-size:12px; color:var(--muted);">Das Signal ist zu jung – die Entwicklung danach liegt noch nicht vor.</div>';
+    }
+    el.style.display = 'block';
+    el.innerHTML =
+      '<div style="display:flex; align-items:baseline; gap:10px; flex-wrap:wrap;">' +
+        '<span style="width:11px; height:11px; border-radius:2px; background:' + p.farbe + '; display:inline-block;"></span>' +
+        '<b style="font-size:14px;">' + U.esc(p.name) + '</b>' +
+        '<span style="color:' + (p.dir === 'call' ? 'var(--up)' : 'var(--down)') + '; font-weight:700;">' +
+          (p.dir === 'call' ? '▲ Kauf' : '▼ Verkauf') + '</span>' +
+        '<span style="color:var(--muted);">' + new Date(p.t).toLocaleString('de-DE') + ' · Kurs ' + U.nf2.format(p.preis) + '</span>' +
+        '<button class="btn ghost tiny" id="expSigZu" style="margin-left:auto;">schließen</button>' +
+      '</div>' +
+      '<div style="font-size:12.5px; color:var(--ink-2); margin-top:6px;">' +
+        U.esc(SIGNAL_ERKLAERT[p.name] || 'Keine Erläuterung hinterlegt.') + '</div>' +
+      danach +
+      '<div style="font-size:11px; color:var(--muted); margin-top:8px;">' +
+        'Hinweis: Einzelsignale wurden über 19 000 Kerzen gemessen und liegen bei 46–56 % Trefferquote. ' +
+        'Was einzeln kaum trägt, kann in Kombination mit Trendkanal und Volumen deutlich besser sein.</div>';
+    var zu = document.getElementById('expSigZu');
+    if (zu) zu.addEventListener('click', function () {
+      GEWAEHLT = null;
+      drawBig(document.getElementById('bigchart'), CURDATA.rangeSeries || [], letzteBeschriftung);
+    });
+  }
+
+  function zeigeSignalListe() {
+    var el = document.getElementById('expSigListe');
+    if (!el) return;
+    if (!LETZTE_PUNKTE.length) {
+      el.innerHTML = '<div class="empty" style="padding:10px 0;">Keine Signale eingeblendet. Oben Häkchen setzen.</div>';
+      return;
+    }
+    // Neueste zuerst - die interessieren beim Prüfen am meisten
+    var mitIndex = LETZTE_PUNKTE.map(function (p, i) { return { p: p, i: i }; })
+      .sort(function (a, b) { return b.p.t - a.p.t; }).slice(0, 200);
+    el.innerHTML =
+      '<div style="font-size:11.5px; color:var(--muted); margin-bottom:6px;">' +
+        LETZTE_PUNKTE.length + ' Signale · Zeile anklicken, um sie im Chart zu markieren' +
+        (LETZTE_PUNKTE.length > 200 ? ' · die 200 jüngsten' : '') + '</div>' +
+      '<div style="max-height:260px; overflow:auto;"><table class="tbl"><thead><tr>' +
+        '<th>Zeitpunkt</th><th>Signal</th><th>Richtung</th><th style="text-align:right;">Kurs</th>' +
+      '</tr></thead><tbody>' +
+      mitIndex.map(function (x) {
+        var p = x.p;
+        return '<tr data-zeile="' + x.i + '" style="cursor:pointer;' +
+          (GEWAEHLT === x.i ? ' background:var(--grid);' : '') + '">' +
+          '<td>' + new Date(p.t).toLocaleString('de-DE', { day: '2-digit', month: 'short', year: '2-digit', hour: '2-digit', minute: '2-digit' }) + '</td>' +
+          '<td><span style="display:inline-block; width:9px; height:9px; border-radius:2px; background:' + p.farbe + '; margin-right:6px;"></span>' + U.esc(p.name) + '</td>' +
+          '<td class="' + (p.dir === 'call' ? 'up' : 'down') + '" style="color:' + (p.dir === 'call' ? 'var(--up)' : 'var(--down)') + ';">' +
+            (p.dir === 'call' ? '▲ Kauf' : '▼ Verkauf') + '</td>' +
+          '<td style="text-align:right;">' + U.nf2.format(p.preis) + '</td></tr>';
+      }).join('') + '</tbody></table></div>';
+    el.querySelectorAll('[data-zeile]').forEach(function (tr) {
+      tr.addEventListener('click', function () {
+        var i3 = parseInt(tr.getAttribute('data-zeile'), 10);
+        GEWAEHLT = (GEWAEHLT === i3) ? null : i3;
+        drawBig(document.getElementById('bigchart'), CURDATA.rangeSeries || [], letzteBeschriftung);
+      });
+    });
+  }
+
   /* ================= Signale im Chart =================
    * Berechnet mit denselben Funktionen, die auch die Messung und der Handel benutzen -
    * es wird nichts fuer die Anzeige nachgebaut. Was hier zu sehen ist, ist exakt das,
@@ -264,6 +359,8 @@
     squeeze:   { name: 'Squeeze',      farbe: '#f472b6', fn: function (b) { return Q.squeezeSignal(b, 20).signal; } }
   };
   var sigAn = {};
+  var LETZTE_PUNKTE = [];     // Signale des aktuellen Charts - fuer Liste und Auswahl
+  var GEWAEHLT = null;        // gerade angeklicktes Signal
   var indAn = {};        // Chartbild: gleitende Durchschnitte, Kanal, Zonen, Volumen
 
   /** Signale ueber die geladene Kursreihe rechnen.
@@ -513,18 +610,28 @@
           ' Kerzen – die meisten Signale brauchen mehr Vorlauf. Längeren Zeitraum oder feinere Kerzen wählen.';
         else zEl2.textContent = 'kein Signal in diesem Zeitraum';
       }
-      punkte.forEach(function (p) {
+      LETZTE_PUNKTE = punkte.slice();
+      punkte.forEach(function (p, pi) {
         if (p.t < x0 || p.t > x1) return;
         var px = X(p.t), py = Y(p.preis);
-        // Call unter dem Kurs (Dreieck nach oben), Put darueber (nach unten) - so ueberdecken
-        // sie den Kursverlauf nicht und die Richtung ist ohne Legende erkennbar.
+        var gew = GEWAEHLT != null && GEWAEHLT === pi;
+        // Groesser als frueher (6 statt 4 Pixel Halbbreite) und mit unsichtbarer
+        // Klickflaeche darum: mit der alten Groesse war ein Signal auf einem vollen
+        // Chart praktisch nicht zu treffen.
+        var s2 = gew ? 9 : 6;
         var d2 = p.dir === 'call'
-          ? 'M' + px + ' ' + (py + 6) + ' l4 7 l-8 0 Z'
-          : 'M' + px + ' ' + (py - 6) + ' l4 -7 l-8 0 Z';
-        marker += '<path d="' + d2 + '" fill="' + p.farbe + '" opacity="0.85"><title>' + p.name + ' · ' +
-          (p.dir === 'call' ? 'Kauf' : 'Verkauf') + '\n' +
+          ? 'M' + px + ' ' + (py + 7) + ' l' + s2 + ' ' + (s2 + 3) + ' l' + (-2 * s2) + ' 0 Z'
+          : 'M' + px + ' ' + (py - 7) + ' l' + s2 + ' ' + (-s2 - 3) + ' l' + (-2 * s2) + ' 0 Z';
+        marker +=
+          '<g class="sigmark" data-sig-i="' + pi + '" style="cursor:pointer;">' +
+          '<rect x="' + (px - 11).toFixed(1) + '" y="' + (py - 20).toFixed(1) + '" width="22" height="40" fill="transparent"></rect>' +
+          '<path d="' + d2 + '" fill="' + p.farbe + '" opacity="' + (gew ? '1' : '0.85') + '"' +
+            (gew ? ' stroke="var(--ink)" stroke-width="1.5"' : '') + '></path>' +
+          (gew ? '<line x1="' + px.toFixed(1) + '" x2="' + px.toFixed(1) + '" y1="' + pad + '" y2="' + (H - padB) +
+                 '" stroke="' + p.farbe + '" stroke-width="1" stroke-dasharray="3 3" opacity="0.6"></line>' : '') +
+          '<title>' + p.name + ' · ' + (p.dir === 'call' ? 'Kauf' : 'Verkauf') + '\n' +
           new Date(p.t).toLocaleString('de-DE', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) +
-          '\n' + U.nf2.format(p.preis) + '</title></path>';
+          '\n' + U.nf2.format(p.preis) + '\n(anklicken für Einzelheiten)</title></g>';
       });
     }
     var first = series[0][1], last = series[series.length - 1][1];
@@ -536,6 +643,16 @@
       '<text x="' + pad + '" y="' + (H - 5) + '" fill="var(--muted)" font-size="10">' + rangeKey + ': <tspan class="' + U.signCls(chg) + '" fill="' + (chg >= 0 ? 'var(--up)' : 'var(--down)') + '">' + U.signTxt(chg, ' %') + '</tspan></text>' +
       '<line id="bigCross" y1="' + pad + '" y2="' + (H - padB) + '" stroke="var(--baseline)" stroke-width="1" style="display:none"></line>';
     bigMeta = { series: series, x0: x0, x1: x1, W: W, X: X };
+    svg.querySelectorAll('.sigmark').forEach(function (g2) {
+      g2.addEventListener('click', function (ev) {
+        ev.stopPropagation();
+        var i2 = parseInt(g2.getAttribute('data-sig-i'), 10);
+        GEWAEHLT = (GEWAEHLT === i2) ? null : i2;
+        drawBig(svg, CURDATA.rangeSeries || [], letzteBeschriftung);
+      });
+    });
+    zeigeSignalListe();
+    zeigeSignalDetail();
   }
 
   // Crosshair-Tooltip auf dem großen Chart
