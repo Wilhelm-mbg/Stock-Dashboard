@@ -8,6 +8,8 @@ importScripts('quant.js');
 var karten = {};
 self.onmessage = function (e) {
   var m = e.data;
+  // Lebenszeichen: sofort und ohne Rechenarbeit beantworten.
+  if (m.ping) { self.postMessage({ pong: 1 }); return; }
   if (m.evict) { delete karten[m.evict]; return; }
   try {
     if (m.map) karten[m.mapId] = m.map;

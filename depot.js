@@ -16,18 +16,18 @@
       stats: { news: { r: 0, w: 0 }, tech: { r: 0, w: 0 }, elliott: { r: 0, w: 0 }, maIntraday: { r: 0, w: 0 }, ki: { r: 0, w: 0 } },
       kiLog: [], patience: {},
       weights: { news: 0.35, tech: 0.40, elliott: 0.25 },
-      intraday: { enabled: false, exitStyle: 'laufen', mode: 'breakout', interval: '5m', period: 20, confirmBps: 15, profile: 'atm21', orderFee: 1.5, minDollarVol: 50, budgetPct: 0.03, sl: -0.25, tp: 0.35, cooldownMin: 45, maxPerDay: 10, lineType: 'ema', trendFilter: false, window: 'all', scalpHold: 60, scalpTrail: 15, scalpSL: 20, blackout: 'block', channel: true, mtf: true, sizing: 'fix', screener: false, avoidHours: [], autoTune: true },
+      intraday: { enabled: false, exitStyle: 'laufen', mode: 'breakout', interval: '5m', period: 20, confirmBps: 15, profile: 'atm21_b', orderFee: 0, minDollarVol: 50, budgetPct: 0.03, sl: -0.25, tp: 0.35, cooldownMin: 45, maxPerDay: 10, lineType: 'ema', trendFilter: false, window: 'all', scalpHold: 60, scalpTrail: 15, scalpSL: 20, blackout: 'block', channel: true, mtf: true, sizing: 'fix', screener: false, avoidHours: [], autoTune: true },
       watchlist: [],
       intradayLastScan: 0, intradayDay: '', intradayCount: 0, intradayCooldown: {},
       notify: true, hourlyEnabled: true, equityHist: [],
-      risk: { maxPos: 8, dayLossPct: 5, exposurePct: 40 },
+      risk: { maxPos: 8, dayLossPct: 3, exposurePct: 40 },
       dayKey: '', dayStartEq: 0,
       lastRun: 0, nextId: 1
     };
   }
   var logFilter = 'all';
   // Gesundheits-Telemetrie (für das externe Audit)
-  var HEALTH = { scans: 0, scanErrors: 0, fetchFail: 0, fetchOk: 0, kiFail: 0, kiOk: 0, capFail: 0, capOk: 0, lastScanT: 0, scanTimes: [], startedAt: Date.now() };
+  var HEALTH = { scans: 0, scanErrors: 0, fetchFail: 0, fetchOk: 0, kiFail: 0, kiOk: 0, capFail: 0, capOk: 0, staleBars: 0, killSwitch: 0, workerFail: 0, lastScanT: 0, scanTimes: [], startedAt: Date.now() };
   var LASTBARS = {}; // sym -> zuletzt geladene Intraday-Serie (für den Kursdaten-Export)
   var SIG = {};      // sym -> letzter Signal-/Blocker-Zustand (Live-Monitor)
   var APP_VER = '';
@@ -40,6 +40,19 @@
     var today = new Date().toISOString().slice(0, 10);
     if (D.dayKey !== today) { D.dayKey = today; D.dayStartEq = eq; }
   }
+  /** Ist der letzte Kursbalken noch frisch genug zum Handeln?
+   *  Bisher wurde das NIRGENDS geprueft: liefert Yahoo eingefrorene Kurse (Ausfall,
+   *  Feiertag, Symbol delisted), rechnete der Scanner unbeirrt weiter und haette auf
+   *  Stunden alten Kursen eroeffnet. Grenze: das Dreifache des Bar-Abstands - ein
+   *  fehlender Bar ist normal (duenner Handel), drei sind ein Datenproblem.
+   *  Gilt nur fuer EINSTIEGE. Ausstiege bleiben immer erlaubt: eine offene Position
+   *  bei schlechter Datenlage nicht schliessen zu koennen waere das groessere Risiko. */
+  function barsFrisch(bars, barMin, now) {
+    if (!bars || !bars.length) return { ok: false, alterMin: null };
+    var alterMin = (now - bars[bars.length - 1][0]) / 60000;
+    return { ok: alterMin <= barMin * 3, alterMin: Math.round(alterMin) };
+  }
+
   /** Dürfen wir eine neue Position eröffnen? */
   function canOpen(eq) {
     var r = D.risk || { maxPos: 8, dayLossPct: 5, exposurePct: 40 };
@@ -54,6 +67,51 @@
       if (expo >= r.exposurePct) return { ok: false, why: 'Exposure-Limit: ' + Math.round(expo) + ' % in Scheinen (Limit ' + r.exposurePct + ' %)' };
     }
     return { ok: true };
+  }
+
+  /* ================= Kill-Switch: Tagesverlust-Limit =================
+   * canOpen() prueft das Limit nur beim EINSTIEG. Offene Positionen liefen darueber
+   * hinaus einfach weiter - das Limit war damit eine Bremse fuers Neugeschaeft, aber
+   * kein Kapitalschutz: an einem schlechten Tag konnte der Verlust beliebig tief unter
+   * das Limit laufen, ohne dass irgendetwas passierte. Dieser Schalter stellt bei
+   * Erreichen ALLES sofort glatt und laesst den Handel bis Tagesende ruhen.
+   * Bewusst rein deterministisch - keine KI, kein Ermessen, kein Netzwerk. */
+  function killSwitchAktiv() {
+    var tag = new Date().toISOString().slice(0, 10);
+    return !!(D.killSwitch && D.killSwitch.day === tag);
+  }
+  /** Prueft das Limit und stellt bei Erreichen alle offenen Positionen glatt.
+   *  Rueckgabe: true, wenn der Handel heute gesperrt ist. */
+  function killSwitchPruefen(now) {
+    if (!D) return false;
+    if (killSwitchAktiv()) return true;
+    var r = D.risk || {};
+    if (!r.dayLossPct) return false;
+    var eq = equityNow();
+    ensureDay(eq);
+    if (!(D.dayStartEq > 0)) return false;
+    var tagPct = (eq / D.dayStartEq - 1) * 100;
+    if (tagPct > -r.dayLossPct) return false;
+    now = now || Date.now();
+    var grund = 'Kill-Switch: Tagesverlust-Limit (' + tagPct.toFixed(1) + ' %, Limit −' + r.dayLossPct + ' %)';
+    var zu = [];
+    D.positions.slice().forEach(function (p) {
+      var sp = spotOf(p.sym) || p.entrySpot;
+      if (!(sp > 0)) return;                      // ohne Kurs kein fairer Ausstiegspreis
+      zu.push(p.sym);
+      closeTrade(p, sp, now, grund);
+    });
+    D.killSwitch = { day: new Date().toISOString().slice(0, 10), at: now, pct: Math.round(tagPct * 10) / 10,
+      limit: r.dayLossPct, n: zu.length, syms: zu, offenGeblieben: D.positions.length };
+    HEALTH.killSwitch = (HEALTH.killSwitch || 0) + 1;
+    if (!D.tuneLog) D.tuneLog = [];
+    D.tuneLog.unshift({ id: 'killswitch-' + now, at: now, quelle: 'sicherung', applied: ['Handel bis Tagesende gesperrt'],
+      txt: 'Kill-Switch ausgeloest: Tagesverlust ' + tagPct.toFixed(1) + ' % hat das Limit von −' + r.dayLossPct + ' % erreicht. ' +
+        (zu.length ? zu.length + ' offene Position(en) sofort glattgestellt (' + zu.join(', ') + ').' : 'Keine offenen Positionen.') +
+        (D.positions.length ? ' ' + D.positions.length + ' Position(en) ohne aktuellen Kurs blieben offen und werden beim naechsten Scan geschlossen.' : '') +
+        ' Neue Trades sind bis Mitternacht gesperrt.' });
+    save();
+    return true;
   }
 
   /* ================= Geduld-Bilanz (verworfene Signale) ================= */
@@ -102,10 +160,11 @@
         iv = Math.min(1.5, Math.max(0.15, Q.histVolIntraday(closes.slice(-300), barsProTagS) * 1.1));
       }
       var prof = Q.PROFILES[(cfg && cfg.profile) || 'atm21'] || Q.PROFILES.atm21;
-      var w = { strike: spot * (1 + (dir === 'call' ? prof.otmPct : -prof.otmPct)), expiry: now + prof.days * 86400000, iv: iv, ratio: Q.RATIO };
+      var bvS = prof.ratio || Q.RATIO;
+      var w = { strike: spot * (1 + (dir === 'call' ? prof.otmPct : -prof.otmPct)), expiry: now + prof.days * 86400000, iv: iv, ratio: bvS };
       var wWertS = Q.warrantValue(dir, w, spot, now);
       if (!(wWertS > 0.001)) return;
-      var spx = Q.effSpread(iv, undefined, wWertS) + Q.slipOf(iv, undefined, wWertS);
+      var spx = Q.effSpread(iv, undefined, wWertS, bvS) + Q.slipOf(iv, undefined, wWertS);
       var ask = wWertS * (1 + spx);
       var uebernacht = !!(mp && mp.uebernacht);
       // Kein frischer Intraday-Schatten im Tagesschluss-Fenster – er würde im nächsten
@@ -116,7 +175,7 @@
         : -0.25;
       D.schatten.unshift({ id: 'sch' + now + '-' + sym, t: now, sym: sym, dir: dir, grund: grund,
         spot0: spot, ask: Math.round(ask * 10000) / 10000,
-        w: { strike: Math.round(w.strike * 100) / 100, expiry: w.expiry, iv: Math.round(iv * 1000) / 1000 },
+        w: { strike: Math.round(w.strike * 100) / 100, expiry: w.expiry, iv: Math.round(iv * 1000) / 1000, ratio: bvS },
         spx: Math.round(spx * 10000) / 10000, sl: slT, tp: mp && mp.tp != null ? mp.tp : null,
         trail: (mp && mp.trail) || 0, maxHoldMin: mp && mp.maxHoldMin != null ? mp.maxHoldMin : 240,
         uebernacht: uebernacht,
@@ -152,7 +211,7 @@
       var sE = D.schatten[i1];
       if (sE.status !== 'open' || sE.sym !== sym) continue;
       try {
-        var wS = { strike: sE.w.strike, expiry: sE.w.expiry, iv: sE.w.iv, ratio: Q.RATIO };
+        var wS = { strike: sE.w.strike, expiry: sE.w.expiry, iv: sE.w.iv, ratio: sE.w.ratio || Q.RATIO };
         var bidS = Math.max(0.001, Q.warrantValue(sE.dir, wS, spot, now) * (1 - sE.spx));
         sE.lastBid = Math.round(bidS * 10000) / 10000;
         if (bidS > sE.peak) sE.peak = bidS;
@@ -194,7 +253,9 @@
       return { go: false, factor: 0, note: '' };
     }
     kiLogAdd(ctx.symbol, ctx.richtung, 'Ja ×' + r.groesse, r.begruendung, ctx.modus);
-    return { go: true, factor: r.groesse, note: ' · KI: ja ×' + r.groesse + ' (' + r.begruendung + ')', approved: true };
+    // Zweite Kappe (die erste steht in ollama.js): die KI darf ausschliesslich bremsen.
+    var fk = Math.min(1, Math.max(0, r.groesse || 1));
+    return { go: true, factor: fk, note: ' · KI: ja ×' + fk + ' (' + r.begruendung + ')', approved: true };
   }
 
   /* ================= Benachrichtigungen & Nachbilden ================= */
@@ -224,7 +285,7 @@
       '• Typ: ' + (t.dir === 'call' ? 'CALL' : 'PUT') + ' auf ' + t.sym + '\n' +
       '• Basispreis (Strike): ca. ' + U.nf2.format(t.strike) + ' $ (±2 %)\n' +
       '• Laufzeit: mindestens bis ' + U.d(t.expiry) + ' (gern etwas länger)\n' +
-      '• Zielhebel (Omega): ~' + (t.omega || Math.round(Q.warrantOmega(t.dir, { strike: t.strike, expiry: t.expiry, iv: t.iv, ratio: Q.RATIO }, t.entrySpot, t.openT) * 10) / 10) + 'x · Bezugsverhältnis 0,1\n' +
+      '• Zielhebel (Omega): ~' + (t.omega || Math.round(Q.warrantOmega(t.dir, { strike: t.strike, expiry: t.expiry, iv: t.iv, ratio: t.ratio || Q.RATIO }, t.entrySpot, t.openT) * 10) / 10) + 'x · Bezugsverhältnis ' + String(t.ratio || Q.RATIO).replace('.', ',') + '\n' +
       '• Sim-Einsatz: ' + U.nf2.format(t.entry * t.qty) + ' $ (' + t.qty + ' Stk à ' + U.nf2.format(t.entry) + ' $) – real nur mit Spielgeld-Betrag!\n' +
       '• Exit auf den BASISWERT bezogen: Stop-Loss ' + slTxt + ' · Take-Profit ' + tpTxt + '\n' +
       '• Zusätzlich schließen bei App-Meldung (Gegensignal' + (t.strategy === 'intraday' ? ' / Tagesschluss' : ' / Zeit-Exit') + ')';
@@ -234,7 +295,7 @@
     var t = findTrade(id);
     if (!t) return;
     var now = Date.now();
-    var w = { strike: t.strike, expiry: t.expiry, iv: t.iv, ratio: Q.RATIO };
+    var w = { strike: t.strike, expiry: t.expiry, iv: t.iv, ratio: t.ratio || Q.RATIO };
     var spot = spotOf(t.sym) || t.entrySpot;
     var slLevel = Q.underlyingAtTarget(t.dir, w, t.entry * (1 + (t.sl || -0.4)), now, spot);
     var tpLevel = Q.underlyingAtTarget(t.dir, w, t.entry * (1 + (t.tp || 0.8)), now, spot);
@@ -355,9 +416,11 @@
       // Hintergrund-Rechnen in dieser Umgebung gesperrt ist), wird endgültig auf den
       // Hauptthread umgeschaltet, statt ewig zu warten.
       w.probe = setTimeout(function () { if (!w.hatGeantwortet) w.onerror(); }, 8000);
+      try { w.postMessage({ ping: 1 }); } catch (ePing) { /* faellt in onerror */ }
       w.onmessage = function (e2) {
         w.hatGeantwortet = true;
         if (w.probe) { clearTimeout(w.probe); w.probe = null; }
+        if (e2.data && e2.data.pong) return;      // reines Lebenszeichen, kein Auftrag
         w.busy = false; w.jobId = 0;
         fertig(e2.data.id, e2.data.ok ? e2.data.res : { error: e2.data.msg || 'Worker-Fehler' });
         pump();
@@ -371,7 +434,10 @@
         var idx = workers.indexOf(w);
         if (idx !== -1) workers.splice(idx, 1);
         try { w.terminate(); } catch (e3) { /* egal */ }
-        if (fehler >= 1) ok = false;   // Hintergrund-Rechnen klappt hier nicht → Hauptthread
+        if (typeof HEALTH !== 'undefined') { HEALTH.workerFail = (HEALTH.workerFail || 0) + 1; }
+        // Erst mehrere Ausfaelle sind ein Umgebungsproblem. Ein einzelner Ausfall ist ein
+        // einzelner Ausfall - frueher legte er den Pool fuer die ganze Sitzung still.
+        if (fehler >= 3) ok = false;   // Hintergrund-Rechnen klappt hier nicht → Hauptthread
         var job = pending[id];
         if (job) { delete pending[id]; if (job.timer) clearTimeout(job.timer); selbstRechnen(job); }
         // wartende Aufträge ebenfalls retten
@@ -465,7 +531,8 @@
     lineType: ['ema', 'vwap'],
     window: ['all', 'open2', 'open4', 'close2'],
     scalpSL: [15, 20, 30, 'auto'],
-    sizing: ['fix', '0.25', '0.5', '1']
+    sizing: ['fix', '0.25', '0.5', '1'],
+    profile: ['atm21', 'otm3_14', 'otm5_10', 'atm21_b', 'atm60_b', 'otm3_30b']
   };
   async function checkRemoteRec() {
     if (!D || !window.api.readRecommendation) return;
@@ -959,6 +1026,10 @@
             kursAbrufeOk: HEALTH.fetchOk, kursAbrufeFehler: HEALTH.fetchFail,
             kiPruefungenOk: HEALTH.kiOk, kiPruefungenFehler: HEALTH.kiFail,
             capitalOk: HEALTH.capOk, capitalFehler: HEALTH.capFail,
+            signaleVerworfenKursdatenVeraltet: HEALTH.staleBars || 0, killSwitchAusloesungen: HEALTH.killSwitch || 0,
+            hintergrundRechnerAusfaelle: HEALTH.workerFail || 0,
+            killSwitchHeute: (D.killSwitch && D.killSwitch.day === new Date().toISOString().slice(0, 10)) ? D.killSwitch : null,
+            handelspauseRegime: (D.handelsPause && D.handelsPause.bis > Date.now()) ? D.handelsPause : null,
             letzterFehler: HEALTH.lastError || null,
             marktOffen: !!(window.Dash && window.Dash.marketOpen()),
             scanIntervallSollMs: modeParams().scanMs };
@@ -1078,7 +1149,7 @@
   /* ================= Positions-Bewertung ================= */
   /** Verkaufskurs einer Position – mit dem Spread/Slippage-Aufschlag, der beim Kauf galt */
   function bidOf(pos, spot, now) {
-    var v = Q.warrantValue(pos.dir, { strike: pos.strike, expiry: pos.expiry, iv: pos.iv, ratio: Q.RATIO }, spot, now);
+    var v = Q.warrantValue(pos.dir, { strike: pos.strike, expiry: pos.expiry, iv: pos.iv, ratio: pos.ratio || Q.RATIO }, spot, now);
     return Math.max(0.001, v * (1 - (pos.spx || 0.02)));
   }
   function posValue(pos, spot, now) {
@@ -1096,18 +1167,19 @@
   /* ================= Trade öffnen / schließen ================= */
   function openTrade(sym, dir, spot, vol, scores, reasonBits, now, kiRes) {
     kiRes = kiRes || { factor: 1, note: '', approved: false };
-    var w = Q.makeWarrant(dir, spot, vol, now);
+    var bvH = (Q.PROFILES[D.intraday.profile] || {}).ratio || Q.RATIO;
+    var w = Q.makeWarrant(dir, spot, vol, now, bvH);
     var wWert = Q.warrantValue(dir, w, spot, now);
     if (wWert <= 0.001) return null;
-    var spx = Q.effSpread(w.iv, undefined, wWert) + Q.slipOf(w.iv, undefined, wWert);
+    var spx = Q.effSpread(w.iv, undefined, wWert, bvH) + Q.slipOf(w.iv, undefined, wWert);
     var ask = wWert * (1 + spx);
-    var qty = Math.floor((equityNow() * BUDGET * (kiRes.factor || 1)) / ask);
+    var qty = Math.floor((equityNow() * BUDGET * Math.min(1, kiRes.factor || 1)) / ask);
     if (qty < 1 || D.cash < qty * ask) return null;
     D.cash -= qty * ask;
     var trade = {
       id: D.nextId++, sym: sym, dir: dir, openT: now, strategy: 'hourly',
       entrySpot: spot, entry: ask, qty: qty, spx: Math.round(spx * 10000) / 10000,
-      strike: w.strike, expiry: w.expiry, iv: Math.round(w.iv * 1000) / 1000,
+      strike: w.strike, expiry: w.expiry, iv: Math.round(w.iv * 1000) / 1000, ratio: w.ratio,
       sl: SL, tp: TP,
       sources: (function () {
         var s0 = { news: scores.news, tech: scores.tech, elliott: scores.elliott };
@@ -1192,6 +1264,8 @@
     var syms = universe();
     var now = Date.now();
     schattenAufraeumen(now);
+    killSwitchPruefen(now);   // gilt fuer ALLE offenen Positionen, nicht nur Intraday
+
     var blackoutEv = (D.intraday.blackout !== 'off' && window.Cal) ? window.Cal.isBlackout(now, 45, 45) : null;
     try {
       for (var i = 0; i < syms.length; i++) {
@@ -1529,6 +1603,9 @@
       st.textContent = 'Lade Kurse (' + syms.length + ' Werte parallel) …';
       var fds = await pmap(syms, function (sy) { return fetchIntraday(sy, cfg.interval || '5m', false); }, 6);
       HEALTH.scans++; HEALTH.lastScanT = now;
+      // Kapitalschutz zuerst - mit den eben geladenen, frischen Kursen. Vor jeder
+      // Signalpruefung, damit an einem schlechten Tag nichts mehr dazukommt.
+      killSwitchPruefen(now);
       HEALTH.scanTimes.push(now); if (HEALTH.scanTimes.length > 400) HEALTH.scanTimes = HEALTH.scanTimes.slice(-400);
       fds.forEach(function (f, fi) {
         if (f && f.series) {
@@ -1702,7 +1779,15 @@
         }
         if (!Q.inWindow(now, cfg.window || 'all')) { patienceAdd('Außerhalb des Zeitfensters', sym); schattenNeu('Zeitfenster', sym, dir, spot, sigBars, mp, cfg, now); continue; }
         if (!liquid) { patienceAdd('Zu wenig Liquidität', sym); continue; }
+        var frisch = barsFrisch(bars, barMinScan, now);
+        if (!frisch.ok) {
+          patienceAdd('Kursdaten veraltet', sym);
+          HEALTH.staleBars = (HEALTH.staleBars || 0) + 1;
+          continue;
+        }
         if (D.intradayCount >= mp.maxPerDay) { patienceAdd('Tageslimit erreicht', sym); schattenNeu('Tageslimit', sym, dir, spot, sigBars, mp, cfg, now); continue; }
+        if (killSwitchAktiv()) { patienceAdd('Kill-Switch: Handel bis Tagesende gesperrt', sym); continue; }
+        if (D.handelsPause && D.handelsPause.bis > now) { patienceAdd('Handelspause (Marktlage: kein passendes Setup)', sym); continue; }
         if (!canOpen(equityNow()).ok) { patienceAdd('Risiko-Limit', sym); continue; } // Risikomanagement
         // 5-Min-Bestätigung für 1-Min-Signale (Multi-Timeframe)
         if (cfg.mtf !== false && (cfg.interval || '5m') === '1m' && !Q.mtfAgrees(sigBars, dir, 5)) { patienceAdd('5-Min-Chart widerspricht', sym); schattenNeu('MTF-Widerspruch', sym, dir, spot, sigBars, mp, cfg, now); continue; }
@@ -1739,10 +1824,11 @@
         var closes5 = sigBars.map(function (b) { return b[1]; });
         var iv = Math.min(1.5, Math.max(0.15, Q.histVolIntraday(closes5, Math.round(390 / barMin)) * 1.1));
         var strike = Math.round(spot * (1 + (dir === 'call' ? prof.otmPct : -prof.otmPct)) * 100) / 100;
-        var w = { strike: strike, expiry: now + prof.days * 86400000, iv: iv, ratio: Q.RATIO };
+        var bvI = prof.ratio || Q.RATIO;
+        var w = { strike: strike, expiry: now + prof.days * 86400000, iv: iv, ratio: bvI };
         var wWert2 = Q.warrantValue(dir, w, spot, now);
         if (wWert2 <= 0.001) continue;
-        var spx2 = Q.effSpread(iv, undefined, wWert2) + Q.slipOf(iv, undefined, wWert2);
+        var spx2 = Q.effSpread(iv, undefined, wWert2, bvI) + Q.slipOf(iv, undefined, wWert2);
         var ask = wWert2 * (1 + spx2);
         // Kosten-Breakeven-Filter: lohnt sich der Trade nach Kosten überhaupt?
         var omegaPre = Q.warrantOmega(dir, w, spot, now);
@@ -1786,11 +1872,11 @@
         var sizingR = parseFloat(cfg.sizing);
         if (sizingR > 0) {
           // Positionsgröße nach Risiko: ausgelöster Stop kostet ~sizingR % vom Depot
-          qty = Math.floor((equityNow() * sizingR / 100 * (ki.factor || 1) * lsFactor) / (ask * Math.max(0.08, Math.abs(slT))));
+          qty = Math.floor((equityNow() * sizingR / 100 * Math.min(1, ki.factor || 1) * lsFactor) / (ask * Math.max(0.08, Math.abs(slT))));
           var qMax = Math.floor((equityNow() * Math.max(cfg.budgetPct * 3, 0.10)) / ask);
           if (qty > qMax) qty = qMax;
         } else {
-          qty = Math.floor((equityNow() * cfg.budgetPct * (ki.factor || 1) * lsFactor) / ask);
+          qty = Math.floor((equityNow() * cfg.budgetPct * Math.min(1, ki.factor || 1) * lsFactor) / ask);
         }
         var cost = qty * ask + fee;
         if (qty < 1 || D.cash < cost) continue;
@@ -1801,7 +1887,7 @@
         var trade = {
           id: D.nextId++, sym: sym, dir: dir, openT: now, strategy: 'intraday',
           entrySpot: spot, entry: ask, qty: qty, cost: cost, orderFee: fee, spx: Math.round(spx2 * 10000) / 10000,
-          strike: w.strike, expiry: w.expiry, iv: Math.round(iv * 1000) / 1000,
+          strike: w.strike, expiry: w.expiry, iv: Math.round(iv * 1000) / 1000, ratio: bvI,
           omega: Math.round(omega * 10) / 10,
           sl: slT, tp: mp.tp, trail: mp.trail || 0, maxHoldMin: mp.maxHoldMin || 0, exitMode: mp.exitMode, peak: ask, chN: chN || 0, chan: chRef,
           sources: ki.approved ? { intraday: dir === 'call' ? 1 : -1, ki: dir === 'call' ? 1 : -1 } : { intraday: dir === 'call' ? 1 : -1 },
@@ -1849,7 +1935,7 @@
         // Spiegelung auf dem Capital.com-Demo-Konto (CFD-Paper-Trade mit Stop-Loss)
         if (window.CapAPI && window.CapAPI.enabled()) {
           (function (tr, spotNow) {
-            var wRef = { strike: tr.strike, expiry: tr.expiry, iv: tr.iv, ratio: Q.RATIO };
+            var wRef = { strike: tr.strike, expiry: tr.expiry, iv: tr.iv, ratio: tr.ratio || Q.RATIO };
             var slLvl = Q.underlyingAtTarget(tr.dir, wRef, tr.entry * (1 + tr.sl), Date.now(), spotNow);
             var tpLvl = tr.tp != null ? Q.underlyingAtTarget(tr.dir, wRef, tr.entry * (1 + tr.tp), Date.now(), spotNow) : null;
             var sizeC = Math.max(0.1, Math.round((equityNow() * cfg.budgetPct * 5 / spotNow) * 10) / 10);
@@ -1982,7 +2068,7 @@
       ph = '<table class="tbl"><tr><th>Wert</th><th>Typ</th><th>Basispreis</th><th>Fällig</th><th>IV</th><th>Hebel</th><th>Stück</th><th>Einstieg</th><th>Aktuell</th><th>P/L</th><th></th></tr>';
       D.positions.forEach(function (p) {
         var spot = spotOf(p.sym) || p.entrySpot;
-        var wobj = { strike: p.strike, expiry: p.expiry, iv: p.iv, ratio: Q.RATIO };
+        var wobj = { strike: p.strike, expiry: p.expiry, iv: p.iv, ratio: p.ratio || Q.RATIO };
         var bid = bidOf(p, spot, now);
         var omegaNow = Q.warrantOmega(p.dir, wobj, spot, now);
         var aufgeldNow = Q.warrantAufgeld(p.dir, wobj, spot, now);
@@ -2158,7 +2244,7 @@
         period: D.intraday.period, confirmBps: D.intraday.confirmBps,
         budgetPct: D.intraday.budgetPct, sl: mp.sl, tp: mp.tp,
         cooldownMin: mp.cooldownMin, maxPerDay: mp.maxPerDay,
-        orderFee: D.intraday.orderFee, otmPct: prof.otmPct, expiryDays: prof.days,
+        orderFee: D.intraday.orderFee, otmPct: prof.otmPct, expiryDays: prof.days, ratio: prof.ratio || Q.RATIO,
         exitMode: mp.exitMode, trailPct: mp.trail, maxHoldMin: mp.maxHoldMin,
         lineType: D.intraday.lineType || 'ema', trendFilter: !!D.intraday.trendFilter, window: D.intraday.window || 'all',
         entryMode: D.intraday.mode === 'wave' ? 'wave' : D.intraday.mode === 'reversion' ? 'reversion' : D.intraday.mode === 'orb' ? 'orb' : 'cross',
@@ -2816,7 +2902,7 @@
     });
     Object.keys(byHour).forEach(function (h) {
       var s = byHour[h];
-      if (s.n >= 5 && s.pnl < 0) out.push('Zwischen ' + h + ':00 und ' + (parseInt(h, 10) + 1) + ':00 Uhr (Berlin) höchstens groesse 0.5.');
+      if (s.n >= 5 && s.pnl < 0) out.push('Zwischen ' + h + ':00 und ' + (parseInt(h, 10) + 1) + ':00 Uhr (Berlin) hoechstens groesse 0.5.');
     });
     return out.slice(0, 6);
   }
@@ -3045,7 +3131,7 @@
       // 'bestes Zeitfenster' konnte dann nie etwas anderes empfehlen als das, was schon
       // eingestellt war. Das beste Fenster wird aus den Out-of-Sample-Trades ERMITTELT.
       window: 'all', lineType: cfg.lineType || 'ema',
-      otmPct: prof.otmPct, expiryDays: prof.days, minEdge: 1.5,
+      otmPct: prof.otmPct, expiryDays: prof.days, ratio: prof.ratio || Q.RATIO, minEdge: 1.5,
       mtf: iv === '1m' && cfg.mtf !== false,
       riskPct: parseFloat(cfg.sizing) > 0 ? parseFloat(cfg.sizing) : 0
     };
@@ -3267,11 +3353,15 @@
       var commonIv = labCommonOpts(cfg, top.interval);
       // Schein-Profil als eigene Dimension: ATM (moderater Hebel) gegen das eingestellte
       // Profil - der Hebel bestimmt, wie viel Basiswert-Bewegung die Kosten decken muss.
-      var PROFILE_TEST = ['atm21', cfg.profile || 'otm3_14'].filter(function (v, i2, arr) { return arr.indexOf(v) === i2; });
+      // Schein-Profil inklusive Bezugsverhaeltnis ist die WICHTIGSTE Kostendimension:
+      // BV 1,0 zahlt nur ein Fuenftel des relativen Spreads bei identischem Hebel.
+      var PROFILE_TEST = ['atm21', 'atm21_b', 'atm60_b', 'otm3_30b', cfg.profile || 'otm3_14']
+        .filter(function (v, i2, arr) { return arr.indexOf(v) === i2 && Q.PROFILES[v]; });
       var fineGrid = [];
       [9, 20, 50].forEach(function (p) { [5, 15, 30].forEach(function (c) { ['ema', 'vwap'].forEach(function (lt) { PROFILE_TEST.forEach(function (pr2) {
         var prof2 = Q.PROFILES[pr2];
-        fineGrid.push({ period: p, confirmBps: c, zThr: zOf(c), lineType: lt, profil: pr2, otmPct: prof2.otmPct, expiryDays: prof2.days });
+        fineGrid.push({ period: p, confirmBps: c, zThr: zOf(c), lineType: lt, profil: pr2,
+          otmPct: prof2.otmPct, expiryDays: prof2.days, ratio: prof2.ratio || Q.RATIO });
       }); }); }); });
       var fineRes = await Promise.all(fineGrid.map(function (g) {
         return btIntraday(trainMap, Object.assign({}, commonIv, top.mode.opts, g));
@@ -3527,6 +3617,13 @@
   function regimeFallback(f) {
     var trendig = f.trendAnteilPct >= 70 || f.trendAnteilPct <= 30;
     var zeitrahmen = f.vola1mPct > 0.15 ? '5m' : '1m';
+    // Weder Trend noch Wellen: Trendfolge laeuft sich in einem richtungslosen Markt tot,
+    // Umkehr braucht ein Schwingungsmuster, das hier fehlt. Bisher fiel dieser Fall durch
+    // bis zur Vorgabe "Trendfolge" - es wurde also gehandelt, obwohl kein Setup passte.
+    if (f.trendAnteilPct > 40 && f.trendAnteilPct < 60 && f.mittlererWellenScore < 45) {
+      return { setup: 'pause', ausloeser: 'keiner', zeitrahmen: zeitrahmen, trendfilter: true, kanal: false,
+        begruendung: 'Weder Trend (' + f.trendAnteilPct + ' % im Trend) noch Wellen (Score ' + f.mittlererWellenScore + ') – kein Setup passt' };
+    }
     if (!trendig && f.mittlererWellenScore >= 50) {
       return { setup: 'umkehr', ausloeser: 'welle', zeitrahmen: zeitrahmen, trendfilter: true,
         kanal: f.kanalAnteilPct >= 20, begruendung: 'Kein klarer Trend, aber Wellenmuster (Score ' + f.mittlererWellenScore + ')' };
@@ -3575,10 +3672,29 @@
       // das stündliche Hin-und-Her hat Handeinstellungen zurückgedreht und stand quer
       // zum Autopiloten, der auf gemessener Basis entscheidet. Umschalten tut nur noch
       // der Autopilot (nach doppelt bestätigter Nacht-Messung) – oder du selbst.
+      D.regimePending = null;   // Altlast aus v7 aufräumen
+      // Sonderfall pause: Die Marktlage ist seit v8 reine ANZEIGE und schaltet nichts um.
+      // "Nicht handeln" ist aber die einzige Entscheidung, die das Risiko ausschliesslich
+      // SENKT - sie kann nichts kaputtmachen, was eine Setup-Umstellung kaputtmachen koennte.
+      // Deshalb wirkt sie sofort. Sie kann den Handel nur aussetzen, niemals einschalten,
+      // und laeuft mit der naechsten Regime-Pruefung von selbst wieder aus.
+      if (wahl.setup === 'pause') {
+        var bisP = Date.now() + 65 * 60000;      // bis zur naechsten stuendlichen Pruefung
+        D.handelsPause = { seit: Date.now(), bis: bisP, quelle: quelle, grund: wahl.begruendung || 'kein passendes Setup' };
+        D.regime = { at: Date.now(), ok: true, quelle: quelle, wahl: wahl, fakten: f, applied: ['Intraday-Handel ausgesetzt'], nurAnzeige: false, pause: true,
+          txt: 'Handelspause – ' + (wahl.begruendung || '') + ' · keine neuen Einstiege bis zur nächsten Prüfung (offene Positionen werden weiter gemanagt)' };
+        if (!D.tuneLog) D.tuneLog = [];
+        D.tuneLog.unshift({ id: 'pause-' + Date.now(), at: Date.now(), quelle: 'regime', applied: ['Intraday-Handel ausgesetzt'],
+          txt: 'Marktlage (' + quelle + '): ' + (wahl.begruendung || 'kein passendes Setup') +
+            '. Es wird bis zur nächsten stündlichen Prüfung nichts Neues eröffnet. Offene Positionen laufen mit allen Ausstiegsregeln weiter.' });
+        await save(); render();
+        return;
+      }
+      // Eine frühere Pause endet, sobald wieder ein Setup passt
+      if (D.handelsPause) { D.handelsPause = null; }
       var mode = modeFromSetup(wahl.setup, wahl.ausloeser, 'laufen');
       var stIst = setupFromMode(D.intraday.mode);
       var passt = stIst.setup === wahl.setup && stIst.trigger === wahl.ausloeser && D.intraday.interval === wahl.zeitrahmen;
-      D.regimePending = null;   // Altlast aus v7 aufräumen
       D.regime = { at: Date.now(), ok: true, quelle: quelle, wahl: wahl, fakten: f, applied: [], nurAnzeige: true,
         txt: setupName(mode, wahl.kanal) + ' · ' + wahl.zeitrahmen + ' — ' + (wahl.begruendung || '') +
              (passt ? ' · entspricht der aktuellen Einstellung' : ' · Empfehlung – umgestellt wird nichts') };
@@ -3661,7 +3777,22 @@
       (a.regime !== false ? '; die Marktlage wird stündlich angezeigt (reine Empfehlung)' : '') +
       '. Jede Änderung steht im Experiment-Journal (Auswertung).';
     var alleAn = a.on !== false;
-    el.innerHTML =
+    // Sperren zuerst - was gerade NICHT gehandelt wird, ist die wichtigste Information
+    var sperrHtml = '';
+    if (killSwitchAktiv()) {
+      var ks = D.killSwitch;
+      sperrHtml += '<div style="font-size:12.5px; color:var(--bad); font-weight:700; margin-bottom:6px; padding:6px 8px; border:1px solid var(--bad); border-radius:6px;">' +
+        'Kill-Switch aktiv: Tagesverlust ' + ks.pct + ' % hat das Limit von −' + ks.limit + ' % erreicht. ' +
+        (ks.n ? ks.n + ' Position(en) wurden sofort glattgestellt. ' : '') +
+        'Es wird heute nichts mehr eröffnet – morgen früh läuft der Handel automatisch wieder an.</div>';
+    }
+    if (D.handelsPause && D.handelsPause.bis > Date.now()) {
+      sperrHtml += '<div style="font-size:12.5px; color:var(--warn); margin-bottom:6px; padding:6px 8px; border:1px solid var(--warn); border-radius:6px;">' +
+        'Handelspause (Marktlage): ' + U.esc(D.handelsPause.grund || '') + '. Keine neuen Einstiege bis ' +
+        new Date(D.handelsPause.bis).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }) + ' Uhr. ' +
+        'Offene Positionen werden normal weiter gemanagt.</div>';
+    }
+    el.innerHTML = sperrHtml +
       '<div style="font-size:14px; font-weight:700; margin-bottom:4px;">' + name + ' · ' + (c.interval || '5m') + '-Chart</div>' +
       '<div style="font-size:12.5px; color:var(--ink-2); margin-bottom:4px;">' + was + (exitTxt ? ' ' + exitTxt : '') + '</div>' +
       (wer ? '<div style="font-size:11.5px; color:var(--muted); margin-bottom:4px;">' + U.esc(wer) + '</div>' : '') +
@@ -3765,6 +3896,32 @@
     if (a.lastBackfill) z.push('Capital-Backfill: zuletzt ' + new Date(a.lastBackfill.at).toLocaleString('de-DE') + ' – ' + a.lastBackfill.bars + ' Kerzen für ' + a.lastBackfill.symbole + ' Werte nachgeladen (' + a.lastBackfill.requests + ' Anfragen).');
     if (a.lastBackfill) z.push('');
     z.push('Das Kursarchiv sammelt rollierend 90 Kalendertage – die Tabelle wächst mit jedem Handelstag, an dem die App läuft. Hürde für ein belastbares Urteil: **' + MIN_OOS_TRADES + ' Out-of-Sample-Trades auf ' + MIN_OOS_TAGE + ' ungesehenen Handelstagen**.');
+    z.push('');
+    z.push('## Kostenrealität (woran das Modell geeicht ist)');
+    z.push('');
+    z.push('Die Simulation rechnet nicht mit Pauschalen, sondern mit echten Emittenten-Kursen (Stichprobe onvista, 20.08.2026). Befund: **die Geld-Brief-Spanne ist ein fester Cent-Betrag**, kein Prozentsatz – rund 1 ct bei Bezugsverhältnis 0,1 und 2 ct bei 1,0, unabhängig vom Preis des Scheins. Ein 8-Euro-Schein zahlt damit 0,13 % je Seite, ein 9-Cent-Schein 11,5 %.');
+    z.push('');
+    z.push('Daraus folgt der wichtigste Kostenhebel überhaupt: Ein Schein mit Bezugsverhältnis 1,0 kostet das Zehnfache je Stück, zahlt aber nur den doppelten Cent – also **ein Fünftel des relativen Spreads bei identischem Hebel** (Omega hängt nicht am Bezugsverhältnis). Was die Bewegung mindestens hergeben muss, damit ein Trade überhaupt lohnt:');
+    z.push('');
+    z.push('| Profil | Bezugsv. | Scheinpreis | Spread je Seite | Hebel | Basiswert muss laufen |');
+    z.push('|---|---|---|---|---|---|');
+    (function () {
+      var spotB = 100, nowB = Date.now();
+      Object.keys(Q.PROFILES).forEach(function (pk) {
+        var p = Q.PROFILES[pk], bv = p.ratio || Q.RATIO;
+        var w = { strike: Math.round(spotB * (1 + p.otmPct) * 100) / 100, expiry: nowB + p.days * 86400000, iv: 0.35, ratio: bv };
+        var wv = Q.warrantValue('call', w, spotB, nowB);
+        if (!(wv > 0.001)) return;
+        var sp = Q.effSpread(0.35, undefined, wv, bv), om = Q.warrantOmega('call', w, spotB, nowB);
+        var fee = D.intraday.orderFee || 0, budg = Math.max(1, equityNow() * D.intraday.budgetPct);
+        var rt = 2 * sp + (2 * fee) / budg;
+        z.push('| ' + p.name + ' | ' + String(bv).replace('.', ',') + ' | ' + wv.toFixed(2).replace('.', ',') + ' € | ' +
+          (sp * 100).toFixed(2).replace('.', ',') + ' % | ' + om.toFixed(1).replace('.', ',') + ' | **' +
+          (om > 0 ? (rt / om * 100).toFixed(3).replace('.', ',') : '–') + ' %** |');
+      });
+    })();
+    z.push('');
+    z.push('Ordergebühr steht auf ' + ((D.intraday.orderFee || 0) === 0 ? '**0** – Capital.com berechnet keine Kommission, alles steckt im Spread.' : (D.intraday.orderFee + ' $ je Order.')));
     z.push('');
     z.push('## Ergebnis dieser Messung');
     z.push('');
@@ -3886,7 +4043,9 @@
     z.push('*Simulation – keine Anlageberatung.*');
     return z.join('\n');
   }
-  if (typeof window !== 'undefined') window.__pilotBericht = baueMessbericht;   // fuer Funktionstests
+  if (typeof window !== 'undefined') window.__pilotBericht = baueMessbericht;
+  if (typeof window !== 'undefined') { window.__tiefensuche = function () { return tiefensuche(); }; window.__pilotMessen = function () { return pilotMessen(true); }; }
+  if (typeof window !== 'undefined') { window.__ladeArchivDaten = ladeArchivDaten; window.__labCommonOpts = labCommonOpts; window.__btIntraday = btIntraday; window.__D = function () { return D; }; }   // fuer Funktionstests
 
   /* ================= Tiefensuche (nutzt die brachliegenden Nacht-/Wochenendstunden) ====
    * Mehr Rechnen auf denselben Daten schafft kein Wissen - TIEFER suchen schon. Nach der
@@ -3895,7 +4054,7 @@
    * tritt in der naechsten Nacht als markierter Kandidat im regulaeren Walk-Forward an und
    * muss dieselben Huerden nehmen wie alle anderen. Tagsueber laeuft sie nie: CPU und
    * Yahoo-Limits gehoeren dann dem Live-Scanner. */
-  var tiefRunning = false;
+  var tiefRunning = false, tiefStartAt = 0;
   /** Minuten bis zur naechsten US-Boersenoeffnung (Wochenende beruecksichtigt, grob). */
   function minutenBisOeffnung() {
     var t = Date.now();
@@ -3922,11 +4081,14 @@
     }
     return { intervals: intervals, data: data };
   }
+  var tiefFortschritt = null;   // Live-Stand fuer die Oberflaeche (sonst Blackbox)
   async function tiefensuche() {
     var a = autoOptCfg();
     if (tiefRunning || pilotRunning || centralRunning || jobRunning) return;
     if (!window.Archiv) return;
     tiefRunning = true;
+    tiefStartAt = Date.now();
+    tiefFortschritt = null;
     var t0 = Date.now();
     try {
       pilotLogAdd('Tiefensuche gestartet: breite Parametersuche auf dem Archiv (ohne Netzabrufe).');
@@ -3944,7 +4106,7 @@
       });
       if (!basenSet.pullback && basen.length < 3) basen.push('pullback');
       if (!basen.length) basen = ['reversion', 'pullback'];
-      var PER = [9, 14, 20, 35, 50], CONF = [5, 15, 30], LT = ['ema', 'vwap'], PROF = ['atm21', D.intraday.profile || 'otm3_14'];
+      var PER = [9, 14, 20, 35, 50], CONF = [5, 15, 30], LT = ['ema', 'vwap'], PROF = ['atm21_b', 'atm60_b', D.intraday.profile || 'otm3_14'];
       PROF = PROF.filter(function (v, i2, arr) { return arr.indexOf(v) === i2; });
       var funde = [], geprueft = 0;
       for (var bi = 0; bi < basen.length; bi++) {
@@ -3962,11 +4124,26 @@
           PER.forEach(function (p) { CONF.forEach(function (c) { LT.forEach(function (lt) { PROF.forEach(function (pr) {
             kombis.push({ basis: basen[bi], interval: iv2, period: p, confirmBps: c, lineType: lt, profile: pr, scalpSL: 30, scalpHold: 240 });
           }); }); }); });
-          pilotLogAdd('Tiefensuche: ' + basen[bi] + ' · ' + iv2 + ' · ' + kombis.length + ' Kombinationen …');
-          var trainRes = await Promise.all(kombis.map(function (k) {
-            var kk = kiKandidatBauen(k);
-            return btIntraday(trainMap, Object.assign({}, common, kk.opts, { period: k.period, confirmBps: k.confirmBps, zThr: zOf(k.confirmBps), lineType: k.lineType }));
-          }));
+          var schrittNr = (bi * ivs.length + vi) + 1, schritteGesamt = basen.length * ivs.length;
+          pilotLogAdd('Tiefensuche ' + schrittNr + '/' + schritteGesamt + ': ' + basen[bi] + ' · ' + iv2 + ' · ' + kombis.length + ' Kombinationen …');
+          renderPilot();
+          var trainRes = [], BLOCK = 12, tBlock = Date.now();
+          for (var kb = 0; kb < kombis.length; kb += BLOCK) {
+            var teil = kombis.slice(kb, kb + BLOCK);
+            var rTeil = await Promise.all(teil.map(function (k) {
+              var kk = kiKandidatBauen(k);
+              return btIntraday(trainMap, Object.assign({}, common, kk.opts, { period: k.period, confirmBps: k.confirmBps, zThr: zOf(k.confirmBps), lineType: k.lineType }));
+            }));
+            trainRes = trainRes.concat(rTeil);
+            var fertigN = Math.min(kombis.length, kb + BLOCK);
+            var mitTrades = trainRes.filter(function (r0) { return r0 && !r0.error && r0.summary && r0.summary.nTrades >= 10; }).length;
+            tiefFortschritt = { basis: basen[bi], iv: iv2, fertig: fertigN, gesamt: kombis.length,
+              schritt: schrittNr, schritte: schritteGesamt, brauchbar: mitTrades, at: Date.now() };
+            pilotLogAdd('… ' + fertigN + '/' + kombis.length + ' gerechnet (' + mitTrades + ' mit genug Trades, ' +
+              Math.round((Date.now() - tBlock) / 1000) + ' s)');
+            renderPilot();
+            await new Promise(function (r0) { setTimeout(r0, 0); });   // Renderer atmen lassen
+          }
           geprueft += kombis.length;
           // die 3 besten Trainings-Kombis je Basis/Zeitrahmen out-of-sample gegenpruefen
           var kandT = [];
@@ -4007,7 +4184,7 @@
       pilotLogAdd('Tiefensuche-Fehler: ' + (e && e.message ? e.message : e));
       a.lastTief = Date.now();
     } finally {
-      tiefRunning = false;
+      tiefRunning = false; tiefStartAt = 0;
     }
   }
 
@@ -4020,7 +4197,7 @@
     basis: ['breakout_lauf', 'orb', 'reversion', 'wave', 'pullback', 'rsi2', 'donchian', 'squeeze'],
     interval: ['1m', '5m', '15m', '60m'],
     period: [9, 20, 50], confirmBps: [5, 15, 30], lineType: ['ema', 'vwap'],
-    profile: ['atm21', 'otm3_14', 'otm5_10'], scalpSL: [15, 30, 'auto'], scalpHold: [60, 240]
+    profile: ['atm21', 'otm3_14', 'otm5_10', 'atm21_b', 'atm60_b', 'otm3_30b'], scalpSL: [15, 30, 'auto'], scalpHold: [60, 240]
   };
   function kiKandidatBauen(k) {
     var slV = k.scalpSL === 'auto' ? 'auto' : -(k.scalpSL) / 100;
@@ -4036,6 +4213,7 @@
     else basisO = { entryMode: 'cross', exitMode: 'confirmed', sl: slV === 'auto' ? -0.25 : slV, tp: 0.35, trailPct: 0, maxHoldMin: k.scalpHold, cooldownMin: 45, maxPerDay: 10, trendFilter: true };
     basisO.otmPct = prof.otmPct;
     basisO.expiryDays = prof.days;
+    basisO.ratio = prof.ratio || Q.RATIO;
     var st2 = setupFromMode(k.basis === 'breakout_lauf' ? 'breakout' : k.basis);
     return {
       basis: k.basis, interval: k.interval, period: k.period, confirmBps: k.confirmBps,
@@ -4421,6 +4599,26 @@
     // Kostenmodell v2 (Cent-Spread): fruehere Messwerte sind nicht mehr vergleichbar -
     // die Zwei-Naechte-Bestaetigung startet neu, damit kein alter Sieger mit neuen Zahlen
     // gemischt wird. Einmalig, sichtbar im Journal.
+    // Kostenmodell v3: an echten Emittenten-Kursen kalibriert (onvista, 20.08.2026) und um
+    // das Bezugsverhaeltnis erweitert. Frueher gemessene Ergebnisse sind damit erneut
+    // nicht vergleichbar - Bestaetigungs-Kette startet neu, Ordergebuehr auf 0 (Capital.com).
+    if (!D.kostenModellV3) {
+      D.kostenModellV3 = Date.now();
+      if (D.autoOpt) { D.autoOpt.lastRecKey = null; D.autoOpt.pending = null; D.autoOpt.filterBilanzVorher = null; }
+      var alteGebuehr = D.intraday.orderFee;
+      if (alteGebuehr === 1.5 && automatikDarf('orderFee')) D.intraday.orderFee = 0;
+      // atm21 -> atm21_b: identische Laufzeit, identischer Strike, identisches Omega,
+      // aber nur ein Fuenftel des relativen Spreads. Kein Nachteil, nur billiger.
+      var altesProfil = D.intraday.profile;
+      if (altesProfil === 'atm21' && automatikDarf('profile')) D.intraday.profile = 'atm21_b';
+      if (!D.tuneLog) D.tuneLog = [];
+      D.tuneLog.unshift({ id: 'sicherung-kosten3-' + Date.now(), at: Date.now(), quelle: 'sicherung',
+        applied: ['Kostenmodell an echten Kursen kalibriert']
+          .concat(D.intraday.orderFee !== alteGebuehr ? ['Ordergebuehr ' + alteGebuehr + ' -> 0'] : [])
+          .concat(D.intraday.profile !== altesProfil ? ['Schein-Profil -> Bezugsverhaeltnis 1,0'] : []),
+        txt: 'Echte Emittenten-Kurse (onvista) zeigen: der Spread ist ein fester Cent-Betrag, 1 ct bei Bezugsverhaeltnis 0,1 und 2 ct bei 1,0 - unabhaengig vom Preis. Ein 8-Euro-Schein zahlt 0,13 %, ein 9-Cent-Schein 11,5 %. Neu messbar sind daher Profile mit Bezugsverhaeltnis 1,0: gleicher Hebel, aber nur ein Fuenftel des relativen Spreads. Ordergebuehr steht auf 0, weil Capital.com keine Kommission berechnet. Alle frueheren Messwerte sind nicht mehr vergleichbar.',
+        konfigVorher: null, konfigNachher: JSON.parse(JSON.stringify(D.intraday)) });
+    }
     if (!D.kostenModellV2) {
       D.kostenModellV2 = Date.now();
       if (D.autoOpt) { D.autoOpt.lastRecKey = null; D.autoOpt.pending = null; }
@@ -4498,7 +4696,7 @@
     renderSymBlocks();
     (function () {
       var fw = document.getElementById('feeWarn');
-      if (fw && D.intraday.orderFee === 0) fw.textContent = 'Ordergebühr 0 $ macht die Simulation unrealistisch – echte Broker kosten Geld. Backtests sehen damit besser aus, als sie sind.';
+      if (fw && D.intraday.orderFee === 0) fw.textContent = 'Ordergebühr 0 – korrekt für Broker ohne Kommission (z. B. Capital.com, dort steckt alles im Spread). Bei einem Broker mit Ordergebühr hier den echten Betrag eintragen, sonst sehen Backtests besser aus, als sie sind.';
     })();
     document.getElementById('exportDataBtn').addEventListener('click', async function () {
       var stE = document.getElementById('reportStatus');
@@ -4659,7 +4857,7 @@
       D.intraday.orderFee = parseFloat(idF.value);
       var feeWarn = document.getElementById('feeWarn');
       if (feeWarn) feeWarn.textContent = D.intraday.orderFee === 0
-        ? 'Ordergebühr 0 $ macht die Simulation unrealistisch – echte Broker kosten Geld. Backtests sehen damit besser aus, als sie sind.'
+        ? 'Ordergebühr 0 – korrekt für Broker ohne Kommission (z. B. Capital.com). Bei Ordergebühren hier den echten Betrag eintragen.'
         : '';
       D.intraday.minDollarVol = parseInt(idL.value, 10);
       D.intraday.lineType = idLn.value;
@@ -4736,17 +4934,20 @@
       // Hängend heißt: KEINE Aktivität mehr - nicht: dauert lange. Eine gesunde Messung
       // schreibt ständig ins Protokoll; mit wachsendem Archiv darf sie auch mal 40 Minuten
       // brauchen. Abbruch erst bei 12 Minuten Funkstille oder 90 Minuten Gesamtdauer.
-      if (pilotRunning && pilotStartAt) {
-        var letzteAktW = pilotLog.length ? pilotLog[pilotLog.length - 1][0] : pilotStartAt;
+      // Waechter deckt Messung UND Tiefensuche ab. Ohne den zweiten Fall wuerde eine
+      // haengende Tiefensuche (tiefRunning bleibt true) JEDE kuenftige Messung blockieren -
+      // die Messung steigt bei laufender Tiefensuche bewusst frueh aus.
+      [['Messung', pilotRunning, pilotStartAt], ['Tiefensuche', tiefRunning, tiefStartAt]].forEach(function (w9) {
+        if (!w9[1] || !w9[2]) return;
+        var letzteAktW = pilotLog.length ? pilotLog[pilotLog.length - 1][0] : w9[2];
         var funkstille = Date.now() - letzteAktW > 12 * 60000;
-        var ueberlang = Date.now() - pilotStartAt > 90 * 60000;
-        if (funkstille || ueberlang) {
-          pilotRunning = false; pilotPhase = '';
-          a.lastCheck = { at: Date.now(), ok: false, txt: 'Wächter-Abbruch: ' + (funkstille ? '12 Minuten ohne Aktivität' : 'Messung lief über 90 Minuten') + '. Nächster Versuch beim nächsten Takt.' };
-          pilotLogAdd('WÄCHTER: Messung abgebrochen (' + (funkstille ? 'Funkstille' : 'Überlänge') + ') und Zustand freigegeben.');
-          save(); renderPilot();
-        }
-      }
+        var ueberlang = Date.now() - w9[2] > 90 * 60000;
+        if (!funkstille && !ueberlang) return;
+        if (w9[0] === 'Messung') { pilotRunning = false; pilotPhase = ''; } else { tiefRunning = false; }
+        a.lastCheck = { at: Date.now(), ok: false, txt: 'Wächter-Abbruch (' + w9[0] + '): ' + (funkstille ? '12 Minuten ohne Aktivität' : 'lief über 90 Minuten') + '. Nächster Versuch beim nächsten Takt.' };
+        pilotLogAdd('WÄCHTER: ' + w9[0] + ' abgebrochen (' + (funkstille ? 'Funkstille' : 'Überlänge') + ') und Zustand freigegeben.');
+        save(); renderPilot();
+      });
       if (window.Dash.marketOpen()) return;
       pilotAnwenden();
       if (a.on === false || pilotRunning || centralRunning || jobRunning || tiefRunning) return;

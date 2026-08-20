@@ -290,11 +290,11 @@
 
   /* ================= Optionsschein-Simulation ================= */
   var RATIO = 0.1, SPREAD = 0.02, RISK_FREE = 0.02;
-  function makeWarrant(dir, spot, vol, nowMs) {
+  function makeWarrant(dir, spot, vol, nowMs, ratio) {
     var strike = Math.round(spot * (dir === 'call' ? 1.05 : 0.95) * 100) / 100;
     var expiry = nowMs + 60 * 86400000;
     var iv = Math.min(1.5, Math.max(0.15, vol * 1.1));
-    return { strike: strike, expiry: expiry, iv: iv, ratio: RATIO };
+    return { strike: strike, expiry: expiry, iv: iv, ratio: ratio || RATIO };
   }
   function warrantValue(dir, w, spot, nowMs) {
     var T = Math.max(0, (w.expiry - nowMs) / (365 * 86400000));
@@ -303,24 +303,33 @@
   function warrantAsk(dir, w, spot, nowMs) { return warrantValue(dir, w, spot, nowMs) * (1 + SPREAD); }
   function warrantBid(dir, w, spot, nowMs) { return Math.max(0.001, warrantValue(dir, w, spot, nowMs) * (1 - SPREAD)); }
 
-  /** Effektiver Spread je Seite. Mit Scheinpreis: realistisches CENT-Modell - Emittenten
-   *  stellen die Geld-Brief-Spanne absolut in Cent (typisch 1-4 ct), nicht prozentual.
-   *  Folge: Ein 45-Cent-Schein zahlt ~2,2 % je Seite, ein 2-Euro-ATM-Schein nur ~0,5 % -
-   *  das alte Pauschal-Prozent-Modell bestrafte teurere Scheine massiv zu Unrecht und
-   *  hat damit JEDE Messung verzerrt. Ohne Preis gilt der alte Pfad (Altaufrufe/Tests). */
-  function effSpread(iv, base, preis) {
+  /** Absoluter Cent-Spread des Emittenten, abhaengig vom Bezugsverhaeltnis.
+   *  Kalibriert an echten Kursen (onvista, Nvidia-Scheine): BV 0,1 -> 1 ct, BV 1,0 -> 2 ct.
+   *  Ein 8-EUR-Schein und ein 0,087-EUR-Schein zahlen DENSELBEN einen Cent (0,13 % bzw.
+   *  11,5 %) - der Spread haengt am Emittenten-Raster, nicht am Preis. */
+  function spreadCent(ratio) {
+    var r = (ratio == null) ? 0.1 : ratio;
+    return 0.01 + 0.01 * Math.min(1, Math.max(0, r));   // 0,1 -> 1,1 ct | 1,0 -> 2 ct
+  }
+  /** Effektiver Spread je Seite (Anteil am Scheinpreis). Mit Preis: reines Cent-Modell -
+   *  KEIN prozentualer Boden. Gemessen: 8,00-EUR-Schein zahlt exakt 0,125 % = 1 ct / 8 EUR;
+   *  ein prozentualer Boden (frueher 0,4 %) haette teure Scheine dreifach zu teuer gemacht.
+   *  Kappe bei 15 % - Pfennig-Scheine sind real noch schlimmer (gemessen 11,5 %), aber
+   *  irgendwo muss die Simulation aufhoeren, Unfug zu bepreisen.
+   *  Ohne Preis gilt der Altpfad (Altaufrufe/Tests). */
+  function effSpread(iv, base, preis, ratio) {
     base = base === undefined ? SPREAD : base;
     if (preis == null) return Math.min(base * 2.5, Math.max(base * 0.8, base * (0.7 + iv)));
-    var absolut = 0.01 / Math.max(preis, 0.05);        // 1-Cent-Floor des Market Makers
-    var relativ = 0.004 * (0.7 + iv);                  // kleiner vola-abhaengiger Anteil
-    return Math.min(0.08, Math.max(absolut, relativ));
+    return Math.min(0.15, spreadCent(ratio) / Math.max(preis, 0.02));
   }
   /** Slippage-Anteil je Ausführung. Mit Scheinpreis: klein - der Emittent stellt feste
    *  Quotes, gefuellt wird zum gestellten Kurs; Restrisiko ist die Kursstellung selbst. */
   function slipOf(iv, base, preis) {
     base = base === undefined ? 0.005 : base;
     if (preis == null) return base * (0.5 + iv);
-    return Math.min(0.02, Math.max(0.001, 0.002 * (0.5 + iv)));
+    // Der Emittent stellt verbindliche Quotes - gefuellt wird zum gestellten Kurs.
+    // Restrisiko ist nur die Kursstellung selbst, daher sehr klein.
+    return Math.min(0.01, Math.max(0.0005, 0.001 * (0.5 + iv)));
   }
 
   /** Effektiver Hebel (Omega) = Delta × Spot × Ratio / Scheinpreis */
@@ -349,10 +358,20 @@
   }
 
   /** Hebel-Profile für die Intraday-Strategie */
+  /* Bezugsverhaeltnis (ratio) ist eine KOSTEN-Entscheidung, keine Kosmetik: Emittenten
+   * stellen die Geld-Brief-Spanne als festen Cent-Betrag (gemessen an echten Nvidia-Scheinen
+   * auf onvista: 1 ct bei BV 0,1 / 2 ct bei BV 1,0 - unabhaengig vom Preis). Ein Schein mit
+   * BV 1,0 kostet das Zehnfache je Stueck, zahlt aber nur den doppelten Cent-Spread - also
+   * ein FUENFTEL des relativen Spreads bei identischem Hebel (Omega ist ratio-unabhaengig).
+   * Gemessene Realitaet: 4,50-EUR-Schein mit BV 1,0 -> 0,44 % je Seite, Breakeven 0,077 %;
+   * 0,45-EUR-Schein mit BV 0,1 -> 2,2 % je Seite, Breakeven 0,31 %. */
   var PROFILES = {
-    atm21:   { name: 'Moderat (ATM, 21 Tage)',        otmPct: 0.00, days: 21 },
-    otm3_14: { name: 'Spekulativ (3 % OTM, 14 Tage)', otmPct: 0.03, days: 14 },
-    otm5_10: { name: 'Heiß (5 % OTM, 10 Tage)',       otmPct: 0.05, days: 10 }
+    atm21:   { name: 'Moderat (ATM, 21 Tage)',        otmPct: 0.00, days: 21, ratio: 0.1 },
+    otm3_14: { name: 'Spekulativ (3 % OTM, 14 Tage)', otmPct: 0.03, days: 14, ratio: 0.1 },
+    otm5_10: { name: 'Heiß (5 % OTM, 10 Tage)',       otmPct: 0.05, days: 10, ratio: 0.1 },
+    atm21_b: { name: 'Moderat, BV 1,0 (ATM, 21 Tage)',    otmPct: 0.00, days: 21, ratio: 1 },
+    atm60_b: { name: 'Ruhig, BV 1,0 (ATM, 60 Tage)',      otmPct: 0.00, days: 60, ratio: 1 },
+    otm3_30b:{ name: 'Spekulativ, BV 1,0 (3 % OTM, 30 T)', otmPct: 0.03, days: 30, ratio: 1 }
   };
 
   /* ================= Backtest-Kennzahlen ================= */
@@ -1120,7 +1139,7 @@
   /** Stand der Rechengrundlage. Wird hochgezählt, sobald sich etwas ändert, das alte
    *  Backtest-Ergebnisse ungültig macht (z. B. die Vola-Skalierung in 7.10). Die Farm
    *  verwirft dann ihren Champion-Nachweis und lässt ihn neu antreten. */
-  var RECHENSTAND = 5;   // v8.8: Kostenmodell auf Cent-Spread umgestellt
+  var RECHENSTAND = 6;   // v8.9: Cent-Spread an echten Kursen kalibriert + Bezugsverhaeltnis
 
   var KANAL_MIN = { touchJeSeite: 3, dichte: 2.5, wechsel: 2, deckung: 0.90, enge: 0.85, vr: 0.35, acf: -0.65, score: 50 };
 
@@ -1276,14 +1295,24 @@
   /* ================= Regime-Whitelist (reine Prüf-Logik) =================
    * Lebt hier statt in depot.js, damit die Unit-Tests die ECHTE Funktion prüfen –
    * die gespiegelte Kopie im Test konnte durch Änderungen am Produktcode nie rot werden. */
+  /* 'pause' ist ein vollwertiges Setup, kein Sonderfall: Bisher MUSSTE die Regime-Logik
+    * eine Handelsart waehlen - "heute passt nichts" war schlicht nicht ausdrueckbar, also
+    * wurde im Zweifel Trendfolge gehandelt, auch in einem Markt der weder trendet noch
+    * schwingt. Der Ausloeser heisst 'keiner', damit die Whitelist-Pruefung unveraendert
+    * greift (Setup -> erlaubte Ausloeser). */
   var SETUP_ALLOW = {
     ausbruch: ['kreuzung', 'range'],
-    umkehr: ['ueberdehnung', 'welle']
+    umkehr: ['ueberdehnung', 'welle'],
+    pause: ['keiner']
   };
   /** KI-Antwort gegen Whitelist und harte Plausibilitätsregeln prüfen. */
   function regimeValidate(w, f) {
     if (!w || !SETUP_ALLOW[w.setup]) return { ok: false, grund: 'Setup unbekannt' };
     if (SETUP_ALLOW[w.setup].indexOf(w.ausloeser) === -1) return { ok: false, grund: 'Auslöser passt nicht zum Setup' };
+    // Pause braucht keinen Zeitrahmen und keine Marktstruktur - es wird ja nicht gehandelt.
+    // Die Sperren unten (Umkehr im Trend, Welle ohne Wellen, Range nur frueh) pruefen
+    // Handels-Plausibilitaet; auf "nicht handeln" sind sie nicht anwendbar.
+    if (w.setup === 'pause') { w.zeitrahmen = w.zeitrahmen || '5m'; w.kanal = false; return { ok: true }; }
     if (['1m', '5m'].indexOf(w.zeitrahmen) === -1) return { ok: false, grund: 'Zeitrahmen unzulässig' };
     // Harte Sperren – die gelten auch dann, wenn das Modell etwas anderes will
     if (w.setup === 'umkehr' && (f.trendAnteilPct >= 70 || f.trendAnteilPct <= 30)) return { ok: false, grund: 'Umkehr im Trendmarkt gesperrt' };
@@ -1457,6 +1486,7 @@
     var MTF = !!opts.mtf;                                              // 5-Min-Bestätigung (für 1-Min-Serien)
     var RISKP = opts.riskPct || 0;                                     // Positionsgröße nach Risiko (% vom Kapital je Stop)
     var ORBMIN = opts.orbMin || 30;                                    // Opening-Range-Dauer in Minuten
+    var BV = opts.ratio || RATIO;                                      // Bezugsverhaeltnis (Kostenhebel!)
     var AUTO_SL = SL === 'auto';
     if (AUTO_SL) SL = -0.25; // Fallback, echter Wert je Trade
     var orbState = {};
@@ -1650,10 +1680,10 @@
         var barsProTag = Math.max(1, Math.round(390 / Math.max(1, barMinOf(bars, ci))));
         var iv = Math.min(1.5, Math.max(0.15, histVolIntraday(closesUpto, barsProTag) * 1.1));
         var strike = spot * (1 + (dir === 'call' ? OTM : -OTM));
-        var w = { strike: strike, expiry: t + EXPD * 86400000, iv: iv, ratio: RATIO };
+        var w = { strike: strike, expiry: t + EXPD * 86400000, iv: iv, ratio: BV };
         var wWert = warrantValue(dir, w, spot, t);
         if (wWert <= 0.001) continue;
-        var spx = effSpread(iv, SP, wWert) + slipOf(iv, SLIPB, wWert); // Cent-Spread + Slippage auf den Scheinwert
+        var spx = effSpread(iv, SP, wWert, BV) + slipOf(iv, SLIPB, wWert); // Cent-Spread + Slippage
         var ask = wWert * (1 + spx);
         var omegaE = warrantOmega(dir, w, spot, t);
         var barMsX = ci > 0 ? Math.max(60000, bars[ci][0] - bars[ci - 1][0]) : 300000;
@@ -1742,7 +1772,7 @@
     SETUP_ALLOW: SETUP_ALLOW, regimeValidate: regimeValidate,
     resampleBars: resampleBars, mtfAgrees: mtfAgrees, autoStop: autoStop,
     signalCross: signalCross, vwapLine: vwapLine, inWindow: inWindow,
-    effSpread: effSpread, slipOf: slipOf,
+    effSpread: effSpread, slipOf: slipOf, spreadCent: spreadCent,
     reversionSignal: reversionSignal, pullbackSignal: pullbackSignal, rsiExtremSignal: rsiExtremSignal,
     donchianSignal: donchianSignal, squeezeSignal: squeezeSignal, edgeCheck: edgeCheck, waveQuality: waveQuality,
     regressionChannel: regressionChannel, channelFit: channelFit, bestChannel: bestChannel,

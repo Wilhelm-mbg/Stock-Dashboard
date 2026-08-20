@@ -96,7 +96,7 @@
       var prompt = 'Du bist ein strenger, nüchterner Trading-Risk-Manager für ein SIMULIERTES Optionsschein-Depot (Intraday, gehebelt). ' +
         'Deine einzige Aufgabe: den geplanten Trade freigeben oder ablehnen. ' +
         'Antworte AUSSCHLIESSLICH auf DEUTSCH (niemals Chinesisch oder Englisch) und AUSSCHLIESSLICH mit gültigem JSON, exakt so: ' +
-        '{"entscheidung":"ja" oder "nein","groesse":0.5 oder 1.0 oder 1.5,"begruendung":"max. 15 Wörter auf Deutsch"}.\n\n' +
+        '{"entscheidung":"ja" oder "nein","groesse":0.5 oder 1.0,"begruendung":"max. 15 Wörter auf Deutsch"}.\n\n' +
         'PRÜFREGELN – gehe sie der Reihe nach durch:\n' +
         '1. Richtung widerspricht trendEMA100 oder der Trendkanal-Steigung → nein.\n' +
         '2. kostenCheck: typischeBewegungPct unter dem 1,5-fachen von noetigPct → nein (Kosten fressen den Vorteil).\n' +
@@ -105,8 +105,8 @@
         'Bei weniger als 3 eigenen Trades heute ist der Tageswert nicht aussagekräftig – dann ignoriere Regel 4.\n' +
         '5. zScore extrem (Betrag über 3,5) → eher Absturz/Nachricht als Welle → nein.\n' +
         '6. letzteBewegungenPct zeigen einen einseitigen Sturz ohne Stabilisierung → nein.\n' +
-        '7. wellenScore unter 65 oder trendkanal.positionImKanal nicht nahe am Rand → groesse höchstens 1.0.\n' +
-        '8. Nur wenn ALLES sauber ist (wellenScore ≥ 75, Kanalposition am Rand, Kosten locker gedeckt, Trend klar) → ja mit groesse 1.5.\n' +
+        '7. groesse 1.0 ist das MAXIMUM und bedeutet "normale Position" – du kannst das Risiko nur senken, niemals erhöhen.\n' +
+        '8. wellenScore unter 65 oder trendkanal.positionImKanal nicht nahe am Rand → groesse 0.5 (halbe Position).\n' +
         'Merksatz: Wer nicht weiß, was er tut, muss wissen, wann er nichts tut. Im Zweifel IMMER: nein.\n' +
         (userRules ? '\nZUSÄTZLICHE REGELN DES NUTZERS (haben Vorrang, außer sie erhöhen das Risiko):\n' + userRules.slice(0, 1200) + '\n' : '') +
         '\nTRADE-KONTEXT:\n' + JSON.stringify(ctx);
@@ -120,7 +120,12 @@
         var j = JSON.parse(JSON.parse(res.body).message.content);
         var e = String(j.entscheidung || '').toLowerCase() === 'ja' ? 'ja' : 'nein';
         var g = parseFloat(j.groesse);
-        if (!(g === 0.5 || g === 1.0 || g === 1.5)) g = 1.0;
+        // Harte Kappe bei 1.0: Die KI ist eine BREMSE, kein Gaspedal. Sie darf eine
+        // Position halbieren oder ganz ablehnen - aber niemals mehr Risiko nehmen, als
+        // die gemessene Positionsgroesse vorsieht. Frueher war 1.5 erlaubt; damit konnte
+        // ein 7B-Modell ohne jede Messgrundlage das Risiko um 50 % anheben.
+        if (!(g > 0)) g = 1.0;
+        g = Math.min(1.0, g);
         return { ok: true, entscheidung: e, groesse: g, begruendung: nurDeutsch(String(j.begruendung || '')).slice(0, 140) };
       } catch (e2) { return { ok: false, msg: 'JSON unlesbar' }; }
     }

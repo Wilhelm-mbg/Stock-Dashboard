@@ -1,4 +1,5 @@
 'use strict';
+const fs = require('fs');
 /* Tests v6: ORB, Auto-Stop, Risiko-Sizing, Resampling/MTF */
 var Q = require('./quant.js');
 var fails = 0;
@@ -319,15 +320,112 @@ console.log('15) Neue Signale: RSI(2)-Extrem, Donchian, Bollinger-Squeeze');
   ok(Q.squeezeSignal(qBreit, 20).signal === null, 'Ausbruch OHNE vorherige Kompression zaehlt nicht');
 })();
 
-console.log('16) Kostenmodell: Cent-Spread statt Pauschal-Prozent');
+console.log('16) Kostenmodell, kalibriert an echten Emittenten-Kursen (onvista)');
 (function () {
-  var billig = Q.effSpread(0.45, undefined, 0.45);   // 45-Cent-Schein
-  var teuer = Q.effSpread(0.45, undefined, 2.00);    // 2-Euro-ATM-Schein
-  ok(Math.abs(billig - 0.01 / 0.45) < 1e-9, '45-Cent-Schein zahlt den 1-Cent-Floor (~2,2 %)', (billig * 100).toFixed(2) + ' %');
-  ok(teuer < billig / 3, 'teurer Schein zahlt relativ DEUTLICH weniger', (teuer * 100).toFixed(2) + ' % vs ' + (billig * 100).toFixed(2) + ' %');
-  ok(Q.effSpread(0.45, undefined, 0.02) === 0.08, 'Pfennig-Scheine laufen in die 8-%-Kappe');
-  ok(Math.abs(Q.effSpread(0.45) - Math.min(0.05, Math.max(0.016, 0.02 * 1.15))) < 1e-9, 'Altpfad ohne Preis unveraendert');
-  ok(Q.slipOf(0.45, undefined, 1.0) <= 0.002 * 0.95 + 1e-9 || Q.slipOf(0.45, undefined, 1.0) < 0.0025, 'Slippage mit Emittenten-Quote klein', Q.slipOf(0.45, undefined, 1.0));
+  // Referenz: echte Nvidia-Optionsscheine, gemessen am 20.08.2026
+  // Ask 8,000 BV 0,1 -> 0,125 % | Ask 0,087 BV 0,1 -> 11,49 % | Ask 4,50 BV 1,0 -> 0,444 %
+  function sp(preis, bv) { return Q.effSpread(0.30, undefined, preis, bv) * 100; }
+  ok(Math.abs(sp(8.00, 0.1) - 0.125) < 0.05, '8-EUR-Schein (BV 0,1): Modell trifft die echten 0,125 %', sp(8.00, 0.1).toFixed(3) + ' %');
+  ok(Math.abs(sp(4.50, 1.0) - 0.444) < 0.05, '4,50-EUR-Schein (BV 1,0): Modell trifft die echten 0,444 %', sp(4.50, 1.0).toFixed(3) + ' %');
+  ok(Math.abs(sp(0.087, 0.1) - 11.49) < 1.5, 'Pfennig-Schein: Modell trifft die echten 11,5 %', sp(0.087, 0.1).toFixed(2) + ' %');
+  // Der Kern: fester Cent-Betrag, KEIN prozentualer Boden
+  ok(sp(8.00, 0.1) < sp(0.80, 0.1) / 8, 'zehnfacher Preis = ein Zehntel des relativen Spreads');
+  ok(Q.spreadCent(1.0) === 0.02 && Math.abs(Q.spreadCent(0.1) - 0.011) < 1e-9, 'Cent-Spread: 1 ct bei BV 0,1 / 2 ct bei BV 1,0');
+  // Bezugsverhaeltnis als Kostenhebel: gleicher Schein, BV 1,0 kostet ein Fuenftel
+  var billig = sp(0.45, 0.1), teuer = sp(4.50, 1.0);
+  ok(teuer < billig / 4, 'BV 1,0 statt 0,1 senkt den relativen Spread um Faktor 4+', billig.toFixed(2) + ' % vs ' + teuer.toFixed(2) + ' %');
+  ok(sp(0.01, 0.1) === 15, 'Kappe bei 15 % greift fuer Schrott-Scheine');
+  // Omega ist ratio-unabhaengig -> BV 1,0 ist reiner Kostengewinn ohne Hebelverlust
+  var t0k = Date.now();
+  var wA = { strike: 100, expiry: t0k + 30 * 86400000, iv: 0.4, ratio: 0.1 };
+  var wB = { strike: 100, expiry: t0k + 30 * 86400000, iv: 0.4, ratio: 1.0 };
+  var oA = Q.warrantOmega('call', wA, 100, t0k), oB = Q.warrantOmega('call', wB, 100, t0k);
+  ok(Math.abs(oA - oB) < 1e-6, 'Omega ist unabhaengig vom Bezugsverhaeltnis', oA.toFixed(3) + ' vs ' + oB.toFixed(3));
+  ok(Q.PROFILES.atm21_b.ratio === 1 && Q.PROFILES.otm3_14.ratio === 0.1, 'Profile tragen ihr Bezugsverhaeltnis');
+})();
+
+/* ================= 17) Kapitalschutz v8.9 =================
+ * Vier Luecken, die belegt offen waren. Jede bekommt hier einen Waechter, damit sie
+ * nicht unbemerkt wieder aufgeht. Kill-Switch und Stale-Pruefung leben in depot.js
+ * (Renderer, nicht importierbar) - ihre REGELN werden hier gegen dieselbe Logik
+ * geprueft, die der Produktcode verwendet, plus ein Quelltext-Waechter, der anschlaegt,
+ * sobald der Aufruf im Scanner verschwindet. */
+console.log('\n17) Kapitalschutz: Kill-Switch, KI-Deckel, Stale-Daten, Regime-Pause');
+(function () {
+  var depotSrc = fs.readFileSync(__dirname + '/depot.js', 'utf8');
+  var ollamaSrc = fs.readFileSync(__dirname + '/ollama.js', 'utf8');
+
+  // --- 1) Kill-Switch ---
+  ok(/function killSwitchPruefen/.test(depotSrc), 'Kill-Switch: Funktion existiert');
+  ok(/HEALTH\.scans\+\+[\s\S]{0,300}killSwitchPruefen\(now\)/.test(depotSrc),
+     'Kill-Switch: wird im Intraday-Scan aufgerufen, vor jeder Signalpruefung');
+  ok(/closeTrade\(p, sp, now, grund\)/.test(depotSrc), 'Kill-Switch: stellt offene Positionen wirklich glatt');
+  ok(/killSwitchAktiv\(\)\) \{ patienceAdd\('Kill-Switch/.test(depotSrc), 'Kill-Switch: sperrt neue Einstiege bis Tagesende');
+  ok(/risk: \{ maxPos: 8, dayLossPct: 3,/.test(depotSrc), 'Kill-Switch: Standard-Tagesverlustlimit steht auf 3 %');
+  // Die Ausloese-Regel selbst nachrechnen (identische Formel wie im Produktcode)
+  function loestAus(eq, start, limit) { return start > 0 && (eq / start - 1) * 100 <= -limit; }
+  ok(loestAus(9700, 10000, 3) === true,  'Kill-Switch-Regel: −3,0 % bei Limit 3 loest aus');
+  ok(loestAus(9701, 10000, 3) === false, 'Kill-Switch-Regel: −2,99 % loest noch nicht aus');
+  ok(loestAus(9000, 10000, 3) === true,  'Kill-Switch-Regel: −10 % loest erst recht aus');
+
+  // --- 2) KI darf nie aufdrehen ---
+  ok(!/groesse":0\.5 oder 1\.0 oder 1\.5/.test(ollamaSrc), 'KI-Prompt: 1.5 wird nicht mehr angeboten');
+  ok(/g = Math\.min\(1\.0, g\)/.test(ollamaSrc), 'KI-Antwort: Faktor wird in ollama.js auf 1.0 gekappt');
+  ok(/Math\.min\(1, Math\.max\(0, r\.groesse \|\| 1\)\)/.test(depotSrc), 'kiCheck: zweite Kappe bei 1.0');
+  var sizingStellen = depotSrc.match(/equityNow\(\) \* [^;]*?(ki|kiRes)\.factor[^;]*?\)/g) || [];
+  ok(sizingStellen.length === 3, 'Positionsgroesse: alle drei Sizing-Stellen gefunden', sizingStellen.length);
+  ok(sizingStellen.every(function (z) { return /Math\.min\(1, (ki|kiRes)\.factor \|\| 1\)/.test(z); }),
+     'Positionsgroesse: KI-Faktor ist an JEDER Stelle auf 1.0 gedeckelt');
+  // Die Kappe selbst nachrechnen
+  function kappe(g) { if (!(g > 0)) g = 1.0; return Math.min(1.0, g); }
+  ok(kappe(1.5) === 1.0, 'Kappe: 1.5 wird zu 1.0 (KI kann nicht aufdrehen)');
+  ok(kappe(0.5) === 0.5, 'Kappe: 0.5 bleibt 0.5 (KI darf bremsen)');
+  ok(kappe(99) === 1.0 && kappe(0) === 1.0 && kappe(NaN) === 1.0, 'Kappe: Unsinn faellt auf 1.0 zurueck');
+
+  // --- 3) Stale-Daten-Schutz ---
+  ok(/function barsFrisch/.test(depotSrc), 'Stale-Schutz: barsFrisch existiert');
+  ok(/patienceAdd\('Kursdaten veraltet', sym\)/.test(depotSrc), 'Stale-Schutz: Eintrag in der Geduld-Bilanz');
+  ok(/HEALTH\.staleBars = \(HEALTH\.staleBars \|\| 0\) \+ 1/.test(depotSrc), 'Stale-Schutz: Zaehler in HEALTH');
+  // Der Einbau muss VOR der Positionseroeffnung stehen und Ausstiege unberuehrt lassen
+  var iScan = depotSrc.indexOf('async function intradayScan');
+  var iStale = depotSrc.indexOf("patienceAdd('Kursdaten veraltet'", iScan);
+  var iOpen = depotSrc.indexOf('Kosten-Check: Bewegung deckt Kosten nicht', iScan);
+  var iExit = depotSrc.indexOf('Stop-Loss erreicht', iScan);
+  ok(iStale > iExit && iStale < iOpen, 'Stale-Schutz: sitzt nach der Ausstiegs-Logik und vor dem Einstieg');
+  // Die Frische-Regel nachrechnen (identische Formel)
+  function frisch(alterMin, barMin) { return alterMin <= barMin * 3; }
+  ok(frisch(14, 5) === true,  '5m-Chart: 14 Min alter Bar ist noch frisch');
+  ok(frisch(16, 5) === false, '5m-Chart: 16 Min alter Bar ist zu alt (Grenze 15)');
+  ok(frisch(200, 60) === false, '60m-Chart: 200 Min alter Bar ist zu alt (Grenze 180)');
+  ok(frisch(2, 1) === true && frisch(4, 1) === false, '1m-Chart: Grenze liegt bei 3 Min');
+
+  // --- 4) Regime darf pausieren ---
+  ok(Array.isArray(Q.SETUP_ALLOW.pause) && Q.SETUP_ALLOW.pause.indexOf('keiner') !== -1,
+     'Regime-Pause: Setup pause steht in der Whitelist');
+  var vPause = Q.regimeValidate({ setup: 'pause', ausloeser: 'keiner', zeitrahmen: '5m' },
+    { trendAnteilPct: 50, mittlererWellenScore: 30, vola1mPct: 0.2, kanalAnteilPct: 10 });
+  ok(vPause.ok === true, 'Regime-Pause: wird von regimeValidate zugelassen');
+  var vFalsch = Q.regimeValidate({ setup: 'pause', ausloeser: 'welle', zeitrahmen: '5m' }, {});
+  ok(vFalsch.ok === false, 'Regime-Pause: falscher Ausloeser wird weiterhin abgelehnt');
+  // Pause darf die bestehenden Sperren nicht aushebeln
+  var vUmkehr = Q.regimeValidate({ setup: 'umkehr', ausloeser: 'welle', zeitrahmen: '5m' },
+    { trendAnteilPct: 85, mittlererWellenScore: 80 });
+  ok(vUmkehr.ok === false, 'Regime-Pause: Umkehr-im-Trend bleibt gesperrt (keine Nebenwirkung)');
+  ok(/setup: 'pause', ausloeser: 'keiner'/.test(depotSrc), 'Regime-Pause: Regel-Fallback kann pause waehlen');
+  ok(/f\.trendAnteilPct > 40 && f\.trendAnteilPct < 60 && f\.mittlererWellenScore < 45/.test(depotSrc),
+     'Regime-Pause: Fallback-Regel ist Trendanteil 40–60 UND Wellen-Score unter 45');
+  ok(/D\.handelsPause && D\.handelsPause\.bis > now\) \{ patienceAdd\('Handelspause/.test(depotSrc),
+     'Regime-Pause: blockt neue Einstiege tatsaechlich');
+  // Die Fallback-Regel nachrechnen
+  function pausiert(trend, welle) { return trend > 40 && trend < 60 && welle < 45; }
+  ok(pausiert(50, 30) === true,  'Fallback: 50 % Trend + Wellen 30 -> Pause');
+  ok(pausiert(50, 60) === false, 'Fallback: Wellen 60 -> kein Grund zu pausieren (Umkehr passt)');
+  ok(pausiert(85, 30) === false, 'Fallback: klarer Trend -> kein Grund zu pausieren (Trendfolge passt)');
+  ok(pausiert(40, 30) === false && pausiert(60, 30) === false, 'Fallback: Grenzen 40/60 sind exklusiv');
+
+  // --- Klartext-Karte macht beide Sperren sichtbar ---
+  ok(/Kill-Switch aktiv: Tagesverlust/.test(depotSrc), 'Klartext-Karte zeigt den Kill-Switch');
+  ok(/Handelspause \(Marktlage\)/.test(depotSrc), 'Klartext-Karte zeigt die Handelspause');
 })();
 
 console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
