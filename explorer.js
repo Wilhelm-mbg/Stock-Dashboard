@@ -176,6 +176,16 @@
         });
       });
     }
+    var indL = document.getElementById('expIndiLeiste');
+    if (indL && !indL.__bereit) {
+      indL.__bereit = true;
+      indL.querySelectorAll('input[data-ind]').forEach(function (cb) {
+        cb.addEventListener('change', function () {
+          indAn[cb.getAttribute('data-ind')] = cb.checked;
+          drawBig(document.getElementById('bigchart'), CURDATA.rangeSeries || [], letzteBeschriftung);
+        });
+      });
+    }
   }
   var letzteBeschriftung = '';
 
@@ -254,6 +264,7 @@
     squeeze:   { name: 'Squeeze',      farbe: '#f472b6', fn: function (b) { return Q.squeezeSignal(b, 20).signal; } }
   };
   var sigAn = {};
+  var indAn = {};        // Chartbild: gleitende Durchschnitte, Kanal, Zonen, Volumen
 
   /** Signale ueber die geladene Kursreihe rechnen.
    *  Jeder Punkt sieht nur die Kerzen BIS zu sich selbst - kein Blick in die Zukunft,
@@ -261,8 +272,12 @@
   function signalePunkte(bars) {
     var raus = [];
     var keys = Object.keys(SIGNALE).filter(function (k) { return sigAn[k]; });
-    if (!keys.length || !bars || bars.length < 130) return raus;
-    var start = Math.max(120, bars.length - 1200);       // Anzeige-Obergrenze: sonst rechnet der Chart ewig
+    // Frueher lag die Untergrenze bei 130 Kerzen - auf einem Monatschart (21 Kerzen)
+    // erschien deshalb NIE etwas, und es sah aus, als seien die Signale kaputt.
+    // Jede Signalfunktion prueft ihre eigene Mindestlaenge selbst; hier genuegt es,
+    // offensichtlich zu kurze Reihen abzuweisen.
+    if (!keys.length || !bars || bars.length < 40) return raus;
+    var start = Math.max(30, bars.length - 1200);        // Anzeige-Obergrenze: sonst rechnet der Chart ewig
     for (var i = start; i < bars.length; i++) {
       var fenster = bars.slice(Math.max(0, i - 300), i + 1);
       for (var ki = 0; ki < keys.length; ki++) {
@@ -292,10 +307,129 @@
       grid += '<line x1="' + pad + '" x2="' + (W - pad) + '" y1="' + gy + '" y2="' + gy + '" stroke="var(--grid)" stroke-width="1"></line>' +
         '<text x="' + (W - pad - 2) + '" y="' + (gy - 3) + '" fill="var(--muted)" font-size="10" text-anchor="end">' + U.nf2.format(gv) + '</text>';
     }
+    /* --- Chartbild: Durchschnitte, Kanal, Zonen, Volumen --- */
+    var indiPfad = '', zonen = '', volBalken = '', kreuze = '';
+    var barsI = CURDATA.rangeBars;
+    if (barsI && barsI.length > 30) {
+      var cI = barsI.map(function (b) { return b[1]; });
+      /** Einfacher gleitender Durchschnitt als Reihe - fuer die ANZEIGE.
+       *  Bewusst SMA und nicht EMA: "SMA 50/200" ist das, was in jedem Chartprogramm
+       *  steht, und der Nutzer soll dasselbe sehen. */
+      function smaReihe(a, n) {
+        var out = new Array(a.length).fill(null), summe = 0;
+        for (var i2 = 0; i2 < a.length; i2++) {
+          summe += a[i2];
+          if (i2 >= n) summe -= a[i2 - n];
+          if (i2 >= n - 1) out[i2] = summe / n;
+        }
+        return out;
+      }
+      function pfadAus(reihe, farbe, breite, strich) {
+        var p = [];
+        for (var i3 = 0; i3 < barsI.length; i3++) {
+          if (reihe[i3] == null || barsI[i3][0] < x0 || barsI[i3][0] > x1) continue;
+          p.push((p.length ? 'L' : 'M') + X(barsI[i3][0]).toFixed(1) + ' ' + Y(reihe[i3]).toFixed(1));
+        }
+        return p.length > 1 ? '<path d="' + p.join(' ') + '" fill="none" stroke="' + farbe + '" stroke-width="' + breite +
+          '"' + (strich ? ' stroke-dasharray="' + strich + '"' : '') + ' opacity="0.85"></path>' : '';
+      }
+      var s50 = null, s200 = null;
+      if (indAn.ma || indAn.cross50200) {
+        s50 = smaReihe(cI, Math.min(50, Math.floor(cI.length / 3)));
+        s200 = smaReihe(cI, Math.min(200, Math.floor(cI.length / 2)));
+      }
+      if (indAn.ma) {
+        indiPfad += pfadAus(s50, '#4a9eff', 1.3);
+        indiPfad += pfadAus(s200, '#f59e0b', 1.6);
+      }
+      if (indAn.cross50200 && s50 && s200) {
+        for (var ck = 1; ck < barsI.length; ck++) {
+          if (s50[ck] == null || s200[ck] == null || s50[ck - 1] == null || s200[ck - 1] == null) continue;
+          if (barsI[ck][0] < x0 || barsI[ck][0] > x1) continue;
+          var golden = s50[ck - 1] <= s200[ck - 1] && s50[ck] > s200[ck];
+          var death = s50[ck - 1] >= s200[ck - 1] && s50[ck] < s200[ck];
+          if (!golden && !death) continue;
+          var cx = X(barsI[ck][0]), cy = Y(s50[ck]);
+          kreuze += '<circle cx="' + cx.toFixed(1) + '" cy="' + cy.toFixed(1) + '" r="5" fill="none" stroke="' +
+            (golden ? 'var(--up)' : 'var(--down)') + '" stroke-width="2"><title>' +
+            (golden ? 'Golden Cross' : 'Death Cross') + ' · SMA50 kreuzt SMA200 ' + (golden ? 'nach oben' : 'nach unten') +
+            '\n' + new Date(barsI[ck][0]).toLocaleDateString('de-DE') +
+            '\nHinweis: an 191 Werten über 55 Jahre gemessen hat dieses Signal keinen Vorsprung (48 % Trefferquote).' +
+            '</title></circle>';
+        }
+      }
+      if (indAn.kanal && barsI.length >= 60) {
+        // Regressionskanal ueber das sichtbare Fenster: Gerade durch die Kurse,
+        // Ober- und Unterkante im groessten Abstand nach oben bzw. unten.
+        var sicht = [];
+        for (var v = 0; v < barsI.length; v++) if (barsI[v][0] >= x0 && barsI[v][0] <= x1) sicht.push({ i: v, t: barsI[v][0], c: cI[v] });
+        if (sicht.length >= 20) {
+          var nS = sicht.length, sx = 0, sy = 0, sxx = 0, sxy = 0;
+          for (var q = 0; q < nS; q++) { sx += q; sy += sicht[q].c; sxx += q * q; sxy += q * sicht[q].c; }
+          var nenner = nS * sxx - sx * sx;
+          if (nenner !== 0) {
+            var st = (nS * sxy - sx * sy) / nenner, ac = (sy - st * sx) / nS;
+            var obenAb = -Infinity, untenAb = Infinity;
+            for (var q2 = 0; q2 < nS; q2++) { var ab = sicht[q2].c - (ac + st * q2); if (ab > obenAb) obenAb = ab; if (ab < untenAb) untenAb = ab; }
+            function kante(off, farbe, breite, strich) {
+              var p1 = ac + off, p2 = ac + st * (nS - 1) + off;
+              return '<line x1="' + X(sicht[0].t).toFixed(1) + '" y1="' + Y(p1).toFixed(1) +
+                '" x2="' + X(sicht[nS - 1].t).toFixed(1) + '" y2="' + Y(p2).toFixed(1) +
+                '" stroke="' + farbe + '" stroke-width="' + breite + '"' + (strich ? ' stroke-dasharray="' + strich + '"' : '') + ' opacity="0.7"></line>';
+            }
+            var richtung = st > 0 ? 'aufwärts' : st < 0 ? 'abwärts' : 'seitwärts';
+            indiPfad += kante(0, '#a78bfa', 1.4) + kante(obenAb, '#a78bfa', 1, '4 4') + kante(untenAb, '#a78bfa', 1, '4 4') +
+              '<text x="' + (X(sicht[nS - 1].t) - 4).toFixed(1) + '" y="' + (Y(ac + st * (nS - 1) + obenAb) - 4).toFixed(1) +
+              '" fill="#a78bfa" font-size="10" text-anchor="end">Kanal ' + richtung + '</text>';
+          }
+        }
+      }
+      if (indAn.sr) {
+        // Unterstuetzung und Widerstand als Hoch/Tief der letzten 20 und 60 Kerzen.
+        // Das ist dieselbe Groesse, die der Donchian-Detektor benutzt - was man sieht,
+        // ist also genau das, worauf die Automatik reagieren wuerde.
+        [[20, '#94a3b8'], [60, '#64748b']].forEach(function (paar) {
+          var nn = paar[0];
+          if (barsI.length < nn + 2) return;
+          var hoch = -Infinity, tief = Infinity;
+          for (var k4 = barsI.length - nn; k4 < barsI.length; k4++) {
+            var hh = barsI[k4][3] != null ? barsI[k4][3] : barsI[k4][1];
+            var ll = barsI[k4][4] != null ? barsI[k4][4] : barsI[k4][1];
+            if (hh > hoch) hoch = hh; if (ll < tief) tief = ll;
+          }
+          [[hoch, 'Widerstand'], [tief, 'Unterstützung']].forEach(function (z) {
+            if (z[0] < y0 || z[0] > y1) return;
+            var yy = Y(z[0]);
+            zonen += '<line x1="' + pad + '" x2="' + (W - pad) + '" y1="' + yy.toFixed(1) + '" y2="' + yy.toFixed(1) +
+              '" stroke="' + paar[1] + '" stroke-width="1" stroke-dasharray="6 4" opacity="0.75"></line>' +
+              '<text x="' + (pad + 3) + '" y="' + (yy - 3).toFixed(1) + '" fill="' + paar[1] + '" font-size="9">' +
+              z[1] + ' ' + nn + ' · ' + U.nf2.format(z[0]) + '</text>';
+          });
+        });
+      }
+      if (indAn.volumen) {
+        var maxV = 0;
+        for (var vv = 0; vv < barsI.length; vv++) if ((barsI[vv][2] || 0) > maxV) maxV = barsI[vv][2] || 0;
+        if (maxV > 0) {
+          var hVol = Math.round((H - pad - padB) * 0.18);
+          var bw = Math.max(1, (W - 2 * pad) / Math.max(1, barsI.length) * 0.8);
+          for (var vb = 0; vb < barsI.length; vb++) {
+            if (barsI[vb][0] < x0 || barsI[vb][0] > x1) continue;
+            var vh = (barsI[vb][2] || 0) / maxV * hVol;
+            if (vh < 0.4) continue;
+            var steigt = vb === 0 || cI[vb] >= cI[vb - 1];
+            volBalken += '<rect x="' + (X(barsI[vb][0]) - bw / 2).toFixed(1) + '" y="' + (H - padB - vh).toFixed(1) +
+              '" width="' + bw.toFixed(1) + '" height="' + vh.toFixed(1) + '" fill="' +
+              (steigt ? 'var(--up)' : 'var(--down)') + '" opacity="0.22"></rect>';
+          }
+        }
+      }
+    }
+
     /* --- Signale und Leitlinie --- */
     var marker = '', linienPfad = '';
     var bars = CURDATA.rangeBars;
-    if (bars && bars.length > 130) {
+    if (bars && bars.length > 30) {
       if (sigAn.linie) {
         var closesL = bars.map(function (b) { return b[1]; });
         var linie = Q.emaSeries(closesL, 20);
@@ -309,9 +443,14 @@
       var punkte = signalePunkte(bars);
       // Zaehler fuer die Bedienleiste - macht sichtbar, wie oft ein Setup ueberhaupt anschlaegt
       var zEl2 = document.getElementById('expSigZahl');
-      if (zEl2) zEl2.textContent = punkte.length
-        ? punkte.length + ' Signale im gezeigten Zeitraum'
-        : (Object.keys(sigAn).some(function (k) { return sigAn[k] && k !== 'linie'; }) ? 'kein Signal in diesem Zeitraum' : '');
+      var etwasAn = Object.keys(sigAn).some(function (k) { return sigAn[k] && k !== 'linie'; });
+      if (zEl2) {
+        if (punkte.length) zEl2.textContent = punkte.length + ' Signale im gezeigten Zeitraum';
+        else if (!etwasAn) zEl2.textContent = '';
+        else if (bars.length < 130) zEl2.textContent = 'Nur ' + bars.length +
+          ' Kerzen – die meisten Signale brauchen mehr Vorlauf. Längeren Zeitraum oder feinere Kerzen wählen.';
+        else zEl2.textContent = 'kein Signal in diesem Zeitraum';
+      }
       punkte.forEach(function (p) {
         if (p.t < x0 || p.t > x1) return;
         var px = X(p.t), py = Y(p.preis);
@@ -331,7 +470,7 @@
     svg.innerHTML = grid +
       '<path d="' + d + ' L' + X(x1).toFixed(1) + ' ' + (H - padB) + ' L' + X(x0).toFixed(1) + ' ' + (H - padB) + ' Z" fill="var(--series-soft)"></path>' +
       '<path d="' + d + '" fill="none" stroke="var(--series)" stroke-width="2" vector-effect="non-scaling-stroke"></path>' +
-      linienPfad + marker +
+      volBalken + zonen + indiPfad + linienPfad + kreuze + marker +
       '<text x="' + pad + '" y="' + (H - 5) + '" fill="var(--muted)" font-size="10">' + rangeKey + ': <tspan class="' + U.signCls(chg) + '" fill="' + (chg >= 0 ? 'var(--up)' : 'var(--down)') + '">' + U.signTxt(chg, ' %') + '</tspan></text>' +
       '<line id="bigCross" y1="' + pad + '" y2="' + (H - padB) + '" stroke="var(--baseline)" stroke-width="1" style="display:none"></line>';
     bigMeta = { series: series, x0: x0, x1: x1, W: W, X: X };
