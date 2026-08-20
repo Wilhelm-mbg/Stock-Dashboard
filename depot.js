@@ -3410,7 +3410,10 @@
     if (centralRunning) return null;
     centralRunning = true;
     var dummy = { textContent: '', innerHTML: '', disabled: false };
-    var btn = (!silent && document.getElementById('centralBtn')) || Object.assign({}, dummy);
+    // Den Knopf 'centralBtn' gibt es seit der Umstellung auf den Autopiloten nicht mehr -
+    // runCentral wird nur noch programmgesteuert aufgerufen. Der Platzhalter bleibt, damit
+    // die btn.disabled-Zuweisungen weiter unten nicht ins Leere greifen.
+    var btn = Object.assign({}, dummy);
     var out = (!silent && document.getElementById('centralResult')) || Object.assign({}, dummy);
     var st = silent
       ? { set textContent(v) { if (opts.status) opts.status(v); }, get textContent() { return ''; } }
