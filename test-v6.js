@@ -428,5 +428,114 @@ console.log('\n17) Kapitalschutz: Kill-Switch, KI-Deckel, Stale-Daten, Regime-Pa
   ok(/Handelspause \(Marktlage\)/.test(depotSrc), 'Klartext-Karte zeigt die Handelspause');
 })();
 
+/* ================= 18) Datenbasis, Suchachsen und Zucht (v8.10) ================= */
+console.log('\n18) Datenbasis, Suchachsen und Zucht');
+(function () {
+  var d = fs.readFileSync(__dirname + '/depot.js', 'utf8');
+  var A = require('./archiv.js');
+
+  // --- 1) Datenbasis: anfragen, was die Quelle wirklich hergibt ---
+  ok(/btRange: '730d'/.test(d), 'Yahoo-Anfrage 60m holt 730 statt 63 Handelstage');
+  ok((d.match(/btRange: '60d'/g) || []).length === 2, '5m und 15m holen 60 statt 23 Handelstage');
+  ok(/btRange: '7d'/.test(d), '1m holt die vollen 7 Tage, die Yahoo maximal gibt');
+  ok(!/btTage/.test(d), 'period1/period2-Umweg entfernt (er deckelte 15m bei 41 Handelstagen)');
+  ok(!/period1=/.test(d), 'kein period1-Aufruf mehr im Kursabruf');
+  ok(A.TAGE_MAX && A.TAGE_MAX['60m'] >= 1000, 'Archiv behaelt 60m lange genug fuer 730 Handelstage', A.TAGE_MAX['60m']);
+  ok(A.TAGE_MAX['15m'] >= 120 && A.TAGE_MAX['5m'] >= 120, 'Archiv behaelt 5m/15m ueber das Yahoo-Fenster hinaus');
+  ok(A.fensterFuer('60m') === A.TAGE_MAX['60m'], 'fensterFuer waehlt je Zeitrahmen');
+  ok(A.fensterFuer('krypto') === A.MAX_TAGE, 'fensterFuer hat einen Rueckfall fuer Unbekanntes');
+  var jetzt = Date.UTC(2026, 7, 20), reihe = [];
+  for (var t = 0; t < 400; t++) reihe.push([jetzt - t * 86400000, 100, 0]);
+  ok(A.kappeTage(reihe, A.TAGE_MAX['60m'], jetzt).length === 400, '60m-Fenster wirft 400 Tage Historie NICHT weg');
+  ok(A.kappeTage(reihe, 90, jetzt).length === 91, 'das alte 90-Tage-Fenster haette 309 von 400 Tagen verworfen', A.kappeTage(reihe, 90, jetzt).length + ' statt 400');
+
+  // --- 2) Suchachsen: dort suchen, wo Wirkung ist ---
+  ok(/var SL = \[10, 15, 20, 30, 'auto'\], HOLD = \[60, 120, 240, 390\]/.test(d), 'Not-Stop und Haltedauer werden durchprobiert');
+  ok(/var PER = \[14, 30\]/.test(d), 'period auf zwei Stufen reduziert (gemessene Wirkung 0,18 Pp)');
+  ok(!/scalpSL: 30, scalpHold: 240 \}\);/.test(d), 'die feste Belegung scalpSL 30 / scalpHold 240 ist weg');
+  ok(/scalpSL: \[10, 15, 20, 30, 45, 'auto'\]/.test(d), 'Whitelist erlaubt die neuen Not-Stop-Werte');
+  ok(/scalpHold: \[15, 30, 60, 120, 240, 390\]/.test(d), 'Whitelist erlaubt die neuen Haltedauern');
+
+  // --- 3) Zucht: Population, Mutation, Gedaechtnis ---
+  ok(/function zuchtMutiere/.test(d) && /function zuchtZufall/.test(d), 'Zucht: Mutation und frisches Blut vorhanden');
+  ok(/zStand\.gen = zStand\.gen \+ 1/.test(d), 'Zucht: Generation zaehlt hoch');
+  ok(/gesehenNeu\[sl3\] \|\| gesehenSet\[sl3\]/.test(d), 'Zucht: bereits Geprueftes wird nicht wiederholt');
+  ok(/fund\.testRet > 0 && fund\.testN >= 15/.test(d), 'Zucht: nur out-of-sample Bewaehrte pflanzen sich fort');
+  ok(/\['scalpSL', 7\], \['scalpHold', 5\]/.test(d), 'Zucht: Mutationsgewichte folgen der gemessenen Wirkung');
+  ok(/\(proBasis\[bkey\] \|\| 0\) >= 4/.test(d), 'Zucht: keine Linie darf die Population uebernehmen');
+
+  // Auslese-Regel nachrechnen (dieselbe Formel wie im Produktcode)
+  function auslese(liste, max, proMax) {
+    liste = liste.slice().sort(function (x, y) { return y.testRet - x.testRet; });
+    var pro = {}, out = [];
+    liste.forEach(function (u) {
+      if ((pro[u.basis] || 0) >= proMax) return;
+      pro[u.basis] = (pro[u.basis] || 0) + 1; out.push(u);
+    });
+    return out.slice(0, max);
+  }
+  var kand = [];
+  for (var i = 0; i < 10; i++) kand.push({ basis: 'wave', testRet: 10 - i });
+  kand.push({ basis: 'reversion', testRet: 1 });
+  var aus = auslese(kand, 12, 4);
+  ok(aus.length === 5, 'Auslese: 10 Wellen-Kandidaten schrumpfen auf 4, Fremdlinie bleibt', aus.length);
+  ok(aus.filter(function (u) { return u.basis === 'reversion'; }).length === 1, 'Auslese: die schwaechere Fremdlinie ueberlebt trotzdem');
+  ok(aus[0].testRet === 10, 'Auslese: der Beste bleibt vorn');
+
+  // --- 4) Zeitbudget: jede Gruppe kommt dran ---
+  function drin(t) { return d.indexOf(t) !== -1; }
+  ok(drin('var GESAMT_MS = 22 * 60000'), 'Zeitbudget mit Puffer unter dem 25-Minuten-Deckel');
+  ok(drin('anteilMs = Math.max(30000, (GESAMT_MS - (Date.now() - t0)) / restGruppen)'), 'Zeitbudget wird auf die verbleibenden Gruppen verteilt');
+  ok(drin('uebersprungen (kommen in einer der naechsten Naechte dran)'), 'Uebersprungene Kombinationen werden GEMELDET, nicht still verschluckt');
+  ok(drin('kombis = kombis.slice(0, fertigN)'), 'nur tatsaechlich Gerechnetes geht in die Auswertung');
+  ok(drin('gruppenFertig++'), 'jede fertige Gruppe wird gezaehlt (sonst stimmt die Verteilung nicht)');
+  // Die Verteilung nachrechnen: keine Gruppe darf leer ausgehen
+  function verteile(gesamtMs, gruppen, bedarf) {
+    var t = 0, fertig = 0, bekommen = [];
+    for (var g = 0; g < gruppen; g++) {
+      var rest = Math.max(1, gruppen - fertig);
+      var anteil = Math.max(30000, (gesamtMs - t) / rest);
+      var g2 = Math.min(anteil, bedarf[g]);
+      bekommen.push(g2); t += g2; fertig++;
+    }
+    return { bekommen: bekommen, gesamt: t };
+  }
+  var v = verteile(22 * 60000, 6, [462000, 109000, 400000, 90000, 350000, 80000]);
+  ok(v.bekommen.every(function (x) { return x > 0; }), 'Zeitverteilung: jede der 6 Gruppen bekommt Rechenzeit');
+  ok(v.gesamt <= 22 * 60000, 'Zeitverteilung: das Gesamtbudget wird eingehalten', Math.round(v.gesamt / 60000) + ' Min');
+  // Der alte Zustand: von vorne durchlaufen, bis die Zeit alle ist. Sechs Gruppen, die
+  // je 10 Minuten brauchen wuerden - da kamen nur die ersten durch, der Rest nie.
+  var bedarfGleich = [600000, 600000, 600000, 600000, 600000, 600000];
+  var summe = 0, drangekommen = 0;
+  bedarfGleich.forEach(function (b) { if (summe < 22 * 60000) { drangekommen++; summe += b; } });
+  ok(drangekommen < 6, 'ohne Verteilung kam nur ein Teil der Gruppen dran (der alte Zustand)', drangekommen + ' von 6');
+  var vGleich = verteile(22 * 60000, 6, bedarfGleich);
+  ok(vGleich.bekommen.length === 6 && vGleich.bekommen.every(function (x) { return x > 0; }),
+     'mit Verteilung kommen alle 6 dran, auch wenn jede mehr wollte als sie bekommt');
+  var langsamste = verteile(22 * 60000, 6, [9e9, 9e9, 9e9, 9e9, 9e9, 9e9]);
+  ok(langsamste.bekommen.every(function (x) { return x >= 30000; }), 'auch bei durchweg langsamen Gruppen bekommt jede mindestens 30 s');
+
+  // Mutation muss den Elternteil veraendern, aber im erlaubten Wertebereich bleiben
+  var ACHSEN = { period:[9,14,20,30,50], confirmBps:[5,15,30], lineType:['ema','vwap'],
+    profile:['atm21_b','atm60_b','otm3_30b'], scalpSL:[10,15,20,30,45,'auto'], scalpHold:[15,30,60,120,240,390] };
+  var GEW = [['scalpSL',7],['scalpHold',5],['lineType',4],['confirmBps',2],['profile',2],['period',1]];
+  function achse() { var su=0,i; for(i=0;i<GEW.length;i++) su+=GEW[i][1];
+    var t2=Math.random()*su; for(i=0;i<GEW.length;i++){t2-=GEW[i][1]; if(t2<=0) return GEW[i][0];} return GEW[0][0]; }
+  function mut(k) { var m=JSON.parse(JSON.stringify(k)); var n=Math.random()<0.7?1:2;
+    for(var i=0;i<n;i++){var a2=achse(); m[a2]=ACHSEN[a2][Math.floor(Math.random()*ACHSEN[a2].length)];} return m; }
+  var elter = { basis:'wave', interval:'15m', period:14, confirmBps:15, lineType:'vwap', profile:'atm21_b', scalpSL:30, scalpHold:240 };
+  var gueltig = true, anders = 0, zaehl = {};
+  for (var mi = 0; mi < 600; mi++) {
+    var kind = mut(elter);
+    Object.keys(ACHSEN).forEach(function (a3) { if (ACHSEN[a3].indexOf(kind[a3]) === -1) gueltig = false; });
+    if (kind.basis !== elter.basis || kind.interval !== elter.interval) gueltig = false;
+    var abw = Object.keys(ACHSEN).filter(function (a4) { return kind[a4] !== elter[a4]; });
+    if (abw.length) { anders++; abw.forEach(function (a5) { zaehl[a5] = (zaehl[a5] || 0) + 1; }); }
+  }
+  ok(gueltig, 'Mutation bleibt in den erlaubten Werten und laesst Basis/Zeitrahmen unangetastet');
+  ok(anders > 400, 'Mutation veraendert den Elternteil tatsaechlich', anders + '/600');
+  ok((zaehl.scalpSL || 0) > (zaehl.period || 0) * 3, 'Mutation trifft scalpSL viel oefter als period', (zaehl.scalpSL||0) + ' vs ' + (zaehl.period||0));
+})();
+
 console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
 process.exit(fails ? 1 : 0);

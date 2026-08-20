@@ -2,13 +2,32 @@
 /* Kursarchiv: sammelt die Intraday-Bars, die die App ohnehin lädt, dauerhaft im Store.
    Warum: Yahoo liefert rückwirkend nur ~5 Handelstage (1m) bzw. ~41 Handelstage (5m/15m).
    Jede Messung auf diesen Fenstern bleibt für immer gleich dünn – egal wie oft sie läuft.
-   Das Archiv führt jeden Abruf zusammen (dedupliziert nach Zeitstempel) und behält
-   rollierend 90 Kalendertage. Nach ein paar Wochen Betrieb hat die Messung ein Vielfaches
-   der Yahoo-Historie – auch auf 1m, wo Yahoo fast nichts hergibt.
+   Das Archiv führt jeden Abruf zusammen (dedupliziert nach Zeitstempel) und behält je
+   Zeitrahmen so viel, wie die Quelle hergibt (siehe TAGE_MAX). Nach ein paar Wochen Betrieb
+   hat die Messung ein Vielfaches der Yahoo-Historie – auch auf 1m, wo Yahoo fast nichts gibt.
    Reine Merge-Logik ist pur gehalten und in Node testbar (module.exports). */
 (function (root) {
 
-  var MAX_TAGE = 90;                 // rollierendes Fenster in Kalendertagen (alle Zeitrahmen)
+  /* Ein einziges 90-Tage-Fenster fuer ALLE Zeitrahmen war die teuerste Zeile der App:
+    * Yahoo liefert Stundenkerzen 730 Handelstage rueckwirkend, das Archiv warf alles
+    * jenseits von 90 KALENDERtagen (rund 61 Handelstage) weg. Die Messung lief damit auf
+    * einem Zwoelftel der frei verfuegbaren Historie - und bei 42 Handelstagen und einer
+    * 70/30-Teilung blieben ganze 13 ungesehene Tage, gegen die 540 Kombinationen antraten.
+    * Auf so wenig Testdaten findet man mit 540 Versuchen fast immer etwas, das gut
+    * AUSSIEHT. Jetzt bekommt jeder Zeitrahmen das Fenster, das seine Quelle hergibt.
+    * Gemessen am 20.08.2026 gegen die Yahoo-Chart-API:
+    *   1m  -> hoechstens 7 Tage abrufbar (darueber lehnt Yahoo ab) -> Rest kommt vom Sammeln
+    *   5m  -> 60 Tage abrufbar
+    *   15m -> 60 Tage abrufbar
+    *   60m -> 730 Handelstage abrufbar (rund 1060 Kalendertage) */
+  var TAGE_MAX = {
+    '1m':  90,     // Yahoo gibt 7 Tage; alles darueber waechst nur durchs taegliche Sammeln
+    '5m':  180,    // Yahoo gibt 60 Tage; Sammeln verlaengert darueber hinaus
+    '15m': 180,
+    '60m': 1100    // deckt die vollen 730 Handelstage ab, die Yahoo direkt liefert
+  };
+  var MAX_TAGE = 90;                 // Rueckfall fuer unbekannte Zeitrahmen
+  function fensterFuer(iv) { return TAGE_MAX[iv] || MAX_TAGE; }
   var FLUSH_MIN = 10;                // Platte höchstens alle 10 Minuten je Symbol beschreiben
 
   /** Zwei Bar-Serien zusammenführen: dedupliziert nach Zeitstempel, neuere Daten gewinnen
@@ -80,7 +99,7 @@
         if (!bars || bars.length < 2) return;
         var e = await lade(iv, sym);
         var vorher = e.series.length;
-        e.series = kappeTage(mischeBars(e.series, bars), MAX_TAGE);
+        e.series = kappeTage(mischeBars(e.series, bars), fensterFuer(iv));
         if (e.series.length !== vorher || bars.length) e.dirty = true;
       },
       /** Zusammengeführte Serie (Archiv inkl. aller bisherigen Einspeisungen). */
@@ -118,7 +137,7 @@
   }
 
   var Archiv = {
-    MAX_TAGE: MAX_TAGE,
+    MAX_TAGE: MAX_TAGE, TAGE_MAX: TAGE_MAX, fensterFuer: fensterFuer,
     mischeBars: mischeBars, kappeTage: kappeTage,
     abdeckungTage: abdeckungTage, schlank: schlank, dollarVolTag: dollarVolTag,
     baueArchiv: baueArchiv
