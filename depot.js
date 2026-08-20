@@ -4129,7 +4129,7 @@
   }
   if (typeof window !== 'undefined') window.__pilotBericht = baueMessbericht;
   if (typeof window !== 'undefined') { window.__tiefensuche = function (o) { return tiefensuche(o || { unbegrenzt: true }); }; window.__pilotMessen = function () { return pilotMessen(true); }; }
-  if (typeof window !== 'undefined') { window.__ladeArchivDaten = ladeArchivDaten; window.__labCommonOpts = labCommonOpts; window.__btIntraday = btIntraday; window.__D = function () { return D; }; }   // fuer Funktionstests
+  if (typeof window !== 'undefined') { window.__save = save; window.__ladeArchivDaten = ladeArchivDaten; window.__labCommonOpts = labCommonOpts; window.__btIntraday = btIntraday; window.__D = function () { return D; }; }   // fuer Funktionstests
 
   /* ================= Tiefensuche (nutzt die brachliegenden Nacht-/Wochenendstunden) ====
    * Mehr Rechnen auf denselben Daten schafft kein Wissen - TIEFER suchen schon. Nach der

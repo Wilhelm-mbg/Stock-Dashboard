@@ -295,9 +295,30 @@
     if (!series || series.length < 2) { svg.innerHTML = '<text x="20" y="40" fill="var(--muted)" font-size="12">Keine Daten für diesen Zeitraum.</text>'; return; }
     var xs = series.map(function (p) { return p[0]; }), ys = series.map(function (p) { return p[1]; });
     var x0 = Math.min.apply(null, xs), x1 = Math.max.apply(null, xs);
+    // Zeitstempel -> Position in der Reihe. Nur so bekommt jede Kerze gleich viel Platz.
+    var xIndex = {};
+    for (var xi = 0; xi < series.length; xi++) xIndex[series[xi][0]] = xi;
+    var letzterIdx = series.length - 1;
     var y0 = Math.min.apply(null, ys), y1 = Math.max.apply(null, ys);
     if (y1 - y0 < 1e-9) { y0 -= 1; y1 += 1; }
-    function X(t) { return pad + (t - x0) / (x1 - x0) * (W - 2 * pad); }
+    /** x-Position einer Kerze. Bekannte Zeitstempel gehen ueber ihren Index (dadurch
+     *  fallen Nacht und Wochenende heraus); unbekannte werden auf den naechstgelegenen
+     *  Index interpoliert, damit auch Kanalkanten und Marker richtig sitzen. */
+    function X(t) {
+      var idx = xIndex[t];
+      if (idx === undefined) {
+        if (t <= x0) idx = 0;
+        else if (t >= x1) idx = letzterIdx;
+        else {
+          // naechstgelegene Kerze suchen (Reihe ist zeitlich sortiert)
+          var lo = 0, hi = letzterIdx;
+          while (hi - lo > 1) { var mid = (lo + hi) >> 1; if (series[mid][0] <= t) lo = mid; else hi = mid; }
+          var span = series[hi][0] - series[lo][0];
+          idx = span > 0 ? lo + (t - series[lo][0]) / span : lo;
+        }
+      }
+      return pad + (letzterIdx > 0 ? idx / letzterIdx : 0) * (W - 2 * pad);
+    }
     function Y(v) { return H - padB - (v - y0) / (y1 - y0) * (H - pad - padB); }
     var d = series.map(function (p, i) { return (i ? 'L' : 'M') + X(p[0]).toFixed(1) + ' ' + Y(p[1]).toFixed(1); }).join(' ');
     var grid = '';
@@ -523,9 +544,9 @@
     if (!bigMeta) return;
     var svg = e.currentTarget, r = svg.getBoundingClientRect();
     var frac = (e.clientX - r.left) / r.width;
-    var t = bigMeta.x0 + frac * (bigMeta.x1 - bigMeta.x0);
-    var best = bigMeta.series[0];
-    for (var j = 1; j < bigMeta.series.length; j++) if (Math.abs(bigMeta.series[j][0] - t) < Math.abs(best[0] - t)) best = bigMeta.series[j];
+    // Achse laeuft ueber den Kerzen-Index, nicht ueber die Zeit
+    var idxF = Math.round(frac * (bigMeta.series.length - 1));
+    var best = bigMeta.series[Math.max(0, Math.min(bigMeta.series.length - 1, idxF))];
     var cross = svg.querySelector('#bigCross');
     if (cross) { cross.style.display = 'block'; cross.setAttribute('x1', bigMeta.X(best[0])); cross.setAttribute('x2', bigMeta.X(best[0])); }
     tip.innerHTML = '<span class="tv">' + U.nf2.format(best[1]) + '</span><br><span class="tt">' +
