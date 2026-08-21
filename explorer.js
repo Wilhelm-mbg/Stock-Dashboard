@@ -205,7 +205,7 @@
         cb.addEventListener('change', function () {
           sigAn[cb.getAttribute('data-sig')] = cb.checked;
           // Neu zeichnen genuegt - die Kurse sind schon da, es wird nichts nachgeladen
-          drawBig(document.getElementById('bigchart'), CURDATA.rangeSeries || [], letzteBeschriftung);
+          drawAktuell();
         });
       });
     }
@@ -214,7 +214,7 @@
       artL.__bereit = true;
       artL.addEventListener('change', function () {
         chartArt = artL.value;
-        drawBig(document.getElementById('bigchart'), CURDATA.rangeSeries || [], letzteBeschriftung);
+        drawAktuell();
       });
     }
     var indL = document.getElementById('expIndiLeiste');
@@ -223,12 +223,50 @@
       indL.querySelectorAll('input[data-ind]').forEach(function (cb) {
         cb.addEventListener('change', function () {
           indAn[cb.getAttribute('data-ind')] = cb.checked;
-          drawBig(document.getElementById('bigchart'), CURDATA.rangeSeries || [], letzteBeschriftung);
+          drawAktuell();
         });
       });
     }
   }
   var letzteBeschriftung = '';
+
+  /* ---- Mausrad-Zoom (Tester-Wunsch #27) ----
+   * Zoomt in die GELADENE Reihe hinein, ohne neu zu laden: zoomFenster haelt die
+   * sichtbaren Indizes. Rad nach vorn verengt das Fenster um den Mauszeiger
+   * herum, Rad zurueck weitet es; ganz herausgezoomt (null) gilt die volle Reihe. */
+  var zoomFenster = null;   // {von, bis} als Indizes in CURDATA.rangeSeries
+  function sichtbareSerie() {
+    var s = CURDATA.rangeSeries || [];
+    if (!zoomFenster || !s.length) return s;
+    return s.slice(Math.max(0, zoomFenster.von), Math.min(s.length, zoomFenster.bis + 1));
+  }
+  function drawAktuell() {
+    drawBig(document.getElementById('bigchart'), sichtbareSerie(),
+      letzteBeschriftung + (zoomFenster ? ' · Ausschnitt (Rad zurück = ganz)' : ''));
+  }
+  (function () {
+    var svgZ = document.getElementById('bigchart');
+    if (!svgZ || svgZ.__zoomBereit) return;
+    svgZ.__zoomBereit = true;
+    svgZ.addEventListener('wheel', function (ev) {
+      var s = CURDATA.rangeSeries || [];
+      if (s.length < 40) return;
+      ev.preventDefault();                                  // Seite soll nicht mitscrollen
+      var von = zoomFenster ? zoomFenster.von : 0;
+      var bis = zoomFenster ? zoomFenster.bis : s.length - 1;
+      var len = bis - von + 1;
+      var r = svgZ.getBoundingClientRect();
+      var frac = Math.max(0, Math.min(1, (ev.clientX - r.left) / r.width));
+      var anker = von + Math.round(frac * (len - 1));       // Kerze unterm Mauszeiger bleibt stehen
+      var neuLen = ev.deltaY < 0 ? Math.max(30, Math.round(len * 0.75)) : Math.round(len / 0.75);
+      if (neuLen >= s.length) { zoomFenster = null; drawAktuell(); return; }
+      var neuVon = Math.max(0, anker - Math.round(frac * (neuLen - 1)));
+      var neuBis = Math.min(s.length - 1, neuVon + neuLen - 1);
+      neuVon = Math.max(0, neuBis - neuLen + 1);
+      zoomFenster = { von: neuVon, bis: neuBis };
+      drawAktuell();
+    }, { passive: false });
+  })();
 
   function buildRangeButtons() {
     var el = document.getElementById('expRanges');
@@ -312,6 +350,7 @@
     CURDATA.rangeBars = data ? data.bars : null;
     CURDATA.kerze = kerze;
     letzteBeschriftung = beschriftung;
+    zoomFenster = null;   // neue Daten = neuer Massstab, der alte Ausschnitt gilt nicht mehr
     drawBig(document.getElementById('bigchart'), data ? data.series : [], beschriftung);
   }
 
@@ -371,7 +410,7 @@
     var zu = document.getElementById('expSigZu');
     if (zu) zu.addEventListener('click', function () {
       GEWAEHLT = null;
-      drawBig(document.getElementById('bigchart'), CURDATA.rangeSeries || [], letzteBeschriftung);
+      drawAktuell();
     });
   }
 
@@ -406,7 +445,7 @@
       tr.addEventListener('click', function () {
         var i3 = parseInt(tr.getAttribute('data-zeile'), 10);
         GEWAEHLT = (GEWAEHLT === i3) ? null : i3;
-        drawBig(document.getElementById('bigchart'), CURDATA.rangeSeries || [], letzteBeschriftung);
+        drawAktuell();
       });
     });
   }
@@ -718,10 +757,9 @@
         if (p.t < x0 || p.t > x1) return;
         var px = X(p.t), py = Y(p.preis);
         var gew = GEWAEHLT != null && GEWAEHLT === pi;
-        // Groesser als frueher (6 statt 4 Pixel Halbbreite) und mit unsichtbarer
-        // Klickflaeche darum: mit der alten Groesse war ein Signal auf einem vollen
-        // Chart praktisch nicht zu treffen.
-        var s2 = gew ? 9 : 6;
+        // Nochmals vergroessert (8 statt 6 Pixel Halbbreite; Tester-Wunsch #27:
+        // "bitte um 2 mm") - mit unsichtbarer Klickflaeche darum.
+        var s2 = gew ? 11 : 8;
         var d2 = p.dir === 'call'
           ? 'M' + px + ' ' + (py + 7) + ' l' + s2 + ' ' + (s2 + 3) + ' l' + (-2 * s2) + ' 0 Z'
           : 'M' + px + ' ' + (py - 7) + ' l' + s2 + ' ' + (-s2 - 3) + ' l' + (-2 * s2) + ' 0 Z';

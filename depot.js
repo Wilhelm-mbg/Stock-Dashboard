@@ -24,7 +24,7 @@
          belegten Strategien ausgeschaltet daneben lagen. Neue Installationen starten jetzt
          mit dem gemessenen Modus (RSI2 im Seitwaertskanal, Basiswert, 8 h) im reinen
          Beobachtungsbetrieb: enabled bleibt false, das Schattenbuch zeichnet auf. */
-      intraday: { enabled: false, exitStyle: 'laufen', mode: 'rsi2seit', interval: '60m', period: 20, confirmBps: 15, profile: 'atm60_b', instrument: 'basis', orderFee: 0, minDollarVol: 50, budgetPct: 0.03, sl: -0.25, tp: 0.35, cooldownMin: 120, maxPerDay: 10, lineType: 'ema', trendFilter: false, window: 'all', scalpHold: 480, scalpTrail: 15, scalpSL: 20, blackout: 'block', channel: true, mtf: true, sizing: 'fix', screener: false, avoidHours: [], autoTune: true },
+      intraday: { enabled: false, exitStyle: 'laufen', mode: 'rsi2seit', interval: '60m', period: 20, confirmBps: 15, profile: 'atm60_b', instrument: 'basis', pool: 'auto', orderFee: 0, minDollarVol: 50, budgetPct: 0.03, sl: -0.25, tp: 0.35, cooldownMin: 120, maxPerDay: 10, lineType: 'ema', trendFilter: false, window: 'all', scalpHold: 480, scalpTrail: 15, scalpSL: 20, blackout: 'block', channel: true, mtf: true, sizing: 'fix', screener: false, avoidHours: [], autoTune: true },
       // Die belegten Mittelfrist-Buecher handeln (virtuell) von Anfang an - dafuer sind sie da.
       momentumAn: true, driftAn: true, maxRisikostufe: 3,
       watchlist: [],
@@ -40,6 +40,20 @@
   var HEALTH = { scans: 0, scanErrors: 0, fetchFail: 0, fetchOk: 0, kiFail: 0, kiOk: 0, capFail: 0, capOk: 0, staleBars: 0, killSwitch: 0, workerFail: 0, lastScanT: 0, scanTimes: [], startedAt: Date.now() };
   var LASTBARS = {}; // sym -> zuletzt geladene Intraday-Serie (für den Kursdaten-Export)
   var SIG = {};      // sym -> letzter Signal-/Blocker-Zustand (Live-Monitor)
+  /* Entscheidungsverlauf je Wert (Tester-Wunsch #30): Der Monitor zeigte nur den
+   * LETZTEN Grund - warum ein Wert den ganzen Tag nicht gehandelt wurde, war nicht
+   * nachvollziehbar. Ringpuffer mit 12 Eintraegen je Wert; derselbe Grund in Folge
+   * wird nicht wiederholt, sondern bekommt einen Zaehler (sonst fluten 90-Sekunden-
+   * Scans den Verlauf mit 'kein Signal'). Nur im Speicher - das ist Anzeige, kein Beleg. */
+  var SIG_LOG = {};
+  function sigLog(sym, grund, t) {
+    if (!sym || !grund) return;
+    var l = SIG_LOG[sym] = SIG_LOG[sym] || [];
+    var letzter = l[l.length - 1];
+    if (letzter && letzter.grund === grund) { letzter.t = t; letzter.n = (letzter.n || 1) + 1; return; }
+    l.push({ t: t, grund: grund, n: 1 });
+    if (l.length > 12) l.shift();
+  }
   var APP_VER = '';
   var EXPORT_ABDECKUNG = null; // Archiv-Abdeckung (füllt renderPilot), geht mit in den Analyse-Export
   var lastEqPoint = 0;
@@ -128,7 +142,7 @@
   var patLast = {}; // Drossel: dieselbe Ablehnung (Symbol+Grund) max. alle 15 Min zählen
   function patienceAdd(reason, sym) {
     if (!D) return;
-    if (sym) { SIG[sym] = SIG[sym] || {}; SIG[sym].grund = reason; SIG[sym].t = Date.now(); SIG[sym].ok = false; }
+    if (sym) { SIG[sym] = SIG[sym] || {}; SIG[sym].grund = reason; SIG[sym].t = Date.now(); SIG[sym].ok = false; sigLog(sym, reason, Date.now()); }
     var key = (sym || '') + '|' + reason;
     var nowT = Date.now();
     if (patLast[key] && nowT - patLast[key] < 15 * 60000) return;
@@ -998,7 +1012,7 @@
     var html = '<table class="tbl"><tr><th>Wert</th><th>Kurs</th><th>Wellen-Score</th><th>z</th><th>Kanal</th><th>Status</th><th>Geprüft</th></tr>';
     syms.slice(0, 30).forEach(function (s) {
       var g = SIG[s];
-      html += '<tr><td><b>' + U.esc(s) + '</b></td>' +
+      html += '<tr data-siglog="' + U.esc(s) + '" style="cursor:pointer;" title="Klick zeigt den Entscheidungsverlauf dieses Werts"><td><b>' + U.esc(s) + '</b></td>' +
         '<td>' + (g.spot != null ? U.nf2.format(g.spot) : '–') + '</td>' +
         '<td>' + (g.score != null ? g.score + '/100' : '–') + '</td>' +
         '<td>' + (g.z != null ? g.z : '–') + '</td>' +
@@ -1006,8 +1020,28 @@
         '<td class="' + (g.ok ? 'pos' : '') + '">' + U.esc(g.grund || (g.ok ? 'gehandelt' : 'kein Signal')) + '</td>' +
         '<td style="color:var(--muted);">' + (g.t ? new Date(g.t).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }) : '–') + '</td></tr>';
     });
-    html += '</table><div style="color:var(--muted); font-size:11.5px; margin-top:6px;">Zeigt für jeden gescannten Wert, was die Strategie zuletzt gesehen hat – und warum sie nicht gehandelt hat. So wird die Geduld-Bilanz nachvollziehbar.</div>';
+    html += '</table><div style="color:var(--muted); font-size:11.5px; margin-top:6px;">Zeigt für jeden gescannten Wert, was die Strategie zuletzt gesehen hat – und warum sie nicht gehandelt hat. Zeile anklicken: Entscheidungsverlauf des Werts (Tester-Wunsch #30).</div>';
     el.innerHTML = html;
+    /* Entscheidungsverlauf aufklappen - direkt unter der angeklickten Zeile,
+       gleiche Bedienung wie im Schein-Finder. */
+    el.querySelectorAll('[data-siglog]').forEach(function (tr) {
+      tr.addEventListener('click', function () {
+        var s = tr.getAttribute('data-siglog');
+        var warOffen = tr.nextElementSibling && tr.nextElementSibling.className === 'sig-inline';
+        el.querySelectorAll('tr.sig-inline').forEach(function (x) { x.parentNode.removeChild(x); });
+        if (warOffen) return;
+        var l = (SIG_LOG[s] || []).slice().reverse();
+        var inhalt = l.length
+          ? l.map(function (e) {
+              return '<div style="padding:1px 0;">' + new Date(e.t).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }) +
+                ' · ' + U.esc(e.grund) + (e.n > 1 ? ' <span style="color:var(--muted);">(' + e.n + '× in Folge)</span>' : '') + '</div>';
+            }).join('')
+          : '<span style="color:var(--muted);">Noch kein Verlauf in dieser Sitzung.</span>';
+        tr.insertAdjacentHTML('afterend',
+          '<tr class="sig-inline"><td colspan="7" style="background:var(--panel); padding:8px 12px; font-size:12px; line-height:1.5; cursor:default;">' +
+          '<b>' + U.esc(s) + ' – Entscheidungsverlauf (diese Sitzung, jüngste zuerst)</b><br>' + inhalt + '</td></tr>');
+      });
+    });
   }
 
   /* ================= Auto-Tuning-Verlauf & Wirkungs-Ranking ================= */
@@ -1317,11 +1351,24 @@
     'XOM CVX COP SLB EOG OXY WMT COST MCD NKE SBUX TGT LOW HD DIS CMCSA VZ TMUS CAT DE BA HON GE LMT RTX UNP UPS FDX ' +
     'PANW CRWD ZS NET DDOG SNOW MDB TEAM WDAY ADSK CDNS SNPS KLAC LRCX AMAT EBAY BKNG ABNB UBER DASH PYPL SHOP SNAP ' +
     'NFLX ROKU F GM MAR HLT RCL DAL UAL').split(' ');
+  /* Waehlbare Beobachtungs-Pools (Tester-Wunsch #29). 'auto' = der gemessene
+   * 84er-Standard oben. Die Gruppen sind statische Stichtagslisten (21.08.2026);
+   * Indexumbauten aendern sie nicht von selbst - bewusst so, eine Liste, die sich
+   * still selbst umbaut, waere eine unsichtbare Konfigurationsaenderung.
+   * DAX-BESONDERHEIT: Der Scanner laeuft nur waehrend der US-Sitzung; XETRA
+   * schliesst 17:30. DAX-Werte sind also nur im Ueberlapp 15:30-17:30 handelbar,
+   * danach blockt die Veraltet-Pruefung ihre Kurse von selbst. */
+  var POOLS_60M = {
+    sp100: ('BRK-B LLY V UNH MA JNJ PG COST ORCL MRK ABBV CVX CRM BAC KO PEP WMT ADBE CSCO ACN MCD LIN NFLX ABT DHR VZ TXN WFC PM NEE DIS IBM CAT RTX GE SPGI CMCSA AMGN HON UNP ISRG BKNG LOW T GS AXP INTU ELV BLK SBUX PLD MS BMY SYK MDT DE ADP LMT TJX GILD MMC ADI CB VRTX AMT C CVS SCHW MO ZTS SO CI TMUS DUK BSX PGR EOG NKE COP CL FDX BDX EMR NOW USB TGT PYPL JPM XOM UPS BA').split(' '),
+    ndx100: ('GOOG COST NFLX ADBE PEP CSCO TMUS AMGN HON INTU ISRG BKNG ADP GILD VRTX ADI REGN LRCX PANW MU SNPS KLAC CDNS MELI ABNB CRWD MAR MRVL ORLY CSX PYPL MNST FTNT DASH ADSK ROP WDAY PCAR NXPI CPRT PDD AEP ROST ODFL KDP FAST EXC GEHC IDXX CTAS VRSK EA CCEP XEL TTWO DXCM ON FANG CSGP MDB TEAM ZS WBD DDOG SIRI ARM CEG DLTR KHC LULU AZN BIIB PAYX AMAT CMCSA TXN QCOM INTC').split(' '),
+    dax: ('SAP.DE SIE.DE ALV.DE DTE.DE AIR.DE MUV2.DE BAS.DE BAYN.DE BMW.DE MBG.DE VOW3.DE DBK.DE DB1.DE ADS.DE IFX.DE HEN3.DE EOAN.DE RWE.DE DHL.DE BEI.DE CON.DE 1COV.DE FRE.DE HEI.DE MRK.DE MTX.DE P911.DE QIA.DE RHM.DE SHL.DE SY1.DE VNA.DE ZAL.DE HNR1.DE CBK.DE ENR.DE BNR.DE DTG.DE SRT3.DE PAH3.DE').split(' ')
+  };
   var extra60mZeiger = 0;
   function extra60mFenster() {
+    var quelle = POOLS_60M[D.intraday.pool] || EXTRA_60M;
     var aus = [];
-    for (var i = 0; i < 12; i++) aus.push(EXTRA_60M[(extra60mZeiger + i) % EXTRA_60M.length]);
-    extra60mZeiger = (extra60mZeiger + 12) % EXTRA_60M.length;
+    for (var i = 0; i < 12; i++) aus.push(quelle[(extra60mZeiger + i) % quelle.length]);
+    extra60mZeiger = (extra60mZeiger + 12) % quelle.length;
     return aus;
   }
 
@@ -2024,6 +2071,7 @@
         var sig = Q.signalCross(sigBars, cfg.lineType || 'ema', cfg.period, cfg.confirmBps);
         var liquid = !cfg.minDollarVol || fd.dollarVolDay == null || fd.dollarVolDay >= cfg.minDollarVol * 1e6;
         SIG[sym] = { t: now, spot: spot, ok: false, grund: 'kein Signal', score: null, z: null, chanPos: null, chanSteep: null };
+        sigLog(sym, 'kein Signal', now);
         if (D.symBlock && D.symBlock[sym] && !D.symBlock[sym].frei) { patienceAdd('Symbol gesperrt (Verlustbringer)', sym); continue; }
 
         // Offene Intraday-Position dieses Symbols managen
@@ -2458,6 +2506,7 @@
           })(trade, spot);
         }
         SIG[sym] = { t: now, spot: spot, ok: true, grund: 'Trade eröffnet (' + (dir === 'call' ? 'CALL' : 'PUT') + ')', score: waveQ ? waveQ.score : null, z: revZ, chanPos: chE ? chE.pos : null, chanSteep: chE ? chE.steigung : null };
+        sigLog(sym, 'Trade eröffnet (' + (dir === 'call' ? 'CALL' : 'PUT') + ')', now);
         D.intradayCooldown[sym] = now;
         D.intradayCount++;
       }
@@ -5924,6 +5973,8 @@
     idPr.value = D.intraday.profile || 'atm21';
     var idIns = document.getElementById('idInstrument');
     if (idIns) idIns.value = D.intraday.instrument || 'schein';
+    var idPl = document.getElementById('idPool');
+    if (idPl) idPl.value = D.intraday.pool || 'auto';
     var idMS = document.getElementById('idMaxStufe');
     if (idMS) idMS.value = String(D.maxRisikostufe || 5);
     var idKH = document.getElementById('idKryptoHandeln');
@@ -5945,6 +5996,8 @@
       D.intraday.profile = idPr.value;
       var idIns2 = document.getElementById('idInstrument');
       if (idIns2) D.intraday.instrument = idIns2.value;
+      var idPl2 = document.getElementById('idPool');
+      if (idPl2) D.intraday.pool = idPl2.value;
       var idMS2 = document.getElementById('idMaxStufe');
       if (idMS2) D.maxRisikostufe = parseInt(idMS2.value, 10) || 5;
       var idKH2 = document.getElementById('idKryptoHandeln');
