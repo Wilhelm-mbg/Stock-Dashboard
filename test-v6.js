@@ -469,8 +469,18 @@ console.log('\n17) Kapitalschutz: Kill-Switch, KI-Deckel, Stale-Daten, Regime-Pa
   ok(/function spyTrendAuf/.test(depotSrc), 'Regime: SPY-Anker-Helfer existiert');
   ok(/SPY_REGIME\.t < 30 \* 60000/.test(depotSrc), 'Regime: SPY-Abruf gecacht (30 min), nicht je Symbol');
   ok(/dir && cfg\.regimeZuteilung/.test(depotSrc), 'Regime: Gate greift erst NACH der Signalfindung');
-  ok(/!kapiTrade && regimeAuf === false/.test(depotSrc), 'Regime: rsi2seit pausiert nur bei SPY unter EMA200');
-  ok(/kapiTrade && regimeAuf === true/.test(depotSrc), 'Regime: Kapitulation pausiert nur bei SPY ueber EMA200');
+  ok(/var istKapi = kapiTrade \|\| isKapitulation/.test(depotSrc),
+     'Regime: Gate erkennt das Zusatz-Standbein UND den eigenstaendigen Kapitulations-Modus');
+  ok(/!istKapi && regimeAuf === false/.test(depotSrc), 'Regime: rsi2seit pausiert nur bei SPY unter EMA200');
+  ok(/istKapi && regimeAuf === true/.test(depotSrc), 'Regime: Kapitulation pausiert nur bei SPY ueber EMA200');
+  /* Der Gate-Block sass urspruenglich IM rsi2seit-Zweig und war fuer den eigenstaendigen
+   * Modus 'kapitulation' unerreichbar. Diese Zusicherung prueft die Verschachtelung:
+   * das Gate muss hinter der gesamten Ausloeser-Kette und vor 'if (!dir) continue;' stehen. */
+  var iKette = depotSrc.lastIndexOf("} else if (sig.crossed) {");
+  var iGate = depotSrc.indexOf('dir && cfg.regimeZuteilung');
+  var iWeiter = depotSrc.indexOf('if (!dir) continue;');
+  ok(iKette > 0 && iGate > iKette && iWeiter > iGate,
+     'Regime: Gate steht HINTER der Ausloeser-Kette, gilt also fuer beide belegten Modi');
   var iRegGate = depotSrc.indexOf('dir && cfg.regimeZuteilung');
   var iRegSchatten = depotSrc.indexOf("schattenNeu('Regime-Filter'", iRegGate);
   ok(iRegGate > 0 && iRegSchatten > iRegGate && iRegSchatten - iRegGate < 900,
@@ -486,6 +496,113 @@ console.log('\n17) Kapitalschutz: Kill-Switch, KI-Deckel, Stale-Daten, Regime-Pa
      'Regime: Diagnose meldet den Schalter (weisse Liste)');
   var htmlSrc = fs.readFileSync(__dirname + '/index.html', 'utf8');
   ok(/id="idRegime"/.test(htmlSrc), 'Regime: Haekchen in der Oberflaeche vorhanden');
+})();
+
+/* ============ 17b) Oberflaechen-Aufraeumung (UI-Audit 21.08.2026) ============
+ * Die Oberflaeche zeigte das alte System: die widerlegte Stunden-Strategie stand
+ * an erster Stelle und behauptete "aktiv", ihr Knopf eroeffnete weiter Positionen,
+ * sechs Schalter des heutigen Systems waren gar nicht verkabelt, und die
+ * Klartext-Karte nannte die belegte Hauptstrategie beim Namen eines widerlegten
+ * Modus. Diese Zusicherungen halten den bereinigten Zustand fest. */
+console.log('\n17b) Oberflaeche: Altlasten und Verdrahtung');
+(function () {
+  var d = fs.readFileSync(__dirname + '/depot.js', 'utf8');
+  var h = fs.readFileSync(__dirname + '/index.html', 'utf8');
+  var r = fs.readFileSync(__dirname + '/renderer.js', 'utf8');
+  var s = fs.readFileSync(__dirname + '/strategien.js', 'utf8');
+
+  // --- Die widerlegte Stunden-Strategie tritt zurueck ---
+  ok(/hourlyEnabled: false/.test(d), 'Stunden-Strategie startet aus (widerlegt)');
+  ok(/D\.hourlyEnabled !== false && Math\.abs\(S\) >= OPEN_THR/.test(d),
+     'Manueller Lauf eroeffnet nichts mehr, solange die Strategie aus ist');
+  ok(/id="archivWiderlegt"/.test(h), 'Widerlegtes liegt im aufklappbaren Archiv');
+  var iIntra = h.indexOf('strat-card intraday'), iArchiv = h.indexOf('id="archivWiderlegt"');
+  ok(iIntra > 0 && iArchiv > iIntra, 'Die belegte Strategie steht VOR dem Archiv');
+  /* Nicht nur "kommt vor": Das Urteil muss VOR der inneren Erklaerungs-Klappe stehen,
+   * sonst muesste man die widerlegte Strategie erst aufklappen, um von der
+   * Widerlegung zu erfahren. */
+  var iArch2 = h.indexOf('id="archivWiderlegt"');
+  var iVerdikt = h.indexOf('Widerlegt am 21.08.2026', iArch2);
+  var iInnenKlappe = h.indexOf('<details class="how"><summary>Wie sie funktioniert', iArch2);
+  ok(iVerdikt > iArch2 && iInnenKlappe > iVerdikt,
+     'Das Messurteil steht VOR der inneren Klappe, nicht darin versteckt');
+  ok(/t=−11,6|t = −11,6/.test(h), 'Der Messwert der Widerlegung ist erhalten geblieben');
+  ok(!/id="weightsPanel"/.test(h), 'Keine Gewichts-Regler mehr fuer drei unbelegte Quellen');
+  ok(/getElementById\('weightsPanel'\);\s*\n\s*if \(!el\) return;/.test(d),
+     'renderWeights vertraegt das fehlende Panel');
+
+  // --- Die Schalter des heutigen Systems sind wirklich verkabelt ---
+  var verkabelt = (d.match(/\.concat\(\[[\s\S]{0,400}?addEventListener\('change', idSave\)/) || [''])[0];
+  ['idBlackout', 'idInstrument', 'idPool', 'idKapiZusatz', 'idRegime', 'idMaxStufe', 'idKryptoHandeln'].forEach(function (id) {
+    ok(verkabelt.indexOf("'" + id + "'") !== -1, 'Feld ' + id + ' bekommt einen change-Listener');
+  });
+  ok(/\.filter\(Boolean\)\s*\n\s*\.forEach\(function \(el\) \{ el\.addEventListener\('change', idSave\); \}\)/.test(d),
+     'Ein fehlendes Bedienelement kappt nicht mehr die ganze Verkabelung');
+
+  // --- Belegte Kanten behalten ihre gemessene Konfiguration ---
+  ok(/if \(m === 'rsi2seit' \|\| m === 'kapitulation'\) \{\s*\n\s*setzeWert\(idI, '60m'\)/.test(d),
+     'Auslöser-Wahl stellt die belegten Kanten auf 60m statt auf 1m');
+  ok(/setzeWert\(idH, m === 'kapitulation' \? '1560' : '480'\)/.test(d),
+     'Auslöser-Wahl bringt auch die gemessene Haltedauer mit');
+  ok(/if \(warBelegt\) setzeWert\(idH, '60'\)/.test(d),
+     'Beim Verlassen der belegten Kanten bleibt keine 26-Stunden-Haltedauer haengen');
+  ['480', '1560'].forEach(function (w) {
+    ok(new RegExp('<option value="' + w + '"').test(h), 'Haltedauer ' + w + ' existiert als Auswahl im Formular');
+  });
+  ok(/rsi2seitZeitrahmenGeprueft/.test(d), 'Einmal-Sicherung zieht Bestandsdepots auf 60m gerade');
+  ok(/TRIG_BELEGT = \{ rsi2seit: 1, kapitulation: 1 \}/.test(d), 'Auslöser-Liste kennt den Belegstand');
+  ok(/standardTrigger\(setup\)/.test(d) && /setup === 'umkehr' \? 'rsi2seit'/.test(d),
+     'Der Umkehr-Standard ist die belegte Kante, nicht der Listenerste');
+
+  // --- Klartext-Karte nennt die Wahrheit ---
+  ok(/c\.mode === 'rsi2seit' \|\| c\.mode === 'kapitulation'/.test(d), 'Klartext hat einen Zweig fuer die belegten Kanten');
+  ok(/var trigName = \(SETUPS\[st\.setup\]/.test(d), 'Klartext zieht den Namen aus SETUPS statt ihn abzutippen');
+  ok(/Math\.round\(\(c\.scalpHold \|\| 480\) \/ 60\)/.test(d), 'Haltedauer kommt aus der Konfiguration, nicht aus dem Text');
+  ok(/SPY_REGIME\.auf/.test(d) && !/await spyTrendAuf\(\)[\s\S]{0,200}renderKlartext/.test(d),
+     'Klartext liest die Marktlage aus dem Cache - kein Netzabruf im Render-Pfad');
+  ok(!/var\(--bad\)/.test(d), 'Kein undefiniertes Farb-Token mehr im Kill-Switch-Kasten');
+
+  // --- Backtest luegt nicht ueber die belegten Kanten ---
+  ok(/mode === 'intraday' \|\| mode === 'intradayCompare'[\s\S]{0,160}rsi2seit/.test(d),
+     'Backtest bricht fuer die belegten Kanten ab statt eine falsche Zahl zu zeigen');
+
+  // --- Robustheit des Dashboards ---
+  ok(/function setzeInhalt/.test(r), 'Dashboard setzt Inhalte nur bei vorhandenem Ziel');
+  ok(!/document\.getElementById\('(tiles|bigtech|chips|winners|losers)'\)\.innerHTML/.test(r),
+     'Kein ungeprueftes innerHTML mehr im Dashboard (skeletons lief vor dem ersten Kursabruf)');
+
+  // --- Strategien-Uebersicht spiegelt das heutige System ---
+  ok(/key: 'stunden'/.test(s), 'Die Uebersicht kennt die widerlegte Strategie samt Schalter');
+  ok(/if \(key === 'stunden'\) D\.hourlyEnabled = an;/.test(s), 'Der zweite Schalter schreibt wirklich in den Speicher');
+  ok(/getElementById\('hourlyEnabled'\)[\s\S]{0,80}checked = D\.hourlyEnabled !== false/.test(s),
+     'Der zweite Schalter zieht den Kippschalter im anderen Reiter nach');
+  ok(/window\.__syncStrategyUI/.test(s) && /window\.__syncStrategyUI = function/.test(d),
+     'Abzeichen und Klartext-Karte werden aus beiden Reitern heraus aufgefrischt');
+  // Der An/Aus-Zustand darf NICHT mehr aus idSave() zurueckgeschrieben werden -
+  // sonst ueberschreibt ein beliebiger Feld-Change die Entscheidung aus dem anderen Reiter.
+  var iSave = d.indexOf('function idSave()'), iSaveEnd = d.indexOf('renderHandSperre();', iSave);
+  ok(iSave > 0 && iSaveEnd > iSave && d.slice(iSave, iSaveEnd).indexOf('D.intraday.enabled =') === -1,
+     'idSave schreibt den An/Aus-Zustand nicht mehr zurueck');
+  ok(/idE\.addEventListener\('change', function \(\) \{ D\.intraday\.enabled = idE\.checked;/.test(d),
+     'Der An/Aus-Zustand kommt nur noch vom eigenen Schalter');
+  ok(!/Optionsscheine \(Hebel\)/.test(s), 'Die Intraday-Karte behauptet nicht mehr, mit Schein zu handeln');
+  ok(/Regime-Zuteilung/.test(s), 'Die Intraday-Karte nennt die Regime-Zuteilung');
+
+  // --- Farben und Ebenen ---
+  ['--series4', '--btn', '--btn-danger', '--btn-ink'].forEach(function (tok) {
+    var n = (h.match(new RegExp('\\' + tok + ':', 'g')) || []).length;
+    ok(n >= 2, 'Farb-Token ' + tok + ' ist in BEIDEN Themen definiert', n + '×');
+  });
+  ok(/\.modal-bg \{[^}]*z-index: 100/.test(h), 'Dialoge liegen ueber dem klebenden Cockpit');
+  ok(/:focus-visible \{ outline: 2px solid var\(--series\); outline-offset: 2px; \}/.test(h),
+     'Der Fokusring verformt die Knoepfe nicht mehr');
+  ok(/\.switch input:focus-visible \+ \.knob/.test(h), 'Kippschalter zeigen Tastatur-Fokus');
+
+  // --- Simulations-Hinweis ueberlebt jeden Umbau ---
+  var simH = (h.match(/keine Anlageberatung/gi) || []).length;
+  var simD = (d.match(/keine Anlageberatung/gi) || []).length;
+  ok(simH >= 4, 'Simulations-Hinweis in der Oberflaeche erhalten', simH + ' Stellen');
+  ok(simD >= 4, 'Simulations-Hinweis in den gerenderten Auswertungen erhalten', simD + ' Stellen');
 })();
 
 /* ================= 18) Datenbasis, Suchachsen und Zucht (v8.10) ================= */
@@ -1539,8 +1656,10 @@ console.log('\nErgebnis-Drift');
  * Verpackungsmuster einschließt. Er braucht keinen Build – nur die beiden Dateien. */
 console.log('\nAuslieferung');
 (function () {
-  var html = fs.readFileSync('index.html', 'utf8');
-  var pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+  // __dirname statt relativer Pfade: sonst faellt die Auslieferungs-Pruefung still
+  // aus, sobald der Test aus einem anderen Arbeitsverzeichnis gestartet wird.
+  var html = fs.readFileSync(__dirname + '/index.html', 'utf8');
+  var pkg = JSON.parse(fs.readFileSync(__dirname + '/package.json', 'utf8'));
   var muster = pkg.build.files;
 
   var skripte = [];
@@ -1569,7 +1688,7 @@ console.log('\nAuslieferung');
      fehlend.length ? 'FEHLT: ' + fehlend.join(', ') : skripte.length + ' geprüft');
 
   // Die Datei muss auch wirklich existieren – ein Tippfehler im src wäre derselbe Ausfall
-  var ohneDatei = skripte.filter(function (s) { return !fs.existsSync(s); });
+  var ohneDatei = skripte.filter(function (s) { return !fs.existsSync(__dirname + '/' + s); });
   ok(ohneDatei.length === 0, 'und existiert auch im Quellordner',
      ohneDatei.length ? 'FEHLT: ' + ohneDatei.join(', ') : 'alle da');
 

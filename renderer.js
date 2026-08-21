@@ -231,6 +231,13 @@
       '</svg>';
   }
 
+  /** Inhalt setzen, wenn das Ziel existiert. Kein Bereich des Dashboards darf die
+   *  Kursverarbeitung mitreissen, nur weil sein Kasten umgezogen ist. */
+  function setzeInhalt(id, html) {
+    var el = document.getElementById(id);
+    if (el) el.innerHTML = html;
+  }
+
   function render() {
     SPARKS = [];
     // Kacheln
@@ -244,7 +251,7 @@
         sparkSVG(q.series, 160, 34, ix.id) +
         '</div>';
     }).join('');
-    document.getElementById('tiles').innerHTML = tiles;
+    setzeInhalt('tiles', tiles);
 
     // Gewinner/Verlierer
     var withQ = STOCKS.filter(function (s) { return Q[s.y] && Q[s.y].pct !== null; });
@@ -255,8 +262,8 @@
           '<span class="nm">' + esc(s.name) + '</span>' + pctChip(Q[s.y].pct) + '</div>';
       }).join('');
     }
-    document.getElementById('winners').innerHTML = moverRows(sorted.slice(0, 3));
-    document.getElementById('losers').innerHTML = moverRows(sorted.slice(-3).reverse());
+    setzeInhalt('winners', moverRows(sorted.slice(0, 3)));
+    setzeInhalt('losers', moverRows(sorted.slice(-3).reverse()));
 
     // Marktbild-Heatmap: eine Kachel je Wert, die Bewegten zuerst. Farbe nur über
     // CSS-Variablen (theme-fest): 3 % Tagesbewegung = volle Beimischung (45 %).
@@ -310,8 +317,8 @@
         rangeHtml +
         '</div>';
     }
-    document.getElementById('bigtech').innerHTML = STOCKS.filter(function (s) { return s.group === 'bigtech'; }).map(card).join('');
-    document.getElementById('chips').innerHTML = STOCKS.filter(function (s) { return s.group === 'chips'; }).map(card).join('');
+    setzeInhalt('bigtech', STOCKS.filter(function (s) { return s.group === 'bigtech'; }).map(card).join(''));
+    setzeInhalt('chips', STOCKS.filter(function (s) { return s.group === 'chips'; }).map(card).join(''));
 
     // Statuszeile
     var open = usMarketOpen();
@@ -336,11 +343,11 @@
   }
 
   function renderNews() {
-    document.getElementById('news').innerHTML = NEWS.map(function (n) {
+    setzeInhalt('news', NEWS.map(function (n) {
       var when = n.t ? new Date(n.t).toLocaleString('de-DE', { weekday: 'short', hour: '2-digit', minute: '2-digit' }) + ' Uhr' : '';
       return '<div class="news-item"><div class="t"><a href="' + esc(safeUrl(n.url)) + '" target="_blank" rel="noopener">' + esc(n.title) + '</a></div>' +
         '<div class="src">' + esc(n.source) + (when ? '<br>' + esc(when) : '') + '</div></div>';
-    }).join('') || '<div class="loading">Keine News gefunden.</div>';
+    }).join('') || '<div class="loading">Keine News gefunden.</div>');
     renderTicker();
   }
 
@@ -560,11 +567,17 @@
       for (var i = 0; i < n; i++) out += '<div class="skel" style="height:' + h + 'px; padding-top:4px;">' + inner + '</div>';
       return out;
     }
-    document.getElementById('tiles').innerHTML = skel(6, 96, ['w60', 'w40', 'w80']);
-    document.getElementById('bigtech').innerHTML = skel(7, 150, ['w40', 'w60', 'w80', 'w60']);
-    document.getElementById('chips').innerHTML = skel(8, 150, ['w40', 'w60', 'w80', 'w60']);
-    document.getElementById('winners').innerHTML = skel(3, 30, ['w80']);
-    document.getElementById('losers').innerHTML = skel(3, 30, ['w80']);
+    /* Defensiv: skeletons() laeuft VOR dem ersten Kursabruf. Ein Fehler hier haette
+     * die ganze Modul-Funktion abgebrochen - keine Kurse, kein 'quotes-updated',
+     * und die App saehe lebendig aus, ohne je wieder zu handeln. */
+    [['tiles', skel(6, 96, ['w60', 'w40', 'w80'])],
+     ['bigtech', skel(7, 150, ['w40', 'w60', 'w80', 'w60'])],
+     ['chips', skel(8, 150, ['w40', 'w60', 'w80', 'w60'])],
+     ['winners', skel(3, 30, ['w80'])],
+     ['losers', skel(3, 30, ['w80'])]].forEach(function (kv) {
+      var el = document.getElementById(kv[0]);
+      if (el) el.innerHTML = kv[1];
+    });
   }
   skeletons();
 

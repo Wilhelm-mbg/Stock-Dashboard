@@ -30,6 +30,14 @@
     --panel:       #f1f1ee;
     --warn:        #915b00;
     --acc:         #1d63b8;
+    --series4:     #6257c9;   /* KI-Karte - muss in BEIDEN Themen stehen, sonst faellt
+                                 var() auf die Erbfarbe zurueck und der Balken wird tintig */
+    /* Knopfflaechen getrennt von --series/--down: Weiss auf --series schaffte nur
+       Kontrast 4,4 (hell) bzw. 3,6 (dunkel) - unter der Lesbarkeitsschwelle 4,5.
+       --series/--down bleiben zeichengleich, sie sind an ~30 Stellen Textfarbe. */
+    --btn:         #2266bf;
+    --btn-danger:  #b32020;
+    --btn-ink:     #ffffff;
   }
   :root[data-theme="dark"] {
     color-scheme: dark;
@@ -37,7 +45,9 @@
     --surface:     #1a1a19;
     --ink:         #ffffff;
     --ink-2:       #c3c2b7;
-    --muted:       #898781;
+    /* Minimal aufgehellt: auf --panel kam #898781 nur auf Kontrast 4,44 - knapp
+       unter der Lesbarkeitsschwelle, und Nebentext traegt hier echte Information. */
+    --muted:       #918f89;
     --grid:        #2c2c2a;
     --baseline:    #383835;
     --border:      rgba(255,255,255,0.10);
@@ -54,6 +64,10 @@
     --panel:       #222220;
     --warn:        #e0a63f;
     --acc:         #4a9eff;
+    --series4:     #9085e9;
+    --btn:         #1f6dc4;
+    --btn-danger:  #a81f1f;
+    --btn-ink:     #ffffff;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
@@ -66,7 +80,7 @@
     max-width: 1280px;
     margin: 0 auto;
   }
-  a { color: var(--series); text-decoration: none; }
+  a { color: var(--acc); text-decoration: none; }
   a:hover { text-decoration: underline; }
 
   header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 16px; margin-bottom: 6px; }
@@ -87,7 +101,7 @@
 
   /* Info-Fenster beim Draufzeigen (Tester-Wunsch #24) */
   #hoverInfo {
-    position: fixed; z-index: 60; display: none; width: 300px; max-width: 90vw;
+    position: fixed; z-index: 120; display: none; width: 300px; max-width: 90vw;
     background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
     padding: 10px 12px; font-size: 12.5px; box-shadow: 0 6px 24px rgba(0,0,0,0.35);
   }
@@ -104,7 +118,7 @@
   .stamp { color: var(--ink-2); font-size: 12.5px; }
   .stamp .dot { display:inline-block; width:7px; height:7px; border-radius:50%; margin-right:5px; vertical-align: 1px; }
   .dot.closed { background: var(--muted); }
-  .dot.open   { background: #0ca30c; }
+  .dot.open   { background: var(--up); }
   .hbtn {
     background: var(--surface); color: var(--ink-2);
     border: 1px solid var(--border); border-radius: 8px; padding: 4px 10px;
@@ -116,8 +130,15 @@
 
   h2 { font-size: 13px; font-weight: 600; color: var(--ink-2); text-transform: uppercase; letter-spacing: 0.06em; margin: 22px 0 10px; }
 
+  /* Eine Karte, acht Schreibweisen und drei verschiedene Radien - das war der
+     Grund, warum Kacheln, Karten und Panels nie ganz zusammenpassten. Die
+     Gemeinsamkeiten stehen jetzt EINMAL hier; die Einzelregeln darunter tragen
+     nur noch ihre echten Unterschiede. */
+  .tile, .mover-col, .card, .news, .skel, .panel, .strat-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+  }
   .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(165px, 1fr)); gap: 10px; }
-  .tile { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px 10px; }
+  .tile { padding: 12px 14px 10px; }
   .tile .name { font-size: 12px; color: var(--ink-2); margin-bottom: 2px; }
   .tile .val  { font-size: 21px; font-weight: 700; letter-spacing: -0.01em; }
   .tile .sub  { margin-top: 2px; }
@@ -130,7 +151,7 @@
 
   .movers { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   @media (max-width: 640px) { .movers { grid-template-columns: 1fr; } }
-  .mover-col { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; }
+  .mover-col { padding: 12px 14px; }
   .mover-col h3 { font-size: 12.5px; font-weight: 600; margin-bottom: 8px; color: var(--ink-2); }
   .mover-row { display: flex; align-items: baseline; gap: 8px; padding: 5px 0; border-top: 1px solid var(--grid); }
   .mover-row:first-of-type { border-top: none; }
@@ -138,7 +159,7 @@
   .mover-row .nm  { color: var(--muted); font-size: 12px; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
   .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(255px, 1fr)); gap: 10px; }
-  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; }
+  .card { padding: 12px 14px; }
   .card .top { display: flex; align-items: baseline; gap: 8px; }
   .card .sym { font-weight: 700; font-size: 15px; }
   .card .nm  { color: var(--muted); font-size: 12px; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -152,7 +173,7 @@
   .range .track { position: relative; height: 4px; border-radius: 2px; background: var(--grid); }
   .range .mark { position: absolute; top: -3px; width: 10px; height: 10px; border-radius: 50%; background: var(--series); border: 2px solid var(--surface); transform: translateX(-50%); }
 
-  .news { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 6px 16px; }
+  .news { padding: 6px 16px; }
   .news-item { display: flex; gap: 10px; padding: 10px 0; border-top: 1px solid var(--grid); }
   .news-item:first-child { border-top: none; }
   .news-item .t { flex: 1; }
@@ -161,7 +182,7 @@
   footer { margin-top: 22px; color: var(--muted); font-size: 11.5px; line-height: 1.6; }
 
   #tip {
-    position: fixed; pointer-events: none; z-index: 10; display: none;
+    position: fixed; pointer-events: none; z-index: 110; display: none;
     background: var(--surface); color: var(--ink); border: 1px solid var(--border);
     border-radius: 8px; padding: 5px 9px; font-size: 12px;
     box-shadow: 0 4px 14px rgba(0,0,0,0.25);
@@ -232,33 +253,51 @@
     border-radius: 999px; padding: 6px 15px; font: inherit; font-size: 12.5px; font-weight: 600; cursor: pointer;
   }
   .pills button:hover { color: var(--ink); }
-  .pills button.active { background: var(--series); border-color: var(--series); color: #fff; }
+  .pills button.active { background: var(--btn); border-color: var(--btn); color: var(--btn-ink); }
   .pills.small button { padding: 3px 11px; font-size: 11.5px; font-weight: 500; }
   .sub { display: none; }
   .sub.active { display: block; }
 
   /* ---- Strategie-Karten & Schalter ---- */
   .strategy-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 12px; align-items: start; }
-  .strat-card {
-    background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
-    padding: 16px 18px; border-top: 3px solid var(--series);
-  }
-  .strat-card.intraday { border-top-color: #d95926; }
+  /* Der Akzentrand MUSS nach der Gruppenregel oben stehen - die Kurzschreibweise
+     'border' dort wuerde ihn sonst wieder ueberschreiben. */
+  .strat-card { padding: 16px 18px; border-top: 3px solid var(--series); }
+  .strat-card.intraday { border-top-color: var(--series2); }
   .strat-card .head { display: flex; align-items: center; gap: 10px; }
   .strat-card .head h3 { font-size: 14.5px; font-weight: 700; color: var(--ink); margin: 0; }
   .strat-card .state { font-size: 11px; font-weight: 700; border-radius: 5px; padding: 1px 7px; }
   .strat-card .state.on  { color: var(--up); background: var(--up-soft); }
-  .strat-card .state.off { color: var(--muted); background: var(--series-soft); }
+  .strat-card .state.off { color: var(--ink-2); background: var(--series-soft); }
   .strat-card .desc { color: var(--muted); font-size: 12px; margin: 8px 0 14px; line-height: 1.55; }
+  /* Das Messurteil einer widerlegten Strategie steht sichtbar - niemand soll erst
+     aufklappen muessen, um zu erfahren, dass etwas durchgefallen ist. */
+  .verdikt {
+    margin: 10px 0; padding: 8px 10px; font-size: 12px; line-height: 1.5;
+    color: var(--ink-2); border-left: 3px solid var(--down);
+    background: var(--down-soft); border-radius: 0 8px 8px 0;
+  }
+  /* Urteilssaetze bekommen die volle Breite - in der schmalen Zahlenspalte von
+     .patrow liefen sie frueher waagerecht ueber den Rand. */
+  .urteil-zeile { font-size: 12px; color: var(--ink-2); margin: 0 0 8px; padding-left: 2px; }
+  /* Klartext-Kasten und die gemessenen Stellschrauben: die zwei Bloecke, die im
+     Normalbetrieb sichtbar bleiben - alles Uebrige liegt hinter Klappen. */
+  .klartext { border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; margin-bottom: 10px; background: var(--panel); }
+  .belegt-box { border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px 12px; margin-bottom: 10px; }
+  .belegt-titel { font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 8px; }
+  /* Haken-Beschriftungen bleiben lesbar: die .params-Regel setzt Grossbuchstaben in
+     10,5 px und Spaltenrichtung - fuer ein Auswahlkaestchen mit Satz daneben untauglich. */
+  .belegt-box .params label:has(input[type="checkbox"]) {
+    flex-direction: row; align-items: center; gap: 7px;
+    font-size: 12.5px; text-transform: none; letter-spacing: 0; font-weight: 500; color: var(--ink-2);
+  }
   .auto-row { padding: 10px 0; border-top: 1px solid var(--grid); }
   .auto-row:first-of-type { border-top: 0; padding-top: 2px; }
   .auto-head { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; font-size: 12.5px; font-weight: 600; }
   .auto-head > label { display: flex; align-items: center; gap: 6px; }
-  .auto-head label.mini { font-weight: 400; font-size: 11.5px; color: var(--muted); }
   .auto-head .switch { width: 34px; height: 19px; margin-left: 2px; }
   .auto-head .switch .knob:before { width: 13px; height: 13px; }
   .btn.tiny { padding: 3px 10px; font-size: 11.5px; }
-  select.tiny-sel { font-size: 11.5px; padding: 3px 6px; }
   .auto-status { font-size: 12px; margin-top: 6px; line-height: 1.55; color: var(--ink-2); }
   .plog { margin-top: 8px; max-height: 190px; overflow-y: auto; font-family: ui-monospace, Consolas, monospace;
     font-size: 11px; line-height: 1.6; color: var(--ink-2); background: var(--page);
@@ -279,12 +318,12 @@
 
   /* ---- Buttons & Inputs ---- */
   .btn {
-    background: var(--series); color: #fff; border: none; border-radius: 8px;
+    background: var(--btn); color: var(--btn-ink); border: none; border-radius: 8px;
     padding: 7px 14px; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer;
   }
   .btn:disabled { opacity: 0.5; cursor: default; }
   .btn.ghost { background: var(--surface); color: var(--ink-2); border: 1px solid var(--border); }
-  .btn.danger { background: var(--down); }
+  .btn.danger { background: var(--btn-danger); }
   input[type="text"], input[type="password"], select {
     background: var(--surface); color: var(--ink); border: 1px solid var(--border);
     border-radius: 8px; padding: 7px 10px; font: inherit; font-size: 13.5px;
@@ -299,7 +338,7 @@
   table.tbl tr:last-child td { border-bottom: none; }
   .pos { color: var(--up); font-weight: 600; }
   .neg { color: var(--down); font-weight: 600; }
-  .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; }
+  .panel { padding: 12px 14px; }
   .panel h3 { font-size: 11px; font-weight: 700; color: var(--muted); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.07em; }
   .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   @media (max-width: 800px) { .grid2 { grid-template-columns: 1fr; } }
@@ -331,12 +370,14 @@
   .rangebtns { display: flex; gap: 4px; flex-wrap: wrap; }
   .rangebtns button { background: none; border: 1px solid var(--border); border-radius: 6px;
     color: var(--ink-2); font: inherit; font-size: 11.5px; padding: 3px 9px; cursor: pointer; }
-  .rangebtns button.active { background: var(--series); border-color: var(--series); color: #fff; }
+  .rangebtns button.active { background: var(--btn); border-color: var(--btn); color: var(--btn-ink); }
   #bigchart { width: 100%; height: 300px; display: block; }
   .chartleiste { display:flex; gap:14px; align-items:center; flex-wrap:wrap; margin:8px 0 6px; font-size:12px; color:var(--ink-2); }
   .chartleiste label { display:flex; gap:5px; align-items:center; }
   .chartleiste select { font-size:12px; padding:2px 4px; }
-  .chartleiste .hinweis { color:var(--muted); font-size:11.5px; }
+  /* .hinweis war nur INNERHALB der Chartleiste gestylt - ausserhalb rutschte jeder
+     so ausgezeichnete Text auf 14 px Fliesstextfarbe und sah aus wie eine Aussage. */
+  .hinweis { color: var(--muted); font-size: 11.5px; line-height: 1.5; }
   .sigbox { cursor:pointer; user-select:none; }
   .sigbox input { margin:0 3px 0 0; vertical-align:-1px; }
   .kv { display: grid; grid-template-columns: auto 1fr; gap: 3px 14px; font-size: 12.5px; }
@@ -344,7 +385,10 @@
   .kv dd { text-align: right; font-weight: 600; }
 
   /* ---- Modal ---- */
-  .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.55); display: none; z-index: 20; }
+  /* Ebenen-Leiter: Das Cockpit klebt oben (40) und lag frueher UEBER den Dialogen -
+     es fing im Ueberlappungsbereich sogar Klicks ab (Eingabefelder, Klick-zum-Schliessen).
+     Reihenfolge jetzt: Cockpit 40 < Dialog 100 < Kurs-Tooltip 110 < Info-Fenster 120. */
+  .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.55); display: none; z-index: 100; }
   .modal-bg.open { display: flex; align-items: flex-start; justify-content: center; padding: 40px 16px; }
   .modal { background: var(--page); border: 1px solid var(--border); border-radius: 14px;
     max-width: 760px; width: 100%; max-height: 85vh; overflow: auto; padding: 20px 22px; }
@@ -357,7 +401,11 @@
   .simnote { color: var(--muted); font-size: 11.5px; margin: 6px 0 14px; }
 
   /* ---- UI-Politur v6.1 ---- */
-  :focus-visible { outline: 2px solid var(--series); outline-offset: 2px; border-radius: 4px; }
+  /* Kein border-radius hier: er ueberschrieb die Rundung JEDES fokussierten Knopfes
+     (8 px -> 4 px), der Knopf sprang beim Antabben sichtbar in der Form. */
+  :focus-visible { outline: 2px solid var(--series); outline-offset: 2px; }
+  /* Die Kippschalter hatten bei Tastaturbedienung ueberhaupt keine Fokus-Markierung. */
+  .switch input:focus-visible + .knob { outline: 2px solid var(--series); outline-offset: 2px; }
   ::-webkit-scrollbar { width: 10px; height: 10px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: var(--grid); border-radius: 5px; border: 2px solid var(--page); }
@@ -365,7 +413,6 @@
   .btn:not(:disabled):hover { filter: brightness(1.08); }
   .btn.ghost:hover { color: var(--ink); border-color: var(--baseline); filter: none; }
   .hbtn:hover, .pills button:not(.active):hover { border-color: var(--baseline); }
-  .chip { transition: filter 0.15s; }
 
   .tile .delta { font-size: 12px; font-weight: 600; margin-top: 2px; color: var(--muted); }
   .tile .delta.pos { color: var(--up); }
@@ -375,12 +422,16 @@
   details.how { margin: 8px 0 12px; }
   details.how summary {
     cursor: pointer; list-style: none; display: inline-flex; align-items: center; gap: 6px;
-    color: var(--series); font-size: 12px; font-weight: 600; user-select: none;
+    color: var(--acc); font-size: 12px; font-weight: 600; user-select: none;
   }
   details.how summary::-webkit-details-marker { display: none; }
-  details.how summary:before { content: "▸"; transition: transform 0.15s; font-size: 10px; }
-  details.how[open] summary:before { transform: rotate(90deg); }
+  /* Direkte Kindschaft: das Archiv schachtelt erstmals eine Klappe in eine Klappe -
+     mit Nachfahren-Selektor drehte die innere Pfeilspitze mit der aeusseren mit. */
+  details.how > summary:before { content: "▸"; transition: transform 0.15s; font-size: 10px; }
+  details.how[open] > summary:before { transform: rotate(90deg); }
   details.how .desc { margin: 8px 0 4px; }
+  /* Nach details.how summary, sonst gewinnt dort die Akzentfarbe (gleiche Spezifitaet). */
+  details.how.archiv > summary { color: var(--muted); }
 
   /* Parameter-Gruppen */
   .pgroup { margin-top: 12px; }
@@ -390,7 +441,6 @@
     letter-spacing: 0.08em; margin-bottom: 8px; padding-bottom: 4px; border-bottom: 1px solid var(--grid);
   }
   .params label .switch { margin: 5px auto 2px 0; }
-  .params label { justify-content: flex-start; min-height: 0; }
 
   /* Leere Zustände */
   .empty {
@@ -418,7 +468,7 @@
 
   /* Lade-Skeletons */
   @keyframes skel { 0% { opacity: 0.45; } 50% { opacity: 0.85; } 100% { opacity: 0.45; } }
-  .skel { border-radius: 12px; background: var(--surface); border: 1px solid var(--border); animation: skel 1.4s ease-in-out infinite; }
+  .skel { animation: skel 1.4s ease-in-out infinite; }
   .skel .bar { height: 10px; border-radius: 5px; background: var(--grid); margin: 10px 14px; }
   .skel .bar.w40 { width: 40%; } .skel .bar.w60 { width: 60%; } .skel .bar.w80 { width: 80%; }
 
@@ -452,7 +502,7 @@
   <div class="hbtns">
     <button class="hbtn" id="refreshBtn" type="button">↻ Aktualisieren</button>
     <button class="hbtn" id="themeBtn" type="button">Hell/Dunkel</button>
-    <button class="hbtn" id="settingsBtn" type="button">Einstellungen</button>
+    <button class="hbtn" id="settingsBtn" type="button">App-Einstellungen</button>
   </div>
 </header>
 <div class="subnote" id="subnote">Big Tech · Chip-Sektor · Marktüberblick – aktualisiert sich automatisch (1 Min während des US-Handels, sonst 5 Min). Charts: 1 Monat, Tagesschluss.</div>
@@ -468,11 +518,11 @@
 
 <nav class="tabs">
   <button data-tab="dashboard" class="active">Dashboard</button>
-  <button data-tab="depot">Optionsscheine</button>
+  <button data-tab="depot">Kurzfrist-Depot</button>
   <button data-tab="explorer">Aktien-Explorer</button>
   <button data-tab="mittel">Mittelfristig</button>
   <button data-tab="scheine">Schein-Finder</button>
-  <button data-tab="strategien">Strategien</button>
+  <button data-tab="strategien">Strategien &amp; Belege</button>
 </nav>
 
 <div id="tab-dashboard" class="tab active">
@@ -481,7 +531,7 @@
 <h2>Marktüberblick</h2>
 <div class="tiles" id="tiles"><div class="loading">Lade Kurse …</div></div>
 
-<h2 style="margin-top:18px;">Marktbild <span style="color:var(--muted); font-size:12px; font-weight:400;">– alle beobachteten Werte, Farbe = heutige Bewegung, Klick öffnet den Explorer</span></h2>
+<h2 style="margin-top:18px;">Marktbild <span style="color:var(--muted); font-size:12px; font-weight:400;">– die 15 Werte dieses Reiters, Farbe = heutige Bewegung, Klick öffnet den Explorer</span></h2>
 <div id="dashHeat" class="heat"><div class="loading">Lade Kurse …</div></div>
 
 <h2>Gewinner &amp; Verlierer des Tages</h2>
@@ -490,11 +540,17 @@
   <div class="mover-col"><h3>▼ Top-Verlierer</h3><div id="losers"></div></div>
 </div>
 
-<h2>Big Tech</h2>
-<div class="cards" id="bigtech"></div>
-
-<h2>Chip-Sektor</h2>
-<div class="cards" id="chips"></div>
+<!-- Dieselben 15 Werte standen dreimal untereinander: Heatmap, Gewinner/Verlierer,
+     Detailkarten. Die Karten liegen jetzt hinter einer Klappe - sie tragen echte
+     Zusatzinformation (Marktkapitalisierung, KGV, 52-Wochen-Spanne), aber nicht
+     jeden Tag und nicht ganz oben. -->
+<details class="how" id="dashDetail">
+  <summary>Einzelwerte im Detail – Kennzahlen, 52-Wochen-Spanne, Kursverlauf</summary>
+  <h2>Big Tech</h2>
+  <div class="cards" id="bigtech"></div>
+  <h2>Chip-Sektor</h2>
+  <div class="cards" id="chips"></div>
+</details>
 
 <h2>Wirtschaftskalender (marktbewegende Termine)</h2>
 <div class="news" id="calendar"><div class="loading">Lade Termine …</div></div>
@@ -504,12 +560,12 @@
 </div><!-- /tab-dashboard -->
 
 <div id="tab-depot" class="tab">
-  <div class="simnote"><b>Simulation mit virtuellem Kapital – keine Anlageberatung.</b> Synthetische Optionsscheine (Black-Scholes): Hebel und Zeitwertverfall realistisch, aber keine echten Emittenten-Preise. Läuft, solange die App geöffnet ist.</div>
+  <div class="simnote"><b>Simulation mit virtuellem Kapital – keine Anlageberatung.</b> Gehandelt wird <span id="depotInstrumentHinweis">der Basiswert (Aktie 1×, ohne Hebel)</span>. Optionsscheine werden synthetisch bepreist (Black-Scholes): Hebel und Zeitwertverfall realistisch, aber keine echten Emittenten-Preise. Läuft, solange die App geöffnet ist.</div>
 
-  <div class="simnote" style="margin-bottom:6px;">Welche Strategien überhaupt laufen sollen und was für sie spricht, steht im Tab <b>Strategien</b>. Hier stehen ihre Einstellungen.</div>
+  <div class="simnote" style="margin-bottom:6px;">Was für jede Strategie spricht und was dagegen, steht im Tab <b>Strategien &amp; Belege</b>. Ein- und ausschalten lässt sie sich hier wie dort.</div>
   <div class="pills" id="depotPills">
     <button data-sub="depot" class="active">Depot</button>
-    <button data-sub="strategien">Einstellungen</button>
+    <button data-sub="strategien">Schalter &amp; Einstellungen</button>
     <button data-sub="protokoll">Protokoll</button>
     <button data-sub="auswertung">Auswertung</button>
   </div>
@@ -528,76 +584,94 @@
       <h2 style="margin:0;">Offene Positionen</h2>
       <label style="font-size:12px; display:flex; align-items:center; gap:6px; margin-left:auto; color:var(--ink-2);"><input type="checkbox" id="notifyEnabled" checked> Benachrichtigung bei Trades</label>
     </div>
-    <div class="panel" id="positionsPanel"><div class="loading">Noch keine Positionen – aktiviere unter „Strategien“ eine Strategie oder starte dort einen Prüf-Lauf.</div></div>
+    <div class="panel" id="positionsPanel"><div class="loading">Noch keine Positionen – schalte unter „Schalter &amp; Einstellungen“ die Intraday-Strategie ein.</div></div>
   </div>
 
   <!-- ============ STRATEGIEN ============ -->
   <div class="sub" id="sub-strategien">
     <div class="strategy-grid">
-      <div class="strat-card">
-        <div class="head">
-          <h3>Stunden-Strategie</h3>
-          <span class="state on" id="hourlyState">aktiv</span>
-          <label class="switch"><input type="checkbox" id="hourlyEnabled" checked><span class="knob"></span></label>
-        </div>
-        <details class="how"><summary>So funktioniert's</summary>
-        <div class="desc">
-          Prüft stündlich alle 15 Watchlist-Werte: <b>News-Sentiment</b> mit Ereignistyp (Earnings, Übernahme, Prognose …),
-          <b>Technik</b> (SMA-Trend, RSI, Momentum, MACD) und <b>Elliott-Wellen</b> – gewichtet kombiniert.
-          Kauft Call/Put (5 % OTM, 60 Tage) ab Gesamtscore ±0,35. Exits: SL −40 % · TP +80 % · Zeit-Exit · Gegensignal.
-          <br><br><b style="color:var(--down);">Messung vom 21.08.2026 (24.727 Signale, 189 Werte, 8 Jahre):</b>
-          Der Technik-Score ist ein <b>Kontraindikator</b> – nach einem Einstiegssignal läuft der Kurs im Schnitt
-          −0,74 Prozentpunkte schlechter als seine übliche Drift (20 Handelstage, t=−11,6, nur 32 von 189 Werten positiv,
-          beide Zeithälften negativ). Mit Elliott-Beimischung −1,0 Pp. Das News-Sentiment war nie messbar.
-          Dazu kommen Schein-Spanne und Zeitwertverfall über Tage. <b>Empfehlung: aus lassen.</b> Wer sie bewusst
-          einschaltet, handelt gegen die Messung – das KI-Veto bremst dann wenigstens die schlechtesten Einstiege.
-        </div>
-        </details>
-        <div style="font-size:11px; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:0.04em; margin-bottom:6px;">Signal-Gewichtung <span style="color:var(--down); text-transform:none; letter-spacing:0; font-weight:600;">– alle drei Quellen ohne belegten Vorsprung (s. „So funktioniert's“)</span></div>
-        <div id="weightsPanel"></div>
-        <div class="strat-foot">
-          <button class="btn" id="runJobBtn">▶ Jetzt prüfen</button>
-          <span id="jobStatus"></span>
-        </div>
-      </div>
-
       <div class="strat-card intraday">
         <div class="head">
           <h3>Intraday-Strategie</h3>
           <span class="state off" id="idState">aus</span>
           <label class="switch"><input type="checkbox" id="idEnabled"><span class="knob"></span></label>
         </div>
-        <details class="how"><summary>So funktionieren die beiden Setups</summary>
+        <details class="how" open><summary>Was hier gehandelt wird</summary>
         <div class="desc">
-          Es gibt nur noch <b>zwei</b> Grundideen – alles andere sind Filter, die für beide gleich funktionieren.<br><br>
+          Zwei Einstiege sind gemessen. Welcher davon läuft, steht in der Karte darunter; ab Werk ist
+          <b>RSI(2) im Seitwärtskanal</b> gewählt und zeichnet nur auf, bis du den Handel einschaltest.<br><br>
+          <b>RSI(2) im Seitwärtskanal.</b> Kauft den kurzfristigen Rücksetzer – aber nur, wenn der Kurs in einem
+          Seitwärtskorridor pendelt und Volumen dahintersteht. Der Kanal gibt nicht die Richtung, sondern die
+          <b>Erlaubnis</b>: dasselbe Signal ist im Trend ein Münzwurf und im Seitwärtsband messbar. Gemessen über
+          162 Werte: <b>+0,147 Prozentpunkte</b> auf 8 Handelsstunden über die übliche Drift hinaus, in beiden
+          Zeithälften positiv. Nur Long, weil das Gegenstück gegen die Marktdrift kämpft.<br><br>
+          <b>Kapitulations-Dip</b> (zuschaltbar). Kauft den Ausverkauf im Abwärtskanal – dieselbe Idee, aber für die
+          andere Marktphase. Gemessen: Median <b>+0,44 %</b> je Trade. Nur Long, 26 Handelsstunden Zeit, kein
+          Gewinndeckel, weil der Ertrag in den großen Erholungen sitzt.<br><br>
+          <b>Regime-Zuteilung</b> (zuschaltbar). Beide Kanten sind komplementär: Der Rücksetzer-Kauf trägt nur, solange
+          der Gesamtmarkt über seiner 200er-Linie steht, der Kapitulations-Kauf nur darunter. Die Zuteilung schaltet
+          jede Kante in ihrer Phase frei – gemessen besser als beide dauerhaft laufen zu lassen, im Durchschnitt
+          <b>und</b> im Gesamtertrag. Pausierte Signale laufen im Schattenbuch weiter mit, damit die Regel im
+          Echtbetrieb überprüfbar bleibt.<br><br>
+          <b>Instrument:</b> gemessen wurde mit der Aktie selbst, ohne Hebel – so ist es auch voreingestellt
+          (was gerade eingestellt ist, steht in der Karte darunter). Der gemessene Vorsprung liegt über der Aktien-Kostenhürde
+          (0,10 %) und unter der Optionsschein-Hürde (0,21 %) – mit Schein war dieselbe Strategie im Backtest bei −96 %.
+          Und er zahlt über Nacht aus: streng bis Handelsschluss geschlossen −0,08 % je Trade, mit einer Nacht Haltezeit
+          +0,23 %. Deshalb steigen beide Kanten über die <b>Zeit</b> aus, nicht zum Tagesschluss.<br><br>
+          <b>Was immer mitläuft:</b> Kosten-Prüfung (die erwartete Bewegung muss Spanne und Gebühren decken),
+          Liquiditätsfilter, Nachrichten-Sperre um Quartalszahlen herum, ein Not-Stop je Position, ein Deckel für
+          Klumpenrisiko und ein Tagesverlust-Limit. Nach 3 Verlusten in Folge wird der Einsatz halbiert,
+          nach 5 pausiert der Tag.<br><br>
+          <b>So entsteht ein Trendkanal:</b> Der Kurs wird gedanklich so lange gedreht, bis das Band am schmalsten liegt –
+          genau das tut ein Chartist beim Anlegen zweier paralleler Linien. Die Linien entstehen aus echten Hochs und
+          Tiefs, und die <b>letzten Kerzen fließen bewusst nicht in die Linienlage ein</b>, sonst wäre ein Ausbruch per
+          Konstruktion unsichtbar. Gültig ist ein Kanal nur, wenn beide Linien mehrfach und über die Zeit verteilt
+          getragen haben, der Kurs zwischen ihnen pendelt statt wegzulaufen, und das Band enger ist als bei reinem
+          Zufall. Unterschieden werden <b>Aufwärtskanal, Abwärtskanal und Seitwärtskorridor</b>; ein Ausbruch setzt
+          den Kanal außer Kraft. Diese Erkennung ist das Erlaubnis-Tor beider belegten Einstiege.
+        </div>
+        </details>
+        <details class="how archiv"><summary>Weiterhin wählbar, aber ohne gemessenen Vorsprung</summary>
+        <div class="desc">
+          Diese Einstiege bleiben in der Auslöser-Liste – die Nacht-Messung prüft sie weiter, und wer sie bewusst
+          fahren will, kann das. Einen belegten Vorsprung hat keiner von ihnen.<br><br>
           <b>Ausbruch (mit der Bewegung):</b> Der Kurs verlässt eine Marke und läuft weiter. Auslöser wahlweise die
-          <b>EMA-Kreuzung</b> (bestätigter Durchbruch durch die Leitlinie) oder die <b>Eröffnungs-Range</b> – die Spanne der
-          ersten 30 Handelsminuten, gehandelt wird der erste Ausbruch daraus (max. 1 Trade je Richtung und Tag).
-          Beim Ausstieg entscheidest du zwischen <b>laufen lassen</b> (bis zum Gegen-Durchbruch, mit Trailing-Stop),
-          <b>kurz</b> (raus bei der Rückkehr zur Linie) und <b>blitz</b> – maximal 3 Minuten halten, raus bei der ersten
-          Gegenbar oder der EMA9-Rückkreuzung. Blitz lebt von kleinen, schnellen Gewinnen; Achtung: Bei sehr kurzer
-          Haltezeit frisst der Spread einen großen Teil der Bewegung – der Kosten-Check bleibt deshalb an.<br><br>
+          <b>EMA-Kreuzung</b> (bestätigter Durchbruch durch die Leitlinie) oder die <b>Eröffnungs-Spanne</b> – die Spanne der
+          ersten 30 Handelsminuten, gehandelt wird der erste Ausbruch daraus (höchstens 1 Trade je Richtung und Tag).
+          Beim Ausstieg entscheidest du zwischen <b>laufen lassen</b> (bis zum Gegen-Durchbruch, mit nachgezogenem Stop),
+          <b>kurz</b> (raus bei der Rückkehr zur Linie) und <b>blitz</b> – höchstens 3 Minuten halten, raus bei der ersten
+          Gegenkerze. Bei so kurzer Haltezeit frisst die Handelsspanne einen großen Teil der Bewegung – die Kosten-Prüfung
+          bleibt deshalb an.<br><br>
           <b>Umkehr (gegen die Übertreibung):</b> Der Kurs hat sich zu weit entfernt und kommt zurück. Auslöser wahlweise
-          <b>Überdehnung</b> (z-Score-Abstand zur Leitlinie, Ziel ist die Rückkehr zur Linie) oder <b>Wellental</b> –
-          Einstieg am Tief einer Welle, nur wenn der Wellen-Qualitäts-Score ≥ 60/100 liegt, Ausstieg am Wellenkamm.
-          Der <b>Trendkanal</b> ist dabei kein eigener Modus mehr, sondern ein Filter: Einstieg nur an der Kanalunterkante
-          (Long) bzw. Oberkante (Short), Ziel ist die Gegenkante, ein Kanalbruch löst einen Schutz-Exit aus.
-          Die Erkennung arbeitet wie ein Chartist: Der Kurs wird gedanklich so lange gedreht, bis das Band am schmalsten liegt –
-          genau das tut man beim Anlegen zweier paralleler Linien. Die Linien entstehen aus den echten Hochs und Tiefs, und die
-          <b>letzten Bars fließen bewusst nicht in die Linienlage ein</b>, sonst wäre ein Ausbruch per Konstruktion unsichtbar.
-          Gültig ist ein Kanal nur, wenn beide Linien mehrfach und über die Zeit verteilt getragen haben, der Kurs zwischen ihnen
-          pendelt statt wegzulaufen, und das Band enger ist als bei reinem Zufall. Unterschieden werden <b>Aufwärtskanal,
-          Abwärtskanal und Seitwärtskorridor</b>; ein <b>Ausbruch</b> wird gemeldet und setzt den Kanal außer Kraft.<br><br>
-          Für beide Setups gilt: <b>Kosten-Breakeven-Filter</b>, Liquiditätsfilter, Event-Blackout, Glattstellung zum Tagesschluss.
-          Die „Bestätigung“ wirkt im Umkehr-Setup als z-Score-Schwelle (0,05 % → z 1,5 · 0,15 % → z 2,0 · 0,30 % → z 2,5).
-          <b>auto-Stop</b> passt sich an Schwankungsbreite und Hebel an. Nach 3 Verlusten in Folge wird die Positionsgröße
-          halbiert, nach 5 pausiert der Tag (Tilt-Schutz).
+          <b>Überdehnung</b> (Abstand zur Leitlinie, Ziel ist die Rückkehr zur Linie) oder <b>Wellental</b> –
+          Einstieg am Tief einer Welle, Ausstieg am Wellenkamm. Der Haken <b>Trendkanal</b> wirkt nur beim Wellental:
+          Einstieg dann nur an der Kanalunterkante, Ziel ist die Gegenkante.<br><br>
+          Die Einstellung „Bestätigung“ verlangt im Umkehr-Setup einen Mindestabstand zur Leitlinie
+          (0,05 % · 0,15 % · 0,30 %, jeweils in Schwankungsbreiten gerechnet).
         </div>
         </details>
         <!-- Klartext: Was läuft gerade und warum – die Automatik stellt alles ein -->
-        <div id="idKlartext" style="border:1px solid var(--border); border-radius:10px; padding:12px 14px; margin-bottom:10px; background:rgba(255,255,255,0.02);">
+        <div id="idKlartext" class="klartext">
           <div class="loading">Lade Strategie-Stand …</div>
         </div>
+
+        <!-- Die drei Stellschrauben, für die es eine Messung gibt, stehen sichtbar –
+             alles Übrige liegt hinter der Experten-Klappe. -->
+        <div class="belegt-box">
+          <div class="belegt-titel">Gemessene Stellschrauben</div>
+          <div class="params">
+            <label title="Welche Werte der Scanner beobachtet. Die Vorgabe sind die 99 Werte, auf denen gemessen wurde (rund 5 handelbare Signale am Tag). Das volatile Drittel schnitt in der Messung besser ab (+0,235 statt +0,147 Prozentpunkte), schwankt aber auch stärker. DAX-Werte sind nur zwischen 15:30 und 17:30 handelbar – danach sperrt die Veraltet-Prüfung ihre Kurse automatisch. Die 15 Standard-Werte laufen immer mit; aus dem Pool kommen zwölf weitere je Runde, im Wechsel.">Beobachtungs-Pool<select id="idPool">
+              <option value="auto" selected>Standard (99 gemessene Werte)</option>
+              <option value="volatil">Volatiles Drittel (33 Werte – gemessen +0,235 statt +0,147 Pp)</option>
+              <option value="sp100">S&amp;P 100 (größte US-Werte)</option>
+              <option value="ndx100">Nasdaq 100</option>
+              <option value="dax">DAX (nur 15:30–17:30 handelbar)</option>
+            </select></label>
+            <label title="Zweites belegtes Standbein: Der Kapitulations-Dip (Median +0,44 %, t=4,6) kauft den Ausverkauf im Abwärtskanal – die andere Marktphase als RSI(2) im Seitwärtskanal. Nur Long, 26 Handelsstunden Zeit-Ausstieg, kein Gewinndeckel (der Ertrag sitzt in den großen Erholungen). Wirkt als Zusatz nur, wenn als Auslöser RSI(2) im Seitwärtskanal eingestellt ist – als eigener Auslöser lässt er sich in den Experten-Einstellungen direkt wählen."><input type="checkbox" id="idKapiZusatz"> Kapitulations-Dip zusätzlich</label>
+            <label title="Regime-Studie vom 21.08.2026: RSI(2) im Seitwärtskanal trägt nur über der 200er-Linie des S&P 500 (+0,15 Pp, darunter −0,17), der Kapitulations-Dip nur darunter (+0,94 Pp, t=3,1). Diese vorab festgelegte Zuteilung schlug die feste Einstellung im Mittelwert UND im Gesamtertrag; eine Zufalls-Gegenprobe ergab p=0,013. Pausierte Signale zeichnet das Schattenbuch als 'Regime-Filter' auf – so bleibt die Regel im Echtbetrieb überprüfbar."><input type="checkbox" id="idRegime"> Regime-Zuteilung (Marktlage)</label>
+          </div>
+        </div>
+
         <details id="idExperte" style="margin-bottom:8px;">
           <summary style="cursor:pointer; font-size:12.5px; color:var(--muted); padding:4px 0;">Experten-Einstellungen anzeigen (stellt normalerweise die Automatik ein – Änderungen von Hand landen im Experiment-Journal)</summary>
         <div id="idParams">
@@ -626,16 +700,7 @@
               <label title="Fix: immer gleicher Kapitaleinsatz. Risiko: Einsatz so bemessen, dass ein ausgelöster Stop immer ~X % vom Depot kostet">Positionsgröße<select id="idSizing"><option value="fix" selected>fix 3 %</option><option value="0.25">Risiko 0,25 %</option><option value="0.5">Risiko 0,5 %</option><option value="1">Risiko 1 %</option></select></label>
               <label title="automatisch = passt sich an Schwankungsbreite und Hebel an">Not-Stop-Loss<select id="idScalpSL"><option value="15">−15 %</option><option value="20" selected>−20 %</option><option value="30">−30 %</option><option value="auto">auto</option></select></label>
               <label title="Das Bezugsverhältnis (BV) ist ein Kostenhebel: Emittenten stellen den Spread als festen Cent-Betrag. Ein BV-1,0-Schein kostet das Zehnfache je Stück, zahlt aber nur den doppelten Cent — also ein Fünftel des relativen Spreads bei gleichem Hebel. Gemessen an echten Kursen.">Hebel-Profil<select id="idProfile"><option value="atm21" selected>Moderat (BV 0,1)</option><option value="otm3_14">Spekulativ (BV 0,1)</option><option value="otm5_10">Heiß (BV 0,1)</option><option value="atm21_b">Moderat · BV 1,0 — günstiger</option><option value="atm60_b">Ruhig 60 T · BV 1,0 — am günstigsten</option><option value="otm3_30b">Spekulativ 30 T · BV 1,0</option></select></label>
-              <label title="Hebelschein: gehebelt, mit Zeitwertverfall und Emittenten-Spanne. Aktie 1×: ungehebelt, linear, 5 Bp Spanne je Seite, Bruchstücke erlaubt – nötig für Strategien, deren Vorsprung unter der Scheinhürde liegt (RSI2 im Seitwärtskanal).">Instrument<select id="idInstrument"><option value="schein" selected>Hebelschein</option><option value="basis">Aktie 1× (Basiswert)</option></select></label>
-              <label title="Beobachtungs-Pool der 60-Minuten-Modi (RSI2 im Seitwärtskanal, Kapitulations-Dip). Standard = die 99 gemessenen Werte (~5 handelbare Signale/Tag). Die Gruppen sind Stichtagslisten vom 21.08.2026. DAX-Werte sind nur im Überlapp 15:30–17:30 handelbar – danach blockt die Veraltet-Prüfung ihre Kurse automatisch.">Beobachtungs-Pool<select id="idPool">
-                <option value="auto" selected>Standard (99 gemessene Werte)</option>
-                <option value="volatil">Volatiles Drittel (33 Werte – gemessen +0,235 statt +0,147 Pp)</option>
-                <option value="sp100">S&amp;P 100 (größte US-Werte)</option>
-                <option value="ndx100">Nasdaq 100</option>
-                <option value="dax">DAX (nur 15:30–17:30 handelbar)</option>
-              </select></label>
-              <label title="Zweites belegtes Standbein: Der Kapitulations-Dip (Median +0,44 %, t=4,6) kauft den Ausverkauf im Abwärtskanal – die andere Marktphase als rsi2seit. Nur Long, 26 Handelsstunden Zeit-Ausstieg, kein Gewinndeckel (der Ertrag sitzt in den großen Erholungen). Gilt nur im rsi2seit-Modus."><input type="checkbox" id="idKapiZusatz"> Kapitulations-Dip zusätzlich</label>
-              <label title="Regime-Studie 21.08.2026: rsi2seit trägt nur über der SPY-EMA200 (+0,15 Pp, darunter −0,17), der Kapitulations-Dip nur darunter (+0,94 Pp, t=3,1). Diese vorab festgelegte Zuteilung schlug die statische Basis in Mittel UND Gesamtertrag (Permutation p=0,013). Geblockte Signale zeichnet das Schattenbuch als 'Regime-Filter' auf – der Vorwärtstest misst die Regel live weiter."><input type="checkbox" id="idRegime"> Regime-Zuteilung (SPY-Trend)</label>
+              <label title="Hebelschein: gehebelt, mit Zeitwertverfall und Spanne des Emittenten. Aktie 1×: ohne Hebel, linear, 0,05 % Spanne je Seite, Bruchstücke erlaubt – nötig für Strategien, deren Vorsprung unter der Schein-Kostenhürde liegt. Genau das gilt für RSI(2) im Seitwärtskanal: mit Schein war dieselbe Strategie im Backtest bei −96 %.">Instrument<select id="idInstrument"><option value="schein" selected>Hebelschein</option><option value="basis">Aktie 1× (Basiswert)</option></select></label>
               <label title="Begrenzt depotweit, welche Scheine gekauft werden dürfen – egal ob von Hand, vom Autopiloten oder von einer Empfehlung. Die Stufen (1 defensiv … 5 Lotterielos) kommen aus dem Schein-Finder und sind dort je Schein begründet. Stufe 5 = keine Grenze.">max. Risikostufe<select id="idMaxStufe"><option value="1">1 – defensiv</option><option value="2">2</option><option value="3">3 – moderat</option><option value="4">4</option><option value="5" selected>5 – keine Grenze</option></select></label>
               <label title="BTC, ETH, SOL, XRP, BNB, ADA, DOGE, LTC rund um die Uhr handeln – immer als Basiswert (1×) mit Taker-Gebühr 10 Bp je Seite, nie als Schein. ACHTUNG: Es gibt bis heute kein belegtes Krypto-Signal – alle gemessenen Modi waren negativ. Handelbar heißt können, nicht sollen.">Krypto handeln<span class="switch"><input type="checkbox" id="idKryptoHandeln"><span class="knob"></span></span></label>
               <label title="Capital.com und viele CFD-Broker berechnen keine Kommission — dort steckt alles im Spread. Bei einem Broker mit Ordergebühr den echten Betrag wählen.">Ordergebühr<select id="idFee"><option value="0" selected>0 (keine Kommission)</option><option value="1.5">1,50 $</option><option value="5">5 $</option></select></label>
@@ -651,7 +716,7 @@
               <label data-iv="1m" title="1-Min-Signale müssen zusätzlich zur EMA20-Richtung auf dem 5-Min-Chart passen (Rauschfilter)">5-Min-Bestätigung<span class="switch"><input type="checkbox" id="idMtf" checked><span class="knob"></span></span></label>
               <label data-modes="wave" title="Nur im Umkehr-Setup mit Auslöser Wellental. Chart-technische Erkennung: Linien an echten Hochs und Tiefs, Fenster automatisch gewählt, Ausbruch wird erkannt. Ohne gültigen Kanal gibt es keinen Trade.">Trendkanal<span class="switch"><input type="checkbox" id="idChannel" checked><span class="knob"></span></span></label>
               <label title="Einmal täglich ~30 zusätzliche Kandidaten nach Wellen-Qualität und Liquidität ranken – die Top-5 werden mitgescannt">Wellen-Screener<span class="switch"><input type="checkbox" id="idScreener"><span class="knob"></span></span></label>
-              <label title="Claude wertet stündlich die Analyse-Daten aus und schreibt geprüfte Parameter-Empfehlungen in den Daten-Ordner – die App übernimmt sie automatisch (nur sichere Felder, jede Änderung wird hier angezeigt)">Auto-Tuning<span class="switch"><input type="checkbox" id="idAutoTune" checked><span class="knob"></span></span></label>
+              <label title="Liegt im Daten-Ordner eine geprüfte Empfehlung (empfehlung.json), übernimmt die App daraus einzelne Einstellungen. Beim Handels-Modus darf sie nur zwischen den beiden belegten Kanten wechseln (RSI(2) im Seitwärtskanal, Kapitulations-Dip), nie zu einem widerlegten Modus – und das Instrument nie. Von Hand gesetzte Felder bleiben unangetastet. Jede Übernahme steht im Experiment-Journal und lässt sich dort einzeln zurücknehmen.">Empfehlungen übernehmen<span class="switch"><input type="checkbox" id="idAutoTune" checked><span class="knob"></span></span></label>
               <label title="Sammelt im Hintergrund Kryptokurse (BTC, ETH, SOL, XRP, BNB, ADA, DOGE, LTC) ins Kursarchiv. Diese Werte werden NICHT gehandelt – sie liefern nur Messdaten. Krypto hat 24 Kerzen am Tag statt 6,5 und keine Nachtlücken, die Messbasis wächst dadurch rund viermal so schnell wie mit Aktien allein.">Krypto-Messdaten sammeln<span class="switch"><input type="checkbox" id="idKrypto" checked><span class="knob"></span></span></label>
               <label title="Zeichnet jedes Intraday-Signal auf und lässt es virtuell zu Ende laufen – auch wenn der Handel oben ausgeschaltet ist. So entsteht ein Vorwärtstest ohne Kapitaleinsatz. Ausschalten heißt: keine Beweisaufnahme mehr.">Signale immer aufzeichnen<span class="switch"><input type="checkbox" id="idSchattenImmer" checked><span class="knob"></span></span></label>
             </div>
@@ -666,18 +731,28 @@
               <label data-modes="waves,orb,pullback,donchian,squeeze,kanaltrend" title="Ausstieg, wenn der Schein X % unter sein Hoch fällt (Gewinn sichern)">Trailing-Stop<select id="idTrail"><option value="0">aus</option><option value="10">−10 %</option><option value="15" selected>−15 %</option><option value="25">−25 %</option></select></label>
             </div>
           </div>
+          <!-- Der Wellen-Screener stand frueher prominenter als jede belegte
+               Einstellung. Er rankt nach der Kennzahl des widerlegten Wellental-Modus
+               und gehoert deshalb hierher, nicht nach oben. -->
+          <div class="pgroup">
+            <div class="pgroup-title">Wellen-Screener</div>
+            <div class="hinweis" style="margin-bottom:8px;">
+              Sucht täglich rund 30 zusätzliche Kandidaten und nimmt die besten fünf mit in den Scan.
+              Die Rangfolge stammt aus der Kennzahl des Wellental-Einstiegs – der hat keinen gemessenen Vorsprung.
+            </div>
+            <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+              <button class="btn ghost" id="screenBtn" style="padding:4px 12px; font-size:12px;">Screener jetzt laufen lassen</button>
+              <span id="screenStatus" style="color:var(--muted); font-size:11.5px;"></span>
+            </div>
+            <div id="screenChips" style="display:flex; gap:6px; flex-wrap:wrap; margin-top:6px;"></div>
+          </div>
         </div>
         </details>
-        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-top:12px;">
-          <button class="btn ghost" id="screenBtn" style="padding:4px 12px; font-size:12px;">Screener jetzt laufen lassen</button>
-          <span id="screenStatus" style="color:var(--muted); font-size:11.5px;"></span>
-        </div>
-        <div id="screenChips" style="display:flex; gap:6px; flex-wrap:wrap; margin-top:6px;"></div>
         <div class="strat-foot" style="flex-direction:column; align-items:flex-start; gap:4px;"><span id="idStatus"></span><span id="tuneStatus"></span><span id="regimeHint" style="color:var(--muted); font-size:11.5px;"></span><span id="capStatus"></span></div>
       </div>
 
       <div style="display:grid; gap:12px; align-content:start;">
-      <div class="strat-card" style="border-top-color: #9085e9;">
+      <div class="strat-card" style="border-top-color: var(--series4);">
         <div class="head">
           <h3>KI-Prüfung (lokal)</h3>
           <span class="state off" id="kiState">aus</span>
@@ -715,6 +790,47 @@
       </div>
     </div>
 
+    <!-- Widerlegtes verschwindet nicht, es tritt zurück: eingeklappt, unter den
+         laufenden Strategien, mit dem Messergebnis als erster sichtbarer Zeile.
+         Aufgeklappt wird automatisch, wenn jemand die Strategie eingeschaltet hat. -->
+    <details class="how archiv" id="archivWiderlegt" style="margin-top:14px;">
+      <summary>Archiv: gemessen und widerlegt – Stunden-Strategie</summary>
+      <div class="strat-card" style="border-top-color: var(--down); margin-top:10px;">
+        <div class="head">
+          <h3>Stunden-Strategie</h3>
+          <span class="state off" id="hourlyState">aus</span>
+          <label class="switch"><input type="checkbox" id="hourlyEnabled"><span class="knob"></span></label>
+        </div>
+        <div class="verdikt">
+          <b>Widerlegt am 21.08.2026:</b> Der Technik-Score ist ein Kontraindikator – nach einem Einstiegssignal läuft
+          der Kurs im Schnitt 0,74 Prozentpunkte schlechter als seine übliche Drift (20 Handelstage, t = −11,6 aus
+          24.727 Signalen). <b>Empfehlung: aus lassen.</b>
+        </div>
+        <details class="how"><summary>Wie sie funktioniert hat und was genau gemessen wurde</summary>
+        <div class="desc">
+          Lief stündlich über die 15 Standard-Werte plus alles, was in der eigenen Watchlist steht:
+          <b>News-Sentiment</b> mit Ereignistyp (Quartalszahlen, Übernahme, Prognose …),
+          <b>Technik</b> (Trend, RSI, Momentum, MACD) und <b>Elliott-Wellen</b> – gewichtet kombiniert.
+          Kaufte Call/Put (5 % aus dem Geld, 60 Tage Laufzeit) ab Gesamtscore ±0,35.
+          Ausstiege: Stop −40 % · Ziel +80 % · Zeit-Ausstieg · Gegensignal.
+          <br><br><b style="color:var(--down);">Messung vom 21.08.2026 (24.727 Signale, 189 Werte, 8 Jahre):</b>
+          Der Technik-Score ist ein <b>Kontraindikator</b> – nach einem Einstiegssignal läuft der Kurs im Schnitt
+          −0,74 Prozentpunkte schlechter als seine übliche Drift (20 Handelstage, t=−11,6, nur 32 von 189 Werten positiv,
+          beide Zeithälften negativ). Mit Elliott-Beimischung −1,0 Pp. Das News-Sentiment war nie messbar.
+          Dazu kommen Schein-Spanne und Zeitwertverfall über Tage. <b>Empfehlung: aus lassen.</b> Wer sie bewusst
+          einschaltet, handelt gegen die Messung – das KI-Veto bremst dann wenigstens die schlechtesten Einstiege.
+          <br><br>Die drei Quellen gehen fest gewichtet in den Gesamtscore ein (News 15 % · Technik 55 % ·
+          Elliott 30 %). Regler dafür gibt es bewusst nicht mehr: Keine der drei hat einen belegten Vorsprung,
+          der Technik-Score ist sogar gegenläufig – an solchen Zahlen zu drehen erzeugt nur den Eindruck von Kontrolle.
+        </div>
+        </details>
+        <div class="strat-foot">
+          <button class="btn ghost" id="runJobBtn" title="Bei ausgeschalteter Strategie werden keine neuen Positionen mehr eröffnet – der Lauf prüft nur noch Stop, Ziel und Zeit-Ausstieg des Altbestands und pflegt das Nachrichten-Archiv.">Bestand jetzt prüfen</button>
+          <span id="jobStatus"></span>
+        </div>
+      </div>
+    </details>
+
     <div class="panel" style="margin-top:12px; margin-bottom:12px;">
       <h3>Signal-Chart – was die Strategie sieht</h3>
       <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
@@ -742,7 +858,12 @@
     </div>
 
     <div class="panel" style="margin-top:12px;">
-      <h3>Eigene Watchlist (wird zusätzlich zu den 15 Standard-Werten gehandelt &amp; überwacht)</h3>
+      <h3>Eigene Watchlist – wird bei jedem Scan mitgeprüft</h3>
+      <div style="color:var(--muted); font-size:11.5px; margin-bottom:8px;">
+        Diese Werte und die 15 Standard-Werte werden in jeder Runde geprüft. Die belegten 60-Minuten-Einstiege
+        schauen zusätzlich in den gewählten Beobachtungs-Pool (Vorgabe: 99 Werte) – daraus rotieren zwölf je Runde,
+        damit ein Scan nicht in Kursabrufe ausartet.
+      </div>
       <div id="watchChips" style="display:flex; gap:6px; flex-wrap:wrap;"></div>
       <div style="color:var(--muted); font-size:11.5px; margin-top:8px;">Hinzufügen: Wert im Aktien-Explorer suchen → „Zur Handels-Watchlist“.</div>
     </div>
@@ -752,7 +873,7 @@
   <div class="sub" id="sub-protokoll">
     <div class="pills small" id="logFilter">
       <button data-lf="all" class="active">Alle</button>
-      <button data-lf="hourly">Stunden-Strategie</button>
+      <button data-lf="hourly">Stunden (widerlegt)</button>
       <button data-lf="intraday">Intraday</button>
       <button data-lf="open">Offen</button>
       <button data-lf="replicated">Nachgebildet</button>
@@ -790,7 +911,7 @@
 
       <div class="auto-row">
         <div class="auto-head">
-          <label title="Reine Anzeige: misst stündlich die Marktlage, schaltet aber nichts mehr um">Marktlage (nur Anzeige)<span class="switch"><input type="checkbox" id="aoRegime" checked><span class="knob"></span></span></label>
+          <label title="Misst stündlich die Marktlage und zeigt sie an. Sie stellt keine Strategie um – aber in erkennbar wirren Phasen kann sie neue Einstiege für rund eine Stunde aussetzen. Offene Positionen werden normal weiter betreut.">Marktlage messen<span class="switch"><input type="checkbox" id="aoRegime" checked><span class="knob"></span></span></label>
           <button class="btn ghost tiny" id="regimeBtn">jetzt messen</button>
         </div>
         <div id="regimeStatus" class="auto-status"></div>
@@ -855,18 +976,23 @@
         <span id="reportStatus" style="color:var(--muted); font-size:12px;"></span>
       </div>
       <div class="panel" style="margin:0;">
-        <h4 style="margin:0 0 8px;">Backtest der Stunden-Strategie</h4>
+        <h4 style="margin:0 0 8px;">Backtest (Handwerkzeug)</h4>
         <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
           <select id="btMode" title="Welche Strategie der Backtest durchrechnet">
             <option value="daily">Stunden-Strategie (Technik + Elliott, Tagesdaten)</option>
-            <option value="intraday">Intraday (gewählter Zeitrahmen)</option>
+            <option value="intraday">Intraday: eingestelltes Setup auf Optionsscheinen</option>
             <option value="intradayCompare">Zeitrahmen-Vergleich: 5 vs. 15 vs. 60 Min</option>
           </select>
           <select id="btRange" title="Wie weit der Backtest zurückreicht"><option value="1y">1 Jahr</option><option value="2y">2 Jahre</option><option value="5y">5 Jahre</option></select>
           <button class="btn ghost" id="btRunBtn">Backtest starten</button>
           <span id="btStatus" style="color:var(--muted); font-size:12px;"></span>
         </div>
-        <div style="color:var(--muted); font-size:11.5px; margin-top:6px;">Historische News gibt es nicht – getestet wird der technische Kern.</div>
+        <div style="color:var(--muted); font-size:11.5px; margin-top:6px;">
+          Rechnet das eingestellte Setup auf synthetischen <b>Optionsscheinen</b>, in beide Richtungen und mit
+          Glattstellung am Abend. Für die beiden belegten Kanten passt das nicht – sie handeln den Basiswert,
+          nur Long und über Nacht –, deshalb verweigert der Backtest dort die Auskunft; sie misst der Autopilot
+          nachts auf dem Kursarchiv. Historische Nachrichten gibt es nicht, getestet wird der technische Kern.
+        </div>
         <div id="btResult" style="margin-top:12px;"></div>
       </div>
     </details>
@@ -924,12 +1050,12 @@
       </div>
       <div class="chartleiste" id="expSignalLeiste">
         <span style="color:var(--muted); font-size:12px;">Signale einblenden:</span>
-        <label class="sigbox"><input type="checkbox" data-sig="cross"> EMA-Kreuzung</label>
-        <label class="sigbox"><input type="checkbox" data-sig="reversion"> Umkehr</label>
-        <label class="sigbox"><input type="checkbox" data-sig="pullback"> Rücksetzer</label>
-        <label class="sigbox"><input type="checkbox" data-sig="rsi2"> RSI(2)</label>
-        <label class="sigbox"><input type="checkbox" data-sig="donchian"> Donchian</label>
-        <label class="sigbox"><input type="checkbox" data-sig="squeeze"> Squeeze</label>
+        <label class="sigbox" title="Gemessen und ohne Vorsprung – wird angezeigt, weil du es sehen willst, nicht weil es trägt."><input type="checkbox" data-sig="cross"> EMA-Kreuzung</label>
+        <label class="sigbox" title="Roh ohne Vorsprung. Dieselbe Überdehnung trägt erst als Kapitulations-Dip: nur im Abwärtskanal, nur mit Volumen, nur Long."><input type="checkbox" data-sig="reversion"> Umkehr</label>
+        <label class="sigbox" title="Gemessen und ohne Vorsprung – wird angezeigt, weil du es sehen willst, nicht weil es trägt."><input type="checkbox" data-sig="pullback"> Rücksetzer</label>
+        <label class="sigbox" title="Roh ein Münzwurf (+0,017 Prozentpunkte). Trägt erst mit der Erlaubnis „Seitwärtskanal + Volumen“ – das ist die belegte Hauptstrategie."><input type="checkbox" data-sig="rsi2"> RSI(2)</label>
+        <label class="sigbox" title="Gemessen und ohne Vorsprung – wird angezeigt, weil du es sehen willst, nicht weil es trägt."><input type="checkbox" data-sig="donchian"> Donchian</label>
+        <label class="sigbox" title="Gemessen und ohne Vorsprung – wird angezeigt, weil du es sehen willst, nicht weil es trägt."><input type="checkbox" data-sig="squeeze"> Squeeze</label>
         <label class="sigbox"><input type="checkbox" data-sig="linie"> Leitlinie (EMA20)</label>
         <span id="expSigZahl" class="hinweis"></span>
       </div>
@@ -937,8 +1063,8 @@
         <span style="color:var(--muted); font-size:12px;">Chartbild:</span>
         <label class="sigbox" title="Gleitende Durchschnitte über die letzten 50 bzw. 200 KERZEN der gewählten Kerzengröße – auf dem Tageschart also 50/200 Handelstage, auf dem Stundenchart 50/200 Stunden. Gezeichnet wird nur, wenn genug Kerzen da sind, nie heimlich verkürzt."><input type="checkbox" data-ind="ma"> SMA 50/200</label>
         <label class="sigbox" title="Kreuzungen der beiden Durchschnitte. Gemessen an 191 Werten über 55 Jahre hat dieses Signal KEINEN Vorsprung – es wird angezeigt, weil du es sehen willst, nicht weil es trägt."><input type="checkbox" data-ind="cross50200"> Golden/Death Cross</label>
-        <label class="sigbox" title="Regressionskanal: eine Gerade durch den Kursverlauf mit paralleler Ober- und Unterkante. Zeigt vier Sichten auf die JÜNGSTE Bewegung (kurz/mittel/lang/ab Wendepunkt)."><input type="checkbox" data-ind="kanal"> Trendkanal</label>
-        <label class="sigbox" title="Zerlegt die gesamte sichtbare Historie an ihren Wendepunkten und zeichnet für JEDEN Trendabschnitt einen eigenen Kanal – grün aufwärts, rot abwärts, blau seitwärts. So viele Kanäle, wie der Chart Abschnitte hat."><input type="checkbox" data-ind="segmente"> Kanal-Abschnitte (Historie)</label>
+        <label class="sigbox" title="Regressionskanal: eine Gerade durch den Kursverlauf mit paralleler Ober- und Unterkante. Zeigt vier Sichten auf die JÜNGSTE Bewegung (kurz/mittel/lang/ab Wendepunkt). Das lange Seitwärtsfenster daraus ist die einzige gemessen tragende Kanal-Nutzung – es steuert den Intraday-Einstieg."><input type="checkbox" data-ind="kanal"> Trendkanal</label>
+        <label class="sigbox" title="Zerlegt die gesamte sichtbare Historie an ihren Wendepunkten und zeichnet für JEDEN Trendabschnitt einen eigenen Kanal – grün aufwärts, rot abwärts, blau seitwärts. Reine Anzeige zum Erkennen von Marktphasen: Als Handelsbedingung wurde ein Dip-Kauf im frischen Seitwärtsabschnitt gemessen und fiel durch – es wird bewusst nichts davon gehandelt."><input type="checkbox" data-ind="segmente"> Kanal-Abschnitte (Historie)</label>
         <label class="sigbox" title="Höchster und tiefster Kurs der letzten 20 bzw. 60 Perioden – die Zonen, an denen der Kurs zuletzt gedreht hat."><input type="checkbox" data-ind="sr"> Unterstützung / Widerstand</label>
         <label class="sigbox" title="Handelsvolumen je Kerze. Ein Ausbruch mit hohem Volumen ist glaubwürdiger als einer bei dünnem Handel."><input type="checkbox" data-ind="volumen"> Volumen</label>
         <span id="expKanalInfo" class="hinweis"></span>
@@ -1223,7 +1349,7 @@
 <div class="modal-bg" id="setModalBg">
   <div class="modal" style="max-width:560px;">
     <button class="btn ghost close" data-close="setModalBg">Schließen ×</button>
-    <h2>Einstellungen</h2>
+    <h2>App-Einstellungen</h2>
     <div style="margin:14px 0; font-size:12px; color:var(--muted);">
       Alle KI-Analysen laufen <b>lokal über Ollama</b> (unten einrichten) – <b>ohne API-Kosten</b>.
       Ohne lokales Modell gibt es eine regelbasierte Analyse aus denselben Daten.

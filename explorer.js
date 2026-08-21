@@ -1014,7 +1014,7 @@
     if (!CUR || !window.DepotAPI) return;
     var st = document.getElementById('aiStatus');
     var r = window.DepotAPI.addWatch(CUR.sym, CUR.name);
-    st.textContent = r === true ? '' + CUR.sym + ' wird jetzt mitgehandelt (siehe Optionsscheine → Strategien).'
+    st.textContent = r === true ? '' + CUR.sym + ' wird jetzt mitgeprüft (siehe Kurzfrist-Depot → Schalter & Einstellungen).'
       : r === 'standard' ? CUR.sym + ' ist schon in der Standard-Watchlist.'
       : r === 'schon' ? CUR.sym + ' ist bereits auf deiner Watchlist.'
       : 'Konnte nicht hinzugefügt werden.';

@@ -1,10 +1,11 @@
 'use strict';
 /* ================= Strategie-Schalter =================
  *
- * Drei Zeithorizonte, drei getrennte Strategien, drei getrennte Schalter. Sie handeln
+ * Getrennte Zeithorizonte, getrennte Strategien, getrennte Schalter. Sie handeln
  * unterschiedlich, sie brauchen unterschiedliche Instrumente, und sie sind
  * unterschiedlich gut belegt. Genau das soll man hier auf einen Blick sehen können –
- * inklusive der unangenehmen Teile.
+ * inklusive der unangenehmen Teile und der widerlegten Ansätze, die nur noch
+ * dokumentiert werden.
  *
  * Warum getrennt und nicht ein gemeinsamer Automat: Ein Signal, das auf vier
  * Handelstage zielt, hat mit einem Momentum-Depot, das drei Monate hält, nichts
@@ -22,19 +23,36 @@
       key: 'kurz',
       name: 'Kurzfristig · Intraday',
       horizont: 'Stunden bis wenige Tage',
-      instrument: 'Optionsscheine (Hebel)',
-      was: 'Sucht im laufenden Handel nach Signalen und kauft gehebelt. Ausstieg über Stop, Ziel, Trailing oder Tagesschluss.',
-      stand: 'in Erprobung',
-      farbe: 'warn',
+      instrument: 'Aktie 1× (Voreinstellung) – mit Schein stirbt die Kante (−96 %)',
+      was: 'Kauft im laufenden Handel den RSI(2)-Rücklauf im Seitwärtskanal. Zuschaltbar: der Kapitulations-Dip als zweites Standbein und die Regime-Zuteilung. Ausstieg über die Zeit, darunter nur ein Not-Stop – kein Gewinnziel, kein Trailing; die Position darf über Nacht laufen.',
+      stand: 'belegt, im Vorwärtstest',
+      farbe: 'up',
       beleg: [
         'UNBEDINGT trägt kein Einzelsignal: Trefferquoten 46–56 %, bester Vorsprung +0,09 Pp. BEDINGT sieht es anders aus — die Bedingungsstudie vom 21.08.2026 (162 Werte, Stundenkerzen, jedes Signal gekreuzt mit Kanalzustand, EMA100, Volumen) fand: RSI(2)-Dip NUR im Seitwärtskanal mit Volumen = +0,147 Pp auf 8 h, t = 4,1 über die Symbole, beide Zeithälften positiv, 99 von 162 Werten im Plus.',
         'Der Kanal gibt nicht die Richtung, sondern die ERLAUBNIS: Dasselbe Signal ist im Trend ein Münzwurf und im Seitwärtsband messbar. Genau das war die These hinter dem handgezeichneten AMD-Chart.',
         'Das Instrument entscheidet: Der Vorsprung liegt ÜBER der Basiswert-Hürde (0,10 %) und UNTER der Scheinhürde (0,21 %). Im Backtest: Basiswert PF 1,23 (+0,23 % je Trade, volatiles Drittel), Schein −96 %. Und er zahlt über Nacht aus — streng intraday −0,08 % je Trade, mit einer Nacht Haltezeit +0,23 %.',
         'Nur die Call-Seite trägt (+0,075 %); das Put-Bein kämpft gegen die Marktdrift (−0,099 %) — dieselbe Lektion wie beim Ergebnis-Drift.',
         'Als Modus „RSI(2) im Seitwärtskanal“ (Umkehr-Auslöser) eingebaut: nur Long, Zeit-Ausstieg 8 Handelsstunden, darf eine Nacht überleben. Monatssignifikanz steht noch aus (36 Monate, t ≈ 0,5) — der Modus gehört in den Vorwärtstest, nicht auf großes Budget.',
+        'Zuschaltbar als zweites Standbein: der Kapitulations-Dip. Gemessen Median +0,44 % je Trade, t = 4,6 — er kauft den Ausverkauf im Abwärtskanal, nur Long, Zeit-Ausstieg nach 26 Handelsstunden, kein Gewinndeckel.',
+        'Zuschaltbar seit Version 8.23.26: die Regime-Zuteilung. Gemessen trägt rsi2seit nur über der SPY-EMA200 (+0,148 Pp; darunter −0,169 Pp), der Kapitulations-Dip nur darunter (+0,94 Pp, t = 3,1). Die Zuteilung schlug die statische Basis im Mittelwert (t = 3,21) und im Gesamtertrag (+45 Pp), Permutationstest p = 0,013.',
         'Auf diesen Daten OHNE tragfähige Zelle: Donchian, Squeeze, Pullback — in keiner Marktlage überzufällig.'
       ],
       schalter: 'intraday'
+    },
+    {
+      key: 'stunden',
+      name: 'Kurzfristig · Stunden-Strategie',
+      horizont: 'stündliche Prüfung, rund 20 Handelstage je Signal',
+      instrument: 'Optionsscheine: Call oder Put 5 % aus dem Geld, 60 Tage Laufzeit',
+      was: 'Verrechnete jede Stunde Technik-Score und Nachrichtenlage zu einem Gesamtscore und kaufte ab ±0,35 einen Call oder Put. Seit Version 8.23.24 per Sicherung abgeschaltet — von Hand lässt sie sich wieder einschalten, dieser Hand-Entscheid wird bewusst respektiert.',
+      stand: 'widerlegt – abgeschaltet',
+      farbe: 'down',
+      beleg: [
+        'Gemessen, nicht vermutet: Der Technik-Score ist ein Kontraindikator. −0,74 Prozentpunkte auf 20 Handelstage, t = −11,6 aus 24.727 Signalen über 189 Werte und 8 Jahre.',
+        'Kein Randfall, sondern die Regel: nur 32 von 189 Werten positiv, beide Zeithälften negativ. Das News-Sentiment, das ein gutes Drittel des Gesamtscores stellte, war nie messbar — es gab keine Auswertung, die es hätte belegen können.',
+        'Empfehlung: aus lassen. Seit Version 8.23.24 hält eine Sicherung sie abgeschaltet; wer sie hier von Hand einschaltet, handelt gegen die Messung — die Karte bleibt sichtbar, damit das nicht unbemerkt passiert.'
+      ],
+      schalter: 'hourly'
     },
     {
       key: 'mittel',
@@ -47,7 +65,7 @@
       beleg: [
         'Parameter auf 1970–2004 gewählt, auf 2005–2026 ohne Anpassung geprüft: +20,3 % p. a. gegen +14,9 % des Marktdurchschnitts, Vorsprung +5,4 Pp.',
         'Schlug den Markt in 14 von 22 Jahren; 93 von 96 Parameterkombinationen schlugen ihn ebenfalls.',
-        'Unangenehm: 48 % größter Rückschlag, in 8 von 22 Jahren schlechter als der Markt, und das Universum enthält nur Firmen, die es heute noch gibt.'
+        'Unangenehm: 52 % größter Rückschlag im geprüften Zeitraum 2005–2026 (Referenzlauf, gemessen 2008), in 8 von 22 Jahren schlechter als der Markt, und das Universum enthält nur Firmen, die es heute noch gibt.'
       ],
       schalter: 'momentum'
     },
@@ -77,7 +95,11 @@
       stand: 'nicht gebaut',
       farbe: 'muted',
       beleg: ['Nichts gemessen, nichts implementiert. Der Schalter bleibt aus, bis es etwas zu schalten gibt.'],
-      schalter: null
+      schalter: null,
+      /* Keine volle Karte: Ein nicht gebauter Ansatz soll neben vier gemessenen
+       * Strategien nicht so aussehen, als stünde er gleichrangig daneben. Er bleibt
+       * als Fußnote stehen, damit die Lücke nicht stillschweigend verschwindet. */
+      fussnote: true
     }
   ];
 
@@ -87,6 +109,8 @@
     if (key === 'kurz') return !!(D.intraday && D.intraday.enabled);
     if (key === 'mittel') return !!D.momentumAn;
     if (key === 'drift') return !!D.driftAn;
+    // Die Stunden-Strategie laeuft historisch, solange sie nicht ausdruecklich aus ist
+    if (key === 'stunden') return D.hourlyEnabled !== false;
     return false;
   }
   function setzen(key, an) {
@@ -95,6 +119,17 @@
     if (key === 'kurz') D.intraday.enabled = an;
     if (key === 'mittel') D.momentumAn = an;
     if (key === 'drift') D.driftAn = an;
+    if (key === 'stunden') D.hourlyEnabled = an;
+    /* Dieselben Schalter stehen ein zweites Mal im Setup-Reiter. Ohne Nachziehen
+     * zeigt der Kippschalter dort AN, waehrend das Abzeichen hier 'aus' sagt -
+     * und der Nutzer glaubt der falschen Haelfte. */
+    var hb = document.getElementById('hourlyEnabled');
+    if (hb) hb.checked = D.hourlyEnabled !== false;
+    var ib = document.getElementById('idEnabled');
+    if (ib) ib.checked = !!(D.intraday && D.intraday.enabled);
+    // Abzeichen und Klartext-Karte dort ebenfalls nachziehen - sonst steht das
+    // Abzeichen auf 'aus', bis der andere Reiter das naechste Mal neu zeichnet.
+    if (window.__syncStrategyUI) window.__syncStrategyUI();
     if (!D.tuneLog) D.tuneLog = [];
     var s = STRATEGIEN.filter(function (x) { return x.key === key; })[0];
     D.tuneLog.unshift({
@@ -153,7 +188,12 @@
   function render() {
     var el = document.getElementById('stratListe');
     if (!el) return;
-    el.innerHTML = STRATEGIEN.map(function (s) {
+    var karten = STRATEGIEN.filter(function (s) { return !s.fussnote; });
+    /* Die Fussnote MUSS hier mitgebaut werden: el.innerHTML ersetzt bei jedem
+     * Reiterwechsel den gesamten Inhalt, ein separat angehaengtes Element waere
+     * beim naechsten render() weg. */
+    var noten = STRATEGIEN.filter(function (s) { return !!s.fussnote; });
+    el.innerHTML = karten.map(function (s) {
       var an = anZustand(s.key);
       var schaltbar = !!s.schalter;
       return '<div class="panel" style="margin-bottom:12px;">' +
@@ -174,7 +214,15 @@
           s.beleg.map(function (b) { return '<li>' + U.esc(b) + '</li>'; }).join('') +
         '</ul>' +
       '</div>';
-    }).join('');
+    }).join('') +
+    (noten.length
+      ? '<div style="font-size:11.5px; color:var(--muted); margin:2px 2px 10px; line-height:1.6;">' +
+          noten.map(function (s) {
+            return U.esc(s.name) + ' (' + U.esc(s.stand) + '): ' + U.esc(s.was) +
+              (s.beleg && s.beleg.length ? ' ' + U.esc(s.beleg[0]) : '');
+          }).join('<br>') +
+        '</div>'
+      : '');
     el.querySelectorAll('[data-strat]').forEach(function (b) {
       b.addEventListener('click', function () {
         var k = b.getAttribute('data-strat');

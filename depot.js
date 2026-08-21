@@ -29,7 +29,9 @@
       momentumAn: true, driftAn: true, maxRisikostufe: 3,
       watchlist: [],
       intradayLastScan: 0, intradayDay: '', intradayCount: 0, intradayCooldown: {},
-      notify: true, hourlyEnabled: true, equityHist: [],
+      // Die Stunden-Strategie startet AUS: gemessen widerlegt (Technik-Score t=-11,6).
+      // Von Hand einschaltbar bleibt sie - dieser Entscheid wird respektiert.
+      notify: true, hourlyEnabled: false, equityHist: [],
       risk: { maxPos: 8, dayLossPct: 3, exposurePct: 40 },
       dayKey: '', dayStartEq: 0,
       lastRun: 0, nextId: 1
@@ -623,7 +625,12 @@
 
   /* ================= Auto-Tuning (empfehlung.json von Claude) ================= */
   var TUNE_ALLOW = {
-    mode: ['breakout', 'waves', 'reversion', 'wave', 'orb', 'pullback', 'rsi2', 'donchian', 'squeeze'],
+    /* Die Liste enthielt ausschliesslich die inzwischen widerlegten Modi - eine
+     * uebernommene Empfehlung konnte die Strategie also nur VON der belegten Kante
+     * WEG schalten, nie zu ihr hin. Der Handels-Modus ist die eine Einstellung, die
+     * eine Messung tragen muss; die Automatik darf ihn nur noch zwischen den beiden
+     * belegten Kanten bewegen (UI-Audit 21.08.2026). */
+    mode: ['rsi2seit', 'kapitulation'],
     interval: ['1m', '5m', '15m', '60m'],
     period: [9, 20, 50],
     confirmBps: [5, 15, 30],
@@ -1566,7 +1573,12 @@
             }
             if (why) closeTrade(pos, spot, now, why);
           });
-        } else if (Math.abs(S) >= OPEN_THR && !blackoutEv && canOpen(equityNow()).ok) {
+        /* Die Sicherung stoppte bisher nur den Stundentakt - der Knopf „Jetzt prüfen“
+         * eröffnete weiter Positionen auf genau dem Score, der als Kontraindikator
+         * vermessen wurde (t=-11,6). Ist die Strategie aus, betreut der manuelle Lauf
+         * nur noch den Bestand: Ausstiege oben laufen weiter, Einstiege nicht mehr.
+         * Wer sie bewusst von Hand einschaltet, handelt wie bisher. */
+        } else if (D.hourlyEnabled !== false && Math.abs(S) >= OPEN_THR && !blackoutEv && canOpen(equityNow()).ok) {
           var dir = S > 0 ? 'call' : 'put';
           var vol = Q.histVol(closes, 30);
           var evTxt = sent.events.length ? ' [' + sent.events.join(', ') + ']' : '';
@@ -2297,20 +2309,6 @@
             });
             if (vsK2 && vsK2.dir === 'call') { dir = 'call'; kapiTrade = true; }
           }
-          /* Regime-Zuteilung: jede Kante nur in ihrem gemessenen Regime.
-           * regimeAuf === null (kein SPY-Anker) laesst beide durch - Basis-Verhalten. */
-          if (dir && cfg.regimeZuteilung) {
-            var regimeAuf = await spyTrendAuf();
-            if (!kapiTrade && regimeAuf === false) {
-              patienceAdd('Regime: SPY unter EMA200 – rsi2seit pausiert (verliert dort −0,17 Pp)', sym);
-              schattenNeu('Regime-Filter', sym, dir, spot, sigBars, mp, cfg, now);
-              dir = null;
-            } else if (kapiTrade && regimeAuf === true) {
-              patienceAdd('Regime: SPY über EMA200 – Kapitulations-Dip pausiert (trägt nur im Abwärtstrend)', sym);
-              schattenNeu('Regime-Filter', sym, dir, spot, sigBars, mp, cfg, now);
-              dir = null; kapiTrade = false;
-            }
-          }
         } else if (isDon) {
           var dsigL = Q.donchianSignal(sigBars, cfg.period, cfg.confirmBps);
           if (dsigL.signal) dir = dsigL.signal;
@@ -2319,6 +2317,25 @@
           if (qsigL.signal) { dir = qsigL.signal; revZ = qsigL.enge; }
         } else if (sig.crossed) {
           dir = sig.crossed === 'up' ? 'call' : 'put';
+        }
+        /* Regime-Zuteilung: jede Kante nur in ihrem gemessenen Regime.
+         * Steht BEWUSST hinter der ganzen Auslöser-Kette und nicht im rsi2seit-Zweig:
+         * dort war das Gate fuer den eigenstaendigen Modus 'kapitulation' schlicht
+         * unerreichbar - die Oberflaeche sagte einen Filter zu, den es dort nie gab
+         * (Gegenpruefung 21.08.2026). regimeAuf === null (kein SPY-Anker) laesst
+         * beide Kanten durch - Basis-Verhalten. */
+        if (dir && cfg.regimeZuteilung && (isRsi2Seit || isKapitulation)) {
+          var istKapi = kapiTrade || isKapitulation;   // Zusatz-Standbein ODER eigener Modus
+          var regimeAuf = await spyTrendAuf();
+          if (!istKapi && regimeAuf === false) {
+            patienceAdd('Regime: S&P 500 unter der 200er-Linie – RSI(2) im Seitwärtskanal pausiert (verliert dort −0,17 Pp)', sym);
+            schattenNeu('Regime-Filter', sym, dir, spot, sigBars, mp, cfg, now);
+            dir = null;
+          } else if (istKapi && regimeAuf === true) {
+            patienceAdd('Regime: S&P 500 über der 200er-Linie – Kapitulations-Dip pausiert (trägt nur im Abwärtstrend)', sym);
+            schattenNeu('Regime-Filter', sym, dir, spot, sigBars, mp, cfg, now);
+            dir = null; kapiTrade = false;
+          }
         }
         if (!dir) continue;
         if (nearClose && !mp.uebernacht && !istKrypto(sym)) { patienceAdd('Tagesschluss steht bevor', sym); continue; }
@@ -2677,10 +2694,7 @@
     }
 
     // Status-Badges der Strategie-Karten
-    var hs = document.getElementById('hourlyState');
-    if (hs) { var hOn = D.hourlyEnabled !== false; hs.textContent = hOn ? 'aktiv' : 'aus'; hs.className = 'state ' + (hOn ? 'on' : 'off'); }
-    var is2 = document.getElementById('idState');
-    if (is2) { is2.textContent = D.intraday.enabled ? 'aktiv' : 'aus'; is2.className = 'state ' + (D.intraday.enabled ? 'on' : 'off'); }
+    renderStatusBadges();
 
     // KI-Karte: Status & Entscheidungs-Log
     var ks = document.getElementById('kiState');
@@ -2753,9 +2767,17 @@
           '<td style="white-space:nowrap;"><button class="btn ghost" style="padding:2px 8px; font-size:11px;" data-ticket="' + p.id + '" title="Order-Daten zum Nachbilden">Nachbilden</button> ' +
           '<button class="btn ghost" style="padding:2px 8px; font-size:11px;" data-closepos="' + p.id + '">Schließen</button></td></tr>';
       });
-      ph += '</table><div style="color:var(--muted); font-size:11px; margin-top:6px;">Stunden-Strategie: SL −40 % / TP +80 %, Zeit-Exit 10 Tage vor Fälligkeit. Intraday: SL −25 % / TP +35 %, Glattstellung zum Tagesschluss. Bezugsverhältnis 0,1 · Spread 2 % · Ordergebühr je Kauf/Verkauf simuliert. Hebel = Omega (Maus über den Wert zeigt das aktuelle Aufgeld).</div>';
+      ph += '</table><div style="color:var(--muted); font-size:11px; margin-top:6px;">' +
+        'Belegte Intraday-Kanten: nur Not-Stop, Ausstieg über die Zeit (8 bzw. 26 Handelsstunden), Übernacht erlaubt. ' +
+        'Widerlegte Setups: Stop −25 % / Ziel +35 %, Glattstellung zum Tagesschluss. ' +
+        'Altbestand der Stunden-Strategie: Stop −40 % / Ziel +80 %, Zeit-Ausstieg 10 Tage vor Fälligkeit. ' +
+        'Bei Scheinen: Bezugsverhältnis 0,1 · Spanne 2 % · Ordergebühr je Kauf und Verkauf simuliert; Hebel = Omega ' +
+        '(Maus über den Wert zeigt das aktuelle Aufgeld).</div>';
     } else {
-      ph = '<div class="empty"><span class="ico"></span>Keine offenen Positionen. Unter „Strategien“ den Lauf starten oder auf den Stunden-Takt warten.</div>';
+      ph = '<div class="empty"><span class="ico"></span>Keine offenen Positionen. ' +
+        (D.intraday && D.intraday.enabled
+          ? 'Die Intraday-Strategie läuft und wartet auf ein Signal – wann sie zuletzt nichts getan hat und warum, steht unter „Auswertung“.'
+          : 'Die Intraday-Strategie ist aus – einschalten unter „Schalter &amp; Einstellungen“.') + '</div>';
     }
     if (D.repairNote && Date.now() - D.repairNote.at < 7 * 86400000) {
       var rn = D.repairNote;
@@ -2780,9 +2802,11 @@
     // Trefferquoten
     var hr = '';
     var srcRows = [
-      { k: 'news', n: 'News-Sentiment', weighted: true },
-      { k: 'tech', n: 'Technik', weighted: true },
-      { k: 'elliott', n: 'Elliott-Wellen', weighted: true },
+      // Kein Gewichts-Ausweis mehr: die Regler sind weg, weil keine der drei Quellen
+      // einen belegten Vorsprung hat. Eine Prozentzahl ohne Regler wuerde nur raetseln lassen.
+      { k: 'news', n: 'News-Sentiment', weighted: false },
+      { k: 'tech', n: 'Technik', weighted: false },
+      { k: 'elliott', n: 'Elliott-Wellen', weighted: false },
       { k: 'maIntraday', n: 'Intraday-MA (eigene Strategie)', weighted: false },
       { k: 'ki', n: 'KI-Prüfung (von der KI bestätigte Trades)', weighted: false }
     ];
@@ -2948,6 +2972,7 @@
   var weightsBuilt = false;
   function renderWeights() {
     var el = document.getElementById('weightsPanel');
+    if (!el) return;   // Regler duerfen fehlen - die Gewichte leben in D, nicht im DOM
     if (!weightsBuilt) {
       var names = { news: 'News-Sentiment', tech: 'Technik', elliott: 'Elliott-Wellen' };
       var html = '';
@@ -2981,9 +3006,23 @@
   /* ================= Backtest-UI ================= */
   async function runBacktest() {
     var btn = document.getElementById('btRunBtn'), st = document.getElementById('btStatus');
+    if (!btn || !st) return;
     btn.disabled = true;
     var mode = (document.getElementById('btMode') || {}).value || 'daily';
-    var range = document.getElementById('btRange').value;
+    /* Dieses Werkzeug rechnet fest die EMA-Kreuzung auf synthetischen Optionsscheinen -
+     * beide Richtungen, Zwangsschluss am Abend. Für die belegten Kanten waere das
+     * eine plausibel aussehende, aber systematisch falsche Zahl: falscher Einstieg,
+     * falsches Instrument, falscher Ausstieg. Lieber gar keine Zahl als eine, die
+     * wie eine Widerlegung der eigenen Strategie aussieht. */
+    if ((mode === 'intraday' || mode === 'intradayCompare') &&
+        (D.intraday.mode === 'rsi2seit' || D.intraday.mode === 'kapitulation')) {
+      st.textContent = 'Für „RSI(2) im Seitwärtskanal“ und „Kapitulations-Dip“ ist dieser Backtest nicht gebaut – ' +
+        'er rechnet die EMA-Kreuzung auf Optionsscheinen. Diese beiden Strategien misst der Autopilot nachts ' +
+        'auf dem Kursarchiv (Bereich Autopilot).';
+      btn.disabled = false;
+      return;
+    }
+    var range = (document.getElementById('btRange') || {}).value || '1y';
     var syms = universe();
     var histMap = {};
     async function loadIntradayHist(interval, label) {
@@ -3478,9 +3517,12 @@
         var urteilE = ein.n < 30
           ? 'noch zu wenige Signale für ein Urteil (ab 30 wird es aussagekräftig)'
           : (avgE > 0 ? 'die Strategie wäre im Mittel im Plus' : 'die Strategie wäre im Mittel im Minus');
+        /* Das Urteil steht in einer EIGENEN Zeile unter den Kennzahlen. Vorher lief
+         * ein ganzer Urteilssatz in die 44 Pixel schmale Zahlenspalte von .patrow. */
         h += '<div class="patrow"><span><b>' + ein.n + ' abgeschlossene Signale</b>' + (einOffen ? ' · ' + einOffen + ' laufen' : '') + '</span>' +
           '<span style="color:var(--muted);">Ø <b class="' + (avgE >= 0 ? 'pos' : 'neg') + '">' + U.signTxt(avgE, ' %') + '</b> je Signal · ' +
-          quoteE + ' % im Plus</span><b>' + urteilE + '</b></div>';
+          quoteE + ' % im Plus</span><b></b></div>' +
+          '<div class="urteil-zeile">' + urteilE + '</div>';
       }
       h += '</div>';
     }
@@ -3498,7 +3540,8 @@
         : (x.gerettet > x.verhindert * 1.5 ? 'rettet Geld' : (x.verhindert > x.gerettet * 1.5 ? 'verhindert eher Gewinne' : 'unentschieden'));
       h += '<div class="patrow"><span>' + U.esc(g3) + '</span>' +
         '<span style="color:var(--muted);">' + x.n + ' Schatten · Ø ' + U.signTxt(avg, ' %') + ' · gerettet ' + x.gerettet + ' · verhindert ' + x.verhindert + '</span>' +
-        '<b>' + urteil + '</b></div>';
+        '<b></b></div>' +
+        '<div class="urteil-zeile">' + urteil + '</div>';
     });
     if (offen) h += '<div style="color:var(--muted); font-size:11.5px; margin-top:4px;">' + offen + ' Schatten laufen noch.</div>';
     return h + '</div>';
@@ -4663,22 +4706,106 @@
       var el = document.getElementById(kv[0]);
       if (el) el.value = kv[1];
     });
-    [['idChannel', !!c.channel], ['idMtf', c.mtf !== false], ['idScreener', !!c.screener], ['idEnabled', !!c.enabled]].forEach(function (kv) {
+    [['idChannel', !!c.channel], ['idMtf', c.mtf !== false], ['idScreener', !!c.screener], ['idEnabled', !!c.enabled],
+     ['idKapiZusatz', !!c.kapiZusatz], ['idRegime', !!c.regimeZuteilung], ['idKryptoHandeln', !!c.kryptoHandeln],
+     // Auch der Stunden-Schalter gehoert nachgezogen, sonst laufen Kippschalter und
+     // Speicherstand nach jedem Depot-Reset auseinander.
+     ['hourlyEnabled', D.hourlyEnabled !== false]].forEach(function (kv) {
       var el = document.getElementById(kv[0]);
       if (el) el.checked = kv[1];
     });
+    // Das Archiv klappt von selbst auf, wenn jemand die widerlegte Strategie
+    // bewusst eingeschaltet hat - sonst waere sie unsichtbar aktiv.
+    var arch = document.getElementById('archivWiderlegt');
+    if (arch && D.hourlyEnabled !== false) arch.open = true;
+    /* Der Instrument-Hinweis im Kopf des Reiters kommt aus dem Ist-Zustand und nicht
+     * aus dem Markup - sonst behauptet er bei Bestandsdepots (die die Migration auf
+     * 'schein' zuruecksetzt) das Falsche. */
+    [['idInstrument', c.instrument || 'schein'], ['idPool', c.pool || 'auto'], ['idMaxStufe', String(D.maxRisikostufe || 5)]].forEach(function (kv) {
+      var el = document.getElementById(kv[0]);
+      if (el) el.value = kv[1];
+    });
     if (window.__syncSetupUI) window.__syncSetupUI();   // Setup-Pillen + Auslöser + Ausstieg
     if (window.__updateParamVis) window.__updateParamVis();
+    renderStatusBadges();
     renderKlartext();
+  }
+  // Der Strategien-Tab schaltet dieselben Werte - er muss die Formularseite nachziehen koennen.
+  window.__syncStrategyUI = function () { try { syncStrategyUI(); } catch (e) { /* optional */ } };
+
+  /** Die Abzeichen an den Strategie-Karten. Eigene Funktion, weil sie aus zwei
+   *  Richtungen kommen muessen: aus render() und aus syncStrategyUI() - der
+   *  Ein/Aus-Schalter liegt auch im Tab „Strategien & Belege“, und ohne diesen
+   *  zweiten Aufruf stand das Abzeichen auf „aus“, waehrend die Strategie lief. */
+  function renderStatusBadges() {
+    if (!D) return;
+    var hs = document.getElementById('hourlyState');
+    if (hs) {
+      var hOn = D.hourlyEnabled !== false;
+      // 'aus' allein waere hier zu wenig: es ist nicht irgendein Schalter, sondern
+      // eine vermessene und durchgefallene Strategie.
+      hs.textContent = hOn ? 'aktiv – gegen die Messung' : 'aus (widerlegt)';
+      hs.className = 'state ' + (hOn ? 'on' : 'off');
+    }
+    var is2 = document.getElementById('idState');
+    if (is2) { is2.textContent = D.intraday.enabled ? 'aktiv' : 'aus'; is2.className = 'state ' + (D.intraday.enabled ? 'on' : 'off'); }
   }
 
   function renderKlartext() {
-    var el = document.getElementById('idKlartext');
-    if (!el || !D) return;
+    if (!D) return;
     var c = D.intraday;
+    /* Der Instrument-Hinweis im Kopf des Reiters haengt hier mit dran: renderKlartext
+     * laeuft aus jedem Formular-Change (idSave), syncStrategyUI dagegen nur beim
+     * Reiterwechsel - sonst nennt der Pflicht-Hinweis nach dem Umstellen das
+     * falsche Instrument. */
+    var iH2 = document.getElementById('depotInstrumentHinweis');
+    if (iH2) iH2.textContent = c.instrument === 'basis'
+      ? 'der Basiswert (Aktie 1×, ohne Hebel)'
+      : 'der Hebelschein';
+    var el = document.getElementById('idKlartext');
+    if (!el) return;
     var st = setupFromMode(c.mode);
     var name, was;
-    if (st.setup === 'umkehr' && st.trigger === 'welle') {
+    /* Namen NICHT abtippen: sie stehen in SETUPS. Genau diese Doppelpflege hatte
+     * dazu geführt, dass die Karte die belegte Hauptstrategie monatelang als
+     * „Umkehr bei Überdehnung“ auswies - den Namen eines widerlegten Modus. */
+    var trigName = (SETUPS[st.setup] && SETUPS[st.setup].trigger[st.trigger]) || '';
+    var haltStd = Math.round((c.scalpHold || 480) / 60);
+    if (c.mode === 'rsi2seit' || c.mode === 'kapitulation') {
+      name = trigName;
+      was = c.mode === 'rsi2seit'
+        ? 'Kauft den RSI(2)-Rücklauf, aber nur im Seitwärtskanal mit Volumen – der Kanal gibt nicht die Richtung, sondern die Erlaubnis. Nur Long. Im Backtest gemessen: +0,147 Prozentpunkte auf 8 Handelsstunden über die übliche Drift hinaus.'
+        : 'Kauft den Ausverkauf im Abwärtskanal – die Kapitulation, nicht den Trend. Nur Long. Im Backtest gemessen: Median +0,44 % je Trade.';
+      // Ausstieg nennen: beide Kanten steigen ueber die Zeit aus, darunter nur der Not-Stop.
+      was += ' Ausstieg nach ' + haltStd + ' Handelsstunden, darunter nur ein Not-Stop – kein Gewinnziel, kein Trailing; die Position darf über Nacht laufen.';
+      // Instrument aus dem Ist-Zustand: die Bestandsschutz-Migration stellt alte
+      // Depots aktiv auf 'schein' zurueck - fuer die waere "Aktie" schlicht falsch.
+      was += c.instrument === 'basis'
+        ? ' Gehandelt wird die Aktie selbst (1×, ohne Hebel).'
+        : ' Achtung: eingestellt ist der Hebelschein – der gemessene Vorsprung liegt UNTER der Scheinhürde, mit Schein war dieselbe Strategie im Backtest bei −96 %.';
+      if (c.mode === 'rsi2seit' && c.kapiZusatz) {
+        was += ' Zusätzlich läuft der Kapitulations-Dip als zweites Standbein – er greift in der anderen Marktphase.';
+      }
+      if (c.regimeZuteilung) {
+        /* Nur der Modulcache, niemals spyTrendAuf(): das ist async mit Netzabruf,
+         * renderKlartext ist synchron und feuert bei jedem Formular-Change.
+         * Der Satz beschreibt, was mit DIESER Einstellung gerade passiert - nicht
+         * abstrakt beide Kanten, sonst raetselt der Leser, welche Haelfte ihn angeht. */
+        var rg = SPY_REGIME.auf;
+        var kapiLaeuft = (c.mode === 'kapitulation');
+        was += ' Regime-Zuteilung ist an: ' + (rg === null
+          ? 'Die Marktlage ist noch nicht gemessen – bis dahin läuft alles wie ohne Zuteilung.'
+          : rg === !kapiLaeuft
+            ? 'Der S&P 500 steht ' + (rg ? 'über' : 'unter') + ' seiner 200er-Linie – das ist die Phase dieser Kante, sie darf handeln.'
+            : 'Der S&P 500 steht ' + (rg ? 'über' : 'unter') + ' seiner 200er-Linie – das ist NICHT die Phase dieser Kante, sie pausiert. ' +
+              (c.mode === 'rsi2seit' && c.kapiZusatz
+                ? 'Der Kapitulations-Dip handelt in dieser Phase weiter.'
+                : 'Signale laufen währenddessen im Schattenbuch mit.'));
+      }
+    } else if (c.mode === 'kanaltrend') {
+      name = trigName;
+      was = 'Folgt dem erkannten Trendkanal und hält, bis der Kanal dreht. Gemessen und ohne Vorsprung.';
+    } else if (st.setup === 'umkehr' && st.trigger === 'welle') {
       name = 'Umkehr am Wellental' + (c.channel !== false ? ' + Trendkanal' : '');
       was = 'Kauft am Tief einer Welle und verkauft am Wellenkamm' + (c.channel !== false ? ' – aber nur an der Kanalkante, Ziel ist die Gegenkante' : '') + '.';
     } else if (st.setup === 'umkehr' && st.trigger === 'rsi2') {
@@ -4720,7 +4847,7 @@
     var sperrHtml = '';
     if (killSwitchAktiv()) {
       var ks = D.killSwitch;
-      sperrHtml += '<div style="font-size:12.5px; color:var(--bad); font-weight:700; margin-bottom:6px; padding:6px 8px; border:1px solid var(--bad); border-radius:6px;">' +
+      sperrHtml += '<div style="font-size:12.5px; color:var(--down); font-weight:700; margin-bottom:6px; padding:6px 8px; border:1px solid var(--down); border-radius:6px;">' +
         'Kill-Switch aktiv: Tagesverlust ' + ks.pct + ' % hat das Limit von −' + ks.limit + ' % erreicht. ' +
         (ks.n ? ks.n + ' Position(en) wurden sofort glattgestellt. ' : '') +
         'Es wird heute nichts mehr eröffnet – morgen früh läuft der Handel automatisch wieder an.</div>';
@@ -4731,8 +4858,10 @@
         new Date(D.handelsPause.bis).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }) + ' Uhr. ' +
         'Offene Positionen werden normal weiter gemanagt.</div>';
     }
+    var IV_NAME = { '1m': '1-Minuten-Kerzen', '5m': '5-Minuten-Kerzen', '15m': '15-Minuten-Kerzen', '60m': 60 + '-Minuten-Kerzen' };
+    var ivTxt = IV_NAME[c.interval] || (c.interval || '60m');
     el.innerHTML = sperrHtml +
-      '<div style="font-size:14px; font-weight:700; margin-bottom:4px;">' + name + ' · ' + (c.interval || '5m') + '-Chart</div>' +
+      '<div style="font-size:14px; font-weight:700; margin-bottom:4px;">' + name + ' · ' + ivTxt + '</div>' +
       '<div style="font-size:12.5px; color:var(--ink-2); margin-bottom:4px;">' + was + (exitTxt ? ' ' + exitTxt : '') + '</div>' +
       (wer ? '<div style="font-size:11.5px; color:var(--muted); margin-bottom:4px;">' + U.esc(wer) + '</div>' : '') +
       (alleAn
@@ -5934,7 +6063,7 @@
           applied: zurueck,
           txt: 'Die neuen Voreinstellungen gelten nur für neue Installationen – dein bestehendes Depot ' +
             'behält sein Verhalten (' + zurueck.join(', ') + '). Wer auf die gemessenen Einstellungen ' +
-            'wechseln will: Knopf „Belegte Voreinstellungen übernehmen“ im Strategien-Tab.' });
+            'wechseln will: Knopf „Belegte Voreinstellungen übernehmen“ im Tab „Strategien & Belege“.' });
       }
     }
     /* Gesamtzaehler ueber alle Sitzungen. Die HEALTH-Zaehler beginnen bei jedem
@@ -5965,7 +6094,31 @@
           applied: ['Stunden-Strategie aus (Messung: Kontraindikator)'],
           txt: 'Die Stunden-Strategie wurde vermessen (24.727 Signale, 189 Werte, 8 Jahre): Ihr Technik-Score ist ein ' +
             'Kontraindikator (−0,74 Pp auf 20 Tage, t=−11,6) – dazu Schein-Kosten über Tage. Sie wurde einmalig ' +
-            'abgeschaltet. Einschalten bleibt jederzeit möglich (Strategien-Tab) und wird danach nie wieder automatisch geändert.' });
+            'abgeschaltet. Einschalten bleibt jederzeit möglich (Tab „Strategien & Belege“, oder im Kurzfrist-Depot unter ' +
+            '„Schalter & Einstellungen“ im Archiv) und wird danach nie wieder automatisch geändert.' });
+      }
+    }
+    /* Einmalig: Wer die belegte Kante ueber die Auslöser-Liste gewaehlt hatte, sass
+     * danach auf 1-Minuten-Kerzen - die alte applySetup-Regel stellte jeden
+     * Umkehr-Auslöser stur auf 1m, und der Formular-Klick sperrte Zeitrahmen und
+     * Haltedauer zugleich gegen jede Automatik. Gemessen wurde auf 60m. Einmal
+     * geradeziehen, sichtbar im Protokoll, danach nie wieder automatisch. */
+    if (D.rsi2seitZeitrahmenGeprueft === undefined) {
+      D.rsi2seitZeitrahmenGeprueft = 1;
+      var mB = D.intraday.mode;
+      if ((mB === 'rsi2seit' || mB === 'kapitulation') && D.intraday.interval !== '60m') {
+        var altIv = D.intraday.interval;
+        D.intraday.interval = '60m';
+        D.intraday.scalpHold = (mB === 'kapitulation') ? 1560 : 480;
+        /* Die Hand-Sperre bleibt bewusst STEHEN: Der Nutzer hat diese Felder von Hand
+         * berührt, also gehören sie weiterhin ihm. Die Sicherung korrigiert einmalig
+         * den Wert - sie gibt die Felder nicht an die Automatik zurück. */
+        if (!D.tuneLog) D.tuneLog = [];
+        D.tuneLog.unshift({ id: 'sicherung-' + Date.now(), at: Date.now(), quelle: 'sicherung',
+          applied: ['Zeitrahmen ' + altIv + ' → 60m', 'Haltedauer → ' + D.intraday.scalpHold + ' Min'],
+          txt: 'Die belegte Kante war auf ' + altIv + '-Kerzen eingestellt, gemessen wurde sie auf 60-Minuten-Kerzen. ' +
+            'Ursache war ein Fehler in der Auslöser-Auswahl, der jeden Umkehr-Auslöser auf 1 Minute stellte. ' +
+            'Einmalig auf die gemessene Einstellung zurückgesetzt – jede Änderung von Hand bleibt ab jetzt unangetastet.' });
       }
     }
     // Einmalig: Das Event-Blackout ist eine Sicherung, keine Stellschraube. Steht es aus,
@@ -6106,7 +6259,10 @@
     }
     if (repaired || messNeu) save();
     render();
-    document.getElementById('jobStatus').textContent = D.lastRun ? 'Letzter Lauf: ' + U.dt(D.lastRun) : 'Noch kein Lauf – „Jetzt prüfen“ klicken oder auf den Auto-Lauf warten.';
+    var jS0 = document.getElementById('jobStatus');
+    if (jS0) jS0.textContent = D.lastRun
+      ? 'Letzter Lauf: ' + U.dt(D.lastRun)
+      : (D.hourlyEnabled !== false ? 'Noch kein Lauf – nächster innerhalb einer Stunde.' : 'Kein Lauf nötig – die Strategie ist aus.');
     // Sub-Navigation (Pills)
     var pills = document.querySelectorAll('#depotPills button');
     pills.forEach(function (b) {
@@ -6194,13 +6350,18 @@
 
     // Stunden-Strategie-Schalter
     var hE = document.getElementById('hourlyEnabled');
-    hE.checked = D.hourlyEnabled !== false;
-    hE.addEventListener('change', function () {
-      D.hourlyEnabled = hE.checked;
-      save();
-      render();
-      document.getElementById('jobStatus').textContent = hE.checked ? 'Aktiv – nächster Lauf innerhalb einer Stunde.' : 'Pausiert (manueller Lauf weiter möglich).';
-    });
+    if (hE) {
+      hE.checked = D.hourlyEnabled !== false;
+      hE.addEventListener('change', function () {
+        D.hourlyEnabled = hE.checked;
+        save();
+        render();
+        var jS = document.getElementById('jobStatus');
+        if (jS) jS.textContent = hE.checked
+          ? 'Aktiv – nächster Lauf innerhalb einer Stunde.'
+          : 'Pausiert – der Knopf „Bestand jetzt prüfen“ betreut nur noch offene Altpositionen.';
+      });
+    }
 
     // Stunden-Scheduler: alle 5 Min prüfen, ob eine Stunde um ist
     setInterval(function () {
@@ -6216,19 +6377,23 @@
     var idLn = document.getElementById('idLine'), idTr = document.getElementById('idTrend'), idW = document.getElementById('idWindow');
     var idH = document.getElementById('idHold'), idTl = document.getElementById('idTrail'), idSS = document.getElementById('idScalpSL');
     var idCh = document.getElementById('idChannel');
-    idCh.checked = D.intraday.channel !== false;
     var idMt = document.getElementById('idMtf'), idSz = document.getElementById('idSizing'), idScr = document.getElementById('idScreener');
-    idMt.checked = D.intraday.mtf !== false;
-    idSz.value = parseFloat(D.intraday.sizing) > 0 ? String(D.intraday.sizing) : 'fix';
-    idScr.checked = !!D.intraday.screener;
-    idLn.value = D.intraday.lineType || 'ema';
-    idTr.value = D.intraday.trendFilter ? '1' : '0';
-    idW.value = D.intraday.window || 'all';
-    idH.value = String(D.intraday.scalpHold != null ? D.intraday.scalpHold : 60);
-    idTl.value = String(D.intraday.scalpTrail != null ? D.intraday.scalpTrail : 15);
-    idSS.value = D.intraday.scalpSL === 'auto' ? 'auto' : String(D.intraday.scalpSL != null ? D.intraday.scalpSL : 20);
-    document.getElementById('idBlackout').value = D.intraday.blackout || 'block';
-    idM.value = D.intraday.mode || 'breakout';
+    /* Defensiv: ein einzelnes fehlendes Bedienelement darf die Verkabelung des
+     * ganzen Formulars nicht abbrechen (UI-Audit 21.08.2026). */
+    function setzeWert(el, val) { if (el) el.value = val; }
+    function setzeHaken(el, val) { if (el) el.checked = val; }
+    setzeHaken(idCh, D.intraday.channel !== false);
+    setzeHaken(idMt, D.intraday.mtf !== false);
+    setzeWert(idSz, parseFloat(D.intraday.sizing) > 0 ? String(D.intraday.sizing) : 'fix');
+    setzeHaken(idScr, !!D.intraday.screener);
+    setzeWert(idLn, D.intraday.lineType || 'ema');
+    setzeWert(idTr, D.intraday.trendFilter ? '1' : '0');
+    setzeWert(idW, D.intraday.window || 'all');
+    setzeWert(idH, String(D.intraday.scalpHold != null ? D.intraday.scalpHold : 60));
+    setzeWert(idTl, String(D.intraday.scalpTrail != null ? D.intraday.scalpTrail : 15));
+    setzeWert(idSS, D.intraday.scalpSL === 'auto' ? 'auto' : String(D.intraday.scalpSL != null ? D.intraday.scalpSL : 20));
+    setzeWert(document.getElementById('idBlackout'), D.intraday.blackout || 'block');
+    setzeWert(idM, D.intraday.mode || 'rsi2seit');
     // Modus-/Zeitrahmen-abhängige Felder ein-/ausblenden
     function updateParamVis() {
       var m = idM.value, iv = idI.value;
@@ -6238,6 +6403,12 @@
       document.querySelectorAll('#idParams label[data-iv]').forEach(function (l) {
         l.style.display = l.getAttribute('data-iv') === iv ? '' : 'none';
       });
+      /* Die Box mit den gemessenen Stellschrauben liegt bewusst ausserhalb von
+       * #idParams (sie soll ueber der Experten-Klappe stehen) - deshalb wird sie
+       * hier eigens ein- und ausgeblendet. Ihre drei Regler wirken nur in den
+       * beiden belegten Modi; in einem anderen Modus liest der Code sie nie. */
+      var bb = document.querySelector('.belegt-box');
+      if (bb) bb.style.display = (m === 'rsi2seit' || m === 'kapitulation') ? '' : 'none';
       var pg = document.getElementById('pgScalp');
       if (pg) {
         var any = Array.prototype.some.call(pg.querySelectorAll('.params > label'), function (l) { return l.style.display !== 'none'; });
@@ -6248,30 +6419,68 @@
     /* ===== Setup-Bedienung: zwei Pillen + Auslöser + Ausstieg ===== */
     var idTg = document.getElementById('idTrigger'), idEx = document.getElementById('idExit');
     var setupPills = document.querySelectorAll('#idSetupPills button');
+    /* Belegstand der Auslöser - rein zur Anzeige. Die Schlüssel selbst sind ein
+     * Datenvertrag (SETUPS, setupFromMode, gespeicherte Depots, quant.js), deshalb
+     * steht die Einteilung hier daneben und nicht in SETUPS. */
+    var TRIG_BELEGT = { rsi2seit: 1, kapitulation: 1 };
+    /** Standard-Auslöser je Setup: im Umkehr-Setup die belegte Kante, nicht der Listenerste. */
+    function standardTrigger(setup) {
+      return setup === 'umkehr' ? 'rsi2seit' : Object.keys(SETUPS[setup].trigger)[0];
+    }
     function fillTrigger(setup, sel) {
+      if (!idTg) return;
       var tr = SETUPS[setup].trigger;
       idTg.innerHTML = '';
-      Object.keys(tr).forEach(function (k) {
-        var o = document.createElement('option'); o.value = k; o.textContent = tr[k]; idTg.appendChild(o);
+      /* Zwei Gruppen, nicht drei: Auch der rohe RSI(2) IST gemessen - er kam als
+       * Muenzwurf heraus (+0,017 Pp) und traegt erst mit der Seitwaerts-Erlaubnis.
+       * Ihn als "noch nicht gemessen" zu fuehren waere eine neue Unwahrheit. */
+      var gruppen = [
+        { titel: 'Belegt und in Betrieb', test: function (k) { return TRIG_BELEGT[k]; } },
+        { titel: 'Gemessen, ohne eigenen Vorsprung', test: function (k) { return !TRIG_BELEGT[k]; } }
+      ];
+      gruppen.forEach(function (g) {
+        var keys = Object.keys(tr).filter(g.test);
+        if (!keys.length) return;
+        var og = document.createElement('optgroup'); og.label = g.titel;
+        keys.forEach(function (k) {
+          var o = document.createElement('option'); o.value = k; o.textContent = tr[k]; og.appendChild(o);
+        });
+        idTg.appendChild(og);
       });
-      idTg.value = tr[sel] ? sel : Object.keys(tr)[0];
+      idTg.value = tr[sel] ? sel : standardTrigger(setup);
     }
     /** Bedienelemente aus dem internen Modus nachziehen (auch nach Auto-Tuning). */
     function syncSetupUI() {
+      if (!idM) return;
       var st2 = setupFromMode(idM.value);
       setupPills.forEach(function (b) { b.classList.toggle('active', b.getAttribute('data-setup') === st2.setup); });
       fillTrigger(st2.setup, st2.trigger);
-      idEx.value = (st2.setup === 'ausbruch' && st2.trigger === 'kreuzung' && D.intraday.exitStyle) ? D.intraday.exitStyle : st2.exitStyle;
+      setzeWert(idEx, (st2.setup === 'ausbruch' && st2.trigger === 'kreuzung' && D.intraday.exitStyle) ? D.intraday.exitStyle : st2.exitStyle);
       var lx = document.getElementById('lblExit');
       if (lx) lx.style.display = (st2.setup === 'ausbruch' && st2.trigger === 'kreuzung') ? '' : 'none';
     }
     function applySetup(setup, trigger, exitStyle) {
-      idM.value = modeFromSetup(setup, trigger, exitStyle);
-      // Sinnvolle Voreinstellungen, aber nur beim echten Wechsel
-      if (setup === 'umkehr') { idI.value = '1m'; idC.value = '15'; if (trigger === 'welle') idTr.value = '1'; }
-      else if (trigger === 'range') { idI.value = '1m'; idC.value = '15'; }
-      else if (exitStyle === 'kurz' || exitStyle === 'blitz') { idI.value = '1m'; idC.value = '5'; }
-      else { idI.value = '5m'; idC.value = '15'; }
+      var m = modeFromSetup(setup, trigger, exitStyle);
+      setzeWert(idM, m);
+      /* Die belegten Kanten bringen ihre GEMESSENE Konfiguration mit. Vorher setzte
+       * jeder Umkehr-Auslöser stur 1 Minute – wer „RSI(2) im Seitwärtskanal“ wählte,
+       * verließ damit im selben Klick die Einstellung, auf der die Messung beruht
+       * (60-Minuten-Kerzen, 8 bzw. 26 Handelsstunden Zeit-Ausstieg). */
+      var warBelegt = idH && (idH.value === '480' || idH.value === '1560');
+      if (m === 'rsi2seit' || m === 'kapitulation') {
+        setzeWert(idI, '60m'); setzeWert(idC, '15');
+        setzeWert(idH, m === 'kapitulation' ? '1560' : '480');
+      }
+      else {
+        /* Beim VERLASSEN der belegten Kanten muss die Haltedauer mit: 8 oder 26
+         * Handelsstunden gehoeren zu ihnen, nicht zu einem Minuten-Setup - und der
+         * Formular-Klick sperrt das Feld anschliessend gegen jede Automatik. */
+        if (warBelegt) setzeWert(idH, '60');
+        if (setup === 'umkehr') { setzeWert(idI, '1m'); setzeWert(idC, '15'); if (trigger === 'welle') setzeWert(idTr, '1'); }
+        else if (trigger === 'range') { setzeWert(idI, '1m'); setzeWert(idC, '15'); }
+        else if (exitStyle === 'kurz' || exitStyle === 'blitz') { setzeWert(idI, '1m'); setzeWert(idC, '5'); }
+        else { setzeWert(idI, '5m'); setzeWert(idC, '15'); }
+      }
       // Erst speichern, dann anzeigen: syncSetupUI liest den gespeicherten Ausstiegsstil –
       // in der alten Reihenfolge setzte es die frische Blitz-Auswahl auf den alten Wert zurück.
       idSave();
@@ -6280,24 +6489,23 @@
     setupPills.forEach(function (b) {
       b.addEventListener('click', function () {
         var sNew = b.getAttribute('data-setup');
-        if (setupFromMode(idM.value).setup === sNew) return;
-        var firstTrigger = Object.keys(SETUPS[sNew].trigger)[0];
-        applySetup(sNew, firstTrigger, 'laufen');
+        if (!idM || setupFromMode(idM.value).setup === sNew) return;
+        applySetup(sNew, standardTrigger(sNew), 'laufen');
       });
     });
-    idTg.addEventListener('change', function () {
+    if (idTg) idTg.addEventListener('change', function () {
       var st2 = setupFromMode(idM.value);
-      applySetup(st2.setup, idTg.value, idEx.value);
+      applySetup(st2.setup, idTg.value, idEx ? idEx.value : st2.exitStyle);
     });
-    idEx.addEventListener('change', function () {
+    if (idEx) idEx.addEventListener('change', function () {
       var st2 = setupFromMode(idM.value);
       applySetup(st2.setup, st2.trigger, idEx.value);
     });
-    idE.checked = !!D.intraday.enabled;
-    idP.value = String(D.intraday.period);
-    idC.value = String(D.intraday.confirmBps);
-    idI.value = D.intraday.interval || '5m';
-    idPr.value = D.intraday.profile || 'atm21';
+    setzeHaken(idE, !!D.intraday.enabled);
+    setzeWert(idP, String(D.intraday.period));
+    setzeWert(idC, String(D.intraday.confirmBps));
+    setzeWert(idI, D.intraday.interval || '60m');
+    setzeWert(idPr, D.intraday.profile || 'atm21');
     var idIns = document.getElementById('idInstrument');
     if (idIns) idIns.value = D.intraday.instrument || 'schein';
     var idPl = document.getElementById('idPool');
@@ -6310,21 +6518,25 @@
     if (idMS) idMS.value = String(D.maxRisikostufe || 5);
     var idKH = document.getElementById('idKryptoHandeln');
     if (idKH) idKH.checked = !!D.intraday.kryptoHandeln;
-    idF.value = String(D.intraday.orderFee != null ? D.intraday.orderFee : 1.5);
-    idL.value = String(D.intraday.minDollarVol != null ? D.intraday.minDollarVol : 50);
+    setzeWert(idF, String(D.intraday.orderFee != null ? D.intraday.orderFee : 0));
+    setzeWert(idL, String(D.intraday.minDollarVol != null ? D.intraday.minDollarVol : 50));
     // 'enabled' bewusst nicht dabei: An/Aus ist Alltag, kein Experiment – das würde das Journal fluten.
     var HAND_FELDER = { mode: 'Setup', period: 'Periode', confirmBps: 'Bestätigung', interval: 'Zeitrahmen',
       profile: 'Schein-Profil', instrument: 'Instrument', kryptoHandeln: 'Krypto-Handel', lineType: 'Leitlinie', trendFilter: 'Trendfilter', window: 'Zeitfenster', scalpHold: 'Max-Halten',
       scalpTrail: 'Trailing', scalpSL: 'Not-Stop', blackout: 'Event-Blackout', channel: 'Trendkanal', mtf: '5-Min-Bestätigung',
       sizing: 'Positionsgröße', screener: 'Screener', exitStyle: 'Ausstieg' };
+    /* Lies ein Feld nur, wenn es da ist - sonst bleibt der gespeicherte Wert stehen.
+     * Verhindert, dass ein umgezogenes oder entferntes Bedienelement eine
+     * Einstellung still auf undefined setzt. */
+    function lies(el, alt, wandel) { return el ? (wandel ? wandel(el.value) : el.value) : alt; }
+    function liesHaken(el, alt) { return el ? el.checked : alt; }
     function idSave() {
       var vorherHand = JSON.parse(JSON.stringify(D.intraday));
-      D.intraday.enabled = idE.checked;
-      D.intraday.mode = idM.value;
-      D.intraday.period = parseInt(idP.value, 10);
-      D.intraday.confirmBps = parseInt(idC.value, 10);
-      D.intraday.interval = idI.value;
-      D.intraday.profile = idPr.value;
+      D.intraday.mode = lies(idM, D.intraday.mode);
+      D.intraday.period = lies(idP, D.intraday.period, function (v) { return parseInt(v, 10); });
+      D.intraday.confirmBps = lies(idC, D.intraday.confirmBps, function (v) { return parseInt(v, 10); });
+      D.intraday.interval = lies(idI, D.intraday.interval);
+      D.intraday.profile = lies(idPr, D.intraday.profile);
       var idIns2 = document.getElementById('idInstrument');
       if (idIns2) D.intraday.instrument = idIns2.value;
       var idPl2 = document.getElementById('idPool');
@@ -6337,26 +6549,28 @@
       if (idMS2) D.maxRisikostufe = parseInt(idMS2.value, 10) || 5;
       var idKH2 = document.getElementById('idKryptoHandeln');
       if (idKH2) D.intraday.kryptoHandeln = idKH2.checked;
-      D.intraday.orderFee = parseFloat(idF.value);
+      D.intraday.orderFee = lies(idF, D.intraday.orderFee, parseFloat);
       var feeWarn = document.getElementById('feeWarn');
       if (feeWarn) feeWarn.textContent = D.intraday.orderFee === 0
         ? 'Ordergebühr 0 – korrekt für Broker ohne Kommission (z. B. Capital.com). Bei Ordergebühren hier den echten Betrag eintragen.'
         : '';
-      D.intraday.minDollarVol = parseInt(idL.value, 10);
-      D.intraday.lineType = idLn.value;
-      D.intraday.trendFilter = idTr.value === '1';
-      D.intraday.window = idW.value;
-      D.intraday.scalpHold = parseInt(idH.value, 10);
-      D.intraday.scalpTrail = parseInt(idTl.value, 10);
-      D.intraday.scalpSL = idSS.value === 'auto' ? 'auto' : parseInt(idSS.value, 10);
-      D.intraday.blackout = document.getElementById('idBlackout').value;
-      D.intraday.channel = idCh.checked;
-      D.intraday.mtf = idMt.checked;
-      D.intraday.sizing = idSz.value;
-      D.intraday.screener = idScr.checked;
-      var stS = setupFromMode(idM.value);
+      D.intraday.minDollarVol = lies(idL, D.intraday.minDollarVol, function (v) { return parseInt(v, 10); });
+      D.intraday.lineType = lies(idLn, D.intraday.lineType);
+      D.intraday.trendFilter = idTr ? idTr.value === '1' : !!D.intraday.trendFilter;
+      D.intraday.window = lies(idW, D.intraday.window);
+      D.intraday.scalpHold = lies(idH, D.intraday.scalpHold, function (v) { return parseInt(v, 10); });
+      D.intraday.scalpTrail = lies(idTl, D.intraday.scalpTrail, function (v) { return parseInt(v, 10); });
+      D.intraday.scalpSL = idSS ? (idSS.value === 'auto' ? 'auto' : parseInt(idSS.value, 10)) : D.intraday.scalpSL;
+      var idBl2 = document.getElementById('idBlackout');
+      if (idBl2) D.intraday.blackout = idBl2.value;
+      D.intraday.channel = liesHaken(idCh, D.intraday.channel);
+      D.intraday.mtf = liesHaken(idMt, D.intraday.mtf);
+      D.intraday.sizing = lies(idSz, D.intraday.sizing);
+      D.intraday.screener = liesHaken(idScr, D.intraday.screener);
+      var stS = setupFromMode(D.intraday.mode);
       D.intraday.setup = stS.setup; D.intraday.trigger = stS.trigger;
-      D.intraday.exitStyle = (stS.setup === 'ausbruch' && stS.trigger === 'kreuzung') ? (idEx.value || stS.exitStyle) : stS.exitStyle;
+      D.intraday.exitStyle = (stS.setup === 'ausbruch' && stS.trigger === 'kreuzung')
+        ? ((idEx && idEx.value) || stS.exitStyle) : stS.exitStyle;
       // Journal: Was hat sich von Hand geändert? Ohne Eintrag ist das Experiment-Journal
       // unvollständig und Konfig-Drift nicht mehr nachvollziehbar.
       var handDiff = [], handFelder = [];
@@ -6377,13 +6591,28 @@
       updateParamVis();
       renderKlartext();   // Setup-Wechsel sofort in der Klartext-Karte zeigen
       save();
-      document.getElementById('idStatus').textContent = D.intraday.enabled
+      var idSt = document.getElementById('idStatus');
+      if (idSt) idSt.textContent = D.intraday.enabled
         ? (window.Dash.marketOpen() ? 'Aktiv – nächster Scan in wenigen Minuten.' : 'Aktiv – wartet auf US-Handelsbeginn (15:30 Uhr Berlin).')
         : '';
     }
-    idE.addEventListener('change', function () { idSave(); if (D.intraday.enabled) intradayScan(); });
-    [idP, idC, idI, idPr, idF, idL, idLn, idTr, idW, idH, idTl, idSS, idCh, idMt, idSz, idScr, document.getElementById('idBlackout')].forEach(function (el) { el.addEventListener('change', idSave); });
-    document.getElementById('screenBtn').addEventListener('click', function () { runScreener(true); });
+    /* 'enabled' schreibt nur noch der eigene Schalter. Frueher schrieb idSave() den
+     * Wert bei JEDEM Feld-Change zurueck - damit konnte der Ein/Aus-Zustand aus dem
+     * Strategien-Tab still ueberschrieben werden (UI-Audit 21.08.2026). */
+    if (idE) idE.addEventListener('change', function () { D.intraday.enabled = idE.checked; idSave(); if (D.intraday.enabled) intradayScan(); });
+    /* Sechs Felder des HEUTIGEN Systems hingen hier nie drin - Instrument, Pool,
+     * Kapitulations-Zusatz, Regime-Zuteilung, Risikostufe und Krypto-Handel wurden
+     * nur mitgespeichert, wenn zufaellig ein anderes Feld geaendert wurde. Und ein
+     * einziges fehlendes Element liess frueher die ganze Schleife werfen: danach
+     * bekam KEIN Intraday-Feld mehr einen Listener, das Formular sah heil aus und
+     * speicherte still nichts (UI-Audit 21.08.2026). Darum filter(Boolean). */
+    [idP, idC, idI, idPr, idF, idL, idLn, idTr, idW, idH, idTl, idSS, idCh, idMt, idSz, idScr]
+      .concat(['idBlackout', 'idInstrument', 'idPool', 'idKapiZusatz', 'idRegime', 'idMaxStufe', 'idKryptoHandeln']
+        .map(function (id) { return document.getElementById(id); }))
+      .filter(Boolean)
+      .forEach(function (el) { el.addEventListener('change', idSave); });
+    var scrBtn = document.getElementById('screenBtn');
+    if (scrBtn) scrBtn.addEventListener('click', function () { runScreener(true); });
     renderScreen();
     renderHandSperre();
     window.__syncSetupUI = syncSetupUI;
@@ -6532,9 +6761,14 @@
     setTimeout(function () { if (D.kryptoSammeln !== false) kryptoSammeln('1m'); }, 25000);
   }
 
-  document.getElementById('runJobBtn').addEventListener('click', function () { runJob(true); });
-  document.getElementById('btRunBtn').addEventListener('click', runBacktest);
-  document.getElementById('depotResetBtn').addEventListener('click', function () {
+  /* Diese drei Zeilen liefen frueher ungeprueft und standen VOR init(): fehlte einer
+   * der Knoepfe, blieb der gesamte Depot-Reiter tot - ohne sichtbare Fehlermeldung. */
+  var rjBtn = document.getElementById('runJobBtn');
+  if (rjBtn) rjBtn.addEventListener('click', function () { runJob(true); });
+  var btBtn = document.getElementById('btRunBtn');
+  if (btBtn) btBtn.addEventListener('click', runBacktest);
+  var drBtn = document.getElementById('depotResetBtn');
+  if (drBtn) drBtn.addEventListener('click', function () {
     // Ein Klick löschte bisher unwiderruflich Positionen, Trade-Protokoll, Trefferquoten,
     // Experiment-Journal und Strategie-Farm. Dafür ist eine Rückfrage angemessen.
     var offen = D && D.positions ? D.positions.length : 0;
@@ -6549,12 +6783,18 @@
     // change-Event die alten UI-Werte zurück ins zurückgesetzte Depot.
     try { syncStrategyUI(); } catch (e0) { /* UI-Sync optional */ }
     render();
-    document.getElementById('setStatus').textContent = 'Depot zurückgesetzt (10.000 $).';
+    var stEl = document.getElementById('setStatus');
+    if (stEl) stEl.textContent = 'Depot zurückgesetzt (10.000 $).';
   });
   document.addEventListener('quotes-updated', function () {
-    if (D && document.getElementById('tab-depot').classList.contains('active')) render();
+    var tD = document.getElementById('tab-depot');
+    if (D && tD && tD.classList.contains('active')) render();
   });
-  document.addEventListener('tab-changed', function (e) { if (e.detail === 'depot') render(); });
+  document.addEventListener('tab-changed', function (e) {
+    // Der Reiterwechsel heilt den Formularstand: Ein/Aus laesst sich auch im
+    // Strategien-Tab umlegen, dann muessen die Schalter hier nachziehen.
+    if (e.detail === 'depot') { render(); try { syncStrategyUI(); } catch (e2) { /* UI-Sync optional */ } }
+  });
 
   init();
 })();
