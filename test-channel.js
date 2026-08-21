@@ -278,6 +278,16 @@ console.log('15) Kurze Kanäle (Befund 21.08.2026: 25er wurden nur zu einem Drit
   var bS = ksS.sort(function (a, b) { return b.guete - a.guete; })[0];
   ok(bS && bS.trend === 'seit' && bS.guete >= 60,
     'zappeliger Seitwärtskorridor: gefunden, als seitwärts erkannt, Güte würdigt die Enge', bS && (bS.trend + ' ' + bS.guete));
+  // b2) Keine Doppelgänger: Seit die kurz-Ebene echte kurze Kanäle findet, fielen
+  //     kurz und 'ab Wendepunkt' oft aufs selbe Fenster - gezeichnet sah man nur
+  //     drei Kanäle. Vier Ausgaben müssen vier verschiedene Sichten sein.
+  var alle4 = Q.kanaele(auf);
+  var doppel = 0;
+  for (var a4 = 0; a4 < alle4.length; a4++) for (var b4 = a4 + 1; b4 < alle4.length; b4++) {
+    if (Math.abs(alle4[a4].von - alle4[b4].von) <= 0.2 * Math.min(alle4[a4].n, alle4[b4].n) &&
+        Math.max(alle4[a4].n, alle4[b4].n) / Math.min(alle4[a4].n, alle4[b4].n) <= 1.3) doppel++;
+  }
+  ok(doppel === 0, 'keine zwei ausgegebenen Kanäle sind deckungsgleich', doppel);
   // c) Spezifität: Reiner Random Walk darf KEINEN Seitwärtskanal mit Güte >= 80 melden
   //    (die Enge-Referenz 0,68*sigma*sqrt(n) ist genau darauf kalibriert)
   var schlimm = 0;

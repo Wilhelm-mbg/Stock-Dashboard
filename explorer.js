@@ -628,7 +628,7 @@
         });
         var kEl = document.getElementById('expKanalInfo');
         if (kEl) kEl.textContent = kListe.length
-          ? kListe.map(function (k5) { return k5.name + ': ' + (k5.trend === 'auf' ? 'aufwärts' : k5.trend === 'ab' ? 'abwärts' : 'seitwärts') + ' (Güte ' + k5.guete + ')'; }).join(' · ')
+          ? kListe.map(function (k5) { return k5.name + ': ' + (k5.trend === 'auf' ? 'aufwärts' : k5.trend === 'ab' ? 'abwärts' : 'seitwärts') + ' (Güte ' + k5.guete + (k5.wendeBestaetigt ? ', beginnt an echtem Wendepunkt' : '') + ')'; }).join(' · ')
           : 'Zu wenige Kerzen im Fenster für einen Kanal.';
 
         /* Wie spät ist der Kanal? Ein Regressionskanal beschreibt, was war – er kann der

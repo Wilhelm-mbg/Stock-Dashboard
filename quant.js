@@ -2268,14 +2268,32 @@
     // und gerade die frische Bewegung ist die, die man sehen will.
     var kandidaten = wp.hoch.concat(wp.tief).filter(function (p) { return p.i < n - 15; });
     kandidaten.sort(function (a, b) { return b.i - a.i; });
-    var bester = null;
+    /* Deckungsgleiche Kanaele nicht doppelt ausgeben (Befund 21.08.2026): Seit die
+     * kurz-Ebene echte kurze Kanaele findet, landen kurz und 'ab Wendepunkt' oft
+     * auf demselben Fenster - gezeichnet lagen zwei Linienpaare aufeinander, und
+     * es SAHEN nur drei Kanaele aus. Ein Wendepunkt-Kanal, der eine Ebene bloss
+     * bestaetigt, markiert sie jetzt (wendeBestaetigt); als vierter Kanal kommt
+     * der beste ANDERSARTIGE Kandidat - vier Linien sollen vier Sichten sein. */
+    function deckungsgleich(a, b) {
+      return Math.abs(a.von - b.von) <= 0.2 * Math.min(a.n, b.n) &&
+        Math.max(a.n, b.n) / Math.min(a.n, b.n) <= 1.3;
+    }
+    var bester = null, besterFrei = null;
     for (var q = 0; q < Math.min(8, kandidaten.length); q++) {
       var k2 = kanalUeber(bars, kandidaten[q].i, n - 1, opt);
-      // Bei Gleichstand gewinnt der KUERZERE - er beschreibt die aktuelle Bewegung,
-      // der laengere nur mehr Vergangenheit.
-      if (k2 && (!bester || k2.guete > bester.guete || (k2.guete === bester.guete && k2.n < bester.n))) bester = k2;
+      if (!k2) continue;
+      // Bei Gleichstand gewinnt der KUERZERE - er beschreibt die aktuelle Bewegung.
+      if (!bester || k2.guete > bester.guete || (k2.guete === bester.guete && k2.n < bester.n)) bester = k2;
+      var frei = !raus.some(function (e2) { return deckungsgleich(e2, k2); });
+      if (frei && (!besterFrei || k2.guete > besterFrei.guete || (k2.guete === besterFrei.guete && k2.n < besterFrei.n))) besterFrei = k2;
     }
-    if (bester) { bester.name = 'ab Wendepunkt'; raus.push(bester); }
+    if (bester) {
+      var zwilling = null;
+      raus.forEach(function (e3) { if (deckungsgleich(e3, bester)) zwilling = e3; });
+      if (zwilling) zwilling.wendeBestaetigt = true;
+      var wahl = zwilling ? besterFrei : bester;
+      if (wahl) { wahl.name = 'ab Wendepunkt'; raus.push(wahl); }
+    }
     return raus;
   }
 
