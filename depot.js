@@ -1968,8 +1968,7 @@
     try {
       var now2 = Date.now();
       if (!TERMINE_KARTE || now2 - TERMINE_KARTE_T > 3600000) {
-        TERMINE_KARTE = {};
-        TERMINE_KARTE_T = now2;
+        var karte = {};
         var ta = await window.api.storeGet('drift_termine');
         if (ta && ta.sym) {
           Object.keys(ta.sym).forEach(function (s) {
@@ -1978,9 +1977,13 @@
               var t = Date.parse(e[0]);
               if (t > now2 && (!kuenftig || t < kuenftig)) kuenftig = t;
             });
-            if (kuenftig) TERMINE_KARTE[s] = kuenftig;
+            if (kuenftig) karte[s] = kuenftig;
           });
         }
+        // Erst NACH erfolgreichem Laden stempeln - vorher blieb bei einem Store-
+        // Fehler eine LEERE Karte eine Stunde lang als 'frisch' stehen (fail-open).
+        TERMINE_KARTE = karte;
+        TERMINE_KARTE_T = now2;
       }
       return TERMINE_KARTE[sym] || null;
     } catch (eT) { return null; }
@@ -2090,15 +2093,26 @@
           var openedToday = new Date(open.openT).toISOString().slice(0, 10) === today;
           /* Positionen mit Übernacht-Erlaubnis (RSI2-Seitwärts) überleben genau eine
            * Nacht - der Backtest zeigte: streng intraday -0,081 % je Trade, mit Nacht
-           * +0,230 %. Die Max-Haltedauer (Wanduhr-Minuten) schließt sie am Folgemorgen;
-           * die 2-Tage-Schranke ist das Netz darunter, falls die App pausiert hat. */
+           * +0,230 %. Die 2-Tage-Schranke ist das Netz, falls die App pausiert hat. */
           if (!openedToday && !open.uebernacht && !open.krypto) why = 'Übernacht-Glattstellung (App war zum Handelsschluss geschlossen)';
           else if (open.uebernacht && now - open.openT > 2 * 86400000) why = 'Übernacht-Position älter als zwei Tage – Schutzschließung';
           else if (flattenEv) why = 'Event-Glattstellung vor: ' + flattenEv.name;
           else if (ret <= xSL) why = 'Stop-Loss erreicht (' + Math.round(ret * 100) + ' %)';
           else if (xTP !== null && ret >= xTP) why = 'Take-Profit erreicht (+' + Math.round(ret * 100) + ' %)';
           else if (open.trail && open.peak > open.entry && bid <= open.peak * (1 - open.trail)) why = 'Trailing-Stop: −' + Math.round(open.trail * 100) + ' % vom Hoch (Gewinn gesichert)';
-          else if (open.maxHoldMin && now - open.openT >= open.maxHoldMin * 60000) why = 'Max-Haltedauer ' + open.maxHoldMin + ' Min erreicht';
+          else if (open.maxHoldMin && xm === 'zeit' && !open.krypto) {
+            /* HANDELSKERZEN statt Wanduhr (Befund 21.08.2026): Die Studie mass den
+             * Zeit-Ausstieg in Kerzen (8 x 60m = 8 HANDELSstunden). Die Wanduhr-
+             * Zaehlung schloss jeden Uebernacht-Trade schon zur Eroeffnung des
+             * Folgetags - ein 16:30-Einstieg hielt 5,5 statt 8 Handelsstunden
+             * (-31 %) und der Exit landete systematisch in die Eroeffnungsauktion.
+             * Jetzt zaehlen die FERTIGEN Kerzen seit dem Einstieg - exakt die
+             * Backtest-Semantik. Krypto bleibt Wanduhr (dort ist beides dasselbe). */
+            var kerzenSeit = 0;
+            for (var kz = sigBars.length - 1; kz >= 0 && sigBars[kz][0] > open.openT; kz--) kerzenSeit++;
+            if (kerzenSeit * barMinScan >= open.maxHoldMin) why = 'Haltedauer erreicht (' + kerzenSeit + ' Handelskerzen à ' + barMinScan + ' Min)';
+          }
+          else if (open.maxHoldMin && (xm !== 'zeit' || open.krypto) && now - open.openT >= open.maxHoldMin * 60000) why = 'Max-Haltedauer ' + open.maxHoldMin + ' Min erreicht';
           else if (nearClose && !open.uebernacht && !open.krypto) why = 'Tagesschluss-Glattstellung (kein Übernacht-Risiko)';
           else if (xm === 'crest') {
             if (open.chan) { // Kanal vom Einstieg fortschreiben, nicht jede Minute neu zeichnen
@@ -2251,17 +2265,32 @@
          * kann nicht blocken - das ist die ehrliche Grenze dieser Pruefung. */
         if (mp.uebernacht && !istKrypto(sym)) {
           var nTermin = await naechsterTermin(sym);
-          if (nTermin && nTermin - now < (mp.maxHoldMin || 480) * 60000 + 12 * 3600000) {
+          /* Fenster = realer Wanduhr-Halt, nicht die nominelle Haltedauer: 8 Handels-
+           * stunden heissen 'bis in den Folgetag' (~26-30 h), vor dem Wochenende bis
+           * Montag (~78 h). Das alte 20-h-Fenster liess Einstiege durchrutschen, deren
+           * Position exakt durch die Vor-Boersen-Zahlen des Folgetags sass. */
+          var blackoutFenster = (new Date(now).getDay() === 5 ? 78 : 30) * 3600000;
+          if (nTermin && nTermin - now < blackoutFenster) {
             patienceAdd('Zahlen stehen an (' + new Date(nTermin).toLocaleDateString('de-DE') + ') – kein Übernacht-Einstieg', sym);
             schattenNeu('Zahlen-Blackout', sym, dir, spot, sigBars, mp, cfg, now);
             continue;
           }
         }
-        if ((cfg.avoidHours || []).length) {
+        /* rsi2seit und kapitulation sind von Meide-Stunden und Zeitfenster AUSGENOMMEN -
+         * dieselbe Falle wie der behobene trendFilter: Die Studie hat die Tageszeit
+         * ausdruecklich mitgemessen und beide Modi OHNE Fenster-Bedingung validiert.
+         * Farm und Analyse-Zentrale duerfen diese Felder setzen (fuer ihre Modi),
+         * aber sie duerfen keine studierten Signale still ausduennen. */
+        if ((cfg.avoidHours || []).length && !isRsi2Seit && !isKapitulation) {
           var hourB = parseInt(new Date(now).toLocaleString('de-DE', { hour: '2-digit', hour12: false, timeZone: 'Europe/Berlin' }), 10);
-          if (cfg.avoidHours.indexOf(hourB) !== -1) { patienceAdd('Meide-Stunde (Analyse-Zentrale)', sym); continue; }
+          if (cfg.avoidHours.indexOf(hourB) !== -1) {
+            patienceAdd('Meide-Stunde (Analyse-Zentrale)', sym);
+            // Auch dieser Block gehoert ins Schattenbuch - vorher waren seine Kosten unmessbar
+            schattenNeu('Meide-Stunde', sym, dir, spot, sigBars, mp, cfg, now);
+            continue;
+          }
         }
-        if (!istKrypto(sym) && !Q.inWindow(now, cfg.window || 'all')) { patienceAdd('Außerhalb des Zeitfensters', sym); schattenNeu('Zeitfenster', sym, dir, spot, sigBars, mp, cfg, now); continue; }
+        if (!istKrypto(sym) && !isRsi2Seit && !isKapitulation && !Q.inWindow(now, cfg.window || 'all')) { patienceAdd('Außerhalb des Zeitfensters', sym); schattenNeu('Zeitfenster', sym, dir, spot, sigBars, mp, cfg, now); continue; }
         if (!liquid) { patienceAdd('Zu wenig Liquidität', sym); continue; }
         var frisch = barsFrisch(bars, barMinScan, now);
         if (!frisch.ok) {
@@ -2493,9 +2522,18 @@
         // Spiegelung auf dem Capital.com-Demo-Konto (CFD-Paper-Trade mit Stop-Loss)
         if (window.CapAPI && window.CapAPI.enabled()) {
           (function (tr, spotNow) {
-            var wRef = { strike: tr.strike, expiry: tr.expiry, iv: tr.iv, ratio: tr.ratio || Q.RATIO };
-            var slLvl = Q.underlyingAtTarget(tr.dir, wRef, tr.entry * (1 + tr.sl), Date.now(), spotNow);
-            var tpLvl = tr.tp != null ? Q.underlyingAtTarget(tr.dir, wRef, tr.entry * (1 + tr.tp), Date.now(), spotNow) : null;
+            var slLvl, tpLvl;
+            if (tr.basis) {
+              /* Basis-Trades sind LINEAR - die Schein-Inversion (underlyingAtTarget)
+               * bekam hier tr.entry~Spot statt eines Scheinpreises und lief an ihre
+               * Obergrenze (SL-Level ~1,6x Spot ueber dem Markt, Order unsinnig). */
+              slLvl = tr.dir === 'call' ? spotNow * (1 + tr.sl) : spotNow * (1 - tr.sl);
+              tpLvl = tr.tp != null ? (tr.dir === 'call' ? spotNow * (1 + tr.tp) : spotNow * (1 - tr.tp)) : null;
+            } else {
+              var wRef = { strike: tr.strike, expiry: tr.expiry, iv: tr.iv, ratio: tr.ratio || Q.RATIO };
+              slLvl = Q.underlyingAtTarget(tr.dir, wRef, tr.entry * (1 + tr.sl), Date.now(), spotNow);
+              tpLvl = tr.tp != null ? Q.underlyingAtTarget(tr.dir, wRef, tr.entry * (1 + tr.tp), Date.now(), spotNow) : null;
+            }
             var sizeC = Math.max(0.1, Math.round((equityNow() * cfg.budgetPct * 5 / spotNow) * 10) / 10);
             window.CapAPI.openPosition(tr.sym, tr.dir, sizeC, slLvl, tpLvl).then(function (r) {
               if (r.ok) { HEALTH.capOk++; } else { HEALTH.capFail++; }
