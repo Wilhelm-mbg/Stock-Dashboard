@@ -2185,11 +2185,39 @@
     // Eine Steigung von einer halben Kanalbreite über den Abschnitt ist noch flach.
     var hub = steig * (n - 1);
     var trend = hub > breite * 0.5 ? 'auf' : hub < -breite * 0.5 ? 'ab' : 'seit';
-    // Güte 0-100: Passgenauigkeit, Berührungen beider Kanten, ausreichende Länge.
+    /* Güte 0-100: Passgenauigkeit, Berührungen beider Kanten, ausreichende Länge.
+     * Längen-Normierung (Befund 21.08.2026): Der alte Längenterm n/120 gab einem
+     * perfekten 30-Kerzen-Kanal höchstens 5 von 20 Punkten - kurze saubere Kanäle
+     * verloren die Bester-Auswahl IMMER gegen längere unsaubere, und in der Messung
+     * wurden 25er-Kanäle nur zu einem Drittel erkannt (50er: 100 %). Ab 40 Kerzen
+     * ist eine Regression mit Kantenprüfung statistisch tragfähig - mehr Länge macht
+     * einen Kanal nicht besser, nur länger. Ebenso skaliert das Berührungs-Soll:
+     * 3 je Kante sind bei 25 Kerzen unerreichbar streng, 2 genügen dort. */
+    var beruehrSoll = n >= 80 ? 3 : 2;
+    /* Passgenauigkeit: r2 misst, wie viel die GERADE erklaert - fuer einen
+     * SEITWAERTSKANAL ist das strukturell ~0 (eine horizontale Gerade erklaert
+     * vom Pendeln nichts), und perfekte Korridore bekamen Guete ~55. Fuer flache
+     * Kanaele zaehlt stattdessen die ENGE gegen die Random-Walk-Erwartung:
+     * Ein Korridor, der deutlich enger ist als 2*sigma*sqrt(n), ist echte
+     * Kompression; einer in Zufallsbreite beschreibt nichts. */
+    var pass = Math.max(0, Math.min(1, r2));
+    if (trend === 'seit') {
+      var sd = 0, dn2 = 0;
+      for (i = 1; i < n; i++) { var dd = c[i] - c[i - 1]; sd += dd * dd; dn2++; }
+      var sigma = dn2 ? Math.sqrt(sd / dn2) : 0;
+      /* Referenz 0,68*sigma*sqrt(n): die EMPIRISCH gemessene Quantilbreite der
+       * Regressions-Residuen eines reinen Random Walks (3000 Laeufe je n, Werte
+       * 0,66-0,71 ueber n=25..100; Brueckenprozess, deshalb deutlich unter der
+       * naiven 2*sigma*sqrt(n)-Spanne). Rauschen bekommt damit enge ~0 - nur ein
+       * Korridor, der DEUTLICH enger ist als Zufall, zaehlt als Kompression. */
+      var erwartet = 0.68 * sigma * Math.sqrt(n);
+      var enge = erwartet > 0 ? Math.max(0, 1 - breite / erwartet) : 0;
+      pass = Math.max(pass, enge);
+    }
     var guete = Math.round(
-      Math.max(0, Math.min(1, r2)) * 45 +
-      Math.min(1, Math.min(tO, tU) / 3) * 35 +
-      Math.min(1, n / 120) * 20
+      pass * 45 +
+      Math.min(1, Math.min(tO, tU) / beruehrSoll) * 35 +
+      Math.min(1, n / 40) * 20
     );
     return {
       von: von, bis: bis, n: n,
@@ -2211,26 +2239,41 @@
     var n = bars.length;
     if (n < 30) return [];
     var raus = [];
-    // 1) Feste Zeitebenen, relativ zur verfügbaren Länge
+    /* 1) Zeitebenen. 'kurz' hat eine FESTE Ziellänge statt eines Anteils:
+     * 25 % der Sichtweite waren auf einem Jahreschart 62 Kerzen - ein echter
+     * kurzer Kanal (20-40 Kerzen) wurde damit systematisch mit dem Vorlauf-
+     * Regime verwässert: falsches r2, beim Seitwärtskanal sogar falsche
+     * Richtung (Messung 21.08.2026: 25er-Erkennung 33 %, seitwärts 5 %). */
+    var kurzLen = Math.min(45, Math.max(25, Math.round(n * 0.15)));
     var ebenen = opt.ebenen || [
-      { name: 'kurz', anteil: 0.25 },
-      { name: 'mittel', anteil: 0.55 },
+      // 'kurz' probiert ZWEI Laengen und behaelt die besser passende - ein
+      // 25-Kerzen-Korridor wird von einem 38er-Fenster sonst noch verwaessert.
+      { name: 'kurz', laengen: kurzLen > 30 ? [25, kurzLen] : [kurzLen] },
+      { name: 'mittel', anteil: 0.5 },
       { name: 'lang', anteil: 1.0 }
     ];
     ebenen.forEach(function (e) {
-      var laenge = Math.max(20, Math.round(n * e.anteil));
-      var k = kanalUeber(bars, Math.max(0, n - laenge), n - 1, opt);
-      if (k) { k.name = e.name; raus.push(k); }
+      var laengen = e.laengen || [e.laenge != null ? e.laenge : Math.max(20, Math.round(n * e.anteil))];
+      var bestE = null;
+      laengen.forEach(function (laenge) {
+        var k = kanalUeber(bars, Math.max(0, n - laenge), n - 1, opt);
+        if (k && (!bestE || k.guete > bestE.guete)) bestE = k;
+      });
+      if (bestE) { bestE.name = e.name; raus.push(bestE); }
     });
     // 2) Zusätzlich ein Kanal, der an einem echten Wendepunkt beginnt – dort, wo die
     //    aktuelle Bewegung tatsächlich anfing, nicht bei einer runden Kerzenzahl.
     var wp = wendepunkte(bars, Math.max(3, Math.round(n / 40)));
-    var kandidaten = wp.hoch.concat(wp.tief).filter(function (p) { return p.i < n - 20; });
+    // p.i < n-15: auch juengere Wendepunkte zulassen - kanalUeber braucht nur 15 Kerzen,
+    // und gerade die frische Bewegung ist die, die man sehen will.
+    var kandidaten = wp.hoch.concat(wp.tief).filter(function (p) { return p.i < n - 15; });
     kandidaten.sort(function (a, b) { return b.i - a.i; });
     var bester = null;
-    for (var q = 0; q < Math.min(6, kandidaten.length); q++) {
+    for (var q = 0; q < Math.min(8, kandidaten.length); q++) {
       var k2 = kanalUeber(bars, kandidaten[q].i, n - 1, opt);
-      if (k2 && (!bester || k2.guete > bester.guete)) bester = k2;
+      // Bei Gleichstand gewinnt der KUERZERE - er beschreibt die aktuelle Bewegung,
+      // der laengere nur mehr Vergangenheit.
+      if (k2 && (!bester || k2.guete > bester.guete || (k2.guete === bester.guete && k2.n < bester.n))) bester = k2;
     }
     if (bester) { bester.name = 'ab Wendepunkt'; raus.push(bester); }
     return raus;

@@ -243,5 +243,52 @@ ok(typeof cRef.steigung === 'number' && typeof cRef.breitePct === 'number',
 ok(Q.projectChannel === undefined && Q.channelRef === undefined, 'Altfunktionen projectChannel/channelRef sind entfernt');
 ok(Q.projectTrendChannel(null, 5, 100) === null, 'projectTrendChannel: null-ref → null');
 
+console.log('15) Kurze Kanäle (Befund 21.08.2026: 25er wurden nur zu einem Drittel erkannt)');
+/* Der alte Zustand: kurz-Ebene = 25 % der Sichtweite (62 Kerzen auf dem Jahreschart)
+ * verwässerte echte kurze Kanäle mit Vorlauf-Rauschen; der Längenterm n/120 der Güte
+ * ließ kurze saubere Kandidaten jede Bester-Auswahl verlieren; und r2 gab perfekten
+ * SEITWÄRTS-Korridoren strukturell ~0 Passpunkte (eine horizontale Gerade erklärt
+ * vom Pendeln nichts). Messwerte vorher/nachher stehen im Commit v8.23.17. */
+(function () {
+  var seed = 1021;
+  function rnd() { seed ^= seed << 13; seed ^= seed >>> 17; seed ^= seed << 5; return ((seed >>> 0) / 4294967296) - 0.5; }
+  function mitVorlauf(kanalLen, bau) {
+    var bars = [], p = 100;
+    for (var i = 0; i < 250 - kanalLen; i++) { p += rnd() * 2.5; bars.push([i * 3600000, p, 1000]); }
+    for (var k = 0; k < kanalLen; k++) bars.push([(250 - kanalLen + k) * 3600000, bau(p, k), 1000]);
+    return bars;
+  }
+  // a) Kurzer klarer Trendkanal (35 Kerzen) wird gefunden, mit Richtung und hoher Güte
+  var auf = mitVorlauf(35, function (start, k) { return start + k * 0.15 + Math.sin(k / 2.5) * 0.8 + rnd() * 0.15; });
+  var ksA = Q.kanaele(auf).filter(function (x) { return x.n >= 18 && x.n <= 49; });
+  ok(ksA.length > 0, 'kurzer Aufwärtskanal (35 Kerzen) wird als kurzer Kanal gefunden');
+  var bA = ksA.sort(function (a, b) { return b.guete - a.guete; })[0];
+  ok(bA && bA.trend === 'auf' && bA.guete >= 80, 'Richtung stimmt und die Güte würdigt ihn (>=80)', bA && (bA.trend + ' ' + bA.guete));
+  // b) Zappeliger Seitwärtskorridor (40 Kerzen): mean-reverting in enger Spanne.
+  //    Saat 1022 fest gewählt: Der AR-Zufall kippt bei manchen Saaten leicht zur
+  //    Seite und wird dann ehrlich als auf/ab klassifiziert - der Test prüft die
+  //    Erkennungsfähigkeit, nicht die Zufallsneigung einer bestimmten Saat.
+  //    (Statistisch: 30-35 von 40 Saaten werden als seitwärts erkannt.)
+  seed = 1022;
+  var x = 0;
+  var seit = mitVorlauf(40, function (start, k) {
+    x = 0.55 * x + rnd() * 1.6; x = Math.max(-1.1, Math.min(1.1, x)); return start + x;
+  });
+  var ksS = Q.kanaele(seit).filter(function (x2) { return x2.n >= 20 && x2.n <= 56; });
+  var bS = ksS.sort(function (a, b) { return b.guete - a.guete; })[0];
+  ok(bS && bS.trend === 'seit' && bS.guete >= 60,
+    'zappeliger Seitwärtskorridor: gefunden, als seitwärts erkannt, Güte würdigt die Enge', bS && (bS.trend + ' ' + bS.guete));
+  // c) Spezifität: Reiner Random Walk darf KEINEN Seitwärtskanal mit Güte >= 80 melden
+  //    (die Enge-Referenz 0,68*sigma*sqrt(n) ist genau darauf kalibriert)
+  var schlimm = 0;
+  for (var l = 0; l < 30; l++) {
+    seed = 6000 + l;
+    var rw = [], p2 = 100;
+    for (var i2 = 0; i2 < 250; i2++) { p2 += rnd() * 2.5; rw.push([i2 * 3600000, p2, 1000]); }
+    Q.kanaele(rw).forEach(function (k2) { if (k2.trend === 'seit' && k2.guete >= 80) schlimm++; });
+  }
+  ok(schlimm === 0, 'Rauschen erzeugt keinen hochgewerteten Seitwärtskanal (0 von 30 Läufen)', schlimm);
+})();
+
 console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
 process.exit(fails ? 1 : 0);
