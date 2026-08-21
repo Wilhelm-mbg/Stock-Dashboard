@@ -4840,7 +4840,7 @@
     if (tl) wer = 'Zuletzt eingestellt von ' + (QUELLE_NAME[tl.quelle] || tl.quelle || '?') + ' (' + U.dt(tl.at) + '): ' + tl.applied.slice(0, 3).join(' · ') + (tl.applied.length > 3 ? ' …' : '');
     var a = autoOptCfg();
     var autoTxt = 'Du musst hier nichts einstellen: der Autopilot misst nachts auf dem wachsenden Kursarchiv und übernimmt nur doppelt bestätigte, robuste Ergebnisse – morgens vor Handelsbeginn' +
-      (a.regime !== false ? '; die Marktlage wird stündlich angezeigt (reine Empfehlung)' : '') +
+      (a.regime !== false ? '; die Marktlage wird stündlich gemessen und angezeigt – in erkennbar wirren Phasen setzt sie neue Einstiege für rund eine Stunde aus' : '') +
       '. Jede Änderung steht im Experiment-Journal (Auswertung).';
     var alleAn = a.on !== false;
     // Sperren zuerst - was gerade NICHT gehandelt wird, ist die wichtigste Information
@@ -4883,7 +4883,7 @@
     var hint = document.getElementById('regimeHint');
     if (hint && D) {
       hint.textContent = autoOptCfg().regime !== false
-        ? 'Die Marktlage wird stündlich gemessen und hier angezeigt – umgestellt wird dabei nichts. Das entscheidet der Autopilot nach der Nacht-Messung, oder du selbst.'
+        ? 'Die Marktlage wird stündlich gemessen und hier angezeigt. Die Strategie stellt sie nicht um – das entscheidet der Autopilot nach der Nacht-Messung, oder du selbst. In erkennbar wirren Phasen setzt sie neue Einstiege für rund eine Stunde aus; offene Positionen laufen normal weiter.'
         : '';
     }
     var el = document.getElementById('regimeStatus');
