@@ -112,7 +112,7 @@
     var STUFENFARBE = ['', 'var(--up)', '#7c9cf5', 'var(--warn)', '#f59c40', 'var(--down)'];
     var zeilen = liste.slice(0, 120).map(function (k, i) {
       return '<tr data-sfi="' + RASTER.indexOf(k) + '" style="cursor:pointer;">' +
-        '<td style="white-space:nowrap; color:var(--muted); font-size:11px;">' + kennung(k) + '</td>' +
+        '<td class="sf-kennung" style="white-space:nowrap; color:var(--muted); font-size:11px; cursor:copy;" title="Klick kopiert die Kennung">' + kennung(k) + '</td>' +
         '<td><b style="color:' + STUFENFARBE[k.stufe] + ';">' + k.stufe + '</b></td>' +
         '<td>' + (k.dir === 'call' ? '▲ Call' : '▼ Put') + '</td>' +
         '<td style="text-align:right;">' + U.nf2.format(k.strike) + '</td>' +
@@ -186,6 +186,17 @@
     /* Einzelheiten klappen DIREKT UNTER der angeklickten Zeile auf (Tester-Wunsch #13).
        Frueher stand die Info nur im Kasten ueber der Tabelle - wer weit unten
        klickte, musste hochscrollen und sah gar nicht, dass etwas passiert war. */
+    // Klick auf die Kennung kopiert sie (Tester-Wunsch #17) - und klappt NICHT auf
+    t.querySelectorAll('.sf-kennung').forEach(function (td) {
+      td.addEventListener('click', function (ev) {
+        ev.stopPropagation();
+        var txt = td.textContent;
+        try { navigator.clipboard.writeText(txt); } catch (eC) { }
+        var alt = td.textContent;
+        td.textContent = 'kopiert ✓';
+        setTimeout(function () { td.textContent = alt; }, 900);
+      });
+    });
     t.querySelectorAll('[data-sfi]').forEach(function (tr) {
       tr.addEventListener('click', function () {
         var k = RASTER[parseInt(tr.getAttribute('data-sfi'), 10)];

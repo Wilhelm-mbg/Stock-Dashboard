@@ -255,6 +255,26 @@
       return '<div class="news-item"><div class="t"><a href="' + esc(safeUrl(n.url)) + '" target="_blank" rel="noopener">' + esc(n.title) + '</a></div>' +
         '<div class="src">' + esc(n.source) + (when ? '<br>' + esc(when) : '') + '</div></div>';
     }).join('') || '<div class="loading">Keine News gefunden.</div>';
+    renderTicker();
+  }
+
+  /* Laufband oben im Dashboard (Tester-Wunsch #20): dieselben Schlagzeilen wie im
+     News-Kasten, als endlos durchlaufendes Band. Der Inhalt wird verdoppelt, damit
+     die CSS-Schleife (-50 %) nahtlos wieder am Anfang ankommt. Bewegung nervt
+     manche - deshalb pausiert das Band unter dem Mauszeiger (CSS) und respektiert
+     prefers-reduced-motion (ebenfalls CSS). */
+  function renderTicker() {
+    var el = document.getElementById('newsTicker');
+    if (!el) return;
+    if (!NEWS.length) { el.style.display = 'none'; return; }
+    var stueck = NEWS.slice(0, 20).map(function (n) {
+      return '<a href="' + esc(safeUrl(n.url)) + '" target="_blank" rel="noopener">' + esc(n.title) + '</a>' +
+        '<span class="tickTrenn">•</span>';
+    }).join('');
+    el.style.display = 'block';
+    // Laufzeit an die Textmenge koppeln, sonst rast ein kurzes Band und kriecht ein langes
+    var dauer = Math.max(30, Math.min(240, NEWS.slice(0, 20).reduce(function (a, n) { return a + n.title.length; }, 0) / 6));
+    el.innerHTML = '<div class="tickSpur" style="animation-duration:' + Math.round(dauer) + 's;">' + stueck + stueck + '</div>';
   }
 
   /* ================= Tooltip ================= */

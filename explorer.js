@@ -86,8 +86,12 @@
   renderStart();
 
   /* ================= Chart-Daten ================= */
-  async function fetchRange(sym, range, interval) {
-    var url = 'https://query1.finance.yahoo.com/v8/finance/chart/' + encodeURIComponent(sym) + '?range=' + range + '&interval=' + interval;
+  async function fetchRange(sym, range, interval, von, bis) {
+    // Entweder benannter Zeitraum ODER freie Datumsgrenzen (period1/period2 in Sekunden)
+    var url = 'https://query1.finance.yahoo.com/v8/finance/chart/' + encodeURIComponent(sym) +
+      (von && bis
+        ? '?period1=' + Math.floor(von / 1000) + '&period2=' + Math.floor(bis / 1000) + '&interval=' + interval
+        : '?range=' + range + '&interval=' + interval);
     var res = await window.api.fetchText(url);
     if (!res.ok) return null;
     try {
@@ -115,6 +119,12 @@
     var seq = ++openSeq;
     CUR = hit;
     activeRange = '1J';
+    // Menues auf den Startzustand der Schnellwahl stellen (Menues = einzige Wahrheit)
+    var zElO = document.getElementById('expZeit'), kElO = document.getElementById('expKerze');
+    if (zElO) zElO.value = '1y';
+    if (kElO) kElO.value = '1d';
+    var vElO = document.getElementById('expVon'), bElO = document.getElementById('expBis');
+    if (vElO) vElO.value = ''; if (bElO) bElO.value = '';
     var startEl = document.getElementById('expStart');
     if (startEl) startEl.style.display = 'none';
     document.getElementById('expDetail').style.display = 'block';
@@ -169,11 +179,25 @@
       zEl.addEventListener('change', function () {
         // Schnellwahl-Knoepfe abwaehlen, sobald frei gewaehlt wird - sonst waere unklar, was gilt
         var rb = document.getElementById('expRanges');
-        if (rb && zEl.value) rb.querySelectorAll('button').forEach(function (x) { x.classList.remove('active'); });
+        if (rb) rb.querySelectorAll('button').forEach(function (x) { x.classList.remove('active'); });
+        // Handwahl des Zeitraums hebt die Datumswahl auf
+        var v4 = document.getElementById('expVon'), b4 = document.getElementById('expBis');
+        if (v4) v4.value = ''; if (b4) b4.value = '';
         loadRange();
       });
     }
     if (kEl && !kEl.__bereit) { kEl.__bereit = true; kEl.addEventListener('change', function () { loadRange(); }); }
+    ['expVon', 'expBis'].forEach(function (idD) {
+      var eD = document.getElementById(idD);
+      if (eD && !eD.__bereit) {
+        eD.__bereit = true;
+        eD.addEventListener('change', function () {
+          var rb2 = document.getElementById('expRanges');
+          if (rb2) rb2.querySelectorAll('button').forEach(function (x) { x.classList.remove('active'); });
+          loadRange();
+        });
+      }
+    });
     var leiste = document.getElementById('expSignalLeiste');
     if (leiste && !leiste.__bereit) {
       leiste.__bereit = true;
@@ -214,8 +238,16 @@
     el.querySelectorAll('button').forEach(function (b) {
       b.addEventListener('click', function () {
         activeRange = b.getAttribute('data-range');
-        var zEl3 = document.getElementById('expZeit');
-        if (zEl3) zEl3.value = '';        // Schnellwahl hebt die freie Wahl auf
+        /* Aufgeraeumt (Tester-Meldungen #23/#26): Die Menues sind die EINZIGE
+           Wahrheit - ein Schnellwahl-Knopf setzt nur die beiden Menues und laedt.
+           Frueher liefen zwei getrennte Zweige, und der Schnellwahl-Zweig
+           ueberschrieb jede Kerzenwahl sofort wieder. */
+        var r = RANGES.filter(function (x) { return x.k === activeRange; })[0];
+        var zEl3 = document.getElementById('expZeit'), kEl3 = document.getElementById('expKerze');
+        if (zEl3) zEl3.value = r.range;
+        if (kEl3) kEl3.value = r.interval;
+        var v3 = document.getElementById('expVon'), b3 = document.getElementById('expBis');
+        if (v3) v3.value = ''; if (b3) b3.value = '';   // Schnellwahl hebt die Datumswahl auf
         el.querySelectorAll('button').forEach(function (x) { x.classList.toggle('active', x === b); });
         loadRange();
       });
@@ -241,29 +273,37 @@
     if (!CUR) return;
     var seqR = openSeq;
     var zEl = document.getElementById('expZeit'), kEl = document.getElementById('expKerze');
+    var vEl = document.getElementById('expVon'), bEl = document.getElementById('expBis');
     var hEl = document.getElementById('expZeitHinweis');
-    var zeit, kerze, beschriftung;
-    if (zEl && zEl.value) {
-      // Freie Wahl hat Vorrang vor den Schnellwahl-Knoepfen.
-      /* selectedIndex kann -1 sein, wenn .value zuvor auf eine Kerzengroesse gesetzt
-         wurde, die es als Option nicht gab (so geschah es mit 'Max' und '1mo', bevor
-         die Option existierte) - der Zugriff auf .options[-1].text warf dann einen
-         TypeError und das Zeitraum-Menue wirkte komplett tot (Tester-Meldung #12).
-         Deshalb hier defensiv, damit ein fehlender Eintrag nie wieder alles lahmlegt. */
-      var kerzeWahl = (kEl && kEl.selectedIndex >= 0 && kEl.value) ? kEl.value : '1d';
-      var pr = zeitPruefen(zEl.value, kerzeWahl);
-      zeit = pr.zeit; kerze = kerzeWahl;
-      if (hEl) hEl.textContent = pr.hinweis;
-      var zTxt = zEl.selectedIndex >= 0 ? zEl.options[zEl.selectedIndex].text : zEl.value;
-      var kTxt = (kEl && kEl.selectedIndex >= 0) ? kEl.options[kEl.selectedIndex].text : kerzeWahl;
-      beschriftung = zTxt + ' · ' + kTxt;
+    /* EIN Weg statt zwei (Tester-Meldungen #23/#26): Die Menues sind die einzige
+       Wahrheit; Schnellwahl-Knoepfe setzen nur die Menues. Der fruehere zweite
+       Zweig ueberschrieb jede Kerzenwahl sofort wieder - das Kerzen-Menue wirkte
+       tot, solange eine Schnellwahl aktiv war.
+       selectedIndex bleibt defensiv geprueft (.options[-1].text warf frueher
+       einen TypeError, Tester-Meldung #12). */
+    var kerze = (kEl && kEl.selectedIndex >= 0 && kEl.value) ? kEl.value : '1d';
+    var kTxt = (kEl && kEl.selectedIndex >= 0) ? kEl.options[kEl.selectedIndex].text : kerze;
+    var zeit, beschriftung, von = null, bis = null;
+    if (vEl && bEl && vEl.value && bEl.value) {
+      // Freie Datumswahl (Tester-Wunsch #25): von/bis schlaegt alles andere
+      von = Date.parse(vEl.value); bis = Date.parse(bEl.value) + 86399000; // bis-Tag einschliesslich
+      if (!(von < bis)) { if (hEl) hEl.textContent = '„Von" muss vor „Bis" liegen.'; return; }
+      var spannTage = Math.ceil((bis - von) / 86400000);
+      var maxT = ZEIT_TAGE[MAX_ZEIT[kerze]] || 99999;
+      if (spannTage > maxT) {
+        von = bis - maxT * 86400000;
+        if (hEl) hEl.textContent = 'Bei ' + kerze + '-Kerzen liefert die Quelle höchstens ' + maxT + ' Tage – Beginn entsprechend verschoben.';
+      } else if (hEl) hEl.textContent = '';
+      beschriftung = vEl.value + ' – ' + bEl.value + ' · ' + kTxt;
     } else {
-      var r = RANGES.filter(function (x) { return x.k === activeRange; })[0];
-      zeit = r.range; kerze = r.interval; beschriftung = r.k;
-      if (hEl) hEl.textContent = '';
-      if (kEl) kEl.value = r.interval;
+      zeit = (zEl && zEl.value) || '1y';
+      var pr = zeitPruefen(zeit, kerze);
+      zeit = pr.zeit;
+      if (hEl) hEl.textContent = pr.hinweis;
+      var zTxt = (zEl && zEl.selectedIndex >= 0) ? zEl.options[zEl.selectedIndex].text : zeit;
+      beschriftung = zTxt + ' · ' + kTxt;
     }
-    var data = await fetchRange(CUR.sym, zeit, kerze);
+    var data = await fetchRange(CUR.sym, zeit, kerze, von, bis);
     if (seqR !== openSeq) return; // Symbol wurde inzwischen gewechselt
     if (!data || !data.series.length) {
       if (hEl) hEl.textContent = 'Für diese Kombination liefert die Quelle keine Daten.';

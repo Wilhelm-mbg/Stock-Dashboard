@@ -70,6 +70,20 @@
   a:hover { text-decoration: underline; }
 
   header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 16px; margin-bottom: 6px; }
+
+  /* News-Laufband im Dashboard (Tester-Wunsch #20) */
+  #newsTicker {
+    overflow: hidden; white-space: nowrap; border: 1px solid var(--border);
+    background: var(--panel); border-radius: 6px; padding: 6px 0; margin-bottom: 10px;
+    font-size: 12.5px; -webkit-mask-image: linear-gradient(90deg, transparent, #000 3%, #000 97%, transparent);
+  }
+  #newsTicker .tickSpur { display: inline-block; animation: tickLauf linear infinite; will-change: transform; }
+  #newsTicker:hover .tickSpur { animation-play-state: paused; }
+  #newsTicker a { color: var(--ink-2); }
+  #newsTicker a:hover { color: var(--ink); }
+  #newsTicker .tickTrenn { color: var(--muted); margin: 0 14px; }
+  @keyframes tickLauf { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  @media (prefers-reduced-motion: reduce) { #newsTicker .tickSpur { animation: none; } }
   header h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; }
   .stamp { color: var(--ink-2); font-size: 12.5px; }
   .stamp .dot { display:inline-block; width:7px; height:7px; border-radius:50%; margin-right:5px; vertical-align: 1px; }
@@ -395,6 +409,7 @@
 </nav>
 
 <div id="tab-dashboard" class="tab active">
+<div id="newsTicker" style="display:none;" title="Markt-News als Laufband – unter dem Mauszeiger hält es an. Klick öffnet die Meldung."></div>
 <h2>Marktüberblick</h2>
 <div class="tiles" id="tiles"><div class="loading">Lade Kurse …</div></div>
 
@@ -790,17 +805,19 @@
         </label>
         <label title="Wie weit zurück der Chart reicht. Yahoo begrenzt Intraday-Daten: 1-Minuten höchstens 7 Tage, 5/15-Minuten 60 Tage, Stundenkerzen 730 Tage.">Zeitraum
           <select id="expZeit">
-            <option value="">– Schnellwahl oben –</option>
+            <option value="1d">1 Tag</option>
             <option value="5d">5 Tage</option>
             <option value="1mo">1 Monat</option>
             <option value="60d">60 Tage</option>
             <option value="6mo">6 Monate</option>
-            <option value="1y">1 Jahr</option>
+            <option value="1y" selected>1 Jahr</option>
             <option value="2y">2 Jahre</option>
             <option value="5y">5 Jahre</option>
             <option value="max">Maximum</option>
           </select>
         </label>
+        <label title="Freie Datumswahl – schlägt den Zeitraum links. Ein Klick auf einen Schnellwahl-Knopf setzt sie zurück.">von<input id="expVon" type="date" style="width:130px;"></label>
+        <label>bis<input id="expBis" type="date" style="width:130px;"></label>
         <label title="Wie fein der Chart aufgelöst ist. Feinere Kerzen reichen weniger weit zurück.">Kerzen
           <select id="expKerze">
             <option value="1m">1 Minute</option>

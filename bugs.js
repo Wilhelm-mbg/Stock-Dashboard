@@ -195,6 +195,28 @@
       var r = await window.api.bugList();
       var offen = ((r && r.meldungen) || []).filter(function (m) { return m && !m.uebermittelt; });
       if (!offen.length) return;
+      /* VOR dem Senden pruefen, ob die Meldung schon als Issue existiert. Der
+       * Browser-Weg kann seinen Erfolg nicht melden (der Submit-Klick passiert
+       * ausserhalb der App) - beim ersten Tester hat der Nachversand deshalb
+       * sechs bereits eingereichte Meldungen erneut angelegt (#18-#23). Die
+       * Meldungs-ID steht in jedem Issue-Koerper; was dort schon auftaucht,
+       * wird nur noch als uebermittelt vermerkt, nie erneut gesendet. */
+      try {
+        var cfgR = await window.api.diagnoseConfig();
+        var repoR = (cfgR && cfgR.repo) || 'Wilhelm-mbg/Stock-Dashboard';
+        var resR = await window.api.fetchText('https://api.github.com/repos/' + repoR + '/issues?state=all&per_page=100&sort=created&direction=desc');
+        if (resR && resR.ok) {
+          var koerperAlle = JSON.parse(resR.body).map(function (i2) { return i2.body || ''; }).join('\n');
+          var rest = [];
+          for (var v = 0; v < offen.length; v++) {
+            if (koerperAlle.indexOf('| ' + offen[v].id + ' |') >= 0) {
+              await window.api.bugMarkSent(offen[v].id);   // kam schon an (z. B. per Browser)
+            } else rest.push(offen[v]);
+          }
+          offen = rest;
+        }
+      } catch (eD) { /* ohne Netz lieber gar nicht nachsenden als doppelt */ return; }
+      if (!offen.length) { zeigeListe(); return; }
       var inst = await installId();
       var geschafft = 0;
       for (var i = 0; i < offen.length && i < 10; i++) {   // Deckel gegen Endlos-Fluten
