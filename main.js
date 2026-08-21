@@ -349,6 +349,29 @@ ipcMain.handle('bug-report', async (_ev, m) => {
     return { ok: true, id: eintrag.id, datei: bugDatei() };
   } catch (e) { return { ok: false, msg: String(e.message || e) }; }
 });
+// Rueckkanal: der Renderer hat die Projekt-Issues gelesen und traegt hier den
+// dortigen Stand in die lokale Liste ein. Nur die drei bekannten Status sind
+// erlaubt, und was einmal behoben ist, bleibt behoben - der Abgleich kann den
+// Status nur voranbringen, nie zuruecksetzen.
+ipcMain.handle('bug-sync', async (_ev, updates) => {
+  try {
+    if (!Array.isArray(updates)) return { ok: false, msg: 'keine Liste' };
+    const erlaubt = ['behoben', 'abgelehnt', 'geprueft'];
+    const j = bugsLesen();
+    let n = 0;
+    for (const u of updates.slice(0, 100)) {
+      if (!u || erlaubt.indexOf(u.status) < 0) continue;
+      const m = j.meldungen.find((x) => x && x.id === u.id);
+      if (!m || m.status === 'behoben' || m.status === 'abgelehnt') continue;
+      m.status = u.status;
+      m.bewertung = String(u.bewertung || '').slice(0, 300);
+      m.erledigt = (u.status === 'behoben' || u.status === 'abgelehnt') ? new Date().toISOString() : null;
+      n++;
+    }
+    if (n) schreibAtomar(bugDatei(), JSON.stringify(j, null, 1));
+    return { ok: true, n };
+  } catch (e) { return { ok: false, msg: String(e.message || e) }; }
+});
 // Vermerkt, dass eine Meldung beim Projekt angekommen ist - danach fasst der
 // Nachversand sie nie wieder an. Ohne den Vermerk wuerde jeder Start dieselbe
 // Meldung erneut als Issue anlegen.

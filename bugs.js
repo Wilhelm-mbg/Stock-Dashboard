@@ -211,18 +211,76 @@
     } catch (e) { /* Nachversand darf den Start nie stoeren */ }
   }
 
+  /* ---- Status-Abgleich mit dem Projekt ----
+   * Was mit einer Meldung passiert, entscheidet sich im Projekt (GitHub-Issue).
+   * Ohne Rueckkanal stuende hier ewig "offen", selbst wenn der Fix laengst
+   * ausgeliefert ist - genau das hat der erste Tester gesehen. Der Abgleich
+   * liest die oeffentlichen Issues (kein Token noetig) und zieht den lokalen
+   * Status nach: geschlossen/erledigt -> behoben, geschlossen/nicht geplant ->
+   * abgelehnt, Rueckfrage oder Antwort -> geprueft. Zuordnung ueber die
+   * Meldungs-ID im Issue-Text; aeltere Meldungen ohne ID ueber den Titel. */
+  async function statusAbgleich() {
+    try {
+      if (!window.api.bugList || !window.api.bugSync) return;
+      var r = await window.api.bugList();
+      var offen = ((r && r.meldungen) || []).filter(function (m) {
+        return m && m.status !== 'behoben' && m.status !== 'abgelehnt';
+      });
+      if (!offen.length) return;
+      var cfg = await window.api.diagnoseConfig();
+      var repo = (cfg && cfg.repo) || 'Wilhelm-mbg/Stock-Dashboard';
+      var res = await window.api.fetchText('https://api.github.com/repos/' + repo + '/issues?state=all&per_page=100&sort=created&direction=desc');
+      if (!res || !res.ok) return;
+      var issues = JSON.parse(res.body);
+      if (!Array.isArray(issues)) return;
+      var updates = [];
+      offen.forEach(function (m) {
+        var titel = 'Fehler (' + (m.art || 'sonstiges') + '): ' +
+          m.text.slice(0, 70).replace(/\s+/g, ' ') + (m.text.length > 70 ? ' …' : '');
+        var iss = null;
+        for (var i = 0; i < issues.length && !iss; i++) {
+          if ((issues[i].body || '').indexOf('| ' + m.id + ' |') >= 0) iss = issues[i];
+        }
+        for (var k = 0; k < issues.length && !iss; k++) {
+          if (issues[k].title === titel) iss = issues[k];
+        }
+        if (!iss) return;
+        var neu = null, grund = null;
+        if (iss.state === 'closed') {
+          if (iss.state_reason === 'not_planned') {
+            neu = 'abgelehnt'; grund = 'Im Projekt geprüft und nicht eingeplant – Begründung steht in Issue #' + iss.number + '.';
+          } else {
+            neu = 'behoben'; grund = 'Im Projekt behoben (Issue #' + iss.number + ') – das Update kommt automatisch beim nächsten Start.';
+          }
+        } else if ((iss.labels || []).some(function (l) { return l && l.name === 'frage'; })) {
+          neu = 'geprueft'; grund = 'Rückfrage im Projekt (Issue #' + iss.number + ') – ein Blick dorthin hilft weiter.';
+        } else if (iss.comments > 0) {
+          neu = 'geprueft'; grund = 'Im Projekt gesichtet (Issue #' + iss.number + ').';
+        }
+        if (neu && neu !== m.status) updates.push({ id: m.id, status: neu, bewertung: grund });
+      });
+      if (updates.length) {
+        var ok = await window.api.bugSync(updates);
+        if (ok && ok.ok && ok.n) zeigeListe();
+      }
+    } catch (e) { /* Abgleich ist Komfort - er darf nie etwas kaputt machen */ }
+  }
+
   function bereit() {
     var b = document.getElementById('bugSendBtn');
     if (b) b.addEventListener('click', senden);
     var a = document.getElementById('bugAktualisierenBtn');
-    if (a) a.addEventListener('click', zeigeListe);
+    if (a) a.addEventListener('click', function () { zeigeListe(); statusAbgleich(); });
     // Strg+Enter im Textfeld schickt ab – wer gerade tippt, will nicht zur Maus greifen
     var t = document.getElementById('bugText');
     if (t) t.addEventListener('keydown', function (e) { if (e.ctrlKey && e.key === 'Enter') senden(); });
     zeigeListe();
     // Kurz nach dem Start liegengebliebene Meldungen nachschicken - nicht sofort,
-    // damit der Start selbst nicht auf das Netz wartet.
+    // damit der Start selbst nicht auf das Netz wartet. Danach den Status mit dem
+    // Projekt abgleichen (erst NACH dem Nachversand, damit frisch angelegte Issues
+    // gleich mitzaehlen).
     setTimeout(nachversand, 15000);
+    setTimeout(statusAbgleich, 25000);
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bereit);
   else bereit();
