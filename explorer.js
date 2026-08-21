@@ -595,6 +595,34 @@
       // und behauptet Kanaele, die gar nicht gezeichnet wurden.
       if (kInfoEl) kInfoEl.textContent = indAn.kanal && barsI.length < 40
         ? "Nur " + barsI.length + " Kerzen - fuer einen Kanal zu wenig." : "";
+      /* Kanal-Abschnitte ueber die GESAMTE Historie (21.08.2026): Die vier
+       * Ebenen-Kanaele enden alle am rechten Rand - ein Chart hat aber so viele
+       * Kanaele, wie er Trendabschnitte hat. Farbe nach Richtung, Deckkraft
+       * nach Guete; jeder Abschnitt traegt seine Nummer und einen Tooltip. */
+      if (indAn.segmente && barsI.length >= 40 && Q.kanalSegmente) {
+        var sichtS = [];
+        for (var sv2 = 0; sv2 < barsI.length; sv2++) if (barsI[sv2][0] >= x0 && barsI[sv2][0] <= x1) sichtS.push(barsI[sv2]);
+        Q.kanalSegmente(sichtS).forEach(function (sg, si) {
+          var tS1 = sichtS[sg.von][0], tS2 = sichtS[sg.bis][0];
+          var mS1 = sg.achse, mS2 = sg.achse + sg.steigung * (sg.n - 1);
+          var oS1 = mS1 + (sg.oben - sg.mitteJetzt), oS2 = sg.oben;
+          var uS1 = mS1 + (sg.unten - sg.mitteJetzt), uS2 = sg.unten;
+          var fS = sg.trend === 'auf' ? 'var(--up)' : sg.trend === 'ab' ? 'var(--down)' : '#7c9cf5';
+          var dS = (0.30 + Math.min(0.5, sg.guete / 100 * 0.5)).toFixed(2);
+          function linS(p1, p2, br, str) {
+            return '<line x1="' + X(tS1).toFixed(1) + '" y1="' + Y(p1).toFixed(1) + '" x2="' + X(tS2).toFixed(1) +
+              '" y2="' + Y(p2).toFixed(1) + '" stroke="' + fS + '" stroke-width="' + br + '"' +
+              (str ? ' stroke-dasharray="' + str + '"' : '') + ' opacity="' + dS + '"></line>';
+          }
+          var titelS = sg.name + ' · ' + (sg.trend === 'auf' ? 'aufwärts' : sg.trend === 'ab' ? 'abwärts' : 'seitwärts') +
+            ' · ' + sg.n + ' Kerzen · Güte ' + sg.guete + '/100 · Breite ' + sg.breitePct.toFixed(1) + ' %';
+          indiPfad += '<g><title>' + titelS + '</title>' + linS(mS1, mS2, 1.2) +
+            linS(oS1, oS2, 1, '4 3') + linS(uS1, uS2, 1, '4 3') +
+            '<text x="' + ((X(tS1) + X(tS2)) / 2).toFixed(1) + '" y="' + (Y(Math.max(oS1, oS2)) - 3).toFixed(1) +
+            '" fill="' + fS + '" font-size="9" text-anchor="middle" opacity="0.9">A' + (si + 1) + ' ' +
+            (sg.trend === 'auf' ? '▲' : sg.trend === 'ab' ? '▼' : '▬') + '</text></g>';
+        });
+      }
       if (indAn.kanal && barsI.length >= 40) {
         var sichtB = [];
         for (var sv = 0; sv < barsI.length; sv++) if (barsI[sv][0] >= x0 && barsI[sv][0] <= x1) sichtB.push(barsI[sv]);

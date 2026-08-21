@@ -2297,6 +2297,42 @@
     return raus;
   }
 
+  /** ALLE Trendabschnitte einer Reihe, je mit eigenem Kanal (21.08.2026).
+   *  Die vier Ebenen-Kanaele (kurz/mittel/lang/Wendepunkt) enden alle am rechten
+   *  Rand - eine Implementierungsgrenze, keine Marktwahrheit: Ein Chart hat so
+   *  viele Kanaele, wie er Trendabschnitte hat. Hier wird die Reihe an den
+   *  grossen Wendepunkten zerlegt, jeder Abschnitt (ab 15 Kerzen) bekommt seinen
+   *  Kanal, und Nachbarn gleicher Richtung verschmelzen, wenn der gemeinsame
+   *  Kanal mindestens so gut passt wie der schwaechere Einzelne. */
+  function kanalSegmente(bars, opt) {
+    opt = opt || {};
+    var n = bars.length;
+    if (n < 40) return [];
+    var fenster = Math.max(3, Math.round(n / 25));
+    var wp = wendepunkte(bars, fenster);
+    var grenzen = wp.hoch.concat(wp.tief).map(function (p) { return p.i; }).sort(function (a, b) { return a - b; });
+    var punkte = [0];
+    grenzen.forEach(function (g) { if (g - punkte[punkte.length - 1] >= 15) punkte.push(g); });
+    if (n - 1 - punkte[punkte.length - 1] >= 15) punkte.push(n - 1);
+    else punkte[punkte.length - 1] = n - 1;
+    var raus = [];
+    for (var s = 0; s + 1 < punkte.length; s++) {
+      var k = kanalUeber(bars, punkte[s], punkte[s + 1], opt);
+      if (k && k.guete >= (opt.mindestGuete != null ? opt.mindestGuete : 50)) raus.push(k);
+    }
+    var i2 = 0;
+    while (i2 + 1 < raus.length) {
+      var a = raus[i2], b = raus[i2 + 1];
+      if (a.trend === b.trend && b.von - a.bis <= fenster) {
+        var m = kanalUeber(bars, a.von, b.bis, opt);
+        if (m && m.guete >= Math.min(a.guete, b.guete)) { raus.splice(i2, 2, m); continue; }
+      }
+      i2++;
+    }
+    raus.forEach(function (k3, idx) { k3.name = 'Abschnitt ' + (idx + 1); });
+    return raus;
+  }
+
   /** Volatilitäts-Stop („atmender“ Not-SL) auf den SCHEIN, aus Bar-Rauschen × Hebel.
    *  Rückgabe: negativer Anteil, z. B. -0.22 = −22 %. */
   function autoStop(closes, omega, barsHold) {
@@ -2719,7 +2755,7 @@
     channelValid: channelValid, CHAN_MIN: CHAN_MIN, varianceRatio: varianceRatio,
     bewaehrungsUrteil: bewaehrungsUrteil,
     trendChannel: trendChannel, projectTrendChannel: projectTrendChannel,
-    wendepunkte: wendepunkte, kanalUeber: kanalUeber, kanaele: kanaele,
+    wendepunkte: wendepunkte, kanalUeber: kanalUeber, kanaele: kanaele, kanalSegmente: kanalSegmente,
     KANAL_MIN: KANAL_MIN, RECHENSTAND: RECHENSTAND, degapBarArray: degapBarArray,
     degapCloses: degapCloses, degapBars: degapBars,
     computeStats: computeStats, bootstrapTrades: bootstrapTrades, bestOfN: bestOfN, gegenprobeRichtung: gegenprobeRichtung, kanalVerzug: kanalVerzug, monatsStatistik: monatsStatistik, schattenKonfig: schattenKonfig, scheinKennzahlen: scheinKennzahlen, scheinRisikostufe: scheinRisikostufe, scheinRaster: scheinRaster, altlastGrund: altlastGrund

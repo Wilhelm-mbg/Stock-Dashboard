@@ -300,5 +300,23 @@ console.log('15) Kurze Kanäle (Befund 21.08.2026: 25er wurden nur zu einem Drit
   ok(schlimm === 0, 'Rauschen erzeugt keinen hochgewerteten Seitwärtskanal (0 von 30 Läufen)', schlimm);
 })();
 
+console.log('16) Kanal-Abschnitte: ein Kanal je Trendbein, nicht vier am rechten Rand');
+(function () {
+  var seed = 3;
+  function rnd() { seed ^= seed << 13; seed ^= seed >>> 17; seed ^= seed << 5; return ((seed >>> 0) / 4294967296) - 0.5; }
+  var bars = [], p = 100, t = 0;
+  for (var i = 0; i < 80; i++) { p = 100 + i * 0.5 + Math.sin(i / 3) * 1.2 + rnd() * 0.4; bars.push([t++ * 3600000, p, 1000]); }
+  var top = p, x = 0;
+  for (var j = 0; j < 60; j++) { x = 0.55 * x + rnd() * 1.8; x = Math.max(-1.3, Math.min(1.3, x)); bars.push([t++ * 3600000, top + x, 1000]); }
+  for (var k = 0; k < 80; k++) { p = top - k * 0.5 + Math.sin(k / 3) * 1.2 + rnd() * 0.4; bars.push([t++ * 3600000, p, 1000]); }
+  var seg = Q.kanalSegmente(bars);
+  ok(seg.length === 3, 'drei Trendbeine ergeben drei Abschnitte', seg.length);
+  ok(seg[0].trend === 'auf' && seg[1].trend === 'seit' && seg[2].trend === 'ab',
+    'Reihenfolge und Richtungen stimmen (auf, seitwärts, ab)', seg.map(function (s) { return s.trend; }).join(','));
+  ok(seg[0].guete >= 90 && seg[2].guete >= 90, 'saubere Trendbeine bekommen hohe Güte', seg[0].guete + '/' + seg[2].guete);
+  ok(seg[1].bis <= seg[2].von && seg[0].bis <= seg[1].von, 'Abschnitte überlappen nicht');
+  ok(Q.kanalSegmente(bars.slice(0, 30)).length === 0, 'zu kurze Reihen liefern keine Abschnitte');
+})();
+
 console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
 process.exit(fails ? 1 : 0);
