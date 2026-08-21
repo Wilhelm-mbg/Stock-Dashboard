@@ -5885,6 +5885,26 @@
         fetchOk: 0, fetchFail: 0, kiOk: 0, kiFail: 0, killSwitch: 0, staleBars: 0, workerFail: 0 };
     }
     D.gesamtzaehler.sitzungen = (D.gesamtzaehler.sitzungen || 0) + 1;
+    /* Einmalig: Die Stunden-Strategie wurde am 21.08.2026 vermessen (24.727
+     * Signale, 189 Werte, 8 Jahre, Studien-Methodik) und ist WIDERLEGT - ihr
+     * Technik-Score ist ein Kontraindikator (-0,74 Pp auf 20 Tage, t=-11,6,
+     * beide Zeithaelften negativ; mit Elliott -1,0 Pp), und darauf zahlt sie
+     * Schein-Spanne plus tagelanges Theta. Sie wird EINMAL abgeschaltet, mit
+     * sichtbarem Protokoll-Eintrag. Wer sie danach von Hand wieder einschaltet,
+     * entscheidet bewusst gegen die Messung - das wird respektiert und nie
+     * wieder automatisch angefasst (dieselbe Mechanik wie beim Blackout). */
+    if (D.hourlyWiderlegtGeprueft === undefined) {
+      D.hourlyWiderlegtGeprueft = 1;
+      if (D.hourlyEnabled !== false) {
+        D.hourlyEnabled = false;
+        if (!D.tuneLog) D.tuneLog = [];
+        D.tuneLog.unshift({ id: 'sicherung-' + Date.now(), at: Date.now(), quelle: 'sicherung',
+          applied: ['Stunden-Strategie aus (Messung: Kontraindikator)'],
+          txt: 'Die Stunden-Strategie wurde vermessen (24.727 Signale, 189 Werte, 8 Jahre): Ihr Technik-Score ist ein ' +
+            'Kontraindikator (−0,74 Pp auf 20 Tage, t=−11,6) – dazu Schein-Kosten über Tage. Sie wurde einmalig ' +
+            'abgeschaltet. Einschalten bleibt jederzeit möglich (Strategien-Tab) und wird danach nie wieder automatisch geändert.' });
+      }
+    }
     // Einmalig: Das Event-Blackout ist eine Sicherung, keine Stellschraube. Steht es aus,
     // wird es beim Update einmal zurückgesetzt – sichtbar im Verlauf, danach nie wieder automatisch.
     if (D.blackoutGeprueft === undefined) {

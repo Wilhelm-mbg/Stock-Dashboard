@@ -125,6 +125,8 @@
     var extras = ['Belegte Voreinstellungen übernommen'];
     // Zweites belegtes Standbein gleich mit an - feuert in der anderen Marktphase
     if (!D.intraday.kapiZusatz) { D.intraday.kapiZusatz = true; extras.push('Kapitulations-Dip zusätzlich an'); }
+    // Die widerlegte Stunden-Strategie gehoert nicht in die belegte Konfiguration
+    if (D.hourlyEnabled !== false) { D.hourlyEnabled = false; extras.push('Stunden-Strategie aus (widerlegt)'); }
     // Der Knopf ist eine bewusste Hand-Entscheidung - er darf auch die Sicherung
     // wieder scharf stellen, die eine fruehere Hand-Entscheidung abgeschaltet hat.
     if (D.intraday.blackout === 'off') { D.intraday.blackout = 'block'; extras.push('Event-Blackout wieder an'); }
