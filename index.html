@@ -11,7 +11,9 @@
     --surface:     #fcfcfb;
     --ink:         #0b0b0b;
     --ink-2:       #52514e;
-    --muted:       #898781;
+    /* Dunkler als frueher (#898781, Kontrast 3,4): Nebentext muss auch im
+       Hell-Thema die 4,5 schaffen - er traegt echte Information, keine Deko. */
+    --muted:       #6e6c66;
     --grid:        #e1e0d9;
     --baseline:    #c3c2b7;
     --border:      rgba(11,11,11,0.10); --line: var(--border);
@@ -23,6 +25,11 @@
     --up-soft:     rgba(12,163,12,0.12);
     --down:        #d03b3b;
     --down-soft:   rgba(208,59,59,0.10);
+    /* Diese drei wurden ueberall benutzt, waren aber nie definiert - die Stellen
+       fielen still auf Erbfarbe bzw. transparent zurueck (UI-Audit 21.08.2026). */
+    --panel:       #f1f1ee;
+    --warn:        #915b00;
+    --acc:         #1d63b8;
   }
   :root[data-theme="dark"] {
     color-scheme: dark;
@@ -40,8 +47,13 @@
     --series3:     #199e70;
     --up:          #0ca30c;
     --up-soft:     rgba(12,163,12,0.16);
-    --down:        #d03b3b;
+    /* Heller als im Licht-Thema: #d03b3b kam auf dunklem Grund nur auf Kontrast
+       3,6 - unter der Lesbarkeitsschwelle von 4,5 fuer Fliesstext. */
+    --down:        #e05e5e;
     --down-soft:   rgba(208,59,59,0.16);
+    --panel:       #222220;
+    --warn:        #e0a63f;
+    --acc:         #4a9eff;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
@@ -739,12 +751,12 @@
       <div class="panel" style="margin:0;">
         <h4 style="margin:0 0 8px;">Backtest der Stunden-Strategie</h4>
         <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-          <select id="btMode">
+          <select id="btMode" title="Welche Strategie der Backtest durchrechnet">
             <option value="daily">Stunden-Strategie (Technik + Elliott, Tagesdaten)</option>
             <option value="intraday">Intraday (gewählter Zeitrahmen)</option>
             <option value="intradayCompare">Zeitrahmen-Vergleich: 5 vs. 15 vs. 60 Min</option>
           </select>
-          <select id="btRange"><option value="1y">1 Jahr</option><option value="2y">2 Jahre</option><option value="5y">5 Jahre</option></select>
+          <select id="btRange" title="Wie weit der Backtest zurückreicht"><option value="1y">1 Jahr</option><option value="2y">2 Jahre</option><option value="5y">5 Jahre</option></select>
           <button class="btn ghost" id="btRunBtn">Backtest starten</button>
           <span id="btStatus" style="color:var(--muted); font-size:12px;"></span>
         </div>
