@@ -1304,12 +1304,37 @@
     (D.watchlist || []).forEach(function (w) { if (base.indexOf(w.y) === -1) base.push(w.y); });
     return base;
   }
+  /* Erweitertes 60m-Universum (Messung 21.08.2026, 3 Monate Stundenkerzen,
+   * Zaehlfenster 30 Tage): Auf den 15 Basis-Werten feuert rsi2seit nur 0,57-mal
+   * je Tag handelbar (Long) - an den meisten Tagen passiert schlicht nichts, und
+   * genau das sah aus wie ein Defekt ("warum wird nichts gehandelt?"). Auf diesen
+   * 84 liquiden S&P-Werten kommen 4,3 handelbare Signale je Tag hinzu.
+   * Bei Stundenkerzen muss nicht jede Runde jedes Symbol abgefragt werden:
+   * je Scan-Runde rotieren 12 Extras durch - jedes ist alle ~10 Minuten dran,
+   * die Signalkerze schliesst ohnehin nur stuendlich. Klumpen-Deckel, Tageslimit,
+   * Cooldown und Risikostufe gelten unveraendert. */
+  var EXTRA_60M = ('ORCL CRM ADBE CSCO TXN IBM NOW INTU JPM BAC WFC GS MS C SCHW BLK AXP UNH PFE ABBV MRK LLY TMO ABT ' +
+    'XOM CVX COP SLB EOG OXY WMT COST MCD NKE SBUX TGT LOW HD DIS CMCSA VZ TMUS CAT DE BA HON GE LMT RTX UNP UPS FDX ' +
+    'PANW CRWD ZS NET DDOG SNOW MDB TEAM WDAY ADSK CDNS SNPS KLAC LRCX AMAT EBAY BKNG ABNB UBER DASH PYPL SHOP SNAP ' +
+    'NFLX ROKU F GM MAR HLT RCL DAL UAL').split(' ');
+  var extra60mZeiger = 0;
+  function extra60mFenster() {
+    var aus = [];
+    for (var i = 0; i < 12; i++) aus.push(EXTRA_60M[(extra60mZeiger + i) % EXTRA_60M.length]);
+    extra60mZeiger = (extra60mZeiger + 12) % EXTRA_60M.length;
+    return aus;
+  }
+
   /** Scan-Universum: Basis + Watchlist + heutige Screener-Treffer */
   function scanUniverse() {
     var base = universe();
     var today = new Date().toISOString().slice(0, 10);
     if (D.screen && D.screen.day === today && D.intraday.screener) {
       (D.screen.picks || []).forEach(function (p) { if (base.indexOf(p.sym) === -1) base.push(p.sym); });
+    }
+    // Nur fuer die belegten 60m-Modi - andere Modi behalten ihr gemessenes Umfeld
+    if (D.intraday.interval === '60m' && (D.intraday.mode === 'rsi2seit' || D.intraday.mode === 'kapitulation')) {
+      extra60mFenster().forEach(function (s) { if (base.indexOf(s) === -1) base.push(s); });
     }
     return base;
   }
