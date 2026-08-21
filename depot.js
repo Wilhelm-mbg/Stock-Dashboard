@@ -2746,27 +2746,46 @@
     // Positionen
     var ph = '';
     if (D.positions.length) {
-      ph = '<table class="tbl"><tr><th>Wert</th><th>Typ</th><th>Basispreis</th><th>Fällig</th><th>IV</th><th>Hebel</th><th>Stück</th><th>Einstieg</th><th>Aktuell</th><th>P/L</th><th></th></tr>';
+      /* Einsatz, aktueller Wert und P/L in Dollar (Felix, Issue #34): Stueckzahl und
+       * Prozente allein ergeben keine Gewinninformation - erst "was habe ich bezahlt,
+       * was ist es jetzt wert" macht die Zeile lesbar. Zusaetzlich: Basiswert-
+       * Positionen bekommen keine Schein-Kennzahlen mehr vorgerechnet (Basispreis/
+       * Faellig/IV eines Pseudo-Scheins, den niemand haelt). */
+      var sumEinsatz = 0, sumWert = 0;
+      ph = '<table class="tbl"><tr><th>Wert</th><th>Typ</th><th>Basispreis</th><th>Fällig</th><th>IV</th><th>Hebel</th><th>Stück</th><th>Einstieg</th><th>Aktuell</th><th title="Kaufsumme inklusive Ordergebühr">Einsatz</th><th title="Stück × aktueller Verkaufskurs">Wert jetzt</th><th title="Wert jetzt minus Einsatz – vor der Ordergebühr des Verkaufs">P/L</th><th></th></tr>';
       D.positions.forEach(function (p) {
         var spot = spotOf(p.sym) || p.entrySpot;
         var wobj = { strike: p.strike, expiry: p.expiry, iv: p.iv, ratio: p.ratio || Q.RATIO };
         var bid = bidOf(p, spot, now);
-        var omegaNow = Q.warrantOmega(p.dir, wobj, spot, now);
-        var aufgeldNow = Q.warrantAufgeld(p.dir, wobj, spot, now);
+        var einsatz = p.cost != null ? p.cost : p.entry * p.qty;
+        var wertJetzt = bid * p.qty;
+        var plUsd = wertJetzt - einsatz;
+        sumEinsatz += einsatz; sumWert += wertJetzt;
         var ret = bid / p.entry - 1;
+        var scheinZellen = p.basis
+          ? '<td>–</td><td>–</td><td>–</td><td title="Aktie ohne Hebel">1×</td>'
+          : '<td>' + U.nf2.format(p.strike) + '</td>' +
+            '<td>' + U.d(p.expiry) + '</td>' +
+            '<td>' + Math.round(p.iv * 100) + ' %</td>' +
+            '<td title="Aufgeld aktuell: ' + Q.warrantAufgeld(p.dir, wobj, spot, now).toFixed(1) + ' %">' + Q.warrantOmega(p.dir, wobj, spot, now).toFixed(1) + 'x</td>';
         ph += '<tr><td><b>' + U.esc(p.sym) + '</b>' + (p.strategy === 'intraday' ? ' <span title="Intraday-Strategie"></span>' : '') + '</td>' +
           '<td><span class="badge ' + p.dir + '">' + (p.dir === 'call' ? 'CALL' : 'PUT') + '</span></td>' +
-          '<td>' + U.nf2.format(p.strike) + '</td>' +
-          '<td>' + U.d(p.expiry) + '</td>' +
-          '<td>' + Math.round(p.iv * 100) + ' %</td>' +
-          '<td title="Aufgeld aktuell: ' + aufgeldNow.toFixed(1) + ' %">' + omegaNow.toFixed(1) + 'x</td>' +
+          scheinZellen +
           '<td>' + p.qty + '</td>' +
           '<td>' + U.nf2.format(p.entry) + ' $</td>' +
           '<td>' + U.nf2.format(bid) + ' $</td>' +
-          '<td class="' + U.signCls(ret) + '">' + U.signTxt(ret * 100, ' %') + '</td>' +
+          '<td>' + U.nf2.format(einsatz) + ' $</td>' +
+          '<td>' + U.nf2.format(wertJetzt) + ' $</td>' +
+          '<td class="' + U.signCls(plUsd) + '" style="white-space:nowrap;">' + U.signTxt(Math.round(plUsd * 100) / 100, ' $') +
+            ' <span style="color:var(--muted); font-weight:400;">(' + U.signTxt(Math.round(ret * 1000) / 10, ' %') + ')</span></td>' +
           '<td style="white-space:nowrap;"><button class="btn ghost" style="padding:2px 8px; font-size:11px;" data-ticket="' + p.id + '" title="Order-Daten zum Nachbilden">Nachbilden</button> ' +
           '<button class="btn ghost" style="padding:2px 8px; font-size:11px;" data-closepos="' + p.id + '">Schließen</button></td></tr>';
       });
+      var sumPl = sumWert - sumEinsatz;
+      ph += '<tr><td colspan="9" style="text-align:right; color:var(--muted); font-weight:600;">Summe</td>' +
+        '<td style="font-weight:600;">' + U.nf2.format(sumEinsatz) + ' $</td>' +
+        '<td style="font-weight:600;">' + U.nf2.format(sumWert) + ' $</td>' +
+        '<td class="' + U.signCls(sumPl) + '" style="white-space:nowrap;">' + U.signTxt(Math.round(sumPl * 100) / 100, ' $') + '</td><td></td></tr>';
       ph += '</table><div style="color:var(--muted); font-size:11px; margin-top:6px;">' +
         'Belegte Intraday-Kanten: nur Not-Stop, Ausstieg über die Zeit (8 bzw. 26 Handelsstunden), Übernacht erlaubt. ' +
         'Widerlegte Setups: Stop −25 % / Ziel +35 %, Glattstellung zum Tagesschluss. ' +
