@@ -359,21 +359,41 @@ ipcMain.handle('bug-report', async (_ev, m) => {
  * zurueck (vorausgefuelltes Issue, Nutzer schickt selbst ab).
  */
 let TELEMETRIE = null;
+/* Warum das Token (nicht) geladen wurde, wandert in die Diagnose selbst.
+ * Anlass: Diagnose #3 kam trotz 8.23.0 über den Browser-Weg, und von außen war
+ * nicht zu erkennen, warum – lokal lud dasselbe Paket einwandfrei. Statt zu raten,
+ * erklärt sich die App ab jetzt selbst. Mehrere Kandidaten-Pfade, weil __dirname
+ * je nach Verpackung unterschiedlich zeigen kann. */
+let TELEMETRIE_GRUND = 'nicht geprüft';
 try {
-  const tp = path.join(__dirname, 'telemetrie.json');
-  if (fs.existsSync(tp)) {
-    const t = JSON.parse(fs.readFileSync(tp, 'utf8'));
+  const kandidaten = [path.join(__dirname, 'telemetrie.json')];
+  try { if (process.resourcesPath) kandidaten.push(path.join(process.resourcesPath, 'app.asar', 'telemetrie.json')); } catch (e0) { }
+  try { if (app.getAppPath) kandidaten.push(path.join(app.getAppPath(), 'telemetrie.json')); } catch (e1) { }
+  let gefunden = null;
+  for (const tp of kandidaten) {
+    try { if (fs.existsSync(tp)) { gefunden = tp; break; } } catch (e2) { }
+  }
+  if (!gefunden) {
+    TELEMETRIE_GRUND = 'telemetrie.json nicht gefunden (' + kandidaten.map((k) => k.split(/[\\/]/).slice(-3).join('/')).join(' | ') + ')';
+  } else {
+    const t = JSON.parse(fs.readFileSync(gefunden, 'utf8'));
     // repo muss "besitzer/name" sein – geprüft ohne Regex, die hat sich beim
     // Patchen schon einmal still zerlegt
     const teile = String(t && t.repo || '').split('/');
     const repoOk = teile.length === 2 && teile.every((x) => x.length > 0 && /^[\w.-]+$/.test(x));
-    if (t && repoOk && typeof t.token === 'string' && t.token.length > 20) TELEMETRIE = t;
+    if (t && repoOk && typeof t.token === 'string' && t.token.length > 20) {
+      TELEMETRIE = t;
+      TELEMETRIE_GRUND = 'ok';
+    } else {
+      TELEMETRIE_GRUND = 'telemetrie.json gefunden, aber ungültig (repo ' + (repoOk ? 'ok' : 'fehlerhaft') + ', tokenLen ' + String(t && t.token ? t.token.length : 0) + ')';
+    }
   }
-} catch (e) { /* keine Telemetrie-Konfiguration */ }
+} catch (e) { TELEMETRIE_GRUND = 'Fehler beim Laden: ' + String(e.message || e); }
 
 ipcMain.handle('diagnose-config', async () => ({
   auto: !!TELEMETRIE,
-  repo: TELEMETRIE ? TELEMETRIE.repo : 'Wilhelm-mbg/Stock-Dashboard'
+  repo: TELEMETRIE ? TELEMETRIE.repo : 'Wilhelm-mbg/Stock-Dashboard',
+  grund: TELEMETRIE_GRUND
 }));
 
 ipcMain.handle('diagnose-send', async (_ev, titel, body, label) => {

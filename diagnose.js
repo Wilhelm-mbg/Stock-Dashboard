@@ -86,6 +86,7 @@
       betrieb: {
         zeitzone: extra.zeitzone || null,
         sprache: extra.sprache || null,
+        sendeweg: extra.sendeweg || null,
         laufzeitMin: h.startedAt ? Math.round((Date.now() - h.startedAt) / 60000) : null,
         scans: h.scans || 0, scanFehler: h.scanErrors || 0,
         abrufeOk: h.fetchOk || 0, abrufeFehl: h.fetchFail || 0,
@@ -176,6 +177,12 @@
     // Zusatzdaten, die nicht am Depot-Objekt hängen: Gesundheit, Umgebung, Datenleitungen
     var extra = { health: null, zeitzone: null, sprache: null, termineWerte: null, tagesdatenStand: null, tagesdatenWerte: null };
     try { extra.health = window.__health ? window.__health() : null; } catch (e) { }
+    // Der Sendeweg samt Grund - erklaert aus der Ferne, warum eine Installation im
+    // Browser-Modus haengt, statt automatisch zu senden.
+    try {
+      var cfgS = await window.api.diagnoseConfig();
+      extra.sendeweg = cfgS ? (cfgS.auto ? 'automatisch' : 'browser (' + (cfgS.grund || '?') + ')') : null;
+    } catch (e) { }
     try { extra.zeitzone = Intl.DateTimeFormat().resolvedOptions().timeZone; } catch (e) { }
     try { extra.sprache = navigator.language; } catch (e) { }
     try {

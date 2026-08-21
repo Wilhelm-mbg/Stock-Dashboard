@@ -5385,6 +5385,22 @@
     // Abwärtskompatibel, falls Felder fehlen – auch eine Ebene tief (z. B. stats.ki,
     // intraday.budgetPct), sonst bekommt ein alter Store neue Unterfelder nie und
     // nachgelagerte Rechnungen laufen still auf undefined/NaN.
+    /* ABER: Der Merge füllt fehlende Felder mit den VOREINSTELLUNGEN FÜR NEUE
+     * INSTALLATIONEN – und die zeigen seit 8.22 bewusst zur Evidenz (Basiswert,
+     * Bücher an, Risikostufe 3). Bei einem BESTANDS-Store ist das eine stille
+     * Verhaltensänderung: Die erste externe Diagnose (#3) zeigte einen Tester, dessen
+     * alte breakout-Konfiguration plötzlich Aktien statt Scheine handelte und dessen
+     * Momentum-Buch 19 Positionen kaufte, ohne dass er je einen Schalter angefasst
+     * hatte. Deshalb: Der Ist-Zustand VOR dem Merge wird festgehalten, und Bestände
+     * bekommen für diese vier Felder die konservativen Altwerte zurück. Umstellen
+     * ist eine Entscheidung – dafür gibt es den Knopf im Strategien-Tab. */
+    var warBestand = D.rechenstand !== undefined || (D.trades && D.trades.length > 0);
+    var hatteVorMerge = {
+      instrument: !!(D.intraday && D.intraday.instrument !== undefined),
+      momentumAn: D.momentumAn !== undefined,
+      driftAn: D.driftAn !== undefined,
+      maxRisikostufe: D.maxRisikostufe !== undefined
+    };
     var def = defaultDepot();
     Object.keys(def).forEach(function (k) {
       if (D[k] === undefined) { D[k] = def[k]; return; }
@@ -5392,6 +5408,21 @@
         Object.keys(def[k]).forEach(function (k2) { if (D[k][k2] === undefined) D[k][k2] = def[k][k2]; });
       }
     });
+    if (warBestand) {
+      var zurueck = [];
+      if (!hatteVorMerge.instrument && D.intraday.instrument !== 'schein') { D.intraday.instrument = 'schein'; zurueck.push('Instrument bleibt Hebelschein'); }
+      if (!hatteVorMerge.momentumAn && D.momentumAn) { D.momentumAn = false; zurueck.push('Momentum-Buch bleibt aus'); }
+      if (!hatteVorMerge.driftAn && D.driftAn) { D.driftAn = false; zurueck.push('Drift-Buch bleibt aus'); }
+      if (!hatteVorMerge.maxRisikostufe && D.maxRisikostufe !== 5) { D.maxRisikostufe = 5; zurueck.push('Risikostufe bleibt unbegrenzt'); }
+      if (zurueck.length) {
+        if (!D.tuneLog) D.tuneLog = [];
+        D.tuneLog.unshift({ id: 'bestandsschutz-' + Date.now(), at: Date.now(), quelle: 'sicherung',
+          applied: zurueck,
+          txt: 'Die neuen Voreinstellungen gelten nur für neue Installationen – dein bestehendes Depot ' +
+            'behält sein Verhalten (' + zurueck.join(', ') + '). Wer auf die gemessenen Einstellungen ' +
+            'wechseln will: Knopf „Belegte Voreinstellungen übernehmen“ im Strategien-Tab.' });
+      }
+    }
     // Einmalig: Das Event-Blackout ist eine Sicherung, keine Stellschraube. Steht es aus,
     // wird es beim Update einmal zurückgesetzt – sichtbar im Verlauf, danach nie wieder automatisch.
     if (D.blackoutGeprueft === undefined) {
