@@ -8,7 +8,11 @@
   var RANGES = [
     { k: '1T', range: '1d', interval: '5m' },
     { k: '5T', range: '5d', interval: '15m' },
-    { k: '1M', range: '1mo', interval: '1d' },
+    // 1M mit Stundenkerzen statt Tageskerzen: ein Monat hat nur ~21 Handelstage,
+    // und fast jedes Signal braucht 40+ Kerzen Vorlauf - mit Tageskerzen war die
+    // Monatsansicht deshalb immer leer (Tester-Meldung #10). ~150 Stundenkerzen
+    // tragen Signale, Kanal und Durchschnitte.
+    { k: '1M', range: '1mo', interval: '60m' },
     { k: '6M', range: '6mo', interval: '1d' },
     { k: '1J', range: '1y', interval: '1d' },
     { k: '5J', range: '5y', interval: '1wk' },
@@ -464,12 +468,21 @@
       }
       var s50 = null, s200 = null;
       if (indAn.ma || indAn.cross50200) {
-        s50 = smaReihe(cI, Math.min(50, Math.floor(cI.length / 3)));
-        s200 = smaReihe(cI, Math.min(200, Math.floor(cI.length / 2)));
+        /* Volle 50/200 Kerzen oder gar nicht. Frueher schrumpften die Fenster still
+           auf ein Drittel bzw. die Haelfte der Reihe - auf einem Monatschart wurde
+           als "SMA 50/200" in Wahrheit ein SMA 7/10 gezeichnet, samt Golden Cross
+           darauf (Tester-Meldung #10). Lieber ehrlich weglassen und es dazuschreiben. */
+        if (cI.length >= 55) s50 = smaReihe(cI, 50);
+        if (cI.length >= 210) s200 = smaReihe(cI, 200);
       }
       if (indAn.ma) {
-        indiPfad += pfadAus(s50, '#4a9eff', 1.3);
-        indiPfad += pfadAus(s200, '#f59e0b', 1.6);
+        if (s50) indiPfad += pfadAus(s50, '#4a9eff', 1.3);
+        if (s200) indiPfad += pfadAus(s200, '#f59e0b', 1.6);
+      }
+      if ((indAn.ma || indAn.cross50200) && (!s50 || !s200)) {
+        indiPfad += '<text x="' + (pad + 4) + '" y="' + (pad + 12) + '" fill="var(--muted)" font-size="10">' +
+          (!s50 ? 'SMA 50 und 200' : 'SMA 200') + ': erst ab ' + (!s50 ? 55 : 210) +
+          ' Kerzen (hier ' + cI.length + ') – längeren Zeitraum oder feinere Kerzen wählen</text>';
       }
       if (indAn.cross50200 && s50 && s200) {
         for (var ck = 1; ck < barsI.length; ck++) {

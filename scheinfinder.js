@@ -55,6 +55,16 @@
     } catch (e) { stat('Fehler: ' + (e.message || e)); }
   }
 
+  /* Modell-Kennung statt WKN (Tester-Wunsch #9/#11): Echte WKNs gibt es nur aus
+     Bezahl-APIs der Emittenten, die bewusst draussen sind. Die Kennung baut sich
+     aus den Merkmalen selbst - "C112,5-45T·0,1" ist Call, Basispreis 112,50,
+     45 Tage Restlaufzeit, BV 0,1. Damit laesst sich ein Schein benennen,
+     wiederfinden und beim Emittenten das echte Gegenstueck suchen. */
+  function kennung(k) {
+    var strike = k.strike % 1 ? String(k.strike.toFixed(1)).replace('.', ',') : String(Math.round(k.strike));
+    return (k.dir === 'call' ? 'C' : 'P') + strike + '-' + k.restTage + 'T·' + String(k.ratio).replace('.', ',');
+  }
+
   function filterWerte() {
     var g = function (id, std) { var e = el(id); var v = e ? parseFloat(e.value) : NaN; return isFinite(v) ? v : std; };
     return {
@@ -97,6 +107,7 @@
     var STUFENFARBE = ['', 'var(--up)', '#7c9cf5', 'var(--warn)', '#f59c40', 'var(--down)'];
     var zeilen = liste.slice(0, 120).map(function (k, i) {
       return '<tr data-sfi="' + RASTER.indexOf(k) + '" style="cursor:pointer;">' +
+        '<td style="white-space:nowrap; color:var(--muted); font-size:11px;">' + kennung(k) + '</td>' +
         '<td><b style="color:' + STUFENFARBE[k.stufe] + ';">' + k.stufe + '</b></td>' +
         '<td>' + (k.dir === 'call' ? '▲ Call' : '▼ Put') + '</td>' +
         '<td style="text-align:right;">' + U.nf2.format(k.strike) + '</td>' +
@@ -117,6 +128,7 @@
        Kennzahlen gibt es genau eine sinnvolle Richtung ("am wenigsten Risiko/
        Kosten zuerst"), also kein Umschalten, das nur verwirren wuerde. */
     var SPALTEN = [
+      { t: 'Kennung', tip: 'Modell-Kennung statt WKN: Echte WKN-Listen liefern nur Bezahl-APIs der Emittenten, und die sind bewusst draußen. Die Kennung fasst Typ, Basispreis, Restlaufzeit und BV zusammen – damit findest du bei jedem Emittenten den vergleichbaren echten Schein.' },
       { t: 'Stufe', tip: 'Risikostufe 1 (defensiv) bis 5 (Lotterielos)', sort: 'stufe', pfeil: '↑' },
       { t: 'Typ' },
       { t: 'Basispreis', r: 1 },
@@ -162,8 +174,9 @@
         var d = el('sfDetail');
         if (!d || !k) return;
         d.style.display = 'block';
-        d.innerHTML = '<b>' + (k.dir === 'call' ? 'Call' : 'Put') + ' ' + U.nf2.format(k.strike) + ', ' + k.restTage +
+        d.innerHTML = '<b>' + kennung(k) + ' – ' + (k.dir === 'call' ? 'Call' : 'Put') + ' ' + U.nf2.format(k.strike) + ', ' + k.restTage +
           ' Tage, BV ' + String(k.ratio).replace('.', ',') + ' · Risikostufe ' + k.stufe + '</b><br>' +
+          '<span style="color:var(--muted); font-size:11.5px;">Modell-Kennung statt WKN – echte WKN-Listen gibt es nur aus Bezahl-Quellen. Mit Typ, Basispreis, Laufzeit und BV findest du bei jedem Emittenten den vergleichbaren echten Schein.</span><br>' +
           k.stufenGruende.map(function (g) { return '• ' + U.esc(g); }).join('<br>') +
           '<br><span style="color:var(--muted);">Break-even ' + U.nf2.format(k.breakEven) + ' $ · Delta ' + k.delta +
           ' · Zeitwertanteil ' + k.zeitwertAnteil + ' % · innerer Wert ' + U.nf2.format(k.innererWert) + ' $</span>';
