@@ -1142,6 +1142,9 @@ console.log('\nDiagnose-Versand');
   var fehler = [];
   for (var i = 0; i < 30; i++) fehler.push({ at: '2026-08-21', nachricht: 'Fehler ' + i, quelle: 'depot.js', zeile: i });
   var extra = { health: { startedAt: Date.now() - 3600000, scans: 42, fetchOk: 400, fetchFail: 7, killSwitch: 1, staleBars: 2, workerFail: 0, scanErrors: 0, kiOk: 5, kiFail: 1 },
+    // Gesamtzaehler MIT Giftkoeder: nur die benannten Felder duerfen durch
+    gesamt: { seit: 111, sitzungen: 12, laufzeitMin: 480, scans: 500, scanErrors: 3, fetchOk: 9000, fetchFail: 44,
+      kiOk: 0, kiFail: 0, killSwitch: 2, staleBars: 9, workerFail: 1, GIFTFELD: 'GIFTGESAMT' },
     zeitzone: 'Europe/Berlin', sprache: 'de-DE', termineWerte: 189, tagesdatenStand: 123456, tagesdatenWerte: 189 };
   var d = Dg.baueDiagnose(einstellungen, depot, fehler, { version: '8.23.0', plattform: 'Win32', electron: '37', installId: 'inst-test' }, extra);
   var text = JSON.stringify(d);
@@ -1156,6 +1159,17 @@ console.log('\nDiagnose-Versand');
   ok(d.betrieb.zeitzone === 'Europe/Berlin' && d.betrieb.abrufeFehl === 7 && d.betrieb.killSwitch === 1,
      'Betriebsdaten sind drin – die Zeitzone erklärt eine ganze Klasse scheinbarer Fehler');
   ok(d.betrieb.laufzeitMin >= 59 && d.betrieb.laufzeitMin <= 61, 'die Laufzeit wird aus dem Start berechnet', d.betrieb.laufzeitMin + ' Min');
+  /* Gesamtzaehler: Die Sitzungszaehler stehen kurz nach dem Start bei null - die
+   * erste Tester-Diagnose kam nach 1 Minute Laufzeit und war nichtssagend. Erst
+   * die Summe ueber alle Sitzungen erzaehlt, wie die Installation lebt. */
+  ok(d.betrieb.gesamt && d.betrieb.gesamt.sitzungen === 12 && d.betrieb.gesamt.laufzeitMin === 480 &&
+     d.betrieb.gesamt.abrufeFehl === 44 && d.betrieb.gesamt.alteKurse === 9,
+     'die Gesamtzaehler über alle Sitzungen reisen mit');
+  ok(text.indexOf('GIFTGESAMT') === -1 && text.indexOf('GIFTFELD') === -1,
+     'unbekannte Felder im Gesamtzaehler bleiben draussen (weisse Liste)');
+  var dOhne = Dg.baueDiagnose(einstellungen, depot, fehler, { version: '8.23.0', plattform: 'Win32', electron: '37', installId: 'inst-test' },
+    Object.assign({}, extra, { gesamt: null }));
+  ok(dOhne.betrieb.gesamt === null, 'ohne Gesamtzaehler (alte Stores) bleibt das Feld schlicht null');
   ok(d.vorwaertstest.konfig !== null && d.vorwaertstest.bilanz['Klumpen-Limit'].n === 3 && d.vorwaertstest.offen === 1,
      'die Vorwärtstest-Bilanz reist mit – der wichtigste Evidenzkanal');
   /* Der behobene Bug: früher wurde nur der Kassenbestand gesendet. Nach einem

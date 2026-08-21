@@ -91,7 +91,21 @@
         scans: h.scans || 0, scanFehler: h.scanErrors || 0,
         abrufeOk: h.fetchOk || 0, abrufeFehl: h.fetchFail || 0,
         kiOk: h.kiOk || 0, kiFehl: h.kiFail || 0,
-        killSwitch: h.killSwitch || 0, alteKurse: h.staleBars || 0, workerAusfaelle: h.workerFail || 0
+        killSwitch: h.killSwitch || 0, alteKurse: h.staleBars || 0, workerAusfaelle: h.workerFail || 0,
+        /* Gesamtsummen ueber ALLE Sitzungen. Die Sitzungszaehler oben stehen kurz
+         * nach dem Start immer bei null (die erste Tester-Diagnose kam nach einer
+         * Minute Laufzeit - nichtssagend); erst die Summe zeigt, wie die
+         * Installation wirklich lebt. Felder einzeln benannt: weisse Liste. */
+        gesamt: extra.gesamt ? {
+          seit: extra.gesamt.seit || null,
+          sitzungen: extra.gesamt.sitzungen || 0,
+          laufzeitMin: extra.gesamt.laufzeitMin || 0,
+          scans: extra.gesamt.scans || 0, scanFehler: extra.gesamt.scanErrors || 0,
+          abrufeOk: extra.gesamt.fetchOk || 0, abrufeFehl: extra.gesamt.fetchFail || 0,
+          kiOk: extra.gesamt.kiOk || 0, kiFehl: extra.gesamt.kiFail || 0,
+          killSwitch: extra.gesamt.killSwitch || 0, alteKurse: extra.gesamt.staleBars || 0,
+          workerAusfaelle: extra.gesamt.workerFail || 0
+        } : null
       },
 
       /* Der VORWÄRTSTEST — der wichtigste Evidenzkanal. Die Schatten-Bilanz sagt, ob
@@ -177,6 +191,8 @@
     // Zusatzdaten, die nicht am Depot-Objekt hängen: Gesundheit, Umgebung, Datenleitungen
     var extra = { health: null, zeitzone: null, sprache: null, termineWerte: null, tagesdatenStand: null, tagesdatenWerte: null };
     try { extra.health = window.__health ? window.__health() : null; } catch (e) { }
+    // Gesamtzaehler ueber alle Sitzungen (frisch abgeglichen, siehe depot.js)
+    try { extra.gesamt = window.__healthGesamt ? window.__healthGesamt() : null; } catch (e) { }
     // Der Sendeweg samt Grund - erklaert aus der Ferne, warum eine Installation im
     // Browser-Modus haengt, statt automatisch zu senden.
     try {
@@ -230,8 +246,8 @@
     '  • Summen-Kennzahlen je Strategie (Anzahl Trades, Trefferquote, Ergebnis) und die\n' +
     '    Tagesstände der virtuellen Bücher samt Marktvergleich\n' +
     '  • die Vorwärtstest-Bilanz des Schattenbuchs (nur Summen je Grund)\n' +
-    '  • Betriebszähler (Scans, fehlgeschlagene Kursabrufe, Laufzeit) und die Größe der\n' +
-    '    lokalen Datenbestände\n' +
+    '  • Betriebszähler (Scans, fehlgeschlagene Kursabrufe, Laufzeit) – je Sitzung und als\n' +
+    '    Gesamtsumme über alle Sitzungen – und die Größe der lokalen Datenbestände\n' +
     '  • automatisch mitgeschnittene Programmfehler\n\n' +
     'NIEMALS gesendet werden: Zugangsdaten, Watchlist, einzelne Positionen oder Symbole, ' +
     'KI-Regeln, Namen, E-Mail. Die Wahl lässt sich jederzeit in den Einstellungen ändern.';

@@ -4624,6 +4624,36 @@
   if (typeof window !== 'undefined') { window.__tiefensuche = function (o) { return tiefensuche(o || { unbegrenzt: true }); }; window.__pilotMessen = function () { return pilotMessen(true); }; }
   if (typeof window !== 'undefined') { window.__save = save; window.__ladeArchivDaten = ladeArchivDaten; window.__labCommonOpts = labCommonOpts; window.__btIntraday = btIntraday; window.__D = function () { return D; }; window.__health = function () { return HEALTH; }; }   // fuer Funktionstests
 
+  /* ---- Gesamtzaehler-Pflege ----
+   * Alle 5 Minuten (und bei jeder Diagnose) wandert das DELTA der Sitzungszaehler
+   * in D.gesamtzaehler. Ein Schnappschuss verhindert Doppelzaehlung: Es wird immer
+   * nur das aufaddiert, was seit dem letzten Abgleich dazugekommen ist. */
+  var GZ_FELDER = ['scans', 'scanErrors', 'fetchOk', 'fetchFail', 'kiOk', 'kiFail', 'killSwitch', 'staleBars', 'workerFail'];
+  var GZ_SCHNAPP = null;
+  function gesamtzaehlerAuffrischen() {
+    try {
+      var g = D && D.gesamtzaehler;
+      if (!g) return null;
+      var s = GZ_SCHNAPP;
+      if (!s) { s = { t: HEALTH.startedAt }; GZ_FELDER.forEach(function (k) { s[k] = 0; }); }
+      g.laufzeitMin = (g.laufzeitMin || 0) + Math.max(0, Math.round((Date.now() - s.t) / 60000));
+      GZ_FELDER.forEach(function (k) { g[k] = (g[k] || 0) + Math.max(0, (HEALTH[k] || 0) - (s[k] || 0)); });
+      GZ_SCHNAPP = { t: Date.now() };
+      GZ_FELDER.forEach(function (k) { GZ_SCHNAPP[k] = HEALTH[k] || 0; });
+      save();
+      return g;
+    } catch (eG) { return null; }
+  }
+  setInterval(gesamtzaehlerAuffrischen, 5 * 60000);
+  if (typeof window !== 'undefined') {
+    // Fuer die Diagnose: erst abgleichen, dann eine KOPIE liefern - der Versand
+    // haelt so immer den Stand der Sekunde, nicht den des letzten 5-Minuten-Takts.
+    window.__healthGesamt = function () {
+      var g = gesamtzaehlerAuffrischen();
+      return g ? JSON.parse(JSON.stringify(g)) : null;
+    };
+  }
+
   /* ================= Tiefensuche (nutzt die brachliegenden Nacht-/Wochenendstunden) ====
    * Mehr Rechnen auf denselben Daten schafft kein Wissen - TIEFER suchen schon. Nach der
    * Nacht-Messung durchkaemmt die Tiefensuche auf dem ARCHIV (kein einziger Netzabruf)
@@ -5423,6 +5453,17 @@
             'wechseln will: Knopf „Belegte Voreinstellungen übernehmen“ im Strategien-Tab.' });
       }
     }
+    /* Gesamtzaehler ueber alle Sitzungen. Die HEALTH-Zaehler beginnen bei jedem
+     * Start wieder bei null - die erste Tester-Diagnose kam eine Minute nach dem
+     * Start, und alle Betriebszahlen standen auf 0: nichtssagend. Hier wird jede
+     * Sitzung aufsummiert, damit die Diagnose auch das GESAMTE Leben der
+     * Installation erzaehlt (wie viele Sitzungen, wie viel Laufzeit, wie viele
+     * Abruffehler insgesamt). */
+    if (!D.gesamtzaehler) {
+      D.gesamtzaehler = { seit: Date.now(), sitzungen: 0, laufzeitMin: 0, scans: 0, scanErrors: 0,
+        fetchOk: 0, fetchFail: 0, kiOk: 0, kiFail: 0, killSwitch: 0, staleBars: 0, workerFail: 0 };
+    }
+    D.gesamtzaehler.sitzungen = (D.gesamtzaehler.sitzungen || 0) + 1;
     // Einmalig: Das Event-Blackout ist eine Sicherung, keine Stellschraube. Steht es aus,
     // wird es beim Update einmal zurückgesetzt – sichtbar im Verlauf, danach nie wieder automatisch.
     if (D.blackoutGeprueft === undefined) {
