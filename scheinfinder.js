@@ -111,23 +111,51 @@
         '<td style="text-align:right;">' + k.totalverlustP.toFixed(0) + ' %</td>' +
         '<td style="text-align:right;">' + (k.spanneHuerdePct != null ? k.spanneHuerdePct.toFixed(2) + ' %' : '–') + '</td></tr>';
     }).join('');
+    /* Spaltenkoepfe sind zugleich die Sortierung (Tester-Wunsch #4): Die aktive
+       Spalte traegt einen Pfeil, ein Klick sortiert nach ihr. Beim Hebel wechselt
+       ein zweiter Klick die Richtung (groesster/kleinster) - bei allen anderen
+       Kennzahlen gibt es genau eine sinnvolle Richtung ("am wenigsten Risiko/
+       Kosten zuerst"), also kein Umschalten, das nur verwirren wuerde. */
+    var SPALTEN = [
+      { t: 'Stufe', tip: 'Risikostufe 1 (defensiv) bis 5 (Lotterielos)', sort: 'stufe', pfeil: '↑' },
+      { t: 'Typ' },
+      { t: 'Basispreis', r: 1 },
+      { t: 'OTM', tip: 'Abstand zum Basispreis. Positiv = aus dem Geld.', r: 1 },
+      { t: 'Tage', tip: 'Restlaufzeit in Tagen', r: 1 },
+      { t: 'BV', tip: 'Bezugsverhältnis – der Kostenhebel: BV 1,0 zahlt relativ die kleinste Spanne', r: 1 },
+      { t: 'Brief', tip: 'Kaufkurs (Brief) laut Modell', r: 1 },
+      { t: 'Hebel', tip: 'Effektiver Hebel (Omega). Klick sortiert, zweiter Klick dreht die Richtung.', sort: (s === 'omegaAuf' ? 'omegaAuf' : 'omega'), pfeil: (s === 'omegaAuf' ? '↑' : '↓'), wechsel: 1, r: 1 },
+      { t: 'Spanne', tip: 'Geld-Brief-Spanne je Seite, aus dem an echten Kursen geeichten Cent-Modell', sort: 'spread', pfeil: '↑', r: 1 },
+      { t: 'Θ/Woche', tip: 'Zeitwertverlust in einer Woche bei unverändertem Kurs', sort: 'theta', pfeil: '↑', r: 1 },
+      { t: 'Aufgeld p.a.', tip: 'Aufgeld aufs Jahr gerechnet', r: 1 },
+      { t: 'Totalverlust', tip: 'Modell-Wahrscheinlichkeit, dass der Schein wertlos verfällt', sort: 'tv', pfeil: '↑', r: 1 },
+      { t: 'Hürde', tip: 'Wie weit der Basiswert laufen muss, um allein die Spanne zu bezahlen', sort: 'huerde', pfeil: '↑', r: 1 }
+    ];
+    var SORTNAME = { stufe: 'Risikostufe (defensiv zuerst)', huerde: 'kleinste Kostenhürde', spread: 'kleinste Spanne', theta: 'wenigster Zeitwertverlust', tv: 'kleinste Totalverlust-Gefahr', omega: 'größter Hebel', omegaAuf: 'kleinster Hebel' };
+    var koepfe = SPALTEN.map(function (c) {
+      var aktiv = c.sort && (c.sort === s || (c.wechsel && (s === 'omega' || s === 'omegaAuf')));
+      var stil = (c.r ? 'text-align:right;' : '') + (c.sort ? 'cursor:pointer; white-space:nowrap;' : '') + (aktiv ? 'color:var(--acc);' : '');
+      return '<th' + (stil ? ' style="' + stil + '"' : '') +
+        (c.tip ? ' title="' + c.tip + '"' : (c.sort ? ' title="Klick sortiert nach dieser Spalte"' : '')) +
+        (c.sort ? ' data-sfsort="' + c.sort + '"' + (c.wechsel ? ' data-sfwechsel="1"' : '') : '') + '>' +
+        c.t + (aktiv ? ' ' + c.pfeil : '') + '</th>';
+    }).join('');
     t.innerHTML =
       '<div style="font-size:11.5px; color:var(--muted); margin-bottom:6px;">' + liste.length + ' von ' + RASTER.length +
-      ' Scheinen nach Filter' + (liste.length > 120 ? ' · die 120 besten angezeigt' : '') + ' · Zeile anklicken für die Risiko-Begründung</div>' +
-      '<div style="overflow-x:auto;"><table class="tbl"><thead><tr>' +
-      '<th title="Risikostufe 1 (defensiv) bis 5 (Lotterielos)">Stufe</th><th>Typ</th>' +
-      '<th style="text-align:right;">Basispreis</th>' +
-      '<th style="text-align:right;" title="Abstand zum Basispreis. Positiv = aus dem Geld.">OTM</th>' +
-      '<th style="text-align:right;" title="Restlaufzeit in Tagen">Tage</th>' +
-      '<th style="text-align:right;" title="Bezugsverhältnis – der Kostenhebel: BV 1,0 zahlt relativ die kleinste Spanne">BV</th>' +
-      '<th style="text-align:right;" title="Kaufkurs (Brief) laut Modell">Brief</th>' +
-      '<th style="text-align:right;" title="Effektiver Hebel (Omega)">Hebel</th>' +
-      '<th style="text-align:right;" title="Geld-Brief-Spanne je Seite, aus dem an echten Kursen geeichten Cent-Modell">Spanne</th>' +
-      '<th style="text-align:right;" title="Zeitwertverlust in einer Woche bei unverändertem Kurs">Θ/Woche</th>' +
-      '<th style="text-align:right;" title="Aufgeld aufs Jahr gerechnet">Aufgeld p.a.</th>' +
-      '<th style="text-align:right;" title="Modell-Wahrscheinlichkeit, dass der Schein wertlos verfällt">Totalverlust</th>' +
-      '<th style="text-align:right;" title="Wie weit der Basiswert laufen muss, um allein die Spanne zu bezahlen">Hürde</th>' +
+      ' Scheinen nach Filter · sortiert nach: <b>' + (SORTNAME[s] || s) + '</b>' +
+      (liste.length > 120 ? ' · die 120 besten angezeigt' : '') + ' · Zeile anklicken für die Risiko-Begründung</div>' +
+      '<div style="overflow-x:auto;"><table class="tbl"><thead><tr>' + koepfe +
       '</tr></thead><tbody>' + zeilen + '</tbody></table></div>';
+    t.querySelectorAll('[data-sfsort]').forEach(function (th) {
+      th.addEventListener('click', function () {
+        var ziel = th.getAttribute('data-sfsort');
+        // Zweiter Klick auf den Hebel dreht die Richtung um
+        if (th.getAttribute('data-sfwechsel') && (s === 'omega' || s === 'omegaAuf')) ziel = (s === 'omega' ? 'omegaAuf' : 'omega');
+        var sel = el('sfSort');
+        if (sel) sel.value = ziel;   // Auswahlfeld bleibt synchron
+        zeige();
+      });
+    });
     t.querySelectorAll('[data-sfi]').forEach(function (tr) {
       tr.addEventListener('click', function () {
         var k = RASTER[parseInt(tr.getAttribute('data-sfi'), 10)];
