@@ -40,6 +40,23 @@
       .map(function (t) { return byT[t]; });
   }
 
+  /** Stempel-Kerzen entfernen (Befund vom 21.08.2026): Yahoo haengt an jede
+   *  Chart-Antwort einen Eintrag mit der AKTUELLEN Uhrzeit an (z. B. 15:38:27
+   *  zwischen den 15-Minuten-Kerzen 15:30 und 15:45). Diese Pseudo-Kerzen haben
+   *  einmalige, krumme Zeitstempel - der Dedup ersetzt sie nie, sie lagerten
+   *  sich fuer immer in der Messbasis ab (13 Stueck allein am ersten Fundtag).
+   *  Regel: Ein Eintrag, der weniger als 0,9 Kerzenlaengen auf den zuletzt
+   *  behaltenen folgt, ist keine Kerze. Echte Nachbarn stehen exakt eine
+   *  Kerzenlaenge auseinander, Luecken (Nacht, Wochenende) sind groesser. */
+  function ohneStempel(bars, barMin) {
+    var min = (barMin || 1) * 60000 * 0.9, out = [];
+    for (var i = 0; i < (bars || []).length; i++) {
+      if (out.length && bars[i][0] - out[out.length - 1][0] < min) continue;
+      out.push(bars[i]);
+    }
+    return out;
+  }
+
   /** Serie auf die letzten maxTage Kalendertage kappen. */
   function kappeTage(bars, maxTage, nowMs) {
     var cut = (nowMs || Date.now()) - (maxTage || MAX_TAGE) * 86400000;
@@ -110,12 +127,15 @@
     }
 
     return {
-      /** Frisch geladene Bars einpflegen (aus Live-Scan oder Backfill). */
+      /** Frisch geladene Bars einpflegen (aus Live-Scan oder Backfill).
+       *  ohneStempel raeumt dabei auch Altlasten im Bestand ab - die laufende
+       *  Kerze bleibt bewusst drin (der naechste Abruf ersetzt sie fertig). */
       fuege: async function (iv, sym, bars) {
         if (!bars || bars.length < 2) return;
         var e = await lade(iv, sym);
         var vorher = e.series.length;
-        e.series = kappeTage(mischeBars(e.series, bars), fensterFuer(iv));
+        var barMin = parseInt(iv, 10) || 1;
+        e.series = kappeTage(ohneStempel(mischeBars(e.series, bars), barMin), fensterFuer(iv));
         if (e.series.length !== vorher || bars.length) e.dirty = true;
       },
       /** Zusammengeführte Serie (Archiv inkl. aller bisherigen Einspeisungen). */
@@ -154,7 +174,7 @@
 
   var Archiv = {
     MAX_TAGE: MAX_TAGE, TAGE_MAX: TAGE_MAX, fensterFuer: fensterFuer,
-    mischeBars: mischeBars, kappeTage: kappeTage,
+    mischeBars: mischeBars, kappeTage: kappeTage, ohneStempel: ohneStempel,
     abdeckungTage: abdeckungTage, schlank: schlank, dollarVolTag: dollarVolTag,
     baueArchiv: baueArchiv
   };

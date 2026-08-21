@@ -1297,7 +1297,8 @@
   /** Stand der Rechengrundlage. Wird hochgezählt, sobald sich etwas ändert, das alte
    *  Backtest-Ergebnisse ungültig macht (z. B. die Vola-Skalierung in 7.10). Die Farm
    *  verwirft dann ihren Champion-Nachweis und lässt ihn neu antreten. */
-  var RECHENSTAND = 9;   // v8.13: kanalUeber verwirft entartete Breiten nicht mehr (Rechenweise geaendert)
+  var RECHENSTAND = 10;  // v8.23.13: Stempel-Kerzen aus der Messbasis entfernt (Yahoo-Quote-Stempel
+                         // lagen als Pseudo-Kerzen im Archiv; alte Messergebnisse darauf sind ungueltig)
 
   var KANAL_MIN = { touchJeSeite: 3, dichte: 2.5, wechsel: 2, deckung: 0.90, enge: 0.85, vr: 0.35, acf: -0.65, score: 50 };
 
@@ -2259,6 +2260,20 @@
    * opts: {capital, period, confirmBps, budgetPct, sl, tp, cooldownMin, maxPerDay}
    */
   /** Bar-Länge in Minuten aus der Serie ableiten – Median der Abstände innerhalb eines Tages. */
+  /** Nur FERTIGE Kerzen behalten (Befund vom 21.08.2026): Yahoo haengt einen
+   *  Quote-Stempel mit der aktuellen Uhrzeit an, und davor kann die noch laufende
+   *  Kerze stehen. Die alte Einmal-Kappung entfernte nur den Stempel - die laufende
+   *  Kerze galt als fertig, Signale entstanden auf halben Kerzen und konnten bis
+   *  zum Kerzenschluss wieder verschwinden (Repainting). Live mass damit etwas
+   *  anderes als Studie und Backtest. Deshalb SCHLEIFE: hinten faellt alles weg,
+   *  was juenger als eine Kerzenlaenge ist. */
+  function fertigeBars(bars, barMin, now) {
+    var n = (bars || []).length;
+    var min = (barMin || 1) * 60000;
+    while (n > 2 && (now || Date.now()) - bars[n - 1][0] < min) n--;
+    return n === (bars || []).length ? bars : bars.slice(0, n);
+  }
+
   function barMinOf(bars, ci) {
     var d = [], i, von = Math.max(1, (ci || bars.length - 1) - 40);
     for (i = von; i <= Math.min(bars.length - 1, (ci || bars.length - 1)); i++) {
@@ -2631,7 +2646,7 @@
     warrantOmega: warrantOmega, warrantAufgeld: warrantAufgeld, PROFILES: PROFILES,
     underlyingAtTarget: underlyingAtTarget,
     backtest: backtest, RATIO: RATIO,
-    histVolIntraday: histVolIntraday, barMinOf: barMinOf, einstiegSignal: einstiegSignal, backtestIntraday: backtestIntraday, backtestIntradayMulti: backtestIntradayMulti,
+    histVolIntraday: histVolIntraday, barMinOf: barMinOf, fertigeBars: fertigeBars, einstiegSignal: einstiegSignal, backtestIntraday: backtestIntraday, backtestIntradayMulti: backtestIntradayMulti,
     usSommerzeit: usSommerzeit, minutenSeitOeffnung: minutenSeitOeffnung,
     SETUP_ALLOW: SETUP_ALLOW, regimeValidate: regimeValidate,
     resampleBars: resampleBars, mtfAgrees: mtfAgrees, autoStop: autoStop,

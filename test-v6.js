@@ -268,6 +268,27 @@ ok(A.schlank([[T0, 72843.359375, 1, 72843.359375, 72843.359375]])[0][1] === 7284
 ok(A.schlank([[T0, 0, 1]])[0][1] === 0, 'ein Kurs von null bleibt null (kein Logarithmus von 0)');
 var dv = A.dollarVolTag([[T0, 100, 1000], [T0 + 60000, 100, 1000], [T0 + 86400000, 200, 500]]);
 ok(dv === 150000, 'Dollar-Umsatz je Tag: (100*1000+100*1000+200*500)/2 Tage', dv);
+/* Stempel-Kerzen (Befund 21.08.2026): Yahoo haengt an jede Chart-Antwort einen
+ * Eintrag mit der AKTUELLEN Uhrzeit an. Der landete als Pseudo-Kerze mit krummem
+ * Zeitstempel dauerhaft in der Messbasis (15:38:27 zwischen 15:30 und 15:45). */
+(function () {
+  var m = 60000, t15 = T0;
+  var mitStempel = [[t15, 100, 10], [t15 + 8 * m + 27000, 100.2, 1], [t15 + 15 * m, 101, 12],
+                    [t15 + 30 * m, 102, 11], [t15 + 30 * m + 41000, 102.1, 1]];
+  var sauber = A.ohneStempel(mitStempel, 15);
+  ok(sauber.length === 3 && sauber[1][0] === t15 + 15 * m && sauber[2][0] === t15 + 30 * m,
+     'ohneStempel: krumme Zwischen- und End-Stempel fliegen, echte Nachbarn bleiben', sauber.length);
+  var nachtLuecke = [[t15, 1, 1], [t15 + 15 * m, 1, 1], [t15 + 17 * 3600000, 1, 1]];
+  ok(A.ohneStempel(nachtLuecke, 15).length === 3, 'ohneStempel: Nacht-Luecken sind KEINE Stempel');
+  // Scanner-Seite: Schleife statt Einmal-Kappung - Stempel UND laufende Kerze fallen
+  var jetzt = Date.UTC(2026, 7, 21, 14, 0, 3);
+  var live = [[jetzt - 3 * 3600000, 1, 1], [jetzt - 2 * 3600000, 1, 1], [jetzt - 90 * m, 1, 1],
+              [jetzt - 30 * m, 1, 1], [jetzt - 3000, 1, 1]];
+  var f60 = Q.fertigeBars(live, 60, jetzt);
+  ok(f60.length === 3 && f60[2][0] === jetzt - 90 * m,
+     'fertigeBars: bei 60m fallen Stempel UND laufende Kerze (die alte Einmal-Kappung liess die laufende durch)', f60.length);
+  ok(Q.fertigeBars(live, 5, jetzt).length === 4, 'fertigeBars: bei 5m ist nur der Stempel zu jung');
+})();
 
 console.log('14) Trend-Ruecksetzer (Pullback) an der Leitlinie');
 (function () {

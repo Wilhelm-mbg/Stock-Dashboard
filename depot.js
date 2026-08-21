@@ -1961,8 +1961,12 @@
         // nur fertige Bars aus – Live und Backtest maßen also Unterschiedliches, obwohl Farm,
         // Analyse-Zentrale und Selbst-Optimierung genau auf dieser Vergleichbarkeit aufbauen.
         // Der Preis (spot) bleibt der aktuelle Kurs – gekauft und gestoppt wird zum Jetzt-Kurs.
-        var sigBars = (bars.length > 2 && now - bars[bars.length - 1][0] < barMinScan * 60000)
-          ? bars.slice(0, -1) : bars;
+        /* SCHLEIFE statt Einmal-Kappung (Befund 21.08.2026): Yahoo haengt einen
+           Quote-Stempel mit aktueller Uhrzeit an, und davor steht die laufende
+           Kerze. Die Einmal-Kappung entfernte nur den Stempel - die laufende
+           Kerze galt als fertig, und der Scanner rechnete Signale auf halben
+           Kerzen (Repainting; Live mass anderes als Studie und Backtest). */
+        var sigBars = Q.fertigeBars(bars, barMinScan, now);
         var sigSpot = sigBars[sigBars.length - 1][1];
         schattenUpdate(sym, spot, now, nearClose); // Schattenbuch mit frischem Kurs weiterrechnen
         var sig = Q.signalCross(sigBars, cfg.lineType || 'ema', cfg.period, cfg.confirmBps);

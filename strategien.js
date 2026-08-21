@@ -122,13 +122,17 @@
     D.momentumAn = true;
     D.driftAn = true;
     D.maxRisikostufe = 3;
+    var extras = ['Belegte Voreinstellungen übernommen'];
+    // Der Knopf ist eine bewusste Hand-Entscheidung - er darf auch die Sicherung
+    // wieder scharf stellen, die eine fruehere Hand-Entscheidung abgeschaltet hat.
+    if (D.intraday.blackout === 'off') { D.intraday.blackout = 'block'; extras.push('Event-Blackout wieder an'); }
     if (!D.tuneLog) D.tuneLog = [];
     D.tuneLog.unshift({ id: 'empfohlen-' + Date.now(), at: Date.now(), quelle: 'hand',
-      applied: ['Belegte Voreinstellungen übernommen'],
+      applied: extras,
       txt: 'Auf die gemessenen Einstellungen umgestellt: Intraday-Modus RSI(2) im Seitwärtskanal ' +
-        '(Basiswert, 8 h Zeit-Ausstieg, nur Long) – der Handel selbst bleibt aus, das Schattenbuch ' +
-        'zeichnet auf. Momentum- und Drift-Buch handeln virtuell. Maximale Risikostufe 3. ' +
-        'Jedes Feld lässt sich einzeln zurückstellen.' });
+        '(Basiswert, 8 h Zeit-Ausstieg, nur Long). Der Ein/Aus-Schalter des Intraday-Handels bleibt ' +
+        'unangetastet; das Schattenbuch zeichnet immer auf. Momentum- und Drift-Buch handeln virtuell. ' +
+        'Maximale Risikostufe 3. Jedes Feld lässt sich einzeln zurückstellen.' });
     if (window.__save) window.__save();
     [['idMode', 'rsi2seit'], ['idInstrument', 'basis'], ['idInterval', '60m'], ['idHold', '480'], ['idMaxStufe', '3']].forEach(function (kv) {
       var e = document.getElementById(kv[0]);
