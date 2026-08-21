@@ -16,6 +16,7 @@
   var Q = window.Quant, U = window.U;
   var RASTER = null;        // aktuelles Raster
   var BASIS = null;         // {sym, spot, iv, stand}
+  var sortUmgekehrt = false; // zweiter Klick auf denselben Spaltenkopf dreht die Reihenfolge
 
   function el(id) { return document.getElementById(id); }
   function stat(t) { var e = el('sfStatus'); if (e) e.textContent = t || ''; }
@@ -104,6 +105,10 @@
       if (s === 'tv') return a.totalverlustP - b.totalverlustP;
       return a.stufe - b.stufe;
     });
+    // Zweiter Klick auf denselben Kopf: Reihenfolge umdrehen (Tester-Wunsch #13) -
+    // wer die teuersten Spannen oder die groesste Totalverlust-Gefahr sehen will,
+    // soll dafuer nicht durch die ganze Liste scrollen muessen.
+    if (sortUmgekehrt) liste.reverse();
     var STUFENFARBE = ['', 'var(--up)', '#7c9cf5', 'var(--warn)', '#f59c40', 'var(--down)'];
     var zeilen = liste.slice(0, 120).map(function (k, i) {
       return '<tr data-sfi="' + RASTER.indexOf(k) + '" style="cursor:pointer;">' +
@@ -147,39 +152,58 @@
     var koepfe = SPALTEN.map(function (c) {
       var aktiv = c.sort && (c.sort === s || (c.wechsel && (s === 'omega' || s === 'omegaAuf')));
       var stil = (c.r ? 'text-align:right;' : '') + (c.sort ? 'cursor:pointer; white-space:nowrap;' : '') + (aktiv ? 'color:var(--acc);' : '');
+      var pf = c.pfeil;
+      if (aktiv && sortUmgekehrt && !c.wechsel) pf = (pf === '↑' ? '↓' : '↑');
       return '<th' + (stil ? ' style="' + stil + '"' : '') +
-        (c.tip ? ' title="' + c.tip + '"' : (c.sort ? ' title="Klick sortiert nach dieser Spalte"' : '')) +
+        (c.tip ? ' title="' + c.tip + (c.sort && !c.wechsel ? ' Klick sortiert, zweiter Klick dreht die Reihenfolge.' : '') + '"'
+               : (c.sort ? ' title="Klick sortiert nach dieser Spalte, zweiter Klick dreht die Reihenfolge"' : '')) +
         (c.sort ? ' data-sfsort="' + c.sort + '"' + (c.wechsel ? ' data-sfwechsel="1"' : '') : '') + '>' +
-        c.t + (aktiv ? ' ' + c.pfeil : '') + '</th>';
+        c.t + (aktiv ? ' ' + pf : '') + '</th>';
     }).join('');
     t.innerHTML =
       '<div style="font-size:11.5px; color:var(--muted); margin-bottom:6px;">' + liste.length + ' von ' + RASTER.length +
-      ' Scheinen nach Filter · sortiert nach: <b>' + (SORTNAME[s] || s) + '</b>' +
+      ' Scheinen nach Filter · sortiert nach: <b>' + (SORTNAME[s] || s) + (sortUmgekehrt ? ' – umgekehrt' : '') + '</b>' +
       (liste.length > 120 ? ' · die 120 besten angezeigt' : '') + ' · Zeile anklicken für die Risiko-Begründung</div>' +
       '<div style="overflow-x:auto;"><table class="tbl"><thead><tr>' + koepfe +
       '</tr></thead><tbody>' + zeilen + '</tbody></table></div>';
     t.querySelectorAll('[data-sfsort]').forEach(function (th) {
       th.addEventListener('click', function () {
         var ziel = th.getAttribute('data-sfsort');
-        // Zweiter Klick auf den Hebel dreht die Richtung um
-        if (th.getAttribute('data-sfwechsel') && (s === 'omega' || s === 'omegaAuf')) ziel = (s === 'omega' ? 'omegaAuf' : 'omega');
+        if (th.getAttribute('data-sfwechsel') && (s === 'omega' || s === 'omegaAuf')) {
+          // Der Hebel hat zwei eigene Sortierungen (groesster/kleinster) - zwischen ihnen wechseln
+          ziel = (s === 'omega' ? 'omegaAuf' : 'omega');
+          sortUmgekehrt = false;
+        } else if (ziel === s) {
+          sortUmgekehrt = !sortUmgekehrt;   // zweiter Klick: Reihenfolge umdrehen
+        } else {
+          sortUmgekehrt = false;
+        }
         var sel = el('sfSort');
         if (sel) sel.value = ziel;   // Auswahlfeld bleibt synchron
         zeige();
       });
     });
+    /* Einzelheiten klappen DIREKT UNTER der angeklickten Zeile auf (Tester-Wunsch #13).
+       Frueher stand die Info nur im Kasten ueber der Tabelle - wer weit unten
+       klickte, musste hochscrollen und sah gar nicht, dass etwas passiert war. */
     t.querySelectorAll('[data-sfi]').forEach(function (tr) {
       tr.addEventListener('click', function () {
         var k = RASTER[parseInt(tr.getAttribute('data-sfi'), 10)];
+        if (!k) return;
+        var warOffen = tr.nextElementSibling && tr.nextElementSibling.className === 'sf-inline';
+        t.querySelectorAll('tr.sf-inline').forEach(function (x) { x.parentNode.removeChild(x); });
         var d = el('sfDetail');
-        if (!d || !k) return;
-        d.style.display = 'block';
-        d.innerHTML = '<b>' + kennung(k) + ' – ' + (k.dir === 'call' ? 'Call' : 'Put') + ' ' + U.nf2.format(k.strike) + ', ' + k.restTage +
+        if (d) d.style.display = 'none';
+        if (warOffen) return;   // zweiter Klick auf dieselbe Zeile klappt wieder zu
+        tr.insertAdjacentHTML('afterend',
+          '<tr class="sf-inline"><td colspan="14" style="background:var(--panel); padding:10px 12px; font-size:12.5px; line-height:1.6; cursor:default;">' +
+          '<b>' + kennung(k) + ' – ' + (k.dir === 'call' ? 'Call' : 'Put') + ' ' + U.nf2.format(k.strike) + ', ' + k.restTage +
           ' Tage, BV ' + String(k.ratio).replace('.', ',') + ' · Risikostufe ' + k.stufe + '</b><br>' +
           '<span style="color:var(--muted); font-size:11.5px;">Modell-Kennung statt WKN – echte WKN-Listen gibt es nur aus Bezahl-Quellen. Mit Typ, Basispreis, Laufzeit und BV findest du bei jedem Emittenten den vergleichbaren echten Schein.</span><br>' +
           k.stufenGruende.map(function (g) { return '• ' + U.esc(g); }).join('<br>') +
           '<br><span style="color:var(--muted);">Break-even ' + U.nf2.format(k.breakEven) + ' $ · Delta ' + k.delta +
-          ' · Zeitwertanteil ' + k.zeitwertAnteil + ' % · innerer Wert ' + U.nf2.format(k.innererWert) + ' $</span>';
+          ' · Zeitwertanteil ' + k.zeitwertAnteil + ' % · innerer Wert ' + U.nf2.format(k.innererWert) + ' $</span>' +
+          '</td></tr>');
       });
     });
   }
@@ -193,10 +217,14 @@
     }
     var b = el('sfLadenBtn');
     if (b) b.addEventListener('click', lade);
-    ['sfTyp', 'sfStufe', 'sfHebelMin', 'sfHebelMax', 'sfLzMin', 'sfLzMax', 'sfSpreadMax', 'sfTvMax', 'sfSort'].forEach(function (id) {
+    ['sfTyp', 'sfStufe', 'sfHebelMin', 'sfHebelMax', 'sfLzMin', 'sfLzMax', 'sfSpreadMax', 'sfTvMax'].forEach(function (id) {
       var e = el(id);
       if (e) e.addEventListener('change', zeige);
     });
+    // Wahl im Auswahlfeld setzt die umgekehrte Reihenfolge zurueck - das Feld
+    // benennt eine Richtung ("kleinste Spanne"), also soll genau die gelten.
+    var so = el('sfSort');
+    if (so) so.addEventListener('change', function () { sortUmgekehrt = false; zeige(); });
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bereit);
   else bereit();

@@ -13,7 +13,10 @@
     // Monatsansicht deshalb immer leer (Tester-Meldung #10). ~150 Stundenkerzen
     // tragen Signale, Kanal und Durchschnitte.
     { k: '1M', range: '1mo', interval: '60m' },
-    { k: '6M', range: '6mo', interval: '1d' },
+    // 6M ebenfalls mit Stundenkerzen: 126 Tageskerzen liegen unter dem Vorlauf,
+    // den die meisten Signale brauchen (~130) - die Halbjahresansicht zeigte
+    // deshalb kaum je etwas. ~780 Stundenkerzen tragen alles.
+    { k: '6M', range: '6mo', interval: '60m' },
     { k: '1J', range: '1y', interval: '1d' },
     { k: '5J', range: '5y', interval: '1wk' },
     { k: 'Max', range: 'max', interval: '1mo' }
@@ -241,11 +244,19 @@
     var hEl = document.getElementById('expZeitHinweis');
     var zeit, kerze, beschriftung;
     if (zEl && zEl.value) {
-      // Freie Wahl hat Vorrang vor den Schnellwahl-Knoepfen
-      var pr = zeitPruefen(zEl.value, kEl.value);
-      zeit = pr.zeit; kerze = kEl.value;
+      // Freie Wahl hat Vorrang vor den Schnellwahl-Knoepfen.
+      /* selectedIndex kann -1 sein, wenn .value zuvor auf eine Kerzengroesse gesetzt
+         wurde, die es als Option nicht gab (so geschah es mit 'Max' und '1mo', bevor
+         die Option existierte) - der Zugriff auf .options[-1].text warf dann einen
+         TypeError und das Zeitraum-Menue wirkte komplett tot (Tester-Meldung #12).
+         Deshalb hier defensiv, damit ein fehlender Eintrag nie wieder alles lahmlegt. */
+      var kerzeWahl = (kEl && kEl.selectedIndex >= 0 && kEl.value) ? kEl.value : '1d';
+      var pr = zeitPruefen(zEl.value, kerzeWahl);
+      zeit = pr.zeit; kerze = kerzeWahl;
       if (hEl) hEl.textContent = pr.hinweis;
-      beschriftung = zEl.options[zEl.selectedIndex].text + ' · ' + kEl.options[kEl.selectedIndex].text;
+      var zTxt = zEl.selectedIndex >= 0 ? zEl.options[zEl.selectedIndex].text : zEl.value;
+      var kTxt = (kEl && kEl.selectedIndex >= 0) ? kEl.options[kEl.selectedIndex].text : kerzeWahl;
+      beschriftung = zTxt + ' · ' + kTxt;
     } else {
       var r = RANGES.filter(function (x) { return x.k === activeRange; })[0];
       zeit = r.range; kerze = r.interval; beschriftung = r.k;
