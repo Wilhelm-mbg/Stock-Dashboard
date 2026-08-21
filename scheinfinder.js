@@ -36,7 +36,7 @@
     try {
       var url = 'https://query1.finance.yahoo.com/v8/finance/chart/' + encodeURIComponent(sym) + '?range=1y&interval=1d';
       var res = await window.api.fetchText(url);
-      if (!res.ok) { stat('Kurse nicht abrufbar (' + res.status + ').'); return; }
+      if (!res.ok) { stat('Keine Kursdaten bekommen – bitte Internetverbindung prüfen und noch einmal auf „Laden & rechnen“ klicken.'); return; }
       var r = JSON.parse(res.body).chart.result[0];
       var closes = (r.indicators.quote[0].close || []).filter(function (c) { return c != null; });
       if (closes.length < 60) { stat('Zu wenig Historie für eine Volatilitätsschätzung.'); return; }

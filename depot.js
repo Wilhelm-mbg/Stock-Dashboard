@@ -18,7 +18,15 @@
       // News auf 0,15 gesenkt (21.08.2026): das Sentiment ist unbelegt, weil es keine
       // historischen Schlagzeilen gibt. Steigt wieder, sobald das Archiv einen Beleg gibt.
       weights: { news: 0.15, tech: 0.55, elliott: 0.30 },
-      intraday: { enabled: false, exitStyle: 'laufen', mode: 'breakout', interval: '5m', period: 20, confirmBps: 15, profile: 'atm21_b', orderFee: 0, minDollarVol: 50, budgetPct: 0.03, sl: -0.25, tp: 0.35, cooldownMin: 45, maxPerDay: 10, lineType: 'ema', trendFilter: false, window: 'all', scalpHold: 60, scalpTrail: 15, scalpSL: 20, blackout: 'block', channel: true, mtf: true, sizing: 'fix', screener: false, avoidHours: [], autoTune: true },
+      /* Voreinstellungen zeigen dahin, wo die EVIDENZ ist. Die erste externe Diagnose
+         (Issue #1, 21.08.2026) zeigte einen Tester, der am ersten Tag den alten Standard
+         'breakout' auf Scheinen handelte - die Muenzwurf-Konfiguration -, waehrend die
+         belegten Strategien ausgeschaltet daneben lagen. Neue Installationen starten jetzt
+         mit dem gemessenen Modus (RSI2 im Seitwaertskanal, Basiswert, 8 h) im reinen
+         Beobachtungsbetrieb: enabled bleibt false, das Schattenbuch zeichnet auf. */
+      intraday: { enabled: false, exitStyle: 'laufen', mode: 'rsi2seit', interval: '60m', period: 20, confirmBps: 15, profile: 'atm60_b', instrument: 'basis', orderFee: 0, minDollarVol: 50, budgetPct: 0.03, sl: -0.25, tp: 0.35, cooldownMin: 120, maxPerDay: 10, lineType: 'ema', trendFilter: false, window: 'all', scalpHold: 480, scalpTrail: 15, scalpSL: 20, blackout: 'block', channel: true, mtf: true, sizing: 'fix', screener: false, avoidHours: [], autoTune: true },
+      // Die belegten Mittelfrist-Buecher handeln (virtuell) von Anfang an - dafuer sind sie da.
+      momentumAn: true, driftAn: true, maxRisikostufe: 3,
       watchlist: [],
       intradayLastScan: 0, intradayDay: '', intradayCount: 0, intradayCooldown: {},
       notify: true, hourlyEnabled: true, equityHist: [],
@@ -1633,11 +1641,12 @@
    * vergleichbar, und es gibt keine zweite Rechenlogik, die auseinanderlaufen kann. */
   var SETUPS = {
     ausbruch: { name: 'Ausbruch', trigger: { kreuzung: 'EMA-Kreuzung', range: 'Eröffnungs-Range', ruecksetzer: 'Trend-Rücksetzer', donchian: 'Kanal-Hoch/Tief (Donchian)', squeeze: 'Vola-Kompression (Squeeze)', kanaltrend: 'Kanaltrend folgen' } },
-    umkehr:   { name: 'Umkehr',   trigger: { ueberdehnung: 'Überdehnung', welle: 'Wellental', rsi2: 'RSI(2)-Extrem', rsi2seit: 'RSI(2) im Seitwärtskanal (nur Long)' } }
+    umkehr:   { name: 'Umkehr',   trigger: { ueberdehnung: 'Überdehnung', welle: 'Wellental', rsi2: 'RSI(2)-Extrem', rsi2seit: 'RSI(2) im Seitwärtskanal (nur Long)', kapitulation: 'Kapitulations-Dip im Abwärtskanal (nur Long)' } }
   };
   function modeFromSetup(setup, trigger, exitStyle) {
     if (setup === 'umkehr' && trigger === 'rsi2') return 'rsi2';
     if (setup === 'umkehr' && trigger === 'rsi2seit') return 'rsi2seit';
+    if (setup === 'umkehr' && trigger === 'kapitulation') return 'kapitulation';
     if (setup === 'umkehr') return trigger === 'welle' ? 'wave' : 'reversion';
     if (trigger === 'range') return 'orb';
     if (trigger === 'ruecksetzer') return 'pullback';

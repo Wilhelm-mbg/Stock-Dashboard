@@ -106,6 +106,40 @@
     render();
   }
 
+  /** Bestehende Installationen auf die gemessenen Einstellungen umstellen - per Knopf,
+   *  nie still: Die erste externe Diagnose zeigte einen Tester im alten Standard
+   *  'breakout' auf Scheinen (Muenzwurf), waehrend die belegten Strategien aus waren.
+   *  Neue Installationen starten schon richtig; Bestandsnutzer entscheiden selbst. */
+  function empfohleneEinstellungen() {
+    var D = window.__D ? window.__D() : null;
+    if (!D) return;
+    D.intraday.mode = 'rsi2seit';
+    D.intraday.instrument = 'basis';
+    D.intraday.interval = '60m';
+    D.intraday.scalpHold = 480;
+    D.intraday.cooldownMin = 120;
+    D.intraday.schattenImmer = true;
+    D.momentumAn = true;
+    D.driftAn = true;
+    D.maxRisikostufe = 3;
+    if (!D.tuneLog) D.tuneLog = [];
+    D.tuneLog.unshift({ id: 'empfohlen-' + Date.now(), at: Date.now(), quelle: 'hand',
+      applied: ['Belegte Voreinstellungen übernommen'],
+      txt: 'Auf die gemessenen Einstellungen umgestellt: Intraday-Modus RSI(2) im Seitwärtskanal ' +
+        '(Basiswert, 8 h Zeit-Ausstieg, nur Long) – der Handel selbst bleibt aus, das Schattenbuch ' +
+        'zeichnet auf. Momentum- und Drift-Buch handeln virtuell. Maximale Risikostufe 3. ' +
+        'Jedes Feld lässt sich einzeln zurückstellen.' });
+    if (window.__save) window.__save();
+    [['idMode', 'rsi2seit'], ['idInstrument', 'basis'], ['idInterval', '60m'], ['idHold', '480'], ['idMaxStufe', '3']].forEach(function (kv) {
+      var e = document.getElementById(kv[0]);
+      if (e) e.value = kv[1];
+    });
+    if (window.__syncSetupUI) window.__syncSetupUI();
+    var st = document.getElementById('stratEmpfohlenStatus');
+    if (st) st.textContent = 'Übernommen – Einzelheiten im Protokoll.';
+    render();
+  }
+
   function render() {
     var el = document.getElementById('stratListe');
     if (!el) return;
@@ -140,6 +174,9 @@
   }
 
   document.addEventListener('tab-changed', function (e) { if (e.detail === 'strategien') render(); });
-  document.addEventListener('DOMContentLoaded', function () { setTimeout(render, 1200); });
+  document.addEventListener('DOMContentLoaded', function () { setTimeout(render, 1200);
+    var bE = document.getElementById('stratEmpfohlenBtn');
+    if (bE) bE.addEventListener('click', empfohleneEinstellungen);
+  });
   if (typeof window !== 'undefined') window.__stratRender = render;
 })();

@@ -62,7 +62,20 @@
     try {
       var daten = await ladeKurse();
       var markt = await ladeMarkt();
-      if (!daten || !markt) { zeige(null, null, null, 'Keine Tagesdaten – im Tab „Mittelfristig“ einmal laden.'); return; }
+      if (!daten || !markt) {
+        /* Erststart-Luecke aus der ersten externen Diagnose (mfBuchWert: null): Frische
+         * Installationen haben keine Tagesdaten, und der Erstladevorgang von 193 Werten
+         * wartete auf einen Knopfdruck, von dem niemand wusste. Jetzt stoesst er sich
+         * selbst an - hoechstens einmal je Stunde, mit sichtbarem Status. */
+        if (window.MF && window.MF.ladeUniversum && Date.now() - ladeAngestossen > 3600000) {
+          ladeAngestossen = Date.now();
+          zeige(null, null, null, 'Erster Start: Tageskurse für 193 Werte werden geladen (einmalig, ein paar Minuten) …');
+          try { await window.MF.ladeUniversum(); } catch (eL) { }
+          daten = await ladeKurse();
+          markt = markt || await ladeMarkt();
+        }
+        if (!daten || !markt) { zeige(null, null, null, 'Keine Tagesdaten – im Tab „Mittelfristig“ einmal laden.'); return; }
+      }
       kurseFrischHalten(daten.stand);
       var MH = window.MFHandel, Dr = window.Drift;
       var now = Date.now();

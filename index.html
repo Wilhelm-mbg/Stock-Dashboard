@@ -548,8 +548,8 @@
           <div class="pgroup" id="pgScalp">
             <div class="pgroup-title">Haltedauer &amp; Ausstieg</div>
             <div class="params">
-              <label data-modes="waves,reversion,wave,pullback,rsi2,squeeze">Max. Haltedauer<select id="idHold"><option value="3">3 Min</option><option value="5">5 Min</option><option value="15">15 Min</option><option value="30">30 Min</option><option value="60" selected>60 Min</option><option value="120">2 h</option><option value="240">4 h</option><option value="0">aus</option></select></label>
-              <label data-modes="waves,orb,pullback,donchian,squeeze" title="Ausstieg, wenn der Schein X % unter sein Hoch fällt (Gewinn sichern)">Trailing-Stop<select id="idTrail"><option value="0">aus</option><option value="10">−10 %</option><option value="15" selected>−15 %</option><option value="25">−25 %</option></select></label>
+              <label data-modes="waves,reversion,wave,pullback,rsi2,squeeze,rsi2seit,kapitulation,kanaltrend">Max. Haltedauer<select id="idHold"><option value="3">3 Min</option><option value="5">5 Min</option><option value="15">15 Min</option><option value="30">30 Min</option><option value="60" selected>60 Min</option><option value="120">2 h</option><option value="240">4 h</option><option value="480">8 h (RSI2-Seitwärts, gemessen)</option><option value="1560">26 h (Kapitulations-Dip, gemessen)</option><option value="0">aus</option></select></label>
+              <label data-modes="waves,orb,pullback,donchian,squeeze,kanaltrend" title="Ausstieg, wenn der Schein X % unter sein Hoch fällt (Gewinn sichern)">Trailing-Stop<select id="idTrail"><option value="0">aus</option><option value="10">−10 %</option><option value="15" selected>−15 %</option><option value="25">−25 %</option></select></label>
             </div>
           </div>
         </div>
@@ -1049,7 +1049,11 @@
       einschließlich der Punkte, die dagegen sprechen.
     </div>
   </div>
-  <div id="stratListe" style="margin-top:12px;"></div>
+  <div style="margin:6px 0 12px;">
+      <button class="btn" id="stratEmpfohlenBtn" type="button" title="Stellt alles auf die gemessenen Ergebnisse um: Intraday-Modus RSI(2) im Seitwärtskanal auf dem Basiswert (nur Beobachtung, Schattenbuch zeichnet auf), Momentum- und Drift-Buch handeln virtuell, maximale Risikostufe 3. Jede Änderung steht im Protokoll und lässt sich einzeln zurückstellen.">Belegte Voreinstellungen übernehmen</button>
+      <span id="stratEmpfohlenStatus" style="font-size:11.5px; color:var(--muted); margin-left:8px;"></span>
+    </div>
+    <div id="stratListe" style="margin-top:12px;"></div>
   <div class="panel">
     <div style="font-size:12px; color:var(--muted);">Alles hier ist Simulation. Es wird nichts gekauft und nichts verkauft.</div>
   </div>
