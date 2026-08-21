@@ -73,6 +73,7 @@
         pool: (depot.intraday && depot.intraday.pool) || 'auto',
         kapiZusatz: !!(depot.intraday && depot.intraday.kapiZusatz),
         regimeZuteilung: !!(depot.intraday && depot.intraday.regimeZuteilung),
+        edgePause: !!(depot.intraday && depot.intraday.edgePause),
         kryptoHandeln: !!(depot.intraday && depot.intraday.kryptoHandeln),
         schattenImmer: !(depot.intraday && depot.intraday.schattenImmer === false),
         momentumAn: !!depot.momentumAn,

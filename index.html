@@ -287,6 +287,16 @@
   .belegt-titel { font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 8px; }
   /* Haken-Beschriftungen bleiben lesbar: die .params-Regel setzt Grossbuchstaben in
      10,5 px und Spaltenrichtung - fuer ein Auswahlkaestchen mit Satz daneben untauglich. */
+  .wendeopt { display: flex; flex-direction: column; gap: 4px; font-size: 10.5px; color: var(--muted);
+    font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; }
+  /* Warnband unter dem Cockpit: eine Zeile je aktivem Warnzustand */
+  #warnband { margin: 8px 0 4px; display: none; }
+  #warnband .warnzeile {
+    font-size: 12.5px; line-height: 1.5; padding: 7px 10px; margin-bottom: 6px;
+    border: 1px solid var(--down); border-left-width: 3px; border-radius: 0 8px 8px 0;
+    background: var(--down-soft); color: var(--ink-2);
+  }
+  #warnband .warnzeile.gelb { border-color: var(--warn); background: color-mix(in srgb, var(--warn) 12%, var(--surface)); }
   .belegt-box .params label:has(input[type="checkbox"]) {
     flex-direction: row; align-items: center; gap: 7px;
     font-size: 12.5px; text-transform: none; letter-spacing: 0; font-weight: 500; color: var(--ink-2);
@@ -515,6 +525,10 @@
   <div class="ck"><span class="ckl">US-Börse</span><b id="ckMarkt">–</b></div>
   <div class="ck"><span class="ckl">Scan</span><b id="ckScan">–</b></div>
 </div>
+<!-- Warnband: seltene, wichtige Zustaende (Quelle gestoert, Speichern fehlgeschlagen,
+     Sicherung geladen, Kante verfallen). Auf jedem Reiter sichtbar, weil es auf
+     jedem Reiter gilt. Gefuellt von depot.js/warnbandSetzen. -->
+<div id="warnband" style="display:none;"></div>
 
 <nav class="tabs">
   <button data-tab="dashboard" class="active">Dashboard</button>
@@ -566,6 +580,7 @@
   <div class="pills" id="depotPills">
     <button data-sub="depot" class="active">Depot</button>
     <button data-sub="strategien">Schalter &amp; Einstellungen</button>
+    <button data-sub="wende">Trendwechsel</button>
     <button data-sub="protokoll">Protokoll</button>
     <button data-sub="auswertung">Auswertung</button>
   </div>
@@ -866,6 +881,44 @@
       </div>
       <div id="watchChips" style="display:flex; gap:6px; flex-wrap:wrap;"></div>
       <div style="color:var(--muted); font-size:11.5px; margin-top:8px;">Hinzufügen: Wert im Aktien-Explorer suchen → „Zur Handels-Watchlist“.</div>
+    </div>
+  </div>
+
+  <!-- ============ TRENDWECHSEL (Felix, #33/#35) ============ -->
+  <div class="sub" id="sub-wende">
+    <div class="simnote"><b>Beobachtung, kein Handel.</b> Dieser Detektor (dein Winkel-Vorschlag aus #33) war der
+      einzige Teilüberlebende der Trendwende-Studie – aber ein guter Teil seines Vorsprungs war Tageszeit-Effekt,
+      und die 1-Minuten-Basis war mit 7 Tagen zu kurz für ein Urteil. Die App sammelt seit 8.23.25 jede Nacht
+      1-Minuten-Kurse; <b>in 4–6 Wochen wird sauber nachgemessen</b>. Bis dahin zeigt diese Seite live, was der
+      Detektor sieht – zum Spielen und Beobachten, genau wie vorgeschlagen.</div>
+    <div class="panel" style="margin-bottom:12px;">
+      <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+        <label class="wendeopt">Kerzen<select id="wendeIv">
+          <option value="1m" selected>1 Minute</option>
+          <option value="5m">5 Minuten</option>
+        </select></label>
+        <label class="wendeopt" title="Normierter Winkel des jungen Abschnitts: Steigung × Länge ÷ Kanalbreite – wie steil die Bewegung relativ zu ihrem eigenen Rauschen ist. In der Studie war 1,0 die beste 1-Minuten-Zelle.">Winkel-Schwelle<select id="wendeS">
+          <option value="0.5">0,5 (empfindlich)</option>
+          <option value="1" selected>1,0 (Studien-Zelle)</option>
+          <option value="1.5">1,5</option>
+          <option value="2">2,0 (nur steile Wechsel)</option>
+        </select></label>
+        <label class="wendeopt" title="Ein Hoch/Tief gilt erst als Wendepunkt, wenn danach so viele Kerzen bestätigt haben – walk-forward, kein Blick in die Zukunft.">Bestätigung<select id="wendeF">
+          <option value="3">3 Kerzen</option>
+          <option value="5" selected>5 Kerzen</option>
+          <option value="8">8 Kerzen</option>
+        </select></label>
+        <button class="btn" id="wendeBtn">Jetzt prüfen</button>
+        <span id="wendeStatus" style="color:var(--muted); font-size:12px;"></span>
+      </div>
+      <div class="hinweis" style="margin-top:8px;">
+        Sekunden-Kerzen (1/5/10 s) sind mit der Kursquelle nicht möglich – Yahoo liefert feinstens 1 Minute,
+        und nur 7 Tage zurück. Geprüft werden die 15 Standard-Werte plus deine Watchlist; der Winkel zur
+        Horizontalen und die Drehung gegen den Vortrend entsprechen exakt der Studien-Rechnung.
+      </div>
+    </div>
+    <div class="panel">
+      <div id="wendeTabelle"><div class="loading">Noch nicht geprüft – „Jetzt prüfen“ klicken.</div></div>
     </div>
   </div>
 

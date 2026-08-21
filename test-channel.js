@@ -318,5 +318,36 @@ console.log('16) Kanal-Abschnitte: ein Kanal je Trendbein, nicht vier am rechten
   ok(Q.kanalSegmente(bars.slice(0, 30)).length === 0, 'zu kurze Reihen liefern keine Abschnitte');
 })();
 
+console.log('17) Trendwechsel-Beobachtung (Felix #33/#35): Winkel-Detektor als reine Funktion');
+(function () {
+  var seed = 11;
+  function rnd() { seed ^= seed << 13; seed ^= seed >>> 17; seed ^= seed << 5; return ((seed >>> 0) / 4294967296) - 0.5; }
+  // Auf, dann ab, dann frisch auf - genau Felix' AMD-Bild. Der erste Aufwaertsteil
+  // ist noetig, damit der obere Wendepunkt existiert: eine Reihe, die an ihrem Hoch
+  // BEGINNT, hat dort keinen bestaetigbaren Wendepunkt.
+  var bars = [], p = 100, t = 0;
+  for (var a = 0; a < 40; a++) { p = 100 + a * 0.6 + Math.sin(a / 4) * 0.8 + rnd() * 0.3; bars.push([t++ * 60000, p, 1000]); }
+  var top = p;
+  for (var i = 0; i < 60; i++) { p = top - i * 0.6 + Math.sin(i / 4) * 0.8 + rnd() * 0.3; bars.push([t++ * 60000, p, 1000]); }
+  var tief = p;
+  for (var j = 0; j < 30; j++) { p = tief + j * 0.7 + Math.sin(j / 4) * 0.8 + rnd() * 0.3; bars.push([t++ * 60000, p, 1000]); }
+  var w = Q.trendwechsel(bars, { schwelle: 1.0, bestaetigung: 5 });
+  ok(w !== null, 'Detektor liefert ein Ergebnis');
+  ok(w && w.vorher && w.vorher.winkel < -0.5, 'Vortrend abwaerts erkannt', w && w.vorher && w.vorher.winkel);
+  ok(w && w.aktuell && w.aktuell.winkel > 0, 'junger Abschnitt aufwaerts', w && w.aktuell && w.aktuell.winkel);
+  ok(w && w.signal && w.signal.dir === 'call', 'Drehung gegen den Vortrend -> Wechsel nach OBEN gemeldet');
+  // Gegenprobe 1: Fortsetzung des Trends (keine Drehung) darf NICHT feuern
+  var bars2 = [], p2 = 100; t = 0; seed = 12;
+  for (var k = 0; k < 120; k++) { p2 = 100 + k * 0.6 + Math.sin(k / 4) * 0.8 + rnd() * 0.3; bars2.push([t++ * 60000, p2, 1000]); }
+  var w2 = Q.trendwechsel(bars2, { schwelle: 1.0, bestaetigung: 5 });
+  ok(!w2 || !w2.signal, 'gleichgerichteter Trend meldet keinen Wechsel');
+  // Gegenprobe 2: Rauschen ohne Vortrend darf nicht feuern (|Vortrend-Winkel| < 0,5)
+  var bars3 = [], p3 = 100; t = 0; seed = 13;
+  for (var l = 0; l < 120; l++) { p3 += rnd() * 0.6; bars3.push([t++ * 60000, 100 + (p3 - 100) * 0.2, 1000]); }
+  var w3 = Q.trendwechsel(bars3, { schwelle: 1.0, bestaetigung: 5 });
+  ok(!w3 || !w3.signal, 'Seitwaerts-Rauschen ohne Vortrend meldet keinen Wechsel');
+  ok(Q.trendwechsel(bars.slice(0, 30)) === null, 'zu kurze Reihe liefert null');
+})();
+
 console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
 process.exit(fails ? 1 : 0);

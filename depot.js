@@ -339,6 +339,16 @@
   /* ================= Benachrichtigungen & Nachbilden ================= */
   var SLUGS = { AAPL: 'apple', MSFT: 'microsoft', NVDA: 'nvidia', GOOGL: 'alphabet', AMZN: 'amazon', META: 'meta-platforms', TSLA: 'tesla', AMD: 'amd', AVGO: 'broadcom', TSM: 'tsmc', ASML: 'asml', INTC: 'intel', QCOM: 'qualcomm', MU: 'micron-technology', ARM: 'arm-holdings' };
 
+  /** Allgemeine Benachrichtigung - fuer die seltenen, wichtigen Ereignisse
+   *  (Quelle gestoert, Kante verfallen, Speichern fehlgeschlagen). */
+  function melde(titel, text) {
+    if (!D || D.notify === false) return;
+    try {
+      var n0 = new Notification(titel, { body: text, silent: false });
+      n0.onclick = function () { window.focus(); };
+    } catch (e) { /* Benachrichtigungen nicht verfuegbar */ }
+  }
+
   function notifyTrade(trade, action) {
     if (!D || D.notify === false) return;
     try {
@@ -440,7 +450,24 @@
 
   function save() {
     exportAnalysis(false); // Analyse-Dateien im Downloads-Ordner aktuell halten (gedrosselt)
-    return window.api.storeSet('depot', D);
+    /* Das Ergebnis wurde frueher nie geprueft: Volle Platte oder ein blockierendes
+     * Programm hiess stilles Nicht-Speichern bei laufendem Handel - beim Beenden
+     * war der ganze Tag weg. Jetzt: Warnband + Zaehler, und beim ersten Fehlschlag
+     * eine Benachrichtigung. Der naechste save() versucht es ohnehin erneut. */
+    return window.api.storeSet('depot', D).then(function (r) {
+      if (r && r.ok === false) {
+        HEALTH.saveFail = (HEALTH.saveFail || 0) + 1;
+        if (typeof warnbandSetzen === 'function') warnbandSetzen('save',
+          '<b>Speichern fehlgeschlagen</b> (' + U.esc(r.msg || 'unbekannt') + ') – die App läuft weiter, aber ' +
+          'Änderungen seit dem letzten erfolgreichen Speichern gingen beim Beenden verloren. ' +
+          'Häufigste Ursachen: Platte voll oder ein Programm blockiert den Daten-Ordner.');
+        if (HEALTH.saveFail === 1) melde('Speichern fehlgeschlagen', 'Der Depot-Stand kann gerade nicht gesichert werden: ' + (r.msg || 'unbekannt'));
+      } else if (r && r.ok && HEALTH.saveFail) {
+        HEALTH.saveFail = 0;
+        if (typeof warnbandSetzen === 'function') warnbandSetzen('save', null);
+      }
+      return r;
+    });
   }
 
   /* ================= Parallel-Helfer & Backtest-Worker-Pool ================= */
@@ -1006,6 +1033,112 @@
     });
   }
 
+  /* ================= Warnband =================
+   * Seltene, wichtige Zustaende gehoeren auf JEDEN Reiter, nicht in eine Klappe:
+   * Quelle gestoert, Speichern fehlgeschlagen, Depot aus Sicherung, Kante verfallen.
+   * Je Schluessel eine Zeile; null raeumt die Zeile wieder ab. */
+  var WARNBAND = {};
+  function warnbandSetzen(schluessel, html, gelb) {
+    var el = document.getElementById('warnband');
+    if (!el) return;
+    if (html) WARNBAND[schluessel] = { html: html, gelb: !!gelb };
+    else delete WARNBAND[schluessel];
+    var keys = Object.keys(WARNBAND);
+    el.style.display = keys.length ? '' : 'none';
+    el.innerHTML = keys.map(function (k) {
+      return '<div class="warnzeile' + (WARNBAND[k].gelb ? ' gelb' : '') + '">' + WARNBAND[k].html + '</div>';
+    }).join('');
+  }
+  function edgePauseAnzeigen() {
+    if (D && D.intraday && D.intraday.edgePause && !D.intraday.edgePauseHand) {
+      var ep = D.intraday.edgePause;
+      warnbandSetzen('edge', '<b>Edge-Wächter: Kante pausiert</b> – der gemessene Vorsprung ist in zwei Nächten ' +
+        'hintereinander verfallen (zuletzt ' + ep.mittelPp + ' Pp, t=' + ep.t + '). Neue Einstiege sind ausgesetzt, ' +
+        'das Schattenbuch misst weiter; eine positive Nacht hebt die Pause automatisch auf. ' +
+        '<button class="btn ghost" data-edgefrei="1" style="padding:2px 10px; font-size:11.5px; margin-left:6px;">Trotzdem weiter handeln</button>', true);
+    } else {
+      warnbandSetzen('edge', null);
+    }
+  }
+  function stoerungAnzeigen() {
+    if ((HEALTH.stoerungScans || 0) >= 2) {
+      var seitTxt = HEALTH.stoerungSeit ? ' seit ' + new Date(HEALTH.stoerungSeit).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }) + ' Uhr' : '';
+      warnbandSetzen('stoerung', '<b>Kursquelle gestört</b>' + seitTxt + ' – ' + HEALTH.stoerungScans +
+        ' Scans ohne Antwort. Offene Positionen können nicht bewertet oder gestoppt werden; ' +
+        'der Abruf-Takt ist gestreckt und normalisiert sich von selbst, sobald wieder Kurse kommen.');
+    } else {
+      warnbandSetzen('stoerung', null);
+    }
+  }
+
+  /* ================= Trendwechsel-Beobachtung (Felix #33/#35) =================
+   * BEOBACHTUNG, kein Handel: Der Winkel-Detektor war der einzige Teilueberlebende
+   * der Trendwende-Studie, aber die 1m-Basis war zu kurz und ~44 % des Effekts war
+   * Tageszeit-Drift. Der Retest kommt, wenn das naechtlich wachsende 1m-Archiv
+   * 60+ Tage traegt. Bis dahin: live ansehen, nichts kaufen. */
+  var wendeLaeuft = false, wendeZuletzt = 0;
+  async function wendePruefen(erzwungen) {
+    var el = document.getElementById('wendeTabelle'), st = document.getElementById('wendeStatus');
+    if (!el || wendeLaeuft) return;
+    // Beim blossen Reiterwechsel hoechstens alle 3 Minuten neu rechnen
+    if (!erzwungen && Date.now() - wendeZuletzt < 3 * 60000 && el.querySelector('table')) return;
+    wendeLaeuft = true;
+    if (st) st.textContent = 'Prüfe …';
+    try {
+      var iv = (document.getElementById('wendeIv') || {}).value || '1m';
+      var S = parseFloat((document.getElementById('wendeS') || {}).value || '1');
+      var F = parseInt((document.getElementById('wendeF') || {}).value || '5', 10);
+      var barMin = iv === '5m' ? 5 : 1;
+      var syms = universe();   // 15 Standard-Werte + eigene Watchlist - bewusst NICHT der 99er-Pool (Abruflast)
+      var fertig = 0;
+      var zeilen = [];
+      await pmap(syms, async function (sy) {
+        var fd = await fetchIntraday(sy, iv, false);
+        fertig++;
+        if (st) st.textContent = 'Prüfe … (' + fertig + '/' + syms.length + ')';
+        if (!fd || !fd.series || fd.series.length < 60) { zeilen.push({ sym: sy, fehler: 'keine Daten' }); return; }
+        var sigBars = Q.fertigeBars(fd.series, barMin, Date.now());
+        var w = Q.trendwechsel(sigBars, { schwelle: S, bestaetigung: F });
+        zeilen.push({ sym: sy, w: w });
+      }, 4);
+      // Frische Wechsel zuoberst, dann die steilsten jungen Abschnitte
+      zeilen.sort(function (a, b) {
+        var sa = a.w && a.w.signal ? 1 : 0, sb = b.w && b.w.signal ? 1 : 0;
+        if (sa !== sb) return sb - sa;
+        var wa = a.w && a.w.aktuell && a.w.aktuell.winkel != null ? Math.abs(a.w.aktuell.winkel) : -1;
+        var wb = b.w && b.w.aktuell && b.w.aktuell.winkel != null ? Math.abs(b.w.aktuell.winkel) : -1;
+        return wb - wa;
+      });
+      var pfeil = function (t) { return t === 'auf' || t === 'up' ? '↗' : (t === 'ab' || t === 'down' ? '↘' : '→'); };
+      var h = '<table class="tbl"><tr><th>Wert</th><th>Vortrend</th><th>Junger Abschnitt</th><th>Drehung</th><th>Stand</th></tr>';
+      zeilen.forEach(function (z) {
+        if (z.fehler || !z.w) {
+          h += '<tr><td><b>' + U.esc(z.sym) + '</b></td><td colspan="4" style="color:var(--muted);">' + U.esc(z.fehler || 'zu wenig Historie') + '</td></tr>';
+          return;
+        }
+        var v = z.w.vorher, a = z.w.aktuell, sig = z.w.signal;
+        var dreht = v && a && a.winkel != null && Math.abs(v.winkel) >= 0.5 && Math.sign(a.winkel) !== Math.sign(v.winkel);
+        h += '<tr' + (sig ? ' style="background:var(--up-soft);"' : '') + '><td><b>' + U.esc(z.sym) + '</b></td>' +
+          '<td>' + (v ? pfeil(v.trend) + ' ' + U.nf2.format(v.winkel) : '<span style="color:var(--muted);">kein Vortrend</span>') + '</td>' +
+          '<td>' + (a ? (a.winkel != null ? pfeil(a.trend) + ' ' + U.nf2.format(a.winkel) + ' <span style="color:var(--muted);">(seit ' + a.seitKerzen + ' Kerzen)</span>' : '<span style="color:var(--muted);">' + U.esc(a.trend) + ' (' + a.seitKerzen + ' Kerzen)</span>') : '–') + '</td>' +
+          '<td>' + (dreht ? '<b>ja</b>' : 'nein') + '</td>' +
+          '<td>' + (sig
+            ? '<b class="' + (sig.dir === 'call' ? 'pos' : 'neg') + '">Wechsel nach ' + (sig.dir === 'call' ? 'OBEN' : 'UNTEN') + '</b>'
+            : '<span style="color:var(--muted);">' + (a && a.winkel != null && Math.abs(a.winkel) < S ? 'zu flach' : 'kein Wechsel') + '</span>') + '</td></tr>';
+      });
+      h += '</table><div class="hinweis" style="margin-top:8px;">Winkel = Steigung × Abschnittslänge ÷ Kanalbreite ' +
+        '(wie steil relativ zum eigenen Rauschen; Vorzeichen = Richtung). „Wechsel“ = junger Abschnitt ist steiler als die ' +
+        'Schwelle UND dreht gegen den Vortrend – die Studien-Bedingung. Simulation, keine Anlageberatung.</div>';
+      el.innerHTML = h;
+      wendeZuletzt = Date.now();
+      if (st) st.textContent = 'Stand ' + new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }) + ' Uhr · ' + zeilen.filter(function (z) { return z.w && z.w.signal; }).length + ' Wechsel';
+    } catch (eW) {
+      if (st) st.textContent = 'Prüfung fehlgeschlagen: ' + (eW && eW.message ? eW.message : eW);
+    } finally {
+      wendeLaeuft = false;
+    }
+  }
+
   /* ================= Live-Signal-Monitor ================= */
   function renderSigMonitor() {
     var el = document.getElementById('sigMonitor');
@@ -1354,6 +1487,12 @@
    * je Scan-Runde rotieren 12 Extras durch - jedes ist alle ~10 Minuten dran,
    * die Signalkerze schliesst ohnehin nur stuendlich. Klumpen-Deckel, Tageslimit,
    * Cooldown und Risikostufe gelten unveraendert. */
+  /* Halbleiter-Stichtagsliste (22.08.2026) fuer den Sektor-Klumpen-Deckel. Eine
+   * SETZUNG, keine Messung - aber der Deckel schreibt Schatten und ist damit
+   * ueberpruefbar. Kriterium: Chips, Chip-Ausruestung und Speichertechnik. */
+  var SEKTOR_CHIPS = {};
+  ('NVDA AMD INTC MU ARM TSM ASML AVGO QCOM TXN LRCX KLAC AMAT ADI NXPI MRVL ON MCHP SMCI MPWR TER SWKS QRVO STX WDC').split(' ')
+    .forEach(function (s9) { SEKTOR_CHIPS[s9] = 1; });
   var EXTRA_60M = ('ORCL CRM ADBE CSCO TXN IBM NOW INTU JPM BAC WFC GS MS C SCHW BLK AXP UNH PFE ABBV MRK LLY TMO ABT ' +
     'XOM CVX COP SLB EOG OXY WMT COST MCD NKE SBUX TGT LOW HD DIS CMCSA VZ TMUS CAT DE BA HON GE LMT RTX UNP UPS FDX ' +
     'PANW CRWD ZS NET DDOG SNOW MDB TEAM WDAY ADSK CDNS SNPS KLAC LRCX AMAT EBAY BKNG ABNB UBER DASH PYPL SHOP SNAP ' +
@@ -2079,10 +2218,40 @@
     try {
       st.textContent = 'Lade Kurse (' + syms.length + ' Werte parallel) …';
       var fds = await pmap(syms, function (sy) { return fetchIntraday(sy, cfg.interval || '5m', false); }, 6);
+      /* Symbole mit OFFENER Position bekommen bei ausbleibender Antwort genau einen
+       * Sofort-Nachversuch: Ohne Kursantwort wurde das Symbol frueher komplett
+       * uebersprungen - INKLUSIVE Stop, Ziel und Glattstellung der offenen Position.
+       * Die Ausstiege sind das Letzte, das eine Stoerung stilllegen darf. */
+      for (var ri = 0; ri < syms.length; ri++) {
+        if (fds[ri]) continue;
+        var hatOffen = D.positions.some(function (p0) { return p0.sym === syms[ri]; });
+        if (hatOffen) fds[ri] = await fetchIntraday(syms[ri], cfg.interval || '5m', false);
+        if (!fds[ri] && hatOffen) {
+          HEALTH.exitBlind = (HEALTH.exitBlind || 0) + 1;
+          patienceAdd('Kursquelle gestört – offene Position ohne frische Bewertung', syms[ri]);
+        }
+      }
       HEALTH.scans++; HEALTH.lastScanT = now;
       // Kapitalschutz zuerst - mit den eben geladenen, frischen Kursen. Vor jeder
       // Signalpruefung, damit an einem schlechten Tag nichts mehr dazukommt.
       killSwitchPruefen(now);
+      /* Stoerungs-Zustand: Liefert ein kompletter Scan KEINE einzige Antwort, ist
+       * nicht ein Symbol kaputt, sondern die Quelle. Dann: sichtbar machen (Banner,
+       * einmalige Benachrichtigung) und den Takt strecken statt weiterzuhaemmern -
+       * gerade bei einem Rate-Limit verlaengert stures Anfragen die Sperre nur. */
+      var antworten = fds.filter(Boolean).length;
+      if (antworten === 0 && syms.length >= 5) {
+        HEALTH.stoerungScans = (HEALTH.stoerungScans || 0) + 1;
+        if (HEALTH.stoerungScans === 2 && !HEALTH.stoerungGemeldet) {
+          HEALTH.stoerungGemeldet = true;
+          HEALTH.stoerungSeit = now;
+          melde('Kursquelle gestört', 'Seit zwei Scans keine Kursdaten. Offene Positionen können bis zur Erholung nicht bewertet oder gestoppt werden.');
+        }
+      } else if (antworten > 0 && HEALTH.stoerungScans) {
+        if (HEALTH.stoerungGemeldet) melde('Kursquelle wieder da', 'Die Kursdaten fließen wieder – Positionen werden normal bewertet.');
+        HEALTH.stoerungScans = 0; HEALTH.stoerungGemeldet = false; HEALTH.stoerungSeit = 0;
+      }
+      stoerungAnzeigen();
       HEALTH.scanTimes.push(now); if (HEALTH.scanTimes.length > 400) HEALTH.scanTimes = HEALTH.scanTimes.slice(-400);
       fds.forEach(function (f, fi) {
         if (f && f.series) {
@@ -2318,6 +2487,15 @@
         } else if (sig.crossed) {
           dir = sig.crossed === 'up' ? 'call' : 'put';
         }
+        /* Edge-Wächter-Pause: Der Vorsprung der belegten Kante ist in zwei Naechten
+         * hintereinander verfallen - dann kommen keine NEUEN Einstiege mehr, bis
+         * eine Nacht wieder positiv misst oder Wilhelm es von Hand uebersteuert.
+         * Ausstiege und Schattenbuch laufen unveraendert weiter. */
+        if (dir && (isRsi2Seit || isKapitulation) && D.intraday.edgePause && !D.intraday.edgePauseHand) {
+          patienceAdd('Edge-Wächter: Vorsprung verfallen – neue Einstiege pausiert', sym);
+          schattenNeu('Edge-Wächter', sym, dir, spot, sigBars, mp, cfg, now);
+          dir = null; kapiTrade = false;
+        }
         /* Regime-Zuteilung: jede Kante nur in ihrem gemessenen Regime.
          * Steht BEWUSST hinter der ganzen Auslöser-Kette und nicht im rsi2seit-Zweig:
          * dort war das Gate fuer den eigenstaendigen Modus 'kapitulation' schlicht
@@ -2383,7 +2561,13 @@
         }
         if (D.intradayCount >= mp.maxPerDay) { patienceAdd('Tageslimit erreicht', sym); schattenNeu('Tageslimit', sym, dir, spot, sigBars, mp, cfg, now); continue; }
         if (killSwitchAktiv()) { patienceAdd('Kill-Switch: Handel bis Tagesende gesperrt', sym); continue; }
-        if (D.handelsPause && D.handelsPause.bis > now) { patienceAdd('Handelspause (Marktlage: kein passendes Setup)', sym); continue; }
+        /* Die Marktlagen-Pause gilt NICHT fuer die belegten Kanten (Inventur
+         * 22.08.2026): Ihre Fallback-Regel pausiert bei "Trendanteil 40-60 %,
+         * wenig Wellen" - das IST der Seitwaertsmarkt, in dem rsi2seit sein Geld
+         * verdient (gemessen +0,147 Pp). Die Pause misst auf 5m-Kennzahlen, die
+         * Kante handelt auf 60m, und gemessen wurde die Regel nie. Fuer die
+         * widerlegten Modi bleibt sie als Schutz bestehen. */
+        if (D.handelsPause && D.handelsPause.bis > now && !isRsi2Seit && !isKapitulation) { patienceAdd('Handelspause (Marktlage: kein passendes Setup)', sym); continue; }
         if (!canOpen(equityNow()).ok) { patienceAdd('Risiko-Limit', sym); continue; } // Risikomanagement
         // 5-Min-Bestätigung für 1-Min-Signale (Multi-Timeframe)
         if (cfg.mtf !== false && (cfg.interval || '5m') === '1m' && !Q.mtfAgrees(sigBars, dir, 5)) { patienceAdd('5-Min-Chart widerspricht', sym); schattenNeu('MTF-Widerspruch', sym, dir, spot, sigBars, mp, cfg, now); continue; }
@@ -2458,6 +2642,25 @@
           patienceAdd('Klumpen-Limit: schon ' + gleicheRichtung + ' offene ' + (dir === 'call' ? 'Long' : 'Short') + '-Positionen (Grenze ' + klumpenMax + ') – zehn gleichgerichtete Trades sind eine Wette, zehnmal', sym);
           schattenNeu('Klumpen-Limit', sym, dir, spot, sigBars, mp, cfg, now, iv);
           continue;
+        }
+        /* SEKTOR-DECKEL (Inventur 22.08.2026): Der Richtungs-Deckel kannte keine
+         * Branchen - 8 gleichgerichtete Longs durften 8 Halbleiter sein, und der
+         * Pool 'volatil' besteht zu einem Drittel aus Chips. Genau im Chip-Ausverkauf
+         * feuert rsi2seit auf alle gleichzeitig; das waere EINE Sektorwette mit bis
+         * zu 40 % des Depots. Die Halbleiter-Liste ist eine SETZUNG (Stichtag), aber
+         * der Deckel schreibt Schatten - seine Kosten sind damit messbar. */
+        var sektor = SEKTOR_CHIPS[sym] ? 'chips' : null;
+        if (sektor) {
+          var chipMax = Math.max(2, Math.ceil(klumpenMax / 2));
+          var gleicheChips = 0;
+          for (var kc = 0; kc < D.positions.length; kc++) {
+            if (D.positions[kc].strategy === 'intraday' && D.positions[kc].dir === dir && SEKTOR_CHIPS[D.positions[kc].sym]) gleicheChips++;
+          }
+          if (gleicheChips >= chipMax) {
+            patienceAdd('Sektor-Klumpen: schon ' + gleicheChips + ' gleichgerichtete Halbleiter-Positionen (Grenze ' + chipMax + ') – acht Chips sind eine Wette, achtmal', sym);
+            schattenNeu('Sektor-Klumpen', sym, dir, spot, sigBars, mp, cfg, now, iv);
+            continue;
+          }
         }
         if (istBasis) {
           wWert2 = spot;
@@ -2695,6 +2898,7 @@
 
     // Status-Badges der Strategie-Karten
     renderStatusBadges();
+    edgePauseAnzeigen();
 
     // KI-Karte: Status & Entscheidungs-Log
     var ks = document.getElementById('kiState');
@@ -3536,6 +3740,15 @@
         var urteilE = ein.n < 30
           ? 'noch zu wenige Signale für ein Urteil (ab 30 wird es aussagekräftig)'
           : (avgE > 0 ? 'die Strategie wäre im Mittel im Plus' : 'die Strategie wäre im Mittel im Minus');
+        // Der Vorwaertstest ist die einzige Evidenz ohne Rueckschau-Verzerrung -
+        // faellt er unter null, gehoert das ins Warnband, nicht nur in diese Karte.
+        if (ein.n >= 30 && avgE < 0) {
+          warnbandSetzen('vorwaerts', '<b>Vorwärtstest im Minus</b> – ' + ein.n + ' abgeschlossene Signale, Ø ' +
+            U.signTxt(avgE, ' %') + ' je Signal. Die Live-Evidenz widerspricht damit der Backtest-Erwartung; ' +
+            'Einzelheiten unter Auswertung → Vorwärtstest.', true);
+        } else {
+          warnbandSetzen('vorwaerts', null);
+        }
         /* Das Urteil steht in einer EIGENEN Zeile unter den Kennzahlen. Vorher lief
          * ein ganzer Urteilssatz in die 44 Pixel schmale Zahlenspalte von .patrow. */
         h += '<div class="patrow"><span><b>' + ein.n + ' abgeschlossene Signale</b>' + (einOffen ? ' · ' + einOffen + ' laufen' : '') + '</span>' +
@@ -5186,7 +5399,9 @@
    * Alle 5 Minuten (und bei jeder Diagnose) wandert das DELTA der Sitzungszaehler
    * in D.gesamtzaehler. Ein Schnappschuss verhindert Doppelzaehlung: Es wird immer
    * nur das aufaddiert, was seit dem letzten Abgleich dazugekommen ist. */
-  var GZ_FELDER = ['scans', 'scanErrors', 'fetchOk', 'fetchFail', 'kiOk', 'kiFail', 'killSwitch', 'staleBars', 'workerFail'];
+  var GZ_FELDER = ['scans', 'scanErrors', 'fetchOk', 'fetchFail', 'kiOk', 'kiFail', 'killSwitch', 'staleBars', 'workerFail',
+    // neu 22.08.2026: unbewertete offene Positionen (Quelle weg) und fehlgeschlagene Speicherversuche
+    'exitBlind', 'saveFail'];
   var GZ_SCHNAPP = null;
   function gesamtzaehlerAuffrischen() {
     try {
@@ -5825,6 +6040,40 @@
         if (edge) {
           a.edge = Object.assign({ at: Date.now() }, edge);
           a.lastCheck.txt += '\n\n' + edge.txt;
+          /* Eskalation (Gegenpruefung 21.08.2026): Der Waechter KUENDIGTE eine
+           * Konsequenz an ("naechste Nacht bestaetigt -> pausieren"), die es nie
+           * gab - er war reine Anzeige. Jetzt: zwei Naechte VERFALL hintereinander
+           * pausieren NEUE Einstiege der belegten Kanten. Die Schatten laufen
+           * weiter (Messung geht nie aus), ein Hand-Entscheid "trotzdem handeln"
+           * wird dauerhaft respektiert, und eine positive Nacht hebt die Pause
+           * von selbst wieder auf. */
+          var verfall = edge.mittelPp != null && !(edge.mittelPp > 0) && (edge.nSym || 0) >= 5;
+          if (!a.edgeHistorie) a.edgeHistorie = [];
+          a.edgeHistorie.unshift({ at: Date.now(), mittelPp: edge.mittelPp != null ? edge.mittelPp : null,
+            t: edge.t != null ? edge.t : null, verfall: verfall });
+          if (a.edgeHistorie.length > 30) a.edgeHistorie = a.edgeHistorie.slice(0, 30);
+          if (verfall && a.edgeHistorie.length >= 2 && a.edgeHistorie[1].verfall &&
+              !D.intraday.edgePauseHand && !D.intraday.edgePause) {
+            D.intraday.edgePause = { seit: Date.now(), mittelPp: edge.mittelPp, t: edge.t };
+            if (!D.tuneLog) D.tuneLog = [];
+            D.tuneLog.unshift({ id: 'sicherung-' + Date.now(), at: Date.now(), quelle: 'sicherung',
+              applied: ['Edge-Wächter: neue Einstiege pausiert'],
+              txt: 'Der gemessene Vorsprung der belegten Kante ist in zwei Nächten hintereinander verfallen ' +
+                '(zuletzt ' + edge.mittelPp + ' Pp, t=' + edge.t + '). Neue Einstiege sind pausiert; das Schattenbuch ' +
+                'misst weiter. Eine positive Nacht hebt die Pause automatisch auf – oder du entscheidest von Hand ' +
+                '„trotzdem handeln“ (wird dauerhaft respektiert).' });
+            melde('Edge-Wächter: Kante pausiert', 'Der gemessene Vorsprung ist in zwei Nächten verfallen (' + edge.mittelPp + ' Pp). Neue Einstiege sind ausgesetzt, die Messung läuft weiter.');
+            pilotLogAdd('Edge-Wächter: VERFALL in zwei Nächten – neue Einstiege pausiert.');
+          }
+          if (!verfall && edge.mittelPp != null && edge.mittelPp > 0 && D.intraday.edgePause) {
+            delete D.intraday.edgePause;
+            if (!D.tuneLog) D.tuneLog = [];
+            D.tuneLog.unshift({ id: 'sicherung-' + Date.now(), at: Date.now(), quelle: 'sicherung',
+              applied: ['Edge-Wächter: Pause aufgehoben'],
+              txt: 'Die Nacht-Messung zeigt den Vorsprung wieder positiv (' + edge.mittelPp + ' Pp, t=' + edge.t + ') – die Einstiegs-Pause ist aufgehoben.' });
+            melde('Edge-Wächter: Kante handelt wieder', 'Der Vorsprung ist wieder positiv (' + edge.mittelPp + ' Pp) – neue Einstiege sind freigegeben.');
+            pilotLogAdd('Edge-Wächter: Vorsprung wieder positiv – Pause aufgehoben.');
+          }
         }
       } catch (eEdge) { /* Waechter ist Zusatz - die Messung gilt auch ohne */ }
       a.lastCheck.dauerMin = Math.round((Date.now() - t0) / 60000 * 10) / 10;
@@ -6026,6 +6275,21 @@
   /* ================= Init & Loop ================= */
   async function init() {
     D = (await window.api.storeGet('depot')) || defaultDepot();
+    /* Kam der Bestand aus einer Sicherungsgeneration (Hauptdatei unlesbar), muss
+     * das SICHTBAR sein - vorher wurde daraus kommentarlos ein Werksreset. Die
+     * Markierung fliegt raus, bevor der naechste save() sie mitschreiben wuerde. */
+    if (D.__ausSicherung) {
+      var gen = D.__ausSicherung; delete D.__ausSicherung;
+      if (!D.tuneLog) D.tuneLog = [];
+      D.tuneLog.unshift({ id: 'sicherung-' + Date.now(), at: Date.now(), quelle: 'sicherung',
+        applied: ['Depot aus Sicherungskopie geladen (' + gen + ')'],
+        txt: 'Die Depot-Datei war unlesbar. Geladen wurde die Sicherungskopie ' + gen +
+          ' (höchstens ~10 Minuten alt bei laufender App). Positionen und Protokoll bitte einmal auf Plausibilität ansehen.' });
+      setTimeout(function () {
+        warnbandSetzen('sicherung', '<b>Depot aus Sicherungskopie geladen</b> – die Hauptdatei war unlesbar. ' +
+          'Der Stand ist höchstens ~10 Minuten älter als der letzte Betrieb. Einzelheiten im Experiment-Journal.', true);
+      }, 500);
+    }
     if (!D.positions) D.positions = [];
     if (!D.trades) D.trades = [];
     // Nach dem Laden sind Position und Protokoll-Eintrag getrennte JSON-Kopien.
@@ -6282,6 +6546,21 @@
     if (jS0) jS0.textContent = D.lastRun
       ? 'Letzter Lauf: ' + U.dt(D.lastRun)
       : (D.hourlyEnabled !== false ? 'Noch kein Lauf – nächster innerhalb einer Stunde.' : 'Kein Lauf nötig – die Strategie ist aus.');
+    /* Warnband-Knoepfe (Delegation - das Band wird bei jeder Aenderung neu gebaut).
+     * "Trotzdem weiter handeln" ist ein Hand-Entscheid gegen die Messung: er wird
+     * dauerhaft respektiert und nie wieder automatisch angefasst (Muster hourly). */
+    var wb = document.getElementById('warnband');
+    if (wb) wb.addEventListener('click', function (evW) {
+      var b = evW.target.closest ? evW.target.closest('[data-edgefrei]') : null;
+      if (!b) return;
+      D.intraday.edgePauseHand = true;
+      if (!D.tuneLog) D.tuneLog = [];
+      D.tuneLog.unshift({ id: 'hand-' + Date.now(), at: Date.now(), quelle: 'hand',
+        applied: ['Edge-Wächter-Pause übersteuert'],
+        txt: 'Von Hand entschieden: trotz verfallenem Vorsprung weiter handeln. Der Edge-Wächter misst weiter, pausiert aber nicht mehr automatisch.' });
+      save();
+      edgePauseAnzeigen();
+    });
     // Sub-Navigation (Pills)
     var pills = document.querySelectorAll('#depotPills button');
     pills.forEach(function (b) {
@@ -6289,10 +6568,12 @@
         pills.forEach(function (x) { x.classList.remove('active'); });
         document.querySelectorAll('#tab-depot .sub').forEach(function (s) { s.classList.remove('active'); });
         b.classList.add('active');
-        document.getElementById('sub-' + b.getAttribute('data-sub')).classList.add('active');
+        var subZiel = document.getElementById('sub-' + b.getAttribute('data-sub'));
+        if (subZiel) subZiel.classList.add('active');
         render();
         if (b.getAttribute('data-sub') === 'auswertung') renderAnalytics();
         if (b.getAttribute('data-sub') === 'strategien') { renderPilot(); renderRegime(); }
+        if (b.getAttribute('data-sub') === 'wende') wendePruefen(false);
       });
     });
 
@@ -6632,6 +6913,13 @@
       .forEach(function (el) { el.addEventListener('change', idSave); });
     var scrBtn = document.getElementById('screenBtn');
     if (scrBtn) scrBtn.addEventListener('click', function () { runScreener(true); });
+    // Trendwechsel-Beobachtung (Felix #33/#35)
+    var wBtn = document.getElementById('wendeBtn');
+    if (wBtn) wBtn.addEventListener('click', function () { wendePruefen(true); });
+    ['wendeIv', 'wendeS', 'wendeF'].forEach(function (id) {
+      var e2 = document.getElementById(id);
+      if (e2) e2.addEventListener('change', function () { wendePruefen(true); });
+    });
     renderScreen();
     renderHandSperre();
     window.__syncSetupUI = syncSetupUI;
@@ -6761,7 +7049,11 @@
       // Vorwärtstest nur, wenn ohnehin Kapital im Feuer steht, und wäre damit wertlos.
       var lohnt = D.intraday.enabled || D.intraday.schattenImmer !== false;
       // Krypto-Handel kennt keinen Boersenschluss - der Takt laeuft dann durch.
-      if (lohnt && (window.Dash.marketOpen() || D.intraday.kryptoHandeln) && Date.now() - D.intradayLastScan >= modeParams().scanMs) intradayScan();
+      /* Bei gestoerter Quelle Takt vervierfachen: stures Weiterhaemmern verlaengert
+       * ein Rate-Limit nur. Der gestreckte Takt prueft weiter (Erholung erkennen!),
+       * aber schont die Quelle. */
+      var taktMs = modeParams().scanMs * ((HEALTH.stoerungScans || 0) >= 2 ? 4 : 1);
+      if (lohnt && (window.Dash.marketOpen() || D.intraday.kryptoHandeln) && Date.now() - D.intradayLastScan >= taktMs) intradayScan();
     }, 30000);
 
     /* Krypto-Sammler. Ausdruecklich OHNE marketOpen()-Pruefung - waehrend die US-Boerse

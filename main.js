@@ -644,12 +644,44 @@ function geheimnisseWandeln(name, wert, fn) {
   GEHEIME_FELDER.forEach((k) => { if (k in kopie) kopie[k] = fn(kopie[k]); });
   return kopie;
 }
-ipcMain.handle('store-get', async (_ev, name) => {
+/* Sicherungsgenerationen fuer das Depot: Die eine Datei traegt Monate an Messbasis
+ * (Trade-Protokoll, Schattenbuch, Geduld-Bilanz). Vorher machte EIN unlesbares
+ * depot.json daraus kommentarlos ein frisches 10.000-$-Depot - und der naechste
+ * save() ueberschrieb die kaputte Datei endgueltig. Jetzt: vor dem Schreiben
+ * hoechstens alle 10 Minuten .bak1 -> .bak2 rotieren, beim Lesen im Fehlerfall
+ * die Generationen versuchen und den Fund MARKIEREN statt still null zu liefern. */
+const SICHERUNG_STORES = { depot: true };
+const sicherungZuletzt = {};
+function sicherungRotieren(f, name) {
+  if (!SICHERUNG_STORES[name] || !fs.existsSync(f)) return;
+  const jetzt = Date.now();
+  if (sicherungZuletzt[name] && jetzt - sicherungZuletzt[name] < 10 * 60000) return;
   try {
-    const f = path.join(storeDir(), safeName(name) + '.json');
+    if (fs.existsSync(f + '.bak1')) fs.copyFileSync(f + '.bak1', f + '.bak2');
+    fs.copyFileSync(f, f + '.bak1');
+    sicherungZuletzt[name] = jetzt;
+  } catch (e) { /* Sicherung darf das Speichern nie verhindern */ }
+}
+ipcMain.handle('store-get', async (_ev, name) => {
+  const f = path.join(storeDir(), safeName(name) + '.json');
+  try {
     if (!fs.existsSync(f)) return null;
     return geheimnisseWandeln(name, JSON.parse(fs.readFileSync(f, 'utf8')), dechiffrieren);
-  } catch (e) { return null; }
+  } catch (e) {
+    // Hauptdatei kaputt: Generationen versuchen, Fund markieren. Der Renderer
+    // zeigt die Markierung an und entfernt sie vor dem naechsten Speichern.
+    if (SICHERUNG_STORES[name]) {
+      for (const gen of ['.bak1', '.bak2']) {
+        try {
+          if (!fs.existsSync(f + gen)) continue;
+          const w = JSON.parse(fs.readFileSync(f + gen, 'utf8'));
+          if (w && typeof w === 'object') w.__ausSicherung = gen;
+          return geheimnisseWandeln(name, w, dechiffrieren);
+        } catch (e2) { /* naechste Generation */ }
+      }
+    }
+    return null;
+  }
 });
 ipcMain.handle('store-set', async (_ev, name, value) => {
   try {
@@ -665,6 +697,7 @@ ipcMain.handle('store-set', async (_ev, name, value) => {
         if (wert[k] && typeof wert[k] === 'object' && wert[k].__keep) wert[k] = alt[k] != null ? alt[k] : '';
       });
     }
+    sicherungRotieren(f, safeName(name));
     schreibAtomar(f, JSON.stringify(wert));
     return { ok: true };
   } catch (e) { return { ok: false, msg: String(e.message || e) }; }

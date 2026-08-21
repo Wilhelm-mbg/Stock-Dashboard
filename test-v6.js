@@ -451,8 +451,13 @@ console.log('\n17) Kapitalschutz: Kill-Switch, KI-Deckel, Stale-Daten, Regime-Pa
   ok(/setup: 'pause', ausloeser: 'keiner'/.test(depotSrc), 'Regime-Pause: Regel-Fallback kann pause waehlen');
   ok(/f\.trendAnteilPct > 40 && f\.trendAnteilPct < 60 && f\.mittlererWellenScore < 45/.test(depotSrc),
      'Regime-Pause: Fallback-Regel ist Trendanteil 40–60 UND Wellen-Score unter 45');
-  ok(/D\.handelsPause && D\.handelsPause\.bis > now\) \{ patienceAdd\('Handelspause/.test(depotSrc),
-     'Regime-Pause: blockt neue Einstiege tatsaechlich');
+  ok(/D\.handelsPause && D\.handelsPause\.bis > now && !isRsi2Seit && !isKapitulation\) \{ patienceAdd\('Handelspause/.test(depotSrc),
+     'Regime-Pause: blockt neue Einstiege der WIDERLEGTEN Modi');
+  /* Inventur 22.08.2026: Die ungemessene Fallback-Pause traf mit "Trendanteil
+   * 40-60, wenig Wellen" genau den Seitwaertsmarkt, in dem rsi2seit sein Geld
+   * verdient. Fuer die belegten Kanten ist sie deshalb ausgenommen. */
+  ok(/handelsPause[\s\S]{0,60}!isRsi2Seit && !isKapitulation/.test(depotSrc),
+     'Regime-Pause: die belegten Kanten sind von der ungemessenen Pause ausgenommen');
   // Die Fallback-Regel nachrechnen
   function pausiert(trend, welle) { return trend > 40 && trend < 60 && welle < 45; }
   ok(pausiert(50, 30) === true,  'Fallback: 50 % Trend + Wellen 30 -> Pause');
@@ -597,6 +602,44 @@ console.log('\n17b) Oberflaeche: Altlasten und Verdrahtung');
   ok(/:focus-visible \{ outline: 2px solid var\(--series\); outline-offset: 2px; \}/.test(h),
      'Der Fokusring verformt die Knoepfe nicht mehr');
   ok(/\.switch input:focus-visible \+ \.knob/.test(h), 'Kippschalter zeigen Tastatur-Fokus');
+
+  // --- Sicherheits-Trio (Inventur 22.08.2026) ---
+  // 1) Ausfall der Kursquelle: Exits nachversuchen, Stoerung sichtbar machen, Takt strecken
+  ok(/hatOffen\) fds\[ri\] = await fetchIntraday/.test(d),
+     'Ausfall: Symbole mit offener Position bekommen einen Sofort-Nachversuch');
+  ok(/HEALTH\.exitBlind = \(HEALTH\.exitBlind \|\| 0\) \+ 1/.test(d),
+     'Ausfall: unbewachte offene Positionen werden gezaehlt');
+  ok(/antworten === 0 && syms\.length >= 5/.test(d), 'Ausfall: Stoerung = kompletter Scan ohne Antwort');
+  ok(/HEALTH\.stoerungScans \|\| 0\) >= 2 \? 4 : 1/.test(d), 'Ausfall: Takt wird bei Stoerung vervierfacht');
+  ok(/function warnbandSetzen/.test(d) && /id="warnband"/.test(h), 'Warnband existiert und wird bedient');
+  // 2) Store-Sicherung
+  var m2 = fs.readFileSync(__dirname + '/main.js', 'utf8');
+  ok(/SICHERUNG_STORES = \{ depot: true \}/.test(m2), 'Store: das Depot hat Sicherungsgenerationen');
+  ok(/\.bak1'\)\) fs\.copyFileSync\(f \+ '\.bak1', f \+ '\.bak2'\)/.test(m2), 'Store: bak1 rotiert nach bak2');
+  ok(/__ausSicherung = gen/.test(m2), 'Store: eine geladene Sicherung wird MARKIERT statt still geliefert');
+  ok(/if \(D\.__ausSicherung\)/.test(d) && /delete D\.__ausSicherung/.test(d),
+     'Store: der Renderer zeigt die Markierung an und entfernt sie vor dem Speichern');
+  ok(/storeSet\('depot', D\)\.then\(function \(r\)/.test(d) && /HEALTH\.saveFail/.test(d),
+     'Store: save() prueft sein Ergebnis und meldet Fehlschlaege');
+  // 3) Edge-Waechter hat jetzt die angekuendigte Konsequenz
+  ok(/a\.edgeHistorie\[1\]\.verfall/.test(d), 'Edge-Waechter: Eskalation erst nach ZWEI Naechten Verfall');
+  ok(/D\.intraday\.edgePause = \{ seit/.test(d), 'Edge-Waechter: Verfall pausiert neue Einstiege wirklich');
+  ok(/schattenNeu\('Edge-Wächter'/.test(d), 'Edge-Waechter: pausierte Signale laufen im Schattenbuch weiter');
+  ok(/edgePauseHand/.test(d) && /data-edgefrei/.test(d), 'Edge-Waechter: Hand-Uebersteuerung existiert und wird respektiert');
+  ok(/edge\.mittelPp > 0 && D\.intraday\.edgePause\) \{\s*\n\s*delete D\.intraday\.edgePause/.test(d),
+     'Edge-Waechter: eine positive Nacht hebt die Pause automatisch auf');
+  ok(/ein\.n >= 30 && avgE < 0/.test(d), 'Vorwaertstest: negatives Live-Ergebnis landet im Warnband');
+  // 4) Sektor-Klumpen
+  ok(/SEKTOR_CHIPS/.test(d) && /schattenNeu\('Sektor-Klumpen'/.test(d),
+     'Sektor-Deckel: Halbleiter-Klumpen wird begrenzt UND per Schatten gemessen');
+  ok(/Math\.ceil\(klumpenMax \/ 2\)/.test(d), 'Sektor-Deckel: Grenze ist die Haelfte des Richtungs-Deckels');
+  // 5) Trendwechsel-Beobachtung (Felix #33/#35)
+  var q2 = fs.readFileSync(__dirname + '/quant.js', 'utf8');
+  ok(/trendwechsel: trendwechsel/.test(q2), 'Trendwechsel: Detektor ist als reine Funktion exportiert');
+  ok(/id="sub-wende"/.test(h) && /data-sub="wende"/.test(h), 'Trendwechsel: eigener Unter-Reiter existiert');
+  ok(/Beobachtung, kein Handel/.test(h), 'Trendwechsel: der Reiter sagt ehrlich, dass nicht gehandelt wird');
+  ok(/Sekunden-Kerzen \(1\/5\/10 s\) sind mit der Kursquelle nicht möglich/.test(h),
+     'Trendwechsel: die Sekunden-Grenze der Datenquelle steht dabei');
 
   // --- Simulations-Hinweis ueberlebt jeden Umbau ---
   var simH = (h.match(/keine Anlageberatung/gi) || []).length;

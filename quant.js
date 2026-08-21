@@ -2333,6 +2333,54 @@
     return raus;
   }
 
+  /** Trendwechsel-Beobachtung (Felix' Winkel-Detektor, Ticket #33/#35).
+   *  EXAKT die Logik der Trendwende-Studie vom 21.08.2026 - hier nur als
+   *  BEOBACHTUNG, nicht als Handelssignal: Der Detektor war der einzige
+   *  Teilueberlebende der Studie, aber ~44 % seines Effekts war Tageszeit-Drift
+   *  und die 1m-Basis zu kurz. Der Retest laeuft; bis dahin zeigt diese Funktion
+   *  nur an, was der Detektor sieht.
+   *
+   *  Ablauf (walk-forward, kein Blick in die Zukunft):
+   *   1. Wendepunkte gelten erst F Kerzen NACH ihrem Hoch/Tief als bestaetigt.
+   *   2. Der Vor-Abschnitt (vorletzter -> letzter Wendepunkt) liefert den
+   *      Vortrend-Winkel; ohne echten Vortrend (|Winkel| < 0,5) kein Signal.
+   *   3. Der junge Abschnitt (ab letztem Wendepunkt) braucht >= 10 Kerzen und
+   *      einen gueltigen Kanal; sein normierter Winkel (Steigung x Laenge /
+   *      Kanalbreite - wie steil relativ zum Rauschen) muss die Schwelle S
+   *      reissen UND das Vorzeichen gegen den Vortrend drehen.
+   *  Rueckgabe: { vorher: {winkel, trend}, aktuell: {winkel, trend, seitKerzen},
+   *              signal: {dir, beiKerze}|null } oder null (zu wenig Daten). */
+  function trendwechsel(bars, opt) {
+    opt = opt || {};
+    var F = opt.bestaetigung || 5;       // Kerzen bis ein Wendepunkt bestaetigt ist
+    var S = opt.schwelle != null ? opt.schwelle : 1.0;   // Winkel-Schwelle (normiert)
+    var MIN_JUNG = 10;
+    if (!bars || bars.length < 40) return null;
+    var wnk = function (k) { return k.steigung * k.n / k.breite; };
+    var wp = wendepunkte(bars, F);
+    var alle = wp.hoch.concat(wp.tief).map(function (w) { return w.i; }).sort(function (a, b) { return a - b; });
+    // nur bestaetigte Wendepunkte (i + F <= letzte Kerze)
+    var C = alle.filter(function (i) { return i + F <= bars.length - 1; });
+    if (C.length < 2) return null;
+    var wLetzt = C[C.length - 1], wVor = C[C.length - 2];
+    var kAlt = kanalUeber(bars, wVor, wLetzt);
+    var winkelAlt = (kAlt && kAlt.breite > 0) ? wnk(kAlt) : 0;
+    var seit = bars.length - 1 - wLetzt;
+    var raus = {
+      vorher: kAlt ? { winkel: Math.round(winkelAlt * 100) / 100, trend: kAlt.trend } : null,
+      aktuell: null, signal: null
+    };
+    if (seit < MIN_JUNG) { raus.aktuell = { winkel: null, trend: 'zu jung', seitKerzen: seit }; return raus; }
+    var kNeu = kanalUeber(bars, wLetzt, bars.length - 1);
+    if (!kNeu || !(kNeu.breite > 0)) { raus.aktuell = { winkel: null, trend: 'kein Kanal', seitKerzen: seit }; return raus; }
+    var wn = wnk(kNeu);
+    raus.aktuell = { winkel: Math.round(wn * 100) / 100, trend: kNeu.trend, seitKerzen: seit };
+    if (Math.abs(winkelAlt) >= 0.5 && Math.abs(wn) >= S && Math.sign(wn) !== Math.sign(winkelAlt)) {
+      raus.signal = { dir: wn > 0 ? 'call' : 'put', beiKerze: bars.length - 1 };
+    }
+    return raus;
+  }
+
   /** Volatilitäts-Stop („atmender“ Not-SL) auf den SCHEIN, aus Bar-Rauschen × Hebel.
    *  Rückgabe: negativer Anteil, z. B. -0.22 = −22 %. */
   function autoStop(closes, omega, barsHold) {
@@ -2755,7 +2803,7 @@
     channelValid: channelValid, CHAN_MIN: CHAN_MIN, varianceRatio: varianceRatio,
     bewaehrungsUrteil: bewaehrungsUrteil,
     trendChannel: trendChannel, projectTrendChannel: projectTrendChannel,
-    wendepunkte: wendepunkte, kanalUeber: kanalUeber, kanaele: kanaele, kanalSegmente: kanalSegmente,
+    wendepunkte: wendepunkte, kanalUeber: kanalUeber, kanaele: kanaele, kanalSegmente: kanalSegmente, trendwechsel: trendwechsel,
     KANAL_MIN: KANAL_MIN, RECHENSTAND: RECHENSTAND, degapBarArray: degapBarArray,
     degapCloses: degapCloses, degapBars: degapBars,
     computeStats: computeStats, bootstrapTrades: bootstrapTrades, bestOfN: bestOfN, gegenprobeRichtung: gegenprobeRichtung, kanalVerzug: kanalVerzug, monatsStatistik: monatsStatistik, schattenKonfig: schattenKonfig, scheinKennzahlen: scheinKennzahlen, scheinRisikostufe: scheinRisikostufe, scheinRaster: scheinRaster, altlastGrund: altlastGrund
