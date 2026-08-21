@@ -93,6 +93,40 @@
     return null;
   }
 
+  /* Vor-/nachboerslich? Ausserhalb der regulaeren Sitzung liefert das die Phase,
+     sonst null. Pre-Market 4:00-9:30 ET (330 Min vor Oeffnung), After-Hours bis
+     4 Stunden nach Schluss. Am Wochenende gibt es beides nicht. */
+  function boersenPhase() {
+    var now = new Date();
+    var d = now.getUTCDay();
+    if (d === 0 || d === 6) return null;
+    var m = window.Quant.minutenSeitOeffnung(now.getTime());
+    if (m >= -330 && m < 0) return 'vorboerslich';
+    if (m >= 390 && m < 630) return 'nachboerslich';
+    return null;
+  }
+
+  /** Vor-/nachboerslicher Kurs (Tester-Wunsch #24): 1-Tages-Chart MIT Pre/Post-
+   *  Kerzen. Der letzte Balken ist der aktuelle ausserboersliche Kurs, verglichen
+   *  wird gegen den letzten regulaeren Schluss (chartPreviousClose bzw.
+   *  regularMarketPrice). Wird nur ausserhalb der Sitzung geladen. */
+  async function loadPrePost(sym, phase) {
+    var url = 'https://query1.finance.yahoo.com/v8/finance/chart/' + encodeURIComponent(sym) + '?range=1d&interval=5m&includePrePost=true';
+    var res = await window.api.fetchText(url);
+    if (!res.ok) return null;
+    try {
+      var r = JSON.parse(res.body).chart.result[0];
+      var closes = (r.indicators.quote[0].close || []).filter(function (c) { return c != null; });
+      if (!closes.length) return null;
+      var kurs = closes[closes.length - 1];
+      var basis = phase === 'vorboerslich'
+        ? (r.meta.chartPreviousClose || r.meta.previousClose)
+        : r.meta.regularMarketPrice;
+      if (!basis) return null;
+      return { kurs: kurs, pct: (kurs / basis - 1) * 100, phase: phase };
+    } catch (e) { return null; }
+  }
+
   async function refreshQuotes() {
     var all = INDICES.map(function (x) { return x.y; }).concat(STOCKS.map(function (s) { return s.y; }));
     var okCount = 0, idx = 0;
@@ -107,6 +141,23 @@
     var lanes = [];
     for (var l = 0; l < 6; l++) lanes.push(lane());
     await Promise.all(lanes);
+    // Ausserhalb der Sitzung: Pre/Post-Kurse der Aktienliste nachziehen
+    var phase = boersenPhase();
+    if (phase) {
+      var idxP = 0, syms = STOCKS.map(function (s) { return s.y; });
+      async function laneP() {
+        while (idxP < syms.length) {
+          var iP = idxP++;
+          var pp = await loadPrePost(syms[iP], phase);
+          if (Q[syms[iP]]) Q[syms[iP]].pp = pp;
+        }
+      }
+      var lanesP = [];
+      for (var lp = 0; lp < 4; lp++) lanesP.push(laneP());
+      await Promise.all(lanesP);
+    } else {
+      Object.keys(Q).forEach(function (k) { if (Q[k]) Q[k].pp = null; });
+    }
     fetchErrors = all.length - okCount;
     if (okCount > 0) lastOk = new Date();
     render();
@@ -200,7 +251,7 @@
     var sorted = withQ.slice().sort(function (a, b) { return Q[b.y].pct - Q[a.y].pct; });
     function moverRows(list) {
       return list.map(function (s) {
-        return '<div class="mover-row"><span class="sym">' + esc(s.y) + '</span>' +
+        return '<div class="mover-row" data-sym="' + esc(s.y) + '"><span class="sym">' + esc(s.y) + '</span>' +
           '<span class="nm">' + esc(s.name) + '</span>' + pctChip(Q[s.y].pct) + '</div>';
       }).join('');
     }
@@ -219,9 +270,19 @@
       }
       var cap = fmtCap(s.sharesB ? q.price * s.sharesB : null);
       var pe = s.eps ? nfP.format(q.price / s.eps) : '–';
-      return '<div class="card">' +
+      // Vor-/nachboerslicher Kurs (Tester-Wunsch #24) - nur wenn gerade eine
+      // ausserboersliche Sitzung laeuft und ein Kurs da ist
+      var ppHtml = '';
+      if (q.pp && q.pp.kurs) {
+        var ppCls = q.pp.pct > 0.001 ? 'up' : (q.pp.pct < -0.001 ? 'down' : 'flat');
+        ppHtml = '<div class="pp ' + ppCls + '" title="' + (q.pp.phase === 'vorboerslich' ? 'Vorbörslicher' : 'Nachbörslicher') + ' Handel – dünner Umsatz, Kurse können springen">' +
+          (q.pp.phase === 'vorboerslich' ? 'vorb.' : 'nachb.') + ' ' + nfP.format(q.pp.kurs) + '&thinsp;$ ' +
+          (q.pp.pct > 0 ? '+' : '') + nfP.format(q.pp.pct) + '&thinsp;%</div>';
+      }
+      return '<div class="card" data-sym="' + esc(s.y) + '">' +
         '<div class="top"><span class="sym">' + esc(s.y) + '</span><span class="nm">' + esc(s.name) + '</span></div>' +
         '<div class="prc-row"><span class="prc">' + nfP.format(q.price) + '&thinsp;$</span>' + pctChip(q.pct) + '</div>' +
+        ppHtml +
         sparkSVG(q.series, 240, 44, s.y) +
         '<div class="meta"><span>MKap <b>' + cap + '</b></span><span>KGV <b>' + pe + '</b></span></div>' +
         rangeHtml +
@@ -276,6 +337,125 @@
     var dauer = Math.max(30, Math.min(240, NEWS.slice(0, 20).reduce(function (a, n) { return a + n.title.length; }, 0) / 6));
     el.innerHTML = '<div class="tickSpur" style="animation-duration:' + Math.round(dauer) + 's;">' + stueck + stueck + '</div>';
   }
+
+  /* ================= Info-Fenster beim Draufzeigen (Tester-Wunsch #24) =========
+   * Zeigt je Wert die wichtigsten Kennzahlen aus den SCHON GELADENEN Daten
+   * (nichts blockiert, nichts wird beim Zeigen berechnet, was teuer waere) und
+   * laedt die juengsten News zum Wert einmalig nach - mit 30-Minuten-Cache,
+   * damit wiederholtes Zeigen keine neuen Abrufe ausloest. */
+  var HOVER_NEWS = {};   // sym -> { t, items: [{title,url,source}] }
+  var hoverSym = null, hoverTimer = null;
+
+  function rsi14(series) {
+    if (!series || series.length < 15) return null;
+    var g = 0, v = 0;
+    for (var i = series.length - 14; i < series.length; i++) {
+      var d = series[i][1] - series[i - 1][1];
+      if (d > 0) g += d; else v -= d;
+    }
+    if (g + v === 0) return 50;
+    return Math.round(100 * g / (g + v));
+  }
+
+  function hoverHtml(s, q) {
+    var z = [];
+    function zeile(k, v2) { z.push('<div class="hv-z"><span>' + k + '</span><b>' + v2 + '</b></div>'); }
+    zeile('Kurs', nfP.format(q.price) + ' $');
+    if (q.pp && q.pp.kurs) zeile(q.pp.phase === 'vorboerslich' ? 'Vorbörslich' : 'Nachbörslich',
+      nfP.format(q.pp.kurs) + ' $ (' + (q.pp.pct > 0 ? '+' : '') + nfP.format(q.pp.pct) + ' %)');
+    if (q.pct != null) zeile('Heute', (q.pct > 0 ? '+' : '') + nfP.format(q.pct) + ' %');
+    var n = q.series.length;
+    if (n >= 6) zeile('1 Woche', (function (r) { return (r > 0 ? '+' : '') + nfP.format(r) + ' %'; })((q.series[n - 1][1] / q.series[n - 6][1] - 1) * 100));
+    if (n >= 2) zeile('1 Monat', (function (r) { return (r > 0 ? '+' : '') + nfP.format(r) + ' %'; })((q.series[n - 1][1] / q.series[0][1] - 1) * 100));
+    var r14 = rsi14(q.series);
+    if (r14 != null) zeile('RSI (14 Tage)', r14 + (r14 >= 70 ? ' – heißgelaufen' : r14 <= 30 ? ' – ausverkauft' : ''));
+    if (q.lo52 && q.hi52 && q.hi52 > q.lo52) {
+      zeile('52-Wochen-Spanne', Math.round((q.price - q.lo52) / (q.hi52 - q.lo52) * 100) + ' % vom Tief');
+    }
+    if (s.sharesB) zeile('Marktkapital.', fmtCap(q.price * s.sharesB));
+    if (s.eps) zeile('KGV', nfP.format(q.price / s.eps));
+    var newsTeil = '<div class="hv-news" id="hvNews"><span class="loading">News werden geladen …</span></div>';
+    var c = HOVER_NEWS[s.y];
+    if (c && Date.now() - c.t < 30 * 60000) newsTeil = '<div class="hv-news" id="hvNews">' + hoverNewsHtml(c.items) + '</div>';
+    return '<div class="hv-kopf"><b>' + esc(s.y) + '</b> · ' + esc(s.name) + '</div>' + z.join('') + newsTeil;
+  }
+
+  function hoverNewsHtml(items) {
+    if (!items || !items.length) return '<span class="loading">Keine aktuellen News zu diesem Wert.</span>';
+    return items.slice(0, 3).map(function (n2) {
+      return '<a href="' + esc(safeUrl(n2.url)) + '" target="_blank" rel="noopener">' + esc(n2.title) + '</a>' +
+        '<span class="src">' + esc(n2.source) + '</span>';
+    }).join('');
+  }
+
+  async function hoverNewsLaden(s) {
+    var c = HOVER_NEWS[s.y];
+    if (c && Date.now() - c.t < 30 * 60000) return;
+    var url = 'https://news.google.com/rss/search?q=' + encodeURIComponent(s.name + ' Aktie when:7d') + '&hl=de&gl=DE&ceid=DE:de';
+    var items = [];
+    try {
+      var res = await window.api.fetchText(url);
+      if (res.ok) {
+        var doc = new DOMParser().parseFromString(res.body, 'text/xml');
+        var nodes = doc.querySelectorAll('item');
+        for (var i = 0; i < nodes.length && items.length < 3; i++) {
+          var t2 = (nodes[i].querySelector('title') || {}).textContent || '';
+          var l2 = (nodes[i].querySelector('link') || {}).textContent || '';
+          var srcE = nodes[i].querySelector('source');
+          var src2 = srcE ? srcE.textContent : 'Google News';
+          if (src2 && t2.lastIndexOf(' - ' + src2) > 0) t2 = t2.slice(0, t2.lastIndexOf(' - ' + src2));
+          if (t2 && l2) items.push({ title: t2, url: l2, source: src2 });
+        }
+      }
+    } catch (e) { }
+    HOVER_NEWS[s.y] = { t: Date.now(), items: items };
+    // Nur aktualisieren, wenn das Fenster noch denselben Wert zeigt
+    if (hoverSym === s.y) {
+      var nEl = document.getElementById('hvNews');
+      if (nEl) nEl.innerHTML = hoverNewsHtml(items);
+    }
+  }
+
+  function hoverZeigen(sym, ankerEl) {
+    var s = STOCKS.filter(function (x) { return x.y === sym; })[0];
+    var q = Q[sym];
+    var hv = document.getElementById('hoverInfo');
+    if (!s || !q || !hv) return;
+    hoverSym = sym;
+    hv.innerHTML = hoverHtml(s, q);
+    hv.style.display = 'block';
+    // Neben dem Element platzieren, im Fenster halten
+    var r = ankerEl.getBoundingClientRect();
+    var links = Math.min(window.innerWidth - hv.offsetWidth - 12, r.right + 10);
+    if (links < r.left) links = Math.max(8, r.left - hv.offsetWidth - 10);
+    var oben = Math.max(8, Math.min(window.innerHeight - hv.offsetHeight - 12, r.top));
+    hv.style.left = links + 'px';
+    hv.style.top = oben + 'px';
+    hoverNewsLaden(s);
+  }
+
+  function hoverVerstecken() {
+    hoverSym = null;
+    var hv = document.getElementById('hoverInfo');
+    if (hv) hv.style.display = 'none';
+  }
+
+  // Delegation: die Karten/Zeilen werden bei jedem Refresh neu gebaut - die
+  // Listener sitzen deshalb auf dem Dokument und schauen aufs data-sym.
+  document.addEventListener('mouseover', function (e) {
+    var zelle = e.target.closest ? e.target.closest('[data-sym]') : null;
+    var hv = document.getElementById('hoverInfo');
+    if (zelle) {
+      clearTimeout(hoverTimer);
+      var sym = zelle.getAttribute('data-sym');
+      if (sym !== hoverSym) hoverZeigen(sym, zelle);
+    } else if (hv && hv.contains(e.target)) {
+      clearTimeout(hoverTimer);   // im Fenster selbst (News anklickbar): offen lassen
+    } else if (hoverSym) {
+      clearTimeout(hoverTimer);
+      hoverTimer = setTimeout(hoverVerstecken, 250);
+    }
+  });
 
   /* ================= Tooltip ================= */
   var tip = document.getElementById('tip');
