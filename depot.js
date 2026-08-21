@@ -1912,6 +1912,33 @@
     } catch (e) { return null; }
   }
 
+  /* Naechster bekannter Ergebnistermin je Symbol - aus dem Drift-Terminarchiv,
+   * hoechstens einmal je Stunde neu geladen. null = kein ZUKUENFTIGER Termin
+   * bekannt (das Archiv ist historisch gewachsen und fuellt sich ueber den
+   * 6-Stunden-Refresh der Drift-Strategie nach und nach mit Zukunftsterminen). */
+  var TERMINE_KARTE = null, TERMINE_KARTE_T = 0;
+  async function naechsterTermin(sym) {
+    try {
+      var now2 = Date.now();
+      if (!TERMINE_KARTE || now2 - TERMINE_KARTE_T > 3600000) {
+        TERMINE_KARTE = {};
+        TERMINE_KARTE_T = now2;
+        var ta = await window.api.storeGet('drift_termine');
+        if (ta && ta.sym) {
+          Object.keys(ta.sym).forEach(function (s) {
+            var kuenftig = null;
+            (ta.sym[s] || []).forEach(function (e) {
+              var t = Date.parse(e[0]);
+              if (t > now2 && (!kuenftig || t < kuenftig)) kuenftig = t;
+            });
+            if (kuenftig) TERMINE_KARTE[s] = kuenftig;
+          });
+        }
+      }
+      return TERMINE_KARTE[sym] || null;
+    } catch (eT) { return null; }
+  }
+
   function isNearUsClose() {
     // Sommer-/winterzeitfest: 15 Minuten vor US-Schluss (Handelstag = 390 Minuten).
     // Vorher war 19:45–21:00 UTC hart verdrahtet – im Winter begann die Glattstellung
@@ -2168,6 +2195,20 @@
         if (!dir) continue;
         if (nearClose && !mp.uebernacht && !istKrypto(sym)) { patienceAdd('Tagesschluss steht bevor', sym); continue; }
         if (blackout) { patienceAdd('Event-Blackout', sym); continue; } // FOMC/CPI/NFP ±45 Min
+        /* Zahlen-Blackout fuer Uebernacht-Modi (21.08.2026): Wer eine Nacht haelt,
+         * darf nicht ausgerechnet VOR den Quartalszahlen des Werts einsteigen -
+         * Ergebnisluecken sind genau das Risiko, das der Event-Blackout-Gedanke
+         * meidet. Geprueft wird gegen die lokal bekannten Termine (Drift-Archiv);
+         * die Liste waechst mit jedem 6-Stunden-Refresh. Ein UNBEKANNTER Termin
+         * kann nicht blocken - das ist die ehrliche Grenze dieser Pruefung. */
+        if (mp.uebernacht && !istKrypto(sym)) {
+          var nTermin = await naechsterTermin(sym);
+          if (nTermin && nTermin - now < (mp.maxHoldMin || 480) * 60000 + 12 * 3600000) {
+            patienceAdd('Zahlen stehen an (' + new Date(nTermin).toLocaleDateString('de-DE') + ') – kein Übernacht-Einstieg', sym);
+            schattenNeu('Zahlen-Blackout', sym, dir, spot, sigBars, mp, cfg, now);
+            continue;
+          }
+        }
         if ((cfg.avoidHours || []).length) {
           var hourB = parseInt(new Date(now).toLocaleString('de-DE', { hour: '2-digit', hour12: false, timeZone: 'Europe/Berlin' }), 10);
           if (cfg.avoidHours.indexOf(hourB) !== -1) { patienceAdd('Meide-Stunde (Analyse-Zentrale)', sym); continue; }
@@ -2190,7 +2231,14 @@
         var lsN = (D.lossStreak && D.lossStreak.day === today) ? D.lossStreak.n : 0;
         if (lsN >= 5) { patienceAdd('Verlustserie (5+) – Pause bis Tagesende', sym); schattenNeu('Verlustserie', sym, dir, spot, sigBars, mp, cfg, now); continue; }
         var lsFactor = lsN >= 3 ? 0.5 : 1;
-        if (isWave || (!isRev && cfg.trendFilter)) { // Trend: beim Wellenreiter Pflicht, sonst optional
+        /* rsi2seit und kapitulation sind vom optionalen EMA100-Trendfilter AUSGENOMMEN:
+         * Beide sind Dip-Kaeufe - beim Signal liegt der Kurs naturgemaess unter der EMA,
+         * ein aktiver Trendfilter haette praktisch JEDES Signal geblockt. Die Studie hat
+         * den EMA-Zustand ausdruecklich mitgemessen und diese Modi OHNE EMA-Bedingung
+         * validiert; ihr Regime-Gate ist der Kanal (seit bzw. ab), nichts anderes.
+         * (Gefunden 21.08.2026: trendFilter=true aus einer alten wave-Konfiguration
+         * haette den frisch umgestellten rsi2seit stumm geschaltet.) */
+        if (isWave || (!isRev && !isRsi2Seit && !isKapitulation && cfg.trendFilter)) { // Trend: beim Wellenreiter Pflicht, sonst optional
           // Kanalrichtung UND übergeordneter Trend müssen passen – ein Seitwärtskorridor
           // innerhalb eines Abwärtstrends ist kein Freibrief für Long-Einstiege.
           if (chE) {
