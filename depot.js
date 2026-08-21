@@ -2313,6 +2313,9 @@
         var isWaves = D.intraday.mode === 'waves';
         var trade = {
           id: D.nextId++, sym: sym, dir: dir, openT: now, strategy: 'intraday',
+          // Welches Setup hat ausgeloest? Ohne den Vermerk laesst sich spaeter nie
+          // sagen, welcher Modus die Trades einer gemischten Historie erzeugt hat.
+          modus: D.intraday.mode || null,
           entrySpot: spot, entry: ask, qty: qty, cost: cost, orderFee: fee, spx: Math.round(spx2 * 10000) / 10000,
           basis: istBasis || undefined, krypto: istKrypto(sym) || undefined,
           strike: w.strike, expiry: w.expiry, iv: Math.round(iv * 1000) / 1000, ratio: bvI,

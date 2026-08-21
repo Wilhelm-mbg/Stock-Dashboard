@@ -1127,10 +1127,11 @@ console.log('\nDiagnose-Versand');
     intraday: { enabled: true, mode: 'rsi2seit', instrument: 'basis', interval: '60m', scalpHold: 480, kryptoHandeln: false },
     momentumAn: true, driftAn: false, maxRisikostufe: 3, rechenstand: 9,
     watchlist: [{ y: 'GEHEIMAKTIE' }],
-    positions: [{ sym: 'MEINSYMBOL', qty: 5, entry: 1.23 }],
+    positions: [{ sym: 'MEINSYMBOL', qty: 5, entry: 1.23, openT: Date.now() - 49 * 3600000 }],
     trades: [
-      { status: 'closed', sym: 'TRADESYMBOL', pnl: 12.5, strategy: 'intraday', basis: true },
-      { status: 'closed', sym: 'TRADESYMBOL', pnl: -4, strategy: 'hourly' }
+      { status: 'closed', sym: 'TRADESYMBOL', pnl: 12.5, strategy: 'intraday', basis: true, modus: 'rsi2seit',
+        dir: 'call', openT: 1787300000000, closeT: 1787328800000, entrySpot: 100, exitSpot: 102, uebernacht: true, why: 'Zeit abgelaufen' },
+      { status: 'closed', sym: 'TRADESYMBOL', pnl: -4, strategy: 'hourly', dir: 'put', openT: 1787300000000, closeT: 1787303600000, entrySpot: 50, exitSpot: 51 }
     ],
     schatten: [{ status: 'closed' }, { status: 'open', sym: 'SCHATTENSYMBOL' }],
     schattenKonfig: 'xzeit_h480_s-90_t-_r0_patm60_b_i60m',
@@ -1156,6 +1157,21 @@ console.log('\nDiagnose-Versand');
   ok(d.kennzahlen.intraday.n === 1 && d.kennzahlen.stunden.n === 1 && d.kennzahlen.intraday.pnl === 12.5,
      'Kennzahlen sind JE STRATEGIE getrennt – ein Topf verwischt die Frage der Auswertung');
   ok(d.kennzahlen.basisTrades === 1, 'Basiswert-Trades werden gezählt');
+  /* Trade-Ebene: das Herzstueck der Auswertung - Haltedauern, Uhrzeiten,
+   * Ausstiegsgruende. OHNE Symbol; der Giftkoeder-Check unten beweist es. */
+  var et = d.kennzahlen.einzelTrades;
+  ok(et && et.length === 2 && et[0].modus === 'rsi2seit' && et[0].haltedauerMin === 480 &&
+     et[0].uebernacht === true && et[0].grund === 'Zeit abgelaufen',
+     'Einzeltrades reisen mit allen Auswertungsfeldern mit', JSON.stringify(et && et[0]));
+  ok(et[0].bewegungPct === 2 && et[1].bewegungPct === -2,
+     'die Basiswert-Bewegung wird in Signalrichtung gerechnet (Put: fallend = positiv)',
+     et[0].bewegungPct + ' / ' + et[1].bewegungPct);
+  ok(!('sym' in et[0]) && JSON.stringify(et).indexOf('SYMBOL') === -1,
+     'Einzeltrades tragen KEIN Symbol');
+  ok(d.kennzahlen.aeltesteOffeneStd === 49,
+     'das Alter der ältesten offenen Position ist sichtbar (das Theta-Verfall-Muster)', d.kennzahlen.aeltesteOffeneStd);
+  ok(d.buecher.verlauf.reihe.length === 2 && d.buecher.verlauf.reihe[1].momentum === 10123,
+     'die komplette Tagesreihe der Bücher reist mit (Drawdown wird messbar)');
   ok(d.betrieb.zeitzone === 'Europe/Berlin' && d.betrieb.abrufeFehl === 7 && d.betrieb.killSwitch === 1,
      'Betriebsdaten sind drin – die Zeitzone erklärt eine ganze Klasse scheinbarer Fehler');
   ok(d.betrieb.laufzeitMin >= 59 && d.betrieb.laufzeitMin <= 61, 'die Laufzeit wird aus dem Start berechnet', d.betrieb.laufzeitMin + ' Min');

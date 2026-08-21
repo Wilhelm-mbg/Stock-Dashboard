@@ -126,7 +126,36 @@
         stunden: summen(geschlossen.filter(function (t) { return t.strategy === 'hourly'; })),
         altbestand: summen(geschlossen.filter(function (t) { return !t.strategy; })),
         basisTrades: geschlossen.filter(function (t) { return t.basis; }).length,
-        positionenOffen: (depot.positions || []).length
+        positionenOffen: (depot.positions || []).length,
+        /* Wie lange steht die aelteste offene Position schon? Der groesste je
+         * gemessene Schaden (−3.719 $ auf dem Demo-Konto) kam nicht von schlechten
+         * Signalen, sondern von tagelang UNBEAUFSICHTIGTEN Scheinen im Theta-Verfall.
+         * Diese eine Zahl macht das Muster aus der Ferne sichtbar. */
+        aeltesteOffeneStd: (depot.positions || []).reduce(function (a, p) {
+          var std = p && p.openT ? Math.round((Date.now() - p.openT) / 3600000) : 0;
+          return Math.max(a, std);
+        }, 0) || 0,
+        /* EINZELNE abgeschlossene Trades - das Herzstueck der Auswertung. Aggregate
+         * sagen DASS gehandelt wurde; erst die Trade-Ebene zeigt WIE: Haltedauern,
+         * Uhrzeiten, Ausstiegsgruende, Ergebnisverteilung. Bewusst OHNE Symbol
+         * (das Versprechen der weissen Liste) - jedes Feld einzeln benannt,
+         * gedeckelt auf die letzten 60. */
+        einzelTrades: geschlossen.slice(0, 60).map(function (t) {
+          var move = (t.entrySpot > 0 && t.exitSpot > 0)
+            ? ((t.exitSpot / t.entrySpot - 1) * (t.dir === 'put' ? -1 : 1) * 100) : null;
+          return {
+            strategie: t.strategy || null,
+            modus: t.modus || null,
+            richtung: t.dir || null,
+            basis: !!t.basis, krypto: !!t.krypto, uebernacht: !!t.uebernacht,
+            eroeffnet: t.openT || null,
+            geschlossen: t.closeT || null,
+            haltedauerMin: (t.openT && t.closeT) ? Math.round((t.closeT - t.openT) / 60000) : null,
+            pnl: typeof t.pnl === 'number' ? Math.round(t.pnl * 100) / 100 : null,
+            bewegungPct: move != null ? Math.round(move * 100) / 100 : null,
+            grund: t.why ? String(t.why).slice(0, 60) : null
+          };
+        })
       },
 
       /* Die Mittelfrist-Bücher mit BEWERTETEN Ständen aus dem Tagesverlauf.
@@ -139,7 +168,14 @@
         verlauf: verlauf.length ? {
           tage: verlauf.length,
           erster: verlauf[0],
-          letzter: verlauf[verlauf.length - 1]
+          letzter: verlauf[verlauf.length - 1],
+          /* Die komplette Tagesreihe (gedeckelt auf 90 Punkte): erst die Kurve
+           * erlaubt Drawdown-, Volatilitaets- und SPY-Vergleichsrechnung - zwei
+           * Eckpunkte koennen einen zwischenzeitlichen Einbruch komplett verstecken.
+           * Nur Zahlen, keine Symbole. */
+          reihe: verlauf.slice(-90).map(function (v) {
+            return { t: v.t, momentum: v.momentum, drift: v.drift, spy: v.spy };
+          })
         } : null
       },
 
@@ -244,7 +280,10 @@
     '  • Programmversion, Betriebssystem, Zeitzone, Sprache, eine zufällige Installations-Kennung\n' +
     '  • welche Funktionen an sind und wie sie eingestellt sind (Strategien, Modus, Instrument, Zeitrahmen)\n' +
     '  • Summen-Kennzahlen je Strategie (Anzahl Trades, Trefferquote, Ergebnis) und die\n' +
-    '    Tagesstände der virtuellen Bücher samt Marktvergleich\n' +
+    '    Tagesstände der virtuellen Bücher samt Marktvergleich (komplette Tagesreihe)\n' +
+    '  • einzelne abgeschlossene simulierte Trades OHNE Symbol: Zeitpunkte, Richtung,\n' +
+    '    Haltedauer, Ergebnis, Ausstiegsgrund (höchstens die letzten 60), sowie das\n' +
+    '    Alter der ältesten offenen Position\n' +
     '  • die Vorwärtstest-Bilanz des Schattenbuchs (nur Summen je Grund)\n' +
     '  • Betriebszähler (Scans, fehlgeschlagene Kursabrufe, Laufzeit) – je Sitzung und als\n' +
     '    Gesamtsumme über alle Sitzungen – und die Größe der lokalen Datenbestände\n' +
