@@ -376,12 +376,13 @@ ipcMain.handle('diagnose-config', async () => ({
   repo: TELEMETRIE ? TELEMETRIE.repo : 'Wilhelm-mbg/Stock-Dashboard'
 }));
 
-ipcMain.handle('diagnose-send', async (_ev, titel, body) => {
+ipcMain.handle('diagnose-send', async (_ev, titel, body, label) => {
   if (!TELEMETRIE) return { ok: false, msg: 'Kein Sende-Token in diesem Build.' };
   const daten = JSON.stringify({
     title: String(titel || 'Diagnose').slice(0, 200),
     body: String(body || '').slice(0, 60000),
-    labels: ['diagnose']
+    // Label aus weisser Liste - der Renderer darf waehlen, aber nichts erfinden
+    labels: [['diagnose', 'bug'].indexOf(label) >= 0 ? label : 'diagnose']
   });
   return new Promise((resolve) => {
     const req = https.request({

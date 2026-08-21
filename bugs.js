@@ -110,10 +110,47 @@
     });
     if (r && r.ok) {
       t.value = '';
-      FEHLER.length = 0;
       var z = document.getElementById('bugFehlerZahl');
       if (z) z.textContent = '';
-      st.textContent = 'Gemeldet. Die Meldung liegt im Daten-Ordner und wird beim nächsten Prüflauf bewertet.';
+      /* Zusaetzlich ans Projekt senden - als GitHub-Issue, derselbe Transport wie die
+       * Diagnose. Der Formulartext sagt das vorher an; das Absenden ist die Zustimmung.
+       * Ohne diesen Weg laege die Meldung nur auf dem Rechner des Melders, und die
+       * Auswertung erfuehre nie davon - genau so ist es beim allerersten Tester
+       * passiert. Die lokale Datei bleibt parallel bestehen (eigener Prueflauf). */
+      st.textContent = 'Lokal gespeichert – wird ans Projekt gesendet …';
+      try {
+        var version = '?';
+        try { version = await window.api.appVersion(); } catch (eV) { }
+        var diag = (await window.api.storeGet('diagnose')) || {};
+        var titel = 'Fehler (' + ((document.getElementById('bugArt') || {}).value || 'sonstiges') + '): ' +
+          text.slice(0, 70).replace(/\s+/g, ' ') + (text.length > 70 ? ' …' : '');
+        var koerper = '**Meldung**\n\n' + text + '\n\n' +
+          '| | |\n|---|---|\n' +
+          '| Art | ' + ((document.getElementById('bugArt') || {}).value || '?') + ' |\n' +
+          '| Schwere | ' + ((document.getElementById('bugSchwere') || {}).value || '?') + ' |\n' +
+          '| Bereich | ' + (offenerTab() || '?') + ' |\n' +
+          '| Version | ' + version + ' |\n' +
+          '| Fenster | ' + window.innerWidth + '×' + window.innerHeight + ' |\n' +
+          '| Installation | ' + (diag.installId || 'unbekannt') + ' |\n' +
+          (FEHLER.length
+            ? '\n**Automatisch mitgeschnittene Fehler**\n\n```json\n' + JSON.stringify(FEHLER.slice(-10), null, 1) + '\n```\n'
+            : '');
+        var cfg = await window.api.diagnoseConfig();
+        if (cfg && cfg.auto) {
+          var rs = await window.api.diagnoseSend(titel, koerper, 'bug');
+          st.textContent = rs && rs.ok
+            ? 'Gemeldet – danke! Die Meldung ist beim Projekt angekommen und liegt zusätzlich lokal.'
+            : 'Lokal gespeichert. Versand ans Projekt fehlgeschlagen (' + ((rs && rs.msg) || '?') + ') – bitte später noch einmal melden.';
+        } else {
+          var url = 'https://github.com/' + (cfg && cfg.repo || 'Wilhelm-mbg/Stock-Dashboard') +
+            '/issues/new?labels=bug&title=' + encodeURIComponent(titel) + '&body=' + encodeURIComponent(koerper.slice(0, 6000));
+          window.api.openExternal(url);
+          st.textContent = 'Lokal gespeichert. Im Browser hat sich die Meldung ans Projekt geöffnet – bitte dort kurz prüfen und absenden.';
+        }
+      } catch (eS) {
+        st.textContent = 'Lokal gespeichert. Versand ans Projekt nicht möglich (' + (eS.message || eS) + ').';
+      }
+      FEHLER.length = 0;
       zeigeListe();
     } else {
       st.textContent = 'Nicht gespeichert: ' + ((r && r.msg) || 'unbekannter Fehler');
