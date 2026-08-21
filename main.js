@@ -483,6 +483,19 @@ ipcMain.handle('read-recommendation', async () => {
     return { ok: true, body: fs.readFileSync(p, 'utf8'), mtime: fs.statSync(p).mtimeMs };
   } catch (e) { return { ok: false, msg: String(e.message || e) }; }
 });
+/* Spekulations-Radar: Eine geplante Claude-Aufgabe durchsucht oeffentliche Quellen
+ * nach Marktspekulationen und schreibt sie in den Daten-Ordner - die App ZEIGT sie
+ * nur an (Dashboard-Karte), gehandelt wird davon nichts. Groessenkappe als Schutz
+ * gegen eine ausufernde oder kaputte Datei. */
+ipcMain.handle('read-spekulationen', async () => {
+  try {
+    const p = path.join(app.getPath('downloads'), 'Markt-Dashboard-Daten', 'spekulationen.json');
+    if (!fs.existsSync(p)) return { ok: false };
+    const st = fs.statSync(p);
+    if (st.size > 300000) return { ok: false, msg: 'Datei zu groß' };
+    return { ok: true, body: fs.readFileSync(p, 'utf8'), mtime: st.mtimeMs };
+  } catch (e) { return { ok: false, msg: String(e.message || e) }; }
+});
 // Claude-Auswertungsbericht aus dem Daten-Ordner lesen (Anzeige in der App)
 ipcMain.handle('read-report', async () => {
   try {

@@ -641,6 +641,22 @@ console.log('\n17b) Oberflaeche: Altlasten und Verdrahtung');
   ok(/Sekunden-Kerzen \(1\/5\/10 s\) sind mit der Kursquelle nicht möglich/.test(h),
      'Trendwechsel: die Sekunden-Grenze der Datenquelle steht dabei');
 
+  // --- Spekulations-Radar (22.08.2026): Anzeige von Fremdinhalten, streng entschaerft ---
+  ok(/read-spekulationen/.test(m2) && /spekulationen\.json/.test(m2), 'Radar: Lese-Kanal im Hauptprozess existiert');
+  ok(/st\.size > 300000/.test(m2), 'Radar: Groessenkappe gegen ausufernde Dateien');
+  var p2 = fs.readFileSync(__dirname + '/preload.js', 'utf8');
+  ok(/readSpekulationen/.test(p2), 'Radar: Bruecke ist exponiert');
+  ok(/id="spekRadar"/.test(h), 'Radar: Karte auf dem Dashboard vorhanden');
+  ok(/Ungemessen, reine Beobachtung/.test(h) && /gehandelt wird hiervon nichts/.test(h),
+     'Radar: die Karte sagt ehrlich, dass nichts davon gehandelt wird');
+  ok(/esc\(z\.these\)/.test(r) && /esc\(safeUrl\(q\.url\)\)/.test(r),
+     'Radar: Fremdinhalte werden escaped, Links nur ueber safeUrl');
+  ok(/jetzt - t > 48 \* 3600000\) continue/.test(r), 'Radar: Eintraege aelter als 48 h fallen raus');
+  ok(/ein\.slice\(0, 12\)/.test(r), 'Radar: hoechstens 12 Eintraege');
+  ok(/spekGesehen\.indexOf\(z\.id\) === -1/.test(r), 'Radar: Benachrichtigung je Eintrag nur einmal');
+  ok(/redaktionelle Einschätzung der Suche, keine Messung/.test(r),
+     'Radar: die Chance-Einstufung wird als Setzung ausgewiesen');
+
   // --- Simulations-Hinweis ueberlebt jeden Umbau ---
   var simH = (h.match(/keine Anlageberatung/gi) || []).length;
   var simD = (d.match(/keine Anlageberatung/gi) || []).length;

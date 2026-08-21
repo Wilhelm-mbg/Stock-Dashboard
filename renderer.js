@@ -351,6 +351,90 @@
     renderTicker();
   }
 
+  /* ================= Spekulations-Radar =================
+   * Eine geplante Claude-Aufgabe durchsucht stuendlich oeffentliche Quellen nach
+   * Marktspekulationen (Uebernahmegeruechte, Beteiligungen, Squeeze-Kandidaten)
+   * und schreibt sie als spekulationen.json in den Daten-Ordner. Diese Karte ZEIGT
+   * sie nur - ungemessen, reine Beobachtung, gehandelt wird davon nichts.
+   * Alles hier ist Fremdinhalt aus dem Web: konsequent esc() und safeUrl(),
+   * feste Kappen, und eine kaputte Datei laesst die Karte einfach in Ruhe. */
+  var SPEK_ART = { uebernahme: 'Übernahme', beteiligung: 'Beteiligung', analyst: 'Analysten', squeeze: 'Squeeze', geruecht: 'Gerücht', ereignis: 'Ereignis' };
+  var spekGesehen = null;   // ids bereits gemeldeter Hoch-Eintraege (persistiert)
+  async function ladeSpekulationen() {
+    var el = document.getElementById('spekRadar');
+    if (!el || !window.api || !window.api.readSpekulationen) return;
+    try {
+      var r = await window.api.readSpekulationen();
+      if (!r || !r.ok) return;   // keine Datei: Platzhalter bleibt stehen
+      var d = JSON.parse(r.body);
+      var roh = (d && Array.isArray(d.eintraege)) ? d.eintraege : [];
+      var jetzt = Date.now();
+      var RANG = { hoch: 0, mittel: 1, niedrig: 2 };
+      var ein = [];
+      for (var i = 0; i < roh.length; i++) {
+        var e = roh[i];
+        if (!e || typeof e.sym !== 'string' || typeof e.these !== 'string') continue;
+        var t = Date.parse(e.zeit || '') || r.mtime;
+        if (jetzt - t > 48 * 3600000) continue;   // aeltere Spekulation ist Geschichte
+        ein.push({
+          id: String(e.id || (e.sym + '|' + e.these)).slice(0, 120),
+          sym: e.sym.toUpperCase().slice(0, 12),
+          art: SPEK_ART[e.art] || 'Gerücht',
+          chance: RANG[e.chance] != null ? e.chance : 'niedrig',
+          these: e.these.slice(0, 240),
+          begruendung: typeof e.begruendung === 'string' ? e.begruendung.slice(0, 240) : '',
+          quellen: (Array.isArray(e.quellen) ? e.quellen : []).slice(0, 3).filter(function (q) {
+            return q && typeof q.url === 'string' && safeUrl(q.url) !== '#';
+          }),
+          zeit: t
+        });
+      }
+      ein.sort(function (a, b) { return (RANG[a.chance] - RANG[b.chance]) || (b.zeit - a.zeit); });
+      ein = ein.slice(0, 12);
+      if (!ein.length) {
+        el.innerHTML = '<div class="loading">Gerade keine nennenswerten Spekulationen im Radar (Stand ' +
+          new Date(r.mtime).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }) + ' Uhr).</div>';
+        return;
+      }
+      var alt = jetzt - r.mtime > 3 * 3600000;
+      el.innerHTML = ein.map(function (z) {
+        return '<div class="spek-zeile">' +
+          '<span class="sym" data-heat="' + esc(z.sym) + '" title="Im Explorer öffnen">' + esc(z.sym) + '</span>' +
+          '<span class="spek-chip ' + z.chance + '">' + z.chance.toUpperCase() + '</span>' +
+          '<span class="spek-chip mittel" style="border-style:dashed;">' + esc(z.art) + '</span>' +
+          '<span class="these">' + esc(z.these) + (z.begruendung ? ' <span class="beg">– ' + esc(z.begruendung) + '</span>' : '') + '</span>' +
+          (z.quellen.length ? '<span class="quellen">' + z.quellen.map(function (q, qi) {
+            return '<a href="' + esc(safeUrl(q.url)) + '" target="_blank" rel="noopener">' +
+              esc(typeof q.titel === 'string' && q.titel ? q.titel.slice(0, 60) : 'Quelle ' + (qi + 1)) + '</a>';
+          }).join(' · ') + '</span>' : '') +
+          '</div>';
+      }).join('') +
+        '<div style="color:var(--muted); font-size:11px; margin-top:8px;">Stand ' +
+        new Date(r.mtime).toLocaleString('de-DE', { weekday: 'short', hour: '2-digit', minute: '2-digit' }) + ' Uhr' +
+        (alt ? ' – <b>veraltet</b>, die stündliche Suche hat länger nicht geschrieben (läuft nur bei geöffneter Claude-App)' : '') +
+        ' · Chance-Einstufung ist eine redaktionelle Einschätzung der Suche, keine Messung.</div>';
+      /* Benachrichtigung nur fuer NEUE Hoch-Eintraege, je id genau einmal - und nur,
+       * wenn Benachrichtigungen im Depot nicht abgeschaltet sind. */
+      if (spekGesehen === null) spekGesehen = (await window.api.storeGet('spekGesehen')) || [];
+      var notifyAus = window.__D && window.__D() && window.__D().notify === false;
+      var neu = ein.filter(function (z) { return z.chance === 'hoch' && spekGesehen.indexOf(z.id) === -1; });
+      if (neu.length && !notifyAus) {
+        try {
+          var nN = new Notification('Spekulations-Radar: ' + neu.map(function (z) { return z.sym; }).join(', '),
+            { body: neu[0].these + (neu.length > 1 ? ' (+' + (neu.length - 1) + ' weitere)' : '') + '\nUngemessen – reine Beobachtung, keine Anlageberatung.', silent: false });
+          nN.onclick = function () { window.focus(); };
+        } catch (eN) { /* Benachrichtigungen nicht verfuegbar */ }
+      }
+      if (neu.length) {
+        neu.forEach(function (z) { spekGesehen.push(z.id); });
+        if (spekGesehen.length > 200) spekGesehen = spekGesehen.slice(-200);
+        window.api.storeSet('spekGesehen', spekGesehen);
+      }
+    } catch (e) { /* kaputte Datei: Karte unveraendert lassen */ }
+  }
+  setTimeout(ladeSpekulationen, 6000);
+  setInterval(ladeSpekulationen, 10 * 60000);
+
   /* Laufband oben im Dashboard (Tester-Wunsch #20): dieselben Schlagzeilen wie im
      News-Kasten, als endlos durchlaufendes Band. Der Inhalt wird verdoppelt, damit
      die CSS-Schleife (-50 %) nahtlos wieder am Anfang ankommt. Bewegung nervt

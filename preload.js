@@ -20,6 +20,7 @@ contextBridge.exposeInMainWorld('api', {
   exportAnalysis: (payload) => ipcRenderer.invoke('export-analysis', payload),
   readRecommendation: () => ipcRenderer.invoke('read-recommendation'),
   readReport: () => ipcRenderer.invoke('read-report'),
+  readSpekulationen: () => ipcRenderer.invoke('read-spekulationen'),
   setAutostart: (v) => ipcRenderer.invoke('set-autostart', v),
   getAutostart: () => ipcRenderer.invoke('get-autostart'),
   openExternal: (url) => ipcRenderer.invoke('open-external', url),
