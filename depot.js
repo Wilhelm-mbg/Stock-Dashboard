@@ -24,7 +24,7 @@
          belegten Strategien ausgeschaltet daneben lagen. Neue Installationen starten jetzt
          mit dem gemessenen Modus (RSI2 im Seitwaertskanal, Basiswert, 8 h) im reinen
          Beobachtungsbetrieb: enabled bleibt false, das Schattenbuch zeichnet auf. */
-      intraday: { enabled: false, exitStyle: 'laufen', mode: 'rsi2seit', interval: '60m', period: 20, confirmBps: 15, profile: 'atm60_b', instrument: 'basis', pool: 'auto', orderFee: 0, minDollarVol: 50, budgetPct: 0.03, sl: -0.25, tp: 0.35, cooldownMin: 120, maxPerDay: 10, lineType: 'ema', trendFilter: false, window: 'all', scalpHold: 480, scalpTrail: 15, scalpSL: 20, blackout: 'block', channel: true, mtf: true, sizing: 'fix', screener: false, avoidHours: [], autoTune: true },
+      intraday: { enabled: false, exitStyle: 'laufen', mode: 'rsi2seit', interval: '60m', period: 20, confirmBps: 15, profile: 'atm60_b', instrument: 'basis', pool: 'auto', kapiZusatz: false, orderFee: 0, minDollarVol: 50, budgetPct: 0.03, sl: -0.25, tp: 0.35, cooldownMin: 120, maxPerDay: 10, lineType: 'ema', trendFilter: false, window: 'all', scalpHold: 480, scalpTrail: 15, scalpSL: 20, blackout: 'block', channel: true, mtf: true, sizing: 'fix', screener: false, avoidHours: [], autoTune: true },
       // Die belegten Mittelfrist-Buecher handeln (virtuell) von Anfang an - dafuer sind sie da.
       momentumAn: true, driftAn: true, maxRisikostufe: 3,
       watchlist: [],
@@ -1359,7 +1359,13 @@
    * schliesst 17:30. DAX-Werte sind also nur im Ueberlapp 15:30-17:30 handelbar,
    * danach blockt die Veraltet-Pruefung ihre Kurse von selbst. */
   var POOLS_60M = {
-    sp100: ('BRK-B LLY V UNH MA JNJ PG COST ORCL MRK ABBV CVX CRM BAC KO PEP WMT ADBE CSCO ACN MCD LIN NFLX ABT DHR VZ TXN WFC PM NEE DIS IBM CAT RTX GE SPGI CMCSA AMGN HON UNP ISRG BKNG LOW T GS AXP INTU ELV BLK SBUX PLD MS BMY SYK MDT DE ADP LMT TJX GILD MMC ADI CB VRTX AMT C CVS SCHW MO ZTS SO CI TMUS DUK BSX PGR EOG NKE COP CL FDX BDX EMR NOW USB TGT PYPL JPM XOM UPS BA').split(' '),
+    /* Volatilstes Drittel des 99er-Universums (Stichtag 21.08.2026, Vola ueber die
+     * letzten 120 Handelstage annualisiert, Spanne 46-96 % gegen 38 % Median).
+     * Beleg: Die Bedingungsstudie mass fuer rsi2seit im volatilen Drittel
+     * +0,235 Pp je 8 h gegen +0,147 im Gesamtuniversum - mehr Bewegung heisst
+     * mehr Ruecklauf zur Mitte, wo der Kanal die Erlaubnis gibt. */
+    volatil: ('MU ARM TEAM INTC ZS AMD LRCX MDB DDOG NET KLAC AMAT SNOW NOW QCOM WDAY SNAP SHOP IBM ORCL INTU ASML CRWD UAL TXN TSLA AVGO PANW ADBE CRM DASH TSM RCL').split(' '),
+    sp100:('BRK-B LLY V UNH MA JNJ PG COST ORCL MRK ABBV CVX CRM BAC KO PEP WMT ADBE CSCO ACN MCD LIN NFLX ABT DHR VZ TXN WFC PM NEE DIS IBM CAT RTX GE SPGI CMCSA AMGN HON UNP ISRG BKNG LOW T GS AXP INTU ELV BLK SBUX PLD MS BMY SYK MDT DE ADP LMT TJX GILD MMC ADI CB VRTX AMT C CVS SCHW MO ZTS SO CI TMUS DUK BSX PGR EOG NKE COP CL FDX BDX EMR NOW USB TGT PYPL JPM XOM UPS BA').split(' '),
     ndx100: ('GOOG COST NFLX ADBE PEP CSCO TMUS AMGN HON INTU ISRG BKNG ADP GILD VRTX ADI REGN LRCX PANW MU SNPS KLAC CDNS MELI ABNB CRWD MAR MRVL ORLY CSX PYPL MNST FTNT DASH ADSK ROP WDAY PCAR NXPI CPRT PDD AEP ROST ODFL KDP FAST EXC GEHC IDXX CTAS VRSK EA CCEP XEL TTWO DXCM ON FANG CSGP MDB TEAM ZS WBD DDOG SIRI ARM CEG DLTR KHC LULU AZN BIIB PAYX AMAT CMCSA TXN QCOM INTC').split(' '),
     dax: ('SAP.DE SIE.DE ALV.DE DTE.DE AIR.DE MUV2.DE BAS.DE BAYN.DE BMW.DE MBG.DE VOW3.DE DBK.DE DB1.DE ADS.DE IFX.DE HEN3.DE EOAN.DE RWE.DE DHL.DE BEI.DE CON.DE 1COV.DE FRE.DE HEI.DE MRK.DE MTX.DE P911.DE QIA.DE RHM.DE SHL.DE SY1.DE VNA.DE ZAL.DE HNR1.DE CBK.DE ENR.DE BNR.DE DTG.DE SRT3.DE PAH3.DE').split(' ')
   };
@@ -2095,7 +2101,11 @@
            * Nacht - der Backtest zeigte: streng intraday -0,081 % je Trade, mit Nacht
            * +0,230 %. Die 2-Tage-Schranke ist das Netz, falls die App pausiert hat. */
           if (!openedToday && !open.uebernacht && !open.krypto) why = 'Übernacht-Glattstellung (App war zum Handelsschluss geschlossen)';
-          else if (open.uebernacht && now - open.openT > 2 * 86400000) why = 'Übernacht-Position älter als zwei Tage – Schutzschließung';
+          /* Schutznetz skaliert mit dem Horizont: 26 Handelsstunden (Kapitulations-Dip)
+           * sind 4 Handelstage - mit Wochenende bis ~6 Kalendertage. Das alte 2-Tage-
+           * Netz haette jeden Kapitulations-Trade vorzeitig gekappt (und die Studie
+           * zeigt: wer die langen Erholungen kappt, behaelt nur die Messer). */
+          else if (open.uebernacht && now - open.openT > ((open.maxHoldMin || 0) >= 1000 ? 7 : 2) * 86400000) why = 'Übernacht-Position über dem Schutznetz (' + (((open.maxHoldMin || 0) >= 1000) ? 7 : 2) + ' Tage) – Schutzschließung';
           else if (flattenEv) why = 'Event-Glattstellung vor: ' + flattenEv.name;
           else if (ret <= xSL) why = 'Stop-Loss erreicht (' + Math.round(ret * 100) + ' %)';
           else if (xTP !== null && ret >= xTP) why = 'Take-Profit erreicht (+' + Math.round(ret * 100) + ' %)';
@@ -2156,6 +2166,7 @@
 
         // Einstieg – Richtung je nach Modus bestimmen
         var mp = modeParams();
+        var kapiTrade = false;   // dieser Trade laeuft als Kapitulations-Dip (Zusatz-Standbein)
         var isRev = cfg.mode === 'reversion';
         var isWave = cfg.mode === 'wave';
         var isOrb = cfg.mode === 'orb';
@@ -2245,6 +2256,20 @@
           });
           if (vsK && vsK.dir === 'call') dir = 'call';
           else if (vsK && vsK.dir === 'put') patienceAdd('RSI2-Seitwärts: Put-Seite trägt nicht (nur Long)', sym);
+          /* ZWEITES STANDBEIN (21.08.2026): Der Kapitulations-Dip feuert in der
+           * ANDEREN Marktphase (Abwaertskanal statt Seitwaerts) - die beiden
+           * Erlaubnis-Gates schliessen sich praktisch aus, deshalb duerfen beide
+           * belegten Modi parallel laufen (Haken 'Kapitulations-Dip zusaetzlich').
+           * Ein Kapitulations-Trade traegt seinen eigenen Horizont (26 Handels-
+           * stunden statt 8) und seinen Modus-Stempel. */
+          if (!dir && cfg.kapiZusatz) {
+            var vsK2 = Q.einstiegSignal(sigBars, sigBars.length - 1, {
+              ENTRY: 'kapitulation', LINE: cfg.lineType || 'ema', period: cfg.period || 20,
+              confirmBps: cfg.confirmBps, ZTHR: zOf(cfg.confirmBps), MINQ: 0,
+              CHAN: false, MTF: false, TREND: false
+            });
+            if (vsK2 && vsK2.dir === 'call') { dir = 'call'; kapiTrade = true; }
+          }
         } else if (isDon) {
           var dsigL = Q.donchianSignal(sigBars, cfg.period, cfg.confirmBps);
           if (dsigL.signal) dir = dsigL.signal;
@@ -2469,12 +2494,15 @@
           id: D.nextId++, sym: sym, dir: dir, openT: now, strategy: 'intraday',
           // Welches Setup hat ausgeloest? Ohne den Vermerk laesst sich spaeter nie
           // sagen, welcher Modus die Trades einer gemischten Historie erzeugt hat.
-          modus: D.intraday.mode || null,
+          modus: kapiTrade ? 'kapitulation' : (D.intraday.mode || null),
           entrySpot: spot, entry: ask, qty: qty, cost: cost, orderFee: fee, spx: Math.round(spx2 * 10000) / 10000,
           basis: istBasis || undefined, krypto: istKrypto(sym) || undefined,
           strike: w.strike, expiry: w.expiry, iv: Math.round(iv * 1000) / 1000, ratio: bvI,
           omega: Math.round(omega * 10) / 10,
-          sl: slT, tp: mp.tp, trail: mp.trail || 0, maxHoldMin: mp.maxHoldMin || 0, exitMode: mp.exitMode, uebernacht: !!mp.uebernacht, peak: ask, chN: chN || 0, chan: chRef,
+          sl: slT, tp: kapiTrade ? null : mp.tp, trail: kapiTrade ? 0 : (mp.trail || 0),
+          // Kapitulations-Trades tragen ihren gemessenen 26-Handelsstunden-Horizont
+          maxHoldMin: kapiTrade ? 1560 : (mp.maxHoldMin || 0),
+          exitMode: kapiTrade ? 'zeit' : mp.exitMode, uebernacht: kapiTrade ? true : !!mp.uebernacht, peak: ask, chN: chN || 0, chan: chRef,
           sources: ki.approved ? { intraday: dir === 'call' ? 1 : -1, ki: dir === 'call' ? 1 : -1 } : { intraday: dir === 'call' ? 1 : -1 },
           reason: ki.note.replace(/^ · /, '') + (ki.note ? ' · ' : '') + (isOrb
               ? 'ORB: Ausbruch aus der Eröffnungs-Range (' + U.nf2.format(orbInfo.lo) + '–' + U.nf2.format(orbInfo.hi) + ', 30 Min) nach ' + (dir === 'call' ? 'OBEN' : 'UNTEN') + ' bei ' + U.nf2.format(spot) + '. '
@@ -6110,6 +6138,8 @@
     if (idIns) idIns.value = D.intraday.instrument || 'schein';
     var idPl = document.getElementById('idPool');
     if (idPl) idPl.value = D.intraday.pool || 'auto';
+    var idKZ = document.getElementById('idKapiZusatz');
+    if (idKZ) idKZ.checked = !!D.intraday.kapiZusatz;
     var idMS = document.getElementById('idMaxStufe');
     if (idMS) idMS.value = String(D.maxRisikostufe || 5);
     var idKH = document.getElementById('idKryptoHandeln');
@@ -6133,6 +6163,8 @@
       if (idIns2) D.intraday.instrument = idIns2.value;
       var idPl2 = document.getElementById('idPool');
       if (idPl2) D.intraday.pool = idPl2.value;
+      var idKZ2 = document.getElementById('idKapiZusatz');
+      if (idKZ2) D.intraday.kapiZusatz = idKZ2.checked;
       var idMS2 = document.getElementById('idMaxStufe');
       if (idMS2) D.maxRisikostufe = parseInt(idMS2.value, 10) || 5;
       var idKH2 = document.getElementById('idKryptoHandeln');

@@ -123,6 +123,8 @@
     D.driftAn = true;
     D.maxRisikostufe = 3;
     var extras = ['Belegte Voreinstellungen übernommen'];
+    // Zweites belegtes Standbein gleich mit an - feuert in der anderen Marktphase
+    if (!D.intraday.kapiZusatz) { D.intraday.kapiZusatz = true; extras.push('Kapitulations-Dip zusätzlich an'); }
     // Der Knopf ist eine bewusste Hand-Entscheidung - er darf auch die Sicherung
     // wieder scharf stellen, die eine fruehere Hand-Entscheidung abgeschaltet hat.
     if (D.intraday.blackout === 'off') { D.intraday.blackout = 'block'; extras.push('Event-Blackout wieder an'); }

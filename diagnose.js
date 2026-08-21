@@ -71,6 +71,7 @@
         profil: depot.intraday && (depot.intraday.instrument || 'schein') === 'schein' ? depot.intraday.profile : null,
         klumpenMax: depot.intraday && depot.intraday.klumpenMax != null ? depot.intraday.klumpenMax : 8,
         pool: (depot.intraday && depot.intraday.pool) || 'auto',
+        kapiZusatz: !!(depot.intraday && depot.intraday.kapiZusatz),
         kryptoHandeln: !!(depot.intraday && depot.intraday.kryptoHandeln),
         schattenImmer: !(depot.intraday && depot.intraday.schattenImmer === false),
         momentumAn: !!depot.momentumAn,
