@@ -1,0 +1,5 @@
+{
+  "_anleitung": "Diese Datei nach 'telemetrie.json' kopieren und das Token eintragen. Token erstellen unter github.com/settings/personal-access-tokens/new -> Repository access: Only select repositories -> Stock-Dashboard -> Permissions: Issues = Read and write, SONST NICHTS. telemetrie.json steht in .gitignore und darf nie committet werden.",
+  "repo": "Wilhelm-mbg/Stock-Dashboard",
+  "token": "github_pat_HIER_EINFUEGEN"
+}

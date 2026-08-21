@@ -1,3 +1,7 @@
 node_modules/
 dist/
 *.part
+# Sende-Token fuer den Diagnose-/Fehler-Versand - DARF NIE ins Repo.
+# Es wird nur in den Installer eingepackt (bewusster, dokumentierter Kompromiss),
+# aber ein Token in der Git-Historie waere fuer immer oeffentlich.
+telemetrie.json
