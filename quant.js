@@ -346,6 +346,103 @@
     var be = dir === 'call' ? w.strike + pPerShare : w.strike - pPerShare;
     return dir === 'call' ? (be / spot - 1) * 100 : (1 - be / spot) * 100;
   }
+  /* ================= Schein-Finder: Kennzahlen und Risikostufe =================
+   *
+   * Modellbasiert, KEINE echten WKN-Listen - Emittenten-Daten gibt es nur ueber
+   * Bezahl-APIs, und die sind bewusst draussen. Dafuer rechnet der Finder mit exakt
+   * demselben Modell wie das Depot: Black-Scholes-Bewertung plus das an echten
+   * Emittentenkursen geeichte Cent-Spread-Modell. Was man hier auswaehlt, verhaelt
+   * sich in der Simulation genauso.
+   */
+
+  /** Alle Kennzahlen eines Scheins auf einen Blick. dir 'call'|'put',
+   *  w {strike, expiry, iv, ratio}, spot, nowMs. Null, wenn der Schein Unfug ist. */
+  function scheinKennzahlen(dir, w, spot, nowMs) {
+    var T = Math.max(0, (w.expiry - nowMs) / (365 * 86400000));
+    if (T <= 0 || !(spot > 0) || !(w.strike > 0)) return null;
+    var wert = warrantValue(dir, w, spot, nowMs);
+    if (!(wert > 0.02)) return null;                      // Pfennig-Bereich: Spanne frisst alles
+    var spx = effSpread(w.iv, undefined, wert, w.ratio);
+    var inner = Math.max(0, (dir === 'call' ? spot - w.strike : w.strike - spot)) * w.ratio;
+    // Zeitwertverlust je Woche: derselbe Schein, eine Woche spaeter, Kurs unveraendert
+    var in7 = warrantValue(dir, w, spot, nowMs + 7 * 86400000);
+    var d1 = (Math.log(spot / w.strike) + (RISK_FREE + w.iv * w.iv / 2) * T) / (w.iv * Math.sqrt(T));
+    var d2 = d1 - w.iv * Math.sqrt(T);
+    var kz = {
+      dir: dir, strike: w.strike, ratio: w.ratio, iv: w.iv,
+      restTage: Math.round(T * 365),
+      wert: Math.round(wert * 10000) / 10000,
+      brief: Math.round(wert * (1 + spx) * 10000) / 10000,
+      geld: Math.round(wert * (1 - spx) * 10000) / 10000,
+      spreadPct: Math.round(spx * 10000) / 100,
+      hebel: Math.round(spot * w.ratio / wert * 10) / 10,
+      omega: Math.round(Math.abs(warrantOmega(dir, w, spot, nowMs)) * 10) / 10,
+      aufgeldPa: Math.round(warrantAufgeld(dir, w, spot, nowMs) / T * 10) / 10,
+      innererWert: Math.round(inner * 10000) / 10000,
+      zeitwertAnteil: Math.round((1 - inner / wert) * 1000) / 10,
+      thetaWoche: Math.round((in7 / wert - 1) * 1000) / 10,
+      breakEven: Math.round((dir === 'call' ? w.strike + wert / w.ratio : w.strike - wert / w.ratio) * 100) / 100,
+      delta: Math.round((dir === 'call' ? normCdf(d1) : normCdf(d1) - 1) * 100) / 100,
+      // Risikoneutrale Wahrscheinlichkeit, dass der Schein wertlos verfaellt. Eine
+      // Modellzahl, keine Prophezeiung - aber sie macht "weit aus dem Geld + kurze
+      // Laufzeit" als das sichtbar, was es ist: ein Lotterielos.
+      totalverlustP: Math.round((dir === 'call' ? normCdf(-d2) : normCdf(d2)) * 1000) / 10,
+      // Wie weit muss der Basiswert laufen, damit allein die Spanne bezahlt ist?
+      spanneHuerdePct: 0
+    };
+    kz.spanneHuerdePct = kz.omega > 0 ? Math.round(2 * spx / kz.omega * 10000) / 100 : null;
+    return kz;
+  }
+
+  /** Risikostufe 1 (defensiv) bis 5 (Lotterielos). Bewusst einfache, dokumentierte
+   *  Regeln statt einer undurchsichtigen Formel - man soll nachvollziehen koennen,
+   *  WARUM ein Schein seine Stufe hat. Die gruende-Liste sagt es dazu. */
+  function scheinRisikostufe(kz) {
+    // Kein Kennzahlen-Objekt heisst: unter 2 Cent, die Spanne frisst jede Bewegung.
+    // Das ist keine Stufe 5, das ist gar nicht handelbar - aber wer trotzdem fragt,
+    // bekommt die ehrliche Hoechststufe statt eines Absturzes.
+    if (!kz) return { stufe: 5, gruende: ['kein handelbarer Schein (Wert unter 2 Cent)'] };
+    var gruende = [];
+    var stufe = kz.omega <= 4 ? 1 : kz.omega <= 8 ? 2 : kz.omega <= 13 ? 3 : kz.omega <= 20 ? 4 : 5;
+    gruende.push('Hebel (Omega) ' + kz.omega + ' → Grundstufe ' + stufe);
+    if (kz.totalverlustP > 50) { stufe += 2; gruende.push('Totalverlust-Wahrscheinlichkeit über 50 % (+2)'); }
+    else if (kz.totalverlustP > 25) { stufe += 1; gruende.push('Totalverlust-Wahrscheinlichkeit über 25 % (+1)'); }
+    if (kz.restTage < 14) { stufe += 1; gruende.push('Restlaufzeit unter 14 Tagen (+1)'); }
+    if (kz.spreadPct > 2) { stufe += 1; gruende.push('Spanne über 2 % je Seite – Pfennig-Schein (+1)'); }
+    stufe = Math.max(1, Math.min(5, stufe));
+    return { stufe: stufe, gruende: gruende };
+  }
+
+  /** Das volle Raster moeglicher Scheine zu einem Basiswert, mit allen Kennzahlen
+   *  und Risikostufe. opt: {typen, laufzeiten, abstaende, ratios} */
+  function scheinRaster(spot, iv, nowMs, opt) {
+    opt = opt || {};
+    var typen = opt.typen || ['call', 'put'];
+    var laufzeiten = opt.laufzeiten || [7, 14, 21, 30, 60, 90, 120, 180];
+    var abstaende = opt.abstaende || (function () {
+      var a = []; for (var m = -0.20; m <= 0.201; m += 0.025) a.push(Math.round(m * 1000) / 1000); return a;
+    })();
+    var ratios = opt.ratios || [0.1, 1.0];
+    var raus = [];
+    typen.forEach(function (dir) {
+      laufzeiten.forEach(function (lz) {
+        abstaende.forEach(function (m) {
+          ratios.forEach(function (bv) {
+            var w = { strike: Math.round(spot * (1 + m) * 100) / 100, expiry: nowMs + lz * 86400000, iv: iv, ratio: bv };
+            var kz = scheinKennzahlen(dir, w, spot, nowMs);
+            if (!kz) return;
+            var rs = scheinRisikostufe(kz);
+            kz.stufe = rs.stufe; kz.stufenGruende = rs.gruende;
+            // Moneyness aus Sicht des Typs: positiv = aus dem Geld
+            kz.otmPct = Math.round((dir === 'call' ? m : -m) * 1000) / 10;
+            raus.push(kz);
+          });
+        });
+      });
+    });
+    return raus;
+  }
+
   /** Bei welchem Basiswert-Kurs erreicht der Schein einen Zielpreis? (Bisektion) */
   function underlyingAtTarget(dir, w, targetWarrantPrice, nowMs, S0) {
     var lo = S0 * 0.4, hi = S0 * 1.6;
@@ -1200,7 +1297,7 @@
   /** Stand der Rechengrundlage. Wird hochgezählt, sobald sich etwas ändert, das alte
    *  Backtest-Ergebnisse ungültig macht (z. B. die Vola-Skalierung in 7.10). Die Farm
    *  verwirft dann ihren Champion-Nachweis und lässt ihn neu antreten. */
-  var RECHENSTAND = 7;   // v8.11: Trendkanal ist eine gemessene Achse (an/aus), nicht mehr fest
+  var RECHENSTAND = 9;   // v8.13: kanalUeber verwirft entartete Breiten nicht mehr (Rechenweise geaendert)
 
   var KANAL_MIN = { touchJeSeite: 3, dichte: 2.5, wechsel: 2, deckung: 0.90, enge: 0.85, vr: 0.35, acf: -0.65, score: 50 };
 
@@ -1361,6 +1458,15 @@
     * wurde im Zweifel Trendfolge gehandelt, auch in einem Markt der weder trendet noch
     * schwingt. Der Ausloeser heisst 'keiner', damit die Whitelist-Pruefung unveraendert
     * greift (Setup -> erlaubte Ausloeser). */
+  /* Freigabeliste für die KI-Regimeempfehlung – ABSICHTLICH kürzer als die Liste der
+   * von Hand wählbaren Auslöser. Was hier steht, darf die Automatik selbsttätig
+   * einstellen; alles andere muss ein Mensch wählen.
+   *
+   * Nicht enthalten und das mit Absicht: 'ruecksetzer', 'donchian', 'squeeze', 'rsi2'
+   * 'rsi2seit' und seit dem 21.08.2026 auch 'kanaltrend'. Sie sind wählbar, aber nicht belegt –
+   * 'kanaltrend' kam im ersten Backtest auf 8 Kryptowerten sogar auf −39 % bei einer
+   * Gegenprobe von p = 0,86 (Zufall wäre besser gewesen). Ein Modus, der noch gemessen
+   * wird, darf sich nicht selbst einschalten. */
   var SETUP_ALLOW = {
     ausbruch: ['kreuzung', 'range'],
     umkehr: ['ueberdehnung', 'welle'],
@@ -1528,6 +1634,106 @@
       var qsig = squeezeSignal(win, P.period);
       if (!qsig.signal) return null;
       dir = qsig.signal;
+    } else if (P.ENTRY === 'rsi2seit') {
+      /* RSI(2)-EXTREM NUR IM SEITWÄRTSKANAL, MIT VOLUMENBESTÄTIGUNG.
+       *
+       * Ergebnis der Bedingungsstudie vom 21.08.2026 (162 Aktien, Stundenkerzen, jedes
+       * Signal gekreuzt mit Kanalzustand, EMA100, Volumen und Tageszeit): Unbedingt ist
+       * RSI(2) ein Münzwurf (+0,017 Pp). Im SEITWÄRTSKANAL mit Volumenbestätigung wird
+       * daraus +0,147 Pp auf 8 Stunden — t = 4,1 ÜBER DIE SYMBOLE (je Wert ein Mittel,
+       * damit überlappende Fenster das t nicht aufblasen), beide Zeithälften positiv,
+       * 99 von 162 Werten im Plus. Im volatilen Drittel des Universums +0,235 Pp.
+       *
+       * Warum das inhaltlich stimmt: RSI(2) kauft kurzfristige Übertreibung und braucht
+       * die Rückkehr zur Mitte. Die gibt es nur, wo eine Mitte existiert — im
+       * Seitwärtskanal. Im Trend ist dieselbe Übertreibung oft der Anfang der nächsten
+       * Etappe, und das Signal fängt Messer. Der Kanal liefert also nicht die Richtung,
+       * sondern die ERLAUBNIS.
+       *
+       * Wirtschaftlich: +0,147 Pp liegen UNTER der Scheinhürde (0,21 % auf 8 h), aber
+       * ÜBER der Basiswert-Hürde (0,10 %). Dieser Modus gehört auf den Basiswert-Pfad
+       * (instrument: 'basis') oder auf das volatile Drittel des Universums. */
+      var xs2 = rsiExtremSignal(win);
+      if (!xs2.signal) return null;
+      var ks2 = null;
+      try { ks2 = kanalUeber(bars, Math.max(0, ci - 200), ci); } catch (eK2) { }
+      if (!ks2 || ks2.trend !== 'seit') return null;
+      // Volumenbestätigung: Signalkerze über dem 1,3-fachen des Schnitts der 50 davor.
+      // Mittel ohne die Signalkerze selbst - sonst bestätigt sie sich selbst.
+      var vs2 = 0, vn2 = 0;
+      for (var vq2 = win.length - 51; vq2 < win.length - 1; vq2++) {
+        if (vq2 >= 0) { vs2 += (win[vq2][2] || 0); vn2++; }
+      }
+      var vAvg2 = vn2 ? vs2 / vn2 : 0;
+      if (!(vAvg2 > 0 && (win[win.length - 1][2] || 0) > 1.3 * vAvg2)) return null;
+      dir = xs2.signal;
+    } else if (P.ENTRY === 'kapitulation') {
+      /* KAPITULATIONS-DIP: Ueberdehnung UNTER die Leitlinie IM Abwaertskanal, mit
+       * Volumenbestaetigung - nur Long. Zweiter Fund der Bedingungsstudie vom
+       * 21.08.2026 (162 Aktien, Stundenkerzen):
+       *   Median +0,44 % je Trade nach 10 Bp Kosten, 26 Handelsstunden Horizont,
+       *   t = 4,62 UEBER DIE SYMBOLE, 98 von 154 Werten positiv, beide Haelften positiv.
+       *
+       * EHRLICHE WARNUNG, die zur Regel gehoert: Der Gewinn sitzt im rechten Schwanz.
+       * Ohne die besten 5 % der Trades faellt das Mittel UNTER die Drift-Basislinie
+       * (+0,72 % -> -0,06 % gegen +0,56 % Drift). Viele kleine Ergebnisse, wenige
+       * grosse Erholungen tragen alles. Konsequenz: KEIN Gewinnziel, kein Deckel -
+       * wer die Ausreisser kappt, behaelt nur die Messer. Der Zeit-Ausstieg nach 26
+       * Handelsstunden ist die ganze Ausstiegsregel.
+       *
+       * Das Put-Gegenstueck (Blow-off im Aufwaertskanal) ist gemessen und faellt:
+       * -0,33 % je Trade, es kaempft gegen die Marktdrift. */
+      var rk = reversionSignal(win, P.LINE, P.period, P.ZTHR);
+      if (rk.signal !== 'call') return null;
+      var kk = null;
+      try { kk = kanalUeber(bars, Math.max(0, ci - 200), ci); } catch (eK3) { }
+      if (!kk || kk.trend !== 'ab') return null;
+      var vsK3 = 0, vnK3 = 0;
+      for (var vq3 = win.length - 51; vq3 < win.length - 1; vq3++) {
+        if (vq3 >= 0) { vsK3 += (win[vq3][2] || 0); vnK3++; }
+      }
+      var vAvg3 = vnK3 ? vsK3 / vnK3 : 0;
+      if (!(vAvg3 > 0 && (win[win.length - 1][2] || 0) > 1.3 * vAvg3)) return null;
+      dir = 'call';
+    } else if (P.ENTRY === 'kanaltrend') {
+      /* TRENDFOLGE IM KANAL – die entgegengesetzte These zu 'wave' und 'reversion'.
+       *
+       * Diese beiden kaufen an der Kanalunterkante, weil sie auf eine Rückkehr zur Mitte
+       * setzen. Am 21.08.2026 auf 138.648 Krypto-Stundenkerzen gemessen, war das die
+       * Verliererseite, und zwar durchgehend über alle Signale:
+       *     Kanal: unten kaufen   −0,093 Pp auf 24 Stunden (t = −5,9, n = 70.839)
+       *     Rücksetzer            −0,119 Pp
+       *     Umkehr zur Linie      −0,064 Pp
+       *     Kanal: Trend folgen   +0,071 Pp (t = 5,5, n = 99.337)
+       *     Squeeze               +0,135 Pp (t = 4,0)
+       * Vier Umkehr-Signale verlieren, drei Trend-Signale gewinnen – kein Einzelausreißer.
+       *
+       * WICHTIG, was das NICHT heißt: Als handelbare Strategie mit Kosten und auf nicht
+       * überlappenden Monaten gerechnet, bleibt von t = 5,5 nur t = 0,46 übrig, und eine
+       * zufällige Richtung mit gleicher Haltedauer verdient sogar mehr. Belegt ist die
+       * RICHTUNG des Effekts, nicht seine Höhe. Deshalb steht dieser Modus als zusätzliche,
+       * einzeln schaltbare Variante neben den anderen – nicht an ihrer Stelle. Er ist zum
+       * Messen da, nicht zum Umstellen.
+       *
+       * Ohne Auslöser wäre der Kanaltrend kein Signal, sondern ein Zustand: Er gilt auf
+       * rund 72 % aller Kerzen. Wer bei jeder Kerze neu kauft, zahlt tausendfach Spanne
+       * und ist tot, egal wie gut die Richtung stimmt. Die Leitlinien-Kreuzung liefert
+       * den fehlenden Auslöser.
+       */
+      var dgT = degapBarArray(win);
+      var chT = trendChannel(dgT);
+      if (!chT || !chT.gueltig || chT.ausbruch) return null;
+      if (chT.score < P.MINQ) return null;
+      if (chT.trend !== 'up' && chT.trend !== 'down') return null;
+      var tsig = signalCross(win, P.LINE, P.period, P.confirmBps);
+      if (!tsig.crossed) return null;
+      var trendDir = chT.trend === 'up' ? 'call' : 'put';
+      // Auslöser und Kanal müssen dasselbe sagen – eine Kreuzung GEGEN den Kanal ist
+      // genau die Umkehrwette, von der dieser Modus wegführen soll.
+      if ((tsig.crossed === 'up' ? 'call' : 'put') !== trendDir) return null;
+      dir = trendDir;
+      chE = chT; chN = chT.N;
+      chRef = { kanal: chT, i0: ci, off: dgT[dgT.length - 1][1] - spot };
     } else {
       var sig = signalCross(win, P.LINE, P.period, P.confirmBps);
       if (!sig.crossed) return null;
@@ -1605,6 +1811,281 @@
     });
   }
 
+  /* ================= Zufallsgegenprobe =================
+   *
+   * Permutationstest auf der HANDELSRICHTUNG. Die Trades bleiben, wie sie sind -
+   * gleiche Zeitpunkte, gleiche Haltedauern, gleiche Anzahl. Gewuerfelt wird nur, ob
+   * jeder einzelne auf steigende oder fallende Kurse gesetzt haette. Aus vielen
+   * solchen Welten entsteht eine Verteilung: "so gut waere Raten gewesen".
+   *
+   * Liegt das echte Ergebnis mittendrin, hat das Signal keine Richtungsinformation -
+   * ganz gleich, wie gut die Ertragskurve aussieht. Genau dieser Fall ist am
+   * 21.08.2026 auf Krypto eingetreten.
+   *
+   * Der Zufall ist absichtlich REPRODUZIERBAR (fester Startwert): zwei Laeufe auf
+   * denselben Trades muessen dasselbe Urteil geben, sonst kann man Messungen nicht
+   * vergleichen - und die Zucht, die Analyse-Zentrale und der Pruefstand tun genau das.
+   */
+  function mischer(saat) {
+    // xorshift32: klein, schnell, ohne Abhaengigkeit - Math.random() waere nicht wiederholbar
+    var z = saat | 0 || 2463534242;
+    return function () {
+      z ^= z << 13; z ^= z >>> 17; z ^= z << 5;
+      return ((z >>> 0) % 100000) / 100000;
+    };
+  }
+
+  /**
+   * Trifft das Signal die Richtung besser als eine Muenze?
+   * trades: [{dir, entrySpot, exitSpot}, ...]   laeufe: Zahl der Zufallswelten
+   * Rueckgabe: {n, echt, zufallMittel, zufallP95, quote, besserAls, pWert, aussage}
+   *   echt         mittlere Bewegung des Basiswerts IN Handelsrichtung, in Prozent
+   *   zufallMittel dasselbe, wenn die Richtung gewuerfelt wird
+   *   pWert        Anteil der Zufallswelten, die mindestens so gut waren
+   */
+  function gegenprobeRichtung(trades, laeufe) {
+    laeufe = laeufe || 2000;
+    // Kursbewegung und Handelsrichtung getrennt halten - die Probe mischt gleich nur
+    // die Richtungen, die Bewegungen bleiben, wo sie sind.
+    var kurs = [], richtung = [], n = 0;
+    for (var i = 0; i < (trades || []).length; i++) {
+      var t = trades[i];
+      if (!t || !(t.entrySpot > 0) || !(t.exitSpot > 0)) continue;
+      kurs.push((t.exitSpot / t.entrySpot - 1) * 100);
+      richtung.push(t.dir === 'put' ? -1 : 1);
+      n++;
+    }
+    if (n < 20) return { n: n, zuWenig: true, aussage: 'Zu wenige Trades mit Kursdaten (' + n + ') für eine Gegenprobe.' };
+    var mittel = function (a) { return a.reduce(function (x, y) { return x + y; }, 0) / a.length; };
+    var bew = kurs.map(function (k2, i2) { return k2 * richtung[i2]; });
+    var echt = mittel(bew);
+    var quote = bew.filter(function (x) { return x > 0; }).length / n;
+
+    /* GEMISCHT, NICHT NEU GEWUERFELT. Ein frueherer Anlauf zog je Trade eine Muenze,
+     * also 50 % Call / 50 % Put. Das ist der falsche Vergleichsmassstab: Eine Strategie,
+     * die zu 64 % long steht, schlaegt in einem steigenden Markt jede 50/50-Zuteilung -
+     * ohne einen einzigen Richtungstreffer, allein durch die Marktneigung. Genau dieser
+     * Fall ist am 21.08.2026 auf Krypto aufgetreten.
+     * Richtig ist, die VORHANDENEN Richtungen unter den Trades zu vertauschen. Dann hat
+     * jede Zufallswelt dieselbe Long-Quote wie das Original, und uebrig bleibt genau die
+     * Frage: Sassen die Calls auf den richtigen Trades? */
+    var wuerfel = mischer(20260821), welten = [], besser = 0;
+    var misch = richtung.slice();
+    for (var w = 0; w < laeufe; w++) {
+      for (var f = n - 1; f > 0; f--) {          // Fisher-Yates
+        var g = Math.floor(wuerfel() * (f + 1));
+        var tmp = misch[f]; misch[f] = misch[g]; misch[g] = tmp;
+      }
+      var s = 0;
+      for (var k = 0; k < n; k++) s += misch[k] * kurs[k];
+      var m = s / n;
+      welten.push(m);
+      if (m >= echt) besser++;
+    }
+    welten.sort(function (a, b) { return a - b; });
+    var p = besser / laeufe;
+    var aussage;
+    if (p <= 0.01) aussage = 'Die Richtung ist deutlich besser als Raten (p = ' + p.toFixed(3) + ').';
+    else if (p <= 0.05) aussage = 'Die Richtung ist besser als Raten (p = ' + p.toFixed(3) + ').';
+    else if (p >= 0.5) aussage = 'Raten wäre im Mittel BESSER gewesen (p = ' + p.toFixed(2) + '). Das Signal trägt keine Richtungsinformation.';
+    else aussage = 'Nicht von Raten zu unterscheiden (p = ' + p.toFixed(2) + '). Kein Beleg für Richtungstreffer.';
+    return {
+      n: n,
+      echt: Math.round(echt * 1000) / 1000,
+      zufallMittel: Math.round(mittel(welten) * 1000) / 1000,
+      zufallP95: Math.round(welten[Math.floor(laeufe * 0.95)] * 1000) / 1000,
+      quote: Math.round(quote * 1000) / 10,
+      besserAls: Math.round((1 - p) * 1000) / 10,
+      pWert: Math.round(p * 10000) / 10000,
+      ueberzufaellig: p <= 0.05,
+      aussage: aussage
+    };
+  }
+
+  /* ================= Altlast: Position aus einer früheren Sitzung? =================
+   *
+   * Positionen werden nur im Scan geschlossen, und der läuft nur bei offener App UND
+   * offener Börse. War die App tagelang zu, lief der Zeitwert des Scheins weiter ab,
+   * ohne dass etwas eingriff. In den Daten vom 21.08.2026 gefunden: Trades mit 22 und
+   * 23 Tagen Haltedauer auf 60-Tage-Scheinen, Ergebnis −44 % und −41 %; über alle 28
+   * geschlossenen Trades stammten 38 % des Verlusts aus reinem Zeitwertverfall.
+   *
+   * Zwei Kriterien, und das zweite ist das wichtigere:
+   *  - Eine KURZFRISTIGE Position, die einen Handelstag überlebt hat, ist keine mehr.
+   *    Eine fehlende Strategie-Kennung zählt dazu: Die teuersten Trades im Bestand
+   *    (9 Stück, −1.993 $, Median 22,2 Tage) tragen keine, weil sie aus einer älteren
+   *    Fassung stammen. Vorsichtig ist hier richtig.
+   *  - VERBRAUCHTE LAUFZEIT, unabhängig von der Strategie. Über einem Viertel der
+   *    ursprünglichen Scheinlaufzeit ist der Zeitwertverfall spürbar. Die
+   *    Stunden-Strategie hält im Median 1,5 Tage; ein Viertel von 60 Tagen sind 15 –
+   *    die Schwelle stört den regulären Betrieb nicht.
+   *
+   * Rückgabe: Grundtext, oder null wenn die Position bleiben darf.
+   */
+  function altlastGrund(pos, now, opt) {
+    if (!pos || !pos.openT) return null;
+    opt = opt || {};
+    var grenze = opt.anteilLaufzeit === undefined ? 0.25 : opt.anteilLaufzeit;
+    now = now || Date.now();
+    if (new Date(pos.openT).toISOString().slice(0, 10) === new Date(now).toISOString().slice(0, 10)) return null;
+    var tage = Math.round((now - pos.openT) / 86400000 * 10) / 10;
+    if (pos.strategy === 'intraday' || !pos.strategy) {
+      // Positionen mit Übernacht-Erlaubnis (RSI2-Seitwärts) dürfen eine Nacht überleben -
+      // das IST ihre Strategie. Erst über zwei Tagen sind auch sie Altlast.
+      if (pos.uebernacht && (now - pos.openT) <= 2 * 86400000) return null;
+      return 'kurzfristige Position seit ' + tage + ' Tagen offen';
+    }
+    var laufzeit = pos.expiry ? (pos.expiry - pos.openT) : 0;
+    if (laufzeit > 0 && (now - pos.openT) / laufzeit > grenze) {
+      return Math.round((now - pos.openT) / laufzeit * 100) + ' % der Scheinlaufzeit verbraucht';
+    }
+    return null;
+  }
+
+  /* ================= Fingerabdruck einer Schatten-Konfiguration =================
+   *
+   * Ein Schatten ist nur mit anderen Schatten DERSELBEN Ausstiegsregeln vergleichbar.
+   * Am 21.08.2026 stand in der Bilanz ein Urteil, das aus 392 Schatten mit drei Minuten
+   * Haltedauer stammte, während die App mit 240 Minuten lief. Bei drei Minuten misst man
+   * nichts als die Geld-Brief-Spanne: Median -5,8 % gegen 5,4 % Kosten, Trefferquote 3 %.
+   * Die Zahl sah nach Filterwirkung aus und war die Kostenstruktur.
+   *
+   * Aufgenommen wird nur, was das ERGEBNIS eines Schattens verändert. Der Modusname
+   * gehört nicht dazu - zwei Modi mit gleichen Ausstiegsregeln liefern vergleichbare
+   * Schatten, und ein reiner Namenswechsel soll die Zählung nicht zurücksetzen.
+   */
+  function schattenKonfig(mp, cfg) {
+    mp = mp || {}; cfg = cfg || {};
+    var teile = [
+      'x' + (mp.exitMode || '-'),
+      'h' + (mp.maxHoldMin || 0),
+      's' + (mp.sl === 'auto' ? 'auto' : Math.round((mp.sl || 0) * 100)),
+      't' + (mp.tp == null ? '-' : Math.round(mp.tp * 100)),
+      'r' + Math.round((mp.trail || 0) * 100),
+      'p' + (cfg.profile || '-'),
+      'i' + (cfg.interval || '-')
+    ];
+    return teile.join('_');
+  }
+
+  /* ================= Signifikanz aus MONATSERTRÄGEN =================
+   *
+   * Warum nicht aus den Trades: Bei Haltedauern über mehreren Bars sind fast alle Trades
+   * gleichzeitig offen. Ein t-Wert setzt aber UNABHÄNGIGE Beobachtungen voraus; bei
+   * Überlappung zählt er dieselbe Marktbewegung dutzendfach und wird dadurch beliebig
+   * groß. Am 21.08.2026 auf Krypto nachgemessen: Aus t = 5,5 (je Kerze gerechnet) wurde
+   * t = 0,46, sobald man auf nicht überlappende Monate umstellte. Dieselbe Strategie,
+   * dieselben Daten – nur ein ehrlicher Nenner.
+   *
+   * Monatserträge aus der Kapitalkurve überlappen nicht. Der t-Wert daraus bedeutet
+   * wieder etwas, und n ist die Zahl der Monate, nicht die der Trades.
+   *
+   * equity: [[Zeitstempel, Kapital], …]
+   */
+  function monatsStatistik(equity) {
+    if (!equity || equity.length < 3) return null;
+    var proMonat = {}, reihenfolge = [];
+    for (var i = 0; i < equity.length; i++) {
+      var k = new Date(equity[i][0]).toISOString().slice(0, 7);
+      if (proMonat[k] === undefined) { proMonat[k] = { erst: equity[i][1], letzt: equity[i][1] }; reihenfolge.push(k); }
+      else proMonat[k].letzt = equity[i][1];
+    }
+    reihenfolge.sort();
+    // Der erste Monat beginnt beim Startkapital, jeder weitere beim Schluss des Vormonats.
+    // Ohne diese Verkettung fehlt der Ertrag, der über den Monatswechsel entstanden ist.
+    var werte = [], vorher = null;
+    for (var m = 0; m < reihenfolge.length; m++) {
+      var e = proMonat[reihenfolge[m]];
+      var basis = vorher === null ? e.erst : vorher;
+      if (basis > 0) werte.push((e.letzt / basis - 1) * 100);
+      vorher = e.letzt;
+    }
+    if (werte.length < 3) return { monate: werte.length, zuKurz: true };
+    var mittel = werte.reduce(function (a, b) { return a + b; }, 0) / werte.length;
+    var varianz = werte.reduce(function (a, b) { return a + (b - mittel) * (b - mittel); }, 0) / (werte.length - 1);
+    var t = varianz > 0 ? mittel / Math.sqrt(varianz / werte.length) : 0;
+    return {
+      monate: werte.length,
+      jeMonat: Math.round(mittel * 1000) / 1000,
+      proJahr: Math.round(mittel * 12 * 100) / 100,
+      positiveMonate: Math.round(100 * werte.filter(function (v) { return v > 0; }).length / werte.length),
+      tWert: Math.round(t * 100) / 100,
+      // Erst ab rund 24 Monaten ist ein t-Wert belastbar. Darunter wird er ausgewiesen,
+      // aber nicht als Beleg gewertet – sonst erklärt ein guter Quartalslauf eine
+      // Strategie zum Fund.
+      belastbar: werte.length >= 24,
+      ueberzufaellig: werte.length >= 24 && t >= 2
+    };
+  }
+
+  /* ================= Wie spät ist der Kanal? =================
+   *
+   * Ein Regressionskanal beschreibt, was WAR. Er kann gar nicht anders, als der
+   * Bewegung nachzulaufen — die Frage ist nur, um wie viel. Am AMD-Chart vom
+   * 20.08.2026 meldete er am Tageshoch (473,50) „aufwärts" und am Tagestief (460,88)
+   * „abwärts". Der Abwärtstrend war erst bei 465,51 erkannt, da waren 7,22 der 12,62
+   * Dollar Bewegung vorbei.
+   *
+   * Diese Funktion rechnet genau das aus, statt es dem Auge zu überlassen: Seit wann
+   * meldet der Kanal die jetzige Richtung, wo lag der Wendepunkt davor, und welcher
+   * Anteil der Bewegung war zum Meldezeitpunkt schon gelaufen.
+   *
+   * Ohne Blick in die Zukunft: Für jeden geprüften Zeitpunkt i wird der Kanal nur über
+   * [i-fenster, i] gebildet, nie darüber hinaus.
+   */
+  function kanalVerzug(bars, opt) {
+    opt = opt || {};
+    var fenster = opt.fenster || 200;
+    var maxRueck = opt.maxRueck || 200;          // Deckel: sonst läuft die Suche über den ganzen Chart
+    var n = bars.length;
+    if (n < fenster + 10) return null;
+    function trendBei(i) {
+      var k = kanalUeber(bars, Math.max(0, i - fenster), i);
+      return k ? k.trend : null;
+    }
+    var jetzt = trendBei(n - 1);
+    if (!jetzt) return null;
+    // Seitwärts hat keine Richtung, also auch keinen Verzug. Eine Zahl auszurechnen wäre
+    // hier schlimmer als keine: Sie hätte kein Vorzeichen, das etwas bedeutet.
+    if (jetzt !== 'auf' && jetzt !== 'ab') return { trend: 'seit', ohneRichtung: true };
+    // Rückwärts, bis der Kanal etwas anderes gemeldet hat: das ist der Meldezeitpunkt.
+    var meldeIdx = n - 1, grenze = Math.max(fenster, n - 1 - maxRueck), gekappt = false;
+    for (var i = n - 2; i >= grenze; i--) {
+      if (trendBei(i) !== jetzt) { meldeIdx = i + 1; break; }
+      meldeIdx = i;
+      if (i === grenze) gekappt = true;
+    }
+    // Der Wendepunkt, an dem die Bewegung tatsächlich begann: bei „aufwärts" das Tief
+    // vor der Meldung, bei „abwärts" das Hoch. Gesucht wird nur VOR dem Meldezeitpunkt.
+    var von = Math.max(0, meldeIdx - Math.round(fenster / 2));
+    var wendeIdx = meldeIdx, best = null;
+    for (var j = von; j <= meldeIdx; j++) {
+      var p = bars[j][1];
+      if (best === null || (jetzt === 'auf' ? p < best : p > best)) { best = p; wendeIdx = j; }
+    }
+    var pWende = bars[wendeIdx][1], pMelde = bars[meldeIdx][1], pJetzt = bars[n - 1][1];
+    var ganzeBewegung = pJetzt - pWende;
+    // Anteil der Bewegung, der beim Melden schon vorbei war. Nur sinnvoll, wenn sich
+    // der Kurs seit dem Wendepunkt überhaupt in Trendrichtung bewegt hat.
+    var anteil = null;
+    if (Math.abs(ganzeBewegung) > 1e-9 && (jetzt === 'auf' ? ganzeBewegung > 0 : ganzeBewegung < 0)) {
+      anteil = Math.max(0, Math.min(1, (pMelde - pWende) / ganzeBewegung));
+    }
+    return {
+      trend: jetzt,
+      gemeldetVor: n - 1 - meldeIdx,             // in Kerzen
+      gemeldetBei: pMelde,
+      gemeldetT: bars[meldeIdx][0],
+      wendeVor: n - 1 - wendeIdx,
+      wendeBei: pWende,
+      wendeT: bars[wendeIdx][0],
+      verzugKerzen: meldeIdx - wendeIdx,
+      anteilVerpasst: anteil === null ? null : Math.round(anteil * 1000) / 10,
+      seitherPct: Math.round((pJetzt / pMelde - 1) * 10000) / 100,
+      gekappt: gekappt
+    };
+  }
+
   /* ================= Trendkanäle: beschreiben statt filtern =================
    *
    * Ein Kanal ist eine BESCHREIBUNG des Kursverlaufs, keine Ja/Nein-Entscheidung.
@@ -1677,7 +2158,19 @@
     var offOben = qi(opt.quantil === undefined ? 0.92 : opt.quantil);
     var offUnten = qi(1 - (opt.quantil === undefined ? 0.92 : opt.quantil));
     var breite = offOben - offUnten;
-    if (!(breite > 0)) return null;
+    // Entartete Breite: Wenn der Kurs der Geraden fast exakt folgt, liegen das 92.- und
+    // das 8.-Perzentil der Abweichungen im Fliesskomma-Rauschen – mal minimal auseinander,
+    // mal gleich. Früher gab es dafür null zurück, also KEINEN Kanal, obwohl die
+    // Passgenauigkeit perfekt war: auf einer glatten Rampe kam abwechselnd ein Ergebnis
+    // und null heraus. Auf echten Kursen ist der Fall selten, aber nicht ausgeschlossen
+    // (lange flache Strecken, grob gerundete Kurse) – und dort verschwand der Kanal still
+    // aus jeder Messung, statt als perfekt passend gemeldet zu werden.
+    // Jetzt bekommt er eine Mindestbreite auf Kursniveau. Für echte Kurse ändert sich
+    // nichts, deren Breite liegt immer weit darüber.
+    if (!(breite > 0)) {
+      var minBreite = Math.max(Math.abs(mittelY) * 1e-7, 1e-10);
+      offOben = minBreite / 2; offUnten = -minBreite / 2; breite = minBreite;
+    }
     // Wie oft berührt der Kurs die Kanten? Ein Kanal, den niemand anfasst, beschreibt nichts.
     var tolBand = breite * 0.15, tO = 0, tU = 0;
     for (i = 0; i < n; i++) {
@@ -1796,7 +2289,14 @@
     var TREND = !!opts.trendFilter;                                    // nur mit übergeordnetem Trend (EMA100)
     var WIN = opts.window || 'all';                                    // Handelszeitfenster
     var SLIPB = opts.slippage === undefined ? 0.005 : opts.slippage;   // Slippage-Basis je Ausführung
+    var INSTRUMENT = opts.instrument || 'schein';                      // 'schein' | 'basis' (Aktie/CFD, linear, ohne Zeitwert)
+    var BASIS_SP = (opts.basisBp === undefined ? 5 : opts.basisBp) / 10000; // Basiswert-Spanne je Seite
     var ENTRY = opts.entryMode || 'cross';                             // 'cross' | 'reversion' | 'wave'
+    var NUR_RICHTUNG = opts.nurRichtung || null;                       // 'call' | 'put': nur eine Seite handeln.
+    // Grund: Ein relativer Vorsprung auf der Short-Seite laesst sich mit einem nackten
+    // Leerverkauf nicht ernten - er kaempft gegen die Marktdrift. Beim RSI2-im-
+    // Seitwaertskanal gemessen: Call-Bein +0,075 % je Trade, Put-Bein -0,099 %.
+    // Dieselbe Lektion wie bei der Ergebnis-Drift-Strategie.
     var ZTHR = opts.zThr || 2;                                         // z-Score-Schwelle (Rücksetzer/Wellenreiter)
     var MINEDGE = opts.minEdge === undefined ? 1.5 : opts.minEdge;     // Kosten-Breakeven-Filter (0 = aus)
     var MINQ = opts.minQuality === undefined ? 60 : opts.minQuality;   // Wellen-Qualitäts-Schwelle
@@ -1832,16 +2332,38 @@
     syms.forEach(function (s) { idx[s] = histMap[s]; cursor[s] = 0; });
 
     function dayKey(t) { var d = new Date(t); return d.getUTCFullYear() + '-' + d.getUTCMonth() + '-' + d.getUTCDate(); }
+    /* DURCHGEHENDE MÄRKTE haben keinen Handelsschluss. Für Aktien ist die Glattstellung
+     * zum Tagesende richtig – über Nacht steht man ungeschützt im Gap. Für Krypto ist
+     * sie eine erfundene Grenze: `dayKey` teilt bei UTC-Mitternacht, obwohl dort nichts
+     * passiert.
+     *
+     * Am 21.08.2026 gemessen, was das anrichtet: Von 21 Trades einer Krypto-Trendfolge
+     * schlossen 9 mit „Tagesschluss-Glattstellung", Median-Haltedauer 2 Stunden. Die
+     * geprüfte Ausstiegsregel kam nie zum Zug – zwei völlig verschiedene Ausstiegsmodi
+     * lieferten deshalb bis auf die Kommastelle dasselbe Ergebnis. Ohne diesen Schalter
+     * ist auf durchgehenden Märkten keine Haltedauer über einem Tag messbar. */
+    var TAGESSCHLUSS = opts.tagesschluss !== false;
     function isLastBarOfDay(s, ci) {
+      if (!TAGESSCHLUSS) return false;
       var bars = idx[s];
       return ci === bars.length - 1 || dayKey(bars[ci + 1][0]) !== dayKey(bars[ci][0]);
     }
+    /** Wert einer Position - Schein ueber Black-Scholes, Basiswert linear.
+     *  Der Put auf dem Basiswert ist ein linearer Leerverkauf: Wert = 2*Einstieg - Kurs.
+     *  Faellt der Kurs um 1 %, steigt der Wert um 1 % - kein Hebel, kein Zeitwert. */
+    function positionsWert(p, spot, t) {
+      if (p.basis) return p.dir === 'call' ? spot : Math.max(0.001, 2 * p.entrySpot - spot);
+      return warrantValue(p.dir, p.w, spot, t);
+    }
     function closePos(sym, spot, t, why) {
       var p = open[sym];
-      var bid = Math.max(0.001, warrantValue(p.dir, p.w, spot, t) * (1 - (p.spx || SP)));
+      var bid = Math.max(0.001, positionsWert(p, spot, t) * (1 - (p.spx || SP)));
       var proceeds = bid * p.qty - FEE;
       cash += proceeds;
-      trades.push({ sym: sym, dir: p.dir, openT: p.openT, closeT: t, entry: p.entry, exit: bid, qty: p.qty, pnl: proceeds - p.cost, fees: 2 * FEE, why: why, holdMin: Math.round((t - p.openT) / 60000) });
+      // entrySpot/exitSpot sind der BASISWERT, nicht der Schein. Ohne sie laesst sich
+      // die Richtungs-Gegenprobe nicht rechnen: ein gespiegelter Schein-Trade ist wegen
+      // Zeitwert und Kruemmung nicht die Spiegelung des echten, die Kursbewegung schon.
+      trades.push({ sym: sym, dir: p.dir, openT: p.openT, closeT: t, entry: p.entry, exit: bid, qty: p.qty, pnl: proceeds - p.cost, fees: 2 * FEE, why: why, holdMin: Math.round((t - p.openT) / 60000), entrySpot: p.entrySpot, exitSpot: spot });
       delete open[sym];
     }
 
@@ -1868,7 +2390,7 @@
         // Offene Position managen
         if (open[sym]) {
           var p = open[sym];
-          var bid = Math.max(0.001, warrantValue(p.dir, p.w, spot, t) * (1 - (p.spx || SP)));
+          var bid = Math.max(0.001, positionsWert(p, spot, t) * (1 - (p.spx || SP)));
           var ret = bid / p.entry - 1;
           if (bid > (p.peak || 0)) p.peak = bid;
           var sig0 = signalCross(bars.slice(Math.max(0, ci - Math.max(period * 4, 120)), ci + 1), LINE, period, confirmBps);
@@ -1905,6 +2427,47 @@
             else if ((p.dir === 'call' && !sig9.above) || (p.dir === 'put' && sig9.above)) why = 'Blitz: EMA9-Rückkreuzung';
           } else if (EXIT_MODE === 'recross') {
             if ((p.dir === 'call' && !sig0.above) || (p.dir === 'put' && sig0.above)) why = 'EMA-Rückkreuzung (Wellen-Ende)';
+          } else if (EXIT_MODE === 'zeit') {
+            /* REINER ZEIT-AUSSTIEG: nur Stop, Ziel, Trailing, Haltedauer, Tagesschluss –
+             * kein Signal-Ausstieg. Nötig für Strategien mit festem Horizont: Beim
+             * RSI2-Dip-Kauf steht der Kurs beim Einstieg UNTER der Leitlinie, und der
+             * generische Gegen-Durchbruch-Ausstieg feuert dadurch sofort auf die
+             * Einstiegsbedingung selbst – 2.831 von 4.932 Trades flogen im Test nach
+             * Minuten raus, obwohl die Regel acht Stunden halten wollte. Der leere
+             * Zweig ist Absicht: Er fängt den Fall ab, bevor der generische Ausstieg
+             * darunter greift. */
+          } else if (EXIT_MODE === 'trendhalten') {
+            /* HALTEN, SOLANGE DER KANAL DIE RICHTUNG HÄLT – das Gegenstück zu 'crest',
+             * das an der Gegenkante schließt.
+             *
+             * 'crest' nimmt Gewinn an der Kanalkante mit; das ist eine Umkehrwette und
+             * damit genau die Seite, die in der Messung vom 21.08.2026 verloren hat
+             * (Kanal: unten kaufen −0,093 Pp, t = −5,9). Hier wird das Gegenteil geprüft:
+             * Die Kante ist kein Ziel, sondern normaler Trendverlauf. Beendet wird erst,
+             * wenn die These nicht mehr gilt – der Kanal dreht oder bricht.
+             *
+             * Der Kanal wird vom Einstieg FORTGESCHRIEBEN, nicht neu gezeichnet. Ein neu
+             * gezeichneter Kanal läuft dem Kurs hinterher, dann verschiebt sich das
+             * Abbruchkriterium mit der Position mit und die Regel wird zahnlos. */
+            if (p.chan) {
+              var chH = projectTrendChannel(p.chan.kanal, ci - p.chan.i0, spot + p.chan.off);
+              if (chH) {
+                if (p.dir === 'call' && chH.pos <= -0.125) why = 'Kanal nach unten gebrochen – These gebrochen';
+                else if (p.dir === 'put' && chH.pos >= 1.125) why = 'Kanal nach oben gebrochen – These gebrochen';
+              }
+              // Dreht der frisch gemessene Kanal, ist der Trend keiner mehr. Das ist die
+              // eigentliche Abbruchbedingung – der Bruch oben fängt nur den schnellen Fall.
+              if (!why) {
+                var chNeu = trendChannel(degapBarArray(bars.slice(Math.max(0, ci - 380), ci + 1)));
+                if (chNeu && chNeu.gueltig) {
+                  if (p.dir === 'call' && chNeu.trend === 'down') why = 'Kanal dreht abwärts – These gebrochen';
+                  else if (p.dir === 'put' && chNeu.trend === 'up') why = 'Kanal dreht aufwärts – These gebrochen';
+                }
+              }
+            }
+            if (!why && ((p.dir === 'call' && sig0.crossed === 'down') || (p.dir === 'put' && sig0.crossed === 'up'))) {
+              why = 'Gegen-Durchbruch der Leitlinie';
+            }
           } else if ((p.dir === 'call' && sig0.crossed === 'down') || (p.dir === 'put' && sig0.crossed === 'up')) {
             why = 'Gegen-Durchbruch';
           }
@@ -1945,6 +2508,7 @@
           if (!vor) continue;
           dir = vor.dir; chE = vor.chE; chRef = vor.chRef; chN = vor.chN;
         }
+        if (NUR_RICHTUNG && dir !== NUR_RICHTUNG) continue;
         var closesUpto = bars.slice(Math.max(0, ci - 300), ci + 1).map(function (b) { return b[1]; });
         // Volatilität muss auf das Bar-Raster hochgerechnet werden: 390 Handelsminuten je Tag
         // geteilt durch die Bar-Länge. Ein fester Wert (78 = 5-Min-Bars) unterschätzt die Vola
@@ -1953,11 +2517,26 @@
         var iv = Math.min(1.5, Math.max(0.15, histVolIntraday(closesUpto, barsProTag) * 1.1));
         var strike = spot * (1 + (dir === 'call' ? OTM : -OTM));
         var w = { strike: strike, expiry: t + EXPD * 86400000, iv: iv, ratio: BV };
-        var wWert = warrantValue(dir, w, spot, t);
-        if (wWert <= 0.001) continue;
-        var spx = effSpread(iv, SP, wWert, BV) + slipOf(iv, SLIPB, wWert); // Cent-Spread + Slippage
-        var ask = wWert * (1 + spx);
-        var omegaE = warrantOmega(dir, w, spot, t);
+        var wWert, spx, ask, omegaE;
+        if (INSTRUMENT === 'basis') {
+          /* BASISWERT statt Schein: Aktie lang bzw. linear leer, ohne Hebel, ohne
+           * Zeitwert, ohne Emittenten-Spanne. Die Bedingungsstudie vom 21.08.2026 hat
+           * gezeigt, warum dieser Pfad existieren muss: Die besten bedingten Signale
+           * liefern +0,15 bis +0,24 Pp auf 8 Stunden - ÜBER der Basiswert-Hürde von
+           * rund 0,10 %, aber UNTER der Scheinhürde von 0,21 bis 0,47 %. Derselbe
+           * Vorsprung ist auf dem einen Instrument wirtschaftlich und auf dem anderen
+           * tot. Ohne diesen Schalter kann der Prüfstand das nicht einmal messen. */
+          wWert = spot;
+          spx = BASIS_SP;
+          ask = spot * (1 + spx);
+          omegaE = 1;
+        } else {
+          wWert = warrantValue(dir, w, spot, t);
+          if (wWert <= 0.001) continue;
+          spx = effSpread(iv, SP, wWert, BV) + slipOf(iv, SLIPB, wWert); // Cent-Spread + Slippage
+          ask = wWert * (1 + spx);
+          omegaE = warrantOmega(dir, w, spot, t);
+        }
         var barMsX = ci > 0 ? Math.max(60000, bars[ci][0] - bars[ci - 1][0]) : 300000;
         var holdBars = MAXHOLD ? MAXHOLD / barMsX : 12;
         var slT = AUTO_SL ? autoStop(closesUpto, omegaE, holdBars) : SL;
@@ -1986,10 +2565,17 @@
         } else {
           qty = Math.floor((capital * budgetPct) / ask);
         }
+        /* Beim BASISWERT sind Bruchstuecke erlaubt (CFD-Realitaet). Ohne das fiel jede
+         * Aktie ueber capital*budgetPct still aus dem Backtest: Bei 10.000 $ Kapital und
+         * 4 % Budget war alles ueber 400 $ ausgeschlossen - AVGO, BKNG, META. Der Test
+         * handelte ein verzerrtes Billig-Teiluniversum und mass etwas anderes als die
+         * Studie, die alle Werte gleich wichtete. Beim Schein bleibt die Stueckelung
+         * ganzzahlig, so wird er auch gehandelt. */
+        if (INSTRUMENT === 'basis') { qty = (capital * budgetPct) / ask; if (RISKP) qty = (capital * RISKP / 100) / (ask * Math.max(0.08, Math.abs(slT))); }
         var cost = qty * ask + FEE;
-        if (qty < 1 || cash < cost) continue;
+        if (qty * ask < 1 || cash < cost) continue;
         cash -= cost;
-        open[sym] = { dir: dir, w: w, qty: qty, entry: ask, cost: cost, openT: t, spx: spx, chN: chN, chan: chRef, sl: slT };
+        open[sym] = { dir: dir, w: w, qty: qty, entry: ask, cost: cost, openT: t, spx: spx, chN: chN, chan: chRef, sl: slT, entrySpot: spot, basis: INSTRUMENT === 'basis' };
         if (ENTRY === 'orb' && orbState[sym]) orbState[sym].traded[dir] = true;   // Tageschance erst jetzt verbraucht
         lastTrade[sym] = t;
         dayCount[dk] = (dayCount[dk] || 0) + 1;
@@ -2027,6 +2613,12 @@
       feesTotal: Math.round(feesTotal * 100) / 100
     };
     Object.assign(summary2, computeStats(equity, trades, capital));
+    // Die Gegenprobe laeuft IMMER mit, nicht auf Anforderung. Sie kostet fast nichts
+    // und ist die einzige Zahl, die verhindert, dass eine schoene Ertragskurve als
+    // Fund durchgeht, obwohl Muenzwerfen dasselbe gebracht haette.
+    summary2.gegenprobe = gegenprobeRichtung(trades, 2000);
+    // Signifikanz aus nicht ueberlappenden Monaten, nicht aus der Trade-Zahl.
+    summary2.monatlich = monatsStatistik(equity);
     return { equity: equity, trades: trades, summary: summary2, bootstrap: bootstrapTrades(trades, capital) };
   }
 
@@ -2054,7 +2646,7 @@
     wendepunkte: wendepunkte, kanalUeber: kanalUeber, kanaele: kanaele,
     KANAL_MIN: KANAL_MIN, RECHENSTAND: RECHENSTAND, degapBarArray: degapBarArray,
     degapCloses: degapCloses, degapBars: degapBars,
-    computeStats: computeStats, bootstrapTrades: bootstrapTrades, bestOfN: bestOfN
+    computeStats: computeStats, bootstrapTrades: bootstrapTrades, bestOfN: bestOfN, gegenprobeRichtung: gegenprobeRichtung, kanalVerzug: kanalVerzug, monatsStatistik: monatsStatistik, schattenKonfig: schattenKonfig, scheinKennzahlen: scheinKennzahlen, scheinRisikostufe: scheinRisikostufe, scheinRaster: scheinRaster, altlastGrund: altlastGrund
   };
   if (typeof module !== 'undefined' && module.exports) module.exports = Quant;
   else root.Quant = Quant;

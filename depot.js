@@ -15,7 +15,9 @@
       cash: START_CAPITAL, positions: [], trades: [],
       stats: { news: { r: 0, w: 0 }, tech: { r: 0, w: 0 }, elliott: { r: 0, w: 0 }, maIntraday: { r: 0, w: 0 }, ki: { r: 0, w: 0 } },
       kiLog: [], patience: {},
-      weights: { news: 0.35, tech: 0.40, elliott: 0.25 },
+      // News auf 0,15 gesenkt (21.08.2026): das Sentiment ist unbelegt, weil es keine
+      // historischen Schlagzeilen gibt. Steigt wieder, sobald das Archiv einen Beleg gibt.
+      weights: { news: 0.15, tech: 0.55, elliott: 0.30 },
       intraday: { enabled: false, exitStyle: 'laufen', mode: 'breakout', interval: '5m', period: 20, confirmBps: 15, profile: 'atm21_b', orderFee: 0, minDollarVol: 50, budgetPct: 0.03, sl: -0.25, tp: 0.35, cooldownMin: 45, maxPerDay: 10, lineType: 'ema', trendFilter: false, window: 'all', scalpHold: 60, scalpTrail: 15, scalpSL: 20, blackout: 'block', channel: true, mtf: true, sizing: 'fix', screener: false, avoidHours: [], autoTune: true },
       watchlist: [],
       intradayLastScan: 0, intradayDay: '', intradayCount: 0, intradayCooldown: {},
@@ -159,13 +161,26 @@
         var barsProTagS = Math.max(1, Math.round(390 / Math.max(1, Q.barMinOf(bars, bars.length - 1))));
         iv = Math.min(1.5, Math.max(0.15, Q.histVolIntraday(closes.slice(-300), barsProTagS) * 1.1));
       }
+      /* Der Vorwaertstest muss dasselbe Instrument messen, das gehandelt wuerde.
+       * Im Basiswert-Modus (oder bei Krypto) wird der Schatten linear gefuehrt -
+       * ein scheinbepreister Schatten wuerde eine Basiswert-Strategie an Kosten
+       * messen, die sie nie zahlt. */
+      var istBasisS = !!((cfg && cfg.instrument === 'basis') || istKrypto(sym));
       var prof = Q.PROFILES[(cfg && cfg.profile) || 'atm21'] || Q.PROFILES.atm21;
       var bvS = prof.ratio || Q.RATIO;
-      var w = { strike: spot * (1 + (dir === 'call' ? prof.otmPct : -prof.otmPct)), expiry: now + prof.days * 86400000, iv: iv, ratio: bvS };
-      var wWertS = Q.warrantValue(dir, w, spot, now);
-      if (!(wWertS > 0.001)) return;
-      var spx = Q.effSpread(iv, undefined, wWertS, bvS) + Q.slipOf(iv, undefined, wWertS);
-      var ask = wWertS * (1 + spx);
+      var w, wWertS, spx, ask;
+      if (istBasisS) {
+        w = { strike: spot, expiry: now + 365 * 86400000, iv: iv, ratio: 1 };
+        wWertS = spot;
+        spx = basisSpanne(sym);
+        ask = spot * (1 + spx);
+      } else {
+        w = { strike: spot * (1 + (dir === 'call' ? prof.otmPct : -prof.otmPct)), expiry: now + prof.days * 86400000, iv: iv, ratio: bvS };
+        wWertS = Q.warrantValue(dir, w, spot, now);
+        if (!(wWertS > 0.001)) return;
+        spx = Q.effSpread(iv, undefined, wWertS, bvS) + Q.slipOf(iv, undefined, wWertS);
+        ask = wWertS * (1 + spx);
+      }
       var uebernacht = !!(mp && mp.uebernacht);
       // Kein frischer Intraday-Schatten im Tagesschluss-Fenster – er würde im nächsten
       // Scan sofort mit 'Tagesschluss' bei ~0 % geschlossen und verwässert nur die Bilanz.
@@ -173,20 +188,54 @@
       var slT = mp && mp.sl != null
         ? (mp.sl === 'auto' ? Q.autoStop(closes, Q.warrantOmega(dir, w, spot, now), (mp.maxHoldMin || 60) / Math.max(1, Q.barMinOf(bars, bars.length - 1))) : mp.sl)
         : -0.25;
-      D.schatten.unshift({ id: 'sch' + now + '-' + sym, t: now, sym: sym, dir: dir, grund: grund,
+      // Fingerabdruck der Konfiguration mitschreiben: Ohne ihn lässt sich später nicht
+      // mehr feststellen, unter welchen Ausstiegsregeln dieser Schatten entstanden ist.
+      var konfig = Q.schattenKonfig(mp, cfg);
+      schattenBilanzPruefen(konfig, now);
+      D.schatten.unshift({ id: 'sch' + now + '-' + sym, t: now, sym: sym, dir: dir, grund: grund, konfig: konfig,
         spot0: spot, ask: Math.round(ask * 10000) / 10000,
         w: { strike: Math.round(w.strike * 100) / 100, expiry: w.expiry, iv: Math.round(iv * 1000) / 1000, ratio: bvS },
         spx: Math.round(spx * 10000) / 10000, sl: slT, tp: mp && mp.tp != null ? mp.tp : null,
         trail: (mp && mp.trail) || 0, maxHoldMin: mp && mp.maxHoldMin != null ? mp.maxHoldMin : 240,
-        uebernacht: uebernacht,
+        uebernacht: uebernacht, basis: istBasisS || undefined,
         peak: ask, lastBid: null, status: 'open' });
       if (D.schatten.length > 400) D.schatten = D.schatten.filter(function (x, ix) { return ix < 400 || x.status === 'open'; });
     } catch (eS) { /* Das Schattenbuch darf den Handel nie stören */ }
   }
+  /** Wacht darüber, dass die Schatten-Bilanz nur Vergleichbares zählt.
+   *  Ändern sich die Ausstiegsregeln, wandert die bisherige Bilanz ins Archiv und die
+   *  Zählung fängt neu an - sonst steht in der Bilanz ein Mittelwert über zwei
+   *  verschiedene Experimente. Genau das war am 21.08.2026 der Fall: 392 Schatten mit
+   *  drei Minuten Haltedauer bildeten das Urteil, während die App mit 240 Minuten lief. */
+  function schattenBilanzPruefen(konfig, now) {
+    if (!D) return;
+    if (D.schattenKonfig === konfig) return;
+    var alt = D.schattenKonfig;
+    var hatte = D.schattenStat && Object.keys(D.schattenStat).length;
+    if (alt && hatte) {
+      if (!D.schattenArchiv) D.schattenArchiv = [];
+      D.schattenArchiv.unshift({ konfig: alt, bis: now, bilanz: D.schattenStat });
+      if (D.schattenArchiv.length > 12) D.schattenArchiv.length = 12;
+      if (!D.tuneLog) D.tuneLog = [];
+      D.tuneLog.unshift({ id: 'schattenreset-' + now, at: now, quelle: 'sicherung',
+        applied: ['Schatten-Bilanz zurückgesetzt'],
+        txt: 'Die Ausstiegsregeln haben sich geändert (' + alt + ' → ' + konfig + '). ' +
+          'Schatten aus verschiedenen Regeln sind nicht vergleichbar - eine Haltedauer von ' +
+          'drei Minuten misst bei 2,7 % Spanne je Seite nichts als die Kosten, eine von vier ' +
+          'Stunden dagegen die Bewegung. Die bisherige Bilanz liegt im Archiv, die Zählung ' +
+          'fängt sauber an.' });
+    }
+    D.schattenKonfig = konfig;
+    D.schattenStat = {};
+  }
+
   function schattenSchliessen(sEintrag, retPct, why, now) {
     sEintrag.status = 'closed'; sEintrag.closeT = now;
     sEintrag.pnlPct = Math.round(retPct * 10000) / 100; sEintrag.why = why;
     var st = D.schattenStat = D.schattenStat || {};
+    // Schatten aus einer früheren Konfiguration schließen zwar noch, zählen aber nicht
+    // mehr in die aktuelle Bilanz - sonst sickert das alte Experiment ins neue.
+    if (sEintrag.konfig && D.schattenKonfig && sEintrag.konfig !== D.schattenKonfig) return;
     var g2 = st[sEintrag.grund] = st[sEintrag.grund] || { n: 0, sumPct: 0, gerettet: 0, verhindert: 0 };
     g2.n++; g2.sumPct = Math.round((g2.sumPct + sEintrag.pnlPct) * 100) / 100;
     if (sEintrag.pnlPct <= -1) g2.gerettet++;           // Filter hat Geld gerettet
@@ -211,8 +260,13 @@
       var sE = D.schatten[i1];
       if (sE.status !== 'open' || sE.sym !== sym) continue;
       try {
-        var wS = { strike: sE.w.strike, expiry: sE.w.expiry, iv: sE.w.iv, ratio: sE.w.ratio || Q.RATIO };
-        var bidS = Math.max(0.001, Q.warrantValue(sE.dir, wS, spot, now) * (1 - sE.spx));
+        var bidS;
+        if (sE.basis) {
+          bidS = Math.max(0.001, (sE.dir === 'call' ? spot : Math.max(0.001, 2 * sE.spot0 - spot)) * (1 - sE.spx));
+        } else {
+          var wS = { strike: sE.w.strike, expiry: sE.w.expiry, iv: sE.w.iv, ratio: sE.w.ratio || Q.RATIO };
+          bidS = Math.max(0.001, Q.warrantValue(sE.dir, wS, spot, now) * (1 - sE.spx));
+        }
         sE.lastBid = Math.round(bidS * 10000) / 10000;
         if (bidS > sE.peak) sE.peak = bidS;
         var retS = bidS / sE.ask - 1;
@@ -802,6 +856,54 @@
   /** Trades, die im Protokoll als "offen" stehen, aber in keiner Position mehr liegen
    *  (z. B. nach einem Absturz, Doppelstart oder Versionswechsel), zurück in die
    *  Positionsverwaltung holen – sonst ist das Kapital gebunden und niemand managt sie. */
+  /** Intraday-Positionen aus einer frueheren Sitzung sofort schliessen.
+   *
+   *  Warum das noetig ist: Positionen werden nur im Scan geschlossen, und der laeuft nur
+   *  bei offener App UND offener Boerse. War die App tagelang zu, lief der Zeitwert des
+   *  Scheins weiter ab, ohne dass irgendetwas eingriff. Am 21.08.2026 in den Daten
+   *  gefunden: Trades mit 22 und 23 Tagen Haltedauer bei 60 Tagen Restlaufzeit, Ergebnis
+   *  -44 % und -41 %. Ueber alle 28 geschlossenen Trades stammten 38 % des Verlusts aus
+   *  reinem Zeitwertverfall.
+   *
+   *  Die vorhandene Uebernacht-Regel im Scan greift erst, wenn der Scan wieder laeuft -
+   *  bei einer Woche Pause also eine Woche zu spaet. Deshalb hier, beim Start, vor allem
+   *  anderen und unabhaengig von der Boersenzeit.
+   *
+   *  Bewertet wird mit dem letzten bekannten Kurs. Der ist nicht exakt der Kurs, zu dem
+   *  man haette verkaufen koennen - aber jede Stunde laenger macht ihn schlechter, nicht
+   *  besser. Lieber ungenau geschlossen als genau verfallen. */
+  function altlastSchliessen() {
+    if (!D || !D.positions || !D.positions.length) return 0;
+    var now = Date.now();
+    var zu = [];
+    for (var i = D.positions.length - 1; i >= 0; i--) {
+      var p = D.positions[i];
+      // Die Entscheidung selbst steht als reine Funktion in quant.js – dort ist sie ohne
+      // laufende App prüfbar, und sie IST geprüft: Etikett, fehlendes Etikett, verbrauchte
+      // Laufzeit, heute eröffnet, fehlende Felder.
+      var grund = Q.altlastGrund(p, now);
+      if (!grund) continue;
+      var tage = Math.round((now - p.openT) / 86400000 * 10) / 10;
+      var spot = spotOf(p.sym) || p.entrySpot;
+      var bid = bidOf(p, spot, now);
+      closeTrade(p, spot, now,
+        'Altlast-Glattstellung beim Start: ' + grund + ', weil die App nicht lief. ' +
+        'Der Zeitwert des Scheins läuft auch dann ab, wenn niemand hinsieht.');
+      zu.push({ sym: p.sym, tage: tage, ret: p.entry ? Math.round((bid / p.entry - 1) * 100) : null });
+    }
+    if (zu.length) {
+      if (!D.tuneLog) D.tuneLog = [];
+      D.tuneLog.unshift({ id: 'altlast-' + now, at: now, quelle: 'sicherung',
+        applied: [zu.length + ' Altlast-Position(en) geschlossen'],
+        txt: 'Beim Start standen ' + zu.length + ' Position(en) aus einer früheren Sitzung offen: ' +
+          zu.map(function (x) { return x.sym + ' (' + x.tage + ' Tage' + (x.ret != null ? ', ' + (x.ret >= 0 ? '+' : '') + x.ret + ' %' : '') + ')'; }).join(', ') +
+          '. Sie wurden sofort geschlossen. Grund: Der Scan schliesst nur bei offener App und offener Boerse - ' +
+          'war die App zu, lief der Zeitwert des Scheins weiter ab, ohne dass etwas eingriff. In den Daten vom ' +
+          '21.08.2026 stammten so 38 % des gesamten Verlusts aus reinem Zeitwertverfall.' });
+    }
+    return zu.length;
+  }
+
   function repairOrphans() {
     if (!D || !D.trades) return 0;
     var have = {};
@@ -1135,8 +1237,43 @@
           t: Date.parse((n.querySelector('pubDate') || {}).textContent || '') || 0
         });
       }
+      archiviereNews(sym, items);
       return items;
     } catch (e) { return []; }
+  }
+
+  /** Schlagzeilen mit Zeitstempel wegschreiben, damit das News-Sentiment irgendwann
+   *  ueberhaupt PRUEFBAR wird. Heute ist es das nicht: die Quelle liefert nur die
+   *  aktuellen Meldungen, und im Backtest faellt das News-Gewicht deshalb heraus
+   *  (quant.js: "News nicht rueckwirkend verfuegbar"). Damit sind 35 % jeder
+   *  Live-Entscheidung unbelegt - weder widerlegt noch belegt.
+   *
+   *  Gespeichert wird nur, was die Auswertung braucht: Titel und Zeitpunkt. Keine
+   *  URLs, keine Texte. Ein Schluessel je Symbol, gedeckelt auf 400 Eintraege -
+   *  das sind bei vier Abrufen am Tag rund drei Jahre. */
+  async function archiviereNews(sym, items) {
+    if (!items || !items.length) return;
+    try {
+      var key = 'newsarchiv_' + sym;
+      var alt = await window.api.storeGet(key);
+      var liste = (alt && alt.items) || [];
+      // Doppelte am Titel erkennen: derselbe Artikel taucht bei jedem Abruf wieder auf,
+      // der Zeitstempel schwankt dabei manchmal um Minuten.
+      var bekannt = {};
+      liste.forEach(function (x) { bekannt[x[1]] = 1; });
+      var neu = 0;
+      items.forEach(function (it) {
+        var titel = (it.title || '').trim();
+        if (!titel || bekannt[titel]) return;
+        bekannt[titel] = 1;
+        liste.push([it.t || Date.now(), titel]);
+        neu++;
+      });
+      if (!neu) return;
+      liste.sort(function (a, b) { return a[0] - b[0]; });
+      if (liste.length > 400) liste = liste.slice(-400);
+      await window.api.storeSet(key, { stand: Date.now(), items: liste });
+    } catch (e) { /* Archiv ist Beiwerk - ein Fehler hier darf den Abruf nicht kippen */ }
   }
 
   /* ================= Spot-Kurs ================= */
@@ -1172,6 +1309,12 @@
   /* ================= Positions-Bewertung ================= */
   /** Verkaufskurs einer Position – mit dem Spread/Slippage-Aufschlag, der beim Kauf galt */
   function bidOf(pos, spot, now) {
+    /* Basiswert-Position: linear, ohne Zeitwert. Der Put ist ein linearer Leerverkauf
+     * (Wert = 2·Einstieg − Kurs) - faellt der Kurs 1 %, steigt der Wert 1 %. */
+    if (pos.basis) {
+      var vB = pos.dir === 'call' ? spot : Math.max(0.001, 2 * (pos.entrySpot || spot) - spot);
+      return Math.max(0.001, vB * (1 - (pos.spx || 0.0005)));
+    }
     var v = Q.warrantValue(pos.dir, { strike: pos.strike, expiry: pos.expiry, iv: pos.iv, ratio: pos.ratio || Q.RATIO }, spot, now);
     return Math.max(0.001, v * (1 - (pos.spx || 0.02)));
   }
@@ -1195,6 +1338,10 @@
     var wWert = Q.warrantValue(dir, w, spot, now);
     if (wWert <= 0.001) return null;
     var spx = Q.effSpread(w.iv, undefined, wWert, bvH) + Q.slipOf(w.iv, undefined, wWert);
+    // Derselbe Risikostufen-Waechter wie im Intraday-Handel - die Stunden-Strategie
+    // kauft ebenfalls Scheine, und die Grenze soll depotweit gelten, nicht je Pfad.
+    var rsH = risikoStufeOk(dir, w, spot, now);
+    if (!rsH.ok) { patienceAdd('Risikostufe (Stunden): ' + rsH.grund, sym); return null; }
     var ask = wWert * (1 + spx);
     var qty = Math.floor((equityNow() * BUDGET * Math.min(1, kiRes.factor || 1)) / ask);
     if (qty < 1 || D.cash < qty * ask) return null;
@@ -1394,21 +1541,109 @@
     '60m': { range: '1mo', btRange: '730d', barMin: 60 }      // 730 Handelstage
   };
 
+  /* ================= Krypto-Messbasis =================
+   * Diese Werte werden NICHT gehandelt. Sie stehen bewusst nicht in universe() und
+   * tauchen im Scanner nicht auf. Ihr einziger Zweck ist, das Kursarchiv schneller
+   * zu fuellen, damit Intraday-Signale ueberhaupt pruefbar werden.
+   *
+   * Gemessen am 21.08.2026, Yahoo-Grenzen fuer Krypto:
+   *   1m  ->   7 Tage    5m -> 60 Tage    15m -> 60 Tage    60m -> 730 Tage
+   * und zwar durchgehende KALENDERtage, nicht Handelstage: 0,0 % Luecken auf jedem
+   * Intervall. Bei Aktien sind dieselben 60 "Tage" nur 60 Handelstage mit Nachtluecken.
+   */
+  var KRYPTO = ['BTC-USD', 'ETH-USD', 'SOL-USD', 'XRP-USD', 'BNB-USD', 'ADA-USD', 'DOGE-USD', 'LTC-USD'];
+  function istKrypto(sym) { return /-USD$/.test(String(sym)); }
+  /** Spanne je Seite fuer den Basiswert-Pfad: Aktien-CFD 5 Bp, Krypto Taker-Gebuehr
+   *  (Vorgabe 10 Bp, einstellbar). Bewusst konservativ - zu billige Kosten haben in
+   *  diesem Projekt schon einmal ein Scheinergebnis erzeugt. */
+  function basisSpanne(sym) {
+    if (istKrypto(sym)) return (D && D.intraday && D.intraday.kryptoGebBp != null ? D.intraday.kryptoGebBp : 10) / 10000;
+    return 0.0005;
+  }
+  /** Depotweiter Risikostufen-Waechter. EIN Waechter am Kauf statt zehn an den Quellen:
+   *  Hand, Autopilot und Farm-Empfehlung laufen alle hier durch. Stufe 5 = keine Grenze. */
+  function risikoStufeOk(dir, w, spot, now) {
+    var max = (D && D.maxRisikostufe) || 5;
+    if (max >= 5) return { ok: true };
+    var kz = Q.scheinKennzahlen(dir, w, spot, now);
+    if (!kz) return { ok: false, grund: 'Schein unter 2 Cent – die Spanne frisst jede Bewegung' };
+    var rs = Q.scheinRisikostufe(kz);
+    if (rs.stufe > max) return { ok: false, stufe: rs.stufe, grund: 'Risikostufe ' + rs.stufe + ' über der Grenze ' + max + ' (' + rs.gruende[0] + ')' };
+    return { ok: true, stufe: rs.stufe };
+  }
+  var kryptoLaeuft = false;
+
+  /** Krypto-Kerzen holen und ins Archiv legen. Laeuft unabhaengig von der US-Handelszeit -
+   *  das ist der ganze Punkt: waehrend die Boerse zu ist, waechst hier die Messbasis
+   *  weiter. Bewusst genuegsam: ein Intervall je Durchlauf, damit sich der Sammler nicht
+   *  mit dem Scanner um Yahoos Anfragebudget streitet (dort kommen bei ~200 Anfragen in
+   *  Folge 429er). */
+  async function kryptoSammeln(intervall) {
+    if (kryptoLaeuft || !window.Archiv) return null;
+    kryptoLaeuft = true;
+    var stat = { symbole: 0, kerzen: 0, fehler: 0, iv: intervall };
+    try {
+      for (var i = 0; i < KRYPTO.length; i++) {
+        var fd = null;
+        try { fd = await fetchIntraday(KRYPTO[i], intervall, true); } catch (e) { }
+        if (!fd || !fd.series || fd.series.length < 30) { stat.fehler++; continue; }
+        await window.Archiv.fuege(intervall, KRYPTO[i], fd.series);
+        stat.symbole++; stat.kerzen += fd.series.length;
+        await new Promise(function (r) { setTimeout(r, 400); });
+      }
+      if (stat.kerzen) await window.Archiv.speichere(true);
+      if (!D.kryptoStat) D.kryptoStat = {};
+      D.kryptoStat[intervall] = { at: Date.now(), symbole: stat.symbole, kerzen: stat.kerzen };
+      save();
+    } finally { kryptoLaeuft = false; }
+    return stat;
+  }
+
+  /** Was hat der Sammler bisher zusammengetragen? Zeigt den echten Archivbestand,
+   *  nicht nur "läuft" – bei einer Maßnahme gegen zu dünne Daten ist die einzig
+   *  interessante Frage, ob die Datenbasis tatsächlich wächst. */
+  async function zeigeKryptoStand() {
+    var el = document.getElementById('kryptoStand');
+    if (!el) return;
+    if (D.kryptoSammeln === false) { el.textContent = 'Sammler aus – die Messbasis wächst nur noch mit den Aktien-Scans.'; return; }
+    if (!window.Archiv) { el.textContent = ''; return; }
+    try {
+      var teile = [];
+      for (var i = 0; i < ['1m', '5m', '15m', '60m'].length; i++) {
+        var iv = ['1m', '5m', '15m', '60m'][i], kerzen = 0, werte = 0, aeltest = null;
+        for (var s = 0; s < KRYPTO.length; s++) {
+          var serie = await window.Archiv.serie(iv, KRYPTO[s]);
+          if (!serie || !serie.length) continue;
+          werte++; kerzen += serie.length;
+          if (aeltest === null || serie[0][0] < aeltest) aeltest = serie[0][0];
+        }
+        if (!kerzen) continue;
+        var tage = aeltest ? Math.round((Date.now() - aeltest) / 86400000) : 0;
+        teile.push(iv + ': ' + kerzen.toLocaleString('de-DE') + ' Kerzen aus ' + werte + ' Werten, ' + tage + ' Tage zurück');
+      }
+      el.textContent = teile.length
+        ? 'Krypto-Messbasis · ' + teile.join(' · ')
+        : 'Noch nichts gesammelt – der erste Durchlauf startet kurz nach dem Programmstart.';
+    } catch (e) { el.textContent = ''; }
+  }
+
   /* ================= Setups: zwei Grundideen statt sechs Modi =================
    * Nach außen gibt es „Ausbruch" und „Umkehr" mit je zwei Auslösern. Intern bleibt
    * das bewährte mode-Feld erhalten – so bleiben Backtests, Historie und Kennzahlen
    * vergleichbar, und es gibt keine zweite Rechenlogik, die auseinanderlaufen kann. */
   var SETUPS = {
-    ausbruch: { name: 'Ausbruch', trigger: { kreuzung: 'EMA-Kreuzung', range: 'Eröffnungs-Range', ruecksetzer: 'Trend-Rücksetzer', donchian: 'Kanal-Hoch/Tief (Donchian)', squeeze: 'Vola-Kompression (Squeeze)' } },
-    umkehr:   { name: 'Umkehr',   trigger: { ueberdehnung: 'Überdehnung', welle: 'Wellental', rsi2: 'RSI(2)-Extrem' } }
+    ausbruch: { name: 'Ausbruch', trigger: { kreuzung: 'EMA-Kreuzung', range: 'Eröffnungs-Range', ruecksetzer: 'Trend-Rücksetzer', donchian: 'Kanal-Hoch/Tief (Donchian)', squeeze: 'Vola-Kompression (Squeeze)', kanaltrend: 'Kanaltrend folgen' } },
+    umkehr:   { name: 'Umkehr',   trigger: { ueberdehnung: 'Überdehnung', welle: 'Wellental', rsi2: 'RSI(2)-Extrem', rsi2seit: 'RSI(2) im Seitwärtskanal (nur Long)' } }
   };
   function modeFromSetup(setup, trigger, exitStyle) {
     if (setup === 'umkehr' && trigger === 'rsi2') return 'rsi2';
+    if (setup === 'umkehr' && trigger === 'rsi2seit') return 'rsi2seit';
     if (setup === 'umkehr') return trigger === 'welle' ? 'wave' : 'reversion';
     if (trigger === 'range') return 'orb';
     if (trigger === 'ruecksetzer') return 'pullback';
     if (trigger === 'donchian') return 'donchian';
     if (trigger === 'squeeze') return 'squeeze';
+    if (trigger === 'kanaltrend') return 'kanaltrend';
     return (exitStyle === 'kurz' || exitStyle === 'blitz') ? 'waves' : 'breakout';
   }
   function setupFromMode(mode) {
@@ -1418,7 +1653,10 @@
     if (mode === 'pullback') return { setup: 'ausbruch', trigger: 'ruecksetzer', exitStyle: 'laufen' };
     if (mode === 'donchian') return { setup: 'ausbruch', trigger: 'donchian', exitStyle: 'laufen' };
     if (mode === 'squeeze') return { setup: 'ausbruch', trigger: 'squeeze', exitStyle: 'laufen' };
+    if (mode === 'kanaltrend') return { setup: 'ausbruch', trigger: 'kanaltrend', exitStyle: 'trend' };
     if (mode === 'rsi2') return { setup: 'umkehr', trigger: 'rsi2', exitStyle: 'laufen' };
+    if (mode === 'rsi2seit') return { setup: 'umkehr', trigger: 'rsi2seit', exitStyle: 'laufen' };
+    if (mode === 'kapitulation') return { setup: 'umkehr', trigger: 'kapitulation', exitStyle: 'laufen' };
     if (mode === 'waves') return { setup: 'ausbruch', trigger: 'kreuzung', exitStyle: 'kurz' };
     return { setup: 'ausbruch', trigger: 'kreuzung', exitStyle: 'laufen' };
   }
@@ -1514,6 +1752,29 @@
         cooldownMin: c.cooldownMin != null ? c.cooldownMin : 5, maxPerDay: c.maxPerDay != null ? c.maxPerDay : 40, scanMs: 90000
       };
     }
+    if (c.mode === 'kapitulation') {
+      /* Kapitulations-Dip: 26 Handelsstunden fester Horizont, KEIN Gewinnziel und kein
+       * Trailing - der Gewinn sitzt im rechten Schwanz, jeder Deckel kappt genau die
+       * Trades, die alles tragen (ohne die besten 5 % faellt das Mittel unter die
+       * Drift). Nur der Not-Stop bleibt als Netz. */
+      return {
+        exitMode: 'zeit', sl: slOf(c), tp: null,
+        trail: 0, maxHoldMin: c.scalpHold || 1560, uebernacht: true,
+        cooldownMin: c.cooldownMin != null ? c.cooldownMin : 240, maxPerDay: c.maxPerDay != null ? c.maxPerDay : 6, scanMs: 90000
+      };
+    }
+    if (c.mode === 'rsi2seit') {
+      /* RSI2-Dip im Seitwaertskanal: fester Zeithorizont von 8 Handelsstunden, KEIN
+       * Signal-Ausstieg (der Dip erfuellt die Gegen-Signal-Bedingung schon beim
+       * Einstieg), und die Position DARF eine Nacht ueberleben - der Backtest zeigte:
+       * streng intraday -0,081 % je Trade, mit Nacht +0,230 %. Der Vorsprung des
+       * Dip-Kaufs zahlt zum grossen Teil ueber Nacht aus. */
+      return {
+        exitMode: 'zeit', sl: slOf(c), tp: null,
+        trail: 0, maxHoldMin: c.scalpHold || 480, uebernacht: true,
+        cooldownMin: c.cooldownMin != null ? c.cooldownMin : 120, maxPerDay: c.maxPerDay != null ? c.maxPerDay : 10, scanMs: 90000
+      };
+    }
     if (c.mode === 'rsi2') {
       // Connors-Logik: Schwaeche kaufen, Ausstieg bei Rueckkehr der Staerke (Leitlinie erreicht)
       return {
@@ -1542,6 +1803,20 @@
         exitMode: 'target', sl: slOf(c), tp: null,
         trail: 0, maxHoldMin: c.scalpHold || 60,
         cooldownMin: c.cooldownMin != null ? c.cooldownMin : 5, maxPerDay: c.maxPerDay != null ? c.maxPerDay : 40, scanMs: 90000
+      };
+    }
+    if (c.mode === 'kanaltrend') {
+      /* Trendfolge im Kanal. Der Ausstieg ist bewusst NICHT 'crest': Die Kanalkante als
+       * Ziel zu nehmen ist selbst eine Umkehrwette und damit genau die Seite, die in der
+       * Messung verloren hat. Hier wird gehalten, bis der Kanal dreht oder bricht.
+       *
+       * Laengere Haltedauer als bei den Umkehr-Modi, weil ein Trend Zeit braucht - und
+       * kein Ziel (tp: null), weil ein festes Ziel den Trend abschneidet, der die
+       * ganze These ist. Der Not-Stop bleibt. */
+      return {
+        exitMode: 'trendhalten', sl: slOf(c), tp: null,
+        trail: (c.scalpTrail || 0) / 100, maxHoldMin: c.scalpHold || 480,
+        cooldownMin: c.cooldownMin != null ? c.cooldownMin : 30, maxPerDay: c.maxPerDay != null ? c.maxPerDay : 10, scanMs: 90000
       };
     }
     if (c.mode === 'wave') {
@@ -1612,8 +1887,20 @@
   }
 
   async function intradayScan() {
-    if (intradayScanning || !D || !D.intraday.enabled) return;
-    if (!window.Dash.marketOpen()) return;
+    // Der Scan laeuft auch bei abgeschaltetem Handel weiter, solange das Schattenbuch
+    // mitschreiben soll. Frueher hing beides zusammen: Wer den Handel stoppte, stoppte
+    // die Beweisaufnahme mit - und stand nach Monaten wieder ohne Daten da.
+    // Reihenfolge beachten: erst prüfen, ob D überhaupt da ist. Die frühere Zeile
+    // `!D || !D.intraday.enabled` war durch die Kurzschluss-Auswertung geschützt; ein
+    // vorgezogenes `var nurSchatten = !D.intraday.enabled` hätte beim allerersten Aufruf
+    // vor dem Laden des Depots geworfen.
+    if (intradayScanning || !D || !D.intraday) return;
+    var nurSchatten = !D.intraday.enabled;
+    if (nurSchatten && D.intraday.schattenImmer === false) return;
+    // Krypto kennt keinen Handelsschluss: Ist der Krypto-Handel an, laeuft der Scan
+    // auch bei geschlossener US-Boerse - dann nur ueber die Krypto-Werte.
+    var boerseOffen = window.Dash.marketOpen();
+    if (!boerseOffen && !D.intraday.kryptoHandeln) return;
     intradayScanning = true;
     var cfg = D.intraday;
     // Wellen-Screener: einmal täglich vor dem ersten Scan die besten Kandidaten holen
@@ -1625,6 +1912,9 @@
     var today = new Date().toISOString().slice(0, 10);
     if (D.intradayDay !== today) { D.intradayDay = today; D.intradayCount = 0; }
     var syms = scanUniverse();
+    if (D.intraday.kryptoHandeln) KRYPTO.forEach(function (ks) { if (syms.indexOf(ks) === -1) syms.push(ks); });
+    // Bei geschlossener Boerse nur die Werte scannen, die auch handeln koennen
+    if (!boerseOffen) syms = syms.filter(istKrypto);
     schattenAufraeumen(now);
     var nearClose = isNearUsClose();
     var barMinScan = (INTERVAL_CFG[cfg.interval] || INTERVAL_CFG['5m']).barMin;
@@ -1685,13 +1975,18 @@
           var xTP = open.tp === null ? null : (open.tp != null ? open.tp : cfg.tp);
           var why = null;
           var openedToday = new Date(open.openT).toISOString().slice(0, 10) === today;
-          if (!openedToday) why = 'Übernacht-Glattstellung (App war zum Handelsschluss geschlossen)';
+          /* Positionen mit Übernacht-Erlaubnis (RSI2-Seitwärts) überleben genau eine
+           * Nacht - der Backtest zeigte: streng intraday -0,081 % je Trade, mit Nacht
+           * +0,230 %. Die Max-Haltedauer (Wanduhr-Minuten) schließt sie am Folgemorgen;
+           * die 2-Tage-Schranke ist das Netz darunter, falls die App pausiert hat. */
+          if (!openedToday && !open.uebernacht && !open.krypto) why = 'Übernacht-Glattstellung (App war zum Handelsschluss geschlossen)';
+          else if (open.uebernacht && now - open.openT > 2 * 86400000) why = 'Übernacht-Position älter als zwei Tage – Schutzschließung';
           else if (flattenEv) why = 'Event-Glattstellung vor: ' + flattenEv.name;
           else if (ret <= xSL) why = 'Stop-Loss erreicht (' + Math.round(ret * 100) + ' %)';
           else if (xTP !== null && ret >= xTP) why = 'Take-Profit erreicht (+' + Math.round(ret * 100) + ' %)';
           else if (open.trail && open.peak > open.entry && bid <= open.peak * (1 - open.trail)) why = 'Trailing-Stop: −' + Math.round(open.trail * 100) + ' % vom Hoch (Gewinn gesichert)';
           else if (open.maxHoldMin && now - open.openT >= open.maxHoldMin * 60000) why = 'Max-Haltedauer ' + open.maxHoldMin + ' Min erreicht';
-          else if (nearClose) why = 'Tagesschluss-Glattstellung (kein Übernacht-Risiko)';
+          else if (nearClose && !open.uebernacht && !open.krypto) why = 'Tagesschluss-Glattstellung (kein Übernacht-Risiko)';
           else if (xm === 'crest') {
             if (open.chan) { // Kanal vom Einstieg fortschreiben, nicht jede Minute neu zeichnen
               var barMinX = (INTERVAL_CFG[cfg.interval] || INTERVAL_CFG['5m']).barMin;
@@ -1709,6 +2004,10 @@
               var zc = (Q.reversionSignal(sigBars, cfg.lineType || 'ema', cfg.period, 1e9).z) || 0;
               if ((open.dir === 'call' && zc >= zOf(cfg.confirmBps) * 0.8) || (open.dir === 'put' && zc <= -zOf(cfg.confirmBps) * 0.8)) why = 'Wellenkamm erreicht – Überdehnung auf der Gegenseite (z ' + zc + ')';
             }
+          } else if (xm === 'zeit') {
+            /* Reiner Zeit-Ausstieg: nur Stop, Ziel, Trailing, Haltedauer. Der leere
+             * Zweig ist Absicht - ohne ihn griffe unten der generische Gegen-Durchbruch,
+             * und der feuert beim Dip-Kauf auf die Einstiegsbedingung selbst. */
           } else if (xm === 'target') {
             if ((open.dir === 'call' && sig.above) || (open.dir === 'put' && !sig.above)) why = 'Ziel erreicht: Rückkehr zur Leitlinie';
           } else if (xm === 'blitz') {
@@ -1735,6 +2034,8 @@
         var isOrb = cfg.mode === 'orb';
         var isPull = cfg.mode === 'pullback';
         var isRsi2 = cfg.mode === 'rsi2';
+        var isRsi2Seit = cfg.mode === 'rsi2seit';
+        var isKapitulation = cfg.mode === 'kapitulation';
         var isDon = cfg.mode === 'donchian';
         var isSq = cfg.mode === 'squeeze';
         var dir = null, revZ = null, waveQ = null, chE = null, chN = 0, chRef = null, orbInfo = null;
@@ -1792,6 +2093,31 @@
         } else if (isRsi2) {
           var xsigL = Q.rsiExtremSignal(sigBars);
           if (xsigL.signal) { dir = xsigL.signal; revZ = xsigL.wert; }
+        } else if (isKapitulation) {
+          // Kapitulations-Dip: dieselbe geprüfte Funktion wie Studie und Backtest.
+          var vsKap = Q.einstiegSignal(sigBars, sigBars.length - 1, {
+            ENTRY: 'kapitulation', LINE: cfg.lineType || 'ema', period: cfg.period || 20,
+            confirmBps: cfg.confirmBps, ZTHR: zOf(cfg.confirmBps), MINQ: 0,
+            CHAN: false, MTF: false, TREND: false
+          });
+          if (vsKap && vsKap.dir === 'call') dir = 'call';
+        } else if (isRsi2Seit) {
+          /* RSI(2)-Dip NUR im Seitwärtskanal, nur Long. Bewusst über die reine Funktion
+           * aus quant.js statt hier nachgebauter Logik – die Bedingungsstudie, der
+           * Backtest und der Live-Scanner müssen exakt dieselbe Regel rechnen, sonst
+           * messen sie Verschiedenes (der Präzedenzfall: der Gleichheitstest der
+           * Vorberechnung fand neun still fehlende Trades).
+           *
+           * NUR CALL: Das Put-Bein kämpft gegen die Marktdrift und verlor im Backtest
+           * −0,099 % je Trade, während das Call-Bein +0,075 % machte. Dieselbe Lektion
+           * wie bei der Ergebnis-Drift-Strategie. */
+          var vsK = Q.einstiegSignal(sigBars, sigBars.length - 1, {
+            ENTRY: 'rsi2seit', LINE: cfg.lineType || 'ema', period: cfg.period || 20,
+            confirmBps: cfg.confirmBps, ZTHR: zOf(cfg.confirmBps), MINQ: 0,
+            CHAN: false, MTF: false, TREND: false
+          });
+          if (vsK && vsK.dir === 'call') dir = 'call';
+          else if (vsK && vsK.dir === 'put') patienceAdd('RSI2-Seitwärts: Put-Seite trägt nicht (nur Long)', sym);
         } else if (isDon) {
           var dsigL = Q.donchianSignal(sigBars, cfg.period, cfg.confirmBps);
           if (dsigL.signal) dir = dsigL.signal;
@@ -1802,13 +2128,13 @@
           dir = sig.crossed === 'up' ? 'call' : 'put';
         }
         if (!dir) continue;
-        if (nearClose) { patienceAdd('Tagesschluss steht bevor', sym); continue; }
+        if (nearClose && !mp.uebernacht && !istKrypto(sym)) { patienceAdd('Tagesschluss steht bevor', sym); continue; }
         if (blackout) { patienceAdd('Event-Blackout', sym); continue; } // FOMC/CPI/NFP ±45 Min
         if ((cfg.avoidHours || []).length) {
           var hourB = parseInt(new Date(now).toLocaleString('de-DE', { hour: '2-digit', hour12: false, timeZone: 'Europe/Berlin' }), 10);
           if (cfg.avoidHours.indexOf(hourB) !== -1) { patienceAdd('Meide-Stunde (Analyse-Zentrale)', sym); continue; }
         }
-        if (!Q.inWindow(now, cfg.window || 'all')) { patienceAdd('Außerhalb des Zeitfensters', sym); schattenNeu('Zeitfenster', sym, dir, spot, sigBars, mp, cfg, now); continue; }
+        if (!istKrypto(sym) && !Q.inWindow(now, cfg.window || 'all')) { patienceAdd('Außerhalb des Zeitfensters', sym); schattenNeu('Zeitfenster', sym, dir, spot, sigBars, mp, cfg, now); continue; }
         if (!liquid) { patienceAdd('Zu wenig Liquidität', sym); continue; }
         var frisch = barsFrisch(bars, barMinScan, now);
         if (!frisch.ok) {
@@ -1863,6 +2189,43 @@
         var ask = wWert2 * (1 + spx2);
         // Kosten-Breakeven-Filter: lohnt sich der Trade nach Kosten überhaupt?
         var omegaPre = Q.warrantOmega(dir, w, spot, now);
+        /* Instrument-Weiche: Basiswert statt Schein - vom Nutzer gewaehlt oder von
+         * Krypto erzwungen (ein aktien-geeichtes Schein-Modell auf BTC waere Unfug).
+         * Linear, ohne Zeitwert, mit kleiner fester Spanne. Der belegte RSI2-Einstieg
+         * liegt ueber der Basiswert-Huerde (0,10 %) und unter der Scheinhuerde (0,21 %) -
+         * ohne diese Weiche ist er live nicht erntbar. */
+        var istBasis = cfg.instrument === 'basis' || istKrypto(sym);
+        /* KLUMPENRISIKO-DECKEL. Die neuen Long-only-Modi (Kapitulations-Dip, RSI2-
+         * Seitwaerts) feuern im Crash auf viele Werte GLEICHZEITIG - genau dann, wenn
+         * alles zusammen faellt. maxPerDay begrenzt nur pro Tag; ueber mehrere Tage
+         * stapeln sich sonst 15+ gleichgerichtete Longs, die alle dasselbe Marktbeta
+         * sind. Zehn Kapitulations-Dips sind keine zehn Wetten, sondern eine - zehnmal.
+         * Der Deckel zaehlt alle offenen Intraday-Positionen derselben Richtung und
+         * laesst ab der Grenze (Vorgabe 8) nichts mehr dazu. Der Kill-Switch bleibt
+         * unabhaengig davon das Netz darunter. */
+        var klumpenMax = D.intraday.klumpenMax != null ? D.intraday.klumpenMax : 8;
+        var gleicheRichtung = 0;
+        for (var kp = 0; kp < D.positions.length; kp++) {
+          if (D.positions[kp].strategy === 'intraday' && D.positions[kp].dir === dir) gleicheRichtung++;
+        }
+        if (gleicheRichtung >= klumpenMax) {
+          patienceAdd('Klumpen-Limit: schon ' + gleicheRichtung + ' offene ' + (dir === 'call' ? 'Long' : 'Short') + '-Positionen (Grenze ' + klumpenMax + ') – zehn gleichgerichtete Trades sind eine Wette, zehnmal', sym);
+          schattenNeu('Klumpen-Limit', sym, dir, spot, sigBars, mp, cfg, now, iv);
+          continue;
+        }
+        if (istBasis) {
+          wWert2 = spot;
+          spx2 = basisSpanne(sym);
+          ask = spot * (1 + spx2);
+          omegaPre = 1;
+        } else {
+          var rsW = risikoStufeOk(dir, w, spot, now);
+          if (!rsW.ok) {
+            patienceAdd('Risikostufe: ' + rsW.grund, sym);
+            schattenNeu('Risikostufe', sym, dir, spot, sigBars, mp, cfg, now, iv);
+            continue;
+          }
+        }
         // Not-Stop: fix oder „atmend“ (Volatilität × Hebel)
         var slT = mp.sl === 'auto' ? Q.autoStop(closes5, omegaPre, (mp.maxHoldMin || 60) / barMin) : mp.sl;
         var budgetAbs = Math.max(1, equityNow() * cfg.budgetPct);
@@ -1909,7 +2272,31 @@
         } else {
           qty = Math.floor((equityNow() * cfg.budgetPct * Math.min(1, ki.factor || 1) * lsFactor) / ask);
         }
+        if (istBasis) {
+          // Bruchstuecke sind beim Basiswert Realitaet (CFD). Ohne sie fiele jede Aktie
+          // ueber equity*budget still aus dem Handel - im Backtest hat genau dieser
+          // Ganzzahl-Filter alle Werte ueber 400 $ ausgeschlossen.
+          qty = sizingR > 0
+            ? (equityNow() * sizingR / 100 * Math.min(1, ki.factor || 1) * lsFactor) / (ask * Math.max(0.08, Math.abs(slT)))
+            : (equityNow() * cfg.budgetPct * Math.min(1, ki.factor || 1) * lsFactor) / ask;
+          qty = Math.max(0, Math.round(qty * 10000) / 10000);
+          if (qty * ask < 1) qty = 0;
+        }
         var cost = qty * ask + fee;
+        /* Hier haben ALLE Filter zugestimmt. Das ist der Moment, den der Vorwaertstest
+            braucht: Was die Strategie tun WOLLTE, unabhaengig davon, ob Geld da war und
+            ob ueberhaupt gehandelt wird. Die bisherigen Schatten protokollieren nur, was
+            ein Filter verhindert hat - damit laesst sich die Strategie selbst nie
+            beurteilen, nur ihre Filter. */
+        schattenNeu('Einstieg', sym, dir, spot, sigBars, mp, cfg, now, iv);
+        if (nurSchatten) {
+          // Handel ist aus: aufgezeichnet ist der Trade, ausgefuehrt wird er nicht.
+          // Das Tageslimit trotzdem hochzaehlen, sonst zeichnet der Schatten einen Tag
+          // auf, den die Strategie so nie gehabt haette.
+          D.intradayCount = (D.intradayCount || 0) + 1;
+          D.intradayCooldown[sym] = now;
+          continue;
+        }
         if (qty < 1 || D.cash < cost) continue;
         D.cash -= cost;
         var omega = Q.warrantOmega(dir, w, spot, now);
@@ -1918,9 +2305,10 @@
         var trade = {
           id: D.nextId++, sym: sym, dir: dir, openT: now, strategy: 'intraday',
           entrySpot: spot, entry: ask, qty: qty, cost: cost, orderFee: fee, spx: Math.round(spx2 * 10000) / 10000,
+          basis: istBasis || undefined, krypto: istKrypto(sym) || undefined,
           strike: w.strike, expiry: w.expiry, iv: Math.round(iv * 1000) / 1000, ratio: bvI,
           omega: Math.round(omega * 10) / 10,
-          sl: slT, tp: mp.tp, trail: mp.trail || 0, maxHoldMin: mp.maxHoldMin || 0, exitMode: mp.exitMode, peak: ask, chN: chN || 0, chan: chRef,
+          sl: slT, tp: mp.tp, trail: mp.trail || 0, maxHoldMin: mp.maxHoldMin || 0, exitMode: mp.exitMode, uebernacht: !!mp.uebernacht, peak: ask, chN: chN || 0, chan: chRef,
           sources: ki.approved ? { intraday: dir === 'call' ? 1 : -1, ki: dir === 'call' ? 1 : -1 } : { intraday: dir === 'call' ? 1 : -1 },
           reason: ki.note.replace(/^ · /, '') + (ki.note ? ' · ' : '') + (isOrb
               ? 'ORB: Ausbruch aus der Eröffnungs-Range (' + U.nf2.format(orbInfo.lo) + '–' + U.nf2.format(orbInfo.hi) + ', 30 Min) nach ' + (dir === 'call' ? 'OBEN' : 'UNTEN') + ' bei ' + U.nf2.format(spot) + '. '
@@ -1937,7 +2325,9 @@
               : isRev
               ? 'Rücksetzer: Kurs überdehnt ' + (dir === 'call' ? 'UNTER' : 'ÜBER') + ' der ' + (cfg.lineType === 'vwap' ? 'VWAP' : 'EMA' + cfg.period) + ' (z-Score ' + revZ + ', ' + barMin + '-Min-Chart) bei ' + U.nf2.format(spot) + '. '
               : (isWaves ? 'Wellen-Scalp: ' : 'Intraday: ') + 'Kurs kreuzt ' + (cfg.lineType === 'vwap' ? 'VWAP' : 'EMA' + cfg.period) + ' (' + barMin + '-Min-Chart) nach ' + (dir === 'call' ? 'OBEN' : 'UNTEN') + ' bei ' + U.nf2.format(spot) + ' (Abstand ' + (sig.distBps / 100).toFixed(2) + ' %). ') +
-            'Schein: ' + prof.name + ', Hebel ~' + omega.toFixed(1) + 'x, Aufgeld ' + aufgeld.toFixed(1) + ' %, ' +
+            (istBasis
+              ? 'Instrument: Basiswert 1× (' + (istKrypto(sym) ? 'Krypto, Taker ' : 'Aktie, Spanne ') + (spx2 * 10000).toFixed(0) + ' Bp je Seite, kein Zeitwertverfall), '
+              : 'Schein: ' + prof.name + ', Hebel ~' + omega.toFixed(1) + 'x, Aufgeld ' + aufgeld.toFixed(1) + ' %, ') +
             'Tagesumsatz ~' + Math.round(fd.dollarVolDay / 1e6) + ' Mio $ · Kosten-Check: Bewegung ' + ec.havePct + ' % vs. nötig ' + ec.needPct + ' %',
           scenario: isOrb
             ? 'Szenario: Ausbruch aus der Eröffnungs-Range läuft in Ausbruchsrichtung weiter (max. 1 Trade je Richtung/Tag). Exit: Trailing-Stop −15 % vom Hoch, Not-SL, Glattstellung zum Tagesschluss.'
@@ -2400,6 +2790,48 @@
       (s.avgHoldMin ? '<span>Ø Haltedauer <b>' + s.avgHoldMin + ' Min</b></span>' : '') +
       '<span>Gebühren <b>' + U.nf2.format(s.feesTotal || 0) + ' $</b></span>' +
       '</div>';
+    /* Zufallsgegenprobe – die wichtigste Einzelzahl der ganzen Auswertung.
+       Sie beantwortet die Frage, die eine schöne Ertragskurve nicht beantwortet:
+       Hätte Raten dasselbe gebracht? Am 21.08.2026 kam eine Trendfolge-Strategie auf
+       Krypto auf +13,7 % p. a. und sah nach einem Fund aus – bis dieselbe Rechnung mit
+       vertauschten Richtungen +19,4 % ergab. Deshalb steht sie hier ganz oben und nicht
+       versteckt unter den Kennzahlen. */
+    if (s.gegenprobe) {
+      var gp = s.gegenprobe;
+      if (gp.zuWenig) {
+        html += '<div style="font-size:12px; color:var(--ink-2); margin-bottom:10px; padding:8px 10px; border-left:3px solid var(--grid);">' +
+          'Zufallsgegenprobe: ' + U.esc(gp.aussage) + '</div>';
+      } else {
+        var farbe = gp.ueberzufaellig ? 'var(--up)' : (gp.pWert >= 0.5 ? 'var(--down)' : 'var(--warn)');
+        html += '<div style="font-size:12px; margin-bottom:10px; padding:9px 11px; border-left:3px solid ' + farbe + '; background:var(--panel);">' +
+          '<b style="color:' + farbe + ';">Zufallsgegenprobe:</b> ' + U.esc(gp.aussage) +
+          '<div style="color:var(--ink-2); margin-top:4px;">' +
+            'Diese Strategie bewegte den Basiswert im Mittel <b>' + U.signTxt(gp.echt, ' %') + '</b> in Handelsrichtung. ' +
+            'Vertauscht man die Richtungen zufällig unter denselben ' + gp.n + ' Trades, kommen im Mittel ' +
+            '<b>' + U.signTxt(gp.zufallMittel, ' %') + '</b> heraus. ' +
+            'Richtung getroffen in ' + gp.quote + ' % der Fälle.' +
+          '</div></div>';
+      }
+    }
+    /* Signifikanz aus nicht überlappenden MONATEN statt aus der Trade-Zahl.
+       Bei Haltedauern über mehreren Bars sind fast alle Trades gleichzeitig offen; ein
+       trade-basierter t-Wert zählt dieselbe Marktbewegung dutzendfach. Am 21.08.2026 auf
+       Krypto nachgemessen: aus t = 5,5 wurde t = 0,46, sobald man auf Monate umstellte. */
+    if (s.monatlich && !s.monatlich.zuKurz) {
+      var ms = s.monatlich;
+      var mFarbe = ms.ueberzufaellig ? 'var(--up)' : 'var(--ink-2)';
+      html += '<div style="font-size:12px; margin-bottom:10px; padding:9px 11px; border-left:3px solid ' + mFarbe + '; background:var(--panel);">' +
+        '<b>Signifikanz über Monate:</b> ' + ms.monate + ' Monate, ' +
+        '<b>' + U.signTxt(ms.jeMonat, ' %') + '</b> je Monat (' + U.signTxt(ms.proJahr, ' %') + ' p. a.), ' +
+        ms.positiveMonate + ' % davon positiv, <b>t = ' + ms.tWert + '</b>' +
+        '<div style="color:var(--ink-2); margin-top:4px;">' +
+          (!ms.belastbar
+            ? 'Unter 24 Monaten ist ein t-Wert nicht belastbar – hier zählt er nicht als Beleg, egal wie hoch er steht.'
+            : ms.ueberzufaellig
+              ? 'Überzufällig. Gerechnet auf Monatserträgen, die sich nicht überlappen – anders als eine Trade-Zählung, die dieselbe Bewegung mehrfach zählt.'
+              : 'Nicht überzufällig (t unter 2). Die Trade-Zahl oben sieht besser aus, weil überlappende Trades dieselbe Marktbewegung mehrfach zählen.') +
+        '</div></div>';
+    }
     html += '<svg id="btChart" style="width:100%; height:180px; display:block;"></svg><div id="btChartLegend" style="font-size:11.5px; color:var(--ink-2); margin-top:4px;"></div>';
     // Robustheit (Bootstrap)
     if (res.bootstrap) {
@@ -2672,10 +3104,47 @@
   /** Schattenbuch-Bilanz: Was wäre aus den verworfenen Trades geworden? */
   function renderSchattenHtml() {
     var st = D.schattenStat || {};
-    var gr = Object.keys(st).sort(function (a, b) { return st[b].n - st[a].n; });
+    /* „Einstieg“ misst etwas grundlegend anderes als die Filter-Gründe und gehört
+       deshalb getrennt: Die Filter-Schatten beantworten „hat dieser Filter Geld
+       gerettet?“, die Einstiegs-Schatten „hätte die Strategie insgesamt verdient?“.
+       In einer Tabelle nebeneinander wären beide Zahlen missverständlich. */
+    var gr = Object.keys(st).filter(function (k) { return k !== 'Einstieg'; })
+      .sort(function (a, b) { return st[b].n - st[a].n; });
     var offen = (D.schatten || []).filter(function (x) { return x.status === 'open'; }).length;
-    if (!gr.length && !offen) return '';
-    var h = '<div style="margin-top:12px; border-top:1px solid var(--line); padding-top:8px;">' +
+    var ein = st['Einstieg'];
+    if (!gr.length && !offen && !ein) return '';
+    var h = '';
+
+    /* ---- Vorwärtstest: die durchgelassenen Signale ---- */
+    if (ein || D.intraday.schattenImmer !== false) {
+      var einOffen = (D.schatten || []).filter(function (x) { return x.status === 'open' && x.grund === 'Einstieg'; }).length;
+      h += '<div style="margin-top:12px; border-top:1px solid var(--line); padding-top:8px;">' +
+        '<div style="font-weight:700; margin-bottom:4px;">Vorwärtstest – was die Intraday-Strategie verdient hätte</div>' +
+        '<div style="color:var(--muted); font-size:11.5px; margin-bottom:6px;">' +
+        'Jedes Signal, das alle Filter passiert hat, läuft hier virtuell zu Ende – auch wenn nicht gehandelt wird. ' +
+        'Das ist die einzige Evidenzform ohne Rückschau-Verzerrung: Sie entsteht erst mit der Zeit und kann nicht nachträglich schöngerechnet werden. ' +
+        'Simulation, keine Anlageberatung.</div>';
+      if (!ein || !ein.n) {
+        h += '<div style="color:var(--muted); font-size:12px;">Noch kein abgeschlossenes Signal' +
+          (einOffen ? ' – ' + einOffen + ' laufen gerade.' : '. Die Aufzeichnung beginnt mit dem nächsten Signal.') + '</div>';
+      } else {
+        var avgE = Math.round(ein.sumPct / ein.n * 10) / 10;
+        var quoteE = Math.round(100 * ein.verhindert / ein.n);
+        // Erst ab einer belastbaren Zahl ein Urteil. 30 Trades sind wenig, aber
+        // unterhalb davon ist jede Aussage Rauschen - das Live-Konto mit 28 Trades
+        // und 11 % Trefferquote ist das Mahnmal dafuer.
+        var urteilE = ein.n < 30
+          ? 'noch zu wenige Signale für ein Urteil (ab 30 wird es aussagekräftig)'
+          : (avgE > 0 ? 'die Strategie wäre im Mittel im Plus' : 'die Strategie wäre im Mittel im Minus');
+        h += '<div class="patrow"><span><b>' + ein.n + ' abgeschlossene Signale</b>' + (einOffen ? ' · ' + einOffen + ' laufen' : '') + '</span>' +
+          '<span style="color:var(--muted);">Ø <b class="' + (avgE >= 0 ? 'pos' : 'neg') + '">' + U.signTxt(avgE, ' %') + '</b> je Signal · ' +
+          quoteE + ' % im Plus</span><b>' + urteilE + '</b></div>';
+      }
+      h += '</div>';
+    }
+
+    if (!gr.length && !offen) return h;
+    h += '<div style="margin-top:12px; border-top:1px solid var(--line); padding-top:8px;">' +
       '<div style="font-weight:700; margin-bottom:4px;">Schattenbuch – was aus den verworfenen Trades geworden wäre</div>' +
       '<div style="color:var(--muted); font-size:11.5px; margin-bottom:6px;">Jeder verworfene Trade läuft virtuell weiter (gleiche Stop-/Ausstiegsregeln). ' +
       '„Gerettet“ = der Filter hat einen Verlust verhindert, „verhindert“ = er hat einen Gewinn gekostet (±1 % Totzone). Simulation, keine Anlageberatung.</div>';
@@ -3223,7 +3692,19 @@
       meta: { scalpHold: 240, scalpSL: 30, scalpTrail: 15 },
       fixedGrid: [{ period: 20, confirmBps: 15, zThr: 2, lineType: 'ema' }],
       opts: { entryMode: 'squeeze', exitMode: 'confirmed', sl: -0.30, tp: null, trailPct: 0.15, maxHoldMin: 240, cooldownMin: 30, maxPerDay: 10 } });
-    if (cfg.exitStyle === 'blitz' || cfg.exitStyle === 'kurz') {
+    /* Die beiden Funde der Bedingungsstudie vom 21.08.2026 - als Kandidaten mit ihrem
+     * RICHTIGEN Instrument: Basiswert, nur Long, Zeit-Ausstieg, haelt ueber Nacht.
+     * Auf dem Schein gemessen waeren beide tot (Huerde 0,21 % gegen Edge 0,15-0,23 %);
+     * der Pruefstand soll sie mit den Kosten messen, die sie wirklich zahlen. */
+    MODESL.push({ key: 'rsi2seit', setup: 'umkehr', trigger: 'rsi2seit', name: 'Umkehr · RSI(2) im Seitwärtskanal · nur Long · Basiswert',
+      meta: { scalpHold: 480 },
+      opts: { entryMode: 'rsi2seit', exitMode: 'zeit', sl: -0.90, tp: null, trailPct: 0, maxHoldMin: 480,
+        cooldownMin: 120, maxPerDay: 10, instrument: 'basis', basisBp: 5, nurRichtung: 'call', tagesschluss: false } });
+    MODESL.push({ key: 'kapitulation', setup: 'umkehr', trigger: 'kapitulation', name: 'Umkehr · Kapitulations-Dip im Abwärtskanal · nur Long · Basiswert',
+      meta: { scalpHold: 1560 },
+      opts: { entryMode: 'kapitulation', exitMode: 'zeit', sl: -0.90, tp: null, trailPct: 0, maxHoldMin: 1560,
+        cooldownMin: 240, maxPerDay: 6, instrument: 'basis', basisBp: 10, nurRichtung: 'call', tagesschluss: false } });
+        if (cfg.exitStyle === 'blitz' || cfg.exitStyle === 'kurz') {
       MODESL.push({ key: 'breakout_lauf', setup: 'ausbruch', trigger: 'kreuzung', name: 'Ausbruch · EMA-Kreuzung · laufen lassen',
         opts: { entryMode: 'cross', exitMode: 'confirmed', sl: -0.25, tp: 0.35, trailPct: 0, maxHoldMin: 0,
           cooldownMin: 45, maxPerDay: 10, trendFilter: !!cfg.trendFilter } });
@@ -4885,6 +5366,7 @@
       D.positions = D.positions.map(function (p) { return (p.id != null && byId[p.id]) ? byId[p.id] : p; });
     })();
     var repaired = repairOrphans(); // Buchhaltung geradeziehen, bevor irgendetwas rechnet
+    var altlast = altlastSchliessen();
     // Einmaliger Messschnitt: Alles, was vor dieser Version entstanden ist, war durch den
     // Buchungsfehler verfälscht. Es bleibt erhalten, zählt aber in keiner Statistik mehr mit.
     var messNeu = 0;
@@ -4951,6 +5433,20 @@
     if (D.rechenstand !== Q.RECHENSTAND) {
       var alterStand = D.rechenstand;
       D.rechenstand = Q.RECHENSTAND;
+      // Das News-Gewicht war bis Stand 7 auf 0,35 - ein Wert, der nie gemessen wurde.
+      // Wer ihn selbst veraendert hat, behaelt seine Einstellung; nur der alte
+      // Vorgabewert wird ersetzt.
+      if (D.weights && Math.abs(D.weights.news - 0.35) < 0.001 && Math.abs(D.weights.tech - 0.40) < 0.001) {
+        D.weights = { news: 0.15, tech: 0.55, elliott: 0.30 };
+        if (!D.tuneLog) D.tuneLog = [];
+        D.tuneLog.unshift({ id: 'newsgewicht-' + Date.now(), at: Date.now(), quelle: 'messung',
+          applied: ['News-Gewicht 35 % -> 15 %'],
+          txt: 'Das News-Sentiment hatte 35 % Gewicht in jeder Entscheidung, ist aber nie ' +
+            'geprueft worden: es gibt keine historischen Schlagzeilen, im Backtest faellt ' +
+            'das Gewicht deshalb heraus. Unbelegt ist nicht widerlegt - aber 35 % sind zu ' +
+            'viel Vertrauen dafuer. Ab jetzt wird jede Schlagzeile mit Zeitstempel ' +
+            'archiviert; sobald genug zusammenkommt, wird die Frage messbar.' });
+      }
       if (D.autoOpt) {
         var wegg = [];
         if (D.autoOpt.entdeckt) wegg.push('Tiefensuche-Fund');
@@ -5217,11 +5713,17 @@
     idC.value = String(D.intraday.confirmBps);
     idI.value = D.intraday.interval || '5m';
     idPr.value = D.intraday.profile || 'atm21';
+    var idIns = document.getElementById('idInstrument');
+    if (idIns) idIns.value = D.intraday.instrument || 'schein';
+    var idMS = document.getElementById('idMaxStufe');
+    if (idMS) idMS.value = String(D.maxRisikostufe || 5);
+    var idKH = document.getElementById('idKryptoHandeln');
+    if (idKH) idKH.checked = !!D.intraday.kryptoHandeln;
     idF.value = String(D.intraday.orderFee != null ? D.intraday.orderFee : 1.5);
     idL.value = String(D.intraday.minDollarVol != null ? D.intraday.minDollarVol : 50);
     // 'enabled' bewusst nicht dabei: An/Aus ist Alltag, kein Experiment – das würde das Journal fluten.
     var HAND_FELDER = { mode: 'Setup', period: 'Periode', confirmBps: 'Bestätigung', interval: 'Zeitrahmen',
-      profile: 'Schein-Profil', lineType: 'Leitlinie', trendFilter: 'Trendfilter', window: 'Zeitfenster', scalpHold: 'Max-Halten',
+      profile: 'Schein-Profil', instrument: 'Instrument', kryptoHandeln: 'Krypto-Handel', lineType: 'Leitlinie', trendFilter: 'Trendfilter', window: 'Zeitfenster', scalpHold: 'Max-Halten',
       scalpTrail: 'Trailing', scalpSL: 'Not-Stop', blackout: 'Event-Blackout', channel: 'Trendkanal', mtf: '5-Min-Bestätigung',
       sizing: 'Positionsgröße', screener: 'Screener', exitStyle: 'Ausstieg' };
     function idSave() {
@@ -5232,6 +5734,12 @@
       D.intraday.confirmBps = parseInt(idC.value, 10);
       D.intraday.interval = idI.value;
       D.intraday.profile = idPr.value;
+      var idIns2 = document.getElementById('idInstrument');
+      if (idIns2) D.intraday.instrument = idIns2.value;
+      var idMS2 = document.getElementById('idMaxStufe');
+      if (idMS2) D.maxRisikostufe = parseInt(idMS2.value, 10) || 5;
+      var idKH2 = document.getElementById('idKryptoHandeln');
+      if (idKH2) D.intraday.kryptoHandeln = idKH2.checked;
       D.intraday.orderFee = parseFloat(idF.value);
       var feeWarn = document.getElementById('feeWarn');
       if (feeWarn) feeWarn.textContent = D.intraday.orderFee === 0
@@ -5359,6 +5867,32 @@
     var idAt = document.getElementById('idAutoTune');
     idAt.checked = D.intraday.autoTune !== false;
     idAt.addEventListener('change', function () { D.intraday.autoTune = idAt.checked; save(); });
+
+    /* Krypto-Sammler: an/aus plus Bestandsanzeige. Ein Hintergrund-Netzwerkjob ohne
+       Aus-Knopf wäre schlechter Stil – und man soll sehen, ob er etwas bringt. */
+    var kEl2 = document.getElementById('idKrypto');
+    if (kEl2) {
+      kEl2.checked = D.kryptoSammeln !== false;
+      kEl2.addEventListener('change', function () { D.kryptoSammeln = kEl2.checked; save(); zeigeKryptoStand(); });
+    }
+    /* Vorwärtstest: Wer den Handel abschaltet, soll die Beweisaufnahme behalten.
+       Früher hing beides am selben Schalter – und nach Monaten Pause stand man
+       wieder ohne Daten da. */
+    var sIm = document.getElementById('idSchattenImmer');
+    if (sIm) {
+      sIm.checked = D.intraday.schattenImmer !== false;
+      sIm.addEventListener('change', function () {
+        D.intraday.schattenImmer = sIm.checked; save();
+        var el2 = document.getElementById('idStatus');
+        if (el2 && !D.intraday.enabled) {
+          el2.textContent = sIm.checked
+            ? 'Handel aus – Signale werden aber weiter aufgezeichnet (Vorwärtstest).'
+            : 'Handel aus, keine Aufzeichnung. Es entstehen keine neuen Messdaten.';
+        }
+      });
+    }
+    zeigeKryptoStand();
+    setInterval(zeigeKryptoStand, 5 * 60000);
     renderTune();
     setTimeout(checkRemoteRec, 8000);
     setInterval(checkRemoteRec, 10 * 60000);
@@ -5369,11 +5903,36 @@
     nE.addEventListener('change', function () { D.notify = nE.checked; save(); });
     if (D.intraday.enabled) {
       document.getElementById('idStatus').textContent = window.Dash.marketOpen() ? 'Aktiv.' : 'Aktiv – wartet auf US-Handelsbeginn (15:30 Uhr Berlin).';
+    } else if (D.intraday.schattenImmer !== false) {
+      // Ohne diese Zeile sieht der abgeschaltete Handel aus wie „nichts passiert“,
+      // obwohl im Hintergrund der Vorwärtstest läuft.
+      document.getElementById('idStatus').textContent = window.Dash.marketOpen()
+        ? 'Handel aus – Signale werden aufgezeichnet (Vorwärtstest, kein Kapitaleinsatz).'
+        : 'Handel aus – Aufzeichnung wartet auf US-Handelsbeginn (15:30 Uhr Berlin).';
     }
     // Intraday-Scheduler: Scan-Takt je nach Modus (Scalping 90 s, Ausbrüche 5 Min)
     setInterval(function () {
-      if (D.intraday.enabled && window.Dash.marketOpen() && Date.now() - D.intradayLastScan >= modeParams().scanMs) intradayScan();
+      // Auch ohne Handel scannen, solange aufgezeichnet werden soll – sonst liefe der
+      // Vorwärtstest nur, wenn ohnehin Kapital im Feuer steht, und wäre damit wertlos.
+      var lohnt = D.intraday.enabled || D.intraday.schattenImmer !== false;
+      // Krypto-Handel kennt keinen Boersenschluss - der Takt laeuft dann durch.
+      if (lohnt && (window.Dash.marketOpen() || D.intraday.kryptoHandeln) && Date.now() - D.intradayLastScan >= modeParams().scanMs) intradayScan();
     }, 30000);
+
+    /* Krypto-Sammler. Ausdruecklich OHNE marketOpen()-Pruefung - waehrend die US-Boerse
+       zu ist, hat der Sammler Yahoos Anfragebudget fuer sich allein, und Krypto handelt
+       ohnehin durchgehend. Reihum durch die Intervalle, alle 20 Minuten eines:
+       15m und 5m oft (dort ist das Fenster mit 60 Tagen am knappsten), 60m selten
+       (730 Tage Rueckblick, da eilt nichts), 1m am haeufigsten (nur 7 Tage Fenster -
+       was aelter ist, holt niemand je wieder). */
+    var kryptoTakt = 0;
+    setInterval(function () {
+      if (D.kryptoSammeln === false) return;
+      var reihe = ['1m', '15m', '1m', '5m', '1m', '15m', '1m', '60m'];
+      kryptoSammeln(reihe[kryptoTakt % reihe.length]);
+      kryptoTakt++;
+    }, 20 * 60000);
+    setTimeout(function () { if (D.kryptoSammeln !== false) kryptoSammeln('1m'); }, 25000);
   }
 
   document.getElementById('runJobBtn').addEventListener('click', function () { runJob(true); });

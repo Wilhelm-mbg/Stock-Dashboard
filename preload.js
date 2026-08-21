@@ -3,6 +3,12 @@ const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('api', {
   fetchText: (url) => ipcRenderer.invoke('fetch-text', url),
+  // Ergebnistermine: nur ein Kuerzel geht raus, Ziel und Anfragekoerper stehen im Hauptprozess fest.
+  earningsFetch: (symbol) => ipcRenderer.invoke('earnings-fetch', symbol),
+  bugReport: (m) => ipcRenderer.invoke('bug-report', m),
+  bugList: () => ipcRenderer.invoke('bug-list'),
+  diagnoseConfig: () => ipcRenderer.invoke('diagnose-config'),
+  diagnoseSend: (titel, body) => ipcRenderer.invoke('diagnose-send', titel, body),
   storeGet: (name) => ipcRenderer.invoke('store-get', name),
   storeSet: (name, value) => ipcRenderer.invoke('store-set', name, value),
   setTrayMode: (v) => ipcRenderer.send('tray-mode', !!v),

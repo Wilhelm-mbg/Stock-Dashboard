@@ -16,6 +16,7 @@ const ALLOWED_HOSTS = new Set([
   'query1.finance.yahoo.com',
   'query2.finance.yahoo.com',
   'feeds.finance.yahoo.com',
+  'fc.yahoo.com', // nur fuer das Cookie, das Yahoos Kalender-Endpunkt verlangt
   'news.google.com',
   'api.github.com' // nur für den Update-Check (Releases lesen)
 ]);
@@ -51,19 +52,367 @@ function fetchText(url, redirectsLeft) {
 }
 
 ipcMain.handle('fetch-text', async (_ev, url) => fetchText(url));
+
+/* ================= Ergebnistermine =================
+ * Yahoos Kalender-Endpunkt liefert echte Veröffentlichungstermine mit Schätzung, Ist
+ * und Überraschung, zurück bis in die 1990er. Anders als `quoteSummary` (nur 4 Quartale,
+ * und dort steht das Quartals-ENDE, nicht der Termin). Er verlangt aber Cookie + Crumb
+ * und einen POST.
+ *
+ * Beides bleibt bewusst hier im Hauptprozess: Der Renderer übergibt nur ein Kürzel, die
+ * Ziel-URL und der Anfragekörper stehen fest. Damit lässt sich über diesen Weg nichts
+ * anderes verschicken – ein allgemeines `postJson` wäre eine offene Tür gewesen.
+ *
+ * Gebraucht wird das für die Ergebnis-Drift-Strategie: Kurse laufen nach einer
+ * Überraschung noch Wochen in Überraschungsrichtung weiter. Am 21.08.2026 auf 20.356
+ * Terminen gemessen: +10,44 % p. a. marktneutral seit 2015 (t = 3,04).
+ */
+let yahooSitz = { cookie: null, crumb: null, at: 0 };
+
+function holeSitz() {
+  return new Promise((resolve) => {
+    // Eine Stunde wiederverwenden – der Crumb hält deutlich länger, und jeder Abruf
+    // kostet sonst zwei zusätzliche Anfragen je Symbol.
+    if (yahooSitz.crumb && Date.now() - yahooSitz.at < 3600000) return resolve(yahooSitz);
+    const req = https.get('https://fc.yahoo.com/', {
+      headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36' },
+      timeout: 15000
+    }, (res) => {
+      const ck = (res.headers['set-cookie'] || []).map((s) => s.split(';')[0]).join('; ');
+      res.resume();
+      if (!ck) return resolve({ cookie: null, crumb: null });
+      const req2 = https.get('https://query2.finance.yahoo.com/v1/test/getcrumb', {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36',
+          'Cookie': ck
+        },
+        timeout: 15000
+      }, (r2) => {
+        let d = '';
+        r2.setEncoding('utf8');
+        r2.on('data', (c) => { d += c; if (d.length > 4096) req2.destroy(); });
+        r2.on('end', () => {
+          // Ein Crumb ist ein kurzes Token. Kommt etwas Längeres, ist es eine
+          // Fehlerseite – dann lieber nichts als Müll weiterreichen.
+          if (!d || d.length > 40) return resolve({ cookie: null, crumb: null });
+          yahooSitz = { cookie: ck, crumb: d, at: Date.now() };
+          resolve(yahooSitz);
+        });
+      });
+      req2.on('timeout', () => { req2.destroy(); resolve({ cookie: null, crumb: null }); });
+      req2.on('error', () => resolve({ cookie: null, crumb: null }));
+    });
+    req.on('timeout', () => { req.destroy(); resolve({ cookie: null, crumb: null }); });
+    req.on('error', () => resolve({ cookie: null, crumb: null }));
+  });
+}
+
+/** Ergebnistermine eines Symbols. Rückgabe: [[ISO-Zeit, Schätzung, Ist, Überraschung%], …] */
+async function holeTermine(symbol, wiederholung) {
+  const sym = String(symbol || '').toUpperCase().replace(/[^A-Z0-9.^-]/g, '').slice(0, 12);
+  if (!sym) return { ok: false, body: 'Kein gültiges Kürzel' };
+  const s = await holeSitz();
+  if (!s.crumb) { yahooSitz = { cookie: null, crumb: null, at: 0 }; return { ok: false, body: 'Kein Zugang zum Kalender (Cookie/Crumb)' }; }
+  const koerper = JSON.stringify({
+    sortType: 'DESC', entityIdType: 'earnings', sortField: 'startdatetime', size: 250, offset: 0,
+    includeFields: ['startdatetime', 'epsestimate', 'epsactual', 'epssurprisepct'],
+    query: { operator: 'and', operands: [{ operator: 'eq', operands: ['ticker', sym] }] }
+  });
+  return new Promise((resolve) => {
+    const req = https.request({
+      hostname: 'query1.finance.yahoo.com',
+      path: '/v1/finance/visualization?crumb=' + encodeURIComponent(s.crumb) + '&lang=en-US&region=US',
+      method: 'POST',
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36',
+        'Content-Type': 'application/json',
+        'Content-Length': Buffer.byteLength(koerper),
+        'Cookie': s.cookie,
+        'Origin': 'https://finance.yahoo.com',
+        'Referer': 'https://finance.yahoo.com/'
+      },
+      timeout: 20000
+    }, (res) => {
+      let d = '';
+      res.setEncoding('utf8');
+      res.on('data', (c) => { d += c; if (d.length > 4 * 1024 * 1024) { req.destroy(); resolve({ ok: false, body: 'Antwort zu groß' }); } });
+      res.on('end', () => {
+        if (res.statusCode === 401 || res.statusCode === 403) yahooSitz = { cookie: null, crumb: null, at: 0 };
+        // Gedrosselt: einmal kurz warten und wiederholen, statt das Symbol still zu verlieren.
+        if (res.statusCode === 429 && !wiederholung) {
+          return setTimeout(() => resolve(holeTermine(sym, true)), 5000);
+        }
+        if (res.statusCode < 200 || res.statusCode >= 300) return resolve({ ok: false, status: res.statusCode, body: 'HTTP ' + res.statusCode });
+        try {
+          const doc = JSON.parse(d).finance.result[0].documents[0];
+          const spalten = doc.columns.map((x) => x.id);
+          const iT = spalten.indexOf('startdatetime'), iS = spalten.indexOf('epsestimate');
+          const iI = spalten.indexOf('epsactual'), iU = spalten.indexOf('epssurprisepct');
+          resolve({ ok: true, termine: doc.rows.map((r) => [r[iT], r[iS], r[iI], r[iU]]) });
+        } catch (e) { resolve({ ok: false, body: 'Antwort nicht lesbar' }); }
+      });
+    });
+    req.on('timeout', () => { req.destroy(); resolve({ ok: false, body: 'Timeout' }); });
+    req.on('error', (e) => resolve({ ok: false, body: String(e.message || e) }));
+    req.write(koerper);
+    req.end();
+  });
+}
+/* Der Kalender-Endpunkt oben ist TIEF, aber nicht FRISCH: Am 21.08.2026 endete er bei
+ * Terminen aus dem Juni 2025, während die Kurse bis August 2026 liefen — 420 Tage Lücke.
+ * Für den Rückblick reicht das, für den laufenden Betrieb nicht.
+ *
+ * Die frischen Zahlen stehen woanders: `earningsHistory` kennt die letzten vier Quartale
+ * mit Ist-Wert und Überraschung (aber nur das Quartals-ENDE), `calendarEvents` nennt mit
+ * `earningsCallDate` den letzten tatsächlichen Meldetermin. Zusammengesetzt ergibt das
+ * den jüngsten Termin.
+ *
+ * Sicher gepaart wird nur das NEUESTE Quartal, und nur wenn der Meldetermin danach liegt
+ * und höchstens 120 Tage später — sonst gehört die Terminangabe zu einem anderen Quartal.
+ * Lieber nichts melden als ein falsch datiertes Ereignis: Ein um Wochen verschobener
+ * Reaktionstag macht aus dem Drift Rauschen.
+ */
+/* Yahoo drosselt bei zu vielen Anfragen in Folge mit 429 und liefert dann den Text
+ * "Too Many Requests" statt JSON. Ohne Behandlung fällt das Symbol still aus der
+ * Messbasis – dieselbe Falle, die beim Kursabruf schon einmal zugeschlagen hat und
+ * dort mit einer einzelnen Wiederholung behoben wurde. Hier wird zusätzlich
+ * schrittweise länger gewartet, weil der Terminabruf über viele Symbole läuft. */
+function jsonGet(pfad, cookie, versuch) {
+  versuch = versuch || 0;
+  return new Promise((resolve) => {
+    const req = https.get('https://query2.finance.yahoo.com' + pfad, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36',
+        'Cookie': cookie, 'Accept': 'application/json'
+      },
+      timeout: 15000
+    }, (res) => {
+      let d = '';
+      res.setEncoding('utf8');
+      res.on('data', (c) => { d += c; if (d.length > 2 * 1024 * 1024) req.destroy(); });
+      res.on('end', () => {
+        if (res.statusCode === 429 && versuch < 2) {
+          return setTimeout(() => resolve(jsonGet(pfad, cookie, versuch + 1)), 4000 * (versuch + 1));
+        }
+        // 401/403 heißt meist: Crumb abgelaufen. Sitzung verwerfen, damit der nächste
+        // Aufruf sich eine frische holt, statt endlos mit einem toten Token zu fragen.
+        if (res.statusCode === 401 || res.statusCode === 403) yahooSitz = { cookie: null, crumb: null, at: 0 };
+        try { resolve(res.statusCode === 200 ? JSON.parse(d) : null); } catch (e) { resolve(null); }
+      });
+    });
+    req.on('timeout', () => { req.destroy(); resolve(null); });
+    req.on('error', () => resolve(null));
+  });
+}
+
+/* Die eigentliche Paarung steht in drift.js als reine Funktion – dort ist sie ohne
+ * Netz und ohne Electron prüfbar, und sie IST geprüft (Termin vor dem Quartalsende,
+ * Termin zu weit danach, fehlende Überraschung, vertauschte Reihenfolge). Hier bleibt
+ * nur das Auspacken der beiden Yahoo-Antworten. */
+const Drift = require('./drift.js');
+
+async function holeAktuell(sym) {
+  const s = await holeSitz();
+  if (!s.crumb) return null;
+  const c = encodeURIComponent(s.crumb);
+  const hist = await jsonGet('/v10/finance/quoteSummary/' + sym + '?modules=earningsHistory&crumb=' + c, s.cookie);
+  const kal = await jsonGet('/v10/finance/quoteSummary/' + sym + '?modules=calendarEvents&crumb=' + c, s.cookie);
+  try {
+    const reihen = hist.quoteSummary.result[0].earningsHistory.history || [];
+    const historie = reihen.map((q) => ({
+      quartalsEndeMs: q.quarter && q.quarter.raw ? q.quarter.raw * 1000 : 0,
+      ueberraschung: q.surprisePercent && q.surprisePercent.raw != null ? q.surprisePercent.raw * 100 : null,
+      ist: q.epsActual && q.epsActual.raw,
+      schaetzung: q.epsEstimate && q.epsEstimate.raw
+    }));
+    const cd = kal && kal.quoteSummary.result[0].calendarEvents.earnings.earningsCallDate;
+    const terminMs = cd && cd.length
+      ? (typeof cd[0] === 'number' ? cd[0] * 1000 : (cd[0].raw ? cd[0].raw * 1000 : Date.parse(cd[0].fmt || cd[0])))
+      : 0;
+    return Drift.paareAktuell(historie, terminMs);
+  } catch (e) { return null; }
+}
+
+ipcMain.handle('earnings-fetch', async (_ev, symbol) => {
+  const sym = String(symbol || '').toUpperCase().replace(/[^A-Z0-9.^-]/g, '').slice(0, 12);
+  if (!sym) return { ok: false, body: 'Kein gültiges Kürzel' };
+  const tief = await holeTermine(sym);
+  const frisch = await holeAktuell(sym);
+  if (!tief.ok && !frisch) return tief;
+  return { ok: true, termine: tief.ok ? tief.termine : [], aktuell: frisch };
+});
 ipcMain.handle('app-version', async () => app.getVersion());
-// Autostart mit Windows (minimiert im Tray)
+/* ================= Autostart mit Windows (minimiert im Tray) =================
+ *
+ * Der Haken sprang bisher nach dem Speichern wieder heraus. Ursache: Unter Windows
+ * schreibt `setLoginItemSettings` mit `args: ['--hidden']` einen Registry-Eintrag der
+ * Form `"…\App.exe" --hidden`. Beim Zurücklesen vergleicht Electron den gefundenen
+ * Eintrag mit `path` und `args` — werden die beim LESEN nicht mitgegeben, passt der
+ * Vergleich nicht und `openAtLogin` kommt als `false` zurück. Der Eintrag war die
+ * ganze Zeit da, nur die Rückfrage stellte die falsche Frage.
+ *
+ * Deshalb: beide Richtungen mit denselben Optionen. Zusätzlich wird das Ergebnis
+ * geprüft und ein Fehlschlag nach oben gemeldet, statt still zu scheitern.
+ */
+const AUTOSTART_OPT = { path: process.execPath, args: ['--hidden'] };
+
+function autostartLesen() {
+  // Erst mit den Optionen fragen, mit denen geschrieben wurde. Nur wenn das nichts
+  // findet, die schlichte Abfrage – dann stammt der Eintrag aus einer älteren Fassung.
+  try {
+    if (app.getLoginItemSettings(AUTOSTART_OPT).openAtLogin) return true;
+    return !!app.getLoginItemSettings().openAtLogin;
+  } catch (e) { return false; }
+}
+
 ipcMain.handle('set-autostart', async (_ev, on) => {
   try {
-    app.setLoginItemSettings({ openAtLogin: !!on, args: on ? ['--hidden'] : [] });
-    return { ok: true, on: app.getLoginItemSettings().openAtLogin };
-  } catch (e) { return { ok: false, msg: String(e.message || e) }; }
+    if (on) app.setLoginItemSettings(Object.assign({ openAtLogin: true }, AUTOSTART_OPT));
+    else {
+      // Beide Schreibweisen entfernen: die mit Argumenten und die alte ohne.
+      app.setLoginItemSettings(Object.assign({ openAtLogin: false }, AUTOSTART_OPT));
+      app.setLoginItemSettings({ openAtLogin: false });
+    }
+    const ist = autostartLesen();
+    if (!!on !== ist) {
+      return { ok: false, on: ist, msg: on
+        ? 'Windows hat den Autostart-Eintrag nicht übernommen (fehlende Rechte oder eine Richtlinie?).'
+        : 'Der Autostart-Eintrag ließ sich nicht entfernen.' };
+    }
+    return { ok: true, on: ist };
+  } catch (e) { return { ok: false, on: autostartLesen(), msg: String(e.message || e) }; }
 });
 ipcMain.handle('get-autostart', async () => {
-  try { return { ok: true, on: app.getLoginItemSettings().openAtLogin }; } catch (e) { return { ok: false, on: false }; }
+  try { return { ok: true, on: autostartLesen() }; } catch (e) { return { ok: false, on: false }; }
 });
 // Analyse-Export: schreibt Depot-Daten (OHNE Zugangsdaten) in den Downloads-Ordner,
 // damit sie z. B. von Claude zur Auswertung gelesen werden können.
+/* ================= Fehlermeldungen =================
+ * Meldungen landen als JSON im selben Daten-Ordner, den auch der Analyse-Export nutzt.
+ * Von dort liest sie ein geplanter Auftrag, bewertet sie und behebt, was sich beheben
+ * lässt — und schreibt seinen Befund in dieselbe Datei zurück. Deshalb ist das Format
+ * bewusst schlicht und in beide Richtungen beschreibbar.
+ *
+ * Bewusst KEINE Zugangsdaten und keine Kursdaten: Eine Fehlermeldung soll man
+ * weitergeben können, ohne sie vorher durchsehen zu müssen.
+ */
+function bugDatei() {
+  const dir = path.join(app.getPath('downloads'), 'Markt-Dashboard-Daten');
+  fs.mkdirSync(dir, { recursive: true });
+  return path.join(dir, 'fehlermeldungen.json');
+}
+function bugsLesen() {
+  try {
+    const p = bugDatei();
+    if (!fs.existsSync(p)) return { version: 1, meldungen: [] };
+    const j = JSON.parse(fs.readFileSync(p, 'utf8'));
+    return j && Array.isArray(j.meldungen) ? j : { version: 1, meldungen: [] };
+  } catch (e) { return { version: 1, meldungen: [] }; }
+}
+ipcMain.handle('bug-list', async () => {
+  const j = bugsLesen();
+  return { ok: true, meldungen: j.meldungen, datei: bugDatei() };
+});
+ipcMain.handle('bug-report', async (_ev, m) => {
+  try {
+    const j = bugsLesen();
+    const text = String((m && m.text) || '').trim().slice(0, 4000);
+    if (!text) return { ok: false, msg: 'Bitte beschreiben, was passiert ist.' };
+    const eintrag = {
+      id: 'bug' + Date.now() + '-' + Math.floor(Math.random() * 1000),
+      gemeldet: new Date().toISOString(),
+      art: ['funktion', 'kosmetik', 'zahlen', 'sonstiges'].indexOf(m && m.art) >= 0 ? m.art : 'sonstiges',
+      schwere: ['stoert-kaum', 'aergerlich', 'blockiert'].indexOf(m && m.schwere) >= 0 ? m.schwere : 'aergerlich',
+      bereich: String((m && m.bereich) || '').slice(0, 60),
+      text: text,
+      // Umgebung mitschicken, damit man nicht nachfragen muss
+      umgebung: {
+        version: app.getVersion(),
+        plattform: process.platform,
+        electron: process.versions.electron,
+        fenster: (m && m.fenster) || null
+      },
+      // Automatisch mitgeschnittene Fehler des Programms, falls vorhanden
+      fehlerprotokoll: Array.isArray(m && m.fehler) ? m.fehler.slice(-20) : [],
+      status: 'offen',
+      bewertung: null,
+      erledigt: null
+    };
+    j.meldungen.unshift(eintrag);
+    if (j.meldungen.length > 300) j.meldungen.length = 300;
+    schreibAtomar(bugDatei(), JSON.stringify(j, null, 1));
+    return { ok: true, id: eintrag.id, datei: bugDatei() };
+  } catch (e) { return { ok: false, msg: String(e.message || e) }; }
+});
+
+/* ================= Diagnose-Versand =================
+ * Der Renderer stellt die Diagnose zusammen (weisse Liste, siehe diagnose.js), hier
+ * liegt nur der Transport: ein GitHub-Issue im konfigurierten Repo.
+ *
+ * Das Sende-Token kommt aus einer optionalen telemetrie.json NEBEN den App-Dateien:
+ *   { "repo": "Wilhelm-mbg/Stock-Dashboard", "token": "github_pat_..." }
+ * Wilhelm legt sie vor dem Bauen in den Quellordner; sie wird mit verpackt. WICHTIG
+ * beim Erzeugen des Tokens: feingranular, NUR dieses Repo, NUR Issues (Schreiben).
+ * Ein Token im Client ist grundsaetzlich auslesbar - mit diesem Zuschnitt ist der
+ * moegliche Schaden auf Issue-Spam im eigenen Repo begrenzt, und das Token laesst
+ * sich jederzeit widerrufen. Ohne die Datei faellt die App auf den Browser-Weg
+ * zurueck (vorausgefuelltes Issue, Nutzer schickt selbst ab).
+ */
+let TELEMETRIE = null;
+try {
+  const tp = path.join(__dirname, 'telemetrie.json');
+  if (fs.existsSync(tp)) {
+    const t = JSON.parse(fs.readFileSync(tp, 'utf8'));
+    // repo muss "besitzer/name" sein – geprüft ohne Regex, die hat sich beim
+    // Patchen schon einmal still zerlegt
+    const teile = String(t && t.repo || '').split('/');
+    const repoOk = teile.length === 2 && teile.every((x) => x.length > 0 && /^[\w.-]+$/.test(x));
+    if (t && repoOk && typeof t.token === 'string' && t.token.length > 20) TELEMETRIE = t;
+  }
+} catch (e) { /* keine Telemetrie-Konfiguration */ }
+
+ipcMain.handle('diagnose-config', async () => ({
+  auto: !!TELEMETRIE,
+  repo: TELEMETRIE ? TELEMETRIE.repo : 'Wilhelm-mbg/Stock-Dashboard'
+}));
+
+ipcMain.handle('diagnose-send', async (_ev, titel, body) => {
+  if (!TELEMETRIE) return { ok: false, msg: 'Kein Sende-Token in diesem Build.' };
+  const daten = JSON.stringify({
+    title: String(titel || 'Diagnose').slice(0, 200),
+    body: String(body || '').slice(0, 60000),
+    labels: ['diagnose']
+  });
+  return new Promise((resolve) => {
+    const req = https.request({
+      hostname: 'api.github.com',
+      path: '/repos/' + TELEMETRIE.repo + '/issues',
+      method: 'POST',
+      headers: {
+        'User-Agent': 'Markt-Dashboard-Diagnose',
+        'Accept': 'application/vnd.github+json',
+        'Authorization': 'Bearer ' + TELEMETRIE.token,
+        'Content-Type': 'application/json',
+        'Content-Length': Buffer.byteLength(daten)
+      },
+      timeout: 20000
+    }, (res) => {
+      let d = '';
+      res.setEncoding('utf8');
+      res.on('data', (c) => { d += c; if (d.length > 1e6) req.destroy(); });
+      res.on('end', () => {
+        if (res.statusCode === 201) {
+          try { resolve({ ok: true, url: JSON.parse(d).html_url }); } catch (e) { resolve({ ok: true }); }
+        } else resolve({ ok: false, msg: 'HTTP ' + res.statusCode });
+      });
+    });
+    req.on('timeout', () => { req.destroy(); resolve({ ok: false, msg: 'Timeout' }); });
+    req.on('error', (e) => resolve({ ok: false, msg: String(e.message || e) }));
+    req.write(daten);
+    req.end();
+  });
+});
+
 // Auto-Tuning: von Claude geschriebene Empfehlung aus dem Daten-Ordner lesen
 ipcMain.handle('read-recommendation', async () => {
   try {

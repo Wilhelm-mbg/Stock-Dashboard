@@ -1,7 +1,7 @@
 {
   "name": "markt-dashboard",
   "productName": "Markt-Dashboard",
-  "version": "8.17.0",
+  "version": "8.21.0",
   "description": "Aktien-Dashboard: Big Tech, Chip-Sektor, Marktüberblick & News – aktualisiert sich selbst",
   "main": "main.js",
   "author": "Wilhelm",
@@ -19,21 +19,12 @@
     "appId": "de.wilhelm.marktdashboard",
     "productName": "Markt-Dashboard",
     "files": [
-      "main.js",
-      "preload.js",
-      "bt-worker.js",
+      "*.js",
+      "!test-*.js",
       "index.html",
-      "renderer.js",
-      "app-shell.js",
-      "ollama.js",
-      "calendar.js",
-      "archiv.js",
-      "capital.js",
-      "explorer.js",
-      "depot.js",
-      "quant.js",
       "icon.png",
-      "icon.ico"
+      "icon.ico",
+      "telemetrie.json"
     ],
     "win": {
       "icon": "icon.ico",

@@ -527,6 +527,34 @@
         if (kEl) kEl.textContent = kListe.length
           ? kListe.map(function (k5) { return k5.name + ': ' + (k5.trend === 'auf' ? 'aufwärts' : k5.trend === 'ab' ? 'abwärts' : 'seitwärts') + ' (Güte ' + k5.guete + ')'; }).join(' · ')
           : 'Zu wenige Kerzen im Fenster für einen Kanal.';
+
+        /* Wie spät ist der Kanal? Ein Regressionskanal beschreibt, was war – er kann der
+           Bewegung nur nachlaufen. Wie weit, stand bisher nirgends, und man sieht es dem
+           Bild nicht an: Am AMD-Chart vom 20.08.2026 meldete er am Tageshoch „aufwärts"
+           und am Tagestief „abwärts". Diese Zeile rechnet es aus, statt es dem Auge zu
+           überlassen – gerade weil sie oft unbequem ausfällt. */
+        var vzEl = document.getElementById('expKanalVerzug');
+        if (vzEl && Q.kanalVerzug) {
+          var fen = Math.min(200, Math.max(40, Math.floor(sichtB.length / 3)));
+          var vz = sichtB.length >= fen + 12 ? Q.kanalVerzug(sichtB, { fenster: fen, maxRueck: 150 }) : null;
+          if (!vz) {
+            vzEl.textContent = '';
+          } else if (vz.ohneRichtung) {
+            vzEl.innerHTML = '<b>Kanal-Verzug:</b> Der Kanal steht seitwärts – ohne Richtung gibt es keinen Verzug zu messen.';
+          } else {
+            var richt = vz.trend === 'auf' ? 'aufwärts' : 'abwärts';
+            var wort = vz.trend === 'auf' ? 'Tief' : 'Hoch';
+            var txt = '<b>Kanal-Verzug:</b> „' + richt + '" wird seit ' + vz.gemeldetVor + ' Kerzen gemeldet, ' +
+              'zuerst bei ' + U.nf2.format(vz.gemeldetBei) + '. Das ' + wort + ', an dem die Bewegung begann, ' +
+              'lag ' + vz.verzugKerzen + ' Kerzen davor bei ' + U.nf2.format(vz.wendeBei) + '.';
+            if (vz.anteilVerpasst != null) {
+              txt += ' <b style="color:' + (vz.anteilVerpasst >= 50 ? 'var(--down)' : 'var(--warn)') + ';">' +
+                vz.anteilVerpasst + ' % der Bewegung waren beim Melden schon vorbei.</b>';
+            }
+            if (vz.gekappt) txt += ' <span style="opacity:.7;">(Richtung hält länger als das Suchfenster – der Verzug ist mindestens so groß.)</span>';
+            vzEl.innerHTML = txt;
+          }
+        }
       }
       if (false) {
         // Regressionskanal ueber das sichtbare Fenster: Gerade durch die Kurse,

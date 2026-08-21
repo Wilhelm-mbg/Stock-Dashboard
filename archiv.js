@@ -53,12 +53,28 @@
     return Object.keys(set).length;
   }
 
-  /** Bars fürs Speichern verschlanken: Preise auf 4 Nachkommastellen, Volumen ganzzahlig.
-   *  Bei ~35.000 1-Minuten-Bars je Symbol spart das spürbar Platz auf der Platte. */
+  /** Bars fürs Speichern verschlanken: Preise auf 7 SIGNIFIKANTE Stellen, Volumen
+   *  ganzzahlig. Bei ~35.000 1-Minuten-Bars je Symbol spart das spürbar Platz.
+   *
+   *  Früher waren es 4 NACHKOMMAstellen. Das ist bei Aktien unauffällig (AAPL 231,4567),
+   *  bei billigen Werten aber grob: DOGE steht bei 0,0797, vier Nachkommastellen sind
+   *  dort nur drei signifikante Stellen und kosten 0,025 % Genauigkeit – bei einer
+   *  typischen Kerzenbewegung von 0,47 % und Kostenhürden ab 0,02 % ist das dieselbe
+   *  Größenordnung wie der gesuchte Vorsprung. Die Messbasis hätte das Signal
+   *  verschluckt, das sie belegen soll.
+   *
+   *  Signifikante Stellen skalieren mit dem Kursniveau und lösen das für jeden Wert:
+   *  72843,36 wird zu 72843,36, 0,0796800 bleibt 0,0796800. Der Fehler bleibt überall
+   *  unter einem Millionstel. */
+  function signifikant(v, stellen) {
+    if (v == null || !isFinite(v) || v === 0) return v == null ? v : 0;
+    var m = Math.pow(10, stellen - 1 - Math.floor(Math.log(Math.abs(v)) / Math.LN10));
+    return Math.round(v * m) / m;
+  }
   function schlank(bars) {
     return (bars || []).map(function (b) {
-      var o = [b[0], Math.round(b[1] * 10000) / 10000, Math.round(b[2] || 0)];
-      if (b.length >= 5) { o.push(Math.round(b[3] * 10000) / 10000, Math.round(b[4] * 10000) / 10000); }
+      var o = [b[0], signifikant(b[1], 7), Math.round(b[2] || 0)];
+      if (b.length >= 5) { o.push(signifikant(b[3], 7), signifikant(b[4], 7)); }
       return o;
     });
   }

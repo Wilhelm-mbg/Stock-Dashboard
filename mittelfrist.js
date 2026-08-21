@@ -60,15 +60,28 @@
       roh = gespeichert.roh;
       stat('Gespeicherte Daten von ' + new Date(gespeichert.at).toLocaleString('de-DE') + ' verwendet.');
     } else {
+      var weg = [];
       for (var i = 0; i < UNIVERSUM.length; i++) {
         var r = await holeTage(UNIVERSUM[i]);
-        if (r) roh[UNIVERSUM[i]] = r;
+        if (r) roh[UNIVERSUM[i]] = r; else weg.push(UNIVERSUM[i]);
         fertig++;
         if (fertig % 10 === 0) stat('Lade Tageskurse … ' + fertig + '/' + UNIVERSUM.length);
         await new Promise(function (w) { setTimeout(w, 90); });   // Quelle nicht überrennen
       }
-      await window.api.storeSet('mf_tagesdaten', { at: Date.now(), roh: roh });
-      stat(Object.keys(roh).length + ' Werte geladen.');
+      await window.api.storeSet('mf_tagesdaten', { at: Date.now(), roh: roh, weg: weg });
+      /* Ausgefallene Werte SICHTBAR machen, nicht still übergehen.
+       *
+       * Am 21.08.2026 lieferte Yahoo für BK, MMC, HES und FI nichts mehr – HES etwa ist
+       * nach der Übernahme durch Chevron von der Börse. Bisher fielen solche Werte
+       * wortlos aus der Liste, und das Universum bestand still aus lauter Überlebenden.
+       * Genau diese Verzerrung frisst hier seit Monaten Messergebnisse: In der schwachen
+       * Hälfte der Werte bleibt vom Ergebnis-Drift kaum etwas übrig, in der starken das
+       * meiste. Wer nicht sieht, dass Werte verschwinden, hält sein Universum für
+       * vollständig. */
+      stat(Object.keys(roh).length + ' von ' + UNIVERSUM.length + ' Werten geladen.' +
+        (weg.length ? '  Nicht mehr abrufbar: ' + weg.join(', ') +
+          ' – vermutlich übernommen oder umbenannt. Das Universum besteht damit aus Überlebenden, ' +
+          'was gemessene Vorsprünge nach oben verzerrt.' : ''));
     }
     var syms = Object.keys(roh);
     if (syms.length < 30) return null;
@@ -182,4 +195,7 @@
     });
   });
   if (typeof window !== 'undefined') window.__mfRechnen = rechnen;
+  // Nach aussen: das Mittelfrist-Depot (mfdepot.js) stoesst hierueber den taeglichen
+  // Kursabruf an, statt den Lader zu duplizieren - zwei Lader hiessen zwei Wahrheiten.
+  window.MF = { ladeUniversum: ladeUniversum };
 })();

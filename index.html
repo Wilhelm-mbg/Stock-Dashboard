@@ -378,6 +378,7 @@
   <button data-tab="depot">Optionsscheine</button>
   <button data-tab="explorer">Aktien-Explorer</button>
   <button data-tab="mittel">Mittelfristig</button>
+  <button data-tab="scheine">Schein-Finder</button>
   <button data-tab="strategien">Strategien</button>
 </nav>
 
@@ -506,8 +507,8 @@
                 </div>
               </div>
               <label title="Was den Trade auslöst">Auslöser<select id="idTrigger"></select></label>
-              <label id="lblExit" title="Wie lange der Trade laufen darf">Ausstieg<select id="idExit"><option value="laufen" selected>laufen lassen</option><option value="kurz">kurz (Rückkehr zur Linie)</option><option value="blitz">blitz (max. 3 Min)</option></select></label>
-              <select id="idMode" style="display:none;"><option value="breakout">breakout</option><option value="waves">waves</option><option value="reversion">reversion</option><option value="wave">wave</option><option value="orb">orb</option><option value="pullback">pullback</option><option value="rsi2">rsi2</option><option value="donchian">donchian</option><option value="squeeze">squeeze</option></select>
+              <label id="lblExit" title="Wie lange der Trade laufen darf">Ausstieg<select id="idExit"><option value="laufen" selected>laufen lassen</option><option value="kurz">kurz (Rückkehr zur Linie)</option><option value="blitz">blitz (max. 3 Min)</option><option value="trend">halten, bis der Kanal dreht</option></select></label>
+              <select id="idMode" style="display:none;"><option value="breakout">breakout</option><option value="waves">waves</option><option value="reversion">reversion</option><option value="wave">wave</option><option value="orb">orb</option><option value="pullback">pullback</option><option value="rsi2">rsi2</option><option value="donchian">donchian</option><option value="squeeze">squeeze</option><option value="kanaltrend">kanaltrend</option><option value="rsi2seit">rsi2seit</option><option value="kapitulation">kapitulation</option></select>
               <label>Zeitrahmen<select id="idInterval"><option value="1m">1 Min</option><option value="5m" selected>5 Min</option><option value="15m">15 Min</option><option value="60m">60 Min</option></select></label>
               <label>EMA-Periode<select id="idPeriod"><option value="9">9</option><option value="20" selected>20</option><option value="50">50</option></select></label>
               <label title="Mindestabstand jenseits der Leitlinie; wirkt im Umkehr-Setup als z-Score-Schwelle (1,5 / 2,0 / 2,5)">Bestätigung<select id="idConfirm"><option value="5">0,05 %</option><option value="15" selected>0,15 %</option><option value="30">0,30 %</option></select></label>
@@ -520,6 +521,9 @@
               <label title="Fix: immer gleicher Kapitaleinsatz. Risiko: Einsatz so bemessen, dass ein ausgelöster Stop immer ~X % vom Depot kostet">Positionsgröße<select id="idSizing"><option value="fix" selected>fix 3 %</option><option value="0.25">Risiko 0,25 %</option><option value="0.5">Risiko 0,5 %</option><option value="1">Risiko 1 %</option></select></label>
               <label title="automatisch = passt sich an Schwankungsbreite und Hebel an">Not-Stop-Loss<select id="idScalpSL"><option value="15">−15 %</option><option value="20" selected>−20 %</option><option value="30">−30 %</option><option value="auto">auto</option></select></label>
               <label title="Das Bezugsverhältnis (BV) ist ein Kostenhebel: Emittenten stellen den Spread als festen Cent-Betrag. Ein BV-1,0-Schein kostet das Zehnfache je Stück, zahlt aber nur den doppelten Cent — also ein Fünftel des relativen Spreads bei gleichem Hebel. Gemessen an echten Kursen.">Hebel-Profil<select id="idProfile"><option value="atm21" selected>Moderat (BV 0,1)</option><option value="otm3_14">Spekulativ (BV 0,1)</option><option value="otm5_10">Heiß (BV 0,1)</option><option value="atm21_b">Moderat · BV 1,0 — günstiger</option><option value="atm60_b">Ruhig 60 T · BV 1,0 — am günstigsten</option><option value="otm3_30b">Spekulativ 30 T · BV 1,0</option></select></label>
+              <label title="Hebelschein: gehebelt, mit Zeitwertverfall und Emittenten-Spanne. Aktie 1×: ungehebelt, linear, 5 Bp Spanne je Seite, Bruchstücke erlaubt – nötig für Strategien, deren Vorsprung unter der Scheinhürde liegt (RSI2 im Seitwärtskanal).">Instrument<select id="idInstrument"><option value="schein" selected>Hebelschein</option><option value="basis">Aktie 1× (Basiswert)</option></select></label>
+              <label title="Begrenzt depotweit, welche Scheine gekauft werden dürfen – egal ob von Hand, vom Autopiloten oder von einer Empfehlung. Die Stufen (1 defensiv … 5 Lotterielos) kommen aus dem Schein-Finder und sind dort je Schein begründet. Stufe 5 = keine Grenze.">max. Risikostufe<select id="idMaxStufe"><option value="1">1 – defensiv</option><option value="2">2</option><option value="3">3 – moderat</option><option value="4">4</option><option value="5" selected>5 – keine Grenze</option></select></label>
+              <label title="BTC, ETH, SOL, XRP, BNB, ADA, DOGE, LTC rund um die Uhr handeln – immer als Basiswert (1×) mit Taker-Gebühr 10 Bp je Seite, nie als Schein. ACHTUNG: Es gibt bis heute kein belegtes Krypto-Signal – alle gemessenen Modi waren negativ. Handelbar heißt können, nicht sollen.">Krypto handeln<span class="switch"><input type="checkbox" id="idKryptoHandeln"><span class="knob"></span></span></label>
               <label title="Capital.com und viele CFD-Broker berechnen keine Kommission — dort steckt alles im Spread. Bei einem Broker mit Ordergebühr den echten Betrag wählen.">Ordergebühr<select id="idFee"><option value="0" selected>0 (keine Kommission)</option><option value="1.5">1,50 $</option><option value="5">5 $</option></select></label>
             </div>
           </div>
@@ -534,7 +538,10 @@
               <label data-modes="wave" title="Nur im Umkehr-Setup mit Auslöser Wellental. Chart-technische Erkennung: Linien an echten Hochs und Tiefs, Fenster automatisch gewählt, Ausbruch wird erkannt. Ohne gültigen Kanal gibt es keinen Trade.">Trendkanal<span class="switch"><input type="checkbox" id="idChannel" checked><span class="knob"></span></span></label>
               <label title="Einmal täglich ~30 zusätzliche Kandidaten nach Wellen-Qualität und Liquidität ranken – die Top-5 werden mitgescannt">Wellen-Screener<span class="switch"><input type="checkbox" id="idScreener"><span class="knob"></span></span></label>
               <label title="Claude wertet stündlich die Analyse-Daten aus und schreibt geprüfte Parameter-Empfehlungen in den Daten-Ordner – die App übernimmt sie automatisch (nur sichere Felder, jede Änderung wird hier angezeigt)">Auto-Tuning<span class="switch"><input type="checkbox" id="idAutoTune" checked><span class="knob"></span></span></label>
+              <label title="Sammelt im Hintergrund Kryptokurse (BTC, ETH, SOL, XRP, BNB, ADA, DOGE, LTC) ins Kursarchiv. Diese Werte werden NICHT gehandelt – sie liefern nur Messdaten. Krypto hat 24 Kerzen am Tag statt 6,5 und keine Nachtlücken, die Messbasis wächst dadurch rund viermal so schnell wie mit Aktien allein.">Krypto-Messdaten sammeln<span class="switch"><input type="checkbox" id="idKrypto" checked><span class="knob"></span></span></label>
+              <label title="Zeichnet jedes Intraday-Signal auf und lässt es virtuell zu Ende laufen – auch wenn der Handel oben ausgeschaltet ist. So entsteht ein Vorwärtstest ohne Kapitaleinsatz. Ausschalten heißt: keine Beweisaufnahme mehr.">Signale immer aufzeichnen<span class="switch"><input type="checkbox" id="idSchattenImmer" checked><span class="knob"></span></span></label>
             </div>
+            <div id="kryptoStand" class="hinweis" style="margin-top:6px;"></div>
           </div>
           <div id="feeWarn" style="color:var(--down); font-size:11.5px; margin-top:6px;"></div>
           <div id="handSperre" style="font-size:11.5px; margin-top:6px;"></div>
@@ -814,6 +821,10 @@
         <label class="sigbox" title="Handelsvolumen je Kerze. Ein Ausbruch mit hohem Volumen ist glaubwürdiger als einer bei dünnem Handel."><input type="checkbox" data-ind="volumen"> Volumen</label>
         <span id="expKanalInfo" class="hinweis"></span>
       </div>
+      <!-- Kanal-Verzug: Ein Regressionskanal beschreibt, was war, und läuft der Bewegung
+           deshalb immer nach. Wie weit, gehört als Zahl unter den Chart – sonst hält man
+           eine Beschreibung der Vergangenheit für eine Vorhersage. -->
+      <div id="expKanalVerzug" class="hinweis" style="margin:2px 0 8px; line-height:1.5;"></div>
       <svg id="bigchart"></svg>
       <div id="expSigDetail" class="panel" style="display:none; margin-top:10px; padding:10px 12px;"></div>
       <div id="expSigListe" style="margin-top:10px;"></div>
@@ -899,7 +910,135 @@
       <p style="margin:0;"><b>Alles hier ist Simulation.</b> Es wird nichts gekauft und nichts verkauft.</p>
     </div>
   </div>
+
+  <div class="panel">
+    <h3>Mittelfrist-Depot · die belegten Strategien handeln</h3>
+    <div style="font-size:12.5px; color:var(--ink-2); line-height:1.55; margin-bottom:8px;">
+      Zwei getrennte virtuelle Bücher à 10.000 $, die die belegten Strategien <b>tatsächlich führen</b> –
+      bis hierher waren Momentum und Ergebnis-Drift Rechenblätter ohne Depot. Die Schalter im Tab
+      „Strategien“ entscheiden: <b>an</b> heißt selbsttätig handeln, <b>aus</b> heißt nur rechnen und
+      erinnern („Rebalancing fällig“ mit Handlungsliste). Alles Simulation, keine Anlageberatung.
+    </div>
+    <div class="chartleiste">
+      <button id="mfdTaktBtn" class="btn ghost">Jetzt prüfen</button>
+      <button id="mfdRebalanceBtn" class="btn" title="Momentum-Rebalancing sofort ausführen, unabhängig vom 63-Tage-Rhythmus">Momentum jetzt umschichten</button>
+      <button id="mfdDriftBtn" class="btn" title="Drift-Buch sofort abgleichen: Fällige schließen, neue Signale eröffnen">Drift jetzt abgleichen</button>
+    </div>
+    <div id="mfdStatus" class="hinweis" style="margin-top:6px;"></div>
+    <h3 style="margin-top:12px; font-size:13.5px;">Momentum-Buch <span style="font-weight:400; color:var(--muted);">· stärkstes Zehntel, alle 63 Handelstage, 20 Bp je Seite</span></h3>
+    <div id="mfdMomentum" style="margin-top:6px;"></div>
+    <h3 style="margin-top:14px; font-size:13.5px;">Ergebnis-Drift-Buch <span style="font-weight:400; color:var(--muted);">· 60 Handelstage je Position, long und short, 10 Bp je Seite</span></h3>
+    <div id="mfdDrift" style="margin-top:6px;"></div>
+  </div>
+
+  <div class="panel">
+    <h3>Ergebnis-Drift · Aktien, keine Hebelscheine</h3>
+    <div style="font-size:12.5px; color:var(--ink-2); line-height:1.55;">
+      Nach einer Quartalsmeldung läuft der Kurs noch Wochen in Richtung der Überraschung weiter.
+      Gekauft wird das <b>oberste Fünftel</b> der Überraschungen, verkauft das <b>unterste</b> – gleich viele,
+      aus demselben Topf. Anders als das Momentum darüber ist das <b>kein Chartsignal</b>: Die Information
+      kommt aus den Zahlen, nicht aus dem Kursverlauf. Deshalb bleibt neben dem Momentum messbar etwas übrig
+      (Korrelation der Monatserträge nur 0,41, Alpha +6,90 % p. a. bei t = 2,20).
+      <br><br>
+      <b>Nicht mit Hebelscheinen handelbar.</b> Am 21.08.2026 durchgerechnet: Der Basiswert müsste 5,5 bis 11 %
+      laufen, damit ein Schein nach Zeitwertverfall und Spanne bei null herauskommt – der Drift liefert rund
+      1,3 % je Position. Faktor 4 bis 8 zu wenig. Gerechnet wird deshalb im Basiswert.
+    </div>
+    <div class="chartleiste" style="margin-top:10px;">
+      <label title="Wie lange eine Position gehalten wird. Auf 20 Tagen ist der Effekt seit 2015 tot (t = 0,77) – erst ab rund 60 Tagen trägt er.">Halten
+        <select id="drHalten">
+          <option value="20">20 Tage</option>
+          <option value="40">40 Tage</option>
+          <option value="60" selected>60 Tage (geprüft)</option>
+          <option value="90">90 Tage</option>
+        </select>
+      </label>
+      <label title="Wie groß die beiden Beine sind. 0,2 heißt: oberstes und unterstes Fünftel.">Anteil je Bein
+        <select id="drAnteil">
+          <option value="0.1">10 %</option>
+          <option value="0.2" selected>20 % (geprüft)</option>
+          <option value="0.33">33 %</option>
+        </select>
+      </label>
+      <label title="Gegen wie viele Handelstage zurück eine Überraschung eingeordnet wird. Nur bereits veröffentlichte Zahlen zählen – kein Blick in die Zukunft.">Vergleichsfenster
+        <select id="drFenster">
+          <option value="60">60 Tage</option>
+          <option value="120" selected>120 Tage (geprüft)</option>
+          <option value="250">250 Tage</option>
+        </select>
+      </label>
+      <label title="Handelskosten je Seite. Bei 10 Basispunkten sinkt das Ergebnis um rund 1,8 Prozentpunkte im Jahr.">Kosten
+        <select id="drKosten">
+          <option value="0">keine</option>
+          <option value="10" selected>10 Basispunkte</option>
+          <option value="20">20 Basispunkte</option>
+          <option value="40">40 Basispunkte</option>
+        </select>
+      </label>
+      <button id="drLadeBtn" class="btn" title="Holt die Termine für Werte, die noch keine haben, plus einen rollierenden Teil für frische Meldungen. Schonend für die Quelle.">Termine nachladen</button>
+      <button id="drLadeAlleBtn" class="btn" title="Holt die Termine für ALLE Werte. Dauert einige Minuten und kann von Yahoo gedrosselt werden.">Alle Termine laden</button>
+      <button id="drRechneBtn" class="btn">Neu rechnen</button>
+    </div>
+    <div id="drStatus" class="hinweis" style="margin-top:8px;"></div>
+    <div id="drErgebnis" style="margin-top:10px;"></div>
+
+    <h3 style="margin-top:16px;">Was wäre heute offen?</h3>
+    <div id="drHeute" style="margin-top:6px;"></div>
+
+    <div style="margin-top:14px; font-size:12px; color:var(--ink-2); line-height:1.55; border-top:1px solid var(--grid); padding-top:10px;">
+      <p style="margin:0 0 6px;"><b>Was gemessen ist.</b> 20.356 Ergebnistermine aus 197 Werten, 1993–2026.
+      Marktneutral, 60 Handelstage, Rang nur gegen bereits veröffentlichte Zahlen:
+      ab 2015 <b>+10,44 % p. a. bei t = 3,04</b> und 67 % positiven Monaten, positiv in allen sieben Teilzeiträumen.
+      Zufällige Zuordnung ergibt −1,74 % (t = −0,88) – der Aufbau selbst erzeugt nichts.</p>
+      <p style="margin:0 0 6px;"><b>Was offen bleibt.</b> Die Überlebensverzerrung ist nur teilweise ausgeräumt:
+      In der über zehn Jahre schwachen Hälfte der Werte bleiben nur +1,72 % (t = 0,58), in der starken +8,61 %.
+      Ein guter Teil sitzt weiter in den Gewinnern von heute. Und es braucht <b>beide Beine</b> –
+      long allein ist überwiegend Marktbeta.</p>
+      <p style="margin:0;"><b>Alles hier ist Simulation.</b> Es wird nichts gekauft und nichts verkauft.</p>
+    </div>
+  </div>
 </div><!-- /tab-mittel -->
+
+<div id="tab-scheine" class="tab">
+  <div class="panel">
+    <h3>Schein-Finder · Kennzahlen und Risikostufe</h3>
+    <div style="font-size:12.5px; color:var(--ink-2); line-height:1.55; margin-bottom:10px;">
+      Rechnet das volle Raster möglicher Scheine zu einem Basiswert durch – mit <b>demselben Modell, mit dem
+      das Depot handelt</b> (Black-Scholes plus das an echten Emittentenkursen geeichte Spanne-Modell).
+      Keine echten WKNs: Emittenten-Listen gibt es nur über Bezahl-APIs, und die sind bewusst draußen.
+      Dafür verhält sich jeder Schein hier exakt so wie in der Simulation.
+      Die <b>Risikostufe</b> (1 defensiv … 5 Lotterielos) begrenzt auf Wunsch auch den Handel – Einstellung
+      „maximale Risikostufe“ im Depot unter Risiko &amp; Kosten.
+    </div>
+    <div class="chartleiste">
+      <label>Basiswert<select id="sfSymbol"></select></label>
+      <label title="Leer lassen für die Schätzung aus der historischen Volatilität (× 1,1)">Vola %<input id="sfIv" type="number" min="5" max="150" style="width:70px;"></label>
+      <button id="sfLadenBtn" class="btn">Laden &amp; rechnen</button>
+    </div>
+    <div id="sfStatus" class="hinweis" style="margin-top:6px;"></div>
+    <div class="chartleiste" style="margin-top:8px;">
+      <label>Typ<select id="sfTyp"><option value="alle">alle</option><option value="call">Call</option><option value="put">Put</option></select></label>
+      <label title="Nur Scheine bis zu dieser Risikostufe anzeigen">max. Stufe<select id="sfStufe"><option>1</option><option>2</option><option selected>3</option><option>4</option><option>5</option></select></label>
+      <label>Hebel von<input id="sfHebelMin" type="number" value="3" style="width:60px;"></label>
+      <label>bis<input id="sfHebelMax" type="number" value="20" style="width:60px;"></label>
+      <label>Laufzeit von<input id="sfLzMin" type="number" value="14" style="width:60px;"> Tagen</label>
+      <label>bis<input id="sfLzMax" type="number" value="180" style="width:60px;"></label>
+      <label title="Geld-Brief-Spanne je Seite">max. Spanne %<input id="sfSpreadMax" type="number" value="1" step="0.1" style="width:60px;"></label>
+      <label title="Modell-Wahrscheinlichkeit eines wertlosen Verfalls">max. Totalverlust %<input id="sfTvMax" type="number" value="50" style="width:60px;"></label>
+      <label>Sortierung<select id="sfSort">
+        <option value="stufe" selected>Risikostufe (defensiv zuerst)</option>
+        <option value="huerde">kleinste Kostenhürde</option>
+        <option value="spread">kleinste Spanne</option>
+        <option value="theta">wenigster Zeitwertverlust</option>
+        <option value="tv">kleinste Totalverlust-Gefahr</option>
+        <option value="omega">größter Hebel</option>
+        <option value="omegaAuf">kleinster Hebel</option>
+      </select></label>
+    </div>
+    <div id="sfDetail" class="panel" style="display:none; margin-top:10px; padding:10px 12px; font-size:12.5px; line-height:1.6;"></div>
+    <div id="sfTabelle" style="margin-top:10px;"></div>
+  </div>
+</div><!-- /tab-scheine -->
 
 <div id="tab-strategien" class="tab">
   <div class="panel">
@@ -998,6 +1137,58 @@
     </div>
 
     <div style="margin:14px 0; border-top:1px solid var(--grid); padding-top:14px;">
+      <div style="font-weight:600; font-size:13px; margin-bottom:4px;">Diagnose &amp; Mithilfe</div>
+      <div style="font-size:11.5px; color:var(--muted); margin-bottom:8px;">
+        Anonyme Diagnosedaten an die Projekt-Auswertung senden (als öffentlich einsehbares GitHub-Issue).
+        Gesendet werden nur: Version, System, Zufalls-Kennung, welche Funktionen an sind, Summen-Kennzahlen
+        des virtuellen Depots und mitgeschnittene Programmfehler. Niemals: Zugangsdaten, Watchlist,
+        einzelne Positionen oder Symbole. Die Vorschau zeigt exakt, was gesendet würde.
+      </div>
+      <label style="display:flex; align-items:center; gap:8px; font-size:12.5px;"><input type="checkbox" id="diagEinwilligung"><span>Diagnosedaten anonym teilen</span></label>
+      <div style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap;">
+        <button class="btn ghost" id="diagVorschauBtn" type="button">Vorschau anzeigen</button>
+        <button class="btn" id="diagSendenBtn" type="button">Jetzt senden</button>
+      </div>
+      <div id="diagStatus" style="font-size:11.5px; color:var(--muted); margin-top:6px;"></div>
+      <pre id="diagVorschau" style="display:none; max-height:220px; overflow:auto; font-size:10.5px; background:var(--panel); border:1px solid var(--grid); border-radius:8px; padding:8px 10px; margin-top:8px;"></pre>
+    </div>
+
+    <!-- Fehler melden: bewusst hier bei den Einstellungen, wo man ohnehin landet, wenn
+         etwas nicht stimmt. Kosmetik zählt ausdrücklich mit – „der Text läuft aus dem
+         Kasten“ ist eine gültige Meldung. -->
+    <div style="margin:14px 0; border-top:1px solid var(--grid); padding-top:14px;">
+      <div style="font-weight:600; font-size:13px; margin-bottom:4px;">Fehler melden</div>
+      <div style="font-size:11.5px; color:var(--muted); margin-bottom:8px;">
+        Alles, was stört – auch Kleinigkeiten und Kosmetik. Was gerade offen ist, die Fenstergröße und
+        die Programmversion gehen automatisch mit; Zugangsdaten und Kursdaten nicht.
+      </div>
+      <textarea id="bugText" rows="3" placeholder="Was ist passiert? Was hätten Sie erwartet? (Strg+Enter schickt ab)"
+        style="width:100%; box-sizing:border-box; font-family:inherit; font-size:12.5px; padding:7px 9px; border-radius:6px; border:1px solid var(--grid); background:var(--panel); color:var(--ink); resize:vertical;"></textarea>
+      <div style="display:flex; gap:8px; align-items:center; margin-top:8px; flex-wrap:wrap;">
+        <label style="font-size:12px;">Art
+          <select id="bugArt">
+            <option value="funktion">funktioniert nicht</option>
+            <option value="kosmetik">Darstellung / Kosmetik</option>
+            <option value="zahlen">Zahlen wirken falsch</option>
+            <option value="sonstiges" selected>sonstiges</option>
+          </select>
+        </label>
+        <label style="font-size:12px;">Schwere
+          <select id="bugSchwere">
+            <option value="stoert-kaum">stört kaum</option>
+            <option value="aergerlich" selected>ärgerlich</option>
+            <option value="blockiert">blockiert die Arbeit</option>
+          </select>
+        </label>
+        <button class="btn" id="bugSendBtn" type="button">Melden</button>
+        <button class="btn ghost" id="bugAktualisierenBtn" type="button">Liste aktualisieren</button>
+      </div>
+      <div id="bugFehlerZahl" style="font-size:11.5px; color:var(--warn); margin-top:6px;"></div>
+      <div id="bugStatus" style="font-size:11.5px; color:var(--muted); margin-top:6px;"></div>
+      <div id="bugListe" style="margin-top:10px;"></div>
+    </div>
+
+    <div style="margin:14px 0; border-top:1px solid var(--grid); padding-top:14px;">
       <div style="font-weight:600; font-size:13px; margin-bottom:8px;">Automatische Updates</div>
       <label style="display:flex; align-items:flex-start; gap:8px; font-size:12.5px;"><input type="checkbox" id="setAutoUpdate" checked style="margin-top:3px;"><span>Neue Versionen <b>selbst herunterladen</b> und beim nächsten Beenden einspielen – die App prüft beim Start und danach alle 6 Stunden</span></label>
       <div style="display:flex; gap:8px; align-items:center; margin-top:8px; flex-wrap:wrap;">
@@ -1046,7 +1237,14 @@
 <script src="explorer.js"></script>
 <script src="momentum.js"></script>
 <script src="strategien.js"></script>
+<script src="drift.js"></script>
 <script src="mittelfrist.js"></script>
+<script src="driftui.js"></script>
+<script src="bugs.js"></script>
+<script src="diagnose.js"></script>
+<script src="scheinfinder.js"></script>
+<script src="mfhandel.js"></script>
+<script src="mfdepot.js"></script>
 <script src="depot.js"></script>
 </body>
 </html>

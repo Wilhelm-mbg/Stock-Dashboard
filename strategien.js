@@ -27,9 +27,12 @@
       stand: 'in Erprobung',
       farbe: 'warn',
       beleg: [
-        'Einzelsignale sind durchgemessen und tragen NICHT: Trefferquoten 46–56 %, bester Vorsprung +0,09 Pp gegen eine Kostenhürde von 0,077 %.',
-        'In KOMBINATION sieht es anders aus. Bestes Ergebnis: Umkehr im Abwärtskanal mit Volumenbestätigung, Put, Horizont 26 Stunden — Median +1,68 % relativ, 63 % Treffer, absolut +1,03 %, p < 0,000033 und damit auch unter der Bonferroni-Schranke bei 504 geprüften Kombinationen.',
-        'Offen: nur 126 Signale auf 14 Werten über drei Jahre. Der Live-Scanner benutzt noch die alten Einzelsignale, nicht die Kombination.'
+        'UNBEDINGT trägt kein Einzelsignal: Trefferquoten 46–56 %, bester Vorsprung +0,09 Pp. BEDINGT sieht es anders aus — die Bedingungsstudie vom 21.08.2026 (162 Werte, Stundenkerzen, jedes Signal gekreuzt mit Kanalzustand, EMA100, Volumen) fand: RSI(2)-Dip NUR im Seitwärtskanal mit Volumen = +0,147 Pp auf 8 h, t = 4,1 über die Symbole, beide Zeithälften positiv, 99 von 162 Werten im Plus.',
+        'Der Kanal gibt nicht die Richtung, sondern die ERLAUBNIS: Dasselbe Signal ist im Trend ein Münzwurf und im Seitwärtsband messbar. Genau das war die These hinter dem handgezeichneten AMD-Chart.',
+        'Das Instrument entscheidet: Der Vorsprung liegt ÜBER der Basiswert-Hürde (0,10 %) und UNTER der Scheinhürde (0,21 %). Im Backtest: Basiswert PF 1,23 (+0,23 % je Trade, volatiles Drittel), Schein −96 %. Und er zahlt über Nacht aus — streng intraday −0,08 % je Trade, mit einer Nacht Haltezeit +0,23 %.',
+        'Nur die Call-Seite trägt (+0,075 %); das Put-Bein kämpft gegen die Marktdrift (−0,099 %) — dieselbe Lektion wie beim Ergebnis-Drift.',
+        'Als Modus „RSI(2) im Seitwärtskanal“ (Umkehr-Auslöser) eingebaut: nur Long, Zeit-Ausstieg 8 Handelsstunden, darf eine Nacht überleben. Monatssignifikanz steht noch aus (36 Monate, t ≈ 0,5) — der Modus gehört in den Vorwärtstest, nicht auf großes Budget.',
+        'Auf diesen Daten OHNE tragfähige Zelle: Donchian, Squeeze, Pullback — in keiner Marktlage überzufällig.'
       ],
       schalter: 'intraday'
     },
@@ -49,6 +52,23 @@
       schalter: 'momentum'
     },
     {
+      key: 'drift',
+      name: 'Mittelfristig · Ergebnis-Drift',
+      horizont: '60 Handelstage je Position',
+      instrument: 'Aktien, kein Hebel',
+      was: 'Kauft nach einer Quartalsmeldung das oberste Fünftel der Überraschungen und verkauft das unterste – gleich viele, aus demselben Topf. Kein Chartsignal: Die Information kommt aus den Zahlen, nicht aus dem Kursverlauf.',
+      stand: 'belegt',
+      farbe: 'up',
+      beleg: [
+        '20.356 Ergebnistermine aus 197 Werten, 1993–2026. Marktneutral, Rang nur gegen bereits veröffentlichte Zahlen: ab 2015 +10,44 % p. a. bei t = 3,04, 67 % positive Monate, positiv in allen sieben Teilzeiträumen.',
+        'Neben dem Momentum bleibt messbar etwas übrig: Korrelation der Monatserträge nur 0,41, Alpha +6,90 % p. a. (t = 2,20). Die Mischung liefert denselben Ertrag bei 10,2 statt 13,1 % Schwankung.',
+        'Zufällige Zuordnung ergibt −1,74 % (t = −0,88) – der Aufbau selbst erzeugt nichts.',
+        'Unangenehm: In der über zehn Jahre schwachen Hälfte der Werte bleiben nur +1,72 % (t = 0,58) – ein guter Teil sitzt in den Gewinnern von heute. Auf 20 Tagen Haltedauer ist der Effekt seit 2015 tot.',
+        'NICHT mit Scheinen handelbar: Der Basiswert müsste 5,5–11 % laufen, damit ein Schein nach Zeitwertverfall und Spanne bei null herauskommt – der Drift liefert rund 1,3 % je Position.'
+      ],
+      schalter: 'drift'
+    },
+    {
       key: 'lang',
       name: 'Langfristig · Nachrichten und Ausblick',
       horizont: 'Monate bis Jahre',
@@ -66,6 +86,7 @@
     if (!D) return false;
     if (key === 'kurz') return !!(D.intraday && D.intraday.enabled);
     if (key === 'mittel') return !!D.momentumAn;
+    if (key === 'drift') return !!D.driftAn;
     return false;
   }
   function setzen(key, an) {
@@ -73,6 +94,7 @@
     if (!D) return;
     if (key === 'kurz') D.intraday.enabled = an;
     if (key === 'mittel') D.momentumAn = an;
+    if (key === 'drift') D.driftAn = an;
     if (!D.tuneLog) D.tuneLog = [];
     var s = STRATEGIEN.filter(function (x) { return x.key === key; })[0];
     D.tuneLog.unshift({

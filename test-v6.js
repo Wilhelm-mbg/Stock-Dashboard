@@ -252,7 +252,20 @@ var gek = A.kappeTage(lang, 90, Date.UTC(2026, 3, 1) + 119 * 86400000);
 ok(gek.length === 91 && A.abdeckungTage(gek) === 91, 'rollierend 90 Kalendertage gekappt', gek.length + ' Bars');
 ok(A.abdeckungTage([[T0, 1], [T0 + 3600000, 1], [T0 + 86400000, 1]]) === 2, 'Abdeckung zaehlt Handelstage, nicht Bars');
 var schl = A.schlank([[T0, 100.123456789, 10.7, 100.99999, 99.00001]]);
-ok(schl[0][1] === 100.1235 && schl[0][2] === 11 && schl[0][3] === 101 && schl[0][4] === 99, 'Speicherform gerundet (4 Nachkommastellen, Volumen ganzzahlig)');
+ok(schl[0][1] === 100.1235 && schl[0][2] === 11 && schl[0][3] === 101 && schl[0][4] === 99.00001,
+   'Speicherform gerundet (7 signifikante Stellen, Volumen ganzzahlig)');
+/* Der Grund fuer signifikante statt fester Nachkommastellen: Bei billigen Werten waren
+ * 4 Nachkommastellen nur drei signifikante Stellen. DOGE steht bei 0,0797 - der
+ * Rundungsverlust lag dort bei 0,025 %, bei einer typischen Kerzenbewegung von 0,47 %
+ * und Kostenhuerden ab 0,02 %. Die Messbasis haette den Vorsprung verschluckt, den sie
+ * belegen soll. Ein Pennystock bei 0,0031415 verlor sogar 1,3 %. */
+var billig = A.schlank([[T0, 0.0796800, 5, 0.0031415, 0.00012345678]]);
+ok(Math.abs(billig[0][1] / 0.0796800 - 1) < 1e-6, 'billige Werte behalten ihre Genauigkeit (DOGE)', billig[0][1]);
+ok(Math.abs(billig[0][3] / 0.0031415 - 1) < 1e-6, 'auch ein Pennystock bleibt genau', billig[0][3]);
+ok(Math.abs(billig[0][4] / 0.00012345678 - 1) < 1e-5, 'und ein sehr kleiner Kurs ebenso', billig[0][4]);
+ok(A.schlank([[T0, 72843.359375, 1, 72843.359375, 72843.359375]])[0][1] === 72843.36,
+   'teure Werte werden weiterhin verschlankt, nicht in voller Laenge gespeichert');
+ok(A.schlank([[T0, 0, 1]])[0][1] === 0, 'ein Kurs von null bleibt null (kein Logarithmus von 0)');
 var dv = A.dollarVolTag([[T0, 100, 1000], [T0 + 60000, 100, 1000], [T0 + 86400000, 200, 500]]);
 ok(dv === 150000, 'Dollar-Umsatz je Tag: (100*1000+100*1000+200*500)/2 Tage', dv);
 
@@ -373,7 +386,10 @@ console.log('\n17) Kapitalschutz: Kill-Switch, KI-Deckel, Stale-Daten, Regime-Pa
   ok(/g = Math\.min\(1\.0, g\)/.test(ollamaSrc), 'KI-Antwort: Faktor wird in ollama.js auf 1.0 gekappt');
   ok(/Math\.min\(1, Math\.max\(0, r\.groesse \|\| 1\)\)/.test(depotSrc), 'kiCheck: zweite Kappe bei 1.0');
   var sizingStellen = depotSrc.match(/equityNow\(\) \* [^;]*?(ki|kiRes)\.factor[^;]*?\)/g) || [];
-  ok(sizingStellen.length === 3, 'Positionsgroesse: alle drei Sizing-Stellen gefunden', sizingStellen.length);
+  // Drei Schein-Stellen plus zwei Basiswert-Stellen (Bruchstueck-Stueckelung, 21.08.2026).
+  // Die Zahl ist der Wachhund: aendert sie sich, ist eine Sizing-Stelle dazugekommen oder
+  // verschwunden - und die Deckel-Pruefung darunter muss sie mit erfassen.
+  ok(sizingStellen.length === 5, 'Positionsgroesse: alle fuenf Sizing-Stellen gefunden', sizingStellen.length);
   ok(sizingStellen.every(function (z) { return /Math\.min\(1, (ki|kiRes)\.factor \|\| 1\)/.test(z); }),
      'Positionsgroesse: KI-Faktor ist an JEDER Stelle auf 1.0 gedeckelt');
   // Die Kappe selbst nachrechnen
@@ -761,6 +777,708 @@ console.log('\n19) Momentum im Querschnitt');
   // --- Die Standardwerte sind die geprüften ---
   ok(M.STANDARD.rueckblick === 231 && M.STANDARD.luecke === 21 && M.STANDARD.halten === 63 && M.STANDARD.anteil === 0.10,
      'Standardparameter sind die auf 1970–2004 gewählten und auf 2005–2026 bestätigten');
+})();
+
+/* ================= Zufallsgegenprobe auf der Handelsrichtung =================
+ * Sie ist am 21.08.2026 dazugekommen, weil eine Trendfolge-Strategie auf Krypto mit
+ * +13,7 % p.a. nach einem Fund aussah - bis dieselbe Rechnung mit gewuerfelter Richtung
+ * und gleicher Haltedauer +19,4 % ergab. Der Zufall schlug das Signal. Die Probe ist
+ * damit die wichtigste Einzelzahl jeder Messung und muss selbst geprueft sein. */
+console.log('\nZufallsgegenprobe (Richtungs-Permutation)');
+(function () {
+  function trades(n, art, saat) {
+    var out = [], z = saat || 12345;
+    var r = function () { z ^= z << 13; z ^= z >>> 17; z ^= z << 5; return ((z >>> 0) % 100000) / 100000; };
+    for (var i = 0; i < n; i++) {
+      var bew = (r() - 0.5) * 4;                       // Kursbewegung rund -2 % bis +2 %
+      var dir;
+      if (art === 'perfekt') dir = bew > 0 ? 'call' : 'put';
+      else if (art === 'verkehrt') dir = bew > 0 ? 'put' : 'call';
+      else dir = r() < 0.5 ? 'call' : 'put';
+      out.push({ dir: dir, entrySpot: 100, exitSpot: 100 * (1 + bew / 100) });
+    }
+    return out;
+  }
+  var gP = Q.gegenprobeRichtung(trades(600, 'perfekt'), 2000);
+  var gZ = Q.gegenprobeRichtung(trades(600, 'zufall'), 2000);
+  var gV = Q.gegenprobeRichtung(trades(600, 'verkehrt'), 2000);
+
+  ok(gP.ueberzufaellig && gP.pWert <= 0.01, 'ein Signal, das die Richtung immer trifft, gilt als belegt', 'p = ' + gP.pWert);
+  ok(!gZ.ueberzufaellig, 'reines Raten gilt NICHT als belegt', 'p = ' + gZ.pWert);
+  ok(gZ.pWert > 0.1 && gZ.pWert < 0.9, 'beim Raten liegt p in der Mitte, nicht am Rand', 'p = ' + gZ.pWert);
+  ok(!gV.ueberzufaellig && gV.pWert > 0.9, 'ein systematisch verkehrtes Signal gilt nicht als belegt', 'p = ' + gV.pWert);
+  ok(Math.abs(gZ.zufallMittel) < 0.05, 'die Zufallsverteilung ist um null zentriert', gZ.zufallMittel);
+  ok(gP.quote === 100 && gV.quote === 0, 'Trefferquote wird richtig gezählt', gP.quote + ' % / ' + gV.quote + ' %');
+
+  // Wiederholbarkeit: die Zucht und die Analyse-Zentrale vergleichen Messungen
+  // miteinander. Ein schwankendes Urteil auf denselben Daten waere dort Gift.
+  var a = JSON.stringify(Q.gegenprobeRichtung(trades(300, 'zufall', 777), 500));
+  var b = JSON.stringify(Q.gegenprobeRichtung(trades(300, 'zufall', 777), 500));
+  ok(a === b, 'zwei Läufe auf denselben Trades geben dasselbe Urteil');
+
+  // Ohne Kursdaten darf sie nicht raten, sondern muss sich verweigern
+  ok(Q.gegenprobeRichtung(trades(8, 'perfekt'), 500).zuWenig === true, 'bei zu wenigen Trades wird kein Urteil gefällt');
+  ok(Q.gegenprobeRichtung([{ dir: 'call' }, { dir: 'put' }], 500).zuWenig === true, 'Trades ohne Kursdaten zählen nicht mit');
+
+  // Der Fall, der die Probe ausgeloest hat: ein Signal, das ueberwiegend long steht,
+  // waehrend der Markt ohnehin steigt. Es verdient Geld, trifft aber keine Richtung.
+  var steigend = [], z2 = 999;
+  var r2 = function () { z2 ^= z2 << 13; z2 ^= z2 >>> 17; z2 ^= z2 << 5; return ((z2 >>> 0) % 100000) / 100000; };
+  for (var i2 = 0; i2 < 500; i2++) {
+    var bew2 = (r2() - 0.42) * 4;                       // Markt mit Aufwaertsdrift
+    steigend.push({ dir: r2() < 0.64 ? 'call' : 'put', entrySpot: 100, exitSpot: 100 * (1 + bew2 / 100) });
+  }
+  var gS = Q.gegenprobeRichtung(steigend, 2000);
+  ok(!gS.ueberzufaellig, 'Long-Neigung in einem steigenden Markt gilt NICHT als Richtungstreffer', 'p = ' + gS.pWert + ', echt ' + gS.echt + ' %');
+})();
+
+/* ================= Kanal-Verzug =================
+ * Ein Regressionskanal beschreibt, was WAR. Er läuft der Bewegung zwangsläufig nach.
+ * Am AMD-Chart vom 20.08.2026 meldete er am Tageshoch „aufwärts" und am Tagestief
+ * „abwärts" – wer das nicht ausrechnet, hält eine Beschreibung der Vergangenheit für
+ * eine Vorhersage. Diese Tests sichern, dass die Zahl stimmt und ehrlich ausfällt. */
+console.log('\nKanal-Verzug');
+(function () {
+  // Ein Verlauf mit klarem Wendepunkt: 200 Kerzen abwärts, dann 120 aufwärts.
+  // Die Sinuswelle sorgt für Kanalbreite – ohne Streuung gibt es keine Kanten.
+  var w = [];
+  for (var i = 0; i < 200; i++) w.push([i * 3600000, 100 - i * 0.15 + Math.sin(i) * 0.3, 1000, 0, 0]);
+  for (var j = 0; j < 120; j++) w.push([(200 + j) * 3600000, 70 + j * 0.25 + Math.sin(j) * 0.3, 1000, 0, 0]);
+  var vz = Q.kanalVerzug(w, { fenster: 60, maxRueck: 150 });
+
+  ok(vz && vz.trend === 'auf', 'nach der Wende meldet der Kanal aufwärts', vz && vz.trend);
+  ok(vz.wendeBei < vz.gemeldetBei, 'der Wendepunkt liegt tiefer als der Meldekurs',
+     vz.wendeBei.toFixed(2) + ' < ' + vz.gemeldetBei.toFixed(2));
+  ok(vz.verzugKerzen > 0, 'die Meldung kommt NACH dem Wendepunkt, nie davor', vz.verzugKerzen + ' Kerzen');
+  ok(vz.anteilVerpasst > 0 && vz.anteilVerpasst < 100, 'der verpasste Anteil liegt zwischen 0 und 100 %', vz.anteilVerpasst + ' %');
+  ok(vz.wendeVor > vz.gemeldetVor, 'der Wendepunkt liegt weiter zurück als die Meldung',
+     vz.wendeVor + ' vs ' + vz.gemeldetVor);
+
+  // Seitwärts: eine Verzugszahl ohne Richtung hätte kein Vorzeichen, das etwas bedeutet
+  var flach = [], r3 = lcg(31);
+  for (var k = 0; k < 300; k++) flach.push([k * 3600000, 100 + r3() * 2, 1000, 0, 0]);
+  var vzF = Q.kanalVerzug(flach, { fenster: 60 });
+  ok(!vzF || vzF.ohneRichtung || vzF.trend !== 'seit' || vzF.anteilVerpasst == null,
+     'bei Seitwärtsbewegung wird kein Verzug behauptet');
+
+  ok(Q.kanalVerzug([[0, 1], [1, 2]], { fenster: 60 }) === null, 'zu kurze Reihen geben null statt einer erfundenen Zahl');
+
+  /* Entartete Kanalbreite: Folgt der Kurs der Geraden exakt, lagen das 92.- und das
+   * 8.-Perzentil der Abweichungen im Fliesskomma-Rauschen. kanalUeber gab dann null
+   * zurück – KEIN Kanal, obwohl die Passgenauigkeit perfekt war. Auf einer glatten
+   * Rampe kam abwechselnd ein Ergebnis und null heraus. */
+  var rampe = [];
+  for (var m = 0; m < 300; m++) rampe.push([m * 3600000, 100 + m * 0.2, 1000, 100 + m * 0.2, 100 + m * 0.2]);
+  var leer = 0;
+  for (var p2 = 80; p2 < 300; p2++) if (!Q.kanalUeber(rampe, Math.max(0, p2 - 60), p2)) leer++;
+  ok(leer === 0, 'eine perfekt gerade Reihe liefert durchgehend einen Kanal, nicht abwechselnd null', leer + ' Lücken');
+  var kR = Q.kanalUeber(rampe, 200, 280);
+  ok(kR && kR.trend === 'auf' && kR.r2 === 1, 'und sie wird als perfekt passender Aufwärtskanal erkannt', kR && (kR.trend + ', r² ' + kR.r2));
+})();
+
+/* ================= Trendfolge im Kanal und durchgehende Märkte ================= */
+console.log('\nTrendfolge-Modus');
+(function () {
+  // Aufwärtsverlauf mit Wellen: der Kanal zeigt nach oben, die Leitlinie wird mehrfach gekreuzt
+  var b = [], r = lcg(21);
+  for (var i = 0; i < 700; i++) b.push([Date.UTC(2026, 0, 1) + i * 3600000, 100 + i * 0.05 + Math.sin(i / 9) * 1.2 + r() * 0.3]);
+  b = b.map(function (x) { return [x[0], x[1], 1000, x[1] * 1.002, x[1] * 0.998]; });
+  var P = { ENTRY: 'kanaltrend', LINE: 'ema', period: 20, confirmBps: 5, ZTHR: 1.5, MINQ: 40, CHAN: false, MTF: false, TREND: false };
+  var treffer = [], i2;
+  for (i2 = 420; i2 < b.length; i2++) { var s = null; try { s = Q.einstiegSignal(b, i2, P); } catch (e) { } if (s) treffer.push(s); }
+  ok(treffer.length > 0, 'im Aufwärtskanal feuert der Trendfolge-Einstieg', treffer.length + ' Signale');
+  ok(treffer.every(function (s) { return s.dir === 'call'; }),
+     'und zwar ausschließlich auf der Kanalseite – nie gegen den Trend',
+     treffer.filter(function (s) { return s.dir === 'call'; }).length + ' von ' + treffer.length + ' Call');
+
+  /* Der Modus muss ein AUSLÖSER sein, kein Zustand. Der Kanaltrend allein gilt auf rund
+   * 72 % aller Kerzen; wer bei jeder davon kauft, zahlt tausendfach Spanne. Auf BTC feuert
+   * er mit der Leitlinien-Kreuzung als Auslöser auf 0,2 % der Kerzen. */
+  ok(treffer.length / (b.length - 420) < 0.25,
+     'er feuert selten genug, um ein Auslöser zu sein statt eines Dauerzustands',
+     Math.round(1000 * treffer.length / (b.length - 420)) / 10 + ' % der Kerzen');
+
+  /* Durchgehende Märkte: Krypto hat keinen Handelsschluss, aber dayKey() teilt bei
+   * UTC-Mitternacht. Am 21.08.2026 gemessen, was das anrichtet: 9 von 21 Trades schlossen
+   * mit „Tagesschluss-Glattstellung", und zwei völlig verschiedene Ausstiegsmodi lieferten
+   * dadurch bis auf die Kommastelle dasselbe Ergebnis. */
+  var map = { A: b, B: b.map(function (x, k) { return [x[0], x[1] * (1 + Math.sin(k / 13) * 0.01), 1000, x[3], x[4]]; }) };
+  var gemein = { capital: 10000, orderFee: 0, profile: 'atm60_b', budgetPct: 0.05, sl: -0.3, tp: null,
+                 minQuality: 40, period: 20, confirmBps: 5, lineType: 'ema', entryMode: 'kanaltrend', channel: false };
+  var mitTag = Q.backtestIntraday(map, Object.assign({}, gemein, { exitMode: 'trendhalten' }));
+  var ohneTag = Q.backtestIntraday(map, Object.assign({}, gemein, { exitMode: 'trendhalten', tagesschluss: false }));
+  if (mitTag.error || ohneTag.error) {
+    ok(false, 'Backtest lief durch', (mitTag.error || '') + ' ' + (ohneTag.error || ''));
+  } else {
+    var tagesGruende = mitTag.trades.filter(function (t) { return /Tagesschluss/.test(t.why || ''); }).length;
+    ok(tagesGruende > 0, 'mit Tagesgrenze schließen Positionen am UTC-Tagesende', tagesGruende + ' von ' + mitTag.trades.length);
+    ok(ohneTag.trades.filter(function (t) { return /Tagesschluss/.test(t.why || ''); }).length === 0,
+       'ohne Tagesgrenze verschwindet dieser Grund vollständig');
+    var hMit = mitTag.summary.avgHoldMin, hOhne = ohneTag.summary.avgHoldMin;
+    ok(hOhne >= hMit, 'ohne die erfundene Grenze werden Positionen nicht kürzer gehalten', hMit + ' → ' + hOhne + ' Min');
+  }
+})();
+
+/* ================= Schein-Finder: Kennzahlen und Risikostufe ================= */
+console.log('\nSchein-Finder');
+(function () {
+  var now = Date.UTC(2026, 7, 21, 14, 0);
+  function kz(dir, strike, tage, bv, iv) {
+    return Q.scheinKennzahlen(dir, { strike: strike, expiry: now + tage * 86400000, iv: iv || 0.35, ratio: bv || 1 }, 100, now);
+  }
+  var tief = kz('call', 80, 180);
+  var atm = kz('call', 100, 60);
+  var otm = kz('call', 110, 21);
+  ok(tief && atm && otm, 'Kennzahlen werden berechnet');
+  ok(tief.omega < atm.omega && atm.omega < otm.omega, 'weiter aus dem Geld = mehr Hebel', tief.omega + ' < ' + atm.omega + ' < ' + otm.omega);
+  ok(tief.totalverlustP < atm.totalverlustP && atm.totalverlustP < otm.totalverlustP,
+     'weiter aus dem Geld = höhere Totalverlust-Wahrscheinlichkeit', tief.totalverlustP + ' < ' + atm.totalverlustP + ' < ' + otm.totalverlustP);
+  ok(tief.thetaWoche > otm.thetaWoche, 'kurzläufige OTM-Scheine verlieren schneller Zeitwert', tief.thetaWoche + ' vs ' + otm.thetaWoche + ' %/Woche');
+  ok(kz('put', 100, 60).delta < 0 && atm.delta > 0, 'Delta hat das richtige Vorzeichen');
+  ok(Math.abs(atm.breakEven - (atm.strike + atm.wert / atm.ratio)) < 0.01, 'Break-even = Strike + Preis/BV');
+  // Der Kostenhebel: BV 1,0 zahlt relativ die kleinste Spanne (Cent-Modell, an echten Kursen geeicht)
+  var bvKlein = kz('call', 100, 60, 0.1), bvGross = kz('call', 100, 60, 1.0);
+  ok(bvKlein && bvGross && bvGross.spreadPct < bvKlein.spreadPct,
+     'BV 1,0 hat die kleinere relative Spanne', bvGross.spreadPct + ' % < ' + bvKlein.spreadPct + ' %');
+
+  ok(Q.scheinRisikostufe(tief).stufe < Q.scheinRisikostufe(kz('call', 110, 10, 1)).stufe,
+     'tief im Geld + lange Laufzeit ist defensiver als OTM + kurz');
+  ok(Q.scheinRisikostufe(tief).gruende.length > 0, 'jede Stufe kommt mit Begründung');
+  var r5 = Q.scheinRisikostufe(kz('call', 112, 8, 1));
+  ok(r5.stufe === 5, 'weit OTM + 8 Tage = Stufe 5 (Lotterielos)', 'Stufe ' + r5.stufe);
+  ok(Q.scheinRisikostufe(null).stufe === 5, 'auch ohne Kennzahlen gibt es ein Urteil statt eines Absturzes');
+  ok(Q.scheinKennzahlen('call', { strike: 110, expiry: now + 7 * 86400000, iv: 0.35, ratio: 0.1 }, 100, now) === null,
+     'Pfennig-Scheine (unter 2 Cent) werden aussortiert statt bepreist');
+
+  var raster = Q.scheinRaster(100, 0.35, now);
+  ok(raster.length > 300, 'das Raster ist dicht genug zum Filtern', raster.length + ' Scheine');
+  ok(raster.every(function (k) { return k.stufe >= 1 && k.stufe <= 5 && k.stufenGruende.length; }),
+     'jeder Schein im Raster trägt Stufe und Begründung');
+  ok(raster.some(function (k) { return k.stufe === 1; }) && raster.some(function (k) { return k.stufe === 5; }),
+     'das Raster deckt die ganze Bandbreite ab');
+})();
+
+/* ================= RSI2 im Seitwärtskanal + Basiswert-Pfad =================
+ * Ergebnis der Bedingungsstudie vom 21.08.2026 (162 Aktien, Stundenkerzen):
+ * RSI(2) unbedingt ist ein Münzwurf (+0,017 Pp), im Seitwärtskanal mit Volumen
+ * +0,147 Pp auf 8 h (t = 4,1 über Symbole). Der Vorsprung liegt über der
+ * Basiswert-Hürde (0,10 %) und unter der Scheinhürde (0,21 %) – und er zahlt
+ * über Nacht aus (streng intraday −0,081 %, mit Nacht +0,230 % je Trade). */
+console.log('\nRSI2-Seitwärts und Basiswert-Pfad');
+(function () {
+  function barsBauen(art, saat) {
+    // Seitwärtsband mit Wellen bzw. klarer Trend; Volumen mit einzelnen Spitzen
+    var b = [], r = lcg(saat || 11);
+    for (var i = 0; i < 400; i++) {
+      var kurs = art === 'seit' ? 100 + Math.sin(i / 7) * 2.2 + r() * 0.7
+                                : 100 + i * 0.3 + Math.sin(i / 7) * 1.2 + r() * 0.5;
+      b.push([Date.UTC(2026, 0, 2, 0, 0) + i * 3600000, kurs, 1000 + (r() > 0.44 ? 900 : 0), kurs * 1.002, kurs * 0.998]);
+    }
+    return b;
+  }
+  var P = { ENTRY: 'rsi2seit', LINE: 'ema', period: 20, confirmBps: 5, ZTHR: 1.5, MINQ: 0, CHAN: false, MTF: false, TREND: false };
+  function zaehle(b) {
+    var k = 0;
+    for (var i = 320; i < b.length; i++) { var s = null; try { s = Q.einstiegSignal(b, i, P); } catch (e) { } if (s) k++; }
+    return k;
+  }
+  // Saat 21: dieselbe Serie, die unten im Backtest nachweislich handelt. Saat 11 traf
+  // zufällig eine Phase, in der der EMA100-Trendfilter INNERHALB von rsiExtremSignal
+  // die Dips blockt - das ist Verhalten des Signals, kein Fehler des Modus.
+  var seitN = zaehle(barsBauen('seit', 21));
+  var trendN = zaehle(barsBauen('trend'));
+  ok(seitN > 0, 'im Seitwärtsband feuert der Modus', seitN + ' Signale');
+  ok(trendN === 0, 'im klaren Trend feuert er NICHT – der Kanal gibt die Erlaubnis, nicht die Richtung', trendN);
+
+  // Ohne Volumenspitze kein Signal: dieselben Kurse, flaches Volumen
+  var flachV = barsBauen('seit').map(function (x) { return [x[0], x[1], 1000, x[3], x[4]]; });
+  ok(zaehle(flachV) === 0, 'ohne Volumenbestätigung kein Signal');
+
+  /* --- Basiswert-Instrument: linear, ohne Zeitwert, Bruchstücke erlaubt --- */
+  var map = { A: barsBauen('seit', 21), B: barsBauen('seit', 22) };
+  var o = { capital: 10000, orderFee: 0, budgetPct: 0.04, sl: -0.9, tp: null, maxHoldMin: 480,
+            period: 20, confirmBps: 5, lineType: 'ema', exitMode: 'zeit', minEdge: 0,
+            cooldownMin: 60, maxPerDay: 100, entryMode: 'rsi2seit', instrument: 'basis', basisBp: 5, tagesschluss: false };
+  var r1 = Q.backtestIntraday(map, o);
+  ok(!r1.error && r1.trades.length > 0, 'der Basiswert-Backtest handelt', r1.trades.length + ' Trades');
+  ok(r1.trades.every(function (t) { return t.dir === 'call' || t.dir === 'put'; }), 'Richtungen sind gesetzt');
+  // Linear heißt: Schein-Ertrag == Basiswert-Ertrag (bis auf die Spanne). Beim Schein
+  // wäre der Ertrag um den Hebel vervielfacht und vom Zeitwert verzerrt.
+  var linear = r1.trades.every(function (t) {
+    if (!t.entrySpot || !t.exitSpot || t.dir !== 'call') return true;
+    var basiswert = t.exitSpot / t.entrySpot - 1;
+    var schein = t.exit / t.entry - 1;
+    return Math.abs(schein - basiswert) < 0.003;   // 2×5 Bp Spanne + Rundung
+  });
+  ok(linear, 'Basiswert-Trades sind linear: Positionsertrag = Kursbewegung minus Spanne');
+
+  // Ein teurer Wert (Kurs > Kapital×Budget) darf beim Basiswert NICHT herausfallen
+  var teuer = { T: barsBauen('seit', 23).map(function (x) { return [x[0], x[1] * 60, x[2], x[3] * 60, x[4] * 60]; }) };
+  var r2 = Q.backtestIntraday(teuer, o);
+  ok(!r2.error && r2.trades.length > 0, 'Werte über 400 $ werden gehandelt (Bruchstücke)', r2.trades.length + ' Trades');
+
+  // nurRichtung: die Put-Seite kämpft gegen die Drift und wird abgeschaltet
+  var r3 = Q.backtestIntraday(map, Object.assign({}, o, { nurRichtung: 'call' }));
+  ok(r3.trades.every(function (t) { return t.dir === 'call'; }), 'nurRichtung call lässt keine Puts durch');
+
+  // exitMode 'zeit': kein Signal-Ausstieg – nur Zeit, Stop, Tagesschluss
+  var gruende = {};
+  r1.trades.forEach(function (t) { gruende[(t.why || '?').split('(')[0].trim()] = 1; });
+  ok(!gruende['Gegen-Durchbruch'], 'Zeit-Ausstieg kennt keinen Gegen-Durchbruch', Object.keys(gruende).join(', '));
+
+  // Altlast: Übernacht-Positionen haben eine Nacht Gnade, aber nur eine
+  var T9 = Date.UTC(2026, 7, 21, 10, 0);
+  ok(Q.altlastGrund({ openT: T9 - 0.8 * 86400000, strategy: 'intraday', uebernacht: true }, T9) === null,
+     'eine Übernacht-Position von gestern Abend bleibt beim Start offen');
+  ok(Q.altlastGrund({ openT: T9 - 3 * 86400000, strategy: 'intraday', uebernacht: true }, T9) !== null,
+     'nach drei Tagen ist auch sie Altlast');
+})();
+
+/* ================= Mittelfrist-Depot: Handelslogik ================= */
+console.log('\nMittelfrist-Depot');
+(function () {
+  var MH = require('./mfhandel.js');
+  var now = Date.UTC(2026, 7, 21);
+  function serie(steig, tage) {
+    var r = [];
+    for (var i = 0; i < (tage || 300); i++) r.push([now - ((tage || 300) - i) * 86400000, 100 * (1 + steig * i / 300)]);
+    return r;
+  }
+  var roh = { A: serie(0.6), B: serie(0.3), C: serie(-0.3), D: serie(0.1), E: serie(0.05), F: serie(0.02), G: serie(-0.1) };
+
+  /* --- Rangfolge --- */
+  var z = MH.momentumZiel(roh, { rueckblick: 231, luecke: 21, anteil: 0.3, minWerte: 5, nowMs: now });
+  ok(z.rangfolge[0].sym === 'A' && z.rangfolge[z.rangfolge.length - 1].sym === 'C',
+     'die Rangfolge sortiert vom stärksten zum schwächsten', z.rangfolge[0].sym + ' … ' + z.rangfolge[z.rangfolge.length - 1].sym);
+  ok(z.ziel.indexOf('C') === -1, 'der schwächste Wert kommt nicht ins Ziel');
+  // Eingefrorene Serien: ein Wert, dessen Kurse 30 Tage alt sind, darf nicht mitranken -
+  // im fallenden Markt saehe er faelschlich stabil aus
+  var alt = Object.assign({}, roh, { H: serie(0.9, 300).map(function (x) { return [x[0] - 30 * 86400000, x[1]]; }) });
+  var z2 = MH.momentumZiel(alt, { rueckblick: 231, luecke: 21, anteil: 0.3, minWerte: 5, nowMs: now });
+  ok(z2.uebersprungen.indexOf('H') >= 0, 'eingefrorene Serien werden übersprungen statt mitzuranken');
+  ok(MH.momentumZiel({ A: serie(0.5) }, { minWerte: 25, nowMs: now }).zuWenig === true,
+     'zu wenige Werte: keine Auswahl statt einer dünnen');
+
+  /* --- Umschichtung --- */
+  var buch = { cash: 10000, positionen: [] };
+  var preise = { A: 150, B: 120, C: 80, D: 110, E: 105, F: 101, G: 90 };
+  var plan = MH.planeUmschichtung(z.ziel, buch, preise);
+  ok(plan.kaufen.length === z.ziel.length, 'leeres Buch: alles wird gekauft');
+  MH.fuehreAus(buch, plan, now, 20);
+  var bw = MH.bewerte(buch, preise);
+  ok(Math.abs(bw.wert - 10000 * (1 - 0.002)) < 15, 'nach dem Kauf fehlt genau die Spanne (20 Bp)', bw.wert);
+  // Zweites Rebalancing: A faellt aus dem Ziel -> verkaufen, X kommt hinein -> kaufen
+  var ziel2 = z.ziel.filter(function (s) { return s !== 'A'; }).concat(['G']);
+  var plan2 = MH.planeUmschichtung(ziel2, buch, preise);
+  ok(plan2.verkaufen.length === 1 && plan2.verkaufen[0].sym === 'A', 'was aus dem Ziel fällt, wird verkauft');
+  ok(plan2.kaufen.length === 1 && plan2.kaufen[0].sym === 'G', 'was neu ins Ziel kommt, wird gekauft');
+  ok(plan2.halten.length === z.ziel.length - 1, 'der Rest bleibt unangetastet – jeder Trade kostet');
+  var cashVor = buch.cash;
+  MH.fuehreAus(buch, plan2, now + 86400000, 20);
+  ok(buch.positionen.some(function (p) { return p.sym === 'G'; }) && !buch.positionen.some(function (p) { return p.sym === 'A'; }),
+     'die Umschichtung ist im Buch angekommen');
+  ok(buch.trades.filter(function (t) { return t.pnl != null; }).length >= 1, 'Verkäufe tragen ihr Ergebnis');
+
+  /* --- Kein Kurs, kein Handel --- */
+  var planO = MH.planeUmschichtung(['A', 'X'], { cash: 1000, positionen: [] }, { A: 100 });
+  ok(planO.kaufen.length === 1 && planO.fehltKurs.indexOf('X') >= 0,
+     'ohne Kurs wird nicht gehandelt, sondern gemeldet');
+
+  /* --- Rebalancing-Uhr in Handelstagen --- */
+  var spy = []; for (var i = 0; i < 100; i++) spy.push([now - (100 - i) * 86400000, 100]);
+  ok(MH.rebalanceFaellig(spy, 0, 63) === true, 'ohne Vorgeschichte ist sofort fällig');
+  ok(MH.rebalanceFaellig(spy, now - 10 * 86400000, 63) === false, 'nach 10 Tagen nicht fällig');
+  ok(MH.rebalanceFaellig(spy, now - 90 * 86400000, 63) === true, 'nach 90 Tagen fällig');
+
+  /* --- Drift-Buch: long und short, Alter zaehlt --- */
+  var db = { cash: 10000, positionen: [] };
+  var heute = { offen: [
+    { sym: 'A', richtung: 'kaufen', seitTagen: 1, ueberraschung: 12 },
+    { sym: 'C', richtung: 'verkaufen', seitTagen: 2, ueberraschung: -15 },
+    { sym: 'B', richtung: 'kaufen', seitTagen: 40, ueberraschung: 20 }
+  ], faellig: [] };
+  var g1 = MH.driftAbgleich(db, heute, preise, now, {});
+  ok(g1.eroeffnet === 2, 'junge Signale werden eröffnet, das 40 Tage alte nicht', g1.eroeffnet);
+  ok(db.positionen.some(function (p) { return p.sym === 'C' && p.richtung === -1; }), 'die Short-Seite wird als Short geführt');
+  // Short gewinnt, wenn der Kurs faellt: C von 80 auf 60
+  var bwD1 = MH.bewerteDrift(db, preise).wert;
+  var bwD2 = MH.bewerteDrift(db, Object.assign({}, preise, { C: 60 })).wert;
+  ok(bwD2 > bwD1, 'fallender Kurs macht die Short-Position wertvoller', bwD1 + ' → ' + bwD2);
+  // Nach 60 Handelstagen wird geschlossen
+  var g2 = MH.driftAbgleich(db, { offen: [], faellig: [] }, preise, now + 120 * 86400000, {});
+  ok(g2.geschlossen === 2, 'nach der Haltedauer wird geschlossen', g2.geschlossen);
+  ok(db.positionen.length === 0 && db.trades.filter(function (t) { return t.pnl != null; }).length === 2,
+     'beide Ausstiege stehen mit Ergebnis im Handelsprotokoll');
+  // Doppelte Eroeffnung verhindern
+  var db2 = { cash: 10000, positionen: [] };
+  MH.driftAbgleich(db2, heute, preise, now, {});
+  var g3 = MH.driftAbgleich(db2, heute, preise, now + 3600000, {});
+  ok(g3.eroeffnet === 0, 'dasselbe Signal wird nicht doppelt eröffnet');
+})();
+
+/* ================= Diagnose: die weisse Liste haelt dicht ================= */
+console.log('\nDiagnose-Versand');
+(function () {
+  var Dg = require('./diagnose.js');
+  // Vergiftete Eingaben: alles, was NIEMALS im Versand landen darf
+  var einstellungen = { capitalKey: 'GEHEIM-KEY-123', capitalPass: 'GEHEIM-PASS-456',
+    kiRules: 'MEINE-GEHEIMEN-REGELN', updateRepo: 'x/y', kiVeto: true };
+  var depot = {
+    intraday: { enabled: true, mode: 'rsi2seit', instrument: 'basis', kryptoHandeln: false },
+    momentumAn: true, driftAn: false, maxRisikostufe: 3, rechenstand: 9,
+    watchlist: [{ y: 'GEHEIMAKTIE' }],
+    positions: [{ sym: 'MEINSYMBOL', qty: 5, entry: 1.23 }],
+    trades: [{ status: 'closed', sym: 'TRADESYMBOL', pnl: 12.5 }, { status: 'closed', sym: 'TRADESYMBOL', pnl: -4 }],
+    schatten: [{ status: 'closed' }],
+    mfBuch: { cash: 9876.54, positionen: [{ sym: 'BUCHSYMBOL' }] }
+  };
+  var fehler = [];
+  for (var i = 0; i < 30; i++) fehler.push({ at: '2026-08-21', nachricht: 'Fehler ' + i, quelle: 'depot.js', zeile: i });
+  var d = Dg.baueDiagnose(einstellungen, depot, fehler, { version: '8.21.0', plattform: 'Win32', electron: '37', installId: 'inst-test' });
+  var text = JSON.stringify(d);
+
+  ok(d.version === '8.21.0' && d.installId === 'inst-test', 'Version und Kennung sind drin');
+  ok(d.nutzung.modus === 'rsi2seit' && d.nutzung.momentumAn === true, 'das Nutzungsbild ist drin');
+  ok(d.kennzahlen.tradesGesamt === 2 && d.kennzahlen.trefferquote === 50, 'Kennzahlen sind Summen und Quoten', d.kennzahlen.trefferquote + ' %');
+  ok(d.fehler.length === 20, 'das Fehlerprotokoll ist auf 20 gedeckelt', d.fehler.length);
+
+  // DIE eigentliche Pruefung: nichts Sensibles darf durchsickern - egal wie es heisst
+  ['GEHEIM-KEY-123', 'GEHEIM-PASS-456', 'MEINE-GEHEIMEN-REGELN', 'GEHEIMAKTIE',
+   'MEINSYMBOL', 'TRADESYMBOL', 'BUCHSYMBOL'].forEach(function (giftig) {
+    ok(text.indexOf(giftig) === -1, 'weisse Liste haelt dicht: ' + giftig + ' ist NICHT im Versand');
+  });
+})();
+
+/* ================= Kapitulations-Dip ================= */
+console.log('\nKapitulations-Dip');
+(function () {
+  var P = { ENTRY: 'kapitulation', LINE: 'ema', period: 20, confirmBps: 5, ZTHR: 1.5, MINQ: 0, CHAN: false, MTF: false, TREND: false };
+  /* Die Reihe braucht ECHTE Kapitulationen: scharfe Stuerze mit Volumenspitze, dann
+   * Erholung. Eine sanfte Welle reicht nicht - reversionSignal verlangt Ueberdehnung
+   * plus Umkehrbestaetigung, und genau das ist der Sinn: Der Modus soll den Ausverkauf
+   * kaufen, nicht jede Delle. */
+  function reihe(richtung, saat) {
+    var b = [], r = lcg(saat || 31);
+    for (var i = 0; i < 400; i++) {
+      var phase = i % 35, sturz = phase < 3 ? -(3 - phase) * 1.6 : 0;
+      var kurs = 100 + richtung * i * 0.10 + Math.sin(i / 8) * 1.2 + sturz + r() * 0.25;
+      b.push([Date.UTC(2026, 0, 2) + i * 3600000, kurs, 1000 + (phase < 4 ? 1400 : 0) + (r() > 0.45 ? 300 : 0), kurs, kurs]);
+    }
+    return b;
+  }
+  function zaehle(b) {
+    var calls = 0, puts = 0;
+    for (var i = 320; i < b.length; i++) {
+      var v = null; try { v = Q.einstiegSignal(b, i, P); } catch (e) { }
+      if (v && v.dir === 'call') calls++; else if (v) puts++;
+    }
+    return { calls: calls, puts: puts };
+  }
+  var ab = zaehle(reihe(-1));
+  var auf = zaehle(reihe(+1));
+  ok(ab.calls > 0, 'im Abwärtskanal feuert der Kapitulations-Dip', ab.calls + ' Signale');
+  ok(ab.puts === 0 && auf.puts === 0, 'niemals Puts – das Put-Gegenstück ist gemessen und fällt (−0,33 % je Trade)');
+  ok(auf.calls === 0, 'im Aufwärtskanal feuert er NICHT – dort ist der Dip keine Kapitulation', auf.calls);
+})();
+
+/* ================= Altlast-Erkennung =================
+ * Aus der Datenauswertung vom 21.08.2026: Positionen werden nur im Scan geschlossen, und
+ * der läuft nur bei offener App UND offener Börse. War die App tagelang zu, lief der
+ * Zeitwert weiter ab. Gefunden: Trades mit 22 und 23 Tagen Haltedauer auf 60-Tage-
+ * Scheinen (−44 % und −41 %); über alle 28 geschlossenen Trades stammten 38 % des
+ * Verlusts aus reinem Zeitwertverfall. */
+console.log('\nAltlast-Erkennung');
+(function () {
+  var T = Date.UTC(2026, 7, 21, 10, 0);
+  var tag = 86400000;
+  function pos(o) {
+    return Object.assign({ openT: T - 3 * tag, expiry: T + 50 * tag, strategy: 'hourly' }, o);
+  }
+  ok(Q.altlastGrund(pos({ openT: T - 3600000 }), T) === null,
+     'eine heute eröffnete Position bleibt offen – dafür ist der laufende Scan da');
+  ok(Q.altlastGrund(pos({ strategy: 'intraday' }), T) !== null,
+     'eine Intraday-Position von vorgestern wird geschlossen');
+  /* Der teuerste Fall im Bestand: 9 Trades ohne Strategie-Kennung, Median 22,2 Tage,
+     zusammen −1.993 $. Eine fehlende Kennung darf nicht durchrutschen. */
+  ok(Q.altlastGrund(pos({ strategy: undefined }), T) !== null,
+     'eine Position OHNE Strategie-Kennung wird wie kurzfristig behandelt');
+  ok(Q.altlastGrund(pos({ strategy: '' }), T) !== null, 'auch eine leere Kennung zählt als fehlend');
+
+  // Stunden-Strategie: hält im Median 1,5 Tage. Drei Tage auf einem 60-Tage-Schein sind
+  // 5 % der Laufzeit – das ist regulärer Betrieb und darf nicht angetastet werden.
+  ok(Q.altlastGrund(pos({}), T) === null,
+     'eine Stunden-Position nach 3 von 60 Tagen bleibt offen (5 % der Laufzeit)');
+  // 22 von 60 Tagen sind 37 % – das ist der Fall, der 24 bis 31 % Zeitwert gekostet hat.
+  var alt = Q.altlastGrund(pos({ openT: T - 22 * tag, expiry: T + 38 * tag }), T);
+  ok(alt !== null && alt.indexOf('%') > 0, 'nach 22 von 60 Tagen greift die Laufzeit-Regel', alt);
+
+  ok(Q.altlastGrund(pos({ openT: T - 20 * tag, expiry: T + 60 * tag }), T,
+     { anteilLaufzeit: 0.9 }) === null, 'die Schwelle lässt sich anheben');
+  ok(Q.altlastGrund(null, T) === null, 'ohne Position kein Urteil');
+  ok(Q.altlastGrund({ strategy: 'hourly' }, T) === null, 'ohne Eröffnungszeit kein Urteil');
+  // Ein Schein ohne Verfallsdatum lässt sich nicht nach Laufzeit beurteilen. Dann lieber
+  // nichts tun, als eine Position auf eine erfundene Grundlage hin zu schließen.
+  ok(Q.altlastGrund({ openT: T - 30 * tag, strategy: 'hourly' }, T) === null,
+     'ohne Verfallsdatum greift die Laufzeit-Regel nicht');
+})();
+
+/* ================= Fingerabdruck der Schatten-Konfiguration =================
+ * Aus der Datenauswertung vom 21.08.2026: In der Schatten-Bilanz stand ein Urteil, das
+ * aus 392 Schatten mit DREI Minuten Haltedauer stammte, während die App längst mit 240
+ * Minuten lief. Bei drei Minuten und 2,7 % Spanne je Seite misst man nichts als die
+ * Kosten – Median −5,8 % gegen 5,4 % Round-Trip, Trefferquote 3 %. Die Zahl sah nach
+ * Filterwirkung aus und war die Kostenstruktur. */
+console.log('\nSchatten-Konfiguration');
+(function () {
+  var blitz = { exitMode: 'blitz', maxHoldMin: 3, sl: -0.25, tp: null, trail: 0.10 };
+  var laufen = { exitMode: 'crest', maxHoldMin: 240, sl: -0.25, tp: null, trail: 0 };
+  var cfg = { profile: 'atm21_b', interval: '15m' };
+
+  ok(Q.schattenKonfig(blitz, cfg) !== Q.schattenKonfig(laufen, cfg),
+     'drei Minuten und vier Stunden Haltedauer sind NICHT dieselbe Messung');
+  ok(Q.schattenKonfig(blitz, cfg) === Q.schattenKonfig(blitz, cfg),
+     'dieselbe Konfiguration gibt denselben Fingerabdruck');
+
+  // Jedes Feld, das das Ergebnis verändert, muss den Fingerabdruck verändern
+  [['maxHoldMin', 60], ['sl', -0.4], ['tp', 0.5], ['trail', 0.25], ['exitMode', 'target']].forEach(function (f) {
+    var anders = Object.assign({}, blitz); anders[f[0]] = f[1];
+    ok(Q.schattenKonfig(anders, cfg) !== Q.schattenKonfig(blitz, cfg),
+       'geändertes ' + f[0] + ' ergibt einen anderen Fingerabdruck');
+  });
+  ok(Q.schattenKonfig(blitz, { profile: 'otm5_10', interval: '15m' }) !== Q.schattenKonfig(blitz, cfg),
+     'ein anderes Scheinprofil ergibt einen anderen Fingerabdruck');
+  ok(Q.schattenKonfig(blitz, { profile: 'atm21_b', interval: '1m' }) !== Q.schattenKonfig(blitz, cfg),
+     'ein anderer Zeitrahmen ergibt einen anderen Fingerabdruck');
+
+  /* Der Modusname gehört NICHT dazu: Zwei Modi mit gleichen Ausstiegsregeln liefern
+     vergleichbare Schatten. Ein reiner Namenswechsel darf die Zählung nicht wegwerfen –
+     sonst fängt die Bilanz bei jeder Umbenennung von vorn an und wird nie aussagekräftig. */
+  ok(Q.schattenKonfig(blitz, { profile: 'atm21_b', interval: '15m', mode: 'waves' }) ===
+     Q.schattenKonfig(blitz, { profile: 'atm21_b', interval: '15m', mode: 'wave' }),
+     'ein reiner Modus-Namenswechsel setzt die Bilanz NICHT zurück');
+
+  ok(typeof Q.schattenKonfig(null, null) === 'string', 'auch ohne Angaben kommt ein Fingerabdruck heraus');
+  ok(Q.schattenKonfig({ sl: 'auto', maxHoldMin: 60 }, cfg).indexOf('auto') >= 0,
+     'ein atmender Stop wird als solcher vermerkt, nicht als Zahl gerundet');
+})();
+
+/* ================= Signifikanz aus Monatserträgen =================
+ * Der Grund für dieses Maß: Bei überlappenden Trades zählt ein trade-basierter t-Wert
+ * dieselbe Marktbewegung dutzendfach. Am 21.08.2026 auf Krypto wurde aus t = 5,5
+ * (je Kerze) ein t = 0,46 (je Monat) — dieselbe Strategie, ehrlicher Nenner. */
+console.log('\nMonatsstatistik');
+(function () {
+  /* Das Rauschen wird auf Mittelwert null ZENTRIERT, bevor es benutzt wird.
+   * Grund: lcg() ist bei manchen Startwerten schief. Saat 9 liefert über 756 Ziehungen
+   * einen Mittelwert von +0,045 statt ~0 — als "Rauschen" eingesetzt ergab das einen
+   * Aufwärtstrend von 0,09 % am Tag, und der Test "reines Rauschen gilt nicht als Beleg"
+   * scheiterte mit t = 5,09. Nicht der geprüfte Code war schuld, sondern der Generator.
+   * Zentrieren macht den Test vom Startwert unabhängig. */
+  function kurve(monate, proMonatPct, rauschen, saat) {
+    var n = monate * 21, roh = [], r = lcg(saat || 5), i;
+    for (i = 0; i < n; i++) roh.push(r());
+    if (rauschen) {
+      var mw = roh.reduce(function (a, b) { return a + b; }, 0) / n;
+      for (i = 0; i < n; i++) roh[i] -= mw;
+    }
+    var e = [], kap = 10000, k = 0;
+    for (var m = 0; m < monate; m++) {
+      for (var t = 0; t < 21; t++) {
+        kap *= 1 + (proMonatPct / 100) / 21 + (rauschen ? roh[k] * rauschen : 0);
+        e.push([Date.UTC(2020, m, 1 + t), kap]);
+        k++;
+      }
+    }
+    return e;
+  }
+  var stetig = Q.monatsStatistik(kurve(36, 1.0, 0));
+  ok(stetig.monate === 36, 'zählt die Monate, nicht die Trades', stetig.monate);
+  ok(Math.abs(stetig.jeMonat - 1.0) < 0.05, 'trifft den Monatsertrag', stetig.jeMonat + ' %');
+  ok(Math.abs(stetig.proJahr - 12) < 0.6, 'rechnet auf das Jahr hoch', stetig.proJahr + ' %');
+  ok(stetig.positiveMonate === 100, 'zählt positive Monate', stetig.positiveMonate + ' %');
+  ok(stetig.belastbar && stetig.ueberzufaellig, '36 stetige Monate gelten als belastbar und überzufällig', 't = ' + stetig.tWert);
+
+  var kurz = Q.monatsStatistik(kurve(9, 3.0, 0));
+  ok(!kurz.belastbar && !kurz.ueberzufaellig,
+     'neun Monate gelten NICHT als Beleg, egal wie gut sie aussehen', 't = ' + kurz.tWert + ', ' + kurz.proJahr + ' % p.a.');
+
+  // OHNE Drift, nur Rauschen. Der erste Anlauf gab 0,05 % Monatsdrift mit dazu - über
+  // 36 Monate ist das ein echter Effekt, kein Rauschen, und der Test scheiterte zu Recht.
+  var laut = Q.monatsStatistik(kurve(36, 0, 0.02, 9));
+  ok(!laut.ueberzufaellig, 'reines Rauschen ohne Drift gilt nicht als Beleg', 't = ' + laut.tWert + ', ' + laut.proJahr + ' % p.a.');
+
+  ok(Q.monatsStatistik([]) === null, 'leere Kurve gibt null');
+  ok(Q.monatsStatistik([[Date.UTC(2026, 0, 1), 100]]) === null, 'ein einzelner Punkt gibt null');
+  // Drei Punkte, aber alle im selben Monat: ein Monat ist kein Urteil.
+  ok(Q.monatsStatistik([[Date.UTC(2026, 0, 1), 100], [Date.UTC(2026, 0, 2), 101], [Date.UTC(2026, 0, 3), 102]]).zuKurz === true,
+     'eine Kurve über wenige Tage gibt kein Urteil');
+
+  /* Der Monatsübergang muss verkettet sein: Sonst fehlt der Ertrag, der zwischen dem
+     letzten Tag eines Monats und dem ersten des nächsten entstanden ist. */
+  var e2 = [[Date.UTC(2026, 0, 31), 100], [Date.UTC(2026, 1, 1), 110], [Date.UTC(2026, 1, 28), 110],
+            [Date.UTC(2026, 2, 1), 121], [Date.UTC(2026, 2, 28), 121], [Date.UTC(2026, 3, 1), 133.1]];
+  var kette = Q.monatsStatistik(e2);
+  ok(kette.monate === 4, 'vier Kalendermonate erkannt', kette.monate);
+  ok(Math.abs(kette.jeMonat - 7.5) < 2.5, 'der Sprung über den Monatswechsel geht nicht verloren', kette.jeMonat + ' %');
+})();
+
+/* ================= Ergebnis-Drift ================= */
+console.log('\nErgebnis-Drift');
+(function () {
+  var Dr = require('./drift.js');
+
+  /* --- Reaktionstag --- */
+  var reihe = [];
+  for (var i = 0; i < 40; i++) reihe.push([Date.UTC(2026, 0, 5 + i), 100 + i]);
+  var di = Dr.datumIndex(reihe);
+  ok(Dr.reaktionstag('2026-01-10T14:00:00Z', di) === di['2026-01-10'],
+     'Meldung vor Börsenschluss wirkt am selben Tag');
+  ok(Dr.reaktionstag('2026-01-10T21:00:00Z', di) === di['2026-01-10'] + 1,
+     'Meldung nach Börsenschluss (ab 20:00 UTC) erst am Folgetag');
+  ok(Dr.reaktionstag('2026-99-99', di) === null, 'unlesbares Datum gibt null');
+
+  /* --- Paarung des jüngsten Termins (echte AMD-Antwort vom 21.08.2026) --- */
+  var hist = [
+    { quartalsEndeMs: Date.parse('2025-09-30'), ueberraschung: 2.48, ist: 1.2, schaetzung: 1.17 },
+    { quartalsEndeMs: Date.parse('2025-12-31'), ueberraschung: 15.98, ist: 1.53, schaetzung: 1.32 },
+    { quartalsEndeMs: Date.parse('2026-03-31'), ueberraschung: 5.82, ist: 1.37, schaetzung: 1.29 },
+    { quartalsEndeMs: Date.parse('2026-06-30'), ueberraschung: 3.21, ist: 1.66, schaetzung: 1.61 }
+  ];
+  var pa = Dr.paareAktuell(hist, Date.parse('2026-08-04'));
+  ok(pa && pa.quartalsende === '2026-06-30' && pa.ueberraschung === 3.21,
+     'jüngstes Quartal wird mit dem Meldetermin gepaart', pa && (pa.quartalsende + ', ' + pa.ueberraschung + ' %'));
+  ok(pa.abstandTage === 35, 'der Abstand Quartalsende → Meldung wird ausgewiesen', pa.abstandTage + ' Tage');
+  ok(Dr.paareAktuell(hist.slice().reverse(), Date.parse('2026-08-04')).quartalsende === '2026-06-30',
+     'die Reihenfolge der Quartale spielt keine Rolle');
+  // Falsch datierte Ereignisse sind schlimmer als gar keine: Ein um Wochen verschobener
+  // Reaktionstag macht aus dem Drift Rauschen.
+  ok(Dr.paareAktuell(hist, Date.parse('2026-06-01')) === null, 'Termin VOR dem Quartalsende wird verworfen');
+  ok(Dr.paareAktuell(hist, Date.parse('2027-01-16')) === null, 'Termin über 120 Tage danach wird verworfen');
+  ok(Dr.paareAktuell(hist, 0) === null, 'ohne Meldetermin kein Ereignis');
+  ok(Dr.paareAktuell([], Date.parse('2026-08-04')) === null, 'ohne Historie kein Ereignis');
+  ok(Dr.paareAktuell([{ quartalsEndeMs: Date.parse('2026-06-30'), ueberraschung: null }], Date.parse('2026-08-04')) === null,
+     'ohne Überraschungswert kein Ereignis');
+
+  /* --- Zuordnung: oberstes und unterstes Fünftel, ohne Blick in die Zukunft --- */
+  var evs = [];
+  for (var k = 0; k < 300; k++) evs.push({ sym: 'S' + (k % 10), i: k, mi: k, ueb: ((k * 37) % 101) - 50 });
+  var zu = Dr.zuordnen(evs, { fenster: 120, anteil: 0.2, minVergleich: 40 });
+  ok(zu.length > 50, 'aus 300 Ereignissen entstehen Positionen', zu.length);
+  ok(zu.every(function (p) { return p.richtung === 1 || p.richtung === -1; }), 'jede Position hat eine Richtung');
+  var langN = zu.filter(function (p) { return p.richtung > 0; }).length;
+  var kurzN = zu.filter(function (p) { return p.richtung < 0; }).length;
+  ok(Math.abs(langN - kurzN) < zu.length * 0.25, 'beide Beine sind ähnlich groß (marktneutral)', langN + ' long / ' + kurzN + ' short');
+  ok(zu.every(function (p) { return p.e.mi >= 40; }), 'die ersten Ereignisse haben zu wenig Vergleich und werden übersprungen');
+  // Der Fehler, der in der Messung 1,6 Prozentpunkte Scheinertrag erzeugt hat: ein
+  // Ereignis darf nur gegen FRÜHERE eingeordnet werden, nie gegen spätere.
+  var evsKurz = evs.slice(0, 120);
+  var zuKurz = Dr.zuordnen(evsKurz, { fenster: 120, anteil: 0.2, minVergleich: 40 });
+  var gemeinsam = zu.filter(function (p) { return p.e.mi < 120; });
+  ok(zuKurz.length === gemeinsam.length,
+     'spätere Ereignisse ändern die Zuordnung früherer NICHT (kein Blick in die Zukunft)',
+     zuKurz.length + ' vs ' + gemeinsam.length);
+
+  /* --- Depotlauf auf gebauten Kursen mit echtem Drift --- */
+  var kurse = {}, termine = {}, markt = [];
+  var r9 = lcg(77);
+  for (var t9 = 0; t9 < 900; t9++) markt.push([Date.UTC(2020, 0, 1) + t9 * 86400000, 100 * Math.pow(1.0002, t9)]);
+  for (var sN = 0; sN < 12; sN++) {
+    var sym = 'T' + sN, b9 = [], tl = [];
+    for (var d9 = 0; d9 < 900; d9++) b9.push([markt[d9][0], 100]);
+    // Alle 90 Tage eine Meldung; danach läuft der Kurs 60 Tage in Überraschungsrichtung
+    for (var e9 = 100; e9 + 70 < 900; e9 += 90) {
+      var ueb = ((sN * 13 + e9) % 41) - 20;
+      tl.push([new Date(markt[e9][0]).toISOString(), 1, 1 + ueb / 100, ueb]);
+      for (var f9 = e9; f9 < 900; f9++) {
+        var schritt = f9 <= e9 + 60 ? ueb / 6000 : 0;
+        b9[f9][1] = b9[f9 - 1][1] * (1 + schritt + r9() * 0.004);
+      }
+    }
+    kurse[sym] = b9; termine[sym] = tl;
+  }
+  var lauf = Dr.durchlauf(kurse, termine, markt, { minVergleich: 8, kostenBp: 0 });
+  ok(lauf && lauf.proJahr > 0, 'bei eingebautem Drift findet der Durchlauf ihn', lauf && (lauf.proJahr + ' % p.a.'));
+  ok(lauf.tWert > 1, 'und zwar überzufällig', 't = ' + lauf.tWert);
+
+  /* Kosten MÜSSEN das Ergebnis senken. Ein früherer Anlauf zog sie direkt vom
+   * Kursertrag ab – auf der Short-Seite wurde daraus durch das Minuszeichen ein
+   * Gewinn, und die Kosten hoben sich zwischen den Beinen exakt auf. 10 Basispunkte
+   * änderten das Ergebnis dadurch um +0,01 statt es zu senken. */
+  var teuer = Dr.durchlauf(kurse, termine, markt, { minVergleich: 8, kostenBp: 40 });
+  ok(teuer.proJahr < lauf.proJahr, 'Kosten senken das Ergebnis (beide Beine zahlen)',
+     lauf.proJahr + ' % → ' + teuer.proJahr + ' %');
+
+  /* Gegenprobe: auf reinen Zufallskursen darf NICHTS herauskommen. */
+  var zufKurse = {}, r10 = lcg(404);
+  Object.keys(kurse).forEach(function (sy) {
+    var b10 = [[markt[0][0], 100]];
+    for (var z10 = 1; z10 < 900; z10++) b10.push([markt[z10][0], b10[z10 - 1][1] * (1 + r10() * 0.02)]);
+    zufKurse[sy] = b10;
+  });
+  var zufall = Dr.durchlauf(zufKurse, termine, markt, { minVergleich: 8, kostenBp: 0 });
+  ok(!zufall || Math.abs(zufall.tWert) < 2.5, 'auf Zufallskursen entsteht kein Vorsprung',
+     zufall ? 't = ' + zufall.tWert : 'kein Ergebnis');
+
+  /* --- Heute-Ansicht --- */
+  var h9 = Dr.heute(kurse, termine, markt, { minVergleich: 8 });
+  ok(h9 && Array.isArray(h9.offen), 'die Heute-Ansicht liefert eine Liste');
+  ok(h9.offen.every(function (o) { return o.nochTage > 0 && o.nochTage <= 60; }),
+     'alle offenen Positionen haben eine Restlaufzeit zwischen 1 und 60 Tagen');
+  ok(h9.offen.every(function (o) { return o.richtung === 'kaufen' || o.richtung === 'verkaufen'; }),
+     'jede Zeile nennt eine Handlung');
+})();
+
+/* ================= Wird auch alles ausgeliefert? =================
+ * Am 21.08.2026 gefunden: Die `files`-Liste in package.json war eine explizite
+ * Aufzählung und enthielt momentum.js, strategien.js und mittelfrist.js NICHT. Im
+ * gepackten Build fehlten sie deshalb – `window.Momentum` war undefiniert, der
+ * Mittelfrist-Tab und die Strategie-Schalter existierten in der installierten App gar
+ * nicht. Im Quellordner lief alles, weshalb es niemandem auffiel: Der Unterschied
+ * zwischen „läuft bei mir" und „läuft beim Nutzer" war eine vergessene Zeile.
+ *
+ * Dieser Test vergleicht die Skripte, die index.html lädt, mit dem, was das
+ * Verpackungsmuster einschließt. Er braucht keinen Build – nur die beiden Dateien. */
+console.log('\nAuslieferung');
+(function () {
+  var html = fs.readFileSync('index.html', 'utf8');
+  var pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+  var muster = pkg.build.files;
+
+  var skripte = [];
+  var re = /<script\s+src="([^"]+)"/g, m;
+  while ((m = re.exec(html))) if (m[1].indexOf('://') === -1) skripte.push(m[1]);
+  ok(skripte.length > 10, 'index.html lädt Skripte', skripte.length + ' Stück');
+
+  /** Deckt das Muster diese Datei ab? Nur die Formen, die hier vorkommen:
+   *  exakter Name, `*.js`, und Ausschlüsse mit `!`. */
+  function abgedeckt(datei) {
+    var drin = false;
+    muster.forEach(function (p) {
+      var neg = p.charAt(0) === '!';
+      var pat = neg ? p.slice(1) : p;
+      var passt = pat === datei ||
+        (pat.indexOf('*') >= 0 &&
+         new RegExp('^' + pat.replace(/[.+^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '[^/]*') + '$').test(datei));
+      if (passt) drin = !neg;
+    });
+    return drin;
+  }
+
+  var fehlend = skripte.filter(function (s) { return !abgedeckt(s); });
+  ok(fehlend.length === 0,
+     'JEDES von index.html geladene Skript wird mitgeliefert',
+     fehlend.length ? 'FEHLT: ' + fehlend.join(', ') : skripte.length + ' geprüft');
+
+  // Die Datei muss auch wirklich existieren – ein Tippfehler im src wäre derselbe Ausfall
+  var ohneDatei = skripte.filter(function (s) { return !fs.existsSync(s); });
+  ok(ohneDatei.length === 0, 'und existiert auch im Quellordner',
+     ohneDatei.length ? 'FEHLT: ' + ohneDatei.join(', ') : 'alle da');
+
+  // Gegenprobe: Testdateien dürfen NICHT mitgeliefert werden
+  ok(!abgedeckt('test-v6.js') && !abgedeckt('test-channel.js'),
+     'Testdateien werden ausgeschlossen');
+  ok(abgedeckt('main.js') && abgedeckt('preload.js') && abgedeckt('bt-worker.js'),
+     'Hauptprozess, Bridge und Worker sind abgedeckt');
 })();
 
 console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');

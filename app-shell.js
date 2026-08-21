@@ -263,7 +263,22 @@
     SETTINGS.autoUpdate = document.getElementById('setAutoUpdate').checked;
     if (window.api.updateSetAuto) window.api.updateSetAuto(SETTINGS.autoUpdate);
     var au = document.getElementById('setAutostart').checked;
-    if (window.api.setAutostart) window.api.setAutostart(au);
+    /* Autostart ist die einzige Einstellung, die NICHT im Store liegt, sondern in der
+       Windows-Registry. Sie kann fehlschlagen, ohne dass eine Ausnahme fliegt – etwa
+       wenn eine Gruppenrichtlinie sie verbietet. Vorher lief das ins Leere: gemeldet
+       wurde "Gespeichert.", der Haken sprang beim nächsten Öffnen wieder heraus, und
+       niemand erfuhr warum. Jetzt wird das Ergebnis geprüft und der Haken auf den
+       tatsächlichen Zustand zurückgesetzt. */
+    if (window.api.setAutostart) {
+      window.api.setAutostart(au).then(function (r) {
+        if (r && r.ok) return;
+        var box = document.getElementById('setAutostart');
+        if (box) box.checked = !!(r && r.on);
+        var st = document.getElementById('setStatus');
+        if (st) st.textContent = 'Autostart nicht gesetzt: ' + ((r && r.msg) || 'unbekannter Fehler') +
+          ' Alle übrigen Einstellungen wurden gespeichert.';
+      });
+    }
     if (au && window.api.setTrayMode) { SETTINGS.tray = true; document.getElementById('setTray').checked = true; window.api.setTrayMode(true); }
     window.api.storeSet('settings', SETTINGS).then(function (res) {
       // Nie wieder "Gespeichert." anzeigen, wenn nichts geschrieben wurde: das Ergebnis
