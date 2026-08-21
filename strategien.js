@@ -127,6 +127,8 @@
     if (!D.intraday.kapiZusatz) { D.intraday.kapiZusatz = true; extras.push('Kapitulations-Dip zusätzlich an'); }
     // Die widerlegte Stunden-Strategie gehoert nicht in die belegte Konfiguration
     if (D.hourlyEnabled !== false) { D.hourlyEnabled = false; extras.push('Stunden-Strategie aus (widerlegt)'); }
+    // Regime-Zuteilung (Studie 21.08.): jede Kante nur in ihrem gemessenen Regime
+    if (!D.intraday.regimeZuteilung) { D.intraday.regimeZuteilung = true; extras.push('Regime-Zuteilung (SPY-Trend) an'); }
     // Der Knopf ist eine bewusste Hand-Entscheidung - er darf auch die Sicherung
     // wieder scharf stellen, die eine fruehere Hand-Entscheidung abgeschaltet hat.
     if (D.intraday.blackout === 'off') { D.intraday.blackout = 'block'; extras.push('Event-Blackout wieder an'); }

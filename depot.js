@@ -24,7 +24,7 @@
          belegten Strategien ausgeschaltet daneben lagen. Neue Installationen starten jetzt
          mit dem gemessenen Modus (RSI2 im Seitwaertskanal, Basiswert, 8 h) im reinen
          Beobachtungsbetrieb: enabled bleibt false, das Schattenbuch zeichnet auf. */
-      intraday: { enabled: false, exitStyle: 'laufen', mode: 'rsi2seit', interval: '60m', period: 20, confirmBps: 15, profile: 'atm60_b', instrument: 'basis', pool: 'auto', kapiZusatz: false, orderFee: 0, minDollarVol: 50, budgetPct: 0.03, sl: -0.25, tp: 0.35, cooldownMin: 120, maxPerDay: 10, lineType: 'ema', trendFilter: false, window: 'all', scalpHold: 480, scalpTrail: 15, scalpSL: 20, blackout: 'block', channel: true, mtf: true, sizing: 'fix', screener: false, avoidHours: [], autoTune: true },
+      intraday: { enabled: false, exitStyle: 'laufen', mode: 'rsi2seit', interval: '60m', period: 20, confirmBps: 15, profile: 'atm60_b', instrument: 'basis', pool: 'auto', kapiZusatz: false, regimeZuteilung: false, orderFee: 0, minDollarVol: 50, budgetPct: 0.03, sl: -0.25, tp: 0.35, cooldownMin: 120, maxPerDay: 10, lineType: 'ema', trendFilter: false, window: 'all', scalpHold: 480, scalpTrail: 15, scalpSL: 20, blackout: 'block', channel: true, mtf: true, sizing: 'fix', screener: false, avoidHours: [], autoTune: true },
       // Die belegten Mittelfrist-Buecher handeln (virtuell) von Anfang an - dafuer sind sie da.
       momentumAn: true, driftAn: true, maxRisikostufe: 3,
       watchlist: [],
@@ -1965,6 +1965,33 @@
     } catch (e) { return null; }
   }
 
+  /* ---- Regime-Zuteilung (Studie 21.08.2026) ----
+   * Die beiden belegten Kanten sind KOMPLEMENTAER: rsi2seit traegt im
+   * SPY-Aufwaertstrend (+0,148 Pp, t=1,9) und verliert darunter (-0,169);
+   * der Kapitulations-Dip sitzt fast vollstaendig im Abwaertstrend/Stress
+   * (+0,94 Pp, t=3,1; in ruhigen Phasen Nullsumme). Die VORAB festgelegte
+   * Regel 'rsi2seit nur ueber, Kapitulation nur unter der SPY-EMA200' schlug
+   * die statische Basis auf BEIDEN Massstaeben (Mittel +0,075 Pp, t=3,2 UND
+   * Durchsatz +45 Pp - die aussortierten 982 Trades waren netto negativ),
+   * Zeithaelften 0,253/0,250, Permutation p=0,013. Geblockte Signale gehen
+   * ins Schattenbuch - der Vorwaertstest misst die Regel live weiter. */
+  var SPY_REGIME = { t: 0, auf: null };
+  async function spyTrendAuf() {
+    if (Date.now() - SPY_REGIME.t < 30 * 60000) return SPY_REGIME.auf;
+    try {
+      var fdS = await fetchIntraday('SPY', '60m', false);
+      if (fdS && fdS.series && fdS.series.length > 220) {
+        var bS = Q.fertigeBars(fdS.series, 60, Date.now());
+        var cS = bS.map(function (b) { return b[1]; });
+        var eS = Q.emaSeries(cS, 200);
+        SPY_REGIME = { t: Date.now(), auf: cS[cS.length - 1] > eS[eS.length - 1] };
+      } else {
+        SPY_REGIME = { t: Date.now(), auf: null };   // ohne Anker: Regel setzt aus (Basis-Verhalten)
+      }
+    } catch (eR) { SPY_REGIME = { t: Date.now(), auf: null }; }
+    return SPY_REGIME.auf;
+  }
+
   /* Naechster bekannter Ergebnistermin je Symbol - aus dem Drift-Terminarchiv,
    * hoechstens einmal je Stunde neu geladen. null = kein ZUKUENFTIGER Termin
    * bekannt (das Archiv ist historisch gewachsen und fuellt sich ueber den
@@ -2269,6 +2296,20 @@
               CHAN: false, MTF: false, TREND: false
             });
             if (vsK2 && vsK2.dir === 'call') { dir = 'call'; kapiTrade = true; }
+          }
+          /* Regime-Zuteilung: jede Kante nur in ihrem gemessenen Regime.
+           * regimeAuf === null (kein SPY-Anker) laesst beide durch - Basis-Verhalten. */
+          if (dir && cfg.regimeZuteilung) {
+            var regimeAuf = await spyTrendAuf();
+            if (!kapiTrade && regimeAuf === false) {
+              patienceAdd('Regime: SPY unter EMA200 – rsi2seit pausiert (verliert dort −0,17 Pp)', sym);
+              schattenNeu('Regime-Filter', sym, dir, spot, sigBars, mp, cfg, now);
+              dir = null;
+            } else if (kapiTrade && regimeAuf === true) {
+              patienceAdd('Regime: SPY über EMA200 – Kapitulations-Dip pausiert (trägt nur im Abwärtstrend)', sym);
+              schattenNeu('Regime-Filter', sym, dir, spot, sigBars, mp, cfg, now);
+              dir = null; kapiTrade = false;
+            }
           }
         } else if (isDon) {
           var dsigL = Q.donchianSignal(sigBars, cfg.period, cfg.confirmBps);
@@ -6263,6 +6304,8 @@
     if (idPl) idPl.value = D.intraday.pool || 'auto';
     var idKZ = document.getElementById('idKapiZusatz');
     if (idKZ) idKZ.checked = !!D.intraday.kapiZusatz;
+    var idRZ = document.getElementById('idRegime');
+    if (idRZ) idRZ.checked = !!D.intraday.regimeZuteilung;
     var idMS = document.getElementById('idMaxStufe');
     if (idMS) idMS.value = String(D.maxRisikostufe || 5);
     var idKH = document.getElementById('idKryptoHandeln');
@@ -6288,6 +6331,8 @@
       if (idPl2) D.intraday.pool = idPl2.value;
       var idKZ2 = document.getElementById('idKapiZusatz');
       if (idKZ2) D.intraday.kapiZusatz = idKZ2.checked;
+      var idRZ2 = document.getElementById('idRegime');
+      if (idRZ2) D.intraday.regimeZuteilung = idRZ2.checked;
       var idMS2 = document.getElementById('idMaxStufe');
       if (idMS2) D.maxRisikostufe = parseInt(idMS2.value, 10) || 5;
       var idKH2 = document.getElementById('idKryptoHandeln');

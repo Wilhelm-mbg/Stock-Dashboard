@@ -463,6 +463,29 @@ console.log('\n17) Kapitalschutz: Kill-Switch, KI-Deckel, Stale-Daten, Regime-Pa
   // --- Klartext-Karte macht beide Sperren sichtbar ---
   ok(/Kill-Switch aktiv: Tagesverlust/.test(depotSrc), 'Klartext-Karte zeigt den Kill-Switch');
   ok(/Handelspause \(Marktlage\)/.test(depotSrc), 'Klartext-Karte zeigt die Handelspause');
+
+  // --- Regime-Zuteilung (Studie 21.08.2026): jede Kante nur in ihrem Regime ---
+  ok(/regimeZuteilung: false/.test(depotSrc), 'Regime: Default aus (Bestand aendert sich nicht still)');
+  ok(/function spyTrendAuf/.test(depotSrc), 'Regime: SPY-Anker-Helfer existiert');
+  ok(/SPY_REGIME\.t < 30 \* 60000/.test(depotSrc), 'Regime: SPY-Abruf gecacht (30 min), nicht je Symbol');
+  ok(/dir && cfg\.regimeZuteilung/.test(depotSrc), 'Regime: Gate greift erst NACH der Signalfindung');
+  ok(/!kapiTrade && regimeAuf === false/.test(depotSrc), 'Regime: rsi2seit pausiert nur bei SPY unter EMA200');
+  ok(/kapiTrade && regimeAuf === true/.test(depotSrc), 'Regime: Kapitulation pausiert nur bei SPY ueber EMA200');
+  var iRegGate = depotSrc.indexOf('dir && cfg.regimeZuteilung');
+  var iRegSchatten = depotSrc.indexOf("schattenNeu('Regime-Filter'", iRegGate);
+  ok(iRegGate > 0 && iRegSchatten > iRegGate && iRegSchatten - iRegGate < 900,
+     'Regime: geblockte Signale landen im Schattenbuch (Vorwaertstest misst weiter)');
+  ok((depotSrc.match(/schattenNeu\('Regime-Filter'/g) || []).length === 2,
+     'Regime: beide Kanten schreiben den Schatten');
+  ok(/regimeAuf === null|auf: null/.test(depotSrc) && /ohne Anker: Regel setzt aus/.test(depotSrc),
+     'Regime: ohne SPY-Daten fail-open (Basis-Verhalten, kein stiller Handelsstopp)');
+  var stratSrc = fs.readFileSync(__dirname + '/strategien.js', 'utf8');
+  ok(/regimeZuteilung = true/.test(stratSrc), 'Regime: Empfehlungs-Knopf schaltet die Regel an');
+  var diagSrc = fs.readFileSync(__dirname + '/diagnose.js', 'utf8');
+  ok(/regimeZuteilung: !!\(depot\.intraday && depot\.intraday\.regimeZuteilung\)/.test(diagSrc),
+     'Regime: Diagnose meldet den Schalter (weisse Liste)');
+  var htmlSrc = fs.readFileSync(__dirname + '/index.html', 'utf8');
+  ok(/id="idRegime"/.test(htmlSrc), 'Regime: Haekchen in der Oberflaeche vorhanden');
 })();
 
 /* ================= 18) Datenbasis, Suchachsen und Zucht (v8.10) ================= */
