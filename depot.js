@@ -5584,6 +5584,28 @@
           if (bf.requests) { a.lastBackfill = { at: Date.now(), requests: bf.requests, bars: bf.bars, symbole: bf.symbole }; pilotLogAdd('Backfill: ' + bf.bars + ' Kerzen für ' + bf.symbole + ' Werte (' + bf.requests + ' Anfragen).'); }
         } catch (eBf) { /* Backfill ist Bonus – die Messung läuft auch ohne */ }
       }
+      /* 1m-Messbasis sammeln (Trendwende-Studie 21.08.2026): Felix' Winkel-Detektor
+       * war die einzige von sechs Wende-Familien, die die adversariale Pruefung
+       * teilweise ueberstand (1m, Short, verzugsrobust, p=0/300) - aber Yahoo gibt
+       * nur 7 Tage 1m-Historie her, zu wenig fuer ein Urteil. Das Archiv haelt 1m
+       * 90 Tage: Jede Nacht die frischen 7 Tage einsammeln, und in 4-6 Wochen ist
+       * die Frage auf 60+ Tagen entscheidbar. ~99 Abrufe, einmal je Nacht. */
+      try {
+        pilotPhase = '1m-Messbasis einsammeln (für die Trendwende-Studie) …';
+        pilotLogAdd(pilotPhase); renderPilot();
+        var symsM1 = messUniversum();
+        var m1Ok = 0;
+        for (var sM = 0; sM < symsM1.length; sM++) {
+          var fdM1 = await fetchIntraday(symsM1[sM], '1m', true);
+          if (fdM1 && fdM1.series && fdM1.series.length > 100 && window.Archiv) {
+            await window.Archiv.fuege('1m', symsM1[sM], fdM1.series);
+            m1Ok++;
+          }
+          await new Promise(function (w1) { setTimeout(w1, 150); });
+        }
+        if (window.Archiv) await window.Archiv.speichere(true);
+        pilotLogAdd('1m-Messbasis: ' + m1Ok + ' Werte eingesammelt.');
+      } catch (eM1) { pilotLogAdd('1m-Sammlung übersprungen (' + (eM1.message || eM1) + ').'); }
       var rec = await runCentral({ silent: true, status: function (t) { pilotPhase = t; pilotLogAdd(t); renderPilot(); } });
       a.lastMess = Date.now();
       if (!rec) {
