@@ -336,12 +336,30 @@ ipcMain.handle('bug-report', async (_ev, m) => {
       fehlerprotokoll: Array.isArray(m && m.fehler) ? m.fehler.slice(-20) : [],
       status: 'offen',
       bewertung: null,
-      erledigt: null
+      erledigt: null,
+      // Wann die Meldung das Projekt tatsaechlich erreicht hat. null heisst: liegt nur
+      // hier. Genau daran ist der erste Tester haengengeblieben - drei Meldungen
+      // geschrieben, eine kam an, zwei blieben im Browser-Tab stecken. Der Renderer
+      // arbeitet alles mit null beim Start nach, sobald ein Sendeweg funktioniert.
+      uebermittelt: null
     };
     j.meldungen.unshift(eintrag);
     if (j.meldungen.length > 300) j.meldungen.length = 300;
     schreibAtomar(bugDatei(), JSON.stringify(j, null, 1));
     return { ok: true, id: eintrag.id, datei: bugDatei() };
+  } catch (e) { return { ok: false, msg: String(e.message || e) }; }
+});
+// Vermerkt, dass eine Meldung beim Projekt angekommen ist - danach fasst der
+// Nachversand sie nie wieder an. Ohne den Vermerk wuerde jeder Start dieselbe
+// Meldung erneut als Issue anlegen.
+ipcMain.handle('bug-mark-sent', async (_ev, id) => {
+  try {
+    const j = bugsLesen();
+    const m = j.meldungen.find((x) => x && x.id === id);
+    if (!m) return { ok: false, msg: 'Meldung nicht gefunden' };
+    m.uebermittelt = new Date().toISOString();
+    schreibAtomar(bugDatei(), JSON.stringify(j, null, 1));
+    return { ok: true };
   } catch (e) { return { ok: false, msg: String(e.message || e) }; }
 });
 

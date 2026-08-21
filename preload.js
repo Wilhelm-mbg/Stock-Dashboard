@@ -7,6 +7,7 @@ contextBridge.exposeInMainWorld('api', {
   earningsFetch: (symbol) => ipcRenderer.invoke('earnings-fetch', symbol),
   bugReport: (m) => ipcRenderer.invoke('bug-report', m),
   bugList: () => ipcRenderer.invoke('bug-list'),
+  bugMarkSent: (id) => ipcRenderer.invoke('bug-mark-sent', id),
   diagnoseConfig: () => ipcRenderer.invoke('diagnose-config'),
   diagnoseSend: (titel, body, label) => ipcRenderer.invoke('diagnose-send', titel, body, label),
   storeGet: (name) => ipcRenderer.invoke('store-get', name),

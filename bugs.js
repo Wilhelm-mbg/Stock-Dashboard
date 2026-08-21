@@ -93,6 +93,34 @@
       }).join('') + '</div>';
   }
 
+  /* Titel und Issue-Koerper aus einem GESPEICHERTEN Eintrag bauen - dieselbe Funktion
+     fuer den Sofortversand und den Nachversand beim Start, damit beide Wege identisch
+     aussehen. Die Meldungs-ID reist mit: nur so lassen sich Doppelgaenger erkennen,
+     falls eine Meldung erst per Browser und spaeter noch einmal automatisch ankommt. */
+  function issueVon(m, installId) {
+    var titel = 'Fehler (' + (m.art || 'sonstiges') + '): ' +
+      m.text.slice(0, 70).replace(/\s+/g, ' ') + (m.text.length > 70 ? ' …' : '');
+    var koerper = '**Meldung**\n\n' + m.text + '\n\n' +
+      '| | |\n|---|---|\n' +
+      '| Art | ' + (m.art || '?') + ' |\n' +
+      '| Schwere | ' + (m.schwere || '?') + ' |\n' +
+      '| Bereich | ' + (m.bereich || '?') + ' |\n' +
+      '| Version | ' + ((m.umgebung && m.umgebung.version) || '?') + ' |\n' +
+      '| Fenster | ' + ((m.umgebung && m.umgebung.fenster) || '?') + ' |\n' +
+      '| Installation | ' + (installId || 'unbekannt') + ' |\n' +
+      '| Meldungs-ID | ' + m.id + ' |\n' +
+      '| Gemeldet | ' + m.gemeldet + ' |\n' +
+      ((m.fehlerprotokoll || []).length
+        ? '\n**Automatisch mitgeschnittene Fehler**\n\n```json\n' + JSON.stringify(m.fehlerprotokoll.slice(-10), null, 1) + '\n```\n'
+        : '');
+    return { titel: titel, koerper: koerper };
+  }
+
+  async function installId() {
+    try { var d = (await window.api.storeGet('diagnose')) || {}; return d.installId || null; }
+    catch (e) { return null; }
+  }
+
   async function senden() {
     var t = document.getElementById('bugText');
     var st = document.getElementById('bugStatus');
@@ -119,42 +147,68 @@
        * passiert. Die lokale Datei bleibt parallel bestehen (eigener Prueflauf). */
       st.textContent = 'Lokal gespeichert – wird ans Projekt gesendet …';
       try {
-        var version = '?';
-        try { version = await window.api.appVersion(); } catch (eV) { }
-        var diag = (await window.api.storeGet('diagnose')) || {};
-        var titel = 'Fehler (' + ((document.getElementById('bugArt') || {}).value || 'sonstiges') + '): ' +
-          text.slice(0, 70).replace(/\s+/g, ' ') + (text.length > 70 ? ' …' : '');
-        var koerper = '**Meldung**\n\n' + text + '\n\n' +
-          '| | |\n|---|---|\n' +
-          '| Art | ' + ((document.getElementById('bugArt') || {}).value || '?') + ' |\n' +
-          '| Schwere | ' + ((document.getElementById('bugSchwere') || {}).value || '?') + ' |\n' +
-          '| Bereich | ' + (offenerTab() || '?') + ' |\n' +
-          '| Version | ' + version + ' |\n' +
-          '| Fenster | ' + window.innerWidth + '×' + window.innerHeight + ' |\n' +
-          '| Installation | ' + (diag.installId || 'unbekannt') + ' |\n' +
-          (FEHLER.length
-            ? '\n**Automatisch mitgeschnittene Fehler**\n\n```json\n' + JSON.stringify(FEHLER.slice(-10), null, 1) + '\n```\n'
-            : '');
+        // Den frisch gespeicherten Eintrag aus der Datei holen, damit der Issue-Text
+        // exakt dem entspricht, was ein Nachversand spaeter auch senden wuerde.
+        var liste = await window.api.bugList();
+        var mNeu = ((liste && liste.meldungen) || []).find(function (x) { return x.id === r.id; });
+        var inst = await installId();
+        var iss = issueVon(mNeu || { id: r.id, text: text, art: '?', gemeldet: '?' }, inst);
         var cfg = await window.api.diagnoseConfig();
         if (cfg && cfg.auto) {
-          var rs = await window.api.diagnoseSend(titel, koerper, 'bug');
+          var rs = await window.api.diagnoseSend(iss.titel, iss.koerper, 'bug');
+          if (rs && rs.ok && window.api.bugMarkSent) await window.api.bugMarkSent(r.id);
           st.textContent = rs && rs.ok
             ? 'Gemeldet – danke! Die Meldung ist beim Projekt angekommen und liegt zusätzlich lokal.'
-            : 'Lokal gespeichert. Versand ans Projekt fehlgeschlagen (' + ((rs && rs.msg) || '?') + ') – bitte später noch einmal melden.';
+            : 'Lokal gespeichert. Versand ans Projekt fehlgeschlagen (' + ((rs && rs.msg) || '?') + ') – die Meldung wird beim nächsten Start automatisch nachgesendet.';
         } else {
+          /* Kein Token: vorbefuellte Issue-Seite im Browser. Der Koerper muss hier eng
+             gedeckelt sein - eine zu lange Adresse quittiert GitHub mit einer leeren
+             Fehlerseite, und die Meldung wirkt abgeschickt, ist es aber nicht. Vermutlich
+             sind genau so zwei der ersten drei Tester-Meldungen verloren gegangen. */
           var url = 'https://github.com/' + (cfg && cfg.repo || 'Wilhelm-mbg/Stock-Dashboard') +
-            '/issues/new?labels=bug&title=' + encodeURIComponent(titel) + '&body=' + encodeURIComponent(koerper.slice(0, 6000));
+            '/issues/new?labels=bug&title=' + encodeURIComponent(iss.titel) + '&body=' + encodeURIComponent(iss.koerper.slice(0, 3000));
           window.api.openExternal(url);
-          st.textContent = 'Lokal gespeichert. Im Browser hat sich die Meldung ans Projekt geöffnet – bitte dort kurz prüfen und absenden.';
+          st.textContent = 'Lokal gespeichert. Im Browser hat sich die Meldung ans Projekt geöffnet – bitte dort kurz prüfen und auf „Submit new issue“ klicken. Ohne diesen Klick bleibt die Meldung nur auf diesem Rechner.';
         }
       } catch (eS) {
-        st.textContent = 'Lokal gespeichert. Versand ans Projekt nicht möglich (' + (eS.message || eS) + ').';
+        st.textContent = 'Lokal gespeichert. Versand ans Projekt nicht möglich (' + (eS.message || eS) + ') – die Meldung wird beim nächsten Start automatisch nachgesendet.';
       }
       FEHLER.length = 0;
       zeigeListe();
     } else {
       st.textContent = 'Nicht gespeichert: ' + ((r && r.msg) || 'unbekannter Fehler');
     }
+  }
+
+  /* ---- Nachversand beim Start ----
+   * Alles, was lokal liegt und das Projekt nie erreicht hat, wird nachgeschickt,
+   * sobald der Token-Weg funktioniert. Nur der Token-Weg: beim Start ungefragt
+   * Browser-Tabs zu oeffnen waere aufdringlich, und ob im Browser wirklich
+   * abgeschickt wurde, laesst sich ohnehin nicht feststellen. Meldungen, die per
+   * Browser ankamen UND nachgesendet werden, erkennt die Auswertung an der
+   * Meldungs-ID und schliesst den Doppelgaenger. */
+  async function nachversand() {
+    try {
+      if (!window.api.bugList || !window.api.bugMarkSent) return;
+      var cfg = await window.api.diagnoseConfig();
+      if (!cfg || !cfg.auto) return;
+      var r = await window.api.bugList();
+      var offen = ((r && r.meldungen) || []).filter(function (m) { return m && !m.uebermittelt; });
+      if (!offen.length) return;
+      var inst = await installId();
+      var geschafft = 0;
+      for (var i = 0; i < offen.length && i < 10; i++) {   // Deckel gegen Endlos-Fluten
+        var iss = issueVon(offen[i], inst);
+        var rs = await window.api.diagnoseSend(iss.titel, iss.koerper + '\n_Nachversand beim Start – lag bisher nur lokal._\n', 'bug');
+        if (rs && rs.ok) { await window.api.bugMarkSent(offen[i].id); geschafft++; }
+        else break;                                        // Sendeweg kaputt: nicht weiter haemmern
+      }
+      if (geschafft) {
+        var st = document.getElementById('bugStatus');
+        if (st) st.textContent = geschafft + ' ältere Meldung' + (geschafft > 1 ? 'en' : '') + ' ans Projekt nachgesendet.';
+        zeigeListe();
+      }
+    } catch (e) { /* Nachversand darf den Start nie stoeren */ }
   }
 
   function bereit() {
@@ -166,6 +220,9 @@
     var t = document.getElementById('bugText');
     if (t) t.addEventListener('keydown', function (e) { if (e.ctrlKey && e.key === 'Enter') senden(); });
     zeigeListe();
+    // Kurz nach dem Start liegengebliebene Meldungen nachschicken - nicht sofort,
+    // damit der Start selbst nicht auf das Netz wartet.
+    setTimeout(nachversand, 15000);
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bereit);
   else bereit();
