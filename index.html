@@ -172,14 +172,56 @@
   .loading { color: var(--muted); padding: 30px 0; text-align: center; }
 
   /* ---- Tabs ---- */
-  nav.tabs { display: flex; gap: 4px; margin: 14px 0 4px; border-bottom: 1px solid var(--grid); }
-  nav.tabs button {
-    background: none; border: none; border-bottom: 2px solid transparent;
-    color: var(--ink-2); font: inherit; font-size: 13.5px; font-weight: 600;
-    padding: 8px 14px; cursor: pointer;
+  /* ===== UI-Ueberarbeitung 21.08.2026: Cockpit + Pill-Navigation + Marktbild ===== */
+  /* Cockpit: die eine Zeile, die auf jedem Tab sichtbar bleibt - Depotstand,
+     Tagesergebnis, Marktstatus. Das Muster jeder Handelsplattform: erst der
+     Kontostand, dann der Rest. */
+  #cockpit {
+    position: sticky; top: 0; z-index: 40;
+    display: flex; gap: 22px; flex-wrap: wrap; align-items: baseline;
+    background: var(--page); border-bottom: 1px solid var(--grid);
+    padding: 9px 2px 8px; margin: 6px -2px 0;
   }
-  nav.tabs button:hover { color: var(--ink); }
-  nav.tabs button.active { color: var(--ink); border-bottom-color: var(--series); }
+  #cockpit .ck { display: flex; align-items: baseline; gap: 7px; font-variant-numeric: tabular-nums; }
+  #cockpit .ckl { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; }
+  #cockpit b { font-size: 14px; font-weight: 650; }
+  #cockpit .up { color: var(--up); } #cockpit .down { color: var(--down); }
+  #cockpit .mdot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 5px; vertical-align: 1px; }
+  #cockpit .mdot.open { background: var(--up); } #cockpit .mdot.closed { background: var(--muted); }
+
+  /* Marktbild-Heatmap: jede Kachel ein Wert, Farbe = Tagesbewegung */
+  .heat { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 6px; margin-top: 8px; }
+  .heat .hz {
+    border-radius: 8px; padding: 8px 10px; cursor: pointer; border: 1px solid var(--border);
+    font-variant-numeric: tabular-nums; transition: transform 0.08s ease;
+  }
+  .heat .hz:hover { transform: scale(1.04); }
+  .heat .hz .s { font-weight: 700; font-size: 12.5px; display: block; }
+  .heat .hz .p { font-size: 11.5px; }
+
+  /* Ertragskurve im Depot */
+  .eq-panel { padding: 12px 14px; margin-bottom: 10px; }
+  .eq-panel .eq-kopf { display: flex; gap: 18px; align-items: baseline; flex-wrap: wrap; margin-bottom: 6px; font-variant-numeric: tabular-nums; }
+  .eq-panel .eq-kopf .ckl { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; margin-right: 4px; }
+  .eq-panel svg { width: 100%; height: 120px; display: block; }
+
+  /* Kurs-Readout im Explorer-Chart (Fadenkreuz-Werte oben links) */
+  .chartwrap { position: relative; }
+  #expReadout {
+    position: absolute; top: 6px; left: 10px; z-index: 5; pointer-events: none;
+    font-size: 12px; font-variant-numeric: tabular-nums; color: var(--ink-2);
+    background: color-mix(in srgb, var(--page) 82%, transparent);
+    border-radius: 6px; padding: 2px 8px; display: none;
+  }
+
+  nav.tabs { display: flex; gap: 6px; margin: 12px 0 10px; flex-wrap: wrap; }
+  nav.tabs button {
+    background: none; border: 1px solid transparent; border-radius: 999px;
+    color: var(--ink-2); font: inherit; font-size: 13px; font-weight: 600;
+    padding: 7px 15px; cursor: pointer;
+  }
+  nav.tabs button:hover { color: var(--ink); background: var(--surface); }
+  nav.tabs button.active { color: var(--ink); background: var(--surface); border-color: var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.16); }
   .tab { display: none; }
   .tab.active { display: block; }
 
@@ -415,6 +457,15 @@
 </header>
 <div class="subnote" id="subnote">Big Tech · Chip-Sektor · Marktüberblick – aktualisiert sich automatisch (1 Min während des US-Handels, sonst 5 Min). Charts: 1 Monat, Tagesschluss.</div>
 
+<div id="cockpit">
+  <div class="ck"><span class="ckl">Depot</span><b id="ckEquity">–</b></div>
+  <div class="ck"><span class="ckl">Heute</span><b id="ckDay">–</b></div>
+  <div class="ck"><span class="ckl">Offen</span><b id="ckOpen">–</b></div>
+  <div class="ck"><span class="ckl">Bücher</span><b id="ckBooks" title="Momentum / Drift – virtuelle 10.000-$-Bücher">–</b></div>
+  <div class="ck"><span class="ckl">US-Börse</span><b id="ckMarkt">–</b></div>
+  <div class="ck"><span class="ckl">Scan</span><b id="ckScan">–</b></div>
+</div>
+
 <nav class="tabs">
   <button data-tab="dashboard" class="active">Dashboard</button>
   <button data-tab="depot">Optionsscheine</button>
@@ -429,6 +480,9 @@
 <div id="newsTicker" style="display:none;" title="Markt-News als Laufband – unter dem Mauszeiger hält es an. Klick öffnet die Meldung."></div>
 <h2>Marktüberblick</h2>
 <div class="tiles" id="tiles"><div class="loading">Lade Kurse …</div></div>
+
+<h2 style="margin-top:18px;">Marktbild <span style="color:var(--muted); font-size:12px; font-weight:400;">– alle beobachteten Werte, Farbe = heutige Bewegung, Klick öffnet den Explorer</span></h2>
+<div id="dashHeat" class="heat"><div class="loading">Lade Kurse …</div></div>
 
 <h2>Gewinner &amp; Verlierer des Tages</h2>
 <div class="movers">
@@ -462,6 +516,7 @@
 
   <!-- ============ DEPOT ============ -->
   <div class="sub active" id="sub-depot">
+    <div id="eqPanel" class="panel eq-panel" style="display:none;"></div>
     <div class="depot-stats" id="depotStats"></div>
     <div id="messNote" style="color:var(--muted); font-size:11.5px; margin:8px 0 0;"></div>
     <div id="calWarn"></div>
@@ -879,7 +934,10 @@
            deshalb immer nach. Wie weit, gehört als Zahl unter den Chart – sonst hält man
            eine Beschreibung der Vergangenheit für eine Vorhersage. -->
       <div id="expKanalVerzug" class="hinweis" style="margin:2px 0 8px; line-height:1.5;"></div>
-      <svg id="bigchart"></svg>
+      <div class="chartwrap">
+        <div id="expReadout"></div>
+        <svg id="bigchart"></svg>
+      </div>
       <div id="expSigDetail" class="panel" style="display:none; margin-top:10px; padding:10px 12px;"></div>
       <div id="expSigListe" style="margin-top:10px;"></div>
     </div>

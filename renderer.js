@@ -258,6 +258,28 @@
     document.getElementById('winners').innerHTML = moverRows(sorted.slice(0, 3));
     document.getElementById('losers').innerHTML = moverRows(sorted.slice(-3).reverse());
 
+    // Marktbild-Heatmap: eine Kachel je Wert, die Bewegten zuerst. Farbe nur über
+    // CSS-Variablen (theme-fest): 3 % Tagesbewegung = volle Beimischung (45 %).
+    var heatEl = document.getElementById('dashHeat');
+    if (heatEl) {
+      if (!withQ.length) {
+        heatEl.innerHTML = '<div class="loading">Noch keine Kurse geladen.</div>';
+      } else {
+        var heatList = withQ.slice().sort(function (a, b) { return Math.abs(Q[b.y].pct) - Math.abs(Q[a.y].pct); });
+        heatEl.innerHTML = heatList.map(function (s) {
+          var pct = Q[s.y].pct;
+          var bg = 'var(--surface)';
+          if (Math.abs(pct) >= 0.05) {
+            var n = Math.round(Math.min(45, Math.abs(pct) / 3 * 45));
+            bg = 'color-mix(in srgb, var(' + (pct > 0 ? '--up' : '--down') + ') ' + n + '%, var(--surface))';
+          }
+          var sign = pct > 0 ? '+' : '';
+          return '<div class="hz" data-heat="' + esc(s.y) + '" title="' + esc(s.name + ' ' + sign + nfP.format(pct) + ' %') + '" style="background:' + bg + '">' +
+            '<span class="s">' + esc(s.y) + '</span><span class="p">' + sign + nfP.format(pct) + '&nbsp;%</span></div>';
+        }).join('');
+      }
+    }
+
     // Karten
     function card(s) {
       var q = Q[s.y];
@@ -298,6 +320,9 @@
       stampTxt += ' · Stand: ' + lastOk.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + ' Uhr';
     }
     document.getElementById('stamp').innerHTML = '<span class="dot ' + (open ? 'open' : 'closed') + '"></span>' + esc(stampTxt);
+    // Cockpit-Marktstatus – die übrigen Cockpit-Felder füllt depot.js
+    var ckM = document.getElementById('ckMarkt');
+    if (ckM) ckM.innerHTML = open ? '<span class="mdot open"></span>offen' : '<span class="mdot closed"></span>geschlossen';
     document.getElementById('err').textContent = fetchErrors > 0 ? '' + fetchErrors + ' Wert(e) konnten nicht geladen werden' : '';
     document.dispatchEvent(new CustomEvent('quotes-updated'));
   }
@@ -454,6 +479,21 @@
     } else if (hoverSym) {
       clearTimeout(hoverTimer);
       hoverTimer = setTimeout(hoverVerstecken, 250);
+    }
+  });
+
+  // Klick auf eine Heatmap-Kachel: Wert im Explorer öffnen. Die Kacheln werden bei
+  // jedem Refresh neu gebaut, deshalb sitzt auch dieser Listener auf dem Dokument.
+  document.addEventListener('click', function (e) {
+    var hz = e.target.closest ? e.target.closest('[data-heat]') : null;
+    if (!hz) return;
+    var sym = hz.getAttribute('data-heat');
+    var s = STOCKS.filter(function (x) { return x.y === sym; })[0];
+    if (window.Explorer && window.Explorer.oeffne) {
+      window.Explorer.oeffne(sym, s ? s.name : sym);
+    } else {
+      var tab = document.querySelector('[data-tab="explorer"]');
+      if (tab) tab.click();
     }
   });
 

@@ -2554,6 +2554,7 @@
       renderSymBlocks();
       await save();
       st.textContent = 'Letzter Scan: ' + new Date(now).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }) + ' Uhr · Trades heute: ' + D.intradayCount + '/' + (modeParams().maxPerDay || cfg.maxPerDay);
+      cockpitRender(); // Scan-Zeit im Kopf-Cockpit sofort nachziehen (kein eigener Timer)
     } catch (e) {
       HEALTH.scanErrors++;
       HEALTH.lastError = { t: Date.now(), msg: String(e.message || e).slice(0, 200) };
@@ -2771,6 +2772,102 @@
     });
 
     renderWeights();
+    cockpitRender();
+    renderEquity();
+  }
+
+  /** Prozent mit 1 Nachkommastelle (deutsches Komma); 0 als '±0,0 %'. */
+  function pz1(v) {
+    if (!isFinite(v)) return '–';
+    var r = Math.round(v * 10) / 10;
+    return (r > 0 ? '+' : r < 0 ? '-' : '±') + Math.abs(r).toFixed(1).replace('.', ',') + ' %';
+  }
+
+  /** Kopf-Cockpit füllen – reine Anzeige aus vorhandenem State, keine eigene Datenhaltung. */
+  function cockpitRender() {
+    if (!D) return;
+    var ce = document.getElementById('ckEquity');
+    if (ce) ce.textContent = U.nf2.format(equityNow()) + ' $';
+    var cd = document.getElementById('ckDay');
+    if (cd) {
+      var tp = tagesPnl();
+      if (tp.pnl) {
+        cd.textContent = U.signTxt(tp.pnl, ' $') + ' (' + U.signTxt(tp.pct, ' %') + ')';
+        cd.classList.toggle('up', tp.pnl > 0);
+        cd.classList.toggle('down', tp.pnl < 0);
+      } else {
+        cd.textContent = '±0,00 $';
+        cd.classList.remove('up');
+        cd.classList.remove('down');
+      }
+    }
+    var co = document.getElementById('ckOpen');
+    if (co) co.textContent = D.positions.length + (D.positions.length === 1 ? ' Position' : ' Positionen');
+    var cb = document.getElementById('ckBooks');
+    if (cb) {
+      var mv = D.mfVerlauf || [];
+      var lp = mv.length ? mv[mv.length - 1] : null;
+      var mTxt = (!D.momentumAn || !lp || lp.momentum == null) ? '–' : pz1((lp.momentum / 10000 - 1) * 100);
+      var dTxt = (!D.driftAn || !lp || lp.drift == null) ? '–' : pz1((lp.drift / 10000 - 1) * 100);
+      cb.textContent = 'M ' + mTxt + ' · D ' + dTxt;
+    }
+    var cs = document.getElementById('ckScan');
+    if (cs) cs.textContent = HEALTH.lastScanT
+      ? new Date(HEALTH.lastScanT).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })
+      : '–';
+  }
+
+  /** Ertragskurve über den Depot-Kacheln: Gesamtrendite, Hoch, max. Rücksetzer und eine
+   *  schlichte Fläche im Stil der Dashboard-Sparklines. Erst ab 5 Punkten – vorher bleibt
+   *  das Panel versteckt, eine 3-Punkte-Kurve sagt nichts. */
+  function renderEquity() {
+    var el = document.getElementById('eqPanel');
+    if (!el || !D) return;
+    var h = D.equityHist || [];
+    if (h.length < 5) { el.style.display = 'none'; return; }
+    el.style.display = 'block';
+
+    // Kopfzahlen über die GESAMTE Historie, die Kurve nur über die letzten 800 Punkte
+    var hoch = h[0][1], peak = h[0][1], dd = 0;
+    h.forEach(function (p) {
+      if (p[1] > peak) peak = p[1];
+      if (p[1] > hoch) hoch = p[1];
+      var r = peak > 0 ? p[1] / peak - 1 : 0;
+      if (r < dd) dd = r;
+    });
+    var eqLast = h[h.length - 1][1];
+
+    var pts = h.slice(-800);
+    var x0 = pts[0][0], x1 = pts[pts.length - 1][0];
+    if (x1 - x0 < 1) x1 = x0 + 1;
+    var ys = pts.map(function (p) { return p[1]; });
+    var minV = Math.min.apply(null, ys), maxV = Math.max.apply(null, ys);
+    // Referenzlinie 10.000 gehört mit in den Wertebereich, sonst hinge sie außerhalb
+    var lo = Math.min(minV, START_CAPITAL), hi = Math.max(maxV, START_CAPITAL);
+    if (hi - lo < 1e-9) { lo -= 1; hi += 1; }
+    var yPad = (hi - lo) * 0.08;
+    lo -= yPad; hi += yPad;
+
+    var W = Math.max(320, (el.clientWidth || 620) - 28), H = 120;
+    function X(t) { return (t - x0) / (x1 - x0) * W; }
+    function Y(v) { return (H - 4) - (v - lo) / (hi - lo) * (H - 8); }
+    var line = pts.map(function (p, i) { return (i ? 'L' : 'M') + X(p[0]).toFixed(1) + ' ' + Y(p[1]).toFixed(1); }).join(' ');
+    var area = line + ' L' + W + ' ' + H + ' L0 ' + H + ' Z';
+    var yB = Y(START_CAPITAL).toFixed(1);
+
+    el.innerHTML =
+      '<div class="eq-kopf">' +
+        '<span><span class="ckl">Verlauf</span><b>' + pz1((eqLast / START_CAPITAL - 1) * 100) + '</b></span>' +
+        '<span><span class="ckl">Hoch</span><b>' + U.nf0.format(hoch) + ' $</b></span>' +
+        '<span><span class="ckl">Max. Rücksetzer</span><b' + (dd < 0 ? ' class="down"' : '') + '>' + pz1(dd * 100) + '</b></span>' +
+      '</div>' +
+      '<svg viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none">' +
+        '<path d="' + area + '" fill="var(--series-soft)" stroke="none"></path>' +
+        '<line x1="0" x2="' + W + '" y1="' + yB + '" y2="' + yB + '" stroke="var(--baseline)" stroke-width="1" stroke-dasharray="4 3"></line>' +
+        '<path d="' + line + '" fill="none" stroke="var(--series)" stroke-width="1.5"></path>' +
+        '<text x="' + (W - 3) + '" y="' + Math.max(10, Y(maxV) - 4).toFixed(1) + '" text-anchor="end" fill="var(--muted)" font-size="10">' + U.nf0.format(maxV) + ' $</text>' +
+        '<text x="' + (W - 3) + '" y="' + Math.min(H - 3, Y(minV) + 11).toFixed(1) + '" text-anchor="end" fill="var(--muted)" font-size="10">' + U.nf0.format(minV) + ' $</text>' +
+      '</svg>';
   }
 
   function normWeights() {

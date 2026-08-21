@@ -863,9 +863,27 @@
     var frac = (e.clientX - r.left) / r.width;
     // Achse laeuft ueber den Kerzen-Index, nicht ueber die Zeit
     var idxF = Math.round(frac * (bigMeta.series.length - 1));
-    var best = bigMeta.series[Math.max(0, Math.min(bigMeta.series.length - 1, idxF))];
+    var idx = Math.max(0, Math.min(bigMeta.series.length - 1, idxF));
+    var best = bigMeta.series[idx];
     var cross = svg.querySelector('#bigCross');
     if (cross) { cross.style.display = 'block'; cross.setAttribute('x1', bigMeta.X(best[0])); cross.setAttribute('x2', bigMeta.X(best[0])); }
+    var ro = document.getElementById('expReadout');
+    if (ro) {
+      var dt = new Date(best[0]);
+      var wtag = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'][dt.getDay()];
+      var mR = (CURDATA.daily && CURDATA.daily.meta) || {};
+      var curR = mR.currency === 'EUR' ? ' €' : mR.currency === 'USD' ? ' $' : (mR.currency ? ' ' + U.esc(mR.currency) : '');
+      // Veraenderung zur VORHERIGEN Kerze der Serie; an der ersten gibt es keine
+      var vorher = idx > 0 ? bigMeta.series[idx - 1][1] : null;
+      var pctR = vorher ? (best[1] / vorher - 1) * 100 : null;
+      ro.innerHTML = wtag + ' ' + dt.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' }) + ' ' +
+        dt.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }) +
+        ' · ' + U.nf2.format(best[1]) + curR +
+        (pctR != null
+          ? ' · <span style="color:' + (pctR >= 0 ? 'var(--up)' : 'var(--down)') + ';">' + U.signTxt(pctR, ' %') + '</span>'
+          : '');
+      ro.style.display = 'block';
+    }
     tip.innerHTML = '<span class="tv">' + U.nf2.format(best[1]) + '</span><br><span class="tt">' +
       new Date(best[0]).toLocaleString('de-DE', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) + '</span>';
     tip.style.display = 'block';
@@ -876,6 +894,8 @@
     tip.style.display = 'none';
     var cross = e.currentTarget.querySelector('#bigCross');
     if (cross) cross.style.display = 'none';
+    var roZu = document.getElementById('expReadout');
+    if (roZu) roZu.style.display = 'none';
   });
 
   /* ================= News ================= */
@@ -1000,4 +1020,14 @@
       : 'Konnte nicht hinzugefügt werden.';
     setTimeout(function () { st.textContent = ''; }, 5000);
   });
+
+  // Oeffentliche Oeffnen-API: andere Module (z. B. die Dashboard-Heatmap) springen
+  // damit direkt in die Detail-Ansicht, ohne die interne openDetail zu kennen.
+  window.Explorer = {
+    oeffne: function (sym, name) {
+      var tabBtn = document.querySelector('[data-tab="explorer"]');
+      if (tabBtn) tabBtn.click();
+      openDetail({ sym: sym, name: name || sym, exch: '', type: '' });
+    }
+  };
 })();
