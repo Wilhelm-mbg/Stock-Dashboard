@@ -1124,27 +1124,52 @@ console.log('\nDiagnose-Versand');
   var einstellungen = { capitalKey: 'GEHEIM-KEY-123', capitalPass: 'GEHEIM-PASS-456',
     kiRules: 'MEINE-GEHEIMEN-REGELN', updateRepo: 'x/y', kiVeto: true };
   var depot = {
-    intraday: { enabled: true, mode: 'rsi2seit', instrument: 'basis', kryptoHandeln: false },
+    intraday: { enabled: true, mode: 'rsi2seit', instrument: 'basis', interval: '60m', scalpHold: 480, kryptoHandeln: false },
     momentumAn: true, driftAn: false, maxRisikostufe: 3, rechenstand: 9,
     watchlist: [{ y: 'GEHEIMAKTIE' }],
     positions: [{ sym: 'MEINSYMBOL', qty: 5, entry: 1.23 }],
-    trades: [{ status: 'closed', sym: 'TRADESYMBOL', pnl: 12.5 }, { status: 'closed', sym: 'TRADESYMBOL', pnl: -4 }],
-    schatten: [{ status: 'closed' }],
-    mfBuch: { cash: 9876.54, positionen: [{ sym: 'BUCHSYMBOL' }] }
+    trades: [
+      { status: 'closed', sym: 'TRADESYMBOL', pnl: 12.5, strategy: 'intraday', basis: true },
+      { status: 'closed', sym: 'TRADESYMBOL', pnl: -4, strategy: 'hourly' }
+    ],
+    schatten: [{ status: 'closed' }, { status: 'open', sym: 'SCHATTENSYMBOL' }],
+    schattenKonfig: 'xzeit_h480_s-90_t-_r0_patm60_b_i60m',
+    schattenStat: { 'Klumpen-Limit': { n: 3, sumPct: -4.2, gerettet: 2, verhindert: 1 } },
+    mfBuch: { start: 10000, cash: 12.34, positionen: [{ sym: 'BUCHSYMBOL' }], trades: [{ sym: 'BUCHSYMBOL' }], angelegt: 1, letztesRebalanceT: 2 },
+    driftBuch: { start: 10000, cash: 5000, positionen: [{ sym: 'DRIFTSYMBOL', richtung: -1 }], trades: [] },
+    mfVerlauf: [{ t: 1, momentum: 10000, drift: 10000, spy: 640 }, { t: 2, momentum: 10123, drift: 9987, spy: 645 }]
   };
   var fehler = [];
   for (var i = 0; i < 30; i++) fehler.push({ at: '2026-08-21', nachricht: 'Fehler ' + i, quelle: 'depot.js', zeile: i });
-  var d = Dg.baueDiagnose(einstellungen, depot, fehler, { version: '8.21.0', plattform: 'Win32', electron: '37', installId: 'inst-test' });
+  var extra = { health: { startedAt: Date.now() - 3600000, scans: 42, fetchOk: 400, fetchFail: 7, killSwitch: 1, staleBars: 2, workerFail: 0, scanErrors: 0, kiOk: 5, kiFail: 1 },
+    zeitzone: 'Europe/Berlin', sprache: 'de-DE', termineWerte: 189, tagesdatenStand: 123456, tagesdatenWerte: 189 };
+  var d = Dg.baueDiagnose(einstellungen, depot, fehler, { version: '8.23.0', plattform: 'Win32', electron: '37', installId: 'inst-test' }, extra);
   var text = JSON.stringify(d);
 
-  ok(d.version === '8.21.0' && d.installId === 'inst-test', 'Version und Kennung sind drin');
-  ok(d.nutzung.modus === 'rsi2seit' && d.nutzung.momentumAn === true, 'das Nutzungsbild ist drin');
-  ok(d.kennzahlen.tradesGesamt === 2 && d.kennzahlen.trefferquote === 50, 'Kennzahlen sind Summen und Quoten', d.kennzahlen.trefferquote + ' %');
+  ok(d.version === '8.23.0' && d.installId === 'inst-test', 'Version und Kennung sind drin');
+  ok(d.nutzung.modus === 'rsi2seit' && d.nutzung.zeitrahmen === '60m' && d.nutzung.haltedauerMin === 480,
+     'das Nutzungsbild trägt jetzt auch die Konfigurationstiefe');
+  ok(d.nutzung.profil === null, 'das Schein-Profil wird beim Basiswert-Instrument NICHT gemeldet (irrelevant)');
+  ok(d.kennzahlen.intraday.n === 1 && d.kennzahlen.stunden.n === 1 && d.kennzahlen.intraday.pnl === 12.5,
+     'Kennzahlen sind JE STRATEGIE getrennt – ein Topf verwischt die Frage der Auswertung');
+  ok(d.kennzahlen.basisTrades === 1, 'Basiswert-Trades werden gezählt');
+  ok(d.betrieb.zeitzone === 'Europe/Berlin' && d.betrieb.abrufeFehl === 7 && d.betrieb.killSwitch === 1,
+     'Betriebsdaten sind drin – die Zeitzone erklärt eine ganze Klasse scheinbarer Fehler');
+  ok(d.betrieb.laufzeitMin >= 59 && d.betrieb.laufzeitMin <= 61, 'die Laufzeit wird aus dem Start berechnet', d.betrieb.laufzeitMin + ' Min');
+  ok(d.vorwaertstest.konfig !== null && d.vorwaertstest.bilanz['Klumpen-Limit'].n === 3 && d.vorwaertstest.offen === 1,
+     'die Vorwärtstest-Bilanz reist mit – der wichtigste Evidenzkanal');
+  /* Der behobene Bug: früher wurde nur der Kassenbestand gesendet. Nach einem
+   * Rebalancing (Kasse ≈ 0) sah jedes Momentum-Buch wie ein Totalverlust aus.
+   * Jetzt reisen die bewerteten Tagesstände aus dem Verlauf mit. */
+  ok(d.buecher.momentum.cash === 12.34 && d.buecher.verlauf.letzter.momentum === 10123,
+     'die Bücher melden bewertete Stände, nicht nur die Kasse');
+  ok(d.buecher.drift.positionen === 1, 'auch das Drift-Buch ist dabei');
+  ok(d.daten.termineWerte === 189 && d.daten.tagesdatenWerte === 189, 'der Zustand der Datenleitungen ist drin');
   ok(d.fehler.length === 20, 'das Fehlerprotokoll ist auf 20 gedeckelt', d.fehler.length);
 
   // DIE eigentliche Pruefung: nichts Sensibles darf durchsickern - egal wie es heisst
   ['GEHEIM-KEY-123', 'GEHEIM-PASS-456', 'MEINE-GEHEIMEN-REGELN', 'GEHEIMAKTIE',
-   'MEINSYMBOL', 'TRADESYMBOL', 'BUCHSYMBOL'].forEach(function (giftig) {
+   'MEINSYMBOL', 'TRADESYMBOL', 'BUCHSYMBOL', 'DRIFTSYMBOL', 'SCHATTENSYMBOL'].forEach(function (giftig) {
     ok(text.indexOf(giftig) === -1, 'weisse Liste haelt dicht: ' + giftig + ' ist NICHT im Versand');
   });
 })();

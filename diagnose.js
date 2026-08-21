@@ -27,20 +27,49 @@
 (function (root) {
 
   /** Reine Zusammenstellung — testbar in Node. Alles per WEISSER LISTE.
-   *  meta: {version, plattform, electron, installId} */
-  function baueDiagnose(einstellungen, depot, fehler, meta) {
+   *  meta: {version, plattform, electron, installId}
+   *  extra: {health, zeitzone, sprache, termineWerte, tagesdatenStand, tagesdatenWerte} */
+  function baueDiagnose(einstellungen, depot, fehler, meta, extra) {
     einstellungen = einstellungen || {};
     depot = depot || {};
+    extra = extra || {};
+    var h = extra.health || {};
+
+    /** Ein Trade-Bündel zu Summen und Quoten eindampfen — nie einzelne Trades. */
+    function summen(trades) {
+      var gew = trades.filter(function (t) { return t.pnl > 0; });
+      return {
+        n: trades.length,
+        treffer: trades.length ? Math.round(100 * gew.length / trades.length) : null,
+        pnl: Math.round(trades.reduce(function (a, t) { return a + (t.pnl || 0); }, 0) * 100) / 100
+      };
+    }
+    /** Ein Mittelfrist-Buch als Eckdaten — Zählwerte und Zeitpunkte, keine Symbole. */
+    function buchEcken(b) {
+      if (!b) return null;
+      return {
+        start: b.start, cash: Math.round((b.cash || 0) * 100) / 100,
+        positionen: (b.positionen || []).length, trades: (b.trades || []).length,
+        seit: b.angelegt || null, letztesRebalance: b.letztesRebalanceT || null
+      };
+    }
+    var geschlossen = (depot.trades || []).filter(function (t) { return t && t.status === 'closed'; });
+    var verlauf = depot.mfVerlauf || [];
+
     var d = {
       art: 'diagnose', version: meta.version || '?', plattform: meta.plattform || '?',
       electron: meta.electron || '?', installId: meta.installId || '?',
       stand: new Date().toISOString(),
 
-      // Welche Funktionen sind an? (Nutzungsbild, keine Inhalte)
+      // Welche Funktionen sind an, und wie sind sie eingestellt? (Nutzungsbild, keine Inhalte)
       nutzung: {
         intradayAn: !!(depot.intraday && depot.intraday.enabled),
         modus: depot.intraday ? depot.intraday.mode : null,
         instrument: depot.intraday ? (depot.intraday.instrument || 'schein') : null,
+        zeitrahmen: depot.intraday ? depot.intraday.interval : null,
+        haltedauerMin: depot.intraday ? depot.intraday.scalpHold : null,
+        profil: depot.intraday && (depot.intraday.instrument || 'schein') === 'schein' ? depot.intraday.profile : null,
+        klumpenMax: depot.intraday && depot.intraday.klumpenMax != null ? depot.intraday.klumpenMax : 8,
         kryptoHandeln: !!(depot.intraday && depot.intraday.kryptoHandeln),
         schattenImmer: !(depot.intraday && depot.intraday.schattenImmer === false),
         momentumAn: !!depot.momentumAn,
@@ -50,23 +79,62 @@
         rechenstand: depot.rechenstand != null ? depot.rechenstand : null
       },
 
-      // Aggregierte Kennzahlen des VIRTUELLEN Depots — Summen und Quoten, nie
-      // einzelne Trades, nie Symbole. Genau das, was die Auswertung braucht, um zu
-      // sehen, ob Strategien draußen so laufen wie in der Messung.
-      kennzahlen: (function () {
-        var trades = (depot.trades || []).filter(function (t) { return t && t.status === 'closed'; });
-        var gew = trades.filter(function (t) { return t.pnl > 0; });
-        var pnl = trades.reduce(function (a, t) { return a + (t.pnl || 0); }, 0);
-        return {
-          tradesGesamt: trades.length,
-          trefferquote: trades.length ? Math.round(100 * gew.length / trades.length) : null,
-          pnlGesamt: Math.round(pnl * 100) / 100,
-          positionenOffen: (depot.positions || []).length,
-          schattenAbgeschlossen: (depot.schatten || []).filter(function (x) { return x.status === 'closed'; }).length,
-          mfBuchWert: depot.mfBuch ? Math.round(((depot.mfBuch.cash || 0)) * 100) / 100 : null,
-          verlaufPunkte: (depot.mfVerlauf || []).length
-        };
-      })(),
+      /* Betriebsdaten für die Ferndiagnose. Die Zeitzone ist dabei die wichtigste
+       * Einzelinformation: Die gesamte Handelszeit-Logik nimmt Berlin an — läuft die
+       * App in einer anderen Zeitzone, erklärt das eine ganze Klasse scheinbarer
+       * Fehler (Scans zur falschen Zeit, leere Tagesschluss-Fenster). */
+      betrieb: {
+        zeitzone: extra.zeitzone || null,
+        sprache: extra.sprache || null,
+        laufzeitMin: h.startedAt ? Math.round((Date.now() - h.startedAt) / 60000) : null,
+        scans: h.scans || 0, scanFehler: h.scanErrors || 0,
+        abrufeOk: h.fetchOk || 0, abrufeFehl: h.fetchFail || 0,
+        kiOk: h.kiOk || 0, kiFehl: h.kiFail || 0,
+        killSwitch: h.killSwitch || 0, alteKurse: h.staleBars || 0, workerAusfaelle: h.workerFail || 0
+      },
+
+      /* Der VORWÄRTSTEST — der wichtigste Evidenzkanal. Die Schatten-Bilanz sagt, ob
+       * die Strategie draußen trägt, BEVOR Kapital im Spiel ist. Nur Aggregate je
+       * Grund (n, Summe, gerettet, verhindert) plus der Konfigurations-Fingerabdruck,
+       * damit die Auswertung Vergleichbares zusammenlegen kann. Keine Symbole. */
+      vorwaertstest: {
+        konfig: depot.schattenKonfig || null,
+        offen: (depot.schatten || []).filter(function (x) { return x.status === 'open'; }).length,
+        abgeschlossen: (depot.schatten || []).filter(function (x) { return x.status === 'closed'; }).length,
+        bilanz: depot.schattenStat || {}
+      },
+
+      // Kennzahlen JE STRATEGIE getrennt — ein Topf über alles verwischt genau die
+      // Frage, die die Auswertung stellt: Welche Strategie läuft draußen wie?
+      kennzahlen: {
+        intraday: summen(geschlossen.filter(function (t) { return t.strategy === 'intraday'; })),
+        stunden: summen(geschlossen.filter(function (t) { return t.strategy === 'hourly'; })),
+        altbestand: summen(geschlossen.filter(function (t) { return !t.strategy; })),
+        basisTrades: geschlossen.filter(function (t) { return t.basis; }).length,
+        positionenOffen: (depot.positions || []).length
+      },
+
+      /* Die Mittelfrist-Bücher mit BEWERTETEN Ständen aus dem Tagesverlauf.
+       * Der frühere Wert war ein Bug: Er sendete nur den Kassenbestand — nach dem
+       * ersten Rebalancing (Kasse ≈ 0) sah jedes Momentum-Buch wie ein Totalverlust
+       * aus. Der Verlauf trägt die täglich MARKIERTEN Buchwerte samt SPY-Vergleich. */
+      buecher: {
+        momentum: buchEcken(depot.mfBuch),
+        drift: buchEcken(depot.driftBuch),
+        verlauf: verlauf.length ? {
+          tage: verlauf.length,
+          erster: verlauf[0],
+          letzter: verlauf[verlauf.length - 1]
+        } : null
+      },
+
+      // Funktionieren die Datenleitungen beim Nutzer? Leere Leitungen erklären
+      // "die Strategie tut nichts" ohne jeden Programmfehler.
+      daten: {
+        termineWerte: extra.termineWerte != null ? extra.termineWerte : null,
+        tagesdatenStand: extra.tagesdatenStand || null,
+        tagesdatenWerte: extra.tagesdatenWerte != null ? extra.tagesdatenWerte : null
+      },
 
       // Automatisch mitgeschnittene Programmfehler — der wertvollste Teil: was still
       // abstürzt, merkt der Nutzer oft gar nicht. Quelle/Zeile ja, Pfade nein.
@@ -105,8 +173,22 @@
     var z = await zustand();
     var ver = '?';
     try { ver = await window.api.appVersion(); } catch (e) { }
+    // Zusatzdaten, die nicht am Depot-Objekt hängen: Gesundheit, Umgebung, Datenleitungen
+    var extra = { health: null, zeitzone: null, sprache: null, termineWerte: null, tagesdatenStand: null, tagesdatenWerte: null };
+    try { extra.health = window.__health ? window.__health() : null; } catch (e) { }
+    try { extra.zeitzone = Intl.DateTimeFormat().resolvedOptions().timeZone; } catch (e) { }
+    try { extra.sprache = navigator.language; } catch (e) { }
+    try {
+      var ta = await window.api.storeGet('drift_termine');
+      if (ta && ta.sym) extra.termineWerte = Object.keys(ta.sym).length;
+    } catch (e) { }
+    try {
+      var td = await window.api.storeGet('mf_tagesdaten');
+      if (td && td.roh) { extra.tagesdatenStand = td.at || null; extra.tagesdatenWerte = Object.keys(td.roh).length; }
+    } catch (e) { }
     return baueDiagnose(s, D() || {}, window.Bugs && window.Bugs.fehlerListe ? window.Bugs.fehlerListe() : [],
-      { version: ver, plattform: navigator.platform, electron: (navigator.userAgent.match(/Electron\/([\d.]+)/) || [])[1] || '?', installId: z.installId });
+      { version: ver, plattform: navigator.platform, electron: (navigator.userAgent.match(/Electron\/([\d.]+)/) || [])[1] || '?', installId: z.installId },
+      extra);
   }
 
   async function senden(anlass) {
@@ -136,9 +218,13 @@
     '(als GitHub-Issue, öffentlich einsehbar). Das hilft, Fehler zu finden und zu sehen, ' +
     'ob die Strategien draußen so laufen wie in der Messung.\n\n' +
     'Gesendet wird NUR:\n' +
-    '  • Programmversion, Betriebssystem, eine zufällige Installations-Kennung\n' +
-    '  • welche Funktionen an sind (Strategien, Modus, Instrument)\n' +
-    '  • Summen-Kennzahlen des virtuellen Depots (Trades gesamt, Trefferquote, Ergebnis)\n' +
+    '  • Programmversion, Betriebssystem, Zeitzone, Sprache, eine zufällige Installations-Kennung\n' +
+    '  • welche Funktionen an sind und wie sie eingestellt sind (Strategien, Modus, Instrument, Zeitrahmen)\n' +
+    '  • Summen-Kennzahlen je Strategie (Anzahl Trades, Trefferquote, Ergebnis) und die\n' +
+    '    Tagesstände der virtuellen Bücher samt Marktvergleich\n' +
+    '  • die Vorwärtstest-Bilanz des Schattenbuchs (nur Summen je Grund)\n' +
+    '  • Betriebszähler (Scans, fehlgeschlagene Kursabrufe, Laufzeit) und die Größe der\n' +
+    '    lokalen Datenbestände\n' +
     '  • automatisch mitgeschnittene Programmfehler\n\n' +
     'NIEMALS gesendet werden: Zugangsdaten, Watchlist, einzelne Positionen oder Symbole, ' +
     'KI-Regeln, Namen, E-Mail. Die Wahl lässt sich jederzeit in den Einstellungen ändern.';
