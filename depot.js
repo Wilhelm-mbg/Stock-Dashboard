@@ -3843,6 +3843,14 @@
   function messUniversum() {
     var syms = universe();
     SCREEN_CANDS.forEach(function (sy) { if (syms.indexOf(sy) === -1) syms.push(sy); });
+    /* Bei den belegten 60m-Modi misst die Nacht auf dem HANDELS-Universum
+     * (Basis + aktiver Pool), nicht auf der kleinen Screener-Liste - sonst
+     * beurteilt die Messung ein anderes Revier, als der Scanner bejagt
+     * (vorher: 47 Werte gemessen, 99 gehandelt). */
+    if (D.intraday.interval === '60m' && (D.intraday.mode === 'rsi2seit' || D.intraday.mode === 'kapitulation')) {
+      var extras = POOLS_60M[D.intraday.pool] || EXTRA_60M;
+      extras.forEach(function (sy) { if (syms.indexOf(sy) === -1) syms.push(sy); });
+    }
     return syms;
   }
 
@@ -4009,6 +4017,27 @@
       MODESL.push({ key: 'breakout_lauf', setup: 'ausbruch', trigger: 'kreuzung', name: 'Ausbruch · EMA-Kreuzung · laufen lassen',
         opts: { entryMode: 'cross', exitMode: 'confirmed', sl: -0.25, tp: 0.35, trailPct: 0, maxHoldMin: 0,
           cooldownMin: 45, maxPerDay: 10, trendFilter: !!cfg.trendFilter } });
+    }
+    /* WAECHTER-MODUS (21.08.2026): Faehrt der Nutzer eine BELEGTE Strategie,
+     * misst die Nacht nicht mehr das Setup-Roulette der widerlegten Familie
+     * (Breakout, Squeeze, Wave, Donchian ... - alle ohne gemessenen Vorsprung).
+     * Genau diese Rangfolgen aus Walk-Forward-Renditen auf kurzen Fenstern haben
+     * frueher Scheinsieger wie 'Bollinger-Squeeze +4,79 %' gekuert. Stattdessen
+     * treten nur noch die belegten Modi mit ihren wenigen sinnvollen
+     * Stellschrauben an (Haltedauer-Varianten). Wer bewusst ein anderes Setup
+     * faehrt, bekommt weiterhin die volle Liste. */
+    if (cfg.mode === 'rsi2seit' || cfg.mode === 'kapitulation') {
+      var belegt = MODESL.filter(function (m) { return m.key === 'rsi2seit' || m.key === 'kapitulation'; });
+      var basisK = belegt.filter(function (m) { return m.key === 'rsi2seit'; })[0];
+      if (basisK) {
+        [360, 600].forEach(function (hold) {
+          belegt.push({ key: 'rsi2seit_h' + hold, setup: 'umkehr', trigger: 'rsi2seit',
+            name: 'Umkehr · RSI(2) im Seitwärtskanal · Haltedauer ' + (hold / 60) + ' h',
+            meta: { scalpHold: hold },
+            opts: Object.assign({}, basisK.opts, { maxHoldMin: hold }) });
+        });
+      }
+      return belegt;
     }
     return MODESL;
   }
@@ -5484,6 +5513,49 @@
     }).join('');
     el.scrollTop = el.scrollHeight;
   }
+  /** Edge-Waechter: Lebt der belegte Vorsprung im frischen Fenster noch?
+   *  Rechnet rsi2seit-Signale der letzten 120 Tage auf dem 60m-Archiv nach -
+   *  Ueberschuss gegen die Drift des Symbols, t UEBER SYMBOLE, exakt die
+   *  Studien-Methodik. Das ist die eigentliche Aufgabe der Nacht: nicht neue
+   *  Sieger kueren, sondern den belegten Edge BEWACHEN. */
+  async function edgeZustand() {
+    var P = { ENTRY: 'rsi2seit', LINE: 'ema', period: 20, confirmBps: 15, ZTHR: 1.5, MINQ: 0, CHAN: false, MTF: false, TREND: false };
+    var H = 8, abT = Date.now() - 120 * 86400000;
+    var syms = messUniversum();
+    var symMittel = [], nGes = 0;
+    for (var si = 0; si < syms.length; si++) {
+      var bars = await window.Archiv.serie('60m', syms[si]);
+      if (!bars || bars.length < 300) continue;
+      var c = bars.map(function (b) { return b[1]; });
+      var ds = 0, dn = 0;
+      for (var i = 0; i < c.length - H; i += H) { ds += c[i + H] / c[i] - 1; dn++; }
+      var drift = dn ? ds / dn : 0;
+      var us = [], cool = 0;
+      for (var i2 = 300; i2 < bars.length - H; i2++) {
+        if (bars[i2][0] < abT) continue;
+        if (bars[i2][0] - cool < 120 * 60000) continue;
+        var s = null;
+        try { s = Q.einstiegSignal(bars, i2, P); } catch (e) { }
+        if (!s || s.dir !== 'call') continue;
+        cool = bars[i2][0];
+        us.push((c[i2 + H] / c[i2] - 1) - drift);
+        nGes++;
+      }
+      if (us.length >= 2) symMittel.push(us.reduce(function (a2, b2) { return a2 + b2; }, 0) / us.length);
+    }
+    var n = symMittel.length;
+    if (n < 5) return { n: nGes, nSym: n, txt: 'Edge-Wächter: erst ' + nGes + ' rsi2seit-Signale im 60m-Archiv – die Messbasis wächst mit jedem Handelstag.' };
+    var m = symMittel.reduce(function (a3, b3) { return a3 + b3; }, 0) / n;
+    var sd = Math.sqrt(symMittel.reduce(function (a4, b4) { return a4 + (b4 - m) * (b4 - m); }, 0) / (n - 1));
+    var t = sd > 0 ? m / (sd / Math.sqrt(n)) : 0;
+    var urteil = (m > 0 && t >= 1.5) ? 'im Rahmen der Studie'
+      : (m > 0 ? 'positiv, aber statistisch dünn – weiter beobachten'
+        : 'VERFALL gegenüber der Studie – wenn die nächste Nacht das bestätigt, Handel pausieren und neu messen');
+    return { n: nGes, nSym: n, mittelPp: Math.round(m * 10000) / 100, t: Math.round(t * 100) / 100,
+      txt: 'Edge-Wächter (rsi2seit, letzte 120 Tage, Archiv): ' + nGes + ' Signale über ' + n + ' Werte · Überschuss ' +
+        (m >= 0 ? '+' : '') + (m * 100).toFixed(3) + ' Pp/8 h · t über Symbole ' + t.toFixed(2) + ' → ' + urteil };
+  }
+
   async function pilotMessen(manual) {
     var a = autoOptCfg();
     if (tiefRunning) { if (manual) pilotLogAdd('Hinweis: Tiefensuche läuft gerade – die Messung startet danach automatisch beim nächsten Takt.'); return; }
@@ -5535,6 +5607,15 @@
             txt: '' + rec.modeName + ' · ' + rec.interval + ' ist robust (Walk-Forward ' + (rec.wfRet > 0 ? '+' : '') + rec.wfRet + ' %, ' + rec.n + ' Trades) – wartet auf Bestätigung durch die nächste Nacht-Messung. Ein einzelner Sieg kann Zufall sein.' };
         }
       }
+      // Edge-Waechter im Anschluss - die eigentliche Frage der Nacht: Traegt der
+      // belegte Vorsprung im frischen Fenster noch? (reine Archiv-Rechnung)
+      try {
+        var edge = await edgeZustand();
+        if (edge) {
+          a.edge = Object.assign({ at: Date.now() }, edge);
+          a.lastCheck.txt += '\n\n' + edge.txt;
+        }
+      } catch (eEdge) { /* Waechter ist Zusatz - die Messung gilt auch ohne */ }
       a.lastCheck.dauerMin = Math.round((Date.now() - t0) / 60000 * 10) / 10;
       pilotLogAdd('Fertig nach ' + a.lastCheck.dauerMin + ' Min: ' + a.lastCheck.txt);
       // Verlauf + Messbericht: sichtbar machen, was funktioniert und woran der Rest scheitert

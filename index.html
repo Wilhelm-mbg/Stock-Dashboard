@@ -761,11 +761,15 @@
     <div class="panel" style="margin-bottom:12px; border-top:3px solid var(--series);">
       <h3>Autopilot – die App verbessert sich selbst</h3>
       <div style="color:var(--muted); font-size:11.5px; margin-bottom:10px;">
-        Eine Kette statt drei Automatiken: Das <b>Kursarchiv</b> sammelt jede geladene Kursreihe dauerhaft
-        (rollierend 90 Tage) – die Messbasis wächst mit jedem Handelstag, statt an Yahoos kurzem Rückblick zu kleben.
-        Der <b>Autopilot</b> misst jede Nacht nach US-Börsenschluss alle Setups per Walk-Forward auf dem Archiv und
-        übernimmt nur Ergebnisse, die <b>belastbar</b> sind und sich in <b>zwei Nächten hintereinander</b> bestätigen –
-        angewendet wird morgens vor Handelsbeginn, nie mitten im Handel. Von Hand gesetzte Felder bleiben unangetastet.
+        Das <b>Kursarchiv</b> sammelt jede geladene Kursreihe dauerhaft – die Messbasis wächst mit jedem Handelstag,
+        statt an Yahoos kurzem Rückblick zu kleben. Was die Nacht misst, hängt von deiner Strategie ab:
+        Fährst du eine <b>belegte Strategie</b> (RSI2 im Seitwärtskanal / Kapitulations-Dip), arbeitet die Nacht als
+        <b>Edge-Wächter</b> – sie prüft auf dem vollen Handels-Universum, ob der gemessene Vorsprung im frischen Fenster
+        noch trägt (Überschuss gegen die Drift, t über Symbole), und vergleicht nur noch die wenigen belegten
+        Stellschrauben (Haltedauer-Varianten). Das alte Setup-Rennen über die widerlegten Signale läuft dort bewusst
+        nicht mehr – es hat Scheinsieger produziert. Fährst du ein anderes Setup, misst die Nacht wie bisher alle
+        Kandidaten per Walk-Forward; übernommen wird nur, was sich in <b>zwei Nächten hintereinander</b> bestätigt,
+        angewendet morgens vor Handelsbeginn. Von Hand gesetzte Felder bleiben unangetastet.
       </div>
 
       <div class="auto-row">
