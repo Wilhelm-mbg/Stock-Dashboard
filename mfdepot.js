@@ -23,7 +23,8 @@
 
   /* ---------------- Daten ---------------- */
   async function ladeKurse() {
-    var g = await window.api.storeGet('mf_tagesdaten');
+    // Liest ueber den Teile-Speicher des Mittelfrist-Tabs (ein Lader, eine Wahrheit)
+    var g = window.MF && window.MF.tagesdatenLesen ? await window.MF.tagesdatenLesen() : await window.api.storeGet('mf_tagesdaten');
     if (!g || !g.roh) return null;
     var preise = {}, juengster = 0;
     Object.keys(g.roh).forEach(function (s) {

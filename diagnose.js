@@ -242,7 +242,7 @@
       if (ta && ta.sym) extra.termineWerte = Object.keys(ta.sym).length;
     } catch (e) { }
     try {
-      var td = await window.api.storeGet('mf_tagesdaten');
+      var td = window.MF && window.MF.tagesdatenLesen ? await window.MF.tagesdatenLesen() : await window.api.storeGet('mf_tagesdaten');
       if (td && td.roh) { extra.tagesdatenStand = td.at || null; extra.tagesdatenWerte = Object.keys(td.roh).length; }
     } catch (e) { }
     return baueDiagnose(s, D() || {}, window.Bugs && window.Bugs.fehlerListe ? window.Bugs.fehlerListe() : [],

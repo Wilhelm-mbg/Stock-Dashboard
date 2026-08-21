@@ -4503,6 +4503,54 @@
     z.push('');
     z.push('Ordergebühr steht auf ' + ((D.intraday.orderFee || 0) === 0 ? '**0** – Capital.com berechnet keine Kommission, alles steckt im Spread.' : (D.intraday.orderFee + ' $ je Order.')));
     z.push('');
+    /* Wochenrueckblick: Eine einzelne Nacht kann Zufall sein - erst der
+     * 7-Tage-Blick zeigt, ob etwas TRAEGT. Rollierend statt Kalenderwoche,
+     * damit der Abschnitt in jedem Bericht steht und nie veraltet. */
+    z.push('## Wochenrückblick (rollierend, letzte 7 Tage)');
+    z.push('');
+    (function () {
+      var seitW = (c.at || Date.now()) - 7 * 86400000;
+      var wt = (D.trades || []).filter(function (t) { return t.status === 'closed' && t.closeT >= seitW; });
+      if (!wt.length) {
+        z.push('Keine abgeschlossenen Trades in den letzten 7 Tagen.');
+      } else {
+        z.push('| Strategie | Trades | Treffer | Ergebnis |');
+        z.push('|---|---|---|---|');
+        [['intraday', 'Intraday'], ['hourly', 'Stunden'], [null, 'Altbestand']].forEach(function (paar) {
+          var liste = wt.filter(function (t) { return paar[0] ? t.strategy === paar[0] : !t.strategy; });
+          if (!liste.length) return;
+          var wins = liste.filter(function (t) { return t.pnl > 0; }).length;
+          var summe = liste.reduce(function (a2, t) { return a2 + (t.pnl || 0); }, 0);
+          z.push('| ' + paar[1] + ' | ' + liste.length + ' | ' + Math.round(wins / liste.length * 100) + ' % | ' +
+            (summe > 0 ? '+' : '') + summe.toFixed(2).replace('.', ',') + ' $ |');
+        });
+        var wBasis = wt.filter(function (t) { return t.basis; }).length;
+        if (wBasis) z.push('');
+        if (wBasis) z.push('Davon ' + wBasis + ' über den Basiswert (statt Hebelschein).');
+      }
+      var wSch = (D.schatten || []).filter(function (s) { return s.status === 'closed' && s.closeT >= seitW; });
+      if (wSch.length) z.push('');
+      if (wSch.length) z.push('Vorwärtstest: ' + wSch.length + ' Schatten-Trades abgeschlossen (Bilanz je Grund steht im Vorwärtstest-Abschnitt der App).');
+      var wTune = (D.tuneLog || []).filter(function (e2) { return e2.at >= seitW; });
+      if (wTune.length) {
+        z.push('');
+        z.push('Eingriffe der Woche (Autopilot/Sicherungen, jüngste zuerst):');
+        wTune.slice(0, 8).forEach(function (e2) {
+          z.push('- ' + new Date(e2.at).toLocaleDateString('de-DE') + ' · ' + (e2.quelle || '?') + ': ' +
+            ((e2.applied || []).join(', ') || (e2.txt || '').slice(0, 90)));
+        });
+        if (wTune.length > 8) z.push('- … und ' + (wTune.length - 8) + ' weitere');
+      }
+      var mv = (D.mfVerlauf || []).filter(function (p) { return p.t >= seitW; });
+      if (mv.length >= 2) {
+        var e0 = mv[0], e1 = mv[mv.length - 1];
+        function pctW(a2, b2) { return a2 > 0 ? ((b2 / a2 - 1) * 100).toFixed(2) : '–'; }
+        z.push('');
+        z.push('Bücher über die Woche (' + mv.length + ' Tagespunkte): Momentum ' + pctW(e0.momentum, e1.momentum) +
+          ' % · Drift ' + pctW(e0.drift, e1.drift) + ' % · SPY ' + pctW(e0.spy, e1.spy) + ' %.');
+      }
+    })();
+    z.push('');
     z.push('## Ergebnis dieser Messung');
     z.push('');
     z.push(a.lastCheck ? a.lastCheck.txt : '–');

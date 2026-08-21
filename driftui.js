@@ -85,7 +85,7 @@
    *  Zweimal dieselben 190 Symbole zu holen wäre Verschwendung – und würde die
    *  Drosselung provozieren, an der der Terminabruf ohnehin schon knabbert. */
   async function ladeKurse() {
-    var g = await window.api.storeGet('mf_tagesdaten');
+    var g = window.MF && window.MF.tagesdatenLesen ? await window.MF.tagesdatenLesen() : await window.api.storeGet('mf_tagesdaten');
     if (!g || !g.roh || Object.keys(g.roh).length < 30) return null;
     return g.roh;
   }

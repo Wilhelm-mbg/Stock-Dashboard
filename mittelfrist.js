@@ -50,15 +50,53 @@
     } catch (e) { return null; }
   }
 
+  /* ---- Tagesdaten-Speicher in Teilen ----
+   * Frueher lag das komplette Archiv (38,5 MB) unter EINEM Schluessel: Jedes
+   * Speichern schrieb den ganzen Klumpen neu, und ein Absturz mitten im
+   * Schreiben haette das gesamte Archiv beschaedigt statt eines Teils. Jetzt:
+   * Symbole alphabetisch in Teile zu je 25, dazu ein kleiner Index mit Stand
+   * und Teilzahl. Der Index wird ZULETZT geschrieben - wer liest, sieht nur
+   * vollstaendige Staende; fehlt ein Teil, greift der alte Schluessel. */
+  var TEIL_GROESSE = 25;
+  async function tagesdatenSchreiben(roh, weg, at) {
+    var syms = Object.keys(roh).sort();
+    var teile = Math.max(1, Math.ceil(syms.length / TEIL_GROESSE));
+    for (var t = 0; t < teile; t++) {
+      var stueck = {};
+      syms.slice(t * TEIL_GROESSE, (t + 1) * TEIL_GROESSE).forEach(function (s) { stueck[s] = roh[s]; });
+      await window.api.storeSet('mf_tagesdaten_teil_' + t, { roh: stueck });
+    }
+    await window.api.storeSet('mf_tagesdaten_index', { at: at || Date.now(), weg: weg || [], teile: teile });
+    // Der alte Riesen-Schluessel wird zu einem kleinen Verweis - die 38 MB sind damit weg
+    try { await window.api.storeSet('mf_tagesdaten', { ersetztDurch: 'mf_tagesdaten_index', at: at || Date.now() }); } catch (eM) { }
+  }
+  async function tagesdatenLesen() {
+    var idx = await window.api.storeGet('mf_tagesdaten_index');
+    if (idx && idx.teile) {
+      var roh = {}, ok = true;
+      for (var t = 0; t < idx.teile && ok; t++) {
+        var teil = await window.api.storeGet('mf_tagesdaten_teil_' + t);
+        if (!teil || !teil.roh) ok = false;
+        else Object.keys(teil.roh).forEach(function (s) { roh[s] = teil.roh[s]; });
+      }
+      if (ok) return { at: idx.at, roh: roh, weg: idx.weg || [], quelle: 'teile' };
+    }
+    var g = await window.api.storeGet('mf_tagesdaten');
+    return (g && g.roh) ? { at: g.at, roh: g.roh, weg: g.weg || [], quelle: 'alt' } : null;
+  }
+
   /** Alle Werte holen und auf eine gemeinsame Zeitachse bringen.
    *  Ohne gemeinsame Achse vergleicht man Werte zu verschiedenen Zeitpunkten. */
   async function ladeUniversum() {
     var roh = {}, fertig = 0;
-    var gespeichert = await window.api.storeGet('mf_tagesdaten');
+    var gespeichert = await tagesdatenLesen();
     var frisch = gespeichert && (Date.now() - (gespeichert.at || 0) < 20 * 3600000);
     if (frisch) {
       roh = gespeichert.roh;
       stat('Gespeicherte Daten von ' + new Date(gespeichert.at).toLocaleString('de-DE') + ' verwendet.');
+      // Einmalige Wanderung: Liegt der Bestand noch im alten Klumpen-Format,
+      // wird er beim ersten Lesen in Teile umgeschrieben.
+      if (gespeichert.quelle === 'alt') await tagesdatenSchreiben(roh, gespeichert.weg, gespeichert.at);
     } else {
       var weg = [];
       for (var i = 0; i < UNIVERSUM.length; i++) {
@@ -68,7 +106,7 @@
         if (fertig % 10 === 0) stat('Lade Tageskurse … ' + fertig + '/' + UNIVERSUM.length);
         await new Promise(function (w) { setTimeout(w, 90); });   // Quelle nicht überrennen
       }
-      await window.api.storeSet('mf_tagesdaten', { at: Date.now(), roh: roh, weg: weg });
+      await tagesdatenSchreiben(roh, weg, Date.now());
       /* Ausgefallene Werte SICHTBAR machen, nicht still übergehen.
        *
        * Am 21.08.2026 lieferte Yahoo für BK, MMC, HES und FI nichts mehr – HES etwa ist
@@ -197,5 +235,5 @@
   if (typeof window !== 'undefined') window.__mfRechnen = rechnen;
   // Nach aussen: das Mittelfrist-Depot (mfdepot.js) stoesst hierueber den taeglichen
   // Kursabruf an, statt den Lader zu duplizieren - zwei Lader hiessen zwei Wahrheiten.
-  window.MF = { ladeUniversum: ladeUniversum };
+  window.MF = { ladeUniversum: ladeUniversum, tagesdatenLesen: tagesdatenLesen };
 })();

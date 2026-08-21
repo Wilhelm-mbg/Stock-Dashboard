@@ -1072,6 +1072,13 @@
       <label>bis<input id="sfLzMax" type="number" value="180" style="width:60px;"></label>
       <label title="Geld-Brief-Spanne je Seite">max. Spanne %<input id="sfSpreadMax" type="number" value="1" step="0.1" style="width:60px;"></label>
       <label title="Modell-Wahrscheinlichkeit eines wertlosen Verfalls">max. Totalverlust %<input id="sfTvMax" type="number" value="50" style="width:60px;"></label>
+      <label title="Filtert das Raster auf Basispreise in einem Band um den aktuellen Kurs des Basiswerts („ums Geld“). Die Bandbreite ist frei wählbar.">Basispreis<select id="sfBand">
+        <option value="999" selected>alle</option>
+        <option value="2.5">±2,5 % ums Geld</option>
+        <option value="5">±5 % ums Geld</option>
+        <option value="10">±10 % ums Geld</option>
+        <option value="20">±20 % ums Geld</option>
+      </select></label>
       <label>Sortierung<select id="sfSort">
         <option value="stufe" selected>Risikostufe (defensiv zuerst)</option>
         <option value="huerde">kleinste Kostenhürde</option>

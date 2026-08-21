@@ -77,6 +77,9 @@
       lzMax: g('sfLzMax', 9999),
       spreadMax: g('sfSpreadMax', 100),
       tvMax: g('sfTvMax', 100),
+      // Basispreis-Band ums Geld (Tester-Wunsch #8): "Basis ist der aktuelle
+      // Wert der Basis, den Spread kann man einstellen" - genau so gebaut.
+      band: g('sfBand', 999),
       sort: (el('sfSort') || {}).value || 'stufe'
     };
   }
@@ -92,6 +95,7 @@
       if (k.restTage < f.lzMin || k.restTage > f.lzMax) return false;
       if (k.spreadPct > f.spreadMax) return false;
       if (k.totalverlustP > f.tvMax) return false;
+      if (BASIS && f.band < 999 && Math.abs(k.strike / BASIS.spot - 1) * 100 > f.band) return false;
       return true;
     });
     var s = f.sort;
@@ -109,6 +113,12 @@
     // wer die teuersten Spannen oder die groesste Totalverlust-Gefahr sehen will,
     // soll dafuer nicht durch die ganze Liste scrollen muessen.
     if (sortUmgekehrt) liste.reverse();
+    if (!liste.length) {
+      t.innerHTML = '<div class="empty" style="padding:14px 4px;">Kein Schein erfüllt alle Filter gleichzeitig. ' +
+        'Am häufigsten ist „max. Spanne“ oder „max. Totalverlust“ die strengste Hürde – Scheine nah am Geld mit kleinem ' +
+        'Bezugsverhältnis sind billig, und der feste Cent-Spread wiegt dort relativ schwer. Einen Filter lockern hilft.</div>';
+      return;
+    }
     var STUFENFARBE = ['', 'var(--up)', '#7c9cf5', 'var(--warn)', '#f59c40', 'var(--down)'];
     var zeilen = liste.slice(0, 120).map(function (k, i) {
       return '<tr data-sfi="' + RASTER.indexOf(k) + '" style="cursor:pointer;">' +
@@ -228,7 +238,7 @@
     }
     var b = el('sfLadenBtn');
     if (b) b.addEventListener('click', lade);
-    ['sfTyp', 'sfStufe', 'sfHebelMin', 'sfHebelMax', 'sfLzMin', 'sfLzMax', 'sfSpreadMax', 'sfTvMax'].forEach(function (id) {
+    ['sfTyp', 'sfStufe', 'sfHebelMin', 'sfHebelMax', 'sfLzMin', 'sfLzMax', 'sfSpreadMax', 'sfTvMax', 'sfBand'].forEach(function (id) {
       var e = el(id);
       if (e) e.addEventListener('change', zeige);
     });
