@@ -223,6 +223,13 @@
       var res = await call('GET', '/prices/' + encodeURIComponent(epic) + '?resolution=' + (RES[interval] || 'MINUTE_5') +
         '&from=' + iso(fromMs) + '&to=' + iso(toMs) + '&max=' + (max || 1000));
       if (!res.ok) {
+        /* Capital.com meldet einen Zeitraum OHNE Kurse als 404 'prices.not-found' -
+         * nicht als leere Liste. Das ist kein Fehler, sondern eine Handelspause
+         * (Feiertag, Wochenende, Halbtag). Als Fehler gezaehlt kostete es je Vorkommen
+         * Sekunden Rueckzug und liess den Wert nach dreimal fallen. Belegt am 22.08.2026:
+         * ZS 15m ueber Memorial Day (25.05.2026).
+         * Leeres Array = 'dieser Bereich ist leer' - der Aufrufer springt dann ueber die Pause. */
+        if (res.status === 404 && String(res.body || '').indexOf('prices.not-found') !== -1) return [];
         letzterKursFehler = 'Kursabruf ' + sym + ' (' + interval + ', ' + iso(fromMs) + ' bis ' + iso(toMs) + '): HTTP ' + res.status +
           (res.body ? ' – ' + String(res.body).slice(0, 200) : '');
         return null;

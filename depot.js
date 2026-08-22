@@ -4509,7 +4509,13 @@
     var budget = opts.maxAnfragen || 15000;
     var stat = { requests: 0, bars: 0, symbole: 0, fehler: 0, start: Date.now(), grund: '' };
     var ohneErfolg = 0;   // Werte in Folge, die keine einzige Kerze lieferten
-    var pause = opts.pauseMs || 300;
+    /* Capital.com erlaubt 10 Anfragen/Sekunde. Mit 200 ms Pause plus Antwortzeit
+     * liegt der Lauf bei rund 2-3/s - genug Abstand, auch wenn nebenher der
+     * Intraday-Scan oder die Spannen-Messung eine Anfrage stellt.
+     * Groesseres Abruffenster wurde geprueft und VERWORFEN: eine Handelssitzung ist
+     * 390 Minuten lang, jedes Fenster ab 390 Kerzen deckt sie bereits ganz ab. Der
+     * 1m-Lauf kostet so oder so eine Anfrage je Handelstag. */
+    var pause = opts.pauseMs || 200;
     melde('Starte … ' + syms.length + ' Werte × ' + ivs.length + ' Zeitrahmen, Ziel ' + tage + ' Tage.');
     try {
       for (var vi = 0; vi < ivs.length && !massenStop; vi++) {
@@ -7521,6 +7527,13 @@
     if (mBtn) mBtn.addEventListener('click', function () {
       if (qBtn) qBtn.disabled = true;
       massenBackfill({ tage: 90 }).catch(function () { }).then(function () { if (qBtn) qBtn.disabled = false; });
+    });
+    var m1 = document.getElementById('massen1mBtn');
+    if (m1) m1.addEventListener('click', function () {
+      if (qBtn) qBtn.disabled = true;
+      // Nur 1m: der einzige Zeitrahmen mit echter Luecke. 15m/5m stehen bereits bei ~85 Tagen.
+      massenBackfill({ tage: 90, ivs: [{ iv: '1m', barMin: 1 }] })
+        .catch(function () { }).then(function () { if (qBtn) qBtn.disabled = false; });
     });
     var mStop = document.getElementById('massenStopBtn');
     if (mStop) mStop.addEventListener('click', function () { massenAbbrechen(); });

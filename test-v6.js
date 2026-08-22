@@ -710,7 +710,7 @@ console.log('\n17b) Oberflaeche: Altlasten und Verdrahtung');
   ok(d.indexOf("massenStop") !== -1 && /function massenAbbrechen/.test(d), 'Backfill: jederzeit anhaltbar');
   ok(d.indexOf("fehlSerie < 3") !== -1 && d.indexOf("1500 * fehlSerie") !== -1,
      'Backfill: bei Fehlern Rueckzug statt Weiterhaemmern - eine gedrosselte API sperrt sonst');
-  ok(d.indexOf("opts.pauseMs || 300") !== -1, 'Backfill: feste Pause je Anfrage');
+  ok(d.indexOf("opts.pauseMs || 200") !== -1, 'Backfill: feste Pause je Anfrage (200 ms)');
   ok(d.indexOf("si % 10 === 9") !== -1, 'Backfill: Zwischenstand wird laufend gesichert');
   ok((d.match(/minutenSeitOeffnung/g) || []).length >= 2,
      'Backfill: nur Kerzen der regulaeren US-Sitzung (CFDs laufen fast rund um die Uhr)');
@@ -2052,6 +2052,19 @@ console.log('\n30) Datenquellen-Diagnose (Capital.com) – ein Fehlschlag muss s
      'Eine gestörte Messung wird als UNBEKANNT ausgewiesen, nicht als kurze Historie');
   ok(dq.indexOf("iTyp.indexOf('SHARES') === -1") !== -1,
      'Die Prüfung warnt, wenn hinter dem Kürzel kein Aktienmarkt liegt');
+
+  /* Capital.com meldet einen Zeitraum ohne Kurse als HTTP 404 prices.not-found statt
+   * als leere Liste. Belegt am 22.08.2026 (ZS 15m ueber Memorial Day). Als Fehler
+   * gezaehlt kostete das je Vorkommen Sekunden Rueckzug und liess den Wert fallen. */
+  ok(pR.indexOf("prices.not-found") !== -1 && pR.indexOf("return [];") !== -1,
+     'Ein leerer Zeitraum (404 prices.not-found) gilt als Handelspause, kein Fehler');
+  ok(mb.indexOf("opts.pauseMs || 200") !== -1,
+     'Der Lauf pausiert 200 ms je Anfrage (rund 2-3/s, Grenze der API ist 10/s)');
+  var v1m = (html.match(/id="massen1mBtn"/g) || []).length;
+  ok(v1m === 1, 'Der Knopf „nur 1-Minuten" existiert genau einmal', v1m + 'x');
+  ok(dep.indexOf("getElementById('massen1mBtn')") !== -1 &&
+     dep.indexOf("ivs: [{ iv: '1m', barMin: 1 }]") !== -1,
+     'Der 1-Minuten-Knopf ist verdrahtet und beschraenkt den Lauf auf 1m');
 
   // Knopf: vorhanden UND verdrahtet – tote Schalter gab es hier schon einmal (6 Stück).
   var vork = (html.match(/id="quelleTestBtn"/g) || []).length;
