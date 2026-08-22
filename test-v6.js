@@ -704,6 +704,18 @@ console.log('\n17b) Oberflaeche: Altlasten und Verdrahtung');
      'Spannen: Diagnose meldet nur Aggregate, keine Einzelkurse');
   ok(/quote: async function/.test(c2) && c2.indexOf('/markets/') !== -1,
      'Spannen: die Kursabfrage nutzt den Markt-Endpunkt des Demo-Hosts');
+  // --- Massen-Backfill: Messbasis in einem Rutsch vertiefen (22.08.2026) ---
+  ok(/function massenBackfill/.test(d), 'Backfill: Massen-Auffuellung existiert');
+  ok(d.indexOf("POOLS_60M.ndx100") !== -1, 'Backfill: Nasdaq-100 ist im Universum');
+  ok(d.indexOf("massenStop") !== -1 && /function massenAbbrechen/.test(d), 'Backfill: jederzeit anhaltbar');
+  ok(d.indexOf("fehlSerie < 3") !== -1 && d.indexOf("1500 * fehlSerie") !== -1,
+     'Backfill: bei Fehlern Rueckzug statt Weiterhaemmern - eine gedrosselte API sperrt sonst');
+  ok(d.indexOf("opts.pauseMs || 300") !== -1, 'Backfill: feste Pause je Anfrage');
+  ok(d.indexOf("si % 10 === 9") !== -1, 'Backfill: Zwischenstand wird laufend gesichert');
+  ok((d.match(/minutenSeitOeffnung/g) || []).length >= 2,
+     'Backfill: nur Kerzen der regulaeren US-Sitzung (CFDs laufen fast rund um die Uhr)');
+  ok(/massenBtn/.test(h) && /massenStopBtn/.test(h), 'Backfill: Knoepfe vorhanden');
+  ok(h.indexOf("mit Absicht gedrosselt") !== -1, 'Backfill: die Drosselung wird dem Nutzer erklaert');
   // --- Simulations-Hinweis ueberlebt jeden Umbau ---
   var simH = (h.match(/keine Anlageberatung/gi) || []).length;
   var simD = (d.match(/keine Anlageberatung/gi) || []).length;

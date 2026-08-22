@@ -4443,6 +4443,91 @@
     return stat;
   }
 
+  /* ================= Massen-Backfill (22.08.2026) =================
+   * Der naechtliche Backfill oben laeuft mit 250 Anfragen - das fuellt das Archiv
+   * ueber Wochen. Fuer die offenen Studien fehlt aber vor allem 1-Minuten-Historie:
+   * Yahoo gibt nur 7 Tage, und Felix' Winkel-Detektor (#33) sowie die Dichte-Studie
+   * (#36) brauchen 60+ Tage. Capital.com kann das liefern - in einem Rutsch.
+   *
+   * Bewusst NICHT "die API heiss laufen lassen": Ein zu schneller Lauf wird
+   * gedrosselt oder sperrt den Zugang zeitweise, und dann steht alles. Deshalb
+   * feste Pause je Anfrage, Abbruch nach mehreren Fehlern in Folge, und ein
+   * Fortschritt, der jederzeit anhaltbar ist und beim naechsten Start weiterlaeuft
+   * (der Zeiger ist der fruehste Archiv-Stempel je Symbol - er merkt sich alles). */
+  var massenLaeuft = false, massenStop = false;
+  function massenAbbrechen() { massenStop = true; }
+  async function massenBackfill(opts) {
+    opts = opts || {};
+    var el = document.getElementById('massenStatus');
+    function melde(t) { if (el) el.textContent = t; }
+    if (!(window.CapAPI && window.CapAPI.enabled())) { melde('Capital.com ist nicht verbunden – Zugangsdaten in den App-Einstellungen eintragen und „Verbindung aktivieren“ setzen.'); return null; }
+    if (!window.Archiv) { melde('Kursarchiv nicht bereit.'); return null; }
+    if (massenLaeuft) { melde('Läuft bereits.'); return null; }
+    massenLaeuft = true; massenStop = false;
+    var tage = opts.tage || 90;
+    var ivs = opts.ivs || [{ iv: '1m', barMin: 1 }, { iv: '5m', barMin: 5 }, { iv: '15m', barMin: 15 }];
+    /* Universum: Handels-Universum + Nasdaq-100 + aktiver Pool, dedupliziert.
+     * Mehr Werte auf denselben Tagen = mehr Out-of-Sample-Trades je Messung. */
+    var syms = universe().slice();
+    (POOLS_60M.ndx100 || []).forEach(function (s) { if (syms.indexOf(s) === -1) syms.push(s); });
+    (POOLS_60M[D.intraday.pool] || []).forEach(function (s) { if (syms.indexOf(s) === -1) syms.push(s); });
+    var ziel = Date.now() - tage * 86400000;
+    var stat = { requests: 0, bars: 0, symbole: 0, fehler: 0, start: Date.now() };
+    var pause = opts.pauseMs || 300;
+    melde('Starte … ' + syms.length + ' Werte × ' + ivs.length + ' Zeitrahmen, Ziel ' + tage + ' Tage.');
+    try {
+      for (var vi = 0; vi < ivs.length && !massenStop; vi++) {
+        var iv = ivs[vi].iv, barMin = ivs[vi].barMin;
+        for (var si = 0; si < syms.length && !massenStop; si++) {
+          var sym = syms[si];
+          var serie = await window.Archiv.serie(iv, sym);
+          var frueh = serie.length ? serie[0][0] : Date.now();
+          if (frueh <= ziel) continue;
+          var leer = 0, geholt = false, fehlSerie = 0;
+          while (frueh > ziel && !massenStop && leer < 2 && fehlSerie < 3) {
+            var von = Math.max(ziel, frueh - 1000 * barMin * 60000);
+            var bars = null;
+            try { bars = await window.CapAPI.pricesRange(sym, iv, von, frueh - 1, 1000); } catch (eB) { bars = null; }
+            stat.requests++;
+            if (!bars) {
+              fehlSerie++; stat.fehler++;
+              // Bei Fehlern langsamer werden statt weiterzuhaemmern - das ist genau
+              // die Situation, in der eine Drosselung greift.
+              await new Promise(function (r) { setTimeout(r, 1500 * fehlSerie); });
+              continue;
+            }
+            fehlSerie = 0;
+            if (!bars.length) { leer++; frueh = von; continue; }
+            leer = 0;
+            var sess = bars.filter(function (b) { var m = Q.minutenSeitOeffnung(b[0]); return m >= 0 && m < 390; });
+            if (sess.length) { await window.Archiv.fuege(iv, sym, sess); stat.bars += sess.length; geholt = true; }
+            frueh = Math.min(von, bars[0][0]);
+            await new Promise(function (r) { setTimeout(r, pause); });
+          }
+          if (geholt) stat.symbole++;
+          var minLauf = Math.round((Date.now() - stat.start) / 60000);
+          melde(iv + ': Wert ' + (si + 1) + '/' + syms.length + ' (' + sym + ') · ' +
+            stat.requests + ' Anfragen · ' + Math.round(stat.bars / 1000) + 'k Kerzen · ' +
+            stat.fehler + ' Fehler · ' + minLauf + ' Min' + (massenStop ? ' · wird angehalten …' : ''));
+          if (si % 10 === 9) await window.Archiv.speichere(true);   // Zwischenstand sichern
+        }
+      }
+      await window.Archiv.speichere(true);
+      var dauer = Math.round((Date.now() - stat.start) / 60000);
+      melde((massenStop ? 'Angehalten' : 'Fertig') + ' nach ' + dauer + ' Min · ' + stat.symbole +
+        ' Werte ergänzt · ' + Math.round(stat.bars / 1000) + 'k Kerzen · ' + stat.requests +
+        ' Anfragen · ' + stat.fehler + ' Fehler. Der Fortschritt ist gespeichert – ein neuer Lauf setzt dort an.');
+      return stat;
+    } catch (eM) {
+      melde('Abgebrochen: ' + ((eM && eM.message) || eM) + ' · Zwischenstand ist gespeichert.');
+      try { await window.Archiv.speichere(true); } catch (e2) { }
+      return stat;
+    } finally {
+      massenLaeuft = false;
+    }
+  }
+  if (typeof window !== 'undefined') { window.__massenBackfill = massenBackfill; window.__massenAbbrechen = massenAbbrechen; }
+
   async function loadLabData(st) {
     var cfg = D.intraday;
     // 60m mit dabei: Yahoo liefert dafuer ~3 Monate Historie, und die Kostenrechnung
@@ -7180,6 +7265,11 @@
       .forEach(function (el) { el.addEventListener('change', idSave); });
     var scrBtn = document.getElementById('screenBtn');
     if (scrBtn) scrBtn.addEventListener('click', function () { runScreener(true); });
+    // Massen-Backfill (Kursarchiv in einem Rutsch vertiefen)
+    var mBtn = document.getElementById('massenBtn');
+    if (mBtn) mBtn.addEventListener('click', function () { massenBackfill({ tage: 90 }); });
+    var mStop = document.getElementById('massenStopBtn');
+    if (mStop) mStop.addEventListener('click', function () { massenAbbrechen(); });
     // Trendwechsel-Beobachtung (Felix #33/#35)
     var wBtn = document.getElementById('wendeBtn');
     if (wBtn) wBtn.addEventListener('click', function () { wendePruefen(true); });

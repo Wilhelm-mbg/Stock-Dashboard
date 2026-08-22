@@ -990,6 +990,22 @@
         <div id="pilotLog" class="plog" style="display:none;"></div>
       </div>
 
+      <!-- Massen-Backfill: die Messbasis in einem Rutsch vertiefen, statt Wochen zu warten -->
+      <div class="auto-row">
+        <div class="auto-head">
+          <label title="Holt fehlende Kerzen für Handels-Universum, Nasdaq-100 und aktiven Pool über die Capital.com-Demo-API ins Archiv. Vor allem 1-Minuten-Historie: Yahoo gibt nur 7 Tage, mehrere offene Studien brauchen 60+.">Kursarchiv auffüllen (Capital.com)</label>
+          <button class="btn ghost tiny" id="massenBtn">jetzt auffüllen</button>
+          <button class="btn ghost tiny" id="massenStopBtn">anhalten</button>
+        </div>
+        <div id="massenStatus" class="auto-status"></div>
+        <div class="hinweis" style="margin-top:4px;">
+          Rund 200 Werte × drei Zeitrahmen bis 90 Tage zurück. Das sind je nach Lücke einige tausend Abrufe –
+          <b>mit Absicht gedrosselt</b> (0,3 s Pause, Rückzug bei Fehlern), weil ein zu schneller Lauf von Capital.com
+          gebremst oder zeitweise gesperrt wird. Rechne mit <b>30–90 Minuten</b> und einigen hundert MB im Datenordner.
+          Der Fortschritt ist jederzeit anhaltbar und wird gespeichert – ein neuer Lauf setzt dort an, wo der letzte aufhörte.
+        </div>
+      </div>
+
       <div class="auto-row">
         <div class="auto-head">
           <label title="Misst stündlich die Marktlage und zeigt sie an. Sie stellt keine Strategie um – aber in erkennbar wirren Phasen kann sie neue Einstiege für rund eine Stunde aussetzen. Offene Positionen werden normal weiter betreut.">Marktlage messen<span class="switch"><input type="checkbox" id="aoRegime" checked><span class="knob"></span></span></label>
