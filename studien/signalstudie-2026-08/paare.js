@@ -14,7 +14,7 @@ const OUT = path.join(__dirname, 'ergebnisse');
 
 const FENSTER_MS = 30 * 60000;
 
-function rechnePaare(iv, phase) {
+function rechnePaare(iv, phase, ohneScreening) {
   const f = path.join(OUT, 'lauf-' + iv + '-' + phase + '.json');
   if (!fs.existsSync(f)) { console.log(iv + '/' + phase + ': kein Lauf'); return null; }
   const L = JSON.parse(fs.readFileSync(f, 'utf8'));
@@ -33,7 +33,8 @@ function rechnePaare(iv, phase) {
     for (const dir of [1, -1]) for (const lab of hor) {
       const dirName = dir > 0 ? 'long' : 'short';
       const tA = tVon[dets[a] + '|' + dirName + '|' + lab], tB = tVon[dets[b] + '|' + dirName + '|' + lab];
-      if (!(tA > 0.5 && tB > 0.5)) { uebersprungen++; continue; }
+      // In der BESTAETIGUNG gilt die fixierte Liste - kein Screening (Registrierung).
+      if (!ohneScreening && !(tA > 0.5 && tB > 0.5)) { uebersprungen++; continue; }
       gerechnet++;
       const entries = [];
       for (const ea of A) {
@@ -55,7 +56,7 @@ function rechnePaare(iv, phase) {
   }
   L.paare = paare; L.paareGerechnet = gerechnet; L.paareUebersprungen = uebersprungen;
   fs.writeFileSync(f, JSON.stringify(L));
-  console.log(iv + '/' + phase + ': ' + gerechnet + ' Paare gerechnet (' + uebersprungen + ' uebersprungen, Screening t>0,5 beidseitig), ' + paare.length + ' mit Daten');
+  console.log(iv + '/' + phase + ': ' + gerechnet + ' Paare gerechnet (' + uebersprungen + ' uebersprungen' + (ohneScreening ? ', OHNE Screening' : ', Screening t>0,5 beidseitig') + '), ' + paare.length + ' mit Daten');
   paare.sort((x, y) => y.tTag - x.tTag).slice(0, 8).forEach(p =>
     console.log('  ' + (p.det + '+' + p.partner).padEnd(36) + p.dir.padEnd(6) + p.hor.padEnd(4) + ' n=' + String(p.n).padStart(5) + ' Tage=' + String(p.nTage).padStart(3) + ' brutto ' + String(p.bruttoPp).padStart(7) + ' t(Tag) ' + p.tTag));
   return paare;
