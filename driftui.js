@@ -47,6 +47,20 @@
   async function ladeTermine(syms, vollstaendig) {
     var archiv = (await window.api.storeGet('drift_termine')) || { at: 0, sym: {} };
     if (!archiv.sym) archiv.sym = {};
+    /* Einmalige Bereinigung: Termine in der ZUKUNFT duerfen keine Zahlen tragen. Durch den
+     * paareAktuell-Fehler (bis 8.23.42) hing die Vorquartals-Ueberraschung am naechsten
+     * Meldetermin - 25 Eintraege im Archiv, z. B. GS 13.10.2026 mit den Q2-Zahlen. Ohne
+     * Bereinigung wuerde mische() sie nie ersetzen, weil ein Eintrag MIT Zahlen gewinnt. */
+    if (!archiv.zukunftBereinigt) {
+      var jetzt = Date.now(), bereinigt = 0;
+      Object.keys(archiv.sym).forEach(function (s) {
+        (archiv.sym[s] || []).forEach(function (t) {
+          if (t && t[0] && Date.parse(t[0]) > jetzt && t[3] != null) { t[1] = null; t[2] = null; t[3] = null; bereinigt++; }
+        });
+      });
+      archiv.zukunftBereinigt = jetzt;
+      if (bereinigt) console.log('Ertragstermine: ' + bereinigt + ' Zukunftstermine von fremden Zahlen befreit.');
+    }
     var fehlend = syms.filter(function (s) { return !archiv.sym[s] || !archiv.sym[s].length; });
     // Vollständiger Lauf: alle Symbole. Sonst nur die, die noch gar nichts haben,
     // plus ein rollierender Teil für die frischen Termine.

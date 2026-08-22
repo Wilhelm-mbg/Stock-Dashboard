@@ -2247,5 +2247,31 @@ console.log('\n34) Momentum: Live-Buch rechnet dasselbe Fenster wie die validier
      (valid != null ? valid.toFixed(6) : 'n/a') + ' / ' + (live != null ? live.toFixed(6) : 'n/a'));
 })();
 
+
+console.log('\n35) Drift-Buch: Meldung nach Schluss und Zukunftstermine (Audit 22.08.2026)');
+(function () {
+  var Dr = require('./drift.js');
+  var dui = fs.readFileSync(__dirname + '/driftui.js', 'utf8');
+  /* Absturz: Meldung NACH Schluss am LETZTEN Kurstag -> reaktionstag = b.length -> b[r] undefined.
+   * Im Live-Pfad brach damit der ganze Takt ab - genau am Morgen nach einer Abendmeldung. */
+  var tage = [], t0 = Date.UTC(2026, 0, 5, 20, 0);
+  for (var i = 0; i < 130; i++) tage.push([t0 + i * 86400000, 100 + i * 0.1]);
+  var letzter = tage[tage.length - 1][0];
+  var termine = { X: [[new Date(letzter + 2 * 3600000).toISOString(), 1, 1.2, 20]] };   // 22:00 UTC am letzten Tag
+  var warf = false, erg = null;
+  try { erg = Dr.ereignisse({ X: tage }, termine, tage, { zukunftNoetig: false }); } catch (e) { warf = true; }
+  ok(!warf, 'Meldung nach Schluss am letzten Kurstag wirft nicht mehr (Ereignis wird am Folgetag gewertet)');
+
+  /* Zukunftstermin traegt Zahlen des Vorquartals -> darf kein Paar liefern */
+  var hist = [{ quartalsEndeMs: Date.UTC(2026, 5, 30), ueberraschung: 5.15, ist: 2.1, schaetzung: 2.0 }];
+  var zukunft = Date.UTC(2026, 7, 27, 20, 0), now = Date.UTC(2026, 7, 22, 22, 0);
+  ok(Dr.paareAktuell(hist, zukunft, 120, now) === null,
+     'Ein Termin in der Zukunft bekommt keine Vorquartals-Ueberraschung angehaengt');
+  ok(Dr.paareAktuell(hist, Date.UTC(2026, 6, 30, 20, 0), 120, now) !== null,
+     'Ein vergangener Termin innerhalb 120 Tagen liefert weiterhin ein Paar');
+  ok(/zukunftBereinigt/.test(dui) && /Date\.parse\(t\[0\]\) > jetzt && t\[3\] != null/.test(dui),
+     'Das Termin-Archiv wird einmalig von Zahlen an Zukunftsterminen befreit (25 Faelle am 22.08., darunter ADSK 27.08.)');
+})();
+
 console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
 process.exit(fails ? 1 : 0);

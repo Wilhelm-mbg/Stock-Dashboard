@@ -84,7 +84,11 @@
       (termineMap[sy] || []).forEach(function (t) {
         if (!t || t[3] == null) return;
         var r = reaktionstag(t[0], idx[sy]);
-        if (r == null || r < 1) return;
+        /* Meldung NACH Schluss am letzten Kurstag: der Reaktionstag liegt noch in der
+         * Zukunft (r == b.length). Vorher griff b[r] ins Leere und der ganze Takt des
+         * Buchs brach ab - genau an dem Morgen, an dem ein Universumswert abends
+         * berichtet hatte (Audit 22.08.2026). Das Ereignis wird am naechsten Tag gewertet. */
+        if (r == null || r < 1 || r >= b.length) return;
         var md = new Date(b[r][0]).toISOString().slice(0, 10);
         var mr = mIdx[md];
         if (mr == null) return;
@@ -202,9 +206,13 @@
    * historie: [{quartalsEndeMs, ueberraschung, ist, schaetzung}, …]
    * terminMs: Zeitstempel des Meldetermins (0/null, wenn unbekannt)
    */
-  function paareAktuell(historie, terminMs, maxAbstand) {
+  function paareAktuell(historie, terminMs, maxAbstand, nowMs) {
     maxAbstand = maxAbstand || 120;
     if (!historie || !historie.length || !terminMs) return null;
+    /* Ein Termin in der ZUKUNFT hat noch keine Zahlen. Vorher wurde die Ueberraschung des
+     * Vorquartals an den naechsten Meldetermin gehaengt: Juli-Signale fehlten, und im
+     * Oktober haette ein falsches Signal mit drei Monate alten Zahlen gefeuert (Audit 22.08.). */
+    if (terminMs > (nowMs || Date.now())) return null;
     var neu = null;
     for (var i = 0; i < historie.length; i++) {
       var q = historie[i];
