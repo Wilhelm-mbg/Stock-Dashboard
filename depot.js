@@ -5628,7 +5628,7 @@
      ['idWindow', c.window || 'all'], ['idHold', String(c.scalpHold != null ? c.scalpHold : 60)],
      ['idTrail', String(c.scalpTrail != null ? c.scalpTrail : 15)],
      ['idScalpSL', c.scalpSL === 'auto' ? 'auto' : String(c.scalpSL != null ? c.scalpSL : 20)],
-     ['idProfile', c.profile || 'atm21'], ['idSizing', parseFloat(c.sizing) > 0 ? String(c.sizing) : 'fix'],
+     ['idProfile', c.profile || 'atm60_b'], ['idSizing', parseFloat(c.sizing) > 0 ? String(c.sizing) : 'fix'],
      ['idBlackout', c.blackout || 'block']].forEach(function (kv) {
       var el = document.getElementById(kv[0]);
       if (el) el.value = kv[1];
@@ -5648,7 +5648,7 @@
     /* Der Instrument-Hinweis im Kopf des Reiters kommt aus dem Ist-Zustand und nicht
      * aus dem Markup - sonst behauptet er bei Bestandsdepots (die die Migration auf
      * 'schein' zuruecksetzt) das Falsche. */
-    [['idInstrument', c.instrument || 'schein'], ['idPool', c.pool || 'auto'], ['idMaxStufe', String(D.maxRisikostufe || 5)]].forEach(function (kv) {
+    [['idInstrument', c.instrument || 'basis'], ['idPool', c.pool || 'auto'], ['idMaxStufe', String(D.maxRisikostufe || 5)]].forEach(function (kv) {
       var el = document.getElementById(kv[0]);
       if (el) el.value = kv[1];
     });

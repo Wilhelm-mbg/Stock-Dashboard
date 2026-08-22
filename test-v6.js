@@ -2314,5 +2314,48 @@ console.log('\n36) Kostenhuerde des Produkts (Signalstudie 23.08.2026)');
   ok(/quellenMigration\(\);\n    huerdeAnzeigen\(\);/.test(dep), 'Die Anzeige wird beim Start gefuellt');
 })();
 
+
+console.log('\n37) Produkt-Vorgabe: eine Wahrheit, nicht drei');
+(function () {
+  var dep = fs.readFileSync(__dirname + '/depot.js', 'utf8');
+  var html = fs.readFileSync(__dirname + '/index.html', 'utf8');
+  /* Befund 23.08.2026: Die Vorgabe stand an drei Stellen und zwei widersprachen der
+   * Messung - D.intraday sagte atm60_b/basis, HTML-'selected' und die Lade-Rueckfaelle
+   * sagten atm21/schein. Huerde 0,26 statt 0,07 Pp; die belegte Kante (0,11 Pp) waere
+   * damit netto negativ gewesen. Gleiche Fehlerklasse wie die Live-Abweichungen vom 22.08. */
+  function erste(re, s) { var m = s.match(re); return m ? m[1] : null; }
+  var kProf = erste(/profile: '([a-z0-9_]+)'/, dep);
+  var kInst = erste(/instrument: '([a-z0-9_]+)'/, dep);
+  var hProf = erste(/id="idProfile"><option value="([a-z0-9_]+)" selected/, html);
+  var hInst = erste(/id="idInstrument"><option value="([a-z0-9_]+)" selected/, html);
+  var rProf = erste(/c\.profile \|\| '([a-z0-9_]+)'/, dep);
+  var rInst = erste(/c\.instrument \|\| '([a-z0-9_]+)'/, dep);
+  ok(kProf && kProf === hProf && hProf === rProf,
+     'Profil-Vorgabe stimmt in Konfig, Oberflaeche und Lade-Rueckfall ueberein',
+     kProf + ' / ' + hProf + ' / ' + rProf);
+  ok(kInst && kInst === hInst && hInst === rInst,
+     'Instrument-Vorgabe stimmt in allen drei Quellen ueberein',
+     kInst + ' / ' + hInst + ' / ' + rInst);
+  /* Und die Vorgabe muss die guenstigste sein: sonst ist die belegte Kante netto negativ. */
+  function huerde(p, haltenMin) {
+    var now = Date.now(), PR = Q.PROFILES[p]; if (!PR) return null;
+    var w = Q.makeWarrant('call', 200, 0.30, now, PR.ratio);
+    w.strike = Math.round(200 * (1 + (PR.otmPct || 0)) * 100) / 100;
+    w.expiry = now + PR.days * 86400000;
+    var wert = Q.warrantValue('call', w, 200, now); if (!(wert > 0.02)) return null;
+    var om = Q.warrantOmega('call', w, 200, now); if (!(om > 0)) return null;
+    var th = Math.max(0, (wert - Q.warrantValue('call', w, 200, now + haltenMin * 60000)) / wert);
+    return (2 * Q.effSpread(w.iv, undefined, wert, w.ratio) + th) / om * 100;
+  }
+  var alle = Object.keys(Q.PROFILES).map(function (p) { return { p: p, h: huerde(p, 480) }; })
+    .filter(function (x) { return x.h != null; }).sort(function (a, b) { return a.h - b.h; });
+  ok(alle.length && alle[0].p === kProf,
+     'Die Profil-Vorgabe ist das guenstigste Profil bei 8 h Haltedauer',
+     alle.slice(0, 3).map(function (x) { return x.p + ' ' + x.h.toFixed(3); }).join(' < '));
+  ok(huerde(kProf, 480) < 0.111,
+     'Die belegte Kante (0,111 Pp Ueberschuss) traegt mit der Vorgabe',
+     'Huerde ' + huerde(kProf, 480).toFixed(3) + ' -> netto +' + (0.111 - huerde(kProf, 480)).toFixed(3));
+})();
+
 console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
 process.exit(fails ? 1 : 0);
