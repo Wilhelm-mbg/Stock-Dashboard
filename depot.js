@@ -2479,7 +2479,10 @@
           LASTBARS[syms[fi]] = f.series.slice(-420);
           // Jeder Scan füttert das Kursarchiv – so wächst die Messbasis mit jedem Handelstag,
           // statt für immer an Yahoos Rückblick-Fenster (5 Tage auf 1m) zu kleben.
-          if (window.Archiv) window.Archiv.fuege(cfg.interval || '5m', syms[fi], f.series);
+          // Kam der Rueckfall von Capital statt Yahoo, muss das mitgeschrieben werden -
+          // sonst mischt sich CFD-Volumen ungekennzeichnet in eine Boersen-Reihe.
+          if (window.Archiv) window.Archiv.fuege(cfg.interval || '5m', syms[fi], f.series,
+            f.source === 'capital' ? 'cap' : null);
         }
         else HEALTH.fetchFail++;
       });
@@ -4432,7 +4435,7 @@
           if (!bars.length) { leer++; frueh = von; continue; }
           leer = 0;
           var sess = bars.filter(function (b) { var m = Q.minutenSeitOeffnung(b[0]); return m >= 0 && m < 390; });
-          if (sess.length) { await window.Archiv.fuege(iv, sym, sess); stat.bars += sess.length; geholt = true; }
+          if (sess.length) { await window.Archiv.fuege(iv, sym, sess, 'cap'); stat.bars += sess.length; geholt = true; }
           frueh = Math.min(von, bars[0][0]);
           await new Promise(function (r) { setTimeout(r, 250); });
         }
@@ -4479,6 +4482,69 @@
     }
     return ms - 86400000;
   }
+
+  /** Einmalige Umstellung: schon geschriebene Capital-Kerzen nachtraeglich kennzeichnen.
+   *  Ohne sie rechnete dollarVolTag ihr CFD-Volumen als Boersenvolumen - belegt am
+   *  22.08.2026 fuer 63 von 63 Dateien, die dadurch samt und sonders unter die
+   *  50-Mio-Schwelle des Liquiditaetsfilters fielen. Immer dieselben Werte, also
+   *  eine echte Auswahlverzerrung. */
+  async function quellenMigration() {
+    if (!window.Archiv || !window.api) return;
+    try {
+      if (await window.api.storeGet('capQuellenMigriert')) return;
+      var epics = (await window.api.storeGet('cap_epics')) || {};
+      var syms = Object.keys(epics);
+      if (!syms.length) return;                 // nichts von Capital geholt: nichts zu tun
+      var tagVon = function (ms) { return new Date(ms).toISOString().slice(0, 10); };
+      function tagesVol(bars) {
+        var t = {};
+        (bars || []).forEach(function (b) { var k = tagVon(b[0]); t[k] = (t[k] || 0) + (b[2] || 0); });
+        return t;
+      }
+      function median(x) { var s = x.slice().sort(function (a, b) { return a - b; }); return s.length ? s[Math.floor(s.length / 2)] : null; }
+      var markiert = 0, dateien = 0;
+      for (var i = 0; i < syms.length; i++) {
+        var sym = syms[i];
+        var ref = null;
+        try {
+          var s60 = await window.Archiv.serie('60m', sym);
+          var v60 = Object.keys(tagesVol(s60)).map(function (k) { return tagesVol(s60)[k]; }).filter(function (v) { return v > 0; });
+          ref = median(v60);
+        } catch (e60) { ref = null; }
+        var ivs = ['1m', '5m', '15m'];
+        for (var j = 0; j < ivs.length; j++) {
+          var iv = ivs[j], serie;
+          try { serie = await window.Archiv.serie(iv, sym); } catch (eS) { continue; }
+          if (!serie || serie.length < 2) continue;
+          var vorhanden = await window.Archiv.bereiche(iv, sym);
+          if (vorhanden && vorhanden.length) continue;      // schon gekennzeichnet
+          dateien++;
+          if (ref == null) {
+            // Kein Boersen-Vergleichswert: der Wert kam erst durch den Backfill ins Archiv.
+            await window.Archiv.markiere(iv, sym, serie[0][0], serie[serie.length - 1][0]);
+            markiert++;
+            continue;
+          }
+          var tv = tagesVol(serie), cfdTage = [];
+          Object.keys(tv).forEach(function (k) { if (tv[k] > 0 && tv[k] < ref / 20) cfdTage.push(k); });
+          if (!cfdTage.length) continue;
+          cfdTage.sort();
+          // Die Backfills schreiben ausschliesslich nach hinten (aelter), der CFD-Teil
+          // liegt daher zusammenhaengend am Anfang. Ein Bereich genuegt.
+          var von = null, bis = null;
+          for (var q = 0; q < serie.length; q++) {
+            if (cfdTage.indexOf(tagVon(serie[q][0])) !== -1) { if (von == null) von = serie[q][0]; bis = serie[q][0]; }
+          }
+          if (von != null) { await window.Archiv.markiere(iv, sym, von, bis); markiert++; }
+        }
+      }
+      await window.Archiv.speichere(true);
+      await window.api.storeSet('capQuellenMigriert', { am: Date.now(), dateien: dateien, markiert: markiert });
+      if (markiert) console.log('Quellen-Umstellung: ' + markiert + ' von ' + dateien + ' Reihen als CFD gekennzeichnet.');
+    } catch (e) { /* Umstellung darf den Start nie blockieren */ }
+  }
+  if (typeof window !== 'undefined') { window.__quellenMigration = quellenMigration; }
+
   async function massenBackfill(opts) {
     opts = opts || {};
     var el = document.getElementById('massenStatus');
@@ -4578,7 +4644,7 @@
             }
             leer = 0;
             var sess = bars.filter(function (b) { return istSitzung(b[0]); });
-            if (sess.length) { await window.Archiv.fuege(iv, sym, sess); stat.bars += sess.length; geholt = true; ohneSitzung = 0; }
+            if (sess.length) { await window.Archiv.fuege(iv, sym, sess, 'cap'); stat.bars += sess.length; geholt = true; ohneSitzung = 0; }
             else {
               /* Kerzen kamen an, aber KEINE lag in der US-Sitzung. Ohne diese Bremse
                * liefe der Wert stumm bis ans Ziel zurueck und stellte hunderte
@@ -4795,7 +4861,10 @@
         if (window.Archiv) {
           if (fdL && fdL.series.length) await window.Archiv.fuege(ivLab, sy, fdL.series);
           serie = await window.Archiv.serie(ivLab, sy);
-          dv = (fdL && fdL.dollarVolDay != null) ? fdL.dollarVolDay : window.Archiv.dollarVolTag(serie);
+          // Ohne die Bereiche rechnete dollarVolTag CFD-Volumen als Boersenvolumen und
+          // warf die betroffenen Werte stumm aus dem Messlauf (belegt: 63 von 63).
+          var berL = await window.Archiv.bereiche(ivLab, sy);
+          dv = (fdL && fdL.dollarVolDay != null) ? fdL.dollarVolDay : window.Archiv.dollarVolTag(serie, berL);
         }
         if (!serie || serie.length <= 200) { serie = fdL ? fdL.series : null; dv = fdL ? fdL.dollarVolDay : null; }
         if (serie && serie.length > 200) {
@@ -6732,6 +6801,8 @@
       return;
     }
     // Datenlage: Wie viele Handelstage hat das Archiv schon gesammelt?
+    // Einmalige Quellen-Umstellung im Hintergrund - blockiert den Start nicht.
+    quellenMigration();
     var deck = '';
     if (window.Archiv) {
       try {

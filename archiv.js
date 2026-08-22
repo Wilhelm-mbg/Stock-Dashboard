@@ -98,13 +98,37 @@
 
   /** Mittlerer Dollar-Umsatz je Handelstag aus den letzten Tagen der Serie –
    *  Ersatz für Yahoos dollarVolDay, wenn die Daten aus dem Archiv kommen. */
-  function dollarVolTag(bars) {
+  /** Liegt der Zeitpunkt in einem als CFD gekennzeichneten Bereich? */
+  function ausCfd(ms, bereiche) {
+    for (var i = 0; i < (bereiche || []).length; i++) {
+      if (ms >= bereiche[i][0] && ms <= bereiche[i][1]) return true;
+    }
+    return false;
+  }
+  function dollarVolTag(bars, bereiche) {
     var sum = 0, tage = {};
     (bars || []).slice(-4000).forEach(function (b) {
-      if (b[2]) { sum += b[2] * b[1]; tage[new Date(b[0]).toISOString().slice(0, 10)] = 1; }
+      /* CFD-Kerzen ueberspringen: Capital.com-Volumen ist NICHT mit Boersenvolumen
+       * vergleichbar (Faktor mehrere hundert). Ein daraus gerechneter Dollar-Umsatz
+       * ist keine kleine Zahl, sondern eine falsche - und wuerde den Wert stumm aus
+       * jedem Messlauf werfen. Bleibt nichts uebrig, ist die Antwort ehrlich null
+       * ('unbekannt'), und der Aufrufer filtert dann bewusst nicht. */
+      if (b[2] && !ausCfd(b[0], bereiche)) { sum += b[2] * b[1]; tage[new Date(b[0]).toISOString().slice(0, 10)] = 1; }
     });
     var n = Object.keys(tage).length;
     return n ? sum / n : null;
+  }
+  /** Zwei Bereichslisten vereinigen und angrenzende verschmelzen. */
+  function bereicheMerge(alt, neu) {
+    var alle = (alt || []).concat(neu || []).filter(function (b) { return b && b.length === 2; });
+    alle.sort(function (x, y) { return x[0] - y[0]; });
+    var out = [];
+    alle.forEach(function (b) {
+      var l = out[out.length - 1];
+      if (l && b[0] <= l[1] + 86400000) { l[1] = Math.max(l[1], b[1]); }
+      else out.push([b[0], b[1]]);
+    });
+    return out;
   }
 
   // ---- Renderer-Teil (braucht window.api für den Store) ----
@@ -118,7 +142,8 @@
       // teilen sie sich EINE Ladung – sonst überschreibt die zweite die Merges der ersten.
       if (!cache[k]) {
         cache[k] = api.storeGet(k).then(function (st) {
-          var e = { series: (st && st.series) || [], dirty: false, letzterFlush: 0 };
+          var e = { series: (st && st.series) || [], capBereiche: (st && st.capBereiche) || [],
+                    dirty: false, letzterFlush: 0 };
           cache[k] = e;
           return e;
         });
@@ -130,9 +155,18 @@
       /** Frisch geladene Bars einpflegen (aus Live-Scan oder Backfill).
        *  ohneStempel raeumt dabei auch Altlasten im Bestand ab - die laufende
        *  Kerze bleibt bewusst drin (der naechste Abruf ersetzt sie fertig). */
-      fuege: async function (iv, sym, bars) {
+      fuege: async function (iv, sym, bars, quelle) {
         if (!bars || bars.length < 2) return;
         var e = await lade(iv, sym);
+        if (quelle === 'cap') {
+          // Zeitbereich der eingespeisten CFD-Kerzen festhalten
+          var von = bars[0][0], bis = bars[0][0];
+          for (var q = 1; q < bars.length; q++) {
+            if (bars[q][0] < von) von = bars[q][0];
+            if (bars[q][0] > bis) bis = bars[q][0];
+          }
+          e.capBereiche = bereicheMerge(e.capBereiche, [[von, bis]]);
+        }
         var vorher = e.series.length;
         var barMin = parseInt(iv, 10) || 1;
         e.series = kappeTage(ohneStempel(mischeBars(e.series, bars), barMin), fensterFuer(iv));
@@ -144,6 +178,14 @@
         return e.series;
       },
       dollarVolTag: dollarVolTag,
+      /** Gekennzeichnete CFD-Bereiche eines Symbols (fuer quellenbewusste Auswertung). */
+      bereiche: async function (iv, sym) { var e = await lade(iv, sym); return e.capBereiche || []; },
+      /** Nachtraegliches Kennzeichnen (einmalige Umstellung fuer schon geschriebene Daten). */
+      markiere: async function (iv, sym, von, bis) {
+        var e = await lade(iv, sym);
+        e.capBereiche = bereicheMerge(e.capBereiche, [[von, bis]]);
+        e.dirty = true;
+      },
       /** Geänderte Serien auf die Platte schreiben – gedrosselt, außer force. */
       speichere: async function (force) {
         var now = Date.now();
@@ -151,7 +193,10 @@
           var e = cache[k];
           if (!e.dirty) continue;
           if (!force && now - e.letzterFlush < FLUSH_MIN * 60000) continue;
-          await api.storeSet(k, { series: schlank(e.series), updatedAt: now });
+          // capBereiche MUSS mitgeschrieben werden - sonst loescht der naechste Flush
+          // die Kennzeichnung, weil storeSet den ganzen Datensatz ersetzt.
+          await api.storeSet(k, { series: schlank(e.series), updatedAt: now,
+            capBereiche: e.capBereiche && e.capBereiche.length ? e.capBereiche : undefined });
           e.dirty = false; e.letzterFlush = now;
         }
       },

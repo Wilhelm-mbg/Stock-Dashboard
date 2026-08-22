@@ -2121,5 +2121,72 @@ console.log('\n31) Auslieferung – enthält der letzte Build wirklich den aktue
      abweichend.length ? abweichend.join('; ') : 'alle geprüften Dateien identisch');
 })();
 
+
+console.log('\n32) Quellen-Kennzeichnung im Archiv – CFD-Volumen darf nicht als Börsenvolumen gelten');
+(function () {
+  var Arch = require('./archiv.js');
+  var dep = fs.readFileSync(__dirname + '/depot.js', 'utf8');
+  var arc = fs.readFileSync(__dirname + '/archiv.js', 'utf8');
+
+  /* Belegt am 22.08.2026 an echten Daten: 66 Archivreihen bestehen VOLLSTÄNDIG aus
+   * Capital-CFD-Kerzen (die neu hinzugekommenen Nasdaq-100-Werte). Deren Volumen liegt
+   * rund 400× unter dem Börsenvolumen. dollarVolTag rechnet absolut und meldete für ADP
+   * 1,8 statt ~560 Mio $ – alle 66 fielen damit unter die 50-Mio-Schwelle des
+   * Liquiditätsfilters. Immer dieselben Werte: eine echte Auswahlverzerrung. */
+
+  // Kerzen: [t, kurs, volumen]. Tag 1 = CFD (winzig), Tag 2 = Börse.
+  var T1 = Date.UTC(2026, 6, 15, 14, 0), T2 = Date.UTC(2026, 7, 18, 14, 0);
+  var reihe = [
+    [T1, 100, 1000], [T1 + 60000, 100, 1000],
+    [T2, 100, 500000], [T2 + 60000, 100, 500000]
+  ];
+  var ohne = Arch.dollarVolTag(reihe);
+  var mit = Arch.dollarVolTag(reihe, [[T1 - 1000, T1 + 120000]]);
+  // ohne Kennzeichnung: (2*1000 + 2*500000)*100 / 2 Tage = 50,1 Mio
+  // mit  Kennzeichnung: nur Tag 2 -> 2*500000*100 / 1 Tag = 100 Mio
+  ok(mit > ohne * 1.9,
+     'dollarVolTag überspringt gekennzeichnete CFD-Kerzen',
+     Math.round(ohne / 1e6) + ' -> ' + Math.round(mit / 1e6) + ' Mio $');
+
+  // Der wichtigste Fall: ist ALLES CFD, muss die Antwort "unbekannt" sein – nicht
+  // eine kleine Zahl. depot.js behandelt null bewusst als "nicht filtern".
+  var allesCfd = Arch.dollarVolTag(reihe, [[T1 - 1000, T2 + 120000]]);
+  ok(allesCfd === null,
+     'Ist die ganze Reihe CFD, liefert dollarVolTag null (unbekannt) statt einer falschen Zahl',
+     String(allesCfd));
+
+  // Ohne Bereiche muss sich nichts ändern (Rückwärtsverträglichkeit)
+  ok(Arch.dollarVolTag(reihe) === Arch.dollarVolTag(reihe, []),
+     'Ohne Kennzeichnung rechnet dollarVolTag unverändert');
+
+  // Schreibpfad: jede Stelle, die Capital-Kerzen einspeist, muss sie kennzeichnen
+  var capStellen = (dep.match(/Archiv\.fuege\([^)]*'cap'/g) || []).length;
+  ok(capStellen >= 2,
+     'Beide Backfills kennzeichnen ihre Kerzen als CFD-Herkunft', capStellen + ' Stellen');
+  ok(dep.indexOf("f.source === 'capital' ? 'cap' : null") !== -1,
+     'Auch der Live-Rückfall kennzeichnet, wenn er von Capital kommt');
+
+  // Die Kennzeichnung muss den nächsten Flush überleben
+  ok(/storeSet\(k, \{ series: schlank\(e\.series\), updatedAt: now,[\s\S]{0,120}capBereiche/.test(arc),
+     'capBereiche wird mitgeschrieben (sonst löscht der nächste Flush die Kennzeichnung)');
+  ok(arc.indexOf("capBereiche: (st && st.capBereiche) || []") !== -1,
+     'capBereiche wird beim Laden wieder übernommen');
+
+  // Verbraucher
+  ok(dep.indexOf('window.Archiv.dollarVolTag(serie, berL)') !== -1,
+     'Der Messlauf gibt die Bereiche an dollarVolTag weiter');
+
+  // Einmalige Umstellung für die bereits geschriebenen Daten
+  ok(dep.indexOf('async function quellenMigration') !== -1 &&
+     dep.indexOf('capQuellenMigriert') !== -1,
+     'Es gibt eine einmalige Umstellung für schon geschriebene CFD-Kerzen');
+  var mi = dep.indexOf('async function quellenMigration');
+  var mig = dep.slice(mi, mi + 4000);
+  ok(mig.indexOf("window.Archiv.serie('60m', sym)") !== -1,
+     'Die Umstellung nutzt 60m als Referenz – diesen Zeitrahmen fasst kein Backfill an');
+  ok(/if \(ref == null\)[\s\S]{0,200}markiere/.test(mig),
+     'Fehlt jede Börsen-Referenz, wird die ganze Reihe gekennzeichnet (Wert kam erst durch den Backfill)');
+})();
+
 console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
 process.exit(fails ? 1 : 0);
