@@ -2114,7 +2114,10 @@ console.log('\n31) Auslieferung – enthält der letzte Build wirklich den aktue
   var crypto = require('crypto');
   function hash(b) { return crypto.createHash('sha1').update(b).digest('hex').slice(0, 12); }
   var abweichend = [];
-  ['depot.js', 'capital.js', 'index.html', 'quant.js', 'renderer.js', 'main.js', 'app-shell.js'].forEach(function (f) {
+  // ALLE ausgelieferten Module - mfhandel.js fehlte und ein veraltetes Paket blieb unbemerkt (22.08.)
+  var html0 = fs.readFileSync(__dirname + '/index.html', 'utf8');
+  var skripte = (html0.match(/<script src="([^"]+.js)"/g) || []).map(function (s) { return s.replace(/.*src="|".*/g, ''); });
+  ['index.html', 'main.js', 'preload.js', 'bt-worker.js'].concat(skripte).filter(function (f, i, a) { return a.indexOf(f) === i; }).forEach(function (f) {
     var quelle, paket;
     try { quelle = hash(fs.readFileSync(__dirname + '/' + f)); } catch (e) { return; }
     try { paket = hash(asarLib.extractFile(asarPfad, f)); } catch (e) { paket = 'fehlt'; }
