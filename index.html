@@ -284,6 +284,11 @@
      Normalbetrieb sichtbar bleiben - alles Uebrige liegt hinter Klappen. */
   .klartext { border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; margin-bottom: 10px; background: var(--panel); }
   .belegt-box { border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px 12px; margin-bottom: 10px; }
+  .huerde { margin-top: 8px; padding: 7px 10px; border-radius: 8px; font-size: 12px; line-height: 1.5;
+            background: var(--panel-2, rgba(127,127,127,.08)); border: 1px solid var(--border); }
+  .huerde b { font-variant-numeric: tabular-nums; }
+  .huerde .warn { color: var(--btn-danger, #c0392b); font-weight: 600; }
+  .huerde .gut { color: var(--good, #2e7d32); font-weight: 600; }
   .belegt-titel { font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 8px; }
   /* Haken-Beschriftungen bleiben lesbar: die .params-Regel setzt Grossbuchstaben in
      10,5 px und Spaltenrichtung - fuer ein Auswahlkaestchen mit Satz daneben untauglich. */
@@ -747,6 +752,7 @@
               <label title="Begrenzt depotweit, welche Scheine gekauft werden dürfen – egal ob von Hand, vom Autopiloten oder von einer Empfehlung. Die Stufen (1 defensiv … 5 Lotterielos) kommen aus dem Schein-Finder und sind dort je Schein begründet. Stufe 5 = keine Grenze.">max. Risikostufe<select id="idMaxStufe"><option value="1">1 – defensiv</option><option value="2">2</option><option value="3">3 – moderat</option><option value="4">4</option><option value="5" selected>5 – keine Grenze</option></select></label>
               <label title="BTC, ETH, SOL, XRP, BNB, ADA, DOGE, LTC rund um die Uhr handeln – immer als Basiswert (1×) mit Taker-Gebühr 10 Bp je Seite, nie als Schein. ACHTUNG: Es gibt bis heute kein belegtes Krypto-Signal – alle gemessenen Modi waren negativ. Handelbar heißt können, nicht sollen.">Krypto handeln<span class="switch"><input type="checkbox" id="idKryptoHandeln"><span class="knob"></span></span></label>
               <label title="Capital.com und viele CFD-Broker berechnen keine Kommission — dort steckt alles im Spread. Bei einem Broker mit Ordergebühr den echten Betrag wählen.">Ordergebühr<select id="idFee"><option value="0" selected>0 (keine Kommission)</option><option value="1.5">1,50 $</option><option value="5">5 $</option></select></label>
+            <div id="kostenHuerde" class="huerde"></div>
             </div>
           </div>
           <div class="pgroup">

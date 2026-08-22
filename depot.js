@@ -306,7 +306,55 @@
     }
   }
 
-  /* ================= Lokale KI-Prüfung (Veto/Boost) ================= */
+  /* Kostenhuerde des GEWAEHLTEN Produkts, in Prozentpunkten des Basiswerts.
+   * Signalstudie 23.08.2026: Die Huerde entscheidet, nicht die Signalqualitaet.
+   * Schein: (2 x Spanne + Zeitwertverlust) / Hebel. Aktie/CFD: 2 x Spanne + Gebuehr. */
+  function kostenHuerdePp(cfg, spot, vol, haltenMin) {
+    spot = spot > 0 ? spot : 200; vol = vol > 0 ? vol : 0.30;
+    var halten = Math.max(5, haltenMin || 60), now = Date.now();
+    if (cfg.instrument === "basis") {
+      var geb = (cfg.orderFee || 0) * 2 / 10000 * 100;      // je Seite auf 10.000 $ Position
+      return { pp: 2 * 0.05 + geb, produkt: "Aktie 1x", hebel: 1 };
+    }
+    var P = Q.PROFILES[cfg.profile] || Q.PROFILES.atm21;
+    var w = Q.makeWarrant("call", spot, vol, now, P.ratio);
+    w.strike = Math.round(spot * (1 + (P.otmPct || 0)) * 100) / 100;
+    w.expiry = now + P.days * 86400000;
+    var wert = Q.warrantValue("call", w, spot, now);
+    if (!(wert > 0.02)) return null;
+    var spx = Q.effSpread(w.iv, undefined, wert, w.ratio);
+    var omega = Q.warrantOmega("call", w, spot, now);
+    if (!(omega > 0)) return null;
+    var spaeter = Q.warrantValue("call", w, spot, now + halten * 60000);
+    var theta = Math.max(0, (wert - spaeter) / wert);
+    return { pp: (2 * spx + theta) / omega * 100, produkt: P.name, hebel: omega };
+  }
+  /** Zeigt die Huerde und stellt sie der belegten Kante gegenueber. */
+  function huerdeAnzeigen() {
+    var el = document.getElementById("kostenHuerde"); if (!el) return;
+    var cfg = D.intraday || {};
+    var halten = cfg.maxHoldMin || 60;
+    var h = kostenHuerdePp(cfg, 200, 0.30, halten);
+    if (!h) { el.textContent = ""; return; }
+    /* Die Kante des eingestellten Auslesers, so wie gemessen. Steht kein Wert fest,
+     * wird nichts behauptet - die Huerde allein ist dann die Aussage. */
+    var KANTE = { rsi2seit: 0.11, kapitulation: null };
+    var kante = KANTE[cfg.mode];
+    var std = halten >= 60 ? Math.round(halten / 60) + " h" : halten + " Min";
+    var txt = "<b>Kostenhürde:</b> " + h.pp.toFixed(2) + " Pp je Umlauf" +
+      " · " + h.produkt + (h.hebel > 1.5 ? " (Hebel " + h.hebel.toFixed(1) + ")" : "") +
+      " · Haltedauer " + std + ". So weit muss sich der <i>Basiswert</i> bewegen, bevor etwas übrig bleibt.";
+    if (kante != null) {
+      var netto = kante - h.pp;
+      txt += "<br>Gemessener Vorsprung dieses Auslösers: " + kante.toFixed(2) + " Pp → <span class=\"" +
+        (netto > 0 ? "gut" : "warn") + "\">netto " + (netto > 0 ? "+" : "") + netto.toFixed(2) + " Pp</span>" +
+        (netto > 0 ? "." : " – mit diesem Produkt trägt der Vorsprung die Kosten nicht.");
+    }
+    el.innerHTML = txt;
+  }
+  if (typeof window !== "undefined") { window.__huerde = kostenHuerdePp; }
+
+  /* ================= Lokale KI-Pruefung (Veto/Boost) ================= */
   function kiLogAdd(sym, dir, entscheidung, begruendung, mode) {
     if (!D.kiLog) D.kiLog = [];
     D.kiLog.unshift({ t: Date.now(), sym: sym, dir: dir, e: entscheidung, b: begruendung, m: mode });
@@ -6820,6 +6868,7 @@
     // Datenlage: Wie viele Handelstage hat das Archiv schon gesammelt?
     // Einmalige Quellen-Umstellung im Hintergrund - blockiert den Start nicht.
     quellenMigration();
+    huerdeAnzeigen();          // Kostenhuerde beim Start zeigen, nicht erst nach einer Aenderung
     var deck = '';
     if (window.Archiv) {
       try {
@@ -7580,6 +7629,9 @@
       if (idSt) idSt.textContent = D.intraday.enabled
         ? (window.Dash.marketOpen() ? 'Aktiv – nächster Scan in wenigen Minuten.' : 'Aktiv – wartet auf US-Handelsbeginn (15:30 Uhr Berlin).')
         : '';
+      /* Kostenhuerde mitfuehren: sie haengt an Instrument, Profil und Haltedauer -
+       * alle drei aendern sich genau hier. So kann die Anzeige nie veralten. */
+      huerdeAnzeigen();
     }
     /* 'enabled' schreibt nur noch der eigene Schalter. Frueher schrieb idSave() den
      * Wert bei JEDEM Feld-Change zurueck - damit konnte der Ein/Aus-Zustand aus dem

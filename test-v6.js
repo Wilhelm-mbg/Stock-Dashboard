@@ -2273,5 +2273,46 @@ console.log('\n35) Drift-Buch: Meldung nach Schluss und Zukunftstermine (Audit 2
      'Das Termin-Archiv wird einmalig von Zahlen an Zukunftsterminen befreit (25 Faelle am 22.08., darunter ADSK 27.08.)');
 })();
 
+
+console.log('\n36) Kostenhuerde des Produkts (Signalstudie 23.08.2026)');
+(function () {
+  var dep = fs.readFileSync(__dirname + '/depot.js', 'utf8');
+  var html = fs.readFileSync(__dirname + '/index.html', 'utf8');
+  /* Wichtigste praktische Erkenntnis der Signalstudie: Die Huerde entscheidet, nicht die
+   * Signalqualitaet. Der Standard-Schein kostet 0,23 Pp je 3h-Umlauf (Spanne durch Hebel
+   * plus Zeitwert); die belegte Kante rsi2seit liegt bei 0,11 Pp - also netto negativ. */
+  function huerde(cfg, spot, vol, haltenMin) {
+    spot = spot > 0 ? spot : 200; vol = vol > 0 ? vol : 0.30;
+    var halten = Math.max(5, haltenMin || 60), now = Date.now();
+    if (cfg.instrument === 'basis') return { pp: 2 * 0.05 + (cfg.orderFee || 0) * 2 / 10000 * 100, hebel: 1 };
+    var PR = Q.PROFILES[cfg.profile] || Q.PROFILES.atm21;
+    var w = Q.makeWarrant('call', spot, vol, now, PR.ratio);
+    w.strike = Math.round(spot * (1 + (PR.otmPct || 0)) * 100) / 100;
+    w.expiry = now + PR.days * 86400000;
+    var wert = Q.warrantValue('call', w, spot, now); if (!(wert > 0.02)) return null;
+    var spx = Q.effSpread(w.iv, undefined, wert, w.ratio), omega = Q.warrantOmega('call', w, spot, now);
+    if (!(omega > 0)) return null;
+    var theta = Math.max(0, (wert - Q.warrantValue('call', w, spot, now + halten * 60000)) / wert);
+    return { pp: (2 * spx + theta) / omega * 100, hebel: omega };
+  }
+  var std = huerde({ profile: 'atm21', instrument: 'schein' }, 200, 0.30, 180);
+  var bv1 = huerde({ profile: 'atm60_b', instrument: 'schein' }, 200, 0.30, 180);
+  var akt = huerde({ instrument: 'basis', orderFee: 0 }, 200, 0.30, 180);
+  ok(std && std.pp > 0.18 && std.pp < 0.30,
+     'Standard-Schein kostet rund 0,23 Pp je 3-Stunden-Umlauf', std ? std.pp.toFixed(3) : 'null');
+  ok(bv1 && bv1.pp < std.pp / 3,
+     'Der BV-1,0-Schein ist ein Vielfaches guenstiger als der Standard-Schein',
+     bv1 ? bv1.pp.toFixed(3) + ' vs ' + std.pp.toFixed(3) : 'null');
+  ok(akt && std.pp > akt.pp,
+     'Die belegte Kante (0,11 Pp) traegt mit der Aktie, nicht mit dem Standard-Schein',
+     'Aktie netto ' + (0.11 - akt.pp).toFixed(3) + ' / Schein netto ' + (0.11 - std.pp).toFixed(3));
+  // Verdrahtung - tote Anzeigen gab es hier schon (6 Schalter, 22.08.)
+  ok((html.match(/id="kostenHuerde"/g) || []).length === 1, 'Die Anzeigeflaeche existiert genau einmal');
+  ok(dep.indexOf('function kostenHuerdePp') !== -1 && dep.indexOf('function huerdeAnzeigen') !== -1,
+     'Rechnung und Anzeige sind vorhanden');
+  ok(/huerdeAnzeigen\(\);\n    }/.test(dep), 'Die Anzeige haengt an idSave - sie kann nicht veralten');
+  ok(/quellenMigration\(\);\n    huerdeAnzeigen\(\);/.test(dep), 'Die Anzeige wird beim Start gefuellt');
+})();
+
 console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
 process.exit(fails ? 1 : 0);
