@@ -4627,7 +4627,12 @@
     /* Universum: Handels-Universum + Nasdaq-100 + aktiver Pool, dedupliziert.
      * Mehr Werte auf denselben Tagen = mehr Out-of-Sample-Trades je Messung. */
     var syms = universe().slice();
-    (POOLS_60M.ndx100 || []).forEach(function (s) { if (syms.indexOf(s) === -1) syms.push(s); });
+    /* ndx100 UND sp100: die Messung vom 23.08.2026 zeigt, dass der Ueberschuss in
+     * weniger liquiden Werten nicht schlechter wird - die Verbreiterung braucht nur
+     * vorher Daten. Ohne Archiv gehandelt waeren es nie gemessene Werte. */
+    ['ndx100', 'sp100'].forEach(function (p) {
+      (POOLS_60M[p] || []).forEach(function (s) { if (syms.indexOf(s) === -1) syms.push(s); });
+    });
     (POOLS_60M[D.intraday.pool] || []).forEach(function (s) { if (syms.indexOf(s) === -1) syms.push(s); });
     var ziel = Date.now() - tage * 86400000;
     /* Capital begrenzt die Zeitspanne je Anfrage je nach Aufloesung - undokumentiert.
@@ -4649,6 +4654,36 @@
     var pause = opts.pauseMs || 200;
     melde('Starte … ' + syms.length + ' Werte × ' + ivs.length + ' Zeitrahmen, Ziel ' + tage + ' Tage.');
     try {
+      /* STUFE 0: 60-Minuten-Historie. Die kommt NICHT von Capital, sondern von Yahoo
+       * (730 Tage per btRange) - und genau auf ihr rechnet die belegte Kante rsi2seit.
+       * Nur Werte, deren Archiv duenner als 400 Kerzen ist; die anderen sind versorgt. */
+      if (opts.mit60m !== false) {
+        var fehl60 = [];
+        for (var f0 = 0; f0 < syms.length; f0++) {
+          var s60 = await window.Archiv.serie('60m', syms[f0]);
+          if (!s60 || s60.length < 400) fehl60.push(syms[f0]);
+        }
+        if (fehl60.length) {
+          melde('Stufe 0: 60-Minuten-Historie für ' + fehl60.length + ' Werte ohne Archiv (Yahoo, 730 Tage) …');
+          var ok60 = 0, fehler60 = 0;
+          for (var g0 = 0; g0 < fehl60.length && !massenStop; g0++) {
+            var fd60 = null;
+            try { fd60 = await fetchIntraday(fehl60[g0], '60m', true); } catch (e60) { fd60 = null; }
+            if (fd60 && fd60.series && fd60.series.length > 100) {
+              await window.Archiv.fuege('60m', fehl60[g0], fd60.series);
+              ok60++;
+            } else { fehler60++; }
+            if (g0 % 10 === 9) { await window.Archiv.speichere(true); }
+            melde('Stufe 0: ' + (g0 + 1) + '/' + fehl60.length + ' · ' + ok60 + ' angelegt · ' +
+              fehler60 + ' ohne Daten · ' + fehl60[g0]);
+            // Yahoo drosselt bei rund 200 Anfragen in Folge - bewusst langsam
+            await new Promise(function (r) { setTimeout(r, 700); });
+          }
+          await window.Archiv.speichere(true);
+          melde('Stufe 0 fertig: ' + ok60 + ' von ' + fehl60.length + ' Werten haben jetzt 60-Minuten-Historie' +
+            (fehler60 ? ' (' + fehler60 + ' ohne Daten – bei Yahoo nicht geführt)' : '') + '.');
+        }
+      }
       for (var vi = 0; vi < ivs.length && !massenStop; vi++) {
         var iv = ivs[vi].iv, barMin = ivs[vi].barMin;
         var fensterMs = gemerkt[iv] || 1000 * barMin * 60000;

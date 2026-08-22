@@ -2361,5 +2361,33 @@ console.log('\n37) Produkt-Vorgabe: eine Wahrheit, nicht drei');
      'Huerde ' + huerde(kProf, 480).toFixed(3) + ' -> netto +' + (0.111 - huerde(kProf, 480)).toFixed(3));
 })();
 
+
+console.log('\n38) Auffuell-Lauf: sp100 und 60-Minuten-Erstbefuellung');
+(function () {
+  var dep = fs.readFileSync(__dirname + '/depot.js', 'utf8');
+  var mbI = dep.indexOf('async function massenBackfill');
+  var mb = dep.slice(mbI, dep.indexOf('async function datenquelleTest'));
+  /* Messung 23.08.2026: Der Ueberschuss wird in weniger liquiden Werten NICHT schlechter
+   * (oberstes Umsatzviertel -0,110 Pp, unterstes +0,108). Eine Verbreiterung verwaessert
+   * also nicht - sie braucht nur vorher Daten. 79 der 151 Werte aus ndx100+sp100 hatten
+   * kein 60m-Archiv, und genau darauf rechnet die belegte Kante rsi2seit. */
+  ok(/\['ndx100', 'sp100'\]/.test(mb),
+     'Der Auffuell-Lauf holt ndx100 UND sp100');
+  ok(mb.indexOf("fetchIntraday(fehl60[g0], '60m', true)") !== -1,
+     '60-Minuten-Historie kommt ueber Yahoo mit btRange (730 Tage), nicht von Capital');
+  ok(/s60\.length < 400/.test(mb),
+     'Nur Werte mit zu duennem 60m-Archiv werden geholt - versorgte bleiben unangetastet');
+  ok(mb.indexOf("Archiv.fuege('60m', fehl60[g0], fd60.series)") !== -1 &&
+     mb.indexOf("Archiv.fuege('60m', fehl60[g0], fd60.series, 'cap')") === -1,
+     'Yahoo-Kerzen werden NICHT als CFD gekennzeichnet (ihr Volumen ist Boersenvolumen)');
+  ok(/setTimeout\(r, 700\)/.test(mb),
+     'Der Yahoo-Abruf ist gedrosselt (Yahoo wirft ab rund 200 Anfragen in Folge 429)');
+  ok(/opts\.mit60m !== false/.test(mb),
+     'Stufe 0 laesst sich abschalten, ohne den Capital-Teil zu verlieren');
+  // Reihenfolge: 60m VOR dem Capital-Teil, sonst misst der Liquiditaetsfilter auf CFD-Volumen
+  var i60 = mb.indexOf('Stufe 0'), iCap = mb.indexOf('for (var vi = 0');
+  ok(i60 > 0 && iCap > i60, 'Stufe 0 laeuft VOR dem Capital-Teil', 'Position ' + i60 + ' < ' + iCap);
+})();
+
 console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
 process.exit(fails ? 1 : 0);
