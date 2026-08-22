@@ -627,18 +627,18 @@
    "referenz": [
     {
      "det": "rsi2seit",
-     "dir": "short",
+     "dir": "long",
      "hor": "1T",
      "bedingung": "-",
      "wert": "-",
-     "n": 1747,
+     "n": 1697,
      "nSym": 114,
-     "nTage": 389,
-     "bruttoPp": 0.218,
-     "nettoPp": 0.118,
-     "tTag": 1.078,
-     "mdeTagPp": 0.18,
-     "symPos": 0.64
+     "nTage": 397,
+     "bruttoPp": 0.114,
+     "nettoPp": 0.014,
+     "tTag": 0.889,
+     "mdeTagPp": 0.202,
+     "symPos": 0.526
     },
     {
      "det": "momentum",

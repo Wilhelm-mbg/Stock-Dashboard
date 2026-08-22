@@ -15,6 +15,10 @@ const path = require('path');
 const OUT = path.join(__dirname, 'ergebnisse');
 
 const BELEGT = ['rsi2seit', 'kapitulation', 'momentum', 'drift'];   // vorab benannt, keine Scan-Funde
+/* Die Referenz ist die VALIDIERTE Konfiguration, nicht die beste Richtung - sonst waere sie
+ * selbst ein Scan-Fund. rsi2seit: RSI2 ueberverkauft im Seitwaertskanal -> Long. Kapitulation:
+ * Long. Momentum: Long (Buch kauft die Staerksten). Drift: beide Seiten (Ueberraschung +/-). */
+const BELEGT_DIR = { rsi2seit: 'long', kapitulation: 'long', momentum: 'long', drift: null };
 const MIN = { A: { n: 100, nTage: 20, nSym: 15 }, B: { n: 60, nTage: 60, nSym: 15 } };
 
 function lade(iv, phase) {
@@ -33,7 +37,7 @@ function waehle(iv) {
   const bedingt = L.zeilen.filter(z => z.bedingung !== '-' && ok(z) && BELEGT.indexOf(z.det) === -1)
     .sort((a, b) => b.tTag - a.tTag).slice(0, 5);
   const paare = (L.paare || []).filter(z => ok(z)).sort((a, b) => b.tTag - a.tTag).slice(0, 3);
-  const referenz = L.zeilen.filter(z => z.bedingung === '-' && BELEGT.indexOf(z.det) !== -1)
+  const referenz = L.zeilen.filter(z => z.bedingung === '-' && BELEGT.indexOf(z.det) !== -1 && (!BELEGT_DIR[z.det] || z.dir === BELEGT_DIR[z.det]))
     .sort((a, b) => b.tTag - a.tTag);
   // je belegte Kante nur die beste Richtung x Horizont
   const refSeen = new Set(), ref = [];
