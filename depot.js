@@ -4472,7 +4472,8 @@
     (POOLS_60M.ndx100 || []).forEach(function (s) { if (syms.indexOf(s) === -1) syms.push(s); });
     (POOLS_60M[D.intraday.pool] || []).forEach(function (s) { if (syms.indexOf(s) === -1) syms.push(s); });
     var ziel = Date.now() - tage * 86400000;
-    var stat = { requests: 0, bars: 0, symbole: 0, fehler: 0, start: Date.now() };
+    var stat = { requests: 0, bars: 0, symbole: 0, fehler: 0, start: Date.now(), grund: '' };
+    var ohneErfolg = 0;   // Werte in Folge, die keine einzige Kerze lieferten
     var pause = opts.pauseMs || 300;
     melde('Starte … ' + syms.length + ' Werte × ' + ivs.length + ' Zeitrahmen, Ziel ' + tage + ' Tage.');
     try {
@@ -4483,14 +4484,29 @@
           var serie = await window.Archiv.serie(iv, sym);
           var frueh = serie.length ? serie[0][0] : Date.now();
           if (frueh <= ziel) continue;
-          var leer = 0, geholt = false, fehlSerie = 0;
-          while (frueh > ziel && !massenStop && leer < 2 && fehlSerie < 3) {
-            var von = Math.max(ziel, frueh - 1000 * barMin * 60000);
+          /* Ein Abruffenster deckt 1000 Kerzen WANDUHRZEIT ab - bei 1m nur 16,7 h.
+           * Zwischen Freitag 20:00 und Dienstag 13:30 UTC (Feiertagsmontag) liegen aber
+           * rund 90 h ganz ohne Sitzungskerzen. Mit einer festen Grenze von 2 leeren
+           * Fenstern kam der 1m-Lauf deshalb ueber das erste Wochenende nicht hinaus -
+           * also genau der Zeitrahmen, fuer den die Funktion gebaut wurde. Die Grenze
+           * richtet sich jetzt nach der Fensterbreite. */
+          var fensterMs = 1000 * barMin * 60000;
+          var leerGrenze = Math.max(2, Math.ceil(96 * 3600000 / fensterMs) + 1);
+          var leer = 0, geholt = false, fehlSerie = 0, ohneSitzung = 0, symGrund = '';
+          while (frueh > ziel && !massenStop && leer < leerGrenze && fehlSerie < 3 && ohneSitzung < 3) {
+            var von = Math.max(ziel, frueh - fensterMs);
             var bars = null;
-            try { bars = await window.CapAPI.pricesRange(sym, iv, von, frueh - 1, 1000); } catch (eB) { bars = null; }
+            var wurf = '';
+            try { bars = await window.CapAPI.pricesRange(sym, iv, von, frueh - 1, 1000); }
+            catch (eB) { bars = null; wurf = 'Ausnahme: ' + ((eB && eB.message) || eB); }
             stat.requests++;
             if (!bars) {
               fehlSerie++; stat.fehler++;
+              // Den Grund festhalten: vorher gab es nur einen Zaehler, und „3 Fehler"
+              // sagt nicht, ob der Markt fehlt, die Sitzung abläuft oder gedrosselt wird.
+              var g = wurf || (window.CapAPI.lastPriceError && window.CapAPI.lastPriceError()) || '';
+              symGrund = g || symGrund;
+              stat.grund = g || stat.grund;
               // Bei Fehlern langsamer werden statt weiterzuhaemmern - das ist genau
               // die Situation, in der eine Drosselung greift.
               await new Promise(function (r) { setTimeout(r, 1500 * fehlSerie); });
@@ -4500,15 +4516,53 @@
             if (!bars.length) { leer++; frueh = von; continue; }
             leer = 0;
             var sess = bars.filter(function (b) { var m = Q.minutenSeitOeffnung(b[0]); return m >= 0 && m < 390; });
-            if (sess.length) { await window.Archiv.fuege(iv, sym, sess); stat.bars += sess.length; geholt = true; }
+            if (sess.length) { await window.Archiv.fuege(iv, sym, sess); stat.bars += sess.length; geholt = true; ohneSitzung = 0; }
+            else {
+              /* Kerzen kamen an, aber KEINE lag in der US-Sitzung. Ohne diese Bremse
+               * liefe der Wert stumm bis ans Ziel zurueck und stellte hunderte
+               * Anfragen, ohne je etwas zu sichern - und ohne einen Fehler zu melden. */
+              ohneSitzung++;
+              if (ohneSitzung >= 3) {
+                stat.grund = sym + ' (' + iv + '): API liefert Kerzen, aber keine innerhalb der US-Handelszeit – ' +
+                  'vermutlich ein rund um die Uhr gehandelter Markt (Index/Devisen) statt der Aktie.';
+              }
+            }
             frueh = Math.min(von, bars[0][0]);
             await new Promise(function (r) { setTimeout(r, pause); });
           }
-          if (geholt) stat.symbole++;
+          /* Ein Wert ohne Kerzen zaehlt als Fehlschlag - egal ob durch Fehler, leere
+           * Fenster oder Kerzen ausserhalb der Sitzung. NICHT gezaehlt wird 'kein Markt
+           * gefunden': Capital fuehrt nicht jeden Wert als CFD (im DAX-Pool haengen 41
+           * .DE-Symbole hintereinander), das ist eine Einzel- und keine Verbindungsstoerung. */
+          if (geholt) { stat.symbole++; ohneErfolg = 0; }
+          /* Leere Fenster zaehlen bewusst NICHT mit: sie bedeuten meist schlicht
+           * 'weiter zurueck gibt die API nichts her'. Beim zweiten Lauf ist das der
+           * Normalfall bei JEDEM Wert - mitgezaehlt haette der Lauf sich dann selbst
+           * mit der Meldung 'Verbindung gestoert' abgebrochen. */
+          else if ((fehlSerie >= 3 || ohneSitzung >= 3) &&
+                   symGrund.indexOf('Kein Markt') !== 0) { ohneErfolg++; }
+          // stat.bars === 0 fasst den Fall 'es lief nie'. Bricht die Verbindung erst
+          // mitten im Lauf weg, greift die zweite Schwelle.
+          if (ohneErfolg >= 3 && (stat.bars === 0 || ohneErfolg >= 10)) {
+            melde('Abgebrochen: ' + ohneErfolg + ' Werte in Folge lieferten keine einzige Kerze' +
+              (stat.bars === 0 ? ' und bisher wurde gar nichts gesichert' : '') + '.\n' +
+              'Das sieht nach einer gemeinsamen Ursache aus, nicht nach Einzelfällen.\n\nGrund der API: ' +
+              (stat.grund || 'kein Fehler gemeldet – die Abrufe kamen leer zurück') +
+              '\n\nBitte zuerst „Datenquelle testen" laufen lassen – das zeigt,\n' +
+              'an welcher Stelle es klemmt.');
+            try { await window.Archiv.speichere(true); } catch (e3) { }
+            return stat;
+          }
           var minLauf = Math.round((Date.now() - stat.start) / 60000);
           melde(iv + ': Wert ' + (si + 1) + '/' + syms.length + ' (' + sym + ') · ' +
             stat.requests + ' Anfragen · ' + Math.round(stat.bars / 1000) + 'k Kerzen · ' +
-            stat.fehler + ' Fehler · ' + minLauf + ' Min' + (massenStop ? ' · wird angehalten …' : ''));
+            stat.fehler + ' Fehler · ' + minLauf + ' Min' + (massenStop ? ' · wird angehalten …' : '') +
+            (stat.grund ? '\nLetzter Fehler: ' + stat.grund : '') +
+        (stat.bars === 0 && stat.requests > 0 && !stat.grund
+          ? '\n\nEs kam keine einzige Kerze an, ohne dass ein Fehler gemeldet wurde. Entweder ist das\n' +
+            'Archiv bereits so tief wie die API reicht – oder das Konto bekommt keine Historie.\n' +
+            '„Datenquelle testen" unterscheidet die beiden Fälle.'
+          : ''));
           if (si % 10 === 9) await window.Archiv.speichere(true);   // Zwischenstand sichern
         }
       }
@@ -4516,7 +4570,8 @@
       var dauer = Math.round((Date.now() - stat.start) / 60000);
       melde((massenStop ? 'Angehalten' : 'Fertig') + ' nach ' + dauer + ' Min · ' + stat.symbole +
         ' Werte ergänzt · ' + Math.round(stat.bars / 1000) + 'k Kerzen · ' + stat.requests +
-        ' Anfragen · ' + stat.fehler + ' Fehler. Der Fortschritt ist gespeichert – ein neuer Lauf setzt dort an.');
+        ' Anfragen · ' + stat.fehler + ' Fehler. Der Fortschritt ist gespeichert – ein neuer Lauf setzt dort an.' +
+        (stat.grund ? '\nLetzter Fehler: ' + stat.grund : ''));
       return stat;
     } catch (eM) {
       melde('Abgebrochen: ' + ((eM && eM.message) || eM) + ' · Zwischenstand ist gespeichert.');
@@ -4527,6 +4582,128 @@
     }
   }
   if (typeof window !== 'undefined') { window.__massenBackfill = massenBackfill; window.__massenAbbrechen = massenAbbrechen; }
+
+  /** Gestufte Diagnose der Capital.com-Datenquelle.
+   *  Grund: massenBackfill konnte bisher nur ZAEHLEN, dass etwas scheitert - jede
+   *  Ursache (kein Markt / Sitzung / HTTP / Drosselung) endete im selben stummen null.
+   *  Diese Pruefung beantwortet der Reihe nach, WO es klemmt, und misst am Ende
+   *  empirisch, wie weit die API je Zeitrahmen ueberhaupt zurueckreicht - die Zahl,
+   *  an der haengt, ob Felix' 1m-Studien (#33) machbar sind. */
+  async function datenquelleTest(sym) {
+    sym = (sym || 'AAPL').toUpperCase();
+    var el = document.getElementById('massenStatus');
+    var z = [];
+    function melde(s) { if (s != null) z.push(s); if (el) el.textContent = z.join('\n'); }
+
+    melde('Prüfe Datenquelle für ' + sym + ' …');
+
+    // 1) Ist die Anbindung überhaupt eingeschaltet?
+    if (!(window.CapAPI && window.CapAPI.enabled())) {
+      melde('✗ Schritt 1: Capital.com ist in dieser App NICHT aktiv.');
+      melde('  → App-Einstellungen: Schlüssel, Kennung und Passwort eintragen UND den Haken');
+      melde('    „Verbindung aktivieren" setzen. Ohne den Haken wird keine Anfrage gestellt.');
+      return;
+    }
+    melde('✓ Schritt 1: Anbindung ist eingeschaltet (Demo-Host).');
+
+    // 2) Meldet die Sitzung an?
+    var st = await window.CapAPI.status();
+    if (!st.ok) {
+      melde('✗ Schritt 2: Anmeldung fehlgeschlagen – ' + st.msg);
+      melde('  → Häufigste Ursachen: Schlüssel gehört zum LIVE- statt zum Demo-Konto,');
+      melde('    das API-Passwort ist nicht das Konto-Passwort, oder der Schlüssel ist abgelaufen.');
+      return;
+    }
+    melde('✓ Schritt 2: ' + st.msg);
+
+    // 3) Wird der Markt gefunden?
+    var epic = await window.CapAPI.epicFor(sym);
+    if (!epic) {
+      melde('✗ Schritt 3: ' + (window.CapAPI.lastPriceError() || 'kein Markt gefunden'));
+      return;
+    }
+    /* epicFor faellt notfalls auf den ersten Suchtreffer zurueck. Bindet es einen Index
+     * oder ein Devisenpaar statt der Aktie, laufen dessen Kerzen rund um die Uhr und
+     * passen nie zur US-Sitzung - im Auffuell-Lauf genau der stille Leerlauf-Fall. */
+    var iName = '', iTyp = '';
+    var mres = await window.CapAPI.roh('/markets/' + encodeURIComponent(epic));
+    if (mres.ok) {
+      try { var mj = JSON.parse(mres.body).instrument || {}; iName = mj.name || ''; iTyp = mj.type || ''; } catch (e) { }
+    }
+    melde('✓ Schritt 3: Markt gefunden – Epic „' + epic + '"' +
+      (iName ? ' = ' + iName : '') + (iTyp ? ' · Typ ' + iTyp : '') + '.');
+    if (iTyp && iTyp.indexOf('SHARES') === -1) {
+      melde('  ⚠ Das ist KEIN Aktienmarkt. Seine Kerzen laufen rund um die Uhr und fallen');
+      melde('    nicht in die US-Sitzung – der Auffüll-Lauf würde für ' + sym + ' nichts sichern.');
+    }
+
+    // 4) Was antwortet der Kurs-Endpunkt roh? Hier zählt der Rumpf, nicht nur der Status.
+    var roh = await window.CapAPI.roh('/prices/' + encodeURIComponent(epic) + '?resolution=MINUTE&max=5');
+    melde('· Schritt 4: HTTP ' + roh.status + ' auf /prices – Antwort: ' +
+      String(roh.body || '').replace(/\s+/g, ' ').slice(0, 300));
+    if (!roh.ok) {
+      melde('✗ Der Kurs-Endpunkt selbst lehnt ab. Der Fehlercode oben ist die Antwort –');
+      melde('  bei „limit exceeded" ist es eine Drosselung, sonst fehlt dem Konto das Recht.');
+      return;
+    }
+
+    // 5) Wie weit reicht die Historie je Zeitrahmen WIRKLICH zurück?
+    //    Wochenenden werden übersprungen: eine Stichprobe auf einem Samstag liefert
+    //    zu Recht nichts und würde sonst als „Grenze erreicht" fehlgedeutet.
+    melde('· Schritt 5: messe die tatsächliche Reichweite je Zeitrahmen …');
+    var stufen = [{ iv: '1m', r: 'MINUTE' }, { iv: '5m', r: 'MINUTE_5' }, { iv: '15m', r: 'MINUTE_15' }];
+    var proben = [2, 7, 14, 30, 60, 90, 180, 365];
+    function werktag(ms) {
+      var d = new Date(ms);
+      while (d.getUTCDay() === 0 || d.getUTCDay() === 6) d.setUTCDate(d.getUTCDate() - 1);
+      return d.getTime();
+    }
+    function iso(ms) { return new Date(ms).toISOString().slice(0, 19); }
+    var ergebnis = {};
+    for (var si = 0; si < stufen.length; si++) {
+      var s = stufen[si], tiefe = 0, leerFolge = 0, httpFehler = 0, gestoert = false;
+      for (var pi = 0; pi < proben.length; pi++) {
+        var tag = werktag(Date.now() - proben[pi] * 86400000);
+        // 14–18 UTC: im Sommer (Sitzung 13:30–20:00 UTC) ganz innerhalb, im Winter
+        // (14:30–21:00 UTC) mit 3,5 h Überlappung – in beiden Fällen genug für ein Urteil.
+        var von = new Date(tag); von.setUTCHours(14, 0, 0, 0);
+        var bis = new Date(tag); bis.setUTCHours(18, 0, 0, 0);
+        var r = await window.CapAPI.roh('/prices/' + encodeURIComponent(epic) +
+          '?resolution=' + s.r + '&from=' + iso(von.getTime()) + '&to=' + iso(bis.getTime()) + '&max=1000');
+        /* Ein HTTP-Fehler ist KEIN Messergebnis. Wuerde er wie „keine Daten" zaehlen,
+         * wiese ausgerechnet dieses Werkzeug eine Drosselung als Historiengrenze aus. */
+        if (!r.ok) {
+          httpFehler++;
+          melde('    ' + s.iv + ' bei ' + proben[pi] + ' Tagen: HTTP ' + r.status +
+            ' – ' + String(r.body || '').replace(/\s+/g, ' ').slice(0, 140));
+          await new Promise(function (res) { setTimeout(res, 1500 * httpFehler); });
+          if (httpFehler >= 2) { gestoert = true; break; }
+          continue;
+        }
+        var n = -1;
+        try { n = (JSON.parse(r.body).prices || []).length; } catch (e) { n = -1; }
+        if (n > 0) { tiefe = proben[pi]; leerFolge = 0; httpFehler = 0; }
+        else if (++leerFolge >= 2) break;   // zweimal nichts hintereinander = Grenze erreicht
+        await new Promise(function (res) { setTimeout(res, 250); });
+      }
+      ergebnis[s.iv] = gestoert ? null : tiefe;
+      melde('    ' + s.iv + ': ' + (gestoert
+        ? 'Messung abgebrochen (die API lehnte zweimal ab) – Tiefe UNBEKANNT, nicht „kurz".'
+        : 'Historie reicht ' + (tiefe ? 'mindestens ' + tiefe + ' Tage zurück' : 'NICHT einmal 2 Tage zurück')));
+    }
+
+    melde('');
+    function tg(v) { return v == null ? 'unbekannt' : v + ' T'; }
+    melde('Ergebnis: 1m ' + tg(ergebnis['1m']) + ' · 5m ' + tg(ergebnis['5m']) + ' · 15m ' + tg(ergebnis['15m']) + '.');
+    if (ergebnis['1m'] == null) melde('→ Für #33 keine Aussage möglich – die Messung wurde gestört. Später erneut prüfen.');
+    else if (ergebnis['1m'] >= 60) melde('→ Reicht für Felix\' Winkel-Detektor (#33, braucht 60+ Tage 1m).');
+    else if (ergebnis['1m'] > 0) melde('→ Für #33 (60+ Tage 1m) zu kurz; 1m bleibt beim laufenden Sammeln.');
+    else melde('→ Die API gibt für ' + sym + ' gar keine 1-Minuten-Historie her; #33 bleibt beim laufenden Sammeln.');
+    melde('Der Auffüll-Lauf sollte nur bis zu diesen Tiefen anfragen – alles darüber sind sichere Fehlschläge.');
+    return ergebnis;
+  }
+  if (typeof window !== 'undefined') { window.__datenquelleTest = datenquelleTest; }
+
 
   async function loadLabData(st) {
     var cfg = D.intraday;
@@ -7265,9 +7442,24 @@
       .forEach(function (el) { el.addEventListener('change', idSave); });
     var scrBtn = document.getElementById('screenBtn');
     if (scrBtn) scrBtn.addEventListener('click', function () { runScreener(true); });
+    // Datenquellen-Diagnose (klaert die Voraussetzung fuers Auffuellen)
+    var qBtn = document.getElementById('quelleTestBtn');
+    if (qBtn) qBtn.addEventListener('click', function () {
+      // Beide schreiben in dieselbe Statusfläche und fragen dieselbe API - gleichzeitig
+      // wuerden sie sich ueberschreiben und die Drosselgefahr genau waehrend der Messung erhoehen.
+      var andere = document.getElementById('massenBtn');
+      qBtn.disabled = true; if (andere) andere.disabled = true;
+      datenquelleTest(universe()[0] || 'AAPL').catch(function (e) {
+        var el = document.getElementById('massenStatus');
+        if (el) el.textContent = 'Prüfung abgebrochen: ' + ((e && e.message) || e);
+      }).then(function () { qBtn.disabled = false; if (andere) andere.disabled = false; });
+    });
     // Massen-Backfill (Kursarchiv in einem Rutsch vertiefen)
     var mBtn = document.getElementById('massenBtn');
-    if (mBtn) mBtn.addEventListener('click', function () { massenBackfill({ tage: 90 }); });
+    if (mBtn) mBtn.addEventListener('click', function () {
+      if (qBtn) qBtn.disabled = true;
+      massenBackfill({ tage: 90 }).catch(function () { }).then(function () { if (qBtn) qBtn.disabled = false; });
+    });
     var mStop = document.getElementById('massenStopBtn');
     if (mStop) mStop.addEventListener('click', function () { massenAbbrechen(); });
     // Trendwechsel-Beobachtung (Felix #33/#35)

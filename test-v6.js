@@ -1889,5 +1889,192 @@ console.log('\nAuslieferung');
      'Hauptprozess, Bridge und Worker sind abgedeckt');
 })();
 
+
+console.log('\n30) Datenquellen-Diagnose (Capital.com) – ein Fehlschlag muss seinen GRUND nennen');
+(function () {
+  var cap = fs.readFileSync(__dirname + '/capital.js', 'utf8');
+  var dep = fs.readFileSync(__dirname + '/depot.js', 'utf8');
+  var html = fs.readFileSync(__dirname + '/index.html', 'utf8');
+
+  function block(quelle, start) {
+    // Schneidet den Rumpf einer Methode ab "name: async function" bis zur Zeile,
+    // die sie auf gleicher Einrückung schließt.
+    var i = quelle.indexOf(start);
+    if (i === -1) return '';
+    var j = quelle.indexOf('\n    },', i);
+    return j === -1 ? quelle.slice(i) : quelle.slice(i, j);
+  }
+
+  ok(/lastPriceError:\s*function/.test(cap), 'capital.js bietet lastPriceError() an');
+
+  /* Dauerregel statt Einzelfall: KEINE der Kursfunktionen darf null zurückgeben, ohne
+   * einen Grund zu hinterlassen. Genau daran scheiterte die Fehlersuche am 22.08.2026 –
+   * "kein Markt", "Login weg", "gedrosselt" und "unlesbar" sahen für den Aufrufer alle
+   * gleich aus. Der '!epic'-Ausgang zählt nicht mit: dort hat epicFor schon gemeldet. */
+  (function () {
+    function rumpf(start) {
+      var i = cap.indexOf(start); if (i === -1) return '';
+      var j = cap.indexOf('\n    },', i); return j === -1 ? cap.slice(i) : cap.slice(i, j);
+    }
+    var stumm = [];
+    ['epicFor: async', 'pricesRange: async', 'prices: async', 'quote: async'].forEach(function (n) {
+      var b = rumpf(n); if (!b) return;
+      var ausgaenge = (b.match(/return null;/g) || []).length - (b.indexOf('if (!epic) return null;') !== -1 ? 1 : 0);
+      var gruende = (b.match(/letzterKursFehler =/g) || []).length - (b.indexOf("letzterKursFehler = '';") !== -1 ? 1 : 0);
+      if (gruende < ausgaenge) stumm.push(n.split(':')[0] + ' (' + (ausgaenge - gruende) + ')');
+    });
+    ok(stumm.length === 0,
+       'Keine Kursfunktion hat einen stummen Fehlerausgang',
+       stumm.length ? stumm.join(', ') : 'epicFor, pricesRange, prices, quote geprüft');
+  })();
+  ok(/roh:\s*async function/.test(cap), 'capital.js bietet roh() für die Rohantwort an');
+
+  // Kern der Sache: KEIN stummes null mehr. Jeder Fehlerausgang muss vorher einen Grund setzen.
+  var eF = block(cap, 'epicFor: async function');
+  var nullsE = (eF.match(/return null;/g) || []).length;
+  var gruendeE = (eF.match(/letzterKursFehler =/g) || []).length;
+  ok(nullsE > 0 && gruendeE >= nullsE,
+     'epicFor: jeder Fehlerausgang setzt einen Grund', gruendeE + ' Gründe / ' + nullsE + ' Ausgänge');
+
+  var pR = block(cap, 'pricesRange: async function');
+  ok(/letzterKursFehler = 'Kursabruf/.test(pR),
+     'pricesRange nennt bei HTTP-Fehler Symbol, Zeitrahmen, Zeitraum und Status');
+  ok(pR.indexOf('String(res.body') !== -1,
+     'pricesRange gibt den Antwortrumpf mit aus (dort steht Capitals errorCode)');
+
+  // Die Diagnose selbst
+  ok(/async function datenquelleTest/.test(dep), 'depot.js hat datenquelleTest()');
+  ok(dep.indexOf('window.__datenquelleTest') !== -1, 'datenquelleTest ist von außen aufrufbar');
+  var dqI = dep.indexOf('async function datenquelleTest');
+  var dq = dep.slice(dqI, dqI + 6000);
+  ok(dq.indexOf('CapAPI.enabled()') !== -1 && dq.indexOf('CapAPI.status()') !== -1 &&
+     dq.indexOf('epicFor') !== -1 && dq.indexOf('/prices/') !== -1,
+     'Die Prüfung geht alle vier Stufen durch: aktiv → Anmeldung → Markt → Kursabruf');
+
+  // Wochenend-Falle: eine Stichprobe auf Samstag/Sonntag liefert zu Recht nichts
+  // und würde sonst als "Historie endet hier" fehlgedeutet.
+  ok(/getUTCDay\(\) === 0 \|\| .*getUTCDay\(\) === 6/.test(dq),
+     'Stichproben-Tage werden von Wochenenden weggeschoben');
+
+  // Auflösungsnamen müssen zu Capitals Vokabular passen (MINUTE/MINUTE_5/MINUTE_15)
+  ok(/'MINUTE'/.test(dq) && /'MINUTE_5'/.test(dq) && /'MINUTE_15'/.test(dq),
+     'Die Tiefenmessung nutzt Capitals Auflösungsnamen');
+
+  // massenBackfill: Grund statt bloßem Zähler
+  var mbI = dep.indexOf('async function massenBackfill');
+  var mb = dep.slice(mbI, dep.indexOf('async function datenquelleTest'));
+  ok(mb.indexOf('stat.grund') !== -1 && mb.indexOf('lastPriceError') !== -1,
+     'massenBackfill hält den konkreten Fehlergrund fest');
+  ok(/Letzter Fehler: ' \+ stat\.grund/.test(mb),
+     'Der Grund erscheint auch in der Statuszeile, nicht nur intern');
+
+  // Früh-Abbruch: muss bei systemischem Fehler greifen …
+  ok(/ohneErfolg >= 3 && \(stat\.bars === 0 \|\| ohneErfolg >= 10\)/.test(mb),
+     'Ein systemischer Fehlschlag bricht den Lauf ab – auch wenn er erst mitten im Lauf auftritt');
+  // … darf aber NICHT durch übersprungene (bereits vollständige) Werte ausgelöst werden.
+  ok(/if \(geholt\) \{ stat\.symbole\+\+; ohneErfolg = 0; \}/.test(mb),
+     'Ein erfolgreicher Wert setzt den Abbruchzähler zurück (fertige Werte lösen nichts aus)');
+  // Capital führt nicht jeden Wert als CFD – im DAX-Pool hängen 41 .DE-Symbole
+  // hintereinander. Die dürfen nicht als „die Verbindung ist kaputt" gedeutet werden.
+  ok(mb.indexOf("symGrund.indexOf('Kein Markt') !== 0") !== -1,
+     'Nicht geführte Einzelwerte lösen KEINEN Verbindungs-Abbruch aus');
+
+  /* Der schwerste Befund der Gegenprüfung (22.08.2026): ein Abruffenster deckt 1000
+   * Kerzen WANDUHRZEIT ab – bei 1m nur 16,7 h. Die Wochenendlücke der US-Sitzung ist
+   * 65,5 h, mit Feiertagsmontag rund 90 h. Mit fester Grenze 2 kam der 1m-Lauf über das
+   * erste Wochenende nicht hinaus – also genau dort nicht weiter, wofür er gebaut wurde.
+   * Deshalb hier nachgerechnet statt nur nach Text gesucht. */
+  ok(/var leerGrenze = Math\.max\(2, Math\.ceil\(96 \* 3600000 \/ fensterMs\) \+ 1\)/.test(mb),
+     'Die Grenze für leere Fenster richtet sich nach der Fensterbreite');
+  (function () {
+    function leerGrenze(barMin) { var f = 1000 * barMin * 60000; return Math.max(2, Math.ceil(96 * 3600000 / f) + 1); }
+    var wochenende = 65.5 * 3600000;          // Fr 20:00 UTC bis Mo 13:30 UTC
+    var langesWE = 89.5 * 3600000;            // mit Feiertagsmontag bis Di 13:30 UTC
+    var schlecht = [];
+    [1, 5, 15].forEach(function (bm) {
+      var reichweite = leerGrenze(bm) * 1000 * bm * 60000;
+      if (reichweite < langesWE) schlecht.push(bm + 'm deckt nur ' + Math.round(reichweite / 3600000) + ' h');
+    });
+    ok(schlecht.length === 0,
+       'Jeder Zeitrahmen kann ein langes Wochenende (90 h ohne Kerzen) überbrücken',
+       schlecht.length ? schlecht.join('; ') : '1m ' + Math.round(leerGrenze(1) * 16.667) + ' h > ' + Math.round(langesWE / 3600000) + ' h');
+    ok(leerGrenze(1) * 1000 * 1 * 60000 >= wochenende,
+       '1-Minuten-Lauf kommt über das erste Wochenende hinaus (der Kernzweck der Funktion)');
+  })();
+
+  // Leere Fenster = Ende der Historie, nicht Fehlschlag. Beim ZWEITEN Lauf ist das der
+  // Normalfall bei jedem Wert - mitgezaehlt haette sich der Lauf selbst abgewuergt.
+  ok(mb.indexOf('else if ((fehlSerie >= 3 || ohneSitzung >= 3)') !== -1,
+     'Leere Abrufe am Ende der Historie lösen keinen Verbindungs-Abbruch aus (Fortsetzbarkeit)');
+
+  // Leerlauf-Bremse: Kerzen kommen an, aber keine liegt in der US-Sitzung.
+  ok(/ohneSitzung < 3/.test(mb) && mb.indexOf('ohneSitzung++') !== -1,
+     'Ein Wert, der nur Kerzen ausserhalb der Handelszeit liefert, wird abgebrochen statt stumm 90 Tage weit abgefragt');
+  ok(/ohneSitzung = 0/.test(mb), 'Die Leerlauf-Bremse wird zurückgesetzt, sobald echte Sitzungskerzen ankommen');
+
+  /* Eine Drosselung (HTTP 429) darf nicht als gemessene Historiengrenze durchgehen –
+   * ausgerechnet in dem Werkzeug, das beides auseinanderhalten soll. */
+  ok(/if \(!r\.ok\) \{[\s\S]{0,400}httpFehler\+\+/.test(dq),
+     'HTTP-Fehler werden getrennt gezählt, nicht als „keine Daten"');
+  ok(/gestoert \? null : tiefe/.test(dq) && dq.indexOf('Tiefe UNBEKANNT') !== -1,
+     'Eine gestörte Messung wird als UNBEKANNT ausgewiesen, nicht als kurze Historie');
+  ok(dq.indexOf("iTyp.indexOf('SHARES') === -1") !== -1,
+     'Die Prüfung warnt, wenn hinter dem Kürzel kein Aktienmarkt liegt');
+
+  // Knopf: vorhanden UND verdrahtet – tote Schalter gab es hier schon einmal (6 Stück).
+  var vork = (html.match(/id="quelleTestBtn"/g) || []).length;
+  ok(vork === 1, 'Der Knopf „Datenquelle testen" existiert genau einmal', vork + '×');
+  ok(/quelleTestBtn'\)[\s\S]{0,200}addEventListener\('click'/.test(dep),
+     'Der Knopf ist an eine Klick-Behandlung angeschlossen');
+  ok(/qBtn\.disabled = false/.test(dep), 'Der Knopf wird nach der Prüfung wieder freigegeben');
+
+  // Mehrzeilige Diagnose muss auch mehrzeilig ankommen
+  var statusZeile = (html.match(/id="massenStatus"[^>]*/) || [''])[0];
+  ok(statusZeile.indexOf('pre-wrap') !== -1,
+     'Die Statusfläche gibt Zeilenumbrüche wieder (sonst verklebt die Diagnose zu einem Absatz)');
+})();
+
+
+console.log('\n31) Auslieferung – enthält der letzte Build wirklich den aktuellen Stand?');
+(function () {
+  var asarPfad = __dirname + '/dist/win-unpacked/resources/app.asar';
+  if (!fs.existsSync(asarPfad)) {
+    console.log('  ℹ  Noch kein Build vorhanden – diese Prüfung greift erst nach „electron-builder".');
+    return;
+  }
+  var asarLib;
+  try { asarLib = require('@electron/asar'); }
+  catch (e) { console.log('  ℹ  asar-Bibliothek nicht verfügbar – Prüfung übersprungen.'); return; }
+
+  var quellVersion = JSON.parse(fs.readFileSync(__dirname + '/package.json', 'utf8')).version;
+  var paketVersion = null;
+  try { paketVersion = JSON.parse(asarLib.extractFile(asarPfad, 'package.json').toString('utf8')).version; }
+  catch (e) { }
+
+  /* Ein fehlgeschlagener Build hinterlässt das ALTE dist/ – und ein Release daraus
+   * liefert stillschweigend den vorherigen Stand aus. Genau das ist hier am
+   * 22.08.2026 passiert: „npm run build" gibt es nicht, der Fehlschlag blieb in einer
+   * verketteten Shell-Zeile unsichtbar, und das Paket war eine Version alt. */
+  ok(paketVersion === quellVersion,
+     'Das gebaute Paket ist auf dem Stand der Quelle',
+     'Quelle ' + quellVersion + ' / Paket ' + (paketVersion || 'unlesbar'));
+
+  /* Der Versionsvergleich oben fängt nur "der Build lief gar nicht". Wird nach dem
+   * Build weiter am Code gefeilt, bleibt die Version gleich und das Paket ist trotzdem
+   * veraltet. Deshalb byteweise vergleichen – das ist der einzige Test, der beides fängt. */
+  var crypto = require('crypto');
+  function hash(b) { return crypto.createHash('sha1').update(b).digest('hex').slice(0, 12); }
+  var abweichend = [];
+  ['depot.js', 'capital.js', 'index.html', 'quant.js', 'renderer.js', 'main.js', 'app-shell.js'].forEach(function (f) {
+    var quelle, paket;
+    try { quelle = hash(fs.readFileSync(__dirname + '/' + f)); } catch (e) { return; }
+    try { paket = hash(asarLib.extractFile(asarPfad, f)); } catch (e) { paket = 'fehlt'; }
+    if (quelle !== paket) abweichend.push(f + ' (' + paket + ' statt ' + quelle + ')');
+  });
+  ok(abweichend.length === 0,
+     'Jede ausgelieferte Datei ist inhaltsgleich mit der Quelle',
+     abweichend.length ? abweichend.join('; ') : 'alle geprüften Dateien identisch');
+})();
+
 console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
 process.exit(fails ? 1 : 0);

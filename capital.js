@@ -3,7 +3,7 @@
    Bewusst NUR das Demo-Konto: der Live-Host ist in der App nicht freigeschaltet. */
 (function () {
   var BASE = 'https://demo-api-capital.backend-capital.com/api/v1';
-  var tokens = null, tokenTime = 0, lastError = '';
+  var tokens = null, tokenTime = 0, lastError = '', letzterKursFehler = '';
 
   /** Capital liefert snapshotTimeUTC als "2026-08-19T09:00:00" – OHNE Zeitzonen-Kennung.
    *  JavaScript liest so etwas als LOKALE Zeit; in Berlin wären alle Kerzen damit um 1–2
@@ -85,18 +85,34 @@
       } catch (e) { return { ok: false, msg: 'Antwort unlesbar' }; }
     },
 
+    /** Roher GET fuer die Diagnose: liefert Status UND Rumpf unveraendert zurueck.
+     *  Jede andere Methode hier verschluckt den Grund - fuer die Fehlersuche ist
+     *  aber genau der Rumpf die Antwort (errorCode von Capital.com). */
+    roh: async function (pfad) { return await call('GET', pfad); },
+
+    /** Warum ist der letzte Kursabruf gescheitert? Vorher endeten drei voellig
+     *  verschiedene Ursachen in einem stummen null (kein Markt / HTTP-Fehler /
+     *  unlesbare Antwort) - damit war ein Fehlschlag nicht diagnostizierbar. */
+    lastPriceError: function () { return letzterKursFehler; },
+
     /** Markt (Epic) zum Symbol finden – mit Cache */
     epicFor: async function (sym) {
       var cache = (await window.api.storeGet('cap_epics')) || {};
       if (cache[sym]) return cache[sym];
       var res = await call('GET', '/markets?searchTerm=' + encodeURIComponent(sym));
-      if (!res.ok) return null;
+      if (!res.ok) {
+        letzterKursFehler = 'Marktsuche für ' + sym + ' fehlgeschlagen: HTTP ' + res.status +
+          (res.body ? ' – ' + String(res.body).slice(0, 160) : '');
+        return null;
+      }
       try {
         var mkts = JSON.parse(res.body).markets || [];
         // exakte Epic-Übereinstimmung bevorzugen, sonst erster Aktien-Treffer
         var hit = mkts.filter(function (m) { return m.epic === sym; })[0] || mkts.filter(function (m) { return (m.instrumentType || '').indexOf('SHARES') !== -1; })[0] || mkts[0];
         if (hit) { cache[sym] = hit.epic; await window.api.storeSet('cap_epics', cache); return hit.epic; }
-      } catch (e) { /* ignorieren */ }
+        letzterKursFehler = 'Kein Markt für ' + sym + ' gefunden (Suche lieferte ' + mkts.length + ' Treffer). ' +
+          'Capital.com führt nicht jeden US-Wert als CFD.';
+      } catch (e) { letzterKursFehler = 'Marktsuche für ' + sym + ': Antwort unlesbar'; }
       return null;
     },
 
@@ -136,16 +152,28 @@
     /** Aktuelle Geld-/Briefkurse eines Marktes - fuer die Spannen-Messung.
      *  Rueckgabe: {bid, ask, mid, spreadPct} oder null. */
     quote: async function (sym) {
+      letzterKursFehler = '';
       var epic = await this.epicFor(sym);
       if (!epic) return null;
       var res = await call('GET', '/markets/' + encodeURIComponent(epic));
-      if (!res.ok) return null;
+      if (!res.ok) {
+        letzterKursFehler = 'Spanne ' + sym + ': HTTP ' + res.status +
+          (res.body ? ' – ' + String(res.body).slice(0, 160) : '');
+        return null;
+      }
       try {
         var s = JSON.parse(res.body).snapshot || {};
-        if (s.bid == null || s.offer == null) return null;
+        if (s.bid == null || s.offer == null) {
+          letzterKursFehler = 'Spanne ' + sym + ': Antwort enthält keine Geld-/Briefkurse ' +
+            '(Markt geschlossen oder nicht handelbar).';
+          return null;
+        }
         var mid = (s.bid + s.offer) / 2;
         return { bid: s.bid, ask: s.offer, mid: mid, spreadPct: mid > 0 ? (s.offer - s.bid) / mid : null };
-      } catch (e) { return null; }
+      } catch (e) {
+        letzterKursFehler = 'Spanne ' + sym + ': Antwort unlesbar';
+        return null;
+      }
     },
 
     /** Kursdaten (Kerzen) von der Demo-API – als Reserve, wenn Yahoo ausfällt.
@@ -156,7 +184,11 @@
       var epic = await this.epicFor(sym);
       if (!epic) return null;
       var res = await call('GET', '/prices/' + encodeURIComponent(epic) + '?resolution=' + (RES[interval] || 'MINUTE_5') + '&max=' + (max || 500));
-      if (!res.ok) return null;
+      if (!res.ok) {
+        letzterKursFehler = 'Kursabruf ' + sym + ' (' + interval + '): HTTP ' + res.status +
+          (res.body ? ' – ' + String(res.body).slice(0, 160) : '');
+        return null;
+      }
       try {
         var ps = JSON.parse(res.body).prices || [];
         var series = [];
@@ -167,8 +199,16 @@
           series.push([zeitUtc(ps[i].snapshotTimeUTC || ps[i].snapshotTime), mid, ps[i].lastTradedVolume || 0]);
         }
         // dollarVolDay: Capital-Volumen ist nicht mit Yahoo vergleichbar → unbekannt (null)
-        return series.length > 30 ? { series: series, dollarVolDay: null, source: 'capital' } : null;
-      } catch (e) { return null; }
+        if (series.length <= 30) {
+          letzterKursFehler = 'Kursabruf ' + sym + ' (' + interval + '): nur ' + series.length +
+            ' verwertbare Kerzen – zu wenig für eine Auswertung.';
+          return null;
+        }
+        return { series: series, dollarVolDay: null, source: 'capital' };
+      } catch (e) {
+        letzterKursFehler = 'Kursabruf ' + sym + ' (' + interval + '): Antwort unlesbar';
+        return null;
+      }
     },
 
     /** Kerzen für einen ZEITBEREICH – fürs Archiv-Backfill: Capital reicht deutlich
@@ -176,12 +216,17 @@
      *  (aufsteigend) oder null bei Fehler; [] wenn der Bereich leer ist. */
     pricesRange: async function (sym, interval, fromMs, toMs, max) {
       var RES = { '1m': 'MINUTE', '5m': 'MINUTE_5', '15m': 'MINUTE_15', '60m': 'HOUR' };
+      letzterKursFehler = '';
       var epic = await this.epicFor(sym);
       if (!epic) return null;
       function iso(ms) { return new Date(ms).toISOString().slice(0, 19); }   // UTC ohne Z – Capitals Format
       var res = await call('GET', '/prices/' + encodeURIComponent(epic) + '?resolution=' + (RES[interval] || 'MINUTE_5') +
         '&from=' + iso(fromMs) + '&to=' + iso(toMs) + '&max=' + (max || 1000));
-      if (!res.ok) return null;
+      if (!res.ok) {
+        letzterKursFehler = 'Kursabruf ' + sym + ' (' + interval + ', ' + iso(fromMs) + ' bis ' + iso(toMs) + '): HTTP ' + res.status +
+          (res.body ? ' – ' + String(res.body).slice(0, 200) : '');
+        return null;
+      }
       try {
         var ps = JSON.parse(res.body).prices || [];
         var series = [];
@@ -196,7 +241,13 @@
         }
         series.sort(function (a, b) { return a[0] - b[0]; });
         return series;
-      } catch (e) { return null; }
+      } catch (e) {
+        // Auch dieser Ausgang muss seinen Grund nennen - sonst bleibt lastPriceError()
+        // leer und der Aufrufer meldet den ALTEN Grund weiter (Falschdiagnose).
+        letzterKursFehler = 'Kursabruf ' + sym + ' (' + interval + '): Antwort unlesbar – ' +
+          String(res.body || '').replace(/\s+/g, ' ').slice(0, 160);
+        return null;
+      }
     },
 
     closePosition: async function (dealId) {
