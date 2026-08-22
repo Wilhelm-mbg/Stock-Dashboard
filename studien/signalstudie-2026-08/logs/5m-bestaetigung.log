@@ -1,0 +1,31 @@
+=== BESTAETIGUNG 5m: 13 Scan-Kandidaten + 0 Referenz, Detektoren: rsi2, reversion, pullback, donchian, kanaltrend, signalCross, wendepunkt-trendwechsel ===
+5m/bestaetigung: 21 Paare gerechnet (105 uebersprungen, Screening t>0,5 beidseitig), 21 mit Daten
+  rsi2+kanaltrend                     long  3h   n=   38 Tage= 14 brutto   0.239 t(Tag) 2.08
+  rsi2+signalCross                    long  3h   n= 1105 Tage= 22 brutto   0.069 t(Tag) 1.331
+  pullback+kanaltrend                 long  3h   n=   12 Tage=  9 brutto   0.299 t(Tag) 1.168
+  pullback+kanaltrend                 long  TS   n=   16 Tage= 11 brutto   0.328 t(Tag) 0.996
+  rsi2+pullback                       long  3h   n=  803 Tage= 22 brutto   0.048 t(Tag) 0.94
+  rsi2+signalCross                    long  TS   n= 1849 Tage= 22 brutto   0.082 t(Tag) 0.855
+  pullback+signalCross                long  3h   n=  222 Tage= 22 brutto   0.072 t(Tag) 0.823
+  reversion+signalCross               long  3h   n=   48 Tage= 17 brutto   0.117 t(Tag) 0.815
+
+SCAN-FUNDE  (Schwelle |t| >= 2.89 bei 13 Kandidaten)
+  Kandidat                                        Entdeckung          Bestaetigung                            Urteil
+                                                  brutto  t(Tag)      n   Tage  brutto   netto  t(Tag)   MDE
+  wendepunkt-trendwechsel|short|3h                  0.287  2.281     177    22  -0.101  -0.201  -1.271  0.193   nicht bestaetigt
+  wendepunkt-trendwechsel|short|TS                   0.17  1.865     300    22  -0.058  -0.158  -0.927  0.217   nicht bestaetigt
+  pullback|short|3h                                 0.043  1.376     993    22   -0.04   -0.14  -0.542  0.154   nicht bestaetigt
+  kanaltrend|short|1h                               0.027  1.339      75    18   0.033  -0.067  -0.215  0.255   unentschieden (Netto-Frage unter MDE 0.255)
+  wendepunkt-trendwechsel|short|1h                   0.07  1.122     277    22   0.024  -0.076   -0.04  0.125   unentschieden (Netto-Frage unter MDE 0.125)
+  wendepunkt-trendwechsel|short|3h|termin=fern       0.33   2.55     111    22  -0.144  -0.244  -1.837  0.327   nicht bestaetigt
+  reversion|long|3h|vola=niedrig                    0.143  2.481     440    22   0.071  -0.029   0.939  0.199   unentschieden (Netto-Frage unter MDE 0.199)
+  wendepunkt-trendwechsel|short|TS|vola=hoch        0.287  2.326     162    22  -0.005  -0.105  -0.176  0.359   nicht bestaetigt
+  wendepunkt-trendwechsel|short|3h|regime=ueber     0.287  2.281     177    22  -0.101  -0.201  -1.271  0.193   nicht bestaetigt
+  donchian|long|3h|kanal=ja                         0.235  2.265     291    22  -0.076  -0.176  -0.027  0.468   nicht bestaetigt
+  rsi2|short|1h|+wendepunkt-trendwechsel            0.088  1.613      -                                         keine Signale in der Bestaetigung
+  rsi2|short|3h|+pullback                           0.045   1.52      -                                         keine Signale in der Bestaetigung
+  signalCross|short|TS|+wendepunkt-trendwechsel     0.188  1.144      -                                         keine Signale in der Bestaetigung
+
+REFERENZ (vorab benannte belegte Kanten, Schwelle |t| >= 2)
+  Kandidat                                        Entdeckung          Bestaetigung                            Urteil
+                                                  brutto  t(Tag)      n   Tage  brutto   netto  t(Tag)   MDE
