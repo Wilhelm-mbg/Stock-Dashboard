@@ -137,6 +137,60 @@
     window.openModal('setModalBg');
   });
 
+  /* Capital.com-Verbindung testen (Issue #41). Prueft der Reihe nach, damit man
+   * SIEHT, woran es haengt - "geht nicht" ist keine brauchbare Fehlermeldung.
+   * Nimmt die Werte aus den Feldern, ohne sie zu speichern: erst testen, dann
+   * bewusst sichern. Die Zugangsdaten verlassen dabei nur den Weg zum Demo-Host. */
+  var capTestBtn = document.getElementById('capTestBtn');
+  if (capTestBtn) capTestBtn.addEventListener('click', async function () {
+    var st = document.getElementById('capTestStatus');
+    var det = document.getElementById('capTestDetail');
+    var key = (document.getElementById('setCapKey').value || '').trim();
+    var id = (document.getElementById('setCapId').value || '').trim();
+    var pass = (document.getElementById('setCapPass').value || '').trim();
+    // Leere Felder koennen "gespeichert, unveraendert" bedeuten - dann die abgelegten nehmen
+    if (!key && SETTINGS.capKey) key = SETTINGS.capKey;
+    if (!id && SETTINGS.capId) id = SETTINGS.capId;
+    if (!pass && SETTINGS.capPass) pass = SETTINGS.capPass;
+    det.style.display = 'none'; det.textContent = '';
+    var fehlt = [];
+    if (!key) fehlt.push('API-Schlüssel');
+    if (!id) fehlt.push('Konto-Kennung');
+    if (!pass) fehlt.push('API-Passwort');
+    if (fehlt.length) { st.textContent = 'Es fehlt noch: ' + fehlt.join(', ') + '.'; return; }
+    capTestBtn.disabled = true;
+    st.textContent = 'Melde mich beim Demo-Server an …';
+    try {
+      var BASE = 'https://demo-api-capital.backend-capital.com/api/v1';
+      var res = await window.api.capFetch('POST', BASE + '/session', { 'X-CAP-API-KEY': key }, { identifier: id, password: pass });
+      if (!(res.ok && res.headers && res.headers.cst)) {
+        var code = '';
+        try { code = JSON.parse(res.body).errorCode || ''; } catch (e) { }
+        st.textContent = 'Anmeldung fehlgeschlagen (HTTP ' + res.status + (code ? ', ' + code : '') + ').';
+        det.style.display = '';
+        det.textContent = code.indexOf('api-key') !== -1 || res.status === 403
+          ? 'Der API-Schlüssel wird abgelehnt. Prüfe, ob er für das DEMO-Konto erstellt wurde – Live- und Demo-Schlüssel sind verschieden.'
+          : code.indexOf('credentials') !== -1 || res.status === 401
+            ? 'Kennung oder API-Passwort passen nicht. Das API-Passwort ist das, das du beim Erstellen des Schlüssels vergeben hast – nicht dein Konto-Passwort.'
+            : 'Antwort des Servers: ' + String(res.body || '').slice(0, 200);
+        return;
+      }
+      st.textContent = 'Angemeldet · frage Konto ab …';
+      var acc = await window.api.capFetch('GET', BASE + '/accounts',
+        { 'X-CAP-API-KEY': key, 'CST': res.headers.cst, 'X-SECURITY-TOKEN': res.headers['x-security-token'] }, null);
+      if (!acc.ok) { st.textContent = 'Angemeldet, aber Kontoabfrage fehlgeschlagen (HTTP ' + acc.status + ').'; return; }
+      var a0 = JSON.parse(acc.body).accounts[0];
+      st.textContent = '✓ Verbunden · ' + a0.accountName + ' · Guthaben ' + a0.balance.balance + ' ' + a0.currency;
+      det.style.display = '';
+      det.textContent = 'Der Test hat nichts gespeichert. Zum dauerhaften Verbinden unten „Speichern" klicken und das Häkchen ' +
+        '„Intraday-Signale zusätzlich auf dem Demo-Konto ausführen" setzen – dann misst die App an jedem gespiegelten Trade die echten Handelskosten.';
+    } catch (e) {
+      st.textContent = 'Test fehlgeschlagen: ' + ((e && e.message) || e);
+    } finally {
+      capTestBtn.disabled = false;
+    }
+  });
+
   // Ollama-Modelle laden
   document.getElementById('ollamaRefreshBtn').addEventListener('click', function () {
     var st = document.getElementById('ollamaStatus');

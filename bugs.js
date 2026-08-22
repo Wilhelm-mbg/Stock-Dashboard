@@ -168,7 +168,12 @@
           var url = 'https://github.com/' + (cfg && cfg.repo || 'Wilhelm-mbg/Stock-Dashboard') +
             '/issues/new?labels=bug&title=' + encodeURIComponent(iss.titel) + '&body=' + encodeURIComponent(iss.koerper.slice(0, 3000));
           window.api.openExternal(url);
-          st.textContent = 'Lokal gespeichert. Im Browser hat sich die Meldung ans Projekt geöffnet – bitte dort kurz prüfen und auf „Submit new issue“ klicken. Ohne diesen Klick bleibt die Meldung nur auf diesem Rechner.';
+          /* WARUM der Browser-Weg? Bisher stand hier nur, DASS er benutzt wird -
+           * dadurch wirkte er wie ein sporadischer Fehler (Issue #39). Der Grund
+           * steht im Hauptprozess bereit und gehoert hierher. */
+          var grund = (cfg && cfg.grund) || '';
+          st.textContent = 'Lokal gespeichert. Im Browser hat sich die Meldung ans Projekt geöffnet – bitte dort kurz prüfen und auf „Submit new issue“ klicken. Ohne diesen Klick bleibt die Meldung nur auf diesem Rechner.' +
+            (grund && grund !== 'ok' ? ' (Grund für den Browser-Weg: ' + grund + ' – dieser Installation fehlt der Sende-Schlüssel; das nächste Update bringt ihn mit.)' : '');
         }
       } catch (eS) {
         st.textContent = 'Lokal gespeichert. Versand ans Projekt nicht möglich (' + (eS.message || eS) + ') – die Meldung wird beim nächsten Start automatisch nachgesendet.';

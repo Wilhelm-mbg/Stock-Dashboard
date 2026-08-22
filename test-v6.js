@@ -1787,6 +1787,49 @@ console.log('\nAuslieferung');
   // Gegenprobe: Testdateien dürfen NICHT mitgeliefert werden
   ok(!abgedeckt('test-v6.js') && !abgedeckt('test-channel.js'),
      'Testdateien werden ausgeschlossen');
+
+  /* Sende-Schlüssel (Issue #39): Fehlt telemetrie.json im PAKET, faellt die App
+   * still auf den Browser-Weg zurueck - genau das ist einer Installation passiert.
+   * Die Datei ist bewusst nicht im Repo (Token!), deshalb pruefen wir zweistufig:
+   * das Muster muss sie einschliessen, und WENN sie lokal liegt, muss sie gueltig
+   * sein. Zusaetzlich wird nach einem Build der Paketinhalt geprueft. */
+  ok(abgedeckt('telemetrie.json'), 'Der Sende-Schlüssel ist im Verpackungsmuster enthalten');
+  var telePfad = __dirname + '/telemetrie.json';
+  if (fs.existsSync(telePfad)) {
+    var tOk = false, tGrund = '';
+    try {
+      var tj = JSON.parse(fs.readFileSync(telePfad, 'utf8'));
+      var teile = String((tj && tj.repo) || '').split('/');
+      tOk = teile.length === 2 && teile.every(function (x) { return x.length > 0; }) &&
+        typeof tj.token === 'string' && tj.token.length > 20;
+      tGrund = tOk ? 'repo + Token plausibel' : 'repo oder Token unbrauchbar';
+    } catch (e) { tGrund = 'kein gültiges JSON'; }
+    ok(tOk, 'Der lokale Sende-Schlüssel ist gültig (sonst landen Meldungen im Browser)', tGrund);
+  } else {
+    console.log('  ℹ  telemetrie.json liegt hier nicht – dieser Build würde den Browser-Weg nutzen (kein Fehler auf fremden Rechnern).');
+  }
+  // Nach einem Build: liegt der Schlüssel wirklich im Paket?
+  var asarPfad = __dirname + '/dist/win-unpacked/resources/app.asar';
+  if (fs.existsSync(telePfad) && fs.existsSync(asarPfad)) {
+    var drinImPaket = false, wieGeprueft = '';
+    try {
+      // Sauber ueber die asar-Bibliothek, wenn vorhanden - sie liest den echten Index.
+      var asarLib = require('@electron/asar');
+      drinImPaket = asarLib.listPackage(asarPfad).some(function (f) { return /telemetrie\.json$/.test(f); });
+      wieGeprueft = 'asar-Index';
+    } catch (e) {
+      // Rueckfall: der asar-Header ist JSON im Klartext am Dateianfang.
+      try {
+        var fd = fs.openSync(asarPfad, 'r');
+        var buf = Buffer.alloc(262144);
+        var gelesen = fs.readSync(fd, buf, 0, buf.length, 0);
+        fs.closeSync(fd);
+        drinImPaket = buf.slice(0, gelesen).toString('utf8').indexOf('telemetrie.json') !== -1;
+        wieGeprueft = 'Header-Suche';
+      } catch (e2) { wieGeprueft = 'nicht lesbar'; }
+    }
+    ok(drinImPaket, 'Der letzte Build enthält den Sende-Schlüssel im Paket', wieGeprueft);
+  }
   ok(abgedeckt('main.js') && abgedeckt('preload.js') && abgedeckt('bt-worker.js'),
      'Hauptprozess, Bridge und Worker sind abgedeckt');
 })();

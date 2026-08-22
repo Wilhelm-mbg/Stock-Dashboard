@@ -289,6 +289,13 @@
      10,5 px und Spaltenrichtung - fuer ein Auswahlkaestchen mit Satz daneben untauglich. */
   .wendeopt { display: flex; flex-direction: column; gap: 4px; font-size: 10.5px; color: var(--muted);
     font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; }
+  /* Beschriftete Eingabefelder: Ein Platzhalter allein reicht nicht - er verschwindet
+     beim Tippen, und dann weiss niemand mehr, welches Feld welches ist (Issue #40). */
+  .feldliste { display: grid; gap: 12px; }
+  .feld { display: grid; gap: 3px; }
+  .feld .feld-name { font-size: 12.5px; font-weight: 600; color: var(--ink); }
+  .feld .feld-hilfe { font-size: 11.5px; color: var(--muted); line-height: 1.4; }
+  .feld input { margin-top: 2px; }
   /* Spekulations-Radar auf dem Dashboard: eine Zeile je Spekulation, Chance als Chip */
   .spek-zeile { display: flex; gap: 10px; align-items: baseline; padding: 8px 0; border-top: 1px solid var(--grid); flex-wrap: wrap; }
   .spek-zeile:first-child { border-top: none; }
@@ -1429,15 +1436,33 @@
     </div>
     <div style="margin:14px 0; border-top:1px solid var(--grid); padding-top:14px;">
       <div style="font-weight:600; font-size:13px; margin-bottom:8px;">Capital.com Demo-Konto (Paper-Trading mit echten Kursen)</div>
-      <div style="display:grid; gap:8px;">
-        <input type="password" id="setCapKey" placeholder="API-Key (bei Capital.com: Einstellungen → API-Integrationen)" style="width:100%;">
-        <input type="text" id="setCapId" placeholder="E-Mail / Kennung deines Capital.com-Kontos" style="width:100%;">
-        <input type="password" id="setCapPass" placeholder="API-Passwort (beim Erstellen des Keys festgelegt)" style="width:100%;">
+      <div class="feldliste">
+        <label class="feld" for="setCapKey">
+          <span class="feld-name">API-Schlüssel</span>
+          <span class="feld-hilfe">Bei Capital.com: Einstellungen → API-Integrationen → „Generate API key“</span>
+          <input type="password" id="setCapKey" autocomplete="off" placeholder="z. B. aB3xY…" style="width:100%;">
+        </label>
+        <label class="feld" for="setCapId">
+          <span class="feld-name">Konto-Kennung</span>
+          <span class="feld-hilfe">Die E-Mail-Adresse, mit der du dich bei Capital.com anmeldest</span>
+          <input type="text" id="setCapId" autocomplete="off" placeholder="name@beispiel.de" style="width:100%;">
+        </label>
+        <label class="feld" for="setCapPass">
+          <span class="feld-name">API-Passwort</span>
+          <span class="feld-hilfe">Das Passwort, das du beim Erstellen des Schlüssels festgelegt hast – nicht dein Konto-Passwort</span>
+          <input type="password" id="setCapPass" autocomplete="off" placeholder="beim Erstellen des Schlüssels vergeben" style="width:100%;">
+        </label>
         <label style="display:flex; align-items:flex-start; gap:8px; font-size:12.5px;"><input type="checkbox" id="setCapEnabled" style="margin-top:3px;"><span>Intraday-Signale zusätzlich auf dem <b>Demo-Konto</b> ausführen (echte CFD-Paper-Trades mit Stop-Loss)</span></label>
       </div>
-      <div style="font-size:11.5px; color:var(--muted); margin-top:6px;">
+      <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-top:10px;">
+        <button class="btn ghost" id="capTestBtn" type="button">Verbindung testen</button>
+        <span id="capTestStatus" style="font-size:11.5px; color:var(--muted);"></span>
+      </div>
+      <div id="capTestDetail" class="hinweis" style="margin-top:6px; display:none;"></div>
+      <div style="font-size:11.5px; color:var(--muted); margin-top:8px;">
         Die App kennt ausschließlich den Demo-Server – Live-Handel mit echtem Geld ist technisch nicht möglich.
-        Zugangsdaten werden nur lokal gespeichert und nur an demo-api-capital.backend-capital.com gesendet.
+        Zugangsdaten werden nur lokal gespeichert (mit dem Windows-Anmeldedatenschutz verschlüsselt) und nur an
+        demo-api-capital.backend-capital.com gesendet.
       </div>
     </div>
     <div style="margin:14px 0; border-top:1px solid var(--grid); padding-top:14px;">
