@@ -34,14 +34,18 @@
     function raus(sym, grund) { uebersprungen.push(sym); verworfen.push({ sym: sym, grund: grund }); }
     Object.keys(rohMap).forEach(function (sym) {
       var r = rohMap[sym];
-      if (!r || r.length < rueck + 5) { raus(sym, 'zu kurze Kursreihe (' + ((r && r.length) || 0) + ' von ' + (rueck + 5) + ' Tagen)'); return; }
+      if (!r || r.length < rueck + luecke + 5) { raus(sym, 'zu kurze Kursreihe (' + ((r && r.length) || 0) + ' von ' + (rueck + luecke + 5) + ' Tagen)'); return; }
       // Veraltete Serien fliegen raus, statt mit einem alten Kurs mitzuranken —
       // ein eingefrorener Wert sähe im fallenden Markt fälschlich „stark“ aus.
       if (nowMs - r[r.length - 1][0] > maxAlter) {
         raus(sym, 'Kurse veraltet (' + Math.round((nowMs - r[r.length - 1][0]) / 86400000) + ' Tage alt)'); return;
       }
       var i = r.length - 1;
-      var st = r[i - luecke][1] / r[i - rueck][1] - 1;
+      /* Fenster EXAKT wie die validierte Staerke in momentum.js (von = bis - rueck):
+       * rueck Tage, endend luecke Tage vor heute = 231 Tage. Vorher stand hier
+       * r[i - rueck], also nur rueck - luecke = 210 Tage - das Live-Buch handelte ein
+       * anderes Momentum als das belegte (Audit 22.08.2026). */
+      var st = r[i - luecke][1] / r[i - luecke - rueck][1] - 1;
       if (isFinite(st)) punkte.push({ sym: sym, staerke: st });
       else raus(sym, 'Stärke nicht berechenbar (Kurslücke)');
     });

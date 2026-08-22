@@ -2226,5 +2226,23 @@ console.log('\n33) Stempel-Kerzen und Live-Fenster (Detektor-Audit 22.08.2026)')
      'Der Spot bleibt der frische Abrufkurs, nicht die Archivkerze');
 })();
 
+
+console.log('\n34) Momentum: Live-Buch rechnet dasselbe Fenster wie die validierte Strategie');
+(function () {
+  /* Audit 22.08.2026: mfhandel.js rechnete r[i-luecke]/r[i-rueck] = 210 Tage (11-1),
+   * momentum.js staerke() rechnet von = bis - rueck = 231 Tage (12-1). Die belegten
+   * +5,4 Pp gelten fuer 231 Tage. Beide Fassungen werden hier auf derselben Reihe
+   * gegeneinander gerechnet - laufen sie je wieder auseinander, faellt dieser Test. */
+  var Mo = require('./momentum.js'), Mh = require('./mfhandel.js');
+  var reihe = []; for (var i = 0; i < 300; i++) reihe.push(100 * Math.exp(0.0007 * i + 0.01 * Math.sin(i / 7)));
+  var n = reihe.length - 1, valid = Mo.staerke(reihe, n, 231, 21);
+  var roh = { X: reihe.map(function (k, j) { return [Date.now() - (299 - j) * 86400000, k]; }) };
+  var z = Mh.momentumZiel(roh, { rueckblick: 231, luecke: 21, minWerte: 1, anteil: 1 });
+  var live = z && z.rangfolge[0] ? z.rangfolge[0].staerke : null;
+  ok(valid != null && live != null && Math.abs(valid - live) < 1e-9,
+     'Live-Buch und validierte Staerke liefern auf derselben Reihe denselben Wert',
+     (valid != null ? valid.toFixed(6) : 'n/a') + ' / ' + (live != null ? live.toFixed(6) : 'n/a'));
+})();
+
 console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
 process.exit(fails ? 1 : 0);
