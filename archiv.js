@@ -48,11 +48,24 @@
    *  Regel: Ein Eintrag, der weniger als 0,9 Kerzenlaengen auf den zuletzt
    *  behaltenen folgt, ist keine Kerze. Echte Nachbarn stehen exakt eine
    *  Kerzenlaenge auseinander, Luecken (Nacht, Wochenende) sind groesser. */
+  /** Stempel-Kerzen entfernen. Echte Kerzen liegen IMMER auf dem Minutenraster (Sekunden 0);
+   *  Quote-Stempel tragen die Abrufzeit (z. B. 15:28:38), Volumen 0 und H=L=C.
+   *  Gelernt am 22.08.2026: Die fruehere Regel behielt von zwei nahen Kerzen die ERSTE -
+   *  der Stempel kommt aber vor der echten Kerze an und verdraengte sie. Am 21.08. waren in
+   *  allen 122 Stundenreihen vier von sieben Kerzen Stempel, die echten verloren.
+   *  Jetzt: erst alles vom Raster werfen, dann Nachbarn innerhalb 0,9 Kerzenlaengen deduplizieren. */
   function ohneStempel(bars, barMin) {
     var min = (barMin || 1) * 60000 * 0.9, out = [];
     for (var i = 0; i < (bars || []).length; i++) {
-      if (out.length && bars[i][0] - out[out.length - 1][0] < min) continue;
-      out.push(bars[i]);
+      var b = bars[i];
+      if (b[0] % 60000 !== 0) continue;                               // nicht auf dem Minutenraster: Stempel
+      if (!b[2] && b[3] != null && b[3] === b[4] && b[4] === b[1] && out.length &&
+          b[0] - out[out.length - 1][0] < min) continue;              // Volumen 0, H=L=C, dicht am Vorgaenger
+      if (out.length && b[0] - out[out.length - 1][0] < min) {
+        // zwei echte Kerzen zu dicht: die spaetere ersetzt die fruehere (fertiger Stand)
+        out[out.length - 1] = b; continue;
+      }
+      out.push(b);
     }
     return out;
   }

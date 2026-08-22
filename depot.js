@@ -2473,7 +2473,8 @@
       }
       stoerungAnzeigen();
       HEALTH.scanTimes.push(now); if (HEALTH.scanTimes.length > 400) HEALTH.scanTimes = HEALTH.scanTimes.slice(-400);
-      fds.forEach(function (f, fi) {
+      for (var fi = 0; fi < fds.length; fi++) {
+        var f = fds[fi];
         if (f && f.series) {
           HEALTH.fetchOk++;
           LASTBARS[syms[fi]] = f.series.slice(-420);
@@ -2481,11 +2482,11 @@
           // statt für immer an Yahoos Rückblick-Fenster (5 Tage auf 1m) zu kleben.
           // Kam der Rueckfall von Capital statt Yahoo, muss das mitgeschrieben werden -
           // sonst mischt sich CFD-Volumen ungekennzeichnet in eine Boersen-Reihe.
-          if (window.Archiv) window.Archiv.fuege(cfg.interval || '5m', syms[fi], f.series,
+          if (window.Archiv) await window.Archiv.fuege(cfg.interval || '5m', syms[fi], f.series,
             f.source === 'capital' ? 'cap' : null);
         }
         else HEALTH.fetchFail++;
-      });
+      }
       if (window.Archiv) window.Archiv.speichere(false);  // gedrosselt: schreibt höchstens alle 10 Min
       for (var i = 0; i < syms.length; i++) {
         var sym = syms[i];
@@ -2493,7 +2494,18 @@
         var fd = fds[i];
         if (!fd) continue;
         var bars = fd.series;
-        var spot = bars[bars.length - 1][1];
+        /* LIVE = STUDIE: Der Abruf liefert fuer 60m nur ~151 Kerzen, der rsi2seit-Detektor
+         * braucht 261 (EMA100) und 201 (Kanal). Auf dem kurzen Fenster rechnete der Scanner
+         * ein ANDERES Signal als Studie und Edge-Waechter (Uebereinstimmung 31,6 %, Audit
+         * 22.08.2026). Das Archiv hat die Tiefe und wurde soeben mit den frischen Kerzen
+         * gemischt - also rechnet der Scan darauf. Der Spot bleibt der frische Kurs. */
+        if (window.Archiv) {
+          try {
+            var archS = await window.Archiv.serie(cfg.interval || '5m', sym);
+            if (archS && archS.length > bars.length) bars = archS.slice(-800);
+          } catch (eArch) { /* Archiv nicht lesbar: beim Abruf bleiben */ }
+        }
+        var spot = fd.series[fd.series.length - 1][1];
         // Signale ausschließlich auf ABGESCHLOSSENEN Bars rechnen. Yahoo liefert während der
         // Handelszeit den laufenden, noch unfertigen Bar mit: ein Signal darauf kann bis zum
         // Bar-Schluss wieder verschwinden (Repainting), und der Backtest wertet grundsätzlich
@@ -2507,6 +2519,11 @@
            Kerzen (Repainting; Live mass anderes als Studie und Backtest). */
         var sigBars = Q.fertigeBars(bars, barMinScan, now);
         var sigSpot = sigBars[sigBars.length - 1][1];
+        if ((cfg.mode === 'rsi2seit' || cfg.kapiZusatz) && sigBars.length < 261) {
+          // Detektor wuerde auf verkuerztem Fenster etwas anderes rechnen als gemessen
+          patienceAdd('Kursreihe zu kurz (' + sigBars.length + ' < 261 Kerzen) – Signal wäre nicht das gemessene', sym);
+          continue;
+        }
         schattenUpdate(sym, spot, now, nearClose); // Schattenbuch mit frischem Kurs weiterrechnen
         var sig = Q.signalCross(sigBars, cfg.lineType || 'ema', cfg.period, cfg.confirmBps);
         var liquid = !cfg.minDollarVol || fd.dollarVolDay == null || fd.dollarVolDay >= cfg.minDollarVol * 1e6;
