@@ -6837,7 +6837,16 @@
     async function updateCapStatus() {
       var el = document.getElementById('capStatus');
       if (!el) return;
-      if (!(window.CapAPI && window.CapAPI.enabled())) { el.textContent = ''; return; }
+      if (!(window.CapAPI && window.CapAPI.enabled())) {
+        /* Halbfertiger Zustand sichtbar machen: Zugangsdaten liegen, aber der
+         * Schalter ist aus - dann passiert nichts, und bisher stand hier NICHTS,
+         * was das erklaert hätte (22.08.2026). */
+        var s9 = window.getSettings ? window.getSettings() : null;
+        el.textContent = (s9 && s9.capKey && s9.capId && s9.capPass && !s9.capEnabled)
+          ? 'Capital.com: Zugangsdaten sind hinterlegt, die Spiegelung ist aber AUS. Häkchen in den App-Einstellungen setzen – erst dann werden Signale gespiegelt und die echten Handelskosten gemessen.'
+          : '';
+        return;
+      }
       el.textContent = 'Capital.com Demo: verbinde …';
       var s0 = await window.CapAPI.status();
       var txt = '' + s0.msg + (s0.ok ? ' · Intraday-Signale werden gespiegelt.' : '');

@@ -296,6 +296,10 @@
   .feld .feld-name { font-size: 12.5px; font-weight: 600; color: var(--ink); }
   .feld .feld-hilfe { font-size: 11.5px; color: var(--muted); line-height: 1.4; }
   .feld input { margin-top: 2px; }
+  /* Der Schalter, der die ganze Sache erst scharf stellt - er darf nicht wie eine
+     beliebige Option unter den Feldern verschwinden. */
+  .anschalter { border: 1px solid var(--acc); border-radius: 8px; padding: 8px 10px;
+    background: color-mix(in srgb, var(--acc) 8%, var(--surface)); }
   /* Spekulations-Radar auf dem Dashboard: eine Zeile je Spekulation, Chance als Chip */
   .spek-zeile { display: flex; gap: 10px; align-items: baseline; padding: 8px 0; border-top: 1px solid var(--grid); flex-wrap: wrap; }
   .spek-zeile:first-child { border-top: none; }
@@ -1452,7 +1456,7 @@
           <span class="feld-hilfe">Das Passwort, das du beim Erstellen des Schlüssels festgelegt hast – nicht dein Konto-Passwort</span>
           <input type="password" id="setCapPass" autocomplete="off" placeholder="beim Erstellen des Schlüssels vergeben" style="width:100%;">
         </label>
-        <label style="display:flex; align-items:flex-start; gap:8px; font-size:12.5px;"><input type="checkbox" id="setCapEnabled" style="margin-top:3px;"><span>Intraday-Signale zusätzlich auf dem <b>Demo-Konto</b> ausführen (echte CFD-Paper-Trades mit Stop-Loss)</span></label>
+        <label class="anschalter" style="display:flex; align-items:flex-start; gap:8px; font-size:12.5px;"><input type="checkbox" id="setCapEnabled" style="margin-top:3px;"><span><b>Verbindung aktivieren:</b> Intraday-Signale zusätzlich auf dem <b>Demo-Konto</b> ausführen (echte CFD-Paper-Trades mit Stop-Loss). Ohne dieses Häkchen passiert nichts – auch nicht die Kostenmessung.</span></label>
       </div>
       <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-top:10px;">
         <button class="btn ghost" id="capTestBtn" type="button">Verbindung testen</button>
