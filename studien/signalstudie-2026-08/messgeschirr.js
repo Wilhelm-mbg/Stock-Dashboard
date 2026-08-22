@@ -73,7 +73,15 @@ function ladeUniversum(iv, max) {
   const E = [];
   for (const sym of syms) {
     let raw; try { raw = JSON.parse(fs.readFileSync(STORE + 'bars_' + iv + '_' + sym + '.json', 'utf8')); } catch (e) { continue; }
-    let a = (raw.series || []).filter(b => istSitzung(b[0]) && b[1] > 0);
+    /* Stempel-Kerzen (Abrufzeit statt Raster, Volumen 0, H=L=C) fliegen raus. Befund 22.08.:
+     * am 21.08. waren in allen 122 Stundenreihen 4 von 7 Kerzen Stempel. Die echten Kerzen
+     * dieser Stunden sind im Archiv verloren - Tage mit unter 80 % der Sollkerzen werden
+     * deshalb als unvollstaendig ganz verworfen, statt halbe Tage zu messen. */
+    let a = (raw.series || []).filter(b => istSitzung(b[0]) && b[1] > 0 && b[0] % 60000 === 0);
+    const soll = { '1m': 390, '5m': 78, '15m': 26, '60m': 7 }[iv];
+    const proTag = {}; a.forEach(b => { const k = tagVon(b[0]); proTag[k] = (proTag[k] || 0) + 1; });
+    const unvoll = new Set(Object.keys(proTag).filter(k => proTag[k] < soll * 0.8));
+    if (unvoll.size) { a = a.filter(b => !unvoll.has(tagVon(b[0]))); (ladeUniversum.unvoll = ladeUniversum.unvoll || new Set()); unvoll.forEach(k => ladeUniversum.unvoll.add(k)); }
     if (a.length < (iv === '60m' ? 500 : 1500)) continue;
     const tage = (a[a.length - 1][0] - a[0][0]) / 86400000;
     if (iv !== '60m' && tage < 55) continue;
@@ -212,7 +220,8 @@ function lauf(opts) {
   const t0 = Date.now();
   const U = ladeUniversum(iv, max);
   U.forEach(E => bereite(E, iv));
-  (log || console.log)('Universum ' + iv + ': ' + U.length + ' Werte, ' + U.reduce((s, E) => s + E.bars.length, 0).toLocaleString('de-DE') + ' Sitzungskerzen');
+  (log || console.log)('Universum ' + iv + ': ' + U.length + ' Werte, ' + U.reduce((s, E) => s + E.bars.length, 0).toLocaleString('de-DE') + ' Sitzungskerzen' +
+    (ladeUniversum.unvoll && ladeUniversum.unvoll.size ? ' · unvollstaendige Tage verworfen: ' + [...ladeUniversum.unvoll].sort().join(', ') : ''));
 
   // Globaler Kalender + Split
   const alleTage = [...new Set(U.flatMap(E => E.segs.map(g => E.dayKey[g.s])))].sort();
