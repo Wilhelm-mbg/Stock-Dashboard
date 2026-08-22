@@ -1945,6 +1945,21 @@ console.log('\n30) Datenquellen-Diagnose (Capital.com) – ein Fehlschlag muss s
   ok(nullsE > 0 && gruendeE >= nullsE,
      'epicFor: jeder Fehlerausgang setzt einen Grund', gruendeE + ' Gründe / ' + nullsE + ' Ausgänge');
 
+  /* Epic-Zuordnung: nur Belegbares (Befund 22./23.08.2026). Der alte Rückfall auf den
+   * ersten SHARES-Treffer machte aus 'WBD' das Papier 'WBDIT' (2,22 statt 28,50, europäische
+   * Handelszeit, 16 statt 78 Kerzen am Tag) und aus 'EA' die Kette 'EAT' – US-notiert und
+   * damit an der Kerzenzahl nicht zu erkennen. Einen Tag später standen sechs solcher
+   * Zuordnungen im Cache, darunter 'NET' → 'NFLX'. Weil openPosition dasselbe Epic benutzt,
+   * hätte ein NET-Signal eine Netflix-Position eröffnet. */
+  ok(eF.indexOf("indexOf('SHARES')") === -1 && !/\|\|\s*mkts\[0\]/.test(eF),
+     'epicFor rät nicht mehr: kein Rückfall auf den ersten SHARES- oder Suchtreffer');
+  ok(/m\.epic === sym/.test(eF) && /m\.symbol === sym/.test(eF),
+     'epicFor nimmt nur Treffer, deren Epic ODER Capital-Symbol das Symbol ist');
+  ok(/cache\[sym\] === sym/.test(eF),
+     'Der Cache gilt nur ungeprüft, wenn das Epic wie das Symbol heißt – sonst lief die Zuordnung ewig an der Prüfung vorbei');
+  ok(/delete cache\[sym\]/.test(eF),
+     'Eine nicht belegbare Zuordnung fliegt aus dem Cache, statt dort weiterzuwirken');
+
   var pR = block(cap, 'pricesRange: async function');
   ok(/letzterKursFehler = 'Kursabruf/.test(pR),
      'pricesRange nennt bei HTTP-Fehler Symbol, Zeitrahmen, Zeitraum und Status');
