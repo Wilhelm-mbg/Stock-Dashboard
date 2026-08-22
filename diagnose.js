@@ -123,6 +123,25 @@
         bilanz: depot.schattenStat || {}
       },
 
+      /* Gemessene Geld-Brief-Spannen - nur Aggregate (Anzahl, Mediane), keine
+       * einzelnen Kurse, keine Symbole. Diese Messung braucht keine Trades und
+       * pruefte als erste die Kostenannahme aller Studien. */
+      spannen: (function () {
+        var sp = depot.spannen;
+        if (!sp || !sp.proben || sp.proben.length < 10) return null;
+        var jeSym = {};
+        sp.proben.forEach(function (p) { (jeSym[p.sym] = jeSym[p.sym] || []).push(p.spreadPct); });
+        var med = function (a) { var s = a.slice().sort(function (x, y) { return x - y; }); return s[Math.floor(s.length / 2)]; };
+        var symMed = Object.keys(jeSym).map(function (s) { return med(jeSym[s]); });
+        if (symMed.length < 3) return null;
+        var srt = symMed.slice().sort(function (a, b) { return a - b; });
+        return { proben: sp.proben.length, werte: symMed.length,
+          medianPct: Math.round(med(symMed) * 1e5) / 1e3,
+          engstesPct: Math.round(srt[0] * 1e5) / 1e3,
+          weitestesPct: Math.round(srt[srt.length - 1] * 1e5) / 1e3,
+          annahmePct: 0.10 };
+      })(),
+
       /* Echte Handelskosten aus dem Demo-Konto - nur AGGREGATE (Anzahl und Mediane),
        * keine einzelnen Ausfuehrungen, keine Symbole, keine Kontodaten. Das ist die
        * einzige Messung im Projekt, die die Kostenannahme aller Studien pruefen kann. */

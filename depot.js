@@ -1843,6 +1843,28 @@
     if (D.kostenMessung.runden.length > 300) D.kostenMessung.runden = D.kostenMessung.runden.slice(0, 300);
     save();
   }
+  /** Bilanz der gemessenen Geld-Brief-Spannen. Erst je Wert den Median (eine
+   *  hektische Minute soll ein Symbol nicht praegen), dann ueber die Werte - so
+   *  zaehlt jeder Wert gleich, nicht der am haeufigsten abgefragte. */
+  function spannenBilanz() {
+    var sp = D && D.spannen;
+    if (!sp || !sp.proben || sp.proben.length < 10) return null;
+    var jeSym = {};
+    sp.proben.forEach(function (p) { (jeSym[p.sym] = jeSym[p.sym] || []).push(p.spreadPct); });
+    var med = function (a) { var s = a.slice().sort(function (x, y) { return x - y; }); return s[Math.floor(s.length / 2)]; };
+    var symMed = Object.keys(jeSym).map(function (s) { return med(jeSym[s]); });
+    if (symMed.length < 3) return null;
+    var alle = symMed.slice().sort(function (a, b) { return a - b; });
+    return {
+      proben: sp.proben.length, werte: symMed.length,
+      medianPct: med(symMed) * 100,
+      engstesPct: alle[0] * 100,
+      weitestesPct: alle[alle.length - 1] * 100,
+      annahmePct: 0.10, seit: sp.seit
+    };
+  }
+  if (typeof window !== 'undefined') window.__spannenBilanz = spannenBilanz;
+
   /** Bilanz der echten Kosten - Median statt Mittel, ein Ausreisser soll nicht dominieren. */
   function kostenBilanz() {
     var km = D && D.kostenMessung;
@@ -6862,7 +6884,19 @@
             : diff > 0 ? 'teurer als angenommen, die Studien rechnen zu günstig'
             : 'günstiger als angenommen – die Kostenhürde der Studien ist zu streng');
       } else if (s0.ok) {
-        txt += ' · Kostenmessung startet mit dem ersten gespiegelten Trade.';
+        txt += ' · Kostenmessung aus Ausführungen startet mit dem ersten gespiegelten Trade.';
+      }
+      /* Die Spannen-Messung braucht keine Trades - nur Kurse. Sie liefert die
+       * Kostenhuerde deshalb schon nach einer Handelssitzung. */
+      var sb = spannenBilanz();
+      if (sb) {
+        var d2 = sb.medianPct - sb.annahmePct;
+        txt += ' · Gemessene Geld-Brief-Spanne über ' + sb.werte + ' Werte (' + sb.proben + ' Proben): Median ' +
+          sb.medianPct.toFixed(3) + ' % je Runde, Spanne ' + sb.engstesPct.toFixed(3) + '–' + sb.weitestesPct.toFixed(3) +
+          ' % · angenommen 0,10 % → ' +
+          (Math.abs(d2) < 0.015 ? 'die Annahme der Studien trägt'
+            : d2 > 0 ? 'teurer als angenommen: die Studien rechnen zu günstig'
+            : 'günstiger als angenommen: die Kostenhürde der Studien ist zu streng');
       }
       el.textContent = txt;
     }
@@ -7303,6 +7337,38 @@
       kryptoTakt++;
     }, 20 * 60000);
     setTimeout(function () { if (D.kryptoSammeln !== false) kryptoSammeln('1m'); }, 25000);
+
+    /* ===== Spannen-Messung (22.08.2026) =====
+     * Capital.com liefert Geld- UND Briefkurs. Deren Abstand IST die Kostenhuerde
+     * einer Runde: gekauft wird zum Brief, verkauft zum Geld - wer ein- und
+     * aussteigt, zahlt die Spanne einmal. Damit ist die Zahl, an der fast jede
+     * Studie haengt (Annahme 0,10 %), in EINER Handelssitzung messbar statt in
+     * Wochen: die Fill-Messung braucht ~20 abgeschlossene Runden, diese hier
+     * braucht nur Kurse.
+     * Schonend: sechs Werte je Takt im Wechsel, nur bei offener Boerse. */
+    var spannenTakt = 0;
+    async function spannenProbe() {
+      if (!(window.CapAPI && window.CapAPI.enabled() && window.CapAPI.quote)) return;
+      if (!(window.Dash && window.Dash.marketOpen())) return;
+      var syms = universe();
+      if (!syms.length) return;
+      var teil = [];
+      for (var i = 0; i < 6 && i < syms.length; i++) teil.push(syms[(spannenTakt * 6 + i) % syms.length]);
+      spannenTakt++;
+      if (!D.spannen) D.spannen = { proben: [], seit: Date.now() };
+      for (var j = 0; j < teil.length; j++) {
+        try {
+          var q = await window.CapAPI.quote(teil[j]);
+          if (q && q.spreadPct != null && isFinite(q.spreadPct) && q.spreadPct >= 0 && q.spreadPct < 0.2) {
+            D.spannen.proben.unshift({ at: Date.now(), sym: teil[j], spreadPct: Math.round(q.spreadPct * 1e6) / 1e6 });
+          }
+        } catch (eQ) { /* eine Absage kippt die Messung nicht */ }
+      }
+      if (D.spannen.proben.length > 4000) D.spannen.proben = D.spannen.proben.slice(0, 4000);
+      save();
+    }
+    setInterval(spannenProbe, 8 * 60000);
+    setTimeout(spannenProbe, 40000);
   }
 
   /* Diese drei Zeilen liefen frueher ungeprueft und standen VOR init(): fehlte einer

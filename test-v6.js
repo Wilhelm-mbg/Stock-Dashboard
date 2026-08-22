@@ -690,6 +690,20 @@ console.log('\n17b) Oberflaeche: Altlasten und Verdrahtung');
   ok(/Bilanz der gemessenen Handelskosten/.test(h),
      'Kosten: der Einwilligungstext nennt die neue Kategorie');
 
+  // --- Spannen-Messung: die Kostenhuerde direkt aus Geld/Brief (22.08.2026) ---
+  ok(/function spannenProbe/.test(d) && d.indexOf('window.CapAPI.enabled() && window.CapAPI.quote') !== -1,
+     'Spannen: Messung laeuft nur mit verbundener Demo-API');
+  ok(d.indexOf('window.Dash.marketOpen())) return;') !== -1,
+     'Spannen: nur bei offener Boerse (geschlossen sind Spannen wertlos)');
+  ok(d.indexOf('i < 6 && i < syms.length') !== -1, 'Spannen: hoechstens sechs Werte je Takt - schont die API');
+  ok(d.indexOf('q.spreadPct < 0.2') !== -1, 'Spannen: unplausible Werte werden verworfen');
+  ok(/function spannenBilanz/.test(d) && d.indexOf('Erst je Wert den Median') !== -1,
+     'Spannen: erst je Wert Median, dann ueber die Werte - kein Symbol dominiert');
+  ok(d.indexOf('sp.proben.length < 10) return null') !== -1, 'Spannen: unter zehn Proben gibt es kein Urteil');
+  ok(diag2.indexOf('spannen: (function') !== -1 && diag2.indexOf('spreadPct: p') === -1,
+     'Spannen: Diagnose meldet nur Aggregate, keine Einzelkurse');
+  ok(/quote: async function/.test(c2) && c2.indexOf('/markets/') !== -1,
+     'Spannen: die Kursabfrage nutzt den Markt-Endpunkt des Demo-Hosts');
   // --- Simulations-Hinweis ueberlebt jeden Umbau ---
   var simH = (h.match(/keine Anlageberatung/gi) || []).length;
   var simD = (d.match(/keine Anlageberatung/gi) || []).length;
