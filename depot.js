@@ -1077,6 +1077,9 @@
    * Tageszeit-Drift. Der Retest kommt, wenn das naechtlich wachsende 1m-Archiv
    * 60+ Tage traegt. Bis dahin: live ansehen, nichts kaufen. */
   var wendeLaeuft = false, wendeZuletzt = 0;
+  /* Die zuletzt geprueften Kerzen je Wert, damit der Chart (Wunsch #38) genau die
+   * Reihe zeigt, auf der auch gerechnet wurde - kein zweiter Abruf, keine Abweichung. */
+  var WENDE_BARS = {}, WENDE_ERG = {}, WENDE_F = 5;
   async function wendePruefen(erzwungen) {
     var el = document.getElementById('wendeTabelle'), st = document.getElementById('wendeStatus');
     if (!el || wendeLaeuft) return;
@@ -1089,6 +1092,7 @@
       var S = parseFloat((document.getElementById('wendeS') || {}).value || '1');
       var F = parseInt((document.getElementById('wendeF') || {}).value || '5', 10);
       var barMin = iv === '5m' ? 5 : 1;
+      WENDE_F = F; WENDE_BARS = {}; WENDE_ERG = {};
       var syms = universe();   // 15 Standard-Werte + eigene Watchlist - bewusst NICHT der 99er-Pool (Abruflast)
       var fertig = 0;
       var zeilen = [];
@@ -1099,6 +1103,7 @@
         if (!fd || !fd.series || fd.series.length < 60) { zeilen.push({ sym: sy, fehler: 'keine Daten' }); return; }
         var sigBars = Q.fertigeBars(fd.series, barMin, Date.now());
         var w = Q.trendwechsel(sigBars, { schwelle: S, bestaetigung: F });
+        WENDE_BARS[sy] = sigBars; WENDE_ERG[sy] = w;
         zeilen.push({ sym: sy, w: w });
       }, 4);
       // Frische Wechsel zuoberst, dann die steilsten jungen Abschnitte
@@ -1118,7 +1123,8 @@
         }
         var v = z.w.vorher, a = z.w.aktuell, sig = z.w.signal;
         var dreht = v && a && a.winkel != null && Math.abs(v.winkel) >= 0.5 && Math.sign(a.winkel) !== Math.sign(v.winkel);
-        h += '<tr' + (sig ? ' style="background:var(--up-soft);"' : '') + '><td><b>' + U.esc(z.sym) + '</b></td>' +
+        var zeichenbar = !!(z.w.bild && (z.w.bild.kanalVor || z.w.bild.kanalJung));
+        h += '<tr' + (zeichenbar ? ' data-wende="' + U.esc(z.sym) + '" style="cursor:pointer;' + (sig ? ' background:var(--up-soft);' : '') + '" title="Klick zeigt den Kursverlauf mit Wendepunkt und beiden Abschnitten"' : (sig ? ' style="background:var(--up-soft);"' : '')) + '><td><b>' + U.esc(z.sym) + (zeichenbar ? ' <span style="color:var(--muted); font-weight:400;">▸</span>' : '') + '</b></td>' +
           '<td>' + (v ? pfeil(v.trend) + ' ' + U.nf2.format(v.winkel) : '<span style="color:var(--muted);">kein Vortrend</span>') + '</td>' +
           '<td>' + (a ? (a.winkel != null ? pfeil(a.trend) + ' ' + U.nf2.format(a.winkel) + ' <span style="color:var(--muted);">(seit ' + a.seitKerzen + ' Kerzen)</span>' : '<span style="color:var(--muted);">' + U.esc(a.trend) + ' (' + a.seitKerzen + ' Kerzen)</span>') : '–') + '</td>' +
           '<td>' + (dreht ? '<b>ja</b>' : 'nein') + '</td>' +
@@ -1128,14 +1134,167 @@
       });
       h += '</table><div class="hinweis" style="margin-top:8px;">Winkel = Steigung × Abschnittslänge ÷ Kanalbreite ' +
         '(wie steil relativ zum eigenen Rauschen; Vorzeichen = Richtung). „Wechsel“ = junger Abschnitt ist steiler als die ' +
-        'Schwelle UND dreht gegen den Vortrend – die Studien-Bedingung. Simulation, keine Anlageberatung.</div>';
+        'Schwelle UND dreht gegen den Vortrend – die Studien-Bedingung. <b>Zeile anklicken</b> zeigt den Kursverlauf mit ' +
+        'Wendepunkt und beiden Abschnitten (Wunsch #38). Simulation, keine Anlageberatung.</div>';
       el.innerHTML = h;
+      wendeChartsVerkabeln(el);
       wendeZuletzt = Date.now();
       if (st) st.textContent = 'Stand ' + new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }) + ' Uhr · ' + zeilen.filter(function (z) { return z.w && z.w.signal; }).length + ' Wechsel';
     } catch (eW) {
       if (st) st.textContent = 'Prüfung fehlgeschlagen: ' + (eW && eW.message ? eW.message : eW);
     } finally {
       wendeLaeuft = false;
+    }
+  }
+
+  /* Wunsch #38: die Wende im Chart nachvollziehen koennen.
+   * Ein Klick auf eine Zeile klappt den Kursverlauf darunter auf und zeigt GENAU das,
+   * woraus der Detektor sein Urteil bildet: den Vor-Abschnitt, den bestaetigten
+   * Wendepunkt, den jungen Abschnitt und beide Kanaele. Reine Anzeige - es wird
+   * weiterhin nichts gehandelt. */
+  function wendeChartsVerkabeln(el) {
+    el.querySelectorAll('[data-wende]').forEach(function (tr) {
+      tr.addEventListener('click', function () {
+        var sy = tr.getAttribute('data-wende');
+        var warOffen = tr.nextElementSibling && tr.nextElementSibling.className === 'wende-inline';
+        el.querySelectorAll('tr.wende-inline').forEach(function (x) { x.parentNode.removeChild(x); });
+        if (warOffen) return;
+        tr.insertAdjacentHTML('afterend',
+          '<tr class="wende-inline"><td colspan="5" style="background:var(--panel); padding:8px 12px; cursor:default;">' +
+          '<div style="font-size:12px; font-weight:600; margin-bottom:4px;">' + U.esc(sy) + ' – Kursverlauf mit Wendepunkt</div>' +
+          '<svg class="wende-chart" style="width:100%; height:220px; display:block;"></svg>' +
+          '<div class="wende-legende" style="font-size:11.5px; color:var(--ink-2); margin-top:6px; line-height:1.5;"></div>' +
+          '</td></tr>');
+        var zeile = tr.nextElementSibling;
+        zeichneWendeChart(zeile.querySelector('.wende-chart'), zeile.querySelector('.wende-legende'),
+          WENDE_BARS[sy], WENDE_ERG[sy], WENDE_F);
+      });
+    });
+  }
+
+  /** Zeichnet den Ausschnitt um die Wende: Kurs, beide Kanaele, Wendepunkt und
+   *  die Kerze, ab der er bestaetigt war. Alle Geometrie stammt aus w.bild,
+   *  also aus derselben Rechnung wie die Tabelle - der Chart kann gar nicht
+   *  etwas anderes behaupten als das Urteil daneben. */
+  function zeichneWendeChart(svg, legende, bars, w, F) {
+    if (!svg) return;
+    var b = w && w.bild;
+    if (!bars || !bars.length || !b) {
+      svg.innerHTML = '<text x="12" y="26" fill="var(--muted)" font-size="12">Keine Kerzen mehr im Speicher – bitte erneut prüfen.</text>';
+      return;
+    }
+    var kV = b.kanalVor, kJ = b.kanalJung;
+    // Fenster: etwas Vorlauf vor dem aelteren Wendepunkt, hoechstens 400 Kerzen
+    var von = Math.max(0, Math.min(b.wpVor, bars.length - 1) - 12);
+    von = Math.max(von, bars.length - 400);
+    var bis = bars.length - 1;
+    if (bis - von < 5) {
+      svg.innerHTML = '<text x="12" y="26" fill="var(--muted)" font-size="12">Zu wenig Kerzen zum Zeichnen.</text>';
+      return;
+    }
+
+    var W = svg.clientWidth || 860, H = svg.clientHeight || 220;
+    var padL = 8, padR = 54, padT = 12, padB = 20;
+    svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+    var plotW = W - padL - padR, plotH = H - padT - padB;
+    function X(i) { return padL + (i - von) / Math.max(1, bis - von) * plotW; }
+
+    // Wertebereich: Kurse plus beide Kanalkanten im sichtbaren Fenster
+    var lo = Infinity, hi = -Infinity, i;
+    for (i = von; i <= bis; i++) {
+      var c = bars[i][1];
+      if (c == null) continue;
+      if (c < lo) lo = c;
+      if (c > hi) hi = c;
+    }
+    function kanalWert(k, idx, welche) {
+      var mitte = k.achse + k.steigung * (idx - k.von);
+      if (welche === 'm') return mitte;
+      return mitte + (welche === 'o' ? (k.oben - k.mitteJetzt) : (k.unten - k.mitteJetzt));
+    }
+    [kV, kJ].forEach(function (k) {
+      if (!k) return;
+      [k.von, k.bis].forEach(function (idx) {
+        ['o', 'u'].forEach(function (wl) {
+          var v2 = kanalWert(k, idx, wl);
+          if (isFinite(v2)) { if (v2 < lo) lo = v2; if (v2 > hi) hi = v2; }
+        });
+      });
+    });
+    if (!isFinite(lo) || !isFinite(hi)) {
+      svg.innerHTML = '<text x="12" y="26" fill="var(--muted)" font-size="12">Keine gültigen Kurse.</text>';
+      return;
+    }
+    var luft = (hi - lo) * 0.10 || 1;
+    lo -= luft; hi += luft;
+    function Y(v3) { return H - padB - (v3 - lo) / (hi - lo) * plotH; }
+
+    var html = '';
+    niceTicks(lo, hi, 4).forEach(function (tv) {
+      html += '<line x1="' + padL + '" x2="' + (padL + plotW) + '" y1="' + Y(tv).toFixed(1) + '" y2="' + Y(tv).toFixed(1) + '" stroke="var(--grid)" stroke-width="1"></line>' +
+        '<text x="' + (padL + plotW + 4) + '" y="' + (Y(tv) + 3).toFixed(1) + '" fill="var(--muted)" font-size="9.5">' + fmtTick(tv, hi - lo) + '</text>';
+    });
+    for (var xi = 0; xi <= 3; xi++) {
+      var ix = Math.round(von + (bis - von) * xi / 3);
+      html += '<text x="' + X(ix).toFixed(1) + '" y="' + (H - 5) + '" text-anchor="' + (xi === 0 ? 'start' : xi === 3 ? 'end' : 'middle') +
+        '" fill="var(--muted)" font-size="9.5">' + fmtTimeTick(bars[ix][0], bars[bis][0] - bars[von][0]) + '</text>';
+    }
+
+    // Beide Kanaele als Band + Mittellinie, jeweils nur ueber ihren eigenen Abschnitt
+    function band(k, farbe, gestrichelt) {
+      if (!k) return '';
+      var a = Math.max(von, k.von), e = Math.min(bis, k.bis);
+      if (e - a < 1) return '';
+      var oben = [], unten = [], mitte = [], j;
+      for (j = a; j <= e; j++) {
+        oben.push((oben.length ? 'L' : 'M') + X(j).toFixed(1) + ' ' + Y(kanalWert(k, j, 'o')).toFixed(1));
+        mitte.push((mitte.length ? 'L' : 'M') + X(j).toFixed(1) + ' ' + Y(kanalWert(k, j, 'm')).toFixed(1));
+      }
+      for (j = e; j >= a; j--) unten.push(X(j).toFixed(1) + ' ' + Y(kanalWert(k, j, 'u')).toFixed(1));
+      return '<path d="' + oben.join(' ') + ' L' + unten.join(' L') + ' Z" fill="' + farbe + '" opacity="0.12"></path>' +
+        '<path d="' + mitte.join(' ') + '" fill="none" stroke="' + farbe + '" stroke-width="1.8"' + (gestrichelt ? ' stroke-dasharray="5 4"' : '') + '></path>';
+    }
+    var farbeJung = w.aktuell && w.aktuell.winkel != null
+      ? (w.aktuell.winkel > 0 ? 'var(--up)' : 'var(--down)') : 'var(--series3)';
+    html += band(kV, 'var(--series2)', true);
+    html += band(kJ, farbeJung, false);
+
+    // Kurs
+    var pfad = [];
+    for (i = von; i <= bis; i++) {
+      if (bars[i][1] == null) continue;
+      pfad.push((pfad.length ? 'L' : 'M') + X(i).toFixed(1) + ' ' + Y(bars[i][1]).toFixed(1));
+    }
+    html += '<path d="' + pfad.join(' ') + '" fill="none" stroke="var(--series)" stroke-width="1.8" stroke-linejoin="round"></path>';
+
+    // Wendepunkte und die Kerze, ab der der juengere bestaetigt war
+    function senkrechte(idx, farbe, text, hoch) {
+      if (idx < von || idx > bis) return '';
+      var x = X(idx);
+      return '<line x1="' + x.toFixed(1) + '" x2="' + x.toFixed(1) + '" y1="' + padT + '" y2="' + (H - padB) +
+        '" stroke="' + farbe + '" stroke-width="1.2" stroke-dasharray="3 3" opacity="0.8"></line>' +
+        '<text x="' + (x + 3).toFixed(1) + '" y="' + (hoch ? padT + 9 : padT + 21) + '" fill="' + farbe + '" font-size="9.5" font-weight="600">' + text + '</text>';
+    }
+    html += senkrechte(b.wpVor, 'var(--muted)', 'Wendepunkt davor', true);
+    html += senkrechte(b.wpLetzt, 'var(--ink-2)', 'Wendepunkt', true);
+    html += senkrechte(b.wpLetzt + (F || 5), 'var(--muted)', 'ab hier bestätigt', false);
+    [b.wpVor, b.wpLetzt].forEach(function (idx) {
+      if (idx < von || idx > bis || bars[idx][1] == null) return;
+      html += '<circle cx="' + X(idx).toFixed(1) + '" cy="' + Y(bars[idx][1]).toFixed(1) + '" r="4" fill="var(--surface)" stroke="var(--ink-2)" stroke-width="2"></circle>';
+    });
+    svg.innerHTML = html;
+
+    if (legende) {
+      var v = w.vorher, a2 = w.aktuell;
+      legende.innerHTML =
+        '<span style="color:var(--series2);">▬</span> Vor-Abschnitt (gestrichelt): ' +
+        (v ? 'Winkel ' + U.nf2.format(v.winkel) : 'kein Vortrend') + ' · ' +
+        '<span style="color:' + farbeJung + ';">▬</span> junger Abschnitt: ' +
+        (a2 && a2.winkel != null ? 'Winkel ' + U.nf2.format(a2.winkel) + ' über ' + a2.seitKerzen + ' Kerzen' : U.esc(a2 ? a2.trend : '–')) + '<br>' +
+        'Der Wendepunkt gilt erst ' + (F || 5) + ' Kerzen später als bestätigt – vorher weiß der Detektor nichts von ihm ' +
+        '(walk-forward, kein Blick in die Zukunft). ' +
+        (w.signal ? '<b class="' + (w.signal.dir === 'call' ? 'pos' : 'neg') + '">Das ist ein Wechsel nach ' + (w.signal.dir === 'call' ? 'OBEN' : 'UNTEN') + '.</b> ' : '') +
+        'Beobachtung, kein Handel – Simulation, keine Anlageberatung.';
     }
   }
 

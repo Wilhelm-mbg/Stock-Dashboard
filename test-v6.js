@@ -640,6 +640,18 @@ console.log('\n17b) Oberflaeche: Altlasten und Verdrahtung');
   ok(/Beobachtung, kein Handel/.test(h), 'Trendwechsel: der Reiter sagt ehrlich, dass nicht gehandelt wird');
   ok(/Sekunden-Kerzen \(1\/5\/10 s\) sind mit der Kursquelle nicht möglich/.test(h),
      'Trendwechsel: die Sekunden-Grenze der Datenquelle steht dabei');
+  // Wunsch #38 (22.08.2026): die Wende muss im Chart nachvollziehbar sein
+  ok(/bild: \{ wpVor: wVor, wpLetzt: wLetzt, kanalVor: kAlt \|\| null, kanalJung: null \}/.test(q2),
+     'Trendwechsel-Chart: der Detektor gibt seine Stuetzstellen zum Zeichnen mit');
+  ok(/raus\.bild\.kanalJung = kNeu;/.test(q2), 'Trendwechsel-Chart: der junge Kanal wird mitgegeben');
+  ok(/data-wende=/.test(d) && /function wendeChartsVerkabeln/.test(d),
+     'Trendwechsel-Chart: Zeilen sind anklickbar und verkabelt');
+  ok(/function zeichneWendeChart/.test(d) && /WENDE_BARS\[sy\] = sigBars/.test(d),
+     'Trendwechsel-Chart: gezeichnet werden genau die geprueften Kerzen, kein zweiter Abruf');
+  ok(/ab hier bestätigt/.test(d) && /kein Blick in die Zukunft/.test(d),
+     'Trendwechsel-Chart: die Bestaetigungs-Verzoegerung ist im Bild sichtbar und benannt');
+  ok(/Beobachtung, kein Handel – Simulation, keine Anlageberatung/.test(d),
+     'Trendwechsel-Chart: auch die Chart-Legende bleibt ehrlich');
 
   // --- Spekulations-Radar (22.08.2026): Anzeige von Fremdinhalten, streng entschaerft ---
   ok(/read-spekulationen/.test(m2) && /spekulationen\.json/.test(m2), 'Radar: Lese-Kanal im Hauptprozess existiert');

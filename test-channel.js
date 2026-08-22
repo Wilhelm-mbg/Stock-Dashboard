@@ -347,6 +347,32 @@ console.log('17) Trendwechsel-Beobachtung (Felix #33/#35): Winkel-Detektor als r
   var w3 = Q.trendwechsel(bars3, { schwelle: 1.0, bestaetigung: 5 });
   ok(!w3 || !w3.signal, 'Seitwaerts-Rauschen ohne Vortrend meldet keinen Wechsel');
   ok(Q.trendwechsel(bars.slice(0, 30)) === null, 'zu kurze Reihe liefert null');
+  /* Wunsch #38: Der Chart darf nichts anderes zeigen als das Urteil. Dafuer gibt
+   * der Detektor seine Stuetzstellen mit - hier wird geprueft, dass sie stimmen
+   * und dass die daraus gezeichnete Kanalgerade dieselben Werte trifft wie die
+   * Kennzahlen der Tabelle. */
+  ok(w && w.bild && w.bild.kanalVor && w.bild.kanalJung, 'Bild-Daten fuer den Chart sind vollstaendig');
+  ok(w && w.bild.wpVor < w.bild.wpLetzt && w.bild.wpLetzt < bars.length - 1,
+     'Wendepunkte liegen in der richtigen Reihenfolge innerhalb der Reihe',
+     w && (w.bild.wpVor + ' < ' + w.bild.wpLetzt + ' < ' + (bars.length - 1)));
+  ok(w && w.bild.wpLetzt + 5 <= bars.length - 1,
+     'der juengere Wendepunkt ist zum Zeitpunkt des Urteils bereits bestaetigt');
+  ok(w && w.bild.kanalVor.von === w.bild.wpVor && w.bild.kanalVor.bis === w.bild.wpLetzt &&
+       w.bild.kanalJung.von === w.bild.wpLetzt && w.bild.kanalJung.bis === bars.length - 1,
+     'jeder Kanal deckt genau seinen eigenen Abschnitt ab');
+  // So zeichnet die Oberflaeche: Mitte(i) = achse + steigung * (i - von)
+  var kJ = w.bild.kanalJung;
+  var mitteAmEnde = kJ.achse + kJ.steigung * (kJ.bis - kJ.von);
+  ok(Math.abs(mitteAmEnde - kJ.mitteJetzt) < 1e-6,
+     'die gezeichnete Kanalmitte trifft am Abschnittsende genau mitteJetzt',
+     Math.abs(mitteAmEnde - kJ.mitteJetzt));
+  ok(kJ.oben > kJ.unten && Math.abs((kJ.oben - kJ.unten) - kJ.breite) < 1e-6,
+     'obere und untere Kante liegen genau eine Kanalbreite auseinander');
+  // Zu junger Abschnitt: die Stuetzstellen kommen trotzdem, der junge Kanal fehlt ehrlich
+  var kurz = bars.slice(0, w.bild.wpLetzt + 6);
+  var wk = Q.trendwechsel(kurz, { schwelle: 1.0, bestaetigung: 5 });
+  ok(!wk || (wk.bild && wk.bild.kanalJung === null),
+     'ohne fertigen jungen Abschnitt bleibt der junge Kanal leer statt geraten');
 })();
 
 console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');

@@ -2349,7 +2349,11 @@
    *      Kanalbreite - wie steil relativ zum Rauschen) muss die Schwelle S
    *      reissen UND das Vorzeichen gegen den Vortrend drehen.
    *  Rueckgabe: { vorher: {winkel, trend}, aktuell: {winkel, trend, seitKerzen},
-   *              signal: {dir, beiKerze}|null } oder null (zu wenig Daten). */
+   *              signal: {dir, beiKerze}|null,
+   *              bild: {wpVor, wpLetzt, kanalVor, kanalJung} } oder null.
+   *  'bild' traegt nur die Stellen, an denen wirklich gerechnet wurde, damit die
+   *  Oberflaeche genau das zeichnen kann - kein zweiter, abweichender Rechenweg
+   *  im Chart (Wunsch #38: die Wende im Chart nachvollziehen koennen). */
   function trendwechsel(bars, opt) {
     opt = opt || {};
     var F = opt.bestaetigung || 5;       // Kerzen bis ein Wendepunkt bestaetigt ist
@@ -2368,13 +2372,16 @@
     var seit = bars.length - 1 - wLetzt;
     var raus = {
       vorher: kAlt ? { winkel: Math.round(winkelAlt * 100) / 100, trend: kAlt.trend } : null,
-      aktuell: null, signal: null
+      aktuell: null, signal: null,
+      // Nur zum Zeichnen: die Oberflaeche zeigt damit exakt die gerechneten Stellen.
+      bild: { wpVor: wVor, wpLetzt: wLetzt, kanalVor: kAlt || null, kanalJung: null }
     };
     if (seit < MIN_JUNG) { raus.aktuell = { winkel: null, trend: 'zu jung', seitKerzen: seit }; return raus; }
     var kNeu = kanalUeber(bars, wLetzt, bars.length - 1);
     if (!kNeu || !(kNeu.breite > 0)) { raus.aktuell = { winkel: null, trend: 'kein Kanal', seitKerzen: seit }; return raus; }
     var wn = wnk(kNeu);
     raus.aktuell = { winkel: Math.round(wn * 100) / 100, trend: kNeu.trend, seitKerzen: seit };
+    raus.bild.kanalJung = kNeu;
     if (Math.abs(winkelAlt) >= 0.5 && Math.abs(wn) >= S && Math.sign(wn) !== Math.sign(winkelAlt)) {
       raus.signal = { dir: wn > 0 ? 'call' : 'put', beiKerze: bars.length - 1 };
     }
