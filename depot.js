@@ -1810,12 +1810,51 @@
     notifyTrade(pos, 'close');
     // Gespiegelte Demo-Position beim Broker ebenfalls schließen
     if (pos.capDealId && window.CapAPI && window.CapAPI.enabled()) {
-      window.CapAPI.closePosition(pos.capDealId).then(function (r) {
-        pos.why = (pos.why || '') + ' · Demo-Position ' + (r.ok ? 'geschlossen' : 'Schließen fehlgeschlagen (' + r.msg + ') – bitte bei Capital.com prüfen');
-        save();
-      });
+      (function (p2, spotAus) {
+        window.CapAPI.closePosition(p2.capDealId).then(function (r) {
+          p2.why = (p2.why || '') + ' · Demo-Position ' + (r.ok ? 'geschlossen' : 'Schließen fehlgeschlagen (' + r.msg + ') – bitte bei Capital.com prüfen');
+          if (r.ok && r.fill != null && spotAus > 0) {
+            p2.capFillClose = r.fill;
+            p2.capSlipClose = (p2.dir === 'call' ? (spotAus / r.fill - 1) : (r.fill / spotAus - 1));
+            kostenMessungNeu(p2);
+          }
+          save();
+        });
+      })(pos, spotOf(pos.sym) || pos.entrySpot);
     }
   }
+
+  /* ================= Echte Handelskosten (Capital.com-Demo) =================
+   * Alle Studien dieses Projekts rechnen mit der ANNAHME 0,10 % je Runde. Die
+   * Demo-Anbindung ist die einzige Stelle mit echten Ausfuehrungen - bisher warf
+   * sie den Fuellkurs weg (Inventur 22.08.2026). Jetzt wird je Trade gemessen,
+   * was Ein- und Ausstieg WIRKLICH gekostet haben, und gegen die Annahme gestellt.
+   * Reine Messung: die Studien bleiben unveraendert, bis genug Runden vorliegen. */
+  function kostenMessungNeu(p) {
+    if (!D) return;
+    if (p.capSlipOpen == null || p.capSlipClose == null) return;   // erst vollstaendige Runden zaehlen
+    if (!D.kostenMessung) D.kostenMessung = { runden: [], seit: Date.now() };
+    D.kostenMessung.runden.unshift({
+      at: Date.now(), sym: p.sym, dir: p.dir, basis: !!p.basis,
+      slipOpen: Math.round(p.capSlipOpen * 1e6) / 1e6,
+      slipClose: Math.round(p.capSlipClose * 1e6) / 1e6,
+      runde: Math.round((p.capSlipOpen + p.capSlipClose) * 1e6) / 1e6
+    });
+    if (D.kostenMessung.runden.length > 300) D.kostenMessung.runden = D.kostenMessung.runden.slice(0, 300);
+    save();
+  }
+  /** Bilanz der echten Kosten - Median statt Mittel, ein Ausreisser soll nicht dominieren. */
+  function kostenBilanz() {
+    var km = D && D.kostenMessung;
+    if (!km || !km.runden || !km.runden.length) return null;
+    var r = km.runden.map(function (x) { return x.runde; }).filter(function (v) { return v != null && isFinite(v); });
+    if (!r.length) return null;
+    var s = r.slice().sort(function (a, b) { return a - b; });
+    var med = s[Math.floor(s.length / 2)];
+    var mit = r.reduce(function (a, b) { return a + b; }, 0) / r.length;
+    return { n: r.length, medianPct: med * 100, mittelPct: mit * 100, annahmePct: 0.10, seit: km.seit };
+  }
+  if (typeof window !== 'undefined') window.__kostenBilanz = kostenBilanz;
 
   /* ================= Der stündliche KI-Job ================= */
   async function runJob(manual) {
@@ -2985,7 +3024,18 @@
             var sizeC = Math.max(0.1, Math.round((equityNow() * cfg.budgetPct * 5 / spotNow) * 10) / 10);
             window.CapAPI.openPosition(tr.sym, tr.dir, sizeC, slLvl, tpLvl).then(function (r) {
               if (r.ok) { HEALTH.capOk++; } else { HEALTH.capFail++; }
-              if (r.ok) { tr.capDealId = r.dealId; tr.reason += ' · Demo-Konto: ' + (tr.dir === 'call' ? 'BUY' : 'SELL') + ' ' + sizeC + '× ' + (r.epic || tr.sym) + ' (SL ' + U.nf2.format(slLvl) + ')'; }
+              if (r.ok) {
+                tr.capDealId = r.dealId;
+                tr.reason += ' · Demo-Konto: ' + (tr.dir === 'call' ? 'BUY' : 'SELL') + ' ' + sizeC + '× ' + (r.epic || tr.sym) + ' (SL ' + U.nf2.format(slLvl) + ')';
+                /* KOSTENMESSUNG (22.08.2026): echter Ausfuehrungskurs gegen den Kurs,
+                 * mit dem die Simulation gerechnet hat. Das ist die einzige Stelle im
+                 * Projekt mit ECHTEN Ausfuehrungen - alle Studien rechnen sonst mit
+                 * der ANNAHME 0,10 % je Runde. Positiver Schlupf = teurer als gedacht. */
+                if (r.fill != null && spotNow > 0) {
+                  tr.capFillOpen = r.fill;
+                  tr.capSlipOpen = (tr.dir === 'call' ? (r.fill / spotNow - 1) : (spotNow / r.fill - 1));
+                }
+              }
               else { tr.reason += ' · Demo-Order fehlgeschlagen: ' + (r.msg || '?'); }
               save(); render();
             });
@@ -6790,7 +6840,22 @@
       if (!(window.CapAPI && window.CapAPI.enabled())) { el.textContent = ''; return; }
       el.textContent = 'Capital.com Demo: verbinde …';
       var s0 = await window.CapAPI.status();
-      el.textContent = '' + s0.msg + (s0.ok ? ' · Intraday-Signale werden gespiegelt.' : '');
+      var txt = '' + s0.msg + (s0.ok ? ' · Intraday-Signale werden gespiegelt.' : '');
+      /* Die gemessenen Kosten gehoeren direkt neben die Annahme, mit der ALLE
+       * Studien rechnen - das ist der eigentliche Zweck der Anbindung. */
+      var kb = kostenBilanz();
+      if (kb) {
+        var diff = kb.medianPct - kb.annahmePct;
+        txt += ' · Gemessene Handelskosten aus ' + kb.n + ' vollständigen Runden: Median ' +
+          kb.medianPct.toFixed(3) + ' % je Runde (angenommen: ' + kb.annahmePct.toFixed(2) + ' %) – ' +
+          (kb.n < 20 ? 'noch zu wenige Runden für ein Urteil'
+            : Math.abs(diff) < 0.02 ? 'die Annahme der Studien trägt'
+            : diff > 0 ? 'teurer als angenommen, die Studien rechnen zu günstig'
+            : 'günstiger als angenommen – die Kostenhürde der Studien ist zu streng');
+      } else if (s0.ok) {
+        txt += ' · Kostenmessung startet mit dem ersten gespiegelten Trade.';
+      }
+      el.textContent = txt;
     }
     setTimeout(updateCapStatus, 3000);
     setInterval(updateCapStatus, 10 * 60000);

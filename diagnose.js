@@ -123,6 +123,24 @@
         bilanz: depot.schattenStat || {}
       },
 
+      /* Echte Handelskosten aus dem Demo-Konto - nur AGGREGATE (Anzahl und Mediane),
+       * keine einzelnen Ausfuehrungen, keine Symbole, keine Kontodaten. Das ist die
+       * einzige Messung im Projekt, die die Kostenannahme aller Studien pruefen kann. */
+      handelskosten: (function () {
+        var km = depot.kostenMessung;
+        if (!km || !km.runden || !km.runden.length) return null;
+        var r = km.runden.map(function (x) { return x.runde; }).filter(function (v) { return v != null && isFinite(v); });
+        if (!r.length) return null;
+        var s = r.slice().sort(function (a, b) { return a - b; });
+        return {
+          runden: r.length,
+          medianPct: Math.round(s[Math.floor(s.length / 2)] * 1e5) / 1e3,
+          mittelPct: Math.round((r.reduce(function (a, b) { return a + b; }, 0) / r.length) * 1e5) / 1e3,
+          annahmePct: 0.10,
+          seit: km.seit || null
+        };
+      })(),
+
       // Kennzahlen JE STRATEGIE getrennt — ein Topf über alles verwischt genau die
       // Frage, die die Auswertung stellt: Welche Strategie läuft draußen wie?
       kennzahlen: {

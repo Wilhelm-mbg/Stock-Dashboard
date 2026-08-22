@@ -114,18 +114,38 @@
       }
       try {
         var ref = JSON.parse(res.body).dealReference;
-        // Bestätigung abholen → dealId
+        // Bestätigung abholen → dealId UND den tatsaechlichen Ausfuehrungskurs
         var conf = await call('GET', '/confirms/' + ref);
         if (conf.ok) {
           var cj = JSON.parse(conf.body);
           if (cj.dealStatus === 'ACCEPTED') {
             var dealId = (cj.affectedDeals && cj.affectedDeals[0] && cj.affectedDeals[0].dealId) || cj.dealId;
-            return { ok: true, dealId: dealId, epic: epic };
+            /* level = der Kurs, zu dem WIRKLICH ausgefuehrt wurde. Der wurde bisher
+             * weggeworfen - damit war die einzige Stelle des Projekts mit echten
+             * Ausfuehrungen blind fuer ihre eigene Kernfrage: was kostet ein Trade
+             * tatsaechlich? (Inventur 22.08.2026) */
+            return { ok: true, dealId: dealId, epic: epic,
+              fill: cj.level != null ? cj.level : null, fillT: Date.now() };
           }
           return { ok: false, msg: cj.rejectReason || cj.dealStatus };
         }
         return { ok: true, dealId: null, epic: epic, msg: 'ohne Bestätigung' };
       } catch (e) { return { ok: false, msg: 'Antwort unlesbar' }; }
+    },
+
+    /** Aktuelle Geld-/Briefkurse eines Marktes - fuer die Spannen-Messung.
+     *  Rueckgabe: {bid, ask, mid, spreadPct} oder null. */
+    quote: async function (sym) {
+      var epic = await this.epicFor(sym);
+      if (!epic) return null;
+      var res = await call('GET', '/markets/' + encodeURIComponent(epic));
+      if (!res.ok) return null;
+      try {
+        var s = JSON.parse(res.body).snapshot || {};
+        if (s.bid == null || s.offer == null) return null;
+        var mid = (s.bid + s.offer) / 2;
+        return { bid: s.bid, ask: s.offer, mid: mid, spreadPct: mid > 0 ? (s.offer - s.bid) / mid : null };
+      } catch (e) { return null; }
     },
 
     /** Kursdaten (Kerzen) von der Demo-API – als Reserve, wenn Yahoo ausfällt.
@@ -182,7 +202,21 @@
     closePosition: async function (dealId) {
       if (!dealId) return { ok: false, msg: 'keine dealId' };
       var res = await call('DELETE', '/positions/' + encodeURIComponent(dealId));
-      return { ok: res.ok, msg: res.ok ? 'geschlossen' : 'HTTP ' + res.status };
+      if (!res.ok) return { ok: false, msg: 'HTTP ' + res.status };
+      // Auch beim Schliessen den echten Ausfuehrungskurs zurueckholen - erst beide
+      // Seiten zusammen ergeben die tatsaechlichen Kosten einer Runde.
+      var fill = null;
+      try {
+        var ref = JSON.parse(res.body).dealReference;
+        if (ref) {
+          var conf = await call('GET', '/confirms/' + ref);
+          if (conf.ok) {
+            var cj = JSON.parse(conf.body);
+            if (cj.level != null) fill = cj.level;
+          }
+        }
+      } catch (e) { /* ohne Fill-Kurs schliessen wir trotzdem */ }
+      return { ok: true, msg: 'geschlossen', fill: fill, fillT: Date.now() };
     }
   };
 })();

@@ -669,6 +669,27 @@ console.log('\n17b) Oberflaeche: Altlasten und Verdrahtung');
   ok(/redaktionelle Einschätzung der Suche, keine Messung/.test(r),
      'Radar: die Chance-Einstufung wird als Setzung ausgewiesen');
 
+  // --- Echte Handelskosten aus dem Demo-Konto (22.08.2026) ---
+  var c2 = fs.readFileSync(__dirname + '/capital.js', 'utf8');
+  ok(/fill: cj\.level != null \? cj\.level : null/.test(c2),
+     'Kosten: der echte Ausfuehrungskurs wird beim Eroeffnen zurueckgelesen');
+  ok(/ok: true, msg: 'geschlossen', fill: fill/.test(c2),
+     'Kosten: auch beim Schliessen - erst beide Seiten ergeben eine Runde');
+  ok(/quote: async function/.test(c2) && /spreadPct/.test(c2), 'Kosten: Geld-Brief-Spanne abfragbar');
+  ok((c2.match(/demo-api-capital\.backend-capital\.com/g) || []).length >= 1 &&
+     !/[^-]api-capital\.backend-capital\.com/.test(c2.replace(/demo-api-capital/g, 'X')),
+     'Kosten: weiterhin AUSSCHLIESSLICH der Demo-Host');
+  ok(/function kostenMessungNeu/.test(d) && /capSlipOpen == null \|\| p\.capSlipClose == null\) return/.test(d),
+     'Kosten: nur vollstaendige Runden zaehlen');
+  ok(/function kostenBilanz/.test(d) && /medianPct/.test(d), 'Kosten: Bilanz ueber den Median, kein Ausreisser dominiert');
+  ok(/angenommen: /.test(d), 'Kosten: die gemessene Zahl steht neben der Annahme der Studien');
+  ok(/kb\.n < 20 \? 'noch zu wenige Runden/.test(d), 'Kosten: unter 20 Runden gibt es kein Urteil');
+  var diag2 = fs.readFileSync(__dirname + '/diagnose.js', 'utf8');
+  ok(/handelskosten: \(function/.test(diag2) && !/slipOpen/.test(diag2),
+     'Kosten: Diagnose meldet nur Aggregate, keine einzelnen Ausfuehrungen');
+  ok(/Bilanz der gemessenen Handelskosten/.test(h),
+     'Kosten: der Einwilligungstext nennt die neue Kategorie');
+
   // --- Simulations-Hinweis ueberlebt jeden Umbau ---
   var simH = (h.match(/keine Anlageberatung/gi) || []).length;
   var simD = (d.match(/keine Anlageberatung/gi) || []).length;
