@@ -28,22 +28,28 @@
     var anteil = opts.anteil || 0.10, minWerte = opts.minWerte || 25;
     var maxAlter = opts.maxAlterMs || 7 * 86400000;
     var nowMs = opts.nowMs || Date.now();
-    var punkte = [], uebersprungen = [];
+    var punkte = [], uebersprungen = [], verworfen = [];
+    /** Jeder Ausschluss wird mit Grund festgehalten, nicht nur gezählt — die Anzeige
+     *  soll erklären können, warum ein Wert nicht mitrankt. */
+    function raus(sym, grund) { uebersprungen.push(sym); verworfen.push({ sym: sym, grund: grund }); }
     Object.keys(rohMap).forEach(function (sym) {
       var r = rohMap[sym];
-      if (!r || r.length < rueck + 5) { uebersprungen.push(sym); return; }
+      if (!r || r.length < rueck + 5) { raus(sym, 'zu kurze Kursreihe (' + ((r && r.length) || 0) + ' von ' + (rueck + 5) + ' Tagen)'); return; }
       // Veraltete Serien fliegen raus, statt mit einem alten Kurs mitzuranken —
       // ein eingefrorener Wert sähe im fallenden Markt fälschlich „stark“ aus.
-      if (nowMs - r[r.length - 1][0] > maxAlter) { uebersprungen.push(sym); return; }
+      if (nowMs - r[r.length - 1][0] > maxAlter) {
+        raus(sym, 'Kurse veraltet (' + Math.round((nowMs - r[r.length - 1][0]) / 86400000) + ' Tage alt)'); return;
+      }
       var i = r.length - 1;
       var st = r[i - luecke][1] / r[i - rueck][1] - 1;
       if (isFinite(st)) punkte.push({ sym: sym, staerke: st });
-      else uebersprungen.push(sym);
+      else raus(sym, 'Stärke nicht berechenbar (Kurslücke)');
     });
-    if (punkte.length < minWerte) return { ziel: [], rangfolge: [], uebersprungen: uebersprungen, zuWenig: true };
+    if (punkte.length < minWerte) return { ziel: [], rangfolge: [], uebersprungen: uebersprungen, verworfen: verworfen, zuWenig: true };
     punkte.sort(function (a, b) { return b.staerke - a.staerke; });
     var n = Math.max(5, Math.round(punkte.length * anteil));
-    return { ziel: punkte.slice(0, n).map(function (p) { return p.sym; }), rangfolge: punkte, uebersprungen: uebersprungen };
+    return { ziel: punkte.slice(0, n).map(function (p) { return p.sym; }), rangfolge: punkte,
+      uebersprungen: uebersprungen, verworfen: verworfen };
   }
 
   /** Umschichtung planen: Soll-Ist-Abgleich. Gleichgewichtung über die Zielliste.
@@ -137,16 +143,25 @@
    *  Eröffnet werden nur JUNGE Signale (seitTagen <= maxAlterTage): Ein 40 Tage altes
    *  Signal hat den Großteil seiner 60-Tage-Wirkung hinter sich — spät einsteigen
    *  hieße, die Messung nicht mehr abzubilden.
-   *  Shorts sind linear (CFD-Stil): Gewinn = Einstand − Kurs. */
+   *  Shorts sind linear (CFD-Stil): Gewinn = Einstand − Kurs.
+   *  Jedes erkannte, aber NICHT gehandelte Signal landet mit Grund in getan.verworfen —
+   *  vorher verschwanden diese Fälle spurlos, und im Fenster stand „12 Signale offen“
+   *  neben drei Positionen, ohne dass die Lücke irgendwo erklärt war.
+   *  opts.nurPruefen: nichts anfassen, nur berichten, was das Buch täte (Automatik aus). */
   function driftAbgleich(buch, heute, preise, nowMs, opts) {
     opts = opts || {};
+    // Im Prüf-Modus wird auf einer Kopie gerechnet: Die Anzeige soll auch bei
+    // ausgeschalteter Automatik ehrlich sagen können, was fällig wäre — ohne zu handeln.
+    var nurPruefen = !!opts.nurPruefen;
+    if (nurPruefen) buch = JSON.parse(JSON.stringify(buch || {}));
     var kostenBp = opts.kostenBp == null ? 10 : opts.kostenBp;
     var k = kostenBp / 10000;
     var maxAlter = opts.maxAlterTage == null ? 5 : opts.maxAlterTage;
     var haltenTage = opts.haltenTage || 60;
     var budgetAnteil = opts.budgetAnteil || 0.05;    // je Position 5 % des Buchwerts
     if (!buch.trades) buch.trades = [];
-    var getan = { geschlossen: 0, eroeffnet: 0, uebersprungen: [] };
+    var getan = { geschlossen: 0, eroeffnet: 0, uebersprungen: [], verworfen: [], nurGeprueft: nurPruefen };
+    function verwirf(sym, richtung, grund) { getan.verworfen.push({ sym: sym, richtung: richtung, grund: grund }); }
 
     // 1. Fällige schließen: Haltedauer erreicht (nach eigener Buchführung — die
     //    heute.faellig-Liste hilft, aber die eigene Uhr ist die Wahrheit des Buchs)
@@ -155,7 +170,12 @@
       var alterTage = (nowMs - p.seit) / 86400000 * (252 / 365);   // grob in Handelstage
       if (alterTage < haltenTage) continue;
       var kurs = preise[p.sym];
-      if (!(kurs > 0)) { getan.uebersprungen.push(p.sym + ' (kein Kurs)'); continue; }
+      if (!(kurs > 0)) {
+        getan.uebersprungen.push(p.sym + ' (kein Kurs)');
+        verwirf(p.sym, p.richtung, 'fällig, aber kein frischer Kurs – bleibt offen');
+        continue;
+      }
+      if (nurPruefen) verwirf(p.sym, p.richtung, 'wäre fällig zum Schließen – Automatik aus');
       var wert = p.richtung > 0 ? p.stueck * kurs : p.stueck * (2 * p.einstand - kurs);
       var erloes = Math.max(0, wert) * (1 - k);
       buch.cash += erloes;
@@ -168,15 +188,24 @@
     // 2. Neue Signale eröffnen — je Termin genau einmal (Schlüssel sym+Richtung offen)
     var wert2 = bewerteDrift(buch, preise).wert;
     (heute && heute.offen || []).forEach(function (o) {
-      if (o.seitTagen > maxAlter) return;
+      var ri = o.richtung === 'kaufen' ? 1 : -1;
+      if (o.seitTagen > maxAlter) {
+        verwirf(o.sym, ri, 'Signal ist ' + o.seitTagen + ' Handelstage alt (Grenze ' + maxAlter + ') – Wirkung größtenteils vorbei');
+        return;
+      }
       var schonDa = (buch.positionen || []).some(function (p) { return p.sym === o.sym; });
-      if (schonDa) return;
+      if (schonDa) { verwirf(o.sym, ri, 'schon im Buch – wird nicht doppelt eröffnet'); return; }
       var kurs = preise[o.sym];
-      if (!(kurs > 0)) { getan.uebersprungen.push(o.sym + ' (kein Kurs)'); return; }
+      if (!(kurs > 0)) {
+        getan.uebersprungen.push(o.sym + ' (kein Kurs)');
+        verwirf(o.sym, ri, 'kein frischer Kurs – ohne Kurs kein Handel');
+        return;
+      }
       var budget = wert2 * budgetAnteil;
       if (budget > buch.cash) budget = buch.cash;
       var stueck = Math.floor(budget / (kurs * (1 + k)) * 10000) / 10000;
-      if (!(stueck > 0)) return;
+      if (!(stueck > 0)) { verwirf(o.sym, ri, 'Bargeld reicht nicht für eine Position'); return; }
+      if (nurPruefen) verwirf(o.sym, ri, 'würde eröffnet – Automatik aus');
       buch.cash -= stueck * kurs * (1 + k);
       buch.positionen.push({ sym: o.sym, stueck: stueck, einstand: kurs * (1 + k),
         richtung: o.richtung === 'kaufen' ? 1 : -1, seit: nowMs, ueberraschung: o.ueberraschung });

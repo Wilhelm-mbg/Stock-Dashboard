@@ -95,7 +95,8 @@
             applied: ['Momentum-Rebalancing: ' + nM + ' Orders'],
             txt: 'Momentum-Depot umgeschichtet: ' + plan.verkaufen.length + ' Verkäufe, ' + plan.kaufen.length +
               ' Käufe auf das stärkste Zehntel (' + ziel.ziel.length + ' Werte). Kosten 20 Bp je Seite.' +
-              (ziel.uebersprungen.length ? ' Ohne frische Kurse übersprungen: ' + ziel.uebersprungen.slice(0, 6).join(', ') + (ziel.uebersprungen.length > 6 ? ' …' : '') : '') });
+              (ziel.uebersprungen.length ? ' Ohne frische Kurse übersprungen: ' + ziel.uebersprungen.slice(0, 6).join(', ') + (ziel.uebersprungen.length > 6 ? ' …' : '') : '') +
+              (plan.fehltKurs.length ? ' Ohne Kurs nicht handelbar: ' + plan.fehltKurs.slice(0, 6).join(', ') + (plan.fehltKurs.length > 6 ? ' …' : '') : '') });
           speichern();
           plan = MH.planeUmschichtung(ziel.ziel, d.mfBuch, daten.preise);   // frisch für die Anzeige
           faellig = false;
@@ -113,18 +114,25 @@
         if (Object.keys(termD).length >= 20) {
           if (!d.driftBuch) d.driftBuch = buchInit('drift');
           var heute = Dr.heute(kurseD, termD, markt);
+          var getanD;
           if (d.driftAn || manuell === 'drift') {
-            var getan = MH.driftAbgleich(d.driftBuch, heute, daten.preise, now, {});
-            if (getan.geschlossen || getan.eroeffnet) {
+            getanD = MH.driftAbgleich(d.driftBuch, heute, daten.preise, now, {});
+            if (getanD.geschlossen || getanD.eroeffnet || getanD.verworfen.length) {
               if (!d.tuneLog) d.tuneLog = [];
               d.tuneLog.unshift({ id: 'driftab-' + now, at: now, quelle: manuell === 'drift' ? 'hand' : 'automatik',
-                applied: ['Drift-Abgleich: ' + getan.eroeffnet + ' eröffnet, ' + getan.geschlossen + ' geschlossen'],
+                applied: ['Drift-Abgleich: ' + getanD.eroeffnet + ' eröffnet, ' + getanD.geschlossen + ' geschlossen' +
+                  (getanD.verworfen.length ? ', ' + getanD.verworfen.length + ' verworfen' : '')],
                 txt: 'Ergebnis-Drift-Depot abgeglichen. Neue Signale nur, wenn jünger als 5 Handelstage – ' +
-                  'ein 40 Tage altes Signal hat den Großteil seiner Wirkung hinter sich.' });
+                  'ein 40 Tage altes Signal hat den Großteil seiner Wirkung hinter sich.' +
+                  (getanD.verworfen.length ? ' Erkannt, aber nicht gehandelt: ' + verworfenKurz(getanD.verworfen) : '') });
               speichern();
             }
+          } else {
+            // Automatik aus: trotzdem erheben, was das Buch täte. Der Prüf-Modus rechnet
+            // auf einer Kopie und fasst das echte Buch nicht an.
+            getanD = MH.driftAbgleich(d.driftBuch, heute, daten.preise, now, { nurPruefen: true });
           }
-          driftInfo = { heute: heute, werte: Object.keys(termD).length };
+          driftInfo = { heute: heute, werte: Object.keys(termD).length, verworfen: getanD.verworfen };
         }
       }
 
@@ -148,6 +156,40 @@
   }
 
   /* ---------------- Anzeige ---------------- */
+
+  /** Kurzfassung der verworfenen Signale für den Protokoll-Eintrag: nach Grund
+   *  gebündelt, damit aus 30 Einzelzeilen ein lesbarer Satz wird. */
+  function verworfenKurz(liste) {
+    var nachGrund = {}, reihenfolge = [];
+    liste.forEach(function (v) {
+      // Zahlen aus dem Grund nehmen, sonst zählt jedes Signalalter als eigener Grund
+      var g = String(v.grund).replace(/\d+/g, 'n');
+      if (nachGrund[g] == null) { nachGrund[g] = 0; reihenfolge.push(g); }
+      nachGrund[g]++;
+    });
+    return reihenfolge.map(function (g) { return nachGrund[g] + '× ' + g; }).join('; ') + '.';
+  }
+
+  /** „Erkannt, aber nicht gehandelt“ – jedes Signal, das das Modell sah und das Buch
+   *  NICHT nahm, mit Grund. Vorher verschwanden diese Fälle spurlos: Im Fenster stand
+   *  „Signale offen laut Modell: 12“ neben drei Positionen, und nirgends war
+   *  nachvollziehbar, woran die neun anderen scheiterten. Reine Anzeige – sie ändert
+   *  nichts am Handel. */
+  function verworfenTabelle(liste, titel, mitRichtung) {
+    if (!liste || !liste.length) return '';
+    var zeigen = liste.slice(0, 40);
+    return '<details class="how" style="margin-top:8px;"><summary>' + U.esc(titel) + ' (' + liste.length + ')</summary>' +
+      '<table class="tbl"><thead><tr><th>Wert</th>' + (mitRichtung ? '<th>Richtung</th>' : '') +
+      '<th>Grund</th></tr></thead><tbody>' +
+      zeigen.map(function (v) {
+        return '<tr><td>' + U.esc(v.sym) + '</td>' +
+          (mitRichtung ? '<td>' + (v.richtung == null ? '–' : (v.richtung > 0 ? '▲ long' : '▼ short')) + '</td>' : '') +
+          '<td>' + U.esc(v.grund) + '</td></tr>';
+      }).join('') + '</tbody></table>' +
+      (liste.length > zeigen.length ? '<div class="hinweis">… und ' + (liste.length - zeigen.length) + ' weitere.</div>' : '') +
+      '</details>';
+  }
+
   function posTabelle(buch, preise, mitRichtung) {
     if (!buch.positionen.length) return '<div class="empty" style="padding:6px 0;">Keine Positionen.</div>';
     return '<table class="tbl"><thead><tr><th>Wert</th>' + (mitRichtung ? '<th>Richtung</th>' : '') +
@@ -193,6 +235,12 @@
       }
       html += posTabelle(b, daten.preise, false);
       if (bw.ohneKurs.length) html += '<div class="hinweis">Ohne frischen Kurs (zum Einstand bewertet): ' + bw.ohneKurs.join(', ') + '</div>';
+      // Erkannt, aber nicht ins Depot genommen: Rangfolge-Ausschlüsse und Ziele ohne Kurs
+      var vM = (mom.ziel.verworfen || []).slice();
+      ((mom.plan && mom.plan.fehltKurs) || []).forEach(function (sy) {
+        vM.push({ sym: sy, grund: 'im Ziel, aber ohne frischen Kurs – nicht handelbar' });
+      });
+      html += verworfenTabelle(vM, 'Erkannt, aber nicht ins Depot genommen', false);
       eM.innerHTML = html;
     }
     var eD = el('mfdDrift');
@@ -206,8 +254,11 @@
           '<div class="tile"><div class="name">Depotwert</div><div class="val ' + (pnlD >= 0 ? 'pos' : 'neg') + '" style="font-size:17px;">' + U.money(bwD.wert) + '</div></div>' +
           '<div class="tile"><div class="name">Ergebnis</div><div class="val ' + (pnlD >= 0 ? 'pos' : 'neg') + '" style="font-size:17px;">' + U.signTxt(Math.round(pnlD * 100) / 100, ' $') + '</div></div>' +
           '<div class="tile"><div class="name">Positionen</div><div class="val" style="font-size:17px;">' + bD.positionen.length + '</div></div>' +
-          '<div class="tile"><div class="name">Signale offen laut Modell</div><div class="val" style="font-size:17px;">' + drift.info.heute.offen.length + '</div></div></div>' +
-          posTabelle(bD, daten.preise, true);
+          '<div class="tile"><div class="name">Signale offen laut Modell</div><div class="val" style="font-size:17px;">' + drift.info.heute.offen.length + '</div></div>' +
+          '<div class="tile"><div class="name">Status</div><div class="val" style="font-size:14px;">' +
+            (d.driftAn ? 'handelt selbst' : 'nur rechnen') + '</div></div></div>' +
+          posTabelle(bD, daten.preise, true) +
+          verworfenTabelle(drift.info.verworfen, 'Erkannt, aber nicht gehandelt', true);
       }
     }
   }

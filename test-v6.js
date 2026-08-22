@@ -1367,6 +1367,35 @@ console.log('\nMittelfrist-Depot');
   MH.driftAbgleich(db2, heute, preise, now, {});
   var g3 = MH.driftAbgleich(db2, heute, preise, now + 3600000, {});
   ok(g3.eroeffnet === 0, 'dasselbe Signal wird nicht doppelt eröffnet');
+
+  /* --- Erkannt, aber nicht gehandelt: kein stiller Ausstieg mehr --- */
+  ok(g1.verworfen.some(function (v) { return v.sym === 'B' && /alt/.test(v.grund); }),
+     'das zu alte Signal steht mit Grund im Protokoll, statt spurlos zu verschwinden');
+  ok(g3.verworfen.some(function (v) { return v.sym === 'A' && /schon im Buch/.test(v.grund); }),
+     'ein bereits gehaltenes Signal wird als verworfen gemeldet');
+  var gK = MH.driftAbgleich({ cash: 10000, positionen: [] },
+    { offen: [{ sym: 'ZZZ', richtung: 'kaufen', seitTagen: 1 }], faellig: [] }, preise, now, {});
+  ok(gK.verworfen.some(function (v) { return v.sym === 'ZZZ' && /Kurs/.test(v.grund); }),
+     'ohne Kurs wird der Grund gemeldet, nicht stillschweigend übersprungen');
+  var gArm = MH.driftAbgleich({ cash: 0.01, positionen: [] },
+    { offen: [{ sym: 'A', richtung: 'kaufen', seitTagen: 1 }], faellig: [] }, preise, now, {});
+  ok(gArm.verworfen.some(function (v) { return /Bargeld/.test(v.grund); }),
+     'reicht das Bargeld nicht, steht auch das mit Grund im Protokoll');
+  // Pruef-Modus: sagt, was das Buch taete - fasst das Buch aber nicht an
+  var dbP = { cash: 10000, positionen: [], trades: [] };
+  var gP = MH.driftAbgleich(dbP, heute, preise, now, { nurPruefen: true });
+  ok(dbP.positionen.length === 0 && dbP.cash === 10000 && dbP.trades.length === 0,
+     'der Prüf-Modus handelt nicht, er berichtet nur', dbP.positionen.length + '/' + dbP.cash);
+  ok(gP.verworfen.some(function (v) { return /Automatik aus/.test(v.grund); }),
+     'bei ausgeschalteter Automatik steht jedes Signal mit „Automatik aus“ im Protokoll');
+  ok(z2.verworfen.some(function (v) { return v.sym === 'H' && /veraltet/.test(v.grund); }),
+     'auch die Momentum-Rangfolge nennt den Grund für jeden Ausschluss');
+  // Die Anzeige muss die Liste auch wirklich zeigen - sonst bleibt sie im Datenmodell stecken
+  var mfdSrc = fs.readFileSync(__dirname + '/mfdepot.js', 'utf8');
+  ok(/verworfenTabelle\(/.test(mfdSrc) && /Erkannt, aber nicht gehandelt/.test(mfdSrc),
+     'die verworfenen Signale stehen sichtbar im Mittelfrist-Fenster');
+  ok(/nurPruefen: true/.test(mfdSrc),
+     'auch bei ausgeschalteter Automatik wird erhoben, was das Buch täte');
 })();
 
 /* ================= Diagnose: die weisse Liste haelt dicht ================= */
