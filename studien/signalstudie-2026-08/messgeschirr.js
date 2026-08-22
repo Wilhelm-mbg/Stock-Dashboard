@@ -183,7 +183,10 @@ function bedingungen(E, i, iv, ctx) {
   out.liquiditaet = E.umsatz >= ctx.umsatzMedian ? 'liquide' : 'duenn';
   const tn = terminNah(ctx.termine, E.sym, tag);
   out.termin = tn == null ? 'na' : (tn ? 'nah' : 'fern');
-  const vr = E.tagRet[tag];
+  /* VORTAG heisst Vortag: tagRet[tag] waere die Rendite des Signaltages selbst - die
+   * enthaelt das Vorwaertsfenster (Zukunftsblick, fiel am 22.08. durch t~10 auf). */
+  const diV = E.dayIdx[i];
+  const vr = diV > 0 ? E.tagRet[E.dayKey[E.segs[diV - 1].s]] : null;
   out.vortag = vr == null ? 'na' : (vr > ctx.vortagTerz[1] ? 'hoch' : (vr < ctx.vortagTerz[0] ? 'tief' : 'mitte'));
   // Technik-Score (walk-forward via endI) und Kanal (bestChannel via endI) - beide teuer, nur je Signal
   {
@@ -220,6 +223,29 @@ function statistik(entries) {
     tTag: r3(tDay), mdeTagPp: (nD >= 2 && dS > 0) ? r3(2 * dS / Math.sqrt(nD) * 100) : null,
     symPos: sm.length ? r3(sm.filter(x => x > 0).length / sm.length) : null,
   };
+}
+
+/* ---------- Aggregation (auch fuer Reparaturen fertiger Laeufe nutzbar) ---------- */
+const BEDINGUNGEN = ['regime', 'tageszeit', 'wochentag', 'vola', 'liquiditaet', 'termin', 'vortag', 'technik', 'kanal'];
+function aggregiere(ereignisse, hor) {
+  const zeilen = [];
+  for (const det of Object.keys(ereignisse)) {
+    const ev = ereignisse[det];
+    for (const dir of [1, -1]) for (const [, lab] of hor) {
+      const basis = ev.filter(e => e.dir === dir && e.fwd[lab] != null).map(e => ({ sym: e.sym, tag: e.tag, ex: e.fwd[lab], bed: e.bed }));
+      const st = statistik(basis);
+      if (st) zeilen.push(Object.assign({ det, dir: dir > 0 ? 'long' : 'short', hor: lab, bedingung: '-', wert: '-' }, st));
+      for (const b of BEDINGUNGEN) {
+        const werte = [...new Set(basis.map(e => e.bed[b]))].filter(w => w !== 'na');
+        for (const w of werte) {
+          const sub = basis.filter(e => e.bed[b] === w);
+          const s2 = statistik(sub);
+          if (s2 && s2.nTage >= 10) zeilen.push(Object.assign({ det, dir: dir > 0 ? 'long' : 'short', hor: lab, bedingung: b, wert: w }, s2));
+        }
+      }
+    }
+  }
+  return zeilen;
 }
 
 /* ---------- Hauptlauf ---------- */
@@ -294,25 +320,7 @@ function lauf(opts) {
     (log || console.log)('  ' + D.key.padEnd(22) + String(ev.length).padStart(6) + ' Signale  (' + aufrufe.toLocaleString('de-DE') + ' Aufrufe, ' + fehler + ' Fehler, ' + Math.round((Date.now() - tDet) / 1000) + ' s)');
   }
 
-  // Aggregation: Einzelsignal x Richtung x Horizont, dann x Bedingung
-  const zeilen = [];
-  const BEDINGUNGEN = ['regime', 'tageszeit', 'wochentag', 'vola', 'liquiditaet', 'termin', 'vortag', 'technik', 'kanal'];
-  for (const det of Object.keys(ereignisse)) {
-    const ev = ereignisse[det];
-    for (const dir of [1, -1]) for (const [, lab] of hor) {
-      const basis = ev.filter(e => e.dir === dir && e.fwd[lab] != null).map(e => ({ sym: e.sym, tag: e.tag, ex: e.fwd[lab], bed: e.bed }));
-      const st = statistik(basis);
-      if (st) zeilen.push(Object.assign({ det, dir: dir > 0 ? 'long' : 'short', hor: lab, bedingung: '-', wert: '-' }, st));
-      for (const b of BEDINGUNGEN) {
-        const werte = [...new Set(basis.map(e => e.bed[b]))].filter(w => w !== 'na');
-        for (const w of werte) {
-          const sub = basis.filter(e => e.bed[b] === w);
-          const s2 = statistik(sub);
-          if (s2 && s2.nTage >= 10) zeilen.push(Object.assign({ det, dir: dir > 0 ? 'long' : 'short', hor: lab, bedingung: b, wert: w }, s2));
-        }
-      }
-    }
-  }
+  const zeilen = aggregiere(ereignisse, hor);
 
   const out = { iv, phase, cutoff, universum: U.length, tage: { gesamt: alleTage.length, entdeckung: nEnt, bestaetigung: nBes }, tests: zeilen.length, zeilen,
     ereignisse: Object.fromEntries(Object.keys(ereignisse).map(k => [k, ereignisse[k].map(e => ({ sym: e.sym, t: e.t, tag: e.tag, dir: e.dir, fwd: e.fwd, bed: e.bed }))])),
@@ -323,7 +331,7 @@ function lauf(opts) {
   return out;
 }
 
-module.exports = { lauf, ladeUniversum, bereite, statistik, istSitzung, HORIZONTE, COOLDOWN, KOSTEN_PP };
+module.exports = { lauf, ladeUniversum, bereite, statistik, aggregiere, istSitzung, HORIZONTE, COOLDOWN, KOSTEN_PP };
 
 if (require.main === module) {
   const iv = process.argv[2], phase = process.argv[3] || 'entdeckung';
