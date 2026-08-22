@@ -95,23 +95,55 @@
      *  unlesbare Antwort) - damit war ein Fehlschlag nicht diagnostizierbar. */
     lastPriceError: function () { return letzterKursFehler; },
 
-    /** Markt (Epic) zum Symbol finden – mit Cache */
+    /** Markt (Epic) zum Symbol finden – mit Cache.
+     *
+     *  Frueher nahm diese Funktion bei fehlender Epic-Uebereinstimmung den ERSTEN
+     *  SHARES-Treffer der Suche, notfalls sogar den ersten Treffer ueberhaupt - ohne
+     *  zu pruefen, ob das dieselbe Gesellschaft ist. Was das anrichtet, stand am
+     *  22.08.2026 im Kursarchiv: 'WBD' war zu 'WBDIT' geworden (2,22 statt 28,50 und
+     *  europaeische Handelszeit - vom US-Sitzungsfilter blieben 16 statt 78 Kerzen
+     *  am Tag uebrig), 'EA' zu 'EAT' (Brinker International; US-notiert und deshalb
+     *  voellig unauffaellig: 78 Kerzen am Tag, nur eben die falsche Firma).
+     *  Einen Tag spaeter standen sechs solcher Zuordnungen im Cache, darunter
+     *  'NET' -> 'NFLX' - Cloudflare auf Netflix, und NFLX handelt die App selbst.
+     *
+     *  Das Epic landet nicht nur im Archiv: openPosition spiegelt Signale darueber
+     *  auf das Demo-Konto. Eine falsche Zuordnung heisst, dass ein NET-Signal eine
+     *  Netflix-Position eroeffnet. Kein CFD-Kurs ist besser als der eines fremden
+     *  Wertes, also wird nur noch angenommen, was belegbar ist: das Epic heisst wie
+     *  das Symbol, oder Capital nennt das Symbol selbst (Feld 'symbol' der Suche).
+     *
+     *  Auch der Cache wird daran gemessen. Ein gespeicherter Eintrag, dessen Epic
+     *  ANDERS heisst als das Symbol, gilt nicht mehr ungeprueft - sonst haetten die
+     *  sechs Fehlgriffe ewig weitergewirkt, denn der Cache lief vor der Pruefung.
+     *  Die 152 von 158 Eintraegen mit Epic = Symbol kosten dabei keine einzige
+     *  zusaetzliche Anfrage. */
     epicFor: async function (sym) {
       var cache = (await window.api.storeGet('cap_epics')) || {};
-      if (cache[sym]) return cache[sym];
+      if (cache[sym] === sym) return cache[sym];         // belegt: das Epic heisst wie das Symbol
       var res = await call('GET', '/markets?searchTerm=' + encodeURIComponent(sym));
       if (!res.ok) {
+        /* Bewusst kein Rueckfall auf den gespeicherten Eintrag: hier landen nur noch
+         * die ungesicherten Zuordnungen, und die sollen einen Netzfehler nicht
+         * ueberleben. Ein Symbol ohne Kurs faellt auf; ein falscher Kurs nicht. */
         letzterKursFehler = 'Marktsuche für ' + sym + ' fehlgeschlagen: HTTP ' + res.status +
           (res.body ? ' – ' + String(res.body).slice(0, 160) : '');
         return null;
       }
       try {
         var mkts = JSON.parse(res.body).markets || [];
-        // exakte Epic-Übereinstimmung bevorzugen, sonst erster Aktien-Treffer
-        var hit = mkts.filter(function (m) { return m.epic === sym; })[0] || mkts.filter(function (m) { return (m.instrumentType || '').indexOf('SHARES') !== -1; })[0] || mkts[0];
+        var hit = mkts.filter(function (m) { return m.epic === sym; })[0] ||
+                  mkts.filter(function (m) { return m.symbol === sym; })[0];
         if (hit) { cache[sym] = hit.epic; await window.api.storeSet('cap_epics', cache); return hit.epic; }
-        letzterKursFehler = 'Kein Markt für ' + sym + ' gefunden (Suche lieferte ' + mkts.length + ' Treffer). ' +
-          'Capital.com führt nicht jeden US-Wert als CFD.';
+        // Nichts Belegbares dabei - eine frueher geratene Zuordnung fliegt hier raus.
+        var verworfen = mkts.slice(0, 3).map(function (m) {
+          return m.epic + (m.instrumentName ? ' (' + m.instrumentName + ')' : '');
+        }).join(', ');
+        if (cache[sym]) { delete cache[sym]; await window.api.storeSet('cap_epics', cache); }
+        letzterKursFehler = 'Kein gesicherter Markt für ' + sym + ': die Suche lieferte ' + mkts.length +
+          ' Treffer, aber keinen, dessen Epic oder Symbol ' + sym + ' heißt' +
+          (verworfen ? ' – verworfen: ' + verworfen : '') +
+          '. Capital.com führt nicht jeden US-Wert als CFD.';
       } catch (e) { letzterKursFehler = 'Marktsuche für ' + sym + ': Antwort unlesbar'; }
       return null;
     },

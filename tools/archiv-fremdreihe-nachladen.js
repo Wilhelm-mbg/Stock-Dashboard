@@ -27,6 +27,16 @@
  * Liegt die Abweichung unter der Schwelle, wird nur gemischt (Luecken auffuellen), wie
  * es tools/archiv-stempel-bereinigen.js fuer die Stempel-Reihen tut.
  *
+ * EINE ABWEICHUNG IST NICHT IMMER EIN FREMDER WERT. Bei MNST stimmte das Epic, aber
+ * Capital liefert die Historie UNbereinigt ueber einen 2:1-Split hinweg, waehrend Yahoo
+ * bereinigt: 3978 Kerzen lagen exakt um Faktor 2,0000 daneben, ab dem 11.08.2026 exakt
+ * auf 1 - in der Archivreihe stand damit ein Kurssprung von -50,2 %, den es nie gab.
+ * So etwas wird UMGERECHNET, nicht verworfen. Der Unterschied ist teuer: Wegwerfen
+ * haette die 1m-Reihe von 62 auf 7 Tage gestutzt (weiter reicht Yahoo dort nicht), und
+ * 60+ Tage 1m sind genau das, wofuer der Backfill gebaut wurde. Erkannt wird ein Split
+ * nur, wenn er eindeutig ist: ein zusammenhaengender Block auf EINEM Faktor, danach
+ * ausschliesslich Tage auf 1. Sonst gilt die Reihe als fremd.
+ *
  * Aufruf (aus dem Projektordner):
  *   node tools/archiv-fremdreihe-nachladen.js --pruefe-alle    Pruefbericht ueber alle Reihen (5m, liest nur)
  *   node tools/archiv-fremdreihe-nachladen.js                  Trockenlauf fuer WBD
@@ -72,7 +82,10 @@ const IV = {
   '15m': { barMin: 15, range: '60d'  },
   '60m': { barMin: 60, range: '730d' }
 };
-const REIHEN = AUCH60 ? ['1m', '5m', '15m', '60m'] : ['1m', '5m', '15m'];
+/* 5m zuerst, 1m zuletzt - und das ist keine Kosmetik: Yahoo gibt 1m nur 7 Tage her,
+ * ein aelterer Split liegt dort komplett ausserhalb des Vergleichsfensters. Erst wenn
+ * er auf 5m oder 15m BELEGT ist, kann die 1m-Reihe ihn uebernehmen. */
+const REIHEN = AUCH60 ? ['5m', '15m', '60m', '1m'] : ['5m', '15m', '1m'];
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36';
 
 /* Unter so wenig gemeinsamen Kerzen ist der Median kein Urteil - dann wird nur
@@ -135,6 +148,61 @@ function abweichung(alt, neu) {
   return { n: rel.length, median: rel.length ? rel[rel.length >> 1] : null };
 }
 
+/** Verhaeltnis Archiv/Yahoo je Handelstag (Median). Ein Kurs-Split zeigt sich hier als
+ *  sauberer Stufensprung: alle Tage vor dem Stichtag auf demselben Faktor, alle danach
+ *  auf 1. Genau das lag am 23.08.2026 bei MNST vor - Capital liefert die Historie
+ *  UNbereinigt, Yahoo bereinigt, und in der Archivreihe stand am 11.08.2026 ein
+ *  Kurssprung von -50,2 %, den es nie gegeben hat. */
+function tagesVerhaeltnis(alt, neu) {
+  const y = {};
+  neu.forEach(function (b) { y[b[0]] = b[1]; });
+  const proTag = {};
+  (alt || []).forEach(function (b) {
+    const k = y[b[0]];
+    if (k == null || !k) return;
+    const d = new Date(b[0]).toISOString().slice(0, 10);
+    (proTag[d] = proTag[d] || []).push(b[1] / k);
+  });
+  const out = [];
+  Object.keys(proTag).sort().forEach(function (d) {
+    const a = proTag[d].sort(function (x, z) { return x - z; });
+    out.push({ tag: d, q: a[a.length >> 1], n: a.length });
+  });
+  return out;
+}
+
+/** Aus den Tagesverhaeltnissen einen Split lesen - aber nur, wenn er EINDEUTIG ist:
+ *  ein zusammenhaengender Block am Anfang auf einem einzigen Faktor, danach
+ *  ausschliesslich Tage auf 1, beides je Tag mit hoechstens 1 % Streuung. Alles
+ *  andere ist kein Split, sondern ein fremder Wert - und der wird ersetzt, nicht
+ *  umgerechnet. Ein falsch erkannter Split waere schlimmer als gar keiner: er
+ *  schriebe plausibel aussehende, frei erfundene Kurse ins Archiv. */
+function erkenneSplit(vh) {
+  if (vh.length < 10) return null;
+  const eins = function (q) { return Math.abs(q - 1) <= 0.01; };
+  let i = 0;
+  while (i < vh.length && !eins(vh[i].q)) i++;
+  if (i === 0 || i === vh.length) return null;                    // kein Vorher- oder kein Nachher-Block
+  for (let j = i; j < vh.length; j++) if (!eins(vh[j].q)) return null;   // ab dem Stichtag muss ALLES passen
+  const vorher = vh.slice(0, i).map(function (v) { return v.q; });
+  const f = vorher.slice().sort(function (a, b) { return a - b; })[vorher.length >> 1];
+  if (eins(f) || !(f > 0)) return null;
+  for (let k = 0; k < vorher.length; k++) if (Math.abs(vorher[k] / f - 1) > 0.01) return null;  // ein Faktor, keine Drift
+  return { faktor: f, abTag: vh[i].tag, tageVorher: i, tageNachher: vh.length - i };
+}
+
+/** Kerzen vor dem Stichtag auf das bereinigte Niveau bringen. Das Volumen bleibt, wie
+ *  es ist: das sind Capital-Ticks, keine Stueckzahlen - ein Split-Faktor darauf waere
+ *  eine erfundene Zahl. */
+function splitKorrigiert(bars, faktor, abMs) {
+  return (bars || []).map(function (b) {
+    if (b[0] >= abMs) return b;
+    const o = [b[0], b[1] / faktor, b[2]];
+    if (b.length >= 5) { o.push(b[3] / faktor, b[4] / faktor); }
+    return o;
+  });
+}
+
 /** Fehlende Rasterkerzen zwischen erster und letzter Kerze je Handelstag. */
 function luecken(bars, step) {
   const proTag = {};
@@ -189,15 +257,20 @@ async function pruefeAlle() {
     const ab = abweichung(d.st.series, r.series);
     if (ab.n < MIN_UEBERLAPP) { unpruefbar.push(sym + ': nur ' + ab.n + ' gemeinsame Kerzen'); continue; }
     if (ab.median > SCHWELLE) {
-      verdaechtig.push({ sym: sym, median: ab.median, n: ab.n });
-      console.log('  FREMD  ' + sym.padEnd(10) + 'Median-Abweichung ' + (ab.median * 100).toFixed(2).padStart(8) + ' %   (' + ab.n + ' gemeinsame Kerzen)');
+      const s = erkenneSplit(tagesVerhaeltnis(d.st.series, r.series));
+      verdaechtig.push({ sym: sym, median: ab.median, n: ab.n, split: s });
+      console.log('  ' + (s ? 'SPLIT' : 'FREMD') + '  ' + sym.padEnd(10) + 'Median-Abweichung ' + (ab.median * 100).toFixed(2).padStart(8) + ' %   (' + ab.n + ' gemeinsame Kerzen)' +
+        (s ? '   Faktor ' + s.faktor.toFixed(4) + ' vor ' + s.abTag : ''));
     }
     if ((i + 1) % 25 === 0) console.error('   ... ' + (i + 1) + '/' + syms.length + ' geprueft');
   }
   console.log('');
   console.log('---------------------------------------------------------------');
-  console.log('Fremde Reihen: ' + verdaechtig.length + ' von ' + syms.length);
-  verdaechtig.forEach(function (v) { console.log('   ' + v.sym + '  ' + (v.median * 100).toFixed(2) + ' %'); });
+  console.log('Auffaellige Reihen: ' + verdaechtig.length + ' von ' + syms.length);
+  verdaechtig.forEach(function (v) {
+    console.log('   ' + v.sym.padEnd(8) + (v.median * 100).toFixed(2).padStart(7) + ' %   ' +
+      (v.split ? 'Split, Faktor ' + v.split.faktor.toFixed(4) + ' vor ' + v.split.abTag + ' (umrechenbar)' : 'fremder Wert (ersetzen)'));
+  });
   if (unpruefbar.length) {
     console.log('Nicht pruefbar: ' + unpruefbar.length);
     unpruefbar.slice(0, 40).forEach(function (u) { console.log('   ' + u); });
@@ -218,7 +291,12 @@ async function reparieren(sym) {
   console.log('Schwelle: Median-Kursabweichung ueber ' + (SCHWELLE * 100).toFixed(1) + ' % = Reihe wird ERSETZT statt gemischt.');
   console.log('');
 
-  const bilanz = { geschrieben: 0, kollision: [], fehler: [], ersetzt: 0, gemischt: 0 };
+  const bilanz = { geschrieben: 0, kollision: [], fehler: [], ersetzt: 0, gemischt: 0, umgerechnet: 0 };
+  /* Beides auf einem breiten Zeitrahmen nachgewiesen und fuer die schmalen nutzbar:
+   * Alle Reihen eines Symbols stammen aus derselben Quelle. Ist dort ein Split oder ein
+   * fremder Wert BELEGT, gilt das auch fuer den Zeitrahmen, dessen Yahoo-Fenster zu kurz
+   * zum Nachpruefen ist - sonst bleibt ausgerechnet die tiefste Reihe die falsche. */
+  let splitBelegt = null, fremdBelegt = null;
 
   for (const iv of REIHEN) {
     const step = IV[iv].barMin * 60000;
@@ -238,22 +316,63 @@ async function reparieren(sym) {
       (tY.length ? '  ' + tY[0] + ' .. ' + tY[tY.length - 1] : '') + '   (' + (r.waehrung || '?') + ' / ' + (r.boerse || '?') + ')');
 
     const ab = abweichung(alt, frisch);
-    let fremd = false;
+    const vh = alt.length ? tagesVerhaeltnis(alt, frisch) : [];
+
+    /* Kann DIESE Reihe den Split ueberhaupt selbst sehen? Nur, wenn Yahoo hier Tage VOR
+     * dem Stichtag abdeckt. Bei 1m reicht Yahoo 7 Tage zurueck: der ganze unbereinigte
+     * Teil liegt davor, der Vergleich trifft nur den bereits bereinigten Rest - und
+     * meldet zufrieden "passt", waehrend 55 Tage weiter um Faktor 2 danebenliegen.
+     * Deshalb zaehlt hier der Nachweis vom breiteren Zeitrahmen. */
+    function erbeSplit() {
+      if (!splitBelegt || !alt.length || alt[0][0] >= splitBelegt.abMs) return false;
+      const selbstSichtbar = vh.some(function (v) { return v.tag < splitBelegt.abTag; });
+      return !selbstSichtbar;
+    }
+    function meldeErbe() {
+      console.log('          Yahoo deckt hier keinen Tag vor dem Stichtag ab - der auf ' + splitBelegt.woher +
+        ' belegte Split (Faktor ' + splitBelegt.faktor.toFixed(4) + ' vor ' + splitBelegt.abTag + ') wird UEBERNOMMEN.');
+    }
+
+    let fremd = false, split = null, fremdGeerbt = false;
     if (!alt.length) {
       console.log('  Urteil: leer - die Yahoo-Reihe wird uebernommen.');
     } else if (ab.n < MIN_UEBERLAPP) {
-      console.log('  Urteil: nur ' + ab.n + ' gemeinsame Zeitstempel - zu wenig fuer ein Urteil, es wird nur GEMISCHT.');
+      console.log('  Urteil: nur ' + ab.n + ' gemeinsame Zeitstempel - kein eigenes Urteil moeglich.');
+      if (fremdBelegt) {
+        /* Auf einem anderen Zeitrahmen ist die Quelle als fremd BELEGT. Alle Reihen eines
+         * Symbols kommen aus demselben Epic - also ist auch diese fremd, selbst wenn Yahoo
+         * hier nichts zum Gegenhalten liefert. Bei EA blieben sonst 21.792 Brinker-Kerzen
+         * unter dem Namen EA stehen, nur weil Yahoo fuer den delisteten Wert keine
+         * 1-Minuten-Historie mehr hat. */
+        fremd = true; fremdGeerbt = true;
+        console.log('          Auf ' + fremdBelegt.woher + ' ist die Quelle als fremd BELEGT (' +
+          (fremdBelegt.median * 100).toFixed(2) + ' % auf ' + fremdBelegt.n + ' Kerzen) - dieselbe Quelle, also faellt der Bestand hier mit.');
+      } else if (erbeSplit()) { split = splitBelegt; meldeErbe(); }
+      else console.log('          Es wird nur GEMISCHT.');
     } else if (ab.median > SCHWELLE) {
-      fremd = true;
-      console.log('  Urteil: FREMD - Median-Kursabweichung ' + (ab.median * 100).toFixed(2) + ' % auf ' + ab.n +
-        ' gemeinsamen Kerzen. Der Bestand wird VERWORFEN.');
+      const s = erkenneSplit(vh);
+      if (s) {
+        split = { faktor: s.faktor, abTag: s.abTag, abMs: Date.parse(s.abTag + 'T00:00:00Z'), woher: iv };
+        if (!splitBelegt) splitBelegt = split;
+        console.log('  Urteil: SPLIT - ' + s.tageVorher + ' Tage liegen exakt um Faktor ' + s.faktor.toFixed(4) +
+          ' daneben, ab ' + s.abTag + ' passen ' + s.tageNachher + ' Tage genau.');
+        console.log('          Capital liefert die Historie unbereinigt. Der Bestand wird UMGERECHNET statt verworfen - das haelt die Tiefe.');
+      } else {
+        fremd = true;
+        if (!fremdBelegt) fremdBelegt = { woher: iv, median: ab.median, n: ab.n };
+        console.log('  Urteil: FREMD - Median-Kursabweichung ' + (ab.median * 100).toFixed(2) + ' % auf ' + ab.n +
+          ' gemeinsamen Kerzen, und kein sauberer Split dahinter. Der Bestand wird VERWORFEN.');
+      }
     } else {
-      console.log('  Urteil: passt (Median-Abweichung ' + (ab.median * 100).toFixed(3) + ' % auf ' + ab.n + ' Kerzen) - es wird GEMISCHT.');
+      console.log('  Urteil: passt (Median-Abweichung ' + (ab.median * 100).toFixed(3) + ' % auf ' + ab.n + ' Kerzen).');
+      if (erbeSplit()) { split = splitBelegt; meldeErbe(); }
+      else console.log('          Es wird GEMISCHT.');
     }
 
+    const basis = split ? splitKorrigiert(alt, split.faktor, split.abMs) : alt;
     const neu = fremd
       ? A.kappeTage(frisch, A.fensterFuer(iv))
-      : A.kappeTage(A.ohneStempel(A.mischeBars(alt, frisch), IV[iv].barMin), A.fensterFuer(iv));
+      : A.kappeTage(A.ohneStempel(A.mischeBars(basis, frisch), IV[iv].barMin), A.fensterFuer(iv));
     const tN = tage(neu);
     console.log('  Ergebnis: ' + String(neu.length).padStart(6) + ' Kerzen, ' + String(tN.length).padStart(3) + ' Tage' +
       (tN.length ? '  ' + tN[0] + ' .. ' + tN[tN.length - 1] : '') +
@@ -263,10 +382,20 @@ async function reparieren(sym) {
       bilanz.ersetzt++;
       console.log('  Verworfen: ' + alt.length + ' fremde Kerzen' +
         (verloren.length ? ', darunter ' + verloren.length + ' Tage ohne Yahoo-Ersatz (' + verloren[0] + ' .. ' + verloren[verloren.length - 1] + ')' : ''));
+    } else if (split) {
+      const betroffen = alt.filter(function (b) { return b[0] < split.abMs; }).length;
+      bilanz.umgerechnet++;
+      console.log('  Umgerechnet: ' + betroffen + ' Kerzen vor ' + split.abTag + ' durch ' + split.faktor.toFixed(4) +
+        ' geteilt (Volumen unveraendert - Capital-Ticks sind keine Stueckzahlen).');
     } else { bilanz.gemischt++; }
 
     if (SCHREIBEN) {
-      if (neu.length < 2) { console.log('  NICHT geschrieben: das Ergebnis waere leer.'); console.log(''); continue; }
+      /* Eine leere Reihe ist normalerweise ein Zeichen, dass etwas schiefging - ausser
+       * beim geerbten Fremdbefund: dort IST die ehrliche Antwort "es gibt hier nichts".
+       * Die Reihe bleibt als leere Datei stehen (die Sicherung hat den alten Inhalt),
+       * damit der Wert aus den Messungen faellt, statt sie mit fremden Kursen zu fuettern. */
+      if (neu.length < 2 && !fremdGeerbt) { console.log('  NICHT geschrieben: das Ergebnis waere leer.'); console.log(''); continue; }
+      if (neu.length < 2) console.log('  Die Reihe wird GELEERT - fuer diesen Wert gibt Yahoo auf ' + iv + ' nichts her.');
       // Race mit der laufenden App: hat sie die Datei zwischenzeitlich geflusht,
       // waere unsere Fassung veraltet - dann lieber ueberspringen.
       if (da) {
@@ -310,6 +439,7 @@ async function reparieren(sym) {
 
   console.log('---------------------------------------------------------------');
   console.log('Reihen ersetzt (fremd):  ' + bilanz.ersetzt);
+  console.log('Reihen split-korrigiert: ' + bilanz.umgerechnet);
   console.log('Reihen gemischt:         ' + bilanz.gemischt);
   console.log('Dateien geschrieben:     ' + bilanz.geschrieben + (SCHREIBEN ? '' : '  (Trockenlauf)'));
   if (bilanz.kollision.length) {
