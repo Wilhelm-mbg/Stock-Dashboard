@@ -1979,33 +1979,65 @@ console.log('\n30) Datenquellen-Diagnose (Capital.com) – ein Fehlschlag muss s
   ok(mb.indexOf("symGrund.indexOf('Kein Markt') !== 0") !== -1,
      'Nicht geführte Einzelwerte lösen KEINEN Verbindungs-Abbruch aus');
 
-  /* Der schwerste Befund der Gegenprüfung (22.08.2026): ein Abruffenster deckt 1000
-   * Kerzen WANDUHRZEIT ab – bei 1m nur 16,7 h. Die Wochenendlücke der US-Sitzung ist
-   * 65,5 h, mit Feiertagsmontag rund 90 h. Mit fester Grenze 2 kam der 1m-Lauf über das
-   * erste Wochenende nicht hinaus – also genau dort nicht weiter, wofür er gebaut wurde.
-   * Deshalb hier nachgerechnet statt nur nach Text gesucht. */
-  ok(/var leerGrenze = Math\.max\(2, Math\.ceil\(96 \* 3600000 \/ fensterMs\) \+ 1\)/.test(mb),
-     'Die Grenze für leere Fenster richtet sich nach der Fensterbreite');
+  /* Handelspausen: Capital.com begrenzt die Zeitspanne je Anfrage (belegt am 22.08.2026
+   * durch error.invalid.max.daterange bei 16 h 39 min auf 1m). Das Fenster verkleinert sich
+   * deshalb selbst – und dann liegen zwischen zwei Sitzungen viele Fenster. Ohne Sprung über
+   * die Pausen würde der Lauf sie einzeln ablaufen und (weil CFDs ausserbörslich Kerzen
+   * liefern, die der Sitzungsfilter verwirft) jeden Wert vorzeitig abbrechen.
+   * Deshalb hier nachgerechnet statt nach Textstellen gesucht. */
+  ok(dep.indexOf('function vorherigerSitzungsschluss') !== -1 && dep.indexOf('function istSitzung') !== -1,
+     'Der Backfill kennt Handelspausen und Sitzungsgrenzen');
+  ok(mb.indexOf('vorherigerSitzungsschluss(von)') !== -1 && mb.indexOf('vorherigerSitzungsschluss(frueh)') !== -1,
+     'Der Zeiger springt über Handelspausen – nach leerem UND nach gefülltem Fenster');
+  ok(mb.indexOf('invalid.max.daterange') !== -1 && mb.indexOf('cap_fenster') !== -1,
+     'Lehnt die API die Zeitspanne ab, verkleinert sich das Fenster und wird gemerkt');
   (function () {
-    function leerGrenze(barMin) { var f = 1000 * barMin * 60000; return Math.max(2, Math.ceil(96 * 3600000 / f) + 1); }
-    var wochenende = 65.5 * 3600000;          // Fr 20:00 UTC bis Mo 13:30 UTC
-    var langesWE = 89.5 * 3600000;            // mit Feiertagsmontag bis Di 13:30 UTC
-    var schlecht = [];
-    [1, 5, 15].forEach(function (bm) {
-      var reichweite = leerGrenze(bm) * 1000 * bm * 60000;
-      if (reichweite < langesWE) schlecht.push(bm + 'm deckt nur ' + Math.round(reichweite / 3600000) + ' h');
+    // Die Sitzungslogik aus depot.js nachbauen und gegen echte Kalendertage rechnen.
+    var msO = Q.minutenSeitOeffnung;
+    function istSitzung(ms) {
+      var tag = new Date(ms).getUTCDay();
+      if (tag === 0 || tag === 6) return false;
+      var m = msO(ms); return m >= 0 && m < 390;
+    }
+    function vorSchluss(ms) {
+      var z = ms;
+      for (var i2 = 0; i2 < 12; i2++) {
+        var d = new Date(z), tag = d.getUTCDay(), m = msO(z);
+        if (tag >= 1 && tag <= 5 && m >= 390) return z - (m - 390) * 60000;
+        d.setUTCDate(d.getUTCDate() - 1); d.setUTCHours(23, 59, 0, 0); z = d.getTime();
+      }
+      return ms - 86400000;
+    }
+    // Samstag 14:00 UTC galt vorher als Sitzung, weil nur die Uhrzeit geprüft wurde.
+    ok(istSitzung(Date.UTC(2026, 7, 20, 14, 0)) === true && istSitzung(Date.UTC(2026, 7, 22, 14, 0)) === false,
+       'Der Sitzungsfilter prüft den Wochentag mit (Samstag 14:00 ist keine Sitzung)');
+    // Sprung über das Wochenende: Montag früh muss auf Freitag 20:00 UTC landen.
+    var mo = Date.UTC(2026, 7, 24, 10, 0), fr = Date.UTC(2026, 7, 21, 20, 0);
+    ok(vorSchluss(mo) === fr, 'Montag früh springt auf Freitag-Sitzungsschluss',
+       new Date(vorSchluss(mo)).toISOString().slice(0, 16));
+    // Kosten des Wochenendes je Fensterbreite – auch das kleinstmögliche Fenster (20 Min)
+    // darf nicht in dutzenden Leeranfragen versinken.
+    var teuer = [];
+    [[1, 20], [1, 60], [1, 1000], [5, 1000], [15, 1000]].forEach(function (p) {
+      var fenster = p[1] * p[0] * 60000;
+      var z = Date.UTC(2026, 7, 24, 14, 0), ziel = Date.UTC(2026, 7, 21, 19, 0), n = 0;
+      while (z > ziel && n < 500) {
+        var von = z - fenster; n++;
+        z = istSitzung(von) ? von : Math.min(von, vorSchluss(von));
+      }
+      if (n > 8) teuer.push(p[0] + 'm/' + p[1] + ' Kerzen: ' + n + ' Anfragen');
     });
-    ok(schlecht.length === 0,
-       'Jeder Zeitrahmen kann ein langes Wochenende (90 h ohne Kerzen) überbrücken',
-       schlecht.length ? schlecht.join('; ') : '1m ' + Math.round(leerGrenze(1) * 16.667) + ' h > ' + Math.round(langesWE / 3600000) + ' h');
-    ok(leerGrenze(1) * 1000 * 1 * 60000 >= wochenende,
-       '1-Minuten-Lauf kommt über das erste Wochenende hinaus (der Kernzweck der Funktion)');
+    ok(teuer.length === 0, 'Ein Wochenende kostet in jeder Fensterbreite höchstens 8 Anfragen',
+       teuer.length ? teuer.join('; ') : 'geprüft für 1m (20/60/1000), 5m, 15m');
   })();
 
-  // Leere Fenster = Ende der Historie, nicht Fehlschlag. Beim ZWEITEN Lauf ist das der
-  // Normalfall bei jedem Wert - mitgezaehlt haette sich der Lauf selbst abgewuergt.
-  ok(mb.indexOf('else if ((fehlSerie >= 3 || ohneSitzung >= 3)') !== -1,
-     'Leere Abrufe am Ende der Historie lösen keinen Verbindungs-Abbruch aus (Fortsetzbarkeit)');
+  /* 1m ist der teuerste UND der gesuchte Zeitrahmen (Yahoo gibt nur 7 Tage her).
+   * Bei gleicher Budgetaufteilung bekaeme er nur ein Drittel, obwohl 15m/5m ihres
+   * mit ihren breiten Fenstern nie ausschoepfen. Deshalb billigste zuerst. */
+  ok(mb.indexOf("[{ iv: '15m', barMin: 15 }, { iv: '5m', barMin: 5 }, { iv: '1m', barMin: 1 }]") !== -1,
+     'Zeitrahmen laufen vom billigsten zum teuersten – 1m bekommt den Rest des Budgets');
+  ok(mb.indexOf('stat.requests >= budget') !== -1 && mb.indexOf('macht genau hier weiter') !== -1,
+     'Ein Anfragebudget begrenzt den Lauf und weist auf die Fortsetzbarkeit hin');
 
   // Leerlauf-Bremse: Kerzen kommen an, aber keine liegt in der US-Sitzung.
   ok(/ohneSitzung < 3/.test(mb) && mb.indexOf('ohneSitzung++') !== -1,

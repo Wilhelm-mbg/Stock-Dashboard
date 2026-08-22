@@ -4456,6 +4456,29 @@
    * (der Zeiger ist der fruehste Archiv-Stempel je Symbol - er merkt sich alles). */
   var massenLaeuft = false, massenStop = false;
   function massenAbbrechen() { massenStop = true; }
+  /** Liegt der Zeitpunkt in einer regulaeren US-Sitzung? Q.minutenSeitOeffnung prueft
+   *  nur die UHRZEIT - ein Samstag 14:00 UTC gilt dort als Sitzung. Bei Yahoo-Daten war
+   *  das folgenlos (keine Wochenendkerzen), CFD-Daten brauchen den Wochentag dazu. */
+  function istSitzung(ms) {
+    var tag = new Date(ms).getUTCDay();
+    if (tag === 0 || tag === 6) return false;
+    var m = Q.minutenSeitOeffnung(ms);
+    return m >= 0 && m < 390;
+  }
+  /** Letzter Sitzungsschluss VOR ms. Zieht den Zeiger in einem Schritt ueber Nacht,
+   *  Wochenende oder Feiertag - sonst liefe der Backfill diese Pausen bei kleinem
+   *  Fenster in dutzenden Leeranfragen ab. */
+  function vorherigerSitzungsschluss(ms) {
+    var z = ms;
+    for (var i = 0; i < 12; i++) {
+      var d = new Date(z), tag = d.getUTCDay(), m = Q.minutenSeitOeffnung(z);
+      if (tag >= 1 && tag <= 5 && m >= 390) return z - (m - 390) * 60000;
+      d.setUTCDate(d.getUTCDate() - 1);
+      d.setUTCHours(23, 59, 0, 0);
+      z = d.getTime();
+    }
+    return ms - 86400000;
+  }
   async function massenBackfill(opts) {
     opts = opts || {};
     var el = document.getElementById('massenStatus');
@@ -4465,13 +4488,25 @@
     if (massenLaeuft) { melde('Läuft bereits.'); return null; }
     massenLaeuft = true; massenStop = false;
     var tage = opts.tage || 90;
-    var ivs = opts.ivs || [{ iv: '1m', barMin: 1 }, { iv: '5m', barMin: 5 }, { iv: '15m', barMin: 15 }];
+    /* Reihenfolge bewusst vom billigsten zum teuersten Zeitrahmen: 15m und 5m haben
+     * breite Abruffenster und sind schnell durch. 1m braucht ein Vielfaches an Anfragen
+     * und ist zugleich der Zeitrahmen, um den es geht - er bekommt so den ganzen Rest
+     * des Budgets, statt nur ein Drittel. */
+    var ivs = opts.ivs || [{ iv: '15m', barMin: 15 }, { iv: '5m', barMin: 5 }, { iv: '1m', barMin: 1 }];
     /* Universum: Handels-Universum + Nasdaq-100 + aktiver Pool, dedupliziert.
      * Mehr Werte auf denselben Tagen = mehr Out-of-Sample-Trades je Messung. */
     var syms = universe().slice();
     (POOLS_60M.ndx100 || []).forEach(function (s) { if (syms.indexOf(s) === -1) syms.push(s); });
     (POOLS_60M[D.intraday.pool] || []).forEach(function (s) { if (syms.indexOf(s) === -1) syms.push(s); });
     var ziel = Date.now() - tage * 86400000;
+    /* Capital begrenzt die Zeitspanne je Anfrage je nach Aufloesung - undokumentiert.
+     * Die einmal gefundene Breite wird gespeichert, damit spaetere Laeufe nicht wieder
+     * gegen die Wand laufen muessen. */
+    var gemerkt = (await window.api.storeGet('cap_fenster')) || {};
+    /* Anfragebudget: wird das Fenster klein, steigt die noetige Anfragezahl steil an.
+     * Ohne Deckel liefe der Lauf im Extremfall Tage. Der Fortschritt ist gespeichert,
+     * ein neuer Lauf setzt dort an - lieber mehrere kurze Laeufe als einer ohne Ende. */
+    var budget = opts.maxAnfragen || 15000;
     var stat = { requests: 0, bars: 0, symbole: 0, fehler: 0, start: Date.now(), grund: '' };
     var ohneErfolg = 0;   // Werte in Folge, die keine einzige Kerze lieferten
     var pause = opts.pauseMs || 300;
@@ -4479,19 +4514,25 @@
     try {
       for (var vi = 0; vi < ivs.length && !massenStop; vi++) {
         var iv = ivs[vi].iv, barMin = ivs[vi].barMin;
+        var fensterMs = gemerkt[iv] || 1000 * barMin * 60000;
         for (var si = 0; si < syms.length && !massenStop; si++) {
           var sym = syms[si];
+          if (stat.requests >= budget) {
+            melde('Anfragebudget erreicht (' + budget + ' Anfragen, ' +
+              Math.round((Date.now() - stat.start) / 60000) + ' Min) – zuletzt bei ' + iv + ' / ' + sym + '.\n' +
+              Math.round(stat.bars / 1000) + 'k Kerzen gesichert. Der Fortschritt ist gespeichert:\n' +
+              'einfach erneut „jetzt auffüllen" drücken, der Lauf macht genau hier weiter.');
+            try { await window.Archiv.speichere(true); } catch (e4) { }
+            return stat;
+          }
           var serie = await window.Archiv.serie(iv, sym);
           var frueh = serie.length ? serie[0][0] : Date.now();
           if (frueh <= ziel) continue;
-          /* Ein Abruffenster deckt 1000 Kerzen WANDUHRZEIT ab - bei 1m nur 16,7 h.
-           * Zwischen Freitag 20:00 und Dienstag 13:30 UTC (Feiertagsmontag) liegen aber
-           * rund 90 h ganz ohne Sitzungskerzen. Mit einer festen Grenze von 2 leeren
-           * Fenstern kam der 1m-Lauf deshalb ueber das erste Wochenende nicht hinaus -
-           * also genau der Zeitrahmen, fuer den die Funktion gebaut wurde. Die Grenze
-           * richtet sich jetzt nach der Fensterbreite. */
-          var fensterMs = 1000 * barMin * 60000;
-          var leerGrenze = Math.max(2, Math.ceil(96 * 3600000 / fensterMs) + 1);
+          /* Handelspausen werden gesprungen (vorherigerSitzungsschluss), nicht abgelaufen.
+           * Leere Fenster bedeuten deshalb: innerhalb einer Sitzung liegt nichts mehr vor.
+           * Die Grenze deckt rund eine volle Sitzung ab, ist aber gedeckelt, damit ein
+           * kleines Fenster nicht das Anfragebudget aufbraucht. */
+          var leerGrenze = Math.max(4, Math.min(24, Math.ceil(8 * 3600000 / fensterMs)));
           var leer = 0, geholt = false, fehlSerie = 0, ohneSitzung = 0, symGrund = '';
           while (frueh > ziel && !massenStop && leer < leerGrenze && fehlSerie < 3 && ohneSitzung < 3) {
             var von = Math.max(ziel, frueh - fensterMs);
@@ -4501,21 +4542,36 @@
             catch (eB) { bars = null; wurf = 'Ausnahme: ' + ((eB && eB.message) || eB); }
             stat.requests++;
             if (!bars) {
+              var gRoh = wurf || (window.CapAPI.lastPriceError && window.CapAPI.lastPriceError()) || '';
+              /* Capital lehnt die Zeitspanne ab. Das ist KEIN Fehlschlag, sondern eine
+               * Auskunft ueber die Grenze: Fenster halbieren, merken, gleiche Stelle erneut. */
+              if (gRoh.indexOf('invalid.max.daterange') !== -1 && fensterMs > 20 * 60000) {
+                fensterMs = Math.floor(fensterMs / 2);
+                leerGrenze = Math.max(2, Math.ceil(96 * 3600000 / fensterMs) + 1);
+                gemerkt[iv] = fensterMs;
+                try { await window.api.storeSet('cap_fenster', gemerkt); } catch (eS) { }
+                melde(iv + ': Capital.com lehnt diese Zeitspanne ab – Fenster auf ' +
+                  Math.round(fensterMs / 60000) + ' Min verkleinert und gemerkt. Läuft weiter …');
+                continue;
+              }
               fehlSerie++; stat.fehler++;
               // Den Grund festhalten: vorher gab es nur einen Zaehler, und „3 Fehler"
               // sagt nicht, ob der Markt fehlt, die Sitzung abläuft oder gedrosselt wird.
-              var g = wurf || (window.CapAPI.lastPriceError && window.CapAPI.lastPriceError()) || '';
-              symGrund = g || symGrund;
-              stat.grund = g || stat.grund;
+              symGrund = gRoh || symGrund;
+              stat.grund = gRoh || stat.grund;
               // Bei Fehlern langsamer werden statt weiterzuhaemmern - das ist genau
               // die Situation, in der eine Drosselung greift.
               await new Promise(function (r) { setTimeout(r, 1500 * fehlSerie); });
               continue;
             }
             fehlSerie = 0;
-            if (!bars.length) { leer++; frueh = von; continue; }
+            if (!bars.length) {
+              leer++;
+              frueh = istSitzung(von) ? von : Math.min(von, vorherigerSitzungsschluss(von));
+              continue;
+            }
             leer = 0;
-            var sess = bars.filter(function (b) { var m = Q.minutenSeitOeffnung(b[0]); return m >= 0 && m < 390; });
+            var sess = bars.filter(function (b) { return istSitzung(b[0]); });
             if (sess.length) { await window.Archiv.fuege(iv, sym, sess); stat.bars += sess.length; geholt = true; ohneSitzung = 0; }
             else {
               /* Kerzen kamen an, aber KEINE lag in der US-Sitzung. Ohne diese Bremse
@@ -4528,6 +4584,8 @@
               }
             }
             frueh = Math.min(von, bars[0][0]);
+            // Steht der Zeiger jetzt in einer Handelspause, in einem Schritt darueber hinweg.
+            if (!istSitzung(frueh)) frueh = Math.min(frueh, vorherigerSitzungsschluss(frueh));
             await new Promise(function (r) { setTimeout(r, pause); });
           }
           /* Ein Wert ohne Kerzen zaehlt als Fehlschlag - egal ob durch Fehler, leere
@@ -4562,12 +4620,16 @@
           ? '\n\nEs kam keine einzige Kerze an, ohne dass ein Fehler gemeldet wurde. Entweder ist das\n' +
             'Archiv bereits so tief wie die API reicht – oder das Konto bekommt keine Historie.\n' +
             '„Datenquelle testen" unterscheidet die beiden Fälle.'
-          : ''));
+          : '') +
+        (fensterTxt ? '\nGemessene Zeitspanne je Anfrage: ' + fensterTxt + ' (wird für künftige Läufe behalten).' : ''));
           if (si % 10 === 9) await window.Archiv.speichere(true);   // Zwischenstand sichern
         }
       }
       await window.Archiv.speichere(true);
       var dauer = Math.round((Date.now() - stat.start) / 60000);
+      var fensterTxt = Object.keys(gemerkt).map(function (k) {
+        return k + ' ' + Math.round(gemerkt[k] / 60000) + ' Min';
+      }).join(' · ');
       melde((massenStop ? 'Angehalten' : 'Fertig') + ' nach ' + dauer + ' Min · ' + stat.symbole +
         ' Werte ergänzt · ' + Math.round(stat.bars / 1000) + 'k Kerzen · ' + stat.requests +
         ' Anfragen · ' + stat.fehler + ' Fehler. Der Fortschritt ist gespeichert – ein neuer Lauf setzt dort an.' +
