@@ -1,0 +1,328 @@
+{
+ "iv": "1m",
+ "cutoff": "2026-07-23",
+ "tage": {
+  "gesamt": 62,
+  "entdeckung": 40,
+  "bestaetigung": 22
+ },
+ "kandidatenScan": 13,
+ "schwelle": 2.89,
+ "zeilen": [
+  {
+   "kandidat": "wendepunkt-trendwechsel|short|1h",
+   "referenz": false,
+   "entdeckung": {
+    "bruttoPp": 0.048,
+    "tTag": 1.807
+   },
+   "bestaetigung": {
+    "det": "wendepunkt-trendwechsel",
+    "dir": "short",
+    "hor": "1h",
+    "bedingung": "-",
+    "wert": "-",
+    "n": 567,
+    "nSym": 88,
+    "nTage": 22,
+    "bruttoPp": -0.026,
+    "nettoPp": -0.126,
+    "tTag": -0.488,
+    "mdeTagPp": 0.073,
+    "symPos": 0.471
+   },
+   "urteil": "nicht bestaetigt"
+  },
+  {
+   "kandidat": "wendepunkt-trendwechsel|short|3h",
+   "referenz": false,
+   "entdeckung": {
+    "bruttoPp": 0.094,
+    "tTag": 1.588
+   },
+   "bestaetigung": {
+    "det": "wendepunkt-trendwechsel",
+    "dir": "short",
+    "hor": "3h",
+    "bedingung": "-",
+    "wert": "-",
+    "n": 329,
+    "nSym": 83,
+    "nTage": 22,
+    "bruttoPp": -0.022,
+    "nettoPp": -0.122,
+    "tTag": -0.425,
+    "mdeTagPp": 0.151,
+    "symPos": 0.5
+   },
+   "urteil": "nicht bestaetigt"
+  },
+  {
+   "kandidat": "reversion|short|3h",
+   "referenz": false,
+   "entdeckung": {
+    "bruttoPp": 0.083,
+    "tTag": 1.37
+   },
+   "bestaetigung": {
+    "det": "reversion",
+    "dir": "short",
+    "hor": "3h",
+    "bedingung": "-",
+    "wert": "-",
+    "n": 422,
+    "nSym": 87,
+    "nTage": 22,
+    "bruttoPp": -0.128,
+    "nettoPp": -0.228,
+    "tTag": -1.966,
+    "mdeTagPp": 0.144,
+    "symPos": 0.425
+   },
+   "urteil": "nicht bestaetigt"
+  },
+  {
+   "kandidat": "rsi2|short|1h",
+   "referenz": false,
+   "entdeckung": {
+    "bruttoPp": 0.035,
+    "tTag": 1.088
+   },
+   "bestaetigung": {
+    "det": "rsi2",
+    "dir": "short",
+    "hor": "1h",
+    "bedingung": "-",
+    "wert": "-",
+    "n": 5026,
+    "nSym": 88,
+    "nTage": 22,
+    "bruttoPp": -0.024,
+    "nettoPp": -0.124,
+    "tTag": -1.255,
+    "mdeTagPp": 0.058,
+    "symPos": 0.398
+   },
+   "urteil": "nicht bestaetigt"
+  },
+  {
+   "kandidat": "wave|long|1h",
+   "referenz": false,
+   "entdeckung": {
+    "bruttoPp": 0.027,
+    "tTag": 0.968
+   },
+   "bestaetigung": {
+    "det": "wave",
+    "dir": "long",
+    "hor": "1h",
+    "bedingung": "-",
+    "wert": "-",
+    "n": 451,
+    "nSym": 88,
+    "nTage": 22,
+    "bruttoPp": -0.079,
+    "nettoPp": -0.179,
+    "tTag": -2.059,
+    "mdeTagPp": 0.094,
+    "symPos": 0.474
+   },
+   "urteil": "nicht bestaetigt"
+  },
+  {
+   "kandidat": "wendepunkt-trendwechsel|short|3h|vola=hoch",
+   "referenz": false,
+   "entdeckung": {
+    "bruttoPp": 0.238,
+    "tTag": 2.738
+   },
+   "bestaetigung": {
+    "det": "wendepunkt-trendwechsel",
+    "dir": "short",
+    "hor": "3h",
+    "bedingung": "vola",
+    "wert": "hoch",
+    "n": 181,
+    "nSym": 55,
+    "nTage": 22,
+    "bruttoPp": 0.008,
+    "nettoPp": -0.092,
+    "tTag": -0.102,
+    "mdeTagPp": 0.231,
+    "symPos": 0.528
+   },
+   "urteil": "unentschieden (Netto-Frage unter MDE 0.231)"
+  },
+  {
+   "kandidat": "wendepunkt-trendwechsel|short|3h|vortag=tief",
+   "referenz": false,
+   "entdeckung": {
+    "bruttoPp": 0.275,
+    "tTag": 2.593
+   },
+   "bestaetigung": {
+    "det": "wendepunkt-trendwechsel",
+    "dir": "short",
+    "hor": "3h",
+    "bedingung": "vortag",
+    "wert": "tief",
+    "n": 90,
+    "nSym": 58,
+    "nTage": 22,
+    "bruttoPp": 0.049,
+    "nettoPp": -0.051,
+    "tTag": 0.251,
+    "mdeTagPp": 0.226,
+    "symPos": 0.429
+   },
+   "urteil": "unentschieden (Netto-Frage unter MDE 0.226)"
+  },
+  {
+   "kandidat": "wendepunkt-trendwechsel|short|1h|vola=hoch",
+   "referenz": false,
+   "entdeckung": {
+    "bruttoPp": 0.098,
+    "tTag": 2.53
+   },
+   "bestaetigung": {
+    "det": "wendepunkt-trendwechsel",
+    "dir": "short",
+    "hor": "1h",
+    "bedingung": "vola",
+    "wert": "hoch",
+    "n": 324,
+    "nSym": 60,
+    "nTage": 22,
+    "bruttoPp": -0.028,
+    "nettoPp": -0.128,
+    "tTag": -0.1,
+    "mdeTagPp": 0.115,
+    "symPos": 0.462
+   },
+   "urteil": "nicht bestaetigt"
+  },
+  {
+   "kandidat": "wendepunkt-trendwechsel|short|1h|termin=fern",
+   "referenz": false,
+   "entdeckung": {
+    "bruttoPp": 0.076,
+    "tTag": 2.492
+   },
+   "bestaetigung": {
+    "det": "wendepunkt-trendwechsel",
+    "dir": "short",
+    "hor": "1h",
+    "bedingung": "termin",
+    "wert": "fern",
+    "n": 316,
+    "nSym": 53,
+    "nTage": 22,
+    "bruttoPp": -0.002,
+    "nettoPp": -0.102,
+    "tTag": -0.142,
+    "mdeTagPp": 0.077,
+    "symPos": 0.471
+   },
+   "urteil": "nicht bestaetigt"
+  },
+  {
+   "kandidat": "wendepunkt-trendwechsel|short|1h|vortag=tief",
+   "referenz": false,
+   "entdeckung": {
+    "bruttoPp": 0.143,
+    "tTag": 2.415
+   },
+   "bestaetigung": {
+    "det": "wendepunkt-trendwechsel",
+    "dir": "short",
+    "hor": "1h",
+    "bedingung": "vortag",
+    "wert": "tief",
+    "n": 147,
+    "nSym": 67,
+    "nTage": 22,
+    "bruttoPp": 0.061,
+    "nettoPp": -0.039,
+    "tTag": 0.5,
+    "mdeTagPp": 0.193,
+    "symPos": 0.583
+   },
+   "urteil": "unentschieden (Netto-Frage unter MDE 0.193)"
+  },
+  {
+   "kandidat": "rsi2|short|1h|+wendepunkt-trendwechsel",
+   "referenz": false,
+   "entdeckung": {
+    "bruttoPp": 0.085,
+    "tTag": 1.734
+   },
+   "bestaetigung": {
+    "det": "rsi2",
+    "partner": "wendepunkt-trendwechsel",
+    "dir": "short",
+    "hor": "1h",
+    "bedingung": "-",
+    "wert": "-",
+    "n": 197,
+    "nSym": 74,
+    "nTage": 22,
+    "bruttoPp": -0.097,
+    "nettoPp": -0.197,
+    "tTag": -1.249,
+    "mdeTagPp": 0.116,
+    "symPos": 0.243
+   },
+   "urteil": "nicht bestaetigt"
+  },
+  {
+   "kandidat": "rsi2|short|3h|+reversion",
+   "referenz": false,
+   "entdeckung": {
+    "bruttoPp": 0.092,
+    "tTag": 1.148
+   },
+   "bestaetigung": {
+    "det": "rsi2",
+    "partner": "reversion",
+    "dir": "short",
+    "hor": "3h",
+    "bedingung": "-",
+    "wert": "-",
+    "n": 243,
+    "nSym": 83,
+    "nTage": 22,
+    "bruttoPp": -0.085,
+    "nettoPp": -0.185,
+    "tTag": -0.953,
+    "mdeTagPp": 0.187,
+    "symPos": 0.333
+   },
+   "urteil": "nicht bestaetigt"
+  },
+  {
+   "kandidat": "rsi2|short|3h|+wave",
+   "referenz": false,
+   "entdeckung": {
+    "bruttoPp": 0.123,
+    "tTag": 0.757
+   },
+   "bestaetigung": {
+    "det": "rsi2",
+    "partner": "wave",
+    "dir": "short",
+    "hor": "3h",
+    "bedingung": "-",
+    "wert": "-",
+    "n": 163,
+    "nSym": 71,
+    "nTage": 21,
+    "bruttoPp": -0.042,
+    "nettoPp": -0.142,
+    "tTag": -1.33,
+    "mdeTagPp": 0.253,
+    "symPos": 0.484
+   },
+   "urteil": "nicht bestaetigt"
+  }
+ ]
+}
