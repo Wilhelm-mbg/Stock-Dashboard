@@ -364,6 +364,19 @@
      Rechner; alle anderen Installationen bekommen dieselben Funde ueber die
      Gemeinschafts-Ablage im Projekt-Zweig "radar". Das offen hinzuschreiben ist
      ehrlicher, als beides gleich aussehen zu lassen. */
+  /* Wunsch #49: Die Thesen der Suche sind ganze Absaetze. Fuer die Karte reicht der
+     erste Satz (hoechstens ~110 Zeichen, an einer Wortgrenze gekappt); der volle
+     Wortlaut bleibt als Tooltip erhalten, es geht nichts verloren. */
+  function spekKurz(t) {
+    var s = String(t || '').trim();
+    // Satzende nur, wenn danach ein Leerzeichen folgt - "25,3 Mrd." oder "S.p.A." sind keins
+    var m = s.match(/^(.{20,}?[.!?])(\s|$)/);
+    if (m && m[1].length <= 110 && !/\b(Mrd|Mio|Mr|Dr|ca|bzw|u|z\.B|S\.p\.A|Inc|Corp|Co)\.$/.test(m[1])) return m[1];
+    if (s.length <= 110) return s;
+    var k = s.slice(0, 110);
+    var sp = k.lastIndexOf(' ');
+    return (sp > 60 ? k.slice(0, sp) : k).replace(/[,;:\-–]$/, '') + ' …';
+  }
   function quelleText(r) {
     return r && r.quelle === 'netz' ? 'Gemeinschafts-Ablage' : 'Suche auf diesem Rechner';
   }
@@ -386,9 +399,12 @@
         ein.push({
           id: String(e.id || (e.sym + '|' + e.these)).slice(0, 120),
           sym: e.sym.toUpperCase().slice(0, 12),
+          // Firmenname ohne Rechtsform-Anhang, damit das Label kurz bleibt
+          name: typeof e.name === 'string' ? e.name.replace(/[\s,]+(S\.p\.A\.|AG|Inc\.?|Corp\.?|Corporation|plc|PLC|Ltd\.?|SE|N\.V\.|S\.A\.|Co\.)$/, '').slice(0, 40) : '',
           art: SPEK_ART[e.art] || 'Gerücht',
           chance: RANG[e.chance] != null ? e.chance : 'niedrig',
           these: e.these.slice(0, 240),
+          kurz: spekKurz(e.these),
           begruendung: typeof e.begruendung === 'string' ? e.begruendung.slice(0, 240) : '',
           quellen: (Array.isArray(e.quellen) ? e.quellen : []).slice(0, 3).filter(function (q) {
             return q && typeof q.url === 'string' && safeUrl(q.url) !== '#';
@@ -406,10 +422,11 @@
       var alt = jetzt - r.mtime > 3 * 3600000;
       el.innerHTML = ein.map(function (z) {
         return '<div class="spek-zeile">' +
-          '<span class="sym" data-heat="' + esc(z.sym) + '" title="Im Explorer öffnen">' + esc(z.sym) + '</span>' +
+          '<span class="sym" data-heat="' + esc(z.sym) + '" title="Im Explorer öffnen">' + esc(z.sym) +
+          (z.name ? ' <span class="firma">' + esc(z.name) + '</span>' : '') + '</span>' +
           '<span class="spek-chip ' + z.chance + '">' + z.chance.toUpperCase() + '</span>' +
           '<span class="spek-chip mittel" style="border-style:dashed;">' + esc(z.art) + '</span>' +
-          '<span class="these">' + esc(z.these) + (z.begruendung ? ' <span class="beg">– ' + esc(z.begruendung) + '</span>' : '') + '</span>' +
+          '<span class="these" title="' + esc(z.these) + '">' + esc(z.kurz) + (z.begruendung ? ' <span class="beg">– ' + esc(z.begruendung) + '</span>' : '') + '</span>' +
           (z.quellen.length ? '<span class="quellen">' + z.quellen.map(function (q, qi) {
             return '<a href="' + esc(safeUrl(q.url)) + '" target="_blank" rel="noopener">' +
               esc(typeof q.titel === 'string' && q.titel ? q.titel.slice(0, 60) : 'Quelle ' + (qi + 1)) + '</a>';

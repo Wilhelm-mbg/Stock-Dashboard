@@ -672,6 +672,10 @@ console.log('\n17b) Oberflaeche: Altlasten und Verdrahtung');
   ok(/spekGesehen\.indexOf\(z\.id\) === -1/.test(r), 'Radar: Benachrichtigung je Eintrag nur einmal');
   ok(/redaktionelle Einschätzung der Suche, keine Messung/.test(r),
      'Radar: die Chance-Einstufung wird als Setzung ausgewiesen');
+  // Wunsch #49: Firmenname als Label neben dem Ticker, These auf einen Satz gekuerzt
+  ok(/class="firma"/.test(r) && /esc\(z\.name\)/.test(r), 'Radar #49: Firmenname steht escaped neben dem Ticker');
+  ok(/function spekKurz\(/.test(r) && /esc\(z\.kurz\)/.test(r) && /title="' \+ esc\(z\.these\)/.test(r),
+     'Radar #49: These gekuerzt, voller Wortlaut bleibt als Tooltip');
 
   // --- Echte Handelskosten aus dem Demo-Konto (22.08.2026) ---
   var c2 = fs.readFileSync(__dirname + '/capital.js', 'utf8');
