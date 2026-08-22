@@ -290,6 +290,109 @@ ok(dv === 150000, 'Dollar-Umsatz je Tag: (100*1000+100*1000+200*500)/2 Tage', dv
   ok(Q.fertigeBars(live, 5, jetzt).length === 4, 'fertigeBars: bei 5m ist nur der Stempel zu jung');
 })();
 
+/* Stempel gegen echte Kerze: WER GEWINNT? (Befund 22.08.2026, Gegenpruefung der
+ * Signalstudie). Die alte Regel entschied nach Reihenfolge - der zuerst behaltene
+ * Eintrag verdraengte alles, was innerhalb 0,9 Kerzenlaengen folgte. Faellt ein
+ * Stempel zufaellig knapp UEBER die Schwelle (17:29:31 liegt 271 s hinter der
+ * 17:25-Kerze, die Schwelle sind 270 s), wird er behalten - und die echte
+ * 17:30-Kerze 29 s spaeter gilt als sein Stempel. Die Kette laeuft weiter, bis eine
+ * Luecke sie bricht. NVDA 5m verlor am 19.08.2026 so den Nachmittag 17:30-19:50;
+ * im Archiv standen 961 solcher Eintraege in 45 Symbolen (5m), 85 (1m), 198 (15m). */
+(function () {
+  var m = 60000;
+  function zeit(r) { return r.map(function (b) { return new Date(b[0]).toISOString().slice(11, 19); }); }
+
+  // --- Fall 1: Stempel NACH der echten Kerze (die Kette aus dem Befund, NVDA 5m) ---
+  var t5 = Date.UTC(2026, 7, 19, 17, 25);
+  var kette = [
+    [t5,             221.5,  372282, 221.7, 221.3],      // 17:25:00 echt
+    [t5 + 4 * m + 31000, 220.9,   0, 220.9, 220.9],      // 17:29:31 Stempel, 271 s -> ueber der Schwelle
+    [t5 + 5 * m,     220.8,  310000, 221.0, 220.6],      // 17:30:00 echt  (fiel frueher als "Stempel")
+    [t5 + 9 * m + 26000, 220.7,   0, 220.7, 220.7],      // 17:34:26 Stempel
+    [t5 + 10 * m,    220.6,  290000, 220.8, 220.4]       // 17:35:00 echt
+  ];
+  var kSauber = A.ohneStempel(kette, 5);
+  ok(kSauber.length === 3 && kSauber.every(function (b) { return b[0] % (5 * m) === 0 && b[2] > 0; }),
+     'ohneStempel: Stempel NACH der echten Kerze verdraengt sie nicht mehr (NVDA-Kette 19.08.)',
+     zeit(kSauber).join(' '));
+
+  // --- Fall 2: Stempel VOR der echten Kerze - die Rasterkerze holt ihren Platz zurueck ---
+  /* 60m, US-Aktie: das Raster liegt auf :30. Ein Stempel um 14:25 steht 55 min hinter
+   * der 13:30-Kerze - ueber der Schwelle von 54 min, er landet also erst einmal in der
+   * Serie. Fuenf Minuten spaeter kommt die echte 14:30-Kerze und muss ihn verdraengen. */
+  var t60 = Date.UTC(2026, 7, 21, 13, 30);
+  var vorher = [
+    [t60,                100.0, 32276874, 101.0,  99.5],  // 13:30 echt
+    [t60 + 55 * m,       100.4,      120, 100.4, 100.4],  // 14:25 Stempel (mit Volumen: nur die Rasterlage entlarvt ihn)
+    [t60 + 60 * m,       100.3, 10991780, 100.9,  99.9],  // 14:30 echt
+    [t60 + 120 * m,      100.2,  7493432, 100.7,  99.8]   // 15:30 echt
+  ];
+  var vSauber = A.ohneStempel(vorher, 60);
+  ok(vSauber.length === 3 && vSauber[1][0] === t60 + 60 * m && vSauber[1][2] === 10991780,
+     'ohneStempel: die Rasterkerze verdraengt den frueher eingetroffenen Stempel',
+     zeit(vSauber).join(' '));
+
+  // Derselbe Stempel ohne nahen Nachbarn: 15:28 liegt 58 min hinter 14:30 und 62 min vor
+  // 16:30 - beide Male ueber der Schwelle. Nur Rasterlage PLUS Signatur (V=0, H=L=C) faellt ihn.
+  var frei = [
+    [t60,           100.0, 32276874, 101.0, 99.5],
+    [t60 + 60 * m,  100.3, 10991780, 100.9, 99.9],
+    [t60 + 118 * m, 100.5,        0, 100.5, 100.5],       // 15:28 Stempel, ohne Konflikt
+    [t60 + 180 * m, 100.2,  7493432, 100.7, 99.8]
+  ];
+  ok(A.ohneStempel(frei, 60).length === 3,
+     'ohneStempel: ein Stempel ohne nahen Nachbarn faellt ueber Rasterlage + Signatur',
+     zeit(A.ohneStempel(frei, 60)).join(' '));
+
+  // --- Fall 3: Luecken sind KEINE Stempel ---
+  var wochenende = [
+    [Date.UTC(2026, 7, 21, 19, 55), 100, 5000, 101, 99],  // Freitag Handelsschluss
+    [Date.UTC(2026, 7, 24, 13, 30), 101, 6000, 102, 100], // Montag Eroeffnung: 65,6 h spaeter
+    [Date.UTC(2026, 7, 24, 13, 35), 101, 6000, 102, 100]
+  ];
+  ok(A.ohneStempel(wochenende, 5).length === 3,
+     'ohneStempel: Wochenend-Luecke bleibt unangetastet');
+  var mittag = [[t5, 100, 1, 100, 99], [t5 + 5 * m, 100, 1, 100, 99], [t5 + 200 * m, 100, 1, 100, 99]];
+  ok(A.ohneStempel(mittag, 5).length === 3, 'ohneStempel: Handelspausen sind keine Stempel');
+
+  // --- Das Raster wird GELERNT, nicht auf null gesetzt ---
+  /* Yahoos Stundenkerzen fuer US-Aktien beginnen 13:30 UTC. Im Archiv liegen 579.675
+   * der 719.575 Stundenkerzen auf Offset 30 min - ein fest verdrahtetes
+   * t % (barMin*60000) === 0 haette vier Fuenftel des Stundenarchivs geloescht. */
+  var usTag = [];
+  for (var h = 0; h < 7; h++) usTag.push([t60 + h * 60 * m, 100 + h, 1000000, 101 + h, 99 + h]);
+  ok(A.rasterPhase(usTag, 3600000) === 30 * m, 'rasterPhase lernt den US-Stundenstart :30',
+     A.rasterPhase(usTag, 3600000) / m + ' min');
+  ok(A.ohneStempel(usTag, 60).length === 7,
+     'ohneStempel: ein voller US-Stundentag ueberlebt vollstaendig (kein Null-Raster erzwungen)',
+     A.ohneStempel(usTag, 60).length);
+  ok(A.rasterPhase([[Date.UTC(2026, 7, 21, 0, 0), 1, 1]], 3600000) === 0,
+     'rasterPhase liefert 0, wo die Serie auf der vollen Stunde liegt (Krypto)');
+
+  /* Die gelernte Phase entscheidet NUR den Konflikt - sie loescht nie fuer sich allein.
+   * An verkuerzten Handelstagen (Thanksgiving, 3. Juli, Heiligabend) schliesst die
+   * US-Boerse 18:00 UTC; Yahoo liefert dort eine Stundenkerze auf Offset 0 MIT Spanne.
+   * 114 der 122 Stundenreihen im Archiv haben je sieben solcher Kerzen. */
+  var halbtag = [
+    [Date.UTC(2025, 11, 24, 14, 30), 188.2,  9095497, 188.5, 187.9],
+    [Date.UTC(2025, 11, 24, 15, 30), 188.2,  9095497, 188.5, 187.9],
+    [Date.UTC(2025, 11, 24, 16, 30), 188.2,  9095497, 188.5, 187.9],
+    [Date.UTC(2025, 11, 24, 18,  0), 188.3,        0, 189.2, 187.1]   // Rest-Kerze: V=0, aber H != L
+  ];
+  ok(A.ohneStempel(halbtag, 60).length === 4,
+     'ohneStempel: die echte 18:00-Kerze des Halbtags bleibt (Spanne statt H=L=C)',
+     A.ohneStempel(halbtag, 60).length);
+
+  /* Capital-CFD-Kerzen brauchen keine Ausnahme: snapshotTimeUTC lautet
+   * "2026-08-19T09:00:00" - glatte Rasterzeit. Nachgemessen am 22.08.2026 an den 45
+   * reinen CFD-Reihen im Archiv (ADP 5m: 4836 Kerzen, Median-Volumen 57 statt
+   * Boersenvolumen): 0 Eintraege neben dem Raster. */
+  var cfd = [];
+  for (var c = 0; c < 12; c++) cfd.push([Date.UTC(2026, 4, 26, 13, 30) + c * 5 * m, 300 + c * 0.1, 57, 300.2, 299.9]);
+  ok(A.ohneStempel(cfd, 5).length === 12,
+     'ohneStempel: Capital-CFD-Kerzen liegen auf demselben Raster und bleiben vollstaendig');
+})();
+
 console.log('14) Trend-Ruecksetzer (Pullback) an der Leitlinie');
 (function () {
   var t0p = Date.UTC(2026, 5, 1, 13, 30);
