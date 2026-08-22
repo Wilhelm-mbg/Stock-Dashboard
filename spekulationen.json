@@ -1,5 +1,5 @@
 {
-  "stand": "2026-08-22T19:57:49.063Z",
+  "stand": "2026-08-22T20:45:42.020Z",
   "hinweis": "Spekulationen aus öffentlichen Quellen – ungemessen, keine Handelsempfehlung, keine Anlageberatung.",
   "eintraege": [
     {
@@ -99,48 +99,28 @@
       "zeit": "2026-08-21T08:00:00Z"
     },
     {
-      "id": "20260822-PYPL-uebernahme",
-      "sym": "PYPL",
-      "name": "PayPal Holdings Inc.",
-      "art": "uebernahme",
-      "chance": "mittel",
-      "these": "Ein Konsortium aus Stripe und Advent International soll 60,50 Dollar je Aktie geboten haben; das Board wies das Gebot im Juli als zu niedrig zurück, die Verhandlungen laufen seither über einen höheren Preis weiter.",
-      "begruendung": "Das Wall Street Journal nennt Preis und Struktur konkret, TechCrunch und PYMNTS berichten übereinstimmend – aber keine der beteiligten Firmen bestätigt etwas, Stripe kommentiert Gerüchte ausdrücklich nicht. Dazu ist die letzte belastbare Meldung vom 14. August, seither ohne neue Entwicklung. Deshalb mittel statt hoch.",
+      "id": "20260821-TGTX-geruecht",
+      "sym": "TGTX",
+      "name": "TG Therapeutics Inc.",
+      "art": "geruecht",
+      "chance": "niedrig",
+      "these": "Ein unbestätigter Betaville-Hinweis nennt ein größeres Biopharma-Unternehmen mit 20 bis 40 Mrd. Dollar Börsenwert als möglichen Interessenten; die Aktie legte am Freitag rund 10 Prozent zu.",
+      "begruendung": "Ursprung ist ein von Betaville selbst als \"uncooked\" – also ausdrücklich ungeprüft – markierter Hinweis; TipRanks, GuruFocus und Seeking Alpha geben alle nur diese eine Quelle wieder, ein Bieter wird nicht benannt und Konditionen gibt es nicht. Der Kurssprung und die angehobene Umsatzprognose sind belegt, die Übernahme-These ist es nicht – deshalb niedrig.",
       "quellen": [
         {
-          "titel": "WSJ via Yahoo Finance",
-          "url": "https://finance.yahoo.com/markets/stocks/articles/stripe-advent-bid-60-50-202741307.html"
+          "titel": "Yahoo Finance",
+          "url": "https://finance.yahoo.com/healthcare/articles/tgtx-stock-alert-know-takeover-193547123.html"
         },
         {
-          "titel": "TechCrunch",
-          "url": "https://techcrunch.com/2026/08/14/talks-to-sell-paypal-to-stripe-and-advent-are-heating-up/"
+          "titel": "GuruFocus",
+          "url": "https://www.gurufocus.com/news/9047765/tg-therapeutics-tgtx-shares-surge-72-amid-acquisition-rumors-valuation-remains-a-key-focus"
         },
         {
-          "titel": "PYMNTS",
-          "url": "https://www.pymnts.com/news/acquiring/2026/paypal-discussing-sale-stripe-after-rejecting-first-offer"
+          "titel": "TipRanks",
+          "url": "https://www.tipranks.com/news/catalyst/tg-therapeutics-pops-as-buyout-rumors-swirl"
         }
       ],
-      "zeit": "2026-08-14T20:00:00Z"
-    },
-    {
-      "id": "20260822-WDAY-uebernahme",
-      "sym": "WDAY",
-      "name": "Workday Inc.",
-      "art": "uebernahme",
-      "chance": "mittel",
-      "these": "Silver Lake soll eine Übernahme von Workday prüfen; die Berichte kommen auf eine Bewertung um 51 Mrd. Dollar, Reuters Breakingviews rechnet mit einem hypothetischen Preis von 227 Dollar je Aktie.",
-      "begruendung": "CNBC und Reuters Breakingviews berichten unabhängig, die Aktie legte am Meldungstag rund 25 Prozent zu und wurde vom Handel ausgesetzt – der Anlass ist aber ein Bericht, kein Angebot und keine Bestätigung. Zudem stammt die Meldung vom 13. August, seither nur Kommentierung. Deshalb mittel.",
-      "quellen": [
-        {
-          "titel": "CNBC",
-          "url": "https://www.cnbc.com/2026/08/13/workday-skyrockets-25percent-before-trading-halted-on-report-of-silver-lake-takeover.html"
-        },
-        {
-          "titel": "Reuters Breakingviews via Yahoo Finance",
-          "url": "https://finance.yahoo.com/technology/articles/workday-51-billion-takeover-talks-163300274.html"
-        }
-      ],
-      "zeit": "2026-08-13T16:00:00Z"
+      "zeit": "2026-08-21T19:35:00Z"
     },
     {
       "id": "20260821-APD-beteiligung",
