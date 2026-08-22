@@ -665,6 +665,10 @@ console.log('\n17b) Oberflaeche: Altlasten und Verdrahtung');
      'Radar: Fremdinhalte werden escaped, Links nur ueber safeUrl');
   ok(/jetzt - t > 48 \* 3600000\) continue/.test(r), 'Radar: Eintraege aelter als 48 h fallen raus');
   ok(/ein\.slice\(0, 12\)/.test(r), 'Radar: hoechstens 12 Eintraege');
+  ok(/const SPEK_URL =/.test(m2), 'Radar: Gemeinschafts-Ablage haengt an einer festen URL');
+  ok(/d\.length > 300000/.test(m2), 'Radar: Groessenkappe gilt auch fuer den Netz-Abruf');
+  ok(/netz\.mtime > lokal\.mtime/.test(m2), 'Radar: der frischere der beiden Staende gewinnt');
+  ok(/quelleText/.test(r), 'Radar: die Karte sagt, woher der Stand stammt');
   ok(/spekGesehen\.indexOf\(z\.id\) === -1/.test(r), 'Radar: Benachrichtigung je Eintrag nur einmal');
   ok(/redaktionelle Einschätzung der Suche, keine Messung/.test(r),
      'Radar: die Chance-Einstufung wird als Setzung ausgewiesen');
@@ -2186,6 +2190,40 @@ console.log('\n32) Quellen-Kennzeichnung im Archiv – CFD-Volumen darf nicht al
      'Die Umstellung nutzt 60m als Referenz – diesen Zeitrahmen fasst kein Backfill an');
   ok(/if \(ref == null\)[\s\S]{0,200}markiere/.test(mig),
      'Fehlt jede Börsen-Referenz, wird die ganze Reihe gekennzeichnet (Wert kam erst durch den Backfill)');
+})();
+
+
+console.log('\n33) Stempel-Kerzen und Live-Fenster (Detektor-Audit 22.08.2026)');
+(function () {
+  var Arch = require('./archiv.js');
+  var dep = fs.readFileSync(__dirname + '/depot.js', 'utf8');
+  /* Befund: ohneStempel behielt von zwei nahen Kerzen die ERSTE. Der Quote-Stempel
+   * (15:28:38, vol 0, H=L=C) kommt vor der echten 15:30-Kerze an und verdraengte sie.
+   * Am 21.08. waren in allen 122 Stundenreihen 4 von 7 Kerzen Stempel. */
+  var T = Date.UTC(2026, 7, 21, 13, 30), h = 3600000;
+  var reihe = [[T, 307.8, 13705396, 312.38, 307.01], [T + h, 310.6, 6775783, 310.64, 307.6],
+    [T + 2 * h - 82000, 310.44, 0, 310.44, 310.44],          // Stempel 15:28:38
+    [T + 2 * h, 310.9, 3000000, 311, 310.2],                 // echte 15:30
+    [T + 3 * h, 311.06, 2476819, 311.64, 310.27]];
+  var out = Arch.ohneStempel(reihe, 60);
+  ok(out.length === 4 && out.every(function (b) { return b[0] % 60000 === 0; }),
+     'Stempel verdraengt keine echte Kerze mehr (15:30 bleibt, 15:28:38 fliegt)',
+     out.map(function (b) { return new Date(b[0]).toISOString().slice(11, 16); }).join(','));
+  // Stempel NACH der echten Kerze (alter Fall) muss weiterhin verschwinden
+  var reihe2 = [[T, 300, 1000, 301, 299], [T + h, 301, 1000, 302, 300], [T + h + 50000, 301.2, 0, 301.2, 301.2]];
+  ok(Arch.ohneStempel(reihe2, 60).length === 2, 'Stempel nach der echten Kerze verschwindet weiterhin');
+
+  /* Befund: Live-Scan rechnete auf dem 1mo-Abruf (~151 Kerzen); rsi2seit braucht 261.
+   * Uebereinstimmung Live vs. Archiv-Signale 31,6 %. */
+  ok(dep.indexOf('var archS = await window.Archiv.serie(cfg.interval') !== -1 &&
+     dep.indexOf('bars = archS.slice(-800)') !== -1,
+     'Der Live-Scan rechnet Signale auf der Archiv-Serie (Tiefe wie Studie und Edge-Waechter)');
+  ok(dep.indexOf('await window.Archiv.fuege(cfg.interval') !== -1,
+     'Die Archiv-Einspeisung wird abgewartet, bevor die Serie gelesen wird');
+  ok(/sigBars\.length < 261[\s\S]{0,200}patienceAdd\('Kursreihe zu kurz/.test(dep),
+     'Unter 261 Kerzen gibt es Geduld statt eines Signals, das nicht das gemessene waere');
+  ok(dep.indexOf("var spot = fd.series[fd.series.length - 1][1];") !== -1,
+     'Der Spot bleibt der frische Abrufkurs, nicht die Archivkerze');
 })();
 
 console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');

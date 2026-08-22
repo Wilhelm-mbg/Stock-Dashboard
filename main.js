@@ -487,14 +487,58 @@ ipcMain.handle('read-recommendation', async () => {
  * nach Marktspekulationen und schreibt sie in den Daten-Ordner - die App ZEIGT sie
  * nur an (Dashboard-Karte), gehandelt wird davon nichts. Groessenkappe als Schutz
  * gegen eine ausufernde oder kaputte Datei. */
+/* Gemeinschafts-Ablage (Wunsch #44): Die geplante Suche laeuft nur auf EINEM Rechner
+ * und schrieb bisher nur dorthin - alle anderen Installationen sahen ein leeres Radar.
+ * Dieselbe Aufgabe legt die Datei jetzt zusaetzlich im Zweig "radar" des Projekts ab,
+ * und jede App liest von dort. Die URL steht FEST im Code (kein Umweg ueber die
+ * allgemeine Abruf-Weissliste), gelesen wird nur - die App schreibt nie ins Netz.
+ * Der frischere von beiden Staenden gewinnt: auf Wilhelms Rechner also die lokale
+ * Datei, bei allen anderen die aus dem Netz. */
+const SPEK_URL = 'https://raw.githubusercontent.com/Wilhelm-mbg/Stock-Dashboard/radar/spekulationen.json';
+let spekNetzCache = { at: 0, body: null };
+function holeSpekNetz() {
+  // 5-Minuten-Cache: die Karte fragt alle 10 Minuten, die Suche schreibt stuendlich
+  if (spekNetzCache.body != null && Date.now() - spekNetzCache.at < 5 * 60000) return Promise.resolve(spekNetzCache.body);
+  return new Promise((resolve) => {
+    const req = https.get(SPEK_URL, { headers: { 'User-Agent': 'Markt-Dashboard', 'Accept': 'application/json' }, timeout: 8000 }, (res) => {
+      if (res.statusCode !== 200) { res.resume(); return resolve(null); }
+      let d = '';
+      res.setEncoding('utf8');
+      res.on('data', (c) => { d += c; if (d.length > 300000) { req.destroy(); resolve(null); } });
+      res.on('end', () => { spekNetzCache = { at: Date.now(), body: d }; resolve(d); });
+    });
+    req.on('timeout', () => { req.destroy(); resolve(null); });
+    req.on('error', () => resolve(null));
+  });
+}
+// Zeitstempel aus dem Feld "stand" ziehen - nur so sind lokal und Netz vergleichbar
+function spekStand(body, ersatz) {
+  try { const t = Date.parse(JSON.parse(body).stand || ''); return isNaN(t) ? ersatz : t; }
+  catch (e) { return NaN; }   // kaputtes JSON scheidet aus dem Vergleich aus
+}
 ipcMain.handle('read-spekulationen', async () => {
+  let lokal = null;
   try {
     const p = path.join(app.getPath('downloads'), 'Markt-Dashboard-Daten', 'spekulationen.json');
-    if (!fs.existsSync(p)) return { ok: false };
-    const st = fs.statSync(p);
-    if (st.size > 300000) return { ok: false, msg: 'Datei zu groß' };
-    return { ok: true, body: fs.readFileSync(p, 'utf8'), mtime: st.mtimeMs };
-  } catch (e) { return { ok: false, msg: String(e.message || e) }; }
+    if (fs.existsSync(p)) {
+      const st = fs.statSync(p);
+      if (st.size > 300000) { /* ausufernde Datei: gar nicht erst anfassen */ }
+      else {
+        const body = fs.readFileSync(p, 'utf8');
+        const t = spekStand(body, st.mtimeMs);
+        if (!isNaN(t)) lokal = { ok: true, body: body, mtime: t, quelle: 'lokal' };
+      }
+    }
+  } catch (e) { /* lokale Datei fehlt oder ist unlesbar: dann eben das Netz */ }
+  // Ist die eigene Datei frisch, sparen wir uns den Abruf komplett
+  if (lokal && Date.now() - lokal.mtime < 90 * 60000) return lokal;
+  let netz = null;
+  try {
+    const body = await holeSpekNetz();
+    if (body) { const t = spekStand(body, NaN); if (!isNaN(t)) netz = { ok: true, body: body, mtime: t, quelle: 'netz' }; }
+  } catch (e) { /* offline: dann bleibt es beim lokalen Stand */ }
+  if (netz && (!lokal || netz.mtime > lokal.mtime)) return netz;
+  return lokal || { ok: false };
 });
 // Claude-Auswertungsbericht aus dem Daten-Ordner lesen (Anzeige in der App)
 ipcMain.handle('read-report', async () => {

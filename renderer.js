@@ -360,6 +360,13 @@
    * feste Kappen, und eine kaputte Datei laesst die Karte einfach in Ruhe. */
   var SPEK_ART = { uebernahme: 'Übernahme', beteiligung: 'Beteiligung', analyst: 'Analysten', squeeze: 'Squeeze', geruecht: 'Gerücht', ereignis: 'Ereignis' };
   var spekGesehen = null;   // ids bereits gemeldeter Hoch-Eintraege (persistiert)
+  /* Woher der angezeigte Stand stammt (Wunsch #44): Die Suche laeuft nur auf einem
+     Rechner; alle anderen Installationen bekommen dieselben Funde ueber die
+     Gemeinschafts-Ablage im Projekt-Zweig "radar". Das offen hinzuschreiben ist
+     ehrlicher, als beides gleich aussehen zu lassen. */
+  function quelleText(r) {
+    return r && r.quelle === 'netz' ? 'Gemeinschafts-Ablage' : 'Suche auf diesem Rechner';
+  }
   async function ladeSpekulationen() {
     var el = document.getElementById('spekRadar');
     if (!el || !window.api || !window.api.readSpekulationen) return;
@@ -393,7 +400,7 @@
       ein = ein.slice(0, 12);
       if (!ein.length) {
         el.innerHTML = '<div class="loading">Gerade keine nennenswerten Spekulationen im Radar (Stand ' +
-          new Date(r.mtime).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }) + ' Uhr).</div>';
+          new Date(r.mtime).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }) + ' Uhr, ' + quelleText(r) + ').</div>';
         return;
       }
       var alt = jetzt - r.mtime > 3 * 3600000;
@@ -411,7 +418,8 @@
       }).join('') +
         '<div style="color:var(--muted); font-size:11px; margin-top:8px;">Stand ' +
         new Date(r.mtime).toLocaleString('de-DE', { weekday: 'short', hour: '2-digit', minute: '2-digit' }) + ' Uhr' +
-        (alt ? ' – <b>veraltet</b>, die stündliche Suche hat länger nicht geschrieben (läuft nur bei geöffneter Claude-App)' : '') +
+        ' · ' + quelleText(r) +
+        (alt ? ' – <b>veraltet</b>, die stündliche Suche hat länger nicht geschrieben' : '') +
         ' · Chance-Einstufung ist eine redaktionelle Einschätzung der Suche, keine Messung.</div>';
       /* Benachrichtigung nur fuer NEUE Hoch-Eintraege, je id genau einmal - und nur,
        * wenn Benachrichtigungen im Depot nicht abgeschaltet sind. */
