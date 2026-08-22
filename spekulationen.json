@@ -1,0 +1,210 @@
+{
+  "stand": "2026-08-22T19:57:49.063Z",
+  "hinweis": "Spekulationen aus öffentlichen Quellen – ungemessen, keine Handelsempfehlung, keine Anlageberatung.",
+  "eintraege": [
+    {
+      "id": "20260821-BAMI-uebernahme",
+      "sym": "BAMI.MI",
+      "name": "Banco BPM S.p.A.",
+      "art": "uebernahme",
+      "chance": "hoch",
+      "these": "Monte dei Paschi hat am Freitag ein Umtauschangebot für Banco BPM über rund 25,3 Mrd. Euro aufgelegt (1,567 MPS-Aktien je BPM-Aktie), Teil eines Doppelgebots über insgesamt rund 34 Mrd. Euro.",
+      "begruendung": "Der Verwaltungsrat hat das Gebot beschlossen, die Konditionen sind veröffentlicht; Reuters, Financial Times und Euronews berichten unabhängig voneinander mit denselben Eckdaten. Konkreter Anlass und mehrere seriöse Quellen, deshalb hoch – der Ausgang hängt allerdings an der Annahmequote und an Intesas Gegenzug.",
+      "quellen": [
+        {
+          "titel": "Financial Times",
+          "url": "https://www.ft.com/content/ecafb9a8-b9a6-48a4-8d3c-a626b26fe82b"
+        },
+        {
+          "titel": "Euronews",
+          "url": "https://www.euronews.com/business/2026/08/21/monte-dei-paschi-details-of-bid-for-banco-bpm-and-banca-generali"
+        },
+        {
+          "titel": "Reuters via Global Banking & Finance",
+          "url": "https://www.globalbankingandfinance.com/monte-dei-paschi-ceo-unveil-strategy-fend-off-intesas-36/"
+        }
+      ],
+      "zeit": "2026-08-21T12:00:00Z"
+    },
+    {
+      "id": "20260821-BMPS-uebernahme",
+      "sym": "BMPS.MI",
+      "name": "Banca Monte dei Paschi di Siena S.p.A.",
+      "art": "uebernahme",
+      "chance": "hoch",
+      "these": "MPS wehrt sich mit dem Doppelgebot und einer Sonderausschüttung von rund 4 Mrd. Euro gegen die feindliche Offerte von Intesa Sanpaolo über rund 36 Mrd. Euro.",
+      "begruendung": "Beide Seiten des Übernahmekampfs sind belegt: Intesas Offerte samt geplantem Filialverkauf an Unipol und die MPS-Gegenwehr werden von Reuters, FT und weiteren Häusern übereinstimmend beschrieben. Die 13-Prozent-Beteiligung an Generali gilt als Verhandlungsmasse; der Ausgang ist offen und politisch aufgeladen.",
+      "quellen": [
+        {
+          "titel": "Reuters via Global Banking & Finance",
+          "url": "https://www.globalbankingandfinance.com/monte-dei-paschi-ceo-unveil-strategy-fend-off-intesas-36/"
+        },
+        {
+          "titel": "FStech",
+          "url": "https://www.fstech.co.uk/fst/Monte_Dei_Paschi_Launches_34bn_Bid_To_Fend_Off_Intesa.php"
+        },
+        {
+          "titel": "Business Day",
+          "url": "https://www.businessday.co.za/world/international-companies/2026-08-20-mps-weighs-generali-stake-sale-to-fend-off-intesa-takeover-bid/"
+        }
+      ],
+      "zeit": "2026-08-21T12:00:00Z"
+    },
+    {
+      "id": "20260822-CBK-uebernahme",
+      "sym": "CBK.DE",
+      "name": "Commerzbank AG",
+      "art": "uebernahme",
+      "chance": "hoch",
+      "these": "Der Bund ist laut Insidern offen für den Verkauf seiner restlichen 12,7 Prozent an UniCredit – damit käme UniCredit auf die Mehrheit, in Berichten ist von über 60 Prozent die Rede.",
+      "begruendung": "Handelsblatt und eine Reuters-Meldung (via Yahoo Finance) berichten unabhängig über die Bereitschaft der Regierungsvertreter, dazu hat Commerzbank-Chefin Orlopp förmliche Gespräche mit UniCredit bestätigt – konkreter Anlass und mehrere seriöse Quellen, daher hoch. Bedingung bleibt laut den Berichten die Rückendeckung des Commerzbank-Managements; die Aktie notiert nahe dem 52-Wochen-Hoch.",
+      "quellen": [
+        {
+          "titel": "Handelsblatt",
+          "url": "https://www.handelsblatt.com/finanzen/banken-versicherungen/banken/commerzbank-regierungsvertreter-wohl-offen-fuer-verkauf-der-bundesanteile/100247767.html"
+        },
+        {
+          "titel": "Reuters via Yahoo Finance",
+          "url": "https://de.finance.yahoo.com/nachrichten/commerzbank-anteil-bundes-regierungsvertreter-offen-095739692.html"
+        },
+        {
+          "titel": "ad-hoc-news",
+          "url": "https://www.ad-hoc-news.de/boerse/news/corporate-news/commerzbank-stock-trades-close-to-52-week-high-as-unicredit-inches-toward/69984034"
+        }
+      ],
+      "zeit": "2026-08-22T04:00:00Z"
+    },
+    {
+      "id": "20260822-GAMA-uebernahme",
+      "sym": "GAMA.L",
+      "name": "Gamma Communications plc",
+      "art": "uebernahme",
+      "chance": "hoch",
+      "these": "Gamma hat Vorgespräche mit dem Private-Equity-Haus Waterland über eine mögliche Übernahme bestätigt; Waterland erwägt dabei einen Zuschnitt gemeinsam mit dem IT-Dienstleister Giacom, der einzelne Sparten übernehmen soll.",
+      "begruendung": "Das Unternehmen hat die Gespräche selbst per Pflichtmitteilung bestätigt und das britische Takeover Panel hat Fristen gesetzt: Epiris muss bis 2. September, Waterland bis 18. September ein festes Angebot vorlegen oder abtreten. Bestätigtes Interesse, amtliche Fristen und mehrere übereinstimmende Berichte, deshalb hoch; ob daraus ein Angebot wird, ist damit nicht gesagt.",
+      "quellen": [
+        {
+          "titel": "Sharecast",
+          "url": "https://www.sharecast.com/news/news-and-announcements/gamma-communications-in-early-takeover-talks-with-pe-firm-waterland--23336668.html"
+        },
+        {
+          "titel": "Investing.com UK",
+          "url": "https://uk.investing.com/news/stock-market-news/gamma-communications-confirms-takeover-talks-with-waterland-93CH-4842560"
+        },
+        {
+          "titel": "TipRanks",
+          "url": "https://www.tipranks.com/news/company-announcements/gamma-confirms-takeover-talks-with-waterland-as-suitor-deadline-set"
+        }
+      ],
+      "zeit": "2026-08-21T08:00:00Z"
+    },
+    {
+      "id": "20260822-PYPL-uebernahme",
+      "sym": "PYPL",
+      "name": "PayPal Holdings Inc.",
+      "art": "uebernahme",
+      "chance": "mittel",
+      "these": "Ein Konsortium aus Stripe und Advent International soll 60,50 Dollar je Aktie geboten haben; das Board wies das Gebot im Juli als zu niedrig zurück, die Verhandlungen laufen seither über einen höheren Preis weiter.",
+      "begruendung": "Das Wall Street Journal nennt Preis und Struktur konkret, TechCrunch und PYMNTS berichten übereinstimmend – aber keine der beteiligten Firmen bestätigt etwas, Stripe kommentiert Gerüchte ausdrücklich nicht. Dazu ist die letzte belastbare Meldung vom 14. August, seither ohne neue Entwicklung. Deshalb mittel statt hoch.",
+      "quellen": [
+        {
+          "titel": "WSJ via Yahoo Finance",
+          "url": "https://finance.yahoo.com/markets/stocks/articles/stripe-advent-bid-60-50-202741307.html"
+        },
+        {
+          "titel": "TechCrunch",
+          "url": "https://techcrunch.com/2026/08/14/talks-to-sell-paypal-to-stripe-and-advent-are-heating-up/"
+        },
+        {
+          "titel": "PYMNTS",
+          "url": "https://www.pymnts.com/news/acquiring/2026/paypal-discussing-sale-stripe-after-rejecting-first-offer"
+        }
+      ],
+      "zeit": "2026-08-14T20:00:00Z"
+    },
+    {
+      "id": "20260822-WDAY-uebernahme",
+      "sym": "WDAY",
+      "name": "Workday Inc.",
+      "art": "uebernahme",
+      "chance": "mittel",
+      "these": "Silver Lake soll eine Übernahme von Workday prüfen; die Berichte kommen auf eine Bewertung um 51 Mrd. Dollar, Reuters Breakingviews rechnet mit einem hypothetischen Preis von 227 Dollar je Aktie.",
+      "begruendung": "CNBC und Reuters Breakingviews berichten unabhängig, die Aktie legte am Meldungstag rund 25 Prozent zu und wurde vom Handel ausgesetzt – der Anlass ist aber ein Bericht, kein Angebot und keine Bestätigung. Zudem stammt die Meldung vom 13. August, seither nur Kommentierung. Deshalb mittel.",
+      "quellen": [
+        {
+          "titel": "CNBC",
+          "url": "https://www.cnbc.com/2026/08/13/workday-skyrockets-25percent-before-trading-halted-on-report-of-silver-lake-takeover.html"
+        },
+        {
+          "titel": "Reuters Breakingviews via Yahoo Finance",
+          "url": "https://finance.yahoo.com/technology/articles/workday-51-billion-takeover-talks-163300274.html"
+        }
+      ],
+      "zeit": "2026-08-13T16:00:00Z"
+    },
+    {
+      "id": "20260821-APD-beteiligung",
+      "sym": "APD",
+      "name": "Air Products and Chemicals Inc.",
+      "art": "beteiligung",
+      "chance": "niedrig",
+      "these": "Ein aktivistischer Investor soll eine Position im Bereich von rund 1 Mrd. Dollar bei Air Products aufgebaut haben.",
+      "begruendung": "Nur eine schwächere Einzelquelle, und der Investor wird nicht klar benannt; bei Air Products laufen ohnehin seit Längerem Aktivisten-Kampagnen (Mantle Ridge, D. E. Shaw), was neue von alten Meldungen schwer trennbar macht.",
+      "quellen": [
+        {
+          "titel": "ad-hoc-news",
+          "url": "https://www.ad-hoc-news.de/boerse/news/corporate-news/air-products-stock-draws-activist-interest-as-investors-weigh-currency-and/69980721"
+        }
+      ],
+      "zeit": "2026-08-21T12:00:00Z"
+    },
+    {
+      "id": "20260821-TGT-analyst",
+      "sym": "TGT",
+      "name": "Target Corporation",
+      "art": "analyst",
+      "chance": "niedrig",
+      "these": "Nach den Q2-Zahlen haben mehrere Häuser ihre Kursziele angehoben (u. a. Telsey auf 182, Goldman auf 161, Citi auf 160 Dollar), die Aktie markierte ein 52-Wochen-Hoch.",
+      "begruendung": "Belegte, aber gewöhnliche Kursziel-Anhebungen nach einem Zahlen-Beat, keine Doppel-Hochstufung und kein Spekulationsanlass im engeren Sinn; Einstufung entsprechend niedrig.",
+      "quellen": [
+        {
+          "titel": "Benzinga",
+          "url": "https://www.benzinga.com/trading-ideas/movers/26/08/61358879/target-stock-climbs-after-analysts-boost-price-targets"
+        }
+      ],
+      "zeit": "2026-08-21T12:00:00Z"
+    },
+    {
+      "id": "20260822-ADSK-analyst",
+      "sym": "ADSK",
+      "name": "Autodesk Inc.",
+      "art": "analyst",
+      "chance": "niedrig",
+      "these": "Vor den Q2-Zahlen melden sich mehrere Analysten mit Rückendeckung und einer jüngsten Kursziel-Anhebung zu Wort, die Aktie notiert über 250 Dollar.",
+      "begruendung": "Einzelne schwächere Quelle, gewöhnliche Vor-Zahlen-Kommentierung ohne Doppel-Hochstufung; nur wegen des anstehenden Termins überhaupt vermerkt, Einstufung niedrig.",
+      "quellen": [
+        {
+          "titel": "ad-hoc-news",
+          "url": "https://www.ad-hoc-news.de/boerse/news/corporate-news/autodesk-stock-draws-fresh-analyst-support-ahead-q2-earnings/69986100"
+        }
+      ],
+      "zeit": "2026-08-22T12:00:00Z"
+    },
+    {
+      "id": "20260822-ITRK-uebernahme",
+      "sym": "ITRK.L",
+      "name": "Intertek Group plc",
+      "art": "uebernahme",
+      "chance": "niedrig",
+      "these": "Um Intertek soll es Übernahme-Interesse geben; die Meldung verweist auf laufende Offenlegungstabellen, wie sie der britische Takeover Code während einer Angebotsphase verlangt.",
+      "begruendung": "Nur eine schwache Einzelquelle, kein benannter Bieter und keine Konditionen; Reuters oder FT bestätigen bislang nichts. Deshalb ausdrücklich niedrig – vermerkt, weil ein förmlicher Prozess bei einem liquiden FTSE-100-Wert weitreichend wäre, falls er sich bestätigt.",
+      "quellen": [
+        {
+          "titel": "ad-hoc-news",
+          "url": "https://www.ad-hoc-news.de/boerse/news/corporate-news/intertek-stock-draws-takeover-attention-as-investors-watch-bid-dynamics/69986171"
+        }
+      ],
+      "zeit": "2026-08-22T12:00:00Z"
+    }
+  ]
+}
