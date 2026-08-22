@@ -228,7 +228,7 @@ function lauf(opts) {
   const tier = iv === '60m' ? 'B' : 'A';
   const t0 = Date.now();
   const U = ladeUniversum(iv, max);
-  U.forEach(E => bereite(E, iv));
+  U.forEach(E => { bereite(E, iv); E.bars.sym = E.sym; });
   (log || console.log)('Universum ' + iv + ': ' + U.length + ' Werte, ' + U.reduce((s, E) => s + E.bars.length, 0).toLocaleString('de-DE') + ' Sitzungskerzen' +
     (ladeUniversum.unvoll && ladeUniversum.unvoll.size ? ' · unvollstaendige Tage verworfen: ' + [...ladeUniversum.unvoll].sort().join(', ') : ''));
 
@@ -243,14 +243,17 @@ function lauf(opts) {
 
   // Kontext fuer Bedingungen
   const ctx = { regime: ladeIndex(), termine: ladeTermine() };
-  const volas = U.flatMap(E => Object.values(E.tagVola).filter(v => v != null)).sort((a, b) => a - b);
+  /* Schnittpunkte der Bedingungen (Mediane, Terzile) NUR aus Entdeckungstagen - sonst
+   * flossen Bestaetigungstage in die Definition ein (Synthese-Hinweis 22.08.). */
+  const nurEnt = (E, obj) => Object.keys(obj).filter(k => k < cutoff).map(k => obj[k]);
+  const volas = U.flatMap(E => nurEnt(E, E.tagVola).filter(v => v != null)).sort((a, b) => a - b);
   ctx.volaMedian = volas[Math.floor(volas.length / 2)] || 0;
   const ums = U.map(E => E.umsatz).sort((a, b) => a - b);
   ctx.umsatzMedian = ums[Math.floor(ums.length / 2)] || 0;
-  const vr = U.flatMap(E => Object.values(E.tagRet)).sort((a, b) => a - b);
+  const vr = U.flatMap(E => nurEnt(E, E.tagRet)).sort((a, b) => a - b);
   ctx.vortagTerz = [vr[Math.floor(vr.length / 3)] || 0, vr[Math.floor(vr.length * 2 / 3)] || 0];
   // Technik-Terzile aus einer Stichprobe
-  const techProbe = U.flatMap(E => Object.values(E.tagScore || {})).filter(v => typeof v === 'number');
+  const techProbe = U.flatMap(E => nurEnt(E, E.tagScore || {})).filter(v => typeof v === 'number');
   techProbe.sort((a, b) => a - b);
   ctx.technikTerz = [techProbe[Math.floor(techProbe.length / 3)] || 0, techProbe[Math.floor(techProbe.length * 2 / 3)] || 0];
 
