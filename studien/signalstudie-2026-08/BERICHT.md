@@ -59,16 +59,52 @@ in beiden Hälften, mit stabiler Größe. Der t-Wert bleibt bei 0,7–0,9, weil 
 tagesgeclusterte Standardfehler bei 0,217 Pp liegt. Validiert war die Kante mit +0,147 Pp
 und t über *Symbole* — hier ist die Zahl kleiner und der Test strenger.
 
-**Der Kapitulations-Dip ist keine Kante, sondern eine Wette auf normale Tage.** Median über
-alle 313 Signale: −0,37 Pp. **Ohne die zwei Crash-Tage 3./4.4.2025** (79 der 313 Signale,
-also ein Viertel): Median **+0,40 Pp**. Unter der 200-Tage-Linie: Median −1,53 Pp; darüber
-+0,45 Pp. Die Strategie kauft den Ausverkauf und gewinnt meistens ein wenig — bis der
-Ausverkauf weitergeht, dann verliert sie viel. Der Regime-Filter, der seit 8.23.26 eingebaut
-ist, greift genau hier.
+**Der Kapitulations-Dip reproduziert sich nicht — auch nicht im Median.** Über alle 488
+Signale beider Phasen: Median −0,29 Pp, Mittel −0,66 Pp (Horizont 1 Tag); auf 3 und 5 Tagen
+ebenso negativ. Nur 45 % der Signale enden positiv. Auch im Aufwärts-Regime bleibt der
+Mittelwert bei −0,10 Pp.
+
+*Korrektur an einer früheren Fassung dieses Berichts:* Dort stand, ohne die zwei Crash-Tage
+liege der Median bei +0,40 Pp. Das war ein nachträglicher Ausschluss von einem Viertel aller
+Signale — genau das Verfahren, das dieser Bericht an anderer Stelle als unzulässig bezeichnet.
+Ohne diesen Ausschluss trägt die Zahl nicht. Die validierten +0,44 % Median stammen aus einer
+anderen Messanlage (anderer Horizont, andere Kontrolle); welche der beiden recht hat, ist mit
+dieser Studie nicht entschieden — reproduziert wird sie hier jedenfalls nicht.
 
 **Felix' Winkel-Detektor dominierte die 1-Minuten-Entdeckung vollständig** — beide besten
 Einzelsignale, alle fünf besten Bedingungen, t bis 2,74. In der Bestätigung: alles bei null.
 Konsistent mit der Neubewertung von #33 vom Vortag.
+
+## Lassen sich die Erkenntnisse kombinieren?
+
+Ja — aber nur zwei Verbindungen sind zulässig, und beide fügen **keine neue Auswahl** hinzu:
+Die Kostenhürde ist Arithmetik, und die Regime-Zuteilung wurde separat validiert (R-TREND,
+t = 3,2). Die 51 gescheiterten Kandidaten neu zu verrühren wäre dagegen dieselbe Mine, tiefer.
+
+Gerechnet auf denselben Trades, nur mit der echten Kostenfunktion statt der Pauschale:
+
+| rsi2seit long, 8 h Haltedauer | Hürde | netto | t |
+|---|---:|---:|---:|
+| Schein BV 1,0 / 60 T | 0,066 | **+0,032** | 0,37 |
+| Schein BV 1,0 / 21 T | 0,088 | +0,010 | 0,12 |
+| Aktie 1× / CFD | 0,100 | −0,001 | −0,02 |
+| Standard-Schein (Vorgabe) | 0,261 | −0,162 | −1,88 |
+
+Mit dem Aufwärts-Regime davor (Index über EMA200) steigt der Rohwert von +0,099 auf **+0,119**
+Pp, unter der Linie fällt er auf −0,172. Kombiniert mit dem günstigsten Produkt bleibt
+**netto +0,052 Pp je Trade**.
+
+Das ist der einzige positive Rest der ganzen Studie — und er kommt nicht aus einem neuen
+Signal, sondern daraus, die bekannte Kante auf dem richtigen Produkt im richtigen Regime zu
+handeln. **t bleibt bei rund 1.** Es ist eine Rechnung auf bekannten Zahlen, kein Beleg für
+die Zukunft: Die Kombination wurde als Kombination nie vorwärts geprüft.
+
+**Ein struktureller Befund, der dabei herausfiel:** Beide belegten Kanten haben einen
+**negativen Median**. rsi2seit endet nur in 49 % der Fälle positiv; sein positiver
+Erwartungswert steckt vollständig im rechten Rand der Verteilung. Für die Produktwahl heißt
+das mehr als jede Hürdenzahl: **Ein enger Stop-Loss schneidet genau den Teil ab, in dem die
+ganze Kante lebt.** Das schlechteste Zwanzigstel liegt bei −4,3 Pp — mit Hebel 16 wären das
+−69 % auf den Schein.
 
 ## Welches Finanzprodukt trägt eine Kante?
 
