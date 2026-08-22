@@ -714,7 +714,8 @@ console.log('\n17b) Oberflaeche: Altlasten und Verdrahtung');
      'Spannen: die Kursabfrage nutzt den Markt-Endpunkt des Demo-Hosts');
   // --- Massen-Backfill: Messbasis in einem Rutsch vertiefen (22.08.2026) ---
   ok(/function massenBackfill/.test(d), 'Backfill: Massen-Auffuellung existiert');
-  ok(d.indexOf("POOLS_60M.ndx100") !== -1, 'Backfill: Nasdaq-100 ist im Universum');
+  // Seit 8.23.46 werden ndx100 UND sp100 ueber eine Liste geholt, nicht mehr einzeln benannt.
+  ok(/['ndx100', 'sp100']/.test(d), 'Backfill: Nasdaq-100 und S&P-100 sind im Universum');
   ok(d.indexOf("massenStop") !== -1 && /function massenAbbrechen/.test(d), 'Backfill: jederzeit anhaltbar');
   ok(d.indexOf("fehlSerie < 3") !== -1 && d.indexOf("1500 * fehlSerie") !== -1,
      'Backfill: bei Fehlern Rueckzug statt Weiterhaemmern - eine gedrosselte API sperrt sonst');
