@@ -129,6 +129,15 @@ function bereite(E, iv) {
     const w = []; for (let j = Math.max(1, i - 19); j <= i; j++) w.push(Math.log(tagsSchluss[j][1] / tagsSchluss[j - 1][1]));
     E.tagVola[tagsSchluss[i][0]] = w.length >= 5 ? sd(w) : null;
   }
+  /* Technik-Score ist auf der TAGESSERIE definiert (quant.js: pts = Tagesserie, Live auf
+   * ~500 Tageskerzen). Auf Intraday-Kerzen gerechnet misst er etwas anderes und ist fast
+   * konstant (Gegenpruefung 22.08.: Terzil-Uebereinstimmung 29 % auf 1m). Deshalb:
+   * Tagesschluesse aus den Segmenten, Score je Tagesindex walk-forward. */
+  E.tagPts = tagsSchluss.map(x => [Date.parse(x[0]), x[1]]);
+  E.tagScore = {};
+  for (let i = 55; i < E.tagPts.length; i++) {
+    try { E.tagScore[tagsSchluss[i][0]] = Q.technical(E.tagPts, i).score; } catch (e) { }
+  }
   const ums = segs.map(g => { let v = 0; for (let k = g.s; k <= g.e; k++) v += (E.bars[k][2] || 0) * E.bars[k][1]; return v; }).filter(v => v > 0).sort((a, b) => a - b);
   E.umsatz = ums.length ? ums[Math.floor(ums.length / 2)] : 0;
   // Ist eine Kerze aus CFD-Daten? (Volumen dort nicht vergleichbar)
@@ -177,13 +186,13 @@ function bedingungen(E, i, iv, ctx) {
   const vr = E.tagRet[tag];
   out.vortag = vr == null ? 'na' : (vr > ctx.vortagTerz[1] ? 'hoch' : (vr < ctx.vortagTerz[0] ? 'tief' : 'mitte'));
   // Technik-Score (walk-forward via endI) und Kanal (bestChannel via endI) - beide teuer, nur je Signal
-  try {
-    const fenster = Math.min(i + 1, 300);
-    const pts = E.bars.slice(i + 1 - fenster, i + 1);
-    const ts = Q.technical(pts, pts.length - 1);
-    const sc = ts && typeof ts.score === 'number' ? ts.score : 0;
-    out.technik = sc > ctx.technikTerz[1] ? 'hoch' : (sc < ctx.technikTerz[0] ? 'tief' : 'mitte');
-  } catch (e) { out.technik = 'na'; }
+  {
+    // Score des VORTAGES (am Signaltag ist der Tagesschluss noch nicht bekannt)
+    const di = E.dayIdx[i];
+    const vorKey = di > 0 ? E.dayKey[E.segs[di - 1].s] : null;
+    const sc = vorKey != null ? E.tagScore[vorKey] : undefined;
+    out.technik = sc == null ? 'na' : (sc > ctx.technikTerz[1] ? 'hoch' : (sc < ctx.technikTerz[0] ? 'tief' : 'mitte'));
+  }
   try {
     const closes = E.bars.slice(Math.max(0, i - 120), i + 1).map(b => b[1]);
     const ch = Q.bestChannel(closes, closes.length - 1, {});
@@ -241,8 +250,7 @@ function lauf(opts) {
   const vr = U.flatMap(E => Object.values(E.tagRet)).sort((a, b) => a - b);
   ctx.vortagTerz = [vr[Math.floor(vr.length / 3)] || 0, vr[Math.floor(vr.length * 2 / 3)] || 0];
   // Technik-Terzile aus einer Stichprobe
-  const techProbe = [];
-  for (const E of U.slice(0, 20)) for (let i = 300; i < E.bars.length; i += 97) { try { const ts = Q.technical(E.bars.slice(i - 299, i + 1), 299); techProbe.push(ts.score || 0); } catch (e) { } }
+  const techProbe = U.flatMap(E => Object.values(E.tagScore || {})).filter(v => typeof v === 'number');
   techProbe.sort((a, b) => a - b);
   ctx.technikTerz = [techProbe[Math.floor(techProbe.length / 3)] || 0, techProbe[Math.floor(techProbe.length * 2 / 3)] || 0];
 
