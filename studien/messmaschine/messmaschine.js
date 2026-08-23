@@ -107,7 +107,10 @@ function tagVon(ms) { return new Date(ms).toISOString().slice(0, 10); }
 function stundeVon(ms) { return new Date(ms).getUTCHours(); }
 
 /* ---------- A2/A3/A5: Kontrollerwartung je Symbol x Stunde x Haelfte ---------- */
-function baueKontrolle(universum, haltedauerKerzen, schnittTag, vorlauf) {
+/* ACHTUNG bei Ausstiegsregeln: Die Kontrolle bekommt denselben Ausstieg wie das
+ * Signal. Sonst vergleicht man "Signal mit Stop" gegen "Zufallskerze ohne Stop" -
+ * und misst den Stop statt das Signal. */
+function baueKontrolle(universum, haltedauerKerzen, schnittTag, vorlauf, stopNiveau, params) {
   var K = {};   // sym -> haelfte -> stunde -> {n, summe}
   Object.keys(universum).forEach(function (sym) {
     var b = universum[sym];
@@ -118,7 +121,16 @@ function baueKontrolle(universum, haltedauerKerzen, schnittTag, vorlauf) {
       var h = stundeVon(b[i][0]);
       var hf = tagVon(b[i][0]) < schnittTag ? 'entdeckung' : 'bestaetigung';
       var z = H[hf][h] = H[hf][h] || { n: 0, summe: 0 };
-      z.n++; z.summe += sH / s0 - 1;            // C3: Anteil, kein Prozent
+      var ende = sH;
+      if (typeof stopNiveau === 'function') {
+        var pf = [];
+        for (var pk = i + 1; pk <= i + haltedauerKerzen; pk++) {
+          pf.push({ auf: b[pk - 1][1], hoch: b[pk][3] != null ? b[pk][3] : b[pk][1],
+            tief: b[pk][4] != null ? b[pk][4] : b[pk][1], schluss: b[pk][1] });
+        }
+        ende = fuehreAus(pf, s0, stopNiveau, params).kurs;
+      }
+      z.n++; z.summe += ende / s0 - 1;          // C3: Anteil, kein Prozent
     }
   });
   return {
@@ -129,9 +141,44 @@ function baueKontrolle(universum, haltedauerKerzen, schnittTag, vorlauf) {
   };
 }
 
+/* ---------- Ausstiegsregeln (C6/C7) ----------
+ * Eine Regel liefert NUR ein Stop-Niveau, berechnet aus abgeschlossenen Kerzen:
+ *   stopNiveau(abgeschlossen, einKurs, params) -> Zahl | null
+ * abgeschlossen ist eine Liste von {auf, hoch, tief, schluss} - die Kerzen NACH dem
+ * Einstieg, die bereits vorbei sind. Die laufende Kerze ist nie dabei.
+ *
+ * Die Maschine wendet das Niveau auf die naechste Kerze an und fuellt zum
+ * SCHLECHTEREN aus Stop und erstem handelbaren Kurs. Genau diese beiden Regeln
+ * haben am 23.08.2026 aus einem t von 15,7 ein t von -0,75 gemacht:
+ *   erster Wurf (Hoch und Tief derselben Kerze):        +0,400 Pp, t 15,74
+ *   ohne Vorgriff, aber Fuellung zum Wunschkurs:        +0,189 Pp, t  5,96
+ *   mit ehrlicher Fuellung:                             -0,023 Pp, t -0,75
+ * Der ganze scheinbare Nutzen war die Annahme, man haette den Hoechstkurs abgepasst
+ * und werde bei jeder Luecke trotzdem zum Wunschkurs bedient. */
+function fuehreAus(pfad, einKurs, stopNiveau, params) {
+  var abgeschlossen = [];
+  var stop = null;
+  for (var k = 0; k < pfad.length; k++) {
+    var p = pfad[k];
+    /* Zuerst pruefen: Der Stop aus den VORHERIGEN Kerzen gilt fuer diese hier. */
+    if (stop != null && p.tief <= stop) {
+      /* Fuellpreis: der schlechtere aus Stop und erstem handelbaren Kurs. Wer bei
+       * Eroeffnung schon unter dem Stop liegt, bekommt nicht den Stop. */
+      return { kerze: k + 1, kurs: Math.min(stop, p.auf), grund: 'Stop' };
+    }
+    abgeschlossen.push(p);
+    /* Erst JETZT darf die Regel rechnen - mit dieser Kerze als abgeschlossener. */
+    var s = null;
+    try { s = stopNiveau(abgeschlossen, einKurs, params); } catch (e) { s = null; }
+    stop = (typeof s === 'number' && isFinite(s)) ? s : null;
+  }
+  return { kerze: pfad.length, kurs: pfad[pfad.length - 1].schluss, grund: 'Zeit' };
+}
+
 /* ============================================================================
  * HAUPTFUNKTION
  * strategie: { key, grund, zeitrahmen, haltedauerKerzen, signal(bars,i,params)->{dir}|null,
+ *              stopNiveau?(abgeschlossen, einKurs, params) -> Zahl|null,
  *              params, varianten?: [params...], richtung: 'long'|'short'|'beide',
  *              universum?: 'aktien'|'alle'|function(sym), kosten?: {spanneBp} }
  * archivPfad: Ordner mit bars_<iv>_<SYM>.json
@@ -187,7 +234,10 @@ function messe(strategie, archivPfad, optionen) {
 
   /* --- Kontrolle (A1-A5) --- */
   var H = S.haltedauerKerzen, vorlauf = VERFAHREN.mindestKerzenVorlauf;
-  var K = baueKontrolle(U, H, schnittTag, vorlauf);
+  /* Die Kontrolle wird je Variante gebraucht, wenn es eine Ausstiegsregel gibt -
+   * ihre Parameter aendern ja den Ausstieg. Ohne Regel genuegt eine. */
+  var K = baueKontrolle(U, H, schnittTag, vorlauf,
+    typeof S.stopNiveau === 'function' ? S.stopNiveau : null, varianten[0]);
   P.entscheide('A2 Kontrolle', { art: VERFAHREN.kontrolle, haltedauerKerzen: H },
     'Erwartung ueber ALLE Kerzen desselben Symbols zur selben UTC-Stunde, getrennt je Haelfte',
     'Keine Zufallsziehung (A2), keine Listenpaarung (A3), kein Zeitbezug zum Signal (A4), je Haelfte getrennt (A5). ' +
@@ -197,7 +247,7 @@ function messe(strategie, archivPfad, optionen) {
   var spanneBp = (S.kosten && S.kosten.spanneBp != null) ? S.kosten.spanneBp : 5;
   var ergebnisse = varianten.map(function (params, vi) {
     var roh = [], ueber = [], ohneKontrolle = 0, nSignale = 0, nLong = 0, nShort = 0;
-    var gruende = {};
+    var gruende = {}, kerzenSumme = 0;
     syms.forEach(function (sym) {
       var b = U[sym];
       for (var i = vorlauf; i < b.length - H; i++) {
@@ -210,10 +260,27 @@ function messe(strategie, archivPfad, optionen) {
         nSignale++; if (dir > 0) nLong++; else nShort++;
         var s0 = b[i][1], sH = b[i + H][1];
         if (!(s0 > 0) || !(sH > 0)) { gruende.kurs = (gruende.kurs || 0) + 1; continue; }
+        /* Mit Ausstiegsregel: den Kursverlauf der Haltedauer sammeln und die Regel
+         * anwenden. Ohne Regel bleibt es beim Zeit-Ausstieg - dann ist sH der Schluss
+         * nach H Kerzen, wie bisher. */
+        var ausKurs = sH, ausKerze = H, ausGrund = 'Zeit';
+        if (typeof S.stopNiveau === 'function') {
+          var pfad = [];
+          for (var pk = i + 1; pk <= i + H; pk++) {
+            pfad.push({ auf: b[pk - 1][1],
+              hoch: b[pk][3] != null ? b[pk][3] : b[pk][1],
+              tief: b[pk][4] != null ? b[pk][4] : b[pk][1],
+              schluss: b[pk][1] });
+          }
+          var a = fuehreAus(pfad, s0, S.stopNiveau, params);
+          ausKurs = a.kurs; ausKerze = a.kerze; ausGrund = a.grund;
+          gruende['aus_' + ausGrund] = (gruende['aus_' + ausGrund] || 0) + 1;
+          kerzenSumme += ausKerze;
+        }
         var tag = tagVon(b[i][0]), hf = tag < schnittTag ? 'entdeckung' : 'bestaetigung';
         var erw = K.erwartung(sym, stundeVon(b[i][0]), hf);
         if (erw == null) { ohneKontrolle++; continue; }
-        var r = (sH / s0 - 1) * dir;                       // C3: Anteil
+        var r = (ausKurs / s0 - 1) * dir;                  // C3: Anteil
         roh.push({ tag: tag, hf: hf, wert: r });
         ueber.push({ tag: tag, hf: hf, wert: r - erw * dir });   // Ueberschuss gegen die Erwartung
       }
@@ -231,6 +298,10 @@ function messe(strategie, archivPfad, optionen) {
     // C5: Kosten einmal, an einer Stelle, als eigenes Feld
     var kostenAnteil = 2 * spanneBp / 10000;
     return { variante: vi, params: params, signale: nSignale, long: nLong, short: nShort,
+      ausstieg: typeof S.stopNiveau === 'function'
+        ? { art: 'Regel', mittlereKerzen: nSignale ? kerzenSumme / nSignale : null,
+            hinweis: 'Stop-Niveau nur aus abgeschlossenen Kerzen; Fuellung zum schlechteren aus Stop und erstem handelbaren Kurs.' }
+        : { art: 'Zeit', mittlereKerzen: H },
       ohneKontrolle: ohneKontrolle, verworfen: gruende,
       entdeckung: E, bestaetigung: B, gesamt: G,
       kosten: { spanneBp: spanneBp, jeUmlaufAnteil: kostenAnteil },

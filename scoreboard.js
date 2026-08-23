@@ -10,6 +10,18 @@
  * Sortierung nach BELEGSTATUS, nicht nach Rendite. Eine Strategie mit +3 % und t=0,8
  * steht unter einer mit +0,5 % und t=2,4 - sonst gewinnt immer das Rauschen. */
 (function () {
+  /* Bei einer Ausstiegsregel ist die vorgegebene Haltedauer nur eine Obergrenze.
+   * Die tatsaechliche steht im Protokoll und gehoert daneben - sonst vergleicht man
+   * eine Messung ueber 8 Kerzen mit einer ueber 2,4. Reine Anzeige, nichts gerechnet. */
+  function ausstiegText(p) {
+    var a = (p.ergebnisse && p.ergebnisse[0] && p.ergebnisse[0].ausstieg) || null;
+    if (!a || a.art !== 'Regel') return '';
+    var k = p.ergebnisse.map(function (e) { return (e.ausstieg && e.ausstieg.mittlereKerzen) || 0; });
+    var lo = Math.min.apply(null, k), hi = Math.max.apply(null, k);
+    return ' · Ausstieg <b>per Regel</b>, tatsächlich ' +
+      (lo.toFixed(1) === hi.toFixed(1) ? lo.toFixed(1) : lo.toFixed(1) + '–' + hi.toFixed(1)) + ' Kerzen';
+  }
+
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function pp(x, d) { return x == null || !isFinite(x) ? '–' : ((x >= 0 ? '+' : '') + (x * 100).toFixed(d == null ? 3 : d)); }
   function t2(x) { return x == null || !isFinite(x) ? '–' : (x >= 0 ? '+' : '') + x.toFixed(2); }
@@ -97,7 +109,7 @@
       '<h3 style="margin:0;">' + esc(z.key) + ' – Entscheidungsweg</h3>' +
       '<span style="font-size:11.5px; color:var(--muted);">Verfahren ' + esc(p.verfahren.version) + ' · ' + esc(z.aktuell.datei) + '</span></div>' +
       '<div style="font-size:12px; color:var(--ink-2); margin:6px 0 10px;"><b>Grund:</b> ' + esc(p.strategie.grund) + '</div>' +
-      '<div style="font-size:12px; margin-bottom:10px;">Universum: <b>' + p.universum.werte + '</b> Werte, <b>' + p.universum.handelstage + '</b> Handelstage (' + esc(p.universum.von) + ' bis ' + esc(p.universum.bis) + '), Schnitt am <b>' + esc(p.universum.schnittTag) + '</b> · Haltedauer <b>' + p.strategie.haltedauerKerzen + '</b> Kerzen · Richtung <b>' + esc(p.strategie.richtung) + '</b> · ' + p.tests + ' Test(s)</div>';
+      '<div style="font-size:12px; margin-bottom:10px;">Universum: <b>' + p.universum.werte + '</b> Werte, <b>' + p.universum.handelstage + '</b> Handelstage (' + esc(p.universum.von) + ' bis ' + esc(p.universum.bis) + '), Schnitt am <b>' + esc(p.universum.schnittTag) + '</b> · Haltedauer <b>' + p.strategie.haltedauerKerzen + '</b> Kerzen · Richtung <b>' + esc(p.strategie.richtung) + '</b> · ' + p.tests + ' Test(s)' + ausstiegText(p) + '</div>';
     // Jede Entscheidung, nummeriert - das ist die 100-%-Einsicht
     h += '<table class="tbl" style="width:100%; font-size:12px;"><tr><th>#</th><th>Regel</th><th>Eingabe</th><th>Ergebnis</th><th>Begründung</th></tr>';
     (p.entscheidungen || []).forEach(function (e) {
@@ -143,9 +155,14 @@
       var richtung = document.getElementById('stRichtung').value;
       var spanne = parseFloat(document.getElementById('stSpanne').value);
       var varTxt = (document.getElementById('stVarianten').value || '').trim();
+      var stop = (document.getElementById('stStop').value || '').trim();
       if (!/^[a-z0-9][a-z0-9-]{1,40}$/.test(key)) { st.textContent = 'Kennung: nur Kleinbuchstaben, Ziffern, Bindestrich.'; return; }
       if (grund.length < 20) { st.textContent = 'Der Grund braucht mindestens 20 Zeichen – ohne Grund misst die Maschine nicht.'; return; }
       if (!/function\s+signal\s*\(/.test(sig)) { st.textContent = 'Die Signalfunktion muss „function signal(bars, i, params)" heißen.'; return; }
+      /* Ohne Namen kann die Maschine die Regel nicht anbinden. Der Rest der Pruefung
+       * passiert dort, wo sie hingehoert - in der Maschine, nicht in der Oberflaeche. */
+      if (stop && stop.indexOf('function stopNiveau') === -1) {
+        st.textContent = 'Die Ausstiegsregel muss „function stopNiveau(abgeschlossen, einKurs, params)“ heißen – oder das Feld bleibt leer.'; return; }
       if (!(halten >= 1 && halten <= 130)) { st.textContent = 'Haltedauer: 1 bis 130 Kerzen.'; return; }
       var varianten = null;
       if (varTxt) { try { varianten = JSON.parse(varTxt); if (!Array.isArray(varianten)) throw new Error(); } catch (e) { st.textContent = 'Varianten: JSON-Liste erwartet, z. B. [{"a":1},{"a":2}].'; return; } }
@@ -156,6 +173,7 @@
         ' *   node studien/messmaschine/messen.js <diese Datei>\n */\n' +
         "var Q = require(require('path').join(process.env.STOCK_DASHBOARD_QUELLE || '.', 'quant.js'));\n" +
         sig + '\n' +
+        (stop ? stop + "\n" : '') +
         'module.exports = {\n' +
         '  key: ' + JSON.stringify(key) + ',\n' +
         '  grund: ' + JSON.stringify(grund) + ',\n' +
@@ -166,6 +184,7 @@
         '  kosten: { spanneBp: ' + (isFinite(spanne) ? spanne : 5) + ' },\n' +
         (varianten ? '  varianten: ' + JSON.stringify(varianten) + ',\n' : '') +
         '  signal: signal,\n' +
+        (stop ? "  stopNiveau: stopNiveau,\n" : '') +
         '};\n';
       btn.disabled = true; st.textContent = 'Lege ab …';
       try {

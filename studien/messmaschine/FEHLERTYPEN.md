@@ -39,6 +39,24 @@ Die Maschine ist nicht klug. Sie ist nur an diesen Stellen schon einmal gestolpe
 | C3 | Doppelte Prozentumrechnung | 54,4 % → „5.444 %" | Alle Renditen intern als Anteil; Prozent nur in der Ausgabe, einmal |
 | C4 | Handelstage als Kalendertage | 252/365-Näherung | Handelstage werden aus der Achse gezählt |
 | C5 | Kosten doppelt abgezogen | Netto-Spalte nochmal um Hürde gemindert | Kosten werden **einmal** an **einer** Stelle abgezogen; Brutto und Netto sind getrennte Felder |
+| C6 | Vorgriff innerhalb der Kerze | MCP-Stop 23.08.: Hoch aus derselben Kerze, gegen deren Tief geprüft wurde; t = 15,74 | Eine Ausstiegsregel bekommt **nur abgeschlossene** Kerzen und liefert **nur ein Niveau**; die Maschine wendet es auf die **nächste** Kerze an |
+| C7 | Wunsch-Ausführung | derselbe Lauf: Füllung zum Stopkurs auch bei Eröffnung darunter; t 5,96 → −0,75 nach Korrektur | Die Maschine füllt zum **schlechteren** aus Stop und erstem handelbaren Kurs; die Regel bestimmt den Füllpreis nie selbst |
+
+**Woher C6 und C7 stammen:** Am 23.08.2026 wurde der Ausstieg aus dem TradingView-Skript
+„MCP Stop Strategy [JARUTIR]" geprüft — außerhalb dieser Maschine, weil sie damals nur
+Einstiege mit fester Haltedauer kannte. Genau dort passierten beide Fehler:
+
+| Fassung | je Signal | t |
+|---|---|---|
+| erster Wurf (Hoch und Tief derselben Kerze) | +0,400 Pp | 15,74 |
+| ohne Vorgriff, aber Füllung zum Wunschkurs | +0,189 Pp | 5,96 |
+| mit ehrlicher Füllung | −0,023 Pp | −0,75 |
+
+Der gesamte scheinbare Nutzen war die Annahme, man hätte den Höchstkurs abgepasst und
+werde bei jeder Lücke trotzdem zum Wunschkurs bedient. Seit dem Ausbau kann eine
+Ausstiegsregel das nicht mehr — nicht weil sie es lassen soll, sondern weil sie die
+dafür nötigen Daten nie zu sehen bekommt. Die Kontrolle bekommt denselben Ausstieg;
+sonst misst man den Stop statt das Signal.
 
 ## D — Gemessenes Objekt ≠ implementiertes Objekt
 

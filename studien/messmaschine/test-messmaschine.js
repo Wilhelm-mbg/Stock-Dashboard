@@ -127,6 +127,65 @@ ok(rA.strategie.grund === immerKaufen.grund && rA.strategie.haltedauerKerzen ===
 ok(rA.verfahren && rA.verfahren.version, 'E3: Das Verfahren ist versioniert');
 ok(typeof rA.universum.werte === 'number' && typeof rA.ergebnisse[0].signale === 'number', 'E2: Zahl der Werte und Signale steht dabei');
 
+/* ========== C6/C7: Ausstiegsregeln koennen nicht mogeln ========== */
+console.log('\n12) C6/C7: Ausstiegsregeln - kein Vorgriff, keine Wunsch-Ausfuehrung');
+(function () {
+  var mm = fs.readFileSync(__dirname + '/messmaschine.js', 'utf8');
+  ok(/function fuehreAus\(pfad, einKurs, stopNiveau, params\)/.test(mm),
+     'Die Maschine fuehrt den Ausstieg selbst aus - die Regel liefert nur ein Niveau');
+
+  /* C6: Die Regel darf die laufende Kerze nie sehen. Nachweis mit einer Regel, die
+   * mitschreibt, welche Kerzen sie zu sehen bekam. */
+  var gesehen = [];
+  var pfad = [
+    { auf: 100, hoch: 110, tief: 99, schluss: 105 },   // Hoch 110 und Tief 99 in DERSELBEN Kerze
+    { auf: 105, hoch: 106, tief: 104, schluss: 105 },
+    { auf: 105, hoch: 105, tief: 103, schluss: 104 },
+  ];
+  var F = new Function('return ' + mm.slice(mm.indexOf('function fuehreAus'), mm.indexOf('/* ============================================================================\n * HAUPTFUNKTION')))();
+  F(pfad, 100, function (abgeschlossen) {
+    gesehen.push(abgeschlossen.length);
+    var h = 100; abgeschlossen.forEach(function (p) { if (p.hoch > h) h = p.hoch; });
+    return h > 100 ? 100 + (h - 100) * 0.9 : null;
+  }, {});
+  ok(gesehen.length && gesehen[0] === 1,
+     'C6: Beim ersten Aufruf ist genau EINE Kerze abgeschlossen - die Regel sieht nie die laufende');
+  /* Die Reihenfolge mit einer Regel pruefen, die nie einen Stop setzt - sonst endet
+   * der Trade vorzeitig und die Regel wird gar nicht mehr gefragt. */
+  var folge = [];
+  F(pfad, 100, function (abg) { folge.push(abg.length); return null; }, {});
+  ok(folge.join(',') === '1,2,3',
+     'C6: Die Regel sieht die Kerzen streng der Reihe nach, immer eine mehr', folge.join(','));
+
+  /* Und der Beweis am Ergebnis: Mit dem Hoch 110 aus Kerze 1 liegt der 90-%-Stop bei
+   * 109. Kerze 1 hatte ein Tief von 99 - haette die Regel in die laufende Kerze sehen
+   * duerfen, waere sie bei 109 ausgestiegen. Darf sie nicht: der Stop gilt ab Kerze 2. */
+  var a1 = F(pfad, 100, function (abg) {
+    var h = 100; abg.forEach(function (p) { if (p.hoch > h) h = p.hoch; });
+    return h > 100 ? 100 + (h - 100) * 0.9 : null;
+  }, {});
+  ok(a1.kerze === 2, 'C6: Der Ausstieg erfolgt fruehestens in der Kerze NACH der, die den Stop setzte', 'Kerze ' + a1.kerze);
+  ok(a1.kurs < 109, 'C6: Nicht zum Stop von 109 gefuellt - das waere der Vorgriff gewesen', a1.kurs);
+
+  /* C7: Eroeffnet die Kerze unter dem Stop, wird zum Eroeffnungskurs gefuellt. */
+  var luecke = [
+    { auf: 100, hoch: 120, tief: 119, schluss: 120 },   // steigt auf 120
+    { auf: 100, hoch: 101, tief: 95, schluss: 96 },     // Luecke: eroeffnet bei 100, Stop lag bei 118
+  ];
+  var a2 = F(luecke, 100, function (abg) {
+    var h = 100; abg.forEach(function (p) { if (p.hoch > h) h = p.hoch; });
+    return h > 100 ? 100 + (h - 100) * 0.9 : null;     // Stop = 118
+  }, {});
+  ok(a2.grund === 'Stop' && a2.kurs === 100,
+     'C7: Bei einer Luecke unter den Stop wird zum ersten handelbaren Kurs gefuellt, nicht zum Stop',
+     'gefuellt zu ' + a2.kurs + ' statt 118');
+
+  /* Ohne Gewinn kein Stop - sonst loest jeder Ruecksetzer sofort aus. */
+  var a3 = F([{ auf: 100, hoch: 100, tief: 98, schluss: 99 }, { auf: 99, hoch: 99, tief: 97, schluss: 98 }], 100,
+    function (abg) { var h = 100; abg.forEach(function (p) { if (p.hoch > h) h = p.hoch; }); return h > 100 ? 100 + (h - 100) * 0.9 : null; }, {});
+  ok(a3.grund === 'Zeit', 'Ohne Gewinn greift der MCP-Stop nicht - der Trade laeuft bis zum Zeit-Ausstieg');
+})();
+
 /* ========== Eine ECHTE Kante wird erkannt ========== */
 console.log('\n11) Gegenprobe: eine eingebaute Kante wird gefunden');
 leereArchiv();

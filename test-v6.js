@@ -3418,10 +3418,32 @@ console.log('\n44) Messmaschine, Scoreboard und Strategie-Eingabe (23.08.2026)')
   ok(r.status === 0 && /ALLE TESTS BESTANDEN/.test(r.stdout), 'test-messmaschine.js besteht (jeder Fehlertyp aus FEHLERTYPEN.md als Falle)');
   var ft = fs.readFileSync(__dirname + '/studien/messmaschine/FEHLERTYPEN.md', 'utf8');
   var kennungen = (ft.match(/\|\s*([A-E]\d)\s*\|/g) || []).length;
-  ok(kennungen >= 23, 'FEHLERTYPEN.md fuehrt mindestens 23 Fehlertypen', kennungen);
+  ok(kennungen >= 25, 'FEHLERTYPEN.md fuehrt mindestens 25 Fehlertypen', kennungen);
 
   ok(/data-tab="messung"/.test(h) && /id="scoreboard"/.test(h) && /id="stAblegen"/.test(h),
      'Reiter Messung mit Scoreboard und Eingabe ist in der Oberflaeche');
+
+  /* Ausstiegsregeln (C6/C7, 23.08.2026). Die Maschine darf sie NICHT der Regel
+   * ueberlassen: Wer selbst entscheidet, wann und zu welchem Kurs verkauft wird,
+   * verkauft rueckblickend zum Hoechstkurs. */
+  var mm = fs.readFileSync(__dirname + '/studien/messmaschine/messmaschine.js', 'utf8');
+  ok(/function fuehreAus\(pfad, einKurs, stopNiveau, params\)/.test(mm),
+     'Die Maschine fuehrt den Ausstieg selbst aus - die Regel liefert nur ein Niveau');
+  ok(/Math\.min\(stop, p\.auf\)/.test(mm),
+     'C7: Gefuellt wird zum schlechteren aus Stop und erstem handelbaren Kurs, nie zum Wunschkurs');
+  ok(/baueKontrolle\(U, H, schnittTag, vorlauf,[\s\S]{0,200}stopNiveau/.test(mm),
+     'Die Kontrolle bekommt denselben Ausstieg - sonst misst man den Stop statt das Signal');
+  ok(/\|\s*C6\s*\|/.test(ft) && /\|\s*C7\s*\|/.test(ft),
+     'C6 und C7 stehen in FEHLERTYPEN.md');
+
+  /* Der Weg muss auch durch die Oberflaeche fuehren - sonst weicht man wieder auf
+   * ein Wegwerf-Skript aus, und genau dort passierten beide Fehler. */
+  var sb2 = fs.readFileSync(__dirname + '/scoreboard.js', 'utf8');
+  ok(/id="stStop"/.test(h), 'Die Strategie-Eingabe hat ein Feld fuer die Ausstiegsregel');
+  ok(/stopNiveau: stopNiveau/.test(sb2),
+     'Eine eingegebene Ausstiegsregel landet als stopNiveau in der Strategiedatei');
+  ok(/ausstiegText/.test(sb2),
+     'Das Scoreboard zeigt bei einer Ausstiegsregel die TATSAECHLICHE Haltedauer an');
 })();
 
 
