@@ -95,16 +95,47 @@ statt der Stunden-EMA200. Und 55 Bestätigungstage sind knapp über der Grenze v
 **Der Liquiditätsfilter tut nichts.** 1.151 → 1.142 Signale. Alle 191 Archivwerte
 liegen über 50 Mio $ Tagesumsatz.
 
-## Offene Differenz zum Live-Handel
+## Der Ausstieg — geklärt, gegen meine eigene Vermutung
 
-Gemessen wurde mit **26 Kerzen ohne Stop**. Live läuft ein Not-Stop bei −25 %. Der
-hätte den DLTR-Trade (−27 Pp) gekappt und den AFRM-Gewinn (+29,6 Pp) laufen lassen —
-die Asymmetrie wirkt hier **zugunsten** der Strategie, und zwar an genau der Stelle,
-die alles entscheidet.
+Im ersten Wurf stand hier, die Messung laufe ohne Stop, live aber mit einem, und
+**die Asymmetrie wirke zugunsten der Strategie**. Das war eine Vermutung, und sie
+war falsch. Nachgezählt (rein beschreibend, kein Test — es wird kein Überschuss
+gegen eine Kontrolle gerechnet):
 
-Das nachzumessen wäre ein vierter Test. Nach den eigenen Abbruchregeln der
-Vorregistrierung wird er jetzt nicht nachgeschoben, sondern separat vorregistriert.
-Er ist der aussichtsreichste offene Punkt.
+| Stop | getroffen | Ergebnis dieser Trades **ohne** Stop | mit Stop | Wirkung je Signal |
+|---|---|---|---|---|
+| −20 % (live) | 11 von 1.151 (0,96 %) | −12,40 % | −20 % | **−0,073 Pp** |
+| −15 % | 31 (2,69 %) | −12,02 % | −15 % | −0,080 Pp |
+| −10 % | 112 (9,73 %) | −7,07 % | −10 % | −0,285 Pp |
+| −5 % | 370 (32,15 %) | −2,58 % | −5 % | −0,778 Pp |
+
+Der Live-Stop steht bei **−20 %** (`slOf` liest `scalpSL: 20`, nicht das Feld
+`sl: -0.25` — auch das hatte ich zuerst falsch genannt). Er greift in **11 von 1.151
+Trades**, und diese elf endeten ohne ihn im Mittel bei −12,40 %. Er schneidet also
+Positionen ab, die sich überwiegend wieder erholen, und kostet rund **0,073 Pp je
+Signal**.
+
+Und das gilt für jede Verschärfung, monoton: −5 % würde 32 % aller Trades treffen und
+−0,778 Pp kosten — mehr als der gesamte gemessene Überschuss.
+
+Die beiden Einzeltrades zeigen, warum:
+
+```
+DLTR 2024-08-29 (schlechtester)  Zwischentief −29,52 % nach 24 Kerzen  →  Ende −26,96 %
+AFRM 2025-04-04 (bester)         Zwischentief  −5,00 % nach  6 Kerzen  →  Ende +30,25 %
+```
+
+Der beste Trade des ganzen Datensatzes wäre bei einem −5-%-Stop ausgestoppt worden.
+
+**Damit entfällt der geplante vierte Test.** Die Richtung ist eindeutig und über alle
+vier Stufen monoton; es gibt nichts zu optimieren. Was hier gemessen wurde, bestätigt
+die Entwurfsentscheidung, die seit dem 21.08. in `quant.js` steht („KEIN Gewinnziel,
+kein Deckel — wer die Ausreisser kappt, behaelt nur die Messer") — jetzt gegen die
+gepaarte Kontrolle, statt nur behauptet.
+
+Einschränkung, die dazugehört: Diese Rechnung läuft über **beide** Hälften und ist
+deskriptiv. Sie taugt, weil jede Stufe in dieselbe Richtung zeigt — ein Rosinenpicken
+ist hier nicht möglich. Für ein Urteil wäre sie es nicht.
 
 ## Was das für den laufenden Handel heißt
 
