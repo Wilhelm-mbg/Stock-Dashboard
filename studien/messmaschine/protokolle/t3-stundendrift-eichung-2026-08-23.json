@@ -1,0 +1,45 @@
+{
+ "verfahren": "eichung-permutation/2.0.0",
+ "strategie": "t3-stundendrift",
+ "gemessenAm": "2026-08-23T21:27:09.322Z",
+ "laeufe": 20,
+ "a7Aktiv": true,
+ "a7Fenster": 430,
+ "hinweis": "Eichung, KEIN Befund ueber den Markt. Die Renditen sind echt, nur ihre Reihenfolge ist innerhalb jeder UTC-Stunde vertauscht. t-Werte auf Nullarchiven sind systematisch zu gross (A8).",
+ "varianten": [
+  {
+   "variante": 0,
+   "params": {
+    "k": 1
+   },
+   "signale": 158237,
+   "verzerrungPp": -0.0002580973639597902,
+   "verzerrungFehlerPp": 0.0005677798972055033,
+   "tVerzerrung": -0.45457291677654094,
+   "verzerrungGegenMde": 0.01223003657870797,
+   "bestanden": true,
+   "laeufe": 20,
+   "echtTagesmittelPp": 0.0020543083368310144,
+   "echtT": 0.1946882813363582,
+   "echtMdePp": 0.021103564351485908,
+   "urteil": "nicht-entscheidbar"
+  },
+  {
+   "variante": 1,
+   "params": {
+    "k": 2
+   },
+   "signale": 24842,
+   "verzerrungPp": -0.0005752199131319764,
+   "verzerrungFehlerPp": 0.001945617473634991,
+   "tVerzerrung": -0.2956490270707195,
+   "verzerrungGegenMde": 0.015630021481992384,
+   "bestanden": true,
+   "laeufe": 20,
+   "echtTagesmittelPp": 0.003423496936157581,
+   "echtT": 0.1860482554031509,
+   "echtMdePp": 0.03680224712388892,
+   "urteil": "nicht-entscheidbar"
+  }
+ ]
+}

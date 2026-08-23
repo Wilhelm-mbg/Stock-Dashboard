@@ -214,17 +214,20 @@ ok(rE.urteile[0] === 'bestaetigt', 'Eine echte Kante wird bestaetigt', rE.urteil
 // im Mittel 0,4 % je 8-Kerzen-Fenster). Erwarteter Ueberschuss: 0,8 - 0,4 = 0,4 %.
 ok(Math.abs(rE.ergebnisse[0].bestaetigung.ueberschuss.tagesmittel - 0.004) < 0.001, 'Der Ueberschuss trifft den eingebauten Effekt MINUS den Kontrollanteil (0,8 - 0,4 = 0,4 %)', (rE.ergebnisse[0].bestaetigung.ueberschuss.tagesmittel * 100).toFixed(3) + ' Pp');
 
-/* ========== A6: der Nullpunkt der Maschine ========== */
-console.log('\n13) A6: Signal und Kontrolle aus demselben endlichen Topf');
+/* ========== A6/A7/A8: der Nullpunkt der Maschine ========== */
+console.log('\n13) A6/A7: Signal und Kontrolle aus demselben endlichen Topf');
 (function () {
   var NP = require('./nullversuch-permutation.js');
   var ZIEL = TMP + '-null';
   var r = NP.baue(TMP, ZIEL, 4711);
   ok(r.gebaut > 0, 'Nullversuch-Archiv wird gebaut', r.gebaut + ' Reihen');
 
-  /* Der Stundenmittelwert MUSS erhalten bleiben - sonst waere die Kontrolle eine
-   * andere und der Vergleich wertlos. */
-  function stundenMittel(pfad, datei) {
+  /* Was das Vertauschen erhaelt: die Verteilung, die Umsatzkopplung und die
+   * Kerzenform. Was es NICHT erhaelt: den Topf, den die Maschine wirklich bildet
+   * (ab Kerze 261, je Haelfte getrennt). Der alte Test prueft den vollen Korb und
+   * konnte deshalb nie zeigen, was er behauptete - er steht hier nur noch als
+   * Kennzahl, nicht als Rechtfertigung des Verfahrens. */
+  function korb(pfad, datei) {
     var s = JSON.parse(fs.readFileSync(path.join(pfad, datei), 'utf8')).series;
     var m = {};
     for (var k = 0; k < s.length - 1; k++) {
@@ -235,34 +238,78 @@ console.log('\n13) A6: Signal und Kontrolle aus demselben endlichen Topf');
     Object.keys(m).forEach(function (h) { o[h] = m[h].reduce(function (a, b) { return a + b; }, 0) / m[h].length; });
     return o;
   }
-  var A = stundenMittel(TMP, 'bars_60m_W0.json'), B = stundenMittel(ZIEL, 'bars_60m_W0.json');
+  var A = korb(TMP, 'bars_60m_W0.json'), B = korb(ZIEL, 'bars_60m_W0.json');
   var groesste = 0;
   Object.keys(A).forEach(function (h) { groesste = Math.max(groesste, Math.abs(A[h] - B[h])); });
-  ok(groesste < 1e-12, 'Vertauschen laesst jeden Stundenmittelwert unveraendert - die Kontrolle bleibt dieselbe',
+  ok(groesste < 1e-12, 'Der volle Stundenkorb bleibt erhalten (nicht zu verwechseln mit dem Topf der Maschine)',
      'groesste Abweichung ' + groesste.toExponential(2));
 
-  /* Und die Gegenprobe zur Gegenprobe: Die eingebaute Kante MUSS verschwinden.
-   * Bliebe sie, wuerde der Nullversuch nichts pruefen. */
+  /* Die eingebaute Kante MUSS das Vertauschen nicht ueberleben. */
   var S = { key: 'gegenprobe-null',
     grund: 'Dieselbe Auswahl wie in Block 11, nur auf vertauschten Daten. Die eingebaute Kante muss verschwinden.',
     zeitrahmen: '60m', haltedauerKerzen: 8, richtung: 'long', universum: 'aktien', kosten: { spanneBp: 0 },
+    leseFensterKerzen: 0,
     signal: function (bars, i) { return i % 20 === 0 ? { dir: 1 } : null; } };
-  var echt = M.messe(S, TMP);
-  var leer = M.messe(S, ZIEL);
-  var tEcht = echt.ergebnisse[0].bestaetigung.ueberschuss.t;
-  var tLeer = leer.ergebnisse[0].bestaetigung.ueberschuss.t;
+  var tEcht = M.messe(S, TMP).ergebnisse[0].bestaetigung.ueberschuss.t;
+  var tLeer = M.messe(S, ZIEL).ergebnisse[0].bestaetigung.ueberschuss.t;
   ok(Math.abs(tEcht) > 5, 'Auf den echten Daten findet die Maschine die eingebaute Kante', 't=' + tEcht.toFixed(2));
   ok(Math.abs(tLeer) < Math.abs(tEcht) / 3,
      'Nach dem Vertauschen ist die Kante weg - der Nullversuch prueft also wirklich etwas',
      't=' + tLeer.toFixed(2) + ' statt ' + tEcht.toFixed(2));
 
-  /* Das Werkzeug muss den vorsichtigeren Fehler nehmen. Vertauschen zerstoert
-   * Volatilitaets-Cluster; seine Streuung allein waere zu klein. */
+  /* A7 beseitigt die Verzerrung - der eigentliche Test. Ein Signal, das auf das
+   * Mittel seines eigenen Rueckblicks konditioniert, schoepft aus dem Kontrolltopf.
+   * OHNE leseFensterKerzen muss das eine Verzerrung geben, MIT nicht. */
+  /* WICHTIG - hier steckte beim ersten Wurf der Fehler: Der Rueckblick muss die
+   * Kerzen DERSELBEN Stunde lesen wie der Kontrolltopf. Ein Fenster ueber die
+   * Vorstunde ueberlappt gar nicht und erzeugt folglich auch keine Verzerrung.
+   * (Genau das ist die schaerfste Placebo-Probe fuer A6.) */
+  function drift(bars, i) {
+    var s = 0, s2 = 0, n = 0;
+    for (var k = i - 140; k < i; k += 7) {
+      if (k < 0 || k + 1 > i) continue;
+      var r = bars[k + 1][1] / bars[k][1] - 1;   // Schritt DIESER Stunde, wie im Topf
+      s += r; s2 += r * r; n++;
+    }
+    if (n < 10) return null;
+    var mu = s / n, va = (s2 - n * mu * mu) / (n - 1);
+    return va > 0 ? { mu: mu, se: Math.sqrt(va / n) } : null;
+  }
+  var D0 = { key: 'a7-ohne', grund: 'Konditioniert auf den eigenen Rueckblick derselben Stunde - ohne Angabe des Lesefensters.',
+    zeitrahmen: '60m', haltedauerKerzen: 1, richtung: 'long', universum: 'aktien', kosten: { spanneBp: 0 },
+    signal: function (bars, i) { var d = drift(bars, i); return d && d.mu >= d.se ? { dir: 1 } : null; } };
+  var D1 = Object.assign({}, D0, { key: 'a7-mit', leseFensterKerzen: 147 });
+  var ohne = M.messe(D0, ZIEL).ergebnisse[0].bestaetigung.ueberschuss;
+  var mit = M.messe(D1, ZIEL).ergebnisse[0].bestaetigung.ueberschuss;
+  ok(Math.abs(ohne.tagesmittel) > Math.abs(mit.tagesmittel) * 2,
+     'A7 beseitigt die Verzerrung: ohne Lesefenster deutlich groesser als mit',
+     'ohne ' + (ohne.tagesmittel * 100).toFixed(4) + ' Pp (t ' + ohne.t.toFixed(2) + ') gegen mit ' +
+     (mit.tagesmittel * 100).toFixed(4) + ' Pp (t ' + mit.t.toFixed(2) + ')');
+  ok(Math.abs(mit.t) < Math.abs(ohne.t),
+     'Und der t-Wert faellt mit', 'ohne t=' + ohne.t.toFixed(2) + ', mit t=' + mit.t.toFixed(2));
+
+  /* Fehlt die Angabe, darf die Maschine das nicht verschweigen. */
+  var pOhne = M.messe(D0, TMP);
+  ok((pOhne.warnungen || []).some(function (w) { return w.kennung === 'A7'; }),
+     'Ohne leseFensterKerzen warnt die Maschine - kein stillschweigendes Null');
+  var pMit = M.messe(D1, TMP);
+  ok(!(pMit.warnungen || []).some(function (w) { return w.kennung === 'A7'; }),
+     'Mit Angabe verschwindet die Warnung');
+  ok(pMit.entscheidungen.some(function (e) { return e.regel.indexOf('A7') !== -1 && e.ergebnis.angewandt === true; }),
+     'Die A7-Entscheidung steht mit Fensterlaenge im Protokoll');
+
+  /* A8: Das Werkzeug darf aus einem Nullarchiv keine Urteile mehr ableiten. */
   var mn = fs.readFileSync(__dirname + '/messen-mit-null.js', 'utf8');
-  ok(mn.indexOf('Math.max(st.sd, seAnalytisch') !== -1,
-     'messen-mit-null.js nimmt den GROESSEREN aus Nullversuch-Streuung und analytischem Fehler');
-  ok(mn.indexOf('Bonferroni-Schwelle nicht im Protokoll gefunden') !== -1,
-     'Fehlt die Bonferroni-Schwelle, bricht das Werkzeug ab statt einen Ersatzwert zu nehmen');
+  ok(mn.indexOf('KEINE Urteile aus dieser Tabelle') !== -1,
+     'A8: Das Eichwerkzeug faellt keine Urteile mehr - t-Werte auf Nullarchiven sind zu gross');
+  ok(mn.indexOf('Verzerrung') !== -1 && mn.indexOf('bestaetigt') === -1,
+     'Es meldet nur noch Verzerrung, kein bestaetigt/widerlegt');
+
+  /* Der Wuerfel muss ganzzahlig rechnen - der alte fiel auf einen Ring der Laenge 10.466. */
+  var w = NP.wuerfelAus(1000), gesehen = {}, doppelt = 0;
+  for (var z = 0; z < 60000; z++) { var x = Math.floor(w() * 1e9); if (gesehen[x]) doppelt++; gesehen[x] = 1; }
+  ok(doppelt < 10, 'Der Wuerfel wiederholt sich in 60.000 Ziehungen so gut wie nie', doppelt + ' Wiederholungen');
+
   try { fs.rmSync(ZIEL, { recursive: true, force: true }); } catch (e) { }
 })();
 

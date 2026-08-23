@@ -111,7 +111,10 @@ function stundeVon(ms) { return new Date(ms).getUTCHours(); }
  * Signal. Sonst vergleicht man "Signal mit Stop" gegen "Zufallskerze ohne Stop" -
  * und misst den Stop statt das Signal. */
 function baueKontrolle(universum, haltedauerKerzen, schnittTag, vorlauf, stopNiveau, params) {
-  var K = {};   // sym -> haelfte -> stunde -> {n, summe}
+  /* A7: Der Topf haelt jetzt die einzelnen Kerzen (Index + Wert), nicht nur Summe und
+   * Anzahl. Nur so laesst sich das Lesefenster des Signals wieder herausrechnen.
+   * Praefixsummen dazu, damit das je Signal O(log n) bleibt statt O(Topfgroesse). */
+  var K = {};   // sym -> haelfte -> stunde -> {idx:[], wert:[], praefix:[]}
   Object.keys(universum).forEach(function (sym) {
     var b = universum[sym];
     var H = K[sym] = { entdeckung: {}, bestaetigung: {} };
@@ -120,7 +123,7 @@ function baueKontrolle(universum, haltedauerKerzen, schnittTag, vorlauf, stopNiv
       var sH = b[i + haltedauerKerzen][1]; if (!(sH > 0)) continue;
       var h = stundeVon(b[i][0]);
       var hf = tagVon(b[i][0]) < schnittTag ? 'entdeckung' : 'bestaetigung';
-      var z = H[hf][h] = H[hf][h] || { n: 0, summe: 0 };
+      var z = H[hf][h] = H[hf][h] || { idx: [], wert: [] };
       var ende = sH;
       if (typeof stopNiveau === 'function') {
         var pf = [];
@@ -130,13 +133,43 @@ function baueKontrolle(universum, haltedauerKerzen, schnittTag, vorlauf, stopNiv
         }
         ende = fuehreAus(pf, s0, stopNiveau, params).kurs;
       }
-      z.n++; z.summe += ende / s0 - 1;          // C3: Anteil, kein Prozent
+      z.idx.push(i); z.wert.push(ende / s0 - 1);   // C3: Anteil, kein Prozent
     }
   });
+
+  /* Praefixsummen einmal aufbauen. Die Indexlisten sind aufsteigend, weil die
+   * Schleife oben aufsteigend laeuft - darauf beruht die binaere Suche. */
+  Object.keys(K).forEach(function (sym) {
+    ['entdeckung', 'bestaetigung'].forEach(function (hf) {
+      Object.keys(K[sym][hf]).forEach(function (h) {
+        var z = K[sym][hf][h];
+        var p = new Float64Array(z.wert.length + 1);
+        for (var q = 0; q < z.wert.length; q++) p[q + 1] = p[q] + z.wert[q];
+        z.praefix = p; z.n = z.wert.length; z.summe = p[p.length - 1];
+      });
+    });
+  });
+
+  /* Erste Position mit idx >= ziel (binaere Suche). */
+  function unten(a, ziel) {
+    var lo = 0, hi = a.length;
+    while (lo < hi) { var m = (lo + hi) >> 1; if (a[m] < ziel) lo = m + 1; else hi = m; }
+    return lo;
+  }
+
   return {
-    erwartung: function (sym, stunde, haelfte) {
+    /* A7: Erwartung ueber den Topf OHNE das Fenster [vonIdx, bisIdx]. Wer kein
+     * Fenster angibt, bekommt den ganzen Topf - und die Maschine warnt darueber. */
+    erwartung: function (sym, stunde, haelfte, vonIdx, bisIdx) {
       var z = K[sym] && K[sym][haelfte] && K[sym][haelfte][stunde];
-      return z && z.n >= 20 ? z.summe / z.n : null;   // unter 20 Kerzen: keine Erwartung, Signal faellt raus (ausgewiesen)
+      if (!z || !z.n) return null;
+      var n = z.n, summe = z.summe;
+      if (vonIdx != null) {
+        var a = unten(z.idx, vonIdx), b2 = unten(z.idx, bisIdx + 1);
+        n -= (b2 - a); summe -= (z.praefix[b2] - z.praefix[a]);
+      }
+      /* unter 20 Kerzen: keine Erwartung, Signal faellt raus (ausgewiesen) */
+      return n >= 20 ? summe / n : null;
     },
   };
 }
@@ -180,6 +213,7 @@ function fuehreAus(pfad, einKurs, stopNiveau, params) {
  * strategie: { key, grund, zeitrahmen, haltedauerKerzen, signal(bars,i,params)->{dir}|null,
  *              stopNiveau?(abgeschlossen, einKurs, params) -> Zahl|null,
  *              testfamilie?: {name, testsGesamt, begruendung},
+ *              leseFensterKerzen?: Zahl - wie weit das Signal zurueckliest (A7),
  *              params, varianten?: [params...], richtung: 'long'|'short'|'beide',
  *              universum?: 'aktien'|'alle'|function(sym), kosten?: {spanneBp} }
  * archivPfad: Ordner mit bars_<iv>_<SYM>.json
@@ -247,9 +281,39 @@ function messe(strategie, archivPfad, optionen) {
   /* --- Kontrolle (A1-A5) --- */
   var H = S.haltedauerKerzen, vorlauf = VERFAHREN.mindestKerzenVorlauf;
   /* Die Kontrolle wird je Variante gebraucht, wenn es eine Ausstiegsregel gibt -
-   * ihre Parameter aendern ja den Ausstieg. Ohne Regel genuegt eine. */
-  var K = baueKontrolle(U, H, schnittTag, vorlauf,
-    typeof S.stopNiveau === 'function' ? S.stopNiveau : null, varianten[0]);
+   * ihre Parameter aendern ja den Ausstieg. Ohne Regel genuegt eine, dann wird sie
+   * einmal gebaut und geteilt.
+   * (Bis 23.08.2026 stand hier varianten[0] und damit lief die Kontrolle fuer ALLE
+   * Stufen mit den Parametern der ersten - bei rsi2seit-mcp also durchweg mcp 0,9.
+   * Der Kommentar forderte schon damals das Gegenteil.) */
+  var hatAusstieg = typeof S.stopNiveau === 'function';
+  var kontrollen = {};
+  function kontrolleFuer(vi) {
+    var schluessel = hatAusstieg ? String(vi) : 'gemeinsam';
+    if (!kontrollen[schluessel]) {
+      kontrollen[schluessel] = baueKontrolle(U, H, schnittTag, vorlauf,
+        hatAusstieg ? S.stopNiveau : null, varianten[vi]);
+    }
+    return kontrollen[schluessel];
+  }
+
+  /* A7: Wie weit liest das Signal zurueck? Ohne Angabe kann die Maschine das
+   * Lesefenster nicht aus der Kontrolle nehmen - und genau daraus entsteht A6. */
+  var leseFenster = (typeof S.leseFensterKerzen === 'number' && S.leseFensterKerzen >= 0)
+    ? Math.floor(S.leseFensterKerzen) : null;
+  P.entscheide('A7 Lesefenster', { leseFensterKerzen: S.leseFensterKerzen == null ? null : S.leseFensterKerzen },
+    { angewandt: leseFenster != null, fensterKerzen: leseFenster },
+    leseFenster != null
+      ? 'Die Kontrolle mittelt ueber den Topf OHNE die Kerzen [i-' + leseFenster + ', i+' + H + '-1]. ' +
+        'Damit enthaelt sie nichts, was das Signal gelesen hat, und nichts, was sich mit dem Ergebnis ueberlappt. ' +
+        'Der Erwartungswert des Ueberschusses ist unter der Nullhypothese exakt null.'
+      : 'KEINE Angabe leseFensterKerzen. Die Kontrolle enthaelt moeglicherweise Kerzen, die das Signal gelesen hat. ' +
+        'Genau daraus entsteht die Nullpunktverschiebung A6. Das Urteil ist ohne diese Angabe nicht belastbar.');
+  if (leseFenster == null) {
+    P.warne('A7', 'Strategie gibt kein leseFensterKerzen an. Die Kontrolle wurde NICHT um das Lesefenster ' +
+      'bereinigt; eine Nullpunktverschiebung ist moeglich (Groessenordnung 0,02-0,04 Pp je Signal, ' +
+      'Vorzeichen je nach Bauart des Signals). Nachmessen mit messen-mit-null.js oder Angabe ergaenzen.');
+  }
   P.entscheide('A2 Kontrolle', { art: VERFAHREN.kontrolle, haltedauerKerzen: H },
     'Erwartung ueber ALLE Kerzen desselben Symbols zur selben UTC-Stunde, getrennt je Haelfte',
     'Keine Zufallsziehung (A2), keine Listenpaarung (A3), kein Zeitbezug zum Signal (A4), je Haelfte getrennt (A5). ' +
@@ -258,6 +322,7 @@ function messe(strategie, archivPfad, optionen) {
   /* --- Je Variante messen --- */
   var spanneBp = (S.kosten && S.kosten.spanneBp != null) ? S.kosten.spanneBp : 5;
   var ergebnisse = varianten.map(function (params, vi) {
+    var K = kontrolleFuer(vi);
     var roh = [], ueber = [], ohneKontrolle = 0, nSignale = 0, nLong = 0, nShort = 0;
     var gruende = {}, kerzenSumme = 0;
     syms.forEach(function (sym) {
@@ -290,7 +355,9 @@ function messe(strategie, archivPfad, optionen) {
           kerzenSumme += ausKerze;
         }
         var tag = tagVon(b[i][0]), hf = tag < schnittTag ? 'entdeckung' : 'bestaetigung';
-        var erw = K.erwartung(sym, stundeVon(b[i][0]), hf);
+        var erw = K.erwartung(sym, stundeVon(b[i][0]), hf,
+          leseFenster == null ? null : i - leseFenster,
+          leseFenster == null ? null : i + H - 1);
         if (erw == null) { ohneKontrolle++; continue; }
         var r = (ausKurs / s0 - 1) * dir;                  // C3: Anteil
         roh.push({ tag: tag, hf: hf, wert: r });

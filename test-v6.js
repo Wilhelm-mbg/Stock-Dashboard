@@ -2787,7 +2787,11 @@ console.log('\n36) Kostenhuerde des Produkts (Signalstudie 23.08.2026)');
   var html = fs.readFileSync(__dirname + '/index.html', 'utf8');
   /* Wichtigste praktische Erkenntnis der Signalstudie: Die Huerde entscheidet, nicht die
    * Signalqualitaet. Der Standard-Schein kostet 0,23 Pp je 3h-Umlauf (Spanne durch Hebel
-   * plus Zeitwert); die belegte Kante rsi2seit liegt bei 0,11 Pp - also netto negativ. */
+   * plus Zeitwert). Die Zahl 0,11 stammt aus der Signalstudie vom 23.08. und ist
+   * ueberholt: nach A7 misst die Messmaschine fuer rsi2seit einen Ueberschuss von
+   * +0,0277 Pp bei t = 0,30, Urteil "nicht entscheidbar", je Signal -0,0415 Pp.
+   * Sie steht hier nur noch als FESTER PRUEFWERT fuer die Kostenrechnung - dass die
+   * Huerde beim Schein hoeher liegt als beim Basiswert, haengt nicht an ihr. */
   function huerde(cfg, spot, vol, haltenMin) {
     spot = spot > 0 ? spot : 200; vol = vol > 0 ? vol : 0.30;
     var halten = Math.max(5, haltenMin || 60), now = Date.now();
@@ -2811,7 +2815,7 @@ console.log('\n36) Kostenhuerde des Produkts (Signalstudie 23.08.2026)');
      'Der BV-1,0-Schein ist ein Vielfaches guenstiger als der Standard-Schein',
      bv1 ? bv1.pp.toFixed(3) + ' vs ' + std.pp.toFixed(3) : 'null');
   ok(akt && std.pp > akt.pp,
-     'Die belegte Kante (0,11 Pp) traegt mit der Aktie, nicht mit dem Standard-Schein',
+     'Bei einer Kante von 0,11 Pp traegt die Aktie, der Standard-Schein nicht (fester Pruefwert, kein Beleg)',
      'Aktie netto ' + (0.11 - akt.pp).toFixed(3) + ' / Schein netto ' + (0.11 - std.pp).toFixed(3));
   // Verdrahtung - tote Anzeigen gab es hier schon (6 Schalter, 22.08.)
   ok((html.match(/id="kostenHuerde"/g) || []).length === 1, 'Die Anzeigeflaeche existiert genau einmal');
@@ -3505,20 +3509,60 @@ console.log('\n44) Messmaschine, Scoreboard und Strategie-Eingabe (23.08.2026)')
   ok(r.status === 0 && /ALLE TESTS BESTANDEN/.test(r.stdout), 'test-messmaschine.js besteht (jeder Fehlertyp aus FEHLERTYPEN.md als Falle)');
   var ft = fs.readFileSync(__dirname + '/studien/messmaschine/FEHLERTYPEN.md', 'utf8');
   var kennungen = (ft.match(/\|\s*([A-E]\d)\s*\|/g) || []).length;
-  ok(kennungen >= 28, 'FEHLERTYPEN.md fuehrt mindestens 28 Fehlertypen', kennungen);
+  ok(kennungen >= 30, 'FEHLERTYPEN.md fuehrt mindestens 30 Fehlertypen', kennungen);
+
+  /* A7 (23.08.2026): Die Kontrolle darf nichts enthalten, was das Signal gelesen hat.
+   * Vorher kam t3-stundendrift als "widerlegt" durch (t = -3,19), obwohl nichts da war.
+   * Bewiesen wurde die Ursache durch Verkleinern des Kontrolltopfes: 366 -> 183 -> 103
+   * laesst die Verzerrung um Faktor 1,84 und 2,81 wachsen, vorhergesagt 1,87 und 2,9. */
+  var mm2 = fs.readFileSync(__dirname + '/studien/messmaschine/messmaschine.js', 'utf8');
+  var np = fs.readFileSync(__dirname + '/studien/messmaschine/nullversuch-permutation.js', 'utf8');
+  var mn = fs.readFileSync(__dirname + '/studien/messmaschine/messen-mit-null.js', 'utf8');
+  ok(/\|\s*A7\s*\|/.test(ft) && /\|\s*A8\s*\|/.test(ft), 'A7 und A8 stehen in FEHLERTYPEN.md');
+  ok(mm2.indexOf('leseFensterKerzen') !== -1 && /erwartung: function \(sym, stunde, haelfte, vonIdx, bisIdx\)/.test(mm2),
+     'A7: Die Kontrolle kann das Lesefenster des Signals auslassen');
+  ok(/P\.warne\('A7'/.test(mm2),
+     'Fehlt die Angabe leseFensterKerzen, warnt die Maschine - kein stillschweigendes Null');
+  ok(mm2.indexOf('kontrolleFuer(vi)') !== -1 && mm2.indexOf('varianten[0]);') === -1,
+     'Die Kontrolle wird je Variante gebaut, nicht einmal mit varianten[0]');
+
+  /* A8: Aus einem Nullarchiv darf nie auf Signifikanz geschlossen werden. Jedes Symbol
+   * wird einzeln gewuerfelt, der Gleichlauf der Werte fehlt, t-Werte sind zu gross. */
+  ok(mn.indexOf('KEINE Urteile aus dieser Tabelle') !== -1,
+     'A8: Das Eichwerkzeug faellt keine Urteile mehr');
+  ok(np.indexOf('Math.imul') !== -1 && np.indexOf('wuerfelAus') !== -1 &&
+      np.split('1103515245').length === 2,
+     'Der Wuerfel rechnet ganzzahlig - die alte Formel steht nur noch einmal, im Kommentar als Beleg');
+  ok(np.indexOf('fH:') !== -1 && np.indexOf('v: z[2]') !== -1,
+     'Beim Vertauschen reisen Umsatz und Kerzenform mit der Rendite mit');
+
+  /* D2 in der laufenden App: die Kante kommt aus dem Protokoll, nicht aus dem Code.
+   * Bis 23.08.2026 stand hier 0,11 fest verdrahtet und wurde als "netto +0,01 Pp"
+   * GRUEN angezeigt - waehrend dasselbe Protokoll "nicht entscheidbar" und je Signal
+   * -0,14 Pp fuehrte. */
+  var dep2 = fs.readFileSync(__dirname + '/depot.js', 'utf8');
+  ok(!/var KANTE = \{ rsi2seit: 0\.11/.test(dep2),
+     'Die Kante 0,11 steht nicht mehr fest verdrahtet in depot.js');
+  ok(dep2.indexOf('PROTOKOLL_KANTE') !== -1 && dep2.indexOf('readProtokolle()') !== -1,
+     'Die Kante kommt aus dem Messprotokoll (D2: das Protokoll ist die einzige Quelle)');
+  ok(/var belegt = kante\.urteil === "bestaetigt";/.test(dep2) &&
+     /\(belegt && netto > 0 \? "gut" : "warn"\)/.test(dep2),
+     'GRUEN nur bei Urteil "bestaetigt" - ein positives Vorzeichen allein ist kein Vorsprung');
+  ok(dep2.indexOf('kante.jeSignalPp') !== -1,
+     'Verglichen wird der Ueberschuss JE SIGNAL mit der Huerde je Umlauf - nicht das Tagesmittel');
 
   /* A6 (23.08.2026): Der Nullpunkt der Maschine liegt nicht bei null. Auf Daten mit
    * vertauschter Reihenfolge kam eine These als "bestaetigt" durch (t=+2,97), eine
    * andere als "widerlegt" (t=-8,07). Ohne dieses Werkzeug ist kein Urteil belastbar. */
-  var np = fs.readFileSync(__dirname + '/studien/messmaschine/nullversuch-permutation.js', 'utf8');
-  var mn = fs.readFileSync(__dirname + '/studien/messmaschine/messen-mit-null.js', 'utf8');
   ok(/\|\s*A6\s*\|/.test(ft), 'A6 steht in FEHLERTYPEN.md');
   ok(np.indexOf('koerbe[h]') !== -1 && np.indexOf('getUTCHours') !== -1,
      'Der Nullversuch vertauscht INNERHALB jeder UTC-Stunde - sonst aendert sich die Kontrolle');
   ok(np.indexOf('Math.random') === -1,
      'Fester Startwert statt Math.random - derselbe Aufruf ergibt dieselbe Vertauschung');
-  ok(mn.indexOf('Math.max(st.sd, seAnalytisch') !== -1,
-     'Das Urteil nimmt den groesseren aus Nullversuch-Streuung und analytischem Fehler');
+  ok(mn.indexOf('Eichung') !== -1 && mn.indexOf('Math.max(st.sd') === -1,
+     'Das Eichwerkzeug zieht nichts mehr ab - seit A7 ist die Verzerrung unmoeglich, nicht geschaetzt');
+  ok(mn.indexOf('bestaetigt') === -1 && mn.indexOf('widerlegt') === -1,
+     'Und es faellt keine Urteile mehr (A8: t-Werte auf Nullarchiven sind zu gross)');
 
   /* Ein Protokoll aus einem fremden Archiv darf die App nie erreichen - sonst steht
    * im Scoreboard ein Urteil aus gewuerfelten Daten, das aussieht wie ein Befund. */
@@ -3531,7 +3575,6 @@ console.log('\n44) Messmaschine, Scoreboard und Strategie-Eingabe (23.08.2026)')
   /* Die Vorregistrierung ist der Beleg, dass die Thesen vor der Messung feststanden. */
   ok(fs.existsSync(__dirname + '/studien/messmaschine/VORREGISTRIERUNG-2026-08-23-eigenbau.md'),
      'Die Vorregistrierung vom 23.08.2026 liegt im Repo');
-  var mm2 = fs.readFileSync(__dirname + '/studien/messmaschine/messmaschine.js', 'utf8');
   ok(mm2.indexOf('B8 Testfamilie') !== -1,
      'B8: Bonferroni zaehlt die ganze Testfamilie, nicht nur die Varianten einer Datei');
 

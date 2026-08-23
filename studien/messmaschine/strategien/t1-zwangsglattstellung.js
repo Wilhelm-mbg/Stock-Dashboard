@@ -29,6 +29,10 @@ module.exports = {
          'beide fragen nicht nach dem Preis. Das Angebot in der Schlussstunde ist dann zu einem ' +
          'erheblichen Teil erzwungen und nicht informationsgetrieben. Wer ueber Nacht die Gegenseite ' +
          'nimmt, stellt Kapital genau dann bereit, wenn es sonst niemand stellt.',
+  /* A7: 60 Handelstage Streuungsfenster x 7 Kerzen je Sitzung, plus die Vortagskerze.
+   * Die Kontrolle laesst diese Kerzen aus, damit sie nichts enthaelt, was das
+   * Signal gelesen hat - sonst entsteht die Nullpunktverschiebung A6. */
+  leseFensterKerzen: 430,
   zeitrahmen: '60m',
   haltedauerKerzen: 1,
   richtung: 'long',

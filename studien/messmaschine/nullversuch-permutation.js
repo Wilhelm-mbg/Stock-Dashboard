@@ -1,46 +1,68 @@
 'use strict';
-/* NULLVERSUCH DURCH VERTAUSCHUNG.
+/* NULLVERSUCH DURCH VERTAUSCHUNG - GEGENPROBE, NICHT HAUPTWEG.
  *
- * Anlass: Am 23.08.2026 kam T3 (Stunden-Drift) als WIDERLEGT durch (t = -3,19) und
- * T1 (Zwangsglattstellung) als BESTAETIGT (t = 2,97) - beides auf Daten, in denen
- * der jeweilige Effekt nicht existieren KANN. Der Nullpunkt der Maschine liegt also
- * nicht bei null.
+ * STAND 23.08.2026 NACH DER GEGENPRUEFUNG. Dieses Werkzeug hat den Fehlertyp A6
+ * aufgedeckt (die Kontrolle enthielt Kerzen, die das Signal gelesen hatte). Die
+ * Abhilfe dafuer ist inzwischen A7 - die Kontrolle laesst das Lesefenster aus, und
+ * damit ist die Verzerrung nicht mehr gemessen, sondern unmoeglich. Der Nullversuch
+ * bleibt als GEGENPROBE: Er zeigt, ob die Maschine auf Daten ohne Vorhersagbarkeit
+ * tatsaechlich nichts findet.
  *
- * WOHER DIE VERZERRUNG KOMMT. Die Kontrolle ist der Mittelwert des Symbols zu dieser
- * Stunde ueber die ganze Haelfte - ein ENDLICHER Topf von rund 366 Werten. Jedes
- * Signal, das seine Auswahl aus demselben Topf speist, verschiebt den Rest:
- *   - T3 waehlt Kerzen, deren vorige 60 Vorkommen HOCH lagen. Liegt die Summe des
- *     Topfes fest, muessen die uebrigen tiefer liegen - und aus denen wird gezogen.
- *     Sog nach unten.
- *   - T1 waehlt Tage nach einem starken Verlust. Der Tagesverlust enthaelt denselben
- *     Stundenschritt, aus dessen Topf spaeter das Ergebnis gezogen wird. Liegt ein
- *     Zug extrem tief, liegen die uebrigen leicht hoeher. Sog nach oben.
- * Beide Male ist die Ursache dieselbe endliche Ueberschneidung, nur das Vorzeichen
- * haengt an der Bauart des Signals. Man kann sie also nicht einmal ausrechnen und
- * abziehen - man muss sie je Strategie messen.
+ * WAS ER KANN. Auf einem vertauschten Archiv fiel t3-stundendrift vor A7 mit
+ * t = -8,07 als "widerlegt" durch; nach A7 sind es t = -0,66. Das ist der Nachweis,
+ * dass A7 wirkt.
  *
- * WIE MAN DAS PRUEFT, OHNE KURSE ZU ERFINDEN. Wilhelm hat frueher zu Recht
- * eingewandt, dass ausgedachte Kurse nie so aussehen wie echte. Hier werden keine
- * erfunden: Es sind SEINE Renditen, jede einzelne, mit ihren echten Ausreissern und
- * ihrer echten Streuung. Vertauscht wird nur die REIHENFOLGE - und zwar innerhalb
- * jeder UTC-Stunde getrennt, damit der Stundenmittelwert und damit die Kontrolle
- * exakt erhalten bleibt (nachgeprueft: gleich bis auf die fuenfte Nachkommastelle).
+ * WAS ER NICHT KANN - und das ist beim Lesen der Zahlen entscheidend:
+ * Jedes Symbol wird EINZELN gewuerfelt. Damit ist der Gleichlauf der Werte
+ * zerstoert: In Wirklichkeit bewegen sich an einem Markttag fast alle Werte
+ * gemeinsam, im Nullarchiv nicht. Ein Tagesmittel ueber 190 Werte streut dort also
+ * viel weniger als in echt. Gemessen: der Standardfehler bricht auf rund 45 % ein.
+ * FOLGE: Auf einem Nullarchiv sind t-Werte systematisch zu gross. Genau das - und
+ * NICHT eine Verzerrung - hat am 23.08.2026 das "t1 BESTAETIGT (t = 2,97)" erzeugt.
+ * Der Punktschaetzer war dort +0,0946 Pp gegen +0,0933 Pp auf den echten Daten,
+ * praktisch gleich; nur der Standardfehler fiel von 0,0707 auf 0,0319.
+ * Ein Nullarchiv taugt daher zur Pruefung von VERZERRUNG, nie von SIGNIFIKANZ.
  *
- * Damit ist die Wahrheit bekannt: In dieser Reihe KANN die Vergangenheit die Zukunft
- * nicht vorhersagen. Was die Maschine hier findet, stammt aus dem Verfahren.
+ * WAS VERTAUSCHT WIRD. Nicht die Rendite allein, sondern die ganze Kerze als
+ * Einheit: Rendite, Umsatz und die Form (Hoch und Tief relativ zum Schluss) reisen
+ * gemeinsam. Alles andere zerstoert Kopplungen, die Strategien benutzen:
+ *   - Blieb der Umsatz am alten Platz liegen, fiel die Kopplung zwischen |Rendite|
+ *     und Umsatz von 0,40 auf 0,14, und t2-umsatzschock verlor 57 % seiner Signale.
+ *     Der Nullversuch mass dann ein anderes, halb so haeufiges Signal.
+ *   - Wurden Hoch und Tief proportional zum neuen Schluss skaliert, enthielt die
+ *     Kerzenspanne den Vorschluss nur noch in 49,5 % statt 90,1 % der Faelle, und
+ *     ein 1-%-Stop loeste in 16,7 % statt 10,5 % der Kerzen aus. Damit war der
+ *     Nullversuch fuer jede Stop-Regel wertlos.
+ *
+ * DER WUERFEL. Vorher: s = (s*1103515245 + 12345) % 2147483648 in Gleitkomma. Ab
+ * dem zweiten Schritt ueberschreitet das Produkt 2^53, die Rechnung verliert
+ * Stellen, und der Generator faellt auf einen Ring der Laenge 10.466 - alle 30
+ * benutzten Saaten landeten auf demselben. Ein einziges Archiv braucht 1,1 Mio
+ * Ziehungen, also 106 Umlaeufe. Jetzt mulberry32 mit Math.imul, also exakter
+ * 32-Bit-Arithmetik.
  *
  * Aufruf:  node nullversuch-permutation.js [zielordner] [saat]
- * Als Baustein: require(...).baue(quelle, ziel, saat)
+ * Baustein: require(...).baue(quelle, ziel, saat)
  */
 var fs = require('fs');
 var path = require('path');
 var os = require('os');
 
-function baue(quelle, ziel, saat) {
-  /* Fester Startwert: derselbe Aufruf erzeugt dieselbe Vertauschung. */
-  var s = saat >>> 0;
-  function wuerfel() { s = (s * 1103515245 + 12345) % 2147483648; return s / 2147483648; }
+/* mulberry32 - ganzzahlig ueber Math.imul, Periode 2^32, in dieser Anwendung
+ * millionenfach ueber jedem Bedarf. */
+function wuerfelAus(saat) {
+  var a = saat >>> 0;
+  return function () {
+    a = (a + 0x6D2B79F5) >>> 0;
+    var t = a;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
 
+function baue(quelle, ziel, saat) {
+  var wuerfel = wuerfelAus(saat);
   if (!fs.existsSync(ziel)) fs.mkdirSync(ziel, { recursive: true });
   var dateien = fs.readdirSync(quelle).filter(function (f) { return f.indexOf('bars_60m_') === 0; });
   var gebaut = 0, uebersprungen = 0;
@@ -51,35 +73,46 @@ function baue(quelle, ziel, saat) {
     var b = j.series;
     if (!Array.isArray(b) || b.length < 300) { uebersprungen++; return; }
 
-    /* Jeder Schritt k -> k+1 gehoert zur Stunde von k. Nach Stunde getrennt sammeln. */
+    /* Der Schritt k -> k+1 gehoert zur Stunde von k. Gesammelt wird die ganze
+     * Zielkerze als Einheit: Rendite, Umsatz, Form. */
     var koerbe = {};
     for (var k = 0; k < b.length - 1; k++) {
       var h = new Date(b[k][0]).getUTCHours();
       var p0 = b[k][1], p1 = b[k + 1][1];
-      (koerbe[h] = koerbe[h] || []).push((p0 > 0 && p1 > 0) ? p1 / p0 - 1 : 0);
+      var z = b[k + 1];
+      koerbe[h] = koerbe[h] || [];
+      koerbe[h].push({
+        r: (p0 > 0 && p1 > 0) ? p1 / p0 - 1 : 0,
+        v: z[2] || 0,
+        fH: (p1 > 0 && z[3] != null) ? z[3] / p1 : 1,
+        fT: (p1 > 0 && z[4] != null) ? z[4] / p1 : 1,
+      });
     }
     Object.keys(koerbe).forEach(function (h) {
       var a = koerbe[h];
-      for (var q = a.length - 1; q > 0; q--) { var w = Math.floor(wuerfel() * (q + 1)); var t = a[q]; a[q] = a[w]; a[w] = t; }
+      for (var q = a.length - 1; q > 0; q--) {
+        var w = Math.floor(wuerfel() * (q + 1));
+        var tmp = a[q]; a[q] = a[w]; a[w] = tmp;
+      }
     });
 
-    /* Reihe neu aufbauen: gleicher Anfangskurs, gleiche Zeitstempel, gleiche Umsaetze. */
+    /* Reihe neu aufbauen: gleicher Anfangskurs, gleiche Zeitstempel. Alles andere
+     * reist mit der Rendite mit. */
     var zeiger = {};
     var neu = [b[0].slice()];
     for (var i = 0; i < b.length - 1; i++) {
       var hh = new Date(b[i][0]).getUTCHours();
       zeiger[hh] = zeiger[hh] || 0;
-      var r = koerbe[hh][zeiger[hh]++];
-      var kurs = neu[i][1] * (1 + r);
-      var alt = b[i + 1];
-      var fH = alt[1] > 0 && alt[3] != null ? alt[3] / alt[1] : 1;
-      var fT = alt[1] > 0 && alt[4] != null ? alt[4] / alt[1] : 1;
-      neu.push([alt[0], kurs, alt[2], kurs * fH, kurs * fT]);
+      var e = koerbe[hh][zeiger[hh]++];
+      var kurs = neu[i][1] * (1 + e.r);
+      neu.push([b[i + 1][0], kurs, e.v, kurs * e.fH, kurs * e.fT]);
     }
 
     fs.writeFileSync(path.join(ziel, f), JSON.stringify({
-      quelle: 'Nullversuch: Renditen von ' + f + ', innerhalb jeder UTC-Stunde vertauscht (Saat ' + saat + ')',
-      hinweis: 'KEINE Marktdaten. Nur fuer die Pruefung des Messverfahrens.',
+      quelle: 'Nullversuch: Kerzen von ' + f + ', innerhalb jeder UTC-Stunde vertauscht (Saat ' + saat + '). ' +
+              'Rendite, Umsatz und Kerzenform reisen gemeinsam.',
+      hinweis: 'KEINE Marktdaten. Nur zur Pruefung des Messverfahrens. t-Werte sind hier systematisch ' +
+               'zu gross, weil der Gleichlauf der Werte fehlt - nur fuer Verzerrung auswerten, nie fuer Signifikanz.',
       series: neu,
     }));
     gebaut++;
@@ -87,7 +120,7 @@ function baue(quelle, ziel, saat) {
   return { gebaut: gebaut, uebersprungen: uebersprungen, ziel: ziel, saat: saat };
 }
 
-module.exports = { baue: baue };
+module.exports = { baue: baue, wuerfelAus: wuerfelAus };
 
 if (require.main === module) {
   var quelle = process.env.MD_STORE || path.join(process.env.APPDATA || '', 'Markt-Dashboard', 'store');
@@ -96,6 +129,6 @@ if (require.main === module) {
   var r = baue(quelle, ziel, saat);
   console.log('Nullversuch-Archiv gebaut: ' + r.gebaut + ' Reihen (' + r.uebersprungen + ' uebersprungen), Saat ' + saat);
   console.log('Ablage: ' + r.ziel);
-  console.log('\nIn dieser Reihe kann die Vergangenheit die Zukunft nicht vorhersagen.');
-  console.log('Was die Maschine hier findet, stammt aus dem Verfahren.');
+  console.log('\nNur fuer VERZERRUNG auswerten. t-Werte sind hier zu gross, weil jedes');
+  console.log('Symbol einzeln gewuerfelt wird und der Gleichlauf der Werte fehlt.');
 }

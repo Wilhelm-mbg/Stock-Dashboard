@@ -36,6 +36,10 @@ module.exports = {
          'Das Signal schaetzt sie aus einem rollenden Fenster, die Kontrolle mittelt dieselbe Groesse ' +
          'ueber die ganze Haelfte. Ist die Drift konstant, heben sich beide auf. Ein Ueberschuss ' +
          'entstuende nur, wenn sie schwankt UND vorhersagbar ist.',
+  /* A7: 60 Vorkommen derselben Stunde (x7) fuer Mittel und Standardfehler.
+   * Die Kontrolle laesst diese Kerzen aus, damit sie nichts enthaelt, was das
+   * Signal gelesen hat - sonst entsteht die Nullpunktverschiebung A6. */
+  leseFensterKerzen: 430,
   zeitrahmen: '60m',
   haltedauerKerzen: 1,
   richtung: 'long',

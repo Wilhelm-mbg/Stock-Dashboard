@@ -30,6 +30,10 @@ module.exports = {
          'Praemie fuer Sofortigkeit. Von einer echten Nachricht unterscheidet sich der Fall dadurch, ' +
          'dass der Kurs aufhoert zu fallen, sobald der Verkaeufer fertig ist - deshalb wird erst in ' +
          'der Folgekerze eingestiegen und nur dann, wenn diese nicht weiter verloren hat.',
+  /* A7: 60 Vorkommen derselben Stunde (x7) fuer Umsatz-Median und Streuung, plus i-1 und i-2.
+   * Die Kontrolle laesst diese Kerzen aus, damit sie nichts enthaelt, was das
+   * Signal gelesen hat - sonst entsteht die Nullpunktverschiebung A6. */
+  leseFensterKerzen: 440,
   zeitrahmen: '60m',
   haltedauerKerzen: 8,
   richtung: 'long',

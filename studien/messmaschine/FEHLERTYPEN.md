@@ -17,7 +17,9 @@ Die Maschine ist nicht klug. Sie ist nur an diesen Stellen schon einmal gestolpe
 | A3 | Kontrolle nicht gepaart: Listen verschieden sortiert, Paarung über Index | nur 0,6 % gleiches Symbol | Kontrolle wird **je Signal** aus dessen Symbol und Stunde nachgeschlagen, nie über Listenindex |
 | A4 | Kontrolle liegt zeitlich **vor** dem Ereignis | Ersatzeinstieg zur Hälfte vor der Meldung, maß den Anlauf | Kontrolle nutzt nur die Tageszeit, nie einen Zeitpunkt relativ zum Signal |
 | A5 | Kontrolle aus anderer Zeithälfte als das Signal | 50,5 % der Kontrollkerzen aus der jeweils anderen Hälfte | Kontrollerwartung wird **je Hälfte** getrennt gebildet |
-| A6 | **Signal und Kontrolle schöpfen aus demselben endlichen Topf** | 23.08.: auf vertauschten Daten kam T1 als „bestätigt" (t = +2,97) und T3 als „widerlegt" (t = −8,07) durch — beides ohne jede Vorhersagbarkeit in den Daten | Der Nullpunkt wird **je Strategie gemessen**: `messen-mit-null.js` misst dieselbe Strategie an 30 Archiven mit vertauschter Reihenfolge und zieht die dort gefundene Verzerrung ab |
+| A6 | **Signal und Kontrolle schöpfen aus demselben endlichen Topf** | 23.08.: `t3-stundendrift` kam als „widerlegt" durch (t = −3,19 echt, −8,07 auf Zufallsdaten), obwohl nichts da war | **A7** — die Kontrolle lässt das Lesefenster des Signals aus. Danach t = +0,19 |
+| A7 | Kontrolle enthält Kerzen, die das Signal gelesen hat | dieselbe Messung; Abhilfe zu A6 | Strategien geben `leseFensterKerzen` an; die Kontrolle mittelt über den Topf **ohne** `[i − Fenster, i + H − 1]`. Ohne Angabe: Warnung im Protokoll, kein stillschweigendes Null |
+| A8 | Aus einem Nullarchiv auf **Signifikanz** schließen | 23.08.: `t1` kam dort mit t = 2,97 als „bestätigt" durch — bei einem Punktschätzer, der dem echten glich (+0,0946 gegen +0,0933). Nur der Standardfehler brach ein, von 0,0707 auf 0,0319 | Der Nullversuch würfelt jedes Symbol **einzeln** und zerstört den Gleichlauf der Werte. Er misst Verzerrung, **nie** Signifikanz — steht als Warnung in jeder erzeugten Datei |
 
 **Warum A6 schwerer wiegt als alles davor.** Die Kontrolle ist der Mittelwert des
 Symbols zu dieser Stunde über die ganze Hälfte — ein **endlicher** Topf von rund 366
@@ -27,9 +29,12 @@ Rest, und zwar ohne dass im Markt irgendetwas passiert:
 - **T3** wählt Kerzen, deren vorige 60 Vorkommen hoch lagen. Liegt die Summe des
   Topfes fest, müssen die übrigen tiefer liegen — und aus denen wird gezogen. **Sog
   nach unten.**
-- **T1** wählt Tage nach starkem Verlust. Der Tagesverlust enthält denselben
-  Stundenschritt, aus dessen Topf später das Ergebnis gezogen wird. Liegt ein Zug
-  extrem tief, liegen die übrigen leicht höher. **Sog nach oben.**
+- **T1** wurde hier ursprünglich als zweites Beispiel geführt („Sog nach oben"). **Das war
+  falsch.** Der Punktschätzer auf dem Zufallsarchiv (+0,0946 Pp) glich dem echten
+  (+0,0933 Pp); das Fehlurteil kam vom eingebrochenen Standardfehler, nicht von einer
+  Verzerrung — siehe A8. Vergrößert man T1s Lesefenster von 430 auf 4.000 Kerzen,
+  schrumpft sein Null-Überschuss **nicht** (0,059 → 0,045 → 0,048 → 0,051 → 0,063).
+  Bei einer Überlappungsverzerrung müsste er das.
 
 Dieselbe Ursache, entgegengesetztes Vorzeichen — je nach Bauart des Signals. Man
 kann sie deshalb nicht einmal ausrechnen und pauschal abziehen. Sie muss je
@@ -45,6 +50,25 @@ damit die Kontrolle bleiben gleich bis auf die fünfte Nachkommastelle.
 Volatilitäts-Cluster. Für ein Signal, das gerade geclusterte Tage auswählt, hat der
 Nullversuch damit zu **wenig** Streuung. Er taugt zur Messung der Verzerrung, nicht
 als Standardfehler. Deshalb gilt der **größere** aus beiden.
+
+**Der Beweis für A6** ist nicht der Nullversuch, sondern eine Manipulation der
+behaupteten Ursache mit vorhergesagtem Ausgang: Schrumpft der Kontrolltopf von 366
+auf 183 auf 103 Werte, wächst die Verzerrung um Faktor **1,84** und **2,81** —
+vorhergesagt waren 1,87 und 2,9. Vier unabhängige geschlossene Rechnungen treffen
+sie zusätzlich auf 1–4 %. Und die schärfste Placebo-Probe: derselbe Detektor, am Topf
+der **Vorstunde** gemessen, ergibt −0,0005 statt −0,0242 Pp.
+
+**Warum A7 besser ist als Nachmessen.** Die erste Abhilfe war, die Verzerrung mit 30
+Nullversuchen je Strategie zu schätzen und abzuziehen. Das schätzt, wo man rechnen
+kann: A7 macht den Erwartungswert des Überschusses unter der Nullhypothese **exakt**
+null, in einem Durchlauf, ohne Zufall. Der Nullversuch bleibt als Gegenprobe — er hat
+A6 gefunden und weist nach, dass A7 wirkt (t3 auf Zufallsdaten: −8,07 → +0,55).
+
+**Was der Verzerrungsabzug angerichtet hätte.** Bei `rsi2seit` schätzte er +0,027 Pp
+Verzerrung; A7 zeigt, dass dort praktisch keine ist (+0,0241 roh gegen +0,0277 mit
+A7). Der Abzug hätte den Wert auf −0,003 gedrückt und die Aussage „der ganze
+Überschuss war das Messgerät" gestützt — die damit **falsch** war. Ein
+Verzerrungsschätzer mit eigenem Fehler ist selbst eine Fehlerquelle.
 
 ## B — Statistik
 

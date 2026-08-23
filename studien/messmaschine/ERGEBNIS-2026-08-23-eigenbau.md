@@ -3,110 +3,142 @@
 Zur Vorregistrierung: [VORREGISTRIERUNG-2026-08-23-eigenbau.md](VORREGISTRIERUNG-2026-08-23-eigenbau.md),
 festgeschrieben in Commit `836bfac` **vor** der ersten Messung.
 
+> **Dieses Dokument ist die zweite Fassung.** Die erste (Commit `c8b63b4`) enthielt
+> zwei falsche Behauptungen, die eine Gegenprüfung aufgedeckt hat. Beide sind unten
+> unter „Was ich zurücknehmen muss" benannt. Die Urteile ändern sich dadurch nicht,
+> die Begründungen schon.
+
 ## Die kurze Antwort
 
 **Keine der drei Thesen trägt.** Alle sieben vorregistrierten Tests: nicht entscheidbar.
 
-Der Ertrag des Tages liegt woanders: Beim Messen der Thesen kam heraus, dass das
-Messgerät selbst einen Nullpunktfehler hatte, der jede bisherige Messung dieses
-Projekts berührt.
+Der Ertrag liegt woanders: Beim Messen kam ein Fehler im Messgerät heraus, der jede
+bisherige Messung dieses Projekts berührt — und die Abhilfe dafür ist stärker als das,
+was ich zuerst gebaut hatte.
 
-## Die sieben Tests
+## Die sieben Tests, korrigierter Stand
 
-Alle Zahlen in Prozentpunkten je Signal, Bestätigungshälfte (zurückgehaltene zweite
-Hälfte der Handelstage). Bonferroni-Schwelle für |t| bei 7 Tests: **2,69**.
+Prozentpunkte, Bestätigungshälfte, Kontrolle nach **A7** (ohne das Lesefenster des
+Signals). Bonferroni-Schwelle für |t| bei 7 Tests: **2,69**.
 
-| These | Variante | roh | Verzerrung | korrigiert | t | Urteil |
+| These | Variante | Überschuss | MDE | t | je Signal | Urteil |
 |---|---|---|---|---|---|---|
-| T1 Zwangsglattstellung | k=1,5 | +0,0933 | **+0,0173** | +0,0760 | 1,08 | nicht entscheidbar |
-| | k=2,0 | +0,0446 | +0,0197 | +0,0249 | 0,28 | nicht entscheidbar |
-| | k=2,5 | −0,1565 | +0,0234 | −0,1798 | −1,55 | nicht entscheidbar |
-| T2 Umsatzschock | k=3 | +0,0922 | −0,0046 | +0,0968 | 0,86 | nicht entscheidbar |
-| | k=5 | +0,1202 | +0,0035 | +0,1167 | 0,65 | nicht entscheidbar |
-| T3 Stunden-Drift | k=1,0 | −0,0329 | **−0,0242** | −0,0088 | −0,85 | nicht entscheidbar |
-| | k=2,0 | −0,0547 | **−0,0399** | −0,0148 | −0,82 | nicht entscheidbar |
+| T1 Zwangsglattstellung | k=1,5 | +0,1041 | 0,1426 | 1,46 | −0,1011 | nicht entscheidbar |
+| | k=2,0 | +0,0543 | 0,1812 | 0,60 | −0,3053 | nicht entscheidbar |
+| | k=2,5 | −0,1620 | 0,2339 | −1,38 | −0,5416 | nicht entscheidbar |
+| T2 Umsatzschock | k=3 | +0,0783 | 0,2264 | 0,69 | +0,0640 | nicht entscheidbar |
+| | k=5 | +0,0898 | 0,3597 | 0,50 | −0,0475 | nicht entscheidbar |
+| T3 Stunden-Drift | k=1,0 | +0,0021 | 0,0211 | 0,19 | +0,0022 | nicht entscheidbar |
+| | k=2,0 | +0,0034 | 0,0368 | 0,19 | −0,0004 | nicht entscheidbar |
 
-„Verzerrung" ist das, was **dieselbe Rechnung auf Daten ohne jeden Effekt** liefert —
-gemittelt über 30 Archive, in denen die echten Renditen jedes Symbols innerhalb jeder
-UTC-Stunde in ihrer Reihenfolge vertauscht wurden.
+Keine Variante erreicht auch nur ihre eigene MDE. Netto nach Spanne ist jede negativ.
 
-## Was ohne die Nullversuche im Bericht gestanden hätte
+## Der Fehler im Messgerät (A6) und seine Abhilfe (A7)
 
-| | ohne Nullpunkt | mit Nullpunkt |
+Die Kontrolle mittelt über einen **endlichen** Topf — rund 366 Kerzen je Symbol,
+Stunde und Hälfte. Liest ein Signal Kerzen aus diesem Topf und wählt danach aus, dann
+verschiebt jede Auswahl den Rest in die Gegenrichtung. Ohne dass im Markt irgendetwas
+passiert.
+
+**Der Beweis** ist nicht der Nullversuch, sondern eine Manipulation der Ursache mit
+vorhergesagtem Ausgang: Schrumpft der Topf von 366 auf 183 auf 103 Werte, wächst die
+Verzerrung um Faktor **1,84** und **2,81** — vorhergesagt waren 1,87 und 2,9. Vier
+unabhängige geschlossene Rechnungen treffen sie zusätzlich auf 1–4 %. Und die
+Placebo-Probe: derselbe Detektor, am Topf der **Vorstunde** gemessen, ergibt −0,0005
+statt −0,0242 Pp.
+
+**A7** macht die Verzerrung nicht messbar, sondern unmöglich: Die Strategie gibt an,
+wie weit sie zurückliest, und die Kontrolle lässt genau diese Kerzen aus. Der
+Erwartungswert des Überschusses ist dann unter der Nullhypothese exakt null — ein
+Durchlauf, kein Zufall.
+
+| `t3-stundendrift` | Überschuss | t | Urteil |
+|---|---|---|---|
+| vor A7, echtes Archiv | −0,0329 | −3,19 | **widerlegt** |
+| vor A7, Zufallsarchiv | — | −8,07 | **widerlegt** |
+| nach A7, echtes Archiv | +0,0021 | 0,19 | nicht entscheidbar |
+| nach A7, Zufallsarchiv | −0,0003 ± 0,0006 | −0,45 | Eichung in Ordnung |
+
+## Was ich zurücknehmen muss
+
+### 1. „Der gesamte rsi2seit-Überschuss war das Messgerät" — falsch
+
+Diese Aussage stützte sich auf eine Verzerrungsschätzung von +0,027 Pp aus 30
+Nullversuchen. Mit A7 zeigt sich, dass bei `rsi2seit` praktisch keine Verzerrung
+vorliegt:
+
+| | Überschuss | t | je Signal |
+|---|---|---|---|
+| roh (vor A7) | +0,0241 | 0,26 | −0,0415 |
+| **mit A7** | **+0,0277** | **0,30** | **−0,0415** |
+| mit Nullversuch-Abzug (falsch) | −0,0030 | −0,03 | — |
+
+Das Urteil war und bleibt **nicht entscheidbar**. Aber „war alles Artefakt" stimmt
+nicht. Ein Verzerrungsschätzer mit eigenem Fehler ist selbst eine Fehlerquelle — das
+ist die Lehre.
+
+### 2. Die T1-Hälfte meiner A6-Erklärung — falsche Ursache
+
+Ich schrieb, T1 komme auf Zufallsdaten „bestätigt" durch, **weil** es nach oben
+verzerrt sei. Der Punktschätzer war dort +0,0946 gegen +0,0933 echt — praktisch
+gleich. Was das Fehlurteil erzeugte, war der **Standardfehler**: 0,0319 statt 0,0707.
+
+Gegenprobe: Vergrößert man T1s Lesefenster von 430 auf 4.000 Kerzen, schrumpft sein
+Null-Überschuss **nicht** (0,059 → 0,045 → 0,048 → 0,051 → 0,063). Bei einer
+Überlappungsverzerrung müsste er das.
+
+Die richtige Ursache steht jetzt als eigener Fehlertyp **A8**: Der Nullversuch würfelt
+jedes Symbol einzeln und zerstört den Gleichlauf der Werte. Ein Tagesmittel über 190
+Werte streut dort viel weniger als in echt. **Ein Nullarchiv taugt für Verzerrung, nie
+für Signifikanz.**
+
+## Drei Fehler in meinem eigenen Werkzeug
+
+| | Fehler | Wirkung |
 |---|---|---|
-| T3 k=1,0 | **widerlegt** (t = −3,19) | nicht entscheidbar (t = −0,85) |
-| T3 k=2,0 | **widerlegt** (t = −3,03) | nicht entscheidbar (t = −0,82) |
-| T1 k=1,5 auf Zufallsarchiv | **bestätigt** (t = +2,97) | — |
+| `messmaschine.js:251` | Kontrolle einmal mit `varianten[0]` gebaut, obwohl der Kommentar zwei Zeilen darüber „je Variante" forderte | alle 5 MCP-Urteile liefen mit der Kontrolle für MCP 90 %. Variante 4 fällt korrigiert von t = 2,01 auf **0,37** |
+| Zufallsgenerator | Zyklus 10.466, alle 30 Saaten auf demselben Ring, ein Archiv braucht 106 Umläufe | Streuungsangaben der Nullversuche waren wertlos |
+| Vertauschung unvollständig | Umsatz blieb liegen, Hoch/Tief wurden skaliert | Umsatzkopplung 0,40 → 0,14, T2 verlor 57 % seiner Signale, 1-%-Stops lösten 60 % zu oft aus |
 
-Bei T3 waren **drei Viertel** des „Befundes" das Messgerät. Und T1 wäre auf einem
-Archiv ohne jede Vorhersagbarkeit als bestätigt durchgegangen.
-
-## Der Nullpunktfehler (A6)
-
-Die Kontrolle ist der Mittelwert des Symbols zu dieser Stunde über die ganze Hälfte —
-ein **endlicher** Topf von rund 366 Werten. Jedes Signal, das seine Auswahl aus
-demselben Topf speist, verschiebt mechanisch den Rest:
-
-- **T3** wählt Kerzen, deren vorige 60 Vorkommen hoch lagen → die übrigen müssen
-  tiefer liegen → **Sog nach unten**.
-- **T1** wählt Tage nach starkem Verlust; die Tagesrendite enthält denselben
-  Stundenschritt, aus dessen Topf später gezogen wird → **Sog nach oben**.
-- **T2** wählt nach *Umsatz* aus, nicht nach vergangenen Renditen — und hat als
-  einzige praktisch keine Verzerrung (−0,005). Das stützt die Diagnose unabhängig.
-
-## Zwei unabhängige Gegenproben der Diagnose
-
-**Erstens: die eingebaute Kante.** Im Testarchiv steckt ein künstlicher Effekt. Auf
-den echten Daten findet die Maschine ihn mit t = 40,77. Nach dem Vertauschen —
-identische Renditen, identische Stundenmittel bis auf 3·10⁻¹⁸ — bleibt t = 0,44.
-Der Nullversuch prüft also wirklich etwas.
-
-**Zweitens: das Vorzeichen kippt mit dem Ausstieg.** Dieselbe Einstiegsregel, dieselben
-Daten, nur ein anderer Ausstieg:
-
-| | Verzerrung |
-|---|---|
-| `rsi2seit` (Zeit-Ausstieg) | **+0,0270** |
-| `rsi2seit-mcp` (MCP-Stop 90 %) | −0,0087 |
-| `rsi2seit-mcp` (MCP-Stop 10 %) | **−0,0536** |
-
-Ein Markteffekt kann sein Vorzeichen nicht ändern, weil man anders aussteigt. Ein
-Messaufbau-Effekt kann es.
-
-## Was das für die bisherigen Messungen heißt
-
-### rsi2seit — der gesamte Überschuss war das Messgerät
+Nach der Reparatur ist das Nullarchiv originalgetreu:
 
 ```
-roh          +0,0241 Pp je Signal
-Verzerrung   +0,0270 Pp
-────────────────────────────────
-korrigiert   −0,0030 Pp     t = −0,03
+                        echt    vertauscht
+Korr(|Rendite|,Umsatz)  0,1291    0,1291
+Vorschluss in Spanne    88,5 %    88,2 %
+1-%-Stop löst aus       9,69 %    9,69 %
 ```
 
-Der Befund von heute früh (+0,0115 Pp, t = 0,14, „kein nachweisbarer Vorteil") wird
-damit schärfer: Der kleine positive Rest war nicht klein, sondern gar nicht da.
+## Was in der App stand
 
-### rsi2seit-mcp — Urteil unverändert, aber die Zahlen bewegen sich
+`depot.js:626` hielt `KANTE = { rsi2seit: 0.11 }` fest verdrahtet und zeigte daraus
+unter der Werksvorgabe **„Gemessener Vorsprung dieses Auslösers: 0.11 Pp → netto +0.01
+Pp" in Grün** — während dasselbe Protokoll desselben Tages „nicht entscheidbar" und je
+Signal −0,0415 Pp führte. Zwei unabhängige Fehler: eine überholte Zahl, und ein
+Tagesmittel gegen Kosten je Umlauf gestellt.
 
-Nach Korrektur werden alle fünf Varianten positiver, die schärfste (MCP 10 %) erreicht
-+0,1009 Pp bei t = 2,01 — Schwelle bei 5 Tests ist 2,58. Damit weiterhin **nicht
-entscheidbar**, und die Spanne (0,10 Pp) frisst den korrigierten Überschuss vollständig
-auf. Kein Handelsvorschlag, aber die einzige Zahl des Tages, die sich in die richtige
-Richtung bewegt hat.
+Die Kante kommt jetzt aus dem Protokoll (Regel D2), mit Urteil daneben. **Und die
+eigentliche Regel, die gefehlt hat: Grün heißt nicht „Zahl ist positiv", sondern
+„Urteil ist bestätigt und trägt die Kosten."** Eine nicht entscheidbare Messung ist
+kein Vorsprung, egal welches Vorzeichen sie hat.
 
-### Noch offen
+## Was nicht betroffen ist
 
-Momentum, Ergebnis-Drift, Kapitulations-Dip und die große Signalstudie liefen mit
-**anderen** Kontrollkonstruktionen, nicht mit dieser Maschine. Ob sie dieselbe
-Überlappung haben, ist einzeln zu prüfen und **nicht** aus diesem Befund ableitbar.
+- **Momentum / Mittelfrist.** Auswahlfenster (t−231 bis t−21) und Ergebnisfenster sind
+  disjunkt; A6 kann dort konstruktiv nicht greifen.
+- **Ergebnis-Drift.** Misst zwei disjunkte Quintilbeine gegeneinander und führt seit
+  dem 21.08. einen eigenen Nullversuch.
+- **Regime-Zuteilung R-TREND und Pool-Wahl.** Differenzen zweier Arme; eine
+  gleichförmige Verzerrung kürzt sich heraus.
+- **Der analytische Standardfehler auf echten Daten.** Newey-West 0,62× bis 1,08×,
+  studentisierter Bootstrap verlangt 2,67–2,73 gegen benutzte 2,69. Das war der
+  plausibelste Angriff auf das Verfahren, und er ist gescheitert.
 
-## Was nicht registriert wurde, und warum
+## Offen
 
-**Quartalsende-Fensterputzen** — mechanisch die stärkste These der Liste. Nicht
-getestet, weil die Zahl der Bestätigungstage vorab feststand (~20 gegen geforderte 30).
-Das Urteil hätte vor der Messung festgestanden. Erst mit 6+ Jahren Archiv prüfbar.
-
-**Unbedingte Übernacht-Prämie** — mit dieser Kontrolle strukturell nicht messbar: Ein
-Signal, das immer zur selben Stunde feuert, wird gegen genau diese Stundenerwartung
-gemessen, der Überschuss ist per Konstruktion null.
+- **Kapitulations-Dip** wird vom Depot gehandelt und ist mit dieser Maschine nie
+  gemessen worden. Höchste Priorität.
+- **Der Edge-Wächter** (`depot.js:7493`) löst eine echte Handelssperre am Vorzeichen
+  eines auf zwei Stellen gerundeten Mittelwerts aus, dessen eigene MDE etwa das
+  Vierfache der bewachten Kante beträgt; er sperrt auch `kapitulation` mit, das er nie
+  misst. Nicht geändert — das ist eine Entscheidung über Handel, nicht über Code.

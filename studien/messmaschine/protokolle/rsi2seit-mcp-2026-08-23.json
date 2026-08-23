@@ -18,10 +18,10 @@
   "richtung": "long",
   "universum": "aktien",
   "varianten": 5,
-  "quelle": "'use strict';\n/* rsi2seit mit MCP-Stop statt Zeit-Ausstieg.\n *\n * Der MCP-Stop stammt aus dem TradingView-Skript \"MCP Stop Strategy [JARUTIR]\"\n * (geprueft am 23.08.2026 auf Wilhelms Bitte). Die Regel:\n *     Stop = Kaufkurs + (Hoechstkurs - Kaufkurs) x MCP%\n * Also ein nachziehender Stop, der einen festen ANTEIL DES BISHERIGEN GEWINNS sichert.\n *\n * Das Skript selbst nennt keine Einstiegsregel und keine Ergebniszahlen - beides\n * ehrlich. Es ist damit kein Gegner fuer eine Strategie, sondern eine Alternative\n * zum bestehenden Zeit-Ausstieg. Genau so wird es hier gemessen: dieselben Signale,\n * dieselben Kerzen, nur ein anderer Ausstieg.\n *\n * Vorregistriert: fuenf MCP-Stufen (90/75/50/25/10 %). Jede zaehlt als eigener Test,\n * die Schwelle steigt entsprechend. Erwartung vor der Messung: Der Stop kappt den\n * rechten Schwanz - und bei den Regeln dieses Projekts sitzt der Ertrag genau dort\n * (Kapitulations-Dip: ohne die besten 5 % faellt das Mittel unter die Basislinie).\n * Die Erwartung ist also NEGATIV, und sie wird trotzdem gemessen.\n */\nvar Q = require('../../../quant.js');\nvar P = { ENTRY: 'rsi2seit', LINE: 'ema', period: 20, confirmBps: 15, ZTHR: 1.5,\n          MINQ: 0, CHAN: false, MTF: false, TREND: false };\n\nmodule.exports = {\n  key: 'rsi2seit-mcp',\n  grund: 'Gewinne absichern, statt sie zurueckzugeben: Ein nachziehender Stop sichert einen festen Anteil ' +\n         'des bisherigen Gewinns. Der Grund ist verhaltensbasiert - nach einem schnellen Anstieg nehmen ' +\n         'Marktteilnehmer Gewinne mit, ein Teil des Anstiegs faellt also regelmaessig zurueck.',\n  zeitrahmen: '60m',\n  haltedauerKerzen: 8,\n  richtung: 'long',\n  universum: 'aktien',\n  kosten: { spanneBp: 5 },\n  varianten: [{ mcp: 0.9 }, { mcp: 0.75 }, { mcp: 0.5 }, { mcp: 0.25 }, { mcp: 0.1 }],\n  signal: function (bars, i) {\n    var s = Q.einstiegSignal(bars, i, P);\n    return s && s.dir === 'call' ? { dir: 1 } : null;\n  },\n  /* Nur das Stop-NIVEAU, berechnet aus abgeschlossenen Kerzen. Die Maschine wendet es\n   * auf die naechste Kerze an und bestimmt den Fuellpreis - die Regel kann also weder\n   * in die laufende Kerze sehen noch sich einen Wunschkurs geben. */\n  stopNiveau: function (abgeschlossen, einKurs, params) {\n    var hoch = einKurs;\n    for (var k = 0; k < abgeschlossen.length; k++) if (abgeschlossen[k].hoch > hoch) hoch = abgeschlossen[k].hoch;\n    if (!(hoch > einKurs)) return null;        // ohne Gewinn kein Stop - sonst loest jeder Ruecksetzer aus\n    return einKurs + (hoch - einKurs) * params.mcp;\n  },\n};\n"
+  "quelle": "'use strict';\n/* rsi2seit mit MCP-Stop statt Zeit-Ausstieg.\n *\n * Der MCP-Stop stammt aus dem TradingView-Skript \"MCP Stop Strategy [JARUTIR]\"\n * (geprueft am 23.08.2026 auf Wilhelms Bitte). Die Regel:\n *     Stop = Kaufkurs + (Hoechstkurs - Kaufkurs) x MCP%\n * Also ein nachziehender Stop, der einen festen ANTEIL DES BISHERIGEN GEWINNS sichert.\n *\n * Das Skript selbst nennt keine Einstiegsregel und keine Ergebniszahlen - beides\n * ehrlich. Es ist damit kein Gegner fuer eine Strategie, sondern eine Alternative\n * zum bestehenden Zeit-Ausstieg. Genau so wird es hier gemessen: dieselben Signale,\n * dieselben Kerzen, nur ein anderer Ausstieg.\n *\n * Vorregistriert: fuenf MCP-Stufen (90/75/50/25/10 %). Jede zaehlt als eigener Test,\n * die Schwelle steigt entsprechend. Erwartung vor der Messung: Der Stop kappt den\n * rechten Schwanz - und bei den Regeln dieses Projekts sitzt der Ertrag genau dort\n * (Kapitulations-Dip: ohne die besten 5 % faellt das Mittel unter die Basislinie).\n * Die Erwartung ist also NEGATIV, und sie wird trotzdem gemessen.\n */\nvar Q = require('../../../quant.js');\nvar P = { ENTRY: 'rsi2seit', LINE: 'ema', period: 20, confirmBps: 15, ZTHR: 1.5,\n          MINQ: 0, CHAN: false, MTF: false, TREND: false };\n\nmodule.exports = {\n  key: 'rsi2seit-mcp',\n  grund: 'Gewinne absichern, statt sie zurueckzugeben: Ein nachziehender Stop sichert einen festen Anteil ' +\n         'des bisherigen Gewinns. Der Grund ist verhaltensbasiert - nach einem schnellen Anstieg nehmen ' +\n         'Marktteilnehmer Gewinne mit, ein Teil des Anstiegs faellt also regelmaessig zurueck.',\n  /* A7: derselbe Einstieg wie rsi2seit; der Stop liest nur Kerzen NACH dem Einstieg.\n   * Die Kontrolle laesst diese Kerzen aus, damit sie nichts enthaelt, was das\n   * Signal gelesen hat - sonst entsteht die Nullpunktverschiebung A6. */\n  leseFensterKerzen: 261,\n  zeitrahmen: '60m',\n  haltedauerKerzen: 8,\n  richtung: 'long',\n  universum: 'aktien',\n  kosten: { spanneBp: 5 },\n  varianten: [{ mcp: 0.9 }, { mcp: 0.75 }, { mcp: 0.5 }, { mcp: 0.25 }, { mcp: 0.1 }],\n  signal: function (bars, i) {\n    var s = Q.einstiegSignal(bars, i, P);\n    return s && s.dir === 'call' ? { dir: 1 } : null;\n  },\n  /* Nur das Stop-NIVEAU, berechnet aus abgeschlossenen Kerzen. Die Maschine wendet es\n   * auf die naechste Kerze an und bestimmt den Fuellpreis - die Regel kann also weder\n   * in die laufende Kerze sehen noch sich einen Wunschkurs geben. */\n  stopNiveau: function (abgeschlossen, einKurs, params) {\n    var hoch = einKurs;\n    for (var k = 0; k < abgeschlossen.length; k++) if (abgeschlossen[k].hoch > hoch) hoch = abgeschlossen[k].hoch;\n    if (!(hoch > einKurs)) return null;        // ohne Gewinn kein Stop - sonst loest jeder Ruecksetzer aus\n    return einKurs + (hoch - einKurs) * params.mcp;\n  },\n};\n"
  },
- "gemessenAm": "2026-08-23T17:55:28.873Z",
- "dauerMs": 52302,
+ "gemessenAm": "2026-08-23T20:54:14.347Z",
+ "dauerMs": 57354,
  "universum": {
   "werte": 191,
   "handelstage": 732,
@@ -63,12 +63,12 @@
     "ueberschuss": {
      "tage": 319,
      "signale": 2913,
-     "tagesmittel": -0.00008415404571039594,
-     "t": -0.20292871142773827,
-     "se": 0.0004146975808317923,
-     "mde": 0.0008293951616635846,
-     "jeSignal": 0.000008525103077085733,
-     "anteilPositiv": 0.5066941297631308
+     "tagesmittel": -0.00007356860134414355,
+     "t": -0.17612514831173304,
+     "se": 0.00041770639825909844,
+     "mde": 0.0008354127965181969,
+     "jeSignal": 0.000014758245227888568,
+     "anteilPositiv": 0.5070374184689324
     }
    },
    "bestaetigung": {
@@ -85,12 +85,12 @@
     "ueberschuss": {
      "tage": 356,
      "signale": 3596,
-     "tagesmittel": 0.00046742871686409693,
-     "t": 1.0168773192368368,
-     "se": 0.00045967070758830644,
-     "mde": 0.0009193414151766129,
-     "jeSignal": 0.0003914801515367028,
-     "anteilPositiv": 0.5150166852057843
+     "tagesmittel": 0.0005117369812419805,
+     "t": 1.1093079375346617,
+     "se": 0.00046131192604577446,
+     "mde": 0.0009226238520915489,
+     "jeSignal": 0.00042872725113744987,
+     "anteilPositiv": 0.5166852057842046
     }
    },
    "gesamt": {
@@ -107,19 +107,19 @@
     "ueberschuss": {
      "tage": 675,
      "signale": 6509,
-     "tagesmittel": 0.00020675478906963265,
-     "t": 0.6633224886100856,
-     "se": 0.00031169573264862923,
-     "mde": 0.0006233914652972585,
-     "jeSignal": 0.00022009467663074744,
-     "anteilPositiv": 0.5112920571516362
+     "tagesmittel": 0.00023512589850868616,
+     "t": 0.7505204297360288,
+     "se": 0.00031328380839863886,
+     "mde": 0.0006265676167972777,
+     "jeSignal": 0.0002434619701089424,
+     "anteilPositiv": 0.5123674911660777
     }
    },
    "kosten": {
     "spanneBp": 5,
     "jeUmlaufAnteil": 0.001
    },
-   "nettoJeSignalBestaetigung": -0.0006085198484632972
+   "nettoJeSignalBestaetigung": -0.0005712727488625502
   },
   {
    "variante": 1,
@@ -153,12 +153,12 @@
     "ueberschuss": {
      "tage": 319,
      "signale": 2913,
-     "tagesmittel": 0.000028139796926359995,
-     "t": 0.06706085688829326,
-     "se": 0.00041961582705741314,
-     "mde": 0.0008392316541148263,
-     "jeSignal": 0.00007199215465613019,
-     "anteilPositiv": 0.5066941297631308
+     "tagesmittel": 0.000027516374590022048,
+     "t": 0.0651416650037807,
+     "se": 0.00042240821735866057,
+     "mde": 0.0008448164347173211,
+     "jeSignal": 0.00006401523108306547,
+     "anteilPositiv": 0.5039478201167181
     }
    },
    "bestaetigung": {
@@ -175,12 +175,12 @@
     "ueberschuss": {
      "tage": 356,
      "signale": 3596,
-     "tagesmittel": 0.0004538746319662594,
-     "t": 0.9992951450840112,
-     "se": 0.0004541947733850963,
-     "mde": 0.0009083895467701926,
-     "jeSignal": 0.0004071299994204027,
-     "anteilPositiv": 0.5152947719688543
+     "tagesmittel": 0.00047613195224115867,
+     "t": 1.0434831248004077,
+     "se": 0.0004562909940035981,
+     "mde": 0.0009125819880071962,
+     "jeSignal": 0.00042253820823984656,
+     "anteilPositiv": 0.514460511679644
     }
    },
    "gesamt": {
@@ -197,19 +197,19 @@
     "ueberschuss": {
      "tage": 675,
      "signale": 6509,
-     "tagesmittel": 0.0002526755025177736,
-     "t": 0.8128289264548049,
-     "se": 0.00031085938786631375,
-     "mde": 0.0006217187757326275,
-     "jeSignal": 0.00025714435772454725,
-     "anteilPositiv": 0.5114456905822707
+     "tagesmittel": 0.0002641195533215846,
+     "t": 0.8450131684271046,
+     "se": 0.0003125626477670318,
+     "mde": 0.0006251252955340636,
+     "jeSignal": 0.0002620869204141121,
+     "anteilPositiv": 0.5097557228452911
     }
    },
    "kosten": {
     "spanneBp": 5,
     "jeUmlaufAnteil": 0.001
    },
-   "nettoJeSignalBestaetigung": -0.0005928700005795972
+   "nettoJeSignalBestaetigung": -0.0005774617917601535
   },
   {
    "variante": 2,
@@ -243,12 +243,12 @@
     "ueberschuss": {
      "tage": 319,
      "signale": 2913,
-     "tagesmittel": 0.00004126527202057329,
-     "t": 0.09396920132388732,
-     "se": 0.00043913613651288424,
-     "mde": 0.0008782722730257685,
-     "jeSignal": 0.00007099288220727941,
-     "anteilPositiv": 0.5025746652935118
+     "tagesmittel": -0.00004309155609464232,
+     "t": -0.09743650281133664,
+     "se": 0.0004422526963850416,
+     "mde": 0.0008845053927700832,
+     "jeSignal": -0.000011450387120763399,
+     "anteilPositiv": 0.49261929282526606
     }
    },
    "bestaetigung": {
@@ -265,12 +265,12 @@
     "ueberschuss": {
      "tage": 356,
      "signale": 3596,
-     "tagesmittel": 0.00028908997466656227,
-     "t": 0.646065395349442,
-     "se": 0.0004474624035701527,
-     "mde": 0.0008949248071403054,
-     "jeSignal": 0.0002286789771345749,
-     "anteilPositiv": 0.5111234705228032
+     "tagesmittel": 0.00021253812975323544,
+     "t": 0.47286457747642735,
+     "se": 0.00044946934043464193,
+     "mde": 0.0008989386808692839,
+     "jeSignal": 0.00013559811961025452,
+     "anteilPositiv": 0.5075083426028921
     }
    },
    "gesamt": {
@@ -287,19 +287,19 @@
     "ueberschuss": {
      "tage": 675,
      "signale": 6509,
-     "tagesmittel": 0.00017196985593460605,
-     "t": 0.5475505347958437,
-     "se": 0.0003140712044025775,
-     "mde": 0.000628142408805155,
-     "jeSignal": 0.00015810905940171152,
-     "anteilPositiv": 0.507297587955139
+     "tagesmittel": 0.00009172943377475681,
+     "t": 0.2904303628252624,
+     "se": 0.00031583968315993834,
+     "mde": 0.0006316793663198767,
+     "jeSignal": 0.00006978888622456555,
+     "anteilPositiv": 0.5008449838684897
     }
    },
    "kosten": {
     "spanneBp": 5,
     "jeUmlaufAnteil": 0.001
    },
-   "nettoJeSignalBestaetigung": -0.0007713210228654251
+   "nettoJeSignalBestaetigung": -0.0008644018803897455
   },
   {
    "variante": 3,
@@ -333,12 +333,12 @@
     "ueberschuss": {
      "tage": 319,
      "signale": 2913,
-     "tagesmittel": 0.00044218621852068284,
-     "t": 0.8789256698171436,
-     "se": 0.0005030985368906993,
-     "mde": 0.0010061970737813986,
-     "jeSignal": 0.0002404313048125627,
-     "anteilPositiv": 0.48266392035702027
+     "tagesmittel": 0.00026656702835206153,
+     "t": 0.5274251175208498,
+     "se": 0.000505412085046412,
+     "mde": 0.001010824170092824,
+     "jeSignal": 0.00005818218624360834,
+     "anteilPositiv": 0.4603501544799176
     }
    },
    "bestaetigung": {
@@ -355,12 +355,12 @@
     "ueberschuss": {
      "tage": 356,
      "signale": 3596,
-     "tagesmittel": 0.00030872189990488745,
-     "t": 0.6529366161509316,
-     "se": 0.00047282062648715647,
-     "mde": 0.0009456412529743129,
-     "jeSignal": 0.0003121625865399565,
-     "anteilPositiv": 0.49582869855394884
+     "tagesmittel": 0.00011109584101147385,
+     "t": 0.23391390725741262,
+     "se": 0.00047494329137607645,
+     "mde": 0.0009498865827521529,
+     "jeSignal": 0.00010733946121776562,
+     "anteilPositiv": 0.4799777530589544
     }
    },
    "gesamt": {
@@ -377,19 +377,19 @@
     "ueberschuss": {
      "tage": 675,
      "signale": 6509,
-     "tagesmittel": 0.00037179614825812976,
-     "t": 1.0798478348058669,
-     "se": 0.00034430420312411017,
-     "mde": 0.0006886084062482203,
-     "jeSignal": 0.00028006038594510714,
-     "anteilPositiv": 0.48993701029343983
+     "tagesmittel": 0.00018457037251021089,
+     "t": 0.5336391409600426,
+     "se": 0.0003458711296516966,
+     "mde": 0.0006917422593033932,
+     "jeSignal": 0.00008533990030215362,
+     "anteilPositiv": 0.47119373175603013
     }
    },
    "kosten": {
     "spanneBp": 5,
     "jeUmlaufAnteil": 0.001
    },
-   "nettoJeSignalBestaetigung": -0.0006878374134600435
+   "nettoJeSignalBestaetigung": -0.0008926605387822344
   },
   {
    "variante": 4,
@@ -423,12 +423,12 @@
     "ueberschuss": {
      "tage": 319,
      "signale": 2913,
-     "tagesmittel": 0.0005679256080584324,
-     "t": 1.069311381567814,
-     "se": 0.0005311134042412842,
-     "mde": 0.0010622268084825683,
-     "jeSignal": 0.0003045584590734308,
-     "anteilPositiv": 0.42670786131136285
+     "tagesmittel": 0.00032172986335109454,
+     "t": 0.6033662938603701,
+     "se": 0.0005332247867089981,
+     "mde": 0.0010664495734179962,
+     "jeSignal": 0.000052190332261691176,
+     "anteilPositiv": 0.37727428767593546
     }
    },
    "bestaetigung": {
@@ -445,12 +445,12 @@
     "ueberschuss": {
      "tage": 356,
      "signale": 3596,
-     "tagesmittel": 0.0004731845070726256,
-     "t": 0.9425823706047433,
-     "se": 0.0005020086539164097,
-     "mde": 0.0010040173078328194,
-     "jeSignal": 0.0003176883524187174,
-     "anteilPositiv": 0.45912124582869857
+     "tagesmittel": 0.00018807639653108593,
+     "t": 0.3731063321395178,
+     "se": 0.0005040825639505829,
+     "mde": 0.0010081651279011659,
+     "jeSignal": 0.000033202151781233454,
+     "anteilPositiv": 0.39933259176863184
     }
    },
    "gesamt": {
@@ -467,19 +467,19 @@
     "ueberschuss": {
      "tage": 675,
      "signale": 6509,
-     "tagesmittel": 0.0005179584496125848,
-     "t": 1.4207639443722142,
-     "se": 0.0003645633404931686,
-     "mde": 0.0007291266809863372,
-     "jeSignal": 0.0003118122763218056,
-     "anteilPositiv": 0.4446151482562606
+     "tagesmittel": 0.00025124003492454173,
+     "t": 0.6863600427486451,
+     "se": 0.0003660470005194481,
+     "mde": 0.0007320940010388962,
+     "jeSignal": 0.00004170001162753492,
+     "anteilPositiv": 0.38946074665847286
     }
    },
    "kosten": {
     "spanneBp": 5,
     "jeUmlaufAnteil": 0.001
    },
-   "nettoJeSignalBestaetigung": -0.0006823116475812826
+   "nettoJeSignalBestaetigung": -0.0009667978482187665
   }
  ],
  "urteile": [
@@ -491,6 +491,7 @@
  ],
  "bestesUrteil": "nicht-entscheidbar",
  "tests": 5,
+ "testfamilie": null,
  "entscheidungen": [
   {
    "nr": 1,
@@ -530,6 +531,18 @@
   },
   {
    "nr": 4,
+   "regel": "A7 Lesefenster",
+   "eingabe": {
+    "leseFensterKerzen": 261
+   },
+   "ergebnis": {
+    "angewandt": true,
+    "fensterKerzen": 261
+   },
+   "begruendung": "Die Kontrolle mittelt ueber den Topf OHNE die Kerzen [i-261, i+8-1]. Damit enthaelt sie nichts, was das Signal gelesen hat, und nichts, was sich mit dem Ergebnis ueberlappt. Der Erwartungswert des Ueberschusses ist unter der Nullhypothese exakt null."
+  },
+  {
+   "nr": 5,
    "regel": "A2 Kontrolle",
    "eingabe": {
     "art": "erwartung-symbol-stunde",
@@ -539,7 +552,7 @@
    "begruendung": "Keine Zufallsziehung (A2), keine Listenpaarung (A3), kein Zeitbezug zum Signal (A4), je Haelfte getrennt (A5). Der Ueberschuss gegen diese Erwartung ist die Aussage; die Rohrendite allein ist keine."
   },
   {
-   "nr": 5,
+   "nr": 6,
    "regel": "B4 Bonferroni",
    "eingabe": {
     "tests": 5,
@@ -551,95 +564,99 @@
    "begruendung": "Zweiseitige Schwelle fuer |t| bei 5 Test(s)."
   },
   {
-   "nr": 6,
+   "nr": 7,
    "regel": "Urteil Variante 0",
    "eingabe": {
-    "ueberschussTagesmittelPp": 0.04674287168640969,
-    "mdePp": 0.09193414151766129,
-    "t": 1.0168773192368368,
+    "ueberschussTagesmittelPp": 0.05117369812419805,
+    "mdePp": 0.09226238520915489,
+    "t": 1.1093079375346617,
     "schwelle": 2.5758293064439264,
     "tage": 356,
     "signale": 3596,
-    "jeSignalPp": 0.03914801515367028
+    "jeSignalPp": 0.042872725113744986
    },
    "ergebnis": {
     "urteil": "nicht-entscheidbar",
     "aussicht": null
    },
-   "begruendung": "Ueberschuss 0.0467 Pp liegt unter der MDE 0.0919 Pp. Das heisst NICHT \"kein Effekt\" - es heisst, dass diese Datenmenge die Frage nicht beantworten kann."
-  },
-  {
-   "nr": 7,
-   "regel": "Urteil Variante 1",
-   "eingabe": {
-    "ueberschussTagesmittelPp": 0.04538746319662594,
-    "mdePp": 0.09083895467701926,
-    "t": 0.9992951450840112,
-    "schwelle": 2.5758293064439264,
-    "tage": 356,
-    "signale": 3596,
-    "jeSignalPp": 0.04071299994204027
-   },
-   "ergebnis": {
-    "urteil": "nicht-entscheidbar",
-    "aussicht": null
-   },
-   "begruendung": "Ueberschuss 0.0454 Pp liegt unter der MDE 0.0908 Pp. Das heisst NICHT \"kein Effekt\" - es heisst, dass diese Datenmenge die Frage nicht beantworten kann."
+   "begruendung": "Ueberschuss 0.0512 Pp liegt unter der MDE 0.0923 Pp. Das heisst NICHT \"kein Effekt\" - es heisst, dass diese Datenmenge die Frage nicht beantworten kann."
   },
   {
    "nr": 8,
-   "regel": "Urteil Variante 2",
+   "regel": "Urteil Variante 1",
    "eingabe": {
-    "ueberschussTagesmittelPp": 0.028908997466656226,
-    "mdePp": 0.08949248071403054,
-    "t": 0.646065395349442,
+    "ueberschussTagesmittelPp": 0.04761319522411587,
+    "mdePp": 0.09125819880071963,
+    "t": 1.0434831248004077,
     "schwelle": 2.5758293064439264,
     "tage": 356,
     "signale": 3596,
-    "jeSignalPp": 0.02286789771345749
+    "jeSignalPp": 0.042253820823984656
    },
    "ergebnis": {
     "urteil": "nicht-entscheidbar",
     "aussicht": null
    },
-   "begruendung": "Ueberschuss 0.0289 Pp liegt unter der MDE 0.0895 Pp. Das heisst NICHT \"kein Effekt\" - es heisst, dass diese Datenmenge die Frage nicht beantworten kann."
+   "begruendung": "Ueberschuss 0.0476 Pp liegt unter der MDE 0.0913 Pp. Das heisst NICHT \"kein Effekt\" - es heisst, dass diese Datenmenge die Frage nicht beantworten kann."
   },
   {
    "nr": 9,
-   "regel": "Urteil Variante 3",
+   "regel": "Urteil Variante 2",
    "eingabe": {
-    "ueberschussTagesmittelPp": 0.030872189990488744,
-    "mdePp": 0.09456412529743129,
-    "t": 0.6529366161509316,
+    "ueberschussTagesmittelPp": 0.021253812975323545,
+    "mdePp": 0.08989386808692838,
+    "t": 0.47286457747642735,
     "schwelle": 2.5758293064439264,
     "tage": 356,
     "signale": 3596,
-    "jeSignalPp": 0.031216258653995653
+    "jeSignalPp": 0.013559811961025452
    },
    "ergebnis": {
     "urteil": "nicht-entscheidbar",
     "aussicht": null
    },
-   "begruendung": "Ueberschuss 0.0309 Pp liegt unter der MDE 0.0946 Pp. Das heisst NICHT \"kein Effekt\" - es heisst, dass diese Datenmenge die Frage nicht beantworten kann."
+   "begruendung": "Ueberschuss 0.0213 Pp liegt unter der MDE 0.0899 Pp. Das heisst NICHT \"kein Effekt\" - es heisst, dass diese Datenmenge die Frage nicht beantworten kann."
   },
   {
    "nr": 10,
-   "regel": "Urteil Variante 4",
+   "regel": "Urteil Variante 3",
    "eingabe": {
-    "ueberschussTagesmittelPp": 0.04731845070726256,
-    "mdePp": 0.10040173078328193,
-    "t": 0.9425823706047433,
+    "ueberschussTagesmittelPp": 0.011109584101147384,
+    "mdePp": 0.09498865827521528,
+    "t": 0.23391390725741262,
     "schwelle": 2.5758293064439264,
     "tage": 356,
     "signale": 3596,
-    "jeSignalPp": 0.03176883524187174
+    "jeSignalPp": 0.010733946121776562
    },
    "ergebnis": {
     "urteil": "nicht-entscheidbar",
     "aussicht": null
    },
-   "begruendung": "Ueberschuss 0.0473 Pp liegt unter der MDE 0.1004 Pp. Das heisst NICHT \"kein Effekt\" - es heisst, dass diese Datenmenge die Frage nicht beantworten kann."
+   "begruendung": "Ueberschuss 0.0111 Pp liegt unter der MDE 0.0950 Pp. Das heisst NICHT \"kein Effekt\" - es heisst, dass diese Datenmenge die Frage nicht beantworten kann."
+  },
+  {
+   "nr": 11,
+   "regel": "Urteil Variante 4",
+   "eingabe": {
+    "ueberschussTagesmittelPp": 0.018807639653108593,
+    "mdePp": 0.1008165127901166,
+    "t": 0.3731063321395178,
+    "schwelle": 2.5758293064439264,
+    "tage": 356,
+    "signale": 3596,
+    "jeSignalPp": 0.0033202151781233456
+   },
+   "ergebnis": {
+    "urteil": "nicht-entscheidbar",
+    "aussicht": null
+   },
+   "begruendung": "Ueberschuss 0.0188 Pp liegt unter der MDE 0.1008 Pp. Das heisst NICHT \"kein Effekt\" - es heisst, dass diese Datenmenge die Frage nicht beantworten kann."
   }
  ],
- "warnungen": []
+ "warnungen": [],
+ "archiv": {
+  "pfad": "C:\\Users\\Wilhe\\AppData\\Roaming\\Markt-Dashboard\\store",
+  "echtesArchiv": true
+ }
 }

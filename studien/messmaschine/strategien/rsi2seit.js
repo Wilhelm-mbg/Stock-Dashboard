@@ -9,6 +9,10 @@ module.exports = {
   key: 'rsi2seit',
   grund: 'RSI(2) kauft kurzfristige Uebertreibung und braucht die Rueckkehr zur Mitte. Die gibt es nur, ' +
          'wo eine Mitte existiert - im Seitwaertskanal. Der Kanal liefert die Erlaubnis, nicht die Richtung.',
+  /* A7: EMA100 und Kanal 200 in quant.js - der Vorlauf der Maschine.
+   * Die Kontrolle laesst diese Kerzen aus, damit sie nichts enthaelt, was das
+   * Signal gelesen hat - sonst entsteht die Nullpunktverschiebung A6. */
+  leseFensterKerzen: 261,
   zeitrahmen: '60m',
   haltedauerKerzen: 8,
   richtung: 'long',

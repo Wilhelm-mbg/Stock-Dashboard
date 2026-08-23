@@ -1,0 +1,62 @@
+{
+ "verfahren": "eichung-permutation/2.0.0",
+ "strategie": "t1-zwangsglattstellung",
+ "gemessenAm": "2026-08-23T21:37:21.243Z",
+ "laeufe": 20,
+ "a7Aktiv": true,
+ "a7Fenster": 430,
+ "hinweis": "Eichung, KEIN Befund ueber den Markt. Die Renditen sind echt, nur ihre Reihenfolge ist innerhalb jeder UTC-Stunde vertauscht. t-Werte auf Nullarchiven sind systematisch zu gross (A8).",
+ "varianten": [
+  {
+   "variante": 0,
+   "params": {
+    "k": 1.5
+   },
+   "signale": 7101,
+   "verzerrungPp": 0.015920398546738743,
+   "verzerrungFehlerPp": 0.005649541074041388,
+   "tVerzerrung": 2.8179985485706225,
+   "verzerrungGegenMde": 0.11167781406615356,
+   "bestanden": true,
+   "laeufe": 20,
+   "echtTagesmittelPp": 0.10413438981893314,
+   "echtT": 1.460956016892359,
+   "echtMdePp": 0.14255650220112767,
+   "urteil": "nicht-entscheidbar"
+  },
+  {
+   "variante": 1,
+   "params": {
+    "k": 2
+   },
+   "signale": 3522,
+   "verzerrungPp": 0.009529678858002214,
+   "verzerrungFehlerPp": 0.009068568908856874,
+   "tVerzerrung": 1.0508470469574305,
+   "verzerrungGegenMde": 0.052605727794145296,
+   "bestanden": true,
+   "laeufe": 20,
+   "echtTagesmittelPp": 0.05427099659089,
+   "echtT": 0.5991734488261353,
+   "echtMdePp": 0.18115287550613093,
+   "urteil": "nicht-entscheidbar"
+  },
+  {
+   "variante": 2,
+   "params": {
+    "k": 2.5
+   },
+   "signale": 1907,
+   "verzerrungPp": -0.006093468528811782,
+   "verzerrungFehlerPp": 0.015383379683486702,
+   "tVerzerrung": -0.39610726993580087,
+   "verzerrungGegenMde": 0.026047153140856007,
+   "bestanden": true,
+   "laeufe": 20,
+   "echtTagesmittelPp": -0.16197755608112013,
+   "echtT": -1.3847791905964724,
+   "echtMdePp": 0.23393990490476793,
+   "urteil": "nicht-entscheidbar"
+  }
+ ]
+}

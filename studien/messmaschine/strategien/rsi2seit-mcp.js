@@ -26,6 +26,10 @@ module.exports = {
   grund: 'Gewinne absichern, statt sie zurueckzugeben: Ein nachziehender Stop sichert einen festen Anteil ' +
          'des bisherigen Gewinns. Der Grund ist verhaltensbasiert - nach einem schnellen Anstieg nehmen ' +
          'Marktteilnehmer Gewinne mit, ein Teil des Anstiegs faellt also regelmaessig zurueck.',
+  /* A7: derselbe Einstieg wie rsi2seit; der Stop liest nur Kerzen NACH dem Einstieg.
+   * Die Kontrolle laesst diese Kerzen aus, damit sie nichts enthaelt, was das
+   * Signal gelesen hat - sonst entsteht die Nullpunktverschiebung A6. */
+  leseFensterKerzen: 261,
   zeitrahmen: '60m',
   haltedauerKerzen: 8,
   richtung: 'long',

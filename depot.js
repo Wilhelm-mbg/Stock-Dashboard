@@ -605,7 +605,54 @@
     }).join('') + '</table>';
   }
   /** Zeigt die Huerde und stellt sie der belegten Kante gegenueber. */
-  function huerdeAnzeigen() {
+  /* ---------------------------------------------------------------------------
+ * D2: Kantenwerte aus den Messprotokollen, nicht aus dem Code.
+ *
+ * Gelesen wird einmal beim Start ueber dieselbe Bruecke wie das Scoreboard. Die
+ * App RECHNET hier nichts - sie nimmt den Ueberschuss je Signal und das Urteil,
+ * so wie die Messmaschine sie hingeschrieben hat. Faellt das Lesen aus, bleibt der
+ * Speicher leer und die Anzeige behauptet nichts.
+ *
+ * Warum "je Signal" und nicht das Tagesmittel: Die Kostenhuerde gilt je Umlauf.
+ * Ein Tagesmittel gegen Umlaufkosten zu stellen vergleicht zwei verschiedene
+ * Groessen - genau dieser Fehler stand hier bis zum 23.08.2026.
+ * ------------------------------------------------------------------------- */
+var PROTOKOLL_KANTE = {};
+async function kantenAusProtokollen() {
+  try {
+    if (!window.api || !window.api.readProtokolle) return;
+    var r = await window.api.readProtokolle();
+    if (!r || !r.ok || !Array.isArray(r.protokolle)) return;
+    var neu = {};
+    r.protokolle.forEach(function (eintrag) {
+      var j = eintrag && eintrag.protokoll;
+      if (!j || !j.strategie || !j.strategie.key || !Array.isArray(j.ergebnisse)) return;
+      /* Von mehreren Varianten die mit dem staerksten Bestaetigungs-t - und die
+       * Variantenzahl wird mit angezeigt, damit die Auswahl sichtbar bleibt. */
+      var beste = null, besterT = -Infinity, besterIdx = 0;
+      j.ergebnisse.forEach(function (e, i) {
+        var u = e && e.bestaetigung && e.bestaetigung.ueberschuss;
+        if (!u || u.jeSignal == null || !isFinite(u.jeSignal)) return;
+        var tw = isFinite(u.t) ? u.t : -Infinity;
+        if (tw > besterT) { besterT = tw; beste = u; besterIdx = i; }
+      });
+      if (!beste) return;
+      var vorhanden = neu[j.strategie.key];
+      if (vorhanden && vorhanden.datum >= String(j.gemessenAm || '').slice(0, 10)) return;
+      neu[j.strategie.key] = {
+        jeSignalPp: beste.jeSignal * 100,
+        urteil: (j.urteile && j.urteile[besterIdx]) || j.bestesUrteil || 'unbekannt',
+        datum: String(j.gemessenAm || '').slice(0, 10),
+        varianten: j.ergebnisse.length,
+      };
+    });
+    PROTOKOLL_KANTE = neu;
+    try { huerdeAnzeigen(); } catch (e) { /* Anzeige noch nicht da - beim naechsten Mal */ }
+  } catch (e) { /* kein Protokoll lesbar: es wird eben nichts behauptet */ }
+}
+document.addEventListener('DOMContentLoaded', function () { kantenAusProtokollen(); });
+
+function huerdeAnzeigen() {
     var el = document.getElementById("kostenHuerde"); if (!el) return;
     var cfg = D.intraday || {};
     /* Haltedauer aus DERSELBEN Quelle wie der Handel: modeParams() liefert sie auch
@@ -621,10 +668,13 @@
     var einsatz = positionsWert(cfg, eq, slAbs, 1);
     var h = kostenHuerdePp(cfg, 200, 0.30, halten, einsatz);
     if (!h) { el.textContent = ""; return; }
-    /* Die Kante des eingestellten Auslesers, so wie gemessen. Steht kein Wert fest,
-     * wird nichts behauptet - die Huerde allein ist dann die Aussage. */
-    var KANTE = { rsi2seit: 0.11, kapitulation: null };
-    var kante = KANTE[cfg.mode];
+    /* D2: Die Kante kommt aus dem Protokoll, nicht aus dem Code. Steht keins da,
+     * wird nichts behauptet - die Huerde allein ist dann die Aussage.
+     * (Bis 23.08.2026 stand hier KANTE = { rsi2seit: 0.11 } fest verdrahtet. Die
+     * Zahl war ein Tagesmittel aus einer Messung mit dem Fehler A6 und wurde gegen
+     * Kosten JE UMLAUF gestellt - daraus wurde "netto +0,01 Pp" in Gruen, waehrend
+     * dasselbe Protokoll "nicht entscheidbar" und je Signal -0,14 Pp fuehrte.) */
+    var kante = PROTOKOLL_KANTE[cfg.mode] || null;
     var std = halten >= 60 ? Math.round(halten / 60) + " h" : halten + " Min";
     var T = h.teile || { spanne: h.pp, zeit: 0, gebuehr: 0 };
     var txt = "<b>Kostenhürde:</b> " + h.pp.toFixed(3) + " Pp je Umlauf" +
@@ -648,11 +698,22 @@
         (h.einsatz > 0 ? ((cfg.orderFee || 0) * 2 / h.einsatz * 100).toFixed(2) : "?") +
         " % der Position. Größere Positionen senken genau diesen Anteil.</span>";
     }
-    if (kante != null) {
-      var netto = kante - h.pp;
-      txt += "<br>Gemessener Vorsprung dieses Auslösers: " + kante.toFixed(2) + " Pp → <span class=\"" +
-        (netto > 0 ? "gut" : "warn") + "\">netto " + (netto > 0 ? "+" : "") + netto.toFixed(2) + " Pp</span>" +
-        (netto > 0 ? "." : " – mit diesem Produkt trägt der Vorsprung die Kosten nicht.");
+    if (kante != null && kante.jeSignalPp != null) {
+      var netto = kante.jeSignalPp - h.pp;
+      /* GRUEN NUR BEI BESTAETIGT. Ein positives Vorzeichen ist kein Vorsprung -
+       * das war der Fehler, den diese Zeile bis zum 23.08.2026 gemacht hat. */
+      var belegt = kante.urteil === "bestaetigt";
+      txt += "<br>Messung vom " + kante.datum + ": Überschuss je Signal <b>" +
+        (kante.jeSignalPp >= 0 ? "+" : "") + kante.jeSignalPp.toFixed(3) + " Pp</b> gegen eine gepaarte Kontrolle" +
+        (kante.varianten > 1 ? " (beste von " + kante.varianten + " Varianten)" : "") +
+        " → <span class=\"" + (belegt && netto > 0 ? "gut" : "warn") + "\">netto " +
+        (netto >= 0 ? "+" : "") + netto.toFixed(3) + " Pp</span>";
+      if (!belegt) {
+        txt += "<br><span class=\"warn\">Urteil der Messmaschine: <b>" + kante.urteil +
+          "</b>. Diese Zahl ist kein belegter Vorsprung – auch dann nicht, wenn sie positiv ist.</span>";
+      } else if (netto <= 0) {
+        txt += " – mit diesem Produkt trägt der Vorsprung die Kosten nicht.";
+      }
     }
     el.innerHTML = txt;
   }
