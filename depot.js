@@ -4,7 +4,12 @@
    SIMULATION – keine Anlageberatung. */
 (function () {
   var Q = window.Quant, U = window.U;
-  var START_CAPITAL = 10000;
+  /* 100.000 statt 10.000 (Wilhelm, 23.08.2026). Bei 10.000 $ war die groesstmoegliche
+   * Position mit Klumpen-Deckel 8 genau 1.250 $; gegen einen Broker mit fester
+   * Ordergebuehr liegt der Break-even ohne Hebel bei rund 4.100 $ - unerreichbar.
+   * Betrifft NUR neue Depots. Ein laufendes Buch wird nicht angefasst; dafuer gibt es
+   * die Aufstockung in den Einstellungen, die den Verlauf erhaelt. */
+  var START_CAPITAL = 100000;
   var OPEN_THR = 0.35, CLOSE_THR = 0.25, BUDGET = 0.05, SL = -0.40, TP = 0.80, MAX_POS = 8;
 
   var D = null; // Depot-State
@@ -319,9 +324,19 @@
      * Spanne oder Zeitwert, erschlaegt die gemessene Kante bei kleinen Positionen. */
     var pos = einsatz > 0 ? einsatz : 10000;
     var gebAnteil = (cfg.orderFee || 0) * 2 / pos;          // Anteil der Position, beide Seiten
+    /* Uebernacht-Finanzierung: Capital.com berechnet rund 0,0237 % je Nacht auf das
+     * ENGAGEMENT - aber nur mit Hebel. Woertlich von der Gebuehrenseite (23.08.2026):
+     * "Trade CFDs on any of our shares markets using 1:1 leverage, and you'll get
+     * 0% overnight funding." Ohne Hebel ist der Basiswert-Pfad also spannenfrei
+     * finanziert; mit Hebel kostet jede Nacht mehr, als die gemessene Kante je
+     * Trade einbringt (+0,073 Pp nach Spanne). Deshalb steht es hier als Zahl.
+     * naechte: 0 bei einem Ausstieg am selben Tag, sonst 1 - ueber ein Wochenende 3. */
+    var naechte = Math.max(0, Math.floor(halten / (60 * 6.5)));   // je angefangener Handelstag eine Nacht
+    var uebernachtPp = (cfg.hebel > 1 ? 0.0237 : 0) * naechte;
     if (cfg.instrument === "basis") {
-      return { pp: 2 * 0.05 + gebAnteil * 100, produkt: "Aktie 1x", hebel: 1, einsatz: pos,
-               teile: { spanne: 2 * 0.05, zeit: 0, gebuehr: gebAnteil * 100 } };
+      return { pp: 2 * 0.05 + gebAnteil * 100 + uebernachtPp, produkt: "Aktie 1x", hebel: 1, einsatz: pos,
+               naechte: naechte,
+               teile: { spanne: 2 * 0.05, zeit: 0, gebuehr: gebAnteil * 100, uebernacht: uebernachtPp } };
     }
     var P = Q.PROFILES[cfg.profile] || Q.PROFILES.atm21;
     var w = Q.makeWarrant("call", spot, vol, now, P.ratio);
@@ -338,8 +353,10 @@
      * sie zu Prozentpunkten des Basiswerts. Die Gebuehr gehoert genauso dazu wie
      * Spanne und Zeitwert - sie fehlte hier bisher vollstaendig. */
     var tSpanne = 2 * spx / omega * 100, tZeit = theta / omega * 100, tGeb = gebAnteil / omega * 100;
-    return { pp: tSpanne + tZeit + tGeb, produkt: P.name, hebel: omega, einsatz: pos,
-             teile: { spanne: tSpanne, zeit: tZeit, gebuehr: tGeb } };
+    /* Beim Schein gibt es keine Uebernacht-Finanzierung - der Zeitwertverlust IST
+     * der Preis fuers Halten und steckt bereits in tZeit. */
+    return { pp: tSpanne + tZeit + tGeb, produkt: P.name, hebel: omega, einsatz: pos, naechte: 0,
+             teile: { spanne: tSpanne, zeit: tZeit, gebuehr: tGeb, uebernacht: 0 } };
   }
   /** Positionswert in Dollar, so wie ihn der Live-Pfad bildet (depot.js, Abschnitt
    *  "Positionsgroesse nach Risiko"). EINE Formel fuer Anzeige und Handel - dass die
@@ -386,7 +403,12 @@
       " · Einsatz " + Math.round(h.einsatz) + " $" +
       ". So weit muss sich der <i>Basiswert</i> bewegen, bevor etwas übrig bleibt." +
       "<br><span style=\"color:var(--muted);\">Davon Spanne " + T.spanne.toFixed(3) +
-      " · Zeitwert " + T.zeit.toFixed(3) + " · Ordergebühr " + T.gebuehr.toFixed(3) + " Pp.</span>";
+      " · Zeitwert " + T.zeit.toFixed(3) + " · Ordergebühr " + T.gebuehr.toFixed(3) +
+      (T.uebernacht ? " · Übernacht-Finanzierung " + T.uebernacht.toFixed(3) + " (" + (h.naechte || 0) + " Nächte)" : "") +
+      " Pp.</span>" +
+      (cfg.instrument === "basis" && !(cfg.orderFee > 0)
+        ? "<br><span style=\"color:var(--muted);\">Capital.com berechnet keine Kommission; ohne Hebel entfällt auch die Übernacht-Finanzierung. Für diesen Weg ist die Spanne der ganze Preis.</span>"
+        : "");
     /* Die Gebuehr ist ein fester Betrag - auf einer kleinen Position wiegt sie alles
      * andere auf. Das ist kein Randfall, sondern der Regelfall beim Risiko-Sizing,
      * deshalb steht es als Satz da und nicht nur als Zahl. */
@@ -545,7 +567,11 @@
         new Date(t.closeT).toISOString().slice(0, 10) === heute;
     });
     var sum = sel.reduce(function (a, t) { return a + t.pnl; }, 0);
-    return { n: sel.length, pnl: Math.round(sum * 100) / 100, pct: Math.round(sum / START_CAPITAL * 10000) / 100 };
+    /* Bezugsgroesse ist das Kapital DIESES Tages, nicht die Startkonstante. Sonst
+     * meldet ein aufgestocktes oder gewachsenes Depot einen falschen Tagesprozentsatz -
+     * und der Kill-Switch entscheidet auf derselben Zahl. */
+    var basis = D.dayStartEq > 0 ? D.dayStartEq : START_CAPITAL;
+    return { n: sel.length, pnl: Math.round(sum * 100) / 100, pct: Math.round(sum / basis * 10000) / 100 };
   }
 
   function save() {
