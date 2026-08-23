@@ -4705,7 +4705,7 @@
            * Die Grenze deckt rund eine volle Sitzung ab, ist aber gedeckelt, damit ein
            * kleines Fenster nicht das Anfragebudget aufbraucht. */
           var leerGrenze = Math.max(4, Math.min(24, Math.ceil(8 * 3600000 / fensterMs)));
-          var leer = 0, geholt = false, fehlSerie = 0, ohneSitzung = 0, symGrund = '';
+          var leer = 0, geholt = false, fehlSerie = 0, ohneSitzung = 0, symGrund = '', symArt = '';
           while (frueh > ziel && !massenStop && leer < leerGrenze && fehlSerie < 3 && ohneSitzung < 3) {
             var von = Math.max(ziel, frueh - fensterMs);
             var bars = null;
@@ -4731,6 +4731,8 @@
               // sagt nicht, ob der Markt fehlt, die Sitzung abläuft oder gedrosselt wird.
               symGrund = gRoh || symGrund;
               stat.grund = gRoh || stat.grund;
+              // Fehlerart als CODE merken - der Meldungstext ist Anzeige, kein Protokoll.
+              symArt = (window.CapAPI.lastErrorKind && window.CapAPI.lastErrorKind()) || symArt;
               // Bei Fehlern langsamer werden statt weiterzuhaemmern - das ist genau
               // die Situation, in der eine Drosselung greift.
               await new Promise(function (r) { setTimeout(r, 1500 * fehlSerie); });
@@ -4769,8 +4771,7 @@
            * 'weiter zurueck gibt die API nichts her'. Beim zweiten Lauf ist das der
            * Normalfall bei JEDEM Wert - mitgezaehlt haette der Lauf sich dann selbst
            * mit der Meldung 'Verbindung gestoert' abgebrochen. */
-          else if ((fehlSerie >= 3 || ohneSitzung >= 3) &&
-                   symGrund.indexOf('Kein Markt') !== 0) { ohneErfolg++; }
+          else if ((fehlSerie >= 3 || ohneSitzung >= 3) && symArt !== 'kein-markt') { ohneErfolg++; }
           // stat.bars === 0 fasst den Fall 'es lief nie'. Bricht die Verbindung erst
           // mitten im Lauf weg, greift die zweite Schwelle.
           if (ohneErfolg >= 3 && (stat.bars === 0 || ohneErfolg >= 10)) {

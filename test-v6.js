@@ -677,6 +677,94 @@ console.log('\n17b) Oberflaeche: Altlasten und Verdrahtung');
   ok(/function spekKurz\(/.test(r) && /esc\(z\.kurz\)/.test(r) && /title="' \+ esc\(z\.these\)/.test(r),
      'Radar #49: These gekuerzt, voller Wortlaut bleibt als Tooltip');
 
+  /* --- Insider-Kaeufe (23.08.2026): SEC Form 4 -----------------------------
+   * Die Siebung ist der ganze Wert dieser Karte: ueber 90 Prozent der Meldungen sind
+   * Zuteilungen, Optionsausuebungen und Plan-Verkaeufe. Deshalb wird hier die
+   * Rechnung selbst geprueft, nicht nur der Quelltext. */
+  var IH = require('./tools/insider-holen.js');
+  var EG = require('./tools/edgar.js');
+
+  // Der Tagesindex haelt sich nicht an die eigene Kopfzeile: sie behauptet, der
+  // Formtyp sei 12 Zeichen breit, bei "SCHEDULE 13D" beginnt der Name aber erst in
+  // Spalte 18. Feste Spaltenbreiten waeren hier still falsch.
+  var zF4 = EG.zeileLesen('4                3D SYSTEMS CORP                                               910638      20260821    edgar/data/910638/0001628280-26-058429.txt');
+  var z13 = EG.zeileLesen('SCHEDULE 13D     IMMERSION CORP                                                1058811     20260821    edgar/data/1058811/0001104659-26-078123.txt');
+  var z13a = EG.zeileLesen('SCHEDULE 13D/A   COMSCORE, INC.                                                1158172     20260821    edgar/data/1158172/0001104659-26-078200.txt');
+  ok(zF4 && zF4.typ === '4' && zF4.firma === '3D SYSTEMS CORP' && zF4.cik === '910638',
+     'EDGAR-Index: Form-4-Zeile korrekt zerlegt', zF4 && zF4.typ);
+  ok(z13 && z13.typ === 'SCHEDULE 13D' && z13.firma === 'IMMERSION CORP',
+     'EDGAR-Index: 13D-Zeile trotz breiterem Formtyp-Feld korrekt zerlegt', z13 && z13.firma);
+  ok(z13a && z13a.typ === 'SCHEDULE 13D/A',
+     'EDGAR-Index: Aenderungsmeldung wird NICHT als Original gelesen', z13a && z13a.typ);
+  ok(EG.entities('Chairman &amp; CEO') === 'Chairman & CEO',
+     'EDGAR: Entitaeten werden aufgeloest, sonst steht &amp;amp; in der Karte');
+
+  // Nur der offene Marktkauf zaehlt (Code P). Zuteilung (A), Optionsausuebung (M)
+  // und Verkauf (S) sagen nichts ueber eine Einschaetzung aus.
+  function f4xml(code, stueck, preis) {
+    return '<nonDerivativeTable><nonDerivativeTransaction>' +
+      '<transactionCoding><transactionCode>' + code + '</transactionCode></transactionCoding>' +
+      '<transactionAmounts><transactionShares><value>' + stueck + '</value></transactionShares>' +
+      '<transactionPricePerShare><value>' + preis + '</value></transactionPricePerShare>' +
+      '<transactionAcquiredDisposedCode><value>' + (code === 'S' ? 'D' : 'A') + '</value></transactionAcquiredDisposedCode>' +
+      '</transactionAmounts></nonDerivativeTransaction></nonDerivativeTable>';
+  }
+  var kaufP = IH.kaeufeLesen(f4xml('P', 1000, 50));
+  ok(kaufP && kaufP.stueck === 1000 && Math.round(kaufP.wert) === 50000 && kaufP.kurs === 50,
+     'Form 4: offener Marktkauf (P) wird gerechnet', kaufP && kaufP.wert);
+  ok(IH.kaeufeLesen(f4xml('A', 1000, 50)) === null, 'Form 4: Aktienzuteilung (A) zaehlt NICHT');
+  ok(IH.kaeufeLesen(f4xml('M', 1000, 50)) === null, 'Form 4: Optionsausuebung (M) zaehlt NICHT');
+  ok(IH.kaeufeLesen(f4xml('S', 1000, 50)) === null, 'Form 4: Verkauf (S) zaehlt NICHT');
+  // Derivate bleiben aussen vor: eine Option ist kein Kaufentschluss am Markt
+  ok(IH.kaeufeLesen('<derivativeTable>' + f4xml('P', 1000, 50).replace(/nonDerivative/g, 'derivative') + '</derivativeTable>') === null,
+     'Form 4: derivative Buchungen bleiben aussen vor');
+
+  // Ein reiner 10-%-Aktionaer ist meist eine Struktur, kein Mensch mit Einblick -
+  // im Probelauf waren das eine Muttergesellschaft und ein Kreditfonds.
+  ok(IH.rolleLesen('<isOfficer>1</isOfficer><officerTitle>Chief Executive Officer</officerTitle>').rang === 3,
+     'Form 4: CEO bekommt den hoechsten Rang');
+  ok(IH.rolleLesen('<isDirector>true</isDirector>').intern === true, 'Form 4: Aufsichtsrat zaehlt als intern');
+  ok(IH.rolleLesen('<isTenPercentOwner>1</isTenPercentOwner>').intern === false,
+     'Form 4: reiner 10-%-Aktionaer zaehlt NICHT als intern');
+  ok(IH.istFonds('Nuveen Municipal Income Fund') === true && IH.istFonds('ALASKA AIR GROUP') === false,
+     'Form 4: geschlossene Fonds sind keine operativen Firmen');
+
+  // Mehrere Insider derselben Firma sind der seltene, staerkere Fall - das muss die
+  // Verdichtung als ein Eintrag mit Kopfzahl abbilden, nicht als zwei Zeilen.
+  var vd = IH.verdichten([
+    { sym: 'XYZ', firma: 'Beispiel Inc.', person: 'Muster Anna', rolle: { text: 'CEO', rang: 3 }, kauf: { stueck: 100, wert: 5000, kurs: 50, datum: '2026-08-20' }, url: 'https://www.sec.gov/a' },
+    { sym: 'XYZ', firma: 'Beispiel Inc.', person: 'Muster Bernd', rolle: { text: 'Aufsichtsrat', rang: 1 }, kauf: { stueck: 100, wert: 3000, kurs: 30, datum: '2026-08-21' }, url: 'https://www.sec.gov/b' },
+    { sym: 'ABC', firma: 'Andere Corp', person: 'Muster Carla', rolle: { text: 'CFO', rang: 3 }, kauf: { stueck: 10, wert: 9000, kurs: 900, datum: '2026-08-21' }, url: 'https://www.sec.gov/c' }
+  ]);
+  ok(vd.length === 2 && vd[0].sym === 'XYZ' && vd[0].anzahl === 2 && vd[0].wert === 8000,
+     'Insider: mehrere Meldungen je Wert werden zu einem Eintrag mit Kopfzahl', vd[0] && vd[0].anzahl);
+  ok(vd[0].rang === 3 && vd[0].id === '20260821-XYZ-insider',
+     'Insider: hoechste Rolle gewinnt, id traegt das juengste Datum', vd[0] && vd[0].id);
+  ok(vd[1].sym === 'ABC' && vd[0].anzahl > vd[1].anzahl, 'Insider: das Cluster steht vor dem Einzelkauf');
+
+  // Schwellen: Pennystocks und Alibi-Kaeufe draussen, Liquiditaet gefordert
+  ok(IH.MIN_KURS >= 5 && IH.MIN_WERT >= 100000 && IH.MIN_UMSATZ >= 10e6,
+     'Insider: Schwellen fuer Kurs, Kaufwert und Tagesumsatz stehen', IH.MIN_KURS + '/' + IH.MIN_WERT + '/' + IH.MIN_UMSATZ);
+
+  // Anzeige: dieselbe Strenge wie beim Radar, denn auch das ist Fremdinhalt
+  ok(/read-insider/.test(m2) && /insider\.json/.test(m2), 'Insider: Lese-Kanal im Hauptprozess existiert');
+  ok(/const INSIDER_URL =/.test(m2), 'Insider: Gemeinschafts-Ablage haengt an einer festen URL');
+  ok(/readInsider/.test(p2), 'Insider: Bruecke ist exponiert');
+  ok(/id="insiderKarte"/.test(h), 'Insider: Karte auf dem Dashboard vorhanden');
+  ok(/esc\(z\.sym\)/.test(r) && /esc\(safeUrl\(q\.url\)\)/.test(r),
+     'Insider: Fremdinhalte werden escaped, Links nur ueber safeUrl');
+  ok(/jetzt - t > 21 \* 86400000\) continue/.test(r), 'Insider: Eintraege aelter als drei Wochen fallen raus');
+  ok(/insiderGesehen\.indexOf\(z\.id\) === -1/.test(r), 'Insider: Benachrichtigung je Eintrag nur einmal');
+  ok(/z\.anzahl > 1 && insiderGesehen/.test(r), 'Insider: benachrichtigt wird nur beim Cluster, nicht bei jedem Kauf');
+  ok(/gemeldet – nicht gemessen/.test(r), 'Insider: die Karte weist aus, dass hier nichts gemessen ist');
+  ok(/keine Intraday-Kante/.test(h) && /Gehandelt wird hiervon nichts/.test(h),
+     'Insider: die Ueberschrift sagt, was der Effekt ist und was nicht');
+  /* Ein Lauf des Werkzeugs darf beim require nicht losgehen - sonst fragt jeder
+     Testlauf die SEC ab und ueberschreibt die Datei. */
+  var ihSrc = fs.readFileSync(__dirname + '/tools/insider-holen.js', 'utf8');
+  ok(/require\.main === module/.test(ihSrc), 'Insider: das Werkzeug laeuft nur beim direkten Aufruf');
+  ok(/nur offener Marktkauf/.test(ihSrc), 'Insider: im Werkzeug steht, warum nur Code P zaehlt');
+
   // --- Echte Handelskosten aus dem Demo-Konto (22.08.2026) ---
   var c2 = fs.readFileSync(__dirname + '/capital.js', 'utf8');
   ok(/fill: cj\.level != null \? cj\.level : null/.test(c2),
@@ -1953,8 +2041,9 @@ console.log('\n30) Datenquellen-Diagnose (Capital.com) – ein Fehlschlag muss s
    * hätte ein NET-Signal eine Netflix-Position eröffnet. */
   ok(eF.indexOf("indexOf('SHARES')") === -1 && !/\|\|\s*mkts\[0\]/.test(eF),
      'epicFor rät nicht mehr: kein Rückfall auf den ersten SHARES- oder Suchtreffer');
-  ok(/m\.epic === sym/.test(eF) && /m\.symbol === sym/.test(eF),
-     'epicFor nimmt nur Treffer, deren Epic ODER Capital-Symbol das Symbol ist');
+  // Seit 23.08.2026 auf den Schreibweisen des Kuerzels (BRK-B / BRKB) - weiterhin EXAKT.
+  ok(/vari\.indexOf\(m\.epic\)/.test(eF) && /vari\.indexOf\(m\.symbol\)/.test(eF),
+     'epicFor nimmt nur Treffer, deren Epic ODER Capital-Symbol dem Kuerzel entspricht');
   ok(/cache\[sym\] === sym/.test(eF),
      'Der Cache gilt nur ungeprüft, wenn das Epic wie das Symbol heißt – sonst lief die Zuordnung ewig an der Prüfung vorbei');
   ok(/delete cache\[sym\]/.test(eF),
@@ -2000,7 +2089,9 @@ console.log('\n30) Datenquellen-Diagnose (Capital.com) – ein Fehlschlag muss s
      'Ein erfolgreicher Wert setzt den Abbruchzähler zurück (fertige Werte lösen nichts aus)');
   // Capital führt nicht jeden Wert als CFD – im DAX-Pool hängen 41 .DE-Symbole
   // hintereinander. Die dürfen nicht als „die Verbindung ist kaputt" gedeutet werden.
-  ok(mb.indexOf("symGrund.indexOf('Kein Markt') !== 0") !== -1,
+  // Seit 23.08.2026 ueber den Fehlercode statt ueber den Meldungstext - der Wortlaut
+  // aenderte sich ('Kein Markt' -> 'Kein gesicherter Markt') und die Pruefung brach still.
+  ok(mb.indexOf("symArt !== 'kein-markt'") !== -1,
      'Nicht geführte Einzelwerte lösen KEINEN Verbindungs-Abbruch aus');
 
   /* Handelspausen: Capital.com begrenzt die Zeitspanne je Anfrage (belegt am 22.08.2026
@@ -2403,6 +2494,42 @@ console.log('\n38) Auffuell-Lauf: sp100 und 60-Minuten-Erstbefuellung');
   // Reihenfolge: 60m VOR dem Capital-Teil, sonst misst der Liquiditaetsfilter auf CFD-Volumen
   var i60 = mb.indexOf('Stufe 0'), iCap = mb.indexOf('for (var vi = 0');
   ok(i60 > 0 && iCap > i60, 'Stufe 0 laeuft VOR dem Capital-Teil', 'Position ' + i60 + ' < ' + iCap);
+})();
+
+
+console.log('\n39) Kuerzel-Schreibweisen und Fehlercodes (echter Lauf 23.08.2026)');
+(function () {
+  var cap = fs.readFileSync(__dirname + '/capital.js', 'utf8');
+  var dep = fs.readFileSync(__dirname + '/depot.js', 'utf8');
+  /* Der Auffuell-Lauf brach ab: Capital fuehrt Berkshire Hathaway B als 'BRKB', Yahoo als
+   * 'BRK-B'. Die woertliche Suche verwarf den richtigen Treffer. Zugleich prueft der
+   * Frueh-Abbruch auf den TEXT 'Kein Markt' - die Meldung hiess inzwischen 'Kein
+   * gesicherter Markt', also zaehlten nicht gefuehrte Einzelwerte als Verbindungsstoerung. */
+  function varianten(sym) {
+    var out = [sym], m = /^([A-Za-z0-9]+)[-.]([A-Za-z])$/.exec(sym);
+    if (m) out.push(m[1] + m[2]);
+    return out;
+  }
+  ok(varianten('BRK-B').indexOf('BRKB') !== -1, 'BRK-B findet auch die Schreibweise BRKB');
+  ok(varianten('BF-B').indexOf('BFB') !== -1, 'BF-B findet auch BFB');
+  ok(varianten('SAP.DE').length === 1 && varianten('MUV2.DE').length === 1,
+     'Boersensuffixe wie .DE werden NICHT zusammengezogen (SAPDE waere ein anderer Wert)');
+  ok(varianten('AAPL').length === 1, 'Kuerzel ohne Trenner bleiben unveraendert');
+  ok(cap.indexOf('function tickerVarianten') !== -1 &&
+     /vari\.indexOf\(m\.epic\)/.test(cap) && /vari\.indexOf\(m\.symbol\)/.test(cap),
+     'Die Marktsuche vergleicht beide Schreibweisen - exakt, nicht unscharf');
+
+  /* Fehlerart als Code, nicht als Text */
+  ok(/lastErrorKind:\s*function/.test(cap), 'capital.js meldet die Fehlerart als Code');
+  ["'kein-markt'", "'http'", "'unlesbar'"].forEach(function (c) {
+    ok(cap.indexOf('letzterGrundArt = ' + c) !== -1, 'Fehlercode ' + c + ' wird gesetzt');
+  });
+  var mbI = dep.indexOf('async function massenBackfill');
+  var mb = dep.slice(mbI, dep.indexOf('async function datenquelleTest'));
+  ok(mb.indexOf("symArt !== 'kein-markt'") !== -1,
+     'Der Frueh-Abbruch prueft den CODE, nicht den Meldungstext');
+  ok(mb.indexOf("symGrund.indexOf('Kein Markt')") === -1,
+     'Die alte Textpruefung ist raus - sie brach, als sich der Wortlaut aenderte');
 })();
 
 console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
