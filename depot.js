@@ -909,12 +909,19 @@
    * Wilhelms Wunsch: die jeweilige Strategie mit ihren Signalen und Indikatoren grafisch
    * nachvollziehen und pruefen koennen. Reine ANZEIGE, keine neue Regel: Der Chart
    * spielt Q.einstiegSignal - dieselbe Funktion wie Studie, Backtest und Live-Scan -
-   * Kerze fuer Kerze ueber die 60m-Reihe ab und markiert jeden Einstieg, den die Regel
+   * Kerze fuer Kerze ueber die Reihe ab und markiert jeden Einstieg, den die Regel
    * gegeben haette. Dazu die Indikatoren, aus denen die Regel besteht (Leitlinie EMA20,
    * EMA100-Richtung, Kanal ueber 200 Kerzen, RSI(2) bzw. z-Abstand), und fuer die letzte
    * abgeschlossene Kerze eine Bedingungsliste: erfuellt / nicht erfuellt.
    * Bewusst nur die beiden BELEGTEN Intraday-Modi; Momentum und Drift sind Rangfolgen
-   * ueber alle Werte und haben kein Chartsignal. */
+   * ueber alle Werte und haben kein Chartsignal.
+   *
+   * Issue #52 (23.08.2026): Kerzenlaenge und Zeitraum sind waehlbar, und jedes historische
+   * Signal laesst sich anklicken - dann rechnet die Bedingungsliste GENAU DIE Kerze nach,
+   * in der das Signal fiel. Damit ist ein falsch erkanntes Signal nachtraeglich pruefbar,
+   * statt nur behauptbar. Die Kerzenlaenge ist dabei ausdruecklich als Ansicht markiert:
+   * belegt sind beide Regeln auf 60m, alles andere bekommt einen Warnhinweis, damit die
+   * Oberflaeche nicht wieder von der Messung wegdriftet. */
   var stcRunning = false;
   function stcParams(mode) {
     var cfg = D.intraday;
@@ -924,8 +931,10 @@
   /** Bedingungen der letzten Kerze, einzeln geprueft - damit man sieht, WARUM (k)ein Signal steht.
    *  Die Einzelpruefungen spiegeln die Regel in Q.einstiegSignal; das Gesamturteil kommt
    *  trotzdem aus genau dieser Funktion, nicht aus der Summe der Haekchen. */
-  function stcBedingungen(bars, mode, P) {
-    var ci = bars.length - 1;
+  function stcBedingungen(bars, mode, P, ciWunsch) {
+    // ciWunsch: Index der zu pruefenden Kerze. Ohne Angabe die letzte abgeschlossene -
+    // mit Angabe genau die Kerze, in der die Regel damals ihr Signal gab (Issue #52).
+    var ci = ciWunsch == null ? bars.length - 1 : Math.max(0, Math.min(bars.length - 1, ciWunsch));
     var win = bars.slice(Math.max(0, ci - Math.max(P.period * 4, 260)), ci + 1);
     var closes = win.map(function (b) { return b[1]; });
     var n = closes.length, out = [];
@@ -957,26 +966,51 @@
     try { sig = Q.einstiegSignal(bars, ci, P); } catch (e2) { }
     return { liste: out, signal: sig && sig.dir ? sig.dir : null, kanal: kanal };
   }
+  /** Zustand des zuletzt geladenen Strategie-Charts. Wird gebraucht, damit ein Klick auf
+   *  ein historisches Signal die Bedingungen JENER Kerze nachrechnen kann, ohne die Reihe
+   *  neu zu laden. Reine Anzeige - hier wird nichts gehandelt und nichts gespeichert. */
+  var stcState = null;
+  var STC_IV = { '60m': { min: 60, txt: '60-Minuten-Kerzen' }, '15m': { min: 15, txt: '15-Minuten-Kerzen' }, '5m': { min: 5, txt: '5-Minuten-Kerzen' } };
   async function runStrategieChart() {
     if (stcRunning) return;
     stcRunning = true;
     var sel = document.getElementById('stcSym'), modeEl = document.getElementById('stcMode'), st = document.getElementById('stcStatus');
-    var btn = document.getElementById('stcBtn'), info = document.getElementById('stcInfo'), check = document.getElementById('stcCheck');
+    var btn = document.getElementById('stcBtn'), info = document.getElementById('stcInfo');
     var svg = document.getElementById('stcChart'), ind = document.getElementById('stcInd');
+    var ivEl = document.getElementById('stcIv'), spEl = document.getElementById('stcSpanne'), warnEl = document.getElementById('stcIvWarn');
     if (!sel || !modeEl || !svg) { stcRunning = false; return; }
     btn.disabled = true;
     try {
       var sym = sel.value, mode = modeEl.value === 'kapitulation' ? 'kapitulation' : 'rsi2seit';
-      st.textContent = 'Lade ' + sym + ' (Stundenkerzen) …';
+      var iv = ivEl && STC_IV[ivEl.value] ? ivEl.value : '60m';
+      var ivCfg = STC_IV[iv];
+      var spanne = spEl ? parseInt(spEl.value, 10) : 320;
+      if (!(spanne > 0)) spanne = 320;
+      // Vorlauf: der Detektor rechnet erst ab Kerze 261 (Kanal ueber 200 + EMA100).
+      // Ohne diesen Puffer waere der linke Teil des Bildes systematisch signalfrei -
+      // man wuerde eine Luecke der Rechnung fuer eine Aussage ueber den Markt halten.
+      var tiefe = Math.max(900, spanne + 320);
+      // Ehrlichkeit vor Bequemlichkeit: gemessen sind beide Regeln auf 60m. Andere
+      // Kerzenlaengen darf man sich ansehen, aber sie sind KEIN Beleg - genau dieser
+      // stille Wechsel weg von der gemessenen Konfiguration hat hier schon einmal
+      // Live und Messung auseinanderlaufen lassen.
+      if (warnEl) {
+        if (iv === '60m') { warnEl.style.display = 'none'; warnEl.textContent = ''; }
+        else {
+          warnEl.style.display = '';
+          warnEl.textContent = 'Achtung: ' + ivCfg.txt + ' sind NICHT die gemessene Konfiguration. Beide Regeln wurden auf 60-Minuten-Kerzen belegt, und die grosse Signalstudie vom 23.08.2026 fand auf anderen Zeitrahmen keine tragfaehige Kante. Was hier steht, ist eine Ansicht zum Nachvollziehen der Mechanik - kein Beleg. Gehandelt wird weiterhin nur, was auf 60m gemessen ist.';
+        }
+      }
+      st.textContent = 'Lade ' + sym + ' (' + ivCfg.txt + ') …';
       var bars = null;
       // Archiv zuerst: es hat die Tiefe (>= 261 Kerzen), die der Detektor braucht - wie im Live-Scan.
-      if (window.Archiv) { try { bars = await window.Archiv.serie('60m', sym); } catch (eA) { bars = null; } }
+      if (window.Archiv) { try { bars = await window.Archiv.serie(iv, sym); } catch (eA) { bars = null; } }
       if (!bars || bars.length < 300) {
-        var fd = await fetchIntraday(sym, '60m', true);
+        var fd = await fetchIntraday(sym, iv, true);
         if (fd && fd.series && (!bars || fd.series.length > bars.length)) bars = fd.series;
       }
-      if (!bars || bars.length < 300) { st.textContent = 'Zu wenig Stundenkerzen für ' + sym + ' (' + (bars ? bars.length : 0) + ' < 300) – der Detektor rechnet erst ab 261 Kerzen wie gemessen.'; return; }
-      bars = Q.fertigeBars(bars.slice(-900), 60, Date.now());
+      if (!bars || bars.length < 300) { st.textContent = 'Zu wenig ' + ivCfg.txt + ' für ' + sym + ' (' + (bars ? bars.length : 0) + ' < 300) – der Detektor rechnet erst ab 261 Kerzen wie gemessen.'; return; }
+      bars = Q.fertigeBars(bars.slice(-tiefe), ivCfg.min, Date.now());
       var P = stcParams(mode);
       // Signale nachspielen: wie der Edge-Waechter, mit der Abklingzeit des Modus
       var cool = 0, marks = [], coolMin = D.intraday.cooldownMin != null ? D.intraday.cooldownMin : 120;
@@ -988,7 +1022,7 @@
         cool = bars[i][0];
         marks.push(i);
       }
-      var show = bars.slice(-320);
+      var show = bars.slice(-Math.min(spanne, bars.length));
       var off = bars.length - show.length;
       var closesAll = bars.map(function (b) { return b[1]; });
       var e20 = Q.emaSeries(closesAll, P.period).slice(off), e100 = Q.emaSeries(closesAll, 100).slice(off);
@@ -1006,19 +1040,19 @@
       }
       var marksShow = marks.filter(function (m) { return m >= off; }).map(function (m) { return m - off; });
       st.textContent = '';
-      drawStrategieChart(svg, show, e20, e100, bed.kanal, marksShow);
+      stcState = { bars: bars, show: show, off: off, mode: mode, P: P, marks: marks, sym: sym, iv: iv,
+        e20: e20, e100: e100, kanal: bed.kanal, marksShow: marksShow, gewaehlt: null };
+      drawStrategieChart(svg, show, e20, e100, bed.kanal, marksShow, null);
       drawStrategieIndikator(ind, show, indSerie, mode === 'rsi2seit'
         ? { lo: 0, hi: 100, schwelle: 10, name: 'RSI(2)' }
         : { lo: -4, hi: 4, schwelle: -P.ZTHR, name: 'z-Abstand zur EMA' + P.period });
       var name = mode === 'rsi2seit' ? 'RSI(2) im Seitwärtskanal' : 'Kapitulations-Dip im Abwärtskanal';
       var tage = Math.round((bars[bars.length - 1][0] - bars[261][0]) / 86400000);
-      info.innerHTML = '<b>' + U.esc(name) + '</b> auf ' + U.esc(sym) + ' · ' + bars.length + ' Stundenkerzen, davon ' + show.length + ' im Bild · Einstiege laut Regel in den letzten ~' + tage + ' Tagen: <b>' + marks.length + '</b>, im Bild <b>' + marksShow.length + '</b>' +
+      info.innerHTML = '<b>' + U.esc(name) + '</b> auf ' + U.esc(sym) + ' · ' + bars.length + ' ' + U.esc(ivCfg.txt) + ', davon ' + show.length + ' im Bild · Einstiege laut Regel in den letzten ~' + tage + ' Tagen: <b>' + marks.length + '</b>, im Bild <b>' + marksShow.length + '</b>' +
         ' · letzte Kerze ' + U.esc(new Date(bars[bars.length - 1][0]).toLocaleString('de-DE')) +
         (bed.signal === 'call' ? ' · <b style="color:var(--up);">Regel gibt JETZT ein Long-Signal</b>' : bed.signal === 'put' ? ' · Put-Seite gemeldet – trägt nicht, wird nicht gehandelt' : ' · aktuell kein Signal');
-      check.innerHTML = '<div style="color:var(--muted); margin-bottom:2px;">Bedingungen der letzten abgeschlossenen Kerze (alle müssen gleichzeitig gelten):</div>' +
-        bed.liste.map(function (b) {
-          return '<div><span style="color:' + (b.ok ? 'var(--up)' : 'var(--down)') + '; font-weight:600;">' + (b.ok ? '✓' : '✗') + '</span> ' + U.esc(b.txt) + '</div>';
-        }).join('');
+      stcListeZeichnen();
+      stcCheckZeichnen(null);
     } catch (e3) {
       st.textContent = 'Fehler: ' + (e3.message || e3);
     } finally {
@@ -1026,7 +1060,75 @@
       stcRunning = false;
     }
   }
-  function drawStrategieChart(svg, bars, e20, e100, kanal, marks) {
+  /** Alle historischen Signale der geladenen Reihe als anklickbare Liste (Issue #52).
+   *  Nur was der Detektor tatsaechlich gemeldet hat - keine Nachbesserung, keine Auswahl
+   *  der schoenen Faelle. Der spaetere Verlauf steht bewusst dabei: Wer ein Signal prueft,
+   *  will sehen, was danach passiert ist. Das ist eine Beobachtung an EINEM Wert und
+   *  ersetzt keine Messung - der Beleg steht in den Studien oben. */
+  function stcListeZeichnen() {
+    var el = document.getElementById('stcSignale');
+    if (!el) return;
+    var S = stcState;
+    if (!S) { el.innerHTML = ''; return; }
+    if (!S.marks.length) {
+      el.innerHTML = '<div style="font-size:12px; color:var(--muted);">Keine Einstiege der Regel in diesem Zeitraum. Das ist ein normales Ergebnis – beide Regeln melden sich selten, und genau deshalb sind sie ueberhaupt messbar.</div>';
+      return;
+    }
+    // Juengstes Signal zuerst: das ist das, was man pruefen will
+    var rows = S.marks.slice().reverse().map(function (mi) {
+      var b = S.bars[mi];
+      // Verlauf danach: Schlusskurs 6 Kerzen spaeter, sofern die Reihe so weit reicht
+      var zi = Math.min(S.bars.length - 1, mi + 6);
+      var d6 = zi > mi ? (S.bars[zi][1] / b[1] - 1) * 100 : null;
+      var imBild = mi >= S.off;
+      return '<tr class="stcRow" data-idx="' + mi + '" style="cursor:pointer;' + (S.gewaehlt === mi ? ' background:var(--grid);' : '') + '">' +
+        '<td>' + U.esc(new Date(b[0]).toLocaleString('de-DE')) + '</td>' +
+        '<td>' + U.nf2.format(b[1]) + ' $</td>' +
+        '<td class="' + (d6 == null ? '' : U.signCls(d6)) + '">' + (d6 == null ? '–' : U.signTxt(Math.round(d6 * 100) / 100, ' %')) + '</td>' +
+        '<td style="color:var(--muted);">' + (imBild ? 'im Bild' : 'vor dem Bild') + '</td>' +
+        '<td style="color:var(--series2);">Bedingungen zeigen</td></tr>';
+    }).join('');
+    el.innerHTML = '<div style="font-size:12px; color:var(--ink-2); margin-bottom:4px;">' + S.marks.length + ' Einstieg(e), die die Regel hier gegeben hätte – Zeile anklicken, um die Bedingungen jener Kerze nachzurechnen:</div>' +
+      '<div style="max-height:230px; overflow:auto;"><table class="tbl"><tr><th>Zeitpunkt der Signalkerze</th><th>Kurs</th><th>nach 6 Kerzen</th><th>Lage</th><th></th></tr>' + rows + '</table></div>' +
+      '<div style="font-size:11.5px; color:var(--muted); margin-top:4px;">Die Spalte „nach 6 Kerzen" ist reine Kursbewegung des Basiswerts – ohne Kosten, ohne Schein und ohne Ausstiegsregel. Sie zeigt den Verlauf, nicht das Ergebnis eines Trades, und ist kein Beleg.</div>';
+  }
+  /** Bedingungsliste - entweder fuer die letzte abgeschlossene Kerze (idx = null)
+   *  oder fuer die angeklickte Signalkerze. */
+  function stcCheckZeichnen(idx) {
+    var check = document.getElementById('stcCheck');
+    var S = stcState;
+    if (!check || !S) return;
+    var bed = stcBedingungen(S.bars, S.mode, S.P, idx);
+    var kopf;
+    if (idx == null) {
+      kopf = 'Bedingungen der letzten abgeschlossenen Kerze (alle müssen gleichzeitig gelten):';
+    } else {
+      kopf = 'Bedingungen der Signalkerze vom ' + U.esc(new Date(S.bars[idx][0]).toLocaleString('de-DE')) +
+        ' – so sah die Regel den Markt in genau diesem Moment:';
+    }
+    check.innerHTML = '<div style="color:var(--muted); margin-bottom:2px;">' + kopf + '</div>' +
+      bed.liste.map(function (bb) {
+        return '<div><span style="color:' + (bb.ok ? 'var(--up)' : 'var(--down)') + '; font-weight:600;">' + (bb.ok ? '✓' : '✗') + '</span> ' + U.esc(bb.txt) + '</div>';
+      }).join('') +
+      (idx == null ? '' : '<div style="margin-top:4px; color:var(--muted); font-size:11.5px;">Gesamturteil des Detektors in dieser Kerze: ' +
+        (bed.signal === 'call' ? '<b style="color:var(--up);">Einstieg (Long)</b>' : bed.signal === 'put' ? 'Put-Seite – wird nicht gehandelt' : 'kein Signal') +
+        '. Es kommt aus <code>einstiegSignal</code> selbst, nicht aus der Summe der Häkchen – deshalb kann ein Häkchen fehlen und das Urteil trotzdem stehen (die Regel prüft manches auf einem anderen Fenster).</div>');
+  }
+  /** Klick auf ein Signal: Bedingungen jener Kerze zeigen und die Markierung hervorheben.
+   *  Nochmal auf dieselbe Zeile klicken schaltet zurueck auf die letzte Kerze. */
+  function stcSignalWaehlen(idx) {
+    var S = stcState;
+    if (!S || !(idx >= 0) || idx >= S.bars.length) return;
+    S.gewaehlt = S.gewaehlt === idx ? null : idx;
+    var svg = document.getElementById('stcChart');
+    var hl = S.gewaehlt != null && S.gewaehlt >= S.off ? S.gewaehlt - S.off : null;
+    if (svg) drawStrategieChart(svg, S.show, S.e20, S.e100, S.kanal, S.marksShow, hl);
+    stcListeZeichnen();
+    stcCheckZeichnen(S.gewaehlt);
+  }
+  /** hl: Index (im Bildausschnitt) des angeklickten Signals - wird groesser und in der
+   *  Gegenfarbe gezeichnet, damit man die Zeile der Liste im Chart wiederfindet. */
+  function drawStrategieChart(svg, bars, e20, e100, kanal, marks, hl) {
     var W = svg.clientWidth || 900, H = svg.clientHeight || 280;
     var padL = 8, padR = 10, padT = 10, padB = 20;
     svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
@@ -1078,7 +1180,11 @@
     html += '<path d="' + bars.map(function (b, i) { return (i ? 'L' : 'M') + X(i).toFixed(1) + ' ' + Y(b[1]).toFixed(1); }).join(' ') +
       '" fill="none" stroke="var(--series)" stroke-width="1.8" stroke-linejoin="round"></path>';
     marks.forEach(function (i) {
-      html += '<circle cx="' + X(i).toFixed(1) + '" cy="' + Y(bars[i][1]).toFixed(1) + '" r="5" fill="var(--up)" stroke="var(--surface)" stroke-width="2"></circle>';
+      var aktiv = hl != null && hl === i;
+      // data-mark traegt den Index im Bildausschnitt; der Klick-Handler rechnet ihn
+      // mit dem Versatz der Reihe in den echten Kerzenindex um.
+      html += '<circle class="stcMark" data-mark="' + i + '" cx="' + X(i).toFixed(1) + '" cy="' + Y(bars[i][1]).toFixed(1) + '" r="' + (aktiv ? 8 : 5) +
+        '" fill="' + (aktiv ? 'var(--series2)' : 'var(--up)') + '" stroke="var(--surface)" stroke-width="2" style="cursor:pointer;"></circle>';
     });
     svg.innerHTML = html;
     svg.__chart = null;
@@ -7541,6 +7647,20 @@
         universe().forEach(function (s2) { var o = document.createElement('option'); o.value = s2; o.textContent = s2; ss.appendChild(o); });
         sb.addEventListener('click', runStrategieChart);
       }
+      // Signale anklickbar (Issue #52): in der Liste und direkt im Chart. Delegiert,
+      // weil beide Inhalte bei jedem Lauf neu gezeichnet werden.
+      var sl = document.getElementById('stcSignale');
+      if (sl) sl.addEventListener('click', function (ev) {
+        var tr = ev.target && ev.target.closest ? ev.target.closest('tr.stcRow') : null;
+        if (tr) stcSignalWaehlen(parseInt(tr.getAttribute('data-idx'), 10));
+      });
+      var sc2 = document.getElementById('stcChart');
+      if (sc2) sc2.addEventListener('click', function (ev) {
+        var t = ev.target;
+        if (!t || !t.getAttribute || !t.getAttribute('data-mark')) return;
+        if (!stcState) return;
+        stcSignalWaehlen(stcState.off + parseInt(t.getAttribute('data-mark'), 10));
+      });
     })();
     document.getElementById('filterBtn').addEventListener('click', runFilterCheck);
     (function () {

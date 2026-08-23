@@ -885,6 +885,73 @@ console.log('\n17b) Oberflaeche: Altlasten und Verdrahtung');
     ok(/value="rsi2seit"/.test(h3) && /value="kapitulation"/.test(h3) && !/value="hourly"/.test(h3.slice(h3.indexOf('id="stcMode"'), h3.indexOf('id="stcMode"') + 400)),
        'Strategie-Chart #51: nur die beiden belegten Modi, keine widerlegte Strategie im Chart');
     ok(/Simulation, keine Anlageberatung/.test(h3.slice(h3.indexOf('id="stratChartPanel"'))), 'Strategie-Chart #51: Hinweis Simulation bleibt');
+
+    // --- #52 (23.08.2026): Kerzenlaenge, Zeitraum, anklickbare historische Signale ---
+    // Wilhelms Wunsch: ein falsch erkanntes Signal soll NACHTRAEGLICH pruefbar sein.
+    // Die Gefahr dabei ist bekannt: eine frei waehlbare Kerzenlaenge fuehrt die
+    // Oberflaeche weg von der gemessenen Konfiguration (60m). Deshalb muss der
+    // Wechsel sichtbar bleiben, nicht still passieren.
+    var stcAlles = d3.slice(d3.indexOf('var stcState = null'), d3.indexOf('function drawStrategieChart'));
+    var panel = h3.slice(h3.indexOf('id="stratChartPanel"'), h3.indexOf('/tab-strategien'));
+    ok(/id="stcIv"/.test(panel) && /value="60m" selected/.test(panel),
+       'Strategie-Chart #52: Kerzenlaenge waehlbar, 60m bleibt die Voreinstellung (so ist gemessen)');
+    ok(/value="15m"[^>]*>[^<]*nur Ansicht/.test(panel) && /value="5m"[^>]*>[^<]*nur Ansicht/.test(panel),
+       'Strategie-Chart #52: ungemessene Kerzenlaengen sind schon in der Auswahl als Ansicht gekennzeichnet');
+    ok(/id="stcIvWarn"/.test(panel) && /NICHT die gemessene Konfiguration/.test(stcAlles),
+       'Strategie-Chart #52: wer die Kerzenlaenge verlaesst, bekommt es ausdruecklich gesagt');
+    ok(/Q\.fertigeBars\(bars\.slice\(-tiefe\), ivCfg\.min,/.test(stcAlles),
+       'Strategie-Chart #52: die Kerzenlaenge geht auch in fertigeBars - sonst wird die laufende Kerze falsch gekappt');
+    ok(/id="stcSpanne"/.test(panel) && /Math\.max\(900, spanne \+ 320\)/.test(stcAlles),
+       'Strategie-Chart #52: groesserer Zeitraum laedt auch mehr Vorlauf - sonst waere der linke Bildrand nur scheinbar signalfrei');
+    ok(/function stcCheckZeichnen/.test(stcAlles) && /stcBedingungen\(S\.bars, S\.mode, S\.P, idx\)/.test(stcAlles),
+       'Strategie-Chart #52: der Klick rechnet die Bedingungen GENAU DER Signalkerze nach, nicht die von heute');
+    ok(/ciWunsch == null \? bars\.length - 1 :/.test(d3),
+       'Strategie-Chart #52: ohne Angabe bleibt es bei der letzten abgeschlossenen Kerze');
+    ok(/data-mark=/.test(d3) && /tr\.stcRow/.test(d3),
+       'Strategie-Chart #52: Signale sind in der Liste UND im Chart anklickbar');
+    ok(/Gesamturteil des Detektors in dieser Kerze/.test(stcAlles) && /nicht aus der Summe der H/.test(stcAlles),
+       'Strategie-Chart #52: das Urteil kommt weiter aus einstiegSignal, nicht aus den Haekchen');
+    ok(/ohne Kosten, ohne Schein und ohne Ausstiegsregel/.test(stcAlles),
+       'Strategie-Chart #52: der Verlauf nach dem Signal wird nicht als Handelsergebnis ausgegeben');
+
+    // Und jetzt nicht nur der Wortlaut, sondern die Rechnung: die Bedingungsliste wird
+    // aus depot.js herausgeschnitten und mit dem echten Q ausgefuehrt. Wilhelms Zweck
+    // steht und faellt damit - wenn die Anzeige je von der Regel abdriftet, erklaert sie
+    // ein Signal, das es so nie gab. Genau das ist hier schon einmal passiert.
+    (function () {
+      var qa = d3.indexOf('  function stcBedingungen(bars, mode, P, ciWunsch) {');
+      var qb = d3.indexOf('  /** Zustand des zuletzt geladenen Strategie-Charts');
+      if (qa < 0 || qb < 0) { ok(false, 'Strategie-Chart #52: Bedingungsfunktion im Quelltext auffindbar'); return; }
+      var bedFn = new Function('Q', d3.slice(qa, qb) + '\n return stcBedingungen;')(Q);
+      // Synthetische Stundenreihe mit Aufwaertsdrift und regelmaessigen Dips - kein
+      // echter Markt, geprueft wird die Mechanik.
+      var bs = [], t0 = Date.UTC(2026, 0, 5, 14, 30);
+      for (var bi = 0; bi < 900; bi++) {
+        var pr = 100 + bi * 0.012 + Math.sin(bi / 11) * 1.6 + Math.sin(bi / 3.3) * 0.9;
+        bs.push([t0 + bi * 3600000, pr, 1000 + (bi % 17 === 0 ? 4000 : 0) + (bi % 5) * 60, pr * 1.004, pr * 0.996]);
+      }
+      var PP = { ENTRY: 'rsi2seit', LINE: 'ema', period: 20, confirmBps: 15, ZTHR: 1.5, MINQ: 0, CHAN: false, MTF: false, TREND: false };
+      var mk = [];
+      for (var mi = 261; mi < bs.length; mi++) {
+        var sg = null;
+        try { sg = Q.einstiegSignal(bs, mi, PP); } catch (eS) { }
+        if (sg && sg.dir === 'call') mk.push(mi);
+      }
+      ok(mk.length > 0, 'Strategie-Chart #52: die Pruefreihe erzeugt ueberhaupt Signale', mk.length);
+      var wieder = mk.filter(function (m) { return bedFn(bs, 'rsi2seit', PP, m).signal === 'call'; }).length;
+      ok(wieder === mk.length,
+         'Strategie-Chart #52: jede angeklickte Signalkerze meldet beim Nachrechnen wieder genau ihr Signal', wieder + '/' + mk.length);
+      var frei = [];
+      for (var fj = 300; fj < 900 && frei.length < 30; fj += 7) if (mk.indexOf(fj) < 0) frei.push(fj);
+      var bleibtFrei = frei.filter(function (f) { return bedFn(bs, 'rsi2seit', PP, f).signal !== 'call'; }).length;
+      ok(bleibtFrei === frei.length,
+         'Strategie-Chart #52: signalfreie Kerzen erfinden beim Nachrechnen kein Signal', bleibtFrei + '/' + frei.length);
+      ok(JSON.stringify(bedFn(bs, 'rsi2seit', PP).liste) === JSON.stringify(bedFn(bs, 'rsi2seit', PP, bs.length - 1).liste),
+         'Strategie-Chart #52: ohne Index bleibt es beim alten Verhalten (letzte Kerze)');
+      var kein = true;
+      try { bedFn(bs, 'rsi2seit', PP, 99999); bedFn(bs, 'kapitulation', PP, -5); } catch (eK) { kein = false; }
+      ok(kein, 'Strategie-Chart #52: ein Index ausserhalb der Reihe wird geklemmt, nicht geworfen');
+    })();
   })();
 
   // --- Echte Handelskosten aus dem Demo-Konto (22.08.2026) ---
