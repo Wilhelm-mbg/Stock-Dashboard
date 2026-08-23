@@ -966,6 +966,71 @@
     try { sig = Q.einstiegSignal(bars, ci, P); } catch (e2) { }
     return { liste: out, signal: sig && sig.dir ? sig.dir : null, kanal: kanal };
   }
+  /** Alle Kanaele, die fuer die Entscheidung IN EINER BESTIMMTEN KERZE zaehlen.
+   *  ci ist der Index dieser Kerze in der Gesamtreihe - beim Klick auf ein historisches
+   *  Signal also dessen Kerze, sonst die letzte abgeschlossene.
+   *
+   *  Warum das eine eigene Funktion ist: Vorher zeichnete der Chart pauschal den Kanal
+   *  der LETZTEN Kerze, auch wenn die Bedingungsliste daneben ein historisches Signal
+   *  nachrechnete. An 292 echten Signalen gemessen war das in 100 % der Faelle ein
+   *  anderer Kanal und in 81 % einer mit anderer Richtung.
+   *
+   *  Entscheidungsrelevant ist genau EINER: der 200-Kerzen-Kanal, den einstiegSignal
+   *  als Erlaubnis abfragt. Die uebrigen sind Kontext und sind auch so beschriftet -
+   *  ein Kanal, der nichts entscheidet, darf nicht aussehen wie einer, der es tut. */
+  function stcKanalListe(S, ci, mitKontext) {
+    var out = [], off = S.off, ende = S.show.length - 1;
+    var kName = { seit: 'seitwärts', auf: 'aufwärts', ab: 'abwärts' };
+    function hol(bis) { try { return Q.kanalUeber(S.bars, Math.max(0, bis - 200), bis); } catch (e) { return null; } }
+    var soll = S.mode === 'rsi2seit' ? 'seit' : 'ab';
+    var kJetzt = hol(S.bars.length - 1);
+    if (ci != null && ci !== S.bars.length - 1) {
+      // Der Kanal, an dem das ANGEKLICKTE Signal haengt - das ist der entscheidende.
+      var kSig = hol(ci);
+      if (kSig) out.push({ k: kSig, endI: ci - off, farbe: 'var(--series3)', breite: 2,
+        opac: 0.95, name: 'Entscheidung: ' + (kName[kSig.trend] || kSig.trend) + (kSig.trend === soll ? ' ✓' : ' ✗') });
+      // Der heutige Kanal daneben, gestrichelt: er entscheidet ueber das Signal von
+      // damals nichts, beantwortet aber die naheliegende Frage "und wie steht es jetzt?".
+      if (kJetzt) out.push({ k: kJetzt, endI: ende, farbe: 'var(--series3)', breite: 1.2, dash: '4 4',
+        opac: 0.35, fuellen: false, name: 'heute: ' + (kName[kJetzt.trend] || kJetzt.trend) });
+    } else if (kJetzt) {
+      out.push({ k: kJetzt, endI: ende, farbe: 'var(--series3)', breite: 2, opac: 0.95,
+        name: 'Entscheidung: ' + (kName[kJetzt.trend] || kJetzt.trend) + (kJetzt.trend === soll ? ' ✓' : ' ✗') });
+    }
+    /* Kontext-Ebenen: derselbe Kursverlauf auf kurzer, mittlerer und langer Sicht.
+     * Sie entscheiden NICHTS - sie erklaeren, warum die 200er-Sicht so eingeordnet
+     * wird, wie sie eingeordnet wird. Ein kurzer Abwaertskanal in einem langen
+     * Seitwaertskanal ist kein Widerspruch, sondern beides wahr. */
+    if (mitKontext) {
+      var bis = ci == null ? S.bars.length - 1 : ci;
+      var ks = [];
+      try { ks = Q.kanaele(S.bars.slice(0, bis + 1)) || []; } catch (e3) { ks = []; }
+      ks.forEach(function (k) {
+        if (!k || !k.name || k.n >= 190 && k.n <= 210) return;   // die 200er-Sicht steht schon oben
+        out.push({ k: k, endI: (k.bis != null ? k.bis : bis) - off, farbe: 'var(--muted)', breite: 1,
+          dash: '2 4', opac: 0.5, fuellen: false,
+          name: k.name + ' (' + k.n + '): ' + (kName[k.trend] || k.trend) });
+      });
+    }
+    return out;
+  }
+  /** Ueberdehnungsband um die Leitlinie, je sichtbarer Kerze.
+   *  Nur fuer den Kapitulations-Modus: dort IST die Unterkante der Ausloeser
+   *  (z <= -ZTHR ist genau der Kurs an der Unterkante). Beim RSI(2)-Modus loest
+   *  RSI(2) aus, nicht dieses Band - dann waere es Zierrat und bleibt weg.
+   *  Die Kurse kommen aus reversionSignal selbst, damit es nur eine Formel gibt. */
+  function stcBandSerie(S) {
+    if (S.mode !== 'kapitulation') return null;
+    var out = [];
+    for (var k = 0; k < S.show.length; k++) {
+      var gi = S.off + k;
+      if (gi < 120) { out.push(null); continue; }
+      var r = null;
+      try { r = Q.reversionSignal(S.bars.slice(Math.max(0, gi - 260), gi + 1), S.P.LINE, S.P.period, S.P.ZTHR); } catch (e) { r = null; }
+      out.push(r && r.bandUnten ? { oben: r.bandOben, unten: r.bandUnten } : null);
+    }
+    return out;
+  }
   /** Zustand des zuletzt geladenen Strategie-Charts. Wird gebraucht, damit ein Klick auf
    *  ein historisches Signal die Bedingungen JENER Kerze nachrechnen kann, ohne die Reihe
    *  neu zu laden. Reine Anzeige - hier wird nichts gehandelt und nichts gespeichert. */
@@ -1041,8 +1106,11 @@
       var marksShow = marks.filter(function (m) { return m >= off; }).map(function (m) { return m - off; });
       st.textContent = '';
       stcState = { bars: bars, show: show, off: off, mode: mode, P: P, marks: marks, sym: sym, iv: iv,
-        e20: e20, e100: e100, kanal: bed.kanal, marksShow: marksShow, gewaehlt: null };
-      drawStrategieChart(svg, show, e20, e100, bed.kanal, marksShow, null);
+        e20: e20, e100: e100, kanal: bed.kanal, marksShow: marksShow, gewaehlt: null, band: null };
+      stcState.band = stcBandSerie(stcState);
+      var kEl = document.getElementById('stcKontext');
+      drawStrategieChart(svg, show, e20, e100, stcKanalListe(stcState, null, !!(kEl && kEl.checked)),
+        marksShow, null, stcState.band);
       drawStrategieIndikator(ind, show, indSerie, mode === 'rsi2seit'
         ? { lo: 0, hi: 100, schwelle: 10, name: 'RSI(2)' }
         : { lo: -4, hi: 4, schwelle: -P.ZTHR, name: 'z-Abstand zur EMA' + P.period });
@@ -1122,27 +1190,43 @@
     S.gewaehlt = S.gewaehlt === idx ? null : idx;
     var svg = document.getElementById('stcChart');
     var hl = S.gewaehlt != null && S.gewaehlt >= S.off ? S.gewaehlt - S.off : null;
-    if (svg) drawStrategieChart(svg, S.show, S.e20, S.e100, S.kanal, S.marksShow, hl);
+    var kEl2 = document.getElementById('stcKontext');
+    if (svg) drawStrategieChart(svg, S.show, S.e20, S.e100,
+      stcKanalListe(S, S.gewaehlt, !!(kEl2 && kEl2.checked)), S.marksShow, hl, S.band);
     stcListeZeichnen();
     stcCheckZeichnen(S.gewaehlt);
   }
   /** hl: Index (im Bildausschnitt) des angeklickten Signals - wird groesser und in der
    *  Gegenfarbe gezeichnet, damit man die Zeile der Liste im Chart wiederfindet. */
-  function drawStrategieChart(svg, bars, e20, e100, kanal, marks, hl) {
+  /** kanaele: Liste von { k, endI, farbe, dash, opac, name } - jeder Kanal wird an
+   *  SEINER Endkerze verankert (endI = Index im Bildausschnitt), nicht pauschal am
+   *  rechten Rand. band: Liste je Bildkerze mit { oben, unten } oder null.
+   *  hl: Index des angeklickten Signals im Bildausschnitt. */
+  function drawStrategieChart(svg, bars, e20, e100, kanaele, marks, hl, band) {
     var W = svg.clientWidth || 900, H = svg.clientHeight || 280;
     var padL = 8, padR = 10, padT = 10, padB = 20;
     svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
     var closes = bars.map(function (b) { return b[1]; });
     var lo = Math.min.apply(null, closes), hi = Math.max.apply(null, closes);
     var n = bars.length;
-    var kStart = null, kN = 0;
-    if (kanal) {
-      // Der Kanal endet auf der letzten Kerze (bis = n-1 der Gesamtreihe) und ist kN Kerzen lang
-      kN = kanal.bis - kanal.von + 1;
-      kStart = n - kN;
-      var hub = kanal.steigung * (kN - 1);
-      lo = Math.min(lo, kanal.unten, kanal.unten - hub);
-      hi = Math.max(hi, kanal.oben, kanal.oben - hub);
+    kanaele = (kanaele || []).filter(function (z) { return z && z.k && z.endI != null; });
+    /* Kanal-Geometrie an der eigenen Endkerze: mitte(i) laeuft von der Endkerze aus
+     * mit der Steigung zurueck. startI darf negativ werden - dann ragt der Kanal
+     * links aus dem Bild, und genau das soll man sehen. */
+    kanaele.forEach(function (z) {
+      z.startI = z.endI - (z.k.n - 1);
+      z.mitteBei = function (i) { return z.k.mitteJetzt - z.k.steigung * (z.endI - i); };
+      z.obenAb = z.k.oben - z.k.mitteJetzt;
+      z.untenAb = z.k.unten - z.k.mitteJetzt;
+      var s = Math.max(0, Math.min(n - 1, z.startI)), e = Math.max(0, Math.min(n - 1, z.endI));
+      [s, e].forEach(function (i) {
+        lo = Math.min(lo, z.mitteBei(i) + z.untenAb);
+        hi = Math.max(hi, z.mitteBei(i) + z.obenAb);
+      });
+    });
+    if (band) for (var bi = 0; bi < n; bi++) {
+      if (!band[bi]) continue;
+      lo = Math.min(lo, band[bi].unten); hi = Math.max(hi, band[bi].oben);
     }
     var pad = (hi - lo) * 0.08 || 1;
     lo -= pad; hi += pad;
@@ -1160,17 +1244,44 @@
       var ti = Math.round((n - 1) * xi / 3);
       html += '<text x="' + X(ti).toFixed(1) + '" y="' + (H - 5) + '" text-anchor="' + (xi === 0 ? 'start' : xi === 3 ? 'end' : 'middle') + '" fill="var(--muted)" font-size="9.5">' + fmtTimeTick(bars[ti][0], x1 - x0) + '</text>';
     }
-    if (kanal && kStart != null) {
-      var a = Math.max(0, kStart);
-      var kY = function (i, oben) {
-        var mitte = kanal.mitteJetzt - kanal.steigung * (n - 1 - i);
-        return Y(mitte + (oben ? kanal.oben - kanal.mitteJetzt : kanal.unten - kanal.mitteJetzt));
-      };
-      html += '<path d="M' + X(a).toFixed(1) + ' ' + kY(a, true).toFixed(1) + ' L' + X(n - 1).toFixed(1) + ' ' + kY(n - 1, true).toFixed(1) +
-        ' L' + X(n - 1).toFixed(1) + ' ' + kY(n - 1, false).toFixed(1) + ' L' + X(a).toFixed(1) + ' ' + kY(a, false).toFixed(1) + ' Z" fill="var(--series3)" opacity="0.10"></path>';
-      html += '<line x1="' + X(a).toFixed(1) + '" y1="' + kY(a, true).toFixed(1) + '" x2="' + X(n - 1).toFixed(1) + '" y2="' + kY(n - 1, true).toFixed(1) + '" stroke="var(--series3)" stroke-width="1.5" opacity="0.85"></line>';
-      html += '<line x1="' + X(a).toFixed(1) + '" y1="' + kY(a, false).toFixed(1) + '" x2="' + X(n - 1).toFixed(1) + '" y2="' + kY(n - 1, false).toFixed(1) + '" stroke="var(--series3)" stroke-width="1.5" opacity="0.85"></line>';
+    /* Ueberdehnungsband um die Leitlinie: fuer den Kapitulations-Modus IST das der
+     * Ausloeser - unterhalb der Unterkante steht z <= -ZTHR. Deshalb gehoert es ins
+     * Bild und nicht nur in den Indikator darunter. */
+    if (band) {
+      var dO = '', dU = '';
+      for (var q = 0; q < n; q++) {
+        if (!band[q]) continue;
+        dO += (dO ? 'L' : 'M') + X(q).toFixed(1) + ' ' + Y(band[q].oben).toFixed(1);
+        dU += (dU ? 'L' : 'M') + X(q).toFixed(1) + ' ' + Y(band[q].unten).toFixed(1);
+      }
+      if (dO && dU) {
+        html += '<path d="' + dU + '" fill="none" stroke="var(--series2)" stroke-width="1" stroke-dasharray="2 3" opacity="0.75"></path>';
+        html += '<path d="' + dO + '" fill="none" stroke="var(--series2)" stroke-width="1" stroke-dasharray="2 3" opacity="0.35"></path>';
+      }
     }
+    kanaele.forEach(function (z) {
+      var s = Math.max(0, z.startI), e = Math.min(n - 1, z.endI);
+      if (e <= s) return;
+      var yO = function (i) { return Y(z.mitteBei(i) + z.obenAb); };
+      var yU = function (i) { return Y(z.mitteBei(i) + z.untenAb); };
+      var opac = z.opac == null ? 0.85 : z.opac;
+      if (z.fuellen !== false) {
+        html += '<path d="M' + X(s).toFixed(1) + ' ' + yO(s).toFixed(1) + ' L' + X(e).toFixed(1) + ' ' + yO(e).toFixed(1) +
+          ' L' + X(e).toFixed(1) + ' ' + yU(e).toFixed(1) + ' L' + X(s).toFixed(1) + ' ' + yU(s).toFixed(1) + ' Z" fill="' + z.farbe + '" opacity="0.10"></path>';
+      }
+      [yO, yU].forEach(function (yf) {
+        html += '<line x1="' + X(s).toFixed(1) + '" y1="' + yf(s).toFixed(1) + '" x2="' + X(e).toFixed(1) + '" y2="' + yf(e).toFixed(1) +
+          '" stroke="' + z.farbe + '" stroke-width="' + (z.breite || 1.5) + '"' + (z.dash ? ' stroke-dasharray="' + z.dash + '"' : '') + ' opacity="' + opac + '"></line>';
+      });
+      // Senkrechte an der Endkerze: sie zeigt, WELCHE Kerze diesen Kanal bestimmt hat.
+      html += '<line x1="' + X(e).toFixed(1) + '" y1="' + yO(e).toFixed(1) + '" x2="' + X(e).toFixed(1) + '" y2="' + yU(e).toFixed(1) +
+        '" stroke="' + z.farbe + '" stroke-width="1" opacity="' + (opac * 0.6) + '"></line>';
+      if (z.name) {
+        var ym = (yO(e) + yU(e)) / 2;
+        html += '<text x="' + Math.min(W - padR - 2, X(e) - 3).toFixed(1) + '" y="' + ym.toFixed(1) + '" text-anchor="end" fill="' + z.farbe +
+          '" font-size="9.5" opacity="' + Math.min(1, opac + 0.15) + '">' + U.esc(z.name) + '</text>';
+      }
+    });
     var linie = function (arr, farbe, dash) {
       var d = '';
       for (var i = 0; i < n; i++) { if (arr[i] == null) continue; d += (d ? 'L' : 'M') + X(i).toFixed(1) + ' ' + Y(arr[i]).toFixed(1); }
@@ -7646,6 +7757,17 @@
       if (sb && ss) {
         universe().forEach(function (s2) { var o = document.createElement('option'); o.value = s2; o.textContent = s2; ss.appendChild(o); });
         sb.addEventListener('click', runStrategieChart);
+        var kb = document.getElementById('stcKontext');
+        // Neu zeichnen genuegt - die Reihe liegt schon im Zustand, ein Neuladen waere
+        // ein Netzabruf fuer eine reine Anzeigefrage.
+        if (kb) kb.addEventListener('change', function () {
+          var S = stcState;
+          if (!S) return;
+          var svg = document.getElementById('stcChart');
+          var hl = S.gewaehlt != null && S.gewaehlt >= S.off ? S.gewaehlt - S.off : null;
+          if (svg) drawStrategieChart(svg, S.show, S.e20, S.e100,
+            stcKanalListe(S, S.gewaehlt, kb.checked), S.marksShow, hl, S.band);
+        });
       }
       // Signale anklickbar (Issue #52): in der Liste und direkt im Chart. Delegiert,
       // weil beide Inhalte bei jedem Lauf neu gezeichnet werden.

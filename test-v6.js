@@ -2725,5 +2725,69 @@ console.log('\n39) Kuerzel-Schreibweisen und Fehlercodes (echter Lauf 23.08.2026
      'Die alte Textpruefung ist raus - sie brach, als sich der Wortlaut aenderte');
 })();
 
+
+console.log('\n40) Strategie-Chart: Kanaele an der Kerze, fuer die sie gelten');
+(function () {
+  var d4 = fs.readFileSync(__dirname + '/depot.js', 'utf8');
+  var draw = d4.slice(d4.indexOf('function drawStrategieChart'), d4.indexOf('function drawStrategieIndikator'));
+
+  /* Der Fehler, den das verhindern soll: Der Chart nahm an, ein Kanal ende IMMER auf
+   * der letzten Kerze des Bildes. Beim Klick auf ein historisches Signal rechnete die
+   * Bedingungsliste den Kanal jener Kerze nach, gezeichnet wurde der von heute.
+   * An 292 echten Signalen: 100 % anderer Kanal, 81 % andere Richtung. */
+  ok(draw.indexOf('kStart = n - kN') === -1,
+     'Der Chart verankert Kanaele NICHT mehr pauschal am rechten Rand');
+  ok(/z\.startI = z\.endI - \(z\.k\.n - 1\)/.test(draw),
+     'Jeder Kanal wird an seiner eigenen Endkerze verankert (endI)');
+  ok(/function drawStrategieChart\(svg, bars, e20, e100, kanaele, marks, hl, band\)/.test(draw),
+     'drawStrategieChart nimmt eine LISTE von Kanaelen und ein Band');
+
+  var liste = d4.slice(d4.indexOf('function stcKanalListe'), d4.indexOf('function stcBandSerie'));
+  ok(liste.indexOf('Q.kanalUeber(S.bars, Math.max(0, bis - 200), bis)') !== -1,
+     'Die Liste holt den Kanal ueber dieselben 200 Kerzen wie einstiegSignal');
+  ok(/endI: ci - off/.test(liste),
+     'Der Kanal des angeklickten Signals endet an DESSEN Kerze');
+  ok(liste.indexOf("farbe: 'var(--muted)'") !== -1 && /Kontext/.test(liste),
+     'Kontext-Kanaele sind eigens gefaerbt - was nichts entscheidet, sieht nicht aus wie eine Entscheidung');
+
+  var waehl = d4.slice(d4.indexOf('function stcSignalWaehlen'), d4.indexOf('function drawStrategieChart'));
+  ok(waehl.indexOf('stcKanalListe(S, S.gewaehlt') !== -1 && waehl.indexOf('S.e100, S.kanal,') === -1,
+     'Ein Klick auf ein Signal zeichnet den Kanal JENER Kerze, nicht den von heute');
+
+  /* Band: eine Formel, nicht zwei. Der Chart darf die Ausloeserschwelle nicht
+   * nachrechnen - sonst wandert die gezeichnete Linie irgendwann von der Regel weg. */
+  var bandF = d4.slice(d4.indexOf('function stcBandSerie'), d4.indexOf('/** Zustand des zuletzt geladenen'));
+  ok(/r\.bandOben/.test(bandF) && /r\.bandUnten/.test(bandF) && bandF.indexOf('stdev') === -1,
+     'Das Ueberdehnungsband kommt aus reversionSignal, es wird nicht nachgerechnet');
+  ok(/S\.mode !== 'kapitulation'\) return null/.test(bandF),
+     'Das Band erscheint nur dort, wo es wirklich ausloest (Kapitulations-Modus)');
+
+  /* Geometrie an echten Zahlen: Die Formel des Charts muss an BEIDEN Enden des
+   * Kanals genau das treffen, was kanalUeber selbst berechnet hat. */
+  var bg = [], pg = 100, rg = lcg(77);
+  for (var g = 0; g < 400; g++) { pg += rg() * 0.8 + 0.02; bg.push([Date.UTC(2026, 0, 1) + g * 3600000, pg, 1000]); }
+  var kg = Q.kanalUeber(bg, 150, 350);
+  var endI = 260, startI = endI - (kg.n - 1);
+  function mitteBei(i) { return kg.mitteJetzt - kg.steigung * (endI - i); }
+  ok(Math.abs(mitteBei(endI) - kg.mitteJetzt) < 1e-9,
+     'Chart-Formel trifft an der Endkerze die Kanalmitte von kanalUeber');
+  ok(Math.abs(mitteBei(startI) - kg.achse) < 1e-6,
+     'Chart-Formel trifft an der Startkerze den Achsenabschnitt von kanalUeber', (mitteBei(startI) - kg.achse).toExponential(2));
+
+  /* Das Band in Kursen muss genau dort liegen, wo z die Schwelle reisst. */
+  var bandTreffer = 0, bandGeprueft = 0;
+  for (var q = 120; q < bg.length; q += 5) {
+    var win = bg.slice(Math.max(0, q - 260), q + 1);
+    var rr = Q.reversionSignal(win, 'ema', 20, 1.5);
+    if (rr.z == null || !rr.bandUnten) continue;
+    bandGeprueft++;
+    var unten = win[win.length - 1][1] <= rr.bandUnten + 1e-9;
+    if (unten === (rr.z <= -1.5)) bandTreffer++;
+  }
+  ok(bandGeprueft > 20 && bandTreffer >= bandGeprueft - 1,
+     'Die Bandunterkante liegt genau auf der Ausloeserschwelle z = -ZTHR',
+     bandTreffer + '/' + bandGeprueft);
+})();
+
 console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
 process.exit(fails ? 1 : 0);

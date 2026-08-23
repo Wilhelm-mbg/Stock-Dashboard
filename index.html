@@ -1451,6 +1451,8 @@
         <option value="640">640 Kerzen</option>
         <option value="1200">1200 Kerzen</option>
       </select></label>
+      <label style="font-size:12px; color:var(--ink-2);" title="Zeigt denselben Kursverlauf zusätzlich auf kurzer, mittlerer und langer Sicht. Diese Kanäle entscheiden nichts – sie erklären, warum die 200-Kerzen-Sicht so eingeordnet wird.">
+        <input type="checkbox" id="stcKontext"> Kontext-Kanäle (kurz/mittel/lang)</label>
       <button class="btn ghost" id="stcBtn" type="button">Chart laden</button>
       <span id="stcStatus" style="color:var(--muted); font-size:12px;"></span>
     </div>
@@ -1462,10 +1464,14 @@
       <span style="color:var(--series);">━</span> Kurs ·
       <span style="color:var(--series2);">╌</span> Leitlinie EMA20 ·
       <span style="color:var(--series4);">╌</span> EMA100 (Trendrichtung) ·
-      <span style="color:var(--series3);">▬</span> Kanal der letzten 200 Kerzen (Regression, 92-%-Kanten) ·
+      <span style="color:var(--series3);">▬</span> <b>Entscheidungskanal</b>: die 200 Kerzen, die der Regel die Erlaubnis geben (Regression, 92-%-Kanten) – verankert an der Kerze, die gerade geprüft wird ·
+      <span style="color:var(--series3);">╌</span> derselbe Kanal heute (nur wenn ein historisches Signal ausgewählt ist) ·
+      <span style="color:var(--series2);">╌</span> Überdehnungsband um die Leitlinie (nur Kapitulations-Modus – dort ist die Unterkante der Auslöser) ·
+      <span style="color:var(--muted);">╌</span> Kontext-Kanäle, falls eingeschaltet ·
       <span style="color:var(--up);">●</span> Einstieg laut Regel (nur Long, anklickbar) ·
       <span style="color:var(--series2);">●</span> gerade ausgewähltes Signal ·
       unten: Auslöser-Indikator mit Schwelle
+      <div style="margin-top:4px;">Zwei Dinge, die man dem Bild sonst falsch entnimmt: Die <b>Güte</b> eines Kanals ist beschreibend – die Regel fragt <i>nur</i> die Richtung ab, es gibt keine Güte-Schwelle, und <code>kanalUeber</code> liefert immer einen Kanal, nie „keiner". Und die <b>Leitlinie EMA20</b> gehört zum Kapitulations-Modus; beim RSI(2)-Modus ist sie nur Orientierung und entscheidet dort nichts.</div>
     </div>
     <div id="stcSignale" style="margin-top:10px;"></div>
     <div id="stcCheck" style="font-size:12px; margin-top:8px; line-height:1.6;"></div>

@@ -947,7 +947,12 @@
     // muss bereits zurück Richtung Leitlinie drehen.
     if (signal === 'call' && !(closes[n - 1] > closes[n - 2])) signal = null;
     if (signal === 'put' && !(closes[n - 1] < closes[n - 2])) signal = null;
-    return { signal: signal, z: Math.round(z * 100) / 100, above: closes[n - 1] > line[n - 1], line: line[n - 1] };
+    /* Das Band, an dem dieser Ausloeser haengt, in KURSEN statt in z:
+     * unten = Leitlinie * (1 + Mittelabstand - zThr*sd). Genau bei diesem Kurs
+     * springt z auf -zThr. Wer es zeichnen will, soll es NICHT nachrechnen. */
+    var lz = line[n - 1];
+    return { signal: signal, z: Math.round(z * 100) / 100, above: closes[n - 1] > line[n - 1], line: lz,
+      bandUnten: lz * (1 + dMean - zThr * sd), bandOben: lz * (1 + dMean + zThr * sd), bandMitte: lz * (1 + dMean) };
   }
 
   /**
