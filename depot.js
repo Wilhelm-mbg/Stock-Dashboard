@@ -3034,7 +3034,11 @@
            Kerzen (Repainting; Live mass anderes als Studie und Backtest). */
         var sigBars = Q.fertigeBars(bars, barMinScan, now);
         var sigSpot = sigBars[sigBars.length - 1][1];
-        if ((cfg.mode === 'rsi2seit' || cfg.kapiZusatz) && sigBars.length < 261) {
+        /* Der Kapitulations-Modus stand hier nur, wenn er als ZUSATZ lief (kapiZusatz).
+         * Als Hauptmodus war er ausgenommen - dort lebte der bekannte Fehler
+         * "live 151 statt 261 Kerzen" weiter. Beide Detektoren brauchen dieselbe Tiefe:
+         * einstiegSignal schneidet win auf max(period*4, 260), kanalUeber rechnet ueber 200. */
+        if ((cfg.mode === 'rsi2seit' || cfg.mode === 'kapitulation' || cfg.kapiZusatz) && sigBars.length < 261) {
           // Detektor wuerde auf verkuerztem Fenster etwas anderes rechnen als gemessen
           patienceAdd('Kursreihe zu kurz (' + sigBars.length + ' < 261 Kerzen) – Signal wäre nicht das gemessene', sym);
           continue;
@@ -3501,7 +3505,22 @@
           D.intradayCooldown[sym] = now;
           continue;
         }
-        if (qty < 1 || D.cash < cost) continue;
+        /* Beim Basiswert sind Bruchstuecke Realitaet und oben ausdruecklich erlaubt;
+         * die Ganzzahl-Schranke hier hat das zwei Zeilen spaeter wieder aufgehoben.
+         * Nachgezaehlt am Stundenarchiv (23.08.2026, 191 Werte): bei risikobasierter
+         * Groesse (125 $) fielen 123 Werte still aus, bei fester Groesse (300 $) 53 -
+         * betroffen war alles oberhalb des Positionswerts, also AAPL, MSFT, NVDA, META.
+         * Zu klein ist eine Basiswert-Position erst unter einem Dollar, und das prueft
+         * der Block oben bereits (qty * ask < 1 -> qty = 0).
+         * Ausserdem wird nicht mehr still uebersprungen: Wer nicht sieht, dass zwei
+         * Drittel des Universums ausfallen, sucht den Fehler an der falschen Stelle. */
+        var zuKlein = istBasis ? !(qty > 0) : qty < 1;
+        if (zuKlein || D.cash < cost) {
+          patienceAdd(zuKlein
+            ? 'Position zu klein: ' + (istBasis ? 'unter 1 $' : Math.round(ask) + ' $ je Stück, das Budget reicht nicht für ein ganzes')
+            : 'Nicht genug freies Kapital', sym);
+          continue;
+        }
         D.cash -= cost;
         var omega = Q.warrantOmega(dir, w, spot, now);
         var aufgeld = Q.warrantAufgeld(dir, w, spot, now);

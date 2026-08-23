@@ -2994,5 +2994,60 @@ console.log('\n42) Kostenhuerde: Gebuehr und Haltedauer (Befund 23.08.2026)');
      Math.round(mitDeckel) + ' $ vs ' + Math.round(ohneDeckel) + ' $');
 })();
 
+
+console.log('\n43) Stufe 0 der Roadmap nach 9.0.0 (Inventarisierung 23.08.2026)');
+(function () {
+  var d6 = fs.readFileSync(__dirname + '/depot.js', 'utf8');
+  var bg = fs.readFileSync(__dirname + '/bugs.js', 'utf8');
+  var as = fs.readFileSync(__dirname + '/app-shell.js', 'utf8');
+  var cp = fs.readFileSync(__dirname + '/capital.js', 'utf8');
+
+  /* --- 1) Bruchstuecke: der Kommentar erlaubt sie, die naechste Zeile verbot sie ---
+   * Am Archiv nachgezaehlt: bei 125 $ Positionswert fielen 123 von 191 Werten still
+   * aus dem Handel, bei 300 $ noch 53 - alles oberhalb des Positionswerts. */
+  ok(d6.indexOf('if (qty < 1 || D.cash < cost) continue;') === -1,
+     'Die Ganzzahl-Schranke, die Basiswert-Bruchstuecke wieder verwarf, ist raus');
+  ok(/var zuKlein = istBasis \? !\(qty > 0\) : qty < 1;/.test(d6),
+     'Beim Basiswert entscheidet der Wert, beim Schein die Stueckzahl');
+  ok(/if \(zuKlein \|\| D\.cash < cost\) \{[\s\S]{0,400}?patienceAdd\(/.test(d6),
+     'Ein uebersprungener Wert wird gemeldet, nicht still verworfen');
+
+  /* --- 2) 261-Kerzen-Sperre --- */
+  ok(d6.indexOf("(cfg.mode === 'rsi2seit' || cfg.mode === 'kapitulation' || cfg.kapiZusatz) && sigBars.length < 261") !== -1,
+     'Die 261-Kerzen-Sperre gilt auch fuer den Kapitulations-HAUPTmodus, nicht nur den Zusatz');
+
+  /* --- 3) Stapelspuren: die Meldung geht in ein OEFFENTLICHES Issue --- */
+  ok(bg.indexOf('function pfadeKuerzen') !== -1 && /stapel: pfadeKuerzen\(/.test(bg),
+     'Die Stapelspur wird bereinigt, bevor sie in die Meldung geht');
+  var a6 = bg.indexOf('function pfadeKuerzen'), b6 = bg.indexOf('\n  }', a6) + 4;
+  var pk = new Function(bg.slice(a6, b6) + '\nreturn pfadeKuerzen;')();
+  var proben = [
+    'at Object.<anonymous> (C:\\Users\\Wilhe\\AppData\\Local\\Programs\\markt-dashboard\\resources\\app.asar\\depot.js:3504:12)',
+    'at scan (file:///C:/Users/Felix/AppData/Local/Programs/markt-dashboard/resources/app.asar/quant.js:1660:9)',
+    'at t (/Users/felix/Applications/Markt-Dashboard.app/Contents/Resources/app.asar/renderer.js:88:3)',
+    'at f (C:\\Users\\Max Mustermann\\AppData\\Local\\app.asar\\bugs.js:30:7)'
+  ];
+  var lecks = proben.filter(function (p) { return /Wilhe|Felix|felix|Mustermann|AppData|Programs|Contents/.test(pk(p)); });
+  ok(lecks.length === 0,
+     'Kein Benutzername und kein Pfad ueberlebt die Bereinigung - auch nicht mit Leerzeichen im Namen',
+     lecks.length ? lecks.length + ' von ' + proben.length + ' undicht' : proben.length + ' Proben sauber');
+  ok(proben.every(function (p) { return /\.js:\d+/.test(pk(p)); }),
+     'Dateiname und Zeilennummer bleiben erhalten - sonst ist die Meldung wertlos');
+  ok(pk('at Array.forEach (<anonymous>)') === 'at Array.forEach (<anonymous>)',
+     'Rahmen ohne Pfad bleiben unveraendert');
+
+  /* --- 4) Zugangsdaten-Sentinel --- */
+  ok(/schreiben\.then\(function \(res\)/.test(as) &&
+     /typeof SETTINGS\[k9\] !== 'string'/.test(as),
+     'Das Sentinel {__keep:true} verlaesst den Arbeitsspeicher direkt nach dem Schreiben');
+  var a7 = cp.indexOf('function txt(v)');
+  ok(a7 > 0, 'capital.js hat einen Text-Pruefer fuer Zugangsdaten');
+  var txt = new Function(cp.slice(a7, cp.indexOf('\n', a7)) + '\nreturn txt;')();
+  ok(txt({ __keep: true }) === '' && txt(null) === '' && txt('abc') === 'abc',
+     'Ein Sentinel-Objekt gilt NICHT als Zugangskennung (es ist wahrheitswertig)');
+  ok(/on: !!\(s\.capEnabled && txt\(s\.capKey\) && txt\(s\.capId\) && txt\(s\.capPass\)\)/.test(cp),
+     'Die Verbindung gilt nur als eingerichtet, wenn alle drei Kennungen Text sind');
+})();
+
 console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
 process.exit(fails ? 1 : 0);

@@ -21,13 +21,30 @@
   var FEHLER = [];          // im Hintergrund mitgeschnitten, höchstens 20
 
   function merke(art, nachricht, quelle, zeile, stapel) {
+  /** Absolute Pfade aus einer Stapelspur entfernen, Dateiname und Zeile behalten.
+   *  Die Meldung landet in einem OEFFENTLICHEN GitHub-Issue. Ein Electron-Stapel
+   *  traegt den vollen Pfad und damit den Windows-Benutzernamen - bei jedem Tester,
+   *  nicht nur beim Entwickler. Das Nachbarfeld quelle wird seit jeher bereinigt
+   *  (.split('/').pop()); hier fehlte es, und die Inkonsistenz zeigt, dass die
+   *  Bereinigung von Anfang an gewollt war. */
+  function pfadeKuerzen(s) {
+    return String(s || '')
+      // Laufwerkspfade: Segment fuer Segment, damit Leerzeichen im Benutzernamen
+      // ("C:\\Users\\Max Mustermann\\...") den Ausdruck nicht abbrechen lassen.
+      .replace(/(?:file:\/\/\/)?[A-Za-z]:[\\/](?:[^\\/()\n]*[\\/])+/g, '')
+      // macOS/Linux, gleiches Muster
+      .replace(/(?:file:\/\/)?\/(?:[^\/()\n]*\/)+/g, '')
+      // Rest-Sicherung, falls doch ein Benutzerordner durchkommt
+      .replace(/[Uu]sers[\\/][^\\/()\n]+/g, 'Users/<Nutzer>');
+  }
+
     try {
       FEHLER.push({
         at: new Date().toISOString(), art: art,
         nachricht: String(nachricht || '').slice(0, 500),
         quelle: String(quelle || '').split('/').pop().slice(0, 80),
         zeile: zeile || null,
-        stapel: String(stapel || '').split('\n').slice(0, 4).join(' | ').slice(0, 500)
+        stapel: pfadeKuerzen(stapel).split('\n').slice(0, 4).join(' | ').slice(0, 500)
       });
       if (FEHLER.length > 20) FEHLER.shift();
       var z = document.getElementById('bugFehlerZahl');

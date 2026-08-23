@@ -334,7 +334,16 @@
       });
     }
     if (au && window.api.setTrayMode) { SETTINGS.tray = true; document.getElementById('setTray').checked = true; window.api.setTrayMode(true); }
-    window.api.storeSet('settings', SETTINGS).then(function (res) {
+    /* Das Sentinel {__keep:true} muss MIT gespeichert werden, darf aber nicht im
+     * Arbeitsspeicher stehenbleiben: Ein Objekt ist wahrheitswertig, und capital.js
+     * schliesst aus einem gesetzten capKey/capId/capPass auf eine eingerichtete
+     * Verbindung. Nach dem Schreiben steht hier deshalb derselbe Zustand wie nach
+     * einem Neustart - Feld leer, Merkung in geheimBehalten (vgl. Ladepfad oben). */
+    var schreiben = window.api.storeSet('settings', SETTINGS);
+    ['capKey', 'capId', 'capPass'].forEach(function (k9) {
+      if (SETTINGS[k9] && typeof SETTINGS[k9] !== 'string') { geheimBehalten[k9] = true; SETTINGS[k9] = ''; }
+    });
+    schreiben.then(function (res) {
       // Nie wieder "Gespeichert." anzeigen, wenn nichts geschrieben wurde: das Ergebnis
       // des Schreibvorgangs entscheidet ueber die Meldung.
       var ok = res === true || (res && res.ok);

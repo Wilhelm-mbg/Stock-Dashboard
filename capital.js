@@ -17,10 +17,14 @@
   }
 
   function cfg() {
+    function txt(v) { return typeof v === 'string' ? v : ''; }
     var s = window.getSettings();
     return {
-      key: s.capKey || '', id: s.capId || '', pass: s.capPass || '',
-      on: !!(s.capEnabled && s.capKey && s.capId && s.capPass)
+      /* Nur Text zaehlt. Ein Sentinel-Objekt aus dem Einstellungsdialog
+       * ({__keep:true}) ist wahrheitswertig und liess die Verbindung als
+       * eingerichtet gelten, waehrend jeder Aufruf mit "[object Object]" scheiterte. */
+      key: txt(s.capKey), id: txt(s.capId), pass: txt(s.capPass),
+      on: !!(s.capEnabled && txt(s.capKey) && txt(s.capId) && txt(s.capPass))
     };
   }
 
