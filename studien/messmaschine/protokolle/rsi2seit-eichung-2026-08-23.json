@@ -1,0 +1,36 @@
+{
+ "verfahren": "eichung-permutation/2.0.0",
+ "strategie": "rsi2seit",
+ "gemessenAm": "2026-08-23T21:47:35.253Z",
+ "laeufe": 20,
+ "a7Aktiv": true,
+ "a7Fenster": 261,
+ "hinweis": "Eichung, KEIN Befund ueber den Markt. Die Renditen sind echt, nur ihre Reihenfolge ist innerhalb jeder UTC-Stunde vertauscht. t-Werte auf Nullarchiven sind systematisch zu gross (A8).",
+ "varianten": [
+  {
+   "variante": 0,
+   "params": {
+    "ENTRY": "rsi2seit",
+    "LINE": "ema",
+    "period": 20,
+    "confirmBps": 15,
+    "ZTHR": 1.5,
+    "MINQ": 0,
+    "CHAN": false,
+    "MTF": false,
+    "TREND": false
+   },
+   "signale": 6509,
+   "verzerrungPp": -0.004930692532478254,
+   "verzerrungFehlerPp": 0.012404067225754658,
+   "tVerzerrung": -0.3975061117244366,
+   "verzerrungGegenMde": 0.026966208090708765,
+   "bestanden": true,
+   "laeufe": 20,
+   "echtTagesmittelPp": 0.02773868654632685,
+   "echtT": 0.3034085733977948,
+   "echtMdePp": 0.18284708461391458,
+   "urteil": "nicht-entscheidbar"
+  }
+ ]
+}
