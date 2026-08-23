@@ -1,5 +1,5 @@
 {
-  "stand": "2026-08-23T08:38:25.351Z",
+  "stand": "2026-08-23T09:28:31.188Z",
   "hinweis": "Spekulationen aus öffentlichen Quellen – ungemessen, keine Handelsempfehlung, keine Anlageberatung.",
   "eintraege": [
     {
@@ -8,8 +8,8 @@
       "name": "Commerzbank AG",
       "art": "uebernahme",
       "chance": "hoch",
-      "these": "Der Bund ist laut Insidern offen für den Verkauf seiner restlichen 12,7 Prozent an UniCredit; parallel hat die Commerzbank zurückgekaufte Aktien eingezogen, wodurch UniCredits Anteil rechnerisch an die 50-Prozent-Marke rückt.",
-      "begruendung": "Handelsblatt und Reuters berichten unabhängig über die Verkaufsbereitschaft, Commerzbank-Chefin Orlopp hat förmliche Gespräche bestätigt, und die Aktieneinziehung ist ein harter, gemeldeter Vorgang – konkreter Anlass und mehrere seriöse Quellen, daher hoch. Bedingung bleibt laut den Berichten die Rückendeckung des Commerzbank-Managements.",
+      "these": "UniCredit hält nach der Einziehung zurückgekaufter Commerzbank-Aktien rechnerisch 49,65 Prozent; der Bund ist laut Insidern offen für den Verkauf seiner restlichen 12,7 Prozent, und die EZB soll einer Übernahme laut Medienbericht zuneigen.",
+      "begruendung": "Handelsblatt und Reuters berichten unabhängig über die Verkaufsbereitschaft des Bundes, Commerzbank-Chefin Orlopp hat förmliche Gespräche bestätigt, und die Aktieneinziehung samt neuem Stimmrechtsvolumen von 1,08 Milliarden Aktien ist ein gemeldeter, harter Vorgang – konkreter Anlass und mehrere seriöse Quellen, daher hoch. Die heutige Zuspitzung (EZB-Zuneigung, aufgegebener Widerstand des Bundes) stammt allerdings nur aus aggregierenden Portalen, die sich auf einen unbenannten Medienbericht berufen; ein Analysten-Webcast ist für den 26. August angesetzt.",
       "quellen": [
         {
           "titel": "Handelsblatt",
@@ -20,15 +20,15 @@
           "url": "https://de.finance.yahoo.com/nachrichten/commerzbank-anteil-bundes-regierungsvertreter-offen-095739692.html"
         },
         {
-          "titel": "FinanzBusiness",
-          "url": "https://finanzbusiness.de/nachrichten/banken/article19564996.ece"
+          "titel": "Börse Express",
+          "url": "https://www.boerse-express.com/news/articles/unicredit-ezb-neigt-zu-commerzbank-uebernahme-941030"
         },
         {
-          "titel": "Börse Express",
-          "url": "https://www.boerse-express.com/news/articles/commerzbank-aktie-bund-verhandelt-ueber-127-prozent-verkauf-940995"
+          "titel": "Börse Global",
+          "url": "https://www.boerse-global.de/commerzbank-aktie-bund-gibt-widerstand-auf/821441"
         }
       ],
-      "zeit": "2026-08-22T18:00:00Z"
+      "zeit": "2026-08-23T05:30:00Z"
     },
     {
       "id": "20260821-BAMI-uebernahme",
@@ -50,6 +50,10 @@
         {
           "titel": "Reuters via Global Banking & Finance",
           "url": "https://www.globalbankingandfinance.com/monte-dei-paschi-ceo-unveil-strategy-fend-off-intesas-36/"
+        },
+        {
+          "titel": "Reuters via AOL",
+          "url": "https://www.aol.com/articles/monte-dei-paschi-ceo-unveil-092322000.html"
         }
       ],
       "zeit": "2026-08-21T12:00:00Z"
