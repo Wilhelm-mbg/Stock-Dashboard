@@ -334,8 +334,31 @@
     var ckM = document.getElementById('ckMarkt');
     if (ckM) ckM.innerHTML = open ? '<span class="mdot open"></span>offen' : '<span class="mdot closed"></span>geschlossen';
     document.getElementById('err').textContent = fetchErrors > 0 ? '' + fetchErrors + ' Wert(e) konnten nicht geladen werden' : '';
+    /* Das Warnband ist fuer genau solche Zustaende gebaut und auf JEDEM Reiter sichtbar -
+     * bei gestoerter Kursquelle blieb es trotzdem stumm, und die Meldung stand nur klein
+     * in der Kopfzeile. Schwelle: mehr als die Haelfte gescheitert. Bei einzelnen
+     * Ausfaellen bleibt es aus, sonst steht dort staendig etwas und niemand liest es mehr. */
+    var gesamt = INDICES.length + STOCKS.length;
+    quellenWarnung((fetchErrors > gesamt / 2)
+      ? 'Die Kursquelle ist gestört: ' + fetchErrors + ' von ' + gesamt +
+        ' Werten kamen nicht durch. Angezeigte Kurse können veraltet sein.'
+      : null);
     document.dispatchEvent(new CustomEvent('quotes-updated'));
   }
+
+  /* Das Warnband wohnt in depot.js - und das ist das 21. Skript, dieses hier das 3.
+   * Beim ERSTEN Kursdurchlauf gibt es window.__warnband also noch nicht. Statt die
+   * Meldung dann zu verlieren, wird sie gemerkt und nachgezogen, sobald es da ist. */
+  var quellenStand = null;
+  function quellenWarnung(text) {
+    quellenStand = text;
+    if (typeof window.__warnband === 'function') window.__warnband('kursquelle', text);
+  }
+  window.addEventListener('load', function () {
+    if (quellenStand !== null && typeof window.__warnband === 'function') {
+      window.__warnband('kursquelle', quellenStand);
+    }
+  });
 
   // Nur echte Web-Links ins DOM lassen. Die Feed-Inhalte kommen von außen; javascript:-URLs
   // blockiert zwar schon die CSP, aber ein Link, der nichts tut, ist besser als einer, der
@@ -383,12 +406,21 @@
   function quelleText(r) {
     return r && r.quelle === 'netz' ? 'Gemeinschafts-Ablage' : 'Suche auf diesem Rechner';
   }
+  /* Leerzustand ist nicht Fehlerzustand. Vorher stand hier bei einem GESCHEITERTEN
+   * Ladeversuch weiter "wird gleich aus der Gemeinschafts-Ablage geladen" - die Karte
+   * versprach also dauerhaft etwas, das nicht mehr kommt. Wer das liest, wartet. */
+  function ablageNichtDa(el, was) {
+    if (!el) return;
+    el.innerHTML = '<div class="loading">' + esc(was) + ' derzeit nicht erreichbar – ' +
+      'die Gemeinschafts-Ablage antwortet nicht. Der nächste Versuch läuft automatisch.</div>';
+  }
+
   async function ladeSpekulationen() {
     var el = document.getElementById('spekRadar');
     if (!el || !window.api || !window.api.readSpekulationen) return;
     try {
       var r = await window.api.readSpekulationen();
-      if (!r || !r.ok) return;   // keine Datei: Platzhalter bleibt stehen
+      if (!r || !r.ok) { ablageNichtDa(el, 'Spekulations-Radar'); return; }
       var d = JSON.parse(r.body);
       var roh = (d && Array.isArray(d.eintraege)) ? d.eintraege : [];
       var jetzt = Date.now();
@@ -497,7 +529,7 @@
     if (!el || !window.api || !window.api.readInsider) return;
     try {
       var r = await window.api.readInsider();
-      if (!r || !r.ok) return;   // keine Datei: Platzhalter bleibt stehen
+      if (!r || !r.ok) { ablageNichtDa(el, 'Insider-Käufe'); return; }
       var d = JSON.parse(r.body);
       var roh = (d && Array.isArray(d.eintraege)) ? d.eintraege : [];
       var jetzt = Date.now();
@@ -919,10 +951,21 @@
   });
 
   /* ================= Steuerung ================= */
+  /* Die Hell/Dunkel-Wahl wurde nirgends gespeichert - jeder Start begann wieder
+   * dunkel, und wer hell braucht, musste bei jedem Start denselben Knopf druecken. */
   document.getElementById('themeBtn').addEventListener('click', function () {
     var root = document.documentElement;
-    root.setAttribute('data-theme', root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+    var neu = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', neu);
+    try { if (window.api && window.api.storeSet) window.api.storeSet('theme', neu); }
+    catch (e) { /* ohne Speicher bleibt es bei dieser Sitzung */ }
   });
+  (function themaLaden() {
+    if (!window.api || !window.api.storeGet) return;
+    window.api.storeGet('theme').then(function (t) {
+      if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+    }).catch(function () { /* nicht lesbar: es bleibt beim Vorgabethema */ });
+  })();
 
   var refreshing = false;
   async function doRefresh() {

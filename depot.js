@@ -1717,7 +1717,11 @@ function huerdeAnzeigen() {
     if (html) WARNBAND[schluessel] = { html: html, gelb: !!gelb };
     else delete WARNBAND[schluessel];
     var keys = Object.keys(WARNBAND);
-    el.style.display = keys.length ? '' : 'none';
+    /* 'block', NICHT '': Der Leerwert loescht nur den Inline-Stil, danach greift die
+     * Regel #warnband{display:none} aus index.html - das Band blieb also IMMER
+     * unsichtbar, egal welche Warnung anlag. Damit war der gesamte Warnkanal tot:
+     * "Speichern fehlgeschlagen", "Depot aus Sicherung", "Kante verfallen". */
+    el.style.display = keys.length ? 'block' : 'none';
     el.innerHTML = keys.map(function (k) {
       return '<div class="warnzeile' + (WARNBAND[k].gelb ? ' gelb' : '') + '">' + WARNBAND[k].html + '</div>';
     }).join('');
@@ -6929,6 +6933,10 @@ function huerdeAnzeigen() {
   }
   if (typeof window !== 'undefined') window.__pilotBericht = baueMessbericht;
   if (typeof window !== 'undefined') { window.__tiefensuche = function (o) { return tiefensuche(o || { unbegrenzt: true }); }; window.__pilotMessen = function () { return pilotMessen(true); }; }
+  /* __warnband wird von renderer.js gebraucht: Bei gestoerter Kursquelle blieb das
+   * Warnband bisher stumm, obwohl es genau dafuer gebaut ist - die Meldung stand nur
+   * klein in der Kopfzeile. warnbandSetzen ist hier lokal, also wird sie durchgereicht. */
+  if (typeof window !== 'undefined') { window.__warnband = warnbandSetzen; }
   if (typeof window !== 'undefined') { window.__save = save; window.__ladeArchivDaten = ladeArchivDaten; window.__labCommonOpts = labCommonOpts; window.__btIntraday = btIntraday; window.__D = function () { return D; }; window.__health = function () { return HEALTH; }; }   // fuer Funktionstests
 
   /* ---- Gesamtzaehler-Pflege ----

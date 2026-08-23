@@ -275,6 +275,9 @@
 
   /* Marktbild-Heatmap: jede Kachel ein Wert, Farbe = Tagesbewegung */
   .heat { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 6px; margin-top: 8px; }
+  /* Lade- und Fehlermeldungen sind keine Kacheln: ohne diese Zeile quetscht das Raster
+     sie in eine 96-px-Spalte, und "Noch keine Kurse geladen." bricht in vier Zeilen. */
+  .heat > .loading { grid-column: 1 / -1; }
   .heat .hz {
     border-radius: 8px; padding: 8px 10px; cursor: pointer; border: 1px solid var(--border);
     font-variant-numeric: tabular-nums; transition: transform 0.08s ease;

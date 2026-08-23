@@ -4010,5 +4010,53 @@ console.log('\n40) Tastatur, Semantik und Kontrast – die Oberflaeche ohne Maus
      'kein Token steht nur in einem Thema  [' + (nurHell.concat(nurDunkel).join(', ') || 'keins') + ']');
 })();
 
+console.log('\n41) Zustaende: was die App sagt, wenn etwas fehlt oder klemmt');
+(function () {
+  var html = fs.readFileSync(__dirname + '/index.html', 'utf8');
+  var ren = fs.readFileSync(__dirname + '/renderer.js', 'utf8');
+  var dep = fs.readFileSync(__dirname + '/depot.js', 'utf8');
+
+  /* --- Das Warnband konnte NIE erscheinen ---
+   * warnbandSetzen setzte display = '', das loescht aber nur den Inline-Stil; danach
+   * greift #warnband{display:none} aus index.html. Der gesamte Warnkanal war damit
+   * tot: "Speichern fehlgeschlagen", "Depot aus Sicherung", "Kante verfallen".
+   * Dasselbe Muster wie B2 (gerechnet und dann vom CSS verdeckt), dritter Fall. */
+  ok(/el\.style\.display = keys\.length \? 'block' : 'none';/.test(dep),
+     'Warnband: setzt einen ECHTEN Wert, nicht den Leerwert');
+  ok(!/el\.style\.display = keys\.length \? '' : 'none';/.test(dep),
+     'Warnband: der Leerwert ist weg (er fiel auf display:none zurueck)');
+  ok(/#warnband \{[^}]*display: none/.test(html),
+     'Warnband: die CSS-Regel steht weiter - genau deshalb muss der Wert explizit sein');
+
+  /* --- Gestoerte Kursquelle benutzt das Warnband --- */
+  ok(/window\.__warnband = warnbandSetzen;/.test(dep), 'Warnband: fuer andere Module erreichbar');
+  ok(/quellenWarnung\(/.test(ren) && /Die Kursquelle ist gestört/.test(ren),
+     'Kursquelle: eine Stoerung landet im Warnband, nicht nur klein in der Kopfzeile');
+  ok(/fetchErrors > gesamt \/ 2/.test(ren),
+     'Kursquelle: erst ab der Haelfte - eine Warnung, die immer steht, liest niemand');
+  /* renderer.js ist das 3. Skript, depot.js das 21. - beim ersten Durchlauf gibt es
+   * window.__warnband noch nicht. Die Meldung darf dabei nicht verloren gehen. */
+  ok(/quellenStand/.test(ren) && /addEventListener\('load'/.test(ren),
+     'Kursquelle: die Meldung wird nachgezogen, wenn depot.js spaeter geladen ist');
+
+  /* --- Leerzustand ist nicht Fehlerzustand ---
+   * Vorher stand bei einem GESCHEITERTEN Ladeversuch weiter "wird gleich geladen". */
+  ok(/function ablageNichtDa\(/.test(ren), 'Ablage: es gibt einen eigenen Fehlerzustand');
+  ok(/ablageNichtDa\(el, 'Spekulations-Radar'\)/.test(ren), 'Radar: sagt Bescheid, wenn die Ablage nicht antwortet');
+  ok(/ablageNichtDa\(el, 'Insider-Käufe'\)/.test(ren), 'Insider: sagt Bescheid, wenn die Ablage nicht antwortet');
+  ok(!/if \(!r \|\| !r\.ok\) return;   \/\/ keine Datei: Platzhalter bleibt stehen/.test(ren),
+     'Ablage: kein stilles return mehr, das den Platzhalter stehen laesst');
+
+  /* --- Hell/Dunkel wurde nirgends gespeichert --- */
+  ok(/storeSet\('theme', neu\)/.test(ren), 'Thema: die Wahl wird gespeichert');
+  ok(/storeGet\('theme'\)/.test(ren), 'Thema: die Wahl wird beim Start gelesen');
+  ok(/t === 'light' \|\| t === 'dark'/.test(ren),
+     'Thema: nur bekannte Werte werden uebernommen');
+
+  /* --- Platzhalter im Raster --- */
+  ok(/\.heat > \.loading \{ grid-column: 1 \/ -1; \}/.test(html),
+     'Heatmap: Lade- und Fehlertext laeuft ueber die volle Breite, nicht in einer 96-px-Spalte');
+})();
+
 console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
 process.exit(fails ? 1 : 0);
