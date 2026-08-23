@@ -677,6 +677,25 @@ console.log('\n17b) Oberflaeche: Altlasten und Verdrahtung');
   ok(/function spekKurz\(/.test(r) && /esc\(z\.kurz\)/.test(r) && /title="' \+ esc\(z\.these\)/.test(r),
      'Radar #49: These gekuerzt, voller Wortlaut bleibt als Tooltip');
 
+  // --- Strategie-Chart im Tab Strategien & Belege (#51, 23.08.2026) ---
+  // Die Oberflaeche darf die Regel nur NACHZEICHNEN, nie nachbauen: jede Markierung
+  // kommt aus Q.einstiegSignal, derselben Funktion wie Studie, Backtest und Live-Scan.
+  (function () {
+    var d3 = fs.readFileSync(__dirname + '/depot.js', 'utf8');
+    var h3 = fs.readFileSync(__dirname + '/index.html', 'utf8');
+    var stc = d3.slice(d3.indexOf('async function runStrategieChart'), d3.indexOf('function drawStrategieChart'));
+    ok(/id="stcChart"/.test(h3) && /id="stcMode"/.test(h3) && h3.indexOf('id="stratChartPanel"') > h3.indexOf('id="tab-strategien"'),
+       'Strategie-Chart #51: Panel liegt im Tab Strategien & Belege');
+    ok(/Q\.einstiegSignal\(bars, i, P\)/.test(stc) && !/rsi\(closes, 2\) <= 10/.test(stc),
+       'Strategie-Chart #51: Einstiege kommen aus Q.einstiegSignal, nicht aus nachgebauter Logik');
+    ok(/s\.dir !== 'call'\) continue/.test(stc), 'Strategie-Chart #51: nur die Long-Seite wird markiert (Put traegt nicht)');
+    ok(/bars\.length < 300/.test(stc) && /Q\.fertigeBars\(/.test(stc),
+       'Strategie-Chart #51: rechnet erst ab der Messtiefe und nur auf fertigen Kerzen - wie der Live-Scan');
+    ok(/value="rsi2seit"/.test(h3) && /value="kapitulation"/.test(h3) && !/value="hourly"/.test(h3.slice(h3.indexOf('id="stcMode"'), h3.indexOf('id="stcMode"') + 400)),
+       'Strategie-Chart #51: nur die beiden belegten Modi, keine widerlegte Strategie im Chart');
+    ok(/Simulation, keine Anlageberatung/.test(h3.slice(h3.indexOf('id="stratChartPanel"'))), 'Strategie-Chart #51: Hinweis Simulation bleibt');
+  })();
+
   // --- Echte Handelskosten aus dem Demo-Konto (22.08.2026) ---
   var c2 = fs.readFileSync(__dirname + '/capital.js', 'utf8');
   ok(/fill: cj\.level != null \? cj\.level : null/.test(c2),
