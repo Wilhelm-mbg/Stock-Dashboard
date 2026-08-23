@@ -1,0 +1,33 @@
+=== BESTAETIGUNG 60m: 12 Scan-Kandidaten + 4 Referenz, Detektoren: rsi2, rsi2seit, kapitulation, squeeze, wave, signalCross, vwap-abstand, momentum, drift ===
+60m/bestaetigung: 15 Paare gerechnet (201 uebersprungen, Screening t>0,5 beidseitig), 7 mit Daten
+  rsi2+rsi2seit                       short 5T   n=  492 Tage=189 brutto   0.567 t(Tag) 1.292
+  rsi2+wave                           short 1T   n=    9 Tage=  8 brutto   0.734 t(Tag) 0.798
+  rsi2+rsi2seit                       short 3T   n=  497 Tage=191 brutto   0.147 t(Tag) 0.346
+  rsi2seit+wave                       long  1T   n=    1 Tage=  1 brutto   0.964 t(Tag) 0
+  rsi2+rsi2seit                       short 1T   n=  500 Tage=193 brutto  -0.176 t(Tag) -0.399
+  rsi2+wave                           short 3T   n=    9 Tage=  8 brutto   -0.49 t(Tag) -0.478
+  rsi2+wave                           short 5T   n=    9 Tage=  8 brutto  -1.023 t(Tag) -0.764
+
+SCAN-FUNDE  (Schwelle |t| >= 2.86 bei 12 Kandidaten)
+  Kandidat                                        Entdeckung          Bestaetigung                            Urteil
+                                                  brutto  t(Tag)      n   Tage  brutto   netto  t(Tag)   MDE
+  wave|short|1T                                     0.749  1.175     240   114   0.147   0.047   0.522  0.548   unentschieden (Netto-Frage unter MDE 0.548)
+  rsi2|short|1T                                     0.016  1.099    8860   241   0.032  -0.068   1.213  0.162   unentschieden (Netto-Frage unter MDE 0.162)
+  vwap-abstand|short|1T                              0.41  0.684     283   119  -0.475  -0.575  -0.426  0.554   nicht bestaetigt
+  vwap-abstand|long|3T                              0.532  0.621     325   118   0.475   0.375  -0.168  0.937   unentschieden (Netto-Frage unter MDE 0.937)
+  rsi2|long|1T                                     -0.014  0.611    9730   241  -0.019  -0.119   0.124  0.132   nicht bestaetigt
+  vwap-abstand|short|1T|liquiditaet=duenn           0.705    2.4     124    72  -0.141  -0.241    0.12  0.761   nicht bestaetigt
+  squeeze|short|5T|technik=mitte                    0.543  2.159    1191   225   0.295   0.195   0.984  0.441   unentschieden (Netto-Frage unter MDE 0.441)
+  rsi2|short|5T|technik=mitte                        0.33  2.083    2572   237   0.335   0.235    2.66  0.356   unentschieden (Netto-Frage unter MDE 0.356)
+  signalCross|short|5T|technik=mitte                0.345  2.055    1720   236   0.335   0.235   0.814  0.408   unentschieden (Netto-Frage unter MDE 0.408)
+  rsi2|short|1T|tageszeit=schluss                   0.116  2.053    1134   220   0.165   0.065   1.585  0.241   unentschieden (Netto-Frage unter MDE 0.241)
+  rsi2|short|1T|+rsi2seit                           0.193  0.475     500   193  -0.176  -0.276  -0.399  0.434   nicht bestaetigt
+  rsi2|long|1T|+rsi2seit                             0.13  0.462      -                                         keine Signale in der Bestaetigung
+
+REFERENZ (vorab benannte belegte Kanten, Schwelle |t| >= 2)
+  Kandidat                                        Entdeckung          Bestaetigung                            Urteil
+                                                  brutto  t(Tag)      n   Tage  brutto   netto  t(Tag)   MDE
+  rsi2seit|short|1T                                 0.218  1.078    1061   233   0.106   0.006   0.694  0.331   unentschieden (Netto-Frage unter MDE 0.331)
+  momentum|long|5T                                  0.309  0.811    2607   237  -0.111  -0.211  -0.282  0.786   nicht bestaetigt
+  drift|long|1T                                    -0.051  0.217       8     8   -0.36   -0.46  -0.263  2.735   nicht bestaetigt
+  kapitulation|long|5T                             -0.438 -0.014     174    90  -0.218  -0.318  -0.473   1.16   nicht bestaetigt

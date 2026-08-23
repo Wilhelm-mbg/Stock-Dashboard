@@ -500,17 +500,22 @@ ipcMain.handle('read-recommendation', async () => {
  * Der frischere von beiden Staenden gewinnt: auf Wilhelms Rechner also die lokale
  * Datei, bei allen anderen die aus dem Netz. */
 const SPEK_URL = 'https://raw.githubusercontent.com/Wilhelm-mbg/Stock-Dashboard/radar/spekulationen.json';
-let spekNetzCache = { at: 0, body: null };
-function holeSpekNetz() {
+/* Insider-Karte (23.08.2026): dieselbe Mechanik, andere Datei. Meldepflichtige
+ * Eigengeschaefte von Vorstand und Aufsichtsrat US-notierter Firmen (SEC Form 4),
+ * geholt von tools/insider-holen.js. Auch das ist reine Anzeige. */
+const INSIDER_URL = 'https://raw.githubusercontent.com/Wilhelm-mbg/Stock-Dashboard/radar/insider.json';
+const ablageCache = {};   // je Adresse ein eigener 5-Minuten-Puffer
+function holeAblageNetz(url) {
   // 5-Minuten-Cache: die Karte fragt alle 10 Minuten, die Suche schreibt stuendlich
-  if (spekNetzCache.body != null && Date.now() - spekNetzCache.at < 5 * 60000) return Promise.resolve(spekNetzCache.body);
+  const c = ablageCache[url];
+  if (c && c.body != null && Date.now() - c.at < 5 * 60000) return Promise.resolve(c.body);
   return new Promise((resolve) => {
-    const req = https.get(SPEK_URL, { headers: { 'User-Agent': 'Markt-Dashboard', 'Accept': 'application/json' }, timeout: 8000 }, (res) => {
+    const req = https.get(url, { headers: { 'User-Agent': 'Markt-Dashboard', 'Accept': 'application/json' }, timeout: 8000 }, (res) => {
       if (res.statusCode !== 200) { res.resume(); return resolve(null); }
       let d = '';
       res.setEncoding('utf8');
-      res.on('data', (c) => { d += c; if (d.length > 300000) { req.destroy(); resolve(null); } });
-      res.on('end', () => { spekNetzCache = { at: Date.now(), body: d }; resolve(d); });
+      res.on('data', (stueck) => { d += stueck; if (d.length > 300000) { req.destroy(); resolve(null); } });
+      res.on('end', () => { ablageCache[url] = { at: Date.now(), body: d }; resolve(d); });
     });
     req.on('timeout', () => { req.destroy(); resolve(null); });
     req.on('error', () => resolve(null));
@@ -521,10 +526,13 @@ function spekStand(body, ersatz) {
   try { const t = Date.parse(JSON.parse(body).stand || ''); return isNaN(t) ? ersatz : t; }
   catch (e) { return NaN; }   // kaputtes JSON scheidet aus dem Vergleich aus
 }
-ipcMain.handle('read-spekulationen', async () => {
+/* Eine Ablage lesen: erst die lokale Datei, sonst die Gemeinschafts-Ablage im Netz.
+ * Radar und Insider teilen sich diesen Weg - zwei Kopien davon waeren mit der Zeit
+ * auseinandergelaufen. */
+async function ablageLesen(datei, url) {
   let lokal = null;
   try {
-    const p = path.join(app.getPath('downloads'), 'Markt-Dashboard-Daten', 'spekulationen.json');
+    const p = path.join(app.getPath('downloads'), 'Markt-Dashboard-Daten', datei);
     if (fs.existsSync(p)) {
       const st = fs.statSync(p);
       if (st.size > 300000) { /* ausufernde Datei: gar nicht erst anfassen */ }
@@ -539,12 +547,14 @@ ipcMain.handle('read-spekulationen', async () => {
   if (lokal && Date.now() - lokal.mtime < 90 * 60000) return lokal;
   let netz = null;
   try {
-    const body = await holeSpekNetz();
+    const body = await holeAblageNetz(url);
     if (body) { const t = spekStand(body, NaN); if (!isNaN(t)) netz = { ok: true, body: body, mtime: t, quelle: 'netz' }; }
   } catch (e) { /* offline: dann bleibt es beim lokalen Stand */ }
   if (netz && (!lokal || netz.mtime > lokal.mtime)) return netz;
   return lokal || { ok: false };
-});
+}
+ipcMain.handle('read-spekulationen', async () => ablageLesen('spekulationen.json', SPEK_URL));
+ipcMain.handle('read-insider', async () => ablageLesen('insider.json', INSIDER_URL));
 // Claude-Auswertungsbericht aus dem Daten-Ordner lesen (Anzeige in der App)
 ipcMain.handle('read-report', async () => {
   try {

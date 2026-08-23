@@ -290,6 +290,109 @@ ok(dv === 150000, 'Dollar-Umsatz je Tag: (100*1000+100*1000+200*500)/2 Tage', dv
   ok(Q.fertigeBars(live, 5, jetzt).length === 4, 'fertigeBars: bei 5m ist nur der Stempel zu jung');
 })();
 
+/* Stempel gegen echte Kerze: WER GEWINNT? (Befund 22.08.2026, Gegenpruefung der
+ * Signalstudie). Die alte Regel entschied nach Reihenfolge - der zuerst behaltene
+ * Eintrag verdraengte alles, was innerhalb 0,9 Kerzenlaengen folgte. Faellt ein
+ * Stempel zufaellig knapp UEBER die Schwelle (17:29:31 liegt 271 s hinter der
+ * 17:25-Kerze, die Schwelle sind 270 s), wird er behalten - und die echte
+ * 17:30-Kerze 29 s spaeter gilt als sein Stempel. Die Kette laeuft weiter, bis eine
+ * Luecke sie bricht. NVDA 5m verlor am 19.08.2026 so den Nachmittag 17:30-19:50;
+ * im Archiv standen 961 solcher Eintraege in 45 Symbolen (5m), 85 (1m), 198 (15m). */
+(function () {
+  var m = 60000;
+  function zeit(r) { return r.map(function (b) { return new Date(b[0]).toISOString().slice(11, 19); }); }
+
+  // --- Fall 1: Stempel NACH der echten Kerze (die Kette aus dem Befund, NVDA 5m) ---
+  var t5 = Date.UTC(2026, 7, 19, 17, 25);
+  var kette = [
+    [t5,             221.5,  372282, 221.7, 221.3],      // 17:25:00 echt
+    [t5 + 4 * m + 31000, 220.9,   0, 220.9, 220.9],      // 17:29:31 Stempel, 271 s -> ueber der Schwelle
+    [t5 + 5 * m,     220.8,  310000, 221.0, 220.6],      // 17:30:00 echt  (fiel frueher als "Stempel")
+    [t5 + 9 * m + 26000, 220.7,   0, 220.7, 220.7],      // 17:34:26 Stempel
+    [t5 + 10 * m,    220.6,  290000, 220.8, 220.4]       // 17:35:00 echt
+  ];
+  var kSauber = A.ohneStempel(kette, 5);
+  ok(kSauber.length === 3 && kSauber.every(function (b) { return b[0] % (5 * m) === 0 && b[2] > 0; }),
+     'ohneStempel: Stempel NACH der echten Kerze verdraengt sie nicht mehr (NVDA-Kette 19.08.)',
+     zeit(kSauber).join(' '));
+
+  // --- Fall 2: Stempel VOR der echten Kerze - die Rasterkerze holt ihren Platz zurueck ---
+  /* 60m, US-Aktie: das Raster liegt auf :30. Ein Stempel um 14:25 steht 55 min hinter
+   * der 13:30-Kerze - ueber der Schwelle von 54 min, er landet also erst einmal in der
+   * Serie. Fuenf Minuten spaeter kommt die echte 14:30-Kerze und muss ihn verdraengen. */
+  var t60 = Date.UTC(2026, 7, 21, 13, 30);
+  var vorher = [
+    [t60,                100.0, 32276874, 101.0,  99.5],  // 13:30 echt
+    [t60 + 55 * m,       100.4,      120, 100.4, 100.4],  // 14:25 Stempel (mit Volumen: nur die Rasterlage entlarvt ihn)
+    [t60 + 60 * m,       100.3, 10991780, 100.9,  99.9],  // 14:30 echt
+    [t60 + 120 * m,      100.2,  7493432, 100.7,  99.8]   // 15:30 echt
+  ];
+  var vSauber = A.ohneStempel(vorher, 60);
+  ok(vSauber.length === 3 && vSauber[1][0] === t60 + 60 * m && vSauber[1][2] === 10991780,
+     'ohneStempel: die Rasterkerze verdraengt den frueher eingetroffenen Stempel',
+     zeit(vSauber).join(' '));
+
+  // Derselbe Stempel ohne nahen Nachbarn: 15:28 liegt 58 min hinter 14:30 und 62 min vor
+  // 16:30 - beide Male ueber der Schwelle. Nur Rasterlage PLUS Signatur (V=0, H=L=C) faellt ihn.
+  var frei = [
+    [t60,           100.0, 32276874, 101.0, 99.5],
+    [t60 + 60 * m,  100.3, 10991780, 100.9, 99.9],
+    [t60 + 118 * m, 100.5,        0, 100.5, 100.5],       // 15:28 Stempel, ohne Konflikt
+    [t60 + 180 * m, 100.2,  7493432, 100.7, 99.8]
+  ];
+  ok(A.ohneStempel(frei, 60).length === 3,
+     'ohneStempel: ein Stempel ohne nahen Nachbarn faellt ueber Rasterlage + Signatur',
+     zeit(A.ohneStempel(frei, 60)).join(' '));
+
+  // --- Fall 3: Luecken sind KEINE Stempel ---
+  var wochenende = [
+    [Date.UTC(2026, 7, 21, 19, 55), 100, 5000, 101, 99],  // Freitag Handelsschluss
+    [Date.UTC(2026, 7, 24, 13, 30), 101, 6000, 102, 100], // Montag Eroeffnung: 65,6 h spaeter
+    [Date.UTC(2026, 7, 24, 13, 35), 101, 6000, 102, 100]
+  ];
+  ok(A.ohneStempel(wochenende, 5).length === 3,
+     'ohneStempel: Wochenend-Luecke bleibt unangetastet');
+  var mittag = [[t5, 100, 1, 100, 99], [t5 + 5 * m, 100, 1, 100, 99], [t5 + 200 * m, 100, 1, 100, 99]];
+  ok(A.ohneStempel(mittag, 5).length === 3, 'ohneStempel: Handelspausen sind keine Stempel');
+
+  // --- Das Raster wird GELERNT, nicht auf null gesetzt ---
+  /* Yahoos Stundenkerzen fuer US-Aktien beginnen 13:30 UTC. Im Archiv liegen 579.675
+   * der 719.575 Stundenkerzen auf Offset 30 min - ein fest verdrahtetes
+   * t % (barMin*60000) === 0 haette vier Fuenftel des Stundenarchivs geloescht. */
+  var usTag = [];
+  for (var h = 0; h < 7; h++) usTag.push([t60 + h * 60 * m, 100 + h, 1000000, 101 + h, 99 + h]);
+  ok(A.rasterPhase(usTag, 3600000) === 30 * m, 'rasterPhase lernt den US-Stundenstart :30',
+     A.rasterPhase(usTag, 3600000) / m + ' min');
+  ok(A.ohneStempel(usTag, 60).length === 7,
+     'ohneStempel: ein voller US-Stundentag ueberlebt vollstaendig (kein Null-Raster erzwungen)',
+     A.ohneStempel(usTag, 60).length);
+  ok(A.rasterPhase([[Date.UTC(2026, 7, 21, 0, 0), 1, 1]], 3600000) === 0,
+     'rasterPhase liefert 0, wo die Serie auf der vollen Stunde liegt (Krypto)');
+
+  /* Die gelernte Phase entscheidet NUR den Konflikt - sie loescht nie fuer sich allein.
+   * An verkuerzten Handelstagen (Thanksgiving, 3. Juli, Heiligabend) schliesst die
+   * US-Boerse 18:00 UTC; Yahoo liefert dort eine Stundenkerze auf Offset 0 MIT Spanne.
+   * 114 der 122 Stundenreihen im Archiv haben je sieben solcher Kerzen. */
+  var halbtag = [
+    [Date.UTC(2025, 11, 24, 14, 30), 188.2,  9095497, 188.5, 187.9],
+    [Date.UTC(2025, 11, 24, 15, 30), 188.2,  9095497, 188.5, 187.9],
+    [Date.UTC(2025, 11, 24, 16, 30), 188.2,  9095497, 188.5, 187.9],
+    [Date.UTC(2025, 11, 24, 18,  0), 188.3,        0, 189.2, 187.1]   // Rest-Kerze: V=0, aber H != L
+  ];
+  ok(A.ohneStempel(halbtag, 60).length === 4,
+     'ohneStempel: die echte 18:00-Kerze des Halbtags bleibt (Spanne statt H=L=C)',
+     A.ohneStempel(halbtag, 60).length);
+
+  /* Capital-CFD-Kerzen brauchen keine Ausnahme: snapshotTimeUTC lautet
+   * "2026-08-19T09:00:00" - glatte Rasterzeit. Nachgemessen am 22.08.2026 an den 45
+   * reinen CFD-Reihen im Archiv (ADP 5m: 4836 Kerzen, Median-Volumen 57 statt
+   * Boersenvolumen): 0 Eintraege neben dem Raster. */
+  var cfd = [];
+  for (var c = 0; c < 12; c++) cfd.push([Date.UTC(2026, 4, 26, 13, 30) + c * 5 * m, 300 + c * 0.1, 57, 300.2, 299.9]);
+  ok(A.ohneStempel(cfd, 5).length === 12,
+     'ohneStempel: Capital-CFD-Kerzen liegen auf demselben Raster und bleiben vollstaendig');
+})();
+
 console.log('14) Trend-Ruecksetzer (Pullback) an der Leitlinie');
 (function () {
   var t0p = Date.UTC(2026, 5, 1, 13, 30);
@@ -672,6 +775,184 @@ console.log('\n17b) Oberflaeche: Altlasten und Verdrahtung');
   ok(/spekGesehen\.indexOf\(z\.id\) === -1/.test(r), 'Radar: Benachrichtigung je Eintrag nur einmal');
   ok(/redaktionelle Einschätzung der Suche, keine Messung/.test(r),
      'Radar: die Chance-Einstufung wird als Setzung ausgewiesen');
+  // Wunsch #49: Firmenname als Label neben dem Ticker, These auf einen Satz gekuerzt
+  ok(/class="firma"/.test(r) && /esc\(z\.name\)/.test(r), 'Radar #49: Firmenname steht escaped neben dem Ticker');
+  ok(/function spekKurz\(/.test(r) && /esc\(z\.kurz\)/.test(r) && /title="' \+ esc\(z\.these\)/.test(r),
+     'Radar #49: These gekuerzt, voller Wortlaut bleibt als Tooltip');
+
+  /* --- Insider-Kaeufe (23.08.2026): SEC Form 4 -----------------------------
+   * Die Siebung ist der ganze Wert dieser Karte: ueber 90 Prozent der Meldungen sind
+   * Zuteilungen, Optionsausuebungen und Plan-Verkaeufe. Deshalb wird hier die
+   * Rechnung selbst geprueft, nicht nur der Quelltext. */
+  var IH = require('./tools/insider-holen.js');
+  var EG = require('./tools/edgar.js');
+
+  // Der Tagesindex haelt sich nicht an die eigene Kopfzeile: sie behauptet, der
+  // Formtyp sei 12 Zeichen breit, bei "SCHEDULE 13D" beginnt der Name aber erst in
+  // Spalte 18. Feste Spaltenbreiten waeren hier still falsch.
+  var zF4 = EG.zeileLesen('4                3D SYSTEMS CORP                                               910638      20260821    edgar/data/910638/0001628280-26-058429.txt');
+  var z13 = EG.zeileLesen('SCHEDULE 13D     IMMERSION CORP                                                1058811     20260821    edgar/data/1058811/0001104659-26-078123.txt');
+  var z13a = EG.zeileLesen('SCHEDULE 13D/A   COMSCORE, INC.                                                1158172     20260821    edgar/data/1158172/0001104659-26-078200.txt');
+  ok(zF4 && zF4.typ === '4' && zF4.firma === '3D SYSTEMS CORP' && zF4.cik === '910638',
+     'EDGAR-Index: Form-4-Zeile korrekt zerlegt', zF4 && zF4.typ);
+  ok(z13 && z13.typ === 'SCHEDULE 13D' && z13.firma === 'IMMERSION CORP',
+     'EDGAR-Index: 13D-Zeile trotz breiterem Formtyp-Feld korrekt zerlegt', z13 && z13.firma);
+  ok(z13a && z13a.typ === 'SCHEDULE 13D/A',
+     'EDGAR-Index: Aenderungsmeldung wird NICHT als Original gelesen', z13a && z13a.typ);
+  ok(EG.entities('Chairman &amp; CEO') === 'Chairman & CEO',
+     'EDGAR: Entitaeten werden aufgeloest, sonst steht &amp;amp; in der Karte');
+
+  // Nur der offene Marktkauf zaehlt (Code P). Zuteilung (A), Optionsausuebung (M)
+  // und Verkauf (S) sagen nichts ueber eine Einschaetzung aus.
+  function f4xml(code, stueck, preis) {
+    return '<nonDerivativeTable><nonDerivativeTransaction>' +
+      '<transactionCoding><transactionCode>' + code + '</transactionCode></transactionCoding>' +
+      '<transactionAmounts><transactionShares><value>' + stueck + '</value></transactionShares>' +
+      '<transactionPricePerShare><value>' + preis + '</value></transactionPricePerShare>' +
+      '<transactionAcquiredDisposedCode><value>' + (code === 'S' ? 'D' : 'A') + '</value></transactionAcquiredDisposedCode>' +
+      '</transactionAmounts></nonDerivativeTransaction></nonDerivativeTable>';
+  }
+  var kaufP = IH.kaeufeLesen(f4xml('P', 1000, 50));
+  ok(kaufP && kaufP.stueck === 1000 && Math.round(kaufP.wert) === 50000 && kaufP.kurs === 50,
+     'Form 4: offener Marktkauf (P) wird gerechnet', kaufP && kaufP.wert);
+  ok(IH.kaeufeLesen(f4xml('A', 1000, 50)) === null, 'Form 4: Aktienzuteilung (A) zaehlt NICHT');
+  ok(IH.kaeufeLesen(f4xml('M', 1000, 50)) === null, 'Form 4: Optionsausuebung (M) zaehlt NICHT');
+  ok(IH.kaeufeLesen(f4xml('S', 1000, 50)) === null, 'Form 4: Verkauf (S) zaehlt NICHT');
+  // Derivate bleiben aussen vor: eine Option ist kein Kaufentschluss am Markt
+  ok(IH.kaeufeLesen('<derivativeTable>' + f4xml('P', 1000, 50).replace(/nonDerivative/g, 'derivative') + '</derivativeTable>') === null,
+     'Form 4: derivative Buchungen bleiben aussen vor');
+
+  // Ein reiner 10-%-Aktionaer ist meist eine Struktur, kein Mensch mit Einblick -
+  // im Probelauf waren das eine Muttergesellschaft und ein Kreditfonds.
+  ok(IH.rolleLesen('<isOfficer>1</isOfficer><officerTitle>Chief Executive Officer</officerTitle>').rang === 3,
+     'Form 4: CEO bekommt den hoechsten Rang');
+  ok(IH.rolleLesen('<isDirector>true</isDirector>').intern === true, 'Form 4: Aufsichtsrat zaehlt als intern');
+  ok(IH.rolleLesen('<isTenPercentOwner>1</isTenPercentOwner>').intern === false,
+     'Form 4: reiner 10-%-Aktionaer zaehlt NICHT als intern');
+  ok(IH.istFonds('Nuveen Municipal Income Fund') === true && IH.istFonds('ALASKA AIR GROUP') === false,
+     'Form 4: geschlossene Fonds sind keine operativen Firmen');
+
+  // Mehrere Insider derselben Firma sind der seltene, staerkere Fall - das muss die
+  // Verdichtung als ein Eintrag mit Kopfzahl abbilden, nicht als zwei Zeilen.
+  var vd = IH.verdichten([
+    { sym: 'XYZ', firma: 'Beispiel Inc.', person: 'Muster Anna', rolle: { text: 'CEO', rang: 3 }, kauf: { stueck: 100, wert: 5000, kurs: 50, datum: '2026-08-20' }, url: 'https://www.sec.gov/a' },
+    { sym: 'XYZ', firma: 'Beispiel Inc.', person: 'Muster Bernd', rolle: { text: 'Aufsichtsrat', rang: 1 }, kauf: { stueck: 100, wert: 3000, kurs: 30, datum: '2026-08-21' }, url: 'https://www.sec.gov/b' },
+    { sym: 'ABC', firma: 'Andere Corp', person: 'Muster Carla', rolle: { text: 'CFO', rang: 3 }, kauf: { stueck: 10, wert: 9000, kurs: 900, datum: '2026-08-21' }, url: 'https://www.sec.gov/c' }
+  ]);
+  ok(vd.length === 2 && vd[0].sym === 'XYZ' && vd[0].anzahl === 2 && vd[0].wert === 8000,
+     'Insider: mehrere Meldungen je Wert werden zu einem Eintrag mit Kopfzahl', vd[0] && vd[0].anzahl);
+  ok(vd[0].rang === 3 && vd[0].id === '20260821-XYZ-insider',
+     'Insider: hoechste Rolle gewinnt, id traegt das juengste Datum', vd[0] && vd[0].id);
+  ok(vd[1].sym === 'ABC' && vd[0].anzahl > vd[1].anzahl, 'Insider: das Cluster steht vor dem Einzelkauf');
+
+  // Schwellen: Pennystocks und Alibi-Kaeufe draussen, Liquiditaet gefordert
+  ok(IH.MIN_KURS >= 5 && IH.MIN_WERT >= 100000 && IH.MIN_UMSATZ >= 10e6,
+     'Insider: Schwellen fuer Kurs, Kaufwert und Tagesumsatz stehen', IH.MIN_KURS + '/' + IH.MIN_WERT + '/' + IH.MIN_UMSATZ);
+
+  // Anzeige: dieselbe Strenge wie beim Radar, denn auch das ist Fremdinhalt
+  ok(/read-insider/.test(m2) && /insider\.json/.test(m2), 'Insider: Lese-Kanal im Hauptprozess existiert');
+  ok(/const INSIDER_URL =/.test(m2), 'Insider: Gemeinschafts-Ablage haengt an einer festen URL');
+  ok(/readInsider/.test(p2), 'Insider: Bruecke ist exponiert');
+  ok(/id="insiderKarte"/.test(h), 'Insider: Karte auf dem Dashboard vorhanden');
+  ok(/esc\(z\.sym\)/.test(r) && /esc\(safeUrl\(q\.url\)\)/.test(r),
+     'Insider: Fremdinhalte werden escaped, Links nur ueber safeUrl');
+  ok(/jetzt - t > 21 \* 86400000\) continue/.test(r), 'Insider: Eintraege aelter als drei Wochen fallen raus');
+  ok(/insiderGesehen\.indexOf\(z\.id\) === -1/.test(r), 'Insider: Benachrichtigung je Eintrag nur einmal');
+  ok(/z\.anzahl > 1 && insiderGesehen/.test(r), 'Insider: benachrichtigt wird nur beim Cluster, nicht bei jedem Kauf');
+  ok(/gemeldet – nicht gemessen/.test(r), 'Insider: die Karte weist aus, dass hier nichts gemessen ist');
+  ok(/keine Intraday-Kante/.test(h) && /Gehandelt wird hiervon nichts/.test(h),
+     'Insider: die Ueberschrift sagt, was der Effekt ist und was nicht');
+  /* Ein Lauf des Werkzeugs darf beim require nicht losgehen - sonst fragt jeder
+     Testlauf die SEC ab und ueberschreibt die Datei. */
+  var ihSrc = fs.readFileSync(__dirname + '/tools/insider-holen.js', 'utf8');
+  ok(/require\.main === module/.test(ihSrc), 'Insider: das Werkzeug laeuft nur beim direkten Aufruf');
+  ok(/nur offener Marktkauf/.test(ihSrc), 'Insider: im Werkzeug steht, warum nur Code P zaehlt');
+
+  // --- Strategie-Chart im Tab Strategien & Belege (#51, 23.08.2026) ---
+  // Die Oberflaeche darf die Regel nur NACHZEICHNEN, nie nachbauen: jede Markierung
+  // kommt aus Q.einstiegSignal, derselben Funktion wie Studie, Backtest und Live-Scan.
+  (function () {
+    var d3 = fs.readFileSync(__dirname + '/depot.js', 'utf8');
+    var h3 = fs.readFileSync(__dirname + '/index.html', 'utf8');
+    var stc = d3.slice(d3.indexOf('async function runStrategieChart'), d3.indexOf('function drawStrategieChart'));
+    ok(/id="stcChart"/.test(h3) && /id="stcMode"/.test(h3) && h3.indexOf('id="stratChartPanel"') > h3.indexOf('id="tab-strategien"'),
+       'Strategie-Chart #51: Panel liegt im Tab Strategien & Belege');
+    ok(/Q\.einstiegSignal\(bars, i, P\)/.test(stc) && !/rsi\(closes, 2\) <= 10/.test(stc),
+       'Strategie-Chart #51: Einstiege kommen aus Q.einstiegSignal, nicht aus nachgebauter Logik');
+    ok(/s\.dir !== 'call'\) continue/.test(stc), 'Strategie-Chart #51: nur die Long-Seite wird markiert (Put traegt nicht)');
+    ok(/bars\.length < 300/.test(stc) && /Q\.fertigeBars\(/.test(stc),
+       'Strategie-Chart #51: rechnet erst ab der Messtiefe und nur auf fertigen Kerzen - wie der Live-Scan');
+    ok(/value="rsi2seit"/.test(h3) && /value="kapitulation"/.test(h3) && !/value="hourly"/.test(h3.slice(h3.indexOf('id="stcMode"'), h3.indexOf('id="stcMode"') + 400)),
+       'Strategie-Chart #51: nur die beiden belegten Modi, keine widerlegte Strategie im Chart');
+    ok(/Simulation, keine Anlageberatung/.test(h3.slice(h3.indexOf('id="stratChartPanel"'))), 'Strategie-Chart #51: Hinweis Simulation bleibt');
+
+    // --- #52 (23.08.2026): Kerzenlaenge, Zeitraum, anklickbare historische Signale ---
+    // Wilhelms Wunsch: ein falsch erkanntes Signal soll NACHTRAEGLICH pruefbar sein.
+    // Die Gefahr dabei ist bekannt: eine frei waehlbare Kerzenlaenge fuehrt die
+    // Oberflaeche weg von der gemessenen Konfiguration (60m). Deshalb muss der
+    // Wechsel sichtbar bleiben, nicht still passieren.
+    var stcAlles = d3.slice(d3.indexOf('var stcState = null'), d3.indexOf('function drawStrategieChart'));
+    var panel = h3.slice(h3.indexOf('id="stratChartPanel"'), h3.indexOf('/tab-strategien'));
+    ok(/id="stcIv"/.test(panel) && /value="60m" selected/.test(panel),
+       'Strategie-Chart #52: Kerzenlaenge waehlbar, 60m bleibt die Voreinstellung (so ist gemessen)');
+    ok(/value="15m"[^>]*>[^<]*nur Ansicht/.test(panel) && /value="5m"[^>]*>[^<]*nur Ansicht/.test(panel),
+       'Strategie-Chart #52: ungemessene Kerzenlaengen sind schon in der Auswahl als Ansicht gekennzeichnet');
+    ok(/id="stcIvWarn"/.test(panel) && /NICHT die gemessene Konfiguration/.test(stcAlles),
+       'Strategie-Chart #52: wer die Kerzenlaenge verlaesst, bekommt es ausdruecklich gesagt');
+    ok(/Q\.fertigeBars\(bars\.slice\(-tiefe\), ivCfg\.min,/.test(stcAlles),
+       'Strategie-Chart #52: die Kerzenlaenge geht auch in fertigeBars - sonst wird die laufende Kerze falsch gekappt');
+    ok(/id="stcSpanne"/.test(panel) && /Math\.max\(900, spanne \+ 320\)/.test(stcAlles),
+       'Strategie-Chart #52: groesserer Zeitraum laedt auch mehr Vorlauf - sonst waere der linke Bildrand nur scheinbar signalfrei');
+    ok(/function stcCheckZeichnen/.test(stcAlles) && /stcBedingungen\(S\.bars, S\.mode, S\.P, idx\)/.test(stcAlles),
+       'Strategie-Chart #52: der Klick rechnet die Bedingungen GENAU DER Signalkerze nach, nicht die von heute');
+    ok(/ciWunsch == null \? bars\.length - 1 :/.test(d3),
+       'Strategie-Chart #52: ohne Angabe bleibt es bei der letzten abgeschlossenen Kerze');
+    ok(/data-mark=/.test(d3) && /tr\.stcRow/.test(d3),
+       'Strategie-Chart #52: Signale sind in der Liste UND im Chart anklickbar');
+    ok(/Gesamturteil des Detektors in dieser Kerze/.test(stcAlles) && /nicht aus der Summe der H/.test(stcAlles),
+       'Strategie-Chart #52: das Urteil kommt weiter aus einstiegSignal, nicht aus den Haekchen');
+    ok(/ohne Kosten, ohne Schein und ohne Ausstiegsregel/.test(stcAlles),
+       'Strategie-Chart #52: der Verlauf nach dem Signal wird nicht als Handelsergebnis ausgegeben');
+
+    // Und jetzt nicht nur der Wortlaut, sondern die Rechnung: die Bedingungsliste wird
+    // aus depot.js herausgeschnitten und mit dem echten Q ausgefuehrt. Wilhelms Zweck
+    // steht und faellt damit - wenn die Anzeige je von der Regel abdriftet, erklaert sie
+    // ein Signal, das es so nie gab. Genau das ist hier schon einmal passiert.
+    (function () {
+      var qa = d3.indexOf('  function stcBedingungen(bars, mode, P, ciWunsch) {');
+      var qb = d3.indexOf('  /** Zustand des zuletzt geladenen Strategie-Charts');
+      if (qa < 0 || qb < 0) { ok(false, 'Strategie-Chart #52: Bedingungsfunktion im Quelltext auffindbar'); return; }
+      var bedFn = new Function('Q', d3.slice(qa, qb) + '\n return stcBedingungen;')(Q);
+      // Synthetische Stundenreihe mit Aufwaertsdrift und regelmaessigen Dips - kein
+      // echter Markt, geprueft wird die Mechanik.
+      var bs = [], t0 = Date.UTC(2026, 0, 5, 14, 30);
+      for (var bi = 0; bi < 900; bi++) {
+        var pr = 100 + bi * 0.012 + Math.sin(bi / 11) * 1.6 + Math.sin(bi / 3.3) * 0.9;
+        bs.push([t0 + bi * 3600000, pr, 1000 + (bi % 17 === 0 ? 4000 : 0) + (bi % 5) * 60, pr * 1.004, pr * 0.996]);
+      }
+      var PP = { ENTRY: 'rsi2seit', LINE: 'ema', period: 20, confirmBps: 15, ZTHR: 1.5, MINQ: 0, CHAN: false, MTF: false, TREND: false };
+      var mk = [];
+      for (var mi = 261; mi < bs.length; mi++) {
+        var sg = null;
+        try { sg = Q.einstiegSignal(bs, mi, PP); } catch (eS) { }
+        if (sg && sg.dir === 'call') mk.push(mi);
+      }
+      ok(mk.length > 0, 'Strategie-Chart #52: die Pruefreihe erzeugt ueberhaupt Signale', mk.length);
+      var wieder = mk.filter(function (m) { return bedFn(bs, 'rsi2seit', PP, m).signal === 'call'; }).length;
+      ok(wieder === mk.length,
+         'Strategie-Chart #52: jede angeklickte Signalkerze meldet beim Nachrechnen wieder genau ihr Signal', wieder + '/' + mk.length);
+      var frei = [];
+      for (var fj = 300; fj < 900 && frei.length < 30; fj += 7) if (mk.indexOf(fj) < 0) frei.push(fj);
+      var bleibtFrei = frei.filter(function (f) { return bedFn(bs, 'rsi2seit', PP, f).signal !== 'call'; }).length;
+      ok(bleibtFrei === frei.length,
+         'Strategie-Chart #52: signalfreie Kerzen erfinden beim Nachrechnen kein Signal', bleibtFrei + '/' + frei.length);
+      ok(JSON.stringify(bedFn(bs, 'rsi2seit', PP).liste) === JSON.stringify(bedFn(bs, 'rsi2seit', PP, bs.length - 1).liste),
+         'Strategie-Chart #52: ohne Index bleibt es beim alten Verhalten (letzte Kerze)');
+      var kein = true;
+      try { bedFn(bs, 'rsi2seit', PP, 99999); bedFn(bs, 'kapitulation', PP, -5); } catch (eK) { kein = false; }
+      ok(kein, 'Strategie-Chart #52: ein Index ausserhalb der Reihe wird geklemmt, nicht geworfen');
+    })();
+  })();
 
   // --- Echte Handelskosten aus dem Demo-Konto (22.08.2026) ---
   var c2 = fs.readFileSync(__dirname + '/capital.js', 'utf8');
@@ -710,7 +991,8 @@ console.log('\n17b) Oberflaeche: Altlasten und Verdrahtung');
      'Spannen: die Kursabfrage nutzt den Markt-Endpunkt des Demo-Hosts');
   // --- Massen-Backfill: Messbasis in einem Rutsch vertiefen (22.08.2026) ---
   ok(/function massenBackfill/.test(d), 'Backfill: Massen-Auffuellung existiert');
-  ok(d.indexOf("POOLS_60M.ndx100") !== -1, 'Backfill: Nasdaq-100 ist im Universum');
+  // Seit 8.23.46 werden ndx100 UND sp100 ueber eine Liste geholt, nicht mehr einzeln benannt.
+  ok(/['ndx100', 'sp100']/.test(d), 'Backfill: Nasdaq-100 und S&P-100 sind im Universum');
   ok(d.indexOf("massenStop") !== -1 && /function massenAbbrechen/.test(d), 'Backfill: jederzeit anhaltbar');
   ok(d.indexOf("fehlSerie < 3") !== -1 && d.indexOf("1500 * fehlSerie") !== -1,
      'Backfill: bei Fehlern Rueckzug statt Weiterhaemmern - eine gedrosselte API sperrt sonst');
@@ -1868,7 +2150,9 @@ console.log('\nAuslieferung');
     console.log('  ℹ  telemetrie.json liegt hier nicht – dieser Build würde den Browser-Weg nutzen (kein Fehler auf fremden Rechnern).');
   }
   // Nach einem Build: liegt der Schlüssel wirklich im Paket?
-  var asarPfad = __dirname + '/dist/win-unpacked/resources/app.asar';
+  // DIST erlaubt es, ein anderswo gebautes Paket zu pruefen (sauberer Arbeitsbaum,
+  // siehe release-final.js). Ohne die Variable bleibt es beim Paket neben der Quelle.
+  var asarPfad = (process.env.DIST || __dirname + '/dist') + '/win-unpacked/resources/app.asar';
   if (fs.existsSync(telePfad) && fs.existsSync(asarPfad)) {
     var drinImPaket = false, wieGeprueft = '';
     try {
@@ -1940,6 +2224,22 @@ console.log('\n30) Datenquellen-Diagnose (Capital.com) – ein Fehlschlag muss s
   ok(nullsE > 0 && gruendeE >= nullsE,
      'epicFor: jeder Fehlerausgang setzt einen Grund', gruendeE + ' Gründe / ' + nullsE + ' Ausgänge');
 
+  /* Epic-Zuordnung: nur Belegbares (Befund 22./23.08.2026). Der alte Rückfall auf den
+   * ersten SHARES-Treffer machte aus 'WBD' das Papier 'WBDIT' (2,22 statt 28,50, europäische
+   * Handelszeit, 16 statt 78 Kerzen am Tag) und aus 'EA' die Kette 'EAT' – US-notiert und
+   * damit an der Kerzenzahl nicht zu erkennen. Einen Tag später standen sechs solcher
+   * Zuordnungen im Cache, darunter 'NET' → 'NFLX'. Weil openPosition dasselbe Epic benutzt,
+   * hätte ein NET-Signal eine Netflix-Position eröffnet. */
+  ok(eF.indexOf("indexOf('SHARES')") === -1 && !/\|\|\s*mkts\[0\]/.test(eF),
+     'epicFor rät nicht mehr: kein Rückfall auf den ersten SHARES- oder Suchtreffer');
+  // Seit 23.08.2026 auf den Schreibweisen des Kuerzels (BRK-B / BRKB) - weiterhin EXAKT.
+  ok(/vari\.indexOf\(m\.epic\)/.test(eF) && /vari\.indexOf\(m\.symbol\)/.test(eF),
+     'epicFor nimmt nur Treffer, deren Epic ODER Capital-Symbol dem Kuerzel entspricht');
+  ok(/cache\[sym\] === sym/.test(eF),
+     'Der Cache gilt nur ungeprüft, wenn das Epic wie das Symbol heißt – sonst lief die Zuordnung ewig an der Prüfung vorbei');
+  ok(/delete cache\[sym\]/.test(eF),
+     'Eine nicht belegbare Zuordnung fliegt aus dem Cache, statt dort weiterzuwirken');
+
   var pR = block(cap, 'pricesRange: async function');
   ok(/letzterKursFehler = 'Kursabruf/.test(pR),
      'pricesRange nennt bei HTTP-Fehler Symbol, Zeitrahmen, Zeitraum und Status');
@@ -1980,7 +2280,9 @@ console.log('\n30) Datenquellen-Diagnose (Capital.com) – ein Fehlschlag muss s
      'Ein erfolgreicher Wert setzt den Abbruchzähler zurück (fertige Werte lösen nichts aus)');
   // Capital führt nicht jeden Wert als CFD – im DAX-Pool hängen 41 .DE-Symbole
   // hintereinander. Die dürfen nicht als „die Verbindung ist kaputt" gedeutet werden.
-  ok(mb.indexOf("symGrund.indexOf('Kein Markt') !== 0") !== -1,
+  // Seit 23.08.2026 ueber den Fehlercode statt ueber den Meldungstext - der Wortlaut
+  // aenderte sich ('Kein Markt' -> 'Kein gesicherter Markt') und die Pruefung brach still.
+  ok(mb.indexOf("symArt !== 'kein-markt'") !== -1,
      'Nicht geführte Einzelwerte lösen KEINEN Verbindungs-Abbruch aus');
 
   /* Handelspausen: Capital.com begrenzt die Zeitspanne je Anfrage (belegt am 22.08.2026
@@ -2086,7 +2388,9 @@ console.log('\n30) Datenquellen-Diagnose (Capital.com) – ein Fehlschlag muss s
 
 console.log('\n31) Auslieferung – enthält der letzte Build wirklich den aktuellen Stand?');
 (function () {
-  var asarPfad = __dirname + '/dist/win-unpacked/resources/app.asar';
+  // DIST erlaubt es, ein anderswo gebautes Paket zu pruefen (sauberer Arbeitsbaum,
+  // siehe release-final.js). Ohne die Variable bleibt es beim Paket neben der Quelle.
+  var asarPfad = (process.env.DIST || __dirname + '/dist') + '/win-unpacked/resources/app.asar';
   if (!fs.existsSync(asarPfad)) {
     console.log('  ℹ  Noch kein Build vorhanden – diese Prüfung greift erst nach „electron-builder".');
     return;
@@ -2273,7 +2577,219 @@ console.log('\n35) Drift-Buch: Meldung nach Schluss und Zukunftstermine (Audit 2
      'Das Termin-Archiv wird einmalig von Zahlen an Zukunftsterminen befreit (25 Faelle am 22.08., darunter ADSK 27.08.)');
 })();
 
-console.log('\n36) Echte WKN zum Modell-Schein (Tickets #9/#11/#17)');
+
+console.log('\n36) Kostenhuerde des Produkts (Signalstudie 23.08.2026)');
+(function () {
+  var dep = fs.readFileSync(__dirname + '/depot.js', 'utf8');
+  var html = fs.readFileSync(__dirname + '/index.html', 'utf8');
+  /* Wichtigste praktische Erkenntnis der Signalstudie: Die Huerde entscheidet, nicht die
+   * Signalqualitaet. Der Standard-Schein kostet 0,23 Pp je 3h-Umlauf (Spanne durch Hebel
+   * plus Zeitwert); die belegte Kante rsi2seit liegt bei 0,11 Pp - also netto negativ. */
+  function huerde(cfg, spot, vol, haltenMin) {
+    spot = spot > 0 ? spot : 200; vol = vol > 0 ? vol : 0.30;
+    var halten = Math.max(5, haltenMin || 60), now = Date.now();
+    if (cfg.instrument === 'basis') return { pp: 2 * 0.05 + (cfg.orderFee || 0) * 2 / 10000 * 100, hebel: 1 };
+    var PR = Q.PROFILES[cfg.profile] || Q.PROFILES.atm21;
+    var w = Q.makeWarrant('call', spot, vol, now, PR.ratio);
+    w.strike = Math.round(spot * (1 + (PR.otmPct || 0)) * 100) / 100;
+    w.expiry = now + PR.days * 86400000;
+    var wert = Q.warrantValue('call', w, spot, now); if (!(wert > 0.02)) return null;
+    var spx = Q.effSpread(w.iv, undefined, wert, w.ratio), omega = Q.warrantOmega('call', w, spot, now);
+    if (!(omega > 0)) return null;
+    var theta = Math.max(0, (wert - Q.warrantValue('call', w, spot, now + halten * 60000)) / wert);
+    return { pp: (2 * spx + theta) / omega * 100, hebel: omega };
+  }
+  var std = huerde({ profile: 'atm21', instrument: 'schein' }, 200, 0.30, 180);
+  var bv1 = huerde({ profile: 'atm60_b', instrument: 'schein' }, 200, 0.30, 180);
+  var akt = huerde({ instrument: 'basis', orderFee: 0 }, 200, 0.30, 180);
+  ok(std && std.pp > 0.18 && std.pp < 0.30,
+     'Standard-Schein kostet rund 0,23 Pp je 3-Stunden-Umlauf', std ? std.pp.toFixed(3) : 'null');
+  ok(bv1 && bv1.pp < std.pp / 3,
+     'Der BV-1,0-Schein ist ein Vielfaches guenstiger als der Standard-Schein',
+     bv1 ? bv1.pp.toFixed(3) + ' vs ' + std.pp.toFixed(3) : 'null');
+  ok(akt && std.pp > akt.pp,
+     'Die belegte Kante (0,11 Pp) traegt mit der Aktie, nicht mit dem Standard-Schein',
+     'Aktie netto ' + (0.11 - akt.pp).toFixed(3) + ' / Schein netto ' + (0.11 - std.pp).toFixed(3));
+  // Verdrahtung - tote Anzeigen gab es hier schon (6 Schalter, 22.08.)
+  ok((html.match(/id="kostenHuerde"/g) || []).length === 1, 'Die Anzeigeflaeche existiert genau einmal');
+  ok(dep.indexOf('function kostenHuerdePp') !== -1 && dep.indexOf('function huerdeAnzeigen') !== -1,
+     'Rechnung und Anzeige sind vorhanden');
+  ok(/huerdeAnzeigen\(\);\n    }/.test(dep), 'Die Anzeige haengt an idSave - sie kann nicht veralten');
+  ok(/quellenMigration\(\);\n    huerdeAnzeigen\(\);/.test(dep), 'Die Anzeige wird beim Start gefuellt');
+})();
+
+
+console.log('\n37) Produkt-Vorgabe: eine Wahrheit, nicht drei');
+(function () {
+  var dep = fs.readFileSync(__dirname + '/depot.js', 'utf8');
+  var html = fs.readFileSync(__dirname + '/index.html', 'utf8');
+  /* Befund 23.08.2026: Die Vorgabe stand an drei Stellen und zwei widersprachen der
+   * Messung - D.intraday sagte atm60_b/basis, HTML-'selected' und die Lade-Rueckfaelle
+   * sagten atm21/schein. Huerde 0,26 statt 0,07 Pp; die belegte Kante (0,11 Pp) waere
+   * damit netto negativ gewesen. Gleiche Fehlerklasse wie die Live-Abweichungen vom 22.08. */
+  function erste(re, s) { var m = s.match(re); return m ? m[1] : null; }
+  var kProf = erste(/profile: '([a-z0-9_]+)'/, dep);
+  var kInst = erste(/instrument: '([a-z0-9_]+)'/, dep);
+  var hProf = erste(/id="idProfile"><option value="([a-z0-9_]+)" selected/, html);
+  var hInst = erste(/id="idInstrument"><option value="([a-z0-9_]+)" selected/, html);
+  var rProf = erste(/c\.profile \|\| '([a-z0-9_]+)'/, dep);
+  var rInst = erste(/c\.instrument \|\| '([a-z0-9_]+)'/, dep);
+  ok(kProf && kProf === hProf && hProf === rProf,
+     'Profil-Vorgabe stimmt in Konfig, Oberflaeche und Lade-Rueckfall ueberein',
+     kProf + ' / ' + hProf + ' / ' + rProf);
+  ok(kInst && kInst === hInst && hInst === rInst,
+     'Instrument-Vorgabe stimmt in allen drei Quellen ueberein',
+     kInst + ' / ' + hInst + ' / ' + rInst);
+  /* Und die Vorgabe muss die guenstigste sein: sonst ist die belegte Kante netto negativ. */
+  function huerde(p, haltenMin) {
+    var now = Date.now(), PR = Q.PROFILES[p]; if (!PR) return null;
+    var w = Q.makeWarrant('call', 200, 0.30, now, PR.ratio);
+    w.strike = Math.round(200 * (1 + (PR.otmPct || 0)) * 100) / 100;
+    w.expiry = now + PR.days * 86400000;
+    var wert = Q.warrantValue('call', w, 200, now); if (!(wert > 0.02)) return null;
+    var om = Q.warrantOmega('call', w, 200, now); if (!(om > 0)) return null;
+    var th = Math.max(0, (wert - Q.warrantValue('call', w, 200, now + haltenMin * 60000)) / wert);
+    return (2 * Q.effSpread(w.iv, undefined, wert, w.ratio) + th) / om * 100;
+  }
+  var alle = Object.keys(Q.PROFILES).map(function (p) { return { p: p, h: huerde(p, 480) }; })
+    .filter(function (x) { return x.h != null; }).sort(function (a, b) { return a.h - b.h; });
+  ok(alle.length && alle[0].p === kProf,
+     'Die Profil-Vorgabe ist das guenstigste Profil bei 8 h Haltedauer',
+     alle.slice(0, 3).map(function (x) { return x.p + ' ' + x.h.toFixed(3); }).join(' < '));
+  ok(huerde(kProf, 480) < 0.111,
+     'Die belegte Kante (0,111 Pp Ueberschuss) traegt mit der Vorgabe',
+     'Huerde ' + huerde(kProf, 480).toFixed(3) + ' -> netto +' + (0.111 - huerde(kProf, 480)).toFixed(3));
+})();
+
+
+console.log('\n38) Auffuell-Lauf: sp100 und 60-Minuten-Erstbefuellung');
+(function () {
+  var dep = fs.readFileSync(__dirname + '/depot.js', 'utf8');
+  var mbI = dep.indexOf('async function massenBackfill');
+  var mb = dep.slice(mbI, dep.indexOf('async function datenquelleTest'));
+  /* Messung 23.08.2026: Der Ueberschuss wird in weniger liquiden Werten NICHT schlechter
+   * (oberstes Umsatzviertel -0,110 Pp, unterstes +0,108). Eine Verbreiterung verwaessert
+   * also nicht - sie braucht nur vorher Daten. 79 der 151 Werte aus ndx100+sp100 hatten
+   * kein 60m-Archiv, und genau darauf rechnet die belegte Kante rsi2seit. */
+  ok(/\['ndx100', 'sp100'\]/.test(mb),
+     'Der Auffuell-Lauf holt ndx100 UND sp100');
+  ok(mb.indexOf("fetchIntraday(fehl60[g0], '60m', true)") !== -1,
+     '60-Minuten-Historie kommt ueber Yahoo mit btRange (730 Tage), nicht von Capital');
+  ok(/s60\.length < 400/.test(mb),
+     'Nur Werte mit zu duennem 60m-Archiv werden geholt - versorgte bleiben unangetastet');
+  ok(mb.indexOf("Archiv.fuege('60m', fehl60[g0], fd60.series)") !== -1 &&
+     mb.indexOf("Archiv.fuege('60m', fehl60[g0], fd60.series, 'cap')") === -1,
+     'Yahoo-Kerzen werden NICHT als CFD gekennzeichnet (ihr Volumen ist Boersenvolumen)');
+  ok(/setTimeout\(r, 700\)/.test(mb),
+     'Der Yahoo-Abruf ist gedrosselt (Yahoo wirft ab rund 200 Anfragen in Folge 429)');
+  ok(/opts\.mit60m !== false/.test(mb),
+     'Stufe 0 laesst sich abschalten, ohne den Capital-Teil zu verlieren');
+  // Reihenfolge: 60m VOR dem Capital-Teil, sonst misst der Liquiditaetsfilter auf CFD-Volumen
+  var i60 = mb.indexOf('Stufe 0'), iCap = mb.indexOf('for (var vi = 0');
+  ok(i60 > 0 && iCap > i60, 'Stufe 0 laeuft VOR dem Capital-Teil', 'Position ' + i60 + ' < ' + iCap);
+})();
+
+
+console.log('\n39) Kuerzel-Schreibweisen und Fehlercodes (echter Lauf 23.08.2026)');
+(function () {
+  var cap = fs.readFileSync(__dirname + '/capital.js', 'utf8');
+  var dep = fs.readFileSync(__dirname + '/depot.js', 'utf8');
+  /* Der Auffuell-Lauf brach ab: Capital fuehrt Berkshire Hathaway B als 'BRKB', Yahoo als
+   * 'BRK-B'. Die woertliche Suche verwarf den richtigen Treffer. Zugleich prueft der
+   * Frueh-Abbruch auf den TEXT 'Kein Markt' - die Meldung hiess inzwischen 'Kein
+   * gesicherter Markt', also zaehlten nicht gefuehrte Einzelwerte als Verbindungsstoerung. */
+  function varianten(sym) {
+    var out = [sym], m = /^([A-Za-z0-9]+)[-.]([A-Za-z])$/.exec(sym);
+    if (m) out.push(m[1] + m[2]);
+    return out;
+  }
+  ok(varianten('BRK-B').indexOf('BRKB') !== -1, 'BRK-B findet auch die Schreibweise BRKB');
+  ok(varianten('BF-B').indexOf('BFB') !== -1, 'BF-B findet auch BFB');
+  ok(varianten('SAP.DE').length === 1 && varianten('MUV2.DE').length === 1,
+     'Boersensuffixe wie .DE werden NICHT zusammengezogen (SAPDE waere ein anderer Wert)');
+  ok(varianten('AAPL').length === 1, 'Kuerzel ohne Trenner bleiben unveraendert');
+  ok(cap.indexOf('function tickerVarianten') !== -1 &&
+     /vari\.indexOf\(m\.epic\)/.test(cap) && /vari\.indexOf\(m\.symbol\)/.test(cap),
+     'Die Marktsuche vergleicht beide Schreibweisen - exakt, nicht unscharf');
+
+  /* Fehlerart als Code, nicht als Text */
+  ok(/lastErrorKind:\s*function/.test(cap), 'capital.js meldet die Fehlerart als Code');
+  ["'kein-markt'", "'http'", "'unlesbar'"].forEach(function (c) {
+    ok(cap.indexOf('letzterGrundArt = ' + c) !== -1, 'Fehlercode ' + c + ' wird gesetzt');
+  });
+  var mbI = dep.indexOf('async function massenBackfill');
+  var mb = dep.slice(mbI, dep.indexOf('async function datenquelleTest'));
+  ok(mb.indexOf("symArt !== 'kein-markt'") !== -1,
+     'Der Frueh-Abbruch prueft den CODE, nicht den Meldungstext');
+  ok(mb.indexOf("symGrund.indexOf('Kein Markt')") === -1,
+     'Die alte Textpruefung ist raus - sie brach, als sich der Wortlaut aenderte');
+})();
+
+
+console.log('\n40) Strategie-Chart: Kanaele an der Kerze, fuer die sie gelten');
+(function () {
+  var d4 = fs.readFileSync(__dirname + '/depot.js', 'utf8');
+  var draw = d4.slice(d4.indexOf('function drawStrategieChart'), d4.indexOf('function drawStrategieIndikator'));
+
+  /* Der Fehler, den das verhindern soll: Der Chart nahm an, ein Kanal ende IMMER auf
+   * der letzten Kerze des Bildes. Beim Klick auf ein historisches Signal rechnete die
+   * Bedingungsliste den Kanal jener Kerze nach, gezeichnet wurde der von heute.
+   * An 292 echten Signalen: 100 % anderer Kanal, 81 % andere Richtung. */
+  ok(draw.indexOf('kStart = n - kN') === -1,
+     'Der Chart verankert Kanaele NICHT mehr pauschal am rechten Rand');
+  ok(/z\.startI = z\.endI - \(z\.k\.n - 1\)/.test(draw),
+     'Jeder Kanal wird an seiner eigenen Endkerze verankert (endI)');
+  ok(/function drawStrategieChart\(svg, bars, e20, e100, kanaele, marks, hl, band\)/.test(draw),
+     'drawStrategieChart nimmt eine LISTE von Kanaelen und ein Band');
+
+  var liste = d4.slice(d4.indexOf('function stcKanalListe'), d4.indexOf('function stcBandSerie'));
+  ok(liste.indexOf('Q.kanalUeber(S.bars, Math.max(0, bis - 200), bis)') !== -1,
+     'Die Liste holt den Kanal ueber dieselben 200 Kerzen wie einstiegSignal');
+  ok(/endI: ci - off/.test(liste),
+     'Der Kanal des angeklickten Signals endet an DESSEN Kerze');
+  ok(liste.indexOf("farbe: 'var(--muted)'") !== -1 && /Kontext/.test(liste),
+     'Kontext-Kanaele sind eigens gefaerbt - was nichts entscheidet, sieht nicht aus wie eine Entscheidung');
+
+  var waehl = d4.slice(d4.indexOf('function stcSignalWaehlen'), d4.indexOf('function drawStrategieChart'));
+  ok(waehl.indexOf('stcKanalListe(S, S.gewaehlt') !== -1 && waehl.indexOf('S.e100, S.kanal,') === -1,
+     'Ein Klick auf ein Signal zeichnet den Kanal JENER Kerze, nicht den von heute');
+
+  /* Band: eine Formel, nicht zwei. Der Chart darf die Ausloeserschwelle nicht
+   * nachrechnen - sonst wandert die gezeichnete Linie irgendwann von der Regel weg. */
+  var bandF = d4.slice(d4.indexOf('function stcBandSerie'), d4.indexOf('/** Zustand des zuletzt geladenen'));
+  ok(/r\.bandOben/.test(bandF) && /r\.bandUnten/.test(bandF) && bandF.indexOf('stdev') === -1,
+     'Das Ueberdehnungsband kommt aus reversionSignal, es wird nicht nachgerechnet');
+  ok(/S\.mode !== 'kapitulation'\) return null/.test(bandF),
+     'Das Band erscheint nur dort, wo es wirklich ausloest (Kapitulations-Modus)');
+
+  /* Geometrie an echten Zahlen: Die Formel des Charts muss an BEIDEN Enden des
+   * Kanals genau das treffen, was kanalUeber selbst berechnet hat. */
+  var bg = [], pg = 100, rg = lcg(77);
+  for (var g = 0; g < 400; g++) { pg += rg() * 0.8 + 0.02; bg.push([Date.UTC(2026, 0, 1) + g * 3600000, pg, 1000]); }
+  var kg = Q.kanalUeber(bg, 150, 350);
+  var endI = 260, startI = endI - (kg.n - 1);
+  function mitteBei(i) { return kg.mitteJetzt - kg.steigung * (endI - i); }
+  ok(Math.abs(mitteBei(endI) - kg.mitteJetzt) < 1e-9,
+     'Chart-Formel trifft an der Endkerze die Kanalmitte von kanalUeber');
+  ok(Math.abs(mitteBei(startI) - kg.achse) < 1e-6,
+     'Chart-Formel trifft an der Startkerze den Achsenabschnitt von kanalUeber', (mitteBei(startI) - kg.achse).toExponential(2));
+
+  /* Das Band in Kursen muss genau dort liegen, wo z die Schwelle reisst. */
+  var bandTreffer = 0, bandGeprueft = 0;
+  for (var q = 120; q < bg.length; q += 5) {
+    var win = bg.slice(Math.max(0, q - 260), q + 1);
+    var rr = Q.reversionSignal(win, 'ema', 20, 1.5);
+    if (rr.z == null || !rr.bandUnten) continue;
+    bandGeprueft++;
+    var unten = win[win.length - 1][1] <= rr.bandUnten + 1e-9;
+    if (unten === (rr.z <= -1.5)) bandTreffer++;
+  }
+  ok(bandGeprueft > 20 && bandTreffer >= bandGeprueft - 1,
+     'Die Bandunterkante liegt genau auf der Ausloeserschwelle z = -ZTHR',
+     bandTreffer + '/' + bandGeprueft);
+})();
+
+console.log('\n41) Echte WKN zum Modell-Schein (Tickets #9/#11/#17)');
 (function () {
   var W = require('./wkn.js');
 

@@ -1,0 +1,14 @@
+Universum 5m: 158 Werte, 756.883 Sitzungskerzen · unvollstaendige Tage verworfen: 2026-05-25, 2026-05-26, 2026-05-27, 2026-05-28, 2026-05-29, 2026-06-01, 2026-06-02, 2026-06-03, 2026-06-04, 2026-06-05, 2026-06-08, 2026-06-09, 2026-06-10, 2026-06-11, 2026-06-12, 2026-06-15, 2026-06-16, 2026-06-17, 2026-06-18, 2026-06-19, 2026-06-22, 2026-06-23, 2026-06-24, 2026-06-25, 2026-06-26, 2026-06-29, 2026-06-30, 2026-07-01, 2026-07-02, 2026-07-03, 2026-07-06, 2026-07-07, 2026-07-08, 2026-07-09, 2026-07-10, 2026-07-13, 2026-07-14, 2026-07-15, 2026-07-16, 2026-07-17, 2026-07-20, 2026-07-21, 2026-07-22, 2026-07-23, 2026-07-24, 2026-07-27, 2026-07-28, 2026-07-29, 2026-07-30, 2026-07-31, 2026-08-03, 2026-08-04, 2026-08-05, 2026-08-06, 2026-08-07, 2026-08-10, 2026-08-11, 2026-08-12, 2026-08-13, 2026-08-14, 2026-08-17, 2026-08-18, 2026-08-19, 2026-08-20, 2026-08-21
+Kalender: 62 Handelstage, Entdeckung 40 (< 2026-07-23), Bestaetigung 22. Phase: entdeckung
+  rsi2                   29183 Signale  (139.987 Aufrufe, 0 Fehler, 2 s)
+  reversion               3942 Signale  (397.509 Aufrufe, 0 Fehler, 2 s)
+  pullback                7481 Signale  (363.156 Aufrufe, 0 Fehler, 4 s)
+  donchian               11049 Signale  (324.996 Aufrufe, 0 Fehler, 1 s)
+  squeeze                16433 Signale  (274.150 Aufrufe, 0 Fehler, 1 s)
+  kanaltrend               280 Signale  (437.636 Aufrufe, 0 Fehler, 279 s)
+  wave                     748 Signale  (432.379 Aufrufe, 0 Fehler, 5 s)
+  orb                     6669 Signale  (368.178 Aufrufe, 0 Fehler, 16 s)
+  signalCross            17401 Signale  (261.957 Aufrufe, 0 Fehler, 2 s)
+  vwap-abstand            4947 Signale  (387.712 Aufrufe, 0 Fehler, 651 s)
+  wendepunkt-trendwechsel  1015 Signale  (430.122 Aufrufe, 0 Fehler, 1 s)
+Geschrieben: C:\Users\Wilhe\Downloads\Stock-Dashboard\studien\signalstudie-2026-08\ergebnisse\lauf-5m-entdeckung.json (985 Testzeilen, 16 Min)

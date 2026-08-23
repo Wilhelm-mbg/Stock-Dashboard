@@ -1,0 +1,31 @@
+=== BESTAETIGUNG 15m: 13 Scan-Kandidaten + 0 Referenz, Detektoren: rsi2, reversion, wave, signalCross, vwap-abstand ===
+15m/bestaetigung: 23 Paare gerechnet (37 uebersprungen, Screening t>0,5 beidseitig), 23 mit Daten
+  rsi2+vwap-abstand                   long  3h   n=   89 Tage= 20 brutto     0.3 t(Tag) 3.3
+  rsi2+vwap-abstand                   long  TS   n=  139 Tage= 21 brutto   0.175 t(Tag) 2.805
+  wave+vwap-abstand                   long  TS   n=   18 Tage=  7 brutto   1.142 t(Tag) 2.62
+  wave+vwap-abstand                   long  1h   n=   18 Tage=  7 brutto   0.575 t(Tag) 1.971
+  reversion+vwap-abstand              long  1h   n=   62 Tage= 17 brutto   0.305 t(Tag) 1.85
+  rsi2+reversion                      long  TS   n=  163 Tage= 21 brutto   0.301 t(Tag) 1.584
+  rsi2+reversion                      long  3h   n=  157 Tage= 21 brutto   0.153 t(Tag) 1.507
+  rsi2+signalCross                    long  3h   n=  293 Tage= 22 brutto   0.059 t(Tag) 0.986
+
+SCAN-FUNDE  (Schwelle |t| >= 2.89 bei 13 Kandidaten)
+  Kandidat                                        Entdeckung          Bestaetigung                            Urteil
+                                                  brutto  t(Tag)      n   Tage  brutto   netto  t(Tag)   MDE
+  rsi2|short|3h                                     0.077  1.406    3121    22  -0.109  -0.209  -1.675  0.106   nicht bestaetigt
+  rsi2|short|1h                                     0.019  0.879    4731    22  -0.043  -0.143  -1.359  0.056   nicht bestaetigt
+  wave|short|3h                                    -0.132  0.857     122    20  -0.177  -0.277  -1.315  0.518   nicht bestaetigt
+  vwap-abstand|long|TS                              0.142  0.842     342    22   0.233   0.133   2.241  0.271   unentschieden (Netto-Frage unter MDE 0.271)
+  vwap-abstand|short|3h                             0.137  0.766     196    20   0.029  -0.071  -0.551  0.301   unentschieden (Netto-Frage unter MDE 0.301)
+  reversion|long|TS|vola=niedrig                    0.199  2.842     222    21   0.196   0.096   1.107  0.372   unentschieden (Netto-Frage unter MDE 0.372)
+  reversion|long|3h|vola=niedrig                    0.226  2.841     215    21    0.17    0.07   1.465  0.369   unentschieden (Netto-Frage unter MDE 0.369)
+  vwap-abstand|long|3h|vola=niedrig                  0.11  2.187     103    18   0.115   0.015   1.349  0.168   unentschieden (Netto-Frage unter MDE 0.168)
+  vwap-abstand|short|TS|vola=niedrig                0.125  2.146     155    19  -0.017  -0.117   0.514  0.178   nicht bestaetigt
+  signalCross|short|1h|vola=niedrig                 0.065   2.09    1055    22   0.004  -0.096   0.135  0.069   nicht bestaetigt
+  rsi2|short|TS|+vwap-abstand                        0.04  1.174      -                                         keine Signale in der Bestaetigung
+  reversion|short|3h|+wave                         -0.132  0.857      -                                         keine Signale in der Bestaetigung
+  rsi2|short|1h|+wave                              -0.056  0.585      -                                         keine Signale in der Bestaetigung
+
+REFERENZ (vorab benannte belegte Kanten, Schwelle |t| >= 2)
+  Kandidat                                        Entdeckung          Bestaetigung                            Urteil
+                                                  brutto  t(Tag)      n   Tage  brutto   netto  t(Tag)   MDE

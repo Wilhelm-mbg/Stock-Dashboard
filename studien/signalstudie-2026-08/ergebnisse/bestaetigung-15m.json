@@ -1,0 +1,328 @@
+{
+ "iv": "15m",
+ "cutoff": "2026-07-23",
+ "tage": {
+  "gesamt": 62,
+  "entdeckung": 40,
+  "bestaetigung": 22
+ },
+ "kandidatenScan": 13,
+ "schwelle": 2.89,
+ "zeilen": [
+  {
+   "kandidat": "rsi2|short|3h",
+   "referenz": false,
+   "entdeckung": {
+    "bruttoPp": 0.077,
+    "tTag": 1.406
+   },
+   "bestaetigung": {
+    "det": "rsi2",
+    "dir": "short",
+    "hor": "3h",
+    "bedingung": "-",
+    "wert": "-",
+    "n": 3121,
+    "nSym": 159,
+    "nTage": 22,
+    "bruttoPp": -0.109,
+    "nettoPp": -0.209,
+    "tTag": -1.675,
+    "mdeTagPp": 0.106,
+    "symPos": 0.296
+   },
+   "urteil": "nicht bestaetigt"
+  },
+  {
+   "kandidat": "rsi2|short|1h",
+   "referenz": false,
+   "entdeckung": {
+    "bruttoPp": 0.019,
+    "tTag": 0.879
+   },
+   "bestaetigung": {
+    "det": "rsi2",
+    "dir": "short",
+    "hor": "1h",
+    "bedingung": "-",
+    "wert": "-",
+    "n": 4731,
+    "nSym": 159,
+    "nTage": 22,
+    "bruttoPp": -0.043,
+    "nettoPp": -0.143,
+    "tTag": -1.359,
+    "mdeTagPp": 0.056,
+    "symPos": 0.34
+   },
+   "urteil": "nicht bestaetigt"
+  },
+  {
+   "kandidat": "wave|short|3h",
+   "referenz": false,
+   "entdeckung": {
+    "bruttoPp": -0.132,
+    "tTag": 0.857
+   },
+   "bestaetigung": {
+    "det": "wave",
+    "dir": "short",
+    "hor": "3h",
+    "bedingung": "-",
+    "wert": "-",
+    "n": 122,
+    "nSym": 93,
+    "nTage": 20,
+    "bruttoPp": -0.177,
+    "nettoPp": -0.277,
+    "tTag": -1.315,
+    "mdeTagPp": 0.518,
+    "symPos": 0.2
+   },
+   "urteil": "nicht bestaetigt"
+  },
+  {
+   "kandidat": "vwap-abstand|long|TS",
+   "referenz": false,
+   "entdeckung": {
+    "bruttoPp": 0.142,
+    "tTag": 0.842
+   },
+   "bestaetigung": {
+    "det": "vwap-abstand",
+    "dir": "long",
+    "hor": "TS",
+    "bedingung": "-",
+    "wert": "-",
+    "n": 342,
+    "nSym": 138,
+    "nTage": 22,
+    "bruttoPp": 0.233,
+    "nettoPp": 0.133,
+    "tTag": 2.241,
+    "mdeTagPp": 0.271,
+    "symPos": 0.517
+   },
+   "urteil": "unentschieden (Netto-Frage unter MDE 0.271)"
+  },
+  {
+   "kandidat": "vwap-abstand|short|3h",
+   "referenz": false,
+   "entdeckung": {
+    "bruttoPp": 0.137,
+    "tTag": 0.766
+   },
+   "bestaetigung": {
+    "det": "vwap-abstand",
+    "dir": "short",
+    "hor": "3h",
+    "bedingung": "-",
+    "wert": "-",
+    "n": 196,
+    "nSym": 109,
+    "nTage": 20,
+    "bruttoPp": 0.029,
+    "nettoPp": -0.071,
+    "tTag": -0.551,
+    "mdeTagPp": 0.301,
+    "symPos": 0.591
+   },
+   "urteil": "unentschieden (Netto-Frage unter MDE 0.301)"
+  },
+  {
+   "kandidat": "reversion|long|TS|vola=niedrig",
+   "referenz": false,
+   "entdeckung": {
+    "bruttoPp": 0.199,
+    "tTag": 2.842
+   },
+   "bestaetigung": {
+    "det": "reversion",
+    "dir": "long",
+    "hor": "TS",
+    "bedingung": "vola",
+    "wert": "niedrig",
+    "n": 222,
+    "nSym": 90,
+    "nTage": 21,
+    "bruttoPp": 0.196,
+    "nettoPp": 0.096,
+    "tTag": 1.107,
+    "mdeTagPp": 0.372,
+    "symPos": 0.561
+   },
+   "urteil": "unentschieden (Netto-Frage unter MDE 0.372)"
+  },
+  {
+   "kandidat": "reversion|long|3h|vola=niedrig",
+   "referenz": false,
+   "entdeckung": {
+    "bruttoPp": 0.226,
+    "tTag": 2.841
+   },
+   "bestaetigung": {
+    "det": "reversion",
+    "dir": "long",
+    "hor": "3h",
+    "bedingung": "vola",
+    "wert": "niedrig",
+    "n": 215,
+    "nSym": 88,
+    "nTage": 21,
+    "bruttoPp": 0.17,
+    "nettoPp": 0.07,
+    "tTag": 1.465,
+    "mdeTagPp": 0.369,
+    "symPos": 0.667
+   },
+   "urteil": "unentschieden (Netto-Frage unter MDE 0.369)"
+  },
+  {
+   "kandidat": "vwap-abstand|long|3h|vola=niedrig",
+   "referenz": false,
+   "entdeckung": {
+    "bruttoPp": 0.11,
+    "tTag": 2.187
+   },
+   "bestaetigung": {
+    "det": "vwap-abstand",
+    "dir": "long",
+    "hor": "3h",
+    "bedingung": "vola",
+    "wert": "niedrig",
+    "n": 103,
+    "nSym": 66,
+    "nTage": 18,
+    "bruttoPp": 0.115,
+    "nettoPp": 0.015,
+    "tTag": 1.349,
+    "mdeTagPp": 0.168,
+    "symPos": 0.727
+   },
+   "urteil": "unentschieden (Netto-Frage unter MDE 0.168)"
+  },
+  {
+   "kandidat": "vwap-abstand|short|TS|vola=niedrig",
+   "referenz": false,
+   "entdeckung": {
+    "bruttoPp": 0.125,
+    "tTag": 2.146
+   },
+   "bestaetigung": {
+    "det": "vwap-abstand",
+    "dir": "short",
+    "hor": "TS",
+    "bedingung": "vola",
+    "wert": "niedrig",
+    "n": 155,
+    "nSym": 80,
+    "nTage": 19,
+    "bruttoPp": -0.017,
+    "nettoPp": -0.117,
+    "tTag": 0.514,
+    "mdeTagPp": 0.178,
+    "symPos": 0.5
+   },
+   "urteil": "nicht bestaetigt"
+  },
+  {
+   "kandidat": "signalCross|short|1h|vola=niedrig",
+   "referenz": false,
+   "entdeckung": {
+    "bruttoPp": 0.065,
+    "tTag": 2.09
+   },
+   "bestaetigung": {
+    "det": "signalCross",
+    "dir": "short",
+    "hor": "1h",
+    "bedingung": "vola",
+    "wert": "niedrig",
+    "n": 1055,
+    "nSym": 109,
+    "nTage": 22,
+    "bruttoPp": 0.004,
+    "nettoPp": -0.096,
+    "tTag": 0.135,
+    "mdeTagPp": 0.069,
+    "symPos": 0.5
+   },
+   "urteil": "nicht bestaetigt"
+  },
+  {
+   "kandidat": "rsi2|short|TS|+vwap-abstand",
+   "referenz": false,
+   "entdeckung": {
+    "bruttoPp": 0.04,
+    "tTag": 1.174
+   },
+   "bestaetigung": {
+    "det": "rsi2",
+    "partner": "vwap-abstand",
+    "dir": "short",
+    "hor": "TS",
+    "bedingung": "-",
+    "wert": "-",
+    "n": 103,
+    "nSym": 72,
+    "nTage": 21,
+    "bruttoPp": 0.025,
+    "nettoPp": -0.075,
+    "tTag": -0.517,
+    "mdeTagPp": 0.463,
+    "symPos": 0.8
+   },
+   "urteil": "unentschieden (Netto-Frage unter MDE 0.463)"
+  },
+  {
+   "kandidat": "reversion|short|3h|+wave",
+   "referenz": false,
+   "entdeckung": {
+    "bruttoPp": -0.132,
+    "tTag": 0.857
+   },
+   "bestaetigung": {
+    "det": "reversion",
+    "partner": "wave",
+    "dir": "short",
+    "hor": "3h",
+    "bedingung": "-",
+    "wert": "-",
+    "n": 122,
+    "nSym": 93,
+    "nTage": 20,
+    "bruttoPp": -0.177,
+    "nettoPp": -0.277,
+    "tTag": -1.315,
+    "mdeTagPp": 0.518,
+    "symPos": 0.2
+   },
+   "urteil": "nicht bestaetigt"
+  },
+  {
+   "kandidat": "rsi2|short|1h|+wave",
+   "referenz": false,
+   "entdeckung": {
+    "bruttoPp": -0.056,
+    "tTag": 0.585
+   },
+   "bestaetigung": {
+    "det": "rsi2",
+    "partner": "wave",
+    "dir": "short",
+    "hor": "1h",
+    "bedingung": "-",
+    "wert": "-",
+    "n": 101,
+    "nSym": 77,
+    "nTage": 17,
+    "bruttoPp": -0.126,
+    "nettoPp": -0.226,
+    "tTag": -0.918,
+    "mdeTagPp": 0.435,
+    "symPos": 0
+   },
+   "urteil": "nicht bestaetigt"
+  }
+ ]
+}

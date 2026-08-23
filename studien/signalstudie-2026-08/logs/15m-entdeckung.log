@@ -1,0 +1,10 @@
+Universum 15m: 159 Werte, 253.864 Sitzungskerzen
+Kalender: 62 Handelstage, Entdeckung 40 (< 2026-07-23), Bestaetigung 22. Phase: entdeckung
+  rsi2                   18307 Signale  (91.556 Aufrufe, 0 Fehler, 1 s)
+  reversion               1588 Signale  (137.999 Aufrufe, 0 Fehler, 1 s)
+  squeeze                 7375 Signale  (122.169 Aufrufe, 0 Fehler, 1 s)
+  kanaltrend               131 Signale  (142.383 Aufrufe, 0 Fehler, 84 s)
+  wave                     367 Signale  (141.652 Aufrufe, 0 Fehler, 2 s)
+  signalCross             8975 Signale  (117.830 Aufrufe, 0 Fehler, 1 s)
+  vwap-abstand            1181 Signale  (139.393 Aufrufe, 0 Fehler, 81 s)
+Geschrieben: C:\Users\Wilhe\Downloads\Stock-Dashboard\studien\signalstudie-2026-08\ergebnisse\lauf-15m-entdeckung.json (596 Testzeilen, 3 Min)

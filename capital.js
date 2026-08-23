@@ -3,7 +3,7 @@
    Bewusst NUR das Demo-Konto: der Live-Host ist in der App nicht freigeschaltet. */
 (function () {
   var BASE = 'https://demo-api-capital.backend-capital.com/api/v1';
-  var tokens = null, tokenTime = 0, lastError = '', letzterKursFehler = '';
+  var tokens = null, tokenTime = 0, lastError = '', letzterKursFehler = '', letzterGrundArt = '';
 
   /** Capital liefert snapshotTimeUTC als "2026-08-19T09:00:00" – OHNE Zeitzonen-Kennung.
    *  JavaScript liest so etwas als LOKALE Zeit; in Berlin wären alle Kerzen damit um 1–2
@@ -71,6 +71,18 @@
     return res;
   }
 
+  /** Schreibweisen desselben Kuerzels. Capital laesst den Anteilsklassen-Trenner weg:
+   *  BRK-B heisst dort BRKB. Das ist eine bekannte Notationsdifferenz, keine Rateerei -
+   *  deshalb bleibt der Vergleich exakt, nur auf beiden Schreibweisen.
+   *  Boersensuffixe wie SAP.DE bleiben unberuehrt: dort steht ein Laendercode aus zwei
+   *  Buchstaben, kein einzelner Klassenbuchstabe. */
+  function tickerVarianten(sym) {
+    var out = [sym];
+    var m = /^([A-Za-z0-9]+)[-.]([A-Za-z])$/.exec(sym);
+    if (m) out.push(m[1] + m[2]);
+    return out;
+  }
+
   window.CapAPI = {
     enabled: function () { return cfg().on; },
     lastError: function () { return lastError; },
@@ -94,25 +106,64 @@
      *  verschiedene Ursachen in einem stummen null (kein Markt / HTTP-Fehler /
      *  unlesbare Antwort) - damit war ein Fehlschlag nicht diagnostizierbar. */
     lastPriceError: function () { return letzterKursFehler; },
+    /** Fehlerart als CODE, nicht als Text: 'kein-markt' | 'http' | 'unlesbar' | ''.
+     *  Aufrufer duerfen sich nie auf den Wortlaut einer Meldung verlassen - genau das
+     *  brach am 23.08.2026, als aus 'Kein Markt' ein 'Kein gesicherter Markt' wurde. */
+    lastErrorKind: function () { return letzterGrundArt; },
 
-    /** Markt (Epic) zum Symbol finden – mit Cache */
+    /** Markt (Epic) zum Symbol finden – mit Cache.
+     *
+     *  Frueher nahm diese Funktion bei fehlender Epic-Uebereinstimmung den ERSTEN
+     *  SHARES-Treffer der Suche, notfalls sogar den ersten Treffer ueberhaupt - ohne
+     *  zu pruefen, ob das dieselbe Gesellschaft ist. Was das anrichtet, stand am
+     *  22.08.2026 im Kursarchiv: 'WBD' war zu 'WBDIT' geworden (2,22 statt 28,50 und
+     *  europaeische Handelszeit - vom US-Sitzungsfilter blieben 16 statt 78 Kerzen
+     *  am Tag uebrig), 'EA' zu 'EAT' (Brinker International; US-notiert und deshalb
+     *  voellig unauffaellig: 78 Kerzen am Tag, nur eben die falsche Firma).
+     *  Einen Tag spaeter standen sechs solcher Zuordnungen im Cache, darunter
+     *  'NET' -> 'NFLX' - Cloudflare auf Netflix, und NFLX handelt die App selbst.
+     *
+     *  Das Epic landet nicht nur im Archiv: openPosition spiegelt Signale darueber
+     *  auf das Demo-Konto. Eine falsche Zuordnung heisst, dass ein NET-Signal eine
+     *  Netflix-Position eroeffnet. Kein CFD-Kurs ist besser als der eines fremden
+     *  Wertes, also wird nur noch angenommen, was belegbar ist: das Epic heisst wie
+     *  das Symbol, oder Capital nennt das Symbol selbst (Feld 'symbol' der Suche).
+     *
+     *  Auch der Cache wird daran gemessen. Ein gespeicherter Eintrag, dessen Epic
+     *  ANDERS heisst als das Symbol, gilt nicht mehr ungeprueft - sonst haetten die
+     *  sechs Fehlgriffe ewig weitergewirkt, denn der Cache lief vor der Pruefung.
+     *  Die 152 von 158 Eintraegen mit Epic = Symbol kosten dabei keine einzige
+     *  zusaetzliche Anfrage. */
     epicFor: async function (sym) {
       var cache = (await window.api.storeGet('cap_epics')) || {};
-      if (cache[sym]) return cache[sym];
+      if (cache[sym] === sym) return cache[sym];         // belegt: das Epic heisst wie das Symbol
       var res = await call('GET', '/markets?searchTerm=' + encodeURIComponent(sym));
       if (!res.ok) {
+        /* Bewusst kein Rueckfall auf den gespeicherten Eintrag: hier landen nur noch
+         * die ungesicherten Zuordnungen, und die sollen einen Netzfehler nicht
+         * ueberleben. Ein Symbol ohne Kurs faellt auf; ein falscher Kurs nicht. */
+        letzterGrundArt = 'http';
         letzterKursFehler = 'Marktsuche für ' + sym + ' fehlgeschlagen: HTTP ' + res.status +
           (res.body ? ' – ' + String(res.body).slice(0, 160) : '');
         return null;
       }
       try {
         var mkts = JSON.parse(res.body).markets || [];
-        // exakte Epic-Übereinstimmung bevorzugen, sonst erster Aktien-Treffer
-        var hit = mkts.filter(function (m) { return m.epic === sym; })[0] || mkts.filter(function (m) { return (m.instrumentType || '').indexOf('SHARES') !== -1; })[0] || mkts[0];
+        var vari = tickerVarianten(sym);
+        var hit = mkts.filter(function (m) { return vari.indexOf(m.epic) !== -1; })[0] ||
+                  mkts.filter(function (m) { return vari.indexOf(m.symbol) !== -1; })[0];
         if (hit) { cache[sym] = hit.epic; await window.api.storeSet('cap_epics', cache); return hit.epic; }
-        letzterKursFehler = 'Kein Markt für ' + sym + ' gefunden (Suche lieferte ' + mkts.length + ' Treffer). ' +
-          'Capital.com führt nicht jeden US-Wert als CFD.';
-      } catch (e) { letzterKursFehler = 'Marktsuche für ' + sym + ': Antwort unlesbar'; }
+        // Nichts Belegbares dabei - eine frueher geratene Zuordnung fliegt hier raus.
+        var verworfen = mkts.slice(0, 3).map(function (m) {
+          return m.epic + (m.instrumentName ? ' (' + m.instrumentName + ')' : '');
+        }).join(', ');
+        if (cache[sym]) { delete cache[sym]; await window.api.storeSet('cap_epics', cache); }
+        letzterGrundArt = 'kein-markt';
+        letzterKursFehler = 'Kein gesicherter Markt für ' + sym + ': die Suche lieferte ' + mkts.length +
+          ' Treffer, aber keinen, dessen Epic oder Symbol ' + sym + ' heißt' +
+          (verworfen ? ' – verworfen: ' + verworfen : '') +
+          '. Capital.com führt nicht jeden US-Wert als CFD.';
+      } catch (e) { letzterGrundArt = 'unlesbar'; letzterKursFehler = 'Marktsuche für ' + sym + ': Antwort unlesbar'; }
       return null;
     },
 
@@ -216,7 +267,7 @@
      *  (aufsteigend) oder null bei Fehler; [] wenn der Bereich leer ist. */
     pricesRange: async function (sym, interval, fromMs, toMs, max) {
       var RES = { '1m': 'MINUTE', '5m': 'MINUTE_5', '15m': 'MINUTE_15', '60m': 'HOUR' };
-      letzterKursFehler = '';
+      letzterKursFehler = ''; letzterGrundArt = '';
       var epic = await this.epicFor(sym);
       if (!epic) return null;
       function iso(ms) { return new Date(ms).toISOString().slice(0, 19); }   // UTC ohne Z – Capitals Format
@@ -230,6 +281,7 @@
          * ZS 15m ueber Memorial Day (25.05.2026).
          * Leeres Array = 'dieser Bereich ist leer' - der Aufrufer springt dann ueber die Pause. */
         if (res.status === 404 && String(res.body || '').indexOf('prices.not-found') !== -1) return [];
+        letzterGrundArt = 'http';
         letzterKursFehler = 'Kursabruf ' + sym + ' (' + interval + ', ' + iso(fromMs) + ' bis ' + iso(toMs) + '): HTTP ' + res.status +
           (res.body ? ' – ' + String(res.body).slice(0, 200) : '');
         return null;

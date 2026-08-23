@@ -1,0 +1,13 @@
+Universum 60m: 114 Werte, 577.567 Sitzungskerzen · unvollstaendige Tage verworfen: 2023-11-24, 2024-07-03, 2024-11-29, 2024-12-24, 2025-07-03, 2025-11-28, 2025-12-24, 2026-01-30, 2026-02-02
+Kalender: 725 Handelstage, Entdeckung 483 (< 2025-09-03), Bestaetigung 242. Phase: entdeckung
+  rsi2                   35685 Signale  (164.925 Aufrufe, 0 Fehler, 2 s)
+  rsi2seit                3444 Signale  (358.133 Aufrufe, 0 Fehler, 4 s)
+  kapitulation             313 Signale  (376.891 Aufrufe, 0 Fehler, 2 s)
+  squeeze                15150 Signale  (287.917 Aufrufe, 0 Fehler, 1 s)
+  kanaltrend               654 Signale  (374.850 Aufrufe, 0 Fehler, 243 s)
+  wave                    1032 Signale  (372.582 Aufrufe, 0 Fehler, 4 s)
+  signalCross            20857 Signale  (253.646 Aufrufe, 0 Fehler, 2 s)
+  vwap-abstand            1148 Signale  (371.880 Aufrufe, 0 Fehler, 586 s)
+  momentum                5102 Signale  (348.154 Aufrufe, 0 Fehler, 5 s)
+  drift                    255 Signale  (377.236 Aufrufe, 0 Fehler, 5 s)
+Geschrieben: C:\Users\Wilhe\Downloads\Stock-Dashboard\studien\signalstudie-2026-08\ergebnisse\lauf-60m-entdeckung.json (1338 Testzeilen, 14 Min)

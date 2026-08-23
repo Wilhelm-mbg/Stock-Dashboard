@@ -1,0 +1,31 @@
+=== BESTAETIGUNG 1m: 13 Scan-Kandidaten + 0 Referenz, Detektoren: rsi2, reversion, wave, wendepunkt-trendwechsel ===
+1m/bestaetigung: 36 Paare gerechnet (0 uebersprungen, OHNE Screening), 36 mit Daten
+  reversion+wendepunkt-trendwechsel   long  1h   n=   63 Tage= 21 brutto    0.09 t(Tag) 2.029
+  rsi2+wendepunkt-trendwechsel        long  TS   n=  242 Tage= 22 brutto   0.085 t(Tag) 1.451
+  reversion+wendepunkt-trendwechsel   long  3h   n=   29 Tage= 17 brutto   0.089 t(Tag) 1.301
+  rsi2+wendepunkt-trendwechsel        long  1h   n=  216 Tage= 22 brutto   0.053 t(Tag) 1.228
+  reversion+wendepunkt-trendwechsel   long  TS   n=   73 Tage= 21 brutto       0 t(Tag) 1.186
+  reversion+wave                      long  3h   n=  119 Tage= 21 brutto  -0.079 t(Tag) 0.993
+  wave+wendepunkt-trendwechsel        long  1h   n=   14 Tage= 11 brutto    0.12 t(Tag) 0.984
+  rsi2+wave                           long  TS   n=  368 Tage= 22 brutto   0.092 t(Tag) 0.917
+
+SCAN-FUNDE  (Schwelle |t| >= 2.89 bei 13 Kandidaten)
+  Kandidat                                        Entdeckung          Bestaetigung                            Urteil
+                                                  brutto  t(Tag)      n   Tage  brutto   netto  t(Tag)   MDE
+  wendepunkt-trendwechsel|short|1h                  0.048  1.807     567    22  -0.026  -0.126  -0.488  0.073   nicht bestaetigt
+  wendepunkt-trendwechsel|short|3h                  0.094  1.588     329    22  -0.022  -0.122  -0.425  0.151   nicht bestaetigt
+  reversion|short|3h                                0.083   1.37     422    22  -0.128  -0.228  -1.966  0.144   nicht bestaetigt
+  rsi2|short|1h                                     0.035  1.088    5026    22  -0.024  -0.124  -1.255  0.058   nicht bestaetigt
+  wave|long|1h                                      0.027  0.968     451    22  -0.079  -0.179  -2.059  0.094   nicht bestaetigt
+  wendepunkt-trendwechsel|short|3h|vola=hoch        0.238  2.738     181    22   0.008  -0.092  -0.102  0.231   unentschieden (Netto-Frage unter MDE 0.231)
+  wendepunkt-trendwechsel|short|3h|vortag=tief      0.275  2.593      90    22   0.049  -0.051   0.251  0.226   unentschieden (Netto-Frage unter MDE 0.226)
+  wendepunkt-trendwechsel|short|1h|vola=hoch        0.098   2.53     324    22  -0.028  -0.128    -0.1  0.115   nicht bestaetigt
+  wendepunkt-trendwechsel|short|1h|termin=fern      0.076  2.492     316    22  -0.002  -0.102  -0.142  0.077   nicht bestaetigt
+  wendepunkt-trendwechsel|short|1h|vortag=tief      0.143  2.415     147    22   0.061  -0.039     0.5  0.193   unentschieden (Netto-Frage unter MDE 0.193)
+  rsi2|short|1h|+wendepunkt-trendwechsel            0.085  1.734     197    22  -0.097  -0.197  -1.249  0.116   nicht bestaetigt
+  rsi2|short|3h|+reversion                          0.092  1.148     243    22  -0.085  -0.185  -0.953  0.187   nicht bestaetigt
+  rsi2|short|3h|+wave                               0.123  0.757     163    21  -0.042  -0.142   -1.33  0.253   nicht bestaetigt
+
+REFERENZ (vorab benannte belegte Kanten, Schwelle |t| >= 2)
+  Kandidat                                        Entdeckung          Bestaetigung                            Urteil
+                                                  brutto  t(Tag)      n   Tage  brutto   netto  t(Tag)   MDE

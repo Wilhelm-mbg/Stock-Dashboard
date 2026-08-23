@@ -1,15 +1,20 @@
-/* Spekulations-Radar in die Gemeinschafts-Ablage hochladen (Wunsch #44)
- * =====================================================================
+/* Anzeige-Daten in die Gemeinschafts-Ablage hochladen (Wunsch #44)
+ * ================================================================
  * Die stuendliche Suche laeuft nur auf EINEM Rechner und schrieb bisher nur in den
  * lokalen Daten-Ordner - bei allen anderen Installationen blieb die Radar-Karte leer.
  * Dieses Skript legt dieselbe Datei zusaetzlich im Zweig "radar" des Projekts ab.
  * Die App liest von dort (feste URL in main.js) und schreibt selbst NIE ins Netz.
  *
- * Aufruf (nach dem Schreiben von spekulationen.json):
- *     node tools/radar-hochladen.js
+ * Aufruf (nach dem Schreiben der jeweiligen Datei):
+ *     node tools/radar-hochladen.js                  → spekulationen.json
+ *     node tools/radar-hochladen.js insider.json     → Insider-Kaeufe
  *
- * Der Zweig "radar" enthaelt bewusst nur diese eine Datei (elternlos, kein Code).
- * Angefasst wird ausschliesslich dieser Pfad in diesem Zweig - nie "main", kein
+ * Seit 23.08.2026 gibt es zwei solcher Dateien: das Spekulations-Radar und die
+ * Insider-Kaeufe aus den SEC-Meldungen. Beide gehen denselben Weg, deshalb nimmt das
+ * Skript den Dateinamen als Aufrufparameter statt ihn fest einzubauen.
+ *
+ * Der Zweig "radar" enthaelt bewusst nur diese Anzeige-Dateien (elternlos, kein Code).
+ * Angefasst wird ausschliesslich der genannte Pfad in diesem Zweig - nie "main", kein
  * Force, nichts wird geloescht. Die Anmeldung laeuft ueber den Git-Zugang, der auf
  * diesem Rechner ohnehin eingerichtet ist; das Geheimnis bleibt im Speicher und wird
  * weder ausgegeben noch irgendwo abgelegt.
@@ -20,9 +25,16 @@ var https = require('https');
 var os = require('os');
 var cp = require('child_process');
 
-var REPO = '/repos/Wilhelm-mbg/Stock-Dashboard/contents/spekulationen.json';
+// Nur diese Dateien duerfen hoch - ein freier Dateiname waere ein Einfallstor
+var ERLAUBT = ['spekulationen.json', 'insider.json'];
+var DATEI = process.argv[2] || ERLAUBT[0];
+if (ERLAUBT.indexOf(DATEI) < 0) {
+  console.error('Unbekannte Datei "' + DATEI + '". Erlaubt: ' + ERLAUBT.join(', '));
+  process.exit(1);
+}
+var REPO = '/repos/Wilhelm-mbg/Stock-Dashboard/contents/' + DATEI;
 var ZWEIG = 'radar';
-var QUELLE = path.join(os.homedir(), 'Downloads', 'Markt-Dashboard-Daten', 'spekulationen.json');
+var QUELLE = path.join(os.homedir(), 'Downloads', 'Markt-Dashboard-Daten', DATEI);
 
 // Zugang aus dem Git-Credential-Speicher - nur im Speicher, nie ausgegeben
 function holeZugang() {
@@ -69,20 +81,27 @@ function api(tok, methode, pfad, koerper) {
 async function einmal(tok, inhalt) {
   // Aktuellen Stand holen: GitHub verlangt den sha der Datei, die ersetzt wird
   var ist = await api(tok, 'GET', REPO + '?ref=' + ZWEIG);
-  if (ist.status !== 200 || !ist.body || !ist.body.sha) {
+  /* 404 heisst: diese Datei liegt noch nicht im Zweig. Das ist kein Fehler, sondern
+   * der erste Lauf - insider.json etwa gibt es dort erst seit dem 23.08.2026. Dann
+   * wird sie ohne sha angelegt. Jede ANDERE Fehlermeldung bleibt ein Fehler. */
+  var sha = null;
+  if (ist.status === 200 && ist.body && ist.body.sha) {
+    sha = ist.body.sha;
+    if (ist.body.content && Buffer.from(ist.body.content, 'base64').toString('utf8') === inhalt) {
+      return 'unveraendert';   // nichts Neues: kein leerer Commit
+    }
+  } else if (ist.status !== 404) {
     throw new Error('Zweig "' + ZWEIG + '" nicht lesbar (HTTP ' + ist.status + ')');
-  }
-  if (ist.body.content && Buffer.from(ist.body.content, 'base64').toString('utf8') === inhalt) {
-    return 'unveraendert';   // nichts Neues: kein leerer Commit
   }
   var stand = '';
   try { stand = JSON.parse(inhalt).stand || ''; } catch (e) { }
-  var put = await api(tok, 'PUT', REPO, {
-    message: 'radar: Stand ' + stand,
+  var koerper = {
+    message: 'radar: ' + DATEI + ' Stand ' + stand,
     content: Buffer.from(inhalt, 'utf8').toString('base64'),
-    sha: ist.body.sha,
     branch: ZWEIG
-  });
+  };
+  if (sha) koerper.sha = sha;         // ohne sha waere es ein Ueberschreiben ins Blaue
+  var put = await api(tok, 'PUT', REPO, koerper);
   if (put.status !== 200 && put.status !== 201) {
     throw new Error('Hochladen fehlgeschlagen (HTTP ' + put.status + (put.body && put.body.message ? ': ' + put.body.message : '') + ')');
   }
@@ -90,7 +109,7 @@ async function einmal(tok, inhalt) {
 }
 
 (async function () {
-  if (!fs.existsSync(QUELLE)) { console.error('Keine spekulationen.json im Daten-Ordner - nichts hochzuladen.'); process.exit(1); }
+  if (!fs.existsSync(QUELLE)) { console.error('Keine ' + DATEI + ' im Daten-Ordner - nichts hochzuladen.'); process.exit(1); }
   var inhalt = fs.readFileSync(QUELLE, 'utf8');
   if (Buffer.byteLength(inhalt) > 300000) { console.error('Datei groesser als 300 KB - die App wuerde sie ohnehin verwerfen.'); process.exit(1); }
   try { JSON.parse(inhalt); } catch (e) { console.error('Datei ist kein gueltiges JSON - nicht hochgeladen.'); process.exit(1); }

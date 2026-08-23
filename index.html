@@ -284,6 +284,11 @@
      Normalbetrieb sichtbar bleiben - alles Uebrige liegt hinter Klappen. */
   .klartext { border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; margin-bottom: 10px; background: var(--panel); }
   .belegt-box { border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px 12px; margin-bottom: 10px; }
+  .huerde { margin-top: 8px; padding: 7px 10px; border-radius: 8px; font-size: 12px; line-height: 1.5;
+            background: var(--panel-2, rgba(127,127,127,.08)); border: 1px solid var(--border); }
+  .huerde b { font-variant-numeric: tabular-nums; }
+  .huerde .warn { color: var(--btn-danger, #c0392b); font-weight: 600; }
+  .huerde .gut { color: var(--good, #2e7d32); font-weight: 600; }
   .belegt-titel { font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 8px; }
   /* Haken-Beschriftungen bleiben lesbar: die .params-Regel setzt Grossbuchstaben in
      10,5 px und Spaltenrichtung - fuer ein Auswahlkaestchen mit Satz daneben untauglich. */
@@ -305,6 +310,7 @@
   .spek-zeile:first-child { border-top: none; }
   .spek-zeile .sym { font-weight: 700; min-width: 52px; cursor: pointer; }
   .spek-zeile .sym:hover { text-decoration: underline; }
+  .spek-zeile .sym .firma { font-weight: 400; color: var(--muted); font-size: 11.5px; }
   .spek-chip { font-size: 11px; font-weight: 700; border-radius: 5px; padding: 1px 7px; flex-shrink: 0; }
   .spek-chip.hoch    { color: var(--warn); border: 1px solid var(--warn); }
   .spek-chip.mittel  { color: var(--ink-2); border: 1px solid var(--border); }
@@ -313,6 +319,12 @@
   .spek-zeile .these .beg { color: var(--muted); }
   .spek-zeile .quellen { font-size: 11.5px; color: var(--muted); }
   .spek-zeile .quellen a { color: var(--acc); }
+  /* Insider-Kaeufe: dieselbe Zeilenform wie das Radar, nur zwei eigene Chips -
+     der Betrag steht rechtsbuendig, damit die Groessenordnungen untereinander
+     vergleichbar bleiben. */
+  .spek-chip.kauf    { color: var(--up); border: 1px solid var(--up); font-variant-numeric: tabular-nums; }
+  .spek-chip.cluster { color: var(--warn); border: 1px solid var(--warn); }
+  .spek-chip.univ    { color: var(--acc); border: 1px dashed var(--acc); font-weight: 400; }
 
   /* Warnband unter dem Cockpit: eine Zeile je aktivem Warnzustand */
   #warnband { margin: 8px 0 4px; display: none; }
@@ -582,6 +594,9 @@
 <h2>Spekulations-Radar <span style="color:var(--muted); font-size:12px; font-weight:400; text-transform:none; letter-spacing:0;">– Gerüchte und Spekulationen aus öffentlichen Quellen, stündlich gesammelt. Ungemessen, reine Beobachtung: Gerüchte sind oft falsch, gehandelt wird hiervon nichts. Keine Anlageberatung.</span></h2>
 <div class="panel" id="spekRadar"><div class="loading">Noch keine Radar-Daten – wird gleich aus der Gemeinschafts-Ablage geladen.</div></div>
 
+<h2>Insider-Käufe <span style="color:var(--muted); font-size:12px; font-weight:400; text-transform:none; letter-spacing:0;">– meldepflichtige Eigengeschäfte von Vorstand und Aufsichtsrat US-notierter Firmen (SEC Form 4), nur offene Marktkäufe. Ungemessen, reine Beobachtung: der Effekt ist in der Literatur ein langsamer Halte-Effekt über Monate, keine Intraday-Kante. Gehandelt wird hiervon nichts. Keine Anlageberatung.</span></h2>
+<div class="panel" id="insiderKarte"><div class="loading">Noch keine Insider-Daten – wird gleich aus der Gemeinschafts-Ablage geladen.</div></div>
+
 <!-- Dieselben 15 Werte standen dreimal untereinander: Heatmap, Gewinner/Verlierer,
      Detailkarten. Die Karten liegen jetzt hinter einer Klappe - sie tragen echte
      Zusatzinformation (Marktkapitalisierung, KGV, 52-Wochen-Spanne), aber nicht
@@ -742,11 +757,12 @@
             <div class="params">
               <label title="Fix: immer gleicher Kapitaleinsatz. Risiko: Einsatz so bemessen, dass ein ausgelöster Stop immer ~X % vom Depot kostet">Positionsgröße<select id="idSizing"><option value="fix" selected>fix 3 %</option><option value="0.25">Risiko 0,25 %</option><option value="0.5">Risiko 0,5 %</option><option value="1">Risiko 1 %</option></select></label>
               <label title="automatisch = passt sich an Schwankungsbreite und Hebel an">Not-Stop-Loss<select id="idScalpSL"><option value="15">−15 %</option><option value="20" selected>−20 %</option><option value="30">−30 %</option><option value="auto">auto</option></select></label>
-              <label title="Das Bezugsverhältnis (BV) ist ein Kostenhebel: Emittenten stellen den Spread als festen Cent-Betrag. Ein BV-1,0-Schein kostet das Zehnfache je Stück, zahlt aber nur den doppelten Cent — also ein Fünftel des relativen Spreads bei gleichem Hebel. Gemessen an echten Kursen.">Hebel-Profil<select id="idProfile"><option value="atm21" selected>Moderat (BV 0,1)</option><option value="otm3_14">Spekulativ (BV 0,1)</option><option value="otm5_10">Heiß (BV 0,1)</option><option value="atm21_b">Moderat · BV 1,0 — günstiger</option><option value="atm60_b">Ruhig 60 T · BV 1,0 — am günstigsten</option><option value="otm3_30b">Spekulativ 30 T · BV 1,0</option></select></label>
-              <label title="Hebelschein: gehebelt, mit Zeitwertverfall und Spanne des Emittenten. Aktie 1×: ohne Hebel, linear, 0,05 % Spanne je Seite, Bruchstücke erlaubt – nötig für Strategien, deren Vorsprung unter der Schein-Kostenhürde liegt. Genau das gilt für RSI(2) im Seitwärtskanal: mit Schein war dieselbe Strategie im Backtest bei −96 %.">Instrument<select id="idInstrument"><option value="schein" selected>Hebelschein</option><option value="basis">Aktie 1× (Basiswert)</option></select></label>
+              <label title="Das Bezugsverhältnis (BV) ist ein Kostenhebel: Emittenten stellen den Spread als festen Cent-Betrag. Ein BV-1,0-Schein kostet das Zehnfache je Stück, zahlt aber nur den doppelten Cent — also ein Fünftel des relativen Spreads bei gleichem Hebel. Auf den Basiswert umgerechnet (Spanne durch Hebel plus Zeitwert) kostet ein Umlauf über 8 Stunden: BV 1,0 / 60 T 0,07 Pp, BV 1,0 / 21 T 0,09 Pp, Moderat BV 0,1 0,26 Pp, Heiß 0,61 Pp. Die einzige belegte Intraday-Kante liefert 0,11 Pp — mit den unteren drei Profilen ist sie netto negativ (Signalstudie 23.08.2026).">Hebel-Profil<select id="idProfile"><option value="atm60_b" selected>Ruhig 60 T · BV 1,0 — Hürde 0,07 Pp</option><option value="atm21_b">Moderat · BV 1,0 — Hürde 0,09 Pp</option><option value="otm3_30b">Spekulativ 30 T · BV 1,0</option><option value="atm21">Moderat (BV 0,1) — Hürde 0,26 Pp</option><option value="otm3_14">Spekulativ (BV 0,1)</option><option value="otm5_10">Heiß (BV 0,1) — Hürde 0,61 Pp</option></select></label>
+              <label title="Hebelschein: gehebelt, mit Zeitwertverfall und Spanne des Emittenten. Aktie 1×: ohne Hebel, linear, 0,05 % Spanne je Seite, Bruchstücke erlaubt – nötig für Strategien, deren Vorsprung unter der Schein-Kostenhürde liegt. Genau das gilt für RSI(2) im Seitwärtskanal: mit Schein war dieselbe Strategie im Backtest bei −96 %.">Instrument<select id="idInstrument"><option value="basis" selected>Aktie 1× (Basiswert)</option><option value="schein">Hebelschein</option></select></label>
               <label title="Begrenzt depotweit, welche Scheine gekauft werden dürfen – egal ob von Hand, vom Autopiloten oder von einer Empfehlung. Die Stufen (1 defensiv … 5 Lotterielos) kommen aus dem Schein-Finder und sind dort je Schein begründet. Stufe 5 = keine Grenze.">max. Risikostufe<select id="idMaxStufe"><option value="1">1 – defensiv</option><option value="2">2</option><option value="3">3 – moderat</option><option value="4">4</option><option value="5" selected>5 – keine Grenze</option></select></label>
               <label title="BTC, ETH, SOL, XRP, BNB, ADA, DOGE, LTC rund um die Uhr handeln – immer als Basiswert (1×) mit Taker-Gebühr 10 Bp je Seite, nie als Schein. ACHTUNG: Es gibt bis heute kein belegtes Krypto-Signal – alle gemessenen Modi waren negativ. Handelbar heißt können, nicht sollen.">Krypto handeln<span class="switch"><input type="checkbox" id="idKryptoHandeln"><span class="knob"></span></span></label>
               <label title="Capital.com und viele CFD-Broker berechnen keine Kommission — dort steckt alles im Spread. Bei einem Broker mit Ordergebühr den echten Betrag wählen.">Ordergebühr<select id="idFee"><option value="0" selected>0 (keine Kommission)</option><option value="1.5">1,50 $</option><option value="5">5 $</option></select></label>
+            <div id="kostenHuerde" class="huerde"></div>
             </div>
           </div>
           <div class="pgroup">
@@ -1413,6 +1429,56 @@
       <span id="stratEmpfohlenStatus" style="font-size:11.5px; color:var(--muted); margin-left:8px;"></span>
     </div>
     <div id="stratListe" style="margin-top:12px;"></div>
+  <div class="panel" id="stratChartPanel" style="margin-top:12px;">
+    <h3>Strategie-Chart – Signal und Bedingungen nachvollziehen</h3>
+    <div style="font-size:12px; color:var(--ink-2); line-height:1.5; margin-bottom:6px;">
+      Rechnet die gemessene Regel auf den Kerzen eines Werts nach – mit exakt derselben Funktion, die auch Studie, Backtest und Live-Scan benutzen (<code>einstiegSignal</code>).
+      Jede Markierung ist ein Einstieg, den die Regel dort gegeben hätte; jedes Signal in der Liste unter dem Chart lässt sich anklicken und zeigt dann, welche Bedingung genau in jener Kerze erfüllt war und welche nicht.
+      Momentum und Ergebnis-Drift sind Rangfolgen über alle Werte, keine Chartsignale – dafür gibt es hier nichts zu zeichnen.
+    </div>
+    <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+      <select id="stcMode">
+        <option value="rsi2seit">RSI(2) im Seitwärtskanal (belegt)</option>
+        <option value="kapitulation">Kapitulations-Dip im Abwärtskanal (belegt)</option>
+      </select>
+      <select id="stcSym"></select>
+      <label style="font-size:12px; color:var(--ink-2);">Kerzenlänge <select id="stcIv">
+        <option value="60m" selected>60 Minuten (so gemessen)</option>
+        <option value="15m">15 Minuten (nur Ansicht)</option>
+        <option value="5m">5 Minuten (nur Ansicht)</option>
+      </select></label>
+      <label style="font-size:12px; color:var(--ink-2);">Zeitraum <select id="stcSpanne">
+        <option value="160">160 Kerzen</option>
+        <option value="320" selected>320 Kerzen</option>
+        <option value="640">640 Kerzen</option>
+        <option value="1200">1200 Kerzen</option>
+      </select></label>
+      <label style="font-size:12px; color:var(--ink-2);" title="Zeigt denselben Kursverlauf zusätzlich auf kurzer, mittlerer und langer Sicht. Diese Kanäle entscheiden nichts – sie erklären, warum die 200-Kerzen-Sicht so eingeordnet wird.">
+        <input type="checkbox" id="stcKontext"> Kontext-Kanäle (kurz/mittel/lang)</label>
+      <button class="btn ghost" id="stcBtn" type="button">Chart laden</button>
+      <span id="stcStatus" style="color:var(--muted); font-size:12px;"></span>
+    </div>
+    <div id="stcIvWarn" style="display:none; font-size:11.5px; margin-top:6px; padding:6px 8px; border-left:3px solid var(--down); color:var(--ink-2); line-height:1.5;"></div>
+    <div id="stcInfo" style="font-size:12px; color:var(--ink-2); margin-top:8px;"></div>
+    <svg id="stcChart" style="width:100%; height:280px; display:block; margin-top:6px;"></svg>
+    <svg id="stcInd" style="width:100%; height:110px; display:block; margin-top:2px;"></svg>
+    <div style="color:var(--muted); font-size:11.5px; margin-top:4px;">
+      <span style="color:var(--series);">━</span> Kurs ·
+      <span style="color:var(--series2);">╌</span> Leitlinie EMA20 ·
+      <span style="color:var(--series4);">╌</span> EMA100 (Trendrichtung) ·
+      <span style="color:var(--series3);">▬</span> <b>Entscheidungskanal</b>: die 200 Kerzen, die der Regel die Erlaubnis geben (Regression, 92-%-Kanten) – verankert an der Kerze, die gerade geprüft wird ·
+      <span style="color:var(--series3);">╌</span> derselbe Kanal heute (nur wenn ein historisches Signal ausgewählt ist) ·
+      <span style="color:var(--series2);">╌</span> Überdehnungsband um die Leitlinie (nur Kapitulations-Modus – dort ist die Unterkante der Auslöser) ·
+      <span style="color:var(--muted);">╌</span> Kontext-Kanäle, falls eingeschaltet ·
+      <span style="color:var(--up);">●</span> Einstieg laut Regel (nur Long, anklickbar) ·
+      <span style="color:var(--series2);">●</span> gerade ausgewähltes Signal ·
+      unten: Auslöser-Indikator mit Schwelle
+      <div style="margin-top:4px;">Zwei Dinge, die man dem Bild sonst falsch entnimmt: Die <b>Güte</b> eines Kanals ist beschreibend – die Regel fragt <i>nur</i> die Richtung ab, es gibt keine Güte-Schwelle, und <code>kanalUeber</code> liefert immer einen Kanal, nie „keiner". Und die <b>Leitlinie EMA20</b> gehört zum Kapitulations-Modus; beim RSI(2)-Modus ist sie nur Orientierung und entscheidet dort nichts.</div>
+    </div>
+    <div id="stcSignale" style="margin-top:10px;"></div>
+    <div id="stcCheck" style="font-size:12px; margin-top:8px; line-height:1.6;"></div>
+    <div style="font-size:11.5px; color:var(--muted); margin-top:6px;">Simulation, keine Anlageberatung. Der Chart zeigt, was die Regel gesehen hätte – nicht, was sie verdient hätte; die Messung dazu steht in den Belegen oben.</div>
+  </div>
   <div class="panel">
     <div style="font-size:12px; color:var(--muted);">Alles hier ist Simulation. Es wird nichts gekauft und nichts verkauft.</div>
   </div>

@@ -1,5 +1,5 @@
 /* Rauchtest des Messgeschirrs - mit zwei Detektoren, deren Ergebnis bekannt sein MUSS:
- *   placebo : feuert deterministisch alle 97 Kerzen, Richtung aus dem Zeitstempel.
+ *   placebo : feuert deterministisch alle 17 Kerzen, Richtung aus dem Zeitstempel.
  *             Ein korrektes Geschirr muss hier Ueberschuss ~0 und |t| klein zeigen.
  *             Zeigt es etwas anderes, ist das Geschirr kaputt (z. B. Kontrolle falsch).
  *   rsi2roh : RSI(2) < 10 -> long, > 90 -> short. Bekannte Mean-Reversion-Heuristik;
@@ -11,7 +11,7 @@ const M = require('./messgeschirr.js');
 
 const DETS = [
   { key: 'placebo', zeitrahmen: ['1m', '5m', '15m', '60m'], params: {},
-    signal: (bars, i) => (i % 97 === 0 ? { dir: (Math.floor(bars[i][0] / 60000) % 2 === 0) ? 1 : -1 } : null) },
+    signal: (bars, i) => (i % 17 === 0 ? { dir: (Math.floor(bars[i][0] / 60000) % 2 === 0) ? 1 : -1 } : null) },
   { key: 'rsi2roh', zeitrahmen: ['1m', '5m', '15m', '60m'], params: { p: 2, lo: 10, hi: 90 },
     signal: (bars, i, p) => {
       if (i < 20) return null;
@@ -32,6 +32,15 @@ out.zeilen.filter(z => z.det === 'placebo' && z.bedingung === '-').forEach(z =>
 const pl = out.zeilen.filter(z => z.det === 'placebo' && z.bedingung === '-');
 const maxT = Math.max.apply(null, pl.map(z => Math.abs(z.tTag)));
 console.log('  -> groesstes |t| ' + maxT.toFixed(2) + (maxT < 2.5 ? '  OK' : '  VERDAECHTIG - Kontrolle pruefen'));
+
+/* Placebo ueber ALLE Bedingungszeilen: eine Bedingung, die in die Zukunft schaut (wie
+ * 'vortag' am 22.08., das die Rendite des Signaltages selbst las), zeigt hier t ~ 10,
+ * waehrend die unbedingten Zeilen unauffaellig bleiben. Deshalb beide pruefen. */
+const plAlle = out.zeilen.filter(z => z.det === 'placebo');
+const maxTBed = Math.max.apply(null, plAlle.map(z => Math.abs(z.tTag)));
+const schlimm = plAlle.filter(z => Math.abs(z.tTag) > 3.5);
+console.log('\nPlacebo ueber alle ' + plAlle.length + ' Zeilen (inkl. Bedingungen): groesstes |t| ' + maxTBed.toFixed(2) +
+  (schlimm.length ? '  ZUKUNFTSBLICK in: ' + schlimm.map(z => z.bedingung + '=' + z.wert + ' (t ' + z.tTag + ')').join(', ') : '  OK'));
 
 console.log('\n=== rsi2roh ===');
 out.zeilen.filter(z => z.det === 'rsi2roh' && z.bedingung === '-').forEach(z =>

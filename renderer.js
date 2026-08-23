@@ -364,6 +364,19 @@
      Rechner; alle anderen Installationen bekommen dieselben Funde ueber die
      Gemeinschafts-Ablage im Projekt-Zweig "radar". Das offen hinzuschreiben ist
      ehrlicher, als beides gleich aussehen zu lassen. */
+  /* Wunsch #49: Die Thesen der Suche sind ganze Absaetze. Fuer die Karte reicht der
+     erste Satz (hoechstens ~110 Zeichen, an einer Wortgrenze gekappt); der volle
+     Wortlaut bleibt als Tooltip erhalten, es geht nichts verloren. */
+  function spekKurz(t) {
+    var s = String(t || '').trim();
+    // Satzende nur, wenn danach ein Leerzeichen folgt - "25,3 Mrd." oder "S.p.A." sind keins
+    var m = s.match(/^(.{20,}?[.!?])(\s|$)/);
+    if (m && m[1].length <= 110 && !/\b(Mrd|Mio|Mr|Dr|ca|bzw|u|z\.B|S\.p\.A|Inc|Corp|Co)\.$/.test(m[1])) return m[1];
+    if (s.length <= 110) return s;
+    var k = s.slice(0, 110);
+    var sp = k.lastIndexOf(' ');
+    return (sp > 60 ? k.slice(0, sp) : k).replace(/[,;:\-–]$/, '') + ' …';
+  }
   function quelleText(r) {
     return r && r.quelle === 'netz' ? 'Gemeinschafts-Ablage' : 'Suche auf diesem Rechner';
   }
@@ -386,9 +399,12 @@
         ein.push({
           id: String(e.id || (e.sym + '|' + e.these)).slice(0, 120),
           sym: e.sym.toUpperCase().slice(0, 12),
+          // Firmenname ohne Rechtsform-Anhang, damit das Label kurz bleibt
+          name: typeof e.name === 'string' ? e.name.replace(/[\s,]+(S\.p\.A\.|AG|Inc\.?|Corp\.?|Corporation|plc|PLC|Ltd\.?|SE|N\.V\.|S\.A\.|Co\.)$/, '').slice(0, 40) : '',
           art: SPEK_ART[e.art] || 'Gerücht',
           chance: RANG[e.chance] != null ? e.chance : 'niedrig',
           these: e.these.slice(0, 240),
+          kurz: spekKurz(e.these),
           begruendung: typeof e.begruendung === 'string' ? e.begruendung.slice(0, 240) : '',
           quellen: (Array.isArray(e.quellen) ? e.quellen : []).slice(0, 3).filter(function (q) {
             return q && typeof q.url === 'string' && safeUrl(q.url) !== '#';
@@ -406,10 +422,11 @@
       var alt = jetzt - r.mtime > 3 * 3600000;
       el.innerHTML = ein.map(function (z) {
         return '<div class="spek-zeile">' +
-          '<span class="sym" data-heat="' + esc(z.sym) + '" title="Im Explorer öffnen">' + esc(z.sym) + '</span>' +
+          '<span class="sym" data-heat="' + esc(z.sym) + '" title="Im Explorer öffnen">' + esc(z.sym) +
+          (z.name ? ' <span class="firma">' + esc(z.name) + '</span>' : '') + '</span>' +
           '<span class="spek-chip ' + z.chance + '">' + z.chance.toUpperCase() + '</span>' +
           '<span class="spek-chip mittel" style="border-style:dashed;">' + esc(z.art) + '</span>' +
-          '<span class="these">' + esc(z.these) + (z.begruendung ? ' <span class="beg">– ' + esc(z.begruendung) + '</span>' : '') + '</span>' +
+          '<span class="these" title="' + esc(z.these) + '">' + esc(z.kurz) + (z.begruendung ? ' <span class="beg">– ' + esc(z.begruendung) + '</span>' : '') + '</span>' +
           (z.quellen.length ? '<span class="quellen">' + z.quellen.map(function (q, qi) {
             return '<a href="' + esc(safeUrl(q.url)) + '" target="_blank" rel="noopener">' +
               esc(typeof q.titel === 'string' && q.titel ? q.titel.slice(0, 60) : 'Quelle ' + (qi + 1)) + '</a>';
@@ -442,6 +459,124 @@
   }
   setTimeout(ladeSpekulationen, 6000);
   setInterval(ladeSpekulationen, 10 * 60000);
+
+  /* ================= Insider-Käufe =================
+   * Vorstand und Aufsichtsrat US-notierter Firmen muessen jeden eigenen Handel mit
+   * Aktien ihrer Firma binnen zwei Werktagen bei der SEC melden (Form 4). Das Skript
+   * tools/insider-holen.js holt diese Meldungen, laesst nur offene Marktkaeufe stehen
+   * (Code P - eigenes Geld, freiwillig) und schreibt insider.json. Diese Karte ZEIGT
+   * das nur.
+   *
+   * Ausdruecklich KEINE gemessene Kante: der Insider-Kauf-Effekt ist in der Literatur
+   * ein langsamer Halte-Effekt ueber Monate. Gegen die hier gemessene Produkthuerde
+   * (0,23 Pp je 3 h beim Standard-Schein) traegt so etwas nicht. Wer das handeln will,
+   * misst es vorher - so wie alles andere hier auch.
+   *
+   * Fremdinhalt aus dem Netz: konsequent esc() und safeUrl(), feste Kappen, und eine
+   * kaputte Datei laesst die Karte einfach in Ruhe. */
+  var insiderGesehen = null;
+  function geldKurz(v) {
+    if (!isFinite(v) || v <= 0) return '–';
+    if (v >= 1e6) return fmt(v / 1e6, 2) + ' Mio $';
+    return nf0.format(Math.round(v / 1000)) + ' Tsd. $';
+  }
+  async function ladeInsider() {
+    var el = document.getElementById('insiderKarte');
+    if (!el || !window.api || !window.api.readInsider) return;
+    try {
+      var r = await window.api.readInsider();
+      if (!r || !r.ok) return;   // keine Datei: Platzhalter bleibt stehen
+      var d = JSON.parse(r.body);
+      var roh = (d && Array.isArray(d.eintraege)) ? d.eintraege : [];
+      var jetzt = Date.now();
+      var ein = [];
+      for (var i = 0; i < roh.length; i++) {
+        var e = roh[i];
+        if (!e || typeof e.sym !== 'string' || !isFinite(e.wert)) continue;
+        var t = Date.parse(e.zeit || '') || r.mtime;
+        if (jetzt - t > 21 * 86400000) continue;   // aelter als drei Wochen: Geschichte
+        var wer = (Array.isArray(e.wer) ? e.wer : []).slice(0, 4).filter(function (w) {
+          return w && typeof w.person === 'string';
+        });
+        ein.push({
+          id: String(e.id || (e.sym + '|' + t)).slice(0, 120),
+          sym: e.sym.toUpperCase().slice(0, 12),
+          name: typeof e.name === 'string' ? e.name.slice(0, 40) : '',
+          anzahl: Math.max(1, Math.min(20, parseInt(e.anzahl, 10) || 1)),
+          wert: Math.max(0, e.wert),
+          stueck: isFinite(e.stueck) ? e.stueck : 0,
+          kurs: isFinite(e.kurs) ? e.kurs : 0,
+          rang: Math.max(0, Math.min(3, parseInt(e.rang, 10) || 0)),
+          imUniversum: !!e.imUniversum,
+          wer: wer,
+          quellen: (Array.isArray(e.quellen) ? e.quellen : []).slice(0, 3).filter(function (q) {
+            return q && typeof q.url === 'string' && safeUrl(q.url) !== '#';
+          }),
+          zeit: t
+        });
+      }
+      // Cluster zuerst, dann die hoechste Rolle, dann das Volumen - wie im Skript
+      ein.sort(function (a, b) {
+        return (b.anzahl - a.anzahl) || (b.wert - a.wert) || (b.rang - a.rang);
+      });
+      ein = ein.slice(0, 12);
+      if (!ein.length) {
+        el.innerHTML = '<div class="loading">Zurzeit keine gemeldeten Insider-Käufe über der Schwelle (Stand ' +
+          new Date(r.mtime).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }) + ' Uhr, ' + quelleText(r) + ').</div>';
+        return;
+      }
+      var alt = jetzt - r.mtime > 26 * 3600000;   // Meldungen kommen werktags, nicht stuendlich
+      el.innerHTML = ein.map(function (z) {
+        var kopf = z.wer.length
+          ? esc(z.wer[0].person) + (z.wer[0].rolle ? ' <span class="beg">(' + esc(String(z.wer[0].rolle).slice(0, 40)) + ')</span>' : '') +
+            (z.anzahl > 1 ? ' <span class="beg">und ' + (z.anzahl - 1) + ' weitere' + (z.anzahl === 2 ? 'r' : '') + '</span>' : '')
+          : '<span class="beg">Meldende Person nicht lesbar</span>';
+        var detail = (z.stueck > 0 && z.kurs > 0)
+          ? ' – ' + nf0.format(z.stueck) + ' Stück zu ' + fmt(z.kurs, 2) + ' $'
+          : '';
+        return '<div class="spek-zeile">' +
+          '<span class="sym" data-heat="' + esc(z.sym) + '" title="Im Explorer öffnen">' + esc(z.sym) +
+          (z.name ? ' <span class="firma">' + esc(z.name) + '</span>' : '') + '</span>' +
+          '<span class="spek-chip kauf">' + esc(geldKurz(z.wert)) + '</span>' +
+          (z.anzahl > 1 ? '<span class="spek-chip cluster">' + z.anzahl + ' INSIDER</span>' : '') +
+          (z.imUniversum ? '<span class="spek-chip univ">im Universum</span>' : '') +
+          '<span class="these">' + kopf + detail +
+          ' <span class="beg">· gemeldet ' + new Date(z.zeit).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' }) + '</span></span>' +
+          (z.quellen.length ? '<span class="quellen">' + z.quellen.map(function (q, qi) {
+            return '<a href="' + esc(safeUrl(q.url)) + '" target="_blank" rel="noopener">' +
+              esc(typeof q.titel === 'string' && q.titel ? q.titel.slice(0, 60) : 'Quelle ' + (qi + 1)) + '</a>';
+          }).join(' · ') + '</span>' : '') +
+          '</div>';
+      }).join('') +
+        '<div style="color:var(--muted); font-size:11px; margin-top:8px;">Stand ' +
+        new Date(r.mtime).toLocaleString('de-DE', { weekday: 'short', hour: '2-digit', minute: '2-digit' }) + ' Uhr' +
+        ' · ' + quelleText(r) +
+        (alt ? ' – <b>veraltet</b>, der Abruf hat länger nicht geschrieben' : '') +
+        ' · Nur offene Marktkäufe (SEC-Code P) ab 100.000 $ und 5 $ je Aktie, ohne reine 10-%-Aktionäre.' +
+        ' Was hier steht, ist gemeldet – nicht gemessen.</div>';
+      /* Benachrichtigung nur fuer Cluster, je Eintrag genau einmal: ein einzelner Kauf
+       * ist ein Datenpunkt, mehrere Insider derselben Firma binnen weniger Tage sind
+       * der seltene Fall, der ueberhaupt eine Meldung wert ist. */
+      if (insiderGesehen === null) insiderGesehen = (await window.api.storeGet('insiderGesehen')) || [];
+      var notifyAus = window.__D && window.__D() && window.__D().notify === false;
+      var neu = ein.filter(function (z) { return z.anzahl > 1 && insiderGesehen.indexOf(z.id) === -1; });
+      if (neu.length && !notifyAus) {
+        try {
+          var nN = new Notification('Insider-Käufe: ' + neu.map(function (z) { return z.sym; }).join(', '),
+            { body: neu[0].anzahl + ' Insider bei ' + neu[0].sym + ' für zusammen ' + geldKurz(neu[0].wert) +
+              '\nGemeldet, nicht gemessen – keine Anlageberatung.', silent: false });
+          nN.onclick = function () { window.focus(); };
+        } catch (eN) { /* Benachrichtigungen nicht verfuegbar */ }
+      }
+      if (neu.length) {
+        neu.forEach(function (z) { insiderGesehen.push(z.id); });
+        if (insiderGesehen.length > 200) insiderGesehen = insiderGesehen.slice(-200);
+        window.api.storeSet('insiderGesehen', insiderGesehen);
+      }
+    } catch (e) { /* kaputte Datei: Karte unveraendert lassen */ }
+  }
+  setTimeout(ladeInsider, 7000);
+  setInterval(ladeInsider, 10 * 60000);
 
   /* Laufband oben im Dashboard (Tester-Wunsch #20): dieselben Schlagzeilen wie im
      News-Kasten, als endlos durchlaufendes Band. Der Inhalt wird verdoppelt, damit

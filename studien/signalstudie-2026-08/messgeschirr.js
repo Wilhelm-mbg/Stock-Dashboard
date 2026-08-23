@@ -183,7 +183,10 @@ function bedingungen(E, i, iv, ctx) {
   out.liquiditaet = E.umsatz >= ctx.umsatzMedian ? 'liquide' : 'duenn';
   const tn = terminNah(ctx.termine, E.sym, tag);
   out.termin = tn == null ? 'na' : (tn ? 'nah' : 'fern');
-  const vr = E.tagRet[tag];
+  /* VORTAG heisst Vortag: tagRet[tag] waere die Rendite des Signaltages selbst - die
+   * enthaelt das Vorwaertsfenster (Zukunftsblick, fiel am 22.08. durch t~10 auf). */
+  const diV = E.dayIdx[i];
+  const vr = diV > 0 ? E.tagRet[E.dayKey[E.segs[diV - 1].s]] : null;
   out.vortag = vr == null ? 'na' : (vr > ctx.vortagTerz[1] ? 'hoch' : (vr < ctx.vortagTerz[0] ? 'tief' : 'mitte'));
   // Technik-Score (walk-forward via endI) und Kanal (bestChannel via endI) - beide teuer, nur je Signal
   {
@@ -222,13 +225,36 @@ function statistik(entries) {
   };
 }
 
+/* ---------- Aggregation (auch fuer Reparaturen fertiger Laeufe nutzbar) ---------- */
+const BEDINGUNGEN = ['regime', 'tageszeit', 'wochentag', 'vola', 'liquiditaet', 'termin', 'vortag', 'technik', 'kanal'];
+function aggregiere(ereignisse, hor) {
+  const zeilen = [];
+  for (const det of Object.keys(ereignisse)) {
+    const ev = ereignisse[det];
+    for (const dir of [1, -1]) for (const [, lab] of hor) {
+      const basis = ev.filter(e => e.dir === dir && e.fwd[lab] != null).map(e => ({ sym: e.sym, tag: e.tag, ex: e.fwd[lab], bed: e.bed }));
+      const st = statistik(basis);
+      if (st) zeilen.push(Object.assign({ det, dir: dir > 0 ? 'long' : 'short', hor: lab, bedingung: '-', wert: '-' }, st));
+      for (const b of BEDINGUNGEN) {
+        const werte = [...new Set(basis.map(e => e.bed[b]))].filter(w => w !== 'na');
+        for (const w of werte) {
+          const sub = basis.filter(e => e.bed[b] === w);
+          const s2 = statistik(sub);
+          if (s2 && s2.nTage >= 10) zeilen.push(Object.assign({ det, dir: dir > 0 ? 'long' : 'short', hor: lab, bedingung: b, wert: w }, s2));
+        }
+      }
+    }
+  }
+  return zeilen;
+}
+
 /* ---------- Hauptlauf ---------- */
 function lauf(opts) {
   const { iv, phase, detektoren, max, log } = opts;
   const tier = iv === '60m' ? 'B' : 'A';
   const t0 = Date.now();
   const U = ladeUniversum(iv, max);
-  U.forEach(E => bereite(E, iv));
+  U.forEach(E => { bereite(E, iv); E.bars.sym = E.sym; });
   (log || console.log)('Universum ' + iv + ': ' + U.length + ' Werte, ' + U.reduce((s, E) => s + E.bars.length, 0).toLocaleString('de-DE') + ' Sitzungskerzen' +
     (ladeUniversum.unvoll && ladeUniversum.unvoll.size ? ' · unvollstaendige Tage verworfen: ' + [...ladeUniversum.unvoll].sort().join(', ') : ''));
 
@@ -243,14 +269,17 @@ function lauf(opts) {
 
   // Kontext fuer Bedingungen
   const ctx = { regime: ladeIndex(), termine: ladeTermine() };
-  const volas = U.flatMap(E => Object.values(E.tagVola).filter(v => v != null)).sort((a, b) => a - b);
+  /* Schnittpunkte der Bedingungen (Mediane, Terzile) NUR aus Entdeckungstagen - sonst
+   * flossen Bestaetigungstage in die Definition ein (Synthese-Hinweis 22.08.). */
+  const nurEnt = (E, obj) => Object.keys(obj).filter(k => k < cutoff).map(k => obj[k]);
+  const volas = U.flatMap(E => nurEnt(E, E.tagVola).filter(v => v != null)).sort((a, b) => a - b);
   ctx.volaMedian = volas[Math.floor(volas.length / 2)] || 0;
   const ums = U.map(E => E.umsatz).sort((a, b) => a - b);
   ctx.umsatzMedian = ums[Math.floor(ums.length / 2)] || 0;
-  const vr = U.flatMap(E => Object.values(E.tagRet)).sort((a, b) => a - b);
+  const vr = U.flatMap(E => nurEnt(E, E.tagRet)).sort((a, b) => a - b);
   ctx.vortagTerz = [vr[Math.floor(vr.length / 3)] || 0, vr[Math.floor(vr.length * 2 / 3)] || 0];
   // Technik-Terzile aus einer Stichprobe
-  const techProbe = U.flatMap(E => Object.values(E.tagScore || {})).filter(v => typeof v === 'number');
+  const techProbe = U.flatMap(E => nurEnt(E, E.tagScore || {})).filter(v => typeof v === 'number');
   techProbe.sort((a, b) => a - b);
   ctx.technikTerz = [techProbe[Math.floor(techProbe.length / 3)] || 0, techProbe[Math.floor(techProbe.length * 2 / 3)] || 0];
 
@@ -291,25 +320,7 @@ function lauf(opts) {
     (log || console.log)('  ' + D.key.padEnd(22) + String(ev.length).padStart(6) + ' Signale  (' + aufrufe.toLocaleString('de-DE') + ' Aufrufe, ' + fehler + ' Fehler, ' + Math.round((Date.now() - tDet) / 1000) + ' s)');
   }
 
-  // Aggregation: Einzelsignal x Richtung x Horizont, dann x Bedingung
-  const zeilen = [];
-  const BEDINGUNGEN = ['regime', 'tageszeit', 'wochentag', 'vola', 'liquiditaet', 'termin', 'vortag', 'technik', 'kanal'];
-  for (const det of Object.keys(ereignisse)) {
-    const ev = ereignisse[det];
-    for (const dir of [1, -1]) for (const [, lab] of hor) {
-      const basis = ev.filter(e => e.dir === dir && e.fwd[lab] != null).map(e => ({ sym: e.sym, tag: e.tag, ex: e.fwd[lab], bed: e.bed }));
-      const st = statistik(basis);
-      if (st) zeilen.push(Object.assign({ det, dir: dir > 0 ? 'long' : 'short', hor: lab, bedingung: '-', wert: '-' }, st));
-      for (const b of BEDINGUNGEN) {
-        const werte = [...new Set(basis.map(e => e.bed[b]))].filter(w => w !== 'na');
-        for (const w of werte) {
-          const sub = basis.filter(e => e.bed[b] === w);
-          const s2 = statistik(sub);
-          if (s2 && s2.nTage >= 10) zeilen.push(Object.assign({ det, dir: dir > 0 ? 'long' : 'short', hor: lab, bedingung: b, wert: w }, s2));
-        }
-      }
-    }
-  }
+  const zeilen = aggregiere(ereignisse, hor);
 
   const out = { iv, phase, cutoff, universum: U.length, tage: { gesamt: alleTage.length, entdeckung: nEnt, bestaetigung: nBes }, tests: zeilen.length, zeilen,
     ereignisse: Object.fromEntries(Object.keys(ereignisse).map(k => [k, ereignisse[k].map(e => ({ sym: e.sym, t: e.t, tag: e.tag, dir: e.dir, fwd: e.fwd, bed: e.bed }))])),
@@ -320,7 +331,7 @@ function lauf(opts) {
   return out;
 }
 
-module.exports = { lauf, ladeUniversum, bereite, statistik, istSitzung, HORIZONTE, COOLDOWN, KOSTEN_PP };
+module.exports = { lauf, ladeUniversum, bereite, statistik, aggregiere, istSitzung, HORIZONTE, COOLDOWN, KOSTEN_PP };
 
 if (require.main === module) {
   const iv = process.argv[2], phase = process.argv[3] || 'entdeckung';

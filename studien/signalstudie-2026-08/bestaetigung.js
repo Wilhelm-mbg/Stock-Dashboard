@@ -29,15 +29,19 @@ function bestaetige(iv, detektoren) {
   console.log('=== BESTAETIGUNG ' + iv + ': ' + scan.length + ' Scan-Kandidaten + ' + ref.length + ' Referenz, Detektoren: ' + dets.map(d => d.key).join(', ') + ' ===');
 
   // Bestaetigungslauf: dieselbe Maschine, nur die anderen Tage
-  const L = M.lauf({ iv, phase: 'bestaetigung', detektoren: dets, log: () => {} });
+  // Vorhandenen Bestaetigungslauf wiederverwenden (die Detektion ist deterministisch);
+  // NEU=1 erzwingt die Neuberechnung.
+  const fL = path.join(OUT, 'lauf-' + iv + '-bestaetigung.json');
+  const L = (fs.existsSync(fL) && !process.env.NEU) ? JSON.parse(fs.readFileSync(fL, 'utf8'))
+    : M.lauf({ iv, phase: 'bestaetigung', detektoren: dets, log: () => {} });
   // Paare auf der Bestaetigungsmenge nachrechnen (ohne Screening - die Auswahl ist fix)
   let paareB = [];
   if (K.kandidaten.paare.length) {
     const P = require('./paare.js');
-    paareB = P.rechnePaare(iv, 'bestaetigung') || [];
+    paareB = P.rechnePaare(iv, 'bestaetigung', true) || [];
   }
   const finde = z => {
-    if (z.partner) return paareB.find(p => p.det === z.det && p.partner === z.partner && p.dir === z.dir && p.hor === z.hor);
+    if (z.partner) return paareB.find(p => ((p.det === z.det && p.partner === z.partner) || (p.det === z.partner && p.partner === z.det)) && p.dir === z.dir && p.hor === z.hor);
     return L.zeilen.find(y => y.det === z.det && y.dir === z.dir && y.hor === z.hor && y.bedingung === z.bedingung && y.wert === z.wert);
   };
   const kScan = scan.length, schwelle = kScan ? zSchwelle(kScan) : 2;

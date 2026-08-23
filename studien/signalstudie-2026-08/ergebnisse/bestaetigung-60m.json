@@ -1,0 +1,399 @@
+{
+ "iv": "60m",
+ "cutoff": "2025-09-03",
+ "tage": {
+  "gesamt": 725,
+  "entdeckung": 483,
+  "bestaetigung": 242
+ },
+ "kandidatenScan": 12,
+ "schwelle": 2.86,
+ "zeilen": [
+  {
+   "kandidat": "wave|short|1T",
+   "referenz": false,
+   "entdeckung": {
+    "bruttoPp": 0.749,
+    "tTag": 1.175
+   },
+   "bestaetigung": {
+    "det": "wave",
+    "dir": "short",
+    "hor": "1T",
+    "bedingung": "-",
+    "wert": "-",
+    "n": 240,
+    "nSym": 97,
+    "nTage": 114,
+    "bruttoPp": 0.147,
+    "nettoPp": 0.047,
+    "tTag": 0.522,
+    "mdeTagPp": 0.548,
+    "symPos": 0.561
+   },
+   "urteil": "unentschieden (Netto-Frage unter MDE 0.548)"
+  },
+  {
+   "kandidat": "rsi2|short|1T",
+   "referenz": false,
+   "entdeckung": {
+    "bruttoPp": 0.016,
+    "tTag": 1.099
+   },
+   "bestaetigung": {
+    "det": "rsi2",
+    "dir": "short",
+    "hor": "1T",
+    "bedingung": "-",
+    "wert": "-",
+    "n": 8860,
+    "nSym": 114,
+    "nTage": 241,
+    "bruttoPp": 0.032,
+    "nettoPp": -0.068,
+    "tTag": 1.213,
+    "mdeTagPp": 0.162,
+    "symPos": 0.491
+   },
+   "urteil": "unentschieden (Netto-Frage unter MDE 0.162)"
+  },
+  {
+   "kandidat": "vwap-abstand|short|1T",
+   "referenz": false,
+   "entdeckung": {
+    "bruttoPp": 0.41,
+    "tTag": 0.684
+   },
+   "bestaetigung": {
+    "det": "vwap-abstand",
+    "dir": "short",
+    "hor": "1T",
+    "bedingung": "-",
+    "wert": "-",
+    "n": 283,
+    "nSym": 107,
+    "nTage": 119,
+    "bruttoPp": -0.475,
+    "nettoPp": -0.575,
+    "tTag": -0.426,
+    "mdeTagPp": 0.554,
+    "symPos": 0.412
+   },
+   "urteil": "nicht bestaetigt"
+  },
+  {
+   "kandidat": "vwap-abstand|long|3T",
+   "referenz": false,
+   "entdeckung": {
+    "bruttoPp": 0.532,
+    "tTag": 0.621
+   },
+   "bestaetigung": {
+    "det": "vwap-abstand",
+    "dir": "long",
+    "hor": "3T",
+    "bedingung": "-",
+    "wert": "-",
+    "n": 325,
+    "nSym": 109,
+    "nTage": 118,
+    "bruttoPp": 0.475,
+    "nettoPp": 0.375,
+    "tTag": -0.168,
+    "mdeTagPp": 0.937,
+    "symPos": 0.621
+   },
+   "urteil": "unentschieden (Netto-Frage unter MDE 0.937)"
+  },
+  {
+   "kandidat": "rsi2|long|1T",
+   "referenz": false,
+   "entdeckung": {
+    "bruttoPp": -0.014,
+    "tTag": 0.611
+   },
+   "bestaetigung": {
+    "det": "rsi2",
+    "dir": "long",
+    "hor": "1T",
+    "bedingung": "-",
+    "wert": "-",
+    "n": 9730,
+    "nSym": 114,
+    "nTage": 241,
+    "bruttoPp": -0.019,
+    "nettoPp": -0.119,
+    "tTag": 0.124,
+    "mdeTagPp": 0.132,
+    "symPos": 0.421
+   },
+   "urteil": "nicht bestaetigt"
+  },
+  {
+   "kandidat": "vwap-abstand|short|1T|liquiditaet=duenn",
+   "referenz": false,
+   "entdeckung": {
+    "bruttoPp": 0.705,
+    "tTag": 2.4
+   },
+   "bestaetigung": {
+    "det": "vwap-abstand",
+    "dir": "short",
+    "hor": "1T",
+    "bedingung": "liquiditaet",
+    "wert": "duenn",
+    "n": 124,
+    "nSym": 53,
+    "nTage": 72,
+    "bruttoPp": -0.141,
+    "nettoPp": -0.241,
+    "tTag": 0.12,
+    "mdeTagPp": 0.761,
+    "symPos": 0.476
+   },
+   "urteil": "nicht bestaetigt"
+  },
+  {
+   "kandidat": "squeeze|short|5T|technik=mitte",
+   "referenz": false,
+   "entdeckung": {
+    "bruttoPp": 0.543,
+    "tTag": 2.159
+   },
+   "bestaetigung": {
+    "det": "squeeze",
+    "dir": "short",
+    "hor": "5T",
+    "bedingung": "technik",
+    "wert": "mitte",
+    "n": 1191,
+    "nSym": 114,
+    "nTage": 225,
+    "bruttoPp": 0.295,
+    "nettoPp": 0.195,
+    "tTag": 0.984,
+    "mdeTagPp": 0.441,
+    "symPos": 0.545
+   },
+   "urteil": "unentschieden (Netto-Frage unter MDE 0.441)"
+  },
+  {
+   "kandidat": "rsi2|short|5T|technik=mitte",
+   "referenz": false,
+   "entdeckung": {
+    "bruttoPp": 0.33,
+    "tTag": 2.083
+   },
+   "bestaetigung": {
+    "det": "rsi2",
+    "dir": "short",
+    "hor": "5T",
+    "bedingung": "technik",
+    "wert": "mitte",
+    "n": 2572,
+    "nSym": 114,
+    "nTage": 237,
+    "bruttoPp": 0.335,
+    "nettoPp": 0.235,
+    "tTag": 2.66,
+    "mdeTagPp": 0.356,
+    "symPos": 0.593
+   },
+   "urteil": "unentschieden (Netto-Frage unter MDE 0.356)"
+  },
+  {
+   "kandidat": "signalCross|short|5T|technik=mitte",
+   "referenz": false,
+   "entdeckung": {
+    "bruttoPp": 0.345,
+    "tTag": 2.055
+   },
+   "bestaetigung": {
+    "det": "signalCross",
+    "dir": "short",
+    "hor": "5T",
+    "bedingung": "technik",
+    "wert": "mitte",
+    "n": 1720,
+    "nSym": 114,
+    "nTage": 236,
+    "bruttoPp": 0.335,
+    "nettoPp": 0.235,
+    "tTag": 0.814,
+    "mdeTagPp": 0.408,
+    "symPos": 0.584
+   },
+   "urteil": "unentschieden (Netto-Frage unter MDE 0.408)"
+  },
+  {
+   "kandidat": "rsi2|short|1T|tageszeit=schluss",
+   "referenz": false,
+   "entdeckung": {
+    "bruttoPp": 0.116,
+    "tTag": 2.053
+   },
+   "bestaetigung": {
+    "det": "rsi2",
+    "dir": "short",
+    "hor": "1T",
+    "bedingung": "tageszeit",
+    "wert": "schluss",
+    "n": 1134,
+    "nSym": 114,
+    "nTage": 220,
+    "bruttoPp": 0.165,
+    "nettoPp": 0.065,
+    "tTag": 1.585,
+    "mdeTagPp": 0.241,
+    "symPos": 0.513
+   },
+   "urteil": "unentschieden (Netto-Frage unter MDE 0.241)"
+  },
+  {
+   "kandidat": "rsi2|short|1T|+rsi2seit",
+   "referenz": false,
+   "entdeckung": {
+    "bruttoPp": 0.193,
+    "tTag": 0.475
+   },
+   "bestaetigung": {
+    "det": "rsi2",
+    "partner": "rsi2seit",
+    "dir": "short",
+    "hor": "1T",
+    "bedingung": "-",
+    "wert": "-",
+    "n": 500,
+    "nSym": 110,
+    "nTage": 193,
+    "bruttoPp": -0.176,
+    "nettoPp": -0.276,
+    "tTag": -0.399,
+    "mdeTagPp": 0.434,
+    "symPos": 0.512
+   },
+   "urteil": "nicht bestaetigt"
+  },
+  {
+   "kandidat": "rsi2|long|1T|+rsi2seit",
+   "referenz": false,
+   "entdeckung": {
+    "bruttoPp": 0.13,
+    "tTag": 0.462
+   },
+   "bestaetigung": {
+    "det": "rsi2",
+    "partner": "rsi2seit",
+    "dir": "long",
+    "hor": "1T",
+    "bedingung": "-",
+    "wert": "-",
+    "n": 434,
+    "nSym": 111,
+    "nTage": 181,
+    "bruttoPp": 0.272,
+    "nettoPp": 0.172,
+    "tTag": 0.683,
+    "mdeTagPp": 0.415,
+    "symPos": 0.523
+   },
+   "urteil": "unentschieden (Netto-Frage unter MDE 0.415)"
+  },
+  {
+   "kandidat": "rsi2seit|long|1T",
+   "referenz": true,
+   "entdeckung": {
+    "bruttoPp": 0.114,
+    "tTag": 0.889
+   },
+   "bestaetigung": {
+    "det": "rsi2seit",
+    "dir": "long",
+    "hor": "1T",
+    "bedingung": "-",
+    "wert": "-",
+    "n": 945,
+    "nSym": 114,
+    "nTage": 228,
+    "bruttoPp": 0.107,
+    "nettoPp": 0.007,
+    "tTag": 0.721,
+    "mdeTagPp": 0.316,
+    "symPos": 0.518
+   },
+   "urteil": "unentschieden (Netto-Frage unter MDE 0.316)"
+  },
+  {
+   "kandidat": "momentum|long|5T",
+   "referenz": true,
+   "entdeckung": {
+    "bruttoPp": 0.309,
+    "tTag": 0.811
+   },
+   "bestaetigung": {
+    "det": "momentum",
+    "dir": "long",
+    "hor": "5T",
+    "bedingung": "-",
+    "wert": "-",
+    "n": 2607,
+    "nSym": 37,
+    "nTage": 237,
+    "bruttoPp": -0.111,
+    "nettoPp": -0.211,
+    "tTag": -0.282,
+    "mdeTagPp": 0.786,
+    "symPos": 0.361
+   },
+   "urteil": "nicht bestaetigt"
+  },
+  {
+   "kandidat": "drift|long|1T",
+   "referenz": true,
+   "entdeckung": {
+    "bruttoPp": -0.051,
+    "tTag": 0.217
+   },
+   "bestaetigung": {
+    "det": "drift",
+    "dir": "long",
+    "hor": "1T",
+    "bedingung": "-",
+    "wert": "-",
+    "n": 8,
+    "nSym": 8,
+    "nTage": 8,
+    "bruttoPp": -0.36,
+    "nettoPp": -0.46,
+    "tTag": -0.263,
+    "mdeTagPp": 2.735,
+    "symPos": null
+   },
+   "urteil": "nicht bestaetigt"
+  },
+  {
+   "kandidat": "kapitulation|long|5T",
+   "referenz": true,
+   "entdeckung": {
+    "bruttoPp": -0.438,
+    "tTag": -0.014
+   },
+   "bestaetigung": {
+    "det": "kapitulation",
+    "dir": "long",
+    "hor": "5T",
+    "bedingung": "-",
+    "wert": "-",
+    "n": 174,
+    "nSym": 83,
+    "nTage": 90,
+    "bruttoPp": -0.218,
+    "nettoPp": -0.318,
+    "tTag": -0.473,
+    "mdeTagPp": 1.16,
+    "symPos": 0.385
+   },
+   "urteil": "nicht bestaetigt"
+  }
+ ]
+}
