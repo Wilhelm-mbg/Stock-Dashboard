@@ -1,19 +1,22 @@
 {
   "name": "markt-dashboard",
   "productName": "Markt-Dashboard",
-  "version": "8.24.2",
+  "version": "8.24.3",
   "description": "Aktien-Dashboard: Big Tech, Chip-Sektor, MarktÃ¼berblick & News â€“ aktualisiert sich selbst",
   "main": "main.js",
   "author": "Wilhelm",
   "license": "MIT",
   "scripts": {
     "start": "electron .",
-    "test": "node test-channel.js && node test-v6.js",
-    "dist": "electron-builder --win portable"
+    "test": "eslint . && node test-channel.js && node test-v6.js",
+    "dist": "electron-builder --win portable",
+    "lint": "eslint ."
   },
   "devDependencies": {
     "electron": "^37.2.0",
-    "electron-builder": "^26.15.3"
+    "electron-builder": "^26.15.3",
+    "eslint": "^9.39.0",
+    "globals": "^15.15.0"
   },
   "build": {
     "appId": "de.wilhelm.marktdashboard",
@@ -24,7 +27,8 @@
       "index.html",
       "icon.png",
       "icon.ico",
-      "telemetrie.json"
+      "telemetrie.json",
+      "!eslint.config.mjs"
     ],
     "win": {
       "icon": "icon.ico",

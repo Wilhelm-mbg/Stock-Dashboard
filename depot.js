@@ -1180,6 +1180,10 @@
    *  ein historisches Signal die Bedingungen JENER Kerze nachrechnen kann, ohne die Reihe
    *  neu zu laden. Reine Anzeige - hier wird nichts gehandelt und nichts gespeichert. */
   var stcState = null;
+  /* Laufsperre gegen den Doppelklick. Die Zeile fehlte zwischenzeitlich; unter
+   * 'use strict' warf runStrategieChart() dadurch bei JEDEM Klick auf "Chart laden"
+   * eine ReferenceError, und der Chartbereich blieb leer. */
+  var stcRunning = false;
   var STC_IV = { '60m': { min: 60, txt: '60-Minuten-Kerzen' }, '15m': { min: 15, txt: '15-Minuten-Kerzen' }, '5m': { min: 5, txt: '5-Minuten-Kerzen' } };
   async function runStrategieChart() {
     if (stcRunning) return;
@@ -2308,7 +2312,8 @@
       var ts = r.timestamp || [];
       var closes = r.indicators.quote[0].close || [];
       var series = [];
-      for (var i = 0; i < ts.length; i++) if (closes[i] != null) series.push([ts[i] * 1000, closes[i]]);
+      // '!= null' laesst 0, negative Werte und NaN durch - siehe kursOk()
+      for (var i = 0; i < ts.length; i++) if (kursOk(closes[i])) series.push([ts[i] * 1000, closes[i]]);
       if (series.length > 50) TAGES_CACHE[sym] = series.slice(-520);
       if (series.length > 50) {
         await window.api.storeSet(key, { fetchedAt: now, range: range, series: series });
@@ -3031,6 +3036,11 @@
     return { exitMode: 'confirmed', sl: c.sl, tp: c.tp, trail: 0, maxHoldMin: 0, cooldownMin: c.cooldownMin, maxPerDay: c.maxPerDay, scanMs: 5 * 60000 };
   }
 
+  /** Ist das ueberhaupt ein Kurs? Endlich und echt groesser als null - alles andere
+   *  (null, undefined, 0, negativ, NaN, Zeichenkette) hat in einer Kursreihe nichts
+   *  verloren und darf erst recht keinen Stop ausloesen. */
+  function kursOk(v) { return typeof v === 'number' && isFinite(v) && v > 0; }
+
   async function fetchIntraday(sym, interval, btMode) {
     var fd = await fetchIntradayYahoo(sym, interval, btMode);
     if (fd) return fd;
@@ -3069,10 +3079,17 @@
       var series = [];
       var dollarSum = 0, days = {};
       for (var i = 0; i < ts.length; i++) {
-        if (closes[i] == null) continue;
+        /* '== null' allein reicht NICHT: eine 0, eine negative Zahl oder NaN kommt
+         * durch (0 == null ist falsch) und wird unmittelbar danach zu Stop, Ziel und
+         * Buchung. Ein einziger kaputter Kurs der inoffiziellen Schnittstelle konnte
+         * so offene Positionen zum Mindestwert liquidieren. Ein verworfener Balken
+         * zaehlt wie ein fehlender - barsFrisch greift dann von selbst. */
+        if (!kursOk(closes[i])) continue;
+        var hi = kursOk(his[i]) ? his[i] : closes[i];
+        var lo = kursOk(los[i]) ? los[i] : closes[i];
+        if (lo > hi) { var tausch = hi; hi = lo; lo = tausch; }   // vertauscht geliefert
         // Hoch/Tief mitführen: Kanalkanten werden daran ausgerichtet, nicht nur an Schlusskursen
-        series.push([ts[i] * 1000, closes[i], vols[i] || 0,
-          his[i] == null ? closes[i] : his[i], los[i] == null ? closes[i] : los[i]]);
+        series.push([ts[i] * 1000, closes[i], vols[i] || 0, hi, lo]);
         if (vols[i]) { dollarSum += vols[i] * closes[i]; days[new Date(ts[i] * 1000).toISOString().slice(0, 10)] = 1; }
       }
       var nDays = Object.keys(days).length || 1;
@@ -3094,7 +3111,14 @@
   async function spyTrendAuf() {
     if (Date.now() - SPY_REGIME.t < 30 * 60000) return SPY_REGIME.auf;
     try {
-      var fdS = await fetchIntraday('SPY', '60m', false);
+      /* Tiefe Reihe holen: Der Anker braucht mehr als 220 Stundenkerzen, das Live-Fenster
+       * (INTERVAL_CFG 60m range=1mo) liefert aber nur rund 150 - die Bedingung war nie
+       * erfuellbar und die Regime-Zuteilung damit dauerhaft wirkungslos, ohne dass es
+       * jemand sah. btMode waehlt btRange=730d, schaltet aber zugleich den
+       * Capital.com-Ersatzweg ab; deshalb bei Fehlschlag noch einmal ueber den
+       * normalen Weg, statt den Ersatz zu verlieren. */
+      var fdS = await fetchIntraday('SPY', '60m', true);
+      if (!fdS || !fdS.series || fdS.series.length <= 220) fdS = await fetchIntraday('SPY', '60m', false);
       if (fdS && fdS.series && fdS.series.length > 220) {
         var bS = Q.fertigeBars(fdS.series, 60, Date.now());
         var cS = bS.map(function (b) { return b[1]; });
@@ -4101,8 +4125,14 @@
     if (cb) {
       var mv = D.mfVerlauf || [];
       var lp = mv.length ? mv[mv.length - 1] : null;
-      var mTxt = (!D.momentumAn || !lp || lp.momentum == null) ? '–' : pz1((lp.momentum / 10000 - 1) * 100);
-      var dTxt = (!D.driftAn || !lp || lp.drift == null) ? '–' : pz1((lp.drift / 10000 - 1) * 100);
+      /* Bezugswert aus dem Buch, nicht aus einer festen Zahl: hier stand 10000, waehrend
+       * die Buecher mit 100000 laufen (mfdepot.js/START_KAPITAL) - ein unberuehrtes Buch
+       * meldete dadurch +900,0 %. mfVerlauf schreibt startM/startD seit 8.24.2 mit; fuer
+       * aeltere Punkte bleibt das Buch selbst die Quelle. */
+      var stM = (lp && lp.startM) || (D.mfBuch && D.mfBuch.start) || null;
+      var stD = (lp && lp.startD) || (D.driftBuch && D.driftBuch.start) || null;
+      var mTxt = (!D.momentumAn || !lp || lp.momentum == null || !stM) ? '–' : pz1((lp.momentum / stM - 1) * 100);
+      var dTxt = (!D.driftAn || !lp || lp.drift == null || !stD) ? '–' : pz1((lp.drift / stD - 1) * 100);
       cb.textContent = 'M ' + mTxt + ' · D ' + dTxt;
     }
     var cs = document.getElementById('ckScan');
@@ -7977,11 +8007,15 @@
     /* Allgemein statt auf #depotPills festgenagelt: Seit Stufe 4 gibt es eine zweite
      * Pillenleiste (Werkzeuge). Der Umschalter arbeitet jetzt in dem Reiter, in dem die
      * angeklickte Pille steht - so kostet jede weitere Leiste keinen neuen Code. */
-    var pills = document.querySelectorAll('.pills button');
+    /* Nur Pillen MIT data-sub sind Navigation. Ohne diese Einschraenkung fing der
+     * Umschalter auch die sechs Protokoll-Filter, den CSV-Knopf und die beiden
+     * Setup-Pillen ab: er blendete alle .sub-Bereiche aus, fand dann kein Ziel und
+     * schaltete nichts zurueck - der Reiter blieb leer. */
+    var pills = document.querySelectorAll('.pills button[data-sub]');
     pills.forEach(function (b) {
       b.addEventListener('click', function () {
         var reiter = b.closest('.tab');
-        var meine = reiter ? reiter.querySelectorAll('.pills button') : [b];
+        var meine = reiter ? reiter.querySelectorAll('.pills button[data-sub]') : [b];
         meine.forEach(function (x) { x.classList.remove('active'); });
         if (reiter) reiter.querySelectorAll('.sub').forEach(function (s) { s.classList.remove('active'); });
         b.classList.add('active');
@@ -8690,5 +8724,19 @@
     if (e.detail === 'depot') { render(); try { syncStrategyUI(); } catch (e2) { /* UI-Sync optional */ } }
   });
 
-  init();
+  /* init() verkabelt nebenbei die Unter-Navigation ALLER Reiter. Wirft sie, blieb die
+   * halbe App vorher stumm bedienbar-aussehend, aber tot - und niemand erfuhr davon.
+   * Jetzt geht der Fehler ins Warnband und in den Fehlermitschnitt. */
+  init().catch(function (e) {
+    var grund = (e && e.message) ? e.message : String(e);
+    try {
+      warnbandSetzen('start', 'Das Depot konnte nicht vollständig starten (' + U.esc(grund) +
+        '). Teile der Oberfläche reagieren nicht — ein Neustart der App hilft meist.');
+    } catch (e2) { /* Warnband selbst nicht erreichbar */ }
+    /* Der globale unhandledrejection-Zuhoerer greift hier nicht mehr, weil wir den
+     * Fehler gerade abgefangen haben - also selbst in den Mitschnitt legen. */
+    try { if (window.Bugs) window.Bugs.merke('start', 'init(): ' + grund, 'depot.js', null, e && e.stack); }
+    catch (e3) { /* Mitschnitt optional */ }
+    if (window.console) console.error('depot init', e);
+  });
 })();

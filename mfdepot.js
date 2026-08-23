@@ -146,7 +146,13 @@
       if (!d.mfVerlauf) d.mfVerlauf = [];
       var heute10 = new Date(now).toISOString().slice(0, 10);
       if (!d.mfVerlauf.length || new Date(d.mfVerlauf[d.mfVerlauf.length - 1].t).toISOString().slice(0, 10) !== heute10) {
-        d.mfVerlauf.push({ t: now, momentum: bwM.wert, drift: bwD ? bwD.wert : null, spy: spy });
+        /* Startkapital MITSCHREIBEN, nicht spaeter erraten: Das Cockpit rechnete den
+         * Prozentstand frueher gegen eine fest verdrahtete 10000 und zeigte fuer ein
+         * unberuehrtes Buch +900 %. Steht der Bezugswert im Punkt selbst, bleibt auch
+         * ein alter Verlauf nach einer spaeteren Kapitalaenderung richtig lesbar. */
+        d.mfVerlauf.push({ t: now, momentum: bwM.wert, drift: bwD ? bwD.wert : null, spy: spy,
+          startM: d.mfBuch ? d.mfBuch.start : START_KAPITAL,
+          startD: d.driftBuch ? d.driftBuch.start : null });
         if (d.mfVerlauf.length > 750) d.mfVerlauf = d.mfVerlauf.slice(-750);
         speichern();
       }

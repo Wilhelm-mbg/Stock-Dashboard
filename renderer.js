@@ -247,7 +247,10 @@
       return '<div class="tile">' +
         '<div class="name">' + esc(ix.name) + '</div>' +
         '<div class="val">' + fmt(q.price, ix.dec) + (ix.unit ? '&thinsp;' + ix.unit : '') + '</div>' +
-        '<div class="sub">' + pctChip(q.pct) + '</div>' +
+        /* NICHT class="sub": das ist die Klasse der Reiter-Unterseiten, und deren
+           Regel .sub{display:none} hat die Tagesbewegung auf allen sechs Kacheln
+           unsichtbar gemacht - der Wert wurde gerechnet und dann verdeckt. */
+        '<div class="kachel-sub">' + pctChip(q.pct) + '</div>' +
         sparkSVG(q.series, 160, 34, ix.id) +
         '</div>';
     }).join('');

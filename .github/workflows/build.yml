@@ -1,10 +1,23 @@
-# Baut den Windows-Installer automatisch und haengt ihn an das Release.
-# Ausloeser: ein neuer Versions-Tag (z. B. v7.0.0) oder manuell unter "Actions".
-# Bewusst in Flow-Schreibweise (alles linksbuendig), damit der Web-Editor die Einrueckung nicht verschiebt.
+# Zwei Jobs mit verschiedenen Aufgaben.
+#
+# "pruefen" laeuft bei JEDEM Push und jedem Pull Request. Vorher lief die Testsuite nur
+# beim Setzen eines Versions-Tags - die beiden Regressionen vom 23.08.2026 (der geloeschte
+# stcRunning-Deklaration und der zu weite .pills-Umschalter) haetten also selbst mit
+# passenden Tests keine rote Lampe erzeugt. Jetzt ist der Push die Kontrolle.
+#
+# "installer" laeuft nur beim Tag und braucht ein gruenes "pruefen". Die Testsuite laeuft
+# dort ein ZWEITES Mal, diesmal NACH dem Build: Abschnitt 31 von test-v6.js vergleicht das
+# gebaute Paket mit der Quelle und kann das nur, wenn dist/ schon existiert. Vorher lief
+# sie davor und die Pruefung war im Release-Pfad wirkungslos.
+#
+# npm ci statt npm install: sonst darf die Lockdatei fortgeschrieben werden und derselbe
+# Tag ergibt an zwei Tagen zwei verschiedene Installer.
+#
 # WICHTIG: latest.yml muss mit hochgeladen werden - daraus liest die App (electron-updater), ob es etwas Neues gibt.
-# Das Release wird angelegt, falls es noch nicht existiert: "gh release upload" allein scheitert an einem
-# reinen Tag-Push, weil es ein vorhandenes Release voraussetzt. Ein Tag genuegt jetzt fuer alles.
-name: Installer bauen
-on: {push: {tags: ['v*']}, workflow_dispatch: {}}
+# Der Zweig "radar" ist ausgenommen: dort liegt nur spekulationen.json, kein package.json -
+# npm ci wuerde bei jedem stuendlichen Hochladen des Spekulations-Radars scheitern.
+# Bewusst in Flow-Schreibweise (alles linksbuendig), damit der Web-Editor die Einrueckung nicht verschiebt.
+name: Pruefen und Installer bauen
+on: {push: {branches: ['**', '!radar'], tags: ['v*']}, pull_request: {}, workflow_dispatch: {}}
 permissions: {contents: write}
-jobs: {build: {runs-on: windows-latest, steps: [{uses: actions/checkout@v4}, {uses: actions/setup-node@v4, with: {node-version: '20'}}, {name: Abhaengigkeiten, run: npm install}, {name: Tests, run: 'node test-channel.js && node test-v6.js'}, {name: Installer bauen, run: 'npx electron-builder --win nsis --x64 --publish never'}, {name: Release anlegen falls noetig, if: "startsWith(github.ref, 'refs/tags/')", env: {GH_TOKEN: '${{ github.token }}'}, run: 'gh release view ${{ github.ref_name }} 2>$null; if ($LASTEXITCODE -ne 0) { gh release create ${{ github.ref_name }} --title "Markt-Dashboard ${{ github.ref_name }}" --notes "Automatisch gebauter Installer." } else { Write-Host "Release existiert bereits" }'}, {name: An Release anhaengen, if: "startsWith(github.ref, 'refs/tags/')", env: {GH_TOKEN: '${{ github.token }}'}, run: 'gh release upload ${{ github.ref_name }} dist/Markt-Dashboard-Setup.exe dist/latest.yml --clobber'}, {name: Installer als Artefakt sichern, uses: actions/upload-artifact@v4, with: {name: Markt-Dashboard-Setup, path: dist/Markt-Dashboard-Setup.exe}}]}}
+jobs: {pruefen: {runs-on: ubuntu-latest, steps: [{uses: actions/checkout@v4}, {uses: actions/setup-node@v4, with: {node-version: '20', cache: npm}}, {name: Abhaengigkeiten, run: npm ci}, {name: Linter, run: npx eslint .}, {name: Tests, run: 'node test-channel.js && node test-v6.js'}]}, installer: {needs: pruefen, if: "startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'", runs-on: windows-latest, steps: [{uses: actions/checkout@v4}, {uses: actions/setup-node@v4, with: {node-version: '20', cache: npm}}, {name: Abhaengigkeiten, run: npm ci}, {name: Tag und package.json muessen dieselbe Version nennen, if: "startsWith(github.ref, 'refs/tags/')", run: '$tag = "${{ github.ref_name }}" -replace "^v", ""; $pkg = (Get-Content package.json | ConvertFrom-Json).version; if ($tag -ne $pkg) { Write-Error "Tag $tag und package.json $pkg stimmen nicht ueberein"; exit 1 } else { Write-Host "Version $pkg" }'}, {name: Installer bauen, run: 'npx electron-builder --win nsis --x64 --publish never'}, {name: Tests gegen das gebaute Paket, run: 'node test-channel.js && node test-v6.js'}, {name: Release anlegen falls noetig, if: "startsWith(github.ref, 'refs/tags/')", env: {GH_TOKEN: '${{ github.token }}'}, run: 'gh release view ${{ github.ref_name }} 2>$null; if ($LASTEXITCODE -ne 0) { gh release create ${{ github.ref_name }} --title "Markt-Dashboard ${{ github.ref_name }}" --notes "Automatisch gebauter Installer." } else { Write-Host "Release existiert bereits" }'}, {name: An Release anhaengen, if: "startsWith(github.ref, 'refs/tags/')", env: {GH_TOKEN: '${{ github.token }}'}, run: 'gh release upload ${{ github.ref_name }} dist/Markt-Dashboard-Setup.exe dist/latest.yml --clobber'}, {name: Installer als Artefakt sichern, uses: actions/upload-artifact@v4, with: {name: Markt-Dashboard-Setup, path: dist/Markt-Dashboard-Setup.exe}}]}}
