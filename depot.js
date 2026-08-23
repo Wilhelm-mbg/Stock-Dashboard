@@ -256,8 +256,14 @@
        * Gerechnet als Erwartung ueber ALLE zulaessigen Kerzen, nicht als eine
        * Zufallsziehung: eine einzelne Ziehung verdoppelt die Streuung. */
       var ktr = kontrollErtrag(bars, mp && mp.maxHoldMin, Q.barMinOf(bars, bars.length - 1));
+      /* MERKMALE (Felix' Issue #57): Vier vorher festgelegte Beschreibungen des Moments
+       * werden mitgeschrieben - Kanallage, Kanalrichtung, relatives Volumen, genutzte
+       * Tagesspanne. Sie entscheiden NICHTS; sie sorgen nur dafuer, dass die Frage
+       * "welche Signale waren gut und was hatten sie gemeinsam?" spaeter aus einer
+       * Aufzeichnung beantwortet werden kann statt aus einer nachtraeglichen Suche. */
+      var merk = Q.signalMerkmale ? Q.signalMerkmale(bars, bars.length - 1) : null;
       D.schatten.unshift({ id: 'sch' + now + '-' + sym, t: now, sym: sym, dir: dir, grund: grund, konfig: konfig,
-        ktrPct: ktr,
+        ktrPct: ktr, merk: merk,
         spot0: spot, ask: Math.round(ask * 10000) / 10000,
         w: { strike: Math.round(w.strike * 100) / 100, expiry: w.expiry, iv: Math.round(iv * 1000) / 1000, ratio: bvS },
         spx: Math.round(spx * 10000) / 10000, sl: slT, tp: mp && mp.tp != null ? mp.tp : null,
@@ -292,6 +298,32 @@
     }
     D.schattenKonfig = konfig;
     D.schattenStat = {};
+    /* Die Merkmals-Zaehlung haengt an denselben Ausstiegsregeln wie die Bilanz und
+     * wird deshalb gemeinsam mit ihr zurueckgesetzt - sonst mischt ein Topf zwei
+     * verschiedene Experimente und sieht dabei nur voller aus. */
+    D.merkStat = {};
+  }
+
+  /** Merkmale eines abgeschlossenen Signals in die Toepfe zaehlen.
+   *  Nur Signale mit Grund 'Einstieg': Das sind die, die alle Filter passiert haben -
+   *  also genau die "getaetigten Kaeufe", nach deren Mustern Felix in #57 fragt.
+   *  Verworfene Signale gehoeren nicht hinein, sie beantworten eine andere Frage. */
+  function merkZaehlen(sEintrag) {
+    if (!sEintrag || sEintrag.grund !== 'Einstieg' || !sEintrag.merk) return;
+    var ms = D.merkStat = D.merkStat || {};
+    var keys = ['kanal', 'trend', 'vol', 'adr'];
+    for (var m = 0; m < keys.length; m++) {
+      var wert = sEintrag.merk[keys[m]];
+      if (!wert) continue;                       // fehlendes Merkmal wird nicht geraten
+      var k = keys[m] + '|' + wert;
+      var t = ms[k] = ms[k] || { n: 0, sumPct: 0, ktrN: 0, ktrSum: 0 };
+      t.n++;
+      t.sumPct = Math.round((t.sumPct + sEintrag.pnlPct) * 100) / 100;
+      if (sEintrag.ktrPct != null) {
+        t.ktrN = (t.ktrN || 0) + 1;
+        t.ktrSum = Math.round(((t.ktrSum || 0) + sEintrag.ktrPct) * 100) / 100;
+      }
+    }
   }
 
   function schattenSchliessen(sEintrag, retPct, why, now) {
@@ -306,6 +338,7 @@
      * Experiment ins neue sickert. */
     var eigeneRegel = String(sEintrag.grund || '').indexOf('Regel: ') === 0;
     if (!eigeneRegel && sEintrag.konfig && D.schattenKonfig && sEintrag.konfig !== D.schattenKonfig) return;
+    merkZaehlen(sEintrag);
     var g2 = st[sEintrag.grund] = st[sEintrag.grund] || { n: 0, sumPct: 0, gerettet: 0, verhindert: 0, ktrN: 0, ktrSum: 0 };
     g2.n++; g2.sumPct = Math.round((g2.sumPct + sEintrag.pnlPct) * 100) / 100;
     /* Die Kontrolle wird getrennt gezaehlt, nicht verrechnet: Der Ueberschuss ist die
@@ -4595,6 +4628,55 @@
       '</div>' + rows + renderSchattenHtml();
   }
 
+  /** Merkmals-Aufzeichnung des Vorwärtstests (Felix' Issue #57).
+   *  Zeigt, was die abgeschlossenen Signale gemeinsam hatten – und sagt in derselben
+   *  Karte dazu, warum das noch kein Befund ist. Diese Zeile ist wichtiger als die
+   *  Tabelle: Wer zwölf Töpfe nebeneinander sieht, hält den besten für eine Kante.
+   *  Nichts hiervon greift in den Handel ein. Simulation, keine Anlageberatung. */
+  function renderMerkmaleHtml() {
+    if (!Q.merkmalsBilanz) return '';
+    var b = Q.merkmalsBilanz(D.merkStat || {});
+    var LBL = {
+      unten: 'unten', mitte: 'Mitte', oben: 'oben',
+      auf: 'aufwärts', seit: 'seitwärts', ab: 'abwärts',
+      niedrig: 'niedrig', normal: 'normal', hoch: 'hoch',
+      wenig: 'wenig (< 40 %)', mittel: 'mittel (40–80 %)', viel: 'viel (> 80 %)'
+    };
+    var h = '<div style="margin-top:12px; border-top:1px solid var(--line); padding-top:8px;">' +
+      '<div style="font-weight:700; margin-bottom:4px;">Merkmale der Signale – Aufzeichnung, kein Befund</div>' +
+      '<div style="color:var(--muted); font-size:11.5px; margin-bottom:6px;">' +
+      'Bei jedem Signal werden vier vorher festgelegte Merkmale mitgeschrieben (Lage im Trendkanal, ' +
+      'Kanalrichtung, relatives Volumen, genutzte Tagesspanne). Erst danach wird gezählt. ' +
+      'Andersherum – hinterher in den fertigen Trades nach Mustern suchen – findet man immer eines. ' +
+      '„Kontrolle“ ist derselbe Wert zur selben Tagesstunde an beliebigen anderen Tagen; nur der ' +
+      '<b>Überschuss</b> darüber wäre überhaupt eine Aussage. Simulation, keine Anlageberatung.</div>';
+    if (!b.gesamtN) {
+      return h + '<div style="color:var(--muted); font-size:12px;">Noch kein abgeschlossenes Signal mit Merkmalen. ' +
+        'Die Aufzeichnung beginnt mit dem nächsten Signal, das alle Filter passiert.</div></div>';
+    }
+    for (var f = 0; f < b.felder.length; f++) {
+      h += '<div style="font-size:12px; font-weight:600; margin-top:6px;">' + U.esc(b.felder[f].name) + '</div>';
+      for (var z = 0; z < b.felder[f].zeilen.length; z++) {
+        var r = b.felder[f].zeilen[z];
+        var rechts = r.n + ' Signale · Ø ' + U.signTxt(r.avg, ' %') +
+          (r.ktr == null ? '' : ' · Kontrolle ' + U.signTxt(r.ktr, ' %') +
+            ' · Überschuss <b class="' + (r.ueber >= 0 ? 'pos' : 'neg') + '">' + U.signTxt(r.ueber, ' %') + '</b>');
+        h += '<div class="patrow"><span>' + U.esc(LBL[r.wert] || r.wert) + '</span>' +
+          '<span style="color:var(--muted);">' + rechts + '</span><b></b></div>';
+        if (r.duenn) h += '<div class="urteil-zeile">unter ' + b.min + ' Signalen – die Zahl ist Rauschen, kein Hinweis</div>';
+      }
+    }
+    /* Die Zahl der Vergleiche gehört sichtbar unter die Tabelle: Sie ist der Grund,
+     * warum ein einzelner auffälliger Topf nichts beweist. */
+    h += '<div style="color:var(--muted); font-size:11.5px; margin-top:8px;">' +
+      b.toepfe + ' Vergleiche nebeneinander, ' + b.gesamtN + ' Merkmalseinträge aus den abgeschlossenen Signalen. ' +
+      'Bei so vielen Töpfen sticht auch bei reinem Zufall regelmäßig einer heraus – ein auffälliger Wert ist ' +
+      'deshalb ein <b>Kandidat für eine Messung</b>, nicht ihr Ergebnis. Gehandelt wird davon nichts: Erst eine ' +
+      'Studie mit Überschuss gegen die Symbol-Drift, t-Wert über die Symbole, Zeitsplit und Netto nach Kosten ' +
+      'macht aus einem Muster eine Regel.</div>';
+    return h + '</div>';
+  }
+
   /** Schattenbuch-Bilanz: Was wäre aus den verworfenen Trades geworden? */
   function renderSchattenHtml() {
     var st = D.schattenStat || {};
@@ -4648,6 +4730,8 @@
       }
       h += '</div>';
     }
+
+    h += renderMerkmaleHtml();
 
     if (!gr.length && !offen) return h;
     h += '<div style="margin-top:12px; border-top:1px solid var(--line); padding-top:8px;">' +

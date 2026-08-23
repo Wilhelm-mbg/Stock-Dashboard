@@ -3492,5 +3492,88 @@ console.log('\n45) Massive-Anbindung: Schluessel, Tempolimit, Aussengrenze');
      'Auch der Tagesdaten-Abruf schreibt nur in die eigene Ablage', tdSchreibt.join(' | '));
 })();
 
+
+console.log('MERKMALE der Signale (Felix, Issue #57): Aufzeichnung statt Nachsuche');
+(function () {
+  /* Kerzen bauen: [t, close, volumen, hoch, tief], 5-Minuten-Raster ueber mehrere Tage.
+     Ein steigender Verlauf mit ruhigem Volumen ist der Normalfall, an dem die
+     Auspraegungen ablesbar sein muessen. */
+  function baueBars(n, opt) {
+    opt = opt || {};
+    var b = [], t = Date.UTC(2026, 5, 1, 13, 30);
+    for (var i = 0; i < n; i++) {
+      var tag = Math.floor(i / 78);                       // 78 Fuenfminutenkerzen = ein Handelstag
+      var zeit = t + tag * 86400000 + (i % 78) * 300000;
+      var c = 100 + i * (opt.steig === undefined ? 0.05 : opt.steig);
+      var v = opt.vol ? opt.vol(i) : 1000;
+      b.push([zeit, c, v, c + 0.2, c - 0.2]);
+    }
+    return b;
+  }
+
+  var steigend = baueBars(400);
+  var m = Q.signalMerkmale(steigend, steigend.length - 1);
+  ok(m && typeof m === 'object', 'signalMerkmale liefert ein Objekt');
+  ok(m.trend === 'auf', 'sauber steigender Verlauf wird als Aufwaertskanal beschrieben (kanalUeber sagt auf/seit/ab)', m.trend);
+  ok(m.kanal === 'unten' || m.kanal === 'mitte' || m.kanal === 'oben', 'Kanallage ist eine der drei Auspraegungen', m.kanal);
+  ok(m.vol === 'normal', 'gleichmaessiges Volumen ist "normal"', m.vol);
+
+  /* Volumen-Ausschlag: die letzten fuenf Kerzen dreimal so schwer wie der Median davor. */
+  var laut = baueBars(400, { vol: function (i) { return i >= 395 ? 3000 : 1000; } });
+  ok(Q.signalMerkmale(laut, laut.length - 1).vol === 'hoch', 'dreifaches Volumen in den letzten Kerzen ist "hoch"');
+  var leise = baueBars(400, { vol: function (i) { return i >= 395 ? 300 : 1000; } });
+  ok(Q.signalMerkmale(leise, leise.length - 1).vol === 'niedrig', 'ein Drittel Volumen ist "niedrig"');
+
+  /* KEIN Blick nach vorn - die entscheidende Zusicherung. Werden hinter i weitere
+     Kerzen angehaengt, muss das Ergebnis AN i unveraendert bleiben. Ohne diese
+     Eigenschaft waere jede spaetere Auswertung wertlos. */
+  var kurz = baueBars(300);
+  var lang = baueBars(400);
+  var mK = Q.signalMerkmale(kurz, 299), mL = Q.signalMerkmale(lang, 299);
+  ok(JSON.stringify(mK) === JSON.stringify(mL),
+     'Merkmale an Kerze i aendern sich nicht, wenn spaetere Kerzen dazukommen (kein Blick nach vorn)',
+     JSON.stringify(mK) + ' vs ' + JSON.stringify(mL));
+
+  /* Zu wenig Daten darf null liefern, aber nie werfen. */
+  var winzig = baueBars(10);
+  var mW = Q.signalMerkmale(winzig, 9);
+  ok(mW.vol === null && mW.kanal === null, 'zu kurze Reihe: Merkmale bleiben leer statt geraten');
+  ok(JSON.stringify(Q.signalMerkmale(null, 0)) === JSON.stringify({ kanal: null, trend: null, vol: null, adr: null }),
+     'ohne Kerzen kommt ein leeres Merkmalsobjekt zurueck, keine Ausnahme');
+
+  /* --- Bilanz: Ueberschuss gegen die Kontrolle, duenne Toepfe markiert --- */
+  var bil = Q.merkmalsBilanz({
+    'vol|hoch': { n: 40, sumPct: 80, ktrN: 40, ktrSum: 40 },     // Oe +2,0 %, Kontrolle +1,0 %
+    'vol|niedrig': { n: 5, sumPct: -10, ktrN: 5, ktrSum: 0 }     // zu duenn fuer ein Urteil
+  });
+  var volFeld = bil.felder.filter(function (f) { return f.key === 'vol'; })[0];
+  ok(!!volFeld, 'die Bilanz gruppiert nach Merkmal');
+  var hoch = volFeld.zeilen.filter(function (z) { return z.wert === 'hoch'; })[0];
+  ok(hoch.avg === 2 && hoch.ktr === 1 && hoch.ueber === 1,
+     'Ueberschuss = Schnitt minus Kontrolle, beide bleiben sichtbar', hoch.avg + ' / ' + hoch.ktr + ' / ' + hoch.ueber);
+  ok(hoch.duenn === false, '40 Signale gelten als auswertbar');
+  var nied = volFeld.zeilen.filter(function (z) { return z.wert === 'niedrig'; })[0];
+  ok(nied.duenn === true, 'unter ' + Q.MERK_MIN + ' Signalen wird der Topf als zu duenn markiert');
+  ok(bil.toepfe === 2 && bil.gesamtN === 45, 'Zahl der Vergleiche und der Eintraege wird mitgefuehrt', bil.toepfe + ' / ' + bil.gesamtN);
+  ok(Q.merkmalsBilanz({}).gesamtN === 0, 'leere Zaehlung ergibt eine leere Bilanz');
+
+  /* --- Verdrahtung im Depot: Aufzeichnung ja, Entscheidung nein --- */
+  var dep = fs.readFileSync(__dirname + '/depot.js', 'utf8');
+  ok(/Q\.signalMerkmale\(bars, bars\.length - 1\)/.test(dep) && /merk: merk/.test(dep),
+     'jeder Schatten bekommt die Merkmale des Moments mitgeschrieben');
+  ok(/sEintrag\.grund !== 'Einstieg'/.test(dep),
+     'gezaehlt werden nur die Signale, die alle Filter passiert haben - das sind die "getaetigten Kaeufe"');
+  // Die Merkmale duerfen NIE ein Signal verhindern oder ausloesen. Waeren sie an einer
+  // Verzweigung beteiligt, waere aus der Aufzeichnung heimlich eine Strategie geworden.
+  ok(!/if\s*\([^)]*signalMerkmale/.test(dep) && !/merk\.(kanal|vol|adr|trend)\s*===/.test(dep),
+     'kein Merkmal steht in einer Handelsentscheidung - die Aufzeichnung greift nicht ein');
+  ok(/D\.schattenStat = \{\};\s*[\s\S]{0,400}?D\.merkStat = \{\};/.test(dep),
+     'aendern sich die Ausstiegsregeln, beginnt die Merkmals-Zaehlung mit der Bilanz gemeinsam neu');
+  ok(/Merkmale der Signale – Aufzeichnung, kein Befund/.test(dep),
+     'die Karte nennt sich selbst Aufzeichnung, nicht Befund');
+  ok(/Kandidat für eine Messung/.test(dep) && /Simulation, keine Anlageberatung/.test(dep),
+     'die Karte sagt dazu, dass ein auffaelliger Wert erst eine Studie braucht');
+})();
+
 console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
 process.exit(fails ? 1 : 0);

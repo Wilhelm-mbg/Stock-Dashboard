@@ -1966,6 +1966,141 @@
    * gehört nicht dazu - zwei Modi mit gleichen Ausstiegsregeln liefern vergleichbare
    * Schatten, und ein reiner Namenswechsel soll die Zählung nicht zurücksetzen.
    */
+  /* ================= Merkmale eines Signals (Felix' Wunsch, Issue #57) =================
+   * Felix will "hoffnungsvoll scheinenden Strategien mehr Chancen geben": erst handeln
+   * lassen, dann die getaetigten Trades ansehen und fragen, welche gut waren und ob es
+   * dazu Muster gibt. Der Wunsch ist berechtigt - aber genau so herum entsteht der
+   * klassische Denkfehler: Wer NACHTRAEGLICH in einer Liste abgeschlossener Trades nach
+   * Mustern sucht, findet immer eines. Bei vier Merkmalen mit je drei Auspraegungen sind
+   * das zwoelf Vergleiche; der beste davon sieht auch bei reinem Rauschen gut aus.
+   *
+   * Der ehrliche Weg ist derselbe Gedanke, nur in der richtigen Reihenfolge: die Merkmale
+   * VORHER festlegen und bei jedem Signal mitschreiben, statt sie hinterher zu suchen.
+   * Diese Funktion IST diese Festlegung. Sie ist bewusst klein und wird nicht erweitert,
+   * ohne dass die Zaehlung neu beginnt - sonst waere die Merkmalsliste selbst schon das
+   * Ergebnis einer Suche.
+   *
+   * Die Merkmale sind die, die Felix genannt hat (Trendkanal, Volumen, ADR):
+   *   kanal  - Lage im Trendkanal der letzten 120 Kerzen: unten / mitte / oben
+   *   trend  - Richtung dieses Kanals
+   *   vol    - Volumen der letzten 5 Kerzen gegen den Median der 60 davor
+   *   adr    - wie viel der ueblichen Tagesspanne heute schon gelaufen ist
+   * Alle lesen ausschliesslich Kerzen BIS i - kein Blick nach vorn.
+   * Rueckgabe: { kanal, trend, vol, adr } mit null, wo die Daten nicht reichen.
+   * Das ist eine Aufzeichnung, KEIN Signal und keine Kante. */
+  function signalMerkmale(bars, i) {
+    var raus = { kanal: null, trend: null, vol: null, adr: null };
+    try {
+      if (!bars || !bars.length) return raus;
+      if (i == null) i = bars.length - 1;
+      if (i < 0 || i >= bars.length) return raus;
+
+      /* 1) Lage im Trendkanal. Der Kanal ist als HANDELSbedingung gemessen und
+       *    widerlegt (Abschnittskanaele: -0,17 Pp, t=-4,1) - hier steht er deshalb
+       *    ausdruecklich nur als Beschreibung des Moments, nicht als Filter. */
+      var von = Math.max(0, i - 120);
+      if (i - von >= 15) {
+        var k = kanalUeber(bars, von, i);
+        if (k && k.pos != null) {
+          raus.kanal = k.pos <= 0.34 ? 'unten' : (k.pos >= 0.66 ? 'oben' : 'mitte');
+          raus.trend = k.trend || null;
+        }
+      }
+
+      /* 2) Relatives Volumen: Summe der letzten 5 Kerzen gegen den Median der 60
+       *    davor, auf 5-Kerzen-Basis vergleichbar gemacht. Median statt Mittelwert,
+       *    weil eine einzige Nachrichtenkerze den Mittelwert sonst allein bestimmt. */
+      if (i >= 64) {
+        var akt = 0, okAkt = true;
+        for (var a = i - 4; a <= i; a++) {
+          if (!(bars[a][2] > 0)) { okAkt = false; break; }
+          akt += bars[a][2];
+        }
+        var vor = [];
+        for (var b = i - 64; b <= i - 5; b++) if (bars[b][2] > 0) vor.push(bars[b][2]);
+        if (okAkt && vor.length >= 40) {
+          vor.sort(function (x, y) { return x - y; });
+          var med = vor[Math.floor(vor.length / 2)];
+          if (med > 0) {
+            var rel = (akt / 5) / med;
+            raus.vol = rel >= 1.5 ? 'hoch' : (rel >= 0.7 ? 'normal' : 'niedrig');
+          }
+        }
+      }
+
+      /* 3) ADR-Ausnutzung: heutige Spanne bis jetzt gegen die uebliche Tagesspanne.
+       *    Tagesgrenze ist der UTC-Tag - weder die US-Sitzung (13:30-20:00 UTC) noch
+       *    die europaeische laeuft ueber Mitternacht UTC, das reicht hier.
+       *    Hoch/Tief nur, wo die Quelle sie liefert; sonst der Schlusskurs. */
+      var hi = function (x) { return bars[x].length >= 5 && bars[x][3] != null ? bars[x][3] : bars[x][1]; };
+      var lo = function (x) { return bars[x].length >= 5 && bars[x][4] != null ? bars[x][4] : bars[x][1]; };
+      var tage = {}, reihe = [];
+      for (var c = Math.max(0, i - 3000); c <= i; c++) {
+        if (!(bars[c][1] > 0)) continue;
+        var tag = Math.floor(bars[c][0] / 86400000);
+        if (!tage[tag]) { tage[tag] = { h: hi(c), t: lo(c), m: bars[c][1] }; reihe.push(tag); }
+        else {
+          if (hi(c) > tage[tag].h) tage[tag].h = hi(c);
+          if (lo(c) < tage[tag].t) tage[tag].t = lo(c);
+        }
+      }
+      if (reihe.length >= 6) {
+        var heute = reihe[reihe.length - 1];
+        var frueher = [];
+        for (var d = 0; d < reihe.length - 1; d++) {
+          var td = tage[reihe[d]];
+          if (td.m > 0 && td.h > td.t) frueher.push((td.h - td.t) / td.m);
+        }
+        if (frueher.length >= 5) {
+          frueher.sort(function (x, y) { return x - y; });
+          var adrMed = frueher[Math.floor(frueher.length / 2)];
+          var th = tage[heute];
+          if (adrMed > 0 && th.m > 0) {
+            var genutzt = ((th.h - th.t) / th.m) / adrMed;
+            raus.adr = genutzt < 0.4 ? 'wenig' : (genutzt < 0.8 ? 'mittel' : 'viel');
+          }
+        }
+      }
+    } catch (e) { /* Merkmale sind Beiwerk - sie duerfen nie ein Signal verhindern */ }
+    return raus;
+  }
+
+  /** Merkmals-Bilanz zusammenfuehren: aus den gezaehlten Toepfen wird je Merkmal eine
+   *  Zeilenliste mit Ueberschuss gegen die Kontrolle. Rein rechnend, damit in Node
+   *  pruefbar. Toepfe unter MERK_MIN abgeschlossenen Signalen bekommen KEIN Urteil -
+   *  sie werden mit n ausgewiesen und ueber `duenn` als zu duenn markiert. */
+  var MERK_MIN = 20;
+  function merkmalsBilanz(stat) {
+    var felder = [
+      { key: 'kanal', name: 'Lage im Trendkanal', werte: ['unten', 'mitte', 'oben'] },
+      { key: 'trend', name: 'Kanalrichtung', werte: ['auf', 'seit', 'ab'] },
+      { key: 'vol', name: 'Volumen (relativ)', werte: ['niedrig', 'normal', 'hoch'] },
+      { key: 'adr', name: 'Tagesspanne genutzt', werte: ['wenig', 'mittel', 'viel'] }
+    ];
+    var raus = [], gesamtN = 0, toepfe = 0;
+    stat = stat || {};
+    for (var f = 0; f < felder.length; f++) {
+      var zeilen = [];
+      for (var w = 0; w < felder[f].werte.length; w++) {
+        var s = stat[felder[f].key + '|' + felder[f].werte[w]];
+        if (!s || !s.n) continue;
+        toepfe++;
+        gesamtN += s.n;
+        var avg = Math.round(s.sumPct / s.n * 100) / 100;
+        var ktr = s.ktrN ? Math.round(s.ktrSum / s.ktrN * 100) / 100 : null;
+        zeilen.push({
+          wert: felder[f].werte[w], n: s.n, avg: avg, ktr: ktr,
+          ueber: ktr == null ? null : Math.round((avg - ktr) * 100) / 100,
+          duenn: s.n < MERK_MIN
+        });
+      }
+      if (zeilen.length) raus.push({ key: felder[f].key, name: felder[f].name, zeilen: zeilen });
+    }
+    /* Die Zahl der Vergleiche gehoert ZU jedem Ergebnis. Ohne sie liest man den besten
+     * Topf als Fund, obwohl bei zwoelf Vergleichen einer davon fast immer heraussticht. */
+    return { felder: raus, toepfe: toepfe, gesamtN: gesamtN, min: MERK_MIN };
+  }
+
   function schattenKonfig(mp, cfg) {
     mp = mp || {}; cfg = cfg || {};
     var teile = [
@@ -2824,7 +2959,7 @@
     wendepunkte: wendepunkte, kanalUeber: kanalUeber, kanaele: kanaele, kanalSegmente: kanalSegmente, trendwechsel: trendwechsel,
     KANAL_MIN: KANAL_MIN, RECHENSTAND: RECHENSTAND, degapBarArray: degapBarArray,
     degapCloses: degapCloses, degapBars: degapBars,
-    computeStats: computeStats, bootstrapTrades: bootstrapTrades, bestOfN: bestOfN, gegenprobeRichtung: gegenprobeRichtung, kanalVerzug: kanalVerzug, monatsStatistik: monatsStatistik, schattenKonfig: schattenKonfig, scheinKennzahlen: scheinKennzahlen, scheinRisikostufe: scheinRisikostufe, scheinRaster: scheinRaster, altlastGrund: altlastGrund
+    computeStats: computeStats, bootstrapTrades: bootstrapTrades, bestOfN: bestOfN, gegenprobeRichtung: gegenprobeRichtung, kanalVerzug: kanalVerzug, monatsStatistik: monatsStatistik, schattenKonfig: schattenKonfig, signalMerkmale: signalMerkmale, merkmalsBilanz: merkmalsBilanz, MERK_MIN: MERK_MIN, scheinKennzahlen: scheinKennzahlen, scheinRisikostufe: scheinRisikostufe, scheinRaster: scheinRaster, altlastGrund: altlastGrund
   };
   if (typeof module !== 'undefined' && module.exports) module.exports = Quant;
   else root.Quant = Quant;
