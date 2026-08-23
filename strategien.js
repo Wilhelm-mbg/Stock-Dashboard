@@ -25,9 +25,10 @@
       horizont: 'Stunden bis wenige Tage',
       instrument: 'Aktie 1× (Voreinstellung) – mit Schein stirbt die Kante (−96 %)',
       was: 'Kauft im laufenden Handel den RSI(2)-Rücklauf im Seitwärtskanal. Zuschaltbar: der Kapitulations-Dip als zweites Standbein und die Regime-Zuteilung. Ausstieg über die Zeit, darunter nur ein Not-Stop – kein Gewinnziel, kein Trailing; die Position darf über Nacht laufen.',
-      stand: 'belegt, im Vorwärtstest',
-      farbe: 'up',
+      stand: 'gemessen – gegen Kontrolle nicht entscheidbar',
+      farbe: 'warn',
       beleg: [
+        'KONTROLLMESSUNG 23.08.2026 (Messmaschine, Protokoll im Reiter Messung): Gegen die Erwartung aller Kerzen desselben Werts zur selben Stunde bleibt auf den zurückgehaltenen Tagen ein Überschuss von +0,024 Pp bei einer Mindest-Effektgröße von 0,182 Pp – nicht entscheidbar. Je Signal gerechnet sind es −0,045 Pp. Rund 62 % des früher gemessenen Rohvorteils waren schlichtes Halten. Mit keinem Produkt netto positiv. Die Zahlen darunter sind die Messungen VOR dieser Kontrolle; sie bleiben als Verlauf stehen.',
         'UNBEDINGT trägt kein Einzelsignal: Trefferquoten 46–56 %, bester Vorsprung +0,09 Pp. BEDINGT sieht es anders aus — die Bedingungsstudie vom 21.08.2026 (162 Werte, Stundenkerzen, jedes Signal gekreuzt mit Kanalzustand, EMA100, Volumen) fand: RSI(2)-Dip NUR im Seitwärtskanal mit Volumen = +0,147 Pp auf 8 h, t = 4,1 über die Symbole, beide Zeithälften positiv, 99 von 162 Werten im Plus.',
         'Der Kanal gibt nicht die Richtung, sondern die ERLAUBNIS: Dasselbe Signal ist im Trend ein Münzwurf und im Seitwärtsband messbar. Genau das war die These hinter dem handgezeichneten AMD-Chart.',
         'Das Instrument entscheidet: Der Vorsprung liegt ÜBER der Basiswert-Hürde (0,10 %) und UNTER der Scheinhürde (0,21 %). Im Backtest: Basiswert PF 1,23 (+0,23 % je Trade, volatiles Drittel), Schein −96 %. Und er zahlt über Nacht aus — streng intraday −0,08 % je Trade, mit einer Nacht Haltezeit +0,23 %.',
@@ -60,9 +61,10 @@
       horizont: 'rund drei Monate je Umschichtung',
       instrument: 'Aktien, kein Hebel',
       was: 'Vergleicht alle Werte miteinander und hält das stärkste Zehntel. Keine Chartmuster, nur eine Rangfolge, die alle 63 Handelstage neu gebildet wird.',
-      stand: 'belegt',
-      farbe: 'up',
+      stand: 'gemessen – hält die volle Historie, nicht die zurückgehaltenen Jahre',
+      farbe: 'warn',
       beleg: [
+        'KONTROLLMESSUNG 23.08.2026: Der eingebaute Marktvergleich ist bereits die richtige Kontrolle (Erwartung einer Zufallsauswahl gleicher Größe, per 500-fach-Simulation bestätigt). Über die volle Historie +2,42 Pp je Umschichtung (t = 3,84) – aber ab 2005 allein +1,51 Pp bei Mindest-Effektgröße 1,86 (t = 1,62): nicht entscheidbar. Rund die Hälfte des Vorsprungs hängt an 30 von 189 Werten, deren Namen man erst 2026 kennt (Überlebensverzerrung). 64,8 % des Ertrags je Schritt sind schlichtes Halten.',
         'Parameter auf 1970–2004 gewählt, auf 2005–2026 ohne Anpassung geprüft: +20,3 % p. a. gegen +14,9 % des Marktdurchschnitts, Vorsprung +5,4 Pp.',
         'Schlug den Markt in 14 von 22 Jahren; 93 von 96 Parameterkombinationen schlugen ihn ebenfalls.',
         'Unangenehm: 52 % größter Rückschlag im geprüften Zeitraum 2005–2026 (Referenzlauf, gemessen 2008), in 8 von 22 Jahren schlechter als der Markt, und das Universum enthält nur Firmen, die es heute noch gibt.'
@@ -75,9 +77,10 @@
       horizont: '60 Handelstage je Position',
       instrument: 'Aktien, kein Hebel',
       was: 'Kauft nach einer Quartalsmeldung das oberste Fünftel der Überraschungen und verkauft das unterste – gleich viele, aus demselben Topf. Kein Chartsignal: Die Information kommt aus den Zahlen, nicht aus dem Kursverlauf.',
-      stand: 'belegt',
-      farbe: 'up',
+      stand: 'gemessen – Zeitzonen-Fehler gefunden, Neumessung offen',
+      farbe: 'warn',
       beleg: [
+        'KONTROLLMESSUNG 23.08.2026: drift.js behandelte 59,8 % aller Termine (Datum ohne Uhrzeit) als „vor Börsenschluss gemeldet" und verbuchte dadurch einen Meldesprung von 1,97 % am ersten Tag als Strategieertrag. Korrigiert fällt der Rohlauf von 14,07 auf 8,44 % p. a. Gegen eine zukunftsfreie Kontrolle bleiben über die volle Historie 12 Pp p. a. (t = 5,5); im zurückgehaltenen Zeitraum 5–7 Pp bei Mindest-Effektgröße 5,6–6,7 (t = 1,7–2,0): nicht entscheidbar. Die Zahlen darunter sind VOR der Zeitzonen-Korrektur.',
         '20.356 Ergebnistermine aus 197 Werten, 1993–2026. Marktneutral, Rang nur gegen bereits veröffentlichte Zahlen: ab 2015 +10,44 % p. a. bei t = 3,04, 67 % positive Monate, positiv in allen sieben Teilzeiträumen.',
         'Neben dem Momentum bleibt messbar etwas übrig: Korrelation der Monatserträge nur 0,41, Alpha +6,90 % p. a. (t = 2,20). Die Mischung liefert denselben Ertrag bei 10,2 statt 13,1 % Schwankung.',
         'Zufällige Zuordnung ergibt −1,74 % (t = −0,88) – der Aufbau selbst erzeugt nichts.',

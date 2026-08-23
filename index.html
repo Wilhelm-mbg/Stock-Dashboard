@@ -701,13 +701,13 @@
           Konstruktion unsichtbar. Gültig ist ein Kanal nur, wenn beide Linien mehrfach und über die Zeit verteilt
           getragen haben, der Kurs zwischen ihnen pendelt statt wegzulaufen, und das Band enger ist als bei reinem
           Zufall. Unterschieden werden <b>Aufwärtskanal, Abwärtskanal und Seitwärtskorridor</b>; ein Ausbruch setzt
-          den Kanal außer Kraft. Diese Erkennung ist das Erlaubnis-Tor beider belegten Einstiege.
+          den Kanal außer Kraft. Diese Erkennung ist das Erlaubnis-Tor beider gemessenen Einstiege.
         </div>
         </details>
         <details class="how archiv"><summary>Weiterhin wählbar, aber ohne gemessenen Vorsprung</summary>
         <div class="desc">
           Diese Einstiege bleiben in der Auslöser-Liste – die Nacht-Messung prüft sie weiter, und wer sie bewusst
-          fahren will, kann das. Einen belegten Vorsprung hat keiner von ihnen.<br><br>
+          fahren will, kann das. Einen bestätigten Vorsprung hat keiner von ihnen – und seit dem 23.08.2026 auch keiner der beiden Hauptmodi (siehe Reiter Messung).<br><br>
           <b>Ausbruch (mit der Bewegung):</b> Der Kurs verlässt eine Marke und läuft weiter. Auslöser wahlweise die
           <b>EMA-Kreuzung</b> (bestätigter Durchbruch durch die Leitlinie) oder die <b>Eröffnungs-Spanne</b> – die Spanne der
           ersten 30 Handelsminuten, gehandelt wird der erste Ausbruch daraus (höchstens 1 Trade je Richtung und Tag).
@@ -772,10 +772,10 @@
             <div class="params">
               <label title="Fix: immer gleicher Kapitaleinsatz. Risiko: Einsatz so bemessen, dass ein ausgelöster Stop immer ~X % vom Depot kostet">Positionsgröße<select id="idSizing"><option value="fix" selected>fix 3 %</option><option value="0.25">Risiko 0,25 %</option><option value="0.5">Risiko 0,5 %</option><option value="1">Risiko 1 %</option></select></label>
               <label title="automatisch = passt sich an Schwankungsbreite und Hebel an">Not-Stop-Loss<select id="idScalpSL"><option value="15">−15 %</option><option value="20" selected>−20 %</option><option value="30">−30 %</option><option value="auto">auto</option></select></label>
-              <label title="Das Bezugsverhältnis (BV) ist ein Kostenhebel: Emittenten stellen den Spread als festen Cent-Betrag. Ein BV-1,0-Schein kostet das Zehnfache je Stück, zahlt aber nur den doppelten Cent — also ein Fünftel des relativen Spreads bei gleichem Hebel. Auf den Basiswert umgerechnet (Spanne durch Hebel plus Zeitwert) kostet ein Umlauf über 8 Stunden: BV 1,0 / 60 T 0,07 Pp, BV 1,0 / 21 T 0,09 Pp, Moderat BV 0,1 0,26 Pp, Heiß 0,61 Pp. Die einzige belegte Intraday-Kante liefert 0,11 Pp — mit den unteren drei Profilen ist sie netto negativ (Signalstudie 23.08.2026).">Hebel-Profil<select id="idProfile"><option value="atm60_b" selected>Ruhig 60 T · BV 1,0 — Hürde 0,07 Pp</option><option value="atm21_b">Moderat · BV 1,0 — Hürde 0,09 Pp</option><option value="otm3_30b">Spekulativ 30 T · BV 1,0</option><option value="atm21">Moderat (BV 0,1) — Hürde 0,26 Pp</option><option value="otm3_14">Spekulativ (BV 0,1)</option><option value="otm5_10">Heiß (BV 0,1) — Hürde 0,61 Pp</option></select></label>
+              <label title="Das Bezugsverhältnis (BV) ist ein Kostenhebel: Emittenten stellen den Spread als festen Cent-Betrag. Ein BV-1,0-Schein kostet das Zehnfache je Stück, zahlt aber nur den doppelten Cent — also ein Fünftel des relativen Spreads bei gleichem Hebel. Auf den Basiswert umgerechnet (Spanne durch Hebel plus Zeitwert) kostet ein Umlauf über 8 Stunden: BV 1,0 / 60 T 0,07 Pp, BV 1,0 / 21 T 0,09 Pp, Moderat BV 0,1 0,26 Pp, Heiß 0,61 Pp. Die Intraday-Kante (RSI(2) im Seitwärtskanal) liefert gegen eine gepaarte Kontrolle je Signal rund −0,04 Pp (Messmaschine 23.08.2026) – mit keinem Profil netto positiv. Die Profile unterscheiden sich in der Hürde, nicht im Ergebnis.">Hebel-Profil<select id="idProfile"><option value="atm60_b" selected>Ruhig 60 T · BV 1,0 — Hürde 0,07 Pp</option><option value="atm21_b">Moderat · BV 1,0 — Hürde 0,09 Pp</option><option value="otm3_30b">Spekulativ 30 T · BV 1,0</option><option value="atm21">Moderat (BV 0,1) — Hürde 0,26 Pp</option><option value="otm3_14">Spekulativ (BV 0,1)</option><option value="otm5_10">Heiß (BV 0,1) — Hürde 0,61 Pp</option></select></label>
               <label title="Hebelschein: gehebelt, mit Zeitwertverfall und Spanne des Emittenten. Aktie 1×: ohne Hebel, linear, 0,05 % Spanne je Seite, Bruchstücke erlaubt – nötig für Strategien, deren Vorsprung unter der Schein-Kostenhürde liegt. Genau das gilt für RSI(2) im Seitwärtskanal: mit Schein war dieselbe Strategie im Backtest bei −96 %.">Instrument<select id="idInstrument"><option value="basis" selected>Aktie 1× (Basiswert)</option><option value="schein">Hebelschein</option></select></label>
               <label title="Begrenzt depotweit, welche Scheine gekauft werden dürfen – egal ob von Hand, vom Autopiloten oder von einer Empfehlung. Die Stufen (1 defensiv … 5 Lotterielos) kommen aus dem Schein-Finder und sind dort je Schein begründet. Stufe 5 = keine Grenze.">max. Risikostufe<select id="idMaxStufe"><option value="1">1 – defensiv</option><option value="2">2</option><option value="3">3 – moderat</option><option value="4">4</option><option value="5" selected>5 – keine Grenze</option></select></label>
-              <label title="BTC, ETH, SOL, XRP, BNB, ADA, DOGE, LTC rund um die Uhr handeln – immer als Basiswert (1×) mit Taker-Gebühr 10 Bp je Seite, nie als Schein. ACHTUNG: Es gibt bis heute kein belegtes Krypto-Signal – alle gemessenen Modi waren negativ. Handelbar heißt können, nicht sollen.">Krypto handeln<span class="switch"><input type="checkbox" id="idKryptoHandeln"><span class="knob"></span></span></label>
+              <label title="BTC, ETH, SOL, XRP, BNB, ADA, DOGE, LTC rund um die Uhr handeln – immer als Basiswert (1×) mit Taker-Gebühr 10 Bp je Seite, nie als Schein. ACHTUNG: Es gibt bis heute kein bestätigtes Krypto-Signal – alle gemessenen Modi waren negativ. Handelbar heißt können, nicht sollen.">Krypto handeln<span class="switch"><input type="checkbox" id="idKryptoHandeln"><span class="knob"></span></span></label>
               <label title="Capital.com und viele CFD-Broker berechnen keine Kommission — dort steckt alles im Spread. Bei einem Broker mit Ordergebühr den echten Betrag wählen.">Ordergebühr<select id="idFee"><option value="0" selected>0 (keine Kommission)</option><option value="1.5">1,50 $</option><option value="5">5 $</option></select></label>
             <div id="kostenHuerde" class="huerde"></div>
             </div>
@@ -805,7 +805,7 @@
               <label data-modes="waves,orb,pullback,donchian,squeeze,kanaltrend" title="Ausstieg, wenn der Schein X % unter sein Hoch fällt (Gewinn sichern)">Trailing-Stop<select id="idTrail"><option value="0">aus</option><option value="10">−10 %</option><option value="15" selected>−15 %</option><option value="25">−25 %</option></select></label>
             </div>
           </div>
-          <!-- Der Wellen-Screener stand frueher prominenter als jede belegte
+          <!-- Der Wellen-Screener stand frueher prominenter als jede gemessene
                Einstellung. Er rankt nach der Kennzahl des widerlegten Wellental-Modus
                und gehoert deshalb hierher, nicht nach oben. -->
           <div class="pgroup">
@@ -882,7 +882,7 @@
           Dazu kommen Schein-Spanne und Zeitwertverfall über Tage. <b>Empfehlung: aus lassen.</b> Wer sie bewusst
           einschaltet, handelt gegen die Messung – das KI-Veto bremst dann wenigstens die schlechtesten Einstiege.
           <br><br>Die drei Quellen gehen fest gewichtet in den Gesamtscore ein (News 15 % · Technik 55 % ·
-          Elliott 30 %). Regler dafür gibt es bewusst nicht mehr: Keine der drei hat einen belegten Vorsprung,
+          Elliott 30 %). Regler dafür gibt es bewusst nicht mehr: Keine der drei hat einen bestätigten Vorsprung,
           der Technik-Score ist sogar gegenläufig – an solchen Zahlen zu drehen erzeugt nur den Eindruck von Kontrolle.
         </div>
         </details>
@@ -905,7 +905,7 @@
     <div class="panel" style="margin-top:12px;">
       <h3>Eigene Watchlist – wird bei jedem Scan mitgeprüft</h3>
       <div style="color:var(--muted); font-size:11.5px; margin-bottom:8px;">
-        Diese Werte und die 15 Standard-Werte werden in jeder Runde geprüft. Die belegten 60-Minuten-Einstiege
+        Diese Werte und die 15 Standard-Werte werden in jeder Runde geprüft. Die gemessenen 60-Minuten-Einstiege
         schauen zusätzlich in den gewählten Beobachtungs-Pool (Vorgabe: 99 Werte) – daraus rotieren zwölf je Runde,
         damit ein Scan nicht in Kursabrufe ausartet.
       </div>
@@ -974,9 +974,9 @@
       <div style="color:var(--muted); font-size:11.5px; margin-bottom:10px;">
         Das <b>Kursarchiv</b> sammelt jede geladene Kursreihe dauerhaft – die Messbasis wächst mit jedem Handelstag,
         statt an Yahoos kurzem Rückblick zu kleben. Was die Nacht misst, hängt von deiner Strategie ab:
-        Fährst du eine <b>belegte Strategie</b> (RSI2 im Seitwärtskanal / Kapitulations-Dip), arbeitet die Nacht als
+        Fährst du eine der <b>gemessenen Strategien</b> (RSI2 im Seitwärtskanal / Kapitulations-Dip), arbeitet die Nacht als
         <b>Edge-Wächter</b> – sie prüft auf dem vollen Handels-Universum, ob der gemessene Vorsprung im frischen Fenster
-        noch trägt (Überschuss gegen die Drift, t über Symbole), und vergleicht nur noch die wenigen belegten
+        noch trägt (Überschuss gegen die Drift, t über Symbole), und vergleicht nur noch die wenigen gemessenen
         Stellschrauben (Haltedauer-Varianten). Das alte Setup-Rennen über die widerlegten Signale läuft dort bewusst
         nicht mehr – es hat Scheinsieger produziert. Fährst du ein anderes Setup, misst die Nacht wie bisher alle
         Kandidaten per Walk-Forward; übernommen wird nur, was sich in <b>zwei Nächten hintereinander</b> bestätigt,
@@ -1054,7 +1054,7 @@
         </div>
         <div style="color:var(--muted); font-size:11.5px; margin-top:6px;">
           Rechnet das eingestellte Setup auf synthetischen <b>Optionsscheinen</b>, in beide Richtungen und mit
-          Glattstellung am Abend. Für die beiden belegten Kanten passt das nicht – sie handeln den Basiswert,
+          Glattstellung am Abend. Für die beiden gemessenen Kanten passt das nicht – sie handeln den Basiswert,
           nur Long und über Nacht –, deshalb verweigert der Backtest dort die Auskunft; sie misst der Autopilot
           nachts auf dem Kursarchiv. Historische Nachrichten gibt es nicht, getestet wird der technische Kern.
         </div>
@@ -1129,9 +1129,9 @@
   </div>
 
   <div class="panel">
-    <h3>Mittelfrist-Depot · die belegten Strategien handeln</h3>
+    <h3>Mittelfrist-Depot · Momentum und Ergebnis-Drift handeln</h3>
     <div style="font-size:12.5px; color:var(--ink-2); line-height:1.55; margin-bottom:8px;">
-      Zwei getrennte virtuelle Bücher à 10.000 $, die die belegten Strategien <b>tatsächlich führen</b> –
+      Zwei getrennte virtuelle Bücher à 100.000 $, die die beiden Strategien <b>tatsächlich führen</b> – beide halten über die volle Historie, aber nicht auf den zurückgehaltenen Jahren ab 2005 (Momentum t = 1,62; Ergebnis-Drift nach Zeitzonen-Korrektur 8,44 statt 14,07 % p.a.). Stand 23.08.2026, Details im Reiter Messung –
       bis hierher waren Momentum und Ergebnis-Drift Rechenblätter ohne Depot. Die Schalter im Tab
       „Strategien“ entscheiden: <b>an</b> heißt selbsttätig handeln, <b>aus</b> heißt nur rechnen und
       erinnern („Rebalancing fällig“ mit Handlungsliste). Alles Simulation, keine Anlageberatung.
@@ -1274,7 +1274,7 @@
         <label class="sigbox" title="Gemessen und ohne Vorsprung – wird angezeigt, weil du es sehen willst, nicht weil es trägt."><input type="checkbox" data-sig="cross"> EMA-Kreuzung</label>
         <label class="sigbox" title="Roh ohne Vorsprung. Dieselbe Überdehnung trägt erst als Kapitulations-Dip: nur im Abwärtskanal, nur mit Volumen, nur Long."><input type="checkbox" data-sig="reversion"> Umkehr</label>
         <label class="sigbox" title="Gemessen und ohne Vorsprung – wird angezeigt, weil du es sehen willst, nicht weil es trägt."><input type="checkbox" data-sig="pullback"> Rücksetzer</label>
-        <label class="sigbox" title="Roh ein Münzwurf (+0,017 Prozentpunkte). Trägt erst mit der Erlaubnis „Seitwärtskanal + Volumen“ – das ist die belegte Hauptstrategie."><input type="checkbox" data-sig="rsi2"> RSI(2)</label>
+        <label class="sigbox" title="Roh ein Münzwurf (+0,017 Prozentpunkte). Trägt erst mit der Erlaubnis „Seitwärtskanal + Volumen“ – das ist die Hauptstrategie; gegen eine gepaarte Kontrolle ist sie seit dem 23.08.2026 nicht entscheidbar."><input type="checkbox" data-sig="rsi2"> RSI(2)</label>
         <label class="sigbox" title="Gemessen und ohne Vorsprung – wird angezeigt, weil du es sehen willst, nicht weil es trägt."><input type="checkbox" data-sig="donchian"> Donchian</label>
         <label class="sigbox" title="Gemessen und ohne Vorsprung – wird angezeigt, weil du es sehen willst, nicht weil es trägt."><input type="checkbox" data-sig="squeeze"> Squeeze</label>
         <label class="sigbox"><input type="checkbox" data-sig="linie"> Leitlinie (EMA20)</label>
@@ -1421,7 +1421,7 @@
   <div class="panel">
     <h3>Drei Zeithorizonte, drei getrennte Strategien</h3>
     <div style="font-size:12.5px; color:var(--ink-2); line-height:1.55;">
-      Sie handeln unterschiedlich, brauchen unterschiedliche Instrumente und sind unterschiedlich gut belegt.
+      Sie handeln unterschiedlich, brauchen unterschiedliche Instrumente und sind unterschiedlich gut gemessen. Den Belegstatus jeder Regel zeigt der Reiter Messung – mit dem vollständigen Entscheidungsweg.
       Jede lässt sich einzeln ein- und ausschalten. Was darunter steht, ist der ehrliche Belegstand –
       einschließlich der Punkte, die dagegen sprechen.
     </div>
@@ -1440,8 +1440,8 @@
     </div>
     <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
       <select id="stcMode">
-        <option value="rsi2seit">RSI(2) im Seitwärtskanal (belegt)</option>
-        <option value="kapitulation">Kapitulations-Dip im Abwärtskanal (belegt)</option>
+        <option value="rsi2seit">RSI(2) im Seitwärtskanal (gemessen, nicht bestätigt)</option>
+        <option value="kapitulation">Kapitulations-Dip im Abwärtskanal (in Überprüfung)</option>
       </select>
       <select id="stcSym"></select>
       <label style="font-size:12px; color:var(--ink-2);">Kerzenlänge <select id="stcIv">
