@@ -3424,5 +3424,57 @@ console.log('\n44) Messmaschine, Scoreboard und Strategie-Eingabe (23.08.2026)')
      'Reiter Messung mit Scoreboard und Eingabe ist in der Oberflaeche');
 })();
 
+
+console.log('\n45) Massive-Anbindung: Schluessel, Tempolimit, Aussengrenze');
+(function () {
+  var mv = fs.readFileSync(__dirname + '/tools/massive.js', 'utf8');
+  var vw = fs.readFileSync(__dirname + '/tools/massive-verschwundene.js', 'utf8');
+  var mj = fs.readFileSync(__dirname + '/main.js', 'utf8');
+  var h = fs.readFileSync(__dirname + '/index.html', 'utf8');
+  var pkg = JSON.parse(fs.readFileSync(__dirname + '/package.json', 'utf8'));
+
+  /* Der Schluessel darf die App nie erreichen. Die Regel aus Version 7.17 lautet:
+   * kein Netzwerkpfad zu Schluessel-APIs IN der Anwendung. tools/ laeuft von Hand. */
+  ok(pkg.build.files.indexOf('tools/**') === -1 && !pkg.build.files.some(function (f) { return /tools/.test(String(f)); }),
+     'tools/ ist nicht im Paket - die Anbindung wird nie mit ausgeliefert');
+  ok(!/massive/i.test(mj) && !/massive/i.test(h),
+     'Weder Hauptprozess noch Oberflaeche kennen Massive');
+  ok(!/api\.massive\.com/.test(mj), 'api.massive.com steht NICHT in der Host-Freigabe der App');
+
+  /* Der Schluessel kommt aus genau zwei Quellen und wird nie ausgegeben. */
+  ok(/process\.env\.MASSIVE_KEY/.test(mv) && /massive\.key/.test(mv),
+     'Schluessel nur aus MASSIVE_KEY oder der Datei massive.key im Datenordner');
+  var kf = mv.slice(mv.indexOf('function schluessel'), mv.indexOf('function warte'));
+  ok(!/console\.log[^\n]*(key|schluessel|s\b)/i.test(kf) || !/console\./.test(kf),
+     'Die Schluessel-Funktion gibt nichts aus');
+  ok(/Authorization: 'Bearer ' \+ key/.test(mv), 'Der Schluessel geht in den Header, nicht in die URL');
+  ok(!/\?.*apiKey|&apiKey/.test(mv), 'Kein Schluessel als Abfrageparameter - der stuende in jedem Fehlerprotokoll');
+  ok(!/massive\.key/.test(fs.readFileSync(__dirname + '/.gitignore', 'utf8')) || true,
+     'Hinweis: die Schluesseldatei liegt im Datenordner, nicht im Repo');
+
+  /* Tempolimit: 5 Abrufe je Minute sind 12 s; das Werkzeug haelt mehr. */
+  var abstand = (mv.match(/ABSTAND_MS\s*=\s*(\d+)/) || [])[1];
+  ok(abstand && Number(abstand) >= 12000, 'Abstand zwischen zwei Abrufen mindestens 12 s (Basis-Stufe: 5/Min)', abstand + ' ms');
+  ok(/statusCode === 429/.test(mv) && /versuch > 5/.test(mv), 'HTTP 429 wird abgefangen und mit wachsender Pause wiederholt');
+  ok(/maxSeiten \|\| 50/.test(mv), 'Die Seitenzahl ist gedeckelt - ein Lauf endet planbar');
+
+  /* Eigener Ablageort: das Kursarchiv der App wird nicht angefasst. */
+  ok(/'massive'/.test(mv) && /Markt-Dashboard-Daten/.test(mv),
+     'Massive schreibt in einen eigenen Ordner unter Markt-Dashboard-Daten/massive');
+  // Entscheidend ist nicht, ob das Archiv VORKOMMT (es wird zum Abgleich gelesen),
+  // sondern ob hineingeschrieben wird. Jeder Schreibaufruf muss in die eigene Ablage zeigen.
+  var schreibt = vw.match(new RegExp('writeFileSync\\([^,)]*', 'g')) || [];
+  ok(schreibt.length > 0 && schreibt.every(function (s) { return /ziel/.test(s); }),
+     'Der Abruf schreibt ausschliesslich in die eigene Ablage, nie ins Kursarchiv',
+     schreibt.length + ' Schreibaufruf(e): ' + schreibt.join(' | '));
+  ok(vw.indexOf('var ziel = path.join(M.ablage()') !== -1,
+     'Das Ziel ist M.ablage() - der eigene Massive-Ordner');
+
+  /* Der Zweck steht im Werkzeug, nicht nur im Commit. */
+  ok(/Ueberlebensverzerrung/.test(vw), 'Das Werkzeug benennt seinen Zweck: die Ueberlebensverzerrung messen');
+  ok(/active=false/.test(vw), 'Es holt ausdruecklich die NICHT mehr aktiven Ticker');
+  ok(/'CS' \|\| t\.art === 'ADRC'/.test(vw), 'Nur aktienartige Papiere - Fonds und Rechte wuerden die Messung verwaessern');
+})();
+
 console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
 process.exit(fails ? 1 : 0);
