@@ -319,6 +319,18 @@
   .spek-zeile .these .beg { color: var(--muted); }
   .spek-zeile .quellen { font-size: 11.5px; color: var(--muted); }
   .spek-zeile .quellen a { color: var(--acc); }
+  /* Fehler #56: Radar und Insider hatten Kennung, Chips, These und bis zu drei
+     Quellenlinks alle in EINER Flex-Reihe. Weil die Thesen unterschiedlich lang
+     sind, brach jede Zeile an einer anderen Stelle um - mal standen die Quellen
+     rechts, mal darunter, und die These bekam manchmal nur 300px. Gestapelt liest
+     es sich ruhiger: Kennung und Chips oben, darunter der Satz ueber die volle
+     Breite, die Quellen zuletzt. flex-basis 100% erzwingt den Umbruch, ohne dass
+     die Karte ihre Zeilenstruktur verliert. */
+  .spek-zeile.gestapelt { gap: 3px 8px; padding: 9px 0; }
+  .spek-zeile.gestapelt .sym { min-width: 0; }
+  .spek-zeile.gestapelt .these { flex: 1 0 100%; margin-top: 1px; }
+  .spek-zeile.gestapelt .quellen { flex: 1 0 100%; }
+  .spek-zeile.gestapelt .quellen a { margin-right: 2px; }
   /* Insider-Kaeufe: dieselbe Zeilenform wie das Radar, nur zwei eigene Chips -
      der Betrag steht rechtsbuendig, damit die Groessenordnungen untereinander
      vergleichbar bleiben. */

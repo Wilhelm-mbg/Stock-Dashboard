@@ -796,6 +796,14 @@ console.log('\n17b) Oberflaeche: Altlasten und Verdrahtung');
   ok(/netz\.mtime > lokal\.mtime/.test(m2), 'Radar: der frischere der beiden Staende gewinnt');
   ok(/quelleText/.test(r), 'Radar: die Karte sagt, woher der Stand stammt');
   ok(/spekGesehen\.indexOf\(z\.id\) === -1/.test(r), 'Radar: Benachrichtigung je Eintrag nur einmal');
+  /* Fehler #56 (23.08.2026): Kennung, Chips, These und Quellen standen alle in
+   * einer Flex-Reihe - je nach Thesenlaenge brach jede Zeile woanders um. Radar
+   * und Insider stapeln jetzt; die Vorboersen-Karte hat nur einen Chip und einen
+   * kurzen Satz und bleibt bewusst einzeilig. */
+  ok(/.spek-zeile.gestapelt .these { flex: 1 0 100%/.test(h),
+     'Radar: das gestapelte Layout zwingt die These auf eine eigene volle Zeile');
+  ok((r.slice(0, r.indexOf('================= Vorbörsen')).match(/spek-zeile gestapelt/g) || []).length === 2,
+     'Radar/Insider: beide dichten Karten benutzen das gestapelte Layout');
   ok(/redaktionelle Einschätzung der Suche, keine Messung/.test(r),
      'Radar: die Chance-Einstufung wird als Setzung ausgewiesen');
   // Wunsch #49: Firmenname als Label neben dem Ticker, These auf einen Satz gekuerzt

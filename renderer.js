@@ -427,7 +427,7 @@
        * niemand mehr, wenn sie einmal stimmt. */
       var alt = jetzt - r.mtime > 20 * 3600000;
       el.innerHTML = ein.map(function (z) {
-        return '<div class="spek-zeile">' +
+        return '<div class="spek-zeile gestapelt">' +
           '<span class="sym" data-heat="' + esc(z.sym) + '" title="Im Explorer öffnen">' + esc(z.sym) +
           (z.name ? ' <span class="firma">' + esc(z.name) + '</span>' : '') + '</span>' +
           '<span class="spek-chip ' + z.chance + '">' + z.chance.toUpperCase() + '</span>' +
@@ -443,8 +443,10 @@
         new Date(r.mtime).toLocaleString('de-DE', { weekday: 'short', hour: '2-digit', minute: '2-digit' }) + ' Uhr' +
         ' · ' + quelleText(r) +
         (alt ? ' – <b>veraltet</b>, die Suche hat seit über 20 Stunden nicht geschrieben' : '') +
-        ' · Sucht dreimal täglich vor US-Eröffnung (ca. 6:45, 12:45, 14:45 Uhr).' +
-        ' · Chance-Einstufung ist eine redaktionelle Einschätzung der Suche, keine Messung.</div>';
+        '</div>' +
+        '<div style="color:var(--muted); font-size:11px; margin-top:2px;">' +
+        'Sucht dreimal täglich vor US-Eröffnung (ca. 6:45, 12:45, 14:45 Uhr). ' +
+        'Die Chance-Einstufung ist eine redaktionelle Einschätzung der Suche, keine Messung.</div>';
       /* Benachrichtigung nur fuer NEUE Hoch-Eintraege, je id genau einmal - und nur,
        * wenn Benachrichtigungen im Depot nicht abgeschaltet sind. */
       if (spekGesehen === null) spekGesehen = (await window.api.storeGet('spekGesehen')) || [];
@@ -541,7 +543,7 @@
         var detail = (z.stueck > 0 && z.kurs > 0)
           ? ' – ' + nf0.format(z.stueck) + ' Stück zu ' + fmt(z.kurs, 2) + ' $'
           : '';
-        return '<div class="spek-zeile">' +
+        return '<div class="spek-zeile gestapelt">' +
           '<span class="sym" data-heat="' + esc(z.sym) + '" title="Im Explorer öffnen">' + esc(z.sym) +
           (z.name ? ' <span class="firma">' + esc(z.name) + '</span>' : '') + '</span>' +
           '<span class="spek-chip kauf">' + esc(geldKurz(z.wert)) + '</span>' +
