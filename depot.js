@@ -3654,10 +3654,6 @@
     renderStatusBadges();
     edgePauseAnzeigen();
 
-    // KI-Karte: Status & Entscheidungs-Log
-    var ks = document.getElementById('kiState');
-    if (ks) {
-    }
 
     // Kalender-Warnung (marktbewegende Termine in <24 h)
     var cw = document.getElementById('calWarn');
@@ -6106,10 +6102,6 @@
       var el = document.getElementById(kv[0]);
       if (el) el.checked = kv[1];
     });
-    // Das Archiv klappt von selbst auf, wenn jemand die widerlegte Strategie
-    // bewusst eingeschaltet hat - sonst waere sie unsichtbar aktiv.
-    var arch = document.getElementById('archivWiderlegt');
-    if (arch && D.hourlyEnabled !== false) arch.open = true;
     /* Der Instrument-Hinweis im Kopf des Reiters kommt aus dem Ist-Zustand und nicht
      * aus dem Markup - sonst behauptet er bei Bestandsdepots (die die Migration auf
      * 'schein' zuruecksetzt) das Falsche. */

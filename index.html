@@ -814,21 +814,6 @@
       </div>
 
       <div style="display:grid; gap:12px; align-content:start;">
-      <div class="strat-card" style="border-top-color: var(--series4);">
-        <div class="head">
-          <h3>KI-Prüfung (lokal)</h3>
-          <span class="state off" id="kiState">aus</span>
-        </div>
-        <details class="how"><summary>So funktioniert's</summary>
-        <div class="desc">
-          Ein <b>lokales Sprachmodell</b> (Ollama, läuft auf deinem PC) prüft jeden geplanten Trade als letzte Instanz:
-          bestätigen, ablehnen (Veto) oder Positionsgröße anpassen (×0,5 / ×1 / ×1,5) – mit Begründung im Protokoll.
-          Fällt die KI aus, handelt die Strategie normal weiter. Einrichten: Einstellungen → Lokale KI.
-        </div>
-        </details>
-        <div id="kiInfo" style="font-size:12px; color:var(--ink-2);"></div>
-        <div id="kiLog" style="font-size:11.5px; margin-top:8px;"></div>
-      </div>
 
       <div class="strat-card" style="border-top-color: var(--muted);">
         <div class="head">
@@ -855,6 +840,9 @@
     <!-- Widerlegtes verschwindet nicht, es tritt zurück: eingeklappt, unter den
          laufenden Strategien, mit dem Messergebnis als erster sichtbarer Zeile.
          Aufgeklappt wird automatisch, wenn jemand die Strategie eingeschaltet hat. -->
+
+    <!-- Bleibt sichtbar, bis Stufe 4 die Belege buendelt: Widerlegtes darf nicht
+         verschwinden, sonst schlaegt es irgendwann als neue Idee wieder auf. -->
     <details class="how archiv" id="archivWiderlegt" style="margin-top:14px;">
       <summary>Archiv: gemessen und widerlegt – Stunden-Strategie</summary>
       <div class="strat-card" style="border-top-color: var(--down); margin-top:10px;">
@@ -892,7 +880,6 @@
         </div>
       </div>
     </details>
-
     <div class="panel" style="margin-top:12px; margin-bottom:12px;">
       <h3>Signal-Chart – was die Strategie sieht</h3>
       <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
@@ -1559,22 +1546,6 @@
       </div>
     </div>
     <div style="margin:14px 0; border-top:1px solid var(--grid); padding-top:14px;">
-      <div style="font-weight:600; font-size:13px; margin-bottom:8px;">Lokale KI (Ollama – läuft komplett auf deinem PC, kostenlos)</div>
-      <div style="display:grid; gap:8px;">
-        <input type="text" id="setOllamaUrl" placeholder="http://127.0.0.1:11434 (Standard)" style="width:100%;">
-        <div style="display:flex; gap:8px;">
-          <select id="setOllamaModel" style="flex:1;"><option value="">– erst „Modelle laden“ klicken –</option></select>
-          <button class="btn ghost" id="ollamaRefreshBtn" type="button">Modelle laden</button>
-        </div>
-        <label style="display:flex; align-items:flex-start; gap:8px; font-size:12.5px;"><input type="checkbox" id="setKiVeto" style="margin-top:3px;"><span><b>KI-Prüfung vor jedem Trade</b> – das lokale Modell bestätigt, lehnt ab oder passt die Größe an (gilt für beide Strategien)</span></label>
-        <label style="font-size:12.5px; display:flex; align-items:center; gap:8px;">Analysen &amp; Retrospektive erstellen mit
-          <select id="setKiProvider"><option value="">Automatisch</option><option value="ollama">Lokal (Ollama)</option></select>
-        </label>
-        <label style="font-size:12.5px; display:block;">Eigene Regeln für die KI-Prüfung <span style="color:var(--muted);">(optional – wird an die eingebauten Prüfregeln angehängt)</span>
-          <textarea id="setKiRules" rows="4" maxlength="1200" placeholder="z. B.:&#10;- Keine Trades in TSLA.&#10;- Freitags nach 20 Uhr nur noch groesse 0.5.&#10;- Bei Hebel über 25 immer nein." style="width:100%; margin-top:4px; resize:vertical; font-family:inherit; font-size:12px;"></textarea>
-        </label>
-        <span id="ollamaStatus" style="font-size:12px; color:var(--muted);"></span>
-      </div>
       <div style="font-size:11.5px; color:var(--muted); margin-top:6px;">
         Einrichtung (einmalig): Ollama von <b>ollama.com</b> installieren, dann in der Eingabeaufforderung <b>ollama pull qwen2.5:7b</b>
         ausführen (gutes, schnelles Modell mit solidem Deutsch, ~4,7 GB). Danach hier „Modelle laden“.

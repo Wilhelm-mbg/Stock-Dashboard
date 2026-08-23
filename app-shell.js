@@ -116,10 +116,6 @@
       el3.placeholder = geheimBehalten[feld] ? 'gespeichert - leer lassen = unverändert' : '';
     });
     document.getElementById('setCapEnabled').checked = !!SETTINGS.capEnabled;
-    document.getElementById('setOllamaUrl').value = SETTINGS.ollamaUrl || '';
-    document.getElementById('setKiVeto').checked = !!SETTINGS.kiVeto;
-    document.getElementById('setKiProvider').value = SETTINGS.kiProvider || '';
-    document.getElementById('setKiRules').value = SETTINGS.kiRules || '';
     document.getElementById('setUpdateRepo').value = SETTINGS.updateRepo || 'Wilhelm-mbg/Stock-Dashboard';
     if (window.api.getAutostart) window.api.getAutostart().then(function (r) { document.getElementById('setAutostart').checked = !!(r && r.on); });
     document.getElementById('setUpdateStatus').textContent = '';
@@ -128,11 +124,6 @@
       auEl.checked = SETTINGS.autoUpdate !== false;
       if (window.api.updateState) window.api.updateState().then(updRender);
     }
-    var ms = document.getElementById('setOllamaModel');
-    if (SETTINGS.ollamaModel && !Array.prototype.some.call(ms.options, function (o) { return o.value === SETTINGS.ollamaModel; })) {
-      var o0 = document.createElement('option'); o0.value = SETTINGS.ollamaModel; o0.textContent = SETTINGS.ollamaModel; ms.appendChild(o0);
-    }
-    ms.value = SETTINGS.ollamaModel || '';
     document.getElementById('setStatus').textContent = '';
     window.openModal('setModalBg');
   });
@@ -192,19 +183,6 @@
   });
 
   // Ollama-Modelle laden
-  document.getElementById('ollamaRefreshBtn').addEventListener('click', function () {
-    var st = document.getElementById('ollamaStatus');
-    SETTINGS.ollamaUrl = document.getElementById('setOllamaUrl').value.trim();
-    st.textContent = 'Suche Ollama …';
-    window.LocalKI.models().then(function (r) {
-      if (!r.ok) { st.textContent = '' + r.msg + ' – läuft Ollama? (ollama.com installieren, App starten)'; return; }
-      var ms2 = document.getElementById('setOllamaModel');
-      ms2.innerHTML = '';
-      r.models.forEach(function (m) { var o = document.createElement('option'); o.value = m; o.textContent = m; ms2.appendChild(o); });
-      if (r.models.length) { ms2.value = SETTINGS.ollamaModel && r.models.indexOf(SETTINGS.ollamaModel) !== -1 ? SETTINGS.ollamaModel : r.models[0]; st.textContent = 'Ollama läuft · ' + r.models.length + ' Modell(e) gefunden.'; }
-      else st.textContent = 'Ollama läuft, aber kein Modell installiert – z. B.: ollama pull qwen2.5:7b';
-    });
-  });
   /* ================= Automatische Updates ================= */
   function updRender(st) {
     var el = document.getElementById('setUpdAutoStatus');
@@ -302,11 +280,6 @@
       if (wert4 !== '') geheimBehalten[feld] = false;
     });
     SETTINGS.capEnabled = document.getElementById('setCapEnabled').checked;
-    SETTINGS.ollamaUrl = document.getElementById('setOllamaUrl').value.trim();
-    SETTINGS.ollamaModel = document.getElementById('setOllamaModel').value;
-    SETTINGS.kiVeto = document.getElementById('setKiVeto').checked;
-    SETTINGS.kiProvider = document.getElementById('setKiProvider').value;
-    SETTINGS.kiRules = document.getElementById('setKiRules').value.trim().slice(0, 1200);
     // Gleiche Formatprüfung wie beim Prüf-Knopf – vorher landete hier auch Unsinn im Store.
     var repoNeu = document.getElementById('setUpdateRepo').value.trim().replace(/^https:\/\/github\.com\//i, '').replace(/\/+$/, '');
     if (repoNeu && !/^[\w.-]+\/[\w.-]+$/.test(repoNeu)) {

@@ -635,6 +635,17 @@ console.log('\n17b) Oberflaeche: Altlasten und Verdrahtung');
   ok(iVerdikt > iArch2 && iInnenKlappe > iVerdikt,
      'Das Messurteil steht VOR der inneren Klappe, nicht darin versteckt');
   ok(/t=−11,6|t = −11,6/.test(h), 'Der Messwert der Widerlegung ist erhalten geblieben');
+  /* Die KI-Oberflaeche ist am 23.08.2026 mit dem KI-Pfad entfernt worden. Der Pfad
+   * lief laut Diagnose ueber 14 Sitzungen kein einziges Mal; die Karte und die
+   * Einstellungen blieben aber stehen und schalteten nichts mehr. Wichtig ist, dass
+   * auch die ZUGRIFFE verschwunden sind: getElementById('setOllamaUrl').value auf
+   * ein entferntes Feld haette den Einstellungsdialog beim Oeffnen abstuerzen lassen. */
+  ok(!/id="kiState"|id="kiLog"|id="setKiVeto"|id="setOllamaUrl"/.test(h),
+     'Keine KI-Bedienelemente mehr in der Oberflaeche');
+  var shell = fs.readFileSync(__dirname + '/app-shell.js', 'utf8');
+  ok(!/setOllamaUrl|setKiVeto|setKiRules|setOllamaModel|setKiProvider/.test(shell),
+     'app-shell.js greift auf kein entferntes KI-Feld mehr zu (sonst Absturz im Dialog)');
+  ok(!/getElementById('kiState')/.test(d), 'depot.js fuellt keine KI-Karte mehr');
   ok(!/id="weightsPanel"/.test(h), 'Keine Gewichts-Regler mehr fuer drei unbelegte Quellen');
   ok(/getElementById\('weightsPanel'\);\s*\n\s*if \(!el\) return;/.test(d),
      'renderWeights vertraegt das fehlende Panel');
