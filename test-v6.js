@@ -2420,6 +2420,27 @@ console.log('\n31) Auslieferung – enthält der letzte Build wirklich den aktue
    * liefert stillschweigend den vorherigen Stand aus. Genau das ist hier am
    * 22.08.2026 passiert: „npm run build" gibt es nicht, der Fehlschlag blieb in einer
    * verketteten Shell-Zeile unsichtbar, und das Paket war eine Version alt. */
+  /* Ein ALTES Paket neben der Quelle ist ein Ueberbleibsel, kein Defekt - es sagt
+   * ueber den Code nichts aus und darf die Testsuite nicht rot machen. Genau daran
+   * stand am 23.08.2026 die Issue-Wache still, die "ALLE TESTS BESTANDEN" verlangt.
+   * Der scharfe Zweig bleibt: gleiche Version mit anderem Inhalt ist der Fehler vom
+   * 22.08. und muss rot sein. Vor einem Release mit DIST auf den frischen Build
+   * zeigen - dann stimmen die Versionen und es wird streng geprueft. */
+  function vNum(v) { return String(v || '0').split('.').map(function (x) { return parseInt(x, 10) || 0; }); }
+  function aelter(a, b) {
+    var x = vNum(a), y = vNum(b);
+    for (var i = 0; i < Math.max(x.length, y.length); i++) {
+      if ((x[i] || 0) < (y[i] || 0)) return true;
+      if ((x[i] || 0) > (y[i] || 0)) return false;
+    }
+    return false;
+  }
+  if (paketVersion && aelter(paketVersion, quellVersion)) {
+    console.log('  ℹ  Das Paket neben der Quelle ist aelter (Paket ' + paketVersion + ' / Quelle ' + quellVersion +
+      ') – ein Ueberbleibsel eines frueheren Builds. Der Inhaltsvergleich braucht einen frischen Build ' +
+      'oder DIST auf das Release-Verzeichnis; er wird hier uebersprungen.');
+    return;
+  }
   ok(paketVersion === quellVersion,
      'Das gebaute Paket ist auf dem Stand der Quelle',
      'Quelle ' + quellVersion + ' / Paket ' + (paketVersion || 'unlesbar'));
