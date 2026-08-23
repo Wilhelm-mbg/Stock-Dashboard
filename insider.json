@@ -1,0 +1,431 @@
+{
+  "stand": "2026-08-23T00:08:42.371Z",
+  "hinweis": "Meldepflichtige Eigengeschäfte von Insidern (SEC Form 4, nur offene Marktkäufe). Ungemessen, keine Handelsempfehlung, keine Anlageberatung.",
+  "eintraege": [
+    {
+      "id": "20260818-ET-insider",
+      "sym": "ET",
+      "name": "Energy Transfer",
+      "anzahl": 1,
+      "wert": 21263520,
+      "stueck": 1000000,
+      "kurs": 21.26,
+      "rang": 1,
+      "imUniversum": false,
+      "wer": [
+        {
+          "person": "Warren Kelcy L",
+          "rolle": "Aufsichtsrat",
+          "wert": 21263520
+        }
+      ],
+      "quellen": [
+        {
+          "titel": "SEC Form 4",
+          "url": "https://www.sec.gov/Archives/edgar/data/1276187/000119312526359388/0001193125-26-359388-index.htm"
+        }
+      ],
+      "zeit": "2026-08-18T20:00:00.000Z"
+    },
+    {
+      "id": "20260820-AMR-insider",
+      "sym": "AMR",
+      "name": "Alpha Metallurgical Resources",
+      "anzahl": 1,
+      "wert": 2902552,
+      "stueck": 15000,
+      "kurs": 193.5,
+      "rang": 1,
+      "imUniversum": false,
+      "wer": [
+        {
+          "person": "Courtis Kenneth S.",
+          "rolle": "Aufsichtsrat",
+          "wert": 2902552
+        }
+      ],
+      "quellen": [
+        {
+          "titel": "SEC Form 4",
+          "url": "https://www.sec.gov/Archives/edgar/data/1704715/000181274626000008/0001812746-26-000008-index.htm"
+        }
+      ],
+      "zeit": "2026-08-20T20:00:00.000Z"
+    },
+    {
+      "id": "20260818-BKKT-insider",
+      "sym": "BKKT",
+      "name": "Bakkt",
+      "anzahl": 1,
+      "wert": 2111557,
+      "stueck": 296567,
+      "kurs": 7.12,
+      "rang": 1,
+      "imUniversum": false,
+      "wer": [
+        {
+          "person": "Alfred Michael",
+          "rolle": "Aufsichtsrat",
+          "wert": 2111557
+        }
+      ],
+      "quellen": [
+        {
+          "titel": "SEC Form 4",
+          "url": "https://www.sec.gov/Archives/edgar/data/1820302/000162828026057900/0001628280-26-057900-index.htm"
+        }
+      ],
+      "zeit": "2026-08-18T20:00:00.000Z"
+    },
+    {
+      "id": "20260820-ALK-insider",
+      "sym": "ALK",
+      "name": "ALASKA AIR GROUP",
+      "anzahl": 1,
+      "wert": 1001510,
+      "stueck": 25000,
+      "kurs": 40.06,
+      "rang": 3,
+      "imUniversum": false,
+      "wer": [
+        {
+          "person": "Minicucci Benito",
+          "rolle": "CEO AND PRESIDENT",
+          "wert": 1001510
+        }
+      ],
+      "quellen": [
+        {
+          "titel": "SEC Form 4",
+          "url": "https://www.sec.gov/Archives/edgar/data/766421/000145145526000011/0001451455-26-000011-index.htm"
+        }
+      ],
+      "zeit": "2026-08-20T20:00:00.000Z"
+    },
+    {
+      "id": "20260820-ELAN-insider",
+      "sym": "ELAN",
+      "name": "Elanco Animal Health",
+      "anzahl": 1,
+      "wert": 935920,
+      "stueck": 40000,
+      "kurs": 23.4,
+      "rang": 1,
+      "imUniversum": false,
+      "wer": [
+        {
+          "person": "Kurzius Lawrence Erik",
+          "rolle": "Aufsichtsrat",
+          "wert": 935920
+        }
+      ],
+      "quellen": [
+        {
+          "titel": "SEC Form 4",
+          "url": "https://www.sec.gov/Archives/edgar/data/1739104/000135209026000006/0001352090-26-000006-index.htm"
+        }
+      ],
+      "zeit": "2026-08-20T20:00:00.000Z"
+    },
+    {
+      "id": "20260819-BWA-insider",
+      "sym": "BWA",
+      "name": "BORGWARNER",
+      "anzahl": 1,
+      "wert": 500664,
+      "stueck": 7407,
+      "kurs": 67.59,
+      "rang": 1,
+      "imUniversum": true,
+      "wer": [
+        {
+          "person": "Kalathur Rajesh",
+          "rolle": "Aufsichtsrat",
+          "wert": 500664
+        }
+      ],
+      "quellen": [
+        {
+          "titel": "SEC Form 4",
+          "url": "https://www.sec.gov/Archives/edgar/data/908255/000122520826007231/0001225208-26-007231-index.htm"
+        }
+      ],
+      "zeit": "2026-08-19T20:00:00.000Z"
+    },
+    {
+      "id": "20260817-MFP-insider",
+      "sym": "MFP",
+      "name": "Midera Food Processing",
+      "anzahl": 1,
+      "wert": 491045,
+      "stueck": 10900,
+      "kurs": 45.05,
+      "rang": 1,
+      "imUniversum": false,
+      "wer": [
+        {
+          "person": "Nerbonne Robert A",
+          "rolle": "Aufsichtsrat",
+          "wert": 491045
+        }
+      ],
+      "quellen": [
+        {
+          "titel": "SEC Form 4",
+          "url": "https://www.sec.gov/Archives/edgar/data/2088281/000119312526357255/0001193125-26-357255-index.htm"
+        }
+      ],
+      "zeit": "2026-08-17T20:00:00.000Z"
+    },
+    {
+      "id": "20260818-GLPI-insider",
+      "sym": "GLPI",
+      "name": "Gaming & Leisure Properties",
+      "anzahl": 1,
+      "wert": 422400,
+      "stueck": 10000,
+      "kurs": 42.24,
+      "rang": 1,
+      "imUniversum": false,
+      "wer": [
+        {
+          "person": "Shanks Earl C",
+          "rolle": "Aufsichtsrat",
+          "wert": 422400
+        }
+      ],
+      "quellen": [
+        {
+          "titel": "SEC Form 4",
+          "url": "https://www.sec.gov/Archives/edgar/data/1575965/000157596526000065/0001575965-26-000065-index.htm"
+        }
+      ],
+      "zeit": "2026-08-18T20:00:00.000Z"
+    },
+    {
+      "id": "20260819-NOMD-insider",
+      "sym": "NOMD",
+      "name": "Nomad Foods",
+      "anzahl": 1,
+      "wert": 335231,
+      "stueck": 28290,
+      "kurs": 11.85,
+      "rang": 3,
+      "imUniversum": false,
+      "wer": [
+        {
+          "person": "Baldew Ruben",
+          "rolle": "Chief Financial Officer",
+          "wert": 335231
+        }
+      ],
+      "quellen": [
+        {
+          "titel": "SEC Form 4",
+          "url": "https://www.sec.gov/Archives/edgar/data/1651717/000211199926000009/0002111999-26-000009-index.htm"
+        }
+      ],
+      "zeit": "2026-08-19T20:00:00.000Z"
+    },
+    {
+      "id": "20260818-UTGN-insider",
+      "sym": "UTGN",
+      "name": "UTG",
+      "anzahl": 1,
+      "wert": 283672,
+      "stueck": 4808,
+      "kurs": 59,
+      "rang": 3,
+      "imUniversum": false,
+      "wer": [
+        {
+          "person": "Correll Jesse T",
+          "rolle": "Chairman & CEO",
+          "wert": 283672
+        }
+      ],
+      "quellen": [
+        {
+          "titel": "SEC Form 4",
+          "url": "https://www.sec.gov/Archives/edgar/data/832480/000083248026000024/0000832480-26-000024-index.htm"
+        }
+      ],
+      "zeit": "2026-08-18T20:00:00.000Z"
+    },
+    {
+      "id": "20260818-PSUS-insider",
+      "sym": "PSUS",
+      "name": "Pershing Square USA",
+      "anzahl": 1,
+      "wert": 243683,
+      "stueck": 6177,
+      "kurs": 39.45,
+      "rang": 1,
+      "imUniversum": false,
+      "wer": [
+        {
+          "person": "Polsky Lisa",
+          "rolle": "Aufsichtsrat",
+          "wert": 243683
+        }
+      ],
+      "quellen": [
+        {
+          "titel": "SEC Form 4",
+          "url": "https://www.sec.gov/Archives/edgar/data/2002660/000119312526358101/0001193125-26-358101-index.htm"
+        }
+      ],
+      "zeit": "2026-08-18T20:00:00.000Z"
+    },
+    {
+      "id": "20260817-ARE-insider",
+      "sym": "ARE",
+      "name": "ALEXANDRIA REAL ESTATE EQUITIES",
+      "anzahl": 1,
+      "wert": 231400,
+      "stueck": 5000,
+      "kurs": 46.28,
+      "rang": 2,
+      "imUniversum": false,
+      "wer": [
+        {
+          "person": "Marcus Joel S",
+          "rolle": "Executive Chairman",
+          "wert": 231400
+        }
+      ],
+      "quellen": [
+        {
+          "titel": "SEC Form 4",
+          "url": "https://www.sec.gov/Archives/edgar/data/1035443/000121695526000019/0001216955-26-000019-index.htm"
+        }
+      ],
+      "zeit": "2026-08-17T20:00:00.000Z"
+    },
+    {
+      "id": "20260818-TSM-insider",
+      "sym": "TSM",
+      "name": "TAIWAN SEMICONDUCTOR MANUFACTURING CO",
+      "anzahl": 1,
+      "wert": 174023,
+      "stueck": 2350,
+      "kurs": 74.05,
+      "rang": 2,
+      "imUniversum": true,
+      "wer": [
+        {
+          "person": "Yuan Lipen",
+          "rolle": "VP",
+          "wert": 174023
+        }
+      ],
+      "quellen": [
+        {
+          "titel": "SEC Form 4",
+          "url": "https://www.sec.gov/Archives/edgar/data/1046179/000104617926000543/0001046179-26-000543-index.htm"
+        }
+      ],
+      "zeit": "2026-08-18T20:00:00.000Z"
+    },
+    {
+      "id": "20260818-SGRY-insider",
+      "sym": "SGRY",
+      "name": "Surgery Partners",
+      "anzahl": 1,
+      "wert": 143500,
+      "stueck": 10000,
+      "kurs": 14.35,
+      "rang": 1,
+      "imUniversum": false,
+      "wer": [
+        {
+          "person": "DeLuca Teresa",
+          "rolle": "Aufsichtsrat",
+          "wert": 143500
+        }
+      ],
+      "quellen": [
+        {
+          "titel": "SEC Form 4",
+          "url": "https://www.sec.gov/Archives/edgar/data/1638833/000163883326000079/0001638833-26-000079-index.htm"
+        }
+      ],
+      "zeit": "2026-08-18T20:00:00.000Z"
+    },
+    {
+      "id": "20260818-CORZ-insider",
+      "sym": "CORZ",
+      "name": "Core Scientific, Inc./tx",
+      "anzahl": 1,
+      "wert": 134358,
+      "stueck": 7000,
+      "kurs": 19.19,
+      "rang": 1,
+      "imUniversum": false,
+      "wer": [
+        {
+          "person": "Weiss Eric Stanton",
+          "rolle": "Aufsichtsrat",
+          "wert": 134358
+        }
+      ],
+      "quellen": [
+        {
+          "titel": "SEC Form 4",
+          "url": "https://www.sec.gov/Archives/edgar/data/1839341/000090514826003841/0000905148-26-003841-index.htm"
+        }
+      ],
+      "zeit": "2026-08-18T20:00:00.000Z"
+    },
+    {
+      "id": "20260819-FCNCA-insider",
+      "sym": "FCNCA",
+      "name": "FIRST CITIZENS BANCSHARES INC /DE/",
+      "anzahl": 1,
+      "wert": 108405,
+      "stueck": 50,
+      "kurs": 2168.11,
+      "rang": 1,
+      "imUniversum": false,
+      "wer": [
+        {
+          "person": "Morais Diane E.",
+          "rolle": "Aufsichtsrat",
+          "wert": 108405
+        }
+      ],
+      "quellen": [
+        {
+          "titel": "SEC Form 4",
+          "url": "https://www.sec.gov/Archives/edgar/data/798941/000119312526358811/0001193125-26-358811-index.htm"
+        }
+      ],
+      "zeit": "2026-08-19T20:00:00.000Z"
+    },
+    {
+      "id": "20260818-FFIN-insider",
+      "sym": "FFIN",
+      "name": "FIRST FINANCIAL BANKSHARES",
+      "anzahl": 1,
+      "wert": 103980,
+      "stueck": 3000,
+      "kurs": 34.66,
+      "rang": 1,
+      "imUniversum": false,
+      "wer": [
+        {
+          "person": "Denny Michael B.",
+          "rolle": "Aufsichtsrat",
+          "wert": 103980
+        }
+      ],
+      "quellen": [
+        {
+          "titel": "SEC Form 4",
+          "url": "https://www.sec.gov/Archives/edgar/data/36029/000119312526358683/0001193125-26-358683-index.htm"
+        }
+      ],
+      "zeit": "2026-08-18T20:00:00.000Z"
+    }
+  ]
+}
