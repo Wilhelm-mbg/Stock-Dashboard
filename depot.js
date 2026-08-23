@@ -1679,7 +1679,13 @@
     }
   }
 
-  /* ================= Trendwechsel-Beobachtung (Felix #33/#35) =================
+  /* ================= Trendfinder (Felix #33/#35, Umbau #58) =================
+   * Seit #58 steht der TREND vorn und der Trendwechsel daneben als sein Sonderfall:
+   * Ein Trend hat drei Eigenschaften - Richtung, Guete, Breite -, dieselben, die der
+   * Aktien-Explorer zu einem Kanal nennt. Ein Wechsel ist der Moment, in dem der junge
+   * Abschnitt gegen den Vortrend dreht. Beides wird getrennt bestimmt; die Guete loest
+   * ausdruecklich NICHTS aus (als Handelsbedingung gemessen und widerlegt: -0,17 Pp,
+   * t = -4,1).
    * BEOBACHTUNG, kein Handel: Der Winkel-Detektor war der einzige Teilueberlebende
    * der Trendwende-Studie, aber die 1m-Basis war zu kurz und ~44 % des Effekts war
    * Tageszeit-Drift. Der Retest kommt, wenn das naechtlich wachsende 1m-Archiv
@@ -1765,33 +1771,69 @@
         var w = Q.trendwechsel(sigBars, { schwelle: S, bestaetigung: F });
         WENDE_BARS[sy] = sigBars; WENDE_ERG[sy] = w;
         var nl = wendeNachlese(sigBars, { schwelle: S, bestaetigung: F });
-        zeilen.push({ sym: sy, w: w, nl: nl });
+        /* Der Trend selbst wird UNABHAENGIG von der Wendepunkt-Suche bestimmt (Wunsch #58).
+         * Grund: Der Detektor braucht ZWEI bestaetigte Wendepunkte, sonst gibt er null
+         * zurueck - und die Zeile meldete dann 'zu wenig Historie', obwohl ein
+         * schnurgerader Trend lief. Wo der Detektor einen jungen Abschnitt hat, ist DAS
+         * der Trend; wo nicht, steht der Kanal ueber die letzten 120 Kerzen - als
+         * Fenster gekennzeichnet, damit man beides nicht verwechselt. */
+        var kt = w && w.bild && w.bild.kanalJung ? { k: w.bild.kanalJung, quelle: 'wende' } : null;
+        if (!kt && sigBars.length >= 40 && Q.kanalUeber) {
+          var vonT = Math.max(0, sigBars.length - 1 - 120);
+          var kf = Q.kanalUeber(sigBars, vonT, sigBars.length - 1);
+          if (kf) kt = { k: kf, quelle: 'fenster' };
+        }
+        zeilen.push({ sym: sy, w: w, nl: nl, kt: kt });
       }, 4);
-      // Frische Wechsel zuoberst, dann die steilsten jungen Abschnitte
+      /* Frische Wechsel zuoberst, danach die BESTEN Trends, erst dann die steilsten
+       * (Wunsch #58: der Trend ist die Hauptsache, der Wechsel sein Sonderfall).
+       * Die Reihenfolge ordnet nur die Anzeige - gehandelt wird davon nichts. */
+      var gueteVon = function (z) { return z.kt ? z.kt.k.guete : -1; };
       zeilen.sort(function (a, b) {
         var sa = a.w && a.w.signal ? 1 : 0, sb = b.w && b.w.signal ? 1 : 0;
         if (sa !== sb) return sb - sa;
+        var ga = gueteVon(a), gb = gueteVon(b);
+        if (ga !== gb) return gb - ga;
         var wa = a.w && a.w.aktuell && a.w.aktuell.winkel != null ? Math.abs(a.w.aktuell.winkel) : -1;
         var wb = b.w && b.w.aktuell && b.w.aktuell.winkel != null ? Math.abs(b.w.aktuell.winkel) : -1;
         return wb - wa;
       });
       var pfeil = function (t) { return t === 'auf' || t === 'up' ? '↗' : (t === 'ab' || t === 'down' ? '↘' : '→'); };
-      var h = '<table class="tbl"><tr><th>Wert</th><th>Vortrend</th><th>Junger Abschnitt</th><th>Drehung</th>' +
+      var h = '<table class="tbl"><tr><th>Wert</th>' +
+        '<th title="Der laufende Abschnitt seit dem letzten bestätigten Wendepunkt: Richtung und normierter Winkel (Steigung × Länge ÷ Kanalbreite).">Trend jetzt</th>' +
+        '<th title="Güte 0–100 aus denselben drei Eigenschaften, die der Aktien-Explorer zu einem Kanal nennt: Passgenauigkeit, Berührungen beider Kanten, Länge. Reine Beschreibung – als Handelsbedingung ist der Kanal gemessen und widerlegt (−0,17 Pp je Trade, t = −4,1).">Güte</th>' +
+        '<th title="Breite des Kanals in Prozent des Kursniveaus – wie viel Luft der Trend zwischen seinen Kanten hat.">Breite</th>' +
+        '<th>Vortrend</th><th>Drehung</th>' +
         '<th title="Die einzige Ausstiegsregel, die aus dem Detektor selbst folgt: halten, bis der Winkel zurückdreht.">Ausstieg</th>' +
         '<th title="Wie viele Drehungen dieser Art in der verfügbaren Historie überhaupt vorkommen. Für eine belastbare Bewertung bräuchte es rund 30 – dafür reicht das Archiv nicht.">Fälle in der Historie</th>' +
         '<th>Stand</th></tr>';
       zeilen.forEach(function (z) {
-        if (z.fehler || !z.w) {
-          h += '<tr><td><b>' + U.esc(z.sym) + '</b></td><td colspan="6" style="color:var(--muted);">' + U.esc(z.fehler || 'zu wenig Historie') + '</td></tr>';
+        if (z.fehler || (!z.w && !z.kt)) {
+          h += '<tr><td><b>' + U.esc(z.sym) + '</b></td><td colspan="8" style="color:var(--muted);">' + U.esc(z.fehler || 'zu wenig Historie') + '</td></tr>';
           return;
         }
-        var v = z.w.vorher, a = z.w.aktuell, sig = z.w.signal;
+        var v = z.w ? z.w.vorher : null, a = z.w ? z.w.aktuell : null, sig = z.w ? z.w.signal : null;
+        /* Die drei Eigenschaften des laufenden Trends (Wunsch #58) kommen aus GENAU dem
+         * Kanal, den der Detektor selbst gerechnet hat - kein zweiter Rechenweg. */
+        var kj = z.kt ? z.kt.k : null;
+        var ausFenster = !!(z.kt && z.kt.quelle === 'fenster');
+        // Winkel des Fenster-Kanals in derselben Einheit wie der des Detektors
+        var wkF = (ausFenster && kj.breite > 0) ? Math.round(kj.steigung * kj.n / kj.breite * 100) / 100 : null;
         var dreht = v && a && a.winkel != null && Math.abs(v.winkel) >= 0.5 && Math.sign(a.winkel) !== Math.sign(v.winkel);
-        var zeichenbar = !!(z.w.bild && (z.w.bild.kanalVor || z.w.bild.kanalJung));
+        var zeichenbar = !!(z.w && z.w.bild && (z.w.bild.kanalVor || z.w.bild.kanalJung));
         h += '<tr' + (zeichenbar ? ' data-wende="' + U.esc(z.sym) + '" style="cursor:pointer;' + (sig ? ' background:var(--up-soft);' : '') + '" title="Klick zeigt den Kursverlauf mit Wendepunkt und beiden Abschnitten"' : (sig ? ' style="background:var(--up-soft);"' : '')) + '><td><b>' + U.esc(z.sym) + (zeichenbar ? ' <span style="color:var(--muted); font-weight:400;">▸</span>' : '') + '</b></td>' +
+          '<td>' + (a && a.winkel != null
+            ? pfeil(a.trend) + ' ' + U.nf2.format(a.winkel) + ' <span style="color:var(--muted);">(seit ' + a.seitKerzen + ' Kerzen)</span>'
+            : (kj
+              ? pfeil(kj.trend) + (wkF != null ? ' ' + U.nf2.format(wkF) : '') +
+                ' <span style="color:var(--muted);">(Fenster: letzte ' + kj.n + ' Kerzen' +
+                (a ? ', ' + U.esc(a.trend) : ', kein bestätigter Wendepunkt') + ')</span>'
+              : '<span style="color:var(--muted);">–</span>')) + '</td>' +
+          '<td' + (kj ? ' title="Passgenauigkeit ' + kj.r2 + ', Kanten berührt ' + kj.beruehrungenOben + '× oben / ' + kj.beruehrungenUnten + '× unten, ' + kj.n + ' Kerzen lang – ' + (ausFenster ? 'gerechnet über ein festes Fenster, weil kein bestätigter Wendepunkt in Reichweite liegt' : 'gerechnet über den jungen Abschnitt seit dem Wendepunkt') + '"' : '') + '>' +
+            (kj ? kj.guete + '/100' : '<span style="color:var(--muted);">–</span>') + '</td>' +
+          '<td>' + (kj ? U.nf2.format(kj.breitePct) + ' %' : '<span style="color:var(--muted);">–</span>') + '</td>' +
           '<td>' + (v ? pfeil(v.trend) + ' ' + U.nf2.format(v.winkel) : '<span style="color:var(--muted);">kein Vortrend</span>') + '</td>' +
-          '<td>' + (a ? (a.winkel != null ? pfeil(a.trend) + ' ' + U.nf2.format(a.winkel) + ' <span style="color:var(--muted);">(seit ' + a.seitKerzen + ' Kerzen)</span>' : '<span style="color:var(--muted);">' + U.esc(a.trend) + ' (' + a.seitKerzen + ' Kerzen)</span>') : '–') + '</td>' +
-          '<td>' + (dreht ? '<b>ja</b>' : 'nein') + '</td>' +
+          '<td>' + (!z.w ? '<span style="color:var(--muted);">nicht bestimmbar</span>' : (dreht ? '<b>ja</b>' : 'nein')) + '</td>' +
           /* AUSSTIEG: Der Detektor hat keine eigene Ausstiegsregel - er erkennt eine
            * Drehung und sagt nie, wann man wieder raus soll. Die einzige Regel, die
            * aus ihm selbst folgt, ist die symmetrische: halten, bis der Winkel
@@ -1816,9 +1858,22 @@
             : '<span style="color:var(--muted);">zu wenig Historie</span>') + '</td>' +
           '<td>' + (sig
             ? '<b class="' + (sig.dir === 'call' ? 'pos' : 'neg') + '">Wechsel nach ' + (sig.dir === 'call' ? 'OBEN' : 'UNTEN') + '</b>'
-            : '<span style="color:var(--muted);">' + (a && a.winkel != null && Math.abs(a.winkel) < S ? 'zu flach' : 'kein Wechsel') + '</span>') + '</td></tr>';
+            : '<span style="color:var(--muted);">' + (!z.w ? 'nur Trend, kein Wechsel-Urteil'
+              : (a && a.winkel != null && Math.abs(a.winkel) < S ? 'zu flach' : 'kein Wechsel')) + '</span>') + '</td></tr>';
       });
-      h += '</table><div class="hinweis" style="margin-top:8px;">Winkel = Steigung × Abschnittslänge ÷ Kanalbreite ' +
+      h += '</table><div class="hinweis" style="margin-top:8px;"><b>Trendfinder:</b> Zuerst steht der laufende ' +
+        'Trend mit seinen drei Eigenschaften – Richtung, Güte, Breite –, dieselben drei, die auch der ' +
+        'Aktien-Explorer zu einem Kanal nennt, aus derselben Rechnung. Der Trendwechsel ist der Sonderfall ' +
+        'rechts daneben: der Moment, in dem der junge Abschnitt gegen den Vortrend dreht (Wunsch #58).' +
+        '<br><b>Trend ohne Wendepunkt:</b> Die Wechsel-Erkennung braucht zwei bestätigte Wendepunkte. Wo die ' +
+        'fehlen, stand hier früher nur „zu wenig Historie“ – auch dann, wenn ein schnurgerader Trend lief. ' +
+        'Jetzt steht dort der Kanal über die letzten 120 Kerzen, als „Fenster“ gekennzeichnet. Ein ' +
+        'Wechsel-Urteil gibt es in solchen Zeilen weiterhin nicht – das wäre eine Zahl ohne Grundlage.' +
+        '<br><b>Die Güte löst nichts aus – und das ist gemessen, nicht vorsichtig:</b> Der Trendkanal als ' +
+        'Handelsbedingung kostete −0,17 Pp je Trade bei t = −4,1 (Abschnittskanal-Studie). Er ist als Filter ' +
+        'nicht neutral, sondern schädlich. Ein Trend mit Güte 90 ist deshalb ein gut beschriebener Trend – ' +
+        'kein guter Einstieg.' +
+        '<br><br>Winkel = Steigung × Abschnittslänge ÷ Kanalbreite ' +
         '(wie steil relativ zum eigenen Rauschen; Vorzeichen = Richtung). „Wechsel“ = junger Abschnitt ist steiler als die ' +
         'Schwelle UND dreht gegen den Vortrend – die Studien-Bedingung. <b>Zeile anklicken</b> zeigt den Kursverlauf mit ' +
         'Wendepunkt und beiden Abschnitten (Wunsch #38). Simulation, keine Anlageberatung.' +
@@ -1863,7 +1918,7 @@
         el.querySelectorAll('tr.wende-inline').forEach(function (x) { x.parentNode.removeChild(x); });
         if (warOffen) return;
         tr.insertAdjacentHTML('afterend',
-          '<tr class="wende-inline"><td colspan="5" style="background:var(--panel); padding:8px 12px; cursor:default;">' +
+          '<tr class="wende-inline"><td colspan="9" style="background:var(--panel); padding:8px 12px; cursor:default;">' +
           '<div style="font-size:12px; font-weight:600; margin-bottom:4px;">' + U.esc(sy) + ' – Kursverlauf mit Wendepunkt</div>' +
           '<svg class="wende-chart" style="width:100%; height:220px; display:block;"></svg>' +
           '<div class="wende-legende" style="font-size:11.5px; color:var(--ink-2); margin-top:6px; line-height:1.5;"></div>' +

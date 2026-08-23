@@ -637,7 +637,7 @@
   <div class="pills" id="depotPills">
     <button data-sub="depot" class="active">Depot</button>
     <button data-sub="strategien">Schalter &amp; Einstellungen</button>
-    <button data-sub="wende">Trendwechsel</button>
+    <button data-sub="wende">Trendfinder</button>
     <button data-sub="protokoll">Protokoll</button>
     <button data-sub="auswertung">Auswertung</button>
     <button data-sub="mittel">Mittelfristig</button>
@@ -916,7 +916,11 @@
 
   <!-- ============ TRENDWECHSEL (Felix, #33/#35) ============ -->
   <div class="sub" id="sub-wende">
-    <div class="simnote"><b>Beobachtung, kein Handel.</b> Dieser Detektor (dein Winkel-Vorschlag aus #33) war der
+    <div class="simnote"><b>Beobachtung, kein Handel.</b> Diese Seite zeigt zuerst den <b>laufenden Trend</b> und
+      seine drei Eigenschaften – Richtung, Güte, Breite – genau die drei, die auch der Aktien-Explorer zu einem
+      Kanal nennt, aus derselben Rechnung. Der <b>Trendwechsel</b> steht daneben als das, was er ist: ein Sonderfall
+      des Trends, nämlich der Moment, in dem ein junger Abschnitt gegen den Vortrend dreht (Wunsch #58).
+      Dieser Detektor (dein Winkel-Vorschlag aus #33) war der
       einzige Teilüberlebende der Trendwende-Studie – aber ein guter Teil seines Vorsprungs war Tageszeit-Effekt,
       und die 1-Minuten-Basis war mit 7 Tagen zu kurz für ein Urteil. Die App sammelt seit 8.23.25 jede Nacht
       1-Minuten-Kurse; <b>in 4–6 Wochen wird sauber nachgemessen</b>. Bis dahin zeigt diese Seite live, was der
@@ -945,6 +949,15 @@
         Sekunden-Kerzen (1/5/10 s) sind mit der Kursquelle nicht möglich – Yahoo liefert feinstens 1 Minute,
         und nur 7 Tage zurück. Geprüft werden die 15 Standard-Werte plus deine Watchlist; der Winkel zur
         Horizontalen und die Drehung gegen den Vortrend entsprechen exakt der Studien-Rechnung.
+        <br><br><b>Warum aus einer guten Trend-Güte hier keine Order wird (Wunsch #58):</b> Genau das ist
+        gemessen worden – und durchgefallen. Der Trendkanal als <i>Handelsbedingung</i> kostete
+        <b>−0,17 Prozentpunkte je Trade bei t = −4,1</b> (Abschnittskanal-Studie): Er ist nicht neutral,
+        sondern schädlich. Deshalb steht die Güte hier als Beschreibung des Moments und nicht als Auslöser.
+        <br><b>Und warum „zu wenig Historie“ stehen bleibt:</b> Das ist keine Bequemlichkeit, sondern die
+        Fallzahl. Für ein Urteil über eine Regel braucht es rund 30 Fälle je Wert; auf 5.000 Kerzen findet
+        der Detektor etwa sechs. Bei sechs Fällen kippt das Vorzeichen des Mittels schon, wenn man nur die
+        Abtastdichte ändert. Eine Order, die trotzdem ausgelöst wird, ist deshalb nicht mutiger als eine
+        gemessene – sie ist nur ungemessen.
       </div>
     </div>
     <div class="panel">

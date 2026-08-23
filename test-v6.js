@@ -2933,6 +2933,36 @@ console.log('\n36) Kostenhuerde des Produkts (Signalstudie 23.08.2026)');
   ok(/0,074 Pp, t = 1,22/.test(dep),
      'Die belastbare Aussage zum Winkel-Detektor steht dabei (widerlegt auf 55 Tagen)');
 
+  /* Trendfinder (Felix' Wunsch #58, 23.08.2026): Der Trend ist die Hauptsache, der
+   * Wechsel sein Sonderfall. Dazu drei Zusicherungen - die Umbenennung, die drei
+   * Eigenschaften aus DERSELBEN Rechnung, und vor allem: die Guete loest nichts aus.
+   * Felix hatte ausdruecklich gewuenscht, ab einer guten Trend-Guete zu ordern.
+   * Genau das ist gemessen und widerlegt (-0,17 Pp, t = -4,1); der Reiter muss das
+   * sagen, statt es zu verschweigen. */
+  var hF = fs.readFileSync(__dirname + '/index.html', 'utf8');
+  ok(hF.indexOf('<button data-sub="wende">Trendfinder</button>') >= 0,
+     'Trendfinder: der Reiter heisst nach dem Trend, nicht nach seinem Sonderfall');
+  ok(dep.indexOf('>Trend jetzt</th>') >= 0 && dep.indexOf('>Güte</th>') >= 0 && dep.indexOf('>Breite</th>') >= 0,
+     'Trendfinder: die drei Eigenschaften des Trends stehen als eigene Spalten');
+  ok(dep.indexOf('var kj = z.kt ? z.kt.k : null;') >= 0 &&
+     dep.indexOf("w.bild.kanalJung ? { k: w.bild.kanalJung") >= 0,
+     'Trendfinder: Guete und Breite kommen aus dem Kanal des Detektors - kein zweiter Rechenweg');
+  ok(/−0,17 Pp je Trade, t = −4,1/.test(dep) && /Die Güte löst nichts aus/.test(dep),
+     'Trendfinder: dass die Guete NICHTS ausloest, steht mit der Messung dabei');
+  ok(/−0,17 Prozentpunkte je Trade bei t = −4,1/.test(hF),
+     'Trendfinder: der Reiterkopf begruendet die Absage an guete-getriebene Orders');
+  /* Und die Gegenprobe zum zweiten Teil des Wunsches: KEINE Order aus dem Reiter. */
+  var wendeBlock = dep.slice(dep.indexOf('async function wendePruefen'), dep.indexOf('function wendeChartsVerkabeln'));
+  ok(wendeBlock.length > 500 && wendeBlock.indexOf('kaufen(') < 0 &&
+     wendeBlock.indexOf('orderNeu(') < 0 && wendeBlock.indexOf('eroeffne(') < 0,
+     'Trendfinder: der Reiter loest weiterhin keine Order aus - reine Beobachtung');
+  /* Fenster-Kanal: "zu wenig Historie" verschwindet dort, wo ein Trend sichtbar ist -
+   * aber ein Wechsel-Urteil wird deshalb NICHT erfunden. */
+  ok(dep.indexOf("quelle: 'fenster'") >= 0 && dep.indexOf("Fenster: letzte ' + kj.n") >= 0,
+     'Trendfinder: ohne bestaetigten Wendepunkt steht der Fenster-Kanal da, gekennzeichnet');
+  ok(/nur Trend, kein Wechsel-Urteil/.test(dep) && /nicht bestimmbar/.test(dep),
+     'Trendfinder: in Fenster-Zeilen wird kein Wechsel behauptet');
+
 
 
 
