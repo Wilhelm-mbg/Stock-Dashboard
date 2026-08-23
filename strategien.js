@@ -188,9 +188,27 @@
     render();
   }
 
+  /* Die Belege wandern ins Erklaerregister, statt dauerhaft auf dem Reiter zu stehen.
+   * Der Reiter "Regeln" trug so 12.630 Zeichen auf 3.739 px, ohne einen zugeklappten
+   * Block - und das ausgerechnet dort, wo man eine Entscheidung trifft. Gekuerzt wird
+   * dabei NICHTS: es sind Messaussagen mit Zahlen, das Fenster rollt lieber. */
+  function belegeAnmelden() {
+    if (!window.Info) return;
+    var eintraege = {};
+    STRATEGIEN.forEach(function (s) {
+      eintraege['strategie.' + s.key] = {
+        titel: 'Belegstand · ' + s.name,
+        punkte: s.beleg || [],
+        fuss: 'Vollständiges Protokoll mit Entscheidungsweg: Reiter „Messung“ → Scoreboard.'
+      };
+    });
+    window.Info.eintragen(eintraege);
+  }
+
   function render() {
     var el = document.getElementById('stratListe');
     if (!el) return;
+    belegeAnmelden();
     var karten = STRATEGIEN.filter(function (s) { return !s.fussnote; });
     /* Die Fussnote MUSS hier mitgebaut werden: el.innerHTML ersetzt bei jedem
      * Reiterwechsel den gesamten Inhalt, ein separat angehaengtes Element waere
@@ -204,18 +222,18 @@
           '<span style="font-size:15px; font-weight:700;">' + U.esc(s.name) + '</span>' +
           '<span style="font-size:11px; padding:2px 7px; border-radius:10px; border:1px solid var(--' + s.farbe + '); color:var(--' + s.farbe + ');">' +
             U.esc(s.stand) + '</span>' +
-          '<span style="margin-left:auto;">' +
+          '<span style="margin-left:auto; display:inline-flex; align-items:center; gap:8px;">' +
             (schaltbar
               ? '<button class="btn' + (an ? '' : ' ghost') + '" data-strat="' + s.key + '">' + (an ? 'läuft – ausschalten' : 'einschalten') + '</button>'
               : '<span style="color:var(--muted); font-size:12px;">nicht verfügbar</span>') +
+            (window.Info ? window.Info.knopf('strategie.' + s.key, s.name) : '') +
           '</span>' +
         '</div>' +
-        '<div style="font-size:12.5px; color:var(--ink-2); margin-top:6px;">' + U.esc(s.was) + '</div>' +
+        '<div style="font-size:12.5px; color:var(--ink-2); margin-top:6px; max-width:68ch;">' + U.esc(s.was) + '</div>' +
         '<div style="font-size:11.5px; color:var(--muted); margin-top:4px;">Horizont: ' + U.esc(s.horizont) +
-          ' · Instrument: ' + U.esc(s.instrument) + '</div>' +
-        '<ul style="font-size:12px; color:var(--ink-2); margin:8px 0 0; padding-left:18px; line-height:1.5;">' +
-          s.beleg.map(function (b) { return '<li>' + U.esc(b) + '</li>'; }).join('') +
-        '</ul>' +
+          ' · Instrument: ' + U.esc(s.instrument) +
+          ' · <span style="opacity:.85;">' + s.beleg.length + ' ' + (s.beleg.length === 1 ? 'Beleg' : 'Belege') +
+          ' hinter dem i</span></div>' +
       '</div>';
     }).join('') +
     (noten.length
