@@ -309,12 +309,19 @@
   /* Kostenhuerde des GEWAEHLTEN Produkts, in Prozentpunkten des Basiswerts.
    * Signalstudie 23.08.2026: Die Huerde entscheidet, nicht die Signalqualitaet.
    * Schein: (2 x Spanne + Zeitwertverlust) / Hebel. Aktie/CFD: 2 x Spanne + Gebuehr. */
-  function kostenHuerdePp(cfg, spot, vol, haltenMin) {
+  function kostenHuerdePp(cfg, spot, vol, haltenMin, einsatz) {
     spot = spot > 0 ? spot : 200; vol = vol > 0 ? vol : 0.30;
     var halten = Math.max(5, haltenMin || 60), now = Date.now();
+    /* Die Gebuehr ist ein FESTER Betrag je Seite - ihr Gewicht haengt also allein an
+     * der Positionsgroesse. Vorher stand hier eine fest verdrahtete 10.000-$-Position;
+     * bei den real gehandelten 125-300 $ war sie damit um den Faktor 30-80 zu klein
+     * angesetzt, und im Schein-Zweig fehlte sie ganz. Genau diese Gebuehr, nicht
+     * Spanne oder Zeitwert, erschlaegt die gemessene Kante bei kleinen Positionen. */
+    var pos = einsatz > 0 ? einsatz : 10000;
+    var gebAnteil = (cfg.orderFee || 0) * 2 / pos;          // Anteil der Position, beide Seiten
     if (cfg.instrument === "basis") {
-      var geb = (cfg.orderFee || 0) * 2 / 10000 * 100;      // je Seite auf 10.000 $ Position
-      return { pp: 2 * 0.05 + geb, produkt: "Aktie 1x", hebel: 1 };
+      return { pp: 2 * 0.05 + gebAnteil * 100, produkt: "Aktie 1x", hebel: 1, einsatz: pos,
+               teile: { spanne: 2 * 0.05, zeit: 0, gebuehr: gebAnteil * 100 } };
     }
     var P = Q.PROFILES[cfg.profile] || Q.PROFILES.atm21;
     var w = Q.makeWarrant("call", spot, vol, now, P.ratio);
@@ -327,23 +334,68 @@
     if (!(omega > 0)) return null;
     var spaeter = Q.warrantValue("call", w, spot, now + halten * 60000);
     var theta = Math.max(0, (wert - spaeter) / wert);
-    return { pp: (2 * spx + theta) / omega * 100, produkt: P.name, hebel: omega };
+    /* Alle drei Kostenanteile sind Anteile am SCHEINWERT; durch omega geteilt werden
+     * sie zu Prozentpunkten des Basiswerts. Die Gebuehr gehoert genauso dazu wie
+     * Spanne und Zeitwert - sie fehlte hier bisher vollstaendig. */
+    var tSpanne = 2 * spx / omega * 100, tZeit = theta / omega * 100, tGeb = gebAnteil / omega * 100;
+    return { pp: tSpanne + tZeit + tGeb, produkt: P.name, hebel: omega, einsatz: pos,
+             teile: { spanne: tSpanne, zeit: tZeit, gebuehr: tGeb } };
+  }
+  /** Positionswert in Dollar, so wie ihn der Live-Pfad bildet (depot.js, Abschnitt
+   *  "Positionsgroesse nach Risiko"). EINE Formel fuer Anzeige und Handel - dass die
+   *  Anzeige anders rechnete als der Handel, war genau der Fehler.
+   *  slAbs: Betrag des Not-Stops als Anteil (0.20 = -20 %).
+   *  ACHTUNG, bewusst abgebildete Asymmetrie: Beim Schein deckelt der Live-Pfad die
+   *  Risiko-Position auf max(3x budgetPct, 10 %) des Depots, beim Basiswert NICHT.
+   *  Ob dieser Deckel bleiben soll, ist eine offene Frage - er begrenzt genau den
+   *  Hebel, der die Gebuehr klein macht. Hier wird er abgebildet, nicht bewertet. */
+  function positionsWert(cfg, equity, slAbs, faktor) {
+    faktor = faktor > 0 ? faktor : 1;
+    var sizingR = parseFloat(cfg.sizing);
+    if (!(sizingR > 0)) return equity * (cfg.budgetPct || 0.03) * faktor;
+    var wert = equity * sizingR / 100 * faktor / Math.max(0.08, Math.abs(slAbs || 0.20));
+    if (cfg.instrument === "basis") return wert;
+    return Math.min(wert, equity * Math.max((cfg.budgetPct || 0.03) * 3, 0.10));
   }
   /** Zeigt die Huerde und stellt sie der belegten Kante gegenueber. */
   function huerdeAnzeigen() {
     var el = document.getElementById("kostenHuerde"); if (!el) return;
     var cfg = D.intraday || {};
-    var halten = cfg.maxHoldMin || 60;
-    var h = kostenHuerdePp(cfg, 200, 0.30, halten);
+    /* Haltedauer aus DERSELBEN Quelle wie der Handel: modeParams() liefert sie auch
+     * dem Live-Pfad. Vorher stand hier cfg.maxHoldMin - ein Feld, das D.intraday nicht
+     * hat; die Anzeige rechnete deshalb immer mit 60 Minuten statt mit 480. */
+    var mp = {};
+    try { mp = modeParams() || {}; } catch (eM) { mp = {}; }
+    var offenesEnde = !(mp.maxHoldMin > 0);
+    var halten = offenesEnde ? 240 : mp.maxHoldMin;
+    var slAbs = typeof mp.sl === "number" ? Math.abs(mp.sl) : (cfg.scalpSL || 20) / 100;
+    var eq = 10000;
+    try { eq = equityNow() > 0 ? equityNow() : 10000; } catch (eE) { eq = 10000; }
+    var einsatz = positionsWert(cfg, eq, slAbs, 1);
+    var h = kostenHuerdePp(cfg, 200, 0.30, halten, einsatz);
     if (!h) { el.textContent = ""; return; }
     /* Die Kante des eingestellten Auslesers, so wie gemessen. Steht kein Wert fest,
      * wird nichts behauptet - die Huerde allein ist dann die Aussage. */
     var KANTE = { rsi2seit: 0.11, kapitulation: null };
     var kante = KANTE[cfg.mode];
     var std = halten >= 60 ? Math.round(halten / 60) + " h" : halten + " Min";
-    var txt = "<b>Kostenhürde:</b> " + h.pp.toFixed(2) + " Pp je Umlauf" +
+    var T = h.teile || { spanne: h.pp, zeit: 0, gebuehr: 0 };
+    var txt = "<b>Kostenhürde:</b> " + h.pp.toFixed(3) + " Pp je Umlauf" +
       " · " + h.produkt + (h.hebel > 1.5 ? " (Hebel " + h.hebel.toFixed(1) + ")" : "") +
-      " · Haltedauer " + std + ". So weit muss sich der <i>Basiswert</i> bewegen, bevor etwas übrig bleibt.";
+      " · Haltedauer " + std + (offenesEnde ? " (angenommen – dieser Modus hat keinen Zeitausstieg)" : "") +
+      " · Einsatz " + Math.round(h.einsatz) + " $" +
+      ". So weit muss sich der <i>Basiswert</i> bewegen, bevor etwas übrig bleibt." +
+      "<br><span style=\"color:var(--muted);\">Davon Spanne " + T.spanne.toFixed(3) +
+      " · Zeitwert " + T.zeit.toFixed(3) + " · Ordergebühr " + T.gebuehr.toFixed(3) + " Pp.</span>";
+    /* Die Gebuehr ist ein fester Betrag - auf einer kleinen Position wiegt sie alles
+     * andere auf. Das ist kein Randfall, sondern der Regelfall beim Risiko-Sizing,
+     * deshalb steht es als Satz da und nicht nur als Zahl. */
+    if (T.gebuehr > T.spanne + T.zeit && T.gebuehr > 0) {
+      txt += "<br><span class=\"warn\">Die Ordergebühr allein ist größer als Spanne und Zeitwert zusammen." +
+        " Sie ist ein fester Betrag: Bei " + Math.round(h.einsatz) + " $ Einsatz wiegt sie " +
+        (h.einsatz > 0 ? ((cfg.orderFee || 0) * 2 / h.einsatz * 100).toFixed(2) : "?") +
+        " % der Position. Größere Positionen senken genau diesen Anteil.</span>";
+    }
     if (kante != null) {
       var netto = kante - h.pp;
       txt += "<br>Gemessener Vorsprung dieses Auslösers: " + kante.toFixed(2) + " Pp → <span class=\"" +

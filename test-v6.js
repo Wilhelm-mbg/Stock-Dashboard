@@ -2909,5 +2909,69 @@ console.log('\n41) Echte WKN zum Modell-Schein (Tickets #9/#11/#17)');
   ok(/colspan="15"/.test(sf), 'Die aufgeklappte Zeile spannt über alle 15 Spalten (WKN kam dazu)');
 })();
 
+
+console.log('\n42) Kostenhuerde: Gebuehr und Haltedauer (Befund 23.08.2026)');
+(function () {
+  var d5 = fs.readFileSync(__dirname + '/depot.js', 'utf8');
+  var a5 = d5.indexOf('function kostenHuerdePp(cfg, spot, vol, haltenMin, einsatz)');
+  var b5 = d5.indexOf('/** Positionswert in Dollar', a5);
+  var c5 = d5.indexOf('function positionsWert(', b5);
+  var e5 = d5.indexOf('/** Zeigt die Huerde', c5);
+  ok(a5 > 0 && b5 > 0 && c5 > 0 && e5 > 0, 'Kostenhuerde und Positionswert sind auffindbar');
+  var M5 = new Function('Q', d5.slice(a5, b5) + d5.slice(c5, e5) +
+    '\nreturn {h: kostenHuerdePp, p: positionsWert};')(Q);
+
+  /* 1) Die Ordergebuehr ist ein FESTER Betrag - ihr Gewicht haengt allein an der
+   *    Positionsgroesse. Vorher stand im Nenner eine feste 10.000-$-Position, und im
+   *    Schein-Zweig fehlte die Gebuehr ganz. Bei den real gehandelten ~125 $ war sie
+   *    damit um Faktor 80 zu klein angesetzt. */
+  var C5 = { instrument: 'schein', profile: 'atm60_b', orderFee: 1.5, mode: 'rsi2seit',
+             scalpHold: 480, scalpSL: 20, budgetPct: 0.03, sizing: '0.25' };
+  var klein = M5.h(C5, 200, 0.30, 480, 125);
+  var gross = M5.h(C5, 200, 0.30, 480, 2000);
+  ok(klein.teile && klein.teile.gebuehr > 0, 'Der Schein-Zweig rechnet die Ordergebuehr ueberhaupt ein',
+     klein.teile ? klein.teile.gebuehr.toFixed(3) + ' Pp' : 'kein Anteil');
+  ok(klein.teile.gebuehr > klein.teile.spanne + klein.teile.zeit,
+     'Auf einer 125-$-Position wiegt die Gebuehr mehr als Spanne und Zeitwert zusammen',
+     klein.teile.gebuehr.toFixed(3) + ' vs ' + (klein.teile.spanne + klein.teile.zeit).toFixed(3));
+  ok(gross.teile.gebuehr < klein.teile.gebuehr / 10,
+     'Bei 2.000 $ Einsatz faellt der Gebuehrenanteil um mehr als das Zehnfache',
+     klein.teile.gebuehr.toFixed(3) + ' -> ' + gross.teile.gebuehr.toFixed(3));
+  ok(Math.abs(klein.pp - 0.312) < 0.01 && Math.abs(gross.pp - 0.082) < 0.01,
+     'Die Huerde trifft die nachgerechneten Werte (125 $ -> 0,312 · 2.000 $ -> 0,082)',
+     klein.pp.toFixed(3) + ' / ' + gross.pp.toFixed(3));
+  /* Die gemessene Kante ist +0,147 Pp. Sie traegt die Kosten erst ab rund 600 $. */
+  ok(0.147 - M5.h(C5, 200, 0.30, 480, 300).pp < 0 && 0.147 - M5.h(C5, 200, 0.30, 480, 600).pp > 0,
+     'Die gemessene Kante traegt die Kosten bei 300 $ NICHT und bei 600 $ schon');
+
+  /* 2) Die Haltedauer muss aus modeParams() kommen, nicht aus einem Feld, das es nicht gibt.
+   *    cfg.maxHoldMin existierte in D.intraday nie - die Anzeige fiel immer auf 60 Minuten
+   *    zurueck, obwohl rsi2seit 480 Minuten haelt. */
+  var anz = d5.slice(d5.indexOf('function huerdeAnzeigen'), d5.indexOf('window.__huerde'));
+  // Kommentare raus: der Grund der Aenderung steht als Text im Code und ist kein Verstoss.
+  var anzCode = anz.replace(new RegExp('/\\*[\\s\\S]*?\\*/', 'g'), '')
+                   .replace(new RegExp('//[^\\n]*', 'g'), '');
+  ok(anzCode.indexOf('cfg.maxHoldMin') === -1,
+     'Die Anzeige liest NICHT mehr cfg.maxHoldMin - das Feld gibt es in D.intraday nicht');
+  ok(/modeParams\(\)/.test(anz),
+     'Die Haltedauer kommt aus modeParams() - derselben Quelle wie der Live-Pfad');
+  ok(/positionsWert\(cfg/.test(anz),
+     'Der Einsatz kommt aus positionsWert() - derselben Formel wie der Handel');
+  var cfgZeile = d5.slice(d5.indexOf('intraday: {'), d5.indexOf('intraday: {') + 900);
+  ok(cfgZeile.indexOf('maxHoldMin') === -1 && cfgZeile.indexOf('scalpHold') !== -1,
+     'Beleg: D.intraday hat scalpHold, aber kein maxHoldMin');
+
+  /* 3) positionsWert bildet die Live-Formel ab, inklusive der Asymmetrie beim Deckel. */
+  ok(Math.abs(M5.p({ sizing: '0.25', scalpSL: 20, budgetPct: 0.03 }, 10000, 0.20, 1) - 125) < 0.5,
+     'Risiko-Sizing 0,25 % bei Stop -20 % ergibt 125 $ auf 10.000 $ Depot');
+  ok(Math.abs(M5.p({ sizing: 'fix', budgetPct: 0.03 }, 10000, 0.20, 1) - 300) < 0.5,
+     'Feste Groesse nimmt budgetPct (3 % = 300 $)');
+  var mitDeckel = M5.p({ sizing: '5', scalpSL: 20, budgetPct: 0.03, instrument: 'schein' }, 10000, 0.20, 1);
+  var ohneDeckel = M5.p({ sizing: '5', scalpSL: 20, budgetPct: 0.03, instrument: 'basis' }, 10000, 0.20, 1);
+  ok(mitDeckel < ohneDeckel,
+     'Der Deckel greift beim Schein, beim Basiswert nicht - so macht es der Live-Pfad',
+     Math.round(mitDeckel) + ' $ vs ' + Math.round(ohneDeckel) + ' $');
+})();
+
 console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
 process.exit(fails ? 1 : 0);
