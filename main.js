@@ -18,7 +18,12 @@ const ALLOWED_HOSTS = new Set([
   'feeds.finance.yahoo.com',
   'fc.yahoo.com', // nur fuer das Cookie, das Yahoos Kalender-Endpunkt verlangt
   'news.google.com',
-  'api.github.com' // nur für den Update-Check (Releases lesen)
+  'api.github.com', // nur für den Update-Check (Releases lesen)
+  // Offene Produktsuche für echte Optionsscheine (WKN, ISIN, Emittent, Basispreis,
+  // Fälligkeit, BV) – ohne Schlüssel und ohne Anmeldung. Damit bekommt der
+  // Schein-Finder endlich echte WKNs (Tickets #9/#11/#17); dieselbe Quelle, an der
+  // am 21.08.2026 das Cent-Spread-Modell geeicht wurde. Nur Lesezugriff.
+  'api.onvista.de'
 ]);
 
 function fetchText(url, redirectsLeft) {

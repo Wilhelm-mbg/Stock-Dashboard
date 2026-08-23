@@ -1371,8 +1371,10 @@
     <div style="font-size:12.5px; color:var(--ink-2); line-height:1.55; margin-bottom:10px;">
       Rechnet das volle Raster möglicher Scheine zu einem Basiswert durch – mit <b>demselben Modell, mit dem
       das Depot handelt</b> (Black-Scholes plus das an echten Emittentenkursen geeichte Spanne-Modell).
-      Keine echten WKNs: Emittenten-Listen gibt es nur über Bezahl-APIs, und die sind bewusst draußen.
-      Dafür verhält sich jeder Schein hier exakt so wie in der Simulation.
+      Jeder Schein hier verhält sich exakt so wie in der Simulation. Zu jeder Zeile lässt sich der
+      <b>echte Schein mit WKN</b> nachschlagen (Spalte „WKN“ oder Zeile anklicken) – Emittent, echte
+      Geld-/Brief-Kurse und der Abstand zur Modell-Zeile stehen dabei, denn Emittenten legen nur auf
+      feste Verfallstage auf.
       Die <b>Risikostufe</b> (1 defensiv … 5 Lotterielos) begrenzt auf Wunsch auch den Handel – Einstellung
       „maximale Risikostufe“ im Depot unter Risiko &amp; Kosten.
     </div>
@@ -1694,6 +1696,7 @@
 <script src="driftui.js"></script>
 <script src="bugs.js"></script>
 <script src="diagnose.js"></script>
+<script src="wkn.js"></script>
 <script src="scheinfinder.js"></script>
 <script src="mfhandel.js"></script>
 <script src="mfdepot.js"></script>

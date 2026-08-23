@@ -348,11 +348,11 @@
   }
   /* ================= Schein-Finder: Kennzahlen und Risikostufe =================
    *
-   * Modellbasiert, KEINE echten WKN-Listen - Emittenten-Daten gibt es nur ueber
-   * Bezahl-APIs, und die sind bewusst draussen. Dafuer rechnet der Finder mit exakt
-   * demselben Modell wie das Depot: Black-Scholes-Bewertung plus das an echten
-   * Emittentenkursen geeichte Cent-Spread-Modell. Was man hier auswaehlt, verhaelt
-   * sich in der Simulation genauso.
+   * Modellbasiert: Der Finder rechnet mit exakt demselben Modell wie das Depot -
+   * Black-Scholes-Bewertung plus das an echten Emittentenkursen geeichte
+   * Cent-Spread-Modell. Was man hier auswaehlt, verhaelt sich in der Simulation
+   * genauso. Die ECHTEN Scheine (WKN, ISIN, Emittent, gestellte Kurse) schlaegt die
+   * Oberflaeche ueber wkn.js nach - hier wird weiterhin nur gerechnet.
    */
 
   /** Alle Kennzahlen eines Scheins auf einen Blick. dir 'call'|'put',
