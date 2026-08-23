@@ -40,32 +40,85 @@
       .map(function (t) { return byT[t]; });
   }
 
-  /** Stempel-Kerzen entfernen (Befund vom 21.08.2026): Yahoo haengt an jede
-   *  Chart-Antwort einen Eintrag mit der AKTUELLEN Uhrzeit an (z. B. 15:38:27
-   *  zwischen den 15-Minuten-Kerzen 15:30 und 15:45). Diese Pseudo-Kerzen haben
-   *  einmalige, krumme Zeitstempel - der Dedup ersetzt sie nie, sie lagerten
-   *  sich fuer immer in der Messbasis ab (13 Stueck allein am ersten Fundtag).
-   *  Regel: Ein Eintrag, der weniger als 0,9 Kerzenlaengen auf den zuletzt
-   *  behaltenen folgt, ist keine Kerze. Echte Nachbarn stehen exakt eine
-   *  Kerzenlaenge auseinander, Luecken (Nacht, Wochenende) sind groesser. */
-  /** Stempel-Kerzen entfernen. Echte Kerzen liegen IMMER auf dem Minutenraster (Sekunden 0);
-   *  Quote-Stempel tragen die Abrufzeit (z. B. 15:28:38), Volumen 0 und H=L=C.
-   *  Gelernt am 22.08.2026: Die fruehere Regel behielt von zwei nahen Kerzen die ERSTE -
-   *  der Stempel kommt aber vor der echten Kerze an und verdraengte sie. Am 21.08. waren in
-   *  allen 122 Stundenreihen vier von sieben Kerzen Stempel, die echten verloren.
-   *  Jetzt: erst alles vom Raster werfen, dann Nachbarn innerhalb 0,9 Kerzenlaengen deduplizieren. */
+  /** Stempel-Kerzen entfernen. Yahoo haengt an jede Chart-Antwort einen Eintrag mit der
+   *  AKTUELLEN Abrufzeit an: krumme Uhrzeit (15:28:38), Volumen 0, H=L=C. Diese
+   *  Pseudo-Kerzen haben einmalige Zeitstempel - der Dedup nach Zeit ersetzt sie nie,
+   *  sie lagern sich fuer immer in der Messbasis ab.
+   *
+   *  Drei Regeln, in dieser Reihenfolge:
+   *   1. Krummer Zeitstempel (Sekunden != 0) ist NIE eine Kerze. Echte Kerzen jeder
+   *      Quelle beginnen auf der vollen Minute - Yahoo wie Capital (deren
+   *      snapshotTimeUTC lautet '2026-08-19T09:00:00'; nachgemessen am 22.08.2026:
+   *      die 45 reinen CFD-Reihen im Archiv, z. B. ADP 5m mit 4836 Kerzen, liegen zu
+   *      100 % auf dem Raster). Darum braucht 'cap' hier KEINE Ausnahme.
+   *   2. Stossen zwei Eintraege dichter als 0,9 Kerzenlaengen aufeinander, gewinnt der
+   *      auf dem RASTER der Serie - egal ob er frueher oder spaeter kam.
+   *   3. Sind beide gleich gut (oder beide daneben), gewinnt der spaetere: er traegt
+   *      den fertigen Stand derselben Kerze.
+   *
+   *  Regel 2 ist der Kern des Befundes vom 22.08.2026: Die alte Regel entschied nach
+   *  Reihenfolge statt nach Rasterlage. Faellt ein Stempel zufaellig weit genug hinter
+   *  die letzte echte Kerze (17:29:31 nach 17:25:00 sind 271 s, die Schwelle liegt bei
+   *  270 s), wird er behalten - und die 29 s spaeter eintreffende ECHTE 17:30-Kerze
+   *  gilt als sein Stempel und faellt. Die Kette laeuft weiter, bis eine Luecke sie
+   *  bricht: NVDA 5m verlor am 19.08.2026 so den ganzen Nachmittag 17:30-19:50,
+   *  insgesamt 961 Stempel in 45 Symbolen (5m), 85 (1m) und 198 (15m).
+   *
+   *  Das Raster wird aus der Serie GELERNT, nicht auf null gesetzt: Yahoos Stundenkerzen
+   *  fuer US-Aktien beginnen 13:30 UTC. 579.675 der 719.575 Stundenkerzen im Archiv
+   *  liegen auf Offset 30 min - ein fest verdrahtetes t % (barMin*60000) === 0 haette
+   *  vier Fuenftel des Stundenarchivs geloescht.
+   *
+   *  Und die gelernte Phase entscheidet NUR den Konflikt, sie loescht nie fuer sich
+   *  allein: An verkuerzten Handelstagen (Thanksgiving, 3. Juli, Heiligabend) schliesst
+   *  die US-Boerse 18:00 UTC, und Yahoo liefert dort eine Stundenkerze auf Offset 0 mit
+   *  echter Spanne. 114 der 122 Stundenreihen haben je sieben solcher Kerzen - als
+   *  Loeschregel gelesen waere die Phase ueber 800 echte Kerzen losgeworden. */
+  function rasterPhase(bars, step) {
+    var z = {}, phase = 0, best = -1;
+    for (var i = 0; i < (bars || []).length; i++) {
+      var t = bars[i][0];
+      if (t % 60000 !== 0) continue;                     // Stempel zaehlen beim Lernen nicht mit
+      var o = ((t % step) + step) % step;
+      z[o] = (z[o] || 0) + 1;
+      if (z[o] > best) { best = z[o]; phase = o; }
+    }
+    return phase;
+  }
   function ohneStempel(bars, barMin) {
-    var min = (barMin || 1) * 60000 * 0.9, out = [];
+    var step = (barMin || 1) * 60000, min = step * 0.9, out = [];
+    var phase = rasterPhase(bars, step);
+    function aufRaster(b) { return ((b[0] % step) + step) % step === phase; }
+    function quoteStempel(b) {                            // Volumen 0 und H=L=C: reiner Kursabdruck
+      return !b[2] && b[3] != null && b[3] === b[4] && b[4] === b[1];
+    }
     for (var i = 0; i < (bars || []).length; i++) {
       var b = bars[i];
-      if (b[0] % 60000 !== 0) continue;                               // nicht auf dem Minutenraster: Stempel
-      if (!b[2] && b[3] != null && b[3] === b[4] && b[4] === b[1] && out.length &&
-          b[0] - out[out.length - 1][0] < min) continue;              // Volumen 0, H=L=C, dicht am Vorgaenger
-      if (out.length && b[0] - out[out.length - 1][0] < min) {
-        // zwei echte Kerzen zu dicht: die spaetere ersetzt die fruehere (fertiger Stand)
-        out[out.length - 1] = b; continue;
+      if (b[0] % 60000 !== 0) continue;                   // Regel 1: krummer Zeitstempel
+      /* Regel 1b: neben dem Raster UND reiner Kursabdruck (Volumen 0, H=L=C) - das ist
+       * ein Stempel, auch wenn kein Nachbar nah genug steht, um ihn zu ueberstimmen.
+       * Noetig, weil die 0,9-Schwelle bei langen Kerzen viel Platz laesst: ein
+       * 60m-Stempel um 15:28 liegt 58 min hinter der 14:30-Kerze und 62 min vor der
+       * 16:30-Kerze - beide Male ueber der Schwelle von 54 min, also ohne Konflikt.
+       * Die Signatur muss dabei ZUSAMMEN mit der Rasterlage zutreffen: an verkuerzten
+       * Handelstagen liefert Yahoo eine echte 18:00-Stundenkerze neben dem Raster, die
+       * aber eine Spanne hat (H != L) und deshalb bleibt. */
+      if (!aufRaster(b) && quoteStempel(b)) continue;
+      if (!out.length) { out.push(b); continue; }
+      var letzt = out[out.length - 1];
+      if (b[0] - letzt[0] >= min) { out.push(b); continue; }   // weit genug: eigene Kerze
+      // Konflikt: zwei Eintraege innerhalb einer Kerzenlaenge - nur einer kann echt sein.
+      var bR = aufRaster(b), lR = aufRaster(letzt);
+      if (bR !== lR) {                                    // Regel 2: Rasterlage schlaegt Reihenfolge
+        if (bR) out[out.length - 1] = b;
+        continue;
       }
-      out.push(b);
+      var bS = quoteStempel(b), lS = quoteStempel(letzt);
+      if (bS !== lS) {                                    // gleiche Rasterlage: Signatur entscheidet
+        if (lS) out[out.length - 1] = b;
+        continue;
+      }
+      out[out.length - 1] = b;                            // Regel 3: der spaetere ist der fertige
     }
     return out;
   }
@@ -232,7 +285,7 @@
 
   var Archiv = {
     MAX_TAGE: MAX_TAGE, TAGE_MAX: TAGE_MAX, fensterFuer: fensterFuer,
-    mischeBars: mischeBars, kappeTage: kappeTage, ohneStempel: ohneStempel,
+    mischeBars: mischeBars, kappeTage: kappeTage, ohneStempel: ohneStempel, rasterPhase: rasterPhase,
     abdeckungTage: abdeckungTage, schlank: schlank, dollarVolTag: dollarVolTag,
     baueArchiv: baueArchiv
   };
