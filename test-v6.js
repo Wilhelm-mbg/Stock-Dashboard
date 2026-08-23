@@ -2772,7 +2772,41 @@ console.log('\n36) Kostenhuerde des Produkts (Signalstudie 23.08.2026)');
   ok((html.match(/id="kostenHuerde"/g) || []).length === 1, 'Die Anzeigeflaeche existiert genau einmal');
   ok(dep.indexOf('function kostenHuerdePp') !== -1 && dep.indexOf('function huerdeAnzeigen') !== -1,
      'Rechnung und Anzeige sind vorhanden');
-  ok(/huerdeAnzeigen\(\);\n    }/.test(dep), 'Die Anzeige haengt an idSave - sie kann nicht veralten');
+  /* Die Absicht ist: Aendert jemand eine Einstellung, wird die Anzeige neu gefuellt.
+   * Vorher pruefte das auf die exakte Nachbarschaft (Aufruf als LETZTE Zeile vor der
+   * Klammer) - und brach, sobald daneben ein zweiter Aufruf stand. Jetzt wird der
+   * idSave-Block als Ganzes betrachtet: beide Anzeigen muessen darin vorkommen. */
+  var idSaveBlock = dep.slice(dep.indexOf('function idSave'), dep.indexOf('function idSave') + 5000);
+  ok(/huerdeAnzeigen\(\)/.test(idSaveBlock), 'Die Kostenhuerde haengt an idSave - sie kann nicht veralten');
+  ok(/regelKopfAnzeigen\(\)/.test(idSaveBlock), 'Der Regelkopf haengt ebenfalls an idSave');
+
+  /* Stufe 2 des UI-Umbaus (23.08.2026): Der Signal-Chart ist entfernt - er zeigte fuer
+   * die belegten Modi NICHT, was die Strategie sieht (Befund der Inventarisierung).
+   * Der Strategie-Chart kann es und ist jetzt der eine Chart. Wichtig wie in Stufe 1:
+   * die Verdrahtung muss mit weg - scBtn hing ungesichert an getElementById, das
+   * waere beim Start ein Absturz gewesen. */
+  ok(!/id="scChart"|id="scBtn"|id="scSym"/.test(html),
+     'Der Signal-Chart ist aus der Oberflaeche raus');
+  ok(!/runSigChart|drawSignalChart/.test(dep),
+     'Kein Code greift mehr auf den Signal-Chart zu (sonst Absturz beim Start)');
+  ok((html.match(/id="stcChart"/g) || []).length === 1,
+     'Es gibt genau EINEN Strategie-Chart');
+
+  /* Die drei Ergebnis-Ansichten lagen im Kurzfrist-Depot verstreut und beantworteten
+   * dieselbe Frage. Jetzt stehen sie als Bilanz bei der Regel, zu der sie gehoeren. */
+  var iChart = html.indexOf('id="stcChart"'), iBilanz = html.indexOf('id="regelBilanz"');
+  ok(iChart > 0 && iBilanz > iChart, 'Die Bilanz steht bei der Regel, nicht im Depot');
+  ['tuneLog', 'patience', 'benchChart'].forEach(function (id) {
+    ok(html.indexOf('id="' + id + '"') > iBilanz, 'Die Bilanz enthaelt ' + id);
+  });
+
+  /* Der Regelkopf darf die Regel nicht ein zweites Mal beschreiben - er liest sie. */
+  var rk = dep.slice(dep.indexOf('function regelKopfAnzeigen'), dep.indexOf('function regelKopfAnzeigen') + 3500);
+  ok(rk.length > 100 && /modeParams\(\)/.test(rk),
+     'Der Regelkopf nimmt die Haltedauer aus modeParams - derselben Quelle wie der Handel');
+  ok(/nicht entscheidbar/.test(rk),
+     'Der Regelkopf nennt den Belegstand ehrlich (nach der Kontroll-Messung: nicht entscheidbar)');
+
   ok(/quellenMigration\(\);\n    huerdeAnzeigen\(\);/.test(dep), 'Die Anzeige wird beim Start gefuellt');
 })();
 

@@ -381,6 +381,45 @@
     if (cfg.instrument === "basis") return wert;
     return Math.min(wert, equity * Math.max((cfg.budgetPct || 0.03) * 3, 0.10));
   }
+  /** Fuellt den Regelkopf: welche Regel laeuft, mit welchen Parametern, und wie es
+   *  um ihren Beleg steht. Alles kommt aus derselben Quelle wie der Handel -
+   *  modeParams() fuer die Haltedauer, D.intraday fuer den Rest. Eine zweite
+   *  Beschreibung der Regel waere genau die Doppelung, die dieser Umbau abschafft. */
+  function regelKopfAnzeigen() {
+    var el = document.getElementById('regelKopf'); if (!el) return;
+    var cfg = D.intraday || {};
+    var mp = {}; try { mp = modeParams() || {}; } catch (e) { mp = {}; }
+    var NAME = { rsi2seit: 'RSI(2) im Seitwärtskanal', kapitulation: 'Kapitulations-Dip im Abwärtskanal' };
+    /* Belegstand, ehrlich. Nach der Kontroll-Messung vom 23.08.2026 ist die Kante der
+     * belegten Regel nicht mehr nachgewiesen: gegen eine Kontrolle aus echten Kerzen
+     * desselben Werts zur selben Tagesstunde bleiben +0,114 Pp bei t = 1,49 und einer
+     * Auflösung von 0,153. Das ist "nicht entscheidbar", nicht "belegt" - und es hier
+     * anders hinzuschreiben waere genau die Art Schoenfaerberei, gegen die das ganze
+     * Projekt aufgebaut ist. */
+    var BELEG = {
+      rsi2seit: { stand: 'nicht entscheidbar',
+        txt: '+0,114 Pp gegen Kontrolle · t 1,49 bei einer Auflösung von 0,153 (6.509 Trades, 675 Tage). ' +
+             'Die Rohkante von +0,172 Pp besteht zu rund zwei Dritteln aus schlichtem Halten.' },
+      kapitulation: { stand: 'in Überprüfung',
+        txt: 'Die große Signalstudie vom 23.08.2026 reproduziert diesen Modus nicht. ' +
+             'Bis zu einer Neumessung gilt er als unbestätigt.' }
+    };
+    var b = BELEG[cfg.mode] || { stand: 'ungemessen', txt: 'Für diesen Auslöser liegt keine Messung vor.' };
+    var farbe = b.stand === 'belegt' ? 'var(--up)' : b.stand === 'ungemessen' ? 'var(--down)' : 'var(--warn, var(--series2))';
+    var halten = mp.maxHoldMin > 0 ? (mp.maxHoldMin >= 60 ? Math.round(mp.maxHoldMin / 60) + ' Stunden' : mp.maxHoldMin + ' Minuten') : 'kein Zeitausstieg';
+    var zeilen = [
+      ['Auslöser', NAME[cfg.mode] || cfg.mode],
+      ['Kerzen', (cfg.interval || '60m') + (cfg.interval === '60m' ? ' (so gemessen)' : ' – NICHT die gemessene Konfiguration')],
+      ['Haltedauer', halten],
+      ['Produkt', cfg.instrument === 'basis' ? 'Basiswert ohne Hebel' : 'Hebelschein' + (cfg.profile ? ' · ' + cfg.profile : '')],
+      ['Positionsgröße', parseFloat(cfg.sizing) > 0 ? 'nach Risiko ' + cfg.sizing + ' % je Stop' : 'fest ' + Math.round((cfg.budgetPct || 0.03) * 100) + ' % des Depots'],
+      ['Not-Stop', (cfg.scalpSL || 20) + ' %'],
+      ['Beleg', '<b style="color:' + farbe + ';">' + U.esc(b.stand) + '</b> – ' + U.esc(b.txt)]
+    ];
+    el.innerHTML = '<table class="tbl" style="font-size:12.5px;">' + zeilen.map(function (r) {
+      return '<tr><td style="color:var(--muted); white-space:nowrap; width:130px;">' + U.esc(r[0]) + '</td><td>' + r[1] + '</td></tr>';
+    }).join('') + '</table>';
+  }
   /** Zeigt die Huerde und stellt sie der belegten Kante gegenueber. */
   function huerdeAnzeigen() {
     var el = document.getElementById("kostenHuerde"); if (!el) return;
@@ -845,140 +884,6 @@
 
   /* ================= Signal-Chart: was die Strategie sieht ================= */
   var sigChartRunning = false;
-  async function runSigChart() {
-    if (sigChartRunning) return;
-    sigChartRunning = true;
-    var sel = document.getElementById('scSym'), st = document.getElementById('scStatus'), out = document.getElementById('scChart');
-    var btn = document.getElementById('scBtn');
-    btn.disabled = true;
-    try {
-      var cfg = D.intraday;
-      var sym = sel.value;
-      st.textContent = 'Lade ' + sym + ' …';
-      var fd = await fetchIntraday(sym, cfg.interval || '5m', false);
-      if (!fd || fd.series.length < 40) { st.textContent = 'Keine Daten für ' + sym + '.'; return; }
-      var bars = fd.series.slice(-260);
-      var closes = bars.map(function (b2) { return b2[1]; });
-      var line = (cfg.lineType === 'vwap' ? Q.vwapLine(bars) : null) || Q.emaSeries(closes, cfg.period);
-      // Kanal (nur im Umkehr-Setup mit Auslöser Wellental und aktivem Kanalfilter)
-      var chan = null, chanFail = '';
-      if (cfg.mode === 'wave' && cfg.channel !== false) {
-        var dgS = Q.degapBarArray(bars);
-        chan = Q.trendChannel(dgS);
-        if (chan && !chan.gueltig) { chanFail = ' · Kanal-Entwurf vorhanden, aber durchgefallen (Güte ' + chan.score + '/100, Berührungen ' + chan.touchUnten + '/' + chan.touchOben + ').'; chan = null; }
-        else if (!chan) chanFail = ' · Kein Kanal erkennbar – kein Kanal ist ehrlicher als ein erfundener.';
-      }
-      var t0 = bars[0][0], t1 = bars[bars.length - 1][0];
-      var marks = D.trades.filter(function (t) { return t.sym === sym && t.openT >= t0 && t.openT <= t1; });
-      st.textContent = '';
-      drawSignalChart(out, bars, line, chan, marks, cfg);
-      var info = document.getElementById('scInfo');
-      info.innerHTML = 'Leitlinie: <b>' + (cfg.lineType === 'vwap' ? 'VWAP' : 'EMA' + cfg.period) + '</b> · Zeitrahmen ' + (cfg.interval || '5m') +
-        (chan
-          ? ' · <b>' + { aufwaerts: 'Aufwärtskanal', abwaerts: 'Abwärtskanal', seitwaerts: 'Seitwärtskorridor' }[chan.typ] +
-            '</b> über ' + chan.N + ' Bars: Position <b>' + Math.round(chan.pos * 100) + ' %</b>, Breite ' + chan.breitePct +
-            ' %, Güte <b>' + chan.score + '/100</b>' + (chan.ausbruch ? ' · <b>Ausbruch nach ' + chan.ausbruch + '</b>' : '') +
-            ' <span style="color:var(--muted);">(Berührungen ' + chan.touchUnten + '/' + chan.touchOben + ' · Seitenwechsel ' + chan.wechsel +
-            ' · Deckung ' + Math.round(chan.deckung * 100) + ' % · Enge ' + chan.enge + (chan.hl ? ' · Linien an Hoch/Tief' : '') + ')</span>'
-          : (chanFail || ' · Kanal nur im Umkehr-Setup mit Auslöser Wellental')) +
-        ' · eigene Trades im Bild: <b>' + marks.length + '</b>';
-    } catch (e) {
-      st.textContent = 'Fehler: ' + (e.message || e);
-    } finally {
-      btn.disabled = false;
-      sigChartRunning = false;
-    }
-  }
-
-  function drawSignalChart(svg, bars, line, chan, marks, cfg) {
-    var W = svg.clientWidth || 900, H = svg.clientHeight || 300;
-    var padL = 8, padR = 54, padT = 10, padB = 20;
-    svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
-    var closes = bars.map(function (b) { return b[1]; });
-    var lo = Math.min.apply(null, closes), hi = Math.max.apply(null, closes);
-    if (chan) { lo = Math.min(lo, chan.unten != null ? chan.unten : chan.lower); hi = Math.max(hi, chan.oben != null ? chan.oben : chan.upper); }
-    var pad = (hi - lo) * 0.08 || 1;
-    lo -= pad; hi += pad;
-    var x0 = bars[0][0], x1 = bars[bars.length - 1][0];
-    var plotW = W - padL - padR, plotH = H - padT - padB;
-    function X(t) { return padL + (t - x0) / Math.max(1, x1 - x0) * plotW; }
-    function Y(v) { return H - padB - (v - lo) / (hi - lo) * plotH; }
-    var html = '';
-    niceTicks(lo, hi, 4).forEach(function (tv) {
-      html += '<line x1="' + padL + '" x2="' + (padL + plotW) + '" y1="' + Y(tv).toFixed(1) + '" y2="' + Y(tv).toFixed(1) + '" stroke="var(--grid)" stroke-width="1"></line>' +
-        '<text x="' + (padL + 2) + '" y="' + (Y(tv) - 3).toFixed(1) + '" fill="var(--muted)" font-size="9.5">' + fmtTick(tv, hi - lo) + '</text>';
-    });
-    for (var xi = 0; xi <= 3; xi++) {
-      var tx = x0 + (x1 - x0) * xi / 3;
-      html += '<text x="' + X(tx).toFixed(1) + '" y="' + (H - 5) + '" text-anchor="' + (xi === 0 ? 'start' : xi === 3 ? 'end' : 'middle') + '" fill="var(--muted)" font-size="9.5">' + fmtTimeTick(tx, x1 - x0) + '</text>';
-    }
-    // Trendkanal: die beiden Geraden über das Fenster, in dem sie ermittelt wurden
-    if (chan) {
-      var n = bars.length;
-      var stepPx = plotW / Math.max(1, n - 1);
-      // chan.endI ist der letzte Bar des Kanal-Fensters, gerechnet ab dessen Anfang
-      var startI = n - chan.N;                       // Index im Chart, an dem der Kanal beginnt
-      function kanalY(i, welche) {                   // i = Chart-Index
-        var ki = i - startI;
-        return Y((welche === 'o' ? chan.cOben : chan.cUnten) + chan.mOben * ki);
-      }
-      var up = [], dn = [];
-      for (var i = Math.max(0, startI); i < n; i++) {
-        up.push((up.length ? 'L' : 'M') + (padL + i * stepPx).toFixed(1) + ' ' + kanalY(i, 'o').toFixed(1));
-      }
-      for (var i2 = n - 1; i2 >= Math.max(0, startI); i2--) {
-        dn.push((padL + i2 * stepPx).toFixed(1) + ' ' + kanalY(i2, 'u').toFixed(1));
-      }
-      if (!up.length || !dn.length) { up = []; dn = []; }
-      if (up.length && dn.length) {
-        html += '<path d="' + up.join(' ') + ' L' + dn.join(' L') + ' Z" fill="var(--series3)" opacity="0.10"></path>';
-        html += '<path d="' + up.join(' ') + '" fill="none" stroke="var(--series3)" stroke-width="1.5" opacity="0.85"></path>';
-        html += '<path d="M' + dn.slice().reverse().join(' L') + '" fill="none" stroke="var(--series3)" stroke-width="1.5" opacity="0.85"></path>';
-      }
-    }
-    // Leitlinie
-    if (line && line.length === bars.length) {
-      html += '<path d="' + bars.map(function (b, i) { return (i ? 'L' : 'M') + X(b[0]).toFixed(1) + ' ' + Y(line[i]).toFixed(1); }).join(' ') +
-        '" fill="none" stroke="var(--series2)" stroke-width="1.5" stroke-dasharray="5 4"></path>';
-    }
-    // Kurs
-    html += '<path d="' + bars.map(function (b, i) { return (i ? 'L' : 'M') + X(b[0]).toFixed(1) + ' ' + Y(b[1]).toFixed(1); }).join(' ') +
-      '" fill="none" stroke="var(--series)" stroke-width="2" stroke-linejoin="round"></path>';
-    // Eigene Trades: Einstieg ▲/▼, Ausstieg ×
-    (marks || []).forEach(function (t) {
-      var ex = X(t.openT), ey = Y(t.entrySpot || bars[0][1]);
-      var col = t.dir === 'call' ? 'var(--up)' : 'var(--down)';
-      html += '<circle cx="' + ex.toFixed(1) + '" cy="' + ey.toFixed(1) + '" r="5" fill="' + col + '" stroke="var(--surface)" stroke-width="2"></circle>' +
-        '<text x="' + (ex + 7).toFixed(1) + '" y="' + (ey - 6).toFixed(1) + '" fill="var(--ink-2)" font-size="9.5" font-weight="600">' + (t.dir === 'call' ? 'CALL' : 'PUT') + '</text>';
-      if (t.status === 'closed' && t.closeT <= x1 && t.exitSpot) {
-        var cx2 = X(t.closeT), cy2 = Y(t.exitSpot);
-        html += '<path d="M' + (cx2 - 4).toFixed(1) + ' ' + (cy2 - 4).toFixed(1) + ' L' + (cx2 + 4).toFixed(1) + ' ' + (cy2 + 4).toFixed(1) +
-          ' M' + (cx2 + 4).toFixed(1) + ' ' + (cy2 - 4).toFixed(1) + ' L' + (cx2 - 4).toFixed(1) + ' ' + (cy2 + 4).toFixed(1) +
-          '" stroke="' + (t.pnl > 0 ? 'var(--up)' : 'var(--down)') + '" stroke-width="2"></path>';
-      }
-    });
-    svg.innerHTML = html;
-    svg.__chart = null;
-  }
-
-  /* ================= Strategie-Chart (Tab „Strategien & Belege“, Issue #51) =================
-   * Wilhelms Wunsch: die jeweilige Strategie mit ihren Signalen und Indikatoren grafisch
-   * nachvollziehen und pruefen koennen. Reine ANZEIGE, keine neue Regel: Der Chart
-   * spielt Q.einstiegSignal - dieselbe Funktion wie Studie, Backtest und Live-Scan -
-   * Kerze fuer Kerze ueber die Reihe ab und markiert jeden Einstieg, den die Regel
-   * gegeben haette. Dazu die Indikatoren, aus denen die Regel besteht (Leitlinie EMA20,
-   * EMA100-Richtung, Kanal ueber 200 Kerzen, RSI(2) bzw. z-Abstand), und fuer die letzte
-   * abgeschlossene Kerze eine Bedingungsliste: erfuellt / nicht erfuellt.
-   * Bewusst nur die beiden BELEGTEN Intraday-Modi; Momentum und Drift sind Rangfolgen
-   * ueber alle Werte und haben kein Chartsignal.
-   *
-   * Issue #52 (23.08.2026): Kerzenlaenge und Zeitraum sind waehlbar, und jedes historische
-   * Signal laesst sich anklicken - dann rechnet die Bedingungsliste GENAU DIE Kerze nach,
-   * in der das Signal fiel. Damit ist ein falsch erkanntes Signal nachtraeglich pruefbar,
-   * statt nur behauptbar. Die Kerzenlaenge ist dabei ausdruecklich als Ansicht markiert:
-   * belegt sind beide Regeln auf 60m, alles andere bekommt einen Warnhinweis, damit die
-   * Oberflaeche nicht wieder von der Messung wegdriftet. */
-  var stcRunning = false;
   function stcParams(mode) {
     var cfg = D.intraday;
     return { ENTRY: mode, LINE: cfg.lineType || 'ema', period: cfg.period || 20, confirmBps: cfg.confirmBps,
@@ -7288,6 +7193,7 @@
     // Einmalige Quellen-Umstellung im Hintergrund - blockiert den Start nicht.
     quellenMigration();
     huerdeAnzeigen();          // Kostenhuerde beim Start zeigen, nicht erst nach einer Aenderung
+    regelKopfAnzeigen();   // dieselbe Quelle, derselbe Takt wie die Huerde
     var deck = '';
     if (window.Archiv) {
       try {
@@ -7718,7 +7624,6 @@
     document.getElementById('retroBtn').addEventListener('click', runRetro);
     document.getElementById('weeklyBtn').addEventListener('click', runWeekly);
     document.getElementById('reportShowBtn').addEventListener('click', showReport);
-    document.getElementById('scBtn').addEventListener('click', runSigChart);
     (function () {
       // Strategie-Chart im Tab „Strategien & Belege“ (Issue #51)
       var sb = document.getElementById('stcBtn'), ss = document.getElementById('stcSym');
@@ -7753,10 +7658,6 @@
       });
     })();
     document.getElementById('filterBtn').addEventListener('click', runFilterCheck);
-    (function () {
-      var sc = document.getElementById('scSym');
-      universe().forEach(function (s) { var o = document.createElement('option'); o.value = s; o.textContent = s; sc.appendChild(o); });
-    })();
     renderSigMonitor();
     renderSymBlocks();
     (function () {
@@ -8084,6 +7985,7 @@
       /* Kostenhuerde mitfuehren: sie haengt an Instrument, Profil und Haltedauer -
        * alle drei aendern sich genau hier. So kann die Anzeige nie veralten. */
       huerdeAnzeigen();
+      regelKopfAnzeigen();   // dieselbe Quelle, derselbe Takt wie die Huerde
     }
     /* 'enabled' schreibt nur noch der eigene Schalter. Frueher schrieb idSave() den
      * Wert bei JEDEM Feld-Change zurueck - damit konnte der Ein/Aus-Zustand aus dem

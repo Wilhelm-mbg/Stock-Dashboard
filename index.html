@@ -880,22 +880,6 @@
         </div>
       </div>
     </details>
-    <div class="panel" style="margin-top:12px; margin-bottom:12px;">
-      <h3>Signal-Chart – was die Strategie sieht</h3>
-      <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-        <select id="scSym"></select>
-        <button class="btn ghost" id="scBtn">Chart laden</button>
-        <span id="scStatus" style="color:var(--muted); font-size:12px;"></span>
-      </div>
-      <div id="scInfo" style="font-size:12px; color:var(--ink-2); margin-top:8px;"></div>
-      <svg id="scChart" style="width:100%; height:300px; display:block; margin-top:6px;"></svg>
-      <div style="color:var(--muted); font-size:11.5px;">
-        <span style="color:var(--series);">━</span> Kurs ·
-        <span style="color:var(--series2);">╌</span> Leitlinie (EMA/VWAP) ·
-        <span style="color:var(--series3);">▬</span> Trendkanal ·
-        ● Einstieg (grün Call / rot Put) · × Ausstieg
-      </div>
-    </div>
 
     <div class="panel" style="margin-bottom:12px;">
       <h3>Live-Signal-Monitor</h3>
@@ -1029,45 +1013,9 @@
     </div>
 
     <!-- 2 · Wirkung -->
-    <div class="panel" style="margin-bottom:12px;">
-      <h3>Was hat gewirkt?</h3>
-      <div style="color:var(--muted); font-size:11.5px; margin-bottom:8px;">
-        Jede automatische Änderung mit gemessener Wirkung: Ø Gewinn je Intraday-Trade davor gegen danach, sortiert nach
-        Wirkung, jede einzeln zurücknehmbar.
-      </div>
-      <div id="tuneLog"></div>
-
-      <div style="margin-top:14px; padding-top:12px; border-top:1px solid var(--line);">
-        <h4 style="margin:0 0 6px;">Bringen die Filter etwas?</h4>
-        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-          <button class="btn ghost" id="filterBtn">Mit vs. ohne Filter rechnen</button>
-          <span id="filterStatus" style="color:var(--muted); font-size:12px;"></span>
-        </div>
-        <div style="color:var(--muted); font-size:11.5px; margin-top:6px;">
-          Rechnet denselben Zeitraum zweimal – einmal mit deinen Filtern, einmal ohne. Zeigt, ob die Zurückhaltung
-          Geld spart oder Rendite kostet.
-        </div>
-        <div id="filterResult" style="margin-top:12px;"></div>
-      </div>
-    </div>
 
     <!-- 3 · Ergebnis & Geduld -->
     <div class="grid2" style="margin-bottom:12px;">
-      <div class="panel">
-        <h3>Wann die Strategie nichts getan hat</h3>
-        <div style="color:var(--muted); font-size:11.5px; margin-bottom:8px;">
-          Wie oft die Filter ein Signal bewusst verworfen haben – und warum. Der häufigste Grund ist der stärkste Hebel:
-          „Wer nicht weiß, was er tut, muss wissen, wann er nichts tut.“ (Kostolany)
-        </div>
-        <div id="patience"><div class="loading">Noch keine verworfenen Signale erfasst – entsteht, sobald der Intraday-Scanner läuft.</div></div>
-      </div>
-      <div class="panel">
-        <h3>Depot gegen Buy &amp; Hold</h3>
-        <div id="benchInfo" style="font-size:12px; color:var(--muted); margin-bottom:6px;">Wird beim Öffnen dieses Bereichs geladen …</div>
-        <svg id="benchChart" style="width:100%; height:150px; display:block;"></svg>
-        <div id="benchLegend" style="font-size:11.5px; color:var(--ink-2); margin-top:4px;"></div>
-        <div id="hitrates" style="margin-top:10px;"></div>
-      </div>
     </div>
 
     <!-- 4 · Selten gebraucht -->
@@ -1469,6 +1417,63 @@
     <div id="stcCheck" style="font-size:12px; margin-top:8px; line-height:1.6;"></div>
     <div style="font-size:11.5px; color:var(--muted); margin-top:6px;">Simulation, keine Anlageberatung. Der Chart zeigt, was die Regel gesehen hätte – nicht, was sie verdient hätte; die Messung dazu steht in den Belegen oben.</div>
   </div>
+    <div class="panel" id="regelKarte" style="margin-top:12px; border-top:3px solid var(--series3);">
+      <h3>Die Regel, die handelt</h3>
+      <div style="font-size:12.5px; color:var(--ink-2); line-height:1.6;">
+        Eine Regel ist hier ein Ding mit Namen, Parametern, Chart, Bedingungen und Bilanz.
+        Was gerade eingestellt ist, steht darunter – im Chart siehst du, was sie sieht,
+        in der Bilanz, was dabei herauskam. Die drei Ergebnis-Ansichten, die früher im
+        Kurzfrist-Depot verstreut lagen, gehören zu dieser Regel und stehen deshalb hier.
+      </div>
+      <div id="regelKopf" style="margin-top:10px;"></div>
+    </div>
+
+    <div class="panel" id="regelBilanz" style="margin-top:12px;">
+      <h3>Bilanz dieser Regel</h3>
+      <div style="font-size:12.5px; color:var(--ink-2); line-height:1.6; margin-bottom:10px;">
+        Was die Regel getan hat, was sie <i>nicht</i> getan hat, und wie sie gegen einfaches
+        Halten steht. Der Vergleich gegen Buy&nbsp;&amp;&nbsp;Hold ist dabei die wichtigste
+        Spalte: Eine Regel, die den Markt nicht schlägt, hat keinen Vorsprung – sie war
+        nur dabei.
+      </div>
+
+    <div class="panel" style="margin-bottom:12px;">
+      <h3>Was hat gewirkt?</h3>
+      <div style="color:var(--muted); font-size:11.5px; margin-bottom:8px;">
+        Jede automatische Änderung mit gemessener Wirkung: Ø Gewinn je Intraday-Trade davor gegen danach, sortiert nach
+        Wirkung, jede einzeln zurücknehmbar.
+      </div>
+      <div id="tuneLog"></div>
+
+      <div style="margin-top:14px; padding-top:12px; border-top:1px solid var(--line);">
+        <h4 style="margin:0 0 6px;">Bringen die Filter etwas?</h4>
+        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+          <button class="btn ghost" id="filterBtn">Mit vs. ohne Filter rechnen</button>
+          <span id="filterStatus" style="color:var(--muted); font-size:12px;"></span>
+        </div>
+        <div style="color:var(--muted); font-size:11.5px; margin-top:6px;">
+          Rechnet denselben Zeitraum zweimal – einmal mit deinen Filtern, einmal ohne. Zeigt, ob die Zurückhaltung
+          Geld spart oder Rendite kostet.
+        </div>
+        <div id="filterResult" style="margin-top:12px;"></div>
+      </div>
+    </div>
+      <div class="panel">
+        <h3>Wann die Strategie nichts getan hat</h3>
+        <div style="color:var(--muted); font-size:11.5px; margin-bottom:8px;">
+          Wie oft die Filter ein Signal bewusst verworfen haben – und warum. Der häufigste Grund ist der stärkste Hebel:
+          „Wer nicht weiß, was er tut, muss wissen, wann er nichts tut.“ (Kostolany)
+        </div>
+        <div id="patience"><div class="loading">Noch keine verworfenen Signale erfasst – entsteht, sobald der Intraday-Scanner läuft.</div></div>
+      </div>
+      <div class="panel">
+        <h3>Depot gegen Buy &amp; Hold</h3>
+        <div id="benchInfo" style="font-size:12px; color:var(--muted); margin-bottom:6px;">Wird beim Öffnen dieses Bereichs geladen …</div>
+        <svg id="benchChart" style="width:100%; height:150px; display:block;"></svg>
+        <div id="benchLegend" style="font-size:11.5px; color:var(--ink-2); margin-top:4px;"></div>
+        <div id="hitrates" style="margin-top:10px;"></div>
+      </div>
+    </div>
   <div class="panel">
     <div style="font-size:12px; color:var(--muted);">Alles hier ist Simulation. Es wird nichts gekauft und nichts verkauft.</div>
   </div>
