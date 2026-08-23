@@ -419,7 +419,13 @@
           new Date(r.mtime).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }) + ' Uhr, ' + quelleText(r) + ').</div>';
         return;
       }
-      var alt = jetzt - r.mtime > 3 * 3600000;
+      /* 20 Stunden, nicht 3: Der Radar laeuft seit 23.08.2026 dreimal taeglich vor
+       * US-Eroeffnung (06:45/12:45/14:45), nicht mehr stuendlich - die Websuche kostet
+       * Credits und fand stuendlich dieselbe Nachrichtenlage. Groesste regulaere Luecke
+       * ist die Nacht mit 16 Stunden. Eine Schwelle darunter wuerde die Karte fast
+       * durchgehend als veraltet zeigen - und eine Warnung, die immer steht, liest
+       * niemand mehr, wenn sie einmal stimmt. */
+      var alt = jetzt - r.mtime > 20 * 3600000;
       el.innerHTML = ein.map(function (z) {
         return '<div class="spek-zeile">' +
           '<span class="sym" data-heat="' + esc(z.sym) + '" title="Im Explorer öffnen">' + esc(z.sym) +
@@ -436,7 +442,8 @@
         '<div style="color:var(--muted); font-size:11px; margin-top:8px;">Stand ' +
         new Date(r.mtime).toLocaleString('de-DE', { weekday: 'short', hour: '2-digit', minute: '2-digit' }) + ' Uhr' +
         ' · ' + quelleText(r) +
-        (alt ? ' – <b>veraltet</b>, die stündliche Suche hat länger nicht geschrieben' : '') +
+        (alt ? ' – <b>veraltet</b>, die Suche hat seit über 20 Stunden nicht geschrieben' : '') +
+        ' · Sucht dreimal täglich vor US-Eröffnung (ca. 6:45, 12:45, 14:45 Uhr).' +
         ' · Chance-Einstufung ist eine redaktionelle Einschätzung der Suche, keine Messung.</div>';
       /* Benachrichtigung nur fuer NEUE Hoch-Eintraege, je id genau einmal - und nur,
        * wenn Benachrichtigungen im Depot nicht abgeschaltet sind. */

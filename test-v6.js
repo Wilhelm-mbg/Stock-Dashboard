@@ -768,6 +768,18 @@ console.log('\n17b) Oberflaeche: Altlasten und Verdrahtung');
      'Radar: Fremdinhalte werden escaped, Links nur ueber safeUrl');
   ok(/jetzt - t > 48 \* 3600000\) continue/.test(r), 'Radar: Eintraege aelter als 48 h fallen raus');
   ok(/ein\.slice\(0, 12\)/.test(r), 'Radar: hoechstens 12 Eintraege');
+  /* Takt und Anzeige muessen zusammenpassen (23.08.2026). Der Radar lief stuendlich
+   * und sucht seit der Umstellung nur noch dreimal taeglich vor US-Eroeffnung
+   * (06:45/12:45/14:45 + Versatz). Die Karte meldete "veraltet" nach 3 Stunden -
+   * damit haette sie ab sofort fast durchgehend gewarnt. Eine Warnung, die immer
+   * steht, wird ueberlesen, wenn sie einmal stimmt. Groesste regulaere Luecke ist
+   * die Nacht: 16 Stunden. */
+  var schwelleH = (/var alt = jetzt - r\.mtime > (\d+) \* 3600000;[\s\S]{0,4000}?veraltet<\/b>, die Suche/.exec(r) || [])[1];
+  ok(schwelleH !== undefined && Number(schwelleH) > 16,
+     'Radar: Veraltet-Schwelle passt zum Takt (groesser als die 16-Stunden-Nachtluecke)', schwelleH + ' h');
+  ok(!/stündlich/.test(h.slice(h.indexOf('Spekulations-Radar'), h.indexOf('Spekulations-Radar') + 400)) &&
+     !/stündliche Suche/.test(r),
+     'Radar: die Oberflaeche behauptet keinen stuendlichen Takt mehr');
   ok(/const SPEK_URL =/.test(m2), 'Radar: Gemeinschafts-Ablage haengt an einer festen URL');
   ok(/d\.length > 300000/.test(m2), 'Radar: Groessenkappe gilt auch fuer den Netz-Abruf');
   ok(/netz\.mtime > lokal\.mtime/.test(m2), 'Radar: der frischere der beiden Staende gewinnt');
