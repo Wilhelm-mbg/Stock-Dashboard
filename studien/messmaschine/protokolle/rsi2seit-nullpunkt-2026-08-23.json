@@ -1,0 +1,38 @@
+{
+ "verfahren": "nullpunkt-permutation/1.0.0",
+ "strategie": "rsi2seit",
+ "gemessenAm": "2026-08-23T19:16:25.634Z",
+ "laeufe": 30,
+ "schwelleT": 1.959963986120195,
+ "tests": 1,
+ "hinweis": "Die Renditen sind echt, nur ihre Reihenfolge ist innerhalb jeder UTC-Stunde vertauscht. In dieser Reihe kann die Vergangenheit die Zukunft nicht vorhersagen.",
+ "varianten": [
+  {
+   "variante": 0,
+   "params": {
+    "ENTRY": "rsi2seit",
+    "LINE": "ema",
+    "period": 20,
+    "confirmBps": 15,
+    "ZTHR": 1.5,
+    "MINQ": 0,
+    "CHAN": false,
+    "MTF": false,
+    "TREND": false
+   },
+   "signale": 6509,
+   "echtTagesmittelPp": 0.024058519771233893,
+   "nullMittelPp": 0.027039865061731786,
+   "nullStreuungPp": 0.04582513586416587,
+   "analytischeSePp": 0.09098110705975429,
+   "benutzterFehlerPp": 0.09098110705975429,
+   "fehlerHerkunft": "analytisch",
+   "korrigiertPp": -0.002981345290497894,
+   "tGegenNull": -0.0327688394530066,
+   "rangUnterNullversuchen": 28,
+   "laeufe": 30,
+   "urteil": "nicht-entscheidbar",
+   "urteilOhneNullpunkt": "nicht-entscheidbar"
+  }
+ ]
+}
