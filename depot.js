@@ -18,8 +18,8 @@
   function defaultDepot() {
     return {
       cash: START_CAPITAL, positions: [], trades: [],
-      stats: { news: { r: 0, w: 0 }, tech: { r: 0, w: 0 }, elliott: { r: 0, w: 0 }, maIntraday: { r: 0, w: 0 }, ki: { r: 0, w: 0 } },
-      kiLog: [], patience: {},
+      stats: { news: { r: 0, w: 0 }, tech: { r: 0, w: 0 }, elliott: { r: 0, w: 0 }, maIntraday: { r: 0, w: 0 } },
+      patience: {},
       // News auf 0,15 gesenkt (21.08.2026): das Sentiment ist unbelegt, weil es keine
       // historischen Schlagzeilen gibt. Steigt wieder, sobald das Archiv einen Beleg gibt.
       weights: { news: 0.15, tech: 0.55, elliott: 0.30 },
@@ -429,35 +429,6 @@
   if (typeof window !== "undefined") { window.__huerde = kostenHuerdePp; }
 
   /* ================= Lokale KI-Pruefung (Veto/Boost) ================= */
-  function kiLogAdd(sym, dir, entscheidung, begruendung, mode) {
-    if (!D.kiLog) D.kiLog = [];
-    D.kiLog.unshift({ t: Date.now(), sym: sym, dir: dir, e: entscheidung, b: begruendung, m: mode });
-    if (D.kiLog.length > 30) D.kiLog = D.kiLog.slice(0, 30);
-  }
-  /** Fragt die lokale KI. Rückgabe: {go, factor, note} – bei KI-Ausfall: durchwinken (fail-open). */
-  async function kiCheck(ctx) {
-    if (!(window.LocalKI && window.LocalKI.vetoEnabled())) {
-      // Angehakt, aber kein Ollama-Modell hinterlegt (z. B. Provider Anthropic): das war
-      // vorher STILL wirkungslos – jetzt steht es sichtbar am Trade.
-      var sK = window.getSettings ? window.getSettings() : {};
-      if (sK.kiVeto && !(window.LocalKI && window.LocalKI.model())) {
-        return { go: true, factor: 1, note: ' · KI-Prüfung übersprungen: kein lokales Modell eingestellt (nur Ollama kann das Veto)' };
-      }
-      return { go: true, factor: 1, note: '' };
-    }
-    var r = await window.LocalKI.decide(ctx);
-    if (r.ok) HEALTH.kiOk++; else HEALTH.kiFail++;
-    if (!r.ok) return { go: true, factor: 1, note: ' · KI nicht erreichbar (' + (r.msg || '?').slice(0, 40) + ') – ohne Prüfung gehandelt' };
-    if (r.entscheidung === 'nein') {
-      kiLogAdd(ctx.symbol, ctx.richtung, 'Veto', r.begruendung, ctx.modus);
-      return { go: false, factor: 0, note: '' };
-    }
-    kiLogAdd(ctx.symbol, ctx.richtung, 'Ja ×' + r.groesse, r.begruendung, ctx.modus);
-    // Zweite Kappe (die erste steht in ollama.js): die KI darf ausschliesslich bremsen.
-    var fk = Math.min(1, Math.max(0, r.groesse || 1));
-    return { go: true, factor: fk, note: ' · KI: ja ×' + fk + ' (' + r.begruendung + ')', approved: true };
-  }
-
   /* ================= Benachrichtigungen & Nachbilden ================= */
   var SLUGS = { AAPL: 'apple', MSFT: 'microsoft', NVDA: 'nvidia', GOOGL: 'alphabet', AMZN: 'amazon', META: 'meta-platforms', TSLA: 'tesla', AMD: 'amd', AVGO: 'broadcom', TSM: 'tsmc', ASML: 'asml', INTC: 'intel', QCOM: 'qualcomm', MU: 'micron-technology', ARM: 'arm-holdings' };
 
@@ -2010,7 +1981,6 @@
         intradayKonfiguration: D.intraday,
         risiko: D.risk,
         geduldBilanz: D.patience || {},
-        kiEntscheidungen: D.kiLog || [],
         screener: D.screen || null,
         verlustSerie: D.lossStreak || null,
         equityVerlauf: (D.equityHist || []).slice(-2000),
@@ -2263,8 +2233,7 @@
   }
 
   /* ================= Trade öffnen / schließen ================= */
-  function openTrade(sym, dir, spot, vol, scores, reasonBits, now, kiRes) {
-    kiRes = kiRes || { factor: 1, note: '', approved: false };
+  function openTrade(sym, dir, spot, vol, scores, reasonBits, now) {
     var bvH = (Q.PROFILES[D.intraday.profile] || {}).ratio || Q.RATIO;
     var w = Q.makeWarrant(dir, spot, vol, now, bvH);
     var wWert = Q.warrantValue(dir, w, spot, now);
@@ -2275,7 +2244,7 @@
     var rsH = risikoStufeOk(dir, w, spot, now);
     if (!rsH.ok) { patienceAdd('Risikostufe (Stunden): ' + rsH.grund, sym); return null; }
     var ask = wWert * (1 + spx);
-    var qty = Math.floor((equityNow() * BUDGET * Math.min(1, kiRes.factor || 1)) / ask);
+    var qty = Math.floor((equityNow() * BUDGET) / ask);
     if (qty < 1 || D.cash < qty * ask) return null;
     D.cash -= qty * ask;
     var trade = {
@@ -2285,10 +2254,9 @@
       sl: SL, tp: TP,
       sources: (function () {
         var s0 = { news: scores.news, tech: scores.tech, elliott: scores.elliott };
-        if (kiRes.approved) s0.ki = dir === 'call' ? 1 : -1;
         return s0;
       })(),
-      reason: (kiRes.note ? kiRes.note.replace(/^ · /, '') + ' · ' : '') + reasonBits.reason,
+      reason: reasonBits.reason,
       scenario: reasonBits.scenario, elliottLabel: reasonBits.elliottLabel,
       status: 'open'
     };
@@ -2492,22 +2460,11 @@
             : 'Szenario: Fortsetzung der Abwärtsbewegung. ') +
             'Elliott-Einordnung: ' + ell.phase + ' (Alternativ: ' + ell.alt + '). ' +
             'Exit-Regeln: Stop-Loss −40 % auf den Scheinkurs, Take-Profit +80 %, Zeit-Exit 10 Tage vor Fälligkeit, oder Gegensignal.';
-          var kiH = await kiCheck({
-            symbol: sym, richtung: dir === 'call' ? 'LONG (Call)' : 'SHORT (Put)', modus: 'stunden-strategie', zeitrahmen: 'Tagesdaten',
-            gesamtScore: Math.round(S * 100) / 100, teilScores: scores,
-            elliott: { zaehlung: ell.label, konfidenz: ell.conf, alternative: ell.alt },
-            topSchlagzeile: sent.top ? sent.top.title : 'keine',
-            eventIn24h: (window.Cal && window.Cal.within24h().length) ? window.Cal.within24h()[0].name : 'nein',
-            // Tages-P/L NUR aus den eigenen, seit dem Messschnitt geschlossenen Trades.
-          // Der Depotwert enthält auch Altlasten-Abwicklungen – daraus ein Veto abzuleiten,
-          // sperrt sich selbst aus (Verlust → Veto → kein Trade → Verlust bleibt).
-          tagesPnlPct: tagesPnl().pct, tradesHeute: tagesPnl().n
-          });
-          if (kiH.go) openTrade(sym, dir, spot, vol, scores, { reason: reason, scenario: scenario, elliottLabel: ell.label }, now, kiH);
-          else {
-            patienceAdd('KI-Veto (Stunden-Strategie)', sym);
-            schattenNeu('KI-Veto (Stunden)', sym, dir, spot, hist, { sl: SL, tp: TP, trail: 0, maxHoldMin: 7 * 1440, uebernacht: true }, { profile: 'atm21' }, now, vol);
-          }
+          /* Die lokale KI-Pruefung ist am 23.08.2026 entfernt worden: Sie lief laut
+           * Diagnose ueber 14 Sitzungen und 1.741 Minuten kein einziges Mal (kiOk 0,
+           * kiFehl 0) und hat nie etwas entschieden. Ihr neutraler Rueckgabewert war
+           * "durchlassen" - genau das passiert hier jetzt direkt. */
+          openTrade(sym, dir, spot, vol, scores, { reason: reason, scenario: scenario, elliottLabel: ell.label }, now);
         }
         await new Promise(function (r) { setTimeout(r, 250); });
       }
@@ -3474,45 +3431,24 @@
           ec = Q.edgeCheck(closes5, (mp.maxHoldMin || 60) / barMin, roundTrip, omegaPre, 1.5);
         }
         if (!ec.ok) { patienceAdd('Kosten-Check: Bewegung deckt Kosten nicht', sym); schattenNeu('Kosten-Check', sym, dir, spot, sigBars, mp, cfg, now); continue; }
-        // Lokale KI als letzte Prüfinstanz (Veto/Boost)
-        var trendUp = (function () { var tc2 = sigBars.slice(-240).map(function (b) { return b[1]; }); if (tc2.length < 100) return '?'; var e2 = Q.emaSeries(tc2, 100); return sigSpot > e2[e2.length - 1] ? 'aufwärts' : 'abwärts'; })();
-        var ki = await kiCheck({
-          symbol: sym, richtung: dir === 'call' ? 'LONG (Call)' : 'SHORT (Put)', modus: cfg.mode, zeitrahmen: cfg.interval,
-          hebel: Math.round(omegaPre * 10) / 10,
-          stopPct: Math.round(slT * 100),
-          uhrzeitBerlin: new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Berlin' }),
-          wochentag: ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'][new Date().getDay()],
-          zScore: revZ, wellenScore: waveQ ? waveQ.score : undefined, scoreTeile: waveQ ? waveQ.parts : undefined,
-          trendEMA100: trendUp,
-          trendkanal: chE ? { positionImKanal: Math.round(chE.pos * 100) + ' %', steigung: chE.steigung, breitePct: chE.breitePct } : undefined,
-          letzteBewegungenPct: sigBars.slice(-10).map(function (b) { return Math.round((b[1] / spot - 1) * 10000) / 100; }),
-          kostenCheck: { typischeBewegungPct: ec.havePct, noetigPct: ec.needPct },
-          eventIn24h: (window.Cal && window.Cal.within24h().length) ? window.Cal.within24h()[0].name : 'nein',
-          // tagesPnl() liefert ein OBJEKT {n, pnl, pct}. Vorher wurde das Objekt geteilt –
-          // Ergebnis NaN, im JSON dann null. Prüfregel 4 des Risk-Managers ("Tagesverlust
-          // unter −3 % → nein") konnte deshalb im Intraday-Betrieb nie greifen.
-          tagesPnlPct: D.dayStartEq ? Math.round(tagesPnl().pnl / D.dayStartEq * 10000) / 100 : 0,
-          tradesHeute: D.intradayCount || 0
-        });
-        if (!ki.go) { patienceAdd('KI-Veto', sym); schattenNeu('KI-Veto', sym, dir, spot, sigBars, mp, cfg, now); continue; }
         var fee = cfg.orderFee || 0;
         var qty;
         var sizingR = parseFloat(cfg.sizing);
         if (sizingR > 0) {
           // Positionsgröße nach Risiko: ausgelöster Stop kostet ~sizingR % vom Depot
-          qty = Math.floor((equityNow() * sizingR / 100 * Math.min(1, ki.factor || 1) * lsFactor) / (ask * Math.max(0.08, Math.abs(slT))));
+          qty = Math.floor((equityNow() * sizingR / 100 * lsFactor) / (ask * Math.max(0.08, Math.abs(slT))));
           var qMax = Math.floor((equityNow() * Math.max(cfg.budgetPct * 3, 0.10)) / ask);
           if (qty > qMax) qty = qMax;
         } else {
-          qty = Math.floor((equityNow() * cfg.budgetPct * Math.min(1, ki.factor || 1) * lsFactor) / ask);
+          qty = Math.floor((equityNow() * cfg.budgetPct * lsFactor) / ask);
         }
         if (istBasis) {
           // Bruchstuecke sind beim Basiswert Realitaet (CFD). Ohne sie fiele jede Aktie
           // ueber equity*budget still aus dem Handel - im Backtest hat genau dieser
           // Ganzzahl-Filter alle Werte ueber 400 $ ausgeschlossen.
           qty = sizingR > 0
-            ? (equityNow() * sizingR / 100 * Math.min(1, ki.factor || 1) * lsFactor) / (ask * Math.max(0.08, Math.abs(slT)))
-            : (equityNow() * cfg.budgetPct * Math.min(1, ki.factor || 1) * lsFactor) / ask;
+            ? (equityNow() * sizingR / 100 * lsFactor) / (ask * Math.max(0.08, Math.abs(slT)))
+            : (equityNow() * cfg.budgetPct * lsFactor) / ask;
           qty = Math.max(0, Math.round(qty * 10000) / 10000);
           if (qty * ask < 1) qty = 0;
         }
@@ -3564,8 +3500,8 @@
           // Kapitulations-Trades tragen ihren gemessenen 26-Handelsstunden-Horizont
           maxHoldMin: kapiTrade ? 1560 : (mp.maxHoldMin || 0),
           exitMode: kapiTrade ? 'zeit' : mp.exitMode, uebernacht: kapiTrade ? true : !!mp.uebernacht, peak: ask, chN: chN || 0, chan: chRef,
-          sources: ki.approved ? { intraday: dir === 'call' ? 1 : -1, ki: dir === 'call' ? 1 : -1 } : { intraday: dir === 'call' ? 1 : -1 },
-          reason: ki.note.replace(/^ · /, '') + (ki.note ? ' · ' : '') + (isOrb
+          sources: { intraday: dir === 'call' ? 1 : -1 },
+          reason: (isOrb
               ? 'ORB: Ausbruch aus der Eröffnungs-Range (' + U.nf2.format(orbInfo.lo) + '–' + U.nf2.format(orbInfo.hi) + ', 30 Min) nach ' + (dir === 'call' ? 'OBEN' : 'UNTEN') + ' bei ' + U.nf2.format(spot) + '. '
               : isWave
               ? 'Wellenreiter: Tal erkannt (z ' + revZ + ', ' + barMin + '-Min) bei ' + U.nf2.format(spot) + ' · Wellen-Score ' + waveQ.score + '/100 (Rhythmus ' + waveQ.parts.rhythmus + ' · Amplitude ' + waveQ.parts.amplitude + ' · Tiefe ' + waveQ.parts.tiefe + ' · Umkehr ' + waveQ.parts.umkehr + ' · Volumen ' + waveQ.parts.volumen + ')' + (chE ? ' · Kanal (' + chN + ' Bars): Position ' + Math.round(chE.pos * 100) + ' %, Steigung ' + chE.steigung + ', Breite ' + chE.breitePct + ' %' : '') + '. '
@@ -3714,20 +3650,6 @@
     // KI-Karte: Status & Entscheidungs-Log
     var ks = document.getElementById('kiState');
     if (ks) {
-      var kiOn = !!(window.LocalKI && window.LocalKI.vetoEnabled());
-      ks.textContent = kiOn ? 'aktiv' : 'aus';
-      ks.className = 'state ' + (kiOn ? 'on' : 'off');
-      var kl = document.getElementById('kiLog');
-      if (kl) {
-        kl.innerHTML = (D.kiLog && D.kiLog.length)
-          ? '<div style="color:var(--muted); margin-bottom:3px;">Letzte KI-Entscheidungen:</div>' + D.kiLog.slice(0, 8).map(function (e0) {
-            var veto = e0.e === 'Veto';
-            return '<div style="padding:2px 0; border-top:1px solid var(--grid);">' +
-              new Date(e0.t).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }) + ' · <b>' + U.esc(e0.sym) + '</b> ' +
-              '<span class="' + (veto ? 'neg' : 'pos') + '">' + U.esc(e0.e) + '</span> – ' + U.esc(e0.b || '') + '</div>';
-          }).join('')
-          : (kiOn ? '<span style="color:var(--muted);">Noch keine Entscheidungen – kommt mit dem nächsten Signal.</span>' : '');
-      }
     }
 
     // Kalender-Warnung (marktbewegende Termine in <24 h)
@@ -5617,14 +5539,9 @@
           fixedGrid: [{ period: entd.period, confirmBps: entd.confirmBps, zThr: zOf(entd.confirmBps), lineType: entd.lineType }],
           opts: entd.opts });
       }
-      var kiK = (D.autoOpt || {}).kiKandidat;
-      if (kiK && kiK.opts && kiK.interval) {
-        MODES.push({ key: 'ki', setup: kiK.setup || 'ausbruch', trigger: kiK.trigger || 'kreuzung',
-          name: 'KI-Vorschlag: ' + (kiK.name || kiK.basis), nurInterval: kiK.interval,
-          meta: { kiBase: kiK.basis, scalpHold: kiK.scalpHold, scalpSL: kiK.scalpSL, profile: kiK.profile },
-          fixedGrid: [{ period: kiK.period, confirmBps: kiK.confirmBps, zThr: zOf(kiK.confirmBps), lineType: kiK.lineType }],
-          opts: kiK.opts });
-      }
+      /* Der KI-Vorschlag stand hier als eigener Modus in der Auswahl und konnte damit
+       * den Waechter-Modus unterlaufen - der Autopilot durfte von der belegten Kante
+       * wegschalten. Zusammen mit dem uebrigen KI-Pfad entfernt (23.08.2026). */
       /* Fenster fuer die Vorauswahl. Gewaehlt so, dass jeder Zeitrahmen genug
        * Handelstage fuer neun Walk-Forward-Scheiben behaelt, ohne dass die Rechnung
        * explodiert. Der Sieger wird anschliessend auf der VOLLEN Historie geprueft. */
@@ -6110,21 +6027,14 @@
     try {
       var f = await regimeFacts();
       if (!f) { D.regime = { at: Date.now(), ok: false, txt: 'Zu wenig Kursdaten für eine Lagebeurteilung.' }; await save(); renderRegime(); return; }
-      var quelle = 'Regel', ki = null, geprueft = null;
-      var wahl = null;
-      if (window.LocalKI && window.LocalKI.model()) {
-        renderRegime('fragt das lokale Modell …');
-        ki = await window.LocalKI.decideSetup(f);
-        if (ki && ki.ok) {
-          geprueft = regimeValidate(ki, f);
-          if (geprueft.ok) { wahl = ki; quelle = 'lokale KI'; }
-        }
-      }
-      if (!wahl) {
-        wahl = regimeFallback(f);
-        quelle = ki && ki.ok ? 'Regel (KI-Vorschlag abgelehnt: ' + geprueft.grund + ')'
-          : (window.LocalKI && window.LocalKI.model() ? 'Regel (Ollama nicht erreichbar)' : 'Regel (kein lokales Modell eingerichtet)');
-      }
+      /* Die Lagebeurteilung fragte hier ein lokales Modell und uebernahm dessen Setup,
+       * wenn regimeValidate zustimmte. Zwei Gruende, warum das weg ist (23.08.2026):
+       * Der Pfad lief laut Diagnose ueber 14 Sitzungen kein einziges Mal, UND
+       * regimeValidate laesst nur 1m und 5m zu, waehrend die App auf 60m handelt -
+       * ein Vorschlag konnte also gar nicht angenommen werden. Es bleibt die Regel,
+       * die vorher schon in jedem Fall entschied. */
+      var quelle = 'Regel';
+      var wahl = regimeFallback(f);
       // v8: Die Marktlage ist NUR NOCH ANZEIGE. Sie schaltet nichts mehr selbst um –
       // das stündliche Hin-und-Her hat Handeinstellungen zurückgedreht und stand quer
       // zum Autopiloten, der auf gemessener Basis entscheidet. Umschalten tut nur noch
@@ -6923,12 +6833,12 @@
             await Promise.all(gruppenTeil.map(function (sk2) {
               var eintraege = buendel[sk2];
               var k0 = eintraege[0].k;
-              var kk0 = kiKandidatBauen(k0);
+              var kk0 = kandidatBauen(k0);
               var basisOpts = Object.assign({}, common, kk0.opts,
                 { period: k0.period, confirmBps: k0.confirmBps, zThr: zOf(k0.confirmBps), lineType: k0.lineType });
               // Was sich je Variante unterscheidet: Not-Stop, Haltedauer, Schein-Profil
               var varianten = eintraege.map(function (e) {
-                var kkv = kiKandidatBauen(e.k);
+                var kkv = kandidatBauen(e.k);
                 return { sl: kkv.opts.sl, maxHoldMin: kkv.opts.maxHoldMin,
                   otmPct: kkv.opts.otmPct, expiryDays: kkv.opts.expiryDays, ratio: kkv.opts.ratio };
               });
@@ -6975,7 +6885,7 @@
             zufallProGruppe.push({ basis: basisJetzt, iv: iv2, probe: zpG });
           }
           for (var ti2 = 0; ti2 < Math.min(6, kandT.length); ti2++) {
-            var kk2 = kiKandidatBauen(kandT[ti2].k);
+            var kk2 = kandidatBauen(kandT[ti2].k);
             var rv = await btIntraday(testMapAlle, Object.assign({}, labCommonOpts(D.intraday, iv2), kk2.opts,
               { period: kandT[ti2].k.period, confirmBps: kandT[ti2].k.confirmBps, zThr: zOf(kandT[ti2].k.confirmBps), lineType: kandT[ti2].k.lineType }));
             if (rv && !rv.error) {
@@ -7045,7 +6955,7 @@
       // zuechten wir Rauschen und nennen es Fortschritt.
       var zufallOk = !zpGesamt || zpGesamt.ueberzufaellig;
       if (bester && bester.testRet > 0 && bester.testN >= 15 && zufallOk) {
-        var ek = kiKandidatBauen(bester.k);
+        var ek = kandidatBauen(bester.k);
         ek.quelle = 'tiefensuche';
         a.entdeckt = ek;
         pilotLogAdd('Tiefensuche-Fund: ' + ek.name + ' (Training ' + bester.trainRet + ' %, ungesehen +' + bester.testRet + ' % bei ' + bester.testN + ' Trades) – tritt in der nächsten Nacht-Messung an.');
@@ -7080,7 +6990,7 @@
     profile: ['atm21', 'otm3_14', 'otm5_10', 'atm21_b', 'atm60_b', 'otm3_30b'],
     scalpSL: [10, 15, 20, 30, 45, 'auto'], scalpHold: [15, 30, 60, 120, 240, 390], channel: [true, false]
   };
-  function kiKandidatBauen(k) {
+  function kandidatBauen(k) {
     var slV = k.scalpSL === 'auto' ? 'auto' : -(k.scalpSL) / 100;
     var prof = Q.PROFILES[k.profile] || Q.PROFILES.atm21;
     var basisO;
@@ -7106,38 +7016,6 @@
       at: Date.now(), opts: basisO
     };
   }
-  async function kiKandidatHolen(ranking, fb) {
-    if (!(window.LocalKI && window.LocalKI.model())) return null;
-    var kurz = (ranking || []).slice(0, 10).map(function (r) {
-      return { variante: r.name, zeitrahmen: r.interval, wfRenditePct: r.wfRet, trades: r.n, profitFaktor: r.pf, urteil: r.verdict };
-    });
-    var prompt = 'Du hilfst, den Kandidaten-Pool einer SIMULIERTEN Handels-Messung zu erweitern. ' +
-      'Hier das aktuelle Ranking (Walk-Forward auf ungesehenen Daten) und die Filter-Bilanz:\n' +
-      JSON.stringify({ ranking: kurz, filterBilanz: fb || null }) + '\n\n' +
-      'Erkenntnisse bisher: Handelskosten dominieren; der Spread ist ein Cent-Betrag je Schein, teurere Scheine (ATM, laengere Laufzeit) zahlen daher relativ weniger; ' +
-      'laengere Haltedauern und niedrigere Hebel schneiden weniger schlecht ab.\n' +
-      'Nominiere EINEN Kandidaten fuer die naechste Nacht-Messung. Erlaubte Werte (STRIKT einhalten):\n' +
-      JSON.stringify(KI_ERLAUBT) + '\n' +
-      'Antworte AUSSCHLIESSLICH mit JSON, exakt so: ' +
-      '{"basis":"...","interval":"...","period":20,"confirmBps":15,"lineType":"ema","profile":"atm21","scalpSL":30,"scalpHold":240,"begruendung":"max. 25 Woerter auf Deutsch"}';
-    var txt = await window.LocalKI.ask(prompt, 300);
-    if (!txt) return null;
-    var m = txt.match(/{[sS]*}/);
-    if (!m) return null;
-    var k;
-    try { k = JSON.parse(m[0]); } catch (e) { return null; }
-    if (k.basis === 'breakout') k.basis = 'breakout_lauf';   // gemessen wird immer die Laufen-Variante
-    if (k.period != null) k.period = parseInt(k.period, 10);
-    if (k.confirmBps != null) k.confirmBps = parseInt(k.confirmBps, 10);
-    if (k.scalpHold != null) k.scalpHold = parseInt(k.scalpHold, 10);
-    if (k.scalpSL !== 'auto' && k.scalpSL != null) k.scalpSL = parseInt(k.scalpSL, 10);
-    var gueltig = ['basis', 'interval', 'period', 'confirmBps', 'lineType', 'profile', 'scalpSL', 'scalpHold'].every(function (f) {
-      return KI_ERLAUBT[f].indexOf(k[f]) !== -1;
-    });
-    if (!gueltig) return null;
-    return kiKandidatBauen(k);
-  }
-
   function recKey(r) { return [r.modeKey, r.interval, r.period, r.confirmBps, r.lineType, r.window, r.profile || '', r.scalpHold || '', r.scalpSL || ''].join('|'); }
   var pilotRunning = false, pilotPhase = '';
   var pilotStartAt = 0;
@@ -7362,15 +7240,9 @@
           fbZeilen.forEach(function (z9) { var f9 = FILTER_FELD[z9.name]; if (f9 && !z9.duenn) a.filterBilanzVorher[f9] = z9.nutzen; });
         }
       } catch (eFb2) { /* Diagnose darf die Messung nie kippen */ }
-      // Das lokale Modell darf einen Kandidaten fuer die NAECHSTE Nacht nominieren
-      try {
-        if (window.LocalKI && window.LocalKI.model()) {
-          pilotLogAdd('Frage das lokale Modell nach einem Kandidaten-Vorschlag …');
-          var kiNeu = await kiKandidatHolen((D.central || {}).ranking, rec && rec.filterBilanz);
-          if (kiNeu) { a.kiKandidat = kiNeu; pilotLogAdd('KI-Vorschlag für die nächste Messung: ' + kiNeu.name + (kiNeu.begruendung ? ' – ' + kiNeu.begruendung : '')); }
-          else pilotLogAdd('KI-Vorschlag: keiner (Antwort unbrauchbar oder außerhalb der Whitelist).');
-        }
-      } catch (eKi) { pilotLogAdd('KI-Vorschlag fehlgeschlagen: ' + (eKi && eKi.message ? eKi.message : eKi)); }
+      /* Hier nominierte das lokale Modell einen Kandidaten fuer die naechste Nacht.
+       * Mit dem uebrigen KI-Pfad entfernt (23.08.2026): Der Vorschlag ging als eigener
+       * Modus in die Auswahl und konnte damit den Waechter-Modus unterlaufen. */
       pilotAnwenden();          // Börse gerade zu? Dann direkt einspielen statt bis morgens zu warten
       await save();
       exportAnalysis(true);     // messbericht.md + analyse-daten.json sofort in den Daten-Ordner

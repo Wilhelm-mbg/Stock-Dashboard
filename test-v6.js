@@ -487,10 +487,9 @@ console.log('16) Kostenmodell, kalibriert an echten Emittenten-Kursen (onvista)'
  * (Renderer, nicht importierbar) - ihre REGELN werden hier gegen dieselbe Logik
  * geprueft, die der Produktcode verwendet, plus ein Quelltext-Waechter, der anschlaegt,
  * sobald der Aufruf im Scanner verschwindet. */
-console.log('\n17) Kapitalschutz: Kill-Switch, KI-Deckel, Stale-Daten, Regime-Pause');
+console.log('\n17) Kapitalschutz: Kill-Switch, Positionsgroessen-Wachhund, Stale-Daten, Regime-Pause');
 (function () {
   var depotSrc = fs.readFileSync(__dirname + '/depot.js', 'utf8');
-  var ollamaSrc = fs.readFileSync(__dirname + '/ollama.js', 'utf8');
 
   // --- 1) Kill-Switch ---
   ok(/function killSwitchPruefen/.test(depotSrc), 'Kill-Switch: Funktion existiert');
@@ -505,22 +504,23 @@ console.log('\n17) Kapitalschutz: Kill-Switch, KI-Deckel, Stale-Daten, Regime-Pa
   ok(loestAus(9701, 10000, 3) === false, 'Kill-Switch-Regel: −2,99 % loest noch nicht aus');
   ok(loestAus(9000, 10000, 3) === true,  'Kill-Switch-Regel: −10 % loest erst recht aus');
 
-  // --- 2) KI darf nie aufdrehen ---
-  ok(!/groesse":0\.5 oder 1\.0 oder 1\.5/.test(ollamaSrc), 'KI-Prompt: 1.5 wird nicht mehr angeboten');
-  ok(/g = Math\.min\(1\.0, g\)/.test(ollamaSrc), 'KI-Antwort: Faktor wird in ollama.js auf 1.0 gekappt');
-  ok(/Math\.min\(1, Math\.max\(0, r\.groesse \|\| 1\)\)/.test(depotSrc), 'kiCheck: zweite Kappe bei 1.0');
-  var sizingStellen = depotSrc.match(/equityNow\(\) \* [^;]*?(ki|kiRes)\.factor[^;]*?\)/g) || [];
-  // Drei Schein-Stellen plus zwei Basiswert-Stellen (Bruchstueck-Stueckelung, 21.08.2026).
-  // Die Zahl ist der Wachhund: aendert sie sich, ist eine Sizing-Stelle dazugekommen oder
-  // verschwunden - und die Deckel-Pruefung darunter muss sie mit erfassen.
-  ok(sizingStellen.length === 5, 'Positionsgroesse: alle fuenf Sizing-Stellen gefunden', sizingStellen.length);
-  ok(sizingStellen.every(function (z) { return /Math\.min\(1, (ki|kiRes)\.factor \|\| 1\)/.test(z); }),
-     'Positionsgroesse: KI-Faktor ist an JEDER Stelle auf 1.0 gedeckelt');
-  // Die Kappe selbst nachrechnen
-  function kappe(g) { if (!(g > 0)) g = 1.0; return Math.min(1.0, g); }
-  ok(kappe(1.5) === 1.0, 'Kappe: 1.5 wird zu 1.0 (KI kann nicht aufdrehen)');
-  ok(kappe(0.5) === 0.5, 'Kappe: 0.5 bleibt 0.5 (KI darf bremsen)');
-  ok(kappe(99) === 1.0 && kappe(0) === 1.0 && kappe(NaN) === 1.0, 'Kappe: Unsinn faellt auf 1.0 zurueck');
+  // --- 2) Positionsgroesse: der Wachhund auf die Zahl der Stellen ---
+  /* Der lokale KI-Pfad ist am 23.08.2026 entfernt worden (er lief laut Diagnose ueber
+   * 14 Sitzungen kein einziges Mal). Die Pruefungen auf die KI-Kappe sind damit
+   * gegenstandslos. Was BLEIBT, ist der Wachhund: Er zaehlt die Stellen, an denen eine
+   * Positionsgroesse aus equityNow() gebildet wird. Aendert sich die Zahl, ist eine
+   * Stelle dazugekommen oder verschwunden - und genau das ist hier schon einmal
+   * unbemerkt passiert. Vorher zaehlte er den KI-Faktor als Marker mit; jetzt zaehlt
+   * er die Stellen selbst. */
+  var sizingStellen = depotSrc.match(/equityNow\(\) \* [^;]*?\/ \(?ask/g) || [];
+  ok(sizingStellen.length === 6, 'Positionsgroesse: alle sechs Stellen gefunden ' +
+     '(zwei Schein-Stellen, der Deckel qMax, zwei Bruchstueck-Stellen, eine in openTrade)', sizingStellen.length);
+  ok(!/\bki\.factor|\bkiRes\.factor/.test(depotSrc),
+     'Kein KI-Faktor mehr in der Positionsgroesse');
+  ok(!/window\.LocalKI/.test(depotSrc),
+     'depot.js spricht das lokale Modell nirgends mehr an');
+  ok(!fs.existsSync(__dirname + '/ollama.js'),
+     'Das Ollama-Modul ist entfernt - es lief laut Diagnose ueber 14 Sitzungen kein einziges Mal');
 
   // --- 3) Stale-Daten-Schutz ---
   ok(/function barsFrisch/.test(depotSrc), 'Stale-Schutz: barsFrisch existiert');
