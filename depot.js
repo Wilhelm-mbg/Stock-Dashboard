@@ -1655,6 +1655,58 @@
   /* Die zuletzt geprueften Kerzen je Wert, damit der Chart (Wunsch #38) genau die
    * Reihe zeigt, auf der auch gerechnet wurde - kein zweiter Abruf, keine Abweichung. */
   var WENDE_BARS = {}, WENDE_ERG = {}, WENDE_F = 5;
+  /** Was ist aus frueheren Drehungen DIESER Reihe geworden?
+   *  Der Detektor wird ueber die Historie gefahren; jede Drehung wird bis zur
+   *  GEGENDREHUNG gehalten - das ist die einzige Ausstiegsregel, die aus der Regel
+   *  selbst folgt. Eine erfundene Haltedauer waere eine zweite, ungemessene Annahme.
+   *
+   *  Daneben die Kontrolle: dieselbe Haltedauer, dieselbe Reihe, aber an beliebigen
+   *  Punkten - der Durchschnitt ueber alle. Ohne sie misst man Marktdrift und nennt
+   *  sie Signal; bei der belegten Intraday-Regel waren das rund zwei Drittel.
+   *
+   *  Rueckgabe: { n, mittel, ktr, ueberschuss, dauerSchnitt } oder null. */
+  function wendeNachlese(bars, opt) {
+    try {
+      if (!bars || bars.length < 260) return null;
+      var S = opt.schwelle, F = opt.bestaetigung;
+      var SCHRITT = Math.max(1, Math.round(bars.length / 400));   // nicht jede Kerze - das reicht und bleibt schnell
+      var offen = null, faelle = [];
+      for (var i = 200; i < bars.length - 1; i += SCHRITT) {
+        var w = null;
+        try { w = Q.trendwechsel(bars.slice(0, i + 1), { schwelle: S, bestaetigung: F }); } catch (e) { continue; }
+        if (!w) continue;
+        var richtung = w.aktuell && w.aktuell.winkel != null ? Math.sign(w.aktuell.winkel) : 0;
+        if (offen && richtung && richtung !== offen.richtung) {
+          // Gegendrehung: Position schliessen
+          var ein = bars[offen.i][1], aus = bars[i][1];
+          if (ein > 0 && aus > 0) {
+            faelle.push({ i: offen.i, dauer: i - offen.i,
+              ret: (aus / ein - 1) * 100 * offen.richtung });   // Short-Bein mit umgekehrtem Vorzeichen
+          }
+          offen = null;
+        }
+        if (!offen && w.signal && richtung) offen = { i: i, richtung: richtung };
+      }
+      if (faelle.length < 5) return null;
+      var sum = 0, dau = 0;
+      faelle.forEach(function (f) { sum += f.ret; dau += f.dauer; });
+      var mittel = sum / faelle.length, dSchnitt = Math.round(dau / faelle.length);
+      /* Kontrolle: dieselbe mittlere Haltedauer, ueber die ganze Reihe gemittelt.
+       * Absolutbetrag waere falsch - gefragt ist, was ein beliebiger Einstieg
+       * ueber dieselbe Zeit gebracht haette. */
+      var ks = 0, kn = 0;
+      for (var j = 200; j + dSchnitt < bars.length; j += SCHRITT) {
+        var a2 = bars[j][1], b2 = bars[j + dSchnitt][1];
+        if (a2 > 0 && b2 > 0) { ks += (b2 / a2 - 1) * 100; kn++; }
+      }
+      var ktr = kn >= 20 ? ks / kn : null;
+      return { n: faelle.length, mittel: Math.round(mittel * 1000) / 1000,
+               ktr: ktr == null ? null : Math.round(ktr * 1000) / 1000,
+               ueberschuss: ktr == null ? null : Math.round((mittel - ktr) * 1000) / 1000,
+               dauerSchnitt: dSchnitt };
+    } catch (e) { return null; }
+  }
+
   async function wendePruefen(erzwungen) {
     var el = document.getElementById('wendeTabelle'), st = document.getElementById('wendeStatus');
     if (!el || wendeLaeuft) return;
@@ -1679,7 +1731,8 @@
         var sigBars = Q.fertigeBars(fd.series, barMin, Date.now());
         var w = Q.trendwechsel(sigBars, { schwelle: S, bestaetigung: F });
         WENDE_BARS[sy] = sigBars; WENDE_ERG[sy] = w;
-        zeilen.push({ sym: sy, w: w });
+        var nl = wendeNachlese(sigBars, { schwelle: S, bestaetigung: F });
+        zeilen.push({ sym: sy, w: w, nl: nl });
       }, 4);
       // Frische Wechsel zuoberst, dann die steilsten jungen Abschnitte
       zeilen.sort(function (a, b) {
@@ -1690,10 +1743,13 @@
         return wb - wa;
       });
       var pfeil = function (t) { return t === 'auf' || t === 'up' ? '↗' : (t === 'ab' || t === 'down' ? '↘' : '→'); };
-      var h = '<table class="tbl"><tr><th>Wert</th><th>Vortrend</th><th>Junger Abschnitt</th><th>Drehung</th><th>Stand</th></tr>';
+      var h = '<table class="tbl"><tr><th>Wert</th><th>Vortrend</th><th>Junger Abschnitt</th><th>Drehung</th>' +
+        '<th title="Die einzige Ausstiegsregel, die aus dem Detektor selbst folgt: halten, bis der Winkel zurückdreht.">Ausstieg</th>' +
+        '<th title="Wie viele Drehungen dieser Art in der verfügbaren Historie überhaupt vorkommen. Für eine belastbare Bewertung bräuchte es rund 30 – dafür reicht das Archiv nicht.">Fälle in der Historie</th>' +
+        '<th>Stand</th></tr>';
       zeilen.forEach(function (z) {
         if (z.fehler || !z.w) {
-          h += '<tr><td><b>' + U.esc(z.sym) + '</b></td><td colspan="4" style="color:var(--muted);">' + U.esc(z.fehler || 'zu wenig Historie') + '</td></tr>';
+          h += '<tr><td><b>' + U.esc(z.sym) + '</b></td><td colspan="6" style="color:var(--muted);">' + U.esc(z.fehler || 'zu wenig Historie') + '</td></tr>';
           return;
         }
         var v = z.w.vorher, a = z.w.aktuell, sig = z.w.signal;
@@ -1703,6 +1759,28 @@
           '<td>' + (v ? pfeil(v.trend) + ' ' + U.nf2.format(v.winkel) : '<span style="color:var(--muted);">kein Vortrend</span>') + '</td>' +
           '<td>' + (a ? (a.winkel != null ? pfeil(a.trend) + ' ' + U.nf2.format(a.winkel) + ' <span style="color:var(--muted);">(seit ' + a.seitKerzen + ' Kerzen)</span>' : '<span style="color:var(--muted);">' + U.esc(a.trend) + ' (' + a.seitKerzen + ' Kerzen)</span>') : '–') + '</td>' +
           '<td>' + (dreht ? '<b>ja</b>' : 'nein') + '</td>' +
+          /* AUSSTIEG: Der Detektor hat keine eigene Ausstiegsregel - er erkennt eine
+           * Drehung und sagt nie, wann man wieder raus soll. Die einzige Regel, die
+           * aus ihm selbst folgt, ist die symmetrische: halten, bis der Winkel
+           * zurueckdreht. Eine erfundene Haltedauer stuende hier als Zahl, die nie
+           * gemessen wurde - deshalb steht stattdessen die Bedingung da. */
+          '<td>' + (a && a.winkel != null
+            ? '<span style="color:var(--muted);">bei Gegendrehung' +
+              (z.nl && z.nl.dauerSchnitt ? ' – bisher im Schnitt nach ' + z.nl.dauerSchnitt + ' Kerzen' : '') + '</span>'
+            : '<span style="color:var(--muted);">–</span>') + '</td>' +
+          /* HIER STAND EINE ERTRAGSZAHL, UND SIE IST WIEDER RAUS.
+           * Gemessen am 23.08.2026: Auf 4.000 Fuenf-Minuten-Kerzen findet der Detektor
+           * rund SECHS Drehungen. Bei sechs Faellen kippt das Mittel das Vorzeichen,
+           * sobald man nur die Abtastdichte aendert (-0,028 / +0,166 / +0,230 % bei
+           * gleicher Fallzahl). Eine Zahl, die von einem Implementierungsdetail
+           * abhaengt, gehoert nicht in die Oberflaeche - wer sie sieht, liest sie,
+           * egal wie vorsichtig der Text daneben steht.
+           * Was bleibt, ist die FALLZAHL: Sie sagt ehrlich, dass sich hier nichts
+           * bewerten laesst. */
+          '<td>' + (z.nl
+            ? '<span style="color:var(--muted);">' + z.nl.n + ' Drehungen in der Historie – ' +
+              'zu wenige für eine Bewertung</span>'
+            : '<span style="color:var(--muted);">zu wenig Historie</span>') + '</td>' +
           '<td>' + (sig
             ? '<b class="' + (sig.dir === 'call' ? 'pos' : 'neg') + '">Wechsel nach ' + (sig.dir === 'call' ? 'OBEN' : 'UNTEN') + '</b>'
             : '<span style="color:var(--muted);">' + (a && a.winkel != null && Math.abs(a.winkel) < S ? 'zu flach' : 'kein Wechsel') + '</span>') + '</td></tr>';
@@ -1710,7 +1788,24 @@
       h += '</table><div class="hinweis" style="margin-top:8px;">Winkel = Steigung × Abschnittslänge ÷ Kanalbreite ' +
         '(wie steil relativ zum eigenen Rauschen; Vorzeichen = Richtung). „Wechsel“ = junger Abschnitt ist steiler als die ' +
         'Schwelle UND dreht gegen den Vortrend – die Studien-Bedingung. <b>Zeile anklicken</b> zeigt den Kursverlauf mit ' +
-        'Wendepunkt und beiden Abschnitten (Wunsch #38). Simulation, keine Anlageberatung.</div>';
+        'Wendepunkt und beiden Abschnitten (Wunsch #38). Simulation, keine Anlageberatung.' +
+        '<br><br><b>Zum Ausstieg:</b> Der Detektor hat keine eigene Ausstiegsregel – er erkennt eine ' +
+        'Drehung und sagt nichts darüber, wann man wieder heraus soll. Die einzige Regel, die aus ihm ' +
+        'selbst folgt, ist die symmetrische: halten, bis der Winkel zurückdreht. Genau so ist die ' +
+        'Spalte „Bisher“ gerechnet – jede vergangene Drehung dieser Reihe bis zur Gegendrehung.' +
+        '<br><b>Warum hier keine Ertragszahl steht:</b> Es war eine geplant – und sie ist beim ' +
+        'Nachrechnen durchgefallen. Auf 4.000 Fünf-Minuten-Kerzen findet der Detektor rund <b>sechs</b> ' +
+        'Drehungen. Bei sechs Fällen entscheidet ein einziger Trade das Mittel, und das Vorzeichen ' +
+        'kippt, sobald man nur die Abtastdichte ändert (−0,028 / +0,166 / +0,230 % bei gleicher ' +
+        'Fallzahl). Für eine belastbare Bewertung bräuchte es rund 30 Fälle je Wert, also etwa ' +
+        '20.000 Kerzen – das Archiv hat gut 5.000.' +
+        '<br>Das ist selbst ein Ergebnis: <b>Dieser Reiter kann seine eigenen Signale nicht ' +
+        'bewerten.</b> Er zeigt die Marktstruktur, und dafür ist er gut. Ob eine Drehung etwas ' +
+        'einbringt, ist damit nicht zu beantworten – und eine Zahl hinzuschreiben, die es zu ' +
+        'beantworten scheint, wäre schlechter als keine.' +
+        '<br><b>Was aus der großen Messung bekannt ist:</b> Der Winkel-Detektor wurde auf 55 ' +
+        'zurückgehaltenen Handelstagen nachgemessen; die ursprünglich gefundenen +0,25 Pp sind ' +
+        'widerlegt (0,074 Pp, t = 1,22). Das ist die belastbare Aussage zu diesem Detektor.</div>';
       el.innerHTML = h;
       wendeChartsVerkabeln(el);
       wendeZuletzt = Date.now();

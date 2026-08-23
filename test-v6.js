@@ -2898,6 +2898,31 @@ console.log('\n36) Kostenhuerde des Produkts (Signalstudie 23.08.2026)');
   ok(/Überschuss/.test(dep) && /Kontrolle/.test(dep),
      'Die Regelliste zeigt Kontrolle und Ueberschuss als eigene Spalten');
 
+  /* Trendwechsel-Reiter (Wilhelms Frage nach dem Ausstiegszeitpunkt, 23.08.2026).
+   * Der Detektor HAT keine Ausstiegsregel - er erkennt eine Drehung und sagt nie, wann
+   * man wieder heraus soll. Die einzige Regel, die aus ihm folgt, ist die
+   * symmetrische: halten bis zur Gegendrehung. Das steht jetzt da, statt einer
+   * erfundenen Haltedauer. */
+  ok(/<th title="Die einzige Ausstiegsregel/.test(dep) && /bei Gegendrehung/.test(dep),
+     'Der Trendwechsel-Reiter nennt den Ausstieg - als Bedingung, nicht als erfundene Zahl');
+  ok(/function wendeNachlese/.test(dep), 'Die Nachlese ueber fruehere Drehungen existiert');
+
+  /* Die wichtigste Zusicherung dieses Blocks. Es WAR eine Ertragszahl geplant; beim
+   * Nachrechnen kippte sie das Vorzeichen, sobald man die Abtastdichte aenderte
+   * (-0,028 / +0,166 / +0,230 % bei gleicher Fallzahl von sechs). Sie ist deshalb
+   * wieder raus. Wer eine Zahl sieht, liest sie - egal wie vorsichtig der Text
+   * daneben steht. */
+  var wz = dep.slice(dep.indexOf("'<td>' + (z.nl"), dep.indexOf("'<td>' + (z.nl") + 900);
+  ok(!/signCls\(z\.nl\.mittel\)|z\.nl\.ueberschuss/.test(wz),
+     'Im Trendwechsel-Reiter steht KEINE Ertragszahl - sie war nicht stabil');
+  ok(/z\.nl\.n \+ ' Drehungen/.test(wz),
+     'Stattdessen steht die Fallzahl da - sie sagt ehrlich, dass sich nichts bewerten laesst');
+  ok(/kann seine eigenen Signale nicht/.test(dep),
+     'Der Reiter sagt selbst, dass er seine Signale nicht bewerten kann');
+  ok(/0,074 Pp, t = 1,22/.test(dep),
+     'Die belastbare Aussage zum Winkel-Detektor steht dabei (widerlegt auf 55 Tagen)');
+
+
 
 
 
