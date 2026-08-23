@@ -905,6 +905,204 @@
     svg.__chart = null;
   }
 
+  /* ================= Strategie-Chart (Tab „Strategien & Belege“, Issue #51) =================
+   * Wilhelms Wunsch: die jeweilige Strategie mit ihren Signalen und Indikatoren grafisch
+   * nachvollziehen und pruefen koennen. Reine ANZEIGE, keine neue Regel: Der Chart
+   * spielt Q.einstiegSignal - dieselbe Funktion wie Studie, Backtest und Live-Scan -
+   * Kerze fuer Kerze ueber die 60m-Reihe ab und markiert jeden Einstieg, den die Regel
+   * gegeben haette. Dazu die Indikatoren, aus denen die Regel besteht (Leitlinie EMA20,
+   * EMA100-Richtung, Kanal ueber 200 Kerzen, RSI(2) bzw. z-Abstand), und fuer die letzte
+   * abgeschlossene Kerze eine Bedingungsliste: erfuellt / nicht erfuellt.
+   * Bewusst nur die beiden BELEGTEN Intraday-Modi; Momentum und Drift sind Rangfolgen
+   * ueber alle Werte und haben kein Chartsignal. */
+  var stcRunning = false;
+  function stcParams(mode) {
+    var cfg = D.intraday;
+    return { ENTRY: mode, LINE: cfg.lineType || 'ema', period: cfg.period || 20, confirmBps: cfg.confirmBps,
+      ZTHR: zOf(cfg.confirmBps), MINQ: 0, CHAN: false, MTF: false, TREND: false };
+  }
+  /** Bedingungen der letzten Kerze, einzeln geprueft - damit man sieht, WARUM (k)ein Signal steht.
+   *  Die Einzelpruefungen spiegeln die Regel in Q.einstiegSignal; das Gesamturteil kommt
+   *  trotzdem aus genau dieser Funktion, nicht aus der Summe der Haekchen. */
+  function stcBedingungen(bars, mode, P) {
+    var ci = bars.length - 1;
+    var win = bars.slice(Math.max(0, ci - Math.max(P.period * 4, 260)), ci + 1);
+    var closes = win.map(function (b) { return b[1]; });
+    var n = closes.length, out = [];
+    var kanal = null;
+    try { kanal = Q.kanalUeber(bars, Math.max(0, ci - 200), ci); } catch (e) { }
+    var kName = { seit: 'seitwärts', auf: 'aufwärts', ab: 'abwärts' };
+    var vs = 0, vn = 0;
+    for (var vq = n - 51; vq < n - 1; vq++) { if (vq >= 0) { vs += (win[vq][2] || 0); vn++; } }
+    var vAvg = vn ? vs / vn : 0, vLast = win[n - 1][2] || 0;
+    var vOk = vAvg > 0 && vLast > 1.3 * vAvg;
+    var vTxt = 'Volumen der Signalkerze über dem 1,3-fachen der 50 Kerzen davor' + (vAvg > 0 ? ' – aktuell ' + (vLast / vAvg).toFixed(2) + '×' : ' – kein Volumen in der Reihe');
+    var kTxt = kanal ? ' – aktuell ' + (kName[kanal.trend] || kanal.trend) + ', Güte ' + Math.round(kanal.guete) + '/100' : ' – kein Kanal berechenbar';
+    if (mode === 'rsi2seit') {
+      var r2 = n >= 3 ? Q.rsi(closes, 2) : null;
+      var e100 = Q.emaSeries(closes, 100);
+      var steigt = n >= 120 && e100[n - 1] > e100[Math.max(0, n - 9)];
+      out.push({ ok: r2 != null && r2 <= 10, txt: 'RSI(2) ≤ 10 (überverkauft)' + (r2 != null ? ' – aktuell ' + r2.toFixed(1) : '') });
+      out.push({ ok: steigt, txt: 'EMA100 steigt (gegen 8 Kerzen zuvor) – nur dann ist der Dip ein Kauf' });
+      out.push({ ok: !!kanal && kanal.trend === 'seit', txt: 'Kanal der letzten 200 Kerzen ist seitwärts' + kTxt });
+      out.push({ ok: vOk, txt: vTxt });
+    } else {
+      var rv = Q.reversionSignal(win, P.LINE, P.period, P.ZTHR);
+      out.push({ ok: rv.z != null && rv.z <= -P.ZTHR, txt: 'Abstand zur Leitlinie EMA' + P.period + ' mindestens ' + P.ZTHR + ' Standardabweichungen UNTER ihr' + (rv.z != null ? ' – aktuell z = ' + rv.z.toFixed(2) : '') });
+      out.push({ ok: n >= 2 && closes[n - 1] > closes[n - 2], txt: 'Letzte Kerze dreht bereits nach oben (kein fallendes Messer)' });
+      out.push({ ok: !!kanal && kanal.trend === 'ab', txt: 'Kanal der letzten 200 Kerzen ist abwärts (Kapitulation braucht den Ausverkauf)' + kTxt });
+      out.push({ ok: vOk, txt: vTxt });
+    }
+    var sig = null;
+    try { sig = Q.einstiegSignal(bars, ci, P); } catch (e2) { }
+    return { liste: out, signal: sig && sig.dir ? sig.dir : null, kanal: kanal };
+  }
+  async function runStrategieChart() {
+    if (stcRunning) return;
+    stcRunning = true;
+    var sel = document.getElementById('stcSym'), modeEl = document.getElementById('stcMode'), st = document.getElementById('stcStatus');
+    var btn = document.getElementById('stcBtn'), info = document.getElementById('stcInfo'), check = document.getElementById('stcCheck');
+    var svg = document.getElementById('stcChart'), ind = document.getElementById('stcInd');
+    if (!sel || !modeEl || !svg) { stcRunning = false; return; }
+    btn.disabled = true;
+    try {
+      var sym = sel.value, mode = modeEl.value === 'kapitulation' ? 'kapitulation' : 'rsi2seit';
+      st.textContent = 'Lade ' + sym + ' (Stundenkerzen) …';
+      var bars = null;
+      // Archiv zuerst: es hat die Tiefe (>= 261 Kerzen), die der Detektor braucht - wie im Live-Scan.
+      if (window.Archiv) { try { bars = await window.Archiv.serie('60m', sym); } catch (eA) { bars = null; } }
+      if (!bars || bars.length < 300) {
+        var fd = await fetchIntraday(sym, '60m', true);
+        if (fd && fd.series && (!bars || fd.series.length > bars.length)) bars = fd.series;
+      }
+      if (!bars || bars.length < 300) { st.textContent = 'Zu wenig Stundenkerzen für ' + sym + ' (' + (bars ? bars.length : 0) + ' < 300) – der Detektor rechnet erst ab 261 Kerzen wie gemessen.'; return; }
+      bars = Q.fertigeBars(bars.slice(-900), 60, Date.now());
+      var P = stcParams(mode);
+      // Signale nachspielen: wie der Edge-Waechter, mit der Abklingzeit des Modus
+      var cool = 0, marks = [], coolMin = D.intraday.cooldownMin != null ? D.intraday.cooldownMin : 120;
+      for (var i = 261; i < bars.length; i++) {
+        if (bars[i][0] - cool < coolMin * 60000) continue;
+        var s = null;
+        try { s = Q.einstiegSignal(bars, i, P); } catch (e) { }
+        if (!s || s.dir !== 'call') continue;
+        cool = bars[i][0];
+        marks.push(i);
+      }
+      var show = bars.slice(-320);
+      var off = bars.length - show.length;
+      var closesAll = bars.map(function (b) { return b[1]; });
+      var e20 = Q.emaSeries(closesAll, P.period).slice(off), e100 = Q.emaSeries(closesAll, 100).slice(off);
+      var bed = stcBedingungen(bars, mode, P);
+      var indSerie = [];
+      if (mode === 'rsi2seit') {
+        for (var k = 0; k < show.length; k++) { var gi = off + k; indSerie.push(gi >= 2 ? Q.rsi(closesAll, 2, gi) : null); }
+      } else {
+        for (var k2 = 0; k2 < show.length; k2++) {
+          var gi2 = off + k2;
+          if (gi2 < 120) { indSerie.push(null); continue; }
+          var rz = Q.reversionSignal(bars.slice(Math.max(0, gi2 - 260), gi2 + 1), P.LINE, P.period, P.ZTHR);
+          indSerie.push(rz && rz.z != null ? rz.z : null);
+        }
+      }
+      var marksShow = marks.filter(function (m) { return m >= off; }).map(function (m) { return m - off; });
+      st.textContent = '';
+      drawStrategieChart(svg, show, e20, e100, bed.kanal, marksShow);
+      drawStrategieIndikator(ind, show, indSerie, mode === 'rsi2seit'
+        ? { lo: 0, hi: 100, schwelle: 10, name: 'RSI(2)' }
+        : { lo: -4, hi: 4, schwelle: -P.ZTHR, name: 'z-Abstand zur EMA' + P.period });
+      var name = mode === 'rsi2seit' ? 'RSI(2) im Seitwärtskanal' : 'Kapitulations-Dip im Abwärtskanal';
+      var tage = Math.round((bars[bars.length - 1][0] - bars[261][0]) / 86400000);
+      info.innerHTML = '<b>' + U.esc(name) + '</b> auf ' + U.esc(sym) + ' · ' + bars.length + ' Stundenkerzen, davon ' + show.length + ' im Bild · Einstiege laut Regel in den letzten ~' + tage + ' Tagen: <b>' + marks.length + '</b>, im Bild <b>' + marksShow.length + '</b>' +
+        ' · letzte Kerze ' + U.esc(new Date(bars[bars.length - 1][0]).toLocaleString('de-DE')) +
+        (bed.signal === 'call' ? ' · <b style="color:var(--up);">Regel gibt JETZT ein Long-Signal</b>' : bed.signal === 'put' ? ' · Put-Seite gemeldet – trägt nicht, wird nicht gehandelt' : ' · aktuell kein Signal');
+      check.innerHTML = '<div style="color:var(--muted); margin-bottom:2px;">Bedingungen der letzten abgeschlossenen Kerze (alle müssen gleichzeitig gelten):</div>' +
+        bed.liste.map(function (b) {
+          return '<div><span style="color:' + (b.ok ? 'var(--up)' : 'var(--down)') + '; font-weight:600;">' + (b.ok ? '✓' : '✗') + '</span> ' + U.esc(b.txt) + '</div>';
+        }).join('');
+    } catch (e3) {
+      st.textContent = 'Fehler: ' + (e3.message || e3);
+    } finally {
+      btn.disabled = false;
+      stcRunning = false;
+    }
+  }
+  function drawStrategieChart(svg, bars, e20, e100, kanal, marks) {
+    var W = svg.clientWidth || 900, H = svg.clientHeight || 280;
+    var padL = 8, padR = 10, padT = 10, padB = 20;
+    svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+    var closes = bars.map(function (b) { return b[1]; });
+    var lo = Math.min.apply(null, closes), hi = Math.max.apply(null, closes);
+    var n = bars.length;
+    var kStart = null, kN = 0;
+    if (kanal) {
+      // Der Kanal endet auf der letzten Kerze (bis = n-1 der Gesamtreihe) und ist kN Kerzen lang
+      kN = kanal.bis - kanal.von + 1;
+      kStart = n - kN;
+      var hub = kanal.steigung * (kN - 1);
+      lo = Math.min(lo, kanal.unten, kanal.unten - hub);
+      hi = Math.max(hi, kanal.oben, kanal.oben - hub);
+    }
+    var pad = (hi - lo) * 0.08 || 1;
+    lo -= pad; hi += pad;
+    var plotW = W - padL - padR, plotH = H - padT - padB;
+    var step = plotW / Math.max(1, n - 1);
+    function X(i) { return padL + i * step; }
+    function Y(v) { return H - padB - (v - lo) / (hi - lo) * plotH; }
+    var html = '';
+    niceTicks(lo, hi, 4).forEach(function (tv) {
+      html += '<line x1="' + padL + '" x2="' + (padL + plotW) + '" y1="' + Y(tv).toFixed(1) + '" y2="' + Y(tv).toFixed(1) + '" stroke="var(--grid)" stroke-width="1"></line>' +
+        '<text x="' + (padL + 2) + '" y="' + (Y(tv) - 3).toFixed(1) + '" fill="var(--muted)" font-size="9.5">' + fmtTick(tv, hi - lo) + '</text>';
+    });
+    var x0 = bars[0][0], x1 = bars[n - 1][0];
+    for (var xi = 0; xi <= 3; xi++) {
+      var ti = Math.round((n - 1) * xi / 3);
+      html += '<text x="' + X(ti).toFixed(1) + '" y="' + (H - 5) + '" text-anchor="' + (xi === 0 ? 'start' : xi === 3 ? 'end' : 'middle') + '" fill="var(--muted)" font-size="9.5">' + fmtTimeTick(bars[ti][0], x1 - x0) + '</text>';
+    }
+    if (kanal && kStart != null) {
+      var a = Math.max(0, kStart);
+      var kY = function (i, oben) {
+        var mitte = kanal.mitteJetzt - kanal.steigung * (n - 1 - i);
+        return Y(mitte + (oben ? kanal.oben - kanal.mitteJetzt : kanal.unten - kanal.mitteJetzt));
+      };
+      html += '<path d="M' + X(a).toFixed(1) + ' ' + kY(a, true).toFixed(1) + ' L' + X(n - 1).toFixed(1) + ' ' + kY(n - 1, true).toFixed(1) +
+        ' L' + X(n - 1).toFixed(1) + ' ' + kY(n - 1, false).toFixed(1) + ' L' + X(a).toFixed(1) + ' ' + kY(a, false).toFixed(1) + ' Z" fill="var(--series3)" opacity="0.10"></path>';
+      html += '<line x1="' + X(a).toFixed(1) + '" y1="' + kY(a, true).toFixed(1) + '" x2="' + X(n - 1).toFixed(1) + '" y2="' + kY(n - 1, true).toFixed(1) + '" stroke="var(--series3)" stroke-width="1.5" opacity="0.85"></line>';
+      html += '<line x1="' + X(a).toFixed(1) + '" y1="' + kY(a, false).toFixed(1) + '" x2="' + X(n - 1).toFixed(1) + '" y2="' + kY(n - 1, false).toFixed(1) + '" stroke="var(--series3)" stroke-width="1.5" opacity="0.85"></line>';
+    }
+    var linie = function (arr, farbe, dash) {
+      var d = '';
+      for (var i = 0; i < n; i++) { if (arr[i] == null) continue; d += (d ? 'L' : 'M') + X(i).toFixed(1) + ' ' + Y(arr[i]).toFixed(1); }
+      return d ? '<path d="' + d + '" fill="none" stroke="' + farbe + '" stroke-width="1.3" stroke-dasharray="' + dash + '"></path>' : '';
+    };
+    html += linie(e100, 'var(--series4)', '2 3') + linie(e20, 'var(--series2)', '5 4');
+    html += '<path d="' + bars.map(function (b, i) { return (i ? 'L' : 'M') + X(i).toFixed(1) + ' ' + Y(b[1]).toFixed(1); }).join(' ') +
+      '" fill="none" stroke="var(--series)" stroke-width="1.8" stroke-linejoin="round"></path>';
+    marks.forEach(function (i) {
+      html += '<circle cx="' + X(i).toFixed(1) + '" cy="' + Y(bars[i][1]).toFixed(1) + '" r="5" fill="var(--up)" stroke="var(--surface)" stroke-width="2"></circle>';
+    });
+    svg.innerHTML = html;
+    svg.__chart = null;
+  }
+  function drawStrategieIndikator(svg, bars, serie, o) {
+    if (!svg) return;
+    var W = svg.clientWidth || 900, H = svg.clientHeight || 110;
+    var padL = 8, padR = 10, padT = 6, padB = 6;
+    svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+    var n = bars.length, plotW = W - padL - padR, plotH = H - padT - padB;
+    var step = plotW / Math.max(1, n - 1);
+    function X(i) { return padL + i * step; }
+    function Y(v) { return H - padB - (Math.max(o.lo, Math.min(o.hi, v)) - o.lo) / (o.hi - o.lo) * plotH; }
+    var html = '<rect x="' + padL + '" y="' + padT + '" width="' + plotW + '" height="' + plotH + '" fill="var(--grid)" opacity="0.25"></rect>';
+    // Schwellenzone: unterhalb (RSI <= 10 bzw. z <= -ZTHR) ist der Ausloeser scharf
+    html += '<rect x="' + padL + '" y="' + Y(o.schwelle).toFixed(1) + '" width="' + plotW + '" height="' + (H - padB - Y(o.schwelle)).toFixed(1) + '" fill="var(--up)" opacity="0.12"></rect>';
+    html += '<line x1="' + padL + '" x2="' + (padL + plotW) + '" y1="' + Y(o.schwelle).toFixed(1) + '" y2="' + Y(o.schwelle).toFixed(1) + '" stroke="var(--up)" stroke-width="1" stroke-dasharray="3 3"></line>';
+    html += '<text x="' + (padL + 2) + '" y="' + (padT + 10) + '" fill="var(--muted)" font-size="9.5">' + U.esc(o.name) + ' · Schwelle ' + o.schwelle + '</text>';
+    var d = '';
+    for (var i = 0; i < n; i++) { if (serie[i] == null) continue; d += (d ? 'L' : 'M') + X(i).toFixed(1) + ' ' + Y(serie[i]).toFixed(1); }
+    if (d) html += '<path d="' + d + '" fill="none" stroke="var(--series2)" stroke-width="1.3"></path>';
+    svg.innerHTML = html;
+  }
+
   /* ================= Filter-Nutzen: mit vs. ohne Filter ================= */
   var filterRunning = false;
   async function runFilterCheck() {
@@ -7336,6 +7534,14 @@
     document.getElementById('weeklyBtn').addEventListener('click', runWeekly);
     document.getElementById('reportShowBtn').addEventListener('click', showReport);
     document.getElementById('scBtn').addEventListener('click', runSigChart);
+    (function () {
+      // Strategie-Chart im Tab „Strategien & Belege“ (Issue #51)
+      var sb = document.getElementById('stcBtn'), ss = document.getElementById('stcSym');
+      if (sb && ss) {
+        universe().forEach(function (s2) { var o = document.createElement('option'); o.value = s2; o.textContent = s2; ss.appendChild(o); });
+        sb.addEventListener('click', runStrategieChart);
+      }
+    })();
     document.getElementById('filterBtn').addEventListener('click', runFilterCheck);
     (function () {
       var sc = document.getElementById('scSym');
