@@ -1961,7 +1961,9 @@ console.log('\nAuslieferung');
     console.log('  ℹ  telemetrie.json liegt hier nicht – dieser Build würde den Browser-Weg nutzen (kein Fehler auf fremden Rechnern).');
   }
   // Nach einem Build: liegt der Schlüssel wirklich im Paket?
-  var asarPfad = __dirname + '/dist/win-unpacked/resources/app.asar';
+  // DIST erlaubt es, ein anderswo gebautes Paket zu pruefen (sauberer Arbeitsbaum,
+  // siehe release-final.js). Ohne die Variable bleibt es beim Paket neben der Quelle.
+  var asarPfad = (process.env.DIST || __dirname + '/dist') + '/win-unpacked/resources/app.asar';
   if (fs.existsSync(telePfad) && fs.existsSync(asarPfad)) {
     var drinImPaket = false, wieGeprueft = '';
     try {
@@ -2197,7 +2199,9 @@ console.log('\n30) Datenquellen-Diagnose (Capital.com) – ein Fehlschlag muss s
 
 console.log('\n31) Auslieferung – enthält der letzte Build wirklich den aktuellen Stand?');
 (function () {
-  var asarPfad = __dirname + '/dist/win-unpacked/resources/app.asar';
+  // DIST erlaubt es, ein anderswo gebautes Paket zu pruefen (sauberer Arbeitsbaum,
+  // siehe release-final.js). Ohne die Variable bleibt es beim Paket neben der Quelle.
+  var asarPfad = (process.env.DIST || __dirname + '/dist') + '/win-unpacked/resources/app.asar';
   if (!fs.existsSync(asarPfad)) {
     console.log('  ℹ  Noch kein Build vorhanden – diese Prüfung greift erst nach „electron-builder".');
     return;
