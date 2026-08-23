@@ -331,7 +331,14 @@
      * finanziert; mit Hebel kostet jede Nacht mehr, als die gemessene Kante je
      * Trade einbringt (+0,073 Pp nach Spanne). Deshalb steht es hier als Zahl.
      * naechte: 0 bei einem Ausstieg am selben Tag, sonst 1 - ueber ein Wochenende 3. */
-    var naechte = Math.max(0, Math.floor(halten / (60 * 6.5)));   // je angefangener Handelstag eine Nacht
+    /* Kalendernaechte, nicht Handelstagswechsel. Der erste Wurf zaehlte Handelstage:
+     * Freitag auf Montag war damit EINE Nacht statt drei. Die Gegenprobe der Messungen
+     * vom 23.08.2026 hat den Faktor an echten Zeitstempeln bestimmt - gezaehlt wurden
+     * 0,563 / 0,666 / 1,927 / 3,497 / 5,011 Kalendernaechte bei 2/4/8/16/24 Kerzen,
+     * gegen 0,397 / 0,469 / 1,327 / 2,399 / 3,439 nach Handelstagen. Faktor 1,45.
+     * Betrifft nur den gehebelten Weg - ohne Hebel gibt es keine Finanzierung. */
+    var handelstage = halten / (60 * 6.5);
+    var naechte = Math.max(0, handelstage * 1.45);   // Wochenenden eingerechnet
     var uebernachtPp = (cfg.hebel > 1 ? 0.0237 : 0) * naechte;
     if (cfg.instrument === "basis") {
       return { pp: 2 * 0.05 + gebAnteil * 100 + uebernachtPp, produkt: "Aktie 1x", hebel: 1, einsatz: pos,
