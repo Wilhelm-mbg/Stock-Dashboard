@@ -1,7 +1,35 @@
 {
-  "stand": "2026-08-22T20:45:42.020Z",
+  "stand": "2026-08-23T08:38:25.351Z",
   "hinweis": "Spekulationen aus öffentlichen Quellen – ungemessen, keine Handelsempfehlung, keine Anlageberatung.",
   "eintraege": [
+    {
+      "id": "20260822-CBK-uebernahme",
+      "sym": "CBK.DE",
+      "name": "Commerzbank AG",
+      "art": "uebernahme",
+      "chance": "hoch",
+      "these": "Der Bund ist laut Insidern offen für den Verkauf seiner restlichen 12,7 Prozent an UniCredit; parallel hat die Commerzbank zurückgekaufte Aktien eingezogen, wodurch UniCredits Anteil rechnerisch an die 50-Prozent-Marke rückt.",
+      "begruendung": "Handelsblatt und Reuters berichten unabhängig über die Verkaufsbereitschaft, Commerzbank-Chefin Orlopp hat förmliche Gespräche bestätigt, und die Aktieneinziehung ist ein harter, gemeldeter Vorgang – konkreter Anlass und mehrere seriöse Quellen, daher hoch. Bedingung bleibt laut den Berichten die Rückendeckung des Commerzbank-Managements.",
+      "quellen": [
+        {
+          "titel": "Handelsblatt",
+          "url": "https://www.handelsblatt.com/finanzen/banken-versicherungen/banken/commerzbank-regierungsvertreter-wohl-offen-fuer-verkauf-der-bundesanteile/100247767.html"
+        },
+        {
+          "titel": "Reuters via Yahoo Finance",
+          "url": "https://de.finance.yahoo.com/nachrichten/commerzbank-anteil-bundes-regierungsvertreter-offen-095739692.html"
+        },
+        {
+          "titel": "FinanzBusiness",
+          "url": "https://finanzbusiness.de/nachrichten/banken/article19564996.ece"
+        },
+        {
+          "titel": "Börse Express",
+          "url": "https://www.boerse-express.com/news/articles/commerzbank-aktie-bund-verhandelt-ueber-127-prozent-verkauf-940995"
+        }
+      ],
+      "zeit": "2026-08-22T18:00:00Z"
+    },
     {
       "id": "20260821-BAMI-uebernahme",
       "sym": "BAMI.MI",
@@ -51,52 +79,20 @@
       "zeit": "2026-08-21T12:00:00Z"
     },
     {
-      "id": "20260822-CBK-uebernahme",
-      "sym": "CBK.DE",
-      "name": "Commerzbank AG",
-      "art": "uebernahme",
-      "chance": "hoch",
-      "these": "Der Bund ist laut Insidern offen für den Verkauf seiner restlichen 12,7 Prozent an UniCredit – damit käme UniCredit auf die Mehrheit, in Berichten ist von über 60 Prozent die Rede.",
-      "begruendung": "Handelsblatt und eine Reuters-Meldung (via Yahoo Finance) berichten unabhängig über die Bereitschaft der Regierungsvertreter, dazu hat Commerzbank-Chefin Orlopp förmliche Gespräche mit UniCredit bestätigt – konkreter Anlass und mehrere seriöse Quellen, daher hoch. Bedingung bleibt laut den Berichten die Rückendeckung des Commerzbank-Managements; die Aktie notiert nahe dem 52-Wochen-Hoch.",
+      "id": "20260822-ADSK-analyst",
+      "sym": "ADSK",
+      "name": "Autodesk Inc.",
+      "art": "analyst",
+      "chance": "niedrig",
+      "these": "Vor den Q2-Zahlen melden sich mehrere Analysten mit Rückendeckung und einer jüngsten Kursziel-Anhebung zu Wort, die Aktie notiert über 250 Dollar.",
+      "begruendung": "Einzelne schwächere Quelle, gewöhnliche Vor-Zahlen-Kommentierung ohne Doppel-Hochstufung; nur wegen des anstehenden Termins überhaupt vermerkt, Einstufung niedrig.",
       "quellen": [
-        {
-          "titel": "Handelsblatt",
-          "url": "https://www.handelsblatt.com/finanzen/banken-versicherungen/banken/commerzbank-regierungsvertreter-wohl-offen-fuer-verkauf-der-bundesanteile/100247767.html"
-        },
-        {
-          "titel": "Reuters via Yahoo Finance",
-          "url": "https://de.finance.yahoo.com/nachrichten/commerzbank-anteil-bundes-regierungsvertreter-offen-095739692.html"
-        },
         {
           "titel": "ad-hoc-news",
-          "url": "https://www.ad-hoc-news.de/boerse/news/corporate-news/commerzbank-stock-trades-close-to-52-week-high-as-unicredit-inches-toward/69984034"
+          "url": "https://www.ad-hoc-news.de/boerse/news/corporate-news/autodesk-stock-draws-fresh-analyst-support-ahead-q2-earnings/69986100"
         }
       ],
-      "zeit": "2026-08-22T04:00:00Z"
-    },
-    {
-      "id": "20260822-GAMA-uebernahme",
-      "sym": "GAMA.L",
-      "name": "Gamma Communications plc",
-      "art": "uebernahme",
-      "chance": "hoch",
-      "these": "Gamma hat Vorgespräche mit dem Private-Equity-Haus Waterland über eine mögliche Übernahme bestätigt; Waterland erwägt dabei einen Zuschnitt gemeinsam mit dem IT-Dienstleister Giacom, der einzelne Sparten übernehmen soll.",
-      "begruendung": "Das Unternehmen hat die Gespräche selbst per Pflichtmitteilung bestätigt und das britische Takeover Panel hat Fristen gesetzt: Epiris muss bis 2. September, Waterland bis 18. September ein festes Angebot vorlegen oder abtreten. Bestätigtes Interesse, amtliche Fristen und mehrere übereinstimmende Berichte, deshalb hoch; ob daraus ein Angebot wird, ist damit nicht gesagt.",
-      "quellen": [
-        {
-          "titel": "Sharecast",
-          "url": "https://www.sharecast.com/news/news-and-announcements/gamma-communications-in-early-takeover-talks-with-pe-firm-waterland--23336668.html"
-        },
-        {
-          "titel": "Investing.com UK",
-          "url": "https://uk.investing.com/news/stock-market-news/gamma-communications-confirms-takeover-talks-with-waterland-93CH-4842560"
-        },
-        {
-          "titel": "TipRanks",
-          "url": "https://www.tipranks.com/news/company-announcements/gamma-confirms-takeover-talks-with-waterland-as-suitor-deadline-set"
-        }
-      ],
-      "zeit": "2026-08-21T08:00:00Z"
+      "zeit": "2026-08-22T12:00:00Z"
     },
     {
       "id": "20260821-TGTX-geruecht",
@@ -155,36 +151,24 @@
       "zeit": "2026-08-21T12:00:00Z"
     },
     {
-      "id": "20260822-ADSK-analyst",
-      "sym": "ADSK",
-      "name": "Autodesk Inc.",
-      "art": "analyst",
+      "id": "20260821-WDC-geruecht",
+      "sym": "WDC",
+      "name": "Western Digital Corporation",
+      "art": "geruecht",
       "chance": "niedrig",
-      "these": "Vor den Q2-Zahlen melden sich mehrere Analysten mit Rückendeckung und einer jüngsten Kursziel-Anhebung zu Wort, die Aktie notiert über 250 Dollar.",
-      "begruendung": "Einzelne schwächere Quelle, gewöhnliche Vor-Zahlen-Kommentierung ohne Doppel-Hochstufung; nur wegen des anstehenden Termins überhaupt vermerkt, Einstufung niedrig.",
+      "these": "Seit dem 21. August kursieren erneut Berichte, Western Digital und der japanische NAND-Hersteller Kioxia hätten ihre Fusionsgespräche über die Flash-Sparten wieder aufgenommen.",
+      "begruendung": "Nur schwächere, überwiegend aggregierende Quellen; weder Unternehmen hat etwas bestätigt, es gibt kein Filing und keine Konditionen. Die Gespräche laufen seit Jahren immer wieder an und wurden mehrfach abgebrochen – deshalb ausdrücklich niedrig, trotz mehrerer übereinstimmender Berichte.",
       "quellen": [
         {
           "titel": "ad-hoc-news",
-          "url": "https://www.ad-hoc-news.de/boerse/news/corporate-news/autodesk-stock-draws-fresh-analyst-support-ahead-q2-earnings/69986100"
-        }
-      ],
-      "zeit": "2026-08-22T12:00:00Z"
-    },
-    {
-      "id": "20260822-ITRK-uebernahme",
-      "sym": "ITRK.L",
-      "name": "Intertek Group plc",
-      "art": "uebernahme",
-      "chance": "niedrig",
-      "these": "Um Intertek soll es Übernahme-Interesse geben; die Meldung verweist auf laufende Offenlegungstabellen, wie sie der britische Takeover Code während einer Angebotsphase verlangt.",
-      "begruendung": "Nur eine schwache Einzelquelle, kein benannter Bieter und keine Konditionen; Reuters oder FT bestätigen bislang nichts. Deshalb ausdrücklich niedrig – vermerkt, weil ein förmlicher Prozess bei einem liquiden FTSE-100-Wert weitreichend wäre, falls er sich bestätigt.",
-      "quellen": [
+          "url": "https://www.ad-hoc-news.de/boerse/news/unternehmensnachrichten/kioxia-catches-a-double-tailwind-rival-buyback-euphoria-meets-western/69981295"
+        },
         {
-          "titel": "ad-hoc-news",
-          "url": "https://www.ad-hoc-news.de/boerse/news/corporate-news/intertek-stock-draws-takeover-attention-as-investors-watch-bid-dynamics/69986171"
+          "titel": "Yahoo Finance",
+          "url": "https://finance.yahoo.com/markets/stocks/articles/western-digital-wdc-revives-kioxia-031926081.html"
         }
       ],
-      "zeit": "2026-08-22T12:00:00Z"
+      "zeit": "2026-08-21T12:00:00Z"
     }
   ]
 }
