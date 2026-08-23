@@ -179,6 +179,7 @@ function fuehreAus(pfad, einKurs, stopNiveau, params) {
  * HAUPTFUNKTION
  * strategie: { key, grund, zeitrahmen, haltedauerKerzen, signal(bars,i,params)->{dir}|null,
  *              stopNiveau?(abgeschlossen, einKurs, params) -> Zahl|null,
+ *              testfamilie?: {name, testsGesamt, begruendung},
  *              params, varianten?: [params...], richtung: 'long'|'short'|'beide',
  *              universum?: 'aktien'|'alle'|function(sym), kosten?: {spanneBp} }
  * archivPfad: Ordner mit bars_<iv>_<SYM>.json
@@ -208,7 +209,18 @@ function messe(strategie, archivPfad, optionen) {
   var varianten = Array.isArray(S.varianten) && S.varianten.length ? S.varianten : [S.params || {}];
   P.entscheide('B4 Testzahl', { varianten: varianten.length }, varianten.length,
     'Jede Parametervariante ist ein eigener Test. Die Schwelle wird auf diese Zahl gerechnet.');
+  /* B8: Gehoert die Datei zu einer groesseren Vorregistrierung, zaehlt deren Umfang.
+   * Nur nach oben - eine zu klein angegebene Familie schuetzt niemanden. */
   P.tests = varianten.length;
+  if (S.testfamilie && S.testfamilie.testsGesamt > P.tests) {
+    P.tests = S.testfamilie.testsGesamt;
+    P.entscheide('B8 Testfamilie', { name: S.testfamilie.name, varianten: varianten.length,
+      testsGesamt: S.testfamilie.testsGesamt },
+      { testsFuerSchwelle: P.tests },
+      'Diese Datei ist Teil der Vorregistrierung "' + S.testfamilie.name + '". Die Bonferroni-Schwelle ' +
+      'rechnet mit allen ' + S.testfamilie.testsGesamt + ' Tests der Familie, nicht nur mit den ' +
+      varianten.length + ' Varianten dieser Datei. ' + (S.testfamilie.begruendung || ''));
+  }
 
   /* --- Universum --- */
   var filter = null;
@@ -361,6 +373,7 @@ function messe(strategie, archivPfad, optionen) {
     bestesUrteil: ['bestaetigt', 'nicht-bestaetigt', 'nicht-entscheidbar', 'nicht-messbar', 'widerlegt']
       .filter(function (k) { return urteile.some(function (u) { return u.urteil === k; }); })[0] || 'nicht-messbar',
     tests: P.tests,
+    testfamilie: S.testfamilie || null,
     entscheidungen: P.entscheidungen,
     warnungen: P.warnungen,
   };
