@@ -41,26 +41,99 @@
   };
   window.U = U;
 
-  // ---- Tabs ----
-  var tabs = document.querySelectorAll('nav.tabs button');
-  tabs.forEach(function (b) {
-    b.addEventListener('click', function () {
-      tabs.forEach(function (x) { x.classList.remove('active'); });
-      document.querySelectorAll('.tab').forEach(function (t) { t.classList.remove('active'); });
-      b.classList.add('active');
-      document.getElementById('tab-' + b.getAttribute('data-tab')).classList.add('active');
-      document.dispatchEvent(new CustomEvent('tab-changed', { detail: b.getAttribute('data-tab') }));
+  /* ---- Reiter ----
+   * Die Leiste ist ein role="tablist". Dazu gehoert eine Tastaturbedienung, die sich
+   * von der normalen Tab-Taste unterscheidet: Innerhalb der Leiste blaettern die
+   * PFEILTASTEN, und nur der aktive Reiter ist selbst tabbierbar (roving tabindex).
+   * Sonst muesste man sich durch alle fuenf Knoepfe tabben, um zum Inhalt zu kommen. */
+  var tabs = [].slice.call(document.querySelectorAll('nav.tabs button'));
+
+  function reiterZeigen(b, fokus) {
+    tabs.forEach(function (x) {
+      var an = (x === b);
+      x.classList.toggle('active', an);
+      x.setAttribute('aria-selected', an ? 'true' : 'false');
+      x.tabIndex = an ? 0 : -1;
+    });
+    document.querySelectorAll('.tab').forEach(function (t) { t.classList.remove('active'); });
+    var ziel = document.getElementById('tab-' + b.getAttribute('data-tab'));
+    if (ziel) ziel.classList.add('active');
+    if (fokus) b.focus();
+    document.dispatchEvent(new CustomEvent('tab-changed', { detail: b.getAttribute('data-tab') }));
+  }
+
+  tabs.forEach(function (b, i) {
+    b.addEventListener('click', function () { reiterZeigen(b, false); });
+    b.addEventListener('keydown', function (ev) {
+      var ziel = null;
+      if (ev.key === 'ArrowRight' || ev.key === 'ArrowDown') ziel = tabs[(i + 1) % tabs.length];
+      else if (ev.key === 'ArrowLeft' || ev.key === 'ArrowUp') ziel = tabs[(i - 1 + tabs.length) % tabs.length];
+      else if (ev.key === 'Home') ziel = tabs[0];
+      else if (ev.key === 'End') ziel = tabs[tabs.length - 1];
+      if (!ziel) return;
+      ev.preventDefault();
+      reiterZeigen(ziel, true);
     });
   });
 
-  // ---- Modals ----
+  /* ---- Dialoge ----
+   * Vorher liessen sich die drei Dialoge nur mit der Maus schliessen: kein Escape,
+   * keine Fokusfalle, und der Hintergrund blieb durchtabbierbar - man konnte also
+   * blind in die Oberflaeche dahinter tabben, waehrend der Dialog offen war.
+   * Jetzt: Escape schliesst, die Tab-Taste laeuft im Dialog im Kreis, und der Fokus
+   * kehrt zu dem Element zurueck, das den Dialog geoeffnet hat. */
+  var modalHer = null;   // wohin der Fokus zurueckgeht
+
+  function fokussierbare(el) {
+    return [].slice.call(el.querySelectorAll(
+      'a[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+    )).filter(function (e) { return e.offsetWidth || e.offsetHeight || e.getClientRects().length; });
+  }
+  function offenerDialog() { return document.querySelector('.modal-bg.open'); }
+
+  function modalSchliessen(bg) {
+    if (!bg) return;
+    bg.classList.remove('open');
+    if (modalHer) { try { modalHer.focus(); } catch (e) { /* Ausloeser ist weg */ } modalHer = null; }
+  }
+
   document.querySelectorAll('[data-close]').forEach(function (b) {
-    b.addEventListener('click', function () { document.getElementById(b.getAttribute('data-close')).classList.remove('open'); });
+    b.addEventListener('click', function () { modalSchliessen(document.getElementById(b.getAttribute('data-close'))); });
   });
   document.querySelectorAll('.modal-bg').forEach(function (bg) {
-    bg.addEventListener('click', function (e) { if (e.target === bg) bg.classList.remove('open'); });
+    bg.addEventListener('click', function (e) { if (e.target === bg) modalSchliessen(bg); });
   });
-  window.openModal = function (id) { document.getElementById(id).classList.add('open'); };
+
+  document.addEventListener('keydown', function (ev) {
+    var bg = offenerDialog();
+    if (!bg) return;
+    if (ev.key === 'Escape') {
+      // Ist ein Erklaerfenster offen, gehoert das erste Escape ihm - sonst schliessen
+      // beide auf einen Schlag und man verliert den Dialog, den man noch brauchte.
+      var ip = document.getElementById('infoPop');
+      if (ip && ip.style.display === 'block') return;
+      ev.preventDefault(); modalSchliessen(bg); return;
+    }
+    if (ev.key !== 'Tab') return;
+    // Fokusfalle: am Ende wieder an den Anfang und umgekehrt.
+    var f = fokussierbare(bg);
+    if (!f.length) return;
+    var erst = f[0], letzt = f[f.length - 1];
+    if (ev.shiftKey && (document.activeElement === erst || !bg.contains(document.activeElement))) {
+      ev.preventDefault(); letzt.focus();
+    } else if (!ev.shiftKey && (document.activeElement === letzt || !bg.contains(document.activeElement))) {
+      ev.preventDefault(); erst.focus();
+    }
+  });
+
+  window.openModal = function (id) {
+    var bg = document.getElementById(id);
+    if (!bg) return;
+    modalHer = document.activeElement;
+    bg.classList.add('open');
+    var f = fokussierbare(bg);
+    if (f.length) { try { f[0].focus(); } catch (e) { /* nicht fokussierbar */ } }
+  };
 
   /* ---- Erklaerungen: ein Register, ein Fenster, ein Knopf ----
    *

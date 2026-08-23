@@ -19,8 +19,8 @@
     --border:      rgba(11,11,11,0.10); --line: var(--border);
     --series:      #2a78d6;
     --series-soft: rgba(42,120,214,0.12);
-    --series2:     #eb6834;
-    --series3:     #1baf7a;
+    --series2:     #d4531f;   /* war #eb6834: 3,12 gegen --surface, Soll 3,0 fuer Grafik */
+    --series3:     #12855c;   /* war #1baf7a: 2,74 */
     --up:          #006300;
     --up-soft:     rgba(12,163,12,0.12);
     --down:        #d03b3b;
@@ -38,6 +38,23 @@
     --btn:         #2266bf;
     --btn-danger:  #b32020;
     --btn-ink:     #ffffff;
+    /* --- 23.08.2026, Audit-Stufe 2: gerechnete Nachtraege --- */
+    /* Diese vier wurden benutzt, waren aber nie definiert und liefen in ihre Notfarbe.
+       --good war dabei fest verdrahtet (#2e7d32) und kam im Dunkelthema auf 3,11. */
+    --mono:        ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+    --panel-2:     #e9e9e5;
+    --surface-2:   #f4f4f1;
+    --good:        var(--up);
+    /* Umrandung von Bedienelementen. --grid schafft gegen --surface nur 1,29 - der
+       Kippschalter im Aus-Zustand war dadurch kaum als Bedienelement erkennbar.
+       Soll fuer Bedienelemente ist 3,0; dieser Ton schafft 4,13 auf --surface,
+       3,75 auf --panel. */
+    --kante:       #7d7b73;
+    /* Die Prozent-Chips stehen auf ihrem EIGENEN Weichton, nicht auf der Flaeche -
+       dort kam --down auf 4,06. Eigene Token, damit --up/--down als Textfarbe an
+       den ~30 anderen Stellen unveraendert bleiben. */
+    --chip-up:     #006300;
+    --chip-down:   #c22b2b;
   }
   :root[data-theme="dark"] {
     color-scheme: dark;
@@ -68,6 +85,13 @@
     --btn:         #1f6dc4;
     --btn-danger:  #a81f1f;
     --btn-ink:     #ffffff;
+    --mono:        ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+    --panel-2:     #282826;
+    --surface-2:   #232322;
+    --good:        var(--up);
+    --kante:       #75736d;   /* 3,67 auf --surface, 3,36 auf --panel */
+    --chip-up:     #16b516;   /* 5,19 auf dem eigenen Weichton (vorher 4,25) */
+    --chip-down:   #ea7a7a;   /* 5,49 (vorher 4,29) */
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
@@ -184,8 +208,8 @@
   .tile svg   { display: block; margin-top: 8px; width: 100%; height: 34px; }
 
   .chip { display: inline-flex; align-items: center; gap: 3px; font-size: 12px; font-weight: 600; border-radius: 6px; padding: 1px 7px; }
-  .chip.up   { color: var(--up);   background: var(--up-soft); }
-  .chip.down { color: var(--down); background: var(--down-soft); }
+  .chip.up   { color: var(--chip-up);   background: var(--up-soft); }
+  .chip.down { color: var(--chip-down); background: var(--down-soft); }
   .chip.flat { color: var(--ink-2); background: var(--series-soft); }
 
   .movers { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -409,8 +433,13 @@
 
   .switch { position: relative; display: inline-block; width: 42px; height: 23px; flex-shrink: 0; margin-left: auto; }
   .switch input { opacity: 0; width: 0; height: 0; }
-  .switch .knob { position: absolute; inset: 0; background: var(--grid); border-radius: 999px; transition: background 0.2s; cursor: pointer; }
-  .switch .knob:before { content: ""; position: absolute; width: 17px; height: 17px; left: 3px; top: 3px; border-radius: 50%; background: #fff; transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.35); }
+  /* Umrandung, damit der Schalter im AUS-Zustand ueberhaupt als Bedienelement zu
+     erkennen ist: --grid allein schafft gegen --surface nur 1,29 (Soll 3,0). Genau
+     dieser Schalter stellt den Handel scharf - er darf nicht unsichtbar sein. */
+  .switch .knob { position: absolute; inset: 0; background: var(--grid); border: 1px solid var(--kante);
+    border-radius: 999px; transition: background 0.2s, border-color 0.2s; cursor: pointer; }
+  .switch input:checked + .knob { border-color: var(--up); }
+  .switch .knob:before { content: ""; position: absolute; width: 17px; height: 17px; left: 2px; top: 2px; border-radius: 50%; background: #fff; transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.35); }
   .switch input:checked + .knob { background: var(--up); }
   .switch input:checked + .knob:before { transform: translateX(19px); }
 
@@ -422,8 +451,10 @@
   .btn:disabled { opacity: 0.5; cursor: default; }
   .btn.ghost { background: var(--surface); color: var(--ink-2); border: 1px solid var(--border); }
   .btn.danger { background: var(--btn-danger); }
-  input[type="text"], input[type="password"], select {
-    background: var(--surface); color: var(--ink); border: 1px solid var(--border);
+  /* --border ist rgba(...,0.10) und ergibt 1,21 (hell) bzw. 1,49 (dunkel) - ein
+     Eingabefeld war praktisch randlos. Bedienelemente brauchen 3,0. */
+  input[type="text"], input[type="password"], input[type="number"], textarea, select {
+    background: var(--surface); color: var(--ink); border: 1px solid var(--kante);
     border-radius: 8px; padding: 7px 10px; font: inherit; font-size: 13.5px;
   }
   input[type="range"] { accent-color: var(--series); }
@@ -460,8 +491,11 @@
   .exp-search input { flex: 1; }
   .exp-results { position: relative; }
   .exp-results .panel { padding: 4px 0; }
-  .exp-hit { padding: 8px 14px; cursor: pointer; display: flex; gap: 10px; align-items: baseline; }
-  .exp-hit:hover { background: var(--series-soft); }
+  /* Seit die Treffer echte <button> sind (Tastaturzugang), muessen die Knopf-Vorgaben
+     des Browsers zurueckgesetzt werden - sonst sitzt jede Zeile in einem Kasten. */
+  .exp-hit { padding: 8px 14px; cursor: pointer; display: flex; gap: 10px; align-items: baseline;
+    width: 100%; background: none; border: 0; color: inherit; font: inherit; text-align: left; }
+  .exp-hit:hover, .exp-hit:focus-visible { background: var(--series-soft); }
   .exp-hit .s { font-weight: 700; min-width: 70px; }
   .exp-hit .n { flex: 1; color: var(--ink-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .exp-hit .x { color: var(--muted); font-size: 11.5px; }
@@ -596,8 +630,8 @@
 
 <header>
   <h1>Markt-Dashboard</h1>
-  <span class="stamp" id="stamp"><span class="dot closed"></span>Lade Daten …</span>
-  <span class="err" id="err"></span>
+  <span class="stamp" id="stamp" role="status" aria-live="polite"><span class="dot closed"></span>Lade Daten …</span>
+  <span class="err" id="err" role="status" aria-live="polite"></span>
   <div class="hbtns">
     <button class="hbtn" id="refreshBtn" type="button">↻ Aktualisieren</button>
     <button class="hbtn" id="themeBtn" type="button">Hell/Dunkel</button>
@@ -606,7 +640,7 @@
 </header>
 <div class="subnote" id="subnote">Big Tech · Chip-Sektor · Marktüberblick – aktualisiert sich automatisch (1 Min während des US-Handels, sonst 5 Min). Charts: 1 Monat, Tagesschluss.</div>
 
-<div id="cockpit">
+<div id="cockpit" role="status" aria-live="polite" aria-label="Kennzahlen">
   <div class="ck"><span class="ckl">Depot</span><b id="ckEquity">–</b></div>
   <div class="ck"><span class="ckl">Heute</span><b id="ckDay">–</b></div>
   <div class="ck"><span class="ckl">Offen</span><b id="ckOpen">–</b></div>
@@ -617,21 +651,24 @@
 <!-- Warnband: seltene, wichtige Zustaende (Quelle gestoert, Speichern fehlgeschlagen,
      Sicherung geladen, Kante verfallen). Auf jedem Reiter sichtbar, weil es auf
      jedem Reiter gilt. Gefuellt von depot.js/warnbandSetzen. -->
-<div id="warnband" style="display:none;"></div>
+<div id="warnband" style="display:none;" role="alert" aria-live="assertive"></div>
 
 <!-- Erklaerfenster: EINES fuer die ganze App, gefuellt von window.Info (app-shell.js).
      Steht ausserhalb der Reiter, damit ein Reiterwechsel es nicht mit wegraeumt. -->
 <div id="infoPop" role="dialog" aria-modal="false" aria-label="Erklärung"></div>
 
-<nav class="tabs">
-  <button data-tab="dashboard" class="active">Heute</button>
-  <button data-tab="strategien">Regeln</button>
-  <button data-tab="depot">Vermögen</button>
-  <button data-tab="werkzeuge">Werkzeuge</button>
-  <button data-tab="messung">Messung</button>
+<!-- role="tablist": Ohne die Rollen liest eine Vorlesehilfe hier fuenf zusammenhanglose
+     Knoepfe vor, nicht eine Reiterleiste - und die Pfeiltasten tun nichts. Die
+     Tastaturbedienung (Pfeile, Pos1/Ende) haengt in app-shell.js daran. -->
+<nav class="tabs" role="tablist" aria-label="Hauptbereiche">
+  <button data-tab="dashboard" class="active" role="tab" aria-selected="true"  aria-controls="tab-dashboard" id="reiter-dashboard">Heute</button>
+  <button data-tab="strategien"               role="tab" aria-selected="false" aria-controls="tab-strategien" id="reiter-strategien" tabindex="-1">Regeln</button>
+  <button data-tab="depot"                    role="tab" aria-selected="false" aria-controls="tab-depot"      id="reiter-depot"      tabindex="-1">Vermögen</button>
+  <button data-tab="werkzeuge"                role="tab" aria-selected="false" aria-controls="tab-werkzeuge"  id="reiter-werkzeuge"  tabindex="-1">Werkzeuge</button>
+  <button data-tab="messung"                  role="tab" aria-selected="false" aria-controls="tab-messung"    id="reiter-messung"    tabindex="-1">Messung</button>
 </nav>
 
-<div id="tab-dashboard" class="tab active">
+<div id="tab-dashboard" class="tab active" role="tabpanel" aria-labelledby="reiter-dashboard">
 <div id="hoverInfo"></div>
 <div id="newsTicker" style="display:none;" title="Markt-News als Laufband – unter dem Mauszeiger hält es an. Klick öffnet die Meldung."></div>
 <h2>Marktüberblick</h2>
@@ -674,7 +711,7 @@
 <div class="news" id="news"><div class="loading">Lade News …</div></div>
 </div><!-- /tab-dashboard -->
 
-<div id="tab-depot" class="tab">
+<div id="tab-depot" class="tab" role="tabpanel" aria-labelledby="reiter-depot">
   <div class="simnote"><b>Simulation mit virtuellem Kapital – keine Anlageberatung.</b> Gehandelt wird <span id="depotInstrumentHinweis">der Basiswert (Aktie 1×, ohne Hebel)</span>. Optionsscheine werden synthetisch bepreist (Black-Scholes): Hebel und Zeitwertverfall realistisch, aber keine echten Emittenten-Preise. Läuft, solange die App geöffnet ist.</div>
 
   <div class="simnote" style="margin-bottom:6px;">Was für jede Strategie spricht und was dagegen, steht im Tab <b>Strategien &amp; Belege</b>. Ein- und ausschalten lässt sie sich hier wie dort.</div>
@@ -1273,7 +1310,7 @@
   </div>
   </div>
 </div><!-- /tab-depot -->
-<div id="tab-werkzeuge" class="tab">
+<div id="tab-werkzeuge" class="tab" role="tabpanel" aria-labelledby="reiter-werkzeuge">
   <div class="pills" id="wzPills">
     <button data-sub="explorer" class="active">Aktien-Explorer</button>
     <button data-sub="scheine">Schein-Finder</button>
@@ -1429,7 +1466,7 @@
 
 
 
-<div id="tab-messung" class="tab">
+<div id="tab-messung" class="tab" role="tabpanel" aria-labelledby="reiter-messung">
 <h2>Scoreboard <span style="color:var(--muted); font-size:12px; font-weight:400; text-transform:none; letter-spacing:0;">– jede Strategie, die durch die Messmaschine gelaufen ist. Sortiert nach Belegstatus, nicht nach Rendite.</span>
   <button class="info" type="button" data-info="messung.scoreboard" aria-expanded="false" aria-label="Erklärung: Scoreboard">i</button></h2>
 <div class="panel" id="scoreboardKarte">
@@ -1476,7 +1513,7 @@
 </div>
 </div>
 
-<div id="tab-strategien" class="tab">
+<div id="tab-strategien" class="tab" role="tabpanel" aria-labelledby="reiter-strategien">
   <div class="panel">
     <h3 style="display:flex; align-items:center; gap:8px;">Drei Zeithorizonte, drei getrennte Strategien
       <button class="info" type="button" data-info="regeln.uebersicht" aria-expanded="false"
@@ -1621,7 +1658,7 @@
 
 <!-- KI-Analyse-Modal -->
 <div class="modal-bg" id="aiModalBg">
-  <div class="modal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="aiTitle">
     <button class="btn ghost close" data-close="aiModalBg">Schließen ×</button>
     <h2 id="aiTitle">KI-Analyse</h2>
     <div class="analysis" id="aiBody"></div>
@@ -1630,7 +1667,7 @@
 
 <!-- Order-Ticket-Modal (Trade nachbilden) -->
 <div class="modal-bg" id="ticketModalBg">
-  <div class="modal" style="max-width:620px;">
+  <div class="modal" style="max-width:620px;" role="dialog" aria-modal="true" aria-labelledby="ticketTitle">
     <button class="btn ghost close" data-close="ticketModalBg">Schließen ×</button>
     <h2 id="ticketTitle">Trade nachbilden</h2>
     <div id="ticketBody" class="analysis"></div>
@@ -1649,9 +1686,9 @@
 
 <!-- Einstellungen-Modal -->
 <div class="modal-bg" id="setModalBg">
-  <div class="modal" style="max-width:560px;">
+  <div class="modal" style="max-width:560px;" role="dialog" aria-modal="true" aria-labelledby="setTitle">
     <button class="btn ghost close" data-close="setModalBg">Schließen ×</button>
-    <h2>App-Einstellungen</h2>
+    <h2 id="setTitle">App-Einstellungen</h2>
     <div style="margin:14px 0; font-size:12px; color:var(--muted);">
       Alle KI-Analysen laufen <b>lokal über Ollama</b> (unten einrichten) – <b>ohne API-Kosten</b>.
       Ohne lokales Modell gibt es eine regelbasierte Analyse aus denselben Daten.

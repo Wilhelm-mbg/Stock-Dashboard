@@ -39,8 +39,13 @@
   function renderResults(hits) {
     var el = document.getElementById('expResults');
     if (!hits.length) { el.innerHTML = '<div class="panel" style="padding:12px 16px; color:var(--muted);">Nichts gefunden.</div>'; return; }
-    el.innerHTML = '<div class="panel">' + hits.map(function (h, i) {
-      return '<div class="exp-hit" data-hit="' + i + '"><span class="s">' + U.esc(h.sym) + '</span><span class="n">' + U.esc(h.name) + '</span><span class="x">' + U.esc(h.type) + ' · ' + U.esc(h.exch) + '</span></div>';
+    /* <button> statt <div>: Die Trefferliste war reine Mausbedienung - per Tastatur
+       kam man an keinen einzigen Treffer heran. type="button" verhindert, dass Enter
+       das umgebende Suchformular abschickt. */
+    el.innerHTML = '<div class="panel" role="list">' + hits.map(function (h, i) {
+      return '<button type="button" class="exp-hit" role="listitem" data-hit="' + i + '">' +
+        '<span class="s">' + U.esc(h.sym) + '</span><span class="n">' + U.esc(h.name) + '</span>' +
+        '<span class="x">' + U.esc(h.type) + ' · ' + U.esc(h.exch) + '</span></button>';
     }).join('') + '</div>';
     el.querySelectorAll('[data-hit]').forEach(function (row) {
       row.addEventListener('click', function () {

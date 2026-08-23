@@ -3933,5 +3933,82 @@ console.log('\n39) Erklaertexte hinter dem i – ein Register, ein Fenster, ein 
      'die verbliebenen Absaetze sind auf lesbare Zeilenlaenge begrenzt');
 })();
 
+console.log('\n40) Tastatur, Semantik und Kontrast – die Oberflaeche ohne Maus und mit schwachen Augen');
+(function () {
+  var html = fs.readFileSync(__dirname + '/index.html', 'utf8');
+  var shell = fs.readFileSync(__dirname + '/app-shell.js', 'utf8');
+  var expl = fs.readFileSync(__dirname + '/explorer.js', 'utf8');
+
+  /* --- Reiterleiste: Rollen und Tastatur ---
+   * Vorher waren es fuenf zusammenhanglose Knoepfe: kein tablist, keine Pfeiltasten,
+   * und man musste sich durch alle fuenf tabben, um zum Inhalt zu kommen. */
+  ok(/role="tablist"/.test(html), 'Reiter: die Leiste ist ein tablist');
+  ok((html.match(/role="tab"/g) || []).length === 5, 'Reiter: alle fuenf Knoepfe sind role="tab"');
+  ok((html.match(/role="tabpanel"/g) || []).length === 5, 'Reiter: alle fuenf Bereiche sind role="tabpanel"');
+  ok((html.match(/aria-controls="tab-/g) || []).length === 5, 'Reiter: jeder Knopf benennt seinen Bereich');
+  ok((html.match(/aria-labelledby="reiter-/g) || []).length === 5, 'Reiter: jeder Bereich benennt seinen Knopf');
+  ok(/ArrowRight/.test(shell) && /ArrowLeft/.test(shell) && /'Home'/.test(shell) && /'End'/.test(shell),
+     'Reiter: Pfeiltasten, Pos1 und Ende blaettern die Leiste');
+  // Roving tabindex: genau EIN Reiter ist tabbierbar, sonst kostet der Weg zum Inhalt vier Tabs
+  ok((html.match(/role="tab"[^>]*tabindex="-1"/g) || []).length === 4,
+     'Reiter: nur der aktive Reiter ist tabbierbar (roving tabindex)');
+  ok(/x\.tabIndex = an \? 0 : -1;/.test(shell), 'Reiter: der tabindex wandert beim Wechsel mit');
+  ok(/aria-selected/.test(shell), 'Reiter: aria-selected wird beim Wechsel nachgezogen');
+
+  /* --- Bereiche, die sich selbst aktualisieren, muessen sich melden --- */
+  ok(/id="warnband"[^>]*aria-live="assertive"/.test(html),
+     'Warnband: meldet sich (dort steht "Speichern fehlgeschlagen" und "Quelle gestoert")');
+  ok(/id="err"[^>]*aria-live="polite"/.test(html), 'Fehlerzeile: meldet sich beilaeufig');
+  ok(/id="cockpit"[^>]*aria-live="polite"/.test(html), 'Cockpit: meldet sich beilaeufig');
+  ok((html.match(/aria-live=/g) || []).length >= 4, 'mindestens vier Bereiche mit aria-live');
+
+  /* --- Dialoge: Escape, Fokusfalle, Fokus-Rueckgabe ---
+   * Vorher liessen sich alle drei nur mit der Maus schliessen, und der Hintergrund
+   * blieb durchtabbierbar. */
+  ok((html.match(/role="dialog"/g) || []).length >= 3, 'Dialoge: als Dialog ausgezeichnet');
+  ok((html.match(/aria-modal="true"/g) || []).length >= 3, 'Dialoge: aria-modal gesetzt');
+  // Den Escape-Zweig als Block schneiden, statt auf Naehe zu hoffen: dazwischen steht
+  // die Vorfahrt-Regel fuer das Erklaerfenster, und die darf wachsen duerfen.
+  var escBlock = (shell.match(/if \(ev\.key === 'Escape'\) \{[\s\S]*?\n    \}/) || [''])[0];
+  ok(/modalSchliessen\(bg\)/.test(escBlock), 'Dialoge: Escape schliesst');
+  ok(/ev\.key !== 'Tab'/.test(shell) && /shiftKey/.test(shell), 'Dialoge: die Tab-Taste laeuft im Kreis (Fokusfalle)');
+  ok(/modalHer = document\.activeElement;/.test(shell) && /modalHer\.focus\(\)/.test(shell),
+     'Dialoge: der Fokus kehrt zum Ausloeser zurueck');
+  // Das Erklaerfenster darf beim ersten Escape nicht zusammen mit dem Dialog verschwinden
+  ok(/ip\.style\.display === 'block'\) return;/.test(shell),
+     'Dialoge: ein offenes Erklaerfenster bekommt das erste Escape');
+
+  /* --- Explorer-Treffer waren klickbare <div> ohne Tastaturzugang --- */
+  ok(/<button type="button" class="exp-hit"/.test(expl), 'Explorer: Treffer sind echte Knoepfe');
+  ok(!/<div class="exp-hit"/.test(expl), 'Explorer: kein klickbares div mehr');
+  ok(/\.exp-hit \{[^}]*background: none[^}]*border: 0/.test(html),
+     'Explorer: die Knopf-Vorgaben des Browsers sind zurueckgesetzt');
+
+  /* --- Kontrast: die vier gemessenen Verstoesse ---
+   * Geprueft wird die URSACHE, nicht der Farbwert: die Token muessen existieren und
+   * an den Stellen benutzt werden, an denen vorher zu schwache Farben standen. */
+  ['--kante', '--chip-up', '--chip-down', '--good', '--mono', '--panel-2', '--surface-2'].forEach(function (t) {
+    var n = (html.match(new RegExp('\\' + t + ':', 'g')) || []).length;
+    ok(n >= 2, 'Token ' + t + ' ist in BEIDEN Themen definiert  [' + n + ']');
+  });
+  ok(/\.chip\.up   \{ color: var\(--chip-up\)/.test(html) && /\.chip\.down \{ color: var\(--chip-down\)/.test(html),
+     'Chips: eigene Textfarbe auf dem eigenen Weichton (vorher 4,06 bzw. 4,25)');
+  ok(/\.switch \.knob \{[^}]*border: 1px solid var\(--kante\)/.test(html),
+     'Kippschalter: sichtbare Umrandung im Aus-Zustand (vorher 1,29)');
+  ok(/input\[type="text"\][\s\S]{0,220}border: 1px solid var\(--kante\)/.test(html),
+     'Eingabefelder: sichtbare Umrandung (vorher 1,21 hell / 1,49 dunkel)');
+  /* Gegenprobe: kein Token darf nur in EINEM Thema stehen - genau daran ist --good
+   * schon einmal gescheitert (fest verdrahtete Notfarbe, im Dunkelthema 3,11). */
+  var hellBlock = html.slice(html.indexOf(':root {'), html.indexOf(':root[data-theme="dark"]'));
+  var dunkelBlock = html.slice(html.indexOf(':root[data-theme="dark"]'), html.indexOf('* { box-sizing'));
+  function tokenNamen(b) { return (b.match(/--[\w-]+:/g) || []).map(function (x) { return x.slice(0, -1); }); }
+  var nurHell = tokenNamen(hellBlock).filter(function (t) { return tokenNamen(dunkelBlock).indexOf(t) < 0; });
+  var nurDunkel = tokenNamen(dunkelBlock).filter(function (t) { return tokenNamen(hellBlock).indexOf(t) < 0; });
+  // --line ist die dokumentierte Ausnahme: es loest sich ueber --border am selben Element auf.
+  nurHell = nurHell.filter(function (t) { return t !== '--line'; });
+  ok(nurHell.length === 0 && nurDunkel.length === 0,
+     'kein Token steht nur in einem Thema  [' + (nurHell.concat(nurDunkel).join(', ') || 'keins') + ']');
+})();
+
 console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
 process.exit(fails ? 1 : 0);
