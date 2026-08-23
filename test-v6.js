@@ -2919,6 +2919,32 @@ console.log('\n41) Echte WKN zum Modell-Schein (Tickets #9/#11/#17)');
   ok(kurz.length === 1 && kurz[0].passt === false,
      'Nur ähnlich statt Treffer: 19 statt 7 Tage wird als solches gekennzeichnet', kurz[0] && kurz[0].abstand);
 
+  /* --- Kennung in der Syntax der Quelle (Tester-Wunsch #54) ---
+     onvista benennt jeden Schein "EMITTENT/TYP/BASISWERT/BASISPREIS/BV/TT.MM.JJ".
+     Die Kennung im Finder baut den emittentenfreien Teil davon nach, damit sie
+     dort auch wirklich etwas findet. Zahlen mit PUNKT, keine Nullen am Ende. */
+  var kn1 = W.onvistaKennung({ dir: 'call', basiswert: 'Apple', strike: 294, ratio: 0.1,
+                               faellig: new Date(2026, 8, 18, 12, 0).getTime() });
+  ok(kn1 === 'CALL/APPLE/294/0.1/18.09.26', 'Die Kennung steht in der Syntax der Produktsuche', kn1);
+  var kn2 = W.onvistaKennung({ dir: 'put', basiswert: 'Apple', strike: 112.5, ratio: 1,
+                               faellig: new Date(2026, 11, 18, 12, 0).getTime() });
+  ok(kn2 === 'PUT/APPLE/112.5/1/18.12.26', 'Punkt statt Komma, keine Nullen am Ende, Datum TT.MM.JJ', kn2);
+  var gleich = { basiswert: 'A', strike: 200, ratio: 0.1, faellig: new Date(2026, 8, 18, 12, 0).getTime() };
+  var kC = W.onvistaKennung({ dir: 'call', basiswert: gleich.basiswert, strike: gleich.strike, ratio: gleich.ratio, faellig: gleich.faellig });
+  var kP = W.onvistaKennung({ dir: 'put', basiswert: gleich.basiswert, strike: gleich.strike, ratio: gleich.ratio, faellig: gleich.faellig });
+  ok(kC !== kP, 'Call und Put mit gleichen Merkmalen bekommen NICHT dieselbe Kennung (beide stehen im Raster)', kC + ' / ' + kP);
+
+  /* Der Name, unter dem der Schein bei der Quelle steht, muss durchgereicht
+     werden - sonst kann die Oberflaeche ihn nicht zum Kopieren anbieten. */
+  var normN = W.normalisiere({ list: [
+    { instrument: { wkn: 'JZ9Y29', isin: 'DE000JZ9Y291', name: 'J.P. MORGAN ZERTIFIKATE/CALL/APPLE/294/0.1/18.09.26' },
+      shortName: 'J.P. MORGAN ZERTIFIKATE/CALL/APPLE/294/0.1/18.09.26',
+      codeExerciseRight: 'C', strikeAbs: 294, coverRatio: 0.1,
+      dateMaturity: '2026-09-18T12:00:00.000+00:00', quote: { bid: 1.2, ask: 1.25 } }
+  ] }, Date.UTC(2026, 7, 23));
+  ok(normN.length === 1 && normN[0].name === 'J.P. MORGAN ZERTIFIKATE/CALL/APPLE/294/0.1/18.09.26',
+     'Der onvista-Name des echten Scheins kommt mit an', normN[0] && normN[0].name);
+
   /* --- Verdrahtung: das Modul muss auch ausgeliefert und freigeschaltet sein --- */
   var html = fs.readFileSync(__dirname + '/index.html', 'utf8');
   var mainQ = fs.readFileSync(__dirname + '/main.js', 'utf8');
@@ -2928,6 +2954,12 @@ console.log('\n41) Echte WKN zum Modell-Schein (Tickets #9/#11/#17)');
   ok(html.indexOf('Keine echten WKNs') < 0 && sf.indexOf('Modell-Kennung statt WKN: Echte WKN-Listen') < 0,
      'Die alte Auskunft „echte WKNs gibt es nur gegen Bezahlung" steht nirgends mehr');
   ok(/colspan="15"/.test(sf), 'Die aufgeklappte Zeile spannt über alle 15 Spalten (WKN kam dazu)');
+  ok(sf.indexOf('window.WKN.kern.onvistaKennung') > 0,
+     'Der Schein-Finder baut die Kennung mit der Syntax der Quelle - nicht mehr mit der Hausform');
+  ok(sf.indexOf('onvista-Name') > 0 && sf.indexOf("U.esc(s.name || '") > 0,
+     'Der echte Schein zeigt seinen onvista-Namen und laesst ihn kopieren');
+  ok(sf.indexOf('await window.WKN.basiswertId(sym, nameZu(sym))') > 0,
+     'Der Name des Basiswerts kommt von der Quelle selbst - sonst stuende ein Kuerzel in der Kennung');
 })();
 
 

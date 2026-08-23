@@ -75,6 +75,35 @@
 
   function isoTag(ms) { return new Date(ms).toISOString().slice(0, 10); }
 
+  /** Kennung eines Scheins in der SYNTAX DER QUELLE (Tester-Wunsch #54).
+   *  onvista benennt jedes Papier nach dem Muster
+   *      EMITTENT/TYP/BASISWERT/BASISPREIS/BV/FAELLIGKEIT
+   *      "J.P. MORGAN ZERTIFIKATE/CALL/APPLE/294/0.1/18.09.26"
+   *  Gebaut wird hier der emittentenfreie Teil - der Teil, der ein PRODUKT
+   *  benennt statt eines einzelnen Papiers, und der sich bei der Quelle suchen
+   *  laesst. Die alte Hauskurzform ("C294-27T*0,1") war kuerzer und nirgends
+   *  sonst zu gebrauchen.
+   *  Der Typ bleibt drin, obwohl das Beispiel im Ticket ihn weglaesst: Call und
+   *  Put mit gleichem Basispreis, BV und Termin stehen beide im Raster - ohne
+   *  ihn waere die Kennung nicht mehr eindeutig.
+   *  Zahlen mit Punkt und ohne Nullen am Ende, Datum TT.MM.JJ - so wie die
+   *  Quelle es schreibt. */
+  function zahlKennung(v) {
+    if (v == null || !isFinite(v)) return '?';
+    return String(Math.round(v * 1e6) / 1e6);
+  }
+  function onvistaKennung(o) {
+    if (!o) return '';
+    var d = new Date(o.faellig);
+    var p2 = function (n) { return (n < 10 ? '0' : '') + n; };
+    var datum = isFinite(d.getTime())
+      ? p2(d.getDate()) + '.' + p2(d.getMonth() + 1) + '.' + String(d.getFullYear()).slice(2)
+      : '?';
+    var typ = o.dir === 'call' ? 'CALL' : (o.dir === 'put' ? 'PUT' : '?');
+    return typ + '/' + String(o.basiswert || '?').toUpperCase() + '/' +
+      zahlKennung(o.strike) + '/' + zahlKennung(o.ratio) + '/' + datum;
+  }
+
   /** Suchfenster um eine Modell-Zeile. Bewusst nicht enger: Emittenten legen nur
    *  auf feste Termine auf, ein Fenster von +-2 Tagen faende bei kurzen Laufzeiten
    *  gar nichts. Lieber breit suchen und die Abweichung hinterher ehrlich zeigen. */
@@ -135,6 +164,9 @@
       aus.push({
         wkn: inst.wkn,
         isin: inst.isin || null,
+        /* Der Name, unter dem der Schein bei der Quelle steht (Tester-Wunsch #54) -
+           genau diese Zeichenkette findet ihn dort wieder. */
+        name: it.shortName || inst.name || null,
         emittent: (it.issuer && it.issuer.name) || '–',
         dir: it.codeExerciseRight === 'C' ? 'call' : (it.codeExerciseRight === 'P' ? 'put' : null),
         strike: strike,
@@ -207,7 +239,8 @@
   var Kern = {
     HOST: HOST, MAX_ABSTAND: MAX_ABSTAND,
     basiswertWaehlen: basiswertWaehlen, suchUrl: suchUrl, scheinUrl: scheinUrl,
-    fenster: fenster, normalisiere: normalisiere, abstand: abstand, besteScheine: besteScheine
+    fenster: fenster, normalisiere: normalisiere, abstand: abstand, besteScheine: besteScheine,
+    onvistaKennung: onvistaKennung
   };
 
   /* ---------------- ab hier Browser-Verdrahtung ---------------- */

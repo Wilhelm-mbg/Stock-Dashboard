@@ -19,6 +19,9 @@
   var RASTER = null;        // aktuelles Raster
   var BASIS = null;         // {sym, spot, iv, stand}
   var sortUmgekehrt = false; // zweiter Klick auf denselben Spaltenkopf dreht die Reihenfolge
+  /* Name des Basiswerts bei der Produktsuche ("APPLE") - er steckt in der Kennung
+     (Tester-Wunsch #54). Bis er da ist, steht das Kuerzel drin. */
+  var BW_NAME = null;
   /* Nachgeschlagene echte Scheine je Raster-Zeile (Tickets #9/#11/#17).
      Abgerufen wird erst auf Klick: Eine Suche je Zeile ist eine Anfrage, und
      niemand braucht die WKN zu 120 Zeilen, sondern zu der einen, die er nimmt. */
@@ -57,19 +60,40 @@
       BASIS = { sym: sym, spot: spot, iv: iv, stand: Date.now() };
       RASTER = Q.scheinRaster(spot, iv, Date.now());
       WKN_TREFFER = {};   // neues Raster: alte Zuordnungen gelten nicht mehr
+      BW_NAME = String(sym).split('.')[0].toUpperCase();
       stat(sym + ': Kurs ' + U.nf2.format(spot) + ' $, Vola ' + Math.round(iv * 100) + ' % → ' +
         RASTER.length + ' Scheine im Raster (Modell – echte WKN je Zeile nachschlagbar).');
       zeige();
+      /* Den Namen holen, unter dem der Basiswert bei der Produktsuche steht - er
+         steht in jeder Kennung (Tester-Wunsch #54). Die Abfrage ist gemerkt, also
+         faellt sie je Symbol genau einmal an; ohne Netz bleibt das Kuerzel stehen.
+         Erst NACH dem Zeichnen, damit die Tabelle nicht auf sie warten muss. */
+      try {
+        var bw = window.WKN ? await window.WKN.basiswertId(sym, nameZu(sym)) : null;
+        if (bw && bw.name && BASIS && BASIS.sym === sym) { BW_NAME = String(bw.name).toUpperCase(); zeige(); }
+      } catch (eB) { }
     } catch (e) { stat('Fehler: ' + (e.message || e)); }
   }
 
-  /* Kennung der MODELL-Zeile: Sie baut sich aus den Merkmalen selbst -
-     "C112,5-45T·0,1" ist Call, Basispreis 112,50, 45 Tage Restlaufzeit, BV 0,1.
-     Sie benennt die gerechnete Zeile eindeutig, auch dort, wo es (noch) keinen
-     aufgelegten Schein dazu gibt; die echte WKN steht in der Spalte davor. */
+  /* Kennung der MODELL-Zeile - in der Syntax der Produktsuche (Tester-Wunsch #54):
+     "CALL/APPLE/294/0.1/18.09.26" ist ein Call auf Apple, Basispreis 294, BV 0,1,
+     Laufzeitende 18.09.26. Genau so heissen die Scheine bei der Quelle, also laesst
+     sich die Kennung dort suchen; die frueher gezeigte Hausform ("C294-27T*0,1")
+     war kuerzer und nirgends sonst zu gebrauchen.
+     EHRLICH BLEIBT: Das Datum ist das Laufzeitende der GERECHNETEN Zeile, nicht der
+     Termin eines aufgelegten Scheins - Emittenten legen nur auf feste Tage auf.
+     Welcher echte Schein am naechsten liegt, sagt die WKN-Spalte daneben. */
   function kennung(k) {
-    var strike = k.strike % 1 ? String(k.strike.toFixed(1)).replace('.', ',') : String(Math.round(k.strike));
-    return (k.dir === 'call' ? 'C' : 'P') + strike + '-' + k.restTage + 'T·' + String(k.ratio).replace('.', ',');
+    var name = BW_NAME || (BASIS ? String(BASIS.sym).split('.')[0] : '?');
+    if (window.WKN && window.WKN.kern && window.WKN.kern.onvistaKennung) {
+      return window.WKN.kern.onvistaKennung({
+        dir: k.dir, basiswert: name, strike: k.strike, ratio: k.ratio,
+        faellig: (BASIS ? BASIS.stand : Date.now()) + k.restTage * 86400000
+      });
+    }
+    // Notform, falls wkn.js fehlt - lieber eine schlichte Kennung als gar keine
+    return (k.dir === 'call' ? 'CALL' : 'PUT') + '/' + name.toUpperCase() + '/' + k.strike +
+      '/' + k.ratio + '/' + k.restTage + 'T';
   }
 
   /* ================= Echte WKN (Tickets #9/#11/#17) =================
@@ -163,13 +187,14 @@
         '<td style="text-align:right;">' + (!s.kursFraglich && s.spanneGesamtPct != null ? s.spanneGesamtPct.toFixed(2) + ' %' : '–') + '</td>' +
         '<td style="text-align:right;">' + (s.iv != null ? s.iv.toFixed(1) + ' %' : '–') + '</td>' +
         '<td style="color:var(--muted);">' + U.esc(abweichungText(k, s)) + (s.passt ? '' : ' <b style="color:var(--warn);">(nur ähnlich)</b>') + '</td>' +
-        '<td style="color:var(--muted); white-space:nowrap;">' + U.esc(s.isin || '') + '</td></tr>';
+        '<td style="color:var(--muted); white-space:nowrap;">' + U.esc(s.isin || '') + '</td>' +
+        '<td class="sf-wknkopie" style="color:var(--muted); white-space:nowrap; cursor:copy;" title="So heißt der Schein bei der Quelle – Klick kopiert den Namen">' + U.esc(s.name || '–') + '</td></tr>';
     }).join('');
-    return '<b>Echte Scheine dazu</b> <span style="color:var(--muted); font-size:11.5px;">– Klick auf die WKN kopiert sie</span>' +
+    return '<b>Echte Scheine dazu</b> <span style="color:var(--muted); font-size:11.5px;">– Klick auf die WKN oder den onvista-Namen kopiert den Eintrag</span>' +
       '<div style="overflow-x:auto; margin-top:4px;"><table class="tbl" style="font-size:11.5px;">' +
       '<tr><th>WKN</th><th>Emittent</th><th style="text-align:right;">Basis</th><th style="text-align:right;">fällig</th>' +
       '<th style="text-align:right;">BV</th><th style="text-align:right;">Geld/Brief</th><th style="text-align:right;">Stand</th>' +
-      '<th style="text-align:right;">Spanne</th><th style="text-align:right;">impl. Vola</th><th>Abweichung</th><th>ISIN</th></tr>' +
+      '<th style="text-align:right;">Spanne</th><th style="text-align:right;">impl. Vola</th><th>Abweichung</th><th>ISIN</th><th>onvista-Name</th></tr>' +
       zeilen + '</table></div>' +
       '<div style="color:var(--muted); font-size:11px; margin-top:6px; line-height:1.5;">' +
       'Emittentenkurse in Euro, das Modell rechnet in Dollar auf den Basiswert – <b>nicht ineinander umgerechnet</b>, ' +
@@ -241,7 +266,7 @@
       return '<tr data-sfi="' + idx + '" style="cursor:pointer;">' +
         '<td class="sf-wkn" data-sfwkn="' + idx + '" style="white-space:nowrap; font-size:11px; cursor:pointer;" ' +
         'title="Echte WKN nachschlagen. Erster Klick sucht den passenden aufgelegten Schein, danach kopiert ein Klick die WKN.">' + wknZelle(idx) + '</td>' +
-        '<td class="sf-kennung" style="white-space:nowrap; color:var(--muted); font-size:11px; cursor:copy;" title="Klick kopiert die Kennung">' + kennung(k) + '</td>' +
+        '<td class="sf-kennung" style="white-space:nowrap; color:var(--muted); font-size:11px; cursor:copy;" title="Kennung in der Syntax der Produktsuche – Klick kopiert sie">' + kennung(k) + '</td>' +
         '<td><b style="color:' + STUFENFARBE[k.stufe] + ';">' + k.stufe + '</b></td>' +
         '<td>' + (k.dir === 'call' ? '▲ Call' : '▼ Put') + '</td>' +
         '<td style="text-align:right;">' + U.nf2.format(k.strike) + '</td>' +
@@ -263,7 +288,7 @@
        Kosten zuerst"), also kein Umschalten, das nur verwirren wuerde. */
     var SPALTEN = [
       { t: 'WKN', tip: 'Echter aufgelegter Schein zu dieser Modell-Zeile. Klick sucht ihn bei der offenen Produktsuche von onvista, ein weiterer Klick kopiert die WKN. „≈“ heißt: nur ähnlich – die Abweichung steht in der aufgeklappten Zeile.' },
-      { t: 'Kennung', tip: 'Modell-Kennung: Typ, Basispreis, Restlaufzeit und BV in einem Kürzel. Sie benennt die gerechnete Zeile – die WKN daneben nennt den echten Schein dazu.' },
+      { t: 'Kennung', tip: 'Kennung in der Syntax der Produktsuche: Typ/Basiswert/Basispreis/Bezugsverhältnis/Fälligkeit – genau so heißen die Scheine bei onvista, so lässt sie sich dort suchen. Klick kopiert sie. Das Datum ist das Laufzeitende der GERECHNETEN Zeile; aufgelegt wird nur auf feste Termine – den echten Schein nennt die WKN-Spalte daneben.' },
       { t: 'Stufe', tip: 'Risikostufe 1 (defensiv) bis 5 (Lotterielos)', sort: 'stufe', pfeil: '↑' },
       { t: 'Typ' },
       { t: 'Basispreis', r: 1 },
