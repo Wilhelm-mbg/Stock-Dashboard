@@ -585,6 +585,156 @@
   setTimeout(ladeInsider, 7000);
   setInterval(ladeInsider, 10 * 60000);
 
+  /* ================= Vorbörsen-Lücken =================
+   * Tester-Wunsch #55: eine Liste der Werte, die vor der US-Eröffnung deutlich
+   * anders stehen als beim gestrigen Schluss. Die Schwellen sind die aus dem
+   * Ticket: Lücke über 5 %, Kurs über 3 $, vorbörsliches Volumen über 50.000
+   * Stück, höchstens zehn Zeilen.
+   *
+   * Diese Karte ZEIGT nur. Sie löst nichts aus, sie geht in keine Strategie ein,
+   * kein Knopf handelt daraus. "Gap and Go" gehört zur Ausbruchsfamilie, und die
+   * ist hier gemessen und widerlegt worden - die grosse Signalstudie vom
+   * 23.08.2026 hat in 3.372 Tests keinen einzigen bestätigten Ausbruchs-Vorteil
+   * gefunden, und die Produkthürde beim Standard-Schein (0,23 Pp je 3 h) frisst
+   * mehr, als solche Effekte roh hergeben. Wer das handeln will, misst es vorher.
+   *
+   * Datenquelle sind die Yahoo-Screener (dieselbe Liste, die auch die
+   * Gewinner-Seite füllt, nur als JSON) plus die 5-Minuten-Kerzen mit
+   * Vorbörsen-Fenster - beides über den Host, den die App ohnehin benutzt.
+   * Der im Ticket vorgeschlagene Nachrichten-Anbieter kommt bewusst NICHT dazu:
+   * das wäre ein neuer Fremdhost auf der Whitelist, und ein Auslöser-Text ist
+   * hier ohnehin nichts Gemessenes. */
+  var VM_SCREENER = ['day_gainers', 'small_cap_gainers', 'most_actives'];
+  var vormarktLaeuft = false;
+  var vormarktStand = null;   // { zeit, geprueft, zeilen: [...] }
+
+  function vormarktZeilenSauber(roh) {
+    var aus = [];
+    for (var i = 0; i < (roh || []).length && i < 10; i++) {
+      var z = roh[i];
+      if (!z || typeof z.sym !== 'string' || !isFinite(z.luecke)) continue;
+      aus.push({
+        sym: z.sym.toUpperCase().slice(0, 12),
+        name: typeof z.name === 'string' ? z.name.slice(0, 40) : '',
+        kurs: isFinite(z.kurs) ? z.kurs : 0,
+        luecke: z.luecke,
+        vol: isFinite(z.vol) ? z.vol : 0,
+        kerzen: isFinite(z.kerzen) ? z.kerzen : 0
+      });
+    }
+    return aus;
+  }
+
+  async function vormarktSuchen() {
+    if (vormarktLaeuft || !window.api || !window.Vormarkt) return;
+    vormarktLaeuft = true;
+    zeigeVormarkt('Suche läuft – Kandidatenliste wird geholt …');
+    try {
+      var kandidaten = [];
+      for (var s = 0; s < VM_SCREENER.length; s++) {
+        var url = 'https://query1.finance.yahoo.com/v1/finance/screener/predefined/saved?scrIds=' +
+          VM_SCREENER[s] + '&count=50';
+        var rs = await window.api.fetchText(url);
+        if (rs && rs.ok) kandidaten = kandidaten.concat(window.Vormarkt.kandidatenAus(rs.body));
+      }
+      // Die eigenen 15 Werte immer mitprüfen - siehe Kommentar in vormarkt.js
+      STOCKS.forEach(function (x) {
+        kandidaten.push({ sym: x.y, name: x.name, kurs: null, vorPct: null, regPct: null, immer: true });
+      });
+      var liste = window.Vormarkt.vorauswahl(kandidaten, window.Vormarkt.MAX_CHART);
+      if (!liste.length) { vormarktFertig([], 0); return; }
+      zeigeVormarkt('Suche läuft – ' + liste.length + ' Werte werden nachgesehen …');
+      var treffer = [], idx = 0;
+      async function bahn() {
+        while (idx < liste.length) {
+          var k = liste[idx++];
+          var cu = 'https://query1.finance.yahoo.com/v8/finance/chart/' + encodeURIComponent(k.sym) +
+            '?range=1d&interval=5m&includePrePost=true';
+          var rc = await window.api.fetchText(cu);
+          if (!rc || !rc.ok) continue;
+          var v = window.Vormarkt.vormarktAusChart(rc.body);
+          if (v) treffer.push({ sym: k.sym, name: k.name, kurs: v.kurs, luecke: v.luecke, vol: v.vol, kerzen: v.kerzen });
+        }
+      }
+      var bahnen = [];
+      for (var b = 0; b < 4; b++) bahnen.push(bahn());
+      await Promise.all(bahnen);
+      vormarktFertig(window.Vormarkt.sieben(treffer, window.Vormarkt.MAX_LISTE), liste.length);
+    } catch (e) {
+      zeigeVormarkt('Die Suche ist nicht durchgelaufen – später noch einmal versuchen.');
+    } finally {
+      vormarktLaeuft = false;
+    }
+  }
+
+  function vormarktFertig(zeilen, geprueft) {
+    vormarktStand = { zeit: Date.now(), geprueft: geprueft, zeilen: vormarktZeilenSauber(zeilen) };
+    try { window.api.storeSet('vormarktStand', vormarktStand); } catch (e) { /* ohne Speicher geht es auch */ }
+    zeigeVormarkt();
+  }
+
+  function zeigeVormarkt(hinweis) {
+    var el = document.getElementById('vormarktKarte');
+    if (!el) return;
+    var phase = boersenPhase();
+    var kopf = '<div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:6px;">' +
+      '<button id="vormarktJetzt" class="btn"' + (vormarktLaeuft ? ' disabled' : '') + '>' +
+      (vormarktLaeuft ? 'Suche läuft …' : 'Jetzt nachsehen') + '</button>' +
+      '<span style="color:var(--muted); font-size:11.5px;">' +
+      (phase === 'vorboerslich'
+        ? 'Vorbörse läuft – die Karte sieht alle 10 Minuten von selbst nach.'
+        : 'Ausserhalb der US-Vorbörse (10:00–15:30 unserer Zeit) gibt es keine Vorbörsen-Kerzen.') +
+      '</span></div>';
+    var rumpf;
+    if (hinweis) {
+      rumpf = '<div class="loading">' + esc(hinweis) + '</div>';
+    } else if (!vormarktStand) {
+      rumpf = '<div class="loading">Noch nicht gesucht.</div>';
+    } else if (!vormarktStand.zeilen.length) {
+      rumpf = '<div class="loading">Kein Wert über der Schwelle – ' + nf0.format(vormarktStand.geprueft) +
+        ' Werte nachgesehen, Stand ' +
+        new Date(vormarktStand.zeit).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }) + ' Uhr.</div>';
+    } else {
+      rumpf = vormarktStand.zeilen.map(function (z) {
+        return '<div class="spek-zeile">' +
+          '<span class="sym" data-heat="' + esc(z.sym) + '" title="Im Explorer öffnen">' + esc(z.sym) +
+          (z.name ? ' <span class="firma">' + esc(z.name) + '</span>' : '') + '</span>' +
+          '<span class="spek-chip kauf">+' + fmt(z.luecke, 2) + ' %</span>' +
+          '<span class="these">' + fmt(z.kurs, 2) + ' $ vorbörslich' +
+          ' <span class="beg">· in ' + nf0.format(z.kerzen) + ' von 66 Vorbörsen-Kerzen gehandelt' +
+          (z.vol > 0 ? ', ' + nf0.format(Math.round(z.vol)) + ' Stück' : '') + '</span></span>' +
+          '</div>';
+      }).join('');
+    }
+    var fuss = '<div style="color:var(--muted); font-size:11px; margin-top:8px;">' +
+      (vormarktStand ? 'Stand ' + new Date(vormarktStand.zeit).toLocaleString('de-DE',
+        { weekday: 'short', hour: '2-digit', minute: '2-digit' }) + ' Uhr · ' : '') +
+      'Schwellen: Lücke über ' + window.Vormarkt.MIN_LUECKE + ' %, Kurs über ' + window.Vormarkt.MIN_KURS +
+      ' $, in mindestens ' + window.Vormarkt.MIN_KERZEN + ' der 5-Minuten-Kerzen gehandelt.' +
+      ' Eine Volumen-Schwelle steht bewusst nicht drin: Yahoo liefert vorbörslich kein Volumen (am 23.08.2026' +
+      ' an fünf liquiden Werten geprüft, jede Kerze 0). Gezählt wird deshalb, wie lange überhaupt gehandelt wurde.' +
+      ' Durchsucht werden die Yahoo-Listen (Tagesgewinner, Nebenwerte, umsatzstärkste) und die 15 Werte dieses Reiters' +
+      ' – nicht der ganze Markt: die Listen sortieren nach dem regulären Vortag, ein Wert, der erst heute Nacht springt,' +
+      ' kann darin fehlen.' +
+      ' Was hier steht, ist beobachtet – nicht gemessen. Keine Anlageberatung.</div>';
+    el.innerHTML = kopf + rumpf + fuss;
+    var btn = document.getElementById('vormarktJetzt');
+    if (btn) btn.onclick = vormarktSuchen;
+  }
+
+  async function vormarktStart() {
+    try {
+      var g = await window.api.storeGet('vormarktStand');
+      if (g && Array.isArray(g.zeilen)) {
+        vormarktStand = { zeit: g.zeit || Date.now(), geprueft: g.geprueft || 0, zeilen: vormarktZeilenSauber(g.zeilen) };
+      }
+    } catch (e) { /* ohne Speicher startet die Karte eben leer */ }
+    zeigeVormarkt();
+    if (boersenPhase() === 'vorboerslich') vormarktSuchen();
+  }
+  setTimeout(vormarktStart, 8000);
+  setInterval(function () { if (boersenPhase() === 'vorboerslich') vormarktSuchen(); }, 10 * 60000);
+
   /* Laufband oben im Dashboard (Tester-Wunsch #20): dieselben Schlagzeilen wie im
      News-Kasten, als endlos durchlaufendes Band. Der Inhalt wird verdoppelt, damit
      die CSS-Schleife (-50 %) nahtlos wieder am Anfang ankommt. Bewegung nervt

@@ -880,6 +880,108 @@ console.log('\n17b) Oberflaeche: Altlasten und Verdrahtung');
   ok(/require\.main === module/.test(ihSrc), 'Insider: das Werkzeug laeuft nur beim direkten Aufruf');
   ok(/nur offener Marktkauf/.test(ihSrc), 'Insider: im Werkzeug steht, warum nur Code P zaehlt');
 
+  /* --- Vorboersen-Luecken (#55, 23.08.2026) ---------------------------------
+   * Zwei Dinge muessen halten: die Rechnung (nur Kerzen aus dem Vorboersen-
+   * Fenster, Basis ist der letzte regulaere Schluss) und die Rolle (reine
+   * Anzeige, kein Handel, keine neue Fremdquelle). */
+  (function () {
+    var VM = require('./vormarkt.js');
+    var rSrc = fs.readFileSync(__dirname + '/renderer.js', 'utf8');
+    var hSrc = fs.readFileSync(__dirname + '/index.html', 'utf8');
+    var vmSrc = fs.readFileSync(__dirname + '/vormarkt.js', 'utf8');
+    var mSrc = fs.readFileSync(__dirname + '/main.js', 'utf8');
+
+    // Ein Tag mit Vorboerse: regulaerer Start 13:30 UTC, Vorboerse ab 8:00 UTC.
+    var regStart = Math.floor(Date.UTC(2026, 7, 24, 13, 30) / 1000);
+    var preStart = regStart - 19800;
+    function chart(bars, basis) {
+      return JSON.stringify({ chart: { result: [{
+        meta: { chartPreviousClose: basis, currentTradingPeriod: {
+          pre: { start: preStart, end: regStart }, regular: { start: regStart, end: regStart + 23400 } } },
+        timestamp: bars.map(function (b) { return b.t; }),
+        indicators: { quote: [{
+          close: bars.map(function (b) { return b.c; }),
+          volume: bars.map(function (b) { return b.v; }) }] }
+      }] } });
+    }
+    // Vortags-Kerze (liegt VOR dem Vorboersen-Fenster), zwei Vorboersen-Kerzen,
+    // eine regulaere Kerze. Nur die beiden mittleren duerfen zaehlen.
+    var v = VM.vormarktAusChart(chart([
+      { t: preStart - 86400, c: 50, v: 900000 },
+      { t: preStart + 300,   c: 106, v: 30000 },
+      { t: preStart + 600,   c: 110, v: 40000 },
+      { t: regStart + 300,   c: 120, v: 500000 }
+    ], 100));
+    ok(v && Math.abs(v.luecke - 10) < 1e-9, 'Vormarkt #55: Luecke gegen den letzten regulaeren Schluss', v && v.luecke);
+    ok(v && v.vol === 70000 && v.kerzen === 2,
+       'Vormarkt #55: nur Kerzen aus dem Vorboersen-Fenster zaehlen - Vortag und Sitzung bleiben draussen',
+       v && (v.vol + '/' + v.kerzen));
+    ok(VM.vormarktAusChart(chart([{ t: regStart + 300, c: 120, v: 5000 }], 100)) === null,
+       'Vormarkt #55: ohne Vorboersen-Kerze gibt es keinen Eintrag');
+    ok(VM.vormarktAusChart('kein json') === null, 'Vormarkt #55: kaputte Antwort wirft nicht');
+
+    // Die Siebung ist die aus dem Ticket - und sie muss jede Schwelle wirklich ziehen.
+    var gesiebt = VM.sieben([
+      { sym: 'GUT',   kurs: 12,  luecke: 8,   vol: 0, kerzen: 60 },
+      { sym: 'MEHR',  kurs: 12,  luecke: 20,  vol: 0, kerzen: 60 },
+      { sym: 'FLACH', kurs: 12,  luecke: 4.9, vol: 0, kerzen: 60 },
+      { sym: 'BILLIG', kurs: 2.5, luecke: 30, vol: 0, kerzen: 60 },
+      { sym: 'DUENN', kurs: 12,  luecke: 30,  vol: 0, kerzen: 3 },
+      { sym: 'LEER',  kurs: 12,  luecke: 30,  vol: 40000, kerzen: 60 }
+    ]);
+    ok(gesiebt.length === 2 && gesiebt[0].sym === 'MEHR' && gesiebt[1].sym === 'GUT',
+       'Vormarkt #55: Luecke, Kurs, Handelsdauer und - wenn vorhanden - Volumen sieben; sortiert nach Luecke',
+       gesiebt.map(function (z) { return z.sym; }).join(','));
+    /* Der Kern des Umbaus: Yahoo liefert vorboerslich kein Volumen (vol 0). Wuerde die
+       Volumen-Schwelle trotzdem greifen, waere die Karte dauerhaft leer - eine Anzeige,
+       die luegt. Mit gemeldetem Volumen muss sie dagegen weiter ziehen (LEER oben). */
+    ok(VM.sieben([{ sym: 'OHNEVOL', kurs: 12, luecke: 9, vol: 0, kerzen: 60 }]).length === 1,
+       'Vormarkt #55: fehlendes Vorboersen-Volumen wirft einen Wert NICHT weg');
+    ok(VM.MIN_LUECKE === 5 && VM.MIN_KURS === 3 && VM.MIN_VOL === 50000 && VM.MAX_LISTE === 10,
+       'Vormarkt #55: die Schwellen sind die aus dem Ticket',
+       VM.MIN_LUECKE + '/' + VM.MIN_KURS + '/' + VM.MIN_VOL + '/' + VM.MAX_LISTE);
+    ok(VM.MIN_KERZEN >= 6 && /liefert im vorbörslichen Fenster KEIN Volumen/.test(vmSrc),
+       'Vormarkt #55: das Ersatzmass ist im Code begruendet, nicht stillschweigend gesetzt');
+
+    // Vorauswahl: die eigenen Werte kommen immer mit, sonst faende die Karte
+    // genau die Ueberraschung nicht, um die es geht.
+    /* AAPL steht hier ZUERST als gewoehnlicher Screener-Treffer und erst danach als
+       Pflicht-Wert. Wer nur einmal durchlaeuft, verschluckt den Pflicht-Eintrag als
+       Doppelten und siebt AAPL anschliessend wegen 0,1 % weg - genau der Fall. */
+    var vw = VM.vorauswahl([
+      { sym: 'HOCH', vorPct: 12 }, { sym: 'AAPL', vorPct: 0.1 }, { sym: 'RUHIG', vorPct: 0.4 },
+      { sym: 'AAPL', vorPct: null, immer: true }, { sym: 'HOCH', vorPct: 12 }
+    ], 40);
+    ok(vw.length === 2 && vw[0].sym === 'AAPL' && vw[1].sym === 'HOCH',
+       'Vormarkt #55: eigene Werte immer, fremde nur ueber der Schwelle, Doppelte fallen raus',
+       vw.map(function (z) { return z.sym; }).join(','));
+    var vwOhne = VM.vorauswahl([{ sym: 'A', regPct: 1 }, { sym: 'B', regPct: 9 }], 40);
+    ok(vwOhne.length === 2 && vwOhne[0].sym === 'B',
+       'Vormarkt #55: ohne Vorboersen-Felder von Yahoo bleibt die Ordnung des Vortags');
+    ok(VM.kandidatenAus('{}').length === 0 && VM.kandidatenAus('kaputt').length === 0,
+       'Vormarkt #55: leere oder kaputte Screener-Antwort ergibt keine Kandidaten');
+
+    // Rolle: Anzeige, nicht Handel.
+    ok(/id="vormarktKarte"/.test(hSrc), 'Vormarkt #55: Karte auf dem Dashboard vorhanden');
+    ok(/<script src="vormarkt\.js"><\/script>/.test(hSrc),
+       'Vormarkt #55: vormarkt.js wird von index.html geladen (sonst fehlt es im Paket)');
+    var kopf = hSrc.slice(hSrc.indexOf('Vorbörsen-Lücken'), hSrc.indexOf('id="vormarktKarte"'));
+    ok(/Keine Anlageberatung/.test(kopf) && /reine Beobachtung/.test(kopf),
+       'Vormarkt #55: die Ueberschrift sagt, dass hier nichts gemessen ist');
+    var block = rSrc.slice(rSrc.indexOf('Vorbörsen-Lücken ='), rSrc.indexOf('setTimeout(vormarktStart'));
+    ok(block.length > 500, 'Vormarkt #55: der Block steht im Renderer', block.length);
+    ok(/beobachtet – nicht gemessen/.test(block),
+       'Vormarkt #55: die Karte weist im Fuss aus, dass hier nichts gemessen ist');
+    ok(!/window\.(Depot|MFDepot|Capital|Strategien)\b/.test(block) && !/einstiegSignal|orderSenden|kaufen\(/.test(block),
+       'Vormarkt #55: die Karte greift in keinen Handelspfad - sie zeigt nur');
+    // Kein neuer Fremdhost: der im Ticket vorgeschlagene Nachrichten-Anbieter
+    // haette die Whitelist geoeffnet. Beides bleibt, wie es war.
+    ok(!/benzinga/i.test(mSrc) && !/benzinga/i.test(rSrc) && !/benzinga/i.test(vmSrc),
+       'Vormarkt #55: kein zusaetzlicher Fremdanbieter im Code');
+    ok(/query1\.finance\.yahoo\.com/.test(block) && !/http:\/\//.test(block),
+       'Vormarkt #55: Daten kommen ueber den Host, den die App ohnehin benutzt');
+  })();
+
   // --- Strategie-Chart im Tab Strategien & Belege (#51, 23.08.2026) ---
   // Die Oberflaeche darf die Regel nur NACHZEICHNEN, nie nachbauen: jede Markierung
   // kommt aus Q.einstiegSignal, derselben Funktion wie Studie, Backtest und Live-Scan.
