@@ -1428,6 +1428,30 @@
       <div id="regelKopf" style="margin-top:10px;"></div>
     </div>
 
+    <div class="panel" id="regelnKarte" style="margin-top:12px;">
+      <h3>Regeln, die nur messen</h3>
+      <div style="font-size:12.5px; color:var(--ink-2); line-height:1.6;">
+        Hier kannst du eine Regel <b>festschreiben</b> und mitlaufen lassen, ohne dass Geld
+        bewegt wird. Sie wird bei jedem Scan auf denselben Kerzen geprüft wie die gehandelte
+        Regel und führt eine eigene Bilanz.
+        <br><br>
+        Der Sinn ist nicht, sie später zu handeln, sondern dass die Regel <i>vor</i> der Messung
+        feststeht und man hinterher nicht mehr an ihr drehen kann. Genau daran sind in diesem
+        Projekt schon mehrere gute Ideen gescheitert – nicht am Markt, sondern daran, dass die
+        Regel erst nach dem Ergebnis endgültig war.
+        <br><br>
+        <b>Bewusst ohne Handelsknopf.</b> Eine Regel, in die man mittendrin eingreifen kann,
+        misst nichts – und die Versuchung dazu ist am größten, wenn es gerade gut läuft.
+        Der Wechsel auf „handelt“ ist eine Entscheidung in den Einstellungen, kein Knopf hier.
+      </div>
+      <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-top:10px;">
+        <input type="text" id="regelName" maxlength="40" placeholder="Name, z. B. „Felix: Winkel 1m“" style="flex:1 1 240px;">
+        <button class="btn ghost" id="regelNeuBtn" type="button" title="Schreibt die AKTUELLEN Einstellungen unter diesem Namen fest. Ab dem nächsten Scan läuft sie mit – ohne Geld.">Aktuelle Einstellungen festschreiben</button>
+        <span id="regelStatus" style="color:var(--muted); font-size:12px;"></span>
+      </div>
+      <div id="regelnListe" style="margin-top:10px;"></div>
+    </div>
+
     <div class="panel" id="regelBilanz" style="margin-top:12px;">
       <h3>Bilanz dieser Regel</h3>
       <div style="font-size:12.5px; color:var(--ink-2); line-height:1.6; margin-bottom:10px;">

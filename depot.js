@@ -264,7 +264,12 @@
     var st = D.schattenStat = D.schattenStat || {};
     // Schatten aus einer früheren Konfiguration schließen zwar noch, zählen aber nicht
     // mehr in die aktuelle Bilanz - sonst sickert das alte Experiment ins neue.
-    if (sEintrag.konfig && D.schattenKonfig && sEintrag.konfig !== D.schattenKonfig) return;
+    /* Benannte Regeln (Stufe 3, Felix' Instrument aus #36) sind von dieser Sperre
+     * ausgenommen: Sie haben ABSICHTLICH eine eigene Konfiguration - das ist ihr Zweck.
+     * Die Sperre gilt weiter fuer die gehandelte Regel, damit dort nicht das alte
+     * Experiment ins neue sickert. */
+    var eigeneRegel = String(sEintrag.grund || '').indexOf('Regel: ') === 0;
+    if (!eigeneRegel && sEintrag.konfig && D.schattenKonfig && sEintrag.konfig !== D.schattenKonfig) return;
     var g2 = st[sEintrag.grund] = st[sEintrag.grund] || { n: 0, sumPct: 0, gerettet: 0, verhindert: 0 };
     g2.n++; g2.sumPct = Math.round((g2.sumPct + sEintrag.pnlPct) * 100) / 100;
     if (sEintrag.pnlPct <= -1) g2.gerettet++;           // Filter hat Geld gerettet
@@ -381,6 +386,91 @@
     if (cfg.instrument === "basis") return wert;
     return Math.min(wert, equity * Math.max((cfg.budgetPct || 0.03) * 3, 0.10));
   }
+  /* ================= Benannte Regeln (Messinstrument, Issue #36) =================
+   * Eine benannte Regel ist { id, name, cfg, seit }. cfg traegt dieselben Felder wie
+   * D.intraday, damit Live-Regel und Testregel DASSELBE Objekt sind - nur eine davon
+   * bekommt Geld. Genau das ist der Punkt: Zwei Beschreibungen derselben Regel sind
+   * der Fehlertyp, an dem dieses Projekt sechsmal gescheitert ist.
+   *
+   * Ausdruecklich ohne Handelsknopf. Eine Regel, an der man mittendrin drehen kann,
+   * misst nichts - und die Versuchung dazu ist am groessten, wenn es gut laeuft. */
+  function regelnListe() { return (D && Array.isArray(D.regeln)) ? D.regeln : []; }
+
+  /** Parameter einer benannten Regel in die Form bringen, die einstiegSignal erwartet -
+   *  ueber stcParams, also ueber DIESELBE Funktion wie Chart und Live-Pfad. */
+  function regelParams(r) {
+    var c = r && r.cfg ? r.cfg : {};
+    return { ENTRY: c.mode || 'rsi2seit', LINE: c.lineType || 'ema', period: c.period || 20,
+             confirmBps: c.confirmBps != null ? c.confirmBps : 15, ZTHR: zOf(c.confirmBps),
+             MINQ: 0, CHAN: false, MTF: false, TREND: false };
+  }
+
+  /** Eine benannte Regel auf den frischen Kerzen eines Werts pruefen und - wenn sie
+   *  ausloest - einen Schatten anlegen. Kein Handel, keine Positionsgroesse, kein Geld.
+   *  Die Abklingzeit gilt je Regel und Symbol, sonst zaehlt eine Regel dasselbe
+   *  Ereignis mehrfach. */
+  function regelnPruefen(sym, sigBars, now) {
+    var liste = regelnListe();
+    if (!liste.length || !sigBars || sigBars.length < 261) return;
+    for (var i = 0; i < liste.length; i++) {
+      var r = liste[i];
+      if (!r || !r.name) continue;
+      try {
+        var P = regelParams(r);
+        var s = Q.einstiegSignal(sigBars, sigBars.length - 1, P);
+        if (!s || s.dir !== 'call') continue;                       // nur Long, wie gemessen
+        if (!D.regelCooldown) D.regelCooldown = {};
+        var k = r.id + '|' + sym;
+        var cool = (r.cfg && r.cfg.cooldownMin != null ? r.cfg.cooldownMin : 120) * 60000;
+        if (D.regelCooldown[k] && now - D.regelCooldown[k] < cool) continue;
+        D.regelCooldown[k] = now;
+        var mpR = { sl: -(((r.cfg && r.cfg.scalpSL) || 20) / 100), tp: null, trail: 0,
+                    maxHoldMin: (r.cfg && r.cfg.scalpHold) || 480, uebernacht: true };
+        schattenNeu('Regel: ' + r.name, sym, s.dir, sigBars[sigBars.length - 1][1], sigBars,
+                    mpR, r.cfg || {}, now, undefined);
+      } catch (eR) { /* Eine kaputte Regel darf den Scan nie stoppen */ }
+    }
+  }
+
+  /** Zeigt die benannten Regeln mit ihrer eigenen Bilanz. Die Zahlen kommen aus
+   *  D.schattenStat, das ohnehin je Grund zaehlt - "Regel: <Name>" ist der Grund.
+   *  Bewusst nuechtern: n, Mittel je Trade und wie oft es aufging. Keine Hochrechnung
+   *  auf das Jahr, keine Kurve - bei zweistelligen Fallzahlen waere beides Theater. */
+  function regelnAnzeigen() {
+    var el = document.getElementById('regelnListe'); if (!el) return;
+    var liste = regelnListe();
+    if (!liste.length) {
+      el.innerHTML = '<div style="font-size:12px; color:var(--muted);">Noch keine festgeschriebene Regel. ' +
+        'Stell oben eine Konfiguration ein, gib ihr hier einen Namen und schreib sie fest.</div>';
+      return;
+    }
+    var st = D.schattenStat || {};
+    var offen = (D.schatten || []).filter(function (s) { return s.status === 'open'; });
+    var rows = liste.map(function (r) {
+      var g = st['Regel: ' + r.name] || { n: 0, sumPct: 0 };
+      var mittel = g.n ? g.sumPct / g.n : null;
+      var offenN = offen.filter(function (s) { return s.grund === 'Regel: ' + r.name; }).length;
+      var tage = r.seit ? Math.max(0, Math.round((Date.now() - r.seit) / 86400000)) : 0;
+      return '<tr>' +
+        '<td><b>' + U.esc(r.name) + '</b><div style="color:var(--muted); font-size:11px;">' +
+          U.esc((r.cfg && r.cfg.mode) || '?') + ' · ' + U.esc((r.cfg && r.cfg.interval) || '?') +
+          ' · ' + (((r.cfg && r.cfg.scalpHold) || 480)) + ' Min · seit ' + tage + ' Tag(en)</div></td>' +
+        '<td style="text-align:right;">' + g.n + '</td>' +
+        '<td style="text-align:right;">' + offenN + '</td>' +
+        '<td style="text-align:right;" class="' + (mittel == null ? '' : U.signCls(mittel)) + '">' +
+          (mittel == null ? '–' : U.signTxt(Math.round(mittel * 100) / 100, ' %')) + '</td>' +
+        '<td style="text-align:right;"><button class="btn ghost regelWeg" data-id="' + U.esc(r.id) +
+          '" style="padding:2px 8px; font-size:11px;">löschen</button></td></tr>';
+    }).join('');
+    el.innerHTML = '<table class="tbl" style="font-size:12.5px;">' +
+      '<tr><th>Regel</th><th style="text-align:right;">geschlossen</th><th style="text-align:right;">offen</th>' +
+      '<th style="text-align:right;">Ø je Trade</th><th></th></tr>' + rows + '</table>' +
+      '<div style="font-size:11.5px; color:var(--muted); margin-top:6px;">' +
+      'Ø je Trade ist der Schatten-Ertrag nach Spanne, ohne Ordergebühr. Er sagt nichts über ' +
+      'Belegbarkeit: Bei unter etwa 300 Trades ist so gut wie jede Zahl hier mit Rauschen ' +
+      'vereinbar. Was er zeigt, ist die Richtung – und dass die Regel überhaupt auslöst.</div>';
+  }
+
   /** Fuellt den Regelkopf: welche Regel laeuft, mit welchen Parametern, und wie es
    *  um ihren Beleg steht. Alles kommt aus derselben Quelle wie der Handel -
    *  modeParams() fuer die Haltedauer, D.intraday fuer den Rest. Eine zweite
@@ -2939,6 +3029,9 @@
           continue;
         }
         schattenUpdate(sym, spot, now, nearClose); // Schattenbuch mit frischem Kurs weiterrechnen
+        /* Benannte Regeln laufen auf DENSELBEN Kerzen mit wie die gehandelte Regel -
+         * vor allen Filtern, denn sie sollen die Regel messen, nicht die Filter. */
+        regelnPruefen(sym, sigBars, now);
         var sig = Q.signalCross(sigBars, cfg.lineType || 'ema', cfg.period, cfg.confirmBps);
         var liquid = !cfg.minDollarVol || fd.dollarVolDay == null || fd.dollarVolDay >= cfg.minDollarVol * 1e6;
         SIG[sym] = { t: now, spot: spot, ok: false, grund: 'kein Signal', score: null, z: null, chanPos: null, chanSteep: null };
@@ -7194,6 +7287,7 @@
     quellenMigration();
     huerdeAnzeigen();          // Kostenhuerde beim Start zeigen, nicht erst nach einer Aenderung
     regelKopfAnzeigen();   // dieselbe Quelle, derselbe Takt wie die Huerde
+    regelnAnzeigen();
     var deck = '';
     if (window.Archiv) {
       try {
@@ -7630,6 +7724,36 @@
       if (sb && ss) {
         universe().forEach(function (s2) { var o = document.createElement('option'); o.value = s2; o.textContent = s2; ss.appendChild(o); });
         sb.addEventListener('click', runStrategieChart);
+        /* Benannte Regeln (Issue #36): festschreiben, was JETZT eingestellt ist. */
+        var rnb = document.getElementById('regelNeuBtn');
+        if (rnb) rnb.addEventListener('click', function () {
+          var nEl = document.getElementById('regelName'), stEl = document.getElementById('regelStatus');
+          var name = (nEl.value || '').trim().slice(0, 40);
+          if (!name) { stEl.textContent = 'Bitte einen Namen vergeben.'; return; }
+          if (!D.regeln) D.regeln = [];
+          if (D.regeln.some(function (x) { return x.name === name; })) { stEl.textContent = 'Diesen Namen gibt es schon.'; return; }
+          if (D.regeln.length >= 8) { stEl.textContent = 'Höchstens acht Regeln gleichzeitig – mehr misst man nicht ernsthaft.'; return; }
+          /* Eine KOPIE der aktuellen Einstellungen, nicht ein Verweis darauf. Sonst
+           * aendert sich die festgeschriebene Regel mit, sobald jemand oben dreht -
+           * und dann misst sie nicht mehr, was sie zu messen vorgibt. */
+          D.regeln.push({ id: 'r' + Date.now(), name: name, seit: Date.now(),
+            cfg: JSON.parse(JSON.stringify(D.intraday || {})) });
+          nEl.value = '';
+          stEl.textContent = 'Festgeschrieben. Ab dem nächsten Scan läuft sie mit – ohne Geld.';
+          save(); regelnAnzeigen();
+        });
+        var rl = document.getElementById('regelnListe');
+        if (rl) rl.addEventListener('click', function (ev) {
+          var b = ev.target && ev.target.closest ? ev.target.closest('button.regelWeg') : null;
+          if (!b) return;
+          var id = b.getAttribute('data-id');
+          var r = (D.regeln || []).filter(function (x) { return x.id === id; })[0];
+          if (!r) return;
+          if (!window.confirm('Regel „' + r.name + '“ löschen?\n\nIhre Schatten bleiben im Buch, ' +
+            'aber die Zeile verschwindet. Eine gelöschte Messung lässt sich nicht rückwirkend fortsetzen.')) return;
+          D.regeln = (D.regeln || []).filter(function (x) { return x.id !== id; });
+          save(); regelnAnzeigen();
+        });
         var kb = document.getElementById('stcKontext');
         // Neu zeichnen genuegt - die Reihe liegt schon im Zustand, ein Neuladen waere
         // ein Netzabruf fuer eine reine Anzeigefrage.
@@ -7986,6 +8110,7 @@
        * alle drei aendern sich genau hier. So kann die Anzeige nie veralten. */
       huerdeAnzeigen();
       regelKopfAnzeigen();   // dieselbe Quelle, derselbe Takt wie die Huerde
+      regelnAnzeigen();
     }
     /* 'enabled' schreibt nur noch der eigene Schalter. Frueher schrieb idSave() den
      * Wert bei JEDEM Feld-Change zurueck - damit konnte der Ein/Aus-Zustand aus dem

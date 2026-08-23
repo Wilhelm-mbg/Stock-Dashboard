@@ -2807,6 +2807,44 @@ console.log('\n36) Kostenhuerde des Produkts (Signalstudie 23.08.2026)');
   ok(/nicht entscheidbar/.test(rk),
      'Der Regelkopf nennt den Belegstand ehrlich (nach der Kontroll-Messung: nicht entscheidbar)');
 
+  /* Stufe 3: benannte Regeln - Felix' Messinstrument aus Issue #36.
+   * Eine Regel ist ein Ding mit Namen und Parametern; die gehandelte ist dieselbe
+   * Sache mit einem Haekchen mehr. */
+  ok(/id="regelnKarte"/.test(html) && /id="regelNeuBtn"/.test(html) && /id="regelnListe"/.test(html),
+     'Die Karte fuer benannte Regeln ist da');
+  ok(/function regelnPruefen/.test(dep) && /function regelnAnzeigen/.test(dep),
+     'Pruefung und Anzeige der benannten Regeln existieren');
+
+  /* Die wichtigste Zusicherung der ganzen Stufe. Ein Handelsknopf an einer Regel, die
+   * gerade gemessen wird, macht die Messung wertlos - und die Versuchung ist am
+   * groessten, wenn es gut laeuft. */
+  /* Strukturell pruefen, nicht ueber Woerter: Der Erklaerungstext der Karte spricht
+   * selbst davon, dass NICHT gehandelt wird - eine Wortsuche schlaegt daran an.
+   * Gezaehlt werden deshalb die Knoepfe: erlaubt sind genau zwei, festschreiben und
+   * loeschen. Jeder dritte Knopf muss auffallen. */
+  var rkarte = html.slice(html.indexOf('id="regelnKarte"'), html.indexOf('id="regelnListe"'));
+  var knoepfe = (rkarte.match(/<button/g) || []).length;
+  ok(knoepfe === 1, 'In der Regelkarte steht genau ein Knopf (festschreiben) - kein Handelsknopf', knoepfe);
+  ok(!/regelHandeln|regelScharf|data-handel/.test(html),
+     'Es gibt keinen Schalter, der eine benannte Regel handeln liesse');
+
+  var rp = dep.slice(dep.indexOf('function regelnPruefen'), dep.indexOf('function regelnPruefen') + 2500);
+  ok(/schattenNeu\('Regel: '/.test(rp), 'Eine benannte Regel schreibt nur Schatten, keine Position');
+  ok(!/openTrade|D\.cash/.test(rp), 'In der Pruefung wird nirgends Geld bewegt');
+  ok(/sigBars\.length < 261/.test(rp),
+     'Auch benannte Regeln brauchen die volle Kerzentiefe - sonst messen sie etwas anderes');
+
+  /* Eine festgeschriebene Regel muss eine KOPIE der Einstellungen tragen. Ein Verweis
+   * wuerde sich mitaendern, sobald jemand oben dreht - dann misst sie nicht mehr, was
+   * sie zu messen vorgibt. */
+  ok(/JSON\.parse\(JSON\.stringify\(D\.intraday/.test(dep),
+     'Eine festgeschriebene Regel bekommt eine Kopie der Einstellungen, keinen Verweis');
+
+  /* Die Bilanz je Regel haengt daran, dass die Konfig-Sperre sie ausnimmt. */
+  ok(/eigeneRegel = String\(sEintrag\.grund/.test(dep) && /!eigeneRegel && sEintrag\.konfig/.test(dep),
+     'Benannte Regeln behalten ihre Bilanz trotz eigener Konfiguration');
+
+
   ok(/quellenMigration\(\);\n    huerdeAnzeigen\(\);/.test(dep), 'Die Anzeige wird beim Start gefuellt');
 })();
 
