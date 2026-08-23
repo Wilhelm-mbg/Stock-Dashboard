@@ -1,5 +1,5 @@
 {
-  "stand": "2026-08-23T09:28:31.188Z",
+  "stand": "2026-08-23T11:04:05.739Z",
   "hinweis": "Spekulationen aus öffentlichen Quellen – ungemessen, keine Handelsempfehlung, keine Anlageberatung.",
   "eintraege": [
     {
@@ -8,8 +8,8 @@
       "name": "Commerzbank AG",
       "art": "uebernahme",
       "chance": "hoch",
-      "these": "UniCredit hält nach der Einziehung zurückgekaufter Commerzbank-Aktien rechnerisch 49,65 Prozent; der Bund ist laut Insidern offen für den Verkauf seiner restlichen 12,7 Prozent, und die EZB soll einer Übernahme laut Medienbericht zuneigen.",
-      "begruendung": "Handelsblatt und Reuters berichten unabhängig über die Verkaufsbereitschaft des Bundes, Commerzbank-Chefin Orlopp hat förmliche Gespräche bestätigt, und die Aktieneinziehung samt neuem Stimmrechtsvolumen von 1,08 Milliarden Aktien ist ein gemeldeter, harter Vorgang – konkreter Anlass und mehrere seriöse Quellen, daher hoch. Die heutige Zuspitzung (EZB-Zuneigung, aufgegebener Widerstand des Bundes) stammt allerdings nur aus aggregierenden Portalen, die sich auf einen unbenannten Medienbericht berufen; ein Analysten-Webcast ist für den 26. August angesetzt.",
+      "these": "UniCredit hält nach der Einziehung zurückgekaufter Aktien rechnerisch 49,65 Prozent der Commerzbank; der Bund soll seinen Widerstand gegen den Verkauf der restlichen 12,7 Prozent aufgegeben haben, die EZB neigt laut Medienbericht einer Übernahme zu.",
+      "begruendung": "Handelsblatt und Reuters berichten unabhängig über die Verkaufsbereitschaft des Bundes, Commerzbank-Chefin Orlopp hat förmliche Gespräche bestätigt, und das gemeldete Stimmrechtsvolumen von 1,08 Milliarden Aktien ist ein harter Vorgang – konkreter Anlass und mehrere seriöse Quellen, daher hoch. Die Zuspitzung des Wochenendes (EZB-Zuneigung, aufgegebener Widerstand) stammt weiterhin nur aus aggregierenden Portalen, die sich auf einen unbenannten Medienbericht stützen; für den 26. August ist ein Analysten-Webcast angesetzt, eine EZB-Entscheidung steht aus.",
       "quellen": [
         {
           "titel": "Handelsblatt",
@@ -26,9 +26,13 @@
         {
           "titel": "Börse Global",
           "url": "https://www.boerse-global.de/commerzbank-aktie-bund-gibt-widerstand-auf/821441"
+        },
+        {
+          "titel": "Trading-Treff",
+          "url": "https://trading-treff.de/trading/commerzbank-aktie-orcel-plant-trennung-bis-2030"
         }
       ],
-      "zeit": "2026-08-23T05:30:00Z"
+      "zeit": "2026-08-23T08:50:00Z"
     },
     {
       "id": "20260821-BAMI-uebernahme",
@@ -36,8 +40,8 @@
       "name": "Banco BPM S.p.A.",
       "art": "uebernahme",
       "chance": "hoch",
-      "these": "Monte dei Paschi hat am Freitag ein Umtauschangebot für Banco BPM über rund 25,3 Mrd. Euro aufgelegt (1,567 MPS-Aktien je BPM-Aktie), Teil eines Doppelgebots über insgesamt rund 34 Mrd. Euro.",
-      "begruendung": "Der Verwaltungsrat hat das Gebot beschlossen, die Konditionen sind veröffentlicht; Reuters, Financial Times und Euronews berichten unabhängig voneinander mit denselben Eckdaten. Konkreter Anlass und mehrere seriöse Quellen, deshalb hoch – der Ausgang hängt allerdings an der Annahmequote und an Intesas Gegenzug.",
+      "these": "Monte dei Paschi hat am Freitag ein Umtauschangebot für Banco BPM über rund 25,3 Mrd. Euro aufgelegt (1,567 MPS-Aktien je BPM-Aktie); der BPM-Verwaltungsrat tagt dazu voraussichtlich am Dienstag.",
+      "begruendung": "Der Verwaltungsrat von MPS hat das Gebot beschlossen, die Konditionen sind veröffentlicht; Reuters, Financial Times und Euronews berichten unabhängig voneinander mit denselben Eckdaten. Konkreter Anlass und mehrere seriöse Quellen, deshalb hoch. Il Sole 24 Ore beschreibt die Haltung der französischen Großaktionäre als ausschlaggebend – der Ausgang hängt an der Annahmequote und an Intesas Gegenzug.",
       "quellen": [
         {
           "titel": "Financial Times",
@@ -48,15 +52,15 @@
           "url": "https://www.euronews.com/business/2026/08/21/monte-dei-paschi-details-of-bid-for-banco-bpm-and-banca-generali"
         },
         {
-          "titel": "Reuters via Global Banking & Finance",
-          "url": "https://www.globalbankingandfinance.com/monte-dei-paschi-ceo-unveil-strategy-fend-off-intesas-36/"
+          "titel": "Il Sole 24 Ore",
+          "url": "https://en.ilsole24ore.com/art/mps-bpm-board-of-directors-crucial-upcoming-tests-in-france-AJXgCJs"
         },
         {
           "titel": "Reuters via AOL",
           "url": "https://www.aol.com/articles/monte-dei-paschi-ceo-unveil-092322000.html"
         }
       ],
-      "zeit": "2026-08-21T12:00:00Z"
+      "zeit": "2026-08-23T07:50:00Z"
     },
     {
       "id": "20260821-BMPS-uebernahme",
@@ -64,39 +68,39 @@
       "name": "Banca Monte dei Paschi di Siena S.p.A.",
       "art": "uebernahme",
       "chance": "hoch",
-      "these": "MPS wehrt sich mit dem Doppelgebot und einer Sonderausschüttung von rund 4 Mrd. Euro gegen die feindliche Offerte von Intesa Sanpaolo über rund 36 Mrd. Euro.",
-      "begruendung": "Beide Seiten des Übernahmekampfs sind belegt: Intesas Offerte samt geplantem Filialverkauf an Unipol und die MPS-Gegenwehr werden von Reuters, FT und weiteren Häusern übereinstimmend beschrieben. Die 13-Prozent-Beteiligung an Generali gilt als Verhandlungsmasse; der Ausgang ist offen und politisch aufgeladen.",
+      "these": "MPS wehrt sich mit einem Doppelgebot über rund 34 Mrd. Euro für Banco BPM und Banca Generali gegen die feindliche Offerte von Intesa Sanpaolo über rund 36 Mrd. Euro.",
+      "begruendung": "Beide Seiten des Übernahmekampfs sind belegt: Intesas Offerte und die MPS-Gegenwehr werden von Reuters, FT und weiteren Häusern übereinstimmend beschrieben, die Umtauschverhältnisse sind veröffentlicht. Die 13-Prozent-Beteiligung an Generali gilt als Verhandlungsmasse; Intesa bereitet laut Il Sole 24 Ore seine Argumentation vor, der Ausgang ist offen und politisch aufgeladen.",
       "quellen": [
         {
-          "titel": "Reuters via Global Banking & Finance",
-          "url": "https://www.globalbankingandfinance.com/monte-dei-paschi-ceo-unveil-strategy-fend-off-intesas-36/"
+          "titel": "Reuters via AOL",
+          "url": "https://www.aol.com/articles/monte-dei-paschi-ceo-unveil-092322000.html"
         },
         {
           "titel": "FStech",
           "url": "https://www.fstech.co.uk/fst/Monte_Dei_Paschi_Launches_34bn_Bid_To_Fend_Off_Intesa.php"
         },
         {
-          "titel": "Business Day",
-          "url": "https://www.businessday.co.za/world/international-companies/2026-08-20-mps-weighs-generali-stake-sale-to-fend-off-intesa-takeover-bid/"
+          "titel": "Il Sole 24 Ore",
+          "url": "https://en.ilsole24ore.com/art/mps-bpm-board-of-directors-crucial-upcoming-tests-in-france-AJXgCJs"
         }
       ],
-      "zeit": "2026-08-21T12:00:00Z"
+      "zeit": "2026-08-23T07:50:00Z"
     },
     {
-      "id": "20260822-ADSK-analyst",
-      "sym": "ADSK",
-      "name": "Autodesk Inc.",
-      "art": "analyst",
-      "chance": "niedrig",
-      "these": "Vor den Q2-Zahlen melden sich mehrere Analysten mit Rückendeckung und einer jüngsten Kursziel-Anhebung zu Wort, die Aktie notiert über 250 Dollar.",
-      "begruendung": "Einzelne schwächere Quelle, gewöhnliche Vor-Zahlen-Kommentierung ohne Doppel-Hochstufung; nur wegen des anstehenden Termins überhaupt vermerkt, Einstufung niedrig.",
+      "id": "20260823-HPE-beteiligung",
+      "sym": "HPE",
+      "name": "Hewlett Packard Enterprise Company",
+      "art": "beteiligung",
+      "chance": "mittel",
+      "these": "Der Aktivist Irenic Capital um Adam Katz soll bei Hewlett Packard Enterprise eingestiegen sein und direkt mit dem Vorstand sprechen – an der Seite des bereits engagierten Elliott.",
+      "begruendung": "Ursprung ist ein Bericht von Semafor mit benanntem Investor und benanntem Vorgang, wiedergegeben über einen Aggregator; die Aktie reagierte mit Aufschlägen. Eine einzelne seriöse Quelle, von HPE oder Irenic unbestätigt, kein Filing – deshalb mittel und nicht hoch.",
       "quellen": [
         {
-          "titel": "ad-hoc-news",
-          "url": "https://www.ad-hoc-news.de/boerse/news/corporate-news/autodesk-stock-draws-fresh-analyst-support-ahead-q2-earnings/69986100"
+          "titel": "Semafor via Stocktwits",
+          "url": "https://stocktwits.com/news-articles/markets/equity/hpe-stock-surges-as-irenic-capital-reportedly-joins-elliott-in-activist-push/cZXLqdOReKN"
         }
       ],
-      "zeit": "2026-08-22T12:00:00Z"
+      "zeit": "2026-08-22T14:00:00Z"
     },
     {
       "id": "20260821-TGTX-geruecht",
@@ -121,6 +125,38 @@
         }
       ],
       "zeit": "2026-08-21T19:35:00Z"
+    },
+    {
+      "id": "20260822-ADSK-analyst",
+      "sym": "ADSK",
+      "name": "Autodesk Inc.",
+      "art": "analyst",
+      "chance": "niedrig",
+      "these": "Vor den Q2-Zahlen melden sich mehrere Analysten mit Rückendeckung und einer jüngsten Kursziel-Anhebung zu Wort, die Aktie notiert über 250 Dollar.",
+      "begruendung": "Einzelne schwächere Quelle, gewöhnliche Vor-Zahlen-Kommentierung ohne Doppel-Hochstufung; nur wegen des anstehenden Termins überhaupt vermerkt, Einstufung niedrig.",
+      "quellen": [
+        {
+          "titel": "ad-hoc-news",
+          "url": "https://www.ad-hoc-news.de/boerse/news/corporate-news/autodesk-stock-draws-fresh-analyst-support-ahead-q2-earnings/69986100"
+        }
+      ],
+      "zeit": "2026-08-22T12:00:00Z"
+    },
+    {
+      "id": "20260823-ITRK-uebernahme",
+      "sym": "ITRK.L",
+      "name": "Intertek Group plc",
+      "art": "uebernahme",
+      "chance": "niedrig",
+      "these": "Um den britischen Prüfkonzern Intertek laufen formale Offenlegungen nach dem UK Takeover Code, was auf anhaltendes Übernahmeinteresse hindeutet.",
+      "begruendung": "Nur ein schwacher, aggregierender Beleg; ein Bieter wird nicht benannt, Konditionen gibt es nicht. Offenlegungstabellen nach dem Takeover Code sind zwar ein amtlich veranlasster Vorgang, ohne benannten Interessenten aber kein konkreter Anlass – deshalb niedrig.",
+      "quellen": [
+        {
+          "titel": "ad-hoc-news",
+          "url": "https://www.ad-hoc-news.de/boerse/news/corporate-news/intertek-stock-draws-takeover-attention-as-investors-watch-bid-dynamics/69986171"
+        }
+      ],
+      "zeit": "2026-08-22T13:00:00Z"
     },
     {
       "id": "20260821-APD-beteiligung",
