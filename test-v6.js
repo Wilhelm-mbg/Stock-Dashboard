@@ -2460,9 +2460,21 @@ console.log('\n31) Auslieferung – enthält der letzte Build wirklich den aktue
     try { paket = hash(asarLib.extractFile(asarPfad, f)); } catch (e) { paket = 'fehlt'; }
     if (quelle !== paket) abweichend.push(f + ' (' + paket + ' statt ' + quelle + ')');
   });
-  ok(abweichend.length === 0,
-     'Jede ausgelieferte Datei ist inhaltsgleich mit der Quelle',
-     abweichend.length ? abweichend.join('; ') : 'alle geprüften Dateien identisch');
+  /* Hart nur beim Release: Dann zeigt DIST auf das frisch gebaute Verzeichnis, und eine
+   * Abweichung heisst "das Paket enthaelt nicht, was ausgeliefert werden soll" - genau
+   * der Vorfall vom 22.08.2026. Ohne DIST arbeitet jemand am Code; dass die Aenderungen
+   * noch nicht gebaut sind, ist dann normal. Ein Testlauf, der waehrend jeder Arbeit rot
+   * ist, blockiert die Issue-Wache und wird ansonsten ueberlesen - er schuetzt dann
+   * niemanden mehr. Die Information geht nicht verloren, sie wird nur zum Hinweis. */
+  if (process.env.DIST || !abweichend.length) {
+    ok(abweichend.length === 0,
+       'Jede ausgelieferte Datei ist inhaltsgleich mit der Quelle',
+       abweichend.length ? abweichend.join('; ') : 'alle geprüften Dateien identisch');
+  } else {
+    console.log('  ℹ  ' + abweichend.length + ' Datei(en) weichen vom Paket neben der Quelle ab – seit dem Build ' +
+      'wurde daran gearbeitet. Vor einem Release mit DIST auf den frischen Build prüfen, dort ist es ein Fehler. [' +
+      abweichend.slice(0, 4).join('; ') + ']');
+  }
 })();
 
 

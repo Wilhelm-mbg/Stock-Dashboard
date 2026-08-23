@@ -8461,9 +8461,16 @@
     // Experiment-Journal und Strategie-Farm. Dafür ist eine Rückfrage angemessen.
     var offen = D && D.positions ? D.positions.length : 0;
     var geschlossen = D && D.trades ? D.trades.filter(function (t) { return t.status === 'closed'; }).length : 0;
+    var mfT = (D && D.mfBuch && D.mfBuch.trades ? D.mfBuch.trades.length : 0) +
+              (D && D.driftBuch && D.driftBuch.trades ? D.driftBuch.trades.length : 0);
     if (!window.confirm('Depot wirklich zurücksetzen?\n\nGelöscht werden: ' + offen + ' offene Position(en), ' +
-      geschlossen + ' geschlossene Trades, alle Trefferquoten, das Experiment-Journal und die Strategie-Farm.\n\n' +
-      'Das lässt sich nicht rückgängig machen.')) return;
+      geschlossen + ' geschlossene Trades, alle Trefferquoten, das Experiment-Journal und die Strategie-Farm.\n' +
+      'Ebenfalls neu angelegt werden die beiden Mittelfrist-Bücher (Momentum und Ergebnis-Drift, zusammen ' +
+      mfT + ' Trades).\n\nAlle Bücher starten danach mit ' + U.nf0.format(START_CAPITAL) + ' $.\n\n' +
+      'Vorher wird eine Sicherung unter „depot_vor_reset" abgelegt – ein Reset ist damit umkehrbar.')) return;
+    /* Sicherung VOR dem Loeschen. Der Knopf schrieb frueher selbst "Das laesst sich
+     * nicht rueckgaengig machen" - das war wahr und unnoetig. Eine Kopie kostet nichts. */
+    try { window.api.storeSet('depot_vor_reset', D); } catch (eSich) { /* Sicherung darf den Reset nicht verhindern */ }
     D = defaultDepot();
     weightsBuilt = false;
     save();
@@ -8472,7 +8479,8 @@
     try { syncStrategyUI(); } catch (e0) { /* UI-Sync optional */ }
     render();
     var stEl = document.getElementById('setStatus');
-    if (stEl) stEl.textContent = 'Depot zurückgesetzt (10.000 $).';
+    if (stEl) stEl.textContent = 'Alle Bücher zurückgesetzt (' + U.nf0.format(START_CAPITAL) + ' $ je Buch). ' +
+      'Der vorherige Stand liegt als „depot_vor_reset" im Datenordner.';
   });
   document.addEventListener('quotes-updated', function () {
     var tD = document.getElementById('tab-depot');

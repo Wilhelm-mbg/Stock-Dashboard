@@ -15,7 +15,10 @@
 (function () {
   var U = window.U;
   var LAEUFT = false;
-  var START_KAPITAL = 10000;
+  /* Gleiches Startkapital wie das Intraday-Depot (depot.js, START_CAPITAL).
+   * Zwei verschiedene Startkapitalien in einer Anwendung waeren genau die Art
+   * Doppelzahl, die hier schon mehrfach zu falschen Prozentangaben gefuehrt hat. */
+  var START_KAPITAL = 100000;
 
   function D() { return window.__D ? window.__D() : null; }
   function speichern() { if (window.__save) window.__save(); }
