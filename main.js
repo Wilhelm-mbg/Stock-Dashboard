@@ -554,6 +554,43 @@ async function ablageLesen(datei, url) {
   return lokal || { ok: false };
 }
 ipcMain.handle('read-spekulationen', async () => ablageLesen('spekulationen.json', SPEK_URL));
+
+/* ---- Messmaschine: Protokolle lesen (nur lesen - die App urteilt nie selbst) ----
+ * Ordner: <Downloads>/Markt-Dashboard-Daten/protokolle/<key>-<datum>.json
+ * Jedes Protokoll traegt seinen vollstaendigen Entscheidungsweg. Groessenkappe wie
+ * bei den anderen Ablagen: eine ausufernde Datei wird nicht angefasst. */
+ipcMain.handle('read-protokolle', async () => {
+  try {
+    const dir = path.join(app.getPath('downloads'), 'Markt-Dashboard-Daten', 'protokolle');
+    if (!fs.existsSync(dir)) return { ok: true, protokolle: [], ordner: dir };
+    const out = [];
+    fs.readdirSync(dir).filter((f) => /^[\w.-]+\.json$/.test(f)).forEach((f) => {
+      try {
+        const p = path.join(dir, f), st = fs.statSync(p);
+        if (st.size > 2000000) return;
+        const j = JSON.parse(fs.readFileSync(p, 'utf8'));
+        if (j && j.strategie && Array.isArray(j.urteile)) out.push({ datei: f, mtime: st.mtimeMs, protokoll: j });
+      } catch (e) { /* eine kaputte Datei darf die Liste nicht kippen */ }
+    });
+    return { ok: true, protokolle: out, ordner: dir };
+  } catch (e) { return { ok: false, grund: String(e && e.message || e) }; }
+});
+/* ---- Messmaschine: neue Strategie ablegen ----
+ * Schreibt NUR in <Downloads>/Markt-Dashboard-Daten/strategien/, nur .js, nur mit
+ * sicherem Dateinamen. Gemessen wird sie von Hand mit node messen.js - absichtlich
+ * kein Knopf in der App, damit das Urteil nie aus der App selbst kommt. */
+ipcMain.handle('write-strategie', async (_ev, key, quelltext) => {
+  try {
+    if (!/^[a-z0-9][a-z0-9-]{1,40}$/.test(String(key || ''))) return { ok: false, grund: 'Kennung: nur Kleinbuchstaben, Ziffern, Bindestrich (2-41 Zeichen).' };
+    if (typeof quelltext !== 'string' || quelltext.length > 200000) return { ok: false, grund: 'Quelltext fehlt oder ist zu gross.' };
+    const dir = path.join(app.getPath('downloads'), 'Markt-Dashboard-Daten', 'strategien');
+    fs.mkdirSync(dir, { recursive: true });
+    const p = path.join(dir, key + '.js');
+    if (fs.existsSync(p)) return { ok: false, grund: 'Es gibt schon eine Strategie mit dieser Kennung. Eine neue Fassung braucht eine neue Kennung - sonst verschwindet das alte Protokoll unter einem geaenderten Text.' };
+    fs.writeFileSync(p, quelltext, 'utf8');
+    return { ok: true, pfad: p };
+  } catch (e) { return { ok: false, grund: String(e && e.message || e) }; }
+});
 ipcMain.handle('read-insider', async () => ablageLesen('insider.json', INSIDER_URL));
 // Claude-Auswertungsbericht aus dem Daten-Ordner lesen (Anzeige in der App)
 ipcMain.handle('read-report', async () => {

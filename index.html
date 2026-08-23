@@ -584,6 +584,7 @@
   <button data-tab="strategien">Regeln</button>
   <button data-tab="depot">Vermögen</button>
   <button data-tab="werkzeuge">Werkzeuge</button>
+  <button data-tab="messung">Messung</button>
 </nav>
 
 <div id="tab-dashboard" class="tab active">
@@ -1371,6 +1372,51 @@
 
 
 
+<div id="tab-messung" class="tab">
+<h2>Scoreboard <span style="color:var(--muted); font-size:12px; font-weight:400; text-transform:none; letter-spacing:0;">– jede Strategie, die durch die Messmaschine gelaufen ist. Sortiert nach Belegstatus, nicht nach Rendite.</span></h2>
+<div class="panel" id="scoreboardKarte">
+  <div style="font-size:12px; color:var(--ink-2); line-height:1.5; margin-bottom:8px;">
+    Die App rechnet hier <b>nichts</b>. Sie zeigt die Protokolle der Messmaschine aus dem Datenordner. Jede Zeile lässt sich aufklappen und zeigt dann den vollständigen Entscheidungsweg – jede Regel, jede Eingabe, jede Begründung.
+    Die Messmaschine kann nur auf eine Art rechnen: gepaarte Kontrolle, Tagesclusterung, Entdeckung und Bestätigung getrennt, Mindest-Effektgröße vor dem Urteil, Testzähler. Es gibt keine Schalter dafür.
+  </div>
+  <div id="scoreboard"><div class="loading">Lade Protokolle …</div></div>
+  <div style="font-size:11.5px; color:var(--muted); margin-top:8px;">
+    <b>Bestätigt</b> = auf zurückgehaltenen Tagen über Mindest-Effektgröße und über der Bonferroni-Schwelle.
+    <b>Nicht entscheidbar</b> = unter der Mindest-Effektgröße; das heißt nicht „kein Effekt", sondern „diese Datenmenge kann die Frage nicht beantworten".
+    <b>Widerlegt</b> = auf zurückgehaltenen Tagen signifikant negativ.
+    Alle Zahlen in Prozentpunkten des Basiswerts, Überschuss gegen die Erwartung aller Kerzen desselben Werts zur selben Stunde.
+  </div>
+</div>
+
+<h2 style="margin-top:18px;">Neue Strategie ins Rennen schicken</h2>
+<div class="panel" id="strategieEingabe">
+  <div style="font-size:12px; color:var(--ink-2); line-height:1.5; margin-bottom:8px;">
+    Drei Dinge braucht eine Strategie: einen <b>Grund</b> (warum sollte der Effekt existieren – nicht „der RSI war unter 10", sondern „Indexfonds müssen am Quartalsende kaufen"),
+    eine <b>Signalfunktion</b>, die nur Kerzen bis zum Index <code>i</code> sieht, und eine <b>Vorregistrierung</b>: Haltedauer in Kerzen, Richtung, und welche Parametervarianten geprüft werden.
+    Jede Variante zählt als eigener Test und hebt die Schwelle – die Maschine verhindert das nicht, sie weist es aus.
+  </div>
+  <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:8px;">
+    <label style="font-size:12px;">Kennung <input id="stKey" placeholder="z. B. quartalsende-kauf" style="width:100%;"></label>
+    <label style="font-size:12px;">Haltedauer in Kerzen (60m) <input id="stHalten" type="number" min="1" max="130" value="8" style="width:100%;"></label>
+    <label style="font-size:12px;">Richtung <select id="stRichtung" style="width:100%;"><option value="long">nur Long</option><option value="short">nur Short</option><option value="beide">beide</option></select></label>
+    <label style="font-size:12px;">Spanne je Seite (Bp) <input id="stSpanne" type="number" min="0" max="100" value="5" style="width:100%;"></label>
+  </div>
+  <label style="font-size:12px; display:block; margin-bottom:8px;">Grund (mindestens 20 Zeichen – ohne Grund verweigert die Maschine die Messung)
+    <textarea id="stGrund" rows="2" style="width:100%; font-family:inherit;" placeholder="Warum sollte dieser Effekt existieren? Wer MUSS hier handeln, und warum?"></textarea></label>
+  <label style="font-size:12px; display:block; margin-bottom:8px;">Signalfunktion <code>signal(bars, i, params)</code> – darf nur <code>bars[0..i]</code> lesen, gibt <code>{dir: 1}</code>, <code>{dir: -1}</code> oder <code>null</code> zurück. <code>Q</code> ist quant.js.
+    <textarea id="stSignal" rows="8" style="width:100%; font-family:var(--mono, monospace); font-size:12px;" placeholder="function signal(bars, i, params) {&#10;  // Beispiel: letzte Kerze des Monats&#10;  var d = new Date(bars[i][0]), n = new Date(bars[i+1] ? bars[i+1][0] : bars[i][0] + 86400000);&#10;  return d.getUTCMonth() !== n.getUTCMonth() ? { dir: 1 } : null;&#10;}"></textarea></label>
+  <label style="font-size:12px; display:block; margin-bottom:8px;">Parametervarianten (JSON-Liste, leer = eine Variante ohne Parameter). <b>Jede Variante ist ein Test.</b>
+    <input id="stVarianten" style="width:100%; font-family:var(--mono, monospace); font-size:12px;" placeholder='[{"schwelle": 10}, {"schwelle": 15}]'></label>
+  <div style="display:flex; gap:8px; align-items:center;">
+    <button class="btn" id="stAblegen" type="button">Strategie ablegen</button>
+    <span id="stStatus" style="font-size:12px; color:var(--muted);"></span>
+  </div>
+  <div style="font-size:11.5px; color:var(--muted); margin-top:8px;">
+    Die Datei landet unter <code>Markt-Dashboard-Daten/strategien/</code>. Gemessen wird sie <b>nicht</b> von der App, sondern mit <code>node studien/messmaschine/messen.js &lt;datei&gt;</code> – absichtlich ein eigener Schritt, damit das Urteil nie aus der App selbst kommt. Das Protokoll erscheint danach oben im Scoreboard.
+  </div>
+</div>
+</div>
+
 <div id="tab-strategien" class="tab">
   <div class="panel">
     <h3>Drei Zeithorizonte, drei getrennte Strategien</h3>
@@ -1718,6 +1764,7 @@
 <script src="bugs.js"></script>
 <script src="diagnose.js"></script>
 <script src="wkn.js"></script>
+<script src="scoreboard.js"></script>
 <script src="scheinfinder.js"></script>
 <script src="mfhandel.js"></script>
 <script src="mfdepot.js"></script>

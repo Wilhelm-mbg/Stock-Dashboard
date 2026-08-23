@@ -1,0 +1,199 @@
+{
+ "verfahren": {
+  "version": "1.0.0",
+  "mindestKerzenVorlauf": 261,
+  "bestaetigungsAnteil": 0.5,
+  "alpha": 0.05,
+  "zAlpha": 1.959964,
+  "zPower80": 0.8416212,
+  "mdeFaktor": 2,
+  "kontrolle": "erwartung-symbol-stunde",
+  "stundenRaster": "utc"
+ },
+ "strategie": {
+  "key": "monatsende-kauf",
+  "grund": "Indexfonds und Pensionskassen passen zum Monatsende ihre Gewichte an und MUESSEN dafuer kaufen - ein Zufluss mit Termin, kein Preismuster.",
+  "zeitrahmen": "60m",
+  "haltedauerKerzen": 8,
+  "richtung": "long",
+  "universum": "aktien",
+  "varianten": 1,
+  "quelle": "'use strict';\n/* Abgelegt wie aus der App. Gemessen wird mit:\n *   node studien/messmaschine/messen.js <diese Datei>\n */\nvar Q = require(require('path').join(process.env.STOCK_DASHBOARD_QUELLE || '.', 'quant.js'));\nfunction signal(bars, i, params) {\n  // Letzte Kerze des Monats: Indexfonds und Pensionskassen muessen zum Monatsende ihr Gewicht anpassen\n  if (!bars[i + 1]) return null;\n  var d = new Date(bars[i][0]), n = new Date(bars[i + 1][0]);\n  return d.getUTCMonth() !== n.getUTCMonth() ? { dir: 1 } : null;\n}\nmodule.exports = {\n  key: \"monatsende-kauf\",\n  grund: \"Indexfonds und Pensionskassen passen zum Monatsende ihre Gewichte an und MUESSEN dafuer kaufen - ein Zufluss mit Termin, kein Preismuster.\",\n  zeitrahmen: '60m',\n  haltedauerKerzen: 8,\n  richtung: \"long\",\n  universum: 'aktien',\n  kosten: { spanneBp: 5 },\n  signal: signal,\n};\n"
+ },
+ "gemessenAm": "2026-08-23T16:13:58.528Z",
+ "dauerMs": 2885,
+ "universum": {
+  "werte": 191,
+  "handelstage": 732,
+  "von": "2023-09-21",
+  "bis": "2026-08-21",
+  "schnittTag": "2025-03-10",
+  "herkunft": "Archiv-Store, Auswahl zum Messzeitpunkt (Ueberlebende)"
+ },
+ "ergebnisse": [
+  {
+   "variante": 0,
+   "params": {},
+   "signale": 6302,
+   "long": 6302,
+   "short": 0,
+   "ohneKontrolle": 0,
+   "verworfen": {},
+   "entdeckung": {
+    "roh": {
+     "tage": 16,
+     "signale": 3055,
+     "tagesmittel": -0.0060954004833486,
+     "t": -1.571712652751213,
+     "se": 0.0038781901212533174,
+     "mde": 0.007756380242506635,
+     "jeSignal": -0.006099087558662972,
+     "anteilPositiv": 0.43731587561374796
+    },
+    "ueberschuss": {
+     "tage": 16,
+     "signale": 3055,
+     "tagesmittel": -0.007654352076709197,
+     "t": -1.9814288072523816,
+     "se": 0.003863046731072501,
+     "mde": 0.007726093462145002,
+     "jeSignal": -0.00765786503022701,
+     "anteilPositiv": 0.40818330605564646
+    }
+   },
+   "bestaetigung": {
+    "roh": {
+     "tage": 17,
+     "signale": 3247,
+     "tagesmittel": 0.0016961087506726328,
+     "t": 0.5982318968910582,
+     "se": 0.0028352028026039956,
+     "mde": 0.005670405605207991,
+     "jeSignal": 0.0016961087506726358,
+     "anteilPositiv": 0.49214659685863876
+    },
+    "ueberschuss": {
+     "tage": 17,
+     "signale": 3247,
+     "tagesmittel": 0.00025275286400483965,
+     "t": 0.0907989055509724,
+     "se": 0.0027836554027950264,
+     "mde": 0.005567310805590053,
+     "jeSignal": 0.0002527528640048399,
+     "anteilPositiv": 0.46843239913766554
+    }
+   },
+   "gesamt": {
+    "roh": {
+     "tage": 33,
+     "signale": 6302,
+     "tagesmittel": -0.002081592696125541,
+     "t": -0.8524679157232151,
+     "se": 0.00244184286321153,
+     "mde": 0.00488368572642306,
+     "jeSignal": -0.0020827431574549846,
+     "anteilPositiv": 0.4655664868295779
+    },
+    "ueberschuss": {
+     "tage": 33,
+     "signale": 6302,
+     "tagesmittel": -0.003580994986038331,
+     "t": -1.4773410534693665,
+     "se": 0.0024239460330630993,
+     "mde": 0.004847892066126199,
+     "jeSignal": -0.0035820515896413598,
+     "anteilPositiv": 0.43922564265312597
+    }
+   },
+   "kosten": {
+    "spanneBp": 5,
+    "jeUmlaufAnteil": 0.001
+   },
+   "nettoJeSignalBestaetigung": -0.0007472471359951602
+  }
+ ],
+ "urteile": [
+  "nicht-messbar"
+ ],
+ "bestesUrteil": "nicht-messbar",
+ "tests": 1,
+ "entscheidungen": [
+  {
+   "nr": 1,
+   "regel": "B4 Testzahl",
+   "eingabe": {
+    "varianten": 1
+   },
+   "ergebnis": 1,
+   "begruendung": "Jede Parametervariante ist ein eigener Test. Die Schwelle wird auf diese Zahl gerechnet."
+  },
+  {
+   "nr": 2,
+   "regel": "E1 Universum",
+   "eingabe": {
+    "archiv": "C:\\Users\\Wilhe\\AppData\\Roaming\\Markt-Dashboard\\store",
+    "zeitrahmen": "60m",
+    "filter": "aktien"
+   },
+   "ergebnis": {
+    "werte": 191
+   },
+   "begruendung": "Das Universum ist \"alles, was heute im Archiv liegt\". Das sind Ueberlebende: Werte, die aus der Beobachtung geflogen sind, fehlen. Die Renditen laufen ueber Zeitraeume, in denen das noch nicht bekannt war. Jede positive Rohrendite ist dadurch nach oben verzerrt; die Groesse der Verzerrung ist hier NICHT gemessen."
+  },
+  {
+   "nr": 3,
+   "regel": "B5 Schnitt",
+   "eingabe": {
+    "handelstage": 732,
+    "anteil": 0.5
+   },
+   "ergebnis": {
+    "schnittTag": "2025-03-10",
+    "entdeckung": 366,
+    "bestaetigung": 366
+   },
+   "begruendung": "Entdeckung auf der ersten Haelfte der Handelstage, Bestaetigung auf der zweiten. Das Urteil faellt NUR auf der Bestaetigung."
+  },
+  {
+   "nr": 4,
+   "regel": "A2 Kontrolle",
+   "eingabe": {
+    "art": "erwartung-symbol-stunde",
+    "haltedauerKerzen": 8
+   },
+   "ergebnis": "Erwartung ueber ALLE Kerzen desselben Symbols zur selben UTC-Stunde, getrennt je Haelfte",
+   "begruendung": "Keine Zufallsziehung (A2), keine Listenpaarung (A3), kein Zeitbezug zum Signal (A4), je Haelfte getrennt (A5). Der Ueberschuss gegen diese Erwartung ist die Aussage; die Rohrendite allein ist keine."
+  },
+  {
+   "nr": 5,
+   "regel": "B4 Bonferroni",
+   "eingabe": {
+    "tests": 1,
+    "alpha": 0.05
+   },
+   "ergebnis": {
+    "schwelleT": 1.959963986120195
+   },
+   "begruendung": "Zweiseitige Schwelle fuer |t| bei 1 Test(s)."
+  },
+  {
+   "nr": 6,
+   "regel": "Urteil Variante 0",
+   "eingabe": {
+    "ueberschussTagesmittelPp": 0.025275286400483966,
+    "mdePp": 0.5567310805590053,
+    "t": 0.0907989055509724,
+    "schwelle": 1.959963986120195,
+    "tage": 17,
+    "signale": 3247,
+    "jeSignalPp": 0.02527528640048399
+   },
+   "ergebnis": {
+    "urteil": "nicht-messbar",
+    "aussicht": null
+   },
+   "begruendung": "Weniger als 30 Bestaetigungstage mit Signal."
+  }
+ ],
+ "warnungen": []
+}

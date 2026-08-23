@@ -21,6 +21,8 @@ contextBridge.exposeInMainWorld('api', {
   readRecommendation: () => ipcRenderer.invoke('read-recommendation'),
   readReport: () => ipcRenderer.invoke('read-report'),
   readSpekulationen: () => ipcRenderer.invoke('read-spekulationen'),
+  readProtokolle: () => ipcRenderer.invoke('read-protokolle'),
+  writeStrategie: (key, quelltext) => ipcRenderer.invoke('write-strategie', key, quelltext),
   readInsider: () => ipcRenderer.invoke('read-insider'),
   setAutostart: (v) => ipcRenderer.invoke('set-autostart', v),
   getAutostart: () => ipcRenderer.invoke('get-autostart'),

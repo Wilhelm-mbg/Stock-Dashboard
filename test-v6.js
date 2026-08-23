@@ -2852,9 +2852,12 @@ console.log('\n36) Kostenhuerde des Produkts (Signalstudie 23.08.2026)');
   ok(/eigeneRegel = String\(sEintrag\.grund/.test(dep) && /!eigeneRegel && sEintrag\.konfig/.test(dep),
      'Benannte Regeln behalten ihre Bilanz trotz eigener Konfiguration');
 
-  /* Stufe 4: aus sechs Reitern werden vier. Heute · Regeln · Vermoegen · Werkzeuge. */
+  /* Stufe 4: aus sechs Reitern wurden vier. Am 23.08.2026 kam ein fuenfter dazu:
+   * Messung - Scoreboard und Strategie-Eingabe. Die Zahl ist der Wachhund; wer einen
+   * Reiter ergaenzt, muss ihn hier benennen. */
   var reiter = (html.match(/data-tab="[a-z]+"/g) || []);
-  ok(reiter.length === 4, 'Vier Reiter statt sechs', reiter.join(' '));
+  ok(reiter.length === 5 && reiter.indexOf('data-tab="messung"') !== -1,
+     'Fuenf Reiter: Heute · Regeln · Vermoegen · Werkzeuge · Messung', reiter.join(' '));
   ['dashboard', 'strategien', 'depot', 'werkzeuge'].forEach(function (id) {
     ok(html.indexOf('data-tab="' + id + '"') !== -1 && html.indexOf('id="tab-' + id + '"') !== -1,
        'Reiter ' + id + ' hat Knopf und Inhalt');
@@ -3365,6 +3368,60 @@ console.log('\n43) Stufe 0 der Roadmap nach 9.0.0 (Inventarisierung 23.08.2026)'
      'Ein Sentinel-Objekt gilt NICHT als Zugangskennung (es ist wahrheitswertig)');
   ok(/on: !!\(s\.capEnabled && txt\(s\.capKey\) && txt\(s\.capId\) && txt\(s\.capPass\)\)/.test(cp),
      'Die Verbindung gilt nur als eingerichtet, wenn alle drei Kennungen Text sind');
+})();
+
+
+console.log('\n44) Messmaschine, Scoreboard und Strategie-Eingabe (23.08.2026)');
+(function () {
+  var mm = fs.readFileSync(__dirname + '/studien/messmaschine/messmaschine.js', 'utf8');
+  var sb = fs.readFileSync(__dirname + '/scoreboard.js', 'utf8');
+  var mj = fs.readFileSync(__dirname + '/main.js', 'utf8');
+  var pj = fs.readFileSync(__dirname + '/preload.js', 'utf8');
+  var h = fs.readFileSync(__dirname + '/index.html', 'utf8');
+
+  /* Grundsatz D2: Die App urteilt nie selbst. Sie liest Protokolle und zeigt sie an. */
+  // Das Scoreboard liest FELDER namens tagesmittel/mde aus dem Protokoll - das ist Anzeige.
+  // Verboten ist, sie zu BERECHNEN: keine Statistik-Funktion, keine Wurzel, keine Summe.
+  var sbCode = sb.replace(/\/\*[\s\S]*?\*\//g, '');
+  ok(!/function\s+(tagesMittel|statistik|bonferroni|normInv)\b|Math\.sqrt\(/.test(sbCode),
+     'scoreboard.js rechnet keine Statistik - es zeigt nur an, was das Protokoll sagt');
+  ok(/readProtokolle/.test(sb) && /read-protokolle/.test(mj) && /readProtokolle/.test(pj),
+     'Das Scoreboard liest Protokolle ueber die Bruecke, nicht aus dem Renderer heraus');
+  ok(!/messe\(|require\(.*messmaschine/.test(sb + mj + pj),
+     'Weder Renderer noch Hauptprozess rufen die Messmaschine auf - messen bleibt ein eigener Schritt');
+
+  /* Sortierung nach Belegstatus, nicht nach Rendite */
+  ok(/RANG\s*=\s*\{\s*'bestaetigt':\s*0/.test(sb) && /RANG\[ua\] - RANG\[ub\]/.test(sb),
+     'Das Scoreboard sortiert nach Belegstatus - Rendite entscheidet nur innerhalb gleichen Status');
+
+  /* 100 % Einsicht: jede Entscheidung steht als Daten im Protokoll */
+  ok(/Protokoll\.prototype\.entscheide/.test(mm) && /entscheidungen:\s*P\.entscheidungen/.test(mm),
+     'Jede Entscheidung der Maschine landet als Datensatz im Protokoll');
+  ok(/p\.entscheidungen\s*\|\|\s*\[\]\)\.forEach/.test(sb) && /Begründung/.test(sb),
+     'Das Scoreboard zeigt den vollstaendigen Entscheidungsweg mit Begruendung an');
+
+  /* Die Maschine hat keine Schalter fuer ihre Disziplin */
+  ok(!/optionen\.(ohneKontrolle|keineKontrolle|skipMde|ohneSchnitt)/.test(mm),
+     'Es gibt keine Option, Kontrolle, MDE oder Bestaetigungsschnitt abzuschalten');
+  ok(/verweigert: true/.test(mm) && /mindestens 20 Zeichen/.test(mm),
+     'Ohne Grund verweigert die Maschine die Messung');
+  ok(/haltedauerKerzen > 130/.test(mm), 'C1: eine Haltedauer, die nach Minuten aussieht, wird verweigert');
+
+  /* Eingabe: schreibt nur in den Datenordner, nur .js, nur sichere Kennung, nie ueberschreiben */
+  var ws = mj.slice(mj.indexOf("ipcMain.handle('write-strategie'"), mj.indexOf("ipcMain.handle('write-strategie'") + 1400);
+  ok(/\^\[a-z0-9\]\[a-z0-9-\]\{1,40\}\$/.test(ws), 'Strategie-Kennung ist auf sichere Zeichen beschraenkt');
+  ok(/Markt-Dashboard-Daten', 'strategien'/.test(ws), 'Strategien landen nur im Datenordner');
+  ok(/fs\.existsSync\(p\)\) return \{ ok: false/.test(ws), 'Eine vorhandene Strategie wird nie ueberschrieben - neue Fassung braucht neue Kennung');
+
+  /* Die Tests der Maschine selbst laufen gruen */
+  var r = require('child_process').spawnSync(process.execPath, [__dirname + '/studien/messmaschine/test-messmaschine.js'], { encoding: 'utf8' });
+  ok(r.status === 0 && /ALLE TESTS BESTANDEN/.test(r.stdout), 'test-messmaschine.js besteht (jeder Fehlertyp aus FEHLERTYPEN.md als Falle)');
+  var ft = fs.readFileSync(__dirname + '/studien/messmaschine/FEHLERTYPEN.md', 'utf8');
+  var kennungen = (ft.match(/\|\s*([A-E]\d)\s*\|/g) || []).length;
+  ok(kennungen >= 23, 'FEHLERTYPEN.md fuehrt mindestens 23 Fehlertypen', kennungen);
+
+  ok(/data-tab="messung"/.test(h) && /id="scoreboard"/.test(h) && /id="stAblegen"/.test(h),
+     'Reiter Messung mit Scoreboard und Eingabe ist in der Oberflaeche');
 })();
 
 console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');

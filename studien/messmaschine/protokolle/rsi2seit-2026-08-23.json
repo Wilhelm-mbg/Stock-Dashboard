@@ -1,0 +1,214 @@
+{
+ "verfahren": {
+  "version": "1.0.0",
+  "mindestKerzenVorlauf": 261,
+  "bestaetigungsAnteil": 0.5,
+  "alpha": 0.05,
+  "zAlpha": 1.959964,
+  "zPower80": 0.8416212,
+  "mdeFaktor": 2,
+  "kontrolle": "erwartung-symbol-stunde",
+  "stundenRaster": "utc"
+ },
+ "strategie": {
+  "key": "rsi2seit",
+  "grund": "RSI(2) kauft kurzfristige Uebertreibung und braucht die Rueckkehr zur Mitte. Die gibt es nur, wo eine Mitte existiert - im Seitwaertskanal. Der Kanal liefert die Erlaubnis, nicht die Richtung.",
+  "zeitrahmen": "60m",
+  "haltedauerKerzen": 8,
+  "richtung": "long",
+  "universum": "aktien",
+  "varianten": 1,
+  "quelle": "'use strict';\n/* Die bisher als \"belegt\" gefuehrte Intraday-Kante - als erste Strategie durch die\n * Messmaschine, damit sich pruefen laesst, ob die Maschine dasselbe sagt wie die\n * Messungen vom 23.08.2026 (je Signal +0,0115 Pp, t 0,14 - nicht entscheidbar). */\nvar Q = require('../../../quant.js');\nvar P = { ENTRY: 'rsi2seit', LINE: 'ema', period: 20, confirmBps: 15, ZTHR: 1.5,\n          MINQ: 0, CHAN: false, MTF: false, TREND: false };\nmodule.exports = {\n  key: 'rsi2seit',\n  grund: 'RSI(2) kauft kurzfristige Uebertreibung und braucht die Rueckkehr zur Mitte. Die gibt es nur, ' +\n         'wo eine Mitte existiert - im Seitwaertskanal. Der Kanal liefert die Erlaubnis, nicht die Richtung.',\n  zeitrahmen: '60m',\n  haltedauerKerzen: 8,\n  richtung: 'long',\n  universum: 'aktien',\n  kosten: { spanneBp: 5 },\n  params: P,\n  signal: function (bars, i, params) {\n    var s = Q.einstiegSignal(bars, i, params || P);\n    return s && s.dir === 'call' ? { dir: 1 } : null;\n  },\n};\n"
+ },
+ "gemessenAm": "2026-08-23T16:10:19.266Z",
+ "dauerMs": 12810,
+ "universum": {
+  "werte": 191,
+  "handelstage": 732,
+  "von": "2023-09-21",
+  "bis": "2026-08-21",
+  "schnittTag": "2025-03-10",
+  "herkunft": "Archiv-Store, Auswahl zum Messzeitpunkt (Ueberlebende)"
+ },
+ "ergebnisse": [
+  {
+   "variante": 0,
+   "params": {
+    "ENTRY": "rsi2seit",
+    "LINE": "ema",
+    "period": 20,
+    "confirmBps": 15,
+    "ZTHR": 1.5,
+    "MINQ": 0,
+    "CHAN": false,
+    "MTF": false,
+    "TREND": false
+   },
+   "signale": 6509,
+   "long": 6509,
+   "short": 0,
+   "ohneKontrolle": 0,
+   "verworfen": {},
+   "entdeckung": {
+    "roh": {
+     "tage": 319,
+     "signale": 2913,
+     "tagesmittel": 0.0020543280555529674,
+     "t": 2.264703387754349,
+     "se": 0.0009071068938480341,
+     "mde": 0.0018142137876960682,
+     "jeSignal": 0.0017135210599329856,
+     "anteilPositiv": 0.5290078956402334
+    },
+    "ueberschuss": {
+     "tage": 319,
+     "signale": 2913,
+     "tagesmittel": 0.0011410014022123491,
+     "t": 1.2544439599207766,
+     "se": 0.0009095674567115841,
+     "mde": 0.0018191349134231683,
+     "jeSignal": 0.0007661160315711421,
+     "anteilPositiv": 0.509783728115345
+    }
+   },
+   "bestaetigung": {
+    "roh": {
+     "tage": 356,
+     "signale": 3596,
+     "tagesmittel": 0.0013886886496432486,
+     "t": 1.5207723142811773,
+     "se": 0.0009131469823604984,
+     "mde": 0.0018262939647209968,
+     "jeSignal": 0.0007205228909059381,
+     "anteilPositiv": 0.503615127919911
+    },
+    "ueberschuss": {
+     "tage": 356,
+     "signale": 3596,
+     "tagesmittel": 0.00024059084619837819,
+     "t": 0.2644404232870629,
+     "se": 0.0009098111521974276,
+     "mde": 0.0018196223043948551,
+     "jeSignal": -0.0004452755743839422,
+     "anteilPositiv": 0.48915461624026696
+    }
+   },
+   "gesamt": {
+    "roh": {
+     "tage": 675,
+     "signale": 6509,
+     "tagesmittel": 0.0017032649022139155,
+     "t": 2.6431295938188244,
+     "se": 0.0006444121794849334,
+     "mde": 0.001288824358969867,
+     "jeSignal": 0.001164923515637206,
+     "anteilPositiv": 0.5149792594868643
+    },
+    "ueberschuss": {
+     "tage": 675,
+     "signale": 6509,
+     "tagesmittel": 0.0006661182052627587,
+     "t": 1.0343768784012657,
+     "se": 0.0006439801770243665,
+     "mde": 0.001287960354048733,
+     "jeSignal": 0.00009686357881120042,
+     "anteilPositiv": 0.4983868489783377
+    }
+   },
+   "kosten": {
+    "spanneBp": 5,
+    "jeUmlaufAnteil": 0.001
+   },
+   "nettoJeSignalBestaetigung": -0.001445275574383942
+  }
+ ],
+ "urteile": [
+  "nicht-entscheidbar"
+ ],
+ "bestesUrteil": "nicht-entscheidbar",
+ "tests": 1,
+ "entscheidungen": [
+  {
+   "nr": 1,
+   "regel": "B4 Testzahl",
+   "eingabe": {
+    "varianten": 1
+   },
+   "ergebnis": 1,
+   "begruendung": "Jede Parametervariante ist ein eigener Test. Die Schwelle wird auf diese Zahl gerechnet."
+  },
+  {
+   "nr": 2,
+   "regel": "E1 Universum",
+   "eingabe": {
+    "archiv": "C:\\Users\\Wilhe\\AppData\\Roaming\\Markt-Dashboard\\store",
+    "zeitrahmen": "60m",
+    "filter": "aktien"
+   },
+   "ergebnis": {
+    "werte": 191
+   },
+   "begruendung": "Das Universum ist \"alles, was heute im Archiv liegt\". Das sind Ueberlebende: Werte, die aus der Beobachtung geflogen sind, fehlen. Die Renditen laufen ueber Zeitraeume, in denen das noch nicht bekannt war. Jede positive Rohrendite ist dadurch nach oben verzerrt; die Groesse der Verzerrung ist hier NICHT gemessen."
+  },
+  {
+   "nr": 3,
+   "regel": "B5 Schnitt",
+   "eingabe": {
+    "handelstage": 732,
+    "anteil": 0.5
+   },
+   "ergebnis": {
+    "schnittTag": "2025-03-10",
+    "entdeckung": 366,
+    "bestaetigung": 366
+   },
+   "begruendung": "Entdeckung auf der ersten Haelfte der Handelstage, Bestaetigung auf der zweiten. Das Urteil faellt NUR auf der Bestaetigung."
+  },
+  {
+   "nr": 4,
+   "regel": "A2 Kontrolle",
+   "eingabe": {
+    "art": "erwartung-symbol-stunde",
+    "haltedauerKerzen": 8
+   },
+   "ergebnis": "Erwartung ueber ALLE Kerzen desselben Symbols zur selben UTC-Stunde, getrennt je Haelfte",
+   "begruendung": "Keine Zufallsziehung (A2), keine Listenpaarung (A3), kein Zeitbezug zum Signal (A4), je Haelfte getrennt (A5). Der Ueberschuss gegen diese Erwartung ist die Aussage; die Rohrendite allein ist keine."
+  },
+  {
+   "nr": 5,
+   "regel": "B4 Bonferroni",
+   "eingabe": {
+    "tests": 1,
+    "alpha": 0.05
+   },
+   "ergebnis": {
+    "schwelleT": 1.959963986120195
+   },
+   "begruendung": "Zweiseitige Schwelle fuer |t| bei 1 Test(s)."
+  },
+  {
+   "nr": 6,
+   "regel": "Urteil Variante 0",
+   "eingabe": {
+    "ueberschussTagesmittelPp": 0.024059084619837818,
+    "mdePp": 0.1819622304394855,
+    "t": 0.2644404232870629,
+    "schwelle": 1.959963986120195,
+    "tage": 356,
+    "signale": 3596,
+    "jeSignalPp": -0.04452755743839422
+   },
+   "ergebnis": {
+    "urteil": "nicht-entscheidbar",
+    "aussicht": null
+   },
+   "begruendung": "Ueberschuss 0.0241 Pp liegt unter der MDE 0.1820 Pp. Das heisst NICHT \"kein Effekt\" - es heisst, dass diese Datenmenge die Frage nicht beantworten kann."
+  }
+ ],
+ "warnungen": [
+  {
+   "kennung": "B2",
+   "text": "Variante 0: Tagesmittel (0.0241 Pp) und Erwartung je Signal (-0.0445 Pp) haben verschiedene Vorzeichen. Duenne Tage tragen den Schaetzer. Handelbar ist die Zahl je Signal."
+  }
+ ]
+}
