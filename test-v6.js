@@ -2844,6 +2844,62 @@ console.log('\n36) Kostenhuerde des Produkts (Signalstudie 23.08.2026)');
   ok(/eigeneRegel = String\(sEintrag\.grund/.test(dep) && /!eigeneRegel && sEintrag\.konfig/.test(dep),
      'Benannte Regeln behalten ihre Bilanz trotz eigener Konfiguration');
 
+  /* Stufe 4: aus sechs Reitern werden vier. Heute · Regeln · Vermoegen · Werkzeuge. */
+  var reiter = (html.match(/data-tab="[a-z]+"/g) || []);
+  ok(reiter.length === 4, 'Vier Reiter statt sechs', reiter.join(' '));
+  ['dashboard', 'strategien', 'depot', 'werkzeuge'].forEach(function (id) {
+    ok(html.indexOf('data-tab="' + id + '"') !== -1 && html.indexOf('id="tab-' + id + '"') !== -1,
+       'Reiter ' + id + ' hat Knopf und Inhalt');
+  });
+  /* Kurzfrist und Mittelfrist sind beide das Vermoegen - wer wissen will, wie es
+   * steht, sollte nicht zwei Stellen addieren muessen. */
+  ok(/data-sub="mittel"/.test(html) && /id="sub-mittel"/.test(html),
+     'Mittelfristig ist ein Unter-Reiter von Vermoegen');
+  ok(/id="wzPills"/.test(html) && /id="sub-explorer"/.test(html) && /id="sub-scheine"/.test(html),
+     'Werkzeuge fasst Explorer und Schein-Finder zusammen');
+
+  /* Der Umschalter darf nicht mehr auf eine einzelne Pillenleiste festgenagelt sein,
+   * sonst waere die zweite Leiste tot - genau die Sorte toter Schalter, die dieser
+   * Umbau abschaffen soll. */
+  ok(/querySelectorAll\('\.pills button'\)/.test(dep),
+     'Der Unter-Reiter-Umschalter arbeitet in JEDER Pillenleiste');
+  ok(/b\.closest\('\.tab'\)/.test(dep),
+     'Er wirkt nur im Reiter der angeklickten Pille');
+
+  /* Zwei Sprungmarken zeigten auf [data-tab="explorer"]. Den Knopf gibt es nicht mehr;
+   * querySelector liefert dort still null - der Sprung waere wirkungslos gewesen,
+   * ohne Fehlermeldung. */
+  var expSrc = fs.readFileSync(__dirname + '/explorer.js', 'utf8');
+  var rndSrc = fs.readFileSync(__dirname + '/renderer.js', 'utf8');
+  ok(!/data-tab="explorer"/.test(expSrc) && !/data-tab="explorer"/.test(rndSrc),
+     'Keine Sprungmarke zeigt mehr auf den entfernten Explorer-Reiter');
+  ok(/#wzPills \[data-sub="explorer"\]/.test(expSrc) && /#wzPills \[data-sub="explorer"\]/.test(rndSrc),
+     'Beide Sprungmarken oeffnen Reiter UND Pille');
+
+  /* Stufe 5: die Kontrolle gehoert in jede Bilanz.
+   * Am 23.08.2026 zeigte sich, dass rund zwei Drittel des Rohvorsprungs der belegten
+   * Regel schlichtes Halten sind. Ohne diese Zahl misst eine Bilanz Marktdrift. */
+  ok(/function kontrollErtrag/.test(dep), 'Die Kontrollrechnung existiert');
+  var ke = dep.slice(dep.indexOf('function kontrollErtrag'), dep.indexOf('function kontrollErtrag') + 1600);
+  ok(/for \(var i = 261;/.test(ke),
+     'Die Kontrolle beginnt beim Vorlauf des Detektors (261), nicht frueher');
+  ok(/getUTCHours\(\) !== std/.test(ke),
+     'Verglichen wird dieselbe Tagesstunde desselben Werts');
+  ok(/k < 20/.test(ke),
+     'Unter 20 Vergleichsfaellen wird kein Kontrollwert gemeldet');
+  ok(/ktrPct: ktr/.test(dep), 'Jeder Schatten traegt seinen Kontrollwert');
+  ok(/g2\.ktrN = \(g2\.ktrN \|\| 0\) \+ 1/.test(dep), 'Die Bilanz zaehlt die Kontrolle getrennt mit');
+
+  /* Nachgerechnet, weil eine falsche Kontrolle schlimmer ist als keine: Der Startindex
+   * war zuerst 60 und ergab +0,128 statt +0,113 Pp - der Ueberschuss haette damit
+   * +0,036 statt +0,064 gelautet. Die Zahl im Regelkopf muss die korrigierte sein. */
+  ok(/\+0,065 Pp Überschuss/.test(dep) && !/\+0,114 Pp gegen Kontrolle/.test(dep),
+     'Der Regelkopf nennt den korrigierten Ueberschuss (+0,065), nicht den zu hohen (+0,114)');
+  ok(/Überschuss/.test(dep) && /Kontrolle/.test(dep),
+     'Die Regelliste zeigt Kontrolle und Ueberschuss als eigene Spalten');
+
+
+
 
   ok(/quellenMigration\(\);\n    huerdeAnzeigen\(\);/.test(dep), 'Die Anzeige wird beim Start gefuellt');
 })();

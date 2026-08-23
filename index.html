@@ -568,12 +568,10 @@
 <div id="warnband" style="display:none;"></div>
 
 <nav class="tabs">
-  <button data-tab="dashboard" class="active">Dashboard</button>
-  <button data-tab="depot">Kurzfrist-Depot</button>
-  <button data-tab="explorer">Aktien-Explorer</button>
-  <button data-tab="mittel">Mittelfristig</button>
-  <button data-tab="scheine">Schein-Finder</button>
-  <button data-tab="strategien">Strategien &amp; Belege</button>
+  <button data-tab="dashboard" class="active">Heute</button>
+  <button data-tab="strategien">Regeln</button>
+  <button data-tab="depot">Vermögen</button>
+  <button data-tab="werkzeuge">Werkzeuge</button>
 </nav>
 
 <div id="tab-dashboard" class="tab active">
@@ -629,6 +627,7 @@
     <button data-sub="wende">Trendwechsel</button>
     <button data-sub="protokoll">Protokoll</button>
     <button data-sub="auswertung">Auswertung</button>
+    <button data-sub="mittel">Mittelfristig</button>
   </div>
 
   <!-- ============ DEPOT ============ -->
@@ -1051,107 +1050,8 @@
     </details>
 
   </div><!-- /sub-auswertung -->
-</div><!-- /tab-depot -->
-
-<div id="tab-explorer" class="tab">
-  <div class="exp-search">
-    <input type="text" id="expQuery" placeholder="Aktie, ETF oder Index suchen – Ticker oder Name (z. B. „Rheinmetall“, „SAP“, „PLTR“) …">
-    <button class="btn" id="expSearchBtn">Suchen</button>
-  </div>
-  <div class="exp-results" id="expResults"></div>
-  <div id="expStart"></div>
-  <div id="expDetail" style="display:none;">
-    <div style="display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; margin:14px 0 4px;">
-      <span style="font-size:20px; font-weight:700;" id="expName"></span>
-      <span style="color:var(--muted);" id="expMeta"></span>
-      <span style="font-size:20px; font-weight:700; margin-left:auto;" id="expPrice"></span>
-      <span id="expChg"></span>
-    </div>
-    <div class="panel">
-      <div class="rangebtns" id="expRanges"></div>
-      <div class="chartleiste">
-        <label title="Linie zeigt nur den Schlusskurs. Kerzen zeigen zusätzlich Eröffnung, Hoch und Tief jeder Periode – daran erkennt man, wie eine Bewegung zustande kam.">Darstellung
-          <select id="expChartArt"><option value="linie" selected>Linie</option><option value="kerzen">Kerzen</option></select>
-        </label>
-        <label title="Wie weit zurück der Chart reicht. Yahoo begrenzt Intraday-Daten: 1-Minuten höchstens 7 Tage, 5/15-Minuten 60 Tage, Stundenkerzen 730 Tage.">Zeitraum
-          <select id="expZeit">
-            <option value="1d">1 Tag</option>
-            <option value="5d">5 Tage</option>
-            <option value="1mo">1 Monat</option>
-            <option value="60d">60 Tage</option>
-            <option value="6mo">6 Monate</option>
-            <option value="1y" selected>1 Jahr</option>
-            <option value="2y">2 Jahre</option>
-            <option value="5y">5 Jahre</option>
-            <option value="max">Maximum</option>
-          </select>
-        </label>
-        <label title="Freie Datumswahl – schlägt den Zeitraum links. Ein Klick auf einen Schnellwahl-Knopf setzt sie zurück.">von<input id="expVon" type="date" style="width:130px;"></label>
-        <label>bis<input id="expBis" type="date" style="width:130px;"></label>
-        <label title="Wie fein der Chart aufgelöst ist. Feinere Kerzen reichen weniger weit zurück.">Kerzen
-          <select id="expKerze">
-            <option value="1m">1 Minute</option>
-            <option value="5m">5 Minuten</option>
-            <option value="15m">15 Minuten</option>
-            <option value="60m">1 Stunde</option>
-            <option value="1d" selected>1 Tag</option>
-            <option value="1wk">1 Woche</option>
-            <option value="1mo">1 Monat</option>
-          </select>
-        </label>
-        <span id="expZeitHinweis" class="hinweis"></span>
-      </div>
-      <div class="chartleiste" id="expSignalLeiste">
-        <span style="color:var(--muted); font-size:12px;">Signale einblenden:</span>
-        <label class="sigbox" title="Gemessen und ohne Vorsprung – wird angezeigt, weil du es sehen willst, nicht weil es trägt."><input type="checkbox" data-sig="cross"> EMA-Kreuzung</label>
-        <label class="sigbox" title="Roh ohne Vorsprung. Dieselbe Überdehnung trägt erst als Kapitulations-Dip: nur im Abwärtskanal, nur mit Volumen, nur Long."><input type="checkbox" data-sig="reversion"> Umkehr</label>
-        <label class="sigbox" title="Gemessen und ohne Vorsprung – wird angezeigt, weil du es sehen willst, nicht weil es trägt."><input type="checkbox" data-sig="pullback"> Rücksetzer</label>
-        <label class="sigbox" title="Roh ein Münzwurf (+0,017 Prozentpunkte). Trägt erst mit der Erlaubnis „Seitwärtskanal + Volumen“ – das ist die belegte Hauptstrategie."><input type="checkbox" data-sig="rsi2"> RSI(2)</label>
-        <label class="sigbox" title="Gemessen und ohne Vorsprung – wird angezeigt, weil du es sehen willst, nicht weil es trägt."><input type="checkbox" data-sig="donchian"> Donchian</label>
-        <label class="sigbox" title="Gemessen und ohne Vorsprung – wird angezeigt, weil du es sehen willst, nicht weil es trägt."><input type="checkbox" data-sig="squeeze"> Squeeze</label>
-        <label class="sigbox"><input type="checkbox" data-sig="linie"> Leitlinie (EMA20)</label>
-        <span id="expSigZahl" class="hinweis"></span>
-      </div>
-      <div class="chartleiste" id="expIndiLeiste">
-        <span style="color:var(--muted); font-size:12px;">Chartbild:</span>
-        <label class="sigbox" title="Gleitende Durchschnitte über die letzten 50 bzw. 200 KERZEN der gewählten Kerzengröße – auf dem Tageschart also 50/200 Handelstage, auf dem Stundenchart 50/200 Stunden. Gezeichnet wird nur, wenn genug Kerzen da sind, nie heimlich verkürzt."><input type="checkbox" data-ind="ma"> SMA 50/200</label>
-        <label class="sigbox" title="Kreuzungen der beiden Durchschnitte. Gemessen an 191 Werten über 55 Jahre hat dieses Signal KEINEN Vorsprung – es wird angezeigt, weil du es sehen willst, nicht weil es trägt."><input type="checkbox" data-ind="cross50200"> Golden/Death Cross</label>
-        <label class="sigbox" title="Regressionskanal: eine Gerade durch den Kursverlauf mit paralleler Ober- und Unterkante. Zeigt vier Sichten auf die JÜNGSTE Bewegung (kurz/mittel/lang/ab Wendepunkt). Das lange Seitwärtsfenster daraus ist die einzige gemessen tragende Kanal-Nutzung – es steuert den Intraday-Einstieg."><input type="checkbox" data-ind="kanal"> Trendkanal</label>
-        <label class="sigbox" title="Zerlegt die gesamte sichtbare Historie an ihren Wendepunkten und zeichnet für JEDEN Trendabschnitt einen eigenen Kanal – grün aufwärts, rot abwärts, blau seitwärts. Reine Anzeige zum Erkennen von Marktphasen: Als Handelsbedingung wurde ein Dip-Kauf im frischen Seitwärtsabschnitt gemessen und fiel durch – es wird bewusst nichts davon gehandelt."><input type="checkbox" data-ind="segmente"> Kanal-Abschnitte (Historie)</label>
-        <label class="sigbox" title="Höchster und tiefster Kurs der letzten 20 bzw. 60 Perioden – die Zonen, an denen der Kurs zuletzt gedreht hat."><input type="checkbox" data-ind="sr"> Unterstützung / Widerstand</label>
-        <label class="sigbox" title="Handelsvolumen je Kerze. Ein Ausbruch mit hohem Volumen ist glaubwürdiger als einer bei dünnem Handel."><input type="checkbox" data-ind="volumen"> Volumen</label>
-        <span id="expKanalInfo" class="hinweis"></span>
-      </div>
-      <!-- Kanal-Verzug: Ein Regressionskanal beschreibt, was war, und läuft der Bewegung
-           deshalb immer nach. Wie weit, gehört als Zahl unter den Chart – sonst hält man
-           eine Beschreibung der Vergangenheit für eine Vorhersage. -->
-      <div id="expKanalVerzug" class="hinweis" style="margin:2px 0 8px; line-height:1.5;"></div>
-      <div class="chartwrap">
-        <div id="expReadout"></div>
-        <svg id="bigchart"></svg>
-      </div>
-      <div id="expSigDetail" class="panel" style="display:none; margin-top:10px; padding:10px 12px;"></div>
-      <div id="expSigListe" style="margin-top:10px;"></div>
-    </div>
-    <div class="grid2" style="margin-top:12px;">
-      <div class="panel">
-        <h3>Kennzahlen</h3>
-        <dl class="kv" id="expStats"></dl>
-        <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
-          <button class="btn" id="aiBtn">KI-Analyse anfordern</button>
-          <button class="btn ghost" id="watchBtn">Zur Handels-Watchlist</button>
-          <span id="aiStatus" style="color:var(--muted); font-size:12px;"></span>
-        </div>
-      </div>
-      <div class="panel">
-        <h3>News zu diesem Wert</h3>
-        <div id="expNews"><div class="loading">–</div></div>
-      </div>
-    </div>
-  </div>
-</div><!-- /tab-explorer -->
-
-<div id="tab-mittel" class="tab">
+  <!-- ============ MITTELFRISTIG (war ein eigener Reiter) ============ -->
+  <div class="sub" id="sub-mittel">
   <div class="panel">
     <h3>Momentum im Querschnitt · Aktien, keine Hebelscheine</h3>
     <div id="mfErklaerung" style="font-size:12.5px; color:var(--ink-2); line-height:1.55;">
@@ -1301,9 +1201,111 @@
       <p style="margin:0;"><b>Alles hier ist Simulation.</b> Es wird nichts gekauft und nichts verkauft.</p>
     </div>
   </div>
-</div><!-- /tab-mittel -->
-
-<div id="tab-scheine" class="tab">
+  </div>
+</div><!-- /tab-depot -->
+<div id="tab-werkzeuge" class="tab">
+  <div class="pills" id="wzPills">
+    <button data-sub="explorer" class="active">Aktien-Explorer</button>
+    <button data-sub="scheine">Schein-Finder</button>
+  </div>
+  <div class="sub active" id="sub-explorer">
+  <div class="exp-search">
+    <input type="text" id="expQuery" placeholder="Aktie, ETF oder Index suchen – Ticker oder Name (z. B. „Rheinmetall“, „SAP“, „PLTR“) …">
+    <button class="btn" id="expSearchBtn">Suchen</button>
+  </div>
+  <div class="exp-results" id="expResults"></div>
+  <div id="expStart"></div>
+  <div id="expDetail" style="display:none;">
+    <div style="display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; margin:14px 0 4px;">
+      <span style="font-size:20px; font-weight:700;" id="expName"></span>
+      <span style="color:var(--muted);" id="expMeta"></span>
+      <span style="font-size:20px; font-weight:700; margin-left:auto;" id="expPrice"></span>
+      <span id="expChg"></span>
+    </div>
+    <div class="panel">
+      <div class="rangebtns" id="expRanges"></div>
+      <div class="chartleiste">
+        <label title="Linie zeigt nur den Schlusskurs. Kerzen zeigen zusätzlich Eröffnung, Hoch und Tief jeder Periode – daran erkennt man, wie eine Bewegung zustande kam.">Darstellung
+          <select id="expChartArt"><option value="linie" selected>Linie</option><option value="kerzen">Kerzen</option></select>
+        </label>
+        <label title="Wie weit zurück der Chart reicht. Yahoo begrenzt Intraday-Daten: 1-Minuten höchstens 7 Tage, 5/15-Minuten 60 Tage, Stundenkerzen 730 Tage.">Zeitraum
+          <select id="expZeit">
+            <option value="1d">1 Tag</option>
+            <option value="5d">5 Tage</option>
+            <option value="1mo">1 Monat</option>
+            <option value="60d">60 Tage</option>
+            <option value="6mo">6 Monate</option>
+            <option value="1y" selected>1 Jahr</option>
+            <option value="2y">2 Jahre</option>
+            <option value="5y">5 Jahre</option>
+            <option value="max">Maximum</option>
+          </select>
+        </label>
+        <label title="Freie Datumswahl – schlägt den Zeitraum links. Ein Klick auf einen Schnellwahl-Knopf setzt sie zurück.">von<input id="expVon" type="date" style="width:130px;"></label>
+        <label>bis<input id="expBis" type="date" style="width:130px;"></label>
+        <label title="Wie fein der Chart aufgelöst ist. Feinere Kerzen reichen weniger weit zurück.">Kerzen
+          <select id="expKerze">
+            <option value="1m">1 Minute</option>
+            <option value="5m">5 Minuten</option>
+            <option value="15m">15 Minuten</option>
+            <option value="60m">1 Stunde</option>
+            <option value="1d" selected>1 Tag</option>
+            <option value="1wk">1 Woche</option>
+            <option value="1mo">1 Monat</option>
+          </select>
+        </label>
+        <span id="expZeitHinweis" class="hinweis"></span>
+      </div>
+      <div class="chartleiste" id="expSignalLeiste">
+        <span style="color:var(--muted); font-size:12px;">Signale einblenden:</span>
+        <label class="sigbox" title="Gemessen und ohne Vorsprung – wird angezeigt, weil du es sehen willst, nicht weil es trägt."><input type="checkbox" data-sig="cross"> EMA-Kreuzung</label>
+        <label class="sigbox" title="Roh ohne Vorsprung. Dieselbe Überdehnung trägt erst als Kapitulations-Dip: nur im Abwärtskanal, nur mit Volumen, nur Long."><input type="checkbox" data-sig="reversion"> Umkehr</label>
+        <label class="sigbox" title="Gemessen und ohne Vorsprung – wird angezeigt, weil du es sehen willst, nicht weil es trägt."><input type="checkbox" data-sig="pullback"> Rücksetzer</label>
+        <label class="sigbox" title="Roh ein Münzwurf (+0,017 Prozentpunkte). Trägt erst mit der Erlaubnis „Seitwärtskanal + Volumen“ – das ist die belegte Hauptstrategie."><input type="checkbox" data-sig="rsi2"> RSI(2)</label>
+        <label class="sigbox" title="Gemessen und ohne Vorsprung – wird angezeigt, weil du es sehen willst, nicht weil es trägt."><input type="checkbox" data-sig="donchian"> Donchian</label>
+        <label class="sigbox" title="Gemessen und ohne Vorsprung – wird angezeigt, weil du es sehen willst, nicht weil es trägt."><input type="checkbox" data-sig="squeeze"> Squeeze</label>
+        <label class="sigbox"><input type="checkbox" data-sig="linie"> Leitlinie (EMA20)</label>
+        <span id="expSigZahl" class="hinweis"></span>
+      </div>
+      <div class="chartleiste" id="expIndiLeiste">
+        <span style="color:var(--muted); font-size:12px;">Chartbild:</span>
+        <label class="sigbox" title="Gleitende Durchschnitte über die letzten 50 bzw. 200 KERZEN der gewählten Kerzengröße – auf dem Tageschart also 50/200 Handelstage, auf dem Stundenchart 50/200 Stunden. Gezeichnet wird nur, wenn genug Kerzen da sind, nie heimlich verkürzt."><input type="checkbox" data-ind="ma"> SMA 50/200</label>
+        <label class="sigbox" title="Kreuzungen der beiden Durchschnitte. Gemessen an 191 Werten über 55 Jahre hat dieses Signal KEINEN Vorsprung – es wird angezeigt, weil du es sehen willst, nicht weil es trägt."><input type="checkbox" data-ind="cross50200"> Golden/Death Cross</label>
+        <label class="sigbox" title="Regressionskanal: eine Gerade durch den Kursverlauf mit paralleler Ober- und Unterkante. Zeigt vier Sichten auf die JÜNGSTE Bewegung (kurz/mittel/lang/ab Wendepunkt). Das lange Seitwärtsfenster daraus ist die einzige gemessen tragende Kanal-Nutzung – es steuert den Intraday-Einstieg."><input type="checkbox" data-ind="kanal"> Trendkanal</label>
+        <label class="sigbox" title="Zerlegt die gesamte sichtbare Historie an ihren Wendepunkten und zeichnet für JEDEN Trendabschnitt einen eigenen Kanal – grün aufwärts, rot abwärts, blau seitwärts. Reine Anzeige zum Erkennen von Marktphasen: Als Handelsbedingung wurde ein Dip-Kauf im frischen Seitwärtsabschnitt gemessen und fiel durch – es wird bewusst nichts davon gehandelt."><input type="checkbox" data-ind="segmente"> Kanal-Abschnitte (Historie)</label>
+        <label class="sigbox" title="Höchster und tiefster Kurs der letzten 20 bzw. 60 Perioden – die Zonen, an denen der Kurs zuletzt gedreht hat."><input type="checkbox" data-ind="sr"> Unterstützung / Widerstand</label>
+        <label class="sigbox" title="Handelsvolumen je Kerze. Ein Ausbruch mit hohem Volumen ist glaubwürdiger als einer bei dünnem Handel."><input type="checkbox" data-ind="volumen"> Volumen</label>
+        <span id="expKanalInfo" class="hinweis"></span>
+      </div>
+      <!-- Kanal-Verzug: Ein Regressionskanal beschreibt, was war, und läuft der Bewegung
+           deshalb immer nach. Wie weit, gehört als Zahl unter den Chart – sonst hält man
+           eine Beschreibung der Vergangenheit für eine Vorhersage. -->
+      <div id="expKanalVerzug" class="hinweis" style="margin:2px 0 8px; line-height:1.5;"></div>
+      <div class="chartwrap">
+        <div id="expReadout"></div>
+        <svg id="bigchart"></svg>
+      </div>
+      <div id="expSigDetail" class="panel" style="display:none; margin-top:10px; padding:10px 12px;"></div>
+      <div id="expSigListe" style="margin-top:10px;"></div>
+    </div>
+    <div class="grid2" style="margin-top:12px;">
+      <div class="panel">
+        <h3>Kennzahlen</h3>
+        <dl class="kv" id="expStats"></dl>
+        <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+          <button class="btn" id="aiBtn">KI-Analyse anfordern</button>
+          <button class="btn ghost" id="watchBtn">Zur Handels-Watchlist</button>
+          <span id="aiStatus" style="color:var(--muted); font-size:12px;"></span>
+        </div>
+      </div>
+      <div class="panel">
+        <h3>News zu diesem Wert</h3>
+        <div id="expNews"><div class="loading">–</div></div>
+      </div>
+    </div>
+  </div>
+  </div>
+  <div class="sub" id="sub-scheine">
   <div class="panel">
     <h3>Schein-Finder · Kennzahlen und Risikostufe</h3>
     <div style="font-size:12.5px; color:var(--ink-2); line-height:1.55; margin-bottom:10px;">
@@ -1351,7 +1353,11 @@
     <div id="sfDetail" class="panel" style="display:none; margin-top:10px; padding:10px 12px; font-size:12.5px; line-height:1.6;"></div>
     <div id="sfTabelle" style="margin-top:10px;"></div>
   </div>
-</div><!-- /tab-scheine -->
+  </div>
+</div>
+
+
+
 
 <div id="tab-strategien" class="tab">
   <div class="panel">

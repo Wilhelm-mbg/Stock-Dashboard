@@ -175,6 +175,34 @@
    * Jeder verworfene Trade mit bekannter Richtung wird als virtueller Schein weitergerechnet.
    * Nach ein paar Tagen steht je Verwerfungsgrund fest: Geld gerettet oder Gewinn verhindert?
    * Ein Filter, der nachweislich nur Gewinne verhindert, verliert sein Argument. */
+  /** Erwarteter Ertrag ueber `halten` Kerzen, gemittelt ueber ALLE Kerzen derselben
+   *  Tagesstunde in dieser Reihe - die letzte ausgenommen, weil sie das Signal ist.
+   *  Das ist die Kontrolle: echte Kurse desselben Werts, nur ein anderer Tag.
+   *  Rueckgabe in Prozent des Basiswerts, oder null, wenn zu wenig Vergleichsfaelle da
+   *  sind. Bewusst KEIN Zufallsgriff - siehe Kopf der Datei-Aenderung. */
+  function kontrollErtrag(bars, maxHoldMin, barMin) {
+    try {
+      if (!bars || bars.length < 120) return null;
+      var n = Math.max(1, Math.round((maxHoldMin || 480) / Math.max(1, barMin || 60)));
+      var i0 = bars.length - 1;
+      var std = new Date(bars[i0][0]).getUTCHours();
+      var s = 0, k = 0;
+      /* Ab 261, nicht ab 60: Der Detektor braucht 261 Kerzen Vorlauf und darf auf
+       * frueheren gar nicht rechnen. Eine Kontrolle, die dort Vergleichsfaelle
+       * heranzieht, misst Zeitraeume mit, in denen die Regel nie haette ausloesen
+       * koennen - nachgerechnet macht das 0,128 statt 0,113 Pp und verschiebt den
+       * Ueberschuss von +0,064 auf +0,036. */
+      for (var i = 261; i < bars.length - n - 1; i++) {
+        if (new Date(bars[i][0]).getUTCHours() !== std) continue;
+        var a = bars[i][1], b = bars[i + n][1];
+        if (!(a > 0) || !(b > 0)) continue;
+        s += (b / a - 1) * 100; k++;
+      }
+      if (k < 20) return null;                      // unter 20 Vergleichsfaellen sagt der Schnitt nichts
+      return Math.round(s / k * 1000) / 1000;
+    } catch (e) { return null; }
+  }
+
   function schattenNeu(grund, sym, dir, spot, bars, mp, cfg, now, ivOpt) {
     try {
       if (!D || !dir || !(spot > 0) || !bars || bars.length < 30) return;
@@ -221,7 +249,15 @@
       // mehr feststellen, unter welchen Ausstiegsregeln dieser Schatten entstanden ist.
       var konfig = Q.schattenKonfig(mp, cfg);
       schattenBilanzPruefen(konfig, now);
+      /* KONTROLLE (Stufe 5, Befund vom 23.08.2026): Was haette derselbe Wert zur
+       * selben Tagesstunde an einem BELIEBIGEN anderen Tag ueber dieselbe Haltedauer
+       * verdient? Ohne diese Zahl misst eine Bilanz Marktdrift und nennt sie Kante -
+       * bei der belegten Regel waren es rund zwei Drittel.
+       * Gerechnet als Erwartung ueber ALLE zulaessigen Kerzen, nicht als eine
+       * Zufallsziehung: eine einzelne Ziehung verdoppelt die Streuung. */
+      var ktr = kontrollErtrag(bars, mp && mp.maxHoldMin, Q.barMinOf(bars, bars.length - 1));
       D.schatten.unshift({ id: 'sch' + now + '-' + sym, t: now, sym: sym, dir: dir, grund: grund, konfig: konfig,
+        ktrPct: ktr,
         spot0: spot, ask: Math.round(ask * 10000) / 10000,
         w: { strike: Math.round(w.strike * 100) / 100, expiry: w.expiry, iv: Math.round(iv * 1000) / 1000, ratio: bvS },
         spx: Math.round(spx * 10000) / 10000, sl: slT, tp: mp && mp.tp != null ? mp.tp : null,
@@ -270,8 +306,15 @@
      * Experiment ins neue sickert. */
     var eigeneRegel = String(sEintrag.grund || '').indexOf('Regel: ') === 0;
     if (!eigeneRegel && sEintrag.konfig && D.schattenKonfig && sEintrag.konfig !== D.schattenKonfig) return;
-    var g2 = st[sEintrag.grund] = st[sEintrag.grund] || { n: 0, sumPct: 0, gerettet: 0, verhindert: 0 };
+    var g2 = st[sEintrag.grund] = st[sEintrag.grund] || { n: 0, sumPct: 0, gerettet: 0, verhindert: 0, ktrN: 0, ktrSum: 0 };
     g2.n++; g2.sumPct = Math.round((g2.sumPct + sEintrag.pnlPct) * 100) / 100;
+    /* Die Kontrolle wird getrennt gezaehlt, nicht verrechnet: Der Ueberschuss ist die
+     * Aussage, aber beide Zahlen muessen sichtbar bleiben. Wer nur die Differenz sieht,
+     * kann nicht erkennen, ob eine gute Bilanz aus dem Signal oder aus dem Markt kam. */
+    if (sEintrag.ktrPct != null) {
+      g2.ktrN = (g2.ktrN || 0) + 1;
+      g2.ktrSum = Math.round(((g2.ktrSum || 0) + sEintrag.ktrPct) * 100) / 100;
+    }
     if (sEintrag.pnlPct <= -1) g2.gerettet++;           // Filter hat Geld gerettet
     else if (sEintrag.pnlPct >= 1) g2.verhindert++;     // Filter hat Gewinn verhindert (±1 % Totzone)
   }
@@ -449,6 +492,8 @@
     var rows = liste.map(function (r) {
       var g = st['Regel: ' + r.name] || { n: 0, sumPct: 0 };
       var mittel = g.n ? g.sumPct / g.n : null;
+      var ktr = g.ktrN ? g.ktrSum / g.ktrN : null;
+      var ueb = (mittel != null && ktr != null) ? mittel - ktr : null;
       var offenN = offen.filter(function (s) { return s.grund === 'Regel: ' + r.name; }).length;
       var tage = r.seit ? Math.max(0, Math.round((Date.now() - r.seit) / 86400000)) : 0;
       return '<tr>' +
@@ -459,16 +504,27 @@
         '<td style="text-align:right;">' + offenN + '</td>' +
         '<td style="text-align:right;" class="' + (mittel == null ? '' : U.signCls(mittel)) + '">' +
           (mittel == null ? '–' : U.signTxt(Math.round(mittel * 100) / 100, ' %')) + '</td>' +
+        '<td style="text-align:right; color:var(--muted);">' +
+          (ktr == null ? '–' : U.signTxt(Math.round(ktr * 100) / 100, ' %')) + '</td>' +
+        '<td style="text-align:right;" class="' + (ueb == null ? '' : U.signCls(ueb)) + '"><b>' +
+          (ueb == null ? '–' : U.signTxt(Math.round(ueb * 100) / 100, ' %')) + '</b></td>' +
         '<td style="text-align:right;"><button class="btn ghost regelWeg" data-id="' + U.esc(r.id) +
           '" style="padding:2px 8px; font-size:11px;">löschen</button></td></tr>';
     }).join('');
     el.innerHTML = '<table class="tbl" style="font-size:12.5px;">' +
       '<tr><th>Regel</th><th style="text-align:right;">geschlossen</th><th style="text-align:right;">offen</th>' +
-      '<th style="text-align:right;">Ø je Trade</th><th></th></tr>' + rows + '</table>' +
+      '<th style="text-align:right;">Ø je Trade</th><th style="text-align:right;">Kontrolle</th>' +
+      '<th style="text-align:right;">Überschuss</th><th></th></tr>' + rows + '</table>' +
       '<div style="font-size:11.5px; color:var(--muted); margin-top:6px;">' +
-      'Ø je Trade ist der Schatten-Ertrag nach Spanne, ohne Ordergebühr. Er sagt nichts über ' +
-      'Belegbarkeit: Bei unter etwa 300 Trades ist so gut wie jede Zahl hier mit Rauschen ' +
-      'vereinbar. Was er zeigt, ist die Richtung – und dass die Regel überhaupt auslöst.</div>';
+      '<b>Kontrolle</b> ist derselbe Wert, dieselbe Tagesstunde, dieselbe Haltedauer – nur an ' +
+      'einem beliebigen anderen Tag, gemittelt über alle. Sie sagt, was schlichtes Halten ' +
+      'gebracht hätte. <b>Überschuss</b> ist die Differenz und die eigentliche Aussage: ' +
+      'Nur er gehört der Regel. Bei der belegten Intraday-Regel sind rund zwei Drittel des ' +
+      'Rohertrags Kontrolle (+0,065 Überschuss auf +0,170 roh) – ohne diese Spalte misst man ' +
+      'Marktdrift und nennt sie Kante.' +
+      '<br>Ø je Trade ist der Schatten-Ertrag nach Spanne, ohne Ordergebühr. Bei unter etwa ' +
+      '300 Trades ist so gut wie jede Zahl hier mit Rauschen vereinbar; was sie zeigt, ist die ' +
+      'Richtung – und dass die Regel überhaupt auslöst.</div>';
   }
 
   /** Fuellt den Regelkopf: welche Regel laeuft, mit welchen Parametern, und wie es
@@ -488,8 +544,13 @@
      * Projekt aufgebaut ist. */
     var BELEG = {
       rsi2seit: { stand: 'nicht entscheidbar',
-        txt: '+0,114 Pp gegen Kontrolle · t 1,49 bei einer Auflösung von 0,153 (6.509 Trades, 675 Tage). ' +
-             'Die Rohkante von +0,172 Pp besteht zu rund zwei Dritteln aus schlichtem Halten.' },
+        /* +0,065, nicht +0,114. Die erste Auswertung hatte eine kaputte Paarung -
+         * nur 0,6 % der Kontrollfaelle gehoerten zum selben Wert. Zwei unabhaengige
+         * Nachrechnungen kommen auf +0,065 bzw. +0,066. */
+        txt: '+0,065 Pp Überschuss gegen eine Kontrolle aus echten Kerzen desselben Werts zur ' +
+             'selben Tagesstunde (6.509 Trades, 675 Tage). Die Rohkante von +0,170 Pp besteht ' +
+             'damit zu rund zwei Dritteln aus schlichtem Halten – nicht die Regel verdient sie, ' +
+             'sondern die Zeit im Markt.' },
       kapitulation: { stand: 'in Überprüfung',
         txt: 'Die große Signalstudie vom 23.08.2026 reproduziert diesen Modus nicht. ' +
              'Bis zu einer Neumessung gilt er als unbestätigt.' }
@@ -7679,11 +7740,16 @@
       edgePauseAnzeigen();
     });
     // Sub-Navigation (Pills)
-    var pills = document.querySelectorAll('#depotPills button');
+    /* Allgemein statt auf #depotPills festgenagelt: Seit Stufe 4 gibt es eine zweite
+     * Pillenleiste (Werkzeuge). Der Umschalter arbeitet jetzt in dem Reiter, in dem die
+     * angeklickte Pille steht - so kostet jede weitere Leiste keinen neuen Code. */
+    var pills = document.querySelectorAll('.pills button');
     pills.forEach(function (b) {
       b.addEventListener('click', function () {
-        pills.forEach(function (x) { x.classList.remove('active'); });
-        document.querySelectorAll('#tab-depot .sub').forEach(function (s) { s.classList.remove('active'); });
+        var reiter = b.closest('.tab');
+        var meine = reiter ? reiter.querySelectorAll('.pills button') : [b];
+        meine.forEach(function (x) { x.classList.remove('active'); });
+        if (reiter) reiter.querySelectorAll('.sub').forEach(function (s) { s.classList.remove('active'); });
         b.classList.add('active');
         var subZiel = document.getElementById('sub-' + b.getAttribute('data-sub'));
         if (subZiel) subZiel.classList.add('active');

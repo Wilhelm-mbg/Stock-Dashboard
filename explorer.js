@@ -1023,10 +1023,20 @@
 
   // Oeffentliche Oeffnen-API: andere Module (z. B. die Dashboard-Heatmap) springen
   // damit direkt in die Detail-Ansicht, ohne die interne openDetail zu kennen.
+  /** Zum Aktien-Explorer springen. Er ist seit dem UI-Umbau (Stufe 4) ein
+   *  Unter-Reiter von "Werkzeuge" - es reicht also nicht mehr, einen Reiter
+   *  anzuklicken, die Pille darin muss mit. Steht hier einmal, damit nicht zwei
+   *  Stellen zwei verschiedene Wege kennen. */
+  function zeigeExplorer() {
+    var reiter = document.querySelector('[data-tab="werkzeuge"]');
+    if (reiter) reiter.click();
+    var pille = document.querySelector('#wzPills [data-sub="explorer"]');
+    if (pille) pille.click();
+  }
+
   window.Explorer = {
     oeffne: function (sym, name) {
-      var tabBtn = document.querySelector('[data-tab="explorer"]');
-      if (tabBtn) tabBtn.click();
+      zeigeExplorer();
       openDetail({ sym: sym, name: name || sym, exch: '', type: '' });
     }
   };

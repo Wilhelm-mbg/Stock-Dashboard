@@ -883,8 +883,12 @@
     if (window.Explorer && window.Explorer.oeffne) {
       window.Explorer.oeffne(sym, s ? s.name : sym);
     } else {
-      var tab = document.querySelector('[data-tab="explorer"]');
-      if (tab) tab.click();
+      /* Der Explorer ist seit dem UI-Umbau ein Unter-Reiter von "Werkzeuge":
+       * Reiter UND Pille anklicken, sonst landet man auf der falschen Seite. */
+      var reiter = document.querySelector('[data-tab="werkzeuge"]');
+      if (reiter) reiter.click();
+      var pille = document.querySelector('#wzPills [data-sub="explorer"]');
+      if (pille) pille.click();
     }
   });
 
