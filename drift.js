@@ -58,7 +58,24 @@
       }
     }
     if (r == null) return null;
-    if (new Date(ms).getUTCHours() >= 20) r += 1;
+    /* Nach Boersenschluss gemeldet: erst am Folgetag handelbar. So weit richtig -
+     * aber die Regel setzt voraus, dass im Stempel ueberhaupt eine Uhrzeit steht.
+     *
+     * An den echten Daten nachgezaehlt (23.08.2026, 20.559 Termine): 59,8 % stehen auf
+     * 04:00 oder 05:00 UTC. Das ist Mitternacht New Yorker Zeit - also KEINE Uhrzeit,
+     * nur ein Datum. Fuer die alte Regel sah das aus wie "vorboerslich gemeldet", und
+     * das Buch kaufte zum Schluss des Meldetags: moeglicherweise VOR der Meldung.
+     * Gemessen hat es dabei den Ueberraschungssprung ueber Nacht mitgenommen
+     * (+0,744 % gegen -0,068 % bei Terminen MIT Uhrzeit), und das waren 40 % der
+     * ausgewiesenen Kante - ein Ertrag, an den man nie herangekommen waere.
+     *
+     * Ein Stempel ohne Uhrzeit ist kein Beleg fuer "vorboerslich", sondern gar keine
+     * Information. Im Zweifel also einen Tag spaeter - das kostet Ertrag, aber nur
+     * solchen, den es nie gab. Der vorboersliche Fall (10-13 UTC = 06-08 Uhr New York)
+     * bleibt unveraendert: dort ist die Meldung vor dem Schluss oeffentlich. */
+    var std = new Date(ms).getUTCHours();
+    var ohneUhrzeit = (std === 4 || std === 5) && new Date(ms).getUTCMinutes() === 0;
+    if (std >= 20 || ohneUhrzeit) r += 1;
     return r;
   }
 
@@ -265,7 +282,24 @@
     return { offen: soll, faellig: faellig, halten: O.halten };
   }
 
-  var Drift = { STANDARD: STANDARD, reaktionstag: reaktionstag, datumIndex: datumIndex,
+  /** Wie viele Termine tragen gar keine Uhrzeit? Rund 60 % - und fuer die wird
+   *  konservativ einen Tag spaeter eingestiegen. Das ist eine Annahme ueber die
+   *  Mehrheit der Daten und gehoert sichtbar gemacht, nicht in einen Kommentar. */
+  function stempelBilanz(termineMap) {
+    var ohne = 0, mit = 0;
+    Object.keys(termineMap || {}).forEach(function (sy) {
+      (termineMap[sy] || []).forEach(function (t) {
+        var ms = typeof t[0] === 'number' ? t[0] : Date.parse(t[0]);
+        if (!ms) return;
+        var d = new Date(ms), h = d.getUTCHours();
+        if ((h === 4 || h === 5) && d.getUTCMinutes() === 0) ohne++; else mit++;
+      });
+    });
+    return { ohneUhrzeit: ohne, mitUhrzeit: mit,
+             anteilOhne: (ohne + mit) ? Math.round(ohne / (ohne + mit) * 1000) / 10 : null };
+  }
+
+  var Drift = { STANDARD: STANDARD, reaktionstag: reaktionstag, datumIndex: datumIndex, stempelBilanz: stempelBilanz,
     ereignisse: ereignisse, zuordnen: zuordnen, durchlauf: durchlauf, heute: heute,
     paareAktuell: paareAktuell };
   if (typeof module !== 'undefined' && module.exports) { module.exports = Drift; return; }

@@ -2119,6 +2119,32 @@ console.log('\nErgebnis-Drift');
      'Meldung nach Börsenschluss (ab 20:00 UTC) erst am Folgetag');
   ok(Dr.reaktionstag('2026-99-99', di) === null, 'unlesbares Datum gibt null');
 
+  /* RUECKSCHAU-FEHLER, gemessen und behoben am 23.08.2026.
+   * reaktionstag schob nur bei Stunde >= 20 UTC auf den Folgetag. An den echten Daten:
+   * 12.290 von 20.559 Terminen (59,8 %) stehen auf 04:00/05:00 UTC - Mitternacht New
+   * Yorker Zeit, also GAR KEINE Uhrzeit. Fuer die alte Regel sah das aus wie
+   * "vorboerslich gemeldet", und das Buch kaufte zum Schluss des Meldetags: vor der
+   * Meldung. Nachgemessen sammelte es dabei den Ueberraschungssprung ein
+   * (+0,295 % gegen +0,084 % bei Terminen MIT Uhrzeit); nach der Behebung sind es
+   * +0,020 %, der Gruppenunterschied faellt von +0,211 auf -0,064 Prozentpunkte. */
+  ok(Dr.reaktionstag('2026-01-12T05:00:00Z', di) === di['2026-01-12'] + 1,
+     'Stempel ohne Uhrzeit (05:00 UTC = Mitternacht New York) wird konservativ einen Tag spaeter gehandelt');
+  ok(Dr.reaktionstag('2026-01-12T04:00:00Z', di) === di['2026-01-12'] + 1,
+     'Dasselbe fuer 04:00 UTC (Sommerzeit)');
+  /* Der vorboersliche Fall bleibt unberuehrt: 11:00 UTC ist 07:00 New York, die
+   * Meldung ist vor dem Schluss oeffentlich - der Kauf zum Schluss ist sauber. */
+  ok(Dr.reaktionstag('2026-01-12T11:00:00Z', di) === di['2026-01-12'],
+     'Vorboerslich gemeldet (11:00 UTC) bleibt am Meldetag - dort ist die Meldung vor Schluss oeffentlich');
+  ok(Dr.reaktionstag('2026-01-12T05:30:00Z', di) === di['2026-01-12'],
+     'Ein Stempel MIT Minuten (05:30) ist eine echte Uhrzeit und wird nicht verschoben');
+  /* Die Annahme betrifft die Mehrheit der Daten und gehoert sichtbar gemacht. */
+  ok(typeof Dr.stempelBilanz === 'function',
+     'Es laesst sich abfragen, wie viele Termine gar keine Uhrzeit tragen');
+  var sb = Dr.stempelBilanz({ X: [['2026-01-12T05:00:00Z'], ['2026-01-12T11:00:00Z'], ['2026-01-12T21:00:00Z']] });
+  ok(sb.ohneUhrzeit === 1 && sb.mitUhrzeit === 2 && Math.abs(sb.anteilOhne - 33.3) < 0.2,
+     'stempelBilanz zaehlt richtig', JSON.stringify(sb));
+
+
   /* --- Paarung des jüngsten Termins (echte AMD-Antwort vom 21.08.2026) --- */
   var hist = [
     { quartalsEndeMs: Date.parse('2025-09-30'), ueberraschung: 2.48, ist: 1.2, schaetzung: 1.17 },
