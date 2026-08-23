@@ -3474,6 +3474,22 @@ console.log('\n45) Massive-Anbindung: Schluessel, Tempolimit, Aussengrenze');
   ok(/Ueberlebensverzerrung/.test(vw), 'Das Werkzeug benennt seinen Zweck: die Ueberlebensverzerrung messen');
   ok(/active=false/.test(vw), 'Es holt ausdruecklich die NICHT mehr aktiven Ticker');
   ok(/'CS' \|\| t\.art === 'ADRC'/.test(vw), 'Nur aktienartige Papiere - Fonds und Rechte wuerden die Messung verwaessern');
+
+  /* --- Tagesdaten-Abruf: schont die Schnittstelle und verliert keinen Fortschritt --- */
+  var td = fs.readFileSync(__dirname + '/tools/massive-tagesdaten.js', 'utf8');
+  ok(/M\.hole\(/.test(td) && !/https\.get/.test(td),
+     'Tagesdaten-Abruf schont die Schnittstelle: er geht ueber M.hole und erbt das Tempolimit');
+  var proAbruf = (td.match(new RegExp('M\\.hole\\(', 'g')) || []).length;
+  ok(proAbruf === 1, 'Genau EIN Abruf je Wert - der Aggregat-Endpunkt liefert die ganze Spanne auf einmal', proAbruf);
+  ok(/fs\.writeFileSync\(standDatei/.test(td) && td.indexOf('fs.writeFileSync(standDatei') > td.indexOf('for (var i = 0'),
+     'Der Fortschritt wird INNERHALB der Schleife gespeichert - ein Abbruch verschwendet keinen Abruf');
+  ok(/stand\.fertig\[t\.sym\]/.test(td) && /stand\.ohneDaten\[t\.sym\]/.test(td),
+     'Bereits geholte und ergebnislose Werte werden nie erneut abgerufen');
+  ok(/fehler >= 5/.test(td), 'Nach fuenf Fehlern bricht der Lauf ab, statt gegen eine Sperre zu laufen');
+  ok(/maxWerte/.test(td), 'Die Zahl der Werte je Lauf ist gedeckelt und einstellbar');
+  var tdSchreibt = td.match(new RegExp('writeFileSync\\([^,)]*', 'g')) || [];
+  ok(tdSchreibt.length > 0 && tdSchreibt.every(function (s) { return /ordner|standDatei/.test(s); }),
+     'Auch der Tagesdaten-Abruf schreibt nur in die eigene Ablage', tdSchreibt.join(' | '));
 })();
 
 console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');

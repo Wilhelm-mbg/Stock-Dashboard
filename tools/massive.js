@@ -39,7 +39,16 @@ function schluessel() {
   if (process.env.MASSIVE_KEY && process.env.MASSIVE_KEY.trim()) return process.env.MASSIVE_KEY.trim();
   var p = path.join(datenOrdner(), 'massive.key');
   if (fs.existsSync(p)) {
-    var s = fs.readFileSync(p, 'utf8').trim();
+    /* Robust gegen die drei haeufigen Windows-Fehler beim Anlegen der Datei:
+     *   echo "abc" > datei   schreibt die Anfuehrungszeichen MIT (genau das passierte am 23.08.)
+     *   Editoren setzen ein BOM davor
+     *   Zeilenumbruch am Ende
+     * Der Schluessel ist ein Wort ohne Leerzeichen - alles andere kann weg. */
+    var s = fs.readFileSync(p, 'utf8')
+      .replace(/^﻿/, '')
+      .trim()
+      .replace(/^["']|["']$/g, '')
+      .trim();
     if (s) return s;
   }
   throw new Error(
