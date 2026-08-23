@@ -1,0 +1,442 @@
+{
+ "verfahren": {
+  "version": "1.0.0",
+  "mindestKerzenVorlauf": 261,
+  "bestaetigungsAnteil": 0.5,
+  "alpha": 0.05,
+  "zAlpha": 1.959964,
+  "zPower80": 0.8416212,
+  "mdeFaktor": 2,
+  "kontrolle": "erwartung-symbol-stunde",
+  "stundenRaster": "utc"
+ },
+ "strategie": {
+  "key": "t1-zwangsglattstellung",
+  "grund": "Wer mit Hebel innerhalb des Tages handelt, MUSS vor Boersenschluss glattstellen - Uebernachtfinanzierung, Margin, interne Risikolimits. An Tagen mit starkem Verlust ist dieser Zwang am groessten: Nachschussforderungen und Stop-Kaskaden treffen zusammen, und beide fragen nicht nach dem Preis. Das Angebot in der Schlussstunde ist dann zu einem erheblichen Teil erzwungen und nicht informationsgetrieben. Wer ueber Nacht die Gegenseite nimmt, stellt Kapital genau dann bereit, wenn es sonst niemand stellt.",
+  "zeitrahmen": "60m",
+  "haltedauerKerzen": 1,
+  "richtung": "long",
+  "universum": "aktien",
+  "varianten": 3,
+  "quelle": "'use strict';\n/* T1 aus der Vorregistrierung 2026-08-23 (\"Eigenbau\"), 3 von 7 Tests.\n *\n * These: Uebernacht-Praemie nach Zwangsglattstellung.\n *\n * Einstieg zum Schluss der letzten Sitzungskerze, Ausstieg zum Schluss der ersten\n * Kerze des Folgetages. Der Auktionspreis wird bewusst NICHT benutzt - an der\n * Schlussauktion kann man nicht zum Ausdruck handeln.\n *\n * Bedingt formuliert, und das ist kein Detail: Die Kontrolle der Maschine ist die\n * Erwartung desselben Symbols zur selben UTC-Stunde. Ein Signal, das jeden Abend\n * feuert, wird gegen genau diesen Mittelwert gemessen - der Ueberschuss waere per\n * Konstruktion null. Gemessen wird also nicht \"zahlt die Nacht\", sondern \"zahlt die\n * Nacht nach einem Abverkauf MEHR als eine gewoehnliche Nacht\".\n */\nvar T = require('./tageshilfen.js');\n\nmodule.exports = {\n  key: 't1-zwangsglattstellung',\n  testfamilie: {\n    name: 'eigenbau-2026-08-23',\n    testsGesamt: 7,\n    begruendung: 'Drei Thesen mit Zwangsgeschichte, vorregistriert in ' +\n                 'VORREGISTRIERUNG-2026-08-23-eigenbau.md vor der ersten Messung.',\n  },\n  grund: 'Wer mit Hebel innerhalb des Tages handelt, MUSS vor Boersenschluss glattstellen - ' +\n         'Uebernachtfinanzierung, Margin, interne Risikolimits. An Tagen mit starkem Verlust ist ' +\n         'dieser Zwang am groessten: Nachschussforderungen und Stop-Kaskaden treffen zusammen, und ' +\n         'beide fragen nicht nach dem Preis. Das Angebot in der Schlussstunde ist dann zu einem ' +\n         'erheblichen Teil erzwungen und nicht informationsgetrieben. Wer ueber Nacht die Gegenseite ' +\n         'nimmt, stellt Kapital genau dann bereit, wenn es sonst niemand stellt.',\n  zeitrahmen: '60m',\n  haltedauerKerzen: 1,\n  richtung: 'long',\n  universum: 'aktien',\n  kosten: { spanneBp: 5 },\n  varianten: [{ k: 1.5 }, { k: 2.0 }, { k: 2.5 }],\n  signal: function (bars, i, params) {\n    var c = T.X(bars);\n    if (!c.ende[i]) return null;                      // nur die letzte Kerze der Sitzung\n    var j = c.tagNr[i];\n    var heute = c.tagRet[j];\n    if (!isFinite(heute)) return null;\n    var sd = T.tagesSd(c, j, 60);                     // Streuung der 60 VORIGEN Tage\n    if (!(sd > 0)) return null;\n    return heute <= -params.k * sd ? { dir: 1 } : null;\n  },\n};\n"
+ },
+ "gemessenAm": "2026-08-23T18:41:56.407Z",
+ "dauerMs": 8643,
+ "universum": {
+  "werte": 191,
+  "handelstage": 732,
+  "von": "2023-09-21",
+  "bis": "2026-08-21",
+  "schnittTag": "2025-03-10",
+  "herkunft": "Archiv-Store, Auswahl zum Messzeitpunkt (Ueberlebende)"
+ },
+ "ergebnisse": [
+  {
+   "variante": 0,
+   "params": {
+    "k": 1.5
+   },
+   "signale": 7101,
+   "long": 7101,
+   "short": 0,
+   "ausstieg": {
+    "art": "Zeit",
+    "mittlereKerzen": 1
+   },
+   "ohneKontrolle": 0,
+   "verworfen": {},
+   "entdeckung": {
+    "roh": {
+     "tage": 286,
+     "signale": 3071,
+     "tagesmittel": -0.00036238983560342284,
+     "t": -0.3818719161445195,
+     "se": 0.0009489826831525269,
+     "mde": 0.0018979653663050537,
+     "jeSignal": -0.0013367586194450933,
+     "anteilPositiv": 0.5141647671768154
+    },
+    "ueberschuss": {
+     "tage": 286,
+     "signale": 3071,
+     "tagesmittel": -0.0008111301096509784,
+     "t": -0.8495497694332097,
+     "se": 0.0009547764461076087,
+     "mde": 0.0019095528922152174,
+     "jeSignal": -0.0018259339002640615,
+     "anteilPositiv": 0.5040703353956366
+    }
+   },
+   "bestaetigung": {
+    "roh": {
+     "tage": 344,
+     "signale": 4030,
+     "tagesmittel": 0.0014055198550000972,
+     "t": 1.9825262250224638,
+     "se": 0.0007089539786461949,
+     "mde": 0.0014179079572923898,
+     "jeSignal": -0.0006977099232172814,
+     "anteilPositiv": 0.5156327543424317
+    },
+    "ueberschuss": {
+     "tage": 344,
+     "signale": 4030,
+     "tagesmittel": 0.0009328187687780802,
+     "t": 1.319732914062064,
+     "se": 0.0007068239026538455,
+     "mde": 0.001413647805307691,
+     "jeSignal": -0.001133725847385501,
+     "anteilPositiv": 0.5138957816377171
+    }
+   },
+   "gesamt": {
+    "roh": {
+     "tage": 630,
+     "signale": 7101,
+     "tagesmittel": 0.000602944979583262,
+     "t": 1.0399785062199591,
+     "se": 0.0005797667701564372,
+     "mde": 0.0011595335403128744,
+     "jeSignal": -0.0009740820603973407,
+     "anteilPositiv": 0.5149978876214618
+    },
+    "ueberschuss": {
+     "tage": 630,
+     "signale": 7101,
+     "tagesmittel": 0.00014112134142774542,
+     "t": 0.24292763725092517,
+     "se": 0.0005809192524355644,
+     "mde": 0.0011618385048711287,
+     "jeSignal": -0.0014330880400893543,
+     "anteilPositiv": 0.5096465286579355
+    }
+   },
+   "kosten": {
+    "spanneBp": 5,
+    "jeUmlaufAnteil": 0.001
+   },
+   "nettoJeSignalBestaetigung": -0.002133725847385501
+  },
+  {
+   "variante": 1,
+   "params": {
+    "k": 2
+   },
+   "signale": 3522,
+   "long": 3522,
+   "short": 0,
+   "ausstieg": {
+    "art": "Zeit",
+    "mittlereKerzen": 1
+   },
+   "ohneKontrolle": 0,
+   "verworfen": {},
+   "entdeckung": {
+    "roh": {
+     "tage": 255,
+     "signale": 1529,
+     "tagesmittel": -0.0015637065383149271,
+     "t": -1.2678897942438943,
+     "se": 0.001233314240254961,
+     "mde": 0.002466628480509922,
+     "jeSignal": -0.002093063126169623,
+     "anteilPositiv": 0.5088293001962066
+    },
+    "ueberschuss": {
+     "tage": 255,
+     "signale": 1529,
+     "tagesmittel": -0.00195451546026192,
+     "t": -1.5767077991039833,
+     "se": 0.0012396180581922907,
+     "mde": 0.0024792361163845813,
+     "jeSignal": -0.002554958450129175,
+     "anteilPositiv": 0.5022890778286462
+    }
+   },
+   "bestaetigung": {
+    "roh": {
+     "tage": 312,
+     "signale": 1993,
+     "tagesmittel": 0.0007855781646528054,
+     "t": 0.8667967427396485,
+     "se": 0.0009063003192303897,
+     "mde": 0.0018126006384607794,
+     "jeSignal": -0.0027692266004565786,
+     "anteilPositiv": 0.4811841445057702
+    },
+    "ueberschuss": {
+     "tage": 312,
+     "signale": 1993,
+     "tagesmittel": 0.0004461539903745011,
+     "t": 0.4949338081872338,
+     "se": 0.0009014417342161455,
+     "mde": 0.001802883468432291,
+     "jeSignal": -0.003154133801657541,
+     "anteilPositiv": 0.48319116909182136
+    }
+   },
+   "gesamt": {
+    "roh": {
+     "tage": 567,
+     "signale": 3522,
+     "tagesmittel": -0.00027097844779299974,
+     "t": -0.36284016733644814,
+     "se": 0.000746825936561019,
+     "mde": 0.001493651873122038,
+     "jeSignal": -0.002475684876383686,
+     "anteilPositiv": 0.49318568994889267
+    },
+    "ueberschuss": {
+     "tage": 567,
+     "signale": 3522,
+     "tagesmittel": -0.0006335121646736249,
+     "t": -0.8478189611063124,
+     "se": 0.0007472257566013383,
+     "mde": 0.0014944515132026767,
+     "jeSignal": -0.0028940148032228865,
+     "anteilPositiv": 0.49148211243611584
+    }
+   },
+   "kosten": {
+    "spanneBp": 5,
+    "jeUmlaufAnteil": 0.001
+   },
+   "nettoJeSignalBestaetigung": -0.0041541338016575415
+  },
+  {
+   "variante": 2,
+   "params": {
+    "k": 2.5
+   },
+   "signale": 1907,
+   "long": 1907,
+   "short": 0,
+   "ausstieg": {
+    "art": "Zeit",
+    "mittlereKerzen": 1
+   },
+   "ohneKontrolle": 0,
+   "verworfen": {},
+   "entdeckung": {
+    "roh": {
+     "tage": 219,
+     "signale": 843,
+     "tagesmittel": -0.0009845556595943976,
+     "t": -0.9495236887886753,
+     "se": 0.0010368942567935437,
+     "mde": 0.0020737885135870874,
+     "jeSignal": -0.003018569804375984,
+     "anteilPositiv": 0.5207591933570581
+    },
+    "ueberschuss": {
+     "tage": 219,
+     "signale": 843,
+     "tagesmittel": -0.001257310978821738,
+     "t": -1.2111148810504884,
+     "se": 0.0010381434482343908,
+     "mde": 0.0020762868964687817,
+     "jeSignal": -0.0033853858836921246,
+     "anteilPositiv": 0.5148279952550415
+    }
+   },
+   "bestaetigung": {
+    "roh": {
+     "tage": 264,
+     "signale": 1064,
+     "tagesmittel": -0.0013497080259542594,
+     "t": -1.1506204507705458,
+     "se": 0.0011730262790396165,
+     "mde": 0.002346052558079233,
+     "jeSignal": -0.0051214793082197665,
+     "anteilPositiv": 0.44642857142857145
+    },
+    "ueberschuss": {
+     "tage": 264,
+     "signale": 1064,
+     "tagesmittel": -0.0015646984172008158,
+     "t": -1.3456148779805468,
+     "se": 0.0011628129584514272,
+     "mde": 0.0023256259169028544,
+     "jeSignal": -0.005389321617533011,
+     "anteilPositiv": 0.450187969924812
+    }
+   },
+   "gesamt": {
+    "roh": {
+     "tage": 483,
+     "signale": 1907,
+     "tagesmittel": -0.0011841420461761857,
+     "t": -1.490782618720649,
+     "se": 0.0007943089967016021,
+     "mde": 0.0015886179934032042,
+     "jeSignal": -0.004191876417952176,
+     "anteilPositiv": 0.4792868379653907
+    },
+    "ueberschuss": {
+     "tage": 483,
+     "signale": 1907,
+     "tagesmittel": -0.0014253239886189973,
+     "t": -1.8038847977383774,
+     "se": 0.0007901413606933208,
+     "mde": 0.0015802827213866415,
+     "jeSignal": -0.0045034706350328205,
+     "anteilPositiv": 0.4787624541164132
+    }
+   },
+   "kosten": {
+    "spanneBp": 5,
+    "jeUmlaufAnteil": 0.001
+   },
+   "nettoJeSignalBestaetigung": -0.006389321617533011
+  }
+ ],
+ "urteile": [
+  "nicht-entscheidbar",
+  "nicht-entscheidbar",
+  "nicht-entscheidbar"
+ ],
+ "bestesUrteil": "nicht-entscheidbar",
+ "tests": 7,
+ "testfamilie": {
+  "name": "eigenbau-2026-08-23",
+  "testsGesamt": 7,
+  "begruendung": "Drei Thesen mit Zwangsgeschichte, vorregistriert in VORREGISTRIERUNG-2026-08-23-eigenbau.md vor der ersten Messung."
+ },
+ "entscheidungen": [
+  {
+   "nr": 1,
+   "regel": "B4 Testzahl",
+   "eingabe": {
+    "varianten": 3
+   },
+   "ergebnis": 3,
+   "begruendung": "Jede Parametervariante ist ein eigener Test. Die Schwelle wird auf diese Zahl gerechnet."
+  },
+  {
+   "nr": 2,
+   "regel": "B8 Testfamilie",
+   "eingabe": {
+    "name": "eigenbau-2026-08-23",
+    "varianten": 3,
+    "testsGesamt": 7
+   },
+   "ergebnis": {
+    "testsFuerSchwelle": 7
+   },
+   "begruendung": "Diese Datei ist Teil der Vorregistrierung \"eigenbau-2026-08-23\". Die Bonferroni-Schwelle rechnet mit allen 7 Tests der Familie, nicht nur mit den 3 Varianten dieser Datei. Drei Thesen mit Zwangsgeschichte, vorregistriert in VORREGISTRIERUNG-2026-08-23-eigenbau.md vor der ersten Messung."
+  },
+  {
+   "nr": 3,
+   "regel": "E1 Universum",
+   "eingabe": {
+    "archiv": "C:\\Users\\Wilhe\\AppData\\Roaming\\Markt-Dashboard\\store",
+    "zeitrahmen": "60m",
+    "filter": "aktien"
+   },
+   "ergebnis": {
+    "werte": 191
+   },
+   "begruendung": "Das Universum ist \"alles, was heute im Archiv liegt\". Das sind Ueberlebende: Werte, die aus der Beobachtung geflogen sind, fehlen. Die Renditen laufen ueber Zeitraeume, in denen das noch nicht bekannt war. Jede positive Rohrendite ist dadurch nach oben verzerrt; die Groesse der Verzerrung ist hier NICHT gemessen."
+  },
+  {
+   "nr": 4,
+   "regel": "B5 Schnitt",
+   "eingabe": {
+    "handelstage": 732,
+    "anteil": 0.5
+   },
+   "ergebnis": {
+    "schnittTag": "2025-03-10",
+    "entdeckung": 366,
+    "bestaetigung": 366
+   },
+   "begruendung": "Entdeckung auf der ersten Haelfte der Handelstage, Bestaetigung auf der zweiten. Das Urteil faellt NUR auf der Bestaetigung."
+  },
+  {
+   "nr": 5,
+   "regel": "A2 Kontrolle",
+   "eingabe": {
+    "art": "erwartung-symbol-stunde",
+    "haltedauerKerzen": 1
+   },
+   "ergebnis": "Erwartung ueber ALLE Kerzen desselben Symbols zur selben UTC-Stunde, getrennt je Haelfte",
+   "begruendung": "Keine Zufallsziehung (A2), keine Listenpaarung (A3), kein Zeitbezug zum Signal (A4), je Haelfte getrennt (A5). Der Ueberschuss gegen diese Erwartung ist die Aussage; die Rohrendite allein ist keine."
+  },
+  {
+   "nr": 6,
+   "regel": "B4 Bonferroni",
+   "eingabe": {
+    "tests": 7,
+    "alpha": 0.05
+   },
+   "ergebnis": {
+    "schwelleT": 2.6901095298324305
+   },
+   "begruendung": "Zweiseitige Schwelle fuer |t| bei 7 Test(s)."
+  },
+  {
+   "nr": 7,
+   "regel": "Urteil Variante 0",
+   "eingabe": {
+    "ueberschussTagesmittelPp": 0.09328187687780802,
+    "mdePp": 0.14136478053076912,
+    "t": 1.319732914062064,
+    "schwelle": 2.6901095298324305,
+    "tage": 344,
+    "signale": 4030,
+    "jeSignalPp": -0.11337258473855011
+   },
+   "ergebnis": {
+    "urteil": "nicht-entscheidbar",
+    "aussicht": null
+   },
+   "begruendung": "Ueberschuss 0.0933 Pp liegt unter der MDE 0.1414 Pp. Das heisst NICHT \"kein Effekt\" - es heisst, dass diese Datenmenge die Frage nicht beantworten kann."
+  },
+  {
+   "nr": 8,
+   "regel": "Urteil Variante 1",
+   "eingabe": {
+    "ueberschussTagesmittelPp": 0.04461539903745011,
+    "mdePp": 0.18028834684322909,
+    "t": 0.4949338081872338,
+    "schwelle": 2.6901095298324305,
+    "tage": 312,
+    "signale": 1993,
+    "jeSignalPp": -0.3154133801657541
+   },
+   "ergebnis": {
+    "urteil": "nicht-entscheidbar",
+    "aussicht": null
+   },
+   "begruendung": "Ueberschuss 0.0446 Pp liegt unter der MDE 0.1803 Pp. Das heisst NICHT \"kein Effekt\" - es heisst, dass diese Datenmenge die Frage nicht beantworten kann."
+  },
+  {
+   "nr": 9,
+   "regel": "Urteil Variante 2",
+   "eingabe": {
+    "ueberschussTagesmittelPp": -0.15646984172008158,
+    "mdePp": 0.23256259169028545,
+    "t": -1.3456148779805468,
+    "schwelle": 2.6901095298324305,
+    "tage": 264,
+    "signale": 1064,
+    "jeSignalPp": -0.538932161753301
+   },
+   "ergebnis": {
+    "urteil": "nicht-entscheidbar",
+    "aussicht": null
+   },
+   "begruendung": "Ueberschuss -0.1565 Pp liegt unter der MDE 0.2326 Pp. Das heisst NICHT \"kein Effekt\" - es heisst, dass diese Datenmenge die Frage nicht beantworten kann."
+  }
+ ],
+ "warnungen": [
+  {
+   "kennung": "B2",
+   "text": "Variante 0: Tagesmittel (0.0933 Pp) und Erwartung je Signal (-0.1134 Pp) haben verschiedene Vorzeichen. Duenne Tage tragen den Schaetzer. Handelbar ist die Zahl je Signal."
+  },
+  {
+   "kennung": "B2",
+   "text": "Variante 1: Tagesmittel (0.0446 Pp) und Erwartung je Signal (-0.3154 Pp) haben verschiedene Vorzeichen. Duenne Tage tragen den Schaetzer. Handelbar ist die Zahl je Signal."
+  }
+ ]
+}

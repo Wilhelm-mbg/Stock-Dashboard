@@ -1,0 +1,49 @@
+{
+ "verfahren": "nullpunkt-permutation/1.0.0",
+ "strategie": "t2-umsatzschock",
+ "gemessenAm": "2026-08-23T19:01:35.646Z",
+ "laeufe": 30,
+ "schwelleT": 2.6901095298324305,
+ "tests": 7,
+ "hinweis": "Die Renditen sind echt, nur ihre Reihenfolge ist innerhalb jeder UTC-Stunde vertauscht. In dieser Reihe kann die Vergangenheit die Zukunft nicht vorhersagen.",
+ "varianten": [
+  {
+   "variante": 0,
+   "params": {
+    "k": 3
+   },
+   "signale": 4582,
+   "echtTagesmittelPp": 0.09219246927868673,
+   "nullMittelPp": -0.004639198374416268,
+   "nullStreuungPp": 0.1063405670403623,
+   "analytischeSePp": 0.11292255706494593,
+   "benutzterFehlerPp": 0.11292255706494593,
+   "fehlerHerkunft": "analytisch",
+   "korrigiertPp": 0.09683166765310298,
+   "tGegenNull": 0.8575050917188451,
+   "rangUnterNullversuchen": 11,
+   "laeufe": 30,
+   "urteil": "nicht-entscheidbar",
+   "urteilOhneNullpunkt": "nicht-entscheidbar"
+  },
+  {
+   "variante": 1,
+   "params": {
+    "k": 5
+   },
+   "signale": 1348,
+   "echtTagesmittelPp": 0.1201648595474175,
+   "nullMittelPp": 0.0034826706614342552,
+   "nullStreuungPp": 0.16634183720656476,
+   "analytischeSePp": 0.17863833346585406,
+   "benutzterFehlerPp": 0.17863833346585406,
+   "fehlerHerkunft": "analytisch",
+   "korrigiertPp": 0.11668218888598325,
+   "tGegenNull": 0.653175534176636,
+   "rangUnterNullversuchen": 17,
+   "laeufe": 30,
+   "urteil": "nicht-entscheidbar",
+   "urteilOhneNullpunkt": "nicht-entscheidbar"
+  }
+ ]
+}

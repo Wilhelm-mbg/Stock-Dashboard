@@ -3474,7 +3474,35 @@ console.log('\n44) Messmaschine, Scoreboard und Strategie-Eingabe (23.08.2026)')
   ok(r.status === 0 && /ALLE TESTS BESTANDEN/.test(r.stdout), 'test-messmaschine.js besteht (jeder Fehlertyp aus FEHLERTYPEN.md als Falle)');
   var ft = fs.readFileSync(__dirname + '/studien/messmaschine/FEHLERTYPEN.md', 'utf8');
   var kennungen = (ft.match(/\|\s*([A-E]\d)\s*\|/g) || []).length;
-  ok(kennungen >= 25, 'FEHLERTYPEN.md fuehrt mindestens 25 Fehlertypen', kennungen);
+  ok(kennungen >= 28, 'FEHLERTYPEN.md fuehrt mindestens 28 Fehlertypen', kennungen);
+
+  /* A6 (23.08.2026): Der Nullpunkt der Maschine liegt nicht bei null. Auf Daten mit
+   * vertauschter Reihenfolge kam eine These als "bestaetigt" durch (t=+2,97), eine
+   * andere als "widerlegt" (t=-8,07). Ohne dieses Werkzeug ist kein Urteil belastbar. */
+  var np = fs.readFileSync(__dirname + '/studien/messmaschine/nullversuch-permutation.js', 'utf8');
+  var mn = fs.readFileSync(__dirname + '/studien/messmaschine/messen-mit-null.js', 'utf8');
+  ok(/\|\s*A6\s*\|/.test(ft), 'A6 steht in FEHLERTYPEN.md');
+  ok(np.indexOf('koerbe[h]') !== -1 && np.indexOf('getUTCHours') !== -1,
+     'Der Nullversuch vertauscht INNERHALB jeder UTC-Stunde - sonst aendert sich die Kontrolle');
+  ok(np.indexOf('Math.random') === -1,
+     'Fester Startwert statt Math.random - derselbe Aufruf ergibt dieselbe Vertauschung');
+  ok(mn.indexOf('Math.max(st.sd, seAnalytisch') !== -1,
+     'Das Urteil nimmt den groesseren aus Nullversuch-Streuung und analytischem Fehler');
+
+  /* Ein Protokoll aus einem fremden Archiv darf die App nie erreichen - sonst steht
+   * im Scoreboard ein Urteil aus gewuerfelten Daten, das aussieht wie ein Befund. */
+  var ms = fs.readFileSync(__dirname + '/studien/messmaschine/messen.js', 'utf8');
+  ok(ms.indexOf('fremdesArchiv') !== -1 && /fremdesArchiv \?[^\n]*fremdarchiv/.test(ms),
+     'Messungen an einem fremden Archiv bekommen -fremdarchiv in den Dateinamen');
+  ok(/if \(fremdesArchiv\) \{[\s\S]{0,200}Keine Kopie in den Datenordner/.test(ms),
+     'Und sie werden NICHT in den Datenordner kopiert - das Scoreboard sieht sie nie');
+
+  /* Die Vorregistrierung ist der Beleg, dass die Thesen vor der Messung feststanden. */
+  ok(fs.existsSync(__dirname + '/studien/messmaschine/VORREGISTRIERUNG-2026-08-23-eigenbau.md'),
+     'Die Vorregistrierung vom 23.08.2026 liegt im Repo');
+  var mm2 = fs.readFileSync(__dirname + '/studien/messmaschine/messmaschine.js', 'utf8');
+  ok(mm2.indexOf('B8 Testfamilie') !== -1,
+     'B8: Bonferroni zaehlt die ganze Testfamilie, nicht nur die Varianten einer Datei');
 
   ok(/data-tab="messung"/.test(h) && /id="scoreboard"/.test(h) && /id="stAblegen"/.test(h),
      'Reiter Messung mit Scoreboard und Eingabe ist in der Oberflaeche');

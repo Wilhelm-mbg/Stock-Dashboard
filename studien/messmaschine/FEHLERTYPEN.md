@@ -17,6 +17,34 @@ Die Maschine ist nicht klug. Sie ist nur an diesen Stellen schon einmal gestolpe
 | A3 | Kontrolle nicht gepaart: Listen verschieden sortiert, Paarung über Index | nur 0,6 % gleiches Symbol | Kontrolle wird **je Signal** aus dessen Symbol und Stunde nachgeschlagen, nie über Listenindex |
 | A4 | Kontrolle liegt zeitlich **vor** dem Ereignis | Ersatzeinstieg zur Hälfte vor der Meldung, maß den Anlauf | Kontrolle nutzt nur die Tageszeit, nie einen Zeitpunkt relativ zum Signal |
 | A5 | Kontrolle aus anderer Zeithälfte als das Signal | 50,5 % der Kontrollkerzen aus der jeweils anderen Hälfte | Kontrollerwartung wird **je Hälfte** getrennt gebildet |
+| A6 | **Signal und Kontrolle schöpfen aus demselben endlichen Topf** | 23.08.: auf vertauschten Daten kam T1 als „bestätigt" (t = +2,97) und T3 als „widerlegt" (t = −8,07) durch — beides ohne jede Vorhersagbarkeit in den Daten | Der Nullpunkt wird **je Strategie gemessen**: `messen-mit-null.js` misst dieselbe Strategie an 30 Archiven mit vertauschter Reihenfolge und zieht die dort gefundene Verzerrung ab |
+
+**Warum A6 schwerer wiegt als alles davor.** Die Kontrolle ist der Mittelwert des
+Symbols zu dieser Stunde über die ganze Hälfte — ein **endlicher** Topf von rund 366
+Werten. Jedes Signal, das seine Auswahl aus demselben Topf speist, verschiebt den
+Rest, und zwar ohne dass im Markt irgendetwas passiert:
+
+- **T3** wählt Kerzen, deren vorige 60 Vorkommen hoch lagen. Liegt die Summe des
+  Topfes fest, müssen die übrigen tiefer liegen — und aus denen wird gezogen. **Sog
+  nach unten.**
+- **T1** wählt Tage nach starkem Verlust. Der Tagesverlust enthält denselben
+  Stundenschritt, aus dessen Topf später das Ergebnis gezogen wird. Liegt ein Zug
+  extrem tief, liegen die übrigen leicht höher. **Sog nach oben.**
+
+Dieselbe Ursache, entgegengesetztes Vorzeichen — je nach Bauart des Signals. Man
+kann sie deshalb nicht einmal ausrechnen und pauschal abziehen. Sie muss je
+Strategie gemessen werden.
+
+**Der Nullversuch erfindet keine Kurse.** Wilhelm hatte früher zu Recht eingewandt,
+dass ausgedachte Kurse nie aussehen wie echte. Es sind seine Renditen, jede einzelne,
+mit ihren echten Ausreißern und ihrer echten Streuung. Vertauscht wird nur die
+**Reihenfolge**, getrennt innerhalb jeder UTC-Stunde — der Stundenmittelwert und
+damit die Kontrolle bleiben gleich bis auf die fünfte Nachkommastelle.
+
+**Und die Grenze des Werkzeugs:** Das Vertauschen zerstört die
+Volatilitäts-Cluster. Für ein Signal, das gerade geclusterte Tage auswählt, hat der
+Nullversuch damit zu **wenig** Streuung. Er taugt zur Messung der Verzerrung, nicht
+als Standardfehler. Deshalb gilt der **größere** aus beiden.
 
 ## B — Statistik
 

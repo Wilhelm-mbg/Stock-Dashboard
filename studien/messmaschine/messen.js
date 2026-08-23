@@ -13,21 +13,33 @@ var archiv = process.argv[3] || path.join(process.env.APPDATA || path.join(os.ho
 if (!process.env.STOCK_DASHBOARD_QUELLE) process.env.STOCK_DASHBOARD_QUELLE = path.resolve(__dirname, '..', '..');
 var S = require(path.resolve(datei));
 
+/* Ein anderes als das echte Archiv macht das Ergebnis zu etwas anderem - meist zu
+ * einem Nullversuch. Das muss am Dateinamen sichtbar sein und darf die App nie
+ * erreichen. */
+var echtesArchiv = path.join(process.env.APPDATA || path.join(os.homedir(), 'AppData', 'Roaming'), 'Markt-Dashboard', 'store');
+var fremdesArchiv = path.resolve(archiv) !== path.resolve(echtesArchiv);
 console.log('Messe ' + S.key + ' auf ' + archiv);
+if (fremdesArchiv) console.log('ACHTUNG: fremdes Archiv - das Ergebnis ist KEIN Befund ueber den Markt.');
 var r = M.messe(S, archiv);
 if (r.verweigert) { console.log('VERWEIGERT: ' + r.grund); process.exit(3); }
 
 var ordner = path.join(__dirname, 'protokolle');
 if (!fs.existsSync(ordner)) fs.mkdirSync(ordner);
-var ziel = path.join(ordner, S.key + '-' + r.gemessenAm.slice(0, 10) + '.json');
+var ziel = path.join(ordner, S.key + '-' + r.gemessenAm.slice(0, 10) +
+  (fremdesArchiv ? '-fremdarchiv' : '') + '.json');
+r.archiv = { pfad: archiv, echtesArchiv: !fremdesArchiv };
 // Die Signalfunktion laesst sich nicht serialisieren; ihr Quelltext schon - so bleibt nachvollziehbar, WAS gemessen wurde
 r.strategie.quelle = fs.readFileSync(path.resolve(datei), 'utf8');
 fs.writeFileSync(ziel, JSON.stringify(r, null, 1));
 /* Zweite Kopie in den Datenordner der App: von dort liest das Scoreboard. Das Repo
  * behaelt seine Kopie als Studienarchiv. Beide sind byteweise gleich. */
 var appOrdner = path.join(os.homedir(), 'Downloads', 'Markt-Dashboard-Daten', 'protokolle');
-try { fs.mkdirSync(appOrdner, { recursive: true }); fs.writeFileSync(path.join(appOrdner, path.basename(ziel)), JSON.stringify(r, null, 1)); }
-catch (e) { console.log('Hinweis: Kopie in den Datenordner nicht moeglich (' + e.message + ')'); }
+if (fremdesArchiv) {
+  console.log('Keine Kopie in den Datenordner - das Scoreboard zeigt nur Messungen am echten Archiv.');
+} else {
+  try { fs.mkdirSync(appOrdner, { recursive: true }); fs.writeFileSync(path.join(appOrdner, path.basename(ziel)), JSON.stringify(r, null, 1)); }
+  catch (e) { console.log('Hinweis: Kopie in den Datenordner nicht moeglich (' + e.message + ')'); }
+}
 
 function pp(x, d) { return x == null ? '–' : ((x >= 0 ? '+' : '') + (x * 100).toFixed(d == null ? 4 : d) + ' Pp'); }
 console.log('\n' + S.key + '  (' + r.universum.werte + ' Werte, ' + r.universum.handelstage + ' Handelstage, Schnitt ' + r.universum.schnittTag + ')');

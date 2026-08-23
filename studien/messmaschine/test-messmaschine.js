@@ -214,6 +214,58 @@ ok(rE.urteile[0] === 'bestaetigt', 'Eine echte Kante wird bestaetigt', rE.urteil
 // im Mittel 0,4 % je 8-Kerzen-Fenster). Erwarteter Ueberschuss: 0,8 - 0,4 = 0,4 %.
 ok(Math.abs(rE.ergebnisse[0].bestaetigung.ueberschuss.tagesmittel - 0.004) < 0.001, 'Der Ueberschuss trifft den eingebauten Effekt MINUS den Kontrollanteil (0,8 - 0,4 = 0,4 %)', (rE.ergebnisse[0].bestaetigung.ueberschuss.tagesmittel * 100).toFixed(3) + ' Pp');
 
+/* ========== A6: der Nullpunkt der Maschine ========== */
+console.log('\n13) A6: Signal und Kontrolle aus demselben endlichen Topf');
+(function () {
+  var NP = require('./nullversuch-permutation.js');
+  var ZIEL = TMP + '-null';
+  var r = NP.baue(TMP, ZIEL, 4711);
+  ok(r.gebaut > 0, 'Nullversuch-Archiv wird gebaut', r.gebaut + ' Reihen');
+
+  /* Der Stundenmittelwert MUSS erhalten bleiben - sonst waere die Kontrolle eine
+   * andere und der Vergleich wertlos. */
+  function stundenMittel(pfad, datei) {
+    var s = JSON.parse(fs.readFileSync(path.join(pfad, datei), 'utf8')).series;
+    var m = {};
+    for (var k = 0; k < s.length - 1; k++) {
+      var h = new Date(s[k][0]).getUTCHours();
+      (m[h] = m[h] || []).push(s[k + 1][1] / s[k][1] - 1);
+    }
+    var o = {};
+    Object.keys(m).forEach(function (h) { o[h] = m[h].reduce(function (a, b) { return a + b; }, 0) / m[h].length; });
+    return o;
+  }
+  var A = stundenMittel(TMP, 'bars_60m_W0.json'), B = stundenMittel(ZIEL, 'bars_60m_W0.json');
+  var groesste = 0;
+  Object.keys(A).forEach(function (h) { groesste = Math.max(groesste, Math.abs(A[h] - B[h])); });
+  ok(groesste < 1e-12, 'Vertauschen laesst jeden Stundenmittelwert unveraendert - die Kontrolle bleibt dieselbe',
+     'groesste Abweichung ' + groesste.toExponential(2));
+
+  /* Und die Gegenprobe zur Gegenprobe: Die eingebaute Kante MUSS verschwinden.
+   * Bliebe sie, wuerde der Nullversuch nichts pruefen. */
+  var S = { key: 'gegenprobe-null',
+    grund: 'Dieselbe Auswahl wie in Block 11, nur auf vertauschten Daten. Die eingebaute Kante muss verschwinden.',
+    zeitrahmen: '60m', haltedauerKerzen: 8, richtung: 'long', universum: 'aktien', kosten: { spanneBp: 0 },
+    signal: function (bars, i) { return i % 20 === 0 ? { dir: 1 } : null; } };
+  var echt = M.messe(S, TMP);
+  var leer = M.messe(S, ZIEL);
+  var tEcht = echt.ergebnisse[0].bestaetigung.ueberschuss.t;
+  var tLeer = leer.ergebnisse[0].bestaetigung.ueberschuss.t;
+  ok(Math.abs(tEcht) > 5, 'Auf den echten Daten findet die Maschine die eingebaute Kante', 't=' + tEcht.toFixed(2));
+  ok(Math.abs(tLeer) < Math.abs(tEcht) / 3,
+     'Nach dem Vertauschen ist die Kante weg - der Nullversuch prueft also wirklich etwas',
+     't=' + tLeer.toFixed(2) + ' statt ' + tEcht.toFixed(2));
+
+  /* Das Werkzeug muss den vorsichtigeren Fehler nehmen. Vertauschen zerstoert
+   * Volatilitaets-Cluster; seine Streuung allein waere zu klein. */
+  var mn = fs.readFileSync(__dirname + '/messen-mit-null.js', 'utf8');
+  ok(mn.indexOf('Math.max(st.sd, seAnalytisch') !== -1,
+     'messen-mit-null.js nimmt den GROESSEREN aus Nullversuch-Streuung und analytischem Fehler');
+  ok(mn.indexOf('Bonferroni-Schwelle nicht im Protokoll gefunden') !== -1,
+     'Fehlt die Bonferroni-Schwelle, bricht das Werkzeug ab statt einen Ersatzwert zu nehmen');
+  try { fs.rmSync(ZIEL, { recursive: true, force: true }); } catch (e) { }
+})();
+
 fs.rmSync(TMP, { recursive: true, force: true });
 console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
 process.exit(fails ? 1 : 0);
