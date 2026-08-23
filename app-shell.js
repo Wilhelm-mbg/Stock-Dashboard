@@ -62,6 +62,200 @@
   });
   window.openModal = function (id) { document.getElementById(id).classList.add('open'); };
 
+  /* ---- Erklaerungen: ein Register, ein Fenster, ein Knopf ----
+   *
+   * Warum es das gibt: Die Oberflaeche trug 19.449 Zeichen dauerhaft sichtbaren Text
+   * ueber fuenf Reiter, davon 91 % Fliesstext - der Reiter "Regeln" allein 12.630 auf
+   * 3.739 px, ohne einen einzigen zugeklappten Block. Der Reiter "Vermoegen" macht es
+   * mit <details> laengst richtig und ist deshalb 584 px hoch statt 3.700.
+   *
+   * Drei Stufen, und jede hat eine Grenze:
+   *   1. Zeile      - ein Satz, bleibt sichtbar. Was tut das?
+   *   2. i-Knopf    - dieses Fenster. Warum, und wie gut belegt? Vier bis sechs Punkte.
+   *   3. Beleg      - Reiter "Messung". Vollstaendig, unbegrenzt, aber selten gebraucht.
+   *
+   * Der Text steht NICHT im Markup, sondern im Register: so laesst er sich an einer
+   * Stelle pflegen, und ein per innerHTML neu gezeichneter Bereich verliert ihn nicht.
+   * Der Zuhoerer haengt am Dokument, nicht am Knopf - aus demselben Grund.
+   *
+   * Nicht alles gehoert hierher. Faustregel: Wer es nicht liest, entscheidet falsch
+   * -> bleibt sichtbar (Simulationshinweis, Belegstatus, Warnungen an Schaltern).
+   * Wer es nicht liest, versteht nur weniger -> hierher.
+   */
+  var Info = (function () {
+    var REGISTER = {};
+    var offen = null;
+    function kasten() { return document.getElementById('infoPop'); }
+
+    function schliessen(zurueck) {
+      var k = kasten();
+      if (!offen || !k) return;
+      offen.setAttribute('aria-expanded', 'false');
+      k.style.display = 'none';
+      var war = offen;
+      offen = null;
+      if (zurueck && war) { try { war.focus(); } catch (e) { /* Knopf schon weg */ } }
+    }
+
+    function zeigen(knopf) {
+      var e = REGISTER[knopf.getAttribute('data-info')], k = kasten();
+      if (!e || !k) return;
+      k.innerHTML =
+        '<button type="button" class="ip-zu" aria-label="Erklärung schließen">×</button>' +
+        '<h4>' + U.esc(e.titel) + '</h4>' +
+        '<ul>' + (e.punkte || []).map(function (p) { return '<li>' + U.esc(p) + '</li>'; }).join('') + '</ul>' +
+        (e.fuss ? '<div class="ip-fuss">' + U.esc(e.fuss) + '</div>' : '');
+      k.style.display = 'block';
+      // Erst einblenden, dann messen: vorher ist die Breite 0.
+      var r = knopf.getBoundingClientRect(), kb = k.getBoundingClientRect();
+      /* Am Knopf LINKS anlegen - das ist die Leserichtung. Nur wenn das Fenster dann
+       * rechts hinausliefe, an seiner rechten Kante ausrichten; passt auch das nicht,
+       * bleibt es am Rand kleben. Nach unten dieselbe Regel, sonst nach oben klappen. */
+      var links = r.left;
+      if (links + kb.width > window.innerWidth - 8) links = r.right - kb.width;
+      links = Math.max(8, Math.min(links, window.innerWidth - kb.width - 8));
+      var oben = r.bottom + 8;
+      if (oben + kb.height > window.innerHeight - 8) oben = Math.max(8, r.top - kb.height - 8);
+      k.style.left = Math.max(8, links) + 'px';
+      k.style.top = oben + 'px';
+      knopf.setAttribute('aria-expanded', 'true');
+      offen = knopf;
+    }
+
+    document.addEventListener('click', function (ev) {
+      var k = ev.target.closest ? ev.target.closest('button.info') : null;
+      if (k) {
+        ev.preventDefault();
+        var warOffen = (offen === k);
+        schliessen(false);
+        if (!warOffen) zeigen(k);
+        return;
+      }
+      if (ev.target.closest && ev.target.closest('.ip-zu')) { schliessen(true); return; }
+      if (offen && !(ev.target.closest && ev.target.closest('#infoPop'))) schliessen(false);
+    });
+    document.addEventListener('keydown', function (ev) { if (ev.key === 'Escape') schliessen(true); });
+    // Reiterwechsel und Scrollen: das Fenster wuerde sonst neben nichts stehen bleiben.
+    document.addEventListener('tab-changed', function () { schliessen(false); });
+    window.addEventListener('resize', function () { schliessen(false); });
+    window.addEventListener('scroll', function () { schliessen(false); }, true);
+
+    return {
+      /** Erklaerungen anmelden: { schluessel: { titel, punkte: [], fuss } } */
+      eintragen: function (obj) { Object.assign(REGISTER, obj); },
+      /** Fertiges Knopf-Markup. 'was' wird nur fuer die Vorlesehilfe gebraucht. */
+      knopf: function (schluessel, was) {
+        return '<button class="info" type="button" data-info="' + U.esc(schluessel) +
+               '" aria-expanded="false" aria-label="Erklärung: ' + U.esc(was || schluessel) + '">i</button>';
+      },
+      /** Nur fuer Tests und die Selbstpruefung: welche Schluessel sind angemeldet? */
+      schluessel: function () { return Object.keys(REGISTER); }
+    };
+  })();
+  window.Info = Info;
+
+  /* Die Erklaerungen der festen Abschnitte aus index.html. Sie standen dort bis 8.24.2
+   * als Dauer-Absaetze; der Wortlaut ist unveraendert uebernommen, nur der Ort hat
+   * sich geaendert. Module, die ihre Karten selbst zeichnen (strategien.js), melden
+   * ihre Texte im eigenen render() an. */
+  Info.eintragen({
+    'regeln.uebersicht': {
+      titel: 'Drei Zeithorizonte, drei getrennte Strategien',
+      punkte: [
+        'Sie handeln unterschiedlich, brauchen unterschiedliche Instrumente und sind unterschiedlich gut gemessen.',
+        'Jede lässt sich einzeln ein- und ausschalten.',
+        'Was auf jeder Karte hinter dem i steht, ist der ehrliche Belegstand – einschließlich der Punkte, die dagegen sprechen.'
+      ],
+      fuss: 'Den Belegstatus jeder Regel mit vollständigem Entscheidungsweg zeigt der Reiter „Messung“.'
+    },
+    'regeln.chart': {
+      titel: 'Strategie-Chart',
+      punkte: [
+        'Rechnet die gemessene Regel auf den Kerzen eines Werts nach – mit exakt derselben Funktion, die auch Studie, Backtest und Live-Scan benutzen (einstiegSignal).',
+        'Jede Markierung ist ein Einstieg, den die Regel dort gegeben hätte.',
+        'Jedes Signal in der Liste unter dem Chart lässt sich anklicken und zeigt dann, welche Bedingung genau in jener Kerze erfüllt war und welche nicht.',
+        'Momentum und Ergebnis-Drift sind Rangfolgen über alle Werte, keine Chartsignale – dafür gibt es hier nichts zu zeichnen.'
+      ],
+      fuss: 'Simulation, keine Anlageberatung. Der Chart zeigt, was die Regel gesehen hätte – nicht, was sie verdient hätte.'
+    },
+    'regeln.legende': {
+      titel: 'Die Zeichen im Chart',
+      punkte: [
+        'Entscheidungskanal: die 200 Kerzen, die der Regel die Erlaubnis geben (Regression, 92-%-Kanten) – verankert an der Kerze, die gerade geprüft wird.',
+        'Derselbe Kanal heute wird nur gezeigt, wenn ein historisches Signal ausgewählt ist.',
+        'Überdehnungsband um die Leitlinie: nur im Kapitulations-Modus – dort ist die Unterkante der Auslöser.',
+        'Die Güte eines Kanals ist beschreibend – die Regel fragt nur die Richtung ab, es gibt keine Güte-Schwelle, und kanalUeber liefert immer einen Kanal, nie „keiner“.',
+        'Die Leitlinie EMA20 gehört zum Kapitulations-Modus; beim RSI(2)-Modus ist sie nur Orientierung und entscheidet dort nichts.'
+      ]
+    },
+    'regeln.handelt': {
+      titel: 'Die Regel, die handelt',
+      punkte: [
+        'Eine Regel ist hier ein Ding mit Namen, Parametern, Chart, Bedingungen und Bilanz.',
+        'Im Chart siehst du, was sie sieht; in der Bilanz, was dabei herauskam.',
+        'Die drei Ergebnis-Ansichten, die früher im Kurzfrist-Depot verstreut lagen, gehören zu dieser Regel und stehen deshalb hier.'
+      ]
+    },
+    'messung.scoreboard': {
+      titel: 'Wie das Scoreboard entsteht',
+      punkte: [
+        'Jede Zeile lässt sich aufklappen und zeigt dann den vollständigen Entscheidungsweg – jede Regel, jede Eingabe, jede Begründung.',
+        'Die Messmaschine kann nur auf eine Art rechnen: gepaarte Kontrolle, Tagesclusterung, Entdeckung und Bestätigung getrennt, Mindest-Effektgröße vor dem Urteil, Testzähler. Es gibt keine Schalter dafür.',
+        'Bestätigt = auf zurückgehaltenen Tagen über Mindest-Effektgröße und über der Bonferroni-Schwelle.',
+        'Nicht entscheidbar = unter der Mindest-Effektgröße; das heißt nicht „kein Effekt“, sondern „diese Datenmenge kann die Frage nicht beantworten“.',
+        'Widerlegt = auf zurückgehaltenen Tagen signifikant negativ.'
+      ],
+      fuss: 'Alle Zahlen in Prozentpunkten des Basiswerts, Überschuss gegen die Erwartung aller Kerzen desselben Werts zur selben Stunde.'
+    },
+    'messung.eingabe': {
+      titel: 'Drei Dinge braucht eine Strategie',
+      punkte: [
+        'Ein Grund: warum sollte der Effekt existieren – nicht „der RSI war unter 10“, sondern „Indexfonds müssen am Quartalsende kaufen“.',
+        'Eine Signalfunktion, die nur Kerzen bis zum Index i sieht.',
+        'Eine Vorregistrierung: Haltedauer in Kerzen, Richtung, und welche Parametervarianten geprüft werden.',
+        'Jede Variante zählt als eigener Test und hebt die Schwelle – die Maschine verhindert das nicht, sie weist es aus.'
+      ]
+    },
+    /* Die drei Beobachtungskarten auf "Heute". Der Satz "Ungemessen, reine Beobachtung
+     * ... Keine Anlageberatung" stand dreimal fast woertlich in der Ueberschrift; er
+     * steht jetzt einmal je Karte hier. Sichtbar BLEIBT "Gehandelt wird hiervon nichts" -
+     * das ist eine Zusicherung, keine Erklaerung, und gehoert nicht hinter einen Klick. */
+    'heute.radar': {
+      titel: 'Spekulations-Radar',
+      punkte: [
+        'Gerüchte und Spekulationen aus öffentlichen Quellen, dreimal täglich vor US-Eröffnung gesammelt.',
+        'Ungemessen, reine Beobachtung: Gerüchte sind oft falsch.'
+      ],
+      fuss: 'Gehandelt wird hiervon nichts. Keine Anlageberatung.'
+    },
+    'heute.insider': {
+      titel: 'Insider-Käufe',
+      punkte: [
+        'Meldepflichtige Eigengeschäfte von Vorstand und Aufsichtsrat US-notierter Firmen (SEC Form 4), nur offene Marktkäufe.',
+        'Ungemessen, reine Beobachtung: der Effekt ist in der Literatur ein langsamer Halte-Effekt über Monate, keine Intraday-Kante.'
+      ],
+      fuss: 'Gehandelt wird hiervon nichts. Keine Anlageberatung.'
+    },
+    'heute.vorboerse': {
+      titel: 'Vorbörsen-Lücken',
+      punkte: [
+        'Werte, die vor der US-Eröffnung deutlich anders stehen als beim gestrigen Schluss: Lücke über 5 %, Kurs über 3 $, vorbörslich durchgehend gehandelt.',
+        'Ungemessen, reine Beobachtung: „Gap and Go“ gehört zur Ausbruchsfamilie, und die ist hier in 3.372 Tests widerlegt worden.'
+      ],
+      fuss: 'Gehandelt wird hiervon nichts. Keine Anlageberatung.'
+    },
+    'regeln.messen': {
+      titel: 'Regeln, die nur messen',
+      punkte: [
+        'Sie wird bei jedem Scan auf denselben Kerzen geprüft wie die gehandelte Regel und führt eine eigene Bilanz.',
+        'Der Sinn ist nicht, sie später zu handeln, sondern dass die Regel VOR der Messung feststeht und man hinterher nicht mehr an ihr drehen kann.',
+        'Genau daran sind in diesem Projekt schon mehrere gute Ideen gescheitert – nicht am Markt, sondern daran, dass die Regel erst nach dem Ergebnis endgültig war.',
+        'Bewusst ohne Handelsknopf: Eine Regel, in die man mittendrin eingreifen kann, misst nichts – und die Versuchung dazu ist am größten, wenn es gerade gut läuft.'
+      ],
+      fuss: 'Der Wechsel auf „handelt“ ist eine Entscheidung in den Einstellungen, kein Knopf hier.'
+    }
+  });
+
   // ---- Einstellungen ----
   var SETTINGS = { tray: false, capKey: '', capId: '', capPass: '', capEnabled: false, ollamaUrl: '', ollamaModel: '', kiVeto: false, kiProvider: '', kiRules: '', updateRepo: '' };
   window.getSettings = function () { return SETTINGS; };

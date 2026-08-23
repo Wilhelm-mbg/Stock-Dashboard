@@ -112,6 +112,45 @@
   #hoverInfo .hv-news a { display: block; color: var(--ink-2); margin-bottom: 2px; line-height: 1.35; }
   #hoverInfo .hv-news a:hover { color: var(--ink); }
   #hoverInfo .hv-news .src { display: block; color: var(--muted); font-size: 11px; margin-bottom: 6px; }
+
+  /* ---- Erklaerknopf und Erklaerfenster ----
+     Die Oberflaeche trug ihre Erklaerungen bisher auf zwei Wegen, die beide nicht
+     taugen: als Dauer-Absatz neben dem Bedienelement (19.449 Zeichen ueber fuenf
+     Reiter, davon 91 % Fliesstext) oder in einem title-Attribut, das weder per
+     Tastatur noch auf einem Tastbildschirm erreichbar ist. Der Knopf hier ist ein
+     echter <button> mit aria-expanded und oeffnet auf KLICK, nicht beim Darueberfahren:
+     nur so bleibt das Fenster offen, waehrend man darin liest. */
+  .info {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 17px; height: 17px; flex: 0 0 17px; padding: 0;
+    border: 1px solid var(--border); border-radius: 50%; background: transparent;
+    color: var(--muted); font: 700 11px/1 inherit; font-family: inherit;
+    cursor: pointer; vertical-align: 1px;
+  }
+  .info:hover, .info[aria-expanded="true"] { border-color: var(--acc); color: var(--acc); }
+  /* Ebene 130: ueber dem Dialog, weil der Knopf auch in einem Dialog stehen kann. */
+  #infoPop {
+    position: fixed; z-index: 130; display: none; width: 400px; max-width: calc(100vw - 24px);
+    background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+    padding: 13px 15px; font-size: 12.5px; line-height: 1.55;
+    box-shadow: 0 8px 28px rgba(0,0,0,0.4);
+    /* Die Belegtexte sind Messaussagen und werden nicht gekuerzt - lieber rollt das
+       Fenster. Entscheidend ist, dass sie nicht mehr DAUERHAFT auf dem Reiter stehen. */
+    max-height: min(60vh, 520px); overflow-y: auto; overscroll-behavior: contain;
+  }
+  #infoPop h4 {
+    font-size: 11.5px; letter-spacing: 0.07em; text-transform: uppercase;
+    color: var(--muted); font-weight: 600; margin-bottom: 8px;
+  }
+  #infoPop ul { margin: 0; padding-left: 17px; color: var(--ink-2); }
+  #infoPop li { margin-bottom: 6px; }
+  #infoPop li:last-child { margin-bottom: 0; }
+  #infoPop .ip-fuss {
+    border-top: 1px solid var(--grid); margin-top: 10px; padding-top: 8px;
+    color: var(--muted); font-size: 11.5px;
+  }
+  #infoPop .ip-zu { float: right; background: none; border: 0; color: var(--muted);
+    cursor: pointer; font: inherit; font-size: 15px; line-height: 1; padding: 0 0 0 8px; }
   .card .pp { font-size: 11.5px; margin: 2px 0 4px; color: var(--muted); }
   .card .pp.up { color: var(--up); } .card .pp.down { color: var(--down); }
   header h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; }
@@ -446,7 +485,8 @@
   /* ---- Modal ---- */
   /* Ebenen-Leiter: Das Cockpit klebt oben (40) und lag frueher UEBER den Dialogen -
      es fing im Ueberlappungsbereich sogar Klicks ab (Eingabefelder, Klick-zum-Schliessen).
-     Reihenfolge jetzt: Cockpit 40 < Dialog 100 < Kurs-Tooltip 110 < Info-Fenster 120. */
+     Reihenfolge jetzt: Cockpit 40 < Dialog 100 < Kurs-Tooltip 110 < Info-Fenster 120
+     < Erklaerfenster 130 (es kann aus einem Dialog heraus geoeffnet werden). */
   .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.55); display: none; z-index: 100; }
   .modal-bg.open { display: flex; align-items: flex-start; justify-content: center; padding: 40px 16px; }
   .modal { background: var(--page); border: 1px solid var(--border); border-radius: 14px;
@@ -579,6 +619,10 @@
      jedem Reiter gilt. Gefuellt von depot.js/warnbandSetzen. -->
 <div id="warnband" style="display:none;"></div>
 
+<!-- Erklaerfenster: EINES fuer die ganze App, gefuellt von window.Info (app-shell.js).
+     Steht ausserhalb der Reiter, damit ein Reiterwechsel es nicht mit wegraeumt. -->
+<div id="infoPop" role="dialog" aria-modal="false" aria-label="Erklärung"></div>
+
 <nav class="tabs">
   <button data-tab="dashboard" class="active">Heute</button>
   <button data-tab="strategien">Regeln</button>
@@ -602,13 +646,13 @@
   <div class="mover-col"><h3>▼ Top-Verlierer</h3><div id="losers"></div></div>
 </div>
 
-<h2>Spekulations-Radar <span style="color:var(--muted); font-size:12px; font-weight:400; text-transform:none; letter-spacing:0;">– Gerüchte und Spekulationen aus öffentlichen Quellen, dreimal täglich vor US-Eröffnung gesammelt. Ungemessen, reine Beobachtung: Gerüchte sind oft falsch, gehandelt wird hiervon nichts. Keine Anlageberatung.</span></h2>
+<h2>Spekulations-Radar <span style="color:var(--muted); font-size:12px; font-weight:400; text-transform:none; letter-spacing:0;">– Gerüchte aus öffentlichen Quellen, dreimal täglich vor US-Eröffnung gesammelt. <b>Gehandelt wird hiervon nichts.</b></span> <button class="info" type="button" data-info="heute.radar" aria-expanded="false" aria-label="Erklärung: Spekulations-Radar">i</button></h2>
 <div class="panel" id="spekRadar"><div class="loading">Noch keine Radar-Daten – wird gleich aus der Gemeinschafts-Ablage geladen.</div></div>
 
-<h2>Insider-Käufe <span style="color:var(--muted); font-size:12px; font-weight:400; text-transform:none; letter-spacing:0;">– meldepflichtige Eigengeschäfte von Vorstand und Aufsichtsrat US-notierter Firmen (SEC Form 4), nur offene Marktkäufe. Ungemessen, reine Beobachtung: der Effekt ist in der Literatur ein langsamer Halte-Effekt über Monate, keine Intraday-Kante. Gehandelt wird hiervon nichts. Keine Anlageberatung.</span></h2>
+<h2>Insider-Käufe <span style="color:var(--muted); font-size:12px; font-weight:400; text-transform:none; letter-spacing:0;">– meldepflichtige Eigengeschäfte von Vorstand und Aufsichtsrat (SEC Form 4). <b>Gehandelt wird hiervon nichts.</b></span> <button class="info" type="button" data-info="heute.insider" aria-expanded="false" aria-label="Erklärung: Insider-Käufe">i</button></h2>
 <div class="panel" id="insiderKarte"><div class="loading">Noch keine Insider-Daten – wird gleich aus der Gemeinschafts-Ablage geladen.</div></div>
 
-<h2>Vorbörsen-Lücken <span style="color:var(--muted); font-size:12px; font-weight:400; text-transform:none; letter-spacing:0;">– Werte, die vor der US-Eröffnung deutlich anders stehen als beim gestrigen Schluss (Lücke über 5 %, Kurs über 3 $, vorbörslich durchgehend gehandelt). Ungemessen, reine Beobachtung: „Gap and Go“ gehört zur Ausbruchsfamilie, und die ist hier in 3.372 Tests widerlegt worden. Gehandelt wird hiervon nichts. Keine Anlageberatung.</span></h2>
+<h2>Vorbörsen-Lücken <span style="color:var(--muted); font-size:12px; font-weight:400; text-transform:none; letter-spacing:0;">– Werte, die vor der US-Eröffnung deutlich anders stehen als beim gestrigen Schluss. <b>Gehandelt wird hiervon nichts.</b></span> <button class="info" type="button" data-info="heute.vorboerse" aria-expanded="false" aria-label="Erklärung: Vorbörsen-Lücken">i</button></h2>
 <div class="panel" id="vormarktKarte"><div class="loading">Noch nicht gesucht.</div></div>
 
 <!-- Dieselben 15 Werte standen dreimal untereinander: Heatmap, Gewinner/Verlierer,
@@ -1386,11 +1430,11 @@
 
 
 <div id="tab-messung" class="tab">
-<h2>Scoreboard <span style="color:var(--muted); font-size:12px; font-weight:400; text-transform:none; letter-spacing:0;">– jede Strategie, die durch die Messmaschine gelaufen ist. Sortiert nach Belegstatus, nicht nach Rendite.</span></h2>
+<h2>Scoreboard <span style="color:var(--muted); font-size:12px; font-weight:400; text-transform:none; letter-spacing:0;">– jede Strategie, die durch die Messmaschine gelaufen ist. Sortiert nach Belegstatus, nicht nach Rendite.</span>
+  <button class="info" type="button" data-info="messung.scoreboard" aria-expanded="false" aria-label="Erklärung: Scoreboard">i</button></h2>
 <div class="panel" id="scoreboardKarte">
-  <div style="font-size:12px; color:var(--ink-2); line-height:1.5; margin-bottom:8px;">
-    Die App rechnet hier <b>nichts</b>. Sie zeigt die Protokolle der Messmaschine aus dem Datenordner. Jede Zeile lässt sich aufklappen und zeigt dann den vollständigen Entscheidungsweg – jede Regel, jede Eingabe, jede Begründung.
-    Die Messmaschine kann nur auf eine Art rechnen: gepaarte Kontrolle, Tagesclusterung, Entdeckung und Bestätigung getrennt, Mindest-Effektgröße vor dem Urteil, Testzähler. Es gibt keine Schalter dafür.
+  <div style="font-size:12px; color:var(--ink-2); line-height:1.5; margin-bottom:8px; max-width:68ch;">
+    Die App rechnet hier <b>nichts</b>. Sie zeigt die Protokolle der Messmaschine aus dem Datenordner.
   </div>
   <div id="scoreboard"><div class="loading">Lade Protokolle …</div></div>
   <div style="font-size:11.5px; color:var(--muted); margin-top:8px;">
@@ -1401,12 +1445,11 @@
   </div>
 </div>
 
-<h2 style="margin-top:18px;">Neue Strategie ins Rennen schicken</h2>
+<h2 style="margin-top:18px;">Neue Strategie ins Rennen schicken
+  <button class="info" type="button" data-info="messung.eingabe" aria-expanded="false" aria-label="Erklärung: Neue Strategie ins Rennen schicken">i</button></h2>
 <div class="panel" id="strategieEingabe">
-  <div style="font-size:12px; color:var(--ink-2); line-height:1.5; margin-bottom:8px;">
-    Drei Dinge braucht eine Strategie: einen <b>Grund</b> (warum sollte der Effekt existieren – nicht „der RSI war unter 10", sondern „Indexfonds müssen am Quartalsende kaufen"),
-    eine <b>Signalfunktion</b>, die nur Kerzen bis zum Index <code>i</code> sieht, und eine <b>Vorregistrierung</b>: Haltedauer in Kerzen, Richtung, und welche Parametervarianten geprüft werden.
-    Jede Variante zählt als eigener Test und hebt die Schwelle – die Maschine verhindert das nicht, sie weist es aus.
+  <div style="font-size:12px; color:var(--ink-2); line-height:1.5; margin-bottom:8px; max-width:68ch;">
+    Drei Dinge braucht eine Strategie: einen <b>Grund</b>, eine <b>Signalfunktion</b> und eine <b>Vorregistrierung</b>.
   </div>
   <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:8px;">
     <label style="font-size:12px;">Kennung <input id="stKey" placeholder="z. B. quartalsende-kauf" style="width:100%;"></label>
@@ -1435,11 +1478,11 @@
 
 <div id="tab-strategien" class="tab">
   <div class="panel">
-    <h3>Drei Zeithorizonte, drei getrennte Strategien</h3>
-    <div style="font-size:12.5px; color:var(--ink-2); line-height:1.55;">
-      Sie handeln unterschiedlich, brauchen unterschiedliche Instrumente und sind unterschiedlich gut gemessen. Den Belegstatus jeder Regel zeigt der Reiter Messung – mit dem vollständigen Entscheidungsweg.
-      Jede lässt sich einzeln ein- und ausschalten. Was darunter steht, ist der ehrliche Belegstand –
-      einschließlich der Punkte, die dagegen sprechen.
+    <h3 style="display:flex; align-items:center; gap:8px;">Drei Zeithorizonte, drei getrennte Strategien
+      <button class="info" type="button" data-info="regeln.uebersicht" aria-expanded="false"
+              aria-label="Erklärung: Drei Zeithorizonte, drei getrennte Strategien">i</button></h3>
+    <div style="font-size:12.5px; color:var(--ink-2); line-height:1.55; max-width:68ch;">
+      Drei Regeln mit verschiedenen Horizonten. Jede lässt sich einzeln ein- und ausschalten.
     </div>
   </div>
   <div style="margin:6px 0 12px;">
@@ -1448,11 +1491,11 @@
     </div>
     <div id="stratListe" style="margin-top:12px;"></div>
   <div class="panel" id="stratChartPanel" style="margin-top:12px;">
-    <h3>Strategie-Chart – Signal und Bedingungen nachvollziehen</h3>
-    <div style="font-size:12px; color:var(--ink-2); line-height:1.5; margin-bottom:6px;">
-      Rechnet die gemessene Regel auf den Kerzen eines Werts nach – mit exakt derselben Funktion, die auch Studie, Backtest und Live-Scan benutzen (<code>einstiegSignal</code>).
-      Jede Markierung ist ein Einstieg, den die Regel dort gegeben hätte; jedes Signal in der Liste unter dem Chart lässt sich anklicken und zeigt dann, welche Bedingung genau in jener Kerze erfüllt war und welche nicht.
-      Momentum und Ergebnis-Drift sind Rangfolgen über alle Werte, keine Chartsignale – dafür gibt es hier nichts zu zeichnen.
+    <h3 style="display:flex; align-items:center; gap:8px;">Strategie-Chart – Signal und Bedingungen nachvollziehen
+      <button class="info" type="button" data-info="regeln.chart" aria-expanded="false"
+              aria-label="Erklärung: Strategie-Chart">i</button></h3>
+    <div style="font-size:12px; color:var(--ink-2); line-height:1.5; margin-bottom:6px; max-width:68ch;">
+      Rechnet die gemessene Regel auf den Kerzen eines Werts nach. Jede Markierung ist ein Einstieg, den die Regel dort gegeben hätte.
     </div>
     <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
       <select id="stcMode">
@@ -1484,45 +1527,38 @@
       <span style="color:var(--series);">━</span> Kurs ·
       <span style="color:var(--series2);">╌</span> Leitlinie EMA20 ·
       <span style="color:var(--series4);">╌</span> EMA100 (Trendrichtung) ·
-      <span style="color:var(--series3);">▬</span> <b>Entscheidungskanal</b>: die 200 Kerzen, die der Regel die Erlaubnis geben (Regression, 92-%-Kanten) – verankert an der Kerze, die gerade geprüft wird ·
-      <span style="color:var(--series3);">╌</span> derselbe Kanal heute (nur wenn ein historisches Signal ausgewählt ist) ·
-      <span style="color:var(--series2);">╌</span> Überdehnungsband um die Leitlinie (nur Kapitulations-Modus – dort ist die Unterkante der Auslöser) ·
-      <span style="color:var(--muted);">╌</span> Kontext-Kanäle, falls eingeschaltet ·
-      <span style="color:var(--up);">●</span> Einstieg laut Regel (nur Long, anklickbar) ·
-      <span style="color:var(--series2);">●</span> gerade ausgewähltes Signal ·
-      unten: Auslöser-Indikator mit Schwelle
-      <div style="margin-top:4px;">Zwei Dinge, die man dem Bild sonst falsch entnimmt: Die <b>Güte</b> eines Kanals ist beschreibend – die Regel fragt <i>nur</i> die Richtung ab, es gibt keine Güte-Schwelle, und <code>kanalUeber</code> liefert immer einen Kanal, nie „keiner". Und die <b>Leitlinie EMA20</b> gehört zum Kapitulations-Modus; beim RSI(2)-Modus ist sie nur Orientierung und entscheidet dort nichts.</div>
+      <span style="color:var(--series3);">▬</span> <b>Entscheidungskanal</b> ·
+      <span style="color:var(--series3);">╌</span> derselbe Kanal heute ·
+      <span style="color:var(--series2);">╌</span> Überdehnungsband ·
+      <span style="color:var(--muted);">╌</span> Kontext-Kanäle ·
+      <span style="color:var(--up);">●</span> Einstieg laut Regel (anklickbar) ·
+      <span style="color:var(--series2);">●</span> gewähltes Signal ·
+      unten: Auslöser mit Schwelle
+      <button class="info" type="button" data-info="regeln.legende" aria-expanded="false"
+              aria-label="Erklärung: Zeichen im Chart" style="margin-left:4px;">i</button>
     </div>
     <div id="stcSignale" style="margin-top:10px;"></div>
     <div id="stcCheck" style="font-size:12px; margin-top:8px; line-height:1.6;"></div>
     <div style="font-size:11.5px; color:var(--muted); margin-top:6px;">Simulation, keine Anlageberatung. Der Chart zeigt, was die Regel gesehen hätte – nicht, was sie verdient hätte; die Messung dazu steht in den Belegen oben.</div>
   </div>
     <div class="panel" id="regelKarte" style="margin-top:12px; border-top:3px solid var(--series3);">
-      <h3>Die Regel, die handelt</h3>
-      <div style="font-size:12.5px; color:var(--ink-2); line-height:1.6;">
-        Eine Regel ist hier ein Ding mit Namen, Parametern, Chart, Bedingungen und Bilanz.
-        Was gerade eingestellt ist, steht darunter – im Chart siehst du, was sie sieht,
-        in der Bilanz, was dabei herauskam. Die drei Ergebnis-Ansichten, die früher im
-        Kurzfrist-Depot verstreut lagen, gehören zu dieser Regel und stehen deshalb hier.
+      <h3 style="display:flex; align-items:center; gap:8px;">Die Regel, die handelt
+        <button class="info" type="button" data-info="regeln.handelt" aria-expanded="false"
+                aria-label="Erklärung: Die Regel, die handelt">i</button></h3>
+      <div style="font-size:12.5px; color:var(--ink-2); line-height:1.6; max-width:68ch;">
+        Was gerade eingestellt ist – mit Chart, Bedingungen und Bilanz an einem Ort.
       </div>
       <div id="regelKopf" style="margin-top:10px;"></div>
     </div>
 
     <div class="panel" id="regelnKarte" style="margin-top:12px;">
-      <h3>Regeln, die nur messen</h3>
-      <div style="font-size:12.5px; color:var(--ink-2); line-height:1.6;">
-        Hier kannst du eine Regel <b>festschreiben</b> und mitlaufen lassen, ohne dass Geld
-        bewegt wird. Sie wird bei jedem Scan auf denselben Kerzen geprüft wie die gehandelte
-        Regel und führt eine eigene Bilanz.
-        <br><br>
-        Der Sinn ist nicht, sie später zu handeln, sondern dass die Regel <i>vor</i> der Messung
-        feststeht und man hinterher nicht mehr an ihr drehen kann. Genau daran sind in diesem
-        Projekt schon mehrere gute Ideen gescheitert – nicht am Markt, sondern daran, dass die
-        Regel erst nach dem Ergebnis endgültig war.
-        <br><br>
-        <b>Bewusst ohne Handelsknopf.</b> Eine Regel, in die man mittendrin eingreifen kann,
-        misst nichts – und die Versuchung dazu ist am größten, wenn es gerade gut läuft.
-        Der Wechsel auf „handelt“ ist eine Entscheidung in den Einstellungen, kein Knopf hier.
+      <h3 style="display:flex; align-items:center; gap:8px;">Regeln, die nur messen
+        <button class="info" type="button" data-info="regeln.messen" aria-expanded="false"
+                aria-label="Erklärung: Regeln, die nur messen">i</button></h3>
+      <div style="font-size:12.5px; color:var(--ink-2); line-height:1.6; max-width:68ch;">
+        Eine Regel <b>festschreiben</b> und mitlaufen lassen, ohne dass Geld bewegt wird –
+        geprüft auf denselben Kerzen wie die gehandelte Regel, mit eigener Bilanz.
+        <b>Bewusst ohne Handelsknopf.</b>
       </div>
       <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-top:10px;">
         <input type="text" id="regelName" maxlength="40" placeholder="Name, z. B. „Felix: Winkel 1m“" style="flex:1 1 240px;">

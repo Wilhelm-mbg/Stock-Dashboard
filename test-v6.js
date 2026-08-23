@@ -773,8 +773,14 @@ console.log('\n17b) Oberflaeche: Altlasten und Verdrahtung');
   var p2 = fs.readFileSync(__dirname + '/preload.js', 'utf8');
   ok(/readSpekulationen/.test(p2), 'Radar: Bruecke ist exponiert');
   ok(/id="spekRadar"/.test(h), 'Radar: Karte auf dem Dashboard vorhanden');
-  ok(/Ungemessen, reine Beobachtung/.test(h) && /gehandelt wird hiervon nichts/.test(h),
-     'Radar: die Karte sagt ehrlich, dass nichts davon gehandelt wird');
+  /* Seit 8.24.2 steht die Einordnung im Erklaerregister (app-shell.js) statt als
+   * Dauer-Absatz in der Ueberschrift. Die Zusicherung "Gehandelt wird hiervon nichts"
+   * bleibt dagegen SICHTBAR - sie ist keine Erklaerung. Beides wird hier geprueft. */
+  var shellQ = fs.readFileSync(__dirname + '/app-shell.js', 'utf8');
+  ok(/Gehandelt wird hiervon nichts/.test(h),
+     'Radar: die Karte sagt sichtbar, dass nichts davon gehandelt wird');
+  ok(/Ungemessen, reine Beobachtung: Gerüchte sind oft falsch/.test(shellQ) && /'heute\.radar'/.test(shellQ),
+     'Radar: die Einordnung ist ueber den Erklaerknopf erreichbar');
   ok(/esc\(z\.these\)/.test(r) && /esc\(safeUrl\(q\.url\)\)/.test(r),
      'Radar: Fremdinhalte werden escaped, Links nur ueber safeUrl');
   ok(/jetzt - t > 48 \* 3600000\) continue/.test(r), 'Radar: Eintraege aelter als 48 h fallen raus');
@@ -891,8 +897,10 @@ console.log('\n17b) Oberflaeche: Altlasten und Verdrahtung');
   ok(/insiderGesehen\.indexOf\(z\.id\) === -1/.test(r), 'Insider: Benachrichtigung je Eintrag nur einmal');
   ok(/z\.anzahl > 1 && insiderGesehen/.test(r), 'Insider: benachrichtigt wird nur beim Cluster, nicht bei jedem Kauf');
   ok(/gemeldet – nicht gemessen/.test(r), 'Insider: die Karte weist aus, dass hier nichts gemessen ist');
-  ok(/keine Intraday-Kante/.test(h) && /Gehandelt wird hiervon nichts/.test(h),
-     'Insider: die Ueberschrift sagt, was der Effekt ist und was nicht');
+  ok(/Gehandelt wird hiervon nichts/.test(h),
+     'Insider: die Karte sagt sichtbar, dass nichts davon gehandelt wird');
+  ok(/keine Intraday-Kante/.test(fs.readFileSync(__dirname + '/app-shell.js', 'utf8')),
+     'Insider: was der Effekt ist und was nicht, steht hinter dem Erklaerknopf');
   /* Ein Lauf des Werkzeugs darf beim require nicht losgehen - sonst fragt jeder
      Testlauf die SEC ab und ueberschreibt die Datei. */
   var ihSrc = fs.readFileSync(__dirname + '/tools/insider-holen.js', 'utf8');
@@ -985,8 +993,11 @@ console.log('\n17b) Oberflaeche: Altlasten und Verdrahtung');
     ok(/<script src="vormarkt\.js"><\/script>/.test(hSrc),
        'Vormarkt #55: vormarkt.js wird von index.html geladen (sonst fehlt es im Paket)');
     var kopf = hSrc.slice(hSrc.indexOf('Vorbörsen-Lücken'), hSrc.indexOf('id="vormarktKarte"'));
-    ok(/Keine Anlageberatung/.test(kopf) && /reine Beobachtung/.test(kopf),
-       'Vormarkt #55: die Ueberschrift sagt, dass hier nichts gemessen ist');
+    ok(/Gehandelt wird hiervon nichts/.test(kopf),
+       'Vormarkt #55: die Ueberschrift sagt sichtbar, dass hier nichts gehandelt wird');
+    var shellV = fs.readFileSync(__dirname + '/app-shell.js', 'utf8');
+    ok(/'heute\.vorboerse'/.test(shellV) && /Keine Anlageberatung/.test(shellV) && /reine Beobachtung/.test(shellV),
+       'Vormarkt #55: dass hier nichts gemessen ist, steht hinter dem Erklaerknopf');
     var block = rSrc.slice(rSrc.indexOf('Vorbörsen-Lücken ='), rSrc.indexOf('setTimeout(vormarktStart'));
     ok(block.length > 500, 'Vormarkt #55: der Block steht im Renderer', block.length);
     ok(/beobachtet – nicht gemessen/.test(block),
@@ -2855,10 +2866,15 @@ console.log('\n36) Kostenhuerde des Produkts (Signalstudie 23.08.2026)');
   /* Strukturell pruefen, nicht ueber Woerter: Der Erklaerungstext der Karte spricht
    * selbst davon, dass NICHT gehandelt wird - eine Wortsuche schlaegt daran an.
    * Gezaehlt werden deshalb die Knoepfe: erlaubt sind genau zwei, festschreiben und
-   * loeschen. Jeder dritte Knopf muss auffallen. */
+   * loeschen. Jeder dritte Knopf muss auffallen.
+   * Der Erklaerknopf (class="info") zaehlt NICHT mit: er oeffnet ein Textfenster und
+   * kann nichts ausloesen. Wuerde er mitgezaehlt, muesste die Schwelle steigen - und
+   * genau dann faellt ein echter Handelsknopf nicht mehr auf. */
   var rkarte = html.slice(html.indexOf('id="regelnKarte"'), html.indexOf('id="regelnListe"'));
-  var knoepfe = (rkarte.match(/<button/g) || []).length;
+  var knoepfe = (rkarte.match(/<button(?![^>]*class="info")/g) || []).length;
   ok(knoepfe === 1, 'In der Regelkarte steht genau ein Knopf (festschreiben) - kein Handelsknopf', knoepfe);
+  ok((rkarte.match(/<button[^>]*class="info"/g) || []).length === 1,
+     'die Erklaerung der Regelkarte haengt an einem Erklaerknopf, nicht an einem Bedienknopf');
   ok(!/regelHandeln|regelScharf|data-handel/.test(html),
      'Es gibt keinen Schalter, der eine benannte Regel handeln liesse');
 
@@ -3809,6 +3825,69 @@ console.log('\n38) Audit 23.08.2026 – die fuenf Fehler duerfen nicht zurueckko
      'CI: geprueft wird bei jedem Push und jedem Pull Request, nicht erst beim Tag');
   ok(/needs: pruefen/.test(ci),
      'CI: der Installer wird nur nach gruener Pruefung gebaut');
+})();
+
+console.log('\n39) Erklaertexte hinter dem i – ein Register, ein Fenster, ein Knopf');
+(function () {
+  var html = fs.readFileSync(__dirname + '/index.html', 'utf8');
+  var shell = fs.readFileSync(__dirname + '/app-shell.js', 'utf8');
+  var strat = fs.readFileSync(__dirname + '/strategien.js', 'utf8');
+
+  /* --- Der Baustein --- */
+  ok(/window\.Info = Info;/.test(shell) && /eintragen: function/.test(shell) && /knopf: function/.test(shell),
+     'Info bietet eintragen() und knopf()');
+  ok(/<div id="infoPop"/.test(html) && /#infoPop \{/.test(html),
+     'das Erklaerfenster steht im Markup und hat eine Gestaltung');
+  /* Der Zuhoerer MUSS am Dokument haengen. Haenge er am einzelnen Knopf, waere er nach
+   * jedem innerHTML-Neuaufbau weg - genau die Falle, in die depot.js schon getappt ist. */
+  ok(/document\.addEventListener\('click'/.test(shell) && /closest\('button\.info'\)/.test(shell),
+     'der Klick wird am Dokument abgefangen, nicht je Knopf gebunden');
+  ok(/ev\.key === 'Escape'/.test(shell), 'Escape schliesst das Fenster');
+  ok(/tab-changed[\s\S]{0,80}schliessen/.test(shell), 'ein Reiterwechsel raeumt das Fenster ab');
+
+  /* --- Jeder Knopf ist ein echter Knopf, kein angeklicktes div --- */
+  var knoepfe = html.match(/<button class="info"[^>]*>/g) || [];
+  ok(knoepfe.length >= 8, 'es gibt Erklaerknoepfe im Markup  [' + knoepfe.length + ']');
+  ok(knoepfe.every(function (b) { return /type="button"/.test(b); }),
+     'jeder Erklaerknopf hat type="button"');
+  ok(knoepfe.every(function (b) { return /aria-expanded="false"/.test(b); }),
+     'jeder Erklaerknopf meldet seinen Zustand ueber aria-expanded');
+  ok(knoepfe.every(function (b) { return /aria-label="Erkl/.test(b); }),
+     'jeder Erklaerknopf hat eine Beschriftung fuer die Vorlesehilfe');
+  ok(/knopf: function \(schluessel, was\)[\s\S]{0,300}aria-expanded="false"/.test(shell),
+     'auch die aus JS erzeugten Knoepfe tragen aria-expanded');
+
+  /* --- Kein Knopf ohne Text, kein Text ohne Knopf --- */
+  var verwendet = (html.match(/data-info="([^"]+)"/g) || []).map(function (m) { return m.slice(11, -1); });
+  var angemeldet = (shell.match(/^    '([\w.]+)': \{$/gm) || []).map(function (m) { return m.trim().slice(1).split("'")[0]; });
+  var ohneText = verwendet.filter(function (k) { return angemeldet.indexOf(k) < 0; });
+  ok(ohneText.length === 0,
+     'jeder data-info-Schluessel im Markup hat einen Eintrag im Register  [' + (ohneText.join(', ') || 'alle') + ']');
+  var ohneKnopf = angemeldet.filter(function (k) { return verwendet.indexOf(k) < 0; });
+  ok(ohneKnopf.length === 0,
+     'kein Eintrag im Register ist verwaist  [' + (ohneKnopf.join(', ') || 'keiner') + ']');
+
+  /* --- Die Strategie-Karten schuetten ihre Belege nicht mehr aus --- */
+  ok(!/s\.beleg\.map\(function \(b\) \{ return '<li>'/.test(strat),
+     'strategien.js listet die Belege nicht mehr dauerhaft auf der Karte');
+  ok(/window\.Info\.knopf\('strategie\.' \+ s\.key/.test(strat),
+     'jede Strategie-Karte traegt stattdessen einen Erklaerknopf');
+  ok(/punkte: s\.beleg \|\| \[\]/.test(strat),
+     'die Belege gehen VOLLSTAENDIG ins Register - gekuerzt wird nichts, es sind Messaussagen');
+
+  /* --- Was eine Zusicherung ist, bleibt sichtbar ---
+   * Faustregel des Umbaus: Wer es nicht liest, entscheidet falsch -> bleibt stehen.
+   * Wer es nicht liest, versteht nur weniger -> darf hinter das i. */
+  var simnoten = (html.match(/class="simnote"/g) || []).length;
+  ok(simnoten >= 3, 'der Simulationshinweis steht weiter im Markup  [' + simnoten + ']');
+  ok((html.match(/Gehandelt wird hiervon nichts/g) || []).length === 3,
+     'die drei Beobachtungskarten sagen weiter sichtbar, dass davon nichts gehandelt wird');
+  ok(/Simulation mit virtuellem Kapital – keine Anlageberatung/.test(html),
+     'die Simulations-Zusicherung ist nicht hinter einen Klick gewandert');
+
+  /* --- Zeilenlaenge: die Absaetze standen ueber 1200 px breit, also 150-170 Zeichen --- */
+  ok((html.match(/max-width:68ch/g) || []).length >= 5,
+     'die verbliebenen Absaetze sind auf lesbare Zeilenlaenge begrenzt');
 })();
 
 console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
