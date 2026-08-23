@@ -746,10 +746,11 @@
             if (barsI[vb][0] < x0 || barsI[vb][0] > x1) continue;
             var vh = (barsI[vb][2] || 0) / maxV * hVol;
             if (vh < 0.4) continue;
-            var steigt = vb === 0 || cI[vb] >= cI[vb - 1];
+            // eigener Name: 'steigt' heisst weiter unten schon die Kerzenrichtung
+            var volSteigt = vb === 0 || cI[vb] >= cI[vb - 1];
             volBalken += '<rect x="' + (X(barsI[vb][0]) - bw / 2).toFixed(1) + '" y="' + (H - padB - vh).toFixed(1) +
               '" width="' + bw.toFixed(1) + '" height="' + vh.toFixed(1) + '" fill="' +
-              (steigt ? 'var(--up)' : 'var(--down)') + '" opacity="0.22"></rect>';
+              (volSteigt ? 'var(--up)' : 'var(--down)') + '" opacity="0.22"></rect>';
           }
         }
       }

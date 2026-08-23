@@ -2872,8 +2872,23 @@ console.log('\n36) Kostenhuerde des Produkts (Signalstudie 23.08.2026)');
   /* Der Umschalter darf nicht mehr auf eine einzelne Pillenleiste festgenagelt sein,
    * sonst waere die zweite Leiste tot - genau die Sorte toter Schalter, die dieser
    * Umbau abschaffen soll. */
-  ok(/querySelectorAll\('\.pills button'\)/.test(dep),
+  ok(/querySelectorAll\('\.pills button\[data-sub\]'\)/.test(dep) && !/getElementById\('depotPills'\)/.test(dep),
      'Der Unter-Reiter-Umschalter arbeitet in JEDER Pillenleiste');
+  /* ... aber NUR auf Pillen, die auch eine Unterseite benennen. Ohne [data-sub] fing er
+   * am 23.08.2026 auch die sechs Protokoll-Filter, den CSV-Knopf und die beiden
+   * Setup-Pillen ab: er blendete alle .sub-Bereiche aus, fand kein Ziel und schaltete
+   * nichts zurueck - ein Klick auf "CSV-Export" leerte den ganzen Reiter Vermoegen.
+   * Beide Fundstellen muessen eingeschraenkt sein, auch die, die .active abraeumt. */
+  ok(!/querySelectorAll\('\.pills button'\)/.test(dep),
+     'Der Umschalter fasst keine Pillen ohne data-sub (sonst leert ein Befehlsknopf den Reiter)');
+  var pillZeilen = (dep.match(/querySelectorAll\('\.pills button[^']*'\)/g) || []);
+  ok(pillZeilen.length >= 2 && pillZeilen.every(function (z) { return /\[data-sub\]/.test(z); }),
+     'JEDE .pills-button-Auswahl in depot.js ist auf [data-sub] eingeschraenkt  [' + pillZeilen.length + ']');
+  /* Gegenprobe am Markup: Es GIBT Knoepfe in einer .pills-Leiste ohne data-sub -
+   * genau deshalb muss die Einschraenkung oben bestehen bleiben. */
+  var logFilter = (html.match(/<div class="pills small" id="logFilter">[\s\S]*?<\/div>/) || [''])[0];
+  ok(/id="csvBtn"/.test(logFilter) && !/data-sub/.test(logFilter),
+     'die Protokoll-Leiste enthaelt Befehlsknoepfe ohne data-sub - die Einschraenkung ist noetig');
   ok(/b\.closest\('\.tab'\)/.test(dep),
      'Er wirkt nur im Reiter der angeklickten Pille');
 
@@ -3573,6 +3588,107 @@ console.log('MERKMALE der Signale (Felix, Issue #57): Aufzeichnung statt Nachsuc
      'die Karte nennt sich selbst Aufzeichnung, nicht Befund');
   ok(/Kandidat für eine Messung/.test(dep) && /Simulation, keine Anlageberatung/.test(dep),
      'die Karte sagt dazu, dass ein auffaelliger Wert erst eine Studie braucht');
+})();
+
+console.log('\n38) Audit 23.08.2026 – die fuenf Fehler duerfen nicht zurueckkommen');
+(function () {
+  var dep = fs.readFileSync(__dirname + '/depot.js', 'utf8');
+  var ren = fs.readFileSync(__dirname + '/renderer.js', 'utf8');
+  var mfd = fs.readFileSync(__dirname + '/mfdepot.js', 'utf8');
+  var html = fs.readFileSync(__dirname + '/index.html', 'utf8');
+
+  /* --- B1: Cockpit rechnete gegen 10000, die Buecher laufen mit 100000 ---
+   * Ein unberuehrtes Buch meldete dadurch +900,0 %, ein Buch mit 8 % Verlust +820,0 %.
+   * Die Zahl steht ausserhalb aller Reiter und ist damit immer sichtbar. */
+  ok(!/lp\.momentum \/ 10000/.test(dep) && !/lp\.drift \/ 10000/.test(dep),
+     'B1: das Cockpit teilt nicht mehr durch eine fest verdrahtete 10000');
+  ok(/lp\.momentum \/ stM/.test(dep) && /lp\.drift \/ stD/.test(dep),
+     'B1: der Bezugswert kommt aus dem Buch, nicht aus einer Konstante');
+  ok(/startM: d\.mfBuch/.test(mfd) && /startD: d\.driftBuch/.test(mfd),
+     'B1: mfVerlauf schreibt das Startkapital mit, damit alte Punkte lesbar bleiben');
+  // Die Rechnung selbst, an genau den Zahlen, die frueher +900 ergaben
+  function stand(wert, start) { return Math.round((wert / start - 1) * 1000) / 10; }
+  ok(stand(100000, 100000) === 0, 'B1: ein unberuehrtes 100.000-$-Buch steht bei 0,0 %  [' + stand(100000, 100000) + ']');
+  ok(stand(92000, 100000) === -8, 'B1: 92.000 $ von 100.000 $ sind -8,0 %  [' + stand(92000, 100000) + ']');
+  ok(/100\.000-\$-B(ü|ue)cher/.test(html), 'B1: der Tooltip nennt dieselbe Groesse wie der Rest der Oberflaeche');
+
+  /* --- B2: Klassenkollision blendete die Tagesbewegung aus ---
+   * renderer.js schrieb den Prozentwert als class="sub"; die Reiter-Regel
+   * .sub{display:none} verdeckte ihn auf allen sechs Kopfkacheln. */
+  ok(/class="kachel-sub"/.test(ren) && !/'<div class="sub">'/.test(ren),
+     'B2: die Kachel benutzt kachel-sub, nicht die Reiter-Klasse sub');
+  ok(/\.tile \.kachel-sub/.test(html) && !/\.tile \.sub\b/.test(html),
+     'B2: das CSS gestaltet kachel-sub');
+  // Gegenprobe: die Reiter-Regel gibt es noch, sie ist ja der Grund fuer die Umbenennung
+  ok(/\.sub \{ display: none; \}/.test(html),
+     'B2: .sub{display:none} steht weiter fuer die Unterseiten - deshalb darf keine Kachel so heissen');
+  /* Allgemein: KEIN von JS erzeugtes Element darf eine Klasse tragen, die das CSS
+   * global ausblendet. Sonst rechnet die App etwas aus und verdeckt es selbst. */
+  var versteckende = (html.match(/^\s*\.([a-z][\w-]*) \{ display: none; \}/gm) || [])
+    .map(function (z) { return z.trim().replace(/^\./, '').replace(/ .*/, ''); });
+  var kollisionen = versteckende.filter(function (k) {
+    return new RegExp("'<div class=\"" + k + "\">'").test(ren + dep);
+  });
+  ok(kollisionen.length === 0,
+     'B2: kein JS-erzeugtes Element traegt eine global ausgeblendete Klasse  [' + (kollisionen.join(', ') || 'keine') + ']');
+
+  /* --- B3: stcRunning war nur noch in der Benutzung da ---
+   * Unter 'use strict' warf "Chart laden" dadurch bei jedem Klick. Die Klasse
+   * insgesamt deckt jetzt der Linter ab (npm run lint); hier bleibt der Wachposten
+   * fuer genau diese Variable, weil sie schon einmal einem Umbau zum Opfer fiel. */
+  ok(/var stcRunning = false;/.test(dep),
+     'B3: stcRunning ist deklariert - sonst wirft der Knopf "Chart laden"');
+  ok(fs.existsSync(__dirname + '/eslint.config.mjs'),
+     'B3: es gibt eine Linter-Konfiguration, die undeklarierte Namen findet');
+
+  /* --- B5: der Regime-Anker forderte mehr Kerzen, als sein Abruf liefern kann --- */
+  // Bis zum catch, NICHT bis zum ersten "return SPY_REGIME.auf" - das ist die frühe
+  // Rückgabe aus dem Zwischenspeicher und steht noch vor den Abrufen.
+  var anker = (dep.match(/async function spyTrendAuf\(\)[\s\S]*?catch \(eR\)/) || [''])[0];
+  ok(/fetchIntraday/.test(anker), 'B5: die Funktion spyTrendAuf ist samt Abruf auffindbar');
+  ok(/fetchIntraday\('SPY', '60m', true\)/.test(anker),
+     'B5: der SPY-Anker holt die tiefe Reihe (btRange), nicht das 1-Monats-Fenster');
+  ok(/fetchIntraday\('SPY', '60m', false\)/.test(anker),
+     'B5: bei Fehlschlag bleibt der Capital.com-Ersatzweg erhalten');
+  var noetig = (anker.match(/series\.length > (\d+)/) || [])[1];
+  ok(Number(noetig) === 220,
+     'B5: die Schwelle steht weiter bei 220 Kerzen  [' + noetig + ']');
+
+  /* --- Kursplausibilitaet: '== null' liess 0, negative Werte und NaN durch --- */
+  ok(/function kursOk\(v\)/.test(dep) && /isFinite\(v\) && v > 0/.test(dep),
+     'Kurse: kursOk() verlangt endlich und groesser null');
+  ok(!/if \(closes\[i\] == null\) continue;/.test(dep) && !/if \(closes\[i\] != null\)/.test(dep),
+     'Kurse: kein Abruf verlaesst sich mehr allein auf "== null"');
+
+  /* --- Equity-Kurve: Aktienpositionen wurden als Schein bepreist ---
+   * Das ist der einzige der fuenf Befunde, der sich richtig AUSFUEHREN laesst, weil
+   * quant.js ladbar ist. Vorher meldete derselbe Lauf 5 % Drawdown, obwohl die Kurve
+   * nie mehr als 0,02 % unter den Start fiel - der Positionswert verschwand einfach. */
+  var barsE = [];
+  var rndE = lcg(9);
+  for (var dE = 0; dE < 3; dE++) {
+    var dsE = t0 + dE * 86400000, baseE = 100 + dE * 2;
+    for (var bE = 0; bE < 390; bE++) {
+      var pE = bE < 30 ? baseE + rndE() * 0.3 : baseE + 0.4 + (bE - 30) * 0.012 + rndE() * 0.25;
+      barsE.push([dsE + bE * 60000, pE, 900000]);
+    }
+  }
+  var rE = Q.backtestIntraday({ TEST: barsE }, {
+    capital: 10000, period: 20, budgetPct: 0.05, orderFee: 1,
+    entryMode: 'orb', orbMin: 30, confirmBps: 15, sl: -0.25, tp: null, trailPct: 0.15,
+    maxHoldMin: 0, cooldownMin: 10, maxPerDay: 10, minEdge: 0, instrument: 'basis'
+  });
+  var eqMin = Math.min.apply(null, rE.equity.map(function (e) { return e[1]; }));
+  var unterStart = (1 - eqMin / 10000) * 100;
+  ok(rE.trades.length >= 2 && rE.summary.retPct > 0,
+     'Equity: der Vergleichslauf handelt und endet im Plus  [' + rE.trades.length + ' Trades, ' + rE.summary.retPct + ' %]');
+  ok(unterStart < 1,
+     'Equity: die Kurve faellt hoechstens 1 % unter den Start - der Positionswert bleibt drin  ['
+       + Math.round(unterStart * 100) / 100 + ' %]');
+  ok(rE.summary.maxDrawdownPct < 1,
+     'Equity: der gemeldete Max-Drawdown passt zur Kurve  [' + rE.summary.maxDrawdownPct + ' %]');
+  ok(/positionsWert\(p2,/.test(fs.readFileSync(__dirname + '/quant.js', 'utf8')),
+     'Equity: die Aufzeichnung benutzt dieselbe Bewertung wie der Ausstieg');
 })();
 
 console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');

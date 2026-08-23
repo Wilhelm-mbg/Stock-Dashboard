@@ -2898,7 +2898,12 @@
         var eq = cash;
         for (var s2 in open) {
           var bars2 = idx[s2], p2 = open[s2];
-          eq += Math.max(0.001, warrantValue(p2.dir, p2.w, bars2[Math.min(cursor[s2], bars2.length - 1)][1], t) * (1 - (p2.spx || SP))) * p2.qty;
+          /* positionsWert, NICHT warrantValue: letzteres bepreist auch eine Aktienposition
+             als 21-Tage-Schein und laesst damit fast ihren ganzen Wert aus der Kurve
+             verschwinden. Da die App ab Werk instrument:'basis' fuehrt, waren
+             Max-Drawdown, Sharpe und der Monats-t-Wert fuer den Normalfall falsch.
+             closePos rechnet seit jeher mit positionsWert - jetzt beide gleich. */
+          eq += Math.max(0.001, positionsWert(p2, bars2[Math.min(cursor[s2], bars2.length - 1)][1], t) * (1 - (p2.spx || SP))) * p2.qty;
         }
         equity.push([t, eq]);
       }
