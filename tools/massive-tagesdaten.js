@@ -58,6 +58,25 @@ var BIS = new Date().toISOString().slice(0, 10);
   var standDatei = path.join(M.ablage(), 'tagesdaten-stand.json');
   var stand = fs.existsSync(standDatei) ? JSON.parse(fs.readFileSync(standDatei, 'utf8')) : { fertig: {}, ohneDaten: {} };
 
+  /* STICHPROBE - fuer schnelle Vorlaeufe, nicht als Ersatz der Vollerhebung.
+   * Wilhelm holt alle 1.633 Werte (rund sechs Stunden); das ist die bessere Grundlage,
+   * weil sich damit BEIDE Fragen beantworten lassen: "wie liefen die Verschwundenen
+   * insgesamt" und "was macht Momentum auf einem Universum, das nur die damals grossen
+   * Werte enthaelt, aber ohne Rueckschau". Fuer die zweite braucht es Umsatz und Kurs
+   * der Verschwundenen - und die stehen erst in den geholten Daten. Vorher zu filtern
+   * hiesse zu raten, was gemessen werden soll.
+   * Die Stichprobe bleibt fuer Vorlaeufe: fester Startwert, also wiederholbar. */
+  var stichprobe = 0;
+  var si = process.argv.indexOf('--stichprobe');
+  if (si !== -1) stichprobe = parseInt(process.argv[si + 1], 10) || 0;
+  if (stichprobe > 0 && stichprobe < kandidaten.length) {
+    var s = 20260823;   // fester Startwert: derselbe Aufruf zieht dieselbe Stichprobe
+    var rnd = function () { s = (s * 1103515245 + 12345) % 2147483648; return s / 2147483648; };
+    var kopie = kandidaten.slice();
+    for (var q = kopie.length - 1; q > 0; q--) { var w = Math.floor(rnd() * (q + 1)); var h = kopie[q]; kopie[q] = kopie[w]; kopie[w] = h; }
+    kandidaten = kopie.slice(0, stichprobe);
+    console.log('Zufallsstichprobe: ' + stichprobe + ' von ' + kopie.length + ' (fester Startwert, wiederholbar)');
+  }
   var offen = kandidaten.filter(function (t) { return !stand.fertig[t.sym] && !stand.ohneDaten[t.sym]; });
   console.log('Verschwundene im Messzeitraum: ' + kandidaten.length +
     (alle ? ' (alle Boersen)' : ' (nur Hauptboersen; mit --alle sind es mehr)'));
