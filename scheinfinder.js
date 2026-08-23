@@ -5,18 +5,24 @@
  * Kennzahlen und nach Risikostufe. Die Rechnung steht in quant.js (rein, getestet);
  * hier wird nur geladen, gefiltert und angezeigt.
  *
- * WAS DAS IST UND WAS NICHT: Es gibt keine echten WKN-Listen – Emittenten-Daten
- * liefern nur Bezahl-APIs, und die sind bewusst draußen. Der Finder rechnet
- * stattdessen mit exakt dem Modell, mit dem auch das Depot handelt: Black-Scholes
- * plus das an echten Emittentenkursen geeichte Cent-Spread-Modell. Ein Schein aus
- * dem Finder verhält sich in der Simulation genauso wie im Handel – das ist der
- * Sinn: aussuchen, was man versteht, und genau das handelt die App dann auch.
+ * WAS DAS IST UND WAS NICHT: Gerechnet wird ein MODELL-Raster mit exakt dem Modell,
+ * mit dem auch das Depot handelt (Black-Scholes plus das an echten Emittentenkursen
+ * geeichte Cent-Spread-Modell). Ein Schein aus dem Finder verhält sich in der
+ * Simulation genauso wie im Handel – das ist der Sinn: aussuchen, was man versteht,
+ * und genau das handelt die App dann auch.
+ * NEU (Tickets #9/#11/#17): Zu jeder Zeile lässt sich der ECHTE aufgelegte Schein
+ * nachschlagen – WKN, ISIN, Emittent, gestellte Kurse, über wkn.js. Die Preise
+ * bleiben Modellpreise; die echten Angaben stehen daneben, nicht an ihrer Stelle.
  */
 (function () {
   var Q = window.Quant, U = window.U;
   var RASTER = null;        // aktuelles Raster
   var BASIS = null;         // {sym, spot, iv, stand}
   var sortUmgekehrt = false; // zweiter Klick auf denselben Spaltenkopf dreht die Reihenfolge
+  /* Nachgeschlagene echte Scheine je Raster-Zeile (Tickets #9/#11/#17).
+     Abgerufen wird erst auf Klick: Eine Suche je Zeile ist eine Anfrage, und
+     niemand braucht die WKN zu 120 Zeilen, sondern zu der einen, die er nimmt. */
+  var WKN_TREFFER = {};     // Raster-Index -> {status:'laedt'|'ok'|'leer', scheine, grund}
 
   function el(id) { return document.getElementById(id); }
   function stat(t) { var e = el('sfStatus'); if (e) e.textContent = t || ''; }
@@ -50,20 +56,130 @@
       else if (ivEl) ivEl.placeholder = Math.round(iv * 100) + ' (geschätzt)';
       BASIS = { sym: sym, spot: spot, iv: iv, stand: Date.now() };
       RASTER = Q.scheinRaster(spot, iv, Date.now());
+      WKN_TREFFER = {};   // neues Raster: alte Zuordnungen gelten nicht mehr
       stat(sym + ': Kurs ' + U.nf2.format(spot) + ' $, Vola ' + Math.round(iv * 100) + ' % → ' +
-        RASTER.length + ' Scheine im Raster (Modell, keine echten WKNs).');
+        RASTER.length + ' Scheine im Raster (Modell – echte WKN je Zeile nachschlagbar).');
       zeige();
     } catch (e) { stat('Fehler: ' + (e.message || e)); }
   }
 
-  /* Modell-Kennung statt WKN (Tester-Wunsch #9/#11): Echte WKNs gibt es nur aus
-     Bezahl-APIs der Emittenten, die bewusst draussen sind. Die Kennung baut sich
-     aus den Merkmalen selbst - "C112,5-45T·0,1" ist Call, Basispreis 112,50,
-     45 Tage Restlaufzeit, BV 0,1. Damit laesst sich ein Schein benennen,
-     wiederfinden und beim Emittenten das echte Gegenstueck suchen. */
+  /* Kennung der MODELL-Zeile: Sie baut sich aus den Merkmalen selbst -
+     "C112,5-45T·0,1" ist Call, Basispreis 112,50, 45 Tage Restlaufzeit, BV 0,1.
+     Sie benennt die gerechnete Zeile eindeutig, auch dort, wo es (noch) keinen
+     aufgelegten Schein dazu gibt; die echte WKN steht in der Spalte davor. */
   function kennung(k) {
     var strike = k.strike % 1 ? String(k.strike.toFixed(1)).replace('.', ',') : String(Math.round(k.strike));
     return (k.dir === 'call' ? 'C' : 'P') + strike + '-' + k.restTage + 'T·' + String(k.ratio).replace('.', ',');
+  }
+
+  /* ================= Echte WKN (Tickets #9/#11/#17) =================
+     Klarname zum Kürzel: Die Kürzel-Suche der Quelle findet nicht jeden Wert
+     ("MU" liefert Münchener Rück, nicht Micron), der Klarname schließt die Lücke. */
+  function nameZu(sym) {
+    var l = (window.Dash && window.Dash.STOCKS) || [];
+    for (var i = 0; i < l.length; i++) if (l[i].y === sym) return l[i].name || null;
+    try {
+      var D = window.__D ? window.__D() : null;
+      var w = (D && D.watchlist || []).filter(function (x) { return x.y === sym; })[0];
+      if (w && w.name) return w.name;
+    } catch (e) { }
+    return null;
+  }
+
+  /** Zellinhalt der WKN-Spalte für eine Raster-Zeile. */
+  function wknZelle(i) {
+    var tf = WKN_TREFFER[i];
+    if (!tf) return '<span style="color:var(--acc);">⌕ suchen</span>';
+    if (tf.status === 'laedt') return '<span style="color:var(--muted);">sucht …</span>';
+    if (tf.status === 'ok') {
+      var s = tf.scheine[0];
+      return '<b>' + U.esc(s.wkn) + '</b>' +
+        (s.passt ? '' : ' <span style="color:var(--warn);" title="nur ähnlich – siehe Zeile aufklappen">≈</span>');
+    }
+    return '<span style="color:var(--muted);">–</span>';
+  }
+
+  /** Nachschlagen und beide Anzeigen (Zelle, aufgeklappte Zeile) nachziehen. */
+  async function wknHolen(i) {
+    var k = RASTER && RASTER[i];
+    if (!k || !BASIS || !window.WKN) return;
+    if (WKN_TREFFER[i] && WKN_TREFFER[i].status === 'laedt') return;
+    WKN_TREFFER[i] = { status: 'laedt' };
+    wknMalen(i);
+    var erg = await window.WKN.echteScheine(BASIS.sym, nameZu(BASIS.sym),
+      { dir: k.dir, strike: k.strike, restTage: k.restTage, ratio: k.ratio }, 3);
+    WKN_TREFFER[i] = (erg && erg.ok)
+      ? { status: 'ok', scheine: erg.scheine, basiswert: erg.basiswert }
+      : { status: 'leer', grund: (erg && erg.grund) || 'Grund unbekannt' };
+    wknMalen(i);
+  }
+
+  /** Nur die betroffenen Stellen neu zeichnen – ein volles zeige() würde die
+      aufgeklappte Zeile zuklappen, während man sie liest. */
+  function wknMalen(i) {
+    var t = el('sfTabelle');
+    if (!t) return;
+    var td = t.querySelector('[data-sfwkn="' + i + '"]');
+    if (td) td.innerHTML = wknZelle(i);
+    var block = t.querySelector('[data-sfecht="' + i + '"]');
+    if (block) block.innerHTML = echteBlock(i);
+    wknVerkabeln(t);   // die eben erzeugten WKN-Zeilen brauchen ihre Klicks
+  }
+
+  /** Wie weit liegt der echte Schein von der Modell-Zeile weg – im Klartext. */
+  function abweichungText(k, s) {
+    var teile = [];
+    if (Math.abs(s.strike - k.strike) > 0.005) teile.push('Basis ' + U.nf2.format(s.strike) + ' statt ' + U.nf2.format(k.strike));
+    if (s.restTage !== k.restTage) teile.push(s.restTage + ' statt ' + k.restTage + ' Tage');
+    if (s.ratio != null && Math.abs(s.ratio - k.ratio) > 1e-9) teile.push('BV ' + String(s.ratio).replace('.', ',') + ' statt ' + String(k.ratio).replace('.', ','));
+    return teile.length ? teile.join(' · ') : 'genau diese Merkmale';
+  }
+
+  /** Inhalt des Kastens „Echte Scheine dazu“ in der aufgeklappten Zeile. */
+  function echteBlock(i) {
+    var k = RASTER && RASTER[i], tf = WKN_TREFFER[i];
+    if (!k) return '';
+    if (!tf) return '<span style="color:var(--acc); cursor:pointer;" data-sfsuche="' + i + '">⌕ echte Scheine mit WKN suchen</span>';
+    if (tf.status === 'laedt') return '<span style="color:var(--muted);">sucht bei der Produktsuche …</span>';
+    if (tf.status !== 'ok') {
+      return '<span style="color:var(--muted);">Keine WKN: ' + U.esc(tf.grund) + '</span>';
+    }
+    var zeilen = tf.scheine.map(function (s) {
+      var kurs = s.kursFraglich
+        ? '<span style="color:var(--warn);" title="Einseitige oder sehr weite Stellung – als Preis nicht brauchbar">keine Stellung</span>'
+        : U.nf2.format(s.geld) + ' / ' + U.nf2.format(s.brief) + ' ' + (s.waehrung || '');
+      var stand = s.stand
+        ? new Date(s.stand).toLocaleString('de-DE', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })
+        : '–';
+      return '<tr' + (s.passt ? '' : ' style="opacity:.72;"') + '>' +
+        '<td class="sf-wknkopie" style="cursor:copy; white-space:nowrap;" title="Klick kopiert die WKN"><b>' + U.esc(s.wkn) + '</b></td>' +
+        '<td style="white-space:nowrap;">' + U.esc(s.emittent) + '</td>' +
+        '<td style="text-align:right;">' + U.nf2.format(s.strike) + '</td>' +
+        '<td style="text-align:right; white-space:nowrap;">' + new Date(s.faellig).toLocaleDateString('de-DE') +
+        ' <span style="color:var(--muted);">(' + s.restTage + ' T)</span></td>' +
+        '<td style="text-align:right;">' + (s.ratio != null ? String(s.ratio).replace('.', ',') : '–') + '</td>' +
+        '<td style="text-align:right; white-space:nowrap;">' + kurs + '</td>' +
+        '<td style="text-align:right; white-space:nowrap; color:var(--muted);">' + stand + '</td>' +
+        '<td style="text-align:right;">' + (!s.kursFraglich && s.spanneGesamtPct != null ? s.spanneGesamtPct.toFixed(2) + ' %' : '–') + '</td>' +
+        '<td style="text-align:right;">' + (s.iv != null ? s.iv.toFixed(1) + ' %' : '–') + '</td>' +
+        '<td style="color:var(--muted);">' + U.esc(abweichungText(k, s)) + (s.passt ? '' : ' <b style="color:var(--warn);">(nur ähnlich)</b>') + '</td>' +
+        '<td style="color:var(--muted); white-space:nowrap;">' + U.esc(s.isin || '') + '</td></tr>';
+    }).join('');
+    return '<b>Echte Scheine dazu</b> <span style="color:var(--muted); font-size:11.5px;">– Klick auf die WKN kopiert sie</span>' +
+      '<div style="overflow-x:auto; margin-top:4px;"><table class="tbl" style="font-size:11.5px;">' +
+      '<tr><th>WKN</th><th>Emittent</th><th style="text-align:right;">Basis</th><th style="text-align:right;">fällig</th>' +
+      '<th style="text-align:right;">BV</th><th style="text-align:right;">Geld/Brief</th><th style="text-align:right;">Stand</th>' +
+      '<th style="text-align:right;">Spanne</th><th style="text-align:right;">impl. Vola</th><th>Abweichung</th><th>ISIN</th></tr>' +
+      zeilen + '</table></div>' +
+      '<div style="color:var(--muted); font-size:11px; margin-top:6px; line-height:1.5;">' +
+      'Emittentenkurse in Euro, das Modell rechnet in Dollar auf den Basiswert – <b>nicht ineinander umgerechnet</b>, ' +
+      'die Euro-Kurse stehen als Orientierung da. „Spanne“ ist hier die volle Geld-Brief-Spanne; die Modellspalte nennt sie je Seite ' +
+      '(diese Zeile: 2 × ' + k.spreadPct.toFixed(2) + ' % = ' + (2 * k.spreadPct).toFixed(2) + ' % je Umlauf). ' +
+      'Die implizite Vola der echten Scheine ist der Marktpreis der Schwankung – das Modell rechnet hier mit ' +
+      (BASIS ? Math.round(BASIS.iv * 100) : '?') + ' %; weicht das stark ab, ist die Modellzeile zu billig oder zu teuer gerechnet. ' +
+      '„Stand“ ist die letzte Kursstellung des Emittenten (gestellt wird nur 8–22 Uhr an Handelstagen). ' +
+      'Quelle: offene Produktsuche von onvista, ohne Gewähr. Verbindlich sind Basisprospekt und Basisinformationsblatt des Emittenten. ' +
+      'Simulation – die App kauft nichts.</div>';
   }
 
   function filterWerte() {
@@ -121,7 +237,10 @@
     }
     var STUFENFARBE = ['', 'var(--up)', '#7c9cf5', 'var(--warn)', '#f59c40', 'var(--down)'];
     var zeilen = liste.slice(0, 120).map(function (k, i) {
-      return '<tr data-sfi="' + RASTER.indexOf(k) + '" style="cursor:pointer;">' +
+      var idx = RASTER.indexOf(k);
+      return '<tr data-sfi="' + idx + '" style="cursor:pointer;">' +
+        '<td class="sf-wkn" data-sfwkn="' + idx + '" style="white-space:nowrap; font-size:11px; cursor:pointer;" ' +
+        'title="Echte WKN nachschlagen. Erster Klick sucht den passenden aufgelegten Schein, danach kopiert ein Klick die WKN.">' + wknZelle(idx) + '</td>' +
         '<td class="sf-kennung" style="white-space:nowrap; color:var(--muted); font-size:11px; cursor:copy;" title="Klick kopiert die Kennung">' + kennung(k) + '</td>' +
         '<td><b style="color:' + STUFENFARBE[k.stufe] + ';">' + k.stufe + '</b></td>' +
         '<td>' + (k.dir === 'call' ? '▲ Call' : '▼ Put') + '</td>' +
@@ -143,7 +262,8 @@
        Kennzahlen gibt es genau eine sinnvolle Richtung ("am wenigsten Risiko/
        Kosten zuerst"), also kein Umschalten, das nur verwirren wuerde. */
     var SPALTEN = [
-      { t: 'Kennung', tip: 'Modell-Kennung statt WKN: Echte WKN-Listen liefern nur Bezahl-APIs der Emittenten, und die sind bewusst draußen. Die Kennung fasst Typ, Basispreis, Restlaufzeit und BV zusammen – damit findest du bei jedem Emittenten den vergleichbaren echten Schein.' },
+      { t: 'WKN', tip: 'Echter aufgelegter Schein zu dieser Modell-Zeile. Klick sucht ihn bei der offenen Produktsuche von onvista, ein weiterer Klick kopiert die WKN. „≈“ heißt: nur ähnlich – die Abweichung steht in der aufgeklappten Zeile.' },
+      { t: 'Kennung', tip: 'Modell-Kennung: Typ, Basispreis, Restlaufzeit und BV in einem Kürzel. Sie benennt die gerechnete Zeile – die WKN daneben nennt den echten Schein dazu.' },
       { t: 'Stufe', tip: 'Risikostufe 1 (defensiv) bis 5 (Lotterielos)', sort: 'stufe', pfeil: '↑' },
       { t: 'Typ' },
       { t: 'Basispreis', r: 1 },
@@ -216,15 +336,63 @@
         var d = el('sfDetail');
         if (d) d.style.display = 'none';
         if (warOffen) return;   // zweiter Klick auf dieselbe Zeile klappt wieder zu
+        var idx = parseInt(tr.getAttribute('data-sfi'), 10);
         tr.insertAdjacentHTML('afterend',
-          '<tr class="sf-inline"><td colspan="14" style="background:var(--panel); padding:10px 12px; font-size:12.5px; line-height:1.6; cursor:default;">' +
+          '<tr class="sf-inline"><td colspan="15" style="background:var(--panel); padding:10px 12px; font-size:12.5px; line-height:1.6; cursor:default;">' +
           '<b>' + kennung(k) + ' – ' + (k.dir === 'call' ? 'Call' : 'Put') + ' ' + U.nf2.format(k.strike) + ', ' + k.restTage +
           ' Tage, BV ' + String(k.ratio).replace('.', ',') + ' · Risikostufe ' + k.stufe + '</b><br>' +
-          '<span style="color:var(--muted); font-size:11.5px;">Modell-Kennung statt WKN – echte WKN-Listen gibt es nur aus Bezahl-Quellen. Mit Typ, Basispreis, Laufzeit und BV findest du bei jedem Emittenten den vergleichbaren echten Schein.</span><br>' +
           k.stufenGruende.map(function (g) { return '• ' + U.esc(g); }).join('<br>') +
           '<br><span style="color:var(--muted);">Break-even ' + U.nf2.format(k.breakEven) + ' $ · Delta ' + k.delta +
           ' · Zeitwertanteil ' + k.zeitwertAnteil + ' % · innerer Wert ' + U.nf2.format(k.innererWert) + ' $</span>' +
+          '<div data-sfecht="' + idx + '" style="margin-top:8px; border-top:1px solid var(--line); padding-top:8px;">' +
+          echteBlock(idx) + '</div>' +
           '</td></tr>');
+        wknVerkabeln(t);
+      });
+    });
+    wknVerkabeln(t);
+  }
+
+  /* Klicks in der WKN-Spalte und im aufgeklappten Kasten. Wird nach jedem
+     Neuzeichnen erneut aufgerufen; die Merker verhindern doppelte Handler. */
+  function wknVerkabeln(t) {
+    t.querySelectorAll('.sf-wkn').forEach(function (td) {
+      if (td.getAttribute('data-verkabelt')) return;
+      td.setAttribute('data-verkabelt', '1');
+      td.addEventListener('click', function (ev) {
+        ev.stopPropagation();   // nicht die Zeile auf- und zuklappen
+        var i = parseInt(td.getAttribute('data-sfwkn'), 10);
+        var tf = WKN_TREFFER[i];
+        if (tf && tf.status === 'ok') {
+          var txt = tf.scheine[0].wkn;
+          try { navigator.clipboard.writeText(txt); } catch (eC) { }
+          td.innerHTML = '<span style="color:var(--up);">kopiert ✓</span>';
+          setTimeout(function () { td.innerHTML = wknZelle(i); }, 900);
+          return;
+        }
+        // Kein Treffer: der Grund gehoert in die Statuszeile, nicht in ein Fenster,
+        // das man wegklicken muss - und er steht ohnehin in der aufgeklappten Zeile.
+        if (tf && tf.status === 'leer') { stat('Keine WKN zu dieser Zeile: ' + tf.grund); return; }
+        wknHolen(i);
+      });
+    });
+    t.querySelectorAll('[data-sfsuche]').forEach(function (a) {
+      if (a.getAttribute('data-verkabelt')) return;
+      a.setAttribute('data-verkabelt', '1');
+      a.addEventListener('click', function (ev) {
+        ev.stopPropagation();
+        wknHolen(parseInt(a.getAttribute('data-sfsuche'), 10));
+      });
+    });
+    t.querySelectorAll('.sf-wknkopie').forEach(function (td) {
+      if (td.getAttribute('data-verkabelt')) return;
+      td.setAttribute('data-verkabelt', '1');
+      td.addEventListener('click', function (ev) {
+        ev.stopPropagation();
+        var alt = td.innerHTML;
+        try { navigator.clipboard.writeText(td.textContent.trim()); } catch (eC) { }
+        td.innerHTML = '<span style="color:var(--up);">kopiert ✓</span>';
+        setTimeout(function () { td.innerHTML = alt; }, 900);
       });
     });
   }

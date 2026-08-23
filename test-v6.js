@@ -2273,5 +2273,113 @@ console.log('\n35) Drift-Buch: Meldung nach Schluss und Zukunftstermine (Audit 2
      'Das Termin-Archiv wird einmalig von Zahlen an Zukunftsterminen befreit (25 Faelle am 22.08., darunter ADSK 27.08.)');
 })();
 
+console.log('\n36) Echte WKN zum Modell-Schein (Tickets #9/#11/#17)');
+(function () {
+  var W = require('./wkn.js');
+
+  /* --- Basiswert-Zuordnung: eine falsche WKN ist schlimmer als keine --- */
+  // Genau das liefert die Kuerzel-Suche nach "MU": Micron ist gar nicht dabei.
+  var trefferMU = [
+    { entityType: 'STOCK', entityValue: '83258', name: 'Münchener Rück', homeSymbol: 'MUV2', isin: 'DE0008430026' },
+    { entityType: 'STOCK', entityValue: '20264835', name: 'Mutares', homeSymbol: 'MUX', isin: 'DE000A2NB650' }
+  ];
+  ok(W.basiswertWaehlen(trefferMU, 'MU', 'Micron') === null,
+     'Kuerzelsuche "MU" liefert Muenchener Rueck – die Zuordnung lehnt ab statt zu raten');
+
+  var trefferMicron = [
+    { entityType: 'STOCK', entityValue: '279805907', name: 'Micron Technology (CDR)', homeSymbol: 'MU', isin: 'CA5949781085' },
+    { entityType: 'STOCK', entityValue: '86911', name: 'Micron Technology', homeSymbol: 'MU', isin: 'US5951121038' },
+    { entityType: 'STOCK', entityValue: '90899', name: 'MICRONICS JAPAN', homeSymbol: '6871', isin: 'JP3750400008' }
+  ];
+  var mic = W.basiswertWaehlen(trefferMicron, 'MU', 'Micron');
+  ok(mic && mic.id === '86911', 'Namenssuche findet Micron – und die Hauptnotierung, nicht die CDR-Zweitnotierung', mic && mic.id);
+
+  // Der Name entscheidet nur mit, wenn er passt: gleiches Kuerzel, anderer Wert -> nicht nehmen
+  ok(W.basiswertWaehlen([{ entityType: 'STOCK', entityValue: '1', name: 'Mutares', homeSymbol: 'MU', isin: 'DE000A2NB650' }], 'MU', 'Micron') !== null,
+     'Ohne Namenstreffer bleibt die Kuerzel-Uebereinstimmung bestehen (die Quelle kennt den Klarnamen nicht immer)');
+  ok(W.basiswertWaehlen(trefferMicron, 'MU', null).id === '86911',
+     'Auch ohne Klarnamen gewinnt die Hauptnotierung vor der Zweitnotierung');
+  ok(W.basiswertWaehlen([{ entityType: 'DERIVATIVE', entityValue: '9', name: 'Irgendein Schein', homeSymbol: 'MU' }], 'MU', 'Micron') === null,
+     'Nur Aktien kommen als Basiswert in Frage, keine Derivate aus derselben Trefferliste');
+  ok(W.basiswertWaehlen([{ entityType: 'STOCK', entityValue: '7', name: 'Infineon', homeSymbol: 'IFX', isin: 'DE0006231004' }], 'IFX.DE', 'Infineon').id === '7',
+     'Yahoo-Boersenkuerzel mit Laendersuffix (IFX.DE) trifft das Heimatkuerzel IFX');
+
+  /* --- Abfrage-URL --- */
+  var jetzt = Date.UTC(2026, 7, 23, 12, 0);   // 23.08.2026
+  var modell = { dir: 'call', strike: 200, restTage: 30, ratio: 0.1 };
+  var url = W.scheinUrl('92472', modell, jetzt, 50);
+  var qp = decodeURIComponent((url.split('queryParameters=')[1] || ''));
+  ok(url.indexOf('entityValueUnderlying=92472') > 0, 'Die Abfrage nennt den Basiswert');
+  ok(qp.indexOf('idExerciseRight=2') >= 0 && W.scheinUrl('1', { dir: 'put', strike: 200, restTage: 30, ratio: 1 }, jetzt).indexOf('%3D1%26') > 0,
+     'Call und Put werden auf die Kennungen 2 und 1 abgebildet');
+  ok(url.indexOf('%3D') > 0 && url.indexOf('%26') > 0 && url.indexOf('&idExerciseRight') < 0,
+     'Die Filter stehen kodiert IM Parameter queryParameters, nicht daneben – sonst ignoriert die Quelle sie stillschweigend');
+  ok(qp.indexOf('strikeAbsRange=194;206') >= 0, 'Basispreis-Band ±3 %', qp);
+  var f = W.fenster(modell, jetzt);
+  ok(f.vonISO === '2026-09-08' && f.bisISO === '2026-10-23',
+     'Laufzeitfenster 0,6× bis 1,8× – eng genug zum Treffen, weit genug für feste Verfallstage', f.vonISO + '…' + f.bisISO);
+
+  /* --- Antwort eindampfen --- */
+  var roh = {
+    list: [
+      { instrument: { wkn: 'JY1DB9', isin: 'DE000JY1DB93' }, issuer: { name: 'J.P. Morgan' },
+        codeExerciseRight: 'C', codeExerciseStyle: 'A', strikeAbs: 224, coverRatio: 0.1,
+        dateMaturity: '2026-10-16T12:00:00.000+00:00', leverage: 10.04, spreadAskPct: 1.25,
+        impliedVolatilityAsk: 37.8731, quanto: false,
+        quote: { bid: 0.79, ask: 0.8, isoCurrency: 'EUR', datetimeAsk: '2026-08-21T19:59:52.000+00:00' } },
+      /* Emittent stellt gerade nicht: nur Geld, dazu eine Spanne von 69 % - der
+         Datensatz ist echt (ASML am 22.08.), als Preis aber unbrauchbar. */
+      { instrument: { wkn: 'PK72K0', isin: 'DE000PK72K00' }, issuer: { name: 'BNP Paribas' },
+        codeExerciseRight: 'C', strikeAbs: 224, coverRatio: 0.1,
+        dateMaturity: '2026-10-16T12:00:00.000+00:00', spreadAskPct: 69.37, impliedVolatilityAsk: 1.0,
+        quote: { bid: 0.34, isoCurrency: 'EUR' } },
+      { instrument: { isin: 'DE000XXXXXX1' }, strikeAbs: 220, dateMaturity: '2026-10-16T12:00:00.000+00:00' },   // ohne WKN
+      { instrument: { wkn: 'AAAAAA' }, codeExerciseRight: 'C', dateMaturity: '2026-10-16T12:00:00.000+00:00' }    // ohne Basispreis
+    ]
+  };
+  var norm = W.normalisiere(roh, jetzt);
+  ok(norm.length === 2, 'Halbe Datensätze (ohne WKN oder ohne Basispreis) fallen raus', norm.length);
+  ok(norm[0].wkn === 'JY1DB9' && norm[0].dir === 'call' && norm[0].restTage === 54 && norm[0].waehrung === 'EUR',
+     'WKN, Richtung, Restlaufzeit und Währung kommen richtig an', norm[0].restTage);
+  ok(norm[0].iv === 37.9, 'Die Quelle liefert die implizite Vola bereits in Prozent – sie wird nicht noch einmal skaliert', norm[0].iv);
+  ok(norm[0].stand === Date.parse('2026-08-21T19:59:52.000+00:00'),
+     'Der Zeitpunkt der letzten Kursstellung wird mitgeführt (am Wochenende ist er von Freitag)');
+  ok(norm[0].kursFraglich === false && norm[1].kursFraglich === true,
+     'Einseitige Stellung mit 69 % Spanne gilt als unbrauchbar, die saubere Stellung nicht');
+  ok(norm[1].iv === null, 'Der Platzhalter 1,0 % Vola wird verworfen statt als Kennzahl ausgegeben', norm[1].iv);
+
+  /* --- Zuordnung Modell -> echter Schein --- */
+  var liste = [
+    { wkn: 'NAH', dir: 'call', strike: 201, restTage: 32, ratio: 0.1, spanneGesamtPct: 1.2 },
+    { wkn: 'WEIT', dir: 'call', strike: 206, restTage: 54, ratio: 0.1, spanneGesamtPct: 0.4 },
+    { wkn: 'BVFALSCH', dir: 'call', strike: 201, restTage: 32, ratio: 1.0, spanneGesamtPct: 0.5 },
+    { wkn: 'PUT', dir: 'put', strike: 200, restTage: 30, ratio: 0.1, spanneGesamtPct: 0.1 }
+  ];
+  var beste = W.besteScheine(modell, liste, 3);
+  ok(beste[0].wkn === 'NAH', 'Der nächstliegende Schein gewinnt – nicht der mit der kleinsten Spanne', beste[0].wkn);
+  ok(beste.every(function (s) { return s.wkn !== 'PUT'; }), 'Ein Put wird einer Call-Zeile nie zugeordnet');
+  ok(W.abstand(modell, liste[0]) < W.abstand(modell, liste[2]),
+     'Gleiche Merkmale, anderes Bezugsverhältnis: schlechterer Treffer (die Spanne je Umlauf ist eine andere)');
+  ok(beste[0].passt === true, 'Basispreis 0,5 % daneben und zwei Tage länger gilt als Treffer');
+
+  /* Der ehrliche Fall: zu einer 7-Tage-Zeile gibt es nur einen 19-Tage-Schein.
+     Er wird gezeigt, aber NICHT als Treffer ausgegeben – Zeitwertverfall ist der
+     halbe Handel, ein 19-Tage-Schein ist ein anderes Geschäft. */
+  var kurz = W.besteScheine({ dir: 'call', strike: 257, restTage: 7, ratio: 0.1 },
+    [{ wkn: 'BD2184', dir: 'call', strike: 250, restTage: 19, ratio: 1.0, spanneGesamtPct: 4.5 }], 3);
+  ok(kurz.length === 1 && kurz[0].passt === false,
+     'Nur ähnlich statt Treffer: 19 statt 7 Tage wird als solches gekennzeichnet', kurz[0] && kurz[0].abstand);
+
+  /* --- Verdrahtung: das Modul muss auch ausgeliefert und freigeschaltet sein --- */
+  var html = fs.readFileSync(__dirname + '/index.html', 'utf8');
+  var mainQ = fs.readFileSync(__dirname + '/main.js', 'utf8');
+  var sf = fs.readFileSync(__dirname + '/scheinfinder.js', 'utf8');
+  ok(/<script src="wkn\.js"><\/script>/.test(html), 'wkn.js wird von index.html geladen (sonst fehlt es im Paket)');
+  ok(/'api\.onvista\.de'/.test(mainQ), 'api.onvista.de steht in der Host-Freigabe – ohne sie blockt die Bridge jeden Abruf');
+  ok(html.indexOf('Keine echten WKNs') < 0 && sf.indexOf('Modell-Kennung statt WKN: Echte WKN-Listen') < 0,
+     'Die alte Auskunft „echte WKNs gibt es nur gegen Bezahlung" steht nirgends mehr');
+  ok(/colspan="15"/.test(sf), 'Die aufgeklappte Zeile spannt über alle 15 Spalten (WKN kam dazu)');
+})();
+
 console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
 process.exit(fails ? 1 : 0);
