@@ -278,7 +278,7 @@
       { t: 'Totalverlust', tip: 'Modell-Wahrscheinlichkeit, dass der Schein wertlos verfällt', sort: 'tv', pfeil: '↑', r: 1 },
       { t: 'Hürde', tip: 'Wie weit der Basiswert laufen muss, um allein die Spanne zu bezahlen', sort: 'huerde', pfeil: '↑', r: 1 }
     ];
-    var SORTNAME = { stufe: 'Risikostufe (defensiv zuerst)', huerde: 'kleinste Kostenhürde', spread: 'kleinste Spanne', theta: 'wenigster Zeitwertverlust', tv: 'kleinste Totalverlust-Gefahr', omega: 'größter Hebel', omegaAuf: 'kleinster Hebel' };
+    var SORTNAME = { stufe: 'Risikostufe (defensiv zuerst)', huerde: 'kleinste Spannen-Hürde (ohne Zeitwert)', spread: 'kleinste Spanne', theta: 'wenigster Zeitwertverlust', tv: 'kleinste Totalverlust-Gefahr', omega: 'größter Hebel', omegaAuf: 'kleinster Hebel' };
     var koepfe = SPALTEN.map(function (c) {
       var aktiv = c.sort && (c.sort === s || (c.wechsel && (s === 'omega' || s === 'omegaAuf')));
       var stil = (c.r ? 'text-align:right;' : '') + (c.sort ? 'cursor:pointer; white-space:nowrap;' : '') + (aktiv ? 'color:var(--acc);' : '');

@@ -387,7 +387,13 @@
       // Modellzahl, keine Prophezeiung - aber sie macht "weit aus dem Geld + kurze
       // Laufzeit" als das sichtbar, was es ist: ein Lotterielos.
       totalverlustP: Math.round((dir === 'call' ? normCdf(-d2) : normCdf(d2)) * 1000) / 10,
-      // Wie weit muss der Basiswert laufen, damit allein die Spanne bezahlt ist?
+      /* Wie weit muss der Basiswert laufen, damit ALLEIN DIE SPANNE bezahlt ist.
+       * Ausdruecklich NICHT die volle Kostenhuerde: Zeitwertverlust und Ordergebuehr
+       * fehlen hier. Die volle Huerde rechnet kostenHuerdePp in depot.js.
+       * Der Unterschied ist ungleichmaessig - bei Bezugsverhaeltnis 1,0 liegt die
+       * volle Huerde ueber doppelt so hoch wie die Spannen-Huerde, bei 0,1 nur rund
+       * ein Viertel darueber. Wer nach dieser Zahl sortiert, sortiert also nach der
+       * Spanne, nicht nach den Kosten - deshalb heisst sie so. */
       spanneHuerdePct: 0
     };
     kz.spanneHuerdePct = kz.omega > 0 ? Math.round(2 * spx / kz.omega * 10000) / 100 : null;
