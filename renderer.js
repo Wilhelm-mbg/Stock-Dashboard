@@ -116,6 +116,18 @@
     return { kurs: kurs, pct: (kurs / basis - 1) * 100, phase: phase };
   }
 
+  /** Kurzform des ausserboerslichen Kurses fuer die engen Stellen (Marktbild,
+   *  Gewinner/Verlierer). Gibt leeren Text zurueck, wenn gerade regulaer
+   *  gehandelt wird oder kein Kurs vorliegt - dann steht dort einfach nichts. */
+  function ppKurz(q) {
+    if (!q || !q.pp || !q.pp.kurs) return '';
+    var wort = q.pp.phase === 'vorboerslich' ? 'vorb.' : 'nachb.';
+    var cls = q.pp.pct > 0.001 ? 'up' : (q.pp.pct < -0.001 ? 'down' : 'flat');
+    return '<span class="ppk ' + cls + '" title="' + (q.pp.phase === 'vorboerslich' ? 'Vorbörslicher' : 'Nachbörslicher') +
+      ' Handel: ' + nfP.format(q.pp.kurs) + ' $ – dünner Umsatz, Kurse können springen">' + wort + ' ' +
+      (q.pp.pct > 0 ? '+' : '') + nfP.format(q.pp.pct) + '&nbsp;%</span>';
+  }
+
   async function refreshQuotes() {
     var all = INDICES.map(function (x) { return x.y; }).concat(STOCKS.map(function (s) { return s.y; }));
     var okCount = 0, idx = 0;
@@ -255,7 +267,7 @@
     function moverRows(list) {
       return list.map(function (s) {
         return '<div class="mover-row" data-sym="' + esc(s.y) + '"><span class="sym">' + esc(s.y) + '</span>' +
-          '<span class="nm">' + esc(s.name) + '</span>' + pctChip(Q[s.y].pct) + '</div>';
+          '<span class="nm">' + esc(s.name) + '</span>' + ppKurz(Q[s.y]) + pctChip(Q[s.y].pct) + '</div>';
       }).join('');
     }
     setzeInhalt('winners', moverRows(sorted.slice(0, 3)));
@@ -277,8 +289,15 @@
             bg = 'color-mix(in srgb, var(' + (pct > 0 ? '--up' : '--down') + ') ' + n + '%, var(--surface))';
           }
           var sign = pct > 0 ? '+' : '';
-          return '<div class="hz" data-heat="' + esc(s.y) + '" title="' + esc(s.name + ' ' + sign + nfP.format(pct) + ' %') + '" style="background:' + bg + '">' +
-            '<span class="s">' + esc(s.y) + '</span><span class="p">' + sign + nfP.format(pct) + '&nbsp;%</span></div>';
+          /* Der ausserboersliche Kurs steht als eigene Zeile darunter, nicht statt der
+           * Tagesbewegung: beide Zahlen beantworten verschiedene Fragen. */
+          var ppq = Q[s.y], ppT = ppq && ppq.pp && ppq.pp.kurs
+            ? ' · ' + (ppq.pp.phase === 'vorboerslich' ? 'vorbörslich' : 'nachbörslich') + ' ' +
+              nfP.format(ppq.pp.kurs) + ' $ (' + (ppq.pp.pct > 0 ? '+' : '') + nfP.format(ppq.pp.pct) + ' %)'
+            : '';
+          return '<div class="hz" data-heat="' + esc(s.y) + '" title="' + esc(s.name + ' ' + sign + nfP.format(pct) + ' %' + ppT) + '" style="background:' + bg + '">' +
+            '<span class="s">' + esc(s.y) + '</span><span class="p">' + sign + nfP.format(pct) + '&nbsp;%</span>' +
+            ppKurz(Q[s.y]) + '</div>';
         }).join('');
       }
     }

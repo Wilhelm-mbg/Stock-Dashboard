@@ -411,6 +411,12 @@
     return added;
   };
 
+  /* Felix, Issue #68: die Einstellungen sollten bei den Werkzeugen erreichbar sein.
+   * Die Pille dort loest denselben Knopf aus, statt den Dialog ein zweites Mal zu
+   * bauen - zwei Wege hinein, aber nur eine Wahrheit darueber, was er tut. */
+  var wzE = document.getElementById('wzEinstellungen');
+  if (wzE) wzE.addEventListener('click', function () { document.getElementById('settingsBtn').click(); });
+
   document.getElementById('settingsBtn').addEventListener('click', function () {
     document.getElementById('setTray').checked = !!SETTINGS.tray;
     ['setCapKey', 'setCapId', 'setCapPass'].forEach(function (id, i3) {

@@ -327,6 +327,12 @@
   .heat .hz:hover { transform: scale(1.04); }
   .heat .hz .s { font-weight: 700; font-size: var(--fs-text); display: block; }
   .heat .hz .p { font-size: var(--fs-neben); }
+  /* Ausserboerslicher Kurs (Issue #68): eigene, ruhigere Zeile - er ist duenn
+     gehandelt und soll die Tagesbewegung nicht optisch ueberstimmen. */
+  .ppk { font-size: var(--fs-klein); color: var(--muted); white-space: nowrap; }
+  .ppk.up { color: var(--up); } .ppk.down { color: var(--down); }
+  .heat .hz .ppk { display: block; opacity: .85; }
+  .mover-row .ppk { margin-right: 6px; }
 
   /* Ertragskurve im Depot */
   .eq-panel { padding: 12px 14px; margin-bottom: 10px; }
@@ -761,14 +767,11 @@
 <div id="tab-depot" class="tab" role="tabpanel" aria-labelledby="reiter-depot">
   <div class="simnote"><b>Simulation mit virtuellem Kapital – keine Anlageberatung.</b> Gehandelt wird <span id="depotInstrumentHinweis">der Basiswert (Aktie 1×, ohne Hebel)</span>. Optionsscheine werden synthetisch bepreist (Black-Scholes): Hebel, Zeitwertverfall, Volatilitäts-Smile und der Vola-Einbruch nach Ergebnisterminen sind abgebildet, echte Emittenten-Preise nicht. Läuft, solange die App geöffnet ist. <button class="info" type="button" data-info="modell.schein" aria-expanded="false" aria-label="Erklärung: Wie ein Optionsschein hier bepreist wird">i</button></div>
 
-  <div class="simnote" style="margin-bottom:6px;">Was für jede Strategie spricht und was dagegen, steht im Reiter <b>Regeln</b>. Ein- und ausschalten lässt sie sich hier wie dort.</div>
+  <div class="simnote" style="margin-bottom:6px;">Hier steht, was das Depot hält und was es getan hat. Wonach gehandelt wird – Schalter, Regelbuch, Chart und Autopilot – steht im Reiter <b>Regeln</b>.</div>
   <div class="pills" id="depotPills">
     <button data-sub="depot" class="active">Depot</button>
-    <button data-sub="strategien">Schalter &amp; Einstellungen</button>
-    <button data-sub="wende">Trendfinder</button>
-    <button data-sub="protokoll">Protokoll</button>
-    <button data-sub="auswertung">Auswertung</button>
     <button data-sub="mittel">Mittelfristig</button>
+    <button data-sub="protokoll">Protokoll</button>
   </div>
 
   <!-- ============ DEPOT ============ -->
@@ -785,10 +788,458 @@
       <h2 style="margin:0;">Offene Positionen</h2>
       <label style="font-size:var(--fs-neben); display:flex; align-items:center; gap:6px; margin-left:auto; color:var(--ink-2);"><input type="checkbox" id="notifyEnabled" checked> Benachrichtigung bei Trades</label>
     </div>
-    <div class="panel" id="positionsPanel"><div class="loading">Noch keine Positionen – schalte unter „Vermögen → Schalter &amp; Einstellungen“ die Intraday-Strategie ein.</div></div>
+    <div class="panel" id="positionsPanel"><div class="loading">Noch keine Positionen – schalte unter „Regeln → Schalter &amp; Einstellungen“ die Intraday-Strategie ein.</div></div>
   </div>
 
   <!-- ============ STRATEGIEN ============ -->
+  <div class="sub" id="sub-mittel">
+  <div class="panel">
+    <h3>Momentum im Querschnitt · Aktien, keine Hebelscheine</h3>
+    <div id="mfErklaerung" style="font-size:var(--fs-text); color:var(--ink-2); line-height:1.55;">
+      Diese Strategie vergleicht alle Werte des Universums <b>miteinander</b> und hält das stärkste Zehntel.
+      Kein Chartmuster, kein Ein- und Ausstiegssignal – nur eine Rangfolge, die alle drei Monate neu gebildet wird.
+      Gekauft werden <b>Aktien</b>; mit Hebelscheinen auf 21 Tage ist eine Haltedauer von drei Monaten nicht
+      darstellbar, der Zeitwertverfall frisst sie auf.
+    </div>
+    <div class="chartleiste" style="margin-top:10px;">
+      <label title="Über wie viele Handelstage die Stärke gemessen wird. 231 Tage sind rund elf Monate.">Rückblick
+        <select id="mfRueck">
+          <option value="126">126 Tage (6 Mon.)</option>
+          <option value="189">189 Tage (9 Mon.)</option>
+          <option value="231" selected>231 Tage (11 Mon.)</option>
+          <option value="273">273 Tage (13 Mon.)</option>
+        </select>
+      </label>
+      <label title="Der jüngste Monat wird ausgelassen – dort liegt die kurzfristige Gegenbewegung, die den Effekt schwächt.">Lücke
+        <select id="mfLuecke"><option value="0">keine</option><option value="21" selected>21 Tage</option></select>
+      </label>
+      <label title="Wie lange gehalten wird, bevor die Rangfolge neu gebildet wird.">Halten
+        <select id="mfHalten">
+          <option value="42">42 Tage</option>
+          <option value="63" selected>63 Tage (3 Mon.)</option>
+          <option value="126">126 Tage (6 Mon.)</option>
+        </select>
+      </label>
+      <label title="Wie groß der gehaltene Teil des Universums ist. Zehn Prozent schnitten durchweg besser ab als zwanzig.">Anteil
+        <select id="mfAnteil"><option value="0.10" selected>stärkste 10 %</option><option value="0.15">15 %</option><option value="0.20">20 %</option></select>
+      </label>
+      <label title="Kosten je Kauf oder Verkauf. 20 Basispunkte sind für liquide Aktien realistisch.">Kosten
+        <select id="mfKosten"><option value="0">0 Bp</option><option value="10">10 Bp</option><option value="20" selected>20 Bp</option><option value="40">40 Bp</option></select>
+      </label>
+      <button class="btn" id="mfLadenBtn">Daten holen und rechnen</button>
+      <span id="mfStatus" class="hinweis"></span>
+    </div>
+  </div>
+
+  <div class="grid2" style="margin-top:12px;">
+    <div class="panel">
+      <h3>Was jetzt zu halten wäre</h3>
+      <div id="mfRang"><div class="empty">Noch nicht gerechnet.</div></div>
+    </div>
+    <div class="panel">
+      <h3>Wie es sich geschlagen hat</h3>
+      <div id="mfErgebnis"><div class="empty">Noch nicht gerechnet.</div></div>
+    </div>
+  </div>
+
+  <div class="panel" style="margin-top:12px;">
+    <h3>Was du dabei wissen musst</h3>
+    <div style="font-size:var(--fs-text); color:var(--ink-2); line-height:1.6;">
+      <p style="margin:0 0 8px;"><b>Der größte Rückschlag lag bei 52 Prozent</b> (2008). Das ist kein ruhiges Investment.
+      Wer bei so einem Einbruch aussteigt, hat den Effekt nicht – er entsteht gerade dadurch, dass man dabeibleibt.</p>
+      <p style="margin:0 0 8px;"><b>In 8 von 22 Jahren war das Depot schlechter als der Markt.</b> 2024 lag es bei
+      −0,1 % gegen +7,4 %. Momentum verliert typischerweise genau dann, wenn der Markt scharf dreht.</p>
+      <p style="margin:0 0 8px;"><b>Das Universum enthält nur Firmen, die es heute noch gibt.</b> Pleiten und
+      Übernahmen fehlen in den Daten. Der Vergleich läuft gegen den Durchschnitt derselben Werte, was das dämpft,
+      aber nicht aufhebt. Der gemessene Vorsprung ist eher eine Obergrenze.</p>
+      <p style="margin:0;"><b>Alles hier ist Simulation.</b> Es wird nichts gekauft und nichts verkauft.</p>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h3>Mittelfrist-Depot · Momentum und Ergebnis-Drift handeln</h3>
+    <div style="font-size:var(--fs-text); color:var(--ink-2); line-height:1.55; margin-bottom:8px;">
+      Zwei getrennte virtuelle Bücher à 100.000 $, die die beiden Strategien <b>tatsächlich führen</b> – beide halten über die volle Historie, aber nicht auf den zurückgehaltenen Jahren ab 2005 (Momentum t = 1,62; Ergebnis-Drift nach Zeitzonen-Korrektur 8,44 statt 14,07 % p.a.). Stand 23.08.2026, Details im Reiter Messung –
+      bis hierher waren Momentum und Ergebnis-Drift Rechenblätter ohne Depot. Die Schalter im Reiter
+      „Regeln“ entscheiden: <b>an</b> heißt selbsttätig handeln, <b>aus</b> heißt nur rechnen und
+      erinnern („Rebalancing fällig“ mit Handlungsliste). Alles Simulation, keine Anlageberatung.
+    </div>
+    <div class="chartleiste">
+      <button id="mfdTaktBtn" class="btn ghost">Jetzt prüfen</button>
+      <button id="mfdRebalanceBtn" class="btn" title="Momentum-Rebalancing sofort ausführen, unabhängig vom 63-Tage-Rhythmus">Momentum jetzt umschichten</button>
+      <button id="mfdDriftBtn" class="btn" title="Drift-Buch sofort abgleichen: Fällige schließen, neue Signale eröffnen">Drift jetzt abgleichen</button>
+    </div>
+    <div id="mfdStatus" class="hinweis" style="margin-top:6px;"></div>
+    <h3 style="margin-top:12px; font-size:var(--fs-gross);">Momentum-Buch <span style="font-weight:400; color:var(--muted);">· stärkstes Zehntel, alle 63 Handelstage, 20 Bp je Seite</span></h3>
+    <div id="mfdMomentum" style="margin-top:6px;"></div>
+    <h3 style="margin-top:14px; font-size:var(--fs-gross);">Ergebnis-Drift-Buch <span style="font-weight:400; color:var(--muted);">· 60 Handelstage je Position, long und short, 10 Bp je Seite</span></h3>
+    <div id="mfdDrift" style="margin-top:6px;"></div>
+  </div>
+
+  <div class="panel">
+    <h3>Ergebnis-Drift · Aktien, keine Hebelscheine</h3>
+    <div style="font-size:var(--fs-text); color:var(--ink-2); line-height:1.55;">
+      Nach einer Quartalsmeldung läuft der Kurs noch Wochen in Richtung der Überraschung weiter.
+      Gekauft wird das <b>oberste Fünftel</b> der Überraschungen, verkauft das <b>unterste</b> – gleich viele,
+      aus demselben Topf. Anders als das Momentum darüber ist das <b>kein Chartsignal</b>: Die Information
+      kommt aus den Zahlen, nicht aus dem Kursverlauf. Deshalb bleibt neben dem Momentum messbar etwas übrig
+      (Korrelation der Monatserträge nur 0,41, Alpha +6,90 % p. a. bei t = 2,20).
+      <br><br>
+      <b>Nicht mit Hebelscheinen handelbar.</b> Am 21.08.2026 durchgerechnet: Der Basiswert müsste 5,5 bis 11 %
+      laufen, damit ein Schein nach Zeitwertverfall und Spanne bei null herauskommt – der Drift liefert rund
+      1,3 % je Position. Faktor 4 bis 8 zu wenig. Gerechnet wird deshalb im Basiswert.
+    </div>
+    <div class="chartleiste" style="margin-top:10px;">
+      <label title="Wie lange eine Position gehalten wird. Auf 20 Tagen ist der Effekt seit 2015 tot (t = 0,77) – erst ab rund 60 Tagen trägt er.">Halten
+        <select id="drHalten">
+          <option value="20">20 Tage</option>
+          <option value="40">40 Tage</option>
+          <option value="60" selected>60 Tage (geprüft)</option>
+          <option value="90">90 Tage</option>
+        </select>
+      </label>
+      <label title="Wie groß die beiden Beine sind. 0,2 heißt: oberstes und unterstes Fünftel.">Anteil je Bein
+        <select id="drAnteil">
+          <option value="0.1">10 %</option>
+          <option value="0.2" selected>20 % (geprüft)</option>
+          <option value="0.33">33 %</option>
+        </select>
+      </label>
+      <label title="Gegen wie viele Handelstage zurück eine Überraschung eingeordnet wird. Nur bereits veröffentlichte Zahlen zählen – kein Blick in die Zukunft.">Vergleichsfenster
+        <select id="drFenster">
+          <option value="60">60 Tage</option>
+          <option value="120" selected>120 Tage (geprüft)</option>
+          <option value="250">250 Tage</option>
+        </select>
+      </label>
+      <label title="Handelskosten je Seite. Bei 10 Basispunkten sinkt das Ergebnis um rund 1,8 Prozentpunkte im Jahr.">Kosten
+        <select id="drKosten">
+          <option value="0">keine</option>
+          <option value="10" selected>10 Basispunkte</option>
+          <option value="20">20 Basispunkte</option>
+          <option value="40">40 Basispunkte</option>
+        </select>
+      </label>
+      <button id="drLadeBtn" class="btn" title="Holt die Termine für Werte, die noch keine haben, plus einen rollierenden Teil für frische Meldungen. Schonend für die Quelle.">Termine nachladen</button>
+      <button id="drLadeAlleBtn" class="btn" title="Holt die Termine für ALLE Werte. Dauert einige Minuten und kann von Yahoo gedrosselt werden.">Alle Termine laden</button>
+      <button id="drRechneBtn" class="btn">Neu rechnen</button>
+    </div>
+    <div id="drStatus" class="hinweis" style="margin-top:8px;"></div>
+    <div id="drErgebnis" style="margin-top:10px;"></div>
+
+    <h3 style="margin-top:16px;">Was wäre heute offen?</h3>
+    <div id="drHeute" style="margin-top:6px;"></div>
+
+    <div style="margin-top:14px; font-size:var(--fs-neben); color:var(--ink-2); line-height:1.55; border-top:1px solid var(--grid); padding-top:10px;">
+      <p style="margin:0 0 6px;"><b>Was gemessen ist.</b> 20.356 Ergebnistermine aus 197 Werten, 1993–2026.
+      Marktneutral, 60 Handelstage, Rang nur gegen bereits veröffentlichte Zahlen:
+      ab 2015 <b>+10,44 % p. a. bei t = 3,04</b> und 67 % positiven Monaten, positiv in allen sieben Teilzeiträumen.
+      Zufällige Zuordnung ergibt −1,74 % (t = −0,88) – der Aufbau selbst erzeugt nichts.</p>
+      <p style="margin:0 0 6px;"><b>Was offen bleibt.</b> Die Überlebensverzerrung ist nur teilweise ausgeräumt:
+      In der über zehn Jahre schwachen Hälfte der Werte bleiben nur +1,72 % (t = 0,58), in der starken +8,61 %.
+      Ein guter Teil sitzt weiter in den Gewinnern von heute. Und es braucht <b>beide Beine</b> –
+      long allein ist überwiegend Marktbeta.</p>
+      <p style="margin:0;"><b>Alles hier ist Simulation.</b> Es wird nichts gekauft und nichts verkauft.</p>
+    </div>
+  </div>
+  </div>
+  <div class="sub" id="sub-protokoll">
+    <div class="pills small" id="logFilter">
+      <button data-lf="all" class="active">Alle</button>
+      <button data-lf="hourly">Stunden (widerlegt)</button>
+      <button data-lf="intraday">Intraday</button>
+      <button data-lf="open">Offen</button>
+      <button data-lf="replicated">Nachgebildet</button>
+      <button id="csvBtn" style="margin-left:auto;">CSV-Export</button>
+    </div>
+    <div class="panel" id="tradeLog"><div class="loading">Noch keine Trades.</div></div>
+  </div>
+
+  <!-- ============ AUSWERTUNG ============ -->
+</div><!-- /tab-depot -->
+<div id="tab-werkzeuge" class="tab" role="tabpanel" aria-labelledby="reiter-werkzeuge">
+  <div class="pills" id="wzPills">
+    <button data-sub="explorer" class="active">Aktien-Explorer</button>
+    <button data-sub="scheine">Schein-Finder</button>
+    <button data-sub="wende">Trendfinder</button>
+    <!-- Ohne data-sub: der Umschalter laesst diese Pille in Ruhe, sie oeffnet nur den
+         vorhandenen Einstellungs-Dialog. Felix wollte die Einstellungen bei den
+         Werkzeugen; ihn hierher zu kopieren waere eine zweite Wahrheit gewesen. -->
+    <button type="button" id="wzEinstellungen" title="Öffnet die App-Einstellungen">Einstellungen …</button>
+  </div>
+  <div class="sub active" id="sub-explorer">
+  <div class="exp-search">
+    <input type="text" id="expQuery" placeholder="Aktie, ETF oder Index suchen – Ticker oder Name (z. B. „Rheinmetall“, „SAP“, „PLTR“) …">
+    <button class="btn" id="expSearchBtn">Suchen</button>
+  </div>
+  <div class="exp-results" id="expResults"></div>
+  <div id="expStart"></div>
+  <div id="expDetail" style="display:none;">
+    <div style="display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; margin:14px 0 4px;">
+      <span style="font-size:var(--fs-titel); font-weight:700;" id="expName"></span>
+      <span style="color:var(--muted);" id="expMeta"></span>
+      <span style="font-size:var(--fs-titel); font-weight:700; margin-left:auto;" id="expPrice"></span>
+      <span id="expChg"></span>
+    </div>
+    <div class="panel">
+      <div class="rangebtns" id="expRanges"></div>
+      <div class="chartleiste">
+        <label title="Linie zeigt nur den Schlusskurs. Kerzen zeigen zusätzlich Eröffnung, Hoch und Tief jeder Periode – daran erkennt man, wie eine Bewegung zustande kam.">Darstellung
+          <select id="expChartArt"><option value="linie" selected>Linie</option><option value="kerzen">Kerzen</option></select>
+        </label>
+        <label title="Wie weit zurück der Chart reicht. Yahoo begrenzt Intraday-Daten: 1-Minuten höchstens 7 Tage, 5/15-Minuten 60 Tage, Stundenkerzen 730 Tage.">Zeitraum
+          <select id="expZeit">
+            <option value="1d">1 Tag</option>
+            <option value="5d">5 Tage</option>
+            <option value="1mo">1 Monat</option>
+            <option value="60d">60 Tage</option>
+            <option value="6mo">6 Monate</option>
+            <option value="1y" selected>1 Jahr</option>
+            <option value="2y">2 Jahre</option>
+            <option value="5y">5 Jahre</option>
+            <option value="max">Maximum</option>
+          </select>
+        </label>
+        <label title="Freie Datumswahl – schlägt den Zeitraum links. Ein Klick auf einen Schnellwahl-Knopf setzt sie zurück.">von<input id="expVon" type="date" style="width:130px;"></label>
+        <label>bis<input id="expBis" type="date" style="width:130px;"></label>
+        <label title="Wie fein der Chart aufgelöst ist. Feinere Kerzen reichen weniger weit zurück.">Kerzen
+          <select id="expKerze">
+            <option value="1m">1 Minute</option>
+            <option value="5m">5 Minuten</option>
+            <option value="15m">15 Minuten</option>
+            <option value="60m">1 Stunde</option>
+            <option value="1d" selected>1 Tag</option>
+            <option value="1wk">1 Woche</option>
+            <option value="1mo">1 Monat</option>
+          </select>
+        </label>
+        <span id="expZeitHinweis" class="hinweis"></span>
+      </div>
+      <div class="chartleiste" id="expSignalLeiste">
+        <span style="color:var(--muted); font-size:var(--fs-neben);">Signale einblenden:</span>
+        <label class="sigbox" title="Gemessen und ohne Vorsprung – wird angezeigt, weil du es sehen willst, nicht weil es trägt."><input type="checkbox" data-sig="cross"> EMA-Kreuzung</label>
+        <label class="sigbox" title="Roh ohne Vorsprung. Dieselbe Überdehnung trägt erst als Kapitulations-Dip: nur im Abwärtskanal, nur mit Volumen, nur Long."><input type="checkbox" data-sig="reversion"> Umkehr</label>
+        <label class="sigbox" title="Gemessen und ohne Vorsprung – wird angezeigt, weil du es sehen willst, nicht weil es trägt."><input type="checkbox" data-sig="pullback"> Rücksetzer</label>
+        <label class="sigbox" title="Roh ein Münzwurf (+0,017 Prozentpunkte). Trägt erst mit der Erlaubnis „Seitwärtskanal + Volumen“ – das ist die Hauptstrategie; gegen eine gepaarte Kontrolle ist sie seit dem 23.08.2026 nicht entscheidbar."><input type="checkbox" data-sig="rsi2"> RSI(2)</label>
+        <label class="sigbox" title="Gemessen und ohne Vorsprung – wird angezeigt, weil du es sehen willst, nicht weil es trägt."><input type="checkbox" data-sig="donchian"> Donchian</label>
+        <label class="sigbox" title="Gemessen und ohne Vorsprung – wird angezeigt, weil du es sehen willst, nicht weil es trägt."><input type="checkbox" data-sig="squeeze"> Squeeze</label>
+        <label class="sigbox"><input type="checkbox" data-sig="linie"> Leitlinie (EMA20)</label>
+        <span id="expSigZahl" class="hinweis"></span>
+      </div>
+      <div class="chartleiste" id="expIndiLeiste">
+        <span style="color:var(--muted); font-size:var(--fs-neben);">Chartbild:</span>
+        <label class="sigbox" title="Gleitende Durchschnitte über die letzten 50 bzw. 200 KERZEN der gewählten Kerzengröße – auf dem Tageschart also 50/200 Handelstage, auf dem Stundenchart 50/200 Stunden. Gezeichnet wird nur, wenn genug Kerzen da sind, nie heimlich verkürzt."><input type="checkbox" data-ind="ma"> SMA 50/200</label>
+        <label class="sigbox" title="Kreuzungen der beiden Durchschnitte. Gemessen an 191 Werten über 55 Jahre hat dieses Signal KEINEN Vorsprung – es wird angezeigt, weil du es sehen willst, nicht weil es trägt."><input type="checkbox" data-ind="cross50200"> Golden/Death Cross</label>
+        <label class="sigbox" title="Regressionskanal: eine Gerade durch den Kursverlauf mit paralleler Ober- und Unterkante. Zeigt vier Sichten auf die JÜNGSTE Bewegung (kurz/mittel/lang/ab Wendepunkt). Das lange Seitwärtsfenster daraus ist die einzige gemessen tragende Kanal-Nutzung – es steuert den Intraday-Einstieg."><input type="checkbox" data-ind="kanal"> Trendkanal</label>
+        <label class="sigbox" title="Zerlegt die gesamte sichtbare Historie an ihren Wendepunkten und zeichnet für JEDEN Trendabschnitt einen eigenen Kanal – grün aufwärts, rot abwärts, blau seitwärts. Reine Anzeige zum Erkennen von Marktphasen: Als Handelsbedingung wurde ein Dip-Kauf im frischen Seitwärtsabschnitt gemessen und fiel durch – es wird bewusst nichts davon gehandelt."><input type="checkbox" data-ind="segmente"> Kanal-Abschnitte (Historie)</label>
+        <label class="sigbox" title="Höchster und tiefster Kurs der letzten 20 bzw. 60 Perioden – die Zonen, an denen der Kurs zuletzt gedreht hat."><input type="checkbox" data-ind="sr"> Unterstützung / Widerstand</label>
+        <label class="sigbox" title="Handelsvolumen je Kerze. Ein Ausbruch mit hohem Volumen ist glaubwürdiger als einer bei dünnem Handel."><input type="checkbox" data-ind="volumen"> Volumen</label>
+        <span id="expKanalInfo" class="hinweis"></span>
+      </div>
+      <!-- Kanal-Verzug: Ein Regressionskanal beschreibt, was war, und läuft der Bewegung
+           deshalb immer nach. Wie weit, gehört als Zahl unter den Chart – sonst hält man
+           eine Beschreibung der Vergangenheit für eine Vorhersage. -->
+      <div id="expKanalVerzug" class="hinweis" style="margin:2px 0 8px; line-height:1.5;"></div>
+      <div class="chartwrap">
+        <div id="expReadout"></div>
+        <svg id="bigchart"></svg>
+      </div>
+      <div id="expSigDetail" class="panel" style="display:none; margin-top:10px; padding:10px 12px;"></div>
+      <div id="expSigListe" style="margin-top:10px;"></div>
+    </div>
+    <div class="grid2" style="margin-top:12px;">
+      <div class="panel">
+        <h3>Kennzahlen</h3>
+        <dl class="kv" id="expStats"></dl>
+        <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+          <button class="btn" id="aiBtn">KI-Analyse anfordern</button>
+          <button class="btn ghost" id="watchBtn">Zur Handels-Watchlist</button>
+          <span id="aiStatus" style="color:var(--muted); font-size:var(--fs-neben);"></span>
+        </div>
+      </div>
+      <div class="panel">
+        <h3>News zu diesem Wert</h3>
+        <div id="expNews"><div class="loading">–</div></div>
+      </div>
+    </div>
+  </div>
+  </div>
+  <div class="sub" id="sub-scheine">
+  <div class="panel">
+    <h3>Schein-Finder · Kennzahlen und Risikostufe</h3>
+    <div style="font-size:var(--fs-text); color:var(--ink-2); line-height:1.55; margin-bottom:10px;">
+      Rechnet das volle Raster möglicher Scheine zu einem Basiswert durch – mit <b>demselben Modell, mit dem
+      das Depot handelt</b> (Black-Scholes plus das an echten Emittentenkursen geeichte Spanne-Modell).
+      Jeder Schein hier verhält sich exakt so wie in der Simulation. Zu jeder Zeile lässt sich der
+      <b>echte Schein mit WKN</b> nachschlagen (Spalte „WKN“ oder Zeile anklicken) – Emittent, echte
+      Geld-/Brief-Kurse und der Abstand zur Modell-Zeile stehen dabei, denn Emittenten legen nur auf
+      feste Verfallstage auf.
+      Die <b>Risikostufe</b> (1 defensiv … 5 Lotterielos) begrenzt auf Wunsch auch den Handel – Einstellung
+      „maximale Risikostufe“ im Depot unter Risiko &amp; Kosten.
+    </div>
+    <div class="chartleiste">
+      <label>Basiswert<select id="sfSymbol"></select></label>
+      <label title="Leer lassen für die Schätzung aus der historischen Volatilität (× 1,1)">Vola %<input id="sfIv" type="number" min="5" max="150" style="width:70px;"></label>
+      <button id="sfLadenBtn" class="btn">Laden &amp; rechnen</button>
+    </div>
+    <div id="sfStatus" class="hinweis" style="margin-top:6px;"></div>
+    <div class="chartleiste" style="margin-top:8px;">
+      <label>Typ<select id="sfTyp"><option value="alle">alle</option><option value="call">Call</option><option value="put">Put</option></select></label>
+      <label title="Nur Scheine bis zu dieser Risikostufe anzeigen">max. Stufe<select id="sfStufe"><option>1</option><option>2</option><option selected>3</option><option>4</option><option>5</option></select></label>
+      <label>Hebel von<input id="sfHebelMin" type="number" value="3" style="width:60px;"></label>
+      <label>bis<input id="sfHebelMax" type="number" value="20" style="width:60px;"></label>
+      <label>Laufzeit von<input id="sfLzMin" type="number" value="14" style="width:60px;"> Tagen</label>
+      <label>bis<input id="sfLzMax" type="number" value="180" style="width:60px;"></label>
+      <label title="Geld-Brief-Spanne je Seite">max. Spanne %<input id="sfSpreadMax" type="number" value="1" step="0.1" style="width:60px;"></label>
+      <label title="Modell-Wahrscheinlichkeit eines wertlosen Verfalls">max. Totalverlust %<input id="sfTvMax" type="number" value="50" style="width:60px;"></label>
+      <label title="Filtert das Raster auf Basispreise in einem Band um den aktuellen Kurs des Basiswerts („ums Geld“). Die Bandbreite ist frei wählbar.">Basispreis<select id="sfBand">
+        <option value="999" selected>alle</option>
+        <option value="2.5">±2,5 % ums Geld</option>
+        <option value="5">±5 % ums Geld</option>
+        <option value="10">±10 % ums Geld</option>
+        <option value="20">±20 % ums Geld</option>
+      </select></label>
+      <label>Sortierung<select id="sfSort">
+        <option value="stufe" selected>Risikostufe (defensiv zuerst)</option>
+        <option value="huerde" title="Nur die Spanne, ohne Zeitwertverlust und ohne Ordergebühr. Der Zeitwert steht als eigene Spalte daneben – bei Bezugsverhältnis 1,0 ist er der größere Posten.">kleinste Spannen-Hürde (ohne Zeitwert)</option>
+        <option value="spread">kleinste Spanne</option>
+        <option value="theta">wenigster Zeitwertverlust</option>
+        <option value="tv">kleinste Totalverlust-Gefahr</option>
+        <option value="omega">größter Hebel</option>
+        <option value="omegaAuf">kleinster Hebel</option>
+      </select></label>
+    </div>
+    <div id="sfDetail" class="panel" style="display:none; margin-top:10px; padding:10px 12px; font-size:var(--fs-text); line-height:1.6;"></div>
+    <div id="sfTabelle" style="margin-top:10px;"></div>
+  </div>
+  </div>
+  <div class="sub" id="sub-wende">
+    <div class="simnote"><b>Beobachtung, kein Handel.</b> Diese Seite zeigt zuerst den <b>laufenden Trend</b> und
+      seine drei Eigenschaften – Richtung, Güte, Breite – genau die drei, die auch der Aktien-Explorer zu einem
+      Kanal nennt, aus derselben Rechnung. Der <b>Trendwechsel</b> steht daneben als das, was er ist: ein Sonderfall
+      des Trends, nämlich der Moment, in dem ein junger Abschnitt gegen den Vortrend dreht (Wunsch #58).
+      Dieser Detektor (dein Winkel-Vorschlag aus #33) war der
+      einzige Teilüberlebende der Trendwende-Studie – aber ein guter Teil seines Vorsprungs war Tageszeit-Effekt,
+      und die 1-Minuten-Basis war mit 7 Tagen zu kurz für ein Urteil. Die App sammelt seit 8.23.25 jede Nacht
+      1-Minuten-Kurse; <b>in 4–6 Wochen wird sauber nachgemessen</b>. Bis dahin zeigt diese Seite live, was der
+      Detektor sieht – zum Spielen und Beobachten, genau wie vorgeschlagen.</div>
+    <div class="panel" style="margin-bottom:12px;">
+      <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+        <label class="wendeopt">Kerzen<select id="wendeIv">
+          <option value="1m" selected>1 Minute</option>
+          <option value="5m">5 Minuten</option>
+        </select></label>
+        <label class="wendeopt" title="Normierter Winkel des jungen Abschnitts: Steigung × Länge ÷ Kanalbreite – wie steil die Bewegung relativ zu ihrem eigenen Rauschen ist. In der Studie war 1,0 die beste 1-Minuten-Zelle.">Winkel-Schwelle<select id="wendeS">
+          <option value="0.5">0,5 (empfindlich)</option>
+          <option value="1" selected>1,0 (Studien-Zelle)</option>
+          <option value="1.5">1,5</option>
+          <option value="2">2,0 (nur steile Wechsel)</option>
+        </select></label>
+        <label class="wendeopt" title="Ein Hoch/Tief gilt erst als Wendepunkt, wenn danach so viele Kerzen bestätigt haben – walk-forward, kein Blick in die Zukunft.">Bestätigung<select id="wendeF">
+          <option value="3">3 Kerzen</option>
+          <option value="5" selected>5 Kerzen</option>
+          <option value="8">8 Kerzen</option>
+        </select></label>
+        <button class="btn" id="wendeBtn">Jetzt prüfen</button>
+        <span id="wendeStatus" style="color:var(--muted); font-size:var(--fs-neben);"></span>
+      </div>
+      <div class="hinweis" style="margin-top:8px;">
+        Sekunden-Kerzen (1/5/10 s) sind mit der Kursquelle nicht möglich – Yahoo liefert feinstens 1 Minute,
+        und nur 7 Tage zurück. Geprüft werden die 15 Standard-Werte plus deine Watchlist; der Winkel zur
+        Horizontalen und die Drehung gegen den Vortrend entsprechen exakt der Studien-Rechnung.
+        <br><br><b>Warum aus einer guten Trend-Güte hier keine Order wird (Wunsch #58):</b> Genau das ist
+        gemessen worden – und durchgefallen. Der Trendkanal als <i>Handelsbedingung</i> kostete
+        <b>−0,17 Prozentpunkte je Trade bei t = −4,1</b> (Abschnittskanal-Studie): Er ist nicht neutral,
+        sondern schädlich. Deshalb steht die Güte hier als Beschreibung des Moments und nicht als Auslöser.
+        <br><b>Und warum „zu wenig Historie“ stehen bleibt:</b> Das ist keine Bequemlichkeit, sondern die
+        Fallzahl. Für ein Urteil über eine Regel braucht es rund 30 Fälle je Wert; auf 5.000 Kerzen findet
+        der Detektor etwa sechs. Bei sechs Fällen kippt das Vorzeichen des Mittels schon, wenn man nur die
+        Abtastdichte ändert. Eine Order, die trotzdem ausgelöst wird, ist deshalb nicht mutiger als eine
+        gemessene – sie ist nur ungemessen.
+      </div>
+    </div>
+    <div class="panel">
+      <div id="wendeTabelle"><div class="loading">Noch nicht geprüft – „Jetzt prüfen“ klicken.</div></div>
+    </div>
+  </div>
+
+  <!-- ============ PROTOKOLL ============ -->
+</div><!-- /tab-werkzeuge -->
+
+
+
+
+<div id="tab-messung" class="tab" role="tabpanel" aria-labelledby="reiter-messung">
+<h2>Scoreboard <span style="color:var(--muted); font-size:var(--fs-neben); font-weight:400; text-transform:none; letter-spacing:0;">– jede Strategie, die durch die Messmaschine gelaufen ist. Sortiert nach Belegstatus, nicht nach Rendite.</span>
+  <button class="info" type="button" data-info="messung.scoreboard" aria-expanded="false" aria-label="Erklärung: Scoreboard">i</button></h2>
+<div class="panel" id="scoreboardKarte">
+  <div style="font-size:var(--fs-neben); color:var(--ink-2); line-height:1.5; margin-bottom:8px; max-width:68ch;">
+    Die App rechnet hier <b>nichts</b>. Sie zeigt die Protokolle der Messmaschine aus dem Datenordner.
+  </div>
+  <div id="scoreboard"><div class="loading">Lade Protokolle …</div></div>
+  <div style="font-size:var(--fs-neben); color:var(--muted); margin-top:8px;">
+    <b>Bestätigt</b> = auf zurückgehaltenen Tagen über Mindest-Effektgröße und über der Bonferroni-Schwelle.
+    <b>Nicht entscheidbar</b> = unter der Mindest-Effektgröße; das heißt nicht „kein Effekt", sondern „diese Datenmenge kann die Frage nicht beantworten".
+    <b>Widerlegt</b> = auf zurückgehaltenen Tagen signifikant negativ.
+    Alle Zahlen in Prozentpunkten des Basiswerts, Überschuss gegen die Erwartung aller Kerzen desselben Werts zur selben Stunde.
+  </div>
+</div>
+
+<h2 style="margin-top:18px;">Neue Strategie ins Rennen schicken
+  <button class="info" type="button" data-info="messung.eingabe" aria-expanded="false" aria-label="Erklärung: Neue Strategie ins Rennen schicken">i</button></h2>
+<div class="panel" id="strategieEingabe">
+  <div style="font-size:var(--fs-neben); color:var(--ink-2); line-height:1.5; margin-bottom:8px; max-width:68ch;">
+    Drei Dinge braucht eine Strategie: einen <b>Grund</b>, eine <b>Signalfunktion</b> und eine <b>Vorregistrierung</b>.
+  </div>
+  <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:8px;">
+    <label style="font-size:var(--fs-neben);">Kennung <input id="stKey" placeholder="z. B. quartalsende-kauf" style="width:100%;"></label>
+    <label style="font-size:var(--fs-neben);">Haltedauer in Kerzen (60m) <input id="stHalten" type="number" min="1" max="130" value="8" style="width:100%;"></label>
+    <label style="font-size:var(--fs-neben);">Richtung <select id="stRichtung" style="width:100%;"><option value="long">nur Long</option><option value="short">nur Short</option><option value="beide">beide</option></select></label>
+    <label style="font-size:var(--fs-neben);">Spanne je Seite (Bp) <input id="stSpanne" type="number" min="0" max="100" value="5" style="width:100%;"></label>
+  </div>
+  <label style="font-size:var(--fs-neben); display:block; margin-bottom:8px;">Grund (mindestens 20 Zeichen – ohne Grund verweigert die Maschine die Messung)
+    <textarea id="stGrund" rows="2" style="width:100%; font-family:inherit;" placeholder="Warum sollte dieser Effekt existieren? Wer MUSS hier handeln, und warum?"></textarea></label>
+  <label style="font-size:var(--fs-neben); display:block; margin-bottom:8px;">Signalfunktion <code>signal(bars, i, params)</code> – darf nur <code>bars[0..i]</code> lesen, gibt <code>{dir: 1}</code>, <code>{dir: -1}</code> oder <code>null</code> zurück. <code>Q</code> ist quant.js.
+    <textarea id="stSignal" rows="8" style="width:100%; font-family:var(--mono, monospace); font-size:var(--fs-neben);" placeholder="function signal(bars, i, params) {&#10;  // Beispiel: letzte Kerze des Monats&#10;  var d = new Date(bars[i][0]), n = new Date(bars[i+1] ? bars[i+1][0] : bars[i][0] + 86400000);&#10;  return d.getUTCMonth() !== n.getUTCMonth() ? { dir: 1 } : null;&#10;}"></textarea></label>
+  <label style="font-size:var(--fs-neben); display:block; margin-bottom:8px;">Ausstiegsregel (freiwillig) <code>stopNiveau(abgeschlossen, einKurs, params)</code> – gibt das <b>Stop-Niveau</b> zurück oder <code>null</code>. Leer = Ausstieg nach der Haltedauer.
+    <textarea id="stStop" rows="5" style="width:100%; font-family:var(--mono, monospace); font-size:var(--fs-neben);" placeholder="function stopNiveau(abgeschlossen, einKurs, params) {&#10;  // Beispiel: nachziehender Stop, sichert params.mcp des bisherigen Gewinns&#10;  var h = einKurs;&#10;  for (var k = 0; k &lt; abgeschlossen.length; k++) if (abgeschlossen[k].hoch &gt; h) h = abgeschlossen[k].hoch;&#10;  return h &gt; einKurs ? einKurs + (h - einKurs) * params.mcp : null;&#10;}"></textarea>
+    <span style="font-size:var(--fs-klein); color:var(--muted);">Die Regel bekommt nur <b>abgeschlossene</b> Kerzen (<code>{auf, hoch, tief, schluss}</code>) und liefert nur ein Niveau – sie kann nicht in die laufende Kerze sehen und sich keinen Wunschkurs geben. Die Maschine wendet das Niveau auf die <b>nächste</b> Kerze an und füllt zum schlechteren aus Stop und erstem handelbaren Kurs. Die Kontrolle bekommt denselben Ausstieg. (Fehlertypen C6/C7)</span></label>
+  <label style="font-size:var(--fs-neben); display:block; margin-bottom:8px;">Parametervarianten (JSON-Liste, leer = eine Variante ohne Parameter). <b>Jede Variante ist ein Test.</b>
+    <input id="stVarianten" style="width:100%; font-family:var(--mono, monospace); font-size:var(--fs-neben);" placeholder='[{"schwelle": 10}, {"schwelle": 15}]'></label>
+  <div style="display:flex; gap:8px; align-items:center;">
+    <button class="btn" id="stAblegen" type="button">Strategie ablegen</button>
+    <span id="stStatus" role="status" aria-live="polite" style="font-size:var(--fs-neben); color:var(--muted);"></span>
+  </div>
+  <div id="stNaechster" hidden style="margin-top:10px; padding:10px 12px; border:1px solid var(--kante); border-radius:var(--r-gross); background:var(--surface-2);"></div>
+  <div style="font-size:var(--fs-neben); color:var(--muted); margin-top:8px;">
+    Die Datei landet unter <code>Markt-Dashboard-Daten/strategien/</code>. Gemessen wird sie <b>nicht</b> von der App, sondern im Projektordner mit <code>node studien/messmaschine/messen.js &lt;datei&gt;</code> – absichtlich ein eigener Schritt, damit das Urteil nie aus der App selbst kommt. Nach dem Ablegen steht der fertige Befehl zum Kopieren hier. Das Protokoll erscheint danach oben im Scoreboard.
+  </div>
+</div>
+</div>
+
+<div id="tab-strategien" class="tab" role="tabpanel" aria-labelledby="reiter-strategien">
+  <div class="pills" id="regelPills">
+    <button data-sub="regeln" class="active">Übersicht</button>
+    <button data-sub="strategien">Schalter &amp; Einstellungen</button>
+    <button data-sub="regelbuch">Regelbuch</button>
+    <button data-sub="stratchart">Chart</button>
+    <button data-sub="auswertung">Autopilot</button>
+  </div>
+  <div class="sub active" id="sub-regeln">
+  <div class="panel">
+    <h3 style="display:flex; align-items:center; gap:8px;">Drei Zeithorizonte, drei getrennte Strategien
+      <button class="info" type="button" data-info="regeln.uebersicht" aria-expanded="false"
+              aria-label="Erklärung: Drei Zeithorizonte, drei getrennte Strategien">i</button></h3>
+    <div style="font-size:var(--fs-text); color:var(--ink-2); line-height:1.55; max-width:68ch;">
+      Drei Regeln mit verschiedenen Horizonten. Jede lässt sich einzeln ein- und ausschalten.
+    </div>
+  </div>
+  <div style="margin:6px 0 12px;">
+      <button class="btn" id="stratEmpfohlenBtn" type="button" title="Stellt alles auf die gemessenen Ergebnisse um: Intraday-Modus RSI(2) im Seitwärtskanal auf dem Basiswert (nur Beobachtung, Schattenbuch zeichnet auf), Momentum- und Drift-Buch handeln virtuell, maximale Risikostufe 3. Jede Änderung steht weiter unten unter „Was hat gewirkt?“ – dort lässt sich jedes Feld einzeln zurückstellen.">Belegte Voreinstellungen übernehmen</button>
+      <span id="stratEmpfohlenStatus" style="font-size:var(--fs-neben); color:var(--muted); margin-left:8px;"></span>
+    </div>
+    <div id="stratListe" style="margin-top:12px;"></div>
+  </div>
   <div class="sub" id="sub-strategien">
     <div class="strategy-grid">
       <div class="strat-card intraday">
@@ -1043,70 +1494,134 @@
   </div>
 
   <!-- ============ TRENDWECHSEL (Felix, #33/#35) ============ -->
-  <div class="sub" id="sub-wende">
-    <div class="simnote"><b>Beobachtung, kein Handel.</b> Diese Seite zeigt zuerst den <b>laufenden Trend</b> und
-      seine drei Eigenschaften – Richtung, Güte, Breite – genau die drei, die auch der Aktien-Explorer zu einem
-      Kanal nennt, aus derselben Rechnung. Der <b>Trendwechsel</b> steht daneben als das, was er ist: ein Sonderfall
-      des Trends, nämlich der Moment, in dem ein junger Abschnitt gegen den Vortrend dreht (Wunsch #58).
-      Dieser Detektor (dein Winkel-Vorschlag aus #33) war der
-      einzige Teilüberlebende der Trendwende-Studie – aber ein guter Teil seines Vorsprungs war Tageszeit-Effekt,
-      und die 1-Minuten-Basis war mit 7 Tagen zu kurz für ein Urteil. Die App sammelt seit 8.23.25 jede Nacht
-      1-Minuten-Kurse; <b>in 4–6 Wochen wird sauber nachgemessen</b>. Bis dahin zeigt diese Seite live, was der
-      Detektor sieht – zum Spielen und Beobachten, genau wie vorgeschlagen.</div>
+  <div class="sub" id="sub-regelbuch">
+    <div class="panel" id="regelKarte" style="margin-top:12px; border-top:3px solid var(--series3);">
+      <h3 style="display:flex; align-items:center; gap:8px;">Die Regel, die handelt
+        <button class="info" type="button" data-info="regeln.handelt" aria-expanded="false"
+                aria-label="Erklärung: Die Regel, die handelt">i</button></h3>
+      <div style="font-size:var(--fs-text); color:var(--ink-2); line-height:1.6; max-width:68ch;">
+        Was gerade eingestellt ist – mit Chart, Bedingungen und Bilanz an einem Ort.
+      </div>
+      <div id="regelKopf" style="margin-top:10px;"></div>
+    </div>
+
+    <div class="panel" id="regelnKarte" style="margin-top:12px;">
+      <h3 style="display:flex; align-items:center; gap:8px;">Regeln, die nur messen
+        <button class="info" type="button" data-info="regeln.messen" aria-expanded="false"
+                aria-label="Erklärung: Regeln, die nur messen">i</button></h3>
+      <div style="font-size:var(--fs-text); color:var(--ink-2); line-height:1.6; max-width:68ch;">
+        Eine Regel <b>festschreiben</b> und mitlaufen lassen, ohne dass Geld bewegt wird –
+        geprüft auf denselben Kerzen wie die gehandelte Regel, mit eigener Bilanz.
+        <b>Bewusst ohne Handelsknopf.</b>
+      </div>
+      <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-top:10px;">
+        <input type="text" id="regelName" maxlength="40" placeholder="Name, z. B. „Felix: Winkel 1m“" style="flex:1 1 240px;">
+        <button class="btn ghost" id="regelNeuBtn" type="button" title="Schreibt die AKTUELLEN Einstellungen unter diesem Namen fest. Ab dem nächsten Scan läuft sie mit – ohne Geld.">Aktuelle Einstellungen festschreiben</button>
+        <span id="regelStatus" style="color:var(--muted); font-size:var(--fs-neben);"></span>
+      </div>
+      <div id="regelnListe" style="margin-top:10px;"></div>
+    </div>
+
+    <div class="panel" id="regelBilanz" style="margin-top:12px;">
+      <h3>Bilanz dieser Regel</h3>
+      <div style="font-size:var(--fs-text); color:var(--ink-2); line-height:1.6; margin-bottom:10px;">
+        Was die Regel getan hat, was sie <i>nicht</i> getan hat, und wie sie gegen einfaches
+        Halten steht. Der Vergleich gegen Buy&nbsp;&amp;&nbsp;Hold ist dabei die wichtigste
+        Spalte: Eine Regel, die den Markt nicht schlägt, hat keinen Vorsprung – sie war
+        nur dabei.
+      </div>
+
     <div class="panel" style="margin-bottom:12px;">
-      <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
-        <label class="wendeopt">Kerzen<select id="wendeIv">
-          <option value="1m" selected>1 Minute</option>
-          <option value="5m">5 Minuten</option>
-        </select></label>
-        <label class="wendeopt" title="Normierter Winkel des jungen Abschnitts: Steigung × Länge ÷ Kanalbreite – wie steil die Bewegung relativ zu ihrem eigenen Rauschen ist. In der Studie war 1,0 die beste 1-Minuten-Zelle.">Winkel-Schwelle<select id="wendeS">
-          <option value="0.5">0,5 (empfindlich)</option>
-          <option value="1" selected>1,0 (Studien-Zelle)</option>
-          <option value="1.5">1,5</option>
-          <option value="2">2,0 (nur steile Wechsel)</option>
-        </select></label>
-        <label class="wendeopt" title="Ein Hoch/Tief gilt erst als Wendepunkt, wenn danach so viele Kerzen bestätigt haben – walk-forward, kein Blick in die Zukunft.">Bestätigung<select id="wendeF">
-          <option value="3">3 Kerzen</option>
-          <option value="5" selected>5 Kerzen</option>
-          <option value="8">8 Kerzen</option>
-        </select></label>
-        <button class="btn" id="wendeBtn">Jetzt prüfen</button>
-        <span id="wendeStatus" style="color:var(--muted); font-size:var(--fs-neben);"></span>
+      <h3>Was hat gewirkt?</h3>
+      <div style="color:var(--muted); font-size:var(--fs-neben); margin-bottom:8px;">
+        Jede automatische Änderung mit gemessener Wirkung: Ø Gewinn je Intraday-Trade davor gegen danach, sortiert nach
+        Wirkung, jede einzeln zurücknehmbar – bei den von Hand übernommenen Voreinstellungen sogar Feld für Feld.
       </div>
-      <div class="hinweis" style="margin-top:8px;">
-        Sekunden-Kerzen (1/5/10 s) sind mit der Kursquelle nicht möglich – Yahoo liefert feinstens 1 Minute,
-        und nur 7 Tage zurück. Geprüft werden die 15 Standard-Werte plus deine Watchlist; der Winkel zur
-        Horizontalen und die Drehung gegen den Vortrend entsprechen exakt der Studien-Rechnung.
-        <br><br><b>Warum aus einer guten Trend-Güte hier keine Order wird (Wunsch #58):</b> Genau das ist
-        gemessen worden – und durchgefallen. Der Trendkanal als <i>Handelsbedingung</i> kostete
-        <b>−0,17 Prozentpunkte je Trade bei t = −4,1</b> (Abschnittskanal-Studie): Er ist nicht neutral,
-        sondern schädlich. Deshalb steht die Güte hier als Beschreibung des Moments und nicht als Auslöser.
-        <br><b>Und warum „zu wenig Historie“ stehen bleibt:</b> Das ist keine Bequemlichkeit, sondern die
-        Fallzahl. Für ein Urteil über eine Regel braucht es rund 30 Fälle je Wert; auf 5.000 Kerzen findet
-        der Detektor etwa sechs. Bei sechs Fällen kippt das Vorzeichen des Mittels schon, wenn man nur die
-        Abtastdichte ändert. Eine Order, die trotzdem ausgelöst wird, ist deshalb nicht mutiger als eine
-        gemessene – sie ist nur ungemessen.
+      <div id="tuneLog"></div>
+
+      <div style="margin-top:14px; padding-top:12px; border-top:1px solid var(--line);">
+        <h4 style="margin:0 0 6px;">Bringen die Filter etwas?</h4>
+        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+          <button class="btn ghost" id="filterBtn">Mit vs. ohne Filter rechnen</button>
+          <span id="filterStatus" style="color:var(--muted); font-size:var(--fs-neben);"></span>
+        </div>
+        <div style="color:var(--muted); font-size:var(--fs-neben); margin-top:6px;">
+          Rechnet denselben Zeitraum zweimal – einmal mit deinen Filtern, einmal ohne. Zeigt, ob die Zurückhaltung
+          Geld spart oder Rendite kostet.
+        </div>
+        <div id="filterResult" style="margin-top:12px;"></div>
       </div>
     </div>
-    <div class="panel">
-      <div id="wendeTabelle"><div class="loading">Noch nicht geprüft – „Jetzt prüfen“ klicken.</div></div>
+      <div class="panel">
+        <h3>Wann die Strategie nichts getan hat</h3>
+        <div style="color:var(--muted); font-size:var(--fs-neben); margin-bottom:8px;">
+          Wie oft die Filter ein Signal bewusst verworfen haben – und warum. Der häufigste Grund ist der stärkste Hebel:
+          „Wer nicht weiß, was er tut, muss wissen, wann er nichts tut.“ (Kostolany)
+        </div>
+        <div id="patience"><div class="loading">Noch keine verworfenen Signale erfasst – entsteht, sobald der Intraday-Scanner läuft.</div></div>
+      </div>
+      <div class="panel">
+        <h3>Depot gegen Buy &amp; Hold</h3>
+        <div id="benchInfo" style="font-size:var(--fs-neben); color:var(--muted); margin-bottom:6px;">Wird beim Öffnen dieses Bereichs geladen …</div>
+        <svg id="benchChart" style="width:100%; height:150px; display:block;"></svg>
+        <div id="benchLegend" style="font-size:var(--fs-neben); color:var(--ink-2); margin-top:4px;"></div>
+        <div id="hitrates" style="margin-top:10px;"></div>
+      </div>
     </div>
   </div>
-
-  <!-- ============ PROTOKOLL ============ -->
-  <div class="sub" id="sub-protokoll">
-    <div class="pills small" id="logFilter">
-      <button data-lf="all" class="active">Alle</button>
-      <button data-lf="hourly">Stunden (widerlegt)</button>
-      <button data-lf="intraday">Intraday</button>
-      <button data-lf="open">Offen</button>
-      <button data-lf="replicated">Nachgebildet</button>
-      <button id="csvBtn" style="margin-left:auto;">CSV-Export</button>
+  <div class="sub" id="sub-stratchart">
+  <div class="panel" id="stratChartPanel" style="margin-top:12px;">
+    <h3 style="display:flex; align-items:center; gap:8px;">Strategie-Chart – Signal und Bedingungen nachvollziehen
+      <button class="info" type="button" data-info="regeln.chart" aria-expanded="false"
+              aria-label="Erklärung: Strategie-Chart">i</button></h3>
+    <div style="font-size:var(--fs-neben); color:var(--ink-2); line-height:1.5; margin-bottom:6px; max-width:68ch;">
+      Rechnet die gemessene Regel auf den Kerzen eines Werts nach. Jede Markierung ist ein Einstieg, den die Regel dort gegeben hätte.
     </div>
-    <div class="panel" id="tradeLog"><div class="loading">Noch keine Trades.</div></div>
+    <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+      <select id="stcMode">
+        <option value="rsi2seit">RSI(2) im Seitwärtskanal (gemessen, nicht bestätigt)</option>
+        <option value="kapitulation">Kapitulations-Dip im Abwärtskanal (in Überprüfung)</option>
+      </select>
+      <select id="stcSym"></select>
+      <label style="font-size:var(--fs-neben); color:var(--ink-2);">Kerzenlänge <select id="stcIv">
+        <option value="60m" selected>60 Minuten (so gemessen)</option>
+        <option value="15m">15 Minuten (nur Ansicht)</option>
+        <option value="5m">5 Minuten (nur Ansicht)</option>
+      </select></label>
+      <label style="font-size:var(--fs-neben); color:var(--ink-2);">Zeitraum <select id="stcSpanne">
+        <option value="160">160 Kerzen</option>
+        <option value="320" selected>320 Kerzen</option>
+        <option value="640">640 Kerzen</option>
+        <option value="1200">1200 Kerzen</option>
+      </select></label>
+      <label style="font-size:var(--fs-neben); color:var(--ink-2);" title="Zeigt denselben Kursverlauf zusätzlich auf kurzer, mittlerer und langer Sicht. Diese Kanäle entscheiden nichts – sie erklären, warum die 200-Kerzen-Sicht so eingeordnet wird.">
+        <input type="checkbox" id="stcKontext"> Kontext-Kanäle (kurz/mittel/lang)</label>
+      <button class="btn ghost" id="stcBtn" type="button">Chart laden</button>
+      <span id="stcStatus" style="color:var(--muted); font-size:var(--fs-neben);"></span>
+    </div>
+    <div id="stcIvWarn" style="display:none; font-size:var(--fs-neben); margin-top:6px; padding:6px 8px; border-left:3px solid var(--down); color:var(--ink-2); line-height:1.5;"></div>
+    <div id="stcInfo" style="font-size:var(--fs-neben); color:var(--ink-2); margin-top:8px;"></div>
+    <svg id="stcChart" style="width:100%; height:280px; display:block; margin-top:6px;"></svg>
+    <svg id="stcInd" style="width:100%; height:110px; display:block; margin-top:2px;"></svg>
+    <div style="color:var(--muted); font-size:var(--fs-neben); margin-top:4px;">
+      <span style="color:var(--series);">━</span> Kurs ·
+      <span style="color:var(--series2);">╌</span> Leitlinie EMA20 ·
+      <span style="color:var(--series4);">╌</span> EMA100 (Trendrichtung) ·
+      <span style="color:var(--series3);">▬</span> <b>Entscheidungskanal</b> ·
+      <span style="color:var(--series3);">╌</span> derselbe Kanal heute ·
+      <span style="color:var(--series2);">╌</span> Überdehnungsband ·
+      <span style="color:var(--muted);">╌</span> Kontext-Kanäle ·
+      <span style="color:var(--up);">●</span> Einstieg laut Regel (anklickbar) ·
+      <span style="color:var(--series2);">●</span> gewähltes Signal ·
+      unten: Auslöser mit Schwelle
+      <button class="info" type="button" data-info="regeln.legende" aria-expanded="false"
+              aria-label="Erklärung: Zeichen im Chart" style="margin-left:4px;">i</button>
+    </div>
+    <div id="stcSignale" style="margin-top:10px;"></div>
+    <div id="stcCheck" style="font-size:var(--fs-neben); margin-top:8px; line-height:1.6;"></div>
+    <div style="font-size:var(--fs-neben); color:var(--muted); margin-top:6px;">Simulation, keine Anlageberatung. Der Chart zeigt, was die Regel gesehen hätte – nicht, was sie verdient hätte; die Messung dazu steht in den Belegen oben.</div>
   </div>
-
-  <!-- ============ AUSWERTUNG ============ -->
+  </div>
   <div class="sub" id="sub-auswertung">
 
     <!-- 1 · Was die App von allein tut -->
@@ -1205,500 +1720,6 @@
 
   </div><!-- /sub-auswertung -->
   <!-- ============ MITTELFRISTIG (war ein eigener Reiter) ============ -->
-  <div class="sub" id="sub-mittel">
-  <div class="panel">
-    <h3>Momentum im Querschnitt · Aktien, keine Hebelscheine</h3>
-    <div id="mfErklaerung" style="font-size:var(--fs-text); color:var(--ink-2); line-height:1.55;">
-      Diese Strategie vergleicht alle Werte des Universums <b>miteinander</b> und hält das stärkste Zehntel.
-      Kein Chartmuster, kein Ein- und Ausstiegssignal – nur eine Rangfolge, die alle drei Monate neu gebildet wird.
-      Gekauft werden <b>Aktien</b>; mit Hebelscheinen auf 21 Tage ist eine Haltedauer von drei Monaten nicht
-      darstellbar, der Zeitwertverfall frisst sie auf.
-    </div>
-    <div class="chartleiste" style="margin-top:10px;">
-      <label title="Über wie viele Handelstage die Stärke gemessen wird. 231 Tage sind rund elf Monate.">Rückblick
-        <select id="mfRueck">
-          <option value="126">126 Tage (6 Mon.)</option>
-          <option value="189">189 Tage (9 Mon.)</option>
-          <option value="231" selected>231 Tage (11 Mon.)</option>
-          <option value="273">273 Tage (13 Mon.)</option>
-        </select>
-      </label>
-      <label title="Der jüngste Monat wird ausgelassen – dort liegt die kurzfristige Gegenbewegung, die den Effekt schwächt.">Lücke
-        <select id="mfLuecke"><option value="0">keine</option><option value="21" selected>21 Tage</option></select>
-      </label>
-      <label title="Wie lange gehalten wird, bevor die Rangfolge neu gebildet wird.">Halten
-        <select id="mfHalten">
-          <option value="42">42 Tage</option>
-          <option value="63" selected>63 Tage (3 Mon.)</option>
-          <option value="126">126 Tage (6 Mon.)</option>
-        </select>
-      </label>
-      <label title="Wie groß der gehaltene Teil des Universums ist. Zehn Prozent schnitten durchweg besser ab als zwanzig.">Anteil
-        <select id="mfAnteil"><option value="0.10" selected>stärkste 10 %</option><option value="0.15">15 %</option><option value="0.20">20 %</option></select>
-      </label>
-      <label title="Kosten je Kauf oder Verkauf. 20 Basispunkte sind für liquide Aktien realistisch.">Kosten
-        <select id="mfKosten"><option value="0">0 Bp</option><option value="10">10 Bp</option><option value="20" selected>20 Bp</option><option value="40">40 Bp</option></select>
-      </label>
-      <button class="btn" id="mfLadenBtn">Daten holen und rechnen</button>
-      <span id="mfStatus" class="hinweis"></span>
-    </div>
-  </div>
-
-  <div class="grid2" style="margin-top:12px;">
-    <div class="panel">
-      <h3>Was jetzt zu halten wäre</h3>
-      <div id="mfRang"><div class="empty">Noch nicht gerechnet.</div></div>
-    </div>
-    <div class="panel">
-      <h3>Wie es sich geschlagen hat</h3>
-      <div id="mfErgebnis"><div class="empty">Noch nicht gerechnet.</div></div>
-    </div>
-  </div>
-
-  <div class="panel" style="margin-top:12px;">
-    <h3>Was du dabei wissen musst</h3>
-    <div style="font-size:var(--fs-text); color:var(--ink-2); line-height:1.6;">
-      <p style="margin:0 0 8px;"><b>Der größte Rückschlag lag bei 52 Prozent</b> (2008). Das ist kein ruhiges Investment.
-      Wer bei so einem Einbruch aussteigt, hat den Effekt nicht – er entsteht gerade dadurch, dass man dabeibleibt.</p>
-      <p style="margin:0 0 8px;"><b>In 8 von 22 Jahren war das Depot schlechter als der Markt.</b> 2024 lag es bei
-      −0,1 % gegen +7,4 %. Momentum verliert typischerweise genau dann, wenn der Markt scharf dreht.</p>
-      <p style="margin:0 0 8px;"><b>Das Universum enthält nur Firmen, die es heute noch gibt.</b> Pleiten und
-      Übernahmen fehlen in den Daten. Der Vergleich läuft gegen den Durchschnitt derselben Werte, was das dämpft,
-      aber nicht aufhebt. Der gemessene Vorsprung ist eher eine Obergrenze.</p>
-      <p style="margin:0;"><b>Alles hier ist Simulation.</b> Es wird nichts gekauft und nichts verkauft.</p>
-    </div>
-  </div>
-
-  <div class="panel">
-    <h3>Mittelfrist-Depot · Momentum und Ergebnis-Drift handeln</h3>
-    <div style="font-size:var(--fs-text); color:var(--ink-2); line-height:1.55; margin-bottom:8px;">
-      Zwei getrennte virtuelle Bücher à 100.000 $, die die beiden Strategien <b>tatsächlich führen</b> – beide halten über die volle Historie, aber nicht auf den zurückgehaltenen Jahren ab 2005 (Momentum t = 1,62; Ergebnis-Drift nach Zeitzonen-Korrektur 8,44 statt 14,07 % p.a.). Stand 23.08.2026, Details im Reiter Messung –
-      bis hierher waren Momentum und Ergebnis-Drift Rechenblätter ohne Depot. Die Schalter im Reiter
-      „Regeln“ entscheiden: <b>an</b> heißt selbsttätig handeln, <b>aus</b> heißt nur rechnen und
-      erinnern („Rebalancing fällig“ mit Handlungsliste). Alles Simulation, keine Anlageberatung.
-    </div>
-    <div class="chartleiste">
-      <button id="mfdTaktBtn" class="btn ghost">Jetzt prüfen</button>
-      <button id="mfdRebalanceBtn" class="btn" title="Momentum-Rebalancing sofort ausführen, unabhängig vom 63-Tage-Rhythmus">Momentum jetzt umschichten</button>
-      <button id="mfdDriftBtn" class="btn" title="Drift-Buch sofort abgleichen: Fällige schließen, neue Signale eröffnen">Drift jetzt abgleichen</button>
-    </div>
-    <div id="mfdStatus" class="hinweis" style="margin-top:6px;"></div>
-    <h3 style="margin-top:12px; font-size:var(--fs-gross);">Momentum-Buch <span style="font-weight:400; color:var(--muted);">· stärkstes Zehntel, alle 63 Handelstage, 20 Bp je Seite</span></h3>
-    <div id="mfdMomentum" style="margin-top:6px;"></div>
-    <h3 style="margin-top:14px; font-size:var(--fs-gross);">Ergebnis-Drift-Buch <span style="font-weight:400; color:var(--muted);">· 60 Handelstage je Position, long und short, 10 Bp je Seite</span></h3>
-    <div id="mfdDrift" style="margin-top:6px;"></div>
-  </div>
-
-  <div class="panel">
-    <h3>Ergebnis-Drift · Aktien, keine Hebelscheine</h3>
-    <div style="font-size:var(--fs-text); color:var(--ink-2); line-height:1.55;">
-      Nach einer Quartalsmeldung läuft der Kurs noch Wochen in Richtung der Überraschung weiter.
-      Gekauft wird das <b>oberste Fünftel</b> der Überraschungen, verkauft das <b>unterste</b> – gleich viele,
-      aus demselben Topf. Anders als das Momentum darüber ist das <b>kein Chartsignal</b>: Die Information
-      kommt aus den Zahlen, nicht aus dem Kursverlauf. Deshalb bleibt neben dem Momentum messbar etwas übrig
-      (Korrelation der Monatserträge nur 0,41, Alpha +6,90 % p. a. bei t = 2,20).
-      <br><br>
-      <b>Nicht mit Hebelscheinen handelbar.</b> Am 21.08.2026 durchgerechnet: Der Basiswert müsste 5,5 bis 11 %
-      laufen, damit ein Schein nach Zeitwertverfall und Spanne bei null herauskommt – der Drift liefert rund
-      1,3 % je Position. Faktor 4 bis 8 zu wenig. Gerechnet wird deshalb im Basiswert.
-    </div>
-    <div class="chartleiste" style="margin-top:10px;">
-      <label title="Wie lange eine Position gehalten wird. Auf 20 Tagen ist der Effekt seit 2015 tot (t = 0,77) – erst ab rund 60 Tagen trägt er.">Halten
-        <select id="drHalten">
-          <option value="20">20 Tage</option>
-          <option value="40">40 Tage</option>
-          <option value="60" selected>60 Tage (geprüft)</option>
-          <option value="90">90 Tage</option>
-        </select>
-      </label>
-      <label title="Wie groß die beiden Beine sind. 0,2 heißt: oberstes und unterstes Fünftel.">Anteil je Bein
-        <select id="drAnteil">
-          <option value="0.1">10 %</option>
-          <option value="0.2" selected>20 % (geprüft)</option>
-          <option value="0.33">33 %</option>
-        </select>
-      </label>
-      <label title="Gegen wie viele Handelstage zurück eine Überraschung eingeordnet wird. Nur bereits veröffentlichte Zahlen zählen – kein Blick in die Zukunft.">Vergleichsfenster
-        <select id="drFenster">
-          <option value="60">60 Tage</option>
-          <option value="120" selected>120 Tage (geprüft)</option>
-          <option value="250">250 Tage</option>
-        </select>
-      </label>
-      <label title="Handelskosten je Seite. Bei 10 Basispunkten sinkt das Ergebnis um rund 1,8 Prozentpunkte im Jahr.">Kosten
-        <select id="drKosten">
-          <option value="0">keine</option>
-          <option value="10" selected>10 Basispunkte</option>
-          <option value="20">20 Basispunkte</option>
-          <option value="40">40 Basispunkte</option>
-        </select>
-      </label>
-      <button id="drLadeBtn" class="btn" title="Holt die Termine für Werte, die noch keine haben, plus einen rollierenden Teil für frische Meldungen. Schonend für die Quelle.">Termine nachladen</button>
-      <button id="drLadeAlleBtn" class="btn" title="Holt die Termine für ALLE Werte. Dauert einige Minuten und kann von Yahoo gedrosselt werden.">Alle Termine laden</button>
-      <button id="drRechneBtn" class="btn">Neu rechnen</button>
-    </div>
-    <div id="drStatus" class="hinweis" style="margin-top:8px;"></div>
-    <div id="drErgebnis" style="margin-top:10px;"></div>
-
-    <h3 style="margin-top:16px;">Was wäre heute offen?</h3>
-    <div id="drHeute" style="margin-top:6px;"></div>
-
-    <div style="margin-top:14px; font-size:var(--fs-neben); color:var(--ink-2); line-height:1.55; border-top:1px solid var(--grid); padding-top:10px;">
-      <p style="margin:0 0 6px;"><b>Was gemessen ist.</b> 20.356 Ergebnistermine aus 197 Werten, 1993–2026.
-      Marktneutral, 60 Handelstage, Rang nur gegen bereits veröffentlichte Zahlen:
-      ab 2015 <b>+10,44 % p. a. bei t = 3,04</b> und 67 % positiven Monaten, positiv in allen sieben Teilzeiträumen.
-      Zufällige Zuordnung ergibt −1,74 % (t = −0,88) – der Aufbau selbst erzeugt nichts.</p>
-      <p style="margin:0 0 6px;"><b>Was offen bleibt.</b> Die Überlebensverzerrung ist nur teilweise ausgeräumt:
-      In der über zehn Jahre schwachen Hälfte der Werte bleiben nur +1,72 % (t = 0,58), in der starken +8,61 %.
-      Ein guter Teil sitzt weiter in den Gewinnern von heute. Und es braucht <b>beide Beine</b> –
-      long allein ist überwiegend Marktbeta.</p>
-      <p style="margin:0;"><b>Alles hier ist Simulation.</b> Es wird nichts gekauft und nichts verkauft.</p>
-    </div>
-  </div>
-  </div>
-</div><!-- /tab-depot -->
-<div id="tab-werkzeuge" class="tab" role="tabpanel" aria-labelledby="reiter-werkzeuge">
-  <div class="pills" id="wzPills">
-    <button data-sub="explorer" class="active">Aktien-Explorer</button>
-    <button data-sub="scheine">Schein-Finder</button>
-  </div>
-  <div class="sub active" id="sub-explorer">
-  <div class="exp-search">
-    <input type="text" id="expQuery" placeholder="Aktie, ETF oder Index suchen – Ticker oder Name (z. B. „Rheinmetall“, „SAP“, „PLTR“) …">
-    <button class="btn" id="expSearchBtn">Suchen</button>
-  </div>
-  <div class="exp-results" id="expResults"></div>
-  <div id="expStart"></div>
-  <div id="expDetail" style="display:none;">
-    <div style="display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; margin:14px 0 4px;">
-      <span style="font-size:var(--fs-titel); font-weight:700;" id="expName"></span>
-      <span style="color:var(--muted);" id="expMeta"></span>
-      <span style="font-size:var(--fs-titel); font-weight:700; margin-left:auto;" id="expPrice"></span>
-      <span id="expChg"></span>
-    </div>
-    <div class="panel">
-      <div class="rangebtns" id="expRanges"></div>
-      <div class="chartleiste">
-        <label title="Linie zeigt nur den Schlusskurs. Kerzen zeigen zusätzlich Eröffnung, Hoch und Tief jeder Periode – daran erkennt man, wie eine Bewegung zustande kam.">Darstellung
-          <select id="expChartArt"><option value="linie" selected>Linie</option><option value="kerzen">Kerzen</option></select>
-        </label>
-        <label title="Wie weit zurück der Chart reicht. Yahoo begrenzt Intraday-Daten: 1-Minuten höchstens 7 Tage, 5/15-Minuten 60 Tage, Stundenkerzen 730 Tage.">Zeitraum
-          <select id="expZeit">
-            <option value="1d">1 Tag</option>
-            <option value="5d">5 Tage</option>
-            <option value="1mo">1 Monat</option>
-            <option value="60d">60 Tage</option>
-            <option value="6mo">6 Monate</option>
-            <option value="1y" selected>1 Jahr</option>
-            <option value="2y">2 Jahre</option>
-            <option value="5y">5 Jahre</option>
-            <option value="max">Maximum</option>
-          </select>
-        </label>
-        <label title="Freie Datumswahl – schlägt den Zeitraum links. Ein Klick auf einen Schnellwahl-Knopf setzt sie zurück.">von<input id="expVon" type="date" style="width:130px;"></label>
-        <label>bis<input id="expBis" type="date" style="width:130px;"></label>
-        <label title="Wie fein der Chart aufgelöst ist. Feinere Kerzen reichen weniger weit zurück.">Kerzen
-          <select id="expKerze">
-            <option value="1m">1 Minute</option>
-            <option value="5m">5 Minuten</option>
-            <option value="15m">15 Minuten</option>
-            <option value="60m">1 Stunde</option>
-            <option value="1d" selected>1 Tag</option>
-            <option value="1wk">1 Woche</option>
-            <option value="1mo">1 Monat</option>
-          </select>
-        </label>
-        <span id="expZeitHinweis" class="hinweis"></span>
-      </div>
-      <div class="chartleiste" id="expSignalLeiste">
-        <span style="color:var(--muted); font-size:var(--fs-neben);">Signale einblenden:</span>
-        <label class="sigbox" title="Gemessen und ohne Vorsprung – wird angezeigt, weil du es sehen willst, nicht weil es trägt."><input type="checkbox" data-sig="cross"> EMA-Kreuzung</label>
-        <label class="sigbox" title="Roh ohne Vorsprung. Dieselbe Überdehnung trägt erst als Kapitulations-Dip: nur im Abwärtskanal, nur mit Volumen, nur Long."><input type="checkbox" data-sig="reversion"> Umkehr</label>
-        <label class="sigbox" title="Gemessen und ohne Vorsprung – wird angezeigt, weil du es sehen willst, nicht weil es trägt."><input type="checkbox" data-sig="pullback"> Rücksetzer</label>
-        <label class="sigbox" title="Roh ein Münzwurf (+0,017 Prozentpunkte). Trägt erst mit der Erlaubnis „Seitwärtskanal + Volumen“ – das ist die Hauptstrategie; gegen eine gepaarte Kontrolle ist sie seit dem 23.08.2026 nicht entscheidbar."><input type="checkbox" data-sig="rsi2"> RSI(2)</label>
-        <label class="sigbox" title="Gemessen und ohne Vorsprung – wird angezeigt, weil du es sehen willst, nicht weil es trägt."><input type="checkbox" data-sig="donchian"> Donchian</label>
-        <label class="sigbox" title="Gemessen und ohne Vorsprung – wird angezeigt, weil du es sehen willst, nicht weil es trägt."><input type="checkbox" data-sig="squeeze"> Squeeze</label>
-        <label class="sigbox"><input type="checkbox" data-sig="linie"> Leitlinie (EMA20)</label>
-        <span id="expSigZahl" class="hinweis"></span>
-      </div>
-      <div class="chartleiste" id="expIndiLeiste">
-        <span style="color:var(--muted); font-size:var(--fs-neben);">Chartbild:</span>
-        <label class="sigbox" title="Gleitende Durchschnitte über die letzten 50 bzw. 200 KERZEN der gewählten Kerzengröße – auf dem Tageschart also 50/200 Handelstage, auf dem Stundenchart 50/200 Stunden. Gezeichnet wird nur, wenn genug Kerzen da sind, nie heimlich verkürzt."><input type="checkbox" data-ind="ma"> SMA 50/200</label>
-        <label class="sigbox" title="Kreuzungen der beiden Durchschnitte. Gemessen an 191 Werten über 55 Jahre hat dieses Signal KEINEN Vorsprung – es wird angezeigt, weil du es sehen willst, nicht weil es trägt."><input type="checkbox" data-ind="cross50200"> Golden/Death Cross</label>
-        <label class="sigbox" title="Regressionskanal: eine Gerade durch den Kursverlauf mit paralleler Ober- und Unterkante. Zeigt vier Sichten auf die JÜNGSTE Bewegung (kurz/mittel/lang/ab Wendepunkt). Das lange Seitwärtsfenster daraus ist die einzige gemessen tragende Kanal-Nutzung – es steuert den Intraday-Einstieg."><input type="checkbox" data-ind="kanal"> Trendkanal</label>
-        <label class="sigbox" title="Zerlegt die gesamte sichtbare Historie an ihren Wendepunkten und zeichnet für JEDEN Trendabschnitt einen eigenen Kanal – grün aufwärts, rot abwärts, blau seitwärts. Reine Anzeige zum Erkennen von Marktphasen: Als Handelsbedingung wurde ein Dip-Kauf im frischen Seitwärtsabschnitt gemessen und fiel durch – es wird bewusst nichts davon gehandelt."><input type="checkbox" data-ind="segmente"> Kanal-Abschnitte (Historie)</label>
-        <label class="sigbox" title="Höchster und tiefster Kurs der letzten 20 bzw. 60 Perioden – die Zonen, an denen der Kurs zuletzt gedreht hat."><input type="checkbox" data-ind="sr"> Unterstützung / Widerstand</label>
-        <label class="sigbox" title="Handelsvolumen je Kerze. Ein Ausbruch mit hohem Volumen ist glaubwürdiger als einer bei dünnem Handel."><input type="checkbox" data-ind="volumen"> Volumen</label>
-        <span id="expKanalInfo" class="hinweis"></span>
-      </div>
-      <!-- Kanal-Verzug: Ein Regressionskanal beschreibt, was war, und läuft der Bewegung
-           deshalb immer nach. Wie weit, gehört als Zahl unter den Chart – sonst hält man
-           eine Beschreibung der Vergangenheit für eine Vorhersage. -->
-      <div id="expKanalVerzug" class="hinweis" style="margin:2px 0 8px; line-height:1.5;"></div>
-      <div class="chartwrap">
-        <div id="expReadout"></div>
-        <svg id="bigchart"></svg>
-      </div>
-      <div id="expSigDetail" class="panel" style="display:none; margin-top:10px; padding:10px 12px;"></div>
-      <div id="expSigListe" style="margin-top:10px;"></div>
-    </div>
-    <div class="grid2" style="margin-top:12px;">
-      <div class="panel">
-        <h3>Kennzahlen</h3>
-        <dl class="kv" id="expStats"></dl>
-        <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
-          <button class="btn" id="aiBtn">KI-Analyse anfordern</button>
-          <button class="btn ghost" id="watchBtn">Zur Handels-Watchlist</button>
-          <span id="aiStatus" style="color:var(--muted); font-size:var(--fs-neben);"></span>
-        </div>
-      </div>
-      <div class="panel">
-        <h3>News zu diesem Wert</h3>
-        <div id="expNews"><div class="loading">–</div></div>
-      </div>
-    </div>
-  </div>
-  </div>
-  <div class="sub" id="sub-scheine">
-  <div class="panel">
-    <h3>Schein-Finder · Kennzahlen und Risikostufe</h3>
-    <div style="font-size:var(--fs-text); color:var(--ink-2); line-height:1.55; margin-bottom:10px;">
-      Rechnet das volle Raster möglicher Scheine zu einem Basiswert durch – mit <b>demselben Modell, mit dem
-      das Depot handelt</b> (Black-Scholes plus das an echten Emittentenkursen geeichte Spanne-Modell).
-      Jeder Schein hier verhält sich exakt so wie in der Simulation. Zu jeder Zeile lässt sich der
-      <b>echte Schein mit WKN</b> nachschlagen (Spalte „WKN“ oder Zeile anklicken) – Emittent, echte
-      Geld-/Brief-Kurse und der Abstand zur Modell-Zeile stehen dabei, denn Emittenten legen nur auf
-      feste Verfallstage auf.
-      Die <b>Risikostufe</b> (1 defensiv … 5 Lotterielos) begrenzt auf Wunsch auch den Handel – Einstellung
-      „maximale Risikostufe“ im Depot unter Risiko &amp; Kosten.
-    </div>
-    <div class="chartleiste">
-      <label>Basiswert<select id="sfSymbol"></select></label>
-      <label title="Leer lassen für die Schätzung aus der historischen Volatilität (× 1,1)">Vola %<input id="sfIv" type="number" min="5" max="150" style="width:70px;"></label>
-      <button id="sfLadenBtn" class="btn">Laden &amp; rechnen</button>
-    </div>
-    <div id="sfStatus" class="hinweis" style="margin-top:6px;"></div>
-    <div class="chartleiste" style="margin-top:8px;">
-      <label>Typ<select id="sfTyp"><option value="alle">alle</option><option value="call">Call</option><option value="put">Put</option></select></label>
-      <label title="Nur Scheine bis zu dieser Risikostufe anzeigen">max. Stufe<select id="sfStufe"><option>1</option><option>2</option><option selected>3</option><option>4</option><option>5</option></select></label>
-      <label>Hebel von<input id="sfHebelMin" type="number" value="3" style="width:60px;"></label>
-      <label>bis<input id="sfHebelMax" type="number" value="20" style="width:60px;"></label>
-      <label>Laufzeit von<input id="sfLzMin" type="number" value="14" style="width:60px;"> Tagen</label>
-      <label>bis<input id="sfLzMax" type="number" value="180" style="width:60px;"></label>
-      <label title="Geld-Brief-Spanne je Seite">max. Spanne %<input id="sfSpreadMax" type="number" value="1" step="0.1" style="width:60px;"></label>
-      <label title="Modell-Wahrscheinlichkeit eines wertlosen Verfalls">max. Totalverlust %<input id="sfTvMax" type="number" value="50" style="width:60px;"></label>
-      <label title="Filtert das Raster auf Basispreise in einem Band um den aktuellen Kurs des Basiswerts („ums Geld“). Die Bandbreite ist frei wählbar.">Basispreis<select id="sfBand">
-        <option value="999" selected>alle</option>
-        <option value="2.5">±2,5 % ums Geld</option>
-        <option value="5">±5 % ums Geld</option>
-        <option value="10">±10 % ums Geld</option>
-        <option value="20">±20 % ums Geld</option>
-      </select></label>
-      <label>Sortierung<select id="sfSort">
-        <option value="stufe" selected>Risikostufe (defensiv zuerst)</option>
-        <option value="huerde" title="Nur die Spanne, ohne Zeitwertverlust und ohne Ordergebühr. Der Zeitwert steht als eigene Spalte daneben – bei Bezugsverhältnis 1,0 ist er der größere Posten.">kleinste Spannen-Hürde (ohne Zeitwert)</option>
-        <option value="spread">kleinste Spanne</option>
-        <option value="theta">wenigster Zeitwertverlust</option>
-        <option value="tv">kleinste Totalverlust-Gefahr</option>
-        <option value="omega">größter Hebel</option>
-        <option value="omegaAuf">kleinster Hebel</option>
-      </select></label>
-    </div>
-    <div id="sfDetail" class="panel" style="display:none; margin-top:10px; padding:10px 12px; font-size:var(--fs-text); line-height:1.6;"></div>
-    <div id="sfTabelle" style="margin-top:10px;"></div>
-  </div>
-  </div>
-</div>
-
-
-
-
-<div id="tab-messung" class="tab" role="tabpanel" aria-labelledby="reiter-messung">
-<h2>Scoreboard <span style="color:var(--muted); font-size:var(--fs-neben); font-weight:400; text-transform:none; letter-spacing:0;">– jede Strategie, die durch die Messmaschine gelaufen ist. Sortiert nach Belegstatus, nicht nach Rendite.</span>
-  <button class="info" type="button" data-info="messung.scoreboard" aria-expanded="false" aria-label="Erklärung: Scoreboard">i</button></h2>
-<div class="panel" id="scoreboardKarte">
-  <div style="font-size:var(--fs-neben); color:var(--ink-2); line-height:1.5; margin-bottom:8px; max-width:68ch;">
-    Die App rechnet hier <b>nichts</b>. Sie zeigt die Protokolle der Messmaschine aus dem Datenordner.
-  </div>
-  <div id="scoreboard"><div class="loading">Lade Protokolle …</div></div>
-  <div style="font-size:var(--fs-neben); color:var(--muted); margin-top:8px;">
-    <b>Bestätigt</b> = auf zurückgehaltenen Tagen über Mindest-Effektgröße und über der Bonferroni-Schwelle.
-    <b>Nicht entscheidbar</b> = unter der Mindest-Effektgröße; das heißt nicht „kein Effekt", sondern „diese Datenmenge kann die Frage nicht beantworten".
-    <b>Widerlegt</b> = auf zurückgehaltenen Tagen signifikant negativ.
-    Alle Zahlen in Prozentpunkten des Basiswerts, Überschuss gegen die Erwartung aller Kerzen desselben Werts zur selben Stunde.
-  </div>
-</div>
-
-<h2 style="margin-top:18px;">Neue Strategie ins Rennen schicken
-  <button class="info" type="button" data-info="messung.eingabe" aria-expanded="false" aria-label="Erklärung: Neue Strategie ins Rennen schicken">i</button></h2>
-<div class="panel" id="strategieEingabe">
-  <div style="font-size:var(--fs-neben); color:var(--ink-2); line-height:1.5; margin-bottom:8px; max-width:68ch;">
-    Drei Dinge braucht eine Strategie: einen <b>Grund</b>, eine <b>Signalfunktion</b> und eine <b>Vorregistrierung</b>.
-  </div>
-  <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:8px;">
-    <label style="font-size:var(--fs-neben);">Kennung <input id="stKey" placeholder="z. B. quartalsende-kauf" style="width:100%;"></label>
-    <label style="font-size:var(--fs-neben);">Haltedauer in Kerzen (60m) <input id="stHalten" type="number" min="1" max="130" value="8" style="width:100%;"></label>
-    <label style="font-size:var(--fs-neben);">Richtung <select id="stRichtung" style="width:100%;"><option value="long">nur Long</option><option value="short">nur Short</option><option value="beide">beide</option></select></label>
-    <label style="font-size:var(--fs-neben);">Spanne je Seite (Bp) <input id="stSpanne" type="number" min="0" max="100" value="5" style="width:100%;"></label>
-  </div>
-  <label style="font-size:var(--fs-neben); display:block; margin-bottom:8px;">Grund (mindestens 20 Zeichen – ohne Grund verweigert die Maschine die Messung)
-    <textarea id="stGrund" rows="2" style="width:100%; font-family:inherit;" placeholder="Warum sollte dieser Effekt existieren? Wer MUSS hier handeln, und warum?"></textarea></label>
-  <label style="font-size:var(--fs-neben); display:block; margin-bottom:8px;">Signalfunktion <code>signal(bars, i, params)</code> – darf nur <code>bars[0..i]</code> lesen, gibt <code>{dir: 1}</code>, <code>{dir: -1}</code> oder <code>null</code> zurück. <code>Q</code> ist quant.js.
-    <textarea id="stSignal" rows="8" style="width:100%; font-family:var(--mono, monospace); font-size:var(--fs-neben);" placeholder="function signal(bars, i, params) {&#10;  // Beispiel: letzte Kerze des Monats&#10;  var d = new Date(bars[i][0]), n = new Date(bars[i+1] ? bars[i+1][0] : bars[i][0] + 86400000);&#10;  return d.getUTCMonth() !== n.getUTCMonth() ? { dir: 1 } : null;&#10;}"></textarea></label>
-  <label style="font-size:var(--fs-neben); display:block; margin-bottom:8px;">Ausstiegsregel (freiwillig) <code>stopNiveau(abgeschlossen, einKurs, params)</code> – gibt das <b>Stop-Niveau</b> zurück oder <code>null</code>. Leer = Ausstieg nach der Haltedauer.
-    <textarea id="stStop" rows="5" style="width:100%; font-family:var(--mono, monospace); font-size:var(--fs-neben);" placeholder="function stopNiveau(abgeschlossen, einKurs, params) {&#10;  // Beispiel: nachziehender Stop, sichert params.mcp des bisherigen Gewinns&#10;  var h = einKurs;&#10;  for (var k = 0; k &lt; abgeschlossen.length; k++) if (abgeschlossen[k].hoch &gt; h) h = abgeschlossen[k].hoch;&#10;  return h &gt; einKurs ? einKurs + (h - einKurs) * params.mcp : null;&#10;}"></textarea>
-    <span style="font-size:var(--fs-klein); color:var(--muted);">Die Regel bekommt nur <b>abgeschlossene</b> Kerzen (<code>{auf, hoch, tief, schluss}</code>) und liefert nur ein Niveau – sie kann nicht in die laufende Kerze sehen und sich keinen Wunschkurs geben. Die Maschine wendet das Niveau auf die <b>nächste</b> Kerze an und füllt zum schlechteren aus Stop und erstem handelbaren Kurs. Die Kontrolle bekommt denselben Ausstieg. (Fehlertypen C6/C7)</span></label>
-  <label style="font-size:var(--fs-neben); display:block; margin-bottom:8px;">Parametervarianten (JSON-Liste, leer = eine Variante ohne Parameter). <b>Jede Variante ist ein Test.</b>
-    <input id="stVarianten" style="width:100%; font-family:var(--mono, monospace); font-size:var(--fs-neben);" placeholder='[{"schwelle": 10}, {"schwelle": 15}]'></label>
-  <div style="display:flex; gap:8px; align-items:center;">
-    <button class="btn" id="stAblegen" type="button">Strategie ablegen</button>
-    <span id="stStatus" role="status" aria-live="polite" style="font-size:var(--fs-neben); color:var(--muted);"></span>
-  </div>
-  <div id="stNaechster" hidden style="margin-top:10px; padding:10px 12px; border:1px solid var(--kante); border-radius:var(--r-gross); background:var(--surface-2);"></div>
-  <div style="font-size:var(--fs-neben); color:var(--muted); margin-top:8px;">
-    Die Datei landet unter <code>Markt-Dashboard-Daten/strategien/</code>. Gemessen wird sie <b>nicht</b> von der App, sondern im Projektordner mit <code>node studien/messmaschine/messen.js &lt;datei&gt;</code> – absichtlich ein eigener Schritt, damit das Urteil nie aus der App selbst kommt. Nach dem Ablegen steht der fertige Befehl zum Kopieren hier. Das Protokoll erscheint danach oben im Scoreboard.
-  </div>
-</div>
-</div>
-
-<div id="tab-strategien" class="tab" role="tabpanel" aria-labelledby="reiter-strategien">
-  <div class="panel">
-    <h3 style="display:flex; align-items:center; gap:8px;">Drei Zeithorizonte, drei getrennte Strategien
-      <button class="info" type="button" data-info="regeln.uebersicht" aria-expanded="false"
-              aria-label="Erklärung: Drei Zeithorizonte, drei getrennte Strategien">i</button></h3>
-    <div style="font-size:var(--fs-text); color:var(--ink-2); line-height:1.55; max-width:68ch;">
-      Drei Regeln mit verschiedenen Horizonten. Jede lässt sich einzeln ein- und ausschalten.
-    </div>
-  </div>
-  <div style="margin:6px 0 12px;">
-      <button class="btn" id="stratEmpfohlenBtn" type="button" title="Stellt alles auf die gemessenen Ergebnisse um: Intraday-Modus RSI(2) im Seitwärtskanal auf dem Basiswert (nur Beobachtung, Schattenbuch zeichnet auf), Momentum- und Drift-Buch handeln virtuell, maximale Risikostufe 3. Jede Änderung steht weiter unten unter „Was hat gewirkt?“ – dort lässt sich jedes Feld einzeln zurückstellen.">Belegte Voreinstellungen übernehmen</button>
-      <span id="stratEmpfohlenStatus" style="font-size:var(--fs-neben); color:var(--muted); margin-left:8px;"></span>
-    </div>
-    <div id="stratListe" style="margin-top:12px;"></div>
-  <div class="panel" id="stratChartPanel" style="margin-top:12px;">
-    <h3 style="display:flex; align-items:center; gap:8px;">Strategie-Chart – Signal und Bedingungen nachvollziehen
-      <button class="info" type="button" data-info="regeln.chart" aria-expanded="false"
-              aria-label="Erklärung: Strategie-Chart">i</button></h3>
-    <div style="font-size:var(--fs-neben); color:var(--ink-2); line-height:1.5; margin-bottom:6px; max-width:68ch;">
-      Rechnet die gemessene Regel auf den Kerzen eines Werts nach. Jede Markierung ist ein Einstieg, den die Regel dort gegeben hätte.
-    </div>
-    <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-      <select id="stcMode">
-        <option value="rsi2seit">RSI(2) im Seitwärtskanal (gemessen, nicht bestätigt)</option>
-        <option value="kapitulation">Kapitulations-Dip im Abwärtskanal (in Überprüfung)</option>
-      </select>
-      <select id="stcSym"></select>
-      <label style="font-size:var(--fs-neben); color:var(--ink-2);">Kerzenlänge <select id="stcIv">
-        <option value="60m" selected>60 Minuten (so gemessen)</option>
-        <option value="15m">15 Minuten (nur Ansicht)</option>
-        <option value="5m">5 Minuten (nur Ansicht)</option>
-      </select></label>
-      <label style="font-size:var(--fs-neben); color:var(--ink-2);">Zeitraum <select id="stcSpanne">
-        <option value="160">160 Kerzen</option>
-        <option value="320" selected>320 Kerzen</option>
-        <option value="640">640 Kerzen</option>
-        <option value="1200">1200 Kerzen</option>
-      </select></label>
-      <label style="font-size:var(--fs-neben); color:var(--ink-2);" title="Zeigt denselben Kursverlauf zusätzlich auf kurzer, mittlerer und langer Sicht. Diese Kanäle entscheiden nichts – sie erklären, warum die 200-Kerzen-Sicht so eingeordnet wird.">
-        <input type="checkbox" id="stcKontext"> Kontext-Kanäle (kurz/mittel/lang)</label>
-      <button class="btn ghost" id="stcBtn" type="button">Chart laden</button>
-      <span id="stcStatus" style="color:var(--muted); font-size:var(--fs-neben);"></span>
-    </div>
-    <div id="stcIvWarn" style="display:none; font-size:var(--fs-neben); margin-top:6px; padding:6px 8px; border-left:3px solid var(--down); color:var(--ink-2); line-height:1.5;"></div>
-    <div id="stcInfo" style="font-size:var(--fs-neben); color:var(--ink-2); margin-top:8px;"></div>
-    <svg id="stcChart" style="width:100%; height:280px; display:block; margin-top:6px;"></svg>
-    <svg id="stcInd" style="width:100%; height:110px; display:block; margin-top:2px;"></svg>
-    <div style="color:var(--muted); font-size:var(--fs-neben); margin-top:4px;">
-      <span style="color:var(--series);">━</span> Kurs ·
-      <span style="color:var(--series2);">╌</span> Leitlinie EMA20 ·
-      <span style="color:var(--series4);">╌</span> EMA100 (Trendrichtung) ·
-      <span style="color:var(--series3);">▬</span> <b>Entscheidungskanal</b> ·
-      <span style="color:var(--series3);">╌</span> derselbe Kanal heute ·
-      <span style="color:var(--series2);">╌</span> Überdehnungsband ·
-      <span style="color:var(--muted);">╌</span> Kontext-Kanäle ·
-      <span style="color:var(--up);">●</span> Einstieg laut Regel (anklickbar) ·
-      <span style="color:var(--series2);">●</span> gewähltes Signal ·
-      unten: Auslöser mit Schwelle
-      <button class="info" type="button" data-info="regeln.legende" aria-expanded="false"
-              aria-label="Erklärung: Zeichen im Chart" style="margin-left:4px;">i</button>
-    </div>
-    <div id="stcSignale" style="margin-top:10px;"></div>
-    <div id="stcCheck" style="font-size:var(--fs-neben); margin-top:8px; line-height:1.6;"></div>
-    <div style="font-size:var(--fs-neben); color:var(--muted); margin-top:6px;">Simulation, keine Anlageberatung. Der Chart zeigt, was die Regel gesehen hätte – nicht, was sie verdient hätte; die Messung dazu steht in den Belegen oben.</div>
-  </div>
-    <div class="panel" id="regelKarte" style="margin-top:12px; border-top:3px solid var(--series3);">
-      <h3 style="display:flex; align-items:center; gap:8px;">Die Regel, die handelt
-        <button class="info" type="button" data-info="regeln.handelt" aria-expanded="false"
-                aria-label="Erklärung: Die Regel, die handelt">i</button></h3>
-      <div style="font-size:var(--fs-text); color:var(--ink-2); line-height:1.6; max-width:68ch;">
-        Was gerade eingestellt ist – mit Chart, Bedingungen und Bilanz an einem Ort.
-      </div>
-      <div id="regelKopf" style="margin-top:10px;"></div>
-    </div>
-
-    <div class="panel" id="regelnKarte" style="margin-top:12px;">
-      <h3 style="display:flex; align-items:center; gap:8px;">Regeln, die nur messen
-        <button class="info" type="button" data-info="regeln.messen" aria-expanded="false"
-                aria-label="Erklärung: Regeln, die nur messen">i</button></h3>
-      <div style="font-size:var(--fs-text); color:var(--ink-2); line-height:1.6; max-width:68ch;">
-        Eine Regel <b>festschreiben</b> und mitlaufen lassen, ohne dass Geld bewegt wird –
-        geprüft auf denselben Kerzen wie die gehandelte Regel, mit eigener Bilanz.
-        <b>Bewusst ohne Handelsknopf.</b>
-      </div>
-      <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-top:10px;">
-        <input type="text" id="regelName" maxlength="40" placeholder="Name, z. B. „Felix: Winkel 1m“" style="flex:1 1 240px;">
-        <button class="btn ghost" id="regelNeuBtn" type="button" title="Schreibt die AKTUELLEN Einstellungen unter diesem Namen fest. Ab dem nächsten Scan läuft sie mit – ohne Geld.">Aktuelle Einstellungen festschreiben</button>
-        <span id="regelStatus" style="color:var(--muted); font-size:var(--fs-neben);"></span>
-      </div>
-      <div id="regelnListe" style="margin-top:10px;"></div>
-    </div>
-
-    <div class="panel" id="regelBilanz" style="margin-top:12px;">
-      <h3>Bilanz dieser Regel</h3>
-      <div style="font-size:var(--fs-text); color:var(--ink-2); line-height:1.6; margin-bottom:10px;">
-        Was die Regel getan hat, was sie <i>nicht</i> getan hat, und wie sie gegen einfaches
-        Halten steht. Der Vergleich gegen Buy&nbsp;&amp;&nbsp;Hold ist dabei die wichtigste
-        Spalte: Eine Regel, die den Markt nicht schlägt, hat keinen Vorsprung – sie war
-        nur dabei.
-      </div>
-
-    <div class="panel" style="margin-bottom:12px;">
-      <h3>Was hat gewirkt?</h3>
-      <div style="color:var(--muted); font-size:var(--fs-neben); margin-bottom:8px;">
-        Jede automatische Änderung mit gemessener Wirkung: Ø Gewinn je Intraday-Trade davor gegen danach, sortiert nach
-        Wirkung, jede einzeln zurücknehmbar – bei den von Hand übernommenen Voreinstellungen sogar Feld für Feld.
-      </div>
-      <div id="tuneLog"></div>
-
-      <div style="margin-top:14px; padding-top:12px; border-top:1px solid var(--line);">
-        <h4 style="margin:0 0 6px;">Bringen die Filter etwas?</h4>
-        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-          <button class="btn ghost" id="filterBtn">Mit vs. ohne Filter rechnen</button>
-          <span id="filterStatus" style="color:var(--muted); font-size:var(--fs-neben);"></span>
-        </div>
-        <div style="color:var(--muted); font-size:var(--fs-neben); margin-top:6px;">
-          Rechnet denselben Zeitraum zweimal – einmal mit deinen Filtern, einmal ohne. Zeigt, ob die Zurückhaltung
-          Geld spart oder Rendite kostet.
-        </div>
-        <div id="filterResult" style="margin-top:12px;"></div>
-      </div>
-    </div>
-      <div class="panel">
-        <h3>Wann die Strategie nichts getan hat</h3>
-        <div style="color:var(--muted); font-size:var(--fs-neben); margin-bottom:8px;">
-          Wie oft die Filter ein Signal bewusst verworfen haben – und warum. Der häufigste Grund ist der stärkste Hebel:
-          „Wer nicht weiß, was er tut, muss wissen, wann er nichts tut.“ (Kostolany)
-        </div>
-        <div id="patience"><div class="loading">Noch keine verworfenen Signale erfasst – entsteht, sobald der Intraday-Scanner läuft.</div></div>
-      </div>
-      <div class="panel">
-        <h3>Depot gegen Buy &amp; Hold</h3>
-        <div id="benchInfo" style="font-size:var(--fs-neben); color:var(--muted); margin-bottom:6px;">Wird beim Öffnen dieses Bereichs geladen …</div>
-        <svg id="benchChart" style="width:100%; height:150px; display:block;"></svg>
-        <div id="benchLegend" style="font-size:var(--fs-neben); color:var(--ink-2); margin-top:4px;"></div>
-        <div id="hitrates" style="margin-top:10px;"></div>
-      </div>
-    </div>
   <div class="panel">
     <div style="font-size:var(--fs-neben); color:var(--muted);">Alles hier ist Simulation. Es wird nichts gekauft und nichts verkauft.</div>
   </div>

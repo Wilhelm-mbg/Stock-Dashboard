@@ -1343,6 +1343,65 @@
    * eine ReferenceError, und der Chartbereich blieb leer. */
   var stcRunning = false;
   var STC_IV = { '60m': { min: 60, txt: '60-Minuten-Kerzen' }, '15m': { min: 15, txt: '15-Minuten-Kerzen' }, '5m': { min: 5, txt: '5-Minuten-Kerzen' } };
+  /** Die Rechnung hinter dem Strategie-Chart, ohne jede Oberflaeche: Kerzen holen,
+   *  Signale nachspielen, Hilfslinien bauen. Seit Issue #68 steht sie getrennt da,
+   *  weil sie zwei Ansichten bedient - den grossen Chart im Reiter "Regeln" und die
+   *  aufgeklappte Zeile einer offenen Position. Zwei Ansichten, EINE Rechnung: sonst
+   *  zeigen sie irgendwann verschiedene Signale fuer denselben Wert, und niemand
+   *  weiss, welche der beiden das Buch meint. */
+  async function stcRechnen(sym, mode, iv, spanne) {
+    var ivCfg = STC_IV[iv] || STC_IV['60m'];
+    if (!(spanne > 0)) spanne = 320;
+    /* Vorlauf: der Detektor rechnet erst ab Kerze 261 (Kanal ueber 200 + EMA100).
+     * Ohne diesen Puffer waere der linke Teil des Bildes systematisch signalfrei -
+     * man hielte eine Luecke der Rechnung fuer eine Aussage ueber den Markt. */
+    var tiefe = Math.max(900, spanne + 320);
+    var bars = null;
+    // Archiv zuerst: es hat die Tiefe (>= 261 Kerzen), die der Detektor braucht - wie im Live-Scan.
+    if (window.Archiv) { try { bars = await window.Archiv.serie(iv, sym); } catch (eA) { bars = null; } }
+    if (!bars || bars.length < 300) {
+      var fd = await fetchIntraday(sym, iv, true);
+      if (fd && fd.series && (!bars || fd.series.length > bars.length)) bars = fd.series;
+    }
+    if (!bars || bars.length < 300) {
+      return { ok: false, grund: 'Zu wenig ' + ivCfg.txt + ' für ' + sym + ' (' + (bars ? bars.length : 0) +
+        ' < 300) – der Detektor rechnet erst ab 261 Kerzen wie gemessen.' };
+    }
+    bars = Q.fertigeBars(bars.slice(-tiefe), ivCfg.min, Date.now());
+    var P = stcParams(mode);
+    // Signale nachspielen: wie der Edge-Waechter, mit der Abklingzeit des Modus
+    var cool = 0, marks = [], coolMin = D.intraday.cooldownMin != null ? D.intraday.cooldownMin : 120;
+    for (var i = 261; i < bars.length; i++) {
+      if (bars[i][0] - cool < coolMin * 60000) continue;
+      var s = null;
+      try { s = Q.einstiegSignal(bars, i, P); } catch (e) { }
+      if (!s || s.dir !== 'call') continue;
+      cool = bars[i][0];
+      marks.push(i);
+    }
+    var show = bars.slice(-Math.min(spanne, bars.length));
+    var off = bars.length - show.length;
+    var closesAll = bars.map(function (b) { return b[1]; });
+    var e20 = Q.emaSeries(closesAll, P.period).slice(off), e100 = Q.emaSeries(closesAll, 100).slice(off);
+    var bed = stcBedingungen(bars, mode, P);
+    var indSerie = [];
+    if (mode === 'rsi2seit') {
+      for (var k = 0; k < show.length; k++) { var gi = off + k; indSerie.push(gi >= 2 ? Q.rsi(closesAll, 2, gi) : null); }
+    } else {
+      for (var k2 = 0; k2 < show.length; k2++) {
+        var gi2 = off + k2;
+        if (gi2 < 120) { indSerie.push(null); continue; }
+        var rz = Q.reversionSignal(bars.slice(Math.max(0, gi2 - 260), gi2 + 1), P.LINE, P.period, P.ZTHR);
+        indSerie.push(rz && rz.z != null ? rz.z : null);
+      }
+    }
+    var marksShow = marks.filter(function (m) { return m >= off; }).map(function (m) { return m - off; });
+    var S = { bars: bars, show: show, off: off, mode: mode, P: P, marks: marks, sym: sym, iv: iv,
+      e20: e20, e100: e100, kanal: bed.kanal, marksShow: marksShow, gewaehlt: null, band: null };
+    S.band = stcBandSerie(S);
+    return { ok: true, S: S, indSerie: indSerie, bed: bed, ivCfg: ivCfg };
+  }
+
   async function runStrategieChart() {
     if (stcRunning) return;
     stcRunning = true;
@@ -1358,10 +1417,6 @@
       var ivCfg = STC_IV[iv];
       var spanne = spEl ? parseInt(spEl.value, 10) : 320;
       if (!(spanne > 0)) spanne = 320;
-      // Vorlauf: der Detektor rechnet erst ab Kerze 261 (Kanal ueber 200 + EMA100).
-      // Ohne diesen Puffer waere der linke Teil des Bildes systematisch signalfrei -
-      // man wuerde eine Luecke der Rechnung fuer eine Aussage ueber den Markt halten.
-      var tiefe = Math.max(900, spanne + 320);
       // Ehrlichkeit vor Bequemlichkeit: gemessen sind beide Regeln auf 60m. Andere
       // Kerzenlaengen darf man sich ansehen, aber sie sind KEIN Beleg - genau dieser
       // stille Wechsel weg von der gemessenen Konfiguration hat hier schon einmal
@@ -1374,47 +1429,14 @@
         }
       }
       st.textContent = 'Lade ' + sym + ' (' + ivCfg.txt + ') …';
-      var bars = null;
-      // Archiv zuerst: es hat die Tiefe (>= 261 Kerzen), die der Detektor braucht - wie im Live-Scan.
-      if (window.Archiv) { try { bars = await window.Archiv.serie(iv, sym); } catch (eA) { bars = null; } }
-      if (!bars || bars.length < 300) {
-        var fd = await fetchIntraday(sym, iv, true);
-        if (fd && fd.series && (!bars || fd.series.length > bars.length)) bars = fd.series;
-      }
-      if (!bars || bars.length < 300) { st.textContent = 'Zu wenig ' + ivCfg.txt + ' für ' + sym + ' (' + (bars ? bars.length : 0) + ' < 300) – der Detektor rechnet erst ab 261 Kerzen wie gemessen.'; return; }
-      bars = Q.fertigeBars(bars.slice(-tiefe), ivCfg.min, Date.now());
-      var P = stcParams(mode);
-      // Signale nachspielen: wie der Edge-Waechter, mit der Abklingzeit des Modus
-      var cool = 0, marks = [], coolMin = D.intraday.cooldownMin != null ? D.intraday.cooldownMin : 120;
-      for (var i = 261; i < bars.length; i++) {
-        if (bars[i][0] - cool < coolMin * 60000) continue;
-        var s = null;
-        try { s = Q.einstiegSignal(bars, i, P); } catch (e) { }
-        if (!s || s.dir !== 'call') continue;
-        cool = bars[i][0];
-        marks.push(i);
-      }
-      var show = bars.slice(-Math.min(spanne, bars.length));
-      var off = bars.length - show.length;
-      var closesAll = bars.map(function (b) { return b[1]; });
-      var e20 = Q.emaSeries(closesAll, P.period).slice(off), e100 = Q.emaSeries(closesAll, 100).slice(off);
-      var bed = stcBedingungen(bars, mode, P);
-      var indSerie = [];
-      if (mode === 'rsi2seit') {
-        for (var k = 0; k < show.length; k++) { var gi = off + k; indSerie.push(gi >= 2 ? Q.rsi(closesAll, 2, gi) : null); }
-      } else {
-        for (var k2 = 0; k2 < show.length; k2++) {
-          var gi2 = off + k2;
-          if (gi2 < 120) { indSerie.push(null); continue; }
-          var rz = Q.reversionSignal(bars.slice(Math.max(0, gi2 - 260), gi2 + 1), P.LINE, P.period, P.ZTHR);
-          indSerie.push(rz && rz.z != null ? rz.z : null);
-        }
-      }
-      var marksShow = marks.filter(function (m) { return m >= off; }).map(function (m) { return m - off; });
+      var r = await stcRechnen(sym, mode, iv, spanne);
+      if (!r.ok) { st.textContent = r.grund; return; }
+      var bed = r.bed;
+      var bars = r.S.bars, show = r.S.show, off = r.S.off, P = r.S.P;
+      var marks = r.S.marks, marksShow = r.S.marksShow, e20 = r.S.e20, e100 = r.S.e100;
+      var indSerie = r.indSerie;
       st.textContent = '';
-      stcState = { bars: bars, show: show, off: off, mode: mode, P: P, marks: marks, sym: sym, iv: iv,
-        e20: e20, e100: e100, kanal: bed.kanal, marksShow: marksShow, gewaehlt: null, band: null };
-      stcState.band = stcBandSerie(stcState);
+      stcState = r.S;
       var kEl = document.getElementById('stcKontext');
       drawStrategieChart(svg, show, e20, e100, stcKanalListe(stcState, null, !!(kEl && kEl.checked)),
         marksShow, null, stcState.band);
@@ -4197,6 +4219,79 @@
       rb.className = 'state ' + (co.ok ? 'on' : 'off');
     }
 
+  /** Welche Regel hat DIESE Position eroeffnet? Intraday-Trades merken sich das im
+   *  Feld modus. Fehlt es (Altbestand, Stunden-Strategie), wird die aktuell
+   *  eingestellte Regel gezeigt - und die Zeile sagt dann auch, dass sie geraten ist. */
+  function posModus(pos) {
+    var m = pos && pos.modus;
+    if (m === 'rsi2seit' || m === 'kapitulation') return { mode: m, sicher: true };
+    var akt = D.intraday && D.intraday.mode;
+    return { mode: akt === 'kapitulation' ? 'kapitulation' : 'rsi2seit', sicher: false };
+  }
+  var POS_MODUS_NAME = { rsi2seit: 'RSI(2) im Seitwärtskanal', kapitulation: 'Kapitulations-Dip im Abwärtskanal' };
+
+  /** Position auf- oder zuklappen (Felix, Issue #68). Gezeichnet wird mit derselben
+   *  Rechnung wie der grosse Strategie-Chart; der eigene Einstieg wird markiert,
+   *  wenn er im gezeigten Ausschnitt liegt. */
+  async function posDetailUmschalten(id) {
+    var pos = null;
+    for (var pi = 0; pi < D.positions.length; pi++) if (D.positions[pi].id === id) pos = D.positions[pi];
+    var zeile = document.querySelector('[data-poszeile="' + id + '"]');
+    var knopf = document.querySelector('[data-posauf="' + id + '"]');
+    if (!pos || !zeile) return;
+    var da = document.querySelector('[data-posdetail="' + id + '"]');
+    if (da) {
+      da.parentNode.removeChild(da);
+      if (knopf) { knopf.innerHTML = '&#9656;'; knopf.setAttribute('aria-expanded', 'false'); }
+      return;
+    }
+    if (knopf) { knopf.innerHTML = '&#9662;'; knopf.setAttribute('aria-expanded', 'true'); }
+    var spalten = zeile.children.length;
+    var tr = document.createElement('tr');
+    tr.setAttribute('data-posdetail', String(id));
+    tr.innerHTML = '<td colspan="' + spalten + '" style="padding:10px 12px; background:var(--surface-2);">' +
+      '<div data-posdetstatus="' + id + '" style="font-size:var(--fs-neben); color:var(--muted); margin-bottom:6px;">Lade Kerzen für ' + U.esc(pos.sym) + ' …</div>' +
+      '<svg data-posdetchart="' + id + '" style="width:100%; height:190px; display:block;"></svg>' +
+      '<div data-posdetsig="' + id + '" style="font-size:var(--fs-neben); color:var(--ink-2); margin-top:6px;"></div>' +
+      '</td>';
+    zeile.parentNode.insertBefore(tr, zeile.nextSibling);
+    var mw = posModus(pos);
+    var r;
+    try { r = await stcRechnen(pos.sym, mw.mode, '60m', 320); }
+    catch (e) { r = { ok: false, grund: 'Die Kerzen ließen sich nicht laden: ' + (e.message || e) }; }
+    /* In der Zwischenzeit koennte zugeklappt oder neu gezeichnet worden sein. */
+    var st = document.querySelector('[data-posdetstatus="' + id + '"]');
+    var svg = document.querySelector('[data-posdetchart="' + id + '"]');
+    if (!st || !svg) return;
+    if (!r.ok) { st.textContent = r.grund; return; }
+    /* Den eigenen Einstieg suchen - nur markieren, wenn er wirklich im Bild liegt.
+     * Sonst zeigte die Markierung auf die naechstbeste Kerze und behauptete etwas Falsches. */
+    var hl = null, beste = null;
+    if (pos.openT) {
+      for (var i = 0; i < r.S.show.length; i++) {
+        var ab = Math.abs(r.S.show[i][0] - pos.openT);
+        if (beste === null || ab < beste.ab) beste = { i: i, ab: ab };
+      }
+      if (beste && beste.ab <= STC_IV['60m'].min * 60000) hl = beste.i;
+    }
+    drawStrategieChart(svg, r.S.show, r.S.e20, r.S.e100,
+      stcKanalListe(r.S, null, false), r.S.marksShow, hl, r.S.band);
+    st.innerHTML = '<b>' + U.esc(POS_MODUS_NAME[mw.mode] || mw.mode) + '</b> auf ' + U.esc(pos.sym) +
+      ' · ' + r.S.show.length + ' 60-Minuten-Kerzen im Bild' +
+      (mw.sicher ? '' : ' · <span style="color:var(--series2);">Diese Position hat keine Regel hinterlegt – gezeigt wird die aktuell eingestellte</span>') +
+      (hl !== null ? ' · dein Einstieg ist markiert' : ' · dein Einstieg liegt außerhalb des Ausschnitts');
+    var sg = document.querySelector('[data-posdetsig="' + id + '"]');
+    if (sg) {
+      var letzte = r.S.marksShow.slice(-8);
+      sg.innerHTML = letzte.length
+        ? 'Einstiege, die die Regel im Bild gegeben hätte (' + r.S.marksShow.length + '): ' + letzte.map(function (m) {
+            var wann = new Date(r.S.show[m][0]).toLocaleString('de-DE', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+            return '<span style="white-space:nowrap;' + (m === hl ? ' font-weight:700; color:var(--series);' : '') + '">' + U.esc(wann) + '</span>';
+          }).join(' · ')
+        : 'Im gezeigten Ausschnitt hat die Regel kein Signal gegeben.';
+    }
+  }
+
     function tile(name, val, sign, delta, deltaSign) {
       return '<div class="tile"><div class="name">' + name + '</div><div class="val' + (sign != null ? ' ' + U.signCls(sign) : '') + '" style="font-size:var(--fs-zahl);">' + val + '</div>' +
         (delta ? '<div class="delta ' + (deltaSign ? U.signCls(deltaSign) : '') + '">' + delta + '</div>' : '') + '</div>';
@@ -4237,7 +4332,17 @@
             '<td title="Wertänderung je Volatilitätspunkt – bei unverändertem Kurs">' +
               (p.vega > 0 ? U.nf2.format(p.vega * p.qty) + ' $' : '–') + '</td>' +
             '<td title="Aufgeld aktuell: ' + Q.warrantAufgeld(p.dir, wobj, spot, now).toFixed(1) + ' %">' + Q.warrantOmega(p.dir, wobj, spot, now).toFixed(1) + 'x</td>';
-        ph += '<tr><td><b>' + U.esc(p.sym) + '</b>' + (p.strategy === 'intraday' ? ' <span title="Intraday-Strategie"></span>' : '') + '</td>' +
+        /* Das Kuerzel ist ein echter Knopf, keine unterstrichene Schrift: so kommt man
+         * auch mit der Tastatur hin. Der Pfeil daneben klappt Chart und Signale auf. */
+        ph += '<tr data-poszeile="' + p.id + '"><td style="white-space:nowrap;">' +
+          '<button type="button" data-posauf="' + p.id + '" aria-expanded="false" ' +
+            'title="Chart und Signale zu dieser Position ein- und ausblenden" ' +
+            'aria-label="Chart und Signale zu ' + U.esc(p.sym) + ' ein- und ausblenden" ' +
+            'style="background:none; border:0; padding:0 4px 0 0; font:inherit; color:var(--muted); cursor:pointer;">&#9656;</button>' +
+          '<button type="button" data-explsym="' + U.esc(p.sym) + '" title="' + U.esc(p.sym) + ' im Aktien-Explorer öffnen" ' +
+            'style="background:none; border:0; padding:0; font:inherit; font-weight:700; color:var(--series); cursor:pointer; text-decoration:underline dotted;">' +
+            U.esc(p.sym) + '</button>' +
+          (p.strategy === 'intraday' ? ' <span title="Intraday-Strategie"></span>' : '') + '</td>' +
           '<td><span class="badge ' + p.dir + '">' + (p.dir === 'call' ? 'CALL' : 'PUT') + '</span></td>' +
           scheinZellen +
           '<td>' + p.qty + '</td>' +
@@ -4264,8 +4369,8 @@
     } else {
       ph = '<div class="empty"><span class="ico"></span>Keine offenen Positionen. ' +
         (D.intraday && D.intraday.enabled
-          ? 'Die Intraday-Strategie läuft und wartet auf ein Signal – wann sie zuletzt nichts getan hat und warum, steht unter „Vermögen → Auswertung“.'
-          : 'Die Intraday-Strategie ist aus – einschalten unter „Vermögen → Schalter &amp; Einstellungen“.') + '</div>';
+          ? 'Die Intraday-Strategie läuft und wartet auf ein Signal – wann sie zuletzt nichts getan hat und warum, steht unter „Regeln → Autopilot“.'
+          : 'Die Intraday-Strategie ist aus – einschalten unter „Regeln → Schalter &amp; Einstellungen“.') + '</div>';
     }
     if (D.repairNote && Date.now() - D.repairNote.at < 7 * 86400000) {
       var rn = D.repairNote;
@@ -4276,6 +4381,15 @@
         '<span style="color:var(--muted);">Ursache: Trades standen im Protokoll als „offen", lagen aber in keiner Position mehr (Absturz, Doppelstart oder Versionswechsel).</span></div>' + ph;
     }
     document.getElementById('positionsPanel').innerHTML = ph;
+    document.querySelectorAll('[data-explsym]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var sym = b.getAttribute('data-explsym');
+        if (window.Explorer && window.Explorer.oeffne) window.Explorer.oeffne(sym, sym);
+      });
+    });
+    document.querySelectorAll('[data-posauf]').forEach(function (b) {
+      b.addEventListener('click', function () { posDetailUmschalten(parseInt(b.getAttribute('data-posauf'), 10)); });
+    });
     document.querySelectorAll('[data-ticket]').forEach(function (b) {
       b.addEventListener('click', function () { openTicket(parseInt(b.getAttribute('data-ticket'), 10)); });
     });
@@ -8130,8 +8244,8 @@
           applied: ['Stunden-Strategie aus (Messung: Kontraindikator)'],
           txt: 'Die Stunden-Strategie wurde vermessen (24.727 Signale, 189 Werte, 8 Jahre): Ihr Technik-Score ist ein ' +
             'Kontraindikator (−0,74 Pp auf 20 Tage, t=−11,6) – dazu Schein-Kosten über Tage. Sie wurde einmalig ' +
-            'abgeschaltet. Einschalten bleibt jederzeit möglich (Reiter „Regeln“, oder unter „Vermögen → ' +
-            'Schalter & Einstellungen“ im Archiv) und wird danach nie wieder automatisch geändert.' });
+            'abgeschaltet. Einschalten bleibt jederzeit möglich (Reiter „Regeln → ' +
+            'Schalter & Einstellungen“, im Archiv) und wird danach nie wieder automatisch geändert.' });
       }
     }
     /* Einmalig: Wer die belegte Kante ueber die Auslöser-Liste gewaehlt hatte, sass

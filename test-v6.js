@@ -1138,7 +1138,12 @@ console.log('\n17b) Oberflaeche: Altlasten und Verdrahtung');
   (function () {
     var d3 = fs.readFileSync(__dirname + '/depot.js', 'utf8');
     var h3 = fs.readFileSync(__dirname + '/index.html', 'utf8');
-    var stc = d3.slice(d3.indexOf('async function runStrategieChart'), d3.indexOf('function drawStrategieChart'));
+    /* Seit Issue #68 steht die Rechnung als stcRechnen VOR runStrategieChart, damit die
+     * aufgeklappte Positionszeile dieselbe Rechnung benutzt. Der Schnitt muss beide
+     * umfassen - sonst prueft er eine leere Huelle und wird gruen, ohne etwas zu sehen. */
+    var stc = d3.slice(d3.indexOf('async function stcRechnen'), d3.indexOf('function drawStrategieChart'));
+    ok(d3.indexOf('async function stcRechnen') > -1 && d3.indexOf('async function stcRechnen') < d3.indexOf('async function runStrategieChart'),
+       'Strategie-Chart: die Rechnung steht getrennt von der Anzeige (eine Rechnung, zwei Ansichten)');
     ok(/id="stcChart"/.test(h3) && /id="stcMode"/.test(h3) && h3.indexOf('id="stratChartPanel"') > h3.indexOf('id="tab-strategien"'),
        'Strategie-Chart #51: Panel liegt im Tab Strategien & Belege');
     ok(/Q\.einstiegSignal\(bars, i, P\)/.test(stc) && !/rsi\(closes, 2\) <= 10/.test(stc),
@@ -2979,8 +2984,13 @@ console.log('\n36) Kostenhuerde des Produkts (Signalstudie 23.08.2026)');
 
   /* Die drei Ergebnis-Ansichten lagen im Kurzfrist-Depot verstreut und beantworteten
    * dieselbe Frage. Jetzt stehen sie als Bilanz bei der Regel, zu der sie gehoeren. */
-  var iChart = html.indexOf('id="stcChart"'), iBilanz = html.indexOf('id="regelBilanz"');
-  ok(iChart > 0 && iBilanz > iChart, 'Die Bilanz steht bei der Regel, nicht im Depot');
+  var iBilanz = html.indexOf('id="regelBilanz"');
+  var regelnVon = html.indexOf('<div id="tab-strategien"'), regelnBis = html.indexOf('<!-- /tab-strategien -->');
+  var depotVon = html.indexOf('<div id="tab-depot"'), depotBis = html.indexOf('<!-- /tab-depot -->');
+  ok(iBilanz > regelnVon && iBilanz < regelnBis && !(iBilanz > depotVon && iBilanz < depotBis),
+     'Die Bilanz steht bei der Regel, nicht im Depot');
+  ok(html.indexOf('id="stcChart"') > regelnVon && html.indexOf('id="stcChart"') < regelnBis,
+     'Der Strategie-Chart steht ebenfalls im Reiter Regeln');
   ['tuneLog', 'patience', 'benchChart'].forEach(function (id) {
     ok(html.indexOf('id="' + id + '"') > iBilanz, 'Die Bilanz enthaelt ' + id);
   });
@@ -3644,8 +3654,10 @@ console.log('\n44) Messmaschine, Scoreboard und Strategie-Eingabe (23.08.2026)')
   var r = require('child_process').spawnSync(process.execPath, [__dirname + '/studien/messmaschine/test-messmaschine.js'], { encoding: 'utf8' });
   ok(r.status === 0 && /ALLE TESTS BESTANDEN/.test(r.stdout), 'test-messmaschine.js besteht (jeder Fehlertyp aus FEHLERTYPEN.md als Falle)');
   var ft = fs.readFileSync(__dirname + '/studien/messmaschine/FEHLERTYPEN.md', 'utf8');
-  var kennungen = (ft.match(/|s*([A-E]d)s*|/g) || []).length;
-  ok(kennungen >= 33, 'FEHLERTYPEN.md fuehrt mindestens 33 Fehlertypen', kennungen);
+  /* Am Zeilenanfang verankert: sonst zaehlen die Zahlen in den erklaerenden
+   * Tabellen mit (beim ersten Wurf 15.533 statt 35). */
+  var kennungen = (ft.match(/^\|\s*[A-E]\d{1,2}\s*\|/gm) || []).length;
+  ok(kennungen >= 34, 'FEHLERTYPEN.md fuehrt mindestens 34 Fehlertypen', kennungen);
 
   /* A7 (23.08.2026): Die Kontrolle darf nichts enthalten, was das Signal gelesen hat.
    * Vorher kam t3-stundendrift als "widerlegt" durch (t = -3,19), obwohl nichts da war.
@@ -3654,6 +3666,29 @@ console.log('\n44) Messmaschine, Scoreboard und Strategie-Eingabe (23.08.2026)')
   var mm2 = fs.readFileSync(__dirname + '/studien/messmaschine/messmaschine.js', 'utf8');
   var np = fs.readFileSync(__dirname + '/studien/messmaschine/nullversuch-permutation.js', 'utf8');
   var mn = fs.readFileSync(__dirname + '/studien/messmaschine/messen-mit-null.js', 'utf8');
+
+  /* B10 (24.08.2026): Ueberlappende Halteperioden. Bei H Kerzen Haltedauer teilen
+   * aufeinanderfolgende TAGE H-1 Kerzen ihres Ergebnisfensters - sie sind dann keine
+   * unabhaengigen Wiederholungen. Momentum: t naiv 4,74, Newey-West 0,74.
+   * Kapitulations-Dip: 2,59 -> 1,74. Beide Befunde loesten sich auf. */
+  ok(/\|\s*B10\s*\|/.test(ft), 'B10 steht in FEHLERTYPEN.md');
+  ok(mm2.indexOf('function neweyWest(werte, mu, va, lags)') !== -1,
+     'Die Maschine korrigiert den Standardfehler nach Newey-West');
+  ok(mm2.indexOf('statistik(tm.mittel, H - 1)') !== -1,
+     'Die Zahl der Verzoegerungen kommt aus der Haltedauer, nicht aus einer Annahme');
+  ok(/P\.warne\('B10'/.test(mm2),
+     'Waechst der Fehler um mehr als Faktor 3, warnt die Maschine');
+
+  /* Und die Gegenprobe: bei H = 1 darf die Korrektur nichts tun. */
+  var mmMod = require(__dirname + '/studien/messmaschine/messmaschine.js');
+  var reihe = [];
+  for (var q = 0; q < 200; q++) reihe.push(Math.sin(q) * 0.01 + 0.002);
+  var ohne = mmMod._intern.statistik(reihe, 0), mit = mmMod._intern.statistik(reihe, 20);
+  ok(Math.abs(ohne.se - ohne.seNaiv) < 1e-15,
+     'Bei 0 Verzoegerungen ist der korrigierte Fehler exakt der naive (H = 1 aendert nichts)');
+  ok(Math.abs(mit.se - ohne.se) > 1e-12,
+     'Bei Verzoegerungen aendert er sich - die Korrektur greift ueberhaupt',
+     'naiv ' + ohne.se.toExponential(3) + ', korrigiert ' + mit.se.toExponential(3));
   ok(/\|\s*A7\s*\|/.test(ft) && /\|\s*A8\s*\|/.test(ft), 'A7 und A8 stehen in FEHLERTYPEN.md');
   ok(mm2.indexOf('leseFensterKerzen') !== -1 && /erwartung: function \(sym, stunde, haelfte, vonIdx, bisIdx\)/.test(mm2),
      'A7: Die Kontrolle kann das Lesefenster des Signals auslassen');
@@ -3685,8 +3720,18 @@ console.log('\n44) Messmaschine, Scoreboard und Strategie-Eingabe (23.08.2026)')
      'A9, B8 und B9 stehen in FEHLERTYPEN.md');
   /* A9: Kontrolle und Signalschleife muessen beim SELBEN Vorlauf beginnen. Start bei
    * Kerze 60 statt 261 verschob den Intraday-Ueberschuss von +0,064 auf +0,036. */
-  ok(mm2.split('for (var i = vorlauf;').length === 3,
-     'A9: Kontrolle und Signalschleife starten beide bei vorlauf');
+  /* Ohne Regex: der Anfang jeder Kerzenschleife wird als Text abgeschnitten. Zaehlen
+   * waere das falsche Mass - eine vierte, korrekte Schleife darf den Test nicht roeten. */
+  /* Nur Schleifen ueber die Kerzenreihe sind gemeint - erkennbar daran, dass ihre
+   * Bedingung b.length nennt. Eine Autokorrelation ueber Werte darf bei 0 beginnen
+   * und hat mit dem Vorlauf des Detektors nichts zu tun. */
+  var kerzenSchleifen = mm2.split('for (var i = ').slice(1)
+    .map(function (s) { return s.split(')')[0]; })
+    .filter(function (s) { return s.indexOf('b.length') !== -1; });
+  var falscherStart = kerzenSchleifen.filter(function (s) { return s.indexOf('vorlauf') === -1; });
+  ok(kerzenSchleifen.length >= 2 && falscherStart.length === 0,
+     'A9: JEDE Kerzenschleife der Maschine startet bei vorlauf',
+     kerzenSchleifen.length + ' Schleifen, abweichend: ' + (falscherStart.join(' | ') || 'keine'));
 
   /* D2 im Regelkopf: Der Belegstand kommt aus dem Protokoll. Vorher stand dort ueber
    * den Kapitulations-Dip "in Ueberpruefung", als die Messung laengst vorlag. */
@@ -4973,11 +5018,14 @@ console.log('\n41) Zustaende: was die App sagt, wenn etwas fehlt oder klemmt');
   var kopf = dep.slice(kopfI, dep.indexOf('</tr>', kopfI));
   var nKopf = (kopf.match(/<th/g) || []).length;
   var zwI = dep.indexOf('var scheinZellen = p.basis');
-  var zweig = dep.slice(zwI, dep.indexOf("ph += '<tr>", zwI));
+  /* Die Marke endet vor dem >: seit Issue #68 traegt die Zeile ein data-poszeile.
+   * Fand die alte Marke nichts, schnitt der Ausdruck bis zum Dateiende durch und
+   * zaehlte <td> aus ganz depot.js - ein Fehlschlag ohne echten Defekt. */
+  var zweig = dep.slice(zwI, dep.indexOf("ph += '<tr", zwI));
   var nBasis = (zweig.slice(zweig.indexOf('?'), zweig.indexOf(': ')).match(/<td/g) || []).length;
   var nSchein = (zweig.slice(zweig.indexOf(': ')).match(/<td/g) || []).length;
   ok(nBasis === nSchein, 'Tabelle: Basiswert- und Schein-Zweig liefern gleich viele Zellen  [' + nBasis + ' / ' + nSchein + ']');
-  var zeilI = dep.indexOf("ph += '<tr><td><b>' + U.esc(p.sym)");
+  var zeilI = dep.indexOf("ph += '<tr data-poszeile=");
   var nZeile = (dep.slice(zeilI, dep.indexOf('</tr>', zeilI)).match(/<td/g) || []).length;
   ok(nZeile + nSchein === nKopf,
      'Tabelle: Zeile und Kopf haben gleich viele Spalten  [' + (nZeile + nSchein) + ' / ' + nKopf + ']');
@@ -5678,6 +5726,100 @@ console.log('\n41) Zustaende: was die App sagt, wenn etwas fehlt oder klemmt');
   });
   ok(mitEval.length === 0, 'CSP: keine ausgelieferte Datei baut Code aus Text  [' + mitEval.join(' ') + ']');
   ok(skripte.length > 20, 'CSP: geprueft wurden alle ' + (skripte.length + 3) + ' ausgelieferten Dateien');
+})();
+
+console.log('\n44) Oberflaeche nach Themen sortiert (Felix, Issue #68)');
+(function () {
+  var html = fs.readFileSync(__dirname + '/index.html', 'utf8');
+  var dep = fs.readFileSync(__dirname + '/depot.js', 'utf8');
+  var ren = fs.readFileSync(__dirname + '/renderer.js', 'utf8');
+
+  /* --- Die Navigation muss aufgehen: jede Pille findet ihr Panel --- */
+  var pillen = (html.match(/data-sub="([a-z]+)"/g) || [])
+    .map(function (s) { return s.slice(10, -1); });
+  var panels = (html.match(/id="sub-([a-z]+)"/g) || [])
+    .map(function (s) { return s.slice(8, -1); });
+  var ohnePanel = pillen.filter(function (p) { return panels.indexOf(p) === -1; });
+  var ohnePille = panels.filter(function (p) { return pillen.indexOf(p) === -1; });
+  ok(ohnePanel.length === 0,
+     'Jede Pille findet ihr Panel - sonst bleibt der Reiter beim Klick leer',
+     ohnePanel.join(' ') || 'alle');
+  ok(ohnePille.length === 0,
+     'Jedes Panel ist ueber eine Pille erreichbar - sonst ist es tot',
+     ohnePille.join(' ') || 'alle');
+
+  /* --- Genau ein aktives Panel je Reiter, sonst liegen zwei uebereinander --- */
+  ['tab-depot', 'tab-werkzeuge', 'tab-strategien'].forEach(function (id) {
+    var von = html.indexOf('<div id="' + id + '"');
+    var bis = html.indexOf('<!-- /' + id + ' -->');
+    ok(von > -1 && bis > von, 'Reiter ' + id + ' ist im Markup abgegrenzt');
+    var teil = html.slice(von, bis);
+    var aktiv = (teil.match(/class="sub active"/g) || []).length;
+    ok(aktiv === 1, 'Reiter ' + id + ' hat genau EIN aktives Unter-Panel', aktiv);
+    var pillenAktiv = (teil.match(/data-sub="[a-z]+" class="active"/g) || []).length;
+    ok(pillenAktiv === 1, 'Reiter ' + id + ' hat genau EINE aktive Pille', pillenAktiv);
+  });
+
+  /* --- Die Aufteilung selbst, so wie sie im Issue vereinbart ist --- */
+  var vermoegen = html.slice(html.indexOf('<div id="tab-depot"'), html.indexOf('<!-- /tab-depot -->'));
+  var werkzeuge = html.slice(html.indexOf('<div id="tab-werkzeuge"'), html.indexOf('<!-- /tab-werkzeuge -->'));
+  var regeln = html.slice(html.indexOf('<div id="tab-strategien"'), html.indexOf('<!-- /tab-strategien -->'));
+  ok(/id="sub-depot"/.test(vermoegen) && /id="sub-protokoll"/.test(vermoegen) && /id="sub-mittel"/.test(vermoegen),
+     'Vermoegen haelt Depot, Protokoll und das Mittelfrist-Buch - alles drei sind Buecher, keine Werkzeuge');
+  ok(!/id="sub-strategien"/.test(vermoegen) && !/id="sub-wende"/.test(vermoegen) && !/id="sub-auswertung"/.test(vermoegen),
+     'Vermoegen haelt keine Schalter, kein Werkzeug und keinen Autopiloten mehr');
+  ok(/id="sub-wende"/.test(werkzeuge) && /id="sub-explorer"/.test(werkzeuge) && /id="sub-scheine"/.test(werkzeuge),
+     'Werkzeuge halten Explorer, Schein-Finder und Trendfinder');
+  ok(/id="wzEinstellungen"/.test(werkzeuge),
+     'Die Einstellungen sind von den Werkzeugen aus erreichbar (Felix, #68)');
+  /* Die Pille darf KEIN data-sub tragen: sie oeffnet einen Dialog, sie navigiert nicht.
+   * Mit data-sub wuerde der Umschalter alle Panels ausblenden und keines wieder ein. */
+  ok(!/id="wzEinstellungen"[^>]*data-sub/.test(werkzeuge),
+     'Die Einstellungs-Pille ist keine Navigation - sonst bliebe der Reiter leer zurueck');
+  ok(/wzEinstellungen/.test(fs.readFileSync(__dirname + '/app-shell.js', 'utf8')),
+     'und sie ist verdrahtet');
+  ok(/id="sub-strategien"/.test(regeln) && /id="sub-auswertung"/.test(regeln) &&
+     /id="sub-regelbuch"/.test(regeln) && /id="sub-stratchart"/.test(regeln),
+     'Regeln haelt alles Regelrelevante: Schalter, Autopilot, Regelbuch, Chart');
+
+  /* --- Kein Wegweiser zeigt mehr auf einen Ort, den es nicht mehr gibt --- */
+  var quellen = ['index.html', 'depot.js', 'explorer.js', 'renderer.js', 'app-shell.js'];
+  var falsch = [];
+  quellen.forEach(function (f) {
+    var s = fs.readFileSync(__dirname + '/' + f, 'utf8');
+    if (/Vermögen (→|-&gt;) (Schalter|Auswertung|Trendfinder)/.test(s)) falsch.push(f);
+  });
+  ok(falsch.length === 0,
+     'Kein Text verweist mehr auf Vermoegen -> Schalter/Auswertung/Trendfinder',
+     falsch.join(' ') || 'keiner');
+
+  /* --- Punkte 1 und 2: Kuerzel und Aufklappen in der Positionstabelle --- */
+  ok(/data-explsym=/.test(dep) && /window\.Explorer && window\.Explorer\.oeffne/.test(dep),
+     'Klick auf das Kuerzel einer offenen Position oeffnet den Aktien-Explorer (#68)');
+  ok(/data-posauf=/.test(dep) && /async function posDetailUmschalten/.test(dep),
+     'Die Positionszeile laesst sich aufklappen (#68)');
+  /* Der aufgeklappte Chart MUSS aus stcRechnen kommen. Ein zweiter, eigener Nachbau
+   * waere die Sorte Fehler, die erst auffaellt, wenn beide Ansichten verschiedene
+   * Signale fuer denselben Wert zeigen. */
+  var auf = dep.slice(dep.indexOf('async function posDetailUmschalten'),
+                      dep.indexOf('function tile(name, val, sign, delta, deltaSign)'));
+  ok(/stcRechnen\(pos\.sym/.test(auf) && !/Q\.einstiegSignal/.test(auf),
+     'Die aufgeklappte Zeile rechnet nicht selbst, sondern nutzt stcRechnen');
+  ok(/beste\.ab <= STC_IV/.test(auf),
+     'Der eigene Einstieg wird nur markiert, wenn er wirklich im Bild liegt');
+
+  /* --- Punkt 4: ausserboerslicher Kurs auch oben im Dashboard --- */
+  ok(/function ppKurz/.test(ren), 'Es gibt eine gemeinsame Kurzform des ausserboerslichen Kurses');
+  var moverStelle = ren.indexOf('function moverRows');
+  ok(ren.slice(moverStelle, moverStelle + 400).indexOf('ppKurz(') > -1,
+     'Gewinner und Verlierer zeigen den ausserboerslichen Kurs (#68)');
+  var heatStelle = ren.indexOf("var heatEl = document.getElementById('dashHeat')");
+  ok(ren.slice(heatStelle, heatStelle + 1600).indexOf('ppKurz(') > -1,
+     'Das Marktbild zeigt den ausserboerslichen Kurs (#68)');
+  /* Bewusst NICHT danach sortiert: ausserboerslich ist duenn gehandelt, und wer
+   * danach sortiert, stellt einzelne Ausreisser wie Tagessieger heraus. */
+  ok(/Math\.abs\(Q\[b\.y\]\.pct\) - Math\.abs\(Q\[a\.y\]\.pct\)/.test(ren),
+     'Sortiert und eingefaerbt wird weiter nach der regulaeren Tagesbewegung');
 })();
 
 Promise.all(offeneProben).then(function () {
