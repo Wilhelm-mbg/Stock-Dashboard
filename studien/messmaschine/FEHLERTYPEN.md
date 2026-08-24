@@ -88,6 +88,7 @@ Verzerrungsschätzer mit eigenem Fehler ist selbst eine Fehlerquelle.
 | B7 | Nachträgliches Weglassen von Fällen, das das Ergebnis macht | „ohne die zwei Crash-Tage +0,40" | Teilmengen nur, wenn sie in der Vorregistrierung stehen; sonst verweigert |
 | B8 | Testfamilie über Dateien hinweg nicht gezählt | 23.08.: sieben vorregistrierte Thesen auf drei Dateien verteilt ergaben dreimal die Schwelle für zwei Tests statt einmal die für sieben | Strategien geben `testfamilie.testsGesamt` an; B4 rechnet damit. Die Zahl wirkt nur nach oben |
 | B9 | **Rasterlage als verschwiegener Mehrfachtest** | Kontroll-Prüfung 23.08.: Beim Momentum erreicht von **63 möglichen Lagen** des 63-Tage-Rasters **keine** ein t ≥ 1,96 (Median 1,15) — die gewählte saß am günstigen Rand | Jede willkürliche Phase, Rasterlage oder Startverschiebung ist ein Test. Sie gehört in `testfamilie.testsGesamt`, sonst rechnet B4 mit einer zu niedrigen Schwelle |
+| B10 | **Überlappende Halteperioden als unabhängige Tage gezählt** | 24.08.: Momentum mit 63 Tagen Haltedauer und einem Signal je Tag — t naiv **4,74**, Newey-West **0,74**, nicht überlappende Blöcke Median **0,52** (0 von 63 Lagen über der Schwelle) | Der Standardfehler ist immer Newey-West-korrigiert mit **H−1** Verzögerungen (Bartlett-Gewichte). Bei H = 1 ändert das nichts; der Faktor steht im Protokoll |
 
 **Warum B9 so leicht zu übersehen ist.** Wer ein Momentum über 63 Handelstage rechnet,
 muss irgendwo anfangen — und jeder Starttag ergibt eine andere Zerlegung derselben
@@ -99,6 +100,30 @@ Startpunkt gleitender Fenster und für jede „ab welcher Kerze zählen wir"-Ent
 Die Gegenprobe ist billig und sollte zur Pflicht gehören: **alle Lagen rechnen und die
 Verteilung berichten.** Liegt die gewählte Lage am Rand, ist das kein Detail, sondern
 der Befund.
+
+**Warum B10 so lange unbemerkt blieb.** Die Maschine clustert über Handelstage —
+genau richtig gegen den Fehler, Signale desselben Tages als unabhängig zu zählen
+(B1). Der zweite Schritt fehlte: Bei einer Haltedauer von H Kerzen teilen
+aufeinanderfolgende **Tage** H−1 Kerzen ihres Ergebnisfensters. Sie sind dann
+ebenso wenig unabhängig wie Signale innerhalb eines Tages.
+
+Die Autokorrelation der Tagesmittel zeigt es unmissverständlich — sie fällt exakt
+bei der Haltedauer ab:
+
+| Verzögerung | 1 | 5 | 21 | 63 | 126 |
+|---|---|---|---|---|---|
+| Autokorrelation | 0,979 | 0,902 | 0,646 | **0,016** | 0,082 |
+
+Betroffen ist **jede** Messung mit H > 1. Nachgerechnet nach dem Einbau:
+
+| Messung | H | t vorher | t nachher |
+|---|---|---|---|
+| Momentum, stärkste 10 % | 63 | 4,74 | **0,74** |
+| Kapitulations-Dip V0 | 26 | 2,59 | **1,74** |
+
+Beide „Befunde" des 24.08. lösen sich damit auf. Das ist nach A6 die zweitschwerste
+Korrektur an dieser Maschine — und wie bei A6 gilt: Sie kam nicht aus einer Ahnung,
+sondern aus der Frage „warum ist dieser t-Wert so groß?"
 
 ## C — Einheiten und Zeit
 

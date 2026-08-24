@@ -57,13 +57,41 @@ function tagesMittel(eintraege) {
   return { tage: tage, mittel: tage.map(function (t) { return m[t].reduce(function (a, b) { return a + b; }, 0) / m[t].length; }),
            nJeTag: tage.map(function (t) { return m[t].length; }) };
 }
-function statistik(werte) {
+/* B10: Newey-West-Standardfehler. Bei einer Haltedauer von H Kerzen ueberlappen
+ * die Ergebnisfenster aufeinanderfolgender Signaltage um H-1 Kerzen - die Tage
+ * sind dann keine unabhaengigen Wiederholungen. Die Korrektur nimmt die in den
+ * Daten GEMESSENE Autokorrelation bis zur Verzoegerung H-1 auf, mit
+ * Bartlett-Gewichten (1 - k/H), die die Schaetzung positiv definit halten.
+ * Bei H = 1 ist die Summe leer und das Ergebnis exakt der alte Wert. */
+function neweyWest(werte, mu, va, lags) {
+  var n = werte.length;
+  if (!(lags > 0) || n < 3) return va;
+  var L = Math.min(lags, n - 2);
+  var lang = va;
+  for (var k = 1; k <= L; k++) {
+    var gew = 1 - k / (L + 1);
+    var s = 0, c = 0;
+    for (var i = 0; i + k < n; i++) { s += (werte[i] - mu) * (werte[i + k] - mu); c++; }
+    if (c) lang += 2 * gew * (s / c);
+  }
+  /* Eine negative Langfristvarianz ist rechnerisch moeglich und sachlich unsinnig;
+   * dann bleibt der unkorrigierte Wert stehen. */
+  return lang > 0 ? lang : va;
+}
+
+function statistik(werte, lags) {
   var n = werte.length;
   if (n < 2) return { n: n, mittel: n ? werte[0] : null, se: null, t: null, mde: null };
   var mu = werte.reduce(function (a, b) { return a + b; }, 0) / n;
-  var sd = Math.sqrt(werte.reduce(function (a, b) { return a + (b - mu) * (b - mu); }, 0) / (n - 1));
-  var se = sd / Math.sqrt(n);
-  return { n: n, mittel: mu, sd: sd, se: se, t: se > 0 ? mu / se : null, mde: se > 0 ? VERFAHREN.mdeFaktor * se : null };
+  var va = werte.reduce(function (a, b) { return a + (b - mu) * (b - mu); }, 0) / (n - 1);
+  var sd = Math.sqrt(va);
+  var seNaiv = sd / Math.sqrt(n);
+  var vaNW = neweyWest(werte, mu, va, lags || 0);
+  var se = Math.sqrt(vaNW / n);
+  return { n: n, mittel: mu, sd: sd, se: se, seNaiv: seNaiv,
+    ueberlappungsFaktor: seNaiv > 0 ? Math.round(se / seNaiv * 100) / 100 : null,
+    t: se > 0 ? mu / se : null, tNaiv: seNaiv > 0 ? mu / seNaiv : null,
+    mde: se > 0 ? VERFAHREN.mdeFaktor * se : null };
 }
 /* B2: die Erwartung JE HANDEL ist eine andere Zahl als das Tagesmittel - beide ausweisen */
 function jeSignal(eintraege) {
@@ -193,38 +221,72 @@ function baueKontrolle(universum, haltedauerKerzen, schnittTag, vorlauf, stopNiv
  * nicht weit genug zurueckreicht, taucht in der Rangfolge nicht auf - sonst
  * bestuende der erste Rang aus jungen Werten mit kurzer Historie. */
 function baueQuerschnitt(universum, merkmal, vorlauf, mindestWerte) {
-  var proZeit = {};        // ms -> [{sym, wert}]
-  var idxVon = {};         // sym -> {ms -> i}, damit das Signal seinen Rang findet
-  Object.keys(universum).forEach(function (sym) {
-    var b = universum[sym];
-    idxVon[sym] = {};
-    for (var i = vorlauf; i < b.length; i++) {
-      var w = null;
-      try { w = merkmal(b, i); } catch (e) { w = null; }
-      if (w == null || !isFinite(w)) continue;
-      var ms = b[i][0];
-      (proZeit[ms] = proZeit[ms] || []).push({ sym: sym, wert: w });
-      idxVon[sym][ms] = i;
-    }
+  var syms = Object.keys(universum);
+  var N = syms.length;
+  var symId = {};
+  syms.forEach(function (s, k) { symId[s] = k; });
+
+  /* Gemeinsame Zeitachse: die Vereinigung aller Zeitstempel, sortiert. */
+  var zeitSatz = new Set();
+  syms.forEach(function (s) {
+    var b = universum[s];
+    for (var i = vorlauf; i < b.length; i++) zeitSatz.add(b[i][0]);
   });
-  var raenge = {};         // ms -> {sym -> perzentil}
+  var zeit = Array.from(zeitSatz).sort(function (a, b) { return a - b; });
+  var T = zeit.length;
+  var zeitIdx = new Map();
+  for (var z = 0; z < T; z++) zeitIdx.set(zeit[z], z);
+
+  /* Ein Byte je (Zeit, Symbol): 0 = kein Rang, 1..255 = Perzentil.
+   * 10.076 x 2.965 = 30 MB. Die Aufloesung von 1/254 reicht fuer Dezile. */
+  var raenge = new Uint8Array(T * N);
+
+  /* Je Symbol ein Zeiger, der mit der Zeitachse mitlaeuft - beide sind sortiert,
+   * also kostet der Gleichlauf nichts. */
+  var zeiger = new Int32Array(N);
+  for (var q = 0; q < N; q++) zeiger[q] = vorlauf;
+
+  var pufferWert = new Float64Array(N);
+  var pufferId = new Int32Array(N);
+  var ordnung = new Int32Array(N);
   var tageMitRang = 0;
-  Object.keys(proZeit).forEach(function (ms) {
-    var liste = proZeit[ms];
-    if (liste.length < mindestWerte) return;
-    liste.sort(function (a, b) { return a.wert - b.wert; });
-    var karte = {};
-    for (var k = 0; k < liste.length; k++) karte[liste[k].sym] = liste.length > 1 ? k / (liste.length - 1) : 0.5;
-    raenge[ms] = { karte: karte, n: liste.length };
+
+  for (var ti = 0; ti < T; ti++) {
+    var ms = zeit[ti], m = 0;
+    for (var si = 0; si < N; si++) {
+      var b = universum[syms[si]];
+      var p = zeiger[si];
+      while (p < b.length && b[p][0] < ms) p++;
+      zeiger[si] = p;
+      if (p >= b.length || b[p][0] !== ms) continue;
+      var w = null;
+      try { w = merkmal(b, p); } catch (e) { w = null; }
+      if (w == null || !isFinite(w)) continue;
+      pufferWert[m] = w; pufferId[m] = si; m++;
+    }
+    if (m < mindestWerte) continue;
+    for (var k = 0; k < m; k++) ordnung[k] = k;
+    var teil = Array.prototype.slice.call(ordnung, 0, m);
+    teil.sort(function (a, b) { return pufferWert[a] - pufferWert[b]; });
+    var basis = ti * N;
+    for (var r = 0; r < m; r++) {
+      /* 1 bleibt der schwaechste, 255 der staerkste. 0 heisst "kein Rang". */
+      var pz = m > 1 ? r / (m - 1) : 0.5;
+      raenge[basis + pufferId[teil[r]]] = 1 + Math.round(pz * 254);
+    }
     tageMitRang++;
-  });
+  }
+
   return {
     tage: tageMitRang,
     rang: function (sym, ms) {
-      var r = raenge[ms];
-      if (!r) return null;
-      var p = r.karte[sym];
-      return p == null ? null : { perzentil: p, n: r.n };
+      var ti = zeitIdx.get(ms);
+      if (ti === undefined) return null;
+      var si = symId[sym];
+      if (si === undefined) return null;
+      var b = raenge[ti * N + si];
+      if (!b) return null;
+      return { perzentil: (b - 1) / 254, n: N };
     },
   };
 }
@@ -459,7 +521,8 @@ function messe(strategie, archivPfad, optionen) {
     });
     function teil(liste, hf) { return liste.filter(function (e) { return e.hf === hf; }); }
     function block(liste) {
-      var tm = tagesMittel(liste), st = statistik(tm.mittel), js = jeSignal(liste);
+      /* B10: H-1 Verzoegerungen - so weit ueberlappen die Ergebnisfenster. */
+      var tm = tagesMittel(liste), st = statistik(tm.mittel, H - 1), js = jeSignal(liste);
       return { tage: st.n, signale: js.n,
         tagesmittel: st.mittel, t: st.t, se: st.se, mde: st.mde,          // B1: Teststatistik ueber Tage
         jeSignal: js.mittel, anteilPositiv: js.anteilPositiv };           // B2: die handelbare Zahl
@@ -481,6 +544,23 @@ function messe(strategie, archivPfad, optionen) {
   });
 
   /* --- Urteil (B3, B6): NUR auf der Bestaetigung, NUR gegen Ueberschuss, MDE vor t --- */
+  /* B10 sichtbar machen: um welchen Faktor waechst der Standardfehler durch die
+   * Ueberlappung? Bei H = 1 ist er 1,00. */
+  var faktoren = ergebnisse.map(function (r) { return r.bestaetigung.ueberschuss.ueberlappungsFaktor; })
+    .filter(function (x) { return x != null; });
+  if (faktoren.length) {
+    var fMax = Math.max.apply(null, faktoren);
+    P.entscheide('B10 Ueberlappung', { haltedauerKerzen: H, verzoegerungen: H - 1 },
+      { faktorGroesster: fMax },
+      H > 1
+        ? 'Die Ergebnisfenster aufeinanderfolgender Signaltage ueberlappen um ' + (H - 1) + ' Kerzen. ' +
+          'Der Standardfehler ist Newey-West-korrigiert; er waechst dadurch um bis zu Faktor ' + fMax.toFixed(2) +
+          ' gegenueber der Annahme unabhaengiger Tage.'
+        : 'Haltedauer 1 Kerze - nichts ueberlappt, die Korrektur ist wirkungslos (Faktor 1,00).');
+    if (fMax > 3) P.warne('B10', 'Der Standardfehler waechst um Faktor ' + fMax.toFixed(2) +
+      ' durch ueberlappende Halteperioden. Ein Urteil, das ohne diese Korrektur zustande kaeme, waere wertlos.');
+  }
+
   var schwelle = bonferroniSchwelle(P.tests);
   P.entscheide('B4 Bonferroni', { tests: P.tests, alpha: VERFAHREN.alpha }, { schwelleT: schwelle },
     'Zweiseitige Schwelle fuer |t| bei ' + P.tests + ' Test(s).');
@@ -540,4 +620,4 @@ function messe(strategie, archivPfad, optionen) {
 }
 
 module.exports = { messe: messe, VERFAHREN: VERFAHREN,
-  _intern: { tagesMittel: tagesMittel, statistik: statistik, jeSignal: jeSignal, bonferroniSchwelle: bonferroniSchwelle, baueKontrolle: baueKontrolle } };
+  _intern: { tagesMittel: tagesMittel, statistik: statistik, jeSignal: jeSignal, bonferroniSchwelle: bonferroniSchwelle, baueKontrolle: baueKontrolle, baueQuerschnitt: baueQuerschnitt } };
