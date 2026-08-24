@@ -5556,6 +5556,19 @@ console.log('\n41) Zustaende: was die App sagt, wenn etwas fehlt oder klemmt');
     var mitSecretIf = alleSchritte.filter(function (st) { return /secrets\./.test(String(st['if'] || '')); });
     ok(mitSecretIf.length === 0, 'Signieren: kein secrets-Zugriff in einer Schrittbedingung  [' +
        mitSecretIf.map(function (st) { return st.name; }).join(', ') + ']');
+    /* Der Vergleich in Abschnitt 31 ist nur HART, wenn DIST gesetzt ist - sonst wird
+     * eine Abweichung zum blossen Hinweis, damit der Testlauf waehrend der Arbeit nicht
+     * dauerrot steht. Der Kommentar dort sagt: "Vor einem Release mit DIST auf den
+     * frischen Build pruefen". Nur stand DIST im Bauplan NIRGENDS. Damit war die
+     * Pruefung genau an der einen Stelle stumm, fuer die sie gebaut wurde: im
+     * Release-Lauf waere ein Paket, das nicht zur Quelle passt, als Hinweis
+     * durchgerutscht und trotzdem veroeffentlicht worden - der Vorfall vom 22.08.2026
+     * noch einmal, diesmal mit einer Pruefung, die daneben zusieht. */
+    var paketTest = alleSchritte.filter(function (st) { return st.name === 'Tests gegen das gebaute Paket'; })[0];
+    ok(!!paketTest && !!paketTest.env && /dist/.test(String(paketTest.env.DIST || '')),
+       'Bau: der Testlauf gegen das Paket bekommt DIST - erst damit ist der Byte-Vergleich ein Fehler und kein Hinweis  [' +
+       ((paketTest && paketTest.env && paketTest.env.DIST) || 'NICHT GESETZT') + ']');
+
     var mitInstall = alleSchritte.filter(function (st) { return /npm install/.test(String(st.run || '')); });
     ok(mitInstall.length === 0 && alleSchritte.some(function (st) { return /npm ci/.test(String(st.run || '')); }),
        'Bau: npm ci - dieselbe Lockdatei ergibt dasselbe Paket, nicht zwei an zwei Tagen  [' +
