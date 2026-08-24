@@ -1101,6 +1101,31 @@
     return { run: run };
   })();
   function btIntraday(map, opts) { return BTPool.run('intraday', map, opts); }
+
+  /* Was haette gleichgewichtetes Halten desselben Universums ueber diese Scheibe
+   * gebracht? In Prozent - dieselbe Einheit, in der foldRets rechnen.
+   * Der Massstab, der dem Autopiloten bis zum 24.08.2026 fehlte. */
+  function haltenUeberScheibe(map, von, bis) {
+    var rr = [];
+    Object.keys(map || {}).forEach(function (sym) {
+      var b = map[sym];
+      if (!Array.isArray(b) || b.length < 2) return;
+      var ein = null, aus = null;
+      for (var i = 0; i < b.length; i++) {
+        var ms = b[i][0];
+        if (ms < von || ms > bis) continue;
+        if (!(b[i][1] > 0)) continue;
+        if (ein == null) ein = b[i][1];
+        aus = b[i][1];
+      }
+      if (ein != null && aus != null && ein > 0) rr.push(aus / ein - 1);
+    });
+    if (!rr.length) return null;
+    /* Median statt Mittel: Ein einzelner Verdreifacher soll den Massstab nicht
+     * verschieben. Wer den Median schlaegt, schlaegt den typischen Wert. */
+    rr.sort(function (a, b) { return a - b; });
+    return rr[rr.length >> 1] * 100;
+  }
   /** Mehrere Varianten in einem Auftrag - der Worker berechnet die Einstiegssignale
    *  einmal und teilt sie. Rueckgabe: Array der Einzelergebnisse. */
   function btIntradayMulti(map, basis, varianten) {
@@ -3709,8 +3734,16 @@
          * hintereinander verfallen - dann kommen keine NEUEN Einstiege mehr, bis
          * eine Nacht wieder positiv misst oder Wilhelm es von Hand uebersteuert.
          * Ausstiege und Schattenbuch laufen unveraendert weiter. */
-        if (dir && (isRsi2Seit || isKapitulation) && D.intraday.edgePause && !D.intraday.edgePauseHand) {
-          patienceAdd('Edge-Wächter: Vorsprung verfallen – neue Einstiege pausiert', sym);
+        /* D1: Jeder Arm haengt an SEINER eigenen Messung. Vorher sperrte eine
+         * rsi2seit-Messung auch den Kapitulations-Dip - eine andere Kante mit
+         * anderer Haltedauer (26 statt 8 Kerzen) und anderem Regime.
+         * edgePauseKapi fehlt in alten Zustaenden; dann greift fuer diesen Arm
+         * nichts, bis der Waechter ihn einmal gemessen hat. */
+        var istKapiSignal = kapiTrade || isKapitulation;
+        var armPause = istKapiSignal ? D.intraday.edgePauseKapi : (isRsi2Seit ? D.intraday.edgePause : null);
+        if (dir && (isRsi2Seit || istKapiSignal) && armPause && !D.intraday.edgePauseHand) {
+          patienceAdd('Edge-Wächter (' + (istKapiSignal ? 'Kapitulations-Dip' : 'RSI(2)') +
+            '): Vorsprung verfallen – neue Einstiege pausiert', sym);
           schattenNeu('Edge-Wächter', sym, dir, spot, sigBars, mp, cfg, now);
           dir = null; kapiTrade = false;
         }
@@ -6030,11 +6063,14 @@
           if (scheiben.length < nScheiben) continue;   // zu wenig Handelstage für einen Walk-Forward
           var oosMax = nScheiben - 1;
           var oosTage = 0;
-          var foldRets = [], oosTrades = [], lastBest = null;
+          var foldRets = [], oosTrades = [], lastBest = null, haltenRets = [];
           for (var f = 1; f <= oosMax; f++) {
             var trainEnd = scheiben[f].von;
             var testEnd = scheiben[f].bis;
             oosTage += scheiben[f].tage;
+            /* Der Massstab fuer genau diese ungesehene Scheibe. */
+            var hR = haltenUeberScheibe(map, scheiben[f].von, scheiben[f].bis);
+            if (hR != null) haltenRets.push(hR);
             // Parameter auf den bisherigen Daten bestimmen …
             var best = null;
             var trainMap = sliceMap(map, span[0], trainEnd, 0);
@@ -6062,6 +6098,9 @@
           var valid = foldRets.filter(function (x) { return x !== null; });
           if (!valid.length) continue;
           var wfRet = Math.round(valid.reduce(function (a, b) { return a + b; }, 0) * 100) / 100;
+          /* Was Nichtstun im selben Zeitraum gebracht haette. */
+          var haltenPct = haltenRets.length
+            ? Math.round(haltenRets.reduce(function (a, b) { return a + b; }, 0) * 100) / 100 : null;
           var posSegs = valid.filter(function (x) { return x > 0; }).length;
           var wins = oosTrades.filter(function (x) { return x.pnl > 0; }).length;
           var gw = 0, gl = 0;
@@ -6078,12 +6117,20 @@
           var rCall = { n: 0, pnl: 0 }, rPut = { n: 0, pnl: 0 };
           oosTrades.forEach(function (x) { var r3 = x.dir === 'call' ? rCall : rPut; r3.n++; r3.pnl += x.pnl; });
           var robustSchwelle = Math.ceil(oosMax * 0.7);
+          /* Bis zum 24.08.2026 hiess "robust" nur: positive Rendite. Ohne Massstab
+           * ist das in einem steigenden Markt fast geschenkt. Jetzt muss die
+           * Strategie das Halten schlagen - und wer alle anderen Huerden nimmt,
+           * aber darunter bleibt, wird nicht verschwiegen, sondern eingeordnet. */
+          var schlaegtHalten = haltenPct == null || wfRet > haltenPct;
+          var sonstRobust = wfRet > 0 && posSegs >= robustSchwelle && pf > 1 && (!bsOOS || bsOOS.lossProb <= 45);
           var verdict = duenn
             ? ('nicht belastbar (' + oosTrades.length + ' Trades auf ' + oosTage + ' ungesehenen Handelstagen, ' + valid.length + '/' + oosMax + ' Scheiben)')
-            : (wfRet > 0 && posSegs >= robustSchwelle && pf > 1 && (!bsOOS || bsOOS.lossProb <= 45)) ? 'robust'
+            : (sonstRobust && schlaegtHalten) ? 'robust'
+            : sonstRobust ? ('unter Halten (' + wfRet + ' % gegen ' + haltenPct + ' % fuers Nichtstun)')
             : (wfRet > 0 || posSegs >= Math.ceil(oosMax / 2)) ? 'gemischt' : 'kein Vorteil';
           results.push({
             mode: MODES[mi], interval: iv, wfRet: wfRet, foldRets: foldRets, posSegs: posSegs,
+            haltenPct: haltenPct, schlaegtHalten: schlaegtHalten,
             n: oosTrades.length, winRate: oosTrades.length ? Math.round(wins / oosTrades.length * 100) : 0,
             pf: pf, verdict: verdict, best: lastBest, trades: oosTrades,
             oosTage: oosTage, scheibenGueltig: valid.length, belastbar: !duenn,
@@ -6774,6 +6821,11 @@
       if ((r.oosTage || 0) < MIN_OOS_TAGE) g.push('nur ' + (r.oosTage || 0) + ' von ' + MIN_OOS_TAGE + ' nötigen ungesehenen Handelstagen');
       if ((r.scheibenGueltig || 0) < 3) g.push('nur ' + (r.scheibenGueltig || 0) + '/' + smax + ' Prüfscheiben auswertbar');
     } else {
+      if (r.haltenPct != null && r.schlaegtHalten === false) {
+        g.push('Walk-Forward ' + r.wfRet + ' % gegen ' + r.haltenPct + ' % fürs blosse Halten desselben Universums – ' +
+          'die Regel verdient weniger als Nichtstun. (Sie trägt dabei weniger Marktrisiko; wer das bewusst will, ' +
+          'muss es bewusst wollen.)');
+      }
       if (r.wfRet <= 0) g.push('Walk-Forward-Rendite ' + r.wfRet + ' % – verliert auf ungesehenen Daten');
       if ((r.posSegs || 0) < Math.ceil(smax * 0.7)) g.push('nur ' + (r.posSegs || 0) + '/' + smax + ' Zeitscheiben positiv – nicht konsistent');
       if ((r.pf || 0) <= 1) g.push('Profit-Faktor ' + r.pf + ' – Verluste überwiegen');
@@ -7505,17 +7557,31 @@
    *  Ueberschuss gegen die Drift des Symbols, t UEBER SYMBOLE, exakt die
    *  Studien-Methodik. Das ist die eigentliche Aufgabe der Nacht: nicht neue
    *  Sieger kueren, sondern den belegten Edge BEWACHEN. */
-  async function edgeZustand() {
-    var P = { ENTRY: 'rsi2seit', LINE: 'ema', period: 20, confirmBps: 15, ZTHR: 1.5, MINQ: 0, CHAN: false, MTF: false, TREND: false };
-    var H = 8, abT = Date.now() - 120 * 86400000;
+  async function edgeZustand(entry) {
+    /* D1: Der Waechter misst den Arm, den er auch sperrt. Vorher stand hier fest
+     * 'rsi2seit', pausiert wurden aber beide Kanten. */
+    entry = entry || 'rsi2seit';
+    var istKapiArm = entry === 'kapitulation';
+    var cfg = D.intraday || {};   // cfg ist hier nicht modulweit sichtbar
+
+    var P = { ENTRY: entry, LINE: cfg.lineType || 'ema', period: cfg.period || 20,
+      confirmBps: cfg.confirmBps, ZTHR: zOf(cfg.confirmBps), MINQ: 0, CHAN: false, MTF: false, TREND: false };
+    /* Haltedauer wie live: der Kapitulations-Dip laeuft 26 Kerzen, rsi2seit 8. */
+    var H = istKapiArm ? 26 : 8, abT = Date.now() - 120 * 86400000;
     var syms = messUniversum();
     var symMittel = [], nGes = 0;
     for (var si = 0; si < syms.length; si++) {
       var bars = await window.Archiv.serie('60m', syms[si]);
       if (!bars || bars.length < 300) continue;
       var c = bars.map(function (b) { return b[1]; });
+      /* A9: Die Kontrolle muss aus DEMSELBEN Zeitraum kommen wie die Signale.
+       * Vorher lief die Drift ueber die ganze Reihe, die Signale nur ueber 120
+       * Tage - ein Fenster gegen einen anderen Zeitraum gemessen. */
       var ds = 0, dn = 0;
-      for (var i = 0; i < c.length - H; i += H) { ds += c[i + H] / c[i] - 1; dn++; }
+      for (var i = 0; i < c.length - H; i += H) {
+        if (bars[i][0] < abT) continue;
+        ds += c[i + H] / c[i] - 1; dn++;
+      }
       var drift = dn ? ds / dn : 0;
       var us = [], cool = 0;
       for (var i2 = 300; i2 < bars.length - H; i2++) {
@@ -7535,11 +7601,20 @@
     var m = symMittel.reduce(function (a3, b3) { return a3 + b3; }, 0) / n;
     var sd = Math.sqrt(symMittel.reduce(function (a4, b4) { return a4 + (b4 - m) * (b4 - m); }, 0) / (n - 1));
     var t = sd > 0 ? m / (sd / Math.sqrt(n)) : 0;
+    /* Die Aufloesung dieser Messung - sie gehoert in den Satz, denn sie ist meist
+     * groesser als die Kante, um die es geht. */
+    var mde = sd > 0 ? 2 * sd / Math.sqrt(n) : null;
     var urteil = (m > 0 && t >= 1.5) ? 'im Rahmen der Studie'
       : (m > 0 ? 'positiv, aber statistisch dünn – weiter beobachten'
-        : 'VERFALL gegenüber der Studie – wenn die nächste Nacht das bestätigt, Handel pausieren und neu messen');
-    return { n: nGes, nSym: n, mittelPp: Math.round(m * 10000) / 100, t: Math.round(t * 100) / 100,
-      txt: 'Edge-Wächter (rsi2seit, letzte 120 Tage, Archiv): ' + nGes + ' Signale über ' + n + ' Werte · Überschuss ' +
+        : (Math.abs(t) >= 2
+          ? 'VERFALL – der Vorsprung ist messbar negativ, Handel pausieren und neu messen'
+          : 'kein Vorsprung messbar – diese Messung kann Verfall nicht von Rauschen trennen (|t| ' +
+            Math.abs(t).toFixed(2) + ' < 2' + (mde ? ', Auflösung ' + (mde * 100).toFixed(2) + ' Pp' : '') +
+            '). Vorsichtshalber wird trotzdem pausiert: eine Pause kostet weniger als ein Irrtum'));
+    return { entry: entry, n: nGes, nSym: n, rohMittel: m,
+      mittelPp: Math.round(m * 10000) / 100, mdePp: mde != null ? Math.round(mde * 10000) / 100 : null,
+      t: Math.round(t * 100) / 100,
+      txt: 'Edge-Wächter (' + entry + ', letzte 120 Tage, Archiv): ' + nGes + ' Signale über ' + n + ' Werte · Überschuss ' +
         (m >= 0 ? '+' : '') + (m * 100).toFixed(3) + ' Pp/8 h · t über Symbole ' + t.toFixed(2) + ' → ' + urteil };
   }
 
@@ -7680,7 +7755,11 @@
            * weiter (Messung geht nie aus), ein Hand-Entscheid "trotzdem handeln"
            * wird dauerhaft respektiert, und eine positive Nacht hebt die Pause
            * von selbst wieder auf. */
-          var verfall = edge.mittelPp != null && !(edge.mittelPp > 0) && (edge.nSym || 0) >= 5;
+          /* TOTBAND behoben: Vorher entschied der auf zwei Stellen GERUNDETE Wert.
+           * Ein wahrer Mittelwert von +0,004 Pp rundete auf 0,00, galt als Verfall
+           * und konnte die Pause nie wieder aufheben - der Waechter hing fest. */
+          var roh = edge.rohMittel != null ? edge.rohMittel : (edge.mittelPp != null ? edge.mittelPp / 100 : null);
+          var verfall = roh != null && !(roh > 0) && (edge.nSym || 0) >= 5;
           if (!a.edgeHistorie) a.edgeHistorie = [];
           /* ZWEI NAECHTE SIND NICHT ZWEI MESSUNGEN. Der Waechter rechnet ueber ein
            * rollendes 120-Tage-Fenster auf 60-Minuten-Kerzen. Eine Nacht bringt darin
@@ -7722,7 +7801,7 @@
             melde('Edge-Wächter: Kante pausiert', 'Der gemessene Vorsprung ist zweimal in Folge verfallen (' + edge.mittelPp + ' Pp, ' + zuwachsTxt + '). Neue Einstiege sind ausgesetzt, die Messung läuft weiter.');
             pilotLogAdd('Edge-Wächter: VERFALL zweimal in Folge (' + zuwachsTxt + ') – neue Einstiege pausiert.');
           }
-          if (!verfall && edge.mittelPp != null && edge.mittelPp > 0 && D.intraday.edgePause) {
+          if (!verfall && roh != null && roh > 0 && D.intraday.edgePause) {
             delete D.intraday.edgePause;
             if (!D.tuneLog) D.tuneLog = [];
             D.tuneLog.unshift({ id: 'sicherung-' + Date.now(), at: Date.now(), quelle: 'sicherung',
