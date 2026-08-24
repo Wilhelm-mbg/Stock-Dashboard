@@ -22,6 +22,7 @@
 var fs = require('fs');
 var path = require('path');
 var Q = require('../../../quant.js');
+var WP = require('./wertpapierart.js');
 
 /* Exakt der Live-Aufruf. */
 var P = { ENTRY: 'kapitulation', LINE: 'ema', period: 20, confirmBps: 15, ZTHR: 2.0,
@@ -57,10 +58,43 @@ function dollarVolNachlaufend(bars, i, tage) {
 }
 
 /* ---------- Regime: NACHBILDUNG, ausdruecklich ----------
- * Live: SPY 60m gegen EMA200 der Stundenkerzen (depot.js: spyTrendAuf). SPY liegt
- * nicht im 60m-Archiv. Nachgebildet ueber die Tages-Marktreihe des Drift-Moduls mit
- * EMA29 - 200 Stundenkerzen sind rund 28,6 Handelstage. Das trifft die Live-
- * Bedingung NICHT exakt und steht deshalb als Nachbildung im Protokoll. */
+ * Live: SPY 60m gegen EMA200 der Stundenkerzen (depot.js: spyTrendAuf).
+ * Seit dem 24.08.2026 liegt SPY als 60m-Reihe im eigenen Archiv - damit laesst sich
+ * die Live-Bedingung EXAKT nachbauen. Fehlt die Reihe, bleibt der alte Rueckfall
+ * (Tages-Marktreihe mit EMA29, weil 200 Stundenkerzen rund 28,6 Handelstage sind),
+ * und die Strategie meldet sich dann unter der Kennung 'kapitulation-regime-genaehert'
+ * - damit nie zwei verschiedene Messungen unter demselben Namen stehen. */
+/* Zuerst der exakte Weg: SPY-Stundenkerzen gegen ihre EMA200, genau wie live.
+ * Das eigene Archiv liegt dort, wohin die Zeigerdatei weist (E: statt C:). */
+var SPY = null;
+function spyStundenEma200() {
+  if (SPY !== null) return SPY;
+  SPY = false;
+  try {
+    var daten = path.join(process.env.USERPROFILE || process.env.HOME || '', 'Downloads', 'Markt-Dashboard-Daten');
+    var ordner = process.env.MD_ARCHIV60M;
+    if (!ordner) {
+      try { ordner = fs.readFileSync(path.join(daten, 'archiv60m-pfad.txt'), 'utf8').replace(/^\uFEFF/, '').trim(); }
+      catch (e) { ordner = path.join(daten, 'archiv60m'); }
+    }
+    /* ETFs liegen im Unterordner - sie sind Massstab, nicht Messobjekt. Der alte
+     * Ort bleibt als Rueckfall, falls jemand das Archiv anders sortiert hat. */
+    var spyDatei = path.join(ordner, 'etf', 'bars_60m_SPY.json');
+    if (!fs.existsSync(spyDatei)) spyDatei = path.join(ordner, 'bars_60m_SPY.json');
+    var s = JSON.parse(fs.readFileSync(spyDatei, 'utf8')).series;
+    if (!Array.isArray(s) || s.length < 400) return SPY;
+    /* EMA200 auf Stundenschlusskursen - dieselbe Rechnung wie Q.emaSeries. */
+    var k = 2 / (200 + 1), ema = s[0][1], zeit = [], ueber = [];
+    for (var q = 0; q < s.length; q++) {
+      ema = s[q][1] * k + ema * (1 - k);
+      zeit.push(s[q][0]);
+      ueber.push(q >= 200 ? s[q][1] > ema : null);   // vor 200 Kerzen kein Urteil
+    }
+    SPY = { zeit: zeit, ueber: ueber };
+  } catch (e) { SPY = false; }
+  return SPY;
+}
+
 var MARKT = null;
 function marktLadeEinmal() {
   if (MARKT !== null) return MARKT;
@@ -80,6 +114,15 @@ function marktLadeEinmal() {
   return MARKT;
 }
 function marktUeberLinie(ms) {
+  /* Exakter Weg zuerst. Der letzte Zeitpunkt STRENG vor dem Signal - eine Kerze,
+   * die zeitgleich mit dem Signal schliesst, kennt man beim Handeln noch nicht. */
+  var S = spyStundenEma200();
+  if (S) {
+    var lo = 0, hi = S.zeit.length;
+    while (lo < hi) { var m = (lo + hi) >> 1; if (S.zeit[m] < ms) lo = m + 1; else hi = m; }
+    if (lo > 0) return S.ueber[lo - 1];
+    return null;
+  }
   var M = marktLadeEinmal();
   if (!M) return null;                 // ohne Anker laesst die Regel durch (Live-Verhalten)
   var lo = 0, hi = M.tage.length;      // letzter Tag STRENG vor dem Signal
@@ -88,7 +131,7 @@ function marktUeberLinie(ms) {
 }
 
 module.exports = {
-  key: 'kapitulation',
+  key: spyStundenEma200() ? 'kapitulation' : 'kapitulation-regime-genaehert',
   testfamilie: {
     name: 'kapitulation-2026-08-24',
     testsGesamt: 3,
@@ -107,7 +150,10 @@ module.exports = {
   leseFensterKerzen: 261,
   haltedauerKerzen: 26,
   richtung: 'long',
-  universum: 'aktien',
+  /* Der eingebaute Filter "aktien" heisst nur "kein Krypto". Im 2.885er-Archiv
+   * lagen darunter 622 ETFs, 144 ADRs, gehebelte Produkte und ZVZZT - das
+   * TESTSYMBOL der NASDAQ. Gefiltert wird jetzt nach der Wertpapierart. */
+  universum: function (sym) { return WP.istAktie(sym); },
   kosten: { spanneBp: 5 },
   varianten: [
     { liquiditaet: false, regime: false },

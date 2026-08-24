@@ -843,8 +843,25 @@ console.log('\n17b) Oberflaeche: Altlasten und Verdrahtung');
   ok(/D\.intraday\.edgePause = \{ seit/.test(d), 'Edge-Waechter: Verfall pausiert neue Einstiege wirklich');
   ok(/schattenNeu\('Edge-Wächter'/.test(d), 'Edge-Waechter: pausierte Signale laufen im Schattenbuch weiter');
   ok(/edgePauseHand/.test(d) && /data-edgefrei/.test(d), 'Edge-Waechter: Hand-Uebersteuerung existiert und wird respektiert');
-  ok(/edge\.mittelPp > 0 && D\.intraday\.edgePause\) \{\s*\n\s*delete D\.intraday\.edgePause/.test(d),
+  ok(/roh > 0 && D\.intraday\.edgePause\) \{\s*\n\s*delete D\.intraday\.edgePause/.test(d),
      'Edge-Waechter: eine positive Nacht hebt die Pause automatisch auf');
+  /* TOTBAND (24.08.2026): Vorher entschieden BEIDE Richtungen am auf zwei Stellen
+   * gerundeten mittelPp. Ein wahrer Mittelwert von +0,004 Pp rundet auf 0,00, gilt
+   * damit als Verfall UND kann die Pause nie aufheben - der Waechter hing fest.
+   * Im gespeicherten Zustand standen vier Naechte in Folge mittelPp -0,04 bei t -0,19. */
+  ok(/var roh = edge\.rohMittel != null/.test(d) && /var verfall = roh != null && !\(roh > 0\)/.test(d),
+     'Edge-Waechter: Ausloesung und Aufhebung entscheiden am UNGERUNDETEN Wert (kein Totband)');
+  ok(/rohMittel: m,/.test(d), 'Der ungerundete Mittelwert wird ueberhaupt mitgeliefert');
+  /* A9: Die Kontrolle muss aus demselben Fenster kommen wie die Signale. */
+  ok(/for \(var i = 0; i < c\.length - H; i \+= H\) \{\s*\n\s*if \(bars\[i\]\[0\] < abT\) continue;/.test(d),
+     'A9: Die Drift-Kontrolle laeuft ueber dasselbe 120-Tage-Fenster wie die Signale');
+  /* D1: Der Waechter sperrt nur, was er auch misst. */
+  ok(/async function edgeZustand\(entry\)/.test(d) && /var H = istKapiArm \? 26 : 8/.test(d),
+     'D1: Der Waechter misst je Arm - mit dessen eigener Haltedauer (26 gegen 8 Kerzen)');
+  ok(/D\.intraday\.edgePauseKapi/.test(d) && !/\(isRsi2Seit \|\| isKapitulation\) && D\.intraday\.edgePause/.test(d),
+     'D1: Der Kapitulations-Dip wird nicht mehr von einer rsi2seit-Messung gesperrt');
+  ok(/kann Verfall nicht von Rauschen trennen/.test(d),
+     'Der Waechter sagt bei |t| < 2, dass er Verfall nicht von Rauschen trennen kann - und pausiert trotzdem');
   ok(/ein\.n >= 30 && avgE < 0/.test(d), 'Vorwaertstest: negatives Live-Ergebnis landet im Warnband');
   // 4) Sektor-Klumpen
   ok(/SEKTOR_CHIPS/.test(d) && /schattenNeu\('Sektor-Klumpen'/.test(d),
@@ -3731,6 +3748,21 @@ console.log('\n44) Messmaschine, Scoreboard und Strategie-Eingabe (23.08.2026)')
      'Die Kontrolle bekommt denselben Ausstieg - sonst misst man den Stop statt das Signal');
   ok(/\|\s*C6\s*\|/.test(ft) && /\|\s*C7\s*\|/.test(ft),
      'C6 und C7 stehen in FEHLERTYPEN.md');
+
+  /* C7 genauer (24.08.2026): Wo das Archiv Eroeffnungskurse fuehrt, wird der echte
+   * benutzt statt des Vorkerzen-Schlusses. Der Testfall der Maschine misst den
+   * Unterschied: -0,2695 Pp gegen -0,0990 Pp - die Naeherung war Faktor 2,7 zu guenstig. */
+  ok(mm2.indexOf('function eroeffnungKurs(bars, k)') !== -1,
+     'Die Maschine hat eine Regel fuer den ersten handelbaren Kurs');
+  ok(mm2.split('auf: eroeffnungKurs(b,').length === 3,
+     'Signal UND Kontrolle benutzen sie - sonst misst man zwei verschiedene Ausfuehrungen');
+  ok(/P\.warne\('C7'/.test(mm2),
+     'Fuehrt das Archiv keine Eroeffnungskurse, warnt die Maschine - keine stille Naeherung');
+  var yh = fs.readFileSync(__dirname + '/tools/yahoo-60m-holen.js', 'utf8');
+  ok(yh.indexOf('serie.push([ts[i] * 1000, cl[i], vo[i] || 0, h, l, o])') !== -1,
+     'Das Abrufwerkzeug schreibt den Eroeffnungskurs als SECHSTES Element - die ersten fuenf bleiben');
+  ok(yh.indexOf('karte[k[0]] = k') !== -1 && yh.indexOf('--aktualisieren') !== -1,
+     'Es fuehrt Reihen fort statt sie zu ueberschreiben (Yahoo liefert nur 730 Tage)');
 
   /* Der Weg muss auch durch die Oberflaeche fuehren - sonst weicht man wieder auf
    * ein Wegwerf-Skript aus, und genau dort passierten beide Fehler. */

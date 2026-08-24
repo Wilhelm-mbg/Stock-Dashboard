@@ -31,6 +31,7 @@ var ARCHIV = process.argv[2] ||
  * Schwanzfrage werden sie hier noch einmal erzeugt - mit DERSELBEN Kontrolle
  * (A7, Lesefenster ausgelassen), damit die Zahlen vergleichbar bleiben. */
 var Q = require('../../quant.js');
+var WP = require('./strategien/wertpapierart.js');
 var P = { ENTRY: 'kapitulation', LINE: 'ema', period: 20, confirmBps: 15, ZTHR: 2.0,
           MINQ: 0, CHAN: false, MTF: false, TREND: false };
 var H = S.haltedauerKerzen, VOR = 261, FENSTER = S.leseFensterKerzen;
@@ -39,7 +40,9 @@ var dateien = fs.readdirSync(ARCHIV).filter(function (f) { return f.indexOf('bar
 var U = {};
 dateien.forEach(function (f) {
   var sym = f.slice(9, -5);
-  if (sym.indexOf('-USD') !== -1) return;
+  /* Dieselbe Auswahl wie die Messung: Unternehmensaktien, keine ETFs,
+   * keine gehebelten Produkte, kein Testsymbol. */
+  if (!WP.istAktie(sym)) return;
   try { var j = JSON.parse(fs.readFileSync(path.join(ARCHIV, f), 'utf8')); if (j.series && j.series.length) U[sym] = j.series; } catch (e) { }
 });
 

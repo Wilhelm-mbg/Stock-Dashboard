@@ -1,0 +1,66 @@
+'use strict';
+/* IST DAS UEBERHAUPT EINE AKTIE?
+ *
+ * Der Universumsfilter der Maschine lautete sym.indexOf('-USD') === -1 - "kein
+ * Krypto". Das ist kein Aktienfilter. Am 24.08.2026 zeigte die Klassifizierung
+ * ueber die Schnittstelle, was im 2.885er-Archiv wirklich lag:
+ *
+ *     CS    (Stammaktien)          2.064
+ *     ETF                            622
+ *     ADRC  (Hinterlegungsscheine)   144
+ *     ETV   (Rohstoff-Treuhaender)    29
+ *     FUND                            16
+ *     ETN                              6
+ *     ETS                              3
+ *
+ * Also 821 von 2.885 Reihen - 28 % - waren keine Unternehmensaktien. Darunter
+ * ZVZZT, das TESTSYMBOL der NASDAQ (41 % seiner Stundenkerzen springen ueber 8 %),
+ * und ein Dutzend gehebelter oder inverser Produkte (SOXL, SOXS, UVIX, TSLL,
+ * GDXU, GDXD, CONL). Die bewegen sich nicht wie Unternehmen, sondern wie ihr
+ * Basiswert mal zwei oder drei - und besetzen damit genau die Plaetze im rechten
+ * und linken Schwanz, an denen ein Schaetzer haengt, der von wenigen Trades lebt.
+ *
+ * WAS ALS AKTIE GILT: CS und ADRC. Ein Hinterlegungsschein ist der Zugang zu einem
+ * echten Unternehmen (ASML, ARM, ABEV) und gehoert dazu. Ein Indexfonds, ein
+ * Rohstoff-Treuhaender oder ein gehebeltes Zertifikat nicht.
+ *
+ * KEINE NAMENSLISTE. Eine Liste waere eine Setzung, die still veraltet; die
+ * Wertpapierart ist eine Tatsache und kommt aus tools/wertpapierarten-holen.js.
+ * Fehlt die Datei, laesst der Filter ALLES durch und sagt es - lieber eine
+ * sichtbare Luecke als ein stiller Filter.
+ */
+var fs = require('fs');
+var path = require('path');
+var os = require('os');
+
+var AKTIENARTEN = { CS: 1, ADRC: 1 };
+var KARTE = null;
+
+function laden() {
+  if (KARTE !== null) return KARTE;
+  KARTE = false;
+  try {
+    var p = path.join(os.homedir(), 'Downloads', 'Markt-Dashboard-Daten', 'massive', 'wertpapierarten.json');
+    var j = JSON.parse(fs.readFileSync(p, 'utf8'));
+    if (j && j.arten && Object.keys(j.arten).length > 1000) KARTE = j.arten;
+  } catch (e) { KARTE = false; }
+  return KARTE;
+}
+
+/** true, wenn das Symbol eine Unternehmensaktie ist. Ohne Klassifizierung: true,
+ *  damit eine fehlende Datei nicht stillschweigend das Universum leert. */
+function istAktie(sym) {
+  if (sym.indexOf('-USD') !== -1) return false;      // Krypto
+  var k = laden();
+  if (!k) return true;
+  /* Yahoo schreibt Aktienklassen mit Bindestrich (BRK-B), die Schnittstelle mit
+   * Punkt (BRK.B). Beide Schreibweisen nachschlagen. */
+  var a = k[sym] || k[sym.replace(/-/g, '.')];
+  if (!a) return false;                               // unbekannt = nicht belegt = raus
+  return !!AKTIENARTEN[a];
+}
+
+/** Fuer das Protokoll: liegt eine Klassifizierung vor? */
+function klassifizierungDa() { return !!laden(); }
+
+module.exports = { istAktie: istAktie, klassifizierungDa: klassifizierungDa, AKTIENARTEN: AKTIENARTEN };

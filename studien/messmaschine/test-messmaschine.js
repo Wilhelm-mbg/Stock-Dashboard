@@ -313,6 +313,70 @@ console.log('\n13) A6/A7: Signal und Kontrolle aus demselben endlichen Topf');
   try { fs.rmSync(ZIEL, { recursive: true, force: true }); } catch (e) { }
 })();
 
+/* ========== C7 genauer: der echte Eroeffnungskurs ========== */
+console.log('\n14) C7: echter Eroeffnungskurs statt Vorkerzen-Schluss');
+(function () {
+  var mm = fs.readFileSync(__dirname + '/messmaschine.js', 'utf8');
+  ok(mm.indexOf('function eroeffnungKurs(bars, k)') !== -1,
+     'Die Maschine hat eine Regel fuer den ersten handelbaren Kurs');
+  ok(mm.split('auf: eroeffnungKurs(b,').length === 3,
+     'Signal UND Kontrolle benutzen sie - sonst misst man zwei verschiedene Ausfuehrungen');
+
+  /* Zwei Archive, identische Schluss-, Hoch- und Tiefkurse. Eines mit
+   * Eroeffnungskursen, eines ohne. Eine Uebernachtluecke muss unterschiedlich
+   * gefuellt werden - sonst wird der Eroeffnungskurs gar nicht gelesen. */
+  function baueLuecke(mitOeffnung) {
+    var bars = [], preis = 100, t0 = Date.UTC(2024, 0, 1, 14, 0);
+    for (var d = 0; d < 400; d++) {
+      var tagMs = t0 + d * 86400000, wt = new Date(tagMs).getUTCDay();
+      if (wt === 0 || wt === 6) continue;
+      for (var h = 0; h < 7; h++) {
+        /* Jeden 20. Tag oeffnet die erste Kerze 3 % TIEFER als der Vorschluss.
+         * Genau dort trennen sich die beiden Archive. */
+        var luecke = (h === 0 && d % 20 === 0) ? 0.97 : 1;
+        var auf = preis * luecke;
+        preis = auf * (1 + ((d * 7 + h) % 13 - 6) * 0.0008);
+        var k = [tagMs + h * 3600000, preis, 1000, Math.max(auf, preis) * 1.001, Math.min(auf, preis) * 0.999];
+        if (mitOeffnung) k.push(auf);
+        bars.push(k);
+      }
+    }
+    return bars;
+  }
+  var A = TMP + '-mitO', B = TMP + '-ohneO';
+  [A, B].forEach(function (p) { if (!fs.existsSync(p)) fs.mkdirSync(p, { recursive: true }); });
+  for (var s = 0; s < 12; s++) {
+    fs.writeFileSync(path.join(A, 'bars_60m_L' + s + '.json'), JSON.stringify({ series: baueLuecke(true) }));
+    fs.writeFileSync(path.join(B, 'bars_60m_L' + s + '.json'), JSON.stringify({ series: baueLuecke(false) }));
+  }
+
+  var S = { key: 'luecken-stop',
+    grund: 'Prueft, ob ein Stop bei einer Uebernachtluecke zum echten Eroeffnungskurs gefuellt wird.',
+    zeitrahmen: '60m', haltedauerKerzen: 8, richtung: 'long', universum: 'aktien',
+    kosten: { spanneBp: 0 }, leseFensterKerzen: 0,
+    signal: function (bars, i) { return i % 20 === 0 ? { dir: 1 } : null; },
+    stopNiveau: function (abg, ein) { return ein * 0.99; } };
+  var rA = M.messe(S, A), rB = M.messe(S, B);
+  var uA = rA.ergebnisse[0].gesamt.roh.jeSignal, uB = rB.ergebnisse[0].gesamt.roh.jeSignal;
+  ok(Math.abs(uA - uB) > 1e-9,
+     'Mit und ohne Eroeffnungskurs kommt NICHT dasselbe heraus - er wird also gelesen',
+     'mit ' + (uA * 100).toFixed(4) + ' Pp, ohne ' + (uB * 100).toFixed(4) + ' Pp');
+  /* Der echte Eroeffnungskurs liegt bei einer Abwaertsluecke UNTER dem
+   * Vorschluss. Wer ihn kennt, fuellt schlechter - und das ist die Wahrheit. */
+  ok(uA < uB, 'Mit echtem Eroeffnungskurs faellt das Ergebnis SCHLECHTER aus - die Naeherung war zu guenstig');
+
+  /* Und die Herkunft steht im Protokoll, statt still angenommen zu werden. */
+  var eA = rA.entscheidungen.filter(function (e) { return e.regel.indexOf('C7') !== -1; })[0];
+  var eB = rB.entscheidungen.filter(function (e) { return e.regel.indexOf('C7') !== -1; })[0];
+  ok(eA && eA.ergebnis.anteilMitEroeffnung > 0.99, 'Protokoll weist das Archiv MIT Eroeffnungskursen aus',
+     eA && eA.ergebnis.anteilMitEroeffnung);
+  ok(eB && eB.ergebnis.anteilMitEroeffnung < 0.01, 'und das Archiv OHNE als solches',
+     eB && eB.ergebnis.anteilMitEroeffnung);
+  ok((rB.warnungen || []).some(function (w) { return w.kennung === 'C7'; }),
+     'Ohne Eroeffnungskurse warnt die Maschine - keine stille Naeherung');
+  [A, B].forEach(function (p) { try { fs.rmSync(p, { recursive: true, force: true }); } catch (e) { } });
+})();
+
 fs.rmSync(TMP, { recursive: true, force: true });
 console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
 process.exit(fails ? 1 : 0);

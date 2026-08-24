@@ -33,8 +33,16 @@
  *   --aktualisieren   alles Vorhandene neu holen und ZUSAMMENFUEHREN. So waechst
  *                     das Archiv ueber Yahoos 730-Tage-Grenze hinaus.
  *
- * Ablageort: MD_ARCHIV60M, sonst <Datenordner>/archiv60m-pfad.txt, sonst
- * <Datenordner>/archiv60m.
+ * Intervall ueber MD_INTERVALL (Vorgabe 60m). Gemessen am 24.08.2026, was Yahoo
+ * hergibt - je Intervall die groesste Spanne mit voller Aufloesung:
+ *     1d   40 Jahre   ~10.076 Kerzen     60m  2 Jahre   ~5.087
+ *     5m   60 Tage     ~4.651            15m  60 Tage   ~1.551
+ *     1m    7 Tage     ~2.577
+ * (range=max ignoriert das Intervall und liefert Monatskerzen.)
+ *
+ * Ablageort: MD_ARCHIV60M zeigt auf den 60m-Ordner, sonst
+ * <Datenordner>/archiv60m-pfad.txt, sonst <Datenordner>/archiv60m. Die anderen
+ * Intervalle liegen als Geschwisterordner daneben (archiv1d, archiv5m, ...).
  */
 var fs = require('fs');
 var path = require('path');
@@ -42,6 +50,23 @@ var os = require('os');
 var https = require('https');
 
 var DATEN = path.join(os.homedir(), 'Downloads', 'Markt-Dashboard-Daten');
+
+/* Was Yahoo je Intervall hergibt - am 24.08.2026 an AAPL gemessen, nicht geraten.
+ * range=max ignoriert das Intervall und liefert Monatskerzen; deshalb je Intervall
+ * die groesste Spanne, die noch die gewuenschte Aufloesung liefert. */
+var INTERVALLE = {
+  '1d':  { range: '40y',  ordner: 'archiv1d',  etwa: 10076 },
+  '60m': { range: '730d', ordner: 'archiv60m', etwa: 5087 },
+  '15m': { range: '60d',  ordner: 'archiv15m', etwa: 1551 },
+  '5m':  { range: '60d',  ordner: 'archiv5m',  etwa: 4651 },
+  '1m':  { range: '7d',   ordner: 'archiv1m',  etwa: 2577 },
+};
+var IV = process.env.MD_INTERVALL || '60m';
+if (!INTERVALLE[IV]) { console.error('Unbekanntes Intervall: ' + IV + ' (bekannt: ' + Object.keys(INTERVALLE).join(' ') + ')'); process.exit(2); }
+var CFG = INTERVALLE[IV];
+/* Die Mindestzahl an Kerzen richtet sich nach dem Intervall - bei 1m sind 200
+ * Kerzen ein halber Handelstag, bei 1d fast ein Jahr. */
+var MIN_KERZEN = Math.max(50, Math.round(CFG.etwa * 0.04));
 
 /* ABLAGEORT. Das Archiv wird gross - rund 470 KB je Wert, bei 3.263 Werten also
  * etwa 1,5 GB. Auf der Systemplatte hat das nichts verloren. Reihenfolge:
@@ -59,8 +84,15 @@ function archivOrdner() {
   } catch (e) { /* keine Zeigerdatei: Rueckfall */ }
   return path.join(DATEN, 'archiv60m');
 }
-var ZIEL = archivOrdner();
+/* Der Zeiger nennt den 60m-Ordner; die anderen Intervalle liegen daneben. */
+function zielFuerIntervall() {
+  var basis = archivOrdner();
+  if (IV === '60m') return basis;
+  return path.join(path.dirname(basis), CFG.ordner);
+}
+var ZIEL = zielFuerIntervall();
 var STAND = path.join(ZIEL, 'stand.json');
+var DATEI_PRAEFIX = 'bars_' + IV + '_';
 var MASSIVE = path.join(DATEN, 'massive');
 var ABSTAND_MS = 1200;
 
@@ -69,6 +101,16 @@ var ABSTAND_MS = 1200;
  * fehlt, musste die Kapitulations-Messung es ueber eine Tagesreihe naehern. */
 var ETFS = ('SPY QQQ IWM DIA VOO IVV RSP TLT HYG LQD GLD SLV USO ' +
   'XLF XLK XLE XLV XLI XLP XLY XLU XLB XLRE XLC SMH SOXX EEM EFA FXI GDX VXX').split(' ');
+
+/* ETFs kommen in einen eigenen Unterordner. Die Messmaschine waehlt "aktien" ueber
+ * sym.indexOf('-USD') === -1 - das ist ein Filter gegen Krypto, nicht gegen
+ * Indexfonds. Laegen SPY und QQQ zwischen den Aktien, wuerde eine Aktienstrategie
+ * sie mitmessen; bei SPY waere es schlimmer, denn es ist zugleich der Anker des
+ * Regime-Tors - Messobjekt und Massstab in einem. */
+var ETF_SATZ = {};
+ETFS.forEach(function (s) { ETF_SATZ[s] = 1; });
+function istEtfSym(s) { return !!ETF_SATZ[s]; }
+function ordnerFuer(sym) { return istEtfSym(sym) ? path.join(ZIEL, 'etf') : ZIEL; }
 
 /* Massive schreibt Aktienklassen mit Punkt (BRK.B), Yahoo mit Bindestrich (BRK-B). */
 function yahooName(sym) { return sym.replace(/\./g, '-'); }
@@ -100,7 +142,7 @@ function kursOk(x) { return typeof x === 'number' && isFinite(x) && x > 0; }
 
 async function reiheHolen(sym) {
   var url = 'https://query1.finance.yahoo.com/v8/finance/chart/' +
-    encodeURIComponent(yahooName(sym)) + '?range=730d&interval=60m';
+    encodeURIComponent(yahooName(sym)) + '?range=' + CFG.range + '&interval=' + IV;
   var r = await hole(url);
   if (r.status === 429) {
     await warte(8000);
@@ -126,7 +168,7 @@ async function reiheHolen(sym) {
     var o = kursOk(op[i]) ? op[i] : null;
     serie.push([ts[i] * 1000, cl[i], vo[i] || 0, h, l, o]);
   }
-  if (serie.length < 200) return { fehler: 'nur ' + serie.length + ' Kerzen' };
+  if (serie.length < MIN_KERZEN) return { fehler: 'nur ' + serie.length + ' Kerzen' };
   return { serie: serie, waehrung: res.meta && res.meta.currency, boerse: res.meta && res.meta.exchangeName };
 }
 
@@ -160,7 +202,7 @@ function listeBauen(wahl) {
     : liste.filter(function (s) { return !stand.fertig[s] && !stand.ohne[s]; });
   var nimm = offen.slice(0, maxWerte);
 
-  console.log('60m-Kerzen von Yahoo, eigenes Archiv (mit Eroeffnungskurs)');
+  console.log(IV + '-Kerzen von Yahoo (range=' + CFG.range + '), eigenes Archiv mit Eroeffnungskurs');
   console.log('  ' + (aktualisieren ? 'FORTFUEHREN: ' + liste.length + ' vorhandene Werte werden nachgezogen'
                                      : 'Auswahl "' + wahl + '": ' + liste.length + ' Werte'));
   console.log('  schon geholt: ' + Object.keys(stand.fertig).length + ' | ohne Daten: ' + Object.keys(stand.ohne).length);
@@ -184,7 +226,9 @@ function listeBauen(wahl) {
        * zusammenfuehrt, dessen Archiv waechst ueber Yahoos Grenze hinaus.
        * Bei gleichem Zeitstempel gewinnt die NEUE Kerze: sie ist nachtraeglich
        * bereinigt (Splits, Dividenden) und damit die richtigere. */
-      var datei = path.join(ZIEL, 'bars_60m_' + sym + '.json');
+      var unterOrdner = ordnerFuer(sym);
+      if (!fs.existsSync(unterOrdner)) fs.mkdirSync(unterOrdner, { recursive: true });
+      var datei = path.join(unterOrdner, DATEI_PRAEFIX + sym + '.json');
       var dazu = 0;
       if (fs.existsSync(datei)) {
         try {
