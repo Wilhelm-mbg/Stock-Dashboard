@@ -388,6 +388,51 @@
   /* Kostenhuerde des GEWAEHLTEN Produkts, in Prozentpunkten des Basiswerts.
    * Signalstudie 23.08.2026: Die Huerde entscheidet, nicht die Signalqualitaet.
    * Schein: (2 x Spanne + Zeitwertverlust) / Hebel. Aktie/CFD: 2 x Spanne + Gebuehr. */
+  /* ================= Volatilitaet: Smile und Ereignis =================
+   * Bis 8.24.5 bekam jeder Schein dieselbe Vola - unabhaengig vom Basispreis und
+   * eingefroren beim Oeffnen. Beides ist falsch, und beide Fehler zeigen in dieselbe
+   * Richtung: Die Simulation faellt optimistischer aus als die Wirklichkeit.
+   *
+   * Nachgemessen (24.08.2026), damit die Groessenordnungen im Code stehen:
+   *   Smile bei den Profilen, die diese App WIRKLICH handelt:
+   *     atm21, atm21_b, atm60_b (4 von 6 Profilen)  ->  0,00 %  (am Geld, kein Effekt)
+   *     otm3_14   Call 3 % aus dem Geld, 14 Tage    -> -2,48 %  (Call-Skew: billiger)
+   *     otm3_30b                        , 30 Tage   -> -1,42 %
+   *   Ereignis-Vola, am Geld, 21 Tage Restlaufzeit:
+   *     ein Tag VOR den Zahlen                      -> +22,0 %
+   *     ein Tag DANACH, bei UNVERAENDERTEM Kurs     -> -29,5 %
+   *
+   * Daraus folgt eine Korrektur am Bericht: Dort stand, ein aus dem Geld liegender
+   * Schein "laege real hoeher, der Schein waere teurer". Das gilt fuer PUTS. Bei
+   * Calls faellt der Aktien-Skew nach unten - der Call wird billiger. Und bei 3 %
+   * Abstand ist der Effekt so oder so klein. Der grosse Posten ist das EREIGNIS,
+   * nicht der Smile: 22 % hin, 29 % zurueck, ohne dass sich der Kurs bewegt. Genau
+   * das ist der Fall, den ein Backtest bisher gar nicht kannte.
+   *
+   * Abschaltbar ueber D.intraday.ivModell === false - eine Modellaenderung an der
+   * Preisbildung soll man zurueckdrehen koennen, ohne die Version zu wechseln. */
+  function ivModellAn() { return !(D && D.intraday && D.intraday.ivModell === false); }
+
+  /** Die Vola, mit der ein Schein JETZT bepreist wird.
+   *  basis: die Vola am Geld (ohne Smile, ohne Ereignis).
+   *  terminT: Zeitstempel des naechsten Ergebnistermins oder null. */
+  function ivFuer(basis, dir, strike, spot, expiry, terminT, now) {
+    if (!(basis > 0)) return basis;
+    if (!ivModellAn()) return basis;
+    var restTage = Math.max(0, (expiry - now) / 86400000);
+    var iv = Q.smileIv(basis, strike, spot, restTage);
+    if (terminT) iv = Q.ivMitEreignis(iv, (terminT - now) / 86400000);
+    return Math.min(1.5, Math.max(0.05, iv));
+  }
+  /** Dieselbe Rechnung fuer eine offene Position - sie traegt ihre Basis-Vola mit.
+   *  Altbestand ohne ivBasis faellt auf die eingefrorene Vola zurueck: dann verhaelt
+   *  sich die Position wie vorher, statt rueckwirkend neu bepreist zu werden. */
+  function ivDerPosition(pos, spot, now) {
+    if (!ivModellAn()) return pos.iv;
+    if (!(pos.ivBasis > 0)) return pos.iv;
+    return ivFuer(pos.ivBasis, pos.dir, pos.strike, spot, pos.expiry, pos.terminT || null, now);
+  }
+
   function kostenHuerdePp(cfg, spot, vol, haltenMin, einsatz) {
     spot = spot > 0 ? spot : 200; vol = vol > 0 ? vol : 0.30;
     var halten = Math.max(5, haltenMin || 60), now = Date.now();
@@ -423,6 +468,18 @@
     var w = Q.makeWarrant("call", spot, vol, now, P.ratio);
     w.strike = Math.round(spot * (1 + (P.otmPct || 0)) * 100) / 100;
     w.expiry = now + P.days * 86400000;
+    /* Derselbe Smile wie im Handel. Die Huerde muss den Schein bepreisen, den der
+     * Scanner tatsaechlich kaufen wuerde - stuende hier die Vola am Geld, waere die
+     * Huerde fuer jedes aus dem Geld liegende Profil systematisch falsch.
+     * Die Ereignis-Struktur bleibt hier bewusst AUSSEN VOR: Die Huerde ist eine
+     * allgemeine Eigenschaft der Konfiguration ("was kostet dieser Trade typisch"),
+     * kein Kurszettel fuer einen bestimmten Wert an einem bestimmten Tag. Einen
+     * Termin gibt es an dieser Stelle gar nicht - es ist kein Symbol im Spiel. */
+    /* Der Schalter kommt aus cfg, NICHT aus dem Modulzustand: kostenHuerdePp bekommt
+     * ihre Konfiguration vollstaendig als Argument und bleibt damit einzeln
+     * ausfuehrbar - die Testsuite schneidet sie heraus und rechnet sie nach. Ein
+     * Griff nach D haette genau das kaputt gemacht (und tat es beim ersten Wurf). */
+    w.iv = (cfg.ivModell === false) ? w.iv : Q.smileIv(w.iv, w.strike, spot, P.days);
     var wert = Q.warrantValue("call", w, spot, now);
     if (!(wert > 0.02)) return null;
     var spx = Q.effSpread(w.iv, undefined, wert, w.ratio);
@@ -2588,7 +2645,14 @@ function huerdeAnzeigen() {
       var vB = pos.dir === 'call' ? spot : Math.max(0.001, 2 * (pos.entrySpot || spot) - spot);
       return Math.max(0.001, vB * (1 - (pos.spx || 0.0005)));
     }
-    var v = Q.warrantValue(pos.dir, { strike: pos.strike, expiry: pos.expiry, iv: pos.iv, ratio: pos.ratio || Q.RATIO }, spot, now);
+    /* Hier sass der groesste Modellfehler: pos.iv war die Vola vom OEFFNEN und wurde
+     * bis zum Schliessen unveraendert weiterbenutzt. Vega - der groesste reale
+     * Risikofaktor eines kurzlaufenden Scheins - kam damit in der Simulation
+     * ueberhaupt nicht vor. Jetzt wird die Vola zu JEDEM Bewertungszeitpunkt neu
+     * bestimmt: Smile nach aktuellem Kursabstand, Ereignis-Struktur nach dem
+     * Abstand zum Ergebnistermin. */
+    var ivJetzt = ivDerPosition(pos, spot, now);
+    var v = Q.warrantValue(pos.dir, { strike: pos.strike, expiry: pos.expiry, iv: ivJetzt, ratio: pos.ratio || Q.RATIO }, spot, now);
     return Math.max(0.001, v * (1 - (pos.spx || 0.02)));
   }
   function posValue(pos, spot, now) {
@@ -3649,8 +3713,12 @@ function huerdeAnzeigen() {
          * meidet. Geprueft wird gegen die lokal bekannten Termine (Drift-Archiv);
          * die Liste waechst mit jedem 6-Stunden-Refresh. Ein UNBEKANNTER Termin
          * kann nicht blocken - das ist die ehrliche Grenze dieser Pruefung. */
+        /* Der Termin wird jetzt IMMER geholt, nicht nur fuer den Blackout: Seit die
+         * Vola die Ereignis-Struktur kennt, geht er auch in die Bepreisung ein.
+         * naechsterTermin liest aus einer stuendlich erneuerten Karte im Speicher -
+         * der Aufruf kostet nichts. */
+        var nTermin = istKrypto(sym) ? null : await naechsterTermin(sym);
         if (mp.uebernacht && !istKrypto(sym)) {
-          var nTermin = await naechsterTermin(sym);
           /* Fenster = realer Wanduhr-Halt, nicht die nominelle Haltedauer: 8 Handels-
            * stunden heissen 'bis in den Folgetag' (~26-30 h), vor dem Wochenende bis
            * Montag (~78 h). Das alte 20-h-Fenster liess Einstiege durchrutschen, deren
@@ -3734,10 +3802,17 @@ function huerdeAnzeigen() {
         if (D.intradayCooldown[sym] && now - D.intradayCooldown[sym] < effCooldown) { patienceAdd('Cooldown (Straßenbahn-Regel)', sym); continue; }
         var prof = Q.PROFILES[cfg.profile] || Q.PROFILES.atm21;
         var closes5 = sigBars.map(function (b) { return b[1]; });
-        var iv = Math.min(1.5, Math.max(0.15, Q.histVolIntraday(closes5, Math.round(390 / barMin)) * 1.1));
+        /* ivBasis ist die Vola AM GELD - die geschaetzte, aus der realisierten
+         * Volatilitaet. Sie wird auf der Position mitgeschrieben, denn die Bewertung
+         * baut Smile und Ereignis-Struktur jedes Mal neu darauf auf. Wuerde nur die
+         * fertige iv gespeichert, waere der Effekt beim naechsten Bewerten wieder
+         * eingefroren - genau der Fehler, der hier behoben wird. */
+        var ivBasis = Math.min(1.5, Math.max(0.15, Q.histVolIntraday(closes5, Math.round(390 / barMin)) * 1.1));
         var strike = Math.round(spot * (1 + (dir === 'call' ? prof.otmPct : -prof.otmPct)) * 100) / 100;
         var bvI = prof.ratio || Q.RATIO;
-        var w = { strike: strike, expiry: now + prof.days * 86400000, iv: iv, ratio: bvI };
+        var expiryI = now + prof.days * 86400000;
+        var iv = ivFuer(ivBasis, dir, strike, spot, expiryI, nTermin, now);
+        var w = { strike: strike, expiry: expiryI, iv: iv, ratio: bvI };
         var wWert2 = Q.warrantValue(dir, w, spot, now);
         if (wWert2 <= 0.001) continue;
         var spx2 = Q.effSpread(iv, undefined, wWert2, bvI) + Q.slipOf(iv, undefined, wWert2);
@@ -3878,6 +3953,12 @@ function huerdeAnzeigen() {
           entrySpot: spot, entry: ask, qty: qty, cost: cost, orderFee: fee, spx: Math.round(spx2 * 10000) / 10000,
           basis: istBasis || undefined, krypto: istKrypto(sym) || undefined,
           strike: w.strike, expiry: w.expiry, iv: Math.round(iv * 1000) / 1000, ratio: bvI,
+          // Basis-Vola und Termin: daraus wird bei JEDER Bewertung neu gerechnet
+          ivBasis: Math.round(ivBasis * 1000) / 1000,
+          terminT: nTermin || undefined,
+          /* Vega je Vola-Punkt und Stueck - die Zahl, die im Bericht als fehlend
+           * benannt war. Sie sagt, wie viel ein Vola-Punkt diese Position wert ist. */
+          vega: Math.round(Q.bsVega(spot, w.strike, Math.max(0, (w.expiry - now) / (365 * 86400000)), iv) * bvI * 10000) / 10000,
           omega: Math.round(omega * 10) / 10,
           sl: slT, tp: kapiTrade ? null : mp.tp, trail: kapiTrade ? 0 : (mp.trail || 0),
           // Kapitulations-Trades tragen ihren gemessenen 26-Handelsstunden-Horizont
@@ -4068,10 +4149,15 @@ function huerdeAnzeigen() {
        * Positionen bekommen keine Schein-Kennzahlen mehr vorgerechnet (Basispreis/
        * Faellig/IV eines Pseudo-Scheins, den niemand haelt). */
       var sumEinsatz = 0, sumWert = 0;
-      ph = '<table class="tbl"><tr><th>Wert</th><th>Typ</th><th>Basispreis</th><th>Fällig</th><th>IV</th><th>Hebel</th><th>Stück</th><th>Einstieg</th><th>Aktuell</th><th title="Kaufsumme inklusive Ordergebühr">Einsatz</th><th title="Stück × aktueller Verkaufskurs">Wert jetzt</th><th title="Wert jetzt minus Einsatz – vor der Ordergebühr des Verkaufs">P/L</th><th></th></tr>';
+      ph = '<table class="tbl"><tr><th>Wert</th><th>Typ</th><th>Basispreis</th><th>Fällig</th><th title="Implizite Volatilität – jetzt, mit Smile und Termin-Struktur">IV</th><th title="Wertänderung der Position je Volatilitätspunkt, bei unverändertem Kurs">Vega</th><th>Hebel</th><th>Stück</th><th>Einstieg</th><th>Aktuell</th><th title="Kaufsumme inklusive Ordergebühr">Einsatz</th><th title="Stück × aktueller Verkaufskurs">Wert jetzt</th><th title="Wert jetzt minus Einsatz – vor der Ordergebühr des Verkaufs">P/L</th><th></th></tr>';
       D.positions.forEach(function (p) {
         var spot = spotOf(p.sym) || p.entrySpot;
-        var wobj = { strike: p.strike, expiry: p.expiry, iv: p.iv, ratio: p.ratio || Q.RATIO };
+        /* Die Vola JETZT, nicht die vom Oeffnen. Sonst zeigt die Spalte einen anderen
+         * Wert als den, mit dem die Zeile daneben gerechnet ist - und die Kopfzeile
+         * verspricht ausdruecklich den aktuellen Stand. Hebel und Aufgeld haengen
+         * ebenfalls daran und wuerden sonst zur eingefrorenen Vola passen. */
+        var ivAnz = ivDerPosition(p, spot, now);
+        var wobj = { strike: p.strike, expiry: p.expiry, iv: ivAnz, ratio: p.ratio || Q.RATIO };
         var bid = bidOf(p, spot, now);
         var einsatz = p.cost != null ? p.cost : p.entry * p.qty;
         var wertJetzt = bid * p.qty;
@@ -4079,10 +4165,15 @@ function huerdeAnzeigen() {
         sumEinsatz += einsatz; sumWert += wertJetzt;
         var ret = bid / p.entry - 1;
         var scheinZellen = p.basis
-          ? '<td>–</td><td>–</td><td>–</td><td title="Aktie ohne Hebel">1×</td>'
+          ? '<td>–</td><td>–</td><td>–</td><td title="Eine Aktie hat kein Vega – ihr Wert hängt nicht an der Volatilität">–</td><td title="Aktie ohne Hebel">1×</td>'
           : '<td>' + U.nf2.format(p.strike) + '</td>' +
             '<td>' + U.d(p.expiry) + '</td>' +
-            '<td>' + Math.round(p.iv * 100) + ' %</td>' +
+            '<td title="Beim Öffnen: ' + Math.round(p.iv * 100) + ' %">' + Math.round(ivAnz * 100) + ' %' +
+              (Math.abs(ivAnz - p.iv) > 0.005 ? '<span style="color:var(--muted);"> (' + (ivAnz > p.iv ? '+' : '') + Math.round((ivAnz - p.iv) * 100) + ')</span>' : '') + '</td>' +
+            /* Vega: was ein Vola-Punkt diese Position wert ist. Stand nirgends - und
+             * genau daran haengt der groesste Teil der Bewegung um einen Termin. */
+            '<td title="Wertänderung je Volatilitätspunkt – bei unverändertem Kurs">' +
+              (p.vega > 0 ? U.nf2.format(p.vega * p.qty) + ' $' : '–') + '</td>' +
             '<td title="Aufgeld aktuell: ' + Q.warrantAufgeld(p.dir, wobj, spot, now).toFixed(1) + ' %">' + Q.warrantOmega(p.dir, wobj, spot, now).toFixed(1) + 'x</td>';
         ph += '<tr><td><b>' + U.esc(p.sym) + '</b>' + (p.strategy === 'intraday' ? ' <span title="Intraday-Strategie"></span>' : '') + '</td>' +
           '<td><span class="badge ' + p.dir + '">' + (p.dir === 'call' ? 'CALL' : 'PUT') + '</span></td>' +
@@ -4098,7 +4189,7 @@ function huerdeAnzeigen() {
           '<button class="btn ghost" style="padding:2px 8px; font-size:var(--fs-klein);" data-closepos="' + p.id + '">Schließen</button></td></tr>';
       });
       var sumPl = sumWert - sumEinsatz;
-      ph += '<tr><td colspan="9" style="text-align:right; color:var(--muted); font-weight:600;">Summe</td>' +
+      ph += '<tr><td colspan="10" style="text-align:right; color:var(--muted); font-weight:600;">Summe</td>' +
         '<td style="font-weight:600;">' + U.nf2.format(sumEinsatz) + ' $</td>' +
         '<td style="font-weight:600;">' + U.nf2.format(sumWert) + ' $</td>' +
         '<td class="' + U.signCls(sumPl) + '" style="white-space:nowrap;">' + U.signTxt(Math.round(sumPl * 100) / 100, ' $') + '</td><td></td></tr>';

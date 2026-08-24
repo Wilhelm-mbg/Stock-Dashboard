@@ -60,8 +60,14 @@
   }
   function normCdf(x) { return 0.5 * (1 + erf(x / Math.SQRT2)); }
   /** Preis eines europäischen Calls/Puts. T in Jahren. */
+  /* Der Zinssatz stand hier dreimal als Zahl 0,02 - einmal je Funktion - und ein
+   * viertes Mal als RISK_FREE weiter unten. Vier Kopien derselben Konstante: setzt
+   * jemand RISK_FREE, aendert sich nur, was RISK_FREE ausdruecklich durchreicht, und
+   * jeder Direktaufruf rechnet weiter mit der alten Zahl. RISK_FREE wird per var
+   * deklariert und erst spaeter belegt - beim AUFRUF steht der Wert, und Aufrufe gibt
+   * es erst nach dem Laden der Datei. */
   function bsPrice(type, S, K, T, sigma, r) {
-    r = r === undefined ? 0.02 : r;
+    r = r === undefined ? RISK_FREE : r;
     if (T <= 0) return type === 'call' ? Math.max(0, S - K) : Math.max(0, K - S);
     var sq = sigma * Math.sqrt(T);
     var d1 = (Math.log(S / K) + (r + 0.5 * sigma * sigma) * T) / sq;
@@ -70,10 +76,105 @@
     return K * Math.exp(-r * T) * normCdf(-d2) - S * normCdf(-d1);
   }
   function bsDelta(type, S, K, T, sigma, r) {
-    r = r === undefined ? 0.02 : r;
+    r = r === undefined ? RISK_FREE : r;
     if (T <= 0) return type === 'call' ? (S > K ? 1 : 0) : (S < K ? -1 : 0);
     var d1 = (Math.log(S / K) + (r + 0.5 * sigma * sigma) * T) / (sigma * Math.sqrt(T));
     return type === 'call' ? normCdf(d1) : normCdf(d1) - 1;
+  }
+  function normPdf(x) { return Math.exp(-0.5 * x * x) / Math.sqrt(2 * Math.PI); }
+  /** Vega: Preisaenderung je EINEM Volatilitaetspunkt (1 %-Punkt), nicht je ganzem
+   *  Vola-Einheitsschritt. So steht sie in jeder Optionsscheintabelle, und so ist die
+   *  Zahl lesbar: "0,03 EUR je Vola-Punkt".
+   *  Call und Put haben dasselbe Vega - das ist keine Vereinfachung, sondern folgt
+   *  aus der Put-Call-Paritaet. */
+  function bsVega(S, K, T, sigma, r) {
+    r = r === undefined ? RISK_FREE : r;
+    if (!(T > 0) || !(sigma > 0) || !(S > 0) || !(K > 0)) return 0;
+    var d1 = (Math.log(S / K) + (r + 0.5 * sigma * sigma) * T) / (sigma * Math.sqrt(T));
+    return S * normPdf(d1) * Math.sqrt(T) / 100;
+  }
+
+  /* ---- Volatilitaets-Smile ----
+   * Bis 8.24.5 bekam JEDER Schein dieselbe Vola, egal wie weit aus dem Geld er lag.
+   * Real ist das nicht so: Bei Einzelaktien liegt die implizite Vola aus dem Geld
+   * hoeher als am Geld, und zwar bei Puts deutlicher als bei Calls (Absicherungs-
+   * nachfrage). Ein 3 % aus dem Geld liegender Schein war in der Simulation damit
+   * systematisch ZU BILLIG - und ein zu billiger Einstieg macht jeden Backtest
+   * optimistischer als die Wirklichkeit.
+   *
+   * EHRLICHE ANSAGE ZUR HERKUNFT DER ZAHLEN: Diese Kurve ist NICHT an
+   * Emittentenkursen kalibriert - dafuer haette es eine Reihe echter Scheinpreise
+   * ueber mehrere Basispreise gebraucht, die die App nicht hat. Sie ist eine
+   * Modellannahme in der Groessenordnung, die fuer Einzelaktien ueblich ist
+   * (Skew rund 0,4 je Einheit log-Moneyness, leichte Kruemmung). Die Richtung ist
+   * dabei die wichtigere Aussage als die Hoehe: Es geht nach OBEN, der Schein wird
+   * TEURER. Damit kann diese Aenderung die Simulation nicht optimistischer machen,
+   * nur weniger optimistisch - der Fehler geht in die sichere Richtung.
+   *
+   * m = ln(K/S): positiv fuer Strikes ueber dem Kurs, negativ darunter.
+   *   iv(m) = ivAtm * (1 - SKEW*m + KRUEMMUNG*m*m)
+   * Das Minus vor SKEW erzeugt den Aktien-Skew: unter dem Kurs teurer (Puts),
+   * ueber dem Kurs billiger - die Kruemmung faengt das an den Raendern wieder auf.
+   * Kurze Laufzeiten haben einen steileren Smile; der Term-Faktor bildet das ab. */
+  var SMILE_SKEW = 0.40;        // Steigung je Einheit log-Moneyness
+  var SMILE_KRUEMMUNG = 2.5;    // Kruemmung - faengt weit aus dem Geld beide Seiten hoch
+  var SMILE_MIN = 0.85, SMILE_MAX = 1.35;  // der Faktor bleibt in vernuenftigen Grenzen
+  /* GRENZE DER GUELTIGKEIT. Die Kurve ist fuer die Naehe des Geldes gedacht - diese App
+   * oeffnet zwischen 0 und 5 % Abstand. Laeuft der Kurs nach dem Einstieg weit weg,
+   * steht die Position ploetzlich bei 50 oder 70 % Moneyness, und dort EXTRAPOLIERT
+   * die Formel: die Kruemmung hob die Vola im Lauf am 24.08.2026 auf das 2,1-Fache
+   * (30 % -> 63 %). Das ist nicht nur zu hoch, es zeigt in die FALSCHE Richtung -
+   * eine tief im Geld liegende Position wird dadurch WERTVOLLER, und der Backtest
+   * damit wieder optimistischer. Genau das sollte diese Aenderung ausschliessen.
+   * Jenseits von +-25 % wird die Moneyness deshalb gekappt: Der Smile bleibt dort
+   * flach, statt eine Zahl zu erfinden, fuer die es keine Grundlage gibt. */
+  var SMILE_M_MAX = 0.25;
+
+  /** Implizite Vola fuer einen Strike, ausgehend von der Vola am Geld.
+   *  tageBisFaellig steuert die Steilheit: kurze Laufzeiten haben einen schaerferen
+   *  Smile. Ohne Angabe wird mit 30 Tagen gerechnet. */
+  function smileIv(ivAtm, strike, spot, tageBisFaellig) {
+    if (!(ivAtm > 0) || !(strike > 0) || !(spot > 0)) return ivAtm;
+    var m = Math.log(strike / spot);
+    m = Math.min(SMILE_M_MAX, Math.max(-SMILE_M_MAX, m));   // ausserhalb wird nicht extrapoliert
+    var tage = (tageBisFaellig > 0) ? tageBisFaellig : 30;
+    // Steilheit ~ 1/sqrt(T): bei 14 Tagen rund 1,46-fach, bei 90 Tagen rund 0,58-fach
+    var term = Math.sqrt(30 / Math.max(3, tage));
+    var f = 1 - SMILE_SKEW * term * m + SMILE_KRUEMMUNG * term * m * m;
+    f = Math.min(SMILE_MAX, Math.max(SMILE_MIN, f));
+    return ivAtm * f;
+  }
+
+  /* ---- Vola um einen Ergebnistermin ----
+   * Der groesste reale Risikofaktor eines kurzlaufenden Scheins ist nicht der Kurs,
+   * sondern die Vola um eine Meldung: sie steigt davor an und faellt danach schlagartig
+   * zusammen ("IV-Crush"). Wer am Tag vor den Zahlen kauft und am Tag danach verkauft,
+   * verliert oft Geld, obwohl der Kurs in die richtige Richtung lief. In der Simulation
+   * kam dieser Effekt ueberhaupt nicht vor: die Vola wurde beim Oeffnen eingefroren.
+   *
+   * Auch hier: Groessenordnung, nicht Kalibrierung. Ueblich sind bei Einzelaktien
+   * 20-40 % Aufschlag unmittelbar vor den Zahlen und ein Rueckfall auf oder unter das
+   * Normalniveau am Tag danach. Genommen wird die vorsichtige Kante des Bereichs. */
+  var EVENT_AUFSCHLAG = 0.25;   // bis zu +25 % Vola am Tag vor der Meldung
+  var EVENT_FENSTER = 10;       // Tage, ueber die der Aufschlag linear aufgebaut wird
+  var EVENT_CRUSH = 0.85;       // direkt danach: 85 % des Normalniveaus
+  var EVENT_ERHOLUNG = 5;       // Tage, bis der Crush wieder auf 1,0 zurueckgelaufen ist
+
+  /** ivBasis mit der Termin-Struktur multiplizieren.
+   *  tageBisTermin: positiv = Termin liegt VOR uns, negativ = er ist vorbei,
+   *                 null/undefined = kein Termin bekannt -> unveraendert. */
+  function ivMitEreignis(ivBasis, tageBisTermin) {
+    if (!(ivBasis > 0) || tageBisTermin == null || !isFinite(tageBisTermin)) return ivBasis;
+    if (tageBisTermin >= 0) {
+      if (tageBisTermin > EVENT_FENSTER) return ivBasis;
+      // linear anschwellend: am Termin selbst voller Aufschlag
+      var anteil = (EVENT_FENSTER - tageBisTermin) / EVENT_FENSTER;
+      return ivBasis * (1 + EVENT_AUFSCHLAG * anteil);
+    }
+    var seit = -tageBisTermin;
+    if (seit >= EVENT_ERHOLUNG) return ivBasis;
+    // vom Crush linear zurueck auf das Normalniveau
+    return ivBasis * (EVENT_CRUSH + (1 - EVENT_CRUSH) * (seit / EVENT_ERHOLUNG));
   }
 
   /* ================= ZigZag & Elliott ================= */
@@ -289,7 +390,17 @@
   }
 
   /* ================= Optionsschein-Simulation ================= */
+  /* RISK_FREE war fest verdrahtet (Bericht, Punkt 3). Er bleibt es dem Wert nach -
+   * 2 % ist eine vertretbare Annahme -, ist aber jetzt SETZBAR und, was mehr zaehlt,
+   * benannt: Wer die Scheinpreise gegen echte Emittentenkurse haelt, muss den Satz
+   * anfassen koennen, ohne quant.js zu editieren.
+   * Der Einfluss ist bei den Laufzeiten dieser App klein: bei 21 Tagen und 30 % Vola
+   * kostet ein Sprung von 2 % auf 5 % am Geld rund 0,5 % Scheinpreis. Deshalb steht
+   * er hier hinten und nicht in der Oberflaeche - er ist eine Stellschraube fuer eine
+   * Eichung, keine Einstellung fuer den Betrieb. */
   var RATIO = 0.1, SPREAD = 0.02, RISK_FREE = 0.02;
+  function setRiskFree(r) { if (typeof r === 'number' && isFinite(r) && r >= -0.05 && r <= 0.25) RISK_FREE = r; return RISK_FREE; }
+  function getRiskFree() { return RISK_FREE; }
   function makeWarrant(dir, spot, vol, nowMs, ratio) {
     var strike = Math.round(spot * (dir === 'call' ? 1.05 : 0.95) * 100) / 100;
     var expiry = nowMs + 60 * 86400000;
@@ -2942,7 +3053,10 @@
 
   var Quant = {
     sma: sma, rsi: rsi, stdev: stdev, histVol: histVol, emaSeries: emaSeries,
-    normCdf: normCdf, bsPrice: bsPrice, bsDelta: bsDelta,
+    normCdf: normCdf, bsPrice: bsPrice, bsDelta: bsDelta, bsVega: bsVega,
+    smileIv: smileIv, ivMitEreignis: ivMitEreignis, setRiskFree: setRiskFree, getRiskFree: getRiskFree,
+    SMILE: { skew: SMILE_SKEW, kruemmung: SMILE_KRUEMMUNG, min: SMILE_MIN, max: SMILE_MAX, mMax: SMILE_M_MAX },
+    EVENT_IV: { aufschlag: EVENT_AUFSCHLAG, fenster: EVENT_FENSTER, crush: EVENT_CRUSH, erholung: EVENT_ERHOLUNG },
     zigzag: zigzag, elliott: elliott, technical: technical,
     sentiment: sentiment, combine: combine, DEFAULT_WEIGHTS: DEFAULT_WEIGHTS,
     makeWarrant: makeWarrant, warrantValue: warrantValue, warrantAsk: warrantAsk, warrantBid: warrantBid,

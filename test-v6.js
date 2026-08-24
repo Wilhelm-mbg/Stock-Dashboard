@@ -4792,6 +4792,134 @@ console.log('\n41) Zustaende: was die App sagt, wenn etwas fehlt oder klemmt');
      'Waechter: die alte, zu starke Formulierung ist weg');
 })();
 
+/* ================= 47. Vega, Smile und die Vola um einen Termin =================
+ * Der Bericht nannte drei systematische Verzerrungen der Schein-Simulation. Alle
+ * drei zeigten in dieselbe Richtung: Der Backtest faellt optimistischer aus als
+ * die Wirklichkeit.
+ *   1. Kein Vega  - die Vola wurde beim Oeffnen eingefroren und bis zum Schliessen
+ *                   unveraendert weiterbenutzt. Der groesste reale Risikofaktor
+ *                   eines kurzlaufenden Scheins kam gar nicht vor.
+ *   2. Kein Smile - jeder Schein bekam dieselbe Vola, egal wie weit aus dem Geld.
+ *   3. RISK_FREE fest verdrahtet.
+ * Nachgemessen wird hier, nicht nacherzaehlt. */
+(function () {
+  console.log('\n47) Vega, Smile und die Vola um einen Ergebnistermin');
+  var dep = fs.readFileSync(__dirname + '/depot.js', 'utf8');
+
+  // --- Vega ---
+  ok(typeof Q.bsVega === 'function', 'Vega: die Funktion gibt es');
+  var vAtm = Q.bsVega(100, 100, 30 / 365, 0.30);
+  ok(vAtm > 0, 'Vega: am Geld positiv  [' + vAtm.toFixed(4) + ']');
+  ok(Q.bsVega(100, 100, 90 / 365, 0.30) > vAtm,
+     'Vega: laengere Restlaufzeit hat mehr Vega - Zeit ist die Waehrung der Vola');
+  ok(Q.bsVega(100, 130, 30 / 365, 0.30) < vAtm,
+     'Vega: weit aus dem Geld hat weniger Vega');
+  ok(Q.bsVega(100, 100, 0, 0.30) === 0 && Q.bsVega(100, 100, 0.1, 0) === 0,
+     'Vega: ohne Restlaufzeit oder ohne Vola ist es null, nicht NaN');
+  /* Call und Put haben DASSELBE Vega - das folgt aus der Put-Call-Paritaet und ist
+   * keine Vereinfachung. Deshalb nimmt bsVega gar keine Richtung entgegen. */
+  ok(Q.bsVega.length === 5, 'Vega: nimmt keine Richtung entgegen - Call und Put haben dasselbe');
+
+  // --- Smile ---
+  ok(Math.abs(Q.smileIv(0.30, 100, 100, 30) - 0.30) < 1e-9,
+     'Smile: am Geld bleibt die Vola unveraendert');
+  ok(Q.smileIv(0.30, 90, 100, 30) > 0.30,
+     'Smile: unter dem Kurs teurer - der Aktien-Skew, Absicherungsnachfrage bei Puts');
+  ok(Q.smileIv(0.30, 103, 100, 30) < 0.30,
+     'Smile: knapp ueber dem Kurs BILLIGER - der Call-Skew faellt');
+  ok(Q.smileIv(0.30, 130, 100, 30) > Q.smileIv(0.30, 110, 100, 30),
+     'Smile: weit aus dem Geld faengt die Kruemmung beide Seiten wieder hoch');
+  ok(Math.abs(Q.smileIv(0.30, 103, 100, 14) - 0.30) > Math.abs(Q.smileIv(0.30, 103, 100, 90) - 0.30),
+     'Smile: kurze Laufzeiten haben den steileren Smile');
+  ok(Q.smileIv(0.30, 1000, 100, 30) <= 0.30 * Q.SMILE.max && Q.smileIv(0.30, 1, 100, 30) >= 0.30 * Q.SMILE.min,
+     'Smile: der Faktor bleibt in Grenzen - kein Unfug an den Raendern');
+  /* GRENZE DER GUELTIGKEIT. Die Kurve ist fuer die Naehe des Geldes gedacht; diese App
+   * oeffnet zwischen 0 und 5 % Abstand. Laeuft der Kurs danach weit weg, extrapolierte
+   * die Formel wild - im Lauf am 24.08.2026 auf das 2,1-Fache (30 % -> 63 %), und das
+   * macht eine tief im Geld liegende Position WERTVOLLER, also den Backtest wieder
+   * optimistischer. Jenseits von +-25 % Moneyness bleibt der Smile jetzt flach. */
+  ok(Math.abs(Q.smileIv(0.30, 170, 100, 21) - Q.smileIv(0.30, 200, 100, 21)) < 1e-9 &&
+     Math.abs(Q.smileIv(0.30, 60, 100, 21) - Q.smileIv(0.30, 20, 100, 21)) < 1e-9,
+     'Smile: jenseits von ±25 % Moneyness wird nicht mehr extrapoliert, sondern gehalten');
+  ok(Q.smileIv(0.30, 100, 170, 21) / 0.30 < 1.4,
+     'Smile: der Faktor bleibt auch im Extremfall unter 1,4  [' +
+     (Q.smileIv(0.30, 100, 170, 21) / 0.30).toFixed(2) + ']');
+  /* Und die Gegenprobe, warum die erhoehte Vola tief im Geld trotzdem harmlos ist:
+   * Dort ist das Vega null, der Preis ist fast reiner innerer Wert. Genau das sagt
+   * die Put-Call-Paritaet - ein tiefer Call und ein weiter Put teilen sich die Vola. */
+  var tiefAlt = Q.bsPrice('call', 170, 100, 21 / 365, 0.30);
+  var tiefNeu = Q.bsPrice('call', 170, 100, 21 / 365, Q.smileIv(0.30, 100, 170, 21));
+  ok(Math.abs(tiefNeu / tiefAlt - 1) < 0.001,
+     'Smile: tief im Geld aendert die hoehere Vola den Preis praktisch nicht (Vega ist dort null)');
+  ok(Q.smileIv(0, 100, 100, 30) === 0 && Q.smileIv(0.3, 0, 100, 30) === 0.3,
+     'Smile: Unsinn geht unveraendert durch, statt NaN zu erzeugen');
+
+  /* Der Bericht sagte, ein aus dem Geld liegender Schein waere "real hoeher, der
+   * Schein teurer". Das gilt fuer PUTS. Bei CALLS faellt der Aktien-Skew - der Call
+   * wird billiger. Diese Korrektur gehoert festgehalten, sonst wird der Bericht
+   * beim naechsten Lesen wieder zur Vorlage. */
+  ok(Q.smileIv(0.30, 97, 100, 30) > Q.smileIv(0.30, 103, 100, 30),
+     'Smile: Put-Seite teurer als Call-Seite bei gleichem Abstand - so herum, nicht anders');
+
+  // --- Vola um einen Termin ---
+  ok(Q.ivMitEreignis(0.30, null) === 0.30 && Q.ivMitEreignis(0.30, undefined) === 0.30,
+     'Termin: ohne bekannten Termin bleibt alles, wie es ist');
+  ok(Q.ivMitEreignis(0.30, 30) === 0.30, 'Termin: weit davor keine Wirkung');
+  ok(Q.ivMitEreignis(0.30, 1) > 0.35, 'Termin: am Tag davor deutlich erhoeht  [' +
+     (Q.ivMitEreignis(0.30, 1) * 100).toFixed(1) + ' %]');
+  ok(Q.ivMitEreignis(0.30, -1) < 0.30, 'Termin: am Tag danach der Crush  [' +
+     (Q.ivMitEreignis(0.30, -1) * 100).toFixed(1) + ' %]');
+  ok(Q.ivMitEreignis(0.30, -10) === 0.30, 'Termin: nach der Erholung wieder normal');
+  /* Der Kern der Sache in einer Zeile: derselbe Kurs, ein Tag Unterschied. */
+  var vor = Q.bsPrice('call', 100, 100, 21 / 365, Q.ivMitEreignis(0.30, 1));
+  var nach = Q.bsPrice('call', 100, 100, 20 / 365, Q.ivMitEreignis(0.30, -1));
+  ok(nach < vor * 0.75,
+     'Termin: bei UNVERAENDERTEM Kurs verliert der Schein ueber die Zahlen ' +
+     Math.round((1 - nach / vor) * 100) + ' % - der Fall, den es in der Simulation nicht gab');
+
+  // --- Verkabelung in depot.js ---
+  ok(/function ivFuer\(basis, dir, strike, spot, expiry, terminT, now\)/.test(dep),
+     'Einbau: es gibt eine Stelle, die die lebende Vola bestimmt');
+  ok(/var ivJetzt = ivDerPosition\(pos, spot, now\);/.test(dep),
+     'Einbau: die BEWERTUNG benutzt sie - dort sass der eingefrorene Wert');
+  ok(!/iv: pos\.iv, ratio: pos\.ratio \|\| Q\.RATIO \}, spot, now\);\s*\n\s*return Math\.max\(0\.001, v/.test(dep),
+     'Einbau: die eingefrorene Vola steht nicht mehr in der Bewertung');
+  ok(/ivBasis: Math\.round\(ivBasis \* 1000\) \/ 1000/.test(dep) && /terminT: nTermin \|\| undefined/.test(dep),
+     'Einbau: die Position traegt Basis-Vola und Termin mit - sonst waere es beim naechsten Bewerten wieder eingefroren');
+  ok(/vega: Math\.round\(Q\.bsVega\(/.test(dep), 'Einbau: Vega wird auf der Position mitgeschrieben');
+  ok(/w\.iv = \(cfg\.ivModell === false\) \? w\.iv : Q\.smileIv\(w\.iv, w\.strike, spot, P\.days\);/.test(dep),
+     'Einbau: die Kostenhuerde bepreist denselben Schein wie der Handel');
+  /* Sie muss dabei EINZELN ausfuehrbar bleiben - die Suite schneidet sie heraus.
+   * Ein Griff nach D oder nach einer Modulfunktion bricht das (und tat es einmal). */
+  ok(!/function kostenHuerdePp\(cfg, spot, vol, haltenMin, einsatz\) \{[\s\S]*?\n  \}/.test(dep) ||
+     !/ivModellAn\(\)/.test(/function kostenHuerdePp\(cfg, spot, vol, haltenMin, einsatz\) \{[\s\S]*?\n  \}/.exec(dep)[0]),
+     'Kostenhuerde: greift auf nichts ausserhalb ihrer Argumente zu');
+  ok(/function ivModellAn\(\)/.test(dep) && /D\.intraday\.ivModell === false/.test(dep),
+     'Einbau: das Modell laesst sich abschalten - eine Aenderung an der Preisbildung muss man zurueckdrehen koennen');
+  ok(/if \(!\(pos\.ivBasis > 0\)\) return pos\.iv;/.test(dep),
+     'Altbestand: Positionen ohne Basis-Vola werden NICHT rueckwirkend neu bepreist');
+
+  // --- Die Tabelle muss aufgehen ---
+  /* Der Basiswert-Zweig liefert Ersatzzellen. Kommt vorne eine Spalte dazu und
+   * dort nicht, verrutscht die ganze Tabelle - und Basiswert ist die Voreinstellung. */
+  var kopfI = dep.indexOf('<th>Wert</th><th>Typ</th>');
+  var kopf = dep.slice(kopfI, dep.indexOf('</tr>', kopfI));
+  var nKopf = (kopf.match(/<th/g) || []).length;
+  var zwI = dep.indexOf('var scheinZellen = p.basis');
+  var zweig = dep.slice(zwI, dep.indexOf("ph += '<tr>", zwI));
+  var nBasis = (zweig.slice(zweig.indexOf('?'), zweig.indexOf(': ')).match(/<td/g) || []).length;
+  var nSchein = (zweig.slice(zweig.indexOf(': ')).match(/<td/g) || []).length;
+  ok(nBasis === nSchein, 'Tabelle: Basiswert- und Schein-Zweig liefern gleich viele Zellen  [' + nBasis + ' / ' + nSchein + ']');
+  var zeilI = dep.indexOf("ph += '<tr><td><b>' + U.esc(p.sym)");
+  var nZeile = (dep.slice(zeilI, dep.indexOf('</tr>', zeilI)).match(/<td/g) || []).length;
+  ok(nZeile + nSchein === nKopf,
+     'Tabelle: Zeile und Kopf haben gleich viele Spalten  [' + (nZeile + nSchein) + ' / ' + nKopf + ']');
+  var sumI = dep.indexOf('style="text-align:right; color:var(--muted); font-weight:600;">Summe');
+  var colspan = Number(/colspan="(\d+)"/.exec(dep.slice(sumI - 60, sumI))[1]);
+  ok(colspan === nKopf - 4,
+     'Tabelle: die Summenzeile ueberspannt die richtige Zahl von Spalten  [' + colspan + ']');
+})();
+
 Promise.all(offeneProben).then(function () {
   console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
   process.exit(fails ? 1 : 0);

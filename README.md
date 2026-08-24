@@ -2,7 +2,7 @@
 
 Windows-Desktop-App (Electron) für Marktüberblick und eine **Trading-Simulation mit virtuellem Kapital**.
 
-> Simulation, keine Anlageberatung. Es wird kein echtes Geld gehandelt. Optionsscheine werden per Black-Scholes synthetisch bewertet (Hebel und Zeitwertverfall realistisch, aber keine echten Emittenten-Preise).
+> Simulation, keine Anlageberatung. Es wird kein echtes Geld gehandelt. Optionsscheine werden per Black-Scholes synthetisch bewertet: Hebel, Zeitwertverfall, Volatilitäts-Smile und der Vola-Einbruch nach Ergebnisterminen sind abgebildet, echte Emittenten-Preise nicht. Smile und Termin-Struktur sind Modellannahmen in der üblichen Größenordnung und **nicht an Emittentenkursen kalibriert** – der App fehlen dafür echte Scheinpreise über mehrere Basispreise. Der Zinssatz ist mit 2 % angenommen.
 
 ## Funktionen
 

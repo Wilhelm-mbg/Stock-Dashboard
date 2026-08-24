@@ -258,6 +258,17 @@
       ],
       fuss: 'Alle Zahlen der App sind Simulation und keine Anlageberatung.'
     },
+    'modell.schein': {
+      titel: 'Wie ein Optionsschein hier bepreist wird',
+      punkte: [
+        'Black-Scholes mit der aus den Kursen geschätzten Volatilität – keine echten Emittenten-Preise. Die Spanne ist an echten Kursen geeicht (onvista), das Modell selbst nicht.',
+        'Volatilitäts-Smile: Ein Schein abseits des Geldes bekommt nicht mehr dieselbe Vola wie einer am Geld. Puts sind auf der Seite teurer, Calls knapp über dem Kurs billiger – so herum, nicht anders. Bei den Abständen, die diese App handelt (0 bis 3 %), macht das zwischen 0,0 und 2,5 % Scheinpreis aus.',
+        'Volatilität um einen Ergebnistermin: Sie steigt bis zu 25 % davor an und fällt danach unter das Normalniveau zurück („IV-Crush"). Gemessen am Beispiel: ein Schein am Geld mit 21 Tagen Restlaufzeit verliert über die Zahlen rund 29 % – bei UNVERÄNDERTEM Kurs.',
+        'Vega steht in der Positionstabelle: wie viel ein einzelner Volatilitätspunkt diese Position wert ist. Bis 8.24.5 kam Vega in der Simulation überhaupt nicht vor – die Vola wurde beim Öffnen eingefroren.',
+        'Der Zinssatz steht auf 2 % und ist eine Annahme, keine Messung. Bei diesen Laufzeiten ändert er den Preis um wenige Zehntelprozent.'
+      ],
+      fuss: 'Smile und Termin-Struktur sind Modellannahmen in der üblichen Größenordnung, NICHT an Emittentenkursen kalibriert – dafür fehlen der App echte Scheinpreise über mehrere Basispreise. Die Richtung ist belastbarer als die Höhe.'
+    },
     'regeln.uebersicht': {
       titel: 'Drei Zeithorizonte, drei getrennte Strategien',
       punkte: [
