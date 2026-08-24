@@ -6132,10 +6132,23 @@ function huerdeAnzeigen() {
       results.uebersprungen = uebersprungen;   // ehrlich weiterreichen, nicht still schlucken
       results.screenTage = SCREEN_TAGE;
       results.screenWerte = SCREEN_WERTE;
+      /* MEHRFACHVERGLEICH. Hier werden 14 Modi x 4 Zeitrahmen geprueft und der Beste
+       * gekuert - auf denselben Scheiben. Bei 56 Versuchen hat der Sieger auch dann
+       * eine ordentliche Rendite, wenn KEIN einziger Kandidat etwas kann: das Maximum
+       * aus 56 Ziehungen liegt immer deutlich ueber dem Mittel. Genau dafuer gibt es
+       * bestOfN (quant.js) - es simuliert, wie gut der Beste aus n reinen Zufalls-
+       * kandidaten derselben Streuung ausfaellt, und sagt, ob der echte Sieger das
+       * ueberhaupt schlaegt. Die Funktion war da und wurde hier nie aufgerufen. */
+      results.zufall = Q.bestOfN(results.filter(function (r0) { return r0.belastbar; })
+                                        .map(function (r0) { return r0.wfRet; }));
       return results;
   }
 
   /* ================= Analyse-Zentrale ================= */
+  /** Handelstage in einer Kurs-Scheibe - fuer die ehrliche Angabe, worauf ein Urteil steht. */
+  function tageIn(m) {
+    try { return handelsTage(m).length; } catch (e) { return null; }
+  }
   var centralRunning = false;
   /** opts: {silent:true, status:fn} → rechnet ohne UI und meldet den Fortschritt per Callback. */
   async function runCentral(opts) {
@@ -6168,9 +6181,24 @@ function huerdeAnzeigen() {
       // Schritt 2: Feinschliff für den Gewinner (Grid, 70/30 out-of-sample)
       out.innerHTML = '<div class="loading">Schritt 2/3: Feinschliff für ' + U.esc(top.mode.name) + ' · ' + top.interval + ' (18 Kombinationen parallel) …</div>';
       var map = ld.data[top.interval];
+      /* DREI Scheiben, nicht zwei. Vorher lief es 70/30: auf den 70 % wurden 90
+       * Kombinationen optimiert, und dieselbe 30-%-Scheibe entschied DANN, ob der
+       * Feinschliff genommen wird (useFine), und lieferte ZUGLEICH die Filter-Bilanz,
+       * die als Beleg berichtet wurde. Eine Scheibe kann aber nicht beides sein: wer
+       * auf ihr auswaehlt, hat sie gesehen - ihre Zahlen sind dann kein Beleg mehr,
+       * sondern Teil der Optimierung.
+       *   0-70 %   trainMap  - hier werden die 90 Kombinationen optimiert
+       *   70-85 %  wahlMap   - hier faellt die Entscheidung, ob der Feinschliff gilt
+       *   85-100 % belegMap  - wird NUR berichtet, entscheidet nichts
+       * Die Belegscheibe ist die kleinste, und das ist richtig so: sie muss nichts
+       * optimieren, sie muss nur unberuehrt sein. */
       var span = mapSpan(map);
       var cut = tagesGrenze(map, 0.7) || (span[0] + (span[1] - span[0]) * 0.7);   // 70 % der HANDELSTAGE
-      var trainMap = sliceMap(map, span[0], cut, 0), testMap = sliceMap(map, cut, span[1], warmlaufBars(top.interval));
+      var cut2 = tagesGrenze(map, 0.85) || (span[0] + (span[1] - span[0]) * 0.85);
+      var trainMap = sliceMap(map, span[0], cut, 0);
+      var wahlMap = sliceMap(map, cut, cut2, warmlaufBars(top.interval));
+      var belegMap = sliceMap(map, cut2, span[1], warmlaufBars(top.interval));
+
       var commonIv = labCommonOpts(cfg, top.interval);
       // Schein-Profil als eigene Dimension: ATM (moderater Hebel) gegen das eingestellte
       // Profil - der Hebel bestimmt, wie viel Basiswert-Bewegung die Kosten decken muss.
@@ -6193,12 +6221,24 @@ function huerdeAnzeigen() {
         if (!r0 || r0.error || r0.summary.nTrades < 5) return;
         if (!bestFine || r0.summary.retPct > bestFine.train.retPct) bestFine = { g: g, train: r0.summary };
       });
+      /* MEHRFACHVERGLEICH auch hier: 90 Kombinationen auf derselben Trainingsscheibe,
+       * und die beste wird genommen. Ohne Korrektur ist ihr Vorsprung zum guten Teil
+       * die Auswahl selbst. */
+      var fineZufall = Q.bestOfN(fineRes.filter(function (r0) { return r0 && !r0.error && r0.summary; })
+                                        .map(function (r0) { return r0.summary.retPct; }));
       var fineValid = null;
       if (bestFine) {
-        var rv = await btIntraday(testMap, Object.assign({}, commonIv, top.mode.opts, bestFine.g));
+        // Die ENTSCHEIDUNG faellt auf der Wahlscheibe - nicht auf der, die berichtet wird.
+        var rv = await btIntraday(wahlMap, Object.assign({}, commonIv, top.mode.opts, bestFine.g));
         if (rv && !rv.error) fineValid = rv.summary;
       }
       var useFine = bestFine && fineValid && fineValid.retPct > 0;
+      // Und was die unberuehrte Belegscheibe dazu sagt - berichtet, nicht verwendet.
+      var fineBeleg = null;
+      if (bestFine) {
+        var rb = await btIntraday(belegMap, Object.assign({}, commonIv, top.mode.opts, bestFine.g));
+        if (rb && !rb.error) fineBeleg = rb.summary;
+      }
       var pick = useFine ? bestFine.g : (top.best ? Object.assign({ lineType: cfg.lineType || 'ema' }, top.best) : { period: cfg.period, confirmBps: cfg.confirmBps, lineType: cfg.lineType || 'ema' });
 
       // Filter-Bilanz: Jeder Filter muss sein Geld verdienen. Für den besten Kandidaten
@@ -6210,7 +6250,7 @@ function huerdeAnzeigen() {
       try {
         out.innerHTML = '<div class="loading">Schritt 2b/3: Filter-Bilanz – jeden Filter einzeln nachrechnen …</div>';
         var basisOpts = Object.assign({}, commonIv, top.mode.opts, pick, { zThr: zOf(pick.confirmBps || cfg.confirmBps) });
-        var basisAb = await btIntraday(testMap, basisOpts);
+        var basisAb = await btIntraday(belegMap, basisOpts);
         if (basisAb && !basisAb.error) {
           var varianten = [
             { name: 'Kosten-Check (Bewegung muss Kosten decken)', opts: { minEdge: 0 }, aktiv: (basisOpts.minEdge || 0) > 0 },
@@ -6220,7 +6260,7 @@ function huerdeAnzeigen() {
             { name: 'Wellen-Qualitätsschwelle', opts: { minQuality: 0 }, aktiv: basisOpts.entryMode === 'wave' && (basisOpts.minQuality || 0) > 0 }
           ].filter(function (v) { return v.aktiv; });
           var abRes = await Promise.all(varianten.map(function (v) {
-            return btIntraday(testMap, Object.assign({}, basisOpts, v.opts));
+            return btIntraday(belegMap, Object.assign({}, basisOpts, v.opts));
           }));
           var zeilen = [];
           varianten.forEach(function (v, i2) {
@@ -6268,9 +6308,19 @@ function huerdeAnzeigen() {
         oosTage: top.oosTage, scheibenGueltig: top.scheibenGueltig, belastbar: top.belastbar,
         scheibenMax: top.scheibenMax, bootLossProb: top.bootLossProb,
         richtung: { callN: top.callN, callPnl: top.callPnl, putN: top.putN, putPnl: top.putPnl },
-        fine: bestFine ? { train: bestFine.train.retPct, valid: fineValid ? fineValid.retPct : null, used: !!useFine } : null,
+        fine: bestFine ? { train: bestFine.train.retPct, valid: fineValid ? fineValid.retPct : null,
+          beleg: fineBeleg ? fineBeleg.retPct : null, belegN: fineBeleg ? fineBeleg.nTrades : null,
+          used: !!useFine, zufall: fineZufall } : null,
+        /* Was der Sieger gegen den Zufall steht. null heisst: zu wenige belastbare
+         * Kandidaten fuer eine Aussage (bestOfN verlangt mindestens 20). */
+        zufall: results.zufall,
+        ueberzufaellig: results.zufall ? !!results.zufall.ueberzufaellig : null,
         topSymbols: symRank.slice(0, 3).map(function (x) { return x[0]; }),
         filterBilanz: filterBilanz,
+        /* Wie gross die drei Scheiben tatsaechlich waren. Die Belegscheibe ist die
+         * kleinste (15 %) - wer die Filter-Bilanz liest, soll sehen, auf wie wenig
+         * sie steht, statt eine Zahl ohne Massstab zu bekommen. */
+        scheiben: { trainTage: tageIn(trainMap), wahlTage: tageIn(wahlMap), belegTage: tageIn(belegMap) },
         datenbasis: { symbole: Object.keys(ld.data[top.interval] || {}).length, zeitrahmen: top.interval,
           spanneTage: (function () { var sp = mapSpan(ld.data[top.interval] || {}); return sp[1] > sp[0] ? Math.round((sp[1] - sp[0]) / 86400000) : 0; })() }
       };
@@ -7583,22 +7633,72 @@ function huerdeAnzeigen() {
       if (!rec) {
         a.lastCheck = { at: Date.now(), ok: false, txt: 'Zu wenig Kursdaten für eine Messung – das Archiv füllt sich mit jedem Handelstag.' };
       } else {
+        /* ZWEI HUERDEN, die es vorher nicht gab.
+         *
+         * 1. MEHRFACHVERGLEICH. Gekuert wird der Beste aus 14 Modi x 4 Zeitrahmen.
+         *    Bei 56 Versuchen hat der Sieger auch dann eine schoene Rendite, wenn kein
+         *    einziger Kandidat etwas kann - das Maximum aus 56 Ziehungen liegt immer
+         *    ueber dem Mittel. rec.ueberzufaellig sagt (ueber bestOfN), ob der Sieger
+         *    das schlaegt, was reiner Zufall bei 56 Versuchen hergibt. Faellt er
+         *    durch, wird NICHTS umgestellt. null heisst: zu wenige belastbare
+         *    Kandidaten fuer die Aussage - dann bleibt es wie bisher beim Urteil
+         *    allein, aber die Meldung sagt das auch.
+         *
+         * 2. ECHTER ZUWACHS. "Bestaetigung durch die naechste Nacht" war keine: die
+         *    Messung laeuft ueber dieselbe Historie, eine Nacht bringt bei 60-Minuten-
+         *    Kerzen rund 0,4 % neue Kerzen. Zweimal dasselbe Ergebnis auf denselben
+         *    Daten ist ein Ergebnis, nicht zwei. Anders als beim Edge-Waechter ist das
+         *    hier keine schuetzende Handlung, sondern eine AENDERUNG der Konfiguration -
+         *    und die braucht echte neue Evidenz. Verlangt wird deshalb mindestens ein
+         *    zusaetzlicher ungesehener Handelstag zwischen den beiden Messungen. */
         var robust = String(rec.verdict).indexOf('robust') === 0 && rec.belastbar !== false && rec.n >= MIN_OOS_TRADES;
+        var zufaellig = rec.ueberzufaellig === false;
+        var zTxt = rec.zufall
+          ? ' Zufallsprobe über ' + rec.zufall.n + ' Kandidaten: der Beste liegt bei ' + rec.zufall.bester +
+            ' %, reiner Zufall bringt im Mittel ' + rec.zufall.zufallsMedian + ' % und in 5 % der Fälle über ' +
+            rec.zufall.zufallsP95 + ' % (p=' + rec.zufall.pWert + ').'
+          : ' Für eine Zufallsprobe gab es zu wenige belastbare Kandidaten.';
         var k = recKey(rec);
         if (!robust) {
-          a.pending = null; a.lastRecKey = null;
+          a.pending = null; a.lastRecKey = null; a.lastRecTage = null;
           a.lastCheck = { at: Date.now(), ok: true,
             txt: 'Bester Kandidat: ' + rec.modeName + ' · ' + rec.interval + ' (' + rec.verdict + ', ' + rec.n + ' Trades auf ' +
-              (rec.oosTage != null ? rec.oosTage : '?') + ' ungesehenen Handelstagen). Nichts geändert – übernommen wird nur, was robust ist UND sich in zwei Nächten hintereinander bestätigt.' };
+              (rec.oosTage != null ? rec.oosTage : '?') + ' ungesehenen Handelstagen). Nichts geändert – übernommen wird nur, ' +
+              'was robust ist, den Zufall schlägt UND sich auf neuen Daten wiederholt.' + zTxt };
+        } else if (zufaellig) {
+          /* Robust, aber nicht ueberzufaellig: Das ist der Fall, den es vorher gar
+           * nicht gab - und der haeufigste bei 56 Kandidaten. */
+          a.pending = null; a.lastRecKey = null; a.lastRecTage = null;
+          a.lastCheck = { at: Date.now(), ok: true,
+            txt: '' + rec.modeName + ' · ' + rec.interval + ' sieht robust aus (Walk-Forward ' + (rec.wfRet > 0 ? '+' : '') + rec.wfRet +
+              ' %), schlägt aber den Zufall nicht: Bei ' + rec.zufall.n + ' geprüften Kandidaten fällt der Beste auch ohne jede ' +
+              'echte Kante so gut aus. Nichts geändert.' + zTxt };
         } else if (a.lastRecKey === k) {
-          // Zweite Nacht in Folge dasselbe robuste Ergebnis → Bewährung bestanden, vormerken
-          a.pending = { rec: rec, seit: Date.now() };
-          a.lastCheck = { at: Date.now(), ok: true,
-            txt: '' + rec.modeName + ' · ' + rec.interval + ' zum zweiten Mal in Folge robust (Walk-Forward ' + (rec.wfRet > 0 ? '+' : '') + rec.wfRet + ' %, ' + rec.n + ' Trades) – wird vor dem nächsten Handelsbeginn übernommen.' };
+          /* Dasselbe Ergebnis wie beim letzten Mal - aber ist inzwischen ueberhaupt
+           * etwas Neues dazugekommen? oosTage ist die Zahl ungesehener Handelstage,
+           * auf denen gemessen wurde; waechst sie nicht, war es dieselbe Messung. */
+          var neueTage = (typeof a.lastRecTage === 'number' && typeof rec.oosTage === 'number')
+            ? rec.oosTage - a.lastRecTage : null;
+          if (neueTage != null && neueTage < 1) {
+            a.lastCheck = { at: Date.now(), ok: true,
+              txt: '' + rec.modeName + ' · ' + rec.interval + ' zum zweiten Mal robust – aber auf DENSELBEN Daten ' +
+                '(' + rec.oosTage + ' ungesehene Handelstage, kein Zuwachs seit der letzten Messung). Das ist eine ' +
+                'Messung, nicht zwei. Wird übernommen, sobald mindestens ein neuer Handelstag dazukommt.' + zTxt };
+          } else {
+            a.pending = { rec: rec, seit: Date.now(), neueTage: neueTage };
+            a.lastRecTage = rec.oosTage;
+            a.lastCheck = { at: Date.now(), ok: true,
+              txt: '' + rec.modeName + ' · ' + rec.interval + ' zum zweiten Mal robust, diesmal mit ' +
+                (neueTage != null ? neueTage + ' neuen ungesehenen Handelstag(en)' : 'neuer Messbasis') +
+                ' (Walk-Forward ' + (rec.wfRet > 0 ? '+' : '') + rec.wfRet + ' %, ' + rec.n + ' Trades) – wird vor dem ' +
+                'nächsten Handelsbeginn übernommen.' + zTxt };
+          }
         } else {
-          a.lastRecKey = k; a.pending = null;
+          a.lastRecKey = k; a.pending = null; a.lastRecTage = rec.oosTage;
           a.lastCheck = { at: Date.now(), ok: true,
-            txt: '' + rec.modeName + ' · ' + rec.interval + ' ist robust (Walk-Forward ' + (rec.wfRet > 0 ? '+' : '') + rec.wfRet + ' %, ' + rec.n + ' Trades) – wartet auf Bestätigung durch die nächste Nacht-Messung. Ein einzelner Sieg kann Zufall sein.' };
+            txt: '' + rec.modeName + ' · ' + rec.interval + ' ist robust (Walk-Forward ' + (rec.wfRet > 0 ? '+' : '') + rec.wfRet + ' %, ' +
+              rec.n + ' Trades) – wartet auf eine Wiederholung mit NEUEN Handelstagen. Ein einzelner Sieg kann Zufall sein, ' +
+              'und dieselbe Messung zweimal anzusehen macht sie nicht belastbarer.' + zTxt };
         }
       }
       // Edge-Waechter im Anschluss - die eigentliche Frage der Nacht: Traegt der
@@ -7617,21 +7717,45 @@ function huerdeAnzeigen() {
            * von selbst wieder auf. */
           var verfall = edge.mittelPp != null && !(edge.mittelPp > 0) && (edge.nSym || 0) >= 5;
           if (!a.edgeHistorie) a.edgeHistorie = [];
+          /* ZWEI NAECHTE SIND NICHT ZWEI MESSUNGEN. Der Waechter rechnet ueber ein
+           * rollendes 120-Tage-Fenster auf 60-Minuten-Kerzen. Eine Nacht bringt darin
+           * rund 0,4 % neue Kerzen - "in zwei Naechten hintereinander verfallen" klang
+           * nach zwei unabhaengigen Belegen und war in Wahrheit fast derselbe Datensatz,
+           * zweimal angesehen. Deshalb wird jetzt der tatsaechliche ZUWACHS an Signalen
+           * mitgeschrieben und in jeder Meldung genannt. */
+          var vorig = a.edgeHistorie[0] || null;
+          var zuwachs = (vorig && typeof vorig.n === 'number') ? (edge.n || 0) - vorig.n : null;
+          var zuwachsPct = (vorig && vorig.n > 0 && zuwachs != null)
+            ? Math.round(zuwachs / vorig.n * 1000) / 10 : null;
           a.edgeHistorie.unshift({ at: Date.now(), mittelPp: edge.mittelPp != null ? edge.mittelPp : null,
-            t: edge.t != null ? edge.t : null, verfall: verfall });
+            t: edge.t != null ? edge.t : null, verfall: verfall,
+            n: edge.n || 0, zuwachs: zuwachs, zuwachsPct: zuwachsPct });
           if (a.edgeHistorie.length > 30) a.edgeHistorie = a.edgeHistorie.slice(0, 30);
+          /* Die Schwelle bleibt bewusst bei zwei Verfalls-Messungen und wird NICHT an
+           * einen Mindestzuwachs gebunden. Das ist eine SCHUETZENDE Handlung: sie setzt
+           * neue Einstiege aus und laesst die Messung weiterlaufen. Bei einer solchen
+           * darf duenne Evidenz ausloesen - der Preis eines Fehlalarms ist eine Pause,
+           * der Preis des Zoegerns sind Verluste. Was sich aendert, ist der ANSPRUCH:
+           * die Meldung behauptet keine zwei unabhaengigen Belege mehr, sondern nennt,
+           * wie viel neue Messbasis wirklich dazwischen lag.
+           * Umgekehrt ist es bei Aenderungen an der Konfiguration - siehe unten. */
+          var zuwachsTxt = zuwachs == null ? 'die Vorgaengermessung ist ohne Zaehlstand'
+            : (zuwachs + ' neue Signale' + (zuwachsPct != null ? ' (+' + zuwachsPct + ' %)' : '') + ' seit der letzten Messung');
           if (verfall && a.edgeHistorie.length >= 2 && a.edgeHistorie[1].verfall &&
               !D.intraday.edgePauseHand && !D.intraday.edgePause) {
-            D.intraday.edgePause = { seit: Date.now(), mittelPp: edge.mittelPp, t: edge.t };
+            D.intraday.edgePause = { seit: Date.now(), mittelPp: edge.mittelPp, t: edge.t,
+              zuwachs: zuwachs, zuwachsPct: zuwachsPct };
             if (!D.tuneLog) D.tuneLog = [];
             D.tuneLog.unshift({ id: 'sicherung-' + Date.now(), at: Date.now(), quelle: 'sicherung',
               applied: ['Edge-Wächter: neue Einstiege pausiert'],
-              txt: 'Der gemessene Vorsprung der belegten Kante ist in zwei Nächten hintereinander verfallen ' +
-                '(zuletzt ' + edge.mittelPp + ' Pp, t=' + edge.t + '). Neue Einstiege sind pausiert; das Schattenbuch ' +
-                'misst weiter. Eine positive Nacht hebt die Pause automatisch auf – oder du entscheidest von Hand ' +
-                '„trotzdem handeln“ (wird dauerhaft respektiert).' });
-            melde('Edge-Wächter: Kante pausiert', 'Der gemessene Vorsprung ist in zwei Nächten verfallen (' + edge.mittelPp + ' Pp). Neue Einstiege sind ausgesetzt, die Messung läuft weiter.');
-            pilotLogAdd('Edge-Wächter: VERFALL in zwei Nächten – neue Einstiege pausiert.');
+              txt: 'Der gemessene Vorsprung der belegten Kante war in zwei aufeinanderfolgenden Messungen ' +
+                'verfallen (zuletzt ' + edge.mittelPp + ' Pp, t=' + edge.t + '; ' + zuwachsTxt + '). ' +
+                'Die zweite Messung ist KEIN unabhängiger zweiter Beleg – sie läuft über dasselbe rollende ' +
+                '120-Tage-Fenster. Ausgesetzt wird trotzdem: eine Pause kostet weniger als ein Irrtum in die ' +
+                'andere Richtung. Das Schattenbuch misst weiter. Eine positive Messung hebt die Pause ' +
+                'automatisch auf – oder du entscheidest von Hand „trotzdem handeln“ (wird dauerhaft respektiert).' });
+            melde('Edge-Wächter: Kante pausiert', 'Der gemessene Vorsprung ist zweimal in Folge verfallen (' + edge.mittelPp + ' Pp, ' + zuwachsTxt + '). Neue Einstiege sind ausgesetzt, die Messung läuft weiter.');
+            pilotLogAdd('Edge-Wächter: VERFALL zweimal in Folge (' + zuwachsTxt + ') – neue Einstiege pausiert.');
           }
           if (!verfall && edge.mittelPp != null && edge.mittelPp > 0 && D.intraday.edgePause) {
             delete D.intraday.edgePause;
@@ -7783,7 +7907,25 @@ function huerdeAnzeigen() {
     html += '<table class="tbl" style="max-width:680px;"><tr><th>Empfehlung</th><th>Wert</th><th>Begründung</th></tr>' +
       '<tr><td>Modus / Zeitrahmen</td><td><b>' + U.esc(r.modeName) + ' · ' + r.interval + '</b></td><td>Walk-Forward ' + U.signTxt(r.wfRet, ' %') + ' · ' + r.posSegs + '/' + (r.scheibenMax || 4) + ' Scheiben · ' + r.n + ' Trades · ' + r.winRate + ' % Treffer · PF ' + r.pf + (r.datenbasis ? ' · Datenbasis: ' + r.datenbasis.symbole + ' Werte über ' + r.datenbasis.spanneTage + ' Tage' : '') + '</td></tr>' +
       '<tr><td>Leitlinie / Periode / Bestätigung</td><td><b>' + r.lineType.toUpperCase() + ' · P' + r.period + ' · ' + (r.confirmBps / 100).toFixed(2) + ' %</b></td><td>' +
-      (r.fine ? (r.fine.used ? 'Feinschliff validiert: Training ' + U.signTxt(r.fine.train, ' %') + ' → ungesehen ' + U.signTxt(r.fine.valid, ' %') : 'Feinschliff nicht robust (Validierung ' + (r.fine.valid == null ? 'ohne Ergebnis' : U.signTxt(r.fine.valid, ' %')) + ') → Labor-Parameter behalten') : 'aus dem Walk-Forward') + '</td></tr>' +
+      (r.fine ? (r.fine.used ? 'Feinschliff gewählt: Training ' + U.signTxt(r.fine.train, ' %') + ' → Wahlscheibe ' + U.signTxt(r.fine.valid, ' %') : 'Feinschliff nicht robust (Wahlscheibe ' + (r.fine.valid == null ? 'ohne Ergebnis' : U.signTxt(r.fine.valid, ' %')) + ') → Labor-Parameter behalten') : 'aus dem Walk-Forward') +
+        (r.fine && r.fine.beleg != null ? '<div style="color:var(--muted); font-size:var(--fs-klein); margin-top:2px;">Auf der unberührten Belegscheibe: ' + U.signTxt(r.fine.beleg, ' %') + ' (' + r.fine.belegN + ' Trades) – diese Zahl hat nichts entschieden.</div>' : '') + '</td></tr>' +
+      /* Die Zufallsprobe gehoert AN DIE ERSTE STELLE der Bewertung, nicht in eine
+       * Fussnote: bei 56 Kandidaten ist sie die Frage, ob ueberhaupt etwas da ist. */
+      '<tr><td>Gegen den Zufall</td><td>' +
+        (r.zufall
+          ? (r.ueberzufaellig
+              ? '<b class="pos">schlägt den Zufall</b>'
+              : '<b class="neg">nicht überzufällig</b>')
+          : '<span style="color:var(--muted);">kein Urteil</span>') + '</td><td>' +
+        (r.zufall
+          ? 'Bester von ' + r.zufall.n + ' Kandidaten: ' + r.zufall.bester + ' %. Reiner Zufall bringt bei ' + r.zufall.n +
+            ' Versuchen im Mittel ' + r.zufall.zufallsMedian + ' % und in 5 % der Fälle über ' + r.zufall.zufallsP95 +
+            ' % (p=' + r.zufall.pWert + ').' +
+            (r.ueberzufaellig ? '' : ' Deshalb wird nichts umgestellt – so gut fällt der Beste auch ohne jede echte Kante aus.')
+          : 'Für eine Zufallsprobe braucht es mindestens 20 belastbare Kandidaten.') + '</td></tr>' +
+      (r.scheiben ? '<tr><td>Datenscheiben</td><td>' + (r.scheiben.belegTage != null ? r.scheiben.belegTage + ' Tage Beleg' : '–') + '</td><td>' +
+        'Optimiert auf ' + r.scheiben.trainTage + ' Handelstagen, entschieden auf ' + r.scheiben.wahlTage + ', berichtet auf ' + r.scheiben.belegTage +
+        '. Die Belegscheibe wird von keiner Entscheidung angefasst – deshalb ist ihre Zahl eine Aussage und keine Auswahl.</td></tr>' : '') +
       '<tr><td>Zeitfenster</td><td><b>' + WINDOW_NAMES[r.window] + '</b></td><td>bestes Out-of-Sample-Fenster nach P/L</td></tr>' +
       '<tr><td>Meide-Stunden</td><td><b>' + (r.avoidHours.length ? r.avoidHours.map(function (h) { return h + ' Uhr'; }).join(', ') : 'keine') + '</b></td><td>Stunden mit ≥3 Trades und negativem P/L (Berlin)</td></tr>' +
       '<tr><td>Stärkste Werte</td><td colspan="2">' + r.topSymbols.map(U.esc).join(' · ') + '</td></tr></table>';

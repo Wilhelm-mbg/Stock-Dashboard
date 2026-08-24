@@ -4706,6 +4706,92 @@ console.log('\n41) Zustaende: was die App sagt, wenn etwas fehlt oder klemmt');
   })());
 })();
 
+/* ================= 46. Die Messkette misst sich nicht mehr selbst =================
+ * Drei Befunde des Berichts, hier nachgerechnet statt nacherzaehlt.
+ *
+ * 1. MEHRFACHVERGLEICH: Die Analyse-Zentrale kuert den Besten aus 14 Modi x 4
+ *    Zeitrahmen = 56 Kandidaten auf denselben Scheiben. Das Maximum aus 56
+ *    Ziehungen liegt IMMER deutlich ueber dem Mittel - der Sieger sieht also auch
+ *    dann gut aus, wenn kein einziger Kandidat etwas kann. bestOfN gab es in
+ *    quant.js schon; aufgerufen wurde es hier nie.
+ * 2. BELEG UND AUSWAHL WAREN DIESELBE SCHEIBE: 90 Kombinationen wurden auf 70 %
+ *    optimiert, und die 30-%-Scheibe entschied DANN, ob der Feinschliff genommen
+ *    wird - und lieferte zugleich die Filter-Bilanz, die als Beleg berichtet wurde.
+ * 3. "ZWEI NAECHTE" WAREN EINE MESSUNG: Bei einem rollenden Fenster auf
+ *    60-Minuten-Kerzen bringt eine Nacht rund 0,4 % neue Kerzen. */
+(function () {
+  console.log('\n46) Messkette: Zufallshuerde, getrennte Scheiben, echter Zuwachs');
+  var dep = fs.readFileSync(__dirname + '/depot.js', 'utf8');
+
+  // --- 1) Die Zufallshuerde wird wirklich gerechnet, nicht nur erwaehnt ---
+  ok(/results\.zufall = Q\.bestOfN\(/.test(dep),
+     'Zufall: die Rangliste bekommt eine bestOfN-Probe (vorher: gar keine)');
+  ok(/fineZufall = Q\.bestOfN\(/.test(dep),
+     'Zufall: auch der 90er-Feinschliff bekommt eine - dort wird ein zweites Mal ausgewaehlt');
+  ok(/var zufaellig = rec\.ueberzufaellig === false;/.test(dep),
+     'Zufall: das Ergebnis wird zu einer Entscheidung, nicht nur angezeigt');
+  ok(/\} else if \(zufaellig\) \{[\s\S]{0,400}a\.pending = null/.test(dep),
+     'Zufall: faellt der Sieger durch, wird NICHTS vorgemerkt');
+
+  /* Und jetzt die Probe aufs Exempel: bestOfN muss reines Rauschen als solches
+   * erkennen und einen echten Ausreisser durchlassen. Gerechnet, nicht behauptet. */
+  var rausch = [];
+  for (var i = 0; i < 56; i++) rausch.push(Math.sin(i * 7.13) * 4);   // fest, kein Zufallsgenerator
+  var uR = Q.bestOfN(rausch);
+  ok(uR && uR.n === 56, 'Zufallsprobe: 56 Kandidaten gehen hinein  [' + (uR && uR.n) + ']');
+  ok(uR && uR.ueberzufaellig === false,
+     'Zufallsprobe: reines Rauschen aus 56 Kandidaten gilt NICHT als ueberzufaellig');
+  var mitAusreisser = rausch.slice(); mitAusreisser[0] = 40;
+  var uA = Q.bestOfN(mitAusreisser);
+  ok(uA && uA.ueberzufaellig === true,
+     'Zufallsprobe: ein echter Ausreisser kommt durch - die Huerde ist keine Mauer');
+  ok(uR.zufallsMedian > 0 && uR.bester <= uR.zufallsP95,
+     'Zufallsprobe: der Beste aus Rauschen liegt unter der 95-%-Marke des Zufalls  [' +
+     uR.bester + ' <= ' + uR.zufallsP95 + ']');
+
+  // --- 2) Drei Scheiben statt zwei ---
+  ok(/var wahlMap = sliceMap\(map, cut, cut2/.test(dep) && /var belegMap = sliceMap\(map, cut2, span\[1\]/.test(dep),
+     'Scheiben: es gibt eine eigene Wahl- UND eine eigene Belegscheibe');
+  ok(/btIntraday\(wahlMap, Object\.assign\(\{\}, commonIv, top\.mode\.opts, bestFine\.g\)\)/.test(dep),
+     'Scheiben: die Entscheidung ueber den Feinschliff faellt auf der Wahlscheibe');
+  /* Der Kern: Die Belegscheibe darf NIRGENDS eine Entscheidung tragen. Sie kommt
+   * genau dreimal vor - einmal beim Anlegen, einmal fuer die berichtete Zahl,
+   * zweimal fuer die Filter-Bilanz. In keiner davon steht ein Vergleich, der
+   * etwas auswaehlt. */
+  ok(!/useFine[\s\S]{0,120}belegMap/.test(dep) && !/belegMap[\s\S]{0,80}\?\s*bestFine/.test(dep),
+     'Scheiben: useFine wird NICHT auf der Belegscheibe entschieden');
+  ok(/var basisAb = await btIntraday\(belegMap, basisOpts\)/.test(dep),
+     'Scheiben: die Filter-Bilanz laeuft auf der unberuehrten Belegscheibe');
+  ok(!/btIntraday\(testMap,/.test(dep.slice(dep.indexOf('async function runCentral'), dep.indexOf('function applyCentralRec'))),
+     'Scheiben: in der Analyse-Zentrale gibt es kein doppelt benutztes testMap mehr');
+  ok(/scheiben: \{ trainTage: tageIn\(trainMap\), wahlTage: tageIn\(wahlMap\), belegTage: tageIn\(belegMap\) \}/.test(dep),
+     'Scheiben: ihre Groessen werden berichtet - eine Zahl ohne Massstab ist keine');
+
+  // --- 3) Echter Zuwachs statt "zwei Naechte" ---
+  ok(/var neueTage = \(typeof a\.lastRecTage === 'number'/.test(dep),
+     'Zuwachs: die Bestaetigung fragt, wie viele ungesehene Handelstage dazugekommen sind');
+  ok(/if \(neueTage != null && neueTage < 1\)/.test(dep),
+     'Zuwachs: ohne einen einzigen neuen Handelstag wird NICHT uebernommen');
+  ok(/Das ist eine \+\n?\s*'Messung, nicht zwei/.test(dep) || /Das ist eine ' \+\s*\n\s*'Messung, nicht zwei/.test(dep) ||
+     /Messung, nicht zwei/.test(dep),
+     'Zuwachs: und die Meldung sagt auch, warum');
+  ok(!/wartet auf Bestätigung durch die nächste Nacht-Messung/.test(dep),
+     'Zuwachs: die alte Formel "naechste Nacht bestaetigt" steht nicht mehr da');
+
+  /* Der Edge-Waechter geht bewusst den ANDEREN Weg: Er setzt neue Einstiege aus -
+   * eine schuetzende Handlung. Dort darf duenne Evidenz ausloesen, denn ein
+   * Fehlalarm kostet eine Pause, das Zoegern kostet Geld. Was sich aendert, ist
+   * der Anspruch: die Meldung behauptet keine zwei unabhaengigen Belege mehr. */
+  ok(/zuwachs: zuwachs, zuwachsPct: zuwachsPct/.test(dep),
+     'Waechter: der tatsaechliche Zuwachs wird mitgeschrieben');
+  ok(/KEIN unabhängiger zweiter Beleg/.test(dep),
+     'Waechter: die Meldung nennt die zweite Messung ausdruecklich keinen zweiten Beleg');
+  ok(/a\.edgeHistorie\[1\]\.verfall/.test(dep),
+     'Waechter: die Ausloeseschwelle bleibt bei zwei Messungen - schuetzen darf auf duenner Grundlage');
+  ok(!/in zwei Nächten hintereinander verfallen/.test(dep),
+     'Waechter: die alte, zu starke Formulierung ist weg');
+})();
+
 Promise.all(offeneProben).then(function () {
   console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
   process.exit(fails ? 1 : 0);
