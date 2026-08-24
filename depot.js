@@ -4727,137 +4727,15 @@ function huerdeAnzeigen() {
     drawLines(svg, [{ name: 'Depotwert', short: '', color: 'var(--series)', pts: eq }], null, base, { area: true, unit: ' $' });
   }
 
-  /* ================= Chart-Helfer: Achsen, Ticks, Hover ================= */
-  function niceTicks(lo, hi, n) {
-    var span = hi - lo;
-    if (span <= 0) return [lo];
-    var step = Math.pow(10, Math.floor(Math.log(span / n) / Math.LN10));
-    var err = span / n / step;
-    step *= err >= 7.5 ? 10 : err >= 3.5 ? 5 : err >= 1.5 ? 2 : 1;
-    var out = [];
-    for (var v = Math.ceil(lo / step) * step; v <= hi + step * 1e-6; v += step) out.push(Math.round(v * 1e6) / 1e6);
-    return out;
-  }
-  function fmtTick(v, span) {
-    if (Math.abs(v) >= 1000) return U.nf0.format(v);
-    if (span < 4) return U.nf2.format(v);
-    return U.nf0.format(v);
-  }
-  function fmtTimeTick(t, spanMs) {
-    var d = new Date(t);
-    if (spanMs <= 30 * 3600000) return d.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
-    if (spanMs <= 130 * 86400000) return d.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' });
-    return d.toLocaleDateString('de-DE', { month: '2-digit', year: '2-digit' });
-  }
-  function chartHover(e) {
-    var svg = e.currentTarget, c = svg.__chart, tip = document.getElementById('tip');
-    if (!c || !tip) return;
-    var rect = svg.getBoundingClientRect();
-    var mx = (e.clientX - rect.left) * (c.W / Math.max(1, rect.width));
-    var t = c.x0 + Math.max(0, Math.min(1, (mx - c.padL) / (c.plotW || 1))) * (c.x1 - c.x0);
-    var rows = [], cx = null;
-    c.series.forEach(function (s) {
-      if (!s.pts.length) return;
-      var best = 0, bd = Infinity;
-      for (var i = 0; i < s.pts.length; i++) { var d0 = Math.abs(s.pts[i][0] - t); if (d0 < bd) { bd = d0; best = i; } }
-      var p = s.pts[best];
-      if (cx === null) cx = p[0];
-      rows.push('<div style="display:flex; align-items:center; gap:6px;"><span style="width:8px;height:8px;border-radius:var(--r-kreis);background:' + s.color + ';display:inline-block;"></span>' +
-        '<span class="tt">' + U.esc(s.short || s.name) + '</span> <span class="tv">' + U.nf2.format(p[1]) + (c.unit || '') + '</span></div>');
-    });
-    if (cx === null) return;
-    var xh = svg.querySelector('.xhair');
-    if (xh) { xh.style.display = ''; var xpx = c.padL + (cx - c.x0) / (c.x1 - c.x0) * c.plotW; xh.setAttribute('x1', xpx); xh.setAttribute('x2', xpx); }
-    tip.style.display = 'block';
-    tip.innerHTML = '<div class="tt">' + fmtTimeTick(cx, c.x1 - c.x0) + (c.x1 - c.x0 > 30 * 3600000 ? ' · ' + new Date(cx).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }) + ' Uhr' : ' Uhr') + '</div>' + rows.join('');
-    var tw = tip.offsetWidth || 120;
-    tip.style.left = Math.min(window.innerWidth - tw - 12, e.clientX + 14) + 'px';
-    tip.style.top = (e.clientY + 14) + 'px';
-  }
-  function chartLeave(e) {
-    var tip = document.getElementById('tip');
-    if (tip) tip.style.display = 'none';
-    var xh = e.currentTarget.querySelector('.xhair');
-    if (xh) xh.style.display = 'none';
-  }
-
-  /* ================= Mehrserien-Chart (Achsen + Grid + Hover) ================= */
-  function drawLines(svg, seriesArr, legendEl, base, opts) {
-    opts = opts || {};
-    var W = svg.clientWidth || 560, H = svg.clientHeight || 150;
-    var padL = 8, padR = opts.padR != null ? opts.padR : 52, padT = 8, padB = 18;
-    svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
-    var all = [];
-    seriesArr.forEach(function (s) { all = all.concat(s.pts); });
-    if (all.length < 2) {
-      svg.innerHTML = '<text x="' + (W / 2) + '" y="' + (H / 2) + '" text-anchor="middle" fill="var(--muted)" font-size="12">Noch zu wenig Daten.</text>';
-      if (legendEl) legendEl.innerHTML = '';
-      svg.__chart = null;
-      return;
-    }
-    var x0 = Math.min.apply(null, all.map(function (p) { return p[0]; })), x1 = Math.max.apply(null, all.map(function (p) { return p[0]; }));
-    var ys = all.map(function (p) { return p[1]; });
-    if (base != null) ys = ys.concat([base]);
-    var y0 = Math.min.apply(null, ys), y1 = Math.max.apply(null, ys);
-    if (y1 - y0 < 1e-9) { y0 -= 1; y1 += 1; }
-    var yPad = (y1 - y0) * 0.06;
-    y0 -= yPad; y1 += yPad;
-    if (x1 - x0 < 1) x1 = x0 + 1;
-    var plotW = W - padL - padR, plotH = H - padT - padB;
-    function X(t) { return padL + (t - x0) / (x1 - x0) * plotW; }
-    function Y(v) { return H - padB - (v - y0) / (y1 - y0) * plotH; }
-    var html = '';
-    // Y-Gitter (haarfein, durchgezogen) + Werte-Beschriftung
-    var ticks = niceTicks(y0, y1, 4);
-    ticks.forEach(function (tv) {
-      html += '<line x1="' + padL + '" x2="' + (padL + plotW) + '" y1="' + Y(tv).toFixed(1) + '" y2="' + Y(tv).toFixed(1) + '" stroke="var(--grid)" stroke-width="1"></line>' +
-        '<text x="' + (padL + 2) + '" y="' + (Y(tv) - 3).toFixed(1) + '" fill="var(--muted)" font-size="9.5">' + fmtTick(tv, y1 - y0) + '</text>';
-    });
-    // X-Zeitachse: 4 Beschriftungen, keine vertikalen Linien
-    for (var xi = 0; xi <= 3; xi++) {
-      var tx = x0 + (x1 - x0) * xi / 3;
-      var anchor = xi === 0 ? 'start' : xi === 3 ? 'end' : 'middle';
-      html += '<text x="' + X(tx).toFixed(1) + '" y="' + (H - 5) + '" text-anchor="' + anchor + '" fill="var(--muted)" font-size="9.5">' + fmtTimeTick(tx, x1 - x0) + '</text>';
-    }
-    if (base != null) html += '<line x1="' + padL + '" x2="' + (padL + plotW) + '" y1="' + Y(base) + '" y2="' + Y(base) + '" stroke="var(--baseline)" stroke-dasharray="4 4" stroke-width="1"></line>';
-    // Flächenfüllung (nur Einzelserie, ~10 % Deckung)
-    if (opts.area && seriesArr.length === 1 && seriesArr[0].pts.length > 1) {
-      var s0 = seriesArr[0];
-      var dA = s0.pts.map(function (p, i) { return (i ? 'L' : 'M') + X(p[0]).toFixed(1) + ' ' + Y(p[1]).toFixed(1); }).join(' ');
-      html += '<path d="' + dA + ' L' + X(s0.pts[s0.pts.length - 1][0]).toFixed(1) + ' ' + (H - padB) + ' L' + X(s0.pts[0][0]).toFixed(1) + ' ' + (H - padB) + ' Z" fill="' + s0.color + '" opacity="0.10"></path>';
-    }
-    // Linien + Endpunkte
-    var endLabels = [];
-    seriesArr.forEach(function (s) {
-      if (s.pts.length < 2) return;
-      var d = s.pts.map(function (p, i) { return (i ? 'L' : 'M') + X(p[0]).toFixed(1) + ' ' + Y(p[1]).toFixed(1); }).join(' ');
-      var last = s.pts[s.pts.length - 1];
-      html += '<path d="' + d + '" fill="none" stroke="' + s.color + '" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"></path>';
-      html += '<circle cx="' + X(last[0]).toFixed(1) + '" cy="' + Y(last[1]).toFixed(1) + '" r="4" fill="' + s.color + '" stroke="var(--surface)" stroke-width="2"></circle>';
-      if (s.short) endLabels.push({ x: X(last[0]) + 8, y: Y(last[1]) + 3.5, txt: s.short, color: s.color });
-    });
-    // End-Beschriftungen: Kollisionen vermeiden (min. 13 px Abstand), Text in Textfarbe
-    endLabels.sort(function (a, b) { return a.y - b.y; });
-    for (var li = 1; li < endLabels.length; li++) {
-      if (endLabels[li].y - endLabels[li - 1].y < 13) endLabels[li].y = endLabels[li - 1].y + 13;
-    }
-    endLabels.forEach(function (l) {
-      html += '<text x="' + l.x.toFixed(1) + '" y="' + Math.min(H - padB, l.y).toFixed(1) + '" fill="var(--ink-2)" font-size="10" font-weight="600">' + U.esc(l.txt) + '</text>';
-    });
-    // Crosshair fürs Hover
-    html += '<line class="xhair" x1="0" x2="0" y1="' + padT + '" y2="' + (H - padB) + '" stroke="var(--baseline)" stroke-width="1" style="display:none;"></line>';
-    svg.innerHTML = html;
-    svg.__chart = { W: W, H: H, padL: padL, plotW: plotW, x0: x0, x1: x1, series: seriesArr, unit: opts.unit || '' };
-    if (!svg.__hoverBound) {
-      svg.__hoverBound = true;
-      svg.style.cursor = 'crosshair';
-      svg.addEventListener('mousemove', chartHover);
-      svg.addEventListener('mouseleave', chartLeave);
-    }
-    if (legendEl) legendEl.innerHTML = seriesArr.length > 1 ? seriesArr.map(function (s) {
-      return '<span style="display:inline-flex; align-items:center; gap:5px; margin-right:14px;"><span style="width:10px;height:10px;border-radius:var(--r-klein);background:' + s.color + ';display:inline-block;"></span>' + U.esc(s.name) + '</span>';
-    }).join('') : '';
-  }
+  /* ================= Chart-Zeichnung =================
+   * Wohnt seit dem zweiten Schnitt (Audit 22) in chart.js - sie fasst weder D noch
+   * eine Position noch eine Kursquelle an, sondern bekommt Punkte und einen
+   * SVG-Knoten. Hier stehen nur noch die Namen, damit die rund 20 Aufrufstellen
+   * unveraendert bleiben konnten. */
+  var niceTicks = window.Chart.niceTicks;
+  var fmtTick = window.Chart.fmtTick;
+  var fmtTimeTick = window.Chart.fmtTimeTick;
+  var drawLines = window.Chart.drawLines;
 
   /* ================= Parallel-Strategien-Auswertung ================= */
   function stratOf(t) { return t.strategy === 'intraday' ? 'intraday' : 'hourly'; }
@@ -5355,16 +5233,25 @@ function huerdeAnzeigen() {
   }
 
   /* ================= Strategie-Labor (Walk-Forward über alle Modi) ================= */
+  /* Die Fenster-Rechnung wohnt seit dem dritten Schnitt (Audit 22) in messfenster.js:
+   * sieben reine Funktionen, die entscheiden, welche Kerze zum Optimieren, welche zum
+   * Auswaehlen und welche zum Belegen zaehlt. Sie fassen nichts an - deshalb liessen
+   * sie sich verschieben, waehrend der Rest der Messmaschine hier bleibt (er ruft acht
+   * Funktionen dieser Datei auf und schreibt in D). Hier stehen nur noch die Namen. */
+  var warmlaufBars = window.Messfenster.warmlaufBars;
+  var handelsTage = window.Messfenster.handelsTage;
+  var mapSpan = window.Messfenster.mapSpan;
+  var tagesGrenze = window.Messfenster.tagesGrenze;
+  var tagesScheiben = window.Messfenster.tagesScheiben;
+  var sliceMap = window.Messfenster.sliceMap;
+  var tageIn = window.Messfenster.tageIn;
+
 
   /* Prüfscheiben werden nach HANDELSTAGEN geschnitten, nicht nach Kalenderzeit.
      Vorher lag bei 1-Minuten-Daten (5 Handelstage Historie) regelmäßig eine ganze Scheibe
      im Wochenende – gemessen: Scheibe 2 hatte 0 Bars, Scheibe 3 nur 25 und fiel durch die
      60-Bar-Hürde. Von vier Scheiben blieben zwei übrig, und das Urteil "robust" verlangt
      drei positive – es war schlicht unerreichbar, die Selbst-Optimierung damit wirkungslos. */
-  var WARMLAUF_BARS = 400;   // deckt Kanal (380), EMA100 und Wellen-Score (120) ab
-  /** Warmlauf je Zeitrahmen: 400 Stundenkerzen waeren ~61 Handelstage und wuerden die
-   *  komplette 60m-Historie auffressen - dort reichen 150 Bars (EMA100 + Wellen-Score). */
-  function warmlaufBars(iv) { return iv === '60m' ? 150 : WARMLAUF_BARS; }
   // Hürden für ein belastbares Urteil. Bewusst deutlich höher als früher (12 Trades):
   // Yahoo gibt Intraday nur ~41 Handelstage (5m/15m) bzw. 5 Tage (1m) her – auf 1-Minuten-
   // Daten ist damit KEIN belastbares Urteil möglich, und das soll die App auch so sagen,
@@ -5372,62 +5259,7 @@ function huerdeAnzeigen() {
   var MIN_OOS_TRADES = 30;
   var MIN_OOS_TAGE = 12;
 
-  /** Alle Handelstage (UTC) der Datenbasis, aufsteigend. */
-  function handelsTage(map) {
-    var set = {};
-    Object.keys(map).forEach(function (s) {
-      map[s].forEach(function (p) { set[new Date(p[0]).toISOString().slice(0, 10)] = 1; });
-    });
-    return Object.keys(set).sort();
-  }
-  /** Teilt die Handelstage in n gleich große Blöcke: [{von, bis, tage}] als ms-Grenzen. */
-  function tagesScheiben(map, n) {
-    var tage = handelsTage(map);
-    if (tage.length < n) return [];
-    var out = [];
-    for (var i = 0; i < n; i++) {
-      var a = Math.floor(tage.length * i / n), b = Math.floor(tage.length * (i + 1) / n);
-      if (b <= a) return [];
-      out.push({ von: Date.parse(tage[a] + 'T00:00:00Z'), bis: Date.parse(tage[b - 1] + 'T23:59:59.999Z'), tage: b - a });
-    }
-    return out;
-  }
-  /** Zeitgrenze nach einem Anteil der Handelstage (0–1). */
-  function tagesGrenze(map, anteil) {
-    var tage = handelsTage(map);
-    if (!tage.length) return null;
-    var i = Math.min(tage.length - 1, Math.max(0, Math.floor(tage.length * anteil)));
-    return Date.parse(tage[i] + 'T00:00:00Z');
-  }
 
-  /** Ausschnitt [from, to] je Symbol – der Warmlauf zählt in BARS, nicht in Millisekunden.
-   *  Vorher war er als Kalenderzeit gerechnet: 160 Bars × 5 Minuten = 13 Stunden Wanduhr,
-   *  die über ein Wochenende NULL zusätzliche Bars ergeben. Jede Scheibe startete dadurch
-   *  kalt – Wellen-Score (120 Bars), EMA100 (100) und Kanal (380) waren am Anfang blind. */
-  function sliceMap(map, from, to, warmupBars) {
-    var out = {};
-    var w = warmupBars || 0;
-    Object.keys(map).forEach(function (s) {
-      var arr = map[s], erst = -1, letzt = -1;
-      for (var i = 0; i < arr.length; i++) {
-        if (arr[i][0] > to) break;
-        if (erst < 0 && arr[i][0] >= from) erst = i;
-        letzt = i;
-      }
-      if (erst < 0 || letzt < erst) return;
-      var sl = arr.slice(Math.max(0, erst - w), letzt + 1);
-      if (sl.length > 60) out[s] = sl;
-    });
-    return out;
-  }
-  function mapSpan(map) {
-    var t0 = Infinity, t1 = -Infinity;
-    Object.keys(map).forEach(function (s) {
-      var a = map[s];
-      if (a.length) { t0 = Math.min(t0, a[0][0]); t1 = Math.max(t1, a[a.length - 1][0]); }
-    });
-    return [t0, t1];
-  }
 
   /** MESS-Universum: bewusst breiter als das HANDELS-Universum. Mehr liquide Werte auf
    *  denselben Handelstagen bedeuten ein Vielfaches an Out-of-Sample-Trades je Messung –
@@ -6260,10 +6092,6 @@ function huerdeAnzeigen() {
   }
 
   /* ================= Analyse-Zentrale ================= */
-  /** Handelstage in einer Kurs-Scheibe - fuer die ehrliche Angabe, worauf ein Urteil steht. */
-  function tageIn(m) {
-    try { return handelsTage(m).length; } catch (e) { return null; }
-  }
   var centralRunning = false;
   /** opts: {silent:true, status:fn} → rechnet ohne UI und meldet den Fortschritt per Callback. */
   async function runCentral(opts) {

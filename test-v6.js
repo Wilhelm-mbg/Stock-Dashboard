@@ -5017,6 +5017,181 @@ console.log('\n41) Zustaende: was die App sagt, wenn etwas fehlt oder klemmt');
      'Ladereihenfolge: boerse.js vor seinen beiden Nutzern');
 })();
 
+/* ================= 49. Die Schnitte aus depot.js =================
+ * Audit 22 nannte drei. Der erste (Reiter-Navigation) lief in Stufe 2.
+ *
+ * ZWEITER: die Chart-Zeichnung. Sie fasst weder D noch eine Position noch eine
+ * Kursquelle an - Punkte rein, SVG raus. Deshalb ein WOERTLICHER Umzug: keine
+ * Formel, kein Aufruf, kein Zahlenwert angefasst.
+ *
+ * DRITTER: die Messmaschine. Sie NICHT im Ganzen zu verschieben, war die
+ * Entscheidung: 1.117 Zeilen, die acht Funktionen aus dem Rest von depot.js
+ * aufrufen und in D schreiben. Ein Umzug haette acht Durchreichungen gebraucht -
+ * dieselbe Verflechtung, nur ueber Dateigrenzen verteilt. Verschoben ist der
+ * Teil, der wirklich rein ist: die Fenster-Rechnung. Sie entscheidet, welche
+ * Kerze zum Optimieren, welche zum Auswaehlen und welche zum Belegen zaehlt -
+ * und war bisher nur ueber einen kompletten Messlauf pruefbar. */
+(function () {
+  console.log('\n49) depot.js geschnitten: Chart und Messfenster');
+  /* chart.js verlangt window.U und bricht sonst laut ab - genau so soll es sein.
+   * Im Test stellen wir die Formate selbst; geprueft wird hier die RECHNUNG
+   * (Tick-Stufen, Zeitachse), nicht die Lokalisierung. */
+  globalThis.U = {
+    nf0: { format: function (v) { return String(Math.round(v)); } },
+    nf2: { format: function (v) { return (Math.round(v * 100) / 100).toFixed(2); } },
+    esc: function (x) { return String(x); }
+  };
+  var C = require(__dirname + '/chart.js');
+  var M = require(__dirname + '/messfenster.js');
+  var dep = fs.readFileSync(__dirname + '/depot.js', 'utf8');
+
+  // ---------- Achsen: reine Rechnerei mit Rundungsfallen ----------
+  ok(typeof C.niceTicks === 'function', 'Chart: niceTicks laeuft jetzt in Node');
+  var t1 = C.niceTicks(0, 100, 4);
+  ok(t1.length >= 3 && t1[0] === 0 && t1[t1.length - 1] === 100,
+     'Ticks: 0 bis 100 ergibt runde Stufen  [' + t1.join(', ') + ']');
+  var t2 = C.niceTicks(9.998, 10.002, 4);
+  ok(t2.length >= 2 && t2.every(function (v) { return v >= 9.99 && v <= 10.01; }),
+     'Ticks: eine winzige Spanne ergibt trotzdem Stufen  [' + t2.join(', ') + ']');
+  ok(C.niceTicks(5, 5, 4).length === 1, 'Ticks: ohne Spanne genau eine Marke, keine Endlosschleife');
+  ok(C.niceTicks(10, 5, 4).length === 1, 'Ticks: verdrehte Grenzen ergeben keine Endlosschleife');
+  var t3 = C.niceTicks(0, 1e7, 4);
+  ok(t3.length >= 3 && t3.length <= 9, 'Ticks: auch bei zehn Millionen bleibt die Zahl der Marken lesbar  [' + t3.length + ']');
+  /* Die Stufen muessen GLEICHMAESSIG sein - eine krumme Leiter faellt am Chart nicht
+   * auf, macht aber jede abgelesene Zahl unzuverlaessig. */
+  var gl = C.niceTicks(0, 100, 4);
+  var abst = [];
+  for (var i = 1; i < gl.length; i++) abst.push(Math.round((gl[i] - gl[i - 1]) * 1e6));
+  ok(new Set(abst).size === 1, 'Ticks: alle Abstaende gleich  [' + abst[0] / 1e6 + ']');
+
+  ok(/^\d/.test(C.fmtTimeTick(Date.UTC(2026, 7, 24, 12), 3600000)) ||
+     C.fmtTimeTick(Date.UTC(2026, 7, 24, 12), 3600000).indexOf(':') > 0,
+     'Zeitachse: kurze Spanne zeigt die Uhrzeit');
+  ok(C.fmtTimeTick(Date.UTC(2026, 7, 24), 60 * 86400000).indexOf('.') > 0,
+     'Zeitachse: mittlere Spanne zeigt Tag und Monat');
+  /* Bewusst OHNE das Trennzeichen geprueft: Node liefert fuer de-DE "08/26", der
+   * Browser "08.26" - eine ICU-Eigenheit der Testumgebung, kein Unterschied in der
+   * App. Geprueft wird, dass Monat UND Jahr dastehen und der Tag verschwindet. */
+  var langTxt = C.fmtTimeTick(Date.UTC(2026, 7, 24), 900 * 86400000);
+  ok(/08/.test(langTxt) && /26/.test(langTxt) && !/24/.test(langTxt),
+     'Zeitachse: lange Spanne zeigt Monat und Jahr, nicht den Tag  [' + langTxt + ']');
+
+  ok(/var niceTicks = window\.Chart\.niceTicks;/.test(dep) && !/function niceTicks/.test(dep),
+     'Chart: depot.js haelt nur noch den Namen, nicht den Code');
+  ok(/throw new Error\('chart\.js braucht window\.U/.test(fs.readFileSync(__dirname + '/chart.js', 'utf8')),
+     'Chart: kein stiller Rueckfall auf Ersatz-Zahlenformate - der waere an einer Achse nie aufgefallen');
+
+  // ---------- Messfenster: hier entscheidet sich, was als Beleg zaehlt ----------
+  /* Eine gebaute Kursreihe mit BEKANNTER Antwort: zehn Handelstage, je drei Kerzen. */
+  /* Sechseinhalb Kerzen je Handelstag - die Dichte eines 60m-Zeitrahmens. Der erste
+   * Wurf dieses Tests nahm DREI und lief prompt in die 60-Kerzen-Schwelle von
+   * sliceMap: Wahl- und Belegscheibe kamen leer zurueck. Das war kein Fehler im
+   * Code, sondern eine unrealistische Testreihe - nachgerechnet ist die knappste
+   * echte Belegscheibe (15m, 60 Tage Historie) 234 Kerzen gross. */
+  function reihe(tage) {
+    var arr = [];
+    for (var d = 0; d < tage; d++) {
+      for (var h = 0; h < 7; h++) arr.push([Date.UTC(2026, 0, 5 + d, 14 + h), 100 + d]);
+    }
+    return { AAA: arr, BBB: arr.slice() };
+  }
+  var m10 = reihe(10);
+  ok(M.handelsTage(m10).length === 10, 'Fenster: zehn Tage rein, zehn Tage erkannt');
+  ok(M.handelsTage(m10)[0] === '2026-01-05' && M.handelsTage(m10)[9] === '2026-01-14',
+     'Fenster: die Tage stehen aufsteigend und stimmen');
+  ok(M.tageIn(m10) === 10 && M.tageIn({}) === 0, 'Fenster: tageIn zaehlt dasselbe');
+
+  var sp = M.mapSpan(m10);
+  ok(sp[0] === Date.UTC(2026, 0, 5, 14) && sp[1] === Date.UTC(2026, 0, 14, 20),
+     'Fenster: die Spanne reicht von der ersten bis zur letzten Kerze');
+  ok(M.mapSpan({}) [0] === Infinity, 'Fenster: eine leere Karte ergibt keine Spanne, sondern Infinity');
+
+  /* Der Kern: Die Grenze wird nach HANDELSTAGEN gezogen, nicht nach Kalenderzeit.
+   * Bei 70 % von zehn Tagen ist das der Beginn des achten - Index 7. */
+  var g70 = M.tagesGrenze(m10, 0.7);
+  ok(g70 === Date.UTC(2026, 0, 12), 'Fenster: 70 % von zehn Handelstagen ist der Beginn des achten  [' +
+     new Date(g70).toISOString().slice(0, 10) + ']');
+  ok(M.tagesGrenze(m10, 0.85) === Date.UTC(2026, 0, 13), 'Fenster: 85 % ist der Beginn des neunten');
+  ok(M.tagesGrenze(m10, 0) === Date.UTC(2026, 0, 5) && M.tagesGrenze(m10, 1) === Date.UTC(2026, 0, 14),
+     'Fenster: 0 und 1 treffen den ersten und den letzten Tag, nicht daneben');
+  ok(M.tagesGrenze({}, 0.7) === null, 'Fenster: ohne Daten keine Grenze');
+
+  /* Und die Probe, warum das ueberhaupt zaehlt: Die drei Scheiben der Analyse-Zentrale
+   * duerfen sich NICHT ueberlappen. Faellt eine Grenze um einen Tag falsch, wandert ein
+   * Tag aus der Belegscheibe in die Trainingsscheibe - und das Ergebnis sieht besser
+   * aus, ohne dass irgendwo ein Fehler auffiele. */
+  var m60 = reihe(60);
+  var spanne = M.mapSpan(m60);
+  var cut = M.tagesGrenze(m60, 0.7), cut2 = M.tagesGrenze(m60, 0.85);
+  var train = M.sliceMap(m60, spanne[0], cut, 0);
+  var wahl = M.sliceMap(m60, cut, cut2, 0);
+  var beleg = M.sliceMap(m60, cut2, spanne[1], 0);
+  var tT = M.handelsTage(train), tW = M.handelsTage(wahl), tB = M.handelsTage(beleg);
+  ok(tT.length + tW.length + tB.length === 60,
+     'Scheiben: die drei ergeben zusammen wieder alle 60 Tage  [' + tT.length + '+' + tW.length + '+' + tB.length + ']');
+  ok(tT[tT.length - 1] < tW[0] && tW[tW.length - 1] < tB[0],
+     'Scheiben: sie ueberlappen sich an keiner Stelle');
+  ok(tT.length === 42 && tW.length === 9 && tB.length === 9,
+     'Scheiben: 70/15/15 kommt bei 60 Tagen als 42/9/9 heraus  [' + tT.length + '/' + tW.length + '/' + tB.length + ']');
+
+  /* Der Warmlauf zaehlt in BARS, nicht in Millisekunden - das war schon einmal ein
+   * Fehler (13 Stunden Wanduhr ueber ein Wochenende ergeben null zusaetzliche Bars). */
+  var ohne = M.sliceMap(m60, cut2, spanne[1], 0);
+  var mit = M.sliceMap(m60, cut2, spanne[1], 30);
+  ok(mit.AAA.length === ohne.AAA.length + 30,
+     'Warmlauf: 30 angeforderte Bars sind genau 30 zusaetzliche Kerzen  [' +
+     ohne.AAA.length + ' -> ' + mit.AAA.length + ']');
+  ok(M.sliceMap(m60, spanne[0], cut, 30).AAA.length === M.sliceMap(m60, spanne[0], cut, 0).AAA.length,
+     'Warmlauf: am ANFANG der Historie gibt es nichts vorzuladen - und es wird nicht negativ geschnitten');
+  ok(M.warmlaufBars('60m') === 150 && M.warmlaufBars('5m') === 400 && M.warmlaufBars('1m') === 400,
+     'Warmlauf: 60m bekommt 150 Bars, alles andere 400');
+  /* Genau hier waere der erste Wurf dieses Moduls gescheitert: WARMLAUF_BARS blieb in
+   * depot.js zurueck, warmlaufBars gab fuer alles ausser 60m undefined - und
+   * Math.max(0, erst - undefined) ist NaN, slice(NaN, n) faengt bei 0 an. Jede Scheibe
+   * waere lautlos ab dem ersten Bar der Historie gelaufen. */
+  ok(M.warmlaufBars('5m') !== undefined && typeof M.warmlaufBars('5m') === 'number',
+     'Warmlauf: die Konstante ist mit umgezogen - sonst waere der Rueckgabewert undefined');
+
+  /* Zu duenne Symbole fliegen raus - sonst rechnet die Messung auf zehn Kerzen.
+   * Das passiert STILL: sliceMap laesst das Symbol einfach weg. */
+  var duenn = { GUT: m60.AAA, DUENN: m60.AAA.slice(0, 20) };
+  var gefiltert = M.sliceMap(duenn, spanne[0], spanne[1], 0);
+  ok(!!gefiltert.GUT && !gefiltert.DUENN,
+     'Scheiben: ein Symbol mit 60 Kerzen oder weniger wird verworfen, nicht mitgeschleppt');
+  /* SPERRKLINKE zu Audit 25: Die Belegscheibe ist dort von 30 % auf 15 % geschrumpft.
+   * Wird sie noch kleiner, koennten Symbole unter die 60-Kerzen-Schwelle rutschen und
+   * LAUTLOS aus dem Beleg verschwinden. Nachgerechnet fuer die vier Zeitrahmen mit der
+   * Historie, die Yahoo hergibt (24.08.2026):
+   *     1m    7 Tage ->  1 Tag  =  390 Kerzen
+   *     5m   60 Tage ->  9 Tage =  702 Kerzen
+   *     15m  60 Tage ->  9 Tage =  234 Kerzen   <- die knappste
+   *     60m 260 Tage -> 39 Tage =  254 Kerzen
+   * Der Abstand zur Schwelle ist also fast vierfach. Diese Zeile wird rot, wenn er
+   * es nicht mehr ist. */
+  var knappste = Math.round(Math.floor(60 * 0.15) * 26);   // 15m: 26 Kerzen je Handelstag
+  ok(knappste > 60 * 3,
+     'Belegscheibe: auch der knappste Zeitrahmen bleibt weit ueber der 60-Kerzen-Schwelle  [' +
+     knappste + ' Kerzen]');
+
+  var sch = M.tagesScheiben(m60, 9);
+  ok(sch.length === 9, 'Walk-Forward: neun Scheiben aus 60 Tagen');
+  ok(sch.reduce(function (a, x) { return a + x.tage; }, 0) === 60, 'Walk-Forward: sie decken alle 60 Tage ab');
+  ok(sch.every(function (x, i2) { return i2 === 0 || x.von > sch[i2 - 1].bis; }),
+     'Walk-Forward: keine Scheibe faengt vor dem Ende der vorigen an');
+  ok(M.tagesScheiben(m10, 20).length === 0, 'Walk-Forward: weniger Tage als Scheiben ergibt keine Scheiben');
+
+  // ---------- Was in depot.js bleiben MUSSTE ----------
+  ok(/var sliceMap = window\.Messfenster\.sliceMap;/.test(dep) && !/function sliceMap/.test(dep),
+     'Messfenster: depot.js haelt nur noch die Namen');
+  ok(/async function runCentral/.test(dep) && /async function labCompute/.test(dep),
+     'Messfenster: die Maschine selbst bleibt in depot.js - sie ruft acht Funktionen von dort und schreibt in D');
+  var htmlS = fs.readFileSync(__dirname + '/index.html', 'utf8');
+  ok(htmlS.indexOf('app-shell.js') < htmlS.indexOf('chart.js'),
+     'Ladereihenfolge: chart.js NACH app-shell.js - dort entsteht window.U');
+  ok(htmlS.indexOf('messfenster.js') < htmlS.indexOf('src="depot.js"'),
+     'Ladereihenfolge: messfenster.js vor depot.js');
+})();
+
 Promise.all(offeneProben).then(function () {
   console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
   process.exit(fails ? 1 : 0);
