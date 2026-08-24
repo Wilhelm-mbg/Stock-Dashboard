@@ -491,18 +491,103 @@ console.log('\n17) Kapitalschutz: Kill-Switch, Positionsgroessen-Wachhund, Stale
 (function () {
   var depotSrc = fs.readFileSync(__dirname + '/depot.js', 'utf8');
 
-  // --- 1) Kill-Switch ---
-  ok(/function killSwitchPruefen/.test(depotSrc), 'Kill-Switch: Funktion existiert');
+  // --- 1) Kill-Switch: die Regel wird AUSGEFUEHRT, nicht gelesen ---
+  /* Bis 8.24.5 stand hier eine Textsuche plus eine Nachbau-Formel mit dem Kommentar
+   * "identische Formel wie im Produktcode". Zwei Kopien derselben Regel - und die
+   * Pruefung faellt genau dann aus, wenn sie gebraucht wird: aendert jemand die Formel
+   * in depot.js, rechnet der Test weiter mit der alten und bleibt gruen. Seit die
+   * Entscheidungen in risiko.js stehen (ohne D, ohne DOM), laeuft hier der ECHTE Code. */
+  var Ri = require(__dirname + '/risiko.js');
+
+  ok(/function killSwitchPruefen/.test(depotSrc), 'Kill-Switch: die Nebenwirkungen liegen weiter in depot.js');
   ok(/HEALTH\.scans\+\+[\s\S]{0,300}killSwitchPruefen\(now\)/.test(depotSrc),
      'Kill-Switch: wird im Intraday-Scan aufgerufen, vor jeder Signalpruefung');
   ok(/closeTrade\(p, sp, now, grund\)/.test(depotSrc), 'Kill-Switch: stellt offene Positionen wirklich glatt');
   ok(/killSwitchAktiv\(\)\) \{ patienceAdd\('Kill-Switch/.test(depotSrc), 'Kill-Switch: sperrt neue Einstiege bis Tagesende');
   ok(/risk: \{ maxPos: 8, dayLossPct: 3,/.test(depotSrc), 'Kill-Switch: Standard-Tagesverlustlimit steht auf 3 %');
-  // Die Ausloese-Regel selbst nachrechnen (identische Formel wie im Produktcode)
-  function loestAus(eq, start, limit) { return start > 0 && (eq / start - 1) * 100 <= -limit; }
-  ok(loestAus(9700, 10000, 3) === true,  'Kill-Switch-Regel: −3,0 % bei Limit 3 loest aus');
-  ok(loestAus(9701, 10000, 3) === false, 'Kill-Switch-Regel: −2,99 % loest noch nicht aus');
-  ok(loestAus(9000, 10000, 3) === true,  'Kill-Switch-Regel: −10 % loest erst recht aus');
+
+  function ks(eq, start, limit) { return Ri.killSwitchFaellig({ risk: { dayLossPct: limit }, dayStartEq: start }, eq); }
+  ok(ks(9700, 10000, 3).faellig === true,  'Kill-Switch: −3,0 % bei Limit 3 loest aus');
+  ok(ks(9701, 10000, 3).faellig === false, 'Kill-Switch: −2,99 % loest noch nicht aus');
+  ok(ks(9000, 10000, 3).faellig === true,  'Kill-Switch: −10 % loest erst recht aus');
+  ok(ks(10500, 10000, 3).faellig === false, 'Kill-Switch: ein Gewinntag loest nie aus');
+  /* Die drei Wege, auf denen der Schalter NICHT ausloesen darf. Jeder einzelne waere
+   * sonst ein Totalglattstellen aus dem Nichts - beim Erststart, nach einem Reset oder
+   * bei ausgeschaltetem Limit. */
+  ok(Ri.killSwitchFaellig({ risk: {}, dayStartEq: 10000 }, 100).faellig === false,
+     'Kill-Switch: ohne gesetztes Limit passiert nichts, egal wie tief der Stand');
+  ok(Ri.killSwitchFaellig({ risk: { dayLossPct: 3 }, dayStartEq: 0 }, 100).faellig === false,
+     'Kill-Switch: ohne Tagesstart wird nicht gerechnet (Erststart)');
+  ok(Ri.killSwitchFaellig({ risk: { dayLossPct: 3 }, dayStartEq: -5 }, 100).faellig === false,
+     'Kill-Switch: ein negativer Tagesstart loest nicht aus');
+  // Der Begruendungstext geht ins Protokoll und ins Warnband - er muss die Zahlen tragen
+  ok(/−3,?0? %|-3\.0 %/.test(ks(9700, 10000, 3).grund.replace('.', ',')) && /Limit −3 %/.test(ks(9700, 10000, 3).grund),
+     'Kill-Switch: die Begruendung nennt Verlust UND Limit');
+
+  // --- 1b) Positionslimit und Exposure-Deckel, ebenfalls ausgefuehrt ---
+  function darf(z, eq) { return Ri.darfOeffnen(z, eq); }
+  var vollesRisiko = { maxPos: 8, dayLossPct: 3, exposurePct: 40 };
+  ok(darf({ risk: vollesRisiko, positionen: 8, dayStartEq: 10000, cash: 10000 }, 10000).ok === false,
+     'Positionslimit: die achte Position ist die letzte');
+  ok(darf({ risk: vollesRisiko, positionen: 7, dayStartEq: 10000, cash: 10000 }, 10000).ok === true,
+     'Positionslimit: bei sieben ist noch Platz');
+  ok(darf({ risk: vollesRisiko, positionen: 0, dayStartEq: 10000, cash: 10000 }, 9700).ok === false,
+     'Tagesverlust: auch der Einstieg ist am Limit gesperrt, nicht nur der Kill-Switch');
+  /* 60 % Bestand bei 40 % Deckel: (10000-4000)/10000 = 60 %. */
+  ok(darf({ risk: vollesRisiko, positionen: 0, dayStartEq: 10000, cash: 4000 }, 10000).ok === false,
+     'Exposure: 60 % in Scheinen bei 40 % Deckel wird abgelehnt');
+  ok(darf({ risk: vollesRisiko, positionen: 0, dayStartEq: 10000, cash: 6500 }, 10000).ok === true,
+     'Exposure: 35 % in Scheinen bleibt erlaubt');
+  /* Der Divisionsschutz (eq > 0 ? ... : 0) ist nur ueber DIESEN Weg erreichbar: mit
+   * gesetztem Tagesstart faengt die Tagesverlust-Regel eine Equity von 0 vorher als
+   * −100 % ab. Ohne Tagesstart - Erststart, direkt nach einem Reset - laeuft es bis
+   * zum Exposure-Zweig durch, und dort darf nicht durch null geteilt werden. */
+  ok(darf({ risk: vollesRisiko, positionen: 0, dayStartEq: 0, cash: 4000 }, 0).ok === true,
+     'Exposure: bei Equity 0 ohne Tagesstart wird nicht durch null geteilt');
+  ok(darf({ risk: vollesRisiko, positionen: 0, dayStartEq: 10000, cash: 4000 }, 0).ok === false,
+     'Equity 0 mit Tagesstart ist ein Totalverlust und wird vorher als Tagesverlust gestoppt');
+  /* Die REIHENFOLGE der Pruefungen entscheidet, welchen Grund der Nutzer zu sehen
+   * bekommt. Liegen mehrere Gruende an, muss weiterhin der Stueckzahl-Grund gewinnen. */
+  var mehrfach = darf({ risk: vollesRisiko, positionen: 9, dayStartEq: 10000, cash: 0 }, 5000);
+  ok(mehrfach.ok === false && /Positionslimit/.test(mehrfach.why),
+     'Reihenfolge: bei mehreren Gruenden nennt die Meldung zuerst das Positionslimit');
+  // Der Rueckfall, wenn D.risk fehlt - er ist bewusst ein anderer als die Erstinstallation
+  ok(Ri.STANDARD.dayLossPct === 5 && Ri.STANDARD.maxPos === 8 && Ri.STANDARD.exposurePct === 40,
+     'Rueckfall ohne D.risk: 8 Positionen, 5 % Tagesverlust, 40 % Exposure');
+  ok(darf({ positionen: 8, dayStartEq: 10000, cash: 10000 }, 10000).ok === false,
+     'Rueckfall greift wirklich, wenn gar kein risk-Objekt da ist');
+  /* Die gefaehrlichste Fehlerart an dieser Stelle ist nicht "lehnt zu viel ab", sondern
+   * "laesst alles durch": undefined >= 8 ist falsch, (eq - undefined) ist NaN, und
+   * NaN >= 40 ist ebenfalls falsch - beide Sperren waeren offen. Ein einziger
+   * Tippfehler im Feldnamen an der Aufrufstelle genuegt dafuer. */
+  [
+    ['positionen fehlt', { risk: vollesRisiko, dayStartEq: 10000, cash: 10000 }, 10000],
+    ['cash fehlt',       { risk: vollesRisiko, positionen: 0, dayStartEq: 10000 }, 10000],
+    ['Equity fehlt',     { risk: vollesRisiko, positionen: 0, dayStartEq: 10000, cash: 10000 }, undefined],
+    ['Equity ist NaN',   { risk: vollesRisiko, positionen: 0, dayStartEq: 10000, cash: 10000 }, NaN],
+    ['gar kein Zustand', null, 10000]
+  ].forEach(function (f) {
+    var e = darf(f[1], f[2]);
+    ok(e.ok === false && /unvollständig/.test(e.why),
+       'Unvollstaendiger Zustand (' + f[0] + ') fuehrt zu KEINEM Einstieg, nicht zu freier Fahrt');
+  });
+  /* Kein throw: eine Ausnahme mitten im Scan wuerde den Durchlauf abbrechen - und damit
+   * auch die AUSSTIEGE, die in derselben Schleife stehen. */
+  ok((function () { try { darf(null, 10000); return true; } catch (e) { return false; } })(),
+     'Unvollstaendiger Zustand wirft nicht - sonst blieben auch die Ausstiege liegen');
+
+  // --- 1c) depot.js darf die Regeln nicht ein zweites Mal enthalten ---
+  /* Genau daran ist die alte Pruefung gescheitert: eine Kopie der Formel, die
+   * auseinanderlaufen kann. Es darf nur noch EINE geben. */
+  ok(!/dayPct <= -r\.dayLossPct/.test(depotSrc) && !/expo >= r\.exposurePct/.test(depotSrc),
+     'Kapitalschutz: die Formeln stehen nur noch in risiko.js, nicht doppelt in depot.js');
+  ok(/R\.darfOeffnen\(/.test(depotSrc) && /R\.killSwitchFaellig\(/.test(depotSrc),
+     'Kapitalschutz: depot.js ruft die echten Entscheidungen auf');
+  ok(/if \(!R\) throw new Error/.test(depotSrc),
+     'Kapitalschutz: fehlt risiko.js, bricht depot.js laut ab statt still ohne Schutz zu laufen');
+  var htmlLade = fs.readFileSync(__dirname + '/index.html', 'utf8');
+  ok(htmlLade.indexOf('risiko.js') < htmlLade.indexOf('src="depot.js"') && htmlLade.indexOf('risiko.js') > 0,
+     'Kapitalschutz: risiko.js wird vor depot.js geladen');
 
   // --- 2) Positionsgroesse: der Wachhund auf die Zahl der Stellen ---
   /* Der lokale KI-Pfad ist am 23.08.2026 entfernt worden (er lief laut Diagnose ueber
@@ -532,12 +617,20 @@ console.log('\n17) Kapitalschutz: Kill-Switch, Positionsgroessen-Wachhund, Stale
   var iOpen = depotSrc.indexOf('Kosten-Check: Bewegung deckt Kosten nicht', iScan);
   var iExit = depotSrc.indexOf('Stop-Loss erreicht', iScan);
   ok(iStale > iExit && iStale < iOpen, 'Stale-Schutz: sitzt nach der Ausstiegs-Logik und vor dem Einstieg');
-  // Die Frische-Regel nachrechnen (identische Formel)
-  function frisch(alterMin, barMin) { return alterMin <= barMin * 3; }
+  /* Auch hier die ECHTE Funktion, ueber echte Bars mit echten Zeitstempeln - nicht die
+   * Formel nachgebaut. Der Nachbau haette den Umgang mit leeren Bars nie geprueft. */
+  var jetztT = 1756000000000;
+  function bar(minAlt) { return [[jetztT - minAlt * 60000, 100]]; }
+  function frisch(alterMin, barMin) { return Ri.barsFrisch(bar(alterMin), barMin, jetztT).ok; }
   ok(frisch(14, 5) === true,  '5m-Chart: 14 Min alter Bar ist noch frisch');
   ok(frisch(16, 5) === false, '5m-Chart: 16 Min alter Bar ist zu alt (Grenze 15)');
+  ok(frisch(15, 5) === true,  '5m-Chart: genau 15 Min ist die Grenze und noch erlaubt');
   ok(frisch(200, 60) === false, '60m-Chart: 200 Min alter Bar ist zu alt (Grenze 180)');
   ok(frisch(2, 1) === true && frisch(4, 1) === false, '1m-Chart: Grenze liegt bei 3 Min');
+  ok(Ri.barsFrisch([], 5, jetztT).ok === false && Ri.barsFrisch(null, 5, jetztT).ok === false,
+     'Stale-Schutz: gar keine Bars gelten als NICHT frisch (kein Einstieg ins Leere)');
+  ok(Ri.barsFrisch(bar(42), 5, jetztT).alterMin === 42,
+     'Stale-Schutz: das gemeldete Alter stimmt - es steht in der Geduld-Bilanz');
 
   // --- 4) Regime darf pausieren ---
   ok(Array.isArray(Q.SETUP_ALLOW.pause) && Q.SETUP_ALLOW.pause.indexOf('keiner') !== -1,

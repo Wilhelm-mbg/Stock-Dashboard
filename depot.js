@@ -66,38 +66,29 @@
   var lastEqPoint = 0;
   var SENT = {}; // Sentiment-Historie je Symbol
 
-  /* ================= Risikomanagement ================= */
+  /* ================= Risikomanagement =================
+   * Die ENTSCHEIDUNGEN stehen in risiko.js: reine Funktionen ueber uebergebenen
+   * Zustand, ohne D, ohne DOM, ohne Netz - und damit in Node ausfuehrbar. Vorher lagen
+   * sie hier, wo die Testsuite sie nur als Text finden und die Formel danebenschreiben
+   * konnte; sie war damit blind gegen jede Aenderung der echten Formel. Was HIER
+   * bleibt, sind die Nebenwirkungen: Tagesstart fortschreiben, Positionen glattstellen,
+   * speichern, protokollieren. */
+  /* Fehlt das Modul, ist die Ladereihenfolge in index.html kaputt (risiko.js MUSS vor
+   * depot.js stehen). Dann lieber hier laut abbrechen als spaeter beim ersten Scan mit
+   * "Cannot read properties of null" - der Kapitalschutz waere in dem Moment aus. */
+  var R = (typeof window !== 'undefined' && window.Risiko) || null;
+  if (!R) throw new Error('risiko.js fehlt oder wird nach depot.js geladen - ohne das Modul gibt es keinen Kapitalschutz.');
   function ensureDay(eq) {
-    var today = new Date().toISOString().slice(0, 10);
+    var today = R.tagesSchluessel();
     if (D.dayKey !== today) { D.dayKey = today; D.dayStartEq = eq; }
   }
-  /** Ist der letzte Kursbalken noch frisch genug zum Handeln?
-   *  Bisher wurde das NIRGENDS geprueft: liefert Yahoo eingefrorene Kurse (Ausfall,
-   *  Feiertag, Symbol delisted), rechnete der Scanner unbeirrt weiter und haette auf
-   *  Stunden alten Kursen eroeffnet. Grenze: das Dreifache des Bar-Abstands - ein
-   *  fehlender Bar ist normal (duenner Handel), drei sind ein Datenproblem.
-   *  Gilt nur fuer EINSTIEGE. Ausstiege bleiben immer erlaubt: eine offene Position
-   *  bei schlechter Datenlage nicht schliessen zu koennen waere das groessere Risiko. */
-  function barsFrisch(bars, barMin, now) {
-    if (!bars || !bars.length) return { ok: false, alterMin: null };
-    var alterMin = (now - bars[bars.length - 1][0]) / 60000;
-    return { ok: alterMin <= barMin * 3, alterMin: Math.round(alterMin) };
-  }
+  function barsFrisch(bars, barMin, now) { return R.barsFrisch(bars, barMin, now); }
 
   /** Dürfen wir eine neue Position eröffnen? */
   function canOpen(eq) {
-    var r = D.risk || { maxPos: 8, dayLossPct: 5, exposurePct: 40 };
     ensureDay(eq);
-    if (D.positions.length >= (r.maxPos || 8)) return { ok: false, why: 'Positionslimit (' + r.maxPos + ') erreicht' };
-    if (r.dayLossPct && D.dayStartEq > 0) {
-      var dayPct = (eq / D.dayStartEq - 1) * 100;
-      if (dayPct <= -r.dayLossPct) return { ok: false, why: 'Risiko-Stopp: Tagesverlust ' + dayPct.toFixed(1) + ' % (Limit −' + r.dayLossPct + ' %)' };
-    }
-    if (r.exposurePct) {
-      var expo = eq > 0 ? (eq - D.cash) / eq * 100 : 0;
-      if (expo >= r.exposurePct) return { ok: false, why: 'Exposure-Limit: ' + Math.round(expo) + ' % in Scheinen (Limit ' + r.exposurePct + ' %)' };
-    }
-    return { ok: true };
+    return R.darfOeffnen({ risk: D.risk, positionen: D.positions.length,
+                           dayStartEq: D.dayStartEq, cash: D.cash }, eq);
   }
 
   /* ================= Kill-Switch: Tagesverlust-Limit =================
@@ -108,23 +99,25 @@
    * Erreichen ALLES sofort glatt und laesst den Handel bis Tagesende ruhen.
    * Bewusst rein deterministisch - keine KI, kein Ermessen, kein Netzwerk. */
   function killSwitchAktiv() {
-    var tag = new Date().toISOString().slice(0, 10);
-    return !!(D.killSwitch && D.killSwitch.day === tag);
+    return !!(D.killSwitch && D.killSwitch.day === R.tagesSchluessel());
   }
   /** Prueft das Limit und stellt bei Erreichen alle offenen Positionen glatt.
-   *  Rueckgabe: true, wenn der Handel heute gesperrt ist. */
+   *  Rueckgabe: true, wenn der Handel heute gesperrt ist.
+   *  Die Ausloese-ENTSCHEIDUNG trifft risiko.js; hier steht nur, was danach passiert. */
   function killSwitchPruefen(now) {
     if (!D) return false;
     if (killSwitchAktiv()) return true;
-    var r = D.risk || {};
-    if (!r.dayLossPct) return false;
+    // Frueher Ausstieg VOR equityNow()/ensureDay - unveraendert aus der alten Fassung:
+    // ohne gesetztes Limit soll dieser Weg den Tagesstart gar nicht erst anfassen.
+    if (!(D.risk && D.risk.dayLossPct)) return false;
     var eq = equityNow();
     ensureDay(eq);
-    if (!(D.dayStartEq > 0)) return false;
-    var tagPct = (eq / D.dayStartEq - 1) * 100;
-    if (tagPct > -r.dayLossPct) return false;
+    var urteil = R.killSwitchFaellig({ risk: D.risk, dayStartEq: D.dayStartEq }, eq);
+    if (!urteil.faellig) return false;
+    var tagPct = urteil.tagPct;
+    var r = D.risk || {};
     now = now || Date.now();
-    var grund = 'Kill-Switch: Tagesverlust-Limit (' + tagPct.toFixed(1) + ' %, Limit −' + r.dayLossPct + ' %)';
+    var grund = urteil.grund;
     var zu = [];
     D.positions.slice().forEach(function (p) {
       var sp = spotOf(p.sym) || p.entrySpot;
@@ -132,7 +125,7 @@
       zu.push(p.sym);
       closeTrade(p, sp, now, grund);
     });
-    D.killSwitch = { day: new Date().toISOString().slice(0, 10), at: now, pct: Math.round(tagPct * 10) / 10,
+    D.killSwitch = { day: R.tagesSchluessel(), at: now, pct: Math.round(tagPct * 10) / 10,
       limit: r.dayLossPct, n: zu.length, syms: zu, offenGeblieben: D.positions.length };
     HEALTH.killSwitch = (HEALTH.killSwitch || 0) + 1;
     if (!D.tuneLog) D.tuneLog = [];
