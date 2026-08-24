@@ -1292,6 +1292,18 @@ console.log('\n18) Datenbasis, Suchachsen und Zucht');
   ok(!/period1=/.test(d), 'kein period1-Aufruf mehr im Kursabruf');
   ok(A.TAGE_MAX && A.TAGE_MAX['60m'] >= 1000, 'Archiv behaelt 60m lange genug fuer 730 Handelstage', A.TAGE_MAX['60m']);
   ok(A.TAGE_MAX['15m'] >= 120 && A.TAGE_MAX['5m'] >= 120, 'Archiv behaelt 5m/15m ueber das Yahoo-Fenster hinaus');
+  /* Das 1m-Fenster muss zur FRAGE passen, nicht nur zur Quelle. Bis 25.08.2026 stand
+   * es auf 90 KALENDERtagen = rund 62 Handelstage. Die Vorregistrierung zu Issue #33
+   * nennt 77 Handelstage fuer den marktneutralen Brutto-Nachweis. Das Archiv waere
+   * also bei 62 stehengeblieben und haette das Ziel nie erreicht, auf das es jede
+   * Nacht zusammengetragen wird - lautlos, denn die Sammlung selbst lief weiter.
+   * Ein Deckel unterhalb der Frage ist derselbe Fehler wie gar nicht zu sammeln,
+   * nur teurer. Reserve fuer den Zeitsplit ist Pflicht: die Muehle verlangt
+   * Entdeckung und Bestaetigung an GETRENNTEN Tagen. */
+  var ht1m = Math.round(A.TAGE_MAX['1m'] * 252 / 365);
+  ok(ht1m >= 154,
+     '1m-Fenster deckt die 77 Handelstage aus #33 mit Reserve fuer einen Zeitsplit',
+     A.TAGE_MAX['1m'] + ' Kalendertage = ~' + ht1m + ' Handelstage');
   ok(A.fensterFuer('60m') === A.TAGE_MAX['60m'], 'fensterFuer waehlt je Zeitrahmen');
   ok(A.fensterFuer('krypto') === A.MAX_TAGE, 'fensterFuer hat einen Rueckfall fuer Unbekanntes');
   var jetzt = Date.UTC(2026, 7, 20), reihe = [];
