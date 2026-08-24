@@ -70,6 +70,16 @@ var ABSTAND_MS = 1200;
 var ETFS = ('SPY QQQ IWM DIA VOO IVV RSP TLT HYG LQD GLD SLV USO ' +
   'XLF XLK XLE XLV XLI XLP XLY XLU XLB XLRE XLC SMH SOXX EEM EFA FXI GDX VXX').split(' ');
 
+/* ETFs kommen in einen eigenen Unterordner. Die Messmaschine waehlt "aktien" ueber
+ * sym.indexOf('-USD') === -1 - das ist ein Filter gegen Krypto, nicht gegen
+ * Indexfonds. Laegen SPY und QQQ zwischen den Aktien, wuerde eine Aktienstrategie
+ * sie mitmessen; bei SPY waere es schlimmer, denn es ist zugleich der Anker des
+ * Regime-Tors - Messobjekt und Massstab in einem. */
+var ETF_SATZ = {};
+ETFS.forEach(function (s) { ETF_SATZ[s] = 1; });
+function istEtfSym(s) { return !!ETF_SATZ[s]; }
+function ordnerFuer(sym) { return istEtfSym(sym) ? path.join(ZIEL, 'etf') : ZIEL; }
+
 /* Massive schreibt Aktienklassen mit Punkt (BRK.B), Yahoo mit Bindestrich (BRK-B). */
 function yahooName(sym) { return sym.replace(/\./g, '-'); }
 
@@ -184,7 +194,9 @@ function listeBauen(wahl) {
        * zusammenfuehrt, dessen Archiv waechst ueber Yahoos Grenze hinaus.
        * Bei gleichem Zeitstempel gewinnt die NEUE Kerze: sie ist nachtraeglich
        * bereinigt (Splits, Dividenden) und damit die richtigere. */
-      var datei = path.join(ZIEL, 'bars_60m_' + sym + '.json');
+      var unterOrdner = ordnerFuer(sym);
+      if (!fs.existsSync(unterOrdner)) fs.mkdirSync(unterOrdner, { recursive: true });
+      var datei = path.join(unterOrdner, 'bars_60m_' + sym + '.json');
       var dazu = 0;
       if (fs.existsSync(datei)) {
         try {

@@ -89,6 +89,16 @@ function normInv(p) {
   return (((((a[0] * r + a[1]) * r + a[2]) * r + a[3]) * r + a[4]) * r + a[5]) * q / (((((b[0] * r + b[1]) * r + b[2]) * r + b[3]) * r + b[4]) * r + 1);
 }
 
+/* ---------- Erster handelbarer Kurs einer Kerze (C7) ----------
+ * Mit Eroeffnungskurs (Element 5) ist es der Eroeffnungskurs. Ohne ihn bleibt
+ * nur der Schluss der Vorkerze - eine Naeherung, die bei Uebernachtluecken
+ * daneben liegt. Welcher Fall vorlag, steht im Protokoll; geraten wird nicht. */
+function eroeffnungKurs(bars, k) {
+  var b = bars[k];
+  if (b && b.length > 5 && typeof b[5] === 'number' && isFinite(b[5]) && b[5] > 0) return b[5];
+  return k > 0 ? bars[k - 1][1] : b[1];
+}
+
 /* ---------- Archiv ---------- */
 function ladeUniversum(archivPfad, intervall, filter) {
   var dateien = fs.readdirSync(archivPfad).filter(function (f) { return f.indexOf('bars_' + intervall + '_') === 0; });
@@ -128,7 +138,7 @@ function baueKontrolle(universum, haltedauerKerzen, schnittTag, vorlauf, stopNiv
       if (typeof stopNiveau === 'function') {
         var pf = [];
         for (var pk = i + 1; pk <= i + haltedauerKerzen; pk++) {
-          pf.push({ auf: b[pk - 1][1], hoch: b[pk][3] != null ? b[pk][3] : b[pk][1],
+          pf.push({ auf: eroeffnungKurs(b, pk), hoch: b[pk][3] != null ? b[pk][3] : b[pk][1],
             tief: b[pk][4] != null ? b[pk][4] : b[pk][1], schluss: b[pk][1] });
         }
         ende = fuehreAus(pf, s0, stopNiveau, params).kurs;
@@ -314,6 +324,27 @@ function messe(strategie, archivPfad, optionen) {
       'bereinigt; eine Nullpunktverschiebung ist moeglich (Groessenordnung 0,02-0,04 Pp je Signal, ' +
       'Vorzeichen je nach Bauart des Signals). Nachmessen mit messen-mit-null.js oder Angabe ergaenzen.');
   }
+  /* C7: Ob das Archiv Eroeffnungskurse fuehrt, entscheidet, wie genau ein Stop
+   * gefuellt wird. Das gehoert ins Protokoll, nicht in eine stille Annahme. */
+  var mitO = 0, ohneO = 0;
+  Object.keys(U).forEach(function (sy) {
+    var bb = U[sy];
+    for (var q = 0; q < bb.length; q += 97) {          // Stichprobe, jede 97. Kerze
+      if (bb[q].length > 5 && bb[q][5] > 0) mitO++; else ohneO++;
+    }
+  });
+  var anteilO = (mitO + ohneO) ? mitO / (mitO + ohneO) : 0;
+  P.entscheide('C7 Eroeffnungskurs', { stichprobe: mitO + ohneO },
+    { anteilMitEroeffnung: Math.round(anteilO * 1000) / 1000 },
+    anteilO > 0.99
+      ? 'Das Archiv fuehrt Eroeffnungskurse. Ein Stop wird zum schlechteren aus Stop und ECHTEM ' +
+        'Eroeffnungskurs gefuellt.'
+      : 'Das Archiv fuehrt ' + (anteilO * 100).toFixed(1) + ' % Eroeffnungskurse. Fuer den Rest dient der ' +
+        'Schluss der Vorkerze als Naeherung - bei Uebernachtluecken liegt die daneben (14,3 % aller Kerzen ' +
+        'folgen auf eine Luecke, 40,6 % davon springen ueber 1 %).');
+  if (anteilO <= 0.99) P.warne('C7', 'Nur ' + (anteilO * 100).toFixed(1) + ' % der Kerzen haben einen ' +
+    'Eroeffnungskurs. Fuellpreise bei Luecken sind genaehert.');
+
   P.entscheide('A2 Kontrolle', { art: VERFAHREN.kontrolle, haltedauerKerzen: H },
     'Erwartung ueber ALLE Kerzen desselben Symbols zur selben UTC-Stunde, getrennt je Haelfte',
     'Keine Zufallsziehung (A2), keine Listenpaarung (A3), kein Zeitbezug zum Signal (A4), je Haelfte getrennt (A5). ' +
@@ -344,7 +375,7 @@ function messe(strategie, archivPfad, optionen) {
         if (typeof S.stopNiveau === 'function') {
           var pfad = [];
           for (var pk = i + 1; pk <= i + H; pk++) {
-            pfad.push({ auf: b[pk - 1][1],
+            pfad.push({ auf: eroeffnungKurs(b, pk),
               hoch: b[pk][3] != null ? b[pk][3] : b[pk][1],
               tief: b[pk][4] != null ? b[pk][4] : b[pk][1],
               schluss: b[pk][1] });

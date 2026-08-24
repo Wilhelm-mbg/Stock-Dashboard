@@ -3732,6 +3732,21 @@ console.log('\n44) Messmaschine, Scoreboard und Strategie-Eingabe (23.08.2026)')
   ok(/\|\s*C6\s*\|/.test(ft) && /\|\s*C7\s*\|/.test(ft),
      'C6 und C7 stehen in FEHLERTYPEN.md');
 
+  /* C7 genauer (24.08.2026): Wo das Archiv Eroeffnungskurse fuehrt, wird der echte
+   * benutzt statt des Vorkerzen-Schlusses. Der Testfall der Maschine misst den
+   * Unterschied: -0,2695 Pp gegen -0,0990 Pp - die Naeherung war Faktor 2,7 zu guenstig. */
+  ok(mm2.indexOf('function eroeffnungKurs(bars, k)') !== -1,
+     'Die Maschine hat eine Regel fuer den ersten handelbaren Kurs');
+  ok(mm2.split('auf: eroeffnungKurs(b,').length === 3,
+     'Signal UND Kontrolle benutzen sie - sonst misst man zwei verschiedene Ausfuehrungen');
+  ok(/P\.warne\('C7'/.test(mm2),
+     'Fuehrt das Archiv keine Eroeffnungskurse, warnt die Maschine - keine stille Naeherung');
+  var yh = fs.readFileSync(__dirname + '/tools/yahoo-60m-holen.js', 'utf8');
+  ok(yh.indexOf('serie.push([ts[i] * 1000, cl[i], vo[i] || 0, h, l, o])') !== -1,
+     'Das Abrufwerkzeug schreibt den Eroeffnungskurs als SECHSTES Element - die ersten fuenf bleiben');
+  ok(yh.indexOf('karte[k[0]] = k') !== -1 && yh.indexOf('--aktualisieren') !== -1,
+     'Es fuehrt Reihen fort statt sie zu ueberschreiben (Yahoo liefert nur 730 Tage)');
+
   /* Der Weg muss auch durch die Oberflaeche fuehren - sonst weicht man wieder auf
    * ein Wegwerf-Skript aus, und genau dort passierten beide Fehler. */
   var sb2 = fs.readFileSync(__dirname + '/scoreboard.js', 'utf8');

@@ -110,7 +110,7 @@ der Befund.
 | C4 | Handelstage als Kalendertage | 252/365-Näherung | Handelstage werden aus der Achse gezählt |
 | C5 | Kosten doppelt abgezogen | Netto-Spalte nochmal um Hürde gemindert | Kosten werden **einmal** an **einer** Stelle abgezogen; Brutto und Netto sind getrennte Felder |
 | C6 | Vorgriff innerhalb der Kerze | MCP-Stop 23.08.: Hoch aus derselben Kerze, gegen deren Tief geprüft wurde; t = 15,74 | Eine Ausstiegsregel bekommt **nur abgeschlossene** Kerzen und liefert **nur ein Niveau**; die Maschine wendet es auf die **nächste** Kerze an |
-| C7 | Wunsch-Ausführung | derselbe Lauf: Füllung zum Stopkurs auch bei Eröffnung darunter; t 5,96 → −0,75 nach Korrektur | Die Maschine füllt zum **schlechteren** aus Stop und erstem handelbaren Kurs; die Regel bestimmt den Füllpreis nie selbst |
+| C7 | Wunsch-Ausführung | 23.08.: Füllung zum Stopkurs auch bei Eröffnung darunter; t 5,96 → −0,75 nach Korrektur | Die Maschine füllt zum **schlechteren** aus Stop und erstem handelbaren Kurs — seit 24.08. dem **echten Eröffnungskurs**, wo das Archiv ihn führt (`eroeffnungKurs`). Sonst der Vorkerzen-Schluss, und das steht als Warnung im Protokoll |
 
 **Woher C6 und C7 stammen:** Am 23.08.2026 wurde der Ausstieg aus dem TradingView-Skript
 „MCP Stop Strategy [JARUTIR]" geprüft — außerhalb dieser Maschine, weil sie damals nur
@@ -127,6 +127,23 @@ werde bei jeder Lücke trotzdem zum Wunschkurs bedient. Seit dem Ausbau kann ein
 Ausstiegsregel das nicht mehr — nicht weil sie es lassen soll, sondern weil sie die
 dafür nötigen Daten nie zu sehen bekommt. Die Kontrolle bekommt denselben Ausstieg;
 sonst misst man den Stop statt das Signal.
+
+**Was der fehlende Eröffnungskurs kostete.** Bis zum 24.08.2026 führte das Archiv
+je Kerze nur `[Zeit, Schluss, Umsatz, Hoch, Tief]`. Ohne Eröffnungskurs musste der
+Schluss der **Vorkerze** als erster handelbarer Kurs dienen — bei einer
+Übernachtlücke genau der Kurs, den es nicht mehr gibt. Gemessen an 40 Werten:
+**14,3 %** aller Kerzen folgen auf eine Lücke, **40,6 %** dieser Lücken springen über
+1 %. In rund 5,8 % aller Kerzen war die Näherung also spürbar falsch — und zwar dort,
+wo Stops greifen.
+
+Der Testfall dazu baut zwei Archive mit identischen Schluss-, Hoch- und Tiefkursen,
+eines mit Eröffnungskursen und eines ohne, und lässt dieselbe Stop-Regel darauf
+laufen: **−0,2695 Pp gegen −0,0990 Pp**. Die Näherung war um Faktor 2,7 zu günstig,
+und zwar systematisch in dieselbe Richtung — Lücken bei einem Long-Signal öffnen
+häufiger nach unten.
+
+Yahoo liefert den Eröffnungskurs; die App verwarf ihn. Seit `tools/yahoo-60m-holen.js`
+steht er als **sechstes Element** in der Kerze. Die ersten fünf bleiben unverändert.
 
 ## D — Gemessenes Objekt ≠ implementiertes Objekt
 
