@@ -3611,8 +3611,8 @@ console.log('\n44) Messmaschine, Scoreboard und Strategie-Eingabe (23.08.2026)')
   var r = require('child_process').spawnSync(process.execPath, [__dirname + '/studien/messmaschine/test-messmaschine.js'], { encoding: 'utf8' });
   ok(r.status === 0 && /ALLE TESTS BESTANDEN/.test(r.stdout), 'test-messmaschine.js besteht (jeder Fehlertyp aus FEHLERTYPEN.md als Falle)');
   var ft = fs.readFileSync(__dirname + '/studien/messmaschine/FEHLERTYPEN.md', 'utf8');
-  var kennungen = (ft.match(/\|\s*([A-E]\d)\s*\|/g) || []).length;
-  ok(kennungen >= 30, 'FEHLERTYPEN.md fuehrt mindestens 30 Fehlertypen', kennungen);
+  var kennungen = (ft.match(/|s*([A-E]d)s*|/g) || []).length;
+  ok(kennungen >= 33, 'FEHLERTYPEN.md fuehrt mindestens 33 Fehlertypen', kennungen);
 
   /* A7 (23.08.2026): Die Kontrolle darf nichts enthalten, was das Signal gelesen hat.
    * Vorher kam t3-stundendrift als "widerlegt" durch (t = -3,19), obwohl nichts da war.
@@ -3644,6 +3644,25 @@ console.log('\n44) Messmaschine, Scoreboard und Strategie-Eingabe (23.08.2026)')
    * GRUEN angezeigt - waehrend dasselbe Protokoll "nicht entscheidbar" und je Signal
    * -0,14 Pp fuehrte. */
   var dep2 = fs.readFileSync(__dirname + '/depot.js', 'utf8');
+
+  /* A9 und B9 stammen aus der unabhaengigen Kontroll-Pruefung der Parallelsitzung
+   * (studien/kontrolle-2026-08/BEFUND.md). Vier ihrer sechs Punkte deckte die Liste
+   * schon ab, zwei nicht. B8 fehlte als Zeile, obwohl er in der Maschine steckte. */
+  ok(/|s*A9s*|/.test(ft) && /|s*B8s*|/.test(ft) && /|s*B9s*|/.test(ft),
+     'A9, B8 und B9 stehen in FEHLERTYPEN.md');
+  /* A9: Kontrolle und Signalschleife muessen beim SELBEN Vorlauf beginnen. Start bei
+   * Kerze 60 statt 261 verschob den Intraday-Ueberschuss von +0,064 auf +0,036. */
+  ok(mm2.split('for (var i = vorlauf;').length === 3,
+     'A9: Kontrolle und Signalschleife starten beide bei vorlauf');
+
+  /* D2 im Regelkopf: Der Belegstand kommt aus dem Protokoll. Vorher stand dort ueber
+   * den Kapitulations-Dip "in Ueberpruefung", als die Messung laengst vorlag. */
+  ok(dep2.indexOf('belegAusProtokoll') !== -1 && dep2.indexOf('PROTOKOLL_KANTE[cfg.mode]') !== -1,
+     'Der Belegstand im Regelkopf kommt aus dem Messprotokoll, nicht aus dem Code');
+  ok(dep2.indexOf("stand: 'in Überprüfung'") === -1,
+     'Der veraltete Kapitulations-Belegstand ist weg (gemessen am 24.08.2026)');
+  ok(/belegAusProtokoll && b.stand === 'bestaetigt'/.test(dep2),
+     'Gruen im Regelkopf nur, wenn ein PROTOKOLL bestaetigt sagt');
   ok(!/var KANTE = \{ rsi2seit: 0\.11/.test(dep2),
      'Die Kante 0,11 steht nicht mehr fest verdrahtet in depot.js');
   ok(dep2.indexOf('PROTOKOLL_KANTE') !== -1 && dep2.indexOf('readProtokolle()') !== -1,

@@ -634,12 +634,28 @@
              'selben Tagesstunde (6.509 Trades, 675 Tage). Die Rohkante von +0,170 Pp besteht ' +
              'damit zu rund zwei Dritteln aus schlichtem Halten – nicht die Regel verdient sie, ' +
              'sondern die Zeit im Markt.' },
-      kapitulation: { stand: 'in Überprüfung',
-        txt: 'Die große Signalstudie vom 23.08.2026 reproduziert diesen Modus nicht. ' +
-             'Bis zu einer Neumessung gilt er als unbestätigt.' }
+      kapitulation: { stand: 'nicht entscheidbar',
+        /* Gemessen am 24.08.2026 mit der Messmaschine, vorregistriert. Die Zahlen
+         * kommen unten aus dem Protokoll; dieser Text erklaert nur, was sie heissen. */
+        txt: 'Der Ertrag sitzt fast vollständig in wenigen Trades: In der Bestätigungshälfte tragen ' +
+             '6 von 676 Trades die Hälfte des Gesamtertrags, und ohne die besten 5 % bleiben −0,505 Pp. ' +
+             'Die Datenmenge kann die Frage nicht beantworten – dafür bräuchte es rund die 23-fache ' +
+             'Zahl an Werten. Was belastbar ist, ist die Aussage über das Risiko, nicht die über den Ertrag.' }
     };
     var b = BELEG[cfg.mode] || { stand: 'ungemessen', txt: 'Für diesen Auslöser liegt keine Messung vor.' };
-    var farbe = b.stand === 'belegt' ? 'var(--up)' : b.stand === 'ungemessen' ? 'var(--down)' : 'var(--warn, var(--series2))';
+    /* D2: Wo ein Protokoll vorliegt, gewinnt es. Ein fest verdrahteter Belegstand
+     * veraltet - genau das war beim Kapitulations-Dip passiert, der hier noch "in
+     * Ueberpruefung" stand, als die Messung laengst vorlag. */
+    var pk = PROTOKOLL_KANTE[cfg.mode];
+    var belegAusProtokoll = null;
+    if (pk && pk.urteil && pk.urteil !== 'unbekannt') {
+      belegAusProtokoll = { stand: pk.urteil, datum: pk.datum, jeSignalPp: pk.jeSignalPp };
+      b = { stand: pk.urteil, txt: b.txt };
+    }
+    /* Gruen nur, wenn ein PROTOKOLL "bestaetigt" sagt. Ein im Code stehendes "belegt"
+     * reicht nicht - das war der Fehler, den die fest verdrahtete Kante 0,11 gemacht hat. */
+    var farbe = (belegAusProtokoll && b.stand === 'bestaetigt') ? 'var(--up)'
+      : b.stand === 'ungemessen' ? 'var(--down)' : 'var(--warn, var(--series2))';
     var halten = mp.maxHoldMin > 0 ? (mp.maxHoldMin >= 60 ? Math.round(mp.maxHoldMin / 60) + ' Stunden' : mp.maxHoldMin + ' Minuten') : 'kein Zeitausstieg';
     var zeilen = [
       ['Auslöser', NAME[cfg.mode] || cfg.mode],
@@ -648,61 +664,67 @@
       ['Produkt', cfg.instrument === 'basis' ? 'Basiswert ohne Hebel' : 'Hebelschein' + (cfg.profile ? ' · ' + cfg.profile : '')],
       ['Positionsgröße', parseFloat(cfg.sizing) > 0 ? 'nach Risiko ' + cfg.sizing + ' % je Stop' : 'fest ' + Math.round((cfg.budgetPct || 0.03) * 100) + ' % des Depots'],
       ['Not-Stop', (cfg.scalpSL || 20) + ' %'],
-      ['Beleg', '<b style="color:' + farbe + ';">' + U.esc(b.stand) + '</b> – ' + U.esc(b.txt)]
+      ['Beleg', '<b style="color:' + farbe + ';">' + U.esc(b.stand) + '</b> – ' + U.esc(b.txt) +
+        (belegAusProtokoll
+          ? '<br><span style="color:var(--muted); font-size:11.5px;">Aus dem Messprotokoll vom ' +
+            U.esc(belegAusProtokoll.datum) + ': Überschuss je Signal ' +
+            (belegAusProtokoll.jeSignalPp >= 0 ? '+' : '') + belegAusProtokoll.jeSignalPp.toFixed(3) +
+            ' Pp. Die App liest dieses Urteil, sie rechnet es nicht.</span>'
+          : '<br><span style="color:var(--muted); font-size:11.5px;">Kein Messprotokoll im Datenordner – dieser Stand steht fest im Code und kann veralten.</span>')]
     ];
     el.innerHTML = '<table class="tbl" style="font-size:var(--fs-text);">' + zeilen.map(function (r) {
       return '<tr><td style="color:var(--muted); white-space:nowrap; width:130px;">' + U.esc(r[0]) + '</td><td>' + r[1] + '</td></tr>';
     }).join('') + '</table>';
   }
   /** Zeigt die Huerde und stellt sie der belegten Kante gegenueber. */
-  /* ---------------------------------------------------------------------------
- * D2: Kantenwerte aus den Messprotokollen, nicht aus dem Code.
- *
- * Gelesen wird einmal beim Start ueber dieselbe Bruecke wie das Scoreboard. Die
- * App RECHNET hier nichts - sie nimmt den Ueberschuss je Signal und das Urteil,
- * so wie die Messmaschine sie hingeschrieben hat. Faellt das Lesen aus, bleibt der
- * Speicher leer und die Anzeige behauptet nichts.
- *
- * Warum "je Signal" und nicht das Tagesmittel: Die Kostenhuerde gilt je Umlauf.
- * Ein Tagesmittel gegen Umlaufkosten zu stellen vergleicht zwei verschiedene
- * Groessen - genau dieser Fehler stand hier bis zum 23.08.2026.
- * ------------------------------------------------------------------------- */
-var PROTOKOLL_KANTE = {};
-async function kantenAusProtokollen() {
-  try {
-    if (!window.api || !window.api.readProtokolle) return;
-    var r = await window.api.readProtokolle();
-    if (!r || !r.ok || !Array.isArray(r.protokolle)) return;
-    var neu = {};
-    r.protokolle.forEach(function (eintrag) {
-      var j = eintrag && eintrag.protokoll;
-      if (!j || !j.strategie || !j.strategie.key || !Array.isArray(j.ergebnisse)) return;
-      /* Von mehreren Varianten die mit dem staerksten Bestaetigungs-t - und die
-       * Variantenzahl wird mit angezeigt, damit die Auswahl sichtbar bleibt. */
-      var beste = null, besterT = -Infinity, besterIdx = 0;
-      j.ergebnisse.forEach(function (e, i) {
-        var u = e && e.bestaetigung && e.bestaetigung.ueberschuss;
-        if (!u || u.jeSignal == null || !isFinite(u.jeSignal)) return;
-        var tw = isFinite(u.t) ? u.t : -Infinity;
-        if (tw > besterT) { besterT = tw; beste = u; besterIdx = i; }
+    /* ---------------------------------------------------------------------------
+   * D2: Kantenwerte aus den Messprotokollen, nicht aus dem Code.
+   *
+   * Gelesen wird einmal beim Start ueber dieselbe Bruecke wie das Scoreboard. Die
+   * App RECHNET hier nichts - sie nimmt den Ueberschuss je Signal und das Urteil,
+   * so wie die Messmaschine sie hingeschrieben hat. Faellt das Lesen aus, bleibt der
+   * Speicher leer und die Anzeige behauptet nichts.
+   *
+   * Warum "je Signal" und nicht das Tagesmittel: Die Kostenhuerde gilt je Umlauf.
+   * Ein Tagesmittel gegen Umlaufkosten zu stellen vergleicht zwei verschiedene
+   * Groessen - genau dieser Fehler stand hier bis zum 23.08.2026.
+   * ------------------------------------------------------------------------- */
+  var PROTOKOLL_KANTE = {};
+  async function kantenAusProtokollen() {
+    try {
+      if (!window.api || !window.api.readProtokolle) return;
+      var r = await window.api.readProtokolle();
+      if (!r || !r.ok || !Array.isArray(r.protokolle)) return;
+      var neu = {};
+      r.protokolle.forEach(function (eintrag) {
+        var j = eintrag && eintrag.protokoll;
+        if (!j || !j.strategie || !j.strategie.key || !Array.isArray(j.ergebnisse)) return;
+        /* Von mehreren Varianten die mit dem staerksten Bestaetigungs-t - und die
+         * Variantenzahl wird mit angezeigt, damit die Auswahl sichtbar bleibt. */
+        var beste = null, besterT = -Infinity, besterIdx = 0;
+        j.ergebnisse.forEach(function (e, i) {
+          var u = e && e.bestaetigung && e.bestaetigung.ueberschuss;
+          if (!u || u.jeSignal == null || !isFinite(u.jeSignal)) return;
+          var tw = isFinite(u.t) ? u.t : -Infinity;
+          if (tw > besterT) { besterT = tw; beste = u; besterIdx = i; }
+        });
+        if (!beste) return;
+        var vorhanden = neu[j.strategie.key];
+        if (vorhanden && vorhanden.datum >= String(j.gemessenAm || '').slice(0, 10)) return;
+        neu[j.strategie.key] = {
+          jeSignalPp: beste.jeSignal * 100,
+          urteil: (j.urteile && j.urteile[besterIdx]) || j.bestesUrteil || 'unbekannt',
+          datum: String(j.gemessenAm || '').slice(0, 10),
+          varianten: j.ergebnisse.length,
+        };
       });
-      if (!beste) return;
-      var vorhanden = neu[j.strategie.key];
-      if (vorhanden && vorhanden.datum >= String(j.gemessenAm || '').slice(0, 10)) return;
-      neu[j.strategie.key] = {
-        jeSignalPp: beste.jeSignal * 100,
-        urteil: (j.urteile && j.urteile[besterIdx]) || j.bestesUrteil || 'unbekannt',
-        datum: String(j.gemessenAm || '').slice(0, 10),
-        varianten: j.ergebnisse.length,
-      };
-    });
-    PROTOKOLL_KANTE = neu;
-    try { huerdeAnzeigen(); } catch (e) { /* Anzeige noch nicht da - beim naechsten Mal */ }
-  } catch (e) { /* kein Protokoll lesbar: es wird eben nichts behauptet */ }
-}
-document.addEventListener('DOMContentLoaded', function () { kantenAusProtokollen(); });
+      PROTOKOLL_KANTE = neu;
+      try { huerdeAnzeigen(); } catch (e) { /* Anzeige noch nicht da - beim naechsten Mal */ }
+    } catch (e) { /* kein Protokoll lesbar: es wird eben nichts behauptet */ }
+  }
+  document.addEventListener('DOMContentLoaded', function () { kantenAusProtokollen(); });
 
-function huerdeAnzeigen() {
+  function huerdeAnzeigen() {
     var el = document.getElementById("kostenHuerde"); if (!el) return;
     var cfg = D.intraday || {};
     /* Haltedauer aus DERSELBEN Quelle wie der Handel: modeParams() liefert sie auch

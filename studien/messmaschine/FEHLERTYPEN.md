@@ -8,6 +8,10 @@ unmöglich macht**. Kein neuer Fehlertyp wird ohne Testfall aufgenommen.
 
 Die Maschine ist nicht klug. Sie ist nur an diesen Stellen schon einmal gestolpert.
 
+A9 und B9 stammen aus der unabhängigen Kontroll-Prüfung einer parallelen Sitzung
+(`studien/kontrolle-2026-08/BEFUND.md`, Abschnitt 8). Vier ihrer sechs methodischen
+Punkte deckte diese Liste bereits ab (A2, A3, C1, C2) — diese beiden nicht.
+
 ## A — Kontrolle
 
 | # | Fehler | Vorkommen | Was die Maschine tut |
@@ -20,6 +24,7 @@ Die Maschine ist nicht klug. Sie ist nur an diesen Stellen schon einmal gestolpe
 | A6 | **Signal und Kontrolle schöpfen aus demselben endlichen Topf** | 23.08.: `t3-stundendrift` kam als „widerlegt" durch (t = −3,19 echt, −8,07 auf Zufallsdaten), obwohl nichts da war | **A7** — die Kontrolle lässt das Lesefenster des Signals aus. Danach t = +0,19 |
 | A7 | Kontrolle enthält Kerzen, die das Signal gelesen hat | dieselbe Messung; Abhilfe zu A6 | Strategien geben `leseFensterKerzen` an; die Kontrolle mittelt über den Topf **ohne** `[i − Fenster, i + H − 1]`. Ohne Angabe: Warnung im Protokoll, kein stillschweigendes Null |
 | A8 | Aus einem Nullarchiv auf **Signifikanz** schließen | 23.08.: `t1` kam dort mit t = 2,97 als „bestätigt" durch — bei einem Punktschätzer, der dem echten glich (+0,0946 gegen +0,0933). Nur der Standardfehler brach ein, von 0,0707 auf 0,0319 | Der Nullversuch würfelt jedes Symbol **einzeln** und zerstört den Gleichlauf der Werte. Er misst Verzerrung, **nie** Signifikanz — steht als Warnung in jeder erzeugten Datei |
+| A9 | Kontrolle beginnt früher, als der Detektor rechnen darf | Kontroll-Prüfung 23.08.: Start bei Kerze 60 statt 261 verschob den Intraday-Überschuss von +0,064 auf **+0,036** — 44 % des Werts | `baueKontrolle` läuft ab demselben `vorlauf` wie die Signalschleife (261). Kerzen, an denen das Signal nicht rechnen darf, sind auch keine Vergleichsfälle |
 
 **Warum A6 schwerer wiegt als alles davor.** Die Kontrolle ist der Mittelwert des
 Symbols zu dieser Stunde über die ganze Hälfte — ein **endlicher** Topf von rund 366
@@ -81,6 +86,19 @@ Verzerrungsschätzer mit eigenem Fehler ist selbst eine Fehlerquelle.
 | B5 | Entdeckung und Bestätigung auf denselben Tagen | schutz-messen.js behauptete Trennung, hatte keine | Der Schnitt ist Teil der Signatur; ohne Bestätigungszeitraum kein Urteil |
 | B6 | Bonferroni auf das volle t statt auf die Bestätigung | „verfehlt |t| > 3,34 (t = 2,29)" auf voller Achse, Bestätigung hatte t = 1,40 | Schwelle wird auf den **Bestätigungs**-t angewandt |
 | B7 | Nachträgliches Weglassen von Fällen, das das Ergebnis macht | „ohne die zwei Crash-Tage +0,40" | Teilmengen nur, wenn sie in der Vorregistrierung stehen; sonst verweigert |
+| B8 | Testfamilie über Dateien hinweg nicht gezählt | 23.08.: sieben vorregistrierte Thesen auf drei Dateien verteilt ergaben dreimal die Schwelle für zwei Tests statt einmal die für sieben | Strategien geben `testfamilie.testsGesamt` an; B4 rechnet damit. Die Zahl wirkt nur nach oben |
+| B9 | **Rasterlage als verschwiegener Mehrfachtest** | Kontroll-Prüfung 23.08.: Beim Momentum erreicht von **63 möglichen Lagen** des 63-Tage-Rasters **keine** ein t ≥ 1,96 (Median 1,15) — die gewählte saß am günstigen Rand | Jede willkürliche Phase, Rasterlage oder Startverschiebung ist ein Test. Sie gehört in `testfamilie.testsGesamt`, sonst rechnet B4 mit einer zu niedrigen Schwelle |
+
+**Warum B9 so leicht zu übersehen ist.** Wer ein Momentum über 63 Handelstage rechnet,
+muss irgendwo anfangen — und jeder Starttag ergibt eine andere Zerlegung derselben
+Kursreihe. Das sieht nach einer Einstellung aus, ist aber eine Auswahl unter 63
+gleichberechtigten Möglichkeiten. Wer eine davon berichtet, hat 63 Tests gemacht und
+62 verschwiegen. Dasselbe gilt für Monats-, Quartals- und Wochenraster, für den
+Startpunkt gleitender Fenster und für jede „ab welcher Kerze zählen wir"-Entscheidung.
+
+Die Gegenprobe ist billig und sollte zur Pflicht gehören: **alle Lagen rechnen und die
+Verteilung berichten.** Liegt die gewählte Lage am Rand, ist das kein Detail, sondern
+der Befund.
 
 ## C — Einheiten und Zeit
 
