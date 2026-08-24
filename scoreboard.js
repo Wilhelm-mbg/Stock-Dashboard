@@ -289,6 +289,194 @@
     }
   }
 
+  /* ---------- Baukasten und Expertenmodus ----------
+   * Das Formular verlangte JavaScript. Wer nicht programmiert, kam nicht bis zu einer
+   * Messung - das Feld war nicht schwer zu bedienen, es war schlicht unbedienbar.
+   *
+   * Eine beliebige Handelsidee laesst sich aber nicht anklicken. Deshalb zwei Wege,
+   * nicht einer: Der Baukasten deckt die haeufigen Muster ab und schreibt den Code
+   * selbst; der Expertenmodus ist das alte Formular, unveraendert. Nichts faellt weg.
+   *
+   * Der erzeugte Code steht immer sichtbar daneben und laesst sich uebernehmen - so
+   * ist der Baukasten auch ein Lehrmittel und keine Sackgasse.
+   *
+   * Was er NICHT ausfuellt, ist der Grund. Der ist die Vorregistrierung; wuerde die App
+   * ihn schreiben, waere die Huerde weg, die diese ganze Maschine traegt. */
+  var modus = 'bau';
+  function modusLesen() {
+    try { return window.localStorage.getItem('stModus') === 'experte' ? 'experte' : 'bau'; }
+    catch (e) { return 'bau'; }   // file:// ohne Speicher, privates Fenster: dann eben Baukasten
+  }
+  function modusSchreiben(m) {
+    try { window.localStorage.setItem('stModus', m); } catch (e) { /* nicht schlimm */ }
+  }
+
+  function modusSetzen(m) {
+    modus = m;
+    var bau = document.getElementById('stBaukasten');
+    var exp = document.getElementById('stExperte');
+    var kb = document.getElementById('stModusBau');
+    var ke = document.getElementById('stModusExperte');
+    var txt = document.getElementById('stModusText');
+    if (!bau || !exp) return;
+    bau.hidden = m !== 'bau';
+    exp.hidden = m !== 'experte';
+    kb.className = m === 'bau' ? 'btn' : 'btn ghost';
+    ke.className = m === 'experte' ? 'btn' : 'btn ghost';
+    kb.setAttribute('aria-checked', m === 'bau' ? 'true' : 'false');
+    ke.setAttribute('aria-checked', m === 'experte' ? 'true' : 'false');
+    txt.textContent = m === 'bau'
+      ? 'Zusammenklicken – die App schreibt den Code.'
+      : 'Eigener Code: volle Freiheit, auch für Regeln, die der Baukasten nicht kennt.';
+    modusSchreiben(m);
+  }
+
+  /** Die Felder des gewaehlten Musters zeichnen. */
+  function felderZeichnen() {
+    var B = window.Baukasten;
+    var wo = document.getElementById('stFelder');
+    var sel = document.getElementById('stMuster');
+    if (!B || !wo || !sel) return;
+    var m = B.musterVon(sel.value);
+    var kurz = document.getElementById('stMusterKurz');
+    if (kurz) kurz.textContent = m ? m.kurz : '';
+    wo.innerHTML = '';
+    if (!m) return;
+    m.felder.forEach(function (f) {
+      var l = document.createElement('label');
+      l.style.cssText = 'font-size:var(--fs-neben);';
+      l.innerHTML = esc(f.frage) +
+        '<input class="stFeld" data-feld="' + esc(f.name) + '" value="' + esc(f.vorgabe) + '" style="width:100%;">' +
+        '<span style="display:block; font-size:var(--fs-klein); color:var(--muted);">' + esc(f.hilfe) +
+        ' Mehrere Werte zum Durchprobieren mit Komma trennen (z. B. <code>4, 6, 8</code>) – ' +
+        'jeder ist dann eine eigene Messung.</span>';
+      wo.appendChild(l);
+    });
+    wo.querySelectorAll('.stFeld').forEach(function (el) {
+      el.addEventListener('input', vorschau);
+    });
+    var key = document.getElementById('stKey');
+    /* Den Kurznamen vorschlagen, aber nur solange niemand selbst getippt hat. Er ist
+     * eine Kennung, keine These - ihn vorzuschlagen nimmt niemandem das Nachdenken ab. */
+    if (key && !key.dataset.selbst) key.value = m.kennung + (richtungJetzt() === -1 ? '-verkauf' : '-kauf');
+    vorschau();
+  }
+
+  function richtungJetzt() {
+    var r = document.getElementById('stRichtung');
+    return (r && r.value === 'short') ? -1 : 1;
+  }
+
+  /** Was ist gerade eingestellt? Fuer Vorschau und Ablegen dieselbe Quelle. */
+  function baukastenWahl() {
+    var werte = {};
+    document.querySelectorAll('#stFelder .stFeld').forEach(function (el) {
+      werte[el.dataset.feld] = el.value;
+    });
+    var sel = document.getElementById('stMuster');
+    var r = document.getElementById('stRichtung');
+    return { muster: sel ? sel.value : '', richtung: r ? r.value : 'long', werte: werte };
+  }
+
+  /** Satz, Testzahl und Code nachziehen - bei jeder Aenderung. */
+  function vorschau() {
+    var B = window.Baukasten;
+    var satzEl = document.getElementById('stSatz');
+    var codeEl = document.getElementById('stCodeVorschau');
+    if (!B || !satzEl) return;
+    var r = B.baue(baukastenWahl());
+    if (!r.ok) {
+      satzEl.innerHTML = '<b class="neg">' + esc(r.fehler) + '</b>';
+      if (codeEl) codeEl.textContent = '';
+      return;
+    }
+    var halten = parseInt((document.getElementById('stHalten') || {}).value, 10) || 8;
+    satzEl.innerHTML = '<b>Gemessen wird:</b> ' + esc(r.satz) +
+      ' Danach ' + halten + ' Stunde(n) halten, dann verkaufen.' +
+      (r.tests > 1
+        ? '<br><span class="neg">' + r.tests + ' Varianten = ' + r.tests + ' Messungen.</span> ' +
+          'Die Hürde steigt mit jeder: Wer oft genug würfelt, würfelt irgendwann eine Sechs, und ' +
+          'die Maschine rechnet das heraus.'
+        : '');
+    if (codeEl) codeEl.textContent = r.signal;
+    grundHilfe(r.warum);
+  }
+
+  /** Der Denkanstoss zum Grund - je Muster einer, der die SORTE Begruendung nennt. */
+  function grundHilfe(warum) {
+    var el = document.getElementById('stGrundHilfe');
+    if (!el) return;
+    el.innerHTML =
+      '<b>Trägt:</b> ' + esc(warum || 'Jemand muss handeln – aus Vorschrift, Termin oder Zwang – und das ist vorher bekannt.') +
+      '<br><b>Trägt nicht:</b> „Der Kurs fällt montags oft“ oder „das sieht im Chart gut aus“. ' +
+      'Das ist eine Beobachtung, keine These – und die Maschine verweigert die Messung dann nicht, ' +
+      'sie zerlegt sie nur.';
+  }
+
+  /** Klartext unter den gemeinsamen Feldern. Kerzen, Basispunkte und „Long“ sind Fachsprache. */
+  function klartext() {
+    var h = parseInt((document.getElementById('stHalten') || {}).value, 10);
+    var ht = document.getElementById('stHaltenText');
+    if (ht) {
+      ht.textContent = (h >= 1)
+        ? h + ' Stundenkerze(n) – rund ' + (h / 7).toFixed(1).replace('.', ',') + ' Handelstage.'
+        : 'Zwischen 1 und 130 Kerzen.';
+    }
+    var s = parseFloat((document.getElementById('stSpanne') || {}).value);
+    var sp = document.getElementById('stSpanneText');
+    if (sp) {
+      sp.textContent = isFinite(s)
+        ? s + ' Basispunkte = ' + (s / 100).toFixed(2).replace('.', ',') + ' % je Kauf und je Verkauf.'
+        : 'In Basispunkten; 5 sind 0,05 %.';
+    }
+    var r = document.getElementById('stRichtung');
+    var rt = document.getElementById('stRichtungText');
+    if (r && rt) {
+      rt.textContent = r.value === 'short' ? 'Steigende Kurse schaden, fallende nützen.'
+        : r.value === 'beide' ? 'Beide Richtungen – der Baukasten erzeugt trotzdem ein Kaufsignal.'
+        : 'Sie erwarten steigende Kurse.';
+    }
+    var g = document.getElementById('stGrund');
+    var gz = document.getElementById('stGrundZaehler');
+    if (g && gz) {
+      var n = g.value.trim().length;
+      gz.textContent = n >= 20 ? '(' + n + ' Zeichen)' : '(' + n + ' von mindestens 20 Zeichen)';
+      gz.className = n >= 20 ? '' : 'neg';
+    }
+  }
+
+  function baukastenAufbauen() {
+    var B = window.Baukasten;
+    var sel = document.getElementById('stMuster');
+    if (!B || !sel) return;
+    sel.innerHTML = B.MUSTER.map(function (m) {
+      return '<option value="' + esc(m.id) + '">' + esc(m.name) + '</option>';
+    }).join('');
+    sel.addEventListener('change', felderZeichnen);
+    document.getElementById('stModusBau').addEventListener('click', function () { modusSetzen('bau'); });
+    document.getElementById('stModusExperte').addEventListener('click', function () { modusSetzen('experte'); });
+    var key = document.getElementById('stKey');
+    if (key) key.addEventListener('input', function () { key.dataset.selbst = '1'; });
+    ['stHalten', 'stSpanne', 'stRichtung', 'stGrund'].forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) el.addEventListener('input', function () { klartext(); vorschau(); });
+      if (el && el.tagName === 'SELECT') el.addEventListener('change', function () { klartext(); felderZeichnen(); });
+    });
+    var ueb = document.getElementById('stUebernehmen');
+    if (ueb) {
+      ueb.addEventListener('click', function () {
+        var r = B.baue(baukastenWahl());
+        if (!r.ok) return;
+        document.getElementById('stSignal').value = r.signal;
+        document.getElementById('stVarianten').value = r.varianten ? JSON.stringify(r.varianten) : '';
+        modusSetzen('experte');
+      });
+    }
+    modusSetzen(modusLesen());
+    felderZeichnen();
+    klartext();
+  }
+
   /* ---------- Eingabe: neue Strategie ablegen ---------- */
   function eingabe() {
     var btn = document.getElementById('stAblegen');
@@ -298,13 +486,29 @@
       var key = (document.getElementById('stKey').value || '').trim().toLowerCase();
       var grund = (document.getElementById('stGrund').value || '').trim();
       var sig = (document.getElementById('stSignal').value || '').trim();
+      var ausBaukasten = null;
       var halten = parseInt(document.getElementById('stHalten').value, 10);
       var richtung = document.getElementById('stRichtung').value;
       var spanne = parseFloat(document.getElementById('stSpanne').value);
       var varTxt = (document.getElementById('stVarianten').value || '').trim();
       var stop = (document.getElementById('stStop').value || '').trim();
-      if (!/^[a-z0-9][a-z0-9-]{1,40}$/.test(key)) { st.textContent = 'Kennung: nur Kleinbuchstaben, Ziffern, Bindestrich.'; return; }
-      if (grund.length < 20) { st.textContent = 'Der Grund braucht mindestens 20 Zeichen – ohne Grund misst die Maschine nicht.'; return; }
+      /* Im Baukasten kommt die Regel nicht aus den Textfeldern, sondern aus der
+       * Auswahl. Alles danach - Pruefung, Dateiaufbau, Ablegen - ist fuer beide Wege
+       * dasselbe: Was die Maschine bekommt, unterscheidet sich nicht danach, wie es
+       * entstanden ist. */
+      if (modus === 'bau') {
+        ausBaukasten = window.Baukasten ? window.Baukasten.baue(baukastenWahl()) : null;
+        if (!ausBaukasten) { st.textContent = 'Der Baukasten ist nicht geladen. Bitte den Expertenmodus benutzen.'; return; }
+        if (!ausBaukasten.ok) { st.textContent = ausBaukasten.fehler; return; }
+        sig = ausBaukasten.signal;
+        stop = '';
+        varTxt = ausBaukasten.varianten ? JSON.stringify(ausBaukasten.varianten) : '';
+      }
+      if (!/^[a-z0-9][a-z0-9-]{1,40}$/.test(key)) { st.textContent = 'Kurzname: nur Kleinbuchstaben, Ziffern, Bindestrich.'; return; }
+      if (grund.length < 20) {
+        st.textContent = 'Es fehlt der Grund (' + grund.length + ' von mindestens 20 Zeichen). ' +
+          'Ohne ihn verweigert die Maschine die Messung – das ist Absicht, nicht Schikane.'; return;
+      }
       if (!/function\s+signal\s*\(/.test(sig)) { st.textContent = 'Die Signalfunktion muss „function signal(bars, i, params)" heißen.'; return; }
       /* Ohne Namen kann die Maschine die Regel nicht anbinden. Der Rest der Pruefung
        * passiert dort, wo sie hingehoert - in der Maschine, nicht in der Oberflaeche. */
@@ -345,6 +549,7 @@
 
   document.addEventListener('DOMContentLoaded', function () {
     eingabe();
+    baukastenAufbauen();
     document.addEventListener('tab-changed', function (ev) { if (ev.detail === 'messung') laden(); });
     setTimeout(laden, 4000);
   });

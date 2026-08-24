@@ -320,10 +320,11 @@
     'messung.eingabe': {
       titel: 'Drei Dinge braucht eine Strategie',
       punkte: [
-        'Ein Grund: warum sollte der Effekt existieren – nicht „der RSI war unter 10“, sondern „Indexfonds müssen am Quartalsende kaufen“.',
-        'Eine Signalfunktion, die nur Kerzen bis zum Index i sieht.',
-        'Eine Vorregistrierung: Haltedauer in Kerzen, Richtung, und welche Parametervarianten geprüft werden.',
-        'Jede Variante zählt als eigener Test und hebt die Schwelle – die Maschine verhindert das nicht, sie weist es aus.'
+        'Ein Grund: warum sollte der Effekt existieren – nicht „der RSI war unter 10“, sondern „Indexfonds müssen am Quartalsende kaufen“. Den schreibt kein Baukasten; er ist die Vorregistrierung.',
+        'Eine Regel, wann gekauft wird. Im <b>Baukasten</b> wird sie zusammengeklickt und die App schreibt den Code; im <b>Expertenmodus</b> schreibt man ihn selbst.',
+        'Der Baukasten deckt die häufigen Muster ab, nicht alles – eine beliebige Idee lässt sich nicht anklicken. Der erzeugte Code steht immer daneben und lässt sich in den Expertenmodus übernehmen.',
+        'Eine Vorregistrierung: Haltedauer, Richtung, und welche Varianten geprüft werden. Jede Variante zählt als eigener Test und hebt die Schwelle – die Maschine verhindert das nicht, sie weist es aus.',
+        'Was die Regel sieht, endet bei der aktuellen Kerze. Die Bausteine halten sich streng daran; wer selbst schreibt, muss selbst darauf achten.'
       ]
     },
     /* Die drei Beobachtungskarten auf "Heute". Der Satz "Ungemessen, reine Beobachtung
