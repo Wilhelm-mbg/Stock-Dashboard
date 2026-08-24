@@ -1532,31 +1532,59 @@
 <h2 style="margin-top:18px;">Neue Strategie ins Rennen schicken
   <button class="info" type="button" data-info="messung.eingabe" aria-expanded="false" aria-label="Erklärung: Neue Strategie ins Rennen schicken">i</button></h2>
 <div class="panel" id="strategieEingabe">
-  <div style="font-size:var(--fs-neben); color:var(--ink-2); line-height:1.5; margin-bottom:8px; max-width:68ch;">
-    Drei Dinge braucht eine Strategie: einen <b>Grund</b>, eine <b>Signalfunktion</b> und eine <b>Vorregistrierung</b>.
+  <div style="font-size:var(--fs-neben); color:var(--ink-2); line-height:1.5; margin-bottom:10px; max-width:68ch;">
+    Drei Dinge braucht eine Strategie: einen <b>Grund</b>, eine <b>Regel, wann gekauft wird</b>, und die
+    Festlegung <b>vorher</b>, was geprüft werden soll.
   </div>
+  <div role="radiogroup" aria-label="Art der Eingabe" style="display:flex; gap:6px; margin-bottom:12px; flex-wrap:wrap;">
+    <button class="btn" type="button" id="stModusBau" role="radio" aria-checked="true">Baukasten</button>
+    <button class="btn ghost" type="button" id="stModusExperte" role="radio" aria-checked="false">Expertenmodus</button>
+    <span id="stModusText" style="font-size:var(--fs-neben); color:var(--muted); align-self:center;"></span>
+  </div>
+
+  <!-- Baukasten: die Regel wird zusammengeklickt, den Code schreibt die App -->
+  <div id="stBaukasten">
+    <label style="font-size:var(--fs-neben); display:block; margin-bottom:8px;">1. Wann soll gekauft werden?
+      <select id="stMuster" style="width:100%;"></select>
+      <span id="stMusterKurz" style="display:block; font-size:var(--fs-klein); color:var(--muted); margin-top:3px;"></span></label>
+    <div id="stFelder" style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:8px;"></div>
+    <div id="stSatz" class="panel" style="padding:8px 10px; margin-bottom:10px; font-size:var(--fs-neben); line-height:1.55;"></div>
+    <details id="stCodeAuf" style="margin-bottom:10px;">
+      <summary style="cursor:pointer; font-size:var(--fs-neben); color:var(--muted);">Was die App daraus gemacht hat (Code ansehen)</summary>
+      <pre id="stCodeVorschau" style="margin-top:6px; padding:8px 10px; background:var(--panel-2); border:1px solid var(--kante); border-radius:var(--r-normal); font-size:var(--fs-klein); overflow-x:auto; white-space:pre;"></pre>
+      <button class="btn ghost" type="button" id="stUebernehmen" style="margin-top:6px; padding:4px 10px; font-size:var(--fs-neben);">In den Expertenmodus übernehmen und dort weiterschreiben</button>
+    </details>
+  </div>
+
   <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:8px;">
-    <label style="font-size:var(--fs-neben);">Kennung <input id="stKey" placeholder="z. B. quartalsende-kauf" style="width:100%;"></label>
-    <label style="font-size:var(--fs-neben);">Haltedauer in Kerzen (60m) <input id="stHalten" type="number" min="1" max="130" value="8" style="width:100%;"></label>
-    <label style="font-size:var(--fs-neben);">Richtung <select id="stRichtung" style="width:100%;"><option value="long">nur Long</option><option value="short">nur Short</option><option value="beide">beide</option></select></label>
-    <label style="font-size:var(--fs-neben);">Spanne je Seite (Bp) <input id="stSpanne" type="number" min="0" max="100" value="5" style="width:100%;"></label>
+    <label style="font-size:var(--fs-neben);">Kurzname der Strategie <input id="stKey" placeholder="z. B. quartalsende-kauf" style="width:100%;">
+      <span style="display:block; font-size:var(--fs-klein); color:var(--muted);">Nur Kleinbuchstaben, Ziffern und Bindestriche. Er wird der Dateiname.</span></label>
+    <label style="font-size:var(--fs-neben);">Wie lange halten? <input id="stHalten" type="number" min="1" max="130" value="8" style="width:100%;">
+      <span id="stHaltenText" style="display:block; font-size:var(--fs-klein); color:var(--muted);"></span></label>
+    <label style="font-size:var(--fs-neben);">Was erwarten Sie? <select id="stRichtung" style="width:100%;"><option value="long">Kurs steigt (nur Long)</option><option value="short">Kurs fällt (nur Short)</option><option value="beide">beides zulassen</option></select>
+      <span id="stRichtungText" style="display:block; font-size:var(--fs-klein); color:var(--muted);"></span></label>
+    <label style="font-size:var(--fs-neben);">Handelskosten je Seite <input id="stSpanne" type="number" min="0" max="100" value="5" style="width:100%;">
+      <span id="stSpanneText" style="display:block; font-size:var(--fs-klein); color:var(--muted);"></span></label>
   </div>
-  <label style="font-size:var(--fs-neben); display:block; margin-bottom:8px;">Grund (mindestens 20 Zeichen – ohne Grund verweigert die Maschine die Messung)
-    <textarea id="stGrund" rows="2" style="width:100%; font-family:inherit;" placeholder="Warum sollte dieser Effekt existieren? Wer MUSS hier handeln, und warum?"></textarea></label>
+  <label style="font-size:var(--fs-neben); display:block; margin-bottom:4px;">Warum sollte das funktionieren? <span id="stGrundZaehler" style="color:var(--muted);"></span>
+    <textarea id="stGrund" rows="3" style="width:100%; font-family:inherit;" placeholder="Wer MUSS hier handeln, und warum? Nicht: was der Kurs Ihrer Meinung nach tut."></textarea></label>
+  <div id="stGrundHilfe" style="font-size:var(--fs-klein); color:var(--muted); line-height:1.55; margin-bottom:10px; max-width:78ch;"></div>
+  <div id="stExperte" hidden>
   <label style="font-size:var(--fs-neben); display:block; margin-bottom:8px;">Signalfunktion <code>signal(bars, i, params)</code> – darf nur <code>bars[0..i]</code> lesen, gibt <code>{dir: 1}</code>, <code>{dir: -1}</code> oder <code>null</code> zurück. <code>Q</code> ist quant.js.
-    <textarea id="stSignal" rows="8" style="width:100%; font-family:var(--mono, monospace); font-size:var(--fs-neben);" placeholder="function signal(bars, i, params) {&#10;  // Beispiel: letzte Kerze des Monats&#10;  var d = new Date(bars[i][0]), n = new Date(bars[i+1] ? bars[i+1][0] : bars[i][0] + 86400000);&#10;  return d.getUTCMonth() !== n.getUTCMonth() ? { dir: 1 } : null;&#10;}"></textarea></label>
+    <textarea id="stSignal" rows="8" style="width:100%; font-family:var(--mono, monospace); font-size:var(--fs-neben);" placeholder="function signal(bars, i, params) {&#10;  // Beispiel: erste Kerze eines neuen Monats. Verglichen wird gegen die VORIGE&#10;  // Kerze. Die naechste anzufassen waere ein Blick in die Zukunft - auch dann,&#10;  // wenn man nur ihren Zeitstempel liest.&#10;  if (i &lt; 1) return null;&#10;  var d = new Date(bars[i][0]), v = new Date(bars[i-1][0]);&#10;  return d.getUTCMonth() !== v.getUTCMonth() ? { dir: 1 } : null;&#10;}"></textarea></label>
   <label style="font-size:var(--fs-neben); display:block; margin-bottom:8px;">Ausstiegsregel (freiwillig) <code>stopNiveau(abgeschlossen, einKurs, params)</code> – gibt das <b>Stop-Niveau</b> zurück oder <code>null</code>. Leer = Ausstieg nach der Haltedauer.
     <textarea id="stStop" rows="5" style="width:100%; font-family:var(--mono, monospace); font-size:var(--fs-neben);" placeholder="function stopNiveau(abgeschlossen, einKurs, params) {&#10;  // Beispiel: nachziehender Stop, sichert params.mcp des bisherigen Gewinns&#10;  var h = einKurs;&#10;  for (var k = 0; k &lt; abgeschlossen.length; k++) if (abgeschlossen[k].hoch &gt; h) h = abgeschlossen[k].hoch;&#10;  return h &gt; einKurs ? einKurs + (h - einKurs) * params.mcp : null;&#10;}"></textarea>
     <span style="font-size:var(--fs-klein); color:var(--muted);">Die Regel bekommt nur <b>abgeschlossene</b> Kerzen (<code>{auf, hoch, tief, schluss}</code>) und liefert nur ein Niveau – sie kann nicht in die laufende Kerze sehen und sich keinen Wunschkurs geben. Die Maschine wendet das Niveau auf die <b>nächste</b> Kerze an und füllt zum schlechteren aus Stop und erstem handelbaren Kurs. Die Kontrolle bekommt denselben Ausstieg. (Fehlertypen C6/C7)</span></label>
   <label style="font-size:var(--fs-neben); display:block; margin-bottom:8px;">Parametervarianten (JSON-Liste, leer = eine Variante ohne Parameter). <b>Jede Variante ist ein Test.</b>
     <input id="stVarianten" style="width:100%; font-family:var(--mono, monospace); font-size:var(--fs-neben);" placeholder='[{"schwelle": 10}, {"schwelle": 15}]'></label>
+  </div>
   <div style="display:flex; gap:8px; align-items:center;">
     <button class="btn" id="stAblegen" type="button">Strategie ablegen</button>
     <span id="stStatus" role="status" aria-live="polite" style="font-size:var(--fs-neben); color:var(--muted);"></span>
   </div>
   <div id="stNaechster" hidden style="margin-top:10px; padding:10px 12px; border:1px solid var(--kante); border-radius:var(--r-gross); background:var(--surface-2);"></div>
   <div style="font-size:var(--fs-neben); color:var(--muted); margin-top:8px;">
-    Die Datei landet unter <code>Markt-Dashboard-Daten/strategien/</code>. Gemessen wird sie <b>nicht</b> von der App, sondern im Projektordner mit <code>node studien/messmaschine/messen.js &lt;datei&gt;</code> – absichtlich ein eigener Schritt, damit das Urteil nie aus der App selbst kommt. Nach dem Ablegen steht der fertige Befehl zum Kopieren hier. Das Protokoll erscheint danach oben im Scoreboard.
+    Die Datei landet unter <code>Markt-Dashboard-Daten/strategien/</code>. Danach erscheint hier der Knopf <b>Jetzt messen</b>. Die Messmaschine läuft dabei in einem <b>eigenen Prozess</b> neben der App – das Urteil kommt weiterhin aus ihr und nicht aus dem Programm, das die Strategie anzeigt. Wer lieber von Hand misst oder ein anderes Archiv prüfen will, findet daneben den fertigen Befehl. Das Protokoll erscheint anschließend oben im Scoreboard.
   </div>
 </div>
 </div>
@@ -1914,6 +1942,7 @@
 <script src="bugs.js"></script>
 <script src="diagnose.js"></script>
 <script src="wkn.js"></script>
+<script src="strategiebaukasten.js"></script>
 <script src="scoreboard.js"></script>
 <script src="scheinfinder.js"></script>
 <script src="mfhandel.js"></script>

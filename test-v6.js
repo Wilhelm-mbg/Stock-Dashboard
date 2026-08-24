@@ -5680,6 +5680,271 @@ console.log('\n41) Zustaende: was die App sagt, wenn etwas fehlt oder klemmt');
   ok(skripte.length > 20, 'CSP: geprueft wurden alle ' + (skripte.length + 3) + ' ausgelieferten Dateien');
 })();
 
+/* ================= 52. Der Baukasten =================
+ * Das Formular fuer eine neue Strategie verlangte JavaScript. Wer nicht programmiert,
+ * kam nicht bis zu einer Messung - es war nicht schwer zu bedienen, es war unbedienbar.
+ *
+ * Eine beliebige Handelsidee laesst sich nicht anklicken; das bleibt so. Deshalb zwei
+ * Wege: der Baukasten fuer die haeufigen Muster, der Expertenmodus unveraendert
+ * daneben. Geprueft wird hier beides - dass der Baukasten richtigen Code erzeugt, UND
+ * dass der Expertenmodus nichts eingebuesst hat.
+ *
+ * Der Baukasten ist eine reine Datei ohne DOM. Deshalb werden die erzeugten
+ * Signalfunktionen hier WIRKLICH AUSGEFUEHRT, gegen gebaute Kursreihen, statt ihren
+ * Quelltext abzusuchen. Eine Textsuche haette den schwersten Fehler nicht gefunden,
+ * den so ein Generator machen kann: einen Blick in die Zukunft. */
+(function () {
+  console.log('\n52) Baukasten: aus Klicken wird eine Signalfunktion');
+  var B = require(__dirname + '/strategiebaukasten.js');
+  var html = fs.readFileSync(__dirname + '/index.html', 'utf8');
+  var sco = fs.readFileSync(__dirname + '/scoreboard.js', 'utf8');
+
+  /** Stundenkerzen, sieben je Handelstag, Montag bis Freitag. */
+  function reihe(tage, kurs) {
+    var bars = [], d = new Date('2026-01-01T00:00:00Z');
+    for (var t = 0; t < tage; t++) {
+      if (d.getUTCDay() !== 0 && d.getUTCDay() !== 6) {
+        for (var h = 0; h < 7; h++) {
+          var k = kurs ? kurs(bars.length) : 100;
+          bars.push([Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(), 14 + h),
+            k, 1000, k * 1.005, k * 0.995, k]);
+        }
+      }
+      d.setUTCDate(d.getUTCDate() + 1);
+    }
+    return bars;
+  }
+  function fnVon(r) { return new Function(r.signal + '; return signal;')(); }
+  function treffer(fn, bars, params) {
+    var out = [];
+    for (var i = 0; i < bars.length; i++) if (fn(bars, i, params || {})) out.push(i);
+    return out;
+  }
+
+  var bars = reihe(150);
+
+  // ---------- Jedes Muster erzeugt lauffaehigen Code ----------
+  ok(B.MUSTER.length >= 5, 'Der Baukasten kennt mindestens fuenf Muster  [' + B.MUSTER.length + ']');
+  var kaputt = [];
+  B.MUSTER.forEach(function (m) {
+    var r = B.baue({ muster: m.id, richtung: 'long', werte: {} });
+    if (!r.ok) { kaputt.push(m.id + ': ' + r.fehler); return; }
+    try { fnVon(r); } catch (e) { kaputt.push(m.id + ': ' + e.message); }
+  });
+  ok(kaputt.length === 0, 'Jedes Muster erzeugt mit seinen Vorgabewerten lauffaehigen Code  [' + kaputt.join('; ') + ']');
+
+  /* ---------- KEIN BLICK IN DIE ZUKUNFT ----------
+   * Der schwerste Fehler, den ein Signalgenerator machen kann. Die Probe ist
+   * unbestechlich: Das Urteil an Stelle i muss dasselbe sein, wenn die Reihe NACH i
+   * endet. Wer bars[i+1] anfasst - auch nur dessen Zeitstempel -, faellt hier durch.
+   * Das mitgelieferte Beispiel im alten Formular haette es getan: es prueft ueber
+   * bars[i+1], ob der Monat wechselt. */
+  var seher = [];
+  B.MUSTER.forEach(function (m) {
+    var fn = fnVon(B.baue({ muster: m.id, richtung: 'long', werte: {} }));
+    for (var i = 40; i < bars.length; i += 3) {
+      var voll, kurz;
+      try { voll = JSON.stringify(fn(bars, i, {})); } catch (e) { voll = 'FEHLER ' + e.message; }
+      try { kurz = JSON.stringify(fn(bars.slice(0, i + 1), i, {})); } catch (e) { kurz = 'FEHLER ' + e.message; }
+      if (voll !== kurz) { seher.push(m.id + ' bei ' + i); break; }
+    }
+  });
+  ok(seher.length === 0,
+     'Zukunftsprobe: kein Muster urteilt anders, wenn die Kursreihe bei i endet  [' + seher.join(', ') + ']');
+  var alleCode = B.MUSTER.map(function (m) { return B.baue({ muster: m.id, richtung: 'long', werte: {} }).signal; }).join('\n');
+  ok(!/bars\s*\[\s*i\s*\+/.test(alleCode),
+     'Zukunftsprobe: nirgends steht bars[i + …] im erzeugten Code - auch nicht fuer den Zeitstempel');
+
+  // ---------- Was die einzelnen Muster tun ----------
+  var mon = fnVon(B.baue({ muster: 'monatsende', richtung: 'long', werte: { vorlauf: '0' } }));
+  var monT = treffer(mon, bars).map(function (i) { return new Date(bars[i][0]).toISOString().slice(0, 10); });
+  ok(monT.length === 5 && monT[0] === '2026-01-30' && monT[1] === '2026-02-27',
+     'Monatsende: genau ein Signal je Monat, am letzten Werktag  [' + monT.join(' ') + ']');
+  var monStd = treffer(mon, bars).map(function (i) { return new Date(bars[i][0]).getUTCHours(); });
+  ok(monStd.every(function (h) { return h === 14; }),
+     'Monatsende: nur zur ersten Kerze des Tages - sonst gaebe es sieben Signale je Monat');
+  var mon1 = fnVon(B.baue({ muster: 'monatsende', richtung: 'long', werte: { vorlauf: '1' } }));
+  var monT1 = treffer(mon1, bars).map(function (i) { return new Date(bars[i][0]).toISOString().slice(0, 10); });
+  ok(monT1[0] === '2026-01-29', 'Monatsende: „einen Werktag frueher“ trifft wirklich den vorletzten  [' + monT1[0] + ']');
+
+  var wt = fnVon(B.baue({ muster: 'wochentag', richtung: 'long', werte: { tag: '3' } }));
+  var wtT = treffer(wt, bars);
+  ok(wtT.length > 15 && wtT.every(function (i) { return new Date(bars[i][0]).getUTCDay() === 3; }),
+     'Wochentag: trifft ausschliesslich Mittwoche  [' + wtT.length + ' Signale]');
+
+  var tz = fnVon(B.baue({ muster: 'tageszeit', richtung: 'long', werte: { nach: '2' } }));
+  var tzT = treffer(tz, bars);
+  ok(tzT.every(function (i) { return new Date(bars[i][0]).getUTCHours() === 16; }),
+     'Tageszeit: „2 Stunden nach Start“ ist die dritte Kerze, also 16 Uhr UTC');
+  var tage = {};
+  tzT.forEach(function (i) { tage[new Date(bars[i][0]).toISOString().slice(0, 10)] = 1; });
+  ok(tzT.length === Object.keys(tage).length, 'Tageszeit: genau ein Signal je Handelstag, nie zwei');
+
+  var rg = fnVon(B.baue({ muster: 'rueckgang', richtung: 'long', werte: { kerzen: '5', prozent: '4' } }));
+  var faellt = reihe(20, function (n) { return 100 - n * 1.2; });
+  var steigt = reihe(20, function (n) { return 100 + n * 1.2; });
+  ok(treffer(rg, faellt).length > 20, 'Rueckgang: feuert in einer fallenden Reihe');
+  ok(treffer(rg, steigt).length === 0, 'Rueckgang: feuert nie in einer steigenden Reihe');
+  var kaputteKurse = reihe(10, function () { return 0; });
+  ok(treffer(rg, kaputteKurse).length === 0,
+     'Rueckgang: Nullkurse im Archiv sind kein Absturz von 100 % - sie werden uebergangen');
+
+  var ab = fnVon(B.baue({ muster: 'ausbruch', richtung: 'long', werte: { kerzen: '5' } }));
+  ok(treffer(ab, steigt).length > 20, 'Ausbruch: feuert in einer steigenden Reihe');
+  ok(treffer(ab, reihe(20)).length === 0, 'Ausbruch: feuert nie in einer flachen Reihe');
+  /* Aeltere Eintraege im Kursarchiv haben nur [Zeit, Schluss, Volumen] - ohne Hoch.
+   * Ohne Rueckfall waere der Vergleich gegen undefined immer falsch, und das Muster
+   * haette auf dem halben Archiv stumm geschwiegen, ohne dass es jemand merkt. */
+  var ohneHoch = steigt.map(function (b) { return [b[0], b[1], b[2]]; });
+  ok(treffer(ab, ohneHoch).length > 20,
+     'Ausbruch: auch auf alten Archivzeilen ohne Hoch - dort zaehlt der Schlusskurs');
+
+  // ---------- Richtung ----------
+  var kurzS = B.baue({ muster: 'monatsende', richtung: 'short', werte: {} });
+  ok(/\{ dir: -1 \}/.test(kurzS.signal) && kurzS.kennung === 'monatsende-verkauf',
+     'Richtung: „Kurs faellt“ erzeugt dir -1 und einen passenden Kurznamen  [' + kurzS.kennung + ']');
+  ok(B.richtungDir('beide') === 1,
+     'Richtung: „beides“ kann ein einseitiges Muster nicht bedienen - es wird Long, und die Oberflaeche sagt das');
+  ok(/beides zulassen/.test(html) && /Kurs steigt \(nur Long\)/.test(html),
+     'Richtung: in der Oberflaeche steht Klartext, nicht nur „Long“');
+
+  // ---------- Mehrere Werte werden zu Varianten ----------
+  var mehr = B.baue({ muster: 'rueckgang', richtung: 'long', werte: { kerzen: '4,6,8', prozent: '3' } });
+  ok(mehr.ok && mehr.tests === 3 && mehr.varianten.length === 3,
+     'Varianten: drei Werte ergeben drei Messungen  [' + mehr.tests + ']');
+  ok(mehr.varianten[0].kerzen === 4 && mehr.varianten[2].kerzen === 8 && mehr.varianten[1].prozent === 3,
+     'Varianten: die Werte stehen wirklich drin  [' + JSON.stringify(mehr.varianten) + ']');
+  var kreuz = B.baue({ muster: 'rueckgang', richtung: 'long', werte: { kerzen: '4,6', prozent: '2,3,4' } });
+  ok(kreuz.ok && kreuz.tests === 6, 'Varianten: zwei Felder ergeben das Kreuzprodukt  [' + kreuz.tests + ']');
+  /* Der Rueckfall in params ist kein Schmuck: die Maschine ruft signal auch mit einem
+   * leeren Parametersatz auf. Ohne ihn waere n undefined und das Muster stumm. */
+  var mehrFn = fnVon(mehr);
+  ok(treffer(mehrFn, faellt, {}).length > 0, 'Varianten: ohne Parameter greift der Rueckfallwert - das Muster bleibt nicht stumm');
+  ok(treffer(mehrFn, faellt, { kerzen: 8 }).length > 0, 'Varianten: mit Parameter laeuft es ebenso');
+  var zuViel = B.baue({ muster: 'rueckgang', richtung: 'long', werte: { kerzen: '1,2,3,4,5', prozent: '1,2,3,4,5,6' } });
+  ok(!zuViel.ok && /30 Tests/.test(zuViel.fehler),
+     'Varianten: dreissig Tests werden abgelehnt, mit dem Grund - nicht still erzeugt');
+
+  // ---------- Fehleingaben werden erklaert, nicht verschluckt ----------
+  var buchstabe = B.baue({ muster: 'rueckgang', richtung: 'long', werte: { kerzen: 'viele', prozent: '3' } });
+  ok(!buchstabe.ok && /viele/.test(buchstabe.fehler) && /Stunden/.test(buchstabe.fehler),
+     'Fehleingabe: Text statt Zahl nennt das Feld UND das, was dort stand  [' + buchstabe.fehler + ']');
+  var drueber = B.baue({ muster: 'rueckgang', richtung: 'long', werte: { kerzen: '999', prozent: '3' } });
+  ok(!drueber.ok && /1 bis 130/.test(drueber.fehler),
+     'Fehleingabe: ausserhalb der Grenzen nennt die Grenzen  [' + drueber.fehler + ']');
+  ok(!B.baue({ muster: 'gibtesnicht' }).ok, 'Fehleingabe: ein unbekanntes Muster wird abgelehnt');
+
+  /* ---------- Den GRUND schreibt der Baukasten nicht ----------
+   * Er ist die Vorregistrierung - die These, warum ein Effekt existieren sollte.
+   * Wuerde die App ihn ausfuellen, waere die Huerde weg, die diese Maschine traegt.
+   * Der Baukasten gibt einen Denkanstoss; das Feld bleibt leer. */
+  var alleFelder = {};
+  B.MUSTER.forEach(function (m) {
+    var r = B.baue({ muster: m.id, richtung: 'long', werte: {} });
+    Object.keys(r).forEach(function (k) { alleFelder[k] = 1; });
+  });
+  ok(!alleFelder.grund, 'Grund: der Baukasten liefert keinen - er ist die Vorregistrierung und bleibt beim Menschen');
+  ok(B.MUSTER.every(function (m) { return m.warum && m.warum.length > 40; }),
+     'Grund: jedes Muster nennt dafuer die SORTE Begruendung, die traegt');
+  ok(/Trägt nicht:/.test(sco) && /Beobachtung, keine These/.test(sco),
+     'Grund: und ausdruecklich, was nicht traegt');
+
+  // ---------- Der Expertenmodus hat nichts eingebuesst ----------
+  ok(/id="stExperte"/.test(html) && /id="stBaukasten"/.test(html), 'Zwei Wege: beide Bereiche stehen im Formular');
+  var exp = /<div id="stExperte" hidden>([\s\S]*?)\n  <\/div>/.exec(html);
+  ok(!!exp, 'Expertenmodus: der Bereich ist abgegrenzt');
+  if (exp) {
+    ok(/id="stSignal"/.test(exp[1]) && /id="stStop"/.test(exp[1]) && /id="stVarianten"/.test(exp[1]),
+       'Expertenmodus: Signalfunktion, Ausstiegsregel und Varianten sind alle drei noch da');
+  }
+  ok(/id="stUebernehmen"/.test(html) && /stSignal'\)\.value = r\.signal/.test(sco),
+     'Uebergang: der erzeugte Code laesst sich in den Expertenmodus uebernehmen - der Baukasten ist keine Sackgasse');
+  ok(/id="stCodeVorschau"/.test(html),
+     'Uebergang: und er wird vorher angezeigt, statt im Verborgenen zu entstehen');
+  /* Das Beispiel im Expertenfeld hat jahrelang das Gegenteil dessen vorgemacht, was
+   * die Zeile darueber verlangt: "darf nur bars[0..i] lesen" - und dann bars[i+1].
+   * Wer abschreibt, schreibt den Fehler mit ab. */
+  var platz = /id="stSignal"[^>]*placeholder="([^"]*)"/.exec(html);
+  ok(!!platz && !/bars\[i\+1\]/.test(platz[1]),
+     'Beispiel: der Platzhalter im Expertenfeld liest nicht mehr bars[i+1] - er widersprach der Regel daneben');
+  ok(!!platz && /bars\[i-1\]/.test(platz[1]),
+     'Beispiel: er vergleicht stattdessen gegen die vorige Kerze');
+  ok(/if \(modus === 'bau'\)/.test(sco) && /ausBaukasten\.signal/.test(sco),
+     'Ablegen: derselbe Knopf bedient beide Wege');
+  ok(html.indexOf('strategiebaukasten.js') < html.indexOf('scoreboard.js'),
+     'Ladereihenfolge: strategiebaukasten.js vor scoreboard.js');
+
+  /* ---------- Was der alte Text noch behauptete ----------
+   * Seit 8.25.0 kann die App messen. Der Absatz unter dem Formular sagte weiter das
+   * Gegenteil - eine Zusicherung, die ihr eigenes Programm ueberholt hatte. */
+  ok(!/Gemessen wird sie <b>nicht<\/b> von der App/.test(html),
+     'Text: die ueberholte Behauptung „gemessen wird nicht von der App“ ist weg');
+  ok(/Jetzt messen<\/b>/.test(html) && /eigenen Prozess<\/b>/.test(html),
+     'Text: stattdessen steht da, wie es wirklich laeuft');
+})();
+
+/* ================= 53. Wo die Daten liegen =================
+ * Das 60m-Archiv wird rund 1,5 GB gross und liegt deshalb nicht mehr im Store der App.
+ * tools/yahoo-60m-holen.js hatte dafuer schon eine Konvention; die Messkette kannte sie
+ * nicht und hatte den alten Pfad fest verdrahtet.
+ *
+ * Das war keine Schoenheitsfrage. messen.js schreibt bei einem "fremden" Archiv KEINE
+ * Kopie in den Datenordner - das Scoreboard sieht solche Messungen nie. Mit verlagerten
+ * Daten hiess das: Der Knopf in der App misst das kleine Archiv, und eine Messung auf
+ * dem grossen kommt nie in der App an. Eine Sackgasse mit Stempel. */
+(function () {
+  console.log('\n53) Das bezeichnete Archiv');
+  var path = require('path');
+  var os = require('os');
+  var q = fs.readFileSync(__dirname + '/studien/messmaschine/messen.js', 'utf8');
+  var m = /function bezeichnetesArchiv\(\) \{[\s\S]*?\n\}/.exec(q);
+  ok(!!m, 'Die Aufloesung steht als eigene Funktion in messen.js');
+  if (!m) return;
+
+  /* Ausgefuehrt, nicht gelesen - mit gestelltem process und einem echten Zeigerordner. */
+  var tmp = path.join(os.tmpdir(), 'md-archiv-' + process.pid);
+  fs.mkdirSync(tmp, { recursive: true });
+  function loese(env) {
+    return new Function('process', 'fs', 'path', 'os', 'DATEN', m[0] + '; return bezeichnetesArchiv();')(
+      { env: env }, fs, path, os, tmp);
+  }
+  var store = path.join('C:\\Users\\W\\AppData\\Roaming', 'Markt-Dashboard', 'store');
+
+  ok(loese({ MD_ARCHIV60M: 'E:\\Markt-Dashboard-Archiv' }) === 'E:\\Markt-Dashboard-Archiv',
+     'Erste Wahl: die Umgebungsvariable MD_ARCHIV60M');
+
+  fs.writeFileSync(path.join(tmp, 'archiv60m-pfad.txt'), 'E:\\Markt-Dashboard-Archiv\n', 'utf8');
+  ok(loese({ APPDATA: 'C:\\Users\\W\\AppData\\Roaming' }) === 'E:\\Markt-Dashboard-Archiv',
+     'Zweite Wahl: die Zeigerdatei im Datenordner');
+  ok(loese({ MD_ARCHIV60M: 'X:\\vorrang', APPDATA: 'C:\\x' }) === 'X:\\vorrang',
+     'Die Umgebungsvariable schlaegt die Zeigerdatei');
+
+  /* Windows-Editoren schreiben gern eine Bytefolgemarke an den Dateianfang. Ohne sie
+   * abzuschneiden waere der Pfad "\uFEFFE:\..." - existiert nicht, und die Fehlermeldung
+   * haette wie ein Tippfehler des Nutzers ausgesehen. */
+  fs.writeFileSync(path.join(tmp, 'archiv60m-pfad.txt'), '\uFEFFE:\\Mit-Marke  \r\n', 'utf8');
+  ok(loese({ APPDATA: 'C:\\x' }) === 'E:\\Mit-Marke',
+     'Zeigerdatei: Bytefolgemarke und Zeilenende werden abgeschnitten  [' + loese({ APPDATA: 'C:\\x' }) + ']');
+
+  fs.writeFileSync(path.join(tmp, 'archiv60m-pfad.txt'), '   \n', 'utf8');
+  ok(loese({ APPDATA: 'C:\\Users\\W\\AppData\\Roaming' }) === store,
+     'Zeigerdatei leer: dann der Store der App, nicht ein leerer Pfad');
+  fs.rmSync(tmp, { recursive: true, force: true });
+  ok(loese({ APPDATA: 'C:\\Users\\W\\AppData\\Roaming' }) === store,
+     'Ohne alles bleibt es beim Store der App - wer nichts einrichtet, merkt keinen Unterschied');
+
+  /* Der Riegel behaelt seine Zaehne: "fremd" heisst weiter "nicht das bezeichnete
+   * Archiv", und eine Messung darauf kommt nicht ins Scoreboard. */
+  ok(/var echtesArchiv = bezeichnetesArchiv\(\);/.test(q),
+     'Der Riegel misst gegen dasselbe bezeichnete Archiv - nicht gegen einen zweiten Pfad daneben');
+  ok(/fremdesArchiv = path\.resolve\(archiv\) !== path\.resolve\(echtesArchiv\)/.test(q),
+     'Fremd heisst weiterhin: nicht das bezeichnete Archiv');
+  ok(/Keine Kopie in den Datenordner/.test(q),
+     'Und eine Messung auf einem fremden Archiv kommt weiterhin nicht ins Scoreboard');
+  ok(/process\.argv\[3\] \|\| bezeichnetesArchiv\(\)/.test(q),
+     'Ein Archiv auf der Befehlszeile geht weiter vor - fuer Gegenproben');
+})();
+
 Promise.all(offeneProben).then(function () {
   console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
   process.exit(fails ? 1 : 0);
