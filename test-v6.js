@@ -3,6 +3,13 @@ const fs = require('fs');
 /* Tests v6: ORB, Auto-Stop, Risiko-Sizing, Resampling/MTF */
 var Q = require('./quant.js');
 var fails = 0;
+/* Asynchrone Abschnitte muessen sich hier eintragen, sonst laufen sie NIE:
+ * process.exit() am Dateiende kommt vor jeder noch offenen Zusage, und die Suite
+ * meldet dann "alle bestanden", ohne die Zusicherungen ueberhaupt ausgefuehrt zu
+ * haben. Genau das ist beim Kurslader passiert - 16 Pruefungen, still uebersprungen. */
+var offeneProben = [];
+function probe(zusage) { offeneProben.push(zusage); return zusage; }
+
 function ok(cond, name, extra) {
   console.log((cond ? '  ✅ ' : '  ❌ ') + name + (extra !== undefined ? '  [' + extra + ']' : ''));
   if (!cond) fails++;
@@ -491,18 +498,103 @@ console.log('\n17) Kapitalschutz: Kill-Switch, Positionsgroessen-Wachhund, Stale
 (function () {
   var depotSrc = fs.readFileSync(__dirname + '/depot.js', 'utf8');
 
-  // --- 1) Kill-Switch ---
-  ok(/function killSwitchPruefen/.test(depotSrc), 'Kill-Switch: Funktion existiert');
+  // --- 1) Kill-Switch: die Regel wird AUSGEFUEHRT, nicht gelesen ---
+  /* Bis 8.24.5 stand hier eine Textsuche plus eine Nachbau-Formel mit dem Kommentar
+   * "identische Formel wie im Produktcode". Zwei Kopien derselben Regel - und die
+   * Pruefung faellt genau dann aus, wenn sie gebraucht wird: aendert jemand die Formel
+   * in depot.js, rechnet der Test weiter mit der alten und bleibt gruen. Seit die
+   * Entscheidungen in risiko.js stehen (ohne D, ohne DOM), laeuft hier der ECHTE Code. */
+  var Ri = require(__dirname + '/risiko.js');
+
+  ok(/function killSwitchPruefen/.test(depotSrc), 'Kill-Switch: die Nebenwirkungen liegen weiter in depot.js');
   ok(/HEALTH\.scans\+\+[\s\S]{0,300}killSwitchPruefen\(now\)/.test(depotSrc),
      'Kill-Switch: wird im Intraday-Scan aufgerufen, vor jeder Signalpruefung');
   ok(/closeTrade\(p, sp, now, grund\)/.test(depotSrc), 'Kill-Switch: stellt offene Positionen wirklich glatt');
   ok(/killSwitchAktiv\(\)\) \{ patienceAdd\('Kill-Switch/.test(depotSrc), 'Kill-Switch: sperrt neue Einstiege bis Tagesende');
   ok(/risk: \{ maxPos: 8, dayLossPct: 3,/.test(depotSrc), 'Kill-Switch: Standard-Tagesverlustlimit steht auf 3 %');
-  // Die Ausloese-Regel selbst nachrechnen (identische Formel wie im Produktcode)
-  function loestAus(eq, start, limit) { return start > 0 && (eq / start - 1) * 100 <= -limit; }
-  ok(loestAus(9700, 10000, 3) === true,  'Kill-Switch-Regel: −3,0 % bei Limit 3 loest aus');
-  ok(loestAus(9701, 10000, 3) === false, 'Kill-Switch-Regel: −2,99 % loest noch nicht aus');
-  ok(loestAus(9000, 10000, 3) === true,  'Kill-Switch-Regel: −10 % loest erst recht aus');
+
+  function ks(eq, start, limit) { return Ri.killSwitchFaellig({ risk: { dayLossPct: limit }, dayStartEq: start }, eq); }
+  ok(ks(9700, 10000, 3).faellig === true,  'Kill-Switch: −3,0 % bei Limit 3 loest aus');
+  ok(ks(9701, 10000, 3).faellig === false, 'Kill-Switch: −2,99 % loest noch nicht aus');
+  ok(ks(9000, 10000, 3).faellig === true,  'Kill-Switch: −10 % loest erst recht aus');
+  ok(ks(10500, 10000, 3).faellig === false, 'Kill-Switch: ein Gewinntag loest nie aus');
+  /* Die drei Wege, auf denen der Schalter NICHT ausloesen darf. Jeder einzelne waere
+   * sonst ein Totalglattstellen aus dem Nichts - beim Erststart, nach einem Reset oder
+   * bei ausgeschaltetem Limit. */
+  ok(Ri.killSwitchFaellig({ risk: {}, dayStartEq: 10000 }, 100).faellig === false,
+     'Kill-Switch: ohne gesetztes Limit passiert nichts, egal wie tief der Stand');
+  ok(Ri.killSwitchFaellig({ risk: { dayLossPct: 3 }, dayStartEq: 0 }, 100).faellig === false,
+     'Kill-Switch: ohne Tagesstart wird nicht gerechnet (Erststart)');
+  ok(Ri.killSwitchFaellig({ risk: { dayLossPct: 3 }, dayStartEq: -5 }, 100).faellig === false,
+     'Kill-Switch: ein negativer Tagesstart loest nicht aus');
+  // Der Begruendungstext geht ins Protokoll und ins Warnband - er muss die Zahlen tragen
+  ok(/−3,?0? %|-3\.0 %/.test(ks(9700, 10000, 3).grund.replace('.', ',')) && /Limit −3 %/.test(ks(9700, 10000, 3).grund),
+     'Kill-Switch: die Begruendung nennt Verlust UND Limit');
+
+  // --- 1b) Positionslimit und Exposure-Deckel, ebenfalls ausgefuehrt ---
+  function darf(z, eq) { return Ri.darfOeffnen(z, eq); }
+  var vollesRisiko = { maxPos: 8, dayLossPct: 3, exposurePct: 40 };
+  ok(darf({ risk: vollesRisiko, positionen: 8, dayStartEq: 10000, cash: 10000 }, 10000).ok === false,
+     'Positionslimit: die achte Position ist die letzte');
+  ok(darf({ risk: vollesRisiko, positionen: 7, dayStartEq: 10000, cash: 10000 }, 10000).ok === true,
+     'Positionslimit: bei sieben ist noch Platz');
+  ok(darf({ risk: vollesRisiko, positionen: 0, dayStartEq: 10000, cash: 10000 }, 9700).ok === false,
+     'Tagesverlust: auch der Einstieg ist am Limit gesperrt, nicht nur der Kill-Switch');
+  /* 60 % Bestand bei 40 % Deckel: (10000-4000)/10000 = 60 %. */
+  ok(darf({ risk: vollesRisiko, positionen: 0, dayStartEq: 10000, cash: 4000 }, 10000).ok === false,
+     'Exposure: 60 % in Scheinen bei 40 % Deckel wird abgelehnt');
+  ok(darf({ risk: vollesRisiko, positionen: 0, dayStartEq: 10000, cash: 6500 }, 10000).ok === true,
+     'Exposure: 35 % in Scheinen bleibt erlaubt');
+  /* Der Divisionsschutz (eq > 0 ? ... : 0) ist nur ueber DIESEN Weg erreichbar: mit
+   * gesetztem Tagesstart faengt die Tagesverlust-Regel eine Equity von 0 vorher als
+   * −100 % ab. Ohne Tagesstart - Erststart, direkt nach einem Reset - laeuft es bis
+   * zum Exposure-Zweig durch, und dort darf nicht durch null geteilt werden. */
+  ok(darf({ risk: vollesRisiko, positionen: 0, dayStartEq: 0, cash: 4000 }, 0).ok === true,
+     'Exposure: bei Equity 0 ohne Tagesstart wird nicht durch null geteilt');
+  ok(darf({ risk: vollesRisiko, positionen: 0, dayStartEq: 10000, cash: 4000 }, 0).ok === false,
+     'Equity 0 mit Tagesstart ist ein Totalverlust und wird vorher als Tagesverlust gestoppt');
+  /* Die REIHENFOLGE der Pruefungen entscheidet, welchen Grund der Nutzer zu sehen
+   * bekommt. Liegen mehrere Gruende an, muss weiterhin der Stueckzahl-Grund gewinnen. */
+  var mehrfach = darf({ risk: vollesRisiko, positionen: 9, dayStartEq: 10000, cash: 0 }, 5000);
+  ok(mehrfach.ok === false && /Positionslimit/.test(mehrfach.why),
+     'Reihenfolge: bei mehreren Gruenden nennt die Meldung zuerst das Positionslimit');
+  // Der Rueckfall, wenn D.risk fehlt - er ist bewusst ein anderer als die Erstinstallation
+  ok(Ri.STANDARD.dayLossPct === 5 && Ri.STANDARD.maxPos === 8 && Ri.STANDARD.exposurePct === 40,
+     'Rueckfall ohne D.risk: 8 Positionen, 5 % Tagesverlust, 40 % Exposure');
+  ok(darf({ positionen: 8, dayStartEq: 10000, cash: 10000 }, 10000).ok === false,
+     'Rueckfall greift wirklich, wenn gar kein risk-Objekt da ist');
+  /* Die gefaehrlichste Fehlerart an dieser Stelle ist nicht "lehnt zu viel ab", sondern
+   * "laesst alles durch": undefined >= 8 ist falsch, (eq - undefined) ist NaN, und
+   * NaN >= 40 ist ebenfalls falsch - beide Sperren waeren offen. Ein einziger
+   * Tippfehler im Feldnamen an der Aufrufstelle genuegt dafuer. */
+  [
+    ['positionen fehlt', { risk: vollesRisiko, dayStartEq: 10000, cash: 10000 }, 10000],
+    ['cash fehlt',       { risk: vollesRisiko, positionen: 0, dayStartEq: 10000 }, 10000],
+    ['Equity fehlt',     { risk: vollesRisiko, positionen: 0, dayStartEq: 10000, cash: 10000 }, undefined],
+    ['Equity ist NaN',   { risk: vollesRisiko, positionen: 0, dayStartEq: 10000, cash: 10000 }, NaN],
+    ['gar kein Zustand', null, 10000]
+  ].forEach(function (f) {
+    var e = darf(f[1], f[2]);
+    ok(e.ok === false && /unvollständig/.test(e.why),
+       'Unvollstaendiger Zustand (' + f[0] + ') fuehrt zu KEINEM Einstieg, nicht zu freier Fahrt');
+  });
+  /* Kein throw: eine Ausnahme mitten im Scan wuerde den Durchlauf abbrechen - und damit
+   * auch die AUSSTIEGE, die in derselben Schleife stehen. */
+  ok((function () { try { darf(null, 10000); return true; } catch (e) { return false; } })(),
+     'Unvollstaendiger Zustand wirft nicht - sonst blieben auch die Ausstiege liegen');
+
+  // --- 1c) depot.js darf die Regeln nicht ein zweites Mal enthalten ---
+  /* Genau daran ist die alte Pruefung gescheitert: eine Kopie der Formel, die
+   * auseinanderlaufen kann. Es darf nur noch EINE geben. */
+  ok(!/dayPct <= -r\.dayLossPct/.test(depotSrc) && !/expo >= r\.exposurePct/.test(depotSrc),
+     'Kapitalschutz: die Formeln stehen nur noch in risiko.js, nicht doppelt in depot.js');
+  ok(/R\.darfOeffnen\(/.test(depotSrc) && /R\.killSwitchFaellig\(/.test(depotSrc),
+     'Kapitalschutz: depot.js ruft die echten Entscheidungen auf');
+  ok(/if \(!R\) throw new Error/.test(depotSrc),
+     'Kapitalschutz: fehlt risiko.js, bricht depot.js laut ab statt still ohne Schutz zu laufen');
+  var htmlLade = fs.readFileSync(__dirname + '/index.html', 'utf8');
+  ok(htmlLade.indexOf('risiko.js') < htmlLade.indexOf('src="depot.js"') && htmlLade.indexOf('risiko.js') > 0,
+     'Kapitalschutz: risiko.js wird vor depot.js geladen');
 
   // --- 2) Positionsgroesse: der Wachhund auf die Zahl der Stellen ---
   /* Der lokale KI-Pfad ist am 23.08.2026 entfernt worden (er lief laut Diagnose ueber
@@ -532,12 +624,20 @@ console.log('\n17) Kapitalschutz: Kill-Switch, Positionsgroessen-Wachhund, Stale
   var iOpen = depotSrc.indexOf('Kosten-Check: Bewegung deckt Kosten nicht', iScan);
   var iExit = depotSrc.indexOf('Stop-Loss erreicht', iScan);
   ok(iStale > iExit && iStale < iOpen, 'Stale-Schutz: sitzt nach der Ausstiegs-Logik und vor dem Einstieg');
-  // Die Frische-Regel nachrechnen (identische Formel)
-  function frisch(alterMin, barMin) { return alterMin <= barMin * 3; }
+  /* Auch hier die ECHTE Funktion, ueber echte Bars mit echten Zeitstempeln - nicht die
+   * Formel nachgebaut. Der Nachbau haette den Umgang mit leeren Bars nie geprueft. */
+  var jetztT = 1756000000000;
+  function bar(minAlt) { return [[jetztT - minAlt * 60000, 100]]; }
+  function frisch(alterMin, barMin) { return Ri.barsFrisch(bar(alterMin), barMin, jetztT).ok; }
   ok(frisch(14, 5) === true,  '5m-Chart: 14 Min alter Bar ist noch frisch');
   ok(frisch(16, 5) === false, '5m-Chart: 16 Min alter Bar ist zu alt (Grenze 15)');
+  ok(frisch(15, 5) === true,  '5m-Chart: genau 15 Min ist die Grenze und noch erlaubt');
   ok(frisch(200, 60) === false, '60m-Chart: 200 Min alter Bar ist zu alt (Grenze 180)');
   ok(frisch(2, 1) === true && frisch(4, 1) === false, '1m-Chart: Grenze liegt bei 3 Min');
+  ok(Ri.barsFrisch([], 5, jetztT).ok === false && Ri.barsFrisch(null, 5, jetztT).ok === false,
+     'Stale-Schutz: gar keine Bars gelten als NICHT frisch (kein Einstieg ins Leere)');
+  ok(Ri.barsFrisch(bar(42), 5, jetztT).alterMin === 42,
+     'Stale-Schutz: das gemeldete Alter stimmt - es steht in der Geduld-Bilanz');
 
   // --- 4) Regime darf pausieren ---
   ok(Array.isArray(Q.SETUP_ALLOW.pause) && Q.SETUP_ALLOW.pause.indexOf('keiner') !== -1,
@@ -598,7 +698,10 @@ console.log('\n17) Kapitalschutz: Kill-Switch, Positionsgroessen-Wachhund, Stale
   ok(/regimeAuf === null|auf: null/.test(depotSrc) && /ohne Anker: Regel setzt aus/.test(depotSrc),
      'Regime: ohne SPY-Daten fail-open (Basis-Verhalten, kein stiller Handelsstopp)');
   var stratSrc = fs.readFileSync(__dirname + '/strategien.js', 'utf8');
-  ok(/regimeZuteilung = true/.test(stratSrc), 'Regime: Empfehlungs-Knopf schaltet die Regel an');
+  // Der Knopf setzt seine Felder seit der Einzel-Ruecknahme ueber setz(), damit der alte
+  // Wert je Feld mitgeschrieben wird. Geprueft wird weiter die Wirkung, nicht die Schreibweise.
+  ok(/setz\('intraday', 'regimeZuteilung', true/.test(stratSrc) || /regimeZuteilung = true/.test(stratSrc),
+     'Regime: Empfehlungs-Knopf schaltet die Regel an');
   var diagSrc = fs.readFileSync(__dirname + '/diagnose.js', 'utf8');
   ok(/regimeZuteilung: !!\(depot\.intraday && depot\.intraday\.regimeZuteilung\)/.test(diagSrc),
      'Regime: Diagnose meldet den Schalter (weisse Liste)');
@@ -3820,8 +3923,17 @@ console.log('\n38) Audit 23.08.2026 – die fuenf Fehler duerfen nicht zurueckko
      'B5: die Schwelle steht weiter bei 220 Kerzen  [' + noetig + ']');
 
   /* --- Kursplausibilitaet: '== null' liess 0, negative Werte und NaN durch --- */
-  ok(/function kursOk\(v\)/.test(dep) && /isFinite\(v\) && v > 0/.test(dep),
-     'Kurse: kursOk() verlangt endlich und groesser null');
+  /* Die Regel wohnt jetzt in kurse.js und wird dort AUSGEFUEHRT, nicht gesucht.
+   * depot.js darf keine zweite Fassung mehr tragen - zwei Kopien einer Regel sind
+   * genau der Fehler, den der Lader aufloest. */
+  var Ku = require(__dirname + '/kurse.js');
+  ok(Ku.kursOk(1) === true && Ku.kursOk(0.01) === true,
+     'Kurse: ein normaler Kurs ist brauchbar');
+  ok(Ku.kursOk(0) === false && Ku.kursOk(-5) === false && Ku.kursOk(NaN) === false &&
+     Ku.kursOk(Infinity) === false && Ku.kursOk(null) === false && Ku.kursOk('12') === false,
+     'Kurse: 0, negativ, NaN, unendlich, null und Text sind es nicht');
+  ok(/var kursOk = window\.Kurse\.kursOk/.test(dep) && !/function kursOk\(v\)/.test(dep),
+     'Kurse: depot.js holt die Regel, statt sie ein zweites Mal hinzuschreiben');
   ok(!/if \(closes\[i\] == null\) continue;/.test(dep) && !/if \(closes\[i\] != null\)/.test(dep),
      'Kurse: kein Abruf verlaesst sich mehr allein auf "== null"');
 
@@ -3864,10 +3976,44 @@ console.log('\n38) Audit 23.08.2026 – die fuenf Fehler duerfen nicht zurueckko
   var ci = fs.readFileSync(__dirname + '/.github/workflows/build.yml', 'utf8');
   ok(/branches: \['\*\*', '!radar'\]/.test(ci),
      'CI: der Datenzweig "radar" ist von der Pruefung ausgenommen');
-  ok(/pull_request: \{\}/.test(ci) && /jobs: \{pruefen:/.test(ci),
-     'CI: geprueft wird bei jedem Push und jedem Pull Request, nicht erst beim Tag');
+  ok(/push: \{branches:/.test(ci) && /jobs: \{pruefen:/.test(ci),
+     'CI: geprueft wird bei jedem Push, nicht erst beim Tag');
   ok(/needs: pruefen/.test(ci),
      'CI: der Installer wird nur nach gruener Pruefung gebaut');
+  /* Der pull_request-Ausloeser hat hier NIE etwas geprueft: alle Zweige liegen in
+   * diesem Repo, das push-Ereignis deckt sie ab. Er erzeugte nur graue "skipped"-
+   * Laeufe auf der Aktionen-Seite. Faellt er zurueck in die Datei, muss auch die
+   * Selbst-Uebersprung-Bedingung am Job zurueck - sonst laeuft die Suite doppelt. */
+  /* Nur die WIRKSAMEN Zeilen pruefen: der Kopfkommentar erklaert ausdruecklich, warum
+   * es den Ausloeser nicht mehr gibt, und darf das Wort selbstverstaendlich nennen. */
+  var ciAktiv = ci.split('\n').filter(function (z) { return !/^\s*#/.test(z); }).join('\n');
+  ok(!/pull_request/.test(ciAktiv),
+     'CI: kein pull_request-Ausloeser, der nur leere Laeufe erzeugt');
+  ok(!/head\.repo\.full_name != github\.repository/.test(ciAktiv),
+     'CI: und damit auch keine Bedingung mehr, die sich selbst ueberspringt');
+
+  /* --- Veroeffentlichen ohne Tag-Push --- */
+  /* Der Tag-Push scheitert in manchen Umgebungen an einer Richtlinie (HTTP 403). Dann
+   * gaebe es kein Release - und ohne Release findet electron-updater nichts. Der
+   * Dispatch-Weg legt den Tag serverseitig ueber "gh release create" an. */
+  ok(/workflow_dispatch: \{inputs: \{release:/.test(ci),
+     'Release: der Dispatch hat einen Schalter zum Veroeffentlichen');
+  ok(/type: boolean, default: false/.test(ci),
+     'Release: er ist standardmaessig AUS - ein Dispatch veroeffentlicht nichts aus Versehen');
+  ok(/id: ziel/.test(ci) && /\$tag = "v\$pkg"/.test(ci),
+     'Release: ohne Tag wird die Version aus package.json genommen');
+  ok(/gh release create \$\{\{ steps\.ziel\.outputs\.tag \}\} --target \$\{\{ github\.sha \}\}/.test(ci),
+     'Release: der Tag entsteht serverseitig am gebauten Commit, ohne git-Push');
+  /* Die Versionskontrolle darf NICHT verschwinden: laeuft der Lauf ueber einen Tag,
+   * muss dieser weiter zu package.json passen. Beim Dispatch ist sie gegenstandslos,
+   * weil der Tag AUS package.json kommt. */
+  ok(/stimmen nicht ueberein"; exit 1/.test(ci),
+     'Release: ein Tag, der nicht zu package.json passt, bricht den Lauf weiterhin ab');
+  var veroeff = ci.match(/if: "steps\.ziel\.outputs\.publish == 'true'"/g) || [];
+  ok(veroeff.length === 2,
+     'Release: Anlegen UND Anhaengen haengen am selben Schalter  [' + veroeff.length + ']');
+  ok(/dist\/Markt-Dashboard-Setup\.exe dist\/latest\.yml --clobber/.test(ci),
+     'Release: latest.yml geht mit hoch - ohne sie sieht der Autoupdater nichts');
 })();
 
 console.log('\n39) Erklaertexte hinter dem i – ein Register, ein Fenster, ein Knopf');
@@ -3883,7 +4029,7 @@ console.log('\n39) Erklaertexte hinter dem i – ein Register, ein Fenster, ein 
      'das Erklaerfenster steht im Markup und hat eine Gestaltung');
   /* Der Zuhoerer MUSS am Dokument haengen. Haenge er am einzelnen Knopf, waere er nach
    * jedem innerHTML-Neuaufbau weg - genau die Falle, in die depot.js schon getappt ist. */
-  ok(/document\.addEventListener\('click'/.test(shell) && /closest\('button\.info'\)/.test(shell),
+  ok(/document\.addEventListener\('click'/.test(shell) && /closest\('button\[data-info\]'\)/.test(shell),
      'der Klick wird am Dokument abgefangen, nicht je Knopf gebunden');
   ok(/ev\.key === 'Escape'/.test(shell), 'Escape schliesst das Fenster');
   ok(/tab-changed[\s\S]{0,80}schliessen/.test(shell), 'ein Reiterwechsel raeumt das Fenster ab');
@@ -3933,5 +4079,1123 @@ console.log('\n39) Erklaertexte hinter dem i – ein Register, ein Fenster, ein 
      'die verbliebenen Absaetze sind auf lesbare Zeilenlaenge begrenzt');
 })();
 
-console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
-process.exit(fails ? 1 : 0);
+console.log('\n40) Tastatur, Semantik und Kontrast – die Oberflaeche ohne Maus und mit schwachen Augen');
+(function () {
+  var html = fs.readFileSync(__dirname + '/index.html', 'utf8');
+  var shell = fs.readFileSync(__dirname + '/app-shell.js', 'utf8');
+  var expl = fs.readFileSync(__dirname + '/explorer.js', 'utf8');
+
+  /* --- Reiterleiste: Rollen und Tastatur ---
+   * Vorher waren es fuenf zusammenhanglose Knoepfe: kein tablist, keine Pfeiltasten,
+   * und man musste sich durch alle fuenf tabben, um zum Inhalt zu kommen. */
+  ok(/role="tablist"/.test(html), 'Reiter: die Leiste ist ein tablist');
+  ok((html.match(/role="tab"/g) || []).length === 5, 'Reiter: alle fuenf Knoepfe sind role="tab"');
+  ok((html.match(/role="tabpanel"/g) || []).length === 5, 'Reiter: alle fuenf Bereiche sind role="tabpanel"');
+  ok((html.match(/aria-controls="tab-/g) || []).length === 5, 'Reiter: jeder Knopf benennt seinen Bereich');
+  ok((html.match(/aria-labelledby="reiter-/g) || []).length === 5, 'Reiter: jeder Bereich benennt seinen Knopf');
+  ok(/ArrowRight/.test(shell) && /ArrowLeft/.test(shell) && /'Home'/.test(shell) && /'End'/.test(shell),
+     'Reiter: Pfeiltasten, Pos1 und Ende blaettern die Leiste');
+  // Roving tabindex: genau EIN Reiter ist tabbierbar, sonst kostet der Weg zum Inhalt vier Tabs
+  ok((html.match(/role="tab"[^>]*tabindex="-1"/g) || []).length === 4,
+     'Reiter: nur der aktive Reiter ist tabbierbar (roving tabindex)');
+  ok(/x\.tabIndex = an \? 0 : -1;/.test(shell), 'Reiter: der tabindex wandert beim Wechsel mit');
+  ok(/aria-selected/.test(shell), 'Reiter: aria-selected wird beim Wechsel nachgezogen');
+
+  /* --- Bereiche, die sich selbst aktualisieren, muessen sich melden --- */
+  ok(/id="warnband"[^>]*aria-live="assertive"/.test(html),
+     'Warnband: meldet sich (dort steht "Speichern fehlgeschlagen" und "Quelle gestoert")');
+  ok(/id="err"[^>]*aria-live="polite"/.test(html), 'Fehlerzeile: meldet sich beilaeufig');
+  ok(/id="cockpit"[^>]*aria-live="polite"/.test(html), 'Cockpit: meldet sich beilaeufig');
+  ok((html.match(/aria-live=/g) || []).length >= 4, 'mindestens vier Bereiche mit aria-live');
+
+  /* --- Dialoge: Escape, Fokusfalle, Fokus-Rueckgabe ---
+   * Vorher liessen sich alle drei nur mit der Maus schliessen, und der Hintergrund
+   * blieb durchtabbierbar. */
+  ok((html.match(/role="dialog"/g) || []).length >= 3, 'Dialoge: als Dialog ausgezeichnet');
+  ok((html.match(/aria-modal="true"/g) || []).length >= 3, 'Dialoge: aria-modal gesetzt');
+  // Den Escape-Zweig als Block schneiden, statt auf Naehe zu hoffen: dazwischen steht
+  // die Vorfahrt-Regel fuer das Erklaerfenster, und die darf wachsen duerfen.
+  var escBlock = (shell.match(/if \(ev\.key === 'Escape'\) \{[\s\S]*?\n    \}/) || [''])[0];
+  ok(/modalSchliessen\(bg\)/.test(escBlock), 'Dialoge: Escape schliesst');
+  ok(/ev\.key !== 'Tab'/.test(shell) && /shiftKey/.test(shell), 'Dialoge: die Tab-Taste laeuft im Kreis (Fokusfalle)');
+  ok(/modalHer = document\.activeElement;/.test(shell) && /modalHer\.focus\(\)/.test(shell),
+     'Dialoge: der Fokus kehrt zum Ausloeser zurueck');
+  // Das Erklaerfenster darf beim ersten Escape nicht zusammen mit dem Dialog verschwinden
+  ok(/ip\.style\.display === 'block'\) return;/.test(shell),
+     'Dialoge: ein offenes Erklaerfenster bekommt das erste Escape');
+
+  /* --- Explorer-Treffer waren klickbare <div> ohne Tastaturzugang --- */
+  ok(/<button type="button" class="exp-hit"/.test(expl), 'Explorer: Treffer sind echte Knoepfe');
+  ok(!/<div class="exp-hit"/.test(expl), 'Explorer: kein klickbares div mehr');
+  ok(/\.exp-hit \{[^}]*background: none[^}]*border: 0/.test(html),
+     'Explorer: die Knopf-Vorgaben des Browsers sind zurueckgesetzt');
+
+  /* --- Kontrast: die vier gemessenen Verstoesse ---
+   * Geprueft wird die URSACHE, nicht der Farbwert: die Token muessen existieren und
+   * an den Stellen benutzt werden, an denen vorher zu schwache Farben standen. */
+  ['--kante', '--chip-up', '--chip-down', '--good', '--mono', '--panel-2', '--surface-2'].forEach(function (t) {
+    var n = (html.match(new RegExp('\\' + t + ':', 'g')) || []).length;
+    ok(n >= 2, 'Token ' + t + ' ist in BEIDEN Themen definiert  [' + n + ']');
+  });
+  ok(/\.chip\.up   \{ color: var\(--chip-up\)/.test(html) && /\.chip\.down \{ color: var\(--chip-down\)/.test(html),
+     'Chips: eigene Textfarbe auf dem eigenen Weichton (vorher 4,06 bzw. 4,25)');
+  ok(/\.switch \.knob \{[^}]*border: 1px solid var\(--kante\)/.test(html),
+     'Kippschalter: sichtbare Umrandung im Aus-Zustand (vorher 1,29)');
+  ok(/input\[type="text"\][\s\S]{0,220}border: 1px solid var\(--kante\)/.test(html),
+     'Eingabefelder: sichtbare Umrandung (vorher 1,21 hell / 1,49 dunkel)');
+  /* Gegenprobe: kein Token darf nur in EINEM Thema stehen - genau daran ist --good
+   * schon einmal gescheitert (fest verdrahtete Notfarbe, im Dunkelthema 3,11). */
+  var hellBlock = html.slice(html.indexOf(':root {'), html.indexOf(':root[data-theme="dark"]'));
+  var dunkelBlock = html.slice(html.indexOf(':root[data-theme="dark"]'), html.indexOf('* { box-sizing'));
+  function tokenNamen(b) { return (b.match(/--[\w-]+:/g) || []).map(function (x) { return x.slice(0, -1); }); }
+  var nurHell = tokenNamen(hellBlock).filter(function (t) { return tokenNamen(dunkelBlock).indexOf(t) < 0; });
+  var nurDunkel = tokenNamen(dunkelBlock).filter(function (t) { return tokenNamen(hellBlock).indexOf(t) < 0; });
+  // --line ist die dokumentierte Ausnahme: es loest sich ueber --border am selben Element auf.
+  nurHell = nurHell.filter(function (t) { return t !== '--line'; });
+  /* Diese Pruefung wurde fuer FARBEN geschrieben - damals war jedes Token eine. Seit
+   * der Design-Skala gibt es auch Geometrie-Token (Schriftgroessen, Radien, Abstaende),
+   * und die sind themenunabhaengig: eine 12px-Schrift ist im Dunkeln nicht anders gross.
+   * Stuenden sie in beiden Bloecken, waeren es zwei Wahrheiten, die auseinanderlaufen
+   * koennen - genau der Fehler, den diese Zusicherung eigentlich verhindern soll.
+   * Abschnitt 44 prueft fuer sie das Gegenteil: dass sie NUR einmal stehen. */
+  function istGeometrie(t) { return /^--(fs|r|ab)-/.test(t); }
+  nurHell = nurHell.filter(function (t) { return !istGeometrie(t); });
+  nurDunkel = nurDunkel.filter(function (t) { return !istGeometrie(t); });
+  ok(nurHell.length === 0 && nurDunkel.length === 0,
+     'kein Token steht nur in einem Thema  [' + (nurHell.concat(nurDunkel).join(', ') || 'keins') + ']');
+})();
+
+console.log('\n41) Zustaende: was die App sagt, wenn etwas fehlt oder klemmt');
+(function () {
+  var html = fs.readFileSync(__dirname + '/index.html', 'utf8');
+  var ren = fs.readFileSync(__dirname + '/renderer.js', 'utf8');
+  var dep = fs.readFileSync(__dirname + '/depot.js', 'utf8');
+
+  /* --- Das Warnband konnte NIE erscheinen ---
+   * warnbandSetzen setzte display = '', das loescht aber nur den Inline-Stil; danach
+   * greift #warnband{display:none} aus index.html. Der gesamte Warnkanal war damit
+   * tot: "Speichern fehlgeschlagen", "Depot aus Sicherung", "Kante verfallen".
+   * Dasselbe Muster wie B2 (gerechnet und dann vom CSS verdeckt), dritter Fall. */
+  ok(/el\.style\.display = keys\.length \? 'block' : 'none';/.test(dep),
+     'Warnband: setzt einen ECHTEN Wert, nicht den Leerwert');
+  ok(!/el\.style\.display = keys\.length \? '' : 'none';/.test(dep),
+     'Warnband: der Leerwert ist weg (er fiel auf display:none zurueck)');
+  ok(/#warnband \{[^}]*display: none/.test(html),
+     'Warnband: die CSS-Regel steht weiter - genau deshalb muss der Wert explizit sein');
+
+  /* --- Gestoerte Kursquelle benutzt das Warnband --- */
+  ok(/window\.__warnband = warnbandSetzen;/.test(dep), 'Warnband: fuer andere Module erreichbar');
+  ok(/quellenWarnung\(/.test(ren) && /Die Kursquelle ist gestört/.test(ren),
+     'Kursquelle: eine Stoerung landet im Warnband, nicht nur klein in der Kopfzeile');
+  ok(/fetchErrors > gesamt \/ 2/.test(ren),
+     'Kursquelle: erst ab der Haelfte - eine Warnung, die immer steht, liest niemand');
+  /* renderer.js ist das 3. Skript, depot.js das 21. - beim ersten Durchlauf gibt es
+   * window.__warnband noch nicht. Die Meldung darf dabei nicht verloren gehen. */
+  ok(/quellenStand/.test(ren) && /addEventListener\('load'/.test(ren),
+     'Kursquelle: die Meldung wird nachgezogen, wenn depot.js spaeter geladen ist');
+
+  /* --- Leerzustand ist nicht Fehlerzustand ---
+   * Vorher stand bei einem GESCHEITERTEN Ladeversuch weiter "wird gleich geladen". */
+  ok(/function ablageNichtDa\(/.test(ren), 'Ablage: es gibt einen eigenen Fehlerzustand');
+  ok(/ablageNichtDa\(el, 'Spekulations-Radar'\)/.test(ren), 'Radar: sagt Bescheid, wenn die Ablage nicht antwortet');
+  ok(/ablageNichtDa\(el, 'Insider-Käufe'\)/.test(ren), 'Insider: sagt Bescheid, wenn die Ablage nicht antwortet');
+  ok(!/if \(!r \|\| !r\.ok\) return;   \/\/ keine Datei: Platzhalter bleibt stehen/.test(ren),
+     'Ablage: kein stilles return mehr, das den Platzhalter stehen laesst');
+
+  /* --- Hell/Dunkel wurde nirgends gespeichert --- */
+  ok(/storeSet\('theme', neu\)/.test(ren), 'Thema: die Wahl wird gespeichert');
+  ok(/storeGet\('theme'\)/.test(ren), 'Thema: die Wahl wird beim Start gelesen');
+  ok(/t === 'light' \|\| t === 'dark'/.test(ren),
+     'Thema: nur bekannte Werte werden uebernommen');
+
+  /* --- Platzhalter im Raster --- */
+  ok(/\.heat > \.loading \{ grid-column: 1 \/ -1; \}/.test(html),
+     'Heatmap: Lade- und Fehlertext laeuft ueber die volle Breite, nicht in einer 96-px-Spalte');
+})();
+
+/* ================= 42. Die Sicherheitshaltung festnageln =================
+ * Das Audit hat die Electron-Härtung als „auf dem Stand der Technik" befundet -
+ * contextIsolation, sandbox, keine generische Durchreiche im preload, eine CSP
+ * ohne unsafe-inline, eine echte Host-Positivliste. Genau solche Eigenschaften
+ * verschwinden aber lautlos: EIN webPreferences-Feld beim Debuggen umgestellt,
+ * EIN 'unsafe-eval' fuer eine Bibliothek, EIN generisches invoke() im preload,
+ * weil es bequemer ist - und niemand merkt es, weil die App danach laeuft wie
+ * vorher. Ein Befund ohne Test ist eine Momentaufnahme; dieser Abschnitt macht
+ * einen Zustand daraus, der beim Wegbrechen rot wird. */
+(function () {
+  console.log('\n42) Sicherheitshaltung: Electron-Haertung, CSP und die Bruecke');
+  var m = fs.readFileSync(__dirname + '/main.js', 'utf8');
+  var pre = fs.readFileSync(__dirname + '/preload.js', 'utf8');
+  var html = fs.readFileSync(__dirname + '/index.html', 'utf8');
+
+  // --- Fenster-Härtung: an JEDEM BrowserWindow, nicht nur am ersten ---
+  var fenster = m.match(/new BrowserWindow\(\{[\s\S]*?\n  \}\)/g) || [];
+  ok(fenster.length >= 1, 'Härtung: es gibt mindestens ein BrowserWindow zu prüfen');
+  fenster.forEach(function (f, i) {
+    ok(/contextIsolation:\s*true/.test(f), 'Fenster ' + (i + 1) + ': contextIsolation an');
+    ok(/nodeIntegration:\s*false/.test(f), 'Fenster ' + (i + 1) + ': nodeIntegration aus');
+    ok(/sandbox:\s*true/.test(f), 'Fenster ' + (i + 1) + ': sandbox an');
+    ok(/preload:\s*path\.join\(__dirname, 'preload\.js'\)/.test(f),
+       'Fenster ' + (i + 1) + ': die Bruecke ist das preload-Skript');
+  });
+  // Was nirgends stehen darf. Jede dieser Zeilen oeffnet die Sandkiste wieder.
+  [
+    ['webSecurity: false', /webSecurity\s*:\s*false/],
+    ['allowRunningInsecureContent', /allowRunningInsecureContent\s*:\s*true/],
+    ['experimentalFeatures', /experimentalFeatures\s*:\s*true/],
+    ['nodeIntegrationInWorker', /nodeIntegrationInWorker\s*:\s*true/],
+    ['nodeIntegrationInSubFrames', /nodeIntegrationInSubFrames\s*:\s*true/],
+    ['enableRemoteModule', /enableRemoteModule\s*:\s*true/]
+  ].forEach(function (p) {
+    ok(!p[1].test(m), 'Härtung: kein ' + p[0]);
+  });
+
+  // --- Die Bruecke reicht nichts generisch durch ---
+  ok(/contextBridge\.exposeInMainWorld\('api'/.test(pre), 'Bruecke: exposeInMainWorld statt globalem require');
+  ok(!/exposeInMainWorld\([^)]*ipcRenderer\s*\)/.test(pre), 'Bruecke: ipcRenderer selbst wird nicht freigelegt');
+  /* Der teure Fehler waere eine Zeile wie  invoke: (kanal, ...a) => ipcRenderer.invoke(kanal, ...a).
+   * Sie sieht harmlos aus und macht jede einzelne Kanal-Pruefung im Hauptprozess wertlos,
+   * weil der Renderer sich dann jeden Kanal selbst aussuchen darf. Deshalb: JEDER
+   * invoke-Aufruf im preload muss seinen Kanal als Zeichenkette fest verdrahtet haben. */
+  var invokes = pre.match(/ipcRenderer\.(invoke|send|on)\(([^,)]*)/g) || [];
+  ok(invokes.length > 10, 'Bruecke: die Kanäle sind einzeln aufgeführt (' + invokes.length + ')');
+  var frei = invokes.filter(function (z) { return !/\((\s*)'[a-z0-9-]+'/.test(z); });
+  ok(frei.length === 0, 'Bruecke: kein Kanal kommt aus einer Variablen' + (frei.length ? ' – ' + frei.join(', ') : ''));
+
+  // --- CSP ---
+  var csp = /<meta http-equiv="Content-Security-Policy" content="([^"]+)"/.exec(html);
+  ok(!!csp, 'CSP: die Regel steht im Dokument');
+  if (csp) {
+    var c = csp[1];
+    ok(/default-src 'self'/.test(c), 'CSP: default-src self');
+    ok(/script-src 'self'/.test(c) && !/script-src[^;]*unsafe-inline/.test(c),
+       'CSP: Skripte nur aus dem Paket, kein unsafe-inline');
+    ok(!/unsafe-eval/.test(c), 'CSP: kein unsafe-eval');
+    ok(!/script-src[^;]*\*/.test(c), 'CSP: keine Platzhalter in script-src');
+  }
+  /* Eine CSP ohne unsafe-inline nuetzt nichts, wenn das Markup Inline-Handler mitbringt:
+   * dann faellt sie beim ersten Klick auf und jemand „repariert" sie mit unsafe-inline. */
+  ok(!/\son(click|change|input|load|error|submit|keydown|mouseover)\s*=/i.test(html),
+     'Markup: kein einziger Inline-Handler, den die CSP blockieren würde');
+
+  // --- Kein eval in irgendeiner ausgelieferten Datei ---
+  var paket = fs.readdirSync(__dirname).filter(function (f) {
+    return /\.js$/.test(f) && !/^test-/.test(f);
+  });
+  var mitEval = paket.filter(function (f) {
+    var q = fs.readFileSync(__dirname + '/' + f, 'utf8');
+    return /(^|[^.\w])eval\s*\(/.test(q) || /new Function\s*\(/.test(q);
+  });
+  ok(mitEval.length === 0, 'Paket: kein eval, kein new Function' + (mitEval.length ? ' – ' + mitEval.join(', ') : ''));
+
+  // --- Host-Positivliste ---
+  var hosts = /const ALLOWED_HOSTS = new Set\(\[([\s\S]*?)\]\)/.exec(m);
+  ok(!!hosts, 'Netz: es gibt eine Positivliste erlaubter Hosts');
+  if (hosts) {
+    var namen = (hosts[1].match(/'([^']+)'/g) || []).map(function (x) { return x.slice(1, -1); });
+    ok(namen.length > 0 && namen.length < 20, 'Netz: die Liste ist kurz und aufzählbar (' + namen.length + ')');
+    var schlecht = namen.filter(function (h) { return /[*\s]/.test(h) || h !== h.toLowerCase() || !/\./.test(h); });
+    ok(schlecht.length === 0, 'Netz: kein Platzhalter, kein Grossbuchstabe' + (schlecht.length ? ' – ' + schlecht.join(', ') : ''));
+  }
+  ok(/u\.protocol !== 'https:' \|\| !ALLOWED_HOSTS\.has\(u\.hostname\)/.test(m),
+     'Netz: Protokoll UND Host werden geprüft');
+  /* Eine Umleitung ist ein neuer Abruf an einen neuen Host. Wuerde ihr blind gefolgt,
+   * genuegte eine 302 bei einer erlaubten Quelle, um irgendwohin zu zeigen. Der Code
+   * ruft sich deshalb selbst auf - und laeuft damit wieder durch dieselbe Pruefung. */
+  ok(/res\.statusCode >= 301 && res\.statusCode <= 308[\s\S]{0,200}return resolve\(fetchText\(/.test(m),
+     'Netz: Umleitungen laufen erneut durch die Prüfung');
+  ok(/redirectsLeft/.test(m) && /redirectsLeft - 1/.test(m), 'Netz: Umleitungen sind begrenzt');
+
+  // --- Pfade ---
+  ok(/function safeName\(name\) \{ return String\(name\)\.replace\(\/\[\^a-zA-Z0-9_-\]\/g, '_'\)/.test(m),
+     'Pfade: safeName ist eine Positivliste, keine Sperrliste');
+  ok(/const u = new URL\(url\);[\s\S]{0,240}u\.protocol === 'https:'[\s\S]{0,200}shell\.openExternal/.test(m),
+     'Aussenlinks: openExternal nur für https und nur für bekannte Ziele');
+})();
+
+/* ================= 43. Unlesbare Dateien =================
+ * Bisher galt: Datei kaputt -> leeres Ergebnis -> der naechste Schreibvorgang macht
+ * das Leere endgueltig. Beim Depot war das schon behoben (Generationen), beim
+ * KURSARCHIV und bei den Fehlermeldungen nicht. Das Archiv ist der teurere Fall:
+ * Yahoo gibt 1m-Kerzen sieben Tage rueckwirkend heraus, alles darueber hat die App
+ * ueber Wochen selbst gesammelt und bekommt es nie wieder. */
+(function () {
+  console.log('\n43) Unlesbare Dateien werden beiseitegelegt, nicht ueberschrieben');
+  var m = fs.readFileSync(__dirname + '/main.js', 'utf8');
+  var ren = fs.readFileSync(__dirname + '/renderer.js', 'utf8');
+  var pre = fs.readFileSync(__dirname + '/preload.js', 'utf8');
+
+  ok(/function defektBeiseite\(pfad\)/.test(m), 'Defekt: es gibt einen Weg, den kaputten Bestand zu retten');
+  ok(/fs\.renameSync\(pfad, ziel\)/.test(m), 'Defekt: die Datei wird umbenannt, nicht gelöscht');
+  /* Beim zweiten Fehlschlag darf die schon gesicherte Fassung NICHT verdraengt werden -
+   * sie ist die einzige, die noch Daten traegt. Die zweite kaputte ist wertlos. */
+  ok(/if \(fs\.existsSync\(ziel\)\) return ziel;/.test(m),
+     'Defekt: eine bereits beiseitegelegte Fassung bleibt unangetastet');
+
+  var sg = /ipcMain\.handle\('store-get'[\s\S]*?\n\}\);/.exec(m);
+  ok(!!sg && /defektMerken\(safeName\(name\), defektBeiseite\(f\)\)/.test(sg[0]),
+     'Store: eine unlesbare Datei wird beiseitegelegt, bevor der nächste Schreibvorgang läuft');
+  /* Reihenfolge zaehlt: erst die Sicherungsgenerationen des Depots versuchen, ERST DANN
+   * beiseitelegen. Andersherum waere die Hauptdatei weg, bevor sie geprüft wurde. */
+  ok(!!sg && sg[0].indexOf('.bak1') < sg[0].indexOf('defektBeiseite(f)'),
+     'Store: die Generationen werden vor dem Beiseitelegen versucht');
+
+  var bl = /function bugsLesen\(\)[\s\S]*?\n\}/.exec(m);
+  ok(!!bl && (bl[0].match(/defektBeiseite/g) || []).length === 2,
+     'Fehlermeldungen: kaputt UND formfremd werden beide gesichert');
+
+  ok(/ipcMain\.handle\('store-defekte'/.test(m), 'Defekt: der Renderer kann den Befund abholen');
+  ok(/storeDefekte: \(\) => ipcRenderer\.invoke\('store-defekte'\)/.test(pre), 'Defekt: der Kanal steht in der Brücke');
+  ok(/window\.__warnband\('defekt'/.test(ren), 'Defekt: der Befund landet im Warnband, nicht in der Konsole');
+  ok(/bars_\(\\w\+\)_\(\.\+\)/.test(ren) || /\^bars_/.test(ren),
+     'Defekt: bars_60m_AAPL wird als Kursarchiv benannt, nicht als Dateiname gezeigt');
+})();
+
+/* ================= 44. Wegweiser, Begriffe und die Sackgassen =================
+ * Vier Befunde aus dem Audit, die alle dasselbe Muster haben: Die Oberflaeche sagt
+ * etwas, das nicht stimmt oder nirgends hinfuehrt. Das faellt in keinem Test auf,
+ * weil nichts abstuerzt - es kostet nur den, der es liest. */
+(function () {
+  console.log('\n44) Wegweiser, Begriffe, Sackgassen');
+  var html = fs.readFileSync(__dirname + '/index.html', 'utf8');
+  var shell = fs.readFileSync(__dirname + '/app-shell.js', 'utf8');
+  var strat = fs.readFileSync(__dirname + '/strategien.js', 'utf8');
+  var dep = fs.readFileSync(__dirname + '/depot.js', 'utf8');
+  var mfd = fs.readFileSync(__dirname + '/mfdepot.js', 'utf8');
+  var exp = fs.readFileSync(__dirname + '/explorer.js', 'utf8');
+  var sco = fs.readFileSync(__dirname + '/scoreboard.js', 'utf8');
+
+  /* --- Verweise auf Reiter, die es nicht gibt ---
+   * Die App hatte drei davon: "Strategien & Belege", "Strategien", "Kurzfrist-Depot".
+   * Wer danach sucht, findet nichts und haelt sich fuer blind. Dieser Test liest die
+   * echten Namen aus dem Markup und prueft JEDEN Verweis dagegen - er faengt also auch
+   * einen kuenftigen, wenn jemand einen Reiter umbenennt und die Texte vergisst. */
+  var reiter = (html.match(/data-tab="[a-z]+"[^>]*>([^<]+)</g) || [])
+    .map(function (z) { return z.slice(z.lastIndexOf('>') + 1, -1).trim(); });
+  var pillen = (html.match(/data-sub="[a-z]+"[^>]*>([^<]+)</g) || [])
+    .map(function (z) { return z.slice(z.lastIndexOf('>') + 1, -1).replace(/&amp;/g, '&').trim(); });
+  ok(reiter.length === 5, 'Wegweiser: fünf Reiter gefunden (' + reiter.join(', ') + ')');
+  ok(pillen.length >= 6, 'Wegweiser: die Unter-Pillen sind lesbar (' + pillen.length + ')');
+  var echt = reiter.concat(pillen);
+  var quellen = ['index.html', 'depot.js', 'renderer.js', 'strategien.js', 'mfdepot.js',
+                 'driftui.js', 'explorer.js', 'app-shell.js', 'scoreboard.js', 'mittelfrist.js'];
+  var falsch = [];
+  quellen.forEach(function (f) {
+    var q = fs.readFileSync(__dirname + '/' + f, 'utf8');
+    // „Reiter X“ / „Tab X“ / „unter X“ mit Anfuehrungszeichen oder <b>
+    var re = /(?:Reiter|Tab)\s+(?:„([^“]{2,40})“|<b>([^<]{2,40})<\/b>)/g, m;
+    while ((m = re.exec(q))) {
+      var name = (m[1] || m[2]).replace(/&amp;/g, '&').trim();
+      // Ein Pfad "Vermögen → Auswertung" ist gueltig, wenn beide Teile echt sind
+      var teile = name.split(/\s*→\s*/);
+      if (teile.every(function (t) { return echt.indexOf(t) >= 0; })) continue;
+      falsch.push(f + ': „' + name + '“');
+    }
+  });
+  ok(falsch.length === 0, 'Wegweiser: kein Verweis auf einen Reiter, den es nicht gibt' +
+     (falsch.length ? ' – ' + falsch.join(' | ') : ''));
+  ok(!/Strategien &(amp;)? Belege|Kurzfrist-Depot/.test(html + dep + strat + exp + shell),
+     'Wegweiser: die drei alten Falschnamen sind restlos weg');
+
+  /* --- Glossar --- */
+  var gl = /'glossar\.begriffe':\s*\{[\s\S]*?\n    \}/.exec(shell);
+  ok(!!gl, 'Glossar: es ist angemeldet');
+  if (gl) {
+    var punkte = (gl[0].match(/\n        '/g) || []).length;
+    ok(punkte >= 10, 'Glossar: mindestens zehn Begriffe (' + punkte + ')');
+    ['Pp –', 'Bp –', 'MDE –', 'Kante –', 'Schattenbuch –', 'Walk-Forward –', 't-Wert –'].forEach(function (b2) {
+      ok(gl[0].indexOf(b2) >= 0, 'Glossar: ' + b2.replace(' –', '') + ' ist erklärt');
+    });
+  }
+  ok(/id="glossarBtn"[^>]*data-info="glossar\.begriffe"/.test(html),
+     'Glossar: aus der Kopfzeile erreichbar, also von jedem Reiter aus');
+  ok(/closest\('button\[data-info\]'\)/.test(shell),
+     'Glossar: der beschriftete Knopf geht denselben Weg wie die runden i');
+
+  /* --- Das Versprechen "einzeln zurückstellen" --- */
+  ok(/function setz\(wo, k, wert, txt\)/.test(strat), 'Einzeln: jedes Feld wird vor dem Überschreiben gemerkt');
+  ok(/felder\.push\(\{ wo: wo, k: k, alt:/.test(strat), 'Einzeln: mit altem Wert, nicht nur mit Namen');
+  ok(/applied: extras, felder: felder,/.test(strat), 'Einzeln: die Liste hängt am Protokolleintrag');
+  ok(/data-feld="' \+ idx \+ ':' \+ j \+ '"/.test(dep), 'Einzeln: je Feld ein eigener Knopf');
+  ok(/function felderZurueck\(e, liste, wasTxt\)/.test(dep), 'Einzeln: die Rücknahme fasst nur die übergebenen Felder an');
+  /* Der Rundumschlag waere der Fehler gewesen: dann haette ein Zurueck auch Felder
+   * angefasst, die dieser Knopf nie angeruehrt hat - etwa den Handelsschalter. */
+  var fz = /function felderZurueck\([\s\S]*?\n  \}/.exec(dep);
+  ok(!!fz && !/JSON\.parse\(JSON\.stringify\(e\.konfigVorher\)\)/.test(fz[0]),
+     'Einzeln: kein Rundumschlag über die ganze Konfiguration');
+  ok(/f\.zurueck/.test(dep), 'Einzeln: ein schon zurückgestelltes Feld zeigt keinen Knopf mehr');
+  /* Der Grund, warum der Knopf nie auftauchte: die Tabelle steht im Reiter "Regeln",
+   * gezeichnet wurde sie aber nur beim Klick auf eine Pille unter "Vermoegen". */
+  ok(/window\.__renderAnalytics/.test(dep) && /ev\.detail === 'strategien'/.test(dep),
+     'Einzeln: die Tabelle wird beim Öffnen des Reiters gezeichnet, nicht nur unter Vermögen');
+  ok(/if \(window\.__renderAnalytics\) window\.__renderAnalytics\(\);/.test(strat),
+     'Einzeln: nach dem Übernehmen erscheint der Eintrag sofort');
+  ok(!/lässt sich einzeln zurückstellen\.">Belegte/.test(html),
+     'Einzeln: der Knopftext verspricht nichts mehr, was er nicht zeigt');
+
+  /* --- Rückfrage, wenn das Buch "nur rechnen" anzeigt --- */
+  ok(/function abgeschaltetOk\(an, was\)/.test(mfd), 'Rückfrage: es gibt eine');
+  ok(/if \(!d \|\| d\[an\]\) return true;/.test(mfd),
+     'Rückfrage: nur bei abgeschaltetem Buch – sonst wäre es eine Klickbremse ohne Zweck');
+  ok(/abgeschaltetOk\('momentumAn'/.test(mfd) && /abgeschaltetOk\('driftAn'/.test(mfd),
+     'Rückfrage: an beiden Knöpfen');
+
+  /* --- Explorer: Netzfehler ist kein Leerbefund --- */
+  ok(/return \{ fehler:/.test(exp), 'Explorer: der Fehlerfall trägt seinen Grund mit');
+  ok(/if \(hits && hits\.fehler\)/.test(exp), 'Explorer: die Liste unterscheidet Fehler von leer');
+  ok(/das heißt nicht, dass es den Wert nicht gibt/.test(exp),
+     'Explorer: und sagt ausdrücklich, dass es das Papier trotzdem geben kann');
+  ok(/Nichts gefunden\./.test(exp), 'Explorer: der echte Leerbefund heißt weiter „Nichts gefunden.“');
+
+  /* --- Messung: der nächste Schritt statt einer Sackgasse --- */
+  ok(/id="stNaechster" hidden/.test(html), 'Messung: der Kasten ist vor dem Ablegen leer');
+  ok(/function naechsterSchritt\(pfad\)/.test(sco), 'Messung: nach dem Ablegen kommt ein nächster Schritt');
+  ok(/node studien\/messmaschine\/messen\.js "' \+ pfad \+ '"/.test(sco),
+     'Messung: der Befehl steht fertig da, mit dem echten Pfad');
+  ok(/id="stKopieren"/.test(sco) && /function kopiere\(text\)/.test(sco), 'Messung: und lässt sich kopieren');
+  /* file:// ist kein sicherer Kontext - navigator.clipboard kann schlicht fehlen. */
+  ok(/navigator\.clipboard && navigator\.clipboard\.writeText/.test(sco) && /execCommand\('copy'\)/.test(sco),
+     'Messung: Kopieren hat einen Rückfallweg, sonst passiert auf file:// nichts');
+  ok(/Projektordner/.test(sco), 'Messung: es steht dabei, WO der Befehl läuft');
+})();
+
+/* ================= 44. Die Design-Skala =================
+ * Gezaehlt am 24.08.2026 ueber index.html und alle Renderer-Dateien: 708 Inline-Stile,
+ * darin SIEBZEHN verschiedene Schriftgroessen - 10,5 / 11,5 / 12,5 / 13,5 / 14,5 px
+ * mitgerechnet. Allein 11,5px kam 96-mal vor, 12,5px 57-mal. Halbe Pixel sieht niemand,
+ * aber jede dieser Groessen muss jemand pflegen, und beim naechsten Bauteil raet man,
+ * welche davon "die richtige" ist. Dazu zehn verschiedene Radien.
+ *
+ * Dieser Abschnitt ist eine Sperrklinke: Sobald irgendwo wieder eine nackte Pixelzahl
+ * auftaucht, wird er rot. Ohne das waechst die Zahl der Groessen einfach nach - genau
+ * so ist sie ja entstanden. */
+(function () {
+  console.log('\n44) Design-Skala: eine Schriftleiter, drei Radien, keine halben Pixel');
+  var html = fs.readFileSync(__dirname + '/index.html', 'utf8');
+  var dateien = fs.readdirSync(__dirname).filter(function (f) {
+    return /\.js$/.test(f) && !/^test-/.test(f);
+  });
+
+  // --- Die Leiter existiert und steht im hellen :root, nicht je Thema ---
+  var wurzel = /:root \{([\s\S]*?)\n  \}/.exec(html);
+  ok(!!wurzel, 'Skala: der Token-Block ist auffindbar');
+  var LEITER = ['--fs-klein', '--fs-neben', '--fs-text', '--fs-gross', '--fs-zahl', '--fs-titel'];
+  LEITER.forEach(function (t) {
+    ok(new RegExp(t + ':\\s*\\d+px').test(wurzel[1]), 'Schriftleiter: ' + t + ' ist definiert');
+  });
+  ['--r-klein', '--r-normal', '--r-gross', '--r-kreis', '--r-pille'].forEach(function (t) {
+    ok(new RegExp(t + ':').test(wurzel[1]), 'Radien: ' + t + ' ist definiert');
+  });
+  /* Schriftgroessen sind KEINE Farben - sie duerfen sich zwischen hell und dunkel nicht
+   * unterscheiden. Stuenden sie im Dunkel-Block noch einmal, waere das eine zweite
+   * Wahrheit, die auseinanderlaufen kann - genau der Fehler, an dem --good gescheitert ist. */
+  var dunkel = /:root\[data-theme="dark"\] \{([\s\S]*?)\n  \}/.exec(html);
+  ok(!!dunkel, 'Skala: der Dunkel-Block ist auffindbar');
+  LEITER.concat(['--r-klein', '--r-normal', '--r-gross']).forEach(function (t) {
+    ok(dunkel[1].indexOf(t + ':') === -1, 'Skala: ' + t + ' wird im Dunkelthema NICHT neu gesetzt');
+  });
+
+  // --- Keine halben Pixel mehr auf der Leiter ---
+  var stufen = LEITER.map(function (t) {
+    return parseFloat(/:\s*([\d.]+)px/.exec(new RegExp(t + ':\\s*[\\d.]+px').exec(wurzel[1])[0])[1]);
+  });
+  ok(stufen.every(function (s) { return s === Math.round(s); }),
+     'Schriftleiter: jede Sprosse ist eine ganze Zahl  [' + stufen.join(', ') + ']');
+  ok(stufen.length === new Set(stufen).size && stufen.slice().sort(function (a, b) { return a - b; }).join() === stufen.join(),
+     'Schriftleiter: die Sprossen sind verschieden und aufsteigend sortiert');
+
+  // --- Die Sperrklinke: nirgends mehr eine nackte Pixelzahl ---
+  var suender = [];
+  ['index.html'].concat(dateien).forEach(function (f) {
+    var s = fs.readFileSync(__dirname + '/' + f, 'utf8');
+    (s.match(/font-size:\s*[\d.]+px/g) || []).forEach(function (t) { suender.push(f + ' ' + t); });
+    (s.match(/border-radius:\s*[\d.]+px/g) || []).forEach(function (t) { suender.push(f + ' ' + t); });
+  });
+  ok(suender.length === 0,
+     'Sperrklinke: keine nackte Pixelzahl fuer Schrift oder Radius mehr' +
+     (suender.length ? ' – ' + suender.slice(0, 5).join(', ') : ''));
+
+  /* Gegenprobe, dass die Sperrklinke wirklich greift: haette sie ein Loch, waere die
+   * Zusicherung darueber wertlos. Also einmal auf einem erfundenen Text nachweisen,
+   * dass genau das Muster gefunden wird, das im Paket nicht mehr vorkommen darf. */
+  var probe = 'a{font-size: 11.5px;} b{border-radius:14px;}';
+  ok((probe.match(/font-size:\s*[\d.]+px/g) || []).length === 1 &&
+     (probe.match(/border-radius:\s*[\d.]+px/g) || []).length === 1,
+     'Sperrklinke: das Muster findet halbe Pixel und krumme Radien wirklich');
+
+  // --- Die Abstandsleiter steht bereit, auch wenn sie noch nicht ueberall gilt ---
+  /* Bewusst NICHT durchgesetzt: die Abstaende lagen schon fast alle auf einem 2-px-
+   * Raster. Eine 4er-Leiter haette 89 Stellen verschoben (6px kam 36-mal vor, 10px
+   * 30-mal, 14px 23-mal) - fuer Symmetrie im Regelwerk, mit echtem Umbruchrisiko. */
+  ['--ab-1', '--ab-2', '--ab-3', '--ab-4', '--ab-5'].forEach(function (t) {
+    ok(new RegExp(t + ':\\s*\\d+px').test(wurzel[1]), 'Abstandsleiter: ' + t + ' steht bereit');
+  });
+})();
+
+/* ================= 45. Der Kurslader =================
+ * Bis 8.24.5 nahmen NEUN Stellen in sechs Dateien die Yahoo-Antwort selbst
+ * auseinander, und sie waren sich in nichts einig: zwei nahmen adjclose, sieben
+ * close; zwei verwarfen unbrauchbare Kurse, sieben liessen 0, negative und NaN
+ * durch; zwei wiederholten bei 429, sieben liessen das Symbol fallen; eine tauschte
+ * vertauschte Hoch/Tief-Werte, eine nicht. Keine davon war in Node ausfuehrbar.
+ * Jetzt eine Zerlegung, rein und exportiert - und damit hier wirklich gerechnet. */
+(function () {
+  console.log('\n45) Kurslader: ein Vertrag statt neun Zerlegungen');
+  var K = require(__dirname + '/kurse.js');
+
+  /** Baut eine Yahoo-Antwort. Absichtlich von Hand, damit im Test steht, was
+   *  hineingeht - eine echte Antwort waere hier eine Blackbox. */
+  function antwort(closes, extra) {
+    extra = extra || {};
+    var o = { meta: extra.meta || { regularMarketPrice: 42 },
+              timestamp: closes.map(function (_, i) { return 1700000000 + i * 3600; }),
+              indicators: { quote: [{ close: closes,
+                volume: extra.volume || closes.map(function () { return 100; }),
+                high: extra.high || closes, low: extra.low || closes, open: extra.open || closes }] } };
+    if (extra.adjclose) o.indicators.adjclose = [{ adjclose: extra.adjclose }];
+    return JSON.stringify({ chart: { result: [o] } });
+  }
+
+  // --- Grundform ---
+  var g = K.zerlege(antwort([10, 11, 12]), { bereinigt: false });
+  ok(g.bars.length === 3, 'Zerlegung: drei Kerzen rein, drei raus');
+  ok(g.bars[0].length === 6, 'Zerlegung: jede Zeile hat sechs Spalten [t, c, v, hoch, tief, auf]');
+  ok(g.bars[0][0] === 1700000000000, 'Zerlegung: der Zeitstempel ist in MILLIsekunden, nicht Sekunden');
+  ok(g.feld === 'close' && g.verworfen === 0 && g.gesamt === 3, 'Zerlegung: Feld, Verworfene und Gesamtzahl werden gemeldet');
+
+  // --- Der Kern des Ganzen: 0, negativ und NaN kommen nicht mehr durch ---
+  /* Sieben der neun Stellen benutzten '!= null'. Das laesst genau diese drei durch
+   * (0 == null ist falsch), und in einer davon lief die Vola-Schaetzung, in einer
+   * anderen der Kachelkurs, in einer dritten die Signalrechnung. */
+  var gift = K.zerlege(antwort([100, 0, 101, -5, 102, NaN, null, 103]), { bereinigt: false });
+  ok(gift.bars.map(function (b) { return b[1]; }).join() === '100,101,102,103',
+     'Verwerfen: 0, negativ, NaN und null fliegen raus  [' + gift.bars.map(function (b) { return b[1]; }).join() + ']');
+  ok(gift.verworfen === 4 && gift.gesamt === 8,
+     'Verwerfen: die Zahl der verworfenen Kerzen wird gemeldet, nicht verschwiegen  [' + gift.verworfen + '/' + gift.gesamt + ']');
+
+  // --- roh oder bereinigt: eine Entscheidung, die getroffen werden MUSS ---
+  var mitAdj = antwort([100, 200], { adjclose: [50, 100] });
+  ok(K.zerlege(mitAdj, { bereinigt: true }).feld === 'adjclose' &&
+     K.zerlege(mitAdj, { bereinigt: true }).bars[0][1] === 50,
+     'bereinigt=true nimmt adjclose - ohne das macht ein Split aus einer Verdopplung eine Halbierung');
+  ok(K.zerlege(mitAdj, { bereinigt: false }).feld === 'close' &&
+     K.zerlege(mitAdj, { bereinigt: false }).bars[0][1] === 100,
+     'bereinigt=false nimmt close - den Kurs, der tatsaechlich gehandelt wird');
+  /* Fehlt adjclose (bei Intraday liefert Yahoo keins), faellt bereinigt=true auf
+   * close zurueck, statt eine leere Reihe zu liefern. */
+  var ohneAdj = K.zerlege(antwort([100, 200]), { bereinigt: true });
+  ok(ohneAdj.feld === 'close' && ohneAdj.bars.length === 2,
+     'bereinigt=true faellt auf close zurueck, wenn Yahoo kein adjclose liefert (Intraday)');
+
+  // --- Hoch/Tief: auffuellen und tauschen ---
+  var luecke = K.zerlege(antwort([100], { high: [null], low: [undefined] }), { bereinigt: false });
+  ok(luecke.bars[0][3] === 100 && luecke.bars[0][4] === 100,
+     'Hoch/Tief: fehlende Werte fallen auf den Schluss zurueck - keine Luecke fuer den Aufrufer');
+  var vertauscht = K.zerlege(antwort([100], { high: [99], low: [101] }), { bereinigt: false });
+  ok(vertauscht.bars[0][3] === 101 && vertauscht.bars[0][4] === 99,
+     'Hoch/Tief: vertauscht geliefert wird zurueckgedreht (frueher nur in depot.js, nicht im Explorer)');
+  var volLuecke = K.zerlege(antwort([100], { volume: [null] }), { bereinigt: false });
+  ok(volLuecke.bars[0][2] === 0, 'Volumen: fehlend wird 0, nicht null');
+
+  // --- Unbrauchbare Antworten ---
+  ok(K.zerlege('kein JSON', { bereinigt: false }) === null, 'Antwort: Muell gibt null, keine Ausnahme');
+  ok(K.zerlege('{}', { bereinigt: false }) === null, 'Antwort: leeres Objekt gibt null');
+  ok(K.zerlege(JSON.stringify({ chart: { result: [], error: 'x' } }), { bereinigt: false }) === null,
+     'Antwort: Yahoo-Fehler gibt null');
+  var leer = K.zerlege(JSON.stringify({ chart: { result: [{ meta: {} }] } }), { bereinigt: false });
+  ok(leer && leer.bars.length === 0, 'Antwort: Ergebnis ohne Kerzen gibt eine leere Reihe, nicht null');
+
+  // --- URL-Bau: benannter Zeitraum ODER freie Grenzen, nie beides ---
+  ok(K.url('AAPL', { range: '1mo', interval: '1d' }) ===
+     'https://query1.finance.yahoo.com/v8/finance/chart/AAPL?range=1mo&interval=1d',
+     'URL: benannter Zeitraum');
+  ok(K.url('AAPL', { von: 0, bis: 2000000, interval: '1d' }) ===
+     'https://query1.finance.yahoo.com/v8/finance/chart/AAPL?period1=0&period2=2000&interval=1d',
+     'URL: freie Grenzen kommen in SEKUNDEN heraus, obwohl von/bis in Millisekunden hereingehen');
+  ok(/includePrePost=true/.test(K.url('AAPL', { range: '1d', interval: '5m', prePost: true })),
+     'URL: Vor-/Nachboerse wird angehaengt, wenn verlangt');
+  ok(!/includePrePost/.test(K.url('AAPL', { range: '1d', interval: '5m' })),
+     'URL: und sonst nicht');
+  ok(K.url('BRK.B^X', { range: '1d', interval: '1d' }).indexOf('BRK.B%5EX') > 0,
+     'URL: das Symbol wird kodiert (ein ^ im Kuerzel darf die Anfrage nicht zerlegen)');
+
+  // --- Der Lader: 429, Wiederholung, Pflichtfeld ---
+  function bauLader(antworten) {
+    var geholt = [], gewartet = [];
+    var lader = K.baueLader(
+      { fetchText: function (u) { geholt.push(u); var a = antworten.shift();
+        return Promise.resolve(a || { ok: false, status: 500, body: '' }); } },
+      function (ms) { gewartet.push(ms); return Promise.resolve(); });
+    return { lader: lader, geholt: geholt, gewartet: gewartet };
+  }
+  var gut = { ok: true, status: 200, body: antwort([10, 11]) };
+  var ratenlimit = { ok: false, status: 429, body: '' };
+
+  var l1 = bauLader([gut]);
+  probe((async function () {
+    var r = await l1.lader.hole('AAPL', { range: '1mo', interval: '1d', bereinigt: false });
+    ok(r && r.bars.length === 2, 'Lader: der Normalfall liefert Kerzen');
+    ok(l1.geholt.length === 1 && l1.gewartet.length === 0, 'Lader: ohne Drosselung wird nicht gewartet');
+
+    var l2 = bauLader([ratenlimit, gut]);
+    var r2 = await l2.lader.hole('AAPL', { range: '1mo', interval: '1d', bereinigt: false });
+    ok(r2 && r2.bars.length === 2, 'Lader: nach 429 rettet die Wiederholung das Symbol');
+    ok(l2.geholt.length === 2, 'Lader: dafuer wird genau EINMAL nachgefasst, nicht endlos');
+    ok(l2.gewartet.indexOf(5000) >= 0, 'Lader: die Vorgabe sind 5 Sekunden');
+    ok(l2.lader.drosselungen() === 1, 'Lader: die Drosselung wird gezaehlt (fuer die Diagnose)');
+
+    /* Die Wartezeit ist je Aufrufer einstellbar. Vor der Zusammenlegung wartete die
+     * Kachelliste 20 Sekunden, der Intraday-Scan 5 - und das ist kein Versehen:
+     * sechs Kacheln pro Minute duerfen geduldig sein, ein Scan ueber Hunderte
+     * Symbole nicht. Eine gemeinsame Zahl haette eine Seite verschlechtert. */
+    var l3 = bauLader([ratenlimit, gut]);
+    await l3.lader.hole('AAPL', { range: '1mo', interval: '1d', bereinigt: false, warteMs: 20000 });
+    ok(l3.gewartet.indexOf(20000) >= 0, 'Lader: die Wartezeit laesst sich je Aufrufer setzen (Kacheln: 20 s)');
+
+    var l4 = bauLader([ratenlimit, ratenlimit]);
+    var r4 = await l4.lader.hole('AAPL', { range: '1mo', interval: '1d', bereinigt: false });
+    ok(r4 === null && l4.geholt.length === 2, 'Lader: bleibt es bei 429, wird aufgegeben statt weiterzuhaemmern');
+
+    var l5 = bauLader([{ ok: false, status: 404, body: '' }]);
+    ok(await l5.lader.hole('AAPL', { range: '1mo', interval: '1d', bereinigt: false }) === null &&
+       l5.geholt.length === 1, 'Lader: ein 404 wird NICHT wiederholt - nur 429');
+
+    // Das Pflichtfeld
+    var geworfen = null;
+    try { await bauLader([gut]).lader.hole('AAPL', { range: '1mo', interval: '1d' }); }
+    catch (e) { geworfen = e.message; }
+    ok(geworfen && /bereinigt/.test(geworfen),
+       'Vertrag: ohne "bereinigt" bricht der Aufruf ab - genau diese Entscheidung wurde neunmal unausgesprochen getroffen');
+
+    var l6 = bauLader([gut]);
+    var txt = await l6.lader.holeRoh('AAPL', { range: '1d', interval: '5m', prePost: true });
+    ok(typeof txt === 'string' && txt.indexOf('chart') > 0,
+       'Lader: holeRoh gibt den Text - fuer vormarkt.js, das sein eigenes Fenster ausschneidet');
+
+    // --- Die Aufrufer: keine handgeschriebene Zerlegung mehr ---
+    var paket = fs.readdirSync(__dirname).filter(function (f) {
+      return /\.js$/.test(f) && !/^test-/.test(f) && f !== 'kurse.js' && f !== 'vormarkt.js';
+    });
+    var eigenbau = paket.filter(function (f) {
+      return /chart\.result\[0\]/.test(fs.readFileSync(__dirname + '/' + f, 'utf8'));
+    });
+    ok(eigenbau.length === 0,
+       'Aufrufer: niemand nimmt die Antwort mehr selbst auseinander' + (eigenbau.length ? ' – ' + eigenbau.join(', ') : ''));
+    /* vormarkt.js ist die dokumentierte Ausnahme: kein Lader, sondern ein
+     * Sonderfall-Auswerter fuer das vorboersliche Fenster, bereits exportiert und
+     * mit eigenen Tests. Er holt seinen Text ueber holeRoh und bekommt damit
+     * URL-Bau und 429-Behandlung, die er vorher gar nicht hatte. */
+    ok(/chart\.result\[0\]/.test(fs.readFileSync(__dirname + '/vormarkt.js', 'utf8')),
+       'Ausnahme: vormarkt.js schneidet weiter selbst - mit eigenem Vertrag und eigenen Tests');
+    ok(/Kurse\.holeRoh\(/.test(fs.readFileSync(__dirname + '/renderer.js', 'utf8')),
+       'Ausnahme: er bekommt seinen Text aber ueber den Lader');
+
+    // Jeder Aufrufer sagt, ob er roh oder bereinigt will
+    var htmlL = fs.readFileSync(__dirname + '/index.html', 'utf8');
+    ok(htmlL.indexOf('kurse.js') < htmlL.indexOf('src="depot.js"'), 'Ladereihenfolge: kurse.js vor depot.js');
+    ok(htmlL.indexOf('kurse.js') < htmlL.indexOf('src="renderer.js"'), 'Ladereihenfolge: kurse.js vor renderer.js');
+    [['mittelfrist.js', true], ['driftui.js', true],
+     ['depot.js', false], ['explorer.js', false], ['scheinfinder.js', false]].forEach(function (f) {
+      var q = fs.readFileSync(__dirname + '/' + f[0], 'utf8');
+      ok(new RegExp('bereinigt: ' + f[1]).test(q),
+         f[0] + ' laedt ' + (f[1] ? 'BEREINIGT (rechnet ueber Jahre)' : 'ROH (handelt den Kurs)'));
+    });
+    /* Kanarienvogel: Faellt der asynchrone Teil kuenftig wieder aus der Zaehlung,
+     * fehlt DIESE Zeile in der Ausgabe - und das faellt auf. */
+    ok(true, 'Lader: der asynchrone Abschnitt ist wirklich gelaufen');
+  })());
+})();
+
+/* ================= 46. Die Messkette misst sich nicht mehr selbst =================
+ * Drei Befunde des Berichts, hier nachgerechnet statt nacherzaehlt.
+ *
+ * 1. MEHRFACHVERGLEICH: Die Analyse-Zentrale kuert den Besten aus 14 Modi x 4
+ *    Zeitrahmen = 56 Kandidaten auf denselben Scheiben. Das Maximum aus 56
+ *    Ziehungen liegt IMMER deutlich ueber dem Mittel - der Sieger sieht also auch
+ *    dann gut aus, wenn kein einziger Kandidat etwas kann. bestOfN gab es in
+ *    quant.js schon; aufgerufen wurde es hier nie.
+ * 2. BELEG UND AUSWAHL WAREN DIESELBE SCHEIBE: 90 Kombinationen wurden auf 70 %
+ *    optimiert, und die 30-%-Scheibe entschied DANN, ob der Feinschliff genommen
+ *    wird - und lieferte zugleich die Filter-Bilanz, die als Beleg berichtet wurde.
+ * 3. "ZWEI NAECHTE" WAREN EINE MESSUNG: Bei einem rollenden Fenster auf
+ *    60-Minuten-Kerzen bringt eine Nacht rund 0,4 % neue Kerzen. */
+(function () {
+  console.log('\n46) Messkette: Zufallshuerde, getrennte Scheiben, echter Zuwachs');
+  var dep = fs.readFileSync(__dirname + '/depot.js', 'utf8');
+
+  // --- 1) Die Zufallshuerde wird wirklich gerechnet, nicht nur erwaehnt ---
+  ok(/results\.zufall = Q\.bestOfN\(/.test(dep),
+     'Zufall: die Rangliste bekommt eine bestOfN-Probe (vorher: gar keine)');
+  ok(/fineZufall = Q\.bestOfN\(/.test(dep),
+     'Zufall: auch der 90er-Feinschliff bekommt eine - dort wird ein zweites Mal ausgewaehlt');
+  ok(/var zufaellig = rec\.ueberzufaellig === false;/.test(dep),
+     'Zufall: das Ergebnis wird zu einer Entscheidung, nicht nur angezeigt');
+  ok(/\} else if \(zufaellig\) \{[\s\S]{0,400}a\.pending = null/.test(dep),
+     'Zufall: faellt der Sieger durch, wird NICHTS vorgemerkt');
+
+  /* Und jetzt die Probe aufs Exempel: bestOfN muss reines Rauschen als solches
+   * erkennen und einen echten Ausreisser durchlassen. Gerechnet, nicht behauptet. */
+  var rausch = [];
+  for (var i = 0; i < 56; i++) rausch.push(Math.sin(i * 7.13) * 4);   // fest, kein Zufallsgenerator
+  var uR = Q.bestOfN(rausch);
+  ok(uR && uR.n === 56, 'Zufallsprobe: 56 Kandidaten gehen hinein  [' + (uR && uR.n) + ']');
+  ok(uR && uR.ueberzufaellig === false,
+     'Zufallsprobe: reines Rauschen aus 56 Kandidaten gilt NICHT als ueberzufaellig');
+  var mitAusreisser = rausch.slice(); mitAusreisser[0] = 40;
+  var uA = Q.bestOfN(mitAusreisser);
+  ok(uA && uA.ueberzufaellig === true,
+     'Zufallsprobe: ein echter Ausreisser kommt durch - die Huerde ist keine Mauer');
+  ok(uR.zufallsMedian > 0 && uR.bester <= uR.zufallsP95,
+     'Zufallsprobe: der Beste aus Rauschen liegt unter der 95-%-Marke des Zufalls  [' +
+     uR.bester + ' <= ' + uR.zufallsP95 + ']');
+
+  // --- 2) Drei Scheiben statt zwei ---
+  ok(/var wahlMap = sliceMap\(map, cut, cut2/.test(dep) && /var belegMap = sliceMap\(map, cut2, span\[1\]/.test(dep),
+     'Scheiben: es gibt eine eigene Wahl- UND eine eigene Belegscheibe');
+  ok(/btIntraday\(wahlMap, Object\.assign\(\{\}, commonIv, top\.mode\.opts, bestFine\.g\)\)/.test(dep),
+     'Scheiben: die Entscheidung ueber den Feinschliff faellt auf der Wahlscheibe');
+  /* Der Kern: Die Belegscheibe darf NIRGENDS eine Entscheidung tragen. Sie kommt
+   * genau dreimal vor - einmal beim Anlegen, einmal fuer die berichtete Zahl,
+   * zweimal fuer die Filter-Bilanz. In keiner davon steht ein Vergleich, der
+   * etwas auswaehlt. */
+  ok(!/useFine[\s\S]{0,120}belegMap/.test(dep) && !/belegMap[\s\S]{0,80}\?\s*bestFine/.test(dep),
+     'Scheiben: useFine wird NICHT auf der Belegscheibe entschieden');
+  ok(/var basisAb = await btIntraday\(belegMap, basisOpts\)/.test(dep),
+     'Scheiben: die Filter-Bilanz laeuft auf der unberuehrten Belegscheibe');
+  ok(!/btIntraday\(testMap,/.test(dep.slice(dep.indexOf('async function runCentral'), dep.indexOf('function applyCentralRec'))),
+     'Scheiben: in der Analyse-Zentrale gibt es kein doppelt benutztes testMap mehr');
+  ok(/scheiben: \{ trainTage: tageIn\(trainMap\), wahlTage: tageIn\(wahlMap\), belegTage: tageIn\(belegMap\) \}/.test(dep),
+     'Scheiben: ihre Groessen werden berichtet - eine Zahl ohne Massstab ist keine');
+
+  // --- 3) Echter Zuwachs statt "zwei Naechte" ---
+  ok(/var neueTage = \(typeof a\.lastRecTage === 'number'/.test(dep),
+     'Zuwachs: die Bestaetigung fragt, wie viele ungesehene Handelstage dazugekommen sind');
+  ok(/if \(neueTage != null && neueTage < 1\)/.test(dep),
+     'Zuwachs: ohne einen einzigen neuen Handelstag wird NICHT uebernommen');
+  ok(/Das ist eine \+\n?\s*'Messung, nicht zwei/.test(dep) || /Das ist eine ' \+\s*\n\s*'Messung, nicht zwei/.test(dep) ||
+     /Messung, nicht zwei/.test(dep),
+     'Zuwachs: und die Meldung sagt auch, warum');
+  ok(!/wartet auf Bestätigung durch die nächste Nacht-Messung/.test(dep),
+     'Zuwachs: die alte Formel "naechste Nacht bestaetigt" steht nicht mehr da');
+
+  /* Der Edge-Waechter geht bewusst den ANDEREN Weg: Er setzt neue Einstiege aus -
+   * eine schuetzende Handlung. Dort darf duenne Evidenz ausloesen, denn ein
+   * Fehlalarm kostet eine Pause, das Zoegern kostet Geld. Was sich aendert, ist
+   * der Anspruch: die Meldung behauptet keine zwei unabhaengigen Belege mehr. */
+  ok(/zuwachs: zuwachs, zuwachsPct: zuwachsPct/.test(dep),
+     'Waechter: der tatsaechliche Zuwachs wird mitgeschrieben');
+  ok(/KEIN unabhängiger zweiter Beleg/.test(dep),
+     'Waechter: die Meldung nennt die zweite Messung ausdruecklich keinen zweiten Beleg');
+  ok(/a\.edgeHistorie\[1\]\.verfall/.test(dep),
+     'Waechter: die Ausloeseschwelle bleibt bei zwei Messungen - schuetzen darf auf duenner Grundlage');
+  ok(!/in zwei Nächten hintereinander verfallen/.test(dep),
+     'Waechter: die alte, zu starke Formulierung ist weg');
+})();
+
+/* ================= 47. Vega, Smile und die Vola um einen Termin =================
+ * Der Bericht nannte drei systematische Verzerrungen der Schein-Simulation. Alle
+ * drei zeigten in dieselbe Richtung: Der Backtest faellt optimistischer aus als
+ * die Wirklichkeit.
+ *   1. Kein Vega  - die Vola wurde beim Oeffnen eingefroren und bis zum Schliessen
+ *                   unveraendert weiterbenutzt. Der groesste reale Risikofaktor
+ *                   eines kurzlaufenden Scheins kam gar nicht vor.
+ *   2. Kein Smile - jeder Schein bekam dieselbe Vola, egal wie weit aus dem Geld.
+ *   3. RISK_FREE fest verdrahtet.
+ * Nachgemessen wird hier, nicht nacherzaehlt. */
+(function () {
+  console.log('\n47) Vega, Smile und die Vola um einen Ergebnistermin');
+  var dep = fs.readFileSync(__dirname + '/depot.js', 'utf8');
+
+  // --- Vega ---
+  ok(typeof Q.bsVega === 'function', 'Vega: die Funktion gibt es');
+  var vAtm = Q.bsVega(100, 100, 30 / 365, 0.30);
+  ok(vAtm > 0, 'Vega: am Geld positiv  [' + vAtm.toFixed(4) + ']');
+  ok(Q.bsVega(100, 100, 90 / 365, 0.30) > vAtm,
+     'Vega: laengere Restlaufzeit hat mehr Vega - Zeit ist die Waehrung der Vola');
+  ok(Q.bsVega(100, 130, 30 / 365, 0.30) < vAtm,
+     'Vega: weit aus dem Geld hat weniger Vega');
+  ok(Q.bsVega(100, 100, 0, 0.30) === 0 && Q.bsVega(100, 100, 0.1, 0) === 0,
+     'Vega: ohne Restlaufzeit oder ohne Vola ist es null, nicht NaN');
+  /* Call und Put haben DASSELBE Vega - das folgt aus der Put-Call-Paritaet und ist
+   * keine Vereinfachung. Deshalb nimmt bsVega gar keine Richtung entgegen. */
+  ok(Q.bsVega.length === 5, 'Vega: nimmt keine Richtung entgegen - Call und Put haben dasselbe');
+
+  // --- Smile ---
+  ok(Math.abs(Q.smileIv(0.30, 100, 100, 30) - 0.30) < 1e-9,
+     'Smile: am Geld bleibt die Vola unveraendert');
+  ok(Q.smileIv(0.30, 90, 100, 30) > 0.30,
+     'Smile: unter dem Kurs teurer - der Aktien-Skew, Absicherungsnachfrage bei Puts');
+  ok(Q.smileIv(0.30, 103, 100, 30) < 0.30,
+     'Smile: knapp ueber dem Kurs BILLIGER - der Call-Skew faellt');
+  ok(Q.smileIv(0.30, 130, 100, 30) > Q.smileIv(0.30, 110, 100, 30),
+     'Smile: weit aus dem Geld faengt die Kruemmung beide Seiten wieder hoch');
+  ok(Math.abs(Q.smileIv(0.30, 103, 100, 14) - 0.30) > Math.abs(Q.smileIv(0.30, 103, 100, 90) - 0.30),
+     'Smile: kurze Laufzeiten haben den steileren Smile');
+  ok(Q.smileIv(0.30, 1000, 100, 30) <= 0.30 * Q.SMILE.max && Q.smileIv(0.30, 1, 100, 30) >= 0.30 * Q.SMILE.min,
+     'Smile: der Faktor bleibt in Grenzen - kein Unfug an den Raendern');
+  /* GRENZE DER GUELTIGKEIT. Die Kurve ist fuer die Naehe des Geldes gedacht; diese App
+   * oeffnet zwischen 0 und 5 % Abstand. Laeuft der Kurs danach weit weg, extrapolierte
+   * die Formel wild - im Lauf am 24.08.2026 auf das 2,1-Fache (30 % -> 63 %), und das
+   * macht eine tief im Geld liegende Position WERTVOLLER, also den Backtest wieder
+   * optimistischer. Jenseits von +-25 % Moneyness bleibt der Smile jetzt flach. */
+  ok(Math.abs(Q.smileIv(0.30, 170, 100, 21) - Q.smileIv(0.30, 200, 100, 21)) < 1e-9 &&
+     Math.abs(Q.smileIv(0.30, 60, 100, 21) - Q.smileIv(0.30, 20, 100, 21)) < 1e-9,
+     'Smile: jenseits von ±25 % Moneyness wird nicht mehr extrapoliert, sondern gehalten');
+  ok(Q.smileIv(0.30, 100, 170, 21) / 0.30 < 1.4,
+     'Smile: der Faktor bleibt auch im Extremfall unter 1,4  [' +
+     (Q.smileIv(0.30, 100, 170, 21) / 0.30).toFixed(2) + ']');
+  /* Und die Gegenprobe, warum die erhoehte Vola tief im Geld trotzdem harmlos ist:
+   * Dort ist das Vega null, der Preis ist fast reiner innerer Wert. Genau das sagt
+   * die Put-Call-Paritaet - ein tiefer Call und ein weiter Put teilen sich die Vola. */
+  var tiefAlt = Q.bsPrice('call', 170, 100, 21 / 365, 0.30);
+  var tiefNeu = Q.bsPrice('call', 170, 100, 21 / 365, Q.smileIv(0.30, 100, 170, 21));
+  ok(Math.abs(tiefNeu / tiefAlt - 1) < 0.001,
+     'Smile: tief im Geld aendert die hoehere Vola den Preis praktisch nicht (Vega ist dort null)');
+  ok(Q.smileIv(0, 100, 100, 30) === 0 && Q.smileIv(0.3, 0, 100, 30) === 0.3,
+     'Smile: Unsinn geht unveraendert durch, statt NaN zu erzeugen');
+
+  /* Der Bericht sagte, ein aus dem Geld liegender Schein waere "real hoeher, der
+   * Schein teurer". Das gilt fuer PUTS. Bei CALLS faellt der Aktien-Skew - der Call
+   * wird billiger. Diese Korrektur gehoert festgehalten, sonst wird der Bericht
+   * beim naechsten Lesen wieder zur Vorlage. */
+  ok(Q.smileIv(0.30, 97, 100, 30) > Q.smileIv(0.30, 103, 100, 30),
+     'Smile: Put-Seite teurer als Call-Seite bei gleichem Abstand - so herum, nicht anders');
+
+  // --- Vola um einen Termin ---
+  ok(Q.ivMitEreignis(0.30, null) === 0.30 && Q.ivMitEreignis(0.30, undefined) === 0.30,
+     'Termin: ohne bekannten Termin bleibt alles, wie es ist');
+  ok(Q.ivMitEreignis(0.30, 30) === 0.30, 'Termin: weit davor keine Wirkung');
+  ok(Q.ivMitEreignis(0.30, 1) > 0.35, 'Termin: am Tag davor deutlich erhoeht  [' +
+     (Q.ivMitEreignis(0.30, 1) * 100).toFixed(1) + ' %]');
+  ok(Q.ivMitEreignis(0.30, -1) < 0.30, 'Termin: am Tag danach der Crush  [' +
+     (Q.ivMitEreignis(0.30, -1) * 100).toFixed(1) + ' %]');
+  ok(Q.ivMitEreignis(0.30, -10) === 0.30, 'Termin: nach der Erholung wieder normal');
+  /* Der Kern der Sache in einer Zeile: derselbe Kurs, ein Tag Unterschied. */
+  var vor = Q.bsPrice('call', 100, 100, 21 / 365, Q.ivMitEreignis(0.30, 1));
+  var nach = Q.bsPrice('call', 100, 100, 20 / 365, Q.ivMitEreignis(0.30, -1));
+  ok(nach < vor * 0.75,
+     'Termin: bei UNVERAENDERTEM Kurs verliert der Schein ueber die Zahlen ' +
+     Math.round((1 - nach / vor) * 100) + ' % - der Fall, den es in der Simulation nicht gab');
+
+  // --- Verkabelung in depot.js ---
+  ok(/function ivFuer\(basis, dir, strike, spot, expiry, terminT, now\)/.test(dep),
+     'Einbau: es gibt eine Stelle, die die lebende Vola bestimmt');
+  ok(/var ivJetzt = ivDerPosition\(pos, spot, now\);/.test(dep),
+     'Einbau: die BEWERTUNG benutzt sie - dort sass der eingefrorene Wert');
+  ok(!/iv: pos\.iv, ratio: pos\.ratio \|\| Q\.RATIO \}, spot, now\);\s*\n\s*return Math\.max\(0\.001, v/.test(dep),
+     'Einbau: die eingefrorene Vola steht nicht mehr in der Bewertung');
+  ok(/ivBasis: Math\.round\(ivBasis \* 1000\) \/ 1000/.test(dep) && /terminT: nTermin \|\| undefined/.test(dep),
+     'Einbau: die Position traegt Basis-Vola und Termin mit - sonst waere es beim naechsten Bewerten wieder eingefroren');
+  ok(/vega: Math\.round\(Q\.bsVega\(/.test(dep), 'Einbau: Vega wird auf der Position mitgeschrieben');
+  ok(/w\.iv = \(cfg\.ivModell === false\) \? w\.iv : Q\.smileIv\(w\.iv, w\.strike, spot, P\.days\);/.test(dep),
+     'Einbau: die Kostenhuerde bepreist denselben Schein wie der Handel');
+  /* Sie muss dabei EINZELN ausfuehrbar bleiben - die Suite schneidet sie heraus.
+   * Ein Griff nach D oder nach einer Modulfunktion bricht das (und tat es einmal). */
+  ok(!/function kostenHuerdePp\(cfg, spot, vol, haltenMin, einsatz\) \{[\s\S]*?\n  \}/.test(dep) ||
+     !/ivModellAn\(\)/.test(/function kostenHuerdePp\(cfg, spot, vol, haltenMin, einsatz\) \{[\s\S]*?\n  \}/.exec(dep)[0]),
+     'Kostenhuerde: greift auf nichts ausserhalb ihrer Argumente zu');
+  ok(/function ivModellAn\(\)/.test(dep) && /D\.intraday\.ivModell === false/.test(dep),
+     'Einbau: das Modell laesst sich abschalten - eine Aenderung an der Preisbildung muss man zurueckdrehen koennen');
+  ok(/if \(!\(pos\.ivBasis > 0\)\) return pos\.iv;/.test(dep),
+     'Altbestand: Positionen ohne Basis-Vola werden NICHT rueckwirkend neu bepreist');
+
+  // --- Die Tabelle muss aufgehen ---
+  /* Der Basiswert-Zweig liefert Ersatzzellen. Kommt vorne eine Spalte dazu und
+   * dort nicht, verrutscht die ganze Tabelle - und Basiswert ist die Voreinstellung. */
+  var kopfI = dep.indexOf('<th>Wert</th><th>Typ</th>');
+  var kopf = dep.slice(kopfI, dep.indexOf('</tr>', kopfI));
+  var nKopf = (kopf.match(/<th/g) || []).length;
+  var zwI = dep.indexOf('var scheinZellen = p.basis');
+  var zweig = dep.slice(zwI, dep.indexOf("ph += '<tr>", zwI));
+  var nBasis = (zweig.slice(zweig.indexOf('?'), zweig.indexOf(': ')).match(/<td/g) || []).length;
+  var nSchein = (zweig.slice(zweig.indexOf(': ')).match(/<td/g) || []).length;
+  ok(nBasis === nSchein, 'Tabelle: Basiswert- und Schein-Zweig liefern gleich viele Zellen  [' + nBasis + ' / ' + nSchein + ']');
+  var zeilI = dep.indexOf("ph += '<tr><td><b>' + U.esc(p.sym)");
+  var nZeile = (dep.slice(zeilI, dep.indexOf('</tr>', zeilI)).match(/<td/g) || []).length;
+  ok(nZeile + nSchein === nKopf,
+     'Tabelle: Zeile und Kopf haben gleich viele Spalten  [' + (nZeile + nSchein) + ' / ' + nKopf + ']');
+  var sumI = dep.indexOf('style="text-align:right; color:var(--muted); font-weight:600;">Summe');
+  var colspan = Number(/colspan="(\d+)"/.exec(dep.slice(sumI - 60, sumI))[1]);
+  ok(colspan === nKopf - 4,
+     'Tabelle: die Summenzeile ueberspannt die richtige Zahl von Spalten  [' + colspan + ']');
+})();
+
+/* ================= 48. US-Handelskalender =================
+ * Die App hielt JEDEN Wochentag fuer einen vollen Handelstag von 390 Minuten.
+ * Feiertage sind dabei der leichte Fall (Leerlauf, barsFrisch faengt es ab);
+ * HALBTAGE sind der teure: Die Boerse schliesst um 13:00 ET statt 16:00, und
+ * isNearUsClose prueft "m >= 375" - an einem Halbtag wird 375 nie erreicht, die
+ * Tagesschluss-Glattstellung fiel dort also KOMPLETT aus. Positionen, die
+ * ausdruecklich kein Uebernacht-Risiko tragen sollten, lagen ueber Nacht.
+ *
+ * Geprueft wird gegen die VEROEFFENTLICHTEN NYSE-Termine, nicht gegen die eigene
+ * Rechnung - sonst pruefte sich der Algorithmus selbst. */
+(function () {
+  console.log('\n48) US-Handelskalender: Feiertage und Halbtage');
+  var B = require(__dirname + '/boerse.js');
+  function tag(s) { return Date.parse(s + 'T15:00:00Z'); }
+  function iso(ms) { return new Date(ms).toISOString().slice(0, 10); }
+
+  // --- Ostern, die Grundlage fuer Karfreitag ---
+  [[2025, 3, 20], [2026, 3, 5], [2027, 2, 28], [2024, 2, 31], [2030, 3, 21]].forEach(function (e) {
+    var o = B.ostern(e[0]);
+    ok(o.monat === e[1] && o.tag === e[2],
+       'Ostern ' + e[0] + ': ' + (o.tag) + '.' + (o.monat + 1) + '. (erwartet ' + e[2] + '.' + (e[1] + 1) + '.)');
+  });
+
+  /* Die veroeffentlichten NYSE-Feiertage. Jede Zeile ist nachschlagbar. */
+  var NYSE = {
+    2025: ['2025-01-01', '2025-01-20', '2025-02-17', '2025-04-18', '2025-05-26',
+           '2025-06-19', '2025-07-04', '2025-09-01', '2025-11-27', '2025-12-25'],
+    2026: ['2026-01-01', '2026-01-19', '2026-02-16', '2026-04-03', '2026-05-25',
+           '2026-06-19', '2026-07-03', '2026-09-07', '2026-11-26', '2026-12-25'],
+    2027: ['2027-01-01', '2027-01-18', '2027-02-15', '2027-03-26', '2027-05-31',
+           '2027-06-18', '2027-07-05', '2027-09-06', '2027-11-25', '2027-12-24']
+  };
+  Object.keys(NYSE).forEach(function (j) {
+    var f = B.feiertage(Number(j));
+    var berechnet = Object.keys(f).map(function (k) { return iso(f[k]); }).sort();
+    ok(berechnet.join(',') === NYSE[j].slice().sort().join(','),
+       'NYSE ' + j + ': alle zehn Feiertage stimmen');
+  });
+  /* Die drei Verschiebungen, an denen eine handgepflegte Liste scheitert: */
+  ok(iso(B.feiertage(2026).unabhaengigkeit) === '2026-07-03',
+     'Verschiebung: 4. Juli 2026 faellt auf Samstag -> frei ist der Freitag davor');
+  ok(iso(B.feiertage(2027).unabhaengigkeit) === '2027-07-05',
+     'Verschiebung: 4. Juli 2027 faellt auf Sonntag -> frei ist der Montag danach');
+  ok(iso(B.feiertage(2027).weihnachten) === '2027-12-24',
+     'Verschiebung: 25.12.2027 faellt auf Samstag -> frei ist der Freitag davor');
+
+  // --- Halbtage ---
+  ok(B.halbtagAn(tag('2026-11-27')) === 'nachThanksgiving', 'Halbtag: der Freitag nach Thanksgiving');
+  ok(B.halbtagAn(tag('2026-12-24')) === 'heiligabend', 'Halbtag: Heiligabend, wenn er ein Handelstag ist');
+  ok(B.halbtagAn(tag('2025-07-03')) === 'vorUnabhaengigkeit', 'Halbtag: der 3. Juli 2025 (Do, der 4. ist Fr)');
+  /* Die beiden Faelle, in denen der 3. Juli KEIN halber Tag ist. */
+  ok(!B.halbtagAn(tag('2026-07-03')),
+     'Kein Halbtag: der 3.7.2026 ist der Ersatzfeiertag selbst, also ganz zu');
+  ok(!B.halbtagAn(tag('2027-07-02')) && !B.halbtagAn(tag('2027-07-03')),
+     'Kein Halbtag: 2027 faellt der 4. Juli auf einen Sonntag - der 3. ist Samstag');
+  /* Kollision: Ein Feiertag schlaegt einen Halbtag. 2027 ist der 24.12. beides. */
+  ok(B.feiertagAn(tag('2027-12-24')) === 'weihnachten' && !B.halbtagAn(tag('2027-12-24')),
+     'Kollision: faellt beides auf denselben Tag, gilt der Feiertag');
+  ok(B.sitzungsMinuten(tag('2027-12-24')) === 0,
+     'Kollision: die Boerse ist dann ZU, nicht halb offen');
+
+  // --- Sitzungslaengen ---
+  ok(B.sitzungsMinuten(tag('2026-08-24')) === 390, 'Sitzung: ein normaler Montag hat 390 Minuten');
+  ok(B.sitzungsMinuten(tag('2026-11-27')) === 210, 'Sitzung: ein Halbtag hat 210 Minuten');
+  ok(B.sitzungsMinuten(tag('2026-11-26')) === 0, 'Sitzung: an Thanksgiving null');
+  ok(B.sitzungsMinuten(tag('2026-08-22')) === 0, 'Sitzung: samstags null');
+  ok(B.istHandelstag(tag('2026-11-27')) === true, 'Ein Halbtag IST ein Handelstag - nur ein kuerzerer');
+
+  // --- Ein Jahr am Stueck ---
+  var handelstage = 0, halb = 0;
+  for (var d = Date.UTC(2026, 0, 1); d < Date.UTC(2027, 0, 1); d += 86400000) {
+    if (B.istHandelstag(d)) handelstage++;
+    if (B.halbtagAn(d)) halb++;
+  }
+  ok(handelstage >= 250 && handelstage <= 253,
+     '2026 hat ' + handelstage + ' Handelstage (die NYSE zaehlt 250-253)');
+  ok(halb >= 1 && halb <= 4, '2026 hat ' + halb + ' Halbtage');
+
+  // --- Verkabelung ---
+  var dep = fs.readFileSync(__dirname + '/depot.js', 'utf8');
+  var ren = fs.readFileSync(__dirname + '/renderer.js', 'utf8');
+  var htmlB = fs.readFileSync(__dirname + '/index.html', 'utf8');
+  ok(/return m >= laenge - 15 && m < laenge;/.test(dep),
+     'Glattstellung: richtet sich nach der ECHTEN Sitzungslaenge, nicht nach 390');
+  ok(!/return m >= 375 && m < 390;/.test(dep),
+     'Glattstellung: die feste 375 ist weg - an einem Halbtag wurde sie nie erreicht');
+  ok(/window\.Boerse\.sitzungsMinuten\(jetzt\)/.test(ren) && /if \(!laenge\) return false;/.test(ren),
+     'Marktstatus: an Feiertagen gilt die Boerse als geschlossen');
+  ok(/var sess = bars\.filter\(function \(b\) \{ return istSitzung\(b\[0\]\); \}\)/.test(dep),
+     'Backfill: filtert ueber istSitzung statt ueber eine zweite, eigene 390er-Regel');
+  ok(/if \(tag >= 1 && tag <= 5 && laenge && m >= laenge\)/.test(dep),
+     'Backfill: der Sprung ueber Pausen kennt jetzt wirklich Feiertage - der Kommentar versprach das schon vorher');
+  ok(htmlB.indexOf('boerse.js') < htmlB.indexOf('src="depot.js"') &&
+     htmlB.indexOf('boerse.js') < htmlB.indexOf('src="renderer.js"'),
+     'Ladereihenfolge: boerse.js vor seinen beiden Nutzern');
+})();
+
+/* ================= 49. Die Schnitte aus depot.js =================
+ * Audit 22 nannte drei. Der erste (Reiter-Navigation) lief in Stufe 2.
+ *
+ * ZWEITER: die Chart-Zeichnung. Sie fasst weder D noch eine Position noch eine
+ * Kursquelle an - Punkte rein, SVG raus. Deshalb ein WOERTLICHER Umzug: keine
+ * Formel, kein Aufruf, kein Zahlenwert angefasst.
+ *
+ * DRITTER: die Messmaschine. Sie NICHT im Ganzen zu verschieben, war die
+ * Entscheidung: 1.117 Zeilen, die acht Funktionen aus dem Rest von depot.js
+ * aufrufen und in D schreiben. Ein Umzug haette acht Durchreichungen gebraucht -
+ * dieselbe Verflechtung, nur ueber Dateigrenzen verteilt. Verschoben ist der
+ * Teil, der wirklich rein ist: die Fenster-Rechnung. Sie entscheidet, welche
+ * Kerze zum Optimieren, welche zum Auswaehlen und welche zum Belegen zaehlt -
+ * und war bisher nur ueber einen kompletten Messlauf pruefbar. */
+(function () {
+  console.log('\n49) depot.js geschnitten: Chart und Messfenster');
+  /* chart.js verlangt window.U und bricht sonst laut ab - genau so soll es sein.
+   * Im Test stellen wir die Formate selbst; geprueft wird hier die RECHNUNG
+   * (Tick-Stufen, Zeitachse), nicht die Lokalisierung. */
+  globalThis.U = {
+    nf0: { format: function (v) { return String(Math.round(v)); } },
+    nf2: { format: function (v) { return (Math.round(v * 100) / 100).toFixed(2); } },
+    esc: function (x) { return String(x); }
+  };
+  var C = require(__dirname + '/chart.js');
+  var M = require(__dirname + '/messfenster.js');
+  var dep = fs.readFileSync(__dirname + '/depot.js', 'utf8');
+
+  // ---------- Achsen: reine Rechnerei mit Rundungsfallen ----------
+  ok(typeof C.niceTicks === 'function', 'Chart: niceTicks laeuft jetzt in Node');
+  var t1 = C.niceTicks(0, 100, 4);
+  ok(t1.length >= 3 && t1[0] === 0 && t1[t1.length - 1] === 100,
+     'Ticks: 0 bis 100 ergibt runde Stufen  [' + t1.join(', ') + ']');
+  var t2 = C.niceTicks(9.998, 10.002, 4);
+  ok(t2.length >= 2 && t2.every(function (v) { return v >= 9.99 && v <= 10.01; }),
+     'Ticks: eine winzige Spanne ergibt trotzdem Stufen  [' + t2.join(', ') + ']');
+  ok(C.niceTicks(5, 5, 4).length === 1, 'Ticks: ohne Spanne genau eine Marke, keine Endlosschleife');
+  ok(C.niceTicks(10, 5, 4).length === 1, 'Ticks: verdrehte Grenzen ergeben keine Endlosschleife');
+  var t3 = C.niceTicks(0, 1e7, 4);
+  ok(t3.length >= 3 && t3.length <= 9, 'Ticks: auch bei zehn Millionen bleibt die Zahl der Marken lesbar  [' + t3.length + ']');
+  /* Die Stufen muessen GLEICHMAESSIG sein - eine krumme Leiter faellt am Chart nicht
+   * auf, macht aber jede abgelesene Zahl unzuverlaessig. */
+  var gl = C.niceTicks(0, 100, 4);
+  var abst = [];
+  for (var i = 1; i < gl.length; i++) abst.push(Math.round((gl[i] - gl[i - 1]) * 1e6));
+  ok(new Set(abst).size === 1, 'Ticks: alle Abstaende gleich  [' + abst[0] / 1e6 + ']');
+
+  ok(/^\d/.test(C.fmtTimeTick(Date.UTC(2026, 7, 24, 12), 3600000)) ||
+     C.fmtTimeTick(Date.UTC(2026, 7, 24, 12), 3600000).indexOf(':') > 0,
+     'Zeitachse: kurze Spanne zeigt die Uhrzeit');
+  ok(C.fmtTimeTick(Date.UTC(2026, 7, 24), 60 * 86400000).indexOf('.') > 0,
+     'Zeitachse: mittlere Spanne zeigt Tag und Monat');
+  /* Bewusst OHNE das Trennzeichen geprueft: Node liefert fuer de-DE "08/26", der
+   * Browser "08.26" - eine ICU-Eigenheit der Testumgebung, kein Unterschied in der
+   * App. Geprueft wird, dass Monat UND Jahr dastehen und der Tag verschwindet. */
+  var langTxt = C.fmtTimeTick(Date.UTC(2026, 7, 24), 900 * 86400000);
+  ok(/08/.test(langTxt) && /26/.test(langTxt) && !/24/.test(langTxt),
+     'Zeitachse: lange Spanne zeigt Monat und Jahr, nicht den Tag  [' + langTxt + ']');
+
+  ok(/var niceTicks = window\.Chart\.niceTicks;/.test(dep) && !/function niceTicks/.test(dep),
+     'Chart: depot.js haelt nur noch den Namen, nicht den Code');
+  ok(/throw new Error\('chart\.js braucht window\.U/.test(fs.readFileSync(__dirname + '/chart.js', 'utf8')),
+     'Chart: kein stiller Rueckfall auf Ersatz-Zahlenformate - der waere an einer Achse nie aufgefallen');
+
+  // ---------- Messfenster: hier entscheidet sich, was als Beleg zaehlt ----------
+  /* Eine gebaute Kursreihe mit BEKANNTER Antwort: zehn Handelstage, je drei Kerzen. */
+  /* Sechseinhalb Kerzen je Handelstag - die Dichte eines 60m-Zeitrahmens. Der erste
+   * Wurf dieses Tests nahm DREI und lief prompt in die 60-Kerzen-Schwelle von
+   * sliceMap: Wahl- und Belegscheibe kamen leer zurueck. Das war kein Fehler im
+   * Code, sondern eine unrealistische Testreihe - nachgerechnet ist die knappste
+   * echte Belegscheibe (15m, 60 Tage Historie) 234 Kerzen gross. */
+  function reihe(tage) {
+    var arr = [];
+    for (var d = 0; d < tage; d++) {
+      for (var h = 0; h < 7; h++) arr.push([Date.UTC(2026, 0, 5 + d, 14 + h), 100 + d]);
+    }
+    return { AAA: arr, BBB: arr.slice() };
+  }
+  var m10 = reihe(10);
+  ok(M.handelsTage(m10).length === 10, 'Fenster: zehn Tage rein, zehn Tage erkannt');
+  ok(M.handelsTage(m10)[0] === '2026-01-05' && M.handelsTage(m10)[9] === '2026-01-14',
+     'Fenster: die Tage stehen aufsteigend und stimmen');
+  ok(M.tageIn(m10) === 10 && M.tageIn({}) === 0, 'Fenster: tageIn zaehlt dasselbe');
+
+  var sp = M.mapSpan(m10);
+  ok(sp[0] === Date.UTC(2026, 0, 5, 14) && sp[1] === Date.UTC(2026, 0, 14, 20),
+     'Fenster: die Spanne reicht von der ersten bis zur letzten Kerze');
+  ok(M.mapSpan({}) [0] === Infinity, 'Fenster: eine leere Karte ergibt keine Spanne, sondern Infinity');
+
+  /* Der Kern: Die Grenze wird nach HANDELSTAGEN gezogen, nicht nach Kalenderzeit.
+   * Bei 70 % von zehn Tagen ist das der Beginn des achten - Index 7. */
+  var g70 = M.tagesGrenze(m10, 0.7);
+  ok(g70 === Date.UTC(2026, 0, 12), 'Fenster: 70 % von zehn Handelstagen ist der Beginn des achten  [' +
+     new Date(g70).toISOString().slice(0, 10) + ']');
+  ok(M.tagesGrenze(m10, 0.85) === Date.UTC(2026, 0, 13), 'Fenster: 85 % ist der Beginn des neunten');
+  ok(M.tagesGrenze(m10, 0) === Date.UTC(2026, 0, 5) && M.tagesGrenze(m10, 1) === Date.UTC(2026, 0, 14),
+     'Fenster: 0 und 1 treffen den ersten und den letzten Tag, nicht daneben');
+  ok(M.tagesGrenze({}, 0.7) === null, 'Fenster: ohne Daten keine Grenze');
+
+  /* Und die Probe, warum das ueberhaupt zaehlt: Die drei Scheiben der Analyse-Zentrale
+   * duerfen sich NICHT ueberlappen. Faellt eine Grenze um einen Tag falsch, wandert ein
+   * Tag aus der Belegscheibe in die Trainingsscheibe - und das Ergebnis sieht besser
+   * aus, ohne dass irgendwo ein Fehler auffiele. */
+  var m60 = reihe(60);
+  var spanne = M.mapSpan(m60);
+  var cut = M.tagesGrenze(m60, 0.7), cut2 = M.tagesGrenze(m60, 0.85);
+  var train = M.sliceMap(m60, spanne[0], cut, 0);
+  var wahl = M.sliceMap(m60, cut, cut2, 0);
+  var beleg = M.sliceMap(m60, cut2, spanne[1], 0);
+  var tT = M.handelsTage(train), tW = M.handelsTage(wahl), tB = M.handelsTage(beleg);
+  ok(tT.length + tW.length + tB.length === 60,
+     'Scheiben: die drei ergeben zusammen wieder alle 60 Tage  [' + tT.length + '+' + tW.length + '+' + tB.length + ']');
+  ok(tT[tT.length - 1] < tW[0] && tW[tW.length - 1] < tB[0],
+     'Scheiben: sie ueberlappen sich an keiner Stelle');
+  ok(tT.length === 42 && tW.length === 9 && tB.length === 9,
+     'Scheiben: 70/15/15 kommt bei 60 Tagen als 42/9/9 heraus  [' + tT.length + '/' + tW.length + '/' + tB.length + ']');
+
+  /* Der Warmlauf zaehlt in BARS, nicht in Millisekunden - das war schon einmal ein
+   * Fehler (13 Stunden Wanduhr ueber ein Wochenende ergeben null zusaetzliche Bars). */
+  var ohne = M.sliceMap(m60, cut2, spanne[1], 0);
+  var mit = M.sliceMap(m60, cut2, spanne[1], 30);
+  ok(mit.AAA.length === ohne.AAA.length + 30,
+     'Warmlauf: 30 angeforderte Bars sind genau 30 zusaetzliche Kerzen  [' +
+     ohne.AAA.length + ' -> ' + mit.AAA.length + ']');
+  ok(M.sliceMap(m60, spanne[0], cut, 30).AAA.length === M.sliceMap(m60, spanne[0], cut, 0).AAA.length,
+     'Warmlauf: am ANFANG der Historie gibt es nichts vorzuladen - und es wird nicht negativ geschnitten');
+  ok(M.warmlaufBars('60m') === 150 && M.warmlaufBars('5m') === 400 && M.warmlaufBars('1m') === 400,
+     'Warmlauf: 60m bekommt 150 Bars, alles andere 400');
+  /* Genau hier waere der erste Wurf dieses Moduls gescheitert: WARMLAUF_BARS blieb in
+   * depot.js zurueck, warmlaufBars gab fuer alles ausser 60m undefined - und
+   * Math.max(0, erst - undefined) ist NaN, slice(NaN, n) faengt bei 0 an. Jede Scheibe
+   * waere lautlos ab dem ersten Bar der Historie gelaufen. */
+  ok(M.warmlaufBars('5m') !== undefined && typeof M.warmlaufBars('5m') === 'number',
+     'Warmlauf: die Konstante ist mit umgezogen - sonst waere der Rueckgabewert undefined');
+
+  /* Zu duenne Symbole fliegen raus - sonst rechnet die Messung auf zehn Kerzen.
+   * Das passiert STILL: sliceMap laesst das Symbol einfach weg. */
+  var duenn = { GUT: m60.AAA, DUENN: m60.AAA.slice(0, 20) };
+  var gefiltert = M.sliceMap(duenn, spanne[0], spanne[1], 0);
+  ok(!!gefiltert.GUT && !gefiltert.DUENN,
+     'Scheiben: ein Symbol mit 60 Kerzen oder weniger wird verworfen, nicht mitgeschleppt');
+  /* SPERRKLINKE zu Audit 25: Die Belegscheibe ist dort von 30 % auf 15 % geschrumpft.
+   * Wird sie noch kleiner, koennten Symbole unter die 60-Kerzen-Schwelle rutschen und
+   * LAUTLOS aus dem Beleg verschwinden. Nachgerechnet fuer die vier Zeitrahmen mit der
+   * Historie, die Yahoo hergibt (24.08.2026):
+   *     1m    7 Tage ->  1 Tag  =  390 Kerzen
+   *     5m   60 Tage ->  9 Tage =  702 Kerzen
+   *     15m  60 Tage ->  9 Tage =  234 Kerzen   <- die knappste
+   *     60m 260 Tage -> 39 Tage =  254 Kerzen
+   * Der Abstand zur Schwelle ist also fast vierfach. Diese Zeile wird rot, wenn er
+   * es nicht mehr ist. */
+  var knappste = Math.round(Math.floor(60 * 0.15) * 26);   // 15m: 26 Kerzen je Handelstag
+  ok(knappste > 60 * 3,
+     'Belegscheibe: auch der knappste Zeitrahmen bleibt weit ueber der 60-Kerzen-Schwelle  [' +
+     knappste + ' Kerzen]');
+
+  var sch = M.tagesScheiben(m60, 9);
+  ok(sch.length === 9, 'Walk-Forward: neun Scheiben aus 60 Tagen');
+  ok(sch.reduce(function (a, x) { return a + x.tage; }, 0) === 60, 'Walk-Forward: sie decken alle 60 Tage ab');
+  ok(sch.every(function (x, i2) { return i2 === 0 || x.von > sch[i2 - 1].bis; }),
+     'Walk-Forward: keine Scheibe faengt vor dem Ende der vorigen an');
+  ok(M.tagesScheiben(m10, 20).length === 0, 'Walk-Forward: weniger Tage als Scheiben ergibt keine Scheiben');
+
+  // ---------- Was in depot.js bleiben MUSSTE ----------
+  ok(/var sliceMap = window\.Messfenster\.sliceMap;/.test(dep) && !/function sliceMap/.test(dep),
+     'Messfenster: depot.js haelt nur noch die Namen');
+  ok(/async function runCentral/.test(dep) && /async function labCompute/.test(dep),
+     'Messfenster: die Maschine selbst bleibt in depot.js - sie ruft acht Funktionen von dort und schreibt in D');
+  var htmlS = fs.readFileSync(__dirname + '/index.html', 'utf8');
+  ok(htmlS.indexOf('app-shell.js') < htmlS.indexOf('chart.js'),
+     'Ladereihenfolge: chart.js NACH app-shell.js - dort entsteht window.U');
+  ok(htmlS.indexOf('messfenster.js') < htmlS.indexOf('src="depot.js"'),
+     'Ladereihenfolge: messfenster.js vor depot.js');
+})();
+
+Promise.all(offeneProben).then(function () {
+  console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
+  process.exit(fails ? 1 : 0);
+}, function (e) {
+  console.log('\nEIN ASYNCHRONER ABSCHNITT IST GESCHEITERT: ' + (e && e.stack || e));
+  process.exit(1);
+});

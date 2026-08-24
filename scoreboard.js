@@ -37,9 +37,9 @@
     if (!el || !window.api || !window.api.readProtokolle) return;
     var r = null;
     try { r = await window.api.readProtokolle(); } catch (e) { r = { ok: false, grund: String(e && e.message || e) }; }
-    if (!r || !r.ok) { el.innerHTML = '<div style="color:var(--muted); font-size:12px;">Protokolle nicht lesbar' + (r && r.grund ? ': ' + esc(r.grund) : '') + '.</div>'; return; }
+    if (!r || !r.ok) { el.innerHTML = '<div style="color:var(--muted); font-size:var(--fs-neben);">Protokolle nicht lesbar' + (r && r.grund ? ': ' + esc(r.grund) : '') + '.</div>'; return; }
     if (!r.protokolle.length) {
-      el.innerHTML = '<div style="color:var(--muted); font-size:12px;">Noch kein Protokoll. Eine Strategie messen mit <code>node studien/messmaschine/messen.js &lt;datei&gt;</code>; das Protokoll gehört nach <code>' + esc(r.ordner) + '</code>.</div>';
+      el.innerHTML = '<div style="color:var(--muted); font-size:var(--fs-neben);">Noch kein Protokoll. Eine Strategie messen mit <code>node studien/messmaschine/messen.js &lt;datei&gt;</code>; das Protokoll gehört nach <code>' + esc(r.ordner) + '</code>.</div>';
       return;
     }
     // Je Kennung nur das juengste Protokoll - aeltere bleiben aufklappbar
@@ -95,7 +95,7 @@
       '<th style="text-align:right;">t</th><th style="text-align:right;">MDE</th><th style="text-align:right;">Tage / Signale</th><th>gemessen</th></tr>' +
       rows + '</table></div>' +
       '<div id="sbDetail" style="margin-top:10px;"></div>' +
-      '<div style="font-size:11.5px; color:var(--muted); margin-top:6px;">Alle Werte aus der <b>Bestätigungshälfte</b> (zurückgehaltene Tage) in Prozentpunkten. „Tagesmittel" ist die Teststatistik, „je Signal" die handelbare Zahl – beide können verschiedene Vorzeichen haben, dann steht eine Warnung dabei. Zeile anklicken für den vollständigen Entscheidungsweg.</div>';
+      '<div style="font-size:var(--fs-neben); color:var(--muted); margin-top:6px;">Alle Werte aus der <b>Bestätigungshälfte</b> (zurückgehaltene Tage) in Prozentpunkten. „Tagesmittel" ist die Teststatistik, „je Signal" die handelbare Zahl – beide können verschiedene Vorzeichen haben, dann steht eine Warnung dabei. Zeile anklicken für den vollständigen Entscheidungsweg.</div>';
     el.querySelectorAll('tr.sbRow').forEach(function (tr) {
       tr.addEventListener('click', function () { detail(parseInt(tr.getAttribute('data-i'), 10)); });
     });
@@ -107,40 +107,99 @@
     var h = '<div class="panel" style="background:var(--surface-2, var(--grid));">' +
       '<div style="display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:8px;">' +
       '<h3 style="margin:0;">' + esc(z.key) + ' – Entscheidungsweg</h3>' +
-      '<span style="font-size:11.5px; color:var(--muted);">Verfahren ' + esc(p.verfahren.version) + ' · ' + esc(z.aktuell.datei) + '</span></div>' +
-      '<div style="font-size:12px; color:var(--ink-2); margin:6px 0 10px;"><b>Grund:</b> ' + esc(p.strategie.grund) + '</div>' +
-      '<div style="font-size:12px; margin-bottom:10px;">Universum: <b>' + p.universum.werte + '</b> Werte, <b>' + p.universum.handelstage + '</b> Handelstage (' + esc(p.universum.von) + ' bis ' + esc(p.universum.bis) + '), Schnitt am <b>' + esc(p.universum.schnittTag) + '</b> · Haltedauer <b>' + p.strategie.haltedauerKerzen + '</b> Kerzen · Richtung <b>' + esc(p.strategie.richtung) + '</b> · ' + p.tests + ' Test(s)' + ausstiegText(p) + '</div>';
+      '<span style="font-size:var(--fs-neben); color:var(--muted);">Verfahren ' + esc(p.verfahren.version) + ' · ' + esc(z.aktuell.datei) + '</span></div>' +
+      '<div style="font-size:var(--fs-neben); color:var(--ink-2); margin:6px 0 10px;"><b>Grund:</b> ' + esc(p.strategie.grund) + '</div>' +
+      '<div style="font-size:var(--fs-neben); margin-bottom:10px;">Universum: <b>' + p.universum.werte + '</b> Werte, <b>' + p.universum.handelstage + '</b> Handelstage (' + esc(p.universum.von) + ' bis ' + esc(p.universum.bis) + '), Schnitt am <b>' + esc(p.universum.schnittTag) + '</b> · Haltedauer <b>' + p.strategie.haltedauerKerzen + '</b> Kerzen · Richtung <b>' + esc(p.strategie.richtung) + '</b> · ' + p.tests + ' Test(s)' + ausstiegText(p) + '</div>';
     // Jede Entscheidung, nummeriert - das ist die 100-%-Einsicht
-    h += '<table class="tbl" style="width:100%; font-size:12px;"><tr><th>#</th><th>Regel</th><th>Eingabe</th><th>Ergebnis</th><th>Begründung</th></tr>';
+    h += '<table class="tbl" style="width:100%; font-size:var(--fs-neben);"><tr><th>#</th><th>Regel</th><th>Eingabe</th><th>Ergebnis</th><th>Begründung</th></tr>';
     (p.entscheidungen || []).forEach(function (e) {
       h += '<tr><td>' + e.nr + '</td><td><b>' + esc(e.regel) + '</b></td>' +
-        '<td style="font-family:var(--mono, monospace); font-size:11px; white-space:pre-wrap; max-width:220px;">' + esc(kurz(e.eingabe)) + '</td>' +
-        '<td style="font-family:var(--mono, monospace); font-size:11px; white-space:pre-wrap; max-width:220px;">' + esc(kurz(e.ergebnis)) + '</td>' +
+        '<td style="font-family:var(--mono, monospace); font-size:var(--fs-klein); white-space:pre-wrap; max-width:220px;">' + esc(kurz(e.eingabe)) + '</td>' +
+        '<td style="font-family:var(--mono, monospace); font-size:var(--fs-klein); white-space:pre-wrap; max-width:220px;">' + esc(kurz(e.ergebnis)) + '</td>' +
         '<td style="color:var(--ink-2);">' + esc(e.begruendung) + '</td></tr>';
     });
     h += '</table>';
     if ((p.warnungen || []).length) {
-      h += '<div style="margin-top:10px; padding:8px 10px; border-left:3px solid var(--series2); font-size:12px;"><b>Warnungen</b>' +
+      h += '<div style="margin-top:10px; padding:8px 10px; border-left:3px solid var(--series2); font-size:var(--fs-neben);"><b>Warnungen</b>' +
         p.warnungen.map(function (w) { return '<div style="margin-top:4px;">[' + esc(w.kennung) + '] ' + esc(w.text) + '</div>'; }).join('') + '</div>';
     }
     // Alle Varianten mit Entdeckung UND Bestaetigung - nichts wird versteckt
-    h += '<h4 style="margin:12px 0 6px;">Alle Varianten</h4><div style="overflow:auto;"><table class="tbl" style="font-size:12px;">' +
+    h += '<h4 style="margin:12px 0 6px;">Alle Varianten</h4><div style="overflow:auto;"><table class="tbl" style="font-size:var(--fs-neben);">' +
       '<tr><th>#</th><th>Parameter</th><th>Signale</th><th colspan="2" style="text-align:center;">Entdeckung</th><th colspan="3" style="text-align:center;">Bestätigung</th><th>Urteil</th></tr>' +
       '<tr><th></th><th></th><th></th><th style="text-align:right;">roh</th><th style="text-align:right;">Überschuss (t)</th><th style="text-align:right;">roh</th><th style="text-align:right;">Überschuss (t)</th><th style="text-align:right;">je Signal</th><th></th></tr>';
     (p.ergebnisse || []).forEach(function (e, vi) {
-      h += '<tr><td>' + vi + '</td><td style="font-family:var(--mono, monospace); font-size:11px;">' + esc(JSON.stringify(e.params)).slice(0, 80) + '</td><td class="num">' + e.signale + '</td>' +
+      h += '<tr><td>' + vi + '</td><td style="font-family:var(--mono, monospace); font-size:var(--fs-klein);">' + esc(JSON.stringify(e.params)).slice(0, 80) + '</td><td class="num">' + e.signale + '</td>' +
         '<td class="num">' + pp(e.entdeckung.roh.tagesmittel) + '</td><td class="num">' + pp(e.entdeckung.ueberschuss.tagesmittel) + ' (' + t2(e.entdeckung.ueberschuss.t) + ')</td>' +
         '<td class="num">' + pp(e.bestaetigung.roh.tagesmittel) + '</td><td class="num">' + pp(e.bestaetigung.ueberschuss.tagesmittel) + ' (' + t2(e.bestaetigung.ueberschuss.t) + ')</td>' +
         '<td class="num">' + pp(e.bestaetigung.ueberschuss.jeSignal) + '</td>' +
         '<td style="color:' + FARBE[p.urteile[vi]] + ';">' + esc(LABEL[p.urteile[vi]] || p.urteile[vi]) + '</td></tr>';
     });
     h += '</table></div>';
-    if (z.aeltere.length) h += '<div style="font-size:11.5px; color:var(--muted); margin-top:8px;">Ältere Protokolle dieser Kennung: ' + z.aeltere.map(function (a) { return esc(a.datei); }).join(', ') + '</div>';
-    if (p.strategie.quelle) h += '<details style="margin-top:10px;"><summary style="font-size:12px; cursor:pointer;">Quelltext der gemessenen Strategie</summary><pre style="font-size:11px; overflow:auto; max-height:300px;">' + esc(p.strategie.quelle) + '</pre></details>';
+    if (z.aeltere.length) h += '<div style="font-size:var(--fs-neben); color:var(--muted); margin-top:8px;">Ältere Protokolle dieser Kennung: ' + z.aeltere.map(function (a) { return esc(a.datei); }).join(', ') + '</div>';
+    if (p.strategie.quelle) h += '<details style="margin-top:10px;"><summary style="font-size:var(--fs-neben); cursor:pointer;">Quelltext der gemessenen Strategie</summary><pre style="font-size:var(--fs-klein); overflow:auto; max-height:300px;">' + esc(p.strategie.quelle) + '</pre></details>';
     h += '</div>';
     d.innerHTML = h;
   }
   function kurz(o) { var s = typeof o === 'string' ? o : JSON.stringify(o, null, 0); return s.length > 300 ? s.slice(0, 300) + '…' : s; }
+
+  /* Bisher endete der Reiter hier in einer Sackgasse: eine Statuszeile nannte einen
+   * Node-Befehl - klein, in einem <span>, nicht markierbar, und ohne ein Wort dazu, WO
+   * er laufen soll. Der Ordner studien/messmaschine/ ist im Installer gar nicht
+   * enthalten, das ist Absicht: das Urteil soll nie aus der App selbst kommen. Nur
+   * stand das nirgends. Jetzt steht der fertige Befehl zum Kopieren da, dazu der Ort,
+   * an dem er laeuft, und was danach passiert. */
+  function naechsterSchritt(pfad) {
+    var box = document.getElementById('stNaechster');
+    if (!box) return;
+    if (!pfad) { box.innerHTML = ''; box.hidden = true; return; }
+    var befehl = 'node studien/messmaschine/messen.js "' + pfad + '"';
+    box.hidden = false;
+    box.innerHTML = '<div style="font-size:var(--fs-neben); margin-bottom:6px;"><b>Abgelegt.</b> Die Datei liegt unter ' +
+      '<code>' + esc(pfad) + '</code>.</div>' +
+      '<div style="font-size:var(--fs-neben); margin-bottom:6px;">Gemessen wird sie im <b>Projektordner</b> – dort, wo ' +
+      '<code>studien/messmaschine/</code> liegt. Der Installer bringt ihn absichtlich nicht mit: das Urteil soll ' +
+      'nicht aus derselben App kommen, die die Regel vorschlägt.</div>' +
+      '<div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">' +
+      '<code id="stBefehl" style="flex:1 1 320px; padding:6px 8px; background:var(--panel-2); ' +
+      'border:1px solid var(--kante); border-radius:var(--r-normal); font-size:var(--fs-neben); overflow-x:auto; white-space:pre;">' +
+      esc(befehl) + '</code>' +
+      '<button class="btn ghost" type="button" id="stKopieren" style="padding:4px 10px; font-size:var(--fs-neben);">Befehl kopieren</button>' +
+      '<span id="stKopiert" role="status" aria-live="polite" style="font-size:var(--fs-neben); color:var(--muted);"></span></div>' +
+      '<div style="font-size:var(--fs-neben); color:var(--muted); margin-top:6px;">Das Protokoll erscheint danach oben im ' +
+      'Scoreboard – die App liest den Ordner <code>Markt-Dashboard-Daten/protokolle</code>, egal wo gemessen wurde.</div>';
+    var kb = document.getElementById('stKopieren');
+    if (kb) kb.addEventListener('click', function () { kopiere(befehl); });
+  }
+  /* file:// ist kein sicherer Kontext, navigator.clipboard kann also fehlen.
+   * Deshalb zuerst der moderne Weg, dann der alte - und wenn beides nicht geht,
+   * wird der Befehl wenigstens markiert, statt still nichts zu tun. */
+  function kopiere(text) {
+    var hin = document.getElementById('stKopiert');
+    function sag(t) { if (hin) { hin.textContent = t; setTimeout(function () { if (hin) hin.textContent = ''; }, 4000); } }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () { sag('kopiert'); }, function () { altWeg(text, sag); });
+      return;
+    }
+    altWeg(text, sag);
+  }
+  function altWeg(text, sag) {
+    try {
+      var ta = document.createElement('textarea');
+      ta.value = text; ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed'; ta.style.left = '-9999px';
+      document.body.appendChild(ta); ta.select();
+      var ok2 = document.execCommand('copy');
+      document.body.removeChild(ta);
+      sag(ok2 ? 'kopiert' : 'nicht kopiert – bitte von Hand markieren');
+    } catch (e) {
+      var c = document.getElementById('stBefehl');
+      if (c && window.getSelection) {
+        var rg = document.createRange(); rg.selectNodeContents(c);
+        var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(rg);
+      }
+      sag('nicht kopiert – der Befehl ist markiert');
+    }
+  }
 
   /* ---------- Eingabe: neue Strategie ablegen ---------- */
   function eingabe() {
@@ -189,9 +248,8 @@
       btn.disabled = true; st.textContent = 'Lege ab …';
       try {
         var r = await window.api.writeStrategie(key, quelle);
-        st.textContent = r && r.ok
-          ? 'Abgelegt: ' + r.pfad + ' – jetzt messen mit node studien/messmaschine/messen.js "' + r.pfad + '"'
-          : 'Nicht abgelegt: ' + (r && r.grund || 'unbekannter Fehler');
+        if (r && r.ok) { st.textContent = ''; naechsterSchritt(r.pfad); }
+        else { naechsterSchritt(null); st.textContent = 'Nicht abgelegt: ' + (r && r.grund || 'unbekannter Fehler'); }
       } catch (e) { st.textContent = 'Fehler: ' + (e && e.message || e); }
       btn.disabled = false;
     });

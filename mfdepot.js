@@ -78,7 +78,7 @@
           daten = await ladeKurse();
           markt = markt || await ladeMarkt();
         }
-        if (!daten || !markt) { zeige(null, null, null, 'Keine Tagesdaten – im Tab „Mittelfristig“ einmal laden.'); return; }
+        if (!daten || !markt) { zeige(null, null, null, 'Keine Tagesdaten – unter „Vermögen → Mittelfristig“ einmal laden.'); return; }
       }
       kurseFrischHalten(daten.stand);
       var MH = window.MFHandel, Dr = window.Drift;
@@ -230,13 +230,13 @@
       var b = d.mfBuch, bw = mom.bewertung;
       var pnl = bw.wert - b.start;
       var html = '<div class="depot-stats">' +
-        '<div class="tile"><div class="name">Depotwert</div><div class="val ' + (pnl >= 0 ? 'pos' : 'neg') + '" style="font-size:17px;">' + U.money(bw.wert) + '</div></div>' +
-        '<div class="tile"><div class="name">Ergebnis</div><div class="val ' + (pnl >= 0 ? 'pos' : 'neg') + '" style="font-size:17px;">' + U.signTxt(Math.round(pnl * 100) / 100, ' $') + '</div></div>' +
-        '<div class="tile"><div class="name">Positionen</div><div class="val" style="font-size:17px;">' + b.positionen.length + '</div></div>' +
-        '<div class="tile"><div class="name">Status</div><div class="val" style="font-size:14px;">' +
+        '<div class="tile"><div class="name">Depotwert</div><div class="val ' + (pnl >= 0 ? 'pos' : 'neg') + '" style="font-size:var(--fs-zahl);">' + U.money(bw.wert) + '</div></div>' +
+        '<div class="tile"><div class="name">Ergebnis</div><div class="val ' + (pnl >= 0 ? 'pos' : 'neg') + '" style="font-size:var(--fs-zahl);">' + U.signTxt(Math.round(pnl * 100) / 100, ' $') + '</div></div>' +
+        '<div class="tile"><div class="name">Positionen</div><div class="val" style="font-size:var(--fs-zahl);">' + b.positionen.length + '</div></div>' +
+        '<div class="tile"><div class="name">Status</div><div class="val" style="font-size:var(--fs-gross);">' +
           (d.momentumAn ? 'handelt selbst' : 'nur rechnen') + '</div></div></div>';
       if (mom.faellig && mom.plan) {
-        html += '<div style="font-size:12.5px; margin:8px 0; padding:8px 10px; border-left:3px solid var(--warn);">' +
+        html += '<div style="font-size:var(--fs-text); margin:8px 0; padding:8px 10px; border-left:3px solid var(--warn);">' +
           '<b>Rebalancing fällig.</b> ' + (d.momentumAn ? 'Wird beim nächsten Takt ausgeführt.' :
           'Automatik ist aus – Handlungsliste: ' +
           (mom.plan.verkaufen.length ? 'verkaufen ' + mom.plan.verkaufen.map(function (o) { return o.sym; }).join(', ') + '; ' : '') +
@@ -260,11 +260,11 @@
         var bD = d.driftBuch, bwD = drift.bewertung;
         var pnlD = bwD.wert - bD.start;
         eD.innerHTML = '<div class="depot-stats">' +
-          '<div class="tile"><div class="name">Depotwert</div><div class="val ' + (pnlD >= 0 ? 'pos' : 'neg') + '" style="font-size:17px;">' + U.money(bwD.wert) + '</div></div>' +
-          '<div class="tile"><div class="name">Ergebnis</div><div class="val ' + (pnlD >= 0 ? 'pos' : 'neg') + '" style="font-size:17px;">' + U.signTxt(Math.round(pnlD * 100) / 100, ' $') + '</div></div>' +
-          '<div class="tile"><div class="name">Positionen</div><div class="val" style="font-size:17px;">' + bD.positionen.length + '</div></div>' +
-          '<div class="tile"><div class="name">Signale offen laut Modell</div><div class="val" style="font-size:17px;">' + drift.info.heute.offen.length + '</div></div>' +
-          '<div class="tile"><div class="name">Status</div><div class="val" style="font-size:14px;">' +
+          '<div class="tile"><div class="name">Depotwert</div><div class="val ' + (pnlD >= 0 ? 'pos' : 'neg') + '" style="font-size:var(--fs-zahl);">' + U.money(bwD.wert) + '</div></div>' +
+          '<div class="tile"><div class="name">Ergebnis</div><div class="val ' + (pnlD >= 0 ? 'pos' : 'neg') + '" style="font-size:var(--fs-zahl);">' + U.signTxt(Math.round(pnlD * 100) / 100, ' $') + '</div></div>' +
+          '<div class="tile"><div class="name">Positionen</div><div class="val" style="font-size:var(--fs-zahl);">' + bD.positionen.length + '</div></div>' +
+          '<div class="tile"><div class="name">Signale offen laut Modell</div><div class="val" style="font-size:var(--fs-zahl);">' + drift.info.heute.offen.length + '</div></div>' +
+          '<div class="tile"><div class="name">Status</div><div class="val" style="font-size:var(--fs-gross);">' +
             (d.driftAn ? 'handelt selbst' : 'nur rechnen') + '</div></div></div>' +
           posTabelle(bD, daten.preise, true) +
           verworfenTabelle(drift.info.verworfen, 'Erkannt, aber nicht gehandelt', true);
@@ -274,8 +274,19 @@
 
   function bereit() {
     var b1 = el('mfdRebalanceBtn'), b2 = el('mfdDriftBtn'), b3 = el('mfdTaktBtn');
-    if (b1) b1.addEventListener('click', function () { takt('momentum'); });
-    if (b2) b2.addEventListener('click', function () { takt('drift'); });
+    /* Beide Knoepfe buchen auch dann echte Orders, wenn das Buch abgeschaltet ist -
+     * takt() laesst 'manuell' den Schalter ausdruecklich uebersteuern. Die Karte
+     * daneben zeigt in diesem Zustand aber "nur rechnen". Wer dort auf "jetzt
+     * umschichten" drueckt, erwartet eine Vorschau und bekommt einen Handel. Also
+     * einmal nachfragen - und nur dann, sonst waere es eine Klickbremse ohne Zweck. */
+    function abgeschaltetOk(an, was) {
+      var d = D();
+      if (!d || d[an]) return true;
+      return window.confirm(was + ' ist gerade abgeschaltet („nur rechnen“).\n\n' +
+        'Der Knopf bucht trotzdem echte Orders im virtuellen Buch. Fortfahren?');
+    }
+    if (b1) b1.addEventListener('click', function () { if (abgeschaltetOk('momentumAn', 'Das Momentum-Buch')) takt('momentum'); });
+    if (b2) b2.addEventListener('click', function () { if (abgeschaltetOk('driftAn', 'Das Drift-Buch')) takt('drift'); });
     if (b3) b3.addEventListener('click', function () { takt(); });
     setTimeout(function () { takt(); }, 12000);
     setInterval(function () { takt(); }, 30 * 60000);

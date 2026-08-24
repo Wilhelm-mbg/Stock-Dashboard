@@ -19,8 +19,8 @@
     --border:      rgba(11,11,11,0.10); --line: var(--border);
     --series:      #2a78d6;
     --series-soft: rgba(42,120,214,0.12);
-    --series2:     #eb6834;
-    --series3:     #1baf7a;
+    --series2:     #d4531f;   /* war #eb6834: 3,12 gegen --surface, Soll 3,0 fuer Grafik */
+    --series3:     #12855c;   /* war #1baf7a: 2,74 */
     --up:          #006300;
     --up-soft:     rgba(12,163,12,0.12);
     --down:        #d03b3b;
@@ -38,6 +38,65 @@
     --btn:         #2266bf;
     --btn-danger:  #b32020;
     --btn-ink:     #ffffff;
+    /* --- 23.08.2026, Audit-Stufe 2: gerechnete Nachtraege --- */
+    /* Diese vier wurden benutzt, waren aber nie definiert und liefen in ihre Notfarbe.
+       --good war dabei fest verdrahtet (#2e7d32) und kam im Dunkelthema auf 3,11. */
+    --mono:        ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+    --panel-2:     #e9e9e5;
+    --surface-2:   #f4f4f1;
+    --good:        var(--up);
+    /* Umrandung von Bedienelementen. --grid schafft gegen --surface nur 1,29 - der
+       Kippschalter im Aus-Zustand war dadurch kaum als Bedienelement erkennbar.
+       Soll fuer Bedienelemente ist 3,0; dieser Ton schafft 4,13 auf --surface,
+       3,75 auf --panel. */
+    --kante:       #7d7b73;
+    /* Die Prozent-Chips stehen auf ihrem EIGENEN Weichton, nicht auf der Flaeche -
+       dort kam --down auf 4,06. Eigene Token, damit --up/--down als Textfarbe an
+       den ~30 anderen Stellen unveraendert bleiben. */
+    --chip-up:     #006300;
+    --chip-down:   #c22b2b;
+
+    /* ===== Schriftleiter =====
+       Gezaehlt am 24.08.2026 ueber index.html und alle acht Renderer-Dateien:
+       SIEBZEHN verschiedene Schriftgroessen, darunter 10,5 / 11,5 / 12,5 / 13,5 /
+       14,5 px. Allein 11,5px kam 96-mal vor, 12,5px 57-mal. Halbe Pixel sieht
+       niemand - aber jede dieser Groessen muss jemand pflegen, und beim naechsten
+       Bauteil raet man, welche davon "die richtige" ist.
+
+       Sechs Stufen. Gerundet wurde zur naechsten Sprosse, bei Gleichstand NACH OBEN:
+       nichts wird um mehr als 1 px kleiner, das meiste wird eine halbe Stufe groesser.
+       Nach der Kontrastarbeit waere ein Schrumpfen die falsche Richtung.
+       Die Namen sagen den Zweck, nicht die Zahl - sonst benennt die naechste
+       Aenderung sich selbst um. */
+    --fs-klein:    11px;   /* Fussnoten, Achsenbeschriftung, Zeitstempel */
+    --fs-neben:    12px;   /* Nebentext, Tabellenzellen, Hinweise    (war 11,5/12) */
+    --fs-text:     13px;   /* Fliesstext, Karteninhalt               (war 12,5/13) */
+    --fs-gross:    14px;   /* hervorgehobene Werte                   (war 13,5/14/15) */
+    --fs-zahl:     17px;   /* Kurse und Kennzahlen auf den Kacheln */
+    --fs-titel:    22px;   /* Ueberschrift der Seite                 (war 19/20/21/22) */
+
+    /* ===== Radien =====
+       Vorher zehn verschiedene: 2, 4, 5, 6, 8, 10, 14 px, dazu 50 % und 999 px.
+       Drei reichen, plus die beiden Sonderformen, die etwas ANDERES bedeuten:
+       ein Kreis ist ein Punkt, eine Pille ist ein Schalter. */
+    --r-klein:      4px;   /* Chips, kleine Marken          (war 2/4) */
+    --r-normal:     6px;   /* Knoepfe, Eingabefelder        (war 5/6) */
+    --r-gross:      8px;   /* Flaechen, Karten, Dialoge     (war 8/10/14) */
+    --r-kreis:      50%;   /* Punkte - keine Sprosse der Leiter */
+    --r-pille:    999px;   /* Kippschalter - keine Sprosse der Leiter */
+
+    /* ===== Abstaende =====
+       Hier war es NICHT so schlimm: die Werte lagen schon fast alle auf einem
+       2-px-Raster, Ausreisser waren nur 3, 7 und 9 px. Eine 4er-Leiter
+       (4/8/12/16/24) haette 89 Stellen verschoben - 6px kam 36-mal vor, 10px
+       30-mal, 14px 23-mal - fuer nichts als Symmetrie im Regelwerk, mit echtem
+       Umbruchrisiko. Die Leiter steht deshalb als Angebot fuer NEUE Stellen da;
+       die Ausreisser sind eingesammelt, der Rest bleibt, wo er ist. */
+    --ab-1:         4px;
+    --ab-2:         8px;
+    --ab-3:        12px;
+    --ab-4:        16px;
+    --ab-5:        24px;
   }
   :root[data-theme="dark"] {
     color-scheme: dark;
@@ -68,13 +127,20 @@
     --btn:         #1f6dc4;
     --btn-danger:  #a81f1f;
     --btn-ink:     #ffffff;
+    --mono:        ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+    --panel-2:     #282826;
+    --surface-2:   #232322;
+    --good:        var(--up);
+    --kante:       #75736d;   /* 3,67 auf --surface, 3,36 auf --panel */
+    --chip-up:     #16b516;   /* 5,19 auf dem eigenen Weichton (vorher 4,25) */
+    --chip-down:   #ea7a7a;   /* 5,49 (vorher 4,29) */
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
     background: var(--page);
     color: var(--ink);
     font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-    font-size: 14px;
+    font-size: var(--fs-gross);
     line-height: 1.45;
     padding: 20px;
     max-width: 1280px;
@@ -88,8 +154,8 @@
   /* News-Laufband im Dashboard (Tester-Wunsch #20) */
   #newsTicker {
     overflow: hidden; white-space: nowrap; border: 1px solid var(--border);
-    background: var(--panel); border-radius: 6px; padding: 6px 0; margin-bottom: 10px;
-    font-size: 12.5px; -webkit-mask-image: linear-gradient(90deg, transparent, #000 3%, #000 97%, transparent);
+    background: var(--panel); border-radius: var(--r-normal); padding: 6px 0; margin-bottom: 10px;
+    font-size: var(--fs-text); -webkit-mask-image: linear-gradient(90deg, transparent, #000 3%, #000 97%, transparent);
   }
   #newsTicker .tickSpur { display: inline-block; animation: tickLauf linear infinite; will-change: transform; }
   #newsTicker:hover .tickSpur { animation-play-state: paused; }
@@ -102,16 +168,16 @@
   /* Info-Fenster beim Draufzeigen (Tester-Wunsch #24) */
   #hoverInfo {
     position: fixed; z-index: 120; display: none; width: 300px; max-width: 90vw;
-    background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
-    padding: 10px 12px; font-size: 12.5px; box-shadow: 0 6px 24px rgba(0,0,0,0.35);
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-gross);
+    padding: 10px 12px; font-size: var(--fs-text); box-shadow: 0 6px 24px rgba(0,0,0,0.35);
   }
-  #hoverInfo .hv-kopf { margin-bottom: 6px; font-size: 13px; }
+  #hoverInfo .hv-kopf { margin-bottom: 6px; font-size: var(--fs-text); }
   #hoverInfo .hv-z { display: flex; justify-content: space-between; gap: 12px; padding: 1.5px 0; }
   #hoverInfo .hv-z span { color: var(--muted); }
   #hoverInfo .hv-news { border-top: 1px solid var(--grid); margin-top: 7px; padding-top: 7px; }
   #hoverInfo .hv-news a { display: block; color: var(--ink-2); margin-bottom: 2px; line-height: 1.35; }
   #hoverInfo .hv-news a:hover { color: var(--ink); }
-  #hoverInfo .hv-news .src { display: block; color: var(--muted); font-size: 11px; margin-bottom: 6px; }
+  #hoverInfo .hv-news .src { display: block; color: var(--muted); font-size: var(--fs-klein); margin-bottom: 6px; }
 
   /* ---- Erklaerknopf und Erklaerfenster ----
      Die Oberflaeche trug ihre Erklaerungen bisher auf zwei Wegen, die beide nicht
@@ -123,7 +189,7 @@
   .info {
     display: inline-flex; align-items: center; justify-content: center;
     width: 17px; height: 17px; flex: 0 0 17px; padding: 0;
-    border: 1px solid var(--border); border-radius: 50%; background: transparent;
+    border: 1px solid var(--border); border-radius: var(--r-kreis); background: transparent;
     color: var(--muted); font: 700 11px/1 inherit; font-family: inherit;
     cursor: pointer; vertical-align: 1px;
   }
@@ -131,15 +197,15 @@
   /* Ebene 130: ueber dem Dialog, weil der Knopf auch in einem Dialog stehen kann. */
   #infoPop {
     position: fixed; z-index: 130; display: none; width: 400px; max-width: calc(100vw - 24px);
-    background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
-    padding: 13px 15px; font-size: 12.5px; line-height: 1.55;
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-gross);
+    padding: 13px 15px; font-size: var(--fs-text); line-height: 1.55;
     box-shadow: 0 8px 28px rgba(0,0,0,0.4);
     /* Die Belegtexte sind Messaussagen und werden nicht gekuerzt - lieber rollt das
        Fenster. Entscheidend ist, dass sie nicht mehr DAUERHAFT auf dem Reiter stehen. */
     max-height: min(60vh, 520px); overflow-y: auto; overscroll-behavior: contain;
   }
   #infoPop h4 {
-    font-size: 11.5px; letter-spacing: 0.07em; text-transform: uppercase;
+    font-size: var(--fs-neben); letter-spacing: 0.07em; text-transform: uppercase;
     color: var(--muted); font-weight: 600; margin-bottom: 8px;
   }
   #infoPop ul { margin: 0; padding-left: 17px; color: var(--ink-2); }
@@ -147,87 +213,87 @@
   #infoPop li:last-child { margin-bottom: 0; }
   #infoPop .ip-fuss {
     border-top: 1px solid var(--grid); margin-top: 10px; padding-top: 8px;
-    color: var(--muted); font-size: 11.5px;
+    color: var(--muted); font-size: var(--fs-neben);
   }
   #infoPop .ip-zu { float: right; background: none; border: 0; color: var(--muted);
-    cursor: pointer; font: inherit; font-size: 15px; line-height: 1; padding: 0 0 0 8px; }
-  .card .pp { font-size: 11.5px; margin: 2px 0 4px; color: var(--muted); }
+    cursor: pointer; font: inherit; font-size: var(--fs-gross); line-height: 1; padding: 0 0 0 8px; }
+  .card .pp { font-size: var(--fs-neben); margin: 2px 0 4px; color: var(--muted); }
   .card .pp.up { color: var(--up); } .card .pp.down { color: var(--down); }
-  header h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; }
-  .stamp { color: var(--ink-2); font-size: 12.5px; }
-  .stamp .dot { display:inline-block; width:7px; height:7px; border-radius:50%; margin-right:5px; vertical-align: 1px; }
+  header h1 { font-size: var(--fs-titel); font-weight: 700; letter-spacing: -0.02em; }
+  .stamp { color: var(--ink-2); font-size: var(--fs-text); }
+  .stamp .dot { display:inline-block; width:7px; height:7px; border-radius:var(--r-kreis); margin-right:5px; vertical-align: 1px; }
   .dot.closed { background: var(--muted); }
   .dot.open   { background: var(--up); }
   .hbtn {
     background: var(--surface); color: var(--ink-2);
-    border: 1px solid var(--border); border-radius: 8px; padding: 4px 10px;
-    font: inherit; font-size: 12px; cursor: pointer;
+    border: 1px solid var(--border); border-radius: var(--r-gross); padding: 4px 10px;
+    font: inherit; font-size: var(--fs-neben); cursor: pointer;
   }
   .hbtns { margin-left: auto; display: flex; gap: 6px; }
-  .subnote { color: var(--muted); font-size: 12px; margin-bottom: 18px; }
-  .err { color: var(--down); font-size: 12px; margin-left: 8px; }
+  .subnote { color: var(--muted); font-size: var(--fs-neben); margin-bottom: 18px; }
+  .err { color: var(--down); font-size: var(--fs-neben); margin-left: 8px; }
 
-  h2 { font-size: 13px; font-weight: 600; color: var(--ink-2); text-transform: uppercase; letter-spacing: 0.06em; margin: 22px 0 10px; }
+  h2 { font-size: var(--fs-text); font-weight: 600; color: var(--ink-2); text-transform: uppercase; letter-spacing: 0.06em; margin: 22px 0 10px; }
 
   /* Eine Karte, acht Schreibweisen und drei verschiedene Radien - das war der
      Grund, warum Kacheln, Karten und Panels nie ganz zusammenpassten. Die
      Gemeinsamkeiten stehen jetzt EINMAL hier; die Einzelregeln darunter tragen
      nur noch ihre echten Unterschiede. */
   .tile, .mover-col, .card, .news, .skel, .panel, .strat-card {
-    background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-gross);
   }
   .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(165px, 1fr)); gap: 10px; }
   .tile { padding: 12px 14px 10px; }
-  .tile .name { font-size: 12px; color: var(--ink-2); margin-bottom: 2px; }
-  .tile .val  { font-size: 21px; font-weight: 700; letter-spacing: -0.01em; }
+  .tile .name { font-size: var(--fs-neben); color: var(--ink-2); margin-bottom: 2px; }
+  .tile .val  { font-size: var(--fs-titel); font-weight: 700; letter-spacing: -0.01em; }
   .tile .kachel-sub { margin-top: 2px; }
   .tile svg   { display: block; margin-top: 8px; width: 100%; height: 34px; }
 
-  .chip { display: inline-flex; align-items: center; gap: 3px; font-size: 12px; font-weight: 600; border-radius: 6px; padding: 1px 7px; }
-  .chip.up   { color: var(--up);   background: var(--up-soft); }
-  .chip.down { color: var(--down); background: var(--down-soft); }
+  .chip { display: inline-flex; align-items: center; gap: 3px; font-size: var(--fs-neben); font-weight: 600; border-radius: var(--r-normal); padding: 1px 7px; }
+  .chip.up   { color: var(--chip-up);   background: var(--up-soft); }
+  .chip.down { color: var(--chip-down); background: var(--down-soft); }
   .chip.flat { color: var(--ink-2); background: var(--series-soft); }
 
   .movers { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   @media (max-width: 640px) { .movers { grid-template-columns: 1fr; } }
   .mover-col { padding: 12px 14px; }
-  .mover-col h3 { font-size: 12.5px; font-weight: 600; margin-bottom: 8px; color: var(--ink-2); }
+  .mover-col h3 { font-size: var(--fs-text); font-weight: 600; margin-bottom: 8px; color: var(--ink-2); }
   .mover-row { display: flex; align-items: baseline; gap: 8px; padding: 5px 0; border-top: 1px solid var(--grid); }
   .mover-row:first-of-type { border-top: none; }
   .mover-row .sym { font-weight: 700; min-width: 52px; }
-  .mover-row .nm  { color: var(--muted); font-size: 12px; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .mover-row .nm  { color: var(--muted); font-size: var(--fs-neben); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
   .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(255px, 1fr)); gap: 10px; }
   .card { padding: 12px 14px; }
   .card .top { display: flex; align-items: baseline; gap: 8px; }
-  .card .sym { font-weight: 700; font-size: 15px; }
-  .card .nm  { color: var(--muted); font-size: 12px; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .card .sym { font-weight: 700; font-size: var(--fs-gross); }
+  .card .nm  { color: var(--muted); font-size: var(--fs-neben); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .card .prc-row { display: flex; align-items: baseline; gap: 8px; margin-top: 4px; }
-  .card .prc { font-size: 19px; font-weight: 700; }
+  .card .prc { font-size: var(--fs-zahl); font-weight: 700; }
   .card svg.spark { display: block; width: 100%; height: 44px; margin-top: 8px; }
-  .meta { display: flex; gap: 14px; margin-top: 8px; font-size: 12px; color: var(--ink-2); }
+  .meta { display: flex; gap: 14px; margin-top: 8px; font-size: var(--fs-neben); color: var(--ink-2); }
   .meta b { color: var(--ink); font-weight: 600; }
   .range { margin-top: 9px; }
-  .range .lbl { display: flex; justify-content: space-between; font-size: 10.5px; color: var(--muted); margin-bottom: 3px; }
-  .range .track { position: relative; height: 4px; border-radius: 2px; background: var(--grid); }
-  .range .mark { position: absolute; top: -3px; width: 10px; height: 10px; border-radius: 50%; background: var(--series); border: 2px solid var(--surface); transform: translateX(-50%); }
+  .range .lbl { display: flex; justify-content: space-between; font-size: var(--fs-klein); color: var(--muted); margin-bottom: 3px; }
+  .range .track { position: relative; height: 4px; border-radius: var(--r-klein); background: var(--grid); }
+  .range .mark { position: absolute; top: -3px; width: 10px; height: 10px; border-radius: var(--r-kreis); background: var(--series); border: 2px solid var(--surface); transform: translateX(-50%); }
 
   .news { padding: 6px 16px; }
   .news-item { display: flex; gap: 10px; padding: 10px 0; border-top: 1px solid var(--grid); }
   .news-item:first-child { border-top: none; }
   .news-item .t { flex: 1; }
-  .news-item .src { color: var(--muted); font-size: 11.5px; white-space: nowrap; text-align: right; }
+  .news-item .src { color: var(--muted); font-size: var(--fs-neben); white-space: nowrap; text-align: right; }
 
-  footer { margin-top: 22px; color: var(--muted); font-size: 11.5px; line-height: 1.6; }
+  footer { margin-top: 22px; color: var(--muted); font-size: var(--fs-neben); line-height: 1.6; }
 
   #tip {
     position: fixed; pointer-events: none; z-index: 110; display: none;
     background: var(--surface); color: var(--ink); border: 1px solid var(--border);
-    border-radius: 8px; padding: 5px 9px; font-size: 12px;
+    border-radius: var(--r-gross); padding: 5px 9px; font-size: var(--fs-neben);
     box-shadow: 0 4px 14px rgba(0,0,0,0.25);
   }
   #tip .tv { font-weight: 700; }
-  #tip .tt { color: var(--muted); font-size: 11px; }
+  #tip .tt { color: var(--muted); font-size: var(--fs-klein); }
 
   .loading { color: var(--muted); padding: 30px 0; text-align: center; }
 
@@ -243,41 +309,44 @@
     padding: 9px 2px 8px; margin: 6px -2px 0;
   }
   #cockpit .ck { display: flex; align-items: baseline; gap: 7px; font-variant-numeric: tabular-nums; }
-  #cockpit .ckl { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; }
-  #cockpit b { font-size: 14px; font-weight: 650; }
+  #cockpit .ckl { color: var(--muted); font-size: var(--fs-klein); text-transform: uppercase; letter-spacing: 0.06em; }
+  #cockpit b { font-size: var(--fs-gross); font-weight: 650; }
   #cockpit .up { color: var(--up); } #cockpit .down { color: var(--down); }
-  #cockpit .mdot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 5px; vertical-align: 1px; }
+  #cockpit .mdot { display: inline-block; width: 8px; height: 8px; border-radius: var(--r-kreis); margin-right: 5px; vertical-align: 1px; }
   #cockpit .mdot.open { background: var(--up); } #cockpit .mdot.closed { background: var(--muted); }
 
   /* Marktbild-Heatmap: jede Kachel ein Wert, Farbe = Tagesbewegung */
   .heat { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 6px; margin-top: 8px; }
+  /* Lade- und Fehlermeldungen sind keine Kacheln: ohne diese Zeile quetscht das Raster
+     sie in eine 96-px-Spalte, und "Noch keine Kurse geladen." bricht in vier Zeilen. */
+  .heat > .loading { grid-column: 1 / -1; }
   .heat .hz {
-    border-radius: 8px; padding: 8px 10px; cursor: pointer; border: 1px solid var(--border);
+    border-radius: var(--r-gross); padding: 8px 10px; cursor: pointer; border: 1px solid var(--border);
     font-variant-numeric: tabular-nums; transition: transform 0.08s ease;
   }
   .heat .hz:hover { transform: scale(1.04); }
-  .heat .hz .s { font-weight: 700; font-size: 12.5px; display: block; }
-  .heat .hz .p { font-size: 11.5px; }
+  .heat .hz .s { font-weight: 700; font-size: var(--fs-text); display: block; }
+  .heat .hz .p { font-size: var(--fs-neben); }
 
   /* Ertragskurve im Depot */
   .eq-panel { padding: 12px 14px; margin-bottom: 10px; }
   .eq-panel .eq-kopf { display: flex; gap: 18px; align-items: baseline; flex-wrap: wrap; margin-bottom: 6px; font-variant-numeric: tabular-nums; }
-  .eq-panel .eq-kopf .ckl { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; margin-right: 4px; }
+  .eq-panel .eq-kopf .ckl { color: var(--muted); font-size: var(--fs-klein); text-transform: uppercase; letter-spacing: 0.06em; margin-right: 4px; }
   .eq-panel svg { width: 100%; height: 120px; display: block; }
 
   /* Kurs-Readout im Explorer-Chart (Fadenkreuz-Werte oben links) */
   .chartwrap { position: relative; }
   #expReadout {
     position: absolute; top: 6px; left: 10px; z-index: 5; pointer-events: none;
-    font-size: 12px; font-variant-numeric: tabular-nums; color: var(--ink-2);
+    font-size: var(--fs-neben); font-variant-numeric: tabular-nums; color: var(--ink-2);
     background: color-mix(in srgb, var(--page) 82%, transparent);
-    border-radius: 6px; padding: 2px 8px; display: none;
+    border-radius: var(--r-normal); padding: 2px 8px; display: none;
   }
 
   nav.tabs { display: flex; gap: 6px; margin: 12px 0 10px; flex-wrap: wrap; }
   nav.tabs button {
-    background: none; border: 1px solid transparent; border-radius: 999px;
-    color: var(--ink-2); font: inherit; font-size: 13px; font-weight: 600;
+    background: none; border: 1px solid transparent; border-radius: var(--r-pille);
+    color: var(--ink-2); font: inherit; font-size: var(--fs-text); font-weight: 600;
     padding: 7px 15px; cursor: pointer;
   }
   nav.tabs button:hover { color: var(--ink); background: var(--surface); }
@@ -289,11 +358,11 @@
   .pills { display: flex; gap: 6px; margin: 16px 0 16px; flex-wrap: wrap; }
   .pills button {
     background: var(--surface); border: 1px solid var(--border); color: var(--ink-2);
-    border-radius: 999px; padding: 6px 15px; font: inherit; font-size: 12.5px; font-weight: 600; cursor: pointer;
+    border-radius: var(--r-pille); padding: 6px 15px; font: inherit; font-size: var(--fs-text); font-weight: 600; cursor: pointer;
   }
   .pills button:hover { color: var(--ink); }
   .pills button.active { background: var(--btn); border-color: var(--btn); color: var(--btn-ink); }
-  .pills.small button { padding: 3px 11px; font-size: 11.5px; font-weight: 500; }
+  .pills.small button { padding: 3px 11px; font-size: var(--fs-neben); font-weight: 500; }
   .sub { display: none; }
   .sub.active { display: block; }
 
@@ -304,59 +373,59 @@
   .strat-card { padding: 16px 18px; border-top: 3px solid var(--series); }
   .strat-card.intraday { border-top-color: var(--series2); }
   .strat-card .head { display: flex; align-items: center; gap: 10px; }
-  .strat-card .head h3 { font-size: 14.5px; font-weight: 700; color: var(--ink); margin: 0; }
-  .strat-card .state { font-size: 11px; font-weight: 700; border-radius: 5px; padding: 1px 7px; }
+  .strat-card .head h3 { font-size: var(--fs-gross); font-weight: 700; color: var(--ink); margin: 0; }
+  .strat-card .state { font-size: var(--fs-klein); font-weight: 700; border-radius: var(--r-normal); padding: 1px 7px; }
   .strat-card .state.on  { color: var(--up); background: var(--up-soft); }
   .strat-card .state.off { color: var(--ink-2); background: var(--series-soft); }
-  .strat-card .desc { color: var(--muted); font-size: 12px; margin: 8px 0 14px; line-height: 1.55; }
+  .strat-card .desc { color: var(--muted); font-size: var(--fs-neben); margin: 8px 0 14px; line-height: 1.55; }
   /* Das Messurteil einer widerlegten Strategie steht sichtbar - niemand soll erst
      aufklappen muessen, um zu erfahren, dass etwas durchgefallen ist. */
   .verdikt {
-    margin: 10px 0; padding: 8px 10px; font-size: 12px; line-height: 1.5;
+    margin: 10px 0; padding: 8px 10px; font-size: var(--fs-neben); line-height: 1.5;
     color: var(--ink-2); border-left: 3px solid var(--down);
     background: var(--down-soft); border-radius: 0 8px 8px 0;
   }
   /* Urteilssaetze bekommen die volle Breite - in der schmalen Zahlenspalte von
      .patrow liefen sie frueher waagerecht ueber den Rand. */
-  .urteil-zeile { font-size: 12px; color: var(--ink-2); margin: 0 0 8px; padding-left: 2px; }
+  .urteil-zeile { font-size: var(--fs-neben); color: var(--ink-2); margin: 0 0 8px; padding-left: 2px; }
   /* Klartext-Kasten und die gemessenen Stellschrauben: die zwei Bloecke, die im
      Normalbetrieb sichtbar bleiben - alles Uebrige liegt hinter Klappen. */
-  .klartext { border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; margin-bottom: 10px; background: var(--panel); }
-  .belegt-box { border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px 12px; margin-bottom: 10px; }
-  .huerde { margin-top: 8px; padding: 7px 10px; border-radius: 8px; font-size: 12px; line-height: 1.5;
+  .klartext { border: 1px solid var(--border); border-radius: var(--r-gross); padding: 12px 14px; margin-bottom: 10px; background: var(--panel); }
+  .belegt-box { border: 1px solid var(--border); border-radius: var(--r-gross); padding: 10px 14px 12px; margin-bottom: 10px; }
+  .huerde { margin-top: 8px; padding: 7px 10px; border-radius: var(--r-gross); font-size: var(--fs-neben); line-height: 1.5;
             background: var(--panel-2, rgba(127,127,127,.08)); border: 1px solid var(--border); }
   .huerde b { font-variant-numeric: tabular-nums; }
   .huerde .warn { color: var(--btn-danger, #c0392b); font-weight: 600; }
   .huerde .gut { color: var(--good, #2e7d32); font-weight: 600; }
-  .belegt-titel { font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 8px; }
+  .belegt-titel { font-size: var(--fs-klein); color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 8px; }
   /* Haken-Beschriftungen bleiben lesbar: die .params-Regel setzt Grossbuchstaben in
      10,5 px und Spaltenrichtung - fuer ein Auswahlkaestchen mit Satz daneben untauglich. */
-  .wendeopt { display: flex; flex-direction: column; gap: 4px; font-size: 10.5px; color: var(--muted);
+  .wendeopt { display: flex; flex-direction: column; gap: 4px; font-size: var(--fs-klein); color: var(--muted);
     font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; }
   /* Beschriftete Eingabefelder: Ein Platzhalter allein reicht nicht - er verschwindet
      beim Tippen, und dann weiss niemand mehr, welches Feld welches ist (Issue #40). */
   .feldliste { display: grid; gap: 12px; }
   .feld { display: grid; gap: 3px; }
-  .feld .feld-name { font-size: 12.5px; font-weight: 600; color: var(--ink); }
-  .feld .feld-hilfe { font-size: 11.5px; color: var(--muted); line-height: 1.4; }
+  .feld .feld-name { font-size: var(--fs-text); font-weight: 600; color: var(--ink); }
+  .feld .feld-hilfe { font-size: var(--fs-neben); color: var(--muted); line-height: 1.4; }
   .feld input { margin-top: 2px; }
   /* Der Schalter, der die ganze Sache erst scharf stellt - er darf nicht wie eine
      beliebige Option unter den Feldern verschwinden. */
-  .anschalter { border: 1px solid var(--acc); border-radius: 8px; padding: 8px 10px;
+  .anschalter { border: 1px solid var(--acc); border-radius: var(--r-gross); padding: 8px 10px;
     background: color-mix(in srgb, var(--acc) 8%, var(--surface)); }
   /* Spekulations-Radar auf dem Dashboard: eine Zeile je Spekulation, Chance als Chip */
   .spek-zeile { display: flex; gap: 10px; align-items: baseline; padding: 8px 0; border-top: 1px solid var(--grid); flex-wrap: wrap; }
   .spek-zeile:first-child { border-top: none; }
   .spek-zeile .sym { font-weight: 700; min-width: 52px; cursor: pointer; }
   .spek-zeile .sym:hover { text-decoration: underline; }
-  .spek-zeile .sym .firma { font-weight: 400; color: var(--muted); font-size: 11.5px; }
-  .spek-chip { font-size: 11px; font-weight: 700; border-radius: 5px; padding: 1px 7px; flex-shrink: 0; }
+  .spek-zeile .sym .firma { font-weight: 400; color: var(--muted); font-size: var(--fs-neben); }
+  .spek-chip { font-size: var(--fs-klein); font-weight: 700; border-radius: var(--r-normal); padding: 1px 7px; flex-shrink: 0; }
   .spek-chip.hoch    { color: var(--warn); border: 1px solid var(--warn); }
   .spek-chip.mittel  { color: var(--ink-2); border: 1px solid var(--border); }
   .spek-chip.niedrig { color: var(--muted); border: 1px solid var(--grid); }
-  .spek-zeile .these { flex: 1 1 300px; font-size: 12.5px; line-height: 1.5; }
+  .spek-zeile .these { flex: 1 1 300px; font-size: var(--fs-text); line-height: 1.5; }
   .spek-zeile .these .beg { color: var(--muted); }
-  .spek-zeile .quellen { font-size: 11.5px; color: var(--muted); }
+  .spek-zeile .quellen { font-size: var(--fs-neben); color: var(--muted); }
   .spek-zeile .quellen a { color: var(--acc); }
   /* Fehler #56: Radar und Insider hatten Kennung, Chips, These und bis zu drei
      Quellenlinks alle in EINER Flex-Reihe. Weil die Thesen unterschiedlich lang
@@ -380,78 +449,85 @@
   /* Warnband unter dem Cockpit: eine Zeile je aktivem Warnzustand */
   #warnband { margin: 8px 0 4px; display: none; }
   #warnband .warnzeile {
-    font-size: 12.5px; line-height: 1.5; padding: 7px 10px; margin-bottom: 6px;
+    font-size: var(--fs-text); line-height: 1.5; padding: 7px 10px; margin-bottom: 6px;
     border: 1px solid var(--down); border-left-width: 3px; border-radius: 0 8px 8px 0;
     background: var(--down-soft); color: var(--ink-2);
   }
   #warnband .warnzeile.gelb { border-color: var(--warn); background: color-mix(in srgb, var(--warn) 12%, var(--surface)); }
   .belegt-box .params label:has(input[type="checkbox"]) {
     flex-direction: row; align-items: center; gap: 7px;
-    font-size: 12.5px; text-transform: none; letter-spacing: 0; font-weight: 500; color: var(--ink-2);
+    font-size: var(--fs-text); text-transform: none; letter-spacing: 0; font-weight: 500; color: var(--ink-2);
   }
   .auto-row { padding: 10px 0; border-top: 1px solid var(--grid); }
   .auto-row:first-of-type { border-top: 0; padding-top: 2px; }
-  .auto-head { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; font-size: 12.5px; font-weight: 600; }
+  .auto-head { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; font-size: var(--fs-text); font-weight: 600; }
   .auto-head > label { display: flex; align-items: center; gap: 6px; }
   .auto-head .switch { width: 34px; height: 19px; margin-left: 2px; }
   .auto-head .switch .knob:before { width: 13px; height: 13px; }
-  .btn.tiny { padding: 3px 10px; font-size: 11.5px; }
-  .auto-status { font-size: 12px; margin-top: 6px; line-height: 1.55; color: var(--ink-2); }
+  .btn.tiny { padding: 3px 10px; font-size: var(--fs-neben); }
+  .auto-status { font-size: var(--fs-neben); margin-top: 6px; line-height: 1.55; color: var(--ink-2); }
   .plog { margin-top: 8px; max-height: 190px; overflow-y: auto; font-family: ui-monospace, Consolas, monospace;
-    font-size: 11px; line-height: 1.6; color: var(--ink-2); background: var(--page);
-    border: 1px solid var(--grid); border-radius: 8px; padding: 8px 10px; }
+    font-size: var(--fs-klein); line-height: 1.6; color: var(--ink-2); background: var(--page);
+    border: 1px solid var(--grid); border-radius: var(--r-gross); padding: 8px 10px; }
   .plog .plz { color: var(--muted); margin-right: 6px; }
   .params { display: grid; grid-template-columns: repeat(auto-fill, minmax(108px, 1fr)); gap: 10px 12px; }
   @media (max-width: 560px) { .params { grid-template-columns: 1fr 1fr; } }
-  .params label { display: flex; flex-direction: column; gap: 4px; font-size: 10.5px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; }
-  .params select { width: 100%; font-size: 12px; padding: 6px 7px; }
-  .strat-foot { margin-top: 12px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; font-size: 12px; color: var(--muted); }
+  .params label { display: flex; flex-direction: column; gap: 4px; font-size: var(--fs-klein); color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; }
+  .params select { width: 100%; font-size: var(--fs-neben); padding: 6px 7px; }
+  .strat-foot { margin-top: 12px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; font-size: var(--fs-neben); color: var(--muted); }
 
   .switch { position: relative; display: inline-block; width: 42px; height: 23px; flex-shrink: 0; margin-left: auto; }
   .switch input { opacity: 0; width: 0; height: 0; }
-  .switch .knob { position: absolute; inset: 0; background: var(--grid); border-radius: 999px; transition: background 0.2s; cursor: pointer; }
-  .switch .knob:before { content: ""; position: absolute; width: 17px; height: 17px; left: 3px; top: 3px; border-radius: 50%; background: #fff; transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.35); }
+  /* Umrandung, damit der Schalter im AUS-Zustand ueberhaupt als Bedienelement zu
+     erkennen ist: --grid allein schafft gegen --surface nur 1,29 (Soll 3,0). Genau
+     dieser Schalter stellt den Handel scharf - er darf nicht unsichtbar sein. */
+  .switch .knob { position: absolute; inset: 0; background: var(--grid); border: 1px solid var(--kante);
+    border-radius: var(--r-pille); transition: background 0.2s, border-color 0.2s; cursor: pointer; }
+  .switch input:checked + .knob { border-color: var(--up); }
+  .switch .knob:before { content: ""; position: absolute; width: 17px; height: 17px; left: 2px; top: 2px; border-radius: var(--r-kreis); background: #fff; transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.35); }
   .switch input:checked + .knob { background: var(--up); }
   .switch input:checked + .knob:before { transform: translateX(19px); }
 
   /* ---- Buttons & Inputs ---- */
   .btn {
-    background: var(--btn); color: var(--btn-ink); border: none; border-radius: 8px;
-    padding: 7px 14px; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer;
+    background: var(--btn); color: var(--btn-ink); border: none; border-radius: var(--r-gross);
+    padding: 7px 14px; font: inherit; font-size: var(--fs-text); font-weight: 600; cursor: pointer;
   }
   .btn:disabled { opacity: 0.5; cursor: default; }
   .btn.ghost { background: var(--surface); color: var(--ink-2); border: 1px solid var(--border); }
   .btn.danger { background: var(--btn-danger); }
-  input[type="text"], input[type="password"], select {
-    background: var(--surface); color: var(--ink); border: 1px solid var(--border);
-    border-radius: 8px; padding: 7px 10px; font: inherit; font-size: 13.5px;
+  /* --border ist rgba(...,0.10) und ergibt 1,21 (hell) bzw. 1,49 (dunkel) - ein
+     Eingabefeld war praktisch randlos. Bedienelemente brauchen 3,0. */
+  input[type="text"], input[type="password"], input[type="number"], textarea, select {
+    background: var(--surface); color: var(--ink); border: 1px solid var(--kante);
+    border-radius: var(--r-gross); padding: 7px 10px; font: inherit; font-size: var(--fs-gross);
   }
   input[type="range"] { accent-color: var(--series); }
 
   /* ---- Tabellen ---- */
-  table.tbl { width: 100%; border-collapse: collapse; font-size: 12.5px; }
-  table.tbl th { text-align: left; color: var(--muted); font-weight: 600; font-size: 11.5px;
+  table.tbl { width: 100%; border-collapse: collapse; font-size: var(--fs-text); }
+  table.tbl th { text-align: left; color: var(--muted); font-weight: 600; font-size: var(--fs-neben);
     text-transform: uppercase; letter-spacing: 0.04em; padding: 6px 8px; border-bottom: 1px solid var(--grid); }
   table.tbl td { padding: 5px 8px; border-bottom: 1px solid var(--grid); vertical-align: top; }
   table.tbl tr:last-child td { border-bottom: none; }
   .pos { color: var(--up); font-weight: 600; }
   .neg { color: var(--down); font-weight: 600; }
   .panel { padding: 12px 14px; }
-  .panel h3 { font-size: 11px; font-weight: 700; color: var(--muted); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.07em; }
+  .panel h3 { font-size: var(--fs-klein); font-weight: 700; color: var(--muted); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.07em; }
   .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   @media (max-width: 800px) { .grid2 { grid-template-columns: 1fr; } }
 
   .depot-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 12px; }
-  .badge { display: inline-block; font-size: 11px; font-weight: 700; border-radius: 5px; padding: 1px 6px; margin-right: 4px; }
+  .badge { display: inline-block; font-size: var(--fs-klein); font-weight: 700; border-radius: var(--r-normal); padding: 1px 6px; margin-right: 4px; }
   .badge.call { color: var(--up); background: var(--up-soft); }
   .badge.put  { color: var(--down); background: var(--down-soft); }
   .badge.src  { color: var(--ink-2); background: var(--series-soft); font-weight: 600; }
-  .trade-entry { border-top: 1px solid var(--grid); padding: 9px 0; font-size: 12.5px; }
+  .trade-entry { border-top: 1px solid var(--grid); padding: 9px 0; font-size: var(--fs-text); }
   .trade-entry:first-child { border-top: none; }
-  .trade-entry .why { color: var(--muted); font-size: 11.5px; margin-top: 2px; }
-  .hitbar { height: 8px; border-radius: 4px; background: var(--grid); overflow: hidden; margin-top: 3px; }
+  .trade-entry .why { color: var(--muted); font-size: var(--fs-neben); margin-top: 2px; }
+  .hitbar { height: 8px; border-radius: var(--r-klein); background: var(--grid); overflow: hidden; margin-top: 3px; }
   .hitbar > span { display: block; height: 100%; background: var(--series); }
-  .wrow { display: flex; align-items: center; gap: 10px; margin: 6px 0; font-size: 12.5px; }
+  .wrow { display: flex; align-items: center; gap: 10px; margin: 6px 0; font-size: var(--fs-text); }
   .wrow label { width: 130px; color: var(--ink-2); }
   .wrow output { width: 42px; text-align: right; font-weight: 600; }
 
@@ -460,25 +536,28 @@
   .exp-search input { flex: 1; }
   .exp-results { position: relative; }
   .exp-results .panel { padding: 4px 0; }
-  .exp-hit { padding: 8px 14px; cursor: pointer; display: flex; gap: 10px; align-items: baseline; }
-  .exp-hit:hover { background: var(--series-soft); }
+  /* Seit die Treffer echte <button> sind (Tastaturzugang), muessen die Knopf-Vorgaben
+     des Browsers zurueckgesetzt werden - sonst sitzt jede Zeile in einem Kasten. */
+  .exp-hit { padding: 8px 14px; cursor: pointer; display: flex; gap: 10px; align-items: baseline;
+    width: 100%; background: none; border: 0; color: inherit; font: inherit; text-align: left; }
+  .exp-hit:hover, .exp-hit:focus-visible { background: var(--series-soft); }
   .exp-hit .s { font-weight: 700; min-width: 70px; }
   .exp-hit .n { flex: 1; color: var(--ink-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .exp-hit .x { color: var(--muted); font-size: 11.5px; }
+  .exp-hit .x { color: var(--muted); font-size: var(--fs-neben); }
   .rangebtns { display: flex; gap: 4px; flex-wrap: wrap; }
-  .rangebtns button { background: none; border: 1px solid var(--border); border-radius: 6px;
-    color: var(--ink-2); font: inherit; font-size: 11.5px; padding: 3px 9px; cursor: pointer; }
+  .rangebtns button { background: none; border: 1px solid var(--border); border-radius: var(--r-normal);
+    color: var(--ink-2); font: inherit; font-size: var(--fs-neben); padding: 3px 9px; cursor: pointer; }
   .rangebtns button.active { background: var(--btn); border-color: var(--btn); color: var(--btn-ink); }
   #bigchart { width: 100%; height: 300px; display: block; }
-  .chartleiste { display:flex; gap:14px; align-items:center; flex-wrap:wrap; margin:8px 0 6px; font-size:12px; color:var(--ink-2); }
+  .chartleiste { display:flex; gap:14px; align-items:center; flex-wrap:wrap; margin:8px 0 6px; font-size:var(--fs-neben); color:var(--ink-2); }
   .chartleiste label { display:flex; gap:5px; align-items:center; }
-  .chartleiste select { font-size:12px; padding:2px 4px; }
+  .chartleiste select { font-size:var(--fs-neben); padding:2px 4px; }
   /* .hinweis war nur INNERHALB der Chartleiste gestylt - ausserhalb rutschte jeder
      so ausgezeichnete Text auf 14 px Fliesstextfarbe und sah aus wie eine Aussage. */
-  .hinweis { color: var(--muted); font-size: 11.5px; line-height: 1.5; }
+  .hinweis { color: var(--muted); font-size: var(--fs-neben); line-height: 1.5; }
   .sigbox { cursor:pointer; user-select:none; }
   .sigbox input { margin:0 3px 0 0; vertical-align:-1px; }
-  .kv { display: grid; grid-template-columns: auto 1fr; gap: 3px 14px; font-size: 12.5px; }
+  .kv { display: grid; grid-template-columns: auto 1fr; gap: 3px 14px; font-size: var(--fs-text); }
   .kv dt { color: var(--muted); }
   .kv dd { text-align: right; font-weight: 600; }
 
@@ -489,15 +568,15 @@
      < Erklaerfenster 130 (es kann aus einem Dialog heraus geoeffnet werden). */
   .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.55); display: none; z-index: 100; }
   .modal-bg.open { display: flex; align-items: flex-start; justify-content: center; padding: 40px 16px; }
-  .modal { background: var(--page); border: 1px solid var(--border); border-radius: 14px;
+  .modal { background: var(--page); border: 1px solid var(--border); border-radius: var(--r-gross);
     max-width: 760px; width: 100%; max-height: 85vh; overflow: auto; padding: 20px 22px; }
   .modal h2 { margin-top: 0; }
   .modal .close { float: right; }
-  .analysis { font-size: 13.5px; line-height: 1.6; }
-  .analysis h4 { margin: 14px 0 4px; font-size: 13px; }
+  .analysis { font-size: var(--fs-gross); line-height: 1.6; }
+  .analysis h4 { margin: 14px 0 4px; font-size: var(--fs-text); }
   .analysis ul { margin: 4px 0 4px 18px; }
-  .analysis .warn { color: var(--muted); font-size: 12px; border-top: 1px solid var(--grid); margin-top: 12px; padding-top: 8px; }
-  .simnote { color: var(--muted); font-size: 11.5px; margin: 6px 0 14px; }
+  .analysis .warn { color: var(--muted); font-size: var(--fs-neben); border-top: 1px solid var(--grid); margin-top: 12px; padding-top: 8px; }
+  .simnote { color: var(--muted); font-size: var(--fs-neben); margin: 6px 0 14px; }
 
   /* ---- UI-Politur v6.1 ---- */
   /* Kein border-radius hier: er ueberschrieb die Rundung JEDES fokussierten Knopfes
@@ -507,13 +586,13 @@
   .switch input:focus-visible + .knob { outline: 2px solid var(--series); outline-offset: 2px; }
   ::-webkit-scrollbar { width: 10px; height: 10px; }
   ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: var(--grid); border-radius: 5px; border: 2px solid var(--page); }
+  ::-webkit-scrollbar-thumb { background: var(--grid); border-radius: var(--r-normal); border: 2px solid var(--page); }
   ::-webkit-scrollbar-thumb:hover { background: var(--baseline); }
   .btn:not(:disabled):hover { filter: brightness(1.08); }
   .btn.ghost:hover { color: var(--ink); border-color: var(--baseline); filter: none; }
   .hbtn:hover, .pills button:not(.active):hover { border-color: var(--baseline); }
 
-  .tile .delta { font-size: 12px; font-weight: 600; margin-top: 2px; color: var(--muted); }
+  .tile .delta { font-size: var(--fs-neben); font-weight: 600; margin-top: 2px; color: var(--muted); }
   .tile .delta.pos { color: var(--up); }
   .tile .delta.neg { color: var(--down); }
 
@@ -521,12 +600,12 @@
   details.how { margin: 8px 0 12px; }
   details.how summary {
     cursor: pointer; list-style: none; display: inline-flex; align-items: center; gap: 6px;
-    color: var(--acc); font-size: 12px; font-weight: 600; user-select: none;
+    color: var(--acc); font-size: var(--fs-neben); font-weight: 600; user-select: none;
   }
   details.how summary::-webkit-details-marker { display: none; }
   /* Direkte Kindschaft: das Archiv schachtelt erstmals eine Klappe in eine Klappe -
      mit Nachfahren-Selektor drehte die innere Pfeilspitze mit der aeusseren mit. */
-  details.how > summary:before { content: "▸"; transition: transform 0.15s; font-size: 10px; }
+  details.how > summary:before { content: "▸"; transition: transform 0.15s; font-size: var(--fs-klein); }
   details.how[open] > summary:before { transform: rotate(90deg); }
   details.how .desc { margin: 8px 0 4px; }
   /* Nach details.how summary, sonst gewinnt dort die Akzentfarbe (gleiche Spezifitaet). */
@@ -536,7 +615,7 @@
   .pgroup { margin-top: 12px; }
   .pgroup:first-child { margin-top: 0; }
   .pgroup-title {
-    font-size: 10.5px; font-weight: 700; color: var(--muted); text-transform: uppercase;
+    font-size: var(--fs-klein); font-weight: 700; color: var(--muted); text-transform: uppercase;
     letter-spacing: 0.08em; margin-bottom: 8px; padding-bottom: 4px; border-bottom: 1px solid var(--grid);
   }
   .params label .switch { margin: 5px auto 2px 0; }
@@ -544,31 +623,31 @@
   /* Leere Zustände */
   .empty {
     display: flex; flex-direction: column; align-items: center; gap: 6px;
-    padding: 22px 16px; color: var(--muted); font-size: 12.5px; text-align: center;
+    padding: 22px 16px; color: var(--muted); font-size: var(--fs-text); text-align: center;
   }
-  .empty .ico { font-size: 22px; opacity: 0.7; }
+  .empty .ico { font-size: var(--fs-titel); opacity: 0.7; }
 
   /* Protokoll-Karten */
   .trade-entry .thead { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-  .trade-entry .thead .tsym { font-weight: 700; font-size: 13px; }
-  .trade-entry .thead .twhen { color: var(--muted); font-size: 11.5px; }
-  .trade-entry .thead .tpl { margin-left: auto; font-size: 12.5px; font-weight: 700; border-radius: 6px; padding: 1px 8px; }
+  .trade-entry .thead .tsym { font-weight: 700; font-size: var(--fs-text); }
+  .trade-entry .thead .twhen { color: var(--muted); font-size: var(--fs-neben); }
+  .trade-entry .thead .tpl { margin-left: auto; font-size: var(--fs-text); font-weight: 700; border-radius: var(--r-normal); padding: 1px 8px; }
   .trade-entry .thead .tpl.pos { color: var(--up); background: var(--up-soft); }
   .trade-entry .thead .tpl.neg { color: var(--down); background: var(--down-soft); }
-  .trade-entry .tmeta { color: var(--ink-2); font-size: 12px; margin-top: 3px; }
+  .trade-entry .tmeta { color: var(--ink-2); font-size: var(--fs-neben); margin-top: 3px; }
   .trade-entry details { margin-top: 4px; }
   .trade-entry details summary {
-    cursor: pointer; list-style: none; color: var(--muted); font-size: 11.5px; user-select: none; display: inline-flex; align-items: center; gap: 5px;
+    cursor: pointer; list-style: none; color: var(--muted); font-size: var(--fs-neben); user-select: none; display: inline-flex; align-items: center; gap: 5px;
   }
   .trade-entry details summary::-webkit-details-marker { display: none; }
-  .trade-entry details summary:before { content: "▸"; font-size: 9px; }
+  .trade-entry details summary:before { content: "▸"; font-size: var(--fs-klein); }
   .trade-entry details[open] summary:before { content: "▾"; }
   .trade-entry details .why { margin-top: 4px; line-height: 1.55; }
 
   /* Lade-Skeletons */
   @keyframes skel { 0% { opacity: 0.45; } 50% { opacity: 0.85; } 100% { opacity: 0.45; } }
   .skel { animation: skel 1.4s ease-in-out infinite; }
-  .skel .bar { height: 10px; border-radius: 5px; background: var(--grid); margin: 10px 14px; }
+  .skel .bar { height: 10px; border-radius: var(--r-normal); background: var(--grid); margin: 10px 14px; }
   .skel .bar.w40 { width: 40%; } .skel .bar.w60 { width: 60%; } .skel .bar.w80 { width: 80%; }
 
   /* Modal: Speichern-Leiste unten fixiert */
@@ -578,16 +657,16 @@
   }
 
   /* Geduld-Bilanz */
-  .patrow { display: grid; grid-template-columns: minmax(170px, 250px) 1fr 44px; gap: 10px; align-items: center; margin: 4px 0; font-size: 12px; line-height: 1.3; }
-  .patrow .pbar, #pilotStatus .pbar { height: 8px; border-radius: 4px; background: var(--grid); overflow: hidden; }
-  .patrow .pbar > span, #pilotStatus .pbar > span { display: block; height: 100%; background: var(--series); border-radius: 4px; }
+  .patrow { display: grid; grid-template-columns: minmax(170px, 250px) 1fr 44px; gap: 10px; align-items: center; margin: 4px 0; font-size: var(--fs-neben); line-height: 1.3; }
+  .patrow .pbar, #pilotStatus .pbar { height: 8px; border-radius: var(--r-klein); background: var(--grid); overflow: hidden; }
+  .patrow .pbar > span, #pilotStatus .pbar > span { display: block; height: 100%; background: var(--series); border-radius: var(--r-klein); }
   .patrow b { text-align: right; }
 
   /* Explorer-Startseite */
   .exp-start .popchips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
   .exp-start .popchips button {
-    background: var(--surface); border: 1px solid var(--border); border-radius: 999px;
-    color: var(--ink); font: inherit; font-size: 12.5px; font-weight: 600; padding: 5px 13px; cursor: pointer;
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-pille);
+    color: var(--ink); font: inherit; font-size: var(--fs-text); font-weight: 600; padding: 5px 13px; cursor: pointer;
   }
   .exp-start .popchips button:hover { border-color: var(--series); color: var(--series); }
 </style>
@@ -596,17 +675,19 @@
 
 <header>
   <h1>Markt-Dashboard</h1>
-  <span class="stamp" id="stamp"><span class="dot closed"></span>Lade Daten …</span>
-  <span class="err" id="err"></span>
+  <span class="stamp" id="stamp" role="status" aria-live="polite"><span class="dot closed"></span>Lade Daten …</span>
+  <span class="err" id="err" role="status" aria-live="polite"></span>
   <div class="hbtns">
     <button class="hbtn" id="refreshBtn" type="button">↻ Aktualisieren</button>
+    <button class="hbtn" id="glossarBtn" type="button" data-info="glossar.begriffe" aria-expanded="false"
+            aria-label="Erklärung: Begriffe dieser App">Begriffe</button>
     <button class="hbtn" id="themeBtn" type="button">Hell/Dunkel</button>
     <button class="hbtn" id="settingsBtn" type="button">App-Einstellungen</button>
   </div>
 </header>
 <div class="subnote" id="subnote">Big Tech · Chip-Sektor · Marktüberblick – aktualisiert sich automatisch (1 Min während des US-Handels, sonst 5 Min). Charts: 1 Monat, Tagesschluss.</div>
 
-<div id="cockpit">
+<div id="cockpit" role="status" aria-live="polite" aria-label="Kennzahlen">
   <div class="ck"><span class="ckl">Depot</span><b id="ckEquity">–</b></div>
   <div class="ck"><span class="ckl">Heute</span><b id="ckDay">–</b></div>
   <div class="ck"><span class="ckl">Offen</span><b id="ckOpen">–</b></div>
@@ -617,27 +698,30 @@
 <!-- Warnband: seltene, wichtige Zustaende (Quelle gestoert, Speichern fehlgeschlagen,
      Sicherung geladen, Kante verfallen). Auf jedem Reiter sichtbar, weil es auf
      jedem Reiter gilt. Gefuellt von depot.js/warnbandSetzen. -->
-<div id="warnband" style="display:none;"></div>
+<div id="warnband" style="display:none;" role="alert" aria-live="assertive"></div>
 
 <!-- Erklaerfenster: EINES fuer die ganze App, gefuellt von window.Info (app-shell.js).
      Steht ausserhalb der Reiter, damit ein Reiterwechsel es nicht mit wegraeumt. -->
 <div id="infoPop" role="dialog" aria-modal="false" aria-label="Erklärung"></div>
 
-<nav class="tabs">
-  <button data-tab="dashboard" class="active">Heute</button>
-  <button data-tab="strategien">Regeln</button>
-  <button data-tab="depot">Vermögen</button>
-  <button data-tab="werkzeuge">Werkzeuge</button>
-  <button data-tab="messung">Messung</button>
+<!-- role="tablist": Ohne die Rollen liest eine Vorlesehilfe hier fuenf zusammenhanglose
+     Knoepfe vor, nicht eine Reiterleiste - und die Pfeiltasten tun nichts. Die
+     Tastaturbedienung (Pfeile, Pos1/Ende) haengt in app-shell.js daran. -->
+<nav class="tabs" role="tablist" aria-label="Hauptbereiche">
+  <button data-tab="dashboard" class="active" role="tab" aria-selected="true"  aria-controls="tab-dashboard" id="reiter-dashboard">Heute</button>
+  <button data-tab="strategien"               role="tab" aria-selected="false" aria-controls="tab-strategien" id="reiter-strategien" tabindex="-1">Regeln</button>
+  <button data-tab="depot"                    role="tab" aria-selected="false" aria-controls="tab-depot"      id="reiter-depot"      tabindex="-1">Vermögen</button>
+  <button data-tab="werkzeuge"                role="tab" aria-selected="false" aria-controls="tab-werkzeuge"  id="reiter-werkzeuge"  tabindex="-1">Werkzeuge</button>
+  <button data-tab="messung"                  role="tab" aria-selected="false" aria-controls="tab-messung"    id="reiter-messung"    tabindex="-1">Messung</button>
 </nav>
 
-<div id="tab-dashboard" class="tab active">
+<div id="tab-dashboard" class="tab active" role="tabpanel" aria-labelledby="reiter-dashboard">
 <div id="hoverInfo"></div>
 <div id="newsTicker" style="display:none;" title="Markt-News als Laufband – unter dem Mauszeiger hält es an. Klick öffnet die Meldung."></div>
 <h2>Marktüberblick</h2>
 <div class="tiles" id="tiles"><div class="loading">Lade Kurse …</div></div>
 
-<h2 style="margin-top:18px;">Marktbild <span style="color:var(--muted); font-size:12px; font-weight:400;">– die 15 Werte dieses Reiters, Farbe = heutige Bewegung, Klick öffnet den Explorer</span></h2>
+<h2 style="margin-top:18px;">Marktbild <span style="color:var(--muted); font-size:var(--fs-neben); font-weight:400;">– die 15 Werte dieses Reiters, Farbe = heutige Bewegung, Klick öffnet den Explorer</span></h2>
 <div id="dashHeat" class="heat"><div class="loading">Lade Kurse …</div></div>
 
 <h2>Gewinner &amp; Verlierer des Tages</h2>
@@ -646,13 +730,13 @@
   <div class="mover-col"><h3>▼ Top-Verlierer</h3><div id="losers"></div></div>
 </div>
 
-<h2>Spekulations-Radar <span style="color:var(--muted); font-size:12px; font-weight:400; text-transform:none; letter-spacing:0;">– Gerüchte aus öffentlichen Quellen, dreimal täglich vor US-Eröffnung gesammelt. <b>Gehandelt wird hiervon nichts.</b></span> <button class="info" type="button" data-info="heute.radar" aria-expanded="false" aria-label="Erklärung: Spekulations-Radar">i</button></h2>
+<h2>Spekulations-Radar <span style="color:var(--muted); font-size:var(--fs-neben); font-weight:400; text-transform:none; letter-spacing:0;">– Gerüchte aus öffentlichen Quellen, dreimal täglich vor US-Eröffnung gesammelt. <b>Gehandelt wird hiervon nichts.</b></span> <button class="info" type="button" data-info="heute.radar" aria-expanded="false" aria-label="Erklärung: Spekulations-Radar">i</button></h2>
 <div class="panel" id="spekRadar"><div class="loading">Noch keine Radar-Daten – wird gleich aus der Gemeinschafts-Ablage geladen.</div></div>
 
-<h2>Insider-Käufe <span style="color:var(--muted); font-size:12px; font-weight:400; text-transform:none; letter-spacing:0;">– meldepflichtige Eigengeschäfte von Vorstand und Aufsichtsrat (SEC Form 4). <b>Gehandelt wird hiervon nichts.</b></span> <button class="info" type="button" data-info="heute.insider" aria-expanded="false" aria-label="Erklärung: Insider-Käufe">i</button></h2>
+<h2>Insider-Käufe <span style="color:var(--muted); font-size:var(--fs-neben); font-weight:400; text-transform:none; letter-spacing:0;">– meldepflichtige Eigengeschäfte von Vorstand und Aufsichtsrat (SEC Form 4). <b>Gehandelt wird hiervon nichts.</b></span> <button class="info" type="button" data-info="heute.insider" aria-expanded="false" aria-label="Erklärung: Insider-Käufe">i</button></h2>
 <div class="panel" id="insiderKarte"><div class="loading">Noch keine Insider-Daten – wird gleich aus der Gemeinschafts-Ablage geladen.</div></div>
 
-<h2>Vorbörsen-Lücken <span style="color:var(--muted); font-size:12px; font-weight:400; text-transform:none; letter-spacing:0;">– Werte, die vor der US-Eröffnung deutlich anders stehen als beim gestrigen Schluss. <b>Gehandelt wird hiervon nichts.</b></span> <button class="info" type="button" data-info="heute.vorboerse" aria-expanded="false" aria-label="Erklärung: Vorbörsen-Lücken">i</button></h2>
+<h2>Vorbörsen-Lücken <span style="color:var(--muted); font-size:var(--fs-neben); font-weight:400; text-transform:none; letter-spacing:0;">– Werte, die vor der US-Eröffnung deutlich anders stehen als beim gestrigen Schluss. <b>Gehandelt wird hiervon nichts.</b></span> <button class="info" type="button" data-info="heute.vorboerse" aria-expanded="false" aria-label="Erklärung: Vorbörsen-Lücken">i</button></h2>
 <div class="panel" id="vormarktKarte"><div class="loading">Noch nicht gesucht.</div></div>
 
 <!-- Dieselben 15 Werte standen dreimal untereinander: Heatmap, Gewinner/Verlierer,
@@ -674,10 +758,10 @@
 <div class="news" id="news"><div class="loading">Lade News …</div></div>
 </div><!-- /tab-dashboard -->
 
-<div id="tab-depot" class="tab">
-  <div class="simnote"><b>Simulation mit virtuellem Kapital – keine Anlageberatung.</b> Gehandelt wird <span id="depotInstrumentHinweis">der Basiswert (Aktie 1×, ohne Hebel)</span>. Optionsscheine werden synthetisch bepreist (Black-Scholes): Hebel und Zeitwertverfall realistisch, aber keine echten Emittenten-Preise. Läuft, solange die App geöffnet ist.</div>
+<div id="tab-depot" class="tab" role="tabpanel" aria-labelledby="reiter-depot">
+  <div class="simnote"><b>Simulation mit virtuellem Kapital – keine Anlageberatung.</b> Gehandelt wird <span id="depotInstrumentHinweis">der Basiswert (Aktie 1×, ohne Hebel)</span>. Optionsscheine werden synthetisch bepreist (Black-Scholes): Hebel, Zeitwertverfall, Volatilitäts-Smile und der Vola-Einbruch nach Ergebnisterminen sind abgebildet, echte Emittenten-Preise nicht. Läuft, solange die App geöffnet ist. <button class="info" type="button" data-info="modell.schein" aria-expanded="false" aria-label="Erklärung: Wie ein Optionsschein hier bepreist wird">i</button></div>
 
-  <div class="simnote" style="margin-bottom:6px;">Was für jede Strategie spricht und was dagegen, steht im Tab <b>Strategien &amp; Belege</b>. Ein- und ausschalten lässt sie sich hier wie dort.</div>
+  <div class="simnote" style="margin-bottom:6px;">Was für jede Strategie spricht und was dagegen, steht im Reiter <b>Regeln</b>. Ein- und ausschalten lässt sie sich hier wie dort.</div>
   <div class="pills" id="depotPills">
     <button data-sub="depot" class="active">Depot</button>
     <button data-sub="strategien">Schalter &amp; Einstellungen</button>
@@ -691,7 +775,7 @@
   <div class="sub active" id="sub-depot">
     <div id="eqPanel" class="panel eq-panel" style="display:none;"></div>
     <div class="depot-stats" id="depotStats"></div>
-    <div id="messNote" style="color:var(--muted); font-size:11.5px; margin:8px 0 0;"></div>
+    <div id="messNote" style="color:var(--muted); font-size:var(--fs-neben); margin:8px 0 0;"></div>
     <div id="calWarn"></div>
     <div class="panel" style="margin-bottom:14px;">
       <h3>Depotverlauf (seit Start der Simulation)</h3>
@@ -699,9 +783,9 @@
     </div>
     <div style="display:flex; gap:14px; align-items:center; flex-wrap:wrap; margin-bottom:10px;">
       <h2 style="margin:0;">Offene Positionen</h2>
-      <label style="font-size:12px; display:flex; align-items:center; gap:6px; margin-left:auto; color:var(--ink-2);"><input type="checkbox" id="notifyEnabled" checked> Benachrichtigung bei Trades</label>
+      <label style="font-size:var(--fs-neben); display:flex; align-items:center; gap:6px; margin-left:auto; color:var(--ink-2);"><input type="checkbox" id="notifyEnabled" checked> Benachrichtigung bei Trades</label>
     </div>
-    <div class="panel" id="positionsPanel"><div class="loading">Noch keine Positionen – schalte unter „Schalter &amp; Einstellungen“ die Intraday-Strategie ein.</div></div>
+    <div class="panel" id="positionsPanel"><div class="loading">Noch keine Positionen – schalte unter „Vermögen → Schalter &amp; Einstellungen“ die Intraday-Strategie ein.</div></div>
   </div>
 
   <!-- ============ STRATEGIEN ============ -->
@@ -790,13 +874,13 @@
         </div>
 
         <details id="idExperte" style="margin-bottom:8px;">
-          <summary style="cursor:pointer; font-size:12.5px; color:var(--muted); padding:4px 0;">Experten-Einstellungen anzeigen (stellt normalerweise die Automatik ein – Änderungen von Hand landen im Experiment-Journal)</summary>
+          <summary style="cursor:pointer; font-size:var(--fs-text); color:var(--muted); padding:4px 0;">Experten-Einstellungen anzeigen (stellt normalerweise die Automatik ein – Änderungen von Hand landen im Experiment-Journal)</summary>
         <div id="idParams">
           <div class="pgroup">
             <div class="pgroup-title">Signal</div>
             <div class="params">
               <div style="grid-column:1/-1; margin-bottom:2px;">
-                <div style="font-size:11px; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:.04em; margin-bottom:4px;">Setup</div>
+                <div style="font-size:var(--fs-klein); color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:.04em; margin-bottom:4px;">Setup</div>
                 <div class="pills small" id="idSetupPills" style="margin:0 0 8px;">
                   <button type="button" data-setup="ausbruch" class="active">Ausbruch</button>
                   <button type="button" data-setup="umkehr">Umkehr</button>
@@ -840,8 +924,8 @@
             </div>
             <div id="kryptoStand" class="hinweis" style="margin-top:6px;"></div>
           </div>
-          <div id="feeWarn" style="color:var(--down); font-size:11.5px; margin-top:6px;"></div>
-          <div id="handSperre" style="font-size:11.5px; margin-top:6px;"></div>
+          <div id="feeWarn" style="color:var(--down); font-size:var(--fs-neben); margin-top:6px;"></div>
+          <div id="handSperre" style="font-size:var(--fs-neben); margin-top:6px;"></div>
           <div class="pgroup" id="pgScalp">
             <div class="pgroup-title">Haltedauer &amp; Ausstieg</div>
             <div class="params">
@@ -859,14 +943,14 @@
               Die Rangfolge stammt aus der Kennzahl des Wellental-Einstiegs – der hat keinen gemessenen Vorsprung.
             </div>
             <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-              <button class="btn ghost" id="screenBtn" style="padding:4px 12px; font-size:12px;">Screener jetzt laufen lassen</button>
-              <span id="screenStatus" style="color:var(--muted); font-size:11.5px;"></span>
+              <button class="btn ghost" id="screenBtn" style="padding:4px 12px; font-size:var(--fs-neben);">Screener jetzt laufen lassen</button>
+              <span id="screenStatus" style="color:var(--muted); font-size:var(--fs-neben);"></span>
             </div>
             <div id="screenChips" style="display:flex; gap:6px; flex-wrap:wrap; margin-top:6px;"></div>
           </div>
         </div>
         </details>
-        <div class="strat-foot" style="flex-direction:column; align-items:flex-start; gap:4px;"><span id="idStatus"></span><span id="tuneStatus"></span><span id="regimeHint" style="color:var(--muted); font-size:11.5px;"></span><span id="capStatus"></span></div>
+        <div class="strat-foot" style="flex-direction:column; align-items:flex-start; gap:4px;"><span id="idStatus"></span><span id="tuneStatus"></span><span id="regimeHint" style="color:var(--muted); font-size:var(--fs-neben);"></span><span id="capStatus"></span></div>
       </div>
 
       <div style="display:grid; gap:12px; align-content:start;">
@@ -941,20 +1025,20 @@
       <h3>Live-Signal-Monitor</h3>
       <div id="sigMonitor"></div>
       <div style="margin-top:10px; padding-top:10px; border-top:1px solid var(--grid);">
-        <div style="font-size:12.5px; font-weight:600; margin-bottom:6px;">Gesperrte Werte <span style="color:var(--muted); font-weight:400;">(automatisch ab 6 Trades mit klarer Negativbilanz – Klick auf × gibt wieder frei)</span></div>
+        <div style="font-size:var(--fs-text); font-weight:600; margin-bottom:6px;">Gesperrte Werte <span style="color:var(--muted); font-weight:400;">(automatisch ab 6 Trades mit klarer Negativbilanz – Klick auf × gibt wieder frei)</span></div>
         <div id="symBlocks"></div>
       </div>
     </div>
 
     <div class="panel" style="margin-top:12px;">
       <h3>Eigene Watchlist – wird bei jedem Scan mitgeprüft</h3>
-      <div style="color:var(--muted); font-size:11.5px; margin-bottom:8px;">
+      <div style="color:var(--muted); font-size:var(--fs-neben); margin-bottom:8px;">
         Diese Werte und die 15 Standard-Werte werden in jeder Runde geprüft. Die gemessenen 60-Minuten-Einstiege
         schauen zusätzlich in den gewählten Beobachtungs-Pool (Vorgabe: 99 Werte) – daraus rotieren zwölf je Runde,
         damit ein Scan nicht in Kursabrufe ausartet.
       </div>
       <div id="watchChips" style="display:flex; gap:6px; flex-wrap:wrap;"></div>
-      <div style="color:var(--muted); font-size:11.5px; margin-top:8px;">Hinzufügen: Wert im Aktien-Explorer suchen → „Zur Handels-Watchlist“.</div>
+      <div style="color:var(--muted); font-size:var(--fs-neben); margin-top:8px;">Hinzufügen: Wert im Aktien-Explorer suchen → „Zur Handels-Watchlist“.</div>
     </div>
   </div>
 
@@ -987,7 +1071,7 @@
           <option value="8">8 Kerzen</option>
         </select></label>
         <button class="btn" id="wendeBtn">Jetzt prüfen</button>
-        <span id="wendeStatus" style="color:var(--muted); font-size:12px;"></span>
+        <span id="wendeStatus" style="color:var(--muted); font-size:var(--fs-neben);"></span>
       </div>
       <div class="hinweis" style="margin-top:8px;">
         Sekunden-Kerzen (1/5/10 s) sind mit der Kursquelle nicht möglich – Yahoo liefert feinstens 1 Minute,
@@ -1028,7 +1112,7 @@
     <!-- 1 · Was die App von allein tut -->
     <div class="panel" style="margin-bottom:12px; border-top:3px solid var(--series);">
       <h3>Autopilot – die App verbessert sich selbst</h3>
-      <div style="color:var(--muted); font-size:11.5px; margin-bottom:10px;">
+      <div style="color:var(--muted); font-size:var(--fs-neben); margin-bottom:10px;">
         Das <b>Kursarchiv</b> sammelt jede geladene Kursreihe dauerhaft – die Messbasis wächst mit jedem Handelstag,
         statt an Yahoos kurzem Rückblick zu kleben. Was die Nacht misst, hängt von deiner Strategie ab:
         Fährst du eine der <b>gemessenen Strategien</b> (RSI2 im Seitwärtskanal / Kapitulations-Dip), arbeitet die Nacht als
@@ -1095,7 +1179,7 @@
         <button class="btn ghost" id="weeklyBtn">Wochenreport</button>
         <button class="btn ghost" id="reportShowBtn" title="Zeigt den Bericht der automatischen Analyse aus dem Daten-Ordner">Analyse-Bericht</button>
         <button class="btn ghost" id="exportDataBtn" title="Schreibt analyse-daten.json + trades.csv nach Downloads\Markt-Dashboard-Daten – ohne Zugangsdaten. Läuft zusätzlich automatisch alle 10 Minuten.">Analyse-Export</button>
-        <span id="reportStatus" style="color:var(--muted); font-size:12px;"></span>
+        <span id="reportStatus" style="color:var(--muted); font-size:var(--fs-neben);"></span>
       </div>
       <div class="panel" style="margin:0;">
         <h4 style="margin:0 0 8px;">Backtest (Handwerkzeug)</h4>
@@ -1107,9 +1191,9 @@
           </select>
           <select id="btRange" title="Wie weit der Backtest zurückreicht"><option value="1y">1 Jahr</option><option value="2y">2 Jahre</option><option value="5y">5 Jahre</option></select>
           <button class="btn ghost" id="btRunBtn">Backtest starten</button>
-          <span id="btStatus" style="color:var(--muted); font-size:12px;"></span>
+          <span id="btStatus" style="color:var(--muted); font-size:var(--fs-neben);"></span>
         </div>
-        <div style="color:var(--muted); font-size:11.5px; margin-top:6px;">
+        <div style="color:var(--muted); font-size:var(--fs-neben); margin-top:6px;">
           Rechnet das eingestellte Setup auf synthetischen <b>Optionsscheinen</b>, in beide Richtungen und mit
           Glattstellung am Abend. Für die beiden gemessenen Kanten passt das nicht – sie handeln den Basiswert,
           nur Long und über Nacht –, deshalb verweigert der Backtest dort die Auskunft; sie misst der Autopilot
@@ -1124,7 +1208,7 @@
   <div class="sub" id="sub-mittel">
   <div class="panel">
     <h3>Momentum im Querschnitt · Aktien, keine Hebelscheine</h3>
-    <div id="mfErklaerung" style="font-size:12.5px; color:var(--ink-2); line-height:1.55;">
+    <div id="mfErklaerung" style="font-size:var(--fs-text); color:var(--ink-2); line-height:1.55;">
       Diese Strategie vergleicht alle Werte des Universums <b>miteinander</b> und hält das stärkste Zehntel.
       Kein Chartmuster, kein Ein- und Ausstiegssignal – nur eine Rangfolge, die alle drei Monate neu gebildet wird.
       Gekauft werden <b>Aktien</b>; mit Hebelscheinen auf 21 Tage ist eine Haltedauer von drei Monaten nicht
@@ -1173,7 +1257,7 @@
 
   <div class="panel" style="margin-top:12px;">
     <h3>Was du dabei wissen musst</h3>
-    <div style="font-size:12.5px; color:var(--ink-2); line-height:1.6;">
+    <div style="font-size:var(--fs-text); color:var(--ink-2); line-height:1.6;">
       <p style="margin:0 0 8px;"><b>Der größte Rückschlag lag bei 52 Prozent</b> (2008). Das ist kein ruhiges Investment.
       Wer bei so einem Einbruch aussteigt, hat den Effekt nicht – er entsteht gerade dadurch, dass man dabeibleibt.</p>
       <p style="margin:0 0 8px;"><b>In 8 von 22 Jahren war das Depot schlechter als der Markt.</b> 2024 lag es bei
@@ -1187,10 +1271,10 @@
 
   <div class="panel">
     <h3>Mittelfrist-Depot · Momentum und Ergebnis-Drift handeln</h3>
-    <div style="font-size:12.5px; color:var(--ink-2); line-height:1.55; margin-bottom:8px;">
+    <div style="font-size:var(--fs-text); color:var(--ink-2); line-height:1.55; margin-bottom:8px;">
       Zwei getrennte virtuelle Bücher à 100.000 $, die die beiden Strategien <b>tatsächlich führen</b> – beide halten über die volle Historie, aber nicht auf den zurückgehaltenen Jahren ab 2005 (Momentum t = 1,62; Ergebnis-Drift nach Zeitzonen-Korrektur 8,44 statt 14,07 % p.a.). Stand 23.08.2026, Details im Reiter Messung –
-      bis hierher waren Momentum und Ergebnis-Drift Rechenblätter ohne Depot. Die Schalter im Tab
-      „Strategien“ entscheiden: <b>an</b> heißt selbsttätig handeln, <b>aus</b> heißt nur rechnen und
+      bis hierher waren Momentum und Ergebnis-Drift Rechenblätter ohne Depot. Die Schalter im Reiter
+      „Regeln“ entscheiden: <b>an</b> heißt selbsttätig handeln, <b>aus</b> heißt nur rechnen und
       erinnern („Rebalancing fällig“ mit Handlungsliste). Alles Simulation, keine Anlageberatung.
     </div>
     <div class="chartleiste">
@@ -1199,15 +1283,15 @@
       <button id="mfdDriftBtn" class="btn" title="Drift-Buch sofort abgleichen: Fällige schließen, neue Signale eröffnen">Drift jetzt abgleichen</button>
     </div>
     <div id="mfdStatus" class="hinweis" style="margin-top:6px;"></div>
-    <h3 style="margin-top:12px; font-size:13.5px;">Momentum-Buch <span style="font-weight:400; color:var(--muted);">· stärkstes Zehntel, alle 63 Handelstage, 20 Bp je Seite</span></h3>
+    <h3 style="margin-top:12px; font-size:var(--fs-gross);">Momentum-Buch <span style="font-weight:400; color:var(--muted);">· stärkstes Zehntel, alle 63 Handelstage, 20 Bp je Seite</span></h3>
     <div id="mfdMomentum" style="margin-top:6px;"></div>
-    <h3 style="margin-top:14px; font-size:13.5px;">Ergebnis-Drift-Buch <span style="font-weight:400; color:var(--muted);">· 60 Handelstage je Position, long und short, 10 Bp je Seite</span></h3>
+    <h3 style="margin-top:14px; font-size:var(--fs-gross);">Ergebnis-Drift-Buch <span style="font-weight:400; color:var(--muted);">· 60 Handelstage je Position, long und short, 10 Bp je Seite</span></h3>
     <div id="mfdDrift" style="margin-top:6px;"></div>
   </div>
 
   <div class="panel">
     <h3>Ergebnis-Drift · Aktien, keine Hebelscheine</h3>
-    <div style="font-size:12.5px; color:var(--ink-2); line-height:1.55;">
+    <div style="font-size:var(--fs-text); color:var(--ink-2); line-height:1.55;">
       Nach einer Quartalsmeldung läuft der Kurs noch Wochen in Richtung der Überraschung weiter.
       Gekauft wird das <b>oberste Fünftel</b> der Überraschungen, verkauft das <b>unterste</b> – gleich viele,
       aus demselben Topf. Anders als das Momentum darüber ist das <b>kein Chartsignal</b>: Die Information
@@ -1259,7 +1343,7 @@
     <h3 style="margin-top:16px;">Was wäre heute offen?</h3>
     <div id="drHeute" style="margin-top:6px;"></div>
 
-    <div style="margin-top:14px; font-size:12px; color:var(--ink-2); line-height:1.55; border-top:1px solid var(--grid); padding-top:10px;">
+    <div style="margin-top:14px; font-size:var(--fs-neben); color:var(--ink-2); line-height:1.55; border-top:1px solid var(--grid); padding-top:10px;">
       <p style="margin:0 0 6px;"><b>Was gemessen ist.</b> 20.356 Ergebnistermine aus 197 Werten, 1993–2026.
       Marktneutral, 60 Handelstage, Rang nur gegen bereits veröffentlichte Zahlen:
       ab 2015 <b>+10,44 % p. a. bei t = 3,04</b> und 67 % positiven Monaten, positiv in allen sieben Teilzeiträumen.
@@ -1273,7 +1357,7 @@
   </div>
   </div>
 </div><!-- /tab-depot -->
-<div id="tab-werkzeuge" class="tab">
+<div id="tab-werkzeuge" class="tab" role="tabpanel" aria-labelledby="reiter-werkzeuge">
   <div class="pills" id="wzPills">
     <button data-sub="explorer" class="active">Aktien-Explorer</button>
     <button data-sub="scheine">Schein-Finder</button>
@@ -1287,9 +1371,9 @@
   <div id="expStart"></div>
   <div id="expDetail" style="display:none;">
     <div style="display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; margin:14px 0 4px;">
-      <span style="font-size:20px; font-weight:700;" id="expName"></span>
+      <span style="font-size:var(--fs-titel); font-weight:700;" id="expName"></span>
       <span style="color:var(--muted);" id="expMeta"></span>
-      <span style="font-size:20px; font-weight:700; margin-left:auto;" id="expPrice"></span>
+      <span style="font-size:var(--fs-titel); font-weight:700; margin-left:auto;" id="expPrice"></span>
       <span id="expChg"></span>
     </div>
     <div class="panel">
@@ -1327,7 +1411,7 @@
         <span id="expZeitHinweis" class="hinweis"></span>
       </div>
       <div class="chartleiste" id="expSignalLeiste">
-        <span style="color:var(--muted); font-size:12px;">Signale einblenden:</span>
+        <span style="color:var(--muted); font-size:var(--fs-neben);">Signale einblenden:</span>
         <label class="sigbox" title="Gemessen und ohne Vorsprung – wird angezeigt, weil du es sehen willst, nicht weil es trägt."><input type="checkbox" data-sig="cross"> EMA-Kreuzung</label>
         <label class="sigbox" title="Roh ohne Vorsprung. Dieselbe Überdehnung trägt erst als Kapitulations-Dip: nur im Abwärtskanal, nur mit Volumen, nur Long."><input type="checkbox" data-sig="reversion"> Umkehr</label>
         <label class="sigbox" title="Gemessen und ohne Vorsprung – wird angezeigt, weil du es sehen willst, nicht weil es trägt."><input type="checkbox" data-sig="pullback"> Rücksetzer</label>
@@ -1338,7 +1422,7 @@
         <span id="expSigZahl" class="hinweis"></span>
       </div>
       <div class="chartleiste" id="expIndiLeiste">
-        <span style="color:var(--muted); font-size:12px;">Chartbild:</span>
+        <span style="color:var(--muted); font-size:var(--fs-neben);">Chartbild:</span>
         <label class="sigbox" title="Gleitende Durchschnitte über die letzten 50 bzw. 200 KERZEN der gewählten Kerzengröße – auf dem Tageschart also 50/200 Handelstage, auf dem Stundenchart 50/200 Stunden. Gezeichnet wird nur, wenn genug Kerzen da sind, nie heimlich verkürzt."><input type="checkbox" data-ind="ma"> SMA 50/200</label>
         <label class="sigbox" title="Kreuzungen der beiden Durchschnitte. Gemessen an 191 Werten über 55 Jahre hat dieses Signal KEINEN Vorsprung – es wird angezeigt, weil du es sehen willst, nicht weil es trägt."><input type="checkbox" data-ind="cross50200"> Golden/Death Cross</label>
         <label class="sigbox" title="Regressionskanal: eine Gerade durch den Kursverlauf mit paralleler Ober- und Unterkante. Zeigt vier Sichten auf die JÜNGSTE Bewegung (kurz/mittel/lang/ab Wendepunkt). Das lange Seitwärtsfenster daraus ist die einzige gemessen tragende Kanal-Nutzung – es steuert den Intraday-Einstieg."><input type="checkbox" data-ind="kanal"> Trendkanal</label>
@@ -1365,7 +1449,7 @@
         <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
           <button class="btn" id="aiBtn">KI-Analyse anfordern</button>
           <button class="btn ghost" id="watchBtn">Zur Handels-Watchlist</button>
-          <span id="aiStatus" style="color:var(--muted); font-size:12px;"></span>
+          <span id="aiStatus" style="color:var(--muted); font-size:var(--fs-neben);"></span>
         </div>
       </div>
       <div class="panel">
@@ -1378,7 +1462,7 @@
   <div class="sub" id="sub-scheine">
   <div class="panel">
     <h3>Schein-Finder · Kennzahlen und Risikostufe</h3>
-    <div style="font-size:12.5px; color:var(--ink-2); line-height:1.55; margin-bottom:10px;">
+    <div style="font-size:var(--fs-text); color:var(--ink-2); line-height:1.55; margin-bottom:10px;">
       Rechnet das volle Raster möglicher Scheine zu einem Basiswert durch – mit <b>demselben Modell, mit dem
       das Depot handelt</b> (Black-Scholes plus das an echten Emittentenkursen geeichte Spanne-Modell).
       Jeder Schein hier verhält sich exakt so wie in der Simulation. Zu jeder Zeile lässt sich der
@@ -1420,7 +1504,7 @@
         <option value="omegaAuf">kleinster Hebel</option>
       </select></label>
     </div>
-    <div id="sfDetail" class="panel" style="display:none; margin-top:10px; padding:10px 12px; font-size:12.5px; line-height:1.6;"></div>
+    <div id="sfDetail" class="panel" style="display:none; margin-top:10px; padding:10px 12px; font-size:var(--fs-text); line-height:1.6;"></div>
     <div id="sfTabelle" style="margin-top:10px;"></div>
   </div>
   </div>
@@ -1429,15 +1513,15 @@
 
 
 
-<div id="tab-messung" class="tab">
-<h2>Scoreboard <span style="color:var(--muted); font-size:12px; font-weight:400; text-transform:none; letter-spacing:0;">– jede Strategie, die durch die Messmaschine gelaufen ist. Sortiert nach Belegstatus, nicht nach Rendite.</span>
+<div id="tab-messung" class="tab" role="tabpanel" aria-labelledby="reiter-messung">
+<h2>Scoreboard <span style="color:var(--muted); font-size:var(--fs-neben); font-weight:400; text-transform:none; letter-spacing:0;">– jede Strategie, die durch die Messmaschine gelaufen ist. Sortiert nach Belegstatus, nicht nach Rendite.</span>
   <button class="info" type="button" data-info="messung.scoreboard" aria-expanded="false" aria-label="Erklärung: Scoreboard">i</button></h2>
 <div class="panel" id="scoreboardKarte">
-  <div style="font-size:12px; color:var(--ink-2); line-height:1.5; margin-bottom:8px; max-width:68ch;">
+  <div style="font-size:var(--fs-neben); color:var(--ink-2); line-height:1.5; margin-bottom:8px; max-width:68ch;">
     Die App rechnet hier <b>nichts</b>. Sie zeigt die Protokolle der Messmaschine aus dem Datenordner.
   </div>
   <div id="scoreboard"><div class="loading">Lade Protokolle …</div></div>
-  <div style="font-size:11.5px; color:var(--muted); margin-top:8px;">
+  <div style="font-size:var(--fs-neben); color:var(--muted); margin-top:8px;">
     <b>Bestätigt</b> = auf zurückgehaltenen Tagen über Mindest-Effektgröße und über der Bonferroni-Schwelle.
     <b>Nicht entscheidbar</b> = unter der Mindest-Effektgröße; das heißt nicht „kein Effekt", sondern „diese Datenmenge kann die Frage nicht beantworten".
     <b>Widerlegt</b> = auf zurückgehaltenen Tagen signifikant negativ.
@@ -1448,53 +1532,54 @@
 <h2 style="margin-top:18px;">Neue Strategie ins Rennen schicken
   <button class="info" type="button" data-info="messung.eingabe" aria-expanded="false" aria-label="Erklärung: Neue Strategie ins Rennen schicken">i</button></h2>
 <div class="panel" id="strategieEingabe">
-  <div style="font-size:12px; color:var(--ink-2); line-height:1.5; margin-bottom:8px; max-width:68ch;">
+  <div style="font-size:var(--fs-neben); color:var(--ink-2); line-height:1.5; margin-bottom:8px; max-width:68ch;">
     Drei Dinge braucht eine Strategie: einen <b>Grund</b>, eine <b>Signalfunktion</b> und eine <b>Vorregistrierung</b>.
   </div>
   <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:8px;">
-    <label style="font-size:12px;">Kennung <input id="stKey" placeholder="z. B. quartalsende-kauf" style="width:100%;"></label>
-    <label style="font-size:12px;">Haltedauer in Kerzen (60m) <input id="stHalten" type="number" min="1" max="130" value="8" style="width:100%;"></label>
-    <label style="font-size:12px;">Richtung <select id="stRichtung" style="width:100%;"><option value="long">nur Long</option><option value="short">nur Short</option><option value="beide">beide</option></select></label>
-    <label style="font-size:12px;">Spanne je Seite (Bp) <input id="stSpanne" type="number" min="0" max="100" value="5" style="width:100%;"></label>
+    <label style="font-size:var(--fs-neben);">Kennung <input id="stKey" placeholder="z. B. quartalsende-kauf" style="width:100%;"></label>
+    <label style="font-size:var(--fs-neben);">Haltedauer in Kerzen (60m) <input id="stHalten" type="number" min="1" max="130" value="8" style="width:100%;"></label>
+    <label style="font-size:var(--fs-neben);">Richtung <select id="stRichtung" style="width:100%;"><option value="long">nur Long</option><option value="short">nur Short</option><option value="beide">beide</option></select></label>
+    <label style="font-size:var(--fs-neben);">Spanne je Seite (Bp) <input id="stSpanne" type="number" min="0" max="100" value="5" style="width:100%;"></label>
   </div>
-  <label style="font-size:12px; display:block; margin-bottom:8px;">Grund (mindestens 20 Zeichen – ohne Grund verweigert die Maschine die Messung)
+  <label style="font-size:var(--fs-neben); display:block; margin-bottom:8px;">Grund (mindestens 20 Zeichen – ohne Grund verweigert die Maschine die Messung)
     <textarea id="stGrund" rows="2" style="width:100%; font-family:inherit;" placeholder="Warum sollte dieser Effekt existieren? Wer MUSS hier handeln, und warum?"></textarea></label>
-  <label style="font-size:12px; display:block; margin-bottom:8px;">Signalfunktion <code>signal(bars, i, params)</code> – darf nur <code>bars[0..i]</code> lesen, gibt <code>{dir: 1}</code>, <code>{dir: -1}</code> oder <code>null</code> zurück. <code>Q</code> ist quant.js.
-    <textarea id="stSignal" rows="8" style="width:100%; font-family:var(--mono, monospace); font-size:12px;" placeholder="function signal(bars, i, params) {&#10;  // Beispiel: letzte Kerze des Monats&#10;  var d = new Date(bars[i][0]), n = new Date(bars[i+1] ? bars[i+1][0] : bars[i][0] + 86400000);&#10;  return d.getUTCMonth() !== n.getUTCMonth() ? { dir: 1 } : null;&#10;}"></textarea></label>
-  <label style="font-size:12px; display:block; margin-bottom:8px;">Ausstiegsregel (freiwillig) <code>stopNiveau(abgeschlossen, einKurs, params)</code> – gibt das <b>Stop-Niveau</b> zurück oder <code>null</code>. Leer = Ausstieg nach der Haltedauer.
-    <textarea id="stStop" rows="5" style="width:100%; font-family:var(--mono, monospace); font-size:12px;" placeholder="function stopNiveau(abgeschlossen, einKurs, params) {&#10;  // Beispiel: nachziehender Stop, sichert params.mcp des bisherigen Gewinns&#10;  var h = einKurs;&#10;  for (var k = 0; k &lt; abgeschlossen.length; k++) if (abgeschlossen[k].hoch &gt; h) h = abgeschlossen[k].hoch;&#10;  return h &gt; einKurs ? einKurs + (h - einKurs) * params.mcp : null;&#10;}"></textarea>
-    <span style="font-size:11px; color:var(--muted);">Die Regel bekommt nur <b>abgeschlossene</b> Kerzen (<code>{auf, hoch, tief, schluss}</code>) und liefert nur ein Niveau – sie kann nicht in die laufende Kerze sehen und sich keinen Wunschkurs geben. Die Maschine wendet das Niveau auf die <b>nächste</b> Kerze an und füllt zum schlechteren aus Stop und erstem handelbaren Kurs. Die Kontrolle bekommt denselben Ausstieg. (Fehlertypen C6/C7)</span></label>
-  <label style="font-size:12px; display:block; margin-bottom:8px;">Parametervarianten (JSON-Liste, leer = eine Variante ohne Parameter). <b>Jede Variante ist ein Test.</b>
-    <input id="stVarianten" style="width:100%; font-family:var(--mono, monospace); font-size:12px;" placeholder='[{"schwelle": 10}, {"schwelle": 15}]'></label>
+  <label style="font-size:var(--fs-neben); display:block; margin-bottom:8px;">Signalfunktion <code>signal(bars, i, params)</code> – darf nur <code>bars[0..i]</code> lesen, gibt <code>{dir: 1}</code>, <code>{dir: -1}</code> oder <code>null</code> zurück. <code>Q</code> ist quant.js.
+    <textarea id="stSignal" rows="8" style="width:100%; font-family:var(--mono, monospace); font-size:var(--fs-neben);" placeholder="function signal(bars, i, params) {&#10;  // Beispiel: letzte Kerze des Monats&#10;  var d = new Date(bars[i][0]), n = new Date(bars[i+1] ? bars[i+1][0] : bars[i][0] + 86400000);&#10;  return d.getUTCMonth() !== n.getUTCMonth() ? { dir: 1 } : null;&#10;}"></textarea></label>
+  <label style="font-size:var(--fs-neben); display:block; margin-bottom:8px;">Ausstiegsregel (freiwillig) <code>stopNiveau(abgeschlossen, einKurs, params)</code> – gibt das <b>Stop-Niveau</b> zurück oder <code>null</code>. Leer = Ausstieg nach der Haltedauer.
+    <textarea id="stStop" rows="5" style="width:100%; font-family:var(--mono, monospace); font-size:var(--fs-neben);" placeholder="function stopNiveau(abgeschlossen, einKurs, params) {&#10;  // Beispiel: nachziehender Stop, sichert params.mcp des bisherigen Gewinns&#10;  var h = einKurs;&#10;  for (var k = 0; k &lt; abgeschlossen.length; k++) if (abgeschlossen[k].hoch &gt; h) h = abgeschlossen[k].hoch;&#10;  return h &gt; einKurs ? einKurs + (h - einKurs) * params.mcp : null;&#10;}"></textarea>
+    <span style="font-size:var(--fs-klein); color:var(--muted);">Die Regel bekommt nur <b>abgeschlossene</b> Kerzen (<code>{auf, hoch, tief, schluss}</code>) und liefert nur ein Niveau – sie kann nicht in die laufende Kerze sehen und sich keinen Wunschkurs geben. Die Maschine wendet das Niveau auf die <b>nächste</b> Kerze an und füllt zum schlechteren aus Stop und erstem handelbaren Kurs. Die Kontrolle bekommt denselben Ausstieg. (Fehlertypen C6/C7)</span></label>
+  <label style="font-size:var(--fs-neben); display:block; margin-bottom:8px;">Parametervarianten (JSON-Liste, leer = eine Variante ohne Parameter). <b>Jede Variante ist ein Test.</b>
+    <input id="stVarianten" style="width:100%; font-family:var(--mono, monospace); font-size:var(--fs-neben);" placeholder='[{"schwelle": 10}, {"schwelle": 15}]'></label>
   <div style="display:flex; gap:8px; align-items:center;">
     <button class="btn" id="stAblegen" type="button">Strategie ablegen</button>
-    <span id="stStatus" style="font-size:12px; color:var(--muted);"></span>
+    <span id="stStatus" role="status" aria-live="polite" style="font-size:var(--fs-neben); color:var(--muted);"></span>
   </div>
-  <div style="font-size:11.5px; color:var(--muted); margin-top:8px;">
-    Die Datei landet unter <code>Markt-Dashboard-Daten/strategien/</code>. Gemessen wird sie <b>nicht</b> von der App, sondern mit <code>node studien/messmaschine/messen.js &lt;datei&gt;</code> – absichtlich ein eigener Schritt, damit das Urteil nie aus der App selbst kommt. Das Protokoll erscheint danach oben im Scoreboard.
+  <div id="stNaechster" hidden style="margin-top:10px; padding:10px 12px; border:1px solid var(--kante); border-radius:var(--r-gross); background:var(--surface-2);"></div>
+  <div style="font-size:var(--fs-neben); color:var(--muted); margin-top:8px;">
+    Die Datei landet unter <code>Markt-Dashboard-Daten/strategien/</code>. Gemessen wird sie <b>nicht</b> von der App, sondern im Projektordner mit <code>node studien/messmaschine/messen.js &lt;datei&gt;</code> – absichtlich ein eigener Schritt, damit das Urteil nie aus der App selbst kommt. Nach dem Ablegen steht der fertige Befehl zum Kopieren hier. Das Protokoll erscheint danach oben im Scoreboard.
   </div>
 </div>
 </div>
 
-<div id="tab-strategien" class="tab">
+<div id="tab-strategien" class="tab" role="tabpanel" aria-labelledby="reiter-strategien">
   <div class="panel">
     <h3 style="display:flex; align-items:center; gap:8px;">Drei Zeithorizonte, drei getrennte Strategien
       <button class="info" type="button" data-info="regeln.uebersicht" aria-expanded="false"
               aria-label="Erklärung: Drei Zeithorizonte, drei getrennte Strategien">i</button></h3>
-    <div style="font-size:12.5px; color:var(--ink-2); line-height:1.55; max-width:68ch;">
+    <div style="font-size:var(--fs-text); color:var(--ink-2); line-height:1.55; max-width:68ch;">
       Drei Regeln mit verschiedenen Horizonten. Jede lässt sich einzeln ein- und ausschalten.
     </div>
   </div>
   <div style="margin:6px 0 12px;">
-      <button class="btn" id="stratEmpfohlenBtn" type="button" title="Stellt alles auf die gemessenen Ergebnisse um: Intraday-Modus RSI(2) im Seitwärtskanal auf dem Basiswert (nur Beobachtung, Schattenbuch zeichnet auf), Momentum- und Drift-Buch handeln virtuell, maximale Risikostufe 3. Jede Änderung steht im Protokoll und lässt sich einzeln zurückstellen.">Belegte Voreinstellungen übernehmen</button>
-      <span id="stratEmpfohlenStatus" style="font-size:11.5px; color:var(--muted); margin-left:8px;"></span>
+      <button class="btn" id="stratEmpfohlenBtn" type="button" title="Stellt alles auf die gemessenen Ergebnisse um: Intraday-Modus RSI(2) im Seitwärtskanal auf dem Basiswert (nur Beobachtung, Schattenbuch zeichnet auf), Momentum- und Drift-Buch handeln virtuell, maximale Risikostufe 3. Jede Änderung steht weiter unten unter „Was hat gewirkt?“ – dort lässt sich jedes Feld einzeln zurückstellen.">Belegte Voreinstellungen übernehmen</button>
+      <span id="stratEmpfohlenStatus" style="font-size:var(--fs-neben); color:var(--muted); margin-left:8px;"></span>
     </div>
     <div id="stratListe" style="margin-top:12px;"></div>
   <div class="panel" id="stratChartPanel" style="margin-top:12px;">
     <h3 style="display:flex; align-items:center; gap:8px;">Strategie-Chart – Signal und Bedingungen nachvollziehen
       <button class="info" type="button" data-info="regeln.chart" aria-expanded="false"
               aria-label="Erklärung: Strategie-Chart">i</button></h3>
-    <div style="font-size:12px; color:var(--ink-2); line-height:1.5; margin-bottom:6px; max-width:68ch;">
+    <div style="font-size:var(--fs-neben); color:var(--ink-2); line-height:1.5; margin-bottom:6px; max-width:68ch;">
       Rechnet die gemessene Regel auf den Kerzen eines Werts nach. Jede Markierung ist ein Einstieg, den die Regel dort gegeben hätte.
     </div>
     <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
@@ -1503,27 +1588,27 @@
         <option value="kapitulation">Kapitulations-Dip im Abwärtskanal (in Überprüfung)</option>
       </select>
       <select id="stcSym"></select>
-      <label style="font-size:12px; color:var(--ink-2);">Kerzenlänge <select id="stcIv">
+      <label style="font-size:var(--fs-neben); color:var(--ink-2);">Kerzenlänge <select id="stcIv">
         <option value="60m" selected>60 Minuten (so gemessen)</option>
         <option value="15m">15 Minuten (nur Ansicht)</option>
         <option value="5m">5 Minuten (nur Ansicht)</option>
       </select></label>
-      <label style="font-size:12px; color:var(--ink-2);">Zeitraum <select id="stcSpanne">
+      <label style="font-size:var(--fs-neben); color:var(--ink-2);">Zeitraum <select id="stcSpanne">
         <option value="160">160 Kerzen</option>
         <option value="320" selected>320 Kerzen</option>
         <option value="640">640 Kerzen</option>
         <option value="1200">1200 Kerzen</option>
       </select></label>
-      <label style="font-size:12px; color:var(--ink-2);" title="Zeigt denselben Kursverlauf zusätzlich auf kurzer, mittlerer und langer Sicht. Diese Kanäle entscheiden nichts – sie erklären, warum die 200-Kerzen-Sicht so eingeordnet wird.">
+      <label style="font-size:var(--fs-neben); color:var(--ink-2);" title="Zeigt denselben Kursverlauf zusätzlich auf kurzer, mittlerer und langer Sicht. Diese Kanäle entscheiden nichts – sie erklären, warum die 200-Kerzen-Sicht so eingeordnet wird.">
         <input type="checkbox" id="stcKontext"> Kontext-Kanäle (kurz/mittel/lang)</label>
       <button class="btn ghost" id="stcBtn" type="button">Chart laden</button>
-      <span id="stcStatus" style="color:var(--muted); font-size:12px;"></span>
+      <span id="stcStatus" style="color:var(--muted); font-size:var(--fs-neben);"></span>
     </div>
-    <div id="stcIvWarn" style="display:none; font-size:11.5px; margin-top:6px; padding:6px 8px; border-left:3px solid var(--down); color:var(--ink-2); line-height:1.5;"></div>
-    <div id="stcInfo" style="font-size:12px; color:var(--ink-2); margin-top:8px;"></div>
+    <div id="stcIvWarn" style="display:none; font-size:var(--fs-neben); margin-top:6px; padding:6px 8px; border-left:3px solid var(--down); color:var(--ink-2); line-height:1.5;"></div>
+    <div id="stcInfo" style="font-size:var(--fs-neben); color:var(--ink-2); margin-top:8px;"></div>
     <svg id="stcChart" style="width:100%; height:280px; display:block; margin-top:6px;"></svg>
     <svg id="stcInd" style="width:100%; height:110px; display:block; margin-top:2px;"></svg>
-    <div style="color:var(--muted); font-size:11.5px; margin-top:4px;">
+    <div style="color:var(--muted); font-size:var(--fs-neben); margin-top:4px;">
       <span style="color:var(--series);">━</span> Kurs ·
       <span style="color:var(--series2);">╌</span> Leitlinie EMA20 ·
       <span style="color:var(--series4);">╌</span> EMA100 (Trendrichtung) ·
@@ -1538,14 +1623,14 @@
               aria-label="Erklärung: Zeichen im Chart" style="margin-left:4px;">i</button>
     </div>
     <div id="stcSignale" style="margin-top:10px;"></div>
-    <div id="stcCheck" style="font-size:12px; margin-top:8px; line-height:1.6;"></div>
-    <div style="font-size:11.5px; color:var(--muted); margin-top:6px;">Simulation, keine Anlageberatung. Der Chart zeigt, was die Regel gesehen hätte – nicht, was sie verdient hätte; die Messung dazu steht in den Belegen oben.</div>
+    <div id="stcCheck" style="font-size:var(--fs-neben); margin-top:8px; line-height:1.6;"></div>
+    <div style="font-size:var(--fs-neben); color:var(--muted); margin-top:6px;">Simulation, keine Anlageberatung. Der Chart zeigt, was die Regel gesehen hätte – nicht, was sie verdient hätte; die Messung dazu steht in den Belegen oben.</div>
   </div>
     <div class="panel" id="regelKarte" style="margin-top:12px; border-top:3px solid var(--series3);">
       <h3 style="display:flex; align-items:center; gap:8px;">Die Regel, die handelt
         <button class="info" type="button" data-info="regeln.handelt" aria-expanded="false"
                 aria-label="Erklärung: Die Regel, die handelt">i</button></h3>
-      <div style="font-size:12.5px; color:var(--ink-2); line-height:1.6; max-width:68ch;">
+      <div style="font-size:var(--fs-text); color:var(--ink-2); line-height:1.6; max-width:68ch;">
         Was gerade eingestellt ist – mit Chart, Bedingungen und Bilanz an einem Ort.
       </div>
       <div id="regelKopf" style="margin-top:10px;"></div>
@@ -1555,7 +1640,7 @@
       <h3 style="display:flex; align-items:center; gap:8px;">Regeln, die nur messen
         <button class="info" type="button" data-info="regeln.messen" aria-expanded="false"
                 aria-label="Erklärung: Regeln, die nur messen">i</button></h3>
-      <div style="font-size:12.5px; color:var(--ink-2); line-height:1.6; max-width:68ch;">
+      <div style="font-size:var(--fs-text); color:var(--ink-2); line-height:1.6; max-width:68ch;">
         Eine Regel <b>festschreiben</b> und mitlaufen lassen, ohne dass Geld bewegt wird –
         geprüft auf denselben Kerzen wie die gehandelte Regel, mit eigener Bilanz.
         <b>Bewusst ohne Handelsknopf.</b>
@@ -1563,14 +1648,14 @@
       <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-top:10px;">
         <input type="text" id="regelName" maxlength="40" placeholder="Name, z. B. „Felix: Winkel 1m“" style="flex:1 1 240px;">
         <button class="btn ghost" id="regelNeuBtn" type="button" title="Schreibt die AKTUELLEN Einstellungen unter diesem Namen fest. Ab dem nächsten Scan läuft sie mit – ohne Geld.">Aktuelle Einstellungen festschreiben</button>
-        <span id="regelStatus" style="color:var(--muted); font-size:12px;"></span>
+        <span id="regelStatus" style="color:var(--muted); font-size:var(--fs-neben);"></span>
       </div>
       <div id="regelnListe" style="margin-top:10px;"></div>
     </div>
 
     <div class="panel" id="regelBilanz" style="margin-top:12px;">
       <h3>Bilanz dieser Regel</h3>
-      <div style="font-size:12.5px; color:var(--ink-2); line-height:1.6; margin-bottom:10px;">
+      <div style="font-size:var(--fs-text); color:var(--ink-2); line-height:1.6; margin-bottom:10px;">
         Was die Regel getan hat, was sie <i>nicht</i> getan hat, und wie sie gegen einfaches
         Halten steht. Der Vergleich gegen Buy&nbsp;&amp;&nbsp;Hold ist dabei die wichtigste
         Spalte: Eine Regel, die den Markt nicht schlägt, hat keinen Vorsprung – sie war
@@ -1579,9 +1664,9 @@
 
     <div class="panel" style="margin-bottom:12px;">
       <h3>Was hat gewirkt?</h3>
-      <div style="color:var(--muted); font-size:11.5px; margin-bottom:8px;">
+      <div style="color:var(--muted); font-size:var(--fs-neben); margin-bottom:8px;">
         Jede automatische Änderung mit gemessener Wirkung: Ø Gewinn je Intraday-Trade davor gegen danach, sortiert nach
-        Wirkung, jede einzeln zurücknehmbar.
+        Wirkung, jede einzeln zurücknehmbar – bei den von Hand übernommenen Voreinstellungen sogar Feld für Feld.
       </div>
       <div id="tuneLog"></div>
 
@@ -1589,9 +1674,9 @@
         <h4 style="margin:0 0 6px;">Bringen die Filter etwas?</h4>
         <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
           <button class="btn ghost" id="filterBtn">Mit vs. ohne Filter rechnen</button>
-          <span id="filterStatus" style="color:var(--muted); font-size:12px;"></span>
+          <span id="filterStatus" style="color:var(--muted); font-size:var(--fs-neben);"></span>
         </div>
-        <div style="color:var(--muted); font-size:11.5px; margin-top:6px;">
+        <div style="color:var(--muted); font-size:var(--fs-neben); margin-top:6px;">
           Rechnet denselben Zeitraum zweimal – einmal mit deinen Filtern, einmal ohne. Zeigt, ob die Zurückhaltung
           Geld spart oder Rendite kostet.
         </div>
@@ -1600,7 +1685,7 @@
     </div>
       <div class="panel">
         <h3>Wann die Strategie nichts getan hat</h3>
-        <div style="color:var(--muted); font-size:11.5px; margin-bottom:8px;">
+        <div style="color:var(--muted); font-size:var(--fs-neben); margin-bottom:8px;">
           Wie oft die Filter ein Signal bewusst verworfen haben – und warum. Der häufigste Grund ist der stärkste Hebel:
           „Wer nicht weiß, was er tut, muss wissen, wann er nichts tut.“ (Kostolany)
         </div>
@@ -1608,20 +1693,20 @@
       </div>
       <div class="panel">
         <h3>Depot gegen Buy &amp; Hold</h3>
-        <div id="benchInfo" style="font-size:12px; color:var(--muted); margin-bottom:6px;">Wird beim Öffnen dieses Bereichs geladen …</div>
+        <div id="benchInfo" style="font-size:var(--fs-neben); color:var(--muted); margin-bottom:6px;">Wird beim Öffnen dieses Bereichs geladen …</div>
         <svg id="benchChart" style="width:100%; height:150px; display:block;"></svg>
-        <div id="benchLegend" style="font-size:11.5px; color:var(--ink-2); margin-top:4px;"></div>
+        <div id="benchLegend" style="font-size:var(--fs-neben); color:var(--ink-2); margin-top:4px;"></div>
         <div id="hitrates" style="margin-top:10px;"></div>
       </div>
     </div>
   <div class="panel">
-    <div style="font-size:12px; color:var(--muted);">Alles hier ist Simulation. Es wird nichts gekauft und nichts verkauft.</div>
+    <div style="font-size:var(--fs-neben); color:var(--muted);">Alles hier ist Simulation. Es wird nichts gekauft und nichts verkauft.</div>
   </div>
 </div><!-- /tab-strategien -->
 
 <!-- KI-Analyse-Modal -->
 <div class="modal-bg" id="aiModalBg">
-  <div class="modal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="aiTitle">
     <button class="btn ghost close" data-close="aiModalBg">Schließen ×</button>
     <h2 id="aiTitle">KI-Analyse</h2>
     <div class="analysis" id="aiBody"></div>
@@ -1630,16 +1715,16 @@
 
 <!-- Order-Ticket-Modal (Trade nachbilden) -->
 <div class="modal-bg" id="ticketModalBg">
-  <div class="modal" style="max-width:620px;">
+  <div class="modal" style="max-width:620px;" role="dialog" aria-modal="true" aria-labelledby="ticketTitle">
     <button class="btn ghost close" data-close="ticketModalBg">Schließen ×</button>
     <h2 id="ticketTitle">Trade nachbilden</h2>
     <div id="ticketBody" class="analysis"></div>
     <div style="display:flex; gap:8px; margin-top:14px; flex-wrap:wrap;">
       <button class="btn" id="ticketCopyBtn">Order-Daten kopieren</button>
-      <label style="display:flex; align-items:center; gap:6px; font-size:12.5px;"><input type="checkbox" id="ticketReplicated"> Hab ich real nachgebildet</label>
-      <span id="ticketStatus" style="color:var(--muted); font-size:12px; align-self:center;"></span>
+      <label style="display:flex; align-items:center; gap:6px; font-size:var(--fs-text);"><input type="checkbox" id="ticketReplicated"> Hab ich real nachgebildet</label>
+      <span id="ticketStatus" style="color:var(--muted); font-size:var(--fs-neben); align-self:center;"></span>
     </div>
-    <div class="warn" style="margin-top:12px; font-size:11.5px; color:var(--muted); border-top:1px solid var(--grid); padding-top:8px;">
+    <div class="warn" style="margin-top:12px; font-size:var(--fs-neben); color:var(--muted); border-top:1px solid var(--grid); padding-top:8px;">
       Hebelprodukte können zum Totalverlust führen. Die simulierten Kurse (Black-Scholes) weichen von echten Emittenten-Preisen ab
       (implizite Vola, Spread, Aufgeld je nach Anbieter). Die Strategie hat keinen nachgewiesenen Vorteil – wenn überhaupt, nur mit
       Beträgen testen, deren Verlust dich nicht schmerzt. Keine Anlageberatung.
@@ -1649,18 +1734,18 @@
 
 <!-- Einstellungen-Modal -->
 <div class="modal-bg" id="setModalBg">
-  <div class="modal" style="max-width:560px;">
+  <div class="modal" style="max-width:560px;" role="dialog" aria-modal="true" aria-labelledby="setTitle">
     <button class="btn ghost close" data-close="setModalBg">Schließen ×</button>
-    <h2>App-Einstellungen</h2>
-    <div style="margin:14px 0; font-size:12px; color:var(--muted);">
+    <h2 id="setTitle">App-Einstellungen</h2>
+    <div style="margin:14px 0; font-size:var(--fs-neben); color:var(--muted);">
       Alle KI-Analysen laufen <b>lokal über Ollama</b> (unten einrichten) – <b>ohne API-Kosten</b>.
       Ohne lokales Modell gibt es eine regelbasierte Analyse aus denselben Daten.
     </div>
     <div style="margin:14px 0;">
-      <label style="display:flex; align-items:center; gap:8px; font-size:12.5px;"><input type="checkbox" id="setTray"> Beim Schließen im Hintergrund weiterlaufen (Tray-Symbol neben der Uhr) – Strategien handeln dann weiter</label>
+      <label style="display:flex; align-items:center; gap:8px; font-size:var(--fs-text);"><input type="checkbox" id="setTray"> Beim Schließen im Hintergrund weiterlaufen (Tray-Symbol neben der Uhr) – Strategien handeln dann weiter</label>
     </div>
     <div style="margin:14px 0; border-top:1px solid var(--grid); padding-top:14px;">
-      <div style="font-weight:600; font-size:13px; margin-bottom:8px;">Capital.com Demo-Konto (Paper-Trading mit echten Kursen)</div>
+      <div style="font-weight:600; font-size:var(--fs-text); margin-bottom:8px;">Capital.com Demo-Konto (Paper-Trading mit echten Kursen)</div>
       <div class="feldliste">
         <label class="feld" for="setCapKey">
           <span class="feld-name">API-Schlüssel</span>
@@ -1677,34 +1762,34 @@
           <span class="feld-hilfe">Das Passwort, das du beim Erstellen des Schlüssels festgelegt hast – nicht dein Konto-Passwort</span>
           <input type="password" id="setCapPass" autocomplete="off" placeholder="beim Erstellen des Schlüssels vergeben" style="width:100%;">
         </label>
-        <label class="anschalter" style="display:flex; align-items:flex-start; gap:8px; font-size:12.5px;"><input type="checkbox" id="setCapEnabled" style="margin-top:3px;"><span><b>Verbindung aktivieren:</b> Intraday-Signale zusätzlich auf dem <b>Demo-Konto</b> ausführen (echte CFD-Paper-Trades mit Stop-Loss). Ohne dieses Häkchen passiert nichts – auch nicht die Kostenmessung.</span></label>
+        <label class="anschalter" style="display:flex; align-items:flex-start; gap:8px; font-size:var(--fs-text);"><input type="checkbox" id="setCapEnabled" style="margin-top:3px;"><span><b>Verbindung aktivieren:</b> Intraday-Signale zusätzlich auf dem <b>Demo-Konto</b> ausführen (echte CFD-Paper-Trades mit Stop-Loss). Ohne dieses Häkchen passiert nichts – auch nicht die Kostenmessung.</span></label>
       </div>
       <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-top:10px;">
         <button class="btn ghost" id="capTestBtn" type="button">Verbindung testen</button>
-        <span id="capTestStatus" style="font-size:11.5px; color:var(--muted);"></span>
+        <span id="capTestStatus" style="font-size:var(--fs-neben); color:var(--muted);"></span>
       </div>
       <div id="capTestDetail" class="hinweis" style="margin-top:6px; display:none;"></div>
-      <div style="font-size:11.5px; color:var(--muted); margin-top:8px;">
+      <div style="font-size:var(--fs-neben); color:var(--muted); margin-top:8px;">
         Die App kennt ausschließlich den Demo-Server – Live-Handel mit echtem Geld ist technisch nicht möglich.
         Zugangsdaten werden nur lokal gespeichert (mit dem Windows-Anmeldedatenschutz verschlüsselt) und nur an
         demo-api-capital.backend-capital.com gesendet.
       </div>
     </div>
     <div style="margin:14px 0; border-top:1px solid var(--grid); padding-top:14px;">
-      <div style="font-size:11.5px; color:var(--muted); margin-top:6px;">
+      <div style="font-size:var(--fs-neben); color:var(--muted); margin-top:6px;">
         Einrichtung (einmalig): Ollama von <b>ollama.com</b> installieren, dann in der Eingabeaufforderung <b>ollama pull qwen2.5:7b</b>
         ausführen (gutes, schnelles Modell mit solidem Deutsch, ~4,7 GB). Danach hier „Modelle laden“.
       </div>
     </div>
     <div style="margin:14px 0; border-top:1px solid var(--grid); padding-top:14px;">
-      <div style="font-weight:600; font-size:13px; margin-bottom:8px;">Dauerbetrieb</div>
-      <label style="display:flex; align-items:flex-start; gap:8px; font-size:12.5px;"><input type="checkbox" id="setAutostart" style="margin-top:3px;"><span>Mit Windows starten und <b>minimiert im Tray</b> laufen – die Strategien handeln dann durchgehend und der Analyse-Export bleibt lückenlos</span></label>
-      <div style="font-size:11.5px; color:var(--muted); margin-top:6px;">Empfohlen, wenn die automatische Analyse zuverlässig Daten auswerten soll: Ohne laufende App entstehen keine Kurse, keine Trades und keine Auswertung.</div>
+      <div style="font-weight:600; font-size:var(--fs-text); margin-bottom:8px;">Dauerbetrieb</div>
+      <label style="display:flex; align-items:flex-start; gap:8px; font-size:var(--fs-text);"><input type="checkbox" id="setAutostart" style="margin-top:3px;"><span>Mit Windows starten und <b>minimiert im Tray</b> laufen – die Strategien handeln dann durchgehend und der Analyse-Export bleibt lückenlos</span></label>
+      <div style="font-size:var(--fs-neben); color:var(--muted); margin-top:6px;">Empfohlen, wenn die automatische Analyse zuverlässig Daten auswerten soll: Ohne laufende App entstehen keine Kurse, keine Trades und keine Auswertung.</div>
     </div>
 
     <div style="margin:14px 0; border-top:1px solid var(--grid); padding-top:14px;">
-      <div style="font-weight:600; font-size:13px; margin-bottom:4px;">Diagnose &amp; Mithilfe</div>
-      <div style="font-size:11.5px; color:var(--muted); margin-bottom:8px;">
+      <div style="font-weight:600; font-size:var(--fs-text); margin-bottom:4px;">Diagnose &amp; Mithilfe</div>
+      <div style="font-size:var(--fs-neben); color:var(--muted); margin-bottom:8px;">
         Anonyme Diagnosedaten an die Projekt-Auswertung senden (als öffentlich einsehbares GitHub-Issue).
         Gesendet werden nur: Version, System, Zeitzone, Zufalls-Kennung, Einstellungen der Strategien,
         Summen-Kennzahlen je Strategie, die Tagesstände der virtuellen Bücher samt Marktvergleich, die
@@ -1715,30 +1800,30 @@
         Niemals: Zugangsdaten, Watchlist, einzelne Positionen oder Symbole. Die Vorschau zeigt exakt,
         was gesendet würde.
       </div>
-      <label style="display:flex; align-items:center; gap:8px; font-size:12.5px;"><input type="checkbox" id="diagEinwilligung"><span>Diagnosedaten anonym teilen</span></label>
+      <label style="display:flex; align-items:center; gap:8px; font-size:var(--fs-text);"><input type="checkbox" id="diagEinwilligung"><span>Diagnosedaten anonym teilen</span></label>
       <div style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap;">
         <button class="btn ghost" id="diagVorschauBtn" type="button">Vorschau anzeigen</button>
         <button class="btn" id="diagSendenBtn" type="button">Jetzt senden</button>
       </div>
-      <div id="diagStatus" style="font-size:11.5px; color:var(--muted); margin-top:6px;"></div>
-      <pre id="diagVorschau" style="display:none; max-height:220px; overflow:auto; font-size:10.5px; background:var(--panel); border:1px solid var(--grid); border-radius:8px; padding:8px 10px; margin-top:8px;"></pre>
+      <div id="diagStatus" style="font-size:var(--fs-neben); color:var(--muted); margin-top:6px;"></div>
+      <pre id="diagVorschau" style="display:none; max-height:220px; overflow:auto; font-size:var(--fs-klein); background:var(--panel); border:1px solid var(--grid); border-radius:var(--r-gross); padding:8px 10px; margin-top:8px;"></pre>
     </div>
 
     <!-- Fehler melden: bewusst hier bei den Einstellungen, wo man ohnehin landet, wenn
          etwas nicht stimmt. Kosmetik zählt ausdrücklich mit – „der Text läuft aus dem
          Kasten“ ist eine gültige Meldung. -->
     <div style="margin:14px 0; border-top:1px solid var(--grid); padding-top:14px;">
-      <div style="font-weight:600; font-size:13px; margin-bottom:4px;">Fehler melden</div>
-      <div style="font-size:11.5px; color:var(--muted); margin-bottom:8px;">
+      <div style="font-weight:600; font-size:var(--fs-text); margin-bottom:4px;">Fehler melden</div>
+      <div style="font-size:var(--fs-neben); color:var(--muted); margin-bottom:8px;">
         Alles, was stört – auch Kleinigkeiten und Kosmetik. Die Meldung wird <b>an das Projekt gesendet</b>
         (als öffentlich einsehbares GitHub-Issue) und zusätzlich lokal gespeichert. Automatisch gehen mit:
         der offene Tab, Fenstergröße, Programmversion, eine anonyme Installations-Kennung und mitgeschnittene
         Programmfehler. Niemals: Zugangsdaten, Watchlist oder Kursdaten.
       </div>
       <textarea id="bugText" rows="3" placeholder="Was ist passiert? Was hätten Sie erwartet? (Strg+Enter schickt ab)"
-        style="width:100%; box-sizing:border-box; font-family:inherit; font-size:12.5px; padding:7px 9px; border-radius:6px; border:1px solid var(--grid); background:var(--panel); color:var(--ink); resize:vertical;"></textarea>
+        style="width:100%; box-sizing:border-box; font-family:inherit; font-size:var(--fs-text); padding:7px 9px; border-radius:var(--r-normal); border:1px solid var(--grid); background:var(--panel); color:var(--ink); resize:vertical;"></textarea>
       <div style="display:flex; gap:8px; align-items:center; margin-top:8px; flex-wrap:wrap;">
-        <label style="font-size:12px;">Art
+        <label style="font-size:var(--fs-neben);">Art
           <select id="bugArt">
             <option value="funktion">funktioniert nicht</option>
             <option value="kosmetik">Darstellung / Kosmetik</option>
@@ -1746,7 +1831,7 @@
             <option value="sonstiges" selected>sonstiges</option>
           </select>
         </label>
-        <label style="font-size:12px;">Schwere
+        <label style="font-size:var(--fs-neben);">Schwere
           <select id="bugSchwere">
             <option value="stoert-kaum">stört kaum</option>
             <option value="aergerlich" selected>ärgerlich</option>
@@ -1756,31 +1841,31 @@
         <button class="btn" id="bugSendBtn" type="button">Melden</button>
         <button class="btn ghost" id="bugAktualisierenBtn" type="button">Liste aktualisieren</button>
       </div>
-      <div id="bugFehlerZahl" style="font-size:11.5px; color:var(--warn); margin-top:6px;"></div>
-      <div id="bugStatus" style="font-size:11.5px; color:var(--muted); margin-top:6px;"></div>
+      <div id="bugFehlerZahl" style="font-size:var(--fs-neben); color:var(--warn); margin-top:6px;"></div>
+      <div id="bugStatus" style="font-size:var(--fs-neben); color:var(--muted); margin-top:6px;"></div>
       <div id="bugListe" style="margin-top:10px;"></div>
     </div>
 
     <div style="margin:14px 0; border-top:1px solid var(--grid); padding-top:14px;">
-      <div style="font-weight:600; font-size:13px; margin-bottom:8px;">Automatische Updates</div>
-      <label style="display:flex; align-items:flex-start; gap:8px; font-size:12.5px;"><input type="checkbox" id="setAutoUpdate" checked style="margin-top:3px;"><span>Neue Versionen <b>selbst herunterladen</b> und beim nächsten Beenden einspielen – die App prüft beim Start und danach alle 6 Stunden</span></label>
+      <div style="font-weight:600; font-size:var(--fs-text); margin-bottom:8px;">Automatische Updates</div>
+      <label style="display:flex; align-items:flex-start; gap:8px; font-size:var(--fs-text);"><input type="checkbox" id="setAutoUpdate" checked style="margin-top:3px;"><span>Neue Versionen <b>selbst herunterladen</b> und beim nächsten Beenden einspielen – die App prüft beim Start und danach alle 6 Stunden</span></label>
       <div style="display:flex; gap:8px; align-items:center; margin-top:8px; flex-wrap:wrap;">
         <button class="btn ghost" id="setUpdNowBtn" type="button">Jetzt nach Update suchen</button>
         <button class="btn" id="setUpdInstallBtn" type="button" style="display:none;">Neu starten &amp; installieren</button>
-        <span id="setUpdAutoStatus" style="font-size:12px; color:var(--muted);"></span>
+        <span id="setUpdAutoStatus" style="font-size:var(--fs-neben); color:var(--muted);"></span>
       </div>
-      <div style="font-size:11.5px; color:var(--muted); margin-top:6px;">
+      <div style="font-size:var(--fs-neben); color:var(--muted); margin-top:6px;">
         Das Update kommt aus den GitHub-Releases dieses Projekts und wird im Hintergrund geladen – ohne dass ein Handelstag
         unterbrochen wird. Eingespielt wird es erst beim Beenden der App (oder sofort per Knopf). Depot und Einstellungen bleiben erhalten.
       </div>
 
-      <div style="font-weight:600; font-size:13px; margin:14px 0 8px;">Manueller Check (Notnagel)</div>
+      <div style="font-weight:600; font-size:var(--fs-text); margin:14px 0 8px;">Manueller Check (Notnagel)</div>
       <div style="display:flex; gap:8px;">
         <input type="text" id="setUpdateRepo" placeholder="nutzer/repo (z. B. wilhelm/markt-dashboard)" style="flex:1;">
         <button class="btn ghost" id="setUpdateBtn" type="button">Nach Update suchen</button>
       </div>
-      <span id="setUpdateStatus" style="font-size:12px; color:var(--muted); display:block; margin-top:6px;"></span>
-      <div style="font-size:11.5px; color:var(--muted); margin-top:6px;">
+      <span id="setUpdateStatus" style="font-size:var(--fs-neben); color:var(--muted); display:block; margin-top:6px;"></span>
+      <div style="font-size:var(--fs-neben); color:var(--muted); margin-top:6px;">
         Sobald ein (kostenloses) GitHub-Repo mit Releases existiert, prüft die App hier die neueste Version und öffnet den
         Download im Browser – kein Zusammensetzen von Teil-Dateien mehr. Es wird nur lesend auf api.github.com zugegriffen.
       </div>
@@ -1788,7 +1873,7 @@
     <div class="modal-foot">
       <button class="btn" id="setSaveBtn">Speichern</button>
       <button class="btn danger" id="depotResetBtn" title="Setzt alle drei Bücher (Intraday, Momentum, Ergebnis-Drift) auf je 100.000 $ zurück und löscht die Trades. Vorher wird eine Sicherung abgelegt – der Reset ist umkehrbar.">Alle Bücher zurücksetzen</button>
-      <span id="setStatus" style="color:var(--muted); font-size:12px;"></span>
+      <span id="setStatus" style="color:var(--muted); font-size:var(--fs-neben);"></span>
     </div>
   </div>
 </div>
@@ -1801,9 +1886,13 @@
 <div id="tip"></div>
 
 <script src="quant.js"></script>
+<script src="kurse.js"></script>
+<script src="boerse.js"></script>
 <script src="vormarkt.js"></script>
 <script src="renderer.js"></script>
 <script src="app-shell.js"></script>
+<script src="chart.js"></script>
+<script src="messfenster.js"></script>
 <script src="capital.js"></script>
 <script src="calendar.js"></script>
 <script src="archiv.js"></script>
@@ -1820,6 +1909,7 @@
 <script src="scheinfinder.js"></script>
 <script src="mfhandel.js"></script>
 <script src="mfdepot.js"></script>
+<script src="risiko.js"></script>
 <script src="depot.js"></script>
 </body>
 </html>

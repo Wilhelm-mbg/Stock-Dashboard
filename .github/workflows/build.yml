@@ -1,19 +1,30 @@
 # Zwei Jobs mit verschiedenen Aufgaben.
 #
-# "pruefen" laeuft bei JEDEM Push und jedem Pull Request. Vorher lief die Testsuite nur
-# beim Setzen eines Versions-Tags - die beiden Regressionen vom 23.08.2026 (der geloeschte
-# stcRunning-Deklaration und der zu weite .pills-Umschalter) haetten also selbst mit
-# passenden Tests keine rote Lampe erzeugt. Jetzt ist der Push die Kontrolle.
+# "pruefen" laeuft bei JEDEM Push. Vorher lief die Testsuite nur beim Setzen eines
+# Versions-Tags - die beiden Regressionen vom 23.08.2026 (die geloeschte stcRunning-
+# Deklaration und der zu weite .pills-Umschalter) haetten also selbst mit passenden
+# Tests keine rote Lampe erzeugt. Jetzt ist der Push die Kontrolle.
 #
-# "installer" laeuft nur beim Tag und braucht ein gruenes "pruefen". Die Testsuite laeuft
-# dort ein ZWEITES Mal, diesmal NACH dem Build: Abschnitt 31 von test-v6.js vergleicht das
-# gebaute Paket mit der Quelle und kann das nur, wenn dist/ schon existiert. Vorher lief
-# sie davor und die Pruefung war im Release-Pfad wirkungslos.
+# KEIN pull_request-Ausloeser mehr. Er hat hier nie etwas geprueft: Alle Zweige liegen
+# in DIESEM Repo, also laeuft "pruefen" schon ueber das push-Ereignis, und ein zweiter
+# Lauf auf demselben Commit ist reine Doppelarbeit. Der Job trug deshalb eine Bedingung,
+# die sich bei eigenen Pull Requests selbst uebersprang - GitHub legt den Lauf aber
+# trotzdem an, und die Aktionen-Seite fuellte sich mit grauen "skipped"-Eintraegen, die
+# nichts bedeuten. Das Repo hat null Forks (nachgesehen am 24.08.2026); kaeme je ein
+# Fork-Pull-Request, muss "pull_request: {}" zurueck, sonst laeuft fuer ihn nichts.
 #
-# Der if am Job "pruefen" verhindert den Doppellauf: Ein Push auf einen Zweig MIT offenem
-# Pull Request loest sonst beide Ereignisse aus und die Suite laeuft zweimal. Bei einem
-# Pull Request aus einem fremden Fork gibt es kein push-Ereignis hier - dort greift der
-# pull_request-Zweig und die Pruefung findet trotzdem statt.
+# "installer" laeuft beim Tag und bei einem Dispatch von Hand. Die Testsuite laeuft dort
+# ein ZWEITES Mal, diesmal NACH dem Build: Abschnitt 31 von test-v6.js vergleicht das
+# gebaute Paket mit der Quelle und kann das nur, wenn dist/ schon existiert.
+#
+# VEROEFFENTLICHEN OHNE TAG-PUSH: Frueher fuehrte der einzige Weg zu einem Release ueber
+# "git tag vX && git push". Wo dieser Push an einer Richtlinie scheitert (HTTP 403),
+# konnte gar nichts ausgeliefert werden - und ohne Release findet der Autoupdater nichts.
+# Deshalb nimmt der Dispatch jetzt den Schalter "release": ist er gesetzt, leitet der Lauf
+# den Tag aus package.json ab und legt ihn ueber "gh release create" an. Das geschieht auf
+# der Serverseite mit dem Token des Laufs, es braucht also keinen git-Push. Ohne den
+# Schalter baut der Dispatch wie bisher nur das Artefakt - ein Klick veroeffentlicht also
+# nichts aus Versehen.
 #
 # npm ci statt npm install: sonst darf die Lockdatei fortgeschrieben werden und derselbe
 # Tag ergibt an zwei Tagen zwei verschiedene Installer.
@@ -23,6 +34,6 @@
 # npm ci wuerde bei jedem stuendlichen Hochladen des Spekulations-Radars scheitern.
 # Bewusst in Flow-Schreibweise (alles linksbuendig), damit der Web-Editor die Einrueckung nicht verschiebt.
 name: Pruefen und Installer bauen
-on: {push: {branches: ['**', '!radar'], tags: ['v*']}, pull_request: {}, workflow_dispatch: {}}
+on: {push: {branches: ['**', '!radar'], tags: ['v*']}, workflow_dispatch: {inputs: {release: {description: 'Release veroeffentlichen (Tag aus package.json anlegen und Installer anhaengen)', type: boolean, default: false}}}}
 permissions: {contents: write}
-jobs: {pruefen: {if: "github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.repository", runs-on: ubuntu-latest, steps: [{uses: actions/checkout@v4}, {uses: actions/setup-node@v4, with: {node-version: '20', cache: npm}}, {name: Abhaengigkeiten, run: npm ci}, {name: Linter, run: npx eslint .}, {name: Tests, run: 'node test-channel.js && node test-v6.js'}]}, installer: {needs: pruefen, if: "startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'", runs-on: windows-latest, steps: [{uses: actions/checkout@v4}, {uses: actions/setup-node@v4, with: {node-version: '20', cache: npm}}, {name: Abhaengigkeiten, run: npm ci}, {name: Tag und package.json muessen dieselbe Version nennen, if: "startsWith(github.ref, 'refs/tags/')", run: '$tag = "${{ github.ref_name }}" -replace "^v", ""; $pkg = (Get-Content package.json | ConvertFrom-Json).version; if ($tag -ne $pkg) { Write-Error "Tag $tag und package.json $pkg stimmen nicht ueberein"; exit 1 } else { Write-Host "Version $pkg" }'}, {name: Installer bauen, run: 'npx electron-builder --win nsis --x64 --publish never'}, {name: Tests gegen das gebaute Paket, run: 'node test-channel.js && node test-v6.js'}, {name: Release anlegen falls noetig, if: "startsWith(github.ref, 'refs/tags/')", env: {GH_TOKEN: '${{ github.token }}'}, run: 'gh release view ${{ github.ref_name }} 2>$null; if ($LASTEXITCODE -ne 0) { gh release create ${{ github.ref_name }} --title "Markt-Dashboard ${{ github.ref_name }}" --notes "Automatisch gebauter Installer." } else { Write-Host "Release existiert bereits" }'}, {name: An Release anhaengen, if: "startsWith(github.ref, 'refs/tags/')", env: {GH_TOKEN: '${{ github.token }}'}, run: 'gh release upload ${{ github.ref_name }} dist/Markt-Dashboard-Setup.exe dist/latest.yml --clobber'}, {name: Installer als Artefakt sichern, uses: actions/upload-artifact@v4, with: {name: Markt-Dashboard-Setup, path: dist/Markt-Dashboard-Setup.exe}}]}}
+jobs: {pruefen: {runs-on: ubuntu-latest, steps: [{uses: actions/checkout@v4}, {uses: actions/setup-node@v4, with: {node-version: '20', cache: npm}}, {name: Abhaengigkeiten, run: npm ci}, {name: Linter, run: npx eslint .}, {name: Tests, run: 'node test-channel.js && node test-v6.js'}]}, installer: {needs: pruefen, if: "startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'", runs-on: windows-latest, steps: [{uses: actions/checkout@v4}, {uses: actions/setup-node@v4, with: {node-version: '20', cache: npm}}, {name: Abhaengigkeiten, run: npm ci}, {name: 'Ziel bestimmen: Tag, Version und ob veroeffentlicht wird', id: ziel, run: '$pkg = (Get-Content package.json | ConvertFrom-Json).version; if ("${{ github.ref_type }}" -eq "tag") { $tag = "${{ github.ref_name }}"; if (($tag -replace "^v", "") -ne $pkg) { Write-Error "Tag $tag und package.json $pkg stimmen nicht ueberein"; exit 1 }; $pub = "true" } else { $tag = "v$pkg"; $pub = "${{ github.event.inputs.release }}" }; Write-Host "Version $pkg, Tag $tag, veroeffentlichen: $pub"; "tag=$tag" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8; "publish=$pub" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8'}, {name: Installer bauen, run: 'npx electron-builder --win nsis --x64 --publish never'}, {name: Tests gegen das gebaute Paket, run: 'node test-channel.js && node test-v6.js'}, {name: Release anlegen falls noetig, if: "steps.ziel.outputs.publish == 'true'", env: {GH_TOKEN: '${{ github.token }}'}, run: 'gh release view ${{ steps.ziel.outputs.tag }} 2>$null; if ($LASTEXITCODE -ne 0) { gh release create ${{ steps.ziel.outputs.tag }} --target ${{ github.sha }} --title "Markt-Dashboard ${{ steps.ziel.outputs.tag }}" --notes "Automatisch gebauter Installer." } else { Write-Host "Release existiert bereits" }'}, {name: An Release anhaengen, if: "steps.ziel.outputs.publish == 'true'", env: {GH_TOKEN: '${{ github.token }}'}, run: 'gh release upload ${{ steps.ziel.outputs.tag }} dist/Markt-Dashboard-Setup.exe dist/latest.yml --clobber'}, {name: Installer als Artefakt sichern, uses: actions/upload-artifact@v4, with: {name: Markt-Dashboard-Setup, path: dist/Markt-Dashboard-Setup.exe}}]}}

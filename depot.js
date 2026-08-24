@@ -66,38 +66,29 @@
   var lastEqPoint = 0;
   var SENT = {}; // Sentiment-Historie je Symbol
 
-  /* ================= Risikomanagement ================= */
+  /* ================= Risikomanagement =================
+   * Die ENTSCHEIDUNGEN stehen in risiko.js: reine Funktionen ueber uebergebenen
+   * Zustand, ohne D, ohne DOM, ohne Netz - und damit in Node ausfuehrbar. Vorher lagen
+   * sie hier, wo die Testsuite sie nur als Text finden und die Formel danebenschreiben
+   * konnte; sie war damit blind gegen jede Aenderung der echten Formel. Was HIER
+   * bleibt, sind die Nebenwirkungen: Tagesstart fortschreiben, Positionen glattstellen,
+   * speichern, protokollieren. */
+  /* Fehlt das Modul, ist die Ladereihenfolge in index.html kaputt (risiko.js MUSS vor
+   * depot.js stehen). Dann lieber hier laut abbrechen als spaeter beim ersten Scan mit
+   * "Cannot read properties of null" - der Kapitalschutz waere in dem Moment aus. */
+  var R = (typeof window !== 'undefined' && window.Risiko) || null;
+  if (!R) throw new Error('risiko.js fehlt oder wird nach depot.js geladen - ohne das Modul gibt es keinen Kapitalschutz.');
   function ensureDay(eq) {
-    var today = new Date().toISOString().slice(0, 10);
+    var today = R.tagesSchluessel();
     if (D.dayKey !== today) { D.dayKey = today; D.dayStartEq = eq; }
   }
-  /** Ist der letzte Kursbalken noch frisch genug zum Handeln?
-   *  Bisher wurde das NIRGENDS geprueft: liefert Yahoo eingefrorene Kurse (Ausfall,
-   *  Feiertag, Symbol delisted), rechnete der Scanner unbeirrt weiter und haette auf
-   *  Stunden alten Kursen eroeffnet. Grenze: das Dreifache des Bar-Abstands - ein
-   *  fehlender Bar ist normal (duenner Handel), drei sind ein Datenproblem.
-   *  Gilt nur fuer EINSTIEGE. Ausstiege bleiben immer erlaubt: eine offene Position
-   *  bei schlechter Datenlage nicht schliessen zu koennen waere das groessere Risiko. */
-  function barsFrisch(bars, barMin, now) {
-    if (!bars || !bars.length) return { ok: false, alterMin: null };
-    var alterMin = (now - bars[bars.length - 1][0]) / 60000;
-    return { ok: alterMin <= barMin * 3, alterMin: Math.round(alterMin) };
-  }
+  function barsFrisch(bars, barMin, now) { return R.barsFrisch(bars, barMin, now); }
 
   /** Dürfen wir eine neue Position eröffnen? */
   function canOpen(eq) {
-    var r = D.risk || { maxPos: 8, dayLossPct: 5, exposurePct: 40 };
     ensureDay(eq);
-    if (D.positions.length >= (r.maxPos || 8)) return { ok: false, why: 'Positionslimit (' + r.maxPos + ') erreicht' };
-    if (r.dayLossPct && D.dayStartEq > 0) {
-      var dayPct = (eq / D.dayStartEq - 1) * 100;
-      if (dayPct <= -r.dayLossPct) return { ok: false, why: 'Risiko-Stopp: Tagesverlust ' + dayPct.toFixed(1) + ' % (Limit −' + r.dayLossPct + ' %)' };
-    }
-    if (r.exposurePct) {
-      var expo = eq > 0 ? (eq - D.cash) / eq * 100 : 0;
-      if (expo >= r.exposurePct) return { ok: false, why: 'Exposure-Limit: ' + Math.round(expo) + ' % in Scheinen (Limit ' + r.exposurePct + ' %)' };
-    }
-    return { ok: true };
+    return R.darfOeffnen({ risk: D.risk, positionen: D.positions.length,
+                           dayStartEq: D.dayStartEq, cash: D.cash }, eq);
   }
 
   /* ================= Kill-Switch: Tagesverlust-Limit =================
@@ -108,23 +99,25 @@
    * Erreichen ALLES sofort glatt und laesst den Handel bis Tagesende ruhen.
    * Bewusst rein deterministisch - keine KI, kein Ermessen, kein Netzwerk. */
   function killSwitchAktiv() {
-    var tag = new Date().toISOString().slice(0, 10);
-    return !!(D.killSwitch && D.killSwitch.day === tag);
+    return !!(D.killSwitch && D.killSwitch.day === R.tagesSchluessel());
   }
   /** Prueft das Limit und stellt bei Erreichen alle offenen Positionen glatt.
-   *  Rueckgabe: true, wenn der Handel heute gesperrt ist. */
+   *  Rueckgabe: true, wenn der Handel heute gesperrt ist.
+   *  Die Ausloese-ENTSCHEIDUNG trifft risiko.js; hier steht nur, was danach passiert. */
   function killSwitchPruefen(now) {
     if (!D) return false;
     if (killSwitchAktiv()) return true;
-    var r = D.risk || {};
-    if (!r.dayLossPct) return false;
+    // Frueher Ausstieg VOR equityNow()/ensureDay - unveraendert aus der alten Fassung:
+    // ohne gesetztes Limit soll dieser Weg den Tagesstart gar nicht erst anfassen.
+    if (!(D.risk && D.risk.dayLossPct)) return false;
     var eq = equityNow();
     ensureDay(eq);
-    if (!(D.dayStartEq > 0)) return false;
-    var tagPct = (eq / D.dayStartEq - 1) * 100;
-    if (tagPct > -r.dayLossPct) return false;
+    var urteil = R.killSwitchFaellig({ risk: D.risk, dayStartEq: D.dayStartEq }, eq);
+    if (!urteil.faellig) return false;
+    var tagPct = urteil.tagPct;
+    var r = D.risk || {};
     now = now || Date.now();
-    var grund = 'Kill-Switch: Tagesverlust-Limit (' + tagPct.toFixed(1) + ' %, Limit −' + r.dayLossPct + ' %)';
+    var grund = urteil.grund;
     var zu = [];
     D.positions.slice().forEach(function (p) {
       var sp = spotOf(p.sym) || p.entrySpot;
@@ -132,7 +125,7 @@
       zu.push(p.sym);
       closeTrade(p, sp, now, grund);
     });
-    D.killSwitch = { day: new Date().toISOString().slice(0, 10), at: now, pct: Math.round(tagPct * 10) / 10,
+    D.killSwitch = { day: R.tagesSchluessel(), at: now, pct: Math.round(tagPct * 10) / 10,
       limit: r.dayLossPct, n: zu.length, syms: zu, offenGeblieben: D.positions.length };
     HEALTH.killSwitch = (HEALTH.killSwitch || 0) + 1;
     if (!D.tuneLog) D.tuneLog = [];
@@ -395,6 +388,51 @@
   /* Kostenhuerde des GEWAEHLTEN Produkts, in Prozentpunkten des Basiswerts.
    * Signalstudie 23.08.2026: Die Huerde entscheidet, nicht die Signalqualitaet.
    * Schein: (2 x Spanne + Zeitwertverlust) / Hebel. Aktie/CFD: 2 x Spanne + Gebuehr. */
+  /* ================= Volatilitaet: Smile und Ereignis =================
+   * Bis 8.24.5 bekam jeder Schein dieselbe Vola - unabhaengig vom Basispreis und
+   * eingefroren beim Oeffnen. Beides ist falsch, und beide Fehler zeigen in dieselbe
+   * Richtung: Die Simulation faellt optimistischer aus als die Wirklichkeit.
+   *
+   * Nachgemessen (24.08.2026), damit die Groessenordnungen im Code stehen:
+   *   Smile bei den Profilen, die diese App WIRKLICH handelt:
+   *     atm21, atm21_b, atm60_b (4 von 6 Profilen)  ->  0,00 %  (am Geld, kein Effekt)
+   *     otm3_14   Call 3 % aus dem Geld, 14 Tage    -> -2,48 %  (Call-Skew: billiger)
+   *     otm3_30b                        , 30 Tage   -> -1,42 %
+   *   Ereignis-Vola, am Geld, 21 Tage Restlaufzeit:
+   *     ein Tag VOR den Zahlen                      -> +22,0 %
+   *     ein Tag DANACH, bei UNVERAENDERTEM Kurs     -> -29,5 %
+   *
+   * Daraus folgt eine Korrektur am Bericht: Dort stand, ein aus dem Geld liegender
+   * Schein "laege real hoeher, der Schein waere teurer". Das gilt fuer PUTS. Bei
+   * Calls faellt der Aktien-Skew nach unten - der Call wird billiger. Und bei 3 %
+   * Abstand ist der Effekt so oder so klein. Der grosse Posten ist das EREIGNIS,
+   * nicht der Smile: 22 % hin, 29 % zurueck, ohne dass sich der Kurs bewegt. Genau
+   * das ist der Fall, den ein Backtest bisher gar nicht kannte.
+   *
+   * Abschaltbar ueber D.intraday.ivModell === false - eine Modellaenderung an der
+   * Preisbildung soll man zurueckdrehen koennen, ohne die Version zu wechseln. */
+  function ivModellAn() { return !(D && D.intraday && D.intraday.ivModell === false); }
+
+  /** Die Vola, mit der ein Schein JETZT bepreist wird.
+   *  basis: die Vola am Geld (ohne Smile, ohne Ereignis).
+   *  terminT: Zeitstempel des naechsten Ergebnistermins oder null. */
+  function ivFuer(basis, dir, strike, spot, expiry, terminT, now) {
+    if (!(basis > 0)) return basis;
+    if (!ivModellAn()) return basis;
+    var restTage = Math.max(0, (expiry - now) / 86400000);
+    var iv = Q.smileIv(basis, strike, spot, restTage);
+    if (terminT) iv = Q.ivMitEreignis(iv, (terminT - now) / 86400000);
+    return Math.min(1.5, Math.max(0.05, iv));
+  }
+  /** Dieselbe Rechnung fuer eine offene Position - sie traegt ihre Basis-Vola mit.
+   *  Altbestand ohne ivBasis faellt auf die eingefrorene Vola zurueck: dann verhaelt
+   *  sich die Position wie vorher, statt rueckwirkend neu bepreist zu werden. */
+  function ivDerPosition(pos, spot, now) {
+    if (!ivModellAn()) return pos.iv;
+    if (!(pos.ivBasis > 0)) return pos.iv;
+    return ivFuer(pos.ivBasis, pos.dir, pos.strike, spot, pos.expiry, pos.terminT || null, now);
+  }
+
   function kostenHuerdePp(cfg, spot, vol, haltenMin, einsatz) {
     spot = spot > 0 ? spot : 200; vol = vol > 0 ? vol : 0.30;
     var halten = Math.max(5, haltenMin || 60), now = Date.now();
@@ -430,6 +468,18 @@
     var w = Q.makeWarrant("call", spot, vol, now, P.ratio);
     w.strike = Math.round(spot * (1 + (P.otmPct || 0)) * 100) / 100;
     w.expiry = now + P.days * 86400000;
+    /* Derselbe Smile wie im Handel. Die Huerde muss den Schein bepreisen, den der
+     * Scanner tatsaechlich kaufen wuerde - stuende hier die Vola am Geld, waere die
+     * Huerde fuer jedes aus dem Geld liegende Profil systematisch falsch.
+     * Die Ereignis-Struktur bleibt hier bewusst AUSSEN VOR: Die Huerde ist eine
+     * allgemeine Eigenschaft der Konfiguration ("was kostet dieser Trade typisch"),
+     * kein Kurszettel fuer einen bestimmten Wert an einem bestimmten Tag. Einen
+     * Termin gibt es an dieser Stelle gar nicht - es ist kein Symbol im Spiel. */
+    /* Der Schalter kommt aus cfg, NICHT aus dem Modulzustand: kostenHuerdePp bekommt
+     * ihre Konfiguration vollstaendig als Argument und bleibt damit einzeln
+     * ausfuehrbar - die Testsuite schneidet sie heraus und rechnet sie nach. Ein
+     * Griff nach D haette genau das kaputt gemacht (und tat es beim ersten Wurf). */
+    w.iv = (cfg.ivModell === false) ? w.iv : Q.smileIv(w.iv, w.strike, spot, P.days);
     var wert = Q.warrantValue("call", w, spot, now);
     if (!(wert > 0.02)) return null;
     var spx = Q.effSpread(w.iv, undefined, wert, w.ratio);
@@ -516,7 +566,7 @@
     var el = document.getElementById('regelnListe'); if (!el) return;
     var liste = regelnListe();
     if (!liste.length) {
-      el.innerHTML = '<div style="font-size:12px; color:var(--muted);">Noch keine festgeschriebene Regel. ' +
+      el.innerHTML = '<div style="font-size:var(--fs-neben); color:var(--muted);">Noch keine festgeschriebene Regel. ' +
         'Stell oben eine Konfiguration ein, gib ihr hier einen Namen und schreib sie fest.</div>';
       return;
     }
@@ -530,7 +580,7 @@
       var offenN = offen.filter(function (s) { return s.grund === 'Regel: ' + r.name; }).length;
       var tage = r.seit ? Math.max(0, Math.round((Date.now() - r.seit) / 86400000)) : 0;
       return '<tr>' +
-        '<td><b>' + U.esc(r.name) + '</b><div style="color:var(--muted); font-size:11px;">' +
+        '<td><b>' + U.esc(r.name) + '</b><div style="color:var(--muted); font-size:var(--fs-klein);">' +
           U.esc((r.cfg && r.cfg.mode) || '?') + ' · ' + U.esc((r.cfg && r.cfg.interval) || '?') +
           ' · ' + (((r.cfg && r.cfg.scalpHold) || 480)) + ' Min · seit ' + tage + ' Tag(en)</div></td>' +
         '<td style="text-align:right;">' + g.n + '</td>' +
@@ -542,13 +592,13 @@
         '<td style="text-align:right;" class="' + (ueb == null ? '' : U.signCls(ueb)) + '"><b>' +
           (ueb == null ? '–' : U.signTxt(Math.round(ueb * 100) / 100, ' %')) + '</b></td>' +
         '<td style="text-align:right;"><button class="btn ghost regelWeg" data-id="' + U.esc(r.id) +
-          '" style="padding:2px 8px; font-size:11px;">löschen</button></td></tr>';
+          '" style="padding:2px 8px; font-size:var(--fs-klein);">löschen</button></td></tr>';
     }).join('');
-    el.innerHTML = '<table class="tbl" style="font-size:12.5px;">' +
+    el.innerHTML = '<table class="tbl" style="font-size:var(--fs-text);">' +
       '<tr><th>Regel</th><th style="text-align:right;">geschlossen</th><th style="text-align:right;">offen</th>' +
       '<th style="text-align:right;">Ø je Trade</th><th style="text-align:right;">Kontrolle</th>' +
       '<th style="text-align:right;">Überschuss</th><th></th></tr>' + rows + '</table>' +
-      '<div style="font-size:11.5px; color:var(--muted); margin-top:6px;">' +
+      '<div style="font-size:var(--fs-neben); color:var(--muted); margin-top:6px;">' +
       '<b>Kontrolle</b> ist derselbe Wert, dieselbe Tagesstunde, dieselbe Haltedauer – nur an ' +
       'einem beliebigen anderen Tag, gemittelt über alle. Sie sagt, was schlichtes Halten ' +
       'gebracht hätte. <b>Überschuss</b> ist die Differenz und die eigentliche Aussage: ' +
@@ -600,7 +650,7 @@
       ['Not-Stop', (cfg.scalpSL || 20) + ' %'],
       ['Beleg', '<b style="color:' + farbe + ';">' + U.esc(b.stand) + '</b> – ' + U.esc(b.txt)]
     ];
-    el.innerHTML = '<table class="tbl" style="font-size:12.5px;">' + zeilen.map(function (r) {
+    el.innerHTML = '<table class="tbl" style="font-size:var(--fs-text);">' + zeilen.map(function (r) {
       return '<tr><td style="color:var(--muted); white-space:nowrap; width:130px;">' + U.esc(r[0]) + '</td><td>' + r[1] + '</td></tr>';
     }).join('') + '</table>';
   }
@@ -797,7 +847,7 @@ function huerdeAnzeigen() {
       (slug ? '<li><a href="https://www.finanzen.net/optionsscheine/auf-' + slug + '" target="_blank" rel="noopener">finanzen.net: Optionsscheine auf ' + U.esc(t.sym) + '</a></li>' : '') +
       '<li><a href="https://www.onvista.de/derivate/optionsscheine" target="_blank" rel="noopener">onvista Optionsschein-Finder</a></li>' +
       '</ul>' +
-      '<p style="color:var(--muted); font-size:12px;">Tipp: Sortiere im Finder nach Spread und wähle einen großen Emittenten mit engem Spread – die Nebenkosten entscheiden bei kurzen Trades.</p>';
+      '<p style="color:var(--muted); font-size:var(--fs-neben);">Tipp: Sortiere im Finder nach Spread und wähle einen großen Emittenten mit engem Spread – die Nebenkosten entscheiden bei kurzen Trades.</p>';
     var chk = document.getElementById('ticketReplicated');
     chk.checked = !!t.replicated;
     chk.onchange = function () { t.replicated = chk.checked; save(); render(); };
@@ -1349,7 +1399,7 @@ function huerdeAnzeigen() {
     var S = stcState;
     if (!S) { el.innerHTML = ''; return; }
     if (!S.marks.length) {
-      el.innerHTML = '<div style="font-size:12px; color:var(--muted);">Keine Einstiege der Regel in diesem Zeitraum. Das ist ein normales Ergebnis – beide Regeln melden sich selten, und genau deshalb sind sie ueberhaupt messbar.</div>';
+      el.innerHTML = '<div style="font-size:var(--fs-neben); color:var(--muted);">Keine Einstiege der Regel in diesem Zeitraum. Das ist ein normales Ergebnis – beide Regeln melden sich selten, und genau deshalb sind sie ueberhaupt messbar.</div>';
       return;
     }
     // Juengstes Signal zuerst: das ist das, was man pruefen will
@@ -1366,9 +1416,9 @@ function huerdeAnzeigen() {
         '<td style="color:var(--muted);">' + (imBild ? 'im Bild' : 'vor dem Bild') + '</td>' +
         '<td style="color:var(--series2);">Bedingungen zeigen</td></tr>';
     }).join('');
-    el.innerHTML = '<div style="font-size:12px; color:var(--ink-2); margin-bottom:4px;">' + S.marks.length + ' Einstieg(e), die die Regel hier gegeben hätte – Zeile anklicken, um die Bedingungen jener Kerze nachzurechnen:</div>' +
+    el.innerHTML = '<div style="font-size:var(--fs-neben); color:var(--ink-2); margin-bottom:4px;">' + S.marks.length + ' Einstieg(e), die die Regel hier gegeben hätte – Zeile anklicken, um die Bedingungen jener Kerze nachzurechnen:</div>' +
       '<div style="max-height:230px; overflow:auto;"><table class="tbl"><tr><th>Zeitpunkt der Signalkerze</th><th>Kurs</th><th>nach 6 Kerzen</th><th>Lage</th><th></th></tr>' + rows + '</table></div>' +
-      '<div style="font-size:11.5px; color:var(--muted); margin-top:4px;">Die Spalte „nach 6 Kerzen" ist reine Kursbewegung des Basiswerts – ohne Kosten, ohne Schein und ohne Ausstiegsregel. Sie zeigt den Verlauf, nicht das Ergebnis eines Trades, und ist kein Beleg.</div>';
+      '<div style="font-size:var(--fs-neben); color:var(--muted); margin-top:4px;">Die Spalte „nach 6 Kerzen" ist reine Kursbewegung des Basiswerts – ohne Kosten, ohne Schein und ohne Ausstiegsregel. Sie zeigt den Verlauf, nicht das Ergebnis eines Trades, und ist kein Beleg.</div>';
   }
   /** Bedingungsliste - entweder fuer die letzte abgeschlossene Kerze (idx = null)
    *  oder fuer die angeklickte Signalkerze. */
@@ -1388,7 +1438,7 @@ function huerdeAnzeigen() {
       bed.liste.map(function (bb) {
         return '<div><span style="color:' + (bb.ok ? 'var(--up)' : 'var(--down)') + '; font-weight:600;">' + (bb.ok ? '✓' : '✗') + '</span> ' + U.esc(bb.txt) + '</div>';
       }).join('') +
-      (idx == null ? '' : '<div style="margin-top:4px; color:var(--muted); font-size:11.5px;">Gesamturteil des Detektors in dieser Kerze: ' +
+      (idx == null ? '' : '<div style="margin-top:4px; color:var(--muted); font-size:var(--fs-neben);">Gesamturteil des Detektors in dieser Kerze: ' +
         (bed.signal === 'call' ? '<b style="color:var(--up);">Einstieg (Long)</b>' : bed.signal === 'put' ? 'Put-Seite – wird nicht gehandelt' : 'kein Signal') +
         '. Es kommt aus <code>einstiegSignal</code> selbst, nicht aus der Summe der Häkchen – deshalb kann ein Häkchen fehlen und das Urteil trotzdem stehen (die Regel prüft manches auf einem anderen Fenster).</div>');
   }
@@ -1570,9 +1620,9 @@ function huerdeAnzeigen() {
       var nutzen = Math.round((a2.summary.retPct - b2.summary.retPct) * 100) / 100;
       out.innerHTML = '<table class="tbl"><tr><th>Variante</th><th>Rendite</th><th>Trades</th><th>Treffer</th><th>Ø je Trade</th><th>Gebühren</th><th>Drawdown</th></tr>' +
         row('<b>mit</b> deinen Filtern', a2) + row('<b>ohne</b> Filter (jedes Signal)', b2) + '</table>' +
-        '<div style="margin-top:8px; font-size:13px;">Filter-Nutzen: <b class="' + U.signCls(nutzen) + '">' + U.signTxt(nutzen, ' Prozentpunkte' ) + '</b> · ' +
+        '<div style="margin-top:8px; font-size:var(--fs-text);">Filter-Nutzen: <b class="' + U.signCls(nutzen) + '">' + U.signTxt(nutzen, ' Prozentpunkte' ) + '</b> · ' +
         (nutzen > 0 ? 'Die Filter haben in diesem Zeitraum Geld gespart.' : nutzen < 0 ? 'Achtung: Die Filter haben hier Rendite gekostet – prüfen, welcher zu streng ist.' : 'Kein messbarer Unterschied.') + '</div>' +
-        '<div style="color:var(--muted); font-size:11.5px; margin-top:6px;">„Ohne Filter" heißt: kein Kosten-Check, kein Trendfilter, kein Kanal, keine 5-Min-Bestätigung, kein Zeitfenster, keine Qualitätsschwelle – nur das reine Einstiegssignal. Gleiche Kosten, gleicher Zeitraum, gleiche Werte.</div>';
+        '<div style="color:var(--muted); font-size:var(--fs-neben); margin-top:6px;">„Ohne Filter" heißt: kein Kosten-Check, kein Trendfilter, kein Kanal, keine 5-Min-Bestätigung, kein Zeitfenster, keine Qualitätsschwelle – nur das reine Einstiegssignal. Gleiche Kosten, gleicher Zeitraum, gleiche Werte.</div>';
     } catch (e) {
       st.textContent = 'Fehler: ' + (e.message || e);
     } finally {
@@ -1688,7 +1738,7 @@ function huerdeAnzeigen() {
     var el = document.getElementById('symBlocks');
     if (!el) return;
     var keys = Object.keys(D.symBlock || {});
-    if (!keys.length) { el.innerHTML = '<span style="color:var(--muted); font-size:12px;">Keine gesperrten Werte.</span>'; return; }
+    if (!keys.length) { el.innerHTML = '<span style="color:var(--muted); font-size:var(--fs-neben);">Keine gesperrten Werte.</span>'; return; }
     el.innerHTML = keys.map(function (s) {
       var b2 = D.symBlock[s];
       if (b2.frei) return '<span class="chip" style="margin-right:6px;">' + U.esc(s) + ' · manuell freigegeben</span>';
@@ -1717,7 +1767,11 @@ function huerdeAnzeigen() {
     if (html) WARNBAND[schluessel] = { html: html, gelb: !!gelb };
     else delete WARNBAND[schluessel];
     var keys = Object.keys(WARNBAND);
-    el.style.display = keys.length ? '' : 'none';
+    /* 'block', NICHT '': Der Leerwert loescht nur den Inline-Stil, danach greift die
+     * Regel #warnband{display:none} aus index.html - das Band blieb also IMMER
+     * unsichtbar, egal welche Warnung anlag. Damit war der gesamte Warnkanal tot:
+     * "Speichern fehlgeschlagen", "Depot aus Sicherung", "Kante verfallen". */
+    el.style.display = keys.length ? 'block' : 'none';
     el.innerHTML = keys.map(function (k) {
       return '<div class="warnzeile' + (WARNBAND[k].gelb ? ' gelb' : '') + '">' + WARNBAND[k].html + '</div>';
     }).join('');
@@ -1728,7 +1782,7 @@ function huerdeAnzeigen() {
       warnbandSetzen('edge', '<b>Edge-Wächter: Kante pausiert</b> – der gemessene Vorsprung ist in zwei Nächten ' +
         'hintereinander verfallen (zuletzt ' + ep.mittelPp + ' Pp, t=' + ep.t + '). Neue Einstiege sind ausgesetzt, ' +
         'das Schattenbuch misst weiter; eine positive Nacht hebt die Pause automatisch auf. ' +
-        '<button class="btn ghost" data-edgefrei="1" style="padding:2px 10px; font-size:11.5px; margin-left:6px;">Trotzdem weiter handeln</button>', true);
+        '<button class="btn ghost" data-edgefrei="1" style="padding:2px 10px; font-size:var(--fs-neben); margin-left:6px;">Trotzdem weiter handeln</button>', true);
     } else {
       warnbandSetzen('edge', null);
     }
@@ -1984,9 +2038,9 @@ function huerdeAnzeigen() {
         if (warOffen) return;
         tr.insertAdjacentHTML('afterend',
           '<tr class="wende-inline"><td colspan="9" style="background:var(--panel); padding:8px 12px; cursor:default;">' +
-          '<div style="font-size:12px; font-weight:600; margin-bottom:4px;">' + U.esc(sy) + ' – Kursverlauf mit Wendepunkt</div>' +
+          '<div style="font-size:var(--fs-neben); font-weight:600; margin-bottom:4px;">' + U.esc(sy) + ' – Kursverlauf mit Wendepunkt</div>' +
           '<svg class="wende-chart" style="width:100%; height:220px; display:block;"></svg>' +
-          '<div class="wende-legende" style="font-size:11.5px; color:var(--ink-2); margin-top:6px; line-height:1.5;"></div>' +
+          '<div class="wende-legende" style="font-size:var(--fs-neben); color:var(--ink-2); margin-top:6px; line-height:1.5;"></div>' +
           '</td></tr>');
         var zeile = tr.nextElementSibling;
         zeichneWendeChart(zeile.querySelector('.wende-chart'), zeile.querySelector('.wende-legende'),
@@ -2142,7 +2196,7 @@ function huerdeAnzeigen() {
         '<td class="' + (g.ok ? 'pos' : '') + '">' + U.esc(g.grund || (g.ok ? 'gehandelt' : 'kein Signal')) + '</td>' +
         '<td style="color:var(--muted);">' + (g.t ? new Date(g.t).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }) : '–') + '</td></tr>';
     });
-    html += '</table><div style="color:var(--muted); font-size:11.5px; margin-top:6px;">Zeigt für jeden gescannten Wert, was die Strategie zuletzt gesehen hat – und warum sie nicht gehandelt hat. Zeile anklicken: Entscheidungsverlauf des Werts (Tester-Wunsch #30).</div>';
+    html += '</table><div style="color:var(--muted); font-size:var(--fs-neben); margin-top:6px;">Zeigt für jeden gescannten Wert, was die Strategie zuletzt gesehen hat – und warum sie nicht gehandelt hat. Zeile anklicken: Entscheidungsverlauf des Werts (Tester-Wunsch #30).</div>';
     el.innerHTML = html;
     /* Entscheidungsverlauf aufklappen - direkt unter der angeklickten Zeile,
        gleiche Bedienung wie im Schein-Finder. */
@@ -2160,7 +2214,7 @@ function huerdeAnzeigen() {
             }).join('')
           : '<span style="color:var(--muted);">Noch kein Verlauf in dieser Sitzung.</span>';
         tr.insertAdjacentHTML('afterend',
-          '<tr class="sig-inline"><td colspan="7" style="background:var(--panel); padding:8px 12px; font-size:12px; line-height:1.5; cursor:default;">' +
+          '<tr class="sig-inline"><td colspan="7" style="background:var(--panel); padding:8px 12px; font-size:var(--fs-neben); line-height:1.5; cursor:default;">' +
           '<b>' + U.esc(s) + ' – Entscheidungsverlauf (diese Sitzung, jüngste zuerst)</b><br>' + inhalt + '</td></tr>');
       });
     });
@@ -2201,6 +2255,54 @@ function huerdeAnzeigen() {
     return out;
   }
 
+  /* Einzelne Felder statt eines Rundumschlags: Eintraege, die ihre Aenderungen Feld fuer
+   * Feld mitgeschrieben haben (bisher nur "Belegte Voreinstellungen uebernehmen"), zeigen
+   * je Feld ein eigenes Zurueck. Genau das stand seit jeher im Knopftext - eingeloest war
+   * es nie. Eintraege ohne felder[] verhalten sich unveraendert wie vorher. */
+  function feldZeilen(e, idx) {
+    if (!e.felder || !e.felder.length) return '';
+    var h = '<div style="margin-top:4px; display:flex; flex-direction:column; gap:2px;">';
+    e.felder.forEach(function (f, j) {
+      // Ein schon zurueckgestelltes Feld behaelt seine Zeile - sonst sieht es aus, als
+      // haette es die Aenderung nie gegeben - aber ohne Knopf, der nichts mehr taete.
+      h += '<div style="font-size:var(--fs-klein); display:flex; align-items:center; gap:6px; color:' +
+        (f.zurueck ? 'var(--muted);" ' : 'var(--ink-2);" ') + '>' +
+        (f.zurueck
+          ? '<span style="width:22px; text-align:center;" title="zurückgestellt">✓</span>' + U.esc(f.txt || f.k) + ' <span>(zurückgestellt)</span>'
+          : '<button class="btn ghost" style="padding:0 6px; font-size:var(--fs-klein); line-height:16px;" ' +
+            'data-feld="' + idx + ':' + j + '" title="Nur dieses Feld zurückstellen" ' +
+            'aria-label="' + U.esc(f.txt || f.k) + ' zurückstellen">↩</button>' +
+            U.esc(f.txt || f.k) + ' <span style="color:var(--muted);">(vorher: ' + U.esc(feldWert(f.alt)) + ')</span>') +
+        '</div>';
+    });
+    return h + '</div>';
+  }
+  function feldWert(v) {
+    if (v === true) return 'an';
+    if (v === false) return 'aus';
+    if (v === null || v === undefined) return 'nicht gesetzt';
+    return String(v);
+  }
+  /** Setzt genau die uebergebenen Felder auf ihren alten Wert zurueck - nie mehr.
+   *  Schreibt die Ruecknahme selbst wieder ins Protokoll, damit die Kette lueckenlos bleibt. */
+  function felderZurueck(e, liste, wasTxt) {
+    if (!liste.length) return;
+    liste.forEach(function (f) {
+      if (f.wo === 'intraday') { if (f.alt === null) delete D.intraday[f.k]; else D.intraday[f.k] = f.alt; }
+      else { if (f.alt === null) delete D[f.k]; else D[f.k] = f.alt; }
+      f.zurueck = true;
+    });
+    if (!D.tuneLog) D.tuneLog = [];
+    D.tuneLog.unshift({ id: 'undo-' + e.id + '-' + Date.now(), at: Date.now(), quelle: 'hand',
+      applied: ['↩ ' + wasTxt], txt: 'Von Hand zurückgestellt (' + U.dt(e.at) + ')',
+      konfigVorher: null, konfigNachher: JSON.parse(JSON.stringify(D.intraday)) });
+    save();
+    if (window.__updateParamVis) window.__updateParamVis();
+    if (window.__syncSetupUI) window.__syncSetupUI();
+    renderTuneLog();
+    render();
+  }
+
   function renderTuneLog() {
     var el = document.getElementById('tuneLog');
     if (!el) return;
@@ -2214,21 +2316,39 @@ function huerdeAnzeigen() {
       var e = r.e;
       html += '<tr' + (r.laufend ? ' style="font-weight:600;"' : '') + '>' +
         '<td>' + (r.rang ? '#' + r.rang : '–') + '</td>' +
-        '<td>' + U.dt(e.at) + '<br><span style="color:var(--muted); font-weight:400; font-size:11px;">' + ({ pilot: 'Autopilot', lokal: 'Selbst-Optimierung (alt)', manuell: 'manuell übernommen', hand: 'von Hand', regime: 'Regime (alt)', farm: 'Farm (alt)', sicherung: 'Sicherung' }[e.quelle] || 'Cloud-Analyse') + (r.laufend ? ' · läuft aktuell' : '') + '</span></td>' +
+        '<td>' + U.dt(e.at) + '<br><span style="color:var(--muted); font-weight:400; font-size:var(--fs-klein);">' + ({ pilot: 'Autopilot', lokal: 'Selbst-Optimierung (alt)', manuell: 'manuell übernommen', hand: 'von Hand', regime: 'Regime (alt)', farm: 'Farm (alt)', sicherung: 'Sicherung' }[e.quelle] || 'Cloud-Analyse') + (r.laufend ? ' · läuft aktuell' : '') + '</span></td>' +
         '<td>' + (e.applied && e.applied.length ? U.esc(e.applied.join(' · ')) : '<span style="color:var(--muted);">keine Feldänderung</span>') +
-          (e.txt ? '<div style="color:var(--muted); font-size:11px; margin-top:2px;">' + U.esc(e.txt) + '</div>' : '') + '</td>' +
+          feldZeilen(e, r.idx) +
+          (e.txt ? '<div style="color:var(--muted); font-size:var(--fs-klein); margin-top:2px;">' + U.esc(e.txt) + '</div>' : '') + '</td>' +
         '<td>' + (r.vor.avg != null ? U.signTxt(r.vor.avg, ' $') : '–') + ' → ' + (r.nach.avg != null ? '<b class="' + U.signCls(r.nach.avg) + '">' + U.signTxt(r.nach.avg, ' $') + '</b>' : '–') +
           (r.delta != null ? ' <span class="' + U.signCls(r.delta) + '">(' + U.signTxt(r.delta, ' $') + ')</span>' : '') + '</td>' +
         '<td>' + r.nach.n + (r.nach.win != null ? ' · ' + r.nach.win + ' % Treffer' : '') + '</td>' +
         '<td>' + r.urteil + '</td>' +
-        '<td>' + (e.konfigVorher ? '<button class="btn ghost" style="padding:2px 8px; font-size:11px;" data-undo="' + r.idx + '">Rückgängig</button>' : '') + '</td></tr>';
+        '<td>' + (e.konfigVorher || (e.felder && e.felder.some(function (f) { return !f.zurueck; }))
+          ? '<button class="btn ghost" style="padding:2px 8px; font-size:var(--fs-klein);" data-undo="' + r.idx + '">Rückgängig</button>' : '') + '</td></tr>';
     });
-    html += '</table><div style="color:var(--muted); font-size:11.5px; margin-top:8px;">Bewertet wird der durchschnittliche Gewinn je Intraday-Trade im Zeitraum <b>nach</b> der Änderung gegen den Zeitraum davor. Unter 5 Trades ist keine Aussage möglich (). Der Rang sortiert nach Wirkung – so siehst du, welche Anpassungen wirklich etwas gebracht haben.</div>';
+    html += '</table><div style="color:var(--muted); font-size:var(--fs-neben); margin-top:8px;">Bewertet wird der durchschnittliche Gewinn je Intraday-Trade im Zeitraum <b>nach</b> der Änderung gegen den Zeitraum davor. Unter 5 Trades ist keine Aussage möglich (). Der Rang sortiert nach Wirkung – so siehst du, welche Anpassungen wirklich etwas gebracht haben.</div>';
     el.innerHTML = html;
+    el.querySelectorAll('[data-feld]').forEach(function (b3) {
+      b3.addEventListener('click', function () {
+        var t = b3.getAttribute('data-feld').split(':');
+        var r = rows[parseInt(t[0], 10)];
+        var f = r && r.e.felder ? r.e.felder[parseInt(t[1], 10)] : null;
+        if (!f) return;
+        felderZurueck(r.e, [f], f.txt || f.k);
+      });
+    });
     el.querySelectorAll('[data-undo]').forEach(function (b2) {
       b2.addEventListener('click', function () {
         var r = rows[parseInt(b2.getAttribute('data-undo'), 10)];
-        if (!r || !r.e.konfigVorher) return;
+        if (!r) return;
+        // Eintrag mit Einzelfeldern: alle auf einmal, aber ueber denselben Weg
+        if (r.e.felder && r.e.felder.length) {
+          var offen = r.e.felder.filter(function (f) { return !f.zurueck; });
+          felderZurueck(r.e, offen, 'Alle ' + offen.length + ' Felder zurückgestellt');
+          return;
+        }
+        if (!r.e.konfigVorher) return;
         var keys = ['mode', 'interval', 'period', 'confirmBps', 'lineType', 'window', 'scalpSL', 'sizing', 'channel', 'mtf', 'avoidHours'];
         keys.forEach(function (k) { if (r.e.konfigVorher[k] !== undefined) D.intraday[k] = r.e.konfigVorher[k]; });
         if (!D.tuneLog) D.tuneLog = [];
@@ -2364,17 +2484,13 @@ function huerdeAnzeigen() {
       TAGES_CACHE[sym] = cached.series.slice(-520);
       return cached.series;
     }
-    var url = 'https://query1.finance.yahoo.com/v8/finance/chart/' + encodeURIComponent(sym) + '?range=' + range + '&interval=1d';
-    var res = await window.api.fetchText(url);
-    if (!res.ok) return cached ? cached.series : null;
     try {
-      var j = JSON.parse(res.body);
-      var r = j.chart.result[0];
-      var ts = r.timestamp || [];
-      var closes = r.indicators.quote[0].close || [];
-      var series = [];
-      // '!= null' laesst 0, negative Werte und NaN durch - siehe kursOk()
-      for (var i = 0; i < ts.length; i++) if (kursOk(closes[i])) series.push([ts[i] * 1000, closes[i]]);
+      /* ROH: Diese Reihe fuettert Stop-Abstaende und Positionsgroessen im Handel -
+       * gerechnet wird auf dem Kurs, der auch gehandelt wird. Das Verwerfen von 0,
+       * negativen Werten und NaN (frueher kursOk hier) macht jetzt der Lader. */
+      var kd = await window.Kurse.hole(sym, { range: range, interval: '1d', bereinigt: false });
+      if (!kd) return cached ? cached.series : null;
+      var series = window.Kurse.reihe(kd.bars);
       if (series.length > 50) TAGES_CACHE[sym] = series.slice(-520);
       if (series.length > 50) {
         await window.api.storeSet(key, { fetchedAt: now, range: range, series: series });
@@ -2529,7 +2645,14 @@ function huerdeAnzeigen() {
       var vB = pos.dir === 'call' ? spot : Math.max(0.001, 2 * (pos.entrySpot || spot) - spot);
       return Math.max(0.001, vB * (1 - (pos.spx || 0.0005)));
     }
-    var v = Q.warrantValue(pos.dir, { strike: pos.strike, expiry: pos.expiry, iv: pos.iv, ratio: pos.ratio || Q.RATIO }, spot, now);
+    /* Hier sass der groesste Modellfehler: pos.iv war die Vola vom OEFFNEN und wurde
+     * bis zum Schliessen unveraendert weiterbenutzt. Vega - der groesste reale
+     * Risikofaktor eines kurzlaufenden Scheins - kam damit in der Simulation
+     * ueberhaupt nicht vor. Jetzt wird die Vola zu JEDEM Bewertungszeitpunkt neu
+     * bestimmt: Smile nach aktuellem Kursabstand, Ereignis-Struktur nach dem
+     * Abstand zum Ergebnistermin. */
+    var ivJetzt = ivDerPosition(pos, spot, now);
+    var v = Q.warrantValue(pos.dir, { strike: pos.strike, expiry: pos.expiry, iv: ivJetzt, ratio: pos.ratio || Q.RATIO }, spot, now);
     return Math.max(0.001, v * (1 - (pos.spx || 0.02)));
   }
   function posValue(pos, spot, now) {
@@ -3100,7 +3223,10 @@ function huerdeAnzeigen() {
   /** Ist das ueberhaupt ein Kurs? Endlich und echt groesser als null - alles andere
    *  (null, undefined, 0, negativ, NaN, Zeichenkette) hat in einer Kursreihe nichts
    *  verloren und darf erst recht keinen Stop ausloesen. */
-  function kursOk(v) { return typeof v === 'number' && isFinite(v) && v > 0; }
+  /* Eine Quelle, nicht zwei: die Regel steht in kurse.js und wird von dort geholt.
+   * Eine zweite Fassung hier haette genau den Fehler wiederholt, den der Lader
+   * aufloest - zwei Kopien derselben Regel, die auseinanderlaufen koennen. */
+  var kursOk = window.Kurse.kursOk;
 
   async function fetchIntraday(sym, interval, btMode) {
     var fd = await fetchIntradayYahoo(sym, interval, btMode);
@@ -3113,7 +3239,6 @@ function huerdeAnzeigen() {
   }
   async function fetchIntradayYahoo(sym, interval, btMode) {
     var ic = INTERVAL_CFG[interval] || INTERVAL_CFG['5m'];
-    var url;
     // Frueher lief der Messmodus ueber period1/period2, weil 'range' angeblich kein
     // 2-Monats-Kuerzel kennt. Am 20.08.2026 nachgemessen: das stimmt nicht, und der
     // Umweg KOSTETE Daten. Yahoo lehnt period1/period2 bei Intraday-Intervallen ab einer
@@ -3123,35 +3248,23 @@ function huerdeAnzeigen() {
     //     60m  period1 abgelehnt            <->  range=730d 730 Handelstage
     // Die 42 Handelstage, die im Archiv lagen, sind exakt das period1-Maximum - der
     // Umweg war die Ursache der duennen Messbasis, nicht Yahoo.
-    url = 'https://query1.finance.yahoo.com/v8/finance/chart/' + encodeURIComponent(sym) + '?range=' + (btMode ? ic.btRange : ic.range) + '&interval=' + interval;
-    var res = await window.api.fetchText(url);
-    // Yahoo drosselt bei ~200 Anfragen in Folge gern mit 429 - einmal kurz warten und
-    // wiederholen rettet das Symbol, statt es still aus der Messbasis zu werfen.
-    if (!res.ok && res.status === 429) {
-      await new Promise(function (r429) { setTimeout(r429, 5000); });
-      res = await window.api.fetchText(url);
-    }
-    if (!res.ok) return null;
+    /* ROH: Was hier herauskommt, wird unmittelbar zu Stop, Ziel und Buchung - also
+     * der tatsaechlich gehandelte Kurs, nicht der split-bereinigte.
+     * Das Verwerfen unbrauchbarer Kurse (0, negativ, NaN), das Auffuellen fehlender
+     * Hoch/Tief und der Tausch vertauscht gelieferter Werte stehen jetzt im Lader -
+     * ein verworfener Balken zaehlt weiter wie ein fehlender, barsFrisch greift
+     * dann von selbst. Die 429-Wiederholung ebenfalls, mit denselben 5 Sekunden. */
     try {
-      var r = JSON.parse(res.body).chart.result[0];
-      var q = r.indicators.quote[0];
-      var ts = r.timestamp || [], closes = q.close || [], vols = q.volume || [];
-      var his = q.high || [], los = q.low || [];
-      var series = [];
+      var kd = await window.Kurse.hole(sym, {
+        range: btMode ? ic.btRange : ic.range, interval: interval, bereinigt: false
+      });
+      if (!kd) return null;
+      // Die Signalrechnung erwartet fuenf Spalten, nicht sechs (ohne Eroeffnung).
+      var series = kd.bars.map(function (b5) { return b5.slice(0, 5); });
       var dollarSum = 0, days = {};
-      for (var i = 0; i < ts.length; i++) {
-        /* '== null' allein reicht NICHT: eine 0, eine negative Zahl oder NaN kommt
-         * durch (0 == null ist falsch) und wird unmittelbar danach zu Stop, Ziel und
-         * Buchung. Ein einziger kaputter Kurs der inoffiziellen Schnittstelle konnte
-         * so offene Positionen zum Mindestwert liquidieren. Ein verworfener Balken
-         * zaehlt wie ein fehlender - barsFrisch greift dann von selbst. */
-        if (!kursOk(closes[i])) continue;
-        var hi = kursOk(his[i]) ? his[i] : closes[i];
-        var lo = kursOk(los[i]) ? los[i] : closes[i];
-        if (lo > hi) { var tausch = hi; hi = lo; lo = tausch; }   // vertauscht geliefert
-        // Hoch/Tief mitführen: Kanalkanten werden daran ausgerichtet, nicht nur an Schlusskursen
-        series.push([ts[i] * 1000, closes[i], vols[i] || 0, hi, lo]);
-        if (vols[i]) { dollarSum += vols[i] * closes[i]; days[new Date(ts[i] * 1000).toISOString().slice(0, 10)] = 1; }
+      for (var i = 0; i < series.length; i++) {
+        var vol = series[i][2];
+        if (vol) { dollarSum += vol * series[i][1]; days[new Date(series[i][0]).toISOString().slice(0, 10)] = 1; }
       }
       var nDays = Object.keys(days).length || 1;
       return series.length > 30 ? { series: series, dollarVolDay: dollarSum / nDays } : null;
@@ -3223,11 +3336,18 @@ function huerdeAnzeigen() {
   }
 
   function isNearUsClose() {
-    // Sommer-/winterzeitfest: 15 Minuten vor US-Schluss (Handelstag = 390 Minuten).
-    // Vorher war 19:45–21:00 UTC hart verdrahtet – im Winter begann die Glattstellung
-    // damit 75 Minuten zu früh und blockierte so lange alle Einstiege.
-    var m = Q.minutenSeitOeffnung(Date.now());
-    return m >= 375 && m < 390;
+    /* Sommer-/winterzeitfest: 15 Minuten vor US-Schluss. Vorher war 19:45-21:00 UTC
+     * hart verdrahtet - im Winter begann die Glattstellung damit 75 Minuten zu frueh.
+     *
+     * Und dann stand hier 390 als feste Sitzungslaenge. An einem HALBTAG (Schluss
+     * 13:00 ET, 210 Minuten) wird 375 nie erreicht - die Tagesschluss-Glattstellung
+     * fiel an diesen Tagen also KOMPLETT AUS, und Positionen, die ausdruecklich kein
+     * Uebernacht-Risiko tragen sollten, lagen ueber Nacht. Sechs bis sieben Tage im
+     * Jahr, darunter der Tag nach Thanksgiving. */
+    var jetzt = Date.now();
+    var laenge = (window.Boerse ? window.Boerse.sitzungsMinuten(jetzt) : 390) || 390;
+    var m = Q.minutenSeitOeffnung(jetzt);
+    return m >= laenge - 15 && m < laenge;
   }
 
   async function intradayScan() {
@@ -3600,8 +3720,12 @@ function huerdeAnzeigen() {
          * meidet. Geprueft wird gegen die lokal bekannten Termine (Drift-Archiv);
          * die Liste waechst mit jedem 6-Stunden-Refresh. Ein UNBEKANNTER Termin
          * kann nicht blocken - das ist die ehrliche Grenze dieser Pruefung. */
+        /* Der Termin wird jetzt IMMER geholt, nicht nur fuer den Blackout: Seit die
+         * Vola die Ereignis-Struktur kennt, geht er auch in die Bepreisung ein.
+         * naechsterTermin liest aus einer stuendlich erneuerten Karte im Speicher -
+         * der Aufruf kostet nichts. */
+        var nTermin = istKrypto(sym) ? null : await naechsterTermin(sym);
         if (mp.uebernacht && !istKrypto(sym)) {
-          var nTermin = await naechsterTermin(sym);
           /* Fenster = realer Wanduhr-Halt, nicht die nominelle Haltedauer: 8 Handels-
            * stunden heissen 'bis in den Folgetag' (~26-30 h), vor dem Wochenende bis
            * Montag (~78 h). Das alte 20-h-Fenster liess Einstiege durchrutschen, deren
@@ -3685,10 +3809,17 @@ function huerdeAnzeigen() {
         if (D.intradayCooldown[sym] && now - D.intradayCooldown[sym] < effCooldown) { patienceAdd('Cooldown (Straßenbahn-Regel)', sym); continue; }
         var prof = Q.PROFILES[cfg.profile] || Q.PROFILES.atm21;
         var closes5 = sigBars.map(function (b) { return b[1]; });
-        var iv = Math.min(1.5, Math.max(0.15, Q.histVolIntraday(closes5, Math.round(390 / barMin)) * 1.1));
+        /* ivBasis ist die Vola AM GELD - die geschaetzte, aus der realisierten
+         * Volatilitaet. Sie wird auf der Position mitgeschrieben, denn die Bewertung
+         * baut Smile und Ereignis-Struktur jedes Mal neu darauf auf. Wuerde nur die
+         * fertige iv gespeichert, waere der Effekt beim naechsten Bewerten wieder
+         * eingefroren - genau der Fehler, der hier behoben wird. */
+        var ivBasis = Math.min(1.5, Math.max(0.15, Q.histVolIntraday(closes5, Math.round(390 / barMin)) * 1.1));
         var strike = Math.round(spot * (1 + (dir === 'call' ? prof.otmPct : -prof.otmPct)) * 100) / 100;
         var bvI = prof.ratio || Q.RATIO;
-        var w = { strike: strike, expiry: now + prof.days * 86400000, iv: iv, ratio: bvI };
+        var expiryI = now + prof.days * 86400000;
+        var iv = ivFuer(ivBasis, dir, strike, spot, expiryI, nTermin, now);
+        var w = { strike: strike, expiry: expiryI, iv: iv, ratio: bvI };
         var wWert2 = Q.warrantValue(dir, w, spot, now);
         if (wWert2 <= 0.001) continue;
         var spx2 = Q.effSpread(iv, undefined, wWert2, bvI) + Q.slipOf(iv, undefined, wWert2);
@@ -3829,6 +3960,12 @@ function huerdeAnzeigen() {
           entrySpot: spot, entry: ask, qty: qty, cost: cost, orderFee: fee, spx: Math.round(spx2 * 10000) / 10000,
           basis: istBasis || undefined, krypto: istKrypto(sym) || undefined,
           strike: w.strike, expiry: w.expiry, iv: Math.round(iv * 1000) / 1000, ratio: bvI,
+          // Basis-Vola und Termin: daraus wird bei JEDER Bewertung neu gerechnet
+          ivBasis: Math.round(ivBasis * 1000) / 1000,
+          terminT: nTermin || undefined,
+          /* Vega je Vola-Punkt und Stueck - die Zahl, die im Bericht als fehlend
+           * benannt war. Sie sagt, wie viel ein Vola-Punkt diese Position wert ist. */
+          vega: Math.round(Q.bsVega(spot, w.strike, Math.max(0, (w.expiry - now) / (365 * 86400000)), iv) * bvI * 10000) / 10000,
           omega: Math.round(omega * 10) / 10,
           sl: slT, tp: kapiTrade ? null : mp.tp, trail: kapiTrade ? 0 : (mp.trail || 0),
           // Kapitulations-Trades tragen ihren gemessenen 26-Handelsstunden-Horizont
@@ -4006,7 +4143,7 @@ function huerdeAnzeigen() {
     }
 
     function tile(name, val, sign, delta, deltaSign) {
-      return '<div class="tile"><div class="name">' + name + '</div><div class="val' + (sign != null ? ' ' + U.signCls(sign) : '') + '" style="font-size:17px;">' + val + '</div>' +
+      return '<div class="tile"><div class="name">' + name + '</div><div class="val' + (sign != null ? ' ' + U.signCls(sign) : '') + '" style="font-size:var(--fs-zahl);">' + val + '</div>' +
         (delta ? '<div class="delta ' + (deltaSign ? U.signCls(deltaSign) : '') + '">' + delta + '</div>' : '') + '</div>';
     }
 
@@ -4019,10 +4156,15 @@ function huerdeAnzeigen() {
        * Positionen bekommen keine Schein-Kennzahlen mehr vorgerechnet (Basispreis/
        * Faellig/IV eines Pseudo-Scheins, den niemand haelt). */
       var sumEinsatz = 0, sumWert = 0;
-      ph = '<table class="tbl"><tr><th>Wert</th><th>Typ</th><th>Basispreis</th><th>Fällig</th><th>IV</th><th>Hebel</th><th>Stück</th><th>Einstieg</th><th>Aktuell</th><th title="Kaufsumme inklusive Ordergebühr">Einsatz</th><th title="Stück × aktueller Verkaufskurs">Wert jetzt</th><th title="Wert jetzt minus Einsatz – vor der Ordergebühr des Verkaufs">P/L</th><th></th></tr>';
+      ph = '<table class="tbl"><tr><th>Wert</th><th>Typ</th><th>Basispreis</th><th>Fällig</th><th title="Implizite Volatilität – jetzt, mit Smile und Termin-Struktur">IV</th><th title="Wertänderung der Position je Volatilitätspunkt, bei unverändertem Kurs">Vega</th><th>Hebel</th><th>Stück</th><th>Einstieg</th><th>Aktuell</th><th title="Kaufsumme inklusive Ordergebühr">Einsatz</th><th title="Stück × aktueller Verkaufskurs">Wert jetzt</th><th title="Wert jetzt minus Einsatz – vor der Ordergebühr des Verkaufs">P/L</th><th></th></tr>';
       D.positions.forEach(function (p) {
         var spot = spotOf(p.sym) || p.entrySpot;
-        var wobj = { strike: p.strike, expiry: p.expiry, iv: p.iv, ratio: p.ratio || Q.RATIO };
+        /* Die Vola JETZT, nicht die vom Oeffnen. Sonst zeigt die Spalte einen anderen
+         * Wert als den, mit dem die Zeile daneben gerechnet ist - und die Kopfzeile
+         * verspricht ausdruecklich den aktuellen Stand. Hebel und Aufgeld haengen
+         * ebenfalls daran und wuerden sonst zur eingefrorenen Vola passen. */
+        var ivAnz = ivDerPosition(p, spot, now);
+        var wobj = { strike: p.strike, expiry: p.expiry, iv: ivAnz, ratio: p.ratio || Q.RATIO };
         var bid = bidOf(p, spot, now);
         var einsatz = p.cost != null ? p.cost : p.entry * p.qty;
         var wertJetzt = bid * p.qty;
@@ -4030,10 +4172,15 @@ function huerdeAnzeigen() {
         sumEinsatz += einsatz; sumWert += wertJetzt;
         var ret = bid / p.entry - 1;
         var scheinZellen = p.basis
-          ? '<td>–</td><td>–</td><td>–</td><td title="Aktie ohne Hebel">1×</td>'
+          ? '<td>–</td><td>–</td><td>–</td><td title="Eine Aktie hat kein Vega – ihr Wert hängt nicht an der Volatilität">–</td><td title="Aktie ohne Hebel">1×</td>'
           : '<td>' + U.nf2.format(p.strike) + '</td>' +
             '<td>' + U.d(p.expiry) + '</td>' +
-            '<td>' + Math.round(p.iv * 100) + ' %</td>' +
+            '<td title="Beim Öffnen: ' + Math.round(p.iv * 100) + ' %">' + Math.round(ivAnz * 100) + ' %' +
+              (Math.abs(ivAnz - p.iv) > 0.005 ? '<span style="color:var(--muted);"> (' + (ivAnz > p.iv ? '+' : '') + Math.round((ivAnz - p.iv) * 100) + ')</span>' : '') + '</td>' +
+            /* Vega: was ein Vola-Punkt diese Position wert ist. Stand nirgends - und
+             * genau daran haengt der groesste Teil der Bewegung um einen Termin. */
+            '<td title="Wertänderung je Volatilitätspunkt – bei unverändertem Kurs">' +
+              (p.vega > 0 ? U.nf2.format(p.vega * p.qty) + ' $' : '–') + '</td>' +
             '<td title="Aufgeld aktuell: ' + Q.warrantAufgeld(p.dir, wobj, spot, now).toFixed(1) + ' %">' + Q.warrantOmega(p.dir, wobj, spot, now).toFixed(1) + 'x</td>';
         ph += '<tr><td><b>' + U.esc(p.sym) + '</b>' + (p.strategy === 'intraday' ? ' <span title="Intraday-Strategie"></span>' : '') + '</td>' +
           '<td><span class="badge ' + p.dir + '">' + (p.dir === 'call' ? 'CALL' : 'PUT') + '</span></td>' +
@@ -4045,15 +4192,15 @@ function huerdeAnzeigen() {
           '<td>' + U.nf2.format(wertJetzt) + ' $</td>' +
           '<td class="' + U.signCls(plUsd) + '" style="white-space:nowrap;">' + U.signTxt(Math.round(plUsd * 100) / 100, ' $') +
             ' <span style="color:var(--muted); font-weight:400;">(' + U.signTxt(Math.round(ret * 1000) / 10, ' %') + ')</span></td>' +
-          '<td style="white-space:nowrap;"><button class="btn ghost" style="padding:2px 8px; font-size:11px;" data-ticket="' + p.id + '" title="Order-Daten zum Nachbilden">Nachbilden</button> ' +
-          '<button class="btn ghost" style="padding:2px 8px; font-size:11px;" data-closepos="' + p.id + '">Schließen</button></td></tr>';
+          '<td style="white-space:nowrap;"><button class="btn ghost" style="padding:2px 8px; font-size:var(--fs-klein);" data-ticket="' + p.id + '" title="Order-Daten zum Nachbilden">Nachbilden</button> ' +
+          '<button class="btn ghost" style="padding:2px 8px; font-size:var(--fs-klein);" data-closepos="' + p.id + '">Schließen</button></td></tr>';
       });
       var sumPl = sumWert - sumEinsatz;
-      ph += '<tr><td colspan="9" style="text-align:right; color:var(--muted); font-weight:600;">Summe</td>' +
+      ph += '<tr><td colspan="10" style="text-align:right; color:var(--muted); font-weight:600;">Summe</td>' +
         '<td style="font-weight:600;">' + U.nf2.format(sumEinsatz) + ' $</td>' +
         '<td style="font-weight:600;">' + U.nf2.format(sumWert) + ' $</td>' +
         '<td class="' + U.signCls(sumPl) + '" style="white-space:nowrap;">' + U.signTxt(Math.round(sumPl * 100) / 100, ' $') + '</td><td></td></tr>';
-      ph += '</table><div style="color:var(--muted); font-size:11px; margin-top:6px;">' +
+      ph += '</table><div style="color:var(--muted); font-size:var(--fs-klein); margin-top:6px;">' +
         'Belegte Intraday-Kanten: nur Not-Stop, Ausstieg über die Zeit (8 bzw. 26 Handelsstunden), Übernacht erlaubt. ' +
         'Widerlegte Setups: Stop −25 % / Ziel +35 %, Glattstellung zum Tagesschluss. ' +
         'Altbestand der Stunden-Strategie: Stop −40 % / Ziel +80 %, Zeit-Ausstieg 10 Tage vor Fälligkeit. ' +
@@ -4062,12 +4209,12 @@ function huerdeAnzeigen() {
     } else {
       ph = '<div class="empty"><span class="ico"></span>Keine offenen Positionen. ' +
         (D.intraday && D.intraday.enabled
-          ? 'Die Intraday-Strategie läuft und wartet auf ein Signal – wann sie zuletzt nichts getan hat und warum, steht unter „Auswertung“.'
-          : 'Die Intraday-Strategie ist aus – einschalten unter „Schalter &amp; Einstellungen“.') + '</div>';
+          ? 'Die Intraday-Strategie läuft und wartet auf ein Signal – wann sie zuletzt nichts getan hat und warum, steht unter „Vermögen → Auswertung“.'
+          : 'Die Intraday-Strategie ist aus – einschalten unter „Vermögen → Schalter &amp; Einstellungen“.') + '</div>';
     }
     if (D.repairNote && Date.now() - D.repairNote.at < 7 * 86400000) {
       var rn = D.repairNote;
-      ph = '<div style="border:1px solid var(--border); border-left:3px solid var(--series2); border-radius:8px; padding:8px 12px; margin-bottom:10px; font-size:12.5px;">' +
+      ph = '<div style="border:1px solid var(--border); border-left:3px solid var(--series2); border-radius:var(--r-gross); padding:8px 12px; margin-bottom:10px; font-size:var(--fs-text);">' +
         '<b>Buchhaltung repariert</b> (' + U.dt(rn.at) + '): ' +
         (rn.adopted ? rn.adopted + ' verwaiste Position(en) zurückgeholt – sie werden ab sofort wieder normal überwacht und nach den Exit-Regeln geschlossen. ' : '') +
         (rn.written ? rn.written + ' unvollständige(r) Datensatz/Datensätze abgeschrieben. ' : '') +
@@ -4100,7 +4247,7 @@ function huerdeAnzeigen() {
       var s = D.stats[row.k] || { r: 0, w: 0 }, tot = s.r + s.w;
       var pct = tot ? Math.round(s.r / tot * 100) : null;
       var wTxt = row.weighted ? ' <span style="color:var(--muted)">(Gewicht ' + Math.round(normWeights()[row.k] * 100) + ' %)</span>' : '';
-      hr += '<div style="margin-bottom:8px;"><div style="display:flex; justify-content:space-between; font-size:12px;">' +
+      hr += '<div style="margin-bottom:8px;"><div style="display:flex; justify-content:space-between; font-size:var(--fs-neben);">' +
         '<span>' + row.n + wTxt + '</span>' +
         '<span>' + (pct === null ? 'noch keine Daten' : pct + ' % richtig (' + s.r + '/' + tot + ')') + '</span></div>' +
         '<div class="hitbar"><span style="width:' + (pct === null ? 0 : pct) + '%"></span></div></div>';
@@ -4386,7 +4533,7 @@ function huerdeAnzeigen() {
         if (!rows.length) { st.textContent = 'Keine Daten für den Vergleich.'; return; }
         rows.sort(function (a, b) { return b.s.retPct - a.s.retPct; });
         var best = rows[0];
-        var html = '<div style="font-size:12px; color:var(--ink-2); margin-bottom:8px;">Gleiche Regeln, drei Zeitrahmen (EMA' + D.intraday.period + ', ' +
+        var html = '<div style="font-size:var(--fs-neben); color:var(--ink-2); margin-bottom:8px;">Gleiche Regeln, drei Zeitrahmen (EMA' + D.intraday.period + ', ' +
           (Q.PROFILES[D.intraday.profile] || Q.PROFILES.atm21).name + ', Gebühr ' + U.nf2.format(D.intraday.orderFee) + ' $/Order). Hinweis: 60-Min nutzt ~3 Monate, 5/15-Min ~1 Monat Historie.</div>';
         html += '<table class="tbl"><tr><th>Zeitrahmen</th><th>Rendite</th><th>Trades</th><th>Trefferquote</th><th>Ø Haltedauer</th><th>Gebühren</th><th>Max. Drawdown</th></tr>';
         rows.forEach(function (r0) {
@@ -4395,7 +4542,7 @@ function huerdeAnzeigen() {
             '<td>' + r0.s.nTrades + '</td><td>' + r0.s.winRate + ' %</td><td>' + r0.s.avgHoldMin + ' Min</td>' +
             '<td>' + U.nf2.format(r0.s.feesTotal || 0) + ' $</td><td>−' + r0.s.maxDrawdownPct + ' %</td></tr>';
         });
-        html += '</table><div style="font-size:11.5px; color:var(--muted); margin-top:8px;">Je kürzer der Zeitrahmen, desto mehr Signale – aber auch mehr Spread- und Gebührenkosten sowie mehr Fehlsignale (Whipsaws). Der beste Zeitrahmen kann sich mit der Marktphase ändern; Vergangenheit ist kein Indikator für die Zukunft.</div>';
+        html += '</table><div style="font-size:var(--fs-neben); color:var(--muted); margin-top:8px;">Je kürzer der Zeitrahmen, desto mehr Signale – aber auch mehr Spread- und Gebührenkosten sowie mehr Fehlsignale (Whipsaws). Der beste Zeitrahmen kann sich mit der Marktphase ändern; Vergangenheit ist kein Indikator für die Zukunft.</div>';
         html += '<svg id="btChart" style="width:100%; height:180px; margin-top:10px;"></svg>';
         document.getElementById('btResult').innerHTML = html;
         drawEquity(document.getElementById('btChart'), best.res.equity, START_CAPITAL);
@@ -4445,16 +4592,16 @@ function huerdeAnzeigen() {
   function renderBtResult(res, label, benchPts) {
     var s = res.summary;
     lastBtTrades = res.trades || [];
-    var html = '<div style="font-size:12px; color:var(--ink-2); margin-bottom:8px;">' + label + '</div>';
+    var html = '<div style="font-size:var(--fs-neben); color:var(--ink-2); margin-bottom:8px;">' + label + '</div>';
     html += '<div class="depot-stats">' +
-      '<div class="tile"><div class="name">Endkapital</div><div class="val ' + U.signCls(s.end - s.start) + '" style="font-size:17px;">' + U.money(s.end) + '</div></div>' +
-      '<div class="tile"><div class="name">Rendite</div><div class="val ' + U.signCls(s.retPct) + '" style="font-size:17px;">' + U.signTxt(s.retPct, ' %') + '</div></div>' +
-      '<div class="tile"><div class="name">Trades / Trefferquote</div><div class="val" style="font-size:17px;">' + s.nTrades + ' / ' + s.winRate + ' %</div></div>' +
-      '<div class="tile"><div class="name">Max. Drawdown</div><div class="val" style="font-size:17px;">−' + s.maxDrawdownPct + ' %</div></div>' +
-      '<div class="tile"><div class="name">Sharpe (ann., ca.)</div><div class="val ' + U.signCls(s.sharpe) + '" style="font-size:17px;">' + (s.sharpe != null ? s.sharpe.toFixed(2) : '–') + '</div></div>' +
+      '<div class="tile"><div class="name">Endkapital</div><div class="val ' + U.signCls(s.end - s.start) + '" style="font-size:var(--fs-zahl);">' + U.money(s.end) + '</div></div>' +
+      '<div class="tile"><div class="name">Rendite</div><div class="val ' + U.signCls(s.retPct) + '" style="font-size:var(--fs-zahl);">' + U.signTxt(s.retPct, ' %') + '</div></div>' +
+      '<div class="tile"><div class="name">Trades / Trefferquote</div><div class="val" style="font-size:var(--fs-zahl);">' + s.nTrades + ' / ' + s.winRate + ' %</div></div>' +
+      '<div class="tile"><div class="name">Max. Drawdown</div><div class="val" style="font-size:var(--fs-zahl);">−' + s.maxDrawdownPct + ' %</div></div>' +
+      '<div class="tile"><div class="name">Sharpe (ann., ca.)</div><div class="val ' + U.signCls(s.sharpe) + '" style="font-size:var(--fs-zahl);">' + (s.sharpe != null ? s.sharpe.toFixed(2) : '–') + '</div></div>' +
       '</div>';
     // Kennzahlen-Zeile 2
-    html += '<div style="display:flex; gap:16px; flex-wrap:wrap; font-size:12px; color:var(--ink-2); margin-bottom:10px;">' +
+    html += '<div style="display:flex; gap:16px; flex-wrap:wrap; font-size:var(--fs-neben); color:var(--ink-2); margin-bottom:10px;">' +
       '<span>Profit-Faktor <b class="' + (s.profitFactor >= 1 ? 'pos' : 'neg') + '">' + (s.profitFactor != null ? s.profitFactor : '–') + '</b></span>' +
       '<span>Ø Gewinn-Trade <b class="pos">' + U.signTxt(s.avgWin || 0, ' $') + '</b></span>' +
       '<span>Ø Verlust-Trade <b class="neg">' + U.signTxt(s.avgLoss || 0, ' $') + '</b></span>' +
@@ -4472,11 +4619,11 @@ function huerdeAnzeigen() {
     if (s.gegenprobe) {
       var gp = s.gegenprobe;
       if (gp.zuWenig) {
-        html += '<div style="font-size:12px; color:var(--ink-2); margin-bottom:10px; padding:8px 10px; border-left:3px solid var(--grid);">' +
+        html += '<div style="font-size:var(--fs-neben); color:var(--ink-2); margin-bottom:10px; padding:8px 10px; border-left:3px solid var(--grid);">' +
           'Zufallsgegenprobe: ' + U.esc(gp.aussage) + '</div>';
       } else {
         var farbe = gp.ueberzufaellig ? 'var(--up)' : (gp.pWert >= 0.5 ? 'var(--down)' : 'var(--warn)');
-        html += '<div style="font-size:12px; margin-bottom:10px; padding:9px 11px; border-left:3px solid ' + farbe + '; background:var(--panel);">' +
+        html += '<div style="font-size:var(--fs-neben); margin-bottom:10px; padding:9px 11px; border-left:3px solid ' + farbe + '; background:var(--panel);">' +
           '<b style="color:' + farbe + ';">Zufallsgegenprobe:</b> ' + U.esc(gp.aussage) +
           '<div style="color:var(--ink-2); margin-top:4px;">' +
             'Diese Strategie bewegte den Basiswert im Mittel <b>' + U.signTxt(gp.echt, ' %') + '</b> in Handelsrichtung. ' +
@@ -4493,7 +4640,7 @@ function huerdeAnzeigen() {
     if (s.monatlich && !s.monatlich.zuKurz) {
       var ms = s.monatlich;
       var mFarbe = ms.ueberzufaellig ? 'var(--up)' : 'var(--ink-2)';
-      html += '<div style="font-size:12px; margin-bottom:10px; padding:9px 11px; border-left:3px solid ' + mFarbe + '; background:var(--panel);">' +
+      html += '<div style="font-size:var(--fs-neben); margin-bottom:10px; padding:9px 11px; border-left:3px solid ' + mFarbe + '; background:var(--panel);">' +
         '<b>Signifikanz über Monate:</b> ' + ms.monate + ' Monate, ' +
         '<b>' + U.signTxt(ms.jeMonat, ' %') + '</b> je Monat (' + U.signTxt(ms.proJahr, ' %') + ' p. a.), ' +
         ms.positiveMonate + ' % davon positiv, <b>t = ' + ms.tWert + '</b>' +
@@ -4505,11 +4652,11 @@ function huerdeAnzeigen() {
               : 'Nicht überzufällig (t unter 2). Die Trade-Zahl oben sieht besser aus, weil überlappende Trades dieselbe Marktbewegung mehrfach zählen.') +
         '</div></div>';
     }
-    html += '<svg id="btChart" style="width:100%; height:180px; display:block;"></svg><div id="btChartLegend" style="font-size:11.5px; color:var(--ink-2); margin-top:4px;"></div>';
+    html += '<svg id="btChart" style="width:100%; height:180px; display:block;"></svg><div id="btChartLegend" style="font-size:var(--fs-neben); color:var(--ink-2); margin-top:4px;"></div>';
     // Robustheit (Bootstrap)
     if (res.bootstrap) {
       var bs = res.bootstrap;
-      html += '<div style="font-size:12px; color:var(--ink-2); margin-top:10px;">Robustheit (400 Neuziehungen der Trades): Endkapital-Bandbreite ' +
+      html += '<div style="font-size:var(--fs-neben); color:var(--ink-2); margin-top:10px;">Robustheit (400 Neuziehungen der Trades): Endkapital-Bandbreite ' +
         '<b>' + U.nf0.format(bs.p5) + ' $</b> (5 %) · <b>' + U.nf0.format(bs.p50) + ' $</b> (Median) · <b>' + U.nf0.format(bs.p95) + ' $</b> (95 %) · ' +
         'Verlust-Wahrscheinlichkeit <b class="' + (bs.lossProb > 50 ? 'neg' : '') + '">' + bs.lossProb + ' %</b></div>';
     }
@@ -4520,7 +4667,7 @@ function huerdeAnzeigen() {
         var y = k.slice(0, 4), m = parseInt(k.slice(5), 10);
         (byYear[y] = byYear[y] || {})[m] = s.monthly[k];
       });
-      html += '<div style="margin-top:12px;"><div style="font-size:12px; color:var(--ink-2); margin-bottom:4px;">Monats-Renditen</div><table class="tbl" style="font-size:11px;"><tr><th></th>';
+      html += '<div style="margin-top:12px;"><div style="font-size:var(--fs-neben); color:var(--ink-2); margin-bottom:4px;">Monats-Renditen</div><table class="tbl" style="font-size:var(--fs-klein);"><tr><th></th>';
       for (var mm = 1; mm <= 12; mm++) html += '<th>' + ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'][mm - 1] + '</th>';
       html += '</tr>';
       Object.keys(byYear).sort().forEach(function (y) {
@@ -4542,25 +4689,25 @@ function huerdeAnzeigen() {
     if (res.stats) {
       [['tech', 'Technik'], ['elliott', 'Elliott-Wellen']].forEach(function (kk) {
         var v = res.stats[kk[0]], tot = v.r + v.w, pct = tot ? Math.round(v.r / tot * 100) : 0;
-        html += '<div style="font-size:12px; display:flex; justify-content:space-between;"><span>' + kk[1] + '</span><span>' + pct + ' % richtig (' + v.r + '/' + tot + ')</span></div><div class="hitbar" style="margin-bottom:8px;"><span style="width:' + pct + '%"></span></div>';
+        html += '<div style="font-size:var(--fs-neben); display:flex; justify-content:space-between;"><span>' + kk[1] + '</span><span>' + pct + ' % richtig (' + v.r + '/' + tot + ')</span></div><div class="hitbar" style="margin-bottom:8px;"><span style="width:' + pct + '%"></span></div>';
       });
     } else if (res.trades && res.trades.length) {
       var byWhy = {};
       res.trades.forEach(function (tr) { byWhy[tr.why] = (byWhy[tr.why] || 0) + 1; });
-      html += '<div style="font-size:12px; color:var(--ink-2);">Exit-Gründe: ' + Object.keys(byWhy).map(function (k) { return k + ' (' + byWhy[k] + ')'; }).join(' · ') + '</div>';
+      html += '<div style="font-size:var(--fs-neben); color:var(--ink-2);">Exit-Gründe: ' + Object.keys(byWhy).map(function (k) { return k + ' (' + byWhy[k] + ')'; }).join(' · ') + '</div>';
     }
-    html += '</div><div style="font-size:11.5px; color:var(--muted);">Simulation mit synthetischen Scheinen (Black-Scholes, vola-abhängiger Spread + Slippage + Gebühren). Vergangenheit ist kein Indikator für die Zukunft.</div></div>';
+    html += '</div><div style="font-size:var(--fs-neben); color:var(--muted);">Simulation mit synthetischen Scheinen (Black-Scholes, vola-abhängiger Spread + Slippage + Gebühren). Vergangenheit ist kein Indikator für die Zukunft.</div></div>';
     // Trade-Liste
     if (res.trades && res.trades.length) {
-      html += '<details style="margin-top:10px;"><summary style="cursor:pointer; font-size:12.5px; color:var(--ink-2);">Alle ' + res.trades.length + ' Trades anzeigen</summary>' +
-        '<div style="max-height:320px; overflow:auto; margin-top:8px;"><table class="tbl" style="font-size:11.5px;"><tr><th>Datum</th><th>Wert</th><th>Typ</th><th>Halt</th><th>P/L</th><th>Exit</th></tr>';
+      html += '<details style="margin-top:10px;"><summary style="cursor:pointer; font-size:var(--fs-text); color:var(--ink-2);">Alle ' + res.trades.length + ' Trades anzeigen</summary>' +
+        '<div style="max-height:320px; overflow:auto; margin-top:8px;"><table class="tbl" style="font-size:var(--fs-neben);"><tr><th>Datum</th><th>Wert</th><th>Typ</th><th>Halt</th><th>P/L</th><th>Exit</th></tr>';
       res.trades.slice(-200).reverse().forEach(function (tr) {
         var holdTxt = tr.holdMin != null ? (tr.holdMin >= 1440 ? Math.round(tr.holdMin / 1440) + ' T' : tr.holdMin + ' Min') : Math.round((tr.closeT - tr.openT) / 86400000) + ' T';
         html += '<tr><td>' + new Date(tr.openT).toLocaleDateString('de-DE') + '</td><td><b>' + U.esc(tr.sym) + '</b></td>' +
           '<td>' + tr.dir.toUpperCase() + '</td><td>' + holdTxt + '</td>' +
           '<td class="' + U.signCls(tr.pnl) + '">' + U.signTxt(tr.pnl, ' $') + '</td><td>' + U.esc(tr.why || '') + '</td></tr>';
       });
-      html += '</table></div><button class="btn ghost" id="btCsvBtn" style="margin-top:8px; font-size:12px;">Backtest-Trades als CSV</button></details>';
+      html += '</table></div><button class="btn ghost" id="btCsvBtn" style="margin-top:8px; font-size:var(--fs-neben);">Backtest-Trades als CSV</button></details>';
     }
     document.getElementById('btResult').innerHTML = html;
     var series = [{ name: 'Strategie', short: 'Strat', color: 'var(--series)', pts: res.equity }];
@@ -4580,137 +4727,15 @@ function huerdeAnzeigen() {
     drawLines(svg, [{ name: 'Depotwert', short: '', color: 'var(--series)', pts: eq }], null, base, { area: true, unit: ' $' });
   }
 
-  /* ================= Chart-Helfer: Achsen, Ticks, Hover ================= */
-  function niceTicks(lo, hi, n) {
-    var span = hi - lo;
-    if (span <= 0) return [lo];
-    var step = Math.pow(10, Math.floor(Math.log(span / n) / Math.LN10));
-    var err = span / n / step;
-    step *= err >= 7.5 ? 10 : err >= 3.5 ? 5 : err >= 1.5 ? 2 : 1;
-    var out = [];
-    for (var v = Math.ceil(lo / step) * step; v <= hi + step * 1e-6; v += step) out.push(Math.round(v * 1e6) / 1e6);
-    return out;
-  }
-  function fmtTick(v, span) {
-    if (Math.abs(v) >= 1000) return U.nf0.format(v);
-    if (span < 4) return U.nf2.format(v);
-    return U.nf0.format(v);
-  }
-  function fmtTimeTick(t, spanMs) {
-    var d = new Date(t);
-    if (spanMs <= 30 * 3600000) return d.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
-    if (spanMs <= 130 * 86400000) return d.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' });
-    return d.toLocaleDateString('de-DE', { month: '2-digit', year: '2-digit' });
-  }
-  function chartHover(e) {
-    var svg = e.currentTarget, c = svg.__chart, tip = document.getElementById('tip');
-    if (!c || !tip) return;
-    var rect = svg.getBoundingClientRect();
-    var mx = (e.clientX - rect.left) * (c.W / Math.max(1, rect.width));
-    var t = c.x0 + Math.max(0, Math.min(1, (mx - c.padL) / (c.plotW || 1))) * (c.x1 - c.x0);
-    var rows = [], cx = null;
-    c.series.forEach(function (s) {
-      if (!s.pts.length) return;
-      var best = 0, bd = Infinity;
-      for (var i = 0; i < s.pts.length; i++) { var d0 = Math.abs(s.pts[i][0] - t); if (d0 < bd) { bd = d0; best = i; } }
-      var p = s.pts[best];
-      if (cx === null) cx = p[0];
-      rows.push('<div style="display:flex; align-items:center; gap:6px;"><span style="width:8px;height:8px;border-radius:50%;background:' + s.color + ';display:inline-block;"></span>' +
-        '<span class="tt">' + U.esc(s.short || s.name) + '</span> <span class="tv">' + U.nf2.format(p[1]) + (c.unit || '') + '</span></div>');
-    });
-    if (cx === null) return;
-    var xh = svg.querySelector('.xhair');
-    if (xh) { xh.style.display = ''; var xpx = c.padL + (cx - c.x0) / (c.x1 - c.x0) * c.plotW; xh.setAttribute('x1', xpx); xh.setAttribute('x2', xpx); }
-    tip.style.display = 'block';
-    tip.innerHTML = '<div class="tt">' + fmtTimeTick(cx, c.x1 - c.x0) + (c.x1 - c.x0 > 30 * 3600000 ? ' · ' + new Date(cx).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }) + ' Uhr' : ' Uhr') + '</div>' + rows.join('');
-    var tw = tip.offsetWidth || 120;
-    tip.style.left = Math.min(window.innerWidth - tw - 12, e.clientX + 14) + 'px';
-    tip.style.top = (e.clientY + 14) + 'px';
-  }
-  function chartLeave(e) {
-    var tip = document.getElementById('tip');
-    if (tip) tip.style.display = 'none';
-    var xh = e.currentTarget.querySelector('.xhair');
-    if (xh) xh.style.display = 'none';
-  }
-
-  /* ================= Mehrserien-Chart (Achsen + Grid + Hover) ================= */
-  function drawLines(svg, seriesArr, legendEl, base, opts) {
-    opts = opts || {};
-    var W = svg.clientWidth || 560, H = svg.clientHeight || 150;
-    var padL = 8, padR = opts.padR != null ? opts.padR : 52, padT = 8, padB = 18;
-    svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
-    var all = [];
-    seriesArr.forEach(function (s) { all = all.concat(s.pts); });
-    if (all.length < 2) {
-      svg.innerHTML = '<text x="' + (W / 2) + '" y="' + (H / 2) + '" text-anchor="middle" fill="var(--muted)" font-size="12">Noch zu wenig Daten.</text>';
-      if (legendEl) legendEl.innerHTML = '';
-      svg.__chart = null;
-      return;
-    }
-    var x0 = Math.min.apply(null, all.map(function (p) { return p[0]; })), x1 = Math.max.apply(null, all.map(function (p) { return p[0]; }));
-    var ys = all.map(function (p) { return p[1]; });
-    if (base != null) ys = ys.concat([base]);
-    var y0 = Math.min.apply(null, ys), y1 = Math.max.apply(null, ys);
-    if (y1 - y0 < 1e-9) { y0 -= 1; y1 += 1; }
-    var yPad = (y1 - y0) * 0.06;
-    y0 -= yPad; y1 += yPad;
-    if (x1 - x0 < 1) x1 = x0 + 1;
-    var plotW = W - padL - padR, plotH = H - padT - padB;
-    function X(t) { return padL + (t - x0) / (x1 - x0) * plotW; }
-    function Y(v) { return H - padB - (v - y0) / (y1 - y0) * plotH; }
-    var html = '';
-    // Y-Gitter (haarfein, durchgezogen) + Werte-Beschriftung
-    var ticks = niceTicks(y0, y1, 4);
-    ticks.forEach(function (tv) {
-      html += '<line x1="' + padL + '" x2="' + (padL + plotW) + '" y1="' + Y(tv).toFixed(1) + '" y2="' + Y(tv).toFixed(1) + '" stroke="var(--grid)" stroke-width="1"></line>' +
-        '<text x="' + (padL + 2) + '" y="' + (Y(tv) - 3).toFixed(1) + '" fill="var(--muted)" font-size="9.5">' + fmtTick(tv, y1 - y0) + '</text>';
-    });
-    // X-Zeitachse: 4 Beschriftungen, keine vertikalen Linien
-    for (var xi = 0; xi <= 3; xi++) {
-      var tx = x0 + (x1 - x0) * xi / 3;
-      var anchor = xi === 0 ? 'start' : xi === 3 ? 'end' : 'middle';
-      html += '<text x="' + X(tx).toFixed(1) + '" y="' + (H - 5) + '" text-anchor="' + anchor + '" fill="var(--muted)" font-size="9.5">' + fmtTimeTick(tx, x1 - x0) + '</text>';
-    }
-    if (base != null) html += '<line x1="' + padL + '" x2="' + (padL + plotW) + '" y1="' + Y(base) + '" y2="' + Y(base) + '" stroke="var(--baseline)" stroke-dasharray="4 4" stroke-width="1"></line>';
-    // Flächenfüllung (nur Einzelserie, ~10 % Deckung)
-    if (opts.area && seriesArr.length === 1 && seriesArr[0].pts.length > 1) {
-      var s0 = seriesArr[0];
-      var dA = s0.pts.map(function (p, i) { return (i ? 'L' : 'M') + X(p[0]).toFixed(1) + ' ' + Y(p[1]).toFixed(1); }).join(' ');
-      html += '<path d="' + dA + ' L' + X(s0.pts[s0.pts.length - 1][0]).toFixed(1) + ' ' + (H - padB) + ' L' + X(s0.pts[0][0]).toFixed(1) + ' ' + (H - padB) + ' Z" fill="' + s0.color + '" opacity="0.10"></path>';
-    }
-    // Linien + Endpunkte
-    var endLabels = [];
-    seriesArr.forEach(function (s) {
-      if (s.pts.length < 2) return;
-      var d = s.pts.map(function (p, i) { return (i ? 'L' : 'M') + X(p[0]).toFixed(1) + ' ' + Y(p[1]).toFixed(1); }).join(' ');
-      var last = s.pts[s.pts.length - 1];
-      html += '<path d="' + d + '" fill="none" stroke="' + s.color + '" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"></path>';
-      html += '<circle cx="' + X(last[0]).toFixed(1) + '" cy="' + Y(last[1]).toFixed(1) + '" r="4" fill="' + s.color + '" stroke="var(--surface)" stroke-width="2"></circle>';
-      if (s.short) endLabels.push({ x: X(last[0]) + 8, y: Y(last[1]) + 3.5, txt: s.short, color: s.color });
-    });
-    // End-Beschriftungen: Kollisionen vermeiden (min. 13 px Abstand), Text in Textfarbe
-    endLabels.sort(function (a, b) { return a.y - b.y; });
-    for (var li = 1; li < endLabels.length; li++) {
-      if (endLabels[li].y - endLabels[li - 1].y < 13) endLabels[li].y = endLabels[li - 1].y + 13;
-    }
-    endLabels.forEach(function (l) {
-      html += '<text x="' + l.x.toFixed(1) + '" y="' + Math.min(H - padB, l.y).toFixed(1) + '" fill="var(--ink-2)" font-size="10" font-weight="600">' + U.esc(l.txt) + '</text>';
-    });
-    // Crosshair fürs Hover
-    html += '<line class="xhair" x1="0" x2="0" y1="' + padT + '" y2="' + (H - padB) + '" stroke="var(--baseline)" stroke-width="1" style="display:none;"></line>';
-    svg.innerHTML = html;
-    svg.__chart = { W: W, H: H, padL: padL, plotW: plotW, x0: x0, x1: x1, series: seriesArr, unit: opts.unit || '' };
-    if (!svg.__hoverBound) {
-      svg.__hoverBound = true;
-      svg.style.cursor = 'crosshair';
-      svg.addEventListener('mousemove', chartHover);
-      svg.addEventListener('mouseleave', chartLeave);
-    }
-    if (legendEl) legendEl.innerHTML = seriesArr.length > 1 ? seriesArr.map(function (s) {
-      return '<span style="display:inline-flex; align-items:center; gap:5px; margin-right:14px;"><span style="width:10px;height:10px;border-radius:3px;background:' + s.color + ';display:inline-block;"></span>' + U.esc(s.name) + '</span>';
-    }).join('') : '';
-  }
+  /* ================= Chart-Zeichnung =================
+   * Wohnt seit dem zweiten Schnitt (Audit 22) in chart.js - sie fasst weder D noch
+   * eine Position noch eine Kursquelle an, sondern bekommt Punkte und einen
+   * SVG-Knoten. Hier stehen nur noch die Namen, damit die rund 20 Aufrufstellen
+   * unveraendert bleiben konnten. */
+  var niceTicks = window.Chart.niceTicks;
+  var fmtTick = window.Chart.fmtTick;
+  var fmtTimeTick = window.Chart.fmtTimeTick;
+  var drawLines = window.Chart.drawLines;
 
   /* ================= Parallel-Strategien-Auswertung ================= */
   function stratOf(t) { return t.strategy === 'intraday' ? 'intraday' : 'hourly'; }
@@ -4767,7 +4792,7 @@ function huerdeAnzeigen() {
         '<b>' + n + '×</b></div>';
     }).join('');
     el.innerHTML =
-      '<div style="display:flex; gap:16px; flex-wrap:wrap; margin-bottom:8px; font-size:12.5px;">' +
+      '<div style="display:flex; gap:16px; flex-wrap:wrap; margin-bottom:8px; font-size:var(--fs-text);">' +
       '<span>Ausgeführte Intraday-Trades: <b>' + taken + '</b></span>' +
       '<span>Bewusst verworfen: <b>' + agg.total + '</b></span>' +
       (agg.total + taken > 0 ? '<span>Geduld-Quote: <b>' + Math.round(agg.total / (agg.total + taken) * 100) + ' %</b></span>' : '') +
@@ -4790,18 +4815,18 @@ function huerdeAnzeigen() {
     };
     var h = '<div style="margin-top:12px; border-top:1px solid var(--line); padding-top:8px;">' +
       '<div style="font-weight:700; margin-bottom:4px;">Merkmale der Signale – Aufzeichnung, kein Befund</div>' +
-      '<div style="color:var(--muted); font-size:11.5px; margin-bottom:6px;">' +
+      '<div style="color:var(--muted); font-size:var(--fs-neben); margin-bottom:6px;">' +
       'Bei jedem Signal werden vier vorher festgelegte Merkmale mitgeschrieben (Lage im Trendkanal, ' +
       'Kanalrichtung, relatives Volumen, genutzte Tagesspanne). Erst danach wird gezählt. ' +
       'Andersherum – hinterher in den fertigen Trades nach Mustern suchen – findet man immer eines. ' +
       '„Kontrolle“ ist derselbe Wert zur selben Tagesstunde an beliebigen anderen Tagen; nur der ' +
       '<b>Überschuss</b> darüber wäre überhaupt eine Aussage. Simulation, keine Anlageberatung.</div>';
     if (!b.gesamtN) {
-      return h + '<div style="color:var(--muted); font-size:12px;">Noch kein abgeschlossenes Signal mit Merkmalen. ' +
+      return h + '<div style="color:var(--muted); font-size:var(--fs-neben);">Noch kein abgeschlossenes Signal mit Merkmalen. ' +
         'Die Aufzeichnung beginnt mit dem nächsten Signal, das alle Filter passiert.</div></div>';
     }
     for (var f = 0; f < b.felder.length; f++) {
-      h += '<div style="font-size:12px; font-weight:600; margin-top:6px;">' + U.esc(b.felder[f].name) + '</div>';
+      h += '<div style="font-size:var(--fs-neben); font-weight:600; margin-top:6px;">' + U.esc(b.felder[f].name) + '</div>';
       for (var z = 0; z < b.felder[f].zeilen.length; z++) {
         var r = b.felder[f].zeilen[z];
         var rechts = r.n + ' Signale · Ø ' + U.signTxt(r.avg, ' %') +
@@ -4814,7 +4839,7 @@ function huerdeAnzeigen() {
     }
     /* Die Zahl der Vergleiche gehört sichtbar unter die Tabelle: Sie ist der Grund,
      * warum ein einzelner auffälliger Topf nichts beweist. */
-    h += '<div style="color:var(--muted); font-size:11.5px; margin-top:8px;">' +
+    h += '<div style="color:var(--muted); font-size:var(--fs-neben); margin-top:8px;">' +
       b.toepfe + ' Vergleiche nebeneinander, ' + b.gesamtN + ' Merkmalseinträge aus den abgeschlossenen Signalen. ' +
       'Bei so vielen Töpfen sticht auch bei reinem Zufall regelmäßig einer heraus – ein auffälliger Wert ist ' +
       'deshalb ein <b>Kandidat für eine Messung</b>, nicht ihr Ergebnis. Gehandelt wird davon nichts: Erst eine ' +
@@ -4842,12 +4867,12 @@ function huerdeAnzeigen() {
       var einOffen = (D.schatten || []).filter(function (x) { return x.status === 'open' && x.grund === 'Einstieg'; }).length;
       h += '<div style="margin-top:12px; border-top:1px solid var(--line); padding-top:8px;">' +
         '<div style="font-weight:700; margin-bottom:4px;">Vorwärtstest – was die Intraday-Strategie verdient hätte</div>' +
-        '<div style="color:var(--muted); font-size:11.5px; margin-bottom:6px;">' +
+        '<div style="color:var(--muted); font-size:var(--fs-neben); margin-bottom:6px;">' +
         'Jedes Signal, das alle Filter passiert hat, läuft hier virtuell zu Ende – auch wenn nicht gehandelt wird. ' +
         'Das ist die einzige Evidenzform ohne Rückschau-Verzerrung: Sie entsteht erst mit der Zeit und kann nicht nachträglich schöngerechnet werden. ' +
         'Simulation, keine Anlageberatung.</div>';
       if (!ein || !ein.n) {
-        h += '<div style="color:var(--muted); font-size:12px;">Noch kein abgeschlossenes Signal' +
+        h += '<div style="color:var(--muted); font-size:var(--fs-neben);">Noch kein abgeschlossenes Signal' +
           (einOffen ? ' – ' + einOffen + ' laufen gerade.' : '. Die Aufzeichnung beginnt mit dem nächsten Signal.') + '</div>';
       } else {
         var avgE = Math.round(ein.sumPct / ein.n * 10) / 10;
@@ -4882,9 +4907,9 @@ function huerdeAnzeigen() {
     if (!gr.length && !offen) return h;
     h += '<div style="margin-top:12px; border-top:1px solid var(--line); padding-top:8px;">' +
       '<div style="font-weight:700; margin-bottom:4px;">Schattenbuch – was aus den verworfenen Trades geworden wäre</div>' +
-      '<div style="color:var(--muted); font-size:11.5px; margin-bottom:6px;">Jeder verworfene Trade läuft virtuell weiter (gleiche Stop-/Ausstiegsregeln). ' +
+      '<div style="color:var(--muted); font-size:var(--fs-neben); margin-bottom:6px;">Jeder verworfene Trade läuft virtuell weiter (gleiche Stop-/Ausstiegsregeln). ' +
       '„Gerettet“ = der Filter hat einen Verlust verhindert, „verhindert“ = er hat einen Gewinn gekostet (±1 % Totzone). Simulation, keine Anlageberatung.</div>';
-    if (!gr.length) h += '<div style="color:var(--muted); font-size:12px;">' + offen + ' Schatten laufen – noch keiner abgeschlossen.</div>';
+    if (!gr.length) h += '<div style="color:var(--muted); font-size:var(--fs-neben);">' + offen + ' Schatten laufen – noch keiner abgeschlossen.</div>';
     gr.forEach(function (g3) {
       var x = st[g3];
       var avg = x.n ? Math.round(x.sumPct / x.n * 10) / 10 : 0;
@@ -4895,7 +4920,7 @@ function huerdeAnzeigen() {
         '<b></b></div>' +
         '<div class="urteil-zeile">' + urteil + '</div>';
     });
-    if (offen) h += '<div style="color:var(--muted); font-size:11.5px; margin-top:4px;">' + offen + ' Schatten laufen noch.</div>';
+    if (offen) h += '<div style="color:var(--muted); font-size:var(--fs-neben); margin-top:4px;">' + offen + ' Schatten laufen noch.</div>';
     return h + '</div>';
   }
 
@@ -4903,6 +4928,17 @@ function huerdeAnzeigen() {
     renderBenchmark();
     renderPatience();
     renderTuneLog();
+  }
+  /* Die drei Ergebnis-Ansichten sind laengst in den Reiter "Regeln" gezogen, gezeichnet
+   * wurden sie aber weiterhin NUR beim Klick auf die Pille "Auswertung" unter Vermoegen.
+   * Wer also in "Regeln" die belegten Voreinstellungen uebernahm, sah die Tabelle
+   * darunter unveraendert - und damit auch nie den Rueckgaengig-Knopf zu seiner eigenen
+   * Aenderung. Beides nachgezogen: beim Oeffnen des Reiters und auf Zuruf. */
+  if (typeof window !== 'undefined') {
+    window.__renderAnalytics = function () { try { renderAnalytics(); } catch (e) { /* optional */ } };
+    document.addEventListener('tab-changed', function (ev) {
+      if (ev.detail === 'strategien') window.__renderAnalytics();
+    });
   }
 
   /* ================= KI-Retrospektive ================= */
@@ -4980,10 +5016,10 @@ function huerdeAnzeigen() {
     var sugs = kiSuggestions();
     var sugHtml = '';
     if (sugs.length) {
-      sugHtml = '<div style="margin-top:14px; padding:10px 12px; border:1px solid var(--grid); border-radius:10px;">' +
-        '<div style="font-weight:600; font-size:13px; margin-bottom:6px;">Lernschleife – Regel-Vorschläge aus den letzten 14 Tagen:</div>' +
-        '<ul style="margin:0 0 8px 18px; font-size:12.5px;">' + sugs.map(function (s) { return '<li>' + U.esc(s) + '</li>'; }).join('') + '</ul>' +
-        '<button class="btn" id="kiSugBtn">→ In meine KI-Regeln übernehmen</button> <span id="kiSugStatus" style="font-size:12px; color:var(--muted);"></span></div>';
+      sugHtml = '<div style="margin-top:14px; padding:10px 12px; border:1px solid var(--grid); border-radius:var(--r-gross);">' +
+        '<div style="font-weight:600; font-size:var(--fs-text); margin-bottom:6px;">Lernschleife – Regel-Vorschläge aus den letzten 14 Tagen:</div>' +
+        '<ul style="margin:0 0 8px 18px; font-size:var(--fs-text);">' + sugs.map(function (s) { return '<li>' + U.esc(s) + '</li>'; }).join('') + '</ul>' +
+        '<button class="btn" id="kiSugBtn">→ In meine KI-Regeln übernehmen</button> <span id="kiSugStatus" style="font-size:var(--fs-neben); color:var(--muted);"></span></div>';
     }
     document.getElementById('aiBody').innerHTML = U.md(body) + sugHtml + '<div class="warn">Simulation – keine Anlageberatung.</div>';
     window.openModal('aiModalBg');
@@ -5061,7 +5097,7 @@ function huerdeAnzeigen() {
     document.getElementById('weeklySaveBtn').addEventListener('click', function () {
       var doc = '<!DOCTYPE html><html lang="de"><head><meta charset="utf-8"><title>Wochenreport KW ' + kw + '</title>' +
         '<style>body{font-family:system-ui,sans-serif;max-width:720px;margin:40px auto;padding:0 20px;line-height:1.6;color:#111}h2{margin-top:24px}</style></head><body>' +
-        U.md(body) + '<hr><p style="color:#888;font-size:12px;">Erstellt vom Markt-Dashboard · Simulation, keine Anlageberatung.</p></body></html>';
+        U.md(body) + '<hr><p style="color:#888;font-size:var(--fs-neben);">Erstellt vom Markt-Dashboard · Simulation, keine Anlageberatung.</p></body></html>';
       dateiSpeichern(new Blob([doc], { type: 'text/html' }), 'Wochenreport-KW' + kw + '.html');
     });
   }
@@ -5105,12 +5141,12 @@ function huerdeAnzeigen() {
     var el = document.getElementById('screenChips');
     if (!el) return;
     var today = new Date().toISOString().slice(0, 10);
-    if (!D.screen || !D.screen.picks || !D.screen.picks.length) { el.innerHTML = '<span style="color:var(--muted); font-size:12px;">Noch kein Lauf.</span>'; return; }
+    if (!D.screen || !D.screen.picks || !D.screen.picks.length) { el.innerHTML = '<span style="color:var(--muted); font-size:var(--fs-neben);">Noch kein Lauf.</span>'; return; }
     var stale = D.screen.day !== today;
     el.innerHTML = D.screen.picks.map(function (p) {
-      return '<span class="chip flat" style="font-size:12px; padding:3px 10px;">' + U.esc(p.sym) + ' · Wellen-Score ' + p.score + (p.vol ? ' · ~' + p.vol + ' Mio $/Tag' : '') + '</span>';
-    }).join('') + (stale ? ' <span style="color:var(--muted); font-size:11px;">(von ' + U.esc(D.screen.day) + ' – läuft heute automatisch neu)</span>' : '') +
-      (D.intraday.screener ? '' : ' <span style="color:var(--muted); font-size:11px;">Schalter aus – Treffer fließen nicht in den Scan ein.</span>');
+      return '<span class="chip flat" style="font-size:var(--fs-neben); padding:3px 10px;">' + U.esc(p.sym) + ' · Wellen-Score ' + p.score + (p.vol ? ' · ~' + p.vol + ' Mio $/Tag' : '') + '</span>';
+    }).join('') + (stale ? ' <span style="color:var(--muted); font-size:var(--fs-klein);">(von ' + U.esc(D.screen.day) + ' – läuft heute automatisch neu)</span>' : '') +
+      (D.intraday.screener ? '' : ' <span style="color:var(--muted); font-size:var(--fs-klein);">Schalter aus – Treffer fließen nicht in den Scan ein.</span>');
   }
 
   /* ================= KI-Lernschleife: Regel-Vorschläge aus den Trades ================= */
@@ -5151,10 +5187,10 @@ function huerdeAnzeigen() {
     var wl = D.watchlist || [];
     el.innerHTML = wl.length
       ? wl.map(function (w, i) {
-        return '<span class="chip flat" style="font-size:12px; padding:3px 10px;">' + U.esc(w.y) + ' · ' + U.esc(w.name).slice(0, 24) +
+        return '<span class="chip flat" style="font-size:var(--fs-neben); padding:3px 10px;">' + U.esc(w.y) + ' · ' + U.esc(w.name).slice(0, 24) +
           ' <a href="#" data-unwatch="' + i + '" style="color:var(--down); font-weight:700; margin-left:4px;">×</a></span>';
       }).join('')
-      : '<span style="color:var(--muted); font-size:12px;">Noch keine eigenen Werte.</span>';
+      : '<span style="color:var(--muted); font-size:var(--fs-neben);">Noch keine eigenen Werte.</span>';
     el.querySelectorAll('[data-unwatch]').forEach(function (a) {
       a.addEventListener('click', function (e) {
         e.preventDefault();
@@ -5197,16 +5233,25 @@ function huerdeAnzeigen() {
   }
 
   /* ================= Strategie-Labor (Walk-Forward über alle Modi) ================= */
+  /* Die Fenster-Rechnung wohnt seit dem dritten Schnitt (Audit 22) in messfenster.js:
+   * sieben reine Funktionen, die entscheiden, welche Kerze zum Optimieren, welche zum
+   * Auswaehlen und welche zum Belegen zaehlt. Sie fassen nichts an - deshalb liessen
+   * sie sich verschieben, waehrend der Rest der Messmaschine hier bleibt (er ruft acht
+   * Funktionen dieser Datei auf und schreibt in D). Hier stehen nur noch die Namen. */
+  var warmlaufBars = window.Messfenster.warmlaufBars;
+  var handelsTage = window.Messfenster.handelsTage;
+  var mapSpan = window.Messfenster.mapSpan;
+  var tagesGrenze = window.Messfenster.tagesGrenze;
+  var tagesScheiben = window.Messfenster.tagesScheiben;
+  var sliceMap = window.Messfenster.sliceMap;
+  var tageIn = window.Messfenster.tageIn;
+
 
   /* Prüfscheiben werden nach HANDELSTAGEN geschnitten, nicht nach Kalenderzeit.
      Vorher lag bei 1-Minuten-Daten (5 Handelstage Historie) regelmäßig eine ganze Scheibe
      im Wochenende – gemessen: Scheibe 2 hatte 0 Bars, Scheibe 3 nur 25 und fiel durch die
      60-Bar-Hürde. Von vier Scheiben blieben zwei übrig, und das Urteil "robust" verlangt
      drei positive – es war schlicht unerreichbar, die Selbst-Optimierung damit wirkungslos. */
-  var WARMLAUF_BARS = 400;   // deckt Kanal (380), EMA100 und Wellen-Score (120) ab
-  /** Warmlauf je Zeitrahmen: 400 Stundenkerzen waeren ~61 Handelstage und wuerden die
-   *  komplette 60m-Historie auffressen - dort reichen 150 Bars (EMA100 + Wellen-Score). */
-  function warmlaufBars(iv) { return iv === '60m' ? 150 : WARMLAUF_BARS; }
   // Hürden für ein belastbares Urteil. Bewusst deutlich höher als früher (12 Trades):
   // Yahoo gibt Intraday nur ~41 Handelstage (5m/15m) bzw. 5 Tage (1m) her – auf 1-Minuten-
   // Daten ist damit KEIN belastbares Urteil möglich, und das soll die App auch so sagen,
@@ -5214,62 +5259,7 @@ function huerdeAnzeigen() {
   var MIN_OOS_TRADES = 30;
   var MIN_OOS_TAGE = 12;
 
-  /** Alle Handelstage (UTC) der Datenbasis, aufsteigend. */
-  function handelsTage(map) {
-    var set = {};
-    Object.keys(map).forEach(function (s) {
-      map[s].forEach(function (p) { set[new Date(p[0]).toISOString().slice(0, 10)] = 1; });
-    });
-    return Object.keys(set).sort();
-  }
-  /** Teilt die Handelstage in n gleich große Blöcke: [{von, bis, tage}] als ms-Grenzen. */
-  function tagesScheiben(map, n) {
-    var tage = handelsTage(map);
-    if (tage.length < n) return [];
-    var out = [];
-    for (var i = 0; i < n; i++) {
-      var a = Math.floor(tage.length * i / n), b = Math.floor(tage.length * (i + 1) / n);
-      if (b <= a) return [];
-      out.push({ von: Date.parse(tage[a] + 'T00:00:00Z'), bis: Date.parse(tage[b - 1] + 'T23:59:59.999Z'), tage: b - a });
-    }
-    return out;
-  }
-  /** Zeitgrenze nach einem Anteil der Handelstage (0–1). */
-  function tagesGrenze(map, anteil) {
-    var tage = handelsTage(map);
-    if (!tage.length) return null;
-    var i = Math.min(tage.length - 1, Math.max(0, Math.floor(tage.length * anteil)));
-    return Date.parse(tage[i] + 'T00:00:00Z');
-  }
 
-  /** Ausschnitt [from, to] je Symbol – der Warmlauf zählt in BARS, nicht in Millisekunden.
-   *  Vorher war er als Kalenderzeit gerechnet: 160 Bars × 5 Minuten = 13 Stunden Wanduhr,
-   *  die über ein Wochenende NULL zusätzliche Bars ergeben. Jede Scheibe startete dadurch
-   *  kalt – Wellen-Score (120 Bars), EMA100 (100) und Kanal (380) waren am Anfang blind. */
-  function sliceMap(map, from, to, warmupBars) {
-    var out = {};
-    var w = warmupBars || 0;
-    Object.keys(map).forEach(function (s) {
-      var arr = map[s], erst = -1, letzt = -1;
-      for (var i = 0; i < arr.length; i++) {
-        if (arr[i][0] > to) break;
-        if (erst < 0 && arr[i][0] >= from) erst = i;
-        letzt = i;
-      }
-      if (erst < 0 || letzt < erst) return;
-      var sl = arr.slice(Math.max(0, erst - w), letzt + 1);
-      if (sl.length > 60) out[s] = sl;
-    });
-    return out;
-  }
-  function mapSpan(map) {
-    var t0 = Infinity, t1 = -Infinity;
-    Object.keys(map).forEach(function (s) {
-      var a = map[s];
-      if (a.length) { t0 = Math.min(t0, a[0][0]); t1 = Math.max(t1, a[a.length - 1][0]); }
-    });
-    return [t0, t1];
-  }
 
   /** MESS-Universum: bewusst breiter als das HANDELS-Universum. Mehr liquide Werte auf
    *  denselben Handelstagen bedeuten ein Vielfaches an Out-of-Sample-Trades je Messung –
@@ -5320,7 +5310,11 @@ function huerdeAnzeigen() {
           if (!bars) break;            // Fehler (Login/Markt unbekannt): Symbol überspringen
           if (!bars.length) { leer++; frueh = von; continue; }
           leer = 0;
-          var sess = bars.filter(function (b) { var m = Q.minutenSeitOeffnung(b[0]); return m >= 0 && m < 390; });
+          /* Genau der Fall, fuer den istSitzung geschrieben wurde: Capital.com liefert
+           * an Feiertagen und nach dem Halbtags-Schluss weiter Kerzen. Hier stand die
+           * 390 noch einmal von Hand - eine zweite Regel neben istSitzung, die deren
+           * Wochentag- und Feiertagspruefung nicht hatte. */
+          var sess = bars.filter(function (b) { return istSitzung(b[0]); });
           if (sess.length) { await window.Archiv.fuege(iv, sym, sess, 'cap'); stat.bars += sess.length; geholt = true; }
           frueh = Math.min(von, bars[0][0]);
           await new Promise(function (r) { setTimeout(r, 250); });
@@ -5349,10 +5343,18 @@ function huerdeAnzeigen() {
    *  nur die UHRZEIT - ein Samstag 14:00 UTC gilt dort als Sitzung. Bei Yahoo-Daten war
    *  das folgenlos (keine Wochenendkerzen), CFD-Daten brauchen den Wochentag dazu. */
   function istSitzung(ms) {
+    /* Feiertage und Halbtage kommen aus boerse.js. Nachgezaehlt ueber ein Jahr
+     * Stundenkerzen (24.08.2026): Von den Kerzen, die die alte Regel als Sitzung
+     * zaehlte, sind 3,85 % Feiertage und 0,38 % liegen nach dem Halbtags-Schluss -
+     * zusammen 4,23 %. Bei Yahoo-Daten faellt das kaum auf (dort gibt es an
+     * Feiertagen ohnehin keine Kerzen), bei CFD-Daten sehr wohl: Capital.com
+     * liefert durch, und genau darum steht dieser Filter hier. */
     var tag = new Date(ms).getUTCDay();
     if (tag === 0 || tag === 6) return false;
+    var laenge = (typeof window !== 'undefined' && window.Boerse) ? window.Boerse.sitzungsMinuten(ms) : 390;
+    if (!laenge) return false;
     var m = Q.minutenSeitOeffnung(ms);
-    return m >= 0 && m < 390;
+    return m >= 0 && m < laenge;
   }
   /** Letzter Sitzungsschluss VOR ms. Zieht den Zeiger in einem Schritt ueber Nacht,
    *  Wochenende oder Feiertag - sonst liefe der Backfill diese Pausen bei kleinem
@@ -5361,7 +5363,12 @@ function huerdeAnzeigen() {
     var z = ms;
     for (var i = 0; i < 12; i++) {
       var d = new Date(z), tag = d.getUTCDay(), m = Q.minutenSeitOeffnung(z);
-      if (tag >= 1 && tag <= 5 && m >= 390) return z - (m - 390) * 60000;
+      /* Der Kommentar darueber verspricht, ueber Feiertage zu springen - konnte es
+       * aber gar nicht: geprueft wurde nur der Wochentag. An einem Feiertag lieferte
+       * die Schleife einen "Schluss", den es nie gab, und der Backfill lief die
+       * Pause doch in Leeranfragen ab. Jetzt haelt die Zeile, was sie ankuendigt. */
+      var laenge = (typeof window !== 'undefined' && window.Boerse) ? window.Boerse.sitzungsMinuten(z) : 390;
+      if (tag >= 1 && tag <= 5 && laenge && m >= laenge) return z - (m - laenge) * 60000;
       d.setUTCDate(d.getUTCDate() - 1);
       d.setUTCHours(23, 59, 0, 0);
       z = d.getTime();
@@ -6072,6 +6079,15 @@ function huerdeAnzeigen() {
       results.uebersprungen = uebersprungen;   // ehrlich weiterreichen, nicht still schlucken
       results.screenTage = SCREEN_TAGE;
       results.screenWerte = SCREEN_WERTE;
+      /* MEHRFACHVERGLEICH. Hier werden 14 Modi x 4 Zeitrahmen geprueft und der Beste
+       * gekuert - auf denselben Scheiben. Bei 56 Versuchen hat der Sieger auch dann
+       * eine ordentliche Rendite, wenn KEIN einziger Kandidat etwas kann: das Maximum
+       * aus 56 Ziehungen liegt immer deutlich ueber dem Mittel. Genau dafuer gibt es
+       * bestOfN (quant.js) - es simuliert, wie gut der Beste aus n reinen Zufalls-
+       * kandidaten derselben Streuung ausfaellt, und sagt, ob der echte Sieger das
+       * ueberhaupt schlaegt. Die Funktion war da und wurde hier nie aufgerufen. */
+      results.zufall = Q.bestOfN(results.filter(function (r0) { return r0.belastbar; })
+                                        .map(function (r0) { return r0.wfRet; }));
       return results;
   }
 
@@ -6108,9 +6124,24 @@ function huerdeAnzeigen() {
       // Schritt 2: Feinschliff für den Gewinner (Grid, 70/30 out-of-sample)
       out.innerHTML = '<div class="loading">Schritt 2/3: Feinschliff für ' + U.esc(top.mode.name) + ' · ' + top.interval + ' (18 Kombinationen parallel) …</div>';
       var map = ld.data[top.interval];
+      /* DREI Scheiben, nicht zwei. Vorher lief es 70/30: auf den 70 % wurden 90
+       * Kombinationen optimiert, und dieselbe 30-%-Scheibe entschied DANN, ob der
+       * Feinschliff genommen wird (useFine), und lieferte ZUGLEICH die Filter-Bilanz,
+       * die als Beleg berichtet wurde. Eine Scheibe kann aber nicht beides sein: wer
+       * auf ihr auswaehlt, hat sie gesehen - ihre Zahlen sind dann kein Beleg mehr,
+       * sondern Teil der Optimierung.
+       *   0-70 %   trainMap  - hier werden die 90 Kombinationen optimiert
+       *   70-85 %  wahlMap   - hier faellt die Entscheidung, ob der Feinschliff gilt
+       *   85-100 % belegMap  - wird NUR berichtet, entscheidet nichts
+       * Die Belegscheibe ist die kleinste, und das ist richtig so: sie muss nichts
+       * optimieren, sie muss nur unberuehrt sein. */
       var span = mapSpan(map);
       var cut = tagesGrenze(map, 0.7) || (span[0] + (span[1] - span[0]) * 0.7);   // 70 % der HANDELSTAGE
-      var trainMap = sliceMap(map, span[0], cut, 0), testMap = sliceMap(map, cut, span[1], warmlaufBars(top.interval));
+      var cut2 = tagesGrenze(map, 0.85) || (span[0] + (span[1] - span[0]) * 0.85);
+      var trainMap = sliceMap(map, span[0], cut, 0);
+      var wahlMap = sliceMap(map, cut, cut2, warmlaufBars(top.interval));
+      var belegMap = sliceMap(map, cut2, span[1], warmlaufBars(top.interval));
+
       var commonIv = labCommonOpts(cfg, top.interval);
       // Schein-Profil als eigene Dimension: ATM (moderater Hebel) gegen das eingestellte
       // Profil - der Hebel bestimmt, wie viel Basiswert-Bewegung die Kosten decken muss.
@@ -6133,12 +6164,24 @@ function huerdeAnzeigen() {
         if (!r0 || r0.error || r0.summary.nTrades < 5) return;
         if (!bestFine || r0.summary.retPct > bestFine.train.retPct) bestFine = { g: g, train: r0.summary };
       });
+      /* MEHRFACHVERGLEICH auch hier: 90 Kombinationen auf derselben Trainingsscheibe,
+       * und die beste wird genommen. Ohne Korrektur ist ihr Vorsprung zum guten Teil
+       * die Auswahl selbst. */
+      var fineZufall = Q.bestOfN(fineRes.filter(function (r0) { return r0 && !r0.error && r0.summary; })
+                                        .map(function (r0) { return r0.summary.retPct; }));
       var fineValid = null;
       if (bestFine) {
-        var rv = await btIntraday(testMap, Object.assign({}, commonIv, top.mode.opts, bestFine.g));
+        // Die ENTSCHEIDUNG faellt auf der Wahlscheibe - nicht auf der, die berichtet wird.
+        var rv = await btIntraday(wahlMap, Object.assign({}, commonIv, top.mode.opts, bestFine.g));
         if (rv && !rv.error) fineValid = rv.summary;
       }
       var useFine = bestFine && fineValid && fineValid.retPct > 0;
+      // Und was die unberuehrte Belegscheibe dazu sagt - berichtet, nicht verwendet.
+      var fineBeleg = null;
+      if (bestFine) {
+        var rb = await btIntraday(belegMap, Object.assign({}, commonIv, top.mode.opts, bestFine.g));
+        if (rb && !rb.error) fineBeleg = rb.summary;
+      }
       var pick = useFine ? bestFine.g : (top.best ? Object.assign({ lineType: cfg.lineType || 'ema' }, top.best) : { period: cfg.period, confirmBps: cfg.confirmBps, lineType: cfg.lineType || 'ema' });
 
       // Filter-Bilanz: Jeder Filter muss sein Geld verdienen. Für den besten Kandidaten
@@ -6150,7 +6193,7 @@ function huerdeAnzeigen() {
       try {
         out.innerHTML = '<div class="loading">Schritt 2b/3: Filter-Bilanz – jeden Filter einzeln nachrechnen …</div>';
         var basisOpts = Object.assign({}, commonIv, top.mode.opts, pick, { zThr: zOf(pick.confirmBps || cfg.confirmBps) });
-        var basisAb = await btIntraday(testMap, basisOpts);
+        var basisAb = await btIntraday(belegMap, basisOpts);
         if (basisAb && !basisAb.error) {
           var varianten = [
             { name: 'Kosten-Check (Bewegung muss Kosten decken)', opts: { minEdge: 0 }, aktiv: (basisOpts.minEdge || 0) > 0 },
@@ -6160,7 +6203,7 @@ function huerdeAnzeigen() {
             { name: 'Wellen-Qualitätsschwelle', opts: { minQuality: 0 }, aktiv: basisOpts.entryMode === 'wave' && (basisOpts.minQuality || 0) > 0 }
           ].filter(function (v) { return v.aktiv; });
           var abRes = await Promise.all(varianten.map(function (v) {
-            return btIntraday(testMap, Object.assign({}, basisOpts, v.opts));
+            return btIntraday(belegMap, Object.assign({}, basisOpts, v.opts));
           }));
           var zeilen = [];
           varianten.forEach(function (v, i2) {
@@ -6208,9 +6251,19 @@ function huerdeAnzeigen() {
         oosTage: top.oosTage, scheibenGueltig: top.scheibenGueltig, belastbar: top.belastbar,
         scheibenMax: top.scheibenMax, bootLossProb: top.bootLossProb,
         richtung: { callN: top.callN, callPnl: top.callPnl, putN: top.putN, putPnl: top.putPnl },
-        fine: bestFine ? { train: bestFine.train.retPct, valid: fineValid ? fineValid.retPct : null, used: !!useFine } : null,
+        fine: bestFine ? { train: bestFine.train.retPct, valid: fineValid ? fineValid.retPct : null,
+          beleg: fineBeleg ? fineBeleg.retPct : null, belegN: fineBeleg ? fineBeleg.nTrades : null,
+          used: !!useFine, zufall: fineZufall } : null,
+        /* Was der Sieger gegen den Zufall steht. null heisst: zu wenige belastbare
+         * Kandidaten fuer eine Aussage (bestOfN verlangt mindestens 20). */
+        zufall: results.zufall,
+        ueberzufaellig: results.zufall ? !!results.zufall.ueberzufaellig : null,
         topSymbols: symRank.slice(0, 3).map(function (x) { return x[0]; }),
         filterBilanz: filterBilanz,
+        /* Wie gross die drei Scheiben tatsaechlich waren. Die Belegscheibe ist die
+         * kleinste (15 %) - wer die Filter-Bilanz liest, soll sehen, auf wie wenig
+         * sie steht, statt eine Zahl ohne Massstab zu bekommen. */
+        scheiben: { trainTage: tageIn(trainMap), wahlTage: tageIn(wahlMap), belegTage: tageIn(belegMap) },
         datenbasis: { symbole: Object.keys(ld.data[top.interval] || {}).length, zeitrahmen: top.interval,
           spanneTage: (function () { var sp = mapSpan(ld.data[top.interval] || {}); return sp[1] > sp[0] ? Math.round((sp[1] - sp[0]) / 86400000) : 0; })() }
       };
@@ -6503,7 +6556,7 @@ function huerdeAnzeigen() {
 
   /** Die Abzeichen an den Strategie-Karten. Eigene Funktion, weil sie aus zwei
    *  Richtungen kommen muessen: aus render() und aus syncStrategyUI() - der
-   *  Ein/Aus-Schalter liegt auch im Tab „Strategien & Belege“, und ohne diesen
+   *  Ein/Aus-Schalter liegt auch im Reiter „Regeln“, und ohne diesen
    *  zweiten Aufruf stand das Abzeichen auf „aus“, waehrend die Strategie lief. */
   function renderStatusBadges() {
     if (!D) return;
@@ -6615,13 +6668,13 @@ function huerdeAnzeigen() {
     var sperrHtml = '';
     if (killSwitchAktiv()) {
       var ks = D.killSwitch;
-      sperrHtml += '<div style="font-size:12.5px; color:var(--down); font-weight:700; margin-bottom:6px; padding:6px 8px; border:1px solid var(--down); border-radius:6px;">' +
+      sperrHtml += '<div style="font-size:var(--fs-text); color:var(--down); font-weight:700; margin-bottom:6px; padding:6px 8px; border:1px solid var(--down); border-radius:var(--r-normal);">' +
         'Kill-Switch aktiv: Tagesverlust ' + ks.pct + ' % hat das Limit von −' + ks.limit + ' % erreicht. ' +
         (ks.n ? ks.n + ' Position(en) wurden sofort glattgestellt. ' : '') +
         'Es wird heute nichts mehr eröffnet – morgen früh läuft der Handel automatisch wieder an.</div>';
     }
     if (D.handelsPause && D.handelsPause.bis > Date.now()) {
-      sperrHtml += '<div style="font-size:12.5px; color:var(--warn); margin-bottom:6px; padding:6px 8px; border:1px solid var(--warn); border-radius:6px;">' +
+      sperrHtml += '<div style="font-size:var(--fs-text); color:var(--warn); margin-bottom:6px; padding:6px 8px; border:1px solid var(--warn); border-radius:var(--r-normal);">' +
         'Handelspause (Marktlage): ' + U.esc(D.handelsPause.grund || '') + '. Keine neuen Einstiege bis ' +
         new Date(D.handelsPause.bis).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }) + ' Uhr. ' +
         'Offene Positionen werden normal weiter gemanagt.</div>';
@@ -6629,12 +6682,12 @@ function huerdeAnzeigen() {
     var IV_NAME = { '1m': '1-Minuten-Kerzen', '5m': '5-Minuten-Kerzen', '15m': '15-Minuten-Kerzen', '60m': 60 + '-Minuten-Kerzen' };
     var ivTxt = IV_NAME[c.interval] || (c.interval || '60m');
     el.innerHTML = sperrHtml +
-      '<div style="font-size:14px; font-weight:700; margin-bottom:4px;">' + name + ' · ' + ivTxt + '</div>' +
-      '<div style="font-size:12.5px; color:var(--ink-2); margin-bottom:4px;">' + was + (exitTxt ? ' ' + exitTxt : '') + '</div>' +
-      (wer ? '<div style="font-size:11.5px; color:var(--muted); margin-bottom:4px;">' + U.esc(wer) + '</div>' : '') +
+      '<div style="font-size:var(--fs-gross); font-weight:700; margin-bottom:4px;">' + name + ' · ' + ivTxt + '</div>' +
+      '<div style="font-size:var(--fs-text); color:var(--ink-2); margin-bottom:4px;">' + was + (exitTxt ? ' ' + exitTxt : '') + '</div>' +
+      (wer ? '<div style="font-size:var(--fs-neben); color:var(--muted); margin-bottom:4px;">' + U.esc(wer) + '</div>' : '') +
       (alleAn
-        ? '<div style="font-size:11.5px; color:var(--muted);">' + autoTxt + '</div>'
-        : '<div style="font-size:11.5px; color:var(--warn); margin-bottom:6px;">Der Autopilot ist ausgeschaltet – die Strategie verbessert sich gerade NICHT von selbst.</div>' +
+        ? '<div style="font-size:var(--fs-neben); color:var(--muted);">' + autoTxt + '</div>'
+        : '<div style="font-size:var(--fs-neben); color:var(--warn); margin-bottom:6px;">Der Autopilot ist ausgeschaltet – die Strategie verbessert sich gerade NICHT von selbst.</div>' +
           '<button class="btn tiny" id="klartextAutoBtn">Autopilot einschalten</button>');
     var kab = document.getElementById('klartextAutoBtn');
     if (kab) kab.addEventListener('click', function () {
@@ -6663,7 +6716,7 @@ function huerdeAnzeigen() {
       : '<span style="color:var(--muted);">Noch keine Messung – startet automatisch nach Handelsbeginn.</span>'; return; }
     var f = r.fakten;
     el.innerHTML = (r.ok ? '<b>' + U.dt(r.at) + '</b> · Quelle: ' + U.esc(r.quelle) + '<br>' + U.esc(r.txt) : '' + U.esc(r.txt)) +
-      (f ? '<div style="color:var(--muted); margin-top:4px; font-size:11.5px;">Gemessen an ' + f.geprueft + ' Werten: Trendanteil ' + f.trendAnteilPct +
+      (f ? '<div style="color:var(--muted); margin-top:4px; font-size:var(--fs-neben);">Gemessen an ' + f.geprueft + ' Werten: Trendanteil ' + f.trendAnteilPct +
         ' % · mittleres |z| ' + f.mittleresAbsZ + ' · Wellen-Score ' + f.mittlererWellenScore + ' · gültige Kanäle ' + f.kanalAnteilPct +
         ' % · 5-Min-Vola ' + f.vola1mPct + ' %</div>' : '');
   }
@@ -6929,6 +6982,10 @@ function huerdeAnzeigen() {
   }
   if (typeof window !== 'undefined') window.__pilotBericht = baueMessbericht;
   if (typeof window !== 'undefined') { window.__tiefensuche = function (o) { return tiefensuche(o || { unbegrenzt: true }); }; window.__pilotMessen = function () { return pilotMessen(true); }; }
+  /* __warnband wird von renderer.js gebraucht: Bei gestoerter Kursquelle blieb das
+   * Warnband bisher stumm, obwohl es genau dafuer gebaut ist - die Meldung stand nur
+   * klein in der Kopfzeile. warnbandSetzen ist hier lokal, also wird sie durchgereicht. */
+  if (typeof window !== 'undefined') { window.__warnband = warnbandSetzen; }
   if (typeof window !== 'undefined') { window.__save = save; window.__ladeArchivDaten = ladeArchivDaten; window.__labCommonOpts = labCommonOpts; window.__btIntraday = btIntraday; window.__D = function () { return D; }; window.__health = function () { return HEALTH; }; }   // fuer Funktionstests
 
   /* ---- Gesamtzaehler-Pflege ----
@@ -7519,22 +7576,72 @@ function huerdeAnzeigen() {
       if (!rec) {
         a.lastCheck = { at: Date.now(), ok: false, txt: 'Zu wenig Kursdaten für eine Messung – das Archiv füllt sich mit jedem Handelstag.' };
       } else {
+        /* ZWEI HUERDEN, die es vorher nicht gab.
+         *
+         * 1. MEHRFACHVERGLEICH. Gekuert wird der Beste aus 14 Modi x 4 Zeitrahmen.
+         *    Bei 56 Versuchen hat der Sieger auch dann eine schoene Rendite, wenn kein
+         *    einziger Kandidat etwas kann - das Maximum aus 56 Ziehungen liegt immer
+         *    ueber dem Mittel. rec.ueberzufaellig sagt (ueber bestOfN), ob der Sieger
+         *    das schlaegt, was reiner Zufall bei 56 Versuchen hergibt. Faellt er
+         *    durch, wird NICHTS umgestellt. null heisst: zu wenige belastbare
+         *    Kandidaten fuer die Aussage - dann bleibt es wie bisher beim Urteil
+         *    allein, aber die Meldung sagt das auch.
+         *
+         * 2. ECHTER ZUWACHS. "Bestaetigung durch die naechste Nacht" war keine: die
+         *    Messung laeuft ueber dieselbe Historie, eine Nacht bringt bei 60-Minuten-
+         *    Kerzen rund 0,4 % neue Kerzen. Zweimal dasselbe Ergebnis auf denselben
+         *    Daten ist ein Ergebnis, nicht zwei. Anders als beim Edge-Waechter ist das
+         *    hier keine schuetzende Handlung, sondern eine AENDERUNG der Konfiguration -
+         *    und die braucht echte neue Evidenz. Verlangt wird deshalb mindestens ein
+         *    zusaetzlicher ungesehener Handelstag zwischen den beiden Messungen. */
         var robust = String(rec.verdict).indexOf('robust') === 0 && rec.belastbar !== false && rec.n >= MIN_OOS_TRADES;
+        var zufaellig = rec.ueberzufaellig === false;
+        var zTxt = rec.zufall
+          ? ' Zufallsprobe über ' + rec.zufall.n + ' Kandidaten: der Beste liegt bei ' + rec.zufall.bester +
+            ' %, reiner Zufall bringt im Mittel ' + rec.zufall.zufallsMedian + ' % und in 5 % der Fälle über ' +
+            rec.zufall.zufallsP95 + ' % (p=' + rec.zufall.pWert + ').'
+          : ' Für eine Zufallsprobe gab es zu wenige belastbare Kandidaten.';
         var k = recKey(rec);
         if (!robust) {
-          a.pending = null; a.lastRecKey = null;
+          a.pending = null; a.lastRecKey = null; a.lastRecTage = null;
           a.lastCheck = { at: Date.now(), ok: true,
             txt: 'Bester Kandidat: ' + rec.modeName + ' · ' + rec.interval + ' (' + rec.verdict + ', ' + rec.n + ' Trades auf ' +
-              (rec.oosTage != null ? rec.oosTage : '?') + ' ungesehenen Handelstagen). Nichts geändert – übernommen wird nur, was robust ist UND sich in zwei Nächten hintereinander bestätigt.' };
+              (rec.oosTage != null ? rec.oosTage : '?') + ' ungesehenen Handelstagen). Nichts geändert – übernommen wird nur, ' +
+              'was robust ist, den Zufall schlägt UND sich auf neuen Daten wiederholt.' + zTxt };
+        } else if (zufaellig) {
+          /* Robust, aber nicht ueberzufaellig: Das ist der Fall, den es vorher gar
+           * nicht gab - und der haeufigste bei 56 Kandidaten. */
+          a.pending = null; a.lastRecKey = null; a.lastRecTage = null;
+          a.lastCheck = { at: Date.now(), ok: true,
+            txt: '' + rec.modeName + ' · ' + rec.interval + ' sieht robust aus (Walk-Forward ' + (rec.wfRet > 0 ? '+' : '') + rec.wfRet +
+              ' %), schlägt aber den Zufall nicht: Bei ' + rec.zufall.n + ' geprüften Kandidaten fällt der Beste auch ohne jede ' +
+              'echte Kante so gut aus. Nichts geändert.' + zTxt };
         } else if (a.lastRecKey === k) {
-          // Zweite Nacht in Folge dasselbe robuste Ergebnis → Bewährung bestanden, vormerken
-          a.pending = { rec: rec, seit: Date.now() };
-          a.lastCheck = { at: Date.now(), ok: true,
-            txt: '' + rec.modeName + ' · ' + rec.interval + ' zum zweiten Mal in Folge robust (Walk-Forward ' + (rec.wfRet > 0 ? '+' : '') + rec.wfRet + ' %, ' + rec.n + ' Trades) – wird vor dem nächsten Handelsbeginn übernommen.' };
+          /* Dasselbe Ergebnis wie beim letzten Mal - aber ist inzwischen ueberhaupt
+           * etwas Neues dazugekommen? oosTage ist die Zahl ungesehener Handelstage,
+           * auf denen gemessen wurde; waechst sie nicht, war es dieselbe Messung. */
+          var neueTage = (typeof a.lastRecTage === 'number' && typeof rec.oosTage === 'number')
+            ? rec.oosTage - a.lastRecTage : null;
+          if (neueTage != null && neueTage < 1) {
+            a.lastCheck = { at: Date.now(), ok: true,
+              txt: '' + rec.modeName + ' · ' + rec.interval + ' zum zweiten Mal robust – aber auf DENSELBEN Daten ' +
+                '(' + rec.oosTage + ' ungesehene Handelstage, kein Zuwachs seit der letzten Messung). Das ist eine ' +
+                'Messung, nicht zwei. Wird übernommen, sobald mindestens ein neuer Handelstag dazukommt.' + zTxt };
+          } else {
+            a.pending = { rec: rec, seit: Date.now(), neueTage: neueTage };
+            a.lastRecTage = rec.oosTage;
+            a.lastCheck = { at: Date.now(), ok: true,
+              txt: '' + rec.modeName + ' · ' + rec.interval + ' zum zweiten Mal robust, diesmal mit ' +
+                (neueTage != null ? neueTage + ' neuen ungesehenen Handelstag(en)' : 'neuer Messbasis') +
+                ' (Walk-Forward ' + (rec.wfRet > 0 ? '+' : '') + rec.wfRet + ' %, ' + rec.n + ' Trades) – wird vor dem ' +
+                'nächsten Handelsbeginn übernommen.' + zTxt };
+          }
         } else {
-          a.lastRecKey = k; a.pending = null;
+          a.lastRecKey = k; a.pending = null; a.lastRecTage = rec.oosTage;
           a.lastCheck = { at: Date.now(), ok: true,
-            txt: '' + rec.modeName + ' · ' + rec.interval + ' ist robust (Walk-Forward ' + (rec.wfRet > 0 ? '+' : '') + rec.wfRet + ' %, ' + rec.n + ' Trades) – wartet auf Bestätigung durch die nächste Nacht-Messung. Ein einzelner Sieg kann Zufall sein.' };
+            txt: '' + rec.modeName + ' · ' + rec.interval + ' ist robust (Walk-Forward ' + (rec.wfRet > 0 ? '+' : '') + rec.wfRet + ' %, ' +
+              rec.n + ' Trades) – wartet auf eine Wiederholung mit NEUEN Handelstagen. Ein einzelner Sieg kann Zufall sein, ' +
+              'und dieselbe Messung zweimal anzusehen macht sie nicht belastbarer.' + zTxt };
         }
       }
       // Edge-Waechter im Anschluss - die eigentliche Frage der Nacht: Traegt der
@@ -7553,21 +7660,45 @@ function huerdeAnzeigen() {
            * von selbst wieder auf. */
           var verfall = edge.mittelPp != null && !(edge.mittelPp > 0) && (edge.nSym || 0) >= 5;
           if (!a.edgeHistorie) a.edgeHistorie = [];
+          /* ZWEI NAECHTE SIND NICHT ZWEI MESSUNGEN. Der Waechter rechnet ueber ein
+           * rollendes 120-Tage-Fenster auf 60-Minuten-Kerzen. Eine Nacht bringt darin
+           * rund 0,4 % neue Kerzen - "in zwei Naechten hintereinander verfallen" klang
+           * nach zwei unabhaengigen Belegen und war in Wahrheit fast derselbe Datensatz,
+           * zweimal angesehen. Deshalb wird jetzt der tatsaechliche ZUWACHS an Signalen
+           * mitgeschrieben und in jeder Meldung genannt. */
+          var vorig = a.edgeHistorie[0] || null;
+          var zuwachs = (vorig && typeof vorig.n === 'number') ? (edge.n || 0) - vorig.n : null;
+          var zuwachsPct = (vorig && vorig.n > 0 && zuwachs != null)
+            ? Math.round(zuwachs / vorig.n * 1000) / 10 : null;
           a.edgeHistorie.unshift({ at: Date.now(), mittelPp: edge.mittelPp != null ? edge.mittelPp : null,
-            t: edge.t != null ? edge.t : null, verfall: verfall });
+            t: edge.t != null ? edge.t : null, verfall: verfall,
+            n: edge.n || 0, zuwachs: zuwachs, zuwachsPct: zuwachsPct });
           if (a.edgeHistorie.length > 30) a.edgeHistorie = a.edgeHistorie.slice(0, 30);
+          /* Die Schwelle bleibt bewusst bei zwei Verfalls-Messungen und wird NICHT an
+           * einen Mindestzuwachs gebunden. Das ist eine SCHUETZENDE Handlung: sie setzt
+           * neue Einstiege aus und laesst die Messung weiterlaufen. Bei einer solchen
+           * darf duenne Evidenz ausloesen - der Preis eines Fehlalarms ist eine Pause,
+           * der Preis des Zoegerns sind Verluste. Was sich aendert, ist der ANSPRUCH:
+           * die Meldung behauptet keine zwei unabhaengigen Belege mehr, sondern nennt,
+           * wie viel neue Messbasis wirklich dazwischen lag.
+           * Umgekehrt ist es bei Aenderungen an der Konfiguration - siehe unten. */
+          var zuwachsTxt = zuwachs == null ? 'die Vorgaengermessung ist ohne Zaehlstand'
+            : (zuwachs + ' neue Signale' + (zuwachsPct != null ? ' (+' + zuwachsPct + ' %)' : '') + ' seit der letzten Messung');
           if (verfall && a.edgeHistorie.length >= 2 && a.edgeHistorie[1].verfall &&
               !D.intraday.edgePauseHand && !D.intraday.edgePause) {
-            D.intraday.edgePause = { seit: Date.now(), mittelPp: edge.mittelPp, t: edge.t };
+            D.intraday.edgePause = { seit: Date.now(), mittelPp: edge.mittelPp, t: edge.t,
+              zuwachs: zuwachs, zuwachsPct: zuwachsPct };
             if (!D.tuneLog) D.tuneLog = [];
             D.tuneLog.unshift({ id: 'sicherung-' + Date.now(), at: Date.now(), quelle: 'sicherung',
               applied: ['Edge-Wächter: neue Einstiege pausiert'],
-              txt: 'Der gemessene Vorsprung der belegten Kante ist in zwei Nächten hintereinander verfallen ' +
-                '(zuletzt ' + edge.mittelPp + ' Pp, t=' + edge.t + '). Neue Einstiege sind pausiert; das Schattenbuch ' +
-                'misst weiter. Eine positive Nacht hebt die Pause automatisch auf – oder du entscheidest von Hand ' +
-                '„trotzdem handeln“ (wird dauerhaft respektiert).' });
-            melde('Edge-Wächter: Kante pausiert', 'Der gemessene Vorsprung ist in zwei Nächten verfallen (' + edge.mittelPp + ' Pp). Neue Einstiege sind ausgesetzt, die Messung läuft weiter.');
-            pilotLogAdd('Edge-Wächter: VERFALL in zwei Nächten – neue Einstiege pausiert.');
+              txt: 'Der gemessene Vorsprung der belegten Kante war in zwei aufeinanderfolgenden Messungen ' +
+                'verfallen (zuletzt ' + edge.mittelPp + ' Pp, t=' + edge.t + '; ' + zuwachsTxt + '). ' +
+                'Die zweite Messung ist KEIN unabhängiger zweiter Beleg – sie läuft über dasselbe rollende ' +
+                '120-Tage-Fenster. Ausgesetzt wird trotzdem: eine Pause kostet weniger als ein Irrtum in die ' +
+                'andere Richtung. Das Schattenbuch misst weiter. Eine positive Messung hebt die Pause ' +
+                'automatisch auf – oder du entscheidest von Hand „trotzdem handeln“ (wird dauerhaft respektiert).' });
+            melde('Edge-Wächter: Kante pausiert', 'Der gemessene Vorsprung ist zweimal in Folge verfallen (' + edge.mittelPp + ' Pp, ' + zuwachsTxt + '). Neue Einstiege sind ausgesetzt, die Messung läuft weiter.');
+            pilotLogAdd('Edge-Wächter: VERFALL zweimal in Folge (' + zuwachsTxt + ') – neue Einstiege pausiert.');
           }
           if (!verfall && edge.mittelPp != null && edge.mittelPp > 0 && D.intraday.edgePause) {
             delete D.intraday.edgePause;
@@ -7665,7 +7796,7 @@ function huerdeAnzeigen() {
       var letzteAkt = pilotLog.length ? Math.round((Date.now() - pilotLog[pilotLog.length - 1][0]) / 1000) : 0;
       el.innerHTML = '<b>Messung läuft</b> · seit ' + seitMin + ' Min · letzte Aktivität vor ' + letzteAkt + ' s' +
         '<div style="color:var(--acc); margin-top:2px;">' + U.esc(pilotPhase || '') + '</div>' +
-        '<div style="color:var(--muted); font-size:11px; margin-top:2px;">Der komplette Verlauf steht im Protokoll darunter. Der Wächter greift erst bei 12 Minuten ohne Aktivität.</div>';
+        '<div style="color:var(--muted); font-size:var(--fs-klein); margin-top:2px;">Der komplette Verlauf steht im Protokoll darunter. Der Wächter greift erst bei 12 Minuten ohne Aktivität.</div>';
       return;
     }
     // Datenlage: Wie viele Handelstage hat das Archiv schon gesammelt?
@@ -7713,20 +7844,38 @@ function huerdeAnzeigen() {
     }
     var c = D.central, r = c.rec;
     var html = '<div style="display:flex; gap:14px; flex-wrap:wrap; align-items:center; margin-bottom:10px;">' +
-      '<span style="font-size:13px;">' + r.verdict + '</span>' +
-      '<span style="font-size:14px; font-weight:700;">' + U.esc(r.modeName) + ' · ' + r.interval + '</span>' +
-      '<span style="color:var(--muted); font-size:12px;">Stand: ' + U.dt(c.at) + '</span></div>';
+      '<span style="font-size:var(--fs-text);">' + r.verdict + '</span>' +
+      '<span style="font-size:var(--fs-gross); font-weight:700;">' + U.esc(r.modeName) + ' · ' + r.interval + '</span>' +
+      '<span style="color:var(--muted); font-size:var(--fs-neben);">Stand: ' + U.dt(c.at) + '</span></div>';
     html += '<table class="tbl" style="max-width:680px;"><tr><th>Empfehlung</th><th>Wert</th><th>Begründung</th></tr>' +
       '<tr><td>Modus / Zeitrahmen</td><td><b>' + U.esc(r.modeName) + ' · ' + r.interval + '</b></td><td>Walk-Forward ' + U.signTxt(r.wfRet, ' %') + ' · ' + r.posSegs + '/' + (r.scheibenMax || 4) + ' Scheiben · ' + r.n + ' Trades · ' + r.winRate + ' % Treffer · PF ' + r.pf + (r.datenbasis ? ' · Datenbasis: ' + r.datenbasis.symbole + ' Werte über ' + r.datenbasis.spanneTage + ' Tage' : '') + '</td></tr>' +
       '<tr><td>Leitlinie / Periode / Bestätigung</td><td><b>' + r.lineType.toUpperCase() + ' · P' + r.period + ' · ' + (r.confirmBps / 100).toFixed(2) + ' %</b></td><td>' +
-      (r.fine ? (r.fine.used ? 'Feinschliff validiert: Training ' + U.signTxt(r.fine.train, ' %') + ' → ungesehen ' + U.signTxt(r.fine.valid, ' %') : 'Feinschliff nicht robust (Validierung ' + (r.fine.valid == null ? 'ohne Ergebnis' : U.signTxt(r.fine.valid, ' %')) + ') → Labor-Parameter behalten') : 'aus dem Walk-Forward') + '</td></tr>' +
+      (r.fine ? (r.fine.used ? 'Feinschliff gewählt: Training ' + U.signTxt(r.fine.train, ' %') + ' → Wahlscheibe ' + U.signTxt(r.fine.valid, ' %') : 'Feinschliff nicht robust (Wahlscheibe ' + (r.fine.valid == null ? 'ohne Ergebnis' : U.signTxt(r.fine.valid, ' %')) + ') → Labor-Parameter behalten') : 'aus dem Walk-Forward') +
+        (r.fine && r.fine.beleg != null ? '<div style="color:var(--muted); font-size:var(--fs-klein); margin-top:2px;">Auf der unberührten Belegscheibe: ' + U.signTxt(r.fine.beleg, ' %') + ' (' + r.fine.belegN + ' Trades) – diese Zahl hat nichts entschieden.</div>' : '') + '</td></tr>' +
+      /* Die Zufallsprobe gehoert AN DIE ERSTE STELLE der Bewertung, nicht in eine
+       * Fussnote: bei 56 Kandidaten ist sie die Frage, ob ueberhaupt etwas da ist. */
+      '<tr><td>Gegen den Zufall</td><td>' +
+        (r.zufall
+          ? (r.ueberzufaellig
+              ? '<b class="pos">schlägt den Zufall</b>'
+              : '<b class="neg">nicht überzufällig</b>')
+          : '<span style="color:var(--muted);">kein Urteil</span>') + '</td><td>' +
+        (r.zufall
+          ? 'Bester von ' + r.zufall.n + ' Kandidaten: ' + r.zufall.bester + ' %. Reiner Zufall bringt bei ' + r.zufall.n +
+            ' Versuchen im Mittel ' + r.zufall.zufallsMedian + ' % und in 5 % der Fälle über ' + r.zufall.zufallsP95 +
+            ' % (p=' + r.zufall.pWert + ').' +
+            (r.ueberzufaellig ? '' : ' Deshalb wird nichts umgestellt – so gut fällt der Beste auch ohne jede echte Kante aus.')
+          : 'Für eine Zufallsprobe braucht es mindestens 20 belastbare Kandidaten.') + '</td></tr>' +
+      (r.scheiben ? '<tr><td>Datenscheiben</td><td>' + (r.scheiben.belegTage != null ? r.scheiben.belegTage + ' Tage Beleg' : '–') + '</td><td>' +
+        'Optimiert auf ' + r.scheiben.trainTage + ' Handelstagen, entschieden auf ' + r.scheiben.wahlTage + ', berichtet auf ' + r.scheiben.belegTage +
+        '. Die Belegscheibe wird von keiner Entscheidung angefasst – deshalb ist ihre Zahl eine Aussage und keine Auswahl.</td></tr>' : '') +
       '<tr><td>Zeitfenster</td><td><b>' + WINDOW_NAMES[r.window] + '</b></td><td>bestes Out-of-Sample-Fenster nach P/L</td></tr>' +
       '<tr><td>Meide-Stunden</td><td><b>' + (r.avoidHours.length ? r.avoidHours.map(function (h) { return h + ' Uhr'; }).join(', ') : 'keine') + '</b></td><td>Stunden mit ≥3 Trades und negativem P/L (Berlin)</td></tr>' +
       '<tr><td>Stärkste Werte</td><td colspan="2">' + r.topSymbols.map(U.esc).join(' · ') + '</td></tr></table>';
     if (r.filterBilanz && r.filterBilanz.zeilen && r.filterBilanz.zeilen.length) {
-      html += '<div style="font-size:12.5px; font-weight:600; margin-top:14px;">Filter-Bilanz (bester Kandidat, ungesehene Daten)</div>';
-      html += '<div style="color:var(--muted); font-size:11.5px; margin:2px 0 6px;">Basis mit allen Filtern: ' + U.signTxt(r.filterBilanz.basisRet, ' %') + ' bei ' + r.filterBilanz.basisN + ' Trades. Nutzen = mit minus ohne – positiv heißt: der Filter spart Geld.</div>';
-      html += '<table class="tbl" style="font-size:11.5px;"><tr><th>Filter</th><th>mit</th><th>ohne</th><th>Nutzen</th><th>Trades mit/ohne</th><th>Urteil</th></tr>';
+      html += '<div style="font-size:var(--fs-text); font-weight:600; margin-top:14px;">Filter-Bilanz (bester Kandidat, ungesehene Daten)</div>';
+      html += '<div style="color:var(--muted); font-size:var(--fs-neben); margin:2px 0 6px;">Basis mit allen Filtern: ' + U.signTxt(r.filterBilanz.basisRet, ' %') + ' bei ' + r.filterBilanz.basisN + ' Trades. Nutzen = mit minus ohne – positiv heißt: der Filter spart Geld.</div>';
+      html += '<table class="tbl" style="font-size:var(--fs-neben);"><tr><th>Filter</th><th>mit</th><th>ohne</th><th>Nutzen</th><th>Trades mit/ohne</th><th>Urteil</th></tr>';
       r.filterBilanz.zeilen.forEach(function (fz) {
         var fu = fz.duenn ? 'zu wenig Trades' : fz.nutzen > 0.5 ? 'spart Geld' : fz.nutzen < -0.5 ? 'kostet Geld' : 'neutral';
         html += '<tr><td>' + U.esc(fz.name) + '</td><td class="' + U.signCls(fz.mitRet) + '">' + U.signTxt(fz.mitRet, ' %') + '</td>' +
@@ -7739,12 +7888,12 @@ function huerdeAnzeigen() {
     // Volles Ranking: ALLE Kandidaten mit dem Grund, woran sie scheitern – dieselbe
     // Sicht wie im messbericht.md, damit App und Bericht nie auseinanderlaufen.
     if (c.ranking && c.ranking.length) {
-      html += '<div style="font-size:12.5px; font-weight:600; margin-top:14px;">Alle Kandidaten dieser Messung</div>';
+      html += '<div style="font-size:var(--fs-text); font-weight:600; margin-top:14px;">Alle Kandidaten dieser Messung</div>';
       if (c.datenlage) {
         var dlz = ['1m', '5m', '15m', '60m'].map(function (iv2) { var d2 = c.datenlage[iv2] || {}; return iv2 + ': ' + (d2.handelstage || 0) + ' Tage / ' + (d2.werte || 0) + ' Werte'; }).join(' · ');
-        html += '<div style="color:var(--muted); font-size:11.5px; margin:2px 0 6px;">Messbasis – ' + dlz + '</div>';
+        html += '<div style="color:var(--muted); font-size:var(--fs-neben); margin:2px 0 6px;">Messbasis – ' + dlz + '</div>';
       }
-      html += '<table class="tbl" style="font-size:11.5px;"><tr><th>#</th><th>Setup</th><th>Zeitrahmen</th><th>WF-Rendite</th><th>Scheiben+</th><th>Trades</th><th>Tage</th><th>PF</th><th>Woran scheitert es</th></tr>';
+      html += '<table class="tbl" style="font-size:var(--fs-neben);"><tr><th>#</th><th>Setup</th><th>Zeitrahmen</th><th>WF-Rendite</th><th>Scheiben+</th><th>Trades</th><th>Tage</th><th>PF</th><th>Woran scheitert es</th></tr>';
       c.ranking.forEach(function (r2, i2) {
         html += '<tr><td>' + (i2 + 1) + '</td><td>' + U.esc(r2.name) + '</td><td>' + r2.interval + '</td>' +
           '<td class="' + U.signCls(r2.wfRet) + '">' + U.signTxt(r2.wfRet, ' %') + '</td>' +
@@ -7755,8 +7904,8 @@ function huerdeAnzeigen() {
     }
     html += '<div style="display:flex; gap:8px; align-items:center; margin-top:10px; flex-wrap:wrap;">' +
       '<button class="btn" id="centralApplyBtn">Empfehlung komplett übernehmen</button>' +
-      '<span id="centralApplyStatus" style="color:var(--muted); font-size:12px;"></span></div>';
-    html += '<div style="color:var(--muted); font-size:11.5px; margin-top:8px;">Ehrlichkeit: ' + r.n + ' Out-of-Sample-Trades sind eine kleine Stichprobe – die Empfehlung ist ein Kandidat, kein Beweis. Analyse regelmäßig wiederholen; sie wird mit jedem Handelstag belastbarer. Ergebnis liegt auch im Analyse-Export.</div>';
+      '<span id="centralApplyStatus" style="color:var(--muted); font-size:var(--fs-neben);"></span></div>';
+    html += '<div style="color:var(--muted); font-size:var(--fs-neben); margin-top:8px;">Ehrlichkeit: ' + r.n + ' Out-of-Sample-Trades sind eine kleine Stichprobe – die Empfehlung ist ein Kandidat, kein Beweis. Analyse regelmäßig wiederholen; sie wird mit jedem Handelstag belastbarer. Ergebnis liegt auch im Analyse-Export.</div>';
     out.innerHTML = html;
     var ab = document.getElementById('centralApplyBtn');
     if (ab) ab.addEventListener('click', function () {
@@ -7849,7 +7998,7 @@ function huerdeAnzeigen() {
           applied: zurueck,
           txt: 'Die neuen Voreinstellungen gelten nur für neue Installationen – dein bestehendes Depot ' +
             'behält sein Verhalten (' + zurueck.join(', ') + '). Wer auf die gemessenen Einstellungen ' +
-            'wechseln will: Knopf „Belegte Voreinstellungen übernehmen“ im Tab „Strategien & Belege“.' });
+            'wechseln will: Knopf „Belegte Voreinstellungen übernehmen“ im Reiter „Regeln“.' });
       }
     }
     /* Gesamtzaehler ueber alle Sitzungen. Die HEALTH-Zaehler beginnen bei jedem
@@ -7880,8 +8029,8 @@ function huerdeAnzeigen() {
           applied: ['Stunden-Strategie aus (Messung: Kontraindikator)'],
           txt: 'Die Stunden-Strategie wurde vermessen (24.727 Signale, 189 Werte, 8 Jahre): Ihr Technik-Score ist ein ' +
             'Kontraindikator (−0,74 Pp auf 20 Tage, t=−11,6) – dazu Schein-Kosten über Tage. Sie wurde einmalig ' +
-            'abgeschaltet. Einschalten bleibt jederzeit möglich (Tab „Strategien & Belege“, oder im Kurzfrist-Depot unter ' +
-            '„Schalter & Einstellungen“ im Archiv) und wird danach nie wieder automatisch geändert.' });
+            'abgeschaltet. Einschalten bleibt jederzeit möglich (Reiter „Regeln“, oder unter „Vermögen → ' +
+            'Schalter & Einstellungen“ im Archiv) und wird danach nie wieder automatisch geändert.' });
       }
     }
     /* Einmalig: Wer die belegte Kante ueber die Auslöser-Liste gewaehlt hatte, sass
@@ -8114,7 +8263,7 @@ function huerdeAnzeigen() {
     document.getElementById('weeklyBtn').addEventListener('click', runWeekly);
     document.getElementById('reportShowBtn').addEventListener('click', showReport);
     (function () {
-      // Strategie-Chart im Tab „Strategien & Belege“ (Issue #51)
+      // Strategie-Chart im Reiter „Regeln“ (Issue #51)
       var sb = document.getElementById('stcBtn'), ss = document.getElementById('stcSym');
       if (sb && ss) {
         universe().forEach(function (s2) { var o = document.createElement('option'); o.value = s2; o.textContent = s2; ss.appendChild(o); });

@@ -148,43 +148,66 @@
    *  nie still: Die erste externe Diagnose zeigte einen Tester im alten Standard
    *  'breakout' auf Scheinen (Muenzwurf), waehrend die belegten Strategien aus waren.
    *  Neue Installationen starten schon richtig; Bestandsnutzer entscheiden selbst. */
+  /* Jedes Feld EINZELN mitschreiben, bevor es ueberschrieben wird. Der Knopf versprach
+   * von Anfang an, jede Aenderung lasse sich einzeln zurueckstellen - eingeloest hat er
+   * es nie: sein Protokolleintrag trug gar kein konfigVorher, und der Rueckgaengig-Knopf
+   * in "Was hat gewirkt?" erscheint nur, wenn eines da ist. Es gab also nicht einmal ein
+   * Zurueck fuer alles, geschweige denn fuer einzelne Felder.
+   * Bewusst NICHT ueber einen Rundumschlag (tiefe Kopie von D.intraday) geloest: dann
+   * wuerde ein Zurueck auch Felder anfassen, die dieser Knopf nie angeruehrt hat - z. B.
+   * den Ein/Aus-Schalter des Handels. Zurueckgestellt wird nur, was hier gesetzt wurde. */
   function empfohleneEinstellungen() {
     var D = window.__D ? window.__D() : null;
     if (!D) return;
-    D.intraday.mode = 'rsi2seit';
-    D.intraday.instrument = 'basis';
-    D.intraday.interval = '60m';
-    D.intraday.scalpHold = 480;
-    D.intraday.cooldownMin = 120;
-    D.intraday.schattenImmer = true;
-    D.momentumAn = true;
-    D.driftAn = true;
-    D.maxRisikostufe = 3;
+    var felder = [];
+    /** Setzt ein Feld und merkt sich den alten Wert - aber nur, wenn er sich unterscheidet.
+     *  wo: 'intraday' (D.intraday[k]) oder 'depot' (D[k]). */
+    function setz(wo, k, wert, txt) {
+      var ziel = wo === 'intraday' ? D.intraday : D;
+      if (ziel[k] === wert) return false;
+      felder.push({ wo: wo, k: k, alt: ziel[k] === undefined ? null : ziel[k], neu: wert, txt: txt });
+      ziel[k] = wert;
+      return true;
+    }
+    setz('intraday', 'mode', 'rsi2seit', 'Modus RSI(2) im Seitwärtskanal');
+    setz('intraday', 'instrument', 'basis', 'Instrument Basiswert');
+    setz('intraday', 'interval', '60m', 'Zeitrahmen 60 Minuten');
+    setz('intraday', 'scalpHold', 480, 'Zeit-Ausstieg 8 Stunden');
+    setz('intraday', 'cooldownMin', 120, 'Wartezeit 120 Minuten');
+    setz('intraday', 'schattenImmer', true, 'Schattenbuch zeichnet immer auf');
+    setz('depot', 'momentumAn', true, 'Momentum-Buch an');
+    setz('depot', 'driftAn', true, 'Drift-Buch an');
+    setz('depot', 'maxRisikostufe', 3, 'Maximale Risikostufe 3');
     var extras = ['Belegte Voreinstellungen übernommen'];
     // Zweites belegtes Standbein gleich mit an - feuert in der anderen Marktphase
-    if (!D.intraday.kapiZusatz) { D.intraday.kapiZusatz = true; extras.push('Kapitulations-Dip zusätzlich an'); }
+    if (!D.intraday.kapiZusatz && setz('intraday', 'kapiZusatz', true, 'Kapitulations-Dip zusätzlich an')) extras.push('Kapitulations-Dip zusätzlich an');
     // Die widerlegte Stunden-Strategie gehoert nicht in die belegte Konfiguration
-    if (D.hourlyEnabled !== false) { D.hourlyEnabled = false; extras.push('Stunden-Strategie aus (widerlegt)'); }
+    if (D.hourlyEnabled !== false && setz('depot', 'hourlyEnabled', false, 'Stunden-Strategie aus')) extras.push('Stunden-Strategie aus (widerlegt)');
     // Regime-Zuteilung (Studie 21.08.): jede Kante nur in ihrem gemessenen Regime
-    if (!D.intraday.regimeZuteilung) { D.intraday.regimeZuteilung = true; extras.push('Regime-Zuteilung (SPY-Trend) an'); }
+    if (!D.intraday.regimeZuteilung && setz('intraday', 'regimeZuteilung', true, 'Regime-Zuteilung (SPY-Trend) an')) extras.push('Regime-Zuteilung (SPY-Trend) an');
     // Der Knopf ist eine bewusste Hand-Entscheidung - er darf auch die Sicherung
     // wieder scharf stellen, die eine fruehere Hand-Entscheidung abgeschaltet hat.
-    if (D.intraday.blackout === 'off') { D.intraday.blackout = 'block'; extras.push('Event-Blackout wieder an'); }
+    if (D.intraday.blackout === 'off' && setz('intraday', 'blackout', 'block', 'Event-Blackout wieder an')) extras.push('Event-Blackout wieder an');
     if (!D.tuneLog) D.tuneLog = [];
     D.tuneLog.unshift({ id: 'empfohlen-' + Date.now(), at: Date.now(), quelle: 'hand',
-      applied: extras,
+      applied: extras, felder: felder,
       txt: 'Auf die gemessenen Einstellungen umgestellt: Intraday-Modus RSI(2) im Seitwärtskanal ' +
         '(Basiswert, 8 h Zeit-Ausstieg, nur Long). Der Ein/Aus-Schalter des Intraday-Handels bleibt ' +
         'unangetastet; das Schattenbuch zeichnet immer auf. Momentum- und Drift-Buch handeln virtuell. ' +
-        'Maximale Risikostufe 3. Jedes Feld lässt sich einzeln zurückstellen.' });
+        'Maximale Risikostufe 3. Jedes Feld lässt sich unten unter „Was hat gewirkt?“ einzeln zurückstellen.' });
     if (window.__save) window.__save();
     [['idMode', 'rsi2seit'], ['idInstrument', 'basis'], ['idInterval', '60m'], ['idHold', '480'], ['idMaxStufe', '3']].forEach(function (kv) {
       var e = document.getElementById(kv[0]);
       if (e) e.value = kv[1];
     });
     if (window.__syncSetupUI) window.__syncSetupUI();
+    // Die Tabelle "Was hat gewirkt?" steht direkt darunter - sie muss den eigenen
+    // Eintrag sofort zeigen, sonst ist die Einzel-Ruecknahme unauffindbar.
+    if (window.__renderAnalytics) window.__renderAnalytics();
     var st = document.getElementById('stratEmpfohlenStatus');
-    if (st) st.textContent = 'Übernommen – Einzelheiten im Protokoll.';
+    if (st) st.textContent = felder.length
+      ? 'Übernommen – ' + felder.length + ' Feld(er) geändert, unten unter „Was hat gewirkt?“ einzeln zurückstellbar.'
+      : 'Nichts zu tun – alle Felder standen bereits so.';
     render();
   }
 
@@ -219,25 +242,25 @@
       var schaltbar = !!s.schalter;
       return '<div class="panel" style="margin-bottom:12px;">' +
         '<div style="display:flex; align-items:baseline; gap:10px; flex-wrap:wrap;">' +
-          '<span style="font-size:15px; font-weight:700;">' + U.esc(s.name) + '</span>' +
-          '<span style="font-size:11px; padding:2px 7px; border-radius:10px; border:1px solid var(--' + s.farbe + '); color:var(--' + s.farbe + ');">' +
+          '<span style="font-size:var(--fs-gross); font-weight:700;">' + U.esc(s.name) + '</span>' +
+          '<span style="font-size:var(--fs-klein); padding:2px 7px; border-radius:var(--r-gross); border:1px solid var(--' + s.farbe + '); color:var(--' + s.farbe + ');">' +
             U.esc(s.stand) + '</span>' +
           '<span style="margin-left:auto; display:inline-flex; align-items:center; gap:8px;">' +
             (schaltbar
               ? '<button class="btn' + (an ? '' : ' ghost') + '" data-strat="' + s.key + '">' + (an ? 'läuft – ausschalten' : 'einschalten') + '</button>'
-              : '<span style="color:var(--muted); font-size:12px;">nicht verfügbar</span>') +
+              : '<span style="color:var(--muted); font-size:var(--fs-neben);">nicht verfügbar</span>') +
             (window.Info ? window.Info.knopf('strategie.' + s.key, s.name) : '') +
           '</span>' +
         '</div>' +
-        '<div style="font-size:12.5px; color:var(--ink-2); margin-top:6px; max-width:68ch;">' + U.esc(s.was) + '</div>' +
-        '<div style="font-size:11.5px; color:var(--muted); margin-top:4px;">Horizont: ' + U.esc(s.horizont) +
+        '<div style="font-size:var(--fs-text); color:var(--ink-2); margin-top:6px; max-width:68ch;">' + U.esc(s.was) + '</div>' +
+        '<div style="font-size:var(--fs-neben); color:var(--muted); margin-top:4px;">Horizont: ' + U.esc(s.horizont) +
           ' · Instrument: ' + U.esc(s.instrument) +
           ' · <span style="opacity:.85;">' + s.beleg.length + ' ' + (s.beleg.length === 1 ? 'Beleg' : 'Belege') +
           ' hinter dem i</span></div>' +
       '</div>';
     }).join('') +
     (noten.length
-      ? '<div style="font-size:11.5px; color:var(--muted); margin:2px 2px 10px; line-height:1.6;">' +
+      ? '<div style="font-size:var(--fs-neben); color:var(--muted); margin:2px 2px 10px; line-height:1.6;">' +
           noten.map(function (s) {
             return U.esc(s.name) + ' (' + U.esc(s.stand) + '): ' + U.esc(s.was) +
               (s.beleg && s.beleg.length ? ' ' + U.esc(s.beleg[0]) : '');

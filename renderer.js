@@ -56,17 +56,12 @@
   function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
 
   /* ================= Datenabruf ================= */
-  function parseChart(bodyText) {
-    var j = JSON.parse(bodyText);
-    var r = j && j.chart && j.chart.result && j.chart.result[0];
-    if (!r) throw new Error(j && j.chart && j.chart.error ? JSON.stringify(j.chart.error) : 'Leere Antwort');
-    var meta = r.meta || {};
-    var ts = r.timestamp || [];
-    var closes = (r.indicators && r.indicators.quote && r.indicators.quote[0] && r.indicators.quote[0].close) || [];
-    var series = [];
-    for (var i = 0; i < ts.length; i++) {
-      if (closes[i] !== null && closes[i] !== undefined) series.push([ts[i] * 1000, closes[i]]);
-    }
+  /* Nimmt die fertig zerlegten Balken des Laders und macht daraus, was die Kachel
+   * braucht: Kurs, Tagesveraenderung, Verlaufslinie, 52-Wochen-Spanne. Das Zerlegen
+   * selbst steht in kurse.js - hier bleibt nur, was NUR die Kachel angeht. */
+  function ausKursdaten(kd) {
+    var meta = kd.meta || {};
+    var series = window.Kurse.reihe(kd.bars);
     var price = (meta.regularMarketPrice !== undefined && meta.regularMarketPrice !== null)
       ? meta.regularMarketPrice
       : (series.length ? series[series.length - 1][1] : null);
@@ -81,16 +76,13 @@
   }
 
   async function loadSymbol(sym) {
-    var url = 'https://query1.finance.yahoo.com/v8/finance/chart/' + encodeURIComponent(sym) + '?range=1mo&interval=1d';
-    for (var attempt = 0; attempt < 2; attempt++) {
-      var res = await window.api.fetchText(url);
-      if (res.ok) {
-        try { return parseChart(res.body); } catch (e) { return null; }
-      }
-      if (res.status === 429) { await sleep(20000); continue; } // kurz warten, einmal erneut
-      return null;
-    }
-    return null;
+    /* ROH: Die Kachel zeigt den Kurs, der gerade an der Boerse steht. Die 429-
+     * Wiederholung macht jetzt der Lader fuer alle Aufrufer, nicht nur fuer diesen. */
+    var kd = null;
+    try { kd = await window.Kurse.hole(sym, { range: '1mo', interval: '1d', bereinigt: false, warteMs: 20000 }); }
+    catch (e) { return null; }
+    if (!kd) return null;
+    try { return ausKursdaten(kd); } catch (e) { return null; }
   }
 
   /* Vor-/nachboerslich? Ausserhalb der regulaeren Sitzung liefert das die Phase,
@@ -111,20 +103,17 @@
    *  wird gegen den letzten regulaeren Schluss (chartPreviousClose bzw.
    *  regularMarketPrice). Wird nur ausserhalb der Sitzung geladen. */
   async function loadPrePost(sym, phase) {
-    var url = 'https://query1.finance.yahoo.com/v8/finance/chart/' + encodeURIComponent(sym) + '?range=1d&interval=5m&includePrePost=true';
-    var res = await window.api.fetchText(url);
-    if (!res.ok) return null;
-    try {
-      var r = JSON.parse(res.body).chart.result[0];
-      var closes = (r.indicators.quote[0].close || []).filter(function (c) { return c != null; });
-      if (!closes.length) return null;
-      var kurs = closes[closes.length - 1];
-      var basis = phase === 'vorboerslich'
-        ? (r.meta.chartPreviousClose || r.meta.previousClose)
-        : r.meta.regularMarketPrice;
-      if (!basis) return null;
-      return { kurs: kurs, pct: (kurs / basis - 1) * 100, phase: phase };
-    } catch (e) { return null; }
+    // ROH und MIT Vor-/Nachboerse: gefragt ist der ausserboerslich gestellte Kurs.
+    var kd = null;
+    try { kd = await window.Kurse.hole(sym, { range: '1d', interval: '5m', prePost: true, bereinigt: false }); }
+    catch (e) { return null; }
+    if (!kd || !kd.bars.length) return null;
+    var kurs = kd.bars[kd.bars.length - 1][1];
+    var basis = phase === 'vorboerslich'
+      ? (kd.meta.chartPreviousClose || kd.meta.previousClose)
+      : kd.meta.regularMarketPrice;
+    if (!basis) return null;
+    return { kurs: kurs, pct: (kurs / basis - 1) * 100, phase: phase };
   }
 
   async function refreshQuotes() {
@@ -198,14 +187,18 @@
 
   /* ================= Markt offen? ================= */
   function usMarketOpen() {
-    var now = new Date();
-    var d = now.getUTCDay();
-    if (d === 0 || d === 6) return false;
-    // Sommer-/winterzeitfest über die Rechen-Engine: 0–390 Minuten nach Börsenöffnung.
-    // Vorher galt die Vereinigung beider Fenster – im Winter lief der Scanner damit eine
-    // Stunde im Premarket auf stalen Kursen. (US-Feiertage kennt die App weiterhin nicht.)
-    var m = window.Quant.minutenSeitOeffnung(now.getTime());
-    return m >= 0 && m < 390;
+    var jetzt = Date.now();
+    /* Feiertage UND Halbtage kommen jetzt aus boerse.js. Vorher galt jeder Wochentag
+     * als voller Handelstag von 390 Minuten: An Feiertagen lief der Scanner ins Leere
+     * (harmlos, barsFrisch faengt es ab), an Halbtagen aber galt die Boerse noch drei
+     * Stunden nach dem Schluss als offen - und daran haengen Glattstellung,
+     * Einstiegssperre und die Anzeige. */
+    var laenge = window.Boerse ? window.Boerse.sitzungsMinuten(jetzt) : 390;
+    if (!laenge) return false;
+    // Sommer-/winterzeitfest über die Rechen-Engine. Vorher galt die Vereinigung beider
+    // Fenster – im Winter lief der Scanner damit eine Stunde im Premarket auf stalen Kursen.
+    var m = window.Quant.minutenSeitOeffnung(jetzt);
+    return m >= 0 && m < laenge;
   }
 
   /* ================= Rendering ================= */
@@ -334,7 +327,55 @@
     var ckM = document.getElementById('ckMarkt');
     if (ckM) ckM.innerHTML = open ? '<span class="mdot open"></span>offen' : '<span class="mdot closed"></span>geschlossen';
     document.getElementById('err').textContent = fetchErrors > 0 ? '' + fetchErrors + ' Wert(e) konnten nicht geladen werden' : '';
+    /* Das Warnband ist fuer genau solche Zustaende gebaut und auf JEDEM Reiter sichtbar -
+     * bei gestoerter Kursquelle blieb es trotzdem stumm, und die Meldung stand nur klein
+     * in der Kopfzeile. Schwelle: mehr als die Haelfte gescheitert. Bei einzelnen
+     * Ausfaellen bleibt es aus, sonst steht dort staendig etwas und niemand liest es mehr. */
+    var gesamt = INDICES.length + STOCKS.length;
+    quellenWarnung((fetchErrors > gesamt / 2)
+      ? 'Die Kursquelle ist gestört: ' + fetchErrors + ' von ' + gesamt +
+        ' Werten kamen nicht durch. Angezeigte Kurse können veraltet sein.'
+      : null);
     document.dispatchEvent(new CustomEvent('quotes-updated'));
+  }
+
+  /* Das Warnband wohnt in depot.js - und das ist das 21. Skript, dieses hier das 3.
+   * Beim ERSTEN Kursdurchlauf gibt es window.__warnband also noch nicht. Statt die
+   * Meldung dann zu verlieren, wird sie gemerkt und nachgezogen, sobald es da ist. */
+  var quellenStand = null;
+  function quellenWarnung(text) {
+    quellenStand = text;
+    if (typeof window.__warnband === 'function') window.__warnband('kursquelle', text);
+  }
+  window.addEventListener('load', function () {
+    if (quellenStand !== null && typeof window.__warnband === 'function') {
+      window.__warnband('kursquelle', quellenStand);
+    }
+    defekteMelden();
+  });
+
+  /* Unlesbare Dateien beim Start ansagen. Der Hauptprozess legt sie beiseite, statt sie
+   * dem naechsten Schreiben zu ueberlassen - aber ein Datenverlust, den niemand bemerkt,
+   * ist der teuerste. Also einmal deutlich ins Warnband, mit dem Ort der Reste. */
+  function defektName(w) {
+    var m = /^bars_(\w+)_(.+)$/.exec(w);
+    if (m) return 'Kursarchiv ' + m[2].replace(/_/g, '.') + ' (' + m[1] + ')';
+    return { depot: 'Depot', settings: 'Einstellungen', fehlermeldungen: 'Fehlermeldungen',
+             diagnose: 'Diagnose', theme: 'Farbthema' }[w] || w;
+  }
+  async function defekteMelden() {
+    if (!window.api || typeof window.api.storeDefekte !== 'function') return;
+    var r = null;
+    try { r = await window.api.storeDefekte(); } catch (e) { return; }
+    if (!r || !r.ok || !r.liste || !r.liste.length) return;
+    var namen = r.liste.slice(0, 6).map(function (d) { return defektName(d.was); });
+    var rest = r.liste.length - namen.length;
+    var wo = r.liste[0].datei ? ' Die Reste liegen unter <code>' + esc(r.liste[0].datei) + '</code>.' : '';
+    if (typeof window.__warnband === 'function') {
+      window.__warnband('defekt', '<b>' + r.liste.length + ' gespeicherte Datei(en) waren unlesbar</b> – ' +
+        esc(namen.join(', ')) + (rest > 0 ? ' und ' + rest + ' weitere' : '') +
+        '. Sie wurden beiseitegelegt statt überschrieben, der Bestand beginnt dort neu.' + wo);
+    }
   }
 
   // Nur echte Web-Links ins DOM lassen. Die Feed-Inhalte kommen von außen; javascript:-URLs
@@ -383,12 +424,21 @@
   function quelleText(r) {
     return r && r.quelle === 'netz' ? 'Gemeinschafts-Ablage' : 'Suche auf diesem Rechner';
   }
+  /* Leerzustand ist nicht Fehlerzustand. Vorher stand hier bei einem GESCHEITERTEN
+   * Ladeversuch weiter "wird gleich aus der Gemeinschafts-Ablage geladen" - die Karte
+   * versprach also dauerhaft etwas, das nicht mehr kommt. Wer das liest, wartet. */
+  function ablageNichtDa(el, was) {
+    if (!el) return;
+    el.innerHTML = '<div class="loading">' + esc(was) + ' derzeit nicht erreichbar – ' +
+      'die Gemeinschafts-Ablage antwortet nicht. Der nächste Versuch läuft automatisch.</div>';
+  }
+
   async function ladeSpekulationen() {
     var el = document.getElementById('spekRadar');
     if (!el || !window.api || !window.api.readSpekulationen) return;
     try {
       var r = await window.api.readSpekulationen();
-      if (!r || !r.ok) return;   // keine Datei: Platzhalter bleibt stehen
+      if (!r || !r.ok) { ablageNichtDa(el, 'Spekulations-Radar'); return; }
       var d = JSON.parse(r.body);
       var roh = (d && Array.isArray(d.eintraege)) ? d.eintraege : [];
       var jetzt = Date.now();
@@ -442,12 +492,12 @@
           }).join(' · ') + '</span>' : '') +
           '</div>';
       }).join('') +
-        '<div style="color:var(--muted); font-size:11px; margin-top:8px;">Stand ' +
+        '<div style="color:var(--muted); font-size:var(--fs-klein); margin-top:8px;">Stand ' +
         new Date(r.mtime).toLocaleString('de-DE', { weekday: 'short', hour: '2-digit', minute: '2-digit' }) + ' Uhr' +
         ' · ' + quelleText(r) +
         (alt ? ' – <b>veraltet</b>, die Suche hat seit über 20 Stunden nicht geschrieben' : '') +
         '</div>' +
-        '<div style="color:var(--muted); font-size:11px; margin-top:2px;">' +
+        '<div style="color:var(--muted); font-size:var(--fs-klein); margin-top:2px;">' +
         'Sucht dreimal täglich vor US-Eröffnung (ca. 6:45, 12:45, 14:45 Uhr). ' +
         'Die Chance-Einstufung ist eine redaktionelle Einschätzung der Suche, keine Messung.</div>';
       /* Benachrichtigung nur fuer NEUE Hoch-Eintraege, je id genau einmal - und nur,
@@ -497,7 +547,7 @@
     if (!el || !window.api || !window.api.readInsider) return;
     try {
       var r = await window.api.readInsider();
-      if (!r || !r.ok) return;   // keine Datei: Platzhalter bleibt stehen
+      if (!r || !r.ok) { ablageNichtDa(el, 'Insider-Käufe'); return; }
       var d = JSON.parse(r.body);
       var roh = (d && Array.isArray(d.eintraege)) ? d.eintraege : [];
       var jetzt = Date.now();
@@ -560,7 +610,7 @@
           }).join(' · ') + '</span>' : '') +
           '</div>';
       }).join('') +
-        '<div style="color:var(--muted); font-size:11px; margin-top:8px;">Stand ' +
+        '<div style="color:var(--muted); font-size:var(--fs-klein); margin-top:8px;">Stand ' +
         new Date(r.mtime).toLocaleString('de-DE', { weekday: 'short', hour: '2-digit', minute: '2-digit' }) + ' Uhr' +
         ' · ' + quelleText(r) +
         (alt ? ' – <b>veraltet</b>, der Abruf hat länger nicht geschrieben' : '') +
@@ -653,11 +703,13 @@
       async function bahn() {
         while (idx < liste.length) {
           var k = liste[idx++];
-          var cu = 'https://query1.finance.yahoo.com/v8/finance/chart/' + encodeURIComponent(k.sym) +
-            '?range=1d&interval=5m&includePrePost=true';
-          var rc = await window.api.fetchText(cu);
-          if (!rc || !rc.ok) continue;
-          var v = window.Vormarkt.vormarktAusChart(rc.body);
+          /* holeRoh statt hole: vormarktAusChart schneidet das vorboersliche Fenster
+             selbst aus den currentTradingPeriod-Grenzen - ein Sonderfall mit eigenem
+             geprueften Vertrag. Ueber den Lader laeuft trotzdem der URL-Bau und die
+             429-Behandlung, die dieser Weg vorher gar nicht hatte. */
+          var rohText = await window.Kurse.holeRoh(k.sym, { range: '1d', interval: '5m', prePost: true });
+          if (!rohText) continue;
+          var v = window.Vormarkt.vormarktAusChart(rohText);
           if (v) treffer.push({ sym: k.sym, name: k.name, kurs: v.kurs, luecke: v.luecke, vol: v.vol, kerzen: v.kerzen });
         }
       }
@@ -685,7 +737,7 @@
     var kopf = '<div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:6px;">' +
       '<button id="vormarktJetzt" class="btn"' + (vormarktLaeuft ? ' disabled' : '') + '>' +
       (vormarktLaeuft ? 'Suche läuft …' : 'Jetzt nachsehen') + '</button>' +
-      '<span style="color:var(--muted); font-size:11.5px;">' +
+      '<span style="color:var(--muted); font-size:var(--fs-neben);">' +
       (phase === 'vorboerslich'
         ? 'Vorbörse läuft – die Karte sieht alle 10 Minuten von selbst nach.'
         : 'Ausserhalb der US-Vorbörse (10:00–15:30 unserer Zeit) gibt es keine Vorbörsen-Kerzen.') +
@@ -711,7 +763,7 @@
           '</div>';
       }).join('');
     }
-    var fuss = '<div style="color:var(--muted); font-size:11px; margin-top:8px;">' +
+    var fuss = '<div style="color:var(--muted); font-size:var(--fs-klein); margin-top:8px;">' +
       (vormarktStand ? 'Stand ' + new Date(vormarktStand.zeit).toLocaleString('de-DE',
         { weekday: 'short', hour: '2-digit', minute: '2-digit' }) + ' Uhr · ' : '') +
       'Schwellen: Lücke über ' + window.Vormarkt.MIN_LUECKE + ' %, Kurs über ' + window.Vormarkt.MIN_KURS +
@@ -919,10 +971,21 @@
   });
 
   /* ================= Steuerung ================= */
+  /* Die Hell/Dunkel-Wahl wurde nirgends gespeichert - jeder Start begann wieder
+   * dunkel, und wer hell braucht, musste bei jedem Start denselben Knopf druecken. */
   document.getElementById('themeBtn').addEventListener('click', function () {
     var root = document.documentElement;
-    root.setAttribute('data-theme', root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+    var neu = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', neu);
+    try { if (window.api && window.api.storeSet) window.api.storeSet('theme', neu); }
+    catch (e) { /* ohne Speicher bleibt es bei dieser Sitzung */ }
   });
+  (function themaLaden() {
+    if (!window.api || !window.api.storeGet) return;
+    window.api.storeGet('theme').then(function (t) {
+      if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+    }).catch(function () { /* nicht lesbar: es bleibt beim Vorgabethema */ });
+  })();
 
   var refreshing = false;
   async function doRefresh() {

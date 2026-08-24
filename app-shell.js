@@ -41,26 +41,99 @@
   };
   window.U = U;
 
-  // ---- Tabs ----
-  var tabs = document.querySelectorAll('nav.tabs button');
-  tabs.forEach(function (b) {
-    b.addEventListener('click', function () {
-      tabs.forEach(function (x) { x.classList.remove('active'); });
-      document.querySelectorAll('.tab').forEach(function (t) { t.classList.remove('active'); });
-      b.classList.add('active');
-      document.getElementById('tab-' + b.getAttribute('data-tab')).classList.add('active');
-      document.dispatchEvent(new CustomEvent('tab-changed', { detail: b.getAttribute('data-tab') }));
+  /* ---- Reiter ----
+   * Die Leiste ist ein role="tablist". Dazu gehoert eine Tastaturbedienung, die sich
+   * von der normalen Tab-Taste unterscheidet: Innerhalb der Leiste blaettern die
+   * PFEILTASTEN, und nur der aktive Reiter ist selbst tabbierbar (roving tabindex).
+   * Sonst muesste man sich durch alle fuenf Knoepfe tabben, um zum Inhalt zu kommen. */
+  var tabs = [].slice.call(document.querySelectorAll('nav.tabs button'));
+
+  function reiterZeigen(b, fokus) {
+    tabs.forEach(function (x) {
+      var an = (x === b);
+      x.classList.toggle('active', an);
+      x.setAttribute('aria-selected', an ? 'true' : 'false');
+      x.tabIndex = an ? 0 : -1;
+    });
+    document.querySelectorAll('.tab').forEach(function (t) { t.classList.remove('active'); });
+    var ziel = document.getElementById('tab-' + b.getAttribute('data-tab'));
+    if (ziel) ziel.classList.add('active');
+    if (fokus) b.focus();
+    document.dispatchEvent(new CustomEvent('tab-changed', { detail: b.getAttribute('data-tab') }));
+  }
+
+  tabs.forEach(function (b, i) {
+    b.addEventListener('click', function () { reiterZeigen(b, false); });
+    b.addEventListener('keydown', function (ev) {
+      var ziel = null;
+      if (ev.key === 'ArrowRight' || ev.key === 'ArrowDown') ziel = tabs[(i + 1) % tabs.length];
+      else if (ev.key === 'ArrowLeft' || ev.key === 'ArrowUp') ziel = tabs[(i - 1 + tabs.length) % tabs.length];
+      else if (ev.key === 'Home') ziel = tabs[0];
+      else if (ev.key === 'End') ziel = tabs[tabs.length - 1];
+      if (!ziel) return;
+      ev.preventDefault();
+      reiterZeigen(ziel, true);
     });
   });
 
-  // ---- Modals ----
+  /* ---- Dialoge ----
+   * Vorher liessen sich die drei Dialoge nur mit der Maus schliessen: kein Escape,
+   * keine Fokusfalle, und der Hintergrund blieb durchtabbierbar - man konnte also
+   * blind in die Oberflaeche dahinter tabben, waehrend der Dialog offen war.
+   * Jetzt: Escape schliesst, die Tab-Taste laeuft im Dialog im Kreis, und der Fokus
+   * kehrt zu dem Element zurueck, das den Dialog geoeffnet hat. */
+  var modalHer = null;   // wohin der Fokus zurueckgeht
+
+  function fokussierbare(el) {
+    return [].slice.call(el.querySelectorAll(
+      'a[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+    )).filter(function (e) { return e.offsetWidth || e.offsetHeight || e.getClientRects().length; });
+  }
+  function offenerDialog() { return document.querySelector('.modal-bg.open'); }
+
+  function modalSchliessen(bg) {
+    if (!bg) return;
+    bg.classList.remove('open');
+    if (modalHer) { try { modalHer.focus(); } catch (e) { /* Ausloeser ist weg */ } modalHer = null; }
+  }
+
   document.querySelectorAll('[data-close]').forEach(function (b) {
-    b.addEventListener('click', function () { document.getElementById(b.getAttribute('data-close')).classList.remove('open'); });
+    b.addEventListener('click', function () { modalSchliessen(document.getElementById(b.getAttribute('data-close'))); });
   });
   document.querySelectorAll('.modal-bg').forEach(function (bg) {
-    bg.addEventListener('click', function (e) { if (e.target === bg) bg.classList.remove('open'); });
+    bg.addEventListener('click', function (e) { if (e.target === bg) modalSchliessen(bg); });
   });
-  window.openModal = function (id) { document.getElementById(id).classList.add('open'); };
+
+  document.addEventListener('keydown', function (ev) {
+    var bg = offenerDialog();
+    if (!bg) return;
+    if (ev.key === 'Escape') {
+      // Ist ein Erklaerfenster offen, gehoert das erste Escape ihm - sonst schliessen
+      // beide auf einen Schlag und man verliert den Dialog, den man noch brauchte.
+      var ip = document.getElementById('infoPop');
+      if (ip && ip.style.display === 'block') return;
+      ev.preventDefault(); modalSchliessen(bg); return;
+    }
+    if (ev.key !== 'Tab') return;
+    // Fokusfalle: am Ende wieder an den Anfang und umgekehrt.
+    var f = fokussierbare(bg);
+    if (!f.length) return;
+    var erst = f[0], letzt = f[f.length - 1];
+    if (ev.shiftKey && (document.activeElement === erst || !bg.contains(document.activeElement))) {
+      ev.preventDefault(); letzt.focus();
+    } else if (!ev.shiftKey && (document.activeElement === letzt || !bg.contains(document.activeElement))) {
+      ev.preventDefault(); erst.focus();
+    }
+  });
+
+  window.openModal = function (id) {
+    var bg = document.getElementById(id);
+    if (!bg) return;
+    modalHer = document.activeElement;
+    bg.classList.add('open');
+    var f = fokussierbare(bg);
+    if (f.length) { try { f[0].focus(); } catch (e) { /* nicht fokussierbar */ } }
+  };
 
   /* ---- Erklaerungen: ein Register, ein Fenster, ein Knopf ----
    *
@@ -123,7 +196,9 @@
     }
 
     document.addEventListener('click', function (ev) {
-      var k = ev.target.closest ? ev.target.closest('button.info') : null;
+      // '[data-info]' statt 'button.info': Der Glossar-Knopf in der Kopfzeile ist
+      // beschriftet, kein rundes i - er soll trotzdem denselben Weg gehen.
+      var k = ev.target.closest ? ev.target.closest('button[data-info]') : null;
       if (k) {
         ev.preventDefault();
         var warOffen = (offen === k);
@@ -158,7 +233,42 @@
    * als Dauer-Absaetze; der Wortlaut ist unveraendert uebernommen, nur der Ort hat
    * sich geaendert. Module, die ihre Karten selbst zeichnen (strategien.js), melden
    * ihre Texte im eigenen render() an. */
+  /* Ein Glossar der Hausbegriffe. Die App rechnet in Pp, Bp, t-Werten, MDE und
+   * "Kante" - 81-mal allein "Pp" - und erklaerte keinen davon an einer Stelle, an der
+   * man ihn beim Lesen sucht. Erreichbar aus der Kopfzeile, also von jedem Reiter aus.
+   * Bewusst knapp: eine Zeile je Begriff, dafuer mit der Zahl, die im Programm steht. */
   Info.eintragen({
+    'glossar.begriffe': {
+      titel: 'Begriffe dieser App',
+      punkte: [
+        'Pp – Prozentpunkt. Der Unterschied zwischen zwei Prozentzahlen. Von 3 % auf 5 % sind 2 Pp (und 67 % mehr). Renditevorsprünge stehen hier in Pp, damit sie nicht mit Prozent vom Kapital verwechselt werden.',
+        'Bp – Basispunkt, ein Hundertstel Prozentpunkt. 20 Bp = 0,20 Pp. Handelskosten stehen in Bp, weil sie klein und dennoch entscheidend sind.',
+        'Kante – der gemessene Vorsprung einer Regel gegenüber dem bloßen Halten, nach Kosten. Keine Kante heißt: Die Regel bringt nichts, was Nichtstun nicht auch bringt.',
+        'MDE – Mindest-Effektgröße. Der kleinste Vorsprung, den eine Messung mit ihrer Datenmenge überhaupt von Zufall unterscheiden könnte. Liegt der gemessene Wert darunter, ist das Ergebnis „nicht entscheidbar“ – nicht „kein Effekt“.',
+        't-Wert – wie viele Standardfehler der gemessene Vorsprung von null entfernt liegt. Grob: unter 2 ist alles gut mit Zufall vereinbar. Ein hoher t-Wert bei wenigen Trades sagt trotzdem wenig.',
+        'PF – Profitfaktor: alle Gewinne geteilt durch alle Verluste. Über 1 heißt profitabel, unter 1 nicht. Sagt nichts über die Häufigkeit.',
+        'Walk-Forward – auf alten Daten einstellen, auf den darauffolgenden, nie gesehenen Daten prüfen, dann weiterrücken. Der einzige Test, den eine überangepasste Regel nicht bestehen kann.',
+        'Schattenbuch – ein Mitschrieb aller Signale, auch der nicht gehandelten. Es kostet nichts und ist die einzige Messbasis, die auch dann weiterläuft, wenn eine Regel abgeschaltet ist.',
+        'Regime – die Marktphase, in der eine Regel gelten soll (hier: SPY im Aufwärts- oder Abwärtstrend). Jede Kante wurde in genau einem Regime gemessen und wird nur dort eingesetzt.',
+        'Aufgeld – der Betrag, den ein Optionsschein über seinem inneren Wert kostet. Er schmilzt bis zur Fälligkeit auf null; deshalb schlägt er bei kurzen Haltedauern durch.',
+        'Omega – wie viel Prozent der Schein macht, wenn der Basiswert ein Prozent macht. Der Hebel, den man tatsächlich bekommt.',
+        'Delta – wie viel Kurs der Schein macht, wenn der Basiswert einen Euro macht. Zwischen 0 und 1 (Call) bzw. −1 und 0 (Put).',
+        'Kostenhürde – wie viel der Basiswert laufen muss, damit ein Trade nach Spanne, Gebühr und Aufgeld bei null herauskommt. Steht dem gemessenen Vorsprung direkt gegenüber.',
+        'Virtuelles Buch – ein Depot, das die App vollständig führt, aber ohne echtes Geld. Momentum- und Drift-Buch sind solche Bücher; sie zeigen, was die Regel getan hätte.'
+      ],
+      fuss: 'Alle Zahlen der App sind Simulation und keine Anlageberatung.'
+    },
+    'modell.schein': {
+      titel: 'Wie ein Optionsschein hier bepreist wird',
+      punkte: [
+        'Black-Scholes mit der aus den Kursen geschätzten Volatilität – keine echten Emittenten-Preise. Die Spanne ist an echten Kursen geeicht (onvista), das Modell selbst nicht.',
+        'Volatilitäts-Smile: Ein Schein abseits des Geldes bekommt nicht mehr dieselbe Vola wie einer am Geld. Puts sind auf der Seite teurer, Calls knapp über dem Kurs billiger – so herum, nicht anders. Bei den Abständen, die diese App handelt (0 bis 3 %), macht das zwischen 0,0 und 2,5 % Scheinpreis aus.',
+        'Volatilität um einen Ergebnistermin: Sie steigt bis zu 25 % davor an und fällt danach unter das Normalniveau zurück („IV-Crush"). Gemessen am Beispiel: ein Schein am Geld mit 21 Tagen Restlaufzeit verliert über die Zahlen rund 29 % – bei UNVERÄNDERTEM Kurs.',
+        'Vega steht in der Positionstabelle: wie viel ein einzelner Volatilitätspunkt diese Position wert ist. Bis 8.24.5 kam Vega in der Simulation überhaupt nicht vor – die Vola wurde beim Öffnen eingefroren.',
+        'Der Zinssatz steht auf 2 % und ist eine Annahme, keine Messung. Bei diesen Laufzeiten ändert er den Preis um wenige Zehntelprozent.'
+      ],
+      fuss: 'Smile und Termin-Struktur sind Modellannahmen in der üblichen Größenordnung, NICHT an Emittentenkursen kalibriert – dafür fehlen der App echte Scheinpreise über mehrere Basispreise. Die Richtung ist belastbarer als die Höhe.'
+    },
     'regeln.uebersicht': {
       titel: 'Drei Zeithorizonte, drei getrennte Strategien',
       punkte: [
@@ -193,7 +303,7 @@
       punkte: [
         'Eine Regel ist hier ein Ding mit Namen, Parametern, Chart, Bedingungen und Bilanz.',
         'Im Chart siehst du, was sie sieht; in der Bilanz, was dabei herauskam.',
-        'Die drei Ergebnis-Ansichten, die früher im Kurzfrist-Depot verstreut lagen, gehören zu dieser Regel und stehen deshalb hier.'
+        'Die drei Ergebnis-Ansichten, die früher unter „Vermögen“ verstreut lagen, gehören zu dieser Regel und stehen deshalb hier.'
       ]
     },
     'messung.scoreboard': {

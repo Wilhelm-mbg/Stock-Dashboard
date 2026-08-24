@@ -336,8 +336,8 @@
     var b = document.createElement('div');
     b.id = 'diagBanner';
     b.style.cssText = 'position:fixed; left:50%; bottom:18px; transform:translateX(-50%); z-index:9999;' +
-      'max-width:560px; background:var(--panel); border:1px solid var(--grid); border-radius:10px;' +
-      'padding:14px 16px; box-shadow:0 6px 24px rgba(0,0,0,.35); font-size:12.5px; line-height:1.55;';
+      'max-width:560px; background:var(--panel); border:1px solid var(--grid); border-radius:var(--r-gross);' +
+      'padding:14px 16px; box-shadow:0 6px 24px rgba(0,0,0,.35); font-size:var(--fs-text); line-height:1.55;';
     b.innerHTML = '<div style="white-space:pre-wrap;">' + U.esc(EINWILLIGUNGSTEXT) + '</div>' +
       '<div style="display:flex; gap:8px; margin-top:10px; justify-content:flex-end;">' +
       '<button class="btn ghost" id="diagNein" type="button">Nein, nichts senden</button>' +

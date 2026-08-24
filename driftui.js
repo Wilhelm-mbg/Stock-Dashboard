@@ -107,17 +107,12 @@
     var key = 'drift_markt';
     var c = await window.api.storeGet(key);
     if (c && c.reihe && Date.now() - c.at < 20 * 3600000) return c.reihe;
-    var url = 'https://query1.finance.yahoo.com/v8/finance/chart/SPY?period1=0&period2=' +
-      Math.floor(Date.now() / 1000) + '&interval=1d';
-    var res = await window.api.fetchText(url);
-    if (!res.ok) return c ? c.reihe : null;
     try {
-      var r = JSON.parse(res.body).chart.result[0];
-      var ts = r.timestamp || [];
-      var adj = (r.indicators.adjclose || [{}])[0] || {};
-      var cl = adj.adjclose || (r.indicators.quote[0] || {}).close || [];
-      var reihe = [];
-      for (var i = 0; i < ts.length; i++) if (cl[i] != null) reihe.push([ts[i] * 1000, cl[i]]);
+      /* BEREINIGT: Der Marktvergleich laeuft ueber Jahrzehnte (period1=0). Ohne
+       * adjclose macht jeder Split aus einer Verdopplung eine Halbierung. */
+      var kd = await window.Kurse.hole('SPY', { von: 0, bis: Date.now(), interval: '1d', bereinigt: true });
+      if (!kd) return c ? c.reihe : null;
+      var reihe = window.Kurse.reihe(kd.bars);
       if (reihe.length < 500) return c ? c.reihe : null;
       await window.api.storeSet(key, { at: Date.now(), reihe: reihe });
       return reihe;
@@ -137,13 +132,13 @@
     el.innerHTML =
       '<div class="depot-stats">' +
         '<div class="tile"><div class="name">Ertrag p. a. (marktneutral)</div><div class="val ' +
-          (res.proJahr >= 0 ? 'pos' : 'neg') + '" style="font-size:17px;">' + U.signTxt(res.proJahr, ' %') + '</div></div>' +
-        '<div class="tile"><div class="name">t-Wert</div><div class="val" style="font-size:17px;">' + res.tWert + '</div></div>' +
-        '<div class="tile"><div class="name">Positive Monate</div><div class="val" style="font-size:17px;">' + res.positiveMonate + ' %</div></div>' +
-        '<div class="tile"><div class="name">Gemessene Monate</div><div class="val" style="font-size:17px;">' + res.verlauf.length + '</div></div>' +
-        '<div class="tile"><div class="name">Positionen gleichzeitig</div><div class="val" style="font-size:17px;">' + res.offenSchnitt + '</div></div>' +
+          (res.proJahr >= 0 ? 'pos' : 'neg') + '" style="font-size:var(--fs-zahl);">' + U.signTxt(res.proJahr, ' %') + '</div></div>' +
+        '<div class="tile"><div class="name">t-Wert</div><div class="val" style="font-size:var(--fs-zahl);">' + res.tWert + '</div></div>' +
+        '<div class="tile"><div class="name">Positive Monate</div><div class="val" style="font-size:var(--fs-zahl);">' + res.positiveMonate + ' %</div></div>' +
+        '<div class="tile"><div class="name">Gemessene Monate</div><div class="val" style="font-size:var(--fs-zahl);">' + res.verlauf.length + '</div></div>' +
+        '<div class="tile"><div class="name">Positionen gleichzeitig</div><div class="val" style="font-size:var(--fs-zahl);">' + res.offenSchnitt + '</div></div>' +
       '</div>' +
-      '<div style="font-size:12px; color:var(--ink-2); margin-top:8px;">' +
+      '<div style="font-size:var(--fs-neben); color:var(--ink-2); margin-top:8px;">' +
         res.positionen.toLocaleString('de-DE') + ' Positionen aus ' + wieViele + ' Werten · ' +
         res.monate[0] + ' bis ' + res.monate[res.monate.length - 1] + ' · ' +
         '<b class="' + (gut ? 'pos' : 'neg') + '">' +
@@ -172,7 +167,7 @@
     }).join('');
     el.innerHTML =
       (h.faellig.length
-        ? '<div style="font-size:12.5px; margin-bottom:8px; padding:8px 10px; border-left:3px solid var(--warn);">' +
+        ? '<div style="font-size:var(--fs-text); margin-bottom:8px; padding:8px 10px; border-left:3px solid var(--warn);">' +
           '<b>Heute fällig:</b> ' + h.faellig.map(function (f) { return U.esc(f.sym) + ' ' + f.richtung; }).join(', ') +
           ' – die Haltedauer von ' + h.halten + ' Handelstagen ist erreicht.</div>'
         : '') +
@@ -180,7 +175,7 @@
       '<th style="text-align:right;">Überraschung</th><th style="text-align:right;">Rang</th>' +
       '<th style="text-align:right;">seit</th><th style="text-align:right;">noch</th>' +
       '<th style="text-align:right;">Stand</th></tr></thead><tbody>' + zeilen + '</tbody></table>' +
-      '<div style="font-size:11.5px; color:var(--muted); margin-top:6px;">' +
+      '<div style="font-size:var(--fs-neben); color:var(--muted); margin-top:6px;">' +
       'Rang = Perzentil der Überraschung gegenüber den letzten ' + opts().fenster + ' Handelstagen. ' +
       'Simulation mit virtuellem Kapital, keine Anlageberatung.</div>';
   }
@@ -193,7 +188,7 @@
       stat('Lade Kurse …');
       var kurse = await ladeKurse();
       if (!kurse) {
-        stat('Keine Tageskurse vorhanden. Bitte zuerst im Tab „Mittelfristig“ die Kurse laden – beide Strategien nutzen dieselben Daten.');
+        stat('Keine Tageskurse vorhanden. Bitte zuerst unter „Vermögen → Mittelfristig“ die Kurse laden – beide Strategien nutzen dieselben Daten.');
         return;
       }
       var markt = await ladeMarkt();
@@ -224,7 +219,7 @@
     LAEUFT = true;
     try {
       var kurse = await ladeKurse();
-      if (!kurse) { stat('Keine Tageskurse vorhanden. Bitte zuerst im Tab „Mittelfristig“ die Kurse laden.'); return; }
+      if (!kurse) { stat('Keine Tageskurse vorhanden. Bitte zuerst unter „Vermögen → Mittelfristig“ die Kurse laden.'); return; }
       await ladeTermine(Object.keys(kurse), vollstaendig);
     } finally { LAEUFT = false; }
     rechne();
