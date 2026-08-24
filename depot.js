@@ -3336,11 +3336,18 @@ function huerdeAnzeigen() {
   }
 
   function isNearUsClose() {
-    // Sommer-/winterzeitfest: 15 Minuten vor US-Schluss (Handelstag = 390 Minuten).
-    // Vorher war 19:45–21:00 UTC hart verdrahtet – im Winter begann die Glattstellung
-    // damit 75 Minuten zu früh und blockierte so lange alle Einstiege.
-    var m = Q.minutenSeitOeffnung(Date.now());
-    return m >= 375 && m < 390;
+    /* Sommer-/winterzeitfest: 15 Minuten vor US-Schluss. Vorher war 19:45-21:00 UTC
+     * hart verdrahtet - im Winter begann die Glattstellung damit 75 Minuten zu frueh.
+     *
+     * Und dann stand hier 390 als feste Sitzungslaenge. An einem HALBTAG (Schluss
+     * 13:00 ET, 210 Minuten) wird 375 nie erreicht - die Tagesschluss-Glattstellung
+     * fiel an diesen Tagen also KOMPLETT AUS, und Positionen, die ausdruecklich kein
+     * Uebernacht-Risiko tragen sollten, lagen ueber Nacht. Sechs bis sieben Tage im
+     * Jahr, darunter der Tag nach Thanksgiving. */
+    var jetzt = Date.now();
+    var laenge = (window.Boerse ? window.Boerse.sitzungsMinuten(jetzt) : 390) || 390;
+    var m = Q.minutenSeitOeffnung(jetzt);
+    return m >= laenge - 15 && m < laenge;
   }
 
   async function intradayScan() {
@@ -5471,7 +5478,11 @@ function huerdeAnzeigen() {
           if (!bars) break;            // Fehler (Login/Markt unbekannt): Symbol überspringen
           if (!bars.length) { leer++; frueh = von; continue; }
           leer = 0;
-          var sess = bars.filter(function (b) { var m = Q.minutenSeitOeffnung(b[0]); return m >= 0 && m < 390; });
+          /* Genau der Fall, fuer den istSitzung geschrieben wurde: Capital.com liefert
+           * an Feiertagen und nach dem Halbtags-Schluss weiter Kerzen. Hier stand die
+           * 390 noch einmal von Hand - eine zweite Regel neben istSitzung, die deren
+           * Wochentag- und Feiertagspruefung nicht hatte. */
+          var sess = bars.filter(function (b) { return istSitzung(b[0]); });
           if (sess.length) { await window.Archiv.fuege(iv, sym, sess, 'cap'); stat.bars += sess.length; geholt = true; }
           frueh = Math.min(von, bars[0][0]);
           await new Promise(function (r) { setTimeout(r, 250); });
@@ -5500,10 +5511,18 @@ function huerdeAnzeigen() {
    *  nur die UHRZEIT - ein Samstag 14:00 UTC gilt dort als Sitzung. Bei Yahoo-Daten war
    *  das folgenlos (keine Wochenendkerzen), CFD-Daten brauchen den Wochentag dazu. */
   function istSitzung(ms) {
+    /* Feiertage und Halbtage kommen aus boerse.js. Nachgezaehlt ueber ein Jahr
+     * Stundenkerzen (24.08.2026): Von den Kerzen, die die alte Regel als Sitzung
+     * zaehlte, sind 3,85 % Feiertage und 0,38 % liegen nach dem Halbtags-Schluss -
+     * zusammen 4,23 %. Bei Yahoo-Daten faellt das kaum auf (dort gibt es an
+     * Feiertagen ohnehin keine Kerzen), bei CFD-Daten sehr wohl: Capital.com
+     * liefert durch, und genau darum steht dieser Filter hier. */
     var tag = new Date(ms).getUTCDay();
     if (tag === 0 || tag === 6) return false;
+    var laenge = (typeof window !== 'undefined' && window.Boerse) ? window.Boerse.sitzungsMinuten(ms) : 390;
+    if (!laenge) return false;
     var m = Q.minutenSeitOeffnung(ms);
-    return m >= 0 && m < 390;
+    return m >= 0 && m < laenge;
   }
   /** Letzter Sitzungsschluss VOR ms. Zieht den Zeiger in einem Schritt ueber Nacht,
    *  Wochenende oder Feiertag - sonst liefe der Backfill diese Pausen bei kleinem
@@ -5512,7 +5531,12 @@ function huerdeAnzeigen() {
     var z = ms;
     for (var i = 0; i < 12; i++) {
       var d = new Date(z), tag = d.getUTCDay(), m = Q.minutenSeitOeffnung(z);
-      if (tag >= 1 && tag <= 5 && m >= 390) return z - (m - 390) * 60000;
+      /* Der Kommentar darueber verspricht, ueber Feiertage zu springen - konnte es
+       * aber gar nicht: geprueft wurde nur der Wochentag. An einem Feiertag lieferte
+       * die Schleife einen "Schluss", den es nie gab, und der Backfill lief die
+       * Pause doch in Leeranfragen ab. Jetzt haelt die Zeile, was sie ankuendigt. */
+      var laenge = (typeof window !== 'undefined' && window.Boerse) ? window.Boerse.sitzungsMinuten(z) : 390;
+      if (tag >= 1 && tag <= 5 && laenge && m >= laenge) return z - (m - laenge) * 60000;
       d.setUTCDate(d.getUTCDate() - 1);
       d.setUTCHours(23, 59, 0, 0);
       z = d.getTime();

@@ -4920,6 +4920,103 @@ console.log('\n41) Zustaende: was die App sagt, wenn etwas fehlt oder klemmt');
      'Tabelle: die Summenzeile ueberspannt die richtige Zahl von Spalten  [' + colspan + ']');
 })();
 
+/* ================= 48. US-Handelskalender =================
+ * Die App hielt JEDEN Wochentag fuer einen vollen Handelstag von 390 Minuten.
+ * Feiertage sind dabei der leichte Fall (Leerlauf, barsFrisch faengt es ab);
+ * HALBTAGE sind der teure: Die Boerse schliesst um 13:00 ET statt 16:00, und
+ * isNearUsClose prueft "m >= 375" - an einem Halbtag wird 375 nie erreicht, die
+ * Tagesschluss-Glattstellung fiel dort also KOMPLETT aus. Positionen, die
+ * ausdruecklich kein Uebernacht-Risiko tragen sollten, lagen ueber Nacht.
+ *
+ * Geprueft wird gegen die VEROEFFENTLICHTEN NYSE-Termine, nicht gegen die eigene
+ * Rechnung - sonst pruefte sich der Algorithmus selbst. */
+(function () {
+  console.log('\n48) US-Handelskalender: Feiertage und Halbtage');
+  var B = require(__dirname + '/boerse.js');
+  function tag(s) { return Date.parse(s + 'T15:00:00Z'); }
+  function iso(ms) { return new Date(ms).toISOString().slice(0, 10); }
+
+  // --- Ostern, die Grundlage fuer Karfreitag ---
+  [[2025, 3, 20], [2026, 3, 5], [2027, 2, 28], [2024, 2, 31], [2030, 3, 21]].forEach(function (e) {
+    var o = B.ostern(e[0]);
+    ok(o.monat === e[1] && o.tag === e[2],
+       'Ostern ' + e[0] + ': ' + (o.tag) + '.' + (o.monat + 1) + '. (erwartet ' + e[2] + '.' + (e[1] + 1) + '.)');
+  });
+
+  /* Die veroeffentlichten NYSE-Feiertage. Jede Zeile ist nachschlagbar. */
+  var NYSE = {
+    2025: ['2025-01-01', '2025-01-20', '2025-02-17', '2025-04-18', '2025-05-26',
+           '2025-06-19', '2025-07-04', '2025-09-01', '2025-11-27', '2025-12-25'],
+    2026: ['2026-01-01', '2026-01-19', '2026-02-16', '2026-04-03', '2026-05-25',
+           '2026-06-19', '2026-07-03', '2026-09-07', '2026-11-26', '2026-12-25'],
+    2027: ['2027-01-01', '2027-01-18', '2027-02-15', '2027-03-26', '2027-05-31',
+           '2027-06-18', '2027-07-05', '2027-09-06', '2027-11-25', '2027-12-24']
+  };
+  Object.keys(NYSE).forEach(function (j) {
+    var f = B.feiertage(Number(j));
+    var berechnet = Object.keys(f).map(function (k) { return iso(f[k]); }).sort();
+    ok(berechnet.join(',') === NYSE[j].slice().sort().join(','),
+       'NYSE ' + j + ': alle zehn Feiertage stimmen');
+  });
+  /* Die drei Verschiebungen, an denen eine handgepflegte Liste scheitert: */
+  ok(iso(B.feiertage(2026).unabhaengigkeit) === '2026-07-03',
+     'Verschiebung: 4. Juli 2026 faellt auf Samstag -> frei ist der Freitag davor');
+  ok(iso(B.feiertage(2027).unabhaengigkeit) === '2027-07-05',
+     'Verschiebung: 4. Juli 2027 faellt auf Sonntag -> frei ist der Montag danach');
+  ok(iso(B.feiertage(2027).weihnachten) === '2027-12-24',
+     'Verschiebung: 25.12.2027 faellt auf Samstag -> frei ist der Freitag davor');
+
+  // --- Halbtage ---
+  ok(B.halbtagAn(tag('2026-11-27')) === 'nachThanksgiving', 'Halbtag: der Freitag nach Thanksgiving');
+  ok(B.halbtagAn(tag('2026-12-24')) === 'heiligabend', 'Halbtag: Heiligabend, wenn er ein Handelstag ist');
+  ok(B.halbtagAn(tag('2025-07-03')) === 'vorUnabhaengigkeit', 'Halbtag: der 3. Juli 2025 (Do, der 4. ist Fr)');
+  /* Die beiden Faelle, in denen der 3. Juli KEIN halber Tag ist. */
+  ok(!B.halbtagAn(tag('2026-07-03')),
+     'Kein Halbtag: der 3.7.2026 ist der Ersatzfeiertag selbst, also ganz zu');
+  ok(!B.halbtagAn(tag('2027-07-02')) && !B.halbtagAn(tag('2027-07-03')),
+     'Kein Halbtag: 2027 faellt der 4. Juli auf einen Sonntag - der 3. ist Samstag');
+  /* Kollision: Ein Feiertag schlaegt einen Halbtag. 2027 ist der 24.12. beides. */
+  ok(B.feiertagAn(tag('2027-12-24')) === 'weihnachten' && !B.halbtagAn(tag('2027-12-24')),
+     'Kollision: faellt beides auf denselben Tag, gilt der Feiertag');
+  ok(B.sitzungsMinuten(tag('2027-12-24')) === 0,
+     'Kollision: die Boerse ist dann ZU, nicht halb offen');
+
+  // --- Sitzungslaengen ---
+  ok(B.sitzungsMinuten(tag('2026-08-24')) === 390, 'Sitzung: ein normaler Montag hat 390 Minuten');
+  ok(B.sitzungsMinuten(tag('2026-11-27')) === 210, 'Sitzung: ein Halbtag hat 210 Minuten');
+  ok(B.sitzungsMinuten(tag('2026-11-26')) === 0, 'Sitzung: an Thanksgiving null');
+  ok(B.sitzungsMinuten(tag('2026-08-22')) === 0, 'Sitzung: samstags null');
+  ok(B.istHandelstag(tag('2026-11-27')) === true, 'Ein Halbtag IST ein Handelstag - nur ein kuerzerer');
+
+  // --- Ein Jahr am Stueck ---
+  var handelstage = 0, halb = 0;
+  for (var d = Date.UTC(2026, 0, 1); d < Date.UTC(2027, 0, 1); d += 86400000) {
+    if (B.istHandelstag(d)) handelstage++;
+    if (B.halbtagAn(d)) halb++;
+  }
+  ok(handelstage >= 250 && handelstage <= 253,
+     '2026 hat ' + handelstage + ' Handelstage (die NYSE zaehlt 250-253)');
+  ok(halb >= 1 && halb <= 4, '2026 hat ' + halb + ' Halbtage');
+
+  // --- Verkabelung ---
+  var dep = fs.readFileSync(__dirname + '/depot.js', 'utf8');
+  var ren = fs.readFileSync(__dirname + '/renderer.js', 'utf8');
+  var htmlB = fs.readFileSync(__dirname + '/index.html', 'utf8');
+  ok(/return m >= laenge - 15 && m < laenge;/.test(dep),
+     'Glattstellung: richtet sich nach der ECHTEN Sitzungslaenge, nicht nach 390');
+  ok(!/return m >= 375 && m < 390;/.test(dep),
+     'Glattstellung: die feste 375 ist weg - an einem Halbtag wurde sie nie erreicht');
+  ok(/window\.Boerse\.sitzungsMinuten\(jetzt\)/.test(ren) && /if \(!laenge\) return false;/.test(ren),
+     'Marktstatus: an Feiertagen gilt die Boerse als geschlossen');
+  ok(/var sess = bars\.filter\(function \(b\) \{ return istSitzung\(b\[0\]\); \}\)/.test(dep),
+     'Backfill: filtert ueber istSitzung statt ueber eine zweite, eigene 390er-Regel');
+  ok(/if \(tag >= 1 && tag <= 5 && laenge && m >= laenge\)/.test(dep),
+     'Backfill: der Sprung ueber Pausen kennt jetzt wirklich Feiertage - der Kommentar versprach das schon vorher');
+  ok(htmlB.indexOf('boerse.js') < htmlB.indexOf('src="depot.js"') &&
+     htmlB.indexOf('boerse.js') < htmlB.indexOf('src="renderer.js"'),
+     'Ladereihenfolge: boerse.js vor seinen beiden Nutzern');
+})();
+
 Promise.all(offeneProben).then(function () {
   console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
   process.exit(fails ? 1 : 0);

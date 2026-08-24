@@ -187,14 +187,18 @@
 
   /* ================= Markt offen? ================= */
   function usMarketOpen() {
-    var now = new Date();
-    var d = now.getUTCDay();
-    if (d === 0 || d === 6) return false;
-    // Sommer-/winterzeitfest über die Rechen-Engine: 0–390 Minuten nach Börsenöffnung.
-    // Vorher galt die Vereinigung beider Fenster – im Winter lief der Scanner damit eine
-    // Stunde im Premarket auf stalen Kursen. (US-Feiertage kennt die App weiterhin nicht.)
-    var m = window.Quant.minutenSeitOeffnung(now.getTime());
-    return m >= 0 && m < 390;
+    var jetzt = Date.now();
+    /* Feiertage UND Halbtage kommen jetzt aus boerse.js. Vorher galt jeder Wochentag
+     * als voller Handelstag von 390 Minuten: An Feiertagen lief der Scanner ins Leere
+     * (harmlos, barsFrisch faengt es ab), an Halbtagen aber galt die Boerse noch drei
+     * Stunden nach dem Schluss als offen - und daran haengen Glattstellung,
+     * Einstiegssperre und die Anzeige. */
+    var laenge = window.Boerse ? window.Boerse.sitzungsMinuten(jetzt) : 390;
+    if (!laenge) return false;
+    // Sommer-/winterzeitfest über die Rechen-Engine. Vorher galt die Vereinigung beider
+    // Fenster – im Winter lief der Scanner damit eine Stunde im Premarket auf stalen Kursen.
+    var m = window.Quant.minutenSeitOeffnung(jetzt);
+    return m >= 0 && m < laenge;
   }
 
   /* ================= Rendering ================= */
