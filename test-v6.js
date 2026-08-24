@@ -3867,10 +3867,44 @@ console.log('\n38) Audit 23.08.2026 – die fuenf Fehler duerfen nicht zurueckko
   var ci = fs.readFileSync(__dirname + '/.github/workflows/build.yml', 'utf8');
   ok(/branches: \['\*\*', '!radar'\]/.test(ci),
      'CI: der Datenzweig "radar" ist von der Pruefung ausgenommen');
-  ok(/pull_request: \{\}/.test(ci) && /jobs: \{pruefen:/.test(ci),
-     'CI: geprueft wird bei jedem Push und jedem Pull Request, nicht erst beim Tag');
+  ok(/push: \{branches:/.test(ci) && /jobs: \{pruefen:/.test(ci),
+     'CI: geprueft wird bei jedem Push, nicht erst beim Tag');
   ok(/needs: pruefen/.test(ci),
      'CI: der Installer wird nur nach gruener Pruefung gebaut');
+  /* Der pull_request-Ausloeser hat hier NIE etwas geprueft: alle Zweige liegen in
+   * diesem Repo, das push-Ereignis deckt sie ab. Er erzeugte nur graue "skipped"-
+   * Laeufe auf der Aktionen-Seite. Faellt er zurueck in die Datei, muss auch die
+   * Selbst-Uebersprung-Bedingung am Job zurueck - sonst laeuft die Suite doppelt. */
+  /* Nur die WIRKSAMEN Zeilen pruefen: der Kopfkommentar erklaert ausdruecklich, warum
+   * es den Ausloeser nicht mehr gibt, und darf das Wort selbstverstaendlich nennen. */
+  var ciAktiv = ci.split('\n').filter(function (z) { return !/^\s*#/.test(z); }).join('\n');
+  ok(!/pull_request/.test(ciAktiv),
+     'CI: kein pull_request-Ausloeser, der nur leere Laeufe erzeugt');
+  ok(!/head\.repo\.full_name != github\.repository/.test(ciAktiv),
+     'CI: und damit auch keine Bedingung mehr, die sich selbst ueberspringt');
+
+  /* --- Veroeffentlichen ohne Tag-Push --- */
+  /* Der Tag-Push scheitert in manchen Umgebungen an einer Richtlinie (HTTP 403). Dann
+   * gaebe es kein Release - und ohne Release findet electron-updater nichts. Der
+   * Dispatch-Weg legt den Tag serverseitig ueber "gh release create" an. */
+  ok(/workflow_dispatch: \{inputs: \{release:/.test(ci),
+     'Release: der Dispatch hat einen Schalter zum Veroeffentlichen');
+  ok(/type: boolean, default: false/.test(ci),
+     'Release: er ist standardmaessig AUS - ein Dispatch veroeffentlicht nichts aus Versehen');
+  ok(/id: ziel/.test(ci) && /\$tag = "v\$pkg"/.test(ci),
+     'Release: ohne Tag wird die Version aus package.json genommen');
+  ok(/gh release create \$\{\{ steps\.ziel\.outputs\.tag \}\} --target \$\{\{ github\.sha \}\}/.test(ci),
+     'Release: der Tag entsteht serverseitig am gebauten Commit, ohne git-Push');
+  /* Die Versionskontrolle darf NICHT verschwinden: laeuft der Lauf ueber einen Tag,
+   * muss dieser weiter zu package.json passen. Beim Dispatch ist sie gegenstandslos,
+   * weil der Tag AUS package.json kommt. */
+  ok(/stimmen nicht ueberein"; exit 1/.test(ci),
+     'Release: ein Tag, der nicht zu package.json passt, bricht den Lauf weiterhin ab');
+  var veroeff = ci.match(/if: "steps\.ziel\.outputs\.publish == 'true'"/g) || [];
+  ok(veroeff.length === 2,
+     'Release: Anlegen UND Anhaengen haengen am selben Schalter  [' + veroeff.length + ']');
+  ok(/dist\/Markt-Dashboard-Setup\.exe dist\/latest\.yml --clobber/.test(ci),
+     'Release: latest.yml geht mit hoch - ohne sie sieht der Autoupdater nichts');
 })();
 
 console.log('\n39) Erklaertexte hinter dem i – ein Register, ein Fenster, ein Knopf');
