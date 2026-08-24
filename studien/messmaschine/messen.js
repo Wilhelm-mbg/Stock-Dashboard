@@ -7,7 +7,34 @@ var M = require('./messmaschine.js');
 
 var datei = process.argv[2];
 if (!datei) { console.error('Aufruf: node messen.js strategien/<name>.js [archiv]'); process.exit(2); }
-var archiv = process.argv[3] || path.join(process.env.APPDATA || path.join(os.homedir(), 'AppData', 'Roaming'), 'Markt-Dashboard', 'store');
+
+/* WELCHES ARCHIV IST DAS ECHTE?
+ *
+ * Bis hierher stand das fest verdrahtet: der Store der App unter %APPDATA%. Das war
+ * richtig, solange es nur den einen gab. Inzwischen liegt die Datenbasis woanders -
+ * das 60m-Archiv wird rund 1,5 GB gross und hat auf der Systemplatte nichts verloren.
+ * tools/yahoo-60m-holen.js hat dafuer laengst eine Konvention; hier wird dieselbe
+ * benutzt, statt einen zweiten Pfad danebenzustellen:
+ *   1. Umgebungsvariable MD_ARCHIV60M
+ *   2. Zeigerdatei <Datenordner>/archiv60m-pfad.txt (eine Zeile, der Pfad)
+ *   3. Rueckfall: der Store der App - damit bleibt alles beim Alten, solange
+ *      niemand etwas eingerichtet hat.
+ *
+ * Der Riegel behaelt seine Zaehne: "fremd" heisst weiterhin "nicht das bezeichnete
+ * Archiv", und eine Messung darauf kommt nicht ins Scoreboard. Nur ZEIGT der Riegel
+ * jetzt dorthin, wo die Daten wirklich liegen. Ohne das haette der Knopf in der App
+ * das kleine Archiv gemessen, und eine Messung auf dem grossen waere als Fremdbefund
+ * eingestuft worden und nie in der App angekommen - eine Sackgasse mit Stempel. */
+var DATEN = path.join(os.homedir(), 'Downloads', 'Markt-Dashboard-Daten');
+function bezeichnetesArchiv() {
+  if (process.env.MD_ARCHIV60M) return process.env.MD_ARCHIV60M;
+  try {
+    var p = fs.readFileSync(path.join(DATEN, 'archiv60m-pfad.txt'), 'utf8').replace(/^\uFEFF/, '').trim();
+    if (p) return p;
+  } catch (e) { /* keine Zeigerdatei: Rueckfall */ }
+  return path.join(process.env.APPDATA || path.join(os.homedir(), 'AppData', 'Roaming'), 'Markt-Dashboard', 'store');
+}
+var archiv = process.argv[3] || bezeichnetesArchiv();
 /* Strategien aus dem App-Datenordner kennen den Quellpfad nicht - sie laden quant.js
  * ueber STOCK_DASHBOARD_QUELLE. Hier wird er gesetzt, bevor die Datei geladen wird. */
 if (!process.env.STOCK_DASHBOARD_QUELLE) process.env.STOCK_DASHBOARD_QUELLE = path.resolve(__dirname, '..', '..');
@@ -16,7 +43,7 @@ var S = require(path.resolve(datei));
 /* Ein anderes als das echte Archiv macht das Ergebnis zu etwas anderem - meist zu
  * einem Nullversuch. Das muss am Dateinamen sichtbar sein und darf die App nie
  * erreichen. */
-var echtesArchiv = path.join(process.env.APPDATA || path.join(os.homedir(), 'AppData', 'Roaming'), 'Markt-Dashboard', 'store');
+var echtesArchiv = bezeichnetesArchiv();
 var fremdesArchiv = path.resolve(archiv) !== path.resolve(echtesArchiv);
 console.log('Messe ' + S.key + ' auf ' + archiv);
 if (fremdesArchiv) console.log('ACHTUNG: fremdes Archiv - das Ergebnis ist KEIN Befund ueber den Markt.');
