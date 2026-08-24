@@ -1,5 +1,5 @@
 {
-  "stand": "2026-08-23T13:37:51.101Z",
+  "stand": "2026-08-24T14:48:45.512Z",
   "hinweis": "Spekulationen aus öffentlichen Quellen – ungemessen, keine Handelsempfehlung, keine Anlageberatung.",
   "eintraege": [
     {
@@ -8,35 +8,27 @@
       "name": "Commerzbank AG",
       "art": "uebernahme",
       "chance": "hoch",
-      "these": "UniCredit hält nach der Einziehung zurückgekaufter Aktien rechnerisch 49,65 Prozent der Commerzbank; der Bund soll seinen Widerstand gegen den Verkauf der restlichen 12,7 Prozent aufgegeben haben, während die EZB laut Medienbericht einer Übernahme zuneigt, zugleich aber vor einem langwierigen Integrationsprozess warnt.",
-      "begruendung": "Handelsblatt und Reuters berichten unabhängig über die Verkaufsbereitschaft des Bundes, Commerzbank-Chefin Orlopp hat förmliche Gespräche bestätigt, und das gemeldete Stimmrechtsvolumen von 1,08 Milliarden Aktien ist ein harter Vorgang – konkreter Anlass und mehrere seriöse Quellen, daher hoch. Die Zuspitzungen des Wochenendes (EZB-Zuneigung, aufgegebener Widerstand, jetzt auch die Integrationswarnung) stammen weiterhin nur aus aggregierenden Portalen, die sich auf einen unbenannten Medienbericht stützen; für den 26. August ist ein Analysten-Webcast angesetzt, eine EZB-Entscheidung steht aus.",
+      "these": "UniCredit hat die Kontrolle über die Commerzbank faktisch erlangt, ohne dass die Mehrheit der Aktionäre angedient hätte; Aufsichtsratschef Weidmann fordert nun eine Überprüfung des deutschen Übernahmerechts und rät dem Bund, seine restlichen Anteile vorerst zu behalten.",
+      "begruendung": "Reuters zitiert Weidmann mit harten Zahlen: von rund 73 Prozent andienbarer Aktien wurden weniger als 18 Prozent angedient, UniCredit steht rechnerisch bei knapp 49,65 Prozent. Mehrere seriöse Häuser berichten unabhängig, der Vorgang ist konkret und belegt, deshalb hoch. Offen bleiben die EZB-Entscheidung, die im vierten Quartal erwartet wird, und die Haltung des Bundes zu den verbliebenen 12,7 Prozent.",
       "quellen": [
+        {
+          "titel": "Reuters",
+          "url": "https://www.reuters.com/legal/transactional/commerzbank-chair-calls-review-german-takeover-rules-after-unicredit-bid-2026-08-23/"
+        },
+        {
+          "titel": "Investing.com",
+          "url": "https://www.investing.com/news/stock-market-news/commerzbank-chair-calls-for-review-of-german-takeover-rules-93CH-4872466"
+        },
         {
           "titel": "Handelsblatt",
           "url": "https://www.handelsblatt.com/finanzen/banken-versicherungen/banken/commerzbank-regierungsvertreter-wohl-offen-fuer-verkauf-der-bundesanteile/100247767.html"
         },
         {
-          "titel": "Reuters via Yahoo Finance",
-          "url": "https://de.finance.yahoo.com/nachrichten/commerzbank-anteil-bundes-regierungsvertreter-offen-095739692.html"
-        },
-        {
-          "titel": "Börse Express",
-          "url": "https://www.boerse-express.com/news/articles/unicredit-ezb-neigt-zu-commerzbank-uebernahme-941030"
-        },
-        {
-          "titel": "Börse Global",
-          "url": "https://www.boerse-global.de/commerzbank-aktie-bund-gibt-widerstand-auf/821441"
-        },
-        {
-          "titel": "Trading-Treff",
-          "url": "https://trading-treff.de/trading/commerzbank-aktie-orcel-plant-trennung-bis-2030"
-        },
-        {
-          "titel": "Börse Global",
-          "url": "https://www.boerse-global.de/commerzbank-aktie-ezb-warnt-vor-integration/821507"
+          "titel": "Euronext Live",
+          "url": "https://live.euronext.com/en/financial-news/commerzbank-chair-calls-review-german-takeover-rules-after-unicredit-bid"
         }
       ],
-      "zeit": "2026-08-23T11:30:00Z"
+      "zeit": "2026-08-23T18:00:00Z"
     },
     {
       "id": "20260821-BAMI-uebernahme",
@@ -44,27 +36,27 @@
       "name": "Banco BPM S.p.A.",
       "art": "uebernahme",
       "chance": "hoch",
-      "these": "Monte dei Paschi hat am Freitag ein Umtauschangebot für Banco BPM aufgelegt (1,567 MPS-Aktien je BPM-Aktie); der BPM-Verwaltungsrat tagt dazu außerplanmäßig am Dienstag, dem 25. August.",
-      "begruendung": "Der Verwaltungsrat von MPS hat das Gebot beschlossen, die Konditionen sind veröffentlicht; Reuters, Financial Times und Euronews berichten unabhängig voneinander mit denselben Eckdaten. Konkreter Anlass und mehrere seriöse Quellen, deshalb hoch. Il Sole 24 Ore nennt inzwischen den Sitzungstermin und beschreibt die Haltung des französischen Großaktionärs Crédit Agricole als ausschlaggebend – der Ausgang hängt an der Annahmequote und an Intesas Gegenzug.",
+      "these": "Der Verwaltungsrat von Banco BPM tagt am Dienstagnachmittag, dem 25. August, außerplanmäßig über das Umtauschangebot von Monte dei Paschi (1,567 MPS-Aktien je BPM-Aktie, Gegenwert rund 25,3 Mrd. Euro).",
+      "begruendung": "Der Sitzungstermin ist inzwischen von mehreren Häusern übereinstimmend gemeldet, die Konditionen des Angebots sind veröffentlicht – konkreter, datierter Anlass aus mehreren seriösen Quellen, deshalb hoch. Der Ausgang hängt an der Annahmequote, an der Haltung des französischen Großaktionärs Crédit Agricole und an Intesas Gegenzug; S&P hat zuletzt neue Zweifel angemeldet.",
       "quellen": [
         {
-          "titel": "Financial Times",
-          "url": "https://www.ft.com/content/ecafb9a8-b9a6-48a4-8d3c-a626b26fe82b"
+          "titel": "MarketScreener",
+          "url": "https://www.marketscreener.com/news/monte-paschi-tender-offer-banco-bpm-to-hold-extraordinary-board-meeting-tuesday-ce7858dbd98bf22d"
         },
         {
-          "titel": "Euronews",
-          "url": "https://www.euronews.com/business/2026/08/21/monte-dei-paschi-details-of-bid-for-banco-bpm-and-banca-generali"
+          "titel": "Repubblica Finanza",
+          "url": "https://finanza.repubblica.it/News/2026/08/24/mps_banco_bpm_riunisce_cda_straordinario_per_domani_su_ops_arrivano_intanto_nuovi_dubbi_da_s_p-5/"
         },
         {
           "titel": "Il Sole 24 Ore",
           "url": "https://en.ilsole24ore.com/art/mps-bpm-board-of-directors-upcoming-crucial-french-tests-AJXgCJs"
         },
         {
-          "titel": "Reuters via AOL",
-          "url": "https://www.aol.com/articles/monte-dei-paschi-ceo-unveil-092322000.html"
+          "titel": "Financial Times",
+          "url": "https://www.ft.com/content/ecafb9a8-b9a6-48a4-8d3c-a626b26fe82b"
         }
       ],
-      "zeit": "2026-08-23T09:00:00Z"
+      "zeit": "2026-08-24T10:00:00Z"
     },
     {
       "id": "20260821-BMPS-uebernahme",
@@ -72,27 +64,27 @@
       "name": "Banca Monte dei Paschi di Siena S.p.A.",
       "art": "uebernahme",
       "chance": "hoch",
-      "these": "MPS wehrt sich mit einem Doppelgebot über rund 34 Mrd. Euro für Banco BPM und Banca Generali gegen die feindliche Offerte von Intesa Sanpaolo; entstehen würde eine Bank von rund 80 Mrd. Euro Börsenwert.",
-      "begruendung": "Beide Seiten des Übernahmekampfs sind belegt: Intesas Offerte und die MPS-Gegenwehr werden von Reuters, FT und weiteren Häusern übereinstimmend beschrieben, die Umtauschverhältnisse sind veröffentlicht. Die 13-Prozent-Beteiligung an Generali gilt als Verhandlungsmasse; Intesa bereitet laut Il Sole 24 Ore seine Argumentation vor, der Ausgang ist offen und politisch aufgeladen.",
+      "these": "MPS wehrt sich mit einem Doppelgebot über rund 34 Mrd. Euro für Banco BPM und Banca Generali gegen die feindliche Offerte von Intesa Sanpaolo; die erste Antwort der Gegenseite fällt am Dienstag im BPM-Verwaltungsrat.",
+      "begruendung": "Beide Seiten des Übernahmekampfs sind belegt: Intesas Offerte über rund 34,5 Mrd. Euro und die MPS-Gegenwehr werden von Reuters, FT und italienischen Häusern übereinstimmend beschrieben, die Umtauschverhältnisse sind veröffentlicht. Konkreter Anlass, mehrere seriöse Quellen, deshalb hoch. Die 13-Prozent-Beteiligung an Generali gilt als Verhandlungsmasse, der Ausgang ist offen und politisch aufgeladen.",
       "quellen": [
         {
-          "titel": "Reuters via AOL",
-          "url": "https://www.aol.com/articles/monte-dei-paschi-ceo-unveil-092322000.html"
+          "titel": "MarketScreener",
+          "url": "https://www.marketscreener.com/news/monte-paschi-tender-offer-banco-bpm-to-hold-extraordinary-board-meeting-tuesday-ce7858dbd98bf22d"
         },
         {
-          "titel": "Reuters via AOL UK",
-          "url": "https://www.aol.co.uk/articles/monte-dei-paschi-details-bid-100627000.html"
+          "titel": "Borsa Italiana / Radiocor",
+          "url": "https://www.borsaitaliana.it/borsa/notizie/radiocor/finance/dettaglio/european-share-prices-little-changed-2-nRC_24082026_1200_204206320.html?lang=en"
         },
         {
-          "titel": "FStech",
-          "url": "https://www.fstech.co.uk/fst/Monte_Dei_Paschi_Launches_34bn_Bid_To_Fend_Off_Intesa.php"
+          "titel": "Euronews",
+          "url": "https://www.euronews.com/business/2026/08/21/monte-dei-paschi-details-of-bid-for-banco-bpm-and-banca-generali"
         },
         {
-          "titel": "Il Sole 24 Ore",
-          "url": "https://en.ilsole24ore.com/art/mps-bpm-board-of-directors-upcoming-crucial-french-tests-AJXgCJs"
+          "titel": "SoldiOnline",
+          "url": "https://www.soldionline.it/notizie/azioni-italia/mps-banco-bpm-banca-generali-perche-lops-divide-mercato-e-analisti"
         }
       ],
-      "zeit": "2026-08-23T09:00:00Z"
+      "zeit": "2026-08-24T10:00:00Z"
     },
     {
       "id": "20260823-WBD-ereignis",
@@ -100,95 +92,59 @@
       "name": "Warner Bros. Discovery Inc.",
       "art": "ereignis",
       "chance": "mittel",
-      "these": "Die Paramount-Skydance-Übernahme von Warner Bros. Discovery ist unterschrieben und von den Aktionären gebilligt, hängt aber an der Kartellklage von zwölf Bundesstaaten; Paramount und Kalifornien treffen sich am Montag zu ersten Vergleichsgesprächen.",
-      "begruendung": "Der Termin am Montag ist ein konkreter, datierter Anlass, den Reuters unter Berufung auf die New York Times meldet; die Klage der zwölf Staaten und Paramounts Antrag auf eine Sicherheitsleistung von 1,88 Mrd. Dollar sind ebenfalls belegt. Der Ausgang ist offen und ein Vergleich schon beim ersten Gesprächstermin unwahrscheinlich, deshalb mittel und nicht hoch.",
+      "these": "Kalifornien hat die für Montag angesetzten Vergleichsgespräche über die Paramount-Skydance-Übernahme von Warner Bros. Discovery kurzfristig abgesagt; Generalstaatsanwalt Bonta wirft Paramount vor, Inhalte des vorangegangenen Treffens durchgestochen und falsch dargestellt zu haben.",
+      "begruendung": "Die Absage ist ein konkreter, datierter Vorgang, den Reuters, CNN, Variety und Deadline melden – der Ursprung ist allerdings durchgehend ein Bericht der New York Times, die Quellen sind also nicht voneinander unabhängig, deshalb mittel und nicht hoch. Weitere Termine sind nicht angesetzt, der Kartellprozess der zwölf Bundesstaaten beginnt am 2. März 2027, und ab dem 1. Oktober fällt für Paramount eine Gebühr von rund 7 Mio. Dollar je Tag zugunsten der WBD-Aktionäre an.",
+      "quellen": [
+        {
+          "titel": "Reuters",
+          "url": "https://www.reuters.com/legal/litigation/california-cancels-talks-with-paramount-over-warner-bros-merger-nyt-reports-2026-08-24/"
+        },
+        {
+          "titel": "New York Times",
+          "url": "https://www.nytimes.com/2026/08/24/us/california-bonta-paramount-warner-settlement-talks.html"
+        },
+        {
+          "titel": "Variety",
+          "url": "https://variety.com/2026/film/global/california-ag-bonta-cancels-paramount-settlement-talks-1236841379/"
+        },
+        {
+          "titel": "CNN",
+          "url": "https://www.cnn.com/2026/08/24/business/california-cancels-meeting-paramount-warner-merger-intl"
+        },
+        {
+          "titel": "Deadline",
+          "url": "https://deadline.com/2026/08/bonta-cancels-paramount-settlement-meeting-1237048537/"
+        }
+      ],
+      "zeit": "2026-08-24T09:00:00Z"
+    },
+    {
+      "id": "20260824-WDAY-uebernahme",
+      "sym": "WDAY",
+      "name": "Workday Inc.",
+      "art": "uebernahme",
+      "chance": "mittel",
+      "these": "Der Finanzinvestor Silver Lake soll seit Monaten über eine Übernahme von Workday verhandeln, die das Unternehmen mit rund 43 Mrd. Dollar bewerten und zu den größten Software-Buyouts überhaupt zählen würde; am 27. August legt Workday Quartalszahlen vor.",
+      "begruendung": "Ursprung ist eine Exklusivmeldung von Reuters, die den Kurs um rund 18 Prozent nach oben trieb – den stärksten Tag seit 2016. Eine seriöse Quelle, von Workday wie Silver Lake unbestätigt, seither Rücksetzer und ausdrücklich skeptische Analystenstimmen zur Abschlusswahrscheinlichkeit; deshalb mittel und nicht hoch. Aufgenommen wegen des Zahlentermins am 27. August, an dem sich die Lage klären könnte.",
       "quellen": [
         {
           "titel": "Reuters via Yahoo Finance",
-          "url": "https://finance.yahoo.com/media-advertising/articles/paramount-california-hold-preliminary-talks-185659000.html"
+          "url": "https://finance.yahoo.com/markets/stocks/articles/exclusive-silver-lake-talks-buy-183537331.html"
         },
         {
-          "titel": "Virginia Business",
-          "url": "https://virginiabusiness.com/paramount-seeks-1-88b-bond-from-state-ags-over-merger-lawsuit/"
+          "titel": "Investor's Business Daily",
+          "url": "https://www.investors.com/news/technology/workday-stock-silver-lake-analyst/"
         },
         {
-          "titel": "Media Play News",
-          "url": "https://www.mediaplaynews.com/paramount-seeks-bond-from-plaintiffs-challenging-wbd-merger/"
-        }
-      ],
-      "zeit": "2026-08-22T18:56:00Z"
-    },
-    {
-      "id": "20260823-HPE-beteiligung",
-      "sym": "HPE",
-      "name": "Hewlett Packard Enterprise Company",
-      "art": "beteiligung",
-      "chance": "mittel",
-      "these": "Der Aktivist Irenic Capital um Adam Katz soll bei Hewlett Packard Enterprise eingestiegen sein und direkt mit dem Vorstand sprechen – an der Seite des bereits engagierten Elliott.",
-      "begruendung": "Ursprung ist ein Bericht von Semafor mit benanntem Investor und benanntem Vorgang, wiedergegeben über einen Aggregator; die Aktie reagierte mit Aufschlägen. Eine einzelne seriöse Quelle, von HPE oder Irenic unbestätigt, kein Filing – deshalb mittel und nicht hoch.",
-      "quellen": [
-        {
-          "titel": "Semafor via Stocktwits",
-          "url": "https://stocktwits.com/news-articles/markets/equity/hpe-stock-surges-as-irenic-capital-reportedly-joins-elliott-in-activist-push/cZXLqdOReKN"
-        }
-      ],
-      "zeit": "2026-08-22T14:00:00Z"
-    },
-    {
-      "id": "20260821-TGTX-geruecht",
-      "sym": "TGTX",
-      "name": "TG Therapeutics Inc.",
-      "art": "geruecht",
-      "chance": "niedrig",
-      "these": "Ein unbestätigter Betaville-Hinweis nennt ein größeres Biopharma-Unternehmen mit 20 bis 40 Mrd. Dollar Börsenwert als möglichen Interessenten; die Aktie legte am Freitag rund 10 Prozent zu.",
-      "begruendung": "Ursprung ist ein von Betaville selbst als \"uncooked\" – also ausdrücklich ungeprüft – markierter Hinweis; TipRanks, GuruFocus und Seeking Alpha geben alle nur diese eine Quelle wieder, ein Bieter wird nicht benannt und Konditionen gibt es nicht. Der Kurssprung und die angehobene Umsatzprognose sind belegt, die Übernahme-These ist es nicht – deshalb niedrig.",
-      "quellen": [
-        {
-          "titel": "Yahoo Finance",
-          "url": "https://finance.yahoo.com/healthcare/articles/tgtx-stock-alert-know-takeover-193547123.html"
+          "titel": "TheStreet",
+          "url": "https://www.thestreet.com/investing/stocks/workday-silver-lake-software-takeover-targets-hubspot-others"
         },
         {
-          "titel": "GuruFocus",
-          "url": "https://www.gurufocus.com/news/9047765/tg-therapeutics-tgtx-shares-surge-72-amid-acquisition-rumors-valuation-remains-a-key-focus"
-        },
-        {
-          "titel": "TipRanks",
-          "url": "https://www.tipranks.com/news/catalyst/tg-therapeutics-pops-as-buyout-rumors-swirl"
+          "titel": "24/7 Wall St.",
+          "url": "https://247wallst.com/investing/2026/08/24/investors-may-want-to-own-workday-before-august-27th/"
         }
       ],
-      "zeit": "2026-08-21T19:35:00Z"
-    },
-    {
-      "id": "20260822-ADSK-analyst",
-      "sym": "ADSK",
-      "name": "Autodesk Inc.",
-      "art": "analyst",
-      "chance": "niedrig",
-      "these": "Vor den Q2-Zahlen melden sich mehrere Analysten mit Rückendeckung und einer jüngsten Kursziel-Anhebung zu Wort, die Aktie notiert über 250 Dollar.",
-      "begruendung": "Einzelne schwächere Quelle, gewöhnliche Vor-Zahlen-Kommentierung ohne Doppel-Hochstufung; nur wegen des anstehenden Termins überhaupt vermerkt, Einstufung niedrig.",
-      "quellen": [
-        {
-          "titel": "ad-hoc-news",
-          "url": "https://www.ad-hoc-news.de/boerse/news/corporate-news/autodesk-stock-draws-fresh-analyst-support-ahead-q2-earnings/69986100"
-        }
-      ],
-      "zeit": "2026-08-22T12:00:00Z"
-    },
-    {
-      "id": "20260823-ITRK-uebernahme",
-      "sym": "ITRK.L",
-      "name": "Intertek Group plc",
-      "art": "uebernahme",
-      "chance": "niedrig",
-      "these": "Um den britischen Prüfkonzern Intertek laufen formale Offenlegungen nach dem UK Takeover Code, was auf anhaltendes Übernahmeinteresse hindeutet.",
-      "begruendung": "Nur ein schwacher, aggregierender Beleg; ein Bieter wird nicht benannt, Konditionen gibt es nicht. Offenlegungstabellen nach dem Takeover Code sind zwar ein amtlich veranlasster Vorgang, ohne benannten Interessenten aber kein konkreter Anlass – deshalb niedrig.",
-      "quellen": [
-        {
-          "titel": "ad-hoc-news",
-          "url": "https://www.ad-hoc-news.de/boerse/news/corporate-news/intertek-stock-draws-takeover-attention-as-investors-watch-bid-dynamics/69986171"
-        }
-      ],
-      "zeit": "2026-08-22T13:00:00Z"
+      "zeit": "2026-08-24T12:00:00Z"
     }
   ]
 }
