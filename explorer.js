@@ -105,28 +105,15 @@
   /* ================= Chart-Daten ================= */
   async function fetchRange(sym, range, interval, von, bis) {
     // Entweder benannter Zeitraum ODER freie Datumsgrenzen (period1/period2 in Sekunden)
-    var url = 'https://query1.finance.yahoo.com/v8/finance/chart/' + encodeURIComponent(sym) +
-      (von && bis
-        ? '?period1=' + Math.floor(von / 1000) + '&period2=' + Math.floor(bis / 1000) + '&interval=' + interval
-        : '?range=' + range + '&interval=' + interval);
-    var res = await window.api.fetchText(url);
-    if (!res.ok) return null;
-    try {
-      var r = JSON.parse(res.body).chart.result[0];
-      var q = r.indicators.quote[0] || {};
-      var ts = r.timestamp || [], closes = q.close || [], hi = q.high || [], lo = q.low || [], vo = q.volume || [];
-      var op = q.open || [];
-      var series = [], bars = [];
-      for (var i = 0; i < ts.length; i++) {
-        if (closes[i] == null) continue;
-        var t = ts[i] * 1000, c = closes[i];
-        series.push([t, c]);
-        // Vollformat fuer die Signalrechnung: [Zeit, Schluss, Volumen, Hoch, Tief]
-        // [Zeit, Schluss, Volumen, Hoch, Tief, Eroeffnung]
-        bars.push([t, c, vo[i] || 0, hi[i] != null ? hi[i] : c, lo[i] != null ? lo[i] : c, op[i] != null ? op[i] : c]);
-      }
-      return { series: series, bars: bars, meta: r.meta || {} };
-    } catch (e) { return null; }
+    /* ROH: Der Explorer zeigt den Chart, den man auch beim Broker sieht, und rechnet
+     * dieselben Signale wie der Live-Handel - beides auf dem tatsaechlich gehandelten
+     * Kurs. Die Balken kommen im Vollformat [Zeit, Schluss, Volumen, Hoch, Tief,
+     * Eroeffnung]; Luecken in Hoch/Tief/Eroeffnung fuellt der Lader mit dem Schluss. */
+    var kd = await window.Kurse.hole(sym, (von && bis)
+      ? { von: von, bis: bis, interval: interval, bereinigt: false }
+      : { range: range, interval: interval, bereinigt: false });
+    if (!kd) return null;
+    return { series: window.Kurse.reihe(kd.bars), bars: kd.bars, meta: kd.meta };
   }
 
   /* ================= Detail-Ansicht ================= */

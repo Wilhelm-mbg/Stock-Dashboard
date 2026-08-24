@@ -2427,17 +2427,13 @@ function huerdeAnzeigen() {
       TAGES_CACHE[sym] = cached.series.slice(-520);
       return cached.series;
     }
-    var url = 'https://query1.finance.yahoo.com/v8/finance/chart/' + encodeURIComponent(sym) + '?range=' + range + '&interval=1d';
-    var res = await window.api.fetchText(url);
-    if (!res.ok) return cached ? cached.series : null;
     try {
-      var j = JSON.parse(res.body);
-      var r = j.chart.result[0];
-      var ts = r.timestamp || [];
-      var closes = r.indicators.quote[0].close || [];
-      var series = [];
-      // '!= null' laesst 0, negative Werte und NaN durch - siehe kursOk()
-      for (var i = 0; i < ts.length; i++) if (kursOk(closes[i])) series.push([ts[i] * 1000, closes[i]]);
+      /* ROH: Diese Reihe fuettert Stop-Abstaende und Positionsgroessen im Handel -
+       * gerechnet wird auf dem Kurs, der auch gehandelt wird. Das Verwerfen von 0,
+       * negativen Werten und NaN (frueher kursOk hier) macht jetzt der Lader. */
+      var kd = await window.Kurse.hole(sym, { range: range, interval: '1d', bereinigt: false });
+      if (!kd) return cached ? cached.series : null;
+      var series = window.Kurse.reihe(kd.bars);
       if (series.length > 50) TAGES_CACHE[sym] = series.slice(-520);
       if (series.length > 50) {
         await window.api.storeSet(key, { fetchedAt: now, range: range, series: series });
@@ -3163,7 +3159,10 @@ function huerdeAnzeigen() {
   /** Ist das ueberhaupt ein Kurs? Endlich und echt groesser als null - alles andere
    *  (null, undefined, 0, negativ, NaN, Zeichenkette) hat in einer Kursreihe nichts
    *  verloren und darf erst recht keinen Stop ausloesen. */
-  function kursOk(v) { return typeof v === 'number' && isFinite(v) && v > 0; }
+  /* Eine Quelle, nicht zwei: die Regel steht in kurse.js und wird von dort geholt.
+   * Eine zweite Fassung hier haette genau den Fehler wiederholt, den der Lader
+   * aufloest - zwei Kopien derselben Regel, die auseinanderlaufen koennen. */
+  var kursOk = window.Kurse.kursOk;
 
   async function fetchIntraday(sym, interval, btMode) {
     var fd = await fetchIntradayYahoo(sym, interval, btMode);
@@ -3176,7 +3175,6 @@ function huerdeAnzeigen() {
   }
   async function fetchIntradayYahoo(sym, interval, btMode) {
     var ic = INTERVAL_CFG[interval] || INTERVAL_CFG['5m'];
-    var url;
     // Frueher lief der Messmodus ueber period1/period2, weil 'range' angeblich kein
     // 2-Monats-Kuerzel kennt. Am 20.08.2026 nachgemessen: das stimmt nicht, und der
     // Umweg KOSTETE Daten. Yahoo lehnt period1/period2 bei Intraday-Intervallen ab einer
@@ -3186,35 +3184,23 @@ function huerdeAnzeigen() {
     //     60m  period1 abgelehnt            <->  range=730d 730 Handelstage
     // Die 42 Handelstage, die im Archiv lagen, sind exakt das period1-Maximum - der
     // Umweg war die Ursache der duennen Messbasis, nicht Yahoo.
-    url = 'https://query1.finance.yahoo.com/v8/finance/chart/' + encodeURIComponent(sym) + '?range=' + (btMode ? ic.btRange : ic.range) + '&interval=' + interval;
-    var res = await window.api.fetchText(url);
-    // Yahoo drosselt bei ~200 Anfragen in Folge gern mit 429 - einmal kurz warten und
-    // wiederholen rettet das Symbol, statt es still aus der Messbasis zu werfen.
-    if (!res.ok && res.status === 429) {
-      await new Promise(function (r429) { setTimeout(r429, 5000); });
-      res = await window.api.fetchText(url);
-    }
-    if (!res.ok) return null;
+    /* ROH: Was hier herauskommt, wird unmittelbar zu Stop, Ziel und Buchung - also
+     * der tatsaechlich gehandelte Kurs, nicht der split-bereinigte.
+     * Das Verwerfen unbrauchbarer Kurse (0, negativ, NaN), das Auffuellen fehlender
+     * Hoch/Tief und der Tausch vertauscht gelieferter Werte stehen jetzt im Lader -
+     * ein verworfener Balken zaehlt weiter wie ein fehlender, barsFrisch greift
+     * dann von selbst. Die 429-Wiederholung ebenfalls, mit denselben 5 Sekunden. */
     try {
-      var r = JSON.parse(res.body).chart.result[0];
-      var q = r.indicators.quote[0];
-      var ts = r.timestamp || [], closes = q.close || [], vols = q.volume || [];
-      var his = q.high || [], los = q.low || [];
-      var series = [];
+      var kd = await window.Kurse.hole(sym, {
+        range: btMode ? ic.btRange : ic.range, interval: interval, bereinigt: false
+      });
+      if (!kd) return null;
+      // Die Signalrechnung erwartet fuenf Spalten, nicht sechs (ohne Eroeffnung).
+      var series = kd.bars.map(function (b5) { return b5.slice(0, 5); });
       var dollarSum = 0, days = {};
-      for (var i = 0; i < ts.length; i++) {
-        /* '== null' allein reicht NICHT: eine 0, eine negative Zahl oder NaN kommt
-         * durch (0 == null ist falsch) und wird unmittelbar danach zu Stop, Ziel und
-         * Buchung. Ein einziger kaputter Kurs der inoffiziellen Schnittstelle konnte
-         * so offene Positionen zum Mindestwert liquidieren. Ein verworfener Balken
-         * zaehlt wie ein fehlender - barsFrisch greift dann von selbst. */
-        if (!kursOk(closes[i])) continue;
-        var hi = kursOk(his[i]) ? his[i] : closes[i];
-        var lo = kursOk(los[i]) ? los[i] : closes[i];
-        if (lo > hi) { var tausch = hi; hi = lo; lo = tausch; }   // vertauscht geliefert
-        // Hoch/Tief mitführen: Kanalkanten werden daran ausgerichtet, nicht nur an Schlusskursen
-        series.push([ts[i] * 1000, closes[i], vols[i] || 0, hi, lo]);
-        if (vols[i]) { dollarSum += vols[i] * closes[i]; days[new Date(ts[i] * 1000).toISOString().slice(0, 10)] = 1; }
+      for (var i = 0; i < series.length; i++) {
+        var vol = series[i][2];
+        if (vol) { dollarSum += vol * series[i][1]; days[new Date(series[i][0]).toISOString().slice(0, 10)] = 1; }
       }
       var nDays = Object.keys(days).length || 1;
       return series.length > 30 ? { series: series, dollarVolDay: dollarSum / nDays } : null;

@@ -34,18 +34,13 @@
   /* Tageskerzen über den vollen verfügbaren Zeitraum. period1=0 statt range=max –
    * letzteres liefert bei Tageskerzen nur rund 170 Monatswerte. */
   async function holeTage(sym) {
-    var url = 'https://query1.finance.yahoo.com/v8/finance/chart/' + encodeURIComponent(sym) +
-      '?period1=0&period2=' + Math.floor(Date.now() / 1000) + '&interval=1d';
-    var res = await window.api.fetchText(url);
-    if (!res.ok) return null;
     try {
-      var r = JSON.parse(res.body).chart.result[0];
-      var ts = r.timestamp || [];
-      var adj = (r.indicators.adjclose || [{}])[0] || {};
-      var q = r.indicators.quote[0] || {};
-      var c = adj.adjclose || q.close || [];
-      var reihe = [];
-      for (var i = 0; i < ts.length; i++) if (c[i] != null) reihe.push([ts[i] * 1000, c[i]]);
+      /* BEREINIGT: Momentum rangiert Werte ueber Monate gegeneinander. Ein
+       * unbereinigter Split waere dort ein Kurssturz von 50 % - und der Wert
+       * flaege aus dem staerksten Zehntel, obwohl gar nichts passiert ist. */
+      var kd = await window.Kurse.hole(sym, { von: 0, bis: Date.now(), interval: '1d', bereinigt: true });
+      if (!kd) return null;
+      var reihe = window.Kurse.reihe(kd.bars);
       return reihe.length > 500 ? reihe : null;
     } catch (e) { return null; }
   }

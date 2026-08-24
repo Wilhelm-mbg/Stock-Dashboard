@@ -3,6 +3,13 @@ const fs = require('fs');
 /* Tests v6: ORB, Auto-Stop, Risiko-Sizing, Resampling/MTF */
 var Q = require('./quant.js');
 var fails = 0;
+/* Asynchrone Abschnitte muessen sich hier eintragen, sonst laufen sie NIE:
+ * process.exit() am Dateiende kommt vor jeder noch offenen Zusage, und die Suite
+ * meldet dann "alle bestanden", ohne die Zusicherungen ueberhaupt ausgefuehrt zu
+ * haben. Genau das ist beim Kurslader passiert - 16 Pruefungen, still uebersprungen. */
+var offeneProben = [];
+function probe(zusage) { offeneProben.push(zusage); return zusage; }
+
 function ok(cond, name, extra) {
   console.log((cond ? '  ✅ ' : '  ❌ ') + name + (extra !== undefined ? '  [' + extra + ']' : ''));
   if (!cond) fails++;
@@ -3916,8 +3923,17 @@ console.log('\n38) Audit 23.08.2026 – die fuenf Fehler duerfen nicht zurueckko
      'B5: die Schwelle steht weiter bei 220 Kerzen  [' + noetig + ']');
 
   /* --- Kursplausibilitaet: '== null' liess 0, negative Werte und NaN durch --- */
-  ok(/function kursOk\(v\)/.test(dep) && /isFinite\(v\) && v > 0/.test(dep),
-     'Kurse: kursOk() verlangt endlich und groesser null');
+  /* Die Regel wohnt jetzt in kurse.js und wird dort AUSGEFUEHRT, nicht gesucht.
+   * depot.js darf keine zweite Fassung mehr tragen - zwei Kopien einer Regel sind
+   * genau der Fehler, den der Lader aufloest. */
+  var Ku = require(__dirname + '/kurse.js');
+  ok(Ku.kursOk(1) === true && Ku.kursOk(0.01) === true,
+     'Kurse: ein normaler Kurs ist brauchbar');
+  ok(Ku.kursOk(0) === false && Ku.kursOk(-5) === false && Ku.kursOk(NaN) === false &&
+     Ku.kursOk(Infinity) === false && Ku.kursOk(null) === false && Ku.kursOk('12') === false,
+     'Kurse: 0, negativ, NaN, unendlich, null und Text sind es nicht');
+  ok(/var kursOk = window\.Kurse\.kursOk/.test(dep) && !/function kursOk\(v\)/.test(dep),
+     'Kurse: depot.js holt die Regel, statt sie ein zweites Mal hinzuschreiben');
   ok(!/if \(closes\[i\] == null\) continue;/.test(dep) && !/if \(closes\[i\] != null\)/.test(dep),
      'Kurse: kein Abruf verlaesst sich mehr allein auf "== null"');
 
@@ -4516,5 +4532,184 @@ console.log('\n41) Zustaende: was die App sagt, wenn etwas fehlt oder klemmt');
   });
 })();
 
-console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
-process.exit(fails ? 1 : 0);
+/* ================= 45. Der Kurslader =================
+ * Bis 8.24.5 nahmen NEUN Stellen in sechs Dateien die Yahoo-Antwort selbst
+ * auseinander, und sie waren sich in nichts einig: zwei nahmen adjclose, sieben
+ * close; zwei verwarfen unbrauchbare Kurse, sieben liessen 0, negative und NaN
+ * durch; zwei wiederholten bei 429, sieben liessen das Symbol fallen; eine tauschte
+ * vertauschte Hoch/Tief-Werte, eine nicht. Keine davon war in Node ausfuehrbar.
+ * Jetzt eine Zerlegung, rein und exportiert - und damit hier wirklich gerechnet. */
+(function () {
+  console.log('\n45) Kurslader: ein Vertrag statt neun Zerlegungen');
+  var K = require(__dirname + '/kurse.js');
+
+  /** Baut eine Yahoo-Antwort. Absichtlich von Hand, damit im Test steht, was
+   *  hineingeht - eine echte Antwort waere hier eine Blackbox. */
+  function antwort(closes, extra) {
+    extra = extra || {};
+    var o = { meta: extra.meta || { regularMarketPrice: 42 },
+              timestamp: closes.map(function (_, i) { return 1700000000 + i * 3600; }),
+              indicators: { quote: [{ close: closes,
+                volume: extra.volume || closes.map(function () { return 100; }),
+                high: extra.high || closes, low: extra.low || closes, open: extra.open || closes }] } };
+    if (extra.adjclose) o.indicators.adjclose = [{ adjclose: extra.adjclose }];
+    return JSON.stringify({ chart: { result: [o] } });
+  }
+
+  // --- Grundform ---
+  var g = K.zerlege(antwort([10, 11, 12]), { bereinigt: false });
+  ok(g.bars.length === 3, 'Zerlegung: drei Kerzen rein, drei raus');
+  ok(g.bars[0].length === 6, 'Zerlegung: jede Zeile hat sechs Spalten [t, c, v, hoch, tief, auf]');
+  ok(g.bars[0][0] === 1700000000000, 'Zerlegung: der Zeitstempel ist in MILLIsekunden, nicht Sekunden');
+  ok(g.feld === 'close' && g.verworfen === 0 && g.gesamt === 3, 'Zerlegung: Feld, Verworfene und Gesamtzahl werden gemeldet');
+
+  // --- Der Kern des Ganzen: 0, negativ und NaN kommen nicht mehr durch ---
+  /* Sieben der neun Stellen benutzten '!= null'. Das laesst genau diese drei durch
+   * (0 == null ist falsch), und in einer davon lief die Vola-Schaetzung, in einer
+   * anderen der Kachelkurs, in einer dritten die Signalrechnung. */
+  var gift = K.zerlege(antwort([100, 0, 101, -5, 102, NaN, null, 103]), { bereinigt: false });
+  ok(gift.bars.map(function (b) { return b[1]; }).join() === '100,101,102,103',
+     'Verwerfen: 0, negativ, NaN und null fliegen raus  [' + gift.bars.map(function (b) { return b[1]; }).join() + ']');
+  ok(gift.verworfen === 4 && gift.gesamt === 8,
+     'Verwerfen: die Zahl der verworfenen Kerzen wird gemeldet, nicht verschwiegen  [' + gift.verworfen + '/' + gift.gesamt + ']');
+
+  // --- roh oder bereinigt: eine Entscheidung, die getroffen werden MUSS ---
+  var mitAdj = antwort([100, 200], { adjclose: [50, 100] });
+  ok(K.zerlege(mitAdj, { bereinigt: true }).feld === 'adjclose' &&
+     K.zerlege(mitAdj, { bereinigt: true }).bars[0][1] === 50,
+     'bereinigt=true nimmt adjclose - ohne das macht ein Split aus einer Verdopplung eine Halbierung');
+  ok(K.zerlege(mitAdj, { bereinigt: false }).feld === 'close' &&
+     K.zerlege(mitAdj, { bereinigt: false }).bars[0][1] === 100,
+     'bereinigt=false nimmt close - den Kurs, der tatsaechlich gehandelt wird');
+  /* Fehlt adjclose (bei Intraday liefert Yahoo keins), faellt bereinigt=true auf
+   * close zurueck, statt eine leere Reihe zu liefern. */
+  var ohneAdj = K.zerlege(antwort([100, 200]), { bereinigt: true });
+  ok(ohneAdj.feld === 'close' && ohneAdj.bars.length === 2,
+     'bereinigt=true faellt auf close zurueck, wenn Yahoo kein adjclose liefert (Intraday)');
+
+  // --- Hoch/Tief: auffuellen und tauschen ---
+  var luecke = K.zerlege(antwort([100], { high: [null], low: [undefined] }), { bereinigt: false });
+  ok(luecke.bars[0][3] === 100 && luecke.bars[0][4] === 100,
+     'Hoch/Tief: fehlende Werte fallen auf den Schluss zurueck - keine Luecke fuer den Aufrufer');
+  var vertauscht = K.zerlege(antwort([100], { high: [99], low: [101] }), { bereinigt: false });
+  ok(vertauscht.bars[0][3] === 101 && vertauscht.bars[0][4] === 99,
+     'Hoch/Tief: vertauscht geliefert wird zurueckgedreht (frueher nur in depot.js, nicht im Explorer)');
+  var volLuecke = K.zerlege(antwort([100], { volume: [null] }), { bereinigt: false });
+  ok(volLuecke.bars[0][2] === 0, 'Volumen: fehlend wird 0, nicht null');
+
+  // --- Unbrauchbare Antworten ---
+  ok(K.zerlege('kein JSON', { bereinigt: false }) === null, 'Antwort: Muell gibt null, keine Ausnahme');
+  ok(K.zerlege('{}', { bereinigt: false }) === null, 'Antwort: leeres Objekt gibt null');
+  ok(K.zerlege(JSON.stringify({ chart: { result: [], error: 'x' } }), { bereinigt: false }) === null,
+     'Antwort: Yahoo-Fehler gibt null');
+  var leer = K.zerlege(JSON.stringify({ chart: { result: [{ meta: {} }] } }), { bereinigt: false });
+  ok(leer && leer.bars.length === 0, 'Antwort: Ergebnis ohne Kerzen gibt eine leere Reihe, nicht null');
+
+  // --- URL-Bau: benannter Zeitraum ODER freie Grenzen, nie beides ---
+  ok(K.url('AAPL', { range: '1mo', interval: '1d' }) ===
+     'https://query1.finance.yahoo.com/v8/finance/chart/AAPL?range=1mo&interval=1d',
+     'URL: benannter Zeitraum');
+  ok(K.url('AAPL', { von: 0, bis: 2000000, interval: '1d' }) ===
+     'https://query1.finance.yahoo.com/v8/finance/chart/AAPL?period1=0&period2=2000&interval=1d',
+     'URL: freie Grenzen kommen in SEKUNDEN heraus, obwohl von/bis in Millisekunden hereingehen');
+  ok(/includePrePost=true/.test(K.url('AAPL', { range: '1d', interval: '5m', prePost: true })),
+     'URL: Vor-/Nachboerse wird angehaengt, wenn verlangt');
+  ok(!/includePrePost/.test(K.url('AAPL', { range: '1d', interval: '5m' })),
+     'URL: und sonst nicht');
+  ok(K.url('BRK.B^X', { range: '1d', interval: '1d' }).indexOf('BRK.B%5EX') > 0,
+     'URL: das Symbol wird kodiert (ein ^ im Kuerzel darf die Anfrage nicht zerlegen)');
+
+  // --- Der Lader: 429, Wiederholung, Pflichtfeld ---
+  function bauLader(antworten) {
+    var geholt = [], gewartet = [];
+    var lader = K.baueLader(
+      { fetchText: function (u) { geholt.push(u); var a = antworten.shift();
+        return Promise.resolve(a || { ok: false, status: 500, body: '' }); } },
+      function (ms) { gewartet.push(ms); return Promise.resolve(); });
+    return { lader: lader, geholt: geholt, gewartet: gewartet };
+  }
+  var gut = { ok: true, status: 200, body: antwort([10, 11]) };
+  var ratenlimit = { ok: false, status: 429, body: '' };
+
+  var l1 = bauLader([gut]);
+  probe((async function () {
+    var r = await l1.lader.hole('AAPL', { range: '1mo', interval: '1d', bereinigt: false });
+    ok(r && r.bars.length === 2, 'Lader: der Normalfall liefert Kerzen');
+    ok(l1.geholt.length === 1 && l1.gewartet.length === 0, 'Lader: ohne Drosselung wird nicht gewartet');
+
+    var l2 = bauLader([ratenlimit, gut]);
+    var r2 = await l2.lader.hole('AAPL', { range: '1mo', interval: '1d', bereinigt: false });
+    ok(r2 && r2.bars.length === 2, 'Lader: nach 429 rettet die Wiederholung das Symbol');
+    ok(l2.geholt.length === 2, 'Lader: dafuer wird genau EINMAL nachgefasst, nicht endlos');
+    ok(l2.gewartet.indexOf(5000) >= 0, 'Lader: die Vorgabe sind 5 Sekunden');
+    ok(l2.lader.drosselungen() === 1, 'Lader: die Drosselung wird gezaehlt (fuer die Diagnose)');
+
+    /* Die Wartezeit ist je Aufrufer einstellbar. Vor der Zusammenlegung wartete die
+     * Kachelliste 20 Sekunden, der Intraday-Scan 5 - und das ist kein Versehen:
+     * sechs Kacheln pro Minute duerfen geduldig sein, ein Scan ueber Hunderte
+     * Symbole nicht. Eine gemeinsame Zahl haette eine Seite verschlechtert. */
+    var l3 = bauLader([ratenlimit, gut]);
+    await l3.lader.hole('AAPL', { range: '1mo', interval: '1d', bereinigt: false, warteMs: 20000 });
+    ok(l3.gewartet.indexOf(20000) >= 0, 'Lader: die Wartezeit laesst sich je Aufrufer setzen (Kacheln: 20 s)');
+
+    var l4 = bauLader([ratenlimit, ratenlimit]);
+    var r4 = await l4.lader.hole('AAPL', { range: '1mo', interval: '1d', bereinigt: false });
+    ok(r4 === null && l4.geholt.length === 2, 'Lader: bleibt es bei 429, wird aufgegeben statt weiterzuhaemmern');
+
+    var l5 = bauLader([{ ok: false, status: 404, body: '' }]);
+    ok(await l5.lader.hole('AAPL', { range: '1mo', interval: '1d', bereinigt: false }) === null &&
+       l5.geholt.length === 1, 'Lader: ein 404 wird NICHT wiederholt - nur 429');
+
+    // Das Pflichtfeld
+    var geworfen = null;
+    try { await bauLader([gut]).lader.hole('AAPL', { range: '1mo', interval: '1d' }); }
+    catch (e) { geworfen = e.message; }
+    ok(geworfen && /bereinigt/.test(geworfen),
+       'Vertrag: ohne "bereinigt" bricht der Aufruf ab - genau diese Entscheidung wurde neunmal unausgesprochen getroffen');
+
+    var l6 = bauLader([gut]);
+    var txt = await l6.lader.holeRoh('AAPL', { range: '1d', interval: '5m', prePost: true });
+    ok(typeof txt === 'string' && txt.indexOf('chart') > 0,
+       'Lader: holeRoh gibt den Text - fuer vormarkt.js, das sein eigenes Fenster ausschneidet');
+
+    // --- Die Aufrufer: keine handgeschriebene Zerlegung mehr ---
+    var paket = fs.readdirSync(__dirname).filter(function (f) {
+      return /\.js$/.test(f) && !/^test-/.test(f) && f !== 'kurse.js' && f !== 'vormarkt.js';
+    });
+    var eigenbau = paket.filter(function (f) {
+      return /chart\.result\[0\]/.test(fs.readFileSync(__dirname + '/' + f, 'utf8'));
+    });
+    ok(eigenbau.length === 0,
+       'Aufrufer: niemand nimmt die Antwort mehr selbst auseinander' + (eigenbau.length ? ' – ' + eigenbau.join(', ') : ''));
+    /* vormarkt.js ist die dokumentierte Ausnahme: kein Lader, sondern ein
+     * Sonderfall-Auswerter fuer das vorboersliche Fenster, bereits exportiert und
+     * mit eigenen Tests. Er holt seinen Text ueber holeRoh und bekommt damit
+     * URL-Bau und 429-Behandlung, die er vorher gar nicht hatte. */
+    ok(/chart\.result\[0\]/.test(fs.readFileSync(__dirname + '/vormarkt.js', 'utf8')),
+       'Ausnahme: vormarkt.js schneidet weiter selbst - mit eigenem Vertrag und eigenen Tests');
+    ok(/Kurse\.holeRoh\(/.test(fs.readFileSync(__dirname + '/renderer.js', 'utf8')),
+       'Ausnahme: er bekommt seinen Text aber ueber den Lader');
+
+    // Jeder Aufrufer sagt, ob er roh oder bereinigt will
+    var htmlL = fs.readFileSync(__dirname + '/index.html', 'utf8');
+    ok(htmlL.indexOf('kurse.js') < htmlL.indexOf('src="depot.js"'), 'Ladereihenfolge: kurse.js vor depot.js');
+    ok(htmlL.indexOf('kurse.js') < htmlL.indexOf('src="renderer.js"'), 'Ladereihenfolge: kurse.js vor renderer.js');
+    [['mittelfrist.js', true], ['driftui.js', true],
+     ['depot.js', false], ['explorer.js', false], ['scheinfinder.js', false]].forEach(function (f) {
+      var q = fs.readFileSync(__dirname + '/' + f[0], 'utf8');
+      ok(new RegExp('bereinigt: ' + f[1]).test(q),
+         f[0] + ' laedt ' + (f[1] ? 'BEREINIGT (rechnet ueber Jahre)' : 'ROH (handelt den Kurs)'));
+    });
+    /* Kanarienvogel: Faellt der asynchrone Teil kuenftig wieder aus der Zaehlung,
+     * fehlt DIESE Zeile in der Ausgabe - und das faellt auf. */
+    ok(true, 'Lader: der asynchrone Abschnitt ist wirklich gelaufen');
+  })());
+})();
+
+Promise.all(offeneProben).then(function () {
+  console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
+  process.exit(fails ? 1 : 0);
+}, function (e) {
+  console.log('\nEIN ASYNCHRONER ABSCHNITT IST GESCHEITERT: ' + (e && e.stack || e));
+  process.exit(1);
+});

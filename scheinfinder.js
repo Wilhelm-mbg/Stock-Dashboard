@@ -44,11 +44,11 @@
     if (!sym) return;
     stat('Lade ' + sym + ' …');
     try {
-      var url = 'https://query1.finance.yahoo.com/v8/finance/chart/' + encodeURIComponent(sym) + '?range=1y&interval=1d';
-      var res = await window.api.fetchText(url);
-      if (!res.ok) { stat('Keine Kursdaten bekommen – bitte Internetverbindung prüfen und noch einmal auf „Laden & rechnen“ klicken.'); return; }
-      var r = JSON.parse(res.body).chart.result[0];
-      var closes = (r.indicators.quote[0].close || []).filter(function (c) { return c != null; });
+      // Roher Kurs: der Schein wird auf den TATSAECHLICH gehandelten Kurs geschrieben,
+      // nicht auf einen split-bereinigten. Vola-Schaetzung und Raster haengen daran.
+      var kd = await window.Kurse.hole(sym, { range: '1y', interval: '1d', bereinigt: false });
+      if (!kd) { stat('Keine Kursdaten bekommen – bitte Internetverbindung prüfen und noch einmal auf „Laden & rechnen“ klicken.'); return; }
+      var closes = kd.bars.map(function (bb) { return bb[1]; });
       if (closes.length < 60) { stat('Zu wenig Historie für eine Volatilitätsschätzung.'); return; }
       var spot = closes[closes.length - 1];
       // Dieselbe Vola-Schätzung wie im Handel: historische Vola × 1,1 als Näherung

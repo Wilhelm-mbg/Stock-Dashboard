@@ -107,17 +107,12 @@
     var key = 'drift_markt';
     var c = await window.api.storeGet(key);
     if (c && c.reihe && Date.now() - c.at < 20 * 3600000) return c.reihe;
-    var url = 'https://query1.finance.yahoo.com/v8/finance/chart/SPY?period1=0&period2=' +
-      Math.floor(Date.now() / 1000) + '&interval=1d';
-    var res = await window.api.fetchText(url);
-    if (!res.ok) return c ? c.reihe : null;
     try {
-      var r = JSON.parse(res.body).chart.result[0];
-      var ts = r.timestamp || [];
-      var adj = (r.indicators.adjclose || [{}])[0] || {};
-      var cl = adj.adjclose || (r.indicators.quote[0] || {}).close || [];
-      var reihe = [];
-      for (var i = 0; i < ts.length; i++) if (cl[i] != null) reihe.push([ts[i] * 1000, cl[i]]);
+      /* BEREINIGT: Der Marktvergleich laeuft ueber Jahrzehnte (period1=0). Ohne
+       * adjclose macht jeder Split aus einer Verdopplung eine Halbierung. */
+      var kd = await window.Kurse.hole('SPY', { von: 0, bis: Date.now(), interval: '1d', bereinigt: true });
+      if (!kd) return c ? c.reihe : null;
+      var reihe = window.Kurse.reihe(kd.bars);
       if (reihe.length < 500) return c ? c.reihe : null;
       await window.api.storeSet(key, { at: Date.now(), reihe: reihe });
       return reihe;
