@@ -57,13 +57,47 @@ function notizen() {
     .map(function (f) { return { datei: f, text: fs.readFileSync(path.join(NOTIZEN, f), 'utf8').trim() }; });
 }
 
+/* Was landet ueberhaupt im Paket? Genau diese Dateien sind es wert, einen Release
+ * anzuhalten - bei allen anderen ist "geaendert" ohne Folge fuer das Ergebnis.
+ * Die Liste spiegelt build.files aus package.json. */
+function gehoertInsPaket(datei) {
+  if (datei === 'index.html' || datei === 'telemetrie.json') return true;
+  if (/^icon\.(png|ico)$/.test(datei)) return true;
+  if (datei === 'studien/messmaschine/messmaschine.js') return true;
+  if (datei === 'studien/messmaschine/messen.js') return true;
+  /* Nur JS-Dateien im Wurzelverzeichnis, ohne die Tests. */
+  return /^[^/]+\.js$/.test(datei) && !/^test-/.test(datei) && datei !== 'eslint.config.mjs';
+}
+
+/* Trennt den Baum in "das haelt einen Release an" und "das ist nur Beiwerk". */
+function baumZustand() {
+  /* NICHT ueber sh(): dessen trim() frisst das fuehrende Leerzeichen der ERSTEN
+   * Zeile, und damit verliert der erste Dateiname einen Buchstaben. */
+  const roh = execSync('git status --porcelain', { cwd: REPO, encoding: 'utf8' });
+  const zeilen = roh.split('\n').filter(Boolean);
+  const teile = { blockend: [], beiwerk: [] };
+  zeilen.forEach(function (z) {
+    const kennung = z.slice(0, 2);
+    const datei = z.slice(3).replace(/^"|"$/g, '');
+    /* Unversioniert (??) kann nicht fehlen - es war nie Teil von irgendetwas. */
+    const nachverfolgt = kennung !== '??';
+    (nachverfolgt && gehoertInsPaket(datei) ? teile.blockend : teile.beiwerk).push(kennung + ' ' + datei);
+  });
+  return teile;
+}
+
 function pruefen() {
   titel('Stand');
   const u = unveroeffentlicht();
   console.log('  HEAD          ' + sh('git rev-parse --short HEAD'));
   console.log('  package.json  ' + version());
   console.log('  letzter Tag   ' + (u.tag || '(keiner)'));
-  console.log('  Arbeitsbaum   ' + (sh('git status --short') ? 'SCHMUTZIG' : 'sauber'));
+  const z = baumZustand();
+  console.log('  Arbeitsbaum   ' + (z.blockend.length
+    ? 'HAELT AN - ' + z.blockend.length + ' geaenderte Datei(en) aus dem Paket'
+    : (z.beiwerk.length ? 'offen, aber ohne Folge (' + z.beiwerk.length + ')' : 'sauber')));
+  z.blockend.forEach(function (x) { console.log('     ! ' + x); });
+  z.beiwerk.forEach(function (x) { console.log('       ' + x + '   (nicht im Paket)'); });
   titel('Nicht ausgeliefert (' + u.commits.length + ')');
   u.commits.forEach(function (z) { console.log('  ' + z); });
   const n = notizen();
@@ -83,9 +117,25 @@ function naechsteVersion(minor) {
 function bauen(minor) {
   const u = unveroeffentlicht();
   if (!u.commits.length) schluss('Seit ' + u.tag + ' gibt es keinen Commit. Nichts auszuliefern.');
-  if (sh('git status --short')) {
-    schluss('Der Arbeitsbaum ist schmutzig. Aus einem schmutzigen Baum wird nicht gebaut - ' +
-            'sonst landet fremde unfertige Arbeit im Paket. Erst committen oder wegraeumen.');
+  /* NICHT geprueft wird "irgendetwas liegt offen herum". Gebaut wird in einem eigenen
+   * Worktree auf HEAD - Uncommittetes kommt dort gar nicht an, ins Paket also erst
+   * recht nicht. Der erste Lauf der Wache brach an einem Messprotokoll ab, das in
+   * keiner build.files-Liste steht; die Regel war aus der Handarbeits-Zeit uebrig.
+   *
+   * Geprueft wird die umgekehrte Gefahr: Liegt FERTIGE Arbeit an einer Datei aus dem
+   * Paket im Baum und ist noch nicht committet, baut das Skript ohne sie. Das Release
+   * erscheint, die Arbeit fehlt still, und derjenige glaubt, sie sei drin. */
+  const zustand = baumZustand();
+  if (zustand.blockend.length) {
+    schluss('Diese Datei(en) gehoeren ins Paket und sind nicht committet:\n  ' +
+            zustand.blockend.join('\n  ') +
+            '\nGebaut wird aus HEAD - sie waeren im Release NICHT enthalten, ohne dass es ' +
+            'jemand merkt. Erst committen (oder verwerfen), dann ausliefern.');
+  }
+  if (zustand.beiwerk.length) {
+    console.log('\n  Hinweis: ' + zustand.beiwerk.length + ' Datei(en) liegen offen im Baum, keine davon');
+    console.log('  gehoert ins Paket - das haelt den Release nicht an:');
+    zustand.beiwerk.forEach(function (x) { console.log('    ' + x); });
   }
 
   const neu = naechsteVersion(minor);

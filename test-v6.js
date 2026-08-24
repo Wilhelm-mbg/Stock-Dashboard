@@ -6086,6 +6086,66 @@ console.log('\n44) Oberflaeche nach Themen sortiert (Felix, Issue #68)');
   ok(/Math\.abs\(Q\[b\.y\]\.pct\) - Math\.abs\(Q\[a\.y\]\.pct\)/.test(ren),
      'Sortiert und eingefaerbt wird weiter nach der regulaeren Tagesbewegung');})();
 
+console.log('\n45) Release-Routine (tools/release.js)');
+(function () {
+  var rel = fs.readFileSync(__dirname + '/tools/release.js', 'utf8');
+  var pkg = JSON.parse(fs.readFileSync(__dirname + '/package.json', 'utf8'));
+
+  /* Die Einstufung entscheidet, ob ein Release angehalten wird. Sie wird hier aus
+   * dem Quelltext geschnitten und einzeln aufgerufen - ein Test, der dafuer erst
+   * Dateien aendern muesste, waere in einem Verzeichnis mit paralleler Arbeit
+   * genau die falsche Idee. */
+  var von = rel.indexOf('function gehoertInsPaket(');
+  var bis = rel.indexOf('\n}', von) + 2;
+  ok(von > -1 && bis > 1, 'release.js stuft Dateien nach Paketzugehoerigkeit ein');
+  var gip = new Function(rel.slice(von, bis) + '\nreturn gehoertInsPaket;')();
+
+  /* Was ins Paket geht, haelt einen Release an: waere es nicht committet, fehlte es
+   * still im Release, weil aus HEAD gebaut wird. */
+  ['depot.js', 'renderer.js', 'index.html', 'telemetrie.json', 'icon.ico',
+   'studien/messmaschine/messmaschine.js', 'studien/messmaschine/messen.js'].forEach(function (f) {
+    ok(gip(f) === true, 'haelt den Release an: ' + f);
+  });
+  /* Was nicht ins Paket geht, darf ihn NICHT anhalten. Der Protokoll-Fall ist der,
+   * an dem die Wache am 24.08.2026 im ersten Lauf abbrach. */
+  ['test-v6.js', 'tools/release.js', 'eslint.config.mjs', 'CLAUDE.md',
+   'studien/messmaschine/protokolle/rsi2seit-2026-08-24.json',
+   'studien/messmaschine/strategien/momentum.js'].forEach(function (f) {
+    ok(gip(f) === false, 'haelt den Release NICHT an: ' + f);
+  });
+
+  /* Die Einstufung muss build.files folgen. Nimmt jemand dort etwas auf, ohne es
+   * hier nachzuziehen, faellt die Datei stillschweigend aus der Pruefung. */
+  (pkg.build.files || []).forEach(function (muster) {
+    if (muster.charAt(0) === '!' || muster.indexOf('*') > -1) return;
+    ok(gip(muster) === true, 'build.files nennt ' + muster + ' - die Einstufung kennt es auch');
+  });
+
+  /* Der feste Aufbau von --porcelain vertraegt kein trim: " M datei" wuerde sonst
+   * zu "M datei", und der Dateiname verloere seinen ersten Buchstaben. Genau das
+   * stand beim ersten Testlauf im Bericht ("ools/release.js"). */
+  var bz = rel.slice(rel.indexOf('function baumZustand('), rel.indexOf('function pruefen('));
+  ok(bz.indexOf('execSync(') > -1 && bz.indexOf("sh('git status") === -1,
+     'baumZustand liest die Statuszeilen ungetrimmt - sonst fehlt dem ersten Dateinamen ein Buchstabe');
+
+  /* Die Weigerungen sind der Zweck des Skripts. Verschwindet eine, verschwindet der
+   * Schutz vor genau dem Fehler, fuer den sie steht. */
+  ok(/rote|Tests sind rot/i.test(rel), 'Weigerung: rote Tests');
+  ok(/Tag v.* gibt es schon|gibt es schon/.test(rel), 'Weigerung: Nummer schon vergeben');
+  ok(/telemetrie/i.test(rel), 'Weigerung: telemetrie.json wird nicht committet');
+  ok(/Pruefsumme/.test(rel), 'Gegenprobe: Pruefsumme nach dem Veroeffentlichen');
+  ok(/Junction/.test(rel), 'Der Bau legt die node_modules-Junction selbst an');
+
+  /* Die Sammelstelle - und dass ihre eigene Beschreibung nicht als Notiz zaehlt und
+   * am Ende mitgeloescht wird. */
+  ok(fs.existsSync(__dirname + '/release-notizen/LIESMICH.md'), 'Die Sammelstelle fuer Release-Notizen ist beschrieben');
+  ok(/LIESMICH/i.test(rel), 'LIESMICH.md wird nicht als Notiz eingesammelt');
+  ok(fs.existsSync(__dirname + '/CLAUDE.md'), 'CLAUDE.md sagt kuenftigen Sitzungen, wie ausgeliefert wird');
+  var cm = fs.readFileSync(__dirname + '/CLAUDE.md', 'utf8');
+  ok(/tools\/release\.js/.test(cm) && /release-notizen/.test(cm),
+     'CLAUDE.md nennt beides: die Routine und die Sammelstelle');
+})();
+
 Promise.all(offeneProben).then(function () {
   console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
   process.exit(fails ? 1 : 0);
