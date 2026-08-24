@@ -22,6 +22,7 @@
 var fs = require('fs');
 var path = require('path');
 var Q = require('../../../quant.js');
+var WP = require('./wertpapierart.js');
 
 /* Exakt der Live-Aufruf. */
 var P = { ENTRY: 'kapitulation', LINE: 'ema', period: 20, confirmBps: 15, ZTHR: 2.0,
@@ -149,7 +150,10 @@ module.exports = {
   leseFensterKerzen: 261,
   haltedauerKerzen: 26,
   richtung: 'long',
-  universum: 'aktien',
+  /* Der eingebaute Filter "aktien" heisst nur "kein Krypto". Im 2.885er-Archiv
+   * lagen darunter 622 ETFs, 144 ADRs, gehebelte Produkte und ZVZZT - das
+   * TESTSYMBOL der NASDAQ. Gefiltert wird jetzt nach der Wertpapierart. */
+  universum: function (sym) { return WP.istAktie(sym); },
   kosten: { spanneBp: 5 },
   varianten: [
     { liquiditaet: false, regime: false },
