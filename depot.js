@@ -666,11 +666,11 @@
       ['Not-Stop', (cfg.scalpSL || 20) + ' %'],
       ['Beleg', '<b style="color:' + farbe + ';">' + U.esc(b.stand) + '</b> – ' + U.esc(b.txt) +
         (belegAusProtokoll
-          ? '<br><span style="color:var(--muted); font-size:11.5px;">Aus dem Messprotokoll vom ' +
+          ? '<br><span style="color:var(--muted); font-size:var(--fs-neben);">Aus dem Messprotokoll vom ' +
             U.esc(belegAusProtokoll.datum) + ': Überschuss je Signal ' +
             (belegAusProtokoll.jeSignalPp >= 0 ? '+' : '') + belegAusProtokoll.jeSignalPp.toFixed(3) +
             ' Pp. Die App liest dieses Urteil, sie rechnet es nicht.</span>'
-          : '<br><span style="color:var(--muted); font-size:11.5px;">Kein Messprotokoll im Datenordner – dieser Stand steht fest im Code und kann veralten.</span>')]
+          : '<br><span style="color:var(--muted); font-size:var(--fs-neben);">Kein Messprotokoll im Datenordner – dieser Stand steht fest im Code und kann veralten.</span>')]
     ];
     el.innerHTML = '<table class="tbl" style="font-size:var(--fs-text);">' + zeilen.map(function (r) {
       return '<tr><td style="color:var(--muted); white-space:nowrap; width:130px;">' + U.esc(r[0]) + '</td><td>' + r[1] + '</td></tr>';
