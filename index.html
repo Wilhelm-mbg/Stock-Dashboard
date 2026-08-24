@@ -1858,6 +1858,15 @@
         Das Update kommt aus den GitHub-Releases dieses Projekts und wird im Hintergrund geladen – ohne dass ein Handelstag
         unterbrochen wird. Eingespielt wird es erst beim Beenden der App (oder sofort per Knopf). Depot und Einstellungen bleiben erhalten.
       </div>
+      <div id="updVertrauen" style="font-size:var(--fs-neben); color:var(--ink-2); margin-top:6px; padding:8px 10px; border:1px solid var(--kante); border-radius:var(--r-normal); background:var(--panel-2);">
+        <b>Woran diese Kette hängt.</b> Geladen wird über HTTPS, und die App prüft die Prüfsumme der heruntergeladenen
+        Datei gegen <code>latest.yml</code> – das fängt einen kaputten Download. Beides liegt aber im selben Release.
+        Der Installer ist <b>nicht signiert</b>: es gibt kein Code-Signing-Zertifikat für dieses Projekt.
+        Damit hängt die ganze Vertrauenskette an einem einzigen Punkt – wer in dieses GitHub-Repo schreiben darf,
+        kann eine Version veröffentlichen, die die App ohne Nachfrage einspielt. Ein Zertifikat würde das ändern; es
+        kostet Geld und eine Identitätsprüfung. Wem das zu viel ist: den Haken oben entfernen und von Hand aktualisieren –
+        dann kommt nichts ungefragt herein.
+      </div>
 
       <div style="font-weight:600; font-size:var(--fs-text); margin:14px 0 8px;">Manueller Check (Notnagel)</div>
       <div style="display:flex; gap:8px;">

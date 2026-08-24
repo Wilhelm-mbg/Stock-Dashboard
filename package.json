@@ -1,7 +1,7 @@
 {
   "name": "markt-dashboard",
   "productName": "Markt-Dashboard",
-  "version": "8.25.0",
+  "version": "8.26.0",
   "description": "Aktien-Dashboard: Big Tech, Chip-Sektor, MarktÃ¼berblick & News â€“ aktualisiert sich selbst",
   "main": "main.js",
   "author": "Wilhelm",
@@ -28,7 +28,9 @@
       "icon.png",
       "icon.ico",
       "telemetrie.json",
-      "!eslint.config.mjs"
+      "!eslint.config.mjs",
+      "studien/messmaschine/messmaschine.js",
+      "studien/messmaschine/messen.js"
     ],
     "win": {
       "icon": "icon.ico",
@@ -60,6 +62,10 @@
         "owner": "Wilhelm-mbg",
         "repo": "Stock-Dashboard"
       }
+    ],
+    "asarUnpack": [
+      "studien/messmaschine/**",
+      "quant.js"
     ]
   },
   "dependencies": {
