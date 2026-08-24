@@ -5325,6 +5325,19 @@ console.log('\n41) Zustaende: was die App sagt, wenn etwas fehlt oder klemmt');
     ok(entpackt(['', 'home', 'w', 'Stock-Dashboard', 'quant.js'].join(sep)) ===
        ['', 'home', 'w', 'Stock-Dashboard', 'quant.js'].join(sep),
        'Entpackt: in der Entwicklung bleibt der Pfad unveraendert');
+    /* Der Fall, den der erste Wurf verschlafen hat: __dirname ENDET auf app.asar, ohne
+     * Trenner dahinter. Ein blosses replace('app.asar' + sep, ...) findet dort nichts
+     * und gibt den Archivpfad zurueck - quellOrdner() waere im Paket stumm gescheitert,
+     * und zwar unsichtbar, weil existsSync im Hauptprozess ueber die asar-Schicht
+     * trotzdem true sagt. Die Pruefung darueber deckte nur den Pfad MITTEN durchs
+     * Archiv ab und blieb deshalb gruen. */
+    ok(entpackt(['', 'opt', 'app', 'resources', 'app.asar'].join(sep)) ===
+       ['', 'opt', 'app', 'resources', 'app.asar.unpacked'].join(sep),
+       'Entpackt: auch ein Pfad, der AUF app.asar endet  [' +
+       entpackt(['', 'opt', 'app', 'resources', 'app.asar'].join(sep)) + ']');
+    ok(entpackt(['', 'home', 'w', 'app.asar-sicherung'].join(sep)) ===
+       ['', 'home', 'w', 'app.asar-sicherung'].join(sep),
+       'Entpackt: ein Ordner, der nur so aehnlich heisst, wird nicht angefasst');
   }
   ok(/STOCK_DASHBOARD_QUELLE: quellOrdner\(\)/.test(mainQ),
      'Entpackt: die Quelle fuer quant.js kommt aus quellOrdner(), nicht blind aus __dirname');

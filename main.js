@@ -633,9 +633,18 @@ ipcMain.handle('write-strategie', async (_ev, key, quelltext) => {
 const MESS_LAUF = { proc: null, key: null, start: 0, abbruch: false };
 function entpackt(p) {
   /* Im Paket liegt ein per asarUnpack ausgenommener Pfad ENTPACKT neben der asar-Datei.
-   * Ausserhalb des Pakets (Entwicklung) kommt 'app.asar' im Pfad gar nicht vor, dann
-   * gibt replace den Pfad unveraendert zurueck. */
-  return p.replace('app.asar' + path.sep, 'app.asar.unpacked' + path.sep);
+   * Ausserhalb des Pakets (Entwicklung) kommt 'app.asar' im Pfad gar nicht vor - dann
+   * bleibt der Pfad, wie er ist.
+   *
+   * ZWEI Faelle, und der erste Wurf hatte nur einen: Ein Pfad IN das Archiv hinein
+   * ('...\app.asar\studien\...') enthaelt 'app.asar' plus Trenner. __dirname selbst
+   * ENDET aber auf 'app.asar', ohne Trenner dahinter - dort fand das blosse replace
+   * nichts, gab den Archivpfad unveraendert zurueck, und quellOrdner() waere stumm
+   * beim asar-Pfad geblieben. Genau die Abhaengigkeit, die es aufloesen soll. */
+  var mitte = 'app.asar' + path.sep;
+  if (p.indexOf(mitte) !== -1) return p.replace(mitte, 'app.asar.unpacked' + path.sep);
+  if (p.slice(-('app.asar'.length + 1)) === path.sep + 'app.asar') return p + '.unpacked';
+  return p;
 }
 function messmaschinePfad() {
   /* Aus dem Archiv heraus liesse sich das Skript nicht als eigener Prozess starten -
