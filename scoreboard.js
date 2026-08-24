@@ -142,6 +142,65 @@
   }
   function kurz(o) { var s = typeof o === 'string' ? o : JSON.stringify(o, null, 0); return s.length > 300 ? s.slice(0, 300) + '…' : s; }
 
+  /* Bisher endete der Reiter hier in einer Sackgasse: eine Statuszeile nannte einen
+   * Node-Befehl - klein, in einem <span>, nicht markierbar, und ohne ein Wort dazu, WO
+   * er laufen soll. Der Ordner studien/messmaschine/ ist im Installer gar nicht
+   * enthalten, das ist Absicht: das Urteil soll nie aus der App selbst kommen. Nur
+   * stand das nirgends. Jetzt steht der fertige Befehl zum Kopieren da, dazu der Ort,
+   * an dem er laeuft, und was danach passiert. */
+  function naechsterSchritt(pfad) {
+    var box = document.getElementById('stNaechster');
+    if (!box) return;
+    if (!pfad) { box.innerHTML = ''; box.hidden = true; return; }
+    var befehl = 'node studien/messmaschine/messen.js "' + pfad + '"';
+    box.hidden = false;
+    box.innerHTML = '<div style="font-size:12px; margin-bottom:6px;"><b>Abgelegt.</b> Die Datei liegt unter ' +
+      '<code>' + esc(pfad) + '</code>.</div>' +
+      '<div style="font-size:12px; margin-bottom:6px;">Gemessen wird sie im <b>Projektordner</b> – dort, wo ' +
+      '<code>studien/messmaschine/</code> liegt. Der Installer bringt ihn absichtlich nicht mit: das Urteil soll ' +
+      'nicht aus derselben App kommen, die die Regel vorschlägt.</div>' +
+      '<div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">' +
+      '<code id="stBefehl" style="flex:1 1 320px; padding:6px 8px; background:var(--panel-2); ' +
+      'border:1px solid var(--kante); border-radius:6px; font-size:11.5px; overflow-x:auto; white-space:pre;">' +
+      esc(befehl) + '</code>' +
+      '<button class="btn ghost" type="button" id="stKopieren" style="padding:4px 10px; font-size:11.5px;">Befehl kopieren</button>' +
+      '<span id="stKopiert" role="status" aria-live="polite" style="font-size:11.5px; color:var(--muted);"></span></div>' +
+      '<div style="font-size:11.5px; color:var(--muted); margin-top:6px;">Das Protokoll erscheint danach oben im ' +
+      'Scoreboard – die App liest den Ordner <code>Markt-Dashboard-Daten/protokolle</code>, egal wo gemessen wurde.</div>';
+    var kb = document.getElementById('stKopieren');
+    if (kb) kb.addEventListener('click', function () { kopiere(befehl); });
+  }
+  /* file:// ist kein sicherer Kontext, navigator.clipboard kann also fehlen.
+   * Deshalb zuerst der moderne Weg, dann der alte - und wenn beides nicht geht,
+   * wird der Befehl wenigstens markiert, statt still nichts zu tun. */
+  function kopiere(text) {
+    var hin = document.getElementById('stKopiert');
+    function sag(t) { if (hin) { hin.textContent = t; setTimeout(function () { if (hin) hin.textContent = ''; }, 4000); } }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () { sag('kopiert'); }, function () { altWeg(text, sag); });
+      return;
+    }
+    altWeg(text, sag);
+  }
+  function altWeg(text, sag) {
+    try {
+      var ta = document.createElement('textarea');
+      ta.value = text; ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed'; ta.style.left = '-9999px';
+      document.body.appendChild(ta); ta.select();
+      var ok2 = document.execCommand('copy');
+      document.body.removeChild(ta);
+      sag(ok2 ? 'kopiert' : 'nicht kopiert – bitte von Hand markieren');
+    } catch (e) {
+      var c = document.getElementById('stBefehl');
+      if (c && window.getSelection) {
+        var rg = document.createRange(); rg.selectNodeContents(c);
+        var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(rg);
+      }
+      sag('nicht kopiert – der Befehl ist markiert');
+    }
+  }
+
   /* ---------- Eingabe: neue Strategie ablegen ---------- */
   function eingabe() {
     var btn = document.getElementById('stAblegen');
@@ -189,9 +248,8 @@
       btn.disabled = true; st.textContent = 'Lege ab …';
       try {
         var r = await window.api.writeStrategie(key, quelle);
-        st.textContent = r && r.ok
-          ? 'Abgelegt: ' + r.pfad + ' – jetzt messen mit node studien/messmaschine/messen.js "' + r.pfad + '"'
-          : 'Nicht abgelegt: ' + (r && r.grund || 'unbekannter Fehler');
+        if (r && r.ok) { st.textContent = ''; naechsterSchritt(r.pfad); }
+        else { naechsterSchritt(null); st.textContent = 'Nicht abgelegt: ' + (r && r.grund || 'unbekannter Fehler'); }
       } catch (e) { st.textContent = 'Fehler: ' + (e && e.message || e); }
       btn.disabled = false;
     });

@@ -2205,6 +2205,54 @@ function huerdeAnzeigen() {
     return out;
   }
 
+  /* Einzelne Felder statt eines Rundumschlags: Eintraege, die ihre Aenderungen Feld fuer
+   * Feld mitgeschrieben haben (bisher nur "Belegte Voreinstellungen uebernehmen"), zeigen
+   * je Feld ein eigenes Zurueck. Genau das stand seit jeher im Knopftext - eingeloest war
+   * es nie. Eintraege ohne felder[] verhalten sich unveraendert wie vorher. */
+  function feldZeilen(e, idx) {
+    if (!e.felder || !e.felder.length) return '';
+    var h = '<div style="margin-top:4px; display:flex; flex-direction:column; gap:2px;">';
+    e.felder.forEach(function (f, j) {
+      // Ein schon zurueckgestelltes Feld behaelt seine Zeile - sonst sieht es aus, als
+      // haette es die Aenderung nie gegeben - aber ohne Knopf, der nichts mehr taete.
+      h += '<div style="font-size:11px; display:flex; align-items:center; gap:6px; color:' +
+        (f.zurueck ? 'var(--muted);" ' : 'var(--ink-2);" ') + '>' +
+        (f.zurueck
+          ? '<span style="width:22px; text-align:center;" title="zurückgestellt">✓</span>' + U.esc(f.txt || f.k) + ' <span>(zurückgestellt)</span>'
+          : '<button class="btn ghost" style="padding:0 6px; font-size:11px; line-height:16px;" ' +
+            'data-feld="' + idx + ':' + j + '" title="Nur dieses Feld zurückstellen" ' +
+            'aria-label="' + U.esc(f.txt || f.k) + ' zurückstellen">↩</button>' +
+            U.esc(f.txt || f.k) + ' <span style="color:var(--muted);">(vorher: ' + U.esc(feldWert(f.alt)) + ')</span>') +
+        '</div>';
+    });
+    return h + '</div>';
+  }
+  function feldWert(v) {
+    if (v === true) return 'an';
+    if (v === false) return 'aus';
+    if (v === null || v === undefined) return 'nicht gesetzt';
+    return String(v);
+  }
+  /** Setzt genau die uebergebenen Felder auf ihren alten Wert zurueck - nie mehr.
+   *  Schreibt die Ruecknahme selbst wieder ins Protokoll, damit die Kette lueckenlos bleibt. */
+  function felderZurueck(e, liste, wasTxt) {
+    if (!liste.length) return;
+    liste.forEach(function (f) {
+      if (f.wo === 'intraday') { if (f.alt === null) delete D.intraday[f.k]; else D.intraday[f.k] = f.alt; }
+      else { if (f.alt === null) delete D[f.k]; else D[f.k] = f.alt; }
+      f.zurueck = true;
+    });
+    if (!D.tuneLog) D.tuneLog = [];
+    D.tuneLog.unshift({ id: 'undo-' + e.id + '-' + Date.now(), at: Date.now(), quelle: 'hand',
+      applied: ['↩ ' + wasTxt], txt: 'Von Hand zurückgestellt (' + U.dt(e.at) + ')',
+      konfigVorher: null, konfigNachher: JSON.parse(JSON.stringify(D.intraday)) });
+    save();
+    if (window.__updateParamVis) window.__updateParamVis();
+    if (window.__syncSetupUI) window.__syncSetupUI();
+    renderTuneLog();
+    render();
+  }
+
   function renderTuneLog() {
     var el = document.getElementById('tuneLog');
     if (!el) return;
@@ -2220,19 +2268,37 @@ function huerdeAnzeigen() {
         '<td>' + (r.rang ? '#' + r.rang : '–') + '</td>' +
         '<td>' + U.dt(e.at) + '<br><span style="color:var(--muted); font-weight:400; font-size:11px;">' + ({ pilot: 'Autopilot', lokal: 'Selbst-Optimierung (alt)', manuell: 'manuell übernommen', hand: 'von Hand', regime: 'Regime (alt)', farm: 'Farm (alt)', sicherung: 'Sicherung' }[e.quelle] || 'Cloud-Analyse') + (r.laufend ? ' · läuft aktuell' : '') + '</span></td>' +
         '<td>' + (e.applied && e.applied.length ? U.esc(e.applied.join(' · ')) : '<span style="color:var(--muted);">keine Feldänderung</span>') +
+          feldZeilen(e, r.idx) +
           (e.txt ? '<div style="color:var(--muted); font-size:11px; margin-top:2px;">' + U.esc(e.txt) + '</div>' : '') + '</td>' +
         '<td>' + (r.vor.avg != null ? U.signTxt(r.vor.avg, ' $') : '–') + ' → ' + (r.nach.avg != null ? '<b class="' + U.signCls(r.nach.avg) + '">' + U.signTxt(r.nach.avg, ' $') + '</b>' : '–') +
           (r.delta != null ? ' <span class="' + U.signCls(r.delta) + '">(' + U.signTxt(r.delta, ' $') + ')</span>' : '') + '</td>' +
         '<td>' + r.nach.n + (r.nach.win != null ? ' · ' + r.nach.win + ' % Treffer' : '') + '</td>' +
         '<td>' + r.urteil + '</td>' +
-        '<td>' + (e.konfigVorher ? '<button class="btn ghost" style="padding:2px 8px; font-size:11px;" data-undo="' + r.idx + '">Rückgängig</button>' : '') + '</td></tr>';
+        '<td>' + (e.konfigVorher || (e.felder && e.felder.some(function (f) { return !f.zurueck; }))
+          ? '<button class="btn ghost" style="padding:2px 8px; font-size:11px;" data-undo="' + r.idx + '">Rückgängig</button>' : '') + '</td></tr>';
     });
     html += '</table><div style="color:var(--muted); font-size:11.5px; margin-top:8px;">Bewertet wird der durchschnittliche Gewinn je Intraday-Trade im Zeitraum <b>nach</b> der Änderung gegen den Zeitraum davor. Unter 5 Trades ist keine Aussage möglich (). Der Rang sortiert nach Wirkung – so siehst du, welche Anpassungen wirklich etwas gebracht haben.</div>';
     el.innerHTML = html;
+    el.querySelectorAll('[data-feld]').forEach(function (b3) {
+      b3.addEventListener('click', function () {
+        var t = b3.getAttribute('data-feld').split(':');
+        var r = rows[parseInt(t[0], 10)];
+        var f = r && r.e.felder ? r.e.felder[parseInt(t[1], 10)] : null;
+        if (!f) return;
+        felderZurueck(r.e, [f], f.txt || f.k);
+      });
+    });
     el.querySelectorAll('[data-undo]').forEach(function (b2) {
       b2.addEventListener('click', function () {
         var r = rows[parseInt(b2.getAttribute('data-undo'), 10)];
-        if (!r || !r.e.konfigVorher) return;
+        if (!r) return;
+        // Eintrag mit Einzelfeldern: alle auf einmal, aber ueber denselben Weg
+        if (r.e.felder && r.e.felder.length) {
+          var offen = r.e.felder.filter(function (f) { return !f.zurueck; });
+          felderZurueck(r.e, offen, 'Alle ' + offen.length + ' Felder zurückgestellt');
+          return;
+        }
+        if (!r.e.konfigVorher) return;
         var keys = ['mode', 'interval', 'period', 'confirmBps', 'lineType', 'window', 'scalpSL', 'sizing', 'channel', 'mtf', 'avoidHours'];
         keys.forEach(function (k) { if (r.e.konfigVorher[k] !== undefined) D.intraday[k] = r.e.konfigVorher[k]; });
         if (!D.tuneLog) D.tuneLog = [];
@@ -4066,8 +4132,8 @@ function huerdeAnzeigen() {
     } else {
       ph = '<div class="empty"><span class="ico"></span>Keine offenen Positionen. ' +
         (D.intraday && D.intraday.enabled
-          ? 'Die Intraday-Strategie läuft und wartet auf ein Signal – wann sie zuletzt nichts getan hat und warum, steht unter „Auswertung“.'
-          : 'Die Intraday-Strategie ist aus – einschalten unter „Schalter &amp; Einstellungen“.') + '</div>';
+          ? 'Die Intraday-Strategie läuft und wartet auf ein Signal – wann sie zuletzt nichts getan hat und warum, steht unter „Vermögen → Auswertung“.'
+          : 'Die Intraday-Strategie ist aus – einschalten unter „Vermögen → Schalter &amp; Einstellungen“.') + '</div>';
     }
     if (D.repairNote && Date.now() - D.repairNote.at < 7 * 86400000) {
       var rn = D.repairNote;
@@ -4907,6 +4973,17 @@ function huerdeAnzeigen() {
     renderBenchmark();
     renderPatience();
     renderTuneLog();
+  }
+  /* Die drei Ergebnis-Ansichten sind laengst in den Reiter "Regeln" gezogen, gezeichnet
+   * wurden sie aber weiterhin NUR beim Klick auf die Pille "Auswertung" unter Vermoegen.
+   * Wer also in "Regeln" die belegten Voreinstellungen uebernahm, sah die Tabelle
+   * darunter unveraendert - und damit auch nie den Rueckgaengig-Knopf zu seiner eigenen
+   * Aenderung. Beides nachgezogen: beim Oeffnen des Reiters und auf Zuruf. */
+  if (typeof window !== 'undefined') {
+    window.__renderAnalytics = function () { try { renderAnalytics(); } catch (e) { /* optional */ } };
+    document.addEventListener('tab-changed', function (ev) {
+      if (ev.detail === 'strategien') window.__renderAnalytics();
+    });
   }
 
   /* ================= KI-Retrospektive ================= */
@@ -6507,7 +6584,7 @@ function huerdeAnzeigen() {
 
   /** Die Abzeichen an den Strategie-Karten. Eigene Funktion, weil sie aus zwei
    *  Richtungen kommen muessen: aus render() und aus syncStrategyUI() - der
-   *  Ein/Aus-Schalter liegt auch im Tab „Strategien & Belege“, und ohne diesen
+   *  Ein/Aus-Schalter liegt auch im Reiter „Regeln“, und ohne diesen
    *  zweiten Aufruf stand das Abzeichen auf „aus“, waehrend die Strategie lief. */
   function renderStatusBadges() {
     if (!D) return;
@@ -7857,7 +7934,7 @@ function huerdeAnzeigen() {
           applied: zurueck,
           txt: 'Die neuen Voreinstellungen gelten nur für neue Installationen – dein bestehendes Depot ' +
             'behält sein Verhalten (' + zurueck.join(', ') + '). Wer auf die gemessenen Einstellungen ' +
-            'wechseln will: Knopf „Belegte Voreinstellungen übernehmen“ im Tab „Strategien & Belege“.' });
+            'wechseln will: Knopf „Belegte Voreinstellungen übernehmen“ im Reiter „Regeln“.' });
       }
     }
     /* Gesamtzaehler ueber alle Sitzungen. Die HEALTH-Zaehler beginnen bei jedem
@@ -7888,8 +7965,8 @@ function huerdeAnzeigen() {
           applied: ['Stunden-Strategie aus (Messung: Kontraindikator)'],
           txt: 'Die Stunden-Strategie wurde vermessen (24.727 Signale, 189 Werte, 8 Jahre): Ihr Technik-Score ist ein ' +
             'Kontraindikator (−0,74 Pp auf 20 Tage, t=−11,6) – dazu Schein-Kosten über Tage. Sie wurde einmalig ' +
-            'abgeschaltet. Einschalten bleibt jederzeit möglich (Tab „Strategien & Belege“, oder im Kurzfrist-Depot unter ' +
-            '„Schalter & Einstellungen“ im Archiv) und wird danach nie wieder automatisch geändert.' });
+            'abgeschaltet. Einschalten bleibt jederzeit möglich (Reiter „Regeln“, oder unter „Vermögen → ' +
+            'Schalter & Einstellungen“ im Archiv) und wird danach nie wieder automatisch geändert.' });
       }
     }
     /* Einmalig: Wer die belegte Kante ueber die Auslöser-Liste gewaehlt hatte, sass
@@ -8122,7 +8199,7 @@ function huerdeAnzeigen() {
     document.getElementById('weeklyBtn').addEventListener('click', runWeekly);
     document.getElementById('reportShowBtn').addEventListener('click', showReport);
     (function () {
-      // Strategie-Chart im Tab „Strategien & Belege“ (Issue #51)
+      // Strategie-Chart im Reiter „Regeln“ (Issue #51)
       var sb = document.getElementById('stcBtn'), ss = document.getElementById('stcSym');
       if (sb && ss) {
         universe().forEach(function (s2) { var o = document.createElement('option'); o.value = s2; o.textContent = s2; ss.appendChild(o); });

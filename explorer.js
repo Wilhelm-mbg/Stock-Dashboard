@@ -24,20 +24,32 @@
   var activeRange = '1J';
 
   /* ================= Suche ================= */
+  /* Gescheiterte Suche und leere Suche waren dasselbe: beide gaben [] zurueck und die
+   * Liste sagte "Nichts gefunden." Bei abgerissener Verbindung behauptet die App damit,
+   * es GAEBE das Papier nicht - und man sucht den Fehler bei sich statt beim Netz.
+   * Der Fehlerfall traegt jetzt seinen Grund mit. */
   async function search(q) {
     var url = 'https://query1.finance.yahoo.com/v1/finance/search?q=' + encodeURIComponent(q) + '&quotesCount=10&newsCount=0&listsCount=0';
-    var res = await window.api.fetchText(url);
-    if (!res.ok) return [];
+    var res;
+    try { res = await window.api.fetchText(url); } catch (e) { return { fehler: String(e && e.message || e) }; }
+    if (!res || !res.ok) return { fehler: (res && res.status ? 'Die Suche antwortete mit Status ' + res.status : 'Keine Antwort von der Suche') };
     try {
       var j = JSON.parse(res.body);
       return (j.quotes || []).filter(function (x) { return x.symbol; }).map(function (x) {
         return { sym: x.symbol, name: x.longname || x.shortname || x.symbol, exch: x.exchDisp || x.exchange || '', type: x.typeDisp || x.quoteType || '' };
       });
-    } catch (e) { return []; }
+    } catch (e) { return { fehler: 'Die Antwort der Suche war unlesbar' }; }
   }
 
   function renderResults(hits) {
     var el = document.getElementById('expResults');
+    if (hits && hits.fehler) {
+      el.innerHTML = '<div class="panel" style="padding:12px 16px; color:var(--down);">' +
+        '<b>Die Suche konnte nicht ausgeführt werden.</b><br>' +
+        '<span style="color:var(--muted); font-size:12px;">' + U.esc(hits.fehler) +
+        ' – das heißt nicht, dass es den Wert nicht gibt. Noch einmal versuchen, sobald die Verbindung steht.</span></div>';
+      return;
+    }
     if (!hits.length) { el.innerHTML = '<div class="panel" style="padding:12px 16px; color:var(--muted);">Nichts gefunden.</div>'; return; }
     /* <button> statt <div>: Die Trefferliste war reine Mausbedienung - per Tastatur
        kam man an keinen einzigen Treffer heran. type="button" verhindert, dass Enter
@@ -1020,7 +1032,7 @@
     if (!CUR || !window.DepotAPI) return;
     var st = document.getElementById('aiStatus');
     var r = window.DepotAPI.addWatch(CUR.sym, CUR.name);
-    st.textContent = r === true ? '' + CUR.sym + ' wird jetzt mitgeprüft (siehe Kurzfrist-Depot → Schalter & Einstellungen).'
+    st.textContent = r === true ? '' + CUR.sym + ' wird jetzt mitgeprüft (siehe Vermögen → Schalter & Einstellungen).'
       : r === 'standard' ? CUR.sym + ' ist schon in der Standard-Watchlist.'
       : r === 'schon' ? CUR.sym + ' ist bereits auf deiner Watchlist.'
       : 'Konnte nicht hinzugefügt werden.';

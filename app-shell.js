@@ -196,7 +196,9 @@
     }
 
     document.addEventListener('click', function (ev) {
-      var k = ev.target.closest ? ev.target.closest('button.info') : null;
+      // '[data-info]' statt 'button.info': Der Glossar-Knopf in der Kopfzeile ist
+      // beschriftet, kein rundes i - er soll trotzdem denselben Weg gehen.
+      var k = ev.target.closest ? ev.target.closest('button[data-info]') : null;
       if (k) {
         ev.preventDefault();
         var warOffen = (offen === k);
@@ -231,7 +233,31 @@
    * als Dauer-Absaetze; der Wortlaut ist unveraendert uebernommen, nur der Ort hat
    * sich geaendert. Module, die ihre Karten selbst zeichnen (strategien.js), melden
    * ihre Texte im eigenen render() an. */
+  /* Ein Glossar der Hausbegriffe. Die App rechnet in Pp, Bp, t-Werten, MDE und
+   * "Kante" - 81-mal allein "Pp" - und erklaerte keinen davon an einer Stelle, an der
+   * man ihn beim Lesen sucht. Erreichbar aus der Kopfzeile, also von jedem Reiter aus.
+   * Bewusst knapp: eine Zeile je Begriff, dafuer mit der Zahl, die im Programm steht. */
   Info.eintragen({
+    'glossar.begriffe': {
+      titel: 'Begriffe dieser App',
+      punkte: [
+        'Pp – Prozentpunkt. Der Unterschied zwischen zwei Prozentzahlen. Von 3 % auf 5 % sind 2 Pp (und 67 % mehr). Renditevorsprünge stehen hier in Pp, damit sie nicht mit Prozent vom Kapital verwechselt werden.',
+        'Bp – Basispunkt, ein Hundertstel Prozentpunkt. 20 Bp = 0,20 Pp. Handelskosten stehen in Bp, weil sie klein und dennoch entscheidend sind.',
+        'Kante – der gemessene Vorsprung einer Regel gegenüber dem bloßen Halten, nach Kosten. Keine Kante heißt: Die Regel bringt nichts, was Nichtstun nicht auch bringt.',
+        'MDE – Mindest-Effektgröße. Der kleinste Vorsprung, den eine Messung mit ihrer Datenmenge überhaupt von Zufall unterscheiden könnte. Liegt der gemessene Wert darunter, ist das Ergebnis „nicht entscheidbar“ – nicht „kein Effekt“.',
+        't-Wert – wie viele Standardfehler der gemessene Vorsprung von null entfernt liegt. Grob: unter 2 ist alles gut mit Zufall vereinbar. Ein hoher t-Wert bei wenigen Trades sagt trotzdem wenig.',
+        'PF – Profitfaktor: alle Gewinne geteilt durch alle Verluste. Über 1 heißt profitabel, unter 1 nicht. Sagt nichts über die Häufigkeit.',
+        'Walk-Forward – auf alten Daten einstellen, auf den darauffolgenden, nie gesehenen Daten prüfen, dann weiterrücken. Der einzige Test, den eine überangepasste Regel nicht bestehen kann.',
+        'Schattenbuch – ein Mitschrieb aller Signale, auch der nicht gehandelten. Es kostet nichts und ist die einzige Messbasis, die auch dann weiterläuft, wenn eine Regel abgeschaltet ist.',
+        'Regime – die Marktphase, in der eine Regel gelten soll (hier: SPY im Aufwärts- oder Abwärtstrend). Jede Kante wurde in genau einem Regime gemessen und wird nur dort eingesetzt.',
+        'Aufgeld – der Betrag, den ein Optionsschein über seinem inneren Wert kostet. Er schmilzt bis zur Fälligkeit auf null; deshalb schlägt er bei kurzen Haltedauern durch.',
+        'Omega – wie viel Prozent der Schein macht, wenn der Basiswert ein Prozent macht. Der Hebel, den man tatsächlich bekommt.',
+        'Delta – wie viel Kurs der Schein macht, wenn der Basiswert einen Euro macht. Zwischen 0 und 1 (Call) bzw. −1 und 0 (Put).',
+        'Kostenhürde – wie viel der Basiswert laufen muss, damit ein Trade nach Spanne, Gebühr und Aufgeld bei null herauskommt. Steht dem gemessenen Vorsprung direkt gegenüber.',
+        'Virtuelles Buch – ein Depot, das die App vollständig führt, aber ohne echtes Geld. Momentum- und Drift-Buch sind solche Bücher; sie zeigen, was die Regel getan hätte.'
+      ],
+      fuss: 'Alle Zahlen der App sind Simulation und keine Anlageberatung.'
+    },
     'regeln.uebersicht': {
       titel: 'Drei Zeithorizonte, drei getrennte Strategien',
       punkte: [
@@ -266,7 +292,7 @@
       punkte: [
         'Eine Regel ist hier ein Ding mit Namen, Parametern, Chart, Bedingungen und Bilanz.',
         'Im Chart siehst du, was sie sieht; in der Bilanz, was dabei herauskam.',
-        'Die drei Ergebnis-Ansichten, die früher im Kurzfrist-Depot verstreut lagen, gehören zu dieser Regel und stehen deshalb hier.'
+        'Die drei Ergebnis-Ansichten, die früher unter „Vermögen“ verstreut lagen, gehören zu dieser Regel und stehen deshalb hier.'
       ]
     },
     'messung.scoreboard': {

@@ -598,7 +598,10 @@ console.log('\n17) Kapitalschutz: Kill-Switch, Positionsgroessen-Wachhund, Stale
   ok(/regimeAuf === null|auf: null/.test(depotSrc) && /ohne Anker: Regel setzt aus/.test(depotSrc),
      'Regime: ohne SPY-Daten fail-open (Basis-Verhalten, kein stiller Handelsstopp)');
   var stratSrc = fs.readFileSync(__dirname + '/strategien.js', 'utf8');
-  ok(/regimeZuteilung = true/.test(stratSrc), 'Regime: Empfehlungs-Knopf schaltet die Regel an');
+  // Der Knopf setzt seine Felder seit der Einzel-Ruecknahme ueber setz(), damit der alte
+  // Wert je Feld mitgeschrieben wird. Geprueft wird weiter die Wirkung, nicht die Schreibweise.
+  ok(/setz\('intraday', 'regimeZuteilung', true/.test(stratSrc) || /regimeZuteilung = true/.test(stratSrc),
+     'Regime: Empfehlungs-Knopf schaltet die Regel an');
   var diagSrc = fs.readFileSync(__dirname + '/diagnose.js', 'utf8');
   ok(/regimeZuteilung: !!\(depot\.intraday && depot\.intraday\.regimeZuteilung\)/.test(diagSrc),
      'Regime: Diagnose meldet den Schalter (weisse Liste)');
@@ -3883,7 +3886,7 @@ console.log('\n39) Erklaertexte hinter dem i – ein Register, ein Fenster, ein 
      'das Erklaerfenster steht im Markup und hat eine Gestaltung');
   /* Der Zuhoerer MUSS am Dokument haengen. Haenge er am einzelnen Knopf, waere er nach
    * jedem innerHTML-Neuaufbau weg - genau die Falle, in die depot.js schon getappt ist. */
-  ok(/document\.addEventListener\('click'/.test(shell) && /closest\('button\.info'\)/.test(shell),
+  ok(/document\.addEventListener\('click'/.test(shell) && /closest\('button\[data-info\]'\)/.test(shell),
      'der Klick wird am Dokument abgefangen, nicht je Knopf gebunden');
   ok(/ev\.key === 'Escape'/.test(shell), 'Escape schliesst das Fenster');
   ok(/tab-changed[\s\S]{0,80}schliessen/.test(shell), 'ein Reiterwechsel raeumt das Fenster ab');
@@ -4056,6 +4059,252 @@ console.log('\n41) Zustaende: was die App sagt, wenn etwas fehlt oder klemmt');
   /* --- Platzhalter im Raster --- */
   ok(/\.heat > \.loading \{ grid-column: 1 \/ -1; \}/.test(html),
      'Heatmap: Lade- und Fehlertext laeuft ueber die volle Breite, nicht in einer 96-px-Spalte');
+})();
+
+/* ================= 42. Die Sicherheitshaltung festnageln =================
+ * Das Audit hat die Electron-Härtung als „auf dem Stand der Technik" befundet -
+ * contextIsolation, sandbox, keine generische Durchreiche im preload, eine CSP
+ * ohne unsafe-inline, eine echte Host-Positivliste. Genau solche Eigenschaften
+ * verschwinden aber lautlos: EIN webPreferences-Feld beim Debuggen umgestellt,
+ * EIN 'unsafe-eval' fuer eine Bibliothek, EIN generisches invoke() im preload,
+ * weil es bequemer ist - und niemand merkt es, weil die App danach laeuft wie
+ * vorher. Ein Befund ohne Test ist eine Momentaufnahme; dieser Abschnitt macht
+ * einen Zustand daraus, der beim Wegbrechen rot wird. */
+(function () {
+  console.log('\n42) Sicherheitshaltung: Electron-Haertung, CSP und die Bruecke');
+  var m = fs.readFileSync(__dirname + '/main.js', 'utf8');
+  var pre = fs.readFileSync(__dirname + '/preload.js', 'utf8');
+  var html = fs.readFileSync(__dirname + '/index.html', 'utf8');
+
+  // --- Fenster-Härtung: an JEDEM BrowserWindow, nicht nur am ersten ---
+  var fenster = m.match(/new BrowserWindow\(\{[\s\S]*?\n  \}\)/g) || [];
+  ok(fenster.length >= 1, 'Härtung: es gibt mindestens ein BrowserWindow zu prüfen');
+  fenster.forEach(function (f, i) {
+    ok(/contextIsolation:\s*true/.test(f), 'Fenster ' + (i + 1) + ': contextIsolation an');
+    ok(/nodeIntegration:\s*false/.test(f), 'Fenster ' + (i + 1) + ': nodeIntegration aus');
+    ok(/sandbox:\s*true/.test(f), 'Fenster ' + (i + 1) + ': sandbox an');
+    ok(/preload:\s*path\.join\(__dirname, 'preload\.js'\)/.test(f),
+       'Fenster ' + (i + 1) + ': die Bruecke ist das preload-Skript');
+  });
+  // Was nirgends stehen darf. Jede dieser Zeilen oeffnet die Sandkiste wieder.
+  [
+    ['webSecurity: false', /webSecurity\s*:\s*false/],
+    ['allowRunningInsecureContent', /allowRunningInsecureContent\s*:\s*true/],
+    ['experimentalFeatures', /experimentalFeatures\s*:\s*true/],
+    ['nodeIntegrationInWorker', /nodeIntegrationInWorker\s*:\s*true/],
+    ['nodeIntegrationInSubFrames', /nodeIntegrationInSubFrames\s*:\s*true/],
+    ['enableRemoteModule', /enableRemoteModule\s*:\s*true/]
+  ].forEach(function (p) {
+    ok(!p[1].test(m), 'Härtung: kein ' + p[0]);
+  });
+
+  // --- Die Bruecke reicht nichts generisch durch ---
+  ok(/contextBridge\.exposeInMainWorld\('api'/.test(pre), 'Bruecke: exposeInMainWorld statt globalem require');
+  ok(!/exposeInMainWorld\([^)]*ipcRenderer\s*\)/.test(pre), 'Bruecke: ipcRenderer selbst wird nicht freigelegt');
+  /* Der teure Fehler waere eine Zeile wie  invoke: (kanal, ...a) => ipcRenderer.invoke(kanal, ...a).
+   * Sie sieht harmlos aus und macht jede einzelne Kanal-Pruefung im Hauptprozess wertlos,
+   * weil der Renderer sich dann jeden Kanal selbst aussuchen darf. Deshalb: JEDER
+   * invoke-Aufruf im preload muss seinen Kanal als Zeichenkette fest verdrahtet haben. */
+  var invokes = pre.match(/ipcRenderer\.(invoke|send|on)\(([^,)]*)/g) || [];
+  ok(invokes.length > 10, 'Bruecke: die Kanäle sind einzeln aufgeführt (' + invokes.length + ')');
+  var frei = invokes.filter(function (z) { return !/\((\s*)'[a-z0-9-]+'/.test(z); });
+  ok(frei.length === 0, 'Bruecke: kein Kanal kommt aus einer Variablen' + (frei.length ? ' – ' + frei.join(', ') : ''));
+
+  // --- CSP ---
+  var csp = /<meta http-equiv="Content-Security-Policy" content="([^"]+)"/.exec(html);
+  ok(!!csp, 'CSP: die Regel steht im Dokument');
+  if (csp) {
+    var c = csp[1];
+    ok(/default-src 'self'/.test(c), 'CSP: default-src self');
+    ok(/script-src 'self'/.test(c) && !/script-src[^;]*unsafe-inline/.test(c),
+       'CSP: Skripte nur aus dem Paket, kein unsafe-inline');
+    ok(!/unsafe-eval/.test(c), 'CSP: kein unsafe-eval');
+    ok(!/script-src[^;]*\*/.test(c), 'CSP: keine Platzhalter in script-src');
+  }
+  /* Eine CSP ohne unsafe-inline nuetzt nichts, wenn das Markup Inline-Handler mitbringt:
+   * dann faellt sie beim ersten Klick auf und jemand „repariert" sie mit unsafe-inline. */
+  ok(!/\son(click|change|input|load|error|submit|keydown|mouseover)\s*=/i.test(html),
+     'Markup: kein einziger Inline-Handler, den die CSP blockieren würde');
+
+  // --- Kein eval in irgendeiner ausgelieferten Datei ---
+  var paket = fs.readdirSync(__dirname).filter(function (f) {
+    return /\.js$/.test(f) && !/^test-/.test(f);
+  });
+  var mitEval = paket.filter(function (f) {
+    var q = fs.readFileSync(__dirname + '/' + f, 'utf8');
+    return /(^|[^.\w])eval\s*\(/.test(q) || /new Function\s*\(/.test(q);
+  });
+  ok(mitEval.length === 0, 'Paket: kein eval, kein new Function' + (mitEval.length ? ' – ' + mitEval.join(', ') : ''));
+
+  // --- Host-Positivliste ---
+  var hosts = /const ALLOWED_HOSTS = new Set\(\[([\s\S]*?)\]\)/.exec(m);
+  ok(!!hosts, 'Netz: es gibt eine Positivliste erlaubter Hosts');
+  if (hosts) {
+    var namen = (hosts[1].match(/'([^']+)'/g) || []).map(function (x) { return x.slice(1, -1); });
+    ok(namen.length > 0 && namen.length < 20, 'Netz: die Liste ist kurz und aufzählbar (' + namen.length + ')');
+    var schlecht = namen.filter(function (h) { return /[*\s]/.test(h) || h !== h.toLowerCase() || !/\./.test(h); });
+    ok(schlecht.length === 0, 'Netz: kein Platzhalter, kein Grossbuchstabe' + (schlecht.length ? ' – ' + schlecht.join(', ') : ''));
+  }
+  ok(/u\.protocol !== 'https:' \|\| !ALLOWED_HOSTS\.has\(u\.hostname\)/.test(m),
+     'Netz: Protokoll UND Host werden geprüft');
+  /* Eine Umleitung ist ein neuer Abruf an einen neuen Host. Wuerde ihr blind gefolgt,
+   * genuegte eine 302 bei einer erlaubten Quelle, um irgendwohin zu zeigen. Der Code
+   * ruft sich deshalb selbst auf - und laeuft damit wieder durch dieselbe Pruefung. */
+  ok(/res\.statusCode >= 301 && res\.statusCode <= 308[\s\S]{0,200}return resolve\(fetchText\(/.test(m),
+     'Netz: Umleitungen laufen erneut durch die Prüfung');
+  ok(/redirectsLeft/.test(m) && /redirectsLeft - 1/.test(m), 'Netz: Umleitungen sind begrenzt');
+
+  // --- Pfade ---
+  ok(/function safeName\(name\) \{ return String\(name\)\.replace\(\/\[\^a-zA-Z0-9_-\]\/g, '_'\)/.test(m),
+     'Pfade: safeName ist eine Positivliste, keine Sperrliste');
+  ok(/const u = new URL\(url\);[\s\S]{0,240}u\.protocol === 'https:'[\s\S]{0,200}shell\.openExternal/.test(m),
+     'Aussenlinks: openExternal nur für https und nur für bekannte Ziele');
+})();
+
+/* ================= 43. Unlesbare Dateien =================
+ * Bisher galt: Datei kaputt -> leeres Ergebnis -> der naechste Schreibvorgang macht
+ * das Leere endgueltig. Beim Depot war das schon behoben (Generationen), beim
+ * KURSARCHIV und bei den Fehlermeldungen nicht. Das Archiv ist der teurere Fall:
+ * Yahoo gibt 1m-Kerzen sieben Tage rueckwirkend heraus, alles darueber hat die App
+ * ueber Wochen selbst gesammelt und bekommt es nie wieder. */
+(function () {
+  console.log('\n43) Unlesbare Dateien werden beiseitegelegt, nicht ueberschrieben');
+  var m = fs.readFileSync(__dirname + '/main.js', 'utf8');
+  var ren = fs.readFileSync(__dirname + '/renderer.js', 'utf8');
+  var pre = fs.readFileSync(__dirname + '/preload.js', 'utf8');
+
+  ok(/function defektBeiseite\(pfad\)/.test(m), 'Defekt: es gibt einen Weg, den kaputten Bestand zu retten');
+  ok(/fs\.renameSync\(pfad, ziel\)/.test(m), 'Defekt: die Datei wird umbenannt, nicht gelöscht');
+  /* Beim zweiten Fehlschlag darf die schon gesicherte Fassung NICHT verdraengt werden -
+   * sie ist die einzige, die noch Daten traegt. Die zweite kaputte ist wertlos. */
+  ok(/if \(fs\.existsSync\(ziel\)\) return ziel;/.test(m),
+     'Defekt: eine bereits beiseitegelegte Fassung bleibt unangetastet');
+
+  var sg = /ipcMain\.handle\('store-get'[\s\S]*?\n\}\);/.exec(m);
+  ok(!!sg && /defektMerken\(safeName\(name\), defektBeiseite\(f\)\)/.test(sg[0]),
+     'Store: eine unlesbare Datei wird beiseitegelegt, bevor der nächste Schreibvorgang läuft');
+  /* Reihenfolge zaehlt: erst die Sicherungsgenerationen des Depots versuchen, ERST DANN
+   * beiseitelegen. Andersherum waere die Hauptdatei weg, bevor sie geprüft wurde. */
+  ok(!!sg && sg[0].indexOf('.bak1') < sg[0].indexOf('defektBeiseite(f)'),
+     'Store: die Generationen werden vor dem Beiseitelegen versucht');
+
+  var bl = /function bugsLesen\(\)[\s\S]*?\n\}/.exec(m);
+  ok(!!bl && (bl[0].match(/defektBeiseite/g) || []).length === 2,
+     'Fehlermeldungen: kaputt UND formfremd werden beide gesichert');
+
+  ok(/ipcMain\.handle\('store-defekte'/.test(m), 'Defekt: der Renderer kann den Befund abholen');
+  ok(/storeDefekte: \(\) => ipcRenderer\.invoke\('store-defekte'\)/.test(pre), 'Defekt: der Kanal steht in der Brücke');
+  ok(/window\.__warnband\('defekt'/.test(ren), 'Defekt: der Befund landet im Warnband, nicht in der Konsole');
+  ok(/bars_\(\\w\+\)_\(\.\+\)/.test(ren) || /\^bars_/.test(ren),
+     'Defekt: bars_60m_AAPL wird als Kursarchiv benannt, nicht als Dateiname gezeigt');
+})();
+
+/* ================= 44. Wegweiser, Begriffe und die Sackgassen =================
+ * Vier Befunde aus dem Audit, die alle dasselbe Muster haben: Die Oberflaeche sagt
+ * etwas, das nicht stimmt oder nirgends hinfuehrt. Das faellt in keinem Test auf,
+ * weil nichts abstuerzt - es kostet nur den, der es liest. */
+(function () {
+  console.log('\n44) Wegweiser, Begriffe, Sackgassen');
+  var html = fs.readFileSync(__dirname + '/index.html', 'utf8');
+  var shell = fs.readFileSync(__dirname + '/app-shell.js', 'utf8');
+  var strat = fs.readFileSync(__dirname + '/strategien.js', 'utf8');
+  var dep = fs.readFileSync(__dirname + '/depot.js', 'utf8');
+  var mfd = fs.readFileSync(__dirname + '/mfdepot.js', 'utf8');
+  var exp = fs.readFileSync(__dirname + '/explorer.js', 'utf8');
+  var sco = fs.readFileSync(__dirname + '/scoreboard.js', 'utf8');
+
+  /* --- Verweise auf Reiter, die es nicht gibt ---
+   * Die App hatte drei davon: "Strategien & Belege", "Strategien", "Kurzfrist-Depot".
+   * Wer danach sucht, findet nichts und haelt sich fuer blind. Dieser Test liest die
+   * echten Namen aus dem Markup und prueft JEDEN Verweis dagegen - er faengt also auch
+   * einen kuenftigen, wenn jemand einen Reiter umbenennt und die Texte vergisst. */
+  var reiter = (html.match(/data-tab="[a-z]+"[^>]*>([^<]+)</g) || [])
+    .map(function (z) { return z.slice(z.lastIndexOf('>') + 1, -1).trim(); });
+  var pillen = (html.match(/data-sub="[a-z]+"[^>]*>([^<]+)</g) || [])
+    .map(function (z) { return z.slice(z.lastIndexOf('>') + 1, -1).replace(/&amp;/g, '&').trim(); });
+  ok(reiter.length === 5, 'Wegweiser: fünf Reiter gefunden (' + reiter.join(', ') + ')');
+  ok(pillen.length >= 6, 'Wegweiser: die Unter-Pillen sind lesbar (' + pillen.length + ')');
+  var echt = reiter.concat(pillen);
+  var quellen = ['index.html', 'depot.js', 'renderer.js', 'strategien.js', 'mfdepot.js',
+                 'driftui.js', 'explorer.js', 'app-shell.js', 'scoreboard.js', 'mittelfrist.js'];
+  var falsch = [];
+  quellen.forEach(function (f) {
+    var q = fs.readFileSync(__dirname + '/' + f, 'utf8');
+    // „Reiter X“ / „Tab X“ / „unter X“ mit Anfuehrungszeichen oder <b>
+    var re = /(?:Reiter|Tab)\s+(?:„([^“]{2,40})“|<b>([^<]{2,40})<\/b>)/g, m;
+    while ((m = re.exec(q))) {
+      var name = (m[1] || m[2]).replace(/&amp;/g, '&').trim();
+      // Ein Pfad "Vermögen → Auswertung" ist gueltig, wenn beide Teile echt sind
+      var teile = name.split(/\s*→\s*/);
+      if (teile.every(function (t) { return echt.indexOf(t) >= 0; })) continue;
+      falsch.push(f + ': „' + name + '“');
+    }
+  });
+  ok(falsch.length === 0, 'Wegweiser: kein Verweis auf einen Reiter, den es nicht gibt' +
+     (falsch.length ? ' – ' + falsch.join(' | ') : ''));
+  ok(!/Strategien &(amp;)? Belege|Kurzfrist-Depot/.test(html + dep + strat + exp + shell),
+     'Wegweiser: die drei alten Falschnamen sind restlos weg');
+
+  /* --- Glossar --- */
+  var gl = /'glossar\.begriffe':\s*\{[\s\S]*?\n    \}/.exec(shell);
+  ok(!!gl, 'Glossar: es ist angemeldet');
+  if (gl) {
+    var punkte = (gl[0].match(/\n        '/g) || []).length;
+    ok(punkte >= 10, 'Glossar: mindestens zehn Begriffe (' + punkte + ')');
+    ['Pp –', 'Bp –', 'MDE –', 'Kante –', 'Schattenbuch –', 'Walk-Forward –', 't-Wert –'].forEach(function (b2) {
+      ok(gl[0].indexOf(b2) >= 0, 'Glossar: ' + b2.replace(' –', '') + ' ist erklärt');
+    });
+  }
+  ok(/id="glossarBtn"[^>]*data-info="glossar\.begriffe"/.test(html),
+     'Glossar: aus der Kopfzeile erreichbar, also von jedem Reiter aus');
+  ok(/closest\('button\[data-info\]'\)/.test(shell),
+     'Glossar: der beschriftete Knopf geht denselben Weg wie die runden i');
+
+  /* --- Das Versprechen "einzeln zurückstellen" --- */
+  ok(/function setz\(wo, k, wert, txt\)/.test(strat), 'Einzeln: jedes Feld wird vor dem Überschreiben gemerkt');
+  ok(/felder\.push\(\{ wo: wo, k: k, alt:/.test(strat), 'Einzeln: mit altem Wert, nicht nur mit Namen');
+  ok(/applied: extras, felder: felder,/.test(strat), 'Einzeln: die Liste hängt am Protokolleintrag');
+  ok(/data-feld="' \+ idx \+ ':' \+ j \+ '"/.test(dep), 'Einzeln: je Feld ein eigener Knopf');
+  ok(/function felderZurueck\(e, liste, wasTxt\)/.test(dep), 'Einzeln: die Rücknahme fasst nur die übergebenen Felder an');
+  /* Der Rundumschlag waere der Fehler gewesen: dann haette ein Zurueck auch Felder
+   * angefasst, die dieser Knopf nie angeruehrt hat - etwa den Handelsschalter. */
+  var fz = /function felderZurueck\([\s\S]*?\n  \}/.exec(dep);
+  ok(!!fz && !/JSON\.parse\(JSON\.stringify\(e\.konfigVorher\)\)/.test(fz[0]),
+     'Einzeln: kein Rundumschlag über die ganze Konfiguration');
+  ok(/f\.zurueck/.test(dep), 'Einzeln: ein schon zurückgestelltes Feld zeigt keinen Knopf mehr');
+  /* Der Grund, warum der Knopf nie auftauchte: die Tabelle steht im Reiter "Regeln",
+   * gezeichnet wurde sie aber nur beim Klick auf eine Pille unter "Vermoegen". */
+  ok(/window\.__renderAnalytics/.test(dep) && /ev\.detail === 'strategien'/.test(dep),
+     'Einzeln: die Tabelle wird beim Öffnen des Reiters gezeichnet, nicht nur unter Vermögen');
+  ok(/if \(window\.__renderAnalytics\) window\.__renderAnalytics\(\);/.test(strat),
+     'Einzeln: nach dem Übernehmen erscheint der Eintrag sofort');
+  ok(!/lässt sich einzeln zurückstellen\.">Belegte/.test(html),
+     'Einzeln: der Knopftext verspricht nichts mehr, was er nicht zeigt');
+
+  /* --- Rückfrage, wenn das Buch "nur rechnen" anzeigt --- */
+  ok(/function abgeschaltetOk\(an, was\)/.test(mfd), 'Rückfrage: es gibt eine');
+  ok(/if \(!d \|\| d\[an\]\) return true;/.test(mfd),
+     'Rückfrage: nur bei abgeschaltetem Buch – sonst wäre es eine Klickbremse ohne Zweck');
+  ok(/abgeschaltetOk\('momentumAn'/.test(mfd) && /abgeschaltetOk\('driftAn'/.test(mfd),
+     'Rückfrage: an beiden Knöpfen');
+
+  /* --- Explorer: Netzfehler ist kein Leerbefund --- */
+  ok(/return \{ fehler:/.test(exp), 'Explorer: der Fehlerfall trägt seinen Grund mit');
+  ok(/if \(hits && hits\.fehler\)/.test(exp), 'Explorer: die Liste unterscheidet Fehler von leer');
+  ok(/das heißt nicht, dass es den Wert nicht gibt/.test(exp),
+     'Explorer: und sagt ausdrücklich, dass es das Papier trotzdem geben kann');
+  ok(/Nichts gefunden\./.test(exp), 'Explorer: der echte Leerbefund heißt weiter „Nichts gefunden.“');
+
+  /* --- Messung: der nächste Schritt statt einer Sackgasse --- */
+  ok(/id="stNaechster" hidden/.test(html), 'Messung: der Kasten ist vor dem Ablegen leer');
+  ok(/function naechsterSchritt\(pfad\)/.test(sco), 'Messung: nach dem Ablegen kommt ein nächster Schritt');
+  ok(/node studien\/messmaschine\/messen\.js "' \+ pfad \+ '"/.test(sco),
+     'Messung: der Befehl steht fertig da, mit dem echten Pfad');
+  ok(/id="stKopieren"/.test(sco) && /function kopiere\(text\)/.test(sco), 'Messung: und lässt sich kopieren');
+  /* file:// ist kein sicherer Kontext - navigator.clipboard kann schlicht fehlen. */
+  ok(/navigator\.clipboard && navigator\.clipboard\.writeText/.test(sco) && /execCommand\('copy'\)/.test(sco),
+     'Messung: Kopieren hat einen Rückfallweg, sonst passiert auf file:// nichts');
+  ok(/Projektordner/.test(sco), 'Messung: es steht dabei, WO der Befehl läuft');
 })();
 
 console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');

@@ -311,8 +311,15 @@ function bugsLesen() {
     const p = bugDatei();
     if (!fs.existsSync(p)) return { version: 1, meldungen: [] };
     const j = JSON.parse(fs.readFileSync(p, 'utf8'));
-    return j && Array.isArray(j.meldungen) ? j : { version: 1, meldungen: [] };
-  } catch (e) { return { version: 1, meldungen: [] }; }
+    if (j && Array.isArray(j.meldungen)) return j;
+    defektMerken('fehlermeldungen', defektBeiseite(p));
+    return { version: 1, meldungen: [] };
+  } catch (e) {
+    // Sonst haette der naechste bug-report die unlesbare Datei durch eine mit
+    // genau EINER Meldung ersetzt - alle frueheren waeren weg gewesen.
+    try { defektMerken('fehlermeldungen', defektBeiseite(bugDatei())); } catch (e2) { /* Ordner nicht da */ }
+    return { version: 1, meldungen: [] };
+  }
 }
 ipcMain.handle('bug-list', async () => {
   const j = bugsLesen();
@@ -721,6 +728,33 @@ function schreibAtomar(pfad, inhalt) {
   fs.renameSync(tmp, pfad);
 }
 
+/* Eine unlesbare Datei darf NIE stillschweigend durch eine leere ersetzt werden.
+ * Genau das passierte bisher zweimal: ein defektes bars_*.json machte aus Wochen
+ * gesammelter Kurse eine leere Reihe, die der naechste Flush endgueltig festschrieb -
+ * und Yahoo liefert 1m-Kerzen nur 7 Tage rueckwirkend, das ist also unwiederbringlich.
+ * Dasselbe galt fuer fehlermeldungen.json. Darum wird der kaputte Bestand vor dem
+ * ersten Ueberschreiben einmal zur Seite gelegt. Bewusst NICHT rotierend: die
+ * aelteste beiseitegelegte Fassung ist die, die noch echte Daten traegt, und sie
+ * darf von einem zweiten Fehlschlag nicht verdraengt werden. */
+function defektBeiseite(pfad) {
+  try {
+    if (!fs.existsSync(pfad)) return null;
+    const ziel = pfad + '.defekt';
+    if (fs.existsSync(ziel)) return ziel;
+    fs.renameSync(pfad, ziel);
+    return ziel;
+  } catch (e) { return null; }
+}
+/* Was in dieser Sitzung unlesbar war. Der Renderer holt die Liste beim Start und
+ * zeigt sie im Warnband - ein Datenverlust, den niemand bemerkt, ist der teuerste. */
+const defekteDateien = [];
+function defektMerken(was, pfad) {
+  if (defekteDateien.some((d) => d.was === was)) return;
+  defekteDateien.push({ was: was, datei: pfad || null, zeit: new Date().toISOString() });
+  if (defekteDateien.length > 50) defekteDateien.shift();
+}
+ipcMain.handle('store-defekte', async () => ({ ok: true, liste: defekteDateien.slice() }));
+
 function storeDir() {
   const d = path.join(app.getPath('userData'), 'store');
   if (!fs.existsSync(d)) fs.mkdirSync(d, { recursive: true });
@@ -789,6 +823,10 @@ ipcMain.handle('store-get', async (_ev, name) => {
         } catch (e2) { /* naechste Generation */ }
       }
     }
+    // Kein brauchbarer Stand: die unlesbare Datei aus dem Weg raeumen, BEVOR der
+    // naechste storeSet sie ueberschreibt. Danach ist der Start sauber (die Datei
+    // fehlt schlicht), die Bytes bleiben aber fuer eine Rettung von Hand liegen.
+    defektMerken(safeName(name), defektBeiseite(f));
     return null;
   }
 });

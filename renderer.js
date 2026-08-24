@@ -358,7 +358,32 @@
     if (quellenStand !== null && typeof window.__warnband === 'function') {
       window.__warnband('kursquelle', quellenStand);
     }
+    defekteMelden();
   });
+
+  /* Unlesbare Dateien beim Start ansagen. Der Hauptprozess legt sie beiseite, statt sie
+   * dem naechsten Schreiben zu ueberlassen - aber ein Datenverlust, den niemand bemerkt,
+   * ist der teuerste. Also einmal deutlich ins Warnband, mit dem Ort der Reste. */
+  function defektName(w) {
+    var m = /^bars_(\w+)_(.+)$/.exec(w);
+    if (m) return 'Kursarchiv ' + m[2].replace(/_/g, '.') + ' (' + m[1] + ')';
+    return { depot: 'Depot', settings: 'Einstellungen', fehlermeldungen: 'Fehlermeldungen',
+             diagnose: 'Diagnose', theme: 'Farbthema' }[w] || w;
+  }
+  async function defekteMelden() {
+    if (!window.api || typeof window.api.storeDefekte !== 'function') return;
+    var r = null;
+    try { r = await window.api.storeDefekte(); } catch (e) { return; }
+    if (!r || !r.ok || !r.liste || !r.liste.length) return;
+    var namen = r.liste.slice(0, 6).map(function (d) { return defektName(d.was); });
+    var rest = r.liste.length - namen.length;
+    var wo = r.liste[0].datei ? ' Die Reste liegen unter <code>' + esc(r.liste[0].datei) + '</code>.' : '';
+    if (typeof window.__warnband === 'function') {
+      window.__warnband('defekt', '<b>' + r.liste.length + ' gespeicherte Datei(en) waren unlesbar</b> – ' +
+        esc(namen.join(', ')) + (rest > 0 ? ' und ' + rest + ' weitere' : '') +
+        '. Sie wurden beiseitegelegt statt überschrieben, der Bestand beginnt dort neu.' + wo);
+    }
+  }
 
   // Nur echte Web-Links ins DOM lassen. Die Feed-Inhalte kommen von außen; javascript:-URLs
   // blockiert zwar schon die CSP, aber ein Link, der nichts tut, ist besser als einer, der

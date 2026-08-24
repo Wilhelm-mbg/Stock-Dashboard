@@ -78,7 +78,7 @@
           daten = await ladeKurse();
           markt = markt || await ladeMarkt();
         }
-        if (!daten || !markt) { zeige(null, null, null, 'Keine Tagesdaten – im Tab „Mittelfristig“ einmal laden.'); return; }
+        if (!daten || !markt) { zeige(null, null, null, 'Keine Tagesdaten – unter „Vermögen → Mittelfristig“ einmal laden.'); return; }
       }
       kurseFrischHalten(daten.stand);
       var MH = window.MFHandel, Dr = window.Drift;
@@ -274,8 +274,19 @@
 
   function bereit() {
     var b1 = el('mfdRebalanceBtn'), b2 = el('mfdDriftBtn'), b3 = el('mfdTaktBtn');
-    if (b1) b1.addEventListener('click', function () { takt('momentum'); });
-    if (b2) b2.addEventListener('click', function () { takt('drift'); });
+    /* Beide Knoepfe buchen auch dann echte Orders, wenn das Buch abgeschaltet ist -
+     * takt() laesst 'manuell' den Schalter ausdruecklich uebersteuern. Die Karte
+     * daneben zeigt in diesem Zustand aber "nur rechnen". Wer dort auf "jetzt
+     * umschichten" drueckt, erwartet eine Vorschau und bekommt einen Handel. Also
+     * einmal nachfragen - und nur dann, sonst waere es eine Klickbremse ohne Zweck. */
+    function abgeschaltetOk(an, was) {
+      var d = D();
+      if (!d || d[an]) return true;
+      return window.confirm(was + ' ist gerade abgeschaltet („nur rechnen“).\n\n' +
+        'Der Knopf bucht trotzdem echte Orders im virtuellen Buch. Fortfahren?');
+    }
+    if (b1) b1.addEventListener('click', function () { if (abgeschaltetOk('momentumAn', 'Das Momentum-Buch')) takt('momentum'); });
+    if (b2) b2.addEventListener('click', function () { if (abgeschaltetOk('driftAn', 'Das Drift-Buch')) takt('drift'); });
     if (b3) b3.addEventListener('click', function () { takt(); });
     setTimeout(function () { takt(); }, 12000);
     setInterval(function () { takt(); }, 30 * 60000);

@@ -193,7 +193,7 @@
       stat('Lade Kurse …');
       var kurse = await ladeKurse();
       if (!kurse) {
-        stat('Keine Tageskurse vorhanden. Bitte zuerst im Tab „Mittelfristig“ die Kurse laden – beide Strategien nutzen dieselben Daten.');
+        stat('Keine Tageskurse vorhanden. Bitte zuerst unter „Vermögen → Mittelfristig“ die Kurse laden – beide Strategien nutzen dieselben Daten.');
         return;
       }
       var markt = await ladeMarkt();
@@ -224,7 +224,7 @@
     LAEUFT = true;
     try {
       var kurse = await ladeKurse();
-      if (!kurse) { stat('Keine Tageskurse vorhanden. Bitte zuerst im Tab „Mittelfristig“ die Kurse laden.'); return; }
+      if (!kurse) { stat('Keine Tageskurse vorhanden. Bitte zuerst unter „Vermögen → Mittelfristig“ die Kurse laden.'); return; }
       await ladeTermine(Object.keys(kurse), vollstaendig);
     } finally { LAEUFT = false; }
     rechne();

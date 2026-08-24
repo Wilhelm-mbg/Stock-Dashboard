@@ -637,6 +637,8 @@
   <span class="err" id="err" role="status" aria-live="polite"></span>
   <div class="hbtns">
     <button class="hbtn" id="refreshBtn" type="button">↻ Aktualisieren</button>
+    <button class="hbtn" id="glossarBtn" type="button" data-info="glossar.begriffe" aria-expanded="false"
+            aria-label="Erklärung: Begriffe dieser App">Begriffe</button>
     <button class="hbtn" id="themeBtn" type="button">Hell/Dunkel</button>
     <button class="hbtn" id="settingsBtn" type="button">App-Einstellungen</button>
   </div>
@@ -717,7 +719,7 @@
 <div id="tab-depot" class="tab" role="tabpanel" aria-labelledby="reiter-depot">
   <div class="simnote"><b>Simulation mit virtuellem Kapital – keine Anlageberatung.</b> Gehandelt wird <span id="depotInstrumentHinweis">der Basiswert (Aktie 1×, ohne Hebel)</span>. Optionsscheine werden synthetisch bepreist (Black-Scholes): Hebel und Zeitwertverfall realistisch, aber keine echten Emittenten-Preise. Läuft, solange die App geöffnet ist.</div>
 
-  <div class="simnote" style="margin-bottom:6px;">Was für jede Strategie spricht und was dagegen, steht im Tab <b>Strategien &amp; Belege</b>. Ein- und ausschalten lässt sie sich hier wie dort.</div>
+  <div class="simnote" style="margin-bottom:6px;">Was für jede Strategie spricht und was dagegen, steht im Reiter <b>Regeln</b>. Ein- und ausschalten lässt sie sich hier wie dort.</div>
   <div class="pills" id="depotPills">
     <button data-sub="depot" class="active">Depot</button>
     <button data-sub="strategien">Schalter &amp; Einstellungen</button>
@@ -741,7 +743,7 @@
       <h2 style="margin:0;">Offene Positionen</h2>
       <label style="font-size:12px; display:flex; align-items:center; gap:6px; margin-left:auto; color:var(--ink-2);"><input type="checkbox" id="notifyEnabled" checked> Benachrichtigung bei Trades</label>
     </div>
-    <div class="panel" id="positionsPanel"><div class="loading">Noch keine Positionen – schalte unter „Schalter &amp; Einstellungen“ die Intraday-Strategie ein.</div></div>
+    <div class="panel" id="positionsPanel"><div class="loading">Noch keine Positionen – schalte unter „Vermögen → Schalter &amp; Einstellungen“ die Intraday-Strategie ein.</div></div>
   </div>
 
   <!-- ============ STRATEGIEN ============ -->
@@ -1229,8 +1231,8 @@
     <h3>Mittelfrist-Depot · Momentum und Ergebnis-Drift handeln</h3>
     <div style="font-size:12.5px; color:var(--ink-2); line-height:1.55; margin-bottom:8px;">
       Zwei getrennte virtuelle Bücher à 100.000 $, die die beiden Strategien <b>tatsächlich führen</b> – beide halten über die volle Historie, aber nicht auf den zurückgehaltenen Jahren ab 2005 (Momentum t = 1,62; Ergebnis-Drift nach Zeitzonen-Korrektur 8,44 statt 14,07 % p.a.). Stand 23.08.2026, Details im Reiter Messung –
-      bis hierher waren Momentum und Ergebnis-Drift Rechenblätter ohne Depot. Die Schalter im Tab
-      „Strategien“ entscheiden: <b>an</b> heißt selbsttätig handeln, <b>aus</b> heißt nur rechnen und
+      bis hierher waren Momentum und Ergebnis-Drift Rechenblätter ohne Depot. Die Schalter im Reiter
+      „Regeln“ entscheiden: <b>an</b> heißt selbsttätig handeln, <b>aus</b> heißt nur rechnen und
       erinnern („Rebalancing fällig“ mit Handlungsliste). Alles Simulation, keine Anlageberatung.
     </div>
     <div class="chartleiste">
@@ -1508,10 +1510,11 @@
     <input id="stVarianten" style="width:100%; font-family:var(--mono, monospace); font-size:12px;" placeholder='[{"schwelle": 10}, {"schwelle": 15}]'></label>
   <div style="display:flex; gap:8px; align-items:center;">
     <button class="btn" id="stAblegen" type="button">Strategie ablegen</button>
-    <span id="stStatus" style="font-size:12px; color:var(--muted);"></span>
+    <span id="stStatus" role="status" aria-live="polite" style="font-size:12px; color:var(--muted);"></span>
   </div>
+  <div id="stNaechster" hidden style="margin-top:10px; padding:10px 12px; border:1px solid var(--kante); border-radius:8px; background:var(--surface-2);"></div>
   <div style="font-size:11.5px; color:var(--muted); margin-top:8px;">
-    Die Datei landet unter <code>Markt-Dashboard-Daten/strategien/</code>. Gemessen wird sie <b>nicht</b> von der App, sondern mit <code>node studien/messmaschine/messen.js &lt;datei&gt;</code> – absichtlich ein eigener Schritt, damit das Urteil nie aus der App selbst kommt. Das Protokoll erscheint danach oben im Scoreboard.
+    Die Datei landet unter <code>Markt-Dashboard-Daten/strategien/</code>. Gemessen wird sie <b>nicht</b> von der App, sondern im Projektordner mit <code>node studien/messmaschine/messen.js &lt;datei&gt;</code> – absichtlich ein eigener Schritt, damit das Urteil nie aus der App selbst kommt. Nach dem Ablegen steht der fertige Befehl zum Kopieren hier. Das Protokoll erscheint danach oben im Scoreboard.
   </div>
 </div>
 </div>
@@ -1526,7 +1529,7 @@
     </div>
   </div>
   <div style="margin:6px 0 12px;">
-      <button class="btn" id="stratEmpfohlenBtn" type="button" title="Stellt alles auf die gemessenen Ergebnisse um: Intraday-Modus RSI(2) im Seitwärtskanal auf dem Basiswert (nur Beobachtung, Schattenbuch zeichnet auf), Momentum- und Drift-Buch handeln virtuell, maximale Risikostufe 3. Jede Änderung steht im Protokoll und lässt sich einzeln zurückstellen.">Belegte Voreinstellungen übernehmen</button>
+      <button class="btn" id="stratEmpfohlenBtn" type="button" title="Stellt alles auf die gemessenen Ergebnisse um: Intraday-Modus RSI(2) im Seitwärtskanal auf dem Basiswert (nur Beobachtung, Schattenbuch zeichnet auf), Momentum- und Drift-Buch handeln virtuell, maximale Risikostufe 3. Jede Änderung steht weiter unten unter „Was hat gewirkt?“ – dort lässt sich jedes Feld einzeln zurückstellen.">Belegte Voreinstellungen übernehmen</button>
       <span id="stratEmpfohlenStatus" style="font-size:11.5px; color:var(--muted); margin-left:8px;"></span>
     </div>
     <div id="stratListe" style="margin-top:12px;"></div>
@@ -1621,7 +1624,7 @@
       <h3>Was hat gewirkt?</h3>
       <div style="color:var(--muted); font-size:11.5px; margin-bottom:8px;">
         Jede automatische Änderung mit gemessener Wirkung: Ø Gewinn je Intraday-Trade davor gegen danach, sortiert nach
-        Wirkung, jede einzeln zurücknehmbar.
+        Wirkung, jede einzeln zurücknehmbar – bei den von Hand übernommenen Voreinstellungen sogar Feld für Feld.
       </div>
       <div id="tuneLog"></div>
 
