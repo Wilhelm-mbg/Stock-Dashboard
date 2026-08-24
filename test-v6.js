@@ -2718,7 +2718,15 @@ console.log('\n31) Auslieferung – enthält der letzte Build wirklich den aktue
   ['index.html', 'main.js', 'preload.js', 'bt-worker.js'].concat(skripte).filter(function (f, i, a) { return a.indexOf(f) === i; }).forEach(function (f) {
     var quelle, paket;
     try { quelle = hash(fs.readFileSync(__dirname + '/' + f)); } catch (e) { return; }
-    try { paket = hash(asarLib.extractFile(asarPfad, f)); } catch (e) { paket = 'fehlt'; }
+    try { paket = hash(asarLib.extractFile(asarPfad, f)); }
+    catch (e) {
+      /* Per asarUnpack ausgenommene Dateien liegen NICHT im Archiv, sondern daneben.
+       * Seit 8.26.0 gilt das fuer quant.js: der Kindprozess der Messmaschine braucht es
+       * als echte Datei, nicht als Archivglied. Ohne diesen Zweig waere die Pruefung
+       * still zu "fehlt" verkommen - eine ausgelieferte Datei ohne Vergleich, und die
+       * Meldung haette wie ein veraltetes Paket ausgesehen. */
+      try { paket = hash(fs.readFileSync(asarPfad + '.unpacked/' + f)); } catch (e2) { paket = 'fehlt'; }
+    }
     if (quelle !== paket) abweichend.push(f + ' (' + paket + ' statt ' + quelle + ')');
   });
   /* Hart nur beim Release: Dann zeigt DIST auf das frisch gebaute Verzeichnis, und eine
@@ -2727,6 +2735,14 @@ console.log('\n31) Auslieferung – enthält der letzte Build wirklich den aktue
    * noch nicht gebaut sind, ist dann normal. Ein Testlauf, der waehrend jeder Arbeit rot
    * ist, blockiert die Issue-Wache und wird ansonsten ueberlesen - er schuetzt dann
    * niemanden mehr. Die Information geht nicht verloren, sie wird nur zum Hinweis. */
+  /* Was entpackt ausgeliefert wird, MUSS neben dem Archiv liegen. Fehlt es dort, ist
+   * es fuer den Kindprozess schlicht nicht da - und die Messung auf Knopfdruck faellt
+   * mit "Cannot find module" aus, in einem Installer, den niemand vorher aufmacht. */
+  var entpacktZiel = asarPfad + '.unpacked/';
+  ['quant.js', 'studien/messmaschine/messen.js', 'studien/messmaschine/messmaschine.js'].forEach(function (f) {
+    ok(fs.existsSync(entpacktZiel + f), 'Entpackt ausgeliefert: ' + f);
+  });
+
   if (process.env.DIST || !abweichend.length) {
     ok(abweichend.length === 0,
        'Jede ausgelieferte Datei ist inhaltsgleich mit der Quelle',
@@ -5435,6 +5451,156 @@ console.log('\n41) Zustaende: was die App sagt, wenn etwas fehlt oder klemmt');
     ok(zuKennung('/home/w/Downloads/Markt-Dashboard-Daten/strategien/monatsende-kauf.js') === 'monatsende-kauf',
        'Reiter: aus einem Unix-Pfad ebenso');
   }
+})();
+
+/* ================= 51. Signatur, Update-Kette und Sicherheitshaltung =================
+ * Stufe 4 des Audits nennt zwei Dinge: den Messknopf (Abschnitt 50) und die Signatur.
+ *
+ * Die Signatur kann dieses Projekt nicht liefern - ein Code-Signing-Zertifikat kostet
+ * Geld und eine Identitaetspruefung, und seit 2023 liegt der Schluessel zwingend auf
+ * Hardware. Was hier steht, ist deshalb KEINE Loesung, sondern eine Bestandsaufnahme,
+ * die nicht mehr stillschweigend verrutschen kann:
+ *
+ *   - Der Installer ist unsigniert. Das ist ein Zustand, kein Versehen, und er MUSS an
+ *     drei Stellen dastehen: in der App, im README und im Bauplan.
+ *   - Was tatsaechlich schuetzt (fester Kanal, Pruefsumme, reproduzierbarer Bau, Test
+ *     gegen das gebaute Paket), wird hier festgenagelt. Faellt eines davon weg, faellt
+ *     der letzte Rest Vertrauenswuerdigkeit mit - dann muss es auffallen.
+ *   - Signieren muss ein Handgriff bleiben: zwei Geheimnisse, keine Codeaenderung.
+ *
+ * Dazu die Sicherheitshaltung des Hauptprozesses. Der Auditbefund war woertlich: "Keine
+ * einzige Zusicherung der Sicherheitshaltung ist getestet." Wer beim Suchen eines Fehlers
+ * sandbox herausnimmt oder die CSP-Zeile beim Umbau verliert, merkt es sonst nicht - und
+ * genau diese drei Zeilen sind es, die den unsignierten Installer ueberhaupt tragbar
+ * machen. Sie stehen hier, weil sie das Einzige sind, was bleibt. */
+(function () {
+  console.log('\n51) Signatur, Update-Kette und die Haltung, die den Rest traegt');
+  var yaml = null;
+  try { yaml = require('js-yaml'); } catch (e) { /* dann eben ohne */ }
+  var mainQ = fs.readFileSync(__dirname + '/main.js', 'utf8');
+  var html = fs.readFileSync(__dirname + '/index.html', 'utf8');
+  var readme = fs.readFileSync(__dirname + '/README.md', 'utf8');
+  var pkg = JSON.parse(fs.readFileSync(__dirname + '/package.json', 'utf8'));
+  var planQ = fs.readFileSync(__dirname + '/.github/workflows/build.yml', 'utf8');
+
+  // ---------- Der Zustand steht da, wo er hingehoert ----------
+  ok(/id="updVertrauen"/.test(html) && /nicht signiert/.test(html),
+     'Unsigniert: die App sagt es selbst, in den Einstellungen neben dem Update-Schalter');
+  ok(/Wer in dieses GitHub-Repo schreiben darf|wer in dieses GitHub-Repo schreiben darf/i.test(html),
+     'Unsigniert: und benennt, woran die Kette wirklich haengt - nicht nur "unsigniert"');
+  ok(/den Haken oben entfernen/.test(html),
+     'Unsigniert: mit einem Ausweg, den der Nutzer selbst gehen kann');
+  /* Gemessen am 24.08.2026 im gerenderten Dialog: mit --muted kam der Kasten im hellen
+   * Thema auf 4,31 - unter dem Soll von 4,5 fuer Fliesstext. Mit --ink-2 sind es 6,52
+   * hell und 8,24 dunkel. Eine Offenlegung, die man wegen der Farbe ueberliest, ist
+   * keine; sie ist keine Fussnote, sondern der Satz, auf den es hier ankommt. */
+  ok(/id="updVertrauen"[^>]*color:var\(--ink-2\)/.test(html) &&
+     !/id="updVertrauen"[^>]*color:var\(--muted\)/.test(html),
+     'Unsigniert: der Kasten steht in Fliesstextfarbe, nicht im Grau der Nebenbemerkung');
+  ok(/## Signatur und Update-Kette/.test(readme) && /CSC_LINK/.test(readme),
+     'Unsigniert: das README hat einen eigenen Abschnitt, samt Weg zum Signieren');
+  ok(/UNSIGNIERT/.test(planQ), 'Unsigniert: auch der Bauplan sagt es');
+
+  /* ---------- Signieren muss ein Handgriff bleiben ----------
+   * Sind die beiden Geheimnisse eines Tages gesetzt, signiert electron-builder von
+   * selbst - es liest CSC_LINK aus der Umgebung. Fehlt der Durchgriff im Bauschritt,
+   * muesste jemand dafuer erst wieder den Bauplan aendern, und genau das vergisst man. */
+  if (yaml) {
+    var plan = yaml.load(planQ);
+    var bau = (plan.jobs.installer.steps || []).filter(function (s) { return s.name === 'Installer bauen'; })[0];
+    ok(!!bau && bau.env && /secrets\.CSC_LINK/.test(String(bau.env.CSC_LINK || '')),
+       'Signieren: der Bauschritt reicht CSC_LINK durch');
+    ok(!!bau && bau.env && /secrets\.CSC_KEY_PASSWORD/.test(String(bau.env.CSC_KEY_PASSWORD || '')),
+       'Signieren: und das Kennwort dazu');
+    ok(!!bau && /if \(\$env:CSC_LINK\)/.test(bau.run) && /electron-builder/.test(bau.run),
+       'Signieren: der Lauf schreibt hin, ob signiert wurde - sonst weiss es hinterher niemand');
+    /* Die Geheimnisse duerfen NICHT in einer if-Bedingung eines Schritts stehen: der
+     * secrets-Kontext ist dort nicht verfuegbar, der Schritt liefe dann nie. Geprueft
+     * wird am GEPARSTEN Plan - die Datei ist Flow-Schreibweise, eine einzige lange
+     * Zeile, in der jede Textsuche alle Schritte miteinander vermengt. */
+    var alleSchritte = Object.keys(plan.jobs).reduce(function (a, j) {
+      return a.concat(plan.jobs[j].steps || []);
+    }, []);
+    var mitSecretIf = alleSchritte.filter(function (st) { return /secrets\./.test(String(st['if'] || '')); });
+    ok(mitSecretIf.length === 0, 'Signieren: kein secrets-Zugriff in einer Schrittbedingung  [' +
+       mitSecretIf.map(function (st) { return st.name; }).join(', ') + ']');
+    var mitInstall = alleSchritte.filter(function (st) { return /npm install/.test(String(st.run || '')); });
+    ok(mitInstall.length === 0 && alleSchritte.some(function (st) { return /npm ci/.test(String(st.run || '')); }),
+       'Bau: npm ci - dieselbe Lockdatei ergibt dasselbe Paket, nicht zwei an zwei Tagen  [' +
+       mitInstall.map(function (st) { return st.name; }).join(', ') + ']');
+  }
+
+  // ---------- Was tatsaechlich schuetzt ----------
+  var pub = (pkg.build && pkg.build.publish && pkg.build.publish[0]) || {};
+  ok(pub.provider === 'github' && pub.owner === 'Wilhelm-mbg' && pub.repo === 'Stock-Dashboard',
+     'Kanal: das Ziel steht fest im Paket  [' + (pub.owner || '?') + '/' + (pub.repo || '?') + ']');
+  ok(!/setFeedURL/.test(mainQ),
+     'Kanal: er laesst sich zur Laufzeit nicht umbiegen - kein setFeedURL, auch nicht aus den Einstellungen');
+  ok(/autoUpd\.allowPrerelease = false;/.test(mainQ),
+     'Kanal: Vorabversionen werden nicht eingespielt');
+  ok(!/verifyUpdateCodeSignature\s*=\s*false/.test(mainQ),
+     'Kanal: die Signaturpruefung ist nirgends abgeschaltet - sie greift, sobald es eine Signatur gibt');
+  ok(/Tests gegen das gebaute Paket/.test(planQ),
+     'Bau: die Suite laeuft ein zweites Mal gegen das Paket - Abschnitt 31 vergleicht es byteweise mit der Quelle');
+  ok(/Tag \$tag und package\.json \$pkg stimmen nicht ueberein/.test(planQ),
+     'Bau: ein Tag, der nicht zur Version passt, bricht den Lauf ab');
+
+  /* ---------- Die Haltung des Fensters ----------
+   * Drei Zeilen, die alles tragen. Ohne sandbox laeuft der Renderer mit vollem
+   * Node-Zugriff; ohne contextIsolation kann jede Seite die preload-Bruecke umbauen. */
+  var mPref = /webPreferences: \{([\s\S]*?)\n    \}/.exec(mainQ);
+  ok(!!mPref, 'Haltung: die webPreferences stehen an einer Stelle');
+  if (mPref) {
+    var pref = mPref[1];
+    ok(/contextIsolation: true/.test(pref), 'Haltung: contextIsolation an');
+    ok(/nodeIntegration: false/.test(pref), 'Haltung: nodeIntegration aus');
+    ok(/sandbox: true/.test(pref), 'Haltung: sandbox an');
+    ok(!/webSecurity|allowRunningInsecureContent|webviewTag|nodeIntegrationInWorker/.test(pref),
+       'Haltung: keine der bequemen Ausnahmen ist eingebaut');
+  }
+
+  /* ---------- Wohin das Fenster navigieren darf ----------
+   * Vorher: alles ausser file:// verboten - also JEDE lokale Adresse erlaubt, und das
+   * Zielfenster haette die volle preload-Bruecke mitbekommen. Die Regel wird aus der
+   * Quelle geschnitten und mit einer feindlichen Adresse AUSGEFUEHRT. */
+  var mNav = /if \(String\(ziel\)\.split\('#'\)\[0\]\.split\('\?'\)\[0\] !== startseite\) ev\.preventDefault\(\);/.exec(mainQ);
+  ok(!!mNav, 'Navigation: es gibt eine Sperre, die gegen die eigene Startseite prueft');
+  function darfHin(ziel, startseite) {
+    if (ziel.startsWith('https://')) return false;                 // geht in den Browser
+    return String(ziel).split('#')[0].split('?')[0] === startseite;
+  }
+  var heim = 'file:///C:/Programme/markt-dashboard/resources/app.asar/index.html';
+  ok(darfHin(heim, heim) === true, 'Navigation: die eigene Seite darf');
+  ok(darfHin(heim + '#depot', heim) === true, 'Navigation: ein Anker darf auch - sonst braeche jeder Sprung in der Seite');
+  ok(darfHin('file:///C:/Users/W/Downloads/harmlos.html', heim) === false,
+     'Navigation: eine heruntergeladene HTML-Datei darf NICHT - sie bekaeme sonst die ganze Bruecke');
+  ok(darfHin('file:///C:/Programme/markt-dashboard/resources/app.asar/../../../boese.html', heim) === false,
+     'Navigation: auch nicht ueber einen Umweg nach oben');
+  ok(darfHin('https://example.com', heim) === false, 'Navigation: https geht in den Browser, nicht ins Fenster');
+  ok(/return \{ action: 'deny' \};/.test(mainQ), 'Navigation: neue Fenster werden abgelehnt');
+
+  /* ---------- Die CSP und was sie nicht erlaubt ----------
+   * Sie steht im Markup, nicht in einem Header - eine Zeile, die beim Umbauen leicht
+   * verlorengeht. Und sie ist nur so viel wert wie die Dateien dahinter: ein eval
+   * irgendwo waere die Luecke, die sie schliessen soll. */
+  var mCsp = /<meta http-equiv="Content-Security-Policy" content="([^"]+)"/.exec(html);
+  ok(!!mCsp, 'CSP: die Zeile steht im Markup');
+  if (mCsp) {
+    var csp = mCsp[1];
+    ok(/default-src 'self'/.test(csp) && /script-src 'self'/.test(csp), 'CSP: Skripte nur aus der App selbst');
+    ok(!/unsafe-eval/.test(csp), 'CSP: kein unsafe-eval');
+    ok(!/'unsafe-inline'[^;]*script-src|script-src[^;]*'unsafe-inline'/.test(csp),
+       'CSP: kein unsafe-inline fuer Skripte (fuer Stile ja - alle Stile stehen inline im Markup)');
+    ok(!/https?:\/\//.test(csp), 'CSP: keine fremde Adresse als Quelle');
+  }
+  ok(!/ on[a-z]+="/.test(html), 'CSP: kein einziger Inline-Handler im Markup - sonst waere die Regel nur Zierde');
+  var skripte = (html.match(/<script src="([^"]+.js)"/g) || []).map(function (s) { return s.replace(/.*src="|".*/g, ''); });
+  var mitEval = ['main.js', 'preload.js', 'bt-worker.js'].concat(skripte).filter(function (f) {
+    var t; try { t = fs.readFileSync(__dirname + '/' + f, 'utf8'); } catch (e) { return false; }
+    return /\beval\s*\(|new Function\s*\(/.test(t);
+  });
+  ok(mitEval.length === 0, 'CSP: keine ausgelieferte Datei baut Code aus Text  [' + mitEval.join(' ') + ']');
+  ok(skripte.length > 20, 'CSP: geprueft wurden alle ' + (skripte.length + 3) + ' ausgelieferten Dateien');
 })();
 
 Promise.all(offeneProben).then(function () {

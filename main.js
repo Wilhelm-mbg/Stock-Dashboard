@@ -6,6 +6,7 @@ const { fork } = require('child_process');
 const path = require('path');
 const fs = require('fs');
 const https = require('https');
+const { pathToFileURL } = require('url');
 
 // Nur EINE Instanz. Autostart (--hidden), Tray-Betrieb und ein Doppelklick auf die Verknüpfung
 // starteten sonst mehrere Prozesse, die sich denselben Depot-Store teilen: beide scannen, beide
@@ -587,7 +588,7 @@ ipcMain.handle('read-protokolle', async () => {
 });
 /* ---- Messmaschine: neue Strategie ablegen ----
  * Schreibt NUR in <Downloads>/Markt-Dashboard-Daten/strategien/, nur .js, nur mit
- * sicherem Dateinamen. Gemessen wird sie danach von der Maschine - seit 8.25.0 auch
+ * sicherem Dateinamen. Gemessen wird sie danach von der Maschine - seit 8.26.0 auch
  * auf Knopfdruck (mess-lauf, weiter unten). Das Urteil kommt trotzdem nicht aus der
  * App: es rechnet dieselbe Maschine in einem eigenen Prozess, mit denselben Regeln
  * und derselben Verweigerung. Bequemer ist der Weg dorthin, nicht das Urteil. */
@@ -604,7 +605,7 @@ ipcMain.handle('write-strategie', async (_ev, key, quelltext) => {
   } catch (e) { return { ok: false, grund: String(e && e.message || e) }; }
 });
 /* ---- Messmaschine aus der App starten ----
- * Bis 8.25.0 endete der Reiter "Messung" in einer Sackgasse: Die App legte die
+ * Bis 8.26.0 endete der Reiter "Messung" in einer Sackgasse: Die App legte die
  * Strategie ab und nannte einen Node-Befehl fuer einen Ordner, der im Installer gar
  * nicht enthalten war. Wer keine Entwicklungsumgebung hat, kam nie zu einem Urteil.
  *
@@ -1030,8 +1031,18 @@ function createWindow() {
     if (url.startsWith('https://')) shell.openExternal(url);
     return { action: 'deny' };
   });
-  win.webContents.on('will-navigate', (ev, url) => {
-    if (!url.startsWith('file://')) { ev.preventDefault(); if (url.startsWith('https://')) shell.openExternal(url); }
+  /* Nur die eigene Startseite. Vorher stand hier "alles ausser file:// verbieten" - also
+   * war JEDE lokale Adresse erlaubt. Ein Fenster, das dorthin navigiert, bekommt die
+   * vollstaendige preload-Bruecke mit: Depot lesen und schreiben, Dateien im Datenordner
+   * anlegen, die Messmaschine starten. Eine beliebige HTML-Datei auf der Platte (etwas
+   * Heruntergeladenes genuegt) haette damit die Rechte der App gehabt.
+   * Die App navigiert nirgendwohin - sie ist eine einzige Seite, und im ganzen Quelltext
+   * steht kein location.href, kein location.reload und kein window.open. Diese Sperre
+   * nimmt also nichts weg, sie schliesst nur eine Tuer, die niemand benutzt. */
+  const startseite = pathToFileURL(path.join(__dirname, 'index.html')).href;
+  win.webContents.on('will-navigate', (ev, ziel) => {
+    if (ziel.startsWith('https://')) { ev.preventDefault(); shell.openExternal(ziel); return; }
+    if (String(ziel).split('#')[0].split('?')[0] !== startseite) ev.preventDefault();
   });
 }
 

@@ -178,7 +178,7 @@
   }
 
   /* ---------- Die Messung aus der App starten ----------
-   * Der Reiter endete bis 8.25.0 in einer Sackgasse: ein Node-Befehl fuer einen Ordner,
+   * Der Reiter endete bis 8.26.0 in einer Sackgasse: ein Node-Befehl fuer einen Ordner,
    * den der Installer gar nicht mitbrachte. Wer keine Entwicklungsumgebung hat, kam nie
    * zu einem Urteil. Der Ordner wird jetzt mitgeliefert und die Maschine laeuft in einem
    * eigenen Prozess - sie kann das Fenster also nicht einfrieren, und ein Absturz dort
