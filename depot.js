@@ -2767,6 +2767,7 @@
     D.positions.push(trade);
     D.trades.unshift(trade);
     if (D.trades.length > 1000) D.trades = D.trades.filter(function (tt, i2) { return i2 < 1000 || tt.status !== 'closed'; }); // Store schlank halten, Offenes nie verwerfen
+    spanneStempeln(trade, 'open');
     notifyTrade(trade, 'open');
     return trade;
   }
@@ -2820,6 +2821,7 @@
     });
     var idx = D.positions.indexOf(pos);
     if (idx >= 0) D.positions.splice(idx, 1);
+    spanneStempeln(pos, 'close');
     notifyTrade(pos, 'close');
     // Gespiegelte Demo-Position beim Broker ebenfalls schließen
     if (pos.capDealId && window.CapAPI && window.CapAPI.enabled()) {
@@ -2856,6 +2858,62 @@
     if (D.kostenMessung.runden.length > 300) D.kostenMessung.runden = D.kostenMessung.runden.slice(0, 300);
     save();
   }
+  /** Warum die Spiegelung aufs Demo-Konto scheiterte - dauerhaft, nicht nur im
+   *  Arbeitsspeicher. HEALTH.capFail zaehlt mit, ist aber beim naechsten Start weg,
+   *  und der Grund wurde bisher weggeworfen. Ohne gespiegelte Positionen gibt es
+   *  keine echten Ausfuehrungen, ohne die keine Messung der echten Handelskosten -
+   *  und die entscheidet ueber fast jede Studie. Ein Fehlschlag, den niemand sieht,
+   *  wird nicht behoben. */
+  function capFehlerNeu(sym, r) {
+    if (!D) return;
+    if (!D.capFehler) D.capFehler = [];
+    D.capFehler.unshift({
+      at: Date.now(), sym: sym,
+      msg: String((r && (r.msg || r.error)) || 'ohne Angabe').slice(0, 200)
+    });
+    if (D.capFehler.length > 50) D.capFehler = D.capFehler.slice(0, 50);
+  }
+
+  /** Die Spanne eines Wertes JETZT - Median der juengsten Proben aus den letzten 45
+   *  Minuten. Ein einzelner Abruf kann eine hektische Sekunde erwischen; der Median
+   *  ueber mehrere Proben ist die ehrlichere Zahl. Gibt null, wenn nichts vorliegt -
+   *  dann wird auch nichts behauptet. */
+  function spanneJetzt(sym) {
+    var sp = D && D.spannen;
+    if (!sp || !sp.proben || !sp.proben.length) return null;
+    var grenze = Date.now() - 45 * 60000;
+    var w = [];
+    for (var i = 0; i < sp.proben.length; i++) {
+      var p = sp.proben[i];
+      if (p.at < grenze) break;              // Puffer ist absteigend sortiert
+      if (p.sym === sym) w.push(p.spreadPct);
+    }
+    if (!w.length) return null;
+    w.sort(function (a, b) { return a - b; });
+    return w[Math.floor(w.length / 2)];
+  }
+
+  /** Die notierte Spanne an einen Trade heften - beim Oeffnen und beim Schliessen.
+   *
+   *  WARUM NICHT ueber die Demo-Spiegelung: kostenMessungNeu misst den echten
+   *  Schlupf, feuert aber nur bei gespiegelten Positionen. Am 25.08.2026 hatte keine
+   *  einzige offene Position eine capDealId, die Messung stand auf 0 Runden. Diese
+   *  Aufzeichnung haengt an nichts ausser der laufenden Spannen-Probe und faellt
+   *  deshalb immer an. Sie ist die halbe Rechnung, nicht die ganze - der Schlupf
+   *  zwischen Anzeige und Ausfuehrung bleibt ungemessen, solange nicht gespiegelt
+   *  wird. Das gehoert bei jeder Auswertung dazugesagt. */
+  function spanneStempeln(tr, phase) {
+    if (!tr || !tr.sym) return;
+    var s = spanneJetzt(tr.sym);
+    if (s == null) return;
+    var pct = Math.round(s * 1e6) / 1e6;
+    if (phase === 'open') tr.spanneAuf = pct;
+    else {
+      tr.spanneZu = pct;
+      if (tr.spanneAuf != null) tr.spanneRunde = Math.round((tr.spanneAuf + pct) * 1e6) / 1e6;
+    }
+  }
+
   /** Bilanz der gemessenen Geld-Brief-Spannen. Erst je Wert den Median (eine
    *  hektische Minute soll ein Symbol nicht praegen), dann ueber die Werte - so
    *  zaehlt jeder Wert gleich, nicht der am haeufigsten abgefragte. */
@@ -4091,6 +4149,7 @@
         D.positions.push(trade);
         D.trades.unshift(trade);
         if (D.trades.length > 1000) D.trades = D.trades.filter(function (tt, i2) { return i2 < 1000 || tt.status !== 'closed'; }); // Store schlank halten, Offenes nie verwerfen
+        spanneStempeln(trade, 'open');
         notifyTrade(trade, 'open');
         // Spiegelung auf dem Capital.com-Demo-Konto (CFD-Paper-Trade mit Stop-Loss)
         if (window.CapAPI && window.CapAPI.enabled()) {
@@ -4109,7 +4168,7 @@
             }
             var sizeC = Math.max(0.1, Math.round((equityNow() * cfg.budgetPct * 5 / spotNow) * 10) / 10);
             window.CapAPI.openPosition(tr.sym, tr.dir, sizeC, slLvl, tpLvl).then(function (r) {
-              if (r.ok) { HEALTH.capOk++; } else { HEALTH.capFail++; }
+              if (r.ok) { HEALTH.capOk++; } else { HEALTH.capFail++; capFehlerNeu(tr.sym, r); }
               if (r.ok) {
                 tr.capDealId = r.dealId;
                 tr.reason += ' · Demo-Konto: ' + (tr.dir === 'call' ? 'BUY' : 'SELL') + ' ' + sizeC + '× ' + (r.epic || tr.sym) + ' (SL ' + U.nf2.format(slLvl) + ')';
@@ -9099,9 +9158,41 @@
           }
         } catch (eQ) { /* eine Absage kippt die Messung nicht */ }
       }
+      /* Der Ringpuffer haelt rund 16 Handelstage. Bevor der aelteste Tag lautlos
+       * herausfaellt, wird er als Median je Wert festgeschrieben - 15 Zahlen am Tag,
+       * die bleiben. Ohne das waere weder "haelt die Annahme ueber Wochen?" noch
+       * "ist die enge Haelfte dauerhaft enger?" jemals zu beantworten. */
+      spannenTagFestschreiben();
       if (D.spannen.proben.length > 4000) D.spannen.proben = D.spannen.proben.slice(0, 4000);
       save();
     }
+    /** Je Tag und Wert einen Median festhalten. Laeuft nach jeder Probenrunde; der
+     *  laufende Tag wird dabei ueberschrieben, fertige Tage bleiben unberuehrt. */
+    function spannenTagFestschreiben() {
+      var sp = D && D.spannen;
+      if (!sp || !sp.proben || !sp.proben.length) return;
+      if (!sp.tage) sp.tage = {};
+      var heute = new Date().toISOString().slice(0, 10);
+      var jeSym = {};
+      for (var i = 0; i < sp.proben.length; i++) {
+        var p = sp.proben[i];
+        if (new Date(p.at).toISOString().slice(0, 10) !== heute) continue;
+        (jeSym[p.sym] = jeSym[p.sym] || []).push(p.spreadPct);
+      }
+      var tag = {};
+      Object.keys(jeSym).forEach(function (s) {
+        var a = jeSym[s].sort(function (x, y) { return x - y; });
+        tag[s] = { n: a.length, med: Math.round(a[Math.floor(a.length / 2)] * 1e6) / 1e6 };
+      });
+      if (Object.keys(tag).length) sp.tage[heute] = tag;
+      /* Sehr grosszuegig aufraeumen: 15 Werte je Tag sind wenige hundert Bytes.
+       * Wer hier zu frueh loescht, loescht genau die Historie, fuer die das da ist. */
+      var alt = Date.now() - 5 * 365 * 86400000;
+      Object.keys(sp.tage).forEach(function (k) {
+        if (new Date(k + 'T00:00:00Z').getTime() < alt) delete sp.tage[k];
+      });
+    }
+
     setInterval(spannenProbe, 8 * 60000);
     setTimeout(spannenProbe, 40000);
   }

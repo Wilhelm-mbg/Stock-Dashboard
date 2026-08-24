@@ -6186,6 +6186,57 @@ console.log('\n45) Release-Routine (tools/release.js)');
      'Ein leeres Junction-Ziel wird als solches gemeldet, mit dem Weg zurueck (npm ci)');
 })();
 
+console.log('\n46) Was die App dauerhaft aufzeichnet');
+(function () {
+  var dep = fs.readFileSync(__dirname + '/depot.js', 'utf8');
+
+  /* --- Die Spannen duerfen sich nicht vergessen ---
+   * spannenProbe sammelt in einen Ringpuffer von 4.000 Proben. Bei rund 250 Proben je
+   * Handelstag reicht der fuer etwa 16 Tage, danach faellt der aelteste Tag lautlos
+   * heraus. Die Fragen, die daran haengen - haelt die Annahme 0,10 % ueber Wochen, ist
+   * die enge Haelfte des Universums dauerhaft enger - brauchen aber Monate. */
+  ok(/function spannenTagFestschreiben/.test(dep),
+     'Je Tag und Wert wird ein Median festgeschrieben, bevor der Ringpuffer vergisst');
+  var probe = dep.slice(dep.indexOf('async function spannenProbe'), dep.indexOf('setInterval(spannenProbe'));
+  var iFest = probe.indexOf('spannenTagFestschreiben()');
+  var iKapp = probe.indexOf('slice(0, 4000)');
+  ok(iFest > -1 && iKapp > -1 && iFest < iKapp,
+     'Festgeschrieben wird VOR dem Kappen - sonst ist der aelteste Tag schon weg');
+  var fest = dep.slice(dep.indexOf('function spannenTagFestschreiben'), dep.indexOf('setInterval(spannenProbe'));
+  ok(/5 \* 365/.test(fest),
+     'Die Tagesbilanz wird erst nach Jahren aufgeraeumt - sie ist der Zweck der Uebung');
+
+  /* --- Die Kosten duerfen nicht an einer Spiegelung haengen, die nicht laeuft ---
+   * kostenMessungNeu misst den echten Schlupf, feuert aber nur bei gespiegelten
+   * Positionen. Am 25.08.2026 hatte KEINE der fuenf offenen Positionen eine capDealId;
+   * die Messung stand auf 0 Runden und waere dort geblieben. */
+  ok(/function spanneJetzt/.test(dep) && /function spanneStempeln/.test(dep),
+     'Jeder Trade bekommt die notierte Spanne mit - unabhaengig von der Demo-Spiegelung');
+  var auf = (dep.match(/spanneStempeln\(trade, 'open'\)/g) || []).length;
+  var zu = (dep.match(/spanneStempeln\(pos, 'close'\)/g) || []).length;
+  ok(auf === 2, 'Beide Wege, auf denen ein Trade oeffnet, stempeln die Spanne', auf + ' Stelle(n)');
+  ok(zu === 1, 'Der Weg, auf dem ein Trade schliesst, stempelt sie auch', zu + ' Stelle(n)');
+  /* Jede Stelle, an der ein Trade entsteht oder endet, muss gestempelt werden -
+   * sonst fehlt genau dort die Kostenaufzeichnung, und es faellt keinem auf. */
+  var offen = (dep.match(/notifyTrade\(trade, 'open'\)/g) || []).length;
+  var ende = (dep.match(/notifyTrade\(pos, 'close'\)/g) || []).length;
+  ok(auf === offen && zu === ende,
+     'Jede Oeffnung und jede Schliessung ist gestempelt - keine Stelle vergessen',
+     auf + '/' + offen + ' offen, ' + zu + '/' + ende + ' zu');
+  /* Ohne Proben wird NICHTS behauptet - ein erfundener Wert waere schlimmer als keiner. */
+  var sj = dep.slice(dep.indexOf('function spanneJetzt'), dep.indexOf('function spanneStempeln'));
+  ok(/return null/.test(sj), 'Liegt keine Probe vor, wird nichts gestempelt statt geraten');
+
+  /* --- Ein Fehlschlag, den niemand sieht, wird nicht behoben --- */
+  ok(/function capFehlerNeu/.test(dep) && /capFehlerNeu\(tr\.sym, r\)/.test(dep),
+     'Scheitert die Spiegelung, wird der Grund dauerhaft festgehalten (nicht nur HEALTH)');
+
+  /* --- Was schon da war, bleibt --- */
+  ok(/D\.patience\[dk\]\[reason\]/.test(dep), 'Nicht gehandelte Signale werden weiter je Tag gezaehlt');
+  ok(/D\.spannen\.proben\.unshift/.test(dep), 'Die Spannen-Probe laeuft weiter');
+  ok(/function kostenMessungNeu/.test(dep), 'Die Messung des echten Schlupfs bleibt bestehen');
+})();
+
 Promise.all(offeneProben).then(function () {
   console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
   process.exit(fails ? 1 : 0);
