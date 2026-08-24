@@ -5192,6 +5192,251 @@ console.log('\n41) Zustaende: was die App sagt, wenn etwas fehlt oder klemmt');
      'Ladereihenfolge: messfenster.js vor depot.js');
 })();
 
+/* ================= 50. Die Messung aus der App =================
+ * Audit 25/26/27 hatten alle denselben Boden: Der Reiter "Messung" endete in einer
+ * Sackgasse. Die App legte die Strategie ab und nannte einen Node-Befehl fuer den
+ * Ordner studien/messmaschine/ - einen Ordner, den der Installer gar nicht mitbrachte,
+ * fuer ein Node, das der Nutzer nicht installiert hat. Wer keine Entwicklungsumgebung
+ * hatte, kam nie zu einem Urteil.
+ *
+ * Jetzt wird der Ordner mitgeliefert und die Maschine laeuft auf Knopfdruck in einem
+ * EIGENEN Prozess mit Electrons eingebautem Node. Was dabei NICHT wandern durfte:
+ *   - das Urteil (die Maschine rechnet dieselbe Rechnung und verweigert genauso),
+ *   - die Vertrauensgrenze (der Renderer uebergibt eine Kennung, nie einen Pfad),
+ *   - der Ort des Protokolls (in den Datenordner, nicht in den Programmordner).
+ *
+ * Die Riegel stehen in main.js, die sich hier nicht laden laesst (sie verlangt
+ * electron). Geprueft wird deshalb nicht der Wortlaut, sondern die HERAUSGELOESTE
+ * REGEL: Muster und Pfadprobe werden aus der Quelle geschnitten und mit Angriffs-
+ * eingaben AUSGEFUEHRT. Aendert jemand die Regel, aendert sich der Test mit. */
+(function () {
+  console.log('\n50) Messung auf Knopfdruck: derselbe Richter, nur ein kuerzerer Weg');
+  var path = require('path');
+  var os = require('os');
+  var mainQ = fs.readFileSync(__dirname + '/main.js', 'utf8');
+  var pre = fs.readFileSync(__dirname + '/preload.js', 'utf8');
+  var sco = fs.readFileSync(__dirname + '/scoreboard.js', 'utf8');
+  var messenQ = fs.readFileSync(__dirname + '/studien/messmaschine/messen.js', 'utf8');
+  var pkg = JSON.parse(fs.readFileSync(__dirname + '/package.json', 'utf8'));
+
+  // ---------- Riegel 1: der Renderer uebergibt eine Kennung, keinen Pfad ----------
+  var mMuster = /if \(!(\/\^[^/]+\/)\.test\(String\(key \|\| ''\)\)\)/.exec(mainQ);
+  ok(!!mMuster, 'Riegel 1: mess-lauf prueft die Kennung gegen ein Muster');
+  if (mMuster) {
+    // Das Muster wird AUS DER QUELLE gebaut - nicht danebengeschrieben.
+    var muster = new Function('return ' + mMuster[1])();
+    var boese = ['../../etc/passwd', 'a/b', 'a\\b', '..', '.', '', 'A', 'a b', 'a;rm -rf /',
+                 'a.js', '-a', 'ä', 'a'.repeat(60), '/absolut'];
+    var durch = boese.filter(function (s) { return muster.test(s); });
+    ok(durch.length === 0, 'Riegel 1: keine der 14 Angriffseingaben kommt durch  [' + durch.join(' ') + ']');
+    ok(muster.test('monatsende-kauf') && muster.test('orb2'),
+       'Riegel 1: echte Kennungen kommen durch - der Riegel sperrt nicht die Tuer zu');
+  }
+
+  /* ---------- Riegel 2: nach dem Zusammensetzen noch einmal pruefen ----------
+   * Das Muster allein waere eine Sperre, die faellt, sobald jemand sie lockert. Die
+   * zweite Probe fragt nicht die Eingabe, sondern das ERGEBNIS: liegt die Datei
+   * wirklich in dem einen Ordner? Hier wird sie mit einer Kennung ausgefuehrt, die
+   * das Muster gar nicht durchgelassen haette - genau der Fall, fuer den sie da ist. */
+  ok(/path\.dirname\(path\.resolve\(datei\)\) !== path\.resolve\(dir\)/.test(mainQ),
+     'Riegel 2: der zusammengesetzte Pfad wird gegen den Ordner geprueft');
+  function ausserhalb(dir, key) {
+    var datei = path.join(dir, key + '.js');
+    return path.dirname(path.resolve(datei)) !== path.resolve(dir);
+  }
+  var basis = path.join(os.tmpdir(), 'strategien');
+  ok(ausserhalb(basis, '../../../etc/passwd') === true, 'Riegel 2: ein Ausbruch nach oben faellt auf');
+  ok(ausserhalb(basis, 'unter/ordner') === true, 'Riegel 2: ein Unterordner faellt auf');
+  ok(ausserhalb(basis, 'monatsende-kauf') === false, 'Riegel 2: die echte Ablage besteht die Probe');
+
+  /* ---------- Riegel 3: das Skript ist fest verdrahtet ----------
+   * fork() nimmt eine Datei und ein Argumentfeld - keine Zeichenkette, die eine Shell
+   * noch einmal auseinandernimmt. Ein exec/spawn mit Shell waere hier der Unterschied
+   * zwischen "Kennung" und "beliebiger Befehl". */
+  ok(/const kind = fork\(skript, \[datei\], \{/.test(mainQ),
+     'Riegel 3: gestartet wird mit fork(Skript, [Datei]) - keine Shell, keine Zeichenkette');
+  ok(!/\bexec\(|\bexecSync\(|shell: true/.test(mainQ),
+     'Riegel 3: nirgends in main.js eine Shell fuer diesen Weg');
+  ok(/const skript = messmaschinePfad\(\);/.test(mainQ) && !/fork\(\s*(datei|key)/.test(mainQ),
+     'Riegel 3: der Pfad zum Skript kommt aus dem Programmordner, nie aus dem Renderer');
+
+  // ---------- Kein Node beim Nutzer noetig ----------
+  ok(/ELECTRON_RUN_AS_NODE: '1'/.test(mainQ),
+     'Der Kindprozess ist Electrons eingebautes Node - der Nutzer braucht keins installiert');
+
+  /* ---------- Wo das Protokoll landet ----------
+   * Im Paket liegt messen.js im Programmordner. Daneben zu schreiben geht dort nicht
+   * (und waere der falsche Ort). Die Zeile wird aus der Quelle geschnitten und mit
+   * gestelltem process/__dirname AUSGEFUEHRT - beide Faelle. */
+  var mOrdner = /var ordner = ([^;]+);/.exec(messenQ);
+  ok(!!mOrdner, 'Protokollordner: die Zeile steht in messen.js');
+  if (mOrdner) {
+    var wohin = new Function('process', 'path', '__dirname', 'return ' + mOrdner[1]);
+    ok(wohin({ env: { MESSMASCHINE_PROTOKOLLE: '/daten/protokolle' } }, path, '/prog/messmaschine') === '/daten/protokolle',
+       'Protokollordner: mit MESSMASCHINE_PROTOKOLLE geht es dorthin');
+    ok(wohin({ env: {} }, path, '/prog/messmaschine') === path.join('/prog/messmaschine', 'protokolle'),
+       'Protokollordner: ohne die Variable bleibt alles wie bisher - neben dem Skript');
+  }
+  ok(/MESSMASCHINE_PROTOKOLLE: protokolle/.test(mainQ) &&
+     /'Markt-Dashboard-Daten', 'protokolle'\)/.test(mainQ),
+     'Protokollordner: die App zeigt auf denselben Ordner, den das Scoreboard liest');
+  /* mkdirSync OHNE recursive haette hier geworfen: Markt-Dashboard-Daten gibt es beim
+   * ersten Mal noch gar nicht, nur protokolle/ darunter waere angelegt worden. Das ist
+   * kein Textbefund - es wird vorgefuehrt. */
+  var tief = path.join(os.tmpdir(), 'md-test-' + process.pid, 'eltern', 'kind');
+  var ohneRecursive = false;
+  try { fs.mkdirSync(tief); } catch (e) { ohneRecursive = true; }
+  ok(ohneRecursive === true, 'Protokollordner: ein fehlender Elternordner laesst mkdirSync ohne recursive scheitern');
+  fs.mkdirSync(tief, { recursive: true });
+  ok(fs.existsSync(tief), 'Protokollordner: mit recursive entsteht die ganze Kette');
+  fs.rmSync(path.join(os.tmpdir(), 'md-test-' + process.pid), { recursive: true, force: true });
+  ok(/fs\.mkdirSync\(ordner, \{ recursive: true \}\)/.test(messenQ),
+     'Protokollordner: messen.js legt sie deshalb auch so an');
+
+  /* ---------- Der Weg zu quant.js haengt nicht an der asar-Schicht ----------
+   * Die Strategie laedt quant.js ueber STOCK_DASHBOARD_QUELLE. Zeigte das im Paket
+   * auf den Ordner IM asar-Archiv, haenge die ganze Messung daran, ob Electrons
+   * asar-Schicht auch unter ELECTRON_RUN_AS_NODE noch aktiv ist. quant.js ist
+   * deshalb mit entpackt, und die Umrechnung wird hier ausgefuehrt. */
+  var mEnt = /function entpackt\(p\) \{[\s\S]*?\n\}/.exec(mainQ);
+  ok(!!mEnt, 'Entpackt: die Umrechnung steht als eigene Funktion da');
+  if (mEnt) {
+    var entpackt = new Function('path', mEnt[0] + '; return entpackt;')(path);
+    var sep = path.sep;
+    ok(entpackt(['', 'opt', 'app', 'resources', 'app.asar', 'quant.js'].join(sep)) ===
+       ['', 'opt', 'app', 'resources', 'app.asar.unpacked', 'quant.js'].join(sep),
+       'Entpackt: im Paket zeigt der Weg neben das Archiv');
+    ok(entpackt(['', 'home', 'w', 'Stock-Dashboard', 'quant.js'].join(sep)) ===
+       ['', 'home', 'w', 'Stock-Dashboard', 'quant.js'].join(sep),
+       'Entpackt: in der Entwicklung bleibt der Pfad unveraendert');
+  }
+  ok(/STOCK_DASHBOARD_QUELLE: quellOrdner\(\)/.test(mainQ),
+     'Entpackt: die Quelle fuer quant.js kommt aus quellOrdner(), nicht blind aus __dirname');
+  var unpack = (pkg.build && pkg.build.asarUnpack) || [];
+  ok(unpack.indexOf('quant.js') !== -1,
+     'Entpackt: quant.js steht in asarUnpack - sonst faende der Kindprozess es dort nie');
+  ok(unpack.indexOf('studien/messmaschine/**') !== -1,
+     'Entpackt: die Maschine ebenfalls - fork() braucht eine echte Datei, kein Archivglied');
+
+  // ---------- Mitgeliefert wird sie ueberhaupt ----------
+  var files = (pkg.build && pkg.build.files) || [];
+  ok(files.indexOf('studien/messmaschine/messen.js') !== -1 &&
+     files.indexOf('studien/messmaschine/messmaschine.js') !== -1,
+     'Paket: beide Dateien der Maschine sind im Installer');
+  ok(files.indexOf('studien/messmaschine/protokolle/**') === -1,
+     'Paket: die Protokolle des Entwicklers gehen NICHT mit - sie sind Befunde, keine Beilage');
+
+  /* ---------- VERWEIGERT ist ein Urteil, kein Absturz ----------
+   * Rueckgabe 3 heisst "die Maschine lehnt die These ab". Saehe das aus wie ein
+   * Absturz, suchte man den Fehler im Programm statt in der These. Hier wird die
+   * Maschine WIRKLICH GESTARTET - als eigener Prozess, wie die App es tut. */
+  ok(/process\.exit\(3\)/.test(messenQ) && /VERWEIGERT: /.test(messenQ),
+     'Verweigerung: messen.js beendet sich mit 3');
+  var mMap = /fertig\(\{ ok: ([^,]+), verweigert: ([^,]+),/.exec(mainQ);
+  ok(!!mMap, 'Verweigerung: main.js bildet den Rueckgabewert ab');
+  if (mMap) {
+    var istOk = new Function('code', 'return ' + mMap[1]);
+    var istVerweigert = new Function('code', 'return ' + mMap[2]);
+    ok(istVerweigert(3) === true && istOk(3) === false, 'Verweigerung: 3 ist verweigert und nicht ok');
+    ok(istVerweigert(0) === false && istOk(0) === true, 'Verweigerung: 0 ist der Erfolg');
+    ok(istVerweigert(1) === false && istOk(1) === false, 'Verweigerung: 1 ist ein echter Fehlschlag, keine Verweigerung');
+  }
+  ok(/if \(r\.verweigert\)/.test(sco) && /das ist ein Urteil/.test(sco),
+     'Verweigerung: der Reiter sagt ausdruecklich, dass es ein Urteil ist');
+
+  var tmp = path.join(os.tmpdir(), 'md-mess-' + process.pid);
+  fs.mkdirSync(tmp, { recursive: true });
+  var strat = path.join(tmp, 'ohne-grund.js');
+  fs.writeFileSync(strat, 'module.exports = { key: "ohne-grund", grund: "zu kurz",\n' +
+    '  zeitrahmen: "60m", haltedauerKerzen: 8, richtung: "long",\n' +
+    '  signal: function () { return null; } };\n', 'utf8');
+  var vorher = fs.readdirSync(__dirname + '/studien/messmaschine/protokolle').length;
+  probe(new Promise(function (fertig) {
+    var kind = require('child_process').fork(__dirname + '/studien/messmaschine/messen.js', [strat, tmp], {
+      silent: true, env: Object.assign({}, process.env, { MESSMASCHINE_PROTOKOLLE: tmp })
+    });
+    var raus = '';
+    kind.stdout.on('data', function (d) { raus += String(d); });
+    kind.stderr.on('data', function (d) { raus += String(d); });
+    kind.on('close', function (code) {
+      ok(code === 3, 'Verweigerung, echt gemessen: der Kindprozess endet mit 3  [' + code + ']');
+      ok(/VERWEIGERT/.test(raus), 'Verweigerung, echt gemessen: der Grund steht in der Ausgabe');
+      ok(fs.readdirSync(tmp).filter(function (f) { return /\.json$/.test(f); }).length === 0,
+         'Verweigerung, echt gemessen: es entsteht KEIN Protokoll - eine abgelehnte These hat keinen Befund');
+      ok(fs.readdirSync(__dirname + '/studien/messmaschine/protokolle').length === vorher,
+         'Verweigerung, echt gemessen: der Protokollordner im Projekt bleibt unberuehrt');
+      fs.rmSync(tmp, { recursive: true, force: true });
+      fertig();
+    });
+  }));
+
+  /* ---------- Ein Abbruch ist kein Fehlschlag ----------
+   * kill() beendet den Prozess per Signal. 'close' bekommt dann KEINEN Rueckgabewert,
+   * sondern null - und ok:(code===0) ist damit false. Der Reiter las das als Fehlschlag
+   * und zeigte "Rueckgabewert null" fuer etwas, das der Nutzer selbst ausgeloest hatte.
+   * Dass code null ist, wird hier nicht behauptet, sondern vorgefuehrt. */
+  var dauerlaeufer = path.join(os.tmpdir(), 'md-lang-' + process.pid + '.js');
+  fs.writeFileSync(dauerlaeufer, 'setInterval(function () {}, 1000);\n', 'utf8');
+  probe(new Promise(function (fertig) {
+    var kind = require('child_process').fork(dauerlaeufer, [], { silent: true });
+    setTimeout(function () { kind.kill(); }, 80);
+    kind.on('close', function (code, signal) {
+      ok(code === null, 'Abbruch: ein abgeschossener Prozess hat gar keinen Rueckgabewert  [code=' +
+         code + ', Signal ' + signal + ']');
+      var istOk2 = new Function('code', 'return ' + (mMap ? mMap[1] : 'false'));
+      ok(istOk2(code) === false,
+         'Abbruch: deshalb waere er ohne eigenes Merkmal als Fehlschlag durchgegangen');
+      fs.rmSync(dauerlaeufer, { force: true });
+      fertig();
+    });
+  }));
+  ok(/MESS_LAUF\.abbruch = true;/.test(mainQ) && /const abgebrochen = MESS_LAUF\.abbruch;/.test(mainQ),
+     'Abbruch: main.js merkt sich, dass der Nutzer abgebrochen hat');
+  ok(/MESS_LAUF\.abbruch = false;/.test(mainQ.slice(mainQ.indexOf('MESS_LAUF.start = Date.now()'))),
+     'Abbruch: das Merkmal wird bei jedem Start zurueckgesetzt - sonst faerbt es den naechsten Lauf');
+  ok(/if \(r\.abgebrochen\)/.test(sco) && /Abgebrochen\. Es wurde kein Protokoll geschrieben\./.test(sco),
+     'Abbruch: der Reiter sagt "abgebrochen", nicht "nicht durchgelaufen"');
+  ok(sco.indexOf('if (r.abgebrochen)') < sco.indexOf('if (r.verweigert)'),
+     'Abbruch: die Abfrage steht VOR der Verweigerung - ein abgeschossener Lauf faellt kein Urteil');
+
+  // ---------- Die Kanaele: preload, main und Renderer meinen dasselbe ----------
+  var kanaeleP = [];
+  pre.replace(/ipcRenderer\.(?:invoke|on)\('([a-z-]+)'/g, function (_, k) { kanaeleP.push(k); return _; });
+  var messKanaele = kanaeleP.filter(function (k) { return k.indexOf('mess-') === 0; });
+  ok(messKanaele.length === 4, 'Kanaele: preload.js reicht genau vier durch  [' + messKanaele.join(', ') + ']');
+  var fehlend = ['mess-strategien', 'mess-lauf', 'mess-abbrechen'].filter(function (k) {
+    return mainQ.indexOf("ipcMain.handle('" + k + "'") === -1;
+  });
+  ok(fehlend.length === 0, 'Kanaele: zu jedem invoke gibt es einen handle in main.js  [' + fehlend.join(' ') + ']');
+  ok(/ev\.sender\.send\('mess-fortschritt'/.test(mainQ) && /onMessFortschritt/.test(pre),
+     'Kanaele: der Fortschritt geht den umgekehrten Weg - und heisst auf beiden Seiten gleich');
+  ok(/if \(!ev\.sender\.isDestroyed\(\)\)/.test(mainQ),
+     'Kanaele: in ein geschlossenes Fenster wird nicht gesendet');
+
+  // ---------- Der Reiter ----------
+  ok(/id="stMessen"/.test(sco) && /id="stMessStop"/.test(sco) && /id="stMessLog"/.test(sco),
+     'Reiter: Knopf, Abbruch und Mitschrift');
+  ok(/if \(!window\.api \|\| typeof window\.api\.messLauf !== 'function'\) return;/.test(sco),
+     'Reiter: ohne die Bruecke erscheint der Knopf gar nicht erst - der Befehl daneben bleibt der Weg');
+  ok(/if \(messLaeuft\) return;/.test(sco), 'Reiter: zweimal Klicken startet keine zweite Messung');
+  ok(/knopf\.disabled = false; stop\.hidden = true;/.test(sco),
+     'Reiter: nach dem Lauf ist der Knopf wieder da - auch wenn die Messung scheiterte');
+  ok(/catch \(e\) \{ r = \{ ok: false, grund: String\(e && e\.message \|\| e\) \}; \}/.test(sco),
+     'Reiter: ein Fehler in der Bruecke haengt die Oberflaeche nicht auf');
+  ok(/log\.scrollTop = log\.scrollHeight/.test(sco), 'Reiter: die Mitschrift laeuft mit');
+  /* Der Renderer schneidet den Ordner ab, BEVOR er die Kennung schickt - der Pfad
+   * verlaesst die Oberflaeche gar nicht erst. Ausgefuehrt, nicht nachgelesen. */
+  var mKey = /var key = (String\(pfad\)[^;]+);/.exec(sco);
+  ok(!!mKey, 'Reiter: aus dem Ablagepfad wird eine Kennung');
+  if (mKey) {
+    var zuKennung = new Function('pfad', 'return ' + mKey[1]);
+    ok(zuKennung('C:\\Users\\W\\Downloads\\Markt-Dashboard-Daten\\strategien\\orb2.js') === 'orb2',
+       'Reiter: aus einem Windows-Pfad bleibt nur die Kennung');
+    ok(zuKennung('/home/w/Downloads/Markt-Dashboard-Daten/strategien/monatsende-kauf.js') === 'monatsende-kauf',
+       'Reiter: aus einem Unix-Pfad ebenso');
+  }
+})();
+
 Promise.all(offeneProben).then(function () {
   console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
   process.exit(fails ? 1 : 0);

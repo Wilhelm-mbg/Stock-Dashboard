@@ -1,5 +1,8 @@
 'use strict';
 const { app, BrowserWindow, ipcMain, shell, Tray, Menu, safeStorage } = require('electron');
+// fork statt spawn: kein Shell-Aufruf, Argumente gehen als Liste - eine Zeichenkette,
+// die eine Shell interpretiert, gibt es hier gar nicht.
+const { fork } = require('child_process');
 const path = require('path');
 const fs = require('fs');
 const https = require('https');
@@ -584,8 +587,10 @@ ipcMain.handle('read-protokolle', async () => {
 });
 /* ---- Messmaschine: neue Strategie ablegen ----
  * Schreibt NUR in <Downloads>/Markt-Dashboard-Daten/strategien/, nur .js, nur mit
- * sicherem Dateinamen. Gemessen wird sie von Hand mit node messen.js - absichtlich
- * kein Knopf in der App, damit das Urteil nie aus der App selbst kommt. */
+ * sicherem Dateinamen. Gemessen wird sie danach von der Maschine - seit 8.25.0 auch
+ * auf Knopfdruck (mess-lauf, weiter unten). Das Urteil kommt trotzdem nicht aus der
+ * App: es rechnet dieselbe Maschine in einem eigenen Prozess, mit denselben Regeln
+ * und derselben Verweigerung. Bequemer ist der Weg dorthin, nicht das Urteil. */
 ipcMain.handle('write-strategie', async (_ev, key, quelltext) => {
   try {
     if (!/^[a-z0-9][a-z0-9-]{1,40}$/.test(String(key || ''))) return { ok: false, grund: 'Kennung: nur Kleinbuchstaben, Ziffern, Bindestrich (2-41 Zeichen).' };
@@ -598,6 +603,128 @@ ipcMain.handle('write-strategie', async (_ev, key, quelltext) => {
     return { ok: true, pfad: p };
   } catch (e) { return { ok: false, grund: String(e && e.message || e) }; }
 });
+/* ---- Messmaschine aus der App starten ----
+ * Bis 8.25.0 endete der Reiter "Messung" in einer Sackgasse: Die App legte die
+ * Strategie ab und nannte einen Node-Befehl fuer einen Ordner, der im Installer gar
+ * nicht enthalten war. Wer keine Entwicklungsumgebung hat, kam nie zu einem Urteil.
+ *
+ * Der Ordner wird jetzt mitgeliefert (package.json: files + asarUnpack), und die
+ * Maschine laeuft in einem EIGENEN Prozess mit Electrons eingebautem Node
+ * (ELECTRON_RUN_AS_NODE). Der Nutzer braucht also kein installiertes Node.
+ *
+ * WARUM EIN EIGENER PROZESS und nicht einfach require(): Die Messung rechnet
+ * minutenlang durch Zehntausende Kerzen. Im Hauptprozess wuerde sie das Fenster
+ * einfrieren. Und sie laedt eine Strategiedatei per require - fremden Code also.
+ * Im eigenen Prozess kann der die App nicht anhalten, und ein Absturz dort ist ein
+ * Fehlschlag der Messung, kein Absturz des Programms.
+ *
+ * DAS HIER IST KEIN KANAL FUER BELIEBIGEN CODE. Drei Riegel:
+ *   1. Der Renderer uebergibt nur eine KENNUNG, nie einen Pfad. Dasselbe Muster wie
+ *      write-strategie: Kleinbuchstaben, Ziffern, Bindestrich.
+ *   2. Der Ordner steht fest (Downloads/Markt-Dashboard-Daten/strategien) und wird
+ *      nach dem Zusammensetzen noch einmal geprueft - ein Name, der daraus
+ *      herausfuehrt, fliegt raus, auch wenn das Muster ihn durchgelassen haette.
+ *   3. Das Skript ist fest verdrahtet und kommt aus dem Programmordner, nie aus einer
+ *      Angabe des Renderers. Keine Shell, kein spawn mit Zeichenkette.
+ * Dass die Strategiedatei selbst Code ist, bleibt: sie ist der Zweck der Sache. Aber
+ * sie liegt im Datenordner des Nutzers, den er selbst befuellt - das ist dieselbe
+ * Vertrauensgrenze wie bei einem Dokument, das man doppelklickt. */
+const MESS_LAUF = { proc: null, key: null, start: 0, abbruch: false };
+function entpackt(p) {
+  /* Im Paket liegt ein per asarUnpack ausgenommener Pfad ENTPACKT neben der asar-Datei.
+   * Ausserhalb des Pakets (Entwicklung) kommt 'app.asar' im Pfad gar nicht vor, dann
+   * gibt replace den Pfad unveraendert zurueck. */
+  return p.replace('app.asar' + path.sep, 'app.asar.unpacked' + path.sep);
+}
+function messmaschinePfad() {
+  /* Aus dem Archiv heraus liesse sich das Skript nicht als eigener Prozess starten -
+   * fork() braucht eine echte Datei. app.asar.unpacked ist der Ort dafuer. */
+  const drin = path.join(__dirname, 'studien', 'messmaschine', 'messen.js');
+  const aus = entpackt(drin);
+  return fs.existsSync(aus) ? aus : drin;
+}
+function quellOrdner() {
+  /* Woher die Strategie ihr quant.js laedt (STOCK_DASHBOARD_QUELLE).
+   *
+   * Der naheliegende Wert waere __dirname - im Paket also der Ordner IM asar-Archiv.
+   * Das haenge ich nicht an die Frage, ob Electrons asar-Schicht auch im Kindprozess
+   * mit ELECTRON_RUN_AS_NODE noch aktiv ist: kann ich hier nicht pruefen, und wenn
+   * sie es nicht ist, scheitert jede Messung im Installer mit "Cannot find module".
+   * quant.js ist deshalb mit entpackt (package.json/asarUnpack) und wird von dort
+   * geladen, wenn es dort liegt. Damit braucht der Kindprozess KEINE asar-Schicht.
+   * In der Entwicklung ist das unveraendert der Projektordner. */
+  const aus = entpackt(__dirname);
+  return fs.existsSync(path.join(aus, 'quant.js')) ? aus : __dirname;
+}
+ipcMain.handle('mess-strategien', async () => {
+  try {
+    const dir = path.join(app.getPath('downloads'), 'Markt-Dashboard-Daten', 'strategien');
+    if (!fs.existsSync(dir)) return { ok: true, liste: [], ordner: dir };
+    const liste = fs.readdirSync(dir)
+      .filter((f) => /^[a-z0-9][a-z0-9-]{1,40}\.js$/.test(f))
+      .map((f) => {
+        const st = fs.statSync(path.join(dir, f));
+        return { key: f.slice(0, -3), datei: f, groesse: st.size, stand: st.mtimeMs };
+      })
+      .sort((a, b) => b.stand - a.stand);
+    return { ok: true, liste: liste, ordner: dir, maschine: fs.existsSync(messmaschinePfad()) };
+  } catch (e) { return { ok: false, grund: String(e && e.message || e) }; }
+});
+ipcMain.handle('mess-lauf', async (ev, key) => {
+  if (MESS_LAUF.proc) return { ok: false, grund: 'Es läuft schon eine Messung (' + MESS_LAUF.key + ').' };
+  if (!/^[a-z0-9][a-z0-9-]{1,40}$/.test(String(key || ''))) return { ok: false, grund: 'Kennung: nur Kleinbuchstaben, Ziffern, Bindestrich.' };
+  const dir = path.join(app.getPath('downloads'), 'Markt-Dashboard-Daten', 'strategien');
+  const datei = path.join(dir, key + '.js');
+  // Riegel 2: nach dem Zusammensetzen noch einmal pruefen, nicht nur das Muster davor
+  if (path.dirname(path.resolve(datei)) !== path.resolve(dir)) return { ok: false, grund: 'Ungültiger Pfad.' };
+  if (!fs.existsSync(datei)) return { ok: false, grund: 'Diese Strategie liegt nicht im Datenordner.' };
+  const skript = messmaschinePfad();
+  if (!fs.existsSync(skript)) {
+    return { ok: false, grund: 'Die Messmaschine ist in dieser Installation nicht enthalten. ' +
+      'Aus dem Projektordner geht es weiterhin von Hand: node studien/messmaschine/messen.js "' + datei + '"' };
+  }
+  const protokolle = path.join(app.getPath('downloads'), 'Markt-Dashboard-Daten', 'protokolle');
+  return await new Promise((fertig) => {
+    let raus = '';
+    const kind = fork(skript, [datei], {
+      silent: true,
+      env: Object.assign({}, process.env, {
+        ELECTRON_RUN_AS_NODE: '1',
+        MESSMASCHINE_PROTOKOLLE: protokolle,
+        STOCK_DASHBOARD_QUELLE: quellOrdner()
+      })
+    });
+    MESS_LAUF.proc = kind; MESS_LAUF.key = key; MESS_LAUF.start = Date.now(); MESS_LAUF.abbruch = false;
+    function melde(txt) {
+      raus += txt;
+      // Ungebremst waere das bei einer langen Messung ein Trommelfeuer an Ereignissen;
+      // zeilenweise reicht, und der Renderer haengt sie einfach an.
+      try { if (!ev.sender.isDestroyed()) ev.sender.send('mess-fortschritt', { key: key, text: txt }); } catch (e) { /* Fenster zu */ }
+    }
+    kind.stdout.on('data', (d) => melde(String(d)));
+    kind.stderr.on('data', (d) => melde(String(d)));
+    kind.on('error', (e) => { MESS_LAUF.proc = null; fertig({ ok: false, grund: String(e.message || e), ausgabe: raus }); });
+    kind.on('close', (code) => {
+      const dauer = Date.now() - MESS_LAUF.start;
+      const abgebrochen = MESS_LAUF.abbruch;
+      MESS_LAUF.proc = null; MESS_LAUF.key = null; MESS_LAUF.abbruch = false;
+      /* Rueckgabe 3 heisst VERWEIGERT - das ist kein Fehler, sondern ein Urteil der
+       * Maschine ("Strategie ohne Begruendung"). Es muss anders aussehen als ein Absturz.
+       * Und ein Abbruch ist ueberhaupt kein Befund: kill() beendet den Prozess per Signal,
+       * code ist dann null. Ohne dieses Merkmal las der Reiter das als Fehlschlag und
+       * zeigte "Rueckgabewert null" - fuer etwas, das der Nutzer selbst ausgeloest hat. */
+      fertig({ ok: code === 0, verweigert: code === 3, abgebrochen: abgebrochen,
+               code: code, dauerMs: dauer, ausgabe: raus });
+    });
+  });
+});
+ipcMain.handle('mess-abbrechen', async () => {
+  if (!MESS_LAUF.proc) return { ok: false, grund: 'Es läuft keine Messung.' };
+  MESS_LAUF.abbruch = true;
+  try { MESS_LAUF.proc.kill(); } catch (e) { /* schon vorbei */ }
+  return { ok: true };
+});
+
 ipcMain.handle('read-insider', async () => ablageLesen('insider.json', INSIDER_URL));
 // Claude-Auswertungsbericht aus dem Daten-Ordner lesen (Anzeige in der App)
 ipcMain.handle('read-report', async () => {

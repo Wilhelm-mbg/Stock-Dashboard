@@ -39,7 +39,9 @@
     try { r = await window.api.readProtokolle(); } catch (e) { r = { ok: false, grund: String(e && e.message || e) }; }
     if (!r || !r.ok) { el.innerHTML = '<div style="color:var(--muted); font-size:var(--fs-neben);">Protokolle nicht lesbar' + (r && r.grund ? ': ' + esc(r.grund) : '') + '.</div>'; return; }
     if (!r.protokolle.length) {
-      el.innerHTML = '<div style="color:var(--muted); font-size:var(--fs-neben);">Noch kein Protokoll. Eine Strategie messen mit <code>node studien/messmaschine/messen.js &lt;datei&gt;</code>; das Protokoll gehört nach <code>' + esc(r.ordner) + '</code>.</div>';
+      el.innerHTML = '<div style="color:var(--muted); font-size:var(--fs-neben);">Noch kein Protokoll. ' +
+        'Unten eine Strategie ablegen und auf <b>Jetzt messen</b> drücken – oder von Hand mit ' +
+        '<code>node studien/messmaschine/messen.js &lt;datei&gt;</code>. Das Protokoll gehört nach <code>' + esc(r.ordner) + '</code>.</div>';
       return;
     }
     // Je Kennung nur das juengste Protokoll - aeltere bleiben aufklappbar
@@ -143,11 +145,12 @@
   function kurz(o) { var s = typeof o === 'string' ? o : JSON.stringify(o, null, 0); return s.length > 300 ? s.slice(0, 300) + '…' : s; }
 
   /* Bisher endete der Reiter hier in einer Sackgasse: eine Statuszeile nannte einen
-   * Node-Befehl - klein, in einem <span>, nicht markierbar, und ohne ein Wort dazu, WO
-   * er laufen soll. Der Ordner studien/messmaschine/ ist im Installer gar nicht
-   * enthalten, das ist Absicht: das Urteil soll nie aus der App selbst kommen. Nur
-   * stand das nirgends. Jetzt steht der fertige Befehl zum Kopieren da, dazu der Ort,
-   * an dem er laeuft, und was danach passiert. */
+   * Node-Befehl - klein, in einem <span>, nicht markierbar, ohne ein Wort dazu, WO er
+   * laufen soll, und fuer einen Ordner, den der Installer gar nicht mitbrachte. Wer
+   * keine Entwicklungsumgebung hat, kam nie zu einem Urteil.
+   * Jetzt gibt es beides: den Knopf (die Maschine wird mitgeliefert, siehe unten) und
+   * darueber weiterhin den fertigen Befehl zum Kopieren - fuer ein anderes Archiv, ein
+   * anderes Protokollverzeichnis oder einfach, um zu sehen, was da eigentlich laeuft. */
   function naechsterSchritt(pfad) {
     var box = document.getElementById('stNaechster');
     if (!box) return;
@@ -156,9 +159,10 @@
     box.hidden = false;
     box.innerHTML = '<div style="font-size:var(--fs-neben); margin-bottom:6px;"><b>Abgelegt.</b> Die Datei liegt unter ' +
       '<code>' + esc(pfad) + '</code>.</div>' +
-      '<div style="font-size:var(--fs-neben); margin-bottom:6px;">Gemessen wird sie im <b>Projektordner</b> – dort, wo ' +
-      '<code>studien/messmaschine/</code> liegt. Der Installer bringt ihn absichtlich nicht mit: das Urteil soll ' +
-      'nicht aus derselben App kommen, die die Regel vorschlägt.</div>' +
+      '<div style="font-size:var(--fs-neben); margin-bottom:6px;">Messen lässt sie sich mit dem Knopf unten – ' +
+      'die Maschine läuft dabei in einem <b>eigenen Prozess</b>, nicht in der App. Wer lieber von Hand misst ' +
+      'oder ein anderes Archiv prüfen will, nimmt den Befehl daneben – der läuft im <b>Projektordner</b>, ' +
+      'also dort, wo die Quellen liegen.</div>' +
       '<div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">' +
       '<code id="stBefehl" style="flex:1 1 320px; padding:6px 8px; background:var(--panel-2); ' +
       'border:1px solid var(--kante); border-radius:var(--r-normal); font-size:var(--fs-neben); overflow-x:auto; white-space:pre;">' +
@@ -169,6 +173,90 @@
       'Scoreboard – die App liest den Ordner <code>Markt-Dashboard-Daten/protokolle</code>, egal wo gemessen wurde.</div>';
     var kb = document.getElementById('stKopieren');
     if (kb) kb.addEventListener('click', function () { kopiere(befehl); });
+    var key = String(pfad).split(/[\\/]/).pop().replace(/\.js$/, '');
+    messKnopfBauen(box, key);
+  }
+
+  /* ---------- Die Messung aus der App starten ----------
+   * Der Reiter endete bis 8.25.0 in einer Sackgasse: ein Node-Befehl fuer einen Ordner,
+   * den der Installer gar nicht mitbrachte. Wer keine Entwicklungsumgebung hat, kam nie
+   * zu einem Urteil. Der Ordner wird jetzt mitgeliefert und die Maschine laeuft in einem
+   * eigenen Prozess - sie kann das Fenster also nicht einfrieren, und ein Absturz dort
+   * ist ein Fehlschlag der Messung, kein Absturz der App.
+   *
+   * Was sich NICHT aendert: Das Urteil kommt weiter aus der Maschine, nicht aus der App.
+   * Sie rechnet dieselbe Rechnung wie am Terminal, schreibt dasselbe Protokoll und
+   * verweigert genauso. Bequemer geworden ist der Weg dorthin, nicht das Urteil. */
+  var messLaeuft = false;
+  function messKnopfBauen(box, key) {
+    if (!window.api || typeof window.api.messLauf !== 'function') return;
+    var zeile = document.createElement('div');
+    zeile.style.cssText = 'margin-top:10px; padding-top:10px; border-top:1px solid var(--kante);';
+    zeile.innerHTML =
+      '<div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">' +
+      '<button class="btn" type="button" id="stMessen">Jetzt messen</button>' +
+      '<button class="btn ghost" type="button" id="stMessStop" hidden style="padding:4px 10px;">Abbrechen</button>' +
+      '<span id="stMessStatus" role="status" aria-live="polite" style="font-size:var(--fs-neben); color:var(--muted);"></span></div>' +
+      '<pre id="stMessLog" hidden style="margin-top:8px; max-height:260px; overflow:auto; padding:8px 10px; ' +
+      'background:var(--panel-2); border:1px solid var(--kante); border-radius:var(--r-normal); ' +
+      'font-size:var(--fs-klein); white-space:pre-wrap; line-height:1.45;"></pre>';
+    box.appendChild(zeile);
+    document.getElementById('stMessen').addEventListener('click', function () { messStarten(key); });
+    document.getElementById('stMessStop').addEventListener('click', function () {
+      if (window.api.messAbbrechen) window.api.messAbbrechen();
+    });
+  }
+
+  async function messStarten(key) {
+    if (messLaeuft) return;
+    var knopf = document.getElementById('stMessen');
+    var stop = document.getElementById('stMessStop');
+    var st = document.getElementById('stMessStatus');
+    var log = document.getElementById('stMessLog');
+    messLaeuft = true;
+    knopf.disabled = true; stop.hidden = false;
+    log.hidden = false; log.textContent = '';
+    st.textContent = 'Die Messung läuft – das dauert je nach Archiv einige Minuten.';
+    var t0 = Date.now();
+    var r = null;
+    try { r = await window.api.messLauf(key); }
+    catch (e) { r = { ok: false, grund: String(e && e.message || e) }; }
+    messLaeuft = false;
+    knopf.disabled = false; stop.hidden = true;
+    var dauer = Math.round((Date.now() - t0) / 1000);
+    if (!r) { st.textContent = 'Keine Antwort von der Messmaschine.'; return; }
+    if (r.abgebrochen) {
+      /* Selbst ausgeloest ist kein Fehlschlag. Ohne diesen Fall stand hier
+       * "Die Messung ist nicht durchgelaufen (Rueckgabewert null)" - der Prozess wird
+       * per Signal beendet, einen Rueckgabewert gibt es dann gar nicht. */
+      st.textContent = 'Abgebrochen. Es wurde kein Protokoll geschrieben.';
+      return;
+    }
+    if (r.verweigert) {
+      /* VERWEIGERT ist ein URTEIL, kein Fehler - die Maschine lehnt eine Strategie ab,
+       * die ihre Bedingungen nicht erfuellt. Das muss anders aussehen als ein Absturz,
+       * sonst sucht man den Fehler im Programm statt in der These. */
+      st.innerHTML = '<b style="color:var(--muted);">Die Maschine hat die Messung verweigert</b> – das ist ein Urteil, ' +
+        'kein Fehler. Der Grund steht unten.';
+      return;
+    }
+    if (!r.ok) {
+      st.innerHTML = '<b class="neg">Die Messung ist nicht durchgelaufen</b>' +
+        (r.grund ? ' – ' + esc(r.grund) : ' (Rückgabewert ' + r.code + ')');
+      if (r.ausgabe && !log.textContent) log.textContent = r.ausgabe;
+      return;
+    }
+    st.innerHTML = '<b class="pos">Fertig</b> nach ' + dauer + ' s. Das Protokoll steht jetzt oben im Scoreboard.';
+    try { await laden(); } catch (e) { /* die Liste kommt beim naechsten Oeffnen */ }
+  }
+
+  if (window.api && typeof window.api.onMessFortschritt === 'function') {
+    window.api.onMessFortschritt(function (d) {
+      var log = document.getElementById('stMessLog');
+      if (!log) return;
+      log.textContent += d.text;
+      log.scrollTop = log.scrollHeight;   // mitlaufen, sonst sieht man nur den Anfang
+    });
   }
   /* file:// ist kein sicherer Kontext, navigator.clipboard kann also fehlen.
    * Deshalb zuerst der moderne Weg, dann der alte - und wenn beides nicht geht,

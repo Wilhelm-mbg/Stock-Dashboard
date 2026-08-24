@@ -23,8 +23,12 @@ if (fremdesArchiv) console.log('ACHTUNG: fremdes Archiv - das Ergebnis ist KEIN 
 var r = M.messe(S, archiv);
 if (r.verweigert) { console.log('VERWEIGERT: ' + r.grund); process.exit(3); }
 
-var ordner = path.join(__dirname, 'protokolle');
-if (!fs.existsSync(ordner)) fs.mkdirSync(ordner);
+/* Der Zielordner ist ueberschreibbar, weil die App die Maschine jetzt selbst starten
+ * kann (Reiter "Messung"). Im ausgelieferten Paket liegt messen.js im Programmordner -
+ * dort neben sich selbst zu schreiben geht nicht, und es waere auch der falsche Ort.
+ * Ohne die Variable bleibt alles wie bisher: protokolle/ neben dem Skript. */
+var ordner = process.env.MESSMASCHINE_PROTOKOLLE || path.join(__dirname, 'protokolle');
+if (!fs.existsSync(ordner)) fs.mkdirSync(ordner, { recursive: true });
 var ziel = path.join(ordner, S.key + '-' + r.gemessenAm.slice(0, 10) +
   (fremdesArchiv ? '-fremdarchiv' : '') + '.json');
 r.archiv = { pfad: archiv, echtesArchiv: !fremdesArchiv };
