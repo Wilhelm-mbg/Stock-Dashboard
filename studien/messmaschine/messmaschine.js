@@ -184,6 +184,51 @@ function baueKontrolle(universum, haltedauerKerzen, schnittTag, vorlauf, stopNiv
   };
 }
 
+/* ---------- Querschnitt: Werte gegeneinander statt mit sich selbst ----------
+ * Baut je Zeitstempel die Rangfolge aller Werte nach dem Merkmal der Strategie.
+ * Rueckgabe: rang(sym, ms) -> {perzentil, n} | null
+ *   perzentil 1,0 = staerkster Wert des Tages, 0,0 = schwaechster.
+ *
+ * Der Vorlauf gilt hier genauso wie im Signal (A9): Ein Wert, dessen Reihe noch
+ * nicht weit genug zurueckreicht, taucht in der Rangfolge nicht auf - sonst
+ * bestuende der erste Rang aus jungen Werten mit kurzer Historie. */
+function baueQuerschnitt(universum, merkmal, vorlauf, mindestWerte) {
+  var proZeit = {};        // ms -> [{sym, wert}]
+  var idxVon = {};         // sym -> {ms -> i}, damit das Signal seinen Rang findet
+  Object.keys(universum).forEach(function (sym) {
+    var b = universum[sym];
+    idxVon[sym] = {};
+    for (var i = vorlauf; i < b.length; i++) {
+      var w = null;
+      try { w = merkmal(b, i); } catch (e) { w = null; }
+      if (w == null || !isFinite(w)) continue;
+      var ms = b[i][0];
+      (proZeit[ms] = proZeit[ms] || []).push({ sym: sym, wert: w });
+      idxVon[sym][ms] = i;
+    }
+  });
+  var raenge = {};         // ms -> {sym -> perzentil}
+  var tageMitRang = 0;
+  Object.keys(proZeit).forEach(function (ms) {
+    var liste = proZeit[ms];
+    if (liste.length < mindestWerte) return;
+    liste.sort(function (a, b) { return a.wert - b.wert; });
+    var karte = {};
+    for (var k = 0; k < liste.length; k++) karte[liste[k].sym] = liste.length > 1 ? k / (liste.length - 1) : 0.5;
+    raenge[ms] = { karte: karte, n: liste.length };
+    tageMitRang++;
+  });
+  return {
+    tage: tageMitRang,
+    rang: function (sym, ms) {
+      var r = raenge[ms];
+      if (!r) return null;
+      var p = r.karte[sym];
+      return p == null ? null : { perzentil: p, n: r.n };
+    },
+  };
+}
+
 /* ---------- Ausstiegsregeln (C6/C7) ----------
  * Eine Regel liefert NUR ein Stop-Niveau, berechnet aus abgeschlossenen Kerzen:
  *   stopNiveau(abgeschlossen, einKurs, params) -> Zahl | null
@@ -224,6 +269,8 @@ function fuehreAus(pfad, einKurs, stopNiveau, params) {
  *              stopNiveau?(abgeschlossen, einKurs, params) -> Zahl|null,
  *              testfamilie?: {name, testsGesamt, begruendung},
  *              leseFensterKerzen?: Zahl - wie weit das Signal zurueckliest (A7),
+ *              querschnitt?: {merkmal(bars,i)->Zahl|null, mindestWerte} - dann bekommt
+ *                            signal einen vierten Parameter rang={perzentil,n}|null,
  *              params, varianten?: [params...], richtung: 'long'|'short'|'beide',
  *              universum?: 'aktien'|'alle'|function(sym), kosten?: {spanneBp} }
  * archivPfad: Ordner mit bars_<iv>_<SYM>.json
@@ -296,6 +343,20 @@ function messe(strategie, archivPfad, optionen) {
    * (Bis 23.08.2026 stand hier varianten[0] und damit lief die Kontrolle fuer ALLE
    * Stufen mit den Parametern der ersten - bei rsi2seit-mcp also durchweg mcp 0,9.
    * Der Kommentar forderte schon damals das Gegenteil.) */
+  /* Querschnitt einmal fuer alle Varianten - das Merkmal haengt nicht an den
+   * Variantenparametern, nur die Schwelle tut es. */
+  var QS = null;
+  if (S.querschnitt && typeof S.querschnitt.merkmal === 'function') {
+    var mindest = S.querschnitt.mindestWerte || 50;
+    QS = baueQuerschnitt(U, S.querschnitt.merkmal, vorlauf, mindest);
+    P.entscheide('E4 Querschnitt', { mindestWerte: mindest },
+      { tageMitRangfolge: QS.tage },
+      'Die Werte werden GEGENEINANDER gestellt, nicht jeder mit sich selbst. An ' + QS.tage +
+      ' Tagen lagen mindestens ' + mindest + ' Werte vor. Geprueft wird an JEDEM solchen Tag - ' +
+      'nicht auf einem Umschichtungsraster, dessen Lage eine willkuerliche Wahl unter vielen waere (B9).');
+    if (!QS.tage) P.warne('E4', 'Keine einzige Rangfolge zustande gekommen - Merkmal oder Mindestzahl pruefen.');
+  }
+
   var hatAusstieg = typeof S.stopNiveau === 'function';
   var kontrollen = {};
   function kontrolleFuer(vi) {
@@ -360,7 +421,8 @@ function messe(strategie, archivPfad, optionen) {
       var b = U[sym];
       for (var i = vorlauf; i < b.length - H; i++) {
         var sig = null;
-        try { sig = S.signal(b, i, params); } catch (e) { gruende.fehler = (gruende.fehler || 0) + 1; continue; }
+        var rang = QS ? QS.rang(sym, b[i][0]) : null;
+        try { sig = S.signal(b, i, params, rang); } catch (e) { gruende.fehler = (gruende.fehler || 0) + 1; continue; }
         if (!sig || !sig.dir) continue;
         var dir = sig.dir > 0 ? 1 : -1;
         if (S.richtung === 'long' && dir < 0) continue;
