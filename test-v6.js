@@ -6144,6 +6144,46 @@ console.log('\n45) Release-Routine (tools/release.js)');
   var cm = fs.readFileSync(__dirname + '/CLAUDE.md', 'utf8');
   ok(/tools\/release\.js/.test(cm) && /release-notizen/.test(cm),
      'CLAUDE.md nennt beides: die Routine und die Sammelstelle');
+
+  /* --- Der teuerste Fehler des Tages: Loeschen durch die Junction ---
+   * "git worktree remove --force" auf einen Baum mit node_modules-Junction hat am
+   * 24.08.2026 alle 276 Pakete des ECHTEN node_modules geloescht. Nachgemessen: weder
+   * fs.rmSync noch "rmdir /s /q" tun das - nur git raeumt mit eigenem Code auf und
+   * steigt in den Verweis hinab. Deshalb muss der Verweis IMMER zuerst geloest werden. */
+  ok(/function baubaumWeg/.test(rel), 'Es gibt einen eigenen Weg, den Baubaum wegzuraeumen');
+  var bw = rel.slice(rel.indexOf('function baubaumWeg'), rel.indexOf('function naechsteVersion'));
+  var iRmdir = bw.indexOf('rmdirSync');
+  var iGit = bw.indexOf('worktree remove');
+  ok(iRmdir > -1 && iGit > -1 && iRmdir < iGit,
+     'Die Junction wird geloest, BEVOR git den Baum entfernt - sonst loescht git durch sie hindurch');
+  /* Gezaehlt werden AUFRUFE, nicht Erwaehnungen: der erste Wurf zaehlte den
+   * Kommentar mit, der den Vorfall beschreibt, und wurde rot. */
+  /* Gezaehlt werden AUFRUFE, nicht Erwaehnungen: der erste Wurf zaehlte den
+   * Kommentar mit, der den Vorfall beschreibt, und wurde rot. */
+  var zeilen = rel.split(String.fromCharCode(10));
+  var aufrufe = zeilen.filter(function (z) {
+    return z.indexOf('worktree remove') > -1 &&
+           (z.indexOf('execSync') > -1 || z.indexOf('laut(') > -1);
+  });
+  ok(aufrufe.length === 1,
+     'worktree remove wird nur an EINER Stelle aufgerufen',
+     aufrufe.length + ' Aufruf(e)');
+  ok(aufrufe.length === 1 && bw.indexOf(aufrufe[0].trim().slice(0, 30)) > -1,
+     'und dieser eine Aufruf steht in baubaumWeg, das vorher die Junction loest');
+
+  /* --- Eine Nummer darf nicht verwaisen ---
+   * --bauen committet die Version, bevor gebaut wird. Scheitert danach etwas (am
+   * 24.08. die Junction), steht 8.28.1 im Commit, aber es gibt weder Tag noch Release.
+   * Weiterzuzaehlen wuerde sie fuer immer zuruecklassen. */
+  var nv = rel.slice(rel.indexOf('function naechsteVersion'), rel.indexOf('function bauen'));
+  ok(/git tag/.test(nv) && /return jetzt/.test(nv),
+     'Eine Version ohne Tag stammt aus einem steckengebliebenen Lauf und wird wiederverwendet');
+
+  /* Die Fehlermeldung muss die beiden Faelle trennen: fehlende Junction gegen leeres
+   * Ziel. Die alte Meldung nannte immer die Junction und schickte die Suche in die
+   * falsche Richtung - die Junction stand, ihr Ziel war leer. */
+  ok(/ZIEL ist leer/.test(rel) && /npm ci/.test(rel),
+     'Ein leeres Junction-Ziel wird als solches gemeldet, mit dem Weg zurueck (npm ci)');
 })();
 
 Promise.all(offeneProben).then(function () {

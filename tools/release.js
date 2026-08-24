@@ -5,6 +5,7 @@
  *   node tools/release.js --bauen [--minor]   Version setzen, sauber bauen, testen.
  *   node tools/release.js --hoch              Entwurf, Assets, veroeffentlichen, gegenpruefen.
  *   node tools/release.js --alles [--minor]   Die drei Schritte nacheinander.
+ *   node tools/release.js --aufraeumen        Baubaum sicher wegraeumen.
  *
  * WARUM ES DIESES SKRIPT GIBT: Jeder Release lief bisher als Handarbeit, und jedes Mal
  * ist dieselbe Falle zugeschnappt - mal fehlte die node_modules-Junction, mal wurde aus
@@ -108,8 +109,52 @@ function pruefen() {
 }
 
 /* ------------------------------------------------------------------ bauen */
+
+/** Den Baubaum wegräumen, OHNE das echte node_modules mitzunehmen.
+ *
+ * Am 24.08.2026 hat ein "git worktree remove --force" auf genau diesen Baum alle 276
+ * Pakete des echten node_modules gelöscht. Danach scheiterte jeder Build, und die
+ * Ursache lag Stunden zurück.
+ *
+ * NACHGEMESSEN, weil die naheliegende Erklärung falsch ist: "rekursives Löschen geht
+ * durch Junctions" stimmt NICHT. An einer Attrappe geprüft, ließen sowohl fs.rmSync
+ * als auch "rmdir /s /q" das Ziel unberührt. Nur git räumt mit eigenem Code auf und
+ * steigt dabei in den Verweis hinab. Der Schuldige ist also nicht das Löschen an sich,
+ * sondern genau dieser eine Befehl — wer das verwechselt, sucht beim nächsten Mal an
+ * der falschen Stelle.
+ *
+ * Deshalb: erst den Verweis lösen (rmdir entfernt die Junction, nicht ihr Ziel),
+ * dann erst git heranlassen. */
+function baubaumWeg() {
+  const nm = path.join(BAUBAUM, 'node_modules');
+  if (fs.existsSync(nm)) {
+    try {
+      fs.rmdirSync(nm);          // loest die Junction, ruehrt das Ziel nicht an
+      console.log('  Junction geloest (das echte node_modules bleibt unberuehrt)');
+    } catch (e) {
+      schluss('Die Junction unter ' + nm + ' liess sich nicht loesen: ' + e.message +
+              '\nDer Baum wird NICHT geloescht - ein rekursives Loeschen wuerde durch die ' +
+              'Junction hindurchgehen und das echte node_modules leeren.');
+    }
+  }
+  try { execSync('git worktree remove --force "' + BAUBAUM + '"', { cwd: REPO, stdio: 'ignore' }); } catch (e) { /* war keiner */ }
+  if (fs.existsSync(BAUBAUM)) fs.rmSync(BAUBAUM, { recursive: true, force: true });
+  try { execSync('git worktree prune', { cwd: REPO, stdio: 'ignore' }); } catch (e) { /* egal */ }
+}
+
 function naechsteVersion(minor) {
-  const teile = version().split('.').map(Number);
+  /* Steht in package.json eine Nummer, zu der es KEINEN Tag gibt, dann hat ein
+   * frueherer Lauf sie schon vergeben und ist danach steckengeblieben (bei 8.28.1
+   * am 24.08.2026 an der Junction). Weiterzuzaehlen wuerde sie fuer immer verwaist
+   * zuruecklassen - also wird sie wiederverwendet. */
+  const jetzt = version();
+  const tags = sh('git tag').split('\n');
+  if (tags.indexOf('v' + jetzt) === -1) {
+    console.log('  Hinweis: ' + jetzt + ' steht in package.json, hat aber keinen Tag -');
+    console.log('  ein frueherer Lauf ist steckengeblieben. Diese Nummer wird wiederverwendet.');
+    return jetzt;
+  }
+  const teile = jetzt.split('.').map(Number);
   if (minor) { teile[1]++; teile[2] = 0; } else { teile[2]++; }
   return teile.join('.');
 }
@@ -149,7 +194,9 @@ function bauen(minor) {
   try { laut('node test-v6.js'); }
   catch (e) { schluss('Die Tests sind rot. Ein rotes Paket wird nicht ausgeliefert.'); }
 
-  titel('Version ' + version() + ' -> ' + neu);
+  const schonGesetzt = version() === neu;
+  titel(schonGesetzt ? 'Version bleibt ' + neu + ' (aus dem steckengebliebenen Lauf)'
+                     : 'Version ' + version() + ' -> ' + neu);
   const pj = path.join(REPO, 'package.json');
   const j = JSON.parse(fs.readFileSync(pj, 'utf8'));
   j.version = neu;
@@ -157,17 +204,22 @@ function bauen(minor) {
   /* Sicherung: telemetrie.json darf nie mitkommen. */
   laut('git add package.json');
   const vorgemerkt = sh('git diff --cached --name-only').split('\n').filter(Boolean);
+  /* Beim Wiederaufnehmen steht die Nummer schon drin - dann gibt es nichts zu committen,
+   * und ein 'git commit' ohne Aenderung bricht mit Rueckgabewert 1 ab. */
+  if (!vorgemerkt.length && schonGesetzt) {
+    console.log('  package.json steht bereits auf ' + neu + ' - kein neuer Commit noetig.');
+  } else {
   if (vorgemerkt.some(function (f) { return /telemetrie/i.test(f); })) {
     schluss('telemetrie.json ist vorgemerkt. Das wird nicht committet.');
   }
   if (vorgemerkt.length !== 1 || vorgemerkt[0] !== 'package.json') {
     schluss('Vorgemerkt ist mehr als package.json: ' + vorgemerkt.join(', '));
   }
-  laut('git commit -q -m "Version ' + neu + '"');
+    laut('git commit -q -m "Version ' + neu + '"');
+  }
 
   titel('Sauberer Baum');
-  try { laut('git worktree prune'); } catch (e) { /* egal */ }
-  if (fs.existsSync(BAUBAUM)) fs.rmSync(BAUBAUM, { recursive: true, force: true });
+  baubaumWeg();
   laut('git worktree add --detach "' + BAUBAUM + '" HEAD');
 
   /* Die Junction laesst sich NICHT aus einer Bash-Zeile heraus anlegen - dort schlaegt
@@ -178,11 +230,18 @@ function bauen(minor) {
   execFileSync('powershell.exe', ['-NoProfile', '-NonInteractive', '-Command',
     'New-Item -ItemType Junction -Path "' + ziel + '" -Target "' + path.join(REPO, 'node_modules') + '" | Out-Null'],
     { stdio: 'inherit' });
-  if (!fs.existsSync(path.join(ziel, 'electron', 'package.json')) ||
-      !fs.existsSync(path.join(ziel, 'electron-builder', 'package.json'))) {
-    schluss('Die Junction steht nicht. Ohne node_modules meldet electron-builder ' +
-            '"Electron version is a range, not a fixed version" - das heisst NICHT, dass ' +
-            'package.json falsch ist.');
+  /* Zwei verschiedene Fehler, die frueher dieselbe Meldung bekamen - und die falsche
+   * schickte am 24.08.2026 die Suche in die falsche Richtung. */
+  if (!fs.existsSync(ziel)) {
+    schluss('Die Junction liess sich nicht anlegen: ' + ziel);
+  }
+  const quelle = path.join(REPO, 'node_modules');
+  if (!fs.existsSync(path.join(quelle, 'electron', 'package.json')) ||
+      !fs.existsSync(path.join(quelle, 'electron-builder', 'package.json'))) {
+    schluss('Die Junction steht, aber ihr ZIEL ist leer oder unvollstaendig:\n  ' + quelle +
+            '\nDas ist kein Fehler dieses Laufs. Wahrscheinlich hat jemand einen Baum mit ' +
+            'Junction rekursiv geloescht - das geht unter Windows durch die Junction hindurch. ' +
+            'Abhilfe: npm ci im Quellverzeichnis.');
   }
   console.log('  ok: ' + fs.readdirSync(ziel).length + ' Eintraege sichtbar');
 
@@ -282,7 +341,8 @@ function hoch() {
 /* ------------------------------------------------------------------- Lauf */
 const arg = process.argv.slice(2);
 const minor = arg.indexOf('--minor') !== -1;
-if (arg.indexOf('--pruefen') !== -1) { pruefen(); }
+if (arg.indexOf('--aufraeumen') !== -1) { baubaumWeg(); console.log('Baubaum weg.'); }
+else if (arg.indexOf('--pruefen') !== -1) { pruefen(); }
 else if (arg.indexOf('--bauen') !== -1) { bauen(minor); }
 else if (arg.indexOf('--hoch') !== -1) { hoch(); }
 else if (arg.indexOf('--alles') !== -1) { pruefen(); bauen(minor); hoch(); }
