@@ -509,7 +509,7 @@
     var el = document.getElementById('regelnListe'); if (!el) return;
     var liste = regelnListe();
     if (!liste.length) {
-      el.innerHTML = '<div style="font-size:12px; color:var(--muted);">Noch keine festgeschriebene Regel. ' +
+      el.innerHTML = '<div style="font-size:var(--fs-neben); color:var(--muted);">Noch keine festgeschriebene Regel. ' +
         'Stell oben eine Konfiguration ein, gib ihr hier einen Namen und schreib sie fest.</div>';
       return;
     }
@@ -523,7 +523,7 @@
       var offenN = offen.filter(function (s) { return s.grund === 'Regel: ' + r.name; }).length;
       var tage = r.seit ? Math.max(0, Math.round((Date.now() - r.seit) / 86400000)) : 0;
       return '<tr>' +
-        '<td><b>' + U.esc(r.name) + '</b><div style="color:var(--muted); font-size:11px;">' +
+        '<td><b>' + U.esc(r.name) + '</b><div style="color:var(--muted); font-size:var(--fs-klein);">' +
           U.esc((r.cfg && r.cfg.mode) || '?') + ' · ' + U.esc((r.cfg && r.cfg.interval) || '?') +
           ' · ' + (((r.cfg && r.cfg.scalpHold) || 480)) + ' Min · seit ' + tage + ' Tag(en)</div></td>' +
         '<td style="text-align:right;">' + g.n + '</td>' +
@@ -535,13 +535,13 @@
         '<td style="text-align:right;" class="' + (ueb == null ? '' : U.signCls(ueb)) + '"><b>' +
           (ueb == null ? '–' : U.signTxt(Math.round(ueb * 100) / 100, ' %')) + '</b></td>' +
         '<td style="text-align:right;"><button class="btn ghost regelWeg" data-id="' + U.esc(r.id) +
-          '" style="padding:2px 8px; font-size:11px;">löschen</button></td></tr>';
+          '" style="padding:2px 8px; font-size:var(--fs-klein);">löschen</button></td></tr>';
     }).join('');
-    el.innerHTML = '<table class="tbl" style="font-size:12.5px;">' +
+    el.innerHTML = '<table class="tbl" style="font-size:var(--fs-text);">' +
       '<tr><th>Regel</th><th style="text-align:right;">geschlossen</th><th style="text-align:right;">offen</th>' +
       '<th style="text-align:right;">Ø je Trade</th><th style="text-align:right;">Kontrolle</th>' +
       '<th style="text-align:right;">Überschuss</th><th></th></tr>' + rows + '</table>' +
-      '<div style="font-size:11.5px; color:var(--muted); margin-top:6px;">' +
+      '<div style="font-size:var(--fs-neben); color:var(--muted); margin-top:6px;">' +
       '<b>Kontrolle</b> ist derselbe Wert, dieselbe Tagesstunde, dieselbe Haltedauer – nur an ' +
       'einem beliebigen anderen Tag, gemittelt über alle. Sie sagt, was schlichtes Halten ' +
       'gebracht hätte. <b>Überschuss</b> ist die Differenz und die eigentliche Aussage: ' +
@@ -593,7 +593,7 @@
       ['Not-Stop', (cfg.scalpSL || 20) + ' %'],
       ['Beleg', '<b style="color:' + farbe + ';">' + U.esc(b.stand) + '</b> – ' + U.esc(b.txt)]
     ];
-    el.innerHTML = '<table class="tbl" style="font-size:12.5px;">' + zeilen.map(function (r) {
+    el.innerHTML = '<table class="tbl" style="font-size:var(--fs-text);">' + zeilen.map(function (r) {
       return '<tr><td style="color:var(--muted); white-space:nowrap; width:130px;">' + U.esc(r[0]) + '</td><td>' + r[1] + '</td></tr>';
     }).join('') + '</table>';
   }
@@ -790,7 +790,7 @@ function huerdeAnzeigen() {
       (slug ? '<li><a href="https://www.finanzen.net/optionsscheine/auf-' + slug + '" target="_blank" rel="noopener">finanzen.net: Optionsscheine auf ' + U.esc(t.sym) + '</a></li>' : '') +
       '<li><a href="https://www.onvista.de/derivate/optionsscheine" target="_blank" rel="noopener">onvista Optionsschein-Finder</a></li>' +
       '</ul>' +
-      '<p style="color:var(--muted); font-size:12px;">Tipp: Sortiere im Finder nach Spread und wähle einen großen Emittenten mit engem Spread – die Nebenkosten entscheiden bei kurzen Trades.</p>';
+      '<p style="color:var(--muted); font-size:var(--fs-neben);">Tipp: Sortiere im Finder nach Spread und wähle einen großen Emittenten mit engem Spread – die Nebenkosten entscheiden bei kurzen Trades.</p>';
     var chk = document.getElementById('ticketReplicated');
     chk.checked = !!t.replicated;
     chk.onchange = function () { t.replicated = chk.checked; save(); render(); };
@@ -1342,7 +1342,7 @@ function huerdeAnzeigen() {
     var S = stcState;
     if (!S) { el.innerHTML = ''; return; }
     if (!S.marks.length) {
-      el.innerHTML = '<div style="font-size:12px; color:var(--muted);">Keine Einstiege der Regel in diesem Zeitraum. Das ist ein normales Ergebnis – beide Regeln melden sich selten, und genau deshalb sind sie ueberhaupt messbar.</div>';
+      el.innerHTML = '<div style="font-size:var(--fs-neben); color:var(--muted);">Keine Einstiege der Regel in diesem Zeitraum. Das ist ein normales Ergebnis – beide Regeln melden sich selten, und genau deshalb sind sie ueberhaupt messbar.</div>';
       return;
     }
     // Juengstes Signal zuerst: das ist das, was man pruefen will
@@ -1359,9 +1359,9 @@ function huerdeAnzeigen() {
         '<td style="color:var(--muted);">' + (imBild ? 'im Bild' : 'vor dem Bild') + '</td>' +
         '<td style="color:var(--series2);">Bedingungen zeigen</td></tr>';
     }).join('');
-    el.innerHTML = '<div style="font-size:12px; color:var(--ink-2); margin-bottom:4px;">' + S.marks.length + ' Einstieg(e), die die Regel hier gegeben hätte – Zeile anklicken, um die Bedingungen jener Kerze nachzurechnen:</div>' +
+    el.innerHTML = '<div style="font-size:var(--fs-neben); color:var(--ink-2); margin-bottom:4px;">' + S.marks.length + ' Einstieg(e), die die Regel hier gegeben hätte – Zeile anklicken, um die Bedingungen jener Kerze nachzurechnen:</div>' +
       '<div style="max-height:230px; overflow:auto;"><table class="tbl"><tr><th>Zeitpunkt der Signalkerze</th><th>Kurs</th><th>nach 6 Kerzen</th><th>Lage</th><th></th></tr>' + rows + '</table></div>' +
-      '<div style="font-size:11.5px; color:var(--muted); margin-top:4px;">Die Spalte „nach 6 Kerzen" ist reine Kursbewegung des Basiswerts – ohne Kosten, ohne Schein und ohne Ausstiegsregel. Sie zeigt den Verlauf, nicht das Ergebnis eines Trades, und ist kein Beleg.</div>';
+      '<div style="font-size:var(--fs-neben); color:var(--muted); margin-top:4px;">Die Spalte „nach 6 Kerzen" ist reine Kursbewegung des Basiswerts – ohne Kosten, ohne Schein und ohne Ausstiegsregel. Sie zeigt den Verlauf, nicht das Ergebnis eines Trades, und ist kein Beleg.</div>';
   }
   /** Bedingungsliste - entweder fuer die letzte abgeschlossene Kerze (idx = null)
    *  oder fuer die angeklickte Signalkerze. */
@@ -1381,7 +1381,7 @@ function huerdeAnzeigen() {
       bed.liste.map(function (bb) {
         return '<div><span style="color:' + (bb.ok ? 'var(--up)' : 'var(--down)') + '; font-weight:600;">' + (bb.ok ? '✓' : '✗') + '</span> ' + U.esc(bb.txt) + '</div>';
       }).join('') +
-      (idx == null ? '' : '<div style="margin-top:4px; color:var(--muted); font-size:11.5px;">Gesamturteil des Detektors in dieser Kerze: ' +
+      (idx == null ? '' : '<div style="margin-top:4px; color:var(--muted); font-size:var(--fs-neben);">Gesamturteil des Detektors in dieser Kerze: ' +
         (bed.signal === 'call' ? '<b style="color:var(--up);">Einstieg (Long)</b>' : bed.signal === 'put' ? 'Put-Seite – wird nicht gehandelt' : 'kein Signal') +
         '. Es kommt aus <code>einstiegSignal</code> selbst, nicht aus der Summe der Häkchen – deshalb kann ein Häkchen fehlen und das Urteil trotzdem stehen (die Regel prüft manches auf einem anderen Fenster).</div>');
   }
@@ -1563,9 +1563,9 @@ function huerdeAnzeigen() {
       var nutzen = Math.round((a2.summary.retPct - b2.summary.retPct) * 100) / 100;
       out.innerHTML = '<table class="tbl"><tr><th>Variante</th><th>Rendite</th><th>Trades</th><th>Treffer</th><th>Ø je Trade</th><th>Gebühren</th><th>Drawdown</th></tr>' +
         row('<b>mit</b> deinen Filtern', a2) + row('<b>ohne</b> Filter (jedes Signal)', b2) + '</table>' +
-        '<div style="margin-top:8px; font-size:13px;">Filter-Nutzen: <b class="' + U.signCls(nutzen) + '">' + U.signTxt(nutzen, ' Prozentpunkte' ) + '</b> · ' +
+        '<div style="margin-top:8px; font-size:var(--fs-text);">Filter-Nutzen: <b class="' + U.signCls(nutzen) + '">' + U.signTxt(nutzen, ' Prozentpunkte' ) + '</b> · ' +
         (nutzen > 0 ? 'Die Filter haben in diesem Zeitraum Geld gespart.' : nutzen < 0 ? 'Achtung: Die Filter haben hier Rendite gekostet – prüfen, welcher zu streng ist.' : 'Kein messbarer Unterschied.') + '</div>' +
-        '<div style="color:var(--muted); font-size:11.5px; margin-top:6px;">„Ohne Filter" heißt: kein Kosten-Check, kein Trendfilter, kein Kanal, keine 5-Min-Bestätigung, kein Zeitfenster, keine Qualitätsschwelle – nur das reine Einstiegssignal. Gleiche Kosten, gleicher Zeitraum, gleiche Werte.</div>';
+        '<div style="color:var(--muted); font-size:var(--fs-neben); margin-top:6px;">„Ohne Filter" heißt: kein Kosten-Check, kein Trendfilter, kein Kanal, keine 5-Min-Bestätigung, kein Zeitfenster, keine Qualitätsschwelle – nur das reine Einstiegssignal. Gleiche Kosten, gleicher Zeitraum, gleiche Werte.</div>';
     } catch (e) {
       st.textContent = 'Fehler: ' + (e.message || e);
     } finally {
@@ -1681,7 +1681,7 @@ function huerdeAnzeigen() {
     var el = document.getElementById('symBlocks');
     if (!el) return;
     var keys = Object.keys(D.symBlock || {});
-    if (!keys.length) { el.innerHTML = '<span style="color:var(--muted); font-size:12px;">Keine gesperrten Werte.</span>'; return; }
+    if (!keys.length) { el.innerHTML = '<span style="color:var(--muted); font-size:var(--fs-neben);">Keine gesperrten Werte.</span>'; return; }
     el.innerHTML = keys.map(function (s) {
       var b2 = D.symBlock[s];
       if (b2.frei) return '<span class="chip" style="margin-right:6px;">' + U.esc(s) + ' · manuell freigegeben</span>';
@@ -1725,7 +1725,7 @@ function huerdeAnzeigen() {
       warnbandSetzen('edge', '<b>Edge-Wächter: Kante pausiert</b> – der gemessene Vorsprung ist in zwei Nächten ' +
         'hintereinander verfallen (zuletzt ' + ep.mittelPp + ' Pp, t=' + ep.t + '). Neue Einstiege sind ausgesetzt, ' +
         'das Schattenbuch misst weiter; eine positive Nacht hebt die Pause automatisch auf. ' +
-        '<button class="btn ghost" data-edgefrei="1" style="padding:2px 10px; font-size:11.5px; margin-left:6px;">Trotzdem weiter handeln</button>', true);
+        '<button class="btn ghost" data-edgefrei="1" style="padding:2px 10px; font-size:var(--fs-neben); margin-left:6px;">Trotzdem weiter handeln</button>', true);
     } else {
       warnbandSetzen('edge', null);
     }
@@ -1981,9 +1981,9 @@ function huerdeAnzeigen() {
         if (warOffen) return;
         tr.insertAdjacentHTML('afterend',
           '<tr class="wende-inline"><td colspan="9" style="background:var(--panel); padding:8px 12px; cursor:default;">' +
-          '<div style="font-size:12px; font-weight:600; margin-bottom:4px;">' + U.esc(sy) + ' – Kursverlauf mit Wendepunkt</div>' +
+          '<div style="font-size:var(--fs-neben); font-weight:600; margin-bottom:4px;">' + U.esc(sy) + ' – Kursverlauf mit Wendepunkt</div>' +
           '<svg class="wende-chart" style="width:100%; height:220px; display:block;"></svg>' +
-          '<div class="wende-legende" style="font-size:11.5px; color:var(--ink-2); margin-top:6px; line-height:1.5;"></div>' +
+          '<div class="wende-legende" style="font-size:var(--fs-neben); color:var(--ink-2); margin-top:6px; line-height:1.5;"></div>' +
           '</td></tr>');
         var zeile = tr.nextElementSibling;
         zeichneWendeChart(zeile.querySelector('.wende-chart'), zeile.querySelector('.wende-legende'),
@@ -2139,7 +2139,7 @@ function huerdeAnzeigen() {
         '<td class="' + (g.ok ? 'pos' : '') + '">' + U.esc(g.grund || (g.ok ? 'gehandelt' : 'kein Signal')) + '</td>' +
         '<td style="color:var(--muted);">' + (g.t ? new Date(g.t).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }) : '–') + '</td></tr>';
     });
-    html += '</table><div style="color:var(--muted); font-size:11.5px; margin-top:6px;">Zeigt für jeden gescannten Wert, was die Strategie zuletzt gesehen hat – und warum sie nicht gehandelt hat. Zeile anklicken: Entscheidungsverlauf des Werts (Tester-Wunsch #30).</div>';
+    html += '</table><div style="color:var(--muted); font-size:var(--fs-neben); margin-top:6px;">Zeigt für jeden gescannten Wert, was die Strategie zuletzt gesehen hat – und warum sie nicht gehandelt hat. Zeile anklicken: Entscheidungsverlauf des Werts (Tester-Wunsch #30).</div>';
     el.innerHTML = html;
     /* Entscheidungsverlauf aufklappen - direkt unter der angeklickten Zeile,
        gleiche Bedienung wie im Schein-Finder. */
@@ -2157,7 +2157,7 @@ function huerdeAnzeigen() {
             }).join('')
           : '<span style="color:var(--muted);">Noch kein Verlauf in dieser Sitzung.</span>';
         tr.insertAdjacentHTML('afterend',
-          '<tr class="sig-inline"><td colspan="7" style="background:var(--panel); padding:8px 12px; font-size:12px; line-height:1.5; cursor:default;">' +
+          '<tr class="sig-inline"><td colspan="7" style="background:var(--panel); padding:8px 12px; font-size:var(--fs-neben); line-height:1.5; cursor:default;">' +
           '<b>' + U.esc(s) + ' – Entscheidungsverlauf (diese Sitzung, jüngste zuerst)</b><br>' + inhalt + '</td></tr>');
       });
     });
@@ -2208,11 +2208,11 @@ function huerdeAnzeigen() {
     e.felder.forEach(function (f, j) {
       // Ein schon zurueckgestelltes Feld behaelt seine Zeile - sonst sieht es aus, als
       // haette es die Aenderung nie gegeben - aber ohne Knopf, der nichts mehr taete.
-      h += '<div style="font-size:11px; display:flex; align-items:center; gap:6px; color:' +
+      h += '<div style="font-size:var(--fs-klein); display:flex; align-items:center; gap:6px; color:' +
         (f.zurueck ? 'var(--muted);" ' : 'var(--ink-2);" ') + '>' +
         (f.zurueck
           ? '<span style="width:22px; text-align:center;" title="zurückgestellt">✓</span>' + U.esc(f.txt || f.k) + ' <span>(zurückgestellt)</span>'
-          : '<button class="btn ghost" style="padding:0 6px; font-size:11px; line-height:16px;" ' +
+          : '<button class="btn ghost" style="padding:0 6px; font-size:var(--fs-klein); line-height:16px;" ' +
             'data-feld="' + idx + ':' + j + '" title="Nur dieses Feld zurückstellen" ' +
             'aria-label="' + U.esc(f.txt || f.k) + ' zurückstellen">↩</button>' +
             U.esc(f.txt || f.k) + ' <span style="color:var(--muted);">(vorher: ' + U.esc(feldWert(f.alt)) + ')</span>') +
@@ -2259,18 +2259,18 @@ function huerdeAnzeigen() {
       var e = r.e;
       html += '<tr' + (r.laufend ? ' style="font-weight:600;"' : '') + '>' +
         '<td>' + (r.rang ? '#' + r.rang : '–') + '</td>' +
-        '<td>' + U.dt(e.at) + '<br><span style="color:var(--muted); font-weight:400; font-size:11px;">' + ({ pilot: 'Autopilot', lokal: 'Selbst-Optimierung (alt)', manuell: 'manuell übernommen', hand: 'von Hand', regime: 'Regime (alt)', farm: 'Farm (alt)', sicherung: 'Sicherung' }[e.quelle] || 'Cloud-Analyse') + (r.laufend ? ' · läuft aktuell' : '') + '</span></td>' +
+        '<td>' + U.dt(e.at) + '<br><span style="color:var(--muted); font-weight:400; font-size:var(--fs-klein);">' + ({ pilot: 'Autopilot', lokal: 'Selbst-Optimierung (alt)', manuell: 'manuell übernommen', hand: 'von Hand', regime: 'Regime (alt)', farm: 'Farm (alt)', sicherung: 'Sicherung' }[e.quelle] || 'Cloud-Analyse') + (r.laufend ? ' · läuft aktuell' : '') + '</span></td>' +
         '<td>' + (e.applied && e.applied.length ? U.esc(e.applied.join(' · ')) : '<span style="color:var(--muted);">keine Feldänderung</span>') +
           feldZeilen(e, r.idx) +
-          (e.txt ? '<div style="color:var(--muted); font-size:11px; margin-top:2px;">' + U.esc(e.txt) + '</div>' : '') + '</td>' +
+          (e.txt ? '<div style="color:var(--muted); font-size:var(--fs-klein); margin-top:2px;">' + U.esc(e.txt) + '</div>' : '') + '</td>' +
         '<td>' + (r.vor.avg != null ? U.signTxt(r.vor.avg, ' $') : '–') + ' → ' + (r.nach.avg != null ? '<b class="' + U.signCls(r.nach.avg) + '">' + U.signTxt(r.nach.avg, ' $') + '</b>' : '–') +
           (r.delta != null ? ' <span class="' + U.signCls(r.delta) + '">(' + U.signTxt(r.delta, ' $') + ')</span>' : '') + '</td>' +
         '<td>' + r.nach.n + (r.nach.win != null ? ' · ' + r.nach.win + ' % Treffer' : '') + '</td>' +
         '<td>' + r.urteil + '</td>' +
         '<td>' + (e.konfigVorher || (e.felder && e.felder.some(function (f) { return !f.zurueck; }))
-          ? '<button class="btn ghost" style="padding:2px 8px; font-size:11px;" data-undo="' + r.idx + '">Rückgängig</button>' : '') + '</td></tr>';
+          ? '<button class="btn ghost" style="padding:2px 8px; font-size:var(--fs-klein);" data-undo="' + r.idx + '">Rückgängig</button>' : '') + '</td></tr>';
     });
-    html += '</table><div style="color:var(--muted); font-size:11.5px; margin-top:8px;">Bewertet wird der durchschnittliche Gewinn je Intraday-Trade im Zeitraum <b>nach</b> der Änderung gegen den Zeitraum davor. Unter 5 Trades ist keine Aussage möglich (). Der Rang sortiert nach Wirkung – so siehst du, welche Anpassungen wirklich etwas gebracht haben.</div>';
+    html += '</table><div style="color:var(--muted); font-size:var(--fs-neben); margin-top:8px;">Bewertet wird der durchschnittliche Gewinn je Intraday-Trade im Zeitraum <b>nach</b> der Änderung gegen den Zeitraum davor. Unter 5 Trades ist keine Aussage möglich (). Der Rang sortiert nach Wirkung – so siehst du, welche Anpassungen wirklich etwas gebracht haben.</div>';
     el.innerHTML = html;
     el.querySelectorAll('[data-feld]').forEach(function (b3) {
       b3.addEventListener('click', function () {
@@ -4069,7 +4069,7 @@ function huerdeAnzeigen() {
     }
 
     function tile(name, val, sign, delta, deltaSign) {
-      return '<div class="tile"><div class="name">' + name + '</div><div class="val' + (sign != null ? ' ' + U.signCls(sign) : '') + '" style="font-size:17px;">' + val + '</div>' +
+      return '<div class="tile"><div class="name">' + name + '</div><div class="val' + (sign != null ? ' ' + U.signCls(sign) : '') + '" style="font-size:var(--fs-zahl);">' + val + '</div>' +
         (delta ? '<div class="delta ' + (deltaSign ? U.signCls(deltaSign) : '') + '">' + delta + '</div>' : '') + '</div>';
     }
 
@@ -4108,15 +4108,15 @@ function huerdeAnzeigen() {
           '<td>' + U.nf2.format(wertJetzt) + ' $</td>' +
           '<td class="' + U.signCls(plUsd) + '" style="white-space:nowrap;">' + U.signTxt(Math.round(plUsd * 100) / 100, ' $') +
             ' <span style="color:var(--muted); font-weight:400;">(' + U.signTxt(Math.round(ret * 1000) / 10, ' %') + ')</span></td>' +
-          '<td style="white-space:nowrap;"><button class="btn ghost" style="padding:2px 8px; font-size:11px;" data-ticket="' + p.id + '" title="Order-Daten zum Nachbilden">Nachbilden</button> ' +
-          '<button class="btn ghost" style="padding:2px 8px; font-size:11px;" data-closepos="' + p.id + '">Schließen</button></td></tr>';
+          '<td style="white-space:nowrap;"><button class="btn ghost" style="padding:2px 8px; font-size:var(--fs-klein);" data-ticket="' + p.id + '" title="Order-Daten zum Nachbilden">Nachbilden</button> ' +
+          '<button class="btn ghost" style="padding:2px 8px; font-size:var(--fs-klein);" data-closepos="' + p.id + '">Schließen</button></td></tr>';
       });
       var sumPl = sumWert - sumEinsatz;
       ph += '<tr><td colspan="9" style="text-align:right; color:var(--muted); font-weight:600;">Summe</td>' +
         '<td style="font-weight:600;">' + U.nf2.format(sumEinsatz) + ' $</td>' +
         '<td style="font-weight:600;">' + U.nf2.format(sumWert) + ' $</td>' +
         '<td class="' + U.signCls(sumPl) + '" style="white-space:nowrap;">' + U.signTxt(Math.round(sumPl * 100) / 100, ' $') + '</td><td></td></tr>';
-      ph += '</table><div style="color:var(--muted); font-size:11px; margin-top:6px;">' +
+      ph += '</table><div style="color:var(--muted); font-size:var(--fs-klein); margin-top:6px;">' +
         'Belegte Intraday-Kanten: nur Not-Stop, Ausstieg über die Zeit (8 bzw. 26 Handelsstunden), Übernacht erlaubt. ' +
         'Widerlegte Setups: Stop −25 % / Ziel +35 %, Glattstellung zum Tagesschluss. ' +
         'Altbestand der Stunden-Strategie: Stop −40 % / Ziel +80 %, Zeit-Ausstieg 10 Tage vor Fälligkeit. ' +
@@ -4130,7 +4130,7 @@ function huerdeAnzeigen() {
     }
     if (D.repairNote && Date.now() - D.repairNote.at < 7 * 86400000) {
       var rn = D.repairNote;
-      ph = '<div style="border:1px solid var(--border); border-left:3px solid var(--series2); border-radius:8px; padding:8px 12px; margin-bottom:10px; font-size:12.5px;">' +
+      ph = '<div style="border:1px solid var(--border); border-left:3px solid var(--series2); border-radius:var(--r-gross); padding:8px 12px; margin-bottom:10px; font-size:var(--fs-text);">' +
         '<b>Buchhaltung repariert</b> (' + U.dt(rn.at) + '): ' +
         (rn.adopted ? rn.adopted + ' verwaiste Position(en) zurückgeholt – sie werden ab sofort wieder normal überwacht und nach den Exit-Regeln geschlossen. ' : '') +
         (rn.written ? rn.written + ' unvollständige(r) Datensatz/Datensätze abgeschrieben. ' : '') +
@@ -4163,7 +4163,7 @@ function huerdeAnzeigen() {
       var s = D.stats[row.k] || { r: 0, w: 0 }, tot = s.r + s.w;
       var pct = tot ? Math.round(s.r / tot * 100) : null;
       var wTxt = row.weighted ? ' <span style="color:var(--muted)">(Gewicht ' + Math.round(normWeights()[row.k] * 100) + ' %)</span>' : '';
-      hr += '<div style="margin-bottom:8px;"><div style="display:flex; justify-content:space-between; font-size:12px;">' +
+      hr += '<div style="margin-bottom:8px;"><div style="display:flex; justify-content:space-between; font-size:var(--fs-neben);">' +
         '<span>' + row.n + wTxt + '</span>' +
         '<span>' + (pct === null ? 'noch keine Daten' : pct + ' % richtig (' + s.r + '/' + tot + ')') + '</span></div>' +
         '<div class="hitbar"><span style="width:' + (pct === null ? 0 : pct) + '%"></span></div></div>';
@@ -4449,7 +4449,7 @@ function huerdeAnzeigen() {
         if (!rows.length) { st.textContent = 'Keine Daten für den Vergleich.'; return; }
         rows.sort(function (a, b) { return b.s.retPct - a.s.retPct; });
         var best = rows[0];
-        var html = '<div style="font-size:12px; color:var(--ink-2); margin-bottom:8px;">Gleiche Regeln, drei Zeitrahmen (EMA' + D.intraday.period + ', ' +
+        var html = '<div style="font-size:var(--fs-neben); color:var(--ink-2); margin-bottom:8px;">Gleiche Regeln, drei Zeitrahmen (EMA' + D.intraday.period + ', ' +
           (Q.PROFILES[D.intraday.profile] || Q.PROFILES.atm21).name + ', Gebühr ' + U.nf2.format(D.intraday.orderFee) + ' $/Order). Hinweis: 60-Min nutzt ~3 Monate, 5/15-Min ~1 Monat Historie.</div>';
         html += '<table class="tbl"><tr><th>Zeitrahmen</th><th>Rendite</th><th>Trades</th><th>Trefferquote</th><th>Ø Haltedauer</th><th>Gebühren</th><th>Max. Drawdown</th></tr>';
         rows.forEach(function (r0) {
@@ -4458,7 +4458,7 @@ function huerdeAnzeigen() {
             '<td>' + r0.s.nTrades + '</td><td>' + r0.s.winRate + ' %</td><td>' + r0.s.avgHoldMin + ' Min</td>' +
             '<td>' + U.nf2.format(r0.s.feesTotal || 0) + ' $</td><td>−' + r0.s.maxDrawdownPct + ' %</td></tr>';
         });
-        html += '</table><div style="font-size:11.5px; color:var(--muted); margin-top:8px;">Je kürzer der Zeitrahmen, desto mehr Signale – aber auch mehr Spread- und Gebührenkosten sowie mehr Fehlsignale (Whipsaws). Der beste Zeitrahmen kann sich mit der Marktphase ändern; Vergangenheit ist kein Indikator für die Zukunft.</div>';
+        html += '</table><div style="font-size:var(--fs-neben); color:var(--muted); margin-top:8px;">Je kürzer der Zeitrahmen, desto mehr Signale – aber auch mehr Spread- und Gebührenkosten sowie mehr Fehlsignale (Whipsaws). Der beste Zeitrahmen kann sich mit der Marktphase ändern; Vergangenheit ist kein Indikator für die Zukunft.</div>';
         html += '<svg id="btChart" style="width:100%; height:180px; margin-top:10px;"></svg>';
         document.getElementById('btResult').innerHTML = html;
         drawEquity(document.getElementById('btChart'), best.res.equity, START_CAPITAL);
@@ -4508,16 +4508,16 @@ function huerdeAnzeigen() {
   function renderBtResult(res, label, benchPts) {
     var s = res.summary;
     lastBtTrades = res.trades || [];
-    var html = '<div style="font-size:12px; color:var(--ink-2); margin-bottom:8px;">' + label + '</div>';
+    var html = '<div style="font-size:var(--fs-neben); color:var(--ink-2); margin-bottom:8px;">' + label + '</div>';
     html += '<div class="depot-stats">' +
-      '<div class="tile"><div class="name">Endkapital</div><div class="val ' + U.signCls(s.end - s.start) + '" style="font-size:17px;">' + U.money(s.end) + '</div></div>' +
-      '<div class="tile"><div class="name">Rendite</div><div class="val ' + U.signCls(s.retPct) + '" style="font-size:17px;">' + U.signTxt(s.retPct, ' %') + '</div></div>' +
-      '<div class="tile"><div class="name">Trades / Trefferquote</div><div class="val" style="font-size:17px;">' + s.nTrades + ' / ' + s.winRate + ' %</div></div>' +
-      '<div class="tile"><div class="name">Max. Drawdown</div><div class="val" style="font-size:17px;">−' + s.maxDrawdownPct + ' %</div></div>' +
-      '<div class="tile"><div class="name">Sharpe (ann., ca.)</div><div class="val ' + U.signCls(s.sharpe) + '" style="font-size:17px;">' + (s.sharpe != null ? s.sharpe.toFixed(2) : '–') + '</div></div>' +
+      '<div class="tile"><div class="name">Endkapital</div><div class="val ' + U.signCls(s.end - s.start) + '" style="font-size:var(--fs-zahl);">' + U.money(s.end) + '</div></div>' +
+      '<div class="tile"><div class="name">Rendite</div><div class="val ' + U.signCls(s.retPct) + '" style="font-size:var(--fs-zahl);">' + U.signTxt(s.retPct, ' %') + '</div></div>' +
+      '<div class="tile"><div class="name">Trades / Trefferquote</div><div class="val" style="font-size:var(--fs-zahl);">' + s.nTrades + ' / ' + s.winRate + ' %</div></div>' +
+      '<div class="tile"><div class="name">Max. Drawdown</div><div class="val" style="font-size:var(--fs-zahl);">−' + s.maxDrawdownPct + ' %</div></div>' +
+      '<div class="tile"><div class="name">Sharpe (ann., ca.)</div><div class="val ' + U.signCls(s.sharpe) + '" style="font-size:var(--fs-zahl);">' + (s.sharpe != null ? s.sharpe.toFixed(2) : '–') + '</div></div>' +
       '</div>';
     // Kennzahlen-Zeile 2
-    html += '<div style="display:flex; gap:16px; flex-wrap:wrap; font-size:12px; color:var(--ink-2); margin-bottom:10px;">' +
+    html += '<div style="display:flex; gap:16px; flex-wrap:wrap; font-size:var(--fs-neben); color:var(--ink-2); margin-bottom:10px;">' +
       '<span>Profit-Faktor <b class="' + (s.profitFactor >= 1 ? 'pos' : 'neg') + '">' + (s.profitFactor != null ? s.profitFactor : '–') + '</b></span>' +
       '<span>Ø Gewinn-Trade <b class="pos">' + U.signTxt(s.avgWin || 0, ' $') + '</b></span>' +
       '<span>Ø Verlust-Trade <b class="neg">' + U.signTxt(s.avgLoss || 0, ' $') + '</b></span>' +
@@ -4535,11 +4535,11 @@ function huerdeAnzeigen() {
     if (s.gegenprobe) {
       var gp = s.gegenprobe;
       if (gp.zuWenig) {
-        html += '<div style="font-size:12px; color:var(--ink-2); margin-bottom:10px; padding:8px 10px; border-left:3px solid var(--grid);">' +
+        html += '<div style="font-size:var(--fs-neben); color:var(--ink-2); margin-bottom:10px; padding:8px 10px; border-left:3px solid var(--grid);">' +
           'Zufallsgegenprobe: ' + U.esc(gp.aussage) + '</div>';
       } else {
         var farbe = gp.ueberzufaellig ? 'var(--up)' : (gp.pWert >= 0.5 ? 'var(--down)' : 'var(--warn)');
-        html += '<div style="font-size:12px; margin-bottom:10px; padding:9px 11px; border-left:3px solid ' + farbe + '; background:var(--panel);">' +
+        html += '<div style="font-size:var(--fs-neben); margin-bottom:10px; padding:9px 11px; border-left:3px solid ' + farbe + '; background:var(--panel);">' +
           '<b style="color:' + farbe + ';">Zufallsgegenprobe:</b> ' + U.esc(gp.aussage) +
           '<div style="color:var(--ink-2); margin-top:4px;">' +
             'Diese Strategie bewegte den Basiswert im Mittel <b>' + U.signTxt(gp.echt, ' %') + '</b> in Handelsrichtung. ' +
@@ -4556,7 +4556,7 @@ function huerdeAnzeigen() {
     if (s.monatlich && !s.monatlich.zuKurz) {
       var ms = s.monatlich;
       var mFarbe = ms.ueberzufaellig ? 'var(--up)' : 'var(--ink-2)';
-      html += '<div style="font-size:12px; margin-bottom:10px; padding:9px 11px; border-left:3px solid ' + mFarbe + '; background:var(--panel);">' +
+      html += '<div style="font-size:var(--fs-neben); margin-bottom:10px; padding:9px 11px; border-left:3px solid ' + mFarbe + '; background:var(--panel);">' +
         '<b>Signifikanz über Monate:</b> ' + ms.monate + ' Monate, ' +
         '<b>' + U.signTxt(ms.jeMonat, ' %') + '</b> je Monat (' + U.signTxt(ms.proJahr, ' %') + ' p. a.), ' +
         ms.positiveMonate + ' % davon positiv, <b>t = ' + ms.tWert + '</b>' +
@@ -4568,11 +4568,11 @@ function huerdeAnzeigen() {
               : 'Nicht überzufällig (t unter 2). Die Trade-Zahl oben sieht besser aus, weil überlappende Trades dieselbe Marktbewegung mehrfach zählen.') +
         '</div></div>';
     }
-    html += '<svg id="btChart" style="width:100%; height:180px; display:block;"></svg><div id="btChartLegend" style="font-size:11.5px; color:var(--ink-2); margin-top:4px;"></div>';
+    html += '<svg id="btChart" style="width:100%; height:180px; display:block;"></svg><div id="btChartLegend" style="font-size:var(--fs-neben); color:var(--ink-2); margin-top:4px;"></div>';
     // Robustheit (Bootstrap)
     if (res.bootstrap) {
       var bs = res.bootstrap;
-      html += '<div style="font-size:12px; color:var(--ink-2); margin-top:10px;">Robustheit (400 Neuziehungen der Trades): Endkapital-Bandbreite ' +
+      html += '<div style="font-size:var(--fs-neben); color:var(--ink-2); margin-top:10px;">Robustheit (400 Neuziehungen der Trades): Endkapital-Bandbreite ' +
         '<b>' + U.nf0.format(bs.p5) + ' $</b> (5 %) · <b>' + U.nf0.format(bs.p50) + ' $</b> (Median) · <b>' + U.nf0.format(bs.p95) + ' $</b> (95 %) · ' +
         'Verlust-Wahrscheinlichkeit <b class="' + (bs.lossProb > 50 ? 'neg' : '') + '">' + bs.lossProb + ' %</b></div>';
     }
@@ -4583,7 +4583,7 @@ function huerdeAnzeigen() {
         var y = k.slice(0, 4), m = parseInt(k.slice(5), 10);
         (byYear[y] = byYear[y] || {})[m] = s.monthly[k];
       });
-      html += '<div style="margin-top:12px;"><div style="font-size:12px; color:var(--ink-2); margin-bottom:4px;">Monats-Renditen</div><table class="tbl" style="font-size:11px;"><tr><th></th>';
+      html += '<div style="margin-top:12px;"><div style="font-size:var(--fs-neben); color:var(--ink-2); margin-bottom:4px;">Monats-Renditen</div><table class="tbl" style="font-size:var(--fs-klein);"><tr><th></th>';
       for (var mm = 1; mm <= 12; mm++) html += '<th>' + ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'][mm - 1] + '</th>';
       html += '</tr>';
       Object.keys(byYear).sort().forEach(function (y) {
@@ -4605,25 +4605,25 @@ function huerdeAnzeigen() {
     if (res.stats) {
       [['tech', 'Technik'], ['elliott', 'Elliott-Wellen']].forEach(function (kk) {
         var v = res.stats[kk[0]], tot = v.r + v.w, pct = tot ? Math.round(v.r / tot * 100) : 0;
-        html += '<div style="font-size:12px; display:flex; justify-content:space-between;"><span>' + kk[1] + '</span><span>' + pct + ' % richtig (' + v.r + '/' + tot + ')</span></div><div class="hitbar" style="margin-bottom:8px;"><span style="width:' + pct + '%"></span></div>';
+        html += '<div style="font-size:var(--fs-neben); display:flex; justify-content:space-between;"><span>' + kk[1] + '</span><span>' + pct + ' % richtig (' + v.r + '/' + tot + ')</span></div><div class="hitbar" style="margin-bottom:8px;"><span style="width:' + pct + '%"></span></div>';
       });
     } else if (res.trades && res.trades.length) {
       var byWhy = {};
       res.trades.forEach(function (tr) { byWhy[tr.why] = (byWhy[tr.why] || 0) + 1; });
-      html += '<div style="font-size:12px; color:var(--ink-2);">Exit-Gründe: ' + Object.keys(byWhy).map(function (k) { return k + ' (' + byWhy[k] + ')'; }).join(' · ') + '</div>';
+      html += '<div style="font-size:var(--fs-neben); color:var(--ink-2);">Exit-Gründe: ' + Object.keys(byWhy).map(function (k) { return k + ' (' + byWhy[k] + ')'; }).join(' · ') + '</div>';
     }
-    html += '</div><div style="font-size:11.5px; color:var(--muted);">Simulation mit synthetischen Scheinen (Black-Scholes, vola-abhängiger Spread + Slippage + Gebühren). Vergangenheit ist kein Indikator für die Zukunft.</div></div>';
+    html += '</div><div style="font-size:var(--fs-neben); color:var(--muted);">Simulation mit synthetischen Scheinen (Black-Scholes, vola-abhängiger Spread + Slippage + Gebühren). Vergangenheit ist kein Indikator für die Zukunft.</div></div>';
     // Trade-Liste
     if (res.trades && res.trades.length) {
-      html += '<details style="margin-top:10px;"><summary style="cursor:pointer; font-size:12.5px; color:var(--ink-2);">Alle ' + res.trades.length + ' Trades anzeigen</summary>' +
-        '<div style="max-height:320px; overflow:auto; margin-top:8px;"><table class="tbl" style="font-size:11.5px;"><tr><th>Datum</th><th>Wert</th><th>Typ</th><th>Halt</th><th>P/L</th><th>Exit</th></tr>';
+      html += '<details style="margin-top:10px;"><summary style="cursor:pointer; font-size:var(--fs-text); color:var(--ink-2);">Alle ' + res.trades.length + ' Trades anzeigen</summary>' +
+        '<div style="max-height:320px; overflow:auto; margin-top:8px;"><table class="tbl" style="font-size:var(--fs-neben);"><tr><th>Datum</th><th>Wert</th><th>Typ</th><th>Halt</th><th>P/L</th><th>Exit</th></tr>';
       res.trades.slice(-200).reverse().forEach(function (tr) {
         var holdTxt = tr.holdMin != null ? (tr.holdMin >= 1440 ? Math.round(tr.holdMin / 1440) + ' T' : tr.holdMin + ' Min') : Math.round((tr.closeT - tr.openT) / 86400000) + ' T';
         html += '<tr><td>' + new Date(tr.openT).toLocaleDateString('de-DE') + '</td><td><b>' + U.esc(tr.sym) + '</b></td>' +
           '<td>' + tr.dir.toUpperCase() + '</td><td>' + holdTxt + '</td>' +
           '<td class="' + U.signCls(tr.pnl) + '">' + U.signTxt(tr.pnl, ' $') + '</td><td>' + U.esc(tr.why || '') + '</td></tr>';
       });
-      html += '</table></div><button class="btn ghost" id="btCsvBtn" style="margin-top:8px; font-size:12px;">Backtest-Trades als CSV</button></details>';
+      html += '</table></div><button class="btn ghost" id="btCsvBtn" style="margin-top:8px; font-size:var(--fs-neben);">Backtest-Trades als CSV</button></details>';
     }
     document.getElementById('btResult').innerHTML = html;
     var series = [{ name: 'Strategie', short: 'Strat', color: 'var(--series)', pts: res.equity }];
@@ -4678,7 +4678,7 @@ function huerdeAnzeigen() {
       for (var i = 0; i < s.pts.length; i++) { var d0 = Math.abs(s.pts[i][0] - t); if (d0 < bd) { bd = d0; best = i; } }
       var p = s.pts[best];
       if (cx === null) cx = p[0];
-      rows.push('<div style="display:flex; align-items:center; gap:6px;"><span style="width:8px;height:8px;border-radius:50%;background:' + s.color + ';display:inline-block;"></span>' +
+      rows.push('<div style="display:flex; align-items:center; gap:6px;"><span style="width:8px;height:8px;border-radius:var(--r-kreis);background:' + s.color + ';display:inline-block;"></span>' +
         '<span class="tt">' + U.esc(s.short || s.name) + '</span> <span class="tv">' + U.nf2.format(p[1]) + (c.unit || '') + '</span></div>');
     });
     if (cx === null) return;
@@ -4771,7 +4771,7 @@ function huerdeAnzeigen() {
       svg.addEventListener('mouseleave', chartLeave);
     }
     if (legendEl) legendEl.innerHTML = seriesArr.length > 1 ? seriesArr.map(function (s) {
-      return '<span style="display:inline-flex; align-items:center; gap:5px; margin-right:14px;"><span style="width:10px;height:10px;border-radius:3px;background:' + s.color + ';display:inline-block;"></span>' + U.esc(s.name) + '</span>';
+      return '<span style="display:inline-flex; align-items:center; gap:5px; margin-right:14px;"><span style="width:10px;height:10px;border-radius:var(--r-klein);background:' + s.color + ';display:inline-block;"></span>' + U.esc(s.name) + '</span>';
     }).join('') : '';
   }
 
@@ -4830,7 +4830,7 @@ function huerdeAnzeigen() {
         '<b>' + n + '×</b></div>';
     }).join('');
     el.innerHTML =
-      '<div style="display:flex; gap:16px; flex-wrap:wrap; margin-bottom:8px; font-size:12.5px;">' +
+      '<div style="display:flex; gap:16px; flex-wrap:wrap; margin-bottom:8px; font-size:var(--fs-text);">' +
       '<span>Ausgeführte Intraday-Trades: <b>' + taken + '</b></span>' +
       '<span>Bewusst verworfen: <b>' + agg.total + '</b></span>' +
       (agg.total + taken > 0 ? '<span>Geduld-Quote: <b>' + Math.round(agg.total / (agg.total + taken) * 100) + ' %</b></span>' : '') +
@@ -4853,18 +4853,18 @@ function huerdeAnzeigen() {
     };
     var h = '<div style="margin-top:12px; border-top:1px solid var(--line); padding-top:8px;">' +
       '<div style="font-weight:700; margin-bottom:4px;">Merkmale der Signale – Aufzeichnung, kein Befund</div>' +
-      '<div style="color:var(--muted); font-size:11.5px; margin-bottom:6px;">' +
+      '<div style="color:var(--muted); font-size:var(--fs-neben); margin-bottom:6px;">' +
       'Bei jedem Signal werden vier vorher festgelegte Merkmale mitgeschrieben (Lage im Trendkanal, ' +
       'Kanalrichtung, relatives Volumen, genutzte Tagesspanne). Erst danach wird gezählt. ' +
       'Andersherum – hinterher in den fertigen Trades nach Mustern suchen – findet man immer eines. ' +
       '„Kontrolle“ ist derselbe Wert zur selben Tagesstunde an beliebigen anderen Tagen; nur der ' +
       '<b>Überschuss</b> darüber wäre überhaupt eine Aussage. Simulation, keine Anlageberatung.</div>';
     if (!b.gesamtN) {
-      return h + '<div style="color:var(--muted); font-size:12px;">Noch kein abgeschlossenes Signal mit Merkmalen. ' +
+      return h + '<div style="color:var(--muted); font-size:var(--fs-neben);">Noch kein abgeschlossenes Signal mit Merkmalen. ' +
         'Die Aufzeichnung beginnt mit dem nächsten Signal, das alle Filter passiert.</div></div>';
     }
     for (var f = 0; f < b.felder.length; f++) {
-      h += '<div style="font-size:12px; font-weight:600; margin-top:6px;">' + U.esc(b.felder[f].name) + '</div>';
+      h += '<div style="font-size:var(--fs-neben); font-weight:600; margin-top:6px;">' + U.esc(b.felder[f].name) + '</div>';
       for (var z = 0; z < b.felder[f].zeilen.length; z++) {
         var r = b.felder[f].zeilen[z];
         var rechts = r.n + ' Signale · Ø ' + U.signTxt(r.avg, ' %') +
@@ -4877,7 +4877,7 @@ function huerdeAnzeigen() {
     }
     /* Die Zahl der Vergleiche gehört sichtbar unter die Tabelle: Sie ist der Grund,
      * warum ein einzelner auffälliger Topf nichts beweist. */
-    h += '<div style="color:var(--muted); font-size:11.5px; margin-top:8px;">' +
+    h += '<div style="color:var(--muted); font-size:var(--fs-neben); margin-top:8px;">' +
       b.toepfe + ' Vergleiche nebeneinander, ' + b.gesamtN + ' Merkmalseinträge aus den abgeschlossenen Signalen. ' +
       'Bei so vielen Töpfen sticht auch bei reinem Zufall regelmäßig einer heraus – ein auffälliger Wert ist ' +
       'deshalb ein <b>Kandidat für eine Messung</b>, nicht ihr Ergebnis. Gehandelt wird davon nichts: Erst eine ' +
@@ -4905,12 +4905,12 @@ function huerdeAnzeigen() {
       var einOffen = (D.schatten || []).filter(function (x) { return x.status === 'open' && x.grund === 'Einstieg'; }).length;
       h += '<div style="margin-top:12px; border-top:1px solid var(--line); padding-top:8px;">' +
         '<div style="font-weight:700; margin-bottom:4px;">Vorwärtstest – was die Intraday-Strategie verdient hätte</div>' +
-        '<div style="color:var(--muted); font-size:11.5px; margin-bottom:6px;">' +
+        '<div style="color:var(--muted); font-size:var(--fs-neben); margin-bottom:6px;">' +
         'Jedes Signal, das alle Filter passiert hat, läuft hier virtuell zu Ende – auch wenn nicht gehandelt wird. ' +
         'Das ist die einzige Evidenzform ohne Rückschau-Verzerrung: Sie entsteht erst mit der Zeit und kann nicht nachträglich schöngerechnet werden. ' +
         'Simulation, keine Anlageberatung.</div>';
       if (!ein || !ein.n) {
-        h += '<div style="color:var(--muted); font-size:12px;">Noch kein abgeschlossenes Signal' +
+        h += '<div style="color:var(--muted); font-size:var(--fs-neben);">Noch kein abgeschlossenes Signal' +
           (einOffen ? ' – ' + einOffen + ' laufen gerade.' : '. Die Aufzeichnung beginnt mit dem nächsten Signal.') + '</div>';
       } else {
         var avgE = Math.round(ein.sumPct / ein.n * 10) / 10;
@@ -4945,9 +4945,9 @@ function huerdeAnzeigen() {
     if (!gr.length && !offen) return h;
     h += '<div style="margin-top:12px; border-top:1px solid var(--line); padding-top:8px;">' +
       '<div style="font-weight:700; margin-bottom:4px;">Schattenbuch – was aus den verworfenen Trades geworden wäre</div>' +
-      '<div style="color:var(--muted); font-size:11.5px; margin-bottom:6px;">Jeder verworfene Trade läuft virtuell weiter (gleiche Stop-/Ausstiegsregeln). ' +
+      '<div style="color:var(--muted); font-size:var(--fs-neben); margin-bottom:6px;">Jeder verworfene Trade läuft virtuell weiter (gleiche Stop-/Ausstiegsregeln). ' +
       '„Gerettet“ = der Filter hat einen Verlust verhindert, „verhindert“ = er hat einen Gewinn gekostet (±1 % Totzone). Simulation, keine Anlageberatung.</div>';
-    if (!gr.length) h += '<div style="color:var(--muted); font-size:12px;">' + offen + ' Schatten laufen – noch keiner abgeschlossen.</div>';
+    if (!gr.length) h += '<div style="color:var(--muted); font-size:var(--fs-neben);">' + offen + ' Schatten laufen – noch keiner abgeschlossen.</div>';
     gr.forEach(function (g3) {
       var x = st[g3];
       var avg = x.n ? Math.round(x.sumPct / x.n * 10) / 10 : 0;
@@ -4958,7 +4958,7 @@ function huerdeAnzeigen() {
         '<b></b></div>' +
         '<div class="urteil-zeile">' + urteil + '</div>';
     });
-    if (offen) h += '<div style="color:var(--muted); font-size:11.5px; margin-top:4px;">' + offen + ' Schatten laufen noch.</div>';
+    if (offen) h += '<div style="color:var(--muted); font-size:var(--fs-neben); margin-top:4px;">' + offen + ' Schatten laufen noch.</div>';
     return h + '</div>';
   }
 
@@ -5054,10 +5054,10 @@ function huerdeAnzeigen() {
     var sugs = kiSuggestions();
     var sugHtml = '';
     if (sugs.length) {
-      sugHtml = '<div style="margin-top:14px; padding:10px 12px; border:1px solid var(--grid); border-radius:10px;">' +
-        '<div style="font-weight:600; font-size:13px; margin-bottom:6px;">Lernschleife – Regel-Vorschläge aus den letzten 14 Tagen:</div>' +
-        '<ul style="margin:0 0 8px 18px; font-size:12.5px;">' + sugs.map(function (s) { return '<li>' + U.esc(s) + '</li>'; }).join('') + '</ul>' +
-        '<button class="btn" id="kiSugBtn">→ In meine KI-Regeln übernehmen</button> <span id="kiSugStatus" style="font-size:12px; color:var(--muted);"></span></div>';
+      sugHtml = '<div style="margin-top:14px; padding:10px 12px; border:1px solid var(--grid); border-radius:var(--r-gross);">' +
+        '<div style="font-weight:600; font-size:var(--fs-text); margin-bottom:6px;">Lernschleife – Regel-Vorschläge aus den letzten 14 Tagen:</div>' +
+        '<ul style="margin:0 0 8px 18px; font-size:var(--fs-text);">' + sugs.map(function (s) { return '<li>' + U.esc(s) + '</li>'; }).join('') + '</ul>' +
+        '<button class="btn" id="kiSugBtn">→ In meine KI-Regeln übernehmen</button> <span id="kiSugStatus" style="font-size:var(--fs-neben); color:var(--muted);"></span></div>';
     }
     document.getElementById('aiBody').innerHTML = U.md(body) + sugHtml + '<div class="warn">Simulation – keine Anlageberatung.</div>';
     window.openModal('aiModalBg');
@@ -5135,7 +5135,7 @@ function huerdeAnzeigen() {
     document.getElementById('weeklySaveBtn').addEventListener('click', function () {
       var doc = '<!DOCTYPE html><html lang="de"><head><meta charset="utf-8"><title>Wochenreport KW ' + kw + '</title>' +
         '<style>body{font-family:system-ui,sans-serif;max-width:720px;margin:40px auto;padding:0 20px;line-height:1.6;color:#111}h2{margin-top:24px}</style></head><body>' +
-        U.md(body) + '<hr><p style="color:#888;font-size:12px;">Erstellt vom Markt-Dashboard · Simulation, keine Anlageberatung.</p></body></html>';
+        U.md(body) + '<hr><p style="color:#888;font-size:var(--fs-neben);">Erstellt vom Markt-Dashboard · Simulation, keine Anlageberatung.</p></body></html>';
       dateiSpeichern(new Blob([doc], { type: 'text/html' }), 'Wochenreport-KW' + kw + '.html');
     });
   }
@@ -5179,12 +5179,12 @@ function huerdeAnzeigen() {
     var el = document.getElementById('screenChips');
     if (!el) return;
     var today = new Date().toISOString().slice(0, 10);
-    if (!D.screen || !D.screen.picks || !D.screen.picks.length) { el.innerHTML = '<span style="color:var(--muted); font-size:12px;">Noch kein Lauf.</span>'; return; }
+    if (!D.screen || !D.screen.picks || !D.screen.picks.length) { el.innerHTML = '<span style="color:var(--muted); font-size:var(--fs-neben);">Noch kein Lauf.</span>'; return; }
     var stale = D.screen.day !== today;
     el.innerHTML = D.screen.picks.map(function (p) {
-      return '<span class="chip flat" style="font-size:12px; padding:3px 10px;">' + U.esc(p.sym) + ' · Wellen-Score ' + p.score + (p.vol ? ' · ~' + p.vol + ' Mio $/Tag' : '') + '</span>';
-    }).join('') + (stale ? ' <span style="color:var(--muted); font-size:11px;">(von ' + U.esc(D.screen.day) + ' – läuft heute automatisch neu)</span>' : '') +
-      (D.intraday.screener ? '' : ' <span style="color:var(--muted); font-size:11px;">Schalter aus – Treffer fließen nicht in den Scan ein.</span>');
+      return '<span class="chip flat" style="font-size:var(--fs-neben); padding:3px 10px;">' + U.esc(p.sym) + ' · Wellen-Score ' + p.score + (p.vol ? ' · ~' + p.vol + ' Mio $/Tag' : '') + '</span>';
+    }).join('') + (stale ? ' <span style="color:var(--muted); font-size:var(--fs-klein);">(von ' + U.esc(D.screen.day) + ' – läuft heute automatisch neu)</span>' : '') +
+      (D.intraday.screener ? '' : ' <span style="color:var(--muted); font-size:var(--fs-klein);">Schalter aus – Treffer fließen nicht in den Scan ein.</span>');
   }
 
   /* ================= KI-Lernschleife: Regel-Vorschläge aus den Trades ================= */
@@ -5225,10 +5225,10 @@ function huerdeAnzeigen() {
     var wl = D.watchlist || [];
     el.innerHTML = wl.length
       ? wl.map(function (w, i) {
-        return '<span class="chip flat" style="font-size:12px; padding:3px 10px;">' + U.esc(w.y) + ' · ' + U.esc(w.name).slice(0, 24) +
+        return '<span class="chip flat" style="font-size:var(--fs-neben); padding:3px 10px;">' + U.esc(w.y) + ' · ' + U.esc(w.name).slice(0, 24) +
           ' <a href="#" data-unwatch="' + i + '" style="color:var(--down); font-weight:700; margin-left:4px;">×</a></span>';
       }).join('')
-      : '<span style="color:var(--muted); font-size:12px;">Noch keine eigenen Werte.</span>';
+      : '<span style="color:var(--muted); font-size:var(--fs-neben);">Noch keine eigenen Werte.</span>';
     el.querySelectorAll('[data-unwatch]').forEach(function (a) {
       a.addEventListener('click', function (e) {
         e.preventDefault();
@@ -6689,13 +6689,13 @@ function huerdeAnzeigen() {
     var sperrHtml = '';
     if (killSwitchAktiv()) {
       var ks = D.killSwitch;
-      sperrHtml += '<div style="font-size:12.5px; color:var(--down); font-weight:700; margin-bottom:6px; padding:6px 8px; border:1px solid var(--down); border-radius:6px;">' +
+      sperrHtml += '<div style="font-size:var(--fs-text); color:var(--down); font-weight:700; margin-bottom:6px; padding:6px 8px; border:1px solid var(--down); border-radius:var(--r-normal);">' +
         'Kill-Switch aktiv: Tagesverlust ' + ks.pct + ' % hat das Limit von −' + ks.limit + ' % erreicht. ' +
         (ks.n ? ks.n + ' Position(en) wurden sofort glattgestellt. ' : '') +
         'Es wird heute nichts mehr eröffnet – morgen früh läuft der Handel automatisch wieder an.</div>';
     }
     if (D.handelsPause && D.handelsPause.bis > Date.now()) {
-      sperrHtml += '<div style="font-size:12.5px; color:var(--warn); margin-bottom:6px; padding:6px 8px; border:1px solid var(--warn); border-radius:6px;">' +
+      sperrHtml += '<div style="font-size:var(--fs-text); color:var(--warn); margin-bottom:6px; padding:6px 8px; border:1px solid var(--warn); border-radius:var(--r-normal);">' +
         'Handelspause (Marktlage): ' + U.esc(D.handelsPause.grund || '') + '. Keine neuen Einstiege bis ' +
         new Date(D.handelsPause.bis).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }) + ' Uhr. ' +
         'Offene Positionen werden normal weiter gemanagt.</div>';
@@ -6703,12 +6703,12 @@ function huerdeAnzeigen() {
     var IV_NAME = { '1m': '1-Minuten-Kerzen', '5m': '5-Minuten-Kerzen', '15m': '15-Minuten-Kerzen', '60m': 60 + '-Minuten-Kerzen' };
     var ivTxt = IV_NAME[c.interval] || (c.interval || '60m');
     el.innerHTML = sperrHtml +
-      '<div style="font-size:14px; font-weight:700; margin-bottom:4px;">' + name + ' · ' + ivTxt + '</div>' +
-      '<div style="font-size:12.5px; color:var(--ink-2); margin-bottom:4px;">' + was + (exitTxt ? ' ' + exitTxt : '') + '</div>' +
-      (wer ? '<div style="font-size:11.5px; color:var(--muted); margin-bottom:4px;">' + U.esc(wer) + '</div>' : '') +
+      '<div style="font-size:var(--fs-gross); font-weight:700; margin-bottom:4px;">' + name + ' · ' + ivTxt + '</div>' +
+      '<div style="font-size:var(--fs-text); color:var(--ink-2); margin-bottom:4px;">' + was + (exitTxt ? ' ' + exitTxt : '') + '</div>' +
+      (wer ? '<div style="font-size:var(--fs-neben); color:var(--muted); margin-bottom:4px;">' + U.esc(wer) + '</div>' : '') +
       (alleAn
-        ? '<div style="font-size:11.5px; color:var(--muted);">' + autoTxt + '</div>'
-        : '<div style="font-size:11.5px; color:var(--warn); margin-bottom:6px;">Der Autopilot ist ausgeschaltet – die Strategie verbessert sich gerade NICHT von selbst.</div>' +
+        ? '<div style="font-size:var(--fs-neben); color:var(--muted);">' + autoTxt + '</div>'
+        : '<div style="font-size:var(--fs-neben); color:var(--warn); margin-bottom:6px;">Der Autopilot ist ausgeschaltet – die Strategie verbessert sich gerade NICHT von selbst.</div>' +
           '<button class="btn tiny" id="klartextAutoBtn">Autopilot einschalten</button>');
     var kab = document.getElementById('klartextAutoBtn');
     if (kab) kab.addEventListener('click', function () {
@@ -6737,7 +6737,7 @@ function huerdeAnzeigen() {
       : '<span style="color:var(--muted);">Noch keine Messung – startet automatisch nach Handelsbeginn.</span>'; return; }
     var f = r.fakten;
     el.innerHTML = (r.ok ? '<b>' + U.dt(r.at) + '</b> · Quelle: ' + U.esc(r.quelle) + '<br>' + U.esc(r.txt) : '' + U.esc(r.txt)) +
-      (f ? '<div style="color:var(--muted); margin-top:4px; font-size:11.5px;">Gemessen an ' + f.geprueft + ' Werten: Trendanteil ' + f.trendAnteilPct +
+      (f ? '<div style="color:var(--muted); margin-top:4px; font-size:var(--fs-neben);">Gemessen an ' + f.geprueft + ' Werten: Trendanteil ' + f.trendAnteilPct +
         ' % · mittleres |z| ' + f.mittleresAbsZ + ' · Wellen-Score ' + f.mittlererWellenScore + ' · gültige Kanäle ' + f.kanalAnteilPct +
         ' % · 5-Min-Vola ' + f.vola1mPct + ' %</div>' : '');
   }
@@ -7743,7 +7743,7 @@ function huerdeAnzeigen() {
       var letzteAkt = pilotLog.length ? Math.round((Date.now() - pilotLog[pilotLog.length - 1][0]) / 1000) : 0;
       el.innerHTML = '<b>Messung läuft</b> · seit ' + seitMin + ' Min · letzte Aktivität vor ' + letzteAkt + ' s' +
         '<div style="color:var(--acc); margin-top:2px;">' + U.esc(pilotPhase || '') + '</div>' +
-        '<div style="color:var(--muted); font-size:11px; margin-top:2px;">Der komplette Verlauf steht im Protokoll darunter. Der Wächter greift erst bei 12 Minuten ohne Aktivität.</div>';
+        '<div style="color:var(--muted); font-size:var(--fs-klein); margin-top:2px;">Der komplette Verlauf steht im Protokoll darunter. Der Wächter greift erst bei 12 Minuten ohne Aktivität.</div>';
       return;
     }
     // Datenlage: Wie viele Handelstage hat das Archiv schon gesammelt?
@@ -7791,9 +7791,9 @@ function huerdeAnzeigen() {
     }
     var c = D.central, r = c.rec;
     var html = '<div style="display:flex; gap:14px; flex-wrap:wrap; align-items:center; margin-bottom:10px;">' +
-      '<span style="font-size:13px;">' + r.verdict + '</span>' +
-      '<span style="font-size:14px; font-weight:700;">' + U.esc(r.modeName) + ' · ' + r.interval + '</span>' +
-      '<span style="color:var(--muted); font-size:12px;">Stand: ' + U.dt(c.at) + '</span></div>';
+      '<span style="font-size:var(--fs-text);">' + r.verdict + '</span>' +
+      '<span style="font-size:var(--fs-gross); font-weight:700;">' + U.esc(r.modeName) + ' · ' + r.interval + '</span>' +
+      '<span style="color:var(--muted); font-size:var(--fs-neben);">Stand: ' + U.dt(c.at) + '</span></div>';
     html += '<table class="tbl" style="max-width:680px;"><tr><th>Empfehlung</th><th>Wert</th><th>Begründung</th></tr>' +
       '<tr><td>Modus / Zeitrahmen</td><td><b>' + U.esc(r.modeName) + ' · ' + r.interval + '</b></td><td>Walk-Forward ' + U.signTxt(r.wfRet, ' %') + ' · ' + r.posSegs + '/' + (r.scheibenMax || 4) + ' Scheiben · ' + r.n + ' Trades · ' + r.winRate + ' % Treffer · PF ' + r.pf + (r.datenbasis ? ' · Datenbasis: ' + r.datenbasis.symbole + ' Werte über ' + r.datenbasis.spanneTage + ' Tage' : '') + '</td></tr>' +
       '<tr><td>Leitlinie / Periode / Bestätigung</td><td><b>' + r.lineType.toUpperCase() + ' · P' + r.period + ' · ' + (r.confirmBps / 100).toFixed(2) + ' %</b></td><td>' +
@@ -7802,9 +7802,9 @@ function huerdeAnzeigen() {
       '<tr><td>Meide-Stunden</td><td><b>' + (r.avoidHours.length ? r.avoidHours.map(function (h) { return h + ' Uhr'; }).join(', ') : 'keine') + '</b></td><td>Stunden mit ≥3 Trades und negativem P/L (Berlin)</td></tr>' +
       '<tr><td>Stärkste Werte</td><td colspan="2">' + r.topSymbols.map(U.esc).join(' · ') + '</td></tr></table>';
     if (r.filterBilanz && r.filterBilanz.zeilen && r.filterBilanz.zeilen.length) {
-      html += '<div style="font-size:12.5px; font-weight:600; margin-top:14px;">Filter-Bilanz (bester Kandidat, ungesehene Daten)</div>';
-      html += '<div style="color:var(--muted); font-size:11.5px; margin:2px 0 6px;">Basis mit allen Filtern: ' + U.signTxt(r.filterBilanz.basisRet, ' %') + ' bei ' + r.filterBilanz.basisN + ' Trades. Nutzen = mit minus ohne – positiv heißt: der Filter spart Geld.</div>';
-      html += '<table class="tbl" style="font-size:11.5px;"><tr><th>Filter</th><th>mit</th><th>ohne</th><th>Nutzen</th><th>Trades mit/ohne</th><th>Urteil</th></tr>';
+      html += '<div style="font-size:var(--fs-text); font-weight:600; margin-top:14px;">Filter-Bilanz (bester Kandidat, ungesehene Daten)</div>';
+      html += '<div style="color:var(--muted); font-size:var(--fs-neben); margin:2px 0 6px;">Basis mit allen Filtern: ' + U.signTxt(r.filterBilanz.basisRet, ' %') + ' bei ' + r.filterBilanz.basisN + ' Trades. Nutzen = mit minus ohne – positiv heißt: der Filter spart Geld.</div>';
+      html += '<table class="tbl" style="font-size:var(--fs-neben);"><tr><th>Filter</th><th>mit</th><th>ohne</th><th>Nutzen</th><th>Trades mit/ohne</th><th>Urteil</th></tr>';
       r.filterBilanz.zeilen.forEach(function (fz) {
         var fu = fz.duenn ? 'zu wenig Trades' : fz.nutzen > 0.5 ? 'spart Geld' : fz.nutzen < -0.5 ? 'kostet Geld' : 'neutral';
         html += '<tr><td>' + U.esc(fz.name) + '</td><td class="' + U.signCls(fz.mitRet) + '">' + U.signTxt(fz.mitRet, ' %') + '</td>' +
@@ -7817,12 +7817,12 @@ function huerdeAnzeigen() {
     // Volles Ranking: ALLE Kandidaten mit dem Grund, woran sie scheitern – dieselbe
     // Sicht wie im messbericht.md, damit App und Bericht nie auseinanderlaufen.
     if (c.ranking && c.ranking.length) {
-      html += '<div style="font-size:12.5px; font-weight:600; margin-top:14px;">Alle Kandidaten dieser Messung</div>';
+      html += '<div style="font-size:var(--fs-text); font-weight:600; margin-top:14px;">Alle Kandidaten dieser Messung</div>';
       if (c.datenlage) {
         var dlz = ['1m', '5m', '15m', '60m'].map(function (iv2) { var d2 = c.datenlage[iv2] || {}; return iv2 + ': ' + (d2.handelstage || 0) + ' Tage / ' + (d2.werte || 0) + ' Werte'; }).join(' · ');
-        html += '<div style="color:var(--muted); font-size:11.5px; margin:2px 0 6px;">Messbasis – ' + dlz + '</div>';
+        html += '<div style="color:var(--muted); font-size:var(--fs-neben); margin:2px 0 6px;">Messbasis – ' + dlz + '</div>';
       }
-      html += '<table class="tbl" style="font-size:11.5px;"><tr><th>#</th><th>Setup</th><th>Zeitrahmen</th><th>WF-Rendite</th><th>Scheiben+</th><th>Trades</th><th>Tage</th><th>PF</th><th>Woran scheitert es</th></tr>';
+      html += '<table class="tbl" style="font-size:var(--fs-neben);"><tr><th>#</th><th>Setup</th><th>Zeitrahmen</th><th>WF-Rendite</th><th>Scheiben+</th><th>Trades</th><th>Tage</th><th>PF</th><th>Woran scheitert es</th></tr>';
       c.ranking.forEach(function (r2, i2) {
         html += '<tr><td>' + (i2 + 1) + '</td><td>' + U.esc(r2.name) + '</td><td>' + r2.interval + '</td>' +
           '<td class="' + U.signCls(r2.wfRet) + '">' + U.signTxt(r2.wfRet, ' %') + '</td>' +
@@ -7833,8 +7833,8 @@ function huerdeAnzeigen() {
     }
     html += '<div style="display:flex; gap:8px; align-items:center; margin-top:10px; flex-wrap:wrap;">' +
       '<button class="btn" id="centralApplyBtn">Empfehlung komplett übernehmen</button>' +
-      '<span id="centralApplyStatus" style="color:var(--muted); font-size:12px;"></span></div>';
-    html += '<div style="color:var(--muted); font-size:11.5px; margin-top:8px;">Ehrlichkeit: ' + r.n + ' Out-of-Sample-Trades sind eine kleine Stichprobe – die Empfehlung ist ein Kandidat, kein Beweis. Analyse regelmäßig wiederholen; sie wird mit jedem Handelstag belastbarer. Ergebnis liegt auch im Analyse-Export.</div>';
+      '<span id="centralApplyStatus" style="color:var(--muted); font-size:var(--fs-neben);"></span></div>';
+    html += '<div style="color:var(--muted); font-size:var(--fs-neben); margin-top:8px;">Ehrlichkeit: ' + r.n + ' Out-of-Sample-Trades sind eine kleine Stichprobe – die Empfehlung ist ein Kandidat, kein Beweis. Analyse regelmäßig wiederholen; sie wird mit jedem Handelstag belastbarer. Ergebnis liegt auch im Analyse-Export.</div>';
     out.innerHTML = html;
     var ab = document.getElementById('centralApplyBtn');
     if (ab) ab.addEventListener('click', function () {

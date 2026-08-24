@@ -91,20 +91,20 @@
     var offen = ms.filter(function (m) { return m.status === 'offen'; }).length;
     var behoben = ms.filter(function (m) { return m.status === 'behoben'; }).length;
     el.innerHTML =
-      '<div style="font-size:11.5px; color:var(--muted); margin-bottom:6px;">' +
+      '<div style="font-size:var(--fs-neben); color:var(--muted); margin-bottom:6px;">' +
         ms.length + ' Meldungen · ' + offen + ' offen · ' + behoben + ' behoben</div>' +
       '<div style="max-height:280px; overflow:auto;">' +
       ms.slice(0, 40).map(function (m) {
         var st = statusText(m);
         return '<div style="border-left:3px solid ' + st.farbe + '; padding:6px 10px; margin-bottom:6px; background:var(--panel);">' +
-          '<div style="font-size:12.5px;">' + U.esc(m.text.slice(0, 220)) + (m.text.length > 220 ? ' …' : '') + '</div>' +
-          '<div style="font-size:11px; color:var(--muted); margin-top:3px;">' +
+          '<div style="font-size:var(--fs-text);">' + U.esc(m.text.slice(0, 220)) + (m.text.length > 220 ? ' …' : '') + '</div>' +
+          '<div style="font-size:var(--fs-klein); color:var(--muted); margin-top:3px;">' +
             new Date(m.gemeldet).toLocaleString('de-DE') + ' · ' + U.esc(m.art) + ' · ' + U.esc(m.schwere) +
             (m.bereich ? ' · ' + U.esc(m.bereich) : '') +
             ' · <b style="color:' + st.farbe + ';">' + st.txt + '</b>' +
             ((m.fehlerprotokoll || []).length ? ' · ' + m.fehlerprotokoll.length + ' Fehler beigelegt' : '') +
           '</div>' +
-          (m.bewertung ? '<div style="font-size:11.5px; color:var(--ink-2); margin-top:4px; padding-top:4px; border-top:1px solid var(--grid);">' +
+          (m.bewertung ? '<div style="font-size:var(--fs-neben); color:var(--ink-2); margin-top:4px; padding-top:4px; border-top:1px solid var(--grid);">' +
             U.esc(m.bewertung) + '</div>' : '') +
         '</div>';
       }).join('') + '</div>';

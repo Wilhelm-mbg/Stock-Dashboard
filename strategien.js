@@ -242,25 +242,25 @@
       var schaltbar = !!s.schalter;
       return '<div class="panel" style="margin-bottom:12px;">' +
         '<div style="display:flex; align-items:baseline; gap:10px; flex-wrap:wrap;">' +
-          '<span style="font-size:15px; font-weight:700;">' + U.esc(s.name) + '</span>' +
-          '<span style="font-size:11px; padding:2px 7px; border-radius:10px; border:1px solid var(--' + s.farbe + '); color:var(--' + s.farbe + ');">' +
+          '<span style="font-size:var(--fs-gross); font-weight:700;">' + U.esc(s.name) + '</span>' +
+          '<span style="font-size:var(--fs-klein); padding:2px 7px; border-radius:var(--r-gross); border:1px solid var(--' + s.farbe + '); color:var(--' + s.farbe + ');">' +
             U.esc(s.stand) + '</span>' +
           '<span style="margin-left:auto; display:inline-flex; align-items:center; gap:8px;">' +
             (schaltbar
               ? '<button class="btn' + (an ? '' : ' ghost') + '" data-strat="' + s.key + '">' + (an ? 'läuft – ausschalten' : 'einschalten') + '</button>'
-              : '<span style="color:var(--muted); font-size:12px;">nicht verfügbar</span>') +
+              : '<span style="color:var(--muted); font-size:var(--fs-neben);">nicht verfügbar</span>') +
             (window.Info ? window.Info.knopf('strategie.' + s.key, s.name) : '') +
           '</span>' +
         '</div>' +
-        '<div style="font-size:12.5px; color:var(--ink-2); margin-top:6px; max-width:68ch;">' + U.esc(s.was) + '</div>' +
-        '<div style="font-size:11.5px; color:var(--muted); margin-top:4px;">Horizont: ' + U.esc(s.horizont) +
+        '<div style="font-size:var(--fs-text); color:var(--ink-2); margin-top:6px; max-width:68ch;">' + U.esc(s.was) + '</div>' +
+        '<div style="font-size:var(--fs-neben); color:var(--muted); margin-top:4px;">Horizont: ' + U.esc(s.horizont) +
           ' · Instrument: ' + U.esc(s.instrument) +
           ' · <span style="opacity:.85;">' + s.beleg.length + ' ' + (s.beleg.length === 1 ? 'Beleg' : 'Belege') +
           ' hinter dem i</span></div>' +
       '</div>';
     }).join('') +
     (noten.length
-      ? '<div style="font-size:11.5px; color:var(--muted); margin:2px 2px 10px; line-height:1.6;">' +
+      ? '<div style="font-size:var(--fs-neben); color:var(--muted); margin:2px 2px 10px; line-height:1.6;">' +
           noten.map(function (s) {
             return U.esc(s.name) + ' (' + U.esc(s.stand) + '): ' + U.esc(s.was) +
               (s.beleg && s.beleg.length ? ' ' + U.esc(s.beleg[0]) : '');

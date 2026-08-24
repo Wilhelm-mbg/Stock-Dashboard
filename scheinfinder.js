@@ -190,13 +190,13 @@
         '<td style="color:var(--muted); white-space:nowrap;">' + U.esc(s.isin || '') + '</td>' +
         '<td class="sf-wknkopie" style="color:var(--muted); white-space:nowrap; cursor:copy;" title="So heißt der Schein bei der Quelle – Klick kopiert den Namen">' + U.esc(s.name || '–') + '</td></tr>';
     }).join('');
-    return '<b>Echte Scheine dazu</b> <span style="color:var(--muted); font-size:11.5px;">– Klick auf die WKN oder den onvista-Namen kopiert den Eintrag</span>' +
-      '<div style="overflow-x:auto; margin-top:4px;"><table class="tbl" style="font-size:11.5px;">' +
+    return '<b>Echte Scheine dazu</b> <span style="color:var(--muted); font-size:var(--fs-neben);">– Klick auf die WKN oder den onvista-Namen kopiert den Eintrag</span>' +
+      '<div style="overflow-x:auto; margin-top:4px;"><table class="tbl" style="font-size:var(--fs-neben);">' +
       '<tr><th>WKN</th><th>Emittent</th><th style="text-align:right;">Basis</th><th style="text-align:right;">fällig</th>' +
       '<th style="text-align:right;">BV</th><th style="text-align:right;">Geld/Brief</th><th style="text-align:right;">Stand</th>' +
       '<th style="text-align:right;">Spanne</th><th style="text-align:right;">impl. Vola</th><th>Abweichung</th><th>ISIN</th><th>onvista-Name</th></tr>' +
       zeilen + '</table></div>' +
-      '<div style="color:var(--muted); font-size:11px; margin-top:6px; line-height:1.5;">' +
+      '<div style="color:var(--muted); font-size:var(--fs-klein); margin-top:6px; line-height:1.5;">' +
       'Emittentenkurse in Euro, das Modell rechnet in Dollar auf den Basiswert – <b>nicht ineinander umgerechnet</b>, ' +
       'die Euro-Kurse stehen als Orientierung da. „Spanne“ ist hier die volle Geld-Brief-Spanne; die Modellspalte nennt sie je Seite ' +
       '(diese Zeile: 2 × ' + k.spreadPct.toFixed(2) + ' % = ' + (2 * k.spreadPct).toFixed(2) + ' % je Umlauf). ' +
@@ -264,9 +264,9 @@
     var zeilen = liste.slice(0, 120).map(function (k, i) {
       var idx = RASTER.indexOf(k);
       return '<tr data-sfi="' + idx + '" style="cursor:pointer;">' +
-        '<td class="sf-wkn" data-sfwkn="' + idx + '" style="white-space:nowrap; font-size:11px; cursor:pointer;" ' +
+        '<td class="sf-wkn" data-sfwkn="' + idx + '" style="white-space:nowrap; font-size:var(--fs-klein); cursor:pointer;" ' +
         'title="Echte WKN nachschlagen. Erster Klick sucht den passenden aufgelegten Schein, danach kopiert ein Klick die WKN.">' + wknZelle(idx) + '</td>' +
-        '<td class="sf-kennung" style="white-space:nowrap; color:var(--muted); font-size:11px; cursor:copy;" title="Kennung in der Syntax der Produktsuche – Klick kopiert sie">' + kennung(k) + '</td>' +
+        '<td class="sf-kennung" style="white-space:nowrap; color:var(--muted); font-size:var(--fs-klein); cursor:copy;" title="Kennung in der Syntax der Produktsuche – Klick kopiert sie">' + kennung(k) + '</td>' +
         '<td><b style="color:' + STUFENFARBE[k.stufe] + ';">' + k.stufe + '</b></td>' +
         '<td>' + (k.dir === 'call' ? '▲ Call' : '▼ Put') + '</td>' +
         '<td style="text-align:right;">' + U.nf2.format(k.strike) + '</td>' +
@@ -316,7 +316,7 @@
         c.t + (aktiv ? ' ' + pf : '') + '</th>';
     }).join('');
     t.innerHTML =
-      '<div style="font-size:11.5px; color:var(--muted); margin-bottom:6px;">' + liste.length + ' von ' + RASTER.length +
+      '<div style="font-size:var(--fs-neben); color:var(--muted); margin-bottom:6px;">' + liste.length + ' von ' + RASTER.length +
       ' Scheinen nach Filter · sortiert nach: <b>' + (SORTNAME[s] || s) + (sortUmgekehrt ? ' – umgekehrt' : '') + '</b>' +
       (liste.length > 120 ? ' · die 120 besten angezeigt' : '') + ' · Zeile anklicken für die Risiko-Begründung</div>' +
       '<div style="overflow-x:auto;"><table class="tbl"><thead><tr>' + koepfe +
@@ -363,7 +363,7 @@
         if (warOffen) return;   // zweiter Klick auf dieselbe Zeile klappt wieder zu
         var idx = parseInt(tr.getAttribute('data-sfi'), 10);
         tr.insertAdjacentHTML('afterend',
-          '<tr class="sf-inline"><td colspan="15" style="background:var(--panel); padding:10px 12px; font-size:12.5px; line-height:1.6; cursor:default;">' +
+          '<tr class="sf-inline"><td colspan="15" style="background:var(--panel); padding:10px 12px; font-size:var(--fs-text); line-height:1.6; cursor:default;">' +
           '<b>' + kennung(k) + ' – ' + (k.dir === 'call' ? 'Call' : 'Put') + ' ' + U.nf2.format(k.strike) + ', ' + k.restTage +
           ' Tage, BV ' + String(k.ratio).replace('.', ',') + ' · Risikostufe ' + k.stufe + '</b><br>' +
           k.stufenGruende.map(function (g) { return '• ' + U.esc(g); }).join('<br>') +

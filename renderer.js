@@ -499,12 +499,12 @@
           }).join(' · ') + '</span>' : '') +
           '</div>';
       }).join('') +
-        '<div style="color:var(--muted); font-size:11px; margin-top:8px;">Stand ' +
+        '<div style="color:var(--muted); font-size:var(--fs-klein); margin-top:8px;">Stand ' +
         new Date(r.mtime).toLocaleString('de-DE', { weekday: 'short', hour: '2-digit', minute: '2-digit' }) + ' Uhr' +
         ' · ' + quelleText(r) +
         (alt ? ' – <b>veraltet</b>, die Suche hat seit über 20 Stunden nicht geschrieben' : '') +
         '</div>' +
-        '<div style="color:var(--muted); font-size:11px; margin-top:2px;">' +
+        '<div style="color:var(--muted); font-size:var(--fs-klein); margin-top:2px;">' +
         'Sucht dreimal täglich vor US-Eröffnung (ca. 6:45, 12:45, 14:45 Uhr). ' +
         'Die Chance-Einstufung ist eine redaktionelle Einschätzung der Suche, keine Messung.</div>';
       /* Benachrichtigung nur fuer NEUE Hoch-Eintraege, je id genau einmal - und nur,
@@ -617,7 +617,7 @@
           }).join(' · ') + '</span>' : '') +
           '</div>';
       }).join('') +
-        '<div style="color:var(--muted); font-size:11px; margin-top:8px;">Stand ' +
+        '<div style="color:var(--muted); font-size:var(--fs-klein); margin-top:8px;">Stand ' +
         new Date(r.mtime).toLocaleString('de-DE', { weekday: 'short', hour: '2-digit', minute: '2-digit' }) + ' Uhr' +
         ' · ' + quelleText(r) +
         (alt ? ' – <b>veraltet</b>, der Abruf hat länger nicht geschrieben' : '') +
@@ -742,7 +742,7 @@
     var kopf = '<div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:6px;">' +
       '<button id="vormarktJetzt" class="btn"' + (vormarktLaeuft ? ' disabled' : '') + '>' +
       (vormarktLaeuft ? 'Suche läuft …' : 'Jetzt nachsehen') + '</button>' +
-      '<span style="color:var(--muted); font-size:11.5px;">' +
+      '<span style="color:var(--muted); font-size:var(--fs-neben);">' +
       (phase === 'vorboerslich'
         ? 'Vorbörse läuft – die Karte sieht alle 10 Minuten von selbst nach.'
         : 'Ausserhalb der US-Vorbörse (10:00–15:30 unserer Zeit) gibt es keine Vorbörsen-Kerzen.') +
@@ -768,7 +768,7 @@
           '</div>';
       }).join('');
     }
-    var fuss = '<div style="color:var(--muted); font-size:11px; margin-top:8px;">' +
+    var fuss = '<div style="color:var(--muted); font-size:var(--fs-klein); margin-top:8px;">' +
       (vormarktStand ? 'Stand ' + new Date(vormarktStand.zeit).toLocaleString('de-DE',
         { weekday: 'short', hour: '2-digit', minute: '2-digit' }) + ' Uhr · ' : '') +
       'Schwellen: Lücke über ' + window.Vormarkt.MIN_LUECKE + ' %, Kurs über ' + window.Vormarkt.MIN_KURS +

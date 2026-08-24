@@ -46,7 +46,7 @@
     if (hits && hits.fehler) {
       el.innerHTML = '<div class="panel" style="padding:12px 16px; color:var(--down);">' +
         '<b>Die Suche konnte nicht ausgeführt werden.</b><br>' +
-        '<span style="color:var(--muted); font-size:12px;">' + U.esc(hits.fehler) +
+        '<span style="color:var(--muted); font-size:var(--fs-neben);">' + U.esc(hits.fehler) +
         ' – das heißt nicht, dass es den Wert nicht gibt. Noch einmal versuchen, sobald die Verbindung steht.</span></div>';
       return;
     }
@@ -88,9 +88,9 @@
     el.innerHTML =
       '<div class="panel exp-start" style="margin-top:4px;">' +
       '<h3>Einen Wert öffnen</h3>' +
-      '<div style="color:var(--muted); font-size:12.5px;">Suche nach Ticker oder Name (auch deutsche Aktien, ETFs, Indizes, Krypto) – oder starte mit einem Klick:</div>' +
+      '<div style="color:var(--muted); font-size:var(--fs-text);">Suche nach Ticker oder Name (auch deutsche Aktien, ETFs, Indizes, Krypto) – oder starte mit einem Klick:</div>' +
       '<div class="popchips">' + POPULAR.map(function (p, i) { return '<button type="button" data-pop="' + i + '">' + U.esc(p.sym) + ' · ' + U.esc(p.name) + '</button>'; }).join('') + '</div>' +
-      '<div style="color:var(--muted); font-size:11.5px; margin-top:10px;">In der Detail-Ansicht: Chart von 1 Tag bis Max., Kennzahlen, News, „KI-Analyse anfordern“ und „Zur Handels-Watchlist“ (dann handeln die Strategien den Wert mit).</div>' +
+      '<div style="color:var(--muted); font-size:var(--fs-neben); margin-top:10px;">In der Detail-Ansicht: Chart von 1 Tag bis Max., Kennzahlen, News, „KI-Analyse anfordern“ und „Zur Handels-Watchlist“ (dann handeln die Strategien den Wert mit).</div>' +
       '</div>';
     el.querySelectorAll('[data-pop]').forEach(function (b) {
       b.addEventListener('click', function () {
@@ -405,23 +405,23 @@
           (inRichtung >= 0 ? '+' : '') + inRichtung.toFixed(2) + ' %</b></span>';
       }).filter(Boolean);
       danach = zeilen.length
-        ? '<div style="margin-top:8px; font-size:12px;"><span style="color:var(--muted);">Was danach kam, in Signalrichtung:</span><br>' + zeilen.join(' ') + '</div>'
-        : '<div style="margin-top:8px; font-size:12px; color:var(--muted);">Das Signal ist zu jung – die Entwicklung danach liegt noch nicht vor.</div>';
+        ? '<div style="margin-top:8px; font-size:var(--fs-neben);"><span style="color:var(--muted);">Was danach kam, in Signalrichtung:</span><br>' + zeilen.join(' ') + '</div>'
+        : '<div style="margin-top:8px; font-size:var(--fs-neben); color:var(--muted);">Das Signal ist zu jung – die Entwicklung danach liegt noch nicht vor.</div>';
     }
     el.style.display = 'block';
     el.innerHTML =
       '<div style="display:flex; align-items:baseline; gap:10px; flex-wrap:wrap;">' +
-        '<span style="width:11px; height:11px; border-radius:2px; background:' + p.farbe + '; display:inline-block;"></span>' +
-        '<b style="font-size:14px;">' + U.esc(p.name) + '</b>' +
+        '<span style="width:11px; height:11px; border-radius:var(--r-klein); background:' + p.farbe + '; display:inline-block;"></span>' +
+        '<b style="font-size:var(--fs-gross);">' + U.esc(p.name) + '</b>' +
         '<span style="color:' + (p.dir === 'call' ? 'var(--up)' : 'var(--down)') + '; font-weight:700;">' +
           (p.dir === 'call' ? '▲ Kauf' : '▼ Verkauf') + '</span>' +
         '<span style="color:var(--muted);">' + new Date(p.t).toLocaleString('de-DE') + ' · Kurs ' + U.nf2.format(p.preis) + '</span>' +
         '<button class="btn ghost tiny" id="expSigZu" style="margin-left:auto;">schließen</button>' +
       '</div>' +
-      '<div style="font-size:12.5px; color:var(--ink-2); margin-top:6px;">' +
+      '<div style="font-size:var(--fs-text); color:var(--ink-2); margin-top:6px;">' +
         U.esc(SIGNAL_ERKLAERT[p.name] || 'Keine Erläuterung hinterlegt.') + '</div>' +
       danach +
-      '<div style="font-size:11px; color:var(--muted); margin-top:8px;">' +
+      '<div style="font-size:var(--fs-klein); color:var(--muted); margin-top:8px;">' +
         'Hinweis: Einzelsignale wurden über 19 000 Kerzen gemessen und liegen bei 46–56 % Trefferquote. ' +
         'Was einzeln kaum trägt, kann in Kombination mit Trendkanal und Volumen deutlich besser sein.</div>';
     var zu = document.getElementById('expSigZu');
@@ -442,7 +442,7 @@
     var mitIndex = LETZTE_PUNKTE.map(function (p, i) { return { p: p, i: i }; })
       .sort(function (a, b) { return b.p.t - a.p.t; }).slice(0, 200);
     el.innerHTML =
-      '<div style="font-size:11.5px; color:var(--muted); margin-bottom:6px;">' +
+      '<div style="font-size:var(--fs-neben); color:var(--muted); margin-bottom:6px;">' +
         LETZTE_PUNKTE.length + ' Signale · Zeile anklicken, um sie im Chart zu markieren' +
         (LETZTE_PUNKTE.length > 200 ? ' · die 200 jüngsten' : '') + '</div>' +
       '<div style="max-height:260px; overflow:auto;"><table class="tbl"><thead><tr>' +
@@ -453,7 +453,7 @@
         return '<tr data-zeile="' + x.i + '" style="cursor:pointer;' +
           (GEWAEHLT === x.i ? ' background:var(--grid);' : '') + '">' +
           '<td>' + new Date(p.t).toLocaleString('de-DE', { day: '2-digit', month: 'short', year: '2-digit', hour: '2-digit', minute: '2-digit' }) + '</td>' +
-          '<td><span style="display:inline-block; width:9px; height:9px; border-radius:2px; background:' + p.farbe + '; margin-right:6px;"></span>' + U.esc(p.name) + '</td>' +
+          '<td><span style="display:inline-block; width:9px; height:9px; border-radius:var(--r-klein); background:' + p.farbe + '; margin-right:6px;"></span>' + U.esc(p.name) + '</td>' +
           '<td class="' + (p.dir === 'call' ? 'up' : 'down') + '" style="color:' + (p.dir === 'call' ? 'var(--up)' : 'var(--down)') + ';">' +
             (p.dir === 'call' ? '▲ Kauf' : '▼ Verkauf') + '</td>' +
           '<td style="text-align:right;">' + U.nf2.format(p.preis) + '</td></tr>';

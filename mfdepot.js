@@ -230,13 +230,13 @@
       var b = d.mfBuch, bw = mom.bewertung;
       var pnl = bw.wert - b.start;
       var html = '<div class="depot-stats">' +
-        '<div class="tile"><div class="name">Depotwert</div><div class="val ' + (pnl >= 0 ? 'pos' : 'neg') + '" style="font-size:17px;">' + U.money(bw.wert) + '</div></div>' +
-        '<div class="tile"><div class="name">Ergebnis</div><div class="val ' + (pnl >= 0 ? 'pos' : 'neg') + '" style="font-size:17px;">' + U.signTxt(Math.round(pnl * 100) / 100, ' $') + '</div></div>' +
-        '<div class="tile"><div class="name">Positionen</div><div class="val" style="font-size:17px;">' + b.positionen.length + '</div></div>' +
-        '<div class="tile"><div class="name">Status</div><div class="val" style="font-size:14px;">' +
+        '<div class="tile"><div class="name">Depotwert</div><div class="val ' + (pnl >= 0 ? 'pos' : 'neg') + '" style="font-size:var(--fs-zahl);">' + U.money(bw.wert) + '</div></div>' +
+        '<div class="tile"><div class="name">Ergebnis</div><div class="val ' + (pnl >= 0 ? 'pos' : 'neg') + '" style="font-size:var(--fs-zahl);">' + U.signTxt(Math.round(pnl * 100) / 100, ' $') + '</div></div>' +
+        '<div class="tile"><div class="name">Positionen</div><div class="val" style="font-size:var(--fs-zahl);">' + b.positionen.length + '</div></div>' +
+        '<div class="tile"><div class="name">Status</div><div class="val" style="font-size:var(--fs-gross);">' +
           (d.momentumAn ? 'handelt selbst' : 'nur rechnen') + '</div></div></div>';
       if (mom.faellig && mom.plan) {
-        html += '<div style="font-size:12.5px; margin:8px 0; padding:8px 10px; border-left:3px solid var(--warn);">' +
+        html += '<div style="font-size:var(--fs-text); margin:8px 0; padding:8px 10px; border-left:3px solid var(--warn);">' +
           '<b>Rebalancing fällig.</b> ' + (d.momentumAn ? 'Wird beim nächsten Takt ausgeführt.' :
           'Automatik ist aus – Handlungsliste: ' +
           (mom.plan.verkaufen.length ? 'verkaufen ' + mom.plan.verkaufen.map(function (o) { return o.sym; }).join(', ') + '; ' : '') +
@@ -260,11 +260,11 @@
         var bD = d.driftBuch, bwD = drift.bewertung;
         var pnlD = bwD.wert - bD.start;
         eD.innerHTML = '<div class="depot-stats">' +
-          '<div class="tile"><div class="name">Depotwert</div><div class="val ' + (pnlD >= 0 ? 'pos' : 'neg') + '" style="font-size:17px;">' + U.money(bwD.wert) + '</div></div>' +
-          '<div class="tile"><div class="name">Ergebnis</div><div class="val ' + (pnlD >= 0 ? 'pos' : 'neg') + '" style="font-size:17px;">' + U.signTxt(Math.round(pnlD * 100) / 100, ' $') + '</div></div>' +
-          '<div class="tile"><div class="name">Positionen</div><div class="val" style="font-size:17px;">' + bD.positionen.length + '</div></div>' +
-          '<div class="tile"><div class="name">Signale offen laut Modell</div><div class="val" style="font-size:17px;">' + drift.info.heute.offen.length + '</div></div>' +
-          '<div class="tile"><div class="name">Status</div><div class="val" style="font-size:14px;">' +
+          '<div class="tile"><div class="name">Depotwert</div><div class="val ' + (pnlD >= 0 ? 'pos' : 'neg') + '" style="font-size:var(--fs-zahl);">' + U.money(bwD.wert) + '</div></div>' +
+          '<div class="tile"><div class="name">Ergebnis</div><div class="val ' + (pnlD >= 0 ? 'pos' : 'neg') + '" style="font-size:var(--fs-zahl);">' + U.signTxt(Math.round(pnlD * 100) / 100, ' $') + '</div></div>' +
+          '<div class="tile"><div class="name">Positionen</div><div class="val" style="font-size:var(--fs-zahl);">' + bD.positionen.length + '</div></div>' +
+          '<div class="tile"><div class="name">Signale offen laut Modell</div><div class="val" style="font-size:var(--fs-zahl);">' + drift.info.heute.offen.length + '</div></div>' +
+          '<div class="tile"><div class="name">Status</div><div class="val" style="font-size:var(--fs-gross);">' +
             (d.driftAn ? 'handelt selbst' : 'nur rechnen') + '</div></div></div>' +
           posTabelle(bD, daten.preise, true) +
           verworfenTabelle(drift.info.verworfen, 'Erkannt, aber nicht gehandelt', true);

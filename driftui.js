@@ -137,13 +137,13 @@
     el.innerHTML =
       '<div class="depot-stats">' +
         '<div class="tile"><div class="name">Ertrag p. a. (marktneutral)</div><div class="val ' +
-          (res.proJahr >= 0 ? 'pos' : 'neg') + '" style="font-size:17px;">' + U.signTxt(res.proJahr, ' %') + '</div></div>' +
-        '<div class="tile"><div class="name">t-Wert</div><div class="val" style="font-size:17px;">' + res.tWert + '</div></div>' +
-        '<div class="tile"><div class="name">Positive Monate</div><div class="val" style="font-size:17px;">' + res.positiveMonate + ' %</div></div>' +
-        '<div class="tile"><div class="name">Gemessene Monate</div><div class="val" style="font-size:17px;">' + res.verlauf.length + '</div></div>' +
-        '<div class="tile"><div class="name">Positionen gleichzeitig</div><div class="val" style="font-size:17px;">' + res.offenSchnitt + '</div></div>' +
+          (res.proJahr >= 0 ? 'pos' : 'neg') + '" style="font-size:var(--fs-zahl);">' + U.signTxt(res.proJahr, ' %') + '</div></div>' +
+        '<div class="tile"><div class="name">t-Wert</div><div class="val" style="font-size:var(--fs-zahl);">' + res.tWert + '</div></div>' +
+        '<div class="tile"><div class="name">Positive Monate</div><div class="val" style="font-size:var(--fs-zahl);">' + res.positiveMonate + ' %</div></div>' +
+        '<div class="tile"><div class="name">Gemessene Monate</div><div class="val" style="font-size:var(--fs-zahl);">' + res.verlauf.length + '</div></div>' +
+        '<div class="tile"><div class="name">Positionen gleichzeitig</div><div class="val" style="font-size:var(--fs-zahl);">' + res.offenSchnitt + '</div></div>' +
       '</div>' +
-      '<div style="font-size:12px; color:var(--ink-2); margin-top:8px;">' +
+      '<div style="font-size:var(--fs-neben); color:var(--ink-2); margin-top:8px;">' +
         res.positionen.toLocaleString('de-DE') + ' Positionen aus ' + wieViele + ' Werten · ' +
         res.monate[0] + ' bis ' + res.monate[res.monate.length - 1] + ' · ' +
         '<b class="' + (gut ? 'pos' : 'neg') + '">' +
@@ -172,7 +172,7 @@
     }).join('');
     el.innerHTML =
       (h.faellig.length
-        ? '<div style="font-size:12.5px; margin-bottom:8px; padding:8px 10px; border-left:3px solid var(--warn);">' +
+        ? '<div style="font-size:var(--fs-text); margin-bottom:8px; padding:8px 10px; border-left:3px solid var(--warn);">' +
           '<b>Heute fällig:</b> ' + h.faellig.map(function (f) { return U.esc(f.sym) + ' ' + f.richtung; }).join(', ') +
           ' – die Haltedauer von ' + h.halten + ' Handelstagen ist erreicht.</div>'
         : '') +
@@ -180,7 +180,7 @@
       '<th style="text-align:right;">Überraschung</th><th style="text-align:right;">Rang</th>' +
       '<th style="text-align:right;">seit</th><th style="text-align:right;">noch</th>' +
       '<th style="text-align:right;">Stand</th></tr></thead><tbody>' + zeilen + '</tbody></table>' +
-      '<div style="font-size:11.5px; color:var(--muted); margin-top:6px;">' +
+      '<div style="font-size:var(--fs-neben); color:var(--muted); margin-top:6px;">' +
       'Rang = Perzentil der Überraschung gegenüber den letzten ' + opts().fenster + ' Handelstagen. ' +
       'Simulation mit virtuellem Kapital, keine Anlageberatung.</div>';
   }

@@ -4136,6 +4136,15 @@ console.log('\n40) Tastatur, Semantik und Kontrast – die Oberflaeche ohne Maus
   var nurDunkel = tokenNamen(dunkelBlock).filter(function (t) { return tokenNamen(hellBlock).indexOf(t) < 0; });
   // --line ist die dokumentierte Ausnahme: es loest sich ueber --border am selben Element auf.
   nurHell = nurHell.filter(function (t) { return t !== '--line'; });
+  /* Diese Pruefung wurde fuer FARBEN geschrieben - damals war jedes Token eine. Seit
+   * der Design-Skala gibt es auch Geometrie-Token (Schriftgroessen, Radien, Abstaende),
+   * und die sind themenunabhaengig: eine 12px-Schrift ist im Dunkeln nicht anders gross.
+   * Stuenden sie in beiden Bloecken, waeren es zwei Wahrheiten, die auseinanderlaufen
+   * koennen - genau der Fehler, den diese Zusicherung eigentlich verhindern soll.
+   * Abschnitt 44 prueft fuer sie das Gegenteil: dass sie NUR einmal stehen. */
+  function istGeometrie(t) { return /^--(fs|r|ab)-/.test(t); }
+  nurHell = nurHell.filter(function (t) { return !istGeometrie(t); });
+  nurDunkel = nurDunkel.filter(function (t) { return !istGeometrie(t); });
   ok(nurHell.length === 0 && nurDunkel.length === 0,
      'kein Token steht nur in einem Thema  [' + (nurHell.concat(nurDunkel).join(', ') || 'keins') + ']');
 })();
@@ -4432,6 +4441,79 @@ console.log('\n41) Zustaende: was die App sagt, wenn etwas fehlt oder klemmt');
   ok(/navigator\.clipboard && navigator\.clipboard\.writeText/.test(sco) && /execCommand\('copy'\)/.test(sco),
      'Messung: Kopieren hat einen Rückfallweg, sonst passiert auf file:// nichts');
   ok(/Projektordner/.test(sco), 'Messung: es steht dabei, WO der Befehl läuft');
+})();
+
+/* ================= 44. Die Design-Skala =================
+ * Gezaehlt am 24.08.2026 ueber index.html und alle Renderer-Dateien: 708 Inline-Stile,
+ * darin SIEBZEHN verschiedene Schriftgroessen - 10,5 / 11,5 / 12,5 / 13,5 / 14,5 px
+ * mitgerechnet. Allein 11,5px kam 96-mal vor, 12,5px 57-mal. Halbe Pixel sieht niemand,
+ * aber jede dieser Groessen muss jemand pflegen, und beim naechsten Bauteil raet man,
+ * welche davon "die richtige" ist. Dazu zehn verschiedene Radien.
+ *
+ * Dieser Abschnitt ist eine Sperrklinke: Sobald irgendwo wieder eine nackte Pixelzahl
+ * auftaucht, wird er rot. Ohne das waechst die Zahl der Groessen einfach nach - genau
+ * so ist sie ja entstanden. */
+(function () {
+  console.log('\n44) Design-Skala: eine Schriftleiter, drei Radien, keine halben Pixel');
+  var html = fs.readFileSync(__dirname + '/index.html', 'utf8');
+  var dateien = fs.readdirSync(__dirname).filter(function (f) {
+    return /\.js$/.test(f) && !/^test-/.test(f);
+  });
+
+  // --- Die Leiter existiert und steht im hellen :root, nicht je Thema ---
+  var wurzel = /:root \{([\s\S]*?)\n  \}/.exec(html);
+  ok(!!wurzel, 'Skala: der Token-Block ist auffindbar');
+  var LEITER = ['--fs-klein', '--fs-neben', '--fs-text', '--fs-gross', '--fs-zahl', '--fs-titel'];
+  LEITER.forEach(function (t) {
+    ok(new RegExp(t + ':\\s*\\d+px').test(wurzel[1]), 'Schriftleiter: ' + t + ' ist definiert');
+  });
+  ['--r-klein', '--r-normal', '--r-gross', '--r-kreis', '--r-pille'].forEach(function (t) {
+    ok(new RegExp(t + ':').test(wurzel[1]), 'Radien: ' + t + ' ist definiert');
+  });
+  /* Schriftgroessen sind KEINE Farben - sie duerfen sich zwischen hell und dunkel nicht
+   * unterscheiden. Stuenden sie im Dunkel-Block noch einmal, waere das eine zweite
+   * Wahrheit, die auseinanderlaufen kann - genau der Fehler, an dem --good gescheitert ist. */
+  var dunkel = /:root\[data-theme="dark"\] \{([\s\S]*?)\n  \}/.exec(html);
+  ok(!!dunkel, 'Skala: der Dunkel-Block ist auffindbar');
+  LEITER.concat(['--r-klein', '--r-normal', '--r-gross']).forEach(function (t) {
+    ok(dunkel[1].indexOf(t + ':') === -1, 'Skala: ' + t + ' wird im Dunkelthema NICHT neu gesetzt');
+  });
+
+  // --- Keine halben Pixel mehr auf der Leiter ---
+  var stufen = LEITER.map(function (t) {
+    return parseFloat(/:\s*([\d.]+)px/.exec(new RegExp(t + ':\\s*[\\d.]+px').exec(wurzel[1])[0])[1]);
+  });
+  ok(stufen.every(function (s) { return s === Math.round(s); }),
+     'Schriftleiter: jede Sprosse ist eine ganze Zahl  [' + stufen.join(', ') + ']');
+  ok(stufen.length === new Set(stufen).size && stufen.slice().sort(function (a, b) { return a - b; }).join() === stufen.join(),
+     'Schriftleiter: die Sprossen sind verschieden und aufsteigend sortiert');
+
+  // --- Die Sperrklinke: nirgends mehr eine nackte Pixelzahl ---
+  var suender = [];
+  ['index.html'].concat(dateien).forEach(function (f) {
+    var s = fs.readFileSync(__dirname + '/' + f, 'utf8');
+    (s.match(/font-size:\s*[\d.]+px/g) || []).forEach(function (t) { suender.push(f + ' ' + t); });
+    (s.match(/border-radius:\s*[\d.]+px/g) || []).forEach(function (t) { suender.push(f + ' ' + t); });
+  });
+  ok(suender.length === 0,
+     'Sperrklinke: keine nackte Pixelzahl fuer Schrift oder Radius mehr' +
+     (suender.length ? ' – ' + suender.slice(0, 5).join(', ') : ''));
+
+  /* Gegenprobe, dass die Sperrklinke wirklich greift: haette sie ein Loch, waere die
+   * Zusicherung darueber wertlos. Also einmal auf einem erfundenen Text nachweisen,
+   * dass genau das Muster gefunden wird, das im Paket nicht mehr vorkommen darf. */
+  var probe = 'a{font-size: 11.5px;} b{border-radius:14px;}';
+  ok((probe.match(/font-size:\s*[\d.]+px/g) || []).length === 1 &&
+     (probe.match(/border-radius:\s*[\d.]+px/g) || []).length === 1,
+     'Sperrklinke: das Muster findet halbe Pixel und krumme Radien wirklich');
+
+  // --- Die Abstandsleiter steht bereit, auch wenn sie noch nicht ueberall gilt ---
+  /* Bewusst NICHT durchgesetzt: die Abstaende lagen schon fast alle auf einem 2-px-
+   * Raster. Eine 4er-Leiter haette 89 Stellen verschoben (6px kam 36-mal vor, 10px
+   * 30-mal, 14px 23-mal) - fuer Symmetrie im Regelwerk, mit echtem Umbruchrisiko. */
+  ['--ab-1', '--ab-2', '--ab-3', '--ab-4', '--ab-5'].forEach(function (t) {
+    ok(new RegExp(t + ':\\s*\\d+px').test(wurzel[1]), 'Abstandsleiter: ' + t + ' steht bereit');
+  });
 })();
 
 console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');

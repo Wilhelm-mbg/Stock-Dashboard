@@ -145,7 +145,7 @@
     var rang = M.rangfolge(DATEN.map, i, o);
     if (!aus || !rang) { el.innerHTML = '<div class="empty">Zu wenige Werte für eine Rangfolge.</div>'; return; }
     var stand = new Date(DATEN.zeiten[i]).toLocaleDateString('de-DE');
-    el.innerHTML = '<div style="font-size:12px; color:var(--muted); margin-bottom:8px;">Stand ' + stand +
+    el.innerHTML = '<div style="font-size:var(--fs-neben); color:var(--muted); margin-bottom:8px;">Stand ' + stand +
       ' · stärkste ' + Math.round(o.anteil * 100) + ' % von ' + rang.length + ' Werten · Rückblick ' +
       o.rueckblick + ' Tage ohne die letzten ' + o.luecke + '</div>' +
       '<table class="tbl"><thead><tr><th>#</th><th>Wert</th><th style="text-align:right;">Stärke</th></tr></thead><tbody>' +
@@ -153,7 +153,7 @@
         return '<tr><td>' + (k + 1) + '</td><td><b>' + U.esc(x.sym) + '</b></td><td style="text-align:right;" class="' +
           U.signCls(x.staerke) + '">' + U.signTxt(x.staerke * 100, ' %') + '</td></tr>';
       }).join('') + '</tbody></table>' +
-      '<div style="font-size:11.5px; color:var(--muted); margin-top:8px;">Die Schwächsten zum Vergleich: ' +
+      '<div style="font-size:var(--fs-neben); color:var(--muted); margin-top:8px;">Die Schwächsten zum Vergleich: ' +
       rang.slice(-5).map(function (x) { return U.esc(x.sym) + ' ' + Math.round(x.staerke * 100) + ' %'; }).join(', ') + '</div>';
   }
 
@@ -185,7 +185,7 @@
         '</td><td style="text-align:right;" class="' + U.signCls(rm) + '">' + U.signTxt(rm, ' %') + '</td></tr>';
     });
     el.innerHTML =
-      '<div style="font-size:12px; color:var(--muted); margin-bottom:6px;">Prüfzeitraum ab ' + PRUEFJAHR +
+      '<div style="font-size:var(--fs-neben); color:var(--muted); margin-bottom:6px;">Prüfzeitraum ab ' + PRUEFJAHR +
         ' – die Parameter wurden auf den Jahren <b>davor</b> ausgesucht und hier nicht mehr angepasst.</div>' +
       '<dl class="kv">' +
       '<dt>Depot</dt><dd><b>' + d.kapital.toFixed(1) + '×</b> (' + U.signTxt(d.proJahr, ' % p. a.') + ')</dd>' +
@@ -195,7 +195,7 @@
       '<dt>Umschichtungen</dt><dd>' + d.schritte + ' · je ' + Math.round(d.umschlag * 100) + ' % des Depots getauscht</dd>' +
       '<dt>Bessere Jahre</dt><dd>' + besser + ' von ' + jahre.length + '</dd>' +
       '</dl>' +
-      (dAll ? '<div style="font-size:11.5px; color:var(--muted); border-top:1px solid var(--grid); padding-top:8px; margin-top:4px;">' +
+      (dAll ? '<div style="font-size:var(--fs-neben); color:var(--muted); border-top:1px solid var(--grid); padding-top:8px; margin-top:4px;">' +
         'Über die <b>gesamte</b> Historie ab ' + new Date(DATEN.zeiten[0]).getFullYear() + ': ' + dAll.kapital.toFixed(0) + '× (' +
         U.signTxt(dAll.proJahr, ' % p. a.') + ') gegen ' + dAll.markt.toFixed(0) + '× (' + U.signTxt(dAll.marktProJahr, ' % p. a.') + '). ' +
         'Diese Zahl enthält den Zeitraum, auf dem die Parameter ausgesucht wurden – sie ist deshalb zu schön und taugt nicht als Beleg.</div>' : '') +
