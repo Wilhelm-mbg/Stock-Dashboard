@@ -5,3 +5,8 @@ dist/
 # Es wird nur in den Installer eingepackt (bewusster, dokumentierter Kompromiss),
 # aber ein Token in der Git-Historie waere fuer immer oeffentlich.
 telemetrie.json
+
+# Arbeitsstaende des Browser-Treibers (.claude/skills/dashboard-fahren)
+.bilder/
+schnappschuss.json
+dashboard-einzeldatei.html
