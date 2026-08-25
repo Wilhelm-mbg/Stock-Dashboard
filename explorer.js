@@ -90,7 +90,7 @@
       '<h3>Einen Wert öffnen</h3>' +
       '<div style="color:var(--muted); font-size:var(--fs-text);">Suche nach Ticker oder Name (auch deutsche Aktien, ETFs, Indizes, Krypto) – oder starte mit einem Klick:</div>' +
       '<div class="popchips">' + POPULAR.map(function (p, i) { return '<button type="button" data-pop="' + i + '">' + U.esc(p.sym) + ' · ' + U.esc(p.name) + '</button>'; }).join('') + '</div>' +
-      '<div style="color:var(--muted); font-size:var(--fs-neben); margin-top:10px;">In der Detail-Ansicht: Chart von 1 Tag bis Max., Kennzahlen, News, „KI-Analyse anfordern“ und „Zur Handels-Watchlist“ (dann handeln die Strategien den Wert mit).</div>' +
+      '<div style="color:var(--muted); font-size:var(--fs-neben); margin-top:10px;">In der Detail-Ansicht: Chart von 1 Tag bis Max., Kennzahlen, News, „Analyse anfordern“ und „Zur Handels-Watchlist“ (dann handeln die Strategien den Wert mit).</div>' +
       '</div>';
     el.querySelectorAll('[data-pop]').forEach(function (b) {
       b.addEventListener('click', function () {
@@ -906,7 +906,7 @@
       : '<div class="loading">Keine News gefunden.</div>';
   }
 
-  /* ================= KI-Analyse ================= */
+  /* ================= Analyse (regelbasiert) ================= */
   function analysisContext() {
     var daily = CURDATA.daily;
     var closes = daily.series.map(function (p) { return p[1]; });
@@ -959,7 +959,7 @@
     var body = localAnalysis(c);
     st.textContent = '';
     btn.disabled = false;
-    document.getElementById('aiTitle').textContent = 'KI-Analyse: ' + CUR.name + ' (' + CUR.sym + ') – regelbasiert';
+    document.getElementById('aiTitle').textContent = 'Analyse: ' + CUR.name + ' (' + CUR.sym + ') – regelbasiert';
     document.getElementById('aiBody').innerHTML = U.md(body) +
       '<div class="warn">Simulations-/Informationszweck. Automatische Analysen (insbesondere Elliott-Wellen-Zählungen) sind unsicher und mehrdeutig. Keine Anlageberatung.</div>';
     window.openModal('aiModalBg');

@@ -17,7 +17,7 @@
     d: function (ms) { return new Date(ms).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: '2-digit' }); },
     signCls: function (v) { return v > 0 ? 'pos' : (v < 0 ? 'neg' : ''); },
     signTxt: function (v, unit) { return (v > 0 ? '+' : '') + U.nf2.format(v) + (unit || ''); },
-    // Mini-Markdown (Überschriften, Listen, fett) für die KI-Analyse
+    // Mini-Markdown (Überschriften, Listen, fett) für die Analyse-Ausgabe
     md: function (txt) {
       var lines = String(txt).split(/\r?\n/), out = [], inList = false;
       function fmtInline(s) {

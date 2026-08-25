@@ -1053,7 +1053,7 @@
         <h3>Kennzahlen</h3>
         <dl class="kv" id="expStats"></dl>
         <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
-          <button class="btn" id="aiBtn">KI-Analyse anfordern</button>
+          <button class="btn" id="aiBtn">Analyse anfordern</button>
           <button class="btn ghost" id="watchBtn">Zur Handels-Watchlist</button>
           <span id="aiStatus" style="color:var(--muted); font-size:var(--fs-neben);"></span>
         </div>
@@ -1740,7 +1740,7 @@
     <details class="how" style="margin-bottom:12px;">
       <summary>Berichte &amp; Werkzeuge</summary>
       <div style="display:flex; gap:8px; margin:10px 0; flex-wrap:wrap; align-items:center;">
-        <button class="btn ghost" id="retroBtn">KI-Retrospektive</button>
+        <button class="btn ghost" id="retroBtn">Retrospektive</button>
         <button class="btn ghost" id="weeklyBtn">Wochenreport</button>
         <button class="btn ghost" id="reportShowBtn" title="Zeigt den Bericht der automatischen Analyse aus dem Daten-Ordner">Analyse-Bericht</button>
         <button class="btn ghost" id="exportDataBtn" title="Schreibt analyse-daten.json + trades.csv nach Downloads\Markt-Dashboard-Daten – ohne Zugangsdaten. Läuft zusätzlich automatisch alle 10 Minuten.">Analyse-Export</button>
@@ -1775,11 +1775,11 @@
   </div>
 </div><!-- /tab-strategien -->
 
-<!-- KI-Analyse-Modal -->
+<!-- Analyse-Modal -->
 <div class="modal-bg" id="aiModalBg">
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="aiTitle">
     <button class="btn ghost close" data-close="aiModalBg">Schließen ×</button>
-    <h2 id="aiTitle">KI-Analyse</h2>
+    <h2 id="aiTitle">Analyse</h2>
     <div class="analysis" id="aiBody"></div>
   </div>
 </div>
