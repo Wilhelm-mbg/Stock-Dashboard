@@ -58,6 +58,10 @@ Dazu die Zusatzpunkte 3–12 der Kritik: fertig.
   Aufzeichnung, Einzeldatei) und bei Tauglichkeit einbauen; sonst mit Begründung vorlegen.
 - **Danach die kleinen Wünsche, Reihenfolge fest:** #69 lokales Backup → #82 Herkunftsland-
   Filter Marktkarte → #70 Radar-Streusuchen → #33 zweiter Trendwende-Detektor.
+- **#86/#87/#88 — drei Messwerkzeug-Funde aus der Methodenkritik** (Analytiker, 2. Lauf):
+  toter aussicht-Detektor, falscher A7-Protokolltext, Placebo ohne Einstiegskonvention.
+  Gehören mit #85 zusammen VOR die Neumessung; #88 ist zudem Vorbedingung für den
+  Tüftler-Kandidaten glockendruck-nacht.
 - **#85 — laufende Quote-Stempel-Kerze im 60m-Archiv abschneiden** (Analytiker-Fund
   25.08.): Abruf-Werkzeug und/oder Messmaschine müssen den unfertigen letzten Balken
   verwerfen. **Vorstufe der Neumessung** — muss vor ihr erledigt sein.
