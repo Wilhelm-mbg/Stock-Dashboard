@@ -7504,6 +7504,14 @@ console.log('\n49) Einwegschalter: eine Sicherung abstellen und nicht zurueckkoe
      'Und er laesst sich auch wieder zuruecknehmen - sonst ist es ein Einwegschalter');
   ok(/data-edgescharf/.test(dep),
      'Es gibt einen Knopf dafuer, nicht nur eine Codestelle');
+  /* UND ER MUSS VERDRAHTET SEIN. Ein Knopf ohne Zuhoerer sieht im Quelltext genauso aus
+   * wie einer mit - das ist dieselbe Falle wie der tote Schutz aus Abschnitt 48, nur
+   * eine Ebene hoeher. Besonders wichtig, weil der Zuhoerer in depot.js/init() sitzt und
+   * dieser Bereich gerade umgebaut wird (Struktur-Plan vom 25.08., Stufe B). */
+  ok(/addEventListener\('click'[\s\S]{0,600}data-edgescharf/.test(dep),
+     'Der Knopf hat einen Zuhoerer - sonst waere er Zierde');
+  ok(/addEventListener\('click'[\s\S]{0,600}data-edgefrei/.test(dep),
+     'Der Gegenknopf ebenfalls');
 
   /* Der Kern: solange der Waechter aus ist, MUSS das Band stehen. */
   var fn = /function edgePauseAnzeigen\(\)[\s\S]*?\n  \}/.exec(dep);
