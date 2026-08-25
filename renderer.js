@@ -40,7 +40,6 @@
   var nfP = new Intl.NumberFormat('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   var nf0 = new Intl.NumberFormat('de-DE', { maximumFractionDigits: 0 });
   function fmt(v, dec) { return dec === 0 ? nf0.format(v) : nfP.format(v); }
-  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function pctChip(pct) {
     if (pct === null || pct === undefined || isNaN(pct)) return '<span class="chip flat">–</span>';
     var cls = pct > 0.001 ? 'up' : (pct < -0.001 ? 'down' : 'flat');
@@ -270,9 +269,9 @@
     // Kacheln
     var tiles = INDICES.map(function (ix) {
       var q = Q[ix.y];
-      if (!q) return '<div class="tile"><div class="name">' + esc(ix.name) + '</div><div class="val">–</div></div>';
+      if (!q) return '<div class="tile"><div class="name">' + U.esc(ix.name) + '</div><div class="val">–</div></div>';
       return '<div class="tile">' +
-        '<div class="name">' + esc(ix.name) + '</div>' +
+        '<div class="name">' + U.esc(ix.name) + '</div>' +
         '<div class="val">' + fmt(q.price, ix.dec) + (ix.unit ? '&thinsp;' + ix.unit : '') + '</div>' +
         /* NICHT class="sub": das ist die Klasse der Reiter-Unterseiten, und deren
            Regel .sub{display:none} hat die Tagesbewegung auf allen sechs Kacheln
@@ -288,8 +287,8 @@
     var sorted = withQ.slice().sort(function (a, b) { return Q[b.y].pct - Q[a.y].pct; });
     function moverRows(list) {
       return list.map(function (s) {
-        return '<div class="mover-row" data-sym="' + esc(s.y) + '"><span class="sym">' + esc(s.y) + '</span>' +
-          '<span class="nm">' + esc(s.name) + '</span>' + ppKurz(Q[s.y]) + pctChip(Q[s.y].pct) + '</div>';
+        return '<div class="mover-row" data-sym="' + U.esc(s.y) + '"><span class="sym">' + U.esc(s.y) + '</span>' +
+          '<span class="nm">' + U.esc(s.name) + '</span>' + ppKurz(Q[s.y]) + pctChip(Q[s.y].pct) + '</div>';
       }).join('');
     }
     setzeInhalt('winners', moverRows(sorted.slice(0, 3)));
@@ -327,8 +326,8 @@
            * bleibt die Zeile weg statt einen Platzhalter zu zeigen. */
           var kursT = Q[s.y] && Q[s.y].price != null
             ? '<span class="k">' + nfP.format(Q[s.y].price) + '&nbsp;$</span>' : '';
-          return '<div class="hz" data-heat="' + esc(s.y) + '" title="' + esc(s.name + ' ' + sign + nfP.format(pct) + ' %' + ppT) + '" style="background:' + bg + '">' +
-            '<span class="s">' + esc(s.y) + '</span>' + kursT +
+          return '<div class="hz" data-heat="' + U.esc(s.y) + '" title="' + U.esc(s.name + ' ' + sign + nfP.format(pct) + ' %' + ppT) + '" style="background:' + bg + '">' +
+            '<span class="s">' + U.esc(s.y) + '</span>' + kursT +
             '<span class="p">' + sign + nfP.format(pct) + '&nbsp;%</span>' +
             ppKurz(Q[s.y]) + '</div>';
         }).join('');
@@ -338,7 +337,7 @@
     // Karten
     function card(s) {
       var q = Q[s.y];
-      if (!q) return '<div class="card"><div class="top"><span class="sym">' + esc(s.y) + '</span><span class="nm">' + esc(s.name) + '</span></div><div class="prc-row"><span class="prc">–</span></div></div>';
+      if (!q) return '<div class="card"><div class="top"><span class="sym">' + U.esc(s.y) + '</span><span class="nm">' + U.esc(s.name) + '</span></div><div class="prc-row"><span class="prc">–</span></div></div>';
       var lo = q.lo52, hi = q.hi52, rangeHtml = '';
       if (lo && hi && hi > lo) {
         var pos = Math.max(0, Math.min(100, (q.price - lo) / (hi - lo) * 100));
@@ -356,8 +355,8 @@
           (q.pp.phase === 'vorboerslich' ? 'vorb.' : 'nachb.') + ' ' + nfP.format(q.pp.kurs) + '&thinsp;$ ' +
           (q.pp.pct > 0 ? '+' : '') + nfP.format(q.pp.pct) + '&thinsp;%</div>';
       }
-      return '<div class="card" data-sym="' + esc(s.y) + '">' +
-        '<div class="top"><span class="sym">' + esc(s.y) + '</span><span class="nm">' + esc(s.name) + '</span></div>' +
+      return '<div class="card" data-sym="' + U.esc(s.y) + '">' +
+        '<div class="top"><span class="sym">' + U.esc(s.y) + '</span><span class="nm">' + U.esc(s.name) + '</span></div>' +
         '<div class="prc-row"><span class="prc">' + nfP.format(q.price) + '&thinsp;$</span>' + pctChip(q.pct) + '</div>' +
         ppHtml +
         sparkSVG(q.series, 240, 44, s.y) +
@@ -374,7 +373,7 @@
     if (lastOk) {
       stampTxt += ' · Stand: ' + lastOk.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + ' Uhr';
     }
-    document.getElementById('stamp').innerHTML = '<span class="dot ' + (open ? 'open' : 'closed') + '"></span>' + esc(stampTxt);
+    document.getElementById('stamp').innerHTML = '<span class="dot ' + (open ? 'open' : 'closed') + '"></span>' + U.esc(stampTxt);
     // Cockpit-Marktstatus – die übrigen Cockpit-Felder füllt depot.js
     var ckM = document.getElementById('ckMarkt');
     if (ckM) ckM.innerHTML = open ? '<span class="mdot open"></span>offen' : '<span class="mdot closed"></span>geschlossen';
@@ -422,10 +421,10 @@
     if (!r || !r.ok || !r.liste || !r.liste.length) return;
     var namen = r.liste.slice(0, 6).map(function (d) { return defektName(d.was); });
     var rest = r.liste.length - namen.length;
-    var wo = r.liste[0].datei ? ' Die Reste liegen unter <code>' + esc(r.liste[0].datei) + '</code>.' : '';
+    var wo = r.liste[0].datei ? ' Die Reste liegen unter <code>' + U.esc(r.liste[0].datei) + '</code>.' : '';
     if (typeof window.__warnband === 'function') {
       window.__warnband('defekt', '<b>' + r.liste.length + ' gespeicherte Datei(en) waren unlesbar</b> – ' +
-        esc(namen.join(', ')) + (rest > 0 ? ' und ' + rest + ' weitere' : '') +
+        U.esc(namen.join(', ')) + (rest > 0 ? ' und ' + rest + ' weitere' : '') +
         '. Sie wurden beiseitegelegt statt überschrieben, der Bestand beginnt dort neu.' + wo);
     }
   }
@@ -441,8 +440,8 @@
   function renderNews() {
     setzeInhalt('news', NEWS.map(function (n) {
       var when = n.t ? new Date(n.t).toLocaleString('de-DE', { weekday: 'short', hour: '2-digit', minute: '2-digit' }) + ' Uhr' : '';
-      return '<div class="news-item"><div class="t"><a href="' + esc(safeUrl(n.url)) + '" target="_blank" rel="noopener">' + esc(n.title) + '</a></div>' +
-        '<div class="src">' + esc(n.source) + (when ? '<br>' + esc(when) : '') + '</div></div>';
+      return '<div class="news-item"><div class="t"><a href="' + U.esc(safeUrl(n.url)) + '" target="_blank" rel="noopener">' + U.esc(n.title) + '</a></div>' +
+        '<div class="src">' + U.esc(n.source) + (when ? '<br>' + U.esc(when) : '') + '</div></div>';
     }).join('') || '<div class="loading">Keine News gefunden.</div>');
     renderTicker();
   }
@@ -452,7 +451,7 @@
    * Marktspekulationen (Uebernahmegeruechte, Beteiligungen, Squeeze-Kandidaten)
    * und schreibt sie als spekulationen.json in den Daten-Ordner. Diese Karte ZEIGT
    * sie nur - ungemessen, reine Beobachtung, gehandelt wird davon nichts.
-   * Alles hier ist Fremdinhalt aus dem Web: konsequent esc() und safeUrl(),
+   * Alles hier ist Fremdinhalt aus dem Web: konsequent U.esc() und safeUrl(),
    * feste Kappen, und eine kaputte Datei laesst die Karte einfach in Ruhe. */
   var SPEK_ART = { uebernahme: 'Übernahme', beteiligung: 'Beteiligung', analyst: 'Analysten', squeeze: 'Squeeze', geruecht: 'Gerücht', ereignis: 'Ereignis' };
   var spekGesehen = null;   // ids bereits gemeldeter Hoch-Eintraege (persistiert)
@@ -494,7 +493,7 @@
    * versprach also dauerhaft etwas, das nicht mehr kommt. Wer das liest, wartet. */
   function ablageNichtDa(el, was) {
     if (!el) return;
-    el.innerHTML = '<div class="loading">' + esc(was) + ' derzeit nicht erreichbar – ' +
+    el.innerHTML = '<div class="loading">' + U.esc(was) + ' derzeit nicht erreichbar – ' +
       'die Gemeinschafts-Ablage antwortet nicht. Der nächste Versuch läuft automatisch.</div>';
   }
 
@@ -546,14 +545,14 @@
       var alt = jetzt - r.mtime > 20 * 3600000;
       el.innerHTML = ein.map(function (z) {
         return '<div class="spek-zeile gestapelt">' +
-          '<span class="sym" data-heat="' + esc(z.sym) + '" title="Im Explorer öffnen">' + esc(z.sym) +
-          (z.name ? ' <span class="firma">' + esc(z.name) + '</span>' : '') + '</span>' +
+          '<span class="sym" data-heat="' + U.esc(z.sym) + '" title="Im Explorer öffnen">' + U.esc(z.sym) +
+          (z.name ? ' <span class="firma">' + U.esc(z.name) + '</span>' : '') + '</span>' +
           '<span class="spek-chip ' + z.chance + '">' + z.chance.toUpperCase() + '</span>' +
-          '<span class="spek-chip mittel" style="border-style:dashed;">' + esc(z.art) + '</span>' +
-          '<span class="these" title="' + esc(z.these) + '">' + esc(z.kurz) + (z.begruendung ? ' <span class="beg">– ' + esc(z.begruendung) + '</span>' : '') + '</span>' +
+          '<span class="spek-chip mittel" style="border-style:dashed;">' + U.esc(z.art) + '</span>' +
+          '<span class="these" title="' + U.esc(z.these) + '">' + U.esc(z.kurz) + (z.begruendung ? ' <span class="beg">– ' + U.esc(z.begruendung) + '</span>' : '') + '</span>' +
           (z.quellen.length ? '<span class="quellen">' + z.quellen.map(function (q, qi) {
-            return '<a href="' + esc(safeUrl(q.url)) + '" target="_blank" rel="noopener">' +
-              esc(typeof q.titel === 'string' && q.titel ? q.titel.slice(0, 60) : 'Quelle ' + (qi + 1)) + '</a>';
+            return '<a href="' + U.esc(safeUrl(q.url)) + '" target="_blank" rel="noopener">' +
+              U.esc(typeof q.titel === 'string' && q.titel ? q.titel.slice(0, 60) : 'Quelle ' + (qi + 1)) + '</a>';
           }).join(' · ') + '</span>' : '') +
           '</div>';
       }).join('') +
@@ -599,7 +598,7 @@
    * (0,23 Pp je 3 h beim Standard-Schein) traegt so etwas nicht. Wer das handeln will,
    * misst es vorher - so wie alles andere hier auch.
    *
-   * Fremdinhalt aus dem Netz: konsequent esc() und safeUrl(), feste Kappen, und eine
+   * Fremdinhalt aus dem Netz: konsequent U.esc() und safeUrl(), feste Kappen, und eine
    * kaputte Datei laesst die Karte einfach in Ruhe. */
   var insiderGesehen = null;
   function geldKurz(v) {
@@ -655,23 +654,23 @@
       var alt = jetzt - r.mtime > 26 * 3600000;   // Meldungen kommen werktags, nicht stuendlich
       el.innerHTML = ein.map(function (z) {
         var kopf = z.wer.length
-          ? esc(z.wer[0].person) + (z.wer[0].rolle ? ' <span class="beg">(' + esc(kappe(z.wer[0].rolle, 40)) + ')</span>' : '') +
+          ? U.esc(z.wer[0].person) + (z.wer[0].rolle ? ' <span class="beg">(' + U.esc(kappe(z.wer[0].rolle, 40)) + ')</span>' : '') +
             (z.anzahl > 1 ? ' <span class="beg">und ' + (z.anzahl - 1) + ' weitere' + (z.anzahl === 2 ? 'r' : '') + '</span>' : '')
           : '<span class="beg">Meldende Person nicht lesbar</span>';
         var detail = (z.stueck > 0 && z.kurs > 0)
           ? ' – ' + nf0.format(z.stueck) + ' Stück zu ' + fmt(z.kurs, 2) + ' $'
           : '';
         return '<div class="spek-zeile gestapelt">' +
-          '<span class="sym" data-heat="' + esc(z.sym) + '" title="Im Explorer öffnen">' + esc(z.sym) +
-          (z.name ? ' <span class="firma">' + esc(z.name) + '</span>' : '') + '</span>' +
-          '<span class="spek-chip kauf">' + esc(geldKurz(z.wert)) + '</span>' +
+          '<span class="sym" data-heat="' + U.esc(z.sym) + '" title="Im Explorer öffnen">' + U.esc(z.sym) +
+          (z.name ? ' <span class="firma">' + U.esc(z.name) + '</span>' : '') + '</span>' +
+          '<span class="spek-chip kauf">' + U.esc(geldKurz(z.wert)) + '</span>' +
           (z.anzahl > 1 ? '<span class="spek-chip cluster">' + z.anzahl + ' INSIDER</span>' : '') +
           (z.imUniversum ? '<span class="spek-chip univ">im Universum</span>' : '') +
           '<span class="these">' + kopf + detail +
           ' <span class="beg">· gemeldet ' + new Date(z.zeit).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' }) + '</span></span>' +
           (z.quellen.length ? '<span class="quellen">' + z.quellen.map(function (q, qi) {
-            return '<a href="' + esc(safeUrl(q.url)) + '" target="_blank" rel="noopener">' +
-              esc(typeof q.titel === 'string' && q.titel ? q.titel.slice(0, 60) : 'Quelle ' + (qi + 1)) + '</a>';
+            return '<a href="' + U.esc(safeUrl(q.url)) + '" target="_blank" rel="noopener">' +
+              U.esc(typeof q.titel === 'string' && q.titel ? q.titel.slice(0, 60) : 'Quelle ' + (qi + 1)) + '</a>';
           }).join(' · ') + '</span>' : '') +
           '</div>';
       }).join('') +
@@ -809,7 +808,7 @@
       '</span></div>';
     var rumpf;
     if (hinweis) {
-      rumpf = '<div class="loading">' + esc(hinweis) + '</div>';
+      rumpf = '<div class="loading">' + U.esc(hinweis) + '</div>';
     } else if (!vormarktStand) {
       rumpf = '<div class="loading">Noch nicht gesucht.</div>';
     } else if (!vormarktStand.zeilen.length) {
@@ -819,8 +818,8 @@
     } else {
       rumpf = vormarktStand.zeilen.map(function (z) {
         return '<div class="spek-zeile">' +
-          '<span class="sym" data-heat="' + esc(z.sym) + '" title="Im Explorer öffnen">' + esc(z.sym) +
-          (z.name ? ' <span class="firma">' + esc(z.name) + '</span>' : '') + '</span>' +
+          '<span class="sym" data-heat="' + U.esc(z.sym) + '" title="Im Explorer öffnen">' + U.esc(z.sym) +
+          (z.name ? ' <span class="firma">' + U.esc(z.name) + '</span>' : '') + '</span>' +
           '<span class="spek-chip kauf">+' + fmt(z.luecke, 2) + ' %</span>' +
           '<span class="these">' + fmt(z.kurs, 2) + ' $ vorbörslich' +
           ' <span class="beg">· in ' + nf0.format(z.kerzen) + ' von 66 Vorbörsen-Kerzen gehandelt' +
@@ -867,7 +866,7 @@
     if (!el) return;
     if (!NEWS.length) { el.style.display = 'none'; return; }
     var stueck = NEWS.slice(0, 20).map(function (n) {
-      return '<a href="' + esc(safeUrl(n.url)) + '" target="_blank" rel="noopener">' + esc(n.title) + '</a>' +
+      return '<a href="' + U.esc(safeUrl(n.url)) + '" target="_blank" rel="noopener">' + U.esc(n.title) + '</a>' +
         '<span class="tickTrenn">•</span>';
     }).join('');
     el.style.display = 'block';
@@ -915,14 +914,14 @@
     var newsTeil = '<div class="hv-news" id="hvNews"><span class="loading">News werden geladen …</span></div>';
     var c = HOVER_NEWS[s.y];
     if (c && Date.now() - c.t < 30 * 60000) newsTeil = '<div class="hv-news" id="hvNews">' + hoverNewsHtml(c.items) + '</div>';
-    return '<div class="hv-kopf"><b>' + esc(s.y) + '</b> · ' + esc(s.name) + '</div>' + z.join('') + newsTeil;
+    return '<div class="hv-kopf"><b>' + U.esc(s.y) + '</b> · ' + U.esc(s.name) + '</div>' + z.join('') + newsTeil;
   }
 
   function hoverNewsHtml(items) {
     if (!items || !items.length) return '<span class="loading">Keine aktuellen News zu diesem Wert.</span>';
     return items.slice(0, 3).map(function (n2) {
-      return '<a href="' + esc(safeUrl(n2.url)) + '" target="_blank" rel="noopener">' + esc(n2.title) + '</a>' +
-        '<span class="src">' + esc(n2.source) + '</span>';
+      return '<a href="' + U.esc(safeUrl(n2.url)) + '" target="_blank" rel="noopener">' + U.esc(n2.title) + '</a>' +
+        '<span class="src">' + U.esc(n2.source) + '</span>';
     }).join('');
   }
 

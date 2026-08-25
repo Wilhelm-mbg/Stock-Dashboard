@@ -1026,7 +1026,10 @@ console.log('\n17b) Oberflaeche: Altlasten und Verdrahtung');
      'Radar: die Chance-Einstufung wird als Setzung ausgewiesen');
   // Wunsch #49: Firmenname als Label neben dem Ticker, These auf einen Satz gekuerzt
   ok(/class="firma"/.test(r) && /esc\(z\.name\)/.test(r), 'Radar #49: Firmenname steht escaped neben dem Ticker');
-  ok(/function spekKurz\(/.test(r) && /esc\(z\.kurz\)/.test(r) && /title="' \+ esc\(z\.these\)/.test(r),
+  /* Der Escape-Aufruf heisst seit dem 25.08.2026 U.esc - eine Kopie weniger im Paket.
+   * Gemessen wird deshalb die Eigenschaft und nicht der Name: der Tooltip entsteht aus
+   * z.these, und er laeuft durch eine Escape-Funktion. */
+  ok(/function spekKurz\(/.test(r) && /esc\(z\.kurz\)/.test(r) && /title="' \+ (U\.)?esc\(z\.these\)/.test(r),
      'Radar #49: These gekuerzt, voller Wortlaut bleibt als Tooltip');
   /* P5 (25.08.2026): These und Begruendung wurden hart auf 240 Zeichen geschnitten. Auf
    * der Karte endete der Satz dann einfach ("… veroeffentlicht, der MPS", "Was danach
@@ -4916,6 +4919,22 @@ console.log('\n41) Zustaende: was die App sagt, wenn etwas fehlt oder klemmt');
   ok(suender.length === 0,
      'Sperrklinke: keine nackte Pixelzahl fuer Schrift oder Radius mehr' +
      (suender.length ? ' – ' + suender.slice(0, 5).join(', ') : ''));
+
+  /* Zweite Sperrklinke, gleiche Bauart: EINE Escape-Funktion im ganzen Paket.
+   * Es waren vier Kopien, und sie waren nicht alle gleich - renderer.js schrieb
+   * String(s) statt String(s == null ? '' : s) und machte damit aus einem fehlenden
+   * Nachrichtenfeld das sichtbare Wort "undefined". Vier Kopien heissen vier Orte, an
+   * denen die naechste Korrektur nur zu einem Viertel ankommt.
+   *
+   * Gesucht wird die Zeichentabelle, nicht der Name: eine eigene IMPLEMENTIERUNG traegt
+   * sie, ein blosser Vorspann auf U.esc (marktkarteui.js) nicht - und der ist kein
+   * zweiter Ort, an dem etwas auseinanderlaufen kann. */
+  var escKopien = dateien.filter(function (f) {
+    if (f === 'app-shell.js') return false;            // dort steht das Original: U.esc
+    return fs.readFileSync(__dirname + '/' + f, 'utf8').indexOf('replace(/[&<>\"]/g') !== -1;
+  });
+  ok(escKopien.length === 0,
+     'Sperrklinke: nur U.esc escapt in diesem Programm', escKopien.join(', ') || 'keine Kopie');
 
   /* Gegenprobe, dass die Sperrklinke wirklich greift: haette sie ein Loch, waere die
    * Zusicherung darueber wertlos. Also einmal auf einem erfundenen Text nachweisen,
