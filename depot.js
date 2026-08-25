@@ -3007,15 +3007,29 @@
       return { ok: false, grund: g3 };
     }
 
-    /* Kleinstmoegliche Groesse. Gemessen wird der PREIS, nicht die Position -
-     * jede zusaetzliche Einheit erhoeht nur das Risiko einer Teilausfuehrung. */
-    var groesse = 0.1;
-    var auf = null;
-    try { auf = await window.CapAPI.openPosition(sym, 'call', groesse, null, null); }
-    catch (eO) { auf = { ok: false, msg: String(eO && eO.message || eO) }; }
+    /* Die Groesse folgt dem GEGENWERT, nicht der Stueckzahl. Fest 0,1 Einheiten
+     * hiess bei ETH (~3.000 $) rund 300 $ und bei BTC (~100.000 $) rund 10.000 $ -
+     * am 25.08.2026 lehnte das Demo-Konto BTC deshalb mit RC_NOT_ENOUGH_MARGIN ab.
+     * Gemessen wird der PREIS, nicht die Position; jede Einheit mehr erhoeht nur das
+     * Risiko einer Ablehnung. */
+    var ZIEL_USD = 200;
+    var groesse = Math.max(0.001, Math.round((ZIEL_USD / vor.mid) * 1000) / 1000);
+    var auf = null, versuche = 0;
+    while (versuche < 3) {
+      versuche++;
+      try { auf = await window.CapAPI.openPosition(sym, 'call', groesse, null, null); }
+      catch (eO) { auf = { ok: false, msg: String(eO && eO.message || eO) }; }
+      if (auf && auf.ok) break;
+      /* Nur bei zu wenig Sicherheit kleiner werden - jeder andere Grund bliebe auch
+       * bei halber Groesse derselbe, und ein blindes Nachfassen verschleierte ihn. */
+      var margin = /MARGIN/i.test(String((auf && auf.msg) || ''));
+      if (!margin || groesse <= 0.001) break;
+      groesse = Math.max(0.001, Math.round((groesse / 2) * 1000) / 1000);
+    }
     if (!auf || !auf.ok) {
       capFehlerNeu(sym, auf || { msg: 'ohne Antwort' });
-      var g4 = 'Oeffnen abgelehnt: ' + ((auf && auf.msg) || 'ohne Angabe');
+      var g4 = 'Oeffnen abgelehnt: ' + ((auf && auf.msg) || 'ohne Angabe') +
+        (versuche > 1 ? ' (auch mit kleinerer Position, zuletzt ' + groesse + ')' : '');
       kostenVersuchNeu(sym, false, g4);
       return { ok: false, grund: g4 };
     }
@@ -3041,6 +3055,7 @@
     if (!D.kostenMessung) D.kostenMessung = { runden: [], seit: Date.now() };
     D.kostenMessung.runden.unshift({
       at: Date.now(), sym: sym, dir: 'call', basis: true, quelle: 'messrunde', krypto: krypto,
+      groesse: groesse,
       slipOpen: Math.round(aufKosten * 1e6) / 1e6,
       slipClose: Math.round(zuKosten * 1e6) / 1e6,
       runde: Math.round(runde * 1e6) / 1e6,

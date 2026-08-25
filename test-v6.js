@@ -6502,8 +6502,15 @@ console.log('\n46) Was die App dauerhaft aufzeichnet');
   /* Die notierte Spanne VOR der Order: nur so laesst sich Spanne von Schlupf trennen. */
   ok(/CapAPI\.quote\(sym\)/.test(kr) && /notiert:/.test(kr),
      'Die Runde haelt die notierte Spanne fest - sonst waere sie nur eine Zahl ohne Zerlegung');
-  /* Kleinstmoegliche Groesse: gemessen wird der Preis, nicht die Position. */
-  ok(/groesse = 0\.1/.test(kr), 'Die Messrunde nimmt die kleinstmoegliche Groesse');
+  /* Die Groesse folgt dem GEGENWERT, nicht der Stueckzahl. Fest 0,1 Einheiten hiess
+   * bei ETH (~3.000 $) rund 300 $ und bei BTC (~100.000 $) rund 10.000 $ - am
+   * 25.08.2026 lehnte das Demo-Konto BTC mit RC_NOT_ENOUGH_MARGIN ab. Eine feste
+   * Stueckzahl ist bei Werten, deren Preise um den Faktor 1.000 auseinanderliegen,
+   * schlicht die falsche Groesse. */
+  ok(kr.indexOf('ZIEL_USD') > -1 && kr.indexOf('ZIEL_USD / vor.mid') > -1,
+     'Die Messrunde bemisst sich am Gegenwert, nicht an einer festen Stueckzahl');
+  ok(/MARGIN/i.test(kr) && kr.indexOf('groesse / 2') > -1,
+     'Bei zu wenig Sicherheit wird mit kleinerer Position nachgefasst - aber nur dann');
   /* Bleibt eine Position offen, MUSS das laut gesagt werden - stillschweigend eine
    * offene Position auf dem Konto zu hinterlassen waere der schlimmere Fehler. */
   ok(/offenGeblieben/.test(kr) && /von Hand pruefen/.test(kr),
