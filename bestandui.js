@@ -13,11 +13,6 @@
 (function () {
   var B = null;
 
-  function esc(s) {
-    return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) {
-      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
-    });
-  }
   function el(id) { return document.getElementById(id); }
 
   /* ---------------------------------------------------------- Signalzeile - */
@@ -57,13 +52,13 @@
         if (q && q.price != null) kurs = { kurs: q.price, pct: q.pct };
       }
       var wert = kurs && w.stueck ? kurs.kurs * w.stueck : null;
-      return '<tr><td><b>' + esc(w.sym) + '</b><div style="color:var(--muted); font-size:var(--fs-klein);">' +
-        esc(w.name) + '</div></td>' +
-        '<td>' + (w.stueck != null ? esc(w.stueck) : '–') + '</td>' +
-        '<td>' + (kurs ? esc(kurs.kurs.toFixed(2)) + ' $' : '–') + '</td>' +
-        '<td>' + (wert != null ? esc(Math.round(wert)) + ' $' : '–') + '</td>' +
-        '<td>' + (kurs && kurs.pct != null ? (kurs.pct >= 0 ? '+' : '') + esc(kurs.pct.toFixed(2)) + ' %' : '–') + '</td>' +
-        '<td style="color:var(--muted); font-size:var(--fs-klein);">' + esc(w.isin || w.wkn || '') + '</td></tr>';
+      return '<tr><td><b>' + U.esc(w.sym) + '</b><div style="color:var(--muted); font-size:var(--fs-klein);">' +
+        U.esc(w.name) + '</div></td>' +
+        '<td>' + (w.stueck != null ? U.esc(w.stueck) : '–') + '</td>' +
+        '<td>' + (kurs ? U.esc(kurs.kurs.toFixed(2)) + ' $' : '–') + '</td>' +
+        '<td>' + (wert != null ? U.esc(Math.round(wert)) + ' $' : '–') + '</td>' +
+        '<td>' + (kurs && kurs.pct != null ? (kurs.pct >= 0 ? '+' : '') + U.esc(kurs.pct.toFixed(2)) + ' %' : '–') + '</td>' +
+        '<td style="color:var(--muted); font-size:var(--fs-klein);">' + U.esc(w.isin || w.wkn || '') + '</td></tr>';
     }).join('');
     /* Eine Summe nur, wenn sie ehrlich ist: fehlt zu einem Papier der Kurs oder die
      * Stueckzahl, waere der Gesamtwert stillschweigend zu klein. */
@@ -89,15 +84,15 @@
       var s = B.standVon(w.sym);
       var k = kurzText(s.kurz), m = mittelText(s.mittel);
       return '<tr>' +
-        '<td><button type="button" data-bsym="' + esc(w.sym) + '" data-bname="' + esc(w.name) + '" ' +
+        '<td><button type="button" data-bsym="' + U.esc(w.sym) + '" data-bname="' + U.esc(w.name) + '" ' +
           'title="Im Aktien-Explorer öffnen" style="background:none; border:0; padding:0; font:inherit; ' +
           'font-weight:700; color:var(--series); cursor:pointer; text-decoration:underline dotted;">' +
-          esc(w.sym) + '</button>' +
-          '<div style="color:var(--muted); font-size:var(--fs-klein);">' + esc(w.name) + '</div></td>' +
-        '<td style="white-space:nowrap;">' + (w.stueck != null ? esc(w.stueck) : '–') + '</td>' +
-        '<td class="' + k.cls + '">' + esc(k.txt) + '</td>' +
-        '<td class="' + m.cls + '">' + esc(m.txt) + '</td>' +
-        '<td><button class="btn ghost" type="button" data-bweg="' + esc(w.sym) + '" ' +
+          U.esc(w.sym) + '</button>' +
+          '<div style="color:var(--muted); font-size:var(--fs-klein);">' + U.esc(w.name) + '</div></td>' +
+        '<td style="white-space:nowrap;">' + (w.stueck != null ? U.esc(w.stueck) : '–') + '</td>' +
+        '<td class="' + k.cls + '">' + U.esc(k.txt) + '</td>' +
+        '<td class="' + m.cls + '">' + U.esc(m.txt) + '</td>' +
+        '<td><button class="btn ghost" type="button" data-bweg="' + U.esc(w.sym) + '" ' +
           'style="padding:2px 8px; font-size:var(--fs-klein);">Entfernen</button></td>' +
         '</tr>';
     }).join('');
@@ -129,8 +124,8 @@
       if (e === 'schon') schon++; else if (e) neu++;
       st.textContent = 'Aufgelöst: ' + (neu + schon) + ' von ' + zeilen.length + ' …';
     }
-    st.innerHTML = esc(neu + ' neu, ' + schon + ' schon vorhanden') +
-      (fehl.length ? '<br><span style="color:var(--series2);">Nicht aufgelöst: ' + esc(fehl.join(', ')) +
+    st.innerHTML = U.esc(neu + ' neu, ' + schon + ' schon vorhanden') +
+      (fehl.length ? '<br><span style="color:var(--series2);">Nicht aufgelöst: ' + U.esc(fehl.join(', ')) +
         '. Eine WKN allein reicht nicht – die ISIN oder das Börsenkürzel dazuschreiben.</span>' : '');
     zeichnen();
   }

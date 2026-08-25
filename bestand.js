@@ -25,12 +25,6 @@
   var BESTAND = [];          // [{sym, name, stueck, isin, wkn, seit}]
   var geladen = false;
 
-  function esc(s) {
-    return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) {
-      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
-    });
-  }
-
   /* ---------------------------------------------------------------- Ablage */
   async function laden() {
     if (geladen) return BESTAND;
@@ -142,6 +136,6 @@
     laden: laden, liste: liste, hinzu: hinzu, entfernen: entfernen,
     ausText: ausText, aufloesen: aufloesen, standVon: standVon,
     /* fuer die Tests: reine Funktionen ohne Oberflaeche */
-    _stueckAus: stueckAus, _esc: esc
+    _stueckAus: stueckAus
   };
 })();

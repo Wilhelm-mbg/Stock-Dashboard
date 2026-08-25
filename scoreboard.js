@@ -22,7 +22,6 @@
       (lo.toFixed(1) === hi.toFixed(1) ? lo.toFixed(1) : lo.toFixed(1) + '–' + hi.toFixed(1)) + ' Kerzen';
   }
 
-  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function pp(x, d) { return x == null || !isFinite(x) ? '–' : ((x >= 0 ? '+' : '') + (x * 100).toFixed(d == null ? 3 : d)); }
   function t2(x) { return x == null || !isFinite(x) ? '–' : (x >= 0 ? '+' : '') + x.toFixed(2); }
 
@@ -96,7 +95,7 @@
     if (!el || !window.api || !window.api.readProtokolle) return;
     var r = null;
     try { r = await window.api.readProtokolle(); } catch (e) { r = { ok: false, grund: String(e && e.message || e) }; }
-    if (!r || !r.ok) { el.innerHTML = '<div style="color:var(--muted); font-size:var(--fs-neben);">Protokolle nicht lesbar' + (r && r.grund ? ': ' + esc(r.grund) : '') + '.</div>'; return; }
+    if (!r || !r.ok) { el.innerHTML = '<div style="color:var(--muted); font-size:var(--fs-neben);">Protokolle nicht lesbar' + (r && r.grund ? ': ' + U.esc(r.grund) : '') + '.</div>'; return; }
     if (!r.protokolle.length) {
       /* Der volle Windows-Pfad und der node-Befehl standen hier im Endnutzer-Satz. Wer
        * die App installiert hat, hat weder node noch den Quellordner - fuer ihn war das
@@ -109,7 +108,7 @@
         '<details class="how archiv" style="margin-top:8px;"><summary>Für Entwickler</summary>' +
         '<div style="margin-top:6px;">Von Hand messen: <code>node studien/messmaschine/messen.js &lt;datei&gt;</code> ' +
         '– der Befehl läuft im Projektordner, also dort, wo die Quellen liegen. ' +
-        'Der Protokollordner ist <code>' + esc(r.ordner) + '</code>.</div>' +
+        'Der Protokollordner ist <code>' + U.esc(r.ordner) + '</code>.</div>' +
         '</details></div>';
       return;
     }
@@ -153,14 +152,14 @@
        * sichtbar werden, wenn man aufklappt. */
       var spOk = placeboOk(p);
       return '<tr class="sbRow" data-i="' + i + '" style="cursor:pointer;">' +
-        '<td><b style="color:' + farbe(u) + ';">' + esc(label(u)) + '</b></td>' +
-        '<td><b>' + esc(z.key) + '</b>' + (p.tests > 1 ? ' <span style="color:var(--muted);">(' + p.tests + ' Varianten)</span>' : '') + '</td>' +
+        '<td><b style="color:' + farbe(u) + ';">' + U.esc(label(u)) + '</b></td>' +
+        '<td><b>' + U.esc(z.key) + '</b>' + (p.tests > 1 ? ' <span style="color:var(--muted);">(' + p.tests + ' Varianten)</span>' : '') + '</td>' +
         '<td class="num">' + pp(b.tagesmittel) + '</td>' +
         '<td class="num">' + pp(b.jeSignal) + '</td>' +
         '<td class="num">' + t2(b.t) + '</td>' +
         '<td class="num">' + pp(b.mde) + '</td>' +
         '<td class="num">' + (b.tage || 0) + ' / ' + (b.signale || 0) + '</td>' +
-        '<td style="color:var(--muted);">' + esc(p.gemessenAm.slice(0, 10)) +
+        '<td style="color:var(--muted);">' + U.esc(p.gemessenAm.slice(0, 10)) +
           (spOk === false ? ' <span title="Selbstprüfung fehlgeschlagen – der Nullpunkt dieser Messung liegt nicht bei null" style="color:var(--down); font-weight:600;">✖ Nullpunkt</span>'
            : spOk === null ? ' <span title="Ohne Selbstprüfung gemessen – Nullpunkt ungeprüft" style="color:var(--muted);">○</span>' : '') +
           (warn ? ' <span title="' + warn + ' Warnung(en) – aufklappen" style="color:var(--series2);">⚠' + warn + '</span>' : '') + '</td>' +
@@ -185,38 +184,38 @@
     var p = z.aktuell.protokoll, d = document.getElementById('sbDetail');
     var h = '<div class="panel" style="background:var(--surface-2, var(--grid));">' +
       '<div style="display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:8px;">' +
-      '<h3 style="margin:0;">' + esc(z.key) + ' – Entscheidungsweg</h3>' +
-      '<span style="font-size:var(--fs-neben); color:var(--muted);">Verfahren ' + esc(p.verfahren.version) + ' · ' + esc(z.aktuell.datei) + '</span></div>' +
-      '<div style="font-size:var(--fs-neben); color:var(--ink-2); margin:6px 0 10px;"><b>Grund:</b> ' + esc(p.strategie.grund) + '</div>' +
-      '<div style="font-size:var(--fs-neben); margin-bottom:10px;">Universum: <b>' + p.universum.werte + '</b> Werte, <b>' + p.universum.handelstage + '</b> Handelstage (' + esc(p.universum.von) + ' bis ' + esc(p.universum.bis) + '), Schnitt am <b>' + esc(p.universum.schnittTag) + '</b> · Haltedauer <b>' + p.strategie.haltedauerKerzen + '</b> Kerzen · Richtung <b>' + esc(p.strategie.richtung) + '</b> · ' + p.tests + ' Test(s)' + ausstiegText(p) + '</div>';
+      '<h3 style="margin:0;">' + U.esc(z.key) + ' – Entscheidungsweg</h3>' +
+      '<span style="font-size:var(--fs-neben); color:var(--muted);">Verfahren ' + U.esc(p.verfahren.version) + ' · ' + U.esc(z.aktuell.datei) + '</span></div>' +
+      '<div style="font-size:var(--fs-neben); color:var(--ink-2); margin:6px 0 10px;"><b>Grund:</b> ' + U.esc(p.strategie.grund) + '</div>' +
+      '<div style="font-size:var(--fs-neben); margin-bottom:10px;">Universum: <b>' + p.universum.werte + '</b> Werte, <b>' + p.universum.handelstage + '</b> Handelstage (' + U.esc(p.universum.von) + ' bis ' + U.esc(p.universum.bis) + '), Schnitt am <b>' + U.esc(p.universum.schnittTag) + '</b> · Haltedauer <b>' + p.strategie.haltedauerKerzen + '</b> Kerzen · Richtung <b>' + U.esc(p.strategie.richtung) + '</b> · ' + p.tests + ' Test(s)' + ausstiegText(p) + '</div>';
     h += placeboBand(p);
     // Jede Entscheidung, nummeriert - das ist die 100-%-Einsicht
     h += '<table class="tbl" style="width:100%; font-size:var(--fs-neben);"><tr><th>#</th><th>Regel</th><th>Eingabe</th><th>Ergebnis</th><th>Begründung</th></tr>';
     (p.entscheidungen || []).forEach(function (e) {
-      h += '<tr><td>' + e.nr + '</td><td><b>' + esc(e.regel) + '</b></td>' +
-        '<td style="font-family:var(--mono, monospace); font-size:var(--fs-klein); white-space:pre-wrap; max-width:220px;">' + esc(kurz(e.eingabe)) + '</td>' +
-        '<td style="font-family:var(--mono, monospace); font-size:var(--fs-klein); white-space:pre-wrap; max-width:220px;">' + esc(kurz(e.ergebnis)) + '</td>' +
-        '<td style="color:var(--ink-2);">' + esc(e.begruendung) + '</td></tr>';
+      h += '<tr><td>' + e.nr + '</td><td><b>' + U.esc(e.regel) + '</b></td>' +
+        '<td style="font-family:var(--mono, monospace); font-size:var(--fs-klein); white-space:pre-wrap; max-width:220px;">' + U.esc(kurz(e.eingabe)) + '</td>' +
+        '<td style="font-family:var(--mono, monospace); font-size:var(--fs-klein); white-space:pre-wrap; max-width:220px;">' + U.esc(kurz(e.ergebnis)) + '</td>' +
+        '<td style="color:var(--ink-2);">' + U.esc(e.begruendung) + '</td></tr>';
     });
     h += '</table>';
     if ((p.warnungen || []).length) {
       h += '<div style="margin-top:10px; padding:8px 10px; border-left:3px solid var(--series2); font-size:var(--fs-neben);"><b>Warnungen</b>' +
-        p.warnungen.map(function (w) { return '<div style="margin-top:4px;">[' + esc(w.kennung) + '] ' + esc(w.text) + '</div>'; }).join('') + '</div>';
+        p.warnungen.map(function (w) { return '<div style="margin-top:4px;">[' + U.esc(w.kennung) + '] ' + U.esc(w.text) + '</div>'; }).join('') + '</div>';
     }
     // Alle Varianten mit Entdeckung UND Bestaetigung - nichts wird versteckt
     h += '<h4 style="margin:12px 0 6px;">Alle Varianten</h4><div style="overflow:auto;"><table class="tbl" style="font-size:var(--fs-neben);">' +
       '<tr><th>#</th><th>Parameter</th><th>Signale</th><th colspan="2" style="text-align:center;">Entdeckung</th><th colspan="3" style="text-align:center;">Bestätigung</th><th>Urteil</th></tr>' +
       '<tr><th></th><th></th><th></th><th style="text-align:right;">roh</th><th style="text-align:right;">Überschuss (t)</th><th style="text-align:right;">roh</th><th style="text-align:right;">Überschuss (t)</th><th style="text-align:right;">je Signal</th><th></th></tr>';
     (p.ergebnisse || []).forEach(function (e, vi) {
-      h += '<tr><td>' + vi + '</td><td style="font-family:var(--mono, monospace); font-size:var(--fs-klein);">' + esc(JSON.stringify(e.params)).slice(0, 80) + '</td><td class="num">' + e.signale + '</td>' +
+      h += '<tr><td>' + vi + '</td><td style="font-family:var(--mono, monospace); font-size:var(--fs-klein);">' + U.esc(JSON.stringify(e.params)).slice(0, 80) + '</td><td class="num">' + e.signale + '</td>' +
         '<td class="num">' + pp(e.entdeckung.roh.tagesmittel) + '</td><td class="num">' + pp(e.entdeckung.ueberschuss.tagesmittel) + ' (' + t2(e.entdeckung.ueberschuss.t) + ')</td>' +
         '<td class="num">' + pp(e.bestaetigung.roh.tagesmittel) + '</td><td class="num">' + pp(e.bestaetigung.ueberschuss.tagesmittel) + ' (' + t2(e.bestaetigung.ueberschuss.t) + ')</td>' +
         '<td class="num">' + pp(e.bestaetigung.ueberschuss.jeSignal) + '</td>' +
-        '<td style="color:' + farbe(p.urteile[vi]) + ';">' + esc(label(p.urteile[vi])) + '</td></tr>';
+        '<td style="color:' + farbe(p.urteile[vi]) + ';">' + U.esc(label(p.urteile[vi])) + '</td></tr>';
     });
     h += '</table></div>';
-    if (z.aeltere.length) h += '<div style="font-size:var(--fs-neben); color:var(--muted); margin-top:8px;">Ältere Protokolle dieser Kennung: ' + z.aeltere.map(function (a) { return esc(a.datei); }).join(', ') + '</div>';
-    if (p.strategie.quelle) h += '<details style="margin-top:10px;"><summary style="font-size:var(--fs-neben); cursor:pointer;">Quelltext der gemessenen Strategie</summary><pre style="font-size:var(--fs-klein); overflow:auto; max-height:300px;">' + esc(p.strategie.quelle) + '</pre></details>';
+    if (z.aeltere.length) h += '<div style="font-size:var(--fs-neben); color:var(--muted); margin-top:8px;">Ältere Protokolle dieser Kennung: ' + z.aeltere.map(function (a) { return U.esc(a.datei); }).join(', ') + '</div>';
+    if (p.strategie.quelle) h += '<details style="margin-top:10px;"><summary style="font-size:var(--fs-neben); cursor:pointer;">Quelltext der gemessenen Strategie</summary><pre style="font-size:var(--fs-klein); overflow:auto; max-height:300px;">' + U.esc(p.strategie.quelle) + '</pre></details>';
     h += '</div>';
     d.innerHTML = h;
   }
@@ -236,7 +235,7 @@
     var befehl = 'node studien/messmaschine/messen.js "' + pfad + '"';
     box.hidden = false;
     box.innerHTML = '<div style="font-size:var(--fs-neben); margin-bottom:6px;"><b>Abgelegt.</b> Die Datei liegt unter ' +
-      '<code>' + esc(pfad) + '</code>.</div>' +
+      '<code>' + U.esc(pfad) + '</code>.</div>' +
       '<div style="font-size:var(--fs-neben); margin-bottom:6px;">Messen lässt sie sich mit dem Knopf unten – ' +
       'die Maschine läuft dabei in einem <b>eigenen Prozess</b>, nicht in der App. Wer lieber von Hand misst ' +
       'oder ein anderes Archiv prüfen will, nimmt den Befehl daneben – der läuft im <b>Projektordner</b>, ' +
@@ -244,7 +243,7 @@
       '<div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">' +
       '<code id="stBefehl" style="flex:1 1 320px; padding:6px 8px; background:var(--panel-2); ' +
       'border:1px solid var(--kante); border-radius:var(--r-normal); font-size:var(--fs-neben); overflow-x:auto; white-space:pre;">' +
-      esc(befehl) + '</code>' +
+      U.esc(befehl) + '</code>' +
       '<button class="btn ghost" type="button" id="stKopieren" style="padding:4px 10px; font-size:var(--fs-neben);">Befehl kopieren</button>' +
       '<span id="stKopiert" role="status" aria-live="polite" style="font-size:var(--fs-neben); color:var(--muted);"></span></div>' +
       '<div style="font-size:var(--fs-neben); color:var(--muted); margin-top:6px;">Das Protokoll erscheint danach oben im ' +
@@ -320,7 +319,7 @@
     }
     if (!r.ok) {
       st.innerHTML = '<b class="neg">Die Messung ist nicht durchgelaufen</b>' +
-        (r.grund ? ' – ' + esc(r.grund) : ' (Rückgabewert ' + r.code + ')');
+        (r.grund ? ' – ' + U.esc(r.grund) : ' (Rückgabewert ' + r.code + ')');
       if (r.ausgabe && !log.textContent) log.textContent = r.ausgabe;
       return;
     }
@@ -423,9 +422,9 @@
     m.felder.forEach(function (f) {
       var l = document.createElement('label');
       l.style.cssText = 'font-size:var(--fs-neben);';
-      l.innerHTML = esc(f.frage) +
-        '<input class="stFeld" data-feld="' + esc(f.name) + '" value="' + esc(f.vorgabe) + '" style="width:100%;">' +
-        '<span style="display:block; font-size:var(--fs-klein); color:var(--muted);">' + esc(f.hilfe) +
+      l.innerHTML = U.esc(f.frage) +
+        '<input class="stFeld" data-feld="' + U.esc(f.name) + '" value="' + U.esc(f.vorgabe) + '" style="width:100%;">' +
+        '<span style="display:block; font-size:var(--fs-klein); color:var(--muted);">' + U.esc(f.hilfe) +
         ' Mehrere Werte zum Durchprobieren mit Komma trennen (z. B. <code>4, 6, 8</code>) – ' +
         'jeder ist dann eine eigene Messung.</span>';
       wo.appendChild(l);
@@ -464,12 +463,12 @@
     if (!B || !satzEl) return;
     var r = B.baue(baukastenWahl());
     if (!r.ok) {
-      satzEl.innerHTML = '<b class="neg">' + esc(r.fehler) + '</b>';
+      satzEl.innerHTML = '<b class="neg">' + U.esc(r.fehler) + '</b>';
       if (codeEl) codeEl.textContent = '';
       return;
     }
     var halten = parseInt((document.getElementById('stHalten') || {}).value, 10) || 8;
-    satzEl.innerHTML = '<b>Gemessen wird:</b> ' + esc(r.satz) +
+    satzEl.innerHTML = '<b>Gemessen wird:</b> ' + U.esc(r.satz) +
       ' Danach ' + halten + ' Stunde(n) halten, dann verkaufen.' +
       (r.tests > 1
         ? '<br><span class="neg">' + r.tests + ' Varianten = ' + r.tests + ' Messungen.</span> ' +
@@ -485,7 +484,7 @@
     var el = document.getElementById('stGrundHilfe');
     if (!el) return;
     el.innerHTML =
-      '<b>Trägt:</b> ' + esc(warum || 'Jemand muss handeln – aus Vorschrift, Termin oder Zwang – und das ist vorher bekannt.') +
+      '<b>Trägt:</b> ' + U.esc(warum || 'Jemand muss handeln – aus Vorschrift, Termin oder Zwang – und das ist vorher bekannt.') +
       '<br><b>Trägt nicht:</b> „Der Kurs fällt montags oft“ oder „das sieht im Chart gut aus“. ' +
       'Das ist eine Beobachtung, keine These – und die Maschine verweigert die Messung dann nicht, ' +
       'sie zerlegt sie nur.';
@@ -540,7 +539,7 @@
       return;
     }
     sel.innerHTML = B.MUSTER.map(function (m) {
-      return '<option value="' + esc(m.id) + '">' + esc(m.name) + '</option>';
+      return '<option value="' + U.esc(m.id) + '">' + U.esc(m.name) + '</option>';
     }).join('');
     sel.addEventListener('change', felderZeichnen);
     var key = document.getElementById('stKey');
@@ -659,7 +658,7 @@
     if (!ms) return '–';
     return new Date(ms).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' });
   }
-  function keyListe(a) { return a.map(function (z) { return esc(z.key); }).join(', '); }
+  function keyListe(a) { return a.map(function (z) { return U.esc(z.key); }).join(', '); }
 
   async function strategienLaden() {
     var el = document.getElementById('strategienListe');
@@ -674,7 +673,7 @@
     try { p = await window.api.readProtokolle(); } catch (e) { p = null; }
     if (!s || !s.ok) {
       el.innerHTML = '<div style="color:var(--muted); font-size:var(--fs-neben);">Strategien nicht lesbar' +
-        (s && s.grund ? ': ' + esc(s.grund) : '') + '.</div>';
+        (s && s.grund ? ': ' + U.esc(s.grund) : '') + '.</div>';
       return;
     }
 
@@ -741,15 +740,15 @@
       '<th scope="col" style="padding:4px 8px;">Zuletzt</th>' +
       '<th scope="col" style="padding:4px 0;">Urteil</th></tr></thead><tbody>';
     zeilen.forEach(function (z) {
-      var ort = z.hatDatei ? esc(z.ort) : '<b>Datei fehlt</b>';
+      var ort = z.hatDatei ? U.esc(z.ort) : '<b>Datei fehlt</b>';
       /* Kein eigener Rueckfall mehr auf den rohen Schluessel: label() hat einen, und
        * er ist der bessere - er macht aus dem Nullpunkt-Urteil dieselbe Beschriftung
        * wie oben im Scoreboard. Nur der Fall "gemessen, aber ohne Urteil im Protokoll"
        * gehoert hierher, den kennt label() nicht. */
       var urteil = !z.laeufe ? '<span style="color:var(--muted);">nie gemessen</span>'
-        : esc(z.urteil ? label(z.urteil) : 'ohne Urteil');
+        : U.esc(z.urteil ? label(z.urteil) : 'ohne Urteil');
       html += '<tr style="border-top:1px solid var(--grid);">' +
-        '<td style="padding:5px 8px 5px 0;"><code>' + esc(z.key) + '</code></td>' +
+        '<td style="padding:5px 8px 5px 0;"><code>' + U.esc(z.key) + '</code></td>' +
         (ortSpalte ? '<td style="padding:5px 8px;">' + ort + '</td>' : '') +
         '<td style="padding:5px 8px; text-align:right;">' + (z.laeufe || '–') + '</td>' +
         '<td style="padding:5px 8px;">' + tagKurz(z.zuletzt) + '</td>' +
@@ -757,7 +756,7 @@
     });
     el.innerHTML = html + '</tbody></table>' +
       (ortSpalte ? '' : '<div style="color:var(--muted); font-size:var(--fs-klein); margin-top:6px;">' +
-        'Ort aller ' + zeilen.length + ' Strategien: ' + esc(orte[0] || '?') + '.</div>');
+        'Ort aller ' + zeilen.length + ' Strategien: ' + U.esc(orte[0] || '?') + '.</div>');
 
     /* Was FEHLT, gehoert ausdruecklich hierhin. Eine Liste, die stillschweigend die
      * Haelfte weglaesst, ist schlimmer als gar keine. */
