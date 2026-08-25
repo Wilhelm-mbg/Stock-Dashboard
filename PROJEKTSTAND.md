@@ -86,9 +86,14 @@ alle vier zuerst, die Neumessung startet erst danach.**
 
 **Oberfläche, parallel möglich:**
 
-- **Stufe F, Reihenfolge fest:** (1) Theme ohne Dunkel-Blitz beim Start, (2) ein einziger
-  Chart-Renderer (`drawBig` vs. `chart.js` — Entscheid nach Funktionsvergleich),
-  (3) Barrierefreiheit (Rest #59 Stufe 3). Je eigenes Vorhaben, je eigene Release-Notiz.
+- **Stufe F, Reihenfolge fest:**
+  - ~~(1) Theme ohne Dunkel-Blitz beim Start.~~ **Erledigt 26.08.** (`2d90433`): zwei
+    Ursachen, beide belegt — die feste Fensterfarbe und das Nachladen per IPC.
+    Neue Probe `tools/thema-probe.js` misst es in Bildern: 0 von 210 dunkel statt
+    vorher 9 von 9. Gehoert VOR und NACH jede Änderung am Startweg des Themas.
+  - **(2) Ein einziger Chart-Renderer** (`drawBig` vs. `chart.js` — Entscheid nach
+    Funktionsvergleich). **Frei.**
+  - **(3) Barrierefreiheit** (Rest #59 Stufe 3). Frei, aber nach (2).
 - **Nachbilden-Dialog:** Belegstatus sichtbar in den Dialog „Trade nachbilden" —
   Belegtexte aus den Protokollen (`DepotAPI.protokollKante`), nie aus Prosa.
 - **Handel raus aus dem Renderer — NUR PLAN:** ein Umbauplan als Dokument unter
@@ -109,10 +114,8 @@ alle vier zuerst, die Neumessung startet erst danach.**
 *Wer welche Dateien belegt. Trag dich ein, bevor du anfängst; nimm dich raus, wenn du
 fertig bist.*
 
-- **App-Codebase Master** — hat **Stufe F Punkt 1** genommen (26.08., vom PM bestätigt):
-  Theme ohne Dunkel-Blitz beim Start. Belegt `main.js`, `preload.js`, `index.html`,
-  `renderer.js`, neu `thema.js`. Zuletzt fertig: #76, #84, #85, #83/#89, #86/#87/#88,
-  Messmaschine versionieren.
+- **App-Codebase Master** — nichts belegt. Zuletzt fertig: #76, #84, #85, #83/#89,
+  #86/#87/#88, Messmaschine versionieren, Stufe F Punkt 1 (`2d90433`).
 
 ---
 
