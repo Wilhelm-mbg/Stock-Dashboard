@@ -1,0 +1,500 @@
+{
+ "verfahren": {
+  "version": "1.0.0",
+  "mindestKerzenVorlauf": 261,
+  "bestaetigungsAnteil": 0.5,
+  "alpha": 0.05,
+  "zAlpha": 1.959964,
+  "zPower80": 0.8416212,
+  "mdeFaktor": 2,
+  "kontrolle": "erwartung-symbol-stunde",
+  "stundenRaster": "utc"
+ },
+ "strategie": {
+  "key": "kapitulation",
+  "grund": "Ueberdehnung UNTER die Leitlinie IM Abwaertskanal, mit Volumenbestaetigung. Wer nach einem Abverkauf im fallenden Kanal noch verkauft, verkauft meist nicht wegen einer Nachricht, sondern weil er MUSS - Nachschussforderungen, Risikolimits, Stop-Kaskaden treffen zusammen. Die Volumenbestaetigung trennt den erzwungenen Verkauf vom stillen Abrutschen: Zwang erzeugt Umsatz. Wer die Gegenseite nimmt, stellt Kapital bereit, wenn es sonst niemand stellt, und haelt lange genug, dass die Erholung Zeit hat.",
+  "zeitrahmen": "60m",
+  "haltedauerKerzen": 26,
+  "richtung": "long",
+  "varianten": 3,
+  "quelle": "'use strict';\n/* KAPITULATIONS-DIP - die einzige Kante, die das Depot handelt und die mit dieser\n * Maschine nie gemessen wurde. Vorregistriert in\n * VORREGISTRIERUNG-2026-08-24-kapitulation.md vor der ersten Messung.\n *\n * D1 (Gemessenes = Implementiertes): Der Auslöser kommt aus quant.js selbst, nicht\n * aus einer Nachbildung. Die Parameter sind EXAKT die des Live-Aufrufs in\n * depot.js:3550 mit dem gespeicherten Zustand:\n *\n *   ENTRY 'kapitulation', LINE 'ema', period 20, confirmBps 15\n *   ZTHR = zOf(15) = 2.0      <- NICHT 1.5. Fuer kapitulation entscheidend, weil\n *                                reversionSignal() den Wert benutzt; bei rsi2seit\n *                                geht ZTHR gar nicht in den Ausloeser ein.\n *   Haltedauer 26 Kerzen      <- depot.js:3835 maxHoldMin 1560 bei 60m-Kerzen,\n *                                gezaehlt in FERTIGEN Kerzen (depot.js:3397-3407),\n *                                nicht in Wanduhrzeit.\n *   Vorlauf 261 Kerzen        <- depot.js:3355, identisch zur Maschine.\n *\n * Die beiden Tore (Liquiditaet, Regime) sind KEINE Signale, sondern Bedingungen des\n * Live-Pfads. Sie stehen als Varianten drin, damit sichtbar wird, was sie beitragen.\n */\nvar fs = require('fs');\nvar path = require('path');\nvar Q = require('../../../quant.js');\nvar WP = require('./wertpapierart.js');\n\n/* Exakt der Live-Aufruf. */\nvar P = { ENTRY: 'kapitulation', LINE: 'ema', period: 20, confirmBps: 15, ZTHR: 2.0,\n          MINQ: 0, CHAN: false, MTF: false, TREND: false };\n\n/* ---------- Liquiditaet: nachlaufend, nicht ueber das ganze Fenster ----------\n * Live rechnet dollarVolDay ueber die GANZE geholte Reihe (depot.js:3157). Fuer ein\n * historisches Signal waere das ein Blick nach vorn. Hier: Durchschnitt der letzten\n * 20 Handelstage VOR der Signalkerze. Die Messung ist damit strenger als die App. */\nvar VOL_SPEICHER = new WeakMap();\nfunction dollarVolNachlaufend(bars, i, tage) {\n  var c = VOL_SPEICHER.get(bars);\n  if (!c) {\n    /* Tagesumsatz je Handelstag einmal aufbauen, plus fuer jede Kerze die Nummer\n     * ihres Tages - damit die Abfrage O(1) bleibt. */\n    var tagVon = [], tagSumme = [], tagIdx = new Int32Array(bars.length);\n    var letzter = null, nr = -1;\n    for (var k = 0; k < bars.length; k++) {\n      var d = new Date(bars[k][0]);\n      var tg = d.getUTCFullYear() * 10000 + (d.getUTCMonth() + 1) * 100 + d.getUTCDate();\n      if (tg !== letzter) { letzter = tg; nr++; tagVon.push(tg); tagSumme.push(0); }\n      tagIdx[k] = nr;\n      tagSumme[nr] += (bars[k][1] || 0) * (bars[k][2] || 0);\n    }\n    c = { tagIdx: tagIdx, tagSumme: tagSumme };\n    VOL_SPEICHER.set(bars, c);\n  }\n  var n = c.tagIdx[i];\n  if (n < tage) return null;\n  var s = 0;\n  for (var q = n - tage; q < n; q++) s += c.tagSumme[q];   // der eigene Tag zaehlt nicht mit\n  return s / tage;\n}\n\n/* ---------- Regime: NACHBILDUNG, ausdruecklich ----------\n * Live: SPY 60m gegen EMA200 der Stundenkerzen (depot.js: spyTrendAuf).\n * Seit dem 24.08.2026 liegt SPY als 60m-Reihe im eigenen Archiv - damit laesst sich\n * die Live-Bedingung EXAKT nachbauen. Fehlt die Reihe, bleibt der alte Rueckfall\n * (Tages-Marktreihe mit EMA29, weil 200 Stundenkerzen rund 28,6 Handelstage sind),\n * und die Strategie meldet sich dann unter der Kennung 'kapitulation-regime-genaehert'\n * - damit nie zwei verschiedene Messungen unter demselben Namen stehen. */\n/* Zuerst der exakte Weg: SPY-Stundenkerzen gegen ihre EMA200, genau wie live.\n * Das eigene Archiv liegt dort, wohin die Zeigerdatei weist (E: statt C:). */\nvar SPY = null;\nfunction spyStundenEma200() {\n  if (SPY !== null) return SPY;\n  SPY = false;\n  try {\n    var daten = path.join(process.env.USERPROFILE || process.env.HOME || '', 'Downloads', 'Markt-Dashboard-Daten');\n    var ordner = process.env.MD_ARCHIV60M;\n    if (!ordner) {\n      try { ordner = fs.readFileSync(path.join(daten, 'archiv60m-pfad.txt'), 'utf8').replace(/^\\uFEFF/, '').trim(); }\n      catch (e) { ordner = path.join(daten, 'archiv60m'); }\n    }\n    /* ETFs liegen im Unterordner - sie sind Massstab, nicht Messobjekt. Der alte\n     * Ort bleibt als Rueckfall, falls jemand das Archiv anders sortiert hat. */\n    var spyDatei = path.join(ordner, 'etf', 'bars_60m_SPY.json');\n    if (!fs.existsSync(spyDatei)) spyDatei = path.join(ordner, 'bars_60m_SPY.json');\n    var s = JSON.parse(fs.readFileSync(spyDatei, 'utf8')).series;\n    if (!Array.isArray(s) || s.length < 400) return SPY;\n    /* EMA200 auf Stundenschlusskursen - dieselbe Rechnung wie Q.emaSeries. */\n    var k = 2 / (200 + 1), ema = s[0][1], zeit = [], ueber = [];\n    for (var q = 0; q < s.length; q++) {\n      ema = s[q][1] * k + ema * (1 - k);\n      zeit.push(s[q][0]);\n      ueber.push(q >= 200 ? s[q][1] > ema : null);   // vor 200 Kerzen kein Urteil\n    }\n    SPY = { zeit: zeit, ueber: ueber };\n  } catch (e) { SPY = false; }\n  return SPY;\n}\n\nvar MARKT = null;\nfunction marktLadeEinmal() {\n  if (MARKT !== null) return MARKT;\n  MARKT = false;\n  try {\n    var p = path.join(process.env.APPDATA || '', 'Markt-Dashboard', 'store', 'drift_markt.json');\n    var r = JSON.parse(fs.readFileSync(p, 'utf8')).reihe;\n    if (!Array.isArray(r) || r.length < 300) return MARKT;\n    var k = 2 / (29 + 1), ema = r[0][1], tage = [], ueber = [];\n    for (var q = 0; q < r.length; q++) {\n      ema = r[q][1] * k + ema * (1 - k);\n      tage.push(r[q][0]);\n      ueber.push(r[q][1] > ema);      // true = Markt UEBER der Linie -> Kapitulation pausiert\n    }\n    MARKT = { tage: tage, ueber: ueber };\n  } catch (e) { MARKT = false; }\n  return MARKT;\n}\nfunction marktUeberLinie(ms) {\n  /* Exakter Weg zuerst. Der letzte Zeitpunkt STRENG vor dem Signal - eine Kerze,\n   * die zeitgleich mit dem Signal schliesst, kennt man beim Handeln noch nicht. */\n  var S = spyStundenEma200();\n  if (S) {\n    var lo = 0, hi = S.zeit.length;\n    while (lo < hi) { var m = (lo + hi) >> 1; if (S.zeit[m] < ms) lo = m + 1; else hi = m; }\n    if (lo > 0) return S.ueber[lo - 1];\n    return null;\n  }\n  var M = marktLadeEinmal();\n  if (!M) return null;                 // ohne Anker laesst die Regel durch (Live-Verhalten)\n  var lo = 0, hi = M.tage.length;      // letzter Tag STRENG vor dem Signal\n  while (lo < hi) { var m = (lo + hi) >> 1; if (M.tage[m] < ms) lo = m + 1; else hi = m; }\n  return lo > 0 ? M.ueber[lo - 1] : null;\n}\n\nmodule.exports = {\n  key: spyStundenEma200() ? 'kapitulation' : 'kapitulation-regime-genaehert',\n  testfamilie: {\n    name: 'kapitulation-2026-08-24',\n    testsGesamt: 3,\n    begruendung: 'Drei Tests, vorregistriert in VORREGISTRIERUNG-2026-08-24-kapitulation.md ' +\n                 'vor der ersten Messung: Ausloeser allein, plus Liquiditaet, plus Regime-Tor.',\n  },\n  grund: 'Ueberdehnung UNTER die Leitlinie IM Abwaertskanal, mit Volumenbestaetigung. Wer nach einem ' +\n         'Abverkauf im fallenden Kanal noch verkauft, verkauft meist nicht wegen einer Nachricht, ' +\n         'sondern weil er MUSS - Nachschussforderungen, Risikolimits, Stop-Kaskaden treffen zusammen. ' +\n         'Die Volumenbestaetigung trennt den erzwungenen Verkauf vom stillen Abrutschen: Zwang erzeugt ' +\n         'Umsatz. Wer die Gegenseite nimmt, stellt Kapital bereit, wenn es sonst niemand stellt, und ' +\n         'haelt lange genug, dass die Erholung Zeit hat.',\n  zeitrahmen: '60m',\n  /* A7: quant.js liest fuer diesen Ausloeser bis zu 261 Kerzen zurueck (Kanal 200,\n   * EMA20 im 260er-Fenster, Umsatzmittel ueber 50). Die Kontrolle laesst sie aus. */\n  leseFensterKerzen: 261,\n  haltedauerKerzen: 26,\n  richtung: 'long',\n  /* Der eingebaute Filter \"aktien\" heisst nur \"kein Krypto\". Im 2.885er-Archiv\n   * lagen darunter 622 ETFs, 144 ADRs, gehebelte Produkte und ZVZZT - das\n   * TESTSYMBOL der NASDAQ. Gefiltert wird jetzt nach der Wertpapierart. */\n  universum: function (sym) { return WP.istAktie(sym); },\n  kosten: { spanneBp: 5 },\n  varianten: [\n    { liquiditaet: false, regime: false },\n    { liquiditaet: true, regime: false },\n    { liquiditaet: true, regime: true },\n  ],\n  signal: function (bars, i, params) {\n    if (params.liquiditaet) {\n      var dv = dollarVolNachlaufend(bars, i, 20);\n      if (dv == null || dv < 50e6) return null;\n    }\n    if (params.regime && marktUeberLinie(bars[i][0]) === true) return null;\n    var s = null;\n    try { s = Q.einstiegSignal(bars, i, P); } catch (e) { return null; }\n    return s && s.dir === 'call' ? { dir: 1 } : null;\n  },\n};\n"
+ },
+ "gemessenAm": "2026-08-25T07:17:22.075Z",
+ "dauerMs": 93273,
+ "universum": {
+  "werte": 2201,
+  "handelstage": 730,
+  "von": "2023-09-26",
+  "bis": "2026-08-24",
+  "schnittTag": "2025-03-12",
+  "herkunft": "Archiv-Store, Auswahl zum Messzeitpunkt (Ueberlebende)"
+ },
+ "ergebnisse": [
+  {
+   "variante": 0,
+   "params": {
+    "liquiditaet": false,
+    "regime": false
+   },
+   "signale": 10783,
+   "long": 10783,
+   "short": 0,
+   "ausstieg": {
+    "art": "Zeit",
+    "mittlereKerzen": 26
+   },
+   "ohneKontrolle": 0,
+   "verworfen": {},
+   "entdeckung": {
+    "roh": {
+     "tage": 308,
+     "signale": 4341,
+     "tagesmittel": 0.0018916505055892366,
+     "t": 0.7820654934044303,
+     "se": 0.002418787840075442,
+     "mde": 0.004837575680150884,
+     "jeSignal": 0.00416304286816199,
+     "anteilPositiv": 0.5219995392766643
+    },
+    "ueberschuss": {
+     "tage": 308,
+     "signale": 4341,
+     "tagesmittel": -0.0005664646300013887,
+     "t": -0.2296697661219453,
+     "se": 0.0024664309959745376,
+     "mde": 0.004932861991949075,
+     "jeSignal": 0.001511927375216403,
+     "anteilPositiv": 0.5033402441833679
+    }
+   },
+   "bestaetigung": {
+    "roh": {
+     "tage": 339,
+     "signale": 6442,
+     "tagesmittel": 0.009097375107662915,
+     "t": 2.4197765130353255,
+     "se": 0.003759593110626289,
+     "mde": 0.007519186221252578,
+     "jeSignal": 0.005993320637980784,
+     "anteilPositiv": 0.5372555107109593
+    },
+    "ueberschuss": {
+     "tage": 339,
+     "signale": 6442,
+     "tagesmittel": 0.005345764902437923,
+     "t": 1.4797248842853143,
+     "se": 0.003612674868963801,
+     "mde": 0.007225349737927602,
+     "jeSignal": 0.0018792988408625054,
+     "anteilPositiv": 0.5187829866501087
+    }
+   },
+   "gesamt": {
+    "roh": {
+     "tage": 647,
+     "signale": 10783,
+     "tagesmittel": 0.005667138357371274,
+     "t": 2.3730429809045557,
+     "se": 0.0023881313583334575,
+     "mde": 0.004776262716666915,
+     "jeSignal": 0.005256490831917227,
+     "anteilPositiv": 0.5311137902253548
+    },
+    "ueberschuss": {
+     "tage": 647,
+     "signale": 10783,
+     "tagesmittel": 0.0025312877834405387,
+     "t": 1.100195012072172,
+     "se": 0.0023007628244677844,
+     "mde": 0.004601525648935569,
+     "jeSignal": 0.0017314031223825087,
+     "anteilPositiv": 0.5125660762311045
+    }
+   },
+   "kosten": {
+    "spanneBp": 5,
+    "jeUmlaufAnteil": 0.001
+   },
+   "nettoJeSignalBestaetigung": 0.0008792988408625054
+  },
+  {
+   "variante": 1,
+   "params": {
+    "liquiditaet": true,
+    "regime": false
+   },
+   "signale": 5197,
+   "long": 5197,
+   "short": 0,
+   "ausstieg": {
+    "art": "Zeit",
+    "mittlereKerzen": 26
+   },
+   "ohneKontrolle": 0,
+   "verworfen": {},
+   "entdeckung": {
+    "roh": {
+     "tage": 272,
+     "signale": 1945,
+     "tagesmittel": -0.0016108725447376612,
+     "t": -0.6986992053504044,
+     "se": 0.0023055308098279474,
+     "mde": 0.004611061619655895,
+     "jeSignal": 0.002049716760327303,
+     "anteilPositiv": 0.5275064267352185
+    },
+    "ueberschuss": {
+     "tage": 272,
+     "signale": 1945,
+     "tagesmittel": -0.004579241895657078,
+     "t": -1.9375128304873421,
+     "se": 0.0023634640367802173,
+     "mde": 0.004726928073560435,
+     "jeSignal": -0.0009563713599852876,
+     "anteilPositiv": 0.5043701799485861
+    }
+   },
+   "bestaetigung": {
+    "roh": {
+     "tage": 314,
+     "signale": 3252,
+     "tagesmittel": 0.007860688460840261,
+     "t": 2.1844815126361916,
+     "se": 0.003598422973767413,
+     "mde": 0.007196845947534826,
+     "jeSignal": 0.010276632670497733,
+     "anteilPositiv": 0.5615006150061501
+    },
+    "ueberschuss": {
+     "tage": 314,
+     "signale": 3252,
+     "tagesmittel": 0.004218328025415149,
+     "t": 1.1856442129262725,
+     "se": 0.0035578363048759374,
+     "mde": 0.007115672609751875,
+     "jeSignal": 0.0061209182600846295,
+     "anteilPositiv": 0.5390528905289053
+    }
+   },
+   "gesamt": {
+    "roh": {
+     "tage": 586,
+     "signale": 5197,
+     "tagesmittel": 0.003464332499206821,
+     "t": 1.4394023985463094,
+     "se": 0.002406785276101764,
+     "mde": 0.004813570552203528,
+     "jeSignal": 0.0071976733775822995,
+     "anteilPositiv": 0.5487781412353281
+    },
+    "ueberschuss": {
+     "tage": 586,
+     "signale": 5197,
+     "tagesmittel": 0.00013481434191404658,
+     "t": 0.056724323662672334,
+     "se": 0.0023766584281508444,
+     "mde": 0.004753316856301689,
+     "jeSignal": 0.0034722116387577153,
+     "anteilPositiv": 0.526072734269771
+    }
+   },
+   "kosten": {
+    "spanneBp": 5,
+    "jeUmlaufAnteil": 0.001
+   },
+   "nettoJeSignalBestaetigung": 0.0051209182600846295
+  },
+  {
+   "variante": 2,
+   "params": {
+    "liquiditaet": true,
+    "regime": true
+   },
+   "signale": 2567,
+   "long": 2567,
+   "short": 0,
+   "ausstieg": {
+    "art": "Zeit",
+    "mittlereKerzen": 26
+   },
+   "ohneKontrolle": 0,
+   "verworfen": {},
+   "entdeckung": {
+    "roh": {
+     "tage": 65,
+     "signale": 827,
+     "tagesmittel": -0.0003390509371967062,
+     "t": -0.06064465944110339,
+     "se": 0.005590779803553586,
+     "mde": 0.011181559607107172,
+     "jeSignal": 0.006157144977530938,
+     "anteilPositiv": 0.5876662636033857
+    },
+    "ueberschuss": {
+     "tage": 65,
+     "signale": 827,
+     "tagesmittel": -0.0036519281959301866,
+     "t": -0.5888762794117449,
+     "se": 0.006201520291457932,
+     "mde": 0.012403040582915864,
+     "jeSignal": 0.002595681665972029,
+     "anteilPositiv": 0.5598548972188634
+    }
+   },
+   "bestaetigung": {
+    "roh": {
+     "tage": 98,
+     "signale": 1740,
+     "tagesmittel": 0.015611384199171482,
+     "t": 2.9884352289022145,
+     "se": 0.005223932594619506,
+     "mde": 0.010447865189239012,
+     "jeSignal": 0.015881049255797995,
+     "anteilPositiv": 0.5867816091954023
+    },
+    "ueberschuss": {
+     "tage": 98,
+     "signale": 1740,
+     "tagesmittel": 0.011075946369856803,
+     "t": 2.143881921969173,
+     "se": 0.005166304289596069,
+     "mde": 0.010332608579192139,
+     "jeSignal": 0.01070834215070887,
+     "anteilPositiv": 0.5666666666666667
+    }
+   },
+   "gesamt": {
+    "roh": {
+     "tage": 163,
+     "signale": 2567,
+     "tagesmittel": 0.0092507812306811,
+     "t": 1.9178905692319261,
+     "se": 0.004823414525879774,
+     "mde": 0.009646829051759547,
+     "jeSignal": 0.012748338372226962,
+     "anteilPositiv": 0.5870666147253604
+    },
+    "ueberschuss": {
+     "tage": 163,
+     "signale": 2567,
+     "tagesmittel": 0.00520286755527917,
+     "t": 1.0846915587920143,
+     "se": 0.00479663321163247,
+     "mde": 0.00959326642326494,
+     "jeSignal": 0.00809471915854784,
+     "anteilPositiv": 0.5644721464744838
+    }
+   },
+   "kosten": {
+    "spanneBp": 5,
+    "jeUmlaufAnteil": 0.001
+   },
+   "nettoJeSignalBestaetigung": 0.00970834215070887
+  }
+ ],
+ "urteile": [
+  "nicht-entscheidbar",
+  "nicht-entscheidbar",
+  "nicht-bestaetigt"
+ ],
+ "bestesUrteil": "nicht-bestaetigt",
+ "tests": 3,
+ "testfamilie": {
+  "name": "kapitulation-2026-08-24",
+  "testsGesamt": 3,
+  "begruendung": "Drei Tests, vorregistriert in VORREGISTRIERUNG-2026-08-24-kapitulation.md vor der ersten Messung: Ausloeser allein, plus Liquiditaet, plus Regime-Tor."
+ },
+ "entscheidungen": [
+  {
+   "nr": 1,
+   "regel": "B4 Testzahl",
+   "eingabe": {
+    "varianten": 3
+   },
+   "ergebnis": 3,
+   "begruendung": "Jede Parametervariante ist ein eigener Test. Die Schwelle wird auf diese Zahl gerechnet."
+  },
+  {
+   "nr": 2,
+   "regel": "E1 Universum",
+   "eingabe": {
+    "archiv": "E:/Markt-Dashboard-Archiv/archiv60m",
+    "zeitrahmen": "60m"
+   },
+   "ergebnis": {
+    "werte": 2201
+   },
+   "begruendung": "Das Universum ist \"alles, was heute im Archiv liegt\". Das sind Ueberlebende: Werte, die aus der Beobachtung geflogen sind, fehlen. Die Renditen laufen ueber Zeitraeume, in denen das noch nicht bekannt war. Jede positive Rohrendite ist dadurch nach oben verzerrt; die Groesse der Verzerrung ist hier NICHT gemessen."
+  },
+  {
+   "nr": 3,
+   "regel": "B5 Schnitt",
+   "eingabe": {
+    "handelstage": 730,
+    "anteil": 0.5
+   },
+   "ergebnis": {
+    "schnittTag": "2025-03-12",
+    "entdeckung": 365,
+    "bestaetigung": 365
+   },
+   "begruendung": "Entdeckung auf der ersten Haelfte der Handelstage, Bestaetigung auf der zweiten. Das Urteil faellt NUR auf der Bestaetigung."
+  },
+  {
+   "nr": 4,
+   "regel": "A7 Lesefenster",
+   "eingabe": {
+    "leseFensterKerzen": 261
+   },
+   "ergebnis": {
+    "angewandt": true,
+    "fensterKerzen": 261
+   },
+   "begruendung": "Die Kontrolle mittelt ueber den Topf OHNE die Kerzen [i-261, i+26-1]. Damit enthaelt sie nichts, was das Signal gelesen hat, und nichts, was sich mit dem Ergebnis ueberlappt. Der Erwartungswert des Ueberschusses ist unter der Nullhypothese exakt null."
+  },
+  {
+   "nr": 5,
+   "regel": "C7 Eroeffnungskurs",
+   "eingabe": {
+    "stichprobe": 116134
+   },
+   "ergebnis": {
+    "anteilMitEroeffnung": 1
+   },
+   "begruendung": "Das Archiv fuehrt Eroeffnungskurse. Ein Stop wird zum schlechteren aus Stop und ECHTEM Eroeffnungskurs gefuellt."
+  },
+  {
+   "nr": 6,
+   "regel": "A2 Kontrolle",
+   "eingabe": {
+    "art": "erwartung-symbol-stunde",
+    "haltedauerKerzen": 26
+   },
+   "ergebnis": "Erwartung ueber ALLE Kerzen desselben Symbols zur selben UTC-Stunde, getrennt je Haelfte",
+   "begruendung": "Keine Zufallsziehung (A2), keine Listenpaarung (A3), kein Zeitbezug zum Signal (A4), je Haelfte getrennt (A5). Der Ueberschuss gegen diese Erwartung ist die Aussage; die Rohrendite allein ist keine."
+  },
+  {
+   "nr": 7,
+   "regel": "F4 Kontrollverlust",
+   "eingabe": {
+    "variante": 0,
+    "signale": 10783,
+    "ohneKontrolle": 0
+   },
+   "ergebnis": {
+    "anteil": 0
+   },
+   "begruendung": "Jedes Signal hat eine Kontrolle bekommen."
+  },
+  {
+   "nr": 8,
+   "regel": "F4 Kontrollverlust",
+   "eingabe": {
+    "variante": 1,
+    "signale": 5197,
+    "ohneKontrolle": 0
+   },
+   "ergebnis": {
+    "anteil": 0
+   },
+   "begruendung": "Jedes Signal hat eine Kontrolle bekommen."
+  },
+  {
+   "nr": 9,
+   "regel": "F4 Kontrollverlust",
+   "eingabe": {
+    "variante": 2,
+    "signale": 2567,
+    "ohneKontrolle": 0
+   },
+   "ergebnis": {
+    "anteil": 0
+   },
+   "begruendung": "Jedes Signal hat eine Kontrolle bekommen."
+  },
+  {
+   "nr": 10,
+   "regel": "F1 Datenpruefung",
+   "eingabe": {
+    "geprueft": 2208
+   },
+   "ergebnis": {
+    "verworfeneReihen": 7,
+    "gestutzteKontrollkerzen": 183861,
+    "toepfe": 30786
+   },
+   "begruendung": "7 Reihen wegen unmoeglicher Kurse oder Spruenge verworfen (BRK.A: Kurs bis 811438 $; ELME: Sprung -84 % bei 2026-01-08; MLTX: Sprung -89 % bei 2025-09-29; NMRA: Sprung -81 % bei 2025-01-02; QXO: Sprung -81 % bei 2024-07-30 …). Die Kontrolle ist zusaetzlich an den 1-%-Quantilen jedes Topfes gestutzt."
+  },
+  {
+   "nr": 11,
+   "regel": "B4 Bonferroni",
+   "eingabe": {
+    "tests": 3,
+    "alpha": 0.05
+   },
+   "ergebnis": {
+    "schwelleT": 2.3939798012415388
+   },
+   "begruendung": "Zweiseitige Schwelle fuer |t| bei 3 Test(s)."
+  },
+  {
+   "nr": 12,
+   "regel": "Urteil Variante 0",
+   "eingabe": {
+    "ueberschussTagesmittelPp": 0.5345764902437923,
+    "mdePp": 0.7225349737927602,
+    "t": 1.4797248842853143,
+    "schwelle": 2.3939798012415388,
+    "tage": 339,
+    "signale": 6442,
+    "jeSignalPp": 0.18792988408625055
+   },
+   "ergebnis": {
+    "urteil": "nicht-entscheidbar",
+    "aussicht": null
+   },
+   "begruendung": "Ueberschuss 0.5346 Pp liegt unter der MDE 0.7225 Pp. Das heisst NICHT \"kein Effekt\" - es heisst, dass diese Datenmenge die Frage nicht beantworten kann."
+  },
+  {
+   "nr": 13,
+   "regel": "Urteil Variante 1",
+   "eingabe": {
+    "ueberschussTagesmittelPp": 0.42183280254151484,
+    "mdePp": 0.7115672609751875,
+    "t": 1.1856442129262725,
+    "schwelle": 2.3939798012415388,
+    "tage": 314,
+    "signale": 3252,
+    "jeSignalPp": 0.6120918260084629
+   },
+   "ergebnis": {
+    "urteil": "nicht-entscheidbar",
+    "aussicht": null
+   },
+   "begruendung": "Ueberschuss 0.4218 Pp liegt unter der MDE 0.7116 Pp. Das heisst NICHT \"kein Effekt\" - es heisst, dass diese Datenmenge die Frage nicht beantworten kann."
+  },
+  {
+   "nr": 14,
+   "regel": "Urteil Variante 2",
+   "eingabe": {
+    "ueberschussTagesmittelPp": 1.1075946369856804,
+    "mdePp": 1.033260857919214,
+    "t": 2.143881921969173,
+    "schwelle": 2.3939798012415388,
+    "tage": 98,
+    "signale": 1740,
+    "jeSignalPp": 1.070834215070887
+   },
+   "ergebnis": {
+    "urteil": "nicht-bestaetigt",
+    "aussicht": null
+   },
+   "begruendung": "Ueberschuss ueber MDE, aber t=2.14 unter der Schwelle 2.39."
+  }
+ ],
+ "warnungen": [],
+ "archiv": {
+  "pfad": "E:/Markt-Dashboard-Archiv/archiv60m",
+  "echtesArchiv": true
+ }
+}

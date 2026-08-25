@@ -75,6 +75,20 @@ A7). Der Abzug hätte den Wert auf −0,003 gedrückt und die Aussage „der gan
 Überschuss war das Messgerät" gestützt — die damit **falsch** war. Ein
 Verzerrungsschätzer mit eigenem Fehler ist selbst eine Fehlerquelle.
 
+**Warum es die Gruppe F erst seit dem 25.08.2026 gibt.** Die Frage „stimmen die
+Daten überhaupt?" wurde bis dahin mit sieben Prüfungen beantwortet: doppelte und
+rückwärts laufende Zeitstempel, Wochenendkerzen, dreielementige Kerzen, Kurse ≤ 0,
+Hoch unter Tief, CFD-Markierungen. **Alle sieben standen auf null** — und trotzdem
+lag im Archiv ein Wert mit 4,2 Milliarden Dollar je Aktie.
+
+Keine der Prüfungen fragte nach **Plausibilität**. Sie prüften die Form der Daten,
+nicht ihren Inhalt. Das ist die allgemeine Lehre: Eine Prüfliste, die nur bestätigt,
+was man ohnehin vermutet hat, findet nichts Neues.
+
+Gefunden wurde es durch den Placebo-Lauf — ein Signal, dessen richtige Antwort man
+vorher kennt. **Das ist die wirksamste Prüfung, die es für ein Messgerät gibt**, und
+sie läuft seitdem bei jeder Messung mit.
+
 ## B — Statistik
 
 | # | Fehler | Vorkommen | Was die Maschine tut |
@@ -187,3 +201,17 @@ steht er als **sechstes Element** in der Kerze. Die ersten fünf bleiben unverä
 | E1 | Überlebensverzerrung nicht benannt | in keiner Schutzmechanismus-Messung erwähnt | Pflichtfeld: Universum-Herkunft und Stichtag der Auswahl |
 | E2 | Von 10 Werten auf 191 verallgemeinert | Stabilitätsaussage der Kanalerkennung | Zahl der Werte und Signale steht in jeder Aussage |
 | E3 | Behauptung ohne Skript | „17 Jahre" aus falsch gewichteter Aussicht | Jede Zahl im Protokoll trägt den Namen der Funktion, die sie erzeugt hat |
+
+## F — Die Daten selbst
+
+Bis zum 25.08.2026 gab es diese Gruppe nicht. Alle Prüfungen davor fragten, ob
+*gerechnet* wird wie behauptet — keine fragte, ob die Zahlen, mit denen gerechnet
+wird, überhaupt möglich sind.
+
+| # | Fehler | Vorkommen | Was die Maschine tut |
+|---|---|---|---|
+| F1 | **Fehldrucke im Kontrolltopf** | 25.08.: 1.696 von 6,5 Mio. Kontrollkerzen über 50 Pp. `DFEN` 0,27 → 28,73 = **+10.541 Pp** (nicht bereinigte Zusammenlegung), `WHLR` mit **4.169.491.200 $** je Aktie, `ZVZZT` (NASDAQ-Testsymbol) 10 → 260. Ein Placebo ohne jeden Kursbezug lieferte dadurch **−0,1722 Pp statt null** | Reihen mit Sprüngen über +400 %/−80 % oder Kursen über 100.000 $ werden **ganz** verworfen und im Protokoll benannt; die Kontrolle ist zusätzlich an den 1-%-Quantilen jedes Topfes gestutzt |
+| F2 | A7-Ausschnitt endet H Kerzen zu früh | dieselbe Prüfung. Eine Kontrollkerze bei `j` trägt die Rendite über `(j, j+H]` und berührt das Lesefenster schon ab `j = i−Fenster−H`. Kunstarchiv mit wahrem Wert null: **+0,048 statt +0,024 Pp** | Der Ausschnitt beginnt bei `i − Fenster − H` |
+| F3 | **UTC-Stunde statt Sitzungsposition** | dieselbe Prüfung. Die US-Sitzung wandert mit der Zeitumstellung: „Stunde 19" ist im Sommer die Schlusskerze (Folge = über Nacht, +0,0805 Pp, sd 2,122) und im Winter eine Kerze mitten am Tag (−0,0042 Pp, sd 0,559) | Der Topf-Schlüssel ist die **Position in der Sitzung** (0 = erste Kerze des Tages), durchgezählt statt aus der Uhrzeit abgeleitet |
+| F4 | Signale fallen still aus der Messung | dieselbe Prüfung: bis zu **10,3 %** einer Messung konnten ohne Kontrolle verschwinden, ohne dass Konsole oder Warnliste es sagten | Anteil steht im Protokoll; über 2 % gibt es eine Warnung |
+| SP | **Der Nullpunkt wird nicht geprüft** | der Fehler, der F1 zwei Tage lang verdeckt hat | Jede Messung fährt einen **Placebo-Lauf** mit: ein Signal ohne jeden Kursbezug auf denselben Sitzungspositionen. Sein wahrer Überschuss ist null. Übersteigt das Ergebnis die eigene Auflösung, wird das Urteil als *bestätigt-aber-nullpunkt-verschoben* gekennzeichnet |

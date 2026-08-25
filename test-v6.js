@@ -3684,6 +3684,28 @@ console.log('\n44) Messmaschine, Scoreboard und Strategie-Eingabe (23.08.2026)')
    * unabhaengigen Wiederholungen. Momentum: t naiv 4,74, Newey-West 0,74.
    * Kapitulations-Dip: 2,59 -> 1,74. Beide Befunde loesten sich auf. */
   ok(/\|\s*B10\s*\|/.test(ft), 'B10 steht in FEHLERTYPEN.md');
+
+  /* Audit vom 25.08.2026: vier Fehler im Verfahren und die Selbstpruefung.
+   * Der schwerste war F1 - ein Placebo OHNE jeden Kursbezug lieferte -0,1722 Pp
+   * statt null, weil nicht bereinigte Zusammenlegungen (DFEN +10.541 Pp, WHLR mit
+   * 4,2 Mrd \$ je Aktie) im ungestutzten Kontrollmittel sassen. */
+  ok(/\|\s*F1\s*\|/.test(ft) && /\|\s*F3\s*\|/.test(ft) && /\|\s*SP\s*\|/.test(ft),
+     'F1, F3 und SP stehen in FEHLERTYPEN.md');
+  ok(mm2.indexOf('function reiheKaputt(bars)') !== -1,
+     'F1: Reihen mit unmoeglichen Kursen oder Spruengen werden verworfen');
+  ok(mm2.indexOf('var STUTZ = 0.01') !== -1,
+     'F1: Die Kontrolle ist an den 1-Prozent-Quantilen gestutzt');
+  ok(mm2.indexOf('i - leseFenster - H') !== -1,
+     'F2: Der A7-Ausschnitt beginnt H Kerzen frueher - eine Kontrollkerze bei j reicht bis j+H');
+  ok(mm2.indexOf('function sitzungsPosition(bars)') !== -1 &&
+     mm2.indexOf('K.erwartung(sym, sitzungsPosition(b)[i]') !== -1,
+     'F3: Der Topf-Schluessel ist die Sitzungsposition, nicht die UTC-Stunde');
+  ok(/P\.warne\('F4'/.test(mm2),
+     'F4: Ueber 2 Prozent Signale ohne Kontrolle gibt eine Warnung');
+  ok(mm2.indexOf('function placeboLauf(') !== -1 && /P\.warne\('SP'/.test(mm2),
+     'SP: Jede Messung faehrt einen Placebo-Lauf mit und warnt, wenn der Nullpunkt wandert');
+  ok(mm2.indexOf("'bestaetigt-aber-nullpunkt-verschoben'") !== -1,
+     'SP: Ein bestaetigtes Urteil auf verschobenem Nullpunkt wird als solches gekennzeichnet');
   ok(mm2.indexOf('function neweyWest(werte, mu, va, lags)') !== -1,
      'Die Maschine korrigiert den Standardfehler nach Newey-West');
   ok(mm2.indexOf('statistik(tm.mittel, H - 1)') !== -1,
