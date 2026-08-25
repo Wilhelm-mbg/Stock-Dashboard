@@ -175,7 +175,7 @@
     melde('Starte … ' + syms.length + ' Werte × ' + ivs.length + ' Zeitrahmen, Ziel ' + tage + ' Tage.');
     try {
       /* STUFE 0: 60-Minuten-Historie. Die kommt NICHT von Capital, sondern von Yahoo
-       * (730 Tage per btRange) - und genau auf ihr rechnet die belegte Kante rsi2seit.
+       * (730 Tage per btRange) - und genau auf ihr rechnet die gemessene Kante rsi2seit.
        * Nur Werte, deren Archiv duenner als 400 Kerzen ist; die anderen sind versorgt. */
       if (opts.mit60m !== false) {
         var fehl60 = [];

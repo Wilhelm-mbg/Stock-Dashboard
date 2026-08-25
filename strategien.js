@@ -152,7 +152,7 @@
 
   /** Bestehende Installationen auf die gemessenen Einstellungen umstellen - per Knopf,
    *  nie still: Die erste externe Diagnose zeigte einen Tester im alten Standard
-   *  'breakout' auf Scheinen (Muenzwurf), waehrend die belegten Strategien aus waren.
+   *  'breakout' auf Scheinen (Muenzwurf), waehrend die gemessenen Strategien aus waren.
    *  Neue Installationen starten schon richtig; Bestandsnutzer entscheiden selbst. */
   /* Jedes Feld EINZELN mitschreiben, bevor es ueberschrieben wird. Der Knopf versprach
    * von Anfang an, jede Aenderung lasse sich einzeln zurueckstellen - eingeloest hat er

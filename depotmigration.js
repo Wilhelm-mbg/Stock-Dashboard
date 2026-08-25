@@ -131,7 +131,7 @@
             'Schalter & Einstellungen“, im Archiv) und wird danach nie wieder automatisch geändert.' });
       }
     }
-    /* Einmalig: Wer die belegte Kante ueber die Auslöser-Liste gewaehlt hatte, sass
+    /* Einmalig: Wer die gemessene Kante ueber die Auslöser-Liste gewaehlt hatte, sass
      * danach auf 1-Minuten-Kerzen - die alte applySetup-Regel stellte jeden
      * Umkehr-Auslöser stur auf 1m, und der Formular-Klick sperrte Zeitrahmen und
      * Haltedauer zugleich gegen jede Automatik. Gemessen wurde auf 60m. Einmal

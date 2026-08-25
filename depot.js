@@ -26,7 +26,7 @@
       /* Voreinstellungen zeigen dahin, wo die EVIDENZ ist. Die erste externe Diagnose
          (Issue #1, 21.08.2026) zeigte einen Tester, der am ersten Tag den alten Standard
          'breakout' auf Scheinen handelte - die Muenzwurf-Konfiguration -, waehrend die
-         belegten Strategien ausgeschaltet daneben lagen. Neue Installationen starten jetzt
+         gemessenen Strategien ausgeschaltet daneben lagen. Neue Installationen starten jetzt
          mit dem gemessenen Modus (RSI2 im Seitwaertskanal, Basiswert, 8 h) im reinen
          Beobachtungsbetrieb: enabled bleibt false, das Schattenbuch zeichnet auf. */
       intraday: { enabled: false, exitStyle: 'laufen', mode: 'rsi2seit', interval: '60m', period: 20, confirmBps: 15, profile: 'atm60_b', instrument: 'basis', pool: 'auto', kapiZusatz: false, regimeZuteilung: false, orderFee: 0, minDollarVol: 50, budgetPct: 0.03, sl: -0.25, tp: 0.35, cooldownMin: 120, maxPerDay: 10, lineType: 'ema', trendFilter: false, window: 'all', scalpHold: 480, scalpTrail: 15, scalpSL: 20, blackout: 'block', channel: true, mtf: true, sizing: 'fix', screener: false, avoidHours: [], autoTune: true },
@@ -260,7 +260,7 @@
       /* KONTROLLE (Stufe 5, Befund vom 23.08.2026): Was haette derselbe Wert zur
        * selben Tagesstunde an einem BELIEBIGEN anderen Tag ueber dieselbe Haltedauer
        * verdient? Ohne diese Zahl misst eine Bilanz Marktdrift und nennt sie Kante -
-       * bei der belegten Regel waren es rund zwei Drittel.
+       * bei der gemessenen Regel waren es rund zwei Drittel.
        * Gerechnet als Erwartung ueber ALLE zulaessigen Kerzen, nicht als eine
        * Zufallsziehung: eine einzelne Ziehung verdoppelt die Streuung. */
       var ktr = kontrollErtrag(bars, mp && mp.maxHoldMin, Q.barMinOf(bars, bars.length - 1));
@@ -639,7 +639,7 @@
     var mp = {}; try { mp = modeParams() || {}; } catch (e) { mp = {}; }
     var NAME = { rsi2seit: 'RSI(2) im Seitwärtskanal', kapitulation: 'Kapitulations-Dip im Abwärtskanal' };
     /* Belegstand, ehrlich. Nach der Kontroll-Messung vom 23.08.2026 ist die Kante der
-     * belegten Regel nicht mehr nachgewiesen: gegen eine Kontrolle aus echten Kerzen
+     * gemessenen Regel nicht mehr nachgewiesen: gegen eine Kontrolle aus echten Kerzen
      * desselben Werts zur selben Tagesstunde bleiben +0,114 Pp bei t = 1,49 und einer
      * Auflösung von 0,153. Das ist "nicht entscheidbar", nicht "belegt" - und es hier
      * anders hinzuschreiben waere genau die Art Schoenfaerberei, gegen die das ganze
@@ -704,7 +704,7 @@
       if (kb) { kb.click(); window.scrollTo(0, 0); }
     });
   }
-  /** Zeigt die Huerde und stellt sie der belegten Kante gegenueber. */
+  /** Zeigt die Huerde und stellt sie der gemessenen Kante gegenueber. */
     /* ---------------------------------------------------------------------------
    * D2: Kantenwerte aus den Messprotokollen, nicht aus dem Code.
    *
@@ -977,10 +977,10 @@
   /* ================= Auto-Tuning (empfehlung.json von Claude) ================= */
   var TUNE_ALLOW = {
     /* Die Liste enthielt ausschliesslich die inzwischen widerlegten Modi - eine
-     * uebernommene Empfehlung konnte die Strategie also nur VON der belegten Kante
+     * uebernommene Empfehlung konnte die Strategie also nur VON der gemessenen Kante
      * WEG schalten, nie zu ihr hin. Der Handels-Modus ist die eine Einstellung, die
      * eine Messung tragen muss; die Automatik darf ihn nur noch zwischen den beiden
-     * belegten Kanten bewegen (UI-Audit 21.08.2026). */
+     * gemessenen Kanten bewegen (UI-Audit 21.08.2026). */
     mode: ['rsi2seit', 'kapitulation'],
     interval: ['1m', '5m', '15m', '60m'],
     period: [9, 20, 50],
@@ -2324,7 +2324,7 @@
   }
 
   /* ---- Regime-Zuteilung (Studie 21.08.2026) ----
-   * Die beiden belegten Kanten sind KOMPLEMENTAER: rsi2seit traegt im
+   * Die beiden gemessenen Kanten sind KOMPLEMENTAER: rsi2seit traegt im
    * SPY-Aufwaertstrend (+0,148 Pp, t=1,9) und verliert darunter (-0,169);
    * der Kapitulations-Dip sitzt fast vollstaendig im Abwaertstrend/Stress
    * (+0,94 Pp, t=3,1; in ruhigen Phasen Nullsumme). Die VORAB festgelegte
@@ -2737,7 +2737,7 @@
           /* ZWEITES STANDBEIN (21.08.2026): Der Kapitulations-Dip feuert in der
            * ANDEREN Marktphase (Abwaertskanal statt Seitwaerts) - die beiden
            * Erlaubnis-Gates schliessen sich praktisch aus, deshalb duerfen beide
-           * belegten Modi parallel laufen (Haken 'Kapitulations-Dip zusaetzlich').
+           * gemessenen Modi parallel laufen (Haken 'Kapitulations-Dip zusaetzlich').
            * Ein Kapitulations-Trade traegt seinen eigenen Horizont (26 Handels-
            * stunden statt 8) und seinen Modus-Stempel. */
           if (!dir && cfg.kapiZusatz) {
@@ -2757,7 +2757,7 @@
         } else if (sig.crossed) {
           dir = sig.crossed === 'up' ? 'call' : 'put';
         }
-        /* Edge-Wächter-Pause: Der Vorsprung der belegten Kante ist in zwei Naechten
+        /* Edge-Wächter-Pause: Der Vorsprung der gemessenen Kante ist in zwei Naechten
          * hintereinander verfallen - dann kommen keine NEUEN Einstiege mehr, bis
          * eine Nacht wieder positiv misst oder Wilhelm es von Hand uebersteuert.
          * Ausstiege und Schattenbuch laufen unveraendert weiter. */
@@ -2846,7 +2846,7 @@
         }
         if (D.intradayCount >= mp.maxPerDay) { patienceAdd('Tageslimit erreicht', sym); schattenNeu('Tageslimit', sym, dir, spot, sigBars, mp, cfg, now); continue; }
         if (killSwitchAktiv()) { patienceAdd('Kill-Switch: Handel bis Tagesende gesperrt', sym); continue; }
-        /* Die Marktlagen-Pause gilt NICHT fuer die belegten Kanten (Inventur
+        /* Die Marktlagen-Pause gilt NICHT fuer die gemessenen Kanten (Inventur
          * 22.08.2026): Ihre Fallback-Regel pausiert bei "Trendanteil 40-60 %,
          * wenig Wellen" - das IST der Seitwaertsmarkt, in dem rsi2seit sein Geld
          * verdient (gemessen +0,147 Pp). Die Pause misst auf 5m-Kennzahlen, die
@@ -3844,7 +3844,7 @@
   }
   /* Die drei Ergebnis-Ansichten sind laengst in den Reiter "Regeln" gezogen, gezeichnet
    * wurden sie aber weiterhin NUR beim Klick auf die Pille "Auswertung" unter Vermoegen.
-   * Wer also in "Regeln" die belegten Voreinstellungen uebernahm, sah die Tabelle
+   * Wer also in "Regeln" die gemessenen Voreinstellungen uebernahm, sah die Tabelle
    * darunter unveraendert - und damit auch nie den Rueckgaengig-Knopf zu seiner eigenen
    * Aenderung. Beides nachgezogen: beim Oeffnen des Reiters und auf Zuruf. */
   if (typeof window !== 'undefined') {
@@ -4335,7 +4335,7 @@
           opts: entd.opts });
       }
       /* Der KI-Vorschlag stand hier als eigener Modus in der Auswahl und konnte damit
-       * den Waechter-Modus unterlaufen - der Autopilot durfte von der belegten Kante
+       * den Waechter-Modus unterlaufen - der Autopilot durfte von der gemessenen Kante
        * wegschalten. Zusammen mit dem uebrigen KI-Pfad entfernt (23.08.2026). */
       /* Fenster fuer die Vorauswahl. Gewaehlt so, dass jeder Zeitrahmen genug
        * Handelstage fuer neun Walk-Forward-Scheiben behaelt, ohne dass die Rechnung
@@ -5565,7 +5565,7 @@
           /* Eskalation (Gegenpruefung 21.08.2026): Der Waechter KUENDIGTE eine
            * Konsequenz an ("naechste Nacht bestaetigt -> pausieren"), die es nie
            * gab - er war reine Anzeige. Jetzt: zwei Naechte VERFALL hintereinander
-           * pausieren NEUE Einstiege der belegten Kanten. Die Schatten laufen
+           * pausieren NEUE Einstiege der gemessenen Kanten. Die Schatten laufen
            * weiter (Messung geht nie aus), ein Hand-Entscheid "trotzdem handeln"
            * wird dauerhaft respektiert, und eine positive Nacht hebt die Pause
            * von selbst wieder auf. */
@@ -6198,7 +6198,7 @@
       /* Die Box mit den gemessenen Stellschrauben liegt bewusst ausserhalb von
        * #idParams (sie soll ueber der Experten-Klappe stehen) - deshalb wird sie
        * hier eigens ein- und ausgeblendet. Ihre drei Regler wirken nur in den
-       * beiden belegten Modi; in einem anderen Modus liest der Code sie nie. */
+       * beiden gemessenen Modi; in einem anderen Modus liest der Code sie nie. */
       var bb = document.querySelector('.belegt-box');
       if (bb) bb.style.display = (m === 'rsi2seit' || m === 'kapitulation') ? '' : 'none';
       var pg = document.getElementById('pgScalp');
@@ -6276,7 +6276,7 @@
     function applySetup(setup, trigger, exitStyle) {
       var m = modeFromSetup(setup, trigger, exitStyle);
       setzeWert(idM, m);
-      /* Die belegten Kanten bringen ihre GEMESSENE Konfiguration mit. Vorher setzte
+      /* Die beiden Kanten bringen die Konfiguration mit, unter der sie GEMESSEN wurden. Vorher setzte
        * jeder Umkehr-Auslöser stur 1 Minute – wer „RSI(2) im Seitwärtskanal“ wählte,
        * verließ damit im selben Klick die Einstellung, auf der die Messung beruht
        * (60-Minuten-Kerzen, 8 bzw. 26 Handelsstunden Zeit-Ausstieg). */
@@ -6286,7 +6286,7 @@
         setzeWert(idH, m === 'kapitulation' ? '1560' : '480');
       }
       else {
-        /* Beim VERLASSEN der belegten Kanten muss die Haltedauer mit: 8 oder 26
+        /* Beim VERLASSEN der gemessenen Kanten muss die Haltedauer mit: 8 oder 26
          * Handelsstunden gehoeren zu ihnen, nicht zu einem Minuten-Setup - und der
          * Formular-Klick sperrt das Feld anschliessend gegen jede Automatik. */
         if (warBelegt) setzeWert(idH, '60');

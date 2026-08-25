@@ -25,7 +25,7 @@
     btn.disabled = true;
     var mode = (document.getElementById('btMode') || {}).value || 'daily';
     /* Dieses Werkzeug rechnet fest die EMA-Kreuzung auf synthetischen Optionsscheinen -
-     * beide Richtungen, Zwangsschluss am Abend. Für die belegten Kanten waere das
+     * beide Richtungen, Zwangsschluss am Abend. Für die gemessenen Kanten waere das
      * eine plausibel aussehende, aber systematisch falsche Zahl: falscher Einstieg,
      * falsches Instrument, falscher Ausstieg. Lieber gar keine Zahl als eine, die
      * wie eine Widerlegung der eigenen Strategie aussieht. */

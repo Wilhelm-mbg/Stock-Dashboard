@@ -5108,6 +5108,23 @@ console.log('\n41) Zustaende: was die App sagt, wenn etwas fehlt oder klemmt');
   ok(behauptet.length === 0,
      'Sperrklinke: kein sichtbarer Text nennt eine Kante belegt - das sagt das Protokoll oder niemand',
      behauptet.join(' ') || 'keiner behauptet');
+  /* Seit dem 26.08.2026 gilt dasselbe fuer KOMMENTARE. Wilhelm hat das entschieden -
+   * gegen die Empfehlung, sie als Geschichte stehen zu lassen. Sein Grund traegt: der
+   * naechste Leser lernt aus einem Kommentar denselben Hausbegriff wie aus der
+   * Oberflaeche, und genau so hat sich die alte Formel ueber Monate durch Code,
+   * Befunde und Gedaechtnis getragen. Der historische Bezug bleibt lesbar, nur ohne
+   * das Urteil: "die Inventur vom 21.08. fand die GEMESSENEN Kanten ..." */
+  var inKommentaren = [];
+  ['index.html'].concat(dateien).forEach(function (f) {
+    var rohK = fs.readFileSync(__dirname + '/' + f, 'utf8');
+    var reinK = ohneKommentare(rohK).split('\n');
+    rohK.split('\n').forEach(function (z, i2) {
+      if (BEHAUPTUNG.test(z) && !BEHAUPTUNG.test(reinK[i2] || '')) inKommentaren.push(f + ':' + (i2 + 1));
+    });
+  });
+  ok(inKommentaren.length === 0,
+     'Sperrklinke: auch kein Kommentar nennt eine Kante belegt - so traegt sich die Formel weiter',
+     inKommentaren.join(' ') || 'keiner behauptet');
   /* Gegenprobe zur Sperrklinke selbst: die richtige, abgelesene Beschriftung muss es
    * weiterhin geben - sonst haette jemand das Kind mit dem Bade ausgeschuettet. */
   var dpB = fs.readFileSync(__dirname + '/depot.js', 'utf8');

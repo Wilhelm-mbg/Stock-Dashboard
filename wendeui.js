@@ -42,7 +42,7 @@
    *
    *  Daneben die Kontrolle: dieselbe Haltedauer, dieselbe Reihe, aber an beliebigen
    *  Punkten - der Durchschnitt ueber alle. Ohne sie misst man Marktdrift und nennt
-   *  sie Signal; bei der belegten Intraday-Regel waren das rund zwei Drittel.
+   *  sie Signal; bei der gemessenen Intraday-Regel waren das rund zwei Drittel.
    *
    *  Rueckgabe: { n, mittel, ktr, ueberschuss, dauerSchnitt } oder null. */
   function wendeNachlese(bars, opt) {
