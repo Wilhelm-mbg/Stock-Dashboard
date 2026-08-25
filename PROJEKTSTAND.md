@@ -62,11 +62,19 @@ alle vier zuerst, die Neumessung startet erst danach.**
 > ist durch #86/#87 dringender geworden: die Protokollinhalte ändern sich (`aussicht`
 > wird gefüllt, A7-Text anders), die Version steht weiter auf `1.0.0`.
 
-**Danach — Messmaschine versionieren und alle Kanten neu messen** (freigegeben 25.08. spät):
-(1) Versionsnummer der Messmaschine an ihren Code koppeln (heute 7 Änderungen bei
-unverändert „1.0.0") und veraltete Protokolle in der Übersichtstafel kennzeichnen;
-(2) danach alle zwölf Strategien einmal auf dem aktuellen Instrumenten-Stand neu messen.
-Erst dann neue Untersuchungen.
+**Messmaschine versionieren und alle Kanten neu messen** (freigegeben 25.08. spät):
+
+- ~~(1) Versionsnummer der Messmaschine an ihren Code koppeln, veraltete Protokolle in
+  der Übersichtstafel kennzeichnen.~~ **Erledigt 26.08.** (`118ad72`): `version` bleibt
+  von Hand (jetzt 1.1.0), dazu ein `codeStand`, der sich selbst ausrechnet; eine
+  Sperrklinke macht jede Änderung an der Maschine rot, bis jemand entschieden hat, ob
+  sich das Verfahren geändert hat. Die Tafel zeigt "↻ alte Maschine" — aber nur, wo
+  eine Kennung da ist; die 26 alten Protokolle stehen als *unbekannt*, nicht veraltet.
+- **(2) Alle zwölf Strategien einmal auf dem aktuellen Instrumenten-Stand neu messen.**
+  **JETZT DRAN und frei** — die vier Vorstufen (#85–#88) und die Versionierung sind
+  fertig. Das ist ein langer Rechenlauf, kein Umbau: es braucht eine Sitzung mit Zeit,
+  nicht eine, die Code anfasst. Danach tragen die Protokolle einen echten Stand statt
+  "unbekannt". **Erst dann neue Untersuchungen.**
 
 **Danach — Nachtaufträge Wilhelms vom 26.08.:**
 
@@ -101,11 +109,9 @@ Erst dann neue Untersuchungen.
 *Wer welche Dateien belegt. Trag dich ein, bevor du anfängst; nimm dich raus, wenn du
 fertig bist.*
 
-- **App-Codebase Master** — hat **Messmaschine versionieren** genommen (26.08., Teil 1
-  des Neumessungs-Auftrags): Versionsnummer an den Code koppeln, veraltete Protokolle in
-  der Übersichtstafel kennzeichnen. Belegt `studien/messmaschine/`. **Das Neumessen der
-  zwölf Strategien (Teil 2) nimmt jemand anders** — langer Rechenlauf, kein Umbau.
-  Zuletzt fertig: #76, #84, #85, #83/#89, #86/#87/#88.
+- **App-Codebase Master** — nichts belegt. Zuletzt fertig: #76, #84, #85, #83/#89,
+  #86/#87/#88, Messmaschine versionieren (`118ad72`). Nimmt als Nächstes einen Auftrag
+  von der Tafel — **nicht** das Neumessen (Rechenlauf, keine Bausitzung).
 
 ---
 
