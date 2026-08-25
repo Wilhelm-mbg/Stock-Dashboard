@@ -5304,7 +5304,7 @@
     });
   }
 
-  /* ================= KI-Retrospektive ================= */
+  /* ================= Retrospektive (regelbasiert) ================= */
   function retroData() {
     var closed = D.trades.filter(function (t) { return t.status === 'closed' && istMess(t); });
     var byWhy = {}, bySym = {}, byDir = { call: { n: 0, pnl: 0 }, put: { n: 0, pnl: 0 } };
@@ -5366,7 +5366,7 @@
     if (!d.closedN) { st.textContent = 'Noch keine geschlossenen Trades für eine Retrospektive.'; return; }
     var body = retroRules(d);
     st.textContent = '';
-    document.getElementById('aiTitle').textContent = 'KI-Retrospektive (' + d.closedN + ' Trades)';
+    document.getElementById('aiTitle').textContent = 'Retrospektive (' + d.closedN + ' Trades)';
     // Lernschleife: konkrete Regel-Vorschläge für die KI-Prüfung
     var sugs = kiSuggestions();
     var sugHtml = '';

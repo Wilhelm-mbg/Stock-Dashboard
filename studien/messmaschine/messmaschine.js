@@ -408,7 +408,12 @@ function fuehreAus(pfad, einKurs, stopNiveau, params) {
  * positionen: {position -> Zahl der echten Signale}. Der Placebo feuert auf
  * denselben Positionen, mit einem festen Schritt so gewaehlt, dass ungefaehr
  * dieselbe Menge zusammenkommt. Kein Zufall - derselbe Aufruf ergibt dasselbe. */
-function placeboLauf(U, K, H, schnittTag, vorlauf, leseFenster, positionen) {
+function placeboLauf(U, K, H, schnittTag, vorlauf, leseFenster, positionen, haelfte) {
+  /* S7: Bis zum 25.08.2026 lief der Placebo NUR auf der Bestaetigung. Damit hatte die
+   * Entdeckungshaelfte keinen geprueften Nullpunkt - und genau von dort kommen die
+   * Zahlen, auf die Kandidaten vorregistriert werden. Beide Kandidaten vom 25.08. sind
+   * so angemeldet worden. Der Aufrufer sagt jetzt, welche Haelfte gemeint ist. */
+  var ZIEL = haelfte || 'bestaetigung';
   var gesamtEcht = 0;
   Object.keys(positionen).forEach(function (p) { gesamtEcht += positionen[p]; });
   if (!gesamtEcht) return null;
@@ -441,7 +446,7 @@ function placeboLauf(U, K, H, schnittTag, vorlauf, leseFenster, positionen) {
       if (!(s0 > 0) || !(sH > 0)) continue;
       var tag = tagVon(b[i][0]);
       var hf = tag < schnittTag ? 'entdeckung' : 'bestaetigung';
-      if (hf !== 'bestaetigung') continue;             // geurteilt wird nur dort
+      if (hf !== ZIEL) continue;                       // S7: je Haelfte ein Nullpunkt
       var erw = K.erwartung(sym, p, hf,
         leseFenster == null ? null : i - leseFenster - H,
         leseFenster == null ? null : i + H - 1);
@@ -605,6 +610,35 @@ function messe(strategie, archivPfad, optionen) {
     'Keine Zufallsziehung (A2), keine Listenpaarung (A3), kein Zeitbezug zum Signal (A4), je Haelfte getrennt (A5). ' +
     'Der Ueberschuss gegen diese Erwartung ist die Aussage; die Rohrendite allein ist keine.');
 
+  /* S9: DIE EINSTIEGSLUECKE. Die Maschine steigt zum SCHLUSS der Signalkerze ein
+   * (messmaschine.js, unten: s0 = b[i][1]). Sitzt der Ertrag einer Strategie in der
+   * Luecke zwischen diesem Schluss und der naechsten Eroeffnung, ist er nicht
+   * handelbar - man kann nicht zu einem Kurs kaufen, den es erst nach dem Kauf gibt.
+   * Bei 'schlussdruck-gegentag' waren das gemessene 67 % des Ueberschusses.
+   * Bisher war diese Zahl eine stille Null: sie wurde nie berechnet und nie berichtet.
+   * Gemessen wird ZENTRIERT - die Luecke auf den Signalkerzen gegen dieselbe Groesse
+   * ueber alle Kerzen derselben Symbole. Sonst misst man die allgemeine Ueber-Nacht-
+   * Drift statt der Auswahl. */
+  var LUECKE_BASIS = null;
+  function lueckeBasis() {
+    if (LUECKE_BASIS !== null) return LUECKE_BASIS;
+    var s = 0, n = 0;
+    syms.forEach(function (sym) {
+      var b = U[sym];
+      /* A9: dieselben Grenzen wie die Signalschleife (vorlauf .. length-H). Ab Kerze 0 zu
+       * mitteln waere ein Vergleich gegen Kerzen, auf denen das Signal gar nicht feuern
+       * kann - und die fruehen Kerzen einer Reihe sind gerade die unruhigsten. Der
+       * bestehende A9-Wachhund hat genau diesen Fehler in der ersten Fassung gefangen. */
+      for (var i = vorlauf; i < b.length - H; i++) {
+        var c = b[i][1], o = eroeffnungKurs(b, i + 1);
+        if (!(c > 0) || !(o > 0)) continue;
+        s += o / c - 1; n++;
+      }
+    });
+    LUECKE_BASIS = n ? { mittel: s / n, n: n } : { mittel: null, n: 0 };
+    return LUECKE_BASIS;
+  }
+
   /* --- Je Variante messen --- */
   var spanneBp = (S.kosten && S.kosten.spanneBp != null) ? S.kosten.spanneBp : 5;
   var ergebnisse = varianten.map(function (params, vi) {
@@ -612,6 +646,7 @@ function messe(strategie, archivPfad, optionen) {
     var roh = [], ueber = [], ohneKontrolle = 0, nSignale = 0, nLong = 0, nShort = 0;
     var gruende = {}, kerzenSumme = 0;
     var posZaehler = {};      // fuer den Placebo: wo feuert das echte Signal?
+    var lueckeSumme = 0, lueckeN = 0;   // S9: Eroeffnung[i+1] gegen Schluss[i]
     syms.forEach(function (sym) {
       var b = U[sym];
       for (var i = vorlauf; i < b.length - H; i++) {
@@ -627,6 +662,12 @@ function messe(strategie, archivPfad, optionen) {
         nSignale++; if (dir > 0) nLong++; else nShort++;
         var _p = sitzungsPosition(b)[i];
         posZaehler[_p] = (posZaehler[_p] || 0) + 1;
+        /* S9: die Luecke NACH der Signalkerze - der Teil des Ertrags, den ein Einstieg
+         * zum Schluss dieser Kerze per Konstruktion nicht mitnehmen kann. */
+        if (i + 1 < b.length) {
+          var _c = b[i][1], _o = eroeffnungKurs(b, i + 1);
+          if (_c > 0 && _o > 0) { lueckeSumme += _o / _c - 1; lueckeN++; }
+        }
         var s0 = b[i][1], sH = b[i + H][1];
         if (!(s0 > 0) || !(sH > 0)) { gruende.kurs = (gruende.kurs || 0) + 1; continue; }
         /* Mit Ausstiegsregel: den Kursverlauf der Haltedauer sammeln und die Regel
@@ -675,8 +716,12 @@ function messe(strategie, archivPfad, optionen) {
     var G = { roh: block(roh), ueberschuss: block(ueber) };
     // C5: Kosten einmal, an einer Stelle, als eigenes Feld
     var kostenAnteil = 2 * spanneBp / 10000;
+    var _lb = lueckeBasis();
+    var _lm = lueckeN ? lueckeSumme / lueckeN : null;
     return { variante: vi, params: params, signale: nSignale, long: nLong, short: nShort,
       positionen: posZaehler,
+      einstiegsluecke: { signalMittel: _lm, universumMittel: _lb.mittel, n: lueckeN,
+        zentriert: (_lm != null && _lb.mittel != null) ? _lm - _lb.mittel : null },
       ausstieg: typeof S.stopNiveau === 'function'
         ? { art: 'Regel', mittlereKerzen: nSignale ? kerzenSumme / nSignale : null,
             hinweis: 'Stop-Niveau nur aus abgeschlossenen Kerzen; Fuellung zum schlechteren aus Stop und erstem handelbaren Kurs.' }
@@ -737,11 +782,14 @@ function messe(strategie, archivPfad, optionen) {
   /* SELBSTPRUEFUNG. Der Placebo laeuft mit der Kontrolle der ERSTEN Variante und
    * den Sitzungspositionen der ersten Variante - das ist der Topf, der auch das
    * echte Urteil traegt. Ein Lauf genuegt; er kostet einen Durchgang. */
-  var placebo = null;
+  var placebo = null, placeboEntdeckung = null;
   try {
-    placebo = placeboLauf(U, kontrolleFuer(0), H, schnittTag, vorlauf, leseFenster,
-      ergebnisse[0] && ergebnisse[0].positionen ? ergebnisse[0].positionen : {});
-  } catch (e) { placebo = null; }
+    var _pos = ergebnisse[0] && ergebnisse[0].positionen ? ergebnisse[0].positionen : {};
+    placebo = placeboLauf(U, kontrolleFuer(0), H, schnittTag, vorlauf, leseFenster, _pos, 'bestaetigung');
+    /* S7: derselbe Lauf auf der Entdeckungshaelfte. Er faellt kein Urteil - aber ohne
+     * ihn ist jede Entdeckungszahl ein Punktschaetzer ohne geprueften Nullpunkt. */
+    placeboEntdeckung = placeboLauf(U, kontrolleFuer(0), H, schnittTag, vorlauf, leseFenster, _pos, 'entdeckung');
+  } catch (e) { placebo = null; placeboEntdeckung = null; }
   var placeboOk = true;
   if (placebo && placebo.t != null) {
     /* Der Placebo darf streuen wie jede Messung. Auffaellig ist er erst, wenn sein
@@ -766,12 +814,47 @@ function messe(strategie, archivPfad, optionen) {
     P.warne('SP', 'Kein Placebo-Lauf moeglich - der Nullpunkt dieser Messung ist ungeprueft.');
   }
 
+  /* S9: zwei Pflichtzeilen, die es bis zum 25.08.2026 nicht gab. */
+  ergebnisse.forEach(function (r, vi) {
+    var L = r.einstiegsluecke || {};
+    P.entscheide('S9 Einstiegsluecke', { variante: vi, faelle: L.n || 0 },
+      { signalPp: L.signalMittel != null ? L.signalMittel * 100 : null,
+        universumPp: L.universumMittel != null ? L.universumMittel * 100 : null,
+        zentriertPp: L.zentriert != null ? L.zentriert * 100 : null },
+      L.zentriert == null
+        ? 'Keine Eroeffnungskurse - die Einstiegsluecke ist nicht messbar.'
+        : 'Zwischen dem Schluss der Signalkerze (dem Einstiegskurs) und der naechsten ' +
+          'Eroeffnung liegen ' + (L.zentriert * 100).toFixed(4) + ' Pp mehr als bei einer ' +
+          'beliebigen Kerze derselben Werte. Diesen Teil kann ein Einstieg zum Schluss ' +
+          'nicht mitnehmen. Ist er so gross wie der Ueberschuss, ist der Befund nicht handelbar.');
+    var pos = r.positionen || {}, ges = 0;
+    Object.keys(pos).forEach(function (k) { ges += pos[k]; });
+    var verteilung = Object.keys(pos).sort(function (a, b) { return pos[b] - pos[a]; })
+      .slice(0, 5).map(function (k) { return 'Pos ' + k + ': ' + (pos[k] / ges * 100).toFixed(1) + ' %'; });
+    P.entscheide('S9 Sitzungspositionen', { variante: vi, verschiedene: Object.keys(pos).length },
+      { top: verteilung },
+      'Wo in der Sitzung das Signal feuert, entscheidet mit, welchem Rauschen es ausgesetzt ist ' +
+      '(F3: die Schlusskerze hat eine 3,8-mal groessere Streuung als eine Kerze mitten am Tag). ' +
+      (verteilung.length ? verteilung.join(', ') : 'keine Signale'));
+  });
+
   var schwelle = bonferroniSchwelle(P.tests);
   P.entscheide('B4 Bonferroni', { tests: P.tests, alpha: VERFAHREN.alpha }, { schwelleT: schwelle },
     'Zweiseitige Schwelle fuer |t| bei ' + P.tests + ' Test(s).');
   var urteile = ergebnisse.map(function (r) {
     var u = r.bestaetigung.ueberschuss;
     var urteil, grund;
+    /* S2: delta80 - der kleinste WAHRE Effekt, den dieser Lauf mit 80 % Wahrscheinlichkeit
+     * ueber die Schwelle gebracht haette. Die MDE (2 x se) sagt nur, ab wann ein Ausschlag
+     * nicht mehr als Rauschen durchgeht; sie sagt NICHTS darueber, ob der Lauf einen echten
+     * Effekt dieser Groesse auch gefunden haette. Genau diese Verwechslung hat das Projekt
+     * zweimal Kandidaten vorregistrieren lassen, die es nie haette bestaetigen koennen.
+     * Liegt delta80 ueber der Kostenhuerde des Produkts, ist der Lauf von vornherein
+     * blind fuer jede handelbare Kante - egal was am Ende herauskommt. */
+    var d80 = (u.se > 0) ? (schwelle + VERFAHREN.zPower80) * u.se : null;
+    var d80Satz = d80 == null ? '' :
+      ' Dieser Lauf haette eine wahre Kante erst ab ' + (d80 * 100).toFixed(4) +
+      ' Pp mit 80 % Wahrscheinlichkeit ueber die Schwelle gebracht (delta80).';
     if (u.tage < 30) { urteil = 'nicht-messbar'; grund = 'Weniger als 30 Bestaetigungstage mit Signal.'; }
     else if (u.mde == null) { urteil = 'nicht-messbar'; grund = 'Keine Streuung berechenbar.'; }
     else if (Math.abs(u.tagesmittel) < u.mde) {
@@ -804,8 +887,9 @@ function messe(strategie, archivPfad, optionen) {
     }
     return P.entscheide('Urteil Variante ' + r.variante,
       { ueberschussTagesmittelPp: u.tagesmittel != null ? u.tagesmittel * 100 : null, mdePp: u.mde != null ? u.mde * 100 : null,
+        delta80Pp: d80 != null ? d80 * 100 : null,
         t: u.t, schwelle: schwelle, tage: u.tage, signale: u.signale, jeSignalPp: u.jeSignal != null ? u.jeSignal * 100 : null },
-      { urteil: urteil, aussicht: aussicht }, grund);
+      { urteil: urteil, delta80: d80, aussicht: aussicht }, grund + d80Satz);
   });
 
   return {
@@ -819,8 +903,9 @@ function messe(strategie, archivPfad, optionen) {
     urteile: urteile.map(function (u) { return u.urteil; }),
     bestesUrteil: ['bestaetigt', 'nicht-bestaetigt', 'nicht-entscheidbar', 'nicht-messbar', 'widerlegt']
       .filter(function (k) { return urteile.some(function (u) { return u.urteil === k; }); })[0] || 'nicht-messbar',
-    /* Der Nullpunkt dieser Messung, gemessen statt angenommen. */
+    /* Der Nullpunkt dieser Messung, gemessen statt angenommen - je Haelfte einer (S7). */
     placebo: placebo || null,
+    placeboEntdeckung: placeboEntdeckung || null,
     tests: P.tests,
     testfamilie: S.testfamilie || null,
     entscheidungen: P.entscheidungen,

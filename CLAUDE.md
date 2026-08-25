@@ -75,7 +75,64 @@ node studien/messmaschine/messen.js studien/messmaschine/strategien/<name>.js
 endet sie in MODULE_NOT_FOUND.
 
 Neue Regeln werden **vorregistriert**, bevor gerechnet wird — sonst ist der beste von N
-Parametersätzen immer schön.
+Parametersätzen immer schön. Die Vorregistrierung gehört **sofort auf die Platte**
+(`studien/vorregistrierung-<datum>/`), nicht erst, wenn man sie braucht: eine, die nur im
+Gesprächsverlauf lebt, bindet an nichts.
+
+### Zwei Tore VOR dem Bestätigungslauf
+
+Beide seit dem 25.08.2026, beide kosten nichts, und beide hätten die zwei Kandidaten jenes
+Tages ohne eine einzige Messung gekippt. Der Grund: **die Bestätigungs-MDE steht vorher
+fest.** Sie hängt nur an der Zahl der Signaltage und an der Streuung — nicht am Ergebnis.
+Wer sie erst nach dem Lauf ansieht, hat die zurückgehaltene Hälfte für nichts verbraucht.
+
+**Tor 1 — Entdeckung ≥ 4 × Bestätigungs-MDE.** Sonst wird die Bestätigungshälfte gar nicht
+erst angefasst. Probe an den beiden Fällen vom 25.08.:
+
+| | Entdeckung | 4 × MDE nötig | |
+|---|---|---|---|
+| `monatswende-breit` | 0,695 Pp | 1,45 Pp | abgelehnt |
+| `quartalsschub-betrag` | 1,289 Pp | 1,59 Pp | abgelehnt |
+
+**Tor 2 — `delta80` unter der Produkthürde.** Die Maschine schreibt `delta80` seit dem
+25.08. in jede Urteilszeile: der kleinste **wahre** Effekt, den der Lauf mit 80 %
+Wahrscheinlichkeit über die Schwelle gebracht hätte. Liegt er über der Kostenhürde der
+Handelsklasse (Aktie 0,04 / Schein ATM 0,05 / CFD 0,10 / Standard-Schein 0,23 Pp je
+Umlauf — gemessen an 15 US-Großwerten 2026, für sonst nichts belegt), ist der Lauf für
+jede handelbare Kante **strukturell blind**, egal was herauskommt. Median über die 38
+vorhandenen Varianten: **0,605 Pp**.
+
+Praktische Folge bei rund 2,8 Pp Tagesstreuung: Kalendersignale mit unter 1.000
+Bestätigungs-**Signaltagen** sind nicht bestätigbar und gehören nicht in die Mühle. Das
+schließt die ganze Monatswende-/Quartals-Familie aus.
+
+### Die Einstiegslücke gegen den Überschuss halten
+
+Die Maschine steigt zum **Schluss der Signalkerze** ein. Jedes Protokoll führt seit dem
+25.08. die Zeile `S9 Einstiegslücke`: wie viel zwischen diesem Schluss und der nächsten
+Eröffnung liegt, zentriert gegen dieselbe Größe über alle Kerzen. Ist sie so groß wie der
+Überschuss, sitzt der Befund in einer Lücke, die kein Einstieg zum Schluss mitnehmen kann.
+Erster Fall: `quartalsschub-betrag` mit +0,194 Pp Lücke gegen +0,184 Pp Überschuss.
+
+### Der Belegstand kommt aus dem Protokoll, nie aus Prosa
+
+Stand 25.08.2026: **null belegte Kanten.** Momentum steht auf „nicht entscheidbar" (B10),
+die Ergebnis-Drift ebenso (Zeitzonen-Fehler). Beide sind *nicht widerlegt, aber unbelegt* —
+die Formel „validierte Kante" gehört nur in einen Satz, wenn ein Protokoll das Urteil
+`bestaetigt` trägt **und** sein Placebo bestanden hat. Der Satz „zwei validierte Kanten"
+stand am 25.08. gleichzeitig in zwei frischen Befunden, in `mfdepot.js` und in
+Sitzungsnotizen, während die Protokolle das Gegenteil sagten (Regel D2).
+
+### Studienläufe: MESSMASCHINE_PROTOKOLLE setzen
+
+Ohne die Variable legt `messen.js` eine Kopie in `~/Downloads/Markt-Dashboard-Daten/protokolle/`.
+Von dort liest die App — und `depot.js` wählt daraus die Variante mit dem **größten**
+Bestätigungs-t und zeigt sie als Kante. Ein Mehrvarianten-Lauf veröffentlicht also von
+selbst sein Maximum. Bei Studien- und Probeläufen deshalb immer:
+
+```bash
+MESSMASCHINE_PROTOKOLLE="$PWD/studien/messmaschine/protokolle" node studien/messmaschine/messen.js studien/messmaschine/strategien/<name>.js
+```
 
 ## Tests
 

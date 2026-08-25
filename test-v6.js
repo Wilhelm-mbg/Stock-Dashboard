@@ -6517,6 +6517,76 @@ console.log('\n47b) signal() bekommt das Symbol');
   fs.rmSync(dir, { recursive: true, force: true });
 })();
 
+console.log('\n47c) Stufe 0: delta80, Placebo je Haelfte, Pflichtzeilen, Kostenanzeige');
+(function () {
+  var mm = fs.readFileSync(__dirname + '/studien/messmaschine/messmaschine.js', 'utf8');
+  var dep = fs.readFileSync(__dirname + '/depot.js', 'utf8');
+  var cm = fs.readFileSync(__dirname + '/CLAUDE.md', 'utf8');
+
+  /* --- S2: delta80 --- */
+  /* Die MDE (2 x se) sagt, ab wann ein Ausschlag nicht mehr als Rauschen durchgeht.
+   * delta80 sagt, welchen WAHREN Effekt der Lauf mit 80 % Wahrscheinlichkeit gefunden
+   * haette. Nur die zweite Zahl entscheidet, ob eine Messung ueberhaupt sinnvoll war -
+   * und genau diese Verwechslung hat zweimal Kandidaten durchgelassen, die nie
+   * bestaetigbar waren. Deshalb AUSGERECHNET geprueft, nicht gegrept. */
+  ok(/var d80 = \(u\.se > 0\) \? \(schwelle \+ VERFAHREN\.zPower80\) \* u\.se/.test(mm),
+     'delta80 = (Schwelle + z80) x se - nicht die MDE, die eine andere Frage beantwortet');
+  ok(/delta80Pp/.test(mm) && /delta80: d80/.test(mm),
+     'delta80 steht in der Urteilszeile UND im Ergebnis');
+  (function () {
+    var se = 0.0018123, schwelle = 2.5, z80 = 0.8416212;
+    var erwartet = (schwelle + z80) * se * 100;
+    ok(Math.abs(erwartet - 0.6055) < 0.002,
+       'Nachgerechnet: se 0,18123 Pp bei Schwelle 2,50 gibt delta80 ' + erwartet.toFixed(4) + ' Pp');
+    ok(erwartet > 2 * se * 100,
+       'delta80 ist IMMER groesser als die MDE - wer die MDE fuer die Nachweisgrenze haelt, unterschaetzt sich');
+  })();
+
+  /* --- S7: Placebo je Haelfte --- */
+  ok(!/if \(hf !== 'bestaetigung'\) continue/.test(mm),
+     'Der Placebo ist nicht mehr fest auf die Bestaetigungshaelfte verdrahtet');
+  ok(/placeboLauf\(U, kontrolleFuer\(0\), H, schnittTag, vorlauf, leseFenster, _pos, 'entdeckung'\)/.test(mm),
+     'Auch die Entdeckungshaelfte bekommt einen geprueften Nullpunkt - von dort kommen die Vorregistrierungszahlen');
+  ok(/placeboEntdeckung: placeboEntdeckung/.test(mm),
+     'und er steht im Protokoll');
+
+  /* --- S9: die zwei Pflichtzeilen --- */
+  ok(/S9 Einstiegsluecke/.test(mm) && /S9 Sitzungspositionen/.test(mm),
+     'Jede Messung protokolliert Einstiegsluecke und Sitzungspositionen');
+  ok(/einstiegsluecke: \{ signalMittel/.test(mm) && /zentriert:/.test(mm),
+     'Die Einstiegsluecke wird ZENTRIERT gemessen - sonst misst man die allgemeine Ueber-Nacht-Drift');
+  ok(/function lueckeBasis\(\)/.test(mm),
+     'Die Basis dafuer laeuft ueber ALLE Kerzen derselben Symbole, nicht nur ueber die Signalkerzen');
+
+  /* --- S3: die Kostenanzeige war doppelt gezaehlt --- */
+  /* aufKosten und zuKosten werden beide gegen mid gemessen, `runde` ist also der volle
+   * Umlauf; spreadPct = (offer-bid)/mid ist es ebenfalls. Mit *200 stand die notierte
+   * Spanne doppelt so hoch wie der gemessene Umlauf. */
+  ok(!/vor\.spreadPct \* 200/.test(dep),
+     'Die notierte Spanne wird nicht mehr doppelt gezaehlt');
+  ok(/notiertPct: vor\.spreadPct != null \? vor\.spreadPct \* 100/.test(dep),
+     'Sie steht auf derselben Skala wie der gemessene Umlauf');
+  ok(/annahmePct: 0\.10/.test(dep),
+     'Die Kostenhuerde bleibt bei 0,10 % - korrigiert wurde eine Anzeige, nicht die Huerde');
+
+  /* --- S4/S5/S8: die Tore stehen in CLAUDE.md, wo jede Sitzung sie liest --- */
+  ok(/Entdeckung ≥ 4 × Bestätigungs-MDE/.test(cm),
+     'Tor 1 steht in CLAUDE.md: Entdeckung >= 4 x Bestaetigungs-MDE');
+  ok(/delta80` unter der Produkthürde/.test(cm),
+     'Tor 2 steht dort: delta80 unter der Produkthuerde');
+  ok(/MESSMASCHINE_PROTOKOLLE/.test(cm),
+     'Und die Sperre gegen das Selbstveroeffentlichen von Studienlaeufen');
+  ok(/null belegte Kanten/.test(cm),
+     'Der Belegstand steht in CLAUDE.md, damit ihn keine Sitzung wieder aus Prosa zusammenreimt');
+
+  /* --- Das Werkzeug fuer die Altprotokolle --- */
+  var d80t = fs.readFileSync(__dirname + '/tools/delta80-bericht.js', 'utf8');
+  ok(!/writeFileSync/.test(d80t),
+     'Der delta80-Bericht LIEST nur - ein Protokoll ist ein Beleg, kein Arbeitsblatt');
+  ok(/B4 Bonferroni/.test(d80t),
+     'Er nimmt die Schwelle aus dem Protokoll statt sie neu zu rechnen (D2: eine Quelle je Zahl)');
+})();
+
 console.log('\n47a) bezeichnetesArchiv je Zeitrahmen');
 (function () {
   var ms = fs.readFileSync(__dirname + '/studien/messmaschine/messen.js', 'utf8');
