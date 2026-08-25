@@ -3050,7 +3050,13 @@
     save();
     kostenVersuchNeu(sym, true, 'Umlauf ' + (runde * 100).toFixed(4) + ' %');
     return { ok: true, sym: sym, rundePct: runde * 100,
-             notiertPct: vor.spreadPct != null ? vor.spreadPct * 200 : null };
+             /* * 100, nicht * 200: aufKosten und zuKosten oben werden BEIDE gegen mid
+                gemessen, `runde` ist also schon der volle Umlauf - und spreadPct =
+                (offer-bid)/mid ist es ebenfalls. Mit * 200 stand die notierte Spanne
+                doppelt so hoch wie der gemessene Umlauf, und die Anzeige "Rest ist
+                Schlupf" wurde regelmaessig negativ. Die Huerde 0,10 % bleibt, wo sie
+                war; korrigiert ist eine Anzeige, nicht die Annahme. */
+             notiertPct: vor.spreadPct != null ? vor.spreadPct * 100 : null };
   }
   if (typeof window !== 'undefined') window.__kostenRundeMessen = kostenRundeMessen;
 

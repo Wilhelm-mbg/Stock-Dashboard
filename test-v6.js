@@ -1078,6 +1078,54 @@ console.log('\n17b) Oberflaeche: Altlasten und Verdrahtung');
        'Vormarkt #55: ohne Vorboersen-Kerze gibt es keinen Eintrag');
     ok(VM.vormarktAusChart('kein json') === null, 'Vormarkt #55: kaputte Antwort wirft nicht');
 
+    /* ---- Issue #74: die Basis war eine Sitzung zu frueh ----
+     * Gemeldet als "AMD liegt vorboerslich im Plus, hier wird ein Minus angezeigt".
+     * Nachgemessen am 25.08.2026 um 10:27 UTC an sechs Werten - bei allen dasselbe:
+     * chartPreviousClose ist waehrend der Vorboerse der Schluss der VORLETZTEN
+     * Sitzung, regularMarketPrice der der letzten.
+     *
+     * Die Zahlen unten sind die echten von AMD. Sie stehen hier, weil eine erfundene
+     * Zahl diesen Fehler nicht zeigen wuerde: Er faellt nur auf, wenn die beiden
+     * Felder wirklich auseinanderliegen - und zwar so weit, dass das VORZEICHEN
+     * kippt. */
+    function chartMitBeiden(bars, prevClose, regPreis) {
+      var o = JSON.parse(chart(bars, prevClose));
+      o.chart.result[0].meta.regularMarketPrice = regPreis;
+      return JSON.stringify(o);
+    }
+    var amd = VM.vormarktAusChart(chartMitBeiden(
+      [{ t: preStart + 300, c: 464.00, v: 0 }, { t: preStart + 600, c: 470.76, v: 0 }],
+      473.25,    // chartPreviousClose - der Schluss vom 21.08., eine Sitzung zu frueh
+      456.745    // regularMarketPrice  - der Schluss vom 24.08., der richtige
+    ));
+    ok(amd && amd.basis === 456.745,
+       'Issue #74: die Basis ist der LETZTE regulaere Schluss, nicht der davor  [' + (amd && amd.basis) + ']');
+    ok(amd && amd.luecke > 3 && amd.luecke < 3.1,
+       'Issue #74: AMD steht vorboerslich bei +3,07 %  [' + (amd && amd.luecke.toFixed(2)) + ' %]');
+    ok(amd && amd.luecke > 0,
+       'Issue #74: das Vorzeichen stimmt - mit der alten Basis waeren es -0,53 % gewesen');
+    /* Fehlt regularMarketPrice ganz, bleibt der alte Weg als Rueckfall - eine
+     * Antwort ohne dieses Feld soll nicht zu gar keinem Eintrag fuehren. */
+    var ohneReg = VM.vormarktAusChart(chart([{ t: preStart + 300, c: 110, v: 0 }], 100));
+    ok(ohneReg && ohneReg.basis === 100,
+       'Issue #74: ohne regularMarketPrice bleibt chartPreviousClose der Rueckfall');
+
+    /* Dieselbe Rechnung steckt in renderer.js/loadPrePost. Sie laesst sich dort
+     * nicht laden (IIFE ueber window), also wird die Zeile herausgeschnitten und
+     * AUSGEFUEHRT - sonst haette man zwei Kopien einer Regel und nur eine geprueft. */
+    var rSrc = fs.readFileSync(__dirname + '/renderer.js', 'utf8');
+    var mBasis = /var basis = kd\.meta\.regularMarketPrice \|\|\s*\n?\s*kd\.meta\.chartPreviousClose \|\| kd\.meta\.previousClose;/.exec(rSrc);
+    ok(!!mBasis, 'Issue #74: loadPrePost nimmt dieselbe Basis wie die Luecken-Karte');
+    if (mBasis) {
+      var basisVon = new Function('kd', mBasis[0] + '; return basis;');
+      ok(basisVon({ meta: { regularMarketPrice: 456.745, chartPreviousClose: 473.25 } }) === 456.745,
+         'Issue #74: auch in den Kacheln gewinnt der letzte regulaere Schluss');
+      ok(basisVon({ meta: { chartPreviousClose: 473.25 } }) === 473.25,
+         'Issue #74: und der Rueckfall greift, wenn das Feld fehlt');
+    }
+    ok(!/phase === 'vorboerslich'\s*\n?\s*\?\s*\(kd\.meta\.chartPreviousClose/.test(rSrc),
+       'Issue #74: die alte, nach Phase verzweigende Basis ist weg');
+
     // Die Siebung ist die aus dem Ticket - und sie muss jede Schwelle wirklich ziehen.
     var gesiebt = VM.sieben([
       { sym: 'GUT',   kurs: 12,  luecke: 8,   vol: 0, kerzen: 60 },
@@ -6147,12 +6195,79 @@ console.log('\n44) Oberflaeche nach Themen sortiert (Felix, Issue #68)');
 
   /* --- Punkt 4: ausserboerslicher Kurs auch oben im Dashboard --- */
   ok(/function ppKurz/.test(ren), 'Es gibt eine gemeinsame Kurzform des ausserboerslichen Kurses');
-  var moverStelle = ren.indexOf('function moverRows');
-  ok(ren.slice(moverStelle, moverStelle + 400).indexOf('ppKurz(') > -1,
+  /* Abgegrenzt am ENDE des Blocks, nicht an einer Zeichenzahl.
+   * Vorher stand hier slice(stelle, stelle + 1600). Das misst einen Abstand, wo der
+   * ORT gemeint ist: Ein hinzugefuegter Kommentar im Block schiebt den gesuchten
+   * Aufruf aus dem Fenster, und die Zusicherung wird rot, obwohl das Verhalten
+   * stimmt. Genau das ist beim Einbau der Kurszeile (Issue #74) passiert. */
+  function imBlock(quelle, von, bis) {
+    var a = quelle.indexOf(von);
+    if (a < 0) return '';
+    var b = quelle.indexOf(bis, a);
+    return quelle.slice(a, b < 0 ? quelle.length : b);
+  }
+  var moverBlock = imBlock(ren, 'function moverRows', '\n  }');
+  ok(moverBlock && moverBlock.indexOf('ppKurz(') > -1,
      'Gewinner und Verlierer zeigen den ausserboerslichen Kurs (#68)');
-  var heatStelle = ren.indexOf("var heatEl = document.getElementById('dashHeat')");
-  ok(ren.slice(heatStelle, heatStelle + 1600).indexOf('ppKurz(') > -1,
+  var heatBlock = imBlock(ren, "var heatEl = document.getElementById('dashHeat')", 'function card(s)');
+  ok(heatBlock && heatBlock.indexOf('ppKurz(') > -1,
      'Das Marktbild zeigt den ausserboerslichen Kurs (#68)');
+  /* Issue #74: der Kurs gehoert auf die Kachel, nicht nur in den Tooltip. */
+  ok(heatBlock && /class="k"/.test(heatBlock) && /\.price/.test(heatBlock),
+     'Issue #74: das Marktbild zeigt auch den Kurs, nicht nur Prozente');
+
+  /* ---- Issue #74: "im Dunkelmodus sind die grauen Texte nur schwer zu lesen" ----
+   * Die Kachel ist eingefaerbt, und die Nebenzeile stand in der Richtungsfarbe mit
+   * Deckkraft 0,85 darauf: gruener Text auf gruenem Grund. Gemessen kam das auf 1,76
+   * im Hellmodus - praktisch unsichtbar.
+   *
+   * Der Kontrast wird hier GERECHNET, aus den Farbwerten in index.html und dem
+   * Deckel in renderer.js. Ein Kommentar mit einer Zahl waere in einem halben Jahr
+   * eine Behauptung; diese Zusicherung wird rot, sobald jemand an einem der drei
+   * Werte dreht - an der Farbe, am Deckel oder an der Deckkraft. */
+  function tokenAus(quelle, name, ab) {
+    var re = new RegExp('--' + name + ':\\s*(#[0-9a-fA-F]{6})');
+    var t = re.exec(quelle.slice(ab));
+    return t ? t[1] : null;
+  }
+  var htmlT = fs.readFileSync(__dirname + '/index.html', 'utf8');
+  var dunkelAb = htmlT.indexOf(':root[data-theme="dark"]');
+  ok(dunkelAb > 0, 'Kontrast: das dunkle Thema ist im Markup zu finden');
+  function rgb(h) { h = h.replace('#', ''); return [0, 2, 4].map(function (i) { return parseInt(h.substr(i, 2), 16); }); }
+  function leucht(c) {
+    var v = c.map(function (x) { var t2 = x / 255; return t2 <= 0.03928 ? t2 / 12.92 : Math.pow((t2 + 0.055) / 1.055, 2.4); });
+    return 0.2126 * v[0] + 0.7152 * v[1] + 0.0722 * v[2];
+  }
+  function kontrast(a, b) {
+    var l1 = leucht(a), l2 = leucht(b);
+    return (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
+  }
+  function misch(a, b, p) { return a.map(function (v, i) { return Math.round(v * p + b[i] * (1 - p)); }); }
+
+  var deckelM = /Math\.min\((\d+), Math\.abs\(pct\) \/ 3 \* \d+\)/.exec(ren);
+  ok(!!deckelM, 'Kontrast: der Deckel der Einfaerbung steht im Renderer');
+  var deckel = deckelM ? Number(deckelM[1]) / 100 : 0.45;
+
+  var schlimmste = [];
+  [{ n: 'hell', ab: 0 }, { n: 'dunkel', ab: dunkelAb }].forEach(function (th) {
+    var fl = tokenAus(htmlT, 'surface', th.ab);
+    var ink2 = tokenAus(htmlT, 'ink-2', th.ab);
+    var up = tokenAus(htmlT, 'up', th.ab);
+    var down = tokenAus(htmlT, 'down', th.ab);
+    if (!fl || !ink2 || !up || !down) { schlimmste.push(th.n + ': Farbwert fehlt'); return; }
+    [['gruen', up], ['rot', down]].forEach(function (paar) {
+      var grund = misch(rgb(paar[1]), rgb(fl), deckel);
+      var k = kontrast(rgb(ink2), grund);
+      if (k < 4.5) schlimmste.push(th.n + ' ' + paar[0] + ' ' + k.toFixed(2));
+    });
+  });
+  ok(schlimmste.length === 0,
+     'Issue #74: die Nebenzeile bleibt auf der staerksten Kachel lesbar - in beiden Themen  [' +
+     (schlimmste.join('; ') || 'Deckel ' + Math.round(deckel * 100) + ' %') + ']');
+  ok(!/\.heat \.hz \.ppk \{[^}]*opacity/.test(htmlT),
+     'Issue #74: keine Deckkraft mehr auf der Nebenzeile der Kachel - sie zog den Text in den Grund');
+  ok(/\.heat \.hz \.ppk \{[^}]*color: var\(--ink-2\)/.test(htmlT),
+     'Issue #74: die Kachel-Nebenzeile traegt nicht die Richtungsfarbe - die sagt schon der Grund');
   /* Bewusst NICHT danach sortiert: ausserboerslich ist duenn gehandelt, und wer
    * danach sortiert, stellt einzelne Ausreisser wie Tagessieger heraus. */
   ok(/Math\.abs\(Q\[b\.y\]\.pct\) - Math\.abs\(Q\[a\.y\]\.pct\)/.test(ren),

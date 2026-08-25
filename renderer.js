@@ -109,9 +109,31 @@
     catch (e) { return null; }
     if (!kd || !kd.bars.length) return null;
     var kurs = kd.bars[kd.bars.length - 1][1];
-    var basis = phase === 'vorboerslich'
-      ? (kd.meta.chartPreviousClose || kd.meta.previousClose)
-      : kd.meta.regularMarketPrice;
+    /* DIE BASIS IST regularMarketPrice - in BEIDEN Phasen.
+     *
+     * Vorher stand hier vorboerslich chartPreviousClose. Das ist falsch, und zwar
+     * um genau eine Sitzung. Nachgemessen am 25.08.2026 um 10:27 UTC, mitten in der
+     * Vorboerse, an sechs Werten - AMD, NVDA, AAPL, MSFT, TSLA, INTC. Bei allen
+     * sechs dasselbe Bild:
+     *
+     *   AMD  letzter Schluss (24.08.)  456,75
+     *        regularMarketPrice        456,745   <- stimmt
+     *        chartPreviousClose        473,25    <- der Schluss vom 21.08.
+     *
+     *   Vorboersenkurs 470,76 ergab damit -0,53 % statt +3,07 %. Nicht nur die
+     *   Zahl war falsch, das VORZEICHEN war es. Genau so gemeldet in Issue #74.
+     *
+     * Der Grund: Bei range=1d waehrend der Vorboerse ist der Bezugspunkt des
+     * Charts die letzte ABGESCHLOSSENE Sitzung. "Previous close" heisst dann der
+     * Schluss DAVOR. regularMarketPrice dagegen ist immer der letzte regulaere
+     * Kurs - vorboerslich also der Schluss von gestern, nachboerslich der von
+     * heute. Beides ist genau die Basis, gegen die gerechnet werden soll.
+     *
+     * Gilt nur AUSSERHALB der Sitzung. Waehrend des Handels waere
+     * regularMarketPrice der laufende Kurs und der Vergleich sinnlos - deshalb
+     * wird diese Funktion nur bei gesetzter Phase gerufen. */
+    var basis = kd.meta.regularMarketPrice ||
+      kd.meta.chartPreviousClose || kd.meta.previousClose;
     if (!basis) return null;
     return { kurs: kurs, pct: (kurs / basis - 1) * 100, phase: phase };
   }
@@ -273,8 +295,13 @@
     setzeInhalt('winners', moverRows(sorted.slice(0, 3)));
     setzeInhalt('losers', moverRows(sorted.slice(-3).reverse()));
 
-    // Marktbild-Heatmap: eine Kachel je Wert, die Bewegten zuerst. Farbe nur über
-    // CSS-Variablen (theme-fest): 3 % Tagesbewegung = volle Beimischung (45 %).
+    /* Marktbild-Heatmap: eine Kachel je Wert, die Bewegten zuerst. Farbe nur über
+     * CSS-Variablen (theme-fest): 3 % Tagesbewegung = volle Beimischung.
+     * Die Beimischung ist seit Issue #74 auf 30 % gedeckelt statt auf 45: Darüber
+     * fällt der Kontrast der Nebenzeile unter die Lesbarkeitsschwelle. Der Deckel
+     * ist nicht geschätzt — Abschnitt 41 rechnet ihn aus den Farbwerten nach und
+     * wird rot, sobald er zu hoch steht. Die Kachel bleibt farbig genug, um die
+     * Richtung auf einen Blick zu zeigen. */
     var heatEl = document.getElementById('dashHeat');
     if (heatEl) {
       if (!withQ.length) {
@@ -285,7 +312,7 @@
           var pct = Q[s.y].pct;
           var bg = 'var(--surface)';
           if (Math.abs(pct) >= 0.05) {
-            var n = Math.round(Math.min(45, Math.abs(pct) / 3 * 45));
+            var n = Math.round(Math.min(30, Math.abs(pct) / 3 * 30));
             bg = 'color-mix(in srgb, var(' + (pct > 0 ? '--up' : '--down') + ') ' + n + '%, var(--surface))';
           }
           var sign = pct > 0 ? '+' : '';
@@ -295,8 +322,14 @@
             ? ' · ' + (ppq.pp.phase === 'vorboerslich' ? 'vorbörslich' : 'nachbörslich') + ' ' +
               nfP.format(ppq.pp.kurs) + ' $ (' + (ppq.pp.pct > 0 ? '+' : '') + nfP.format(ppq.pp.pct) + ' %)'
             : '';
+          /* Der Kurs gehoert auf die Kachel, nicht nur in den Tooltip (Issue #74:
+           * "Das Marktbild braucht auch Kurse, nicht nur Prozente."). Ohne Kurs
+           * bleibt die Zeile weg statt einen Platzhalter zu zeigen. */
+          var kursT = Q[s.y] && Q[s.y].price != null
+            ? '<span class="k">' + nfP.format(Q[s.y].price) + '&nbsp;$</span>' : '';
           return '<div class="hz" data-heat="' + esc(s.y) + '" title="' + esc(s.name + ' ' + sign + nfP.format(pct) + ' %' + ppT) + '" style="background:' + bg + '">' +
-            '<span class="s">' + esc(s.y) + '</span><span class="p">' + sign + nfP.format(pct) + '&nbsp;%</span>' +
+            '<span class="s">' + esc(s.y) + '</span>' + kursT +
+            '<span class="p">' + sign + nfP.format(pct) + '&nbsp;%</span>' +
             ppKurz(Q[s.y]) + '</div>';
         }).join('');
       }
