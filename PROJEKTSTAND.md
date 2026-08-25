@@ -58,6 +58,13 @@ Dazu die Zusatzpunkte 3–12 der Kritik: fertig.
   Aufzeichnung, Einzeldatei) und bei Tauglichkeit einbauen; sonst mit Begründung vorlegen.
 - **Danach die kleinen Wünsche, Reihenfolge fest:** #69 lokales Backup → #82 Herkunftsland-
   Filter Marktkarte → #70 Radar-Streusuchen → #33 zweiter Trendwende-Detektor.
+- **Messmaschine versionieren und alle Kanten neu messen** (freigegeben 25.08. spät):
+  (1) Versionsnummer der Messmaschine an ihren Code koppeln (heute 7 Änderungen bei
+  unverändert „1.0.0“) und veraltete Protokolle in der Übersichtstafel als solche
+  kennzeichnen; (2) danach alle zwölf Strategien einmal auf dem aktuellen Instrumenten-
+  Stand neu messen. Erst dann neue Untersuchungen. Quelle: Befundbericht „Sieben stille
+  Fehler“, Abschnitt 5. Messwerkzeug, keine Handelslogik. Der Analytiker prüft ab jetzt
+  nächtlich, ob Protokolle und Instrumenten-Stand zusammenpassen.
 - **#76 — die sieben gesammelten Fehler vom 25.08. reparieren** (inkl. #76.2, die zu enge
   fetch-Refspec von origin). Warum: gemeldete Fehler, freigegeben durch die Hausregel
   „Reparatur von Warnsignalen“. Dateien: laut Issue #76, je Fehler einzeln committen.
@@ -86,6 +93,9 @@ steht, ist nach zwei Stunden verloren.*
 - **25.08.2026** — Kommerzielles und Mehrbenutzer sind vorerst kein Thema. Das Werkzeug
   ist für Wilhelm allein; Schwerpunkt sind Werkzeuge, Bedienbarkeit, Optik und ein
   vollständiger Marktüberblick.
+- **25.08.2026 (spät)** — Messmaschine wird versioniert, alle zwölf Strategien werden auf
+  dem aktuellen Stand neu gemessen; erst danach neue Untersuchungen (Empfehlung aus dem
+  Befundbericht „Sieben stille Fehler“, von Wilhelm bestätigt).
 - **25.08.2026 (spät)** — Neue Rolle **Analytiker**: läuft jede Nacht 03:15, prüft alles
   (Wächterprüfungen, Kanten-Neuberechnung, kritische Methodenbeurteilung), meldet per
   Issue nur bei Fund, sonst eine Zeile hier auf der Tafel.
