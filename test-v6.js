@@ -6754,9 +6754,15 @@ console.log('\n46) Was die App dauerhaft aufzeichnet');
      'Die Marktkarte hat einen Kurs-Zwischenspeicher je Kuerzel');
   /* Der Kern der Abhilfe: was versorgt ist, wird nicht noch einmal geholt. Ohne diese
    * eine Zeile waere der Zwischenspeicher reine Zierde. */
-  ok(mkFix.indexOf('if (w.ausSpeicher || w.ausApp) continue;') !== -1,
-     'Was im Zwischenspeicher liegt, wird nicht noch einmal aus dem Netz geholt');
-  ok(/KURSE\[w\.sym\] = \{ kurs: w\.kurs, pct: w\.pct, at: Date\.now\(\) \}/.test(mkFix),
+  /* Seit dem Sammelabruf gibt es keine Schleife mehr, aus der man aussteigen koennte:
+   * gefragt wird nur noch nach dem, was WEDER im Zwischenspeicher NOCH in der App liegt.
+   * Dieselbe Eigenschaft, andere Bauart. */
+  ok(/var offen = liste\.filter\(function \(w\) \{ return !w\.ausSpeicher && !w\.ausApp; \}\);/.test(mkFix) &&
+     /K\.holeViele\(offen\.map/.test(mkFix),
+     'Gefragt wird nur nach dem, was weder im Zwischenspeicher noch in der App liegt');
+  ok(/if \(!offen\.length\) return/.test(mkFix),
+     'Ist nichts offen, unterbleibt der Abruf ganz - das ist der Fall nach jeder Filteraenderung');
+  ok((mkFix.match(/KURSE\[w\.sym\] = \{ kurs:/g) || []).length >= 2,
      'Geholte Kurse wandern in den Zwischenspeicher - sonst fuellt er sich nie');
   /* Der frueher hier stehende `return 0` haette den Zwischenspeicher unterschlagen und
    * eine volle Karte als leer gemeldet. */
@@ -6770,6 +6776,27 @@ console.log('\n46) Was die App dauerhaft aufzeichnet');
   /* Das Projektverzeichnis wird gesucht, bevor jemand einen Zettel schreiben muss. */
   ok(/'Stock-Dashboard', \.\.\.teil/.test(mjSt),
      'Das Projektverzeichnis wird neben dem Datenordner selbst gesucht');
+  /* SAMMELABRUF (25.08.2026). Vorher ein Netzabruf JE WERT - bei der Marktkarten-Vorgabe
+   * von 600 Werten sechshundert Anfragen fuer ein Bild. Gemessen gegen query2: 800
+   * Kuerzel in EINER Anfrage, 3,4 s. Geblockt wird bei 400. */
+  ok(/ipcMain\.handle\('yahoo-quotes'/.test(mjSt) && /QUOTE_BLOCK = 400/.test(mjSt),
+     'Der Hauptprozess kann Kurse gebuendelt holen, in Bloecken zu 400');
+  /* Derselbe Host und dieselbe Crumb-Sitzung wie der Ergebniskalender - der Kanal
+   * oeffnet KEINE neue Aussengrenze. Genau das ist die Regel aus 7.17. */
+  ok(/const sitz = await holeSitz\(\);/.test(mjSt) && /jsonGet\(pfad, sitz\.cookie\)/.test(mjSt),
+     'Der Sammelabruf benutzt die vorhandene Yahoo-Sitzung, nicht einen eigenen Weg');
+  /* Eine Obergrenze, damit ein Aufrufer nicht versehentlich zehntausend Kuerzel schickt. */
+  ok(/QUOTE_MAX = 3000/.test(mjSt) && /if \(syms\.length >= QUOTE_MAX\) break;/.test(mjSt),
+     'Die Zahl der Kuerzel je Aufruf ist gedeckelt');
+  var kuQ = fs.readFileSync(__dirname + '/kurse.js', 'utf8');
+  ok(/holeViele: async function/.test(kuQ) && /return \{ ok: false, grund:/.test(kuQ),
+     'Der Lader gibt den GRUND zurueck - sonst waere ein gescheiterter Abruf von einer leeren Antwort nicht zu unterscheiden');
+  ok(/kurseHolen\.letzterGrund/.test(mkFix) && /Kursabruf gescheitert/.test(mkFix),
+     'und die Karte sagt es, statt still eine halbe Karte zu zeigen');
+  /* Der Hintergrundbetrieb war der eigentliche Wunsch aus #79. Er ist erst mit dem
+   * Sammelabruf vertretbar: zwei Anfragen je Runde statt sechshundert. */
+  ok(/if \(document\.hidden\) return;/.test(mkFix) && !/classList\.contains\('active'\)/.test(mkFix),
+     'Die Karte laedt jetzt auch im Hintergrund nach - nur bei unsichtbarem Fenster nicht');
   ok(/function kostenMessungNeu/.test(dep), 'Die Messung des echten Schlupfs bleibt bestehen');
 
   /* --- Die Kostenmessung darf nicht auf einen Trade warten muessen ---
@@ -7354,10 +7381,24 @@ console.log('\n47) Anzeige der Messmaschine: unbekannte Urteile und die Selbstpr
   /* ---------- Die Arbeitsteilung: langsam aus der Datei, schnell aus dem Netz ----------
    * Wuerde die Marktkapitalisierung gespeichert, waere die Karte die Karte von
    * gestern - Flaeche wie Farbe. */
-  ok(/w\.groesse = w\.kurs \* w\.aktien/.test(ui),
-     'Die Flaeche entsteht aus Kurs mal Stueckzahl, bei jedem Abruf neu');
-  ok(/regularMarketPrice/.test(ui) && /chartPreviousClose/.test(ui),
-     'Kurs und Vortagesschluss kommen aus demselben einen Abruf');
+  /* Gemessen wird die EIGENSCHAFT, nicht die Schreibweise: JEDE Zuweisung an groesse
+   * muss ein Produkt mit w.aktien sein. Vorher stand hier ein Muster auf `w.kurs` -
+   * beim Umstieg auf den Sammelabruf (25.08.2026) hiess die Variable q.kurs, und die
+   * Zusicherung wurde rot, obwohl die Flaeche unveraendert frisch gerechnet wird. */
+  var groessenZeilen = ui.split('\n').filter(function (z) { return /\.groesse\s*=/.test(z); });
+  ok(groessenZeilen.length >= 3 && groessenZeilen.every(function (z) { return /\* w\.aktien/.test(z); }),
+     'Die Flaeche entsteht IMMER aus Kurs mal Stueckzahl, nie aus einem gespeicherten Wert',
+     groessenZeilen.length);
+  /* Kurs und Vortagesschluss duerfen nicht aus zwei Abrufen zu verschiedenen Zeitpunkten
+   * stammen - sonst waere die Farbe eine Veraenderung, die es nie gab. Seit dem
+   * Sammelabruf stehen die Feldnamen im Hauptprozess; die Eigenschaft wird deshalb dort
+   * gemessen: beide aus DEMSELBEN Antwortobjekt q. */
+  var mjQ = fs.readFileSync(__dirname + '/main.js', 'utf8');
+  ok(/q\.regularMarketPrice/.test(mjQ) && /q\.regularMarketPreviousClose/.test(mjQ) &&
+     /q\.regularMarketChangePercent/.test(mjQ),
+     'Kurs, Vortagesschluss und Veraenderung kommen aus demselben einen Antwortobjekt');
+  ok(/w\.pct = q\.pct != null \? q\.pct : \(q\.vorher > 0/.test(ui),
+     'und die Karte nimmt beide aus demselben q - nie aus zwei Abrufen');
   ok(!/sec\.gov|data\.sec/.test(ui) && !/sec\.gov/.test(fs.readFileSync(__dirname + '/marktkarte.js', 'utf8')),
      'Die App fragt nie selbst bei der SEC an - das macht das Werkzeug daneben');
   ok(/if \(e\.auslaender\)/.test(ui),

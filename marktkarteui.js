@@ -227,40 +227,45 @@
       KURSE[w.sym] = { kurs: k.kurs, pct: k.pct, at: jetzt };
       ausDerApp++;
     });
-    var fertig = ausSpeicher + ausDerApp, idx = 0;
+    var fertig = ausSpeicher + ausDerApp;
     if (fertig && melde) melde(fertig, liste.length);
     var K = window.Kurse;
     /* Frueher stand hier `return 0` - das haette den Zwischenspeicher unterschlagen
      * und die Karte als leer gemeldet, obwohl sie voll ist. */
-    if (!K || typeof K.hole !== 'function') return liste.filter(function (w) { return w.groesse > 0; }).length;
-    async function bahn() {
-      while (idx < liste.length) {
-        var w = liste[idx++];
-        /* Was schon versorgt ist, wird nicht noch einmal geholt - weder aus dem
-         * Zwischenspeicher noch aus der App. Sonst waere beides oben reine Zierde.
-         * Nicht mitzaehlen: fertig steht bereits auf ausSpeicher + ausDerApp. */
-        if (w.ausSpeicher || w.ausApp) continue;
-        try {
-          var r = await K.hole(w.sym, { range: '1d', interval: '1d', bereinigt: false, wiederholen: false });
-          var m = r && r.meta;
-          if (m && m.regularMarketPrice > 0) {
-            w.kurs = m.regularMarketPrice;
-            var vor = m.chartPreviousClose > 0 ? m.chartPreviousClose : m.previousClose;
-            w.pct = vor > 0 ? (w.kurs / vor - 1) * 100 : null;
-            w.groesse = w.kurs * w.aktien;
-            KURSE[w.sym] = { kurs: w.kurs, pct: w.pct, at: Date.now() };
-          }
-        } catch (e) { /* ein Wert weniger, kein Grund die Karte abzubrechen */ }
-        fertig++;
-        if (melde && fertig % 25 === 0) melde(fertig, liste.length);
-      }
+    if (!K || typeof K.holeViele !== 'function') return liste.filter(function (w) { return w.groesse > 0; }).length;
+
+    /* SAMMELABRUF statt Einzelabrufen (25.08.2026). Hier lief eine Schleife ueber sechs
+     * Bahnen mit EINEM Netzabruf JE WERT. Bei der Vorgabe von 600 Werten waren das
+     * sechshundert Anfragen fuer ein Bild - der Grund, warum die Karte traege war und
+     * nicht im Hintergrund laufen durfte.
+     *
+     * /v7/finance/quote nimmt viele Kuerzel auf einmal; der Hauptprozess blockt bei 400.
+     * Nachgemessen am 25.08.2026: 800 Kuerzel in EINER Anfrage, 3,4 s. 600 Werte kosten
+     * damit zwei Anfragen statt sechshundert. */
+    var offen = liste.filter(function (w) { return !w.ausSpeicher && !w.ausApp; });
+    if (!offen.length) return liste.filter(function (w) { return w.groesse > 0; }).length;
+    var r = await K.holeViele(offen.map(function (w) { return w.sym; }));
+    if (!r || !r.ok) {
+      /* Ein gescheiterter Sammelabruf darf nicht wie eine leere Karte aussehen. Was aus
+       * Zwischenspeicher und App kam, bleibt stehen; der Grund wandert nach oben, statt
+       * in einer stillen Null zu verschwinden. */
+      kurseHolen.letzterGrund = (r && r.grund) || 'unbekannt';
+      return liste.filter(function (w) { return w.groesse > 0; }).length;
     }
-    /* Sechs Bahnen wie bei den Kacheln. Nachgemessen am 25.08.2026: 220 Werte in
-     * knapp vier Sekunden, keine einzige Drosselung. Mehr Bahnen bringen wenig und
-     * erhoehen nur das Risiko, dass Yahoo dichtmacht. */
-    var bahnen = [];
-    for (var i = 0; i < 6; i++) bahnen.push(bahn());
-    await Promise.all(bahnen);
+    kurseHolen.letzterGrund = '';
+    var nun = Date.now();
+    offen.forEach(function (w) {
+      var q = r.kurse[w.sym];
+      if (!q || !(q.kurs > 0)) return;
+      w.kurs = q.kurs;
+      /* Yahoo liefert die Prozentzahl mit; nur wenn sie fehlt, wird sie aus dem
+       * Vortagesschluss gerechnet. Fehlt auch der, bleibt sie null - eine unbekannte
+       * Veraenderung ist unbekannt, nicht null Prozent. */
+      w.pct = q.pct != null ? q.pct : (q.vorher > 0 ? (q.kurs / q.vorher - 1) * 100 : null);
+      w.groesse = q.kurs * w.aktien;
+      KURSE[w.sym] = { kurs: w.kurs, pct: w.pct, at: nun };
+    });
+    if (melde) melde(liste.length, liste.length);
     return liste.filter(function (w) { return w.groesse > 0; }).length;
   }
 
@@ -467,7 +472,8 @@
       zeichnen(mitKurs, { gezeichnet: n, gesamt: a.gesamt, adr: a.adr, ohneGroesse: a.ohneGroesse,
         ausApp: ausApp, ausSpeicher: ausSpeicher, keineAktie: a.keineAktie, doppelt: a.doppelt });
       letzterLauf = Date.now();
-      sag('Stand: ' + new Date(letzterLauf).toLocaleTimeString('de-DE'));
+      sag('Stand: ' + new Date(letzterLauf).toLocaleTimeString('de-DE') +
+        (kurseHolen.letzterGrund ? ' · Kursabruf gescheitert: ' + kurseHolen.letzterGrund : ''));
     } catch (e) {
       sag('Fehler: ' + (e && e.message || e));
     } finally { laeuft = false; }
@@ -481,13 +487,14 @@
      * haelt, waere das nur doppelte Arbeit gewesen. Die Karte ist eine Uebersicht,
      * kein Handelssignal - fuenf Minuten Alter sind hier ohne Belang.
      *
-     * Weiterhin nur bei offenem Reiter: im Hintergrund hunderte Kurse zu ziehen waere
-     * Verschwendung und ein guter Weg, gedrosselt zu werden - und die Drosselung traefe
-     * den Intraday-Scanner mit, der dieselbe Quelle benutzt. Der Zwischenspeicher
-     * ueberlebt den Reiterwechsel, die Karte steht beim Zurueckkommen also sofort. */
+     * UND JETZT AUCH IM HINTERGRUND (Wunsch aus #79). Das ging vorher nicht, weil 600
+     * EINZELabrufe je Runde eine Drosselung riskiert haetten - die haette den
+     * Intraday-Scanner mitgetroffen, der dieselbe Quelle benutzt. Mit dem Sammelabruf
+     * sind es zwei Anfragen je Runde: weniger als eine einzige Kachelreihe.
+     * Ausgesetzt wird nur, wenn das Fenster gar nicht sichtbar ist - dann sieht
+     * ohnehin niemand hin, und der Zwischenspeicher haelt den Stand bis zum Aufwachen. */
     taktung = setInterval(function () {
-      var t = document.getElementById('tab-marktkarte');
-      if (!t || !t.classList.contains('active')) return;
+      if (document.hidden) return;
       if (Date.now() - letzterLauf >= KURS_FRISCH_MS) laden();
     }, 20000);
   }

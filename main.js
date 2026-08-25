@@ -842,6 +842,63 @@ function stammdatenPfad() {
  * zeichnen, und eine Liste von zehntausend Kuerzeln durch die Bruecke zu schieben,
  * von denen die Haelfte unbrauchbar ist, waere Verschwendung. */
 const MAX_KANDIDATEN = 2000;
+/* SAMMELABRUF (25.08.2026). Bis dahin holte die Oberflaeche jeden Kurs EINZELN ueber
+ * /v8/finance/chart/<sym>. Die Marktkarte steht per Vorgabe auf 600 Werten - das waren
+ * 600 Anfragen fuer ein Bild. Deshalb durfte sie nicht im Hintergrund laufen, und jede
+ * Filteraenderung war traege (Fehler #79).
+ *
+ * /v7/finance/quote nimmt viele Kuerzel auf einmal. Nachgemessen am 25.08.2026 gegen
+ * query2.finance.yahoo.com - dieselbe Crumb-Sitzung wie der Ergebniskalender, also
+ * KEINE neue Aussengrenze:
+ *     200 Kuerzel -> 1 Anfrage, 0,8 s
+ *     400 Kuerzel -> 1 Anfrage, 1,5 s   (URL 2.644 Zeichen)
+ *     800 Kuerzel -> 1 Anfrage, 3,4 s   (URL 5.229 Zeichen)
+ * Geblockt wird bei 400: gemessen schnell, und die URL bleibt weit unter jeder
+ * ueblichen Laengengrenze. 600 Werte kosten damit ZWEI Anfragen statt sechshundert.
+ *
+ * Was die Quelle nicht kennt, FEHLT im Ergebnis - ein unbekannter Kurs ist unbekannt,
+ * nicht null. Der Aufrufer sieht an "angefragt" gegen "geholt", wie viel ankam. */
+const QUOTE_BLOCK = 400;
+const QUOTE_MAX = 3000;
+ipcMain.handle('yahoo-quotes', async (_ev, symbole) => {
+  try {
+    const roh = Array.isArray(symbole) ? symbole : [];
+    const syms = [], gesehen = new Set();
+    for (const x of roh) {
+      const k = String(x || '').toUpperCase().replace(/[^A-Z0-9.^-]/g, '').slice(0, 12);
+      if (!k || gesehen.has(k)) continue;
+      gesehen.add(k); syms.push(k);
+      if (syms.length >= QUOTE_MAX) break;
+    }
+    if (!syms.length) return { ok: true, kurse: {}, angefragt: 0, geholt: 0, bloecke: 0 };
+    const sitz = await holeSitz();
+    if (!sitz.crumb) return { ok: false, grund: 'Kein Zugang zu den Kursen (Cookie/Crumb)' };
+    const kurse = {};
+    let bloecke = 0;
+    for (let i = 0; i < syms.length; i += QUOTE_BLOCK) {
+      const teil = syms.slice(i, i + QUOTE_BLOCK);
+      const pfad = '/v7/finance/quote?symbols=' + encodeURIComponent(teil.join(',')) +
+        '&crumb=' + encodeURIComponent(sitz.crumb);
+      const j = await jsonGet(pfad, sitz.cookie);
+      bloecke++;
+      const arr = (j && j.quoteResponse && j.quoteResponse.result) || [];
+      arr.forEach((q) => {
+        if (!q || !(q.regularMarketPrice > 0)) return;
+        kurse[q.symbol] = {
+          kurs: q.regularMarketPrice,
+          pct: typeof q.regularMarketChangePercent === 'number' ? q.regularMarketChangePercent : null,
+          vorher: q.regularMarketPreviousClose > 0 ? q.regularMarketPreviousClose : null
+        };
+      });
+      /* Zwischen den Bloecken kurz Luft lassen. Mehrere Anfragen im Millisekundenabstand
+       * sind der schnellste Weg in eine Drosselung - und die traefe den Intraday-Scanner
+       * mit, der dieselbe Quelle benutzt. */
+      if (i + QUOTE_BLOCK < syms.length) await new Promise((f) => setTimeout(f, 300));
+    }
+    return { ok: true, kurse: kurse, angefragt: syms.length,
+             geholt: Object.keys(kurse).length, bloecke: bloecke };
+  } catch (e) { return { ok: false, grund: String((e && e.message) || e) }; }
+});
 ipcMain.handle('markt-sec-basis', async () => {
   try {
     const b = await secBasis();

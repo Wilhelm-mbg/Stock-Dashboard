@@ -175,6 +175,28 @@
        *  schneidet als alle anderen (vormarkt.js schneidet das vorboersliche Fenster
        *  aus den currentTradingPeriod-Grenzen). Er bekommt so denselben URL-Bau und
        *  dieselbe 429-Behandlung wie alle, ohne dass sein geprüfter Vertrag aufbricht. */
+      /** VIELE Kurse auf einmal - eine Anfrage je 400 Kuerzel statt einer je Wert.
+       *  Fuer Uebersichten ueber hunderte Werte ist das der Unterschied zwischen
+       *  "geht nicht" und "kostet eine Sekunde": 600 Werte sind zwei Anfragen.
+       *
+       *  Rueckgabe wie beim Hauptprozess: { ok, kurse: { SYM: { kurs, pct, vorher } },
+       *  angefragt, geholt, bloecke }. Bewusst das GANZE Ergebnis und nicht nur die
+       *  Kurse: sonst liesse sich "Abruf gescheitert" nicht von "nichts gefunden"
+       *  unterscheiden, und der Aufrufer meldete stillschweigend eine leere Karte.
+       *
+       *  Kein "bereinigt"-Vertrag wie bei hole(): das hier sind LEBENDE Kurse, kein
+       *  Zeitreihenabruf. Splits gibt es im Jetzt nicht. */
+      holeViele: async function (syms) {
+        if (!api || typeof api.yahooQuotes !== 'function') {
+          return { ok: false, grund: 'Sammelabruf in dieser Fassung nicht vorhanden', kurse: {} };
+        }
+        try {
+          var r = await api.yahooQuotes(syms || []);
+          if (!r || !r.ok) return { ok: false, grund: (r && r.grund) || 'unbekannt', kurse: {} };
+          return { ok: true, kurse: r.kurse || {}, angefragt: r.angefragt || 0,
+                   geholt: r.geholt || 0, bloecke: r.bloecke || 0 };
+        } catch (e) { return { ok: false, grund: String((e && e.message) || e), kurse: {} }; }
+      },
       holeRoh: async function (sym, opt) {
         var res = await mitWiederholung(url(sym, opt || {}), opt || {});
         return (res && res.ok) ? res.body : null;
