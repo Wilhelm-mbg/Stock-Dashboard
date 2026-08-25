@@ -1,0 +1,19 @@
+
+Teil 1: Ausschnitt-Arithmetik von erwartung()
+  OK  Ausschnitt [i-lese-H, i+H-1] stimmt mit Brute-Force ueberein  [20 Faelle, groesste Abweichung 0.00e+0]
+  OK  Unter 20 Restkerzen liefert erwartung() null (kein stilles Duennmittel)
+
+Teil 2: Selektions-Signal auf Zufallspfad (wahrer Ueberschuss 0)
+  mit A7-Fenster : 0.0065 Pp, MDE 0.0377 Pp, t 0.34, 7062 Signale / 228 Tage
+  ohne Fenster   : 0.0129 Pp, MDE 0.0375 Pp, t 0.69, 7062 Signale / 228 Tage
+  OK  Mit A7-Fenster liegt der Nullpunkt im Rahmen (|tm| < MDE)
+  OK  Ohne Fensterangabe warnt die Maschine (A7)
+  OK  Urteil mit Fenster ist kein "bestaetigt"  [nicht-entscheidbar]
+  (A6-Verschiebung ohne Fenster: 0.0064 Pp - zur Kenntnis, kein Pruefkriterium: bei iid-Schritten und grossen Toepfen ist sie klein)
+  Maschinen-Placebo (Bestaetigung): -0.0157 Pp, t -0.94, MDE 0.0335 Pp
+  OK  Maschinen-Placebo auf Kunstarchiv im Rahmen
+
+Teil 3: "aussicht" (Tage bis t=2)
+  Urteile mit positivem Punktschaetzer: 2, davon mit aussicht: 0
+
+GEGENPROBE OHNE BEFUND IN TEIL 1/2

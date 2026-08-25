@@ -133,6 +133,7 @@ steht, ist nach zwei Stunden verloren.*
 *Eine Zeile je Nacht, geschrieben von der Analytiker-Aufgabe (03:15). Issues nur bei Fund.*
 
 - **26.08.** — Erster Lauf: A–C, E + D geprüft; Placebo sauber (t −0,10), Live = Messung bestätigt, keine frischen Tage für Kanten-Neuberechnung; 2 Funde gemeldet (#84 „belegt"-Prosa, #85 laufende Quote-Stempel-Kerze im 60m-Archiv), Details in `studien/analytiker/2026-08-26/BEFUND.md`; nächste Nacht F-Rotation Punkt 1 (Kontrollgruppen-Konstruktion / A7-Lesefenster).
+- **26.08. (2. Lauf, 23:36)** — A–C, E verkürzt (nichts geändert seit dem ersten Lauf) + F-Rotation Punkt 1: **A7-Konstruktion trägt** (Ausschnitt-Arithmetik exakt gegen Brute-Force, Nullpunkt auf Kunstarchiv mit Selektions-Köder im Rahmen); 3 Funde gemeldet (#86 `aussicht` feuert nie, #87 A7-Protokolltext nennt falsches Fenster, #88 Placebo ignoriert Einstiegskonvention — Vorbedingung für glockendruck-nacht Zweig T, neben #85 und dem `ausstieg`-Schalter), Details in `studien/analytiker/2026-08-26-zweiter-lauf/BEFUND.md`; nächste Nacht F-Rotation Punkt 2 (Signifikanz-Rechnung/Testzahl, dabei Newey-West-Verzögerung Tage-gegen-Kerzen nachrechnen).
 
 ---
 
