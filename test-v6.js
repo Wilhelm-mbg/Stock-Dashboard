@@ -6330,6 +6330,67 @@ console.log('\n46) Was die App dauerhaft aufzeichnet');
   ok(/kostenRundeLaeuft/.test(draht), 'Ein Doppelklick loest nicht zwei Runden aus');
 })();
 
+console.log('\n47b) signal() bekommt das Symbol');
+(function () {
+  /* Bis zum 25.08.2026 hiess die Signatur signal(bars, i, params, rang) - ohne Symbol.
+   * Eine Strategie, die etwas Symbolbezogenes braucht (Ertragstermine, Branche,
+   * Kennzahlen), musste sich die Zuordnung aus den KURSEN zurueckrechnen. Kandidat B der
+   * Vorregistrierung tat das mit einem Fingerabdruck aus zehn fruehen Schlusskursen -
+   * und genau in dieser Bruecke ist sein Quelltext abgebrochen und verlorengegangen.
+   * Der laengste Teil der Datei existierte nur, weil hier ein Argument fehlte.
+   * Deshalb wird das hier AUSGEFUEHRT geprueft, nicht gelesen. */
+  var os2 = require('os'), path2 = require('path');
+  var M = require(__dirname + '/studien/messmaschine/messmaschine.js');
+  var dir = path2.join(os2.tmpdir(), 'md-sym-' + process.pid);
+  fs.mkdirSync(dir, { recursive: true });
+
+  /* Zwei Reihen, die sich im KURSVERLAUF nicht unterscheiden - nur im Dateinamen.
+   * Genau der Fall, an dem eine Fingerabdruck-Bruecke scheitern muesste. */
+  var reihe = [], tag = Date.UTC(2015, 0, 2);
+  for (var d = 0; d < 700; d++) {
+    var dt = new Date(tag + d * 86400000);
+    if (dt.getUTCDay() === 0 || dt.getUTCDay() === 6) continue;
+    reihe.push([dt.getTime(), 100 + (d % 7) * 0.5, 1000]);
+  }
+  /* Zwoelf Reihen, weil die Maschine unter zehn Werten verweigert (E1). */
+  var SYMS = ['AAA', 'BBB', 'CCC', 'DDD', 'EEE', 'FFF',
+              'GGG', 'HHH', 'III', 'JJJ', 'KKK', 'LLL'];
+  SYMS.forEach(function (s) {
+    fs.writeFileSync(path2.join(dir, 'bars_1d_' + s + '.json'),
+      JSON.stringify({ series: reihe }));
+  });
+
+  var gesehen = {};
+  var r = M.messe({
+    key: 'symprobe', grund: 'Prueft, ob signal() das Symbol bekommt.',
+    zeitrahmen: '1d', haltedauerKerzen: 3, richtung: 'long', leseFensterKerzen: 5,
+    universum: function () { return true; },
+    varianten: [{}],
+    signal: function (bars, i, params, rang, sym) {
+      gesehen[String(sym)] = (gesehen[String(sym)] || 0) + 1;
+      return null;
+    }
+  }, dir);
+
+  var namen = Object.keys(gesehen).sort();
+  ok(namen.length === SYMS.length && namen[0] === 'AAA' && namen[namen.length - 1] === 'LLL',
+     'signal() sieht jedes Symbol des Universums beim Namen  [' + namen.length + ': ' + namen.join(',') + ']');
+  ok(namen.indexOf('undefined') === -1,
+     'Kein Aufruf ohne Symbol - sonst braeuchte es wieder eine Bruecke aus Kursen');
+
+  /* Rueckwaertsvertraeglich: eine Strategie mit der alten Signatur laeuft unveraendert. */
+  var alt = 0;
+  M.messe({
+    key: 'altsignatur', grund: 'Alte Signatur ohne sym.',
+    zeitrahmen: '1d', haltedauerKerzen: 3, richtung: 'long', leseFensterKerzen: 5,
+    universum: function () { return true; }, varianten: [{}],
+    signal: function (bars, i, params) { alt++; return null; }
+  }, dir);
+  ok(alt > 0, 'Eine Strategie mit der alten Signatur laeuft unveraendert weiter');
+
+  fs.rmSync(dir, { recursive: true, force: true });
+})();
+
 console.log('\n47a) bezeichnetesArchiv je Zeitrahmen');
 (function () {
   var ms = fs.readFileSync(__dirname + '/studien/messmaschine/messen.js', 'utf8');
