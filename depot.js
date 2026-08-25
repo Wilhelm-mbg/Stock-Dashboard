@@ -2767,6 +2767,7 @@
     D.positions.push(trade);
     D.trades.unshift(trade);
     if (D.trades.length > 1000) D.trades = D.trades.filter(function (tt, i2) { return i2 < 1000 || tt.status !== 'closed'; }); // Store schlank halten, Offenes nie verwerfen
+    spanneStempeln(trade, 'open');
     notifyTrade(trade, 'open');
     return trade;
   }
@@ -2820,6 +2821,7 @@
     });
     var idx = D.positions.indexOf(pos);
     if (idx >= 0) D.positions.splice(idx, 1);
+    spanneStempeln(pos, 'close');
     notifyTrade(pos, 'close');
     // Gespiegelte Demo-Position beim Broker ebenfalls schließen
     if (pos.capDealId && window.CapAPI && window.CapAPI.enabled()) {
@@ -2856,6 +2858,62 @@
     if (D.kostenMessung.runden.length > 300) D.kostenMessung.runden = D.kostenMessung.runden.slice(0, 300);
     save();
   }
+  /** Warum die Spiegelung aufs Demo-Konto scheiterte - dauerhaft, nicht nur im
+   *  Arbeitsspeicher. HEALTH.capFail zaehlt mit, ist aber beim naechsten Start weg,
+   *  und der Grund wurde bisher weggeworfen. Ohne gespiegelte Positionen gibt es
+   *  keine echten Ausfuehrungen, ohne die keine Messung der echten Handelskosten -
+   *  und die entscheidet ueber fast jede Studie. Ein Fehlschlag, den niemand sieht,
+   *  wird nicht behoben. */
+  function capFehlerNeu(sym, r) {
+    if (!D) return;
+    if (!D.capFehler) D.capFehler = [];
+    D.capFehler.unshift({
+      at: Date.now(), sym: sym,
+      msg: String((r && (r.msg || r.error)) || 'ohne Angabe').slice(0, 200)
+    });
+    if (D.capFehler.length > 50) D.capFehler = D.capFehler.slice(0, 50);
+  }
+
+  /** Die Spanne eines Wertes JETZT - Median der juengsten Proben aus den letzten 45
+   *  Minuten. Ein einzelner Abruf kann eine hektische Sekunde erwischen; der Median
+   *  ueber mehrere Proben ist die ehrlichere Zahl. Gibt null, wenn nichts vorliegt -
+   *  dann wird auch nichts behauptet. */
+  function spanneJetzt(sym) {
+    var sp = D && D.spannen;
+    if (!sp || !sp.proben || !sp.proben.length) return null;
+    var grenze = Date.now() - 45 * 60000;
+    var w = [];
+    for (var i = 0; i < sp.proben.length; i++) {
+      var p = sp.proben[i];
+      if (p.at < grenze) break;              // Puffer ist absteigend sortiert
+      if (p.sym === sym) w.push(p.spreadPct);
+    }
+    if (!w.length) return null;
+    w.sort(function (a, b) { return a - b; });
+    return w[Math.floor(w.length / 2)];
+  }
+
+  /** Die notierte Spanne an einen Trade heften - beim Oeffnen und beim Schliessen.
+   *
+   *  WARUM NICHT ueber die Demo-Spiegelung: kostenMessungNeu misst den echten
+   *  Schlupf, feuert aber nur bei gespiegelten Positionen. Am 25.08.2026 hatte keine
+   *  einzige offene Position eine capDealId, die Messung stand auf 0 Runden. Diese
+   *  Aufzeichnung haengt an nichts ausser der laufenden Spannen-Probe und faellt
+   *  deshalb immer an. Sie ist die halbe Rechnung, nicht die ganze - der Schlupf
+   *  zwischen Anzeige und Ausfuehrung bleibt ungemessen, solange nicht gespiegelt
+   *  wird. Das gehoert bei jeder Auswertung dazugesagt. */
+  function spanneStempeln(tr, phase) {
+    if (!tr || !tr.sym) return;
+    var s = spanneJetzt(tr.sym);
+    if (s == null) return;
+    var pct = Math.round(s * 1e6) / 1e6;
+    if (phase === 'open') tr.spanneAuf = pct;
+    else {
+      tr.spanneZu = pct;
+      if (tr.spanneAuf != null) tr.spanneRunde = Math.round((tr.spanneAuf + pct) * 1e6) / 1e6;
+    }
+  }
+
   /** Bilanz der gemessenen Geld-Brief-Spannen. Erst je Wert den Median (eine
    *  hektische Minute soll ein Symbol nicht praegen), dann ueber die Werte - so
    *  zaehlt jeder Wert gleich, nicht der am haeufigsten abgefragte. */
@@ -2877,6 +2935,72 @@
     };
   }
   if (typeof window !== 'undefined') window.__spannenBilanz = spannenBilanz;
+
+  /** EINE Messrunde: kleinste Position oeffnen, sofort schliessen, beide
+   *  Ausfuehrungskurse gegen die Mitte halten. Das misst, was ein Umlauf WIRKLICH
+   *  kostet - Spanne plus Schlupf - ohne auf ein Signal zu warten.
+   *
+   *  Warum es das gibt: Die Messung aus echten Trades stand am 25.08.2026 auf 0
+   *  Runden und waere dort geblieben. Die Stunden-Strategie spiegelt nicht, und der
+   *  Intraday-Arm ist seit dem 23.08. vom Edge-Waechter pausiert. Der Schutz
+   *  verhindert genau die Messung, die ueber ihn entscheiden wuerde. Die Kostenfrage
+   *  hat mit der Strategie aber gar nichts zu tun - also wird sie getrennt gemessen.
+   *
+   *  Setzt ECHTE Orders auf dem Demo-Konto ab. Wird nur von Hand ausgeloest. */
+  async function kostenRundeMessen(sym) {
+    if (!(window.CapAPI && window.CapAPI.enabled() && window.CapAPI.quote)) {
+      return { ok: false, grund: 'Capital.com-Demo ist nicht verbunden.' };
+    }
+    if (!(window.Dash && window.Dash.marketOpen && window.Dash.marketOpen())) {
+      return { ok: false, grund: 'Die Boerse ist zu - eine Runde jetzt misst nichts Brauchbares.' };
+    }
+    /* Die notierte Spanne VOR der Order: nur so laesst sich hinterher trennen, was
+     * Spanne war und was Schlupf. Ohne sie waere die Runde nur eine Zahl. */
+    var vor = null;
+    try { vor = await window.CapAPI.quote(sym); } catch (eQ) { vor = null; }
+    if (!vor || !(vor.mid > 0)) return { ok: false, grund: 'Kein Kurs fuer ' + sym + '.' };
+
+    /* Kleinstmoegliche Groesse. Gemessen wird der PREIS, nicht die Position -
+     * jede zusaetzliche Einheit erhoeht nur das Risiko einer Teilausfuehrung. */
+    var groesse = 0.1;
+    var auf = null;
+    try { auf = await window.CapAPI.openPosition(sym, 'call', groesse, null, null); }
+    catch (eO) { auf = { ok: false, msg: String(eO && eO.message || eO) }; }
+    if (!auf || !auf.ok) {
+      capFehlerNeu(sym, auf || { msg: 'ohne Antwort' });
+      return { ok: false, grund: 'Oeffnen abgelehnt: ' + ((auf && auf.msg) || 'ohne Angabe') };
+    }
+    /* Sofort wieder zu. Zwischen Auf und Zu soll moeglichst nichts passieren -
+     * gemessen werden die Kosten, nicht die Marktbewegung. */
+    var zu = null;
+    try { zu = await window.CapAPI.closePosition(auf.dealId); }
+    catch (eC) { zu = { ok: false, msg: String(eC && eC.message || eC) }; }
+    if (!zu || !zu.ok) {
+      return { ok: false, grund: 'ACHTUNG: geoeffnet, aber Schliessen fehlgeschlagen (' +
+        ((zu && zu.msg) || 'ohne Angabe') + '). Position bitte bei Capital.com von Hand pruefen.',
+        offenGeblieben: auf.dealId };
+    }
+    if (auf.fill == null || zu.fill == null) {
+      return { ok: false, grund: 'Runde lief, aber ohne Ausfuehrungskurse - nichts zu messen.' };
+    }
+    /* Kauf ueber der Mitte, Verkauf darunter: beides zusammen ist der Umlauf. */
+    var aufKosten = auf.fill / vor.mid - 1;
+    var zuKosten = 1 - zu.fill / vor.mid;
+    var runde = aufKosten + zuKosten;
+    if (!D.kostenMessung) D.kostenMessung = { runden: [], seit: Date.now() };
+    D.kostenMessung.runden.unshift({
+      at: Date.now(), sym: sym, dir: 'call', basis: true, quelle: 'messrunde',
+      slipOpen: Math.round(aufKosten * 1e6) / 1e6,
+      slipClose: Math.round(zuKosten * 1e6) / 1e6,
+      runde: Math.round(runde * 1e6) / 1e6,
+      notiert: vor.spreadPct != null ? Math.round(vor.spreadPct * 1e6) / 1e6 : null
+    });
+    if (D.kostenMessung.runden.length > 300) D.kostenMessung.runden = D.kostenMessung.runden.slice(0, 300);
+    save();
+    return { ok: true, sym: sym, rundePct: runde * 100,
+             notiertPct: vor.spreadPct != null ? vor.spreadPct * 200 : null };
+  }
+  if (typeof window !== 'undefined') window.__kostenRundeMessen = kostenRundeMessen;
 
   /** Bilanz der echten Kosten - Median statt Mittel, ein Ausreisser soll nicht dominieren. */
   function kostenBilanz() {
@@ -4091,6 +4215,7 @@
         D.positions.push(trade);
         D.trades.unshift(trade);
         if (D.trades.length > 1000) D.trades = D.trades.filter(function (tt, i2) { return i2 < 1000 || tt.status !== 'closed'; }); // Store schlank halten, Offenes nie verwerfen
+        spanneStempeln(trade, 'open');
         notifyTrade(trade, 'open');
         // Spiegelung auf dem Capital.com-Demo-Konto (CFD-Paper-Trade mit Stop-Loss)
         if (window.CapAPI && window.CapAPI.enabled()) {
@@ -4109,7 +4234,7 @@
             }
             var sizeC = Math.max(0.1, Math.round((equityNow() * cfg.budgetPct * 5 / spotNow) * 10) / 10);
             window.CapAPI.openPosition(tr.sym, tr.dir, sizeC, slLvl, tpLvl).then(function (r) {
-              if (r.ok) { HEALTH.capOk++; } else { HEALTH.capFail++; }
+              if (r.ok) { HEALTH.capOk++; } else { HEALTH.capFail++; capFehlerNeu(tr.sym, r); }
               if (r.ok) {
                 tr.capDealId = r.dealId;
                 tr.reason += ' · Demo-Konto: ' + (tr.dir === 'call' ? 'BUY' : 'SELL') + ' ' + sizeC + '× ' + (r.epic || tr.sym) + ' (SL ' + U.nf2.format(slLvl) + ')';
@@ -8587,7 +8712,11 @@
             : diff > 0 ? 'teurer als angenommen, die Studien rechnen zu günstig'
             : 'günstiger als angenommen – die Kostenhürde der Studien ist zu streng');
       } else if (s0.ok) {
-        txt += ' · Kostenmessung aus Ausführungen startet mit dem ersten gespiegelten Trade.';
+        /* Stand 25.08.2026 stimmte dieser Satz nicht mehr: gespiegelt wird nur im
+         * Intraday-Pfad, und der ist seit dem 23.08. vom Edge-Waechter pausiert. Der
+         * Satz haette auf etwas gewartet, das nicht kommt. */
+        txt += ' · Kostenmessung aus Ausführungen: noch keine Runde. Sie startet mit dem ersten ' +
+          'gespiegelten Trade – oder sofort über „Kostenrunde messen“, das braucht kein Signal.';
       }
       /* Die Spannen-Messung braucht keine Trades - nur Kurse. Sie liefert die
        * Kostenhuerde deshalb schon nach einer Handelssitzung. */
@@ -8603,6 +8732,41 @@
       }
       el.textContent = txt;
     }
+    /* Messrunde von Hand. Setzt echte Orders auf dem Demo-Konto ab - deshalb eine
+     * Rueckfrage davor und ein Riegel gegen Doppelklicks. Die Symbole werden
+     * durchgereicht, damit die Proben nicht alle an einem Wert haengen. */
+    var kostenRundeLaeuft = false, kostenRundeTakt = 0;
+    (function () {
+      var b = document.getElementById('kostenRundeBtn');
+      var st = document.getElementById('kostenRundeStatus');
+      if (!b) return;
+      b.addEventListener('click', async function () {
+        if (kostenRundeLaeuft) return;
+        var syms = universe();
+        if (!syms.length) { st.textContent = 'Kein Wert im Universum.'; return; }
+        var sym = syms[kostenRundeTakt % syms.length];
+        if (!window.confirm('Auf dem Capital.com-DEMO-Konto wird jetzt die kleinstmögliche Position in ' +
+            sym + ' geöffnet und sofort wieder geschlossen. Das ist eine echte Order mit Demo-Geld.\n\n' +
+            'Gemessen wird, was ein Umlauf wirklich kostet. Fortfahren?')) return;
+        kostenRundeTakt++;
+        kostenRundeLaeuft = true; b.disabled = true;
+        st.textContent = 'Messe ' + sym + ' …';
+        var r = null;
+        try { r = await kostenRundeMessen(sym); }
+        catch (e) { r = { ok: false, grund: 'Fehler: ' + (e && e.message || e) }; }
+        if (r && r.ok) {
+          var n = ((D.kostenMessung || {}).runden || []).length;
+          st.textContent = sym + ': Umlauf ' + r.rundePct.toFixed(3) + ' %' +
+            (r.notiertPct != null ? ' (notiert ' + r.notiertPct.toFixed(3) + ' %, Rest ist Schlupf)' : '') +
+            ' · ' + n + ' von ~20 Runden';
+        } else {
+          st.textContent = (r && r.grund) || 'Die Runde lief nicht durch.';
+        }
+        render();
+        kostenRundeLaeuft = false; b.disabled = false;
+      });
+    })();
+
     setTimeout(updateCapStatus, 3000);
     setInterval(updateCapStatus, 10 * 60000);
     document.addEventListener('settings-saved', function () { setTimeout(updateCapStatus, 500); });
@@ -9099,9 +9263,41 @@
           }
         } catch (eQ) { /* eine Absage kippt die Messung nicht */ }
       }
+      /* Der Ringpuffer haelt rund 16 Handelstage. Bevor der aelteste Tag lautlos
+       * herausfaellt, wird er als Median je Wert festgeschrieben - 15 Zahlen am Tag,
+       * die bleiben. Ohne das waere weder "haelt die Annahme ueber Wochen?" noch
+       * "ist die enge Haelfte dauerhaft enger?" jemals zu beantworten. */
+      spannenTagFestschreiben();
       if (D.spannen.proben.length > 4000) D.spannen.proben = D.spannen.proben.slice(0, 4000);
       save();
     }
+    /** Je Tag und Wert einen Median festhalten. Laeuft nach jeder Probenrunde; der
+     *  laufende Tag wird dabei ueberschrieben, fertige Tage bleiben unberuehrt. */
+    function spannenTagFestschreiben() {
+      var sp = D && D.spannen;
+      if (!sp || !sp.proben || !sp.proben.length) return;
+      if (!sp.tage) sp.tage = {};
+      var heute = new Date().toISOString().slice(0, 10);
+      var jeSym = {};
+      for (var i = 0; i < sp.proben.length; i++) {
+        var p = sp.proben[i];
+        if (new Date(p.at).toISOString().slice(0, 10) !== heute) continue;
+        (jeSym[p.sym] = jeSym[p.sym] || []).push(p.spreadPct);
+      }
+      var tag = {};
+      Object.keys(jeSym).forEach(function (s) {
+        var a = jeSym[s].sort(function (x, y) { return x - y; });
+        tag[s] = { n: a.length, med: Math.round(a[Math.floor(a.length / 2)] * 1e6) / 1e6 };
+      });
+      if (Object.keys(tag).length) sp.tage[heute] = tag;
+      /* Sehr grosszuegig aufraeumen: 15 Werte je Tag sind wenige hundert Bytes.
+       * Wer hier zu frueh loescht, loescht genau die Historie, fuer die das da ist. */
+      var alt = Date.now() - 5 * 365 * 86400000;
+      Object.keys(sp.tage).forEach(function (k) {
+        if (new Date(k + 'T00:00:00Z').getTime() < alt) delete sp.tage[k];
+      });
+    }
+
     setInterval(spannenProbe, 8 * 60000);
     setTimeout(spannenProbe, 40000);
   }

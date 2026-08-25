@@ -27,9 +27,59 @@
   function t2(x) { return x == null || !isFinite(x) ? '–' : (x >= 0 ? '+' : '') + x.toFixed(2); }
 
   /* Reihenfolge = Belegwert. Die Ziffer steht nur fuers Sortieren. */
-  var RANG = { 'bestaetigt': 0, 'nicht-bestaetigt': 1, 'nicht-entscheidbar': 2, 'nicht-messbar': 3, 'widerlegt': 4 };
-  var LABEL = { 'bestaetigt': 'bestätigt', 'nicht-bestaetigt': 'nicht bestätigt', 'nicht-entscheidbar': 'nicht entscheidbar', 'nicht-messbar': 'nicht messbar', 'widerlegt': 'widerlegt' };
-  var FARBE = { 'bestaetigt': 'var(--up)', 'nicht-bestaetigt': 'var(--series2)', 'nicht-entscheidbar': 'var(--muted)', 'nicht-messbar': 'var(--muted)', 'widerlegt': 'var(--down)' };
+  var RANG = { 'bestaetigt': 0, 'nicht-bestaetigt': 1, 'nicht-entscheidbar': 2,
+               'bestaetigt-aber-nullpunkt-verschoben': 3, 'nicht-messbar': 4, 'widerlegt': 5 };
+  var LABEL = { 'bestaetigt': 'bestätigt', 'nicht-bestaetigt': 'nicht bestätigt', 'nicht-entscheidbar': 'nicht entscheidbar',
+                'bestaetigt-aber-nullpunkt-verschoben': 'bestätigt – aber Nullpunkt verschoben',
+                'nicht-messbar': 'nicht messbar', 'widerlegt': 'widerlegt' };
+  var FARBE = { 'bestaetigt': 'var(--up)', 'nicht-bestaetigt': 'var(--series2)', 'nicht-entscheidbar': 'var(--muted)',
+                'bestaetigt-aber-nullpunkt-verschoben': 'var(--down)',
+                'nicht-messbar': 'var(--muted)', 'widerlegt': 'var(--down)' };
+
+  /* RUECKFALL FUER UNBEKANNTE URTEILE. Die Maschine darf neue Urteile erfinden - das
+   * ist gerade passiert. Ein Zugriff per Tabelle liefert dann undefined, und undefined
+   * ist in JEDEM der drei Fälle still: NaN beim Sortieren, false beim Vergleich, und
+   * "color:undefined" wirft der Browser weg. Deshalb Funktionen statt Tabellen, mit
+   * einem Rueckfall, der im Zweifel gegen die Strategie ausschlaegt. */
+  function rang(u) { return RANG[u] != null ? RANG[u] : 90; }
+  function label(u) { return LABEL[u] || String(u == null ? '?' : u).replace(/-/g, ' '); }
+  function farbe(u) {
+    if (FARBE[u]) return FARBE[u];
+    /* Gruen gibt es nur fuer den einen Schluessel, der genau 'bestaetigt' heisst.
+     * Alles, was mit "bestaetigt" nur ANFAENGT, ist ein Urteil mit Vorbehalt - und
+     * ein Vorbehalt ist kein gruenes Licht. */
+    return 'var(--warn, var(--series2))';
+  }
+
+  /* SELBSTPRUEFUNG (SP). Der Placebo-Lauf ist das Einzige in einem Protokoll, dessen
+   * richtige Antwort vorher feststeht: null. Ein Signal ohne jeden Kursbezug, auf
+   * denselben Sitzungspositionen wie das echte. Weicht er staerker ab als die eigene
+   * Aufloesung, misst die Maschine etwas, wo nichts ist - dann ist jede andere Zahl
+   * im Protokoll um diesen Betrag verschoben. Genau so ist am 25.08.2026 aufgefallen,
+   * dass nicht bereinigte Zusammenlegungen im Kontrolltopf sassen.
+   * Hier wird nichts gerechnet: zwei gemessene Zahlen werden verglichen. */
+  function placeboOk(p) {
+    var pl = p && p.placebo;
+    if (!pl || pl.tagesmittel == null || pl.mde == null) return null;   // ungeprueft
+    return Math.abs(pl.tagesmittel) <= pl.mde;
+  }
+  function placeboBand(p) {
+    var pl = p && p.placebo, ok = placeboOk(p);
+    if (ok === null) {
+      return '<div style="margin:6px 0 10px; padding:8px 10px; border-left:3px solid var(--muted); font-size:var(--fs-neben); color:var(--ink-2);">' +
+        '<b>Selbstprüfung: keine.</b> Diese Messung stammt aus der Zeit vor dem Placebo-Lauf, oder er kam ' +
+        'nicht zustande. Ihr Nullpunkt ist ungeprüft – die Zahlen unten können um einen unbekannten Betrag verschoben sein.</div>';
+    }
+    return '<div style="margin:6px 0 10px; padding:8px 10px; border-left:3px solid ' +
+      (ok ? 'var(--up)' : 'var(--down)') + '; font-size:var(--fs-neben);">' +
+      '<b>Selbstprüfung ' + (ok ? 'bestanden' : 'FEHLGESCHLAGEN') + '.</b> ' +
+      'Ein Signal <b>ohne jeden Kursbezug</b> – die richtige Antwort ist null – ergab ' +
+      '<b>' + pp(pl.tagesmittel, 4) + ' Pp</b> bei einer Auflösung von ' +
+      (pl.mde * 100).toFixed(4) + ' Pp (' + (pl.signale || 0).toLocaleString('de-DE') + ' Fälle, ' + (pl.tage || 0) + ' Tage). ' +
+      (ok ? 'Der Nullpunkt der Maschine liegt im Rahmen; die Zahlen unten stehen auf geprüftem Grund.'
+          : 'Die Maschine misst etwas, wo nichts ist. <b>Jede Zahl unten ist um diesen Betrag verschoben</b> und darf ' +
+            'nicht für bare Münze genommen werden.') + '</div>';
+  }
 
   var STAND = [];
   async function laden() {
@@ -55,7 +105,7 @@
       return { key: k, aktuell: liste[0], aeltere: liste.slice(1) };
     }).sort(function (a, b) {
       var ua = a.aktuell.protokoll.bestesUrteil, ub = b.aktuell.protokoll.bestesUrteil;
-      if (RANG[ua] !== RANG[ub]) return RANG[ua] - RANG[ub];
+      if (rang(ua) !== rang(ub)) return rang(ua) - rang(ub);
       // innerhalb gleichen Status: groesserer Bestaetigungs-t zuerst
       var ta = besterT(a.aktuell.protokoll), tb = besterT(b.aktuell.protokoll);
       return (tb || -99) - (ta || -99);
@@ -70,7 +120,7 @@
   function bestesErgebnis(p) {
     // die Variante, die das beste Urteil traegt
     var idx = 0, best = 99;
-    (p.urteile || []).forEach(function (u, i) { if (RANG[u] < best) { best = RANG[u]; idx = i; } });
+    (p.urteile || []).forEach(function (u, i) { if (rang(u) < best) { best = rang(u); idx = i; } });
     return p.ergebnisse[idx] || p.ergebnisse[0];
   }
 
@@ -80,15 +130,21 @@
       var p = z.aktuell.protokoll, e = bestesErgebnis(p), b = e.bestaetigung.ueberschuss;
       var u = p.bestesUrteil;
       var warn = (p.warnungen || []).length;
+      /* Ein gescheiterter Selbsttest entwertet die ganze Zeile. Er darf nicht erst
+       * sichtbar werden, wenn man aufklappt. */
+      var spOk = placeboOk(p);
       return '<tr class="sbRow" data-i="' + i + '" style="cursor:pointer;">' +
-        '<td><b style="color:' + FARBE[u] + ';">' + esc(LABEL[u] || u) + '</b></td>' +
+        '<td><b style="color:' + farbe(u) + ';">' + esc(label(u)) + '</b></td>' +
         '<td><b>' + esc(z.key) + '</b>' + (p.tests > 1 ? ' <span style="color:var(--muted);">(' + p.tests + ' Varianten)</span>' : '') + '</td>' +
         '<td class="num">' + pp(b.tagesmittel) + '</td>' +
         '<td class="num">' + pp(b.jeSignal) + '</td>' +
         '<td class="num">' + t2(b.t) + '</td>' +
         '<td class="num">' + pp(b.mde) + '</td>' +
         '<td class="num">' + (b.tage || 0) + ' / ' + (b.signale || 0) + '</td>' +
-        '<td style="color:var(--muted);">' + esc(p.gemessenAm.slice(0, 10)) + (warn ? ' <span title="' + warn + ' Warnung(en) – aufklappen" style="color:var(--series2);">⚠' + warn + '</span>' : '') + '</td>' +
+        '<td style="color:var(--muted);">' + esc(p.gemessenAm.slice(0, 10)) +
+          (spOk === false ? ' <span title="Selbstprüfung fehlgeschlagen – der Nullpunkt dieser Messung liegt nicht bei null" style="color:var(--down); font-weight:600;">✖ Nullpunkt</span>'
+           : spOk === null ? ' <span title="Ohne Selbstprüfung gemessen – Nullpunkt ungeprüft" style="color:var(--muted);">○</span>' : '') +
+          (warn ? ' <span title="' + warn + ' Warnung(en) – aufklappen" style="color:var(--series2);">⚠' + warn + '</span>' : '') + '</td>' +
         '</tr>';
     }).join('');
     el.innerHTML = '<div style="overflow:auto;"><table class="tbl" style="width:100%;">' +
@@ -97,7 +153,9 @@
       '<th style="text-align:right;">t</th><th style="text-align:right;">MDE</th><th style="text-align:right;">Tage / Signale</th><th>gemessen</th></tr>' +
       rows + '</table></div>' +
       '<div id="sbDetail" style="margin-top:10px;"></div>' +
-      '<div style="font-size:var(--fs-neben); color:var(--muted); margin-top:6px;">Alle Werte aus der <b>Bestätigungshälfte</b> (zurückgehaltene Tage) in Prozentpunkten. „Tagesmittel" ist die Teststatistik, „je Signal" die handelbare Zahl – beide können verschiedene Vorzeichen haben, dann steht eine Warnung dabei. Zeile anklicken für den vollständigen Entscheidungsweg.</div>';
+      '<div style="font-size:var(--fs-neben); color:var(--muted); margin-top:6px;">Alle Werte aus der <b>Bestätigungshälfte</b> (zurückgehaltene Tage) in Prozentpunkten. „Tagesmittel" ist die Teststatistik, „je Signal" die handelbare Zahl – beide können verschiedene Vorzeichen haben, dann steht eine Warnung dabei. Zeile anklicken für den vollständigen Entscheidungsweg. ' +
+      'Ein <b style="color:var(--down);">✖ Nullpunkt</b> heißt: Die Messung hat ihre eigene Selbstprüfung nicht bestanden – ' +
+      'ein Signal ohne jeden Kursbezug hätte null ergeben müssen und tat es nicht. Dann stimmt keine Zahl dieser Zeile.</div>';
     el.querySelectorAll('tr.sbRow').forEach(function (tr) {
       tr.addEventListener('click', function () { detail(parseInt(tr.getAttribute('data-i'), 10)); });
     });
@@ -112,6 +170,7 @@
       '<span style="font-size:var(--fs-neben); color:var(--muted);">Verfahren ' + esc(p.verfahren.version) + ' · ' + esc(z.aktuell.datei) + '</span></div>' +
       '<div style="font-size:var(--fs-neben); color:var(--ink-2); margin:6px 0 10px;"><b>Grund:</b> ' + esc(p.strategie.grund) + '</div>' +
       '<div style="font-size:var(--fs-neben); margin-bottom:10px;">Universum: <b>' + p.universum.werte + '</b> Werte, <b>' + p.universum.handelstage + '</b> Handelstage (' + esc(p.universum.von) + ' bis ' + esc(p.universum.bis) + '), Schnitt am <b>' + esc(p.universum.schnittTag) + '</b> · Haltedauer <b>' + p.strategie.haltedauerKerzen + '</b> Kerzen · Richtung <b>' + esc(p.strategie.richtung) + '</b> · ' + p.tests + ' Test(s)' + ausstiegText(p) + '</div>';
+    h += placeboBand(p);
     // Jede Entscheidung, nummeriert - das ist die 100-%-Einsicht
     h += '<table class="tbl" style="width:100%; font-size:var(--fs-neben);"><tr><th>#</th><th>Regel</th><th>Eingabe</th><th>Ergebnis</th><th>Begründung</th></tr>';
     (p.entscheidungen || []).forEach(function (e) {
@@ -134,7 +193,7 @@
         '<td class="num">' + pp(e.entdeckung.roh.tagesmittel) + '</td><td class="num">' + pp(e.entdeckung.ueberschuss.tagesmittel) + ' (' + t2(e.entdeckung.ueberschuss.t) + ')</td>' +
         '<td class="num">' + pp(e.bestaetigung.roh.tagesmittel) + '</td><td class="num">' + pp(e.bestaetigung.ueberschuss.tagesmittel) + ' (' + t2(e.bestaetigung.ueberschuss.t) + ')</td>' +
         '<td class="num">' + pp(e.bestaetigung.ueberschuss.jeSignal) + '</td>' +
-        '<td style="color:' + FARBE[p.urteile[vi]] + ';">' + esc(LABEL[p.urteile[vi]] || p.urteile[vi]) + '</td></tr>';
+        '<td style="color:' + farbe(p.urteile[vi]) + ';">' + esc(label(p.urteile[vi])) + '</td></tr>';
     });
     h += '</table></div>';
     if (z.aeltere.length) h += '<div style="font-size:var(--fs-neben); color:var(--muted); margin-top:8px;">Ältere Protokolle dieser Kennung: ' + z.aeltere.map(function (a) { return esc(a.datei); }).join(', ') + '</div>';

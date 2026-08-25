@@ -20,10 +20,23 @@
     *   5m  -> 60 Tage abrufbar
     *   15m -> 60 Tage abrufbar
     *   60m -> 730 Handelstage abrufbar (rund 1060 Kalendertage) */
+  /* Das Fenster muss zur FRAGE passen, nicht zur Quelle allein. Bis 25.08.2026 stand
+   * 1m auf 90 Kalendertagen = rund 62 Handelstage. Die Vorregistrierung zu Issue #33
+   * nennt 77 Handelstage; das Archiv waere also bei 62 stehengeblieben und haette das
+   * Ziel nie erreicht, auf das es jede Nacht zusammengetragen wird - lautlos, denn
+   * die Sammlung selbst lief ja weiter. Ein Deckel unterhalb der Frage ist derselbe
+   * Fehler wie gar nicht zu sammeln, nur teurer.
+   *
+   * Die Reserve ist kein Luxus: die Muehle verlangt Entdeckung und Bestaetigung an
+   * GETRENNTEN Tagen. Ein Datensatz, der genau die noetige Laenge hat, laesst sich
+   * nicht teilen.
+   *
+   * Platzbedarf gemessen (25.08.2026): 1m braucht 2,03 MB je Kalendertag ueber 199
+   * Werte, 250 Tage also rund 507 MB. 5m und 15m kosten zusammen ein Zehntel davon. */
   var TAGE_MAX = {
-    '1m':  90,     // Yahoo gibt 7 Tage; alles darueber waechst nur durchs taegliche Sammeln
-    '5m':  180,    // Yahoo gibt 60 Tage; Sammeln verlaengert darueber hinaus
-    '15m': 180,
+    '1m':  250,    // Yahoo gibt 7 Tage; der Rest waechst durchs taegliche Sammeln (#33 braucht 77 Handelstage)
+    '5m':  365,    // Yahoo gibt 60 Tage; Sammeln verlaengert darueber hinaus
+    '15m': 365,
     '60m': 1100    // deckt die vollen 730 Handelstage ab, die Yahoo direkt liefert
   };
   var MAX_TAGE = 90;                 // Rueckfall fuer unbekannte Zeitrahmen

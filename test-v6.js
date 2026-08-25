@@ -1292,6 +1292,18 @@ console.log('\n18) Datenbasis, Suchachsen und Zucht');
   ok(!/period1=/.test(d), 'kein period1-Aufruf mehr im Kursabruf');
   ok(A.TAGE_MAX && A.TAGE_MAX['60m'] >= 1000, 'Archiv behaelt 60m lange genug fuer 730 Handelstage', A.TAGE_MAX['60m']);
   ok(A.TAGE_MAX['15m'] >= 120 && A.TAGE_MAX['5m'] >= 120, 'Archiv behaelt 5m/15m ueber das Yahoo-Fenster hinaus');
+  /* Das 1m-Fenster muss zur FRAGE passen, nicht nur zur Quelle. Bis 25.08.2026 stand
+   * es auf 90 KALENDERtagen = rund 62 Handelstage. Die Vorregistrierung zu Issue #33
+   * nennt 77 Handelstage fuer den marktneutralen Brutto-Nachweis. Das Archiv waere
+   * also bei 62 stehengeblieben und haette das Ziel nie erreicht, auf das es jede
+   * Nacht zusammengetragen wird - lautlos, denn die Sammlung selbst lief weiter.
+   * Ein Deckel unterhalb der Frage ist derselbe Fehler wie gar nicht zu sammeln,
+   * nur teurer. Reserve fuer den Zeitsplit ist Pflicht: die Muehle verlangt
+   * Entdeckung und Bestaetigung an GETRENNTEN Tagen. */
+  var ht1m = Math.round(A.TAGE_MAX['1m'] * 252 / 365);
+  ok(ht1m >= 154,
+     '1m-Fenster deckt die 77 Handelstage aus #33 mit Reserve fuer einen Zeitsplit',
+     A.TAGE_MAX['1m'] + ' Kalendertage = ~' + ht1m + ' Handelstage');
   ok(A.fensterFuer('60m') === A.TAGE_MAX['60m'], 'fensterFuer waehlt je Zeitrahmen');
   ok(A.fensterFuer('krypto') === A.MAX_TAGE, 'fensterFuer hat einen Rueckfall fuer Unbekanntes');
   var jetzt = Date.UTC(2026, 7, 20), reihe = [];
@@ -3044,9 +3056,9 @@ console.log('\n36) Kostenhuerde des Produkts (Signalstudie 23.08.2026)');
   ok(/eigeneRegel = String\(sEintrag\.grund/.test(dep) && /!eigeneRegel && sEintrag\.konfig/.test(dep),
      'Benannte Regeln behalten ihre Bilanz trotz eigener Konfiguration');
 
-  /* Stufe 4: aus sechs Reitern wurden vier. Am 23.08.2026 kam ein fuenfter dazu
-   * (Messung), am 25.08. ein sechster (Marktkarte). Die Zahl ist der Wachhund; wer
-   * einen Reiter ergaenzt, muss ihn hier benennen. */
+  /* Stufe 4: aus sechs Reitern wurden vier. Am 23.08.2026 kam ein fuenfter dazu:
+   * Messung - Scoreboard und Strategie-Eingabe. Die Zahl ist der Wachhund; wer einen
+   * Reiter ergaenzt, muss ihn hier benennen. */
   var reiter = (html.match(/data-tab="[a-z]+"/g) || []);
   ok(reiter.length === 6 && reiter.indexOf('data-tab="messung"') !== -1 &&
      reiter.indexOf('data-tab="marktkarte"') !== -1,
@@ -3628,8 +3640,11 @@ console.log('\n44) Messmaschine, Scoreboard und Strategie-Eingabe (23.08.2026)')
   ok(!/messe\(|require\(.*messmaschine/.test(sb + mj + pj),
      'Weder Renderer noch Hauptprozess rufen die Messmaschine auf - messen bleibt ein eigener Schritt');
 
-  /* Sortierung nach Belegstatus, nicht nach Rendite */
-  ok(/RANG\s*=\s*\{\s*'bestaetigt':\s*0/.test(sb) && /RANG\[ua\] - RANG\[ub\]/.test(sb),
+  /* Sortierung nach Belegstatus, nicht nach Rendite.
+   * Der Zugriff laeuft seit dem 25.08.2026 ueber rang() statt ueber die Tabelle direkt -
+   * wegen des Rueckfalls fuer unbekannte Urteile. Was rang() dabei leistet, prueft
+   * Abschnitt 47 am laufenden Code; hier bleibt nur die Sortierregel selbst. */
+  ok(/RANG\s*=\s*\{\s*'bestaetigt':\s*0/.test(sb) && /rang\(ua\) - rang\(ub\)/.test(sb),
      'Das Scoreboard sortiert nach Belegstatus - Rendite entscheidet nur innerhalb gleichen Status');
 
   /* 100 % Einsicht: jede Entscheidung steht als Daten im Protokoll */
@@ -3673,6 +3688,28 @@ console.log('\n44) Messmaschine, Scoreboard und Strategie-Eingabe (23.08.2026)')
    * unabhaengigen Wiederholungen. Momentum: t naiv 4,74, Newey-West 0,74.
    * Kapitulations-Dip: 2,59 -> 1,74. Beide Befunde loesten sich auf. */
   ok(/\|\s*B10\s*\|/.test(ft), 'B10 steht in FEHLERTYPEN.md');
+
+  /* Audit vom 25.08.2026: vier Fehler im Verfahren und die Selbstpruefung.
+   * Der schwerste war F1 - ein Placebo OHNE jeden Kursbezug lieferte -0,1722 Pp
+   * statt null, weil nicht bereinigte Zusammenlegungen (DFEN +10.541 Pp, WHLR mit
+   * 4,2 Mrd \$ je Aktie) im ungestutzten Kontrollmittel sassen. */
+  ok(/\|\s*F1\s*\|/.test(ft) && /\|\s*F3\s*\|/.test(ft) && /\|\s*SP\s*\|/.test(ft),
+     'F1, F3 und SP stehen in FEHLERTYPEN.md');
+  ok(mm2.indexOf('function reiheKaputt(bars)') !== -1,
+     'F1: Reihen mit unmoeglichen Kursen oder Spruengen werden verworfen');
+  ok(mm2.indexOf('var STUTZ = 0.01') !== -1,
+     'F1: Die Kontrolle ist an den 1-Prozent-Quantilen gestutzt');
+  ok(mm2.indexOf('i - leseFenster - H') !== -1,
+     'F2: Der A7-Ausschnitt beginnt H Kerzen frueher - eine Kontrollkerze bei j reicht bis j+H');
+  ok(mm2.indexOf('function sitzungsPosition(bars)') !== -1 &&
+     mm2.indexOf('K.erwartung(sym, sitzungsPosition(b)[i]') !== -1,
+     'F3: Der Topf-Schluessel ist die Sitzungsposition, nicht die UTC-Stunde');
+  ok(/P\.warne\('F4'/.test(mm2),
+     'F4: Ueber 2 Prozent Signale ohne Kontrolle gibt eine Warnung');
+  ok(mm2.indexOf('function placeboLauf(') !== -1 && /P\.warne\('SP'/.test(mm2),
+     'SP: Jede Messung faehrt einen Placebo-Lauf mit und warnt, wenn der Nullpunkt wandert');
+  ok(mm2.indexOf("'bestaetigt-aber-nullpunkt-verschoben'") !== -1,
+     'SP: Ein bestaetigtes Urteil auf verschobenem Nullpunkt wird als solches gekennzeichnet');
   ok(mm2.indexOf('function neweyWest(werte, mu, va, lags)') !== -1,
      'Die Maschine korrigiert den Standardfehler nach Newey-West');
   ok(mm2.indexOf('statistik(tm.mittel, H - 1)') !== -1,
@@ -5946,16 +5983,24 @@ console.log('\n41) Zustaende: was die App sagt, wenn etwas fehlt oder klemmt');
   var path = require('path');
   var os = require('os');
   var q = fs.readFileSync(__dirname + '/studien/messmaschine/messen.js', 'utf8');
-  var m = /function bezeichnetesArchiv\(\) \{[\s\S]*?\n\}/.exec(q);
-  ok(!!m, 'Die Aufloesung steht als eigene Funktion in messen.js');
-  if (!m) return;
+  /* Seit dem 25.08.2026 haengt die Aufloesung am ZEITRAHMEN: '1d' und '60m' haben je
+   * einen eigenen Zeiger. Vorher kannte sie nur 60m, und eine Tagesstrategie galt
+   * damit IMMER als auf fremdem Archiv gemessen - auch auf dem richtigen. Sie bekam
+   * keine Kopie in den Datenordner und erschien im Scoreboard nie: dieselbe Sackgasse
+   * wie oben beschrieben, nur eine Ebene tiefer. */
+  var mz = /var ZEIGER = \{[\s\S]*?\};/.exec(q);
+  var m = /function bezeichnetesArchiv\(zeitrahmen\) \{[\s\S]*?\n\}/.exec(q);
+  ok(!!m && !!mz, 'Die Aufloesung steht als eigene Funktion in messen.js, mit einem Zeiger je Zeitrahmen');
+  if (!m || !mz) return;
 
   /* Ausgefuehrt, nicht gelesen - mit gestelltem process und einem echten Zeigerordner. */
   var tmp = path.join(os.tmpdir(), 'md-archiv-' + process.pid);
   fs.mkdirSync(tmp, { recursive: true });
-  function loese(env) {
-    return new Function('process', 'fs', 'path', 'os', 'DATEN', m[0] + '; return bezeichnetesArchiv();')(
-      { env: env }, fs, path, os, tmp);
+  function loese(zr, env) {
+    if (env === undefined) { env = zr; zr = '60m'; }   // alte Aufrufform bleibt lesbar
+    return new Function('process', 'fs', 'path', 'os', 'DATEN', 'ZR',
+      mz[0] + '\n' + m[0] + '; return bezeichnetesArchiv(ZR);')(
+      { env: env }, fs, path, os, tmp, zr);
   }
   var store = path.join('C:\\Users\\W\\AppData\\Roaming', 'Markt-Dashboard', 'store');
 
@@ -5978,19 +6023,34 @@ console.log('\n41) Zustaende: was die App sagt, wenn etwas fehlt oder klemmt');
   fs.writeFileSync(path.join(tmp, 'archiv60m-pfad.txt'), '   \n', 'utf8');
   ok(loese({ APPDATA: 'C:\\Users\\W\\AppData\\Roaming' }) === store,
      'Zeigerdatei leer: dann der Store der App, nicht ein leerer Pfad');
+  /* TAGESKERZEN. Der Fall, der bis zum 25.08.2026 gar nicht vorgesehen war. */
+  fs.mkdirSync(tmp, { recursive: true });
+  fs.writeFileSync(path.join(tmp, 'archiv60m-pfad.txt'), 'E:\\sechzig\n', 'utf8');
+  fs.writeFileSync(path.join(tmp, 'archiv1d-pfad.txt'), 'E:\\taeglich\n', 'utf8');
+  ok(loese('1d', { APPDATA: 'C:\\x' }) === 'E:\\taeglich',
+     'Eine Tagesstrategie bekommt das TAGES-Archiv, nicht das 60m-Archiv');
+  ok(loese('60m', { APPDATA: 'C:\\x' }) === 'E:\\sechzig',
+     'Und eine 60m-Strategie unveraendert das ihre');
+  ok(loese('1d', { MD_ARCHIV1D: 'X:\\vorrang', APPDATA: 'C:\\x' }) === 'X:\\vorrang',
+     'MD_ARCHIV1D schlaegt auch hier die Zeigerdatei');
+  ok(loese('1d', { MD_ARCHIV60M: 'X:\\falsch', APPDATA: 'C:\\x' }) === 'E:\\taeglich',
+     'Die 60m-Variable greift bei Tageskerzen NICHT - sonst waere der Riegel wieder blind');
+
   fs.rmSync(tmp, { recursive: true, force: true });
   ok(loese({ APPDATA: 'C:\\Users\\W\\AppData\\Roaming' }) === store,
      'Ohne alles bleibt es beim Store der App - wer nichts einrichtet, merkt keinen Unterschied');
+  ok(loese('1d', { APPDATA: 'C:\\Users\\W\\AppData\\Roaming' }) === store,
+     'Das gilt fuer Tageskerzen genauso');
 
   /* Der Riegel behaelt seine Zaehne: "fremd" heisst weiter "nicht das bezeichnete
    * Archiv", und eine Messung darauf kommt nicht ins Scoreboard. */
-  ok(/var echtesArchiv = bezeichnetesArchiv\(\);/.test(q),
-     'Der Riegel misst gegen dasselbe bezeichnete Archiv - nicht gegen einen zweiten Pfad daneben');
+  ok(/var echtesArchiv = bezeichnetesArchiv\(ZR\);/.test(q),
+     'Der Riegel misst gegen dasselbe bezeichnete Archiv - und gegen das DESSELBEN Zeitrahmens');
   ok(/fremdesArchiv = path\.resolve\(archiv\) !== path\.resolve\(echtesArchiv\)/.test(q),
      'Fremd heisst weiterhin: nicht das bezeichnete Archiv');
   ok(/Keine Kopie in den Datenordner/.test(q),
      'Und eine Messung auf einem fremden Archiv kommt weiterhin nicht ins Scoreboard');
-  ok(/process\.argv\[3\] \|\| bezeichnetesArchiv\(\)/.test(q),
+  ok(/process\.argv\[3\] \|\| bezeichnetesArchiv\(ZR\)/.test(q),
      'Ein Archiv auf der Befehlszeile geht weiter vor - fuer Gegenproben');
 })();
 
@@ -6187,6 +6247,174 @@ console.log('\n45) Release-Routine (tools/release.js)');
      'Ein leeres Junction-Ziel wird als solches gemeldet, mit dem Weg zurueck (npm ci)');
 })();
 
+console.log('\n46) Was die App dauerhaft aufzeichnet');
+(function () {
+  var dep = fs.readFileSync(__dirname + '/depot.js', 'utf8');
+
+  /* --- Die Spannen duerfen sich nicht vergessen ---
+   * spannenProbe sammelt in einen Ringpuffer von 4.000 Proben. Bei rund 250 Proben je
+   * Handelstag reicht der fuer etwa 16 Tage, danach faellt der aelteste Tag lautlos
+   * heraus. Die Fragen, die daran haengen - haelt die Annahme 0,10 % ueber Wochen, ist
+   * die enge Haelfte des Universums dauerhaft enger - brauchen aber Monate. */
+  ok(/function spannenTagFestschreiben/.test(dep),
+     'Je Tag und Wert wird ein Median festgeschrieben, bevor der Ringpuffer vergisst');
+  var probe = dep.slice(dep.indexOf('async function spannenProbe'), dep.indexOf('setInterval(spannenProbe'));
+  var iFest = probe.indexOf('spannenTagFestschreiben()');
+  var iKapp = probe.indexOf('slice(0, 4000)');
+  ok(iFest > -1 && iKapp > -1 && iFest < iKapp,
+     'Festgeschrieben wird VOR dem Kappen - sonst ist der aelteste Tag schon weg');
+  var fest = dep.slice(dep.indexOf('function spannenTagFestschreiben'), dep.indexOf('setInterval(spannenProbe'));
+  ok(/5 \* 365/.test(fest),
+     'Die Tagesbilanz wird erst nach Jahren aufgeraeumt - sie ist der Zweck der Uebung');
+
+  /* --- Die Kosten duerfen nicht an einer Spiegelung haengen, die nicht laeuft ---
+   * kostenMessungNeu misst den echten Schlupf, feuert aber nur bei gespiegelten
+   * Positionen. Am 25.08.2026 hatte KEINE der fuenf offenen Positionen eine capDealId;
+   * die Messung stand auf 0 Runden und waere dort geblieben. */
+  ok(/function spanneJetzt/.test(dep) && /function spanneStempeln/.test(dep),
+     'Jeder Trade bekommt die notierte Spanne mit - unabhaengig von der Demo-Spiegelung');
+  var auf = (dep.match(/spanneStempeln\(trade, 'open'\)/g) || []).length;
+  var zu = (dep.match(/spanneStempeln\(pos, 'close'\)/g) || []).length;
+  ok(auf === 2, 'Beide Wege, auf denen ein Trade oeffnet, stempeln die Spanne', auf + ' Stelle(n)');
+  ok(zu === 1, 'Der Weg, auf dem ein Trade schliesst, stempelt sie auch', zu + ' Stelle(n)');
+  /* Jede Stelle, an der ein Trade entsteht oder endet, muss gestempelt werden -
+   * sonst fehlt genau dort die Kostenaufzeichnung, und es faellt keinem auf. */
+  var offen = (dep.match(/notifyTrade\(trade, 'open'\)/g) || []).length;
+  var ende = (dep.match(/notifyTrade\(pos, 'close'\)/g) || []).length;
+  ok(auf === offen && zu === ende,
+     'Jede Oeffnung und jede Schliessung ist gestempelt - keine Stelle vergessen',
+     auf + '/' + offen + ' offen, ' + zu + '/' + ende + ' zu');
+  /* Ohne Proben wird NICHTS behauptet - ein erfundener Wert waere schlimmer als keiner. */
+  var sj = dep.slice(dep.indexOf('function spanneJetzt'), dep.indexOf('function spanneStempeln'));
+  ok(/return null/.test(sj), 'Liegt keine Probe vor, wird nichts gestempelt statt geraten');
+
+  /* --- Ein Fehlschlag, den niemand sieht, wird nicht behoben --- */
+  ok(/function capFehlerNeu/.test(dep) && /capFehlerNeu\(tr\.sym, r\)/.test(dep),
+     'Scheitert die Spiegelung, wird der Grund dauerhaft festgehalten (nicht nur HEALTH)');
+
+  /* --- Was schon da war, bleibt --- */
+  ok(/D\.patience\[dk\]\[reason\]/.test(dep), 'Nicht gehandelte Signale werden weiter je Tag gezaehlt');
+  ok(/D\.spannen\.proben\.unshift/.test(dep), 'Die Spannen-Probe laeuft weiter');
+  ok(/function kostenMessungNeu/.test(dep), 'Die Messung des echten Schlupfs bleibt bestehen');
+
+  /* --- Die Kostenmessung darf nicht auf einen Trade warten muessen ---
+   * Befund 25.08.2026: 0 gemessene Runden, und daran haette sich nie etwas geaendert.
+   * Gespiegelt wird nur im Intraday-Pfad; alle sieben je gemachten Trades stammen von
+   * der Stunden-Strategie, und der Intraday-Arm ist seit dem 23.08. vom Edge-Waechter
+   * pausiert. Der Schutz verhindert genau die Messung, die ueber ihn entscheiden
+   * wuerde. Die Kostenfrage haengt aber gar nicht an der Strategie. */
+  ok(/async function kostenRundeMessen/.test(dep),
+     'Es gibt eine Kostenmessung, die ohne Signal auskommt (oeffnen, sofort schliessen)');
+  var kr = dep.slice(dep.indexOf('async function kostenRundeMessen'), dep.indexOf('function kostenBilanz'));
+  /* Die notierte Spanne VOR der Order: nur so laesst sich Spanne von Schlupf trennen. */
+  ok(/CapAPI\.quote\(sym\)/.test(kr) && /notiert:/.test(kr),
+     'Die Runde haelt die notierte Spanne fest - sonst waere sie nur eine Zahl ohne Zerlegung');
+  /* Kleinstmoegliche Groesse: gemessen wird der Preis, nicht die Position. */
+  ok(/groesse = 0\.1/.test(kr), 'Die Messrunde nimmt die kleinstmoegliche Groesse');
+  /* Bleibt eine Position offen, MUSS das laut gesagt werden - stillschweigend eine
+   * offene Position auf dem Konto zu hinterlassen waere der schlimmere Fehler. */
+  ok(/offenGeblieben/.test(kr) && /von Hand pruefen/.test(kr),
+     'Scheitert das Schliessen, wird die offene Position ausdruecklich gemeldet');
+  /* Der Marktzustand wird geprueft: eine Runde bei geschlossener Boerse misst nichts. */
+  ok(/marketOpen/.test(kr), 'Bei geschlossener Boerse wird gar nicht erst gemessen');
+
+  /* --- Und sie laeuft NIE von allein --- 
+   * Sie setzt echte Orders auf dem Demo-Konto ab. Was Orders absetzt, gehoert an eine
+   * Hand, nicht an einen Taktgeber. */
+  var h68 = fs.readFileSync(__dirname + '/index.html', 'utf8');
+  ok(/id="kostenRundeBtn"/.test(h68), 'Die Messrunde haengt an einem Knopf');
+  ok(!/setInterval\([^)]*kostenRunde/.test(dep) && !/setTimeout\([^)]*kostenRundeMessen/.test(dep),
+     'Kein Taktgeber loest die Messrunde aus - nur der Knopf');
+  var draht = dep.slice(dep.indexOf("getElementById('kostenRundeBtn')"), dep.indexOf('setTimeout(updateCapStatus, 3000)'));
+  ok(/window\.confirm\(/.test(draht), 'Vor der Order wird gefragt');
+  ok(/DEMO/.test(draht), 'Und die Frage sagt ausdruecklich, dass es das Demo-Konto ist');
+  ok(/kostenRundeLaeuft/.test(draht), 'Ein Doppelklick loest nicht zwei Runden aus');
+})();
+
+console.log('\n47a) bezeichnetesArchiv je Zeitrahmen');
+(function () {
+  var ms = fs.readFileSync(__dirname + '/studien/messmaschine/messen.js', 'utf8');
+
+  /* Der Riegel 'fremdes Archiv' war bis zum 25.08.2026 auf 60m verdrahtet. Eine
+   * Strategie mit zeitrahmen '1d' galt damit IMMER als fremd gemessen - auch auf dem
+   * richtigen Vollarchiv. Sie bekam keine Kopie in den Datenordner und tauchte im
+   * Scoreboard nie auf. Nichts brach: das Ergebnis kam nur nie an. */
+  ok(/ZEIGER\s*=\s*\{[\s\S]*'1d'[\s\S]*'60m'/.test(ms),
+     'Es gibt je Zeitrahmen einen Archivzeiger, nicht nur fuer 60m');
+  ok(/MD_ARCHIV1D/.test(ms) && /archiv1d-pfad\.txt/.test(ms),
+     'Fuer Tageskerzen gilt dieselbe Konvention wie fuer 60m: Umgebungsvariable oder Zeigerdatei');
+  ok(/function bezeichnetesArchiv\(zeitrahmen\)/.test(ms),
+     'bezeichnetesArchiv bekommt den Zeitrahmen als Argument');
+  ok(/bezeichnetesArchiv\(ZR\)/.test(ms) && !/bezeichnetesArchiv\(\)/.test(ms),
+     'Kein Aufruf ohne Zeitrahmen mehr uebrig - sonst faellt genau der stille Fall zurueck');
+
+  /* Die Reihenfolge ist der Kern: die Strategie sagt den Zeitrahmen, also muss sie
+   * geladen sein, BEVOR das Archiv bestimmt wird. */
+  ok(ms.indexOf('var S = require(path.resolve(datei));') < ms.indexOf('var archiv = process.argv[3]'),
+     'Die Strategie wird geladen, bevor das Archiv gewaehlt wird - sonst ist der Zeitrahmen noch unbekannt');
+
+  /* Und der Riegel behaelt seine Zaehne. */
+  ok(/fremdesArchiv\s*=\s*path\.resolve\(archiv\)\s*!==\s*path\.resolve\(echtesArchiv\)/.test(ms),
+     'Ein anderes als das bezeichnete Archiv wird weiterhin als Fremdbefund gestempelt');
+  ok(/Keine Kopie in den Datenordner/.test(ms),
+     'Ein Fremdbefund erreicht das Scoreboard weiterhin nicht');
+})();
+
+console.log('\n47) Anzeige der Messmaschine: unbekannte Urteile und die Selbstpruefung');
+(function () {
+  var sb = fs.readFileSync(__dirname + '/scoreboard.js', 'utf8');
+
+  /* Den reinen Teil herausschneiden und ausfuehren. Textsuche haette den Fehler nie
+   * gefunden, um den es hier geht: RANG['unbekannt'] ist undefined, und undefined ist
+   * in allen drei Verwendungen STILL - NaN beim Sortieren, false beim Vergleich, und
+   * 'color:undefined' verwirft der Browser wortlos. */
+  var von = sb.indexOf('  var RANG = {');
+  var bis = sb.indexOf('  function placeboBand(p) {');
+  ok(von !== -1 && bis > von, 'Der reine Teil des Scoreboards ist auffindbar');
+  var rein = { }; 
+  (new Function('E', sb.slice(von, bis) +
+     '\nE.rang = rang; E.label = label; E.farbe = farbe; E.placeboOk = placeboOk; E.RANG = RANG;'))(rein);
+
+  /* Der Kern: ein Urteil mit Vorbehalt ist KEIN gruenes Licht. */
+  ok(rein.farbe('bestaetigt') === 'var(--up)',
+     'Nur das blanke "bestaetigt" wird gruen');
+  ok(rein.farbe('bestaetigt-aber-nullpunkt-verschoben') !== 'var(--up)',
+     'Ein bestaetigtes Urteil auf verschobenem Nullpunkt wird NICHT gruen');
+  ok(rein.farbe('irgendein-neues-urteil-2027') !== 'var(--up)',
+     'Auch ein Urteil, das dieses Scoreboard noch gar nicht kennt, wird nicht gruen');
+  ok(rein.farbe('bestaetigt-mit-irgendwas') !== 'var(--up)',
+     'Ein Urteil, das mit "bestaetigt" nur ANFAENGT, wird nicht gruen');
+
+  /* Sortierung und Variantenwahl duerfen an einem unbekannten Urteil nicht zerbrechen. */
+  ok(rein.rang('bestaetigt') < rein.rang('bestaetigt-aber-nullpunkt-verschoben'),
+     'Der Vorbehalt sortiert hinter das saubere Urteil');
+  ok(rein.rang('unbekannt-2027') > rein.rang('widerlegt'),
+     'Ein unbekanntes Urteil sortiert ganz nach unten, nicht nach oben');
+  ok(isFinite(rein.rang('unbekannt-2027') - rein.rang('bestaetigt')),
+     'Der Vergleich zweier Raenge ergibt nie NaN - sonst ist die Reihenfolge unbestimmt');
+  ok(rein.label('unbekannt-2027').indexOf('undefined') === -1 && rein.label(null).indexOf('undefined') === -1,
+     'Ein unbekanntes Urteil zeigt seinen Namen, nie das Wort undefined');
+
+  /* Die Selbstpruefung: gemessene Abweichung gegen gemessene Aufloesung. */
+  ok(rein.placeboOk({ placebo: { tagesmittel: -0.0001, mde: 0.0013 } }) === true,
+     'Ein Placebo innerhalb der eigenen Aufloesung gilt als bestanden');
+  ok(rein.placeboOk({ placebo: { tagesmittel: -0.0017, mde: 0.0013 } }) === false,
+     'Ein Placebo jenseits der eigenen Aufloesung faellt durch - egal welches Vorzeichen');
+  ok(rein.placeboOk({ placebo: { tagesmittel: 0.0017, mde: 0.0013 } }) === false,
+     'Auch nach oben faellt er durch - geprueft wird der Betrag');
+  ok(rein.placeboOk({}) === null && rein.placeboOk({ placebo: null }) === null,
+     'Ein Protokoll aus der Zeit vor der Selbstpruefung gilt als UNGEPRUEFT, nicht als bestanden');
+
+  /* Und die Anzeige muss den Fehlschlag zeigen, bevor jemand aufklappt. */
+  ok(/spOk === false/.test(sb) && /Nullpunkt<\/span>/.test(sb),
+     'Eine fehlgeschlagene Selbstpruefung steht in der Uebersichtszeile, nicht erst im Detail');
+  ok(sb.indexOf('h += placeboBand(p);') !== -1,
+     'Der Entscheidungsweg beginnt mit der Selbstpruefung');
+
+  /* D2 gilt weiter: der neue Code liest zwei Zahlen und vergleicht sie - er rechnet nicht. */
+  ok(!/Math\.sqrt\(|function\s+statistik/.test(sb),
+     'Auch die Selbstpruefung rechnet im Renderer nichts nach - sie vergleicht Gemessenes');
+})();
 /* ================= 54. Stammdaten: Branche und Groesse =================
  * Fuer eine Marktuebersicht braucht man je Wert drei Dinge: Tagesveraenderung (hat die
  * App live), Groesse (hatte sie nur fuer sechzehn handgepflegte Werte) und Branche
