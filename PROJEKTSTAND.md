@@ -86,6 +86,9 @@ steht, ist nach zwei Stunden verloren.*
 - **25.08.2026** — Kommerzielles und Mehrbenutzer sind vorerst kein Thema. Das Werkzeug
   ist für Wilhelm allein; Schwerpunkt sind Werkzeuge, Bedienbarkeit, Optik und ein
   vollständiger Marktüberblick.
+- **25.08.2026 (spät)** — Neue Rolle **Analytiker**: läuft jede Nacht 03:15, prüft alles
+  (Wächterprüfungen, Kanten-Neuberechnung, kritische Methodenbeurteilung), meldet per
+  Issue nur bei Fund, sonst eine Zeile hier auf der Tafel.
 - **25.08.2026 (abends, 9 Antworten auf einmal)** — E-Rest: ja, jetzt. Stufe F: alle drei,
   Reihenfolge Theme → Chart → Barrierefreiheit. Nachbilden-Dialog: Belegstatus rein.
   Handel-aus-Renderer: erst Plan, Bau nur mit zweitem Ja. #80: neu eichen, solange
@@ -101,6 +104,14 @@ steht, ist nach zwei Stunden verloren.*
 *Fragen, an denen Arbeit hängt.*
 
 - **Zweites Ja zum Handel-aus-Renderer-Umbau** — fällig, sobald der Plan als Dokument vorliegt.
+
+---
+
+## Analytiker
+
+*Eine Zeile je Nacht, geschrieben von der Analytiker-Aufgabe (03:15). Issues nur bei Fund.*
+
+- *(noch kein Lauf — erster Lauf in der Nacht auf den 26.08.)*
 
 ---
 
