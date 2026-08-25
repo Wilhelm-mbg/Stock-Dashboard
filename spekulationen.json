@@ -1,5 +1,5 @@
 {
-  "stand": "2026-08-25T10:55:46.070Z",
+  "stand": "2026-08-25T12:55:31.930Z",
   "hinweis": "Spekulationen aus öffentlichen Quellen – ungemessen, keine Handelsempfehlung, keine Anlageberatung.",
   "eintraege": [
     {
@@ -8,8 +8,8 @@
       "name": "Banca Monte dei Paschi di Siena S.p.A.",
       "art": "uebernahme",
       "chance": "hoch",
-      "these": "MPS wehrt sich mit einem Doppelgebot für Banco BPM und Banca Generali gegen die feindliche Offerte von Intesa Sanpaolo; die erste Antwort der Gegenseite fällt heute Nachmittag im BPM-Verwaltungsrat.",
-      "begruendung": "Beide Seiten des Übernahmekampfs sind belegt: Intesas Offerte über rund 30,5 Mrd. Euro und die MPS-Gegenwehr werden von Reuters, FT und italienischen Häusern übereinstimmend beschrieben, die Umtauschverhältnisse sind veröffentlicht, der MPS-Verwaltungsrat hat nach sieben Stunden mit neun Ja-Stimmen bei vier Enthaltungen zugestimmt. Konkreter Anlass, mehrere seriöse Quellen, deshalb hoch. Die Beteiligung an Generali gilt als Verhandlungsmasse, der Ausgang ist offen und politisch aufgeladen.",
+      "these": "MPS wehrt sich mit einem Doppelgebot für Banco BPM und Banca Generali gegen die feindliche Offerte von Intesa Sanpaolo; die eigenen Aktionäre müssen den Plan am 29. Oktober mit Zweidrittelmehrheit freigeben.",
+      "begruendung": "Beide Seiten des Übernahmekampfs sind belegt: Intesas Offerte über rund 30,6 Mrd. Euro und die MPS-Gegenwehr werden von Reuters, FT und italienischen Häusern übereinstimmend beschrieben, die Umtauschverhältnisse sind veröffentlicht, der MPS-Verwaltungsrat hat mit neun Ja-Stimmen bei vier Enthaltungen zugestimmt. Konkreter Anlass, mehrere seriöse Quellen, deshalb hoch. Neu gegenüber gestern: Wegen Intesas laufendem Gebot greift die Passivity Rule, die MPS-Hauptversammlung muss am 29. Oktober mit zwei Dritteln zustimmen; Intesa bereitet laut italienischen Medien eine Beschwerde bei der Consob vor. Der Ausgang ist offen und politisch aufgeladen.",
       "quellen": [
         {
           "titel": "Euronews",
@@ -26,9 +26,13 @@
         {
           "titel": "SoldiOnline",
           "url": "https://www.soldionline.it/notizie/azioni-italia/mps-banco-bpm-banca-generali-perche-lops-divide-mercato-e-analisti"
+        },
+        {
+          "titel": "Reuters Factbox via AOL",
+          "url": "https://www.aol.com/articles/factbox-italys-banking-shake-m-140318000.html"
         }
       ],
-      "zeit": "2026-08-24T10:00:00Z"
+      "zeit": "2026-08-25T06:00:00Z"
     },
     {
       "id": "20260821-BAMI-uebernahme",
@@ -36,8 +40,8 @@
       "name": "Banco BPM S.p.A.",
       "art": "uebernahme",
       "chance": "hoch",
-      "these": "Der Verwaltungsrat von Banco BPM tagt an diesem Dienstagnachmittag außerplanmäßig ueber das Umtauschangebot von Monte dei Paschi (1,567 MPS-Aktien je BPM-Aktie); ein Beschluss lag zur Mittagszeit noch nicht vor.",
-      "begruendung": "Der Sitzungstermin ist von mehreren Häusern übereinstimmend gemeldet, die Konditionen des Angebots sind veröffentlicht - konkreter, datierter Anlass aus mehreren seriösen Quellen, deshalb hoch. Eine Nachsuche am Dienstagmittag brachte keine Stellungnahme des Gremiums; der Ausgang hängt an der Annahmequote, an der Haltung des französischen Großaktionärs Crédit Agricole und an Intesas Gegenzug, S&P hat zuletzt neue Zweifel angemeldet.",
+      "these": "Der Verwaltungsrat von Banco BPM tagt heute außerplanmäßig über das Umtauschangebot von Monte dei Paschi (1,567 MPS-Aktien je BPM-Aktie); bis zum US-Vormarkt lag kein Beschluss vor.",
+      "begruendung": "Der Sitzungstermin für Dienstag, den 25. August, ist von mehreren Häusern übereinstimmend gemeldet, die Konditionen des Angebots sind veröffentlicht – konkreter, datierter Anlass aus mehreren seriösen Quellen, deshalb hoch. Eine Nachsuche am Dienstagmittag brachte weiterhin keine Stellungnahme des Gremiums. Der Ausgang hängt an der Annahmequote, an der Haltung des französischen Großaktionärs Crédit Agricole und an Intesas Gegenzug; S&P hat zuletzt neue Zweifel angemeldet.",
       "quellen": [
         {
           "titel": "MarketScreener",
@@ -56,7 +60,7 @@
           "url": "https://www.ft.com/content/ecafb9a8-b9a6-48a4-8d3c-a626b26fe82b"
         }
       ],
-      "zeit": "2026-08-24T10:00:00Z"
+      "zeit": "2026-08-25T06:00:00Z"
     },
     {
       "id": "20260822-CBK-uebernahme",
@@ -93,7 +97,7 @@
       "art": "ereignis",
       "chance": "hoch",
       "these": "Kalifornien hat die Vergleichsgespräche ueber die Paramount-Skydance-Übernahme von Warner Bros. Discovery abgesagt; ab dem 1. Oktober fällt fuer Paramount eine Verzögerungsgebühr von 7 Mio. Dollar je Tag an.",
-      "begruendung": "Generalstaatsanwalt Bonta hat die Absage selbst bestätigt und wirft Paramount vor, Inhalte des Vortreffens durchgestochen zu haben; Paramount weist das zurück. NBC, CNBC, LA Times, Variety und USA Today berichten unabhängig und übereinstimmend, dazu die vertraglich fixierte Gebühr von 7 Mio. Dollar je Tag ab dem 1. Oktober und ein Prozesstermin im Frühjahr - konkreter, belegter Anlass mit klarem Zeitdruck, deshalb hoch. Offen bleibt, ob die Gespraeche wieder aufgenommen werden.",
+      "begruendung": "Generalstaatsanwalt Bonta hat die Absage selbst bestätigt und wirft Paramount vor, Inhalte des Vortreffens durchgestochen zu haben; Paramount weist das zurück. NBC, CNBC, Reuters, LA Times und Variety berichten unabhängig und übereinstimmend, dazu die vertraglich fixierte Gebühr von 7 Mio. Dollar je Tag ab dem 1. Oktober und ein Prozesstermin im Frühjahr – konkreter, belegter Anlass mit klarem Zeitdruck, deshalb hoch. Über Nacht kam die Gegenbewegung: Gouverneur Newsom soll einem Vergleich zuneigen, während Paramount mit dem Wegzug aus Kalifornien droht. Insgesamt klagen zwölf Bundesstaaten; ob die Gespräche wieder aufgenommen werden, ist offen.",
       "quellen": [
         {
           "titel": "NBC News",
@@ -112,7 +116,7 @@
           "url": "https://variety.com/2026/film/news/paramount-leak-discussions-california-attorney-general-1236841669/"
         }
       ],
-      "zeit": "2026-08-24T18:00:00Z"
+      "zeit": "2026-08-25T02:00:00Z"
     },
     {
       "id": "20260824-WDAY-uebernahme",
@@ -165,6 +169,26 @@
         }
       ],
       "zeit": "2026-08-24T20:00:00Z"
+    },
+    {
+      "id": "20260825-BCRX-geruecht",
+      "sym": "BCRX",
+      "name": "BioCryst Pharmaceuticals Inc.",
+      "art": "geruecht",
+      "chance": "niedrig",
+      "these": "BioCryst legte nachbörslich über 10 Prozent zu, nachdem erneut über einen Einstieg eines großen US-Pharmaunternehmens spekuliert wurde.",
+      "begruendung": "Der Ursprung ist eine \"uncooked\"-Meldung des Gerüchtedienstes Betaville aus der Vorwoche, wonach ein US-Biopharmaunternehmen mit über 15 Mrd. Dollar Börsenwert Interesse haben soll – kein Name, keine Bestätigung, kein Filing. Was danach kam, ist Forum-Verkehr: Die Erwähnungen auf Stocktwits erreichten den höchsten Stand des Jahres. Einzelquelle plus Stimmungslärm, deshalb niedrig; die Kursreaktion ist real, der Anlass nicht überprüfbar.",
+      "quellen": [
+        {
+          "titel": "Stocktwits",
+          "url": "https://stocktwits.com/news-articles/markets/equity/biocryst-stock-after-hours-big-pharma-takeover-buzz-retail-sentiment-2026-high/cZ3nTt1RIKa"
+        },
+        {
+          "titel": "Stocktwits (Marktüberblick)",
+          "url": "https://stocktwits.com/news-articles/markets/equity/dow-sp500-nasdaq-futures-flip-gains-iran-talk-cools-vcx-mu-bcrx-dkng-after-hours/cZ3ncAQRIKO"
+        }
+      ],
+      "zeit": "2026-08-24T22:30:00Z"
     }
   ]
 }
