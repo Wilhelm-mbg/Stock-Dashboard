@@ -1,0 +1,65 @@
+{
+ "ordner": "C:\\Users\\Wilhe\\AppData\\Local\\Temp\\md-auditor-rm-1nN2Vx",
+ "normal": {
+  "erst": {
+   "da": true,
+   "sichtbar": true,
+   "reduzierteBewegung": true,
+   "overflow": "hidden",
+   "umbruch": "nowrap",
+   "animation": "none",
+   "dauer": "70s",
+   "transform": "none",
+   "breiteSpur": 5367,
+   "breiteRahmen": 1230,
+   "meldungen": 12,
+   "imRahmen": 3
+  },
+  "danach": {
+   "da": true,
+   "sichtbar": true,
+   "reduzierteBewegung": true,
+   "overflow": "hidden",
+   "umbruch": "nowrap",
+   "animation": "none",
+   "dauer": "70s",
+   "transform": "none",
+   "breiteSpur": 5367,
+   "breiteRahmen": 1230,
+   "meldungen": 12,
+   "imRahmen": 3
+  },
+  "bewegtSich": false
+ },
+ "reduziert": {
+  "erst": {
+   "da": true,
+   "sichtbar": true,
+   "reduzierteBewegung": true,
+   "overflow": "hidden",
+   "umbruch": "nowrap",
+   "animation": "none",
+   "dauer": "70s",
+   "transform": "none",
+   "breiteSpur": 5367,
+   "breiteRahmen": 1230,
+   "meldungen": 12,
+   "imRahmen": 3
+  },
+  "danach": {
+   "da": true,
+   "sichtbar": true,
+   "reduzierteBewegung": true,
+   "overflow": "hidden",
+   "umbruch": "nowrap",
+   "animation": "none",
+   "dauer": "70s",
+   "transform": "none",
+   "breiteSpur": 5367,
+   "breiteRahmen": 1230,
+   "meldungen": 12,
+   "imRahmen": 3
+  },
+  "bewegtSich": false
+ }
+}

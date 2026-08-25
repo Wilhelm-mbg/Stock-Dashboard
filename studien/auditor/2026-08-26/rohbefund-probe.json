@@ -1,0 +1,104 @@
+{
+ "bilder": "C:\\Users\\Wilhe\\AppData\\Local\\Temp\\md-auditor-stl3Sp\\bilder",
+ "tabs": 5,
+ "seitenFehler": [],
+ "konsoleFehler": [],
+ "funde": [
+  {
+   "marke": "dashboard @1280x800",
+   "art": "unsichtbarBedienbar",
+   "e": {
+    "wo": "div#sub-ueberblick.sub.active > div#newsTicker > div.tickSpur > a",
+    "grund": "ausserhalb: left=1746"
+   }
+  },
+  {
+   "marke": "dashboard @1280x800",
+   "art": "unsichtbarBedienbar",
+   "e": {
+    "wo": "div#sub-ueberblick.sub.active > div#newsTicker > div.tickSpur > a",
+    "grund": "ausserhalb: left=2213"
+   }
+  },
+  {
+   "marke": "dashboard @1280x800",
+   "art": "unsichtbarBedienbar",
+   "e": {
+    "wo": "div#sub-ueberblick.sub.active > div#newsTicker > div.tickSpur > a",
+    "grund": "ausserhalb: left=2704"
+   }
+  },
+  {
+   "marke": "dashboard @1280x800",
+   "art": "unsichtbarBedienbar",
+   "e": {
+    "wo": "div#sub-ueberblick.sub.active > div#newsTicker > div.tickSpur > a",
+    "grund": "ausserhalb: left=2948"
+   }
+  },
+  {
+   "marke": "dashboard @1280x800",
+   "art": "unsichtbarBedienbar",
+   "e": {
+    "wo": "div#sub-ueberblick.sub.active > div#newsTicker > div.tickSpur > a",
+    "grund": "ausserhalb: left=3666"
+   }
+  },
+  {
+   "marke": "dashboard @1280x800",
+   "art": "unsichtbarBedienbar",
+   "e": {
+    "wo": "div#sub-ueberblick.sub.active > div#newsTicker > div.tickSpur > a",
+    "grund": "ausserhalb: left=4132"
+   }
+  },
+  {
+   "marke": "dashboard @1280x800",
+   "art": "unsichtbarBedienbar",
+   "e": {
+    "wo": "div#sub-ueberblick.sub.active > div#newsTicker > div.tickSpur > a",
+    "grund": "ausserhalb: left=4429"
+   }
+  },
+  {
+   "marke": "dashboard @1280x800",
+   "art": "unsichtbarBedienbar",
+   "e": {
+    "wo": "div#sub-ueberblick.sub.active > div#newsTicker > div.tickSpur > a",
+    "grund": "ausserhalb: left=4896"
+   }
+  },
+  {
+   "marke": "strategien/mittelfrist @1280x800",
+   "art": "unfertig",
+   "e": {
+    "text": "Am 21.08.2026 durchgerechnet: Der Basiswert müsste 5,5 bis 11 %\n      laufen, damit ein Schein nach Zeitwertverfall und ",
+    "wo": "div#tab-strategien.tab.active > div#sub-mittelfrist.sub.active > div.panel > div"
+   }
+  },
+  {
+   "marke": "strategien/regelbuch @1280x800",
+   "art": "unfertig",
+   "e": {
+    "text": "Die Trefferquoten zählten noch Trades aus der Zeit des Buchungsfehlers mit. Einmalig auf null gesetzt – ab jetzt zählen ",
+    "wo": "tbody > tr > td > div"
+   }
+  },
+  {
+   "marke": "messung @1280x800",
+   "art": "unfertig",
+   "e": {
+    "text": "function ersteKerzeDesTages(bars, i) {\n  /* Die erste Kerze eines Handelstages - erkannt am Datumswechsel gegen die\n   *",
+    "wo": "div#strategieEingabe.panel > div#stBaukasten > details#stCodeAuf > pre#stCodeVorschau"
+   }
+  },
+  {
+   "marke": "dashboard/ueberblick @1000x700",
+   "art": "unsichtbarBedienbar",
+   "e": {
+    "wo": "div#sub-ueberblick.sub.active > div#newsTicker > div.tickSpur > a",
+    "grund": "ausserhalb: left=1449"
+   }
+  }
+ ]
+}

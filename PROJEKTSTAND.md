@@ -205,6 +205,15 @@ stehen in `studien/tueftler/WARTESCHLANGE.md`.*
 
 ---
 
+## Auditor
+
+*Eine Zeile je Nacht, geschrieben von der Auditor-Aufgabe (01:00). Sie prüft die **Oberfläche** —
+funktional und optisch —, nicht die Messungen; sie repariert nichts. Issue nur bei Fund (A/B).*
+
+- **26.08.** — Erster Lauf, deshalb volle Grundprüfung über alle fünf Reiter und 16 Pillen in zwei Fenstergrößen (Änderungsmenge: 7 Tage, 405 Commits). `npm test` **rot (6)** — aber vollständig aus der offenen fremden Arbeit an `bestandui.js`/`index.html` (Signalliste raus aus „Heute", Sperrklinken noch nicht nachgezogen); `eslint` allein grün, `ui-probe` **grün**, vertiefte Probe 0 unbehandelte Fehler. **1 B-Fund gemeldet (#90):** das News-Laufband steht unter `prefers-reduced-motion` still und zeigt dauerhaft nur 3 von 6 Schlagzeilen (Spur 5367 px in 1230 px Rahmen, `overflow:hidden`, kein Rollbalken) — und die Einstellung ist auf diesem Rechner **ohne Emulation aktiv**, das Band ist im echten Betrieb tot. 0 A-Funde, 3 C (Umbrüche im Trendfinder und bei „Max. offene Positionen", eine Umschrift „ueber" in den Radar-Daten). Barrierefreiheit: 0 Knöpfe ohne zugänglichen Namen, die Null durch Gegenprobe abgesichert. Details in `studien/auditor/2026-08-26/BEFUND.md`; nächste Nacht Rotationspunkt **depot**.
+
+---
+
 ## Was nicht angefasst wird
 
 Gilt unabhängig von dieser Tafel und steht ausführlich in `CLAUDE.md`:
