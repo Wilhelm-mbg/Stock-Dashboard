@@ -8257,6 +8257,10 @@
             '). Vorsichtshalber wird trotzdem pausiert: eine Pause kostet weniger als ein Irrtum'));
     return { entry: entry, n: nGes, nSym: n, rohMittel: m,
       mittelPp: Math.round(m * 10000) / 100, mdePp: mde != null ? Math.round(mde * 10000) / 100 : null,
+      /* rohT ist der UNGERUNDETE t-Wert. Dieselbe Lehre wie bei rohMittel (Totband,
+       * 24.08.2026): eine Entscheidung darf nie an einer gerundeten Anzeigezahl haengen.
+       * t geht weiter gerundet in Texte und Historie - entschieden wird an rohT. */
+      rohT: t,
       t: Math.round(t * 100) / 100,
       txt: 'Edge-Wächter (' + entry + ', letzte 120 Tage, Archiv): ' + nGes + ' Signale über ' + n + ' Werte · Überschuss ' +
         (m >= 0 ? '+' : '') + (m * 100).toFixed(3) + ' Pp/8 h · t über Symbole ' + t.toFixed(2) + ' → ' + urteil };
@@ -8407,8 +8411,8 @@
           var roh = edge.rohMittel != null ? edge.rohMittel : (edge.mittelPp != null ? edge.mittelPp / 100 : null);
           /* Verfall heisst: bedeutsam negativ, nicht bloss nicht-positiv. Der t-Wert
            * entscheidet, nicht das Vorzeichen. */
-          var verfall = roh != null && (edge.nSym || 0) >= 5 &&
-                        edge.t != null && edge.t <= VERFALL_T;
+          var rohT = edge.rohT != null ? edge.rohT : edge.t;
+          var verfall = roh != null && (edge.nSym || 0) >= 5 && rohT != null && rohT <= VERFALL_T;
           if (!a[ARM.histKey]) a[ARM.histKey] = [];
           /* ZWEI NAECHTE SIND NICHT ZWEI MESSUNGEN. Der Waechter rechnet ueber ein
            * rollendes 120-Tage-Fenster auf 60-Minuten-Kerzen. Eine Nacht bringt darin

@@ -936,7 +936,12 @@ console.log('\n17b) Oberflaeche: Altlasten und Verdrahtung');
    * gerundeten mittelPp. Ein wahrer Mittelwert von +0,004 Pp rundet auf 0,00, gilt
    * damit als Verfall UND kann die Pause nie aufheben - der Waechter hing fest.
    * Im gespeicherten Zustand standen vier Naechte in Folge mittelPp -0,04 bei t -0,19. */
-  ok(/var roh = edge\.rohMittel != null/.test(d) && /var verfall = roh != null && !\(roh > 0\)/.test(d),
+  /* Seit dem 25.08.2026 entscheidet die AUSLOESUNG am t-Wert (Verfall verlangt einen
+   * bedeutsamen Rueckgang, nicht bloss ein negatives Vorzeichen). Damit gilt dieselbe
+   * Lehre fuer t: entschieden wird an rohT, nicht am gerundeten Anzeigewert. Die
+   * AUFHEBUNG entscheidet unveraendert am ungerundeten rohMittel. */
+  ok(/var roh = edge\.rohMittel != null/.test(d) && /rohT: t,/.test(d) &&
+     /edge\.rohT != null \? edge\.rohT : edge\.t/.test(d),
      'Edge-Waechter: Ausloesung und Aufhebung entscheiden am UNGERUNDETEN Wert (kein Totband)');
   ok(/rohMittel: m,/.test(d), 'Der ungerundete Mittelwert wird ueberhaupt mitgeliefert');
   /* A9: Die Kontrolle muss aus demselben Fenster kommen wie die Signale. */
@@ -7593,7 +7598,9 @@ console.log('\n51) Der Edge-Waechter loest nicht mehr im Rauschen aus');
   ok(VERFALL_T < 0, 'Die Schwelle ist negativ - Verfall heisst Rueckgang  [' + VERFALL_T + ']');
 
   function verfallVon(tWert, nSym) {
-    var f = new Function('roh', 'edge', 'VERFALL_T', mr[0] + ' return verfall;');
+    /* rohT wird eine Zeile vorher gebildet - beide Zeilen muessen mit. */
+    var f = new Function('roh', 'edge', 'VERFALL_T',
+      'var rohT = edge.rohT != null ? edge.rohT : edge.t;' + mr[0] + ' return verfall;');
     return f(-0.0004, { t: tWert, nSym: nSym == null ? 40 : nSym }, VERFALL_T);
   }
 
