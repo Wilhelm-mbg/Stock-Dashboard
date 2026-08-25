@@ -349,6 +349,20 @@ function hoch() {
             'dann veroeffentlichen - sonst scheitert der Push und der Tag bleibt liegen.');
   }
 
+  /* Die verbrauchten Notizen VERSCHWINDEN VOR DEM TAG. Bis zum 25.08.2026 geschah das
+   * danach - der Aufraeum-Commit konnte den Tag damit bauartbedingt nie erreichen, und
+   * der naechste --pruefen-Lauf hielt ihn fuer unausgelieferte Arbeit (Issue 76.6).
+   * Der Text der Notizen steht zu diesem Zeitpunkt laengst in koerper und in tmp; das
+   * Loeschen kann den Release-Text also nicht mehr beschaedigen. */
+  titel('Notizen wegraeumen');
+  n.forEach(function (x) { fs.unlinkSync(path.join(NOTIZEN, x.datei)); console.log('  ' + x.datei + ' verbraucht'); });
+  let notizenWeg = false;
+  if (n.length) {
+    laut('git add -A release-notizen');
+    laut('git commit -q -m "Release-Notizen fuer ' + v + ' verbraucht"');
+    notizenWeg = true;
+  }
+
   titel('Tag und Entwurf');
   laut('git tag -a ' + tag + ' -m "Markt-Dashboard ' + v + '"');
   /* Ab hier gibt es etwas aufzuraeumen, wenn es schiefgeht. */
@@ -360,6 +374,22 @@ function hoch() {
     /* Wer einen Tag anlegt, raeumt ihn weg, wenn er nicht traegt - sonst meldet der
      * naechste Lauf "Tag gibt es schon", waehrend es kein Release dazu gibt. */
     try { execSync('git tag -d ' + tag, { cwd: REPO, stdio: 'ignore' }); } catch (e2) { }
+    /* Und die Notizen kommen zurueck. Sie sind seit diesem Lauf verbraucht, aber es
+     * gibt kein Release, das sie verbraucht haette - ohne diesen Rueckweg waere die
+     * Arbeit von einem halben Tag aus der naechsten Release-Nachricht verschwunden.
+     * n traegt Dateiname UND Text, das Zurueckschreiben braucht also kein Git. */
+    if (notizenWeg) {
+      try {
+        n.forEach(function (x) { fs.writeFileSync(path.join(NOTIZEN, x.datei), x.text + '\n', 'utf8'); });
+        execSync('git add -A release-notizen', { cwd: REPO, stdio: 'ignore' });
+        execSync('git commit -q -m "Release-Notizen zurueckgeholt: ' + tag + ' wurde nicht veroeffentlicht"', { cwd: REPO, stdio: 'ignore' });
+        console.log('  ' + n.length + ' Notiz(en) zurueckgeholt - der naechste Lauf findet sie wieder.');
+      } catch (e3) {
+        console.error('  ACHTUNG: die Notizen liessen sich nicht zurueckholen. Sie stehen im\n' +
+                      '  Commit "Release-Notizen fuer ' + v + ' verbraucht" und lassen sich\n' +
+                      '  von dort mit git revert wiederherstellen.');
+      }
+    }
     schluss('Tag oder Entwurf liessen sich nicht anlegen: ' + (e.message || e).toString().split('\n')[0] +
             '\nDer lokale Tag ' + tag + ' wurde wieder entfernt, damit der naechste Lauf nicht ' +
             'daran haengenbleibt.');
@@ -386,13 +416,6 @@ function hoch() {
   }
   console.log('  ok: oben liegt mein Paket');
 
-  titel('Notizen wegraeumen');
-  n.forEach(function (x) { fs.unlinkSync(path.join(NOTIZEN, x.datei)); console.log('  ' + x.datei + ' verbraucht'); });
-  if (n.length) {
-    laut('git add -A release-notizen');
-    laut('git commit -q -m "Release-Notizen fuer ' + v + ' verbraucht"');
-    laut('git push -q origin HEAD');
-  }
   console.log('\n  ' + tag + ' ist draussen.');
 }
 
