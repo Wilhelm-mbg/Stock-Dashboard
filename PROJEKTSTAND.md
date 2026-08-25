@@ -39,7 +39,20 @@ Damit ist vom Struktur-Plan nur noch Stufe F offen.
 *Was freigegeben ist und noch niemand macht. Wer eine Zeile nimmt, trägt sich unter
 „Läuft gerade" ein und streicht sie hier.*
 
-**Zuerst — Vorstufen der Neumessung (Messwerkzeug, keine Handelslogik):**
+**Sofort, klein, vorgezogen (Wilhelm 26.08.):**
+
+- **#83 / #89 — „Meine Papiere" nach Vermögen.** Beide Issues meinen dieselbe Sache: die
+  Pille gehört nicht unter „Heute"/„Überblick", sondern nach „Vermögen"; unter „Heute"
+  bleibt nur der Rest. Wilhelm hat entschieden: **jetzt, nicht hinter der Neumessung.**
+  Belegt Navigation/Shell — nicht gleichzeitig mit Stufe F Punkt 1 anfassen.
+- **#84-Rest — die 21 Quellcode-Kommentare umschreiben.** Wilhelm hat entschieden:
+  **alle 21**, nicht stehen lassen. Ziel ist, die *Behauptung* zu entfernen und den
+  historischen Bezug zu erhalten — „die Inventur vom 21.08. fand …" bleibt lesbar, nur
+  ohne „belegt" als Urteil. Reine Kommentaränderung, kein Verhalten, eigene Release-Notiz.
+  Die vierte Sperrklinke prüft sichtbaren Text, nicht Kommentare — sie hilft hier nicht.
+
+**Dann — Vorstufen der Neumessung (Messwerkzeug, keine Handelslogik). Wilhelm 26.08.:
+alle vier zuerst, die Neumessung startet erst danach.**
 
 - **#85 — laufende Quote-Stempel-Kerze abschneiden.** Abruf-Werkzeug und/oder Messmaschine
   müssen den unfertigen letzten Balken verwerfen. **Der Tüftler hat am 26.08. gemessen,
@@ -71,12 +84,6 @@ Erst dann neue Untersuchungen.
   (3) Barrierefreiheit (Rest #59 Stufe 3). Je eigenes Vorhaben, je eigene Release-Notiz.
 - **Nachbilden-Dialog:** Belegstatus sichtbar in den Dialog „Trade nachbilden" —
   Belegtexte aus den Protokollen (`DepotAPI.protokollKante`), nie aus Prosa.
-- **#83 / #89 — „Meine Papiere" nach Vermögen.** Wilhelms eigene Bestellung, beide Issues
-  meinen dieselbe Sache: die Pille gehört nicht unter „Heute"/„Überblick", sondern nach
-  „Vermögen". Freigegeben, weil er sie selbst geschrieben hat; **wo sie in der
-  Reihenfolge steht, ist Frage 1 an ihn** (siehe „Wartet auf Wilhelm").
-- **#84-Rest, klein:** In 21 Quellcode-Kommentaren lebt die „belegt"-Formel weiter. Der
-  ehrliche Weg wäre eine Zeile in `CLAUDE.md` statt Umschreiben — Frage 2 an Wilhelm.
 - **Handel raus aus dem Renderer — NUR PLAN:** ein Umbauplan als Dokument unter
   `studien/`, kein Code. Gebaut wird erst nach Wilhelms zweitem Ja.
 - **#80 Kanal-Güte neu eichen:** Studien-Strang. Bis die Eichung steht, bekommt die
@@ -105,9 +112,18 @@ fertig bist.*
 *Entscheidungen von Wilhelm, mit Datum. Eine Entscheidung, die nur in einem Chatverlauf
 steht, ist nach zwei Stunden verloren.*
 
+- **26.08.2026, 00:45 (drei Antworten)** —
+  (1) *Wohin mit #83/#89 („Meine Papiere" nach Vermögen)?* → **sofort erledigen**, nicht
+  hinter die Neumessung stellen.
+  (2) *Die „belegt"-Formel in 21 Quellcode-Kommentaren?* → **alle 21 umschreiben.** Der
+  PM hatte „stehen lassen, Zeile in CLAUDE.md" empfohlen (die Kommentare tragen Geschichte);
+  Wilhelm hat anders entschieden. Umschreiben heißt: die Behauptung entfernen, den
+  historischen Bezug erhalten („die Inventur vom 21.08. fand …" bleibt lesbar, nur ohne
+  das Wort „belegt" als Urteil). Reine Kommentaränderung, kein Verhalten.
+  (3) *Neumessung: alle vier Vorstufen abwarten oder früher starten?* → **alle vier
+  (#85–#88) zuerst.** Erst wenn die Instrumente stimmen, wird gemessen.
 - **26.08.2026** — #84 erledigt: sieben sichtbare Texte auf „gemessen" gezogen, vierte
-  Sperrklinke gesetzt. Offen als eigener kleiner Auftrag: in 21 Kommentaren lebt die
-  Formel weiter — ehrlicher Weg wäre eine Zeile in CLAUDE.md statt Umschreiben.
+  Sperrklinke gesetzt.
 - **25.08.2026 (spät)** — Geheimnis `TELEMETRIE_JSON` angelegt. Automatisch gebaute
   Pakete tragen den Diagnose-Rückkanal ab dem nächsten Release. Issue #76 damit
   vollständig erledigt.
@@ -140,14 +156,7 @@ steht, ist nach zwei Stunden verloren.*
 
 *Fragen, an denen Arbeit hängt.*
 
-1. **Wohin mit #83/#89 („Meine Papiere" nach Vermögen)?** — (a) sofort, es sind zehn
-   Minuten; (b) hinter die Neumessung, zusammen mit den anderen Wünschen; (c) mit in
-   Stufe F. *Empfehlung: (a).*
-2. **Die „belegt"-Formel in 21 Quellcode-Kommentaren** — (a) stehen lassen, eine Zeile in
-   `CLAUDE.md` erklärt sie als Geschichte; (b) alle 21 umschreiben. *Empfehlung: (a).*
-3. **Neumessung: alle vier Vorstufen abwarten oder früher starten?** — (a) #85–#88 alle
-   zuerst; (b) nur #85, der Rest parallel. *Empfehlung: (a).*
-4. **Zweites Ja zum Handel-aus-Renderer-Umbau** — fällig, sobald der Plan als Dokument vorliegt.
+- **Zweites Ja zum Handel-aus-Renderer-Umbau** — fällig, sobald der Plan als Dokument vorliegt.
 
 ---
 
