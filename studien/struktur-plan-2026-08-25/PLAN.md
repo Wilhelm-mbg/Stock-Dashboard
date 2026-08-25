@@ -185,4 +185,23 @@ Danach, als eigenes Vorhaben: `init()` dritteln (`depotMigration.js` / Verdrahtu
 
 ---
 
+## 7. Nachtrag 25.08. abends: Zusatzkritik, Stand der Umsetzung
+
+Nach dem Plan kamen zwölf weitere Kritikpunkte (Chat mit Wilhelm); die Punkte 3–12 hat er zum Beheben freigegeben, 1–2 (Produkt-Identität, Nachbilden-Ticket) liegen bewusst. Stand am Abend:
+
+| Punkt | Inhalt | Stand |
+|---|---|---|
+| 3 | Belegaussagen aus den Protokollen statt Prosa | umgesetzt: `PROTOKOLL_KANTE` speist jetzt auch Strategien-Übersicht (`DepotAPI.protokollKante`, Ereignis `kanten-geladen`) und Klartext-Kasten; Code-Fallbacks sind als solche gekennzeichnet |
+| 4 | Lebenszyklus einer Regel verbinden | umgesetzt: Scoreboard-Spalte „Im Betrieb" (`DepotAPI.regelStatus`), Regelbuch-Beleg verlinkt aufs Scoreboard |
+| 5 | Handel läuft im Renderer | **bewusst nicht angefasst** — Architektur-Umbau, eigenes Vorhaben mit eigenem Auftrag (Leitplanke 2) |
+| 6 | Zahlenformate gemischt | umgesetzt: `U.dez` (Komma) in allen sichtbaren Pp-/Prozent-Statuszeilen; CSV/Maschinenlesbares bleibt beim Punkt |
+| 7 | Fehlermeldungs-Bereich = Label | umgesetzt: `offenerTab()` liefert Reiter + Pille als Name UND Kennung |
+| 8 | Release-Notizen erreichen Anwender nie | umgesetzt: `wasneu.js` + Dialog + Knopf in den Einstellungen; Repo kommt aus `build.publish` via `update-state` |
+| 9 | Capital.com an drei Orten | umgesetzt: laufender Status als Spiegel neben den Zugangsdaten (`#setCapStatusLive`) |
+| 10 | 15 Werte dreimal auf „Heute" | umgesetzt: Movers-Spalten entfernt, Marktbild sortiert signiert und trägt alles |
+| 11 | Muster-Brüche (Pille als Aktion, notify-Checkbox) | umgesetzt: „App-Einstellungen …"-Knopf gestrichelt, Benachrichtigung im Einstellungs-Abschnitt |
+| 12 | Verhaltens-Smoke-Test | umgesetzt: `tools/ui-probe.js` (isolierte Instanz, klickt alle Reiter und Pillen, Exit-Code 0/1/2) — gehört einmal vor und einmal nach jedem Navigations-Umbau |
+
+Parallel dazu hat die Aufräum-Sitzung Stufe A, B und Teile von D geliefert (Sammelzeilen, Statuszeilen-Hilfe, Kachel-Hilfe, eine Urteil-Tabelle) und beginnt auf Wilhelms Freigabe **Stufe C** (Mittelfrist → Regeln, Meine Papiere → Vermögen, Marktkarte als Heute-Pille) plus D.6.
+
 *Testartefakte (26 Screenshots Erststart/Hell/Schmal, Testfahrer-Skript) liegen im Sitzungs-Scratchpad und sind bewusst nicht eingecheckt. Die Befunde sind oben vollständig textlich beschrieben; jede bauende Sitzung kann den Zustand mit einer isolierten Instanz (eigenes userData + eigener Downloads-Pfad per `app.setPath`) selbst reproduzieren.*
