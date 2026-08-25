@@ -3819,7 +3819,7 @@ console.log('\n44) Messmaschine, Scoreboard und Strategie-Eingabe (23.08.2026)')
    * Der Zugriff laeuft seit dem 25.08.2026 ueber rang() statt ueber die Tabelle direkt -
    * wegen des Rueckfalls fuer unbekannte Urteile. Was rang() dabei leistet, prueft
    * Abschnitt 47 am laufenden Code; hier bleibt nur die Sortierregel selbst. */
-  ok(/RANG\s*=\s*\{\s*'bestaetigt':\s*0/.test(sb) && /rang\(ua\) - rang\(ub\)/.test(sb),
+  ok(/'bestaetigt':\s*\{\s*rang: 0/.test(sb) && /rang\(ua\) - rang\(ub\)/.test(sb),
      'Das Scoreboard sortiert nach Belegstatus - Rendite entscheidet nur innerhalb gleichen Status');
 
   /* 100 % Einsicht: jede Entscheidung steht als Daten im Protokoll */
@@ -7140,12 +7140,12 @@ console.log('\n47) Anzeige der Messmaschine: unbekannte Urteile und die Selbstpr
    * gefunden, um den es hier geht: RANG['unbekannt'] ist undefined, und undefined ist
    * in allen drei Verwendungen STILL - NaN beim Sortieren, false beim Vergleich, und
    * 'color:undefined' verwirft der Browser wortlos. */
-  var von = sb.indexOf('  var RANG = {');
+  var von = sb.indexOf('  var URTEIL = {');
   var bis = sb.indexOf('  function placeboBand(p) {');
   ok(von !== -1 && bis > von, 'Der reine Teil des Scoreboards ist auffindbar');
   var rein = { }; 
   (new Function('E', sb.slice(von, bis) +
-     '\nE.rang = rang; E.label = label; E.farbe = farbe; E.placeboOk = placeboOk; E.RANG = RANG;'))(rein);
+     '\nE.rang = rang; E.label = label; E.farbe = farbe; E.placeboOk = placeboOk; E.URTEIL = URTEIL;'))(rein);
 
   /* Der Kern: ein Urteil mit Vorbehalt ist KEIN gruenes Licht. */
   ok(rein.farbe('bestaetigt') === 'var(--up)',
@@ -7166,6 +7166,33 @@ console.log('\n47) Anzeige der Messmaschine: unbekannte Urteile und die Selbstpr
      'Der Vergleich zweier Raenge ergibt nie NaN - sonst ist die Reihenfolge unbestimmt');
   ok(rein.label('unbekannt-2027').indexOf('undefined') === -1 && rein.label(null).indexOf('undefined') === -1,
      'Ein unbekanntes Urteil zeigt seinen Namen, nie das Wort undefined');
+
+  /* EINE Tabelle je Urteil. Bis zum 25.08.2026 gab es eine zweite fuer dieselben
+   * Schluessel, der genau ein Urteil fehlte - und die Strategien-Liste zeigte dafuer
+   * den rohen Schluessel, waehrend das Scoreboard darueber die Beschriftung zeigte.
+   * Der Fehler war still: nichts brach, es stand nur zweierlei da. */
+  ok(!/URTEIL_TEXT/.test(sb),
+     'Es gibt keine zweite Urteil-Tabelle mehr');
+  var luecken = Object.keys(rein.URTEIL).filter(function (k) {
+    var e = rein.URTEIL[k];
+    return !e || e.rang == null || !e.text || !e.farbe;
+  });
+  ok(luecken.length === 0,
+     'Jedes bekannte Urteil hat Rang, Beschriftung und Farbe', luecken.join(', ') || 'keine Luecke');
+  ok(rein.label('bestaetigt-aber-nullpunkt-verschoben').indexOf('Nullpunkt') !== -1,
+     'Der Vorbehalt "Nullpunkt verschoben" steht ausgeschrieben da, wo immer ein Urteil steht');
+  /* Die Strategien-Liste darf sich ihre Beschriftung nicht selbst bauen. */
+  ok(/label\(z\.urteil\)/.test(sb),
+     'Die Strategien-Liste beschriftet das Urteil ueber dieselbe Funktion wie das Scoreboard');
+  /* Die Sortierregel als EIGENSCHAFT, nicht als Schreibweise: ein bestaetigtes Urteil
+   * steht vor jedem anderen, ein unbekanntes hinter allen. Gemessen am laufenden Code -
+   * die Textmarke in Abschnitt 44 sagt nur, dass die Tabelle so aussieht. Genau diese
+   * Textmarke ist beim Zusammenfuehren der Tabellen rot geworden. */
+  var raenge = Object.keys(rein.URTEIL).map(function (k) { return rein.rang(k); });
+  ok(rein.rang('bestaetigt') === Math.min.apply(null, raenge),
+     'Ein bestaetigtes Urteil sortiert vor jedem anderen');
+  ok(rein.rang('unbekannt-2027') > Math.max.apply(null, raenge),
+     'Ein unbekanntes Urteil sortiert hinter alle bekannten - im Zweifel gegen die Strategie');
 
   /* Die Selbstpruefung: gemessene Abweichung gegen gemessene Aufloesung. */
   ok(rein.placeboOk({ placebo: { tagesmittel: -0.0001, mde: 0.0013 } }) === true,

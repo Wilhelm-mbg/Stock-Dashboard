@@ -26,25 +26,34 @@
   function pp(x, d) { return x == null || !isFinite(x) ? '–' : ((x >= 0 ? '+' : '') + (x * 100).toFixed(d == null ? 3 : d)); }
   function t2(x) { return x == null || !isFinite(x) ? '–' : (x >= 0 ? '+' : '') + x.toFixed(2); }
 
-  /* Reihenfolge = Belegwert. Die Ziffer steht nur fuers Sortieren. */
-  var RANG = { 'bestaetigt': 0, 'nicht-bestaetigt': 1, 'nicht-entscheidbar': 2,
-               'bestaetigt-aber-nullpunkt-verschoben': 3, 'nicht-messbar': 4, 'widerlegt': 5 };
-  var LABEL = { 'bestaetigt': 'bestätigt', 'nicht-bestaetigt': 'nicht bestätigt', 'nicht-entscheidbar': 'nicht entscheidbar',
-                'bestaetigt-aber-nullpunkt-verschoben': 'bestätigt – aber Nullpunkt verschoben',
-                'nicht-messbar': 'nicht messbar', 'widerlegt': 'widerlegt' };
-  var FARBE = { 'bestaetigt': 'var(--up)', 'nicht-bestaetigt': 'var(--series2)', 'nicht-entscheidbar': 'var(--muted)',
-                'bestaetigt-aber-nullpunkt-verschoben': 'var(--down)',
-                'nicht-messbar': 'var(--muted)', 'widerlegt': 'var(--down)' };
+  /* EINE Zeile je Urteil: Rang, Beschriftung, Farbe. Die Ziffer steht nur fuers
+   * Sortieren, die Reihenfolge ist der Belegwert.
+   *
+   * Warum eine Tabelle statt drei nebeneinander und einer vierten weiter unten: Bis zum
+   * 25.08.2026 fuehrte diese Datei fuer dieselben Schluessel eine zweite
+   * Beschriftungstabelle - und die kannte das Urteil mit dem verschobenen Nullpunkt
+   * nicht. Dieselbe Messung hiess im Scoreboard "bestätigt – aber Nullpunkt verschoben"
+   * und in der Strategien-Liste darunter roh, als Schluessel. Zwei Wahrheiten fuer ein
+   * Urteil laufen auseinander, ohne dass etwas bricht; wer ein neues Urteil eintraegt,
+   * muss es an genau einer Stelle tun. */
+  var URTEIL = {
+    'bestaetigt':                           { rang: 0, text: 'bestätigt',                             farbe: 'var(--up)' },
+    'nicht-bestaetigt':                     { rang: 1, text: 'nicht bestätigt',                       farbe: 'var(--series2)' },
+    'nicht-entscheidbar':                   { rang: 2, text: 'nicht entscheidbar',                    farbe: 'var(--muted)' },
+    'bestaetigt-aber-nullpunkt-verschoben': { rang: 3, text: 'bestätigt – aber Nullpunkt verschoben', farbe: 'var(--down)' },
+    'nicht-messbar':                        { rang: 4, text: 'nicht messbar',                         farbe: 'var(--muted)' },
+    'widerlegt':                            { rang: 5, text: 'widerlegt',                             farbe: 'var(--down)' }
+  };
 
   /* RUECKFALL FUER UNBEKANNTE URTEILE. Die Maschine darf neue Urteile erfinden - das
    * ist gerade passiert. Ein Zugriff per Tabelle liefert dann undefined, und undefined
    * ist in JEDEM der drei Fälle still: NaN beim Sortieren, false beim Vergleich, und
    * "color:undefined" wirft der Browser weg. Deshalb Funktionen statt Tabellen, mit
    * einem Rueckfall, der im Zweifel gegen die Strategie ausschlaegt. */
-  function rang(u) { return RANG[u] != null ? RANG[u] : 90; }
-  function label(u) { return LABEL[u] || String(u == null ? '?' : u).replace(/-/g, ' '); }
+  function rang(u) { return URTEIL[u] ? URTEIL[u].rang : 90; }
+  function label(u) { return (URTEIL[u] && URTEIL[u].text) || String(u == null ? '?' : u).replace(/-/g, ' '); }
   function farbe(u) {
-    if (FARBE[u]) return FARBE[u];
+    if (URTEIL[u]) return URTEIL[u].farbe;
     /* Gruen gibt es nur fuer den einen Schluessel, der genau 'bestaetigt' heisst.
      * Alles, was mit "bestaetigt" nur ANFAENGT, ist ein Urteil mit Vorbehalt - und
      * ein Vorbehalt ist kein gruenes Licht. */
@@ -641,11 +650,9 @@
    * nicht nachzurechnen. Genau dieser Fall bekommt hier eine eigene Zeile.
    *
    * Die Karte rechnet nichts. Sie liest zwei Ordner und die Protokolle. */
-  var URTEIL_TEXT = {
-    'bestaetigt': 'bestätigt', 'nicht-bestaetigt': 'nicht bestätigt',
-    'nicht-entscheidbar': 'nicht entscheidbar', 'widerlegt': 'widerlegt',
-    'nicht-messbar': 'nicht messbar'
-  };
+  /* Fuer das Urteil gibt es keine eigene Tabelle mehr - die Liste liest dieselbe
+   * Beschriftung wie das Scoreboard darueber (label()). HERKUNFT_TEXT bleibt: der Ort
+   * einer Strategie ist keine Messaussage, sondern eine Eigenschaft dieser Liste. */
   var HERKUNFT_TEXT = { lokal: 'nur lokal', quelle: 'Projekt', beides: 'beides' };
 
   function tagKurz(ms) {
@@ -735,8 +742,12 @@
       '<th scope="col" style="padding:4px 0;">Urteil</th></tr></thead><tbody>';
     zeilen.forEach(function (z) {
       var ort = z.hatDatei ? esc(z.ort) : '<b>Datei fehlt</b>';
+      /* Kein eigener Rueckfall mehr auf den rohen Schluessel: label() hat einen, und
+       * er ist der bessere - er macht aus dem Nullpunkt-Urteil dieselbe Beschriftung
+       * wie oben im Scoreboard. Nur der Fall "gemessen, aber ohne Urteil im Protokoll"
+       * gehoert hierher, den kennt label() nicht. */
       var urteil = !z.laeufe ? '<span style="color:var(--muted);">nie gemessen</span>'
-        : esc(URTEIL_TEXT[z.urteil] || z.urteil || 'ohne Urteil');
+        : esc(z.urteil ? label(z.urteil) : 'ohne Urteil');
       html += '<tr style="border-top:1px solid var(--grid);">' +
         '<td style="padding:5px 8px 5px 0;"><code>' + esc(z.key) + '</code></td>' +
         (ortSpalte ? '<td style="padding:5px 8px;">' + ort + '</td>' : '') +
