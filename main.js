@@ -3,6 +3,8 @@ const { app, BrowserWindow, ipcMain, shell, Tray, Menu, safeStorage } = require(
 // fork statt spawn: kein Shell-Aufruf, Argumente gehen als Liste - eine Zeichenkette,
 // die eine Shell interpretiert, gibt es hier gar nicht.
 const { fork } = require('child_process');
+const zlib = require('zlib');
+const Stammdaten = require('./stammdaten.js');
 const path = require('path');
 const fs = require('fs');
 const https = require('https');
@@ -733,6 +735,110 @@ ipcMain.handle('mess-abbrechen', async () => {
   MESS_LAUF.abbruch = true;
   try { MESS_LAUF.proc.kill(); } catch (e) { /* schon vorbei */ }
   return { ok: true };
+});
+
+/* ---- Abruf bei der SEC ----
+ * NICHT ueber fetch-text. Zwei Gruende, und beide sind wichtig:
+ *   1. fetch-text haelt eine Erlaubnisliste von Hosts. Sie dort zu oeffnen hiesse,
+ *      dem Renderer eine weitere Adresse freizugeben. Hier kommen die Adressen aus
+ *      stammdaten.js und der Renderer reicht KEINE URL herein - dieselbe Haltung
+ *      wie beim Yahoo-Kalender weiter oben.
+ *   2. Die SEC verlangt einen Absender mit Kontakt und deckelt auf zehn Abrufe je
+ *      Sekunde. Der Browser-Absender von fetch-text bekommt dort 403. */
+function secJson(url) {
+  return new Promise((fertig) => {
+    let u;
+    try { u = new URL(url); } catch (e) { return fertig(null); }
+    // Guertel und Hosentraeger: die Adressen kommen zwar aus stammdaten.js, aber wenn
+    // dort je etwas anderes stuende, endet es nicht bei einem beliebigen Host.
+    if (u.protocol !== 'https:' || (u.hostname !== 'data.sec.gov' && u.hostname !== 'www.sec.gov')) {
+      return fertig(null);
+    }
+    const req = https.get(u, { headers: Stammdaten.KOPF, timeout: 30000 }, (res) => {
+      if (res.statusCode !== 200) { res.resume(); return fertig(null); }
+      const teile = [];
+      let strom = res;
+      const enc = String(res.headers['content-encoding'] || '').toLowerCase();
+      if (enc === 'gzip') strom = res.pipe(zlib.createGunzip());
+      else if (enc === 'deflate') strom = res.pipe(zlib.createInflate());
+      strom.on('data', (c) => teile.push(c));
+      strom.on('end', () => {
+        try { fertig(JSON.parse(Buffer.concat(teile).toString('utf8'))); } catch (e) { fertig(null); }
+      });
+      strom.on('error', () => fertig(null));
+    });
+    req.on('timeout', () => { req.destroy(); fertig(null); });
+    req.on('error', () => fertig(null));
+  });
+}
+function warteMs(ms) { return new Promise((f) => setTimeout(f, ms)); }
+function stammdatenPfad() {
+  return path.join(app.getPath('downloads'), 'Markt-Dashboard-Daten', 'markt', 'stammdaten.json');
+}
+
+/* Der Sammelteil: drei Abrufe, danach steht die Stueckzahl fuer tausende Firmen.
+ * Zurueck gehen nur die Werte MIT Stueckzahl - alles andere kann die Karte nicht
+ * zeichnen, und eine Liste von zehntausend Kuerzeln durch die Bruecke zu schieben,
+ * von denen die Haelfte unbrauchbar ist, waere Verschwendung. */
+const MAX_KANDIDATEN = 2000;
+ipcMain.handle('markt-sec-basis', async () => {
+  try {
+    const b = await secBasis();
+    const kandidaten = [];
+    Object.keys(b.cikVon).forEach((sym) => {
+      const cik = b.cikVon[sym];
+      if (b.aktien[cik] > 0) kandidaten.push({ sym, cik, aktien: b.aktien[cik] });
+    });
+    /* Vorgefiltert nach Stueckzahl, weil fuer die Rangfolge nach Groesse Kurse
+     * noetig waeren - und die holt der Renderer. Zweitausend ist grosszuegig fuer
+     * eine Karte mit drei- bis sechshundert Kaestchen. Was dabei durchfallen KANN:
+     * ein sehr hochpreisiger Wert mit wenigen Aktien (Berkshire A). Das steht in
+     * der Oberflaeche, statt still zu passieren. */
+    kandidaten.sort((a, c) => c.aktien - a.aktien);
+    return { ok: true, kandidaten: kandidaten.slice(0, MAX_KANDIDATEN),
+      gesamt: kandidaten.length, zeitraum: b.zeitraum };
+  } catch (e) { return { ok: false, grund: String(e && e.message || e) }; }
+});
+let secBasisZwischen = null;
+async function secBasis() {
+  // Der Sammelteil aendert sich im Quartalsrhythmus - einmal je Sitzung reicht.
+  if (secBasisZwischen && Date.now() - secBasisZwischen.at < 6 * 3600000) return secBasisZwischen.b;
+  const b = await Stammdaten.basis(secJson, Date.now());
+  secBasisZwischen = { b, at: Date.now() };
+  return b;
+}
+
+/* Der teure Teil: Branche je Firma, ein Abruf pro Wert. Deshalb nur fuer die Werte,
+ * die die Karte wirklich zeigt - der Renderer hat sie zu diesem Zeitpunkt nach
+ * Marktkapitalisierung ausgewaehlt. */
+ipcMain.handle('markt-sec-branchen', async (ev, syms) => {
+  try {
+    if (!Array.isArray(syms) || !syms.length) return { ok: false, grund: 'Keine Werte angefragt.' };
+    const liste = syms.filter((s) => /^[A-Za-z0-9.\-]{1,12}$/.test(String(s))).slice(0, 1500);
+    const b = await secBasis();
+    const p = stammdatenPfad();
+    let bekannt = {};
+    try { bekannt = (JSON.parse(fs.readFileSync(p, 'utf8')).werte) || {}; } catch (e) { /* erster Lauf */ }
+    function melde(art) {
+      return (fertig, gesamt) => {
+        try { if (!ev.sender.isDestroyed()) ev.sender.send('markt-sec-fortschritt', { art, fertig, gesamt }); }
+        catch (e) { /* Fenster zu */ }
+      };
+    }
+    const br = await Stammdaten.branchen(secJson, warteMs, liste, b, bekannt, melde('branche'));
+    const st = await Stammdaten.stueckzahlen(secJson, warteMs, liste, b, bekannt, Date.now(), melde('stueckzahl'));
+    const raus = {
+      stand: new Date().toISOString(),
+      quelle: 'SEC EDGAR (aus der App geholt)',
+      hinweis: 'sic und sicText sind Tatsachen der Behoerde. sektor ist eine Faltung in stammdaten.js - eine Entscheidung, keine Messung.',
+      aktienStand: b.zeitraum,
+      werte: bekannt
+    };
+    fs.mkdirSync(path.dirname(p), { recursive: true });
+    fs.writeFileSync(p, JSON.stringify(raus, null, 1));
+    return { ok: true, daten: raus, neu: br.neu, ohneBranche: br.fehl,
+      mitGroesse: st.mit, zuAlt: st.zuAlt, pfad: p };
+  } catch (e) { return { ok: false, grund: String(e && e.message || e) }; }
 });
 
 /* ---- Stammdaten fuer die Marktkarte ----
