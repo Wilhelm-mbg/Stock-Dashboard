@@ -869,7 +869,9 @@ console.log('\n17b) Oberflaeche: Altlasten und Verdrahtung');
   ok(!/var\(--bad\)/.test(d), 'Kein undefiniertes Farb-Token mehr im Kill-Switch-Kasten');
 
   // --- Backtest luegt nicht ueber die belegten Kanten ---
-  ok(/mode === 'intraday' \|\| mode === 'intradayCompare'[\s\S]{0,160}rsi2seit/.test(d),
+  // Seit Stufe E wohnt runBacktest in backtestui.js - dort wird geschnitten.
+  ok(/mode === 'intraday' \|\| mode === 'intradayCompare'[\s\S]{0,160}rsi2seit/.test(
+       fs.readFileSync(__dirname + '/backtestui.js', 'utf8')),
      'Backtest bricht fuer die belegten Kanten ab statt eine falsche Zahl zu zeigen');
 
   // --- Robustheit des Dashboards ---
@@ -1567,7 +1569,10 @@ console.log('\n18) Datenbasis, Suchachsen und Zucht');
   ok(drin('function screenWerte(m)'), 'Messung: Vorauswahl laeuft auf einer Symbol-Stichprobe');
   ok(drin('function zuchtStichprobe(m)'), 'Zucht: Suche laeuft auf einer Symbol-Stichprobe');
   ok(drin('var rv = await btIntraday(testMapAlle,'), 'Zucht: das URTEIL faellt auf allen Werten');
-  ok(drin('if (zu && !handelBrauchtRechenzeit()) return Math.max(2, Math.min(15, kerne - 2));'), 'bei pausiertem Handel werden fast alle Kerne genutzt');
+  /* Seit Stufe E entscheidet der Pool das in btpool.js - dort wird geschnitten. */
+  var btp = fs.readFileSync(__dirname + '/btpool.js', 'utf8');
+  ok(btp.indexOf('if (zu && !handelBrauchtRechenzeit()) return Math.max(2, Math.min(15, kerne - 2));') !== -1,
+     'bei pausiertem Handel werden fast alle Kerne genutzt');
   // Stichprobe muss stabil und gleichmaessig sein
   function stichprobe(syms, N2) {
     syms = syms.slice().sort();
@@ -1589,8 +1594,9 @@ console.log('\n18) Datenbasis, Suchachsen und Zucht');
   var qsrc = fs.readFileSync(__dirname + '/quant.js', 'utf8');
   var wsrc = fs.readFileSync(__dirname + '/bt-worker.js', 'utf8');
   ok(qsrc.indexOf('function einstiegSignal(bars, ci, P)') !== -1, 'Einstiegspruefung ist als reine Funktion herausgezogen');
-  ok(drin("BTPool.run('intradayMulti'"), 'der Pool kennt Buendel-Auftraege');
-  ok(drin("else if (job.fn === 'intradayMulti')"), 'auch der Notpfad ohne Worker kennt sie');
+  var btp2 = fs.readFileSync(__dirname + '/btpool.js', 'utf8');
+  ok(btp2.indexOf("BTPool.run('intradayMulti'") !== -1, 'der Pool kennt Buendel-Auftraege');
+  ok(btp2.indexOf("else if (job.fn === 'intradayMulti')") !== -1, 'auch der Notpfad ohne Worker kennt sie');
   ok(wsrc.indexOf("else if (m.fn === 'intradayMulti')") !== -1, 'der Worker kennt sie');
   ok(drin("[k.basis, k.period, k.confirmBps, k.lineType, k.channel].join('|')"),
      'gebuendelt wird nach dem SIGNAL-Schluessel (Not-Stop und Haltedauer gehoeren nicht dazu)');

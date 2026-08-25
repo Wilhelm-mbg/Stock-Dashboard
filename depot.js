@@ -946,208 +946,16 @@
     });
   }
 
-  /* ================= Parallel-Helfer & Backtest-Worker-Pool ================= */
-  /** Parallel über Items laufen (max. conc gleichzeitig), Reihenfolge bleibt erhalten. */
-  async function pmap(items, worker, conc) {
-    var out = new Array(items.length), idx = 0;
-    async function lane() {
-      while (idx < items.length) {
-        var i = idx++;
-        try { out[i] = await worker(items[i], i); } catch (e) { out[i] = null; }
-      }
-    }
-    var lanes = [];
-    for (var l = 0; l < Math.max(1, Math.min(conc || 5, items.length)); l++) lanes.push(lane());
-    await Promise.all(lanes);
-    return out;
-  }
-
-  /** Worker-Pool: Backtests laufen in eigenen Threads (nutzt mehrere CPU-Kerne, UI bleibt flüssig). */
-  var BTPool = (function () {
-    /* Wie viele Worker duerfen laufen? Der alte feste Deckel von 8 schnitt die Formel ab:
-     * auf einem 16-Thread-Rechner wollte sie 12 und bekam 8 - die halbe Maschine lag brach,
-     * ausgerechnet bei der Nacht-Messung, wo niemand die Oberflaeche braucht.
-     * Jetzt nach Lage: Boerse zu -> 75 % (Messung/Tiefensuche duerfen liefern),
-     * Boerse offen -> 50 % (Luft fuer Oberflaeche, Kursabrufe und den Live-Scanner). */
-    function poolGroesse() {
-      var kerne = (typeof navigator !== 'undefined' && navigator.hardwareConcurrency) || 4;
-      var zu = true;
-      try { zu = !(window.Dash && window.Dash.marketOpen && window.Dash.marketOpen()); } catch (e) { zu = true; }
-      // Boerse zu UND Handel pausiert: die Maschine hat nichts Besseres zu tun.
-      // Zwei Threads bleiben dem Betriebssystem und der Oberflaeche.
-      if (zu && !handelBrauchtRechenzeit()) return Math.max(2, Math.min(15, kerne - 2));
-      return zu ? Math.max(2, Math.min(12, Math.floor(kerne * 0.75)))
-                : Math.max(2, Math.min(8, Math.floor(kerne * 0.5)));
-    }
-    var workers = [], queue = [], nextId = 1, pending = {}, ok = typeof Worker !== 'undefined';
-    // Kurskarten bekommen eine Kennung; jeder Worker cached die letzten 3 Karten und
-    // erhält Folgeauftraege nur noch mit der Kennung statt mit dem kompletten Datensatz.
-    var MAP_IDS = (typeof WeakMap !== 'undefined') ? new WeakMap() : null;
-    var mapIdZaehler = 0;
-    function mapIdVon(m) {
-      if (!MAP_IDS || !m || typeof m !== 'object') return 0;
-      if (!MAP_IDS.has(m)) MAP_IDS.set(m, ++mapIdZaehler);
-      return MAP_IDS.get(m);
-    }
-    var fehler = 0;
-    function fertig(id, res) {
-      var job = pending[id];
-      if (!job) return;
-      delete pending[id];
-      if (job.timer) clearTimeout(job.timer);
-      job.cb(res);
-    }
-    /** Rechnet im Hauptthread weiter – langsamer, aber es bleibt nie etwas hängen. */
-    function selbstRechnen(job) {
-      try {
-        // Notpfad ohne Worker - muss dieselben Auftragsarten kennen, sonst faellt
-        // ein Buendel-Auftrag beim Ausfall des Hintergrund-Rechnens lautlos auf die Nase.
-        if (job.fn === 'daily') job.cb(Q.backtest(job.histMap, job.opts));
-        else if (job.fn === 'intradayMulti') job.cb(Q.backtestIntradayMulti(job.histMap, job.opts.basis, job.opts.varianten));
-        else job.cb(Q.backtestIntraday(job.histMap, job.opts));
-      } catch (e) { job.cb({ error: String(e && e.message ? e.message : e) }); }
-    }
-    function spawn() {
-      var w;
-      try { w = new Worker('bt-worker.js'); } catch (e) { ok = false; return null; }
-      w.busy = false; w.jobId = 0;
-      // Erstkontakt-Wächter: Antwortet ein frisch gestarteter Worker nicht (z. B. weil das
-      // Hintergrund-Rechnen in dieser Umgebung gesperrt ist), wird endgültig auf den
-      // Hauptthread umgeschaltet, statt ewig zu warten.
-      w.probe = setTimeout(function () { if (!w.hatGeantwortet) w.onerror(); }, 8000);
-      try { w.postMessage({ ping: 1 }); } catch (ePing) { /* faellt in onerror */ }
-      w.onmessage = function (e2) {
-        w.hatGeantwortet = true;
-        if (w.probe) { clearTimeout(w.probe); w.probe = null; }
-        if (e2.data && e2.data.pong) return;      // reines Lebenszeichen, kein Auftrag
-        w.busy = false; w.jobId = 0;
-        fertig(e2.data.id, e2.data.ok ? e2.data.res : { error: e2.data.msg || 'Worker-Fehler' });
-        pump();
-      };
-      // Stirbt ein Worker, darf der Auftrag NICHT verloren gehen – sonst wartet die Analyse ewig.
-      w.onerror = function () {
-        var id = w.jobId;
-        if (w.probe) { clearTimeout(w.probe); w.probe = null; }
-        w.busy = false; w.jobId = 0;
-        fehler++;
-        var idx = workers.indexOf(w);
-        if (idx !== -1) workers.splice(idx, 1);
-        try { w.terminate(); } catch (e3) { /* egal */ }
-        if (typeof HEALTH !== 'undefined') { HEALTH.workerFail = (HEALTH.workerFail || 0) + 1; }
-        // Erst mehrere Ausfaelle sind ein Umgebungsproblem. Ein einzelner Ausfall ist ein
-        // einzelner Ausfall - frueher legte er den Pool fuer die ganze Sitzung still.
-        if (fehler >= 3) ok = false;   // Hintergrund-Rechnen klappt hier nicht → Hauptthread
-        var job = pending[id];
-        if (job) { delete pending[id]; if (job.timer) clearTimeout(job.timer); selbstRechnen(job); }
-        // wartende Aufträge ebenfalls retten
-        if (!ok) {
-          workers.slice().forEach(function (ww) { try { ww.terminate(); } catch (e4) { /* egal */ } });
-          workers.length = 0;
-          Object.keys(pending).forEach(function (pid) {
-            var pj = pending[pid]; delete pending[pid];
-            if (pj.timer) clearTimeout(pj.timer);
-            selbstRechnen(pj);
-          });
-          var q = queue.splice(0, queue.length);
-          q.forEach(selbstRechnen);
-        } else pump();
-      };
-      workers.push(w);
-      return w;
-    }
-    function pump() {
-      // Ist das Hintergrund-Rechnen ausgefallen, dürfen wartende Aufträge nicht liegenbleiben.
-      if (!ok) { var rest = queue.splice(0, queue.length); rest.forEach(selbstRechnen); return; }
-      while (queue.length) {
-        var free = null;
-        for (var i = 0; i < workers.length; i++) if (!workers[i].busy) { free = workers[i]; break; }
-        if (!free && workers.length < poolGroesse()) free = spawn();
-        if (!free) {
-          // Kein Worker verfügbar: entweder alle beschäftigt (warten) oder gar keiner möglich (selbst rechnen)
-          if (!ok) { var rest2 = queue.splice(0, queue.length); rest2.forEach(selbstRechnen); }
-          return;
-        }
-        var job = queue.shift();
-        free.busy = true; free.jobId = job.id;
-        pending[job.id] = job;
-        // Karte nur mitschicken, wenn dieser Worker sie noch nicht hat
-        if (!free.hatMaps) free.hatMaps = {};
-        var mitDaten = !job.mapId || !free.hatMaps[job.mapId];
-        if (mitDaten && job.mapId) {
-          free.hatMaps[job.mapId] = Date.now();
-          var kIds = Object.keys(free.hatMaps);
-          if (kIds.length > 3) {
-            kIds.sort(function (a2, b2) { return free.hatMaps[a2] - free.hatMaps[b2]; });
-            delete free.hatMaps[kIds[0]];
-            try { free.postMessage({ evict: parseInt(kIds[0], 10) }); } catch (eEv) { /* egal */ }
-          }
-        } else if (job.mapId) {
-          free.hatMaps[job.mapId] = Date.now();   // zuletzt benutzt aktualisieren
-        }
-        // Sicherheitsnetz: Ein Auftrag, der nach 3 Minuten nicht zurück ist, gilt als verloren.
-        // Der Worker wird dabei beendet und ersetzt – er rechnete sonst weiter und alle
-        // Folgejobs stauten sich bei ihm und liefen kaskadierend in denselben Timeout.
-        job.timer = setTimeout((function (jid, wk) {
-          return function () {
-            var j = pending[jid];
-            if (!j) return;
-            delete pending[jid];
-            try { wk.terminate(); } catch (e0) {}
-            var wi = workers.indexOf(wk);
-            if (wi >= 0) workers.splice(wi, 1);
-            j.cb({ error: 'Zeitüberschreitung im Hintergrund-Rechner' });
-            pump();
-          };
-        })(job.id, free), 180000);
-        free.postMessage({ id: job.id, fn: job.fn, mapId: job.mapId, map: mitDaten ? job.histMap : null, opts: job.opts });
-      }
-    }
-    function run(fn, histMap, opts) {
-      if (!ok) {
-        return new Promise(function (resolve) {
-          // Hauptthread nicht blockieren: Aufträge nacheinander im Leerlauf abarbeiten
-          setTimeout(function () { selbstRechnen({ fn: fn, histMap: histMap, opts: opts, cb: resolve }); }, 0);
-        });
-      }
-      return new Promise(function (resolve) {
-        queue.push({ id: nextId++, fn: fn, histMap: histMap, mapId: mapIdVon(histMap), opts: opts, cb: resolve });
-        pump();
-      });
-    }
-    return { run: run };
-  })();
-  function btIntraday(map, opts) { return BTPool.run('intraday', map, opts); }
-
-  /* Was haette gleichgewichtetes Halten desselben Universums ueber diese Scheibe
-   * gebracht? In Prozent - dieselbe Einheit, in der foldRets rechnen.
-   * Der Massstab, der dem Autopiloten bis zum 24.08.2026 fehlte. */
-  function haltenUeberScheibe(map, von, bis) {
-    var rr = [];
-    Object.keys(map || {}).forEach(function (sym) {
-      var b = map[sym];
-      if (!Array.isArray(b) || b.length < 2) return;
-      var ein = null, aus = null;
-      for (var i = 0; i < b.length; i++) {
-        var ms = b[i][0];
-        if (ms < von || ms > bis) continue;
-        if (!(b[i][1] > 0)) continue;
-        if (ein == null) ein = b[i][1];
-        aus = b[i][1];
-      }
-      if (ein != null && aus != null && ein > 0) rr.push(aus / ein - 1);
-    });
-    if (!rr.length) return null;
-    /* Median statt Mittel: Ein einzelner Verdreifacher soll den Massstab nicht
-     * verschieben. Wer den Median schlaegt, schlaegt den typischen Wert. */
-    rr.sort(function (a, b) { return a - b; });
-    return rr[rr.length >> 1] * 100;
-  }
-  /** Mehrere Varianten in einem Auftrag - der Worker berechnet die Einstiegssignale
-   *  einmal und teilt sie. Rueckgabe: Array der Einzelergebnisse. */
-  function btIntradayMulti(map, basis, varianten) {
-    return BTPool.run('intradayMulti', map, { basis: basis, varianten: varianten });
-  }
-  function btDaily(map, opts) { return BTPool.run('daily', map, opts); }
+  /* ================= Parallel-Helfer & Backtest-Worker-Pool =================
+   * Seit Stufe E des Struktur-Plans in btpool.js (window.BTPool). depot.js behaelt
+   * Aliase - die rund zwanzig Aufrufstellen im Handelsmodul bleiben dadurch
+   * woertlich unveraendert. verkabeln() bekommt in init() die Frage, ob der Handel
+   * die Kerne braucht, und den Ausfallzaehler des Gesundheitsblocks. */
+  var pmap = window.BTPool.pmap;
+  var btIntraday = window.BTPool.btIntraday;
+  var btDaily = window.BTPool.btDaily;
+  var btIntradayMulti = window.BTPool.btIntradayMulti;
+  var haltenUeberScheibe = window.BTPool.haltenUeberScheibe;
 
   var WINDOW_NAMES = { all: 'ganzer Handelstag', open2: '15:30–17:30 Uhr', open4: '15:30–19:30 Uhr', close2: '20–22 Uhr' };
 
@@ -4309,290 +4117,11 @@
     });
   }
 
-  /* ================= Backtest-UI ================= */
-  async function runBacktest() {
-    var btn = document.getElementById('btRunBtn'), st = document.getElementById('btStatus');
-    if (!btn || !st) return;
-    btn.disabled = true;
-    var mode = (document.getElementById('btMode') || {}).value || 'daily';
-    /* Dieses Werkzeug rechnet fest die EMA-Kreuzung auf synthetischen Optionsscheinen -
-     * beide Richtungen, Zwangsschluss am Abend. Für die belegten Kanten waere das
-     * eine plausibel aussehende, aber systematisch falsche Zahl: falscher Einstieg,
-     * falsches Instrument, falscher Ausstieg. Lieber gar keine Zahl als eine, die
-     * wie eine Widerlegung der eigenen Strategie aussieht. */
-    if ((mode === 'intraday' || mode === 'intradayCompare') &&
-        (D.intraday.mode === 'rsi2seit' || D.intraday.mode === 'kapitulation')) {
-      st.textContent = 'Für „RSI(2) im Seitwärtskanal“ und „Kapitulations-Dip“ ist dieser Backtest nicht gebaut – ' +
-        'er rechnet die EMA-Kreuzung auf Optionsscheinen. Diese beiden Strategien misst der Autopilot nachts ' +
-        'auf dem Kursarchiv (Bereich Autopilot).';
-      btn.disabled = false;
-      return;
-    }
-    var range = (document.getElementById('btRange') || {}).value || '1y';
-    var syms = universe();
-    var histMap = {};
-    async function loadIntradayHist(interval, label) {
-      var map = {}, doneL = 0;
-      await pmap(syms, async function (sy) {
-        var fd = await fetchIntraday(sy, interval, true);
-        doneL++;
-        st.textContent = 'Lade ' + label + '-Historie … (' + doneL + '/' + syms.length + ')';
-        if (fd && fd.series.length > 200) {
-          // Liquiditätsfilter auch im Backtest anwenden
-          if (!D.intraday.minDollarVol || fd.dollarVolDay == null || fd.dollarVolDay >= D.intraday.minDollarVol * 1e6) map[sy] = fd.series;
-        }
-      }, 6);
-      return map;
-    }
-    function intradayOpts() {
-      var prof = Q.PROFILES[D.intraday.profile] || Q.PROFILES.atm21;
-      var mp = modeParams();
-      return {
-        capital: START_CAPITAL,
-        period: D.intraday.period, confirmBps: D.intraday.confirmBps,
-        budgetPct: D.intraday.budgetPct, sl: mp.sl, tp: mp.tp,
-        cooldownMin: mp.cooldownMin, maxPerDay: mp.maxPerDay,
-        orderFee: D.intraday.orderFee, otmPct: prof.otmPct, expiryDays: prof.days, ratio: prof.ratio || Q.RATIO,
-        exitMode: mp.exitMode, trailPct: mp.trail, maxHoldMin: mp.maxHoldMin,
-        lineType: D.intraday.lineType || 'ema', trendFilter: !!D.intraday.trendFilter, window: D.intraday.window || 'all',
-        entryMode: D.intraday.mode === 'wave' ? 'wave' : D.intraday.mode === 'reversion' ? 'reversion' : D.intraday.mode === 'orb' ? 'orb' : 'cross',
-        zThr: zOf(D.intraday.confirmBps), minEdge: 1.5, minQuality: 60,
-        channel: D.intraday.mode === 'wave' && D.intraday.channel !== false,
-        mtf: D.intraday.mtf !== false && (D.intraday.interval || '5m') === '1m',
-        riskPct: parseFloat(D.intraday.sizing) > 0 ? parseFloat(D.intraday.sizing) : 0,
-        orbMin: 30
-      };
-    }
-
-    if (mode === 'intraday') {
-      try {
-        var iv0 = D.intraday.interval || '5m';
-        var map0 = await loadIntradayHist(iv0, iv0);
-        st.textContent = 'Rechne (' + Object.keys(map0).length + ' Werte) …';
-        await new Promise(function (r) { setTimeout(r, 30); });
-        var resI = await btIntraday(map0, intradayOpts());
-        if (resI.error) { st.textContent = resI.error; return; }
-        st.textContent = '';
-        var profN = (Q.PROFILES[D.intraday.profile] || Q.PROFILES.atm21).name;
-        var modeN = D.intraday.mode === 'waves' ? 'Wellen-Scalping' : 'Ausbrüche';
-        renderBtResult(resI, modeN + ' · EMA' + D.intraday.period + ' · ' + iv0 + ' · ' + profN +
-          ' · Gebühr ' + U.nf2.format(D.intraday.orderFee) + ' $/Order · Ø Haltedauer ' + resI.summary.avgHoldMin + ' Min · Gebühren gesamt ' + U.nf2.format(resI.summary.feesTotal || 0) + ' $');
-      } catch (eI) {
-        st.textContent = 'Fehler: ' + (eI.message || eI);
-      } finally {
-        btn.disabled = false;
-      }
-      return;
-    }
-
-    if (mode === 'intradayCompare') {
-      try {
-        var rows = [];
-        var IVS = ['5m', '15m', '60m'];
-        for (var vi = 0; vi < IVS.length; vi++) {
-          var mapC = await loadIntradayHist(IVS[vi], IVS[vi]);
-          st.textContent = 'Rechne ' + IVS[vi] + ' …';
-          await new Promise(function (r) { setTimeout(r, 30); });
-          var resC = await btIntraday(mapC, intradayOpts());
-          if (!resC.error) rows.push({ iv: IVS[vi], s: resC.summary, res: resC });
-        }
-        st.textContent = '';
-        if (!rows.length) { st.textContent = 'Keine Daten für den Vergleich.'; return; }
-        rows.sort(function (a, b) { return b.s.retPct - a.s.retPct; });
-        var best = rows[0];
-        var html = '<div style="font-size:var(--fs-neben); color:var(--ink-2); margin-bottom:8px;">Gleiche Regeln, drei Zeitrahmen (EMA' + D.intraday.period + ', ' +
-          (Q.PROFILES[D.intraday.profile] || Q.PROFILES.atm21).name + ', Gebühr ' + U.nf2.format(D.intraday.orderFee) + ' $/Order). Hinweis: 60-Min nutzt ~3 Monate, 5/15-Min ~1 Monat Historie.</div>';
-        html += '<table class="tbl"><tr><th>Zeitrahmen</th><th>Rendite</th><th>Trades</th><th>Trefferquote</th><th>Ø Haltedauer</th><th>Gebühren</th><th>Max. Drawdown</th></tr>';
-        rows.forEach(function (r0) {
-          html += '<tr' + (r0 === best ? ' style="font-weight:600;"' : '') + '><td>' + r0.iv + (r0 === best ? ' ' : '') + '</td>' +
-            '<td class="' + U.signCls(r0.s.retPct) + '">' + U.signTxt(r0.s.retPct, ' %') + '</td>' +
-            '<td>' + r0.s.nTrades + '</td><td>' + r0.s.winRate + ' %</td><td>' + r0.s.avgHoldMin + ' Min</td>' +
-            '<td>' + U.nf2.format(r0.s.feesTotal || 0) + ' $</td><td>−' + r0.s.maxDrawdownPct + ' %</td></tr>';
-        });
-        html += '</table><div style="font-size:var(--fs-neben); color:var(--muted); margin-top:8px;">Je kürzer der Zeitrahmen, desto mehr Signale – aber auch mehr Spread- und Gebührenkosten sowie mehr Fehlsignale (Whipsaws). Der beste Zeitrahmen kann sich mit der Marktphase ändern; Vergangenheit ist kein Indikator für die Zukunft.</div>';
-        html += '<svg id="btChart" style="width:100%; height:180px; margin-top:10px;"></svg>';
-        document.getElementById('btResult').innerHTML = html;
-        drawEquity(document.getElementById('btChart'), best.res.equity, START_CAPITAL);
-      } catch (eC) {
-        st.textContent = 'Fehler: ' + (eC.message || eC);
-      } finally {
-        btn.disabled = false;
-      }
-      return;
-    }
-    try {
-      var fetchRange = range === '5y' ? '5y' : '2y';
-      var doneH = 0;
-      await pmap(syms, async function (sy) {
-        var h = await getHistory(sy, fetchRange);
-        doneH++;
-        st.textContent = 'Lade Historie … (' + doneH + '/' + syms.length + ')';
-        if (h && h.length > 260) histMap[sy] = range === '1y' ? h.slice(-320) : h; // ~1J + Warmup
-      }, 6);
-      st.textContent = 'Rechne …';
-      await new Promise(function (r) { setTimeout(r, 30); });
-      var res = await btDaily(histMap, { capital: START_CAPITAL, weights: D.weights });
-      if (res.error) { st.textContent = res.error; return; }
-      // Benchmark im selben Zeitraum (S&P 500, auf Startkapital normiert)
-      var benchPts = null;
-      if (res.equity && res.equity.length > 2) {
-        var bh = await getHistory('^GSPC', fetchRange);
-        if (bh) {
-          var t0b = res.equity[0][0];
-          var slb = bh.filter(function (p) { return p[0] >= t0b - 86400000; });
-          if (slb.length > 2) {
-            var p0b = slb[0][1];
-            benchPts = slb.map(function (p) { return [Math.max(p[0], t0b), START_CAPITAL * p[1] / p0b]; });
-          }
-        }
-      }
-      st.textContent = '';
-      renderBtResult(res, 'Stunden-Strategie (Technik + Elliott, Signale alle 2 Handelstage, SL −40 %/TP +80 %)', benchPts);
-    } catch (e) {
-      st.textContent = 'Fehler: ' + (e.message || e);
-    } finally {
-      btn.disabled = false;
-    }
-  }
-
-  var lastBtTrades = null;
-  function renderBtResult(res, label, benchPts) {
-    var s = res.summary;
-    lastBtTrades = res.trades || [];
-    var html = '<div style="font-size:var(--fs-neben); color:var(--ink-2); margin-bottom:8px;">' + label + '</div>';
-    html += '<div class="depot-stats">' +
-      '<div class="tile"><div class="name">Endkapital</div><div class="val ' + U.signCls(s.end - s.start) + '" style="font-size:var(--fs-zahl);">' + U.money(s.end) + '</div></div>' +
-      '<div class="tile"><div class="name">Rendite</div><div class="val ' + U.signCls(s.retPct) + '" style="font-size:var(--fs-zahl);">' + U.signTxt(s.retPct, ' %') + '</div></div>' +
-      '<div class="tile"><div class="name">Trades / Trefferquote</div><div class="val" style="font-size:var(--fs-zahl);">' + s.nTrades + ' / ' + s.winRate + ' %</div></div>' +
-      '<div class="tile"><div class="name">Max. Drawdown</div><div class="val" style="font-size:var(--fs-zahl);">−' + s.maxDrawdownPct + ' %</div></div>' +
-      '<div class="tile"><div class="name">Sharpe (ann., ca.)</div><div class="val ' + U.signCls(s.sharpe) + '" style="font-size:var(--fs-zahl);">' + (s.sharpe != null ? s.sharpe.toFixed(2) : '–') + '</div></div>' +
-      '</div>';
-    // Kennzahlen-Zeile 2
-    html += '<div style="display:flex; gap:16px; flex-wrap:wrap; font-size:var(--fs-neben); color:var(--ink-2); margin-bottom:10px;">' +
-      '<span>Profit-Faktor <b class="' + (s.profitFactor >= 1 ? 'pos' : 'neg') + '">' + (s.profitFactor != null ? s.profitFactor : '–') + '</b></span>' +
-      '<span>Ø Gewinn-Trade <b class="pos">' + U.signTxt(s.avgWin || 0, ' $') + '</b></span>' +
-      '<span>Ø Verlust-Trade <b class="neg">' + U.signTxt(s.avgLoss || 0, ' $') + '</b></span>' +
-      '<span>Längste Verlustserie <b>' + (s.maxLossStreak || 0) + '</b></span>' +
-      '<span>Zeit im Markt <b>' + (s.exposurePct || 0) + ' %</b></span>' +
-      (s.avgHoldMin ? '<span>Ø Haltedauer <b>' + s.avgHoldMin + ' Min</b></span>' : '') +
-      '<span>Gebühren <b>' + U.nf2.format(s.feesTotal || 0) + ' $</b></span>' +
-      '</div>';
-    /* Zufallsgegenprobe – die wichtigste Einzelzahl der ganzen Auswertung.
-       Sie beantwortet die Frage, die eine schöne Ertragskurve nicht beantwortet:
-       Hätte Raten dasselbe gebracht? Am 21.08.2026 kam eine Trendfolge-Strategie auf
-       Krypto auf +13,7 % p. a. und sah nach einem Fund aus – bis dieselbe Rechnung mit
-       vertauschten Richtungen +19,4 % ergab. Deshalb steht sie hier ganz oben und nicht
-       versteckt unter den Kennzahlen. */
-    if (s.gegenprobe) {
-      var gp = s.gegenprobe;
-      if (gp.zuWenig) {
-        html += '<div style="font-size:var(--fs-neben); color:var(--ink-2); margin-bottom:10px; padding:8px 10px; border-left:3px solid var(--grid);">' +
-          'Zufallsgegenprobe: ' + U.esc(gp.aussage) + '</div>';
-      } else {
-        var farbe = gp.ueberzufaellig ? 'var(--up)' : (gp.pWert >= 0.5 ? 'var(--down)' : 'var(--warn)');
-        html += '<div style="font-size:var(--fs-neben); margin-bottom:10px; padding:9px 11px; border-left:3px solid ' + farbe + '; background:var(--panel);">' +
-          '<b style="color:' + farbe + ';">Zufallsgegenprobe:</b> ' + U.esc(gp.aussage) +
-          '<div style="color:var(--ink-2); margin-top:4px;">' +
-            'Diese Strategie bewegte den Basiswert im Mittel <b>' + U.signTxt(gp.echt, ' %') + '</b> in Handelsrichtung. ' +
-            'Vertauscht man die Richtungen zufällig unter denselben ' + gp.n + ' Trades, kommen im Mittel ' +
-            '<b>' + U.signTxt(gp.zufallMittel, ' %') + '</b> heraus. ' +
-            'Richtung getroffen in ' + gp.quote + ' % der Fälle.' +
-          '</div></div>';
-      }
-    }
-    /* Signifikanz aus nicht überlappenden MONATEN statt aus der Trade-Zahl.
-       Bei Haltedauern über mehreren Bars sind fast alle Trades gleichzeitig offen; ein
-       trade-basierter t-Wert zählt dieselbe Marktbewegung dutzendfach. Am 21.08.2026 auf
-       Krypto nachgemessen: aus t = 5,5 wurde t = 0,46, sobald man auf Monate umstellte. */
-    if (s.monatlich && !s.monatlich.zuKurz) {
-      var ms = s.monatlich;
-      var mFarbe = ms.ueberzufaellig ? 'var(--up)' : 'var(--ink-2)';
-      html += '<div style="font-size:var(--fs-neben); margin-bottom:10px; padding:9px 11px; border-left:3px solid ' + mFarbe + '; background:var(--panel);">' +
-        '<b>Signifikanz über Monate:</b> ' + ms.monate + ' Monate, ' +
-        '<b>' + U.signTxt(ms.jeMonat, ' %') + '</b> je Monat (' + U.signTxt(ms.proJahr, ' %') + ' p. a.), ' +
-        ms.positiveMonate + ' % davon positiv, <b>t = ' + ms.tWert + '</b>' +
-        '<div style="color:var(--ink-2); margin-top:4px;">' +
-          (!ms.belastbar
-            ? 'Unter 24 Monaten ist ein t-Wert nicht belastbar – hier zählt er nicht als Beleg, egal wie hoch er steht.'
-            : ms.ueberzufaellig
-              ? 'Überzufällig. Gerechnet auf Monatserträgen, die sich nicht überlappen – anders als eine Trade-Zählung, die dieselbe Bewegung mehrfach zählt.'
-              : 'Nicht überzufällig (t unter 2). Die Trade-Zahl oben sieht besser aus, weil überlappende Trades dieselbe Marktbewegung mehrfach zählen.') +
-        '</div></div>';
-    }
-    html += '<svg id="btChart" style="width:100%; height:180px; display:block;"></svg><div id="btChartLegend" style="font-size:var(--fs-neben); color:var(--ink-2); margin-top:4px;"></div>';
-    // Robustheit (Bootstrap)
-    if (res.bootstrap) {
-      var bs = res.bootstrap;
-      html += '<div style="font-size:var(--fs-neben); color:var(--ink-2); margin-top:10px;">Robustheit (400 Neuziehungen der Trades): Endkapital-Bandbreite ' +
-        '<b>' + U.nf0.format(bs.p5) + ' $</b> (5 %) · <b>' + U.nf0.format(bs.p50) + ' $</b> (Median) · <b>' + U.nf0.format(bs.p95) + ' $</b> (95 %) · ' +
-        'Verlust-Wahrscheinlichkeit <b class="' + (bs.lossProb > 50 ? 'neg' : '') + '">' + bs.lossProb + ' %</b></div>';
-    }
-    // Monats-Heatmap
-    if (s.monthly && Object.keys(s.monthly).length >= 4) {
-      var byYear = {};
-      Object.keys(s.monthly).forEach(function (k) {
-        var y = k.slice(0, 4), m = parseInt(k.slice(5), 10);
-        (byYear[y] = byYear[y] || {})[m] = s.monthly[k];
-      });
-      html += '<div style="margin-top:12px;"><div style="font-size:var(--fs-neben); color:var(--ink-2); margin-bottom:4px;">Monats-Renditen</div><table class="tbl" style="font-size:var(--fs-klein);"><tr><th></th>';
-      for (var mm = 1; mm <= 12; mm++) html += '<th>' + ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'][mm - 1] + '</th>';
-      html += '</tr>';
-      Object.keys(byYear).sort().forEach(function (y) {
-        html += '<tr><td><b>' + y + '</b></td>';
-        for (var m2 = 1; m2 <= 12; m2++) {
-          var v2 = byYear[y][m2];
-          if (v2 === undefined) html += '<td style="color:var(--muted);">·</td>';
-          else {
-            var op = Math.min(0.85, 0.15 + Math.abs(v2) / 12);
-            html += '<td style="background:' + (v2 >= 0 ? 'rgba(12,163,12,' : 'rgba(208,59,59,') + op.toFixed(2) + ');">' + (v2 > 0 ? '+' : '') + v2.toFixed(1) + '</td>';
-          }
-        }
-        html += '</tr>';
-      });
-      html += '</table></div>';
-    }
-    // Signalquellen / Exit-Gründe
-    html += '<div class="grid2" style="margin-top:10px;"><div>';
-    if (res.stats) {
-      [['tech', 'Technik'], ['elliott', 'Elliott-Wellen']].forEach(function (kk) {
-        var v = res.stats[kk[0]], tot = v.r + v.w, pct = tot ? Math.round(v.r / tot * 100) : 0;
-        html += '<div style="font-size:var(--fs-neben); display:flex; justify-content:space-between;"><span>' + kk[1] + '</span><span>' + pct + ' % richtig (' + v.r + '/' + tot + ')</span></div><div class="hitbar" style="margin-bottom:8px;"><span style="width:' + pct + '%"></span></div>';
-      });
-    } else if (res.trades && res.trades.length) {
-      var byWhy = {};
-      res.trades.forEach(function (tr) { byWhy[tr.why] = (byWhy[tr.why] || 0) + 1; });
-      html += '<div style="font-size:var(--fs-neben); color:var(--ink-2);">Exit-Gründe: ' + Object.keys(byWhy).map(function (k) { return k + ' (' + byWhy[k] + ')'; }).join(' · ') + '</div>';
-    }
-    html += '</div><div style="font-size:var(--fs-neben); color:var(--muted);">Simulation mit synthetischen Scheinen (Black-Scholes, vola-abhängiger Spread + Slippage + Gebühren). Vergangenheit ist kein Indikator für die Zukunft.</div></div>';
-    // Trade-Liste
-    if (res.trades && res.trades.length) {
-      html += '<details style="margin-top:10px;"><summary style="cursor:pointer; font-size:var(--fs-text); color:var(--ink-2);">Alle ' + res.trades.length + ' Trades anzeigen</summary>' +
-        '<div style="max-height:320px; overflow:auto; margin-top:8px;"><table class="tbl" style="font-size:var(--fs-neben);"><tr><th>Datum</th><th>Wert</th><th>Typ</th><th>Halt</th><th>P/L</th><th>Exit</th></tr>';
-      res.trades.slice(-200).reverse().forEach(function (tr) {
-        var holdTxt = tr.holdMin != null ? (tr.holdMin >= 1440 ? Math.round(tr.holdMin / 1440) + ' T' : tr.holdMin + ' Min') : Math.round((tr.closeT - tr.openT) / 86400000) + ' T';
-        html += '<tr><td>' + new Date(tr.openT).toLocaleDateString('de-DE') + '</td><td><b>' + U.esc(tr.sym) + '</b></td>' +
-          '<td>' + tr.dir.toUpperCase() + '</td><td>' + holdTxt + '</td>' +
-          '<td class="' + U.signCls(tr.pnl) + '">' + U.signTxt(tr.pnl, ' $') + '</td><td>' + U.esc(tr.why || '') + '</td></tr>';
-      });
-      html += '</table></div><button class="btn ghost" id="btCsvBtn" style="margin-top:8px; font-size:var(--fs-neben);">Backtest-Trades als CSV</button></details>';
-    }
-    document.getElementById('btResult').innerHTML = html;
-    var series = [{ name: 'Strategie', short: 'Strat', color: 'var(--series)', pts: res.equity }];
-    if (benchPts) series.push({ name: 'S&P 500 (Buy & Hold)', short: 'S&P', color: 'var(--series2)', pts: benchPts });
-    drawLines(document.getElementById('btChart'), series, document.getElementById('btChartLegend'), START_CAPITAL, { unit: ' $' });
-    var csvB = document.getElementById('btCsvBtn');
-    if (csvB) csvB.addEventListener('click', function () {
-      var head = 'Datum;Symbol;Typ;Einstieg;Exit;Stück;P/L ($);Exit-Grund\n';
-      var rows = lastBtTrades.map(function (tr) {
-        return [new Date(tr.openT).toLocaleString('de-DE'), tr.sym, tr.dir.toUpperCase(), String(tr.entry).replace('.', ','), String(tr.exit).replace('.', ','), tr.qty, String(Math.round(tr.pnl * 100) / 100).replace('.', ','), (tr.why || '').replace(/;/g, ',')].join(';');
-      }).join('\n');
-      dateiSpeichern(new Blob(['﻿' + head + rows], { type: 'text/csv;charset=utf-8' }), 'backtest-trades.csv');
-    });
-  }
-
-  function drawEquity(svg, eq, base) {
-    drawLines(svg, [{ name: 'Depotwert', short: '', color: 'var(--series)', pts: eq }], null, base, { area: true, unit: ' $' });
-  }
+  /* ================= Backtest-UI =================
+   * Seit Stufe E des Struktur-Plans in backtestui.js (window.BacktestUI) -
+   * verkabelt in init(). drawEquity wohnt dort und zeichnet auch den
+   * Depot-Verlauf (eine Definition, zwei Nutzer). */
+  var drawEquity = window.BacktestUI.drawEquity;
 
   /* ================= Chart-Zeichnung =================
    * Wohnt seit dem zweiten Schnitt (Audit 22) in chart.js - sie fasst weder D noch
@@ -8231,6 +7760,17 @@
     // Trendwechsel-Beobachtung (Felix #33/#35): wohnt seit Stufe E in wendeui.js.
     // Hereingereicht wird nur, was zum Handelsmodul gehoert - Kurse holt depot.js.
     if (window.WendeUI) window.WendeUI.verkabeln({ universe: universe, fetchIntraday: fetchIntraday, pmap: pmap });
+    /* Worker-Pool und Backtest-UI (Stufe E): der Pool bekommt die Frage, ob der
+     * Handel die Kerne braucht, und den Ausfallzaehler des Gesundheitsblocks. */
+    if (window.BTPool) window.BTPool.verkabeln({
+      handelBrauchtRechenzeit: handelBrauchtRechenzeit,
+      workerAusfall: function () { if (typeof HEALTH !== 'undefined') HEALTH.workerFail = (HEALTH.workerFail || 0) + 1; }
+    });
+    if (window.BacktestUI) window.BacktestUI.verkabeln({
+      depot: function () { return D; }, universe: universe, fetchIntraday: fetchIntraday,
+      getHistory: getHistory, modeParams: modeParams, zOf: zOf,
+      dateiSpeichern: dateiSpeichern, START_CAPITAL: START_CAPITAL
+    });
     renderScreen();
     renderHandSperre();
     window.__syncSetupUI = syncSetupUI;
@@ -8467,8 +8007,7 @@
    * der Knoepfe, blieb der gesamte Depot-Reiter tot - ohne sichtbare Fehlermeldung. */
   var rjBtn = document.getElementById('runJobBtn');
   if (rjBtn) rjBtn.addEventListener('click', function () { runJob(true); });
-  var btBtn = document.getElementById('btRunBtn');
-  if (btBtn) btBtn.addEventListener('click', runBacktest);
+  // Der Backtest-Knopf wird seit Stufe E von backtestui.js verkabelt (siehe init()).
   var drBtn = document.getElementById('depotResetBtn');
   var drFrei = document.getElementById('depotResetFrei');
   /* Der rote Knopf lag frueher in der Modal-Fusszeile neben "Speichern" - ein
