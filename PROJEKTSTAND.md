@@ -40,6 +40,24 @@ Dazu die Zusatzpunkte 3–12 der Kritik: fertig.
 *Was freigegeben ist und noch niemand macht. Wer eine Zeile nimmt, trägt sich unter
 „Läuft gerade" ein und streicht sie hier.*
 
+- **E-Rest freigegeben:** `init()` dreiteln (Migration / Verdrahtung / Scheduler) und die
+  `equityHist`-Fortschreibung aus `render()` in den Scheduler ziehen. Methode wie Stufe E
+  (byte-genauer Schnitt, Getter, Aliase, Testmarken umhängen). Handelspfad bleibt tabu.
+- **Stufe F, Reihenfolge fest:** (1) Theme ohne Dunkel-Blitz beim Start, (2) ein einziger
+  Chart-Renderer (`drawBig` vs. `chart.js` — Entscheid nach Funktionsvergleich),
+  (3) Barrierefreiheit (Rest #59 Stufe 3). Je eigenes Vorhaben, je eigene Release-Notiz.
+- **Nachbilden-Dialog:** Belegstatus sichtbar in den Dialog „Trade nachbilden“ —
+  Belegtexte aus den Protokollen (`DepotAPI.protokollKante`), nie aus Prosa.
+- **Handel raus aus dem Renderer — NUR PLAN:** ein Umbauplan als Dokument unter
+  `studien/`, kein Code. Gebaut wird erst nach Wilhelms zweitem Ja (siehe „Wartet auf Wilhelm“).
+- **#80 Kanal-Güte neu eichen:** Studien-Strang. Bis die Eichung steht, bekommt die
+  Güte-Zahl in der Oberfläche einen Warnhinweis („ungeeicht“).
+- **rsi2seit-mcp V4: Bestätigungsmessung vorregistrieren** (Studien-Strang). Ehrlicher
+  Rahmen: Intervall [+0,018, +0,117] gegen Hürde 0,10 — läuft, sobald genug frische Tage da sind.
+- **Zweig `claude/dashboard-integrated-browser-plvkv7` prüfen** (1 Commit: Browser-Treiber,
+  Aufzeichnung, Einzeldatei) und bei Tauglichkeit einbauen; sonst mit Begründung vorlegen.
+- **Danach die kleinen Wünsche, Reihenfolge fest:** #69 lokales Backup → #82 Herkunftsland-
+  Filter Marktkarte → #70 Radar-Streusuchen → #33 zweiter Trendwende-Detektor.
 - **#76 — die sieben gesammelten Fehler vom 25.08. reparieren** (inkl. #76.2, die zu enge
   fetch-Refspec von origin). Warum: gemeldete Fehler, freigegeben durch die Hausregel
   „Reparatur von Warnsignalen“. Dateien: laut Issue #76, je Fehler einzeln committen.
@@ -68,6 +86,11 @@ steht, ist nach zwei Stunden verloren.*
 - **25.08.2026** — Kommerzielles und Mehrbenutzer sind vorerst kein Thema. Das Werkzeug
   ist für Wilhelm allein; Schwerpunkt sind Werkzeuge, Bedienbarkeit, Optik und ein
   vollständiger Marktüberblick.
+- **25.08.2026 (abends, 9 Antworten auf einmal)** — E-Rest: ja, jetzt. Stufe F: alle drei,
+  Reihenfolge Theme → Chart → Barrierefreiheit. Nachbilden-Dialog: Belegstatus rein.
+  Handel-aus-Renderer: erst Plan, Bau nur mit zweitem Ja. #80: neu eichen, solange
+  Warnhinweis. V4: Bestätigungsmessung vorregistrieren. Browser-Zweig: prüfen und
+  einbauen. #71/#78/#81: geschlossen. Wünsche: #69 → #82 → #70 → #33.
 - **25.08.2026** — Der Projekt-Manager darf Unstrittiges selbst zuteilen; alles, was die
   Handelslogik berührt, neu ist oder Geld kostet, wird vorgelegt.
 
@@ -77,7 +100,7 @@ steht, ist nach zwei Stunden verloren.*
 
 *Fragen, an denen Arbeit hängt.*
 
-- *(keine offenen Fragen)*
+- **Zweites Ja zum Handel-aus-Renderer-Umbau** — fällig, sobald der Plan als Dokument vorliegt.
 
 ---
 
