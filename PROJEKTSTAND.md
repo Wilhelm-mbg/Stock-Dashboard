@@ -41,10 +41,23 @@ Damit ist vom Struktur-Plan nur noch Stufe F offen.
 
 **Sofort, klein, vorgezogen (Wilhelm 26.08.):**
 
-- **#83 / #89 — „Meine Papiere" nach Vermögen.** Beide Issues meinen dieselbe Sache: die
-  Pille gehört nicht unter „Heute"/„Überblick", sondern nach „Vermögen"; unter „Heute"
-  bleibt nur der Rest. Wilhelm hat entschieden: **jetzt, nicht hinter der Neumessung.**
-  Belegt Navigation/Shell — nicht gleichzeitig mit Stufe F Punkt 1 anfassen.
+- **#83 / #89 — „Meine Papiere" nach Vermögen. LIEGT, bis Wilhelm Frage 1 beantwortet
+  (siehe „Wartet auf Wilhelm"). Bitte nicht auf Verdacht bauen.**
+  Vom PM am 26.08. gegen Code und Issue-Texte geprüft, weil der Verdacht bestand, C2 habe
+  es schon erledigt. Ergebnis:
+  - Eine **Pille** „Meine Papiere" unter Überblick gibt es nicht mehr — C2 hat sie nach
+    Vermögen gezogen (`index.html:1548`). Was Wilhelm in #89 „Pille" nennt, ist der
+    **Abschnitt** `#bestandListe` unter Heute → Überblick (`index.html:786`). Der steht noch.
+  - #83 verlangt mehr als einen Umzug. Gegen `bestandui.js` geprüft, noch offen:
+    Tagesperformance in der Heute-Liste (dort stehen heute Signalgruppen, keine Kursspalte);
+    **„seit Jahresbeginn"** in der Vermögen-Tabelle; eine **Summenzeile** unter den Zeilen
+    (es gibt gar keine); ein **Absprung in den Aktien-Explorer** aus der Vermögen-Tabelle
+    (die Heute-Liste hat ihn über `data-bsym`, die Tabelle nicht).
+    Erfüllt ist bereits „die gesamte Summe der Aktie" — Spalte „Wert" (Kurs × Stück).
+  - **Die beiden Issues widersprechen sich:** #83 (25.08. 20:02, v8.33.0) will ausdrücklich
+    eine kleine Liste **in Heute behalten**; #89 (25.08. 21:46, v8.33.1, also nach C2) will
+    die Sache **aus dem Überblick heraus**. Genau darüber entscheidet Frage 1.
+  Belegt später Navigation/Shell und `bestandui.js` — nicht gleichzeitig mit Stufe F Punkt 1.
 
 **Dann — Vorstufen der Neumessung (Messwerkzeug, keine Handelslogik). Wilhelm 26.08.:
 alle vier zuerst, die Neumessung startet erst danach.**
@@ -97,8 +110,9 @@ Erst dann neue Untersuchungen.
 *Wer welche Dateien belegt. Trag dich ein, bevor du anfängst; nimm dich raus, wenn du
 fertig bist.*
 
-- **App-Codebase Master** — arbeitet die offene Issue-Liste ab (Reihenfolge siehe
-  Aufträge); zuletzt #76 und #84 abgeschlossen.
+- **App-Codebase Master** — hat **#85** genommen (26.08. ~01:00, vom PM zugeteilt): die
+  laufende Quote-Stempel-Kerze abschneiden, **beide** Archive (60m *und* `archiv1d`).
+  Belegt Abruf-Werkzeug und Messmaschine. Zuletzt fertig: #76, #84, #84-Rest.
 
 ---
 
@@ -153,6 +167,13 @@ steht, ist nach zwei Stunden verloren.*
 
 *Fragen, an denen Arbeit hängt.*
 
+1. **#83 und #89 widersprechen sich: bleibt unter „Heute" etwas von „Meine Papiere" stehen?**
+   #83 will dort eine kleine Liste mit Tagesperformance behalten, #89 (anderthalb Stunden
+   später) will den Abschnitt aus dem Überblick heraus. — (a) kleine Liste bleibt unter
+   Heute, alles Ausführliche nach Vermögen; (b) unter Heute verschwindet er ganz;
+   (c) er bleibt, wo er ist, und nur Vermögen wird ausgebaut. *Empfehlung: (a)* — es ist
+   die ausführlichere der beiden Meldungen, und der Signalstand der eigenen Papiere ist
+   auf „Heute" am richtigen Ort.
 - **Zweites Ja zum Handel-aus-Renderer-Umbau** — fällig, sobald der Plan als Dokument vorliegt.
 
 ---
