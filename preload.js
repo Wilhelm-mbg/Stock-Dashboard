@@ -15,6 +15,7 @@ contextBridge.exposeInMainWorld('api', {
   storeSet: (name, value) => ipcRenderer.invoke('store-set', name, value),
   storeDefekte: () => ipcRenderer.invoke('store-defekte'),
   marktStammdaten: () => ipcRenderer.invoke('markt-stammdaten'),
+  marktWertpapierarten: () => ipcRenderer.invoke('markt-wertpapierarten'),
   marktSecBasis: () => ipcRenderer.invoke('markt-sec-basis'),
   marktSecBranchen: (syms) => ipcRenderer.invoke('markt-sec-branchen', syms),
   onMarktSecFortschritt: (cb) => ipcRenderer.on('markt-sec-fortschritt', (_ev, d) => cb(d)),

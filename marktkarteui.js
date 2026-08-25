@@ -57,6 +57,30 @@
     if (namen.indexOf(war) !== -1) s.value = war;
   }
 
+  var ARTEN = null;            // sym -> Wertpapierart, einmal geholt
+  var AKTIE = { CS: 1, ADRC: 1 };   // Unternehmensaktie und Hinterlegungsschein
+
+  /** Die Wertpapierart eines Kuerzels - in DREI Schreibweisen nachgeschlagen.
+   *  Das Archiv schreibt BAC-PL, die Klassifizierung BACpL; ohne diese eine
+   *  Normalisierung galt jede Vorzugsaktie als unbekannt und rutschte durch. */
+  function artVon(sym) {
+    if (!ARTEN) return null;
+    if (ARTEN[sym]) return ARTEN[sym];
+    var p = sym.replace('-P', 'p');
+    if (ARTEN[p]) return ARTEN[p];
+    var q = sym.replace('-', '.');
+    if (ARTEN[q]) return ARTEN[q];
+    return null;
+  }
+
+  async function artenLaden() {
+    if (ARTEN) return ARTEN;
+    if (!window.api || typeof window.api.marktWertpapierarten !== 'function') return null;
+    var r = await window.api.marktWertpapierarten();
+    if (r && r.ok) ARTEN = r.arten;
+    return ARTEN;                 // ein Fehlschlag wird NICHT gemerkt
+  }
+
   function anzahlJetzt() {
     var s = document.getElementById('mkAnzahl');
     return s ? parseInt(s.value, 10) || 300 : 300;
@@ -101,7 +125,7 @@
       var aktien = e.aktien > 0 ? e.aktien : (ERSATZ_AKTIEN[sym] && ERSATZ_AKTIEN[sym].aktien);
       if (!(aktien > 0)) { ohneGroesse++; return; }
       raus.push({
-        sym: sym, name: e.name || sym, sektor: e.sektor, aktien: aktien,
+        sym: sym, name: e.name || sym, sektor: e.sektor, aktien: aktien, cik: e.cik || null,
         ersatz: !(e.aktien > 0),
         vorrang: (e.startKurs > 0 ? e.startKurs : 1) * aktien
       });
@@ -111,8 +135,46 @@
       var e = ERSATZ_AKTIEN[sym];
       raus.push({ sym: sym, name: e.name, sektor: e.sektor, aktien: e.aktien, ersatz: true, vorrang: e.aktien });
     });
+    /* NUR UNTERNEHMENSAKTIEN. Ohne diesen Filter bekam jede Vorzugsserie die
+     * Stammaktien-Anzahl ihres Unternehmens - FNMFO (Vorzug von Fannie Mae) wurde so
+     * zur groessten Kachel der ganzen Karte. Unklassifizierte werden hier bewusst
+     * NICHT durchgelassen: auf einer Flaechenkarte behauptet ein unbekanntes Papier
+     * mit geerbter Stueckzahl etwas Falsches, und zwar gross. */
+    var keineAktie = 0;
+    if (ARTEN) {
+      raus = raus.filter(function (w) {
+        var a = artVon(w.sym);
+        if (a && AKTIE[a]) return true;
+        keineAktie++;
+        return false;
+      });
+    }
+
+    /* EIN UNTERNEHMEN, EINE KACHEL. Die SEC fuehrt die Aktienanzahl je CIK, also je
+     * Unternehmen - die Karte hing sie an jedes Kuerzel. Bank of America stand mit
+     * 17 Kuerzeln da, jedes mit den vollen 6,99 Milliarden Aktien; Alphabet viermal.
+     * Bei zwei Gattungen desselben Unternehmens (GOOGL/GOOG, UA/UAA) ist die
+     * Stueckzahl ohnehin die GEMEINSAME - also gehoert sie genau einmal gezaehlt. */
+    var doppelt = 0, jeCik = {};
+    raus = raus.filter(function (w) {
+      if (!w.cik) return true;
+      if (!jeCik[w.cik]) { jeCik[w.cik] = w; return true; }
+      doppelt++;
+      /* Behalten wird das kuerzere Kuerzel - bei GOOGL/GOOG und UA/UAA ist das die
+       * gebraeuchlichere Gattung. Eine Setzung, keine Messung; sie steht in der
+       * Fusszeile. */
+      if (w.sym.length < jeCik[w.cik].sym.length) {
+        var alt = jeCik[w.cik];
+        alt.verdraengt = true;
+        jeCik[w.cik] = w;
+        return true;
+      }
+      return false;
+    }).filter(function (w) { return !w.verdraengt; });
+
     raus.sort(function (a, b) { return b.vorrang - a.vorrang; });
-    return { liste: raus.slice(0, n), gesamt: raus.length, ohneGroesse: ohneGroesse, adr: adr };
+    return { liste: raus.slice(0, n), gesamt: raus.length, ohneGroesse: ohneGroesse,
+             adr: adr, keineAktie: keineAktie, doppelt: doppelt };
   }
 
   /** Kurs und Tagesveraenderung. Ein Abruf je Wert liefert beides: Der Chart-Kopf
@@ -239,6 +301,11 @@
         (info.adr ? 'Nicht gezeigt: ' + info.adr + ' ausländische Emittenten – ihre Stückzahl sind Stammaktien, ' +
           'gehandelt wird ein ADR aus mehreren davon, und das Verhältnis steht in den Daten nicht. ' : '') +
         (info.ohneGroesse ? info.ohneGroesse + ' ohne Stückzahl in den SEC-Daten. ' : '') +
+        (info.keineAktie ? 'Nicht gezeigt: ' + info.keineAktie + ' Papiere, die keine Unternehmensaktien sind ' +
+          '(Vorzüge, Indexfonds, Zertifikate) – sie tragen die Stückzahl ihres Emittenten und wären sonst ' +
+          'riesige Kacheln. ' : '') +
+        (info.doppelt ? info.doppelt + ' weitere Gattungen desselben Unternehmens zusammengefasst – die ' +
+          'Aktienanzahl der SEC gilt je Unternehmen, nicht je Kürzel. ' : '') +
         '<br>Das ist eine <b>Übersicht</b>, kein Signal: An dieser Karte ist nichts gemessen. ' +
         'Sie sortiert nicht nach „bestem Sektor“ und hebt nichts hervor – das sähe nach einem Befund aus und wäre keiner.';
     }
@@ -325,6 +392,7 @@
     function sag(t) { if (stand) stand.textContent = t; }
     try {
       sag('Stammdaten lesen …');
+      await artenLaden();
       var st = await stammLaden();
       if (!st || st.fehlt) { fehlenAnbieten(st); sag(''); return; }
       var a = auswahl(anzahlJetzt());

@@ -845,6 +845,23 @@ ipcMain.handle('markt-sec-branchen', async (ev, syms) => {
  * NUR LESEN, und nur eine Datei aus dem Datenordner. Die App holt Branche und
  * Aktienanzahl NICHT selbst bei der SEC - das macht tools/stammdaten-holen.js
  * daneben. Hier wird die fertige Datei gereicht, sonst nichts. */
+/* Wertpapierarten fuer die Marktkarte - NUR LESEN. Dieselbe Datei, die auch die
+ * Messmaschine benutzt (studien/.../wertpapierart.js). Ohne sie zeigt die Karte
+ * Vorzugsaktien und Indexfonds mit der Stueckzahl ihres Emittenten - siehe FNMFO. */
+ipcMain.handle('markt-wertpapierarten', async () => {
+  try {
+    /* Der App-Datenordner, NICHT der Ordner der Anbindung: die Regel aus 7.17 haelt
+     * die Anwendung von Schluessel-APIs fern, und eine Zusicherung prueft das hart.
+     * tools/arten-fuer-karte.js uebersetzt einmal hierher. */
+    const p = path.join(app.getPath('downloads'), 'Markt-Dashboard-Daten', 'markt', 'wertpapierarten.json');
+    if (!fs.existsSync(p)) return { ok: false, grund: 'Keine Klassifizierung der Wertpapierarten gefunden. Einmal "node tools/arten-fuer-karte.js" laufen lassen.', pfad: p };
+    const j = JSON.parse(fs.readFileSync(p, 'utf8'));
+    const arten = (j && j.arten) || j;
+    if (!arten || Object.keys(arten).length < 1000) return { ok: false, grund: 'Die Klassifizierung ist unbrauchbar klein.' };
+    return { ok: true, arten: arten, pfad: p };
+  } catch (e) { return { ok: false, grund: String(e && e.message || e) }; }
+});
+
 ipcMain.handle('markt-stammdaten', async () => {
   try {
     const p = path.join(app.getPath('downloads'), 'Markt-Dashboard-Daten', 'markt', 'stammdaten.json');
