@@ -855,7 +855,9 @@ console.log('\n17b) Oberflaeche: Altlasten und Verdrahtung');
   ['480', '1560'].forEach(function (w) {
     ok(new RegExp('<option value="' + w + '"').test(h), 'Haltedauer ' + w + ' existiert als Auswahl im Formular');
   });
-  ok(/rsi2seitZeitrahmenGeprueft/.test(d), 'Einmal-Sicherung zieht Bestandsdepots auf 60m gerade');
+  /* Seit dem E-Rest wohnen die Einmal-Migrationen in depotmigration.js. */
+  ok(/rsi2seitZeitrahmenGeprueft/.test(fs.readFileSync(__dirname + '/depotmigration.js', 'utf8')),
+     'Einmal-Sicherung zieht Bestandsdepots auf 60m gerade');
   ok(/TRIG_BELEGT = \{ rsi2seit: 1, kapitulation: 1 \}/.test(d), 'Auslöser-Liste kennt den Belegstand');
   ok(/standardTrigger\(setup\)/.test(d) && /setup === 'umkehr' \? 'rsi2seit'/.test(d),
      'Der Umkehr-Standard ist die belegte Kante, nicht der Listenerste');
@@ -920,7 +922,8 @@ console.log('\n17b) Oberflaeche: Altlasten und Verdrahtung');
   ok(/SICHERUNG_STORES = \{ depot: true \}/.test(m2), 'Store: das Depot hat Sicherungsgenerationen');
   ok(/\.bak1'\)\) fs\.copyFileSync\(f \+ '\.bak1', f \+ '\.bak2'\)/.test(m2), 'Store: bak1 rotiert nach bak2');
   ok(/__ausSicherung = gen/.test(m2), 'Store: eine geladene Sicherung wird MARKIERT statt still geliefert');
-  ok(/if \(D\.__ausSicherung\)/.test(d) && /delete D\.__ausSicherung/.test(d),
+  ok(/if \(D\.__ausSicherung\)/.test(fs.readFileSync(__dirname + '/depotmigration.js', 'utf8')) &&
+     /delete D\.__ausSicherung/.test(fs.readFileSync(__dirname + '/depotmigration.js', 'utf8')),
      'Store: der Renderer zeigt die Markierung an und entfernt sie vor dem Speichern');
   ok(/storeSet\('depot', D\)\.then\(function \(r\)/.test(d) && /HEALTH\.saveFail/.test(d),
      'Store: save() prueft sein Ergebnis und meldet Fehlschlaege');
@@ -1524,7 +1527,10 @@ console.log('\n18) Datenbasis, Suchachsen und Zucht');
    * dieses Abschnitts sind hochspezifische Codefragmente - geprueft wird, dass jede
    * Eigenschaft in EINER der beiden Haelften weiterlebt. */
   var zut = fs.readFileSync(__dirname + '/zucht.js', 'utf8');
-  function drin(t) { return d.indexOf(t) !== -1 || zut.indexOf(t) !== -1; }
+  /* Seit dem E-Rest liegt auch der Migrationsteil in einer eigenen Datei -
+   * derselbe Dreiklang wie beim zweigeteilten Zucht-Komplex. */
+  var mig9 = fs.readFileSync(__dirname + '/depotmigration.js', 'utf8');
+  function drin(t) { return d.indexOf(t) !== -1 || zut.indexOf(t) !== -1 || mig9.indexOf(t) !== -1; }
   ok(drin('unbegrenzt ? Infinity : 22 * 60000'), 'Nachtlauf hat ein Budget mit Puffer unter dem 25-Minuten-Deckel');
   ok(drin('Math.max(30000, (GESAMT_MS - (Date.now() - t0)) / restGruppen)'), 'Zeitbudget wird auf die verbleibenden Gruppen verteilt');
   ok(drin('uebersprungen (kommen in einer der naechsten Naechte dran)'), 'Uebersprungene Kombinationen werden GEMELDET, nicht still verschluckt');

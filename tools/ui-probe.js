@@ -79,6 +79,14 @@ async function probe(win) {
     }
   }
   const seitenFehler = await js('window.__probe.fehler.slice(0, 20)');
+  /* Ein abgebrochenes init() faengt depot.js selbst ab und meldet es NUR im
+   * Warnband - die Schaltung funktioniert dann trotzdem, und genau so waere der
+   * Q-Fehler der Migrations-Auslagerung (25.08.2026) hier fast durchgerutscht.
+   * Deshalb ist das Warnband Teil der Probe. */
+  const warnband = await js("(document.getElementById('warnband') || {}).textContent || ''");
+  if (/nicht vollständig starten|nicht vollstaendig starten/.test(warnband)) {
+    probleme.push('Warnband meldet init-Abbruch: ' + String(warnband).slice(0, 120));
+  }
   return { tabs: tabs.length, pillen, probleme, seitenFehler: seitenFehler || [] };
 }
 
