@@ -9047,30 +9047,9 @@
       save();
       edgePauseAnzeigen();
     });
-    // Sub-Navigation (Pills)
-    /* Allgemein statt auf #depotPills festgenagelt: Seit Stufe 4 gibt es eine zweite
-     * Pillenleiste (Werkzeuge). Der Umschalter arbeitet jetzt in dem Reiter, in dem die
-     * angeklickte Pille steht - so kostet jede weitere Leiste keinen neuen Code. */
-    /* Nur Pillen MIT data-sub sind Navigation. Ohne diese Einschraenkung fing der
-     * Umschalter auch die sechs Protokoll-Filter, den CSV-Knopf und die beiden
-     * Setup-Pillen ab: er blendete alle .sub-Bereiche aus, fand dann kein Ziel und
-     * schaltete nichts zurueck - der Reiter blieb leer. */
-    var pills = document.querySelectorAll('.pills button[data-sub]');
-    pills.forEach(function (b) {
-      b.addEventListener('click', function () {
-        var reiter = b.closest('.tab');
-        var meine = reiter ? reiter.querySelectorAll('.pills button[data-sub]') : [b];
-        meine.forEach(function (x) { x.classList.remove('active'); });
-        if (reiter) reiter.querySelectorAll('.sub').forEach(function (s) { s.classList.remove('active'); });
-        b.classList.add('active');
-        var subZiel = document.getElementById('sub-' + b.getAttribute('data-sub'));
-        if (subZiel) subZiel.classList.add('active');
-        render();
-        if (b.getAttribute('data-sub') === 'auswertung') renderAnalytics();
-        if (b.getAttribute('data-sub') === 'strategien') { renderPilot(); renderRegime(); }
-        if (b.getAttribute('data-sub') === 'wende') wendePruefen(false);
-      });
-    });
+    /* Die Unter-Navigation verkabelt jetzt app-shell.js. Sie stand hier hinter dem
+     * Laden des Depots und war bis dahin tot. Was je Unterseite zusaetzlich gezeichnet
+     * werden muss, haengt weiter unten am Ereignis 'sub-changed'. */
 
     if (window.api.appVersion) window.api.appVersion().then(function (v) { APP_VER = v || ''; });
     // Sentiment-Historie laden
@@ -9826,6 +9805,11 @@
 
     setInterval(spannenProbe, 8 * 60000);
     setTimeout(spannenProbe, 40000);
+
+    /* Nachholen, falls waehrend des Startens schon umgeschaltet wurde - von Hand oder
+     * aus dem gemerkten Ort. Die Unterseite steht dann zwar sichtbar da, ihr Inhalt
+     * waere aber nie gezeichnet worden. */
+    if (subOffen) { var subN = subOffen; subOffen = null; subSonderfall(subN.sub, subN.wieder); }
   }
 
   /* Diese drei Zeilen liefen frueher ungeprueft und standen VOR init(): fehlte einer
@@ -9881,6 +9865,28 @@
     // Der Reiterwechsel heilt den Formularstand: Ein/Aus laesst sich auch im
     // Strategien-Tab umlegen, dann muessen die Schalter hier nachziehen.
     if (e.detail === 'depot') { render(); try { syncStrategyUI(); } catch (e2) { /* UI-Sync optional */ } }
+  });
+
+  /* Die Pillen schaltet die Shell; was je Unterseite zusaetzlich gezeichnet werden muss,
+   * weiss nur dieses Modul. Der Umweg ueber ein Ereignis haelt die Navigation ab dem
+   * ersten Bild bedienbar, auch waehrend init() noch laeuft.
+   * Faellt eine Umschaltung in genau diese Zeit, ist D noch leer - dann wird sie
+   * gemerkt und am Ende von init() einmal nachgeholt, statt still auszufallen. */
+  var subOffen = null;
+  function subSonderfall(sub, wieder) {
+    if (!sub) return;
+    if (!D) { subOffen = { sub: sub, wieder: wieder }; return; }
+    render();
+    if (sub === 'auswertung') renderAnalytics();
+    if (sub === 'strategien') { renderPilot(); renderRegime(); }
+    /* Der Trendfinder holt Kurse fuer 15 Werte. Beim Klick ist das eine Bestellung des
+     * Nutzers; beim blossen Wiederherstellen des letzten Orts waere es eine ungefragte
+     * Abfrage bei jedem Programmstart. Wiederhergestellt zeigt der Reiter seinen
+     * eigenen Leerzustand, und "Jetzt pruefen" steht daneben. */
+    if (sub === 'wende' && !wieder) wendePruefen(false);
+  }
+  document.addEventListener('sub-changed', function (ev) {
+    subSonderfall(ev.detail && ev.detail.sub, ev.detail && ev.detail.wieder);
   });
 
   /* init() verkabelt nebenbei die Unter-Navigation ALLER Reiter. Wirft sie, blieb die

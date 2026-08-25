@@ -67,9 +67,15 @@
   /* Welcher Tab ist gerade offen? Das ist bei einer Meldung fast immer die erste
      Rückfrage, also wird sie gleich mitbeantwortet. */
   function offenerTab() {
-    var t = document.querySelector('.tab.active, .tab:not([style*="display: none"])');
-    var b = document.querySelector('nav button.active, .tabs button.active');
-    return (b && b.textContent.trim()) || (t && t.id) || null;
+    /* Die Reiterschaltung arbeitet ueber die Klasse .active, nie ueber einen
+     * Inline-Stil. Der alte Rueckfall suchte einen Reiter, der nicht per Inline-Stil
+     * ausgeblendet ist - so einen gab es nie, die Zeile fand also nie etwas und waere
+     * bei jeder Aenderung der Schaltung still falsch geworden. Eine Meldung mit
+     * falschem Bereich ist schlechter als eine ohne.
+     * Kennung UND Klartextname, weil beide auseinanderfallen (dashboard = "Heute"). */
+    var b = document.querySelector('nav.tabs button.active');
+    if (!b) return null;
+    return b.textContent.trim() + ' (' + (b.getAttribute('data-tab') || '?') + ')';
   }
 
   function statusText(m) {

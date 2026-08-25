@@ -111,6 +111,24 @@
    * Sonst muesste man sich durch alle fuenf Knoepfe tabben, um zum Inhalt zu kommen. */
   var tabs = [].slice.call(document.querySelectorAll('nav.tabs button'));
 
+  /* ---- Wo man zuletzt war ----
+   * Ohne das warf jeder Neustart auf "Heute" und die erste Pille zurueck, auch nach
+   * einem Schliessen von zwei Minuten. Gemerkt wird ausschliesslich der ORT: welcher
+   * Reiter, und je Reiter welche Pille. Bewusst NICHT gemerkt werden offene Dialoge
+   * und die Detail-Ansicht des Explorers - ein Fenster, das ohne den Klick wiederkommt,
+   * der es geoeffnet hat, verwirrt mehr, als das Wiederfinden spart. */
+  var UI = { tab: null, sub: {} };
+  var uiGeladen = false;   // vor dem Wiederherstellen nicht schreiben, sonst
+                           // ueberschreibt der Aufbau den gemerkten Stand
+  function uiMerken() {
+    if (!uiGeladen) return;
+    // Der Ort ist Beiwerk: schlaegt das Speichern fehl, darf trotzdem nie die
+    // Bedienbarkeit daran haengen.
+    try { window.api.storeSet('ui', UI); } catch (e) { /* Ort merken ist Beiwerk */ }
+  }
+  // Sofort lesen lassen, damit die Antwort da ist, sobald das DOM steht.
+  var uiStand = window.api.storeGet('ui').catch(function () { return null; });
+
   function reiterZeigen(b, fokus) {
     tabs.forEach(function (x) {
       var an = (x === b);
@@ -122,6 +140,8 @@
     var ziel = document.getElementById('tab-' + b.getAttribute('data-tab'));
     if (ziel) ziel.classList.add('active');
     if (fokus) b.focus();
+    UI.tab = b.getAttribute('data-tab');
+    uiMerken();
     document.dispatchEvent(new CustomEvent('tab-changed', { detail: b.getAttribute('data-tab') }));
   }
 
@@ -137,6 +157,77 @@
       ev.preventDefault();
       reiterZeigen(ziel, true);
     });
+  });
+
+  /* ---- Unter-Reiter (Pillen) ----
+   * Navigation gehoert der Shell. Vorher stand der Umschalter in depot.js init(), also
+   * hinter dem Laden des Depots: bis dahin sahen alle Pillen bedienbar aus und taten
+   * nichts. Hier steht er VOR jedem Laden - er schaltet ab dem ersten Bild.
+   * Was je Unterseite zusaetzlich gezeichnet werden muss, weiss nur das Fachmodul; die
+   * Shell meldet deshalb nur, WAS umgeschaltet wurde ('sub-changed') - genauso, wie sie
+   * es fuer die Reiter schon tut ('tab-changed').
+   *
+   * Allgemein statt auf #depotPills festgenagelt: Seit Stufe 4 gibt es eine zweite
+   * Pillenleiste (Werkzeuge). Der Umschalter arbeitet in dem Reiter, in dem die
+   * angeklickte Pille steht - so kostet jede weitere Leiste keinen neuen Code.
+   *
+   * Nur Pillen MIT data-sub sind Navigation. Ohne diese Einschraenkung fing der
+   * Umschalter auch die sechs Protokoll-Filter, den CSV-Knopf und die beiden
+   * Setup-Pillen ab: er blendete alle .sub-Bereiche aus, fand dann kein Ziel und
+   * schaltete nichts zurueck - der Reiter blieb leer. */
+  function pilleZeigen(b, wieder) {
+    var reiter = b.closest('.tab');
+    var meine = reiter ? reiter.querySelectorAll('.pills button[data-sub]') : [b];
+    meine.forEach(function (x) { x.classList.remove('active'); });
+    if (reiter) reiter.querySelectorAll('.sub').forEach(function (s) { s.classList.remove('active'); });
+    b.classList.add('active');
+    var sub = b.getAttribute('data-sub');
+    var subZiel = document.getElementById('sub-' + sub);
+    if (subZiel) subZiel.classList.add('active');
+    var reiterName = reiter ? reiter.id.replace(/^tab-/, '') : null;
+    if (reiterName) { UI.sub[reiterName] = sub; uiMerken(); }
+    document.dispatchEvent(new CustomEvent('sub-changed',
+      { detail: { tab: reiterName, sub: sub, wieder: !!wieder } }));
+  }
+
+  var pillen = document.querySelectorAll('.pills button[data-sub]');
+  pillen.forEach(function (b) {
+    b.addEventListener('click', function () { pilleZeigen(b); });
+  });
+
+  /* Den gemerkten Ort erst herstellen, wenn das DOM steht UND die Warteschlange einmal
+   * durchgelaufen ist: mehrere Zuhoerer von 'tab-changed' melden sich erst in ihrem
+   * EIGENEN DOMContentLoaded an (marktkarteui.js, scoreboard.js), und app-shell.js
+   * laeuft als zweites von 31 Skripten vor ihnen. Ohne den Umweg ueber setTimeout
+   * ginge die Wiederherstellung an genau den Modulen vorbei, fuer die sie gedacht ist. */
+  function uiHerstellen(st) {
+    if (st && typeof st === 'object') {
+      if (typeof st.tab === 'string') UI.tab = st.tab;
+      if (st.sub && typeof st.sub === 'object') UI.sub = st.sub;
+    }
+    // Eine beschaedigte Store-Datei darf keinen Selektor sprengen. Alle echten
+    // data-sub- und data-tab-Werte sind reine Kleinbuchstaben.
+    var gueltig = /^[a-z]+$/;
+    /* Erst die Pillen, dann der Reiter: so trifft 'tab-changed' einen Reiter, dessen
+     * Unterseite schon steht - sonst zeichnet ein Zuhoerer in ein Panel, das gleich
+     * darauf ausgeblendet wird. */
+    Object.keys(UI.sub).forEach(function (t) {
+      if (!gueltig.test(t) || !gueltig.test(String(UI.sub[t]))) return;
+      var reiter = document.getElementById('tab-' + t);
+      var p = reiter ? reiter.querySelector('.pills button[data-sub="' + UI.sub[t] + '"]') : null;
+      if (p && !p.classList.contains('active')) pilleZeigen(p, true);
+    });
+    /* Nur wechseln, wenn es wirklich ein anderer Reiter ist: ein 'tab-changed' auf den
+     * ohnehin offenen Reiter liesse Marktkarte und Scoreboard ein zweites Mal laden -
+     * beide haben dafuer eigene Anlauf-Zeitgeber. */
+    if (UI.tab && gueltig.test(UI.tab)) {
+      var rb = document.querySelector('nav.tabs button[data-tab="' + UI.tab + '"]');
+      if (rb && !rb.classList.contains('active')) reiterZeigen(rb, false);
+    }
+    uiGeladen = true;
+  }
+  document.addEventListener('DOMContentLoaded', function () {
+    setTimeout(function () { uiStand.then(uiHerstellen); }, 0);
   });
 
   /* ---- Dialoge ----

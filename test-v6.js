@@ -3096,6 +3096,7 @@ console.log('\n36) Kostenhuerde des Produkts (Signalstudie 23.08.2026)');
 (function () {
   var dep = fs.readFileSync(__dirname + '/depot.js', 'utf8');
   var html = fs.readFileSync(__dirname + '/index.html', 'utf8');
+  var shell = fs.readFileSync(__dirname + '/app-shell.js', 'utf8');
   /* Wichtigste praktische Erkenntnis der Signalstudie: Die Huerde entscheidet, nicht die
    * Signalqualitaet. Der Standard-Schein kostet 0,23 Pp je 3h-Umlauf (Spanne durch Hebel
    * plus Zeitwert). Die Zahl 0,11 stammt aus der Signalstudie vom 23.08. und ist
@@ -3244,25 +3245,31 @@ console.log('\n36) Kostenhuerde des Produkts (Signalstudie 23.08.2026)');
 
   /* Der Umschalter darf nicht mehr auf eine einzelne Pillenleiste festgenagelt sein,
    * sonst waere die zweite Leiste tot - genau die Sorte toter Schalter, die dieser
-   * Umbau abschaffen soll. */
-  ok(/querySelectorAll\('\.pills button\[data-sub\]'\)/.test(dep) && !/getElementById\('depotPills'\)/.test(dep),
+   * Umbau abschaffen soll.
+   * Seit dem 25.08.2026 steht er in app-shell.js statt in depot.js init(). Dort hing er
+   * hinter dem Laden des Depots (ein IPC-Umlauf plus rund 300 Zeilen Migration), und bis
+   * dahin sahen alle Pillen bedienbar aus und taten nichts. Die Zusicherungen sind
+   * mitgezogen; sie messen dasselbe Verhalten, nur in der anderen Datei. */
+  ok(/querySelectorAll\('\.pills button\[data-sub\]'\)/.test(shell) && !/getElementById\('depotPills'\)/.test(shell),
      'Der Unter-Reiter-Umschalter arbeitet in JEDER Pillenleiste');
+  ok(!/\.pills button/.test(dep),
+     'Der Umschalter steht in der Shell - das Fachmodul verkabelt keine Navigation mehr');
   /* ... aber NUR auf Pillen, die auch eine Unterseite benennen. Ohne [data-sub] fing er
    * am 23.08.2026 auch die sechs Protokoll-Filter, den CSV-Knopf und die beiden
    * Setup-Pillen ab: er blendete alle .sub-Bereiche aus, fand kein Ziel und schaltete
    * nichts zurueck - ein Klick auf "CSV-Export" leerte den ganzen Reiter Vermoegen.
    * Beide Fundstellen muessen eingeschraenkt sein, auch die, die .active abraeumt. */
-  ok(!/querySelectorAll\('\.pills button'\)/.test(dep),
+  ok(!/querySelectorAll\('\.pills button'\)/.test(shell),
      'Der Umschalter fasst keine Pillen ohne data-sub (sonst leert ein Befehlsknopf den Reiter)');
-  var pillZeilen = (dep.match(/querySelectorAll\('\.pills button[^']*'\)/g) || []);
+  var pillZeilen = (shell.match(/querySelectorAll\('\.pills button[^']*'\)/g) || []);
   ok(pillZeilen.length >= 2 && pillZeilen.every(function (z) { return /\[data-sub\]/.test(z); }),
-     'JEDE .pills-button-Auswahl in depot.js ist auf [data-sub] eingeschraenkt  [' + pillZeilen.length + ']');
+     'JEDE .pills-button-Auswahl in app-shell.js ist auf [data-sub] eingeschraenkt  [' + pillZeilen.length + ']');
   /* Gegenprobe am Markup: Es GIBT Knoepfe in einer .pills-Leiste ohne data-sub -
    * genau deshalb muss die Einschraenkung oben bestehen bleiben. */
   var logFilter = (html.match(/<div class="pills small" id="logFilter">[\s\S]*?<\/div>/) || [''])[0];
   ok(/id="csvBtn"/.test(logFilter) && !/data-sub/.test(logFilter),
      'die Protokoll-Leiste enthaelt Befehlsknoepfe ohne data-sub - die Einschraenkung ist noetig');
-  ok(/b\.closest\('\.tab'\)/.test(dep),
+  ok(/b\.closest\('\.tab'\)/.test(shell),
      'Er wirkt nur im Reiter der angeklickten Pille');
 
   /* Zwei Sprungmarken zeigten auf [data-tab="explorer"]. Den Knopf gibt es nicht mehr;
