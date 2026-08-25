@@ -1,5 +1,5 @@
 {
-  "stand": "2026-08-25T07:16:52.041Z",
+  "stand": "2026-08-25T10:55:46.070Z",
   "hinweis": "Spekulationen aus öffentlichen Quellen – ungemessen, keine Handelsempfehlung, keine Anlageberatung.",
   "eintraege": [
     {
@@ -36,8 +36,8 @@
       "name": "Banco BPM S.p.A.",
       "art": "uebernahme",
       "chance": "hoch",
-      "these": "Der Verwaltungsrat von Banco BPM tagt heute, am Dienstagnachmittag, außerplanmäßig über das Umtauschangebot von Monte dei Paschi (1,567 MPS-Aktien je BPM-Aktie).",
-      "begruendung": "Der Sitzungstermin ist von mehreren Häusern übereinstimmend gemeldet, die Konditionen des Angebots sind veröffentlicht – konkreter, datierter Anlass aus mehreren seriösen Quellen, deshalb hoch. MPS hat das Gebot ausdrücklich nicht mit der BPM-Führung abgestimmt. Der Ausgang hängt an der Annahmequote, an der Haltung des französischen Großaktionärs Crédit Agricole, der sich bislang nicht äußert, und an Intesas Gegenzug; S&P hat zuletzt neue Zweifel angemeldet.",
+      "these": "Der Verwaltungsrat von Banco BPM tagt an diesem Dienstagnachmittag außerplanmäßig ueber das Umtauschangebot von Monte dei Paschi (1,567 MPS-Aktien je BPM-Aktie); ein Beschluss lag zur Mittagszeit noch nicht vor.",
+      "begruendung": "Der Sitzungstermin ist von mehreren Häusern übereinstimmend gemeldet, die Konditionen des Angebots sind veröffentlicht - konkreter, datierter Anlass aus mehreren seriösen Quellen, deshalb hoch. Eine Nachsuche am Dienstagmittag brachte keine Stellungnahme des Gremiums; der Ausgang hängt an der Annahmequote, an der Haltung des französischen Großaktionärs Crédit Agricole und an Intesas Gegenzug, S&P hat zuletzt neue Zweifel angemeldet.",
       "quellen": [
         {
           "titel": "MarketScreener",
@@ -92,28 +92,24 @@
       "name": "Warner Bros. Discovery Inc.",
       "art": "ereignis",
       "chance": "hoch",
-      "these": "Kalifornien hat die für Montag angesetzten Vergleichsgespräche über die Paramount-Skydance-Übernahme von Warner Bros. Discovery abgesagt; Generalstaatsanwalt Bonta wirft Paramount vor, Inhalte des vorangegangenen Treffens durchgestochen zu haben.",
-      "begruendung": "Bonta hat die Absage selbst begründet und Paramount fehlenden guten Willen vorgeworfen; CNBC und NBC zitieren ihn direkt und unabhängig voneinander, Reuters, Variety und Deadline berichten ebenfalls. Damit hängt die Meldung nicht mehr allein an der ursprünglichen Darstellung der New York Times – konkreter, datierter Vorgang aus mehreren Quellen, deshalb hoch statt wie gestern mittel. Weitere Termine sind nicht angesetzt, der Kartellprozess der zwölf Bundesstaaten beginnt am 2. März 2027, und ab dem 1. Oktober fällt für Paramount eine Gebühr von rund 7 Mio. Dollar je Tag zugunsten der WBD-Aktionäre an.",
+      "these": "Kalifornien hat die Vergleichsgespräche ueber die Paramount-Skydance-Übernahme von Warner Bros. Discovery abgesagt; ab dem 1. Oktober fällt fuer Paramount eine Verzögerungsgebühr von 7 Mio. Dollar je Tag an.",
+      "begruendung": "Generalstaatsanwalt Bonta hat die Absage selbst bestätigt und wirft Paramount vor, Inhalte des Vortreffens durchgestochen zu haben; Paramount weist das zurück. NBC, CNBC, LA Times, Variety und USA Today berichten unabhängig und übereinstimmend, dazu die vertraglich fixierte Gebühr von 7 Mio. Dollar je Tag ab dem 1. Oktober und ein Prozesstermin im Frühjahr - konkreter, belegter Anlass mit klarem Zeitdruck, deshalb hoch. Offen bleibt, ob die Gespraeche wieder aufgenommen werden.",
       "quellen": [
-        {
-          "titel": "CNBC",
-          "url": "https://www.cnbc.com/2026/08/24/california-ag-bonta-paramount-settlement-meeting.html"
-        },
         {
           "titel": "NBC News",
           "url": "https://www.nbcnews.com/business/media/paramount-warner-bros-merger-california-attorney-general-cancels-talks-rcna594160"
         },
         {
-          "titel": "Reuters",
-          "url": "https://www.reuters.com/legal/litigation/california-cancels-talks-with-paramount-over-warner-bros-merger-nyt-reports-2026-08-24/"
+          "titel": "CNBC",
+          "url": "https://www.cnbc.com/2026/08/24/paramount-ceo-david-ellison-wbd-acquisition-final-hurdle.html"
         },
         {
-          "titel": "Deadline",
-          "url": "https://deadline.com/2026/08/bonta-cancels-paramount-settlement-meeting-1237048537/"
+          "titel": "Los Angeles Times",
+          "url": "https://www.latimes.com/entertainment-arts/business/story/2026-08-24/california-cancels-mediation-session-for-paramount-warner-bros-discovery-deal"
         },
         {
-          "titel": "Politico",
-          "url": "https://www.politico.com/news/2026/08/21/california-paramount-reps-expected-to-meet-monday-in-antitrust-settlement-talks-01046647"
+          "titel": "Variety",
+          "url": "https://variety.com/2026/film/news/paramount-leak-discussions-california-attorney-general-1236841669/"
         }
       ],
       "zeit": "2026-08-24T18:00:00Z"
@@ -124,8 +120,8 @@
       "name": "Workday Inc.",
       "art": "uebernahme",
       "chance": "mittel",
-      "these": "Der Finanzinvestor Silver Lake soll seit Monaten über eine Übernahme von Workday verhandeln, die das Unternehmen mit rund 43 Mrd. Dollar bewerten würde; am 27. August legt Workday Quartalszahlen vor.",
-      "begruendung": "Ursprung ist eine Exklusivmeldung von Reuters vom 13. August, die den Kurs um rund 18 Prozent nach oben trieb – den stärksten Tag seit 2016. Eine seriöse Quelle, von Workday wie Silver Lake unbestätigt, seither Rücksetzer und ausdrücklich skeptische Analystenstimmen zur Abschlusswahrscheinlichkeit; deshalb mittel und nicht hoch. Im Kurs stecken derzeit rund 5,1 Mrd. Dollar Übernahmeprämie, die am Zahlentermin auf die Probe gestellt wird.",
+      "these": "Der Finanzinvestor Silver Lake soll ueber eine Übernahme von Workday verhandeln; die Quartalszahlen am 27. August sind der nächste Prüfstein fuer den eingepreisten Übernahmeaufschlag.",
+      "begruendung": "Die Meldung geht auf einen Reuters-Bericht vom 13. August zurück, auf den die Aktie rund 18 Prozent zulegte; seither ist der Aufschlag im Kurs geblieben (rund 5 Mrd. Dollar gegenueber dem Stand davor), bestätigt wurde von keiner Seite etwas. Analystenhäuser rechnen mit 224 bis 227 Dollar je Aktie als möglichem Preis. Eine seriöse Erstquelle, viel Zweitverwertung, kein Filing und keine Bestaetigung, deshalb mittel.",
       "quellen": [
         {
           "titel": "Reuters via Yahoo Finance",
