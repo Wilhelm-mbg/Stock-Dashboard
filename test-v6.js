@@ -6228,16 +6228,47 @@ console.log('\n45) Release-Routine (tools/release.js)');
   ok(frei.length === 2 && frei.every(function (x) { return x.indexOf('darfAusliefern') === -1; }),
      '--pruefen und --aufraeumen bleiben ohne Riegel');
   /* Die Wache MUSS den Schluessel fuehren, sonst sperrt der Riegel genau den aus,
-   * fuer den er gebaut wurde. */
-  var wache = fs.readFileSync(require('os').homedir() + '/.claude/scheduled-tasks/release-wache/SKILL.md', 'utf8');
-  ok(/--bauen --wache/.test(wache) && /--hoch --wache/.test(wache),
-     'Die Release-Wache ruft mit --wache auf - sonst sperrt der Riegel sie selbst aus');
+   * fuer den er gebaut wurde.
+   *
+   * ABER: Ihre Beschreibung liegt NICHT im Repo, sondern im Benutzerordner der
+   * jeweiligen Maschine. Der erste Wurf las sie ohne Umschweife - und liess damit die
+   * ganze Suite abstuerzen, ueberall dort, wo es die Datei nicht gibt: in der CI, in
+   * jedem frischen Klon, auf dem Rechner jeder anderen Sitzung. Ein Absturz ist dabei
+   * schlimmer als ein rotes Haeckchen, weil er weder ❌ noch "FEHLGESCHLAGEN" schreibt -
+   * wer die Ausgabe nach diesen Worten absucht, sieht gar nichts und haelt den Lauf
+   * fuer gruen. (Genau das ist am 25.08. passiert.)
+   *
+   * Deshalb dieselbe Bauart wie beim Paketvergleich in Abschnitt 31: hart, wenn das
+   * Geprüfte da ist, und ein sichtbarer Hinweis, wenn nicht. */
+  var wachePfad = require('os').homedir() + '/.claude/scheduled-tasks/release-wache/SKILL.md';
+  if (fs.existsSync(wachePfad)) {
+    var wache = fs.readFileSync(wachePfad, 'utf8');
+    ok(/--bauen --wache/.test(wache) && /--hoch --wache/.test(wache),
+       'Die Release-Wache ruft mit --wache auf - sonst sperrt der Riegel sie selbst aus');
+  } else {
+    console.log('  ℹ  Die Beschreibung der Release-Wache liegt nicht auf dieser Maschine (' + wachePfad + ').');
+    console.log('     Sie gehoert nicht ins Repo; geprueft wird sie dort, wo die Wache laeuft.');
+  }
   /* Und die Ansage an kuenftige Sitzungen muss dasselbe sagen wie das Skript. */
   /* Eigens gelesen statt cm benutzt: das steht erst weiter unten, und eine
    * Zusicherung darf nicht an der Reihenfolge im Testlauf haengen. */
   var cmHier = fs.readFileSync(__dirname + '/CLAUDE.md', 'utf8');
   ok(/Ausliefern ist NICHT deine Aufgabe/.test(cmHier) && !/Benutze sie, statt den Ablauf/.test(cmHier),
      'CLAUDE.md weist Sitzungen NICHT mehr an, selbst auszuliefern');
+
+  /* SPERRKLINKE gegen genau diesen Fehler.
+   * Ein Test, der eine Datei ausserhalb des Repos OHNE Vorpruefung liest, laesst die
+   * Suite abstuerzen - und ein Absturz ist heimtueckischer als ein rotes Haeckchen:
+   * Er schreibt weder ❌ noch "FEHLGESCHLAGEN". Wer die Ausgabe nach diesen Worten
+   * absucht, sieht nichts und haelt den Lauf fuer bestanden. Der Rueckgabewert ist
+   * die einzige verlaessliche Auskunft, und die haben wir am 25.08. nicht angesehen. */
+  var selbst = fs.readFileSync(__filename, 'utf8');
+  var ungeschuetzt = selbst.split(String.fromCharCode(10)).filter(function (z) {
+    return /readFileSync\s*\(\s*require\('os'\)\.homedir\(\)/.test(z);
+  });
+  ok(ungeschuetzt.length === 0,
+     'Kein Test liest ungeprueft ausserhalb des Repos - das laesst die Suite abstuerzen statt rot werden  [' +
+     ungeschuetzt.length + ']');
 
   /* Die Sammelstelle - und dass ihre eigene Beschreibung nicht als Notiz zaehlt und
    * am Ende mitgeloescht wird. */
