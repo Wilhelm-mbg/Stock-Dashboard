@@ -114,6 +114,25 @@ fertig bist.*
 *Entscheidungen von Wilhelm, mit Datum. Eine Entscheidung, die nur in einem Chatverlauf
 steht, ist nach zwei Stunden verloren.*
 
+- **26.08.2026, ~01:45 — die Issue-Wache ist zurück, aber als TRIAGE.** Sie war
+  unbemerkt aus der Aufgabenliste verschwunden (mindestens zum zweiten Mal); #83 und #89
+  lagen deshalb über vier Stunden unbeachtet. Wilhelm wollte sie in der Cloud neu anlegen
+  und an „neues Issue" binden. **Das ist nicht baubar:** die Schnittstelle verlangt eine
+  Cloud-Umgebung (`ccr.environment_id`), die an das Repo gebunden ist; auf diesem Rechner
+  ist keine hinterlegt, und einrichten kann sie nur Wilhelm selbst. Er hat entschieden,
+  **das vorerst zu lassen**. Stattdessen läuft sie wieder **lokal alle 30 Minuten**.
+  **Wichtige Änderung gegenüber der alten Fassung:** sie **baut nichts und liefert nichts
+  aus**. Sie sichtet, ordnet ein, antwortet freundlich auf Deutsch und lässt Issues offen;
+  schließen darf sie nur nachweislich Erledigtes und exakte Doppel. Grund: die alte
+  Fassung durfte selbst releasen und stand damit gegen die Regel vom 25.08. („Versionen
+  gehören der Release-Wache") — bei zehn parallelen Sitzungen im selben Arbeitsbaum ist
+  das der Zusammenstoß vom 23.08. Sie schreibt auch **nicht** auf diese Tafel; die
+  gehört dem PM, der die Issues ohnehin bei jedem Lauf liest.
+- **26.08.2026, ~01:45** — Neue Aufgabe **`projekt-manager-abruf`**, „nur von Hand".
+  Damit kann Wilhelm einen Projektstand abrufen, wann er will, statt auf den nächsten
+  Termin zu warten. Sie berichtet nur und **schreibt die Tafel nicht neu** — einzige
+  Ausnahme: trifft Wilhelm dabei eine Entscheidung, trägt sie diese unter „Entschieden"
+  ein und gibt sie an die laufenden Sitzungen weiter.
 - **26.08.2026, ~01:15** — *#83 und #89 widersprachen sich: bleibt unter „Heute" etwas von
   „Meine Papiere" stehen?* → **(b) Unter „Heute" verschwindet der Abschnitt ganz.** Damit
   gilt #89 vor #83. Der PM hatte (a) empfohlen (kleine Liste bleibt); Wilhelm hat anders
@@ -169,19 +188,6 @@ steht, ist nach zwei Stunden verloren.*
 
 *Fragen, an denen Arbeit hängt.*
 
-- **Die Issue-Wache läuft nicht mehr.** Vom PM am 26.08. festgestellt: der Aufgaben-Ordner
-  `.claude/scheduled-tasks/issue-wache/` liegt noch da (Anleitung vom 24.08. abends), aber
-  die Aufgabe ist **nicht mehr registriert** — sie steht in keiner Aufgabenliste. Sie
-  sollte alle 30 Minuten laufen. Folge: neue Meldungen bleiben liegen, bis jemand von Hand
-  hinsieht (#83 und #89 lagen so über vier Stunden). Mindestens das zweite Verschwinden.
-  Wilhelm wollte sie **in der Cloud** neu anlegen und an „neues Issue" binden — das ist
-  **blockiert**, siehe unten. Entscheidung ausstehend: Cloud einrichten oder lokal mit
-  30-Minuten-Takt neu registrieren.
-- **Cloud-Routinen sind derzeit nicht anlegbar.** Der PM hat es am 26.08. versucht: die
-  Schnittstelle verlangt `ccr.environment_id` (eine Cloud-Umgebung, die an das Repo
-  gebunden ist). Auf diesem Rechner ist keine hinterlegt. Das Einrichten geht nur über
-  Wilhelms Konto — keine Sitzung kann es nachholen. **Solange das fehlt, ist jede
-  Ereignis-Bindung (GitHub-Webhook auf „Issue geöffnet") nicht baubar.**
 - **Zweites Ja zum Handel-aus-Renderer-Umbau** — fällig, sobald der Plan als Dokument vorliegt.
 
 ---
