@@ -6512,10 +6512,15 @@ console.log('\n44) Oberflaeche nach Themen sortiert (Felix, Issue #68)');
      'Issue #74: keine Deckkraft mehr auf der Nebenzeile der Kachel - sie zog den Text in den Grund');
   ok(/\.heat \.hz \.ppk \{[^}]*color: var\(--ink-2\)/.test(htmlT),
      'Issue #74: die Kachel-Nebenzeile traegt nicht die Richtungsfarbe - die sagt schon der Grund');
-  /* Bewusst NICHT danach sortiert: ausserboerslich ist duenn gehandelt, und wer
-   * danach sortiert, stellt einzelne Ausreisser wie Tagessieger heraus. */
-  ok(/Math\.abs\(Q\[b\.y\]\.pct\) - Math\.abs\(Q\[a\.y\]\.pct\)/.test(ren),
-     'Sortiert und eingefaerbt wird weiter nach der regulaeren Tagesbewegung');})();
+  /* Bewusst NICHT nach dem ausserboerslichen Kurs sortiert: der ist duenn gehandelt,
+   * und wer danach sortiert, stellt einzelne Ausreisser wie Tagessieger heraus.
+   * Gemessen wird die EIGENSCHAFT (die Sortierbasis ist der regulaere Tages-pct und
+   * greift nie auf pp.* zu), nicht die Schreibweise: die fruehere Pruefung auf
+   * Math.abs(...) wurde rot, als Punkt 10 des Struktur-Audits die Sortierung auf
+   * signiert umstellte - obwohl die Basis unveraendert die Tagesbewegung war. */
+  var heatSort = /heatList = withQ\.slice\(\)\.sort\(function \(a, b\) \{ return ([^;]+); \}\)/.exec(ren);
+  ok(!!heatSort && /Q\[[ab]\.y\]\.pct/.test(heatSort[1]) && heatSort[1].indexOf('.pp') === -1,
+     'Sortiert wird nach der regulaeren Tagesbewegung, nie nach dem ausserboerslichen Kurs');})();
 
 console.log('\n45) Release-Routine (tools/release.js)');
 (function () {
