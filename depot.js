@@ -2948,9 +2948,23 @@
    *
    *  Setzt ECHTE Orders auf dem Demo-Konto ab. Wird nur von Hand ausgeloest. */
   /** Handelt der Wert rund um die Uhr? Capital fuehrt Krypto als BTCUSD/ETHUSD,
-   *  die App schreibt intern BTC-USD. Beide Schreibweisen zaehlen. */
+   *  die App schreibt intern BTC-USD. Beide Schreibweisen zaehlen.
+   *
+   *  DIESE FUNKTION GAB ES ZWEIMAL - hier und noch einmal weiter unten neben der
+   *  KRYPTO-Liste, als /-USD$/. Zwei Funktionsdeklarationen desselben Namens im
+   *  selben Gueltigkeitsbereich sind kein Fehler zur Laufzeit: die SPAETERE gewinnt,
+   *  und zwar fuer alle Aufrufstellen, auch die weit darueber. Damit galt ueberall
+   *  die enge Fassung /-USD$/ - und die trifft BTCUSD ohne Bindestrich NICHT. Genau
+   *  das, was der Kommentar hier zusagt, war seitdem nicht mehr wahr: In
+   *  kostenRundeMessen waere ein Capital-Kuerzel als Aktie durchgegangen und haette
+   *  die Boersen-Sperre bekommen, die fuer Krypto falsch ist.
+   *
+   *  Jetzt eine Fassung, die beides kennt. Fuer die internen Kuerzel (immer mit
+   *  Bindestrich) aendert sich nichts - der erste Zweig deckt sie ab, wie die
+   *  bisher gewinnende Fassung auch. */
   function istKrypto(sym) {
-    return /^(BTC|ETH|XRP|LTC|SOL|ADA|DOGE)[-]?USD$/i.test(String(sym || ""));
+    var s = String(sym || '');
+    return /-USD$/i.test(s) || /^(BTC|ETH|XRP|LTC|SOL|ADA|DOGE|BNB)USD$/i.test(s);
   }
 
   async function kostenRundeMessen(sym) {
@@ -3161,7 +3175,8 @@
    * Intervall. Bei Aktien sind dieselben 60 "Tage" nur 60 Handelstage mit Nachtluecken.
    */
   var KRYPTO = ['BTC-USD', 'ETH-USD', 'SOL-USD', 'XRP-USD', 'BNB-USD', 'ADA-USD', 'DOGE-USD', 'LTC-USD'];
-  function istKrypto(sym) { return /-USD$/.test(String(sym)); }
+  /* istKrypto stand hier ein zweites Mal - siehe die Erklaerung an der einen
+   * verbliebenen Fassung weiter oben. */
   /** Spanne je Seite fuer den Basiswert-Pfad: Aktien-CFD 5 Bp, Krypto Taker-Gebuehr
    *  (Vorgabe 10 Bp, einstellbar). Bewusst konservativ - zu billige Kosten haben in
    *  diesem Projekt schon einmal ein Scheinergebnis erzeugt. */
