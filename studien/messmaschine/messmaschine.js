@@ -121,6 +121,25 @@ function normInv(p) {
  * Mit Eroeffnungskurs (Element 5) ist es der Eroeffnungskurs. Ohne ihn bleibt
  * nur der Schluss der Vorkerze - eine Naeherung, die bei Uebernachtluecken
  * daneben liegt. Welcher Fall vorlag, steht im Protokoll; geraten wird nicht. */
+/* EINSTIEGSKONVENTION (Zweig N, 25.08.2026). Bis hierher stieg die Maschine immer zum
+ * SCHLUSS der Signalkerze ein - zu einem Kurs, der im Augenblick der Signalbildung schon
+ * vorbei ist. Zweig E hat gemessen, was das kostet: innerhalb der Sitzung nichts
+ * (-0,00003 Pp ueber 11,8 Mio Faelle), an der Sitzungsgrenze +0,055 Pp bei sd 1,7652.
+ * Wer zu 99,9 % auf der Schlusskerze feuert - wie t1 -, misst eine Uebernachtluecke als
+ * Handelsertrag.
+ * Der Schalter gilt fuer das Signal UND BEIDE KONTROLLEN. Nur den Signalpfad umzustellen
+ * hiesse, zwei verschiedene Ausfuehrungen zu vergleichen und den Unterschied Effekt zu
+ * nennen - genau der C7-Fehler, der hier schon aus t 5,96 ein t -0,75 gemacht hat. */
+function einstiegKurs(bars, i, konvention) {
+  if (konvention === 'folgeEroeffnung') {
+    if (i + 1 >= bars.length) return null;      // kein handelbarer Kurs mehr
+    var o = eroeffnungKurs(bars, i + 1);
+    return o > 0 ? o : null;
+  }
+  var s = bars[i][1];
+  return s > 0 ? s : null;
+}
+
 function eroeffnungKurs(bars, k) {
   var b = bars[k];
   if (b && b.length > 5 && typeof b[5] === 'number' && isFinite(b[5]) && b[5] > 0) return b[5];
@@ -235,7 +254,7 @@ function sitzungsPosition(bars) {
 /* ACHTUNG bei Ausstiegsregeln: Die Kontrolle bekommt denselben Ausstieg wie das
  * Signal. Sonst vergleicht man "Signal mit Stop" gegen "Zufallskerze ohne Stop" -
  * und misst den Stop statt das Signal. */
-function baueKontrolle(universum, haltedauerKerzen, schnittTag, vorlauf, stopNiveau, params) {
+function baueKontrolle(universum, haltedauerKerzen, schnittTag, vorlauf, stopNiveau, params, konvention) {
   /* A7: Der Topf haelt jetzt die einzelnen Kerzen (Index + Wert), nicht nur Summe und
    * Anzahl. Nur so laesst sich das Lesefenster des Signals wieder herausrechnen.
    * Praefixsummen dazu, damit das je Signal O(log n) bleibt statt O(Topfgroesse). */
@@ -245,9 +264,9 @@ function baueKontrolle(universum, haltedauerKerzen, schnittTag, vorlauf, stopNiv
     var POS = sitzungsSchicht(b);          // E3: Position UND Sitzungsgrenze
     var H = K[sym] = { entdeckung: {}, bestaetigung: {} };
     for (var i = vorlauf; i < b.length - haltedauerKerzen; i++) {
-      var s0 = b[i][1]; if (!(s0 > 0)) continue;
+      var s0 = einstiegKurs(b, i, konvention); if (!(s0 > 0)) continue;
       var sH = b[i + haltedauerKerzen][1]; if (!(sH > 0)) continue;
-      var h = POS[i];                     // F3: Sitzungsposition statt UTC-Stunde
+      var h = POS[i];                     // F3/E3: Sitzungsschicht statt UTC-Stunde
       var hf = tagVon(b[i][0]) < schnittTag ? 'entdeckung' : 'bestaetigung';
       var z = H[hf][h] = H[hf][h] || { idx: [], wert: [] };
       var ende = sH;
@@ -528,12 +547,12 @@ function placeboLauf(U, K, H, schnittTag, vorlauf, leseFenster, positionen, hael
  * dessen "andere Werte" SIND das eigene Portfolio. Dort geht der Ueberschuss per
  * Konstruktion gegen null, und das ist kein Befund, sondern eine Probe auf dieses
  * Werkzeug: ginge er dort NICHT gegen null, waere die Implementierung falsch. */
-function baueQuerschnittKontrolle(universum, haltedauerKerzen, vorlauf, stopNiveau, params) {
+function baueQuerschnittKontrolle(universum, haltedauerKerzen, vorlauf, stopNiveau, params, konvention) {
   var Q = new Map();          // Zeitstempel -> { wert: [] }  spaeter { summe, n, lo, hi }
   Object.keys(universum).forEach(function (sym) {
     var b = universum[sym];
     for (var i = vorlauf; i < b.length - haltedauerKerzen; i++) {
-      var s0 = b[i][1]; if (!(s0 > 0)) continue;
+      var s0 = einstiegKurs(b, i, konvention); if (!(s0 > 0)) continue;
       var sH = b[i + haltedauerKerzen][1]; if (!(sH > 0)) continue;
       var ende = sH;
       if (typeof stopNiveau === 'function') {
@@ -683,13 +702,28 @@ function messe(strategie, archivPfad, optionen) {
     if (!QS.tage) P.warne('E4', 'Keine einzige Rangfolge zustande gekommen - Merkmal oder Mindestzahl pruefen.');
   }
 
+  /* D3: Die Konvention steht in der Strategiedatei und im Protokoll - sie ist nie frei
+   * waehlbar und wird nie danach gesetzt, welcher Lauf besser aussieht. */
+  var KONVENTION = S.einstiegsZeitpunkt || 'schlusskerze';
+  if (KONVENTION !== 'schlusskerze' && KONVENTION !== 'folgeEroeffnung') {
+    return { verweigert: true, grund: 'einstiegsZeitpunkt muss schlusskerze oder folgeEroeffnung sein, nicht "' + KONVENTION + '".' };
+  }
+  P.entscheide('C8 Einstiegskonvention', { einstiegsZeitpunkt: KONVENTION },
+    { gilt_fuer: 'Signal und beide Kontrollen' },
+    KONVENTION === 'schlusskerze'
+      ? 'Einstieg zum Schluss der Signalkerze - dem Kurs, der im Augenblick der Signalbildung schon vorbei ist. '
+        + 'Zweig E hat gemessen: innerhalb der Sitzung folgenlos (-0,00003 Pp ueber 11,8 Mio Faelle), an der '
+        + 'Sitzungsgrenze +0,055 Pp bei sd 1,7652. Wer auf der Schlusskerze feuert, misst eine Uebernachtluecke mit.'
+      : 'Einstieg zum ersten handelbaren Kurs NACH dem Signal (Eroeffnung der Folgekerze). Gilt fuer Signal und '
+        + 'beide Kontrollen - nur den Signalpfad umzustellen waere ein C7-Fehler.');
+
   var hatAusstieg = typeof S.stopNiveau === 'function';
   var kontrollen = {};
   function kontrolleFuer(vi) {
     var schluessel = hatAusstieg ? String(vi) : 'gemeinsam';
     if (!kontrollen[schluessel]) {
       kontrollen[schluessel] = baueKontrolle(U, H, schnittTag, vorlauf,
-        hatAusstieg ? S.stopNiveau : null, varianten[vi]);
+        hatAusstieg ? S.stopNiveau : null, varianten[vi], KONVENTION);
     }
     return kontrollen[schluessel];
   }
@@ -744,7 +778,7 @@ function messe(strategie, archivPfad, optionen) {
     var schluessel = hatAusstieg ? vi : 0;
     if (!QSK[schluessel]) {
       QSK[schluessel] = baueQuerschnittKontrolle(U, H, vorlauf,
-        hatAusstieg ? S.stopNiveau : null, varianten[schluessel]);
+        hatAusstieg ? S.stopNiveau : null, varianten[schluessel], KONVENTION);
     }
     return QSK[schluessel];
   }
@@ -810,7 +844,7 @@ function messe(strategie, archivPfad, optionen) {
           var _c = b[i][1], _o = eroeffnungKurs(b, i + 1);
           if (_c > 0 && _o > 0) { lueckeSumme += _o / _c - 1; lueckeN++; }
         }
-        var s0 = b[i][1], sH = b[i + H][1];
+        var s0 = einstiegKurs(b, i, KONVENTION), sH = b[i + H][1];
         if (!(s0 > 0) || !(sH > 0)) { gruende.kurs = (gruende.kurs || 0) + 1; continue; }
         /* Mit Ausstiegsregel: den Kursverlauf der Haltedauer sammeln und die Regel
          * anwenden. Ohne Regel bleibt es beim Zeit-Ausstieg - dann ist sH der Schluss
@@ -1088,6 +1122,7 @@ function messe(strategie, archivPfad, optionen) {
   return {
     verfahren: VERFAHREN,
     strategie: { key: S.key, grund: S.grund, zeitrahmen: S.zeitrahmen || '60m', haltedauerKerzen: H, richtung: S.richtung || 'beide',
+      einstiegsZeitpunkt: KONVENTION,
       universum: S.universum || 'aktien', varianten: varianten.length },
     gemessenAm: new Date(start).toISOString(), dauerMs: Date.now() - start,
     universum: { werte: syms.length, handelstage: tage.length, von: tage[0], bis: tage[tage.length - 1], schnittTag: schnittTag,
