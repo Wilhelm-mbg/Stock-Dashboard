@@ -734,13 +734,43 @@
     });
     var ortSpalte = orte.length > 1 || zeilen.some(function (z) { return !z.hatDatei; });
 
+    /* ---- Struktur-Audit Punkt 4: was die App aus einer Regel gerade MACHT ----
+     * Der Lebenszyklus einer Regel (gemessen -> handelt / zeichnet auf / Buch laeuft)
+     * war bisher nirgends verbunden: das Scoreboard wusste nicht, dass eine Kennung
+     * im Betrieb ist. Die Quelle ist der Depot-Zustand (DepotAPI.regelStatus) - eine
+     * Zustandsauskunft, KEIN Urteil; sie steht deshalb als eigene Spalte neben dem
+     * Urteil und faerbt nichts davon um. Die Spalte erscheint nur, wenn mindestens
+     * eine Kennung im Betrieb ist - das Muster der Ort-Spalte. */
+    var rs = (window.DepotAPI && window.DepotAPI.regelStatus) ? window.DepotAPI.regelStatus() : null;
+    function betriebVon(key) {
+      if (!rs) return null;
+      var t = [];
+      if (rs.modus === key) {
+        t.push(rs.intradayAn ? 'handelt (Intraday)'
+          : (rs.schatten ? 'eingestellt – Handel aus, Schattenbuch zeichnet auf' : 'eingestellt – Handel aus'));
+      }
+      if (key === 'kapitulation' && rs.kapiZusatz && rs.modus !== 'kapitulation') {
+        t.push(rs.intradayAn ? 'handelt als Zusatz-Standbein' : 'als Zusatz eingestellt – Handel aus');
+      }
+      if (key === 'momentum' && rs.momentumAn) t.push('Momentum-Buch handelt virtuell');
+      if ((key === 'drift' || key === 'ergebnis-drift') && rs.driftAn) t.push('Drift-Buch handelt virtuell');
+      (rs.messRegeln || []).forEach(function (r) {
+        if (r.modus === key) t.push('läuft als Mess-Regel „' + r.name + '“');
+      });
+      return t.length ? t.join(' · ') : null;
+    }
+    zeilen.forEach(function (z) { z.betrieb = betriebVon(z.key); });
+    var betriebSpalte = zeilen.some(function (z) { return !!z.betrieb; });
+
     var html = '<table style="width:100%; border-collapse:collapse; font-size:var(--fs-neben);">' +
       '<thead><tr style="text-align:left; color:var(--muted);">' +
       '<th scope="col" style="padding:4px 8px 4px 0;">Strategie</th>' +
       (ortSpalte ? '<th scope="col" style="padding:4px 8px;">Ort</th>' : '') +
       '<th scope="col" style="padding:4px 8px; text-align:right;">Läufe</th>' +
       '<th scope="col" style="padding:4px 8px;">Zuletzt</th>' +
-      '<th scope="col" style="padding:4px 0;">Urteil</th></tr></thead><tbody>';
+      '<th scope="col" style="padding:4px 0;">Urteil</th>' +
+      (betriebSpalte ? '<th scope="col" style="padding:4px 0 4px 8px;">Im Betrieb</th>' : '') +
+      '</tr></thead><tbody>';
     zeilen.forEach(function (z) {
       var ort = z.hatDatei ? U.esc(z.ort) : '<b>Datei fehlt</b>';
       /* Kein eigener Rueckfall mehr auf den rohen Schluessel: label() hat einen, und
@@ -754,11 +784,17 @@
         (ortSpalte ? '<td style="padding:5px 8px;">' + ort + '</td>' : '') +
         '<td style="padding:5px 8px; text-align:right;">' + (z.laeufe || '–') + '</td>' +
         '<td style="padding:5px 8px;">' + tagKurz(z.zuletzt) + '</td>' +
-        '<td style="padding:5px 0;">' + urteil + '</td></tr>';
+        '<td style="padding:5px 0;">' + urteil + '</td>' +
+        (betriebSpalte ? '<td style="padding:5px 0 5px 8px;">' +
+          (z.betrieb ? U.esc(z.betrieb) : '<span style="color:var(--muted);">–</span>') + '</td>' : '') +
+        '</tr>';
     });
     el.innerHTML = html + '</tbody></table>' +
       (ortSpalte ? '' : '<div style="color:var(--muted); font-size:var(--fs-klein); margin-top:6px;">' +
-        'Ort aller ' + zeilen.length + ' Strategien: ' + U.esc(orte[0] || '?') + '.</div>');
+        'Ort aller ' + zeilen.length + ' Strategien: ' + U.esc(orte[0] || '?') + '.</div>') +
+      (betriebSpalte ? '<div style="color:var(--muted); font-size:var(--fs-klein); margin-top:6px;">' +
+        '„Im Betrieb“ sagt, was die App aus einer Regel gerade macht (Reiter Regeln) – ' +
+        'das ist Depot-Zustand, kein Urteil.</div>' : '');
 
     /* Was FEHLT, gehoert ausdruecklich hierhin. Eine Liste, die stillschweigend die
      * Haelfte weglaesst, ist schlimmer als gar keine. */

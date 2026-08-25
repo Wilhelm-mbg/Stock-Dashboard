@@ -27,6 +27,10 @@
       was: 'Kauft im laufenden Handel den RSI(2)-Rücklauf im Seitwärtskanal. Zuschaltbar: der Kapitulations-Dip als zweites Standbein und die Regime-Zuteilung. Ausstieg über die Zeit, darunter nur ein Not-Stop – kein Gewinnziel, kein Trailing; die Position darf über Nacht laufen.',
       stand: 'gemessen – gegen Kontrolle nicht entscheidbar',
       farbe: 'warn',
+      /* Struktur-Audit Punkt 3: unter welchen Kennungen die Messmaschine diese
+       * Strategie fuehrt. Liegt ein Protokoll vor, zeigt die Karte dessen Urteil als
+       * eigene Zeile - aus derselben Quelle wie Regelkopf und Kostenhuerde. */
+      messKeys: ['rsi2seit', 'kapitulation'],
       beleg: [
         'KONTROLLMESSUNG 23.08.2026 (Messmaschine, Protokoll im Reiter Messung): Gegen die Erwartung aller Kerzen desselben Werts zur selben Stunde bleibt auf den zurückgehaltenen Tagen ein Überschuss von +0,024 Pp bei einer Mindest-Effektgröße von 0,182 Pp – nicht entscheidbar. Je Signal gerechnet sind es −0,045 Pp. Rund 62 % des früher gemessenen Rohvorteils waren schlichtes Halten. Mit keinem Produkt netto positiv. Die Zahlen darunter sind die Messungen VOR dieser Kontrolle; sie bleiben als Verlauf stehen.',
         'UNBEDINGT trägt kein Einzelsignal: Trefferquoten 46–56 %, bester Vorsprung +0,09 Pp. BEDINGT sieht es anders aus — die Bedingungsstudie vom 21.08.2026 (162 Werte, Stundenkerzen, jedes Signal gekreuzt mit Kanalzustand, EMA100, Volumen) fand: RSI(2)-Dip NUR im Seitwärtskanal mit Volumen = +0,147 Pp auf 8 h, t = 4,1 über die Symbole, beide Zeithälften positiv, 99 von 162 Werten im Plus.',
@@ -63,6 +67,7 @@
       was: 'Vergleicht alle Werte miteinander und hält das stärkste Zehntel. Keine Chartmuster, nur eine Rangfolge, die alle 63 Handelstage neu gebildet wird.',
       stand: 'gemessen – hält die volle Historie, nicht die zurückgehaltenen Jahre',
       farbe: 'warn',
+      messKeys: ['momentum'],
       beleg: [
         'KONTROLLMESSUNG 23.08.2026: Der eingebaute Marktvergleich ist bereits die richtige Kontrolle (Erwartung einer Zufallsauswahl gleicher Größe, per 500-fach-Simulation bestätigt). Über die volle Historie +2,42 Pp je Umschichtung (t = 3,84) – aber ab 2005 allein +1,51 Pp bei Mindest-Effektgröße 1,86 (t = 1,62): nicht entscheidbar. Rund die Hälfte des Vorsprungs hängt an 30 von 189 Werten, deren Namen man erst 2026 kennt (Überlebensverzerrung). 64,8 % des Ertrags je Schritt sind schlichtes Halten.',
         'Parameter auf 1970–2004 gewählt, auf 2005–2026 ohne Anpassung geprüft: +20,3 % p. a. gegen +14,9 % des Marktdurchschnitts, Vorsprung +5,4 Pp.',
@@ -79,6 +84,7 @@
       was: 'Kauft nach einer Quartalsmeldung das oberste Fünftel der Überraschungen und verkauft das unterste – gleich viele, aus demselben Topf. Kein Chartsignal: Die Information kommt aus den Zahlen, nicht aus dem Kursverlauf.',
       stand: 'gemessen – Zeitzonen-Fehler gefunden, Neumessung offen',
       farbe: 'warn',
+      messKeys: ['drift', 'ergebnis-drift'],
       beleg: [
         'KONTROLLMESSUNG 23.08.2026: drift.js behandelte 59,8 % aller Termine (Datum ohne Uhrzeit) als „vor Börsenschluss gemeldet" und verbuchte dadurch einen Meldesprung von 1,97 % am ersten Tag als Strategieertrag. Korrigiert fällt der Rohlauf von 14,07 auf 8,44 % p. a. Gegen eine zukunftsfreie Kontrolle bleiben über die volle Historie 12 Pp p. a. (t = 5,5); im zurückgehaltenen Zeitraum 5–7 Pp bei Mindest-Effektgröße 5,6–6,7 (t = 1,7–2,0): nicht entscheidbar. Die Zahlen darunter sind VOR der Zeitzonen-Korrektur.',
         '20.356 Ergebnistermine aus 197 Werten, 1993–2026. Marktneutral, Rang nur gegen bereits veröffentlichte Zahlen: ab 2015 +10,44 % p. a. bei t = 3,04, 67 % positive Monate, positiv in allen sieben Teilzeiträumen.',
@@ -228,6 +234,32 @@
     window.Info.eintragen(eintraege);
   }
 
+  /** Struktur-Audit Punkt 3: das Messurteil aus dem Protokoll als eigene Zeile -
+   *  dieselbe Quelle wie Regelkopf und Kostenhuerde (DepotAPI.protokollKante), damit
+   *  der kuratierte Stand-Chip und die Messmaschine nie stumm auseinanderlaufen.
+   *  Ohne Protokoll sagt die Zeile genau das - der Chip oben steht fest im Code. */
+  function protokollZeile(s) {
+    if (!s.messKeys || !s.messKeys.length) return '';
+    var api = window.DepotAPI;
+    if (!api || !api.protokollKante) return '';
+    var treffer = s.messKeys.map(function (k) {
+      var pk = api.protokollKante(k);
+      return pk ? { key: k, pk: pk } : null;
+    }).filter(Boolean);
+    if (!treffer.length) {
+      return '<div style="font-size:var(--fs-neben); color:var(--muted); margin-top:3px;">' +
+        'Kein Messprotokoll im Datenordner – der Stand oben steht fest im Code und kann veralten.</div>';
+    }
+    return '<div style="font-size:var(--fs-neben); color:var(--ink-2); margin-top:3px;">' +
+      treffer.map(function (t) {
+        var pk = t.pk;
+        return 'Messprotokoll <code>' + U.esc(t.key) + '</code> vom ' + U.esc(pk.datum) + ': <b>' + U.esc(pk.urteil) +
+          '</b>, Überschuss je Signal ' + (pk.jeSignalPp >= 0 ? '+' : '') + U.dez(pk.jeSignalPp, 3) + ' Pp' +
+          (pk.varianten > 1 ? ' (beste von ' + pk.varianten + ' Varianten)' : '');
+      }).join(' · ') +
+      ' <span style="color:var(--muted);">– die App liest dieses Urteil, sie rechnet es nicht.</span></div>';
+  }
+
   function render() {
     var el = document.getElementById('stratListe');
     if (!el) return;
@@ -257,6 +289,7 @@
           ' · Instrument: ' + U.esc(s.instrument) +
           ' · <span style="opacity:.85;">' + s.beleg.length + ' ' + (s.beleg.length === 1 ? 'Beleg' : 'Belege') +
           ' hinter dem i</span></div>' +
+        protokollZeile(s) +
       '</div>';
     }).join('') +
     (noten.length
@@ -276,6 +309,8 @@
   }
 
   document.addEventListener('tab-changed', function (e) { if (e.detail === 'strategien') render(); });
+  /* Die Kanten kommen asynchron aus dem Datenordner - sind sie da, zieht die Liste nach. */
+  document.addEventListener('kanten-geladen', function () { render(); });
   document.addEventListener('DOMContentLoaded', function () { setTimeout(render, 1200);
     var bE = document.getElementById('stratEmpfohlenBtn');
     if (bE) bE.addEventListener('click', empfohleneEinstellungen);
