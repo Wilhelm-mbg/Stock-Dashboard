@@ -1,7 +1,41 @@
 {
-  "stand": "2026-08-24T14:48:56.245Z",
+  "stand": "2026-08-25T07:20:05.285Z",
   "hinweis": "Meldepflichtige Eigengeschäfte von Insidern (SEC Form 4, nur offene Marktkäufe). Ungemessen, keine Handelsempfehlung, keine Anlageberatung.",
   "eintraege": [
+    {
+      "id": "20260824-BABA-insider",
+      "sym": "BABA",
+      "name": "Alibaba Group Holding",
+      "anzahl": 2,
+      "wert": 15272800,
+      "stueck": 1070000,
+      "kurs": 14.27,
+      "rang": 3,
+      "imUniversum": false,
+      "wer": [
+        {
+          "person": "Tsai Joseph C",
+          "rolle": "Aufsichtsrat",
+          "wert": 10288800
+        },
+        {
+          "person": "Wu Yongming",
+          "rolle": "Chief Executive Officer",
+          "wert": 4984000
+        }
+      ],
+      "quellen": [
+        {
+          "titel": "SEC Form 4 (1)",
+          "url": "https://www.sec.gov/Archives/edgar/data/1577552/000119312526361902/0001193125-26-361902-index.htm"
+        },
+        {
+          "titel": "SEC Form 4 (2)",
+          "url": "https://www.sec.gov/Archives/edgar/data/1577552/000119312526361711/0001193125-26-361711-index.htm"
+        }
+      ],
+      "zeit": "2026-08-24T20:00:00.000Z"
+    },
     {
       "id": "20260818-ET-insider",
       "sym": "ET",
@@ -26,6 +60,31 @@
         }
       ],
       "zeit": "2026-08-18T20:00:00.000Z"
+    },
+    {
+      "id": "20260821-AMR-insider",
+      "sym": "AMR",
+      "name": "Alpha Metallurgical Resources",
+      "anzahl": 1,
+      "wert": 3157631,
+      "stueck": 15000,
+      "kurs": 210.51,
+      "rang": 1,
+      "imUniversum": false,
+      "wer": [
+        {
+          "person": "Courtis Kenneth S.",
+          "rolle": "Aufsichtsrat",
+          "wert": 3157631
+        }
+      ],
+      "quellen": [
+        {
+          "titel": "SEC Form 4",
+          "url": "https://www.sec.gov/Archives/edgar/data/1704715/000181274626000009/0001812746-26-000009-index.htm"
+        }
+      ],
+      "zeit": "2026-08-21T20:00:00.000Z"
     },
     {
       "id": "20260820-AMR-insider",
@@ -78,6 +137,31 @@
       "zeit": "2026-08-18T20:00:00.000Z"
     },
     {
+      "id": "20260824-KURA-insider",
+      "sym": "KURA",
+      "name": "Kura Oncology",
+      "anzahl": 1,
+      "wert": 1239000,
+      "stueck": 100000,
+      "kurs": 12.39,
+      "rang": 3,
+      "imUniversum": false,
+      "wer": [
+        {
+          "person": "Wilson Troy Edward",
+          "rolle": "President and CEO",
+          "wert": 1239000
+        }
+      ],
+      "quellen": [
+        {
+          "titel": "SEC Form 4",
+          "url": "https://www.sec.gov/Archives/edgar/data/1422143/000119312526363812/0001193125-26-363812-index.htm"
+        }
+      ],
+      "zeit": "2026-08-24T20:00:00.000Z"
+    },
+    {
       "id": "20260820-ALK-insider",
       "sym": "ALK",
       "name": "ALASKA AIR GROUP",
@@ -126,6 +210,81 @@
         }
       ],
       "zeit": "2026-08-20T20:00:00.000Z"
+    },
+    {
+      "id": "20260824-ABCL-insider",
+      "sym": "ABCL",
+      "name": "AbCellera Biologics",
+      "anzahl": 1,
+      "wert": 570442,
+      "stueck": 53613,
+      "kurs": 10.64,
+      "rang": 1,
+      "imUniversum": false,
+      "wer": [
+        {
+          "person": "Hayden Michael R",
+          "rolle": "Aufsichtsrat",
+          "wert": 570442
+        }
+      ],
+      "quellen": [
+        {
+          "titel": "SEC Form 4",
+          "url": "https://www.sec.gov/Archives/edgar/data/1703057/000162828026058684/0001628280-26-058684-index.htm"
+        }
+      ],
+      "zeit": "2026-08-24T20:00:00.000Z"
+    },
+    {
+      "id": "20260824-TTMI-insider",
+      "sym": "TTMI",
+      "name": "TTM TECHNOLOGIES",
+      "anzahl": 1,
+      "wert": 524500,
+      "stueck": 5000,
+      "kurs": 104.9,
+      "rang": 1,
+      "imUniversum": false,
+      "wer": [
+        {
+          "person": "Geveden Rex D",
+          "rolle": "Aufsichtsrat",
+          "wert": 524500
+        }
+      ],
+      "quellen": [
+        {
+          "titel": "SEC Form 4",
+          "url": "https://www.sec.gov/Archives/edgar/data/1116942/000119312526363525/0001193125-26-363525-index.htm"
+        }
+      ],
+      "zeit": "2026-08-24T20:00:00.000Z"
+    },
+    {
+      "id": "20260821-HRI-insider",
+      "sym": "HRI",
+      "name": "HERC HOLDINGS",
+      "anzahl": 1,
+      "wert": 502855,
+      "stueck": 3085,
+      "kurs": 163,
+      "rang": 1,
+      "imUniversum": false,
+      "wer": [
+        {
+          "person": "Olsson Erik",
+          "rolle": "Aufsichtsrat",
+          "wert": 502855
+        }
+      ],
+      "quellen": [
+        {
+          "titel": "SEC Form 4",
+          "url": "https://www.sec.gov/Archives/edgar/data/1364479/000136447926000121/0001364479-26-000121-index.htm"
+        }
+      ],
+      "zeit": "2026-08-21T20:00:00.000Z"
     },
     {
       "id": "20260819-BWA-insider",
@@ -253,6 +412,31 @@
       "zeit": "2026-08-18T20:00:00.000Z"
     },
     {
+      "id": "20260824-VST-insider",
+      "sym": "VST",
+      "name": "Vistra",
+      "anzahl": 1,
+      "wert": 270000,
+      "stueck": 2000,
+      "kurs": 135,
+      "rang": 3,
+      "imUniversum": false,
+      "wer": [
+        {
+          "person": "Burke James A",
+          "rolle": "President and CEO",
+          "wert": 270000
+        }
+      ],
+      "quellen": [
+        {
+          "titel": "SEC Form 4",
+          "url": "https://www.sec.gov/Archives/edgar/data/1692819/000126840626000007/0001268406-26-000007-index.htm"
+        }
+      ],
+      "zeit": "2026-08-24T20:00:00.000Z"
+    },
+    {
       "id": "20260818-PSUS-insider",
       "sym": "PSUS",
       "name": "Pershing Square USA",
@@ -303,6 +487,31 @@
       "zeit": "2026-08-17T20:00:00.000Z"
     },
     {
+      "id": "20260820-BNL-insider",
+      "sym": "BNL",
+      "name": "Broadstone Net Lease",
+      "anzahl": 1,
+      "wert": 211600,
+      "stueck": 10000,
+      "kurs": 21.16,
+      "rang": 1,
+      "imUniversum": false,
+      "wer": [
+        {
+          "person": "Imperiale Richard P",
+          "rolle": "Aufsichtsrat",
+          "wert": 211600
+        }
+      ],
+      "quellen": [
+        {
+          "titel": "SEC Form 4",
+          "url": "https://www.sec.gov/Archives/edgar/data/1424182/000131161826000005/0001311618-26-000005-index.htm"
+        }
+      ],
+      "zeit": "2026-08-20T20:00:00.000Z"
+    },
+    {
       "id": "20260818-TSM-insider",
       "sym": "TSM",
       "name": "TAIWAN SEMICONDUCTOR MANUFACTURING CO",
@@ -326,6 +535,56 @@
         }
       ],
       "zeit": "2026-08-18T20:00:00.000Z"
+    },
+    {
+      "id": "20260821-PODD-insider",
+      "sym": "PODD",
+      "name": "INSULET",
+      "anzahl": 1,
+      "wert": 162217,
+      "stueck": 1100,
+      "kurs": 147.47,
+      "rang": 3,
+      "imUniversum": false,
+      "wer": [
+        {
+          "person": "McEvoy Ashley",
+          "rolle": "President and CEO",
+          "wert": 162217
+        }
+      ],
+      "quellen": [
+        {
+          "titel": "SEC Form 4",
+          "url": "https://www.sec.gov/Archives/edgar/data/1145197/000114519726000172/0001145197-26-000172-index.htm"
+        }
+      ],
+      "zeit": "2026-08-21T20:00:00.000Z"
+    },
+    {
+      "id": "20260817-BFC-insider",
+      "sym": "BFC",
+      "name": "Bank First",
+      "anzahl": 1,
+      "wert": 160737,
+      "stueck": 1024,
+      "kurs": 156.97,
+      "rang": 1,
+      "imUniversum": false,
+      "wer": [
+        {
+          "person": "Pearson Tracy C",
+          "rolle": "Aufsichtsrat",
+          "wert": 160737
+        }
+      ],
+      "quellen": [
+        {
+          "titel": "SEC Form 4",
+          "url": "https://www.sec.gov/Archives/edgar/data/1746109/000110465926100257/0001104659-26-100257-index.htm"
+        }
+      ],
+      "zeit": "2026-08-17T20:00:00.000Z"
     },
     {
       "id": "20260818-SGRY-insider",
@@ -373,56 +632,6 @@
         {
           "titel": "SEC Form 4",
           "url": "https://www.sec.gov/Archives/edgar/data/1839341/000090514826003841/0000905148-26-003841-index.htm"
-        }
-      ],
-      "zeit": "2026-08-18T20:00:00.000Z"
-    },
-    {
-      "id": "20260819-FCNCA-insider",
-      "sym": "FCNCA",
-      "name": "FIRST CITIZENS BANCSHARES INC /DE/",
-      "anzahl": 1,
-      "wert": 108405,
-      "stueck": 50,
-      "kurs": 2168.11,
-      "rang": 1,
-      "imUniversum": false,
-      "wer": [
-        {
-          "person": "Morais Diane E.",
-          "rolle": "Aufsichtsrat",
-          "wert": 108405
-        }
-      ],
-      "quellen": [
-        {
-          "titel": "SEC Form 4",
-          "url": "https://www.sec.gov/Archives/edgar/data/798941/000119312526358811/0001193125-26-358811-index.htm"
-        }
-      ],
-      "zeit": "2026-08-19T20:00:00.000Z"
-    },
-    {
-      "id": "20260818-FFIN-insider",
-      "sym": "FFIN",
-      "name": "FIRST FINANCIAL BANKSHARES",
-      "anzahl": 1,
-      "wert": 103980,
-      "stueck": 3000,
-      "kurs": 34.66,
-      "rang": 1,
-      "imUniversum": false,
-      "wer": [
-        {
-          "person": "Denny Michael B.",
-          "rolle": "Aufsichtsrat",
-          "wert": 103980
-        }
-      ],
-      "quellen": [
-        {
-          "titel": "SEC Form 4",
-          "url": "https://www.sec.gov/Archives/edgar/data/36029/000119312526358683/0001193125-26-358683-index.htm"
         }
       ],
       "zeit": "2026-08-18T20:00:00.000Z"
