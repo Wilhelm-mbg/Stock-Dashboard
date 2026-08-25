@@ -1480,19 +1480,22 @@ console.log('\n18) Datenbasis, Suchachsen und Zucht');
   ok(A.kappeTage(reihe, 90, jetzt).length === 91, 'das alte 90-Tage-Fenster haette 309 von 400 Tagen verworfen', A.kappeTage(reihe, 90, jetzt).length + ' statt 400');
 
   // --- 2) Suchachsen: dort suchen, wo Wirkung ist ---
-  ok(/var SL = \[10, 15, 20, 30, 'auto'\], HOLD = \[60, 120, 240, 390\]/.test(d), 'Not-Stop und Haltedauer werden durchprobiert');
-  ok(/var PER = \[14, 30\]/.test(d), 'period auf zwei Stufen reduziert (gemessene Wirkung 0,18 Pp)');
-  ok(!/scalpSL: 30, scalpHold: 240 \}\);/.test(d), 'die feste Belegung scalpSL 30 / scalpHold 240 ist weg');
+  // Seit Stufe E wohnen Suchachsen und Zucht in zucht.js; die Whitelist des
+  // KI-Vorschlags-Slots bleibt im Handelsmodul - jede Marke schneidet an ihrer Stelle.
+  var zu2 = fs.readFileSync(__dirname + '/zucht.js', 'utf8');
+  ok(/var SL = \[10, 15, 20, 30, 'auto'\], HOLD = \[60, 120, 240, 390\]/.test(zu2), 'Not-Stop und Haltedauer werden durchprobiert');
+  ok(/var PER = \[14, 30\]/.test(zu2), 'period auf zwei Stufen reduziert (gemessene Wirkung 0,18 Pp)');
+  ok(!/scalpSL: 30, scalpHold: 240 \}\);/.test(d) && !/scalpSL: 30, scalpHold: 240 \}\);/.test(zu2), 'die feste Belegung scalpSL 30 / scalpHold 240 ist weg');
   ok(/scalpSL: \[10, 15, 20, 30, 45, 'auto'\]/.test(d), 'Whitelist erlaubt die neuen Not-Stop-Werte');
   ok(/scalpHold: \[15, 30, 60, 120, 240, 390\]/.test(d), 'Whitelist erlaubt die neuen Haltedauern');
 
   // --- 3) Zucht: Population, Mutation, Gedaechtnis ---
-  ok(/function zuchtMutiere/.test(d) && /function zuchtZufall/.test(d), 'Zucht: Mutation und frisches Blut vorhanden');
-  ok(/zStand\.gen = zStand\.gen \+ 1/.test(d), 'Zucht: Generation zaehlt hoch');
-  ok(/gesehenNeu\[sl3\] \|\| gesehenSet\[sl3\]/.test(d), 'Zucht: bereits Geprueftes wird nicht wiederholt');
-  ok(/fund\.testRet > 0 && fund\.testN >= 15/.test(d), 'Zucht: nur out-of-sample Bewaehrte pflanzen sich fort');
-  ok(/\['scalpSL', 7\], \['scalpHold', 5\]/.test(d), 'Zucht: Mutationsgewichte folgen der gemessenen Wirkung');
-  ok(/\(proBasis\[bkey\] \|\| 0\) >= 4/.test(d), 'Zucht: keine Linie darf die Population uebernehmen');
+  ok(/function zuchtMutiere/.test(zu2) && /function zuchtZufall/.test(zu2), 'Zucht: Mutation und frisches Blut vorhanden');
+  ok(/zStand\.gen = zStand\.gen \+ 1/.test(zu2), 'Zucht: Generation zaehlt hoch');
+  ok(/gesehenNeu\[sl3\] \|\| gesehenSet\[sl3\]/.test(zu2), 'Zucht: bereits Geprueftes wird nicht wiederholt');
+  ok(/fund\.testRet > 0 && fund\.testN >= 15/.test(zu2), 'Zucht: nur out-of-sample Bewaehrte pflanzen sich fort');
+  ok(/\['scalpSL', 7\], \['scalpHold', 5\]/.test(zu2), 'Zucht: Mutationsgewichte folgen der gemessenen Wirkung');
+  ok(/\(proBasis\[bkey\] \|\| 0\) >= 4/.test(zu2), 'Zucht: keine Linie darf die Population uebernehmen');
 
   // Auslese-Regel nachrechnen (dieselbe Formel wie im Produktcode)
   function auslese(liste, max, proMax) {
@@ -1513,7 +1516,12 @@ console.log('\n18) Datenbasis, Suchachsen und Zucht');
   ok(aus[0].testRet === 10, 'Auslese: der Beste bleibt vorn');
 
   // --- 4) Zeitbudget: jede Gruppe kommt dran ---
-  function drin(t) { return d.indexOf(t) !== -1; }
+  /* Seit Stufe E ist der Komplex zweigeteilt: die Suche wohnt in zucht.js, der
+   * Waechter und die beiden Boersen-Fragen bleiben im Handelsmodul. Die Marken
+   * dieses Abschnitts sind hochspezifische Codefragmente - geprueft wird, dass jede
+   * Eigenschaft in EINER der beiden Haelften weiterlebt. */
+  var zut = fs.readFileSync(__dirname + '/zucht.js', 'utf8');
+  function drin(t) { return d.indexOf(t) !== -1 || zut.indexOf(t) !== -1; }
   ok(drin('unbegrenzt ? Infinity : 22 * 60000'), 'Nachtlauf hat ein Budget mit Puffer unter dem 25-Minuten-Deckel');
   ok(drin('Math.max(30000, (GESAMT_MS - (Date.now() - t0)) / restGruppen)'), 'Zeitbudget wird auf die verbleibenden Gruppen verteilt');
   ok(drin('uebersprungen (kommen in einer der naechsten Naechte dran)'), 'Uebersprungene Kombinationen werden GEMELDET, nicht still verschluckt');
@@ -7058,7 +7066,7 @@ console.log('\n46) Was die App dauerhaft aufzeichnet');
      'Eine haengende Scan-Sperre loest sich nach zehn Minuten - sonst schwiegen auch die Stops');
   ok(/intradayScanSeit = Date\.now\(\);/.test(dep),
      'Die Scan-Sperre bekommt beim Setzen ihren Zeitstempel');
-  ok(/pilotLogAdd\('Tiefensuche uebersprungen/.test(dep),
+  ok(/pilotLogAdd\('Tiefensuche uebersprungen/.test(fs.readFileSync(__dirname + '/zucht.js', 'utf8')),
      'Die Tiefensuche hinterlaesst eine Zeile, wenn sie ohne Kursarchiv umkehrt');
   ok(/HEALTH\.edgeFail = \(HEALTH\.edgeFail \|\| 0\) \+ 1/.test(dep) &&
      /HEALTH\.edgeFail === 2[\s\S]{0,160}melde\(/.test(dep),
