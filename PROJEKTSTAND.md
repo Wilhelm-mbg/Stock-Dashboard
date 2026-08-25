@@ -90,6 +90,9 @@ fertig bist.*
 
 - **App-Codebase Master** — hat am 25.08. spät die offene Issue-Liste zur Abarbeitung
   übernommen (Reihenfolge siehe Aufträge); Details trägt er selbst nach.
+- **#84 („belegt“-Prosa)** — genommen 26.08. Belegt: `index.html`, `depot.js`,
+  `depotmigration.js`, `strategien.js`, `test-v6.js`. Befund unabhaengig nachgeprueft:
+  kein Protokoll sagt „bestaetigt“, der Fund steht.
 
 ---
 
