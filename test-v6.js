@@ -6186,6 +6186,79 @@ console.log('\n45) Release-Routine (tools/release.js)');
      'Ein leeres Junction-Ziel wird als solches gemeldet, mit dem Weg zurueck (npm ci)');
 })();
 
+/* ================= 54. Stammdaten: Branche und Groesse =================
+ * Fuer eine Marktuebersicht braucht man je Wert drei Dinge: Tagesveraenderung (hat die
+ * App live), Groesse (hatte sie nur fuer sechzehn handgepflegte Werte) und Branche
+ * (hatte sie gar nicht). tools/stammdaten-holen.js holt die beiden fehlenden bei der
+ * SEC.
+ *
+ * Geprueft wird hier die SETZUNG - die Faltung SIC -> Sektor. Der SIC-Code selbst ist
+ * eine Tatsache der Behoerde; welcher Sektor daraus wird, ist eine Entscheidung, und
+ * genau solche Entscheidungen verrutschen still. Die Beispiele im Kopf der Datei sind
+ * hier ausgefuehrt statt nachgelesen: Steht Apple eines Tages nicht mehr unter
+ * Technologie, wird dieser Abschnitt rot. */
+(function () {
+  console.log('\n54) Stammdaten: die Faltung SIC → Sektor');
+  var q = fs.readFileSync(__dirname + '/tools/stammdaten-holen.js', 'utf8');
+
+  var mTab = /var SEKTOR_NACH_SIC2 = \{[\s\S]*?\n\};/.exec(q);
+  var mFn = /var SIC2_SEKTOR = \{\};[\s\S]*?function sektorVon\(sic\) \{[\s\S]*?\n\}/.exec(q);
+  var mFein = /var SIC3_SEKTOR = \{[\s\S]*?\n\};/.exec(q);
+  ok(!!mTab && !!mFn, 'Die Faltung steht als Tabelle und Funktion da');
+  if (!mTab || !mFn) return;
+  var sektorVon = new Function(mTab[0] + '\n' + (mFein ? mFein[0] : '') + '\n' + mFn[0] + '\nreturn sektorVon;')();
+
+  /* Die fuenf Beispiele, die im Kopf der Datei als Begruendung stehen. Wer die Tabelle
+   * aendert, ohne den Kopf anzupassen, faellt hier auf. */
+  var faelle = [
+    [3571, 'Technologie', 'Apple, Electronic Computers'],
+    [3674, 'Technologie', 'Nvidia und Intel, Semiconductors'],
+    [7372, 'Technologie', 'Microsoft, Prepackaged Software'],
+    [2834, 'Gesundheit', 'Pfizer, Pharmaceutical Preparations'],
+    [3841, 'Gesundheit', 'Medizingeraete - liegt im Zweisteller 38 neben Messtechnik'],
+    [2821, 'Rohstoffe', 'Kunststoffe - derselbe Zweisteller 28 wie Pharma und Seife'],
+    [3711, 'Industrie', 'Ford, Motor Vehicles'],
+    [6021, 'Finanzen', 'JPMorgan, National Commercial Banks'],
+    [6798, 'Finanzen', 'Prologis, REIT'],
+    [1311, 'Energie', 'ExxonMobil, Crude Petroleum'],
+    [4931, 'Versorger', 'NextEra, Electric & Other Services'],
+    [4813, 'Telekommunikation', 'AT&T, Telephone Communications'],
+    [5331, 'Zyklischer Konsum', 'Walmart, Variety Stores'],
+    [2844, 'Basiskonsum', 'Procter & Gamble, Toilet Preparations']
+  ];
+  var daneben = faelle.filter(function (f) { return sektorVon(f[0]) !== f[1]; });
+  ok(daneben.length === 0,
+     'Zwoelf echte SIC-Codes landen im erwarteten Sektor  [' +
+     daneben.map(function (f) { return f[2] + ' → ' + sektorVon(f[0]) + ' statt ' + f[1]; }).join('; ') + ']');
+  ok(sektorVon(9999) === 'Sonstige' && sektorVon(0) === 'Sonstige',
+     'Ein unbekannter Code faellt auf „Sonstige“, nicht auf undefined');
+
+  /* ---------- Die Riegel gegen falsche Groessen ----------
+   * Beide stammen aus einer Gegenprobe gegen die handgepflegten Zahlen in renderer.js:
+   * dreizehn von fuenfzehn stimmten auf ±1,4 %, zwei nicht - und beide Abweichungen
+   * waren echte Befunde, keine Rundung. */
+  ok(/MAX_ALTER_TAGE = 550/.test(q) && /aktienVeraltet/.test(q),
+     'Altersgrenze: Fords juengste Meldung war von 2011 - eine plausible, fuenfzehn Jahre alte Zahl');
+  ok(/f === '20-F' \|\| f === '40-F'/.test(q) && /auslaender = true/.test(q),
+     'ADR-Riegel: auslaendische Emittenten werden markiert - ihre Stueckzahl sind Stammaktien, gehandelt wird ein Buendel');
+  ok(/x\.end === letzt/.test(q) && /reduce\(function \(a, x\) \{ return a \+ x\.val; \}, 0\)/.test(q),
+     'Mehrere Aktiengattungen zum selben Stichtag werden addiert, nicht eine davon genommen');
+
+  /* Die Marktkapitalisierung darf NICHT im Werkzeug entstehen - sonst waere sie der
+   * Kurs von gestern. Sie ist Kurs mal Stueckzahl und gehoert in die Aktualisierung. */
+  /* Die erste Fassung dieser Zusicherung suchte das WORT - und traf damit den
+   * Kommentar, der erklaert, dass hier nichts gerechnet wird. Eine Pruefung, die an
+   * Prosa haengt, prueft nichts. Gesucht wird jetzt ein Feld im Ergebnis. */
+  ok(!/(marktkap|marketCap|mktCap)\s*[:=]/i.test(q),
+     'Das Werkzeug legt keine Marktkapitalisierung ab - sie entsteht live aus Kurs mal Stueckzahl');
+  ok(/e3\.aktien = best\.val/.test(q) && /e\.aktien = aktien\[e\.cik\]/.test(q),
+     'Abgelegt wird die Stueckzahl - die ist morgen noch richtig, ein Kurs waere es nicht');
+  ok(/tools\//.test('tools/stammdaten-holen.js') && !/require\(.*stammdaten-holen/.test(
+     fs.readdirSync(__dirname).filter(function (f) { return /\.js$/.test(f) && !/^test-/.test(f); })
+       .map(function (f) { return fs.readFileSync(__dirname + '/' + f, 'utf8'); }).join('\n')),
+     'Kein App-Code bindet das Werkzeug ein - die App fragt nie selbst bei der SEC an');
+})();
+
 Promise.all(offeneProben).then(function () {
   console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
   process.exit(fails ? 1 : 0);
