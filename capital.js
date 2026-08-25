@@ -267,7 +267,8 @@
     },
 
     /** Kerzen für einen ZEITBEREICH – fürs Archiv-Backfill: Capital reicht deutlich
-     *  weiter zurück als Yahoos Intraday-Fenster. Rückgabe: [[t, mid, vol, high, low]]
+     *  weiter zurück als Yahoos Intraday-Fenster. Rückgabe: [[t, mid, vol, high, low, spanne]]
+     *  – zur Bedeutung und zur Kurzlebigkeit von [5] siehe den Kommentar unten.
      *  (aufsteigend) oder null bei Fehler; [] wenn der Bereich leer ist. */
     pricesRange: async function (sym, interval, fromMs, toMs, max) {
       var RES = { '1m': 'MINUTE', '5m': 'MINUTE_5', '15m': 'MINUTE_15', '60m': 'HOUR' };
@@ -299,8 +300,30 @@
           function mid(p) { return p && p.bid != null ? (p.ask != null ? (p.bid + p.ask) / 2 : p.bid) : null; }
           var m = mid(c);
           var hi = mid(ps[i].highPrice), lo = mid(ps[i].lowPrice);
+          /* Element [5]: die Geld-Brief-Spanne dieser Kerze, bezogen auf die Mitte.
+           *
+           * Bis zum 25.08.2026 wurde sie hier weggerechnet: bid und ask kamen an,
+           * gespeichert wurde nur ihr Mittelwert. Damit war die einzige Zahl verloren,
+           * die die Kostenannahme von 0,10 % ueber Zeit UND Universum belegen kann -
+           * sie musste live und langsam neu gesammelt werden, obwohl der Backfill sie
+           * bei jedem Abruf ohnehin mitbrachte. Sie kostet keine einzige Anfrage extra.
+           *
+           * BEWUSST KURZLEBIG. archiv.js/schlank() kuerzt jede Zeile beim Speichern auf
+           * 3 bzw. 5 Felder; die Spanne erreicht das Kursarchiv also nicht und kann
+           * seine Form nicht veraendern. Der Aufrufer wertet sie aus, BEVOR er die
+           * Kerzen weiterreicht (depot.js/spannenAusKerzen). Dass ein Verhalten heute
+           * zufaellig stimmt, ist aber kein Vertrag - test-v6.js haelt beides fest:
+           * dass [5] hier ankommt und dass es im Archiv nicht ankommt.
+           *
+           * Nur hier, nicht in prices(): dort sind die Zeilen dreistellig. Eine Spanne
+           * an Position 3 waere dort ein Hoch - stillschweigend und falsch.
+           *
+           * null statt 0, wenn ask fehlt: eine unbekannte Spanne ist nicht eng. Genau
+           * diese Verwechslung hat beim Volumen schon einmal 66 Reihen durch den
+           * Liquiditaetsfilter gehen lassen. */
+          var sp = (c.ask != null && m > 0) ? (c.ask - c.bid) / m : null;
           series.push([zeitUtc(ps[i].snapshotTimeUTC || ps[i].snapshotTime), m, ps[i].lastTradedVolume || 0,
-            hi != null ? hi : m, lo != null ? lo : m]);
+            hi != null ? hi : m, lo != null ? lo : m, sp]);
         }
         series.sort(function (a, b) { return a[0] - b[0]; });
         return series;

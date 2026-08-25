@@ -286,6 +286,52 @@ ok(A.schlank([[T0, 72843.359375, 1, 72843.359375, 72843.359375]])[0][1] === 7284
 ok(A.schlank([[T0, 0, 1]])[0][1] === 0, 'ein Kurs von null bleibt null (kein Logarithmus von 0)');
 var dv = A.dollarVolTag([[T0, 100, 1000], [T0 + 60000, 100, 1000], [T0 + 86400000, 200, 500]]);
 ok(dv === 150000, 'Dollar-Umsatz je Tag: (100*1000+100*1000+200*500)/2 Tage', dv);
+/* Historische Geld-Brief-Spanne (25.08.2026). capital.js/pricesRange haengt sie je
+ * Kerze an Element [5]; sie ist die einzige Zahl, die die Kostenannahme von 0,10 %
+ * ueber Zeit und Universum belegen kann. Bis dahin wurde sie weggerechnet.
+ *
+ * Die drei Zusicherungen halten die drei Eigenschaften fest, auf die es ankommt:
+ * Median statt Mittelwert, fehlende Spanne wird UEBERGANGEN statt als 0 gezaehlt,
+ * und sie erreicht das Kursarchiv NICHT. */
+var TSp = Date.UTC(2026, 7, 10, 13, 30);
+var spBars = [
+  [TSp, 100, 10, 100, 100, 0.001],
+  [TSp + 3600000, 100, 10, 100, 100, 0.003],
+  [TSp + 7200000, 100, 10, 100, 100, 0.002],
+  [TSp + 86400000, 100, 10, 100, 100, 0.005]
+];
+var spTag = A.spannenJeTag(spBars);
+ok(Object.keys(spTag).length === 2, 'Spanne: je Kalendertag ein Eintrag', Object.keys(spTag).length);
+ok(spTag['2026-08-10'].n === 3 && spTag['2026-08-10'].med === 0.002,
+   'Spanne: Median je Tag, nicht Mittelwert (0,001/0,002/0,003 -> 0,002)', spTag['2026-08-10'].med);
+/* Eine Kerze ohne Spanne ist eine unbekannte Spanne, keine enge. Als 0 gezaehlt
+ * zoege sie den Median nach unten und liesse die Kosten guenstiger aussehen, als
+ * sie sind - dieselbe Verwechslung, die beim Volumen 66 Reihen gekostet hat. */
+var spLuecke = A.spannenJeTag([
+  [TSp, 100, 10, 100, 100, 0.004],
+  [TSp + 3600000, 100, 10, 100, 100, null],
+  [TSp + 7200000, 100, 10, 100, 100],
+  [TSp + 10800000, 100, 10, 100, 100, 0.006]
+]);
+ok(spLuecke['2026-08-10'].n === 2 && spLuecke['2026-08-10'].med === 0.006,
+   'Spanne: fehlende Werte werden uebergangen, nicht als 0 gezaehlt', spLuecke['2026-08-10'].n);
+ok(Object.keys(A.spannenJeTag([[TSp, 100, 10]])).length === 0,
+   'Spanne: Kerzen ohne das Feld ergeben gar keinen Tag');
+/* Die Kurzlebigkeit von [5] ist der Vertrag, auf dem der ganze Entwurf steht: die
+ * Spanne darf die FORM des Kursarchivs nicht veraendern. Dass schlank() sie heute
+ * abschneidet, ist ein Verhalten - hier wird es eine Zusicherung. */
+var spGekuerzt = A.schlank([[TSp, 100, 10, 101, 99, 0.002]]);
+ok(spGekuerzt[0].length === 5, 'Die Spanne erreicht das Kursarchiv nicht - schlank() kuerzt sie weg',
+   spGekuerzt[0].length);
+ok(Object.keys(A.spannenJeTag(spGekuerzt)).length === 0,
+   'und nach dem Speichern ist sie nachweislich fort');
+/* Die stille Bruchstelle: depot.js ruft window.Archiv.spannenJeTag auf - also die
+ * INSTANZ aus baueArchiv, nicht das Kern-Objekt. Fehlt sie dort, faellt
+ * spannenAusKerzen wortlos auf 0 zurueck und niemand merkt es, weil kein Fehler
+ * entsteht - es kommen nur nie Daten an. */
+var ArchInst = A.baueArchiv({ storeGet: async function () { return null; }, storeSet: async function () { return true; } });
+ok(typeof ArchInst.spannenJeTag === 'function',
+   'window.Archiv traegt spannenJeTag - sonst sammelt der Backfill lautlos nichts');
 /* Stempel-Kerzen (Befund 21.08.2026): Yahoo haengt an jede Chart-Antwort einen
  * Eintrag mit der AKTUELLEN Uhrzeit an. Der landete als Pseudo-Kerze mit krummem
  * Zeitstempel dauerhaft in der Messbasis (15:38:27 zwischen 15:30 und 15:45). */
@@ -6200,6 +6246,32 @@ console.log('\n44) Oberflaeche nach Themen sortiert (Felix, Issue #68)');
 
   /* --- Punkt 4: ausserboerslicher Kurs auch oben im Dashboard --- */
   ok(/function ppKurz/.test(ren), 'Es gibt eine gemeinsame Kurzform des ausserboerslichen Kurses');
+
+  /* --- Die Flaechen der Marktkarte: eine Kachel je UNTERNEHMEN, und nur Aktien ---
+   * Die SEC fuehrt die Aktienanzahl je CIK, also je Unternehmen. Die Karte hing sie
+   * an jedes Kuerzel: Bank of America stand mit 17 Kuerzeln da (BAC, BAC-PL, BACRP,
+   * BML-PJ ...), jedes mit den vollen 6,99 Milliarden Aktien; Alphabet viermal. Und
+   * FNMFO - eine Vorzugsserie von Fannie Mae - bekam die 1,158 Milliarden STAMMaktien
+   * und wurde damit zur groessten Kachel der ganzen Karte. */
+  var mk = fs.readFileSync(__dirname + '/marktkarteui.js', 'utf8');
+  ok(/function artVon/.test(mk) && /AKTIE = \{ CS: 1, ADRC: 1 \}/.test(mk),
+     'Die Karte zeigt nur Unternehmensaktien und Hinterlegungsscheine');
+  /* Die eine Normalisierung, an der alles haengt: das Archiv schreibt BAC-PL, die
+   * Klassifizierung BACpL. Ohne sie gilt jede Vorzugsaktie als unbekannt. */
+  var av = mk.slice(mk.indexOf('function artVon'), mk.indexOf('async function artenLaden'));
+  ok(av.indexOf("replace('-P', 'p')") > -1,
+     'Vorzugsaktien werden in der Schreibweise der Klassifizierung nachgeschlagen (BAC-PL -> BACpL)');
+  /* Unklassifizierte duerfen NICHT durch: auf einer Flaechenkarte wird ein unbekanntes
+   * Papier mit geerbter Stueckzahl zur groessten Kachel und behauptet etwas. */
+  var aus = mk.slice(mk.indexOf('function auswahl(n)'), mk.indexOf('async function kurseHolen'));
+  ok(/keineAktie\+\+/.test(aus) && /a && AKTIE\[a\]/.test(aus),
+     'Was nicht als Aktie klassifiziert ist, bekommt keine Kachel - auch Unbekanntes nicht');
+  ok(/jeCik/.test(aus) && /doppelt\+\+/.test(aus),
+     'Ein Unternehmen bekommt genau eine Kachel, nicht eine je Kuerzel');
+  /* Beides gehoert in die Fusszeile - eine stille Bereinigung waere so schlecht wie
+   * die stille Mehrfachzaehlung davor. */
+  ok(/keine Unternehmensaktien sind/.test(mk) && /gilt je Unternehmen, nicht je Kürzel/.test(mk),
+     'Die Fusszeile sagt, was weggelassen und was zusammengefasst wurde');
   /* Abgegrenzt am ENDE des Blocks, nicht an einer Zeichenzahl.
    * Vorher stand hier slice(stelle, stelle + 1600). Das misst einen Abstand, wo der
    * ORT gemeint ist: Ein hinzugefuegter Kommentar im Block schiebt den gesuchten
@@ -6488,6 +6560,14 @@ console.log('\n46) Was die App dauerhaft aufzeichnet');
   /* --- Was schon da war, bleibt --- */
   ok(/D\.patience\[dk\]\[reason\]/.test(dep), 'Nicht gehandelte Signale werden weiter je Tag gezaehlt');
   ok(/D\.spannen\.proben\.unshift/.test(dep), 'Die Spannen-Probe laeuft weiter');
+  /* Die Historie aus Kerzen darf die Live-Messung weder ersetzen noch ueberschreiben.
+   * Quote-Schnappschuss und Kerzenschluss-Bid/Ask sind nicht dieselbe Groesse. */
+  ok(/function spannenAusKerzen/.test(dep) && (dep.match(/spannenAusKerzen\(sym, sess\)/g) || []).length === 2,
+     'Die Spanne wird an beiden Backfill-Stellen ausgewertet');
+  ok(dep.indexOf("if (da && da.q !== 'kerze') continue;") !== -1,
+     'Ein aus Kerzen gewonnener Tag ueberschreibt nie einen aus Live-Proben');
+  ok(/function spannenHistorie/.test(dep) && /Kerzenschluss-Bid\/Ask, nicht Quote-Proben/.test(dep),
+     'Die Kerzen-Historie steht NEBEN der Live-Messung und sagt, was sie ist');
   ok(/function kostenMessungNeu/.test(dep), 'Die Messung des echten Schlupfs bleibt bestehen');
 
   /* --- Die Kostenmessung darf nicht auf einen Trade warten muessen ---

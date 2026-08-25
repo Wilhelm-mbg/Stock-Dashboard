@@ -2935,6 +2935,75 @@
   }
   if (typeof window !== 'undefined') window.__spannenBilanz = spannenBilanz;
 
+  /** Tagesmediane der Geld-Brief-Spanne aus Archiv-Kerzen in D.spannen.tage falten.
+   *
+   *  Woher: capital.js/pricesRange haengt die Spanne je Kerze an Element [5]. Der
+   *  Backfill holt diese Kerzen ohnehin - die Spanne kostet keinen Abruf extra, sie
+   *  wurde bis zum 25.08.2026 nur weggeworfen.
+   *
+   *  WARUM GETRENNT GEFUEHRT: Die Live-Proben (spannenProbe, alle 8 Minuten) sind
+   *  Quote-Schnappschuesse, diese hier sind Kerzenschluss-Bid/Ask. Beide von
+   *  Capital.com, beide auf denselben Epics - aber NICHT dieselbe Messung. Deshalb
+   *  traegt ein aus Kerzen gewonnener Tag die Kennung q:"kerze", und er ueberschreibt
+   *  NIE einen aus Live-Proben gewonnenen. Beides in einen Topf zu werfen waere
+   *  "Zwei Quellen in einer Reihe" ein zweites Mal - diesmal in der Zahl, an der die
+   *  Kostenhuerde jeder Studie haengt.
+   *
+   *  Erwartet SITZUNGSGEFILTERTE Kerzen. Capital liefert an Feiertagen und nach dem
+   *  Halbtagsschluss weiter Bars; deren Spanne ist weit und misst nichts, was ein
+   *  Handelssignal je zahlen wuerde. */
+  function spannenAusKerzen(sym, bars) {
+    if (!D || !sym || !bars || !bars.length) return 0;
+    if (!window.Archiv || !window.Archiv.spannenJeTag) return 0;
+    var jeTag = window.Archiv.spannenJeTag(bars);
+    var tage = Object.keys(jeTag);
+    if (!tage.length) return 0;
+    if (!D.spannen) D.spannen = { proben: [], seit: Date.now() };
+    if (!D.spannen.tage) D.spannen.tage = {};
+    var neu = 0;
+    for (var i = 0; i < tage.length; i++) {
+      var tag = D.spannen.tage[tage[i]] = D.spannen.tage[tage[i]] || {};
+      var da = tag[sym];
+      if (da && da.q !== 'kerze') continue;          // die Live-Messung hat Vorrang
+      tag[sym] = { n: jeTag[tage[i]].n, med: jeTag[tage[i]].med, q: 'kerze' };
+      neu++;
+    }
+    return neu;
+  }
+
+  /** Was die Kerzen-Historie ueber die Spanne sagt - getrennt von der Live-Messung.
+   *  Erst je Wert den Median ueber alle Tage, dann die Verteilung ueber die Werte:
+   *  ein Wert mit vielen Tagen soll die Aussage nicht dominieren.
+   *
+   *  "streuung" ist die Zahl, wegen der das hier steht: das Verhaeltnis des weitesten
+   *  zum engsten Wert. Es stand bisher als geschaetzte 1,35 in den Studien. */
+  function spannenHistorie() {
+    var sp = D && D.spannen;
+    if (!sp || !sp.tage) return null;
+    var jeSym = {}, tage = 0;
+    Object.keys(sp.tage).forEach(function (d) {
+      var tag = sp.tage[d], drin = false;
+      Object.keys(tag).forEach(function (sy) {
+        var e = tag[sy];
+        if (!e || e.q !== 'kerze' || !isFinite(e.med)) return;
+        (jeSym[sy] = jeSym[sy] || []).push(e.med); drin = true;
+      });
+      if (drin) tage++;
+    });
+    var syms = Object.keys(jeSym);
+    if (syms.length < 3 || tage < 2) return null;
+    function med(a) { var x = a.slice().sort(function (p, q) { return p - q; }); return x[Math.floor(x.length / 2)]; }
+    var symMed = syms.map(function (sy) { return med(jeSym[sy]); }).sort(function (a, b) { return a - b; });
+    return {
+      tage: tage, werte: syms.length,
+      medianPct: med(symMed) * 100,
+      engstesPct: symMed[0] * 100,
+      weitestesPct: symMed[symMed.length - 1] * 100,
+      streuung: symMed[0] > 0 ? symMed[symMed.length - 1] / symMed[0] : null
+    };
+  }
+  if (typeof window !== 'undefined') window.__spannenHistorie = spannenHistorie;
+
   /** EINE Messrunde: kleinste Position oeffnen, sofort schliessen, beide
    *  Ausfuehrungskurse gegen die Mitte halten. Das misst, was ein Umlauf WIRKLICH
    *  kostet - Spanne plus Schlupf - ohne auf ein Signal zu warten.
@@ -5757,7 +5826,10 @@
            * 390 noch einmal von Hand - eine zweite Regel neben istSitzung, die deren
            * Wochentag- und Feiertagspruefung nicht hatte. */
           var sess = bars.filter(function (b) { return istSitzung(b[0]); });
-          if (sess.length) { await window.Archiv.fuege(iv, sym, sess, 'cap'); stat.bars += sess.length; geholt = true; }
+          if (sess.length) {
+            spannenAusKerzen(sym, sess);        // Spanne auswerten, BEVOR das Archiv sie abschneidet
+            await window.Archiv.fuege(iv, sym, sess, 'cap'); stat.bars += sess.length; geholt = true;
+          }
           frueh = Math.min(von, bars[0][0]);
           await new Promise(function (r) { setTimeout(r, 250); });
         }
@@ -6016,7 +6088,10 @@
             }
             leer = 0;
             var sess = bars.filter(function (b) { return istSitzung(b[0]); });
-            if (sess.length) { await window.Archiv.fuege(iv, sym, sess, 'cap'); stat.bars += sess.length; geholt = true; ohneSitzung = 0; }
+            if (sess.length) {
+              spannenAusKerzen(sym, sess);      // Spanne auswerten, BEVOR das Archiv sie abschneidet
+              await window.Archiv.fuege(iv, sym, sess, 'cap'); stat.bars += sess.length; geholt = true; ohneSitzung = 0;
+            }
             else {
               /* Kerzen kamen an, aber KEINE lag in der US-Sitzung. Ohne diese Bremse
                * liefe der Wert stumm bis ans Ziel zurueck und stellte hunderte
@@ -8875,6 +8950,16 @@
           (Math.abs(d2) < 0.015 ? 'die Annahme der Studien trägt'
             : d2 > 0 ? 'teurer als angenommen: die Studien rechnen zu günstig'
             : 'günstiger als angenommen: die Kostenhürde der Studien ist zu streng');
+      }
+      /* Aus dem Kursarchiv - reicht weiter zurueck und ueber mehr Werte als der
+       * Live-Ringpuffer, misst aber Kerzenschluss statt Quote. Steht NEBEN der
+       * Messung oben, nicht an ihrer Stelle. */
+      var sh = spannenHistorie();
+      if (sh) {
+        txt += ' · Aus dem Kursarchiv (' + sh.tage + ' Tage, ' + sh.werte + ' Werte): Median ' +
+          sh.medianPct.toFixed(3) + ' %, ' + sh.engstesPct.toFixed(3) + '–' + sh.weitestesPct.toFixed(3) + ' %' +
+          (sh.streuung ? ' – der weiteste Wert kostet das ' + sh.streuung.toFixed(2) + '-fache des engsten' : '') +
+          ' (Kerzenschluss-Bid/Ask, nicht Quote-Proben).';
       }
       /* Der letzte Versuch einer Messrunde - auch ein gescheiterter. Sonst steht nach
        * einem Klick, der an einer Sperre endete, wieder nichts da. */

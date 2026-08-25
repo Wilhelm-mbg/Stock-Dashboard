@@ -175,6 +175,33 @@
     });
   }
 
+  /** Median der Geld-Brief-Spanne je Kalendertag, aus Kerzen, die sie als Element [5]
+   *  tragen (capital.js/pricesRange). Ergebnis in genau der Form, die depot.js in
+   *  D.spannen.tage fuehrt: { "YYYY-MM-DD": { n, med } }.
+   *
+   *  Rein und ohne Zustand, damit sie in Node geprueft werden kann - wie die uebrige
+   *  Merge-Logik dieser Datei.
+   *
+   *  Kerzen ohne [5] werden UEBERGANGEN, nicht als 0 gezaehlt: eine fehlende Spanne
+   *  ist unbekannt, nicht eng. Ein Median ueber Nullen waere die schoenste und
+   *  falscheste Zahl, die diese Datei liefern koennte. */
+  function spannenJeTag(bars) {
+    var jeTag = {};
+    (bars || []).forEach(function (b) {
+      if (!b || b.length < 6) return;
+      var sp = b[5];
+      if (sp == null || typeof sp !== 'number' || !isFinite(sp) || sp < 0) return;
+      var tag = new Date(b[0]).toISOString().slice(0, 10);
+      (jeTag[tag] = jeTag[tag] || []).push(sp);
+    });
+    var aus = {};
+    Object.keys(jeTag).forEach(function (tag) {
+      var a = jeTag[tag].sort(function (x, y) { return x - y; });
+      aus[tag] = { n: a.length, med: Math.round(a[Math.floor(a.length / 2)] * 1e6) / 1e6 };
+    });
+    return aus;
+  }
+
   /** Mittlerer Dollar-Umsatz je Handelstag aus den letzten Tagen der Serie –
    *  Ersatz für Yahoos dollarVolDay, wenn die Daten aus dem Archiv kommen. */
   /** Liegt der Zeitpunkt in einem als CFD gekennzeichneten Bereich? */
@@ -256,7 +283,7 @@
         var e = await lade(iv, sym);
         return e.series;
       },
-      dollarVolTag: dollarVolTag,
+      dollarVolTag: dollarVolTag, spannenJeTag: spannenJeTag,
       /** Gekennzeichnete CFD-Bereiche eines Symbols (fuer quellenbewusste Auswertung). */
       bereiche: async function (iv, sym) { var e = await lade(iv, sym); return e.capBereiche || []; },
       /** Nachtraegliches Kennzeichnen (einmalige Umstellung fuer schon geschriebene Daten). */
@@ -300,6 +327,7 @@
     MAX_TAGE: MAX_TAGE, TAGE_MAX: TAGE_MAX, fensterFuer: fensterFuer,
     mischeBars: mischeBars, kappeTage: kappeTage, ohneStempel: ohneStempel, rasterPhase: rasterPhase,
     abdeckungTage: abdeckungTage, schlank: schlank, dollarVolTag: dollarVolTag,
+    spannenJeTag: spannenJeTag,
     baueArchiv: baueArchiv
   };
   if (typeof module !== 'undefined' && module.exports) { module.exports = Archiv; return; }
