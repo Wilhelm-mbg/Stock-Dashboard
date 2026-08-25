@@ -222,7 +222,12 @@ function jsonGet(pfad, cookie, versuch) {
  * nur das Auspacken der beiden Yahoo-Antworten. */
 const Drift = require('./drift.js');
 
+/* Der Grund des Fehlschlags haengt an der Funktion, nicht am Rueckgabewert: null hiess
+ * bis zum 25.08.2026 gleichermassen "kein Termin vorhanden" und "Abruf gescheitert".
+ * Der Aufrufer meldete daraufhin ok:true - die Drift-Anzeige blieb frisch, ihr Inhalt
+ * alterte. Betroffen ist die Ergebnis-Drift, die im Mittelfrist-Depot wirklich handelt. */
 async function holeAktuell(sym) {
+  holeAktuell.grund = '';
   const s = await holeSitz();
   if (!s.crumb) return null;
   const c = encodeURIComponent(s.crumb);
@@ -241,7 +246,7 @@ async function holeAktuell(sym) {
       ? (typeof cd[0] === 'number' ? cd[0] * 1000 : (cd[0].raw ? cd[0].raw * 1000 : Date.parse(cd[0].fmt || cd[0])))
       : 0;
     return Drift.paareAktuell(historie, terminMs);
-  } catch (e) { return null; }
+  } catch (e) { holeAktuell.grund = String((e && e.message) || e).slice(0, 120); return null; }
 }
 
 ipcMain.handle('earnings-fetch', async (_ev, symbol) => {
@@ -250,7 +255,8 @@ ipcMain.handle('earnings-fetch', async (_ev, symbol) => {
   const tief = await holeTermine(sym);
   const frisch = await holeAktuell(sym);
   if (!tief.ok && !frisch) return tief;
-  return { ok: true, termine: tief.ok ? tief.termine : [], aktuell: frisch };
+  return { ok: true, termine: tief.ok ? tief.termine : [], aktuell: frisch,
+    aktuellGrund: frisch ? '' : (holeAktuell.grund || 'kein aktueller Termin gefunden') };
 });
 ipcMain.handle('app-version', async () => app.getVersion());
 /* ================= Autostart mit Windows (minimiert im Tray) =================

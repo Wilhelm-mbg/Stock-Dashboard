@@ -57,7 +57,9 @@
     if (namen.indexOf(war) !== -1) s.value = war;
   }
 
-  var ARTEN = null;            // sym -> Wertpapierart, einmal geholt
+  var ARTEN = null;
+
+  var ARTEN_FEHLER = '';            // sym -> Wertpapierart, einmal geholt
   var AKTIE = { CS: 1, ADRC: 1 };   // Unternehmensaktie und Hinterlegungsschein
 
   /** Die Wertpapierart eines Kuerzels - in DREI Schreibweisen nachgeschlagen.
@@ -75,10 +77,16 @@
 
   async function artenLaden() {
     if (ARTEN) return ARTEN;
-    if (!window.api || typeof window.api.marktWertpapierarten !== 'function') return null;
+    /* Ohne ARTEN umgeht auswahl() den Wertpapierart-Filter komplett: Vorzugsserien,
+     * Indexfonds und Zertifikate erben dann wieder die Stueckzahl ihres Emittenten.
+     * Die Karte zeigt Flaechen, die nichts bedeuten - und sagte es nicht. */
+    if (!window.api || typeof window.api.marktWertpapierarten !== 'function') {
+      ARTEN_FEHLER = 'Schnittstelle fehlt'; return null;
+    }
     var r = await window.api.marktWertpapierarten();
-    if (r && r.ok) ARTEN = r.arten;
-    return ARTEN;                 // ein Fehlschlag wird NICHT gemerkt
+    if (r && r.ok) { ARTEN = r.arten; ARTEN_FEHLER = ''; }
+    else ARTEN_FEHLER = (r && r.msg) || 'Abruf fehlgeschlagen';
+    return ARTEN;
   }
 
   function anzahlJetzt() {
@@ -291,8 +299,12 @@
     }
 
     var fuss = document.getElementById('mkFuss');
+    var artenHinweis = (!ARTEN && ARTEN_FEHLER)
+      ? '<b>Ohne Klassifizierung der Wertpapierarten</b> (' + esc(ARTEN_FEHLER) + '): Vorzugsserien, Fonds und Zertifikate sind NICHT herausgefiltert und erben die Größe ihres Emittenten. '
+      : '';
     if (fuss) {
       fuss.innerHTML =
+        artenHinweis +
         '<b>Fläche</b> = Kurs × Aktienanzahl, bei jeder Aktualisierung neu gerechnet. ' +
         '<b>Farbe</b> = Veränderung zum Vortagesschluss, gedeckelt bei ±' + window.Marktkarte.DECKEL + ' %. ' +
         'Gruppiert nach Branche aus dem SIC-Code der SEC.<br>' +
@@ -410,7 +422,11 @@
       var n = await kurseHolen(a.liste, function (f, g) { sag('Kurse holen: ' + f + ' von ' + g + ' …'); });
       var mitKurs = a.liste.filter(function (w) { return w.groesse > 0; });
       var ausApp = a.liste.filter(function (w) { return w.ausApp; }).length;
-      zeichnen(mitKurs, { gezeichnet: n, gesamt: a.gesamt, adr: a.adr, ohneGroesse: a.ohneGroesse, ausApp: ausApp });
+      /* keineAktie und doppelt fehlten hier - die beiden Fusszeilen-Saetze, die den
+       * Filter belegen wuerden, waren damit dauerhaft unerreichbar (info.keineAktie
+       * war immer undefined). Der Filter arbeitete, konnte es aber nicht zeigen. */
+      zeichnen(mitKurs, { gezeichnet: n, gesamt: a.gesamt, adr: a.adr, ohneGroesse: a.ohneGroesse,
+        ausApp: ausApp, keineAktie: a.keineAktie, doppelt: a.doppelt });
       letzterLauf = Date.now();
       sag('Stand: ' + new Date(letzterLauf).toLocaleTimeString('de-DE'));
     } catch (e) {

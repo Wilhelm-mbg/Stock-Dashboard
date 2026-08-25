@@ -507,13 +507,23 @@
   function baukastenAufbauen() {
     var B = window.Baukasten;
     var sel = document.getElementById('stMuster');
-    if (!B || !sel) return;
+    /* Der Waechter stand VOR der Verdrahtung der beiden Modus-Knoepfe. Fehlte der
+     * Baukasten, war damit auch der AUSWEG tot: "Expertenmodus" reagierte auf keinen
+     * Klick mehr, und der ganze Weg "Strategie ablegen und messen" war ohne eine
+     * einzige Meldung unerreichbar. Ein Waechter darf den Notausgang nicht mit
+     * verriegeln - die Knoepfe kommen deshalb zuerst. */
+    var kBau = document.getElementById('stModusBau'), kExp = document.getElementById('stModusExperte');
+    if (kBau) kBau.addEventListener('click', function () { modusSetzen('bau'); });
+    if (kExp) kExp.addEventListener('click', function () { modusSetzen('experte'); });
+    if (!B || !sel) {
+      var stat0 = document.getElementById('stStatus');
+      if (stat0) stat0.textContent = 'Der Baukasten ist nicht geladen – nur der Expertenmodus steht zur Verfügung.';
+      return;
+    }
     sel.innerHTML = B.MUSTER.map(function (m) {
       return '<option value="' + esc(m.id) + '">' + esc(m.name) + '</option>';
     }).join('');
     sel.addEventListener('change', felderZeichnen);
-    document.getElementById('stModusBau').addEventListener('click', function () { modusSetzen('bau'); });
-    document.getElementById('stModusExperte').addEventListener('click', function () { modusSetzen('experte'); });
     var key = document.getElementById('stKey');
     if (key) key.addEventListener('input', function () { key.dataset.selbst = '1'; });
     ['stHalten', 'stSpanne', 'stRichtung', 'stGrund'].forEach(function (id) {

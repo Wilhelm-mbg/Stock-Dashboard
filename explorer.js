@@ -431,6 +431,7 @@
     el.innerHTML =
       '<div style="font-size:var(--fs-neben); color:var(--muted); margin-bottom:6px;">' +
         LETZTE_PUNKTE.length + ' Signale · Zeile anklicken, um sie im Chart zu markieren' +
+        (SIG_FEHLER ? ' · ACHTUNG: ' + SIG_FEHLER + ' Detektor-Abbrüche – die Liste ist unvollständig' : '') +
         (LETZTE_PUNKTE.length > 200 ? ' · die 200 jüngsten' : '') + '</div>' +
       '<div style="max-height:260px; overflow:auto;"><table class="tbl"><thead><tr>' +
         '<th>Zeitpunkt</th><th>Signal</th><th>Richtung</th><th style="text-align:right;">Kurs</th>' +
@@ -468,6 +469,7 @@
   };
   var sigAn = {};
   var LETZTE_PUNKTE = [];     // Signale des aktuellen Charts - fuer Liste und Auswahl
+  var SIG_FEHLER = 0;         // Detektor-Abbrueche des letzten Durchlaufs
   var GEWAEHLT = null;        // gerade angeklicktes Signal
   var indAn = {};        // Chartbild: gleitende Durchschnitte, Kanal, Zonen, Volumen
   var chartArt = 'linie';   // 'linie' oder 'kerzen'
@@ -483,12 +485,16 @@
     // Jede Signalfunktion prueft ihre eigene Mindestlaenge selbst; hier genuegt es,
     // offensichtlich zu kurze Reihen abzuweisen.
     if (!keys.length || !bars || bars.length < 40) return raus;
+    SIG_FEHLER = 0;
     var start = Math.max(30, bars.length - 1200);        // Anzeige-Obergrenze: sonst rechnet der Chart ewig
     for (var i = start; i < bars.length; i++) {
       var fenster = bars.slice(Math.max(0, i - 300), i + 1);
       for (var ki = 0; ki < keys.length; ki++) {
         var def = SIGNALE[keys[ki]], d = null;
-        try { d = def.fn(fenster); } catch (e) { d = null; }
+        /* Wirft ein Detektor - oder fehlt seine Funktion -, lieferte er fuer JEDE der
+         * bis zu 1200 Kerzen still null. Der Chart blieb ohne Markierungen und die
+         * Liste sagte "keine Signale": ein Ausfall sah aus wie ein Befund. */
+        try { d = def.fn(fenster); } catch (e) { d = null; SIG_FEHLER++; }
         if (d) raus.push({ t: bars[i][0], preis: bars[i][1], dir: d, farbe: def.farbe, name: def.name });
       }
     }

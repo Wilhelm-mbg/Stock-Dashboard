@@ -6666,6 +6666,26 @@ console.log('\n46) Was die App dauerhaft aufzeichnet');
   ok(/capitalOhneBestaetigung: HEALTH\.capOhneDealId/.test(dep) &&
      /edgeWaechterAusfaelle: HEALTH\.edgeFail/.test(dep) && /scanSperreHaenger: HEALTH\.scanHaenger/.test(dep),
      'Alle drei neuen Zaehler stehen in den Gesundheitszahlen');
+  /* Stufe 4: fuenf stille Ausfaelle in Anzeige und Zulieferung. Sie kosten kein Geld,
+   * aber sie lassen jemanden glauben, er saehe etwas Vollstaendiges. */
+  var mjS = fs.readFileSync(__dirname + '/main.js', 'utf8');
+  ok(/aktuellGrund:/.test(mjS) && /holeAktuell\.grund = String/.test(mjS),
+     'earnings-fetch unterscheidet "kein Termin" von "Abruf gescheitert"');
+  var duS = fs.readFileSync(__dirname + '/driftui.js', 'utf8');
+  ok(/ohneAktuell\+\+/.test(duS) && /ohne aktuellen Termin/.test(duS),
+     'und die Drift-Anzeige zaehlt die Werte, fuer die nur die Vergangenheit bekannt ist');
+  var exS = fs.readFileSync(__dirname + '/explorer.js', 'utf8');
+  ok(/SIG_FEHLER\+\+/.test(exS) && /Detektor-Abbrüche/.test(exS),
+     'Ein abgebrochener Detektor sieht nicht mehr aus wie "kein Signal"');
+  var sbS = fs.readFileSync(__dirname + '/scoreboard.js', 'utf8');
+  ok(sbS.indexOf('if (kBau) kBau.addEventListener') > -1 &&
+     sbS.indexOf('if (kBau) kBau.addEventListener') < sbS.indexOf('if (!B || !sel) {'),
+     'Der Ausweg (Expertenmodus) wird VOR dem Baukasten-Waechter verdrahtet');
+  var mkS = fs.readFileSync(__dirname + '/marktkarteui.js', 'utf8');
+  ok(/keineAktie: a\.keineAktie/.test(mkS) && /doppelt: a\.doppelt/.test(mkS),
+     'Die Marktkarte reicht die Zaehler durch, die ihre Fusszeile belegen');
+  ok(/ARTEN_FEHLER/.test(mkS) && /artenHinweis \+/.test(mkS),
+     'und sagt es, wenn der Wertpapierart-Filter mangels Daten gar nicht lief');
   ok(/function kostenMessungNeu/.test(dep), 'Die Messung des echten Schlupfs bleibt bestehen');
 
   /* --- Die Kostenmessung darf nicht auf einen Trade warten muessen ---

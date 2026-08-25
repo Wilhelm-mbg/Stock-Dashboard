@@ -73,7 +73,7 @@
       }
       archiv.zeiger = start + 25;
     }
-    var neu = 0, fehler = 0;
+    var neu = 0, fehler = 0, ohneAktuell = 0;
     for (var i = 0; i < holen.length; i++) {
       stat('Lade Ergebnistermine … ' + (i + 1) + '/' + holen.length + ' (' + holen[i] + ')');
       var r = null;
@@ -81,6 +81,11 @@
       if (!r || !r.ok) { fehler++; await new Promise(function (w) { setTimeout(w, 800); }); continue; }
       var liste = r.termine || [];
       if (r.aktuell) liste = liste.concat([[r.aktuell.termin, r.aktuell.schaetzung, r.aktuell.ist, r.aktuell.ueberraschung]]);
+      /* Der tiefe Kalender endet rund ein Jahr in der Vergangenheit; erst r.aktuell
+       * bringt den kommenden Termin. Faellt genau diese Haelfte aus, meldete der
+       * Hauptprozess trotzdem ok:true und hier wurde stillschweigend uebersprungen -
+       * das Archiv galt danach als frisch und war es nicht. */
+      else if (r.aktuellGrund) ohneAktuell++;
       var vorher = (archiv.sym[holen[i]] || []).length;
       archiv.sym[holen[i]] = mische(archiv.sym[holen[i]], liste);
       neu += archiv.sym[holen[i]].length - vorher;
@@ -90,7 +95,9 @@
     archiv.at = Date.now();
     await window.api.storeSet('drift_termine', archiv);
     stat(Object.keys(archiv.sym).length + ' Werte im Terminarchiv, ' + neu + ' neue Termine' +
-      (fehler ? ', ' + fehler + ' Abrufe fehlgeschlagen (Drosselung? Später nochmal)' : '') + '.');
+      (fehler ? ', ' + fehler + ' Abrufe fehlgeschlagen (Drosselung? Später nochmal)' : '') +
+      (ohneAktuell ? ', ' + ohneAktuell + ' ohne aktuellen Termin – für diese Werte ist nur die ' +
+        'Vergangenheit bekannt' : '') + '.');
     return archiv;
   }
 
