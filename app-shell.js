@@ -387,14 +387,25 @@
       if (zurueck && war) { try { war.focus(); } catch (e) { /* Knopf schon weg */ } }
     }
 
+    /* Punkte sind Messaussagen und laufen IMMER zuerst durch U.esc - Fremdes wird
+     * nie zu Markup. Drei aeltere Registereintraege tragen aber selbst einfache
+     * Auszeichnung (fett, kursiv, Code) und zeigten sie dem Leser woertlich als
+     * spitze Klammern (Fund 25.08.2026, D6-Gegenprobe). Nach dem Escapen werden
+     * deshalb genau die drei harmlosen Element-Namen b, i und code zurueckverwandelt -
+     * eine Whitelist hinter dem Escapen, kein Aufweichen: jedes andere Element und
+     * jedes Attribut bleibt sichtbarer Text. */
+    function ausz(s) {
+      return U.esc(s).replace(/&lt;(\/?)(b|i|code)&gt;/g, '<$1$2>');
+    }
+
     function zeigen(knopf) {
       var e = REGISTER[knopf.getAttribute('data-info')], k = kasten();
       if (!e || !k) return;
       k.innerHTML =
         '<button type="button" class="ip-zu" aria-label="Erklärung schließen">×</button>' +
         '<h4>' + U.esc(e.titel) + '</h4>' +
-        '<ul>' + (e.punkte || []).map(function (p) { return '<li>' + U.esc(p) + '</li>'; }).join('') + '</ul>' +
-        (e.fuss ? '<div class="ip-fuss">' + U.esc(e.fuss) + '</div>' : '');
+        '<ul>' + (e.punkte || []).map(function (p) { return '<li>' + ausz(p) + '</li>'; }).join('') + '</ul>' +
+        (e.fuss ? '<div class="ip-fuss">' + ausz(e.fuss) + '</div>' : '');
       k.style.display = 'block';
       // Erst einblenden, dann messen: vorher ist die Breite 0.
       var r = knopf.getBoundingClientRect(), kb = k.getBoundingClientRect();
