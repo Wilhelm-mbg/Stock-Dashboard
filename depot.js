@@ -64,6 +64,21 @@
   var APP_VER = '';
   var EXPORT_ABDECKUNG = null; // Archiv-Abdeckung (füllt renderPilot), geht mit in den Analyse-Export
   var lastEqPoint = 0;
+  /** Schreibt hoechstens alle 10 Minuten einen Punkt des Depotverlaufs fort.
+   *  Seit Stufe E ein eigener Takt statt eines Nebeneffekts von render() -
+   *  die Kurve waechst damit auch, wenn niemand den Reiter ansieht. */
+  function equityPuls() {
+    if (!D) return;
+    var now = Date.now();
+    if (now - lastEqPoint <= 10 * 60000) return;
+    var eq = equityNow();
+    if (!(eq > 0)) return;
+    lastEqPoint = now;
+    if (!D.equityHist) D.equityHist = [];
+    D.equityHist.push([now, Math.round(eq * 100) / 100]);
+    if (D.equityHist.length > 2000) D.equityHist = D.equityHist.slice(-1500);
+    save();
+  }
   var SENT = {}; // Sentiment-Historie je Symbol
 
   /* ================= Risikomanagement =================
@@ -3186,14 +3201,10 @@
         : '';
     }
 
-    // Depotverlauf fortschreiben (max. 1 Punkt / 10 Min) und zeichnen
-    if (now - lastEqPoint > 10 * 60000) {
-      lastEqPoint = now;
-      if (!D.equityHist) D.equityHist = [];
-      D.equityHist.push([now, Math.round(eq * 100) / 100]);
-      if (D.equityHist.length > 2000) D.equityHist = D.equityHist.slice(-1500);
-      save();
-    }
+    /* Der Depotverlauf wird seit Stufe E vom Takt fortgeschrieben (equityPuls),
+     * nicht mehr beim Rendern - render() liest nur noch. Vorher wuchs die Kurve
+     * ausschliesslich, wenn jemand den Reiter ansah, und eine Anzeige-Funktion
+     * schrieb den Zustand (der Befund aus der Zerlegungs-Kartierung). */
     var eqSvg = document.getElementById('equityChart');
     if (eqSvg) {
       if (D.equityHist && D.equityHist.length >= 2) drawEquity(eqSvg, D.equityHist, START_CAPITAL);
@@ -6379,8 +6390,6 @@
       });
     })();
 
-    setTimeout(updateCapStatus, 3000);
-    setInterval(updateCapStatus, 10 * 60000);
     document.addEventListener('settings-saved', function () { setTimeout(updateCapStatus, 500); });
 
     // Protokoll-Filter
@@ -6409,12 +6418,6 @@
       });
     }
 
-    // Stunden-Scheduler: alle 5 Min prüfen, ob eine Stunde um ist
-    setInterval(function () {
-      if (D.hourlyEnabled !== false && Date.now() - D.lastRun >= 3600000 && !jobRunning) runJob(false);
-    }, 5 * 60000);
-    // Beim Start: nachholen, wenn der letzte Lauf >1 h her ist
-    if (D.hourlyEnabled !== false && Date.now() - D.lastRun >= 3600000) setTimeout(function () { runJob(false); }, 20000);
 
     // Intraday-UI verkabeln
     var idE = document.getElementById('idEnabled'), idP = document.getElementById('idPeriod'), idC = document.getElementById('idConfirm');
@@ -6744,6 +6747,82 @@
     // einmal je ~20 h – die Nacht-Messung gestartet. So läuft sie genau einmal pro Nacht,
     // die Rechenlast bleibt außerhalb der Handelszeit, und Neustarts überstehen den Takt
     // (lastMess liegt im Store, nicht im Speicher).
+
+    /* Regime-Automatik verkabeln */
+    (function () {
+      var rOn = document.getElementById('aoRegime'), rBtn = document.getElementById('regimeBtn');
+      if (!rOn) return;
+      rOn.checked = autoOptCfg().regime !== false;
+      rOn.addEventListener('change', function () { autoOptCfg().regime = rOn.checked; save(); renderRegime(); });
+      rBtn.addEventListener('click', function () { runRegime(true); });
+      renderRegime();
+    })();
+
+    var idAt = document.getElementById('idAutoTune');
+    idAt.checked = D.intraday.autoTune !== false;
+    idAt.addEventListener('change', function () { D.intraday.autoTune = idAt.checked; save(); });
+
+    /* Krypto-Sammler: an/aus plus Bestandsanzeige. Ein Hintergrund-Netzwerkjob ohne
+       Aus-Knopf wäre schlechter Stil – und man soll sehen, ob er etwas bringt. */
+    var kEl2 = document.getElementById('idKrypto');
+    if (kEl2) {
+      kEl2.checked = D.kryptoSammeln !== false;
+      kEl2.addEventListener('change', function () { D.kryptoSammeln = kEl2.checked; save(); zeigeKryptoStand(); });
+    }
+    /* Vorwärtstest: Wer den Handel abschaltet, soll die Beweisaufnahme behalten.
+       Früher hing beides am selben Schalter – und nach Monaten Pause stand man
+       wieder ohne Daten da. */
+    var sIm = document.getElementById('idSchattenImmer');
+    if (sIm) {
+      sIm.checked = D.intraday.schattenImmer !== false;
+      sIm.addEventListener('change', function () {
+        D.intraday.schattenImmer = sIm.checked; save();
+        var el2 = document.getElementById('idStatus');
+        if (el2 && !D.intraday.enabled) {
+          el2.textContent = sIm.checked
+            ? 'Handel aus – Signale werden aber weiter aufgezeichnet (Vorwärtstest).'
+            : 'Handel aus, keine Aufzeichnung. Es entstehen keine neuen Messdaten.';
+        }
+      });
+    }
+    zeigeKryptoStand();
+    renderTune();
+
+    // Benachrichtigungen
+    /* Die Checkbox wohnt seit dem Struktur-Audit (Punkt 11) im Einstellungs-Dialog -
+     * der Guard bleibt trotzdem: ein fehlendes Element darf init() nie stoppen. */
+    var nE = document.getElementById('notifyEnabled');
+    if (nE) {
+      nE.checked = D.notify !== false;
+      nE.addEventListener('change', function () { D.notify = nE.checked; save(); });
+    }
+    if (D.intraday.enabled) {
+      document.getElementById('idStatus').textContent = window.Dash.marketOpen() ? 'Aktiv.' : 'Aktiv – wartet auf US-Handelsbeginn (15:30 Uhr Berlin).';
+    } else if (D.intraday.schattenImmer !== false) {
+      // Ohne diese Zeile sieht der abgeschaltete Handel aus wie „nichts passiert“,
+      // obwohl im Hintergrund der Vorwärtstest läuft.
+      document.getElementById('idStatus').textContent = window.Dash.marketOpen()
+        ? 'Handel aus – Signale werden aufgezeichnet (Vorwärtstest, kein Kapitaleinsatz).'
+        : 'Handel aus – Aufzeichnung wartet auf US-Handelsbeginn (15:30 Uhr Berlin).';
+    }
+
+
+
+
+    /* ===== Takte: die Dauer-Intervalle von init an EINEM Ort (Stufe E) =====
+     * Verschoben, nicht veraendert - jeder Block traegt seinen alten Kommentar.
+     * Die Funktionsdefinitionen wohnen weiter bei ihrem Fachteil; hier steht nur,
+     * WANN etwas laeuft. */
+    setTimeout(updateCapStatus, 3000);
+    setInterval(updateCapStatus, 10 * 60000);
+
+    // Stunden-Scheduler: alle 5 Min prüfen, ob eine Stunde um ist
+    setInterval(function () {
+      if (D.hourlyEnabled !== false && Date.now() - D.lastRun >= 3600000 && !jobRunning) runJob(false);
+    }, 5 * 60000);
+    // Beim Start: nachholen, wenn der letzte Lauf >1 h her ist
+    if (D.hourlyEnabled !== false && Date.now() - D.lastRun >= 3600000) setTimeout(function () { runJob(false); }, 20000);
+
     // Herzschlag: solange gemessen wird, Kopfzeile alle 5 s auffrischen (seit/letzte Aktivität)
     setInterval(function () { if (pilotRunning) renderPilot(); }, 5000);
     setInterval(function () {
@@ -6779,16 +6858,6 @@
     // Beim Start: Vorgemerktes ggf. sofort einspielen (z. B. App war über Nacht aus)
     setTimeout(function () { if (!window.Dash.marketOpen()) pilotAnwenden(); }, 30000);
 
-    /* Regime-Automatik verkabeln */
-    (function () {
-      var rOn = document.getElementById('aoRegime'), rBtn = document.getElementById('regimeBtn');
-      if (!rOn) return;
-      rOn.checked = autoOptCfg().regime !== false;
-      rOn.addEventListener('change', function () { autoOptCfg().regime = rOn.checked; save(); renderRegime(); });
-      rBtn.addEventListener('click', function () { runRegime(true); });
-      renderRegime();
-    })();
-
     // Takt: kurz nach Handelsbeginn und danach stündlich, solange die Börse offen ist
     setInterval(function () {
       var a = autoOptCfg();
@@ -6798,56 +6867,10 @@
       a.lastRegime = Date.now(); // vor dem Start setzen; bei Abbruch gibt runRegime den Slot zurück
       runRegime(false).then(function (lief) { if (lief === false) a.lastRegime = 0; });
     }, 60000);
-    var idAt = document.getElementById('idAutoTune');
-    idAt.checked = D.intraday.autoTune !== false;
-    idAt.addEventListener('change', function () { D.intraday.autoTune = idAt.checked; save(); });
 
-    /* Krypto-Sammler: an/aus plus Bestandsanzeige. Ein Hintergrund-Netzwerkjob ohne
-       Aus-Knopf wäre schlechter Stil – und man soll sehen, ob er etwas bringt. */
-    var kEl2 = document.getElementById('idKrypto');
-    if (kEl2) {
-      kEl2.checked = D.kryptoSammeln !== false;
-      kEl2.addEventListener('change', function () { D.kryptoSammeln = kEl2.checked; save(); zeigeKryptoStand(); });
-    }
-    /* Vorwärtstest: Wer den Handel abschaltet, soll die Beweisaufnahme behalten.
-       Früher hing beides am selben Schalter – und nach Monaten Pause stand man
-       wieder ohne Daten da. */
-    var sIm = document.getElementById('idSchattenImmer');
-    if (sIm) {
-      sIm.checked = D.intraday.schattenImmer !== false;
-      sIm.addEventListener('change', function () {
-        D.intraday.schattenImmer = sIm.checked; save();
-        var el2 = document.getElementById('idStatus');
-        if (el2 && !D.intraday.enabled) {
-          el2.textContent = sIm.checked
-            ? 'Handel aus – Signale werden aber weiter aufgezeichnet (Vorwärtstest).'
-            : 'Handel aus, keine Aufzeichnung. Es entstehen keine neuen Messdaten.';
-        }
-      });
-    }
-    zeigeKryptoStand();
     setInterval(zeigeKryptoStand, 5 * 60000);
-    renderTune();
     setTimeout(checkRemoteRec, 8000);
     setInterval(checkRemoteRec, 10 * 60000);
-
-    // Benachrichtigungen
-    /* Die Checkbox wohnt seit dem Struktur-Audit (Punkt 11) im Einstellungs-Dialog -
-     * der Guard bleibt trotzdem: ein fehlendes Element darf init() nie stoppen. */
-    var nE = document.getElementById('notifyEnabled');
-    if (nE) {
-      nE.checked = D.notify !== false;
-      nE.addEventListener('change', function () { D.notify = nE.checked; save(); });
-    }
-    if (D.intraday.enabled) {
-      document.getElementById('idStatus').textContent = window.Dash.marketOpen() ? 'Aktiv.' : 'Aktiv – wartet auf US-Handelsbeginn (15:30 Uhr Berlin).';
-    } else if (D.intraday.schattenImmer !== false) {
-      // Ohne diese Zeile sieht der abgeschaltete Handel aus wie „nichts passiert“,
-      // obwohl im Hintergrund der Vorwärtstest läuft.
-      document.getElementById('idStatus').textContent = window.Dash.marketOpen()
-        ? 'Handel aus – Signale werden aufgezeichnet (Vorwärtstest, kein Kapitaleinsatz).'
-        : 'Handel aus – Aufzeichnung wartet auf US-Handelsbeginn (15:30 Uhr Berlin).';
-    }
     // Intraday-Scheduler: Scan-Takt je nach Modus (Scalping 90 s, Ausbrüche 5 Min)
     setInterval(function () {
       // Auch ohne Handel scannen, solange aufgezeichnet werden soll – sonst liefe der
@@ -6860,7 +6883,6 @@
       var taktMs = modeParams().scanMs * ((HEALTH.stoerungScans || 0) >= 2 ? 4 : 1);
       if (lohnt && (window.Dash.marketOpen() || D.intraday.kryptoHandeln) && Date.now() - D.intradayLastScan >= taktMs) intradayScan();
     }, 30000);
-
     /* Krypto-Sammler. Ausdruecklich OHNE marketOpen()-Pruefung - waehrend die US-Boerse
        zu ist, hat der Sammler Yahoos Anfragebudget fuer sich allein, und Krypto handelt
        ohnehin durchgehend. Reihum durch die Intervalle, alle 20 Minuten eines:
@@ -6875,7 +6897,6 @@
       kryptoTakt++;
     }, 20 * 60000);
     setTimeout(function () { if (D.kryptoSammeln !== false) kryptoSammeln('1m'); }, 25000);
-
     /* Die Spannen-Messung wohnt seit Stufe E in kosten.js - hier bleiben nur die
      * Takte: der Scheduler gehoert dem Handelsmodul. */
     /* Das Festschreiben darf NICHT an derselben Sperre haengen wie das Sammeln.
@@ -6887,6 +6908,10 @@
 
     setInterval(window.Kosten.probe, 8 * 60000);
     setTimeout(window.Kosten.probe, 40000);
+    /* Depotverlauf-Puls: frueher ein Nebeneffekt von render() - die Kurve wuchs
+     * nur, wenn jemand den Reiter ansah. Jetzt laeuft der Punkt (hoechstens einer
+     * je 10 Minuten, die Drossel wohnt in equityPuls) unabhaengig vom Rendern. */
+    setInterval(equityPuls, 60000);
 
     /* Nachholen, falls waehrend des Startens schon umgeschaltet wurde - von Hand oder
      * aus dem gemerkten Ort. Die Unterseite steht dann zwar sichtbar da, ihr Inhalt
