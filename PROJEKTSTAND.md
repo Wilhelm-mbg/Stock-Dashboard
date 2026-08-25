@@ -143,7 +143,7 @@ steht, ist nach zwei Stunden verloren.*
 ## Tüftler
 
 *Eine Zeile je Nacht, geschrieben von der Strategie-Tüftler-Aufgabe (04:30). Übergaben
-stehen in .*
+stehen in `studien/tueftler/WARTESCHLANGE.md`.*
 
 - *(noch kein Lauf — erster Lauf in der Nacht auf den 26.08.)*
 
