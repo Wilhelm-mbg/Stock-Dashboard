@@ -47,6 +47,31 @@
         : GRUNDFARBE.get(el);
       return el;
     },
+    /* Eine Kachel fuer .depot-stats. name/wert/sub/delta sind FERTIGES HTML: die
+     * Aufrufer setzen dort schmale Leerzeichen, <b> und ganze Chips ein - ein Escapen
+     * in der Hilfe wuerde diese Zeichen sichtbar machen. Das Escapen bleibt also beim
+     * Aufrufer, genau wie bisher.
+     *
+     * opt.cls  fertige Klasse ('pos'/'neg') - hat Vorrang, weil die Buecher bei genau
+     *          0 $ 'pos' zeigen, U.signCls dagegen neutral; das ist eine Anzeige-
+     *          entscheidung der Buecher und keine, die eine Hilfe umdrehen darf.
+     * opt.sign Zahl, aus der die Klasse ueber U.signCls kommt.
+     * opt.fs   Schriftgroesse des Werts. OHNE Vorgabe: die Kopfkacheln auf "Heute"
+     *          tragen absichtlich keine, sie leben von .tile .val im CSS (--fs-titel).
+     *          Wer hier einen Vorgabewert einbaut, verkleinert sie stillschweigend.
+     * opt.sub  Zusatzzeile unter dem Wert (Klasse kachel-sub; NICHT sub - die Klasse
+     *          gehoert den Reiter-Unterseiten und ist dort auf display:none gesetzt).
+     * opt.delta / opt.deltaSign  die Veraenderungszeile der Depot-Kacheln. */
+    kachel: function (name, wert, opt) {
+      opt = opt || {};
+      var cls = opt.cls != null ? opt.cls : (opt.sign != null ? U.signCls(opt.sign) : '');
+      return '<div class="tile"><div class="name">' + name + '</div>' +
+        '<div class="val' + (cls ? ' ' + cls : '') + '"' +
+        (opt.fs ? ' style="font-size:' + opt.fs + ';"' : '') + '>' + wert + '</div>' +
+        (opt.sub ? '<div class="kachel-sub">' + opt.sub + '</div>' : '') +
+        (opt.delta ? '<div class="delta' + (opt.deltaSign ? ' ' + U.signCls(opt.deltaSign) : '') + '">' + opt.delta + '</div>' : '') +
+        '</div>';
+    },
     // Mini-Markdown (Überschriften, Listen, fett) für die Analyse-Ausgabe
     md: function (txt) {
       var lines = String(txt).split(/\r?\n/), out = [], inList = false;

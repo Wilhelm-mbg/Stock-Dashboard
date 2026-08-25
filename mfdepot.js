@@ -246,12 +246,16 @@
     if (eM && mom) {
       var b = d.mfBuch, bw = mom.bewertung;
       var pnl = bw.wert - b.start;
+      /* cls statt sign: das Buch zeigt ein Ergebnis von genau 0 $ gruen. U.signCls
+       * saehe es neutral. Welche der beiden Anzeigen richtig ist, entscheidet nicht
+       * diese Aufraeumarbeit - der Ausdruck bleibt deshalb, wie er war. */
+      var pnlCls = pnl >= 0 ? 'pos' : 'neg';
       var html = '<div class="depot-stats">' +
-        '<div class="tile"><div class="name">Depotwert</div><div class="val ' + (pnl >= 0 ? 'pos' : 'neg') + '" style="font-size:var(--fs-zahl);">' + U.money(bw.wert) + '</div></div>' +
-        '<div class="tile"><div class="name">Ergebnis</div><div class="val ' + (pnl >= 0 ? 'pos' : 'neg') + '" style="font-size:var(--fs-zahl);">' + U.signTxt(Math.round(pnl * 100) / 100, ' $') + '</div></div>' +
-        '<div class="tile"><div class="name">Positionen</div><div class="val" style="font-size:var(--fs-zahl);">' + b.positionen.length + '</div></div>' +
-        '<div class="tile"><div class="name">Status</div><div class="val" style="font-size:var(--fs-gross);">' +
-          (d.momentumAn ? 'handelt selbst' : 'nur rechnen') + '</div></div></div>';
+        U.kachel('Depotwert', U.money(bw.wert), { cls: pnlCls, fs: 'var(--fs-zahl)' }) +
+        U.kachel('Ergebnis', U.signTxt(Math.round(pnl * 100) / 100, ' $'), { cls: pnlCls, fs: 'var(--fs-zahl)' }) +
+        U.kachel('Positionen', b.positionen.length, { fs: 'var(--fs-zahl)' }) +
+        U.kachel('Status', d.momentumAn ? 'handelt selbst' : 'nur rechnen', { fs: 'var(--fs-gross)' }) +
+        '</div>';
       if (mom.faellig && mom.plan) {
         html += '<div style="font-size:var(--fs-text); margin:8px 0; padding:8px 10px; border-left:3px solid var(--warn);">' +
           '<b>Rebalancing fällig.</b> ' + (d.momentumAn ? 'Wird beim nächsten Takt ausgeführt.' :
@@ -276,13 +280,14 @@
       } else {
         var bD = d.driftBuch, bwD = drift.bewertung;
         var pnlD = bwD.wert - bD.start;
+        var pnlDCls = pnlD >= 0 ? 'pos' : 'neg';
         eD.innerHTML = '<div class="depot-stats">' +
-          '<div class="tile"><div class="name">Depotwert</div><div class="val ' + (pnlD >= 0 ? 'pos' : 'neg') + '" style="font-size:var(--fs-zahl);">' + U.money(bwD.wert) + '</div></div>' +
-          '<div class="tile"><div class="name">Ergebnis</div><div class="val ' + (pnlD >= 0 ? 'pos' : 'neg') + '" style="font-size:var(--fs-zahl);">' + U.signTxt(Math.round(pnlD * 100) / 100, ' $') + '</div></div>' +
-          '<div class="tile"><div class="name">Positionen</div><div class="val" style="font-size:var(--fs-zahl);">' + bD.positionen.length + '</div></div>' +
-          '<div class="tile"><div class="name">Signale offen laut Modell</div><div class="val" style="font-size:var(--fs-zahl);">' + drift.info.heute.offen.length + '</div></div>' +
-          '<div class="tile"><div class="name">Status</div><div class="val" style="font-size:var(--fs-gross);">' +
-            (d.driftAn ? 'handelt selbst' : 'nur rechnen') + '</div></div></div>' +
+          U.kachel('Depotwert', U.money(bwD.wert), { cls: pnlDCls, fs: 'var(--fs-zahl)' }) +
+          U.kachel('Ergebnis', U.signTxt(Math.round(pnlD * 100) / 100, ' $'), { cls: pnlDCls, fs: 'var(--fs-zahl)' }) +
+          U.kachel('Positionen', bD.positionen.length, { fs: 'var(--fs-zahl)' }) +
+          U.kachel('Signale offen laut Modell', drift.info.heute.offen.length, { fs: 'var(--fs-zahl)' }) +
+          U.kachel('Status', d.driftAn ? 'handelt selbst' : 'nur rechnen', { fs: 'var(--fs-gross)' }) +
+          '</div>' +
           posTabelle(bD, daten.preise, true) +
           verworfenTabelle(drift.info.verworfen, 'Erkannt, aber nicht gehandelt', true);
       }

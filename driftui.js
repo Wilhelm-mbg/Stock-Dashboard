@@ -138,12 +138,12 @@
     var gut = res.tWert >= 2;
     el.innerHTML =
       '<div class="depot-stats">' +
-        '<div class="tile"><div class="name">Ertrag p. a. (marktneutral)</div><div class="val ' +
-          (res.proJahr >= 0 ? 'pos' : 'neg') + '" style="font-size:var(--fs-zahl);">' + U.signTxt(res.proJahr, ' %') + '</div></div>' +
-        '<div class="tile"><div class="name">t-Wert</div><div class="val" style="font-size:var(--fs-zahl);">' + res.tWert + '</div></div>' +
-        '<div class="tile"><div class="name">Positive Monate</div><div class="val" style="font-size:var(--fs-zahl);">' + res.positiveMonate + ' %</div></div>' +
-        '<div class="tile"><div class="name">Gemessene Monate</div><div class="val" style="font-size:var(--fs-zahl);">' + res.verlauf.length + '</div></div>' +
-        '<div class="tile"><div class="name">Positionen gleichzeitig</div><div class="val" style="font-size:var(--fs-zahl);">' + res.offenSchnitt + '</div></div>' +
+        U.kachel('Ertrag p. a. (marktneutral)', U.signTxt(res.proJahr, ' %'),
+                 { cls: res.proJahr >= 0 ? 'pos' : 'neg', fs: 'var(--fs-zahl)' }) +
+        U.kachel('t-Wert', res.tWert, { fs: 'var(--fs-zahl)' }) +
+        U.kachel('Positive Monate', res.positiveMonate + ' %', { fs: 'var(--fs-zahl)' }) +
+        U.kachel('Gemessene Monate', res.verlauf.length, { fs: 'var(--fs-zahl)' }) +
+        U.kachel('Positionen gleichzeitig', res.offenSchnitt, { fs: 'var(--fs-zahl)' }) +
       '</div>' +
       '<div style="font-size:var(--fs-neben); color:var(--ink-2); margin-top:8px;">' +
         res.positionen.toLocaleString('de-DE') + ' Positionen aus ' + wieViele + ' Werten · ' +

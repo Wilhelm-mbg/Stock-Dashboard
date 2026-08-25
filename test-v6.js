@@ -8112,6 +8112,33 @@ console.log('\n60) Bausteinkasten: Statuszeilen');
   });
 })();
 
+console.log('\n61) Bausteinkasten: Kacheln');
+(function () {
+  var shell = fs.readFileSync(__dirname + '/app-shell.js', 'utf8');
+  ok(/kachel: function \(name, wert, opt\)/.test(shell), 'Es gibt eine Kachel-Hilfe');
+  /* Der Grund, warum die Groesse KEINEN Vorgabewert hat: die sechs Kopfkacheln auf
+   * "Heute" tragen absichtlich keine Inline-Groesse und leben von .tile .val
+   * (--fs-titel). Ein Vorgabewert wuerde sie stillschweigend verkleinern. */
+  ok(/opt\.fs \? ' style="font-size:'/.test(shell),
+     'Die Kachel-Hilfe setzt eine Schriftgroesse nur, wenn der Aufrufer eine nennt');
+  /* cls hat Vorrang vor sign: die Buecher zeigen ein Ergebnis von genau 0 $ gruen,
+   * U.signCls saehe es neutral. Diese Anzeigeentscheidung darf eine Hilfe nicht
+   * umdrehen - deshalb reichen die Buecher cls durch, nicht sign. */
+  ok(/opt\.cls != null \? opt\.cls :/.test(shell),
+     'Eine fertige Klasse hat Vorrang - die Hilfe dreht keine Anzeigeentscheidung um');
+  /* Kein Modul baut die Kachel nochmal von Hand. depot.js darf: dort steht der
+   * Aufrufer-seitige Rest (tile()), und der ruft die Hilfe. */
+  ['mfdepot.js', 'driftui.js'].forEach(function (f) {
+    var q = fs.readFileSync(__dirname + '/' + f, 'utf8');
+    ok(/U\.kachel\(/.test(q) && !/<div class="tile"><div class="name">/.test(q),
+       f + ': baut keine Kachel mehr von Hand');
+  });
+  var depK = fs.readFileSync(__dirname + '/depot.js', 'utf8');
+  ok(/function tile\(name, val, sign, delta, deltaSign\)/.test(depK),
+     'depot.js: die Signatur von tile() bleibt - eine Zusicherung benutzt sie als Endmarke');
+  ok(/U\.kachel\(name, val,/.test(depK), 'depot.js: tile() baut nicht mehr selbst');
+})();
+
 Promise.all(offeneProben).then(function () {
   console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
   process.exit(fails ? 1 : 0);

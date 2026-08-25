@@ -729,6 +729,9 @@
       });
       PROTOKOLL_KANTE = neu;
       try { huerdeAnzeigen(); } catch (e) { /* Anzeige noch nicht da - beim naechsten Mal */ }
+      /* Struktur-Audit Punkt 3: andere Anzeigen (Strategien-Uebersicht) lesen dieselben
+       * Kanten ueber DepotAPI - das Ereignis sagt ihnen, dass jetzt welche da sind. */
+      try { document.dispatchEvent(new CustomEvent('kanten-geladen')); } catch (e2) { /* optional */ }
     } catch (e) { /* kein Protokoll lesbar: es wird eben nichts behauptet */ }
   }
   document.addEventListener('DOMContentLoaded', function () { kantenAusProtokollen(); });
@@ -4799,9 +4802,12 @@
     }
   }
 
+    /* Die SIGNATUR bleibt unveraendert: eine Zusicherung in test-v6.js benutzt genau
+     * diese Zeile als Endmarke, um einen Ausschnitt dieser Datei herauszuschneiden.
+     * Aendert sie sich, liefert indexOf -1 und der Ausschnitt reicht bis ans Dateiende -
+     * die Zusicherung prueft dann klaglos den falschen Bereich. */
     function tile(name, val, sign, delta, deltaSign) {
-      return '<div class="tile"><div class="name">' + name + '</div><div class="val' + (sign != null ? ' ' + U.signCls(sign) : '') + '" style="font-size:var(--fs-zahl);">' + val + '</div>' +
-        (delta ? '<div class="delta ' + (deltaSign ? U.signCls(deltaSign) : '') + '">' + delta + '</div>' : '') + '</div>';
+      return U.kachel(name, val, { sign: sign, fs: 'var(--fs-zahl)', delta: delta, deltaSign: deltaSign });
     }
 
     // Positionen
@@ -5928,6 +5934,33 @@
       save();
       renderWatchChips();
       return true;
+    },
+
+    /* ---- Struktur-Audit Punkte 3+4: eine Quelle fuer Urteil und Betrieb ----
+     * protokollKante: das Messurteil zu einer Strategie-Kennung, wie
+     * kantenAusProtokollen() es aus dem Datenordner gelesen hat. Nur eine Kopie -
+     * wer es anzeigt, rechnet nichts nach und behauptet nichts dazu.
+     * regelStatus: was die App aus den Regeln gerade MACHT (handelt, zeichnet auf,
+     * Buch laeuft). Das ist Depot-Zustand, kein Urteil - beide gehoeren nebeneinander
+     * angezeigt, nie vermischt. */
+    protokollKante: function (key) {
+      var k = PROTOKOLL_KANTE[key];
+      return k ? { urteil: k.urteil, datum: k.datum, jeSignalPp: k.jeSignalPp, varianten: k.varianten } : null;
+    },
+    regelStatus: function () {
+      if (!D) return null;
+      return {
+        intradayAn: !!(D.intraday && D.intraday.enabled),
+        modus: D.intraday ? D.intraday.mode : null,
+        kapiZusatz: !!(D.intraday && D.intraday.kapiZusatz),
+        schatten: !D.intraday || D.intraday.schattenImmer !== false,
+        momentumAn: !!D.momentumAn,
+        driftAn: !!D.driftAn,
+        stundenAn: D.hourlyEnabled !== false,
+        messRegeln: (Array.isArray(D.regeln) ? D.regeln : []).map(function (r) {
+          return { name: r.name, modus: r.cfg && r.cfg.mode };
+        })
+      };
     }
   };
 
@@ -7326,9 +7359,19 @@
     var haltStd = Math.round((c.scalpHold || 480) / 60);
     if (c.mode === 'rsi2seit' || c.mode === 'kapitulation') {
       name = trigName;
-      was = c.mode === 'rsi2seit'
-        ? 'Kauft den RSI(2)-Rücklauf, aber nur im Seitwärtskanal mit Volumen – der Kanal gibt nicht die Richtung, sondern die Erlaubnis. Nur Long. Im Backtest gemessen: +0,147 Prozentpunkte auf 8 Handelsstunden über die übliche Drift hinaus.'
-        : 'Kauft den Ausverkauf im Abwärtskanal – die Kapitulation, nicht den Trend. Nur Long. Im Backtest gemessen: Median +0,44 % je Trade.';
+      /* Struktur-Audit Punkt 3: die Messzahl kommt aus dem Protokoll, nicht aus einem
+       * abgetippten Satz - abgetippte Zahlen veralten (Regel D2). Ohne Protokoll steht
+       * der alte Backtest-Wert da, aber ALS das gekennzeichnet, was er ist. */
+      var pkK = PROTOKOLL_KANTE[c.mode];
+      var messSatz = pkK
+        ? ' Messprotokoll vom ' + pkK.datum + ': ' + pkK.urteil + ', Überschuss je Signal ' +
+          (pkK.jeSignalPp >= 0 ? '+' : '') + U.dez(pkK.jeSignalPp, 3) + ' Pp – die App liest dieses Urteil, sie rechnet es nicht.'
+        : (c.mode === 'rsi2seit'
+          ? ' Backtest vor der Kontrollmessung: +0,147 Pp auf 8 Handelsstunden über die übliche Drift – kein Messprotokoll im Datenordner, dieser Stand kann veralten.'
+          : ' Backtest vor der Kontrollmessung: Median +0,44 % je Trade – kein Messprotokoll im Datenordner, dieser Stand kann veralten.');
+      was = (c.mode === 'rsi2seit'
+        ? 'Kauft den RSI(2)-Rücklauf, aber nur im Seitwärtskanal mit Volumen – der Kanal gibt nicht die Richtung, sondern die Erlaubnis. Nur Long.'
+        : 'Kauft den Ausverkauf im Abwärtskanal – die Kapitulation, nicht den Trend. Nur Long.') + messSatz;
       // Ausstieg nennen: beide Kanten steigen ueber die Zeit aus, darunter nur der Not-Stop.
       was += ' Ausstieg nach ' + haltStd + ' Handelsstunden, darunter nur ein Not-Stop – kein Gewinnziel, kein Trailing; die Position darf über Nacht laufen.';
       // Instrument aus dem Ist-Zustand: die Bestandsschutz-Migration stellt alte
