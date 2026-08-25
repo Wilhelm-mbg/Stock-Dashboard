@@ -3231,10 +3231,14 @@ console.log('\n36) Kostenhuerde des Produkts (Signalstudie 23.08.2026)');
   /* Stufe 4: aus sechs Reitern wurden vier. Am 23.08.2026 kam ein fuenfter dazu:
    * Messung - Scoreboard und Strategie-Eingabe. Die Zahl ist der Wachhund; wer einen
    * Reiter ergaenzt, muss ihn hier benennen. */
+  /* Am 25.08.2026 ging einer wieder: die Marktkarte ist seither die zweite Pille unter
+   * "Heute" (Struktur-Plan, Stufe C4) - ein eigener Reiter fuer EINE Ansicht war das
+   * schwerste Ungleichgewicht der Leiste. Die Zahl ist der Wachhund; wer einen Reiter
+   * ergaenzt ODER streicht, muss es hier benennen. */
   var reiter = (html.match(/data-tab="[a-z]+"/g) || []);
-  ok(reiter.length === 6 && reiter.indexOf('data-tab="messung"') !== -1 &&
-     reiter.indexOf('data-tab="marktkarte"') !== -1,
-     'Sechs Reiter: Heute · Marktkarte · Regeln · Vermoegen · Werkzeuge · Messung', reiter.join(' '));
+  ok(reiter.length === 5 && reiter.indexOf('data-tab="messung"') !== -1 &&
+     reiter.indexOf('data-tab="marktkarte"') === -1,
+     'Fuenf Reiter: Heute · Regeln · Vermoegen · Werkzeuge · Messung', reiter.join(' '));
   ['dashboard', 'strategien', 'depot', 'werkzeuge'].forEach(function (id) {
     ok(html.indexOf('data-tab="' + id + '"') !== -1 && html.indexOf('id="tab-' + id + '"') !== -1,
        'Reiter ' + id + ' hat Knopf und Inhalt');
@@ -4466,14 +4470,18 @@ console.log('\n40) Tastatur, Semantik und Kontrast – die Oberflaeche ohne Maus
    * Vorher waren es fuenf zusammenhanglose Knoepfe: kein tablist, keine Pfeiltasten,
    * und man musste sich durch alle fuenf tabben, um zum Inhalt zu kommen. */
   ok(/role="tablist"/.test(html), 'Reiter: die Leiste ist ein tablist');
-  ok((html.match(/role="tab"/g) || []).length === 6, 'Reiter: alle sechs Knoepfe sind role="tab"');
-  ok((html.match(/role="tabpanel"/g) || []).length === 6, 'Reiter: alle sechs Bereiche sind role="tabpanel"');
-  ok((html.match(/aria-controls="tab-/g) || []).length === 6, 'Reiter: jeder Knopf benennt seinen Bereich');
-  ok((html.match(/aria-labelledby="reiter-/g) || []).length === 6, 'Reiter: jeder Bereich benennt seinen Knopf');
+  /* Fuenf, seit die Marktkarte eine Pille unter "Heute" ist (Stufe C4). Die Pillen
+     tragen bewusst KEINE tab/tabpanel-Rollen - sie sind es bei keiner der anderen
+     Leisten (#depotPills, #wzPills, #regelPills, #heutePills) auch nicht. Wer das
+     aendern will, aendert es fuer alle vier Leisten oder fuer keine. */
+  ok((html.match(/role="tab"/g) || []).length === 5, 'Reiter: alle fuenf Knoepfe sind role="tab"');
+  ok((html.match(/role="tabpanel"/g) || []).length === 5, 'Reiter: alle fuenf Bereiche sind role="tabpanel"');
+  ok((html.match(/aria-controls="tab-/g) || []).length === 5, 'Reiter: jeder Knopf benennt seinen Bereich');
+  ok((html.match(/aria-labelledby="reiter-/g) || []).length === 5, 'Reiter: jeder Bereich benennt seinen Knopf');
   ok(/ArrowRight/.test(shell) && /ArrowLeft/.test(shell) && /'Home'/.test(shell) && /'End'/.test(shell),
      'Reiter: Pfeiltasten, Pos1 und Ende blaettern die Leiste');
   // Roving tabindex: genau EIN Reiter ist tabbierbar, sonst kostet der Weg zum Inhalt vier Tabs
-  ok((html.match(/role="tab"[^>]*tabindex="-1"/g) || []).length === 5,
+  ok((html.match(/role="tab"[^>]*tabindex="-1"/g) || []).length === 4,
      'Reiter: nur der aktive Reiter ist tabbierbar (roving tabindex)');
   ok(/x\.tabIndex = an \? 0 : -1;/.test(shell), 'Reiter: der tabindex wandert beim Wechsel mit');
   ok(/aria-selected/.test(shell), 'Reiter: aria-selected wird beim Wechsel nachgezogen');
@@ -4751,7 +4759,7 @@ console.log('\n41) Zustaende: was die App sagt, wenn etwas fehlt oder klemmt');
     .map(function (z) { return z.slice(z.lastIndexOf('>') + 1, -1).trim(); });
   var pillen = (html.match(/data-sub="[a-z]+"[^>]*>([^<]+)</g) || [])
     .map(function (z) { return z.slice(z.lastIndexOf('>') + 1, -1).replace(/&amp;/g, '&').trim(); });
-  ok(reiter.length === 6, 'Wegweiser: sechs Reiter gefunden (' + reiter.join(', ') + ')');
+  ok(reiter.length === 5, 'Wegweiser: fuenf Reiter gefunden (' + reiter.join(', ') + ')');
   ok(pillen.length >= 6, 'Wegweiser: die Unter-Pillen sind lesbar (' + pillen.length + ')');
   var echt = reiter.concat(pillen);
   var quellen = ['index.html', 'depot.js', 'renderer.js', 'strategien.js', 'mfdepot.js',
@@ -6351,7 +6359,12 @@ console.log('\n44) Oberflaeche nach Themen sortiert (Felix, Issue #68)');
      ohnePille.join(' ') || 'alle');
 
   /* --- Genau ein aktives Panel je Reiter, sonst liegen zwei uebereinander --- */
-  ['tab-depot', 'tab-werkzeuge', 'tab-strategien'].forEach(function (id) {
+  /* tab-dashboard steht seit Stufe C4 mit in der Liste: "Heute" hat drei Pillen und
+     faellt damit unter dieselbe Regel wie die drei anderen - genau ein aktives Panel,
+     genau eine aktive Pille. Zwei aktive Panels laegen uebereinander und niemand saehe,
+     welches. Deshalb ist die Attributreihenfolge data-sub vor class im Markup
+     Bedingung und nicht Geschmack. */
+  ['tab-dashboard', 'tab-depot', 'tab-werkzeuge', 'tab-strategien'].forEach(function (id) {
     var von = html.indexOf('<div id="' + id + '"');
     var bis = html.indexOf('<!-- /' + id + ' -->');
     ok(von > -1 && bis > von, 'Reiter ' + id + ' ist im Markup abgegrenzt');
@@ -6452,6 +6465,35 @@ console.log('\n44) Oberflaeche nach Themen sortiert (Felix, Issue #68)');
   ok(/id="sub-strategien"/.test(regeln) && /id="sub-auswertung"/.test(regeln) &&
      /id="sub-regelbuch"/.test(regeln) && /id="sub-stratchart"/.test(regeln),
      'Regeln haelt alles Regelrelevante: Schalter, Autopilot, Regelbuch, Chart');
+
+  /* --- Stufe C4: die Marktkarte ist eine Pille, kein Reiter --- */
+  ok(!/data-tab="marktkarte"/.test(html) && /id="heutePills"/.test(html),
+     'Die Marktkarte ist kein eigener Reiter mehr, "Heute" hat eine Pillenleiste');
+  ok(/id="sub-marktkarte"/.test(heute) && /id="mkKarte"/.test(heute) && /id="mkFuss"/.test(heute),
+     'Der Marktkarten-Block liegt vollstaendig unter Heute - als Block umgezogen, nicht neu gebaut');
+  ok(/id="spekRadar"/.test(heute) && /id="insiderKarte"/.test(heute) && /id="vormarktKarte"/.test(heute) &&
+     /id="sub-beobachtung"/.test(heute),
+     'Radar, Insider und Vorboersen-Luecken stehen zusammen in der dritten Pille');
+  /* Keine verwaiste Reiter-Kennung: eine Endmarke oder ein aria-labelledby fuer einen
+     Reiter, den es nicht mehr gibt, ist genau die Sorte toter Verweis, die dieser
+     Umbau abschafft. */
+  ok(!/tab-marktkarte/.test(html) && !/reiter-marktkarte/.test(html),
+     'Vom alten Reiter ist keine Kennung uebriggeblieben');
+  /* Der Simulationssatz muss VOR seiner Karte stehen bleiben - er ist die sichtbare
+     Zusicherung, dass an diesen drei Karten nichts gemessen ist. Zieht die Ueberschrift
+     nicht mit um, faellt er zwischen die Stuehle und niemand merkt es. */
+  ['spekRadar', 'insiderKarte', 'vormarktKarte'].forEach(function (kid) {
+    var bisK = heute.indexOf('id="' + kid + '"');
+    var vonK = heute.lastIndexOf('<h2>', bisK);
+    ok(vonK > -1 && /Gehandelt wird hiervon nichts/.test(heute.slice(vonK, bisK)),
+       'Beobachtung: ueber ' + kid + ' steht der Simulationssatz weiterhin');
+  });
+  /* hoverInfo ist ein position:fixed Ueberlagerungsfenster, kein Inhalt. Laege es in
+     einer Pille, waere es weg, sobald eine andere gewaehlt ist - und der
+     Zeigefinger-Hinweis der Heatmap ginge mit. */
+  ok(heute.indexOf('id="hoverInfo"') > -1 &&
+     heute.indexOf('id="hoverInfo"') < heute.indexOf('id="heutePills"'),
+     'hoverInfo steht ausserhalb der Pillen - sonst verschwaende der Heatmap-Hinweis');
 
   /* C1 (Struktur-Plan 25.08.2026): Steuerung nach Regeln, Bestand nach Vermoegen.
    * Die Trennlinie ist nachpruefbar: mfdepot.js takt() liest KEIN Bedienfeld, es
@@ -7670,7 +7712,25 @@ console.log('\n47) Anzeige der Messmaschine: unbekannte Urteile und die Selbstpr
   // Geprueft wird der CODE, nicht der Kommentar - siehe ohneKommentare() oben.
   ok(!/bester Sektor|heissester|Rangliste|Top-?\d/i.test(ohneKommentare(ui)),
      'Keine Rangliste und kein „bester Sektor“ im Code - das saehe nach einem Befund aus');
-  ok(/data-info="marktkarte"/.test(html), 'Der Reiter hat einen Erklaertext hinter dem i');
+  ok(/data-info="marktkarte"/.test(html), 'Die Karte hat einen Erklaertext hinter dem i');
+  /* Stufe C4: die Karte ist eine Pille geworden. Der Reiterwechsel feuert fuer sie nie
+     wieder - ein Zuhoerer darauf waere ein toter Schalter, und zwar ein unsichtbarer.
+     Geprueft wird die VERWENDUNG, nicht der blosse Name: der Kommentar daneben darf
+     das alte Ereignis nennen, um zu erklaeren, warum es weg ist. */
+  ok(!/addEventListener\('tab-changed'/.test(ui) && /addEventListener\('sub-changed'/.test(ui) &&
+     /d\.sub !== 'marktkarte'/.test(ui),
+     'Die Karte hoert auf den Pillenwechsel, nicht mehr auf den Reiterwechsel');
+  /* Die Karte laeuft im Hintergrund weiter, auch wenn ihre Pille nicht gewaehlt ist
+     (Fehler #79). Das darf nicht zufaellig stimmen: der Takt startet UNBEDINGT beim
+     Laden der Seite und prueft nur, ob das FENSTER sichtbar ist - nie, welcher Reiter
+     oder welche Pille offen ist. Haenge das je an .active oder an ein
+     Navigations-Ereignis, waere die Karte nach jedem Umbau der Navigation still tot. */
+  var takt = ui.slice(ui.indexOf('function taktenAn'), ui.indexOf('window.api.onMarktSecFortschritt'));
+  ok(takt.length > 50, 'Der Takt der Karte ist auffindbar');
+  ok(/document\.hidden/.test(takt) && !/classList|\.active|tab-changed|sub-changed|getElementById\('tab-/.test(takt),
+     'Der Takt der Karte prueft nur document.hidden - nie den gewaehlten Reiter oder die Pille');
+  ok(/setTimeout\(function \(\) \{ if \(!letzterLauf\) laden\(\); \}, 12000\);\s*\n\s*taktenAn\(\);/.test(ui),
+     'Der Takt startet beim Laden der Seite, nicht erst beim Oeffnen der Karte');
   ok(html.indexOf('marktkarte.js') < html.indexOf('marktkarteui.js'),
      'Ladereihenfolge: die Rechnung vor der Oberflaeche');
 })();

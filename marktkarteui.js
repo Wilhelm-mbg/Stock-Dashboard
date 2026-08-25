@@ -517,10 +517,26 @@
     if (anz) anz.addEventListener('change', laden);
     var br = document.getElementById('mkBranche');
     if (br) br.addEventListener('change', laden);
-    document.addEventListener('tab-changed', function (ev) {
-      if (ev.detail !== 'marktkarte') return;
+    /* Seit Stufe C4 ist die Karte kein eigener Reiter mehr, sondern die zweite Pille
+     * unter "Heute". Die Shell meldet einen Pillenwechsel als 'sub-changed'; auf
+     * 'tab-changed' kaeme fuer die Karte nie wieder etwas an - der Zuhoerer waere tot,
+     * und zwar unsichtbar tot.
+     *
+     * DIESE ZEILEN SIND EIN BESCHLEUNIGER, KEIN ANTRIEB. Getaktet wird unabhaengig vom
+     * gewaehlten Reiter und von der gewaehlten Pille - taktenAn() steht unten
+     * unbedingt im DOMContentLoaded, und der Takt prueft nur document.hidden.
+     *
+     * Neu gezeichnet wird IMMER, nicht nur beim ersten Mal: solange die Pille nicht
+     * gewaehlt ist, hat #mkKarte clientWidth 0 - zeichnen() faellt dann auf 900 px
+     * zurueck (die Hoehe stimmt zufaellig, weil #mkKarte fest 620 px hoch ist, die
+     * Breite nicht). Wer die Pille oeffnet, saehe sonst bis zum naechsten Takt einen
+     * leeren Streifen rechts. Der Neuaufbau ist praktisch gratis: der
+     * Kurs-Zwischenspeicher haelt fuenf Minuten, es geht kein Abruf ins Netz. */
+    document.addEventListener('sub-changed', function (ev) {
+      var d = ev.detail || {};
+      if (d.sub !== 'marktkarte') return;
       taktenAn();
-      if (!letzterLauf) laden();
+      laden();
     });
     /* BEIM START laden, nicht erst beim ersten Reiterwechsel (Wilhelm: "er soll es
      * beim app start laden und dann live weiter führen"). Die 12 Sekunden Vorlauf

@@ -254,7 +254,6 @@
   .chip.down { color: var(--chip-down); background: var(--down-soft); }
   .chip.flat { color: var(--ink-2); background: var(--series-soft); }
 
-
   .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(255px, 1fr)); gap: 10px; }
   .card { padding: 12px 14px; }
   .card .top { display: flex; align-items: baseline; gap: 8px; }
@@ -745,7 +744,6 @@
      Tastaturbedienung (Pfeile, Pos1/Ende) haengt in app-shell.js daran. -->
 <nav class="tabs" role="tablist" aria-label="Hauptbereiche">
   <button data-tab="dashboard" class="active" role="tab" aria-selected="true"  aria-controls="tab-dashboard" id="reiter-dashboard">Heute</button>
-  <button data-tab="marktkarte"               role="tab" aria-selected="false" aria-controls="tab-marktkarte" id="reiter-marktkarte" tabindex="-1">Marktkarte</button>
   <button data-tab="strategien"               role="tab" aria-selected="false" aria-controls="tab-strategien" id="reiter-strategien" tabindex="-1">Regeln</button>
   <button data-tab="depot"                    role="tab" aria-selected="false" aria-controls="tab-depot"      id="reiter-depot"      tabindex="-1">Vermögen</button>
   <button data-tab="werkzeuge"                role="tab" aria-selected="false" aria-controls="tab-werkzeuge"  id="reiter-werkzeuge"  tabindex="-1">Werkzeuge</button>
@@ -753,7 +751,27 @@
 </nav>
 
 <div id="tab-dashboard" class="tab active" role="tabpanel" aria-labelledby="reiter-dashboard">
+<!-- #hoverInfo steht ABSICHTLICH ausserhalb der Pillen: es ist ein position:fixed
+     Ueberlagerungsfenster, kein Inhalt. Laege es in einer Pille, waere es weg,
+     sobald eine andere Pille gewaehlt ist - und der Zeigefinger-Hinweis der
+     Heatmap ginge mit. -->
 <div id="hoverInfo"></div>
+
+  <!-- Drei Pillen statt zehn Sektionen am Stueck (Struktur-Plan 25.08.2026, Stufe C4).
+       Die Marktkarte war bis dahin ein eigener Reiter fuer EINE Ansicht; die drei
+       Beobachtungs-Karten standen mitten im Ueberblick, obwohl an keiner von ihnen
+       etwas gemessen ist. Die data-sub-Werte sind app-weit eindeutig und rein
+       kleinbuchstabig - der Umschalter sucht das Panel ueber getElementById('sub-'+Wert),
+       und test-v6.js liest die Pillen mit /data-sub="[a-z]+"/.
+       Attributreihenfolge data-sub VOR class ist Bedingung, nicht Geschmack: die
+       Zusicherung "genau eine aktive Pille" liest /data-sub="[a-z]+" class="active"/. -->
+  <div class="pills" id="heutePills">
+    <button data-sub="ueberblick" class="active">Überblick</button>
+    <button data-sub="marktkarte">Marktkarte</button>
+    <button data-sub="beobachtung">Radar &amp; Insider</button>
+  </div>
+
+  <div class="sub active" id="sub-ueberblick">
 <div id="newsTicker" style="display:none;" title="Markt-News als Laufband – unter dem Mauszeiger hält es an. Klick öffnet die Meldung."></div>
 <h2>Marktüberblick</h2>
 <div class="tiles" id="tiles"><div class="loading">Lade Kurse …</div></div>
@@ -775,16 +793,6 @@
      nur anders sortiert. Zusammengelegt: das Marktbild sortiert jetzt vom staerksten
      Gewinner zum staerksten Verlierer und traegt Kurs + ausserboerslichen Kurs. -->
 
-
-<h2>Spekulations-Radar <span style="color:var(--muted); font-size:var(--fs-neben); font-weight:400; text-transform:none; letter-spacing:0;">– Gerüchte aus öffentlichen Quellen, dreimal täglich vor US-Eröffnung gesammelt. <b>Gehandelt wird hiervon nichts.</b></span> <button class="info" type="button" data-info="heute.radar" aria-expanded="false" aria-label="Erklärung: Spekulations-Radar">i</button></h2>
-<div class="panel" id="spekRadar"><div class="loading">Noch keine Radar-Daten – wird gleich aus der Gemeinschafts-Ablage geladen.</div></div>
-
-<h2>Insider-Käufe <span style="color:var(--muted); font-size:var(--fs-neben); font-weight:400; text-transform:none; letter-spacing:0;">– meldepflichtige Eigengeschäfte von Vorstand und Aufsichtsrat (SEC Form 4). <b>Gehandelt wird hiervon nichts.</b></span> <button class="info" type="button" data-info="heute.insider" aria-expanded="false" aria-label="Erklärung: Insider-Käufe">i</button></h2>
-<div class="panel" id="insiderKarte"><div class="loading">Noch keine Insider-Daten – wird gleich aus der Gemeinschafts-Ablage geladen.</div></div>
-
-<h2>Vorbörsen-Lücken <span style="color:var(--muted); font-size:var(--fs-neben); font-weight:400; text-transform:none; letter-spacing:0;">– Werte, die vor der US-Eröffnung deutlich anders stehen als beim gestrigen Schluss. <b>Gehandelt wird hiervon nichts.</b></span> <button class="info" type="button" data-info="heute.vorboerse" aria-expanded="false" aria-label="Erklärung: Vorbörsen-Lücken">i</button></h2>
-<div class="panel" id="vormarktKarte"><div class="loading">Noch nicht gesucht.</div></div>
-
 <!-- Dieselben 15 Werte standen dreimal untereinander: Heatmap, Gewinner/Verlierer,
      Detailkarten. Die Karten liegen jetzt hinter einer Klappe - sie tragen echte
      Zusatzinformation (Marktkapitalisierung, KGV, 52-Wochen-Spanne), aber nicht
@@ -802,9 +810,12 @@
 
 <h2>Markt-News</h2>
 <div class="news" id="news"><div class="loading">Lade News …</div></div>
-</div><!-- /tab-dashboard -->
+  </div><!-- /sub-ueberblick -->
 
-<div id="tab-marktkarte" class="tab" role="tabpanel" aria-labelledby="reiter-marktkarte">
+  <!-- Aus dem eigenen Reiter in die zweite Pille unter "Heute" (Stufe C4). Der Block
+       ist unveraendert umgezogen; die IDs mkAnzahl / mkBranche / mkStand / mkKarte /
+       mkFuss sind die Schnittstelle zum Kartenmodul und bleiben, wie sie sind. -->
+  <div class="sub" id="sub-marktkarte">
 <h2>Marktkarte <span style="color:var(--muted); font-size:var(--fs-neben); font-weight:400; text-transform:none; letter-spacing:0;">– Fläche ist Größe, Farbe ist der Tag.</span>
   <button class="info" type="button" data-info="marktkarte" aria-expanded="false" aria-label="Erklärung: Marktkarte">i</button></h2>
 <div class="panel">
@@ -829,7 +840,25 @@
   </div>
   <div id="mkFuss" style="font-size:var(--fs-klein); color:var(--muted); margin-top:8px; line-height:1.6; max-width:80ch;"></div>
 </div>
-</div><!-- /tab-marktkarte -->
+  </div><!-- /sub-marktkarte -->
+
+  <!-- Radar, Insider und Vorboersen-Luecken standen bis 25.08.2026 mitten im
+       Ueberblick. Sie gehoeren zusammen: alle drei sind Fremdinhalt, an allen dreien
+       ist nichts gemessen, und alle drei sagen das in ihrer Ueberschrift. Die
+       Ueberschriften ziehen deshalb MIT ihren Karten um: eine Zusicherung schneidet
+       den Simulationssatz genau zwischen Ueberschrift und Karte aus, und eine zweite
+       zaehlt ihn auf genau drei. Deshalb steht er hier auch nicht im Kommentar. -->
+  <div class="sub" id="sub-beobachtung">
+<h2>Spekulations-Radar <span style="color:var(--muted); font-size:var(--fs-neben); font-weight:400; text-transform:none; letter-spacing:0;">– Gerüchte aus öffentlichen Quellen, dreimal täglich vor US-Eröffnung gesammelt. <b>Gehandelt wird hiervon nichts.</b></span> <button class="info" type="button" data-info="heute.radar" aria-expanded="false" aria-label="Erklärung: Spekulations-Radar">i</button></h2>
+<div class="panel" id="spekRadar"><div class="loading">Noch keine Radar-Daten – wird gleich aus der Gemeinschafts-Ablage geladen.</div></div>
+
+<h2>Insider-Käufe <span style="color:var(--muted); font-size:var(--fs-neben); font-weight:400; text-transform:none; letter-spacing:0;">– meldepflichtige Eigengeschäfte von Vorstand und Aufsichtsrat (SEC Form 4). <b>Gehandelt wird hiervon nichts.</b></span> <button class="info" type="button" data-info="heute.insider" aria-expanded="false" aria-label="Erklärung: Insider-Käufe">i</button></h2>
+<div class="panel" id="insiderKarte"><div class="loading">Noch keine Insider-Daten – wird gleich aus der Gemeinschafts-Ablage geladen.</div></div>
+
+<h2>Vorbörsen-Lücken <span style="color:var(--muted); font-size:var(--fs-neben); font-weight:400; text-transform:none; letter-spacing:0;">– Werte, die vor der US-Eröffnung deutlich anders stehen als beim gestrigen Schluss. <b>Gehandelt wird hiervon nichts.</b></span> <button class="info" type="button" data-info="heute.vorboerse" aria-expanded="false" aria-label="Erklärung: Vorbörsen-Lücken">i</button></h2>
+<div class="panel" id="vormarktKarte"><div class="loading">Noch nicht gesucht.</div></div>
+  </div><!-- /sub-beobachtung -->
+</div><!-- /tab-dashboard -->
 
 <div id="tab-strategien" class="tab" role="tabpanel" aria-labelledby="reiter-strategien">
   <div class="pills" id="regelPills">
@@ -1161,7 +1190,6 @@
     </div>
   </div>
 
-
   <div class="grid2" style="margin-top:12px;">
     <div class="panel">
       <h3>Was jetzt zu halten wäre</h3>
@@ -1172,7 +1200,6 @@
       <div id="mfErgebnis"><div class="empty">Noch nicht gerechnet.</div></div>
     </div>
   </div>
-
 
   <div class="panel" style="margin-top:12px;">
     <h3>Was du dabei wissen musst</h3>
@@ -1187,7 +1214,6 @@
       <p style="margin:0;"><b>Alles hier ist Simulation.</b> Es wird nichts gekauft und nichts verkauft.</p>
     </div>
   </div>
-
 
   <div class="panel">
     <h3>Mittelfrist-Bücher steuern</h3>
