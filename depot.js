@@ -2505,6 +2505,9 @@
             signaleVerworfenKursdatenVeraltet: HEALTH.staleBars || 0, killSwitchAusloesungen: HEALTH.killSwitch || 0,
             hintergrundRechnerAusfaelle: HEALTH.workerFail || 0,
             analyseExportFehler: HEALTH.exportFail || 0,
+            capitalOhneBestaetigung: HEALTH.capOhneDealId || 0,
+            edgeWaechterAusfaelle: HEALTH.edgeFail || 0,
+            scanSperreHaenger: HEALTH.scanHaenger || 0,
             archivSchreibFehler: (window.Archiv && window.Archiv.flushFehler
               ? window.Archiv.flushFehler().n : null),
             spannenTageAusKerzen: HEALTH.spannenTage || 0,
@@ -3352,6 +3355,7 @@
 
   /* ================= Intraday: MA-Durchbruch-Scanner ================= */
   var intradayScanning = false;
+  var intradayScanSeit = 0;      // wann die Sperre gesetzt wurde - gegen ein Festhaengen
 
   /* btRange = wie weit zurueck fuer Messung und Archiv-Aufbau gefragt wird.
    * Am 20.08.2026 gegen die Yahoo-Chart-API ausgemessen (AAPL, gegengeprueft an NVDA,
@@ -3794,7 +3798,28 @@
     // `!D || !D.intraday.enabled` war durch die Kurzschluss-Auswertung geschützt; ein
     // vorgezogenes `var nurSchatten = !D.intraday.enabled` hätte beim allerersten Aufruf
     // vor dem Laden des Depots geworfen.
-    if (intradayScanning || !D || !D.intraday) return;
+    /* DIE SPERRE KONNTE FUER IMMER STEHENBLEIBEN. `intradayScanning = true` wird
+     * weiter unten gesetzt, das schuetzende try beginnt aber erst danach. Wirft ein
+     * Vorbereitungsschritt (runScreener, scanUniverse, window.Cal), bleibt die Sperre
+     * gesetzt - und der 30-Sekunden-Takt prallt danach an dieser Zeile ab, bis die App
+     * neu startet. Still ausgefallen waere nicht nur das Neugeschaeft, sondern auch
+     * Stops, Ziele und die Tagesschluss-Glattstellung offener Positionen.
+     *
+     * Statt die Vorbereitung umzubauen bekommt die Sperre einen Zeitstempel. Das deckt
+     * zusaetzlich den Fall ab, den ein try NIE faengt: ein await, das nicht zurueckkehrt.
+     * Zehn Minuten sind reichlich - ein Scan dauert Sekunden. */
+    if (intradayScanning) {
+      if (Date.now() - intradayScanSeit < 10 * 60000) return;
+      HEALTH.scanHaenger = (HEALTH.scanHaenger || 0) + 1;
+      if (HEALTH.scanHaenger === 1) {
+        melde('Intraday-Scan hing fest',
+          'Ein Scan hat die Sperre laenger als zehn Minuten gehalten - danach haetten weder ' +
+          'Signale noch Stops noch die Tagesschluss-Glattstellung gegriffen. Die Sperre ist ' +
+          'geloest, der Scan laeuft wieder.');
+      }
+      intradayScanning = false;                 // dieser Aufruf uebernimmt
+    }
+    if (!D || !D.intraday) return;
     var nurSchatten = !D.intraday.enabled;
     if (nurSchatten && D.intraday.schattenImmer === false) return;
     // Krypto kennt keinen Handelsschluss: Ist der Krypto-Handel an, laeuft der Scan
@@ -3802,6 +3827,7 @@
     var boerseOffen = window.Dash.marketOpen();
     if (!boerseOffen && !D.intraday.kryptoHandeln) return;
     intradayScanning = true;
+    intradayScanSeit = Date.now();
     var cfg = D.intraday;
     // Wellen-Screener: einmal täglich vor dem ersten Scan die besten Kandidaten holen
     if (cfg.screener && (!D.screen || D.screen.day !== new Date().toISOString().slice(0, 10))) {
@@ -4478,9 +4504,24 @@
             var sizeC = Math.max(0.1, Math.round((equityNow() * cfg.budgetPct * 5 / spotNow) * 10) / 10);
             window.CapAPI.openPosition(tr.sym, tr.dir, sizeC, slLvl, tpLvl).then(function (r) {
               if (r.ok) { HEALTH.capOk++; } else { HEALTH.capFail++; capFehlerNeu(tr.sym, r); }
+              /* HALBER ERFOLG, bis zum 25.08.2026 als ganzer gezaehlt. capital.js meldet
+               * ok:true auch dann, wenn der POST durchging, die Bestaetigung
+               * (GET /confirms) aber nicht - dealId ist dann null. Die CFD-Position IST
+               * beim Broker eroeffnet, aber closeTrade schliesst nur bei vorhandener
+               * capDealId: sie bleibt offen und unbeaufsichtigt, nur mit ihrem Stop,
+               * waehrend die Simulation sie laengst geschlossen hat. Dieser Fall wurde
+               * nicht bloss verschwiegen - er ging als capitalOk in den Export. */
+              if (r.ok && !r.dealId) {
+                HEALTH.capOhneDealId = (HEALTH.capOhneDealId || 0) + 1;
+                capFehlerNeu(tr.sym, { msg: 'Order abgesetzt, aber ohne Bestaetigung - die Demo-Position ' +
+                  'kann NICHT automatisch geschlossen werden und muss von Hand geprueft werden' });
+              }
               if (r.ok) {
                 tr.capDealId = r.dealId;
                 tr.reason += ' · Demo-Konto: ' + (tr.dir === 'call' ? 'BUY' : 'SELL') + ' ' + sizeC + '× ' + (r.epic || tr.sym) + ' (SL ' + U.nf2.format(slLvl) + ')';
+                /* Der Zaehler steht in der Diagnose, dieser Satz steht dort, wo jemand
+                 * wirklich hinsieht: in der Begruendung des Trades. */
+                if (!r.dealId) tr.reason += ' · ACHTUNG: ohne Bestätigung eröffnet – bitte bei Capital.com von Hand schließen';
                 /* KOSTENMESSUNG (22.08.2026): echter Ausfuehrungskurs gegen den Kurs,
                  * mit dem die Simulation gerechnet hat. Das ist die einzige Stelle im
                  * Projekt mit ECHTEN Ausfuehrungen - alle Studien rechnen sonst mit
@@ -7753,7 +7794,15 @@
     var unbegrenzt = !!opts.unbegrenzt;      // Analyselauf: rechnet zu Ende, egal wie lange
     var a = autoOptCfg();
     if (tiefRunning || pilotRunning || centralRunning || jobRunning) return;
-    if (!window.Archiv) return;
+    if (!window.Archiv) {
+      /* Dieser Waechter stand VOR dem ersten Protokolleintrag und vor tiefRunning:
+       * fehlte das Kursarchiv, kehrte die ganze Nacht um, ohne eine Zeile zu
+       * hinterlassen. Auch der Haenge-Waechter griff nicht (tiefRunning war nie
+       * gesetzt), a.lastTief blieb alt, und die Anzeige zeigte den Stand der letzten
+       * gelungenen Nacht - ohne Hinweis, dass seither nichts mehr gerechnet wurde. */
+      pilotLogAdd('Tiefensuche uebersprungen: das Kursarchiv ist nicht geladen.');
+      return;
+    }
     tiefRunning = true;
     tiefStartAt = Date.now();
     tiefFortschritt = null;
@@ -8334,7 +8383,20 @@
             pilotLogAdd('Edge-Wächter: Vorsprung wieder positiv – Pause aufgehoben.');
           }
         }
-      } catch (eEdge) { /* Waechter ist Zusatz - die Messung gilt auch ohne */ }
+      } catch (eEdge) {
+        /* Der Waechter ist Zusatz - die Messung gilt auch ohne ihn. Sein Ausfall darf
+         * aber nicht unsichtbar sein: mit ihm faellt eine SCHUETZENDE Handlung aus
+         * (neue Einstiege pausieren, wenn der Vorsprung zweimal verfallen ist) und
+         * ebenso das automatische Aufheben einer bestehenden Pause. Beides schweigend
+         * zu verlieren ist genau der Fall, den dieser Kommentar bisher gedeckt hat. */
+        HEALTH.edgeFail = (HEALTH.edgeFail || 0) + 1;
+        pilotLogAdd('Edge-Waechter ausgefallen: ' + String((eEdge && eEdge.message) || eEdge).slice(0, 140));
+        if (HEALTH.edgeFail === 2) {
+          melde('Edge-Wächter ausgefallen',
+            'Zwei Läufe in Folge konnte der Wächter den gemessenen Vorsprung nicht prüfen. ' +
+            'Damit pausiert er auch nicht mehr von selbst - die Schutzhandlung ist ausgesetzt.');
+        }
+      }
       a.lastCheck.dauerMin = Math.round((Date.now() - t0) / 60000 * 10) / 10;
       pilotLogAdd('Fertig nach ' + a.lastCheck.dauerMin + ' Min: ' + a.lastCheck.txt);
       // Verlauf + Messbericht: sichtbar machen, was funktioniert und woran der Rest scheitert

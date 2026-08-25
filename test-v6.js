@@ -6645,6 +6645,27 @@ console.log('\n46) Was die App dauerhaft aufzeichnet');
      'Ein fehlgeschlagener Analyse-Export wird gezaehlt und gemeldet, nicht zu null verschluckt');
   ok(/analyseExportFehler: HEALTH\.exportFail/.test(dep) && /archivSchreibFehler:/.test(dep),
      'Beide Schreibwege stehen in den Gesundheitszahlen: Export und Kursarchiv');
+  /* Vier weitere stille Ausfaelle (25.08.2026), alle im Handels- und Nachtpfad. */
+  ok(/if \(Date\.now\(\) - intradayScanSeit < 10 \* 60000\) return;/.test(dep) &&
+     /HEALTH\.scanHaenger = \(HEALTH\.scanHaenger \|\| 0\) \+ 1/.test(dep),
+     'Eine haengende Scan-Sperre loest sich nach zehn Minuten - sonst schwiegen auch die Stops');
+  ok(/intradayScanSeit = Date\.now\(\);/.test(dep),
+     'Die Scan-Sperre bekommt beim Setzen ihren Zeitstempel');
+  ok(/pilotLogAdd\('Tiefensuche uebersprungen/.test(dep),
+     'Die Tiefensuche hinterlaesst eine Zeile, wenn sie ohne Kursarchiv umkehrt');
+  ok(/HEALTH\.edgeFail = \(HEALTH\.edgeFail \|\| 0\) \+ 1/.test(dep) &&
+     /HEALTH\.edgeFail === 2[\s\S]{0,160}melde\(/.test(dep),
+     'Faellt der Edge-Waechter aus, faellt eine Schutzhandlung aus - das wird gemeldet');
+  /* Der schwerste der vier: die CFD-Position bleibt beim Broker offen, und der Fall
+   * ging bisher als capitalOk in den Export - nicht verschwiegen, sondern als Erfolg. */
+  ok(/if \(r\.ok && !r\.dealId\)/.test(dep) &&
+     /HEALTH\.capOhneDealId = \(HEALTH\.capOhneDealId \|\| 0\) \+ 1/.test(dep),
+     'Eine Spiegelung ohne Bestaetigung gilt nicht mehr als voller Erfolg');
+  ok(/ACHTUNG: ohne Bestätigung eröffnet/.test(dep),
+     'und der Hinweis steht in der Trade-Begruendung, nicht nur in der Diagnose');
+  ok(/capitalOhneBestaetigung: HEALTH\.capOhneDealId/.test(dep) &&
+     /edgeWaechterAusfaelle: HEALTH\.edgeFail/.test(dep) && /scanSperreHaenger: HEALTH\.scanHaenger/.test(dep),
+     'Alle drei neuen Zaehler stehen in den Gesundheitszahlen');
   ok(/function kostenMessungNeu/.test(dep), 'Die Messung des echten Schlupfs bleibt bestehen');
 
   /* --- Die Kostenmessung darf nicht auf einen Trade warten muessen ---
