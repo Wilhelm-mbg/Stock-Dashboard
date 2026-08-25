@@ -184,8 +184,8 @@
     setz('depot', 'momentumAn', true, 'Momentum-Buch an');
     setz('depot', 'driftAn', true, 'Drift-Buch an');
     setz('depot', 'maxRisikostufe', 3, 'Maximale Risikostufe 3');
-    var extras = ['Belegte Voreinstellungen übernommen'];
-    // Zweites belegtes Standbein gleich mit an - feuert in der anderen Marktphase
+    var extras = ['Gemessene Voreinstellungen übernommen'];
+    // Zweite gemessene Kante gleich mit an - feuert in der anderen Marktphase
     if (!D.intraday.kapiZusatz && setz('intraday', 'kapiZusatz', true, 'Kapitulations-Dip zusätzlich an')) extras.push('Kapitulations-Dip zusätzlich an');
     // Die widerlegte Stunden-Strategie gehoert nicht in die belegte Konfiguration
     if (D.hourlyEnabled !== false && setz('depot', 'hourlyEnabled', false, 'Stunden-Strategie aus')) extras.push('Stunden-Strategie aus (widerlegt)');

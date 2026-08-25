@@ -5080,6 +5080,40 @@ console.log('\n41) Zustaende: was die App sagt, wenn etwas fehlt oder klemmt');
      'Sperrklinke: ein Leerzustand mit Auszeichnung steht in EINEM span - sonst bricht er zeilenweise',
      zerfallen.join(' | ') || 'keiner zerfaellt');
 
+  /* Vierte Sperrklinke: KEIN sichtbarer Text behauptet einen Belegstand.
+   * "Belegt" ist in diesem Projekt kein Adjektiv, sondern ein Protokoll-Urteil. Die
+   * dynamischen Anzeigen leiten es korrekt aus urteil === 'bestaetigt' ab; feste Texte
+   * koennen das nicht und behaupten es deshalb. Am 25./26.08.2026 zweimal gefunden:
+   * erst als fest verdrahtete Liste im Code, dann in acht sichtbaren Texten - waehrend
+   * von zwoelf Protokollen keines "bestaetigt" sagt.
+   * Geprueft wird die BEHAUPTUNG (belegte + Kante/Regel/Modus/...), nicht das Wort:
+   * die Gruppenueberschrift "Belegt (Protokoll sagt bestaetigt)" ist richtig und muss
+   * stehen bleiben - sie liest ab, statt zu behaupten.
+   * Kommentare bleiben aussen vor: sie tragen Geschichte, und Vergangenes umzuschreiben
+   * waere schlimmer als die Formel dort stehen zu lassen. */
+  function ohneKommentare(t) {
+    t = t.replace(/\/\*[\s\S]*?\*\//g, function (m) { return m.replace(/[^\n]/g, ' '); });
+    t = t.replace(/<!--[\s\S]*?-->/g, function (m) { return m.replace(/[^\n]/g, ' '); });
+    return t.split('\n').map(function (z) { return z.replace(/(^|[^:])\/\/.*$/, '$1'); }).join('\n');
+  }
+  var BEHAUPTUNG = /[Bb]elegte[nrs]?\s+(Kante|Regel|Voreinstellung|Intraday|Modi|Modus|Strategie|Standbein)/;
+  var behauptet = [];
+  ['index.html'].concat(dateien).forEach(function (f) {
+    var roh = fs.readFileSync(__dirname + '/' + f, 'utf8');
+    var rein = ohneKommentare(roh).split('\n');
+    roh.split('\n').forEach(function (z, i) {
+      if (BEHAUPTUNG.test(rein[i] || '')) behauptet.push(f + ':' + (i + 1));
+    });
+  });
+  ok(behauptet.length === 0,
+     'Sperrklinke: kein sichtbarer Text nennt eine Kante belegt - das sagt das Protokoll oder niemand',
+     behauptet.join(' ') || 'keiner behauptet');
+  /* Gegenprobe zur Sperrklinke selbst: die richtige, abgelesene Beschriftung muss es
+   * weiterhin geben - sonst haette jemand das Kind mit dem Bade ausgeschuettet. */
+  var dpB = fs.readFileSync(__dirname + '/depot.js', 'utf8');
+  ok(/Belegt \(Protokoll sagt bestätigt\)/.test(dpB) && /urteil === 'bestaetigt' \? 'belegt'/.test(dpB),
+     'Der Belegstand wird weiterhin AUS dem Protokoll abgelesen und angezeigt');
+
   /* Gegenprobe, dass die Sperrklinke wirklich greift: haette sie ein Loch, waere die
    * Zusicherung darueber wertlos. Also einmal auf einem erfundenen Text nachweisen,
    * dass genau das Muster gefunden wird, das im Paket nicht mehr vorkommen darf. */

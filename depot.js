@@ -621,7 +621,7 @@
       '<b>Kontrolle</b> ist derselbe Wert, dieselbe Tagesstunde, dieselbe Haltedauer – nur an ' +
       'einem beliebigen anderen Tag, gemittelt über alle. Sie sagt, was schlichtes Halten ' +
       'gebracht hätte. <b>Überschuss</b> ist die Differenz und die eigentliche Aussage: ' +
-      'Nur er gehört der Regel. Bei der belegten Intraday-Regel sind rund zwei Drittel des ' +
+      'Nur er gehört der Regel. Bei der gemessenen Intraday-Regel sind rund zwei Drittel des ' +
       'Rohertrags Kontrolle (+0,065 Überschuss auf +0,170 roh) – ohne diese Spalte misst man ' +
       'Marktdrift und nennt sie Kante.' +
       '<br>Ø je Trade ist der Schatten-Ertrag nach Spanne, ohne Ordergebühr. Bei unter etwa ' +
@@ -1403,7 +1403,7 @@
   }
 
   /* Einzelne Felder statt eines Rundumschlags: Eintraege, die ihre Aenderungen Feld fuer
-   * Feld mitgeschrieben haben (bisher nur "Belegte Voreinstellungen uebernehmen"), zeigen
+   * Feld mitgeschrieben haben (bisher nur "Gemessene Voreinstellungen uebernehmen"), zeigen
    * je Feld ein eigenes Zurueck. Genau das stand seit jeher im Knopftext - eingeloest war
    * es nie. Eintraege ohne felder[] verhalten sich unveraendert wie vorher. */
   function feldZeilen(e, idx) {
@@ -3384,7 +3384,7 @@
         '<td style="font-weight:600;">' + U.nf2.format(sumWert) + ' $</td>' +
         '<td class="' + U.signCls(sumPl) + '" style="white-space:nowrap;">' + U.signTxt(Math.round(sumPl * 100) / 100, ' $') + '</td><td></td></tr>';
       ph += '</table><div style="color:var(--muted); font-size:var(--fs-klein); margin-top:6px;">' +
-        'Belegte Intraday-Kanten: nur Not-Stop, Ausstieg über die Zeit (8 bzw. 26 Handelsstunden), Übernacht erlaubt. ' +
+        'Gemessene Intraday-Kanten: nur Not-Stop, Ausstieg über die Zeit (8 bzw. 26 Handelsstunden), Übernacht erlaubt. ' +
         'Widerlegte Setups: Stop −25 % / Ziel +35 %, Glattstellung zum Tagesschluss. ' +
         'Altbestand der Stunden-Strategie: Stop −40 % / Ziel +80 %, Zeit-Ausstieg 10 Tage vor Fälligkeit. ' +
         'Bei Scheinen: Bezugsverhältnis 0,1 · Spanne 2 % · Ordergebühr je Kauf und Verkauf simuliert; Hebel = Omega ' +
@@ -4299,21 +4299,21 @@
      * (Breakout, Squeeze, Wave, Donchian ... - alle ohne gemessenen Vorsprung).
      * Genau diese Rangfolgen aus Walk-Forward-Renditen auf kurzen Fenstern haben
      * frueher Scheinsieger wie 'Bollinger-Squeeze +4,79 %' gekuert. Stattdessen
-     * treten nur noch die belegten Modi mit ihren wenigen sinnvollen
+     * treten nur noch die gemessenen Modi mit ihren wenigen sinnvollen
      * Stellschrauben an (Haltedauer-Varianten). Wer bewusst ein anderes Setup
      * faehrt, bekommt weiterhin die volle Liste. */
     if (cfg.mode === 'rsi2seit' || cfg.mode === 'kapitulation') {
-      var belegt = MODESL.filter(function (m) { return m.key === 'rsi2seit' || m.key === 'kapitulation'; });
-      var basisK = belegt.filter(function (m) { return m.key === 'rsi2seit'; })[0];
+      var gemessen = MODESL.filter(function (m) { return m.key === 'rsi2seit' || m.key === 'kapitulation'; });
+      var basisK = gemessen.filter(function (m) { return m.key === 'rsi2seit'; })[0];
       if (basisK) {
         [360, 600].forEach(function (hold) {
-          belegt.push({ key: 'rsi2seit_h' + hold, setup: 'umkehr', trigger: 'rsi2seit',
+          gemessen.push({ key: 'rsi2seit_h' + hold, setup: 'umkehr', trigger: 'rsi2seit',
             name: 'Umkehr · RSI(2) im Seitwärtskanal · Haltedauer ' + (hold / 60) + ' h',
             meta: { scalpHold: hold },
             opts: Object.assign({}, basisK.opts, { maxHoldMin: hold }) });
         });
       }
-      return belegt;
+      return gemessen;
     }
     return MODESL;
   }

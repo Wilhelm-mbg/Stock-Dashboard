@@ -96,7 +96,7 @@
           applied: zurueck,
           txt: 'Die neuen Voreinstellungen gelten nur für neue Installationen – dein bestehendes Depot ' +
             'behält sein Verhalten (' + zurueck.join(', ') + '). Wer auf die gemessenen Einstellungen ' +
-            'wechseln will: Knopf „Belegte Voreinstellungen übernehmen“ im Reiter „Regeln“.' });
+            'wechseln will: Knopf „Gemessene Voreinstellungen übernehmen“ im Reiter „Regeln“.' });
       }
     }
     /* Gesamtzaehler ueber alle Sitzungen. Die HEALTH-Zaehler beginnen bei jedem
@@ -149,7 +149,7 @@
         if (!D.tuneLog) D.tuneLog = [];
         D.tuneLog.unshift({ id: 'sicherung-' + Date.now(), at: Date.now(), quelle: 'sicherung',
           applied: ['Zeitrahmen ' + altIv + ' → 60m', 'Haltedauer → ' + D.intraday.scalpHold + ' Min'],
-          txt: 'Die belegte Kante war auf ' + altIv + '-Kerzen eingestellt, gemessen wurde sie auf 60-Minuten-Kerzen. ' +
+          txt: 'Die gemessene Kante war auf ' + altIv + '-Kerzen eingestellt, gemessen wurde sie auf 60-Minuten-Kerzen. ' +
             'Ursache war ein Fehler in der Auslöser-Auswahl, der jeden Umkehr-Auslöser auf 1 Minute stellte. ' +
             'Einmalig auf die gemessene Einstellung zurückgesetzt – jede Änderung von Hand bleibt ab jetzt unangetastet.' });
       }
