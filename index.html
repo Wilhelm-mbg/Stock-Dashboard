@@ -653,6 +653,10 @@
     font-size: var(--fs-klein); font-weight: 700; color: var(--muted); text-transform: uppercase;
     letter-spacing: 0.08em; margin-bottom: 8px; padding-bottom: 4px; border-bottom: 1px solid var(--grid);
   }
+  /* Der Erklaerknopf steht IN der Gruppenueberschrift und erbt sonst deren
+     Grossschreibung und Sperrung - aus dem runden "i" wuerde ein gesperrtes "I".
+     Die font-Kurzform in .info setzt beides nicht zurueck. */
+  .pgroup-title .info { text-transform: none; letter-spacing: 0; margin-left: 6px; }
   .params label .switch { margin: 5px auto 2px 0; }
 
   /* Leere Zustände */
@@ -976,7 +980,9 @@
           <summary style="cursor:pointer; font-size:var(--fs-text); color:var(--muted); padding:4px 0;">Experten-Einstellungen anzeigen (stellt normalerweise die Automatik ein – Änderungen von Hand landen im Experiment-Journal)</summary>
         <div id="idParams">
           <div class="pgroup">
-            <div class="pgroup-title">Signal</div>
+            <div class="pgroup-title">Signal
+              <button class="info" type="button" data-info="regeln.param.signal" aria-expanded="false"
+                      aria-label="Erklärung: Signal-Einstellungen">i</button></div>
             <div class="params">
               <div style="grid-column:1/-1; margin-bottom:2px;">
                 <div style="font-size:var(--fs-klein); color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:.04em; margin-bottom:4px;">Setup</div>
@@ -995,7 +1001,9 @@
             </div>
           </div>
           <div class="pgroup">
-            <div class="pgroup-title">Risiko &amp; Kosten</div>
+            <div class="pgroup-title">Risiko &amp; Kosten
+              <button class="info" type="button" data-info="regeln.param.risiko" aria-expanded="false"
+                      aria-label="Erklärung: Risiko und Kosten">i</button></div>
             <div class="params">
               <label title="Fix: immer gleicher Kapitaleinsatz. Risiko: Einsatz so bemessen, dass ein ausgelöster Stop immer ~X % vom Depot kostet">Positionsgröße<select id="idSizing"><option value="fix" selected>fix 3 %</option><option value="0.25">Risiko 0,25 %</option><option value="0.5">Risiko 0,5 %</option><option value="1">Risiko 1 %</option></select></label>
               <label title="automatisch = passt sich an Schwankungsbreite und Hebel an">Not-Stop-Loss<select id="idScalpSL"><option value="15">−15 %</option><option value="20" selected>−20 %</option><option value="30">−30 %</option><option value="auto">auto</option></select></label>
@@ -1011,7 +1019,9 @@
             <div id="kostenHuerde" class="huerde"></div>
           </div>
           <div class="pgroup">
-            <div class="pgroup-title">Filter &amp; Schutz</div>
+            <div class="pgroup-title">Filter &amp; Schutz
+              <button class="info" type="button" data-info="regeln.param.filter" aria-expanded="false"
+                      aria-label="Erklärung: Filter und Schutz">i</button></div>
             <div class="params">
               <label data-modes="breakout,waves,orb">Trendfilter<select id="idTrend"><option value="0" selected>aus</option><option value="1">nur mit Trend</option></select></label>
               <label>Zeitfenster<select id="idWindow"><option value="all" selected>ganzer Tag</option><option value="open2">15:30–17:30</option><option value="open4">15:30–19:30</option><option value="close2">20–22 Uhr</option></select></label>
@@ -1029,7 +1039,9 @@
           <div id="feeWarn" style="color:var(--down); font-size:var(--fs-neben); margin-top:6px;"></div>
           <div id="handSperre" style="font-size:var(--fs-neben); margin-top:6px;"></div>
           <div class="pgroup" id="pgScalp">
-            <div class="pgroup-title">Haltedauer &amp; Ausstieg</div>
+            <div class="pgroup-title">Haltedauer &amp; Ausstieg
+              <button class="info" type="button" data-info="regeln.param.haltedauer" aria-expanded="false"
+                      aria-label="Erklärung: Haltedauer und Ausstieg">i</button></div>
             <div class="params">
               <label data-modes="waves,reversion,wave,pullback,rsi2,squeeze,rsi2seit,kapitulation,kanaltrend">Max. Haltedauer<select id="idHold"><option value="3">3 Min</option><option value="5">5 Min</option><option value="15">15 Min</option><option value="30">30 Min</option><option value="60" selected>60 Min</option><option value="120">2 h</option><option value="240">4 h</option><option value="480">8 h (RSI2-Seitwärts, gemessen)</option><option value="1560">26 h (Kapitulations-Dip, gemessen)</option><option value="0">aus</option></select></label>
               <label data-modes="waves,orb,pullback,donchian,squeeze,kanaltrend" title="Ausstieg, wenn der Schein X % unter sein Hoch fällt (Gewinn sichern)">Trailing-Stop<select id="idTrail"><option value="0">aus</option><option value="10">−10 %</option><option value="15" selected>−15 %</option><option value="25">−25 %</option></select></label>
@@ -1811,15 +1823,8 @@
         Sekunden-Kerzen (1/5/10 s) sind mit der Kursquelle nicht möglich – Yahoo liefert feinstens 1 Minute,
         und nur 7 Tage zurück. Geprüft werden die 15 Standard-Werte plus deine Watchlist; der Winkel zur
         Horizontalen und die Drehung gegen den Vortrend entsprechen exakt der Studien-Rechnung.
-        <br><br><b>Warum aus einer guten Trend-Güte hier keine Order wird (Wunsch #58):</b> Genau das ist
-        gemessen worden – und durchgefallen. Der Trendkanal als <i>Handelsbedingung</i> kostete
-        <b>−0,17 Prozentpunkte je Trade bei t = −4,1</b> (Abschnittskanal-Studie): Er ist nicht neutral,
-        sondern schädlich. Deshalb steht die Güte hier als Beschreibung des Moments und nicht als Auslöser.
-        <br><b>Und warum „zu wenig Historie“ stehen bleibt:</b> Das ist keine Bequemlichkeit, sondern die
-        Fallzahl. Für ein Urteil über eine Regel braucht es rund 30 Fälle je Wert; auf 5.000 Kerzen findet
-        der Detektor etwa sechs. Bei sechs Fällen kippt das Vorzeichen des Mittels schon, wenn man nur die
-        Abtastdichte ändert. Eine Order, die trotzdem ausgelöst wird, ist deshalb nicht mutiger als eine
-        gemessene – sie ist nur ungemessen.
+        <button class="info" type="button" data-info="werkzeuge.trendfinder" aria-expanded="false"
+                aria-label="Erklärung: Warum aus der Trend-Güte keine Order wird">i</button>
       </div>
     </div>
     <div class="panel">

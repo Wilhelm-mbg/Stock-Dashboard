@@ -612,6 +612,66 @@
         'Bewusst ohne Handelsknopf: Eine Regel, in die man mittendrin eingreifen kann, misst nichts – und die Versuchung dazu ist am größten, wenn es gerade gut läuft.'
       ],
       fuss: 'Der Wechsel auf „handelt“ ist eine Entscheidung in den Einstellungen, kein Knopf hier.'
+    },
+    /* Die Experten-Einstellungen (#idParams) erklaerten sich bis 8.31 ausschliesslich
+     * ueber 18 title-Tooltips - weder per Tastatur noch auf einem Tastbildschirm
+     * erreichbar, und sieben Bedienelemente hatten gar keine Erklaerung. Die Tooltips
+     * BLEIBEN als Zweitweg stehen; hier steht nicht ihre Nacherzaehlung, sondern der
+     * Grund, warum es die Gruppe gibt und was ein Dreh daran kostet.
+     * WICHTIG: kein Markup in den Punkten - Info.zeigen() escaped sie, ein b-Element
+     * erschiene dem Nutzer woertlich. */
+    'regeln.param.signal': {
+      titel: 'Signal – wann überhaupt gekauft wird',
+      punkte: [
+        'Diese Gruppe ist keine Feineinstellung. Setup, Auslöser, Zeitrahmen und Ausstieg bilden zusammen die Regel, die gemessen wurde – wer eines davon verstellt, handelt eine andere Regel als die, für die es ein Protokoll gibt.',
+        'Deshalb bringt die Auslöser-Wahl ihre gemessene Haltedauer gleich mit: 8 Handelsstunden bei RSI(2) im Seitwärtskanal, 26 beim Kapitulations-Dip. Wird sie danach von Hand geändert, steht das im Experiment-Journal und lässt sich dort einzeln zurücknehmen.',
+        'Setup und Auslöser hängen zusammen: „Ausbruch“ handelt mit der Bewegung, „Umkehr“ gegen die Übertreibung. Die Auslöser-Liste wechselt deshalb mit dem Setup, und Felder, die im gewählten Modus nichts entscheiden, werden ausgeblendet statt wirkungslos dazustehen.',
+        'Leitlinie und EMA-Periode wirken nur dort, wo der Modus sie abfragt: im Kapitulations-Modus ist die EMA20 der Bezug der Überdehnung, beim RSI(2)-Modus ist sie nur Orientierung und entscheidet nichts.',
+        'Die Bestätigung ist ein Mindestabstand jenseits der Leitlinie und wirkt im Umkehr-Setup als z-Score-Schwelle (1,5 / 2,0 / 2,5). Sie entscheidet nicht über die Richtung, sondern darüber, wie weit der Kurs gelaufen sein muss, bevor die Regel überhaupt hinsieht.'
+      ],
+      fuss: 'Die Automatik stellt diese Felder normalerweise selbst ein. Was gerade läuft, steht im Klartext-Kasten über dieser Klappe.'
+    },
+    'regeln.param.risiko': {
+      titel: 'Risiko & Kosten – was ein Trade kosten darf',
+      punkte: [
+        'Hier entscheidet sich, ob von einem gemessenen Vorsprung überhaupt etwas übrig bleibt. Die Produkthürde – was der Basiswert laufen muss, damit ein Umlauf aus Spanne, Gebühr und Aufgeld bei null herauskommt – ist in diesem Projekt der Grund, an dem die meisten Intraday-Kanten scheitern.',
+        'Deshalb steht die Hürde bei den Hebel-Profilen in der Auswahl selbst: 0,07 Pp (Ruhig 60 T, BV 1,0), 0,09 Pp (Moderat, BV 1,0), 0,26 Pp (Moderat, BV 0,1), 0,61 Pp (Heiß, BV 0,1). Die Profile unterscheiden sich in der Hürde, nicht im Ergebnis.',
+        'Der eigentliche Kostenhebel ist das Bezugsverhältnis, nicht der Hebel: Emittenten stellen die Spanne als festen Cent-Betrag. Ein BV-1,0-Schein kostet je Stück das Zehnfache, zahlt aber nur den doppelten Cent – also ein Fünftel des relativen Spreads bei gleichem Hebel.',
+        'Instrument „Aktie 1×“ ist Vorgabe, nicht Vorsicht: Für eine Strategie, deren Vorsprung unter der Schein-Kostenhürde liegt, ist der Basiswert der einzige gangbare Weg. Bei RSI(2) im Seitwärtskanal war dieselbe Strategie mit Schein im Backtest bei −96 %.',
+        'Positionsgröße und Not-Stop ändern nicht, wie oft die Regel recht hat, sondern was ein Irrtum kostet. „Risiko X %“ bemisst den Einsatz so, dass ein ausgelöster Stop immer ungefähr X % des Depots kostet – bei „fix“ schwankt genau das mit der Schwankungsbreite des Werts.',
+        'Die maximale Risikostufe wirkt depotweit und gilt auch für Käufe von Hand, vom Autopiloten und aus einer Empfehlung. Sie ist die einzige Grenze dieser Gruppe, die im Einzelfall niemand übergeht.'
+      ],
+      fuss: 'Was die eingestellte Kombination gerade kostet, rechnet die Hürden-Zeile unter dieser Gruppe aus.'
+    },
+    'regeln.param.filter': {
+      titel: 'Filter & Schutz – was einen Trade verhindert',
+      punkte: [
+        'Alles in dieser Gruppe verhindert Trades, nichts erzeugt welche. Ein Filter ist damit immer ein Tausch: weniger Signale gegen weniger Gelegenheiten, in denen die Regel außerhalb der Lage handelt, in der sie gemessen wurde.',
+        'Liquidität und Zeitfenster sind deshalb keine Vorsicht, sondern Teil der Messbasis – und DAX-Werte sind ohnehin nur zwischen 15:30 und 17:30 handelbar; danach sperrt die Veraltet-Prüfung ihre Kurse automatisch.',
+        'Der Event-Blackout sperrt die Kerzen um einen Quartalstermin herum. Dort reagiert der Kurs auf eine Nachricht und nicht auf das Muster, das die Regel erkennt – gemessen wurde ohne diese Kerzen.',
+        '„Signale immer aufzeichnen“ ist der wichtigste Schalter der Gruppe und der einzige, der nichts kostet: Er lässt jedes Signal virtuell zu Ende laufen, auch bei ausgeschaltetem Handel. Ausschalten heißt: keine Beweisaufnahme mehr – und damit keine Grundlage, die Regel später zu bestätigen oder zu widerlegen.',
+        'Zwei Schalter sammeln nur und handeln nichts: „Krypto-Messdaten sammeln“ füllt das Kursarchiv (24 Kerzen am Tag statt 6,5, keine Nachtlücken), der „Wellen-Screener“ rankt nach der Kennzahl des Wellental-Einstiegs – der hat keinen gemessenen Vorsprung.',
+        '„Empfehlungen übernehmen“ darf beim Handels-Modus nur zwischen den beiden gemessenen Kanten wechseln, nie zu einem widerlegten Modus, und das Instrument nie. Jede Übernahme steht im Experiment-Journal und lässt sich dort einzeln zurücknehmen.'
+      ]
+    },
+    'regeln.param.haltedauer': {
+      titel: 'Haltedauer & Ausstieg – wann der Trade endet',
+      punkte: [
+        'Der Ausstieg ist Teil der Messung, nicht ihr Anhängsel: Dieselbe Regel misst sich völlig anders, je nachdem wann sie schließt. Streng bis Handelsschluss geschlossen ergab die Intraday-Kante −0,08 % je Trade, mit einer Nacht Haltezeit +0,23 %.',
+        'Deshalb tragen zwei Haltedauern in der Liste den Zusatz „gemessen“: 8 Handelsstunden für RSI(2) im Seitwärtskanal, 26 für den Kapitulations-Dip. Die übrigen Werte sind wählbar, aber es gibt kein Protokoll zu ihnen.',
+        'Ein Trailing-Stop verkürzt die Haltedauer unbemerkt – er schließt, sobald der Kurs X % unter seinem Hoch steht. Damit läuft eine andere Haltedauer als die, für die das Protokoll gilt.',
+        'Die Gruppe blendet sich aus, sobald der eingestellte Modus keinen ihrer Werte abfragt. Sie steht dann nicht wirkungslos da: Fehlt sie, bestimmt der Modus seinen Ausstieg selbst.'
+      ]
+    },
+    /* Trendfinder: die beiden Begruendungs-Absaetze standen bis 8.31 als Dauertext ueber
+     * der Tabelle. Der Wortlaut ist UNVERAENDERT uebernommen - es sind Messaussagen;
+     * weggefallen sind nur die Auszeichnungen, weil Info.zeigen() escaped. */
+    'werkzeuge.trendfinder': {
+      titel: 'Warum aus der Trend-Güte hier keine Order wird',
+      punkte: [
+        'Warum aus einer guten Trend-Güte hier keine Order wird (Wunsch #58): Genau das ist gemessen worden – und durchgefallen. Der Trendkanal als Handelsbedingung kostete −0,17 Prozentpunkte je Trade bei t = −4,1 (Abschnittskanal-Studie): Er ist nicht neutral, sondern schädlich. Deshalb steht die Güte hier als Beschreibung des Moments und nicht als Auslöser.',
+        'Und warum „zu wenig Historie“ stehen bleibt: Das ist keine Bequemlichkeit, sondern die Fallzahl. Für ein Urteil über eine Regel braucht es rund 30 Fälle je Wert; auf 5.000 Kerzen findet der Detektor etwa sechs. Bei sechs Fällen kippt das Vorzeichen des Mittels schon, wenn man nur die Abtastdichte ändert. Eine Order, die trotzdem ausgelöst wird, ist deshalb nicht mutiger als eine gemessene – sie ist nur ungemessen.'
+      ]
     }
   });
 

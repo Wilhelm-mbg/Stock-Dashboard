@@ -224,7 +224,11 @@
   function belegeAnmelden() {
     if (!window.Info) return;
     var eintraege = {};
-    STRATEGIEN.forEach(function (s) {
+    /* Nur die Karten bekommen einen Knopf (render() filtert .fussnote heraus) - ein
+     * Eintrag fuer 'lang' waere ein Text, den kein Knopf je aufruft. Die bestehende
+     * Zusicherung konnte das nicht sehen: sie haelt app-shell.js gegen index.html
+     * und kennt die zur Laufzeit angemeldeten Eintraege nicht. */
+    STRATEGIEN.filter(function (s) { return !s.fussnote; }).forEach(function (s) {
       eintraege['strategie.' + s.key] = {
         titel: 'Belegstand · ' + s.name,
         punkte: s.beleg || [],

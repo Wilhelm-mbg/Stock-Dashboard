@@ -3139,8 +3139,11 @@ console.log('\n36) Kostenhuerde des Produkts (Signalstudie 23.08.2026)');
    * Gemessen wird das schliessende </div> ZWISCHEN letztem Label und Huerde - es ist
    * der Beweis, dass das Raster vorher zu war. Eine reine Positionspruefung ("steht
    * hinter dem letzten Label") waere auch im alten, falschen Zustand gruen gewesen. */
-  var rkGrp = html.slice(html.indexOf('<div class="pgroup-title">Risiko &amp; Kosten</div>'),
-                         html.indexOf('<div class="pgroup-title">Filter &amp; Schutz</div>'));
+  /* Die Marken enden bewusst NICHT auf </div>: seit die Gruppenueberschriften einen
+   * Erklaerknopf tragen, steht das schliessende Tag eine Zeile tiefer. Gemessen wird
+   * die Lage der Huerde, nicht die Schreibweise der Ueberschrift. */
+  var rkGrp = html.slice(html.indexOf('<div class="pgroup-title">Risiko &amp; Kosten'),
+                         html.indexOf('<div class="pgroup-title">Filter &amp; Schutz'));
   var zwischen = rkGrp.slice(rkGrp.lastIndexOf('</label>'), rkGrp.indexOf('id="kostenHuerde"'));
   ok(rkGrp.indexOf('id="kostenHuerde"') > -1 && /<\/div>/.test(zwischen),
      'Die Kostenhuerde steht AUSSERHALB des .params-Rasters, aber in der Gruppe "Risiko & Kosten"');
@@ -3351,8 +3354,16 @@ console.log('\n36) Kostenhuerde des Produkts (Signalstudie 23.08.2026)');
      'Trendfinder: Guete und Breite kommen aus dem Kanal des Detektors - kein zweiter Rechenweg');
   ok(/−0,17 Pp je Trade, t = −4,1/.test(dep) && /Die Güte löst nichts aus/.test(dep),
      'Trendfinder: dass die Guete NICHTS ausloest, steht mit der Messung dabei');
-  ok(/−0,17 Prozentpunkte je Trade bei t = −4,1/.test(hF),
-     'Trendfinder: der Reiterkopf begruendet die Absage an guete-getriebene Orders');
+  /* Die Begruendung stand bis 8.31 als Dauertext ueber der Tabelle und ist mit D6 ins
+   * Erklaerregister gezogen - woertlich, es ist eine Messaussage. Die Marke zeigt
+   * deshalb jetzt auf app-shell.js; sichtbar bleibt der Knopf am Reiterkopf. */
+  var shF = fs.readFileSync(__dirname + '/app-shell.js', 'utf8');
+  ok(/−0,17 Prozentpunkte je Trade bei t = −4,1/.test(shF),
+     'Trendfinder: die Absage an guete-getriebene Orders steht woertlich im Erklaerregister');
+  ok(/rund 30 Fälle je Wert/.test(shF) && /sie ist nur ungemessen/.test(shF),
+     'Trendfinder: auch die Fallzahl-Begruendung ist vollstaendig mitgezogen');
+  ok(/data-info="werkzeuge\.trendfinder"/.test(hF),
+     'Trendfinder: der Erklaerknopf steht am Reiterkopf');
   /* Und die Gegenprobe zum zweiten Teil des Wunsches: KEINE Order aus dem Reiter. */
   var wendeBlock = dep.slice(dep.indexOf('async function wendePruefen'), dep.indexOf('function wendeChartsVerkabeln'));
   ok(wendeBlock.length > 500 && wendeBlock.indexOf('kaufen(') < 0 &&
@@ -4436,6 +4447,48 @@ console.log('\n39) Erklaertexte hinter dem i – ein Register, ein Fenster, ein 
   var ohneKnopf = angemeldet.filter(function (k) { return verwendet.indexOf(k) < 0; });
   ok(ohneKnopf.length === 0,
      'kein Eintrag im Register ist verwaist  [' + (ohneKnopf.join(', ') || 'keiner') + ']');
+
+  /* --- Die Experten-Einstellungen (Befund B1 des Struktur-Plans) ---
+   * Sie erklaerten sich bis 8.31 ausschliesslich ueber 18 title-Tooltips - laut
+   * eigenem CSS-Kommentar "weder per Tastatur noch auf einem Tastbildschirm
+   * erreichbar". Sieben Bedienelemente hatten GAR KEINE Erklaerung, darunter die
+   * Haltedauer, an der beide gemessenen Kanten haengen. Die Tooltips BLEIBEN stehen
+   * (Zweitweg); geprueft wird, dass daneben ein erreichbarer Weg existiert. */
+  var apA = html.indexOf('<div id="idParams">');
+  var apE = apA >= 0 ? html.indexOf('</details>', apA) : -1;
+  ok(apA >= 0 && apE > apA, 'Experten-Einstellungen: der Block #idParams ist auffindbar');
+  var idp = (apA >= 0 && apE > apA) ? html.slice(apA, apE) : '';
+  /* Die Tooltips duerfen nicht verschwinden - sie sind der zweite Weg, nicht der
+   * geloeschte. 18 waren es am 25.08.2026; mehr duerfen es werden. */
+  var tips = (idp.match(/ title="/g) || []).length;
+  ok(tips >= 18, 'Experten-Einstellungen: die Tooltips bleiben als Zweitweg stehen', tips);
+  /* Jede Gruppe, die ihr Wissen per title traegt, muss einen Erklaerknopf in der
+   * Ueberschrift haben. Die Gruppe "Wellen-Screener" hat keinen einzigen title (ihr
+   * Grund steht sichtbar als .hinweis) und braucht deshalb keinen - genau deshalb
+   * wird ueber die Tooltips gefiltert und nicht stumpf ueber alle Gruppen gezaehlt. */
+  var ohneErklaerung = [];
+  idp.split('<div class="pgroup"').forEach(function (g) {
+    if (!/ title="/.test(g)) return;
+    if (/<div class="pgroup-title">[^<]*\n\s*<button class="info"/.test(g)) return;
+    ohneErklaerung.push(((/<div class="pgroup-title">([^<\n]*)/.exec(g) || [])[1] || '?').trim());
+  });
+  ok(ohneErklaerung.length === 0,
+     'Experten-Einstellungen: jede Gruppe mit Tooltips traegt einen Erklaerknopf',
+     ohneErklaerung.join(', ') || 'alle vier');
+  ['signal', 'risiko', 'filter', 'haltedauer'].forEach(function (g) {
+    ok(new RegExp("^    'regeln\\.param\\." + g + "': \\{$", 'm').test(shell),
+       'Experten-Einstellungen: Gruppe ' + g + ' hat einen Registereintrag');
+  });
+  /* Gegenprobe zu einem Fund vom 25.08.2026: Info.zeigen() escaped die Punkte mit
+   * U.esc. Ein Auszeichnungselement im Text erscheint dem Nutzer woertlich. Die NEUEN
+   * Eintraege bleiben deshalb markup-frei; drei alte Suender sind ein eigener Befund. */
+  ['regeln.param.signal', 'regeln.param.risiko', 'regeln.param.filter',
+   'regeln.param.haltedauer', 'werkzeuge.trendfinder'].forEach(function (k) {
+    var blk = shell.slice(shell.indexOf("    '" + k + "': {"));
+    blk = blk.slice(0, blk.indexOf('\n    },') >= 0 ? blk.indexOf('\n    },') : blk.indexOf('\n    }'));
+    ok(blk.length > 50 && !/<[a-z]+>/.test(blk),
+       'Erklaertext ' + k + ' kommt ohne Markup aus (U.esc wuerde es zeigen)');
+  });
 
   /* --- Die Strategie-Karten schuetten ihre Belege nicht mehr aus --- */
   ok(!/s\.beleg\.map\(function \(b\) \{ return '<li>'/.test(strat),
