@@ -104,6 +104,9 @@ fertig bist.*
 
 - **App-Codebase Master** — arbeitet die offene Issue-Liste ab (Reihenfolge siehe
   Aufträge); zuletzt #76 und #84 abgeschlossen.
+- **#84-Rest (21 Kommentare)** — genommen 26.08. Belegt: Kommentare in `depot.js`,
+  `depotmigration.js`, `strategien.js`, `backfill.js`, `backtestui.js`, `wendeui.js`.
+  Reine Kommentaraenderung; ich weise die tatsaechliche Zahl im Befund aus.
 
 ---
 
