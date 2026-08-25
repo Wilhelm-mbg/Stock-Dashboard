@@ -73,9 +73,18 @@ module.exports = {
     if (i < FENSTER) return null;
     var k = null;
     try { k = Q.kanalUeber(bars, i - FENSTER, i); } catch (e) { return null; }
-    /* Kein Kanal = kein bestaetigter Trend. kanalUeber verlangt Beruehrungen an beiden
-     * Raendern und ein Varianzverhaeltnis, das einen Zufallspfad ausschliesst - das ist
-     * die "Bestaetigung" aus Felix' Satz, und sie ist nicht meine Erfindung. */
+    /* ACHTUNG, HIER STAND EINE FALSCHE BEGRUENDUNG (aufgedeckt 25.08.2026, Nachtrag in
+     * der Vorregistrierung). Behauptet war, kanalUeber verlange Beruehrungen an beiden
+     * Raendern und ein Varianzverhaeltnis, das einen Zufallspfad ausschliesst. Es
+     * verlangt nichts davon: drei return null, alle technisch. In 20.000 Zufallspfaden
+     * kam KEIN EINZIGES null. Diese Zeile filtert also praktisch nie - der Detektor
+     * feuert auf rund der Haelfte aller Kerzen.
+     *
+     * Die Regel wird trotzdem NICHT geaendert: sie ist vorregistriert und gemessen, und
+     * eine vorregistrierte Regel hinterher zurechtzubiegen waere genau der Fehler, gegen
+     * den die Vorregistrierung geschrieben ist. Was dieser Lauf gemessen hat, ist "ueber
+     * 40 Kerzen laesst sich eine Gerade legen" - eine gueltige Frage, aber nicht Felix'.
+     * Felix' Frage misst winkelbestaetigt.js, mit Bestaetigung ausserhalb des Fensters. */
     if (!k) return null;
     var w = winkelVon(k);
     if (w == null) return null;

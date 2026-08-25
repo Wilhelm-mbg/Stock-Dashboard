@@ -104,3 +104,51 @@ wäre der Fehler, gegen den die halbe Fehlerliste geschrieben ist.
 ---
 
 *Simulation mit virtuellem Kapital. Keine Anlageberatung.*
+
+---
+
+## NACHTRAG vom 25.08.2026, nach dem Lauf — die Regel oben bleibt, der Grund dafür nicht
+
+Diese Registrierung wird **nicht** korrigiert; das verbietet ihr eigener erster Absatz.
+Was hier steht, ist ein Nachtrag: Der Abschnitt „Auslöser" begründet das Wort *bestätigt*
+mit einer Eigenschaft von `Q.kanalUeber`, **die es nicht hat.**
+
+Nachgemessen: `kanalUeber` hat drei `return null`, alle technisch (< 16 Kerzen, fehlender
+Kurs, Nenner 0). In **20.000 Zufallspfaden kam kein einziges `null`**. Güte, r² und
+Berührungen werden als *Felder* zurückgegeben, nicht geprüft. Und sie taugten auch als
+Gatter nicht: Die Kanten *sind* das 92.-/8.-Perzentil genau der Abweichungen, an denen
+sie geprüft werden — „Berührung an beiden Rändern" kann nicht scheitern (Minimum über
+8.000 Rauschläufe: 4 bei Soll 2). Rauschen bekommt Güte-Median 75 und heißt zu 35 %
+„trend: auf".
+
+**Was der Lauf deshalb gemessen hat:** „Über 40 Kerzen lässt sich eine Gerade legen,
+deren normierte Steigung ≥ Schwelle ist." Der Detektor feuerte auf rund der **Hälfte
+aller Kerzen** (S0: 5.547.482 Signale bei 2.201 Werten).
+
+**Das Ergebnis, unverändert festgehalten** (Bestätigungshälfte, t über 328 Tage
+geclustert):
+
+| Stufe | Signale | Überschuss | t | MDE |
+|---|---|---|---|---|
+| S0 | 5.547.482 | — | — | 0,1319 Pp |
+| S05 | 3.074.054 | −0,0548 Pp | −0,95 | 0,1158 Pp |
+| S10 | 2.061.478 | −0,0620 Pp | −1,08 | 0,1143 Pp |
+| S15 | 1.295.989 | −0,0701 Pp | −1,20 | 0,1169 Pp |
+
+**Urteil: nicht entscheidbar** — jeder Überschuss liegt unter seiner MDE. Der Lauf hätte
+eine echte Kante erst ab rund 0,198 Pp mit 80 % Wahrscheinlichkeit gezeigt.
+
+Der Überschuss *fällt* zwar monoton über die Stufen, was nach dem Abschnitt „Was als
+Bestätigung gilt" ein **widerlegt** wäre. Das wird hier **nicht** ausgesprochen, aus zwei
+Gründen: die Stufen sind ineinander geschachtelt und damit hochkorreliert, und keine
+einzelne Zahl erreicht auch nur ihre MDE — ein Trend aus fünf nicht nachweisbaren Zahlen
+ist selbst nicht nachweisbar.
+
+**Für Felix' Frage ist dieser Lauf keine Antwort**, weil er ihre Voraussetzung nie
+geprüft hat. Der zweite Anlauf steht in
+`VORREGISTRIERUNG-2026-08-25-winkelbestaetigt.md`, dort liegt die Bestätigung
+außerhalb des Fensters, aus dem der Kanal gerechnet wird.
+
+*Gefunden auf Wilhelms Nachfrage „prüfe im nachgang deine messmethode" — nicht von
+selbst. Ein Detektor, der auf jeder zweiten Kerze feuert, hätte beim Schreiben auffallen
+müssen.*
