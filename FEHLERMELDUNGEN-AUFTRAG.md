@@ -1,9 +1,10 @@
 # Auftrag: Fehlermeldungen bewerten und beheben
 
 Dieser Text ist die Anweisung für einen geplanten Auftrag, der die im Programm
-gemeldeten Fehler abarbeitet. Der Versuch, ihn automatisch anzulegen, wurde von der
-Berechtigungsabfrage abgelehnt — er liegt deshalb hier und lässt sich jederzeit als
-geplanter Auftrag einrichten (Vorschlag: täglich 8, 14 und 20 Uhr).
+gemeldeten Fehler abarbeitet. Eingerichtet ist er noch nicht — der ursprünglich
+genannte Grund (die Berechtigungsabfrage habe das Anlegen abgelehnt) trägt allerdings
+nicht mehr: `spekulations-radar` läuft nach Zeitplan, `release-wache` ist angelegt und
+wird von Hand gestartet. Vorschlag für diesen hier: täglich 8, 14 und 20 Uhr.
 
 ---
 
@@ -14,7 +15,9 @@ Wilhelm. Deine Aufgabe: gemeldete Fehler bewerten und beheben.
 
 - Quellcode: `C:\Users\Wilhe\Downloads\Stock-Dashboard\`
 - Fehlermeldungen: `C:\Users\Wilhe\Downloads\Markt-Dashboard-Daten\fehlermeldungen.json`
-- Testsuite: `node test-v6.js` im Quellordner. Muss am Ende IMMER grün sein.
+- Testsuite: `npm test` im Quellordner (`eslint .`, `node test-channel.js`,
+  `node test-v6.js`). Muss am Ende IMMER grün sein — `node test-v6.js` allein reicht
+  nicht, der Linter findet eine Fehlerklasse, die die Suite strukturell nicht sieht.
 
 Existiert die Datei nicht oder steht dort keine Meldung mit `"status": "offen"`, beende
 den Lauf sofort und melde in einem Satz „nichts zu tun". Erfinde keine Arbeit.
@@ -60,8 +63,8 @@ wertvoller als der Meldetext — sie nennen Datei und Zeile.
 - Alles auf Deutsch: Oberfläche, Kommentare, Bewertungen.
 - Kommentare erklären das WARUM, besonders bei nicht offensichtlichen Entscheidungen.
 - Nach jeder Änderung: `node --check <datei>` für alle berührten JS-Dateien, dann
-  `node test-v6.js`. Schlägt etwas fehl, reparieren oder zurücknehmen — den Code nie
-  kaputt hinterlassen.
+  `npm test`. Schlägt etwas fehl, reparieren oder zurücknehmen — den Code nie kaputt
+  hinterlassen.
 - Ändere NICHTS an: dem Kostenmodell für Hebelscheine, `Q.RECHENSTAND` (außer die
   Rechenweise ändert sich wirklich), den Risikogrenzen, dem Event-Blackout, der
   Host-Freigabe in `main.js`.
@@ -75,3 +78,13 @@ wertvoller als der Meldetext — sie nennen Datei und Zeile.
 
 Drei bis sechs Zeilen: wie viele Meldungen bearbeitet, was behoben, was offen blieb und
 warum. Die geänderten Dateien nennen. Keine Aufzählung von Selbstverständlichkeiten.
+
+Dazu der Übergabeweg — ohne ihn bleibt die Arbeit im Arbeitsbaum liegen und der
+nächste Release-Lauf bricht daran ab:
+
+1. **Committen**, aber nur die eigenen Dateien (nie `git add -A`; hier arbeiten mehrere
+   Sitzungen gleichzeitig).
+2. **Eine Notiz in `release-notizen/`** ablegen, eigene Datei, benannt nach Datum und
+   Sache. Zwei bis fünf Sätze für einen Anwender. Ohne sie erscheint die Fehlerbehebung
+   im Release nur als Commit-Zeile. Näheres in `CLAUDE.md`.
+3. **Nicht pushen und nicht ausliefern** — das bleibt bei der Release-Wache.

@@ -2,9 +2,20 @@
 
 Jeder Eintrag ist ein Fehler, der am 23.08.2026 in einer echten Messung dieses
 Projekts vorgekommen ist — in Skripten des Autors, in Agentenarbeit oder in der
-App selbst. Für jeden gibt es in `test-messmaschine.js` einen Testfall, der die
-Maschine mit genau diesem Fehler füttert und prüft, dass sie ihn **erkennt oder
-unmöglich macht**. Kein neuer Fehlertyp wird ohne Testfall aufgenommen.
+App selbst. Zu den meisten gibt es einen Testfall, der die Maschine mit genau diesem
+Fehler füttert und prüft, dass sie ihn **erkennt oder unmöglich macht**. Die Testfälle
+liegen in **zwei** Dateien:
+
+- `studien/messmaschine/test-messmaschine.js` — füttert die Maschine mit erzeugten Kerzen
+- `test-v6.js` (Abschnitt ab Zeile 3669) — prüft den Quelltext von `messmaschine.js`;
+  A9, B8, B10, F1–F4 und SP stehen **ausschließlich** dort
+
+Nachgezählt am 25.08.2026: von 39 Kennungen sind **33 gedeckt**. Ohne Testfall sind
+**A3, B7, C2, C4, D4 und D5**; für **B9** existiert nur eine Existenzprüfung des
+Dokuments (test-v6.js:3768), kein Testfall. Der Satz „Kein neuer Fehlertyp wird ohne
+Testfall aufgenommen“ gilt als **Regel für künftige Einträge** — rückwirkend stimmt er
+nicht. Nicht dokumentiert ist umgekehrt **E4**, das `messmaschine.js` (Zeile 546/551)
+als Klasse führt.
 
 Die Maschine ist nicht klug. Sie ist nur an diesen Stellen schon einmal gestolpert.
 

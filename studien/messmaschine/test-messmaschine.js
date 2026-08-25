@@ -1,7 +1,11 @@
 'use strict';
-/* Jeder Fehlertyp aus FEHLERTYPEN.md als Falle. Die Maschine muss jede erkennen
+/* Fehlertypen aus FEHLERTYPEN.md als Falle. Die Maschine muss jede erkennen
  * oder unmoeglich machen. Laeuft ohne Archiv: die Kerzen werden erzeugt, damit
- * die Antwort bekannt ist. */
+ * die Antwort bekannt ist.
+ *
+ * NICHT alle Typen stehen hier: A9, B8, B10, F1-F4 und SP werden in test-v6.js gegen
+ * den Quelltext von messmaschine.js geprueft. A3, B7, C2, C4, D4 und D5 haben bisher
+ * gar keinen Testfall - der Kopf von FEHLERTYPEN.md weist sie als offen aus. */
 var fs = require('fs'), path = require('path'), os = require('os');
 var M = require('./messmaschine.js');
 var I = M._intern;

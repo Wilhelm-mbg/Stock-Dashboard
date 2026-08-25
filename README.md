@@ -6,12 +6,33 @@ Windows-Desktop-App (Electron) für Marktüberblick und eine **Trading-Simulatio
 
 ## Funktionen
 
-- **Dashboard**: Big Tech, Chip-Sektor, Indizes, Wirtschaftskalender und Markt-News
-- **Aktien-Explorer**: freie Suche, Charts von 1 Tag bis Max., Kennzahlen, News, regelbasierte Analyse
-- **Simulations-Depot**: Stunden-Strategie (News-Sentiment + Technik + Elliott-Wellen) und Intraday-Strategien (Ausbrüche, Scalping, Rücksetzer, Wellenreiter mit Trendkanal, ORB)
-- **Analyse-Zentrale**: prüft alle Modi per Walk-Forward, schleift Parameter nach und gibt eine Empfehlung mit Übernehmen-Knopf
-- **Risikomanagement**: Positionslimits, Tagesverlust-Limit, Event-Blackout, Meide-Stunden, Notbremse nach Verlustserien
-- **Analyse-Export**: schreibt Kennzahlen, Trades, Kursdaten und Telemetrie nach `Downloads/Markt-Dashboard-Daten`
+Die App hat sechs Reiter:
+
+- **Heute**: Big Tech, Chip-Sektor, Indizes, Wirtschaftskalender und Markt-News. Dazu drei
+  reine Anzeigekarten, aus denen **nichts gehandelt wird**: Spekulations-Radar (Gerüchte aus
+  öffentlichen Quellen), Insider-Käufe (SEC Form 4) und Vorbörsen-Lücken.
+- **Marktkarte**: Branchen und Marktbreite auf einen Blick; die Stammdaten holt die App
+  selbst von der SEC.
+- **Regeln**: die Intraday-Strategien und der Autopilot, der alle Modi per Walk-Forward
+  prüft, Parameter nachschleift und eine Empfehlung mit Übernehmen-Knopf gibt. Setups sind
+  **Ausbruch** (EMA-Kreuzung, Eröffnungs-Range, Trend-Rücksetzer, Donchian, Squeeze,
+  Kanaltrend) und **Umkehr** (Überdehnung, Wellental, RSI(2)-Extrem, RSI(2) im
+  Seitwärtskanal, Kapitulations-Dip). Ab Werk steht „RSI(2) im Seitwärtskanal“ auf dem
+  Basiswert — im reinen Beobachtungsbetrieb, das Schattenbuch zeichnet auf.
+- **Vermögen**: das Simulations-Depot und die beiden Mittelfrist-Bücher Momentum und
+  Drift, die virtuell von Anfang an handeln.
+- **Werkzeuge**: Aktien-Explorer (freie Suche, Charts von 1 Tag bis Max., Kennzahlen,
+  News, regelbasierte Analyse), Schein-Finder, Strategiebaukasten und der Analyse-Export
+  nach `Downloads/Markt-Dashboard-Daten`.
+- **Messung**: die Messmaschine mit dem Knopf „Jetzt messen“ und das Scoreboard.
+
+Quer über alles liegt das **Risikomanagement**: Positionslimits, Tagesverlust-Limit,
+Event-Blackout, Meide-Stunden, Notbremse nach Verlustserien.
+
+Die **Stunden-Strategie** (News-Sentiment + Technik + Elliott-Wellen) gibt es weiterhin,
+sie startet aber **ab Werk aus**: gemessen widerlegt, der Technik-Score wirkt als
+Kontraindikator (−0,74 Pp auf 20 Tage, t = −11,6). Von Hand einschaltbar bleibt sie —
+dieser Entscheid wird respektiert.
 
 ## Installation
 
@@ -42,7 +63,9 @@ Was stattdessen trägt, und was nachprüfbar ist:
   ergibt dasselbe Paket.
 - Nach dem Build läuft die Testsuite ein zweites Mal **gegen das gebaute Paket**:
   Abschnitt 31 von `test-v6.js` vergleicht jede ausgelieferte Datei byteweise mit der
-  Quelle und die Paketversion mit dem Tag. Ein Paket, das nicht zum Commit passt, wird rot.
+  Quelle und die Paketversion mit `package.json`. Dass der **Tag** zu `package.json`
+  passt, prüft der Schritt „Ziel bestimmen“ in `.github/workflows/build.yml`. Ein Paket,
+  das nicht zum Commit passt, wird rot.
 - Der Update-Kanal ist auf `Wilhelm-mbg/Stock-Dashboard` festgenagelt (`package.json`,
   `build.publish`), nicht auf eine Adresse aus den Einstellungen.
 - Wer das nicht will, entfernt in den Einstellungen den Haken bei „Neue Versionen selbst

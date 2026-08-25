@@ -63,20 +63,48 @@ Jede Handelsidee muss durch dieselbe Prüfung, bevor sie handelt:
 - Entdeckung und Bestätigung an **getrennten Tagen**, Testzahl ausweisen (Bonferroni).
 - **Netto nach Kosten.** Die Produkthürde erschlägt fast jede Intraday-Kante.
 
-Fehlerarten mit Kennung: `studien/messmaschine/FEHLERTYPEN.md`. Messgeschirr:
-`node studien/messmaschine/messen.js strategien/<name>.js`.
+Fehlerarten mit Kennung: `studien/messmaschine/FEHLERTYPEN.md`. Messgeschirr, aus der
+Repo-Wurzel:
+
+```bash
+node studien/messmaschine/messen.js studien/messmaschine/strategien/<name>.js
+```
+
+`messen.js` löst den Pfad gegen das **Arbeitsverzeichnis** auf. Die Kurzform
+`strategien/<name>.js` läuft nur aus `studien/messmaschine/` heraus — aus der Wurzel
+endet sie in MODULE_NOT_FOUND.
 
 Neue Regeln werden **vorregistriert**, bevor gerechnet wird — sonst ist der beste von N
 Parametersätzen immer schön.
 
 ## Tests
 
-`node test-v6.js` (über 1500 Zusicherungen) muss grün sein, bevor etwas gepusht wird.
+`npm test` muss grün sein, bevor etwas gepusht wird — das ist `eslint .`, dann
+`node test-channel.js`, dann `node test-v6.js` (über 1500 Zusicherungen). Genau diese
+Reihe fährt die CI bei jedem Push, und `tools/release.js` vor jeder Auslieferung.
+
+**`node test-v6.js` allein reicht nicht.** Die Suite prüft Quelltext per Textmarke und
+kann eine ganze Fehlerklasse deshalb strukturell nicht sehen. Am 25.08.2026 fand der
+Linter eine doppelt deklarierte Funktion, nachdem test-v6 grün war.
 
 Eine Zusicherung, die bei **korrektem** Verhalten rot wird, misst die falsche Größe —
 repariere die Zusicherung, nicht das Verhalten. Häufige Ursache: sie zählt Vorkommen
 oder prüft Dokument-Reihenfolge, wo der Ort gemeint war. Ebenso häufig: eine Textmarke
 (`indexOf`), die bei Nichttreffer `-1` liefert und dann bis zum Dateiende durchschneidet.
+
+## Das Audit vom 23.08.2026
+
+Die Bestandsaufnahme liegt in `studien/audit-2026-08-23/`. Ihre Zahlen beschreiben den
+Stand vom 23.08. und passen nicht mehr auf den heutigen Code — sie ist Beleg, kein
+Nachschlagewerk. Verweise wie „Audit 22“ oder „Stufe 4 des Audits“ in Tests und
+Quelltext meinen die Nummerierung dort.
+
+Zwei Dinge daraus sind **noch offen** und gelten weiter:
+
+- **Punkt 21: Messung an den Live-Pfad angleichen** — gleicher Vorlauf, gleiches
+  Instrument. Gehört zur Handelslogik und ist nie umgesetzt worden.
+- **Die Update-Signatur** ist ohne Zertifikat nicht lösbar. Der Zustand ist offengelegt
+  (App, README, Bauplan), das Signieren als Handgriff vorbereitet (`CSC_LINK`).
 
 ## Was nicht angefasst wird
 
