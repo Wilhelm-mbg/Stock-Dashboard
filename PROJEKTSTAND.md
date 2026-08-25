@@ -71,10 +71,6 @@ Dazu die Zusatzpunkte 3–12 der Kritik: fertig.
 - **#84 — „belegt“-Prosa entfernen** (Analytiker-Fund 25.08.): fünf feste Texte nennen
   Kanten „belegt“, kein Protokoll sagt „bestätigt“; Wortlaut auf „gemessen“ umstellen
   (Fundstellen im Issue). Gehört zum selben Aufwasch wie #76.
-- **#76 — die sieben gesammelten Fehler vom 25.08. reparieren** (inkl. #76.2, die zu enge
-  fetch-Refspec von origin). Warum: gemeldete Fehler, freigegeben durch die Hausregel
-  „Reparatur von Warnsignalen“. Dateien: laut Issue #76, je Fehler einzeln committen.
-  *(zugeteilt vom Projekt-Manager, 25.08. 21:45 — noch von niemandem genommen)*
 
 ---
 
@@ -85,9 +81,6 @@ fertig bist.*
 
 - **App-Codebase Master** — hat am 25.08. spät die offene Issue-Liste zur Abarbeitung
   übernommen (Reihenfolge siehe Aufträge); Details trägt er selbst nach.
-- **#76 (sieben Fehler)** — genommen 25.08. 23:0x. Belegt: `.github/workflows/build.yml`,
-  `tools/release.js`. Fuenf der sieben sind bereits behoben (Nachweis im Commit); offen
-  waren nur Nr. 1 (CI-Sendeschluessel) und Nr. 6 (Aufraeum-Commit ausserhalb des Tags).
 
 ---
 
@@ -128,6 +121,10 @@ steht, ist nach zwei Stunden verloren.*
 
 *Fragen, an denen Arbeit hängt.*
 
+- **Geheimnis `TELEMETRIE_JSON` anlegen** (Settings → Secrets and variables → Actions):
+  Inhalt der eigenen `telemetrie.json` hineinkopieren. Bis dahin bekommen automatisch
+  gebaute Pakete keinen Sendeschluessel — der Bau sagt es jetzt laut, statt zu schweigen.
+  Nur Wilhelm darf den Schluessel in der Hand haben. (#76.1)
 - **Zweites Ja zum Handel-aus-Renderer-Umbau** — fällig, sobald der Plan als Dokument vorliegt.
 
 ---
