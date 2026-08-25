@@ -357,6 +357,16 @@
       ],
       fuss: 'Gehandelt wird hiervon nichts. Keine Anlageberatung.'
     },
+    'heute.bestand': {
+      titel: 'Mein Depot',
+      punkte: [
+        'Die eigenen Papiere - eingetragen aus dem Auszug der Depotbank oder von Hand. Sie werden NICHT gehandelt: die App bleibt eine Simulation mit virtuellem Kapital.',
+        'Kurzfrist zeigt, was die gemessenen Intraday-Regeln beim letzten Scan zu dem Wert gesagt haben. Mittelfrist zeigt, ob eines der beiden Buecher (Momentum, Ergebnis-Drift) den Wert gerade haelt.',
+        'Beides ist eine BEOBACHTUNG, keine Empfehlung. „Die Regel haette hier ein Signal“ heisst nicht „kaufen“ - was daraus folgt, entscheidest du.',
+        'Uebernommen wird ueber die ISIN. Eine WKN allein reicht nicht: sie laesst sich bei keiner freien Quelle in ein Boersenkuerzel uebersetzen (am 25.08.2026 nachgemessen - ISIN US0378331005 findet AAPL, WKN 846900 findet nichts).'
+      ],
+      fuss: 'Simulation. Keine Anlageberatung.'
+    },
     'heute.vorboerse': {
       titel: 'Vorbörsen-Lücken',
       punkte: [

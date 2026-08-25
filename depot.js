@@ -5579,6 +5579,33 @@
     });
   }
   window.DepotAPI = {
+    /** Was die Kurzfrist-Regeln zu einem Symbol zuletzt gesagt haben.
+     *  Nur eine KOPIE - das Bestandsdepot (Issue #71) liest mit, es greift nicht ein. */
+    signal: function (sym) {
+      var s = SIG[sym];
+      if (!s) return null;
+      return { ok: !!s.ok, grund: s.grund || null, t: s.t || null,
+               spot: s.spot != null ? s.spot : null };
+    },
+
+    /** Halten die beiden Mittelfrist-Buecher dieses Symbol gerade?
+     *  Das IST das Mittelfrist-Signal dieses Projekts: nicht eine Meinung, sondern
+     *  die Frage, ob die gemessenen Regeln den Wert derzeit im Buch haetten.
+     *  richtung: 1 long, -1 short (die Drift kennt beide Seiten). */
+    mittelfrist: function (sym) {
+      if (!D) return null;
+      function suche(buch, name) {
+        if (!buch || !buch.positionen) return null;
+        for (var i = 0; i < buch.positionen.length; i++) {
+          var p = buch.positionen[i];
+          if (p.sym !== sym) continue;
+          return { buch: name, richtung: p.richtung != null ? p.richtung : 1 };
+        }
+        return null;
+      }
+      return { momentum: suche(D.mfBuch, 'Momentum'), drift: suche(D.driftBuch, 'Ergebnis-Drift') };
+    },
+
     /** Der letzte Kurs, den der Intraday-Scanner fuer ein Symbol gesehen hat.
      *  Er fuehrt LASTBARS fuer sein ganzes Handelsuniversum - deutlich mehr Werte
      *  als die Kachelreihe, und ohne einen einzigen zusaetzlichen Abruf. Die

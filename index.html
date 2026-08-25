@@ -753,6 +753,29 @@
 <h2 style="margin-top:18px;">Marktbild <span style="color:var(--muted); font-size:var(--fs-neben); font-weight:400;">– die 15 Werte dieses Reiters, Farbe = heutige Bewegung, Klick öffnet den Explorer</span></h2>
 <div id="dashHeat" class="heat"><div class="loading">Lade Kurse …</div></div>
 
+<h2>Mein Depot <span style="color:var(--muted); font-size:var(--fs-neben); font-weight:400; text-transform:none; letter-spacing:0;">
+  – die eigenen Papiere und was die gemessenen Regeln zu ihnen sagen.
+  <b>Beobachtung, keine Anlageberatung.</b></span>
+  <button class="info" type="button" data-info="heute.bestand" aria-expanded="false" aria-label="Erklärung: Mein Depot">i</button></h2>
+<div class="panel">
+  <div id="bestandListe"><div class="loading">Lade …</div></div>
+  <details style="margin-top:10px;">
+    <summary style="cursor:pointer; font-size:var(--fs-neben); color:var(--muted); padding:4px 0;">Papiere übernehmen (Auszug der Depotbank einfügen)</summary>
+    <div style="margin-top:8px; font-size:var(--fs-neben); color:var(--ink-2); line-height:1.55; max-width:72ch;">
+      Den Auszug einfach hier hineinkopieren – Zeile für Zeile, so wie er aus der Bank kommt.
+      Erkannt wird die <b>ISIN</b> und die Stückzahl daneben. Eine WKN allein reicht nicht:
+      sie lässt sich bei keiner freien Quelle in ein Börsenkürzel übersetzen (am 25.08.2026
+      nachgemessen). Wer nur eine WKN hat, schreibt das Kürzel dazu – oder eine Zeile
+      <code>NVDA 40</code> tut es auch.
+    </div>
+    <textarea id="bestandText" rows="6" style="width:100%; margin-top:8px; font-family:var(--mono, monospace); font-size:var(--fs-neben);" placeholder="Apple Inc.   US0378331005   25 Stück&#10;SAP SE       DE0007164600  100 St."></textarea>
+    <div style="margin-top:6px; display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+      <button class="btn" type="button" id="bestandLesen">Übernehmen</button>
+      <span id="bestandStatus" role="status" aria-live="polite" style="font-size:var(--fs-neben); color:var(--muted);"></span>
+    </div>
+  </details>
+</div>
+
 <h2>Gewinner &amp; Verlierer des Tages</h2>
 <div class="movers">
   <div class="mover-col"><h3>▲ Top-Gewinner</h3><div id="winners"></div></div>
@@ -1994,6 +2017,8 @@
 <script src="capital.js"></script>
 <script src="calendar.js"></script>
 <script src="archiv.js"></script>
+<script src="bestand.js"></script>
+<script src="bestandui.js"></script>
 <script src="explorer.js"></script>
 <script src="momentum.js"></script>
 <script src="strategien.js"></script>
