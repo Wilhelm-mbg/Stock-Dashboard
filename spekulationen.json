@@ -1,34 +1,34 @@
 {
-  "stand": "2026-08-24T14:48:45.512Z",
+  "stand": "2026-08-25T07:16:52.041Z",
   "hinweis": "Spekulationen aus öffentlichen Quellen – ungemessen, keine Handelsempfehlung, keine Anlageberatung.",
   "eintraege": [
     {
-      "id": "20260822-CBK-uebernahme",
-      "sym": "CBK.DE",
-      "name": "Commerzbank AG",
+      "id": "20260821-BMPS-uebernahme",
+      "sym": "BMPS.MI",
+      "name": "Banca Monte dei Paschi di Siena S.p.A.",
       "art": "uebernahme",
       "chance": "hoch",
-      "these": "UniCredit hat die Kontrolle über die Commerzbank faktisch erlangt, ohne dass die Mehrheit der Aktionäre angedient hätte; Aufsichtsratschef Weidmann fordert nun eine Überprüfung des deutschen Übernahmerechts und rät dem Bund, seine restlichen Anteile vorerst zu behalten.",
-      "begruendung": "Reuters zitiert Weidmann mit harten Zahlen: von rund 73 Prozent andienbarer Aktien wurden weniger als 18 Prozent angedient, UniCredit steht rechnerisch bei knapp 49,65 Prozent. Mehrere seriöse Häuser berichten unabhängig, der Vorgang ist konkret und belegt, deshalb hoch. Offen bleiben die EZB-Entscheidung, die im vierten Quartal erwartet wird, und die Haltung des Bundes zu den verbliebenen 12,7 Prozent.",
+      "these": "MPS wehrt sich mit einem Doppelgebot für Banco BPM und Banca Generali gegen die feindliche Offerte von Intesa Sanpaolo; die erste Antwort der Gegenseite fällt heute Nachmittag im BPM-Verwaltungsrat.",
+      "begruendung": "Beide Seiten des Übernahmekampfs sind belegt: Intesas Offerte über rund 30,5 Mrd. Euro und die MPS-Gegenwehr werden von Reuters, FT und italienischen Häusern übereinstimmend beschrieben, die Umtauschverhältnisse sind veröffentlicht, der MPS-Verwaltungsrat hat nach sieben Stunden mit neun Ja-Stimmen bei vier Enthaltungen zugestimmt. Konkreter Anlass, mehrere seriöse Quellen, deshalb hoch. Die Beteiligung an Generali gilt als Verhandlungsmasse, der Ausgang ist offen und politisch aufgeladen.",
       "quellen": [
         {
-          "titel": "Reuters",
-          "url": "https://www.reuters.com/legal/transactional/commerzbank-chair-calls-review-german-takeover-rules-after-unicredit-bid-2026-08-23/"
+          "titel": "Euronews",
+          "url": "https://www.euronews.com/business/2026/08/20/monte-dei-paschi-board-approves-dual-exchange-offers-for-banco-bpm-and-banca-generali"
         },
         {
-          "titel": "Investing.com",
-          "url": "https://www.investing.com/news/stock-market-news/commerzbank-chair-calls-for-review-of-german-takeover-rules-93CH-4872466"
+          "titel": "MarketScreener",
+          "url": "https://www.marketscreener.com/news/monte-paschi-tender-offer-banco-bpm-to-hold-extraordinary-board-meeting-tuesday-ce7858dbd98bf22d"
         },
         {
-          "titel": "Handelsblatt",
-          "url": "https://www.handelsblatt.com/finanzen/banken-versicherungen/banken/commerzbank-regierungsvertreter-wohl-offen-fuer-verkauf-der-bundesanteile/100247767.html"
+          "titel": "Borsa Italiana / Radiocor",
+          "url": "https://www.borsaitaliana.it/borsa/notizie/radiocor/finance/dettaglio/european-share-prices-little-changed-2-nRC_24082026_1200_204206320.html?lang=en"
         },
         {
-          "titel": "Euronext Live",
-          "url": "https://live.euronext.com/en/financial-news/commerzbank-chair-calls-review-german-takeover-rules-after-unicredit-bid"
+          "titel": "SoldiOnline",
+          "url": "https://www.soldionline.it/notizie/azioni-italia/mps-banco-bpm-banca-generali-perche-lops-divide-mercato-e-analisti"
         }
       ],
-      "zeit": "2026-08-23T18:00:00Z"
+      "zeit": "2026-08-24T10:00:00Z"
     },
     {
       "id": "20260821-BAMI-uebernahme",
@@ -36,8 +36,8 @@
       "name": "Banco BPM S.p.A.",
       "art": "uebernahme",
       "chance": "hoch",
-      "these": "Der Verwaltungsrat von Banco BPM tagt am Dienstagnachmittag, dem 25. August, außerplanmäßig über das Umtauschangebot von Monte dei Paschi (1,567 MPS-Aktien je BPM-Aktie, Gegenwert rund 25,3 Mrd. Euro).",
-      "begruendung": "Der Sitzungstermin ist inzwischen von mehreren Häusern übereinstimmend gemeldet, die Konditionen des Angebots sind veröffentlicht – konkreter, datierter Anlass aus mehreren seriösen Quellen, deshalb hoch. Der Ausgang hängt an der Annahmequote, an der Haltung des französischen Großaktionärs Crédit Agricole und an Intesas Gegenzug; S&P hat zuletzt neue Zweifel angemeldet.",
+      "these": "Der Verwaltungsrat von Banco BPM tagt heute, am Dienstagnachmittag, außerplanmäßig über das Umtauschangebot von Monte dei Paschi (1,567 MPS-Aktien je BPM-Aktie).",
+      "begruendung": "Der Sitzungstermin ist von mehreren Häusern übereinstimmend gemeldet, die Konditionen des Angebots sind veröffentlicht – konkreter, datierter Anlass aus mehreren seriösen Quellen, deshalb hoch. MPS hat das Gebot ausdrücklich nicht mit der BPM-Führung abgestimmt. Der Ausgang hängt an der Annahmequote, an der Haltung des französischen Großaktionärs Crédit Agricole, der sich bislang nicht äußert, und an Intesas Gegenzug; S&P hat zuletzt neue Zweifel angemeldet.",
       "quellen": [
         {
           "titel": "MarketScreener",
@@ -59,64 +59,64 @@
       "zeit": "2026-08-24T10:00:00Z"
     },
     {
-      "id": "20260821-BMPS-uebernahme",
-      "sym": "BMPS.MI",
-      "name": "Banca Monte dei Paschi di Siena S.p.A.",
+      "id": "20260822-CBK-uebernahme",
+      "sym": "CBK.DE",
+      "name": "Commerzbank AG",
       "art": "uebernahme",
       "chance": "hoch",
-      "these": "MPS wehrt sich mit einem Doppelgebot über rund 34 Mrd. Euro für Banco BPM und Banca Generali gegen die feindliche Offerte von Intesa Sanpaolo; die erste Antwort der Gegenseite fällt am Dienstag im BPM-Verwaltungsrat.",
-      "begruendung": "Beide Seiten des Übernahmekampfs sind belegt: Intesas Offerte über rund 34,5 Mrd. Euro und die MPS-Gegenwehr werden von Reuters, FT und italienischen Häusern übereinstimmend beschrieben, die Umtauschverhältnisse sind veröffentlicht. Konkreter Anlass, mehrere seriöse Quellen, deshalb hoch. Die 13-Prozent-Beteiligung an Generali gilt als Verhandlungsmasse, der Ausgang ist offen und politisch aufgeladen.",
+      "these": "UniCredit hat die Kontrolle über die Commerzbank faktisch erlangt, ohne dass die Mehrheit der Aktionäre angedient hätte; Aufsichtsratschef Weidmann fordert eine Überprüfung des deutschen Übernahmerechts und rät dem Bund, seine restlichen Anteile vorerst zu behalten.",
+      "begruendung": "Reuters zitiert Weidmann mit harten Zahlen: von rund 73 Prozent andienbarer Aktien wurden weniger als 18 Prozent angedient, UniCredit steht rechnerisch bei knapp 49,65 Prozent. In einem ausführlichen Interview mit der Süddeutschen hat Weidmann am Montag nachgelegt. Mehrere seriöse Häuser berichten unabhängig, der Vorgang ist konkret und belegt, deshalb hoch. Offen bleiben die EZB-Entscheidung, die im vierten Quartal erwartet wird, und die Haltung des Bundes zu den verbliebenen 12,7 Prozent.",
       "quellen": [
         {
-          "titel": "MarketScreener",
-          "url": "https://www.marketscreener.com/news/monte-paschi-tender-offer-banco-bpm-to-hold-extraordinary-board-meeting-tuesday-ce7858dbd98bf22d"
+          "titel": "Reuters",
+          "url": "https://www.reuters.com/legal/transactional/commerzbank-chair-calls-review-german-takeover-rules-after-unicredit-bid-2026-08-23/"
         },
         {
-          "titel": "Borsa Italiana / Radiocor",
-          "url": "https://www.borsaitaliana.it/borsa/notizie/radiocor/finance/dettaglio/european-share-prices-little-changed-2-nRC_24082026_1200_204206320.html?lang=en"
+          "titel": "Süddeutsche Zeitung",
+          "url": "https://www.sueddeutsche.de/wirtschaft/commerzbank-uebernahme-jens-weidmann-unicredit-zukunft-li.3532729"
         },
         {
-          "titel": "Euronews",
-          "url": "https://www.euronews.com/business/2026/08/21/monte-dei-paschi-details-of-bid-for-banco-bpm-and-banca-generali"
+          "titel": "Handelsblatt",
+          "url": "https://www.handelsblatt.com/finanzen/banken-versicherungen/banken/commerzbank-regierungsvertreter-wohl-offen-fuer-verkauf-der-bundesanteile/100247767.html"
         },
         {
-          "titel": "SoldiOnline",
-          "url": "https://www.soldionline.it/notizie/azioni-italia/mps-banco-bpm-banca-generali-perche-lops-divide-mercato-e-analisti"
+          "titel": "Investing.com",
+          "url": "https://www.investing.com/news/stock-market-news/commerzbank-chair-calls-for-review-of-german-takeover-rules-93CH-4872466"
         }
       ],
-      "zeit": "2026-08-24T10:00:00Z"
+      "zeit": "2026-08-24T06:00:00Z"
     },
     {
       "id": "20260823-WBD-ereignis",
       "sym": "WBD",
       "name": "Warner Bros. Discovery Inc.",
       "art": "ereignis",
-      "chance": "mittel",
-      "these": "Kalifornien hat die für Montag angesetzten Vergleichsgespräche über die Paramount-Skydance-Übernahme von Warner Bros. Discovery kurzfristig abgesagt; Generalstaatsanwalt Bonta wirft Paramount vor, Inhalte des vorangegangenen Treffens durchgestochen und falsch dargestellt zu haben.",
-      "begruendung": "Die Absage ist ein konkreter, datierter Vorgang, den Reuters, CNN, Variety und Deadline melden – der Ursprung ist allerdings durchgehend ein Bericht der New York Times, die Quellen sind also nicht voneinander unabhängig, deshalb mittel und nicht hoch. Weitere Termine sind nicht angesetzt, der Kartellprozess der zwölf Bundesstaaten beginnt am 2. März 2027, und ab dem 1. Oktober fällt für Paramount eine Gebühr von rund 7 Mio. Dollar je Tag zugunsten der WBD-Aktionäre an.",
+      "chance": "hoch",
+      "these": "Kalifornien hat die für Montag angesetzten Vergleichsgespräche über die Paramount-Skydance-Übernahme von Warner Bros. Discovery abgesagt; Generalstaatsanwalt Bonta wirft Paramount vor, Inhalte des vorangegangenen Treffens durchgestochen zu haben.",
+      "begruendung": "Bonta hat die Absage selbst begründet und Paramount fehlenden guten Willen vorgeworfen; CNBC und NBC zitieren ihn direkt und unabhängig voneinander, Reuters, Variety und Deadline berichten ebenfalls. Damit hängt die Meldung nicht mehr allein an der ursprünglichen Darstellung der New York Times – konkreter, datierter Vorgang aus mehreren Quellen, deshalb hoch statt wie gestern mittel. Weitere Termine sind nicht angesetzt, der Kartellprozess der zwölf Bundesstaaten beginnt am 2. März 2027, und ab dem 1. Oktober fällt für Paramount eine Gebühr von rund 7 Mio. Dollar je Tag zugunsten der WBD-Aktionäre an.",
       "quellen": [
+        {
+          "titel": "CNBC",
+          "url": "https://www.cnbc.com/2026/08/24/california-ag-bonta-paramount-settlement-meeting.html"
+        },
+        {
+          "titel": "NBC News",
+          "url": "https://www.nbcnews.com/business/media/paramount-warner-bros-merger-california-attorney-general-cancels-talks-rcna594160"
+        },
         {
           "titel": "Reuters",
           "url": "https://www.reuters.com/legal/litigation/california-cancels-talks-with-paramount-over-warner-bros-merger-nyt-reports-2026-08-24/"
         },
         {
-          "titel": "New York Times",
-          "url": "https://www.nytimes.com/2026/08/24/us/california-bonta-paramount-warner-settlement-talks.html"
-        },
-        {
-          "titel": "Variety",
-          "url": "https://variety.com/2026/film/global/california-ag-bonta-cancels-paramount-settlement-talks-1236841379/"
-        },
-        {
-          "titel": "CNN",
-          "url": "https://www.cnn.com/2026/08/24/business/california-cancels-meeting-paramount-warner-merger-intl"
-        },
-        {
           "titel": "Deadline",
           "url": "https://deadline.com/2026/08/bonta-cancels-paramount-settlement-meeting-1237048537/"
+        },
+        {
+          "titel": "Politico",
+          "url": "https://www.politico.com/news/2026/08/21/california-paramount-reps-expected-to-meet-monday-in-antitrust-settlement-talks-01046647"
         }
       ],
-      "zeit": "2026-08-24T09:00:00Z"
+      "zeit": "2026-08-24T18:00:00Z"
     },
     {
       "id": "20260824-WDAY-uebernahme",
@@ -124,15 +124,15 @@
       "name": "Workday Inc.",
       "art": "uebernahme",
       "chance": "mittel",
-      "these": "Der Finanzinvestor Silver Lake soll seit Monaten über eine Übernahme von Workday verhandeln, die das Unternehmen mit rund 43 Mrd. Dollar bewerten und zu den größten Software-Buyouts überhaupt zählen würde; am 27. August legt Workday Quartalszahlen vor.",
-      "begruendung": "Ursprung ist eine Exklusivmeldung von Reuters, die den Kurs um rund 18 Prozent nach oben trieb – den stärksten Tag seit 2016. Eine seriöse Quelle, von Workday wie Silver Lake unbestätigt, seither Rücksetzer und ausdrücklich skeptische Analystenstimmen zur Abschlusswahrscheinlichkeit; deshalb mittel und nicht hoch. Aufgenommen wegen des Zahlentermins am 27. August, an dem sich die Lage klären könnte.",
+      "these": "Der Finanzinvestor Silver Lake soll seit Monaten über eine Übernahme von Workday verhandeln, die das Unternehmen mit rund 43 Mrd. Dollar bewerten würde; am 27. August legt Workday Quartalszahlen vor.",
+      "begruendung": "Ursprung ist eine Exklusivmeldung von Reuters vom 13. August, die den Kurs um rund 18 Prozent nach oben trieb – den stärksten Tag seit 2016. Eine seriöse Quelle, von Workday wie Silver Lake unbestätigt, seither Rücksetzer und ausdrücklich skeptische Analystenstimmen zur Abschlusswahrscheinlichkeit; deshalb mittel und nicht hoch. Im Kurs stecken derzeit rund 5,1 Mrd. Dollar Übernahmeprämie, die am Zahlentermin auf die Probe gestellt wird.",
       "quellen": [
         {
           "titel": "Reuters via Yahoo Finance",
           "url": "https://finance.yahoo.com/markets/stocks/articles/exclusive-silver-lake-talks-buy-183537331.html"
         },
         {
-          "titel": "Investor's Business Daily",
+          "titel": "Investors Business Daily",
           "url": "https://www.investors.com/news/technology/workday-stock-silver-lake-analyst/"
         },
         {
@@ -145,6 +145,30 @@
         }
       ],
       "zeit": "2026-08-24T12:00:00Z"
+    },
+    {
+      "id": "20260825-MLM-beteiligung",
+      "sym": "MLM",
+      "name": "Martin Marietta Materials Inc.",
+      "art": "beteiligung",
+      "chance": "niedrig",
+      "these": "Mit dem Abschluss der 13,5 Mrd. Dollar schweren Übernahme von Lhoist North America ist die Familienholding LNA Holding SRL über 10.953.543 neu ausgegebene Aktien zum größten Einzelaktionär von Martin Marietta geworden (15,4 Prozent).",
+      "begruendung": "Das Schedule 13D ist amtlich und eindeutig, die Konditionen sind über mehrere Häuser belegt. Trotzdem niedrig: Der Melder ist der Verkäufer, der neben 7 Mrd. Dollar in bar in Aktien bezahlt wurde – kein Einstieg aus Überzeugung und keine aktivistische Absicht. Interessant ist eher die Struktur: Haltefrist für 50 Prozent der Stücke bis 21. August 2027, für den Rest bis 2028, dazu eine Stillhaltevereinbarung bei 18 Prozent. Die Aktie stand zuletzt auf einem 52-Wochen-Tief.",
+      "quellen": [
+        {
+          "titel": "SEC EDGAR (Schedule 13D)",
+          "url": "https://www.sec.gov/Archives/edgar/data/916076/000149315226039879/0001493152-26-039879-index.htm"
+        },
+        {
+          "titel": "GuruFocus",
+          "url": "https://www.gurufocus.com/news/9049757/martin-marietta-mlm-completes-135-billion-acquisition-of-lhoist-north-america"
+        },
+        {
+          "titel": "StockTitan",
+          "url": "https://www.stocktitan.net/sec-filings/MLM/schedule-13d-martin-marietta-materials-inc-major-shareholder-acquisit-8231b00802e3.html"
+        }
+      ],
+      "zeit": "2026-08-24T20:00:00Z"
     }
   ]
 }
