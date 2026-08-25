@@ -40,7 +40,10 @@ Dazu die Zusatzpunkte 3–12 der Kritik: fertig.
 *Was freigegeben ist und noch niemand macht. Wer eine Zeile nimmt, trägt sich unter
 „Läuft gerade" ein und streicht sie hier.*
 
-- *(keine — die freigegebenen Stufen sind abgearbeitet)*
+- **#76 — die sieben gesammelten Fehler vom 25.08. reparieren** (inkl. #76.2, die zu enge
+  fetch-Refspec von origin). Warum: gemeldete Fehler, freigegeben durch die Hausregel
+  „Reparatur von Warnsignalen“. Dateien: laut Issue #76, je Fehler einzeln committen.
+  *(zugeteilt vom Projekt-Manager, 25.08. 21:45 — noch von niemandem genommen)*
 
 ---
 
