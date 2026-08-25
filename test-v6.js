@@ -6295,6 +6295,39 @@ console.log('\n46) Was die App dauerhaft aufzeichnet');
   ok(/D\.patience\[dk\]\[reason\]/.test(dep), 'Nicht gehandelte Signale werden weiter je Tag gezaehlt');
   ok(/D\.spannen\.proben\.unshift/.test(dep), 'Die Spannen-Probe laeuft weiter');
   ok(/function kostenMessungNeu/.test(dep), 'Die Messung des echten Schlupfs bleibt bestehen');
+
+  /* --- Die Kostenmessung darf nicht auf einen Trade warten muessen ---
+   * Befund 25.08.2026: 0 gemessene Runden, und daran haette sich nie etwas geaendert.
+   * Gespiegelt wird nur im Intraday-Pfad; alle sieben je gemachten Trades stammen von
+   * der Stunden-Strategie, und der Intraday-Arm ist seit dem 23.08. vom Edge-Waechter
+   * pausiert. Der Schutz verhindert genau die Messung, die ueber ihn entscheiden
+   * wuerde. Die Kostenfrage haengt aber gar nicht an der Strategie. */
+  ok(/async function kostenRundeMessen/.test(dep),
+     'Es gibt eine Kostenmessung, die ohne Signal auskommt (oeffnen, sofort schliessen)');
+  var kr = dep.slice(dep.indexOf('async function kostenRundeMessen'), dep.indexOf('function kostenBilanz'));
+  /* Die notierte Spanne VOR der Order: nur so laesst sich Spanne von Schlupf trennen. */
+  ok(/CapAPI\.quote\(sym\)/.test(kr) && /notiert:/.test(kr),
+     'Die Runde haelt die notierte Spanne fest - sonst waere sie nur eine Zahl ohne Zerlegung');
+  /* Kleinstmoegliche Groesse: gemessen wird der Preis, nicht die Position. */
+  ok(/groesse = 0\.1/.test(kr), 'Die Messrunde nimmt die kleinstmoegliche Groesse');
+  /* Bleibt eine Position offen, MUSS das laut gesagt werden - stillschweigend eine
+   * offene Position auf dem Konto zu hinterlassen waere der schlimmere Fehler. */
+  ok(/offenGeblieben/.test(kr) && /von Hand pruefen/.test(kr),
+     'Scheitert das Schliessen, wird die offene Position ausdruecklich gemeldet');
+  /* Der Marktzustand wird geprueft: eine Runde bei geschlossener Boerse misst nichts. */
+  ok(/marketOpen/.test(kr), 'Bei geschlossener Boerse wird gar nicht erst gemessen');
+
+  /* --- Und sie laeuft NIE von allein --- 
+   * Sie setzt echte Orders auf dem Demo-Konto ab. Was Orders absetzt, gehoert an eine
+   * Hand, nicht an einen Taktgeber. */
+  var h68 = fs.readFileSync(__dirname + '/index.html', 'utf8');
+  ok(/id="kostenRundeBtn"/.test(h68), 'Die Messrunde haengt an einem Knopf');
+  ok(!/setInterval\([^)]*kostenRunde/.test(dep) && !/setTimeout\([^)]*kostenRundeMessen/.test(dep),
+     'Kein Taktgeber loest die Messrunde aus - nur der Knopf');
+  var draht = dep.slice(dep.indexOf("getElementById('kostenRundeBtn')"), dep.indexOf('setTimeout(updateCapStatus, 3000)'));
+  ok(/window\.confirm\(/.test(draht), 'Vor der Order wird gefragt');
+  ok(/DEMO/.test(draht), 'Und die Frage sagt ausdruecklich, dass es das Demo-Konto ist');
+  ok(/kostenRundeLaeuft/.test(draht), 'Ein Doppelklick loest nicht zwei Runden aus');
 })();
 
 console.log('\n47a) bezeichnetesArchiv je Zeitrahmen');

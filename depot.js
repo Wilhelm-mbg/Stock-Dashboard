@@ -2936,6 +2936,72 @@
   }
   if (typeof window !== 'undefined') window.__spannenBilanz = spannenBilanz;
 
+  /** EINE Messrunde: kleinste Position oeffnen, sofort schliessen, beide
+   *  Ausfuehrungskurse gegen die Mitte halten. Das misst, was ein Umlauf WIRKLICH
+   *  kostet - Spanne plus Schlupf - ohne auf ein Signal zu warten.
+   *
+   *  Warum es das gibt: Die Messung aus echten Trades stand am 25.08.2026 auf 0
+   *  Runden und waere dort geblieben. Die Stunden-Strategie spiegelt nicht, und der
+   *  Intraday-Arm ist seit dem 23.08. vom Edge-Waechter pausiert. Der Schutz
+   *  verhindert genau die Messung, die ueber ihn entscheiden wuerde. Die Kostenfrage
+   *  hat mit der Strategie aber gar nichts zu tun - also wird sie getrennt gemessen.
+   *
+   *  Setzt ECHTE Orders auf dem Demo-Konto ab. Wird nur von Hand ausgeloest. */
+  async function kostenRundeMessen(sym) {
+    if (!(window.CapAPI && window.CapAPI.enabled() && window.CapAPI.quote)) {
+      return { ok: false, grund: 'Capital.com-Demo ist nicht verbunden.' };
+    }
+    if (!(window.Dash && window.Dash.marketOpen && window.Dash.marketOpen())) {
+      return { ok: false, grund: 'Die Boerse ist zu - eine Runde jetzt misst nichts Brauchbares.' };
+    }
+    /* Die notierte Spanne VOR der Order: nur so laesst sich hinterher trennen, was
+     * Spanne war und was Schlupf. Ohne sie waere die Runde nur eine Zahl. */
+    var vor = null;
+    try { vor = await window.CapAPI.quote(sym); } catch (eQ) { vor = null; }
+    if (!vor || !(vor.mid > 0)) return { ok: false, grund: 'Kein Kurs fuer ' + sym + '.' };
+
+    /* Kleinstmoegliche Groesse. Gemessen wird der PREIS, nicht die Position -
+     * jede zusaetzliche Einheit erhoeht nur das Risiko einer Teilausfuehrung. */
+    var groesse = 0.1;
+    var auf = null;
+    try { auf = await window.CapAPI.openPosition(sym, 'call', groesse, null, null); }
+    catch (eO) { auf = { ok: false, msg: String(eO && eO.message || eO) }; }
+    if (!auf || !auf.ok) {
+      capFehlerNeu(sym, auf || { msg: 'ohne Antwort' });
+      return { ok: false, grund: 'Oeffnen abgelehnt: ' + ((auf && auf.msg) || 'ohne Angabe') };
+    }
+    /* Sofort wieder zu. Zwischen Auf und Zu soll moeglichst nichts passieren -
+     * gemessen werden die Kosten, nicht die Marktbewegung. */
+    var zu = null;
+    try { zu = await window.CapAPI.closePosition(auf.dealId); }
+    catch (eC) { zu = { ok: false, msg: String(eC && eC.message || eC) }; }
+    if (!zu || !zu.ok) {
+      return { ok: false, grund: 'ACHTUNG: geoeffnet, aber Schliessen fehlgeschlagen (' +
+        ((zu && zu.msg) || 'ohne Angabe') + '). Position bitte bei Capital.com von Hand pruefen.',
+        offenGeblieben: auf.dealId };
+    }
+    if (auf.fill == null || zu.fill == null) {
+      return { ok: false, grund: 'Runde lief, aber ohne Ausfuehrungskurse - nichts zu messen.' };
+    }
+    /* Kauf ueber der Mitte, Verkauf darunter: beides zusammen ist der Umlauf. */
+    var aufKosten = auf.fill / vor.mid - 1;
+    var zuKosten = 1 - zu.fill / vor.mid;
+    var runde = aufKosten + zuKosten;
+    if (!D.kostenMessung) D.kostenMessung = { runden: [], seit: Date.now() };
+    D.kostenMessung.runden.unshift({
+      at: Date.now(), sym: sym, dir: 'call', basis: true, quelle: 'messrunde',
+      slipOpen: Math.round(aufKosten * 1e6) / 1e6,
+      slipClose: Math.round(zuKosten * 1e6) / 1e6,
+      runde: Math.round(runde * 1e6) / 1e6,
+      notiert: vor.spreadPct != null ? Math.round(vor.spreadPct * 1e6) / 1e6 : null
+    });
+    if (D.kostenMessung.runden.length > 300) D.kostenMessung.runden = D.kostenMessung.runden.slice(0, 300);
+    save();
+    return { ok: true, sym: sym, rundePct: runde * 100,
+             notiertPct: vor.spreadPct != null ? vor.spreadPct * 200 : null };
+  }
+  if (typeof window !== 'undefined') window.__kostenRundeMessen = kostenRundeMessen;
+
   /** Bilanz der echten Kosten - Median statt Mittel, ein Ausreisser soll nicht dominieren. */
   function kostenBilanz() {
     var km = D && D.kostenMessung;
@@ -8646,7 +8712,11 @@
             : diff > 0 ? 'teurer als angenommen, die Studien rechnen zu günstig'
             : 'günstiger als angenommen – die Kostenhürde der Studien ist zu streng');
       } else if (s0.ok) {
-        txt += ' · Kostenmessung aus Ausführungen startet mit dem ersten gespiegelten Trade.';
+        /* Stand 25.08.2026 stimmte dieser Satz nicht mehr: gespiegelt wird nur im
+         * Intraday-Pfad, und der ist seit dem 23.08. vom Edge-Waechter pausiert. Der
+         * Satz haette auf etwas gewartet, das nicht kommt. */
+        txt += ' · Kostenmessung aus Ausführungen: noch keine Runde. Sie startet mit dem ersten ' +
+          'gespiegelten Trade – oder sofort über „Kostenrunde messen“, das braucht kein Signal.';
       }
       /* Die Spannen-Messung braucht keine Trades - nur Kurse. Sie liefert die
        * Kostenhuerde deshalb schon nach einer Handelssitzung. */
@@ -8662,6 +8732,41 @@
       }
       el.textContent = txt;
     }
+    /* Messrunde von Hand. Setzt echte Orders auf dem Demo-Konto ab - deshalb eine
+     * Rueckfrage davor und ein Riegel gegen Doppelklicks. Die Symbole werden
+     * durchgereicht, damit die Proben nicht alle an einem Wert haengen. */
+    var kostenRundeLaeuft = false, kostenRundeTakt = 0;
+    (function () {
+      var b = document.getElementById('kostenRundeBtn');
+      var st = document.getElementById('kostenRundeStatus');
+      if (!b) return;
+      b.addEventListener('click', async function () {
+        if (kostenRundeLaeuft) return;
+        var syms = universe();
+        if (!syms.length) { st.textContent = 'Kein Wert im Universum.'; return; }
+        var sym = syms[kostenRundeTakt % syms.length];
+        if (!window.confirm('Auf dem Capital.com-DEMO-Konto wird jetzt die kleinstmögliche Position in ' +
+            sym + ' geöffnet und sofort wieder geschlossen. Das ist eine echte Order mit Demo-Geld.\n\n' +
+            'Gemessen wird, was ein Umlauf wirklich kostet. Fortfahren?')) return;
+        kostenRundeTakt++;
+        kostenRundeLaeuft = true; b.disabled = true;
+        st.textContent = 'Messe ' + sym + ' …';
+        var r = null;
+        try { r = await kostenRundeMessen(sym); }
+        catch (e) { r = { ok: false, grund: 'Fehler: ' + (e && e.message || e) }; }
+        if (r && r.ok) {
+          var n = ((D.kostenMessung || {}).runden || []).length;
+          st.textContent = sym + ': Umlauf ' + r.rundePct.toFixed(3) + ' %' +
+            (r.notiertPct != null ? ' (notiert ' + r.notiertPct.toFixed(3) + ' %, Rest ist Schlupf)' : '') +
+            ' · ' + n + ' von ~20 Runden';
+        } else {
+          st.textContent = (r && r.grund) || 'Die Runde lief nicht durch.';
+        }
+        render();
+        kostenRundeLaeuft = false; b.disabled = false;
+      });
+    })();
+
     setTimeout(updateCapStatus, 3000);
     setInterval(updateCapStatus, 10 * 60000);
     document.addEventListener('settings-saved', function () { setTimeout(updateCapStatus, 500); });
