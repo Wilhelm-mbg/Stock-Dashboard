@@ -6379,12 +6379,59 @@ console.log('\n44) Oberflaeche nach Themen sortiert (Felix, Issue #68)');
      /id="sub-regelbuch"/.test(regeln) && /id="sub-stratchart"/.test(regeln),
      'Regeln haelt alles Regelrelevante: Schalter, Autopilot, Regelbuch, Chart');
 
+  /* C1 (Struktur-Plan 25.08.2026): Steuerung nach Regeln, Bestand nach Vermoegen.
+   * Die Trennlinie ist nachpruefbar: mfdepot.js takt() liest KEIN Bedienfeld, es
+   * zeichnet D.mfBuch/D.driftBuch - deshalb duerfen die zwei Buch-Container in
+   * Vermoegen stehen. Die Rechner-Ausgaben haengen dagegen an opts() aus ihren
+   * Auswahlfeldern und muessen bei ihnen bleiben, sonst dreht man in einem Reiter
+   * und die Zahl aendert sich in einem anderen. */
+  var mfSteuer = ['mfRueck', 'mfLuecke', 'mfHalten', 'mfAnteil', 'mfKosten', 'mfLadenBtn',
+                  'mfStatus', 'mfRang', 'mfErgebnis', 'mfdTaktBtn', 'mfdRebalanceBtn',
+                  'mfdDriftBtn', 'mfdStatus', 'drHalten', 'drAnteil', 'drFenster',
+                  'drKosten', 'drLadeBtn', 'drLadeAlleBtn', 'drRechneBtn', 'drStatus',
+                  'drErgebnis', 'drHeute'];
+  var nichtInRegeln = mfSteuer.filter(function (id) { return regeln.indexOf('id="' + id + '"') === -1; });
+  ok(/id="sub-mittelfrist"/.test(regeln) && nichtInRegeln.length === 0,
+     'Regeln haelt die ganze Mittelfrist-Steuerung: Parameter, Lade- und Handelsknoepfe',
+     nichtInRegeln.join(' ') || 'alle 23');
+  var schalterInVermoegen = mfSteuer.filter(function (id) { return vermoegen.indexOf('id="' + id + '"') > -1; });
+  ok(/id="mfdMomentum"/.test(vermoegen) && /id="mfdDrift"/.test(vermoegen) &&
+     schalterInVermoegen.length === 0,
+     'Vermoegen zeigt die zwei Buecher und keine einzige Stellschraube mehr',
+     schalterInVermoegen.join(' ') || 'keine');
+  /* EINE Wahrheit: jede dieser Kennungen darf im Markup genau einmal vorkommen. Ein
+   * zweiter Container mit derselben Kennung waere ein zweites Rendering desselben
+   * Inhalts - und getElementById zeigte still auf das erste. */
+  ['mfdMomentum', 'mfdDrift', 'mfdStatus', 'mfRang', 'mfErgebnis', 'drErgebnis', 'drHeute',
+   'mfStatus', 'drStatus'].forEach(function (id) {
+    ok((html.match(new RegExp('id="' + id + '"', 'g')) || []).length === 1,
+       'Kennung ' + id + ' steht genau einmal im Markup - kein Doppel-Rendering');
+  });
+  /* Die zwei Buch-Container brauchen einen Leerzustand IM MARKUP: zeige() schreibt
+   * sie nur, wenn takt() durchlief - beim Erststart ohne Tagesdaten kehrt es vorher
+   * um, und ohne diesen Text stuenden in Vermoegen zwei Ueberschriften ueber nichts.
+   * Vor C1 fiel das nicht auf, weil #mfdStatus im selben Panel den Grund nannte. */
+  ok(/id="mfdMomentum"[^>]*>\s*<div class="empty"/.test(vermoegen) &&
+     /id="mfdDrift"[^>]*>\s*<div class="empty"/.test(vermoegen),
+     'Beide Buch-Container haben einen Leerzustand fuer den Erststart');
+  ok(/data-sub="mittel">Bücher</.test(vermoegen) && /data-sub="mittelfrist">Mittelfrist</.test(regeln),
+     'Die Pillen heissen, was sie zeigen: Buecher (Bestand) und Mittelfrist (Steuerung)');
+  /* Der Erklaerabsatz mit den Messzahlen wurde nicht geteilt - er beschreibt, WAS die
+   * beiden Buecher sind, und bleibt deshalb ungeteilt bei ihnen (Leitplanke 1). */
+  ok(/t = 1,62/.test(vermoegen) && /8,44 statt 14,07/.test(vermoegen),
+     'Die Messzahlen der beiden Buecher stehen ungeteilt bei den Buechern');
+
   /* --- Kein Wegweiser zeigt mehr auf einen Ort, den es nicht mehr gibt --- */
-  var quellen = ['index.html', 'depot.js', 'explorer.js', 'renderer.js', 'app-shell.js'];
+  var quellen = ['index.html', 'depot.js', 'explorer.js', 'renderer.js', 'app-shell.js',
+                 'mfdepot.js', 'driftui.js', 'mittelfrist.js'];
   var falsch = [];
   quellen.forEach(function (f) {
     var s = fs.readFileSync(__dirname + '/' + f, 'utf8');
-    if (/Vermögen (→|-&gt;) (Schalter|Auswertung|Trendfinder)/.test(s)) falsch.push(f);
+    /* "Mittelfristig" steht seit C1 (25.08.2026) auf dieser Liste: die Pille heisst
+     * "Buecher", und die Steuerung, auf die drei Meldungen frueher zeigten, liegt in
+     * Regeln -> Mittelfrist. Die drei Module sind mit aufgenommen, weil genau sie die
+     * Meldungen tragen - vorher stand die Regel da und sah an ihnen vorbei. */
+    if (/Vermögen (→|-&gt;) (Schalter|Auswertung|Trendfinder|Mittelfristig)/.test(s)) falsch.push(f);
   });
   ok(falsch.length === 0,
      'Kein Text verweist mehr auf Vermoegen -> Schalter/Auswertung/Trendfinder',
