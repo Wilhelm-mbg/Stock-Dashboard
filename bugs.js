@@ -75,7 +75,20 @@
      * Kennung UND Klartextname, weil beide auseinanderfallen (dashboard = "Heute"). */
     var b = document.querySelector('nav.tabs button.active');
     if (!b) return null;
-    return b.textContent.trim() + ' (' + (b.getAttribute('data-tab') || '?') + ')';
+    var kennung = b.getAttribute('data-tab') || '?';
+    var label = b.textContent.trim();
+    /* Die aktive Pille gehoert dazu (Struktur-Audit Punkt 7): "Regeln" allein sagt
+     * nicht, ob die Meldung das Regelbuch oder den Autopiloten meint. Und weil
+     * Reiter-BESCHRIFTUNGEN sich aendern (alte Meldungen tragen "Strategien & Belege",
+     * einen Reiter, den es nicht mehr gibt), traegt die Meldung beides: den Namen
+     * fuer den Leser, die Kennung fuer die Zuordnung ueber Versionen hinweg. */
+    var panel = document.getElementById('tab-' + kennung);
+    var sub = panel && panel.querySelector('.pills button.active[data-sub]');
+    if (sub) {
+      kennung += '/' + sub.getAttribute('data-sub');
+      label += ' → ' + sub.textContent.trim();
+    }
+    return label + ' (' + kennung + ')';
   }
 
   function statusText(m) {

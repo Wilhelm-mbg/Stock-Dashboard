@@ -668,13 +668,22 @@
         (belegAusProtokoll
           ? '<br><span style="color:var(--muted); font-size:var(--fs-neben);">Aus dem Messprotokoll vom ' +
             U.esc(belegAusProtokoll.datum) + ': Überschuss je Signal ' +
-            (belegAusProtokoll.jeSignalPp >= 0 ? '+' : '') + belegAusProtokoll.jeSignalPp.toFixed(3) +
-            ' Pp. Die App liest dieses Urteil, sie rechnet es nicht.</span>'
+            (belegAusProtokoll.jeSignalPp >= 0 ? '+' : '') + U.dez(belegAusProtokoll.jeSignalPp, 3) +
+            ' Pp. Die App liest dieses Urteil, sie rechnet es nicht. ' +
+            '<a href="#" data-sprung-messung>Protokoll im Scoreboard ansehen</a></span>'
           : '<br><span style="color:var(--muted); font-size:var(--fs-neben);">Kein Messprotokoll im Datenordner – dieser Stand steht fest im Code und kann veralten.</span>')]
     ];
     el.innerHTML = '<table class="tbl" style="font-size:var(--fs-text);">' + zeilen.map(function (r) {
       return '<tr><td style="color:var(--muted); white-space:nowrap; width:130px;">' + U.esc(r[0]) + '</td><td>' + r[1] + '</td></tr>';
     }).join('') + '</table>';
+    /* Struktur-Audit Punkt 4: der Beleg verweist auf seine Quelle. Der Reiterwechsel
+     * laeuft ueber den echten Reiterknopf - dieselbe Schaltung wie ein Klick. */
+    var spr = el.querySelector('[data-sprung-messung]');
+    if (spr) spr.addEventListener('click', function (ev) {
+      ev.preventDefault();
+      var kb = document.querySelector('nav.tabs [data-tab="messung"]');
+      if (kb) { kb.click(); window.scrollTo(0, 0); }
+    });
   }
   /** Zeigt die Huerde und stellt sie der belegten Kante gegenueber. */
     /* ---------------------------------------------------------------------------
@@ -749,14 +758,14 @@
     var kante = PROTOKOLL_KANTE[cfg.mode] || null;
     var std = halten >= 60 ? Math.round(halten / 60) + " h" : halten + " Min";
     var T = h.teile || { spanne: h.pp, zeit: 0, gebuehr: 0 };
-    var txt = "<b>Kostenhürde:</b> " + h.pp.toFixed(3) + " Pp je Umlauf" +
-      " · " + h.produkt + (h.hebel > 1.5 ? " (Hebel " + h.hebel.toFixed(1) + ")" : "") +
+    var txt = "<b>Kostenhürde:</b> " + U.dez(h.pp, 3) + " Pp je Umlauf" +
+      " · " + h.produkt + (h.hebel > 1.5 ? " (Hebel " + U.dez(h.hebel, 1) + ")" : "") +
       " · Haltedauer " + std + (offenesEnde ? " (angenommen – dieser Modus hat keinen Zeitausstieg)" : "") +
       " · Einsatz " + Math.round(h.einsatz) + " $" +
       ". So weit muss sich der <i>Basiswert</i> bewegen, bevor etwas übrig bleibt." +
-      "<br><span style=\"color:var(--muted);\">Davon Spanne " + T.spanne.toFixed(3) +
-      " · Zeitwert " + T.zeit.toFixed(3) + " · Ordergebühr " + T.gebuehr.toFixed(3) +
-      (T.uebernacht ? " · Übernacht-Finanzierung " + T.uebernacht.toFixed(3) + " (" + (h.naechte || 0) + " Nächte)" : "") +
+      "<br><span style=\"color:var(--muted);\">Davon Spanne " + U.dez(T.spanne, 3) +
+      " · Zeitwert " + U.dez(T.zeit, 3) + " · Ordergebühr " + U.dez(T.gebuehr, 3) +
+      (T.uebernacht ? " · Übernacht-Finanzierung " + U.dez(T.uebernacht, 3) + " (" + (h.naechte || 0) + " Nächte)" : "") +
       " Pp.</span>" +
       (cfg.instrument === "basis" && !(cfg.orderFee > 0)
         ? "<br><span style=\"color:var(--muted);\">Capital.com berechnet keine Kommission; ohne Hebel entfällt auch die Übernacht-Finanzierung. Für diesen Weg ist die Spanne der ganze Preis.</span>"
@@ -767,7 +776,7 @@
     if (T.gebuehr > T.spanne + T.zeit && T.gebuehr > 0) {
       txt += "<br><span class=\"warn\">Die Ordergebühr allein ist größer als Spanne und Zeitwert zusammen." +
         " Sie ist ein fester Betrag: Bei " + Math.round(h.einsatz) + " $ Einsatz wiegt sie " +
-        (h.einsatz > 0 ? ((cfg.orderFee || 0) * 2 / h.einsatz * 100).toFixed(2) : "?") +
+        (h.einsatz > 0 ? U.dez((cfg.orderFee || 0) * 2 / h.einsatz * 100, 2) : "?") +
         " % der Position. Größere Positionen senken genau diesen Anteil.</span>";
     }
     if (kante != null && kante.jeSignalPp != null) {
@@ -776,10 +785,10 @@
        * das war der Fehler, den diese Zeile bis zum 23.08.2026 gemacht hat. */
       var belegt = kante.urteil === "bestaetigt";
       txt += "<br>Messung vom " + kante.datum + ": Überschuss je Signal <b>" +
-        (kante.jeSignalPp >= 0 ? "+" : "") + kante.jeSignalPp.toFixed(3) + " Pp</b> gegen eine gepaarte Kontrolle" +
+        (kante.jeSignalPp >= 0 ? "+" : "") + U.dez(kante.jeSignalPp, 3) + " Pp</b> gegen eine gepaarte Kontrolle" +
         (kante.varianten > 1 ? " (beste von " + kante.varianten + " Varianten)" : "") +
         " → <span class=\"" + (belegt && netto > 0 ? "gut" : "warn") + "\">netto " +
-        (netto >= 0 ? "+" : "") + netto.toFixed(3) + " Pp</span>";
+        (netto >= 0 ? "+" : "") + U.dez(netto, 3) + " Pp</span>";
       if (!belegt) {
         txt += "<br><span class=\"warn\">Urteil der Messmaschine: <b>" + kante.urteil +
           "</b>. Diese Zahl ist kein belegter Vorsprung – auch dann nicht, wenn sie positiv ist.</span>";
@@ -7534,7 +7543,7 @@
         var rt = 2 * sp + (2 * fee) / budg;
         z.push('| ' + p.name + ' | ' + String(bv).replace('.', ',') + ' | ' + wv.toFixed(2).replace('.', ',') + ' € | ' +
           (sp * 100).toFixed(2).replace('.', ',') + ' % | ' + om.toFixed(1).replace('.', ',') + ' | **' +
-          (om > 0 ? (rt / om * 100).toFixed(3).replace('.', ',') : '–') + ' %** |');
+          (om > 0 ? U.dez(rt / om * 100, 3) : '–') + ' %** |');
       });
     })();
     z.push('');
@@ -8302,7 +8311,7 @@
       rohT: t,
       t: Math.round(t * 100) / 100,
       txt: 'Edge-Wächter (' + entry + ', letzte 120 Tage, Archiv): ' + nGes + ' Signale über ' + n + ' Werte · Überschuss ' +
-        (m >= 0 ? '+' : '') + (m * 100).toFixed(3) + ' Pp/8 h · t über Symbole ' + t.toFixed(2) + ' → ' + urteil };
+        (m >= 0 ? '+' : '') + U.dez(m * 100, 3) + ' Pp/8 h · t über Symbole ' + U.dez(t, 2) + ' → ' + urteil };
   }
 
   async function pilotMessen(manual) {
@@ -9201,7 +9210,7 @@
       if (sb) {
         var d2 = sb.medianPct - sb.annahmePct;
         txt += ' · Gemessene Geld-Brief-Spanne über ' + sb.werte + ' Werte (' + sb.proben + ' Proben): Median ' +
-          sb.medianPct.toFixed(3) + ' % je Runde, Spanne ' + sb.engstesPct.toFixed(3) + '–' + sb.weitestesPct.toFixed(3) +
+          U.dez(sb.medianPct, 3) + ' % je Runde, Spanne ' + U.dez(sb.engstesPct, 3) + '–' + U.dez(sb.weitestesPct, 3) +
           ' % · angenommen 0,10 % → ' +
           (Math.abs(d2) < 0.015 ? 'die Annahme der Studien trägt'
             : d2 > 0 ? 'teurer als angenommen: die Studien rechnen zu günstig'

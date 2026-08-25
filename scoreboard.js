@@ -22,8 +22,10 @@
       (lo.toFixed(1) === hi.toFixed(1) ? lo.toFixed(1) : lo.toFixed(1) + '–' + hi.toFixed(1)) + ' Kerzen';
   }
 
-  function pp(x, d) { return x == null || !isFinite(x) ? '–' : ((x >= 0 ? '+' : '') + (x * 100).toFixed(d == null ? 3 : d)); }
-  function t2(x) { return x == null || !isFinite(x) ? '–' : (x >= 0 ? '+' : '') + x.toFixed(2); }
+  /* Sichtbare Zahlen mit Komma (U.dez) - das Scoreboard ist deutsche Oberflaeche,
+   * kein Export (Struktur-Audit Punkt 6). */
+  function pp(x, d) { return x == null || !isFinite(x) ? '–' : ((x >= 0 ? '+' : '') + window.U.dez(x * 100, d == null ? 3 : d)); }
+  function t2(x) { return x == null || !isFinite(x) ? '–' : (x >= 0 ? '+' : '') + window.U.dez(x, 2); }
 
   /* EINE Zeile je Urteil: Rang, Beschriftung, Farbe. Die Ziffer steht nur fuers
    * Sortieren, die Reihenfolge ist der Belegwert.
