@@ -327,6 +327,17 @@
         'Das ist eine <b>Übersicht, kein Signal</b>. An dieser Karte ist nichts gemessen. Sie sortiert nichts nach „bestem Sektor“ und hebt nichts hervor: Das sähe nach einem Befund aus und wäre keiner.'
       ]
     },
+    'messung.strategien': {
+      titel: 'Warum diese Liste zwei Orte nennt',
+      punkte: [
+        'Strategien entstehen an zwei Stellen: der <b>Baukasten</b> in dieser App schreibt sie in den Datenordner, die <b>Messmaschine</b> misst die Dateien im Projektverzeichnis. Die App darf nur in den Datenordner schreiben – diese Trennung ist Absicht und bleibt.',
+        '<b>Projekt</b> heißt: die Datei liegt im Projektverzeichnis und ist damit versioniert und gesichert. <b>Nur lokal</b> heißt: sie liegt allein im Datenordner – geht der verloren, ist die Regel weg.',
+        'Das Urteil kommt aus dem jüngsten Protokoll derselben Kennung. Steht dort <b>nie gemessen</b>, gibt es die Regel, aber kein Ergebnis – das ist etwas anderes als ein schlechtes Ergebnis.',
+        'Ein <b>Protokoll ohne Datei</b> ist der unangenehme Fall: Das Ergebnis ist da, die Regel, die es erzeugt hat, nicht mehr auffindbar. Es lässt sich dann nicht nachrechnen.',
+        'Findet die App das Projektverzeichnis nicht – in der installierten Fassung ist es nicht mitverpackt –, sagt sie das hier ausdrücklich, statt die Hälfte wegzulassen. Ein Zettel <code>quelle-pfad.txt</code> im Datenordner darf darauf zeigen.'
+      ],
+      fuss: 'Diese Karte rechnet nichts. Sie liest zwei Ordner und die Protokolle.'
+    },
     'messung.eingabe': {
       titel: 'Drei Dinge braucht eine Strategie',
       punkte: [

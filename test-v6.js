@@ -6710,6 +6710,40 @@ console.log('\n46) Was die App dauerhaft aufzeichnet');
      'Die Marktkarte reicht die Zaehler durch, die ihre Fusszeile belegen');
   ok(/ARTEN_FEHLER/.test(mkS) && /artenHinweis \+/.test(mkS),
      'und sagt es, wenn der Wertpapierart-Filter mangels Daten gar nicht lief');
+  /* STRATEGIEN-LISTE (25.08.2026). Strategien entstehen an zwei Orten - der Baukasten
+   * schreibt in den Datenordner, die Messmaschine misst das Projektverzeichnis - und die
+   * App las nur den ersten. Im Reiter Messung stand EINE Strategie, waehrend zwoelf
+   * gemessene existierten. Der Kanal mess-strategien war samt Bruecke gebaut, aber kein
+   * einziger Aufruf in der Oberflaeche: ein Kanal ohne Verbraucher.
+   * Nachgerechnet gegen die echten Ordner: 13 Zeilen statt 1. */
+  var mjSt = fs.readFileSync(__dirname + '/main.js', 'utf8');
+  ok(/function strategieQuelle\(\)/.test(mjSt) && /quelle-pfad\.txt/.test(mjSt),
+     'Der Hauptprozess sucht die Strategien auch im Projektverzeichnis - mit Zettel als Rueckfall');
+  ok(/lies\(dir, 'lokal'\)/.test(mjSt) && /lies\(quelle, 'quelle'\)/.test(mjSt),
+     'mess-strategien liest BEIDE Orte und schreibt die Herkunft dazu');
+  /* Das Schreibrecht bleibt, wie es war: nur in den Datenordner. Gelesen wird woanders. */
+  ok(/ipcMain\.handle\('write-strategie'[\s\S]{0,600}Markt-Dashboard-Daten', 'strategien'/.test(mjSt),
+     'Geschrieben wird weiterhin AUSSCHLIESSLICH in den Datenordner');
+  var sbSt = fs.readFileSync(__dirname + '/scoreboard.js', 'utf8');
+  ok(/async function strategienLaden\(\)/.test(sbSt) && /window\.api\.messStrategien\(\)/.test(sbSt),
+     'Die Bruecke messStrategien hat endlich einen Verbraucher');
+  ok(/if \(ev\.detail === 'messung'\) \{ laden\(\); strategienLaden\(\); \}/.test(sbSt),
+     'Die Liste wird beim Wechsel in den Reiter Messung geladen');
+  /* Die drei Luecken muessen BENANNT werden. Eine Liste, die stillschweigend die
+   * Haelfte weglaesst, ist schlimmer als gar keine - genau der Zustand vorher. */
+  ok(/Protokoll\(e\) ohne Datei/.test(sbSt) && /nur im Datenordner/.test(sbSt) &&
+     /nie gemessen/.test(sbSt),
+     'Die Karte benennt alle drei Luecken: Protokoll ohne Datei, nur lokal, nie gemessen');
+  ok(/Das Projektverzeichnis ist nicht auffindbar/.test(sbSt),
+     'und sagt es, wenn sie nur den halben Bestand sehen kann');
+  var htSt = fs.readFileSync(__dirname + '/index.html', 'utf8');
+  ok(/id="strategienListe"/.test(htSt) && /id="strategienFuss"/.test(htSt),
+     'Die Karte hat ihren Platz im Reiter Messung');
+  /* Ein i-Knopf ohne Text waere dieselbe stille Luecke noch einmal: er sieht aus wie
+   * eine Erklaerung und ist keine. */
+  var shSt = fs.readFileSync(__dirname + '/app-shell.js', 'utf8');
+  ok(/data-info="messung\.strategien"/.test(htSt) && /'messung\.strategien':/.test(shSt),
+     'Der Erklaer-Knopf der Karte hat auch einen Text - sonst waere er ein toter Knopf');
   ok(/function kostenMessungNeu/.test(dep), 'Die Messung des echten Schlupfs bleibt bestehen');
 
   /* --- Die Kostenmessung darf nicht auf einen Trade warten muessen ---

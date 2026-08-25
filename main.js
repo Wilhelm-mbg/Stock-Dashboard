@@ -683,18 +683,59 @@ function quellOrdner() {
   const aus = entpackt(__dirname);
   return fs.existsSync(path.join(aus, 'quant.js')) ? aus : __dirname;
 }
+/* Strategien entstehen an ZWEI Orten, und bis zum 25.08.2026 zeigte die App nur einen:
+ *   <Daten>/strategien/                  was der Baukasten IN der App schreibt
+ *   <Quelle>/studien/messmaschine/strategien/   was die Messmaschine misst
+ * Dadurch stand im Reiter Messung EINE Strategie, waehrend zwoelf gemessene existierten.
+ *
+ * Der Quellordner ist im PAKET nicht vorhanden: build.files nimmt aus studien/ nur
+ * messmaschine.js und messen.js mit. In der Entwicklung ist er __dirname. Fuer die
+ * installierte App darf ein Zettel darauf zeigen - dieselbe Bauart wie beim Kursarchiv
+ * (archiv60m-pfad.txt). Wird er nicht gefunden, gibt die Funktion null zurueck und die
+ * Oberflaeche SAGT das: eine Liste, die stillschweigend die Haelfte weglaesst, ist
+ * schlimmer als gar keine.
+ *
+ * Gelesen wird nur - geschrieben wird weiterhin ausschliesslich in den Datenordner. */
+function strategieQuelle() {
+  const kandidaten = [path.join(quellOrdner(), 'studien', 'messmaschine', 'strategien')];
+  try {
+    const zettel = path.join(app.getPath('downloads'), 'Markt-Dashboard-Daten', 'quelle-pfad.txt');
+    if (fs.existsSync(zettel)) {
+      const p = String(fs.readFileSync(zettel, 'utf8')).trim();
+      if (p) kandidaten.push(path.join(p, 'studien', 'messmaschine', 'strategien'));
+    }
+  } catch (e) { /* kein Zettel: dann muss der erste Kandidat genuegen */ }
+  for (const k of kandidaten) {
+    try { if (fs.existsSync(k)) return k; } catch (e2) { /* unlesbar: naechster */ }
+  }
+  return null;
+}
 ipcMain.handle('mess-strategien', async () => {
   try {
     const dir = path.join(app.getPath('downloads'), 'Markt-Dashboard-Daten', 'strategien');
-    if (!fs.existsSync(dir)) return { ok: true, liste: [], ordner: dir };
-    const liste = fs.readdirSync(dir)
-      .filter((f) => /^[a-z0-9][a-z0-9-]{1,40}\.js$/.test(f))
-      .map((f) => {
-        const st = fs.statSync(path.join(dir, f));
-        return { key: f.slice(0, -3), datei: f, groesse: st.size, stand: st.mtimeMs };
-      })
-      .sort((a, b) => b.stand - a.stand);
-    return { ok: true, liste: liste, ordner: dir, maschine: fs.existsSync(messmaschinePfad()) };
+    const quelle = strategieQuelle();
+    const lies = (ordner, herkunft) => {
+      if (!ordner || !fs.existsSync(ordner)) return [];
+      return fs.readdirSync(ordner)
+        .filter((f) => /^[a-z0-9][a-z0-9-]{1,40}\.js$/.test(f))
+        .map((f) => {
+          const st = fs.statSync(path.join(ordner, f));
+          return { key: f.slice(0, -3), datei: f, groesse: st.size, stand: st.mtimeMs, herkunft: herkunft };
+        });
+    };
+    const beide = {};
+    lies(dir, 'lokal').forEach((x) => { beide[x.key] = x; });
+    lies(quelle, 'quelle').forEach((x) => {
+      const da = beide[x.key];
+      if (!da) { beide[x.key] = x; return; }
+      /* Dieselbe Kennung an beiden Orten ist kein Fehler, aber eine Auskunft:
+       * gezeigt wird der neuere Stand, genannt werden beide Orte. */
+      beide[x.key] = { key: x.key, datei: x.datei, herkunft: 'beides',
+        groesse: Math.max(da.groesse, x.groesse), stand: Math.max(da.stand, x.stand) };
+    });
+    const liste = Object.keys(beide).map((k) => beide[k]).sort((a, b) => b.stand - a.stand);
+    return { ok: true, liste: liste, ordner: dir, quelle: quelle,
+             maschine: fs.existsSync(messmaschinePfad()) };
   } catch (e) { return { ok: false, grund: String(e && e.message || e) }; }
 });
 ipcMain.handle('mess-lauf', async (ev, key) => {

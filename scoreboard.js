@@ -616,11 +616,149 @@
     });
   }
 
+
+  /* ================= Strategien: eine Liste statt zwei Ordner =================
+   *
+   * Bis zum 25.08.2026 gab es diese Liste nicht. Strategien entstehen an zwei Orten -
+   * der Baukasten schreibt in den Datenordner, die Messmaschine misst das
+   * Projektverzeichnis -, und die App las nur den ersten. Im Reiter Messung stand
+   * damit EINE Strategie, waehrend zwoelf gemessene existierten. Die Bruecke
+   * messStrategien war gebaut, aber niemand rief sie auf: ein Kanal ohne Verbraucher.
+   *
+   * Der Beleg, dass das schon geschadet hat: monatsende-kauf hat ein committetes
+   * Protokoll mit Urteil, seine Datei liegt aber nur im Datenordner. Das Ergebnis ist
+   * versioniert, der Code dahinter nicht - die Messung ist aus dem Projekt allein
+   * nicht nachzurechnen. Genau dieser Fall bekommt hier eine eigene Zeile.
+   *
+   * Die Karte rechnet nichts. Sie liest zwei Ordner und die Protokolle. */
+  var URTEIL_TEXT = {
+    'bestaetigt': 'bestätigt', 'nicht-bestaetigt': 'nicht bestätigt',
+    'nicht-entscheidbar': 'nicht entscheidbar', 'widerlegt': 'widerlegt',
+    'nicht-messbar': 'nicht messbar'
+  };
+  var HERKUNFT_TEXT = { lokal: 'nur lokal', quelle: 'Projekt', beides: 'beides' };
+
+  function tagKurz(ms) {
+    if (!ms) return '–';
+    return new Date(ms).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' });
+  }
+  function keyListe(a) { return a.map(function (z) { return esc(z.key); }).join(', '); }
+
+  async function strategienLaden() {
+    var el = document.getElementById('strategienListe');
+    var fuss = document.getElementById('strategienFuss');
+    if (!el) return;
+    if (!window.api || !window.api.messStrategien || !window.api.readProtokolle) {
+      el.innerHTML = '<div style="color:var(--muted); font-size:var(--fs-neben);">Diese Fassung kennt die Strategieliste noch nicht.</div>';
+      return;
+    }
+    var s = null, p = null;
+    try { s = await window.api.messStrategien(); } catch (e) { s = { ok: false, grund: String(e && e.message || e) }; }
+    try { p = await window.api.readProtokolle(); } catch (e) { p = null; }
+    if (!s || !s.ok) {
+      el.innerHTML = '<div style="color:var(--muted); font-size:var(--fs-neben);">Strategien nicht lesbar' +
+        (s && s.grund ? ': ' + esc(s.grund) : '') + '.</div>';
+      return;
+    }
+
+    /* Protokolle je Kennung, juengstes zuerst - dieselbe Gruppierung wie im Scoreboard,
+     * hier nur fuer Zahl, Datum und Urteil. */
+    var jeKey = {};
+    ((p && p.ok && p.protokolle) || []).forEach(function (x) {
+      var k = x.protokoll && x.protokoll.strategie && x.protokoll.strategie.key;
+      if (!k) return;
+      (jeKey[k] = jeKey[k] || []).push(x);
+    });
+    Object.keys(jeKey).forEach(function (k) {
+      jeKey[k].sort(function (a, b) { return b.mtime - a.mtime; });
+    });
+
+    var zeilen = (s.liste || []).map(function (st) {
+      var pr = jeKey[st.key] || [];
+      return { key: st.key, herkunft: st.herkunft || 'lokal', laeufe: pr.length,
+        zuletzt: pr.length ? pr[0].mtime : 0,
+        urteil: pr.length ? pr[0].protokoll.bestesUrteil : null, hatDatei: true };
+    });
+    /* Ein Protokoll ohne auffindbare Datei ist der unangenehme Fall: das Ergebnis steht,
+     * die Regel dahinter ist weg. Es bekommt eine Zeile, statt einfach zu fehlen. */
+    Object.keys(jeKey).forEach(function (k) {
+      if (zeilen.some(function (z) { return z.key === k; })) return;
+      var pr = jeKey[k];
+      zeilen.push({ key: k, herkunft: null, laeufe: pr.length, zuletzt: pr[0].mtime,
+        urteil: pr[0].protokoll.bestesUrteil, hatDatei: false });
+    });
+
+    if (!zeilen.length) {
+      el.innerHTML = '<div style="color:var(--muted); font-size:var(--fs-neben);">Noch keine Strategie – unten eine anlegen.</div>';
+      if (fuss) fuss.innerHTML = '';
+      return;
+    }
+
+    /* Gemessene zuerst, nie gemessene danach, verwaiste Protokolle ganz unten:
+     * sie sind die Ausnahme, nicht der Bestand. */
+    zeilen.sort(function (a, b) {
+      if (a.hatDatei !== b.hatDatei) return a.hatDatei ? -1 : 1;
+      if (!!a.laeufe !== !!b.laeufe) return a.laeufe ? -1 : 1;
+      return (b.zuletzt || 0) - (a.zuletzt || 0);
+    });
+
+    var html = '<table style="width:100%; border-collapse:collapse; font-size:var(--fs-neben);">' +
+      '<thead><tr style="text-align:left; color:var(--muted);">' +
+      '<th scope="col" style="padding:4px 8px 4px 0;">Strategie</th>' +
+      '<th scope="col" style="padding:4px 8px;">Ort</th>' +
+      '<th scope="col" style="padding:4px 8px; text-align:right;">Läufe</th>' +
+      '<th scope="col" style="padding:4px 8px;">Zuletzt</th>' +
+      '<th scope="col" style="padding:4px 0;">Urteil</th></tr></thead><tbody>';
+    zeilen.forEach(function (z) {
+      var ort = z.hatDatei ? esc(HERKUNFT_TEXT[z.herkunft] || z.herkunft || '?')
+        : '<b>Datei fehlt</b>';
+      var urteil = !z.laeufe ? '<span style="color:var(--muted);">nie gemessen</span>'
+        : esc(URTEIL_TEXT[z.urteil] || z.urteil || 'ohne Urteil');
+      html += '<tr style="border-top:1px solid var(--grid);">' +
+        '<td style="padding:5px 8px 5px 0;"><code>' + esc(z.key) + '</code></td>' +
+        '<td style="padding:5px 8px;">' + ort + '</td>' +
+        '<td style="padding:5px 8px; text-align:right;">' + (z.laeufe || '–') + '</td>' +
+        '<td style="padding:5px 8px;">' + tagKurz(z.zuletzt) + '</td>' +
+        '<td style="padding:5px 0;">' + urteil + '</td></tr>';
+    });
+    el.innerHTML = html + '</tbody></table>';
+
+    /* Was FEHLT, gehoert ausdruecklich hierhin. Eine Liste, die stillschweigend die
+     * Haelfte weglaesst, ist schlimmer als gar keine. */
+    var nurLokal = zeilen.filter(function (z) { return z.hatDatei && z.herkunft === 'lokal'; });
+    var ohneDatei = zeilen.filter(function (z) { return !z.hatDatei; });
+    var nieGemessen = zeilen.filter(function (z) { return z.hatDatei && !z.laeufe; });
+    var t = [];
+    if (!s.quelle) {
+      t.push('<b>Das Projektverzeichnis ist nicht auffindbar</b> – gezeigt sind nur die Strategien aus dem ' +
+        'Datenordner. In der installierten Fassung ist es nicht mitverpackt; ein Zettel ' +
+        '<code>quelle-pfad.txt</code> im Datenordner darf darauf zeigen.');
+    }
+    if (ohneDatei.length) {
+      t.push('<b>' + ohneDatei.length + ' Protokoll(e) ohne Datei</b> (' + keyListe(ohneDatei) +
+        '): Das Ergebnis liegt vor, die Regel dahinter ist nicht auffindbar – es lässt sich nicht nachrechnen.');
+    }
+    if (nurLokal.length) {
+      t.push(nurLokal.length + ' Strategie(n) liegen <b>nur im Datenordner</b> (' + keyListe(nurLokal) +
+        ') – nicht versioniert. Geht der Ordner verloren, ist die Regel weg.');
+    }
+    if (nieGemessen.length) {
+      t.push(nieGemessen.length + ' <b>nie gemessen</b> (' + keyListe(nieGemessen) +
+        ') – es gibt die Regel, aber kein Ergebnis. Das ist etwas anderes als ein schlechtes Ergebnis.');
+    }
+    if (fuss) {
+      fuss.innerHTML = t.length ? t.join(' ')
+        : 'Alle Strategien liegen im Projektverzeichnis und haben ein Protokoll.';
+    }
+  }
+
   document.addEventListener('DOMContentLoaded', function () {
     eingabe();
     baukastenAufbauen();
-    document.addEventListener('tab-changed', function (ev) { if (ev.detail === 'messung') laden(); });
-    setTimeout(laden, 4000);
+    document.addEventListener('tab-changed', function (ev) {
+      if (ev.detail === 'messung') { laden(); strategienLaden(); }
+    });
+    setTimeout(function () { laden(); strategienLaden(); }, 4000);
   });
-  window.Scoreboard = { laden: laden };
+  window.Scoreboard = { laden: laden, strategien: strategienLaden };
 })();
