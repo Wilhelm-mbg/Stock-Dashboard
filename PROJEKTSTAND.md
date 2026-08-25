@@ -45,11 +45,6 @@ Damit ist vom Struktur-Plan nur noch Stufe F offen.
   Pille gehört nicht unter „Heute"/„Überblick", sondern nach „Vermögen"; unter „Heute"
   bleibt nur der Rest. Wilhelm hat entschieden: **jetzt, nicht hinter der Neumessung.**
   Belegt Navigation/Shell — nicht gleichzeitig mit Stufe F Punkt 1 anfassen.
-- **#84-Rest — die 21 Quellcode-Kommentare umschreiben.** Wilhelm hat entschieden:
-  **alle 21**, nicht stehen lassen. Ziel ist, die *Behauptung* zu entfernen und den
-  historischen Bezug zu erhalten — „die Inventur vom 21.08. fand …" bleibt lesbar, nur
-  ohne „belegt" als Urteil. Reine Kommentaränderung, kein Verhalten, eigene Release-Notiz.
-  Die vierte Sperrklinke prüft sichtbaren Text, nicht Kommentare — sie hilft hier nicht.
 
 **Dann — Vorstufen der Neumessung (Messwerkzeug, keine Handelslogik). Wilhelm 26.08.:
 alle vier zuerst, die Neumessung startet erst danach.**
@@ -104,9 +99,6 @@ fertig bist.*
 
 - **App-Codebase Master** — arbeitet die offene Issue-Liste ab (Reihenfolge siehe
   Aufträge); zuletzt #76 und #84 abgeschlossen.
-- **#84-Rest (21 Kommentare)** — genommen 26.08. Belegt: Kommentare in `depot.js`,
-  `depotmigration.js`, `strategien.js`, `backfill.js`, `backtestui.js`, `wendeui.js`.
-  Reine Kommentaraenderung; ich weise die tatsaechliche Zahl im Befund aus.
 
 ---
 
@@ -115,6 +107,8 @@ fertig bist.*
 *Entscheidungen von Wilhelm, mit Datum. Eine Entscheidung, die nur in einem Chatverlauf
 steht, ist nach zwei Stunden verloren.*
 
+- **26.08.2026** — #84-Rest erledigt: alle 21 Kommentare umgeschrieben, Sperrklinke
+  deckt jetzt auch Kommentare ab. Bewiesen, dass sich kein Verhalten geaendert hat.
 - **26.08.2026, 00:45 (drei Antworten)** —
   (1) *Wohin mit #83/#89 („Meine Papiere" nach Vermögen)?* → **sofort erledigen**, nicht
   hinter die Neumessung stellen.
