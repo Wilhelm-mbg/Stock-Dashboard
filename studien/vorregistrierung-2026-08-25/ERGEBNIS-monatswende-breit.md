@@ -98,5 +98,15 @@ er hätte am Ergebnis ohnehin nichts geändert: t 0,83 liegt auch unter 2,24.
 | Gemessen | 1 (B: Quelltext verloren) |
 | **Bestätigt** | **0** |
 
-Damit steht das Projekt weiter bei **zwei** validierten Kanten (Momentum, Ergebnis-Drift) und
-keiner neuen aus dieser Suche.
+Und keine neue aus dieser Suche.
+
+> **Korrektur vom 25.08.2026, nachträglich.** Hier stand: „Damit steht das Projekt weiter
+> bei zwei validierten Kanten (Momentum, Ergebnis-Drift)." **Das war falsch.** Momentum
+> steht seit dem 24.08. in seinem eigenen Befund auf *nicht entscheidbar, alle vier
+> Varianten* (B10: Newey-West über 63 überlappende Kerzen, t 4,74 → 0,74), und die
+> Ergebnis-Drift steht im ausgelieferten App-Text `strategien.js` selbst auf *im
+> zurückgehaltenen Zeitraum t = 1,7–2,0: nicht entscheidbar*. Ich habe eine überholte
+> Formel weitergeschrieben, ohne sie gegen die Protokolle zu prüfen.
+>
+> **Der Stand ist: null belegte Kanten.** Nicht widerlegt — unbelegt. Das ist ein
+> Unterschied, aber nicht der, den ich hier behauptet hatte.

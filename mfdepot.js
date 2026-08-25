@@ -1,9 +1,19 @@
 'use strict';
 /* ================= Mittelfrist-Depot: Verdrahtung =================
  *
- * Führt die zwei belegten Mittelfrist-Strategien als echte (virtuelle) Bücher:
+ * Führt die zwei Mittelfrist-Strategien als echte (virtuelle) Bücher:
  *   MOMENTUM   stärkstes Zehntel, Rebalancing alle 63 Handelstage, 20 Bp je Seite
  *   DRIFT      Ergebnis-Drift, 60 Handelstage je Position, long UND short, 10 Bp
+ *
+ * ACHTUNG, Stand 25.08.2026: Hier stand "die zwei BELEGTEN Mittelfrist-Strategien".
+ * Das stimmt nicht mehr und stimmte seit dem 24.08. nicht. Momentum ist an B10
+ * gestorben (Newey-West ueber 63 ueberlappende Kerzen: t 4,74 -> 0,74, Urteil "nicht
+ * entscheidbar, alle vier Varianten", siehe studien/messmaschine/ERGEBNIS-2026-08-24-
+ * momentum.md). Die Ergebnis-Drift weist strategien.js selbst als "im zurueckgehaltenen
+ * Zeitraum t = 1,7-2,0: nicht entscheidbar" aus.
+ * Beide sind NICHT WIDERLEGT, aber UNBELEGT. Die Buecher laufen weiter - sie sind
+ * Simulation und sammeln Vorwaertsdaten; nur ist das kein Beleg, und dieser Kommentar
+ * darf nicht wieder einen behaupten (Regel D2: der Beleg steht im Protokoll, nie im Code).
  *
  * Die Schalter im Strategien-Tab (D.momentumAn / D.driftAn) bekommen hiermit erstmals
  * Wirkung: An heißt, das Buch handelt selbsttätig. Aus heißt, es wird nur gerechnet

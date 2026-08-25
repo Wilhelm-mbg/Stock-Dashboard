@@ -92,5 +92,10 @@ verwickeltste Teil der Datei existierte nur, weil an einer Stelle ein Argument f
 | **Bestätigt** | **0** |
 
 Beide Kandidaten reproduzieren ihre Entdeckung sauber und verlieren auf der
-zurückgehaltenen Hälfte 79 bzw. 86 % ihrer Wirkung. Das Projekt steht weiter bei zwei
-validierten Kanten: Momentum und Ergebnis-Drift.
+zurückgehaltenen Hälfte 79 bzw. 86 % ihrer Wirkung.
+
+> **Korrektur vom 25.08.2026, nachträglich.** Hier stand: „Das Projekt steht weiter bei
+> zwei validierten Kanten: Momentum und Ergebnis-Drift." **Das war falsch.** Momentum
+> steht seit dem 24.08. auf *nicht entscheidbar, alle vier Varianten* (B10, t 4,74 → 0,74),
+> die Ergebnis-Drift laut `strategien.js` auf *nicht entscheidbar* im zurückgehaltenen
+> Zeitraum. **Der Stand ist: null belegte Kanten** — nicht widerlegt, aber unbelegt.
