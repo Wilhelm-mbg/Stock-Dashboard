@@ -1423,15 +1423,17 @@ console.log('\n17b) Oberflaeche: Altlasten und Verdrahtung');
   ok(/quote: async function/.test(c2) && c2.indexOf('/markets/') !== -1,
      'Spannen: die Kursabfrage nutzt den Markt-Endpunkt des Demo-Hosts');
   // --- Massen-Backfill: Messbasis in einem Rutsch vertiefen (22.08.2026) ---
-  ok(/function massenBackfill/.test(d), 'Backfill: Massen-Auffuellung existiert');
+  // Seit Stufe E wohnt der Backfill in der eigenen Datei - dort wird geschnitten.
+  var bf = fs.readFileSync(__dirname + '/backfill.js', 'utf8');
+  ok(/function massenBackfill/.test(bf), 'Backfill: Massen-Auffuellung existiert');
   // Seit 8.23.46 werden ndx100 UND sp100 ueber eine Liste geholt, nicht mehr einzeln benannt.
-  ok(/['ndx100', 'sp100']/.test(d), 'Backfill: Nasdaq-100 und S&P-100 sind im Universum');
-  ok(d.indexOf("massenStop") !== -1 && /function massenAbbrechen/.test(d), 'Backfill: jederzeit anhaltbar');
-  ok(d.indexOf("fehlSerie < 3") !== -1 && d.indexOf("1500 * fehlSerie") !== -1,
+  ok(/['ndx100', 'sp100']/.test(bf), 'Backfill: Nasdaq-100 und S&P-100 sind im Universum');
+  ok(bf.indexOf("massenStop") !== -1 && /function massenAbbrechen/.test(bf), 'Backfill: jederzeit anhaltbar');
+  ok(bf.indexOf("fehlSerie < 3") !== -1 && bf.indexOf("1500 * fehlSerie") !== -1,
      'Backfill: bei Fehlern Rueckzug statt Weiterhaemmern - eine gedrosselte API sperrt sonst');
-  ok(d.indexOf("opts.pauseMs || 200") !== -1, 'Backfill: feste Pause je Anfrage (200 ms)');
-  ok(d.indexOf("si % 10 === 9") !== -1, 'Backfill: Zwischenstand wird laufend gesichert');
-  ok((d.match(/minutenSeitOeffnung/g) || []).length >= 2,
+  ok(bf.indexOf("opts.pauseMs || 200") !== -1, 'Backfill: feste Pause je Anfrage (200 ms)');
+  ok(bf.indexOf("si % 10 === 9") !== -1, 'Backfill: Zwischenstand wird laufend gesichert');
+  ok((bf.match(/minutenSeitOeffnung/g) || []).length >= 2,
      'Backfill: nur Kerzen der regulaeren US-Sitzung (CFDs laufen fast rund um die Uhr)');
   ok(/massenBtn/.test(h) && /massenStopBtn/.test(h), 'Backfill: Knoepfe vorhanden');
   ok(h.indexOf("mit Absicht gedrosselt") !== -1, 'Backfill: die Drosselung wird dem Nutzer erklaert');
@@ -2717,11 +2719,12 @@ console.log('\n30) Datenquellen-Diagnose (Capital.com) – ein Fehlschlag muss s
   ok(pR.indexOf('String(res.body') !== -1,
      'pricesRange gibt den Antwortrumpf mit aus (dort steht Capitals errorCode)');
 
-  // Die Diagnose selbst
-  ok(/async function datenquelleTest/.test(dep), 'depot.js hat datenquelleTest()');
-  ok(dep.indexOf('window.__datenquelleTest') !== -1, 'datenquelleTest ist von außen aufrufbar');
-  var dqI = dep.indexOf('async function datenquelleTest');
-  var dq = dep.slice(dqI, dqI + 6000);
+  // Die Diagnose selbst - seit Stufe E in backfill.js, dort wird geschnitten.
+  var bf2 = fs.readFileSync(__dirname + '/backfill.js', 'utf8');
+  ok(/async function datenquelleTest/.test(bf2), 'Die Datenquellen-Diagnose existiert');
+  ok(bf2.indexOf('window.__datenquelleTest') !== -1, 'datenquelleTest ist von außen aufrufbar');
+  var dqI = bf2.indexOf('async function datenquelleTest');
+  var dq = bf2.slice(dqI, dqI + 6000);
   ok(dq.indexOf('CapAPI.enabled()') !== -1 && dq.indexOf('CapAPI.status()') !== -1 &&
      dq.indexOf('epicFor') !== -1 && dq.indexOf('/prices/') !== -1,
      'Die Prüfung geht alle vier Stufen durch: aktiv → Anmeldung → Markt → Kursabruf');
@@ -2736,8 +2739,9 @@ console.log('\n30) Datenquellen-Diagnose (Capital.com) – ein Fehlschlag muss s
      'Die Tiefenmessung nutzt Capitals Auflösungsnamen');
 
   // massenBackfill: Grund statt bloßem Zähler
-  var mbI = dep.indexOf('async function massenBackfill');
-  var mb = dep.slice(mbI, dep.indexOf('async function datenquelleTest'));
+  ok(bf2.indexOf('async function massenBackfill') >= 0, 'massenBackfill ist auffindbar');
+  var mbI = bf2.indexOf('async function massenBackfill');
+  var mb = bf2.slice(mbI, bf2.indexOf('async function datenquelleTest'));
   ok(mb.indexOf('stat.grund') !== -1 && mb.indexOf('lastPriceError') !== -1,
      'massenBackfill hält den konkreten Fehlergrund fest');
   ok(/Letzter Fehler: ' \+ stat\.grund/.test(mb),
@@ -2762,7 +2766,7 @@ console.log('\n30) Datenquellen-Diagnose (Capital.com) – ein Fehlschlag muss s
    * die Pausen würde der Lauf sie einzeln ablaufen und (weil CFDs ausserbörslich Kerzen
    * liefern, die der Sitzungsfilter verwirft) jeden Wert vorzeitig abbrechen.
    * Deshalb hier nachgerechnet statt nach Textstellen gesucht. */
-  ok(dep.indexOf('function vorherigerSitzungsschluss') !== -1 && dep.indexOf('function istSitzung') !== -1,
+  ok(bf2.indexOf('function vorherigerSitzungsschluss') !== -1 && bf2.indexOf('function istSitzung') !== -1,
      'Der Backfill kennt Handelspausen und Sitzungsgrenzen');
   ok(mb.indexOf('vorherigerSitzungsschluss(von)') !== -1 && mb.indexOf('vorherigerSitzungsschluss(frueh)') !== -1,
      'Der Zeiger springt über Handelspausen – nach leerem UND nach gefülltem Fenster');
@@ -2839,16 +2843,18 @@ console.log('\n30) Datenquellen-Diagnose (Capital.com) – ein Fehlschlag muss s
      'Der Lauf pausiert 200 ms je Anfrage (rund 2-3/s, Grenze der API ist 10/s)');
   var v1m = (html.match(/id="massen1mBtn"/g) || []).length;
   ok(v1m === 1, 'Der Knopf „nur 1-Minuten" existiert genau einmal', v1m + 'x');
-  ok(dep.indexOf("getElementById('massen1mBtn')") !== -1 &&
-     dep.indexOf("ivs: [{ iv: '1m', barMin: 1 }]") !== -1,
+  /* Die Verdrahtung wohnt seit Stufe E in backfill.js (verkabeln) - die Eigenschaft
+   * bleibt: Knopf vorhanden UND angeschlossen, tote Schalter gab es hier schon. */
+  ok(bf2.indexOf("getElementById('massen1mBtn')") !== -1 &&
+     bf2.indexOf("ivs: [{ iv: '1m', barMin: 1 }]") !== -1,
      'Der 1-Minuten-Knopf ist verdrahtet und beschraenkt den Lauf auf 1m');
 
   // Knopf: vorhanden UND verdrahtet – tote Schalter gab es hier schon einmal (6 Stück).
   var vork = (html.match(/id="quelleTestBtn"/g) || []).length;
   ok(vork === 1, 'Der Knopf „Datenquelle testen" existiert genau einmal', vork + '×');
-  ok(/quelleTestBtn'\)[\s\S]{0,200}addEventListener\('click'/.test(dep),
+  ok(/quelleTestBtn'\)[\s\S]{0,220}addEventListener\('click'/.test(bf2),
      'Der Knopf ist an eine Klick-Behandlung angeschlossen');
-  ok(/qBtn\.disabled = false/.test(dep), 'Der Knopf wird nach der Prüfung wieder freigegeben');
+  ok(/qBtn\.disabled = false/.test(bf2), 'Der Knopf wird nach der Prüfung wieder freigegeben');
 
   // Mehrzeilige Diagnose muss auch mehrzeilig ankommen
   var statusZeile = (html.match(/id="massenStatus"[^>]*/) || [''])[0];
@@ -3007,12 +3013,13 @@ console.log('\n32) Quellen-Kennzeichnung im Archiv – CFD-Volumen darf nicht al
   ok(dep.indexOf('window.Archiv.dollarVolTag(serie, berL)') !== -1,
      'Der Messlauf gibt die Bereiche an dollarVolTag weiter');
 
-  // Einmalige Umstellung für die bereits geschriebenen Daten
-  ok(dep.indexOf('async function quellenMigration') !== -1 &&
-     dep.indexOf('capQuellenMigriert') !== -1,
+  // Einmalige Umstellung für die bereits geschriebenen Daten - seit Stufe E in backfill.js
+  var bfm = fs.readFileSync(__dirname + '/backfill.js', 'utf8');
+  ok(bfm.indexOf('async function quellenMigration') !== -1 &&
+     bfm.indexOf('capQuellenMigriert') !== -1,
      'Es gibt eine einmalige Umstellung für schon geschriebene CFD-Kerzen');
-  var mi = dep.indexOf('async function quellenMigration');
-  var mig = dep.slice(mi, mi + 4000);
+  var mi = bfm.indexOf('async function quellenMigration');
+  var mig = bfm.slice(mi, mi + 4000);
   ok(mig.indexOf("window.Archiv.serie('60m', sym)") !== -1,
      'Die Umstellung nutzt 60m als Referenz – diesen Zeitrahmen fasst kein Backfill an');
   ok(/if \(ref == null\)[\s\S]{0,200}markiere/.test(mig),
@@ -3438,9 +3445,11 @@ console.log('\n37) Produkt-Vorgabe: eine Wahrheit, nicht drei');
 
 console.log('\n38) Auffuell-Lauf: sp100 und 60-Minuten-Erstbefuellung');
 (function () {
-  var dep = fs.readFileSync(__dirname + '/depot.js', 'utf8');
-  var mbI = dep.indexOf('async function massenBackfill');
-  var mb = dep.slice(mbI, dep.indexOf('async function datenquelleTest'));
+  /* Seit Stufe E wohnt der Backfill in der eigenen Datei - dort wird geschnitten. */
+  var bfq = fs.readFileSync(__dirname + '/backfill.js', 'utf8');
+  ok(bfq.indexOf('async function massenBackfill') >= 0, 'massenBackfill ist auffindbar (Stufe-0-Marken)');
+  var mbI = bfq.indexOf('async function massenBackfill');
+  var mb = bfq.slice(mbI, bfq.indexOf('async function datenquelleTest'));
   /* Messung 23.08.2026: Der Ueberschuss wird in weniger liquiden Werten NICHT schlechter
    * (oberstes Umsatzviertel -0,110 Pp, unterstes +0,108). Eine Verbreiterung verwaessert
    * also nicht - sie braucht nur vorher Daten. 79 der 151 Werte aus ndx100+sp100 hatten
@@ -3491,8 +3500,10 @@ console.log('\n39) Kuerzel-Schreibweisen und Fehlercodes (echter Lauf 23.08.2026
   ["'kein-markt'", "'http'", "'unlesbar'"].forEach(function (c) {
     ok(cap.indexOf('letzterGrundArt = ' + c) !== -1, 'Fehlercode ' + c + ' wird gesetzt');
   });
-  var mbI = dep.indexOf('async function massenBackfill');
-  var mb = dep.slice(mbI, dep.indexOf('async function datenquelleTest'));
+  /* Seit Stufe E in backfill.js - dort wird geschnitten. */
+  var bfk = fs.readFileSync(__dirname + '/backfill.js', 'utf8');
+  var mbI = bfk.indexOf('async function massenBackfill');
+  var mb = bfk.slice(mbI, bfk.indexOf('async function datenquelleTest'));
   ok(mb.indexOf("symArt !== 'kein-markt'") !== -1,
      'Der Frueh-Abbruch prueft den CODE, nicht den Meldungstext');
   ok(mb.indexOf("symGrund.indexOf('Kein Markt')") === -1,
@@ -5542,9 +5553,12 @@ console.log('\n41) Zustaende: was die App sagt, wenn etwas fehlt oder klemmt');
      'Glattstellung: die feste 375 ist weg - an einem Halbtag wurde sie nie erreicht');
   ok(/window\.Boerse\.sitzungsMinuten\(jetzt\)/.test(ren) && /if \(!laenge\) return false;/.test(ren),
      'Marktstatus: an Feiertagen gilt die Boerse als geschlossen');
-  ok(/var sess = bars\.filter\(function \(b\) \{ return istSitzung\(b\[0\]\); \}\)/.test(dep),
+  /* Seit Stufe E: die EINE Sitzungsregel wohnt in backfill.js; capBackfill (depot.js)
+   * ruft sie ueber die Schnittstelle - weiterhin keine zweite, eigene 390er-Regel. */
+  var bfs = fs.readFileSync(__dirname + '/backfill.js', 'utf8');
+  ok(/var sess = bars\.filter\(function \(b\) \{ return window\.Backfill\.istSitzung\(b\[0\]\); \}\)/.test(dep),
      'Backfill: filtert ueber istSitzung statt ueber eine zweite, eigene 390er-Regel');
-  ok(/if \(tag >= 1 && tag <= 5 && laenge && m >= laenge\)/.test(dep),
+  ok(/if \(tag >= 1 && tag <= 5 && laenge && m >= laenge\)/.test(bfs),
      'Backfill: der Sprung ueber Pausen kennt jetzt wirklich Feiertage - der Kommentar versprach das schon vorher');
   ok(htmlB.indexOf('boerse.js') < htmlB.indexOf('src="depot.js"') &&
      htmlB.indexOf('boerse.js') < htmlB.indexOf('src="renderer.js"'),
@@ -6996,7 +7010,10 @@ console.log('\n46) Was die App dauerhaft aufzeichnet');
   ok(/D\.spannen\.proben\.unshift/.test(dep), 'Die Spannen-Probe laeuft weiter');
   /* Die Historie aus Kerzen darf die Live-Messung weder ersetzen noch ueberschreiben.
    * Quote-Schnappschuss und Kerzenschluss-Bid/Ask sind nicht dieselbe Groesse. */
-  ok(/function spannenAusKerzen/.test(dep) && (dep.match(/spannenAusKerzen\(sym, sess\)/g) || []).length === 2,
+  /* Seit Stufe E: EINE Definition (depot.js, beim Kosten-Bestand), zwei Auswerter -
+   * capBackfill in depot.js und massenBackfill in backfill.js (hereingereicht). */
+  ok(/function spannenAusKerzen/.test(dep) && (dep.match(/spannenAusKerzen\(sym, sess\)/g) || []).length === 1 &&
+     (fs.readFileSync(__dirname + '/backfill.js', 'utf8').match(/spannenAusKerzen\(sym, sess\)/g) || []).length === 1,
      'Die Spanne wird an beiden Backfill-Stellen ausgewertet');
   ok(dep.indexOf("if (da && da.q !== 'kerze') continue;") !== -1,
      'Ein aus Kerzen gewonnener Tag ueberschreibt nie einen aus Live-Proben');
