@@ -6329,6 +6329,92 @@ console.log('\n46) Was die App dauerhaft aufzeichnet');
   ok(/window\.confirm\(/.test(draht), 'Vor der Order wird gefragt');
   ok(/DEMO/.test(draht), 'Und die Frage sagt ausdruecklich, dass es das Demo-Konto ist');
   ok(/kostenRundeLaeuft/.test(draht), 'Ein Doppelklick loest nicht zwei Runden aus');
+
+  /* --- Krypto misst rund um die Uhr, gehoert aber NICHT in die Aktien-Zahl ---
+   * Die Spanne auf BTC sagt nichts ueber die Spanne auf MSFT, und die Annahme
+   * 0,10 %, gegen die geprueft wird, stammt aus den Aktien-Studien. Eine einzige
+   * BTC-Runde wuerde den Median verschieben, an dem fast jede Studie haengt -
+   * unsichtbar. Zwei Quellen in einer Reihe haben hier schon einmal Schaden
+   * angerichtet (Capital-CFD und Yahoo). */
+  var ik = dep.slice(dep.indexOf('function istKrypto'), dep.indexOf('async function kostenRundeMessen'));
+  ok(/BTC/.test(ik) && /ETH/.test(ik), 'Krypto wird als solches erkannt');
+  var kb2 = dep.slice(dep.indexOf('function kostenBilanz'), dep.indexOf('window.__kostenBilanz'));
+  ok(/x\.krypto/.test(kb2),
+     'Die Kostenbilanz trennt Krypto von Aktien - sonst verschiebt eine BTC-Runde den Median der Studien');
+  ok(/kryptoN/.test(kb2) && /kryptoMedianPct/.test(kb2),
+     'Die Krypto-Zahl wird eigens ausgewiesen, nicht verschwiegen');
+  /* Ohne Aktien-Runde darf keine Aktien-Zahl entstehen - nichts behaupten ist
+   * besser als eine Zahl, die aus Krypto stammt. */
+  ok(/if \(r\.length\) \{/.test(kb2),
+     'Ohne Aktien-Runde wird keine Aktien-Zahl gebildet');
+  /* Die Boersen-Sperre gilt fuer Aktien. Auf Krypto waere sie schlicht falsch und
+   * haette das Messgeschirr nachts gesperrt - genau dann, wenn Zeit dafuer ist. */
+  ok(/!krypto && !\(window\.Dash/.test(kr),
+     'Die Boersen-Sperre gilt nur fuer Aktien, nicht fuer Krypto');
+  ok(/krypto: krypto/.test(kr), 'Jede Runde merkt sich, ob sie Krypto war');
+  ok(/id="kostenRundeSym"/.test(h68) && /BTCUSD/.test(h68),
+     'Die Oberflaeche laesst den Wert waehlen, Krypto eingeschlossen');
+})();
+
+console.log('\n47b) signal() bekommt das Symbol');
+(function () {
+  /* Bis zum 25.08.2026 hiess die Signatur signal(bars, i, params, rang) - ohne Symbol.
+   * Eine Strategie, die etwas Symbolbezogenes braucht (Ertragstermine, Branche,
+   * Kennzahlen), musste sich die Zuordnung aus den KURSEN zurueckrechnen. Kandidat B der
+   * Vorregistrierung tat das mit einem Fingerabdruck aus zehn fruehen Schlusskursen -
+   * und genau in dieser Bruecke ist sein Quelltext abgebrochen und verlorengegangen.
+   * Der laengste Teil der Datei existierte nur, weil hier ein Argument fehlte.
+   * Deshalb wird das hier AUSGEFUEHRT geprueft, nicht gelesen. */
+  var os2 = require('os'), path2 = require('path');
+  var M = require(__dirname + '/studien/messmaschine/messmaschine.js');
+  var dir = path2.join(os2.tmpdir(), 'md-sym-' + process.pid);
+  fs.mkdirSync(dir, { recursive: true });
+
+  /* Zwei Reihen, die sich im KURSVERLAUF nicht unterscheiden - nur im Dateinamen.
+   * Genau der Fall, an dem eine Fingerabdruck-Bruecke scheitern muesste. */
+  var reihe = [], tag = Date.UTC(2015, 0, 2);
+  for (var d = 0; d < 700; d++) {
+    var dt = new Date(tag + d * 86400000);
+    if (dt.getUTCDay() === 0 || dt.getUTCDay() === 6) continue;
+    reihe.push([dt.getTime(), 100 + (d % 7) * 0.5, 1000]);
+  }
+  /* Zwoelf Reihen, weil die Maschine unter zehn Werten verweigert (E1). */
+  var SYMS = ['AAA', 'BBB', 'CCC', 'DDD', 'EEE', 'FFF',
+              'GGG', 'HHH', 'III', 'JJJ', 'KKK', 'LLL'];
+  SYMS.forEach(function (s) {
+    fs.writeFileSync(path2.join(dir, 'bars_1d_' + s + '.json'),
+      JSON.stringify({ series: reihe }));
+  });
+
+  var gesehen = {};
+  var r = M.messe({
+    key: 'symprobe', grund: 'Prueft, ob signal() das Symbol bekommt.',
+    zeitrahmen: '1d', haltedauerKerzen: 3, richtung: 'long', leseFensterKerzen: 5,
+    universum: function () { return true; },
+    varianten: [{}],
+    signal: function (bars, i, params, rang, sym) {
+      gesehen[String(sym)] = (gesehen[String(sym)] || 0) + 1;
+      return null;
+    }
+  }, dir);
+
+  var namen = Object.keys(gesehen).sort();
+  ok(namen.length === SYMS.length && namen[0] === 'AAA' && namen[namen.length - 1] === 'LLL',
+     'signal() sieht jedes Symbol des Universums beim Namen  [' + namen.length + ': ' + namen.join(',') + ']');
+  ok(namen.indexOf('undefined') === -1,
+     'Kein Aufruf ohne Symbol - sonst braeuchte es wieder eine Bruecke aus Kursen');
+
+  /* Rueckwaertsvertraeglich: eine Strategie mit der alten Signatur laeuft unveraendert. */
+  var alt = 0;
+  M.messe({
+    key: 'altsignatur', grund: 'Alte Signatur ohne sym.',
+    zeitrahmen: '1d', haltedauerKerzen: 3, richtung: 'long', leseFensterKerzen: 5,
+    universum: function () { return true; }, varianten: [{}],
+    signal: function (bars, i, params) { alt++; return null; }
+  }, dir);
+  ok(alt > 0, 'Eine Strategie mit der alten Signatur laeuft unveraendert weiter');
+
+  fs.rmSync(dir, { recursive: true, force: true });
 })();
 
 console.log('\n47a) bezeichnetesArchiv je Zeitrahmen');

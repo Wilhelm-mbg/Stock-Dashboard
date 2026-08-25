@@ -459,7 +459,7 @@ function placeboLauf(U, K, H, schnittTag, vorlauf, leseFenster, positionen) {
 
 /* ============================================================================
  * HAUPTFUNKTION
- * strategie: { key, grund, zeitrahmen, haltedauerKerzen, signal(bars,i,params)->{dir}|null,
+ * strategie: { key, grund, zeitrahmen, haltedauerKerzen, signal(bars,i,params,rang,sym)->{dir}|null,
  *              stopNiveau?(abgeschlossen, einKurs, params) -> Zahl|null,
  *              testfamilie?: {name, testsGesamt, begruendung},
  *              leseFensterKerzen?: Zahl - wie weit das Signal zurueckliest (A7),
@@ -617,7 +617,9 @@ function messe(strategie, archivPfad, optionen) {
       for (var i = vorlauf; i < b.length - H; i++) {
         var sig = null;
         var rang = QS ? QS.rang(sym, b[i][0]) : null;
-        try { sig = S.signal(b, i, params, rang); } catch (e) { gruende.fehler = (gruende.fehler || 0) + 1; continue; }
+        /* Das Symbol wird mitgegeben: eine Strategie, die Ertragstermine, Branche oder
+         * Kennzahlen braucht, soll es nicht aus den Kursen zurueckrechnen muessen. */
+        try { sig = S.signal(b, i, params, rang, sym); } catch (e) { gruende.fehler = (gruende.fehler || 0) + 1; continue; }
         if (!sig || !sig.dir) continue;
         var dir = sig.dir > 0 ? 1 : -1;
         if (S.richtung === 'long' && dir < 0) continue;
