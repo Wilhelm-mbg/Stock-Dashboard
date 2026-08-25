@@ -7971,6 +7971,78 @@ console.log('\n58) Wiederholungs-Waende: eine Sammelzeile statt dreissig gleiche
      'Scoreboard: der echte Pfad ist weiterhin da - einsortiert, nicht geloescht');
 })();
 
+console.log('\n59) Navigation gehoert der Shell (Struktur-Plan 25.08.2026, Stufe B)');
+(function () {
+  var shell = fs.readFileSync(__dirname + '/app-shell.js', 'utf8');
+  var dep = fs.readFileSync(__dirname + '/depot.js', 'utf8');
+  var bgs = fs.readFileSync(__dirname + '/bugs.js', 'utf8');
+  var html = fs.readFileSync(__dirname + '/index.html', 'utf8');
+
+  /* --- 1) Der eigentliche Fund: die Pillen duerfen auf nichts warten ---
+   * Vorher hing der Umschalter in depot.js init() hinter
+   * "await window.api.storeGet('depot')". Diese Zusicherung ist der Wachhund dagegen:
+   * vor der Verkabelung darf in app-shell.js kein Warten auf Daten stehen.
+   * Die Stelle wird ueber indexOf geprueft und NICHT ueber die Laenge des Ausschnitts:
+   * fehlt der Umschalter, liefert indexOf -1 und slice(0,-1) die halbe Datei - eine
+   * Laengenpruefung waere dann gruen und wertlos. */
+  var iPillen = shell.indexOf("querySelectorAll('.pills button[data-sub]'");
+  ok(iPillen > 0, 'Navigation: der Umschalter steht in app-shell.js');
+  var bisPillen = shell.slice(0, Math.max(0, iPillen));
+  ok(!/\bawait\b/.test(bisPillen),
+     'Navigation: vor der Verkabelung wird auf nichts gewartet - sonst sind die Pillen wieder tot');
+
+  /* --- 2) Die Schnittstelle zwischen Shell und Fachmodul --- */
+  ok(/CustomEvent\('sub-changed'/.test(shell),
+     'Navigation: die Shell meldet jede Umschaltung, statt selbst zu zeichnen');
+  ok(/addEventListener\('sub-changed'/.test(dep),
+     'Navigation: das Fachmodul zeichnet auf Zuruf, statt selbst zu schalten');
+  ok(/if \(!D\) \{ subOffen =/.test(dep),
+     'Navigation: eine Umschaltung waehrend des Startens faellt nicht aus, sie wird nachgeholt');
+  /* Wiederherstellen ist kein Klick: der Trendfinder holt Kurse fuer 15 Werte. Beim
+   * Klick ist das eine Bestellung, beim Wiederherstellen waere es eine ungefragte
+   * Abfrage bei JEDEM Programmstart. */
+  ok(/sub === 'wende' && !wieder/.test(dep),
+     'Navigation: der wiederhergestellte Ort loest von sich aus keine Kursabfrage aus');
+
+  /* --- 3) Der Ort ueberlebt den Neustart - und nur der Ort --- */
+  ok(/storeGet\('ui'\)/.test(shell) && /storeSet\('ui'/.test(shell),
+     'Navigation: Reiter und Pille ueberleben den Neustart');
+  ok(/var UI = \{ tab: null, sub: \{\} \};/.test(shell),
+     'Navigation: gemerkt wird NUR der Ort - kein Dialog, kein Explorer-Detail');
+
+  /* --- 4) Der offene Reiter wird gelesen, nicht geraten (T3) --- */
+  ok(!/style\*="display: none"/.test(bgs),
+     'Meldungen: der offene Reiter wird nicht mehr ueber einen Inline-Stil geraten');
+  ok(/querySelector\('nav\.tabs button\.active'\)/.test(bgs),
+     'Meldungen: gelesen wird an derselben Leiste, die die Shell schaltet');
+
+  /* --- 5) Markup: Reihenfolge und Blockgrenzen (S6) ---
+   * Wer im Markup sucht, sucht in der Reihenfolge der Leiste. Und ein Reiter ohne
+   * Endmarke laesst sich nicht als Block verschieben - beides hat am 25.08. gefehlt. */
+  var leiste = (html.match(/data-tab="([a-z]+)"/g) || []).map(function (s2) { return s2.slice(10, -1); });
+  var stellen = leiste.map(function (t) { return html.indexOf('<div id="tab-' + t + '"'); });
+  ok(stellen.every(function (p) { return p > 0; }) &&
+     stellen.every(function (p, i) { return i === 0 || p > stellen[i - 1]; }),
+     'Markup: die Panels stehen in der Reihenfolge der Reiterleiste', leiste.join(' '));
+  var ohneMarke = leiste.filter(function (t) {
+    return html.indexOf('<!-- /tab-' + t + ' -->') < html.indexOf('<div id="tab-' + t + '"');
+  });
+  ok(ohneMarke.length === 0,
+     'Markup: jeder Reiter ist als Block abgegrenzt - sonst kann ihn niemand verschieben',
+     ohneMarke.join(' ') || 'alle sechs');
+
+  /* --- 6) Kein leeres Raster, kein Kommentar ohne Abschnitt ---
+   * Ehrliche Reichweite: die zweite Regel faengt Kommentare, hinter denen KEIN Abschnitt
+   * folgt. Einen fehlbeschrifteten Kommentar vor einem echten Abschnitt faengt sie
+   * nicht - das ist eine andere Fehlerklasse. */
+  ok(!/<div class="grid2"[^>]*>\s*<\/div>/.test(html),
+     'Markup: kein leeres Raster mehr, das nur Luft erzeugt');
+  var verwaist = [], reK = /<!-- =+ ([^=]+?) =+ -->\s*([\s\S]{0,40})/g, mK;
+  while ((mK = reK.exec(html))) { if (!/^<div/.test(mK[2].trim())) verwaist.push(mK[1].trim()); }
+  ok(verwaist.length === 0,
+     'Markup: jeder Abschnitts-Kommentar steht vor einem Abschnitt', verwaist.join(' | '));
+})();
+
 Promise.all(offeneProben).then(function () {
   console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
   process.exit(fails ? 1 : 0);
