@@ -8596,6 +8596,66 @@ console.log('\n52) F1 auch im produktiven Waechter');
      'Waechter und Messmaschine benutzen DIESELBE Plausibilitaetsgrenze  [' + gDep + ' vs ' + gMm + ']');
 })();
 
+console.log('\n63) Nur fertige Kerzen kommen ins Archiv (Issue #85)');
+/* Yahoo liefert am Ende jeder Reihe die LAUFENDE Kerze mit - eine Momentaufnahme
+ * mitten in der Sitzung, gestempelt mit der Quote-Uhrzeit (16:57:27 statt 16:30).
+ * Gemessen am 26.08.2026: 2.841 von 2.917 Reihen im 60m-Archiv endeten so.
+ * Der Fehler ist klein (eine Kerze von ~5.000), aber er wandert mit jedem Abruf auf
+ * den juengsten Tag, und jeder Verbraucher, der das Reihenende liest, erbt ihn. */
+(function () {
+  var yh = fs.readFileSync(__dirname + '/tools/yahoo-60m-holen.js', 'utf8');
+
+  /* EINE Definition, nicht zwei. Zwei Regeln fuer dieselbe Frage laufen auseinander. */
+  ok(/function fertigeKerze\(tsMs, reg, jetzt\)/.test(yh),
+     'Es gibt genau eine Regel dafuer, wann eine Kerze fertig ist');
+  var reg = (/function fertigeKerze[\s\S]*?\n\}/.exec(yh) || [''])[0];
+  var F = new Function('IV', reg + '\nreturn fertigeKerze;');
+
+  /* Die laufende Kerze traegt Sekunden - eine Gitterkerze nie. */
+  var f60 = F('60m');
+  ok(f60(Date.parse('2026-08-24T16:30:00Z'), null, Date.now()) === true,
+     'Eine Gitterkerze ist fertig');
+  ok(f60(Date.parse('2026-08-24T16:57:27Z'), null, Date.now()) === false,
+     'Die laufende Kerze mit Quote-Stempel ist es nicht');
+  /* Die Falle, die eine "Stempel + Intervall <= jetzt"-Regel gestellt haette: die
+   * letzte Sitzungskerze ist kuerzer als eine Stunde (19:30 bis 20:00 UTC). Sie ist
+   * trotzdem fertig und darf nicht verworfen werden. */
+  ok(f60(Date.parse('2026-08-24T19:30:00Z'), null, Date.now()) === true,
+     'Die kurze letzte Sitzungskerze bleibt - sie ist fertig, nur kuerzer');
+
+  /* Tageskerzen sind am Stempel NICHT zu erkennen (nachgemessen: 0 von 400). Sie
+   * tragen den Sitzungsbeginn und sehen auch als Teiltag normal aus. Fertig sind sie,
+   * sobald die Sitzung zu ist. */
+  var f1d = F('1d');
+  var start = Date.parse('2026-08-25T13:30:00Z'), ende = Date.parse('2026-08-25T20:00:00Z');
+  var rp = { start: start / 1000, end: ende / 1000 };
+  ok(f1d(start, rp, ende - 3600000) === false,
+     'Ein Tagesbalken der noch laufenden Sitzung ist unfertig');
+  ok(f1d(start, rp, ende + 60000) === true,
+     'Nach Handelsschluss ist er fertig');
+  ok(f1d(Date.parse('2026-08-21T13:30:00Z'), rp, ende - 3600000) === true,
+     'Ein aelterer Tag ist immer fertig');
+
+  /* Der Abruf schneidet wirklich ab - eine Regel ohne Aufrufer waere toter Code. */
+  ok(/while \(serie\.length && !fertigeKerze\(/.test(yh),
+     'Der Abruf schneidet unfertige Kerzen am Ende ab');
+  /* Und das Zusammenfuehren reinigt das VORHANDENE mit. Das ist der eigentliche
+   * Haken: die Vereinigung laeuft ueber den Zeitstempel, und 16:57:27 ist ein anderer
+   * Schluessel als 16:30 - eine alte Teilkerze bliebe sonst ewig stehen. */
+  ok(/alt\.filter\(function \(k\) \{ return new Date\(k\[0\]\)\.getUTCSeconds\(\) === 0; \}\)/.test(yh),
+     'Das Zusammenfuehren wirft alte Teilkerzen mit hinaus - sonst blieben sie ewig stehen');
+
+  /* Und es gibt ein Werkzeug, das ein vorhandenes Archiv sofort reinigt, ohne Netz. */
+  var tk = fs.existsSync(__dirname + '/tools/archiv-teilkerzen-entfernen.js');
+  ok(tk, 'Es gibt ein Werkzeug, das ein vorhandenes Archiv ohne Netz reinigt');
+  if (tk) {
+    var w = fs.readFileSync(__dirname + '/tools/archiv-teilkerzen-entfernen.js', 'utf8');
+    /* Ein Werkzeug, das Daten loescht, schreibt nicht ohne ausdrueckliche Ansage. */
+    ok(/--wirklich/.test(w) && /if \(!loeschen \|\| !WIRKLICH\) return;/.test(w),
+       'Es zaehlt nur - geschrieben wird erst mit --wirklich');
+  }
+})();
+
 Promise.all(offeneProben).then(function () {
   console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
   process.exit(fails ? 1 : 0);

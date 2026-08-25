@@ -140,6 +140,23 @@ function hole(url) {
  * oder ein NaN kaeme durch. Ein verworfener Balken zaehlt wie ein fehlender. */
 function kursOk(x) { return typeof x === 'number' && isFinite(x) && x > 0; }
 
+/* Ist diese Kerze FERTIG? Eine unfertige gehoert nicht ins Archiv: sie ist eine
+ * Momentaufnahme mitten in der Sitzung und wandert mit jedem Abruf weiter.
+ * Gemessen am 26.08.2026 (Issue 85):
+ *   archiv60m  400 von 400 Reihen endeten mit Sekunde != 0, mitten in der Reihe 0.
+ *              Yahoo stempelt die laufende Kerze mit der Quote-Uhrzeit (16:57:27
+ *              statt 16:30); eine Gitterkerze traegt immer Sekunde 0.
+ *   archiv1d   0 von 400 am Stempel erkennbar - eine Tageskerze traegt den
+ *              Sitzungsbeginn und sieht auch als Teiltag normal aus. Sie ist fertig,
+ *              sobald die Sitzung zu ist.
+ * Bewusst NICHT "Stempel + Intervall <= jetzt": die letzte Sitzungskerze ist kuerzer
+ * als das Intervall (19:30 bis 20:00 UTC) und waere faelschlich verworfen worden. */
+function fertigeKerze(tsMs, reg, jetzt) {
+  if (new Date(tsMs).getUTCSeconds() !== 0) return false;
+  if (IV === '1d' && reg && tsMs === reg.start * 1000) return jetzt >= reg.end * 1000;
+  return true;
+}
+
 async function reiheHolen(sym) {
   var url = 'https://query1.finance.yahoo.com/v8/finance/chart/' +
     encodeURIComponent(yahooName(sym)) + '?range=' + CFG.range + '&interval=' + IV;
@@ -168,8 +185,16 @@ async function reiheHolen(sym) {
     var o = kursOk(op[i]) ? op[i] : null;
     serie.push([ts[i] * 1000, cl[i], vo[i] || 0, h, l, o]);
   }
+  /* Was am Ende nicht fertig ist, kommt gar nicht erst ins Archiv. */
+  var reg = res.meta && res.meta.currentTradingPeriod && res.meta.currentTradingPeriod.regular;
+  var jetzt = Date.now();
+  var abgeschnitten = 0;
+  while (serie.length && !fertigeKerze(serie[serie.length - 1][0], reg, jetzt)) {
+    serie.pop(); abgeschnitten++;
+  }
   if (serie.length < MIN_KERZEN) return { fehler: 'nur ' + serie.length + ' Kerzen' };
-  return { serie: serie, waehrung: res.meta && res.meta.currency, boerse: res.meta && res.meta.exchangeName };
+  return { serie: serie, waehrung: res.meta && res.meta.currency,
+           boerse: res.meta && res.meta.exchangeName, abgeschnitten: abgeschnitten };
 }
 
 function listeBauen(wahl) {
@@ -195,6 +220,7 @@ function listeBauen(wahl) {
   var stand = fs.existsSync(STAND) ? JSON.parse(fs.readFileSync(STAND, 'utf8')) : { fertig: {}, ohne: {} };
 
   var aktualisieren = process.argv.indexOf('--aktualisieren') !== -1;
+  var altgereinigt = 0, neuAbgeschnitten = 0;
   var liste = aktualisieren ? Object.keys(stand.fertig) : listeBauen(wahl);
   /* Beim Aktualisieren ist nichts "schon erledigt" - es geht ja gerade darum,
    * das Vorhandene fortzuschreiben. */
@@ -233,6 +259,14 @@ function listeBauen(wahl) {
       if (fs.existsSync(datei)) {
         try {
           var alt = JSON.parse(fs.readFileSync(datei, 'utf8')).series || [];
+          /* Auch das Vorhandene reinigen. Die Vereinigung laeuft ueber den
+           * Zeitstempel, und eine alte Teilkerze (16:57:27) hat einen anderen
+           * Stempel als die richtige Kerze derselben Stunde (16:30) - sie wuerde
+           * sonst ewig stehenbleiben, kuenftig mitten in der Reihe. Hier ist die
+           * Sitzung von damals laengst zu, deshalb reicht die Stempelregel. */
+          var altVor = alt.length;
+          alt = alt.filter(function (k) { return new Date(k[0]).getUTCSeconds() === 0; });
+          altgereinigt += altVor - alt.length;
           var karte = {};
           alt.forEach(function (k) { karte[k[0]] = k; });
           var vorher = alt.length;
@@ -242,6 +276,7 @@ function listeBauen(wahl) {
           dazu = r.serie.length - vorher;
         } catch (e) { /* unlesbar: die frische Reihe ersetzt sie */ }
       }
+      neuAbgeschnitten += r.abgeschnitten || 0;
       var ohneO = r.serie.filter(function (k) { return k[5] == null; }).length;
       ohneEroeffnung += ohneO;
       fs.writeFileSync(datei, JSON.stringify({
