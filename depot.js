@@ -2006,7 +2006,9 @@
         return wb - wa;
       });
       var pfeil = function (t) { return t === 'auf' || t === 'up' ? '↗' : (t === 'ab' || t === 'down' ? '↘' : '→'); };
-      var h = '<table class="tbl"><tr><th>Wert</th>' +
+      /* Der Kopf wird zweimal gebraucht: fuer die Tabelle und fuer die Tabelle in der
+       * Klappe - damit eingeklappte Zeilen ihre Spaltenbeschriftung behalten. */
+      var kopf = '<tr><th>Wert</th>' +
         '<th title="Der laufende Abschnitt seit dem letzten bestätigten Wendepunkt: Richtung und normierter Winkel (Steigung × Länge ÷ Kanalbreite).">Trend jetzt</th>' +
         '<th title="Güte 0–100 aus denselben drei Eigenschaften, die der Aktien-Explorer zu einem Kanal nennt: Passgenauigkeit, Berührungen beider Kanten, Länge. Reine Beschreibung – als Handelsbedingung ist der Kanal gemessen und widerlegt (−0,17 Pp je Trade, t = −4,1).">Güte</th>' +
         '<th title="Breite des Kanals in Prozent des Kursniveaus – wie viel Luft der Trend zwischen seinen Kanten hat.">Breite</th>' +
@@ -2014,9 +2016,20 @@
         '<th title="Die einzige Ausstiegsregel, die aus dem Detektor selbst folgt: halten, bis der Winkel zurückdreht.">Ausstieg</th>' +
         '<th title="Wie viele Drehungen dieser Art in der verfügbaren Historie überhaupt vorkommen. Für eine belastbare Bewertung bräuchte es rund 30 – dafür reicht das Archiv nicht.">Fälle in der Historie</th>' +
         '<th>Stand</th></tr>';
+      var h = '<table class="tbl">' + kopf;
+      /* Die Zeilen werden erst gesammelt und dann durch U.wandBuendeln geschickt:
+       * gleiche Statuszeilen werden zu einer Sammelzeile mit Zaehler, die Einzelzeilen
+       * stehen woertlich in der Klappe darunter (Befund B2, 25.08.2026). */
+      var posten = [];
       zeilen.forEach(function (z) {
         if (z.fehler || (!z.w && !z.kt)) {
-          h += '<tr><td><b>' + U.esc(z.sym) + '</b></td><td colspan="8" style="color:var(--muted);">' + U.esc(z.fehler || 'zu wenig Historie') + '</td></tr>';
+          /* Zeilen ohne jede Aussage sind der Hauptfall der Wiederholungs-Wand: bei
+           * frischem Archiv steht das fuer JEDEN Wert da. Der Grund wird zum Schluessel,
+           * der Text selbst bleibt woertlich in der Zeile - einmal gerechnet, damit
+           * Schluessel und Anzeige nicht auseinanderlaufen koennen. */
+          var leerGrund = z.fehler || 'zu wenig Historie';
+          posten.push({ status: leerGrund, html:
+            '<tr><td><b>' + U.esc(z.sym) + '</b></td><td colspan="8" style="color:var(--muted);">' + U.esc(leerGrund) + '</td></tr>' });
           return;
         }
         var v = z.w ? z.w.vorher : null, a = z.w ? z.w.aktuell : null, sig = z.w ? z.w.signal : null;
@@ -2028,7 +2041,11 @@
         var wkF = (ausFenster && kj.breite > 0) ? Math.round(kj.steigung * kj.n / kj.breite * 100) / 100 : null;
         var dreht = v && a && a.winkel != null && Math.abs(v.winkel) >= 0.5 && Math.sign(a.winkel) !== Math.sign(v.winkel);
         var zeichenbar = !!(z.w && z.w.bild && (z.w.bild.kanalVor || z.w.bild.kanalJung));
-        h += '<tr' + (zeichenbar ? ' data-wende="' + U.esc(z.sym) + '" style="cursor:pointer;' + (sig ? ' background:var(--up-soft);' : '') + '" title="Klick zeigt den Kursverlauf mit Wendepunkt und beiden Abschnitten"' : (sig ? ' style="background:var(--up-soft);"' : '')) + '><td><b>' + U.esc(z.sym) + (zeichenbar ? ' <span style="color:var(--muted); font-weight:400;">▸</span>' : '') + '</b></td>' +
+        /* Der Stand steht jetzt als eigene Groesse da, weil er zweimal gebraucht wird:
+         * in seiner Zelle und als Schluessel der Sammelzeile. Wortlaut unveraendert. */
+        var standTxt = !z.w ? 'nur Trend, kein Wechsel-Urteil'
+          : (a && a.winkel != null && Math.abs(a.winkel) < S ? 'zu flach' : 'kein Wechsel');
+        var zeileHtml = '<tr' + (zeichenbar ? ' data-wende="' + U.esc(z.sym) + '" style="cursor:pointer;' + (sig ? ' background:var(--up-soft);' : '') + '" title="Klick zeigt den Kursverlauf mit Wendepunkt und beiden Abschnitten"' : (sig ? ' style="background:var(--up-soft);"' : '')) + '><td><b>' + U.esc(z.sym) + (zeichenbar ? ' <span style="color:var(--muted); font-weight:400;">▸</span>' : '') + '</b></td>' +
           '<td>' + (a && a.winkel != null
             ? pfeil(a.trend) + ' ' + U.nf2.format(a.winkel) + ' <span style="color:var(--muted);">(seit ' + a.seitKerzen + ' Kerzen)</span>'
             : (kj
@@ -2065,9 +2082,14 @@
             : '<span style="color:var(--muted);">zu wenig Historie</span>') + '</td>' +
           '<td>' + (sig
             ? '<b class="' + (sig.dir === 'call' ? 'pos' : 'neg') + '">Wechsel nach ' + (sig.dir === 'call' ? 'OBEN' : 'UNTEN') + '</b>'
-            : '<span style="color:var(--muted);">' + (!z.w ? 'nur Trend, kein Wechsel-Urteil'
-              : (a && a.winkel != null && Math.abs(a.winkel) < S ? 'zu flach' : 'kein Wechsel')) + '</span>') + '</td></tr>';
+            : '<span style="color:var(--muted);">' + standTxt + '</span>') + '</td></tr>';
+        /* Gebuendelt wird nur, was NICHTS zeigt: kein Wechsel UND kein Trendkanal.
+         * Zeilen mit Kanal bleiben einzeln stehen - seit #58 ist der Trend die
+         * Hauptsache und der Wechsel sein Sonderfall; eine Sammelzeile duerfte ihn
+         * nicht verdecken. */
+        posten.push({ status: (sig || kj) ? null : standTxt, html: zeileHtml });
       });
+      h += U.wandBuendeln(posten, { spalten: 9, kopf: kopf, was: 'Werte' });
       h += '</table><div class="hinweis" style="margin-top:8px;"><b>Trendfinder:</b> Zuerst steht der laufende ' +
         'Trend mit seinen drei Eigenschaften – Richtung, Güte, Breite –, dieselben drei, die auch der ' +
         'Aktien-Explorer zu einem Kanal nennt, aus derselben Rechnung. Der Trendwechsel ist der Sonderfall ' +
@@ -2273,17 +2295,26 @@
       return;
     }
     syms.sort(function (a2, b2) { return (SIG[b2].score || 0) - (SIG[a2].score || 0); });
-    var html = '<table class="tbl"><tr><th>Wert</th><th>Kurs</th><th>Wellen-Score</th><th>z</th><th>Kanal</th><th>Status</th><th>Geprüft</th></tr>';
+    var kopf = '<tr><th>Wert</th><th>Kurs</th><th>Wellen-Score</th><th>z</th><th>Kanal</th><th>Status</th><th>Geprüft</th></tr>';
+    var html = '<table class="tbl">' + kopf;
+    /* Der Monitor zeigte an ruhigen Tagen dreissig Zeilen mit demselben Grund (Befund
+     * B2). Die Zeilen entstehen unveraendert - sie gehen nur durch U.wandBuendeln, das
+     * gleiche Gruende zu einer Sammelzeile mit Zaehler zusammenzieht und die
+     * Einzelzeilen woertlich in die Klappe stellt. */
+    var posten = [];
     syms.slice(0, 30).forEach(function (s) {
       var g = SIG[s];
-      html += '<tr data-siglog="' + U.esc(s) + '" style="cursor:pointer;" title="Klick zeigt den Entscheidungsverlauf dieses Werts"><td><b>' + U.esc(s) + '</b></td>' +
+      /* Eine eroeffnete Position ist nie eine Wiederholung - sie bleibt immer sichtbar. */
+      posten.push({ status: g.ok ? null : (g.grund || 'kein Signal'), html:
+        '<tr data-siglog="' + U.esc(s) + '" style="cursor:pointer;" title="Klick zeigt den Entscheidungsverlauf dieses Werts"><td><b>' + U.esc(s) + '</b></td>' +
         '<td>' + (g.spot != null ? U.nf2.format(g.spot) : '–') + '</td>' +
         '<td>' + (g.score != null ? g.score + '/100' : '–') + '</td>' +
         '<td>' + (g.z != null ? g.z : '–') + '</td>' +
         '<td>' + (g.chanPos != null ? Math.round(g.chanPos * 100) + ' % · Güte ' + (g.chanQ != null ? g.chanQ : '–') : '–') + '</td>' +
         '<td class="' + (g.ok ? 'pos' : '') + '">' + U.esc(g.grund || (g.ok ? 'gehandelt' : 'kein Signal')) + '</td>' +
-        '<td style="color:var(--muted);">' + (g.t ? new Date(g.t).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }) : '–') + '</td></tr>';
+        '<td style="color:var(--muted);">' + (g.t ? new Date(g.t).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }) : '–') + '</td></tr>' });
     });
+    html += U.wandBuendeln(posten, { spalten: 7, kopf: kopf, was: 'Werte' });
     html += '</table><div style="color:var(--muted); font-size:var(--fs-neben); margin-top:6px;">Zeigt für jeden gescannten Wert, was die Strategie zuletzt gesehen hat – und warum sie nicht gehandelt hat. Zeile anklicken: Entscheidungsverlauf des Werts (Tester-Wunsch #30).</div>';
     el.innerHTML = html;
     /* Entscheidungsverlauf aufklappen - direkt unter der angeklickten Zeile,

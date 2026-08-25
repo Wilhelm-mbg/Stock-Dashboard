@@ -639,6 +639,13 @@
   /* Nach details.how summary, sonst gewinnt dort die Akzentfarbe (gleiche Spezifitaet). */
   details.how.archiv > summary { color: var(--muted); }
 
+  /* Sammelzeile einer Wiederholungs-Wand (Befund B2): Die Klappe traegt eine eigene
+     Tabelle - ein <details> darf kein <tr> umschliessen, der Parser hoebe es sonst aus
+     der Tabelle heraus. Der abgesetzte Grund macht sichtbar, dass hier gebuendelt
+     wurde; ohne Abstand klebt die innere Tabelle an der Kante der Sammelzeile. */
+  table.tbl tr.agg > td { background: var(--panel); }
+  table.tbl tr.agg table.tbl { margin-top: 6px; }
+
   /* Parameter-Gruppen */
   .pgroup { margin-top: 12px; }
   .pgroup:first-child { margin-top: 0; }

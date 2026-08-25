@@ -37,6 +37,69 @@
       }
       if (inList) out.push('</ul>');
       return out.join('\n');
+    },
+
+    /* ---- Wiederholungs-Waende buendeln (Audit 25.08.2026, Befund B2) ----
+     * Listen mit einem Status je Zeile laufen zu Waenden auf: dreissig Zeilen
+     * "Kursreihe zu kurz (148 < 261 Kerzen)" sagen dasselbe wie eine Zeile mit einem
+     * Zaehler. Gebuendelt wird deshalb am STATUS, nicht am Text - dieselbe Begruendung
+     * mit anderen Zahlen ist derselbe Status.
+     * Der Wortlaut bleibt dabei unangetastet: die Einzelzeilen stehen woertlich in der
+     * Klappe, und die Sammelzeile setzt die Ellipse nur dort, wo sich die Zahlen
+     * zwischen den Zeilen wirklich unterscheiden - eine gemessene Konstante wie
+     * "261 Kerzen" bleibt damit sichtbar. Gruende sind Messaussagen (Leitplanke 1);
+     * gezaehlt wird, nicht umformuliert. */
+    ZAHL: /(-?\d+(?:[.,]\d+)?)/,
+    AGG_AB: 5,
+    /* Schluessel einer Gruppe: derselbe Satz mit anderen Zahlen ergibt denselben Wert.
+     * Trennzeichen ist U+0001 und nicht die Ellipse, damit ein Text, der selbst eine
+     * Ellipse traegt, keine fremde Gruppe trifft. Nur intern - nie angezeigt. */
+    statusKern: function (s) {
+      return String(s == null ? '' : s).split(U.ZAHL)
+        .filter(function (_, i) { return i % 2 === 0; }).join('\u0001');
+    },
+    /* Titel der Sammelzeile, gebildet aus den Einzeltexten selbst: fester Text bleibt
+     * woertlich, und nur die Zahlen, die sich zwischen den Zeilen unterscheiden, werden
+     * zur Ellipse. Nichts wird umformuliert und nichts gekuerzt. */
+    statusTitel: function (texte) {
+      var teile = texte.map(function (t) { return String(t == null ? '' : t).split(U.ZAHL); });
+      return teile[0].map(function (stueck, i) {
+        if (i % 2 === 0) return stueck;
+        return teile.every(function (t) { return t[i] === stueck; }) ? stueck : '…';
+      }).join('');
+    },
+    /* posten: [{ status, html }] - html ist eine fertige <tr>-Zeile, status ihr Grund.
+     * status null/'' heisst: diese Zeile wird NIE gebuendelt (etwa ein eroeffneter
+     * Trade). opt: { spalten, kopf, was, grenze }.
+     * Eine Gruppe steht an der Stelle ihres ERSTEN Mitglieds - die Sortierung der
+     * aufrufenden Liste bleibt damit unangetastet. */
+    wandBuendeln: function (posten, opt) {
+      opt = opt || {};
+      var grenze = opt.grenze != null ? opt.grenze : U.AGG_AB;
+      var spalten = opt.spalten || 1, was = opt.was || 'Zeilen', kopf = opt.kopf || '';
+      var schluessel = posten.map(function (p) { return p.status ? U.statusKern(p.status) : null; });
+      /* Object.create(null): die Gruende kommen aus Daten - "__proto__" darf kein
+       * Sonderfall werden. */
+      var gruppen = Object.create(null);
+      schluessel.forEach(function (k, i) {
+        if (!k) return;
+        if (!gruppen[k]) gruppen[k] = [];
+        gruppen[k].push(i);
+      });
+      var raus = '', gezeigt = Object.create(null);
+      schluessel.forEach(function (k, i) {
+        if (!k || gruppen[k].length <= grenze) { raus += posten[i].html; return; }
+        if (gezeigt[k]) return;
+        gezeigt[k] = 1;
+        var mit = gruppen[k];
+        var titel = U.statusTitel(mit.map(function (j) { return posten[j].status; }));
+        raus += '<tr class="agg"><td colspan="' + spalten + '">' +
+          '<details class="how"><summary>' + mit.length + ' ' + U.esc(was) + ': ' + U.esc(titel) + '</summary>' +
+          '<table class="tbl">' + kopf +
+          mit.map(function (j) { return posten[j].html; }).join('') +
+          '</table></details></td></tr>';
+      });
+      return raus;
     }
   };
   window.U = U;

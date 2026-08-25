@@ -7770,6 +7770,72 @@ console.log('\n51) Der Edge-Waechter loest nicht mehr im Rauschen aus');
   });
 })();
 
+console.log('\n58) Wiederholungs-Waende: eine Sammelzeile statt dreissig gleicher Zeilen');
+/* Befund B2 des Struktur-Audits vom 25.08.2026: Der Signal-Monitor zeigte an ruhigen
+ * Tagen rund dreissig Zeilen mit demselben Grund, der Trendfinder bei frischem Archiv
+ * fuer jeden Wert dieselbe Absage. Der Baustein U.wandBuendeln zieht das zu einer
+ * Sammelzeile zusammen - und die Zusicherungen unten halten das Entscheidende fest:
+ * es geht dabei NICHTS verloren und es wird NICHTS umformuliert. */
+(function () {
+  var as = fs.readFileSync(__dirname + '/app-shell.js', 'utf8');
+  var dep = fs.readFileSync(__dirname + '/depot.js', 'utf8');
+
+  /* U ist eine reine Helferliste ohne DOM-Zugriff - sie laesst sich aus der Quelle
+   * herausschneiden und wirklich ausfuehren, statt nur als Text geprueft zu werden.
+   * Hausmuster, siehe pfadeKuerzen aus bugs.js weiter oben. */
+  var aU = as.indexOf('  var U = {'), bU = as.indexOf('\n  };', aU) + 5;
+  ok(aU > 0 && bU > aU, 'Die Helferliste U laesst sich aus app-shell.js herausschneiden');
+  var UU = new Function(as.slice(aU, bU) + '\n  return U;')();
+  ok(typeof UU.wandBuendeln === 'function', 'U.wandBuendeln existiert als gemeinsamer Baustein');
+
+  function wand(n) {
+    var p = [];
+    for (var i = 0; i < n; i++) {
+      p.push({ status: 'Kursreihe zu kurz (' + (140 + i) + ' < 261 Kerzen) – Signal wäre nicht das gemessene',
+               html: '<tr data-siglog="S' + i + '"><td>S' + i + '</td></tr>' });
+    }
+    return p;
+  }
+  var sechs = UU.wandBuendeln(wand(6), { spalten: 7, was: 'Werte' });
+
+  /* 1) Gebuendelt wird am STATUS, nicht am Text: gleicher Grund, andere Zahlen. */
+  ok((sechs.match(/<details/g) || []).length === 1,
+     'Sechs Zeilen mit demselben Grund und verschiedenen Zahlen ergeben EINE Sammelzeile');
+  ok(/>6 Werte: /.test(sechs), 'Die Sammelzeile nennt die Zahl der gebuendelten Werte');
+
+  /* 2) Die Einzelinformation verschwindet nicht - sie wandert in die Klappe. */
+  var alleDa = true;
+  for (var i2 = 0; i2 < 6; i2++) if (sechs.indexOf('data-siglog="S' + i2 + '"') < 0) alleDa = false;
+  ok(alleDa, 'Alle sechs Einzelzeilen stehen unveraendert in der Klappe - nichts geht verloren');
+
+  /* 3) Leitplanke 1: Gruende sind Messaussagen. Die gemessene Konstante 261 bleibt
+   *    stehen; zur Ellipse wird nur, was sich zwischen den Zeilen unterscheidet. */
+  ok(sechs.indexOf('261 Kerzen') >= 0 && sechs.indexOf('(140') < 0,
+     'Im Titel bleibt die gemessene Konstante stehen, nur die je Wert verschiedene Zahl faellt weg');
+  ok(/Signal wäre nicht das gemessene/.test(sechs),
+     'Der Grund wird gezaehlt, nicht umformuliert und nicht gekuerzt');
+
+  /* 4) Erst oberhalb von fuenf wird gebuendelt - und Wichtiges nie. */
+  ok((UU.wandBuendeln(wand(5), { spalten: 7 }).match(/<details/g) || []).length === 0,
+     'Bei fuenf gleichen Zeilen bleibt die Liste, wie sie ist');
+  var mitTrade = wand(6).concat([{ status: null, html: '<tr data-siglog="OK"><td>gehandelt</td></tr>' }]);
+  var mt = UU.wandBuendeln(mitTrade, { spalten: 7 });
+  ok(mt.indexOf('<details') >= 0 && mt.indexOf('<details') < mt.indexOf('data-siglog="OK"'),
+     'Eine Zeile ohne Status wird nie gebuendelt und behaelt ihren Platz in der Sortierung');
+
+  /* 5) Beide Aufrufstellen benutzen wirklich den gemeinsamen Baustein. */
+  ok(/html \+= U\.wandBuendeln\(posten, \{ spalten: 7/.test(dep),
+     'Signal-Monitor: gebuendelt wird ueber den gemeinsamen Baustein');
+  ok(/h \+= U\.wandBuendeln\(posten, \{ spalten: 9/.test(dep),
+     'Trendfinder: derselbe Baustein, nicht ein zweiter Handgriff');
+  ok(/posten\.push\(\{ status: g\.ok \? null :/.test(dep),
+     'Signal-Monitor: eine eroeffnete Position ist nie eine Wiederholung');
+  /* Wunsch #58: der Trend ist die Hauptsache, der Wechsel sein Sonderfall. Eine
+   * Sammelzeile darf eine Zeile mit Trendkanal deshalb nie verdecken. */
+  ok(/posten\.push\(\{ status: \(sig \|\| kj\) \? null : standTxt/.test(dep),
+     'Trendfinder: Zeilen mit Wechsel oder Trendkanal bleiben einzeln stehen (Wunsch #58)');
+})();
+
 Promise.all(offeneProben).then(function () {
   console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
   process.exit(fails ? 1 : 0);
