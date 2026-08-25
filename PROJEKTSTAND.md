@@ -121,6 +121,9 @@ fertig bist.*
 *Entscheidungen von Wilhelm, mit Datum. Eine Entscheidung, die nur in einem Chatverlauf
 steht, ist nach zwei Stunden verloren.*
 
+- **26.08.2026** — #85 erledigt (Vorstufe 1 von 4). Beide Archive geprueft: 60m
+  gereinigt (2.841 Teilkerzen), 1d heilt sich beim naechsten Abruf selbst. Es bleiben
+  #86, #87, #88 vor der Neumessung.
 - **26.08.2026** — #84-Rest erledigt: alle 21 Kommentare umgeschrieben, Sperrklinke
   deckt jetzt auch Kommentare ab. Bewiesen, dass sich kein Verhalten geaendert hat.
 - **26.08.2026, 00:45 (drei Antworten)** —
