@@ -88,8 +88,11 @@
     if (!kasten || !B) return;
     var werte = B.liste();
     if (!werte.length) {
-      kasten.innerHTML = '<div class="empty" style="padding:10px 0;">Noch keine eigenen Papiere eingetragen. ' +
-        'Eintragen im Reiter <b>Vermögen → Meine Papiere</b> – der Auszug der Depotbank genügt.</div>';
+      /* Der Fliesstext steht in EINEM span: .empty ist flex-direction:column, jedes
+       * Kind bekaeme sonst eine eigene Zeile - Text, Auszeichnung und der Satzpunkt
+       * danach waeren drei. */
+      kasten.innerHTML = '<div class="empty" style="padding:10px 0;"><span>Noch keine eigenen Papiere eingetragen. ' +
+        'Eintragen im Reiter <b>Vermögen → Meine Papiere</b> – der Auszug der Depotbank genügt.</span></div>';
       return;
     }
     /* Untergliedert nach Signalstand (Felix, #71). Drei Gruppen in EINER Tabelle -

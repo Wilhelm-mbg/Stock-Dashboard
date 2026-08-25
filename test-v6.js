@@ -5002,6 +5002,30 @@ console.log('\n41) Zustaende: was die App sagt, wenn etwas fehlt oder klemmt');
   ok(escKopien.length === 0,
      'Sperrklinke: nur U.esc escapt in diesem Programm', escKopien.join(', ') || 'keine Kopie');
 
+  /* Dritte Sperrklinke, gleiche Bauart: ein Leerzustand ist EINE Fliesszeile.
+   * .empty traegt display:flex; flex-direction:column - damit wird jedes Kind eine
+   * eigene Zeile, auch jeder anonyme Textabschnitt. Steht eine Auszeichnung mitten im
+   * Satz, zerfaellt er in drei Zeilen und der Satzpunkt dahinter landet allein auf der
+   * letzten. Am 25.08.2026 im Bild gefunden, nachdem drei neue Leerzustaende mit einem
+   * Reiterverweis dazugekommen waren - kein Test konnte das sehen.
+   * Abhilfe und Regel: Fliesstext in EIN span wickeln.
+   * Ausgenommen ist der Icon-Stapel (span.ico + Text): dort sind zwei Zeilen gewollt,
+   * Symbol ueber Text. */
+  var zerfallen = [];
+  ['index.html'].concat(dateien).forEach(function (f) {
+    var q = fs.readFileSync(__dirname + '/' + f, 'utf8');
+    var re = /<div class="empty"[^>]*>([\s\S]*?)<\/div>\s*(?:'|<\/div>)/g, mE;
+    while ((mE = re.exec(q))) {
+      var inn = mE[1].replace(/^\s*<span class="ico">[^<]*<\/span>/, '');
+      if (!/<[a-z]+[ >]/.test(inn)) continue;                        // reiner Text
+      if (/^\s*<span[^>]*>[\s\S]*<\/span>\s*$/.test(inn)) continue;   // schon gewickelt
+      zerfallen.push(f + ': ' + inn.replace(/\s+/g, ' ').slice(0, 40));
+    }
+  });
+  ok(zerfallen.length === 0,
+     'Sperrklinke: ein Leerzustand mit Auszeichnung steht in EINEM span - sonst bricht er zeilenweise',
+     zerfallen.join(' | ') || 'keiner zerfaellt');
+
   /* Gegenprobe, dass die Sperrklinke wirklich greift: haette sie ein Loch, waere die
    * Zusicherung darueber wertlos. Also einmal auf einem erfundenen Text nachweisen,
    * dass genau das Muster gefunden wird, das im Paket nicht mehr vorkommen darf. */
