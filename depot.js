@@ -2953,22 +2953,46 @@
     return /^(BTC|ETH|XRP|LTC|SOL|ADA|DOGE)[-]?USD$/i.test(String(sym || ""));
   }
 
+  /** Jeder Versuch einer Messrunde - auch der, der an einer Sperre endet.
+   *  Ohne das steht nach einem Klick unter Umstaenden NICHTS in den Daten, und der
+   *  Grund lebt nur in einer Statuszeile, die beim naechsten Neuzeichnen weg ist.
+   *  Genau daran war am 25.08.2026 nicht nachvollziehbar, warum ein Klick nichts
+   *  bewirkt hat. */
+  function kostenVersuchNeu(sym, ok, grund) {
+    if (!D) return;
+    if (!D.kostenVersuche) D.kostenVersuche = [];
+    D.kostenVersuche.unshift({ at: Date.now(), sym: sym || null, ok: !!ok,
+      grund: String(grund || '').slice(0, 200) });
+    if (D.kostenVersuche.length > 30) D.kostenVersuche = D.kostenVersuche.slice(0, 30);
+    save();
+  }
+
   async function kostenRundeMessen(sym) {
     if (!(window.CapAPI && window.CapAPI.enabled() && window.CapAPI.quote)) {
-      return { ok: false, grund: 'Capital.com-Demo ist nicht verbunden.' };
+      var g1 = 'Capital.com-Demo ist nicht verbunden.';
+      kostenVersuchNeu(sym, false, g1);
+      return { ok: false, grund: g1 };
     }
     /* Die Boersen-Sperre gilt fuer Aktien. Krypto handelt rund um die Uhr - dort
      * waere sie schlicht falsch und haette das Messgeschirr nachts gesperrt. */
     var krypto = istKrypto(sym);
     if (!krypto && !(window.Dash && window.Dash.marketOpen && window.Dash.marketOpen())) {
-      return { ok: false, grund: 'Die Boerse ist zu - eine Aktien-Runde jetzt misst nichts Brauchbares. ' +
-        'Krypto (BTCUSD, ETHUSD) geht rund um die Uhr.' };
+      var g2 = 'Die Boerse ist zu - eine Aktien-Runde jetzt misst nichts Brauchbares. ' +
+        'Krypto (BTCUSD, ETHUSD) geht rund um die Uhr.';
+      kostenVersuchNeu(sym, false, g2);
+      return { ok: false, grund: g2 };
     }
     /* Die notierte Spanne VOR der Order: nur so laesst sich hinterher trennen, was
      * Spanne war und was Schlupf. Ohne sie waere die Runde nur eine Zahl. */
     var vor = null;
     try { vor = await window.CapAPI.quote(sym); } catch (eQ) { vor = null; }
-    if (!vor || !(vor.mid > 0)) return { ok: false, grund: 'Kein Kurs fuer ' + sym + '.' };
+    if (!vor || !(vor.mid > 0)) {
+      /* Der Grund steckt in capital.js (lastPriceError) - ohne ihn sucht man im Nebel. */
+      var g3 = 'Kein Kurs fuer ' + sym + '.' +
+        (window.CapAPI.lastPriceError ? ' ' + (window.CapAPI.lastPriceError() || '') : '');
+      kostenVersuchNeu(sym, false, g3);
+      return { ok: false, grund: g3 };
+    }
 
     /* Kleinstmoegliche Groesse. Gemessen wird der PREIS, nicht die Position -
      * jede zusaetzliche Einheit erhoeht nur das Risiko einer Teilausfuehrung. */
@@ -2978,7 +3002,9 @@
     catch (eO) { auf = { ok: false, msg: String(eO && eO.message || eO) }; }
     if (!auf || !auf.ok) {
       capFehlerNeu(sym, auf || { msg: 'ohne Antwort' });
-      return { ok: false, grund: 'Oeffnen abgelehnt: ' + ((auf && auf.msg) || 'ohne Angabe') };
+      var g4 = 'Oeffnen abgelehnt: ' + ((auf && auf.msg) || 'ohne Angabe');
+      kostenVersuchNeu(sym, false, g4);
+      return { ok: false, grund: g4 };
     }
     /* Sofort wieder zu. Zwischen Auf und Zu soll moeglichst nichts passieren -
      * gemessen werden die Kosten, nicht die Marktbewegung. */
@@ -2991,7 +3017,9 @@
         offenGeblieben: auf.dealId };
     }
     if (auf.fill == null || zu.fill == null) {
-      return { ok: false, grund: 'Runde lief, aber ohne Ausfuehrungskurse - nichts zu messen.' };
+      var g5 = 'Runde lief, aber ohne Ausfuehrungskurse - nichts zu messen.';
+      kostenVersuchNeu(sym, false, g5);
+      return { ok: false, grund: g5 };
     }
     /* Kauf ueber der Mitte, Verkauf darunter: beides zusammen ist der Umlauf. */
     var aufKosten = auf.fill / vor.mid - 1;
@@ -3007,6 +3035,7 @@
     });
     if (D.kostenMessung.runden.length > 300) D.kostenMessung.runden = D.kostenMessung.runden.slice(0, 300);
     save();
+    kostenVersuchNeu(sym, true, 'Umlauf ' + (runde * 100).toFixed(4) + ' %');
     return { ok: true, sym: sym, rundePct: runde * 100,
              notiertPct: vor.spreadPct != null ? vor.spreadPct * 200 : null };
   }
@@ -8760,6 +8789,13 @@
             : d2 > 0 ? 'teurer als angenommen: die Studien rechnen zu günstig'
             : 'günstiger als angenommen: die Kostenhürde der Studien ist zu streng');
       }
+      /* Der letzte Versuch einer Messrunde - auch ein gescheiterter. Sonst steht nach
+       * einem Klick, der an einer Sperre endete, wieder nichts da. */
+      var kv = (D && D.kostenVersuche || [])[0];
+      if (kv) {
+        txt += ' · Letzte Kostenrunde (' + U.dt(kv.at) + (kv.sym ? ', ' + kv.sym : '') + '): ' +
+          (kv.ok ? kv.grund : 'nicht gelaufen – ' + kv.grund);
+      }
       el.textContent = txt;
     }
     /* Messrunde von Hand. Setzt echte Orders auf dem Demo-Konto ab - deshalb eine
@@ -9331,6 +9367,13 @@
         if (new Date(k + 'T00:00:00Z').getTime() < alt) delete sp.tage[k];
       });
     }
+
+    /* Das Festschreiben darf NICHT an derselben Sperre haengen wie das Sammeln.
+     * spannenProbe kehrt bei geschlossener Boerse sofort um - die Proben vom Vortag
+     * blieben deshalb bis zur naechsten Boersenoeffnung unbewahrt im Ringpuffer.
+     * Der Zweck der Tagesbilanz war gerade, dass nichts verlorengeht. */
+    setTimeout(function () { try { spannenTagFestschreiben(); save(); } catch (e) { } }, 5000);
+    setInterval(function () { try { spannenTagFestschreiben(); } catch (e) { } }, 30 * 60000);
 
     setInterval(spannenProbe, 8 * 60000);
     setTimeout(spannenProbe, 40000);

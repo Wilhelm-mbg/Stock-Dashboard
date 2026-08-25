@@ -6353,6 +6353,33 @@ console.log('\n46) Was die App dauerhaft aufzeichnet');
   ok(/krypto: krypto/.test(kr), 'Jede Runde merkt sich, ob sie Krypto war');
   ok(/id="kostenRundeSym"/.test(h68) && /BTCUSD/.test(h68),
      'Die Oberflaeche laesst den Wert waehlen, Krypto eingeschlossen');
+
+  /* --- Jeder Versuch hinterlaesst eine Spur, auch der gescheiterte ---
+   * Am 25.08.2026 drueckte Wilhelm den Knopf, und danach stand weder eine Runde noch
+   * ein Fehlschlag in den Daten: der Lauf war an einer fruehen Sperre umgekehrt, und
+   * die gab nur eine Statuszeile zurueck, die beim Neuzeichnen verschwand. Ein
+   * Versuch, dessen Ausgang niemand nachlesen kann, ist kein Messgeschirr. */
+  ok(/function kostenVersuchNeu/.test(dep), 'Jeder Versuch einer Kostenrunde wird festgehalten');
+  /* Jede Rueckkehr aus kostenRundeMessen muss vermerkt werden - eine vergessene
+   * waere genau die stille Stelle, um die es hier geht. */
+  var kr2 = dep.slice(dep.indexOf('async function kostenRundeMessen'), dep.indexOf('function kostenBilanz'));
+  var rueck = (kr2.match(/return { ok:/g) || []).length;
+  var vermerke = kr2.split('kostenVersuchNeu(').length - 1;
+  ok(vermerke >= rueck - 1,
+     'Fast jede Rueckkehr ist vermerkt (Ausnahme: die offen gebliebene Position, die eigens meldet)',
+     vermerke + ' Vermerke auf ' + rueck + ' Rueckgaben');
+  ok(/lastPriceError/.test(kr2),
+     'Bleibt der Kurs aus, wird der Grund aus capital.js mitgenommen statt verworfen');
+  ok(/Letzte Kostenrunde/.test(dep), 'Der letzte Versuch steht in der Anzeige, nicht nur in den Daten');
+
+  /* --- Die Tagesbilanz darf nicht am Sammler haengen ---
+   * spannenProbe kehrt bei geschlossener Boerse sofort um. Haengt das Festschreiben
+   * dort drin, bleiben die Proben des Vortags bis zur naechsten Oeffnung unbewahrt -
+   * und der Zweck der Tagesbilanz war gerade, dass nichts verlorengeht. */
+  var festAufrufe = (dep.match(/spannenTagFestschreiben()/g) || []).length;
+  ok(festAufrufe >= 3,
+     'Die Tagesbilanz wird auch ausserhalb des Sammlers festgeschrieben',
+     festAufrufe + ' Aufruf(e)');
 })();
 
 console.log('\n47b) signal() bekommt das Symbol');
