@@ -1808,10 +1808,6 @@
   <div class="modal" style="max-width:560px;" role="dialog" aria-modal="true" aria-labelledby="setTitle">
     <button class="btn ghost close" data-close="setModalBg">Schließen ×</button>
     <h2 id="setTitle">App-Einstellungen</h2>
-    <div style="margin:14px 0; font-size:var(--fs-neben); color:var(--muted);">
-      Alle KI-Analysen laufen <b>lokal über Ollama</b> (unten einrichten) – <b>ohne API-Kosten</b>.
-      Ohne lokales Modell gibt es eine regelbasierte Analyse aus denselben Daten.
-    </div>
     <div style="margin:14px 0;">
       <label style="display:flex; align-items:center; gap:8px; font-size:var(--fs-text);"><input type="checkbox" id="setTray"> Beim Schließen im Hintergrund weiterlaufen (Tray-Symbol neben der Uhr) – Strategien handeln dann weiter</label>
     </div>
@@ -1844,12 +1840,6 @@
         Die App kennt ausschließlich den Demo-Server – Live-Handel mit echtem Geld ist technisch nicht möglich.
         Zugangsdaten werden nur lokal gespeichert (mit dem Windows-Anmeldedatenschutz verschlüsselt) und nur an
         demo-api-capital.backend-capital.com gesendet.
-      </div>
-    </div>
-    <div style="margin:14px 0; border-top:1px solid var(--grid); padding-top:14px;">
-      <div style="font-size:var(--fs-neben); color:var(--muted); margin-top:6px;">
-        Einrichtung (einmalig): Ollama von <b>ollama.com</b> installieren, dann in der Eingabeaufforderung <b>ollama pull qwen2.5:7b</b>
-        ausführen (gutes, schnelles Modell mit solidem Deutsch, ~4,7 GB). Danach hier „Modelle laden“.
       </div>
     </div>
     <div style="margin:14px 0; border-top:1px solid var(--grid); padding-top:14px;">

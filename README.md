@@ -7,11 +7,10 @@ Windows-Desktop-App (Electron) für Marktüberblick und eine **Trading-Simulatio
 ## Funktionen
 
 - **Dashboard**: Big Tech, Chip-Sektor, Indizes, Wirtschaftskalender und Markt-News
-- **Aktien-Explorer**: freie Suche, Charts von 1 Tag bis Max., Kennzahlen, News, KI-Analyse
+- **Aktien-Explorer**: freie Suche, Charts von 1 Tag bis Max., Kennzahlen, News, regelbasierte Analyse
 - **Simulations-Depot**: Stunden-Strategie (News-Sentiment + Technik + Elliott-Wellen) und Intraday-Strategien (Ausbrüche, Scalping, Rücksetzer, Wellenreiter mit Trendkanal, ORB)
 - **Analyse-Zentrale**: prüft alle Modi per Walk-Forward, schleift Parameter nach und gibt eine Empfehlung mit Übernehmen-Knopf
 - **Risikomanagement**: Positionslimits, Tagesverlust-Limit, Event-Blackout, Meide-Stunden, Notbremse nach Verlustserien
-- **Lokale KI (optional)**: Ollama prüft jeden geplanten Trade als letzte Instanz (Veto oder Positionsgrößen-Anpassung)
 - **Analyse-Export**: schreibt Kennzahlen, Trades, Kursdaten und Telemetrie nach `Downloads/Markt-Dashboard-Daten`
 
 ## Installation

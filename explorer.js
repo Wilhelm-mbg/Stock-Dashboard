@@ -1,6 +1,6 @@
 'use strict';
 /* Aktien-Explorer: freie Suche (Yahoo-Universum), Voll-Chart 1T–Max,
-   Kennzahlen, News, KI-Analyse (LLM via API-Key oder regelbasierter Fallback). */
+   Kennzahlen, News, regelbasierte Analyse. */
 (function () {
   var Q = window.Quant, U = window.U;
   var CUR = null; // aktuell angezeigtes Symbol {sym, name, exch, type}
@@ -691,32 +691,6 @@
           }
         }
       }
-      if (false) {
-        // Regressionskanal ueber das sichtbare Fenster: Gerade durch die Kurse,
-        // Ober- und Unterkante im groessten Abstand nach oben bzw. unten.
-        var sicht = [];
-        for (var v = 0; v < barsI.length; v++) if (barsI[v][0] >= x0 && barsI[v][0] <= x1) sicht.push({ i: v, t: barsI[v][0], c: cI[v] });
-        if (sicht.length >= 20) {
-          var nS = sicht.length, sx = 0, sy = 0, sxx = 0, sxy = 0;
-          for (var q = 0; q < nS; q++) { sx += q; sy += sicht[q].c; sxx += q * q; sxy += q * sicht[q].c; }
-          var nenner = nS * sxx - sx * sx;
-          if (nenner !== 0) {
-            var st = (nS * sxy - sx * sy) / nenner, ac = (sy - st * sx) / nS;
-            var obenAb = -Infinity, untenAb = Infinity;
-            for (var q2 = 0; q2 < nS; q2++) { var ab = sicht[q2].c - (ac + st * q2); if (ab > obenAb) obenAb = ab; if (ab < untenAb) untenAb = ab; }
-            function kante(off, farbe, breite, strich) {
-              var p1 = ac + off, p2 = ac + st * (nS - 1) + off;
-              return '<line x1="' + X(sicht[0].t).toFixed(1) + '" y1="' + Y(p1).toFixed(1) +
-                '" x2="' + X(sicht[nS - 1].t).toFixed(1) + '" y2="' + Y(p2).toFixed(1) +
-                '" stroke="' + farbe + '" stroke-width="' + breite + '"' + (strich ? ' stroke-dasharray="' + strich + '"' : '') + ' opacity="0.7"></line>';
-            }
-            var richtung = st > 0 ? 'aufwärts' : st < 0 ? 'abwärts' : 'seitwärts';
-            indiPfad += kante(0, '#a78bfa', 1.4) + kante(obenAb, '#a78bfa', 1, '4 4') + kante(untenAb, '#a78bfa', 1, '4 4') +
-              '<text x="' + (X(sicht[nS - 1].t) - 4).toFixed(1) + '" y="' + (Y(ac + st * (nS - 1) + obenAb) - 4).toFixed(1) +
-              '" fill="#a78bfa" font-size="10" text-anchor="end">Kanal ' + richtung + '</text>';
-          }
-        }
-      }
       if (indAn.sr) {
         // Unterstuetzung und Widerstand als Hoch/Tief der letzten 20 und 60 Kerzen.
         // Das ist dieselbe Groesse, die der Donchian-Detektor benutzt - was man sieht,
@@ -956,7 +930,7 @@
 
   function localAnalysis(c) {
     var lines = [];
-    lines.push('## Kurzfazit (regelbasiert – ohne LLM)');
+    lines.push('## Kurzfazit (regelbasiert)');
     var S = Q.combine({ news: c.sent.score, tech: c.tech.score, elliott: c.ell.score }, Q.DEFAULT_WEIGHTS);
     lines.push('Gesamtscore **' + S.toFixed(2) + '** (−1 bis +1) aus News (' + c.sent.score.toFixed(2) + '), Technik (' + c.tech.score.toFixed(2) + ') und Elliott (' + c.ell.score.toFixed(2) + '). ' +
       (S > 0.35 ? 'Das Gesamtbild ist **konstruktiv**.' : S < -0.35 ? 'Das Gesamtbild ist **belastet**.' : 'Das Gesamtbild ist **neutral/gemischt**.'));
@@ -982,32 +956,10 @@
     var btn = document.getElementById('aiBtn'), st = document.getElementById('aiStatus');
     btn.disabled = true;
     var c = analysisContext();
-    var body = '';
-    var usedLLM = false;
-    var prov = window.LLM ? window.LLM.provider() : null;
-    if (prov) {
-      st.textContent = prov === 'ollama' ? 'Lokale KI (' + window.LocalKI.model() + ') analysiert – kann 1–2 Min dauern …' : 'Frage KI an …';
-      var prompt = 'Du bist ein nüchterner Aktienanalyst. Analysiere auf DEUTSCH das folgende Wertpapier anhand der Daten. ' +
-        'Struktur (Markdown, ##-Überschriften): Kurzfazit (2-3 Sätze), News-Lage, Technische Analyse, Elliott-Wellen-Einordnung ' +
-        '(nutze die vorberechnete Zählung, nenne IMMER Konfidenz UND Alternativzählung und weise explizit auf die Mehrdeutigkeit automatischer Wellenzählungen hin), ' +
-        'Chancen, Risiken, Szenarien (Bull/Base/Bear mit ungefähren Kurszonen). Sei konkret mit Zahlen aus den Daten, erfinde nichts. ' +
-        'Beende mit dem Hinweis, dass dies keine Anlageberatung ist.\n\nDATEN:\n' + JSON.stringify({
-          symbol: c.sym, name: c.name, kurs: c.price, waehrung: c.currency,
-          perf: { '1T_pct': c.pct1d, '1M_pct': c.pct1m, '1J_pct': c.pct1y },
-          '52w': { hoch: c.hi52, tief: c.lo52 },
-          technik: { rsi14: c.rsi, sma50: c.sma50, sma200: c.sma200, vola30_pct: c.vol30, score: c.tech.score, teilsignale: c.tech.parts },
-          elliott: { zaehlung: c.ell.label, phase: c.ell.phase, konfidenz: c.ell.conf, alternative: c.ell.alt, alt_konfidenz: c.ell.altConf, zigzag_schwelle_pct: c.ell.thrPct },
-          news_sentiment: { score: c.sent.score, ereignistypen: c.sent.events, top: c.sent.top },
-          schlagzeilen: c.news
-        });
-      var txt = await window.LLM.ask(prompt, 2000);
-      if (txt) { body = txt; usedLLM = true; }
-      else body = '**KI-Anfrage fehlgeschlagen** – hier die regelbasierte Analyse:\n\n' + localAnalysis(c);
-    }
-    if (!body) body = localAnalysis(c) + '\n\n*Tipp: In den Einstellungen () die lokale KI (Ollama) einrichten – dann erstellt ein Sprachmodell die Analyse aus denselben Daten, ohne API-Kosten.*';
+    var body = localAnalysis(c);
     st.textContent = '';
     btn.disabled = false;
-    document.getElementById('aiTitle').textContent = 'KI-Analyse: ' + CUR.name + ' (' + CUR.sym + ')' + (usedLLM ? '' : ' – regelbasiert');
+    document.getElementById('aiTitle').textContent = 'KI-Analyse: ' + CUR.name + ' (' + CUR.sym + ') – regelbasiert';
     document.getElementById('aiBody').innerHTML = U.md(body) +
       '<div class="warn">Simulations-/Informationszweck. Automatische Analysen (insbesondere Elliott-Wellen-Zählungen) sind unsicher und mehrdeutig. Keine Anlageberatung.</div>';
     window.openModal('aiModalBg');

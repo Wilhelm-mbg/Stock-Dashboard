@@ -895,7 +895,7 @@ ipcMain.handle('open-external', async (_ev, url) => {
   return false;
 });
 
-// Die kostenpflichtige Anthropic-API wurde entfernt – KI-Analysen laufen lokal über Ollama.
+// Die kostenpflichtige Anthropic-API wurde entfernt – es gibt keinen KI-Pfad mehr.
 
 // ---- Capital.com (NUR Demo-Host – Live-Handel ist bewusst nicht möglich) ----
 const CAP_HOSTS = new Set(['demo-api-capital.backend-capital.com']);
@@ -927,8 +927,7 @@ function capFetch(method, url, headers, bodyObj) {
 }
 ipcMain.handle('cap-fetch', async (_ev, method, url, headers, bodyObj) => capFetch(method, url, headers, bodyObj));
 
-// ---- Ollama (lokale KI – NUR localhost) ----
-const http = require('http');
+// ---- Gespeicherte Einstellungen (userData/store/settings.json) ----
 function gespeicherteSettings() {
   try {
     const f = path.join(app.getPath('userData'), 'store', 'settings.json');
@@ -936,44 +935,6 @@ function gespeicherteSettings() {
   } catch (e) { /* defekte Datei: Defaults */ }
   return {};
 }
-function ollamaPortErlaubt(port) {
-  if (port === '11434') return true;
-  try {
-    const st = gespeicherteSettings();
-    if (st.ollamaUrl) { const ou = new URL(st.ollamaUrl); return (ou.port || '80') === port; }
-  } catch (e) { /* ignorieren */ }
-  return false;
-}
-function ollamaFetch(method, url, bodyObj) {
-  return new Promise((resolve) => {
-    let u;
-    try { u = new URL(url); } catch (e) { return resolve({ ok: false, status: 0, body: 'Ungültige URL' }); }
-    if (u.protocol !== 'http:' || (u.hostname !== '127.0.0.1' && u.hostname !== 'localhost')) {
-      return resolve({ ok: false, status: 0, body: 'Nur localhost erlaubt' });
-    }
-    // Nur der Ollama-Port (Standard 11434 bzw. der in den Einstellungen hinterlegte) –
-    // sonst könnte der Renderer beliebige lokale Dienste mit POSTs ansprechen.
-    if (!ollamaPortErlaubt(u.port || '80')) {
-      return resolve({ ok: false, status: 0, body: 'Port nicht erlaubt (nur der eingestellte Ollama-Port)' });
-    }
-    const payload = bodyObj != null ? JSON.stringify(bodyObj) : null;
-    const req = http.request(u, {
-      method: method || 'GET',
-      headers: payload ? { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(payload) } : {},
-      timeout: 45000
-    }, (res) => {
-      let data = '';
-      res.setEncoding('utf8');
-      res.on('data', (c) => { data += c; if (data.length > 8 * 1024 * 1024) { req.destroy(); resolve({ ok: false, status: res.statusCode || 0, body: 'Antwort zu groß – abgebrochen' }); } });
-      res.on('end', () => resolve({ ok: res.statusCode >= 200 && res.statusCode < 300, status: res.statusCode || 0, body: data }));
-    });
-    req.on('timeout', () => { req.destroy(); resolve({ ok: false, status: 0, body: 'Timeout – Modell zu langsam?' }); });
-    req.on('error', (e) => resolve({ ok: false, status: 0, body: String(e.message || e) }));
-    if (payload) req.write(payload);
-    req.end();
-  });
-}
-ipcMain.handle('ollama-fetch', async (_ev, method, url, bodyObj) => ollamaFetch(method, url, bodyObj));
 
 // ---- Lokaler JSON-Store (userData/store/<name>.json) ----
 /** Atomar schreiben: erst Temp-Datei, dann umbenennen. Ein Absturz mitten im Schreiben

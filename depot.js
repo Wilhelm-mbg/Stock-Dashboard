@@ -10,7 +10,7 @@
    * Betrifft NUR neue Depots. Ein laufendes Buch wird nicht angefasst; dafuer gibt es
    * die Aufstockung in den Einstellungen, die den Verlauf erhaelt. */
   var START_CAPITAL = 100000;
-  var OPEN_THR = 0.35, CLOSE_THR = 0.25, BUDGET = 0.05, SL = -0.40, TP = 0.80, MAX_POS = 8;
+  var OPEN_THR = 0.35, CLOSE_THR = 0.25, BUDGET = 0.05, SL = -0.40, TP = 0.80;
 
   var D = null; // Depot-State
   var jobRunning = false;
@@ -1225,7 +1225,6 @@
   }
 
   /* ================= Signal-Chart: was die Strategie sieht ================= */
-  var sigChartRunning = false;
   function stcParams(mode) {
     var cfg = D.intraday;
     return { ENTRY: mode, LINE: cfg.lineType || 'ema', period: cfg.period || 20, confirmBps: cfg.confirmBps,
@@ -5365,15 +5364,7 @@
     var st = document.getElementById('reportStatus');
     var d = retroData();
     if (!d.closedN) { st.textContent = 'Noch keine geschlossenen Trades für eine Retrospektive.'; return; }
-    var body = '';
-    var provR = window.LLM ? window.LLM.provider() : null;
-    if (provR) {
-      st.textContent = provR === 'ollama' ? 'Lokale KI analysiert deine Trades – kann 1–2 Min dauern …' : 'KI analysiert deine Trades …';
-      body = await window.LLM.ask('Du bist Trading-Coach für ein SIMULIERTES Optionsschein-Depot. Erstelle auf DEUTSCH eine ehrliche Retrospektive (Markdown, ##-Überschriften): Kurzfazit, Was lief gut, Was lief schlecht, Muster in den Daten, 3-5 konkrete Empfehlungen (Gewichte/Modus/Zeitrahmen/Risiko). Nutze NUR die Daten, erfinde nichts, nenne Zahlen. Ende: Hinweis Simulation/keine Anlageberatung.\n\nDATEN:\n' + JSON.stringify(d), 1800) || '';
-      if (!body) body = '**KI-Anfrage fehlgeschlagen** – regelbasierte Auswertung:\n\n' + retroRules(d);
-    } else {
-      body = retroRules(d) + '\n\n*Tipp: Mit der lokalen KI (Ollama, Einstellungen) schreibt ein Sprachmodell die Retrospektive ausführlicher – ohne API-Kosten.*';
-    }
+    var body = retroRules(d);
     st.textContent = '';
     document.getElementById('aiTitle').textContent = 'KI-Retrospektive (' + d.closedN + ' Trades)';
     // Lernschleife: konkrete Regel-Vorschläge für die KI-Prüfung
@@ -6741,13 +6732,11 @@
     return applied;
   }
 
-  /* ================= Regime-Automatik: die lokale KI wählt das Setup =================
+  /* ================= Regime-Automatik: die App wählt das Setup =================
    * Ablauf: Die App MISST die Marktlage (Trendanteil, Überdehnung, Wellen-Score, Kanal-Anteil,
-   * Vola), das lokale Modell WÄHLT daraus eines von vier Setups, die App PRÜFT die Antwort
-   * gegen eine Whitelist und protokolliert Fakten, Begründung und die spätere Wirkung.
-   * Ist Ollama nicht erreichbar oder die Antwort unbrauchbar, entscheidet eine feste Regel. */
-  // Whitelist + Prüf-Logik leben in quant.js, damit die Unit-Tests die echte Funktion testen
-  var SETUP_ALLOW = Q.SETUP_ALLOW;
+   * Vola) und WÄHLT daraus nach festen Regeln eines von vier Setups. Die Wahl wird gegen eine
+   * Whitelist geprüft (quant.js, damit die Unit-Tests die echte Funktion testen) und mit
+   * Fakten, Begründung und späterer Wirkung protokolliert. Passt kein Setup: "pause". */
   var regimeRunning = false;
 
   /** Marktlage messen – rein rechnerisch, ohne Modell. */
@@ -6831,9 +6820,6 @@
     return { setup: 'ausbruch', ausloeser: 'kreuzung', zeitrahmen: zeitrahmen, trendfilter: true, kanal: false,
       begruendung: 'Vorgabe: Trendfolge mit Trendfilter (Trendanteil ' + f.trendAnteilPct + ' %)' };
   }
-
-  /** KI-Antwort gegen Whitelist und harte Plausibilitätsregeln prüfen (echte Logik in quant.js). */
-  var regimeValidate = Q.regimeValidate;
 
   /** Kompletter Durchlauf: messen → entscheiden lassen → prüfen → anwenden → protokollieren. */
   async function runRegime(manual) {
@@ -7594,7 +7580,6 @@
           var trainMapVoll = sliceMap(map, span[0], cut, 0);
           var testMapVoll = sliceMap(map, cut, span[1], warmlaufBars(iv2));
           var trainMap = zuchtStichprobe(trainMapVoll);   // Suchen auf der Stichprobe …
-          var testMap = zuchtStichprobe(testMapVoll);     // … Gegenprobe gleich mit
           var testMapAlle = testMapVoll;                  // … Urteil auf allen Werten
           var common = labCommonOpts(D.intraday, iv2);
           var basisJetzt = basen[bi];

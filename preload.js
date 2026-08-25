@@ -24,7 +24,6 @@ contextBridge.exposeInMainWorld('api', {
   onMessFortschritt: (cb) => ipcRenderer.on('mess-fortschritt', (_ev, d) => cb(d)),
   setTrayMode: (v) => ipcRenderer.send('tray-mode', !!v),
   capFetch: (method, url, headers, body) => ipcRenderer.invoke('cap-fetch', method, url, headers, body),
-  ollamaFetch: (method, url, body) => ipcRenderer.invoke('ollama-fetch', method, url, body),
   appVersion: () => ipcRenderer.invoke('app-version'),
   exportAnalysis: (payload) => ipcRenderer.invoke('export-analysis', payload),
   readRecommendation: () => ipcRenderer.invoke('read-recommendation'),

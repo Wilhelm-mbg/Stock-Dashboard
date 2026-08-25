@@ -378,7 +378,7 @@
   });
 
   // ---- Einstellungen ----
-  var SETTINGS = { tray: false, capKey: '', capId: '', capPass: '', capEnabled: false, ollamaUrl: '', ollamaModel: '', kiVeto: false, kiProvider: '', kiRules: '', updateRepo: '' };
+  var SETTINGS = { tray: false, capKey: '', capId: '', capPass: '', capEnabled: false, kiVeto: false, kiRules: '', updateRepo: '' };
   window.getSettings = function () { return SETTINGS; };
   var settingsGeladen = false; // Schreiben vor dem Laden würde die gespeicherten Werte überschreiben
   var geheimBehalten = {};     // Felder, deren gespeicherter Wert nicht entschlüsselbar war:
@@ -392,7 +392,7 @@
     }
     settingsGeladen = true;
     // Kostenpflichtige API abgeschafft: einen evtl. noch gespeicherten Key einmalig
-    // von der Platte löschen – KI läuft ausschließlich lokal über Ollama.
+    // von der Platte löschen – einen KI-Pfad gibt es nicht mehr.
     if (SETTINGS.apiKey || SETTINGS.model) {
       delete SETTINGS.apiKey; delete SETTINGS.model;
       window.api.storeSet('settings', SETTINGS);
@@ -503,7 +503,6 @@
     }
   });
 
-  // Ollama-Modelle laden
   /* ================= Automatische Updates ================= */
   function updRender(st) {
     var el = document.getElementById('setUpdAutoStatus');
