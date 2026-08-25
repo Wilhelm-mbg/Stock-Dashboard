@@ -7482,6 +7482,41 @@ console.log('\n48) Toter Schutz: gelesen, aber nie geschrieben');
      'Der Kapitulations-Arm hat eine EIGENE Pause - eine gemeinsame legte den gesunden Arm mit still');
 })();
 
+console.log('\n49) Einwegschalter: eine Sicherung abstellen und nicht zurueckkoennen');
+(function () {
+  var dep = fs.readFileSync(__dirname + '/depot.js', 'utf8');
+
+  /* edgePauseHand stellt den Edge-Waechter ab - fuer BEIDE Arme, dauerhaft. Bis zum
+   * 25.08.2026 wurde das Feld an genau einer Stelle auf true gesetzt und an keiner je
+   * zurueck; im Datenstand lag es seit dem 22.08. auf true, waehrend die Pause von damals
+   * unveraendert stand. Dazu verschwand das Warnband, weil seine Bedingung
+   * '!edgePauseHand' lautet - die abgeschaltete Sicherung war unsichtbar.
+   * Der Hand-Entscheid SOLL dauerhaft respektiert werden. Er darf nur nicht unumkehrbar
+   * und nicht unsichtbar sein. */
+  ok(/D\.intraday\.edgePauseHand = true/.test(dep),
+     'Der Hand-Entscheid laesst sich setzen');
+  ok(/delete D\.intraday\.edgePauseHand/.test(dep),
+     'Und er laesst sich auch wieder zuruecknehmen - sonst ist es ein Einwegschalter');
+  ok(/data-edgescharf/.test(dep),
+     'Es gibt einen Knopf dafuer, nicht nur eine Codestelle');
+
+  /* Der Kern: solange der Waechter aus ist, MUSS das Band stehen. */
+  var fn = /function edgePauseAnzeigen\(\)[\s\S]*?\n  \}/.exec(dep);
+  ok(!!fn, 'edgePauseAnzeigen ist auffindbar');
+  if (fn) {
+    ok(/if \(c\.edgePauseHand\)[\s\S]*?warnbandSetzen\('edge',/.test(fn[0]),
+       'Ist der Waechter von Hand aus, steht das im Warnband - dauerhaft, nicht als Hinweis der verschwindet');
+    ok(!/edgePause && !D\.intraday\.edgePauseHand/.test(fn[0]),
+       'Das Band haengt nicht mehr an "!edgePauseHand" - genau das liess es verschwinden');
+    ok(/edgePauseKapi/.test(fn[0]),
+       'Das Band kennt beide Arme - sonst weiss man nicht, was aussetzt und was weiterhandelt');
+  }
+
+  /* Und die Reichweite muss im Text stehen: der Schalter gilt fuer BEIDE Arme. */
+  ok(/keine<\/b> Kante mehr automatisch aus|KEINEN Arm/.test(dep),
+     'Der Text sagt, dass der Schalter alle Kanten betrifft, nicht nur die angezeigte');
+})();
+
 Promise.all(offeneProben).then(function () {
   console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
   process.exit(fails ? 1 : 0);

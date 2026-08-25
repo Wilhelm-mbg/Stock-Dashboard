@@ -1845,15 +1845,35 @@
     }).join('');
   }
   function edgePauseAnzeigen() {
-    if (D && D.intraday && D.intraday.edgePause && !D.intraday.edgePauseHand) {
-      var ep = D.intraday.edgePause;
-      warnbandSetzen('edge', '<b>Edge-Wächter: Kante pausiert</b> – der gemessene Vorsprung ist in zwei Nächten ' +
-        'hintereinander verfallen (zuletzt ' + ep.mittelPp + ' Pp, t=' + ep.t + '). Neue Einstiege sind ausgesetzt, ' +
-        'das Schattenbuch misst weiter; eine positive Nacht hebt die Pause automatisch auf. ' +
-        '<button class="btn ghost" data-edgefrei="1" style="padding:2px 10px; font-size:var(--fs-neben); margin-left:6px;">Trotzdem weiter handeln</button>', true);
-    } else {
-      warnbandSetzen('edge', null);
+    var c = (D && D.intraday) || {};
+    /* EIN ABGESCHALTETER WAECHTER MUSS SICHTBAR BLEIBEN. Bis zum 25.08.2026 liess der
+     * Hand-Entscheid das Band verschwinden - die Sicherung war aus, und nichts sagte es.
+     * Der Entscheid wird weiter dauerhaft respektiert; er ist nur nicht mehr unsichtbar
+     * und nicht mehr unumkehrbar. */
+    if (c.edgePauseHand) {
+      var seitTxt = c.edgePause && c.edgePause.seit
+        ? ' Die letzte gemessene Pause stammt vom ' + new Date(c.edgePause.seit).toLocaleDateString('de-DE') +
+          ' (' + c.edgePause.mittelPp + ' Pp, t=' + c.edgePause.t + ') und steht weiterhin.'
+        : '';
+      warnbandSetzen('edge', '<b>Edge-Wächter ist von Hand ausgeschaltet</b> – du hast einmal ' +
+        '„Trotzdem weiter handeln“ gewählt. Seitdem setzt <b>keine</b> Kante mehr automatisch aus, ' +
+        'auch wenn ihr gemessener Vorsprung verfällt.' + seitTxt + ' Gemessen wird weiter.' +
+        '<button class="btn ghost" data-edgescharf="1" style="padding:2px 10px; font-size:var(--fs-neben); margin-left:6px;">Wächter wieder scharf stellen</button>', true);
+      return;
     }
+    /* Seit dem 25.08.2026 gibt es zwei Pausen - je Arm eine. Das Band nennt den Arm,
+     * sonst weiss man nicht, was ausgesetzt ist und was weiterhandelt. */
+    var offen = [];
+    if (c.edgePause) offen.push({ name: 'RSI(2) im Seitwärtskanal', ep: c.edgePause });
+    if (c.edgePauseKapi) offen.push({ name: 'Kapitulations-Dip', ep: c.edgePauseKapi });
+    if (!offen.length) { warnbandSetzen('edge', null); return; }
+    warnbandSetzen('edge', '<b>Edge-Wächter: ' +
+      offen.map(function (o) { return o.name; }).join(' und ') + ' pausiert</b> – der gemessene Vorsprung ist in zwei Nächten ' +
+      'hintereinander verfallen (' + offen.map(function (o) { return o.name + ': ' + o.ep.mittelPp + ' Pp, t=' + o.ep.t; }).join(' · ') + '). ' +
+      'Neue Einstiege ' + (offen.length > 1 ? 'dieser Kanten' : 'dieser Kante') + ' sind ausgesetzt' +
+      (offen.length > 1 ? '' : ', die andere handelt weiter') + '. Das Schattenbuch misst weiter; ' +
+      'eine positive Nacht hebt die Pause automatisch auf. ' +
+      '<button class="btn ghost" data-edgefrei="1" style="padding:2px 10px; font-size:var(--fs-neben); margin-left:6px;">Trotzdem weiter handeln</button>', true);
   }
   function stoerungAnzeigen() {
     if ((HEALTH.stoerungScans || 0) >= 2) {
@@ -8909,6 +8929,22 @@
     /* Warnband-Knoepfe (Delegation - das Band wird bei jeder Aenderung neu gebaut).
      * "Trotzdem weiter handeln" ist ein Hand-Entscheid gegen die Messung: er wird
      * dauerhaft respektiert und nie wieder automatisch angefasst (Muster hourly). */
+    /* DER WEG ZURUECK. Bis zum 25.08.2026 gab es ihn nicht: edgePauseHand wurde an genau
+     * einer Stelle auf true gesetzt und an keiner je zurueck. Automatisch angefasst wird
+     * der Entscheid weiterhin NIE - nur von Hand, so wie er zustande kam. */
+    var wbS = document.getElementById('warnband');
+    if (wbS) wbS.addEventListener('click', function (evS) {
+      var bs = evS.target.closest ? evS.target.closest('[data-edgescharf]') : null;
+      if (!bs) return;
+      delete D.intraday.edgePauseHand;
+      if (!D.tuneLog) D.tuneLog = [];
+      D.tuneLog.unshift({ id: 'hand-' + Date.now(), at: Date.now(), quelle: 'hand',
+        applied: ['Edge-Wächter wieder scharf'],
+        txt: 'Von Hand entschieden: der Edge-Wächter darf wieder automatisch aussetzen. Eine bereits gemessene, noch stehende Pause greift damit sofort wieder.' });
+      save();
+      edgePauseAnzeigen();
+    });
+
     var wb = document.getElementById('warnband');
     if (wb) wb.addEventListener('click', function (evW) {
       var b = evW.target.closest ? evW.target.closest('[data-edgefrei]') : null;
@@ -8917,7 +8953,8 @@
       if (!D.tuneLog) D.tuneLog = [];
       D.tuneLog.unshift({ id: 'hand-' + Date.now(), at: Date.now(), quelle: 'hand',
         applied: ['Edge-Wächter-Pause übersteuert'],
-        txt: 'Von Hand entschieden: trotz verfallenem Vorsprung weiter handeln. Der Edge-Wächter misst weiter, pausiert aber nicht mehr automatisch.' });
+        txt: 'Von Hand entschieden: trotz verfallenem Vorsprung weiter handeln. Der Edge-Wächter misst weiter, pausiert aber nicht mehr automatisch - fuer KEINEN Arm. ' +
+          'Das steht ab jetzt dauerhaft im Warnband und laesst sich dort auch zuruecknehmen.' });
       save();
       edgePauseAnzeigen();
     });
