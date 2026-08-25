@@ -43,6 +43,18 @@ function version() { return JSON.parse(fs.readFileSync(path.join(REPO, 'package.
 function letzterTag() {
   try { return sh('git describe --tags --abbrev=0'); } catch (e) { return null; }
 }
+/** Wie steht HEAD zu origin/main? Ohne diesen Blick setzt --hoch einen Tag und
+ *  scheitert dann am Push - der Tag bleibt liegen und verklemmt den naechsten Lauf.
+ *  Am 25.08.2026 genau so passiert: 7 Commits Rueckstand, roher Node-Auswurf. */
+function standGegenOrigin() {
+  try { execSync('git fetch -q origin', { cwd: REPO, stdio: 'ignore' }); } catch (e) { return null; }
+  try {
+    var voraus = Number(sh('git rev-list --count origin/main..HEAD'));
+    var zurueck = Number(sh('git rev-list --count HEAD..origin/main'));
+    return { voraus: voraus, zurueck: zurueck };
+  } catch (e) { return null; }
+}
+
 function unveroeffentlicht() {
   const t = letzterTag();
   const bereich = t ? t + '..HEAD' : 'HEAD';
@@ -94,6 +106,9 @@ function pruefen() {
   console.log('  package.json  ' + version());
   console.log('  letzter Tag   ' + (u.tag || '(keiner)'));
   const z = baumZustand();
+  var so = standGegenOrigin();
+  console.log('  gegen origin  ' + (so ? so.voraus + ' voraus, ' + so.zurueck + ' zurueck' +
+    (so.zurueck && so.voraus ? '   AUSEINANDERGELAUFEN' : so.zurueck ? '   erst nachziehen' : '') : 'nicht erreichbar'));
   console.log('  Arbeitsbaum   ' + (z.blockend.length
     ? 'HAELT AN - ' + z.blockend.length + ' geaenderte Datei(en) aus dem Paket'
     : (z.beiwerk.length ? 'offen, aber ohne Folge (' + z.beiwerk.length + ')' : 'sauber')));
@@ -183,6 +198,16 @@ function bauen(minor) {
     zustand.beiwerk.forEach(function (x) { console.log('    ' + x); });
   }
 
+  /* Rueckstand VOR dem Taggen abfangen. Ein Tag auf einem Stand, der nicht gepusht
+   * werden kann, ist schlimmer als kein Tag. */
+  const stand = standGegenOrigin();
+  if (stand && stand.zurueck > 0) {
+    schluss('HEAD liegt ' + stand.zurueck + ' Commit(s) hinter origin/main' +
+            (stand.voraus ? ' und ' + stand.voraus + ' davor (auseinandergelaufen)' : '') +
+            '.\nErst "git merge origin/main" (oder pull), dann ausliefern - sonst scheitert der ' +
+            'Push nach dem Taggen und der Tag bleibt ohne Release liegen.');
+  }
+
   const neu = naechsteVersion(minor);
   const tags = sh('git tag').split('\n');
   if (tags.indexOf('v' + neu) !== -1) {
@@ -191,8 +216,14 @@ function bauen(minor) {
   }
 
   titel('Tests vor dem Bauen');
-  try { laut('node test-v6.js'); }
-  catch (e) { schluss('Die Tests sind rot. Ein rotes Paket wird nicht ausgeliefert.'); }
+  /* Die VOLLE Reihe aus package.json, nicht nur test-v6. Am 25.08.2026 hat der
+   * Linter einen Fehler gefunden, den test-v6 nicht sehen konnte: eine doppelt
+   * deklarierte Funktion. In JavaScript gewinnt die spaetere - fuer alle
+   * Aufrufstellen. Ein Test, der die Funktion aus der Datei schneidet und einzeln
+   * prueft, findet Verschattung grundsaetzlich nicht; der Linter schon. */
+  try { laut('npm test'); }
+  catch (e) { schluss('Die Testreihe ist rot (eslint, test-channel oder test-v6). ' +
+                      'Ein rotes Paket wird nicht ausgeliefert.'); }
 
   const schonGesetzt = version() === neu;
   titel(schonGesetzt ? 'Version bleibt ' + neu + ' (aus dem steckengebliebenen Lauf)'
@@ -301,11 +332,29 @@ function hoch() {
   fs.writeFileSync(tmp, koerper, 'utf8');
   console.log('  ' + n.length + ' Notiz(en), ' + koerper.length + ' Zeichen');
 
+  /* Auch hier: erst der Blick auf origin. Der Push weiter unten ist die Stelle, an
+   * der am 25.08.2026 alles auseinanderflog. */
+  const st2 = standGegenOrigin();
+  if (st2 && st2.zurueck > 0) {
+    schluss('HEAD liegt ' + st2.zurueck + ' Commit(s) hinter origin/main. Erst nachziehen, ' +
+            'dann veroeffentlichen - sonst scheitert der Push und der Tag bleibt liegen.');
+  }
+
   titel('Tag und Entwurf');
   laut('git tag -a ' + tag + ' -m "Markt-Dashboard ' + v + '"');
-  laut('git push -q origin HEAD');
-  laut('git push -q origin ' + tag);
-  laut('gh release create ' + tag + ' --draft --title "Markt-Dashboard ' + v + '" --notes-file "' + tmp + '"');
+  /* Ab hier gibt es etwas aufzuraeumen, wenn es schiefgeht. */
+  try {
+    laut('git push -q origin HEAD');
+    laut('git push -q origin ' + tag);
+    laut('gh release create ' + tag + ' --draft --title "Markt-Dashboard ' + v + '" --notes-file "' + tmp + '"');
+  } catch (e) {
+    /* Wer einen Tag anlegt, raeumt ihn weg, wenn er nicht traegt - sonst meldet der
+     * naechste Lauf "Tag gibt es schon", waehrend es kein Release dazu gibt. */
+    try { execSync('git tag -d ' + tag, { cwd: REPO, stdio: 'ignore' }); } catch (e2) { }
+    schluss('Tag oder Entwurf liessen sich nicht anlegen: ' + (e.message || e).toString().split('\n')[0] +
+            '\nDer lokale Tag ' + tag + ' wurde wieder entfernt, damit der naechste Lauf nicht ' +
+            'daran haengenbleibt.');
+  }
 
   titel('Assets hochladen');
   laut('gh release upload ' + tag + ' "' + yml + '" "' + setup + '"');
