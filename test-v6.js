@@ -8428,6 +8428,40 @@ console.log('\n62) Bausteinkasten: ein Overlay-Muster');
      'Er wurde nicht ins Markup kopiert - eine Einwilligung hat genau eine Quelle');
 })();
 
+console.log('\n52) F1 auch im produktiven Waechter');
+(function () {
+  var dep = fs.readFileSync(__dirname + '/depot.js', 'utf8');
+  var mm  = fs.readFileSync(__dirname + '/studien/messmaschine/messmaschine.js', 'utf8');
+
+  /* Der Edge-Waechter liest DASSELBE 60m-Archiv wie die Messmaschine, hatte aber bis zum
+   * 25.08.2026 keinen F1-Schutz: 'ds += c[i + H] / c[i] - 1' ohne jede Pruefung, dass die
+   * Kurse groesser als null sind. c[i] = 0 gibt Infinity, und ein nicht bereinigter
+   * Fehldruck ging ungefiltert in die Zahl ein, die ueber die HANDELSPAUSE entscheidet.
+   * Anlass in der Maschine: DFEN mit +10.541 Pp, WHLR mit 4,2 Mrd $ je Aktie. */
+  ok(/function reiheUnplausibel\(bars\)/.test(dep),
+     'Der Waechter prueft die Reihe auf unmoegliche Kurse');
+  ok(/if \(reiheUnplausibel\(bars\)\) \{ verworfen\+\+; continue; \}/.test(dep),
+     'Und ueberspringt eine kaputte Reihe GANZ - einzelne Werte zu ueberspringen genuegt nicht');
+  ok(/if \(!\(c\[i\] > 0\) \|\| !\(c\[i \+ H\] > 0\)\) continue;/.test(dep),
+     'Die Drift-Paare sind gegen Null und Infinity abgesichert');
+  ok(/if \(!\(c\[i2\] > 0\) \|\| !\(c\[i2 \+ H\] > 0\)\) continue;/.test(dep),
+     'Die Signal-Paare ebenfalls');
+  ok(/verworfen \+ ' Reihen wegen unmöglicher Kurse verworfen/.test(dep),
+     'Verworfene Reihen stehen in der Meldung - ein stiller Ausschluss waere ein neuer Fehler');
+
+  /* DIESELBE Grenze wie in der Maschine. Zwei verschiedene Plausibilitaetsgrenzen in
+   * einem Programm waeren genau die Sorte Doppelzahl, die hier schon mehrfach
+   * auseinandergelaufen ist. */
+  function grenzen(q) {
+    var m = /r > (\d+(?:\.\d+)?) \|\| r < (-?\d+(?:\.\d+)?)/.exec(q);
+    var k = /maxKurs > (\d+)/.exec(q);
+    return m && k ? m[1] + '/' + m[2] + '/' + k[1] : null;
+  }
+  var gDep = grenzen(dep), gMm = grenzen(mm);
+  ok(gDep && gMm && gDep === gMm,
+     'Waechter und Messmaschine benutzen DIESELBE Plausibilitaetsgrenze  [' + gDep + ' vs ' + gMm + ']');
+})();
+
 Promise.all(offeneProben).then(function () {
   console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
   process.exit(fails ? 1 : 0);

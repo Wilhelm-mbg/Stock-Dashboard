@@ -8284,6 +8284,28 @@
    * erzeugt t <= -1 problemlos; keine der sechs Rauschmessungen haette es erzeugt.
    * Bewusst LAX gewaehlt (t = -1 sind rund 16 % einseitig): der Waechter soll frueh
    * warnen duerfen - nur nicht im Rauschen. */
+  /* F1 fuer den Waechter - dieselbe Regel wie in der Messmaschine (FEHLERTYPEN.md).
+   * Anlass dort: DFEN mit +10.541 Pp und WHLR mit 4,2 Mrd $ je Aktie im Archiv; ein
+   * Placebo ohne jeden Kursbezug lieferte dadurch -0,1722 Pp statt null.
+   * Der Waechter liest DASSELBE Archiv - und hatte bis zum 25.08.2026 keinen Schutz:
+   * c[i] = 0 gab Infinity, und der Fehldruck ging ungefiltert in die Zahl ein, die
+   * ueber die Handelspause entscheidet.
+   * Eine Reihe wird GANZ uebersprungen, nicht nur der einzelne Wert: eine nicht
+   * bereinigte Zusammenlegung verschiebt auch alle uebrigen Paare derselben Reihe. */
+  function reiheUnplausibel(bars) {
+    var maxKurs = 0;
+    for (var i = 0; i < bars.length; i++) {
+      var c = bars[i][1];
+      if (!(c > 0)) return true;
+      if (c > maxKurs) maxKurs = c;
+      if (i > 0) {
+        var v = bars[i - 1][1];
+        if (v > 0) { var r = c / v - 1; if (r > 4 || r < -0.8) return true; }
+      }
+    }
+    return maxKurs > 100000;
+  }
+
   var VERFALL_T = -1;
   var EDGE_ARME = [
     { key: 'rsi2seit',     name: 'rsi2seit',          pauseKey: 'edgePause',
@@ -8304,10 +8326,11 @@
     /* Haltedauer wie live: der Kapitulations-Dip laeuft 26 Kerzen, rsi2seit 8. */
     var H = istKapiArm ? 26 : 8, abT = Date.now() - 120 * 86400000;
     var syms = messUniversum();
-    var symMittel = [], nGes = 0;
+    var symMittel = [], nGes = 0, verworfen = 0;
     for (var si = 0; si < syms.length; si++) {
       var bars = await window.Archiv.serie('60m', syms[si]);
       if (!bars || bars.length < 300) continue;
+      if (reiheUnplausibel(bars)) { verworfen++; continue; }   // F1
       var c = bars.map(function (b) { return b[1]; });
       /* A9: Die Kontrolle muss aus DEMSELBEN Zeitraum kommen wie die Signale.
        * Vorher lief die Drift ueber die ganze Reihe, die Signale nur ueber 120
@@ -8315,6 +8338,7 @@
       var ds = 0, dn = 0;
       for (var i = 0; i < c.length - H; i += H) {
         if (bars[i][0] < abT) continue;
+        if (!(c[i] > 0) || !(c[i + H] > 0)) continue;
         ds += c[i + H] / c[i] - 1; dn++;
       }
       var drift = dn ? ds / dn : 0;
@@ -8326,6 +8350,7 @@
         try { s = Q.einstiegSignal(bars, i2, P); } catch (e) { }
         if (!s || s.dir !== 'call') continue;
         cool = bars[i2][0];
+        if (!(c[i2] > 0) || !(c[i2 + H] > 0)) continue;
         us.push((c[i2 + H] / c[i2] - 1) - drift);
         nGes++;
       }
@@ -8346,14 +8371,15 @@
           : 'kein Vorsprung messbar – diese Messung kann Verfall nicht von Rauschen trennen (|t| ' +
             Math.abs(t).toFixed(2) + ' < 2' + (mde ? ', Auflösung ' + (mde * 100).toFixed(2) + ' Pp' : '') +
             '). Vorsichtshalber wird trotzdem pausiert: eine Pause kostet weniger als ein Irrtum'));
-    return { entry: entry, n: nGes, nSym: n, rohMittel: m,
+    return { entry: entry, n: nGes, nSym: n, verworfen: verworfen, rohMittel: m,
       mittelPp: Math.round(m * 10000) / 100, mdePp: mde != null ? Math.round(mde * 10000) / 100 : null,
       /* rohT ist der UNGERUNDETE t-Wert. Dieselbe Lehre wie bei rohMittel (Totband,
        * 24.08.2026): eine Entscheidung darf nie an einer gerundeten Anzeigezahl haengen.
        * t geht weiter gerundet in Texte und Historie - entschieden wird an rohT. */
       rohT: t,
       t: Math.round(t * 100) / 100,
-      txt: 'Edge-Wächter (' + entry + ', letzte 120 Tage, Archiv): ' + nGes + ' Signale über ' + n + ' Werte · Überschuss ' +
+      txt: 'Edge-Wächter (' + entry + ', letzte 120 Tage, Archiv): ' + nGes + ' Signale über ' + n + ' Werte' +
+        (verworfen ? ' (' + verworfen + ' Reihen wegen unmöglicher Kurse verworfen)' : '') + ' · Überschuss ' +
         (m >= 0 ? '+' : '') + U.dez(m * 100, 3) + ' Pp/8 h · t über Symbole ' + U.dez(t, 2) + ' → ' + urteil };
   }
 

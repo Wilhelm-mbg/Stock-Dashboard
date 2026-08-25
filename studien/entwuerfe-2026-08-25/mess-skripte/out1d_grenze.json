@@ -1,0 +1,43 @@
+{
+ "intervall": "1d",
+ "symbole": 2907,
+ "kaputt": 58,
+ "kurz": 0,
+ "letzteKerzeStempel": 8,
+ "ohneOpen": 0,
+ "kerzenProTagHistogramm": {
+  "1": 15218263
+ },
+ "schichten": {
+  "GRENZE": {
+   "faelle": 14456629,
+   "mittelPp": 0.037755,
+   "sdPp": 1.7509,
+   "bitgenau": 0.1028,
+   "tage": 9814,
+   "jeTag": 1473.1,
+   "tagesmittelPp": 0.031828,
+   "sdTagesmittelPp": 0.5986,
+   "sePp": 0.006042,
+   "t": 5.27,
+   "mdePp": 0.01208,
+   "delta80Pp": 0.01693,
+   "qsResiduumSdPp": 1.6153
+  },
+  "GRENZE_P0": {
+   "faelle": 14456629,
+   "mittelPp": 0.037755,
+   "sdPp": 1.7509,
+   "bitgenau": 0.1028,
+   "tage": 9814,
+   "jeTag": 1473.1,
+   "tagesmittelPp": 0.031828,
+   "sdTagesmittelPp": 0.5986,
+   "sePp": 0.006042,
+   "t": 5.27,
+   "mdePp": 0.01208,
+   "delta80Pp": 0.01693,
+   "qsResiduumSdPp": 1.6153
+  }
+ }
+}

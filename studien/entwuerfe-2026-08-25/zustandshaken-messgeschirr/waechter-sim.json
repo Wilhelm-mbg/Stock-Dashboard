@@ -1,0 +1,5930 @@
+{
+ "universum": [
+  "AAPL",
+  "MSFT",
+  "NVDA",
+  "GOOGL",
+  "AMZN",
+  "META",
+  "TSLA",
+  "AMD",
+  "AVGO",
+  "TSM",
+  "ASML",
+  "INTC",
+  "QCOM",
+  "MU",
+  "ARM",
+  "TEAM",
+  "ZS",
+  "LRCX",
+  "MDB",
+  "DDOG",
+  "NET",
+  "KLAC",
+  "AMAT",
+  "SNOW",
+  "NOW",
+  "WDAY",
+  "SNAP",
+  "SHOP",
+  "IBM",
+  "ORCL",
+  "INTU",
+  "CRWD",
+  "UAL",
+  "TXN",
+  "PANW",
+  "ADBE",
+  "CRM",
+  "DASH",
+  "RCL"
+ ],
+ "signale": 1120,
+ "tage": 730,
+ "schnittTag": "2025-03-12",
+ "gesamt": {
+  "tage": 730,
+  "pause": 34,
+  "verfall": 35
+ },
+ "entdeckung": {
+  "tage": 365,
+  "pause": 0,
+  "verfall": 0
+ },
+ "bestaetigung": {
+  "tage": 365,
+  "pause": 34,
+  "verfall": 35
+ },
+ "pausenWechsel": [
+  {
+   "tag": "2025-09-10",
+   "art": "PAUSE",
+   "t": -3.00998845328031,
+   "mittel": -0.011635320538947088
+  },
+  {
+   "tag": "2025-10-10",
+   "art": "FREI",
+   "t": 0.03301681193157496,
+   "mittel": 0.00033096277652259137,
+   "seit": "2025-09-10"
+  },
+  {
+   "tag": "2026-08-06",
+   "art": "PAUSE",
+   "t": -1.099024571464485,
+   "mittel": -0.0044735895964847115
+  }
+ ],
+ "protokoll": [
+  {
+   "tag": "2023-09-26",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 0,
+   "nSym": 0
+  },
+  {
+   "tag": "2023-09-27",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 0,
+   "nSym": 0
+  },
+  {
+   "tag": "2023-09-28",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 0,
+   "nSym": 0
+  },
+  {
+   "tag": "2023-09-29",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 0,
+   "nSym": 0
+  },
+  {
+   "tag": "2023-10-02",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 0,
+   "nSym": 0
+  },
+  {
+   "tag": "2023-10-03",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 0,
+   "nSym": 0
+  },
+  {
+   "tag": "2023-10-04",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 0,
+   "nSym": 0
+  },
+  {
+   "tag": "2023-10-05",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 0,
+   "nSym": 0
+  },
+  {
+   "tag": "2023-10-06",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 0,
+   "nSym": 0
+  },
+  {
+   "tag": "2023-10-09",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 0,
+   "nSym": 0
+  },
+  {
+   "tag": "2023-10-10",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 0,
+   "nSym": 0
+  },
+  {
+   "tag": "2023-10-11",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 0,
+   "nSym": 0
+  },
+  {
+   "tag": "2023-10-12",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 0,
+   "nSym": 0
+  },
+  {
+   "tag": "2023-10-13",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 0,
+   "nSym": 0
+  },
+  {
+   "tag": "2023-10-16",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 0,
+   "nSym": 0
+  },
+  {
+   "tag": "2023-10-17",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 0,
+   "nSym": 0
+  },
+  {
+   "tag": "2023-10-18",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 0,
+   "nSym": 0
+  },
+  {
+   "tag": "2023-10-19",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 0,
+   "nSym": 0
+  },
+  {
+   "tag": "2023-10-20",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 0,
+   "nSym": 0
+  },
+  {
+   "tag": "2023-10-23",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 0,
+   "nSym": 0
+  },
+  {
+   "tag": "2023-10-24",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 0,
+   "nSym": 0
+  },
+  {
+   "tag": "2023-10-25",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 0,
+   "nSym": 0
+  },
+  {
+   "tag": "2023-10-26",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 0,
+   "nSym": 0
+  },
+  {
+   "tag": "2023-10-27",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 0,
+   "nSym": 0
+  },
+  {
+   "tag": "2023-10-30",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 0,
+   "nSym": 0
+  },
+  {
+   "tag": "2023-10-31",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 0,
+   "nSym": 0
+  },
+  {
+   "tag": "2023-11-01",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 0,
+   "nSym": 0
+  },
+  {
+   "tag": "2023-11-02",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 0,
+   "nSym": 0
+  },
+  {
+   "tag": "2023-11-03",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 0,
+   "nSym": 0
+  },
+  {
+   "tag": "2023-11-06",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 0,
+   "nSym": 0
+  },
+  {
+   "tag": "2023-11-07",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 0,
+   "nSym": 0
+  },
+  {
+   "tag": "2023-11-08",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 0,
+   "nSym": 0
+  },
+  {
+   "tag": "2023-11-09",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 0,
+   "nSym": 0
+  },
+  {
+   "tag": "2023-11-10",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 0,
+   "nSym": 0
+  },
+  {
+   "tag": "2023-11-13",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 0,
+   "nSym": 0
+  },
+  {
+   "tag": "2023-11-14",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 0,
+   "nSym": 0
+  },
+  {
+   "tag": "2023-11-15",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 0,
+   "nSym": 0
+  },
+  {
+   "tag": "2023-11-16",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 0,
+   "nSym": 0
+  },
+  {
+   "tag": "2023-11-17",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 0,
+   "nSym": 0
+  },
+  {
+   "tag": "2023-11-20",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 0,
+   "nSym": 0
+  },
+  {
+   "tag": "2023-11-21",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 0,
+   "nSym": 0
+  },
+  {
+   "tag": "2023-11-22",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 0,
+   "nSym": 0
+  },
+  {
+   "tag": "2023-11-24",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 0,
+   "nSym": 0
+  },
+  {
+   "tag": "2023-11-27",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 0,
+   "nSym": 0
+  },
+  {
+   "tag": "2023-11-28",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 0,
+   "nSym": 0
+  },
+  {
+   "tag": "2023-11-29",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 3,
+   "nSym": 0
+  },
+  {
+   "tag": "2023-11-30",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 4,
+   "nSym": 1
+  },
+  {
+   "tag": "2023-12-01",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 6,
+   "nSym": 2
+  },
+  {
+   "tag": "2023-12-04",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 6,
+   "nSym": 2
+  },
+  {
+   "tag": "2023-12-05",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 6,
+   "nSym": 2
+  },
+  {
+   "tag": "2023-12-06",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 6,
+   "nSym": 2
+  },
+  {
+   "tag": "2023-12-07",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 6,
+   "nSym": 2
+  },
+  {
+   "tag": "2023-12-08",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 6,
+   "nSym": 2
+  },
+  {
+   "tag": "2023-12-11",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 6,
+   "nSym": 2
+  },
+  {
+   "tag": "2023-12-12",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 6,
+   "nSym": 2
+  },
+  {
+   "tag": "2023-12-13",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 6,
+   "nSym": 2
+  },
+  {
+   "tag": "2023-12-14",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 6,
+   "nSym": 2
+  },
+  {
+   "tag": "2023-12-15",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 7,
+   "nSym": 2
+  },
+  {
+   "tag": "2023-12-18",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 7,
+   "nSym": 2
+  },
+  {
+   "tag": "2023-12-19",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 7,
+   "nSym": 2
+  },
+  {
+   "tag": "2023-12-20",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 9,
+   "nSym": 2
+  },
+  {
+   "tag": "2023-12-21",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 11,
+   "nSym": 3
+  },
+  {
+   "tag": "2023-12-22",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 11,
+   "nSym": 3
+  },
+  {
+   "tag": "2023-12-26",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 11,
+   "nSym": 3
+  },
+  {
+   "tag": "2023-12-27",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 11,
+   "nSym": 3
+  },
+  {
+   "tag": "2023-12-28",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 12,
+   "nSym": 3
+  },
+  {
+   "tag": "2023-12-29",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 12,
+   "nSym": 3
+  },
+  {
+   "tag": "2024-01-02",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 12,
+   "nSym": 3
+  },
+  {
+   "tag": "2024-01-03",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 15,
+   "nSym": 4
+  },
+  {
+   "tag": "2024-01-04",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 15,
+   "nSym": 4
+  },
+  {
+   "tag": "2024-01-05",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 15,
+   "nSym": 4
+  },
+  {
+   "tag": "2024-01-08",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 15,
+   "nSym": 4
+  },
+  {
+   "tag": "2024-01-09",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 15,
+   "nSym": 4
+  },
+  {
+   "tag": "2024-01-10",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 16,
+   "nSym": 4
+  },
+  {
+   "tag": "2024-01-11",
+   "pauseAktiv": false,
+   "rohT": null,
+   "verfall": false,
+   "n": 17,
+   "nSym": 4
+  },
+  {
+   "tag": "2024-01-12",
+   "pauseAktiv": false,
+   "rohT": -0.8052779233049342,
+   "verfall": false,
+   "n": 23,
+   "nSym": 5
+  },
+  {
+   "tag": "2024-01-16",
+   "pauseAktiv": false,
+   "rohT": -0.3160606983121959,
+   "verfall": false,
+   "n": 25,
+   "nSym": 6
+  },
+  {
+   "tag": "2024-01-17",
+   "pauseAktiv": false,
+   "rohT": 0.19999075770376565,
+   "verfall": false,
+   "n": 26,
+   "nSym": 7
+  },
+  {
+   "tag": "2024-01-18",
+   "pauseAktiv": false,
+   "rohT": 0.9155384331178441,
+   "verfall": false,
+   "n": 28,
+   "nSym": 8
+  },
+  {
+   "tag": "2024-01-19",
+   "pauseAktiv": false,
+   "rohT": 0.9069856884241255,
+   "verfall": false,
+   "n": 29,
+   "nSym": 8
+  },
+  {
+   "tag": "2024-01-22",
+   "pauseAktiv": false,
+   "rohT": 0.844374359716116,
+   "verfall": false,
+   "n": 29,
+   "nSym": 8
+  },
+  {
+   "tag": "2024-01-23",
+   "pauseAktiv": false,
+   "rohT": 0.8623573913881916,
+   "verfall": false,
+   "n": 30,
+   "nSym": 8
+  },
+  {
+   "tag": "2024-01-24",
+   "pauseAktiv": false,
+   "rohT": 1.382596364431935,
+   "verfall": false,
+   "n": 37,
+   "nSym": 11
+  },
+  {
+   "tag": "2024-01-25",
+   "pauseAktiv": false,
+   "rohT": 1.5569777112276733,
+   "verfall": false,
+   "n": 39,
+   "nSym": 12
+  },
+  {
+   "tag": "2024-01-26",
+   "pauseAktiv": false,
+   "rohT": 1.3396276733173942,
+   "verfall": false,
+   "n": 42,
+   "nSym": 14
+  },
+  {
+   "tag": "2024-01-29",
+   "pauseAktiv": false,
+   "rohT": 0.5133649393656579,
+   "verfall": false,
+   "n": 46,
+   "nSym": 16
+  },
+  {
+   "tag": "2024-01-30",
+   "pauseAktiv": false,
+   "rohT": 0.3871832851754476,
+   "verfall": false,
+   "n": 47,
+   "nSym": 16
+  },
+  {
+   "tag": "2024-01-31",
+   "pauseAktiv": false,
+   "rohT": 0.18798177251298512,
+   "verfall": false,
+   "n": 50,
+   "nSym": 17
+  },
+  {
+   "tag": "2024-02-01",
+   "pauseAktiv": false,
+   "rohT": -0.13174537991274707,
+   "verfall": false,
+   "n": 56,
+   "nSym": 18
+  },
+  {
+   "tag": "2024-02-02",
+   "pauseAktiv": false,
+   "rohT": -0.3078319442573864,
+   "verfall": false,
+   "n": 57,
+   "nSym": 18
+  },
+  {
+   "tag": "2024-02-05",
+   "pauseAktiv": false,
+   "rohT": -0.23401281501753865,
+   "verfall": false,
+   "n": 57,
+   "nSym": 18
+  },
+  {
+   "tag": "2024-02-06",
+   "pauseAktiv": false,
+   "rohT": 0.09931436111770332,
+   "verfall": false,
+   "n": 60,
+   "nSym": 18
+  },
+  {
+   "tag": "2024-02-07",
+   "pauseAktiv": false,
+   "rohT": 0.06526238289694253,
+   "verfall": false,
+   "n": 60,
+   "nSym": 18
+  },
+  {
+   "tag": "2024-02-08",
+   "pauseAktiv": false,
+   "rohT": 0.03939090934376238,
+   "verfall": false,
+   "n": 61,
+   "nSym": 19
+  },
+  {
+   "tag": "2024-02-09",
+   "pauseAktiv": false,
+   "rohT": -0.23941923978009316,
+   "verfall": false,
+   "n": 61,
+   "nSym": 19
+  },
+  {
+   "tag": "2024-02-12",
+   "pauseAktiv": false,
+   "rohT": -0.18306485495293706,
+   "verfall": false,
+   "n": 61,
+   "nSym": 19
+  },
+  {
+   "tag": "2024-02-13",
+   "pauseAktiv": false,
+   "rohT": -0.07320806831806374,
+   "verfall": false,
+   "n": 61,
+   "nSym": 19
+  },
+  {
+   "tag": "2024-02-14",
+   "pauseAktiv": false,
+   "rohT": -0.11181088461183743,
+   "verfall": false,
+   "n": 62,
+   "nSym": 19
+  },
+  {
+   "tag": "2024-02-15",
+   "pauseAktiv": false,
+   "rohT": -0.17214209113878076,
+   "verfall": false,
+   "n": 62,
+   "nSym": 19
+  },
+  {
+   "tag": "2024-02-16",
+   "pauseAktiv": false,
+   "rohT": -0.17357199915278176,
+   "verfall": false,
+   "n": 63,
+   "nSym": 20
+  },
+  {
+   "tag": "2024-02-20",
+   "pauseAktiv": false,
+   "rohT": -0.15786847432260454,
+   "verfall": false,
+   "n": 64,
+   "nSym": 20
+  },
+  {
+   "tag": "2024-02-21",
+   "pauseAktiv": false,
+   "rohT": -0.15228403565096588,
+   "verfall": false,
+   "n": 64,
+   "nSym": 20
+  },
+  {
+   "tag": "2024-02-22",
+   "pauseAktiv": false,
+   "rohT": -0.20325946367792358,
+   "verfall": false,
+   "n": 65,
+   "nSym": 20
+  },
+  {
+   "tag": "2024-02-23",
+   "pauseAktiv": false,
+   "rohT": -0.16982123530347223,
+   "verfall": false,
+   "n": 65,
+   "nSym": 20
+  },
+  {
+   "tag": "2024-02-26",
+   "pauseAktiv": false,
+   "rohT": -0.16484463209739855,
+   "verfall": false,
+   "n": 65,
+   "nSym": 20
+  },
+  {
+   "tag": "2024-02-27",
+   "pauseAktiv": false,
+   "rohT": -0.1100390402291984,
+   "verfall": false,
+   "n": 65,
+   "nSym": 20
+  },
+  {
+   "tag": "2024-02-28",
+   "pauseAktiv": false,
+   "rohT": -0.032068022472401814,
+   "verfall": false,
+   "n": 65,
+   "nSym": 20
+  },
+  {
+   "tag": "2024-02-29",
+   "pauseAktiv": false,
+   "rohT": 0.14453530749903465,
+   "verfall": false,
+   "n": 67,
+   "nSym": 20
+  },
+  {
+   "tag": "2024-03-01",
+   "pauseAktiv": false,
+   "rohT": 0.7355387404431319,
+   "verfall": false,
+   "n": 68,
+   "nSym": 21
+  },
+  {
+   "tag": "2024-03-04",
+   "pauseAktiv": false,
+   "rohT": 0.6518591065849709,
+   "verfall": false,
+   "n": 69,
+   "nSym": 21
+  },
+  {
+   "tag": "2024-03-05",
+   "pauseAktiv": false,
+   "rohT": -0.1984867349377213,
+   "verfall": false,
+   "n": 74,
+   "nSym": 23
+  },
+  {
+   "tag": "2024-03-06",
+   "pauseAktiv": false,
+   "rohT": -0.357600635203175,
+   "verfall": false,
+   "n": 81,
+   "nSym": 23
+  },
+  {
+   "tag": "2024-03-07",
+   "pauseAktiv": false,
+   "rohT": -0.418620138044273,
+   "verfall": false,
+   "n": 81,
+   "nSym": 23
+  },
+  {
+   "tag": "2024-03-08",
+   "pauseAktiv": false,
+   "rohT": -0.3141181012549683,
+   "verfall": false,
+   "n": 82,
+   "nSym": 23
+  },
+  {
+   "tag": "2024-03-11",
+   "pauseAktiv": false,
+   "rohT": -0.18732923670330565,
+   "verfall": false,
+   "n": 82,
+   "nSym": 23
+  },
+  {
+   "tag": "2024-03-12",
+   "pauseAktiv": false,
+   "rohT": -0.059129392080887556,
+   "verfall": false,
+   "n": 82,
+   "nSym": 23
+  },
+  {
+   "tag": "2024-03-13",
+   "pauseAktiv": false,
+   "rohT": -0.04680055204533949,
+   "verfall": false,
+   "n": 82,
+   "nSym": 23
+  },
+  {
+   "tag": "2024-03-14",
+   "pauseAktiv": false,
+   "rohT": 0.11336346224261033,
+   "verfall": false,
+   "n": 84,
+   "nSym": 23
+  },
+  {
+   "tag": "2024-03-15",
+   "pauseAktiv": false,
+   "rohT": 0.22502783087652034,
+   "verfall": false,
+   "n": 84,
+   "nSym": 23
+  },
+  {
+   "tag": "2024-03-18",
+   "pauseAktiv": false,
+   "rohT": 0.22736072505006086,
+   "verfall": false,
+   "n": 84,
+   "nSym": 23
+  },
+  {
+   "tag": "2024-03-19",
+   "pauseAktiv": false,
+   "rohT": 0.24099684775661712,
+   "verfall": false,
+   "n": 84,
+   "nSym": 23
+  },
+  {
+   "tag": "2024-03-20",
+   "pauseAktiv": false,
+   "rohT": 0.22528038465858416,
+   "verfall": false,
+   "n": 84,
+   "nSym": 23
+  },
+  {
+   "tag": "2024-03-21",
+   "pauseAktiv": false,
+   "rohT": 0.1120643735017631,
+   "verfall": false,
+   "n": 84,
+   "nSym": 23
+  },
+  {
+   "tag": "2024-03-22",
+   "pauseAktiv": false,
+   "rohT": 0.1329608410200141,
+   "verfall": false,
+   "n": 85,
+   "nSym": 23
+  },
+  {
+   "tag": "2024-03-25",
+   "pauseAktiv": false,
+   "rohT": -0.04067611344516164,
+   "verfall": false,
+   "n": 88,
+   "nSym": 24
+  },
+  {
+   "tag": "2024-03-26",
+   "pauseAktiv": false,
+   "rohT": 0.09586645111622288,
+   "verfall": false,
+   "n": 90,
+   "nSym": 24
+  },
+  {
+   "tag": "2024-03-27",
+   "pauseAktiv": false,
+   "rohT": 0.37329879913795133,
+   "verfall": false,
+   "n": 89,
+   "nSym": 23
+  },
+  {
+   "tag": "2024-03-28",
+   "pauseAktiv": false,
+   "rohT": 0.4741280807999147,
+   "verfall": false,
+   "n": 92,
+   "nSym": 24
+  },
+  {
+   "tag": "2024-04-01",
+   "pauseAktiv": false,
+   "rohT": 0.4745121947727249,
+   "verfall": false,
+   "n": 91,
+   "nSym": 24
+  },
+  {
+   "tag": "2024-04-02",
+   "pauseAktiv": false,
+   "rohT": 0.5828926607640225,
+   "verfall": false,
+   "n": 91,
+   "nSym": 24
+  },
+  {
+   "tag": "2024-04-03",
+   "pauseAktiv": false,
+   "rohT": 0.4356400408119314,
+   "verfall": false,
+   "n": 93,
+   "nSym": 24
+  },
+  {
+   "tag": "2024-04-04",
+   "pauseAktiv": false,
+   "rohT": 0.5340209748653946,
+   "verfall": false,
+   "n": 94,
+   "nSym": 24
+  },
+  {
+   "tag": "2024-04-05",
+   "pauseAktiv": false,
+   "rohT": 0.7539482498616461,
+   "verfall": false,
+   "n": 99,
+   "nSym": 24
+  },
+  {
+   "tag": "2024-04-08",
+   "pauseAktiv": false,
+   "rohT": 0.7522894391974921,
+   "verfall": false,
+   "n": 100,
+   "nSym": 24
+  },
+  {
+   "tag": "2024-04-09",
+   "pauseAktiv": false,
+   "rohT": 0.7836031505344195,
+   "verfall": false,
+   "n": 101,
+   "nSym": 24
+  },
+  {
+   "tag": "2024-04-10",
+   "pauseAktiv": false,
+   "rohT": 0.6154552570052697,
+   "verfall": false,
+   "n": 105,
+   "nSym": 24
+  },
+  {
+   "tag": "2024-04-11",
+   "pauseAktiv": false,
+   "rohT": 0.5948090624857043,
+   "verfall": false,
+   "n": 106,
+   "nSym": 24
+  },
+  {
+   "tag": "2024-04-12",
+   "pauseAktiv": false,
+   "rohT": 0.7488034579804966,
+   "verfall": false,
+   "n": 105,
+   "nSym": 24
+  },
+  {
+   "tag": "2024-04-15",
+   "pauseAktiv": false,
+   "rohT": 1.3091043336527346,
+   "verfall": false,
+   "n": 111,
+   "nSym": 26
+  },
+  {
+   "tag": "2024-04-16",
+   "pauseAktiv": false,
+   "rohT": 1.224649556490081,
+   "verfall": false,
+   "n": 113,
+   "nSym": 26
+  },
+  {
+   "tag": "2024-04-17",
+   "pauseAktiv": false,
+   "rohT": 1.263819446593022,
+   "verfall": false,
+   "n": 113,
+   "nSym": 26
+  },
+  {
+   "tag": "2024-04-18",
+   "pauseAktiv": false,
+   "rohT": 1.0443453914908636,
+   "verfall": false,
+   "n": 112,
+   "nSym": 25
+  },
+  {
+   "tag": "2024-04-19",
+   "pauseAktiv": false,
+   "rohT": 1.2530844883851968,
+   "verfall": false,
+   "n": 112,
+   "nSym": 25
+  },
+  {
+   "tag": "2024-04-22",
+   "pauseAktiv": false,
+   "rohT": 1.3696873167669457,
+   "verfall": false,
+   "n": 113,
+   "nSym": 25
+  },
+  {
+   "tag": "2024-04-23",
+   "pauseAktiv": false,
+   "rohT": 1.1633853237750131,
+   "verfall": false,
+   "n": 113,
+   "nSym": 25
+  },
+  {
+   "tag": "2024-04-24",
+   "pauseAktiv": false,
+   "rohT": 1.2809148548752693,
+   "verfall": false,
+   "n": 114,
+   "nSym": 25
+  },
+  {
+   "tag": "2024-04-25",
+   "pauseAktiv": false,
+   "rohT": 1.3030430779299085,
+   "verfall": false,
+   "n": 113,
+   "nSym": 24
+  },
+  {
+   "tag": "2024-04-26",
+   "pauseAktiv": false,
+   "rohT": 0.40923322018040353,
+   "verfall": false,
+   "n": 119,
+   "nSym": 25
+  },
+  {
+   "tag": "2024-04-29",
+   "pauseAktiv": false,
+   "rohT": 0.44555485510273873,
+   "verfall": false,
+   "n": 118,
+   "nSym": 25
+  },
+  {
+   "tag": "2024-04-30",
+   "pauseAktiv": false,
+   "rohT": 0.4638275915613542,
+   "verfall": false,
+   "n": 118,
+   "nSym": 25
+  },
+  {
+   "tag": "2024-05-01",
+   "pauseAktiv": false,
+   "rohT": 0.3844984203684862,
+   "verfall": false,
+   "n": 118,
+   "nSym": 26
+  },
+  {
+   "tag": "2024-05-02",
+   "pauseAktiv": false,
+   "rohT": 0.38820798453985195,
+   "verfall": false,
+   "n": 123,
+   "nSym": 26
+  },
+  {
+   "tag": "2024-05-03",
+   "pauseAktiv": false,
+   "rohT": -0.0253046801694305,
+   "verfall": false,
+   "n": 125,
+   "nSym": 27
+  },
+  {
+   "tag": "2024-05-06",
+   "pauseAktiv": false,
+   "rohT": -0.017413046354062343,
+   "verfall": false,
+   "n": 126,
+   "nSym": 27
+  },
+  {
+   "tag": "2024-05-07",
+   "pauseAktiv": false,
+   "rohT": 0.07890381036952014,
+   "verfall": false,
+   "n": 128,
+   "nSym": 27
+  },
+  {
+   "tag": "2024-05-08",
+   "pauseAktiv": false,
+   "rohT": -0.26703914304147475,
+   "verfall": false,
+   "n": 129,
+   "nSym": 27
+  },
+  {
+   "tag": "2024-05-09",
+   "pauseAktiv": false,
+   "rohT": 0.05940556311120388,
+   "verfall": false,
+   "n": 127,
+   "nSym": 26
+  },
+  {
+   "tag": "2024-05-10",
+   "pauseAktiv": false,
+   "rohT": -0.17641360182638444,
+   "verfall": false,
+   "n": 127,
+   "nSym": 27
+  },
+  {
+   "tag": "2024-05-13",
+   "pauseAktiv": false,
+   "rohT": -0.132350715856593,
+   "verfall": false,
+   "n": 129,
+   "nSym": 27
+  },
+  {
+   "tag": "2024-05-14",
+   "pauseAktiv": false,
+   "rohT": -0.17130970487069616,
+   "verfall": false,
+   "n": 133,
+   "nSym": 27
+  },
+  {
+   "tag": "2024-05-15",
+   "pauseAktiv": false,
+   "rohT": -0.1837613482109149,
+   "verfall": false,
+   "n": 135,
+   "nSym": 27
+  },
+  {
+   "tag": "2024-05-16",
+   "pauseAktiv": false,
+   "rohT": -0.01972171396326138,
+   "verfall": false,
+   "n": 136,
+   "nSym": 27
+  },
+  {
+   "tag": "2024-05-17",
+   "pauseAktiv": false,
+   "rohT": -0.33363117647296175,
+   "verfall": false,
+   "n": 141,
+   "nSym": 27
+  },
+  {
+   "tag": "2024-05-20",
+   "pauseAktiv": false,
+   "rohT": -0.7532958425043604,
+   "verfall": false,
+   "n": 149,
+   "nSym": 28
+  },
+  {
+   "tag": "2024-05-21",
+   "pauseAktiv": false,
+   "rohT": -0.7413566625515035,
+   "verfall": false,
+   "n": 147,
+   "nSym": 28
+  },
+  {
+   "tag": "2024-05-22",
+   "pauseAktiv": false,
+   "rohT": -0.3536341703588458,
+   "verfall": false,
+   "n": 144,
+   "nSym": 29
+  },
+  {
+   "tag": "2024-05-23",
+   "pauseAktiv": false,
+   "rohT": -0.3290173027937957,
+   "verfall": false,
+   "n": 143,
+   "nSym": 30
+  },
+  {
+   "tag": "2024-05-24",
+   "pauseAktiv": false,
+   "rohT": -0.2622016068690061,
+   "verfall": false,
+   "n": 144,
+   "nSym": 30
+  },
+  {
+   "tag": "2024-05-28",
+   "pauseAktiv": false,
+   "rohT": -0.1975102580723321,
+   "verfall": false,
+   "n": 140,
+   "nSym": 30
+  },
+  {
+   "tag": "2024-05-29",
+   "pauseAktiv": false,
+   "rohT": -0.01724882673653079,
+   "verfall": false,
+   "n": 137,
+   "nSym": 30
+  },
+  {
+   "tag": "2024-05-30",
+   "pauseAktiv": false,
+   "rohT": 0.14483593249772153,
+   "verfall": false,
+   "n": 131,
+   "nSym": 28
+  },
+  {
+   "tag": "2024-05-31",
+   "pauseAktiv": false,
+   "rohT": -0.040296801378005266,
+   "verfall": false,
+   "n": 132,
+   "nSym": 29
+  },
+  {
+   "tag": "2024-06-03",
+   "pauseAktiv": false,
+   "rohT": -0.05589649076624978,
+   "verfall": false,
+   "n": 132,
+   "nSym": 29
+  },
+  {
+   "tag": "2024-06-04",
+   "pauseAktiv": false,
+   "rohT": -0.12498965100398796,
+   "verfall": false,
+   "n": 129,
+   "nSym": 28
+  },
+  {
+   "tag": "2024-06-05",
+   "pauseAktiv": false,
+   "rohT": -0.010298746102475087,
+   "verfall": false,
+   "n": 130,
+   "nSym": 28
+  },
+  {
+   "tag": "2024-06-06",
+   "pauseAktiv": false,
+   "rohT": -0.047910288457069926,
+   "verfall": false,
+   "n": 129,
+   "nSym": 28
+  },
+  {
+   "tag": "2024-06-07",
+   "pauseAktiv": false,
+   "rohT": -0.008143134782491575,
+   "verfall": false,
+   "n": 129,
+   "nSym": 28
+  },
+  {
+   "tag": "2024-06-10",
+   "pauseAktiv": false,
+   "rohT": 0.029145862886540322,
+   "verfall": false,
+   "n": 129,
+   "nSym": 28
+  },
+  {
+   "tag": "2024-06-11",
+   "pauseAktiv": false,
+   "rohT": 0.06887395010409862,
+   "verfall": false,
+   "n": 132,
+   "nSym": 29
+  },
+  {
+   "tag": "2024-06-12",
+   "pauseAktiv": false,
+   "rohT": 0.02678886267581738,
+   "verfall": false,
+   "n": 132,
+   "nSym": 29
+  },
+  {
+   "tag": "2024-06-13",
+   "pauseAktiv": false,
+   "rohT": 0.07792525483771368,
+   "verfall": false,
+   "n": 132,
+   "nSym": 29
+  },
+  {
+   "tag": "2024-06-14",
+   "pauseAktiv": false,
+   "rohT": -0.12281709997271714,
+   "verfall": false,
+   "n": 134,
+   "nSym": 29
+  },
+  {
+   "tag": "2024-06-17",
+   "pauseAktiv": false,
+   "rohT": -0.24292345930862067,
+   "verfall": false,
+   "n": 134,
+   "nSym": 29
+  },
+  {
+   "tag": "2024-06-18",
+   "pauseAktiv": false,
+   "rohT": -0.28678016043864313,
+   "verfall": false,
+   "n": 136,
+   "nSym": 29
+  },
+  {
+   "tag": "2024-06-20",
+   "pauseAktiv": false,
+   "rohT": -0.2273201747328668,
+   "verfall": false,
+   "n": 137,
+   "nSym": 29
+  },
+  {
+   "tag": "2024-06-21",
+   "pauseAktiv": false,
+   "rohT": -0.16545132261161505,
+   "verfall": false,
+   "n": 138,
+   "nSym": 29
+  },
+  {
+   "tag": "2024-06-24",
+   "pauseAktiv": false,
+   "rohT": -0.10238421091180268,
+   "verfall": false,
+   "n": 141,
+   "nSym": 29
+  },
+  {
+   "tag": "2024-06-25",
+   "pauseAktiv": false,
+   "rohT": -0.1535922562115391,
+   "verfall": false,
+   "n": 143,
+   "nSym": 29
+  },
+  {
+   "tag": "2024-06-26",
+   "pauseAktiv": false,
+   "rohT": -0.26424604723171274,
+   "verfall": false,
+   "n": 145,
+   "nSym": 29
+  },
+  {
+   "tag": "2024-06-27",
+   "pauseAktiv": false,
+   "rohT": -0.0018770502145504125,
+   "verfall": false,
+   "n": 146,
+   "nSym": 30
+  },
+  {
+   "tag": "2024-06-28",
+   "pauseAktiv": false,
+   "rohT": 0.0009742047178637243,
+   "verfall": false,
+   "n": 144,
+   "nSym": 30
+  },
+  {
+   "tag": "2024-07-01",
+   "pauseAktiv": false,
+   "rohT": -0.39701418679662487,
+   "verfall": false,
+   "n": 145,
+   "nSym": 30
+  },
+  {
+   "tag": "2024-07-02",
+   "pauseAktiv": false,
+   "rohT": -0.4558607032229897,
+   "verfall": false,
+   "n": 141,
+   "nSym": 29
+  },
+  {
+   "tag": "2024-07-03",
+   "pauseAktiv": false,
+   "rohT": -0.10088229679592098,
+   "verfall": false,
+   "n": 138,
+   "nSym": 30
+  },
+  {
+   "tag": "2024-07-05",
+   "pauseAktiv": false,
+   "rohT": -0.19772487095302718,
+   "verfall": false,
+   "n": 137,
+   "nSym": 30
+  },
+  {
+   "tag": "2024-07-08",
+   "pauseAktiv": false,
+   "rohT": -0.29852224150559364,
+   "verfall": false,
+   "n": 137,
+   "nSym": 30
+  },
+  {
+   "tag": "2024-07-09",
+   "pauseAktiv": false,
+   "rohT": -0.19014221407946094,
+   "verfall": false,
+   "n": 137,
+   "nSym": 30
+  },
+  {
+   "tag": "2024-07-10",
+   "pauseAktiv": false,
+   "rohT": -0.5953100405872915,
+   "verfall": false,
+   "n": 140,
+   "nSym": 31
+  },
+  {
+   "tag": "2024-07-11",
+   "pauseAktiv": false,
+   "rohT": -0.40334920160767823,
+   "verfall": false,
+   "n": 139,
+   "nSym": 30
+  },
+  {
+   "tag": "2024-07-12",
+   "pauseAktiv": false,
+   "rohT": -0.5716738949276433,
+   "verfall": false,
+   "n": 140,
+   "nSym": 30
+  },
+  {
+   "tag": "2024-07-15",
+   "pauseAktiv": false,
+   "rohT": -0.5444926181028086,
+   "verfall": false,
+   "n": 140,
+   "nSym": 30
+  },
+  {
+   "tag": "2024-07-16",
+   "pauseAktiv": false,
+   "rohT": -0.5758850994239163,
+   "verfall": false,
+   "n": 140,
+   "nSym": 30
+  },
+  {
+   "tag": "2024-07-17",
+   "pauseAktiv": false,
+   "rohT": -0.40903780797788625,
+   "verfall": false,
+   "n": 140,
+   "nSym": 30
+  },
+  {
+   "tag": "2024-07-18",
+   "pauseAktiv": false,
+   "rohT": -0.2262110567684807,
+   "verfall": false,
+   "n": 140,
+   "nSym": 30
+  },
+  {
+   "tag": "2024-07-19",
+   "pauseAktiv": false,
+   "rohT": -0.20551311626569627,
+   "verfall": false,
+   "n": 137,
+   "nSym": 30
+  },
+  {
+   "tag": "2024-07-22",
+   "pauseAktiv": false,
+   "rohT": -0.3828242329986799,
+   "verfall": false,
+   "n": 135,
+   "nSym": 29
+  },
+  {
+   "tag": "2024-07-23",
+   "pauseAktiv": false,
+   "rohT": -0.5002987602399565,
+   "verfall": false,
+   "n": 133,
+   "nSym": 29
+  },
+  {
+   "tag": "2024-07-24",
+   "pauseAktiv": false,
+   "rohT": -0.23429075103601035,
+   "verfall": false,
+   "n": 131,
+   "nSym": 29
+  },
+  {
+   "tag": "2024-07-25",
+   "pauseAktiv": false,
+   "rohT": -0.2781644103552742,
+   "verfall": false,
+   "n": 127,
+   "nSym": 29
+  },
+  {
+   "tag": "2024-07-26",
+   "pauseAktiv": false,
+   "rohT": -0.2688139621086854,
+   "verfall": false,
+   "n": 127,
+   "nSym": 29
+  },
+  {
+   "tag": "2024-07-29",
+   "pauseAktiv": false,
+   "rohT": -0.3121378632106007,
+   "verfall": false,
+   "n": 127,
+   "nSym": 29
+  },
+  {
+   "tag": "2024-07-30",
+   "pauseAktiv": false,
+   "rohT": -0.28557529100051915,
+   "verfall": false,
+   "n": 126,
+   "nSym": 29
+  },
+  {
+   "tag": "2024-07-31",
+   "pauseAktiv": false,
+   "rohT": -0.4393215686744761,
+   "verfall": false,
+   "n": 125,
+   "nSym": 29
+  },
+  {
+   "tag": "2024-08-01",
+   "pauseAktiv": false,
+   "rohT": -0.216213783284588,
+   "verfall": false,
+   "n": 123,
+   "nSym": 29
+  },
+  {
+   "tag": "2024-08-02",
+   "pauseAktiv": false,
+   "rohT": -0.18475356805504545,
+   "verfall": false,
+   "n": 118,
+   "nSym": 29
+  },
+  {
+   "tag": "2024-08-05",
+   "pauseAktiv": false,
+   "rohT": -0.07879179680086944,
+   "verfall": false,
+   "n": 118,
+   "nSym": 29
+  },
+  {
+   "tag": "2024-08-06",
+   "pauseAktiv": false,
+   "rohT": 0.20762899089758047,
+   "verfall": false,
+   "n": 117,
+   "nSym": 30
+  },
+  {
+   "tag": "2024-08-07",
+   "pauseAktiv": false,
+   "rohT": 0.19513331811549492,
+   "verfall": false,
+   "n": 115,
+   "nSym": 30
+  },
+  {
+   "tag": "2024-08-08",
+   "pauseAktiv": false,
+   "rohT": 0.16611315525057543,
+   "verfall": false,
+   "n": 114,
+   "nSym": 30
+  },
+  {
+   "tag": "2024-08-09",
+   "pauseAktiv": false,
+   "rohT": 0.06314658373543167,
+   "verfall": false,
+   "n": 113,
+   "nSym": 30
+  },
+  {
+   "tag": "2024-08-12",
+   "pauseAktiv": false,
+   "rohT": -0.06901163471480602,
+   "verfall": false,
+   "n": 107,
+   "nSym": 29
+  },
+  {
+   "tag": "2024-08-13",
+   "pauseAktiv": false,
+   "rohT": 0.42417457244028056,
+   "verfall": false,
+   "n": 106,
+   "nSym": 28
+  },
+  {
+   "tag": "2024-08-14",
+   "pauseAktiv": false,
+   "rohT": 0.35614375331823295,
+   "verfall": false,
+   "n": 104,
+   "nSym": 28
+  },
+  {
+   "tag": "2024-08-15",
+   "pauseAktiv": false,
+   "rohT": 0.2911821845180845,
+   "verfall": false,
+   "n": 103,
+   "nSym": 27
+  },
+  {
+   "tag": "2024-08-16",
+   "pauseAktiv": false,
+   "rohT": 0.221485569569375,
+   "verfall": false,
+   "n": 103,
+   "nSym": 27
+  },
+  {
+   "tag": "2024-08-19",
+   "pauseAktiv": false,
+   "rohT": -0.012775235288490585,
+   "verfall": false,
+   "n": 104,
+   "nSym": 27
+  },
+  {
+   "tag": "2024-08-20",
+   "pauseAktiv": false,
+   "rohT": 0.2125128316600366,
+   "verfall": false,
+   "n": 106,
+   "nSym": 27
+  },
+  {
+   "tag": "2024-08-21",
+   "pauseAktiv": false,
+   "rohT": 0.06624471249974516,
+   "verfall": false,
+   "n": 109,
+   "nSym": 29
+  },
+  {
+   "tag": "2024-08-22",
+   "pauseAktiv": false,
+   "rohT": 0.002554875134239911,
+   "verfall": false,
+   "n": 116,
+   "nSym": 29
+  },
+  {
+   "tag": "2024-08-23",
+   "pauseAktiv": false,
+   "rohT": 0.19744908899987315,
+   "verfall": false,
+   "n": 118,
+   "nSym": 31
+  },
+  {
+   "tag": "2024-08-26",
+   "pauseAktiv": false,
+   "rohT": 0.24163788974211797,
+   "verfall": false,
+   "n": 125,
+   "nSym": 33
+  },
+  {
+   "tag": "2024-08-27",
+   "pauseAktiv": false,
+   "rohT": 0.2818464666331841,
+   "verfall": false,
+   "n": 130,
+   "nSym": 33
+  },
+  {
+   "tag": "2024-08-28",
+   "pauseAktiv": false,
+   "rohT": 0.07175878496175117,
+   "verfall": false,
+   "n": 130,
+   "nSym": 32
+  },
+  {
+   "tag": "2024-08-29",
+   "pauseAktiv": false,
+   "rohT": 0.3828773361595172,
+   "verfall": false,
+   "n": 130,
+   "nSym": 33
+  },
+  {
+   "tag": "2024-08-30",
+   "pauseAktiv": false,
+   "rohT": 0.4398251449319416,
+   "verfall": false,
+   "n": 131,
+   "nSym": 33
+  },
+  {
+   "tag": "2024-09-03",
+   "pauseAktiv": false,
+   "rohT": 0.5556116659887556,
+   "verfall": false,
+   "n": 129,
+   "nSym": 33
+  },
+  {
+   "tag": "2024-09-04",
+   "pauseAktiv": false,
+   "rohT": 0.26660375948140186,
+   "verfall": false,
+   "n": 131,
+   "nSym": 34
+  },
+  {
+   "tag": "2024-09-05",
+   "pauseAktiv": false,
+   "rohT": 0.41742660992563557,
+   "verfall": false,
+   "n": 133,
+   "nSym": 34
+  },
+  {
+   "tag": "2024-09-06",
+   "pauseAktiv": false,
+   "rohT": 0.7835650500138348,
+   "verfall": false,
+   "n": 130,
+   "nSym": 35
+  },
+  {
+   "tag": "2024-09-09",
+   "pauseAktiv": false,
+   "rohT": 1.021794981043299,
+   "verfall": false,
+   "n": 129,
+   "nSym": 35
+  },
+  {
+   "tag": "2024-09-10",
+   "pauseAktiv": false,
+   "rohT": 0.7956443345977584,
+   "verfall": false,
+   "n": 126,
+   "nSym": 35
+  },
+  {
+   "tag": "2024-09-11",
+   "pauseAktiv": false,
+   "rohT": 0.9417189905342145,
+   "verfall": false,
+   "n": 126,
+   "nSym": 35
+  },
+  {
+   "tag": "2024-09-12",
+   "pauseAktiv": false,
+   "rohT": 0.8659986211539222,
+   "verfall": false,
+   "n": 121,
+   "nSym": 34
+  },
+  {
+   "tag": "2024-09-13",
+   "pauseAktiv": false,
+   "rohT": 0.8153379245926514,
+   "verfall": false,
+   "n": 114,
+   "nSym": 32
+  },
+  {
+   "tag": "2024-09-16",
+   "pauseAktiv": false,
+   "rohT": 0.5746812227207351,
+   "verfall": false,
+   "n": 111,
+   "nSym": 31
+  },
+  {
+   "tag": "2024-09-17",
+   "pauseAktiv": false,
+   "rohT": 0.9136594412935616,
+   "verfall": false,
+   "n": 121,
+   "nSym": 32
+  },
+  {
+   "tag": "2024-09-18",
+   "pauseAktiv": false,
+   "rohT": 0.9479679299001108,
+   "verfall": false,
+   "n": 121,
+   "nSym": 32
+  },
+  {
+   "tag": "2024-09-19",
+   "pauseAktiv": false,
+   "rohT": 1.5651900444332016,
+   "verfall": false,
+   "n": 124,
+   "nSym": 31
+  },
+  {
+   "tag": "2024-09-20",
+   "pauseAktiv": false,
+   "rohT": 1.7239476661624984,
+   "verfall": false,
+   "n": 128,
+   "nSym": 29
+  },
+  {
+   "tag": "2024-09-23",
+   "pauseAktiv": false,
+   "rohT": 1.44816673795851,
+   "verfall": false,
+   "n": 136,
+   "nSym": 29
+  },
+  {
+   "tag": "2024-09-24",
+   "pauseAktiv": false,
+   "rohT": 1.523963453356862,
+   "verfall": false,
+   "n": 139,
+   "nSym": 29
+  },
+  {
+   "tag": "2024-09-25",
+   "pauseAktiv": false,
+   "rohT": 1.5017404372322518,
+   "verfall": false,
+   "n": 142,
+   "nSym": 29
+  },
+  {
+   "tag": "2024-09-26",
+   "pauseAktiv": false,
+   "rohT": 1.35425596874609,
+   "verfall": false,
+   "n": 143,
+   "nSym": 29
+  },
+  {
+   "tag": "2024-09-27",
+   "pauseAktiv": false,
+   "rohT": 1.3662934038192223,
+   "verfall": false,
+   "n": 146,
+   "nSym": 29
+  },
+  {
+   "tag": "2024-09-30",
+   "pauseAktiv": false,
+   "rohT": 1.304777547497769,
+   "verfall": false,
+   "n": 149,
+   "nSym": 29
+  },
+  {
+   "tag": "2024-10-01",
+   "pauseAktiv": false,
+   "rohT": 1.1809693546811217,
+   "verfall": false,
+   "n": 152,
+   "nSym": 29
+  },
+  {
+   "tag": "2024-10-02",
+   "pauseAktiv": false,
+   "rohT": 1.2253331267384597,
+   "verfall": false,
+   "n": 153,
+   "nSym": 29
+  },
+  {
+   "tag": "2024-10-03",
+   "pauseAktiv": false,
+   "rohT": 1.6814492177529492,
+   "verfall": false,
+   "n": 157,
+   "nSym": 30
+  },
+  {
+   "tag": "2024-10-04",
+   "pauseAktiv": false,
+   "rohT": 1.6496822589357685,
+   "verfall": false,
+   "n": 165,
+   "nSym": 32
+  },
+  {
+   "tag": "2024-10-07",
+   "pauseAktiv": false,
+   "rohT": 1.610746088170855,
+   "verfall": false,
+   "n": 163,
+   "nSym": 32
+  },
+  {
+   "tag": "2024-10-08",
+   "pauseAktiv": false,
+   "rohT": 1.9714361092843287,
+   "verfall": false,
+   "n": 164,
+   "nSym": 32
+  },
+  {
+   "tag": "2024-10-09",
+   "pauseAktiv": false,
+   "rohT": 2.24829747962027,
+   "verfall": false,
+   "n": 165,
+   "nSym": 32
+  },
+  {
+   "tag": "2024-10-10",
+   "pauseAktiv": false,
+   "rohT": 2.5768943018418176,
+   "verfall": false,
+   "n": 163,
+   "nSym": 32
+  },
+  {
+   "tag": "2024-10-11",
+   "pauseAktiv": false,
+   "rohT": 2.7397824738336434,
+   "verfall": false,
+   "n": 162,
+   "nSym": 32
+  },
+  {
+   "tag": "2024-10-14",
+   "pauseAktiv": false,
+   "rohT": 2.677253809156249,
+   "verfall": false,
+   "n": 161,
+   "nSym": 31
+  },
+  {
+   "tag": "2024-10-15",
+   "pauseAktiv": false,
+   "rohT": 2.8681779536138334,
+   "verfall": false,
+   "n": 159,
+   "nSym": 31
+  },
+  {
+   "tag": "2024-10-16",
+   "pauseAktiv": false,
+   "rohT": 3.140855935509626,
+   "verfall": false,
+   "n": 158,
+   "nSym": 31
+  },
+  {
+   "tag": "2024-10-17",
+   "pauseAktiv": false,
+   "rohT": 3.1247783554836244,
+   "verfall": false,
+   "n": 158,
+   "nSym": 31
+  },
+  {
+   "tag": "2024-10-18",
+   "pauseAktiv": false,
+   "rohT": 3.105361297694904,
+   "verfall": false,
+   "n": 157,
+   "nSym": 31
+  },
+  {
+   "tag": "2024-10-21",
+   "pauseAktiv": false,
+   "rohT": 2.8638059173989965,
+   "verfall": false,
+   "n": 154,
+   "nSym": 31
+  },
+  {
+   "tag": "2024-10-22",
+   "pauseAktiv": false,
+   "rohT": 3.09938658725342,
+   "verfall": false,
+   "n": 153,
+   "nSym": 30
+  },
+  {
+   "tag": "2024-10-23",
+   "pauseAktiv": false,
+   "rohT": 3.048244654334265,
+   "verfall": false,
+   "n": 150,
+   "nSym": 30
+  },
+  {
+   "tag": "2024-10-24",
+   "pauseAktiv": false,
+   "rohT": 2.711088389610298,
+   "verfall": false,
+   "n": 150,
+   "nSym": 29
+  },
+  {
+   "tag": "2024-10-25",
+   "pauseAktiv": false,
+   "rohT": 2.8127376866078304,
+   "verfall": false,
+   "n": 149,
+   "nSym": 29
+  },
+  {
+   "tag": "2024-10-28",
+   "pauseAktiv": false,
+   "rohT": 2.688394667204019,
+   "verfall": false,
+   "n": 149,
+   "nSym": 29
+  },
+  {
+   "tag": "2024-10-29",
+   "pauseAktiv": false,
+   "rohT": 2.562841978757896,
+   "verfall": false,
+   "n": 146,
+   "nSym": 29
+  },
+  {
+   "tag": "2024-10-30",
+   "pauseAktiv": false,
+   "rohT": 2.5882263748679577,
+   "verfall": false,
+   "n": 149,
+   "nSym": 30
+  },
+  {
+   "tag": "2024-10-31",
+   "pauseAktiv": false,
+   "rohT": 2.337917804758362,
+   "verfall": false,
+   "n": 156,
+   "nSym": 30
+  },
+  {
+   "tag": "2024-11-01",
+   "pauseAktiv": false,
+   "rohT": 2.5994573893382498,
+   "verfall": false,
+   "n": 166,
+   "nSym": 31
+  },
+  {
+   "tag": "2024-11-04",
+   "pauseAktiv": false,
+   "rohT": 2.607297876727595,
+   "verfall": false,
+   "n": 168,
+   "nSym": 31
+  },
+  {
+   "tag": "2024-11-05",
+   "pauseAktiv": false,
+   "rohT": 2.6072712131697826,
+   "verfall": false,
+   "n": 172,
+   "nSym": 31
+  },
+  {
+   "tag": "2024-11-06",
+   "pauseAktiv": false,
+   "rohT": 3.085989330849007,
+   "verfall": false,
+   "n": 172,
+   "nSym": 31
+  },
+  {
+   "tag": "2024-11-07",
+   "pauseAktiv": false,
+   "rohT": 2.7528364692462883,
+   "verfall": false,
+   "n": 172,
+   "nSym": 30
+  },
+  {
+   "tag": "2024-11-08",
+   "pauseAktiv": false,
+   "rohT": 2.908135493014878,
+   "verfall": false,
+   "n": 172,
+   "nSym": 30
+  },
+  {
+   "tag": "2024-11-11",
+   "pauseAktiv": false,
+   "rohT": 1.7020860383242427,
+   "verfall": false,
+   "n": 176,
+   "nSym": 33
+  },
+  {
+   "tag": "2024-11-12",
+   "pauseAktiv": false,
+   "rohT": 1.7617976052830224,
+   "verfall": false,
+   "n": 180,
+   "nSym": 33
+  },
+  {
+   "tag": "2024-11-13",
+   "pauseAktiv": false,
+   "rohT": 1.77666113650037,
+   "verfall": false,
+   "n": 182,
+   "nSym": 33
+  },
+  {
+   "tag": "2024-11-14",
+   "pauseAktiv": false,
+   "rohT": 1.8031842228841704,
+   "verfall": false,
+   "n": 188,
+   "nSym": 34
+  },
+  {
+   "tag": "2024-11-15",
+   "pauseAktiv": false,
+   "rohT": 1.8636419733711227,
+   "verfall": false,
+   "n": 189,
+   "nSym": 34
+  },
+  {
+   "tag": "2024-11-18",
+   "pauseAktiv": false,
+   "rohT": 1.9214693823502371,
+   "verfall": false,
+   "n": 193,
+   "nSym": 34
+  },
+  {
+   "tag": "2024-11-19",
+   "pauseAktiv": false,
+   "rohT": 1.934379837948197,
+   "verfall": false,
+   "n": 194,
+   "nSym": 34
+  },
+  {
+   "tag": "2024-11-20",
+   "pauseAktiv": false,
+   "rohT": 1.777561654206262,
+   "verfall": false,
+   "n": 194,
+   "nSym": 34
+  },
+  {
+   "tag": "2024-11-21",
+   "pauseAktiv": false,
+   "rohT": 1.7681623302830523,
+   "verfall": false,
+   "n": 195,
+   "nSym": 34
+  },
+  {
+   "tag": "2024-11-22",
+   "pauseAktiv": false,
+   "rohT": 1.808876779377326,
+   "verfall": false,
+   "n": 195,
+   "nSym": 34
+  },
+  {
+   "tag": "2024-11-25",
+   "pauseAktiv": false,
+   "rohT": 1.7954635420277312,
+   "verfall": false,
+   "n": 195,
+   "nSym": 34
+  },
+  {
+   "tag": "2024-11-26",
+   "pauseAktiv": false,
+   "rohT": 1.6950796189717474,
+   "verfall": false,
+   "n": 196,
+   "nSym": 34
+  },
+  {
+   "tag": "2024-11-27",
+   "pauseAktiv": false,
+   "rohT": 1.8456973382802047,
+   "verfall": false,
+   "n": 196,
+   "nSym": 34
+  },
+  {
+   "tag": "2024-11-29",
+   "pauseAktiv": false,
+   "rohT": 1.4739431251685393,
+   "verfall": false,
+   "n": 197,
+   "nSym": 34
+  },
+  {
+   "tag": "2024-12-02",
+   "pauseAktiv": false,
+   "rohT": 1.4233059270393664,
+   "verfall": false,
+   "n": 197,
+   "nSym": 34
+  },
+  {
+   "tag": "2024-12-03",
+   "pauseAktiv": false,
+   "rohT": 1.2550565095799158,
+   "verfall": false,
+   "n": 196,
+   "nSym": 34
+  },
+  {
+   "tag": "2024-12-04",
+   "pauseAktiv": false,
+   "rohT": 1.2561079692369115,
+   "verfall": false,
+   "n": 198,
+   "nSym": 34
+  },
+  {
+   "tag": "2024-12-05",
+   "pauseAktiv": false,
+   "rohT": 1.3018443176407128,
+   "verfall": false,
+   "n": 198,
+   "nSym": 34
+  },
+  {
+   "tag": "2024-12-06",
+   "pauseAktiv": false,
+   "rohT": 1.3215364156862717,
+   "verfall": false,
+   "n": 206,
+   "nSym": 34
+  },
+  {
+   "tag": "2024-12-09",
+   "pauseAktiv": false,
+   "rohT": 1.2353570359288202,
+   "verfall": false,
+   "n": 209,
+   "nSym": 34
+  },
+  {
+   "tag": "2024-12-10",
+   "pauseAktiv": false,
+   "rohT": 1.413851280633823,
+   "verfall": false,
+   "n": 211,
+   "nSym": 34
+  },
+  {
+   "tag": "2024-12-11",
+   "pauseAktiv": false,
+   "rohT": 1.4683556578144923,
+   "verfall": false,
+   "n": 214,
+   "nSym": 34
+  },
+  {
+   "tag": "2024-12-12",
+   "pauseAktiv": false,
+   "rohT": 1.6218606587941868,
+   "verfall": false,
+   "n": 214,
+   "nSym": 34
+  },
+  {
+   "tag": "2024-12-13",
+   "pauseAktiv": false,
+   "rohT": 1.805758521789961,
+   "verfall": false,
+   "n": 217,
+   "nSym": 34
+  },
+  {
+   "tag": "2024-12-16",
+   "pauseAktiv": false,
+   "rohT": 1.3421047651571234,
+   "verfall": false,
+   "n": 214,
+   "nSym": 34
+  },
+  {
+   "tag": "2024-12-17",
+   "pauseAktiv": false,
+   "rohT": 1.3152890918186804,
+   "verfall": false,
+   "n": 214,
+   "nSym": 34
+  },
+  {
+   "tag": "2024-12-18",
+   "pauseAktiv": false,
+   "rohT": 1.9435310056932267,
+   "verfall": false,
+   "n": 211,
+   "nSym": 33
+  },
+  {
+   "tag": "2024-12-19",
+   "pauseAktiv": false,
+   "rohT": 1.7100161060589354,
+   "verfall": false,
+   "n": 209,
+   "nSym": 33
+  },
+  {
+   "tag": "2024-12-20",
+   "pauseAktiv": false,
+   "rohT": 1.6692874769552886,
+   "verfall": false,
+   "n": 202,
+   "nSym": 33
+  },
+  {
+   "tag": "2024-12-23",
+   "pauseAktiv": false,
+   "rohT": 1.6697351587879612,
+   "verfall": false,
+   "n": 200,
+   "nSym": 33
+  },
+  {
+   "tag": "2024-12-24",
+   "pauseAktiv": false,
+   "rohT": 1.7284708987884094,
+   "verfall": false,
+   "n": 191,
+   "nSym": 33
+  },
+  {
+   "tag": "2024-12-26",
+   "pauseAktiv": false,
+   "rohT": 1.6779607274376858,
+   "verfall": false,
+   "n": 188,
+   "nSym": 33
+  },
+  {
+   "tag": "2024-12-27",
+   "pauseAktiv": false,
+   "rohT": 1.64840926248715,
+   "verfall": false,
+   "n": 185,
+   "nSym": 33
+  },
+  {
+   "tag": "2024-12-30",
+   "pauseAktiv": false,
+   "rohT": 1.5970513784858933,
+   "verfall": false,
+   "n": 184,
+   "nSym": 33
+  },
+  {
+   "tag": "2024-12-31",
+   "pauseAktiv": false,
+   "rohT": 1.6248852940750458,
+   "verfall": false,
+   "n": 184,
+   "nSym": 33
+  },
+  {
+   "tag": "2025-01-02",
+   "pauseAktiv": false,
+   "rohT": 1.640245395317563,
+   "verfall": false,
+   "n": 175,
+   "nSym": 32
+  },
+  {
+   "tag": "2025-01-03",
+   "pauseAktiv": false,
+   "rohT": 1.4048010700112417,
+   "verfall": false,
+   "n": 172,
+   "nSym": 31
+  },
+  {
+   "tag": "2025-01-06",
+   "pauseAktiv": false,
+   "rohT": 1.4361728649192762,
+   "verfall": false,
+   "n": 170,
+   "nSym": 31
+  },
+  {
+   "tag": "2025-01-07",
+   "pauseAktiv": false,
+   "rohT": 1.396160446401514,
+   "verfall": false,
+   "n": 171,
+   "nSym": 30
+  },
+  {
+   "tag": "2025-01-08",
+   "pauseAktiv": false,
+   "rohT": 1.5192728035602017,
+   "verfall": false,
+   "n": 176,
+   "nSym": 30
+  },
+  {
+   "tag": "2025-01-10",
+   "pauseAktiv": false,
+   "rohT": 1.6350130180576912,
+   "verfall": false,
+   "n": 176,
+   "nSym": 30
+  },
+  {
+   "tag": "2025-01-13",
+   "pauseAktiv": false,
+   "rohT": 1.2722328363086948,
+   "verfall": false,
+   "n": 178,
+   "nSym": 31
+  },
+  {
+   "tag": "2025-01-14",
+   "pauseAktiv": false,
+   "rohT": 1.3190245673442589,
+   "verfall": false,
+   "n": 177,
+   "nSym": 30
+  },
+  {
+   "tag": "2025-01-15",
+   "pauseAktiv": false,
+   "rohT": 1.325924384769197,
+   "verfall": false,
+   "n": 173,
+   "nSym": 30
+  },
+  {
+   "tag": "2025-01-16",
+   "pauseAktiv": false,
+   "rohT": 1.1968425301312444,
+   "verfall": false,
+   "n": 167,
+   "nSym": 29
+  },
+  {
+   "tag": "2025-01-17",
+   "pauseAktiv": false,
+   "rohT": 1.2308268904537611,
+   "verfall": false,
+   "n": 175,
+   "nSym": 29
+  },
+  {
+   "tag": "2025-01-21",
+   "pauseAktiv": false,
+   "rohT": 1.0377645988784718,
+   "verfall": false,
+   "n": 166,
+   "nSym": 28
+  },
+  {
+   "tag": "2025-01-22",
+   "pauseAktiv": false,
+   "rohT": 1.4232405858816317,
+   "verfall": false,
+   "n": 168,
+   "nSym": 28
+  },
+  {
+   "tag": "2025-01-23",
+   "pauseAktiv": false,
+   "rohT": 1.5845358236963254,
+   "verfall": false,
+   "n": 167,
+   "nSym": 28
+  },
+  {
+   "tag": "2025-01-24",
+   "pauseAktiv": false,
+   "rohT": 1.7052392040085473,
+   "verfall": false,
+   "n": 169,
+   "nSym": 28
+  },
+  {
+   "tag": "2025-01-27",
+   "pauseAktiv": false,
+   "rohT": 1.756319755436813,
+   "verfall": false,
+   "n": 166,
+   "nSym": 28
+  },
+  {
+   "tag": "2025-01-28",
+   "pauseAktiv": false,
+   "rohT": 1.587735378041534,
+   "verfall": false,
+   "n": 170,
+   "nSym": 29
+  },
+  {
+   "tag": "2025-01-29",
+   "pauseAktiv": false,
+   "rohT": 1.4077138594053884,
+   "verfall": false,
+   "n": 171,
+   "nSym": 31
+  },
+  {
+   "tag": "2025-01-30",
+   "pauseAktiv": false,
+   "rohT": 0.7883859615938639,
+   "verfall": false,
+   "n": 176,
+   "nSym": 32
+  },
+  {
+   "tag": "2025-01-31",
+   "pauseAktiv": false,
+   "rohT": 1.5530433637411907,
+   "verfall": false,
+   "n": 178,
+   "nSym": 33
+  },
+  {
+   "tag": "2025-02-03",
+   "pauseAktiv": false,
+   "rohT": 1.6032778004382338,
+   "verfall": false,
+   "n": 179,
+   "nSym": 33
+  },
+  {
+   "tag": "2025-02-04",
+   "pauseAktiv": false,
+   "rohT": 1.585731182369428,
+   "verfall": false,
+   "n": 182,
+   "nSym": 33
+  },
+  {
+   "tag": "2025-02-05",
+   "pauseAktiv": false,
+   "rohT": 1.6235768946235098,
+   "verfall": false,
+   "n": 182,
+   "nSym": 33
+  },
+  {
+   "tag": "2025-02-06",
+   "pauseAktiv": false,
+   "rohT": 1.6588485671149853,
+   "verfall": false,
+   "n": 185,
+   "nSym": 33
+  },
+  {
+   "tag": "2025-02-07",
+   "pauseAktiv": false,
+   "rohT": 1.8258043493647316,
+   "verfall": false,
+   "n": 187,
+   "nSym": 35
+  },
+  {
+   "tag": "2025-02-10",
+   "pauseAktiv": false,
+   "rohT": 1.7481385730369832,
+   "verfall": false,
+   "n": 188,
+   "nSym": 35
+  },
+  {
+   "tag": "2025-02-11",
+   "pauseAktiv": false,
+   "rohT": 1.6457047300816734,
+   "verfall": false,
+   "n": 188,
+   "nSym": 35
+  },
+  {
+   "tag": "2025-02-12",
+   "pauseAktiv": false,
+   "rohT": 1.9009678991579646,
+   "verfall": false,
+   "n": 188,
+   "nSym": 35
+  },
+  {
+   "tag": "2025-02-13",
+   "pauseAktiv": false,
+   "rohT": 2.1050639763470667,
+   "verfall": false,
+   "n": 192,
+   "nSym": 35
+  },
+  {
+   "tag": "2025-02-14",
+   "pauseAktiv": false,
+   "rohT": 2.006054221010225,
+   "verfall": false,
+   "n": 192,
+   "nSym": 35
+  },
+  {
+   "tag": "2025-02-18",
+   "pauseAktiv": false,
+   "rohT": 1.908937097166497,
+   "verfall": false,
+   "n": 196,
+   "nSym": 35
+  },
+  {
+   "tag": "2025-02-19",
+   "pauseAktiv": false,
+   "rohT": 1.813937299599428,
+   "verfall": false,
+   "n": 199,
+   "nSym": 35
+  },
+  {
+   "tag": "2025-02-20",
+   "pauseAktiv": false,
+   "rohT": 1.9703724885025427,
+   "verfall": false,
+   "n": 200,
+   "nSym": 35
+  },
+  {
+   "tag": "2025-02-21",
+   "pauseAktiv": false,
+   "rohT": 2.0970044449804695,
+   "verfall": false,
+   "n": 203,
+   "nSym": 35
+  },
+  {
+   "tag": "2025-02-24",
+   "pauseAktiv": false,
+   "rohT": 2.111251300397629,
+   "verfall": false,
+   "n": 204,
+   "nSym": 35
+  },
+  {
+   "tag": "2025-02-25",
+   "pauseAktiv": false,
+   "rohT": 2.074451436986163,
+   "verfall": false,
+   "n": 205,
+   "nSym": 35
+  },
+  {
+   "tag": "2025-02-26",
+   "pauseAktiv": false,
+   "rohT": 1.9972852403119135,
+   "verfall": false,
+   "n": 204,
+   "nSym": 35
+  },
+  {
+   "tag": "2025-02-27",
+   "pauseAktiv": false,
+   "rohT": 2.3459273086088452,
+   "verfall": false,
+   "n": 197,
+   "nSym": 34
+  },
+  {
+   "tag": "2025-02-28",
+   "pauseAktiv": false,
+   "rohT": 2.3117491388713667,
+   "verfall": false,
+   "n": 189,
+   "nSym": 34
+  },
+  {
+   "tag": "2025-03-03",
+   "pauseAktiv": false,
+   "rohT": 2.3872443701406603,
+   "verfall": false,
+   "n": 188,
+   "nSym": 34
+  },
+  {
+   "tag": "2025-03-04",
+   "pauseAktiv": false,
+   "rohT": 2.5495526384720226,
+   "verfall": false,
+   "n": 184,
+   "nSym": 34
+  },
+  {
+   "tag": "2025-03-05",
+   "pauseAktiv": false,
+   "rohT": 2.384861967663121,
+   "verfall": false,
+   "n": 182,
+   "nSym": 33
+  },
+  {
+   "tag": "2025-03-06",
+   "pauseAktiv": false,
+   "rohT": 2.514391272472175,
+   "verfall": false,
+   "n": 180,
+   "nSym": 33
+  },
+  {
+   "tag": "2025-03-07",
+   "pauseAktiv": false,
+   "rohT": 2.5241202358417167,
+   "verfall": false,
+   "n": 183,
+   "nSym": 34
+  },
+  {
+   "tag": "2025-03-10",
+   "pauseAktiv": false,
+   "rohT": 2.5254447727834206,
+   "verfall": false,
+   "n": 180,
+   "nSym": 34
+  },
+  {
+   "tag": "2025-03-11",
+   "pauseAktiv": false,
+   "rohT": 2.4813137202332074,
+   "verfall": false,
+   "n": 180,
+   "nSym": 34
+  },
+  {
+   "tag": "2025-03-12",
+   "pauseAktiv": false,
+   "rohT": 2.443135138293792,
+   "verfall": false,
+   "n": 177,
+   "nSym": 34
+  },
+  {
+   "tag": "2025-03-13",
+   "pauseAktiv": false,
+   "rohT": 2.5262793257817284,
+   "verfall": false,
+   "n": 173,
+   "nSym": 34
+  },
+  {
+   "tag": "2025-03-14",
+   "pauseAktiv": false,
+   "rohT": 2.358554897574172,
+   "verfall": false,
+   "n": 172,
+   "nSym": 34
+  },
+  {
+   "tag": "2025-03-17",
+   "pauseAktiv": false,
+   "rohT": 2.1373953943103596,
+   "verfall": false,
+   "n": 168,
+   "nSym": 32
+  },
+  {
+   "tag": "2025-03-18",
+   "pauseAktiv": false,
+   "rohT": 2.2030646756848387,
+   "verfall": false,
+   "n": 167,
+   "nSym": 32
+  },
+  {
+   "tag": "2025-03-19",
+   "pauseAktiv": false,
+   "rohT": 2.182702188836295,
+   "verfall": false,
+   "n": 168,
+   "nSym": 32
+  },
+  {
+   "tag": "2025-03-20",
+   "pauseAktiv": false,
+   "rohT": 2.0868193626410894,
+   "verfall": false,
+   "n": 168,
+   "nSym": 32
+  },
+  {
+   "tag": "2025-03-21",
+   "pauseAktiv": false,
+   "rohT": 2.1471253419155367,
+   "verfall": false,
+   "n": 168,
+   "nSym": 32
+  },
+  {
+   "tag": "2025-03-24",
+   "pauseAktiv": false,
+   "rohT": 2.075698410120631,
+   "verfall": false,
+   "n": 169,
+   "nSym": 32
+  },
+  {
+   "tag": "2025-03-25",
+   "pauseAktiv": false,
+   "rohT": 2.066498632331005,
+   "verfall": false,
+   "n": 168,
+   "nSym": 32
+  },
+  {
+   "tag": "2025-03-26",
+   "pauseAktiv": false,
+   "rohT": 2.1016934688250664,
+   "verfall": false,
+   "n": 168,
+   "nSym": 32
+  },
+  {
+   "tag": "2025-03-27",
+   "pauseAktiv": false,
+   "rohT": 2.1905341764868616,
+   "verfall": false,
+   "n": 169,
+   "nSym": 32
+  },
+  {
+   "tag": "2025-03-28",
+   "pauseAktiv": false,
+   "rohT": 2.3015466382427863,
+   "verfall": false,
+   "n": 169,
+   "nSym": 32
+  },
+  {
+   "tag": "2025-03-31",
+   "pauseAktiv": false,
+   "rohT": 2.2249324751927517,
+   "verfall": false,
+   "n": 169,
+   "nSym": 32
+  },
+  {
+   "tag": "2025-04-01",
+   "pauseAktiv": false,
+   "rohT": 2.2312256403651616,
+   "verfall": false,
+   "n": 169,
+   "nSym": 32
+  },
+  {
+   "tag": "2025-04-02",
+   "pauseAktiv": false,
+   "rohT": 2.1898430259752284,
+   "verfall": false,
+   "n": 167,
+   "nSym": 32
+  },
+  {
+   "tag": "2025-04-03",
+   "pauseAktiv": false,
+   "rohT": 2.2131891163200357,
+   "verfall": false,
+   "n": 165,
+   "nSym": 32
+  },
+  {
+   "tag": "2025-04-04",
+   "pauseAktiv": false,
+   "rohT": 2.2468242902081177,
+   "verfall": false,
+   "n": 159,
+   "nSym": 32
+  },
+  {
+   "tag": "2025-04-07",
+   "pauseAktiv": false,
+   "rohT": 2.2212957918183562,
+   "verfall": false,
+   "n": 157,
+   "nSym": 32
+  },
+  {
+   "tag": "2025-04-08",
+   "pauseAktiv": false,
+   "rohT": 2.1403736385751087,
+   "verfall": false,
+   "n": 154,
+   "nSym": 32
+  },
+  {
+   "tag": "2025-04-09",
+   "pauseAktiv": false,
+   "rohT": 1.7842323702272518,
+   "verfall": false,
+   "n": 152,
+   "nSym": 32
+  },
+  {
+   "tag": "2025-04-10",
+   "pauseAktiv": false,
+   "rohT": 1.9197339854537399,
+   "verfall": false,
+   "n": 152,
+   "nSym": 32
+  },
+  {
+   "tag": "2025-04-11",
+   "pauseAktiv": false,
+   "rohT": 1.5471869547956376,
+   "verfall": false,
+   "n": 151,
+   "nSym": 32
+  },
+  {
+   "tag": "2025-04-14",
+   "pauseAktiv": false,
+   "rohT": 1.3644671333955112,
+   "verfall": false,
+   "n": 150,
+   "nSym": 31
+  },
+  {
+   "tag": "2025-04-15",
+   "pauseAktiv": false,
+   "rohT": 1.429091423670434,
+   "verfall": false,
+   "n": 147,
+   "nSym": 31
+  },
+  {
+   "tag": "2025-04-16",
+   "pauseAktiv": false,
+   "rohT": 1.2132106650822685,
+   "verfall": false,
+   "n": 145,
+   "nSym": 31
+  },
+  {
+   "tag": "2025-04-17",
+   "pauseAktiv": false,
+   "rohT": 1.744232443350099,
+   "verfall": false,
+   "n": 141,
+   "nSym": 31
+  },
+  {
+   "tag": "2025-04-21",
+   "pauseAktiv": false,
+   "rohT": 1.8240911249594527,
+   "verfall": false,
+   "n": 139,
+   "nSym": 31
+  },
+  {
+   "tag": "2025-04-22",
+   "pauseAktiv": false,
+   "rohT": 1.7776269846199466,
+   "verfall": false,
+   "n": 139,
+   "nSym": 31
+  },
+  {
+   "tag": "2025-04-23",
+   "pauseAktiv": false,
+   "rohT": 1.5543928464709496,
+   "verfall": false,
+   "n": 139,
+   "nSym": 31
+  },
+  {
+   "tag": "2025-04-24",
+   "pauseAktiv": false,
+   "rohT": 1.5543928464709496,
+   "verfall": false,
+   "n": 139,
+   "nSym": 31
+  },
+  {
+   "tag": "2025-04-25",
+   "pauseAktiv": false,
+   "rohT": 1.3870222124428702,
+   "verfall": false,
+   "n": 139,
+   "nSym": 31
+  },
+  {
+   "tag": "2025-04-28",
+   "pauseAktiv": false,
+   "rohT": 1.4100564142186913,
+   "verfall": false,
+   "n": 140,
+   "nSym": 31
+  },
+  {
+   "tag": "2025-04-29",
+   "pauseAktiv": false,
+   "rohT": 1.3577388058967126,
+   "verfall": false,
+   "n": 141,
+   "nSym": 31
+  },
+  {
+   "tag": "2025-04-30",
+   "pauseAktiv": false,
+   "rohT": 1.4058053631019352,
+   "verfall": false,
+   "n": 141,
+   "nSym": 31
+  },
+  {
+   "tag": "2025-05-01",
+   "pauseAktiv": false,
+   "rohT": 2.5048002042400683,
+   "verfall": false,
+   "n": 155,
+   "nSym": 33
+  },
+  {
+   "tag": "2025-05-02",
+   "pauseAktiv": false,
+   "rohT": 2.518048953242686,
+   "verfall": false,
+   "n": 156,
+   "nSym": 33
+  },
+  {
+   "tag": "2025-05-05",
+   "pauseAktiv": false,
+   "rohT": 2.8436625836718763,
+   "verfall": false,
+   "n": 172,
+   "nSym": 35
+  },
+  {
+   "tag": "2025-05-06",
+   "pauseAktiv": false,
+   "rohT": 2.452853785750926,
+   "verfall": false,
+   "n": 182,
+   "nSym": 34
+  },
+  {
+   "tag": "2025-05-07",
+   "pauseAktiv": false,
+   "rohT": 2.244607298266586,
+   "verfall": false,
+   "n": 196,
+   "nSym": 36
+  },
+  {
+   "tag": "2025-05-08",
+   "pauseAktiv": false,
+   "rohT": 2.1226095861022443,
+   "verfall": false,
+   "n": 197,
+   "nSym": 36
+  },
+  {
+   "tag": "2025-05-09",
+   "pauseAktiv": false,
+   "rohT": 2.0980681640260332,
+   "verfall": false,
+   "n": 198,
+   "nSym": 36
+  },
+  {
+   "tag": "2025-05-12",
+   "pauseAktiv": false,
+   "rohT": 2.3976630427544934,
+   "verfall": false,
+   "n": 197,
+   "nSym": 37
+  },
+  {
+   "tag": "2025-05-13",
+   "pauseAktiv": false,
+   "rohT": 2.3739324722876316,
+   "verfall": false,
+   "n": 194,
+   "nSym": 37
+  },
+  {
+   "tag": "2025-05-14",
+   "pauseAktiv": false,
+   "rohT": 2.403239736564872,
+   "verfall": false,
+   "n": 193,
+   "nSym": 37
+  },
+  {
+   "tag": "2025-05-15",
+   "pauseAktiv": false,
+   "rohT": 2.3993796041666244,
+   "verfall": false,
+   "n": 191,
+   "nSym": 37
+  },
+  {
+   "tag": "2025-05-16",
+   "pauseAktiv": false,
+   "rohT": 2.2092441837950783,
+   "verfall": false,
+   "n": 180,
+   "nSym": 35
+  },
+  {
+   "tag": "2025-05-19",
+   "pauseAktiv": false,
+   "rohT": 1.9579475622359181,
+   "verfall": false,
+   "n": 176,
+   "nSym": 35
+  },
+  {
+   "tag": "2025-05-20",
+   "pauseAktiv": false,
+   "rohT": 1.9637717554250451,
+   "verfall": false,
+   "n": 176,
+   "nSym": 35
+  },
+  {
+   "tag": "2025-05-21",
+   "pauseAktiv": false,
+   "rohT": 1.7842904519228833,
+   "verfall": false,
+   "n": 173,
+   "nSym": 35
+  },
+  {
+   "tag": "2025-05-22",
+   "pauseAktiv": false,
+   "rohT": 1.882042736301882,
+   "verfall": false,
+   "n": 172,
+   "nSym": 35
+  },
+  {
+   "tag": "2025-05-23",
+   "pauseAktiv": false,
+   "rohT": 2.038014651793446,
+   "verfall": false,
+   "n": 167,
+   "nSym": 35
+  },
+  {
+   "tag": "2025-05-27",
+   "pauseAktiv": false,
+   "rohT": 1.7924801776401802,
+   "verfall": false,
+   "n": 159,
+   "nSym": 33
+  },
+  {
+   "tag": "2025-05-28",
+   "pauseAktiv": false,
+   "rohT": 1.6560824150126257,
+   "verfall": false,
+   "n": 154,
+   "nSym": 33
+  },
+  {
+   "tag": "2025-05-29",
+   "pauseAktiv": false,
+   "rohT": 2.4729062937689927,
+   "verfall": false,
+   "n": 146,
+   "nSym": 32
+  },
+  {
+   "tag": "2025-05-30",
+   "pauseAktiv": false,
+   "rohT": 1.961814359465117,
+   "verfall": false,
+   "n": 138,
+   "nSym": 31
+  },
+  {
+   "tag": "2025-06-02",
+   "pauseAktiv": false,
+   "rohT": 2.000305054687931,
+   "verfall": false,
+   "n": 135,
+   "nSym": 31
+  },
+  {
+   "tag": "2025-06-03",
+   "pauseAktiv": false,
+   "rohT": 1.4875251077719829,
+   "verfall": false,
+   "n": 130,
+   "nSym": 29
+  },
+  {
+   "tag": "2025-06-04",
+   "pauseAktiv": false,
+   "rohT": 1.3813225550361035,
+   "verfall": false,
+   "n": 129,
+   "nSym": 29
+  },
+  {
+   "tag": "2025-06-05",
+   "pauseAktiv": false,
+   "rohT": 1.1828832175996289,
+   "verfall": false,
+   "n": 127,
+   "nSym": 28
+  },
+  {
+   "tag": "2025-06-06",
+   "pauseAktiv": false,
+   "rohT": 1.280031260183344,
+   "verfall": false,
+   "n": 125,
+   "nSym": 28
+  },
+  {
+   "tag": "2025-06-09",
+   "pauseAktiv": false,
+   "rohT": 1.2928265961982621,
+   "verfall": false,
+   "n": 125,
+   "nSym": 28
+  },
+  {
+   "tag": "2025-06-10",
+   "pauseAktiv": false,
+   "rohT": 1.342835239201555,
+   "verfall": false,
+   "n": 126,
+   "nSym": 28
+  },
+  {
+   "tag": "2025-06-11",
+   "pauseAktiv": false,
+   "rohT": 1.3161336730925504,
+   "verfall": false,
+   "n": 126,
+   "nSym": 29
+  },
+  {
+   "tag": "2025-06-12",
+   "pauseAktiv": false,
+   "rohT": 1.343868274175539,
+   "verfall": false,
+   "n": 126,
+   "nSym": 29
+  },
+  {
+   "tag": "2025-06-13",
+   "pauseAktiv": false,
+   "rohT": 1.2057240255282682,
+   "verfall": false,
+   "n": 125,
+   "nSym": 29
+  },
+  {
+   "tag": "2025-06-16",
+   "pauseAktiv": false,
+   "rohT": 1.2120593884220072,
+   "verfall": false,
+   "n": 121,
+   "nSym": 29
+  },
+  {
+   "tag": "2025-06-17",
+   "pauseAktiv": false,
+   "rohT": 1.2410337839970613,
+   "verfall": false,
+   "n": 121,
+   "nSym": 29
+  },
+  {
+   "tag": "2025-06-18",
+   "pauseAktiv": false,
+   "rohT": 1.3210878298653992,
+   "verfall": false,
+   "n": 119,
+   "nSym": 29
+  },
+  {
+   "tag": "2025-06-20",
+   "pauseAktiv": false,
+   "rohT": 1.262251474604827,
+   "verfall": false,
+   "n": 114,
+   "nSym": 29
+  },
+  {
+   "tag": "2025-06-23",
+   "pauseAktiv": false,
+   "rohT": 1.3341644641458639,
+   "verfall": false,
+   "n": 113,
+   "nSym": 29
+  },
+  {
+   "tag": "2025-06-24",
+   "pauseAktiv": false,
+   "rohT": 1.3974150462306392,
+   "verfall": false,
+   "n": 111,
+   "nSym": 29
+  },
+  {
+   "tag": "2025-06-25",
+   "pauseAktiv": false,
+   "rohT": 1.3530454755474643,
+   "verfall": false,
+   "n": 111,
+   "nSym": 29
+  },
+  {
+   "tag": "2025-06-26",
+   "pauseAktiv": false,
+   "rohT": 1.3841197814940758,
+   "verfall": false,
+   "n": 111,
+   "nSym": 29
+  },
+  {
+   "tag": "2025-06-27",
+   "pauseAktiv": false,
+   "rohT": 1.2560989622653755,
+   "verfall": false,
+   "n": 109,
+   "nSym": 28
+  },
+  {
+   "tag": "2025-06-30",
+   "pauseAktiv": false,
+   "rohT": 1.3066743049756455,
+   "verfall": false,
+   "n": 109,
+   "nSym": 28
+  },
+  {
+   "tag": "2025-07-01",
+   "pauseAktiv": false,
+   "rohT": 1.2026281187670194,
+   "verfall": false,
+   "n": 110,
+   "nSym": 28
+  },
+  {
+   "tag": "2025-07-02",
+   "pauseAktiv": false,
+   "rohT": 1.2345775003240613,
+   "verfall": false,
+   "n": 110,
+   "nSym": 28
+  },
+  {
+   "tag": "2025-07-03",
+   "pauseAktiv": false,
+   "rohT": 1.0728724794524214,
+   "verfall": false,
+   "n": 111,
+   "nSym": 28
+  },
+  {
+   "tag": "2025-07-07",
+   "pauseAktiv": false,
+   "rohT": 0.9464885138569284,
+   "verfall": false,
+   "n": 107,
+   "nSym": 27
+  },
+  {
+   "tag": "2025-07-08",
+   "pauseAktiv": false,
+   "rohT": 1.1118066037527476,
+   "verfall": false,
+   "n": 104,
+   "nSym": 27
+  },
+  {
+   "tag": "2025-07-09",
+   "pauseAktiv": false,
+   "rohT": 1.181937866475586,
+   "verfall": false,
+   "n": 103,
+   "nSym": 27
+  },
+  {
+   "tag": "2025-07-10",
+   "pauseAktiv": false,
+   "rohT": 1.3002064980738472,
+   "verfall": false,
+   "n": 104,
+   "nSym": 27
+  },
+  {
+   "tag": "2025-07-11",
+   "pauseAktiv": false,
+   "rohT": 0.8858442294430076,
+   "verfall": false,
+   "n": 109,
+   "nSym": 27
+  },
+  {
+   "tag": "2025-07-14",
+   "pauseAktiv": false,
+   "rohT": 0.9020396575461737,
+   "verfall": false,
+   "n": 111,
+   "nSym": 27
+  },
+  {
+   "tag": "2025-07-15",
+   "pauseAktiv": false,
+   "rohT": 0.755003465955785,
+   "verfall": false,
+   "n": 112,
+   "nSym": 27
+  },
+  {
+   "tag": "2025-07-16",
+   "pauseAktiv": false,
+   "rohT": 0.9502758693352302,
+   "verfall": false,
+   "n": 111,
+   "nSym": 27
+  },
+  {
+   "tag": "2025-07-17",
+   "pauseAktiv": false,
+   "rohT": 0.9466515624337832,
+   "verfall": false,
+   "n": 111,
+   "nSym": 27
+  },
+  {
+   "tag": "2025-07-18",
+   "pauseAktiv": false,
+   "rohT": 0.9454406478455861,
+   "verfall": false,
+   "n": 111,
+   "nSym": 27
+  },
+  {
+   "tag": "2025-07-21",
+   "pauseAktiv": false,
+   "rohT": 0.722862420377006,
+   "verfall": false,
+   "n": 110,
+   "nSym": 26
+  },
+  {
+   "tag": "2025-07-22",
+   "pauseAktiv": false,
+   "rohT": 0.7700517238280196,
+   "verfall": false,
+   "n": 110,
+   "nSym": 26
+  },
+  {
+   "tag": "2025-07-23",
+   "pauseAktiv": false,
+   "rohT": 0.9243428948131945,
+   "verfall": false,
+   "n": 116,
+   "nSym": 28
+  },
+  {
+   "tag": "2025-07-24",
+   "pauseAktiv": false,
+   "rohT": 0.9262879775956129,
+   "verfall": false,
+   "n": 115,
+   "nSym": 28
+  },
+  {
+   "tag": "2025-07-25",
+   "pauseAktiv": false,
+   "rohT": 0.9009838558971645,
+   "verfall": false,
+   "n": 117,
+   "nSym": 28
+  },
+  {
+   "tag": "2025-07-28",
+   "pauseAktiv": false,
+   "rohT": 0.9556204194880671,
+   "verfall": false,
+   "n": 116,
+   "nSym": 28
+  },
+  {
+   "tag": "2025-07-29",
+   "pauseAktiv": false,
+   "rohT": 1.032499422505655,
+   "verfall": false,
+   "n": 118,
+   "nSym": 28
+  },
+  {
+   "tag": "2025-07-30",
+   "pauseAktiv": false,
+   "rohT": 0.5113886539997913,
+   "verfall": false,
+   "n": 123,
+   "nSym": 29
+  },
+  {
+   "tag": "2025-07-31",
+   "pauseAktiv": false,
+   "rohT": -0.08257291135296771,
+   "verfall": false,
+   "n": 127,
+   "nSym": 29
+  },
+  {
+   "tag": "2025-08-01",
+   "pauseAktiv": false,
+   "rohT": -0.18825865701370867,
+   "verfall": false,
+   "n": 129,
+   "nSym": 29
+  },
+  {
+   "tag": "2025-08-04",
+   "pauseAktiv": false,
+   "rohT": -0.4548069622688097,
+   "verfall": false,
+   "n": 135,
+   "nSym": 30
+  },
+  {
+   "tag": "2025-08-05",
+   "pauseAktiv": false,
+   "rohT": -0.5439965919157757,
+   "verfall": false,
+   "n": 135,
+   "nSym": 30
+  },
+  {
+   "tag": "2025-08-06",
+   "pauseAktiv": false,
+   "rohT": -0.1466422082221654,
+   "verfall": false,
+   "n": 137,
+   "nSym": 31
+  },
+  {
+   "tag": "2025-08-07",
+   "pauseAktiv": false,
+   "rohT": -0.2827137656896957,
+   "verfall": false,
+   "n": 136,
+   "nSym": 31
+  },
+  {
+   "tag": "2025-08-08",
+   "pauseAktiv": false,
+   "rohT": 0.0674574324478203,
+   "verfall": false,
+   "n": 135,
+   "nSym": 30
+  },
+  {
+   "tag": "2025-08-11",
+   "pauseAktiv": false,
+   "rohT": 0.09755547880719617,
+   "verfall": false,
+   "n": 135,
+   "nSym": 30
+  },
+  {
+   "tag": "2025-08-12",
+   "pauseAktiv": false,
+   "rohT": 0.01158739295284039,
+   "verfall": false,
+   "n": 135,
+   "nSym": 30
+  },
+  {
+   "tag": "2025-08-13",
+   "pauseAktiv": false,
+   "rohT": -0.0842714342773476,
+   "verfall": false,
+   "n": 135,
+   "nSym": 30
+  },
+  {
+   "tag": "2025-08-14",
+   "pauseAktiv": false,
+   "rohT": -0.16058339080409323,
+   "verfall": false,
+   "n": 134,
+   "nSym": 30
+  },
+  {
+   "tag": "2025-08-15",
+   "pauseAktiv": false,
+   "rohT": -0.280622737999375,
+   "verfall": false,
+   "n": 134,
+   "nSym": 30
+  },
+  {
+   "tag": "2025-08-18",
+   "pauseAktiv": false,
+   "rohT": -0.3222494720573186,
+   "verfall": false,
+   "n": 138,
+   "nSym": 30
+  },
+  {
+   "tag": "2025-08-19",
+   "pauseAktiv": false,
+   "rohT": -0.1992255786990462,
+   "verfall": false,
+   "n": 138,
+   "nSym": 30
+  },
+  {
+   "tag": "2025-08-20",
+   "pauseAktiv": false,
+   "rohT": 0.13155206942817996,
+   "verfall": false,
+   "n": 141,
+   "nSym": 31
+  },
+  {
+   "tag": "2025-08-21",
+   "pauseAktiv": false,
+   "rohT": 0.5885891643450258,
+   "verfall": false,
+   "n": 146,
+   "nSym": 32
+  },
+  {
+   "tag": "2025-08-22",
+   "pauseAktiv": false,
+   "rohT": 0.5435299833864887,
+   "verfall": false,
+   "n": 146,
+   "nSym": 32
+  },
+  {
+   "tag": "2025-08-25",
+   "pauseAktiv": false,
+   "rohT": 0.5831771489968801,
+   "verfall": false,
+   "n": 145,
+   "nSym": 32
+  },
+  {
+   "tag": "2025-08-26",
+   "pauseAktiv": false,
+   "rohT": 0.666356683785248,
+   "verfall": false,
+   "n": 148,
+   "nSym": 33
+  },
+  {
+   "tag": "2025-08-27",
+   "pauseAktiv": false,
+   "rohT": 0.5593260439858437,
+   "verfall": false,
+   "n": 146,
+   "nSym": 33
+  },
+  {
+   "tag": "2025-08-28",
+   "pauseAktiv": false,
+   "rohT": -1.338132184466194,
+   "verfall": true,
+   "n": 137,
+   "nSym": 30
+  },
+  {
+   "tag": "2025-08-29",
+   "pauseAktiv": false,
+   "rohT": -2.1673060027385396,
+   "verfall": true,
+   "n": 125,
+   "nSym": 29
+  },
+  {
+   "tag": "2025-09-02",
+   "pauseAktiv": false,
+   "rohT": -2.093475329920278,
+   "verfall": true,
+   "n": 107,
+   "nSym": 25
+  },
+  {
+   "tag": "2025-09-03",
+   "pauseAktiv": false,
+   "rohT": -2.2082979094147253,
+   "verfall": true,
+   "n": 95,
+   "nSym": 21
+  },
+  {
+   "tag": "2025-09-04",
+   "pauseAktiv": false,
+   "rohT": -2.162428424810714,
+   "verfall": true,
+   "n": 93,
+   "nSym": 21
+  },
+  {
+   "tag": "2025-09-05",
+   "pauseAktiv": false,
+   "rohT": -1.9553787890756553,
+   "verfall": true,
+   "n": 92,
+   "nSym": 21
+  },
+  {
+   "tag": "2025-09-08",
+   "pauseAktiv": false,
+   "rohT": -3.316555984621985,
+   "verfall": true,
+   "n": 90,
+   "nSym": 19
+  },
+  {
+   "tag": "2025-09-09",
+   "pauseAktiv": false,
+   "rohT": -3.1945150466671457,
+   "verfall": true,
+   "n": 90,
+   "nSym": 19
+  },
+  {
+   "tag": "2025-09-10",
+   "pauseAktiv": false,
+   "rohT": -3.00998845328031,
+   "verfall": true,
+   "n": 92,
+   "nSym": 19
+  },
+  {
+   "tag": "2025-09-11",
+   "pauseAktiv": true,
+   "rohT": -3.3734055014845463,
+   "verfall": true,
+   "n": 95,
+   "nSym": 21
+  },
+  {
+   "tag": "2025-09-12",
+   "pauseAktiv": true,
+   "rohT": -3.5136392672808063,
+   "verfall": true,
+   "n": 97,
+   "nSym": 22
+  },
+  {
+   "tag": "2025-09-15",
+   "pauseAktiv": true,
+   "rohT": -3.2271156565513235,
+   "verfall": true,
+   "n": 101,
+   "nSym": 23
+  },
+  {
+   "tag": "2025-09-16",
+   "pauseAktiv": true,
+   "rohT": -3.2443607340340885,
+   "verfall": true,
+   "n": 101,
+   "nSym": 23
+  },
+  {
+   "tag": "2025-09-17",
+   "pauseAktiv": true,
+   "rohT": -3.265767927430299,
+   "verfall": true,
+   "n": 101,
+   "nSym": 23
+  },
+  {
+   "tag": "2025-09-18",
+   "pauseAktiv": true,
+   "rohT": -3.1215083441357034,
+   "verfall": true,
+   "n": 103,
+   "nSym": 23
+  },
+  {
+   "tag": "2025-09-19",
+   "pauseAktiv": true,
+   "rohT": -3.1248519867589177,
+   "verfall": true,
+   "n": 104,
+   "nSym": 24
+  },
+  {
+   "tag": "2025-09-22",
+   "pauseAktiv": true,
+   "rohT": -3.0179699397514423,
+   "verfall": true,
+   "n": 106,
+   "nSym": 24
+  },
+  {
+   "tag": "2025-09-23",
+   "pauseAktiv": true,
+   "rohT": -2.705294031850249,
+   "verfall": true,
+   "n": 109,
+   "nSym": 24
+  },
+  {
+   "tag": "2025-09-24",
+   "pauseAktiv": true,
+   "rohT": -2.9902956596922667,
+   "verfall": true,
+   "n": 113,
+   "nSym": 25
+  },
+  {
+   "tag": "2025-09-25",
+   "pauseAktiv": true,
+   "rohT": -2.8912221338614073,
+   "verfall": true,
+   "n": 114,
+   "nSym": 25
+  },
+  {
+   "tag": "2025-09-26",
+   "pauseAktiv": true,
+   "rohT": -2.925766477509797,
+   "verfall": true,
+   "n": 114,
+   "nSym": 25
+  },
+  {
+   "tag": "2025-09-29",
+   "pauseAktiv": true,
+   "rohT": -2.9564957440495125,
+   "verfall": true,
+   "n": 114,
+   "nSym": 25
+  },
+  {
+   "tag": "2025-09-30",
+   "pauseAktiv": true,
+   "rohT": -2.8769877711875935,
+   "verfall": true,
+   "n": 114,
+   "nSym": 25
+  },
+  {
+   "tag": "2025-10-01",
+   "pauseAktiv": true,
+   "rohT": -2.8350434071041626,
+   "verfall": true,
+   "n": 114,
+   "nSym": 25
+  },
+  {
+   "tag": "2025-10-02",
+   "pauseAktiv": true,
+   "rohT": -2.8846969128798596,
+   "verfall": true,
+   "n": 114,
+   "nSym": 25
+  },
+  {
+   "tag": "2025-10-03",
+   "pauseAktiv": true,
+   "rohT": -2.833047820427055,
+   "verfall": true,
+   "n": 113,
+   "nSym": 25
+  },
+  {
+   "tag": "2025-10-06",
+   "pauseAktiv": true,
+   "rohT": -0.015780635437736692,
+   "verfall": false,
+   "n": 116,
+   "nSym": 26
+  },
+  {
+   "tag": "2025-10-07",
+   "pauseAktiv": true,
+   "rohT": -0.012803577086902527,
+   "verfall": false,
+   "n": 114,
+   "nSym": 26
+  },
+  {
+   "tag": "2025-10-08",
+   "pauseAktiv": true,
+   "rohT": -0.07035526098529918,
+   "verfall": false,
+   "n": 113,
+   "nSym": 26
+  },
+  {
+   "tag": "2025-10-09",
+   "pauseAktiv": true,
+   "rohT": -0.03689198279772395,
+   "verfall": false,
+   "n": 110,
+   "nSym": 26
+  },
+  {
+   "tag": "2025-10-10",
+   "pauseAktiv": true,
+   "rohT": 0.03301681193157496,
+   "verfall": false,
+   "n": 110,
+   "nSym": 26
+  },
+  {
+   "tag": "2025-10-13",
+   "pauseAktiv": false,
+   "rohT": 0.08763896422267582,
+   "verfall": false,
+   "n": 110,
+   "nSym": 26
+  },
+  {
+   "tag": "2025-10-14",
+   "pauseAktiv": false,
+   "rohT": 0.07562484143361216,
+   "verfall": false,
+   "n": 110,
+   "nSym": 26
+  },
+  {
+   "tag": "2025-10-15",
+   "pauseAktiv": false,
+   "rohT": 0.082295547384364,
+   "verfall": false,
+   "n": 111,
+   "nSym": 26
+  },
+  {
+   "tag": "2025-10-16",
+   "pauseAktiv": false,
+   "rohT": 0.07250879077556796,
+   "verfall": false,
+   "n": 111,
+   "nSym": 26
+  },
+  {
+   "tag": "2025-10-17",
+   "pauseAktiv": false,
+   "rohT": 0.08632578223790506,
+   "verfall": false,
+   "n": 111,
+   "nSym": 26
+  },
+  {
+   "tag": "2025-10-20",
+   "pauseAktiv": false,
+   "rohT": 0.1060990825418475,
+   "verfall": false,
+   "n": 111,
+   "nSym": 26
+  },
+  {
+   "tag": "2025-10-21",
+   "pauseAktiv": false,
+   "rohT": 0.11892020535480599,
+   "verfall": false,
+   "n": 110,
+   "nSym": 26
+  },
+  {
+   "tag": "2025-10-22",
+   "pauseAktiv": false,
+   "rohT": 0.1490057506317473,
+   "verfall": false,
+   "n": 111,
+   "nSym": 27
+  },
+  {
+   "tag": "2025-10-23",
+   "pauseAktiv": false,
+   "rohT": 0.223034537158463,
+   "verfall": false,
+   "n": 112,
+   "nSym": 27
+  },
+  {
+   "tag": "2025-10-24",
+   "pauseAktiv": false,
+   "rohT": 0.1723736424476737,
+   "verfall": false,
+   "n": 111,
+   "nSym": 27
+  },
+  {
+   "tag": "2025-10-27",
+   "pauseAktiv": false,
+   "rohT": 0.24146434417539614,
+   "verfall": false,
+   "n": 113,
+   "nSym": 27
+  },
+  {
+   "tag": "2025-10-28",
+   "pauseAktiv": false,
+   "rohT": 0.2882248399236345,
+   "verfall": false,
+   "n": 116,
+   "nSym": 26
+  },
+  {
+   "tag": "2025-10-29",
+   "pauseAktiv": false,
+   "rohT": 0.21318444125054342,
+   "verfall": false,
+   "n": 120,
+   "nSym": 25
+  },
+  {
+   "tag": "2025-10-30",
+   "pauseAktiv": false,
+   "rohT": 0.32426023360184986,
+   "verfall": false,
+   "n": 127,
+   "nSym": 25
+  },
+  {
+   "tag": "2025-10-31",
+   "pauseAktiv": false,
+   "rohT": 0.42627749234247597,
+   "verfall": false,
+   "n": 131,
+   "nSym": 25
+  },
+  {
+   "tag": "2025-11-03",
+   "pauseAktiv": false,
+   "rohT": 0.4345488359590506,
+   "verfall": false,
+   "n": 134,
+   "nSym": 25
+  },
+  {
+   "tag": "2025-11-04",
+   "pauseAktiv": false,
+   "rohT": 0.4745281595152778,
+   "verfall": false,
+   "n": 133,
+   "nSym": 25
+  },
+  {
+   "tag": "2025-11-05",
+   "pauseAktiv": false,
+   "rohT": 0.4939004575987554,
+   "verfall": false,
+   "n": 133,
+   "nSym": 25
+  },
+  {
+   "tag": "2025-11-06",
+   "pauseAktiv": false,
+   "rohT": 0.385978832162117,
+   "verfall": false,
+   "n": 132,
+   "nSym": 25
+  },
+  {
+   "tag": "2025-11-07",
+   "pauseAktiv": false,
+   "rohT": 0.5784722877806064,
+   "verfall": false,
+   "n": 126,
+   "nSym": 25
+  },
+  {
+   "tag": "2025-11-10",
+   "pauseAktiv": false,
+   "rohT": 0.5440048548256625,
+   "verfall": false,
+   "n": 125,
+   "nSym": 24
+  },
+  {
+   "tag": "2025-11-11",
+   "pauseAktiv": false,
+   "rohT": 0.5683643654112233,
+   "verfall": false,
+   "n": 124,
+   "nSym": 24
+  },
+  {
+   "tag": "2025-11-12",
+   "pauseAktiv": false,
+   "rohT": 0.5487262284959634,
+   "verfall": false,
+   "n": 123,
+   "nSym": 24
+  },
+  {
+   "tag": "2025-11-13",
+   "pauseAktiv": false,
+   "rohT": 0.57094320866985,
+   "verfall": false,
+   "n": 123,
+   "nSym": 24
+  },
+  {
+   "tag": "2025-11-14",
+   "pauseAktiv": false,
+   "rohT": 0.6227528680557228,
+   "verfall": false,
+   "n": 123,
+   "nSym": 24
+  },
+  {
+   "tag": "2025-11-17",
+   "pauseAktiv": false,
+   "rohT": 0.6342291769829445,
+   "verfall": false,
+   "n": 123,
+   "nSym": 24
+  },
+  {
+   "tag": "2025-11-18",
+   "pauseAktiv": false,
+   "rohT": 0.6483801054961627,
+   "verfall": false,
+   "n": 122,
+   "nSym": 24
+  },
+  {
+   "tag": "2025-11-19",
+   "pauseAktiv": false,
+   "rohT": 0.5480324611949081,
+   "verfall": false,
+   "n": 117,
+   "nSym": 24
+  },
+  {
+   "tag": "2025-11-20",
+   "pauseAktiv": false,
+   "rohT": 0.5867959643078967,
+   "verfall": false,
+   "n": 116,
+   "nSym": 24
+  },
+  {
+   "tag": "2025-11-21",
+   "pauseAktiv": false,
+   "rohT": 0.5327255940796575,
+   "verfall": false,
+   "n": 117,
+   "nSym": 25
+  },
+  {
+   "tag": "2025-11-24",
+   "pauseAktiv": false,
+   "rohT": 0.6486807949101868,
+   "verfall": false,
+   "n": 117,
+   "nSym": 25
+  },
+  {
+   "tag": "2025-11-25",
+   "pauseAktiv": false,
+   "rohT": 0.6098970004905253,
+   "verfall": false,
+   "n": 116,
+   "nSym": 25
+  },
+  {
+   "tag": "2025-11-26",
+   "pauseAktiv": false,
+   "rohT": 0.985452706491416,
+   "verfall": false,
+   "n": 112,
+   "nSym": 24
+  },
+  {
+   "tag": "2025-11-28",
+   "pauseAktiv": false,
+   "rohT": 1.0950460517787193,
+   "verfall": false,
+   "n": 103,
+   "nSym": 23
+  },
+  {
+   "tag": "2025-12-01",
+   "pauseAktiv": false,
+   "rohT": 1.1133066116940527,
+   "verfall": false,
+   "n": 100,
+   "nSym": 23
+  },
+  {
+   "tag": "2025-12-02",
+   "pauseAktiv": false,
+   "rohT": 1.1304180270387956,
+   "verfall": false,
+   "n": 98,
+   "nSym": 23
+  },
+  {
+   "tag": "2025-12-03",
+   "pauseAktiv": false,
+   "rohT": 1.1460492711425494,
+   "verfall": false,
+   "n": 100,
+   "nSym": 23
+  },
+  {
+   "tag": "2025-12-04",
+   "pauseAktiv": false,
+   "rohT": 1.0588588281061213,
+   "verfall": false,
+   "n": 107,
+   "nSym": 24
+  },
+  {
+   "tag": "2025-12-05",
+   "pauseAktiv": false,
+   "rohT": 1.0766500087275797,
+   "verfall": false,
+   "n": 111,
+   "nSym": 24
+  },
+  {
+   "tag": "2025-12-08",
+   "pauseAktiv": false,
+   "rohT": 1.0734461242558082,
+   "verfall": false,
+   "n": 111,
+   "nSym": 24
+  },
+  {
+   "tag": "2025-12-09",
+   "pauseAktiv": false,
+   "rohT": 1.0647997643178315,
+   "verfall": false,
+   "n": 112,
+   "nSym": 24
+  },
+  {
+   "tag": "2025-12-10",
+   "pauseAktiv": false,
+   "rohT": 1.0791729552261005,
+   "verfall": false,
+   "n": 113,
+   "nSym": 24
+  },
+  {
+   "tag": "2025-12-11",
+   "pauseAktiv": false,
+   "rohT": 1.193141860391695,
+   "verfall": false,
+   "n": 116,
+   "nSym": 26
+  },
+  {
+   "tag": "2025-12-12",
+   "pauseAktiv": false,
+   "rohT": 1.0612420735809067,
+   "verfall": false,
+   "n": 122,
+   "nSym": 26
+  },
+  {
+   "tag": "2025-12-15",
+   "pauseAktiv": false,
+   "rohT": 1.120199431628245,
+   "verfall": false,
+   "n": 126,
+   "nSym": 26
+  },
+  {
+   "tag": "2025-12-16",
+   "pauseAktiv": false,
+   "rohT": 1.2169148766105122,
+   "verfall": false,
+   "n": 129,
+   "nSym": 26
+  },
+  {
+   "tag": "2025-12-17",
+   "pauseAktiv": false,
+   "rohT": 1.1785978897524203,
+   "verfall": false,
+   "n": 134,
+   "nSym": 27
+  },
+  {
+   "tag": "2025-12-18",
+   "pauseAktiv": false,
+   "rohT": 1.178113503930644,
+   "verfall": false,
+   "n": 129,
+   "nSym": 27
+  },
+  {
+   "tag": "2025-12-19",
+   "pauseAktiv": false,
+   "rohT": 1.1222230176337566,
+   "verfall": false,
+   "n": 129,
+   "nSym": 27
+  },
+  {
+   "tag": "2025-12-22",
+   "pauseAktiv": false,
+   "rohT": 1.1035613226761514,
+   "verfall": false,
+   "n": 127,
+   "nSym": 26
+  },
+  {
+   "tag": "2025-12-23",
+   "pauseAktiv": false,
+   "rohT": 1.1452574353093947,
+   "verfall": false,
+   "n": 126,
+   "nSym": 26
+  },
+  {
+   "tag": "2025-12-24",
+   "pauseAktiv": false,
+   "rohT": 1.1539343500308468,
+   "verfall": false,
+   "n": 124,
+   "nSym": 26
+  },
+  {
+   "tag": "2025-12-26",
+   "pauseAktiv": false,
+   "rohT": 1.193125729774084,
+   "verfall": false,
+   "n": 122,
+   "nSym": 26
+  },
+  {
+   "tag": "2025-12-29",
+   "pauseAktiv": false,
+   "rohT": 1.2368843506575198,
+   "verfall": false,
+   "n": 118,
+   "nSym": 26
+  },
+  {
+   "tag": "2025-12-30",
+   "pauseAktiv": false,
+   "rohT": 1.2054782661904033,
+   "verfall": false,
+   "n": 120,
+   "nSym": 27
+  },
+  {
+   "tag": "2025-12-31",
+   "pauseAktiv": false,
+   "rohT": 1.2394346260938203,
+   "verfall": false,
+   "n": 119,
+   "nSym": 27
+  },
+  {
+   "tag": "2026-01-02",
+   "pauseAktiv": false,
+   "rohT": 1.2492961240750524,
+   "verfall": false,
+   "n": 120,
+   "nSym": 27
+  },
+  {
+   "tag": "2026-01-05",
+   "pauseAktiv": false,
+   "rohT": 1.463807817282608,
+   "verfall": false,
+   "n": 119,
+   "nSym": 28
+  },
+  {
+   "tag": "2026-01-06",
+   "pauseAktiv": false,
+   "rohT": 1.3932345337844694,
+   "verfall": false,
+   "n": 118,
+   "nSym": 29
+  },
+  {
+   "tag": "2026-01-07",
+   "pauseAktiv": false,
+   "rohT": 1.6005560450897294,
+   "verfall": false,
+   "n": 120,
+   "nSym": 29
+  },
+  {
+   "tag": "2026-01-08",
+   "pauseAktiv": false,
+   "rohT": 1.4501986605690877,
+   "verfall": false,
+   "n": 117,
+   "nSym": 28
+  },
+  {
+   "tag": "2026-01-09",
+   "pauseAktiv": false,
+   "rohT": 1.2590121925905144,
+   "verfall": false,
+   "n": 118,
+   "nSym": 30
+  },
+  {
+   "tag": "2026-01-12",
+   "pauseAktiv": false,
+   "rohT": 1.3354876825359092,
+   "verfall": false,
+   "n": 115,
+   "nSym": 29
+  },
+  {
+   "tag": "2026-01-13",
+   "pauseAktiv": false,
+   "rohT": 1.466413553441744,
+   "verfall": false,
+   "n": 116,
+   "nSym": 29
+  },
+  {
+   "tag": "2026-01-14",
+   "pauseAktiv": false,
+   "rohT": 1.2839347419770382,
+   "verfall": false,
+   "n": 117,
+   "nSym": 30
+  },
+  {
+   "tag": "2026-01-15",
+   "pauseAktiv": false,
+   "rohT": 1.3392598163639209,
+   "verfall": false,
+   "n": 116,
+   "nSym": 30
+  },
+  {
+   "tag": "2026-01-16",
+   "pauseAktiv": false,
+   "rohT": 1.3677473139846401,
+   "verfall": false,
+   "n": 115,
+   "nSym": 30
+  },
+  {
+   "tag": "2026-01-20",
+   "pauseAktiv": false,
+   "rohT": 1.1528879354839798,
+   "verfall": false,
+   "n": 110,
+   "nSym": 29
+  },
+  {
+   "tag": "2026-01-21",
+   "pauseAktiv": false,
+   "rohT": 1.197248052002557,
+   "verfall": false,
+   "n": 106,
+   "nSym": 28
+  },
+  {
+   "tag": "2026-01-22",
+   "pauseAktiv": false,
+   "rohT": 1.0516316168988424,
+   "verfall": false,
+   "n": 105,
+   "nSym": 27
+  },
+  {
+   "tag": "2026-01-23",
+   "pauseAktiv": false,
+   "rohT": 1.070914714175758,
+   "verfall": false,
+   "n": 105,
+   "nSym": 27
+  },
+  {
+   "tag": "2026-01-26",
+   "pauseAktiv": false,
+   "rohT": 1.0550633842531736,
+   "verfall": false,
+   "n": 105,
+   "nSym": 27
+  },
+  {
+   "tag": "2026-01-27",
+   "pauseAktiv": false,
+   "rohT": 1.0361848400063602,
+   "verfall": false,
+   "n": 105,
+   "nSym": 27
+  },
+  {
+   "tag": "2026-01-28",
+   "pauseAktiv": false,
+   "rohT": 1.0361848400063602,
+   "verfall": false,
+   "n": 105,
+   "nSym": 27
+  },
+  {
+   "tag": "2026-01-29",
+   "pauseAktiv": false,
+   "rohT": 1.1391647276736114,
+   "verfall": false,
+   "n": 107,
+   "nSym": 27
+  },
+  {
+   "tag": "2026-01-30",
+   "pauseAktiv": false,
+   "rohT": 1.452841065537106,
+   "verfall": false,
+   "n": 109,
+   "nSym": 28
+  },
+  {
+   "tag": "2026-02-02",
+   "pauseAktiv": false,
+   "rohT": 1.0461437236693978,
+   "verfall": false,
+   "n": 108,
+   "nSym": 27
+  },
+  {
+   "tag": "2026-02-03",
+   "pauseAktiv": false,
+   "rohT": 1.1722553260930109,
+   "verfall": false,
+   "n": 108,
+   "nSym": 27
+  },
+  {
+   "tag": "2026-02-04",
+   "pauseAktiv": false,
+   "rohT": 1.2263401172447244,
+   "verfall": false,
+   "n": 110,
+   "nSym": 27
+  },
+  {
+   "tag": "2026-02-05",
+   "pauseAktiv": false,
+   "rohT": 1.3079616547198372,
+   "verfall": false,
+   "n": 110,
+   "nSym": 27
+  },
+  {
+   "tag": "2026-02-06",
+   "pauseAktiv": false,
+   "rohT": 1.450099976223135,
+   "verfall": false,
+   "n": 110,
+   "nSym": 28
+  },
+  {
+   "tag": "2026-02-09",
+   "pauseAktiv": false,
+   "rohT": 1.4743752954165503,
+   "verfall": false,
+   "n": 109,
+   "nSym": 28
+  },
+  {
+   "tag": "2026-02-10",
+   "pauseAktiv": false,
+   "rohT": 1.4039473525061033,
+   "verfall": false,
+   "n": 109,
+   "nSym": 28
+  },
+  {
+   "tag": "2026-02-11",
+   "pauseAktiv": false,
+   "rohT": 1.560800293849644,
+   "verfall": false,
+   "n": 109,
+   "nSym": 28
+  },
+  {
+   "tag": "2026-02-12",
+   "pauseAktiv": false,
+   "rohT": 1.6175889512029942,
+   "verfall": false,
+   "n": 110,
+   "nSym": 28
+  },
+  {
+   "tag": "2026-02-13",
+   "pauseAktiv": false,
+   "rohT": 1.4264708017195231,
+   "verfall": false,
+   "n": 112,
+   "nSym": 29
+  },
+  {
+   "tag": "2026-02-17",
+   "pauseAktiv": false,
+   "rohT": 1.5728505716656351,
+   "verfall": false,
+   "n": 112,
+   "nSym": 29
+  },
+  {
+   "tag": "2026-02-18",
+   "pauseAktiv": false,
+   "rohT": 1.5433946342342812,
+   "verfall": false,
+   "n": 111,
+   "nSym": 29
+  },
+  {
+   "tag": "2026-02-19",
+   "pauseAktiv": false,
+   "rohT": 1.5539118167694357,
+   "verfall": false,
+   "n": 109,
+   "nSym": 29
+  },
+  {
+   "tag": "2026-02-20",
+   "pauseAktiv": false,
+   "rohT": 1.5163954499757724,
+   "verfall": false,
+   "n": 108,
+   "nSym": 29
+  },
+  {
+   "tag": "2026-02-23",
+   "pauseAktiv": false,
+   "rohT": 1.3670118549144912,
+   "verfall": false,
+   "n": 105,
+   "nSym": 29
+  },
+  {
+   "tag": "2026-02-24",
+   "pauseAktiv": false,
+   "rohT": 1.6394016985832272,
+   "verfall": false,
+   "n": 100,
+   "nSym": 28
+  },
+  {
+   "tag": "2026-02-25",
+   "pauseAktiv": false,
+   "rohT": 1.6049336869596098,
+   "verfall": false,
+   "n": 96,
+   "nSym": 28
+  },
+  {
+   "tag": "2026-02-26",
+   "pauseAktiv": false,
+   "rohT": 1.5726726703815443,
+   "verfall": false,
+   "n": 91,
+   "nSym": 28
+  },
+  {
+   "tag": "2026-02-27",
+   "pauseAktiv": false,
+   "rohT": 0.901962618338786,
+   "verfall": false,
+   "n": 88,
+   "nSym": 28
+  },
+  {
+   "tag": "2026-03-02",
+   "pauseAktiv": false,
+   "rohT": 0.7642532664541081,
+   "verfall": false,
+   "n": 90,
+   "nSym": 27
+  },
+  {
+   "tag": "2026-03-03",
+   "pauseAktiv": false,
+   "rohT": 0.7079099163712641,
+   "verfall": false,
+   "n": 91,
+   "nSym": 27
+  },
+  {
+   "tag": "2026-03-04",
+   "pauseAktiv": false,
+   "rohT": 0.6854450424611718,
+   "verfall": false,
+   "n": 91,
+   "nSym": 27
+  },
+  {
+   "tag": "2026-03-05",
+   "pauseAktiv": false,
+   "rohT": 0.5164690503842496,
+   "verfall": false,
+   "n": 91,
+   "nSym": 27
+  },
+  {
+   "tag": "2026-03-06",
+   "pauseAktiv": false,
+   "rohT": 0.5158054385131612,
+   "verfall": false,
+   "n": 91,
+   "nSym": 27
+  },
+  {
+   "tag": "2026-03-09",
+   "pauseAktiv": false,
+   "rohT": 1.0296000122983278,
+   "verfall": false,
+   "n": 93,
+   "nSym": 28
+  },
+  {
+   "tag": "2026-03-10",
+   "pauseAktiv": false,
+   "rohT": 0.6368156637635207,
+   "verfall": false,
+   "n": 96,
+   "nSym": 29
+  },
+  {
+   "tag": "2026-03-11",
+   "pauseAktiv": false,
+   "rohT": 0.9094254076712247,
+   "verfall": false,
+   "n": 98,
+   "nSym": 29
+  },
+  {
+   "tag": "2026-03-12",
+   "pauseAktiv": false,
+   "rohT": 0.8816179635480907,
+   "verfall": false,
+   "n": 102,
+   "nSym": 29
+  },
+  {
+   "tag": "2026-03-13",
+   "pauseAktiv": false,
+   "rohT": 0.9496806043012792,
+   "verfall": false,
+   "n": 105,
+   "nSym": 29
+  },
+  {
+   "tag": "2026-03-16",
+   "pauseAktiv": false,
+   "rohT": 0.6187982200688075,
+   "verfall": false,
+   "n": 106,
+   "nSym": 30
+  },
+  {
+   "tag": "2026-03-17",
+   "pauseAktiv": false,
+   "rohT": 0.3964115164011517,
+   "verfall": false,
+   "n": 107,
+   "nSym": 30
+  },
+  {
+   "tag": "2026-03-18",
+   "pauseAktiv": false,
+   "rohT": 0.44612955906837937,
+   "verfall": false,
+   "n": 107,
+   "nSym": 30
+  },
+  {
+   "tag": "2026-03-19",
+   "pauseAktiv": false,
+   "rohT": 0.4369205706301262,
+   "verfall": false,
+   "n": 107,
+   "nSym": 30
+  },
+  {
+   "tag": "2026-03-20",
+   "pauseAktiv": false,
+   "rohT": 0.22780093857859626,
+   "verfall": false,
+   "n": 106,
+   "nSym": 30
+  },
+  {
+   "tag": "2026-03-23",
+   "pauseAktiv": false,
+   "rohT": 0.41409574159226803,
+   "verfall": false,
+   "n": 110,
+   "nSym": 30
+  },
+  {
+   "tag": "2026-03-24",
+   "pauseAktiv": false,
+   "rohT": 0.6842991125177272,
+   "verfall": false,
+   "n": 112,
+   "nSym": 31
+  },
+  {
+   "tag": "2026-03-25",
+   "pauseAktiv": false,
+   "rohT": 0.9446223475793291,
+   "verfall": false,
+   "n": 114,
+   "nSym": 31
+  },
+  {
+   "tag": "2026-03-26",
+   "pauseAktiv": false,
+   "rohT": 0.7074330423141543,
+   "verfall": false,
+   "n": 118,
+   "nSym": 31
+  },
+  {
+   "tag": "2026-03-27",
+   "pauseAktiv": false,
+   "rohT": 0.4358510922206769,
+   "verfall": false,
+   "n": 123,
+   "nSym": 32
+  },
+  {
+   "tag": "2026-03-30",
+   "pauseAktiv": false,
+   "rohT": 0.5337710384678092,
+   "verfall": false,
+   "n": 124,
+   "nSym": 32
+  },
+  {
+   "tag": "2026-03-31",
+   "pauseAktiv": false,
+   "rohT": 0.519723333607334,
+   "verfall": false,
+   "n": 123,
+   "nSym": 32
+  },
+  {
+   "tag": "2026-04-01",
+   "pauseAktiv": false,
+   "rohT": 0.2691781193300973,
+   "verfall": false,
+   "n": 120,
+   "nSym": 31
+  },
+  {
+   "tag": "2026-04-02",
+   "pauseAktiv": false,
+   "rohT": 0.3934077418833709,
+   "verfall": false,
+   "n": 115,
+   "nSym": 31
+  },
+  {
+   "tag": "2026-04-06",
+   "pauseAktiv": false,
+   "rohT": 0.4786967657373888,
+   "verfall": false,
+   "n": 113,
+   "nSym": 31
+  },
+  {
+   "tag": "2026-04-07",
+   "pauseAktiv": false,
+   "rohT": 0.4879589825280342,
+   "verfall": false,
+   "n": 112,
+   "nSym": 31
+  },
+  {
+   "tag": "2026-04-08",
+   "pauseAktiv": false,
+   "rohT": 0.6022793889781171,
+   "verfall": false,
+   "n": 112,
+   "nSym": 31
+  },
+  {
+   "tag": "2026-04-09",
+   "pauseAktiv": false,
+   "rohT": 0.2878486944524384,
+   "verfall": false,
+   "n": 109,
+   "nSym": 30
+  },
+  {
+   "tag": "2026-04-10",
+   "pauseAktiv": false,
+   "rohT": 0.06540500763332116,
+   "verfall": false,
+   "n": 105,
+   "nSym": 28
+  },
+  {
+   "tag": "2026-04-13",
+   "pauseAktiv": false,
+   "rohT": -0.31137843066337856,
+   "verfall": false,
+   "n": 98,
+   "nSym": 25
+  },
+  {
+   "tag": "2026-04-14",
+   "pauseAktiv": false,
+   "rohT": 1.0602476146799285,
+   "verfall": false,
+   "n": 95,
+   "nSym": 24
+  },
+  {
+   "tag": "2026-04-15",
+   "pauseAktiv": false,
+   "rohT": 0.9744016501182234,
+   "verfall": false,
+   "n": 92,
+   "nSym": 24
+  },
+  {
+   "tag": "2026-04-16",
+   "pauseAktiv": false,
+   "rohT": 0.7736739302300081,
+   "verfall": false,
+   "n": 95,
+   "nSym": 25
+  },
+  {
+   "tag": "2026-04-17",
+   "pauseAktiv": false,
+   "rohT": 0.7818305696331374,
+   "verfall": false,
+   "n": 97,
+   "nSym": 25
+  },
+  {
+   "tag": "2026-04-20",
+   "pauseAktiv": false,
+   "rohT": 0.6585695731056306,
+   "verfall": false,
+   "n": 98,
+   "nSym": 26
+  },
+  {
+   "tag": "2026-04-21",
+   "pauseAktiv": false,
+   "rohT": 0.3761934877559501,
+   "verfall": false,
+   "n": 103,
+   "nSym": 26
+  },
+  {
+   "tag": "2026-04-22",
+   "pauseAktiv": false,
+   "rohT": 0.3755263152708559,
+   "verfall": false,
+   "n": 105,
+   "nSym": 27
+  },
+  {
+   "tag": "2026-04-23",
+   "pauseAktiv": false,
+   "rohT": 0.02743310490174967,
+   "verfall": false,
+   "n": 109,
+   "nSym": 27
+  },
+  {
+   "tag": "2026-04-24",
+   "pauseAktiv": false,
+   "rohT": -0.1682490285016421,
+   "verfall": false,
+   "n": 118,
+   "nSym": 28
+  },
+  {
+   "tag": "2026-04-27",
+   "pauseAktiv": false,
+   "rohT": 0.24369133988802644,
+   "verfall": false,
+   "n": 119,
+   "nSym": 29
+  },
+  {
+   "tag": "2026-04-28",
+   "pauseAktiv": false,
+   "rohT": 0.30466598324515043,
+   "verfall": false,
+   "n": 118,
+   "nSym": 29
+  },
+  {
+   "tag": "2026-04-29",
+   "pauseAktiv": false,
+   "rohT": 0.2508970187889056,
+   "verfall": false,
+   "n": 118,
+   "nSym": 29
+  },
+  {
+   "tag": "2026-04-30",
+   "pauseAktiv": false,
+   "rohT": -0.0004125675719134857,
+   "verfall": false,
+   "n": 115,
+   "nSym": 29
+  },
+  {
+   "tag": "2026-05-01",
+   "pauseAktiv": false,
+   "rohT": 0.2993055077921221,
+   "verfall": false,
+   "n": 119,
+   "nSym": 29
+  },
+  {
+   "tag": "2026-05-04",
+   "pauseAktiv": false,
+   "rohT": 0.5708133234144884,
+   "verfall": false,
+   "n": 118,
+   "nSym": 29
+  },
+  {
+   "tag": "2026-05-05",
+   "pauseAktiv": false,
+   "rohT": 0.5869538519330862,
+   "verfall": false,
+   "n": 119,
+   "nSym": 29
+  },
+  {
+   "tag": "2026-05-06",
+   "pauseAktiv": false,
+   "rohT": 0.42052772035241454,
+   "verfall": false,
+   "n": 120,
+   "nSym": 31
+  },
+  {
+   "tag": "2026-05-07",
+   "pauseAktiv": false,
+   "rohT": 0.8076759755208249,
+   "verfall": false,
+   "n": 123,
+   "nSym": 31
+  },
+  {
+   "tag": "2026-05-08",
+   "pauseAktiv": false,
+   "rohT": 0.8909155536477064,
+   "verfall": false,
+   "n": 121,
+   "nSym": 30
+  },
+  {
+   "tag": "2026-05-11",
+   "pauseAktiv": false,
+   "rohT": 0.8864018274671799,
+   "verfall": false,
+   "n": 126,
+   "nSym": 31
+  },
+  {
+   "tag": "2026-05-12",
+   "pauseAktiv": false,
+   "rohT": 0.6552355660135275,
+   "verfall": false,
+   "n": 125,
+   "nSym": 31
+  },
+  {
+   "tag": "2026-05-13",
+   "pauseAktiv": false,
+   "rohT": 0.7324265329456154,
+   "verfall": false,
+   "n": 124,
+   "nSym": 31
+  },
+  {
+   "tag": "2026-05-14",
+   "pauseAktiv": false,
+   "rohT": 0.6458813722607083,
+   "verfall": false,
+   "n": 123,
+   "nSym": 31
+  },
+  {
+   "tag": "2026-05-15",
+   "pauseAktiv": false,
+   "rohT": 0.6945855041973721,
+   "verfall": false,
+   "n": 124,
+   "nSym": 31
+  },
+  {
+   "tag": "2026-05-18",
+   "pauseAktiv": false,
+   "rohT": 0.6461809853976191,
+   "verfall": false,
+   "n": 124,
+   "nSym": 31
+  },
+  {
+   "tag": "2026-05-19",
+   "pauseAktiv": false,
+   "rohT": 0.8983116864624338,
+   "verfall": false,
+   "n": 125,
+   "nSym": 32
+  },
+  {
+   "tag": "2026-05-20",
+   "pauseAktiv": false,
+   "rohT": 0.8105499117674774,
+   "verfall": false,
+   "n": 127,
+   "nSym": 32
+  },
+  {
+   "tag": "2026-05-21",
+   "pauseAktiv": false,
+   "rohT": 0.8766264146473884,
+   "verfall": false,
+   "n": 132,
+   "nSym": 33
+  },
+  {
+   "tag": "2026-05-22",
+   "pauseAktiv": false,
+   "rohT": 0.9429993814224058,
+   "verfall": false,
+   "n": 134,
+   "nSym": 33
+  },
+  {
+   "tag": "2026-05-26",
+   "pauseAktiv": false,
+   "rohT": 0.833382826553513,
+   "verfall": false,
+   "n": 135,
+   "nSym": 33
+  },
+  {
+   "tag": "2026-05-27",
+   "pauseAktiv": false,
+   "rohT": 0.7636799930083843,
+   "verfall": false,
+   "n": 135,
+   "nSym": 33
+  },
+  {
+   "tag": "2026-05-28",
+   "pauseAktiv": false,
+   "rohT": 0.6365228186694347,
+   "verfall": false,
+   "n": 137,
+   "nSym": 33
+  },
+  {
+   "tag": "2026-05-29",
+   "pauseAktiv": false,
+   "rohT": 0.49888972730302283,
+   "verfall": false,
+   "n": 136,
+   "nSym": 33
+  },
+  {
+   "tag": "2026-06-01",
+   "pauseAktiv": false,
+   "rohT": 0.3156019283406326,
+   "verfall": false,
+   "n": 135,
+   "nSym": 32
+  },
+  {
+   "tag": "2026-06-02",
+   "pauseAktiv": false,
+   "rohT": 0.13190674368783215,
+   "verfall": false,
+   "n": 135,
+   "nSym": 32
+  },
+  {
+   "tag": "2026-06-03",
+   "pauseAktiv": false,
+   "rohT": -0.24322737258454566,
+   "verfall": false,
+   "n": 137,
+   "nSym": 32
+  },
+  {
+   "tag": "2026-06-04",
+   "pauseAktiv": false,
+   "rohT": -0.306598385350074,
+   "verfall": false,
+   "n": 140,
+   "nSym": 32
+  },
+  {
+   "tag": "2026-06-05",
+   "pauseAktiv": false,
+   "rohT": -0.16828011941369878,
+   "verfall": false,
+   "n": 140,
+   "nSym": 32
+  },
+  {
+   "tag": "2026-06-08",
+   "pauseAktiv": false,
+   "rohT": -0.02764797050828242,
+   "verfall": false,
+   "n": 140,
+   "nSym": 32
+  },
+  {
+   "tag": "2026-06-09",
+   "pauseAktiv": false,
+   "rohT": 0.1614074334555952,
+   "verfall": false,
+   "n": 140,
+   "nSym": 32
+  },
+  {
+   "tag": "2026-06-10",
+   "pauseAktiv": false,
+   "rohT": 0.014020834202164751,
+   "verfall": false,
+   "n": 139,
+   "nSym": 32
+  },
+  {
+   "tag": "2026-06-11",
+   "pauseAktiv": false,
+   "rohT": -0.06040436710770622,
+   "verfall": false,
+   "n": 138,
+   "nSym": 32
+  },
+  {
+   "tag": "2026-06-12",
+   "pauseAktiv": false,
+   "rohT": 0.06641670650041628,
+   "verfall": false,
+   "n": 136,
+   "nSym": 31
+  },
+  {
+   "tag": "2026-06-15",
+   "pauseAktiv": false,
+   "rohT": -0.07854687949292596,
+   "verfall": false,
+   "n": 135,
+   "nSym": 31
+  },
+  {
+   "tag": "2026-06-16",
+   "pauseAktiv": false,
+   "rohT": -0.07969696890053939,
+   "verfall": false,
+   "n": 135,
+   "nSym": 31
+  },
+  {
+   "tag": "2026-06-17",
+   "pauseAktiv": false,
+   "rohT": -0.03983947323754799,
+   "verfall": false,
+   "n": 136,
+   "nSym": 31
+  },
+  {
+   "tag": "2026-06-18",
+   "pauseAktiv": false,
+   "rohT": 0.47371738667993124,
+   "verfall": false,
+   "n": 139,
+   "nSym": 33
+  },
+  {
+   "tag": "2026-06-22",
+   "pauseAktiv": false,
+   "rohT": 0.41627247196834427,
+   "verfall": false,
+   "n": 140,
+   "nSym": 33
+  },
+  {
+   "tag": "2026-06-23",
+   "pauseAktiv": false,
+   "rohT": 0.31778095776268434,
+   "verfall": false,
+   "n": 141,
+   "nSym": 33
+  },
+  {
+   "tag": "2026-06-24",
+   "pauseAktiv": false,
+   "rohT": 0.35019957191725903,
+   "verfall": false,
+   "n": 143,
+   "nSym": 33
+  },
+  {
+   "tag": "2026-06-25",
+   "pauseAktiv": false,
+   "rohT": 0.3468221108065289,
+   "verfall": false,
+   "n": 142,
+   "nSym": 32
+  },
+  {
+   "tag": "2026-06-26",
+   "pauseAktiv": false,
+   "rohT": 0.24843444079088126,
+   "verfall": false,
+   "n": 140,
+   "nSym": 31
+  },
+  {
+   "tag": "2026-06-29",
+   "pauseAktiv": false,
+   "rohT": -0.05865872098763164,
+   "verfall": false,
+   "n": 139,
+   "nSym": 31
+  },
+  {
+   "tag": "2026-06-30",
+   "pauseAktiv": false,
+   "rohT": -0.18713038818570016,
+   "verfall": false,
+   "n": 138,
+   "nSym": 31
+  },
+  {
+   "tag": "2026-07-01",
+   "pauseAktiv": false,
+   "rohT": -0.14344449558782207,
+   "verfall": false,
+   "n": 139,
+   "nSym": 31
+  },
+  {
+   "tag": "2026-07-02",
+   "pauseAktiv": false,
+   "rohT": -0.08840367113819443,
+   "verfall": false,
+   "n": 140,
+   "nSym": 31
+  },
+  {
+   "tag": "2026-07-06",
+   "pauseAktiv": false,
+   "rohT": -0.38515783181805907,
+   "verfall": false,
+   "n": 142,
+   "nSym": 31
+  },
+  {
+   "tag": "2026-07-07",
+   "pauseAktiv": false,
+   "rohT": -0.21356282435799417,
+   "verfall": false,
+   "n": 142,
+   "nSym": 30
+  },
+  {
+   "tag": "2026-07-08",
+   "pauseAktiv": false,
+   "rohT": -0.1693639396254062,
+   "verfall": false,
+   "n": 140,
+   "nSym": 30
+  },
+  {
+   "tag": "2026-07-09",
+   "pauseAktiv": false,
+   "rohT": -0.060395795791555774,
+   "verfall": false,
+   "n": 143,
+   "nSym": 30
+  },
+  {
+   "tag": "2026-07-10",
+   "pauseAktiv": false,
+   "rohT": 0.07775195575128391,
+   "verfall": false,
+   "n": 140,
+   "nSym": 30
+  },
+  {
+   "tag": "2026-07-13",
+   "pauseAktiv": false,
+   "rohT": 0.2432701186527294,
+   "verfall": false,
+   "n": 141,
+   "nSym": 30
+  },
+  {
+   "tag": "2026-07-14",
+   "pauseAktiv": false,
+   "rohT": 0.2324805534595869,
+   "verfall": false,
+   "n": 143,
+   "nSym": 30
+  },
+  {
+   "tag": "2026-07-15",
+   "pauseAktiv": false,
+   "rohT": 0.3708729071555791,
+   "verfall": false,
+   "n": 145,
+   "nSym": 30
+  },
+  {
+   "tag": "2026-07-16",
+   "pauseAktiv": false,
+   "rohT": 0.3428089709835254,
+   "verfall": false,
+   "n": 144,
+   "nSym": 30
+  },
+  {
+   "tag": "2026-07-17",
+   "pauseAktiv": false,
+   "rohT": 0.9992892818449965,
+   "verfall": false,
+   "n": 146,
+   "nSym": 31
+  },
+  {
+   "tag": "2026-07-20",
+   "pauseAktiv": false,
+   "rohT": 0.7055700285954541,
+   "verfall": false,
+   "n": 147,
+   "nSym": 31
+  },
+  {
+   "tag": "2026-07-21",
+   "pauseAktiv": false,
+   "rohT": 0.3110067526691591,
+   "verfall": false,
+   "n": 150,
+   "nSym": 31
+  },
+  {
+   "tag": "2026-07-22",
+   "pauseAktiv": false,
+   "rohT": -1.1942666086785725,
+   "verfall": true,
+   "n": 152,
+   "nSym": 31
+  },
+  {
+   "tag": "2026-07-23",
+   "pauseAktiv": false,
+   "rohT": -0.6330995521211239,
+   "verfall": false,
+   "n": 150,
+   "nSym": 29
+  },
+  {
+   "tag": "2026-07-24",
+   "pauseAktiv": false,
+   "rohT": -0.29148336954658693,
+   "verfall": false,
+   "n": 148,
+   "nSym": 30
+  },
+  {
+   "tag": "2026-07-27",
+   "pauseAktiv": false,
+   "rohT": -0.7624322118925366,
+   "verfall": false,
+   "n": 149,
+   "nSym": 30
+  },
+  {
+   "tag": "2026-07-28",
+   "pauseAktiv": false,
+   "rohT": -0.7783215065698418,
+   "verfall": false,
+   "n": 149,
+   "nSym": 30
+  },
+  {
+   "tag": "2026-07-29",
+   "pauseAktiv": false,
+   "rohT": -0.6021406719987029,
+   "verfall": false,
+   "n": 150,
+   "nSym": 30
+  },
+  {
+   "tag": "2026-07-30",
+   "pauseAktiv": false,
+   "rohT": -0.6662013088026426,
+   "verfall": false,
+   "n": 150,
+   "nSym": 30
+  },
+  {
+   "tag": "2026-07-31",
+   "pauseAktiv": false,
+   "rohT": -0.9015828571125435,
+   "verfall": false,
+   "n": 149,
+   "nSym": 30
+  },
+  {
+   "tag": "2026-08-03",
+   "pauseAktiv": false,
+   "rohT": -0.9027989491777129,
+   "verfall": false,
+   "n": 149,
+   "nSym": 30
+  },
+  {
+   "tag": "2026-08-04",
+   "pauseAktiv": false,
+   "rohT": -0.941696256865922,
+   "verfall": false,
+   "n": 150,
+   "nSym": 30
+  },
+  {
+   "tag": "2026-08-05",
+   "pauseAktiv": false,
+   "rohT": -1.1283436403800222,
+   "verfall": true,
+   "n": 150,
+   "nSym": 30
+  },
+  {
+   "tag": "2026-08-06",
+   "pauseAktiv": false,
+   "rohT": -1.099024571464485,
+   "verfall": true,
+   "n": 151,
+   "nSym": 30
+  },
+  {
+   "tag": "2026-08-07",
+   "pauseAktiv": true,
+   "rohT": -0.9661430934283877,
+   "verfall": false,
+   "n": 151,
+   "nSym": 31
+  },
+  {
+   "tag": "2026-08-10",
+   "pauseAktiv": true,
+   "rohT": -0.8902479526831283,
+   "verfall": false,
+   "n": 151,
+   "nSym": 31
+  },
+  {
+   "tag": "2026-08-11",
+   "pauseAktiv": true,
+   "rohT": -1.240367599137218,
+   "verfall": true,
+   "n": 147,
+   "nSym": 30
+  },
+  {
+   "tag": "2026-08-12",
+   "pauseAktiv": true,
+   "rohT": -1.158145195550878,
+   "verfall": true,
+   "n": 149,
+   "nSym": 30
+  },
+  {
+   "tag": "2026-08-13",
+   "pauseAktiv": true,
+   "rohT": -0.9570453742725625,
+   "verfall": false,
+   "n": 146,
+   "nSym": 29
+  },
+  {
+   "tag": "2026-08-14",
+   "pauseAktiv": true,
+   "rohT": -1.1522145577895113,
+   "verfall": true,
+   "n": 144,
+   "nSym": 29
+  },
+  {
+   "tag": "2026-08-17",
+   "pauseAktiv": true,
+   "rohT": -1.1096276096532696,
+   "verfall": true,
+   "n": 144,
+   "nSym": 30
+  },
+  {
+   "tag": "2026-08-18",
+   "pauseAktiv": true,
+   "rohT": -0.8702321643501357,
+   "verfall": false,
+   "n": 141,
+   "nSym": 28
+  },
+  {
+   "tag": "2026-08-19",
+   "pauseAktiv": true,
+   "rohT": -1.1489456022365108,
+   "verfall": true,
+   "n": 143,
+   "nSym": 30
+  },
+  {
+   "tag": "2026-08-20",
+   "pauseAktiv": true,
+   "rohT": -1.0026709358971186,
+   "verfall": true,
+   "n": 140,
+   "nSym": 30
+  },
+  {
+   "tag": "2026-08-21",
+   "pauseAktiv": true,
+   "rohT": -0.8890409336403122,
+   "verfall": false,
+   "n": 131,
+   "nSym": 28
+  },
+  {
+   "tag": "2026-08-24",
+   "pauseAktiv": true,
+   "rohT": -0.9981535949347384,
+   "verfall": false,
+   "n": 129,
+   "nSym": 28
+  }
+ ],
+ "signalzahlen": {
+  "gesamt": 1120,
+  "aufPause": 36,
+  "bestaetigung": 535,
+  "bestaetigungAufPause": 36
+ }
+}
