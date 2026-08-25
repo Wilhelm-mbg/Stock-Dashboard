@@ -2947,12 +2947,22 @@
    *  hat mit der Strategie aber gar nichts zu tun - also wird sie getrennt gemessen.
    *
    *  Setzt ECHTE Orders auf dem Demo-Konto ab. Wird nur von Hand ausgeloest. */
+  /** Handelt der Wert rund um die Uhr? Capital fuehrt Krypto als BTCUSD/ETHUSD,
+   *  die App schreibt intern BTC-USD. Beide Schreibweisen zaehlen. */
+  function istKrypto(sym) {
+    return /^(BTC|ETH|XRP|LTC|SOL|ADA|DOGE)[-]?USD$/i.test(String(sym || ""));
+  }
+
   async function kostenRundeMessen(sym) {
     if (!(window.CapAPI && window.CapAPI.enabled() && window.CapAPI.quote)) {
       return { ok: false, grund: 'Capital.com-Demo ist nicht verbunden.' };
     }
-    if (!(window.Dash && window.Dash.marketOpen && window.Dash.marketOpen())) {
-      return { ok: false, grund: 'Die Boerse ist zu - eine Runde jetzt misst nichts Brauchbares.' };
+    /* Die Boersen-Sperre gilt fuer Aktien. Krypto handelt rund um die Uhr - dort
+     * waere sie schlicht falsch und haette das Messgeschirr nachts gesperrt. */
+    var krypto = istKrypto(sym);
+    if (!krypto && !(window.Dash && window.Dash.marketOpen && window.Dash.marketOpen())) {
+      return { ok: false, grund: 'Die Boerse ist zu - eine Aktien-Runde jetzt misst nichts Brauchbares. ' +
+        'Krypto (BTCUSD, ETHUSD) geht rund um die Uhr.' };
     }
     /* Die notierte Spanne VOR der Order: nur so laesst sich hinterher trennen, was
      * Spanne war und was Schlupf. Ohne sie waere die Runde nur eine Zahl. */
@@ -2989,7 +2999,7 @@
     var runde = aufKosten + zuKosten;
     if (!D.kostenMessung) D.kostenMessung = { runden: [], seit: Date.now() };
     D.kostenMessung.runden.unshift({
-      at: Date.now(), sym: sym, dir: 'call', basis: true, quelle: 'messrunde',
+      at: Date.now(), sym: sym, dir: 'call', basis: true, quelle: 'messrunde', krypto: krypto,
       slipOpen: Math.round(aufKosten * 1e6) / 1e6,
       slipClose: Math.round(zuKosten * 1e6) / 1e6,
       runde: Math.round(runde * 1e6) / 1e6,
@@ -3006,12 +3016,28 @@
   function kostenBilanz() {
     var km = D && D.kostenMessung;
     if (!km || !km.runden || !km.runden.length) return null;
-    var r = km.runden.map(function (x) { return x.runde; }).filter(function (v) { return v != null && isFinite(v); });
-    if (!r.length) return null;
-    var s = r.slice().sort(function (a, b) { return a - b; });
-    var med = s[Math.floor(s.length / 2)];
-    var mit = r.reduce(function (a, b) { return a + b; }, 0) / r.length;
-    return { n: r.length, medianPct: med * 100, mittelPct: mit * 100, annahmePct: 0.10, seit: km.seit };
+    /* Krypto NICHT mitzaehlen: Die Spanne auf BTC sagt nichts ueber die Spanne auf
+     * MSFT, und die Annahme 0,10 %, gegen die hier geprueft wird, stammt aus den
+     * Aktien-Studien. Eine einzige BTC-Runde wuerde den Median verschieben, an dem
+     * fast jede Studie haengt - unsichtbar. Zwei Quellen in einer Reihe haben hier
+     * schon einmal Schaden angerichtet; das passiert nicht noch einmal. */
+    function werte(nurKrypto) {
+      return km.runden
+        .filter(function (x) { return !!x.krypto === nurKrypto; })
+        .map(function (x) { return x.runde; })
+        .filter(function (v) { return v != null && isFinite(v); });
+    }
+    function med(a) { var s = a.slice().sort(function (x, y) { return x - y; }); return s[Math.floor(s.length / 2)]; }
+    var r = werte(false);
+    var k = werte(true);
+    if (!r.length && !k.length) return null;
+    var aus = { n: r.length, annahmePct: 0.10, seit: km.seit,
+                kryptoN: k.length, kryptoMedianPct: k.length ? med(k) * 100 : null };
+    if (r.length) {
+      aus.medianPct = med(r) * 100;
+      aus.mittelPct = r.reduce(function (a, b) { return a + b; }, 0) / r.length * 100;
+    }
+    return aus;
   }
   if (typeof window !== 'undefined') window.__kostenBilanz = kostenBilanz;
 
@@ -8715,6 +8741,10 @@
         /* Stand 25.08.2026 stimmte dieser Satz nicht mehr: gespiegelt wird nur im
          * Intraday-Pfad, und der ist seit dem 23.08. vom Edge-Waechter pausiert. Der
          * Satz haette auf etwas gewartet, das nicht kommt. */
+        if (kb && kb.kryptoN) {
+          txt += ' · Krypto getrennt gemessen (' + kb.kryptoN + ' Runde(n)): Median ' +
+            kb.kryptoMedianPct.toFixed(3) + ' % je Runde – sagt NICHTS über die Spanne auf Aktien.';
+        }
         txt += ' · Kostenmessung aus Ausführungen: noch keine Runde. Sie startet mit dem ersten ' +
           'gespiegelten Trade – oder sofort über „Kostenrunde messen“, das braucht kein Signal.';
       }
@@ -8742,9 +8772,13 @@
       if (!b) return;
       b.addEventListener('click', async function () {
         if (kostenRundeLaeuft) return;
-        var syms = universe();
-        if (!syms.length) { st.textContent = 'Kein Wert im Universum.'; return; }
-        var sym = syms[kostenRundeTakt % syms.length];
+        var wahl = document.getElementById('kostenRundeSym');
+        var sym = wahl && wahl.value ? wahl.value : null;
+        if (!sym) {
+          var syms = universe();
+          if (!syms.length) { st.textContent = 'Kein Wert im Universum.'; return; }
+          sym = syms[kostenRundeTakt % syms.length];
+        }
         if (!window.confirm('Auf dem Capital.com-DEMO-Konto wird jetzt die kleinstmögliche Position in ' +
             sym + ' geöffnet und sofort wieder geschlossen. Das ist eine echte Order mit Demo-Geld.\n\n' +
             'Gemessen wird, was ein Umlauf wirklich kostet. Fortfahren?')) return;

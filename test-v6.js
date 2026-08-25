@@ -6328,6 +6328,31 @@ console.log('\n46) Was die App dauerhaft aufzeichnet');
   ok(/window\.confirm\(/.test(draht), 'Vor der Order wird gefragt');
   ok(/DEMO/.test(draht), 'Und die Frage sagt ausdruecklich, dass es das Demo-Konto ist');
   ok(/kostenRundeLaeuft/.test(draht), 'Ein Doppelklick loest nicht zwei Runden aus');
+
+  /* --- Krypto misst rund um die Uhr, gehoert aber NICHT in die Aktien-Zahl ---
+   * Die Spanne auf BTC sagt nichts ueber die Spanne auf MSFT, und die Annahme
+   * 0,10 %, gegen die geprueft wird, stammt aus den Aktien-Studien. Eine einzige
+   * BTC-Runde wuerde den Median verschieben, an dem fast jede Studie haengt -
+   * unsichtbar. Zwei Quellen in einer Reihe haben hier schon einmal Schaden
+   * angerichtet (Capital-CFD und Yahoo). */
+  var ik = dep.slice(dep.indexOf('function istKrypto'), dep.indexOf('async function kostenRundeMessen'));
+  ok(/BTC/.test(ik) && /ETH/.test(ik), 'Krypto wird als solches erkannt');
+  var kb2 = dep.slice(dep.indexOf('function kostenBilanz'), dep.indexOf('window.__kostenBilanz'));
+  ok(/x\.krypto/.test(kb2),
+     'Die Kostenbilanz trennt Krypto von Aktien - sonst verschiebt eine BTC-Runde den Median der Studien');
+  ok(/kryptoN/.test(kb2) && /kryptoMedianPct/.test(kb2),
+     'Die Krypto-Zahl wird eigens ausgewiesen, nicht verschwiegen');
+  /* Ohne Aktien-Runde darf keine Aktien-Zahl entstehen - nichts behaupten ist
+   * besser als eine Zahl, die aus Krypto stammt. */
+  ok(/if \(r\.length\) \{/.test(kb2),
+     'Ohne Aktien-Runde wird keine Aktien-Zahl gebildet');
+  /* Die Boersen-Sperre gilt fuer Aktien. Auf Krypto waere sie schlicht falsch und
+   * haette das Messgeschirr nachts gesperrt - genau dann, wenn Zeit dafuer ist. */
+  ok(/!krypto && !\(window\.Dash/.test(kr),
+     'Die Boersen-Sperre gilt nur fuer Aktien, nicht fuer Krypto');
+  ok(/krypto: krypto/.test(kr), 'Jede Runde merkt sich, ob sie Krypto war');
+  ok(/id="kostenRundeSym"/.test(h68) && /BTCUSD/.test(h68),
+     'Die Oberflaeche laesst den Wert waehlen, Krypto eingeschlossen');
 })();
 
 console.log('\n47b) signal() bekommt das Symbol');
