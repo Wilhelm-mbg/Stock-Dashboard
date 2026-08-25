@@ -6197,6 +6197,37 @@ console.log('\n45) Release-Routine (tools/release.js)');
   ok(/Pruefsumme/.test(rel), 'Gegenprobe: Pruefsumme nach dem Veroeffentlichen');
   ok(/Junction/.test(rel), 'Der Bau legt die node_modules-Junction selbst an');
 
+  /* --- Ausliefern ist Sache der Wache, nicht einer Sitzung ---
+   * CLAUDE.md sagte "benutze die Routine", und prompt hat eine Sitzung in einer Nacht
+   * fuenf Versionen vergeben. Eine Regel, die nur dasteht, haelt nicht - deshalb steht
+   * sie im Skript. */
+  ok(/function darfAusliefern/.test(rel), 'Das Skript kennt die Regel, wer ausliefern darf');
+  ['--bauen', '--hoch', '--alles'].forEach(function (f) {
+    var z = rel.split(String.fromCharCode(10)).filter(function (x) {
+      return x.indexOf("indexOf('" + f + "')") > -1 && x.indexOf('arg.') > -1;
+    })[0];
+    ok(!!z && z.indexOf('darfAusliefern') > -1,
+       f + ' ist hinter dem Riegel', z ? z.trim().slice(0, 70) : 'Zeile nicht gefunden');
+  });
+  /* Nachsehen und Aufraeumen muessen frei bleiben - sonst weiss eine Sitzung nicht
+   * einmal, was noch offen ist, und laesst Muell liegen. */
+  var frei = rel.split(String.fromCharCode(10)).filter(function (x) {
+    return (x.indexOf("indexOf('--pruefen')") > -1 || x.indexOf("indexOf('--aufraeumen')") > -1) && x.indexOf('arg.') > -1;
+  });
+  ok(frei.length === 2 && frei.every(function (x) { return x.indexOf('darfAusliefern') === -1; }),
+     '--pruefen und --aufraeumen bleiben ohne Riegel');
+  /* Die Wache MUSS den Schluessel fuehren, sonst sperrt der Riegel genau den aus,
+   * fuer den er gebaut wurde. */
+  var wache = fs.readFileSync(require('os').homedir() + '/.claude/scheduled-tasks/release-wache/SKILL.md', 'utf8');
+  ok(/--bauen --wache/.test(wache) && /--hoch --wache/.test(wache),
+     'Die Release-Wache ruft mit --wache auf - sonst sperrt der Riegel sie selbst aus');
+  /* Und die Ansage an kuenftige Sitzungen muss dasselbe sagen wie das Skript. */
+  /* Eigens gelesen statt cm benutzt: das steht erst weiter unten, und eine
+   * Zusicherung darf nicht an der Reihenfolge im Testlauf haengen. */
+  var cmHier = fs.readFileSync(__dirname + '/CLAUDE.md', 'utf8');
+  ok(/Ausliefern ist NICHT deine Aufgabe/.test(cmHier) && !/Benutze sie, statt den Ablauf/.test(cmHier),
+     'CLAUDE.md weist Sitzungen NICHT mehr an, selbst auszuliefern');
+
   /* Die Sammelstelle - und dass ihre eigene Beschreibung nicht als Notiz zaehlt und
    * am Ende mitgeloescht wird. */
   ok(fs.existsSync(__dirname + '/release-notizen/LIESMICH.md'), 'Die Sammelstelle fuer Release-Notizen ist beschrieben');

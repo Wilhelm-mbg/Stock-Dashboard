@@ -1,6 +1,11 @@
 'use strict';
 /* AUSLIEFERN, VON HAND ODER VON DER WACHE
  *
+ * AUSLIEFERN IST SACHE DER RELEASE-WACHE. Eine Sitzung committet und legt ihre Notiz
+ * in release-notizen/ ab - mehr nicht. --bauen und --hoch verlangen deshalb ein
+ * ausdrueckliches --wache. Wilhelm, 25.08.2026: "du vergibst keine versionen das
+ * macht die release wache". Von Hand geht es mit --von-hand, wenn er es so will.
+ *
  *   node tools/release.js --pruefen           Was ist unveroeffentlicht? Nur berichten.
  *   node tools/release.js --bauen [--minor]   Version setzen, sauber bauen, testen.
  *   node tools/release.js --hoch              Entwurf, Assets, veroeffentlichen, gegenpruefen.
@@ -390,11 +395,30 @@ function hoch() {
 /* ------------------------------------------------------------------- Lauf */
 const arg = process.argv.slice(2);
 const minor = arg.indexOf('--minor') !== -1;
+
+/** Ausliefern darf die Wache - oder Wilhelm ausdruecklich von Hand.
+ *
+ *  Eine Regel, die nur in der Dokumentation steht, hat hier nicht gehalten: CLAUDE.md
+ *  sagte "benutze die Routine", und genau das hat eine Sitzung dann selbst getan -
+ *  fuenf Versionen in einer Nacht. Deshalb steht die Regel hier, wo sie greift. */
+function darfAusliefern(was) {
+  if (arg.indexOf('--wache') !== -1 || arg.indexOf('--von-hand') !== -1) return;
+  console.error('\nAusliefern ist Sache der RELEASE-WACHE, nicht einer Sitzung.');
+  console.error('');
+  console.error('Wenn du an der App gearbeitet hast: committen, eine Notiz in');
+  console.error('release-notizen/ ablegen - fertig. Die Wache holt den Rest.');
+  console.error('');
+  console.error('  node tools/release.js --pruefen     zeigt, was unveroeffentlicht ist');
+  console.error('');
+  console.error('Die Wache ruft "' + was + '" mit --wache auf.');
+  console.error('Von Hand (Wilhelms Entscheidung): --von-hand anhaengen.');
+  process.exit(2);
+}
 if (arg.indexOf('--aufraeumen') !== -1) { baubaumWeg(); console.log('Baubaum weg.'); }
 else if (arg.indexOf('--pruefen') !== -1) { pruefen(); }
-else if (arg.indexOf('--bauen') !== -1) { bauen(minor); }
-else if (arg.indexOf('--hoch') !== -1) { hoch(); }
-else if (arg.indexOf('--alles') !== -1) { pruefen(); bauen(minor); hoch(); }
+else if (arg.indexOf('--bauen') !== -1) { darfAusliefern('--bauen'); bauen(minor); }
+else if (arg.indexOf('--hoch') !== -1) { darfAusliefern('--hoch'); hoch(); }
+else if (arg.indexOf('--alles') !== -1) { darfAusliefern('--alles'); pruefen(); bauen(minor); hoch(); }
 else {
   console.log(fs.readFileSync(__filename, 'utf8').split('*/')[0].replace(/^'use strict';\n\/\* /, '').replace(/^ \* ?/gm, ''));
 }
