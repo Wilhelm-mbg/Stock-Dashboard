@@ -1436,6 +1436,14 @@
       var indSerie = r.indSerie;
       st.textContent = '';
       stcState = r.S;
+      /* Erst hier wird die Ausgabe sichtbar, nicht schon im Markup: Ohne Daten waere
+       * das eine schwarze Flaeche mit vollstaendiger Legende - eine Beschriftung fuer
+       * Linien, die es noch nicht gibt. Der Fehlerpfad oben kehrt vorher um, dann
+       * bleibt der Leerzustand stehen, und das ist richtig so. */
+      var leerEl = document.getElementById('stcLeer');
+      var ausEl = document.getElementById('stcAusgabe');
+      if (leerEl) leerEl.style.display = 'none';
+      if (ausEl) ausEl.style.display = '';
       var kEl = document.getElementById('stcKontext');
       drawStrategieChart(svg, show, e20, e100, stcKanalListe(stcState, null, !!(kEl && kEl.checked)),
         marksShow, null, stcState.band);

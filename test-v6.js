@@ -7261,7 +7261,7 @@ console.log('\n47) Anzeige der Messmaschine: unbekannte Urteile und die Selbstpr
   ok(/id="mkHolen"/.test(ui) && /Jetzt holen/.test(ui),
      'Karte: es gibt einen Knopf, keine Sackgasse mit Befehlszeile');
   ok(/node tools\/stammdaten-holen\.js/.test(ui),
-     'Karte: der Befehl steht trotzdem daneben - fuer das ganze Archiv ist er der bessere Weg');
+     'Karte: der Befehl bleibt erreichbar - in der Klappe fuer Entwickler');
 
   /* ---------- Eine Tabelle, nicht zwei ----------
    * Genau diese Doppelung ist in diesem Projekt schon mehrfach auseinandergelaufen. */
@@ -7834,6 +7834,76 @@ console.log('\n58) Wiederholungs-Waende: eine Sammelzeile statt dreissig gleiche
    * Sammelzeile darf eine Zeile mit Trendkanal deshalb nie verdecken. */
   ok(/posten\.push\(\{ status: \(sig \|\| kj\) \? null : standTxt/.test(dep),
      'Trendfinder: Zeilen mit Wechsel oder Trendkanal bleiben einzeln stehen (Wunsch #58)');
+})();
+
+/* ================= 57) Leerzustaende ohne Entwickler-Jargon =================
+ * Befund B3 des Struktur-Audits vom 25.08.2026. Ein Leerzustand ist die erste Seite,
+ * die ein neuer Nutzer sieht - und die App zeigte dort eine schwarze Flaeche mit
+ * Legende, gar nichts, einen node-Befehl und einen Windows-Pfad. Wer die App
+ * INSTALLIERT hat, besitzt weder node noch den Quellordner; fuer ihn ist beides eine
+ * Sackgasse mit Wegbeschreibung.
+ * Diese Zusicherungen halten den Zustand fest, nicht den Wortlaut: geprueft wird die
+ * REIHENFOLGE (Endnutzer-Weg zuerst, Entwicklerweg in der Klappe) und die Kopplung
+ * zwischen Markup und Skript. Der zweite Teil ist der wichtigere - ein Behaelter mit
+ * display:none, den niemand aufschaltet, ist ein unsichtbarer Chart, und das saehe
+ * eine reine Markup-Pruefung nicht. */
+(function () {
+  console.log('\n57) Leerzustaende: kein Entwickler-Jargon fuer Endnutzer');
+  var html = fs.readFileSync(__dirname + '/index.html', 'utf8');
+  var dep = fs.readFileSync(__dirname + '/depot.js', 'utf8');
+  var sf = fs.readFileSync(__dirname + '/scheinfinder.js', 'utf8');
+  var mk = fs.readFileSync(__dirname + '/marktkarteui.js', 'utf8');
+  var sco = fs.readFileSync(__dirname + '/scoreboard.js', 'utf8');
+
+  // --- Strategie-Chart: Legende erst, wenn es Linien gibt ---
+  var stcBlock = html.slice(html.indexOf('id="stratChartPanel"'), html.indexOf('id="sub-auswertung"'));
+  ok(/id="stcLeer"[^>]*class="empty"/.test(stcBlock),
+     'Strategie-Chart: der Leerzustand benutzt den .empty-Baustein');
+  /* Nicht nur das SVG - auch die Legende. Sie war der eigentliche Befund: eine
+   * Beschriftung fuer Linien, die es noch nicht gab. */
+  ok(/id="stcAusgabe"[^>]*display:\s*none/.test(stcBlock) &&
+     stcBlock.indexOf('id="stcAusgabe"') < stcBlock.indexOf('id="stcChart"') &&
+     stcBlock.indexOf('id="stcAusgabe"') < stcBlock.indexOf('Entscheidungskanal'),
+     'Strategie-Chart: SVG UND Legende liegen im Behaelter, der vor dem ersten Laden zu ist');
+  /* Der eigentliche Punkt: ohne diese vier Zeilen in depot.js waere der Chart nach
+   * dem Laden unsichtbar - gruenes Markup, tote Oberflaeche. */
+  var stcLauf = dep.slice(dep.indexOf('async function runStrategieChart'), dep.indexOf('function drawStrategieChart'));
+  ok(/getElementById\('stcAusgabe'\)/.test(stcLauf) && /getElementById\('stcLeer'\)/.test(stcLauf),
+     'Strategie-Chart: das Laden schaltet den Leerzustand ab und die Ausgabe frei');
+  ok(stcLauf.indexOf("getElementById('stcAusgabe')") > stcLauf.indexOf('if (!r.ok)') &&
+     stcLauf.indexOf("getElementById('stcAusgabe')") < stcLauf.indexOf('drawStrategieChart('),
+     'Strategie-Chart: freigeschaltet wird NACH dem Fehlerpfad - ein Fehlschlag laesst den Leerzustand stehen');
+
+  // --- Schein-Finder: unter den Filtern steht etwas ---
+  var sfBlock = html.slice(html.indexOf('id="sub-scheine"'), html.indexOf('id="sub-wende"'));
+  ok(/id="sfTabelle"[^>]*>\s*<div class="empty"/.test(sfBlock),
+     'Schein-Finder: unter den Filtern steht ein Leerzustand, keine leere Flaeche');
+  /* Daran haengt alles: zeige() kehrt ohne Raster um und laesst den Text stehen.
+   * Faellt diese Zeile, ueberschreibt der erste Aufruf den Leerzustand mit Leere. */
+  ok(/if \(!t \|\| !RASTER\) return;/.test(sf),
+     'Schein-Finder: ohne Raster schreibt zeige() nicht - daran haengt der Leerzustand');
+
+  // --- Marktkarte: Knopf vorn, Befehl in der Klappe ---
+  var mkLeer = mk.slice(mk.indexOf('function fehlenAnbieten'), mk.indexOf('async function holen'));
+  ok(mkLeer.indexOf('id="mkHolen"') > -1 &&
+     mkLeer.indexOf('id="mkHolen"') < mkLeer.indexOf('node tools/stammdaten-holen.js'),
+     'Marktkarte: der Knopf steht vor der Befehlszeile - der Endnutzer-Weg zuerst');
+  ok(mkLeer.indexOf('<details') > -1 &&
+     mkLeer.indexOf('<details') < mkLeer.indexOf('node tools/stammdaten-holen.js') &&
+     mkLeer.indexOf('<details') < mkLeer.indexOf('esc(st.grund)'),
+     'Marktkarte: Befehlszeile und Rohmeldung stehen in der Klappe, nicht im Endnutzer-Text');
+
+  // --- Scoreboard: kein Windows-Pfad im Endnutzer-Satz ---
+  var sbLeer = sco.slice(sco.indexOf('if (!r.protokolle.length)'), sco.indexOf('// Je Kennung nur das juengste'));
+  ok(sbLeer.indexOf('<details') > -1 &&
+     sbLeer.indexOf('<details') < sbLeer.indexOf('esc(r.ordner)') &&
+     sbLeer.indexOf('<details') < sbLeer.indexOf('studien/messmaschine/messen.js'),
+     'Scoreboard: der volle Pfad und der node-Befehl stehen in der Klappe, nicht im Endnutzer-Satz');
+  ok(/protokolle<\/code>/.test(sbLeer),
+     'Scoreboard: der Ordner wird in der Sprache der App benannt (Datenordner -> protokolle)');
+  /* Einsortiert, nicht geloescht - wer den Pfad braucht, findet ihn vollstaendig. */
+  ok(/esc\(r\.ordner\)/.test(sbLeer),
+     'Scoreboard: der echte Pfad ist weiterhin da - einsortiert, nicht geloescht');
 })();
 
 Promise.all(offeneProben).then(function () {

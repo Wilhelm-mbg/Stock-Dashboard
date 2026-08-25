@@ -89,9 +89,19 @@
     try { r = await window.api.readProtokolle(); } catch (e) { r = { ok: false, grund: String(e && e.message || e) }; }
     if (!r || !r.ok) { el.innerHTML = '<div style="color:var(--muted); font-size:var(--fs-neben);">Protokolle nicht lesbar' + (r && r.grund ? ': ' + esc(r.grund) : '') + '.</div>'; return; }
     if (!r.protokolle.length) {
+      /* Der volle Windows-Pfad und der node-Befehl standen hier im Endnutzer-Satz. Wer
+       * die App installiert hat, hat weder node noch den Quellordner - fuer ihn war das
+       * eine Sackgasse mit Wegbeschreibung. Vorn steht jetzt der Weg ueber den Knopf,
+       * der Ordner in der Sprache der App; der echte Pfad bleibt vollstaendig, aber in
+       * der Klappe. Gekuerzt wird nichts - nur einsortiert. */
       el.innerHTML = '<div style="color:var(--muted); font-size:var(--fs-neben);">Noch kein Protokoll. ' +
-        'Unten eine Strategie ablegen und auf <b>Jetzt messen</b> drücken – oder von Hand mit ' +
-        '<code>node studien/messmaschine/messen.js &lt;datei&gt;</code>. Das Protokoll gehört nach <code>' + esc(r.ordner) + '</code>.</div>';
+        'Unten eine Strategie ablegen und auf <b>Jetzt messen</b> drücken. Die fertigen Protokolle liest ' +
+        'die App aus <code>Datenordner → protokolle</code>.' +
+        '<details class="how archiv" style="margin-top:8px;"><summary>Für Entwickler</summary>' +
+        '<div style="margin-top:6px;">Von Hand messen: <code>node studien/messmaschine/messen.js &lt;datei&gt;</code> ' +
+        '– der Befehl läuft im Projektordner, also dort, wo die Quellen liegen. ' +
+        'Der Protokollordner ist <code>' + esc(r.ordner) + '</code>.</div>' +
+        '</details></div>';
       return;
     }
     // Je Kennung nur das juengste Protokoll - aeltere bleiben aufklappbar

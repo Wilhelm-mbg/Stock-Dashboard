@@ -367,8 +367,10 @@
    * "Messung" eine war. Die Begruendung dafuer war ausserdem schief: Die Regel des
    * Projekts verbietet einen Netzwerkpfad zu KOSTENPFLICHTIGEN Schnittstellen. Die
    * SEC ist kostenlos und braucht keinen Schluessel.
-   * Der Befehl bleibt daneben stehen - fuer den Massenlauf ueber das ganze Archiv ist
-   * er weiterhin der bessere Weg. */
+   * Der Befehl bleibt erhalten - fuer den Massenlauf ueber das ganze Archiv ist er
+   * weiterhin der bessere Weg -, steht aber seit dem 25.08.2026 in einer Klappe
+   * "Fuer Entwickler": Nutzbar ist er nur mit Quellordner und node, und die Rohmeldung
+   * darunter wiederholt ihn ein zweites Mal. Nach vorn gehoert der Knopf. */
   function fehlenAnbieten(st) {
     var kasten = document.getElementById('mkKarte');
     var kann = window.api && typeof window.api.marktSecBasis === 'function';
@@ -383,10 +385,12 @@
           'dann die Kurse für die Rangfolge, dann die Branche für die Werte, die die Karte zeigt. ' +
           'Danach nie wieder – die Datei bleibt liegen.</div>'
         : '<div style="color:var(--muted); margin:12px 0;">Diese Programmfassung kann es noch nicht selbst holen.</div>') +
-      '<div style="color:var(--muted); margin-top:10px;">Für das ganze Archiv auf einmal ist das Werkzeug ' +
+      '<details class="how archiv" style="margin-top:10px;"><summary>Für Entwickler</summary>' +
+      '<div style="color:var(--muted); margin-top:6px;">Für das ganze Archiv auf einmal ist das Werkzeug ' +
       'daneben der bessere Weg – es nimmt alle Werte des 60m-Archivs statt nur der gezeigten:<br>' +
       '<code>node tools/stammdaten-holen.js</code>   (ohne Archiv: <code>--alle</code>)</div>' +
       (st && st.grund ? '<div style="color:var(--muted); margin-top:8px; font-size:var(--fs-klein);">' + esc(st.grund) + '</div>' : '') +
+      '</details>' +
       '</div>';
     var k = document.getElementById('mkHolen');
     if (k) k.addEventListener('click', holen);

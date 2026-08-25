@@ -1170,7 +1170,9 @@
       </select></label>
     </div>
     <div id="sfDetail" class="panel" style="display:none; margin-top:10px; padding:10px 12px; font-size:var(--fs-text); line-height:1.6;"></div>
-    <div id="sfTabelle" style="margin-top:10px;"></div>
+    <!-- Der Startzustand steht im Markup, nicht im Skript: scheinfinder.js zeige()
+         kehrt ohne Raster sofort um und laesst genau diesen Text stehen. -->
+    <div id="sfTabelle" style="margin-top:10px;"><div class="empty" style="padding:14px 4px;">Noch nichts gerechnet. Oben Basiswert wählen, dann „Laden &amp; rechnen“.</div></div>
   </div>
   </div>
   <div class="sub" id="sub-wende">
@@ -1732,6 +1734,12 @@
     </div>
     <div id="stcIvWarn" style="display:none; font-size:var(--fs-neben); margin-top:6px; padding:6px 8px; border-left:3px solid var(--down); color:var(--ink-2); line-height:1.5;"></div>
     <div id="stcInfo" style="font-size:var(--fs-neben); color:var(--ink-2); margin-top:8px;"></div>
+    <!-- Vor dem ersten Laden ist hier nichts zu beschriften: die Legende benannte
+         Linien, die es noch nicht gab, ueber einer schwarzen Flaeche. Chart, Indikator
+         und Legende liegen deshalb in #stcAusgabe und werden erst sichtbar, wenn
+         runStrategieChart() wirklich gezeichnet hat. -->
+    <div id="stcLeer" class="empty">Noch nichts geladen. Oben Regel und Wert wählen, dann „Chart laden“.</div>
+    <div id="stcAusgabe" style="display:none;">
     <svg id="stcChart" style="width:100%; height:280px; display:block; margin-top:6px;"></svg>
     <svg id="stcInd" style="width:100%; height:110px; display:block; margin-top:2px;"></svg>
     <div style="color:var(--muted); font-size:var(--fs-neben); margin-top:4px;">
@@ -1748,6 +1756,7 @@
       <button class="info" type="button" data-info="regeln.legende" aria-expanded="false"
               aria-label="Erklärung: Zeichen im Chart" style="margin-left:4px;">i</button>
     </div>
+    </div><!-- /stcAusgabe -->
     <div id="stcSignale" style="margin-top:10px;"></div>
     <div id="stcCheck" style="font-size:var(--fs-neben); margin-top:8px; line-height:1.6;"></div>
     <div style="font-size:var(--fs-neben); color:var(--muted); margin-top:6px;">Simulation, keine Anlageberatung. Der Chart zeigt, was die Regel gesehen hätte – nicht, was sie verdient hätte; die Messung dazu steht in den Belegen oben.</div>
