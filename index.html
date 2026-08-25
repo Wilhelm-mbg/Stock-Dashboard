@@ -1471,8 +1471,11 @@
               <label title="Begrenzt depotweit, welche Scheine gekauft werden dürfen – egal ob von Hand, vom Autopiloten oder von einer Empfehlung. Die Stufen (1 defensiv … 5 Lotterielos) kommen aus dem Schein-Finder und sind dort je Schein begründet. Stufe 5 = keine Grenze.">max. Risikostufe<select id="idMaxStufe"><option value="1">1 – defensiv</option><option value="2">2</option><option value="3">3 – moderat</option><option value="4">4</option><option value="5" selected>5 – keine Grenze</option></select></label>
               <label title="BTC, ETH, SOL, XRP, BNB, ADA, DOGE, LTC rund um die Uhr handeln – immer als Basiswert (1×) mit Taker-Gebühr 10 Bp je Seite, nie als Schein. ACHTUNG: Es gibt bis heute kein bestätigtes Krypto-Signal – alle gemessenen Modi waren negativ. Handelbar heißt können, nicht sollen.">Krypto handeln<span class="switch"><input type="checkbox" id="idKryptoHandeln"><span class="knob"></span></span></label>
               <label title="Capital.com und viele CFD-Broker berechnen keine Kommission — dort steckt alles im Spread. Bei einem Broker mit Ordergebühr den echten Betrag wählen.">Ordergebühr<select id="idFee"><option value="0" selected>0 (keine Kommission)</option><option value="1.5">1,50 $</option><option value="5">5 $</option></select></label>
-            <div id="kostenHuerde" class="huerde"></div>
             </div>
+            <!-- Die Kostenhuerde ist ein Satz, kein Auswahlfeld. Im .params-Raster bekam sie
+                 eine 108-px-Spalte wie ein Auswahlfeld und brach auf Wortbreite um; sie steht
+                 deshalb UNTER dem Raster - in derselben Gruppe, aber ueber die volle Breite. -->
+            <div id="kostenHuerde" class="huerde"></div>
           </div>
           <div class="pgroup">
             <div class="pgroup-title">Filter &amp; Schutz</div>
@@ -1540,6 +1543,23 @@
         </div>
         <div class="strat-foot"><span id="riskStatus"></span></div>
       </div>
+
+      <!-- Die rechte Spalte war als Stapel gebaut (display:grid, gap), trug aber nur die
+           kleine Risiko-Karte - daneben stand Leere ueber die Hoehe der Intraday-Karte.
+           Die Watchlist beantwortet dieselbe Frage wie die Risiko-Karte, naemlich welche
+           Rahmenbedingungen fuer jeden Scan gelten, und fuellt die Spalte, statt weiter
+           unten eine eigene vollbreite Zeile zu brauchen.
+           Kein margin-top mehr: der Behaelter setzt den Abstand ueber gap:12px. -->
+      <div class="panel">
+        <h3>Eigene Watchlist – wird bei jedem Scan mitgeprüft</h3>
+        <div style="color:var(--muted); font-size:var(--fs-neben); margin-bottom:8px;">
+          Diese Werte und die 15 Standard-Werte werden in jeder Runde geprüft. Die gemessenen 60-Minuten-Einstiege
+          schauen zusätzlich in den gewählten Beobachtungs-Pool (Vorgabe: 99 Werte) – daraus rotieren zwölf je Runde,
+          damit ein Scan nicht in Kursabrufe ausartet.
+        </div>
+        <div id="watchChips" style="display:flex; gap:6px; flex-wrap:wrap;"></div>
+        <div style="color:var(--muted); font-size:var(--fs-neben); margin-top:8px;">Hinzufügen: Wert im Aktien-Explorer suchen → „Zur Handels-Watchlist“.</div>
+      </div>
       </div>
     </div>
 
@@ -1594,17 +1614,6 @@
         <div style="font-size:var(--fs-text); font-weight:600; margin-bottom:6px;">Gesperrte Werte <span style="color:var(--muted); font-weight:400;">(automatisch ab 6 Trades mit klarer Negativbilanz – Klick auf × gibt wieder frei)</span></div>
         <div id="symBlocks"></div>
       </div>
-    </div>
-
-    <div class="panel" style="margin-top:12px;">
-      <h3>Eigene Watchlist – wird bei jedem Scan mitgeprüft</h3>
-      <div style="color:var(--muted); font-size:var(--fs-neben); margin-bottom:8px;">
-        Diese Werte und die 15 Standard-Werte werden in jeder Runde geprüft. Die gemessenen 60-Minuten-Einstiege
-        schauen zusätzlich in den gewählten Beobachtungs-Pool (Vorgabe: 99 Werte) – daraus rotieren zwölf je Runde,
-        damit ein Scan nicht in Kursabrufe ausartet.
-      </div>
-      <div id="watchChips" style="display:flex; gap:6px; flex-wrap:wrap;"></div>
-      <div style="color:var(--muted); font-size:var(--fs-neben); margin-top:8px;">Hinzufügen: Wert im Aktien-Explorer suchen → „Zur Handels-Watchlist“.</div>
     </div>
   </div>
 
@@ -2005,9 +2014,25 @@
         Download im Browser – kein Zusammensetzen von Teil-Dateien mehr. Es wird nur lesend auf api.github.com zugegriffen.
       </div>
     </div>
+    <!-- Gefahrenzone. Zerstoerendes gehoert nicht neben den meistgeklickten Knopf:
+         "Alle Buecher zuruecksetzen" stand in der Fusszeile unmittelbar neben
+         "Speichern". Hier unten, hinter einem eigenen Haken, kostet ein Fehlgriff
+         nichts mehr. Der Haken sperrt den Knopf auch fuer die Tastatur - eine reine
+         CSS-Sperre haette Tab und Enter durchgelassen.
+         Sie steht VOR .modal-foot, nicht dahinter: die Fusszeile klebt
+         (position:sticky), ein Block dahinter laege optisch unter ihr. -->
+    <div style="margin:14px 0 0; border-top:1px solid var(--down); padding-top:14px;">
+      <div style="font-weight:600; font-size:var(--fs-text); color:var(--down); margin-bottom:4px;">Gefahrenzone</div>
+      <div style="font-size:var(--fs-neben); color:var(--muted); margin-bottom:8px;">
+        Setzt alle drei Bücher (Intraday, Momentum, Ergebnis-Drift) auf je 100.000 $ zurück und löscht die Trades.
+        Vorher wird eine Sicherung abgelegt – der Reset ist umkehrbar.
+      </div>
+      <label style="display:flex; align-items:flex-start; gap:8px; font-size:var(--fs-text); margin-bottom:8px;"><input type="checkbox" id="depotResetFrei" style="margin-top:3px;"><span>Ja, ich will alle drei Bücher zurücksetzen</span></label>
+      <button class="btn danger" id="depotResetBtn" disabled>Alle Bücher zurücksetzen</button>
+    </div>
+
     <div class="modal-foot">
       <button class="btn" id="setSaveBtn">Speichern</button>
-      <button class="btn danger" id="depotResetBtn" title="Setzt alle drei Bücher (Intraday, Momentum, Ergebnis-Drift) auf je 100.000 $ zurück und löscht die Trades. Vorher wird eine Sicherung abgelegt – der Reset ist umkehrbar.">Alle Bücher zurücksetzen</button>
       <span id="setStatus" style="color:var(--muted); font-size:var(--fs-neben);"></span>
     </div>
   </div>

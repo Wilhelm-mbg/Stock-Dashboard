@@ -3112,6 +3112,16 @@ console.log('\n36) Kostenhuerde des Produkts (Signalstudie 23.08.2026)');
      'Aktie netto ' + (0.11 - akt.pp).toFixed(3) + ' / Schein netto ' + (0.11 - std.pp).toFixed(3));
   // Verdrahtung - tote Anzeigen gab es hier schon (6 Schalter, 22.08.)
   ok((html.match(/id="kostenHuerde"/g) || []).length === 1, 'Die Anzeigeflaeche existiert genau einmal');
+  /* Die Huerde ist ein Satz, kein Auswahlfeld: im .params-Raster lief sie in eine
+   * 108-px-Spalte und brach auf Wortbreite um. Diese Zusicherung haelt sie draussen.
+   * Gemessen wird das schliessende </div> ZWISCHEN letztem Label und Huerde - es ist
+   * der Beweis, dass das Raster vorher zu war. Eine reine Positionspruefung ("steht
+   * hinter dem letzten Label") waere auch im alten, falschen Zustand gruen gewesen. */
+  var rkGrp = html.slice(html.indexOf('<div class="pgroup-title">Risiko &amp; Kosten</div>'),
+                         html.indexOf('<div class="pgroup-title">Filter &amp; Schutz</div>'));
+  var zwischen = rkGrp.slice(rkGrp.lastIndexOf('</label>'), rkGrp.indexOf('id="kostenHuerde"'));
+  ok(rkGrp.indexOf('id="kostenHuerde"') > -1 && /<\/div>/.test(zwischen),
+     'Die Kostenhuerde steht AUSSERHALB des .params-Rasters, aber in der Gruppe "Risiko & Kosten"');
   ok(dep.indexOf('function kostenHuerdePp') !== -1 && dep.indexOf('function huerdeAnzeigen') !== -1,
      'Rechnung und Anzeige sind vorhanden');
   /* Die Absicht ist: Aendert jemand eine Einstellung, wird die Anzeige neu gefuellt.
@@ -7646,6 +7656,118 @@ console.log('\n51) Der Edge-Waechter loest nicht mehr im Rauschen aus');
    * bei einer Schutzhandlung soll es leichter sein, pausiert zu bleiben. */
   ok(/roh != null && roh > 0 && D\.intraday\[ARM\.pauseKey\]/.test(dep),
      'Aufgehoben wird erst bei positivem Vorsprung - die Totzone dazwischen verhindert Hin-und-Her');
+})();
+
+/* ================= 56) Gefahrenzone und rechte Rasterspalte =================
+ * Struktur-Audit 25.08.2026, Befunde P2 und P3. "Alle Buecher zuruecksetzen" stand
+ * in .modal-foot unmittelbar neben "Speichern", dem meistgeklickten Knopf des
+ * Dialogs; die rechte Spalte des strategy-grid trug eine einzige kleine Karte. */
+(function () {
+  console.log('\n56) Zerstoerendes steht nicht neben Speichern');
+  var html = fs.readFileSync(__dirname + '/index.html', 'utf8');
+  var dep = fs.readFileSync(__dirname + '/depot.js', 'utf8');
+
+  var foot = /<div class="modal-foot">([\s\S]*?)<\/div>\s*<\/div>/.exec(html);
+  ok(!!foot && foot[1].indexOf('depotResetBtn') === -1,
+     'Der Zuruecksetzen-Knopf steht NICHT mehr in der Fusszeile neben "Speichern"');
+  ok(html.indexOf('id="depotResetFrei"') > -1 &&
+     html.indexOf('id="depotResetFrei"') < html.indexOf('id="depotResetBtn"'),
+     'Der Zwischenschritt steht vor dem roten Knopf');
+  ok(/id="depotResetBtn"[^>]*\bdisabled\b/.test(html),
+     'Der rote Knopf ist ab Werk gesperrt - erst der Haken gibt ihn frei');
+  /* disabled statt pointer-events: eine CSS-Sperre laesst Tab und Enter durch.
+   * app-shell.js filtert die Tabfolge ueber button:not([disabled]). */
+  ok(/drBtn\.disabled = !drFrei\.checked/.test(dep),
+     'Die Sperre ist verdrahtet und nicht nur gemalt');
+  /* Der Reset war und bleibt umkehrbar - das ist der Grund, warum er ueberhaupt
+   * ohne zweiten Dialog vertretbar ist. Die wichtigste Zeile dieses Abschnitts. */
+  ok(/storeSet\('depot_vor_reset', D\)/.test(dep),
+     'Der Reset legt weiterhin eine Sicherung an, BEVOR er loescht');
+
+  /* Die rechte Rasterspalte war als Stapel gebaut, trug aber nur die Risiko-Karte;
+   * daneben stand Leere ueber die Hoehe der Intraday-Karte (P3). */
+  var grid = html.slice(html.indexOf('<div class="strategy-grid">'),
+                        html.indexOf('id="archivWiderlegt"'));
+  ok(grid.indexOf('id="watchChips"') > -1,
+     'Die rechte Spalte von "Schalter & Einstellungen" traegt mehr als die Risiko-Karte');
+  /* Der wahrscheinlichste Fehler beim Verschieben von Hand ist eine Kopie - und
+   * depot.js fuellte dann nur die erste der beiden Flaechen. */
+  ok((html.match(/id="watchChips"/g) || []).length === 1,
+     'Die Watchlist steht genau einmal - verschoben, nicht kopiert');
+})();
+
+/* ------------------------------------------------------------------ BLOCK 47
+ * WER "BESTAETIGT" SAGT, MUSS AUSSORTIEREN.
+ *
+ * Am 25.08.2026 stand in winkelgrad.js als Begruendung, Q.kanalUeber verlange
+ * Beruehrungen an beiden Kanalraendern und ein Varianzverhaeltnis, das einen
+ * Zufallspfad ausschliesst. Es verlangt nichts davon - drei return null, alle
+ * technisch. In 20.000 Zufallspfaden kam kein einziges null. Der Detektor feuerte
+ * auf 52,7 % aller Kerzen und mass damit nicht Felix' Regel, sondern "ueber 40
+ * Kerzen laesst sich eine Gerade legen".
+ *
+ * Der Fehler war von aussen unsichtbar: Der Code lief, die Maschine rechnete, das
+ * Protokoll sah aus wie jedes andere. Aufgefallen ist er erst auf Nachfrage. Diese
+ * Pruefung macht ihn sichtbar - nicht durch Lesen des Kommentars, sondern indem
+ * gezaehlt wird, wie oft der Detektor tatsaechlich feuert. */
+(function () {
+  var Wb = require('./studien/messmaschine/strategien/winkelbestaetigt.js');
+
+  /* Fester Zufallspfad, kein Math.random - ein Test, der mal durchgeht und mal
+   * nicht, ist schlimmer als keiner. */
+  function zufallspfad(seed, n) {
+    var s = seed, b = [], p = 100;
+    function rnd() { s = (s * 1103515245 + 12345) & 0x7fffffff; return s / 0x7fffffff; }
+    for (var i = 0; i < n; i++) {
+      var u = Math.max(1e-9, rnd()), v = rnd();
+      p *= 1 + 0.01 * Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+      b.push([i * 3600000, p, 1000, p * 1.002, p * 0.998, p]);
+    }
+    return b;
+  }
+
+  /* 1. Die Bestaetigung muss am Rauschen tatsaechlich aussortieren. Der alte
+   *    Detektor kam hier auf ueber 50 % - genau das darf nicht wieder passieren. */
+  var pfad = zufallspfad(4711, 3000), feuer = 0, gepruef = 0;
+  for (var i = 42; i < pfad.length; i++) {
+    gepruef++;
+    if (Wb.signal(pfad, i, { schwelle: 0 })) feuer++;
+  }
+  var anteil = feuer / gepruef;
+  ok(anteil < 0.25, 'winkelbestaetigt sortiert am Zufallspfad aus (feuert auf ' +
+     (100 * anteil).toFixed(1) + ' % der Kerzen, erlaubt sind unter 25 %)');
+  ok(feuer > 0, 'winkelbestaetigt feuert ueberhaupt - ein Detektor, der nie ausloest, ' +
+     'besteht jede Strenge-Pruefung und misst nichts');
+
+  /* 2. Die Bestaetigung muss WIRKEN, nicht nur dastehen: derselbe saubere Kanal,
+   *    einmal fortgesetzt und einmal gebrochen, muss verschieden ausgehen. */
+  function kanalReihe(ausbruch) {
+    var b = [], i;
+    for (i = 0; i < 42; i++) {
+      var kurs = 100 + 0.1 * i + (i % 2 ? 0.05 : -0.05);
+      if (i >= 33) kurs = ausbruch ? 100 + 0.1 * i + 5 : 100 + 0.1 * i + (i % 2 ? 0.02 : -0.02);
+      b.push([i * 3600000, kurs, 1000, kurs * 1.001, kurs * 0.999, kurs]);
+    }
+    return b;
+  }
+  ok(Wb.signal(kanalReihe(false), 41, { schwelle: 0 }) != null,
+     'Ein Kanal, den die acht ungesehenen Kerzen eingehalten haben, gilt als bestaetigt');
+  ok(Wb.signal(kanalReihe(true), 41, { schwelle: 0 }) == null,
+     'Derselbe Kanal, in den acht ungesehenen Kerzen gebrochen, gilt NICHT als bestaetigt');
+
+  /* 3. Das Lesefenster muss decken, was das Signal wirklich anfasst. Der erste
+   *    Anlauf meldete 40 und las 41 - die Kontrolle liess eine Kerze zu wenig aus (A7). */
+  ok(Wb.leseFensterKerzen >= Wb._intern.FIT + Wb._intern.AUS + 1,
+     'leseFensterKerzen deckt alle Kerzen ab, die das Signal liest (A7)');
+
+  /* 4. Die falsche Begruendung darf nicht zurueckkehren - weder hier noch anderswo. */
+  var strDir = './studien/messmaschine/strategien/';
+  fs.readdirSync(strDir).filter(function (f) { return /.js$/.test(f); }).forEach(function (f) {
+    var q = fs.readFileSync(strDir + f, 'utf8');
+    var behauptet = /kanalUeber verlangt|verlangt dafuer Beruehrungen|verlangt dafür Berührungen/.test(q);
+    ok(!behauptet, f + ' behauptet nicht, kanalUeber pruefe die Kanalqualitaet ' +
+       '(es gibt guete und Beruehrungen nur zurueck)');
+  });
 })();
 
 Promise.all(offeneProben).then(function () {

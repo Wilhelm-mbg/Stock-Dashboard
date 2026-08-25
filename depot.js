@@ -9796,6 +9796,15 @@
   var btBtn = document.getElementById('btRunBtn');
   if (btBtn) btBtn.addEventListener('click', runBacktest);
   var drBtn = document.getElementById('depotResetBtn');
+  var drFrei = document.getElementById('depotResetFrei');
+  /* Der rote Knopf lag frueher in der Modal-Fusszeile neben "Speichern" - ein
+   * Fehlgriff leerte alle drei Buecher. Der Haken daneben ist der Zwischenschritt,
+   * und er wirkt ueber das disabled-Attribut auch fuer die Tastatur: eine reine
+   * CSS-Sperre haette Tab und Enter durchgelassen. */
+  if (drBtn && drFrei) {
+    drBtn.disabled = !drFrei.checked;
+    drFrei.addEventListener('change', function () { drBtn.disabled = !drFrei.checked; });
+  }
   if (drBtn) drBtn.addEventListener('click', function () {
     // Ein Klick löschte bisher unwiderruflich Positionen, Trade-Protokoll, Trefferquoten,
     // Experiment-Journal und Strategie-Farm. Dafür ist eine Rückfrage angemessen.
@@ -9821,6 +9830,9 @@
     var stEl = document.getElementById('setStatus');
     if (stEl) stEl.textContent = 'Alle Bücher zurückgesetzt (' + U.nf0.format(START_CAPITAL) + ' $ je Buch). ' +
       'Der vorherige Stand liegt als „depot_vor_reset" im Datenordner.';
+    /* Der Haken faellt zurueck: ein zweiter Klick soll den Zwischenschritt wieder
+     * verlangen und nicht auf einem scharf gebliebenen Knopf landen. */
+    if (drFrei) { drFrei.checked = false; drBtn.disabled = true; }
   });
   document.addEventListener('quotes-updated', function () {
     var tD = document.getElementById('tab-depot');
