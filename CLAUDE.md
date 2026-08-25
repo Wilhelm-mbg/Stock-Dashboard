@@ -4,42 +4,29 @@ Deutschsprachige Trading-**Simulation** (Electron). Virtuelles Kapital, keine
 Anlageberatung. An diesem Repo arbeiten regelmäßig **mehrere Sitzungen gleichzeitig** —
 darauf ist alles Folgende zugeschnitten.
 
-## Ausliefern: nicht von Hand
+## Ausliefern ist NICHT deine Aufgabe
 
-Es gibt eine Routine. Benutze sie, statt den Ablauf jedes Mal neu zusammenzusetzen:
+Versionsnummern vergibt und Releases baut die **Release-Wache**, nicht du. Wenn du an
+der App gearbeitet hast, endet dein Teil hier:
+
+1. Committen (nur deine eigenen Dateien).
+2. Eine Datei in `release-notizen/` ablegen — Überschrift plus zwei bis fünf Sätze für
+   einen Anwender, was sich für ihn ändert. Eine je Vorhaben, nie eine gemeinsame.
+3. Fertig. Die Wache holt den Rest.
 
 ```bash
-node tools/release.js --pruefen    # was ist unveröffentlicht, welche Notizen liegen da
-node tools/release.js --bauen      # Version hochzählen, sauber bauen, testen
-node tools/release.js --hoch       # Entwurf, Assets, veröffentlichen, gegenprüfen
+node tools/release.js --pruefen    # zeigt, was unveröffentlicht ist und welche Notizen liegen
 ```
 
-`--minor` zählt die mittlere Stelle hoch (8.28.3 → 8.29.0) statt der letzten. Das Skript
-**weigert sich**, aus einem schmutzigen Arbeitsbaum zu bauen, bei roten Tests
-auszuliefern, eine schon vergebene Nummer zu nehmen oder `telemetrie.json` zu committen —
-und es prüft nach dem Veröffentlichen nach, ob wirklich das eigene Paket oben liegt.
-Umgehe diese Weigerungen nicht; jede einzelne steht für einen Fehler, der schon passiert
-ist.
+`--bauen` und `--hoch` **weigern sich**, wenn du sie aufrufst. Das ist Absicht: an
+dieser Stelle stand früher „benutze die Routine", und prompt hat eine Sitzung in einer
+Nacht fünf Versionen vergeben. Eine Regel, die nur dasteht, hält nicht — deshalb steht
+sie jetzt im Skript.
 
-Dieselbe Routine fährt die geplante Aufgabe **`release-wache`** (Haiku, läuft nur von
-Hand, cwd = dieses Repo).
-
-### Was DU tun musst: deine Änderung ankündigen
-
-**Lege am Ende deiner Arbeit eine Datei in `release-notizen/` ab.** Eine je Vorhaben,
-benannt nach Datum und Sache:
-
-```
-release-notizen/2026-08-24-issue-68-reiter.md
-```
-
-Inhalt: eine Überschrift und zwei bis fünf Sätze für einen **Anwender** — was sich für
-ihn ändert, nicht welche Funktion umbenannt wurde. Wer das nicht tut, dessen Arbeit
-erscheint im Release nur als Commit-Zeile.
-
-Eigene Datei, nicht eine gemeinsame: bei paralleler Arbeit erzeugt eine gemeinsame Datei
-genau dort einen Konflikt, wo niemand einen gebrauchen kann. Näheres in
-`release-notizen/LIESMICH.md`.
+Warum überhaupt eine Wache: sie liefert aus einem sauberen Baum, vergibt die Nummer
+unmittelbar vor dem Build (sonst nimmt eine parallele Sitzung dieselbe), prüft die
+Prüfsumme nach dem Veröffentlichen und sieht danach im Installer nach, ob der
+ausgelieferte Code der committete ist. Das jedes Mal neu zusammenzusetzen geht schief.
 
 ## Version: immer aus Git, nie aus der App
 
