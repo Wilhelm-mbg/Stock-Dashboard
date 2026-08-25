@@ -7517,6 +7517,63 @@ console.log('\n49) Einwegschalter: eine Sicherung abstellen und nicht zurueckkoe
      'Der Text sagt, dass der Schalter alle Kanten betrifft, nicht nur die angezeigte');
 })();
 
+console.log('\n50) Der Extra-Pool haengt an der Kerzenuhr');
+(function () {
+  var dep = fs.readFileSync(__dirname + '/depot.js', 'utf8');
+
+  /* Bis zum 25.08.2026 rotierten 12 Werte je Scan-Runde durch den Pool - bei 89 Werten
+   * und 90 s Runden war jeder alle ~11 Minuten dran. Das kostete keine Signale (jeder
+   * Kerzenschluss wurde gesehen), aber bis zu 11 Minuten Verzoegerung beim Einstieg,
+   * waehrend die Messmaschine AM Kerzenschluss einsteigt. Live trieb damit von der
+   * Messung weg - eine Test-Invariante des Projekts.
+   * Der Sammelabruf (yahoo-quotes) kann das NICHT loesen: er liefert regularMarketPrice,
+   * eine Zahl je Symbol. RSI(2), Kanal und EMA brauchen die Kerzenreihe. */
+  var von = dep.indexOf('  var letzteSweepKerze = 0;');
+  var bis = dep.indexOf('/** Scan-Universum');
+  ok(von !== -1 && bis > von, 'Die Pool-Auswahl ist auffindbar');
+  if (von === -1 || bis <= von) return;
+
+  /* Ausgefuehrt, mit gestellter Umgebung: ein Basis-Universum von zwei Werten, deren
+   * letzte Kerze wir selbst setzen, und ein Pool von 89. */
+  var E = {};
+  var LASTBARS = {}, D = { intraday: { pool: 'test', interval: '60m' } };
+  var POOLS_60M = { test: [] };
+  for (var i = 0; i < 89; i++) POOLS_60M.test.push('S' + i);
+  var EXTRA_60M = POOLS_60M.test;
+  function universe() { return ['AAA', 'BBB']; }
+  (new Function('E', 'LASTBARS', 'D', 'POOLS_60M', 'EXTRA_60M', 'universe',
+     dep.slice(von, bis) + '\nE.fenster = extra60mFenster;'))(E, LASTBARS, D, POOLS_60M, EXTRA_60M, universe);
+
+  /* Erste Runde: noch keine Kerze bekannt - der Pool wird trotzdem einmal angesehen,
+   * sonst bliebe er beim Start bis zur ersten Kerze unsichtbar. */
+  var r0 = E.fenster();
+  ok(r0.length === 89, 'Beim ersten Aufruf wird der ganze Pool angesehen  [' + r0.length + ']');
+
+  /* Kerze setzen und zweimal aufrufen: nur EIN Durchgang je Kerze. */
+  var kerze = Date.UTC(2026, 7, 25, 14, 30);
+  LASTBARS.AAA = [[kerze, 100]];
+  var r1 = E.fenster();
+  ok(r1.length === 89, 'Eine neue Kerze loest einen vollen Durchgang aus  [' + r1.length + ']');
+  var r2 = E.fenster();
+  ok(r2.length === 0,
+     'Innerhalb DERSELBEN Kerze gibt es nichts Neues zu sehen - kein zweiter Durchgang  [' + r2.length + ']');
+  var r3 = E.fenster();
+  ok(r3.length === 0, 'Auch beim dritten Aufruf nicht');
+
+  /* Naechste Kerze: wieder ein voller Durchgang. */
+  LASTBARS.AAA = [[kerze + 3600000, 101]];
+  var r4 = E.fenster();
+  ok(r4.length === 89, 'Die naechste Kerze loest wieder einen vollen Durchgang aus  [' + r4.length + ']');
+
+  /* Kein Wert bleibt liegen - das war der Sinn der Sache. */
+  ok(r4.indexOf('S0') !== -1 && r4.indexOf('S88') !== -1,
+     'Der Durchgang enthaelt den ersten UND den letzten Wert des Pools - niemand wartet mehr eine Runde');
+
+  /* Und die alte Rotation ist wirklich weg. */
+  ok(!/extra60mZeiger/.test(dep),
+     'Der Rotationszeiger ist entfernt - sonst laeuft die alte Auswahl daneben weiter');
+})();
+
 Promise.all(offeneProben).then(function () {
   console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
   process.exit(fails ? 1 : 0);

@@ -2703,10 +2703,15 @@
    * je Tag handelbar (Long) - an den meisten Tagen passiert schlicht nichts, und
    * genau das sah aus wie ein Defekt ("warum wird nichts gehandelt?"). Auf diesen
    * 84 liquiden S&P-Werten kommen 4,3 handelbare Signale je Tag hinzu.
-   * Bei Stundenkerzen muss nicht jede Runde jedes Symbol abgefragt werden:
-   * je Scan-Runde rotieren 12 Extras durch - jedes ist alle ~10 Minuten dran,
-   * die Signalkerze schliesst ohnehin nur stuendlich. Klumpen-Deckel, Tageslimit,
-   * Cooldown und Risikostufe gelten unveraendert. */
+   * Bei Stundenkerzen muss nicht jede Runde jedes Symbol abgefragt werden - die
+   * Signalkerze schliesst ohnehin nur stuendlich. Bis zum 25.08.2026 rotierten
+   * deshalb 12 Extras je Runde durch; jeder Wert war alle ~11 Minuten dran.
+   * Das kostete keine Signale (jeder Kerzenschluss wurde gesehen), aber bis zu
+   * 11 Minuten VERZOEGERUNG beim Einstieg - waehrend die Messmaschine AM
+   * Kerzenschluss einsteigt. Die Rotation trieb Live also von der Messung weg.
+   * Jetzt wird der Pool EINMAL JE KERZE komplett durchgesehen, gleich nach ihrem
+   * Schluss. Das ist naeher an der Messung UND billiger: 89 Anfragen je Stunde
+   * statt 480. Klumpen-Deckel, Tageslimit, Cooldown und Risikostufe unveraendert. */
   /* Halbleiter-Stichtagsliste (22.08.2026) fuer den Sektor-Klumpen-Deckel. Eine
    * SETZUNG, keine Messung - aber der Deckel schreibt Schatten und ist damit
    * ueberpruefbar. Kriterium: Chips, Chip-Ausruestung und Speichertechnik. */
@@ -2735,13 +2740,35 @@
     ndx100: ('GOOG COST NFLX ADBE PEP CSCO TMUS AMGN HON INTU ISRG BKNG ADP GILD VRTX ADI REGN LRCX PANW MU SNPS KLAC CDNS MELI ABNB CRWD MAR MRVL ORLY CSX PYPL MNST FTNT DASH ADSK ROP WDAY PCAR NXPI CPRT PDD AEP ROST ODFL KDP FAST EXC GEHC IDXX CTAS VRSK EA CCEP XEL TTWO DXCM ON FANG CSGP MDB TEAM ZS WBD DDOG SIRI ARM CEG DLTR KHC LULU AZN BIIB PAYX AMAT CMCSA TXN QCOM INTC').split(' '),
     dax: ('SAP.DE SIE.DE ALV.DE DTE.DE AIR.DE MUV2.DE BAS.DE BAYN.DE BMW.DE MBG.DE VOW3.DE DBK.DE DB1.DE ADS.DE IFX.DE HEN3.DE EOAN.DE RWE.DE DHL.DE BEI.DE CON.DE 1COV.DE FRE.DE HEI.DE MRK.DE MTX.DE P911.DE QIA.DE RHM.DE SHL.DE SY1.DE VNA.DE ZAL.DE HNR1.DE CBK.DE ENR.DE BNR.DE DTG.DE SRT3.DE PAH3.DE').split(' ')
   };
-  var extra60mZeiger = 0;
+  var letzteSweepKerze = 0;    // Zeitstempel der Kerze, bei der zuletzt voll durchgesehen wurde
+  var letzterSweepAt = 0;      // Wanduhr, nur fuer den Notnagel unten
+  /** Der Zeitstempel der juengsten Kerze im BASIS-Universum. Das wird jede Runde
+   *  geladen, ist also immer aktuell - und es ist dieselbe Kerzenuhr, die auch fuer
+   *  den Extra-Pool gilt. Damit braucht es weder eine feste Uhrzeit noch
+   *  Zeitzonenrechnerei: Wann eine Stundenkerze schliesst, sagen die Daten selbst. */
+  function neuesteBasisKerze() {
+    var neu = 0;
+    universe().forEach(function (s) {
+      var b = LASTBARS[s];
+      if (b && b.length) { var ts = b[b.length - 1][0]; if (ts > neu) neu = ts; }
+    });
+    return neu;
+  }
   function extra60mFenster() {
     var quelle = POOLS_60M[D.intraday.pool] || EXTRA_60M;
-    var aus = [];
-    for (var i = 0; i < 12; i++) aus.push(quelle[(extra60mZeiger + i) % quelle.length]);
-    extra60mZeiger = (extra60mZeiger + 12) % quelle.length;
-    return aus;
+    var kerze = neuesteBasisKerze();
+    var jetzt = Date.now();
+    /* NOTNAGEL: Antwortet das Basis-Universum gar nicht (Quelle gestoert), bliebe die
+     * Kerzenuhr stehen und der Pool wuerde nie mehr durchgesehen. Nach der doppelten
+     * Kerzenlaenge wird deshalb auch ohne neue Kerze einmal durchgesehen. */
+    var kerzenMin = (D.intraday.interval === '60m') ? 60 : (D.intraday.interval === '5m' ? 5 : 15);
+    var ueberfaellig = letzterSweepAt && (jetzt - letzterSweepAt) > kerzenMin * 2 * 60000;
+    if ((kerze && kerze > letzteSweepKerze) || ueberfaellig || !letzterSweepAt) {
+      if (kerze) letzteSweepKerze = kerze;
+      letzterSweepAt = jetzt;
+      return quelle.slice();          // der ganze Pool, einmal je Kerze
+    }
+    return [];                        // innerhalb derselben Kerze gibt es nichts Neues zu sehen
   }
 
   /** Scan-Universum: Basis + Watchlist + heutige Screener-Treffer */
