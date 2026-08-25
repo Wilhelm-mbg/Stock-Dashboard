@@ -106,6 +106,11 @@ steht, ist nach zwei Stunden verloren.*
 - **25.08.2026 (spät)** — Messmaschine wird versioniert, alle zwölf Strategien werden auf
   dem aktuellen Stand neu gemessen; erst danach neue Untersuchungen (Empfehlung aus dem
   Befundbericht „Sieben stille Fehler“, von Wilhelm bestätigt).
+- **25.08.2026 (spät)** — Neue Rolle **Strategie-Tüftler**: läuft jede Nacht 04:30 (Wilhelms
+  Wahl; bei ≥3 wartenden Entwürfen arbeitet er stattdessen am Datenbestand). Entwirft
+  Kandidaten mit Machbarkeits-Check gegen die Auflösungswand, vorregistriert, erweitert
+  Daten; misst NIE selbst — Messung macht die Mess-Kette, Nachprüfung der Analytiker.
+  Übergabe über studien/tueftler/WARTESCHLANGE.md, eine Zeile auf der Tafel.
 - **25.08.2026 (spät)** — Neue Rolle **Analytiker**: läuft jede Nacht 03:15, prüft alles
   (Wächterprüfungen, Kanten-Neuberechnung, kritische Methodenbeurteilung), meldet per
   Issue nur bei Fund, sonst eine Zeile hier auf der Tafel.
@@ -132,6 +137,15 @@ steht, ist nach zwei Stunden verloren.*
 *Eine Zeile je Nacht, geschrieben von der Analytiker-Aufgabe (03:15). Issues nur bei Fund.*
 
 - **26.08.** — Erster Lauf: A–C, E + D geprüft; Placebo sauber (t −0,10), Live = Messung bestätigt, keine frischen Tage für Kanten-Neuberechnung; 2 Funde gemeldet (#84 „belegt"-Prosa, #85 laufende Quote-Stempel-Kerze im 60m-Archiv), Details in `studien/analytiker/2026-08-26/BEFUND.md`; nächste Nacht F-Rotation Punkt 1 (Kontrollgruppen-Konstruktion / A7-Lesefenster).
+
+---
+
+## Tüftler
+
+*Eine Zeile je Nacht, geschrieben von der Strategie-Tüftler-Aufgabe (04:30). Übergaben
+stehen in .*
+
+- *(noch kein Lauf — erster Lauf in der Nacht auf den 26.08.)*
 
 ---
 
