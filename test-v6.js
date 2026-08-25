@@ -6393,6 +6393,50 @@ console.log('\n44) Oberflaeche nach Themen sortiert (Felix, Issue #68)');
    * angefasst, in dem ein Messsatz steht. */
   ok((html.match(/data-info="heute\.bestand"/g) || []).length === 2,
      'Beide Ueberschriften fuehren auf denselben Erklaereintrag - eine Wahrheit');
+
+  /* --- Felix #71: "prominent auf Heute, untergliedert nach Kurz-/Mittelfristsignal" ---
+   * Vorher standen alle Papiere in einer Reihe und man musste zwei Spalten absuchen,
+   * um zu sehen, wo heute ueberhaupt etwas anliegt. */
+  var bu = fs.readFileSync(__dirname + '/bestandui.js', 'utf8');
+  ok(/gruppe\('Kurzfrist/.test(bu) && /gruppe\('Mittelfrist/.test(bu) && /gruppe\('Ohne Signal/.test(bu),
+     'Die Liste auf "Heute" ist nach Kurz- und Mittelfrist-Signal untergliedert');
+
+  /* Die beiden Textfunktionen werden AUSGEFUEHRT: sie sind rein und ohne DOM-Zugriff.
+   * Geprueft wird die Eigenschaft, auf der die ganze Gruppierung ruht - dass das
+   * Kennzeichen "an" mit dem angezeigten TEXT uebereinstimmt. Kaeme die Gruppe aus dem
+   * CSS-Klassennamen, verschoebe eine Umbenennung im Stylesheet still die
+   * Fachbedeutung. */
+  var kt = (/\n  function kurzText\(k\) \{[\s\S]*?\n  \}/.exec(bu) || [])[0];
+  var mt = (/\n  function mittelText\(m\) \{[\s\S]*?\n  \}/.exec(bu) || [])[0];
+  ok(!!kt && !!mt, 'Die beiden Textfunktionen lassen sich herausschneiden');
+  var TF = new Function(kt + mt + '\nreturn { k: kurzText, m: mittelText };')();
+  ok(TF.k({ ok: true }).an === true && TF.k({ ok: false, grund: 'Kanal fehlt' }).an === false &&
+     TF.k(null).an === false,
+     'Kurzfrist: das Kennzeichen an folgt genau dem Signal');
+  ok(TF.m({ momentum: { richtung: 1 } }).an === true && TF.m({}).an === false &&
+     TF.m(null).an === false,
+     'Mittelfrist: das Kennzeichen an folgt genau dem Buchbestand');
+  /* Der eigentliche Punkt: Kennzeichen und Text duerfen nie auseinanderlaufen - sonst
+   * stuende eine Zeile unter "Ohne Signal" und daneben "Regel gibt ein Signal". */
+  var faelle = [TF.k(null), TF.k({ ok: true }), TF.k({ ok: false, grund: 'x' }),
+                TF.m(null), TF.m({}), TF.m({ drift: { richtung: -1 } })];
+  ok(faelle.every(function (f) { return f.an === (f.cls === 'up'); }),
+     'Kennzeichen und angezeigter Text sagen in jedem Fall dasselbe');
+
+  /* Jeder Wert landet in GENAU EINER Gruppe - Kurzfrist geht vor, weil es das eilige
+   * ist; dass er zusaetzlich in einem Buch liegt, steht weiter in seiner Spalte. */
+  ok(/if \(k\.an\)/.test(bu) && /else if \(m\.an\)/.test(bu) && /else gRest\.push/.test(bu),
+     'Jeder Wert steht in genau einer Gruppe, das Kurzfrist-Signal hat Vorrang');
+  ok(/colspan="5"/.test(bu) && /<th>Kurzfrist<\/th><th>Mittelfrist<\/th><th><\/th>/.test(bu),
+     'Die Gruppenzeile spannt genau ueber die fuenf Spalten der Tabelle');
+  /* Ohne Regel fuer td.up/td.muted saehe eine Zeile mit Signal aus wie eine ohne -
+   * die Untergliederung waere dann nur eine Reihenfolge, keine Auskunft. */
+  ok(/#bestandListe td\.up/.test(html) && /#bestandListe td\.muted/.test(html),
+     'td.up und td.muted haben eine Regel - sonst sieht "Signal" aus wie "kein Signal"');
+  /* Entfernen geht dort, wo die Papiere wohnen - sonst legt man sie unter Vermoegen an
+   * und loescht sie auf "Heute": genau die Wohnungsteilung, die C2 abschafft. */
+  ok(/el\('bestandTabelle'\)[\s\S]{0,500}addEventListener\('click'/.test(bu),
+     'Entfernen geht auch dort, wo die Papiere wohnen');
   ok(!/id="sub-strategien"/.test(vermoegen) && !/id="sub-wende"/.test(vermoegen) && !/id="sub-auswertung"/.test(vermoegen),
      'Vermoegen haelt keine Schalter, kein Werkzeug und keinen Autopiloten mehr');
   ok(/id="sub-wende"/.test(werkzeuge) && /id="sub-explorer"/.test(werkzeuge) && /id="sub-scheine"/.test(werkzeuge),

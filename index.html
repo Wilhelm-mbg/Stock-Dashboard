@@ -529,6 +529,16 @@
     text-transform: uppercase; letter-spacing: 0.04em; padding: 6px 8px; border-bottom: 1px solid var(--grid); }
   table.tbl td { padding: 5px 8px; border-bottom: 1px solid var(--grid); vertical-align: top; }
   table.tbl tr:last-child td { border-bottom: none; }
+  /* Die eigenen Papiere auf "Heute" (Felix, #71): Gruppenzeile INNERHALB der Tabelle,
+     damit die Spaltenbreiten ueber alle Gruppen gleich bleiben.
+     td.up/td.muted setzt bestandui.js seit jeher - eine Regel dafuer gab es bis heute
+     nirgends, die Unterscheidung "Signal / kein Signal" war also unsichtbar. Bewusst
+     auf #bestandListe beschraenkt: .up und .muted sind im Rest der App keine
+     allgemeinen Hilfsklassen und sollen es auch nicht werden. */
+  #bestandListe td.bgrp { color: var(--muted); font-size: var(--fs-klein); font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.06em; padding-top: 12px; }
+  #bestandListe td.up { color: var(--up); font-weight: 600; }
+  #bestandListe td.muted { color: var(--muted); }
   .pos { color: var(--up); font-weight: 600; }
   .neg { color: var(--down); font-weight: 600; }
   .panel { padding: 12px 14px; }
