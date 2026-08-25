@@ -970,13 +970,15 @@ console.log('\n17b) Oberflaeche: Altlasten und Verdrahtung');
   ok(/bild: \{ wpVor: wVor, wpLetzt: wLetzt, kanalVor: kAlt \|\| null, kanalJung: null \}/.test(q2),
      'Trendwechsel-Chart: der Detektor gibt seine Stuetzstellen zum Zeichnen mit');
   ok(/raus\.bild\.kanalJung = kNeu;/.test(q2), 'Trendwechsel-Chart: der junge Kanal wird mitgegeben');
-  ok(/data-wende=/.test(d) && /function wendeChartsVerkabeln/.test(d),
+  /* Seit Stufe E schneiden die Trendfinder-Marken in der eigenen Datei. */
+  var wq = fs.readFileSync(__dirname + '/wendeui.js', 'utf8');
+  ok(/data-wende=/.test(wq) && /function wendeChartsVerkabeln/.test(wq),
      'Trendwechsel-Chart: Zeilen sind anklickbar und verkabelt');
-  ok(/function zeichneWendeChart/.test(d) && /WENDE_BARS\[sy\] = sigBars/.test(d),
+  ok(/function zeichneWendeChart/.test(wq) && /WENDE_BARS\[sy\] = sigBars/.test(wq),
      'Trendwechsel-Chart: gezeichnet werden genau die geprueften Kerzen, kein zweiter Abruf');
-  ok(/ab hier bestätigt/.test(d) && /kein Blick in die Zukunft/.test(d),
+  ok(/ab hier bestätigt/.test(wq) && /kein Blick in die Zukunft/.test(wq),
      'Trendwechsel-Chart: die Bestaetigungs-Verzoegerung ist im Bild sichtbar und benannt');
-  ok(/Beobachtung, kein Handel – Simulation, keine Anlageberatung/.test(d),
+  ok(/Beobachtung, kein Handel – Simulation, keine Anlageberatung/.test(wq),
      'Trendwechsel-Chart: auch die Chart-Legende bleibt ehrlich');
 
   // --- Spekulations-Radar (22.08.2026): Anzeige von Fremdinhalten, streng entschaerft ---
@@ -3319,23 +3321,26 @@ console.log('\n36) Kostenhuerde des Produkts (Signalstudie 23.08.2026)');
    * man wieder heraus soll. Die einzige Regel, die aus ihm folgt, ist die
    * symmetrische: halten bis zur Gegendrehung. Das steht jetzt da, statt einer
    * erfundenen Haltedauer. */
-  ok(/<th title="Die einzige Ausstiegsregel/.test(dep) && /bei Gegendrehung/.test(dep),
+  /* Seit Stufe E wohnt der Reiter-Inhalt in der eigenen Datei - dort wird geschnitten. */
+  var wu3 = fs.readFileSync(__dirname + '/wendeui.js', 'utf8');
+  ok(/<th title="Die einzige Ausstiegsregel/.test(wu3) && /bei Gegendrehung/.test(wu3),
      'Der Trendwechsel-Reiter nennt den Ausstieg - als Bedingung, nicht als erfundene Zahl');
-  ok(/function wendeNachlese/.test(dep), 'Die Nachlese ueber fruehere Drehungen existiert');
+  ok(/function wendeNachlese/.test(wu3), 'Die Nachlese ueber fruehere Drehungen existiert');
 
   /* Die wichtigste Zusicherung dieses Blocks. Es WAR eine Ertragszahl geplant; beim
    * Nachrechnen kippte sie das Vorzeichen, sobald man die Abtastdichte aenderte
    * (-0,028 / +0,166 / +0,230 % bei gleicher Fallzahl von sechs). Sie ist deshalb
    * wieder raus. Wer eine Zahl sieht, liest sie - egal wie vorsichtig der Text
    * daneben steht. */
-  var wz = dep.slice(dep.indexOf("'<td>' + (z.nl"), dep.indexOf("'<td>' + (z.nl") + 900);
+  ok(wu3.indexOf("'<td>' + (z.nl") >= 0, 'Die Fallzahl-Zelle ist auffindbar');
+  var wz = wu3.slice(wu3.indexOf("'<td>' + (z.nl"), wu3.indexOf("'<td>' + (z.nl") + 900);
   ok(!/signCls\(z\.nl\.mittel\)|z\.nl\.ueberschuss/.test(wz),
      'Im Trendwechsel-Reiter steht KEINE Ertragszahl - sie war nicht stabil');
   ok(/z\.nl\.n \+ ' Drehungen/.test(wz),
      'Stattdessen steht die Fallzahl da - sie sagt ehrlich, dass sich nichts bewerten laesst');
-  ok(/kann seine eigenen Signale nicht/.test(dep),
+  ok(/kann seine eigenen Signale nicht/.test(wu3),
      'Der Reiter sagt selbst, dass er seine Signale nicht bewerten kann');
-  ok(/0,074 Pp, t = 1,22/.test(dep),
+  ok(/0,074 Pp, t = 1,22/.test(wu3),
      'Die belastbare Aussage zum Winkel-Detektor steht dabei (widerlegt auf 55 Tagen)');
 
   /* Trendfinder (Felix' Wunsch #58, 23.08.2026): Der Trend ist die Hauptsache, der
@@ -3347,12 +3352,12 @@ console.log('\n36) Kostenhuerde des Produkts (Signalstudie 23.08.2026)');
   var hF = fs.readFileSync(__dirname + '/index.html', 'utf8');
   ok(hF.indexOf('<button data-sub="wende">Trendfinder</button>') >= 0,
      'Trendfinder: der Reiter heisst nach dem Trend, nicht nach seinem Sonderfall');
-  ok(dep.indexOf('>Trend jetzt</th>') >= 0 && dep.indexOf('>Güte</th>') >= 0 && dep.indexOf('>Breite</th>') >= 0,
+  ok(wu3.indexOf('>Trend jetzt</th>') >= 0 && wu3.indexOf('>Güte</th>') >= 0 && wu3.indexOf('>Breite</th>') >= 0,
      'Trendfinder: die drei Eigenschaften des Trends stehen als eigene Spalten');
-  ok(dep.indexOf('var kj = z.kt ? z.kt.k : null;') >= 0 &&
-     dep.indexOf("w.bild.kanalJung ? { k: w.bild.kanalJung") >= 0,
+  ok(wu3.indexOf('var kj = z.kt ? z.kt.k : null;') >= 0 &&
+     wu3.indexOf("w.bild.kanalJung ? { k: w.bild.kanalJung") >= 0,
      'Trendfinder: Guete und Breite kommen aus dem Kanal des Detektors - kein zweiter Rechenweg');
-  ok(/−0,17 Pp je Trade, t = −4,1/.test(dep) && /Die Güte löst nichts aus/.test(dep),
+  ok(/−0,17 Pp je Trade, t = −4,1/.test(wu3) && /Die Güte löst nichts aus/.test(wu3),
      'Trendfinder: dass die Guete NICHTS ausloest, steht mit der Messung dabei');
   /* Die Begruendung stand bis 8.31 als Dauertext ueber der Tabelle und ist mit D6 ins
    * Erklaerregister gezogen - woertlich, es ist eine Messaussage. Die Marke zeigt
@@ -3364,16 +3369,19 @@ console.log('\n36) Kostenhuerde des Produkts (Signalstudie 23.08.2026)');
      'Trendfinder: auch die Fallzahl-Begruendung ist vollstaendig mitgezogen');
   ok(/data-info="werkzeuge\.trendfinder"/.test(hF),
      'Trendfinder: der Erklaerknopf steht am Reiterkopf');
-  /* Und die Gegenprobe zum zweiten Teil des Wunsches: KEINE Order aus dem Reiter. */
-  var wendeBlock = dep.slice(dep.indexOf('async function wendePruefen'), dep.indexOf('function wendeChartsVerkabeln'));
+  /* Und die Gegenprobe zum zweiten Teil des Wunsches: KEINE Order aus dem Reiter.
+   * Seit Stufe E wohnt der Trendfinder in einer eigenen Datei - die Marken schneiden
+   * dort, nicht mehr im Handelsmodul. */
+  var wui = fs.readFileSync(__dirname + '/wendeui.js', 'utf8');
+  var wendeBlock = wui.slice(wui.indexOf('async function wendePruefen'), wui.indexOf('function wendeChartsVerkabeln'));
   ok(wendeBlock.length > 500 && wendeBlock.indexOf('kaufen(') < 0 &&
      wendeBlock.indexOf('orderNeu(') < 0 && wendeBlock.indexOf('eroeffne(') < 0,
      'Trendfinder: der Reiter loest weiterhin keine Order aus - reine Beobachtung');
   /* Fenster-Kanal: "zu wenig Historie" verschwindet dort, wo ein Trend sichtbar ist -
    * aber ein Wechsel-Urteil wird deshalb NICHT erfunden. */
-  ok(dep.indexOf("quelle: 'fenster'") >= 0 && dep.indexOf("Fenster: letzte ' + kj.n") >= 0,
+  ok(wui.indexOf("quelle: 'fenster'") >= 0 && wui.indexOf("Fenster: letzte ' + kj.n") >= 0,
      'Trendfinder: ohne bestaetigten Wendepunkt steht der Fenster-Kanal da, gekennzeichnet');
-  ok(/nur Trend, kein Wechsel-Urteil/.test(dep) && /nicht bestimmbar/.test(dep),
+  ok(/nur Trend, kein Wechsel-Urteil/.test(wui) && /nicht bestimmbar/.test(wui),
      'Trendfinder: in Fenster-Zeilen wird kein Wechsel behauptet');
 
 
@@ -8206,13 +8214,15 @@ console.log('\n58) Wiederholungs-Waende: eine Sammelzeile statt dreissig gleiche
   /* 5) Beide Aufrufstellen benutzen wirklich den gemeinsamen Baustein. */
   ok(/html \+= U\.wandBuendeln\(posten, \{ spalten: 7/.test(dep),
      'Signal-Monitor: gebuendelt wird ueber den gemeinsamen Baustein');
-  ok(/h \+= U\.wandBuendeln\(posten, \{ spalten: 9/.test(dep),
+  /* Die Trendfinder-Haelfte schneidet seit Stufe E in der eigenen Datei. */
+  var wui2 = fs.readFileSync(__dirname + '/wendeui.js', 'utf8');
+  ok(/h \+= U\.wandBuendeln\(posten, \{ spalten: 9/.test(wui2),
      'Trendfinder: derselbe Baustein, nicht ein zweiter Handgriff');
   ok(/posten\.push\(\{ status: g\.ok \? null :/.test(dep),
      'Signal-Monitor: eine eroeffnete Position ist nie eine Wiederholung');
   /* Wunsch #58: der Trend ist die Hauptsache, der Wechsel sein Sonderfall. Eine
    * Sammelzeile darf eine Zeile mit Trendkanal deshalb nie verdecken. */
-  ok(/posten\.push\(\{ status: \(sig \|\| kj\) \? null : standTxt/.test(dep),
+  ok(/posten\.push\(\{ status: \(sig \|\| kj\) \? null : standTxt/.test(wui2),
      'Trendfinder: Zeilen mit Wechsel oder Trendkanal bleiben einzeln stehen (Wunsch #58)');
 })();
 
