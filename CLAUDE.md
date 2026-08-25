@@ -4,6 +4,27 @@ Deutschsprachige Trading-**Simulation** (Electron). Virtuelles Kapital, keine
 Anlageberatung. An diesem Repo arbeiten regelmäßig **mehrere Sitzungen gleichzeitig** —
 darauf ist alles Folgende zugeschnitten.
 
+## Zuerst: PROJEKTSTAND.md lesen
+
+`PROJEKTSTAND.md` im Wurzelverzeichnis ist die gemeinsame Tafel. Dort steht, was Wilhelm
+entschieden hat, welche Aufträge freigegeben sind und **welche Dateien gerade belegt
+sind**. Sie wird vom Projekt-Manager gepflegt (geplante Routine `projekt-manager`, meldet
+sich mehrmals täglich bei Wilhelm).
+
+Für dich heißt das dreierlei:
+
+1. **Vor dem ersten Schreibvorgang lesen.** Ist deine Datei belegt, stimm dich ab, statt
+   parallel zu arbeiten — ein fremder `git add` nimmt sonst deine halbfertige Arbeit mit.
+2. **Trag dich unter „Läuft gerade" ein**, wenn du Dateien für längere Zeit belegst, und
+   nimm dich wieder heraus. Nur diese eine Zeile darfst du dort ändern.
+3. **Was du entscheidest, gehört nicht in den Chatverlauf.** Steht eine Entscheidung von
+   Wilhelm nur in einer Sitzung, ist sie nach zwei Stunden verloren. Melde sie dem
+   Projekt-Manager oder schreib sie in deine Release-Notiz.
+
+Der Manager holt sich den Stand selbst aus Git, den Release-Notizen und den Issues — du
+musst dich bei ihm **nicht** melden, wenn du fertig bist. Deine Commit-Nachricht und deine
+Release-Notiz sind sein Material; schreib sie so, dass ein Anwender sie versteht.
+
 ## Ausliefern ist NICHT deine Aufgabe
 
 Versionsnummern vergibt und Releases baut die **Release-Wache**, nicht du. Wenn du an
