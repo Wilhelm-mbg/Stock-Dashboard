@@ -20,8 +20,8 @@
   "varianten": 3,
   "quelle": "'use strict';\n/* T1 aus der Vorregistrierung 2026-08-23 (\"Eigenbau\"), 3 von 7 Tests.\n *\n * These: Uebernacht-Praemie nach Zwangsglattstellung.\n *\n * Einstieg zum Schluss der letzten Sitzungskerze, Ausstieg zum Schluss der ersten\n * Kerze des Folgetages. Der Auktionspreis wird bewusst NICHT benutzt - an der\n * Schlussauktion kann man nicht zum Ausdruck handeln.\n *\n * Bedingt formuliert, und das ist kein Detail: Die Kontrolle der Maschine ist die\n * Erwartung desselben Symbols zur selben UTC-Stunde. Ein Signal, das jeden Abend\n * feuert, wird gegen genau diesen Mittelwert gemessen - der Ueberschuss waere per\n * Konstruktion null. Gemessen wird also nicht \"zahlt die Nacht\", sondern \"zahlt die\n * Nacht nach einem Abverkauf MEHR als eine gewoehnliche Nacht\".\n */\nvar T = require('./tageshilfen.js');\n\nmodule.exports = {\n  key: 't1-zwangsglattstellung',\n  testfamilie: {\n    name: 'eigenbau-2026-08-23',\n    testsGesamt: 7,\n    begruendung: 'Drei Thesen mit Zwangsgeschichte, vorregistriert in ' +\n                 'VORREGISTRIERUNG-2026-08-23-eigenbau.md vor der ersten Messung.',\n  },\n  grund: 'Wer mit Hebel innerhalb des Tages handelt, MUSS vor Boersenschluss glattstellen - ' +\n         'Uebernachtfinanzierung, Margin, interne Risikolimits. An Tagen mit starkem Verlust ist ' +\n         'dieser Zwang am groessten: Nachschussforderungen und Stop-Kaskaden treffen zusammen, und ' +\n         'beide fragen nicht nach dem Preis. Das Angebot in der Schlussstunde ist dann zu einem ' +\n         'erheblichen Teil erzwungen und nicht informationsgetrieben. Wer ueber Nacht die Gegenseite ' +\n         'nimmt, stellt Kapital genau dann bereit, wenn es sonst niemand stellt.',\n  /* A7: 60 Handelstage Streuungsfenster x 7 Kerzen je Sitzung, plus die Vortagskerze.\n   * Die Kontrolle laesst diese Kerzen aus, damit sie nichts enthaelt, was das\n   * Signal gelesen hat - sonst entsteht die Nullpunktverschiebung A6. */\n  leseFensterKerzen: 430,\n  zeitrahmen: '60m',\n  haltedauerKerzen: 1,\n  richtung: 'long',\n  universum: 'aktien',\n  kosten: { spanneBp: 5 },\n  varianten: [{ k: 1.5 }, { k: 2.0 }, { k: 2.5 }],\n  signal: function (bars, i, params) {\n    var c = T.X(bars);\n    if (!c.ende[i]) return null;                      // nur die letzte Kerze der Sitzung\n    var j = c.tagNr[i];\n    var heute = c.tagRet[j];\n    if (!isFinite(heute)) return null;\n    var sd = T.tagesSd(c, j, 60);                     // Streuung der 60 VORIGEN Tage\n    if (!(sd > 0)) return null;\n    return heute <= -params.k * sd ? { dir: 1 } : null;\n  },\n};\n"
  },
- "gemessenAm": "2026-08-25T07:38:14.176Z",
- "dauerMs": 135045,
+ "gemessenAm": "2026-08-25T11:14:00.615Z",
+ "dauerMs": 149547,
  "universum": {
   "werte": 2874,
   "handelstage": 730,
@@ -46,6 +46,59 @@
     "4": 6,
     "5": 72,
     "6": 106810
+   },
+   "einstiegsluecke": {
+    "signalMittel": -0.0006411069479442016,
+    "universumMittel": 0.00007918284112480376,
+    "n": 106902,
+    "zentriert": -0.0007202897890690053
+   },
+   "querschnitt": {
+    "ohneErwartung": 0,
+    "entdeckung": {
+     "a7": {
+      "tage": 300,
+      "signale": 49362,
+      "tagesmittel": -0.0004742695239685857,
+      "t": -0.8675761801208745,
+      "se": 0.0005466603796135902,
+      "mde": 0.0010933207592271803,
+      "jeSignal": -0.002310721570928417,
+      "anteilPositiv": 0.4859406020825736
+     },
+     "qs": {
+      "tage": 300,
+      "signale": 49362,
+      "tagesmittel": -0.00031897486369251895,
+      "t": -0.8890794101583753,
+      "se": 0.00035876982421142637,
+      "mde": 0.0007175396484228527,
+      "jeSignal": -0.0006283094954923103,
+      "anteilPositiv": 0.4945707224180544
+     }
+    },
+    "bestaetigung": {
+     "a7": {
+      "tage": 361,
+      "signale": 57536,
+      "tagesmittel": -0.000039680417536400595,
+      "t": -0.06805071249552519,
+      "se": 0.0005831006918408071,
+      "mde": 0.0011662013836816142,
+      "jeSignal": -0.001718497512272602,
+      "anteilPositiv": 0.5106368186874305
+     },
+     "qs": {
+      "tage": 361,
+      "signale": 57536,
+      "tagesmittel": -0.00006403848329054097,
+      "t": -0.14209669312533357,
+      "se": 0.00045066835745471637,
+      "mde": 0.0009013367149094327,
+      "jeSignal": -0.00007423501190800457,
+      "anteilPositiv": 0.5000347608453838
+     }
+    }
    },
    "ausstieg": {
     "art": "Zeit",
@@ -140,6 +193,59 @@
     "5": 38,
     "6": 52089
    },
+   "einstiegsluecke": {
+    "signalMittel": -0.0014387211680176805,
+    "universumMittel": 0.00007918284112480376,
+    "n": 52134,
+    "zentriert": -0.0015179040091424843
+   },
+   "querschnitt": {
+    "ohneErwartung": 0,
+    "entdeckung": {
+     "a7": {
+      "tage": 300,
+      "signale": 24146,
+      "tagesmittel": -0.00029405643158376146,
+      "t": -0.44907205967317887,
+      "se": 0.0006548090117157743,
+      "mde": 0.0013096180234315486,
+      "jeSignal": -0.0029071100025933414,
+      "anteilPositiv": 0.4754824815704464
+     },
+     "qs": {
+      "tage": 300,
+      "signale": 24146,
+      "tagesmittel": -0.000115895415329264,
+      "t": -0.2304022843075026,
+      "se": 0.0005030133085598496,
+      "mde": 0.0010060266171196992,
+      "jeSignal": -0.0007089390353670585,
+      "anteilPositiv": 0.4917998840387642
+     }
+    },
+    "bestaetigung": {
+     "a7": {
+      "tage": 361,
+      "signale": 27986,
+      "tagesmittel": -0.00008583996322203393,
+      "t": -0.12747166270407106,
+      "se": 0.00067340427983052,
+      "mde": 0.00134680855966104,
+      "jeSignal": -0.0034381821620535513,
+      "anteilPositiv": 0.496641177731723
+     },
+     "qs": {
+      "tage": 361,
+      "signale": 27986,
+      "tagesmittel": -0.00011364077521239475,
+      "t": -0.21101576555541046,
+      "se": 0.0005385416341441745,
+      "mde": 0.001077083268288349,
+      "jeSignal": -0.00023368146888392476,
+      "anteilPositiv": 0.4962838562138212
+     }
+    }
+   },
    "ausstieg": {
     "art": "Zeit",
     "mittlereKerzen": 1
@@ -233,6 +339,59 @@
     "5": 18,
     "6": 27628
    },
+   "einstiegsluecke": {
+    "signalMittel": -0.0023015356121776796,
+    "universumMittel": 0.00007918284112480376,
+    "n": 27651,
+    "zentriert": -0.002380718453302483
+   },
+   "querschnitt": {
+    "ohneErwartung": 0,
+    "entdeckung": {
+     "a7": {
+      "tage": 300,
+      "signale": 12359,
+      "tagesmittel": 0.00048190399140565147,
+      "t": 0.5843194108974806,
+      "se": 0.0008247269942059173,
+      "mde": 0.0016494539884118345,
+      "jeSignal": -0.0027647789315489533,
+      "anteilPositiv": 0.48304879035520676
+     },
+     "qs": {
+      "tage": 300,
+      "signale": 12359,
+      "tagesmittel": 0.0006327659215774805,
+      "t": 0.8998267926590505,
+      "se": 0.0007032085805176054,
+      "mde": 0.0014064171610352109,
+      "jeSignal": -0.0004243322486793826,
+      "anteilPositiv": 0.501335059470831
+     }
+    },
+    "bestaetigung": {
+     "a7": {
+      "tage": 361,
+      "signale": 15291,
+      "tagesmittel": 0.0002930910635459033,
+      "t": 0.3878293950505186,
+      "se": 0.0007557216324660623,
+      "mde": 0.0015114432649321245,
+      "jeSignal": -0.005541960023873627,
+      "anteilPositiv": 0.48714930351186975
+     },
+     "qs": {
+      "tage": 361,
+      "signale": 15291,
+      "tagesmittel": 0.000255348388682506,
+      "t": 0.4087402126420413,
+      "se": 0.0006247204967477231,
+      "mde": 0.0012494409934954462,
+      "jeSignal": -0.0005215537197647607,
+      "anteilPositiv": 0.4908115885161206
+     }
+    }
+   },
    "ausstieg": {
     "art": "Zeit",
     "mittlereKerzen": 1
@@ -325,6 +484,14 @@
   "tagesmittel": -0.00006888504155057106,
   "t": -0.15486887061476476,
   "mde": 0.0008895918369795842
+ },
+ "placeboEntdeckung": {
+  "signale": 51262,
+  "ohneKontrolle": 2,
+  "tage": 324,
+  "tagesmittel": 0.00011285559224912827,
+  "t": 0.2676172635066858,
+  "mde": 0.0008434104046229353
  },
  "tests": 7,
  "testfamilie": {
@@ -483,6 +650,150 @@
   },
   {
    "nr": 13,
+   "regel": "S9 Einstiegsluecke",
+   "eingabe": {
+    "variante": 0,
+    "faelle": 106902
+   },
+   "ergebnis": {
+    "signalPp": -0.06411069479442015,
+    "universumPp": 0.007918284112480377,
+    "zentriertPp": -0.07202897890690052
+   },
+   "begruendung": "Zwischen dem Schluss der Signalkerze (dem Einstiegskurs) und der naechsten Eroeffnung liegen -0.0720 Pp mehr als bei einer beliebigen Kerze derselben Werte. Diesen Teil kann ein Einstieg zum Schluss nicht mitnehmen. Ist er so gross wie der Ueberschuss, ist der Befund nicht handelbar."
+  },
+  {
+   "nr": 14,
+   "regel": "S9 Sitzungspositionen",
+   "eingabe": {
+    "variante": 0,
+    "verschiedene": 6
+   },
+   "ergebnis": {
+    "top": [
+     "Pos 6: 99.9 %",
+     "Pos 5: 0.1 %",
+     "Pos 3: 0.0 %",
+     "Pos 4: 0.0 %",
+     "Pos 1: 0.0 %"
+    ]
+   },
+   "begruendung": "Wo in der Sitzung das Signal feuert, entscheidet mit, welchem Rauschen es ausgesetzt ist (F3: die Schlusskerze hat eine 3,8-mal groessere Streuung als eine Kerze mitten am Tag). Pos 6: 99.9 %, Pos 5: 0.1 %, Pos 3: 0.0 %, Pos 4: 0.0 %, Pos 1: 0.0 %"
+  },
+  {
+   "nr": 15,
+   "regel": "S9 Einstiegsluecke",
+   "eingabe": {
+    "variante": 1,
+    "faelle": 52134
+   },
+   "ergebnis": {
+    "signalPp": -0.14387211680176806,
+    "universumPp": 0.007918284112480377,
+    "zentriertPp": -0.15179040091424845
+   },
+   "begruendung": "Zwischen dem Schluss der Signalkerze (dem Einstiegskurs) und der naechsten Eroeffnung liegen -0.1518 Pp mehr als bei einer beliebigen Kerze derselben Werte. Diesen Teil kann ein Einstieg zum Schluss nicht mitnehmen. Ist er so gross wie der Ueberschuss, ist der Befund nicht handelbar."
+  },
+  {
+   "nr": 16,
+   "regel": "S9 Sitzungspositionen",
+   "eingabe": {
+    "variante": 1,
+    "verschiedene": 5
+   },
+   "ergebnis": {
+    "top": [
+     "Pos 6: 99.9 %",
+     "Pos 5: 0.1 %",
+     "Pos 4: 0.0 %",
+     "Pos 3: 0.0 %",
+     "Pos 1: 0.0 %"
+    ]
+   },
+   "begruendung": "Wo in der Sitzung das Signal feuert, entscheidet mit, welchem Rauschen es ausgesetzt ist (F3: die Schlusskerze hat eine 3,8-mal groessere Streuung als eine Kerze mitten am Tag). Pos 6: 99.9 %, Pos 5: 0.1 %, Pos 4: 0.0 %, Pos 3: 0.0 %, Pos 1: 0.0 %"
+  },
+  {
+   "nr": 17,
+   "regel": "S9 Einstiegsluecke",
+   "eingabe": {
+    "variante": 2,
+    "faelle": 27651
+   },
+   "ergebnis": {
+    "signalPp": -0.23015356121776795,
+    "universumPp": 0.007918284112480377,
+    "zentriertPp": -0.23807184533024833
+   },
+   "begruendung": "Zwischen dem Schluss der Signalkerze (dem Einstiegskurs) und der naechsten Eroeffnung liegen -0.2381 Pp mehr als bei einer beliebigen Kerze derselben Werte. Diesen Teil kann ein Einstieg zum Schluss nicht mitnehmen. Ist er so gross wie der Ueberschuss, ist der Befund nicht handelbar."
+  },
+  {
+   "nr": 18,
+   "regel": "S9 Sitzungspositionen",
+   "eingabe": {
+    "variante": 2,
+    "verschiedene": 5
+   },
+   "ergebnis": {
+    "top": [
+     "Pos 6: 99.9 %",
+     "Pos 5: 0.1 %",
+     "Pos 4: 0.0 %",
+     "Pos 1: 0.0 %",
+     "Pos 3: 0.0 %"
+    ]
+   },
+   "begruendung": "Wo in der Sitzung das Signal feuert, entscheidet mit, welchem Rauschen es ausgesetzt ist (F3: die Schlusskerze hat eine 3,8-mal groessere Streuung als eine Kerze mitten am Tag). Pos 6: 99.9 %, Pos 5: 0.1 %, Pos 4: 0.0 %, Pos 1: 0.0 %, Pos 3: 0.0 %"
+  },
+  {
+   "nr": 19,
+   "regel": "QS Querschnitts-Kontrolle",
+   "eingabe": {
+    "variante": 0,
+    "ohneErwartung": 0
+   },
+   "ergebnis": {
+    "seA7Pp": 0.05831006918408071,
+    "seQuerschnittPp": 0.045066835745471635,
+    "faktor": 1.294,
+    "ueberschussA7Pp": -0.0039680417536400595,
+    "ueberschussQuerschnittPp": -0.006403848329054097
+   },
+   "begruendung": "Auf denselben Signalen: Standardfehler 0.0583 Pp gegen die Zeit desselben Werts (A7), 0.0451 Pp gegen den Rest des Marktes. Faktor 1.29. Ein Faktor ueber 1 heisst: die zweite Kontrolle rechnet den gemeinsamen Marktzug heraus und macht die Messung schaerfer. Reine Eichung - das Urteil faellt weiter gegen A7."
+  },
+  {
+   "nr": 20,
+   "regel": "QS Querschnitts-Kontrolle",
+   "eingabe": {
+    "variante": 1,
+    "ohneErwartung": 0
+   },
+   "ergebnis": {
+    "seA7Pp": 0.06734042798305201,
+    "seQuerschnittPp": 0.05385416341441745,
+    "faktor": 1.25,
+    "ueberschussA7Pp": -0.008583996322203392,
+    "ueberschussQuerschnittPp": -0.011364077521239475
+   },
+   "begruendung": "Auf denselben Signalen: Standardfehler 0.0673 Pp gegen die Zeit desselben Werts (A7), 0.0539 Pp gegen den Rest des Marktes. Faktor 1.25. Ein Faktor ueber 1 heisst: die zweite Kontrolle rechnet den gemeinsamen Marktzug heraus und macht die Messung schaerfer. Reine Eichung - das Urteil faellt weiter gegen A7."
+  },
+  {
+   "nr": 21,
+   "regel": "QS Querschnitts-Kontrolle",
+   "eingabe": {
+    "variante": 2,
+    "ohneErwartung": 0
+   },
+   "ergebnis": {
+    "seA7Pp": 0.07557216324660623,
+    "seQuerschnittPp": 0.06247204967477231,
+    "faktor": 1.21,
+    "ueberschussA7Pp": 0.029309106354590327,
+    "ueberschussQuerschnittPp": 0.0255348388682506
+   },
+   "begruendung": "Auf denselben Signalen: Standardfehler 0.0756 Pp gegen die Zeit desselben Werts (A7), 0.0625 Pp gegen den Rest des Marktes. Faktor 1.21. Ein Faktor ueber 1 heisst: die zweite Kontrolle rechnet den gemeinsamen Marktzug heraus und macht die Messung schaerfer. Reine Eichung - das Urteil faellt weiter gegen A7."
+  },
+  {
+   "nr": 22,
    "regel": "B4 Bonferroni",
    "eingabe": {
     "tests": 7,
@@ -494,11 +805,12 @@
    "begruendung": "Zweiseitige Schwelle fuer |t| bei 7 Test(s)."
   },
   {
-   "nr": 14,
+   "nr": 23,
    "regel": "Urteil Variante 0",
    "eingabe": {
     "ueberschussTagesmittelPp": -0.0039680417536400595,
     "mdePp": 0.11662013836816142,
+    "delta80Pp": 0.20593546319607287,
     "t": -0.06805071249552519,
     "schwelle": 2.6901095298324305,
     "tage": 361,
@@ -507,16 +819,18 @@
    },
    "ergebnis": {
     "urteil": "nicht-entscheidbar",
+    "delta80": 0.0020593546319607288,
     "aussicht": null
    },
-   "begruendung": "Ueberschuss -0.0040 Pp liegt unter der MDE 0.1166 Pp. Das heisst NICHT \"kein Effekt\" - es heisst, dass diese Datenmenge die Frage nicht beantworten kann."
+   "begruendung": "Ueberschuss -0.0040 Pp liegt unter der MDE 0.1166 Pp. Das heisst NICHT \"kein Effekt\" - es heisst, dass diese Datenmenge die Frage nicht beantworten kann. Dieser Lauf haette eine wahre Kante erst ab 0.2059 Pp mit 80 % Wahrscheinlichkeit ueber die Schwelle gebracht (delta80)."
   },
   {
-   "nr": 15,
+   "nr": 24,
    "regel": "Urteil Variante 1",
    "eingabe": {
     "ueberschussTagesmittelPp": -0.008583996322203392,
     "mdePp": 0.13468085596610402,
+    "delta80Pp": 0.23782825886781248,
     "t": -0.12747166270407106,
     "schwelle": 2.6901095298324305,
     "tage": 361,
@@ -525,16 +839,18 @@
    },
    "ergebnis": {
     "urteil": "nicht-entscheidbar",
+    "delta80": 0.0023782825886781247,
     "aussicht": null
    },
-   "begruendung": "Ueberschuss -0.0086 Pp liegt unter der MDE 0.1347 Pp. Das heisst NICHT \"kein Effekt\" - es heisst, dass diese Datenmenge die Frage nicht beantworten kann."
+   "begruendung": "Ueberschuss -0.0086 Pp liegt unter der MDE 0.1347 Pp. Das heisst NICHT \"kein Effekt\" - es heisst, dass diese Datenmenge die Frage nicht beantworten kann. Dieser Lauf haette eine wahre Kante erst ab 0.2378 Pp mit 80 % Wahrscheinlichkeit ueber die Schwelle gebracht (delta80)."
   },
   {
-   "nr": 16,
+   "nr": 25,
    "regel": "Urteil Variante 2",
    "eingabe": {
     "ueberschussTagesmittelPp": 0.029309106354590327,
     "mdePp": 0.15114432649321247,
+    "delta80Pp": 0.2669005312579522,
     "t": 0.3878293950505186,
     "schwelle": 2.6901095298324305,
     "tage": 361,
@@ -543,9 +859,10 @@
    },
    "ergebnis": {
     "urteil": "nicht-entscheidbar",
+    "delta80": 0.002669005312579522,
     "aussicht": null
    },
-   "begruendung": "Ueberschuss 0.0293 Pp liegt unter der MDE 0.1511 Pp. Das heisst NICHT \"kein Effekt\" - es heisst, dass diese Datenmenge die Frage nicht beantworten kann."
+   "begruendung": "Ueberschuss 0.0293 Pp liegt unter der MDE 0.1511 Pp. Das heisst NICHT \"kein Effekt\" - es heisst, dass diese Datenmenge die Frage nicht beantworten kann. Dieser Lauf haette eine wahre Kante erst ab 0.2669 Pp mit 80 % Wahrscheinlichkeit ueber die Schwelle gebracht (delta80)."
   }
  ],
  "warnungen": [
