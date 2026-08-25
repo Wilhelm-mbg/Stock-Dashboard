@@ -8187,6 +8187,13 @@
    * Eigene Pause je Arm und nicht eine gemeinsame, weil die Arme verschiedene
    * Haltedauern und verschiedene Regime haben: eine gemeinsame Pause legt einen
    * gesunden Arm still, weil der andere verfaellt. */
+  /* Ab wann heisst "verfallen" wirklich verfallen. Bis zum 25.08.2026 galt jeder
+   * nicht-positive Wert als Verfall - damit meldeten sechs von sechs Messungen Verfall
+   * bei |t| unter 0,5, also auf reinem Rauschen. Eine Kante, die wirklich wegbricht,
+   * erzeugt t <= -1 problemlos; keine der sechs Rauschmessungen haette es erzeugt.
+   * Bewusst LAX gewaehlt (t = -1 sind rund 16 % einseitig): der Waechter soll frueh
+   * warnen duerfen - nur nicht im Rauschen. */
+  var VERFALL_T = -1;
   var EDGE_ARME = [
     { key: 'rsi2seit',     name: 'rsi2seit',          pauseKey: 'edgePause',
       histKey: 'edgeHistorie',     edgeKey: 'edge' },
@@ -8398,7 +8405,10 @@
            * Ein wahrer Mittelwert von +0,004 Pp rundete auf 0,00, galt als Verfall
            * und konnte die Pause nie wieder aufheben - der Waechter hing fest. */
           var roh = edge.rohMittel != null ? edge.rohMittel : (edge.mittelPp != null ? edge.mittelPp / 100 : null);
-          var verfall = roh != null && !(roh > 0) && (edge.nSym || 0) >= 5;
+          /* Verfall heisst: bedeutsam negativ, nicht bloss nicht-positiv. Der t-Wert
+           * entscheidet, nicht das Vorzeichen. */
+          var verfall = roh != null && (edge.nSym || 0) >= 5 &&
+                        edge.t != null && edge.t <= VERFALL_T;
           if (!a[ARM.histKey]) a[ARM.histKey] = [];
           /* ZWEI NAECHTE SIND NICHT ZWEI MESSUNGEN. Der Waechter rechnet ueber ein
            * rollendes 120-Tage-Fenster auf 60-Minuten-Kerzen. Eine Nacht bringt darin
@@ -8424,7 +8434,16 @@
            * Umgekehrt ist es bei Aenderungen an der Konfiguration - siehe unten. */
           var zuwachsTxt = zuwachs == null ? 'die Vorgaengermessung ist ohne Zaehlstand'
             : (zuwachs + ' neue Signale' + (zuwachsPct != null ? ' (+' + zuwachsPct + ' %)' : '') + ' seit der letzten Messung');
+          /* ZWEI MESSUNGEN, NICHT ZWEIMAL DIESELBE. Ohne diese Bedingung war 'zweimal
+           * hintereinander' beim Rollfenster fast derselbe Datensatz - am 24.08.2026
+           * mit einem Zuwachs von exakt NULL neuen Signalen. Eine groessere Schranke als
+           * 'mehr als null' waere eine erfundene Zahl; diese hier ist die einzige, die
+           * sich aus der Sache selbst ergibt.
+           * Ist der Zuwachs unbekannt (alte Eintraege ohne Zaehlstand), wird nicht
+           * pausiert - das heilt sich nach zwei Naechten von selbst. */
+          var echteZweiteMessung = zuwachs != null && isFinite(zuwachs) && zuwachs > 0;
           if (verfall && a[ARM.histKey].length >= 2 && a[ARM.histKey][1].verfall &&
+              echteZweiteMessung &&
               !D.intraday.edgePauseHand && !D.intraday[ARM.pauseKey]) {
             D.intraday[ARM.pauseKey] = { seit: Date.now(), arm: ARM.key,
               mittelPp: edge.mittelPp, t: edge.t,
@@ -8432,8 +8451,8 @@
             if (!D.tuneLog) D.tuneLog = [];
             D.tuneLog.unshift({ id: 'sicherung-' + Date.now(), at: Date.now(), quelle: 'sicherung',
               applied: ['Edge-Wächter (' + ARM.name + '): neue Einstiege pausiert'],
-              txt: 'Der gemessene Vorsprung von ' + ARM.name + ' war in zwei aufeinanderfolgenden Messungen ' +
-                'verfallen (zuletzt ' + edge.mittelPp + ' Pp, t=' + edge.t + '; ' + zuwachsTxt + '). ' +
+              txt: 'Der gemessene Vorsprung von ' + ARM.name + ' ist in zwei Messungen mit neuer Messbasis ' +
+                'bedeutsam negativ (zuletzt ' + edge.mittelPp + ' Pp, t=' + edge.t + ' – die Schwelle ist t ≤ ' + VERFALL_T + '; ' + zuwachsTxt + '). ' +
                 'Die zweite Messung ist KEIN unabhängiger zweiter Beleg – sie läuft über dasselbe rollende ' +
                 '120-Tage-Fenster. Ausgesetzt wird trotzdem: eine Pause kostet weniger als ein Irrtum in die ' +
                 'andere Richtung. Das Schattenbuch misst weiter. Eine positive Messung hebt die Pause ' +

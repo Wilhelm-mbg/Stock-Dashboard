@@ -7574,6 +7574,65 @@ console.log('\n50) Der Extra-Pool haengt an der Kerzenuhr');
      'Der Rotationszeiger ist entfernt - sonst laeuft die alte Auswahl daneben weiter');
 })();
 
+console.log('\n51) Der Edge-Waechter loest nicht mehr im Rauschen aus');
+(function () {
+  var dep = fs.readFileSync(__dirname + '/depot.js', 'utf8');
+
+  /* Die Regel wird AUSGEFUEHRT geprueft, nicht per Textsuche - und mit den echten
+   * Messungen aus dem Datenstand vom 25.08.2026. Alle sechs meldeten Verfall, alle
+   * sechs lagen bei |t| unter 0,5. Weil eine Sicherung, die dauernd falschen Alarm
+   * schlaegt, abgeschaltet wird (genau das ist am 22.08. passiert), ist das kein
+   * Schoenheitsfehler: der schlecht geeichte Waechter fuehrte zu WENIGER Schutz als
+   * gar keiner. */
+  var mv = /var VERFALL_T = (-?[\d.]+);/.exec(dep);
+  ok(!!mv, 'Die Verfalls-Schwelle steht als benannte Konstante im Code');
+  var mr = /var verfall = roh != null[\s\S]*?;/.exec(dep);
+  ok(!!mr, 'Die Verfalls-Regel ist auffindbar');
+  if (!mv || !mr) return;
+  var VERFALL_T = Number(mv[1]);
+  ok(VERFALL_T < 0, 'Die Schwelle ist negativ - Verfall heisst Rueckgang  [' + VERFALL_T + ']');
+
+  function verfallVon(tWert, nSym) {
+    var f = new Function('roh', 'edge', 'VERFALL_T', mr[0] + ' return verfall;');
+    return f(-0.0004, { t: tWert, nSym: nSym == null ? 40 : nSym }, VERFALL_T);
+  }
+
+  /* DIE ECHTEN SECHS. Keiner darf mehr Verfall ausloesen. */
+  var echte = [-0.43, -0.11, -0.19, -0.19, -0.19, -0.22];
+  var falschAlarm = echte.filter(function (x) { return verfallVon(x); });
+  ok(falschAlarm.length === 0,
+     'Keine der sechs echten Rauschmessungen (t -0,11 bis -0,43) meldet noch Verfall' +
+     (falschAlarm.length ? '  [noch: ' + falschAlarm.join(', ') + ']' : ''));
+
+  /* Ein ECHTER Verfall muss weiterhin durchkommen - sonst haetten wir die Sicherung
+   * nicht geeicht, sondern abgeschafft. */
+  ok(verfallVon(-2.5) === true, 'Ein deutlicher Rueckgang (t -2,5) meldet weiterhin Verfall');
+  ok(verfallVon(VERFALL_T) === true, 'Genau auf der Schwelle zaehlt es noch als Verfall');
+  ok(verfallVon(VERFALL_T + 0.01) === false, 'Knapp darueber nicht mehr');
+  ok(verfallVon(+3) === false, 'Ein positiver Vorsprung ist nie Verfall');
+
+  /* Die Mindestzahl an Werten bleibt bestehen. */
+  ok(verfallVon(-2.5, 4) === false, 'Unter fuenf Werten wird gar nicht geurteilt');
+
+  /* ZWEI MESSUNGEN, NICHT ZWEIMAL DIESELBE. Am 24.08. stand der Zuwachs bei NULL -
+   * derselbe Datensatz, zweimal angesehen, und das loeste die Pause aus. */
+  var mz = /var echteZweiteMessung = [\s\S]*?;/.exec(dep);
+  ok(!!mz, 'Die Bedingung an die neue Messbasis ist auffindbar');
+  if (mz) {
+    function zweite(zw) { return new Function('zuwachs', mz[0] + ' return echteZweiteMessung;')(zw); }
+    ok(zweite(0) === false, 'Zuwachs 0 ist keine zweite Messung - genau der Fall vom 24.08.');
+    ok(zweite(null) === false, 'Unbekannter Zuwachs pausiert nicht (alte Eintraege heilen sich nach zwei Naechten)');
+    ok(zweite(37) === true, 'Echte neue Signale zaehlen als zweite Messung');
+  }
+  ok(/echteZweiteMessung &&/.test(dep),
+     'Und die Bedingung haengt wirklich an der Pause, steht nicht nur herum');
+
+  /* Die Aufhebung bleibt STRENGER als die Ausloesung - Absicht, keine Nachlaessigkeit:
+   * bei einer Schutzhandlung soll es leichter sein, pausiert zu bleiben. */
+  ok(/roh != null && roh > 0 && D\.intraday\[ARM\.pauseKey\]/.test(dep),
+     'Aufgehoben wird erst bei positivem Vorsprung - die Totzone dazwischen verhindert Hin-und-Her');
+})();
+
 Promise.all(offeneProben).then(function () {
   console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
   process.exit(fails ? 1 : 0);
