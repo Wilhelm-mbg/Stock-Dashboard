@@ -165,6 +165,29 @@ function werteAusArchiv() {
   } catch (e) { return []; }
 }
 
+/** Der letzte bekannte Schlusskurs aus dem Archiv - NUR als Startwert fuer die
+ *  Rangfolge der Karte.
+ *
+ *  Warum ueberhaupt: Die Karte will die groessten Werte zuerst zeigen, kennt aber vor
+ *  dem ersten Abruf keine Kurse. Ohne Anhaltspunkt muesste sie entweder alle
+ *  zweitausend Werte abrufen, bevor sie das erste Kaestchen zeichnen kann, oder eine
+ *  willkuerliche Auswahl treffen.
+ *
+ *  Dieser Kurs wird in der App SOFORT durch den Live-Kurs ersetzt. Er steht deshalb
+ *  mit seinem Datum in der Datei - eine Zahl ohne Datum wuerde frueher oder spaeter
+ *  fuer aktuell gehalten. */
+function letzterKursAus(sym) {
+  var p = path.join(archivOrdner(), 'bars_60m_' + sym + '.json');
+  try {
+    var j = JSON.parse(fs.readFileSync(p, 'utf8'));
+    var s = j && j.series;
+    if (!s || !s.length) return null;
+    var b = s[s.length - 1];
+    if (!(b && b[1] > 0)) return null;
+    return { kurs: b[1], stand: new Date(b[0]).toISOString().slice(0, 10) };
+  } catch (e) { return null; }
+}
+
 // ===========================================================================
 (async function () {
   var arg = process.argv[2] || '';
@@ -341,6 +364,20 @@ function werteAusArchiv() {
   if (luecken.length) {
     console.log('   davon einzeln gefunden: ' + einzeln + ', wegen Alter verworfen: ' + zuAlt +
       ', gar nicht getaggt: ' + (luecken.length - einzeln - zuAlt));
+  }
+
+  /* ---- 5b) Startkurs aus dem Archiv, falls vorhanden ----
+   * Nur wenn das Archiv da ist; mit einer uebergebenen Kuerzelliste laeuft das
+   * Werkzeug auch ohne. Die Karte kommt dann ohne Rangfolge aus und holt eben alles. */
+  if (!arg || arg === '--alle') {
+    var mitKurs = 0;
+    liste.forEach(function (sym) {
+      var e = bekannt[sym];
+      if (!e || !(e.aktien > 0)) return;
+      var lk = letzterKursAus(sym);
+      if (lk) { e.startKurs = lk.kurs; e.startKursStand = lk.stand; mitKurs++; }
+    });
+    if (mitKurs) console.log('5) Startkurs aus dem Archiv fuer ' + mitKurs + ' Werte (nur zur Rangfolge, die App ersetzt ihn sofort)');
   }
 
   // ---- 6) Ablegen ----

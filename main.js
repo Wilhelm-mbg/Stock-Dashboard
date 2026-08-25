@@ -735,6 +735,20 @@ ipcMain.handle('mess-abbrechen', async () => {
   return { ok: true };
 });
 
+/* ---- Stammdaten fuer die Marktkarte ----
+ * NUR LESEN, und nur eine Datei aus dem Datenordner. Die App holt Branche und
+ * Aktienanzahl NICHT selbst bei der SEC - das macht tools/stammdaten-holen.js
+ * daneben. Hier wird die fertige Datei gereicht, sonst nichts. */
+ipcMain.handle('markt-stammdaten', async () => {
+  try {
+    const p = path.join(app.getPath('downloads'), 'Markt-Dashboard-Daten', 'markt', 'stammdaten.json');
+    if (!fs.existsSync(p)) {
+      return { ok: false, grund: 'Noch keine Stammdaten. Einmal "node tools/stammdaten-holen.js" laufen lassen.', pfad: p };
+    }
+    return { ok: true, daten: JSON.parse(fs.readFileSync(p, 'utf8')), pfad: p };
+  } catch (e) { return { ok: false, grund: String(e && e.message || e) }; }
+});
+
 ipcMain.handle('read-insider', async () => ablageLesen('insider.json', INSIDER_URL));
 // Claude-Auswertungsbericht aus dem Daten-Ordner lesen (Anzeige in der App)
 ipcMain.handle('read-report', async () => {

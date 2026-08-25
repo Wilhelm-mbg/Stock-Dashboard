@@ -715,6 +715,7 @@
      Tastaturbedienung (Pfeile, Pos1/Ende) haengt in app-shell.js daran. -->
 <nav class="tabs" role="tablist" aria-label="Hauptbereiche">
   <button data-tab="dashboard" class="active" role="tab" aria-selected="true"  aria-controls="tab-dashboard" id="reiter-dashboard">Heute</button>
+  <button data-tab="marktkarte"               role="tab" aria-selected="false" aria-controls="tab-marktkarte" id="reiter-marktkarte" tabindex="-1">Marktkarte</button>
   <button data-tab="strategien"               role="tab" aria-selected="false" aria-controls="tab-strategien" id="reiter-strategien" tabindex="-1">Regeln</button>
   <button data-tab="depot"                    role="tab" aria-selected="false" aria-controls="tab-depot"      id="reiter-depot"      tabindex="-1">Vermögen</button>
   <button data-tab="werkzeuge"                role="tab" aria-selected="false" aria-controls="tab-werkzeuge"  id="reiter-werkzeuge"  tabindex="-1">Werkzeuge</button>
@@ -1168,6 +1169,27 @@
 
 
 
+
+<div id="tab-marktkarte" class="tab" role="tabpanel" aria-labelledby="reiter-marktkarte">
+<h2>Marktkarte <span style="color:var(--muted); font-size:var(--fs-neben); font-weight:400; text-transform:none; letter-spacing:0;">– Fläche ist Größe, Farbe ist der Tag.</span>
+  <button class="info" type="button" data-info="marktkarte" aria-expanded="false" aria-label="Erklärung: Marktkarte">i</button></h2>
+<div class="panel">
+  <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:10px;">
+    <label style="font-size:var(--fs-neben);">Wie viele Werte
+      <select id="mkAnzahl" style="margin-left:4px;">
+        <option value="100">die 100 größten</option>
+        <option value="300" selected>die 300 größten</option>
+        <option value="600">die 600 größten</option>
+      </select></label>
+    <button class="btn ghost" type="button" id="mkNeu" style="padding:4px 10px; font-size:var(--fs-neben);">Jetzt aktualisieren</button>
+    <span id="mkStand" role="status" aria-live="polite" style="font-size:var(--fs-neben); color:var(--muted);"></span>
+  </div>
+  <div id="mkKarte" style="position:relative; width:100%; height:620px; background:var(--panel-2); border:1px solid var(--kante); border-radius:var(--r-gross); overflow:hidden;">
+    <div class="loading" style="padding:14px;">Noch nicht geladen.</div>
+  </div>
+  <div id="mkFuss" style="font-size:var(--fs-klein); color:var(--muted); margin-top:8px; line-height:1.6; max-width:80ch;"></div>
+</div>
+</div>
 
 <div id="tab-messung" class="tab" role="tabpanel" aria-labelledby="reiter-messung">
 <h2>Scoreboard <span style="color:var(--muted); font-size:var(--fs-neben); font-weight:400; text-transform:none; letter-spacing:0;">– jede Strategie, die durch die Messmaschine gelaufen ist. Sortiert nach Belegstatus, nicht nach Rendite.</span>
@@ -1963,6 +1985,8 @@
 <script src="bugs.js"></script>
 <script src="diagnose.js"></script>
 <script src="wkn.js"></script>
+<script src="marktkarte.js"></script>
+<script src="marktkarteui.js"></script>
 <script src="strategiebaukasten.js"></script>
 <script src="scoreboard.js"></script>
 <script src="scheinfinder.js"></script>
