@@ -14,6 +14,7 @@ contextBridge.exposeInMainWorld('api', {
   storeGet: (name) => ipcRenderer.invoke('store-get', name),
   storeSet: (name, value) => ipcRenderer.invoke('store-set', name, value),
   storeDefekte: () => ipcRenderer.invoke('store-defekte'),
+  marktStammdaten: () => ipcRenderer.invoke('markt-stammdaten'),
   messStrategien: () => ipcRenderer.invoke('mess-strategien'),
   messLauf: (key) => ipcRenderer.invoke('mess-lauf', key),
   messAbbrechen: () => ipcRenderer.invoke('mess-abbrechen'),

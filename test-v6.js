@@ -3060,8 +3060,9 @@ console.log('\n36) Kostenhuerde des Produkts (Signalstudie 23.08.2026)');
    * Messung - Scoreboard und Strategie-Eingabe. Die Zahl ist der Wachhund; wer einen
    * Reiter ergaenzt, muss ihn hier benennen. */
   var reiter = (html.match(/data-tab="[a-z]+"/g) || []);
-  ok(reiter.length === 5 && reiter.indexOf('data-tab="messung"') !== -1,
-     'Fuenf Reiter: Heute · Regeln · Vermoegen · Werkzeuge · Messung', reiter.join(' '));
+  ok(reiter.length === 6 && reiter.indexOf('data-tab="messung"') !== -1 &&
+     reiter.indexOf('data-tab="marktkarte"') !== -1,
+     'Sechs Reiter: Heute · Marktkarte · Regeln · Vermoegen · Werkzeuge · Messung', reiter.join(' '));
   ['dashboard', 'strategien', 'depot', 'werkzeuge'].forEach(function (id) {
     ok(html.indexOf('data-tab="' + id + '"') !== -1 && html.indexOf('id="tab-' + id + '"') !== -1,
        'Reiter ' + id + ' hat Knopf und Inhalt');
@@ -4238,14 +4239,14 @@ console.log('\n40) Tastatur, Semantik und Kontrast – die Oberflaeche ohne Maus
    * Vorher waren es fuenf zusammenhanglose Knoepfe: kein tablist, keine Pfeiltasten,
    * und man musste sich durch alle fuenf tabben, um zum Inhalt zu kommen. */
   ok(/role="tablist"/.test(html), 'Reiter: die Leiste ist ein tablist');
-  ok((html.match(/role="tab"/g) || []).length === 5, 'Reiter: alle fuenf Knoepfe sind role="tab"');
-  ok((html.match(/role="tabpanel"/g) || []).length === 5, 'Reiter: alle fuenf Bereiche sind role="tabpanel"');
-  ok((html.match(/aria-controls="tab-/g) || []).length === 5, 'Reiter: jeder Knopf benennt seinen Bereich');
-  ok((html.match(/aria-labelledby="reiter-/g) || []).length === 5, 'Reiter: jeder Bereich benennt seinen Knopf');
+  ok((html.match(/role="tab"/g) || []).length === 6, 'Reiter: alle sechs Knoepfe sind role="tab"');
+  ok((html.match(/role="tabpanel"/g) || []).length === 6, 'Reiter: alle sechs Bereiche sind role="tabpanel"');
+  ok((html.match(/aria-controls="tab-/g) || []).length === 6, 'Reiter: jeder Knopf benennt seinen Bereich');
+  ok((html.match(/aria-labelledby="reiter-/g) || []).length === 6, 'Reiter: jeder Bereich benennt seinen Knopf');
   ok(/ArrowRight/.test(shell) && /ArrowLeft/.test(shell) && /'Home'/.test(shell) && /'End'/.test(shell),
      'Reiter: Pfeiltasten, Pos1 und Ende blaettern die Leiste');
   // Roving tabindex: genau EIN Reiter ist tabbierbar, sonst kostet der Weg zum Inhalt vier Tabs
-  ok((html.match(/role="tab"[^>]*tabindex="-1"/g) || []).length === 4,
+  ok((html.match(/role="tab"[^>]*tabindex="-1"/g) || []).length === 5,
      'Reiter: nur der aktive Reiter ist tabbierbar (roving tabindex)');
   ok(/x\.tabIndex = an \? 0 : -1;/.test(shell), 'Reiter: der tabindex wandert beim Wechsel mit');
   ok(/aria-selected/.test(shell), 'Reiter: aria-selected wird beim Wechsel nachgezogen');
@@ -4523,7 +4524,7 @@ console.log('\n41) Zustaende: was die App sagt, wenn etwas fehlt oder klemmt');
     .map(function (z) { return z.slice(z.lastIndexOf('>') + 1, -1).trim(); });
   var pillen = (html.match(/data-sub="[a-z]+"[^>]*>([^<]+)</g) || [])
     .map(function (z) { return z.slice(z.lastIndexOf('>') + 1, -1).replace(/&amp;/g, '&').trim(); });
-  ok(reiter.length === 5, 'Wegweiser: fünf Reiter gefunden (' + reiter.join(', ') + ')');
+  ok(reiter.length === 6, 'Wegweiser: sechs Reiter gefunden (' + reiter.join(', ') + ')');
   ok(pillen.length >= 6, 'Wegweiser: die Unter-Pillen sind lesbar (' + pillen.length + ')');
   var echt = reiter.concat(pillen);
   var quellen = ['index.html', 'depot.js', 'renderer.js', 'strategien.js', 'mfdepot.js',
@@ -6526,6 +6527,226 @@ console.log('\n47) Anzeige der Messmaschine: unbekannte Urteile und die Selbstpr
   /* D2 gilt weiter: der neue Code liest zwei Zahlen und vergleicht sie - er rechnet nicht. */
   ok(!/Math\.sqrt\(|function\s+statistik/.test(sb),
      'Auch die Selbstpruefung rechnet im Renderer nichts nach - sie vergleicht Gemessenes');
+})();
+/* ================= 54. Stammdaten: Branche und Groesse =================
+ * Fuer eine Marktuebersicht braucht man je Wert drei Dinge: Tagesveraenderung (hat die
+ * App live), Groesse (hatte sie nur fuer sechzehn handgepflegte Werte) und Branche
+ * (hatte sie gar nicht). tools/stammdaten-holen.js holt die beiden fehlenden bei der
+ * SEC.
+ *
+ * Geprueft wird hier die SETZUNG - die Faltung SIC -> Sektor. Der SIC-Code selbst ist
+ * eine Tatsache der Behoerde; welcher Sektor daraus wird, ist eine Entscheidung, und
+ * genau solche Entscheidungen verrutschen still. Die Beispiele im Kopf der Datei sind
+ * hier ausgefuehrt statt nachgelesen: Steht Apple eines Tages nicht mehr unter
+ * Technologie, wird dieser Abschnitt rot. */
+(function () {
+  console.log('\n54) Stammdaten: die Faltung SIC → Sektor');
+  var q = fs.readFileSync(__dirname + '/tools/stammdaten-holen.js', 'utf8');
+
+  var mTab = /var SEKTOR_NACH_SIC2 = \{[\s\S]*?\n\};/.exec(q);
+  var mFn = /var SIC2_SEKTOR = \{\};[\s\S]*?function sektorVon\(sic\) \{[\s\S]*?\n\}/.exec(q);
+  var mFein = /var SIC3_SEKTOR = \{[\s\S]*?\n\};/.exec(q);
+  ok(!!mTab && !!mFn, 'Die Faltung steht als Tabelle und Funktion da');
+  if (!mTab || !mFn) return;
+  var sektorVon = new Function(mTab[0] + '\n' + (mFein ? mFein[0] : '') + '\n' + mFn[0] + '\nreturn sektorVon;')();
+
+  /* Die fuenf Beispiele, die im Kopf der Datei als Begruendung stehen. Wer die Tabelle
+   * aendert, ohne den Kopf anzupassen, faellt hier auf. */
+  var faelle = [
+    [3571, 'Technologie', 'Apple, Electronic Computers'],
+    [3674, 'Technologie', 'Nvidia und Intel, Semiconductors'],
+    [7372, 'Technologie', 'Microsoft, Prepackaged Software'],
+    [2834, 'Gesundheit', 'Pfizer, Pharmaceutical Preparations'],
+    [3841, 'Gesundheit', 'Medizingeraete - liegt im Zweisteller 38 neben Messtechnik'],
+    [2821, 'Rohstoffe', 'Kunststoffe - derselbe Zweisteller 28 wie Pharma und Seife'],
+    [3711, 'Industrie', 'Ford, Motor Vehicles'],
+    [6021, 'Finanzen', 'JPMorgan, National Commercial Banks'],
+    [6798, 'Finanzen', 'Prologis, REIT'],
+    [1311, 'Energie', 'ExxonMobil, Crude Petroleum'],
+    [4931, 'Versorger', 'NextEra, Electric & Other Services'],
+    [4813, 'Telekommunikation', 'AT&T, Telephone Communications'],
+    [5331, 'Zyklischer Konsum', 'Walmart, Variety Stores'],
+    [2844, 'Basiskonsum', 'Procter & Gamble, Toilet Preparations']
+  ];
+  var daneben = faelle.filter(function (f) { return sektorVon(f[0]) !== f[1]; });
+  ok(daneben.length === 0,
+     'Zwoelf echte SIC-Codes landen im erwarteten Sektor  [' +
+     daneben.map(function (f) { return f[2] + ' → ' + sektorVon(f[0]) + ' statt ' + f[1]; }).join('; ') + ']');
+  ok(sektorVon(9999) === 'Sonstige' && sektorVon(0) === 'Sonstige',
+     'Ein unbekannter Code faellt auf „Sonstige“, nicht auf undefined');
+
+  /* ---------- Die Riegel gegen falsche Groessen ----------
+   * Beide stammen aus einer Gegenprobe gegen die handgepflegten Zahlen in renderer.js:
+   * dreizehn von fuenfzehn stimmten auf ±1,4 %, zwei nicht - und beide Abweichungen
+   * waren echte Befunde, keine Rundung. */
+  ok(/MAX_ALTER_TAGE = 550/.test(q) && /aktienVeraltet/.test(q),
+     'Altersgrenze: Fords juengste Meldung war von 2011 - eine plausible, fuenfzehn Jahre alte Zahl');
+  ok(/f === '20-F' \|\| f === '40-F'/.test(q) && /auslaender = true/.test(q),
+     'ADR-Riegel: auslaendische Emittenten werden markiert - ihre Stueckzahl sind Stammaktien, gehandelt wird ein Buendel');
+  ok(/x\.end === letzt/.test(q) && /reduce\(function \(a, x\) \{ return a \+ x\.val; \}, 0\)/.test(q),
+     'Mehrere Aktiengattungen zum selben Stichtag werden addiert, nicht eine davon genommen');
+
+  /* Die Marktkapitalisierung darf NICHT im Werkzeug entstehen - sonst waere sie der
+   * Kurs von gestern. Sie ist Kurs mal Stueckzahl und gehoert in die Aktualisierung. */
+  /* Die erste Fassung dieser Zusicherung suchte das WORT - und traf damit den
+   * Kommentar, der erklaert, dass hier nichts gerechnet wird. Eine Pruefung, die an
+   * Prosa haengt, prueft nichts. Gesucht wird jetzt ein Feld im Ergebnis. */
+  ok(!/(marktkap|marketCap|mktCap)\s*[:=]/i.test(q),
+     'Das Werkzeug legt keine Marktkapitalisierung ab - sie entsteht live aus Kurs mal Stueckzahl');
+  ok(/e3\.aktien = best\.val/.test(q) && /e\.aktien = aktien\[e\.cik\]/.test(q),
+     'Abgelegt wird die Stueckzahl - die ist morgen noch richtig, ein Kurs waere es nicht');
+  ok(/tools\//.test('tools/stammdaten-holen.js') && !/require\(.*stammdaten-holen/.test(
+     fs.readdirSync(__dirname).filter(function (f) { return /\.js$/.test(f) && !/^test-/.test(f); })
+       .map(function (f) { return fs.readFileSync(__dirname + '/' + f, 'utf8'); }).join('\n')),
+     'Kein App-Code bindet das Werkzeug ein - die App fragt nie selbst bei der SEC an');
+})();
+
+/* ================= 55. Die Marktkarte =================
+ * Flaeche ist Groesse, Farbe ist der Tag. Die Aufteilung ist reine Rechnerei -
+ * Rechtecke rein, Rechtecke raus - und deshalb hier wirklich pruefbar. Am Bildschirm
+ * faellt ein Kaestchen, das zwei Pixel zu breit ist, niemandem auf; eine Karte, deren
+ * Flaechen nicht zu den Groessen passen, luegt aber genau ueber das, was sie zeigen
+ * soll. */
+(function () {
+  console.log('\n55) Marktkarte: Flaeche, Farbe, Lesbarkeit');
+  var M = require(__dirname + '/marktkarte.js');
+  var ui = fs.readFileSync(__dirname + '/marktkarteui.js', 'utf8');
+  var html = fs.readFileSync(__dirname + '/index.html', 'utf8');
+
+  function lcg(s) { return function () { s = (s * 1103515245 + 12345) % 2147483648; return s / 2147483648; }; }
+  var r = lcg(11), werte = [];
+  var sekt = ['Technologie', 'Finanzen', 'Gesundheit', 'Industrie', 'Energie'];
+  for (var i = 0; i < 140; i++) {
+    werte.push({ sym: 'S' + i, sektor: sekt[i % 5], groesse: Math.pow(10, 1 + r() * 4), pct: (r() - 0.5) * 8 });
+  }
+  var karte = M.baue(werte, 1000, 600);
+
+  ok(karte.length === 5, 'Fuenf Sektoren werden zu fuenf Bloecken  [' + karte.length + ']');
+  var alle = [];
+  karte.forEach(function (s) { s.kinder.forEach(function (k) { alle.push(k); }); });
+  ok(alle.length === werte.length, 'Kein Wert geht verloren  [' + alle.length + ' von ' + werte.length + ']');
+
+  /* ---------- Ueberlappung ----------
+   * Der Fehler, den ein Treemap am ehesten macht, und der am Bildschirm wie Absicht
+   * aussieht: zwei Kaestchen liegen uebereinander, eines davon ist unsichtbar. */
+  var ueber = 0;
+  karte.forEach(function (s) {
+    for (var a = 0; a < s.kinder.length; a++) {
+      for (var b = a + 1; b < s.kinder.length; b++) {
+        var A = s.kinder[a], B = s.kinder[b];
+        if (A.x < B.x + B.b - 0.01 && B.x < A.x + A.b - 0.01 &&
+            A.y < B.y + B.h - 0.01 && B.y < A.y + A.h - 0.01) ueber++;
+      }
+    }
+  });
+  ok(ueber === 0, 'Keine zwei Kaestchen ueberlappen sich  [' + ueber + ']');
+
+  /* ---------- Flaechentreue ----------
+   * Das ist die eine Zusage, die die Karte gibt: doppelt so gross heisst doppelt so
+   * viel Flaeche. Stimmt das nicht, ist die Karte eine huebsche Luege. */
+  var schlimmste = 0;
+  karte.forEach(function (s) {
+    var gesW = s.kinder.reduce(function (a, k) { return a + k.wert; }, 0);
+    var gesF = s.kinder.reduce(function (a, k) { return a + k.b * k.h; }, 0);
+    s.kinder.forEach(function (k) {
+      var d = Math.abs(k.b * k.h / gesF - k.wert / gesW);
+      if (d > schlimmste) schlimmste = d;
+    });
+  });
+  ok(schlimmste < 0.001,
+     'Flaeche folgt der Groesse: groesste Abweichung ' + (schlimmste * 100).toFixed(4) + ' % vom Anteil');
+
+  /* ---------- Kein Kaestchen verlaesst seinen Sektor ---------- */
+  var raus = 0;
+  karte.forEach(function (s) {
+    s.kinder.forEach(function (k) {
+      if (k.x < s.x - 0.01 || k.y < s.y - 0.01 ||
+          k.x + k.b > s.x + s.b + 0.01 || k.y + k.h > s.y + s.h + 0.01) raus++;
+    });
+  });
+  ok(raus === 0, 'Jedes Kaestchen bleibt in seinem Sektorblock  [' + raus + ']');
+
+  /* ---------- Seitenverhaeltnis: wozu das Verfahren ueberhaupt da ist ----------
+   * Der naive Treemap (abwechselnd waagerecht/senkrecht teilen) erzeugt bei
+   * ungleichen Groessen Striche, in denen kein Text mehr steht. */
+  var sv = alle.map(function (k) { return Math.max(k.b / k.h, k.h / k.b); }).sort(function (a, b) { return a - b; });
+  ok(sv[Math.floor(sv.length / 2)] < 2,
+     'Die Kaestchen sind ungefaehr quadratisch: Median ' + sv[Math.floor(sv.length / 2)].toFixed(2));
+
+  // ---------- Randfaelle, die nicht abstuerzen duerfen ----------
+  ok(M.baue([], 800, 600).length === 0, 'Ohne Werte entsteht eine leere Karte, kein Absturz');
+  ok(M.aufteilen([{ wert: 0 }, { wert: -5 }], { x: 0, y: 0, b: 100, h: 100 }).length === 0,
+     'Groesse null oder negativ wird uebergangen - ein Kaestchen ohne Flaeche gibt es nicht');
+  var eins = M.aufteilen([{ wert: 7 }], { x: 10, y: 20, b: 100, h: 50 });
+  ok(eins.length === 1 && Math.abs(eins[0].b * eins[0].h - 5000) < 0.01 && eins[0].x === 10,
+     'Ein einziger Wert fuellt das ganze Rechteck');
+  ok(M.aufteilen([{ wert: 1 }], { x: 0, y: 0, b: 0, h: 100 }).length === 0,
+     'Ein Rechteck ohne Breite ergibt keine Kaestchen statt einer Division durch null');
+
+  /* ---------- Farbe und Lesbarkeit ----------
+   * Rot/Gruen allein traegt nicht - jeder zwanzigste Mann sieht den Unterschied
+   * schlecht. Deshalb traegt die HELLIGKEIT die Aussage mit, und die Beschriftung
+   * muss auf jedem Grund lesbar bleiben. Das wird hier ueber den ganzen Bereich
+   * durchgerechnet, nicht an zwei Beispielen behauptet. */
+  function kontrast(rgb, hex) {
+    var t = hex === '#ffffff' ? [255, 255, 255] : [16, 19, 23];
+    var l1 = M.leuchtdichte(rgb), l2 = M.leuchtdichte(t);
+    var hell = Math.max(l1, l2), dunkel = Math.min(l1, l2);
+    return (hell + 0.05) / (dunkel + 0.05);
+  }
+  var schlecht = [];
+  for (var p = -8; p <= 8; p += 0.25) {
+    var f = M.farbe(p);
+    var k = kontrast(f.rgb, f.text);
+    if (k < 4.5) schlecht.push(p.toFixed(2) + ' → ' + k.toFixed(2));
+  }
+  ok(schlecht.length === 0,
+     'Beschriftung haelt ueber den ganzen Bereich Kontrast 4,5:1  [' + schlecht.slice(0, 4).join(', ') + ']');
+  var kNull = M.farbe(null);
+  ok(kontrast(kNull.rgb, kNull.text) >= 4.5, 'Auch das Kaestchen ohne Kurs bleibt lesbar');
+
+  var plus = M.farbe(2), minus = M.farbe(-2);
+  ok(plus.rgb[1] > plus.rgb[0] && minus.rgb[0] > minus.rgb[1],
+     'Plus ist gruenlastig, Minus rotlastig  [' + plus.rgb.join(',') + ' / ' + minus.rgb.join(',') + ']');
+  ok(Math.abs(M.farbe(3).rgb[0] - M.farbe(30).rgb[0]) < 1 && Math.abs(M.farbe(3).rgb[1] - M.farbe(30).rgb[1]) < 1,
+     'Ueber dem Deckel aendert sich nichts mehr - ein Ausreisser blasst die Karte nicht aus');
+  ok(M.farbe(null).rgb.join(',') !== M.farbe(0).rgb.join(','),
+     '„kein Kurs“ sieht anders aus als „unveraendert“ - sonst waere Fehlen und Null dasselbe');
+
+  // ---------- Buendeln ----------
+  var b1 = M.buendeln([{ sym: 'A', sektor: 'X', groesse: 1 }, { sym: 'B', sektor: 'Y', groesse: 5 },
+    { sym: 'C', sektor: 'X', groesse: 3 }, { sym: 'D', groesse: 2 }]);
+  ok(b1[0].sektor === 'Y' && b1[0].wert === 5, 'Der groesste Sektor kommt zuerst - die Karte springt nicht herum');
+  ok(b1.filter(function (x) { return x.sektor === 'X'; })[0].wert === 4, 'Groessen werden je Sektor summiert');
+  ok(b1.filter(function (x) { return x.sektor === 'Sonstige'; }).length === 1,
+     'Ohne Sektorangabe landet ein Wert in „Sonstige“, nicht im Nichts');
+
+  /* ---------- Die Arbeitsteilung: langsam aus der Datei, schnell aus dem Netz ----------
+   * Wuerde die Marktkapitalisierung gespeichert, waere die Karte die Karte von
+   * gestern - Flaeche wie Farbe. */
+  ok(/w\.groesse = w\.kurs \* w\.aktien/.test(ui),
+     'Die Flaeche entsteht aus Kurs mal Stueckzahl, bei jedem Abruf neu');
+  ok(/regularMarketPrice/.test(ui) && /chartPreviousClose/.test(ui),
+     'Kurs und Vortagesschluss kommen aus demselben einen Abruf');
+  ok(!/sec\.gov|data\.sec/.test(ui) && !/sec\.gov/.test(fs.readFileSync(__dirname + '/marktkarte.js', 'utf8')),
+     'Die App fragt nie selbst bei der SEC an - das macht das Werkzeug daneben');
+  ok(/if \(e\.auslaender\)/.test(ui),
+     'Auslaendische Emittenten werden weggelassen: ihre Stueckzahl passt nicht zum gehandelten ADR');
+
+  /* ---------- Was die Karte NICHT sein darf ----------
+   * Bei Issue #63 stand der Satz: eine Karte, die etwas zeigt, laedt zum Handeln
+   * danach ein. Gemessen ist an dieser hier nichts. */
+  ok(/kein Signal/.test(ui) && /nichts gemessen/.test(ui),
+     'Die Karte sagt selbst, dass an ihr nichts gemessen ist');
+  /* Geprueft wird der CODE, nicht der Kommentar: Die erste Fassung dieser Zeile
+   * schlug an, weil der Kommentar darueber erklaert, dass es keine Rangliste GIBT.
+   * Dieselbe Falle wie beim Platzhalter im Strategieformular. */
+  var uiOhneKommentar = ui.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+  ok(!/bester Sektor|heissester|Rangliste|Top-?\d/i.test(uiOhneKommentar),
+     'Keine Rangliste und kein „bester Sektor“ im Code - das saehe nach einem Befund aus');
+  ok(/data-info="marktkarte"/.test(html), 'Der Reiter hat einen Erklaertext hinter dem i');
+  ok(html.indexOf('marktkarte.js') < html.indexOf('marktkarteui.js'),
+     'Ladereihenfolge: die Rechnung vor der Oberflaeche');
 })();
 
 Promise.all(offeneProben).then(function () {

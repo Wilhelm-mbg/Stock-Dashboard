@@ -317,6 +317,16 @@
       ],
       fuss: 'Alle Zahlen in Prozentpunkten des Basiswerts, Überschuss gegen die Erwartung aller Kerzen desselben Werts zur selben Stunde.'
     },
+    'marktkarte': {
+      titel: 'Wie die Karte zu lesen ist',
+      punkte: [
+        'Jedes Kästchen ist ein Unternehmen. Die <b>Fläche</b> ist Kurs mal Aktienanzahl – sie wird bei jeder Aktualisierung neu gerechnet, nicht gespeichert.',
+        'Die <b>Farbe</b> ist die Veränderung zum Vortagesschluss, gedeckelt bei ±3 %. Darüber wäre nichts mehr unterscheidbar, und ein einzelner Ausreißer würde die ganze Karte blass machen.',
+        'Gruppiert wird nach dem SIC-Code der SEC. Der ist von 1987 und kennt kein „Technologie“ – die Zuordnung zu Sektoren ist eine Entscheidung des Projekts und steht offen in tools/stammdaten-holen.js.',
+        'Ausländische Emittenten fehlen: Ihre gemeldete Stückzahl sind Stammaktien, gehandelt wird ein ADR aus mehreren davon. Das Verhältnis steht in den Daten nicht – lieber nicht zeigen als falsch zeigen.',
+        'Das ist eine <b>Übersicht, kein Signal</b>. An dieser Karte ist nichts gemessen. Sie sortiert nichts nach „bestem Sektor“ und hebt nichts hervor: Das sähe nach einem Befund aus und wäre keiner.'
+      ]
+    },
     'messung.eingabe': {
       titel: 'Drei Dinge braucht eine Strategie',
       punkte: [
