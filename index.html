@@ -326,12 +326,34 @@
   }
   .heat .hz:hover { transform: scale(1.04); }
   .heat .hz .s { font-weight: 700; font-size: var(--fs-text); display: block; }
+  /* Der Kurs (Issue #74): "Das Marktbild braucht auch Kurse, nicht nur Prozente."
+     Er stand bis dahin nur im Tooltip - also nur fuer den, der die Maus hinhaelt. */
+  .heat .hz .k { font-size: var(--fs-neben); color: var(--ink-2); display: block; }
   .heat .hz .p { font-size: var(--fs-neben); }
   /* Ausserboerslicher Kurs (Issue #68): eigene, ruhigere Zeile - er ist duenn
      gehandelt und soll die Tagesbewegung nicht optisch ueberstimmen. */
   .ppk { font-size: var(--fs-klein); color: var(--muted); white-space: nowrap; }
   .ppk.up { color: var(--up); } .ppk.down { color: var(--down); }
-  .heat .hz .ppk { display: block; opacity: .85; }
+  /* AUF DER KACHEL GILT DAS NICHT (Issue #74: "im Dunkelmodus sind die grauen Texte
+     nur schwer zu lesen").
+     Die Kachel ist eingefaerbt - bis zu einer Beimischung von --up bzw. --down. Ein
+     gruener Text auf gruenem Grund verschwindet darin, und die Deckkraft von 0,85 zog
+     ihn zusaetzlich in den Hintergrund. WCAG-Kontrast auf der staerksten Kachel,
+     nachgerechnet aus den Farbwerten dieser Datei:
+
+                                        hell            dunkel
+       vorher (Richtungsfarbe, .85)     2,11 - 2,75     2,20 - 2,26
+       jetzt  (--ink-2, Deckel 30 %)    4,65 - 4,97     6,34 - 6,45
+
+     2,11 ist praktisch unsichtbar. Deshalb hier weder die Richtungsfarbe noch die
+     Deckkraft: Die Richtung sagt die Kachel selbst durch ihren Grund. Diese Regel
+     hat drei Klassen und schlaegt .ppk.up damit sicher.
+     Der Deckel steht in renderer.js und ist von 45 auf 30 % gesenkt. Er ist nicht
+     geschaetzt: Abschnitt 41 der Testsuite rechnet den Kontrast aus genau diesen
+     Farbwerten nach und wird rot, sobald einer der drei Werte nicht mehr traegt.
+     (Der erste Wurf nahm 35 % - das reichte im Hellmodus nicht, weil --up dort ein
+     dunkles #006300 ist. Die Zusicherung hat es gefunden, nicht das Auge.) */
+  .heat .hz .ppk { display: block; color: var(--ink-2); }
   .mover-row .ppk { margin-right: 6px; }
 
   /* Ertragskurve im Depot */

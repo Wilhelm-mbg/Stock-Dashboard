@@ -111,9 +111,11 @@
    * dem heutigen regulären Start. Fehlt das Fenster, wird es aus dem regulären
    * Start zurückgerechnet (Vorbörse ab 4:00 ET, also 5,5 Stunden davor).
    *
-   * Verglichen wird gegen chartPreviousClose, den letzten regulären Schluss -
-   * nicht gegen einen Quote-Stempel. Yahoos Quote-Stempel hatten hier schon
-   * einmal die Messbasis verseucht; seit 8.23.13 kommen Kurse aus Kerzen. */
+   * Verglichen wird gegen den letzten regulären Schluss - nicht gegen einen
+   * Quote-Stempel. Yahoos Quote-Stempel hatten hier schon einmal die Messbasis
+   * verseucht; seit 8.23.13 kommen die KURSE aus Kerzen. Welches Metafeld den
+   * letzten Schluss trägt, steht unten an der Basis-Zeile; chartPreviousClose
+   * ist es in der Vorbörse NICHT. */
   function vormarktAusChart(text) {
     var r;
     try { r = JSON.parse(text).chart.result[0]; } catch (e) { return null; }
@@ -128,8 +130,17 @@
     if (regStart === null) return null;
     var vonZeit = (per.pre && isFinite(per.pre.start)) ? per.pre.start : regStart - 19800;
     var bisZeit = (per.pre && isFinite(per.pre.end)) ? per.pre.end : regStart;
-    var basis = isFinite(meta.chartPreviousClose) ? meta.chartPreviousClose
-      : (isFinite(meta.previousClose) ? meta.previousClose : null);
+    /* Dieselbe Falle wie in renderer.js/loadPrePost, siehe Issue #74: In der
+     * Vorboerse ist chartPreviousClose bei range=1d der Schluss der VORLETZTEN
+     * Sitzung, nicht der letzten. Am 25.08.2026 an sechs Werten nachgemessen -
+     * AMD stand auf 473,25 statt 456,75, also eine Sitzung zu frueh. Eine Luecke
+     * gegen diese Basis ist um den Vortagesbetrag verschoben; bei AMD wurde aus
+     * +3,07 % ein -0,53 %.
+     * regularMarketPrice ist ausserhalb der Sitzung der letzte regulaere Schluss
+     * und damit die Basis, die der Kommentar oben immer gemeint hat. */
+    var basis = isFinite(meta.regularMarketPrice) ? meta.regularMarketPrice
+      : (isFinite(meta.chartPreviousClose) ? meta.chartPreviousClose
+        : (isFinite(meta.previousClose) ? meta.previousClose : null));
     if (!basis || basis <= 0) return null;
     var kurs = null, vol = 0, kerzen = 0;
     for (var i = 0; i < ts.length; i++) {
