@@ -6579,8 +6579,17 @@ console.log('\n44) Oberflaeche nach Themen sortiert (Felix, Issue #68)');
      'Uebernahme-Formular und Bestandstabelle stehen unter Vermoegen');
   ok(!/id="bestandText"/.test(heute) && !/id="bestandLesen"/.test(heute),
      'Auf "Heute" steht kein zweites Uebernahme-Formular mehr');
-  ok(/id="bestandListe"/.test(heute) && !/id="bestandListe"/.test(vermoegen),
-     'Die Signalliste steht auf "Heute" - und nur dort (Felix, #71)');
+  /* GEDREHT am 26.08.2026, nicht abgeschwaecht: Wilhelm hat entschieden, dass der
+   * Abschnitt "Meine Papiere" unter "Heute" ganz verschwindet (#89 vor #83). Der
+   * Signalstand ist damit nicht gestrichen, sondern umgezogen - er steht als zwei
+   * Spalten in der Bestandstabelle. Beides wird hier geprueft, denn beides koennte
+   * einzeln zurueckfallen: der Abschnitt wiederkommen oder der Signalstand still
+   * verschwinden. */
+  ok(!/id="bestandListe"/.test(html),
+     'Unter "Heute" steht kein Abschnitt "Meine Papiere" mehr (#89)');
+  var buSig = fs.readFileSync(__dirname + '/bestandui.js', 'utf8');
+  ok(/<th>Kurzfrist<\/th><th>Mittelfrist<\/th>/.test(buSig) && /kurzText\(st\.kurz\)/.test(buSig),
+     'Der Signalstand ist mitgezogen, nicht gestrichen - zwei Spalten in der Bestandstabelle');
   /* Der Container MUSS leer bleiben: zeichnenTabelle() setzt seinen innerHTML. Waere das
    * Formular hineingeschachtelt, loeschte es der 60-Sekunden-Takt weg - ein Fehler, der
    * erst nach einer Minute sichtbar wird und deshalb von Hand kaum zu finden ist. */
@@ -6589,15 +6598,25 @@ console.log('\n44) Oberflaeche nach Themen sortiert (Felix, Issue #68)');
   /* Zwei Knoepfe, EIN Registereintrag: der Schluessel bleibt heute.bestand, obwohl der
    * zweite Knopf unter Vermoegen sitzt. Ein Umbenennen haette den Registerblock
    * angefasst, in dem ein Messsatz steht. */
-  ok((html.match(/data-info="heute\.bestand"/g) || []).length === 2,
-     'Beide Ueberschriften fuehren auf denselben Erklaereintrag - eine Wahrheit');
+  /* Es gab zwei Ueberschriften mit demselben Erklaerknopf; eine davon ist mit dem
+   * Heute-Abschnitt entfallen. Der Registerschluessel bleibt "heute.bestand" - im
+   * Registerblock steht ein Messsatz, und der wird nicht wegen einer Umbenennung
+   * angefasst. Ein Schluessel ist intern; sein Name muss nicht wandern. */
+  ok((html.match(/data-info="heute\.bestand"/g) || []).length === 1,
+     'Der Erklaerknopf steht genau einmal - bei den Papieren, wo sie wohnen');
 
-  /* --- Felix #71: "prominent auf Heute, untergliedert nach Kurz-/Mittelfristsignal" ---
-   * Vorher standen alle Papiere in einer Reihe und man musste zwei Spalten absuchen,
-   * um zu sehen, wo heute ueberhaupt etwas anliegt. */
+  /* Felix #71 wollte die Liste "prominent auf Heute, untergliedert nach Kurz-/
+   * Mittelfristsignal". Am 26.08.2026 hat Wilhelm entschieden, dass der Abschnitt
+   * unter "Heute" ganz verschwindet. Damit ist die GRUPPIERUNG entfallen - die
+   * INFORMATION nicht: sie steht als zwei Spalten in der Bestandstabelle und faerbt
+   * sich, wo etwas anliegt.
+   * Das ist eine Abwaegung und keine Selbstverstaendlichkeit: eine Bestandstabelle
+   * nach einem stuendlich wechselnden Signal umzusortieren haette den eigenen Bestand
+   * aus dem Blick genommen, und die Summenzeile aus #83 haette keinen eindeutigen
+   * Bezug mehr gehabt. Wer die Gruppierung zurueckwill, baut sie in der Tabelle. */
   var bu = fs.readFileSync(__dirname + '/bestandui.js', 'utf8');
-  ok(/gruppe\('Kurzfrist/.test(bu) && /gruppe\('Mittelfrist/.test(bu) && /gruppe\('Ohne Signal/.test(bu),
-     'Die Liste auf "Heute" ist nach Kurz- und Mittelfrist-Signal untergliedert');
+  ok(/<th>seit Jahresbeginn<\/th>/.test(bu) && /<th>Kurzfrist<\/th>/.test(bu),
+     'Die Bestandstabelle traegt Signalstand UND Jahresentwicklung (#83)');
 
   /* Die beiden Textfunktionen werden AUSGEFUEHRT: sie sind rein und ohne DOM-Zugriff.
    * Geprueft wird die Eigenschaft, auf der die ganze Gruppierung ruht - dass das
@@ -6608,28 +6627,64 @@ console.log('\n44) Oberflaeche nach Themen sortiert (Felix, Issue #68)');
   var mt = (/\n  function mittelText\(m\) \{[\s\S]*?\n  \}/.exec(bu) || [])[0];
   ok(!!kt && !!mt, 'Die beiden Textfunktionen lassen sich herausschneiden');
   var TF = new Function(kt + mt + '\nreturn { k: kurzText, m: mittelText };')();
-  ok(TF.k({ ok: true }).an === true && TF.k({ ok: false, grund: 'Kanal fehlt' }).an === false &&
-     TF.k(null).an === false,
-     'Kurzfrist: das Kennzeichen an folgt genau dem Signal');
-  ok(TF.m({ momentum: { richtung: 1 } }).an === true && TF.m({}).an === false &&
-     TF.m(null).an === false,
-     'Mittelfrist: das Kennzeichen an folgt genau dem Buchbestand');
-  /* Der eigentliche Punkt: Kennzeichen und Text duerfen nie auseinanderlaufen - sonst
-   * stuende eine Zeile unter "Ohne Signal" und daneben "Regel gibt ein Signal". */
+  /* Die Farbe muss dem Text folgen. Bis zum 26.08.2026 lief diese Probe ueber das
+   * Feld 'an', das die Gruppierung der Heute-Liste brauchte; die Liste ist entfallen,
+   * das Feld auch. Die Eigenschaft gilt weiter und ist jetzt wichtiger als vorher:
+   * in der Bestandstabelle faerbt cls die beiden Signalspalten - stuende dort gruen
+   * neben "kein Signal", waere die Anzeige eine Luege.
+   * Die Funktionen sind rein und ohne DOM-Zugriff, werden also AUSGEFUEHRT. */
+  ok(TF.k({ ok: true }).cls === 'up' &&
+     TF.k({ ok: false, grund: 'Kanal fehlt' }).cls === 'muted' &&
+     TF.k(null).cls === 'muted',
+     'Kurzfrist: gruen genau dann, wenn die Regel ein Signal gibt');
+  ok(TF.m({ momentum: { richtung: 1 } }).cls === 'up' &&
+     TF.m({ drift: { richtung: -1 } }).cls === 'up' &&
+     TF.m({}).cls === 'muted' && TF.m(null).cls === 'muted',
+     'Mittelfrist: gruen genau dann, wenn ein Buch den Wert haelt');
+  /* Und keine Farbe ohne Deckung im Text: was gruen ist, darf nicht "kein Signal",
+   * "in keinem Buch" oder "noch nicht geprueft" heissen. */
   var faelle = [TF.k(null), TF.k({ ok: true }), TF.k({ ok: false, grund: 'x' }),
                 TF.m(null), TF.m({}), TF.m({ drift: { richtung: -1 } })];
-  ok(faelle.every(function (f) { return f.an === (f.cls === 'up'); }),
-     'Kennzeichen und angezeigter Text sagen in jedem Fall dasselbe');
+  ok(faelle.every(function (f) {
+    /* Nur die eine Richtung ist eine Eigenschaft: gruen verlangt Deckung im Text.
+     * Die Umkehrung gilt nicht - ein Grund wie "Kanal fehlt" ist grau, ohne eine
+     * der drei festen Wendungen zu sein. Mein erster Anlauf hat genau das verwechselt. */
+    return f.cls !== 'up' || !/kein Signal|in keinem Buch|noch nicht gepr/.test(f.txt);
+  }), 'Keine Farbe ohne Deckung im Text - gruen steht nie neben "kein Signal"');
 
-  /* Jeder Wert landet in GENAU EINER Gruppe - Kurzfrist geht vor, weil es das eilige
-   * ist; dass er zusaetzlich in einem Buch liegt, steht weiter in seiner Spalte. */
-  ok(/if \(k\.an\)/.test(bu) && /else if \(m\.an\)/.test(bu) && /else gRest\.push/.test(bu),
-     'Jeder Wert steht in genau einer Gruppe, das Kurzfrist-Signal hat Vorrang');
-  ok(/colspan="5"/.test(bu) && /<th>Kurzfrist<\/th><th>Mittelfrist<\/th><th><\/th>/.test(bu),
-     'Die Gruppenzeile spannt genau ueber die fuenf Spalten der Tabelle');
+  /* Statt der Gruppenzeile pruefen wir jetzt, was #83 dafuer verlangt hat: eine
+   * Summenzeile unter den Zeilen - und dass sie nur erscheint, wenn sie ehrlich ist.
+   * Eine Summe, der ein Papier fehlt, ist stillschweigend zu klein. */
+  ok(/<tr class="summe">/.test(bu) && /var vollstaendig = werte\.every/.test(bu),
+     'Es gibt eine Summenzeile - und sie erscheint nur, wenn kein Papier fehlt');
+  /* Kopf, Zeile und Summe muessen gleich viele Zellen haben. Stimmen sie nicht
+   * ueberein, stehen die Zahlen unter der falschen Ueberschrift - und nichts bricht.
+   * Dieselbe Probe gibt es fuer die Positionstabelle weiter oben. */
+  var kopfB = (/<table class="tbl"><tr><th>Wert<\/th>[\s\S]*?<\/tr>/.exec(bu) || [''])[0];
+  var nKopfB = (kopfB.match(/<th/g) || []).length;
+  var summeB = (/<tr class="summe">[\s\S]*?<\/tr>/.exec(bu) || [''])[0];
+  var nSummeB = (summeB.match(/<td/g) || []).length;
+  ok(nKopfB === 10 && nSummeB === nKopfB,
+     'Bestandstabelle: Kopf und Summenzeile haben gleich viele Spalten',
+     nKopfB + ' Kopf / ' + nSummeB + ' Summe');
+  /* Prozentzahlen verschiedener Papiere lassen sich nicht addieren. Die Tagessumme
+   * wird deshalb in Geld gerechnet, die Jahressumme aus Basis und Jetzt-Wert. */
+  ok(/sumHeute \+= wert - wert \/ \(1 \+ kurs\.pct \/ 100\)/.test(bu),
+     'Die Tagessumme wird in Geld gerechnet, nicht aus Prozenten gemittelt');
+  /* Ueber ein Jahr faellt jeder Aktiensplit als Absturz auf, wenn unbereinigt
+   * geladen wird - ein 4:1-Split saehe aus wie -75 %. */
+  ok(/range: '1y', interval: '1d', bereinigt: true/.test(bu),
+     'Die Jahresbasis wird BEREINIGT geladen - sonst ist jeder Split ein Absturz');
+  /* Und der Absprung in den Explorer haengt an der Tabelle, nicht mehr an der
+   * entfallenen Liste. */
+  ok(/el\('bestandTabelle'\)[\s\S]{0,700}closest\('\[data-bsym\]'\)/.test(bu),
+     'Der Absprung in den Aktien-Explorer ist mitgezogen (#83)');
   /* Ohne Regel fuer td.up/td.muted saehe eine Zeile mit Signal aus wie eine ohne -
    * die Untergliederung waere dann nur eine Reihenfolge, keine Auskunft. */
-  ok(/#bestandListe td\.up/.test(html) && /#bestandListe td\.muted/.test(html),
+  /* Die Regel hing an #bestandListe - den Behaelter gibt es nicht mehr. Ohne diesen
+   * Umzug waere die Faerbung still verschwunden, und mit ihr das "auf einen Blick
+   * sehen, wo etwas anliegt" aus #71. */
+  ok(/#bestandTabelle td\.up/.test(html) && /#bestandTabelle td\.muted/.test(html),
      'td.up und td.muted haben eine Regel - sonst sieht "Signal" aus wie "kein Signal"');
   /* Entfernen geht dort, wo die Papiere wohnen - sonst legt man sie unter Vermoegen an
    * und loescht sie auf "Heute": genau die Wohnungsteilung, die C2 abschafft. */

@@ -534,10 +534,13 @@
      nirgends, die Unterscheidung "Signal / kein Signal" war also unsichtbar. Bewusst
      auf #bestandListe beschraenkt: .up und .muted sind im Rest der App keine
      allgemeinen Hilfsklassen und sollen es auch nicht werden. */
-  #bestandListe td.bgrp { color: var(--muted); font-size: var(--fs-klein); font-weight: 700;
-    text-transform: uppercase; letter-spacing: 0.06em; padding-top: 12px; }
-  #bestandListe td.up { color: var(--up); font-weight: 600; }
-  #bestandListe td.muted { color: var(--muted); }
+  /* Seit 26.08.2026 an der Bestandstabelle: die Signalliste unter "Heute" ist
+     entfallen (#89), der Signalstand steht als zwei Spalten in der Tabelle. Ohne
+     diesen Umzug waere die Faerbung still verschwunden - und mit ihr das "auf einen
+     Blick sehen, wo etwas anliegt" aus Felix' Wunsch #71. */
+  #bestandTabelle td.up { color: var(--up); font-weight: 600; }
+  #bestandTabelle td.muted { color: var(--muted); }
+  #bestandTabelle tr.summe td { border-top: 2px solid var(--kante); font-weight: 700; }
   .pos { color: var(--up); font-weight: 600; }
   .neg { color: var(--down); font-weight: 600; }
   .panel { padding: 12px 14px; }
@@ -783,14 +786,6 @@
 <h2 style="margin-top:18px;">Marktbild <span style="color:var(--muted); font-size:var(--fs-neben); font-weight:400;">– die 15 Werte dieses Reiters, sortiert vom stärksten Gewinner zum stärksten Verlierer. Farbe = heutige Bewegung, Klick öffnet den Explorer</span></h2>
 <div id="dashHeat" class="heat"><div class="loading">Lade Kurse …</div></div>
 
-<h2>Meine Papiere <span style="color:var(--muted); font-size:var(--fs-neben); font-weight:400; text-transform:none; letter-spacing:0;">
-  – die eigenen Papiere und was die gemessenen Regeln zu ihnen sagen.
-  <b>Beobachtung, keine Anlageberatung.</b>
-  Eintragen und Bestand: Reiter <b>Vermögen → Meine Papiere</b>.</span>
-  <button class="info" type="button" data-info="heute.bestand" aria-expanded="false" aria-label="Erklärung: Meine Papiere">i</button></h2>
-<div class="panel">
-  <div id="bestandListe"><div class="loading">Lade …</div></div>
-</div>
 
 <!-- Struktur-Audit Punkt 10: "Gewinner & Verlierer des Tages" stand hier als dritte
      Anzeige derselben 15 Werte - dieselbe Information wie das Marktbild darueber,
@@ -1594,7 +1589,7 @@
        sonst loescht es der naechste 60-Sekunden-Takt weg. -->
   <div class="sub" id="sub-papiere">
     <h2 style="margin-top:0;">Meine Papiere <span style="color:var(--muted); font-size:var(--fs-neben); font-weight:400; text-transform:none; letter-spacing:0;">
-      – echte Papiere, von der App nie angefasst. Was die gemessenen Regeln zu ihnen sagen, steht im Reiter <b>Heute</b>.</span>
+      – echte Papiere, von der App nie angefasst. Was die gemessenen Regeln zu ihnen sagen, steht in den beiden rechten Spalten.</span>
       <button class="info" type="button" data-info="heute.bestand" aria-expanded="false" aria-label="Erklärung: Meine Papiere">i</button></h2>
     <div class="panel" id="bestandTabelle"><div class="loading">Lade …</div></div>
     <div class="panel" style="margin-top:14px;">
