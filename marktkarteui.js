@@ -234,7 +234,8 @@
         '<b>Fläche</b> = Kurs × Aktienanzahl, bei jeder Aktualisierung neu gerechnet. ' +
         '<b>Farbe</b> = Veränderung zum Vortagesschluss, gedeckelt bei ±' + window.Marktkarte.DECKEL + ' %. ' +
         'Gruppiert nach Branche aus dem SIC-Code der SEC.<br>' +
-        'Gezeigt: ' + info.gezeichnet + ' von ' + info.gesamt + ' Werten mit Stammdaten. ' +
+        'Gezeigt: ' + info.gezeichnet + ' von ' + info.gesamt + ' Werten mit Stammdaten' +
+        (info.ausApp ? ' (' + info.ausApp + ' davon aus laufenden Kursen der App, ohne eigenen Abruf)' : '') + '. ' +
         (info.adr ? 'Nicht gezeigt: ' + info.adr + ' ausländische Emittenten – ihre Stückzahl sind Stammaktien, ' +
           'gehandelt wird ein ADR aus mehreren davon, und das Verhältnis steht in den Daten nicht. ' : '') +
         (info.ohneGroesse ? info.ohneGroesse + ' ohne Stückzahl in den SEC-Daten. ' : '') +
@@ -296,7 +297,11 @@
       await kurseHolen(liste, function (f, g) { sagH('Kurse: ' + f + ' von ' + g + ' …'); });
       var mitKurs = liste.filter(function (w) { return w.groesse > 0; })
         .sort(function (a, c) { return c.groesse - a.groesse; });
-      var wieViele = Math.min(Math.max(anzahlJetzt(), 100) * 2, 900);
+      /* Der Deckel folgt der Auswahl. Vorher stand hier fest 900, und weil der
+       * Abruf mit "die 100 groessten" lief, standen dauerhaft nur 200 Werte in der
+       * Datei - auch fuer jede spaetere, groessere Auswahl. Die 4.000 sind die
+       * Groessenordnung dessen, was die SEC ueberhaupt mit Stueckzahl fuehrt. */
+      var wieViele = Math.min(Math.max(anzahlJetzt(), 100) * 2, 4000);
       var top = mitKurs.slice(0, wieViele).map(function (w) { return w.sym; });
       if (!top.length) { sagH('Keine Kurse bekommen – Netz?'); if (k) k.disabled = false; return; }
 
@@ -336,7 +341,8 @@
       sag('Kurse holen: 0 von ' + a.liste.length + ' …');
       var n = await kurseHolen(a.liste, function (f, g) { sag('Kurse holen: ' + f + ' von ' + g + ' …'); });
       var mitKurs = a.liste.filter(function (w) { return w.groesse > 0; });
-      zeichnen(mitKurs, { gezeichnet: n, gesamt: a.gesamt, adr: a.adr, ohneGroesse: a.ohneGroesse });
+      var ausApp = a.liste.filter(function (w) { return w.ausApp; }).length;
+      zeichnen(mitKurs, { gezeichnet: n, gesamt: a.gesamt, adr: a.adr, ohneGroesse: a.ohneGroesse, ausApp: ausApp });
       letzterLauf = Date.now();
       sag('Stand: ' + new Date(letzterLauf).toLocaleTimeString('de-DE'));
     } catch (e) {
