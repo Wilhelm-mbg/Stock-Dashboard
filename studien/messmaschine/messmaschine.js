@@ -462,6 +462,81 @@ function placeboLauf(U, K, H, schnittTag, vorlauf, leseFenster, positionen, hael
     tagesmittel: st.mittel, t: st.t, mde: st.mde };
 }
 
+/* ---------- QUERSCHNITTS-KONTROLLE ----------
+ * Erwartung = Mittel aller ANDEREN Werte zur selben Kerzenzeit.
+ *
+ * Gegenstueck zu baueKontrolle (A7), die ueber die Zeit desselben Symbols mittelt. Beide
+ * beantworten verschiedene Fragen:
+ *   A7          "laeuft dieser Wert nach dem Signal anders als sonst?"
+ *   Querschnitt "laeuft dieser Wert nach dem Signal anders als der Rest des Marktes?"
+ * Die zweite rechnet den gemeinsamen Marktzug heraus - genau den Anteil, der die
+ * Tagesstreuung aufblaeht.
+ *
+ * ACHTUNG, das ist keine Verbesserung fuer jede Strategie: Wer einen grossen Teil des
+ * Universums gleichzeitig kauft (monatswende-breit: 74,7 %, monatsende-kauf: 100 %),
+ * dessen "andere Werte" SIND das eigene Portfolio. Dort geht der Ueberschuss per
+ * Konstruktion gegen null, und das ist kein Befund, sondern eine Probe auf dieses
+ * Werkzeug: ginge er dort NICHT gegen null, waere die Implementierung falsch. */
+function baueQuerschnittKontrolle(universum, haltedauerKerzen, vorlauf, stopNiveau, params) {
+  var Q = new Map();          // Zeitstempel -> { wert: [] }  spaeter { summe, n, lo, hi }
+  Object.keys(universum).forEach(function (sym) {
+    var b = universum[sym];
+    for (var i = vorlauf; i < b.length - haltedauerKerzen; i++) {
+      var s0 = b[i][1]; if (!(s0 > 0)) continue;
+      var sH = b[i + haltedauerKerzen][1]; if (!(sH > 0)) continue;
+      var ende = sH;
+      if (typeof stopNiveau === 'function') {
+        var pf = [];
+        for (var pk = i + 1; pk <= i + haltedauerKerzen; pk++) {
+          pf.push({ auf: eroeffnungKurs(b, pk), hoch: b[pk][3] != null ? b[pk][3] : b[pk][1],
+            tief: b[pk][4] != null ? b[pk][4] : b[pk][1], schluss: b[pk][1] });
+        }
+        ende = fuehreAus(pf, s0, stopNiveau, params).kurs;
+      }
+      var ms = b[i][0];
+      var z = Q.get(ms); if (!z) { z = { wert: [] }; Q.set(ms, z); }
+      z.wert.push(ende / s0 - 1);
+    }
+  });
+
+  /* Stutzen wie in baueKontrolle - dieselbe Schranke, damit die beiden Kontrollen
+   * vergleichbar bleiben. Die Grenzen bleiben stehen: die Auslassung des eigenen Werts
+   * muss ihn an DENSELBEN Grenzen klippen, sonst zieht sie etwas ab, was nie drin war. */
+  var STUTZ_QS = 0.01;
+  var gestutzt = 0, toepfe = 0;
+  Q.forEach(function (z) {
+    var n = z.wert.length;
+    toepfe++;
+    z.lo = -Infinity; z.hi = Infinity;
+    if (n >= 50) {
+      var sortiert = z.wert.slice().sort(function (a, b) { return a - b; });
+      var k = Math.floor(n * STUTZ_QS);
+      z.lo = sortiert[k]; z.hi = sortiert[n - 1 - k];
+      for (var q = 0; q < n; q++) {
+        if (z.wert[q] < z.lo) { z.wert[q] = z.lo; gestutzt++; }
+        else if (z.wert[q] > z.hi) { z.wert[q] = z.hi; gestutzt++; }
+      }
+    }
+    var s = 0;
+    for (var q2 = 0; q2 < n; q2++) s += z.wert[q2];
+    z.summe = s; z.n = n;
+    z.wert = null;            // Speicher frei - fuer die Auslassung genuegen lo/hi
+  });
+  baueQuerschnittKontrolle.gestutzt = gestutzt;
+  baueQuerschnittKontrolle.toepfe = toepfe;
+
+  return {
+    /* eigenerWert ist die UNGERICHTETE Rendite des Signals - genau die Groesse, die auch
+     * in den Topf gewandert ist. Sie wird an denselben Grenzen geklippt und abgezogen. */
+    erwartung: function (ms, eigenerWert) {
+      var z = Q.get(ms);
+      if (!z || z.n < 21) return null;      // nach der Auslassung muessen 20 uebrig bleiben
+      var eigen = eigenerWert < z.lo ? z.lo : (eigenerWert > z.hi ? z.hi : eigenerWert);
+      return (z.summe - eigen) / (z.n - 1);
+    }
+  };
+}
+
 /* ============================================================================
  * HAUPTFUNKTION
  * strategie: { key, grund, zeitrahmen, haltedauerKerzen, signal(bars,i,params,rang,sym)->{dir}|null,
@@ -610,6 +685,18 @@ function messe(strategie, archivPfad, optionen) {
     'Keine Zufallsziehung (A2), keine Listenpaarung (A3), kein Zeitbezug zum Signal (A4), je Haelfte getrennt (A5). ' +
     'Der Ueberschuss gegen diese Erwartung ist die Aussage; die Rohrendite allein ist keine.');
 
+  /* Die Querschnitts-Kontrolle haengt wie die A7-Kontrolle am Ausstieg, also an den
+   * Parametern - deshalb je Variante, mit demselben Zwischenspeicher-Muster. */
+  var QSK = {};
+  function querschnittFuer(vi) {
+    var schluessel = hatAusstieg ? vi : 0;
+    if (!QSK[schluessel]) {
+      QSK[schluessel] = baueQuerschnittKontrolle(U, H, vorlauf,
+        hatAusstieg ? S.stopNiveau : null, varianten[schluessel]);
+    }
+    return QSK[schluessel];
+  }
+
   /* S9: DIE EINSTIEGSLUECKE. Die Maschine steigt zum SCHLUSS der Signalkerze ein
    * (messmaschine.js, unten: s0 = b[i][1]). Sitzt der Ertrag einer Strategie in der
    * Luecke zwischen diesem Schluss und der naechsten Eroeffnung, ist er nicht
@@ -642,7 +729,10 @@ function messe(strategie, archivPfad, optionen) {
   /* --- Je Variante messen --- */
   var spanneBp = (S.kosten && S.kosten.spanneBp != null) ? S.kosten.spanneBp : 5;
   var ergebnisse = varianten.map(function (params, vi) {
-    var K = kontrolleFuer(vi);
+    var K = kontrolleFuer(vi), QK = querschnittFuer(vi);
+    /* GEPAARTE Teilmenge: nur Signale, fuer die BEIDE Erwartungen existieren. Ohne das
+     * vergleicht man zwei verschiedene Stichproben und nennt den Unterschied Methode. */
+    var paarA7 = [], paarQS = [], ohneQuerschnitt = 0;
     var roh = [], ueber = [], ohneKontrolle = 0, nSignale = 0, nLong = 0, nShort = 0;
     var gruende = {}, kerzenSumme = 0;
     var posZaehler = {};      // fuer den Placebo: wo feuert das echte Signal?
@@ -698,9 +788,17 @@ function messe(strategie, archivPfad, optionen) {
           leseFenster == null ? null : i - leseFenster - H,
           leseFenster == null ? null : i + H - 1);
         if (erw == null) { ohneKontrolle++; continue; }
-        var r = (ausKurs / s0 - 1) * dir;                  // C3: Anteil
+        var rUngerichtet = ausKurs / s0 - 1;
+        var r = rUngerichtet * dir;                        // C3: Anteil
         roh.push({ tag: tag, hf: hf, wert: r });
         ueber.push({ tag: tag, hf: hf, wert: r - erw * dir });   // Ueberschuss gegen die Erwartung
+        /* Zweite Erwartung: der Rest des Marktes zur selben Kerzenzeit. */
+        var erwQ = QK.erwartung(b[i][0], rUngerichtet);
+        if (erwQ == null) { ohneQuerschnitt++; }
+        else {
+          paarA7.push({ tag: tag, hf: hf, wert: r - erw * dir });
+          paarQS.push({ tag: tag, hf: hf, wert: r - erwQ * dir });
+        }
       }
     });
     function teil(liste, hf) { return liste.filter(function (e) { return e.hf === hf; }); }
@@ -722,6 +820,12 @@ function messe(strategie, archivPfad, optionen) {
       positionen: posZaehler,
       einstiegsluecke: { signalMittel: _lm, universumMittel: _lb.mittel, n: lueckeN,
         zentriert: (_lm != null && _lb.mittel != null) ? _lm - _lb.mittel : null },
+      /* Die Eichung: beide Kontrollen auf DENSELBEN Signalen, je Haelfte. */
+      querschnitt: {
+        ohneErwartung: ohneQuerschnitt,
+        entdeckung: { a7: block(teil(paarA7, 'entdeckung')), qs: block(teil(paarQS, 'entdeckung')) },
+        bestaetigung: { a7: block(teil(paarA7, 'bestaetigung')), qs: block(teil(paarQS, 'bestaetigung')) }
+      },
       ausstieg: typeof S.stopNiveau === 'function'
         ? { art: 'Regel', mittlereKerzen: nSignale ? kerzenSumme / nSignale : null,
             hinweis: 'Stop-Niveau nur aus abgeschlossenen Kerzen; Fuellung zum schlechteren aus Stop und erstem handelbaren Kurs.' }
@@ -836,6 +940,26 @@ function messe(strategie, archivPfad, optionen) {
       'Wo in der Sitzung das Signal feuert, entscheidet mit, welchem Rauschen es ausgesetzt ist ' +
       '(F3: die Schlusskerze hat eine 3,8-mal groessere Streuung als eine Kerze mitten am Tag). ' +
       (verteilung.length ? verteilung.join(', ') : 'keine Signale'));
+  });
+
+  /* Eichung: was bringt die Querschnitts-Kontrolle an Aufloesung? Reine Anzeige - sie
+   * faellt kein Urteil und veraendert keines. */
+  ergebnisse.forEach(function (r, vi) {
+    var q = r.querschnitt && r.querschnitt.bestaetigung;
+    /* block() liefert ein flaches Objekt - se steht direkt darauf, nicht unter .ueberschuss. */
+    var seA = q && q.a7 && q.a7.se, seQ = q && q.qs && q.qs.se;
+    var f = (seA > 0 && seQ > 0) ? seA / seQ : null;
+    P.entscheide('QS Querschnitts-Kontrolle', { variante: vi, ohneErwartung: r.querschnitt.ohneErwartung },
+      { seA7Pp: seA != null ? seA * 100 : null, seQuerschnittPp: seQ != null ? seQ * 100 : null,
+        faktor: f != null ? Math.round(f * 1000) / 1000 : null,
+        ueberschussA7Pp: q && q.a7 ? q.a7.tagesmittel * 100 : null,
+        ueberschussQuerschnittPp: q && q.qs ? q.qs.tagesmittel * 100 : null },
+      f == null ? 'Keine gepaarte Teilmenge - der Vergleich kam nicht zustande.'
+        : 'Auf denselben Signalen: Standardfehler ' + (seA * 100).toFixed(4) + ' Pp gegen die Zeit ' +
+          'desselben Werts (A7), ' + (seQ * 100).toFixed(4) + ' Pp gegen den Rest des Marktes. ' +
+          'Faktor ' + f.toFixed(2) + '. Ein Faktor ueber 1 heisst: die zweite Kontrolle rechnet den ' +
+          'gemeinsamen Marktzug heraus und macht die Messung schaerfer. Reine Eichung - das Urteil ' +
+          'faellt weiter gegen A7.');
   });
 
   var schwelle = bonferroniSchwelle(P.tests);

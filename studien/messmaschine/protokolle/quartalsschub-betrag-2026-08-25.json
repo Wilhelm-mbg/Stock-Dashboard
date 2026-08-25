@@ -19,8 +19,8 @@
   "varianten": 2,
   "quelle": "'use strict';\n/* QUARTALSSCHUB NACH DEM BETRAG DER UEBERRASCHUNG - Neubau vom 25.08.2026.\n *\n * Vorregistriert in studien/vorregistrierung-2026-08-25/VORREGISTRIERUNG-B-NEUBAU.md.\n * Der Quelltext der urspruenglichen Fassung ist verloren; diese Datei ist aus der\n * ueberlieferten Beschreibung neu gebaut, und JEDE Wahl darin steht dort schriftlich,\n * bevor gemessen wurde.\n *\n * Diese Fassung braucht KEINE Symbol-Bruecke mehr. Die alte musste sich aus dem ersten\n * Zeitstempel und zehn fruehen Schlusskursen einen Fingerabdruck je Reihe bauen und das\n * Archiv ein zweites Mal einlesen - weil signal() das Symbol nicht bekam. Seit heute\n * bekommt es das (messmaschine.js, fuenftes Argument). Genau in jener Bruecke ist der\n * alte Quelltext abgebrochen. */\nvar fs = require('fs'), path = require('path'), os = require('os');\n\n/* Universum: dieselbe Population wie Kandidat A - CS = Stammaktie, ADRC = Hinterlegungsschein. */\nvar ARTEN = (function () {\n  var p = process.env.MD_ARTEN || path.join(os.homedir(), 'Downloads',\n    'Markt-Dashboard-Daten', 'massive', 'wertpapierarten.json');\n  try { return (JSON.parse(fs.readFileSync(p, 'utf8')) || {}).arten || {}; }\n  catch (e) { return {}; }\n})();\n\n/* Ertragstermine aus dem Store der App. Zeilen: [Datum, Schaetzung, Ist, Ueberraschung %].\n * Die Spaltenbedeutung stammt aus dem SCHREIBENDEN Code (driftui.js), nicht aus einem\n * Blick auf die Werte - dort steht woertlich\n *   [r.aktuell.termin, r.aktuell.schaetzung, r.aktuell.ist, r.aktuell.ueberraschung]\n * Sie zu erraten waere hier besonders teuer gewesen: Schaetzung und Ist stehen\n * nebeneinander und sehen gleich aus. */\nvar TERMINE = (function () {\n  var p = process.env.MD_TERMINE || path.join(process.env.APPDATA ||\n    path.join(os.homedir(), 'AppData', 'Roaming'), 'Markt-Dashboard', 'store', 'drift_termine.json');\n  try { var j = JSON.parse(fs.readFileSync(p, 'utf8')); return (j && j.sym) || {}; }\n  catch (e) { return {}; }\n})();\n\nvar VERFALL_KERZEN = 63;      // drei Monate; der ueberlieferte leseFenster 80 = 63 + Rand\n\n/* Je Symbol EINMAL: die Terminzeitpunkte mit brauchbarer Ueberraschung, aufsteigend.\n * Die Maschine ruft signal() fuer jede Kerze jeder Reihe - hier darf nichts je Aufruf\n * neu gerechnet werden. */\nvar GEDAECHTNIS = {};\nfunction termineVon(sym) {\n  if (GEDAECHTNIS[sym] !== undefined) return GEDAECHTNIS[sym];\n  var roh = TERMINE[sym];\n  if (!roh || !roh.length) return (GEDAECHTNIS[sym] = null);\n  var liste = [];\n  for (var k = 0; k < roh.length; k++) {\n    var ms = Date.parse(roh[k][0]), ue = roh[k][3];\n    if (!isFinite(ms) || ue == null || !isFinite(ue)) continue;\n    liste.push([ms, ue]);\n  }\n  liste.sort(function (a, b) { return a[0] - b[0]; });\n  return (GEDAECHTNIS[sym] = liste.length ? liste : null);\n}\n\nmodule.exports = {\n  key: 'quartalsschub-betrag',\n  grund: 'Ein Wert, der drei Monate lang gefallen ist, traegt vor seinem Quartalstermin eine '\n       + 'aufgestaute Ergebnisunsicherheit. Wer sein Risikobudget daran gebunden hat - der '\n       + 'Fondsmanager, der die Position vor dem Termin gedeckelt hat, das Risikobuch, das die '\n       + 'Ereignisvolatilitaet limitiert, der Verwalter, der vor seinem Ausschuss keine ungeloeste '\n       + 'Lage halten darf -, gibt dieses Budget erst wieder frei, wenn die Zahl da ist UND gross '\n       + 'genug war, um die Unsicherheit aufzuloesen. Eine Meldung nahe der Schaetzung loest nichts '\n       + 'auf und zahlt nachweislich nichts (+0,095 Pp, t 0,47 auf der Entdeckungshaelfte). Wirksam '\n       + 'ist der BETRAG der Ueberraschung, nicht ihr Vorzeichen: nach demselben Kursverfall zahlt '\n       + '-5 % mehr als +5 % (+1,619 gegen +0,870 Pp). Das Freigeben des Budgets ist ein '\n       + 'Verwaltungsvorgang mit Vorlauf, kein Kursurteil, und es laeuft ueber Tage.',\n  zeitrahmen: '1d',\n  haltedauerKerzen: 5,\n  richtung: 'long',\n  leseFensterKerzen: 80,\n  kosten: { spanneBp: 5 },\n  testfamilie: { name: 'quartalsschub-neubau-2026-08-25', testsGesamt: 2,\n                 begruendung: 'zwei Varianten; Schwelle bleibt bei 2,50 statt 2,24, weil die These '\n                            + 'nicht frisch ist - im Zweifel die strengere Latte' },\n  universum: function (sym) {\n    var a = ARTEN[sym];\n    return (a === 'CS' || a === 'ADRC') && !!TERMINE[sym];\n  },\n  varianten: [ { verfall: -0.02 }, { verfall: -0.05 } ],\n\n  /* Signal auf der ERSTEN Kerze nach einem Termin.\n   *\n   * Kein Vorgriff: Kerze i feuert nur, wenn zwischen dem Schluss von i-1 und dem Schluss\n   * von i ein Termin lag. Damit ist die Meldung beim Einstieg oeffentlich - Zahlen\n   * erscheinen ueblicherweise nach Boersenschluss. Der Ankuendigungssprung ist dadurch\n   * NICHT enthalten; die These handelt vom Nachlauf ueber Tage, nicht vom Sprung.\n   *\n   * Der Verfall wird bis zur letzten Kerze VOR dem Termin gemessen (i-1), damit die\n   * Terminbewegung selbst nicht in den Filter geraet. */\n  signal: function (bars, i, params, rang, sym) {\n    if (i < VERFALL_KERZEN + 1) return null;\n    var liste = termineVon(sym);\n    if (!liste) return null;\n\n    var vor = bars[i - 1][0], jetzt = bars[i][0];\n    /* Genau ein Termin im Fenster (vor, jetzt] - mehr als einer waere ein Datenfehler,\n     * der erste zaehlt. Lineare Suche waere je Kerze zu teuer; die Liste ist sortiert. */\n    var lo = 0, hi = liste.length;\n    while (lo < hi) { var m = (lo + hi) >> 1; if (liste[m][0] <= vor) lo = m + 1; else hi = m; }\n    if (lo >= liste.length || liste[lo][0] > jetzt) return null;\n\n    var ue = liste[lo][1];\n    if (!(Math.abs(ue) >= 5)) return null;              // der BETRAG loest die Unsicherheit auf\n\n    var a = bars[i - 1 - VERFALL_KERZEN][1], b = bars[i - 1][1];\n    if (!(a > 0) || !(b > 0)) return null;\n    if (!((b / a - 1) <= params.verfall)) return null;  // drei Monate gefallen\n\n    return { dir: 1 };\n  },\n};\n"
  },
- "gemessenAm": "2026-08-25T10:30:17.822Z",
- "dauerMs": 5106,
+ "gemessenAm": "2026-08-25T10:50:06.997Z",
+ "dauerMs": 5255,
  "universum": {
   "werte": 189,
   "handelstage": 10076,
@@ -46,6 +46,53 @@
     "universumMittel": 0.0002888923099722362,
     "n": 3490,
     "zentriert": 0.0019575808452591786
+   },
+   "querschnitt": {
+    "ohneErwartung": 0,
+    "entdeckung": {
+     "a7": {
+      "tage": 670,
+      "signale": 1069,
+      "tagesmittel": 0.012891178191617869,
+      "t": 3.9706036417525854,
+      "se": 0.0032466545026206216,
+      "mde": 0.006493309005241243,
+      "jeSignal": 0.012766333703744876,
+      "anteilPositiv": 0.567820392890552
+     },
+     "qs": {
+      "tage": 670,
+      "signale": 1069,
+      "tagesmittel": 0.011166805386648753,
+      "t": 3.8142412920815696,
+      "se": 0.002927660976727202,
+      "mde": 0.005855321953454404,
+      "jeSignal": 0.010296919735070704,
+      "anteilPositiv": 0.5622076707202993
+     }
+    },
+    "bestaetigung": {
+     "a7": {
+      "tage": 1198,
+      "signale": 2421,
+      "tagesmittel": 0.0018431975974708462,
+      "t": 0.9267994363440161,
+      "se": 0.00198877721024711,
+      "mde": 0.00397755442049422,
+      "jeSignal": 0.001474016781577696,
+      "anteilPositiv": 0.5064023130937629
+     },
+     "qs": {
+      "tage": 1198,
+      "signale": 2421,
+      "tagesmittel": 0.0012785599672093162,
+      "t": 0.9141659935910121,
+      "se": 0.0013986081041878374,
+      "mde": 0.0027972162083756747,
+      "jeSignal": 0.0004435473000233646,
+      "anteilPositiv": 0.483271375464684
+     }
+    }
    },
    "ausstieg": {
     "art": "Zeit",
@@ -141,6 +188,53 @@
     "universumMittel": 0.0002888923099722362,
     "n": 2723,
     "zentriert": 0.0018069424663833143
+   },
+   "querschnitt": {
+    "ohneErwartung": 0,
+    "entdeckung": {
+     "a7": {
+      "tage": 562,
+      "signale": 841,
+      "tagesmittel": 0.01368610504696611,
+      "t": 3.505440627262402,
+      "se": 0.00390424671310276,
+      "mde": 0.00780849342620552,
+      "jeSignal": 0.014884785949835999,
+      "anteilPositiv": 0.5671819262782402
+     },
+     "qs": {
+      "tage": 562,
+      "signale": 841,
+      "tagesmittel": 0.011691412954502298,
+      "t": 3.3070231390319025,
+      "se": 0.003535328439801858,
+      "mde": 0.007070656879603716,
+      "jeSignal": 0.01198278778632461,
+      "anteilPositiv": 0.5683709869203329
+     }
+    },
+    "bestaetigung": {
+     "a7": {
+      "tage": 996,
+      "signale": 1882,
+      "tagesmittel": 0.001621322687828683,
+      "t": 0.6982924019340766,
+      "se": 0.0023218392228500097,
+      "mde": 0.0046436784457000195,
+      "jeSignal": 0.0022228268076442325,
+      "anteilPositiv": 0.5185972369819342
+     },
+     "qs": {
+      "tage": 996,
+      "signale": 1882,
+      "tagesmittel": 0.0009001679670935034,
+      "t": 0.5420832588252991,
+      "se": 0.0016605714204201364,
+      "mde": 0.003321142840840273,
+      "jeSignal": 0.0011254226110409174,
+      "anteilPositiv": 0.49681190223166843
+     }
+    }
    },
    "ausstieg": {
     "art": "Zeit",
@@ -428,6 +522,38 @@
   },
   {
    "nr": 15,
+   "regel": "QS Querschnitts-Kontrolle",
+   "eingabe": {
+    "variante": 0,
+    "ohneErwartung": 0
+   },
+   "ergebnis": {
+    "seA7Pp": 0.198877721024711,
+    "seQuerschnittPp": 0.13986081041878373,
+    "faktor": 1.422,
+    "ueberschussA7Pp": 0.18431975974708462,
+    "ueberschussQuerschnittPp": 0.12785599672093162
+   },
+   "begruendung": "Auf denselben Signalen: Standardfehler 0.1989 Pp gegen die Zeit desselben Werts (A7), 0.1399 Pp gegen den Rest des Marktes. Faktor 1.42. Ein Faktor ueber 1 heisst: die zweite Kontrolle rechnet den gemeinsamen Marktzug heraus und macht die Messung schaerfer. Reine Eichung - das Urteil faellt weiter gegen A7."
+  },
+  {
+   "nr": 16,
+   "regel": "QS Querschnitts-Kontrolle",
+   "eingabe": {
+    "variante": 1,
+    "ohneErwartung": 0
+   },
+   "ergebnis": {
+    "seA7Pp": 0.23218392228500098,
+    "seQuerschnittPp": 0.16605714204201363,
+    "faktor": 1.398,
+    "ueberschussA7Pp": 0.1621322687828683,
+    "ueberschussQuerschnittPp": 0.09001679670935034
+   },
+   "begruendung": "Auf denselben Signalen: Standardfehler 0.2322 Pp gegen die Zeit desselben Werts (A7), 0.1661 Pp gegen den Rest des Marktes. Faktor 1.40. Ein Faktor ueber 1 heisst: die zweite Kontrolle rechnet den gemeinsamen Marktzug heraus und macht die Messung schaerfer. Reine Eichung - das Urteil faellt weiter gegen A7."
+  },
+  {
+   "nr": 17,
    "regel": "B4 Bonferroni",
    "eingabe": {
     "tests": 2,
@@ -439,7 +565,7 @@
    "begruendung": "Zweiseitige Schwelle fuer |t| bei 2 Test(s)."
   },
   {
-   "nr": 16,
+   "nr": 18,
    "regel": "Urteil Variante 0",
    "eingabe": {
     "ueberschussTagesmittelPp": 0.18431975974708462,
@@ -459,7 +585,7 @@
    "begruendung": "Ueberschuss 0.1843 Pp liegt unter der MDE 0.3978 Pp. Das heisst NICHT \"kein Effekt\" - es heisst, dass diese Datenmenge die Frage nicht beantworten kann. Dieser Lauf haette eine wahre Kante erst ab 0.6131 Pp mit 80 % Wahrscheinlichkeit ueber die Schwelle gebracht (delta80)."
   },
   {
-   "nr": 17,
+   "nr": 19,
    "regel": "Urteil Variante 1",
    "eingabe": {
     "ueberschussTagesmittelPp": 0.1621322687828683,

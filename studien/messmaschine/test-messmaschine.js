@@ -323,8 +323,14 @@ console.log('\n14) C7: echter Eroeffnungskurs statt Vorkerzen-Schluss');
   var mm = fs.readFileSync(__dirname + '/messmaschine.js', 'utf8');
   ok(mm.indexOf('function eroeffnungKurs(bars, k)') !== -1,
      'Die Maschine hat eine Regel fuer den ersten handelbaren Kurs');
-  ok(mm.split('auf: eroeffnungKurs(b,').length === 3,
-     'Signal UND Kontrolle benutzen sie - sonst misst man zwei verschiedene Ausfuehrungen');
+  /* Drei Pfade fuehren einen Ausstieg aus, und ALLE drei muessen dieselbe Fuellregel
+   * benutzen - sonst misst man zwei verschiedene Ausfuehrungen und nennt den Unterschied
+   * Effekt: der Signalpfad, die A7-Kontrolle (ueber die Zeit desselben Werts) und seit
+   * dem 25.08.2026 die Querschnitts-Kontrolle (ueber die anderen Werte derselben Zeit).
+   * Die Zahl steht hier hart, damit ein VIERTER Pfad ohne die Regel auffliegt. */
+  var pfade = mm.split('auf: eroeffnungKurs(b,').length - 1;
+  ok(pfade === 3,
+     'Signalpfad UND beide Kontrollen benutzen sie - sonst misst man zwei verschiedene Ausfuehrungen  [' + pfade + ' Pfade]');
 
   /* Zwei Archive, identische Schluss-, Hoch- und Tiefkurse. Eines mit
    * Eroeffnungskursen, eines ohne. Eine Uebernachtluecke muss unterschiedlich

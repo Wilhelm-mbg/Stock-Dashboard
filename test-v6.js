@@ -3896,8 +3896,13 @@ console.log('\n44) Messmaschine, Scoreboard und Strategie-Eingabe (23.08.2026)')
    * Unterschied: -0,2695 Pp gegen -0,0990 Pp - die Naeherung war Faktor 2,7 zu guenstig. */
   ok(mm2.indexOf('function eroeffnungKurs(bars, k)') !== -1,
      'Die Maschine hat eine Regel fuer den ersten handelbaren Kurs');
-  ok(mm2.split('auf: eroeffnungKurs(b,').length === 3,
-     'Signal UND Kontrolle benutzen sie - sonst misst man zwei verschiedene Ausfuehrungen');
+  /* Drei Ausstiegspfade seit dem 25.08.2026: Signal, A7-Kontrolle (Zeit desselben Werts)
+   * und Querschnitts-Kontrolle (andere Werte derselben Zeit). Alle drei muessen dieselbe
+   * Fuellregel benutzen, sonst misst man zwei Ausfuehrungen und nennt den Unterschied
+   * Effekt. Die Zahl steht hart, damit ein VIERTER Pfad ohne die Regel auffliegt. */
+  var c7Pfade = mm2.split('auf: eroeffnungKurs(b,').length - 1;
+  ok(c7Pfade === 3,
+     'Signalpfad UND beide Kontrollen benutzen sie - sonst misst man zwei verschiedene Ausfuehrungen  [' + c7Pfade + ']');
   ok(/P\.warne\('C7'/.test(mm2),
      'Fuehrt das Archiv keine Eroeffnungskurse, warnt die Maschine - keine stille Naeherung');
   var yh = fs.readFileSync(__dirname + '/tools/yahoo-60m-holen.js', 'utf8');
