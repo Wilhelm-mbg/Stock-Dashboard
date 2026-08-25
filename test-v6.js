@@ -3923,9 +3923,18 @@ console.log('\n44) Messmaschine, Scoreboard und Strategie-Eingabe (23.08.2026)')
      'F1: Die Kontrolle ist an den 1-Prozent-Quantilen gestutzt');
   ok(mm2.indexOf('i - leseFenster - H') !== -1,
      'F2: Der A7-Ausschnitt beginnt H Kerzen frueher - eine Kontrollkerze bei j reicht bis j+H');
+  /* Seit E3 (25.08.2026) ist der Schluessel die Sitzungs-SCHICHT: Position PLUS die Frage,
+   * ob dies die letzte Kerze ihres Tages ist. Grund: die Position sollte sagen, was NACH
+   * der Kerze kommt, aber die Sitzungslaenge ist nicht konstant - an verkuerzten Tagen ist
+   * schon Position 3 die letzte. sitzungsSchicht() baut auf sitzungsPosition() auf, die
+   * F3-Lehre (keine UTC-Stunde) gilt unveraendert weiter. */
   ok(mm2.indexOf('function sitzungsPosition(bars)') !== -1 &&
-     mm2.indexOf('K.erwartung(sym, sitzungsPosition(b)[i]') !== -1,
-     'F3: Der Topf-Schluessel ist die Sitzungsposition, nicht die UTC-Stunde');
+     mm2.indexOf('function sitzungsSchicht(bars)') !== -1 &&
+     mm2.indexOf('K.erwartung(sym, sitzungsSchicht(b)[i]') !== -1 &&
+     !/getUTCHours\(\)/.test(mm2.replace(/function stundeVon[\s\S]*?\n\}/, '')),
+     'F3/E3: Der Topf-Schluessel ist die Sitzungsschicht, nicht die UTC-Stunde');
+  ok(/var grenze = \(i \+ 1 >= bars\.length\) \|\| POS\[i \+ 1\] === 0;/.test(mm2),
+     'E3: Die Schicht trennt die letzte Kerze eines Tages von den uebrigen');
   ok(/P\.warne\('F4'/.test(mm2),
      'F4: Ueber 2 Prozent Signale ohne Kontrolle gibt eine Warnung');
   ok(mm2.indexOf('function placeboLauf(') !== -1 && /P\.warne\('SP'/.test(mm2),

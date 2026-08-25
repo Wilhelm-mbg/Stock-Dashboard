@@ -190,6 +190,31 @@ function stundeVon(ms) { return new Date(ms).getUTCHours(); }
  * liegen zwischen beiden 0,085 Pp im Mittel und Faktor 3,8 in der Streuung.
  * Durchgezaehlt braucht es keine Zeitzonenlogik: Was die erste Kerze eines
  * Handelstags ist, sagt der Kalendertag. Auf Tageskerzen ist die Position immer 0. */
+/* E3 (25.08.2026): Die Position allein genuegt nicht als Topf-Schluessel. Sie sollte
+ * sagen, was NACH der Kerze kommt - ueber Nacht oder innerhalb des Tages. Das gilt nur
+ * bei konstanter Sitzungslaenge, und die ist nicht konstant: an verkuerzten Tagen ist
+ * schon Position 3 die letzte Kerze.
+ * Gemessen ueber H=8 auf archiv60m: Position 3 innerhalb der Sitzung +0,0925 Pp, an der
+ * Grenze -0,4205 Pp - Abstand 0,513 Pp, und beides lag im selben Topf. Bei 1,03 % Anteil
+ * verschiebt das den Topf um 0,0053 Pp; die groesste je sauber gemessene Nettokante liegt
+ * bei 0,047 Pp. Verzerrung, kein Rauschen.
+ * Der Schluessel ist deshalb Position PLUS "ist dies die letzte Kerze ihres Tages". */
+var SCHICHT_SPEICHER = new WeakMap();
+function sitzungsSchicht(bars) {
+  var s = SCHICHT_SPEICHER.get(bars);
+  if (s) return s;
+  var POS = sitzungsPosition(bars);
+  s = new Array(bars.length);
+  for (var i = 0; i < bars.length; i++) {
+    /* Letzte Kerze des Tages = die naechste beginnt einen neuen Tag. Die allerletzte
+     * Kerze der Reihe gilt als Grenze - sie hat keine Folgekerze im selben Tag. */
+    var grenze = (i + 1 >= bars.length) || POS[i + 1] === 0;
+    s[i] = POS[i] + (grenze ? 'G' : 'I');
+  }
+  SCHICHT_SPEICHER.set(bars, s);
+  return s;
+}
+
 var POS_SPEICHER = new WeakMap();
 function sitzungsPosition(bars) {
   var p = POS_SPEICHER.get(bars);
@@ -217,7 +242,7 @@ function baueKontrolle(universum, haltedauerKerzen, schnittTag, vorlauf, stopNiv
   var K = {};   // sym -> haelfte -> stunde -> {idx:[], wert:[], praefix:[]}
   Object.keys(universum).forEach(function (sym) {
     var b = universum[sym];
-    var POS = sitzungsPosition(b);
+    var POS = sitzungsSchicht(b);          // E3: Position UND Sitzungsgrenze
     var H = K[sym] = { entdeckung: {}, bestaetigung: {} };
     for (var i = vorlauf; i < b.length - haltedauerKerzen; i++) {
       var s0 = b[i][1]; if (!(s0 > 0)) continue;
@@ -448,7 +473,7 @@ function placeboLauf(U, K, H, schnittTag, vorlauf, leseFenster, positionen, hael
    * sich der Schritt, mit dem der Placebo auf dieselbe Haeufigkeit kommt. */
   var verfuegbar = {};
   Object.keys(U).forEach(function (sym) {
-    var b = U[sym], POS = sitzungsPosition(b);
+    var b = U[sym], POS = sitzungsSchicht(b);
     for (var i = vorlauf; i < b.length - H; i++) {
       var p = POS[i];
       if (positionen[p] == null) continue;
@@ -462,7 +487,7 @@ function placeboLauf(U, K, H, schnittTag, vorlauf, leseFenster, positionen, hael
 
   var ueber = [], zaehler = {}, ohne = 0, n = 0;
   Object.keys(U).forEach(function (sym) {
-    var b = U[sym], POS = sitzungsPosition(b);
+    var b = U[sym], POS = sitzungsSchicht(b);
     for (var i = vorlauf; i < b.length - H; i++) {
       var p = POS[i];
       if (positionen[p] == null) continue;
@@ -777,7 +802,7 @@ function messe(strategie, archivPfad, optionen) {
         if (S.richtung === 'long' && dir < 0) continue;
         if (S.richtung === 'short' && dir > 0) continue;
         nSignale++; if (dir > 0) nLong++; else nShort++;
-        var _p = sitzungsPosition(b)[i];
+        var _p = sitzungsSchicht(b)[i];
         posZaehler[_p] = (posZaehler[_p] || 0) + 1;
         /* S9: die Luecke NACH der Signalkerze - der Teil des Ertrags, den ein Einstieg
          * zum Schluss dieser Kerze per Konstruktion nicht mitnehmen kann. */
@@ -811,7 +836,7 @@ function messe(strategie, archivPfad, optionen) {
          * sonst bleiben genau die Kerzen im Topf, auf die das Signal selektiert
          * hat (gemessen: auf einem Kunstarchiv mit wahrem Wert null +0,048 Pp
          * statt +0,024). */
-        var erw = K.erwartung(sym, sitzungsPosition(b)[i], hf,
+        var erw = K.erwartung(sym, sitzungsSchicht(b)[i], hf,
           leseFenster == null ? null : i - leseFenster - H,
           leseFenster == null ? null : i + H - 1);
         if (erw == null) { ohneKontrolle++; continue; }
