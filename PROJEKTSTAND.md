@@ -109,9 +109,10 @@ alle vier zuerst, die Neumessung startet erst danach.**
 *Wer welche Dateien belegt. Trag dich ein, bevor du anfängst; nimm dich raus, wenn du
 fertig bist.*
 
-- **App-Codebase Master** — nichts belegt. Zuletzt fertig: #76, #84, #85, #83/#89,
-  #86/#87/#88, Messmaschine versionieren (`118ad72`). Nimmt als Nächstes einen Auftrag
-  von der Tafel — **nicht** das Neumessen (Rechenlauf, keine Bausitzung).
+- **App-Codebase Master** — hat **Stufe F Punkt 1** genommen (26.08., vom PM bestätigt):
+  Theme ohne Dunkel-Blitz beim Start. Belegt `main.js`, `preload.js`, `index.html`,
+  `renderer.js`, neu `thema.js`. Zuletzt fertig: #76, #84, #85, #83/#89, #86/#87/#88,
+  Messmaschine versionieren.
 
 ---
 
