@@ -26,24 +26,36 @@ if (!datei) { console.error('Aufruf: node messen.js strategien/<name>.js [archiv
  * das kleine Archiv gemessen, und eine Messung auf dem grossen waere als Fremdbefund
  * eingestuft worden und nie in der App angekommen - eine Sackgasse mit Stempel. */
 var DATEN = path.join(os.homedir(), 'Downloads', 'Markt-Dashboard-Daten');
-function bezeichnetesArchiv() {
-  if (process.env.MD_ARCHIV60M) return process.env.MD_ARCHIV60M;
+/* JE ZEITRAHMEN EIN ARCHIV. Bis zum 25.08.2026 kannte diese Funktion nur den
+ * 60m-Zeiger. Eine Strategie mit zeitrahmen '1d' galt damit IMMER als auf fremdem
+ * Archiv gemessen - auch auf dem richtigen. Sie bekam keine Kopie in den Datenordner
+ * und tauchte im Scoreboard nie auf: ein sauber vorregistrierter Test, der die App
+ * nicht erreichen konnte. Aufgefallen am Bestaetigungslauf von monatswende-breit.
+ * Die Konvention bleibt dieselbe, es gibt sie jetzt einmal je Aufloesung. */
+var ZEIGER = { '1d': { env: 'MD_ARCHIV1D', datei: 'archiv1d-pfad.txt' },
+               '60m': { env: 'MD_ARCHIV60M', datei: 'archiv60m-pfad.txt' } };
+function bezeichnetesArchiv(zeitrahmen) {
+  var z = ZEIGER[zeitrahmen] || ZEIGER['60m'];
+  if (process.env[z.env]) return process.env[z.env];
   try {
-    var p = fs.readFileSync(path.join(DATEN, 'archiv60m-pfad.txt'), 'utf8').replace(/^\uFEFF/, '').trim();
+    var p = fs.readFileSync(path.join(DATEN, z.datei), 'utf8').replace(/^\uFEFF/, '').trim();
     if (p) return p;
   } catch (e) { /* keine Zeigerdatei: Rueckfall */ }
   return path.join(process.env.APPDATA || path.join(os.homedir(), 'AppData', 'Roaming'), 'Markt-Dashboard', 'store');
 }
-var archiv = process.argv[3] || bezeichnetesArchiv();
 /* Strategien aus dem App-Datenordner kennen den Quellpfad nicht - sie laden quant.js
  * ueber STOCK_DASHBOARD_QUELLE. Hier wird er gesetzt, bevor die Datei geladen wird. */
 if (!process.env.STOCK_DASHBOARD_QUELLE) process.env.STOCK_DASHBOARD_QUELLE = path.resolve(__dirname, '..', '..');
+/* Die Strategie wird geladen, BEVOR das Archiv bestimmt wird - sie sagt den
+ * Zeitrahmen, und der entscheidet, welches Archiv das bezeichnete ist. */
 var S = require(path.resolve(datei));
+var ZR = S.zeitrahmen || '60m';
+var archiv = process.argv[3] || bezeichnetesArchiv(ZR);
 
 /* Ein anderes als das echte Archiv macht das Ergebnis zu etwas anderem - meist zu
  * einem Nullversuch. Das muss am Dateinamen sichtbar sein und darf die App nie
  * erreichen. */
-var echtesArchiv = bezeichnetesArchiv();
+var echtesArchiv = bezeichnetesArchiv(ZR);
 var fremdesArchiv = path.resolve(archiv) !== path.resolve(echtesArchiv);
 console.log('Messe ' + S.key + ' auf ' + archiv);
 if (fremdesArchiv) console.log('ACHTUNG: fremdes Archiv - das Ergebnis ist KEIN Befund ueber den Markt.');

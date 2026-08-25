@@ -5982,16 +5982,24 @@ console.log('\n41) Zustaende: was die App sagt, wenn etwas fehlt oder klemmt');
   var path = require('path');
   var os = require('os');
   var q = fs.readFileSync(__dirname + '/studien/messmaschine/messen.js', 'utf8');
-  var m = /function bezeichnetesArchiv\(\) \{[\s\S]*?\n\}/.exec(q);
-  ok(!!m, 'Die Aufloesung steht als eigene Funktion in messen.js');
-  if (!m) return;
+  /* Seit dem 25.08.2026 haengt die Aufloesung am ZEITRAHMEN: '1d' und '60m' haben je
+   * einen eigenen Zeiger. Vorher kannte sie nur 60m, und eine Tagesstrategie galt
+   * damit IMMER als auf fremdem Archiv gemessen - auch auf dem richtigen. Sie bekam
+   * keine Kopie in den Datenordner und erschien im Scoreboard nie: dieselbe Sackgasse
+   * wie oben beschrieben, nur eine Ebene tiefer. */
+  var mz = /var ZEIGER = \{[\s\S]*?\};/.exec(q);
+  var m = /function bezeichnetesArchiv\(zeitrahmen\) \{[\s\S]*?\n\}/.exec(q);
+  ok(!!m && !!mz, 'Die Aufloesung steht als eigene Funktion in messen.js, mit einem Zeiger je Zeitrahmen');
+  if (!m || !mz) return;
 
   /* Ausgefuehrt, nicht gelesen - mit gestelltem process und einem echten Zeigerordner. */
   var tmp = path.join(os.tmpdir(), 'md-archiv-' + process.pid);
   fs.mkdirSync(tmp, { recursive: true });
-  function loese(env) {
-    return new Function('process', 'fs', 'path', 'os', 'DATEN', m[0] + '; return bezeichnetesArchiv();')(
-      { env: env }, fs, path, os, tmp);
+  function loese(zr, env) {
+    if (env === undefined) { env = zr; zr = '60m'; }   // alte Aufrufform bleibt lesbar
+    return new Function('process', 'fs', 'path', 'os', 'DATEN', 'ZR',
+      mz[0] + '\n' + m[0] + '; return bezeichnetesArchiv(ZR);')(
+      { env: env }, fs, path, os, tmp, zr);
   }
   var store = path.join('C:\\Users\\W\\AppData\\Roaming', 'Markt-Dashboard', 'store');
 
@@ -6014,19 +6022,34 @@ console.log('\n41) Zustaende: was die App sagt, wenn etwas fehlt oder klemmt');
   fs.writeFileSync(path.join(tmp, 'archiv60m-pfad.txt'), '   \n', 'utf8');
   ok(loese({ APPDATA: 'C:\\Users\\W\\AppData\\Roaming' }) === store,
      'Zeigerdatei leer: dann der Store der App, nicht ein leerer Pfad');
+  /* TAGESKERZEN. Der Fall, der bis zum 25.08.2026 gar nicht vorgesehen war. */
+  fs.mkdirSync(tmp, { recursive: true });
+  fs.writeFileSync(path.join(tmp, 'archiv60m-pfad.txt'), 'E:\\sechzig\n', 'utf8');
+  fs.writeFileSync(path.join(tmp, 'archiv1d-pfad.txt'), 'E:\\taeglich\n', 'utf8');
+  ok(loese('1d', { APPDATA: 'C:\\x' }) === 'E:\\taeglich',
+     'Eine Tagesstrategie bekommt das TAGES-Archiv, nicht das 60m-Archiv');
+  ok(loese('60m', { APPDATA: 'C:\\x' }) === 'E:\\sechzig',
+     'Und eine 60m-Strategie unveraendert das ihre');
+  ok(loese('1d', { MD_ARCHIV1D: 'X:\\vorrang', APPDATA: 'C:\\x' }) === 'X:\\vorrang',
+     'MD_ARCHIV1D schlaegt auch hier die Zeigerdatei');
+  ok(loese('1d', { MD_ARCHIV60M: 'X:\\falsch', APPDATA: 'C:\\x' }) === 'E:\\taeglich',
+     'Die 60m-Variable greift bei Tageskerzen NICHT - sonst waere der Riegel wieder blind');
+
   fs.rmSync(tmp, { recursive: true, force: true });
   ok(loese({ APPDATA: 'C:\\Users\\W\\AppData\\Roaming' }) === store,
      'Ohne alles bleibt es beim Store der App - wer nichts einrichtet, merkt keinen Unterschied');
+  ok(loese('1d', { APPDATA: 'C:\\Users\\W\\AppData\\Roaming' }) === store,
+     'Das gilt fuer Tageskerzen genauso');
 
   /* Der Riegel behaelt seine Zaehne: "fremd" heisst weiter "nicht das bezeichnete
    * Archiv", und eine Messung darauf kommt nicht ins Scoreboard. */
-  ok(/var echtesArchiv = bezeichnetesArchiv\(\);/.test(q),
-     'Der Riegel misst gegen dasselbe bezeichnete Archiv - nicht gegen einen zweiten Pfad daneben');
+  ok(/var echtesArchiv = bezeichnetesArchiv\(ZR\);/.test(q),
+     'Der Riegel misst gegen dasselbe bezeichnete Archiv - und gegen das DESSELBEN Zeitrahmens');
   ok(/fremdesArchiv = path\.resolve\(archiv\) !== path\.resolve\(echtesArchiv\)/.test(q),
      'Fremd heisst weiterhin: nicht das bezeichnete Archiv');
   ok(/Keine Kopie in den Datenordner/.test(q),
      'Und eine Messung auf einem fremden Archiv kommt weiterhin nicht ins Scoreboard');
-  ok(/process\.argv\[3\] \|\| bezeichnetesArchiv\(\)/.test(q),
+  ok(/process\.argv\[3\] \|\| bezeichnetesArchiv\(ZR\)/.test(q),
      'Ein Archiv auf der Befehlszeile geht weiter vor - fuer Gegenproben');
 })();
 
@@ -6272,6 +6295,35 @@ console.log('\n46) Was die App dauerhaft aufzeichnet');
   ok(/D\.patience\[dk\]\[reason\]/.test(dep), 'Nicht gehandelte Signale werden weiter je Tag gezaehlt');
   ok(/D\.spannen\.proben\.unshift/.test(dep), 'Die Spannen-Probe laeuft weiter');
   ok(/function kostenMessungNeu/.test(dep), 'Die Messung des echten Schlupfs bleibt bestehen');
+})();
+
+console.log('\n47a) bezeichnetesArchiv je Zeitrahmen');
+(function () {
+  var ms = fs.readFileSync(__dirname + '/studien/messmaschine/messen.js', 'utf8');
+
+  /* Der Riegel 'fremdes Archiv' war bis zum 25.08.2026 auf 60m verdrahtet. Eine
+   * Strategie mit zeitrahmen '1d' galt damit IMMER als fremd gemessen - auch auf dem
+   * richtigen Vollarchiv. Sie bekam keine Kopie in den Datenordner und tauchte im
+   * Scoreboard nie auf. Nichts brach: das Ergebnis kam nur nie an. */
+  ok(/ZEIGER\s*=\s*\{[\s\S]*'1d'[\s\S]*'60m'/.test(ms),
+     'Es gibt je Zeitrahmen einen Archivzeiger, nicht nur fuer 60m');
+  ok(/MD_ARCHIV1D/.test(ms) && /archiv1d-pfad\.txt/.test(ms),
+     'Fuer Tageskerzen gilt dieselbe Konvention wie fuer 60m: Umgebungsvariable oder Zeigerdatei');
+  ok(/function bezeichnetesArchiv\(zeitrahmen\)/.test(ms),
+     'bezeichnetesArchiv bekommt den Zeitrahmen als Argument');
+  ok(/bezeichnetesArchiv\(ZR\)/.test(ms) && !/bezeichnetesArchiv\(\)/.test(ms),
+     'Kein Aufruf ohne Zeitrahmen mehr uebrig - sonst faellt genau der stille Fall zurueck');
+
+  /* Die Reihenfolge ist der Kern: die Strategie sagt den Zeitrahmen, also muss sie
+   * geladen sein, BEVOR das Archiv bestimmt wird. */
+  ok(ms.indexOf('var S = require(path.resolve(datei));') < ms.indexOf('var archiv = process.argv[3]'),
+     'Die Strategie wird geladen, bevor das Archiv gewaehlt wird - sonst ist der Zeitrahmen noch unbekannt');
+
+  /* Und der Riegel behaelt seine Zaehne. */
+  ok(/fremdesArchiv\s*=\s*path\.resolve\(archiv\)\s*!==\s*path\.resolve\(echtesArchiv\)/.test(ms),
+     'Ein anderes als das bezeichnete Archiv wird weiterhin als Fremdbefund gestempelt');
+  ok(/Keine Kopie in den Datenordner/.test(ms),
+     'Ein Fremdbefund erreicht das Scoreboard weiterhin nicht');
 })();
 
 console.log('\n47) Anzeige der Messmaschine: unbekannte Urteile und die Selbstpruefung');

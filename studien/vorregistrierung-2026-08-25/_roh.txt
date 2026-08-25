@@ -1,0 +1,429 @@
+##### Zeile 25166 (user) #####
+"# Vorregistrierung vom 25.08.2026 — Kalenderzwang und Meldungszwang\
+\
+## 0. Was ich getan habe\
+\
+Ich habe die 16 eingereichten Kandidaten aus sechs Suchrichtungen und die sechs zugehörigen Gegenprüfungen durchgearbeitet. Zwei Kandidaten kommen in die Vorregistrierung, vierzehn nicht. Drei der eingereichten Kandidaten (`monatswende-breit`, `monatswechsel-zufluss`, `monatszufluss`) sind **derselbe Effekt** — drei Sucher haben unabhängig voneinander die Monatswende gefunden. Sie werden zu **einem** Test zusammengeführt; sie einzeln zu messen hieße, drei Bonferroni-Stellen für eine einzige Wette auszugeben.\
+\
+Der Signalcode unten läuft. Ich habe ihn auf `such1d` gegen 40 Reihen gefahren: 6.002 Signale (fenster 5), 239 Ereignistage, **0 Vorgriffs-Abweichungen** zwischen voller und bei `i` gekappter Reihe, **0 Monate mit mehr als einem Einstieg je Symbol**. Die zweite Variante ist keine Doppelung: `fenster 4` wählt in 70 % der Monate einen anderen Einstiegstag als `fenster 5` (nachgezählt über 240 Monate). Die Terminzahlen der Bestätigungshälfte habe ich selbst gezählt: 13.313 Termine nach dem Schnitt, davon **12.987 mit brauchbarer Überraschung** — exakt die Zahl, die der Sucher vorab genannt hat.\
+\
+---\
+\
+## 1. Die Kandidaten\
+\
+### Kandidat A — `monatswende-breit`\
+\
+**Kennung:** `monatswende-breit`\
+**Zeitrahmen:** `1d` · **Haltedauer:** 5 Kerzen · **leseFensterKerzen:** 21 · **Richtung:** long · **Varianten:** 2\
+\
+**Grund (unverändert übernommen, weil er die Gegenprüfung überstanden hat):**\
+Zum Monatswechsel treffen mehrere Zuflüsse mit Termin zusammen, die keiner der Beteiligten frei legen kann: Gehalts- und Sparplanraten werden zum Monatsersten investiert, Fonds und Pensionskassen bewerten zum Stichtag und stellen dafür ihre Quoten her, Zins- und Ausschüttungszuflüsse werden zum Monatsende angelegt, und Verwalter, die nach Monatsergebnis bezahlt werden, wollen zum Stichtag investiert sein statt in Bargeld. Jeder dieser Käufe folgt einem Kalender, keinem Preisurteil. Der Termin steht Jahre im Voraus fest, und das Signal liest zu seiner Bildung **keinen einzigen Kurs**.\
+\
+```js\
+'use strict';\
+var fs = require('fs'), path = require('path'), os = require('os');\
+\
+/* Universum: exakt die Population der Entdeckungshaelfte (CS = Stammaktie,\
+ * ADRC = Hinterlegungsschein). Fest verdrahtet, damit Live = Messung gilt. */\
+var ARTEN = (function () {\
+  var p = process.env.MD_ARTEN || path.join(os.homedir(), 'Downloads',\
+    'Markt-Dashboard-Daten', 'massive', 'wertpapierarten.json');\
+  try { return (JSON.parse(fs.readFileSync(p, 'utf8')) || {}).arten || {}; }\
+  catch (e) { return {}; }\
+})();\
+\
+/* Kalenderarithmetik. Die Lage des Monatsendes ist Jahre im Voraus bekannt;\
+ * es wird KEINE spaetere Kerze und ueberhaupt kein Kurs gelesen.\
+ * 1 = letzter Kalendertag des Monats. */\
+function restKalendertage(ms) {\
+  var d = new Date(ms);\
+  var letzter = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 0)).getUTCDate();\
+  return letzter - d.getUTCDate() + 1;\
+}\
+\
+module.exports = {\
+  key: 'monatswende-breit',\
+  grund: 'Zum Monatswechsel treffen Zufluesse mit Termin ein, die niemand frei legen kann: '\
+       + 'Gehalts- und Sparplanraten zum Monatsersten, Bewertungsstichtag der Fonds und '\
+       + 'Pensionskassen mit Herstellung der Sollquote, Zins- und Ausschuettungszufluesse zum '\
+       + 'Monatsende, und Verwalter, die nach Monatsergebnis bezahlt werden und zum Stichtag '\
+       + 'investiert sein wollen statt in Bargeld. Jeder dieser Kaeufe folgt einem Kalender, '\
+       + 'keinem Preisurteil. Das Signal liest zu seiner Bildung keinen einzigen Kurs.',\
+  zeitrahmen: '1d',\
+  haltedauerKerzen: 5,\
+  richtung: 'long',\
+  leseFensterKerzen: 21,\
+  kosten: { spanneBp: 5 },\
+  testfamilie: { name: 'vorregistrierung-2026-08-25', testsGesamt: 4,\
+                 begruendung: 'zwei Kandidaten mit je zwei Varianten, gemeinsam vorregistriert' },\
+  universum: function (sym) { var a = ARTEN[sym]; return a === 'CS' || a === 'ADRC'; },\
+  varianten: [ { fenster: 5 }, { fenster: 4 } ],\
+  signal: function (bars, i, params) {\
+    if (i < 21) return null;\
+    if (restKalendertage(bars[i][0]) > params.fenster) return null;\
+    /* nur die ERSTE Kerze im Stichtagsfenster - genau ein Einstieg je Symbol und Monat */\
+    var d = new Date(bars[i][0]), v = new Date(bars[i - 1][0]);\
+    if (d.getUTCMonth() === v.getUTCMonth() &&\
+        restKalendertage(bars[i - 1][0]) <= params.fenster) return null;\
+    return { dir: 1 };\
+  },\
+};\
+```\
+\
+Die Untergrenze `i < 21` ist der einzige Zusatz gegenüber der gegengeprüften Fassung; sie macht `leseFensterKerzen: 21` ehrlich und kostet je Reihe 21 Kerzen. Die Gegenprüfung hat gezeigt, dass das Ergebnis gegen das Lesefenster praktisch unempfindlich ist (0,678 bis 0,683 Pp für Fenster 0 bis 80).\
+\
+---\
+\
+### Kandidat B — `quartalsschub-betrag`\
+\
+**Kennung:** `quartalsschub-betrag` · **Zeitrahmen:** `1d` · **Haltedauer:** 5 Kerzen · **leseFensterKerzen:** 80 · **Richtung:** long · **Varianten:** 2\
+\
+**Grund — neu geschrieben, und das ist Bedingung für die Aufnahme.** Der eingereichte Grund („gute Zahlen erzwingen den Widerruf einer veröffentlichten negativen Festlegung") ist auf der Entdeckungshälfte widerlegt: nach demselben Kursverfall zahlt eine Überraschung von −5 % *mehr* als eine von +5 % (+1,619 gegen +0,870 Pp je Signal), und −20 % zahlt +2,507 Pp. Wirksam ist der **Betrag** der Meldung, nicht ihr Vorzeichen. Der Grund muss deshalb lauten:\
+\
+> Ein Wert, der drei Monate lang gefallen ist, trägt vor seinem Quartalstermin eine aufgestaute Ergebnisunsicherheit. Wer sein Risikobudget daran gebunden hat — der Fondsmanager, der die Position vor dem Termin gedeckelt hat, das Risikobuch, das die Ereignisvolatilität limitiert, der Verwalter, der vor seinem Ausschuss keine ungelöste Lage halten darf —, gibt dieses Budget erst wieder frei, wenn die Zahl da ist UND groß genug war, um die Unsicherheit tatsächlich aufzulösen. Eine Meldung nahe der Schätzung löst nichts auf: sie beantwortet die Frage nicht, die die Position blockiert hat. Genau das ist messbar — nach demselben Kursverfall zahlt |Überraschung| < 5 % nichts (+0,095 Pp, t 0,47), während beide Richtungen mit |Überraschung| ≥ 5 % zahlen. Das Freigeben des Budgets ist ein Verwaltungsvorgang mit Vorlauf, kein Kursurteil, und es läuft über Tage.\
+\
+```js\
+'use strict';\
+var fs = require('fs'), path = require('path'), os = require('os');\
+\
+var ARTEN = (function () {\
+  var p = process.env.MD_ARTEN || path.join(os.homedir(), 'Downloads',\
+    'Markt-Dashboard-Daten', 'massive', 'wertpapierarten.json');\
+  try { return (JSON.parse(fs.readFileSync(p, 'utf8')) || {}).arten || {}; }\
+  catch (e) { return {}; }\
+})();\
+\
+var TERMINE = (function () {\
+  var p = process.env.MD_TERMINE || path.join(process.env.APPDATA ||\
+    path.join(os.homedir(), 'AppData', 'Roaming'), 'Markt-Dashboard', 'store', 'drift_termine.json');\
+  try { var j = JSON.parse(fs.readFileSync(p, 'utf8')); return (j && j.sym) || {}; }\
+  catch (e) { return {}; }\
+})();\
+var TERMIN_SYMS = Object.keys(TERMINE);\
+\
+/* SYMBOL-BRUECKE. Die Maschine ruft signal(bars, i, params, rang) ohne sym, die\
+ * Termine haengen aber am Symbol. Deshalb wird DASSELBE Archiv gelesen, das die\
+ * Maschine misst, und je Reihe ein Fingerabdruck aus dem ersten Zeitstempel und\
+ * zehn fruehen Schlusskursen gebildet - auf allen 1.319 Reihen von such1d\
+ * eindeutig, 0 Kollisionen (von der Gegenpruefung bestaetigt). Gelesen wird nur\
+ * der ANFANG jeder Reihe, nie die Zukunft. */\
+var FINGER_IDX = [0, 1, 2, 3, 5, 8, 13, 21, 34, 55];\
+function fingerVon(s) {\
+  if (!s || s.length <= 55) return null;\
+  var t = s[0][0];\
+  for (var k = 0; k < FINGER_IDX.length; k++) t += '|' + s[FINGER_IDX[k]][1];\
+  return t;\
+}\
+function archivPfad() {\
+  if (process.env.STUDIE_ARCHIV) return process.env.STUDIE_ARCHIV;\
+  if (process.argv[3]) return process.argv[3];\
+  var daten = path.join(os.homedir(), 'Downloads', 'Markt-Dashboard-Daten');\
+  try {\
+    var p = fs.readFileSync(path.join(daten, 'archiv60m-pfad.txt'), 'utf8').replace(/^\\\\uFEFF/, '').trim();\
+    if (p) return p;\
+  } catch (e) {}\
+  return path.join(process.env.APPDATA || path.join(os.homedir(), 'AppData', 'Roaming'),\
+                   'Markt-Dashboard', 'store');\
+}\
+var BRUECKE = null;\
+exports_brueckeStand = null;\
+function bruecke() {\
+  if (BRUECKE) return BRUECKE;\
+  BRUECKE = {};\
+  var gefunden = 0, mehrdeutig = 0, dir = archivPfad();\
+  TERMIN_SYMS.forEach(function (sym) {\
+    var j; try { j = JSON.parse(fs.readFileSync(path.join(dir, 'bars_1d_' + sym + '.json'), 'utf8')); }\
+    catch (e) { return; }\
+    var fp = fingerVon(j && j.series); if (!fp) return;\
+    if (BRUECKE[fp] !== undefined) { BRUECKE[fp] = null; mehrdeutig++; return; }\
+    BRUECKE[fp] = sym; gefunden++;\
+  });\
+  /* PFLICHT-RAUCHPROBE: die Maschine faengt Wuerfe aus signal() ab und meldet\
+   * dann still "null Signale". Ein Bruecken-Fehlschlag darf nicht al"
+
+##### Zeile 25171 (user) #####
+"## 2. Testzahl und Schwelle\
+\
+| | |\
+|---|---|\
+| Kandidaten | 2 |\
+| Varianten insgesamt | 4 |\
+| **Tests insgesamt** | **4** |\
+| Bonferroni, zweiseitig, α = 0,05 | 0,05 / 4 = 0,0125 |\
+| **Schwelle** | **\\\\|t\\\\| ≥ 2,50** |\
+\
+Beide Dateien tragen `testfamilie: { testsGesamt: 4 }`. Ohne dieses Feld meldet die Maschine „Tests 2" je Datei und urteilt an einer Schwelle von 2,24 — an der falschen Latte. Vier Tests sind das Maximum; jeder weitere hebt die Schwelle für beide Kandidaten.\
+\
+---\
+\
+## 3. Was jeder Kandidat braucht, und wie weit er davon entfernt ist\
+\
+Die Maschine gibt MDE = 2 × Standardfehler aus (an allen eingereichten Zahlen nachgerechnet: 0,729/5,04 = 0,145 = 0,289/2). Erforderlicher Überschuss bei der Schwelle: **2,50 × SE**.\
+\
+| Kandidat / Variante | Entdeckung Pp (t) | SE Entdeckung | SE Bestätigung (erwartet) | Erforderlich bei \\\\|t\\\\| 2,50 | Es reicht noch bei … % des Entdeckungsbefunds |\
+|---|---|---|---|---|---|\
+| `monatswende-breit` V1 (fenster 5) | 0,729 (5,04) | 0,145 | ≈ 0,145 | **0,363 Pp** | 50 % |\
+| `monatswende-breit` V2 (fenster 4) | 0,43–0,76 (3,8–6,2)¹ | 0,14–0,17 | ≈ 0,15 | **0,375 Pp** | 49–87 % |\
+| `quartalsschub-betrag` V1 (\\\\|ue\\\\|≥5, Verfall ≤ −2 %) | 1,155 (3,91) | 0,295 | ≈ 0,13² | **0,325 Pp** | 28 % |\
+| `quartalsschub-betrag` V2 (\\\\|ue\\\\|≥5, Verfall ≤ −5 %) | 1,266 (3,71) | 0,341 | ≈ 0,15² | **0,375 Pp** | 30 % |\
+\
+¹ Für `fenster 4` liegt in den Berichten kein Punktwert vor, nur das dokumentierte Plateau über `fenster` 3–7 × `H` 3–6: 0,43 bis 0,76 Pp bei t 3,8 bis 6,2. **Auch die schlechteste Ecke dieses Plateaus (0,43 Pp, t 3,8) liegt über der Schwelle** — die Variante erfüllt die Aufnahmebedingung also selbst im ungünstigsten dokumentierten Fall.\
+\
+² Bestätigungshälfte: 12.987 brauchbare Termine (selbst gezählt), davon nach Überraschungs- und Verfallsfilter geschätzt 2.600–2.700 Signale auf ~1.400 Signaltagen für V1 (Faktor 1,46 gegenüber der gerichteten Fassung, gemessen auf der Entdeckungshälfte: 1.095 gegen 750). Der Sucher hat für die gerichtete Fassung MDE ≈ 0,30 vorausgesagt; mit der Betragsfassung fällt sie auf ≈ 0,26 (V1) bzw. ≈ 0,30 (V2).\
+\
+**Für die Monatswende:** die Bestätigungshälfte umfasst 2006-08 bis 2026-08, also rund 240 Monatswechsel gegen 227 in der Entdeckung. Die wirksame Stichprobe ist die Zahl der Ereignistage, und die Maschine rechnet ohnehin auf Tagesmitteln — das Klumpen über die ~1.200 gleichzeitig gehandelten Werte ist damit korrekt behandelt. Der Standardfehler sollte praktisch gleich bleiben.\
+\
+**Beide Kandidaten erfüllen die Aufnahmebedingung: ihr Entdeckungsbefund liegt deutlich über dem, was bei \\\\|t\\\\| 2,50 erforderlich wäre.** Die Monatswende darf die Hälfte ihrer Wirkung verlieren, der Quartalsschub knapp drei Viertel.\
+\
+---\
+\
+## 4. Abgelehnt — vierzehn Kandidaten, je ein Satz\
+\
+| Kandidat | Grund der Ablehnung |\
+|---|---|\
+| `monatswechsel-zufluss` (F5) | Dieselbe Wette wie `monatswende-breit`, nur mit anderem Fenstermaß und einem Umsatzfilter — als eigener Test verbraucht sie eine Bonferroni-Stelle für einen Effekt, der schon gemessen wird. |\
+| `monatszufluss` (F6) | Ebenfalls dieselbe Wette, feuert aber an allen vier Tagen des Fensters statt einmal je Monat und erzeugt damit überlappende Einstiege ohne Informationsgewinn. |\
+| `monatswende-rueckkauf` (F1) | Die Gegenprüfung hat gezeigt, dass der Auswahl-Aufschlag über den ganzen Monat konstant ist (Stichtag 0,508 Pp gegen 0,411 im Mittel von 44 anderen Versatzlagen, z = 0,75) — es ist die Monatswende mal der termin-losen Kurzfrist-Umkehr, also eine Doppelung. |\
+| `steuerverlust-umkehr` (F1) | Halber Ertrag aus 0,96 % der Handel (unter der 1-%-Grenze), über 19 Saisons geclustert fällt t auf 2,61, die letzten drei Saisons vor dem Schnitt sind alle negativ. |\
+| `schlussdruck-gegentag` (F2) | Siehe Abschnitt 5 — die beste nicht handelbare Entdeckung des Pakets. |\
+| `leerbuch-umkehr` (F2) | Auf allen fünf Varianten sitzen 102–107 % des Überschusses im Sprung vom Signalschluss zum ersten Druck der Folgekerze, der handelbare Rest ist vor Kosten negativ: er kauft den Abschlag nicht, er ist der Abschlag. |\
+| `leerbuch-tageskerzen` (F2) | Der Roll-Schätzer auf denselben Reihen gibt rund 0,93 Pp Spanne je Umlauf gegen 0,402 Pp Bruttoüberschuss, und nach Jahrfünften trägt der Effekt nur in den volatilen Regimen (1995–99: t 0,92 auf dem größten Block). |\
+| `quartalsschub-nur-ueberraschung` (F3) | Halber Ertrag aus 0,9 % der Handel, über Meldesaisons geclustert t 2,37, und es ist der bereits belegte Ergebnis-Drift in einer Kurzfassung, die das Projekt am 21.08. schon abgehakt hat. |\
+| `quartalsschub-nur-verfall` (F3) | Der erklärte Wirkmechanismus („die Zahlen sind egal") liegt in den eigenen Daten bei t 0,72 — die Datei funktioniert nur, weil sie die Betragsfälle stillschweigend mitführt, und ist damit Kandidat B, verdünnt. |\
+| `innertags-abgabedruck` (F4) | Ein Mindest-Tick kostet auf der tatsächlichen Handelspopulation im Mittel 3,97 Pp gegen 0,74 Pp Bruttoüberschuss, und mit Preis > 5 $ und Umsatz > 10 Mio $ ist er schon brutto negativ. |\
+| `schlussdruck` (F4) | 0,65 % der Handel tragen den halben Ertrag, der Median je Handel ist negativ und die Trefferquote 49,9 % — nach der eigenen Regel des Projekts vor jeder Statistik erledigt. |\
+| `zwangsband` (F4) | Eine hundertprozentige Teilmenge von `innertags-abgabedruck` (45.530 von 45.530 Handeln identisch), deren versprochene Dosis-Wirkung mit 0,08 Pp unter der Auflösung liegt. |\
+| `querschnitt-umkehr-im-streuungsregime` (F5) | 0,66 % der Handel tragen die Hälfte, einseitig gerechnet fällt der Überschuss ohne die besten 2 % der Handel auf −0,047 Pp, und 30 % des Rests ist Geld-Brief-Praller. |\
+| `monatszufluss-schwach` (F6) | Der Zusatznutzen des Schwachfilters ist am Stichtag +0,117 Pp und in der Monatsmitte +0,119 Pp — die mechanismus-spezifische Vorhersage ist exakt null. |\
+| `steuerstichtag` (F6) | Das unterste Jahresdezil liefert im Archiv +46,4 % auf 250 Tage gegen +17 % in der Mitte: das ist der Fingerabdruck der Überlebensverzerrung, und ohne die drei Dot-com-Dezember fällt die handelbare Fassung auf t 1,13. |\
+\
+---\
+\
+## 5. Der schwerste Grenzfall: warum `schlussdruck-gegentag` draußen bleibt\
+\
+Er hätte den besten Nullpunkt des ganzen Pakets: dieselbe Regel in einer Mittagsstunde liefert bei 243.214 Signalen +0,003 Pp und t 0,35, das Stundenprofil zeigt den Effekt zehnfach höher in der Schlussstunde als in jeder anderen. Er ist gegen Winsorisierung robust und über alle Kursbänder flach, also keine Spanne. Die Gegenprüfung hat ihn als „tauglich nach Korrektur" durchgelassen.\
+\
+Er scheitert an Regel 2 der Aufgabenstellung — die Haltedauer muss zur Kostenhürde passen:\
+\
+- 67 % des Überschusses (bei k=2 sogar 92 %) entstehen zwischen dem Einstiegskurs und dem ersten Druck des Folgetages. Der Einstiegskurs **ist** der Schlusskurs, aus dem das Signal gebildet wird.\
+- Der handelbare Rest — Eröffnung bis Schluss der Folgekerze — beträgt 0,0788 Pp und liegt **unter** der Kostenhürde von 0,10 Pp je Umlauf.\
+- Ob die letzte 60m-Kerze von Yahoo den Auktionsdruck überhaupt enthält, ist auf dem abgeschnittenen Archiv nicht prüfbar. Die Gegenprüfung hat diese Flanke ausdrücklich offen gelassen.\
+\
+Dazu kommen drei praktische Gründe: die Korrektur des Lesefensters von 430 auf 1600 kostet ihn 24,8 % der Signale und drückt t von 4,60 auf 4,21; die 60m-Bestätigungshälfte ist mit rund 355 Handelstagen kurz und wird durch dasselbe Lesefenster weiter beschnitten; und im Repo liegt mit `t1-zwangsglattstellung` bereits eine gemessene Strategie mit demselben Zeitrahmen, derselben Haltedauer, demselben Ein- und Ausstieg und demselben Lesefenster — dieses Handelsfenster ist schon einmal befischt worden.\
+\
+Ihn aufzunehmen hieße, die Schwelle für beide anderen von 2,50 auf 2,69 zu heben (bei 6 Tests), um etwas zu bestätigen, das nach eigener Zerlegung nicht handelbar ist. Das ist genau der Fehler, den dieses Projekt unter „Live driftet von der Messung weg" schon viermal protokolliert hat. **Der Mechanismus gehört als Befund festgehalten — die Eröffnungsauktion zahlt den Schlussdruck zurück —, aber nicht als Test.** Wenn das 60m-Archiv später erlaubt, die Auktion getrennt zu messen, ist er der erste Kandidat für eine neue Vorregistrierung.\
+\
+---\
+\
+## 6. Auflagen für den Messlauf (keine Tests, sondern Protokollpflichten)\
+\
+Diese Punkte kosten kein Alpha, weil an ihnen kein Urteil hängt. Sie müssen aber im Ergebnis stehen.\
+\
+1. **Rauchprobe vor dem Urteil.** Die Maschine fängt Würfe aus `signal()` in `gruende.fehler` ab und meldet dann still „null Signale". Bei `quartalsschub-betrag` gibt die Symbol-Brücke ihre Fundzahl auf stderr aus und wirft, wenn sie unter 100 Symbolen bleibt. Erwartet werden **2.600–2.700 Signale auf ~1.400 Signaltagen** (V1) und **1.900–2.100** (V2). Eine Zahl nahe null ist ein Brückenfehler, keine Widerlegung. `STUDIE_ARCHIV` bzw. `argv[3]` muss auf das gemessene Archiv zeigen.\
+2. **Liquiditätsaufriss der Monatswende, deskriptiv.** Der Überschuss fällt in der Entdeckung monoton mit der Liquidität (>5 Mio $: 0,543 Pp; >10 Mio: 0,578; >50 Mio: 0,261–0,350, t 1,85–2,00). Die These zeigt aber auf die *größten* Namen. Der Lauf muss den Überschuss nach Dollarumsatz-Terzilen **derselben** Handel ausweisen. Bestätigt sich der Effekt nur im unteren Terzil, ist er wahr und trotzdem nicht handelbar — das entscheidet über die Verwendung, nicht über das Urteil.\
+3. **Schwanzanteil auf der NETTOsumme.** Die Sucher haben durchweg die halbe Positivsumme gerechnet, was fünf- bis zehnmal schmeichelhafter ausfällt. Auszuweisen ist: wie viele Handel tragen die Hälfte der Nettosumme. Grenze 1 %.\
+4. **Die Monatsmitte ist keine Gegenprobe.** Der Überschuss summiert sich über alle Kerzen per Konstruktion auf null (nachgemessen: +0,0001 Pp über 3,86 Mio Kerzen). Ist eine Teilmenge positiv, muss die Restmenge negativ sein. Der Satz darf im Ergebnisbericht nicht als Beleg auftauchen.\
+5. **Kostenannahme.** `spanneBp: 5` ist"
+
+##### Zeile 25646 (user) #####
+"-rw-r--r-- 1 Wilhe 197609 48053205 Aug 25 09:58 /c/Users/Wilhe/.claude/projects/C--Users-Wilhe-AppData-Local-Programs-markt-dashboard/2b197d9c-354f-4d59-bbbc-8e89df4720d9.jsonl
+--- Treffer ---
+9
+      4 monatswende
+     17 monatswende-breit
+      4 monatswende-rueckkauf
+      3 quartalsschub
+     13 quartalsschub-betrag
+      2 quartalsschub-nur-ueberraschung
+      2 quartalsschub-nur-verfall"
+
+##### Zeile 25657 (user) #####
+"##################### [0] user #####################
+<task-notification>
+<task-id>wzi9fyfdv</task-id>
+<tool-use-id>toolu_01Mxe44T5Ln1cQzSUSnVgox6</tool-use-id>
+<output-file>C:\\Users\\Wilhe\\AppData\\Local\\Temp\\claude\\C--Users-Wilhe-AppData-Local-Programs-markt-dashboard\\2b197d9c-354f-4d59-bbbc-8e89df4720d9\\tasks\\wzi9fyfdv.output</output-file>
+<status>completed</status>
+<summary>Dynamic workflow "Sechs Suchrichtungen auf der Entdeckungshaelfte, adversarisch gehaertet, zu einer einzigen Vorregistrierung verdichtet" completed</summary>
+<result>{"funde":[{"familie":"zwangsfluss-termin-2026-08-25 (Kalenderstichtage auf Tageskerzen, such1d 1986-08-25 bis 2006-08-11, 1.198 Aktien CS/ADRC)","kandidaten":[{"name":"monatswende-rueckkauf","grund":"Wer ein festes Zielgewicht halten MUSS, muss zum Stichtag genau das nachkaufen, was gefallen ist. Mischfonds mit 60/40-Vorgabe, Pensionskassen mit Anlagerichtlinie, Sparplaene, deren Monatsrate in eine feste Quote fliesst, und Verwalter, die zum Monatsbewertungsstichtag die Abweichung vom Ziel schliessen muessen: alle diese Kaeufe entstehen aus der Vorgabe und dem Datum, nicht aus einem Preisurteil. Sie treffen mit voller Wucht die Werte, deren Gewicht im abgelaufenen Monat am staerksten unter das Ziel gerutscht ist, und sie hoeren nach dem Stichtag auf. Wer gestiegen ist, wird von denselben Leuten am selben Tag verkauft - deshalb ist die Auswahl gerichtet und nicht symmetrisch.","zeitrahmen":"1d","haltedauerKerzen":3,"leseFensterKerzen":22,"signalCode":"/* Kalender rein aus dem Zeitstempel - die Lage des Monatsendes ist Jahre im\
+ * Voraus bekannt, es wird KEINE spaetere Kerze gelesen. */\
+function restKalendertage(ms) {\
+  var d = new Date(ms);\
+  var letzter = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 0)).getUTCDate();\
+  return letzter - d.getUTCDate() + 1;   // 1 = letzter Kalendertag des Monats\
+}\
+function signal(bars, i, params) {\
+  if (i &lt; params.rueckblick + 1) return null;\
+  /* im Stichtagsfenster? */\
+  if (restKalendertage(bars[i][0]) &gt; params.fenster) return null;\
+  /* nur die ERSTE Kerze im Fenster - ein Einstieg je Monat */\
+  var d = new Date(bars[i][0]), v = new Date(bars[i - 1][0]);\
+  if (d.getUTCMonth() === v.getUTCMonth() &amp;&amp; restKalendertage(bars[i - 1][0]) &lt;= params.fenster) return null;\
+  /* nur die Werte, die im abgelaufenen Monat unter ihr Zielgewicht gefallen sind */\
+  var a = bars[i - params.rueckblick][1], c = bars[i][1];\
+  if (!(a &gt; 0) || !(c &gt; 0)) return null;\
+  return (c / a - 1) &lt; params.schwelle ? { dir: 1 } : null;\
+}","varianten":"[{"fenster":5,"rueckblick":21,"schwelle":-0.05},{"fenster":5,"rueckblick":21,"schwelle":-0.02},{"fenster":5,"rueckblick":21,"schwelle":-0.10},{"fenster":4,"rueckblick":21,"schwelle":-0.05}]","befundEntdeckung":"42.541 Signale auf 227 Ereignistagen (ein Einstieg je Monat, 20 Jahre). Ueberschuss gegen die Erwartung desselben Symbols 0,955 Pp im Tagesmittel, t 7,56, MDE 0,253 Pp, Newey-West-Faktor 1,01. Je Signal 0,873 Pp, nach 0,10 Pp Kosten 0,773 Pp, 54,7 % positiv. Konzentration auf EREIGNISebene (das ist die echte Stichprobe): 178 von 227 Ereignissen positiv, Median-Ereignis 0,970 Pp, halber Ertrag aus 27 Ereignissen (11,9 %), beste 5 % der Ereignisse tragen 27 %. Auf Handelsebene: halber Ertrag aus 1,60 % der Handel, beste 5 % tragen 100 %. Kein Zerfall: 1,324 / 0,985 / 0,720 / 0,831 Pp in den vier Fuenfjahresbloecken, t durchweg &gt;= 2,33. Entscheidende Gegenprobe: dieselbe Auswahl am ersten Handelstag der MONATSMITTE (Rest 12-16 Kalendertage) ergibt -0,110 Pp (t -0,59), bei Rest 18-22 +0,228 Pp, bei Rest 8-11 +0,343 Pp - der Ertrag haengt am Stichtag, nicht an der Auswahl allein. Ohne Filter liefert dieselbe Monatswende 0,577 Pp (t 6,16), der Filter fuegt also rund 0,38 Pp hinzu. Das Raster ist ein Plateau, kein Grat: ueber sieben Parameterlagen (fenster 4-6, rueckblick 10-42, schwelle -0,02 bis -0,10) liegt t zwischen 6,44 und 9,28.","schwaeche":"Die Auswahl 'im letzten Monat gefallen' ist zugleich eine Kurzfrist-Umkehr, und die allgemeine Umkehr ist in diesen Daten riesig (5-Tage-Dezil long/short: +0,735 Pp, t 24,3). Die Monatsmitte-Gegenprobe trennt beides deutlich, aber nicht restlos. Zweitens: 42.541 Handel verteilen sich auf nur 227 Ereignistage - an jedem Tag wird derselbe Marktzustand rund 190-fach gewettet, die effektive Stichprobe ist die Ereigniszahl. Drittens Ueberlebensverzerrung: alle 1.198 Aktien im Archiv handeln bis zum Rand durch, gekauft werden aber gerade die Gefallenen - die Gefallenen, die es nicht bis zum Rand geschafft haben, fehlen im Korb. Viertens ist auf Handelsebene der halbe Ertrag in 1,60 % der Handel - knapp ueber der Schwelle, an der es keine Kante mehr waere."},{"name":"steuerverlust-umkehr","grund":"Der 31. Dezember ist eine Frist, keine Meinung. Wer einen Verlust noch im alten Steuerjahr gegen realisierte Gewinne rechnen will, muss vorher verkauft haben - steuerpflichtige Privatdepots ebenso wie Vermoegensverwalter, die ihren Kunden die Verlustverrechnung schulden. Dazu kommt der Fondsmanager, der die Jahresverlierer nicht im Jahresbericht stehen haben will. Beide verkaufen genau die Werte, die im laufenden Jahr am tiefsten im Minus stehen, beide muessen es vor dem Stichtag tun, und beide hoeren danach schlagartig auf. Die Gegenseite ist derselbe Zwang mit umgekehrtem Vorzeichen: der Jahresgewinner wird bis zum Stichtag gehalten, weil ein Verkauf den Gewinn ins alte Jahr zoege - der Verkaufsdruck darauf setzt erst im Januar ein.","zeitrahmen":"1d","haltedauerKerzen":5,"leseFensterKerzen":560,"signalCode":"/* Merkmal fuer den Querschnitt: die Rendite des STEUERJAHRS, auf das sich der\
+ * Verlust bezieht. Im Dezember das laufende Jahr bis heute, im Januar das gerade\
+ * abgelaufene Jahr bis zum 31.12. Es wird nur rueckwaerts gelesen. */\
+function letzteVor(bars, i, grenzeMs) {   // groesster k &lt;= i mit bars[k][0] &lt; grenzeMs\
+  if (bars[0][0] &gt;= grenzeMs) return -1;\
+  var lo = 0, hi = i;\
+  while (lo &lt; hi) { var m = (lo + hi 
+
+##################### [1] user #####################
+"# Vorregistrierung vom 25.08.2026 — Kalenderzwang und Meldungszwang\\\
+\\\
+## 0. Was ich getan habe\\\
+\\\
+Ich habe die 16 eingereichten Kandidaten aus sechs Suchrichtungen und die sechs zugehörigen Gegenprüfungen durchgearbeitet. Zwei Kandidaten kommen in die Vorregistrierung, vierzehn nicht. Drei der eingereichten Kandidaten (`monatswende-breit`, `monatswechsel-zufluss`, `monatszufluss`) sind **derselbe Effekt** — drei Sucher haben unabhängig voneinander die Monatswende gefunden. Sie werden zu **einem** Test zusammengeführt; sie einzeln zu messen hieße, drei Bonferroni-Stellen für eine einzige Wette auszugeben.\\\
+\\\
+Der Signalcode unten läuft. Ich habe ihn auf `such1d` gegen 40 Reihen gefahren: 6.002 Signale (fenster 5), 239 Ereignistage, **0 Vorgriffs-Abweichungen** zwischen voller und bei `i` gekappter Reihe, **0 Monate mit mehr als einem Einstieg je Symbol**. Die zweite Variante ist keine Doppelung: `fenster 4` wählt in 70 % der Monate einen anderen Einstiegstag als `fenster 5` (nachgezählt über 240 Monate). Die Terminzahlen der Bestätigungshälfte habe ich selbst gezählt: 13.313 Termine nach dem Schnitt, davon **12.987 mit brauchbarer Überraschung** — exakt die Zahl, die der Sucher vorab genannt hat.\\\
+\\\
+---\\\
+\\\
+## 1. Die Kandidaten\\\
+\\\
+### Kandidat A — `monatswende-breit`\\\
+\\\
+**Kennung:** `monatswende-breit`\\\
+**Zeitrahmen:** `1d` · **Haltedauer:** 5 Kerzen · **leseFensterKerzen:** 21 · **Richtung:** long · **Varianten:** 2\\\
+\\\
+**Grund (unverändert übernommen, weil er die Gegenprüfung überstanden hat):**\\\
+Zum Monatswechsel treffen mehrere Zuflüsse mit Termin zusammen, die keiner der Beteiligten frei legen kann: Gehalts- und Sparplanraten werden zum Monatsersten investiert, Fonds und Pensionskassen bewerten zum Stichtag und stellen dafür ihre Quoten her, Zins- und Ausschüttungszuflüsse werden zum Monatsende angelegt, und Verwalter, die nach Monatsergebnis bezahlt werden, wollen zum Stichtag investiert sein statt in Bargeld. Jeder dieser Käufe folgt einem Kalender, keinem Preisurteil. Der Termin steht Jahre im Voraus fest, und das Signal liest zu seiner Bildung **keinen einzigen Kurs**.\\\
+\\\
+```js\\\
+'use strict';\\\
+var fs = require('fs'), path = require('path'), os = require('os');\\\
+\\\
+/* Universum: exakt die Population der Entdeckungshaelfte (CS = Stammaktie,\\\
+ * ADRC = Hinterlegungsschein). Fest verdrahtet, damit Live = Messung gilt. */\\\
+var ARTEN = (function () {\\\
+  var p = process.env.MD_ARTEN || path.join(os.homedir(), 'Downloads',\\\
+    'Markt-Dashboard-Daten', 'massive', 'wertpapierarten.json');\\\
+  try { return (JSON.parse(fs.readFileSync(p, 'utf8')) || {}).arten || {}; }\\\
+  catch (e) { return {}; }\\\
+})();\\\
+\\\
+/* Kalenderarithmetik. Die Lage des Monatsendes ist Jahre im Voraus bekannt;\\\
+ * es wird KEINE spaetere Kerze und ueberhaupt kein Kurs gelesen.\\\
+ * 1 = letzter Kalendertag des Monats. */\\\
+function restKalendertage(ms) {\\\
+  var d = new Date(ms);\\\
+  var letzter = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 0)).getUTCDate();\\\
+  return letzter - d.getUTCDate() + 1;\\\
+}\\\
+\\\
+module.exports = {\\\
+  key: 'monatswende-breit',\\\
+  grund: 'Zum Monatswechsel treffen Zufluesse mit Termin ein, die niemand frei legen kann: '\\\
+       + 'Gehalts- und Sparplanraten zum Monatsersten, Bewertungsstichtag der Fonds und '\\\
+       + 'Pensionskassen mit Herstellung der Sollquote, Zins- und Ausschuettungszufluesse zum '\\\
+       + 'Monatsende, und Verwalter, die nach Monatsergebnis bezahlt werden und zum Stichtag '\\\
+       + 'investiert sein wollen statt in Bargeld. Jeder dieser Kaeufe folgt einem Kalender, '\\\
+       + 'keinem Preisurteil. Das Signal liest zu seiner Bildung keinen einzigen Kurs.',\\\
+  zeitrahmen: '1d',\\\
+  haltedauerKerzen: 5,\\\
+  richtung: 'long',\\\
+  leseFensterKerzen: 21,\\\
+  kosten: { spanneBp: 5 },\\\
+  testfamilie: { name: 'vorregistrierung-2026-08-25', testsGesamt: 4,\\\
+                 begruendung: 'zwei Kandidaten mit je zwei Varianten, gemeinsam vorregistriert' },\\\
+  universum: function (sym) { var a = ARTEN[sym]; return a === 'CS' || a === 'ADRC'; },\\\
+  varianten: [ { fenster: 5 }, { fenster: 4 } ],\\\
+  signal: function (bars, i, params) {\\\
+    if (i < 21) return null;\\\
+    if (restKalendertage(bars[i][0]) > params.fenster) return null;\\\
+    /* nur die ERSTE Kerze im Stichtagsfenster - genau ein Einstieg je Symbol und Monat */\\\
+    var d = new Date(bars[i][0]), v = new Date(bars[i - 1][0]);\\\
+    if (d.getUTCMonth() === v.getUTCMonth() &&\\\
+        restKalendertage(bars[i - 1][0]) <= params.fenster) return null;\\\
+    return { dir: 1 };\\\
+  },\\\
+};\\\
+```\\\
+\\\
+Die Untergrenze `i < 21` ist der einzige Zusatz gegenüber der gegengeprüften Fassung; sie macht `leseFensterKerzen: 21` ehrlich und kostet je Reihe 21 Kerzen. Die Gegenprüfung hat gezeigt, dass das Ergebnis gegen das Lesefenster praktisch unempfindlich ist (0,678 bis 0,683 Pp für Fenster 0 bis 80).\\\
+\\\
+---\\\
+\\\
+### Kandidat B — `quartalsschub-betrag`\\\
+\\\
+**Kennung:** `quartalsschub-betrag` · **Zeitrahmen:** `1d` · **Haltedauer:** 5 Kerzen · **leseFensterKerzen:** 80 · **Richtung:** long · **Varianten:** 2\\\
+\\\
+**Grund — neu geschrieben, und das ist Bedingung für die Aufnahme.** Der eingereichte Grund („gute Zahlen erzwingen den Widerruf einer veröffentlichten negativen Festlegung") ist auf der Entdeckungshälfte widerlegt: nach demselben Kursverfall zahlt eine Überraschung von −5 % *mehr* als eine von +5 % (+1,619 gegen +0,870 Pp je Signal), und −20 % zahlt +2,507 Pp. Wirksam ist der **Betrag** der Meldung, nicht ihr Vorzeichen. Der Grund muss deshalb lauten:\\\
+\\\
+> Ein Wert, der drei Monate lang gefallen ist, trägt vor seinem Quartalstermin eine aufgestaute Ergebnisunsicherheit. Wer sein Risikobudget daran gebunden hat — der Fondsmanager, der die Position vor dem Termin gedeckelt hat, das Risikobuch, das die Ereignisvolatilität limitiert, der Verwalter, der vor seinem Ausschuss keine ungelöste Lage halten darf —, gibt dieses Budget erst wieder frei, wenn die Zahl da ist
+
+##################### [2] user #####################
+"## 2. Testzahl und Schwelle\\\
+\\\
+| | |\\\
+|---|---|\\\
+| Kandidaten | 2 |\\\
+| Varianten insgesamt | 4 |\\\
+| **Tests insgesamt** | **4** |\\\
+| Bonferroni, zweiseitig, α = 0,05 | 0,05 / 4 = 0,0125 |\\\
+| **Schwelle** | **\\\\\\\\|t\\\\\\\\| ≥ 2,50** |\\\
+\\\
+Beide Dateien tragen `testfamilie: { testsGesamt: 4 }`. Ohne dieses Feld meldet die Maschine „Tests 2" je Datei und urteilt an einer Schwelle von 2,24 — an der falschen Latte. Vier Tests sind das Maximum; jeder weitere hebt die Schwelle für beide Kandidaten.\\\
+\\\
+---\\\
+\\\
+## 3. Was jeder Kandidat braucht, und wie weit er davon entfernt ist\\\
+\\\
+Die Maschine gibt MDE = 2 × Standardfehler aus (an allen eingereichten Zahlen nachgerechnet: 0,729/5,04 = 0,145 = 0,289/2). Erforderlicher Überschuss bei der Schwelle: **2,50 × SE**.\\\
+\\\
+| Kandidat / Variante | Entdeckung Pp (t) | SE Entdeckung | SE Bestätigung (erwartet) | Erforderlich bei \\\\\\\\|t\\\\\\\\| 2,50 | Es reicht noch bei … % des Entdeckungsbefunds |\\\
+|---|---|---|---|---|---|\\\
+| `monatswende-breit` V1 (fenster 5) | 0,729 (5,04) | 0,145 | ≈ 0,145 | **0,363 Pp** | 50 % |\\\
+| `monatswende-breit` V2 (fenster 4) | 0,43–0,76 (3,8–6,2)¹ | 0,14–0,17 | ≈ 0,15 | **0,375 Pp** | 49–87 % |\\\
+| `quartalsschub-betrag` V1 (\\\\\\\\|ue\\\\\\\\|≥5, Verfall ≤ −2 %) | 1,155 (3,91) | 0,295 | ≈ 0,13² | **0,325 Pp** | 28 % |\\\
+| `quartalsschub-betrag` V2 (\\\\\\\\|ue\\\\\\\\|≥5, Verfall ≤ −5 %) | 1,266 (3,71) | 0,341 | ≈ 0,15² | **0,375 Pp** | 30 % |\\\
+\\\
+¹ Für `fenster 4` liegt in den Berichten kein Punktwert vor, nur das dokumentierte Plateau über `fenster` 3–7 × `H` 3–6: 0,43 bis 0,76 Pp bei t 3,8 bis 6,2. **Auch die schlechteste Ecke dieses Plateaus (0,43 Pp, t 3,8) liegt über der Schwelle** — die Variante erfüllt die Aufnahmebedingung also selbst im ungünstigsten dokumentierten Fall.\\\
+\\\
+² Bestätigungshälfte: 12.987 brauchbare Termine (selbst gezählt), davon nach Überraschungs- und Verfallsfilter geschätzt 2.600–2.700 Signale auf ~1.400 Signaltagen für V1 (Faktor 1,46 gegenüber der gerichteten Fassung, gemessen auf der Entdeckungshälfte: 1.095 gegen 750). Der Sucher hat für die gerichtete Fassung MDE ≈ 0,30 vorausgesagt; mit der Betragsfassung fällt sie auf ≈ 0,26 (V1) bzw. ≈ 0,30 (V2).\\\
+\\\
+**Für die Monatswende:** die Bestätigungshälfte umfasst 2006-08 bis 2026-08, also rund 240 Monatswechsel gegen 227 in der Entdeckung. Die wirksame Stichprobe ist die Zahl der Ereignistage, und die Maschine rechnet ohnehin auf Tagesmitteln — das Klumpen über die ~1.200 gleichzeitig gehandelten Werte ist damit korrekt behandelt. Der Standardfehler sollte praktisch gleich bleiben.\\\
+\\\
+**Beide Kandidaten erfüllen die Aufnahmebedingung: ihr Entdeckungsbefund liegt deutlich über dem, was bei \\\\\\\\|t\\\\\\\\| 2,50 erforderlich wäre.** Die Monatswende darf die Hälfte ihrer Wirkung verlieren, der Quartalsschub knapp drei Viertel.\\\
+\\\
+---\\\
+\\\
+## 4. Abgelehnt — vierzehn Kandidaten, je ein Satz\\\
+\\\
+| Kandidat | Grund der Ablehnung |\\\
+|---|---|\\\
+| `monatswechsel-zufluss` (F5) | Dieselbe Wette wie `monatswende-breit`, nur mit anderem Fenstermaß und einem Umsatzfilter — als eigener Test verbraucht sie eine Bonferroni-Stelle für einen Effekt, der schon gemessen wird. |\\\
+| `monatszufluss` (F6) | Ebenfalls dieselbe Wette, feuert aber an allen vier Tagen des Fensters statt einmal je Monat und erzeugt damit überlappende Einstiege ohne Informationsgewinn. |\\\
+| `monatswende-rueckkauf` (F1) | Die Gegenprüfung hat gezeigt, dass der Auswahl-Aufschlag über den ganzen Monat konstant ist (Stichtag 0,508 Pp gegen 0,411 im Mittel von 44 anderen Versatzlagen, z = 0,75) — es ist die Monatswende mal der termin-losen Kurzfrist-Umkehr, also eine Doppelung. |\\\
+| `steuerverlust-umkehr` (F1) | Halber Ertrag aus 0,96 % der Handel (unter der 1-%-Grenze), über 19 Saisons geclustert fällt t auf 2,61, die letzten drei Saisons vor dem Schnitt sind alle negativ. |\\\
+| `schlussdruck-gegentag` (F2) | Siehe Abschnitt 5 — die beste nicht handelbare Entdeckung des Pakets. |\\\
+| `leerbuch-umkehr` (F2) | Auf allen fünf Varianten sitzen 102–107 % des Überschusses im Sprung vom Signalschluss zum ersten Druck der Folgekerze, der handelbare Rest ist vor Kosten negativ: er kauft den Abschlag nicht, er ist der Abschlag. |\\\
+| `leerbuch-tageskerzen` (F2) | Der Roll-Schätzer auf denselben Reihen gibt rund 0,93 Pp Spanne je Umlauf gegen 0,402 Pp Bruttoüberschuss, und nach Jahrfünften trägt der Effekt nur in den volatilen Regimen (1995–99: t 0,92 auf dem größten Block). |\\\
+| `quartalsschub-nur-ueberraschung` (F3) | Halber Ertrag aus 0,9 % der Handel, über Meldesaisons geclustert t 2,37, und es ist der bereits belegte Ergebnis-Drift in einer Kurzfassung, die das Projekt am 21.08. schon abgehakt hat. |\\\
+| `quartalsschub-nur-verfall` (F3) | Der erklärte Wirkmechanismus („die Zahlen sind egal") liegt in den eigenen Daten bei t 0,72 — die Datei funktioniert nur, weil sie die Betragsfälle stillschweigend mitführt, und ist damit Kandidat B, verdünnt. |\\\
+| `innertags-abgabedruck` (F4) | Ein Mindest-Tick kostet auf der tatsächlichen Handelspopulation im Mittel 3,97 Pp gegen 0,74 Pp Bruttoüberschuss, und mit Preis > 5 $ und Umsatz > 10 Mio $ ist er schon brutto negativ. |\\\
+| `schlussdruck` (F4) | 0,65 % der Handel tragen den halben Ertrag, der Median je Handel ist negativ und die Trefferquote 49,9 % — nach der eigenen Regel des Projekts vor jeder Statistik erledigt. |\\\
+| `zwangsband` (F4) | Eine hundertprozentige Teilmenge von `innertags-abgabedruck` (45.530 von 45.530 Handeln identisch), deren versprochene Dosis-Wirkung mit 0,08 Pp unter der Auflösung liegt. |\\\
+| `querschnitt-umkehr-im-streuungsregime` (F5) | 0,66 % der Handel tragen die Hälfte, einseitig gerechnet fällt der Überschuss ohne die besten 2 % der Handel auf −0,047 Pp, und 30 % des Rests ist Geld-Brief-Praller. |\\\
+| `monatszufluss-schwach` (F6) | Der Zusatznutzen des Schwachfilters ist am Stichtag +0,117 Pp und in der Monatsmitte +0,119 Pp — die mechanismus-spezifische Vorhersage ist exakt null. |\\\
+| `steuerstichtag` (F6) | Das unterste"
+
+##### Zeile 25672 (assistant) #####
+{"command":"T="/c/Users/Wilhe/.claude/projects/C--Users-Wilhe-AppData-Local-Programs-markt-dashboard/2b197d9c-354f-4d59-bbbc-8e89df4720d9.jsonl" && grep -c "quartalsschub-betrag" "$T" && node -e "
+var fs=require('fs'),rl=require('readline');
+var s=rl.createInterface({input:fs.createReadStream(process.argv[1])});
+var i=0;
+s.on('line',function(l){
+  i++;
+  if(l.indexOf('quartalsschub-betrag')===-1) return;
+  var o; try{o=JSON.parse(l)}catch(e){return}
+  var c=o.message&&o.message.content; if(!c) return;
+  var txt=(typeof c==='string')?c:c.map(function(x){return x.text||(x.input?JSON.stringify(x.input):'')+(x.content?JSON.stringify(x.content):'')}).join('\
+');
+  var hatCode=/ueberraschung|signal: function|module.exports/.test(txt);
+  console.log('Zeile '+i+'  '+o.type+'  '+txt.length+' Zeichen  Code:'+hatCode);
+});
+" "$T"","description":"Locate candidate B's source in the transcript","timeout":300000}
