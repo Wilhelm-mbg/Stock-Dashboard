@@ -287,7 +287,11 @@ function bauen(minor) {
   else console.log('  WARNUNG: telemetrie.json fehlt im Quellbaum - das Paket bekommt keinen Sendeschluessel');
 
   titel('Tests im sauberen Baum');
-  laut('node test-v6.js', { cwd: BAUBAUM });
+  /* Die VOLLE Reihe, nicht nur test-v6. Bis Issue #76 lief hier - also in genau dem
+   * Baum, aus dem das ausgelieferte Paket entsteht - nur test-v6.js; eslint und
+   * test-channel sahen das Paket nie. Im Repo oben lief die volle Reihe laengst,
+   * ausgerechnet der Baubaum war die Ausnahme. */
+  laut('npm test', { cwd: BAUBAUM });
 
   titel('Bauen');
   laut('npx electron-builder --win --publish never', { cwd: BAUBAUM });

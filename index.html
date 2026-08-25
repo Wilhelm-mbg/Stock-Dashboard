@@ -835,6 +835,13 @@
       <label style="font-size:var(--fs-neben); display:flex; align-items:center; gap:6px; margin-left:auto; color:var(--ink-2);"><input type="checkbox" id="notifyEnabled" checked> Benachrichtigung bei Trades</label>
     </div>
     <div class="panel" id="positionsPanel"><div class="loading">Noch keine Positionen – schalte unter „Regeln → Schalter &amp; Einstellungen“ die Intraday-Strategie ein.</div></div>
+
+    <!-- Felix, #71: die eigenen Papiere als Übersicht neben den simulierten Positionen.
+         Streng getrennt - was Simulation ist, steht in der Überschrift und nicht in
+         einer Fußnote darunter. -->
+    <h2 style="margin-top:18px;">Mein Depot <span style="color:var(--muted); font-size:var(--fs-neben); font-weight:400; text-transform:none; letter-spacing:0;">
+      – echte Papiere, von der App nie angefasst. Übernehmen und Signalstand: Reiter <b>Heute</b>.</span></h2>
+    <div class="panel" id="bestandTabelle"><div class="loading">Lade …</div></div>
   </div>
 
   <!-- ============ STRATEGIEN ============ -->

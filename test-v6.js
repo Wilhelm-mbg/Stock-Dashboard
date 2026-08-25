@@ -3859,7 +3859,11 @@ console.log('\n44) Messmaschine, Scoreboard und Strategie-Eingabe (23.08.2026)')
   /* A9 und B9 stammen aus der unabhaengigen Kontroll-Pruefung der Parallelsitzung
    * (studien/kontrolle-2026-08/BEFUND.md). Vier ihrer sechs Punkte deckte die Liste
    * schon ab, zwei nicht. B8 fehlte als Zeile, obwohl er in der Maschine steckte. */
-  ok(/|s*A9s*|/.test(ft) && /|s*B8s*|/.test(ft) && /|s*B9s*|/.test(ft),
+  /* Die Rohre MUESSEN maskiert sein. Unmaskiert ist /|s*A9s*|/ eine Alternative mit
+   * leerem Zweig - sie trifft die leere Zeichenkette, und die Zusicherung besteht,
+   * egal was in FEHLERTYPEN.md steht (Issue #76, Punkt 5). Drei blinde Pruefungen
+   * unter 1.179 Regex-Literalen; genau diese drei. */
+  ok(/\|\s*A9\s*\|/.test(ft) && /\|\s*B8\s*\|/.test(ft) && /\|\s*B9\s*\|/.test(ft),
      'A9, B8 und B9 stehen in FEHLERTYPEN.md');
   /* A9: Kontrolle und Signalschleife muessen beim SELBEN Vorlauf beginnen. Start bei
    * Kerze 60 statt 261 verschob den Intraday-Ueberschuss von +0,064 auf +0,036. */

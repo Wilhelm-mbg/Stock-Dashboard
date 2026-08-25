@@ -35,8 +35,49 @@
     return { txt: teile.join(' · '), cls: 'up' };
   }
 
+  /** Die Uebersicht unter "Vermoegen -> Depot" (Felix, #71). Schlanker als die Karte
+   *  auf "Heute": dort geht es um den Signalstand, hier um den Bestand. */
+  function zeichnenTabelle() {
+    var kasten = el('bestandTabelle');
+    if (!kasten || !B) return;
+    var werte = B.liste();
+    if (!werte.length) {
+      kasten.innerHTML = '<div class="empty" style="padding:10px 0;">Noch keine eigenen Papiere. ' +
+        'Übernehmen geht im Reiter <b>Heute</b> – Auszug der Depotbank einfügen.</div>';
+      return;
+    }
+    var zeilen = werte.map(function (w) {
+      var kurs = null;
+      if (window.DepotAPI && window.DepotAPI.letzterKurs) {
+        var d = window.DepotAPI.letzterKurs(w.sym);
+        if (d && d.kurs > 0) kurs = d;
+      }
+      if (!kurs && window.Dash && window.Dash.quote) {
+        var q = window.Dash.quote(w.sym);
+        if (q && q.price != null) kurs = { kurs: q.price, pct: q.pct };
+      }
+      var wert = kurs && w.stueck ? kurs.kurs * w.stueck : null;
+      return '<tr><td><b>' + esc(w.sym) + '</b><div style="color:var(--muted); font-size:var(--fs-klein);">' +
+        esc(w.name) + '</div></td>' +
+        '<td>' + (w.stueck != null ? esc(w.stueck) : '–') + '</td>' +
+        '<td>' + (kurs ? esc(kurs.kurs.toFixed(2)) + ' $' : '–') + '</td>' +
+        '<td>' + (wert != null ? esc(Math.round(wert)) + ' $' : '–') + '</td>' +
+        '<td>' + (kurs && kurs.pct != null ? (kurs.pct >= 0 ? '+' : '') + esc(kurs.pct.toFixed(2)) + ' %' : '–') + '</td>' +
+        '<td style="color:var(--muted); font-size:var(--fs-klein);">' + esc(w.isin || w.wkn || '') + '</td></tr>';
+    }).join('');
+    /* Eine Summe nur, wenn sie ehrlich ist: fehlt zu einem Papier der Kurs oder die
+     * Stueckzahl, waere der Gesamtwert stillschweigend zu klein. */
+    var vollstaendig = werte.every(function (w) { return w.stueck != null; });
+    kasten.innerHTML = '<table class="tbl"><tr><th>Wert</th><th>Stück</th><th>Kurs</th>' +
+      '<th>Wert</th><th>Heute</th><th>ISIN</th></tr>' + zeilen + '</table>' +
+      '<div style="color:var(--muted); font-size:var(--fs-klein); margin-top:6px;">' +
+      (vollstaendig ? '' : 'Zu mindestens einem Papier fehlt die Stückzahl – deshalb steht hier keine Summe. ') +
+      'Diese Papiere werden nicht gehandelt und zählen nicht zum simulierten Depotwert.</div>';
+  }
+
   function zeichnen() {
     var kasten = el('bestandListe');
+    zeichnenTabelle();
     if (!kasten || !B) return;
     var werte = B.liste();
     if (!werte.length) {
@@ -125,5 +166,5 @@
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bereit);
   else bereit();
-  window.BestandUI = { zeichnen: zeichnen };
+  window.BestandUI = { zeichnen: zeichnen, zeichnenTabelle: zeichnenTabelle };
 })();
