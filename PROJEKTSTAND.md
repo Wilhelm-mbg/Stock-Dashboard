@@ -1,6 +1,6 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-25 21:30
-gesehener-tag: v8.33.0
+letzter-bericht: 2026-08-26 00:30
+gesehener-tag: v8.33.2
 -->
 
 # Projektstand
@@ -13,13 +13,12 @@ Wenn du hier etwas änderst, dann nur deine eigene Zeile unter „Läuft gerade"
 
 ---
 
-## Stand: 25.08.2026, 21:30
+## Stand: 26.08.2026, 00:30
 
-Ausgeliefert ist **v8.33.0**. Arbeitsbaum sauber, nichts Ungepushtes, alle Tests grün
-(2074 Zusicherungen), UI-Probe grün (5 Reiter, 16 Pillen).
+Ausgeliefert ist **v8.33.2**. Arbeitsbaum sauber, nichts Ungepushtes, alle Tests grün.
+Eine Release-Notiz wartet auf die Wache (`2026-08-26-belegt-heisst-bestaetigt.md`).
 
-Der Struktur-Plan vom 25.08. (`studien/struktur-plan-2026-08-25/PLAN.md`) ist damit zu
-großen Teilen abgearbeitet:
+Der Struktur-Plan vom 25.08. (`studien/struktur-plan-2026-08-25/PLAN.md`):
 
 | Stufe | Inhalt | Stand |
 |---|---|---|
@@ -28,10 +27,10 @@ großen Teilen abgearbeitet:
 | C | Mittelfrist, Meine Papiere, Marktkarte als Pille | fertig |
 | D | Bausteinkasten, Info-Register | fertig |
 | E | `depot.js` zerlegen — sieben Blöcke | fertig (9.972 → 6.988 Zeilen) |
-| E-Rest | `init()` dritteln, Speicher-Nebeneffekt aus `render()` | **offen** |
+| E-Rest | `init()` dritteln, Speicher-Nebeneffekt aus `render()` | **fertig** (25./26.08.) |
 | F | Ein Chart-Renderer, Barrierefreiheit, Theme ohne Blitz | **offen** |
 
-Dazu die Zusatzpunkte 3–12 der Kritik: fertig.
+Damit ist vom Struktur-Plan nur noch Stufe F offen.
 
 ---
 
@@ -40,43 +39,54 @@ Dazu die Zusatzpunkte 3–12 der Kritik: fertig.
 *Was freigegeben ist und noch niemand macht. Wer eine Zeile nimmt, trägt sich unter
 „Läuft gerade" ein und streicht sie hier.*
 
-- **E-Rest freigegeben:** `init()` dreiteln (Migration / Verdrahtung / Scheduler) und die
-  `equityHist`-Fortschreibung aus `render()` in den Scheduler ziehen. Methode wie Stufe E
-  (byte-genauer Schnitt, Getter, Aliase, Testmarken umhängen). Handelspfad bleibt tabu.
+**Zuerst — Vorstufen der Neumessung (Messwerkzeug, keine Handelslogik):**
+
+- **#85 — laufende Quote-Stempel-Kerze abschneiden.** Abruf-Werkzeug und/oder Messmaschine
+  müssen den unfertigen letzten Balken verwerfen. **Der Tüftler hat am 26.08. gemessen,
+  dass das auch `archiv1d` betrifft** (56 % einer 80er-Stichprobe; AAPL 15,0 statt 46,8 Mio
+  Stück) — der Fund ist also größer als bei der Meldung angenommen und trifft beide Archive.
+- **#86** — `aussicht` (Tage bis t=2) feuert nie, weil `block()` kein `sd` liefert.
+- **#87** — A7-Protokolltext nennt das falsche Ausschlussfenster (`[i-lese]` statt `[i-lese-H]`).
+- **#88** — Placebo-Lauf ignoriert die Einstiegskonvention; zugleich Vorbedingung für den
+  Tüftler-Kandidaten `glockendruck-nacht` Zweig T.
+
+**Danach — Messmaschine versionieren und alle Kanten neu messen** (freigegeben 25.08. spät):
+(1) Versionsnummer der Messmaschine an ihren Code koppeln (heute 7 Änderungen bei
+unverändert „1.0.0") und veraltete Protokolle in der Übersichtstafel kennzeichnen;
+(2) danach alle zwölf Strategien einmal auf dem aktuellen Instrumenten-Stand neu messen.
+Erst dann neue Untersuchungen.
+
+**Danach — Nachtaufträge Wilhelms vom 26.08.:**
+
+- **Großer Archiv-Ausbau:** Backfill 60m und täglich auf E:, Universum nach Wertpapierart
+  verbreitern. Ausdrücklich NACH der Neumessung, damit die zwölf Protokolle auf einem
+  festen Archivstand messen.
+- **Literatur-Tiefenrecherche** Übernacht-/Schlussauktions-Effekte (einmaliger Lauf 02:30,
+  Ergebnis nach `studien/tueftler/recherche-2026-08-26/`).
+
+**Oberfläche, parallel möglich:**
+
 - **Stufe F, Reihenfolge fest:** (1) Theme ohne Dunkel-Blitz beim Start, (2) ein einziger
   Chart-Renderer (`drawBig` vs. `chart.js` — Entscheid nach Funktionsvergleich),
   (3) Barrierefreiheit (Rest #59 Stufe 3). Je eigenes Vorhaben, je eigene Release-Notiz.
-- **Nachbilden-Dialog:** Belegstatus sichtbar in den Dialog „Trade nachbilden“ —
+- **Nachbilden-Dialog:** Belegstatus sichtbar in den Dialog „Trade nachbilden" —
   Belegtexte aus den Protokollen (`DepotAPI.protokollKante`), nie aus Prosa.
+- **#83 / #89 — „Meine Papiere" nach Vermögen.** Wilhelms eigene Bestellung, beide Issues
+  meinen dieselbe Sache: die Pille gehört nicht unter „Heute"/„Überblick", sondern nach
+  „Vermögen". Freigegeben, weil er sie selbst geschrieben hat; **wo sie in der
+  Reihenfolge steht, ist Frage 1 an ihn** (siehe „Wartet auf Wilhelm").
+- **#84-Rest, klein:** In 21 Quellcode-Kommentaren lebt die „belegt"-Formel weiter. Der
+  ehrliche Weg wäre eine Zeile in `CLAUDE.md` statt Umschreiben — Frage 2 an Wilhelm.
 - **Handel raus aus dem Renderer — NUR PLAN:** ein Umbauplan als Dokument unter
-  `studien/`, kein Code. Gebaut wird erst nach Wilhelms zweitem Ja (siehe „Wartet auf Wilhelm“).
+  `studien/`, kein Code. Gebaut wird erst nach Wilhelms zweitem Ja.
 - **#80 Kanal-Güte neu eichen:** Studien-Strang. Bis die Eichung steht, bekommt die
-  Güte-Zahl in der Oberfläche einen Warnhinweis („ungeeicht“).
+  Güte-Zahl in der Oberfläche einen Warnhinweis („ungeeicht").
 - **rsi2seit-mcp V4: Bestätigungsmessung vorregistrieren** (Studien-Strang). Ehrlicher
   Rahmen: Intervall [+0,018, +0,117] gegen Hürde 0,10 — läuft, sobald genug frische Tage da sind.
 - **Zweig `claude/dashboard-integrated-browser-plvkv7` prüfen** (1 Commit: Browser-Treiber,
   Aufzeichnung, Einzeldatei) und bei Tauglichkeit einbauen; sonst mit Begründung vorlegen.
-- **Nachtauftrag 26.08. (Wilhelm):** Nach der Neumessung ein **großer Archiv-Ausbau** —
-  Backfill 60m und täglich auf E:, Universum nach Wertpapierart verbreitern. Ausdrücklich
-  NACH der Neumessung, damit die zwölf Protokolle auf einem festen Archivstand messen.
-- **Nachtauftrag 26.08. (Wilhelm):** Literatur-Tiefenrecherche Übernacht-/Schlussauktions-
-  Effekte (einmaliger Lauf 02:30, Ergebnis nach studien/tueftler/recherche-2026-08-26/).
 - **Danach die kleinen Wünsche, Reihenfolge fest:** #69 lokales Backup → #82 Herkunftsland-
   Filter Marktkarte → #70 Radar-Streusuchen → #33 zweiter Trendwende-Detektor.
-- **#86/#87/#88 — drei Messwerkzeug-Funde aus der Methodenkritik** (Analytiker, 2. Lauf):
-  toter aussicht-Detektor, falscher A7-Protokolltext, Placebo ohne Einstiegskonvention.
-  Gehören mit #85 zusammen VOR die Neumessung; #88 ist zudem Vorbedingung für den
-  Tüftler-Kandidaten glockendruck-nacht.
-- **#85 — laufende Quote-Stempel-Kerze im 60m-Archiv abschneiden** (Analytiker-Fund
-  25.08.): Abruf-Werkzeug und/oder Messmaschine müssen den unfertigen letzten Balken
-  verwerfen. **Vorstufe der Neumessung** — muss vor ihr erledigt sein.
-- **Messmaschine versionieren und alle Kanten neu messen** (freigegeben 25.08. spät):
-  (1) Versionsnummer der Messmaschine an ihren Code koppeln (heute 7 Änderungen bei
-  unverändert „1.0.0“) und veraltete Protokolle in der Übersichtstafel als solche
-  kennzeichnen; (2) danach alle zwölf Strategien einmal auf dem aktuellen Instrumenten-
-  Stand neu messen. Erst dann neue Untersuchungen. Quelle: Befundbericht „Sieben stille
-  Fehler“, Abschnitt 5. Messwerkzeug, keine Handelslogik. Der Analytiker prüft ab jetzt
-  nächtlich, ob Protokolle und Instrumenten-Stand zusammenpassen.
 
 ---
 
@@ -85,8 +95,8 @@ Dazu die Zusatzpunkte 3–12 der Kritik: fertig.
 *Wer welche Dateien belegt. Trag dich ein, bevor du anfängst; nimm dich raus, wenn du
 fertig bist.*
 
-- **App-Codebase Master** — hat am 25.08. spät die offene Issue-Liste zur Abarbeitung
-  übernommen (Reihenfolge siehe Aufträge); Details trägt er selbst nach.
+- **App-Codebase Master** — arbeitet die offene Issue-Liste ab (Reihenfolge siehe
+  Aufträge); zuletzt #76 und #84 abgeschlossen.
 
 ---
 
@@ -95,12 +105,12 @@ fertig bist.*
 *Entscheidungen von Wilhelm, mit Datum. Eine Entscheidung, die nur in einem Chatverlauf
 steht, ist nach zwei Stunden verloren.*
 
-- **26.08.2026** — #84 erledigt: sieben sichtbare Texte auf „gemessen“ gezogen, vierte
+- **26.08.2026** — #84 erledigt: sieben sichtbare Texte auf „gemessen" gezogen, vierte
   Sperrklinke gesetzt. Offen als eigener kleiner Auftrag: in 21 Kommentaren lebt die
-  Formel weiter — ehrlicher Weg waere eine Zeile in CLAUDE.md statt Umschreiben.
+  Formel weiter — ehrlicher Weg wäre eine Zeile in CLAUDE.md statt Umschreiben.
 - **25.08.2026 (spät)** — Geheimnis `TELEMETRIE_JSON` angelegt. Automatisch gebaute
-  Pakete tragen den Diagnose-Rueckkanal ab dem naechsten Release. Issue #76 damit
-  vollstaendig erledigt.
+  Pakete tragen den Diagnose-Rückkanal ab dem nächsten Release. Issue #76 damit
+  vollständig erledigt.
 - **25.08.2026** — Stufe C des Struktur-Plans wird gebaut, einschließlich Marktkarte als
   Pille unter „Heute".
 - **25.08.2026** — Stufe D Punkt 6 (Erklärtexte ins Info-Register) wird gebaut; das
@@ -109,16 +119,13 @@ steht, ist nach zwei Stunden verloren.*
   ist für Wilhelm allein; Schwerpunkt sind Werkzeuge, Bedienbarkeit, Optik und ein
   vollständiger Marktüberblick.
 - **25.08.2026 (spät)** — Messmaschine wird versioniert, alle zwölf Strategien werden auf
-  dem aktuellen Stand neu gemessen; erst danach neue Untersuchungen (Empfehlung aus dem
-  Befundbericht „Sieben stille Fehler“, von Wilhelm bestätigt).
-- **25.08.2026 (spät)** — Neue Rolle **Strategie-Tüftler**: läuft jede Nacht 04:30 (Wilhelms
-  Wahl; bei ≥3 wartenden Entwürfen arbeitet er stattdessen am Datenbestand). Entwirft
-  Kandidaten mit Machbarkeits-Check gegen die Auflösungswand, vorregistriert, erweitert
-  Daten; misst NIE selbst — Messung macht die Mess-Kette, Nachprüfung der Analytiker.
-  Übergabe über studien/tueftler/WARTESCHLANGE.md, eine Zeile auf der Tafel.
-- **25.08.2026 (spät)** — Neue Rolle **Analytiker**: läuft jede Nacht 03:15, prüft alles
-  (Wächterprüfungen, Kanten-Neuberechnung, kritische Methodenbeurteilung), meldet per
-  Issue nur bei Fund, sonst eine Zeile hier auf der Tafel.
+  dem aktuellen Stand neu gemessen; erst danach neue Untersuchungen.
+- **25.08.2026 (spät)** — Neue Rolle **Strategie-Tüftler**: läuft jede Nacht 04:30; bei
+  ≥3 wartenden Entwürfen arbeitet er stattdessen am Datenbestand. Entwirft Kandidaten mit
+  Machbarkeits-Check gegen die Auflösungswand, vorregistriert, erweitert Daten; misst NIE
+  selbst. Übergabe über `studien/tueftler/WARTESCHLANGE.md`.
+- **25.08.2026 (spät)** — Neue Rolle **Analytiker**: läuft jede Nacht 03:15, prüft alles,
+  meldet per Issue nur bei Fund, sonst eine Zeile hier auf der Tafel.
 - **25.08.2026 (abends, 9 Antworten auf einmal)** — E-Rest: ja, jetzt. Stufe F: alle drei,
   Reihenfolge Theme → Chart → Barrierefreiheit. Nachbilden-Dialog: Belegstatus rein.
   Handel-aus-Renderer: erst Plan, Bau nur mit zweitem Ja. #80: neu eichen, solange
@@ -133,7 +140,14 @@ steht, ist nach zwei Stunden verloren.*
 
 *Fragen, an denen Arbeit hängt.*
 
-- **Zweites Ja zum Handel-aus-Renderer-Umbau** — fällig, sobald der Plan als Dokument vorliegt.
+1. **Wohin mit #83/#89 („Meine Papiere" nach Vermögen)?** — (a) sofort, es sind zehn
+   Minuten; (b) hinter die Neumessung, zusammen mit den anderen Wünschen; (c) mit in
+   Stufe F. *Empfehlung: (a).*
+2. **Die „belegt"-Formel in 21 Quellcode-Kommentaren** — (a) stehen lassen, eine Zeile in
+   `CLAUDE.md` erklärt sie als Geschichte; (b) alle 21 umschreiben. *Empfehlung: (a).*
+3. **Neumessung: alle vier Vorstufen abwarten oder früher starten?** — (a) #85–#88 alle
+   zuerst; (b) nur #85, der Rest parallel. *Empfehlung: (a).*
+4. **Zweites Ja zum Handel-aus-Renderer-Umbau** — fällig, sobald der Plan als Dokument vorliegt.
 
 ---
 
@@ -142,7 +156,7 @@ steht, ist nach zwei Stunden verloren.*
 *Eine Zeile je Nacht, geschrieben von der Analytiker-Aufgabe (03:15). Issues nur bei Fund.*
 
 - **26.08.** — Erster Lauf: A–C, E + D geprüft; Placebo sauber (t −0,10), Live = Messung bestätigt, keine frischen Tage für Kanten-Neuberechnung; 2 Funde gemeldet (#84 „belegt"-Prosa, #85 laufende Quote-Stempel-Kerze im 60m-Archiv), Details in `studien/analytiker/2026-08-26/BEFUND.md`; nächste Nacht F-Rotation Punkt 1 (Kontrollgruppen-Konstruktion / A7-Lesefenster).
-- **26.08. (2. Lauf, 23:36)** — A–C, E verkürzt (nichts geändert seit dem ersten Lauf) + F-Rotation Punkt 1: **A7-Konstruktion trägt** (Ausschnitt-Arithmetik exakt gegen Brute-Force, Nullpunkt auf Kunstarchiv mit Selektions-Köder im Rahmen); 3 Funde gemeldet (#86 `aussicht` feuert nie, #87 A7-Protokolltext nennt falsches Fenster, #88 Placebo ignoriert Einstiegskonvention — Vorbedingung für glockendruck-nacht Zweig T, neben #85 und dem `ausstieg`-Schalter), Details in `studien/analytiker/2026-08-26-zweiter-lauf/BEFUND.md`; nächste Nacht F-Rotation Punkt 2 (Signifikanz-Rechnung/Testzahl, dabei Newey-West-Verzögerung Tage-gegen-Kerzen nachrechnen).
+- **26.08. (2. Lauf, 23:36)** — A–C, E verkürzt (nichts geändert seit dem ersten Lauf) + F-Rotation Punkt 1: **A7-Konstruktion trägt** (Ausschnitt-Arithmetik exakt gegen Brute-Force, Nullpunkt auf Kunstarchiv mit Selektions-Köder im Rahmen); 3 Funde gemeldet (#86 `aussicht` feuert nie, #87 A7-Protokolltext nennt falsches Fenster, #88 Placebo ignoriert Einstiegskonvention), Details in `studien/analytiker/2026-08-26-zweiter-lauf/BEFUND.md`; nächste Nacht F-Rotation Punkt 2 (Signifikanz-Rechnung/Testzahl, dabei Newey-West-Verzögerung Tage-gegen-Kerzen nachrechnen).
 
 ---
 
