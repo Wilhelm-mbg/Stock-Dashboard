@@ -2504,6 +2504,9 @@
             capitalOk: HEALTH.capOk, capitalFehler: HEALTH.capFail,
             signaleVerworfenKursdatenVeraltet: HEALTH.staleBars || 0, killSwitchAusloesungen: HEALTH.killSwitch || 0,
             hintergrundRechnerAusfaelle: HEALTH.workerFail || 0,
+            analyseExportFehler: HEALTH.exportFail || 0,
+            archivSchreibFehler: (window.Archiv && window.Archiv.flushFehler
+              ? window.Archiv.flushFehler().n : null),
             spannenTageAusKerzen: HEALTH.spannenTage || 0,
             spannenVerdrahtungFehlt: HEALTH.spannenVerdrahtung || 0,
             spannenKerzenOhneBriefkurs: HEALTH.spannenOhneFeld || 0,
@@ -2541,7 +2544,32 @@
       csv: csvString(),
       bericht: (D.central && D.central.berichtMd) || null
     };
-    try { return await window.api.exportAnalysis(payload); } catch (e) { return null; }
+    /* Der Analyse-Export ist die Leitung, ueber die SAEMTLICHE HEALTH-Zaehler die App
+     * verlassen (gesundheit:, weiter oben). Bis zum 25.08.2026 wurde sein Ergebnis
+     * verworfen: schlug er fehl, meldete niemand etwas - und mit ihm schwiegen still
+     * auch alle Zaehler, die einen anderen stillen Ausfall haetten melden sollen.
+     * Ein Waechter, der selbst lautlos ausfallen kann, ist kein Waechter.
+     *
+     * Ein Wurf waere falsch: exportAnalysis haengt an save(), das im laufenden Handel
+     * staendig laeuft. Die 10-Minuten-Sperre bleibt auch im Fehlerfall bestehen -
+     * sonst versuchte es jeder save() erneut und schriebe bei voller Platte im
+     * Sekundentakt vier Dateien. */
+    var rEx = null;
+    try { rEx = await window.api.exportAnalysis(payload); }
+    catch (e) { rEx = { ok: false, msg: String((e && e.message) || e) }; }
+    if (!rEx || rEx.ok === false) {
+      HEALTH.exportFail = (HEALTH.exportFail || 0) + 1;
+      if (HEALTH.exportFail === 1) {
+        melde('Analyse-Export fehlgeschlagen',
+          'analyse-daten.json, messbericht.md, trades.csv und kursdaten.json werden nicht ' +
+          'mehr geschrieben (' + ((rEx && rEx.msg) || 'unbekannt') + '). Damit fehlen auch ' +
+          'saemtliche Gesundheitszahlen der App - haeufigste Ursachen: Platte voll oder ein ' +
+          'Programm blockiert den Daten-Ordner.');
+      }
+      return rEx;
+    }
+    HEALTH.exportFail = 0;
+    return rEx;
   }
 
   /* ================= Historie (lokaler Cache) ================= */

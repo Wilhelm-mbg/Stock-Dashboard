@@ -332,6 +332,33 @@ ok(Object.keys(A.spannenJeTag(spGekuerzt)).length === 0,
 var ArchInst = A.baueArchiv({ storeGet: async function () { return null; }, storeSet: async function () { return true; } });
 ok(typeof ArchInst.spannenJeTag === 'function',
    'window.Archiv traegt spannenJeTag - sonst sammelt der Backfill lautlos nichts');
+/* DER ARCHIV-FLUSH (25.08.2026). storeSet WIRFT NICHT - main.js:1085 meldet im
+ * Fehlerfall { ok:false, msg }. Dieser Rueckgabewert wurde verworfen und die
+ * dirty-Marke trotzdem geloescht: bei voller Platte oder blockiertem Datenordner
+ * galt der Stand als gesichert und war beim Beenden weg. Bei 1m-Kerzen endgueltig,
+ * denn Yahoo gibt nur sieben Tage zurueck - der Rest waechst nur durchs Sammeln.
+ *
+ * Ausgefuehrt geprueft und nicht per Textmarke: gefragt ist, ob der naechste Flush
+ * es WIRKLICH erneut versucht. Das steht in keiner Zeichenkette. */
+probe((async function () {
+  var versuche = 0, antwort = { ok: false, msg: 'Platte voll' };
+  var ArchF = A.baueArchiv({
+    storeGet: async function () { return null; },
+    storeSet: async function () { versuche++; return antwort; }
+  });
+  await ArchF.fuege('5m', 'TESTSYM', [[TSp, 100, 10], [TSp + 300000, 101, 12]]);
+  var rF1 = await ArchF.speichere(true);
+  ok(rF1.misslungen === 1, 'Archiv: ein gescheiterter Flush wird als solcher gemeldet', rF1.misslungen);
+  ok(ArchF.flushFehler().n === 1 && /Platte voll/.test(ArchF.flushFehler().grund),
+     'Archiv: der Grund des Fehlschlags bleibt abrufbar');
+  antwort = { ok: true };
+  var rF2 = await ArchF.speichere(true);
+  ok(versuche === 2 && rF2.misslungen === 0,
+     'Archiv: der naechste Flush versucht es ERNEUT - die Aenderungsmarke blieb stehen', versuche);
+  await ArchF.speichere(true);
+  ok(versuche === 2, 'Archiv: nach dem Erfolg ist die Marke geloescht - kein Dauerschreiben', versuche);
+  ok(true, 'Archiv-Flush: der asynchrone Abschnitt ist wirklich gelaufen');
+})());
 /* Stempel-Kerzen (Befund 21.08.2026): Yahoo haengt an jede Chart-Antwort einen
  * Eintrag mit der AKTUELLEN Uhrzeit an. Der landete als Pseudo-Kerze mit krummem
  * Zeitstempel dauerhaft in der Messbasis (15:38:27 zwischen 15:30 und 15:45). */
@@ -3764,6 +3791,25 @@ console.log('\n44) Messmaschine, Scoreboard und Strategie-Eingabe (23.08.2026)')
   ok(/verweigert: true/.test(mm) && /mindestens 20 Zeichen/.test(mm),
      'Ohne Grund verweigert die Maschine die Messung');
   ok(/haltedauerKerzen > 130/.test(mm), 'C1: eine Haltedauer, die nach Minuten aussieht, wird verweigert');
+  /* Drei stille Ausfaelle der Maschine, gefunden am 25.08.2026. Alle drei haben
+   * gemeinsam, dass die Messung WEITERLAEUFT und ein Ergebnis liefert, obwohl ein
+   * Teil ihrer Eingabe fehlte. Das ist schlimmer als ein Abbruch: eine fehlende Zahl
+   * faellt auf, eine falsche nicht. */
+  ok(/ladeUniversum\.verworfen\.push\(sym \+ ': Datei unlesbar/.test(mm) &&
+     /ladeUniversum\.verworfen\.push\(sym \+ ': keine Kerzen/.test(mm),
+     'Eine unlesbare Archivdatei wird gezaehlt - der Kommentar versprach das, der Code tat es nicht');
+  ok(/baueQuerschnitt\.merkmalFehler\+\+/.test(mm) && /baueQuerschnitt\.merkmalFehler = 0;/.test(mm),
+     'Ein werfendes Querschnitts-Merkmal wird gezaehlt - sonst schrumpft die Rangfolge unsichtbar');
+  ok(/fuehreAus\.fehler = \(fuehreAus\.fehler \|\| 0\) \+ 1;/.test(mm) &&
+     /fuehreAus\.fehler = 0; fuehreAus\.letzterFehler = '';/.test(mm),
+     'Eine werfende Ausstiegsregel wird gezaehlt und je Lauf zurueckgesetzt');
+  /* Der Kern: das Ergebnis eines Laufs mit defekter Ausstiegsregel sieht PLAUSIBEL aus,
+   * weil Signal und Kontrolle dieselbe fuehreAus benutzen und der Stop auf beiden
+   * Seiten wegfaellt. Ohne diese Warnung wuerde jemand darauf eine Entscheidung stuetzen. */
+  ok((mm.match(/P\.warne\('DEFEKT'/g) || []).length === 2,
+     'Ein defektes Messgeschirr meldet sich als DEFEKT - nicht als Fehlerart der Methode');
+  ok(/ausstiegsregelFehler: fuehreAus\.fehler/.test(mm) && /merkmalFehler: baueQuerschnitt\.merkmalFehler/.test(mm),
+     'Beide Defekt-Zaehler stehen im Protokoll (F1), nicht nur in der Warnung');
 
   /* Eingabe: schreibt nur in den Datenordner, nur .js, nur sichere Kennung, nie ueberschreiben */
   var ws = mj.slice(mj.indexOf("ipcMain.handle('write-strategie'"), mj.indexOf("ipcMain.handle('write-strategie'") + 1400);
@@ -6590,6 +6636,15 @@ console.log('\n46) Was die App dauerhaft aufzeichnet');
    * abgeschalteter Sammler genauso aus wie ein fehlerfreier. */
   ok(/HEALTH\.spannenTage = \(HEALTH\.spannenTage \|\| 0\) \+ neu;/.test(dep),
      'Auch der Erfolg wird gezaehlt - sonst ist Stille nicht von Fehlerfreiheit zu unterscheiden');
+  /* Der Analyse-Export ist die Leitung, ueber die SAEMTLICHE Gesundheitszahlen die App
+   * verlassen. Faellt er still aus, schweigen mit ihm alle Zaehler, die einen anderen
+   * stillen Ausfall melden sollten. Ein Waechter, der selbst lautlos ausfallen kann,
+   * ist keiner - deshalb steht diese Zusicherung hier und nicht bei der Diagnose. */
+  ok(/HEALTH\.exportFail = \(HEALTH\.exportFail \|\| 0\) \+ 1/.test(dep) &&
+     /HEALTH\.exportFail === 1[\s\S]{0,120}melde\(/.test(dep),
+     'Ein fehlgeschlagener Analyse-Export wird gezaehlt und gemeldet, nicht zu null verschluckt');
+  ok(/analyseExportFehler: HEALTH\.exportFail/.test(dep) && /archivSchreibFehler:/.test(dep),
+     'Beide Schreibwege stehen in den Gesundheitszahlen: Export und Kursarchiv');
   ok(/function kostenMessungNeu/.test(dep), 'Die Messung des echten Schlupfs bleibt bestehen');
 
   /* --- Die Kostenmessung darf nicht auf einen Trade warten muessen ---

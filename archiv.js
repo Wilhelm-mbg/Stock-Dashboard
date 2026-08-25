@@ -241,6 +241,7 @@
   function baueArchiv(api) {
     var cache = {};        // key -> { series, dirty, geladen, letzterFlush }
     function key(iv, sym) { return 'bars_' + iv + '_' + String(sym).replace(/[^\w.^-]/g, '_'); }
+    var FLUSH_FEHLER = { n: 0, grund: '', zuletzt: 0 };
 
     async function lade(iv, sym) {
       var k = key(iv, sym);
@@ -292,19 +293,43 @@
         e.capBereiche = bereicheMerge(e.capBereiche, [[von, bis]]);
         e.dirty = true;
       },
-      /** Geänderte Serien auf die Platte schreiben – gedrosselt, außer force. */
+      /** Geänderte Serien auf die Platte schreiben – gedrosselt, außer force.
+       *  Rueckgabe: { misslungen, grund } - der Aufrufer traegt sie weiter, dieses
+       *  Modul kennt weder HEALTH noch melde(). */
       speichere: async function (force) {
         var now = Date.now();
+        var misslungen = 0;
         for (var k in cache) {
           var e = cache[k];
           if (!e.dirty) continue;
           if (!force && now - e.letzterFlush < FLUSH_MIN * 60000) continue;
           // capBereiche MUSS mitgeschrieben werden - sonst loescht der naechste Flush
           // die Kennzeichnung, weil storeSet den ganzen Datensatz ersetzt.
-          await api.storeSet(k, { series: schlank(e.series), updatedAt: now,
+          var r = await api.storeSet(k, { series: schlank(e.series), updatedAt: now,
             capBereiche: e.capBereiche && e.capBereiche.length ? e.capBereiche : undefined });
+          /* storeSet WIRFT NICHT. main.js:1085 gibt im Fehlerfall { ok:false, msg }
+           * zurueck. Bis zum 25.08.2026 wurde dieser Rueckgabewert verworfen und die
+           * dirty-Marke trotzdem geloescht: bei voller Platte oder blockiertem
+           * Datenordner galt der Stand als gesichert, und beim Beenden war alles seit
+           * dem letzten echten Flush weg. Bei 1m-Kerzen ist das endgueltig - Yahoo gibt
+           * nur sieben Tage zurueck, der Rest waechst ausschliesslich durchs Sammeln.
+           *
+           * Die Marke stehen zu lassen genuegt: der naechste Flush versucht es erneut.
+           * Der Zaehler ist die Sichtbarkeit, das continue ist die Rettung. */
+          if (r && r.ok === false) {
+            misslungen++;
+            FLUSH_FEHLER.n++;
+            FLUSH_FEHLER.grund = String(r.msg || 'unbekannt');
+            FLUSH_FEHLER.zuletzt = now;
+            continue;                       // dirty NICHT loeschen
+          }
           e.dirty = false; e.letzterFlush = now;
         }
+        return { misslungen: misslungen, grund: FLUSH_FEHLER.grund };
+      },
+      /** Wie oft ein Flush seit dem Start scheiterte. Fuer die Gesundheitsanzeige. */
+      flushFehler: function () {
+        return { n: FLUSH_FEHLER.n, grund: FLUSH_FEHLER.grund, zuletzt: FLUSH_FEHLER.zuletzt };
       },
       /** Abdeckung je Zeitrahmen über eine Symbolliste: {tageMin, tageMedian, symbole}. */
       abdeckung: async function (iv, syms) {

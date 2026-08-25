@@ -139,10 +139,18 @@ function ladeUniversum(archivPfad, intervall, filter) {
       var j = JSON.parse(fs.readFileSync(path.join(archivPfad, f), 'utf8'));
       if (j && Array.isArray(j.series) && j.series.length) {
         var kaputt = reiheKaputt(j.series);
-        if (kaputt) { (ladeUniversum.verworfen = ladeUniversum.verworfen || []).push(sym + ': ' + kaputt); }
+        if (kaputt) { ladeUniversum.verworfen.push(sym + ': ' + kaputt); }
         else out[sym] = j.series;
+      } else {
+        ladeUniversum.verworfen.push(sym + ': keine Kerzen in der Datei');
       }
-    } catch (e) { /* unlesbar = nicht im Universum; wird unten gezaehlt */ }
+      /* Der Kommentar hier lautete bis zum 25.08.2026 "wird unten gezaehlt" - und
+       * genau das geschah nicht: ladeUniversum.verworfen wurde ausschliesslich von
+       * reiheKaputt gefuellt. Eine abgeschnittene oder gesperrte Archivdatei fiel
+       * lautlos aus dem Universum, und F1 meldete "geprueft: 13" statt 14. Die
+       * Messung lief auf einem kleineren Universum, als ihr Protokoll behauptete.
+       * Jetzt wird wirklich gezaehlt - F1 nimmt verworfen ohnehin auf. */
+    } catch (e) { ladeUniversum.verworfen.push(sym + ': Datei unlesbar (' + String((e && e.message) || e).slice(0, 60) + ')'); }
   });
   return out;
 }
@@ -296,6 +304,7 @@ function baueKontrolle(universum, haltedauerKerzen, schnittTag, vorlauf, stopNiv
  * nicht weit genug zurueckreicht, taucht in der Rangfolge nicht auf - sonst
  * bestuende der erste Rang aus jungen Werten mit kurzer Historie. */
 function baueQuerschnitt(universum, merkmal, vorlauf, mindestWerte) {
+  baueQuerschnitt.merkmalFehler = 0;
   var syms = Object.keys(universum);
   var N = syms.length;
   var symId = {};
@@ -335,7 +344,11 @@ function baueQuerschnitt(universum, merkmal, vorlauf, mindestWerte) {
       zeiger[si] = p;
       if (p >= b.length || b[p][0] !== ms) continue;
       var w = null;
-      try { w = merkmal(b, p); } catch (e) { w = null; }
+      /* Wirft das Merkmal fuer einen Teil der Werte, wird das Perzentil nur ueber die
+       * verbliebenen gebildet: "staerkstes Zehntel von 7" statt "von 14". Die Rangfolge
+       * schrumpft, ohne dass es irgendwo steht. Der Vertrag lautet "Zahl oder null" -
+       * ein Wurf ist ein Defekt, kein Normalfall, und wird deshalb gezaehlt. */
+      try { w = merkmal(b, p); } catch (e) { w = null; baueQuerschnitt.merkmalFehler++; }
       if (w == null || !isFinite(w)) continue;
       pufferWert[m] = w; pufferId[m] = si; m++;
     }
@@ -394,7 +407,20 @@ function fuehreAus(pfad, einKurs, stopNiveau, params) {
     abgeschlossen.push(p);
     /* Erst JETZT darf die Regel rechnen - mit dieser Kerze als abgeschlossener. */
     var s = null;
-    try { s = stopNiveau(abgeschlossen, einKurs, params); } catch (e) { s = null; }
+    /* DER TEUERSTE STILLE AUSFALL DER MASCHINE. Wirft die Ausstiegsregel, bleibt stop
+     * fuer immer null und JEDER Trade laeuft in den Zeitausstieg. Weil Signal UND
+     * Kontrolle dieselbe fuehreAus benutzen, faellt der Stop auf beiden Seiten weg -
+     * das Ergebnis sieht deshalb nicht kaputt aus, sondern plausibel. Es ist dann
+     * keine fehlende Zahl, sondern eine FALSCHE Zahl mit Vorzeichen, auf die jemand
+     * eine Handelsentscheidung stuetzt.
+     * Gezaehlt statt geworfen, damit ein Lauf nicht mitten in der Auswertung abbricht -
+     * messe() weist ihn dafuer als defekt aus, nicht als Ergebnis. */
+    try { s = stopNiveau(abgeschlossen, einKurs, params); }
+    catch (e) {
+      s = null;
+      fuehreAus.fehler = (fuehreAus.fehler || 0) + 1;
+      if (!fuehreAus.letzterFehler) fuehreAus.letzterFehler = String((e && e.message) || e).slice(0, 120);
+    }
     stop = (typeof s === 'number' && isFinite(s)) ? s : null;
   }
   return { kerze: pfad.length, kurs: pfad[pfad.length - 1].schluss, grund: 'Zeit' };
@@ -551,6 +577,7 @@ function baueQuerschnittKontrolle(universum, haltedauerKerzen, vorlauf, stopNive
  * ========================================================================== */
 function messe(strategie, archivPfad, optionen) {
   optionen = optionen || {};
+  fuehreAus.fehler = 0; fuehreAus.letzterFehler = '';
   var P = new Protokoll();
   var start = Date.now();
   var S = strategie;
@@ -876,12 +903,29 @@ function messe(strategie, archivPfad, optionen) {
   var verworfen = ladeUniversum.verworfen || [];
   P.entscheide('F1 Datenpruefung', { geprueft: Object.keys(U).length + verworfen.length },
     { verworfeneReihen: verworfen.length, gestutzteKontrollkerzen: baueKontrolle.gestutzt || 0,
-      toepfe: baueKontrolle.toepfe || 0 },
+      toepfe: baueKontrolle.toepfe || 0,
+      ausstiegsregelFehler: fuehreAus.fehler || 0,
+      merkmalFehler: baueQuerschnitt.merkmalFehler || 0 },
     verworfen.length
       ? verworfen.length + ' Reihen wegen unmoeglicher Kurse oder Spruenge verworfen (' +
         verworfen.slice(0, 5).join('; ') + (verworfen.length > 5 ? ' …' : '') + '). ' +
         'Die Kontrolle ist zusaetzlich an den 1-%-Quantilen jedes Topfes gestutzt.'
       : 'Keine Reihe auffaellig. Die Kontrolle ist an den 1-%-Quantilen jedes Topfes gestutzt.');
+
+  /* DEFEKT ist keine Fehlerart der Methode, sondern ein kaputtes Messgeschirr. Eine
+   * Kennung aus FEHLERTYPEN.md waere hier falsch: dort stehen Denkfehler, hier steht
+   * ein Werkzeug, das nicht funktioniert hat. */
+  if (fuehreAus.fehler) {
+    P.warne('DEFEKT', 'Die Ausstiegsregel hat ' + fuehreAus.fehler + '-mal geworfen (' +
+      fuehreAus.letzterFehler + '). Der Stop war danach jedes Mal aus, jeder Trade lief in ' +
+      'den Zeitausstieg - auf BEIDEN Seiten, Signal wie Kontrolle. Dieses Ergebnis ist ' +
+      'kein Befund, sondern ein Fehlschlag.');
+  }
+  if (baueQuerschnitt.merkmalFehler) {
+    P.warne('DEFEKT', 'Das Querschnitts-Merkmal hat ' + baueQuerschnitt.merkmalFehler +
+      '-mal geworfen. Die Rangfolge wurde an diesen Zeitpunkten ueber weniger Werte ' +
+      'gebildet als vorhanden - das Perzentil bedeutet dort etwas anderes.');
+  }
 
   /* SELBSTPRUEFUNG. Der Placebo laeuft mit der Kontrolle der ERSTEN Variante und
    * den Sitzungspositionen der ersten Variante - das ist der Topf, der auch das
