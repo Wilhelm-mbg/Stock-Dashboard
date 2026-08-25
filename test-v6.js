@@ -1399,9 +1399,12 @@ console.log('\n17b) Oberflaeche: Altlasten und Verdrahtung');
   ok((c2.match(/demo-api-capital\.backend-capital\.com/g) || []).length >= 1 &&
      !/[^-]api-capital\.backend-capital\.com/.test(c2.replace(/demo-api-capital/g, 'X')),
      'Kosten: weiterhin AUSSCHLIESSLICH der Demo-Host');
-  ok(/function kostenMessungNeu/.test(d) && /capSlipOpen == null \|\| p\.capSlipClose == null\) return/.test(d),
+  /* Seit Stufe E wohnen Kostenrunden und Spannen in kosten.js - dort wird
+   * geschnitten; die Statuszeile (updateCapStatus) blieb im Handelsmodul. */
+  var ks = fs.readFileSync(__dirname + '/kosten.js', 'utf8');
+  ok(/function kostenMessungNeu/.test(ks) && /capSlipOpen == null \|\| p\.capSlipClose == null\) return/.test(ks),
      'Kosten: nur vollstaendige Runden zaehlen');
-  ok(/function kostenBilanz/.test(d) && /medianPct/.test(d), 'Kosten: Bilanz ueber den Median, kein Ausreisser dominiert');
+  ok(/function kostenBilanz/.test(ks) && /medianPct/.test(ks), 'Kosten: Bilanz ueber den Median, kein Ausreisser dominiert');
   ok(/angenommen: /.test(d), 'Kosten: die gemessene Zahl steht neben der Annahme der Studien');
   ok(/kb\.n < 20 \? 'noch zu wenige Runden/.test(d), 'Kosten: unter 20 Runden gibt es kein Urteil');
   var diag2 = fs.readFileSync(__dirname + '/diagnose.js', 'utf8');
@@ -1411,15 +1414,15 @@ console.log('\n17b) Oberflaeche: Altlasten und Verdrahtung');
      'Kosten: der Einwilligungstext nennt die neue Kategorie');
 
   // --- Spannen-Messung: die Kostenhuerde direkt aus Geld/Brief (22.08.2026) ---
-  ok(/function spannenProbe/.test(d) && d.indexOf('window.CapAPI.enabled() && window.CapAPI.quote') !== -1,
+  ok(/function spannenProbe/.test(ks) && ks.indexOf('window.CapAPI.enabled() && window.CapAPI.quote') !== -1,
      'Spannen: Messung laeuft nur mit verbundener Demo-API');
-  ok(d.indexOf('window.Dash.marketOpen())) return;') !== -1,
+  ok(ks.indexOf('window.Dash.marketOpen())) return;') !== -1,
      'Spannen: nur bei offener Boerse (geschlossen sind Spannen wertlos)');
-  ok(d.indexOf('i < 6 && i < syms.length') !== -1, 'Spannen: hoechstens sechs Werte je Takt - schont die API');
-  ok(d.indexOf('q.spreadPct < 0.2') !== -1, 'Spannen: unplausible Werte werden verworfen');
-  ok(/function spannenBilanz/.test(d) && d.indexOf('Erst je Wert den Median') !== -1,
+  ok(ks.indexOf('i < 6 && i < syms.length') !== -1, 'Spannen: hoechstens sechs Werte je Takt - schont die API');
+  ok(ks.indexOf('q.spreadPct < 0.2') !== -1, 'Spannen: unplausible Werte werden verworfen');
+  ok(/function spannenBilanz/.test(ks) && ks.indexOf('Erst je Wert den Median') !== -1,
      'Spannen: erst je Wert Median, dann ueber die Werte - kein Symbol dominiert');
-  ok(d.indexOf('sp.proben.length < 10) return null') !== -1, 'Spannen: unter zehn Proben gibt es kein Urteil');
+  ok(ks.indexOf('sp.proben.length < 10) return null') !== -1, 'Spannen: unter zehn Proben gibt es kein Urteil');
   ok(diag2.indexOf('spannen: (function') !== -1 && diag2.indexOf('spreadPct: p') === -1,
      'Spannen: Diagnose meldet nur Aggregate, keine Einzelkurse');
   ok(/quote: async function/.test(c2) && c2.indexOf('/markets/') !== -1,
@@ -6977,20 +6980,25 @@ console.log('\n45) Release-Routine (tools/release.js)');
 console.log('\n46) Was die App dauerhaft aufzeichnet');
 (function () {
   var dep = fs.readFileSync(__dirname + '/depot.js', 'utf8');
+  /* Seit Stufe E wohnen die Aufzeichner in kosten.js; die Handelspfad-AUFRUFE
+   * (stempeln, Fehler festhalten) bleiben im Handelsmodul - jede Marke schneidet
+   * an ihrer Stelle. */
+  var ks6 = fs.readFileSync(__dirname + '/kosten.js', 'utf8');
 
   /* --- Die Spannen duerfen sich nicht vergessen ---
    * spannenProbe sammelt in einen Ringpuffer von 4.000 Proben. Bei rund 250 Proben je
    * Handelstag reicht der fuer etwa 16 Tage, danach faellt der aelteste Tag lautlos
    * heraus. Die Fragen, die daran haengen - haelt die Annahme 0,10 % ueber Wochen, ist
    * die enge Haelfte des Universums dauerhaft enger - brauchen aber Monate. */
-  ok(/function spannenTagFestschreiben/.test(dep),
+  ok(/function spannenTagFestschreiben/.test(ks6),
      'Je Tag und Wert wird ein Median festgeschrieben, bevor der Ringpuffer vergisst');
-  var probe = dep.slice(dep.indexOf('async function spannenProbe'), dep.indexOf('setInterval(spannenProbe'));
+  ok(ks6.indexOf('async function spannenProbe') >= 0, 'Der Sammler ist auffindbar');
+  var probe = ks6.slice(ks6.indexOf('async function spannenProbe'), ks6.indexOf('function spannenTagFestschreiben'));
   var iFest = probe.indexOf('spannenTagFestschreiben()');
   var iKapp = probe.indexOf('slice(0, 4000)');
   ok(iFest > -1 && iKapp > -1 && iFest < iKapp,
      'Festgeschrieben wird VOR dem Kappen - sonst ist der aelteste Tag schon weg');
-  var fest = dep.slice(dep.indexOf('function spannenTagFestschreiben'), dep.indexOf('setInterval(spannenProbe'));
+  var fest = ks6.slice(ks6.indexOf('function spannenTagFestschreiben'), ks6.indexOf('function verkabeln(deps)'));
   ok(/5 \* 365/.test(fest),
      'Die Tagesbilanz wird erst nach Jahren aufgeraeumt - sie ist der Zweck der Uebung');
 
@@ -6998,7 +7006,7 @@ console.log('\n46) Was die App dauerhaft aufzeichnet');
    * kostenMessungNeu misst den echten Schlupf, feuert aber nur bei gespiegelten
    * Positionen. Am 25.08.2026 hatte KEINE der fuenf offenen Positionen eine capDealId;
    * die Messung stand auf 0 Runden und waere dort geblieben. */
-  ok(/function spanneJetzt/.test(dep) && /function spanneStempeln/.test(dep),
+  ok(/function spanneJetzt/.test(ks6) && /function spanneStempeln/.test(ks6),
      'Jeder Trade bekommt die notierte Spanne mit - unabhaengig von der Demo-Spiegelung');
   var auf = (dep.match(/spanneStempeln\(trade, 'open'\)/g) || []).length;
   var zu = (dep.match(/spanneStempeln\(pos, 'close'\)/g) || []).length;
@@ -7012,36 +7020,36 @@ console.log('\n46) Was die App dauerhaft aufzeichnet');
      'Jede Oeffnung und jede Schliessung ist gestempelt - keine Stelle vergessen',
      auf + '/' + offen + ' offen, ' + zu + '/' + ende + ' zu');
   /* Ohne Proben wird NICHTS behauptet - ein erfundener Wert waere schlimmer als keiner. */
-  var sj = dep.slice(dep.indexOf('function spanneJetzt'), dep.indexOf('function spanneStempeln'));
+  var sj = ks6.slice(ks6.indexOf('function spanneJetzt'), ks6.indexOf('function spanneStempeln'));
   ok(/return null/.test(sj), 'Liegt keine Probe vor, wird nichts gestempelt statt geraten');
 
   /* --- Ein Fehlschlag, den niemand sieht, wird nicht behoben --- */
-  ok(/function capFehlerNeu/.test(dep) && /capFehlerNeu\(tr\.sym, r\)/.test(dep),
+  ok(/function capFehlerNeu/.test(ks6) && /capFehlerNeu\(tr\.sym, r\)/.test(dep),
      'Scheitert die Spiegelung, wird der Grund dauerhaft festgehalten (nicht nur HEALTH)');
 
   /* --- Was schon da war, bleibt --- */
   ok(/D\.patience\[dk\]\[reason\]/.test(dep), 'Nicht gehandelte Signale werden weiter je Tag gezaehlt');
-  ok(/D\.spannen\.proben\.unshift/.test(dep), 'Die Spannen-Probe laeuft weiter');
+  ok(/D\.spannen\.proben\.unshift/.test(ks6), 'Die Spannen-Probe laeuft weiter');
   /* Die Historie aus Kerzen darf die Live-Messung weder ersetzen noch ueberschreiben.
    * Quote-Schnappschuss und Kerzenschluss-Bid/Ask sind nicht dieselbe Groesse. */
   /* Seit Stufe E: EINE Definition (depot.js, beim Kosten-Bestand), zwei Auswerter -
    * capBackfill in depot.js und massenBackfill in backfill.js (hereingereicht). */
-  ok(/function spannenAusKerzen/.test(dep) && (dep.match(/spannenAusKerzen\(sym, sess\)/g) || []).length === 1 &&
+  ok(/function spannenAusKerzen/.test(ks6) && (dep.match(/spannenAusKerzen\(sym, sess\)/g) || []).length === 1 &&
      (fs.readFileSync(__dirname + '/backfill.js', 'utf8').match(/spannenAusKerzen\(sym, sess\)/g) || []).length === 1,
      'Die Spanne wird an beiden Backfill-Stellen ausgewertet');
-  ok(dep.indexOf("if (da && da.q !== 'kerze') continue;") !== -1,
+  ok(ks6.indexOf("if (da && da.q !== 'kerze') continue;") !== -1,
      'Ein aus Kerzen gewonnener Tag ueberschreibt nie einen aus Live-Proben');
-  ok(/function spannenHistorie/.test(dep) && /Kerzenschluss-Bid\/Ask, nicht Quote-Proben/.test(dep),
+  ok(/function spannenHistorie/.test(ks6) && /Kerzenschluss-Bid\/Ask, nicht Quote-Proben/.test(dep),
      'Die Kerzen-Historie steht NEBEN der Live-Messung und sagt, was sie ist');
   /* Ein Fehler, der keinen Fehler erzeugt, ist die teuerste Sorte: Faellt die
    * Verdrahtung weg, sammelte spannenAusKerzen lautlos nichts. Ein Wurf waere hier
    * falsch (er braeche den Backfill ab, der auch das Kursarchiv fuellt) - also muss
    * es zaehlen und melden. Diese drei Zusicherungen halten genau das fest. */
-  ok(/HEALTH\.spannenVerdrahtung = \(HEALTH\.spannenVerdrahtung \|\| 0\) \+ 1/.test(dep) &&
-     /HEALTH\.spannenVerdrahtung === 1[\s\S]{0,120}melde\(/.test(dep),
+  ok(/HEALTH\.spannenVerdrahtung = \(HEALTH\.spannenVerdrahtung \|\| 0\) \+ 1/.test(ks6) &&
+     /HEALTH\.spannenVerdrahtung === 1[\s\S]{0,120}melde\(/.test(ks6),
      'Fehlende Verdrahtung wird gezaehlt und einmal gemeldet, nicht verschwiegen');
-  ok(/HEALTH\.spannenOhneFeld === 5[\s\S]{0,140}melde\(/.test(dep) &&
-     /HEALTH\.spannenOhneFeld = 0;/.test(dep),
+  ok(/HEALTH\.spannenOhneFeld === 5[\s\S]{0,140}melde\(/.test(ks6) &&
+     /HEALTH\.spannenOhneFeld = 0;/.test(ks6),
      'Kerzen ohne Briefkurs: erst nach fuenf Runden in Folge gemeldet, jeder Erfolg setzt zurueck');
   ok(/spannenTageAusKerzen: HEALTH\.spannenTage/.test(dep) &&
      /spannenVerdrahtungFehlt: HEALTH\.spannenVerdrahtung/.test(dep),
@@ -7049,7 +7057,7 @@ console.log('\n46) Was die App dauerhaft aufzeichnet');
   /* Warum der positive Zaehler mit muss: "kein Fehler gezaehlt" ist erst dann eine
    * Auskunft, wenn danebensteht, wie viel wirklich angekommen ist. Sonst sieht ein
    * abgeschalteter Sammler genauso aus wie ein fehlerfreier. */
-  ok(/HEALTH\.spannenTage = \(HEALTH\.spannenTage \|\| 0\) \+ neu;/.test(dep),
+  ok(/HEALTH\.spannenTage = \(HEALTH\.spannenTage \|\| 0\) \+ neu;/.test(ks6),
      'Auch der Erfolg wird gezaehlt - sonst ist Stille nicht von Fehlerfreiheit zu unterscheiden');
   /* Der Analyse-Export ist die Leitung, ueber die SAEMTLICHE Gesundheitszahlen die App
    * verlassen. Faellt er still aus, schweigen mit ihm alle Zaehler, die einen anderen
@@ -7200,7 +7208,8 @@ console.log('\n46) Was die App dauerhaft aufzeichnet');
    * Sammelabruf vertretbar: zwei Anfragen je Runde statt sechshundert. */
   ok(/if \(document\.hidden\) return;/.test(mkFix) && !/classList\.contains\('active'\)/.test(mkFix),
      'Die Karte laedt jetzt auch im Hintergrund nach - nur bei unsichtbarem Fenster nicht');
-  ok(/function kostenMessungNeu/.test(dep), 'Die Messung des echten Schlupfs bleibt bestehen');
+  var ks7 = fs.readFileSync(__dirname + '/kosten.js', 'utf8');
+  ok(/function kostenMessungNeu/.test(ks7), 'Die Messung des echten Schlupfs bleibt bestehen');
 
   /* --- Die Kostenmessung darf nicht auf einen Trade warten muessen ---
    * Befund 25.08.2026: 0 gemessene Runden, und daran haette sich nie etwas geaendert.
@@ -7208,9 +7217,9 @@ console.log('\n46) Was die App dauerhaft aufzeichnet');
    * der Stunden-Strategie, und der Intraday-Arm ist seit dem 23.08. vom Edge-Waechter
    * pausiert. Der Schutz verhindert genau die Messung, die ueber ihn entscheiden
    * wuerde. Die Kostenfrage haengt aber gar nicht an der Strategie. */
-  ok(/async function kostenRundeMessen/.test(dep),
+  ok(/async function kostenRundeMessen/.test(ks7),
      'Es gibt eine Kostenmessung, die ohne Signal auskommt (oeffnen, sofort schliessen)');
-  var kr = dep.slice(dep.indexOf('async function kostenRundeMessen'), dep.indexOf('function kostenBilanz'));
+  var kr = ks7.slice(ks7.indexOf('async function kostenRundeMessen'), ks7.indexOf('function kostenBilanz'));
   /* Die notierte Spanne VOR der Order: nur so laesst sich Spanne von Schlupf trennen. */
   ok(/CapAPI\.quote\(sym\)/.test(kr) && /notiert:/.test(kr),
      'Die Runde haelt die notierte Spanne fest - sonst waere sie nur eine Zahl ohne Zerlegung');
@@ -7248,9 +7257,11 @@ console.log('\n46) Was die App dauerhaft aufzeichnet');
    * BTC-Runde wuerde den Median verschieben, an dem fast jede Studie haengt -
    * unsichtbar. Zwei Quellen in einer Reihe haben hier schon einmal Schaden
    * angerichtet (Capital-CFD und Yahoo). */
-  var ik = dep.slice(dep.indexOf('function istKrypto'), dep.indexOf('async function kostenRundeMessen'));
+  /* istKrypto blieb im Handelsmodul (12 Aufrufstellen) - Scheibe eng um die Funktion. */
+  var ik = dep.slice(dep.indexOf('function istKrypto'), dep.indexOf('function istKrypto') + 400);
   ok(/BTC/.test(ik) && /ETH/.test(ik), 'Krypto wird als solches erkannt');
-  var kb2 = dep.slice(dep.indexOf('function kostenBilanz'), dep.indexOf('window.__kostenBilanz'));
+  ok(ks7.indexOf('function kostenBilanz') >= 0 && ks7.indexOf('window.__kostenBilanz') >= 0, 'kostenBilanz samt Testgriff ist auffindbar');
+  var kb2 = ks7.slice(ks7.indexOf('function kostenBilanz'), ks7.indexOf('window.__kostenBilanz'));
   ok(/x\.krypto/.test(kb2),
      'Die Kostenbilanz trennt Krypto von Aktien - sonst verschiebt eine BTC-Runde den Median der Studien');
   ok(/kryptoN/.test(kb2) && /kryptoMedianPct/.test(kb2),
@@ -7272,10 +7283,10 @@ console.log('\n46) Was die App dauerhaft aufzeichnet');
    * ein Fehlschlag in den Daten: der Lauf war an einer fruehen Sperre umgekehrt, und
    * die gab nur eine Statuszeile zurueck, die beim Neuzeichnen verschwand. Ein
    * Versuch, dessen Ausgang niemand nachlesen kann, ist kein Messgeschirr. */
-  ok(/function kostenVersuchNeu/.test(dep), 'Jeder Versuch einer Kostenrunde wird festgehalten');
+  ok(/function kostenVersuchNeu/.test(ks7), 'Jeder Versuch einer Kostenrunde wird festgehalten');
   /* Jede Rueckkehr aus kostenRundeMessen muss vermerkt werden - eine vergessene
    * waere genau die stille Stelle, um die es hier geht. */
-  var kr2 = dep.slice(dep.indexOf('async function kostenRundeMessen'), dep.indexOf('function kostenBilanz'));
+  var kr2 = ks7.slice(ks7.indexOf('async function kostenRundeMessen'), ks7.indexOf('function kostenBilanz'));
   var rueck = (kr2.match(/return { ok:/g) || []).length;
   var vermerke = kr2.split('kostenVersuchNeu(').length - 1;
   ok(vermerke >= rueck - 1,
@@ -7289,7 +7300,9 @@ console.log('\n46) Was die App dauerhaft aufzeichnet');
    * spannenProbe kehrt bei geschlossener Boerse sofort um. Haengt das Festschreiben
    * dort drin, bleiben die Proben des Vortags bis zur naechsten Oeffnung unbewahrt -
    * und der Zweck der Tagesbilanz war gerade, dass nichts verlorengeht. */
-  var festAufrufe = (dep.match(/spannenTagFestschreiben()/g) || []).length;
+  /* Seit Stufe E: der Sammler ruft intern fest (kosten.js), die Takte in init()
+   * rufen ueber die Schnittstelle - beides zaehlt, die Eigenschaft bleibt. */
+  var festAufrufe = (dep.match(/Kosten.tagFestschreiben()/g) || []).length + (ks7.match(/spannenTagFestschreiben()/g) || []).length;
   ok(festAufrufe >= 3,
      'Die Tagesbilanz wird auch ausserhalb des Sammlers festgeschrieben',
      festAufrufe + ' Aufruf(e)');
@@ -7401,11 +7414,14 @@ console.log('\n47c) Stufe 0: delta80, Placebo je Haelfte, Pflichtzeilen, Kostena
   /* aufKosten und zuKosten werden beide gegen mid gemessen, `runde` ist also der volle
    * Umlauf; spreadPct = (offer-bid)/mid ist es ebenfalls. Mit *200 stand die notierte
    * Spanne doppelt so hoch wie der gemessene Umlauf. */
-  ok(!/vor\.spreadPct \* 200/.test(dep),
+  /* Seit Stufe E wohnen Runde und Bilanz in kosten.js - dort wird geschnitten;
+   * die Doppelzaehlung darf in KEINER der beiden Haelften zurueckkommen. */
+  var ksS3 = fs.readFileSync(__dirname + '/kosten.js', 'utf8');
+  ok(!/vor\.spreadPct \* 200/.test(dep) && !/vor\.spreadPct \* 200/.test(ksS3),
      'Die notierte Spanne wird nicht mehr doppelt gezaehlt');
-  ok(/notiertPct: vor\.spreadPct != null \? vor\.spreadPct \* 100/.test(dep),
+  ok(/notiertPct: vor\.spreadPct != null \? vor\.spreadPct \* 100/.test(ksS3),
      'Sie steht auf derselben Skala wie der gemessene Umlauf');
-  ok(/annahmePct: 0\.10/.test(dep),
+  ok(/annahmePct: 0\.10/.test(ksS3),
      'Die Kostenhuerde bleibt bei 0,10 % - korrigiert wurde eine Anzeige, nicht die Huerde');
 
   /* --- S4/S5/S8: die Tore stehen in CLAUDE.md, wo jede Sitzung sie liest --- */
