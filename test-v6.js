@@ -1299,7 +1299,8 @@ console.log('\n17b) Oberflaeche: Altlasten und Verdrahtung');
   // Die Oberflaeche darf die Regel nur NACHZEICHNEN, nie nachbauen: jede Markierung
   // kommt aus Q.einstiegSignal, derselben Funktion wie Studie, Backtest und Live-Scan.
   (function () {
-    var d3 = fs.readFileSync(__dirname + '/depot.js', 'utf8');
+    /* Seit Stufe E wohnt die stc-Familie in der eigenen Datei - dort wird geschnitten. */
+    var d3 = fs.readFileSync(__dirname + '/strategiechart.js', 'utf8');
     var h3 = fs.readFileSync(__dirname + '/index.html', 'utf8');
     /* Seit Issue #68 steht die Rechnung als stcRechnen VOR runStrategieChart, damit die
      * aufgeklappte Positionszeile dieselbe Rechnung benutzt. Der Schnitt muss beide
@@ -3501,7 +3502,8 @@ console.log('\n39) Kuerzel-Schreibweisen und Fehlercodes (echter Lauf 23.08.2026
 
 console.log('\n40) Strategie-Chart: Kanaele an der Kerze, fuer die sie gelten');
 (function () {
-  var d4 = fs.readFileSync(__dirname + '/depot.js', 'utf8');
+  /* Seit Stufe E wohnt die stc-Familie in der eigenen Datei - dort wird geschnitten. */
+  var d4 = fs.readFileSync(__dirname + '/strategiechart.js', 'utf8');
   var draw = d4.slice(d4.indexOf('function drawStrategieChart'), d4.indexOf('function drawStrategieIndikator'));
 
   /* Der Fehler, den das verhindern soll: Der Chart nahm an, ein Kanal ende IMMER auf
@@ -4282,8 +4284,9 @@ console.log('\n38) Audit 23.08.2026 – die fuenf Fehler duerfen nicht zurueckko
   /* --- B3: stcRunning war nur noch in der Benutzung da ---
    * Unter 'use strict' warf "Chart laden" dadurch bei jedem Klick. Die Klasse
    * insgesamt deckt jetzt der Linter ab (npm run lint); hier bleibt der Wachposten
-   * fuer genau diese Variable, weil sie schon einmal einem Umbau zum Opfer fiel. */
-  ok(/var stcRunning = false;/.test(dep),
+   * fuer genau diese Variable, weil sie schon einmal einem Umbau zum Opfer fiel.
+   * Seit Stufe E wohnt sie in strategiechart.js - der Wachposten zieht mit. */
+  ok(/var stcRunning = false;/.test(fs.readFileSync(__dirname + '/strategiechart.js', 'utf8')),
      'B3: stcRunning ist deklariert - sonst wirft der Knopf "Chart laden"');
   ok(fs.existsSync(__dirname + '/eslint.config.mjs'),
      'B3: es gibt eine Linter-Konfiguration, die undeklarierte Namen findet');
@@ -6648,9 +6651,11 @@ console.log('\n44) Oberflaeche nach Themen sortiert (Felix, Issue #68)');
    * Signale fuer denselben Wert zeigen. */
   var auf = dep.slice(dep.indexOf('async function posDetailUmschalten'),
                       dep.indexOf('function tile(name, val, sign, delta, deltaSign)'));
-  ok(/stcRechnen\(pos\.sym/.test(auf) && !/Q\.einstiegSignal/.test(auf),
+  /* Seit Stufe E laeuft der Rueckgriff ueber die Schnittstelle der eigenen Datei -
+   * die Eigenschaft bleibt dieselbe: EINE Rechnung, keine nachgebaute Logik. */
+  ok(/StrategieChart\.rechnen\(pos\.sym/.test(auf) && !/Q\.einstiegSignal/.test(auf),
      'Die aufgeklappte Zeile rechnet nicht selbst, sondern nutzt stcRechnen');
-  ok(/beste\.ab <= STC_IV/.test(auf),
+  ok(/beste\.ab <= window\.StrategieChart\.IV/.test(auf),
      'Der eigene Einstieg wird nur markiert, wenn er wirklich im Bild liegt');
 
   /* --- Punkt 4: ausserboerslicher Kurs auch oben im Dashboard --- */
@@ -8255,9 +8260,13 @@ console.log('\n58) Wiederholungs-Waende: eine Sammelzeile statt dreissig gleiche
      stcBlock.indexOf('id="stcAusgabe"') < stcBlock.indexOf('id="stcChart"') &&
      stcBlock.indexOf('id="stcAusgabe"') < stcBlock.indexOf('Entscheidungskanal'),
      'Strategie-Chart: SVG UND Legende liegen im Behaelter, der vor dem ersten Laden zu ist');
-  /* Der eigentliche Punkt: ohne diese vier Zeilen in depot.js waere der Chart nach
-   * dem Laden unsichtbar - gruenes Markup, tote Oberflaeche. */
-  var stcLauf = dep.slice(dep.indexOf('async function runStrategieChart'), dep.indexOf('function drawStrategieChart'));
+  /* Der eigentliche Punkt: ohne diese vier Zeilen im Lade-Lauf waere der Chart nach
+   * dem Laden unsichtbar - gruenes Markup, tote Oberflaeche. Seit Stufe E schneidet
+   * die Marke in der eigenen Datei; die Auffindbarkeits-Pruefung macht aus einem
+   * stillen indexOf-Fehlschnitt einen lauten. */
+  var scq = fs.readFileSync(__dirname + '/strategiechart.js', 'utf8');
+  ok(scq.indexOf('async function runStrategieChart') >= 0, 'Strategie-Chart: der Lade-Lauf ist auffindbar');
+  var stcLauf = scq.slice(scq.indexOf('async function runStrategieChart'), scq.indexOf('function drawStrategieChart'));
   ok(/getElementById\('stcAusgabe'\)/.test(stcLauf) && /getElementById\('stcLeer'\)/.test(stcLauf),
      'Strategie-Chart: das Laden schaltet den Leerzustand ab und die Ausgabe frei');
   ok(stcLauf.indexOf("getElementById('stcAusgabe')") > stcLauf.indexOf('if (!r.ok)') &&
