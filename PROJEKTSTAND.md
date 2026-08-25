@@ -159,6 +159,19 @@ steht, ist nach zwei Stunden verloren.*
 
 *Fragen, an denen Arbeit hängt.*
 
+- **Die Issue-Wache läuft nicht mehr.** Vom PM am 26.08. festgestellt: der Aufgaben-Ordner
+  `.claude/scheduled-tasks/issue-wache/` liegt noch da (Anleitung vom 24.08. abends), aber
+  die Aufgabe ist **nicht mehr registriert** — sie steht in keiner Aufgabenliste. Sie
+  sollte alle 30 Minuten laufen. Folge: neue Meldungen bleiben liegen, bis jemand von Hand
+  hinsieht (#83 und #89 lagen so über vier Stunden). Mindestens das zweite Verschwinden.
+  Wilhelm wollte sie **in der Cloud** neu anlegen und an „neues Issue" binden — das ist
+  **blockiert**, siehe unten. Entscheidung ausstehend: Cloud einrichten oder lokal mit
+  30-Minuten-Takt neu registrieren.
+- **Cloud-Routinen sind derzeit nicht anlegbar.** Der PM hat es am 26.08. versucht: die
+  Schnittstelle verlangt `ccr.environment_id` (eine Cloud-Umgebung, die an das Repo
+  gebunden ist). Auf diesem Rechner ist keine hinterlegt. Das Einrichten geht nur über
+  Wilhelms Konto — keine Sitzung kann es nachholen. **Solange das fehlt, ist jede
+  Ereignis-Bindung (GitHub-Webhook auf „Issue geöffnet") nicht baubar.**
 - **Zweites Ja zum Handel-aus-Renderer-Umbau** — fällig, sobald der Plan als Dokument vorliegt.
 
 ---
