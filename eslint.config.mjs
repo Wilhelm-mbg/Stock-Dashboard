@@ -95,5 +95,20 @@ export default [
       globals: { ...globals.node, ...globals.browser, ...fensterGlobals }
     },
     rules: { ...echteFehler, 'no-redeclare': 'off', 'no-self-compare': 'off' }
+  },
+
+  /* Die Konfiguration des Linters lief als EINZIGE Quelldatei des Repos an ihm vorbei:
+   * kein files-Muster traf auf .mjs zu, sie wurde also mit null Regeln geprueft
+   * (Issue #76, Punkt 4). Ein Linter, der sich selbst nicht prueft, ist genau die
+   * Sorte blinder Fleck, gegen die er gebaut wurde.
+   * sourceType MUSS 'module' sein - mit 'script' waere schon `export default` ein
+   * Parserfehler und der Lauf braeche ab, statt zu pruefen. */
+  {
+    files: ['*.mjs'],
+    languageOptions: {
+      ecmaVersion: 2022, sourceType: 'module',
+      globals: { ...globals.node }
+    },
+    rules: { ...echteFehler }
   }
 ];

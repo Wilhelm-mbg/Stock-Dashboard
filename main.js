@@ -446,11 +446,20 @@ try {
     // Patchen schon einmal still zerlegt
     const teile = String(t && t.repo || '').split('/');
     const repoOk = teile.length === 2 && teile.every((x) => x.length > 0 && /^[\w.-]+$/.test(x));
-    if (t && repoOk && typeof t.token === 'string' && t.token.length > 20) {
+    /* Der Platzhalter der Vorlage war 25 Zeichen lang und bestand damit die reine
+     * Laengenpruefung (Issue #76, Punkt 3). Wer die Vorlage kopierte, ohne das Token
+     * einzutragen, bekam KEINEN Konfigurationsfehler: die App hielt die Datei fuer
+     * gueltig, versuchte zu senden und scheiterte erst bei GitHub - sichtbar nirgends.
+     * Die Vorlage ist gekuerzt; diese Pruefung faengt zusaetzlich den Fall ab, dass
+     * jemand eine aeltere Vorlage benutzt oder den Platzhalter stehen laesst. */
+    const istPlatzhalter = typeof t.token === 'string' && t.token.indexOf('HIER_EINFUEGEN') !== -1;
+    if (t && repoOk && typeof t.token === 'string' && t.token.length > 20 && !istPlatzhalter) {
       TELEMETRIE = t;
       TELEMETRIE_GRUND = 'ok';
     } else {
-      TELEMETRIE_GRUND = 'telemetrie.json gefunden, aber ungültig (repo ' + (repoOk ? 'ok' : 'fehlerhaft') + ', tokenLen ' + String(t && t.token ? t.token.length : 0) + ')';
+      TELEMETRIE_GRUND = istPlatzhalter
+        ? 'telemetrie.json gefunden, aber das Token ist noch der Platzhalter aus der Vorlage - bitte ein echtes Token eintragen'
+        : 'telemetrie.json gefunden, aber ungültig (repo ' + (repoOk ? 'ok' : 'fehlerhaft') + ', tokenLen ' + String(t && t.token ? t.token.length : 0) + ')';
     }
   }
 } catch (e) { TELEMETRIE_GRUND = 'Fehler beim Laden: ' + String(e.message || e); }

@@ -4218,6 +4218,27 @@ console.log('\n38) Audit 23.08.2026 – die fuenf Fehler duerfen nicht zurueckko
      'B3: stcRunning ist deklariert - sonst wirft der Knopf "Chart laden"');
   ok(fs.existsSync(__dirname + '/eslint.config.mjs'),
      'B3: es gibt eine Linter-Konfiguration, die undeklarierte Namen findet');
+  /* Zwei Punkte aus Issue #76 (25.08.2026), beide von derselben Sorte: eine Pruefung,
+   * die es gibt, aber nichts prueft.
+   *
+   * Punkt 4: Kein files-Muster traf auf .mjs zu. Die Konfiguration des Linters war
+   * damit die EINZIGE Quelldatei des Repos, die er selbst nicht ansah - gemessen mit
+   * `eslint --print-config`: null aktive Regeln. Nachgewiesen behoben: 17 Regeln,
+   * sourceType 'module', und eine Probedatei mit `no-undef` faellt jetzt durch. */
+  var esCfg = fs.readFileSync(__dirname + '/eslint.config.mjs', 'utf8');
+  ok(/files: \['\*\.mjs'\]/.test(esCfg) && /sourceType: 'module'/.test(esCfg),
+     'Der Linter prueft auch .mjs - sonst sieht er seine eigene Konfiguration nicht an');
+  /* Punkt 3: Der Platzhalter der Vorlage war 25 Zeichen lang und bestand damit die
+   * Laengenpruefung in main.js. Wer die Vorlage kopierte, ohne ein Token einzutragen,
+   * bekam KEINEN Konfigurationsfehler - die App hielt die Datei fuer gueltig und
+   * scheiterte erst bei GitHub, sichtbar nirgends. Beide Haelften werden geprueft:
+   * die gekuerzte Vorlage UND die Pruefung, die eine aeltere Vorlage abfaengt. */
+  var vorlage = JSON.parse(fs.readFileSync(__dirname + '/telemetrie.json.vorlage', 'utf8'));
+  ok(vorlage.token.length <= 20,
+     'Der Platzhalter der Telemetrie-Vorlage faellt durch die Laengenpruefung', vorlage.token.length);
+  var mjT = fs.readFileSync(__dirname + '/main.js', 'utf8');
+  ok(/istPlatzhalter/.test(mjT) && /!istPlatzhalter/.test(mjT),
+     'und main.js weist einen stehengebliebenen Platzhalter ausdruecklich ab');
 
   /* --- B5: der Regime-Anker forderte mehr Kerzen, als sein Abruf liefern kann --- */
   // Bis zum catch, NICHT bis zum ersten "return SPY_REGIME.auf" - das ist die frühe
