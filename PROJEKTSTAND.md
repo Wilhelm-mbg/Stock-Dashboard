@@ -39,40 +39,16 @@ Damit ist vom Struktur-Plan nur noch Stufe F offen.
 *Was freigegeben ist und noch niemand macht. Wer eine Zeile nimmt, trägt sich unter
 „Läuft gerade" ein und streicht sie hier.*
 
-**Sofort, klein, vorgezogen (Wilhelm 26.08.):**
-
-- **#83 / #89 — „Meine Papiere" ganz nach Vermögen. FREIGEGEBEN, Wilhelm 26.08.:
-  unter „Heute" verschwindet der Abschnitt vollständig.** Damit gilt #89 vor #83, wo die
-  beiden sich widersprachen. Belegt `index.html`, `bestandui.js`, `test-v6.js` — nicht
-  gleichzeitig mit Stufe F Punkt 1 anfassen. Was zu tun ist:
-  1. **Heute → Überblick:** Überschrift und `#bestandListe` raus (`index.html:786–792`).
-  2. **Der Signalstand darf nicht ersatzlos verschwinden.** Er zieht in die Vermögen-
-     Tabelle mit um — Kurzfrist-/Mittelfrist-Spalte an `#bestandTabelle`. Ohne das wäre
-     Felix' Wunsch #71 kommentarlos gestrichen statt umgezogen. Ob die Gruppierung nach
-     Signalstand mitkommt oder zwei Spalten genügen, entscheidet die bauende Sitzung.
-  3. **#83-Inhalte in der Vermögen-Tabelle nachziehen** (heute noch offen, gegen
-     `bestandui.js` geprüft): Spalte **„seit Jahresbeginn"**, eine **Summenzeile** unter
-     den Zeilen (es gibt gar keine), **Absprung in den Aktien-Explorer** (die alte
-     Heute-Liste hatte ihn über `data-bsym`, die Tabelle nicht). Bereits erfüllt:
-     „die gesamte Summe der Aktie" = Spalte „Wert" (Kurs × Stück), und „Heute".
-  4. **Kreuzverweise bereinigen:** der Untertitel unter Vermögen verweist auf „Reiter
-     **Heute**" (`index.html:1597`) — dieser Verweis stirbt mit dem Abschnitt.
-  5. **Testmarken werden umgedreht, nicht abgeschwächt** — das ist hier ausdrücklich
-     erlaubt und gehört mit Begründung in den Commit: `test-v6.js:6582` sichert heute
-     *„Die Signalliste steht auf ‚Heute' — und nur dort (Felix, #71)"*. Diese Zusicherung
-     wird in ihr Gegenteil gedreht (Signalstand nur noch unter Vermögen), **weil Wilhelm
-     am 26.08. so entschieden hat** und damit #71 überschreibt. Ebenso `test-v6.js:6592`:
-     `data-info="heute.bestand"` kommt danach nur noch **einmal** vor, nicht zweimal.
-     Der Registerschlüssel selbst bleibt `heute.bestand` — umbenennen hieße den
-     Registerblock anfassen, in dem ein Messsatz steht.
+**Erledigt 26.08.:** ~~#83 / #89 — „Meine Papiere“ ganz nach Vermögen.~~ `79a505b`,
+beide Meldungen geschlossen. Der Signalstand ist als zwei Spalten mitgezogen; Felix’
+Gruppierung aus #71 kommt bewusst nicht mit (Begründung im Commit und in #83).
 
 **Dann — Vorstufen der Neumessung (Messwerkzeug, keine Handelslogik). Wilhelm 26.08.:
 alle vier zuerst, die Neumessung startet erst danach.**
 
-- **#85 — laufende Quote-Stempel-Kerze abschneiden.** Abruf-Werkzeug und/oder Messmaschine
-  müssen den unfertigen letzten Balken verwerfen. **Der Tüftler hat am 26.08. gemessen,
-  dass das auch `archiv1d` betrifft** (56 % einer 80er-Stichprobe; AAPL 15,0 statt 46,8 Mio
-  Stück) — der Fund ist also größer als bei der Meldung angenommen und trifft beide Archive.
+- ~~**#85** — laufende Quote-Stempel-Kerze abschneiden.~~ **Erledigt 26.08.** (`4e36674`):
+  beide Archive verwerfen den unfertigen Balken, 2.841 vorhandene Teilkerzen entfernt.
+  **Damit ist 1 von 4 Vorstufen fertig.**
 - **#86** — `aussicht` (Tage bis t=2) feuert nie, weil `block()` kein `sd` liefert.
 - **#87** — A7-Protokolltext nennt das falsche Ausschlussfenster (`[i-lese]` statt `[i-lese-H]`).
 - **#88** — Placebo-Lauf ignoriert die Einstiegskonvention; zugleich Vorbedingung für den
@@ -117,8 +93,9 @@ Erst dann neue Untersuchungen.
 *Wer welche Dateien belegt. Trag dich ein, bevor du anfängst; nimm dich raus, wenn du
 fertig bist.*
 
-- **App-Codebase Master** — nichts belegt. Zuletzt fertig: #76, #84, #85, #83/#89
-  (`79a505b`). Nimmt als Nächstes einen Auftrag von der Tafel.
+- **App-Codebase Master** — hat **#86, #87, #88** genommen (26.08.): die drei restlichen
+  Vorstufen der Neumessung. Sie liegen alle in der Messmaschine und würden sich sonst
+  gegenseitig blockieren. **Keine Handelslogik.** Zuletzt fertig: #76, #84, #85, #83/#89.
 
 ---
 
