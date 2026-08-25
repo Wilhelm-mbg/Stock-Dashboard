@@ -9212,6 +9212,13 @@
     async function updateCapStatus() {
       var el = document.getElementById('capStatus');
       if (!el) return;
+      /* Struktur-Audit Punkt 9: derselbe Status auch neben den Zugangsdaten im
+       * Einstellungs-Dialog - Konfiguration und Zustand gehoeren nebeneinander.
+       * Ein Spiegel derselben Zeile, keine zweite Wahrheit. */
+      function spiegel() {
+        var el2 = document.getElementById('setCapStatusLive');
+        if (el2) el2.textContent = el.textContent || '– keine Anbindung eingerichtet.';
+      }
       if (!(window.CapAPI && window.CapAPI.enabled())) {
         /* Halbfertiger Zustand sichtbar machen: Zugangsdaten liegen, aber der
          * Schalter ist aus - dann passiert nichts, und bisher stand hier NICHTS,
@@ -9220,6 +9227,7 @@
         el.textContent = (s9 && s9.capKey && s9.capId && s9.capPass && !s9.capEnabled)
           ? 'Capital.com: Zugangsdaten sind hinterlegt, die Spiegelung ist aber AUS. Häkchen in den App-Einstellungen setzen – erst dann werden Signale gespiegelt und die echten Handelskosten gemessen.'
           : '';
+        spiegel();
         return;
       }
       el.textContent = 'Capital.com Demo: verbinde …';
@@ -9231,7 +9239,7 @@
       if (kb) {
         var diff = kb.medianPct - kb.annahmePct;
         txt += ' · Gemessene Handelskosten aus ' + kb.n + ' vollständigen Runden: Median ' +
-          kb.medianPct.toFixed(3) + ' % je Runde (angenommen: ' + kb.annahmePct.toFixed(2) + ' %) – ' +
+          U.dez(kb.medianPct, 3) + ' % je Runde (angenommen: ' + U.dez(kb.annahmePct, 2) + ' %) – ' +
           (kb.n < 20 ? 'noch zu wenige Runden für ein Urteil'
             : Math.abs(diff) < 0.02 ? 'die Annahme der Studien trägt'
             : diff > 0 ? 'teurer als angenommen, die Studien rechnen zu günstig'
@@ -9242,7 +9250,7 @@
          * Satz haette auf etwas gewartet, das nicht kommt. */
         if (kb && kb.kryptoN) {
           txt += ' · Krypto getrennt gemessen (' + kb.kryptoN + ' Runde(n)): Median ' +
-            kb.kryptoMedianPct.toFixed(3) + ' % je Runde – sagt NICHTS über die Spanne auf Aktien.';
+            U.dez(kb.kryptoMedianPct, 3) + ' % je Runde – sagt NICHTS über die Spanne auf Aktien.';
         }
         txt += ' · Kostenmessung aus Ausführungen: noch keine Runde. Sie startet mit dem ersten ' +
           'gespiegelten Trade – oder sofort über „Kostenrunde messen“, das braucht kein Signal.';
@@ -9265,8 +9273,8 @@
       var sh = spannenHistorie();
       if (sh) {
         txt += ' · Aus dem Kursarchiv (' + sh.tage + ' Tage, ' + sh.werte + ' Werte): Median ' +
-          sh.medianPct.toFixed(3) + ' %, ' + sh.engstesPct.toFixed(3) + '–' + sh.weitestesPct.toFixed(3) + ' %' +
-          (sh.streuung ? ' – der weiteste Wert kostet das ' + sh.streuung.toFixed(2) + '-fache des engsten' : '') +
+          U.dez(sh.medianPct, 3) + ' %, ' + U.dez(sh.engstesPct, 3) + '–' + U.dez(sh.weitestesPct, 3) + ' %' +
+          (sh.streuung ? ' – der weiteste Wert kostet das ' + U.dez(sh.streuung, 2) + '-fache des engsten' : '') +
           ' (Kerzenschluss-Bid/Ask, nicht Quote-Proben).';
       }
       /* Der letzte Versuch einer Messrunde - auch ein gescheiterter. Sonst steht nach
@@ -9277,6 +9285,7 @@
           (kv.ok ? kv.grund : 'nicht gelaufen – ' + kv.grund);
       }
       el.textContent = txt;
+      spiegel();
     }
     /* Messrunde von Hand. Setzt echte Orders auf dem Demo-Konto ab - deshalb eine
      * Rueckfrage davor und ein Riegel gegen Doppelklicks. Die Symbole werden
@@ -9747,9 +9756,13 @@
     setInterval(checkRemoteRec, 10 * 60000);
 
     // Benachrichtigungen
+    /* Die Checkbox wohnt seit dem Struktur-Audit (Punkt 11) im Einstellungs-Dialog -
+     * der Guard bleibt trotzdem: ein fehlendes Element darf init() nie stoppen. */
     var nE = document.getElementById('notifyEnabled');
-    nE.checked = D.notify !== false;
-    nE.addEventListener('change', function () { D.notify = nE.checked; save(); });
+    if (nE) {
+      nE.checked = D.notify !== false;
+      nE.addEventListener('change', function () { D.notify = nE.checked; save(); });
+    }
     if (D.intraday.enabled) {
       document.getElementById('idStatus').textContent = window.Dash.marketOpen() ? 'Aktiv.' : 'Aktiv – wartet auf US-Handelsbeginn (15:30 Uhr Berlin).';
     } else if (D.intraday.schattenImmer !== false) {

@@ -1387,7 +1387,9 @@
     </div>
     <div style="display:flex; gap:14px; align-items:center; flex-wrap:wrap; margin-bottom:10px;">
       <h2 style="margin:0;">Offene Positionen</h2>
-      <label style="font-size:var(--fs-neben); display:flex; align-items:center; gap:6px; margin-left:auto; color:var(--ink-2);"><input type="checkbox" id="notifyEnabled" checked> Benachrichtigung bei Trades</label>
+      <!-- Struktur-Audit Punkt 11: die Benachrichtigungs-Einstellung wohnt bei den
+           App-Einstellungen, nicht als einsame Checkbox neben einer Überschrift. -->
+      <span style="font-size:var(--fs-neben); color:var(--muted); margin-left:auto;">Benachrichtigungen: in den App-Einstellungen</span>
     </div>
     <div class="panel" id="positionsPanel"><div class="loading">Noch keine Positionen – schalte unter „Regeln → Schalter &amp; Einstellungen“ die Intraday-Strategie ein.</div></div>
 
@@ -1572,7 +1574,10 @@
     <!-- Ohne data-sub: der Umschalter laesst diese Pille in Ruhe, sie oeffnet nur den
          vorhandenen Einstellungs-Dialog. Felix wollte die Einstellungen bei den
          Werkzeugen; ihn hierher zu kopieren waere eine zweite Wahrheit gewesen. -->
-    <button type="button" id="wzEinstellungen" title="Öffnet die App-Einstellungen">Einstellungen …</button>
+    <!-- Struktur-Audit Punkt 11: dieser Knopf ist eine AKTION (oeffnet den Dialog),
+         keine Unterseite - die gestrichelte Kante sagt das, bevor man klickt. Er heisst
+         wie der Kopfzeilen-Knopf, denn er tut dasselbe. -->
+    <button type="button" id="wzEinstellungen" style="border-style:dashed; color:var(--muted);" title="Öffnet die App-Einstellungen – derselbe Dialog wie der Knopf oben rechts">App-Einstellungen …</button>
   </div>
   <div class="sub active" id="sub-explorer">
   <div class="exp-search">
@@ -1927,6 +1932,10 @@
         Zugangsdaten werden nur lokal gespeichert (mit dem Windows-Anmeldedatenschutz verschlüsselt) und nur an
         demo-api-capital.backend-capital.com gesendet.
       </div>
+    </div>
+    <div style="margin:14px 0; border-top:1px solid var(--grid); padding-top:14px;">
+      <div style="font-weight:600; font-size:var(--fs-text); margin-bottom:8px;">Benachrichtigungen</div>
+      <label style="display:flex; align-items:center; gap:8px; font-size:var(--fs-text);"><input type="checkbox" id="notifyEnabled" checked> Benachrichtigung, wenn eine Strategie einen Trade eröffnet oder schließt</label>
     </div>
     <div style="margin:14px 0; border-top:1px solid var(--grid); padding-top:14px;">
       <div style="font-weight:600; font-size:var(--fs-text); margin-bottom:8px;">Dauerbetrieb</div>
