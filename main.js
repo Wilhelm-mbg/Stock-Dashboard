@@ -1306,7 +1306,18 @@ function setupUpdater() {
   autoUpd.on('error', (e) => updSend({ state: 'error', msg: 'Update-Fehler: ' + ((e && e.message) || e) }));
   return autoUpd;
 }
-ipcMain.handle('update-state', async () => Object.assign({ packaged: app.isPackaged, current: app.getVersion() }, updState));
+/* Struktur-Audit Punkt 8: der Renderer zeigt nach einem Update "Was ist neu" und
+ * braucht dafuer das Release-Repo. Quelle ist build.publish in package.json -
+ * dieselbe Angabe, aus der electron-builder die Update-Quelle baut. Eine zweite,
+ * abgetippte Repo-Angabe waere die Doppelpflege, an der die Telemetrie schon
+ * gescheitert ist (#76.1). */
+let RELEASE_REPO = null;
+try {
+  const pub = require('./package.json').build.publish;
+  const p0 = Array.isArray(pub) ? pub[0] : pub;
+  if (p0 && p0.owner && p0.repo) RELEASE_REPO = p0.owner + '/' + p0.repo;
+} catch (e) { /* kein publish konfiguriert - dann gibt es auch kein "Was ist neu" */ }
+ipcMain.handle('update-state', async () => Object.assign({ packaged: app.isPackaged, current: app.getVersion(), repo: RELEASE_REPO }, updState));
 ipcMain.handle('update-check', async () => {
   const u = setupUpdater();
   if (!u) return { ok: false, packaged: app.isPackaged,

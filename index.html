@@ -1853,6 +1853,20 @@
 </div>
 </div><!-- /tab-messung -->
 
+<!-- Was ist neu (Struktur-Audit Punkt 8): Die Release-Notizen werden je Vorhaben fuer
+     Anwender geschrieben, kamen aber nie bei ihnen an - nach einem Auto-Update zeigte
+     nichts, was sich geaendert hat. Gefuellt und geoeffnet von wasneu.js. -->
+<div class="modal-bg" id="wasNeuModalBg">
+  <div class="modal" style="max-width:620px;" role="dialog" aria-modal="true" aria-labelledby="wasNeuTitle">
+    <button class="btn ghost close" data-close="wasNeuModalBg">Schließen ×</button>
+    <h2 id="wasNeuTitle">Was ist neu</h2>
+    <div class="analysis" id="wasNeuBody"></div>
+    <div style="font-size:var(--fs-neben); color:var(--muted); border-top:1px solid var(--grid); margin-top:12px; padding-top:8px;">
+      Dieses Fenster erscheint einmalig nach einem Update. Später: App-Einstellungen → „Was ist neu anzeigen“.
+    </div>
+  </div>
+</div>
+
 <!-- Analyse-Modal -->
 <div class="modal-bg" id="aiModalBg">
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="aiTitle">
@@ -1998,6 +2012,7 @@
       <label style="display:flex; align-items:flex-start; gap:8px; font-size:var(--fs-text);"><input type="checkbox" id="setAutoUpdate" checked style="margin-top:3px;"><span>Neue Versionen <b>selbst herunterladen</b> und beim nächsten Beenden einspielen – die App prüft beim Start und danach alle 6 Stunden</span></label>
       <div style="display:flex; gap:8px; align-items:center; margin-top:8px; flex-wrap:wrap;">
         <button class="btn ghost" id="setUpdNowBtn" type="button">Jetzt nach Update suchen</button>
+        <button class="btn ghost" id="wasNeuZeigenBtn" type="button" title="Zeigt die Release-Notizen der installierten Version – dasselbe Fenster erscheint einmalig von selbst nach einem Update">Was ist neu anzeigen</button>
         <button class="btn" id="setUpdInstallBtn" type="button" style="display:none;">Neu starten &amp; installieren</button>
         <span id="setUpdAutoStatus" style="font-size:var(--fs-neben); color:var(--muted);"></span>
       </div>
@@ -2094,6 +2109,7 @@
 <script src="mittelfrist.js"></script>
 <script src="driftui.js"></script>
 <script src="bugs.js"></script>
+<script src="wasneu.js"></script>
 <script src="diagnose.js"></script>
 <script src="wkn.js"></script>
 <script src="marktkarte.js"></script>
