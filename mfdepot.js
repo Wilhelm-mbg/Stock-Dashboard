@@ -231,12 +231,16 @@
   }
 
   function zeige(mom, drift, daten, fehler) {
-    var e = el('mfdStatus');
-    if (fehler) { if (e) e.textContent = fehler; return; }
+    /* Ein Fehler ist hier kein Zwischenstand: er ersetzt die Kursangabe und beendet die
+     * Anzeige. Deshalb 'fehler' als Zustand - die Zeile wird eingefaerbt und faellt
+     * beim naechsten erfolgreichen Durchlauf von selbst wieder auf ihre Grundfarbe.
+     * #mfdStatus traegt class="hinweis"; der Inline-Stil ist leer, die Hilfe merkt sich
+     * genau dieses '' und stellt es wieder her - die Klassenfarbe bleibt also. */
+    if (fehler) { U.statuszeile('mfdStatus', fehler, 'fehler'); return; }
     var d = D();
-    if (e && daten) {
-      e.textContent = 'Kurse vom ' + new Date(daten.juengster).toLocaleDateString('de-DE') +
-        (Date.now() - daten.stand > 26 * 3600000 ? ' – veraltet, Nachladen angestoßen' : '') + '.';
+    if (daten) {
+      U.statuszeile('mfdStatus', 'Kurse vom ' + new Date(daten.juengster).toLocaleDateString('de-DE') +
+        (Date.now() - daten.stand > 26 * 3600000 ? ' – veraltet, Nachladen angestoßen' : '') + '.');
     }
     var eM = el('mfdMomentum');
     if (eM && mom) {
