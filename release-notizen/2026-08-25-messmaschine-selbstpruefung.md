@@ -13,3 +13,9 @@ Was das für die angezeigten Zahlen bedeutet: Mehrere Belegstände sind nach unt
 korrigiert. Der RSI(2)-Auslöser steht jetzt bei +0,054 statt +0,105 Prozentpunkten
 Vorsprung, der Kapitulations-Dip bei +0,535 statt +0,613. Beide bleiben „nicht
 entscheidbar" — die Richtung der Korrektur war aber durchweg nach unten.
+
+Im Reiter **Messung** steht das Ergebnis der Selbstprüfung jetzt ganz oben in jedem
+Entscheidungsweg, und eine Messung, die sie nicht besteht, ist schon in der Übersicht
+mit **✖ Nullpunkt** gekennzeichnet — man muss nicht erst aufklappen. Ältere Protokolle
+aus der Zeit davor werden als *ungeprüft* ausgewiesen statt stillschweigend als in
+Ordnung.

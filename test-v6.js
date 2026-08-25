@@ -3639,8 +3639,11 @@ console.log('\n44) Messmaschine, Scoreboard und Strategie-Eingabe (23.08.2026)')
   ok(!/messe\(|require\(.*messmaschine/.test(sb + mj + pj),
      'Weder Renderer noch Hauptprozess rufen die Messmaschine auf - messen bleibt ein eigener Schritt');
 
-  /* Sortierung nach Belegstatus, nicht nach Rendite */
-  ok(/RANG\s*=\s*\{\s*'bestaetigt':\s*0/.test(sb) && /RANG\[ua\] - RANG\[ub\]/.test(sb),
+  /* Sortierung nach Belegstatus, nicht nach Rendite.
+   * Der Zugriff laeuft seit dem 25.08.2026 ueber rang() statt ueber die Tabelle direkt -
+   * wegen des Rueckfalls fuer unbekannte Urteile. Was rang() dabei leistet, prueft
+   * Abschnitt 47 am laufenden Code; hier bleibt nur die Sortierregel selbst. */
+  ok(/RANG\s*=\s*\{\s*'bestaetigt':\s*0/.test(sb) && /rang\(ua\) - rang\(ub\)/.test(sb),
      'Das Scoreboard sortiert nach Belegstatus - Rendite entscheidet nur innerhalb gleichen Status');
 
   /* 100 % Einsicht: jede Entscheidung steht als Daten im Protokoll */
@@ -6269,6 +6272,62 @@ console.log('\n46) Was die App dauerhaft aufzeichnet');
   ok(/D\.patience\[dk\]\[reason\]/.test(dep), 'Nicht gehandelte Signale werden weiter je Tag gezaehlt');
   ok(/D\.spannen\.proben\.unshift/.test(dep), 'Die Spannen-Probe laeuft weiter');
   ok(/function kostenMessungNeu/.test(dep), 'Die Messung des echten Schlupfs bleibt bestehen');
+})();
+
+console.log('\n47) Anzeige der Messmaschine: unbekannte Urteile und die Selbstpruefung');
+(function () {
+  var sb = fs.readFileSync(__dirname + '/scoreboard.js', 'utf8');
+
+  /* Den reinen Teil herausschneiden und ausfuehren. Textsuche haette den Fehler nie
+   * gefunden, um den es hier geht: RANG['unbekannt'] ist undefined, und undefined ist
+   * in allen drei Verwendungen STILL - NaN beim Sortieren, false beim Vergleich, und
+   * 'color:undefined' verwirft der Browser wortlos. */
+  var von = sb.indexOf('  var RANG = {');
+  var bis = sb.indexOf('  function placeboBand(p) {');
+  ok(von !== -1 && bis > von, 'Der reine Teil des Scoreboards ist auffindbar');
+  var rein = { }; 
+  (new Function('E', sb.slice(von, bis) +
+     '\nE.rang = rang; E.label = label; E.farbe = farbe; E.placeboOk = placeboOk; E.RANG = RANG;'))(rein);
+
+  /* Der Kern: ein Urteil mit Vorbehalt ist KEIN gruenes Licht. */
+  ok(rein.farbe('bestaetigt') === 'var(--up)',
+     'Nur das blanke "bestaetigt" wird gruen');
+  ok(rein.farbe('bestaetigt-aber-nullpunkt-verschoben') !== 'var(--up)',
+     'Ein bestaetigtes Urteil auf verschobenem Nullpunkt wird NICHT gruen');
+  ok(rein.farbe('irgendein-neues-urteil-2027') !== 'var(--up)',
+     'Auch ein Urteil, das dieses Scoreboard noch gar nicht kennt, wird nicht gruen');
+  ok(rein.farbe('bestaetigt-mit-irgendwas') !== 'var(--up)',
+     'Ein Urteil, das mit "bestaetigt" nur ANFAENGT, wird nicht gruen');
+
+  /* Sortierung und Variantenwahl duerfen an einem unbekannten Urteil nicht zerbrechen. */
+  ok(rein.rang('bestaetigt') < rein.rang('bestaetigt-aber-nullpunkt-verschoben'),
+     'Der Vorbehalt sortiert hinter das saubere Urteil');
+  ok(rein.rang('unbekannt-2027') > rein.rang('widerlegt'),
+     'Ein unbekanntes Urteil sortiert ganz nach unten, nicht nach oben');
+  ok(isFinite(rein.rang('unbekannt-2027') - rein.rang('bestaetigt')),
+     'Der Vergleich zweier Raenge ergibt nie NaN - sonst ist die Reihenfolge unbestimmt');
+  ok(rein.label('unbekannt-2027').indexOf('undefined') === -1 && rein.label(null).indexOf('undefined') === -1,
+     'Ein unbekanntes Urteil zeigt seinen Namen, nie das Wort undefined');
+
+  /* Die Selbstpruefung: gemessene Abweichung gegen gemessene Aufloesung. */
+  ok(rein.placeboOk({ placebo: { tagesmittel: -0.0001, mde: 0.0013 } }) === true,
+     'Ein Placebo innerhalb der eigenen Aufloesung gilt als bestanden');
+  ok(rein.placeboOk({ placebo: { tagesmittel: -0.0017, mde: 0.0013 } }) === false,
+     'Ein Placebo jenseits der eigenen Aufloesung faellt durch - egal welches Vorzeichen');
+  ok(rein.placeboOk({ placebo: { tagesmittel: 0.0017, mde: 0.0013 } }) === false,
+     'Auch nach oben faellt er durch - geprueft wird der Betrag');
+  ok(rein.placeboOk({}) === null && rein.placeboOk({ placebo: null }) === null,
+     'Ein Protokoll aus der Zeit vor der Selbstpruefung gilt als UNGEPRUEFT, nicht als bestanden');
+
+  /* Und die Anzeige muss den Fehlschlag zeigen, bevor jemand aufklappt. */
+  ok(/spOk === false/.test(sb) && /Nullpunkt<\/span>/.test(sb),
+     'Eine fehlgeschlagene Selbstpruefung steht in der Uebersichtszeile, nicht erst im Detail');
+  ok(sb.indexOf('h += placeboBand(p);') !== -1,
+     'Der Entscheidungsweg beginnt mit der Selbstpruefung');
+
+  /* D2 gilt weiter: der neue Code liest zwei Zahlen und vergleicht sie - er rechnet nicht. */
+  ok(!/Math\.sqrt\(|function\s+statistik/.test(sb),
+     'Auch die Selbstpruefung rechnet im Renderer nichts nach - sie vergleicht Gemessenes');
 })();
 
 Promise.all(offeneProben).then(function () {
