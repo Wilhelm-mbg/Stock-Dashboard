@@ -35,16 +35,50 @@
   var letzterLauf = 0;
   var taktung = null;
 
+  function brancheJetzt() {
+    var s = document.getElementById('mkBranche');
+    return s ? s.value : '';
+  }
+
+  /** Die Auswahlliste aus den Daten fuellen - eine Branche, die es nicht gibt,
+   *  soll gar nicht erst waehlbar sein. Die Auswahl des Nutzers bleibt erhalten. */
+  function branchenAnbieten(werte) {
+    var s = document.getElementById('mkBranche');
+    if (!s) return;
+    var da = {};
+    werte.forEach(function (w) { if (w.sektor) da[w.sektor] = (da[w.sektor] || 0) + 1; });
+    var namen = Object.keys(da).sort();
+    if (s.__stand === namen.join('|')) return;      // nichts Neues, Auswahl nicht anfassen
+    s.__stand = namen.join('|');
+    var war = s.value;
+    s.innerHTML = '<option value="">alle Branchen</option>' + namen.map(function (n) {
+      return '<option value="' + esc(n) + '">' + esc(n) + ' (' + da[n] + ')</option>';
+    }).join('');
+    if (namen.indexOf(war) !== -1) s.value = war;
+  }
+
   function anzahlJetzt() {
     var s = document.getElementById('mkAnzahl');
     return s ? parseInt(s.value, 10) || 300 : 300;
   }
 
+  /** Stammdaten lesen.
+   *
+   *  EIN FEHLSCHLAG WIRD NICHT ZWISCHENGESPEICHERT. Vorher stand auch das Fehlen im
+   *  Speicher: startete die App, bevor stammdaten.json existierte, lieferte jeder
+   *  weitere Versuch den gespeicherten Fehlschlag zurueck, ohne die Datei anzusehen -
+   *  bis zum Neustart. Am 25.08.2026 kam die Datei um 12:08, und die Karte behauptete
+   *  weiter "Noch keine Stammdaten"; kein Druecken half.
+   *  Erfolg darf man sich merken (die Daten aendern sich selten). Ein Fehlen nicht -
+   *  das kann sich jede Sekunde aendern. */
   async function stammLaden() {
-    if (stamm) return stamm;
+    if (stamm && !stamm.fehlt) return stamm;
     if (!window.api || typeof window.api.marktStammdaten !== 'function') return null;
     var r = await window.api.marktStammdaten();
-    if (!r || !r.ok) { stamm = { fehlt: true, grund: (r && r.grund) || 'unbekannt', pfad: r && r.pfad }; return stamm; }
+    if (!r || !r.ok) {
+      stamm = null;                       // NICHT merken - beim naechsten Mal neu nachsehen
+      return { fehlt: true, grund: (r && r.grund) || 'unbekannt', pfad: r && r.pfad };
+    }
     stamm = r.daten || {};
     return stamm;
   }
@@ -84,12 +118,28 @@
   /** Kurs und Tagesveraenderung. Ein Abruf je Wert liefert beides: Der Chart-Kopf
    *  traegt den aktuellen Kurs UND den Schluss des Vortages. */
   async function kurseHolen(liste, melde) {
+    /* Erst abschoepfen, was die App schon weiss. Bei 300 Werten sind das die rund
+     * hundert, die Kachelreihe und Intraday-Scanner ohnehin fuehren - hundert Abrufe
+     * weniger, und die Zahlen sind so frisch wie der Rest der Oberflaeche. */
+    var ausDerApp = 0;
+    liste.forEach(function (w) {
+      var k = kursAusDerApp(w.sym);
+      if (!k) return;
+      w.kurs = k.kurs; w.pct = k.pct;
+      w.groesse = k.kurs * w.aktien;
+      w.ausApp = true;
+      ausDerApp++;
+    });
+    if (ausDerApp && melde) melde(ausDerApp, liste.length);
     var fertig = 0, idx = 0;
     var K = window.Kurse;
     if (!K || typeof K.hole !== 'function') return 0;
     async function bahn() {
       while (idx < liste.length) {
         var w = liste[idx++];
+        /* Was die App schon wusste, wird nicht noch einmal geholt - sonst waere das
+         * Abschoepfen oben reine Zierde. */
+        if (w.ausApp) { fertig++; continue; }
         try {
           var r = await K.hole(w.sym, { range: '1d', interval: '1d', bereinigt: false, wiederholen: false });
           var m = r && r.meta;
@@ -113,6 +163,19 @@
     return liste.filter(function (w) { return w.groesse > 0; }).length;
   }
 
+  /** Der Kurs, den die App OHNEHIN schon hat - erst danach wird das Netz bemueht.
+   *  Die Kachelreihe fuehrt die Dashboard-Werte live nach, der Intraday-Scanner
+   *  seine ganze Handelsliste. Beides ist frischer als ein eigener Abruf und kostet
+   *  nichts. (Wilhelm: "Koennen wir uns die live daten nicht aus der datenquelle der
+   *  intraday strategie ziehen?") */
+  function kursAusDerApp(sym) {
+    var q = window.Dash && window.Dash.quote ? window.Dash.quote(sym) : null;
+    if (q && q.price != null && q.pct != null) return { kurs: q.price, pct: q.pct };
+    var d = window.DepotAPI && window.DepotAPI.letzterKurs ? window.DepotAPI.letzterKurs(sym) : null;
+    if (d && d.kurs > 0) return d;
+    return null;
+  }
+
   function zeichnen(werte, info) {
     var kasten = document.getElementById('mkKarte');
     if (!kasten) return;
@@ -131,7 +194,11 @@
         var klein = k.b < 34 || k.h < 22;
         var titel = d.sym + ' · ' + d.name + ' · ' + (d.pct == null ? 'kein Kurs' :
           (d.pct >= 0 ? '+' : '') + d.pct.toFixed(2) + ' %') + (d.ersatz ? ' · Stückzahl handgepflegt' : '');
-        teile.push('<div title="' + esc(titel) + '" style="position:absolute; left:' + k.x.toFixed(1) +
+        /* Anklickbar (Wilhelm, 25.08.2026). Ein echter Knopf statt eines div mit
+         * Klick-Behandlung: so kommt man auch mit der Tastatur hin, und der Browser
+         * kennt den Zustand "gedrueckt" von selbst. */
+        teile.push('<button type="button" data-mksym="' + esc(d.sym) + '" data-mkname="' + esc(d.name || d.sym) +
+          '" title="' + esc(titel + ' · Klick öffnet den Aktien-Explorer') + '" style="position:absolute; left:' + k.x.toFixed(1) +
           'px; top:' + k.y.toFixed(1) + 'px; width:' + Math.max(0, k.b - 1).toFixed(1) +
           'px; height:' + Math.max(0, k.h - 1).toFixed(1) + 'px; background:rgb(' + f.rgb.join(',') + '); ' +
           'color:' + f.text + '; box-sizing:border-box; overflow:hidden; border-radius:var(--r-klein); ' +
@@ -140,13 +207,26 @@
            * Abschnitt 44 sieht nur nackte Pixelzahlen im Quelltext - eine per
            * Verkettung gebaute waere ihr entgangen. Genau so waechst die Zahl der
            * Groessen wieder nach, gegen die sie gebaut wurde. */
-          'font-size:var(' + (k.b > 70 && k.h > 44 ? '--fs-neben' : '--fs-klein') + '); line-height:1.15;">' +
+          'font-size:var(' + (k.b > 70 && k.h > 44 ? '--fs-neben' : '--fs-klein') + '); line-height:1.15; ' +
+          'border:0; padding:0; font-family:inherit; cursor:pointer;">' +
           (klein ? '' : '<b>' + esc(d.sym) + '</b>' +
             (k.h > 30 ? '<span>' + (d.pct == null ? '–' : (d.pct >= 0 ? '+' : '') + d.pct.toFixed(1) + ' %') + '</span>' : '')) +
-          '</div>');
+          '</button>');
       });
     });
     kasten.innerHTML = teile.join('');
+    /* Ein einziger Zuhoerer am Kasten statt hunderter an den Kaestchen - bei 600
+     * Werten ist das der Unterschied zwischen fluessig und zaeh. */
+    if (!kasten.__klickBereit) {
+      kasten.__klickBereit = true;
+      kasten.addEventListener('click', function (ev) {
+        var b = ev.target && ev.target.closest ? ev.target.closest('[data-mksym]') : null;
+        if (!b) return;
+        if (window.Explorer && window.Explorer.oeffne) {
+          window.Explorer.oeffne(b.getAttribute('data-mksym'), b.getAttribute('data-mkname'));
+        }
+      });
+    }
 
     var fuss = document.getElementById('mkFuss');
     if (fuss) {
@@ -243,6 +323,11 @@
       var st = await stammLaden();
       if (!st || st.fehlt) { fehlenAnbieten(st); sag(''); return; }
       var a = auswahl(anzahlJetzt());
+      /* Die Auswahlliste wird aus der VOLLEN Menge gefuellt, nicht aus der gefilterten -
+       * sonst verschwaende die eigene Branche aus der Liste, sobald man sie waehlt. */
+      branchenAnbieten(a.liste);
+      var nurBranche = brancheJetzt();
+      if (nurBranche) a.liste = a.liste.filter(function (w) { return w.sektor === nurBranche; });
       if (!a.liste.length) {
         kasten.innerHTML = '<div style="padding:14px;">Keine Werte mit Branche und Stückzahl gefunden.</div>';
         sag('');
@@ -283,15 +368,22 @@
   }
 
   document.addEventListener('DOMContentLoaded', function () {
-    var neu = document.getElementById('mkNeu');
-    if (neu) neu.addEventListener('click', laden);
     var anz = document.getElementById('mkAnzahl');
     if (anz) anz.addEventListener('change', laden);
+    var br = document.getElementById('mkBranche');
+    if (br) br.addEventListener('change', laden);
     document.addEventListener('tab-changed', function (ev) {
       if (ev.detail !== 'marktkarte') return;
       taktenAn();
       if (!letzterLauf) laden();
     });
+    /* BEIM START laden, nicht erst beim ersten Reiterwechsel (Wilhelm: "er soll es
+     * beim app start laden und dann live weiter führen"). Die 12 Sekunden Vorlauf
+     * sind kein Zieren: davor holt die Kachelreihe ihre Kurse, und genau die schoepft
+     * die Karte ab. Wer frueher startet, holt dieselben Kurse ein zweites Mal.
+     * Getaktet wird danach ohnehin - eine Minute waehrend des Handels, sonst fuenf. */
+    setTimeout(function () { if (!letzterLauf) laden(); }, 12000);
+    taktenAn();
   });
   window.__marktkarteLaden = laden;
 })();

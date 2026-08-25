@@ -1203,7 +1203,11 @@
         <option value="300" selected>die 300 größten</option>
         <option value="600">die 600 größten</option>
       </select></label>
-    <button class="btn ghost" type="button" id="mkNeu" style="padding:4px 10px; font-size:var(--fs-neben);">Jetzt aktualisieren</button>
+    <label style="font-size:var(--fs-neben);">Branche
+      <select id="mkBranche" style="margin-left:4px;"><option value="">alle</option></select></label>
+    <!-- Kein Aktualisieren-Knopf: die Karte lädt beim Start und hält sich danach von
+         selbst frisch. Ein Knopf, der nur nachholt, was ohnehin läuft, ist eine
+         Einladung, ihn zu drücken und sich zu wundern. -->
     <span id="mkStand" role="status" aria-live="polite" style="font-size:var(--fs-neben); color:var(--muted);"></span>
   </div>
   <div id="mkKarte" style="position:relative; width:100%; height:620px; background:var(--panel-2); border:1px solid var(--kante); border-radius:var(--r-gross); overflow:hidden;">

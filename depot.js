@@ -3049,14 +3049,31 @@
     if (D.kostenMessung.runden.length > 300) D.kostenMessung.runden = D.kostenMessung.runden.slice(0, 300);
     save();
     kostenVersuchNeu(sym, true, 'Umlauf ' + (runde * 100).toFixed(4) + ' %');
+    /* C5, gefunden am 25.08.2026: Hier stand `spreadPct * 200` - doppelt gezaehlt.
+     *
+     * aufKosten und zuKosten werden BEIDE gegen vor.mid gemessen (siehe oben), jede Seite
+     * kostet also rund die halbe Spanne, und `runde` ist der volle Umlauf. vor.spreadPct =
+     * (offer - bid) / mid ist ebenfalls schon der volle Umlauf - wer zum Brief kauft und
+     * zum Geld verkauft, zahlt diese Spanne genau einmal. Die vergleichbare Zahl ist
+     * deshalb spreadPct * 100.
+     *
+     * Mit * 200 stand die notierte Spanne doppelt so hoch wie der gemessene Umlauf, und
+     * die Anzeige "Rest ist Schlupf" wurde regelmaessig negativ - der Schlupf sah aus, als
+     * gaebe die Ausfuehrung Geld zurueck.
+     *
+     * WICHTIG: Daraus folgt NICHT, dass die Kostenhuerde von 0,10 % zu hoch waere. Die
+     * Huerde stuetzt sich auf spannenBilanz(), und die rechnet seit jeher mit * 100, also
+     * richtig. Fuer das tatsaechliche Archivuniversum zeigen die eigenen Ablehnungen sogar
+     * in die Gegenrichtung (leerbuch-tageskerzen: Roll-Schaetzer ~0,93 Pp je Umlauf;
+     * innertags-abgabedruck: 3,97 Pp Mindest-Tick). Korrigiert wird eine ANZEIGE, nicht
+     * die Huerde. */
     return { ok: true, sym: sym, rundePct: runde * 100,
              /* * 100, nicht * 200: aufKosten und zuKosten oben werden BEIDE gegen mid
                 gemessen, `runde` ist also schon der volle Umlauf - und spreadPct =
                 (offer-bid)/mid ist es ebenfalls. Mit * 200 stand die notierte Spanne
                 doppelt so hoch wie der gemessene Umlauf, und die Anzeige "Rest ist
                 Schlupf" wurde regelmaessig negativ. Die Huerde 0,10 % bleibt, wo sie
-                war; korrigiert ist eine Anzeige, nicht die Annahme. */
-             notiertPct: vor.spreadPct != null ? vor.spreadPct * 100 : null };
+                war; korrigiert ist eine Anzeige, nicht die Annahme. */             notiertPct: vor.spreadPct != null ? vor.spreadPct * 100 : null };
   }
   if (typeof window !== 'undefined') window.__kostenRundeMessen = kostenRundeMessen;
 
@@ -5562,6 +5579,28 @@
     });
   }
   window.DepotAPI = {
+    /** Der letzte Kurs, den der Intraday-Scanner fuer ein Symbol gesehen hat.
+     *  Er fuehrt LASTBARS fuer sein ganzes Handelsuniversum - deutlich mehr Werte
+     *  als die Kachelreihe, und ohne einen einzigen zusaetzlichen Abruf. Die
+     *  Marktkarte schoepft das ab, statt dieselben Kurse noch einmal zu holen.
+     *  Die Tagesveraenderung kommt aus der ersten Kerze des laufenden Tages;
+     *  liegt keine vor, wird pct null - dann faerbt die Karte neutral, statt zu
+     *  raten. */
+    letzterKurs: function (sym) {
+      var b = LASTBARS[sym];
+      if (!b || !b.length) return null;
+      var kurs = b[b.length - 1][1];
+      if (!(kurs > 0)) return null;
+      var heute = new Date(b[b.length - 1][0]).toISOString().slice(0, 10);
+      var ersteHeute = null, letzteGestern = null;
+      for (var i = b.length - 1; i >= 0; i--) {
+        var tag = new Date(b[i][0]).toISOString().slice(0, 10);
+        if (tag === heute) ersteHeute = b[i];
+        else { letzteGestern = b[i]; break; }
+      }
+      var basis = letzteGestern ? letzteGestern[1] : (ersteHeute ? ersteHeute[5] : null);
+      return { kurs: kurs, pct: basis > 0 ? (kurs / basis - 1) * 100 : null };
+    },
     addWatch: function (sym, name) {
       if (!D) return false;
       var base = window.Dash.STOCKS.map(function (s) { return s.y; });
