@@ -31,6 +31,18 @@
   };
 
   var stamm = null;          // Inhalt der Stammdatendatei
+  /* KURS-ZWISCHENSPEICHER je Kuerzel (Fehler #79). Ohne ihn holte JEDE Filteraenderung
+   * dieselben Kurse noch einmal: mkAnzahl und mkBranche hingen direkt an laden(), also
+   * am vollen Netzabruf. Kurse haengen aber am Kuerzel, nicht am Filter - wer die
+   * Branche wechselt, sieht dieselben Werte in anderer Auswahl. Bei 300 Werten waren
+   * das hunderte Abrufe fuer nichts, und die Bedienung war entsprechend traege.
+   * Fuenf Minuten Frische: die Karte ist eine Uebersicht, kein Handelssignal. */
+  var KURSE = {};
+  var KURS_FRISCH_MS = 5 * 60000;
+  function kursFrisch(sym) {
+    var c = KURSE[sym];
+    return !!(c && c.kurs > 0 && Date.now() - c.at <= KURS_FRISCH_MS);
+  }
   var laeuft = false;
   var letzterLauf = 0;
   var taktung = null;
@@ -191,25 +203,43 @@
     /* Erst abschoepfen, was die App schon weiss. Bei 300 Werten sind das die rund
      * hundert, die Kachelreihe und Intraday-Scanner ohnehin fuehren - hundert Abrufe
      * weniger, und die Zahlen sind so frisch wie der Rest der Oberflaeche. */
+    var jetzt = Date.now();
+    /* ERST der Zwischenspeicher. Das ist die eigentliche Abhilfe zu #79: nach einer
+     * Filteraenderung sind praktisch alle Kuerzel schon bekannt, und die Karte zeichnet
+     * ohne einen einzigen Abruf neu. */
+    var ausSpeicher = 0;
+    liste.forEach(function (w) {
+      if (!kursFrisch(w.sym)) return;
+      var c = KURSE[w.sym];
+      w.kurs = c.kurs; w.pct = c.pct;
+      w.groesse = c.kurs * w.aktien;
+      w.ausSpeicher = true;
+      ausSpeicher++;
+    });
     var ausDerApp = 0;
     liste.forEach(function (w) {
+      if (w.ausSpeicher) return;
       var k = kursAusDerApp(w.sym);
       if (!k) return;
       w.kurs = k.kurs; w.pct = k.pct;
       w.groesse = k.kurs * w.aktien;
       w.ausApp = true;
+      KURSE[w.sym] = { kurs: k.kurs, pct: k.pct, at: jetzt };
       ausDerApp++;
     });
-    if (ausDerApp && melde) melde(ausDerApp, liste.length);
-    var fertig = 0, idx = 0;
+    var fertig = ausSpeicher + ausDerApp, idx = 0;
+    if (fertig && melde) melde(fertig, liste.length);
     var K = window.Kurse;
-    if (!K || typeof K.hole !== 'function') return 0;
+    /* Frueher stand hier `return 0` - das haette den Zwischenspeicher unterschlagen
+     * und die Karte als leer gemeldet, obwohl sie voll ist. */
+    if (!K || typeof K.hole !== 'function') return liste.filter(function (w) { return w.groesse > 0; }).length;
     async function bahn() {
       while (idx < liste.length) {
         var w = liste[idx++];
-        /* Was die App schon wusste, wird nicht noch einmal geholt - sonst waere das
-         * Abschoepfen oben reine Zierde. */
-        if (w.ausApp) { fertig++; continue; }
+        /* Was schon versorgt ist, wird nicht noch einmal geholt - weder aus dem
+         * Zwischenspeicher noch aus der App. Sonst waere beides oben reine Zierde.
+         * Nicht mitzaehlen: fertig steht bereits auf ausSpeicher + ausDerApp. */
+        if (w.ausSpeicher || w.ausApp) continue;
         try {
           var r = await K.hole(w.sym, { range: '1d', interval: '1d', bereinigt: false, wiederholen: false });
           var m = r && r.meta;
@@ -218,6 +248,7 @@
             var vor = m.chartPreviousClose > 0 ? m.chartPreviousClose : m.previousClose;
             w.pct = vor > 0 ? (w.kurs / vor - 1) * 100 : null;
             w.groesse = w.kurs * w.aktien;
+            KURSE[w.sym] = { kurs: w.kurs, pct: w.pct, at: Date.now() };
           }
         } catch (e) { /* ein Wert weniger, kein Grund die Karte abzubrechen */ }
         fertig++;
@@ -309,7 +340,9 @@
         '<b>Farbe</b> = Veränderung zum Vortagesschluss, gedeckelt bei ±' + window.Marktkarte.DECKEL + ' %. ' +
         'Gruppiert nach Branche aus dem SIC-Code der SEC.<br>' +
         'Gezeigt: ' + info.gezeichnet + ' von ' + info.gesamt + ' Werten mit Stammdaten' +
-        (info.ausApp ? ' (' + info.ausApp + ' davon aus laufenden Kursen der App, ohne eigenen Abruf)' : '') + '. ' +
+        (info.ausApp ? ' (' + info.ausApp + ' davon aus laufenden Kursen der App, ohne eigenen Abruf' +
+          (info.ausSpeicher ? ', ' + info.ausSpeicher + ' aus dem Zwischenspeicher' : '') + ')'
+          : (info.ausSpeicher ? ' (' + info.ausSpeicher + ' davon aus dem Zwischenspeicher, ohne Abruf)' : '')) + '. ' +
         (info.adr ? 'Nicht gezeigt: ' + info.adr + ' ausländische Emittenten – ihre Stückzahl sind Stammaktien, ' +
           'gehandelt wird ein ADR aus mehreren davon, und das Verhältnis steht in den Daten nicht. ' : '') +
         (info.ohneGroesse ? info.ohneGroesse + ' ohne Stückzahl in den SEC-Daten. ' : '') +
@@ -418,15 +451,21 @@
         sag('');
         return;
       }
-      sag('Kurse holen: 0 von ' + a.liste.length + ' …');
-      var n = await kurseHolen(a.liste, function (f, g) { sag('Kurse holen: ' + f + ' von ' + g + ' …'); });
+      /* Das Flackern von "Kurse holen: 0 von 300" bei jeder Filteraenderung war Teil
+       * des traegen Eindrucks - auch dann, wenn gar nichts geholt werden musste. */
+      var offen = a.liste.filter(function (w) { return !kursFrisch(w.sym); }).length;
+      if (offen) sag('Kurse holen: 0 von ' + offen + ' …');
+      var n = await kurseHolen(a.liste, function (f, g) {
+        if (offen) sag('Kurse holen: ' + f + ' von ' + g + ' …');
+      });
       var mitKurs = a.liste.filter(function (w) { return w.groesse > 0; });
       var ausApp = a.liste.filter(function (w) { return w.ausApp; }).length;
+      var ausSpeicher = a.liste.filter(function (w) { return w.ausSpeicher; }).length;
       /* keineAktie und doppelt fehlten hier - die beiden Fusszeilen-Saetze, die den
        * Filter belegen wuerden, waren damit dauerhaft unerreichbar (info.keineAktie
        * war immer undefined). Der Filter arbeitete, konnte es aber nicht zeigen. */
       zeichnen(mitKurs, { gezeichnet: n, gesamt: a.gesamt, adr: a.adr, ohneGroesse: a.ohneGroesse,
-        ausApp: ausApp, keineAktie: a.keineAktie, doppelt: a.doppelt });
+        ausApp: ausApp, ausSpeicher: ausSpeicher, keineAktie: a.keineAktie, doppelt: a.doppelt });
       letzterLauf = Date.now();
       sag('Stand: ' + new Date(letzterLauf).toLocaleTimeString('de-DE'));
     } catch (e) {
@@ -436,15 +475,20 @@
 
   function taktenAn() {
     if (taktung) return;
-    /* Dieselbe Taktung wie die Kacheln: eine Minute waehrend des US-Handels, sonst
-     * fuenf. Und nur solange der Reiter offen ist - im Hintergrund hunderte Kurse zu
-     * ziehen waere Verschwendung und ein guter Weg, gedrosselt zu werden. */
+    /* FUENF MINUTEN, auch waehrend des Handels (Wunsch aus Fehler #79: "alle 5 min
+     * im hintergrund laden und aktualisieren"). Vorher war es eine Minute waehrend
+     * der US-Sitzung; zusammen mit dem Zwischenspeicher, der ebenfalls fuenf Minuten
+     * haelt, waere das nur doppelte Arbeit gewesen. Die Karte ist eine Uebersicht,
+     * kein Handelssignal - fuenf Minuten Alter sind hier ohne Belang.
+     *
+     * Weiterhin nur bei offenem Reiter: im Hintergrund hunderte Kurse zu ziehen waere
+     * Verschwendung und ein guter Weg, gedrosselt zu werden - und die Drosselung traefe
+     * den Intraday-Scanner mit, der dieselbe Quelle benutzt. Der Zwischenspeicher
+     * ueberlebt den Reiterwechsel, die Karte steht beim Zurueckkommen also sofort. */
     taktung = setInterval(function () {
       var t = document.getElementById('tab-marktkarte');
       if (!t || !t.classList.contains('active')) return;
-      var offen = typeof window.__boersenPhaseOffen === 'function' ? window.__boersenPhaseOffen() : true;
-      var abstand = offen ? 60000 : 300000;
-      if (Date.now() - letzterLauf >= abstand) laden();
+      if (Date.now() - letzterLauf >= KURS_FRISCH_MS) laden();
     }, 20000);
   }
 

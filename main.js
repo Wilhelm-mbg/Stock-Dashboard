@@ -697,7 +697,12 @@ function quellOrdner() {
  *
  * Gelesen wird nur - geschrieben wird weiterhin ausschliesslich in den Datenordner. */
 function strategieQuelle() {
-  const kandidaten = [path.join(quellOrdner(), 'studien', 'messmaschine', 'strategien')];
+  const teil = ['studien', 'messmaschine', 'strategien'];
+  const kandidaten = [path.join(quellOrdner(), ...teil)];
+  /* Selbst nachsehen, bevor jemand einen Zettel schreiben muss: das Projekt liegt
+   * neben dem Datenordner. Eine Einrichtung von Hand, die sich in einer Zeile
+   * erraten laesst, ist keine Einrichtung, sondern eine vergessene Zeile Code. */
+  kandidaten.push(path.join(app.getPath('downloads'), 'Stock-Dashboard', ...teil));
   try {
     const zettel = path.join(app.getPath('downloads'), 'Markt-Dashboard-Daten', 'quelle-pfad.txt');
     if (fs.existsSync(zettel)) {

@@ -6744,6 +6744,32 @@ console.log('\n46) Was die App dauerhaft aufzeichnet');
   var shSt = fs.readFileSync(__dirname + '/app-shell.js', 'utf8');
   ok(/data-info="messung\.strategien"/.test(htSt) && /'messung\.strategien':/.test(shSt),
      'Der Erklaer-Knopf der Karte hat auch einen Text - sonst waere er ein toter Knopf');
+  /* FEHLER #79: "Die Marktkarte aktualisiert jedesmal wenn die Filter angepasst
+   * werden, das macht die Bedienung sehr traege." Ursache: mkAnzahl und mkBranche
+   * hingen beide direkt an laden(), also am vollen Netzabruf. Kurse haengen aber am
+   * KUERZEL, nicht am Filter - wer die Branche wechselt, sieht dieselben Werte in
+   * anderer Auswahl. Bei 300 Werten waren das hunderte Abrufe fuer nichts. */
+  var mkFix = fs.readFileSync(__dirname + '/marktkarteui.js', 'utf8');
+  ok(/var KURSE = \{\};/.test(mkFix) && /function kursFrisch\(sym\)/.test(mkFix),
+     'Die Marktkarte hat einen Kurs-Zwischenspeicher je Kuerzel');
+  /* Der Kern der Abhilfe: was versorgt ist, wird nicht noch einmal geholt. Ohne diese
+   * eine Zeile waere der Zwischenspeicher reine Zierde. */
+  ok(mkFix.indexOf('if (w.ausSpeicher || w.ausApp) continue;') !== -1,
+     'Was im Zwischenspeicher liegt, wird nicht noch einmal aus dem Netz geholt');
+  ok(/KURSE\[w\.sym\] = \{ kurs: w\.kurs, pct: w\.pct, at: Date\.now\(\) \}/.test(mkFix),
+     'Geholte Kurse wandern in den Zwischenspeicher - sonst fuellt er sich nie');
+  /* Der frueher hier stehende `return 0` haette den Zwischenspeicher unterschlagen und
+   * eine volle Karte als leer gemeldet. */
+  ok(!/typeof K\.hole !== 'function'\) return 0;/.test(mkFix),
+     'Ohne Kurslader wird die Zahl aus dem Zwischenspeicher gemeldet, nicht null');
+  /* Fuenf Minuten, wie in #79 gewuenscht - und dieselbe Spanne wie die Frische des
+   * Zwischenspeichers. Eine Minute waere doppelte Arbeit gewesen. */
+  ok(/KURS_FRISCH_MS = 5 \* 60000/.test(mkFix) &&
+     /Date\.now\(\) - letzterLauf >= KURS_FRISCH_MS/.test(mkFix),
+     'Getaktet wird in derselben Spanne, in der der Zwischenspeicher haelt: fuenf Minuten');
+  /* Das Projektverzeichnis wird gesucht, bevor jemand einen Zettel schreiben muss. */
+  ok(/'Stock-Dashboard', \.\.\.teil/.test(mjSt),
+     'Das Projektverzeichnis wird neben dem Datenordner selbst gesucht');
   ok(/function kostenMessungNeu/.test(dep), 'Die Messung des echten Schlupfs bleibt bestehen');
 
   /* --- Die Kostenmessung darf nicht auf einen Trade warten muessen ---
