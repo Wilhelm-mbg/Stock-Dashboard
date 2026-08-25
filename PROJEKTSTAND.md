@@ -77,9 +77,6 @@ Dazu die Zusatzpunkte 3–12 der Kritik: fertig.
   Stand neu messen. Erst dann neue Untersuchungen. Quelle: Befundbericht „Sieben stille
   Fehler“, Abschnitt 5. Messwerkzeug, keine Handelslogik. Der Analytiker prüft ab jetzt
   nächtlich, ob Protokolle und Instrumenten-Stand zusammenpassen.
-- **#84 — „belegt“-Prosa entfernen** (Analytiker-Fund 25.08.): fünf feste Texte nennen
-  Kanten „belegt“, kein Protokoll sagt „bestätigt“; Wortlaut auf „gemessen“ umstellen
-  (Fundstellen im Issue). Gehört zum selben Aufwasch wie #76.
 
 ---
 
@@ -90,9 +87,6 @@ fertig bist.*
 
 - **App-Codebase Master** — hat am 25.08. spät die offene Issue-Liste zur Abarbeitung
   übernommen (Reihenfolge siehe Aufträge); Details trägt er selbst nach.
-- **#84 („belegt“-Prosa)** — genommen 26.08. Belegt: `index.html`, `depot.js`,
-  `depotmigration.js`, `strategien.js`, `test-v6.js`. Befund unabhaengig nachgeprueft:
-  kein Protokoll sagt „bestaetigt“, der Fund steht.
 
 ---
 
@@ -101,6 +95,9 @@ fertig bist.*
 *Entscheidungen von Wilhelm, mit Datum. Eine Entscheidung, die nur in einem Chatverlauf
 steht, ist nach zwei Stunden verloren.*
 
+- **26.08.2026** — #84 erledigt: sieben sichtbare Texte auf „gemessen“ gezogen, vierte
+  Sperrklinke gesetzt. Offen als eigener kleiner Auftrag: in 21 Kommentaren lebt die
+  Formel weiter — ehrlicher Weg waere eine Zeile in CLAUDE.md statt Umschreiben.
 - **25.08.2026 (spät)** — Geheimnis `TELEMETRIE_JSON` angelegt. Automatisch gebaute
   Pakete tragen den Diagnose-Rueckkanal ab dem naechsten Release. Issue #76 damit
   vollstaendig erledigt.
