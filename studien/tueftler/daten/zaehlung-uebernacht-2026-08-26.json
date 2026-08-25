@@ -1,0 +1,39 @@
+{
+ "archiv": "E:/Markt-Dashboard-Archiv/archiv1d",
+ "universum": "2249 Aktien (CS/ADRC) von 2965 Reihen",
+ "stichprobe": 400,
+ "verworfen": {
+  "kaputt": 5,
+  "leer": 0,
+  "unlesbar": 0
+ },
+ "extremRaus": 388,
+ "symbolTage": 1597869,
+ "handelstageMitBreite": 9330,
+ "ersterTag": "1986-11-19",
+ "letzterTag": "2026-08-20",
+ "bestaetigungAb": "2008-02-05",
+ "bestaetigungTage": 4665,
+ "breiteMedian": {
+  "basket": 170,
+  "vQuintil": 34,
+  "kostenfest": 11
+ },
+ "umsatzMedian_MioDollar": {
+  "basket": 37.2,
+  "vQuintil_ungeschuetzt": 49.5,
+  "vQuintil_kostenfest": 175
+ },
+ "streuung_Pp": {
+  "uebernacht_breit_gesamt": 0.6896506807438425,
+  "uebernacht_breit_bestaetigung": 0.8452201055361934,
+  "vollerTag_breit_bestaetigung": 1.4740304644738689,
+  "uebernacht_vQuintil_bestaetigung": 0.9332417469110581,
+  "uebernacht_kostenfest_bestaetigung": 1.0418515607335794
+ },
+ "beharrlichkeit_vQuintil": {
+  "anteilSchonGesternDrin_median": 0.917,
+  "anteilSchonGesternDrin_bestaetigung": 0.943,
+  "hinweis": "Zufallserwartung bei einem Quintil = 0,20. Naeher an 1,00 heisst: feste Symbolneigung, die A7 per Konstruktion wegkuerzt."
+ }
+}

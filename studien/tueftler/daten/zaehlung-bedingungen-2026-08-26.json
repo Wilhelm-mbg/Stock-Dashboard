@@ -1,0 +1,93 @@
+{
+ "hinweis": "Nur Anzahlen, Streuungen und Beharrlichkeit. Kein Ertragsmittelwert berechnet oder abgelegt.",
+ "archiv": "E:/Markt-Dashboard-Archiv/archiv1d",
+ "stichprobe": 150,
+ "verworfeneReihen": 2,
+ "extremRaus": 118,
+ "symbolTage": 614636,
+ "handelstage": 7507,
+ "ersterTag": "1994-03-31",
+ "letzterTag": "2026-08-20",
+ "kostenhuerden_Pp": {
+  "aktie": 0.04,
+  "scheinATM": 0.05,
+  "cfd": 0.1,
+  "standardSchein": 0.23
+ },
+ "korpusVergleich_Pp": {
+  "median_delta80_der_38_Varianten": 0.605,
+  "median_se": 0.148
+ },
+ "bedingungen": {
+  "A_nachtanteil": {
+   "was": "V = sd(60 Luecken) / sd(60 Innentage), hoechstes Quintil (erster Entwurf)",
+   "signalanteil": "19.5 %",
+   "breiteMedian": 14,
+   "umsatzMedian_MioDollar": 46.8,
+   "beharrlichkeit": 0.938,
+   "beharrlichkeit_zufall": 0.195,
+   "bestaetigungTage": 3754,
+   "streuung_Pp": 0.9303,
+   "se_Pp": 0.01518,
+   "MDE_Pp": 0.03037,
+   "delta80_1Test_Pp": 0.04254,
+   "delta80_3Tests_Pp": 0.04913
+  },
+  "B_schlussdruck": {
+   "was": "S = (Schluss - Tief)/(Hoch - Tief), niedrigstes Quintil: in die Glocke verkauft",
+   "signalanteil": "19.5 %",
+   "breiteMedian": 14,
+   "umsatzMedian_MioDollar": 35.7,
+   "beharrlichkeit": 0.192,
+   "beharrlichkeit_zufall": 0.195,
+   "bestaetigungTage": 3754,
+   "streuung_Pp": 0.8382,
+   "se_Pp": 0.01368,
+   "MDE_Pp": 0.02736,
+   "delta80_1Test_Pp": 0.03833,
+   "delta80_3Tests_Pp": 0.04427
+  },
+  "C_umsatzschock": {
+   "was": "U = Umsatz / Median60(Umsatz), hoechstes Quintil",
+   "signalanteil": "19.5 %",
+   "breiteMedian": 14,
+   "umsatzMedian_MioDollar": 43.7,
+   "beharrlichkeit": 0.476,
+   "beharrlichkeit_zufall": 0.195,
+   "bestaetigungTage": 3754,
+   "streuung_Pp": 0.8721,
+   "se_Pp": 0.01423,
+   "MDE_Pp": 0.02847,
+   "delta80_1Test_Pp": 0.03988,
+   "delta80_3Tests_Pp": 0.04605
+  },
+  "D_spannenschock": {
+   "was": "R = (Hoch-Tief)/Schluss geteilt durch Median60, hoechstes Quintil",
+   "signalanteil": "19.5 %",
+   "breiteMedian": 14,
+   "umsatzMedian_MioDollar": 43.8,
+   "beharrlichkeit": 0.286,
+   "beharrlichkeit_zufall": 0.195,
+   "bestaetigungTage": 3754,
+   "streuung_Pp": 0.8799,
+   "se_Pp": 0.01436,
+   "MDE_Pp": 0.02872,
+   "delta80_1Test_Pp": 0.04023,
+   "delta80_3Tests_Pp": 0.04647
+  },
+  "E_druck_und_schock": {
+   "was": "S im untersten Drittel UND U im obersten Drittel: einseitig verkauft bei hohem Umsatz",
+   "signalanteil": "10.5 %",
+   "breiteMedian": 8,
+   "umsatzMedian_MioDollar": 46.7,
+   "beharrlichkeit": 0.188,
+   "beharrlichkeit_zufall": 0.105,
+   "bestaetigungTage": 3733,
+   "streuung_Pp": 0.9111,
+   "se_Pp": 0.01491,
+   "MDE_Pp": 0.02982,
+   "delta80_1Test_Pp": 0.04178,
+   "delta80_3Tests_Pp": 0.04825
+  }
+ }
+}

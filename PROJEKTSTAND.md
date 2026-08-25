@@ -142,7 +142,18 @@ steht, ist nach zwei Stunden verloren.*
 *Eine Zeile je Nacht, geschrieben von der Strategie-Tüftler-Aufgabe (04:30). Übergaben
 stehen in `studien/tueftler/WARTESCHLANGE.md`.*
 
-- *(noch kein Lauf — erster Lauf in der Nacht auf den 26.08.)*
+- **26.08.** — Nacht-Typ A (Entwurf), Warteschlange war leer. Entstanden: `glockendruck-nacht`
+  vorregistriert (`studien/vorregistrierung-2026-08-26-glockendruck-nacht/`) — Schlussdruck
+  `(Schluss−Tief)/(Hoch−Tief)`, unterstes Quintil, long über Nacht auf `archiv1d`. Der Fund
+  ist die Auflösung, nicht die These: **`delta80` = 0,0397 Pp gegen einen Korpus-Median von
+  0,605** (Faktor 15,2), weil H = 1 keine Überlappung hat und das Tagesarchiv 4.665
+  Bestätigungstage trägt statt 361 — beide Zweige (JA ≥ 0,10 / NEIN < 0,04) sind erreichbar.
+  Der erste Entwurf der Nacht wurde **selbst verworfen** (Beharrlichkeit 0,943 gegen Zufall
+  0,198: ein fast festes Symbolmerkmal, das A7 per Konstruktion wegkürzt) — daraus ein
+  Vorschlag für `FEHLERTYPEN.md`. Nebenbei gemessen: **#85 betrifft auch `archiv1d`** (56 %
+  einer 80er-Stichprobe, AAPL 15,0 statt 46,8 Mio Stück). Warteschlange: 1 Entwurf,
+  2 Auftragsvorschläge (`ausstieg`-Schalter der Maschine als Vorbedingung; Auktionskosten
+  am Demo-Konto). Keine Messung, kein Maschinencode, 0 von 5 Web-Suchen verbraucht.
 
 ---
 
