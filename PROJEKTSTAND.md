@@ -114,6 +114,12 @@ fertig bist.*
 *Entscheidungen von Wilhelm, mit Datum. Eine Entscheidung, die nur in einem Chatverlauf
 steht, ist nach zwei Stunden verloren.*
 
+- **26.08.2026, 01:40 — Release jetzt.** *Frage des PM-Abrufs: Release-Wache jetzt
+  bündeln lassen oder auf die Messmaschinen-Versionierung bzw. die Neumessung warten?*
+  → **(a) Jetzt ausliefern.** Fünf wartende Notizen (u. a. der sichtbare Umzug von
+  „Meine Papiere“ nach Vermögen) sind genug. Die Messmaschinen-Versionierung kommt,
+  wenn sie fertig ist, ins nächste Release.
+
 - **26.08.2026, ~01:45 — die Issue-Wache ist zurück, aber als TRIAGE.** Sie war
   unbemerkt aus der Aufgabenliste verschwunden (mindestens zum zweiten Mal); #83 und #89
   lagen deshalb über vier Stunden unbeachtet. Wilhelm wollte sie in der Cloud neu anlegen
