@@ -19,7 +19,7 @@
     'PANW CRWD ZS OKTA NET DDOG SNOW MDB TEAM WDAY VEEV ADSK CDNS SNPS KLAC LRCX AMAT ASML TSM ARM'
   ).split(/\s+/).filter(Boolean);
 
-  function stat(t) { var e = document.getElementById('mfStatus'); if (e) e.textContent = t || ''; }
+  function stat(t, art) { U.statuszeile('mfStatus', t, art); }
   function opts() {
     var g = function (id) { return document.getElementById(id); };
     return {

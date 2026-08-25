@@ -1,6 +1,14 @@
 'use strict';
 /* App-Shell: Tabs, Modals, Einstellungen, gemeinsame Helfer */
 (function () {
+  /* Die Ausgangsfarbe einer Statuszeile, beim ersten Anfassen gemerkt. Warum das noetig
+   * ist: die meisten Statuszeilen tragen ihre Farbe als Inline-Stil aus dem Markup
+   * (color:var(--muted)) oder aus einer Klasse (.hinweis, .auto-status). Wer beim
+   * Fehlerfall el.style.color setzt, ueberschreibt genau diesen Inline-Stil - und ein
+   * spaeteres Zuruecksetzen auf '' loescht ihn, statt ihn wiederherzustellen. Die Zeile
+   * bliebe fuer den Rest der Sitzung falsch eingefaerbt. */
+  var GRUNDFARBE = new WeakMap();
+
   var U = {
     esc: function (s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); },
     // Nur echte Web-Links ins DOM lassen: Feed-URLs kommen von außen. javascript:-Links
@@ -17,6 +25,28 @@
     d: function (ms) { return new Date(ms).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: '2-digit' }); },
     signCls: function (v) { return v > 0 ? 'pos' : (v < 0 ? 'neg' : ''); },
     signTxt: function (v, unit) { return (v > 0 ? '+' : '') + U.nf2.format(v) + (unit || ''); },
+    /* Statuszeile setzen. ziel = Element oder Kennung, text = TEXT (nie HTML),
+     * art = undefined | 'ok' | 'fehler'.
+     *
+     * Warum als Hilfe: acht Module schrieben denselben Dreisatz von Hand - Element
+     * suchen, Text setzen, im Zweifel einfaerben -, achtmal leicht anders. Warum TEXT
+     * und nicht HTML: eine Statuszeile traegt regelmaessig Fremdinhalt (Fehlertexte
+     * einer Schnittstelle, Kuerzel aus einer Eingabe). Wer sie ueber textContent setzt,
+     * kann das Escapen nicht vergessen.
+     * Was die Hilfe ausdruecklich NICHT tut: role/aria-live nachruesten. Nur drei der
+     * 31 Statuszeilen melden sich heute, und aus "alle melden sich" wird schnell eine
+     * Vorlesestimme, die bei jedem Zwischenstand dazwischenredet. Das ist eine eigene
+     * Entscheidung je Zeile (Plan, Stufe F). */
+    statuszeile: function (ziel, text, art) {
+      var el = typeof ziel === 'string' ? document.getElementById(ziel) : ziel;
+      if (!el) return null;
+      if (!GRUNDFARBE.has(el)) GRUNDFARBE.set(el, el.style.color || '');
+      el.textContent = text == null ? '' : String(text);
+      el.style.color = art === 'fehler' ? 'var(--down)'
+        : art === 'ok' ? 'var(--up)'
+        : GRUNDFARBE.get(el);
+      return el;
+    },
     // Mini-Markdown (Überschriften, Listen, fett) für die Analyse-Ausgabe
     md: function (txt) {
       var lines = String(txt).split(/\r?\n/), out = [], inList = false;
@@ -101,6 +131,14 @@
       });
       return raus;
     }
+  };
+  /* Dezimalzahl fuer sichtbaren deutschen Text: Komma statt Punkt. Bis zum
+   * 25.08.2026 stand "Kostenhürde: 0.100 Pp" neben "100.000,00 $" - zwei
+   * Schreibweisen im selben Blickfeld. NUR fuer die Oberflaeche: CSV-Export und
+   * alles Maschinenlesbare bleiben beim Punkt. */
+  U.dez = function (x, stellen) {
+    if (x == null || !isFinite(x)) return '–';
+    return x.toFixed(stellen == null ? 2 : stellen).replace('.', ',');
   };
   window.U = U;
 

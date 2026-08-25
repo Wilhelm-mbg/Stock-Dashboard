@@ -8089,6 +8089,29 @@ console.log('\n59) Navigation gehoert der Shell (Struktur-Plan 25.08.2026, Stufe
      'Markup: jeder Abschnitts-Kommentar steht vor einem Abschnitt', verwaist.join(' | '));
 })();
 
+console.log('\n60) Bausteinkasten: Statuszeilen');
+(function () {
+  var shell = fs.readFileSync(__dirname + '/app-shell.js', 'utf8');
+  ok(/statuszeile: function \(ziel, text, art\)/.test(shell),
+     'Es gibt eine Hilfe fuer Statuszeilen');
+  /* Der Kern, warum sie sich die Farbe merkt: die Zeilen tragen ihre Grundfarbe als
+   * Inline-Stil aus dem Markup. Ein Zuruecksetzen auf '' wuerde sie loeschen, statt
+   * sie wiederherzustellen - die Zeile bliebe fuer den Rest der Sitzung falsch
+   * eingefaerbt. */
+  ok(/GRUNDFARBE/.test(shell) && /el\.style\.color \|\| ''/.test(shell),
+     'Die Hilfe merkt sich die Ausgangsfarbe, statt sie beim Zuruecksetzen zu loeschen');
+  /* Den Rumpf als Block schneiden statt auf Naehe zu hoffen. */
+  var sz = (shell.match(/statuszeile: function \(ziel, text, art\) \{[\s\S]*?\n    \},/) || [''])[0];
+  ok(/el\.textContent = text == null/.test(sz) && !/innerHTML/.test(sz),
+     'Eine Statuszeile traegt TEXT - so kann niemand das Escapen vergessen');
+  /* Und die umgestellten Module bauen sie nicht wieder von Hand. */
+  ['mittelfrist.js', 'driftui.js', 'scheinfinder.js'].forEach(function (f) {
+    var q = fs.readFileSync(__dirname + '/' + f, 'utf8');
+    ok(/U\.statuszeile\(/.test(q) && !/e\.textContent = t \|\| ''/.test(q),
+       f + ': setzt die Statuszeile ueber die Hilfe');
+  });
+})();
+
 Promise.all(offeneProben).then(function () {
   console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
   process.exit(fails ? 1 : 0);

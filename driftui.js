@@ -17,7 +17,7 @@
   var DATEN = null;                 // {kurse, markt, termine}
   var LAEUFT = false;
 
-  function stat(t) { var e = document.getElementById('drStatus'); if (e) e.textContent = t || ''; }
+  function stat(t, art) { U.statuszeile('drStatus', t, art); }
   function opts() {
     var g = function (id) { var e = document.getElementById(id); return e ? e.value : null; };
     return {

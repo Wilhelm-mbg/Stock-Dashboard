@@ -28,7 +28,7 @@
   var WKN_TREFFER = {};     // Raster-Index -> {status:'laedt'|'ok'|'leer', scheine, grund}
 
   function el(id) { return document.getElementById(id); }
-  function stat(t) { var e = el('sfStatus'); if (e) e.textContent = t || ''; }
+  function stat(t, art) { U.statuszeile('sfStatus', t, art); }
 
   function symbole() {
     var s = (window.Dash && window.Dash.STOCKS ? window.Dash.STOCKS.map(function (x) { return x.y; }) : []);
