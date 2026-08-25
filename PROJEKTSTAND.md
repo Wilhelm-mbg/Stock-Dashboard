@@ -41,23 +41,30 @@ Damit ist vom Struktur-Plan nur noch Stufe F offen.
 
 **Sofort, klein, vorgezogen (Wilhelm 26.08.):**
 
-- **#83 / #89 — „Meine Papiere" nach Vermögen. LIEGT, bis Wilhelm Frage 1 beantwortet
-  (siehe „Wartet auf Wilhelm"). Bitte nicht auf Verdacht bauen.**
-  Vom PM am 26.08. gegen Code und Issue-Texte geprüft, weil der Verdacht bestand, C2 habe
-  es schon erledigt. Ergebnis:
-  - Eine **Pille** „Meine Papiere" unter Überblick gibt es nicht mehr — C2 hat sie nach
-    Vermögen gezogen (`index.html:1548`). Was Wilhelm in #89 „Pille" nennt, ist der
-    **Abschnitt** `#bestandListe` unter Heute → Überblick (`index.html:786`). Der steht noch.
-  - #83 verlangt mehr als einen Umzug. Gegen `bestandui.js` geprüft, noch offen:
-    Tagesperformance in der Heute-Liste (dort stehen heute Signalgruppen, keine Kursspalte);
-    **„seit Jahresbeginn"** in der Vermögen-Tabelle; eine **Summenzeile** unter den Zeilen
-    (es gibt gar keine); ein **Absprung in den Aktien-Explorer** aus der Vermögen-Tabelle
-    (die Heute-Liste hat ihn über `data-bsym`, die Tabelle nicht).
-    Erfüllt ist bereits „die gesamte Summe der Aktie" — Spalte „Wert" (Kurs × Stück).
-  - **Die beiden Issues widersprechen sich:** #83 (25.08. 20:02, v8.33.0) will ausdrücklich
-    eine kleine Liste **in Heute behalten**; #89 (25.08. 21:46, v8.33.1, also nach C2) will
-    die Sache **aus dem Überblick heraus**. Genau darüber entscheidet Frage 1.
-  Belegt später Navigation/Shell und `bestandui.js` — nicht gleichzeitig mit Stufe F Punkt 1.
+- **#83 / #89 — „Meine Papiere" ganz nach Vermögen. FREIGEGEBEN, Wilhelm 26.08.:
+  unter „Heute" verschwindet der Abschnitt vollständig.** Damit gilt #89 vor #83, wo die
+  beiden sich widersprachen. Belegt `index.html`, `bestandui.js`, `test-v6.js` — nicht
+  gleichzeitig mit Stufe F Punkt 1 anfassen. Was zu tun ist:
+  1. **Heute → Überblick:** Überschrift und `#bestandListe` raus (`index.html:786–792`).
+  2. **Der Signalstand darf nicht ersatzlos verschwinden.** Er zieht in die Vermögen-
+     Tabelle mit um — Kurzfrist-/Mittelfrist-Spalte an `#bestandTabelle`. Ohne das wäre
+     Felix' Wunsch #71 kommentarlos gestrichen statt umgezogen. Ob die Gruppierung nach
+     Signalstand mitkommt oder zwei Spalten genügen, entscheidet die bauende Sitzung.
+  3. **#83-Inhalte in der Vermögen-Tabelle nachziehen** (heute noch offen, gegen
+     `bestandui.js` geprüft): Spalte **„seit Jahresbeginn"**, eine **Summenzeile** unter
+     den Zeilen (es gibt gar keine), **Absprung in den Aktien-Explorer** (die alte
+     Heute-Liste hatte ihn über `data-bsym`, die Tabelle nicht). Bereits erfüllt:
+     „die gesamte Summe der Aktie" = Spalte „Wert" (Kurs × Stück), und „Heute".
+  4. **Kreuzverweise bereinigen:** der Untertitel unter Vermögen verweist auf „Reiter
+     **Heute**" (`index.html:1597`) — dieser Verweis stirbt mit dem Abschnitt.
+  5. **Testmarken werden umgedreht, nicht abgeschwächt** — das ist hier ausdrücklich
+     erlaubt und gehört mit Begründung in den Commit: `test-v6.js:6582` sichert heute
+     *„Die Signalliste steht auf ‚Heute' — und nur dort (Felix, #71)"*. Diese Zusicherung
+     wird in ihr Gegenteil gedreht (Signalstand nur noch unter Vermögen), **weil Wilhelm
+     am 26.08. so entschieden hat** und damit #71 überschreibt. Ebenso `test-v6.js:6592`:
+     `data-info="heute.bestand"` kommt danach nur noch **einmal** vor, nicht zweimal.
+     Der Registerschlüssel selbst bleibt `heute.bestand` — umbenennen hieße den
+     Registerblock anfassen, in dem ein Messsatz steht.
 
 **Dann — Vorstufen der Neumessung (Messwerkzeug, keine Handelslogik). Wilhelm 26.08.:
 alle vier zuerst, die Neumessung startet erst danach.**
@@ -121,6 +128,12 @@ fertig bist.*
 *Entscheidungen von Wilhelm, mit Datum. Eine Entscheidung, die nur in einem Chatverlauf
 steht, ist nach zwei Stunden verloren.*
 
+- **26.08.2026, ~01:15** — *#83 und #89 widersprachen sich: bleibt unter „Heute" etwas von
+  „Meine Papiere" stehen?* → **(b) Unter „Heute" verschwindet der Abschnitt ganz.** Damit
+  gilt #89 vor #83. Der PM hatte (a) empfohlen (kleine Liste bleibt); Wilhelm hat anders
+  entschieden. **Folge, die mitentschieden ist:** das überschreibt Felix' Wunsch #71
+  („Signalstand prominent auf Heute") — der Signalstand zieht deshalb in die Vermögen-
+  Tabelle um, statt ersatzlos zu verschwinden. Einzelheiten unter „Aufträge".
 - **26.08.2026** — #85 erledigt (Vorstufe 1 von 4). Beide Archive geprueft: 60m
   gereinigt (2.841 Teilkerzen), 1d heilt sich beim naechsten Abruf selbst. Es bleiben
   #86, #87, #88 vor der Neumessung.
@@ -170,13 +183,6 @@ steht, ist nach zwei Stunden verloren.*
 
 *Fragen, an denen Arbeit hängt.*
 
-1. **#83 und #89 widersprechen sich: bleibt unter „Heute" etwas von „Meine Papiere" stehen?**
-   #83 will dort eine kleine Liste mit Tagesperformance behalten, #89 (anderthalb Stunden
-   später) will den Abschnitt aus dem Überblick heraus. — (a) kleine Liste bleibt unter
-   Heute, alles Ausführliche nach Vermögen; (b) unter Heute verschwindet er ganz;
-   (c) er bleibt, wo er ist, und nur Vermögen wird ausgebaut. *Empfehlung: (a)* — es ist
-   die ausführlichere der beiden Meldungen, und der Signalstand der eigenen Papiere ist
-   auf „Heute" am richtigen Ort.
 - **Zweites Ja zum Handel-aus-Renderer-Umbau** — fällig, sobald der Plan als Dokument vorliegt.
 
 ---
