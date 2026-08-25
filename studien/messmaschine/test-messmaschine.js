@@ -387,6 +387,144 @@ console.log('\n14) C7: echter Eroeffnungskurs statt Vorkerzen-Schluss');
   [A, B].forEach(function (p) { try { fs.rmSync(p, { recursive: true, force: true }); } catch (e) { } });
 })();
 
+/* ========== #86: die Aussicht (Tage bis t=2) muss ueberhaupt entstehen ========== */
+console.log('\n15) #86: aussicht - die Planungszahl der Aufloesungswand');
+leereArchiv();
+(function () {
+  /* Eigenes Archiv mit einer SCHWACHEN eingebauten Kante. Block 11 taugt dafuer nicht:
+   * dort ist der Effekt so gross, dass tage80 auf 1 faellt - und bei 1 sagt die
+   * Nachrechnung unten nichts mehr aus, weil jede Streuung auf dieselbe 1 rundet.
+   * Mit bonus 0,01 % kommt tage80 zweistellig heraus, bei t 6 immer noch stabil. */
+  var rnd = lcg(99);
+  for (var s = 0; s < 40; s++) {
+    var bars = [], preis = 100, t0 = Date.UTC(2024, 0, 1, 14, 0), zaehler = 0;
+    for (var d = 0; d < 400; d++) {
+      var tagMs = t0 + d * 86400000, wt = new Date(tagMs).getUTCDay(); if (wt === 0 || wt === 6) continue;
+      for (var h = 0; h < 7; h++) {
+        var bonus = (zaehler % 20 > 0 && zaehler % 20 <= 8) ? 0.0001 : 0;
+        preis *= 1 + bonus + (rnd() - 0.5) * 0.006;
+        bars.push([tagMs + h * 3600000, preis, 1000, preis * 1.002, preis * 0.998]);
+        zaehler++;
+      }
+    }
+    fs.writeFileSync(path.join(TMP, 'bars_60m_W' + s + '.json'), JSON.stringify({ series: bars }));
+  }
+  var rA = M.messe({ key: 'schwache-kante',
+    grund: 'Schwache eingebaute Kante: prueft, ob die Maschine eine Aussicht auf Entscheidbarkeit ausweist.',
+    haltedauerKerzen: 8, richtung: 'long',
+    signal: function (b, i) { return (i - 261) % 20 === 0 ? { dir: 1 } : null; } }, TMP);
+  /* Bis zum 26.08.2026 fragte die Bedingung ein Feld u.sd ab, das block() nie geliefert
+   * hat. Sie war damit IMMER falsch, und in JEDEM Protokoll stand "aussicht": null -
+   * auch bei kapitulation (Bestaetigung t 2,14) und rsi2seit-mcp (t 2,01). */
+  var uz = rA.entscheidungen.filter(function (e) { return e.regel.indexOf('Urteil Variante') === 0; })[0];
+  ok(!!uz, 'Es gibt eine Urteilsentscheidung im Protokoll');
+  var a = uz && uz.ergebnis.aussicht;
+  var u = rA.ergebnisse[0].bestaetigung.ueberschuss;
+  ok(u.tagesmittel > 0, 'Die Probe hat einen positiven Punktschaetzer - sonst prueft sie nichts',
+     (u.tagesmittel * 100).toFixed(4) + ' Pp, t ' + (u.t || 0).toFixed(2));
+  ok(a && isFinite(a.tage80) && a.tage80 > 1,
+     'Bei positivem Punktschaetzer steht eine aussicht im Protokoll - nicht null', a && a.tage80);
+  /* Und sie rechnet mit der NEWEY-WEST-korrigierten Streuung (se*sqrt(tage)), nicht mit
+   * der rohen aus statistik(). Der Grund ist nicht, dass eine der beiden groesser waere -
+   * hier gibt die rohe sogar 25 statt 11 Tage -, sondern dass die Aussicht fragt "wie
+   * viele Tage bis t=2" und dieses t mit dem NW-Standardfehler gerechnet wird. Eine
+   * Hochrechnung auf eine andere Streuung beantwortet eine andere Frage.
+   * Die Nachrechnung hier benutzt NUR veroeffentlichte Felder; sie faellt auseinander,
+   * sobald die Maschine eine andere Streuung nimmt - nachgewiesen am 26.08.2026 gegen
+   * die Alternativfassung mit rohem sd (25 gegen 11). Deshalb muss tage80 > 1 sein:
+   * bei 1 rundet jede Streuung auf dieselbe Zahl und die Probe waere hohl. */
+  var sdNW = u.se * Math.sqrt(u.tage);
+  var soll = Math.ceil(Math.pow(M.VERFAHREN.zAlpha + M.VERFAHREN.zPower80, 2) * sdNW * sdNW / (u.tagesmittel * u.tagesmittel));
+  ok(a && a.tage80 === soll,
+     'Sie rechnet mit se*sqrt(tage) - der korrigierten Streuung, nicht der rohen',
+     a && (a.tage80 + ' / ' + soll));
+  ok(u.se > 0 && u.sd === undefined,
+     'block() liefert bewusst KEIN rohes sd - damit niemand versehentlich das falsche nimmt');
+  ok(a && /NICHT gesichert/.test(a.annahme || ''),
+     'Und sie nennt ihre Annahme - eine Hochrechnung ohne Vorbehalt waere eine Zusage');
+})();
+
+/* ========== #87: der A7-Text nennt das Fenster, das wirklich ausgeschnitten wird ========== */
+console.log('\n16) #87: A7-Protokolltext gegen die Rechnung');
+leereArchiv();
+baueArchiv();
+(function () {
+  var L = 5, HH = 3;
+  var r = M.messe({ key: 'a7-fenstertext',
+    grund: 'Prueft, ob der A7-Protokolltext dasselbe Fenster nennt, das die Rechnung ausschneidet.',
+    haltedauerKerzen: HH, richtung: 'long', leseFensterKerzen: L,
+    signal: function (b, i) { return (i - 261) % 20 === 0 ? { dir: 1 } : null; } }, TMP);
+  var e = r.entscheidungen.filter(function (x) { return x.regel.indexOf('A7') === 0; })[0];
+  ok(!!e, 'Der A7-Eintrag steht im Protokoll');
+  /* Gerechnet wird [i-lese-H, i+H-1] (F2: eine Kontrollkerze j traegt die Rendite ueber
+   * (j, j+H] und beruehrt das Lesefenster schon ab j = i-lese-H). Bis zum 26.08.2026
+   * nannte der Text [i-lese, i+H-1] - ein SCHWAECHERES Verfahren als das ausgefuehrte,
+   * und das in jedem bisherigen Protokoll. Der Entscheidungsweg liegt als Daten im
+   * Protokoll; ein Text, der etwas anderes behauptet als die Rechnung, macht genau
+   * diese Einsicht wertlos. */
+  ok(e && e.begruendung.indexOf('[i-' + (L + HH) + ', i+' + (HH - 1) + ']') !== -1,
+     'Er nennt [i-lese-H, i+H-1] - dasselbe Fenster, das K.erwartung ausschneidet',
+     e && e.begruendung.slice(0, 66));
+  ok(e && e.begruendung.indexOf('[i-' + L + ',') === -1,
+     'und NICHT mehr das alte, zu enge [i-lese, ...]');
+})();
+
+/* ========== #88: der Placebo folgt der Einstiegskonvention ========== */
+console.log('\n17) #88: der Nullpunktwaechter misst dieselbe Ausfuehrung wie das Signal');
+(function () {
+  var mm = fs.readFileSync(__dirname + '/messmaschine.js', 'utf8');
+  /* Vier Pfade fuehren einen Einstieg aus: Signal, A7-Kontrolle, Querschnitts-
+   * Kontrolle und - seit #88 - der Placebo. Die Zahl steht hart, damit ein FUENFTER
+   * Pfad ohne die Konvention auffliegt, so wie es bei C7 schon gehalten wird. */
+  var pfade = mm.split('einstiegKurs(b, i, ').length - 1;
+  ok(pfade === 4,
+     'Signal, BEIDE Kontrollen UND der Placebo benutzen einstiegKurs()  [' + pfade + ' Pfade]');
+
+  /* Archiv mit systematischer Uebernachtluecke: jede erste Tageskerze oeffnet 0,5 %
+   * unter dem Vorschluss. Das Signal feuert auf der LETZTEN Kerze des Tages, der
+   * Einstieg liegt also mit folgeEroeffnung genau ueber der Luecke. Wahrer
+   * Ueberschuss des Placebo: null. */
+  function baueNacht(seed) {
+    var rnd = lcg(seed), bars = [], preis = 100 + seed, t0 = Date.UTC(2024, 0, 1, 14, 0);
+    for (var d = 0; d < 400; d++) {
+      var tagMs = t0 + d * 86400000, wt = new Date(tagMs).getUTCDay();
+      if (wt === 0 || wt === 6) continue;
+      for (var h = 0; h < 7; h++) {
+        var auf = h === 0 ? preis * 0.995 : preis;
+        preis = auf * (1 + (rnd() - 0.5) * 0.004);
+        bars.push([tagMs + h * 3600000, preis, 1000,
+                   Math.max(auf, preis) * 1.001, Math.min(auf, preis) * 0.999, auf]);
+      }
+    }
+    return bars;
+  }
+  var N = TMP + '-nacht';
+  if (!fs.existsSync(N)) fs.mkdirSync(N, { recursive: true });
+  for (var s = 0; s < 12; s++) {
+    fs.writeFileSync(path.join(N, 'bars_60m_N' + s + '.json'), JSON.stringify({ series: baueNacht(s + 3) }));
+  }
+  var S = { key: 'nachtluecke', grund: 'Prueft, ob der Placebo-Lauf dieselbe Einstiegskonvention benutzt wie Signal und Kontrollen.',
+    haltedauerKerzen: 1, richtung: 'long', universum: 'aktien', kosten: { spanneBp: 0 },
+    leseFensterKerzen: 0, einstiegsZeitpunkt: 'folgeEroeffnung',
+    signal: function (b, i) { return i % 7 === 6 ? { dir: 1 } : null; } };
+  var r = M.messe(S, N);
+  var pb = r.placebo;
+  ok(pb && pb.signale > 100, 'Der Placebo kommt ueberhaupt zustande', pb && pb.signale);
+  /* Die Falle muss beissen koennen: waere die Luecke klein gegen die MDE, sagte ein
+   * bestandener Placebo gar nichts. 0,5 % gegen eine MDE in Pp-Bruchteilen. */
+  ok(pb && 0.005 > 5 * pb.mde,
+     'Die Luecke ist gross genug, dass der alte Fehler hier auffallen MUSSTE',
+     pb && ('Luecke 0,5000 Pp gegen MDE ' + (pb.mde * 100).toFixed(4) + ' Pp'));
+  ok(pb && Math.abs(pb.tagesmittel) <= pb.mde,
+     'Mit folgeEroeffnung liegt der Nullpunkt im Rahmen - keine Uebernachtluecke als Schein-Ueberschuss',
+     pb && ((pb.tagesmittel * 100).toFixed(4) + ' Pp, MDE ' + (pb.mde * 100).toFixed(4) + ' Pp'));
+  ok(!(r.warnungen || []).some(function (w) { return w.kennung === 'SP'; }),
+     'und die Maschine warnt nicht mehr ueber einen verschobenen Nullpunkt');
+  ok(r.placeboEntdeckung && Math.abs(r.placeboEntdeckung.tagesmittel) <= r.placeboEntdeckung.mde,
+     'Auch die Entdeckungshaelfte hat einen sauberen Nullpunkt (S7 zusammen mit #88)');
+  try { fs.rmSync(N, { recursive: true, force: true }); } catch (e) { }
+})();
+
 fs.rmSync(TMP, { recursive: true, force: true });
 console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
 process.exit(fails ? 1 : 0);

@@ -127,7 +127,8 @@ function normInv(p) {
  * (-0,00003 Pp ueber 11,8 Mio Faelle), an der Sitzungsgrenze +0,055 Pp bei sd 1,7652.
  * Wer zu 99,9 % auf der Schlusskerze feuert - wie t1 -, misst eine Uebernachtluecke als
  * Handelsertrag.
- * Der Schalter gilt fuer das Signal UND BEIDE KONTROLLEN. Nur den Signalpfad umzustellen
+ * Der Schalter gilt fuer das Signal, BEIDE KONTROLLEN und den PLACEBO-LAUF (#88; bis zum
+ * 26.08.2026 lief der Placebo als einziger Pfad daneben). Nur den Signalpfad umzustellen
  * hiesse, zwei verschiedene Ausfuehrungen zu vergleichen und den Unterschied Effekt zu
  * nennen - genau der C7-Fehler, der hier schon aus t 5,96 ein t -0,75 gemacht hat. */
 function einstiegKurs(bars, i, konvention) {
@@ -478,7 +479,7 @@ function fuehreAus(pfad, einKurs, stopNiveau, params) {
  * positionen: {position -> Zahl der echten Signale}. Der Placebo feuert auf
  * denselben Positionen, mit einem festen Schritt so gewaehlt, dass ungefaehr
  * dieselbe Menge zusammenkommt. Kein Zufall - derselbe Aufruf ergibt dasselbe. */
-function placeboLauf(U, K, H, schnittTag, vorlauf, leseFenster, positionen, haelfte) {
+function placeboLauf(U, K, H, schnittTag, vorlauf, leseFenster, positionen, haelfte, konvention) {
   /* S7: Bis zum 25.08.2026 lief der Placebo NUR auf der Bestaetigung. Damit hatte die
    * Entdeckungshaelfte keinen geprueften Nullpunkt - und genau von dort kommen die
    * Zahlen, auf die Kandidaten vorregistriert werden. Beide Kandidaten vom 25.08. sind
@@ -512,7 +513,14 @@ function placeboLauf(U, K, H, schnittTag, vorlauf, leseFenster, positionen, hael
       if (positionen[p] == null) continue;
       zaehler[p] = (zaehler[p] || 0) + 1;
       if (zaehler[p] % schritt[p] !== 0) continue;     // fester Schritt, kein Zufall
-      var s0 = b[i][1], sH = b[i + H][1];
+      /* #88 (26.08.2026): hier stand fest der SCHLUSS der Signalkerze, unabhaengig von
+       * der Einstiegskonvention - waehrend das Signal und BEIDE Kontrollen laengst
+       * einstiegKurs() benutzen. Bei folgeEroeffnung mass der Placebo damit
+       * E[Schluss(i)->Schluss(i+H)] minus E[Eroeffnung(i+1)->Schluss(i+H)], also die
+       * mittlere Uebernachtluecke als Schein-Ueberschuss - ausgerechnet im
+       * Nullpunktwaechter, der das Urteil "bestaetigt" freigibt. Ein verschobener
+       * Nullpunkt im Waechter ist schlimmer als gar keiner: an ihn gewoehnt man sich. */
+      var s0 = einstiegKurs(b, i, konvention), sH = b[i + H][1];
       if (!(s0 > 0) || !(sH > 0)) continue;
       var tag = tagVon(b[i][0]);
       var hf = tag < schnittTag ? 'entdeckung' : 'bestaetigung';
@@ -735,7 +743,9 @@ function messe(strategie, archivPfad, optionen) {
   P.entscheide('A7 Lesefenster', { leseFensterKerzen: S.leseFensterKerzen == null ? null : S.leseFensterKerzen },
     { angewandt: leseFenster != null, fensterKerzen: leseFenster },
     leseFenster != null
-      ? 'Die Kontrolle mittelt ueber den Topf OHNE die Kerzen [i-' + leseFenster + ', i+' + H + '-1]. ' +
+      ? 'Die Kontrolle mittelt ueber den Topf OHNE die Kerzen [i-' + (leseFenster + H) + ', i+' + (H - 1) + ']. ' +
+        'Der Ausschnitt beginnt H Kerzen VOR dem Lesefenster: eine Kontrollkerze j traegt die Rendite ' +
+        'ueber (j, j+H] und beruehrt das Lesefenster deshalb schon ab j = i-lese-H (F2). ' +
         'Damit enthaelt sie nichts, was das Signal gelesen hat, und nichts, was sich mit dem Ergebnis ueberlappt. ' +
         'Der Erwartungswert des Ueberschusses ist unter der Nullhypothese exakt null.'
       : 'KEINE Angabe leseFensterKerzen. Die Kontrolle enthaelt moeglicherweise Kerzen, die das Signal gelesen hat. ' +
@@ -992,10 +1002,10 @@ function messe(strategie, archivPfad, optionen) {
   var placebo = null, placeboEntdeckung = null;
   try {
     var _pos = ergebnisse[0] && ergebnisse[0].positionen ? ergebnisse[0].positionen : {};
-    placebo = placeboLauf(U, kontrolleFuer(0), H, schnittTag, vorlauf, leseFenster, _pos, 'bestaetigung');
+    placebo = placeboLauf(U, kontrolleFuer(0), H, schnittTag, vorlauf, leseFenster, _pos, 'bestaetigung', KONVENTION);
     /* S7: derselbe Lauf auf der Entdeckungshaelfte. Er faellt kein Urteil - aber ohne
      * ihn ist jede Entdeckungszahl ein Punktschaetzer ohne geprueften Nullpunkt. */
-    placeboEntdeckung = placeboLauf(U, kontrolleFuer(0), H, schnittTag, vorlauf, leseFenster, _pos, 'entdeckung');
+    placeboEntdeckung = placeboLauf(U, kontrolleFuer(0), H, schnittTag, vorlauf, leseFenster, _pos, 'entdeckung', KONVENTION);
   } catch (e) { placebo = null; placeboEntdeckung = null; }
   var placeboOk = true;
   if (placebo && placebo.t != null) {
@@ -1107,7 +1117,22 @@ function messe(strategie, archivPfad, optionen) {
     }
     // Aussicht: wie viele Tage bis t=2 mit 80 % - nur, wenn der Punktschaetzer positiv ist
     var aussicht = null;
-    if (u.tagesmittel > 0 && u.se > 0 && u.sd > 0) {
+    /* #86 (26.08.2026): die Bedingung fragte u.sd ab - ein Feld, das block() nie
+     * geliefert hat. Sie war damit IMMER falsch, und in JEDEM Protokoll stand
+     * "aussicht": null, auch bei kapitulation (Bestaetigung t 2,14) und rsi2seit-mcp
+     * (t 2,01). Der Fehler fiel geschlossen aus - es erschien keine falsche Zahl,
+     * sondern gar keine -, traf aber genau die Planungszahl der Aufloesungswand.
+     * Geprueft wird jetzt, was die naechste Zeile wirklich braucht.
+     * ABSICHTLICH NICHT das sd aus statistik(): das ist die ROHE Streuung. Die Aussicht
+     * fragt "wie viele Tage bis t=2" - und dieses t rechnet die Maschine mit dem
+     * Newey-West-Standardfehler. Die Hochrechnung muss denselben benutzen, sonst
+     * beantwortet sie eine andere Frage als die, die spaeter wirklich entschieden wird.
+     * Die RICHTUNG des Unterschieds ist dabei nicht festgelegt und war beim Bau eine
+     * falsche Vermutung: auf dem Kunstarchiv der Testfalle liegt die NW-Korrektur
+     * UNTER der rohen Streuung (11 statt 25 Tage, also negative Autokorrelation der
+     * Tagesmittel); bei positiver Autokorrelation waere es umgekehrt. Es zaehlt nicht,
+     * welche Zahl kleiner ist, sondern welche zum Test passt. */
+    if (u.tagesmittel > 0 && u.se > 0 && u.tage > 0) {
       var sd = u.se * Math.sqrt(u.tage);
       aussicht = { tage80: Math.ceil(Math.pow(VERFAHREN.zAlpha + VERFAHREN.zPower80, 2) * sd * sd / (u.tagesmittel * u.tagesmittel)),
         annahme: 'Effekt bleibt konstant; Signaldichte bleibt konstant. Beides ist NICHT gesichert.' };

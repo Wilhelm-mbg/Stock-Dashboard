@@ -7511,8 +7511,18 @@ console.log('\n47c) Stufe 0: delta80, Placebo je Haelfte, Pflichtzeilen, Kostena
   /* --- S7: Placebo je Haelfte --- */
   ok(!/if \(hf !== 'bestaetigung'\) continue/.test(mm),
      'Der Placebo ist nicht mehr fest auf die Bestaetigungshaelfte verdrahtet');
-  ok(/placeboLauf\(U, kontrolleFuer\(0\), H, schnittTag, vorlauf, leseFenster, _pos, 'entdeckung'\)/.test(mm),
+  /* Die schliessende Klammer steht seit dem 26.08.2026 bewusst NICHT mehr im Muster:
+   * mit #88 bekommt placeboLauf die Einstiegskonvention als letztes Argument.
+   * Gemessen wird, dass die Entdeckungshaelfte einen Placebo bekommt - nicht, wie viele
+   * Argumente die Funktion hat. Alles vor dem letzten Argument bleibt fest verankert. */
+  ok(/placeboLauf\(U, kontrolleFuer\(0\), H, schnittTag, vorlauf, leseFenster, _pos, 'entdeckung'/.test(mm),
      'Auch die Entdeckungshaelfte bekommt einen geprueften Nullpunkt - von dort kommen die Vorregistrierungszahlen');
+  /* #88: und beide Placebo-Laeufe bekommen die Konvention wirklich mit. Ohne sie mass
+   * der Nullpunktwaechter eine ANDERE Ausfuehrung als Signal und Kontrollen - bei
+   * folgeEroeffnung die mittlere Uebernachtluecke als Schein-Ueberschuss, gemessen
+   * -0,5000 Pp gegen eine MDE von 0,0055 Pp (test-messmaschine.js, Block 17). */
+  ok((mm.match(/_pos, '(bestaetigung|entdeckung)', KONVENTION\)/g) || []).length === 2,
+     'Beide Placebo-Laeufe fahren die Einstiegskonvention des Signals (#88)');
   ok(/placeboEntdeckung: placeboEntdeckung/.test(mm),
      'und er steht im Protokoll');
 
