@@ -30,15 +30,19 @@
     return { txt: teile.join(' · '), cls: 'up' };
   }
 
-  /** Die Uebersicht unter "Vermoegen -> Depot" (Felix, #71). Schlanker als die Karte
-   *  auf "Heute": dort geht es um den Signalstand, hier um den Bestand. */
+  /** Die Uebersicht unter "Vermoegen -> Meine Papiere" (Felix, #71). Schlanker als die
+   *  Karte auf "Heute": dort geht es um den Signalstand, hier um den Bestand - und hier
+   *  steht auch das Uebernahme-Formular. */
   function zeichnenTabelle() {
     var kasten = el('bestandTabelle');
     if (!kasten || !B) return;
     var werte = B.liste();
     if (!werte.length) {
+      /* Kein Fernverweis mehr: das Uebernahme-Formular steht seit C2 direkt darunter
+       * auf derselben Pille. Ein "geh nach X", waehrend man in X steht, ist genau der
+       * Selbstverweis aus Befund P4. */
       kasten.innerHTML = '<div class="empty" style="padding:10px 0;">Noch keine eigenen Papiere. ' +
-        'Übernehmen geht im Reiter <b>Heute</b> – Auszug der Depotbank einfügen.</div>';
+        'Unten den Auszug der Depotbank einfügen – die ISIN genügt.</div>';
       return;
     }
     var zeilen = werte.map(function (w) {
@@ -77,7 +81,7 @@
     var werte = B.liste();
     if (!werte.length) {
       kasten.innerHTML = '<div class="empty" style="padding:10px 0;">Noch keine eigenen Papiere eingetragen. ' +
-        'Unten den Auszug der Depotbank einfügen – die ISIN genügt.</div>';
+        'Eintragen im Reiter <b>Vermögen → Meine Papiere</b> – der Auszug der Depotbank genügt.</div>';
       return;
     }
     var zeilen = werte.map(function (w) {

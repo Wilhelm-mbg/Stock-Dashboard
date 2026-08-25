@@ -4755,7 +4755,12 @@ console.log('\n41) Zustaende: was die App sagt, wenn etwas fehlt oder klemmt');
   ok(pillen.length >= 6, 'Wegweiser: die Unter-Pillen sind lesbar (' + pillen.length + ')');
   var echt = reiter.concat(pillen);
   var quellen = ['index.html', 'depot.js', 'renderer.js', 'strategien.js', 'mfdepot.js',
-                 'driftui.js', 'explorer.js', 'app-shell.js', 'scoreboard.js', 'mittelfrist.js'];
+                 'driftui.js', 'explorer.js', 'app-shell.js', 'scoreboard.js', 'mittelfrist.js',
+                 'bestandui.js'];
+  /* bestandui.js kam am 25.08.2026 dazu: die Datei verwies auf "Reiter Heute", als das
+   * Uebernahme-Formular laengst nach Vermoegen gezogen war - und keine Zusicherung
+   * konnte das sehen, sie stand schlicht nicht in dieser Liste. Wer eine Datei mit
+   * Ortsangaben anlegt, traegt sie hier ein. */
   var falsch = [];
   quellen.forEach(function (f) {
     var q = fs.readFileSync(__dirname + '/' + f, 'utf8');
@@ -6363,6 +6368,31 @@ console.log('\n44) Oberflaeche nach Themen sortiert (Felix, Issue #68)');
   var regeln = html.slice(html.indexOf('<div id="tab-strategien"'), html.indexOf('<!-- /tab-strategien -->'));
   ok(/id="sub-depot"/.test(vermoegen) && /id="sub-protokoll"/.test(vermoegen) && /id="sub-mittel"/.test(vermoegen),
      'Vermoegen haelt Depot, Protokoll und das Mittelfrist-Buch - alles drei sind Buecher, keine Werkzeuge');
+
+  /* --- C2: die eigenen Papiere haben EIN Zuhause (Struktur-Plan Stufe C.2) ---
+   * Vorher lagen Signalliste und Uebernahme-Formular auf "Heute", die Bestandstabelle
+   * unter Vermoegen, und beide Seiten verwiesen wechselseitig aufeinander. */
+  var heute = html.slice(html.indexOf('<div id="tab-dashboard"'), html.indexOf('<!-- /tab-dashboard -->'));
+  ok(heute.length > 100, 'Reiter tab-dashboard ist im Markup abgegrenzt');
+  ok(/data-sub="papiere"/.test(vermoegen) && /id="sub-papiere"/.test(vermoegen),
+     'Vermoegen hat die Pille "Meine Papiere" mit ihrem Panel');
+  ok(/id="bestandText"/.test(vermoegen) && /id="bestandLesen"/.test(vermoegen) &&
+     /id="bestandTabelle"/.test(vermoegen),
+     'Uebernahme-Formular und Bestandstabelle stehen unter Vermoegen');
+  ok(!/id="bestandText"/.test(heute) && !/id="bestandLesen"/.test(heute),
+     'Auf "Heute" steht kein zweites Uebernahme-Formular mehr');
+  ok(/id="bestandListe"/.test(heute) && !/id="bestandListe"/.test(vermoegen),
+     'Die Signalliste steht auf "Heute" - und nur dort (Felix, #71)');
+  /* Der Container MUSS leer bleiben: zeichnenTabelle() setzt seinen innerHTML. Waere das
+   * Formular hineingeschachtelt, loeschte es der 60-Sekunden-Takt weg - ein Fehler, der
+   * erst nach einer Minute sichtbar wird und deshalb von Hand kaum zu finden ist. */
+  ok(/<div class="panel" id="bestandTabelle"><div class="loading">[^<]*<\/div><\/div>/.test(html),
+     'bestandTabelle bleibt ein leerer Container - sein Inhalt wird ueberschrieben');
+  /* Zwei Knoepfe, EIN Registereintrag: der Schluessel bleibt heute.bestand, obwohl der
+   * zweite Knopf unter Vermoegen sitzt. Ein Umbenennen haette den Registerblock
+   * angefasst, in dem ein Messsatz steht. */
+  ok((html.match(/data-info="heute\.bestand"/g) || []).length === 2,
+     'Beide Ueberschriften fuehren auf denselben Erklaereintrag - eine Wahrheit');
   ok(!/id="sub-strategien"/.test(vermoegen) && !/id="sub-wende"/.test(vermoegen) && !/id="sub-auswertung"/.test(vermoegen),
      'Vermoegen haelt keine Schalter, kein Werkzeug und keinen Autopiloten mehr');
   ok(/id="sub-wende"/.test(werkzeuge) && /id="sub-explorer"/.test(werkzeuge) && /id="sub-scheine"/.test(werkzeuge),

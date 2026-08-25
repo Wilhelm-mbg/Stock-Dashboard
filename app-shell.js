@@ -586,7 +586,7 @@
       fuss: 'Gehandelt wird hiervon nichts. Keine Anlageberatung.'
     },
     'heute.bestand': {
-      titel: 'Mein Depot',
+      titel: 'Meine Papiere',
       punkte: [
         'Die eigenen Papiere - eingetragen aus dem Auszug der Depotbank oder von Hand. Sie werden NICHT gehandelt: die App bleibt eine Simulation mit virtuellem Kapital.',
         'Kurzfrist zeigt, was die gemessenen Intraday-Regeln beim letzten Scan zu dem Wert gesagt haben. Mittelfrist zeigt, ob eines der beiden Buecher (Momentum, Ergebnis-Drift) den Wert gerade haelt.',
