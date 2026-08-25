@@ -282,19 +282,16 @@
     }).join('');
     setzeInhalt('tiles', tiles);
 
-    // Gewinner/Verlierer
+    /* Struktur-Audit Punkt 10: die Spalten "Gewinner & Verlierer" sind mit dem
+     * Marktbild zusammengelegt - dieselben 15 Werte standen dreimal untereinander.
+     * Die Heatmap uebernimmt beides: sie sortiert signiert (staerkster Gewinner
+     * zuerst, staerkster Verlierer zuletzt) und traegt Kurs, Prozent und
+     * ausserboerslichen Kurs (#68/#74) auf jeder Kachel. */
     var withQ = STOCKS.filter(function (s) { return Q[s.y] && Q[s.y].pct !== null; });
-    var sorted = withQ.slice().sort(function (a, b) { return Q[b.y].pct - Q[a.y].pct; });
-    function moverRows(list) {
-      return list.map(function (s) {
-        return '<div class="mover-row" data-sym="' + U.esc(s.y) + '"><span class="sym">' + U.esc(s.y) + '</span>' +
-          '<span class="nm">' + U.esc(s.name) + '</span>' + ppKurz(Q[s.y]) + pctChip(Q[s.y].pct) + '</div>';
-      }).join('');
-    }
-    setzeInhalt('winners', moverRows(sorted.slice(0, 3)));
-    setzeInhalt('losers', moverRows(sorted.slice(-3).reverse()));
 
-    /* Marktbild-Heatmap: eine Kachel je Wert, die Bewegten zuerst. Farbe nur über
+    /* Marktbild-Heatmap: eine Kachel je Wert, vom staerksten Gewinner zum staerksten
+     * Verlierer (seit Punkt 10 des Struktur-Audits ersetzt sie auch die frueheren
+     * Gewinner/Verlierer-Spalten). Farbe nur über
      * CSS-Variablen (theme-fest): 3 % Tagesbewegung = volle Beimischung.
      * Die Beimischung ist seit Issue #74 auf 30 % gedeckelt statt auf 45: Darüber
      * fällt der Kontrast der Nebenzeile unter die Lesbarkeitsschwelle. Der Deckel
@@ -306,7 +303,7 @@
       if (!withQ.length) {
         heatEl.innerHTML = '<div class="loading">Noch keine Kurse geladen.</div>';
       } else {
-        var heatList = withQ.slice().sort(function (a, b) { return Math.abs(Q[b.y].pct) - Math.abs(Q[a.y].pct); });
+        var heatList = withQ.slice().sort(function (a, b) { return Q[b.y].pct - Q[a.y].pct; });
         heatEl.innerHTML = heatList.map(function (s) {
           var pct = Q[s.y].pct;
           var bg = 'var(--surface)';
@@ -1092,9 +1089,7 @@
      * und die App saehe lebendig aus, ohne je wieder zu handeln. */
     [['tiles', skel(6, 96, ['w60', 'w40', 'w80'])],
      ['bigtech', skel(7, 150, ['w40', 'w60', 'w80', 'w60'])],
-     ['chips', skel(8, 150, ['w40', 'w60', 'w80', 'w60'])],
-     ['winners', skel(3, 30, ['w80'])],
-     ['losers', skel(3, 30, ['w80'])]].forEach(function (kv) {
+     ['chips', skel(8, 150, ['w40', 'w60', 'w80', 'w60'])]].forEach(function (kv) {
       var el = document.getElementById(kv[0]);
       if (el) el.innerHTML = kv[1];
     });

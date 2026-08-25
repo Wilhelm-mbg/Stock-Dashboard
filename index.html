@@ -239,7 +239,7 @@
      Grund, warum Kacheln, Karten und Panels nie ganz zusammenpassten. Die
      Gemeinsamkeiten stehen jetzt EINMAL hier; die Einzelregeln darunter tragen
      nur noch ihre echten Unterschiede. */
-  .tile, .mover-col, .card, .news, .skel, .panel, .strat-card {
+  .tile, .card, .news, .skel, .panel, .strat-card {
     background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-gross);
   }
   .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(165px, 1fr)); gap: 10px; }
@@ -254,14 +254,6 @@
   .chip.down { color: var(--chip-down); background: var(--down-soft); }
   .chip.flat { color: var(--ink-2); background: var(--series-soft); }
 
-  .movers { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  @media (max-width: 640px) { .movers { grid-template-columns: 1fr; } }
-  .mover-col { padding: 12px 14px; }
-  .mover-col h3 { font-size: var(--fs-text); font-weight: 600; margin-bottom: 8px; color: var(--ink-2); }
-  .mover-row { display: flex; align-items: baseline; gap: 8px; padding: 5px 0; border-top: 1px solid var(--grid); }
-  .mover-row:first-of-type { border-top: none; }
-  .mover-row .sym { font-weight: 700; min-width: 52px; }
-  .mover-row .nm  { color: var(--muted); font-size: var(--fs-neben); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
   .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(255px, 1fr)); gap: 10px; }
   .card { padding: 12px 14px; }
@@ -354,7 +346,6 @@
      (Der erste Wurf nahm 35 % - das reichte im Hellmodus nicht, weil --up dort ein
      dunkles #006300 ist. Die Zusicherung hat es gefunden, nicht das Auge.) */
   .heat .hz .ppk { display: block; color: var(--ink-2); }
-  .mover-row .ppk { margin-right: 6px; }
 
   /* Ertragskurve im Depot */
   .eq-panel { padding: 12px 14px; margin-bottom: 10px; }
@@ -757,7 +748,7 @@
 <h2>Marktüberblick</h2>
 <div class="tiles" id="tiles"><div class="loading">Lade Kurse …</div></div>
 
-<h2 style="margin-top:18px;">Marktbild <span style="color:var(--muted); font-size:var(--fs-neben); font-weight:400;">– die 15 Werte dieses Reiters, Farbe = heutige Bewegung, Klick öffnet den Explorer</span></h2>
+<h2 style="margin-top:18px;">Marktbild <span style="color:var(--muted); font-size:var(--fs-neben); font-weight:400;">– die 15 Werte dieses Reiters, sortiert vom stärksten Gewinner zum stärksten Verlierer. Farbe = heutige Bewegung, Klick öffnet den Explorer</span></h2>
 <div id="dashHeat" class="heat"><div class="loading">Lade Kurse …</div></div>
 
 <h2>Mein Depot <span style="color:var(--muted); font-size:var(--fs-neben); font-weight:400; text-transform:none; letter-spacing:0;">
@@ -783,11 +774,11 @@
   </details>
 </div>
 
-<h2>Gewinner &amp; Verlierer des Tages</h2>
-<div class="movers">
-  <div class="mover-col"><h3>▲ Top-Gewinner</h3><div id="winners"></div></div>
-  <div class="mover-col"><h3>▼ Top-Verlierer</h3><div id="losers"></div></div>
-</div>
+<!-- Struktur-Audit Punkt 10: "Gewinner & Verlierer des Tages" stand hier als dritte
+     Anzeige derselben 15 Werte - dieselbe Information wie das Marktbild darueber,
+     nur anders sortiert. Zusammengelegt: das Marktbild sortiert jetzt vom staerksten
+     Gewinner zum staerksten Verlierer und traegt Kurs + ausserboerslichen Kurs. -->
+
 
 <h2>Spekulations-Radar <span style="color:var(--muted); font-size:var(--fs-neben); font-weight:400; text-transform:none; letter-spacing:0;">– Gerüchte aus öffentlichen Quellen, dreimal täglich vor US-Eröffnung gesammelt. <b>Gehandelt wird hiervon nichts.</b></span> <button class="info" type="button" data-info="heute.radar" aria-expanded="false" aria-label="Erklärung: Spekulations-Radar">i</button></h2>
 <div class="panel" id="spekRadar"><div class="loading">Noch keine Radar-Daten – wird gleich aus der Gemeinschafts-Ablage geladen.</div></div>

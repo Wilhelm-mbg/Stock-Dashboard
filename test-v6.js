@@ -6444,9 +6444,15 @@ console.log('\n44) Oberflaeche nach Themen sortiert (Felix, Issue #68)');
     var b = quelle.indexOf(bis, a);
     return quelle.slice(a, b < 0 ? quelle.length : b);
   }
-  var moverBlock = imBlock(ren, 'function moverRows', '\n  }');
-  ok(moverBlock && moverBlock.indexOf('ppKurz(') > -1,
-     'Gewinner und Verlierer zeigen den ausserboerslichen Kurs (#68)');
+  /* Struktur-Audit Punkt 10 (25.08.2026): "Gewinner & Verlierer" zeigten dieselben
+   * 15 Werte wie das Marktbild direkt darueber - zusammengelegt. Die #68-Information
+   * (ausserboerslicher Kurs) lebt auf den Marktbild-Kacheln weiter; das sichert die
+   * Zusicherung direkt darunter. Diese hier haelt fest, dass die Doppelanzeige nicht
+   * zurueckkommt und die Heatmap die Movers-Sortierung uebernommen hat. */
+  ok(ren.indexOf('moverRows') === -1 && ren.indexOf("setzeInhalt('winners'") === -1,
+     'Struktur-Audit 10: keine getrennten Gewinner/Verlierer-Spalten mehr');
+  ok(/heatList = withQ\.slice\(\)\.sort\(function \(a, b\) \{ return Q\[b\.y\]\.pct - Q\[a\.y\]\.pct/.test(ren),
+     'Struktur-Audit 10: das Marktbild sortiert vom Gewinner zum Verlierer');
   var heatBlock = imBlock(ren, "var heatEl = document.getElementById('dashHeat')", 'function card(s)');
   ok(heatBlock && heatBlock.indexOf('ppKurz(') > -1,
      'Das Marktbild zeigt den ausserboerslichen Kurs (#68)');
