@@ -463,6 +463,19 @@
   /* Wunsch #49: Die Thesen der Suche sind ganze Absaetze. Fuer die Karte reicht der
      erste Satz (hoechstens ~110 Zeichen, an einer Wortgrenze gekappt); der volle
      Wortlaut bleibt als Tooltip erhalten, es geht nichts verloren. */
+  /* Die Karte kappte These und Begründung hart auf 240 Zeichen, ohne ein Zeichen dafür.
+     Der Text endete dann mitten im Satz ("… veröffentlicht, der MPS", "Was danach kam"),
+     und der Leser konnte nicht unterscheiden, ob die Quelle so schlecht war oder die
+     Anzeige abgeschnitten hat. Gekappt wird deshalb an der Wortgrenze und sichtbar;
+     was unter die Grenze passt, bleibt unverändert - ein Auslassungszeichen darf nur
+     dort stehen, wo wirklich etwas fehlt. */
+  function kappe(t, n) {
+    var s = String(t == null ? '' : t).trim();
+    if (s.length <= n) return s;
+    var k = s.slice(0, n);
+    var sp = k.lastIndexOf(' ');
+    return (sp > n / 2 ? k.slice(0, sp) : k).replace(/[,;:\-–]$/, '') + ' …';
+  }
   function spekKurz(t) {
     var s = String(t || '').trim();
     // Satzende nur, wenn danach ein Leerzeichen folgt - "25,3 Mrd." oder "S.p.A." sind keins
@@ -505,12 +518,12 @@
           id: String(e.id || (e.sym + '|' + e.these)).slice(0, 120),
           sym: e.sym.toUpperCase().slice(0, 12),
           // Firmenname ohne Rechtsform-Anhang, damit das Label kurz bleibt
-          name: typeof e.name === 'string' ? e.name.replace(/[\s,]+(S\.p\.A\.|AG|Inc\.?|Corp\.?|Corporation|plc|PLC|Ltd\.?|SE|N\.V\.|S\.A\.|Co\.)$/, '').slice(0, 40) : '',
+          name: typeof e.name === 'string' ? kappe(e.name.replace(/[\s,]+(S\.p\.A\.|AG|Inc\.?|Corp\.?|Corporation|plc|PLC|Ltd\.?|SE|N\.V\.|S\.A\.|Co\.)$/, ''), 40) : '',
           art: SPEK_ART[e.art] || 'Gerücht',
           chance: RANG[e.chance] != null ? e.chance : 'niedrig',
-          these: e.these.slice(0, 240),
+          these: kappe(e.these, 240),
           kurz: spekKurz(e.these),
-          begruendung: typeof e.begruendung === 'string' ? e.begruendung.slice(0, 240) : '',
+          begruendung: typeof e.begruendung === 'string' ? kappe(e.begruendung, 240) : '',
           quellen: (Array.isArray(e.quellen) ? e.quellen : []).slice(0, 3).filter(function (q) {
             return q && typeof q.url === 'string' && safeUrl(q.url) !== '#';
           }),
@@ -615,7 +628,7 @@
         ein.push({
           id: String(e.id || (e.sym + '|' + t)).slice(0, 120),
           sym: e.sym.toUpperCase().slice(0, 12),
-          name: typeof e.name === 'string' ? e.name.slice(0, 40) : '',
+          name: typeof e.name === 'string' ? kappe(e.name, 40) : '',
           anzahl: Math.max(1, Math.min(20, parseInt(e.anzahl, 10) || 1)),
           wert: Math.max(0, e.wert),
           stueck: isFinite(e.stueck) ? e.stueck : 0,
@@ -642,7 +655,7 @@
       var alt = jetzt - r.mtime > 26 * 3600000;   // Meldungen kommen werktags, nicht stuendlich
       el.innerHTML = ein.map(function (z) {
         var kopf = z.wer.length
-          ? esc(z.wer[0].person) + (z.wer[0].rolle ? ' <span class="beg">(' + esc(String(z.wer[0].rolle).slice(0, 40)) + ')</span>' : '') +
+          ? esc(z.wer[0].person) + (z.wer[0].rolle ? ' <span class="beg">(' + esc(kappe(z.wer[0].rolle, 40)) + ')</span>' : '') +
             (z.anzahl > 1 ? ' <span class="beg">und ' + (z.anzahl - 1) + ' weitere' + (z.anzahl === 2 ? 'r' : '') + '</span>' : '')
           : '<span class="beg">Meldende Person nicht lesbar</span>';
         var detail = (z.stueck > 0 && z.kurs > 0)

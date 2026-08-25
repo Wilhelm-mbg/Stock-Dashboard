@@ -88,7 +88,10 @@
           daten = await ladeKurse();
           markt = markt || await ladeMarkt();
         }
-        if (!daten || !markt) { zeige(null, null, null, 'Keine Tagesdaten – unter „Vermögen → Mittelfristig“ einmal laden.'); return; }
+        /* Der Verweis zeigte auf die Pille, auf der dieser Text selbst steht. Genannt
+           wird deshalb der Knopf, der die Daten wirklich holt - wörtlich so, wie er
+           beschriftet ist (#mfLadenBtn, gleiches Pillen-Panel, weiter oben). */
+        if (!daten || !markt) { zeige(null, null, null, 'Keine Tagesdaten – erst oben „Daten holen und rechnen“.'); return; }
       }
       kurseFrischHalten(daten.stand);
       var MH = window.MFHandel, Dr = window.Drift;

@@ -1028,6 +1028,24 @@ console.log('\n17b) Oberflaeche: Altlasten und Verdrahtung');
   ok(/class="firma"/.test(r) && /esc\(z\.name\)/.test(r), 'Radar #49: Firmenname steht escaped neben dem Ticker');
   ok(/function spekKurz\(/.test(r) && /esc\(z\.kurz\)/.test(r) && /title="' \+ esc\(z\.these\)/.test(r),
      'Radar #49: These gekuerzt, voller Wortlaut bleibt als Tooltip');
+  /* P5 (25.08.2026): These und Begruendung wurden hart auf 240 Zeichen geschnitten. Auf
+   * der Karte endete der Satz dann einfach ("… veroeffentlicht, der MPS", "Was danach
+   * kam") - nachgerechnet gegen die echte spekulationen.json waren sieben von sieben
+   * Begruendungen betroffen. Ein Auslassungszeichen sagt, dass die ANZEIGE gekuerzt hat;
+   * es darf aber nur dort stehen, wo wirklich etwas fehlt. Beides wird hier geprueft -
+   * die Hilfe wird ausgeschnitten und AUSGEFUEHRT, nicht als Text abgeglichen. */
+  var kappeSrc = (/\n  function kappe\(t, n\) \{[\s\S]*?\n  \}/.exec(r) || [])[0];
+  var kappeFn = kappeSrc ? new Function(kappeSrc + '\nreturn kappe;')() : null;
+  ok(!!kappeFn && kappeFn('kurz genug', 40) === 'kurz genug',
+     'Kappe: was unter die Grenze passt, bleibt Zeichen fuer Zeichen stehen');
+  ok(!!kappeFn && / …$/.test(kappeFn('Wort '.repeat(30), 40)) && kappeFn('Wort '.repeat(30), 40).length <= 42,
+     'Kappe: was darueber liegt, endet sichtbar mit Auslassungszeichen an der Wortgrenze');
+  ok(/these: kappe\(e\.these, 240\)/.test(r) && /kappe\(e\.begruendung, 240\)/.test(r),
+     'Radar: These UND Begruendung laufen durch die Kappe, nicht nur eine von beiden');
+  /* Liefe die Kennung ueber die Kappe, aenderten sich die Kennungen aller bestehenden
+   * Eintraege - spekGesehen meldete dann jede alte Spekulation noch einmal als neu. */
+  ok(/id: String\(e\.id \|\| \(e\.sym \+ '\|' \+ e\.these\)\)/.test(r),
+     'Radar: die Kennung haengt weiter am ungekappten Text - sonst meldete jeder Eintrag neu');
 
   /* --- Insider-Kaeufe (23.08.2026): SEC Form 4 -----------------------------
    * Die Siebung ist der ganze Wert dieser Karte: ueber 90 Prozent der Meldungen sind
@@ -4745,6 +4763,34 @@ console.log('\n41) Zustaende: was die App sagt, wenn etwas fehlt oder klemmt');
      (falsch.length ? ' – ' + falsch.join(' | ') : ''));
   ok(!/Strategien &(amp;)? Belege|Kurzfrist-Depot/.test(html + dep + strat + exp + shell),
      'Wegweiser: die drei alten Falschnamen sind restlos weg');
+  /* P4 (25.08.2026): Der Leerzustand des Mittelfrist-Depots verwies auf die Pille, auf
+   * der er selbst steht ("unter „Vermoegen → Mittelfristig“ einmal laden"). Ein Verweis
+   * taugt nur, wenn er woanders hinzeigt - und der Knopf, den er nennt, muss wirklich so
+   * heissen. Beides steht hier, weil ein Umzug der Pille (Stufe C) sonst still eine
+   * Sackgasse hinterlaesst: die erste Zusicherung wird dann rot und zeigt genau darauf. */
+  var duiWeg = fs.readFileSync(__dirname + '/driftui.js', 'utf8');
+  var mfdVerweis = (/'Keine Tagesdaten[^']*?„([^“]+)“/.exec(mfd) || [])[1];
+  ok(!!mfdVerweis && html.indexOf('>' + mfdVerweis + '</button>') > -1,
+     'Mittelfrist-Depot: der Leerzustand nennt einen Knopf, den es wirklich gibt', mfdVerweis);
+  ok(!/Vermögen → Mittelfristig/.test(mfd + duiWeg),
+     'Mittelfrist-Panel: kein Statustext verweist mehr auf die Pille, auf der er steht');
+
+  /* S7 (25.08.2026): Die Ueberschrift zaehlte mit ("Drei Zeithorizonte, drei getrennte
+   * Strategien"), die Liste darunter kommt aber aus STRATEGIEN in strategien.js und war
+   * laengst auf vier Karten plus Langfrist-Fussnote gewachsen. Eine Ueberschrift mit
+   * Zahlwort laeuft beim naechsten Zuwachs still von der Liste weg.
+   * Verboten wird die FEHLERKLASSE, nicht der alte Wortlaut - ein Test auf den neuen
+   * Text waere nur eine Abschrift. "ein/eine" fehlt bewusst in der Liste: \bein\b traefe
+   * auch "ein- und ausschalten".
+   * Geprueft wird der SICHTBARE Text: HTML-Kommentare werden vorher entfernt. Sonst
+   * machte jede kuenftige Begruendung neben der Ueberschrift den Test rot - die
+   * Sperrklinke soll die Anzeige pruefen, nicht die Notiz daneben. */
+  var kopfRegeln = (/<div class="sub active" id="sub-regeln">([\s\S]*?)<div style="margin:6px 0 12px;">/.exec(html) || ['', ''])[1];
+  ok(kopfRegeln.length > 100, 'Strategie-Uebersicht: der Kopf des Panels ist auffindbar');
+  ok(!/\b(zwei|drei|vier|fünf|sechs)\b/i.test(kopfRegeln.replace(/<!--[\s\S]*?-->/g, '')),
+     'Strategie-Uebersicht: der Kopf zaehlt die Karten nicht mehr mit');
+  var karten = (strat.match(/\n      key: '/g) || []).length;
+  ok(karten >= 5, 'Strategie-Uebersicht: strategien.js fuehrt die Karten selbst', karten + ' Eintraege');
 
   /* --- Glossar --- */
   var gl = /'glossar\.begriffe':\s*\{[\s\S]*?\n    \}/.exec(shell);
@@ -6754,6 +6800,18 @@ console.log('\n46) Was die App dauerhaft aufzeichnet');
   var htSt = fs.readFileSync(__dirname + '/index.html', 'utf8');
   ok(/id="strategienListe"/.test(htSt) && /id="strategienFuss"/.test(htSt),
      'Die Karte hat ihren Platz im Reiter Messung');
+  /* P7 (25.08.2026): Die Spalte "Ort" zeigte zwoelfmal denselben Wert. Eine Spalte ohne
+   * Unterschied ist keine Information, sondern Breite. Sie darf verschwinden - der eine
+   * Ort aber nicht: er muss dann einmal dastehen. */
+  ok(/var ortSpalte = orte\.length > 1/.test(sbSt) &&
+     /\(ortSpalte \? '<th scope="col" style="padding:4px 8px;">Ort<\/th>' : ''\)/.test(sbSt),
+     'Strategien-Liste: die Ort-Spalte erscheint nur bei mehr als einem Ort');
+  ok(/Ort aller ' \+ zeilen\.length/.test(sbSt),
+     'und der eine Ort geht dabei nicht verloren, sondern steht einmal unter der Tabelle');
+  /* Der unangenehme Sonderfall: bestuende die Liste nur aus verwaisten Protokollen,
+   * waere der einzige "Ort" das fette "Datei fehlt" - eine Warnung, keine Ortsangabe. */
+  ok(/zeilen\.some\(function \(z\) \{ return !z\.hatDatei; \}\)/.test(sbSt),
+     'Strategien-Liste: "Datei fehlt" ist eine Warnung und wird nie wegoptimiert');
   /* Ein i-Knopf ohne Text waere dieselbe stille Luecke noch einmal: er sieht aus wie
    * eine Erklaerung und ist keine. */
   var shSt = fs.readFileSync(__dirname + '/app-shell.js', 'utf8');

@@ -712,26 +712,41 @@
       return (b.zuletzt || 0) - (a.zuletzt || 0);
     });
 
+    /* Die Spalte "Ort" trug in allen zwölf Zeilen denselben Wert. Eine Spalte ohne
+     * Unterschied trägt keine Information, kostet aber Breite und lässt die Tabelle
+     * voller aussehen, als sie ist. Sie erscheint deshalb nur, wenn es wirklich mehr
+     * als einen Ort gibt; der eine Ort geht nicht verloren, er wandert aus der
+     * Wiederholung in einen Satz darunter.
+     * "Datei fehlt" ist dabei keine Ortsangabe, sondern eine Warnung - sie darf auch
+     * dann nicht verschwinden, wenn sie in jeder Zeile stünde. */
+    var orte = [];
+    zeilen.forEach(function (z) {
+      z.ort = z.hatDatei ? (HERKUNFT_TEXT[z.herkunft] || z.herkunft || '?') : 'Datei fehlt';
+      if (orte.indexOf(z.ort) === -1) orte.push(z.ort);
+    });
+    var ortSpalte = orte.length > 1 || zeilen.some(function (z) { return !z.hatDatei; });
+
     var html = '<table style="width:100%; border-collapse:collapse; font-size:var(--fs-neben);">' +
       '<thead><tr style="text-align:left; color:var(--muted);">' +
       '<th scope="col" style="padding:4px 8px 4px 0;">Strategie</th>' +
-      '<th scope="col" style="padding:4px 8px;">Ort</th>' +
+      (ortSpalte ? '<th scope="col" style="padding:4px 8px;">Ort</th>' : '') +
       '<th scope="col" style="padding:4px 8px; text-align:right;">Läufe</th>' +
       '<th scope="col" style="padding:4px 8px;">Zuletzt</th>' +
       '<th scope="col" style="padding:4px 0;">Urteil</th></tr></thead><tbody>';
     zeilen.forEach(function (z) {
-      var ort = z.hatDatei ? esc(HERKUNFT_TEXT[z.herkunft] || z.herkunft || '?')
-        : '<b>Datei fehlt</b>';
+      var ort = z.hatDatei ? esc(z.ort) : '<b>Datei fehlt</b>';
       var urteil = !z.laeufe ? '<span style="color:var(--muted);">nie gemessen</span>'
         : esc(URTEIL_TEXT[z.urteil] || z.urteil || 'ohne Urteil');
       html += '<tr style="border-top:1px solid var(--grid);">' +
         '<td style="padding:5px 8px 5px 0;"><code>' + esc(z.key) + '</code></td>' +
-        '<td style="padding:5px 8px;">' + ort + '</td>' +
+        (ortSpalte ? '<td style="padding:5px 8px;">' + ort + '</td>' : '') +
         '<td style="padding:5px 8px; text-align:right;">' + (z.laeufe || '–') + '</td>' +
         '<td style="padding:5px 8px;">' + tagKurz(z.zuletzt) + '</td>' +
         '<td style="padding:5px 0;">' + urteil + '</td></tr>';
     });
-    el.innerHTML = html + '</tbody></table>';
+    el.innerHTML = html + '</tbody></table>' +
+      (ortSpalte ? '' : '<div style="color:var(--muted); font-size:var(--fs-klein); margin-top:6px;">' +
+        'Ort aller ' + zeilen.length + ' Strategien: ' + esc(orte[0] || '?') + '.</div>');
 
     /* Was FEHLT, gehoert ausdruecklich hierhin. Eine Liste, die stillschweigend die
      * Haelfte weglaesst, ist schlimmer als gar keine. */

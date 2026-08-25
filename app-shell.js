@@ -333,7 +333,7 @@
       fuss: 'Smile und Termin-Struktur sind Modellannahmen in der üblichen Größenordnung, NICHT an Emittentenkursen kalibriert – dafür fehlen der App echte Scheinpreise über mehrere Basispreise. Die Richtung ist belastbarer als die Höhe.'
     },
     'regeln.uebersicht': {
-      titel: 'Drei Zeithorizonte, drei getrennte Strategien',
+      titel: 'Die Strategien im Überblick',
       punkte: [
         'Sie handeln unterschiedlich, brauchen unterschiedliche Instrumente und sind unterschiedlich gut gemessen.',
         'Jede lässt sich einzeln ein- und ausschalten.',
