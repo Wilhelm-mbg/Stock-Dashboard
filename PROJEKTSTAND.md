@@ -56,6 +56,11 @@ Dazu die Zusatzpunkte 3–12 der Kritik: fertig.
   Rahmen: Intervall [+0,018, +0,117] gegen Hürde 0,10 — läuft, sobald genug frische Tage da sind.
 - **Zweig `claude/dashboard-integrated-browser-plvkv7` prüfen** (1 Commit: Browser-Treiber,
   Aufzeichnung, Einzeldatei) und bei Tauglichkeit einbauen; sonst mit Begründung vorlegen.
+- **Nachtauftrag 26.08. (Wilhelm):** Nach der Neumessung ein **großer Archiv-Ausbau** —
+  Backfill 60m und täglich auf E:, Universum nach Wertpapierart verbreitern. Ausdrücklich
+  NACH der Neumessung, damit die zwölf Protokolle auf einem festen Archivstand messen.
+- **Nachtauftrag 26.08. (Wilhelm):** Literatur-Tiefenrecherche Übernacht-/Schlussauktions-
+  Effekte (einmaliger Lauf 02:30, Ergebnis nach studien/tueftler/recherche-2026-08-26/).
 - **Danach die kleinen Wünsche, Reihenfolge fest:** #69 lokales Backup → #82 Herkunftsland-
   Filter Marktkarte → #70 Radar-Streusuchen → #33 zweiter Trendwende-Detektor.
 - **#86/#87/#88 — drei Messwerkzeug-Funde aus der Methodenkritik** (Analytiker, 2. Lauf):
