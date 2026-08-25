@@ -85,6 +85,9 @@ fertig bist.*
 
 - **App-Codebase Master** — hat am 25.08. spät die offene Issue-Liste zur Abarbeitung
   übernommen (Reihenfolge siehe Aufträge); Details trägt er selbst nach.
+- **#76 (sieben Fehler)** — genommen 25.08. 23:0x. Belegt: `.github/workflows/build.yml`,
+  `tools/release.js`. Fuenf der sieben sind bereits behoben (Nachweis im Commit); offen
+  waren nur Nr. 1 (CI-Sendeschluessel) und Nr. 6 (Aufraeum-Commit ausserhalb des Tags).
 
 ---
 
