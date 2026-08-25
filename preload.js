@@ -1,7 +1,22 @@
 'use strict';
 const { contextBridge, ipcRenderer } = require('electron');
 
+/* Das Farbthema kommt als Startargument des Fensters, nicht ueber IPC: thema.js muss
+ * es im <head> lesen koennen, also SYNCHRON, bevor der Rumpf geparst wird.
+ * Nur die zwei erlaubten Werte kommen durch - was hier ankommt, faerbt die ganze
+ * Oberflaeche, und dafuer wird nichts durchgereicht, was nicht gepruefft ist. */
+function startThemaAusArgv() {
+  try {
+    for (var i = 0; i < process.argv.length; i++) {
+      var m = /^--startthema=(light|dark)$/.exec(process.argv[i]);
+      if (m) return m[1];
+    }
+  } catch (e) { /* ohne Argument bleibt es beim Thema aus dem <html>-Tag */ }
+  return null;
+}
+
 contextBridge.exposeInMainWorld('api', {
+  startThema: startThemaAusArgv(),
   fetchText: (url) => ipcRenderer.invoke('fetch-text', url),
   // Ergebnistermine: nur ein Kuerzel geht raus, Ziel und Anfragekoerper stehen im Hauptprozess fest.
   earningsFetch: (symbol) => ipcRenderer.invoke('earnings-fetch', symbol),

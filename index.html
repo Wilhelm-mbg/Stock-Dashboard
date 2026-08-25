@@ -4,6 +4,12 @@
 <meta charset="UTF-8">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:;">
 <title>Markt-Dashboard</title>
+<!-- Das Farbthema, bevor der Rumpf geparst wird. Diese Zeile MUSS vor dem <style>
+     stehen und vor allem anderen Skript: sie verhindert, dass hell eingestellte
+     Anwender bei jedem Start erst die dunkle Oberflaeche sehen. Ein Inline-Skript
+     waere der uebliche Weg, ist hier aber durch die CSP (script-src 'self')
+     ausgeschlossen - deshalb eine eigene Datei. -->
+<script src="thema.js"></script>
 <style>
   :root {
     color-scheme: light;

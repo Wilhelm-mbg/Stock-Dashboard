@@ -4828,6 +4828,76 @@ console.log('\n41) Zustaende: was die App sagt, wenn etwas fehlt oder klemmt');
   ok(!/\son(click|change|input|load|error|submit|keydown|mouseover)\s*=/i.test(html),
      'Markup: kein einziger Inline-Handler, den die CSP blockieren würde');
 
+  /* ---- Stufe F Punkt 1: kein Dunkel-Blitz beim Start (26.08.2026) ----
+   * OB es blitzt, kann hier NICHT geprueft werden - das sagt nur ein echter Start mit
+   * echten Bildern. Dafuer gibt es tools/thema-probe.js (A/B gemessen: mit beiden
+   * Reparaturen 0 von 206 Bildern dunkel, ohne thema.js 7 von 210, ohne beides 9 von 9).
+   * Hier stehen die Voraussetzungen, unter denen das so bleibt - jede einzelne koennte
+   * still wegbrechen, ohne dass irgendetwas an der App kaputtginge. */
+  var tThema = fs.readFileSync(__dirname + '/thema.js', 'utf8');
+  var tMain = fs.readFileSync(__dirname + '/main.js', 'utf8');
+  var tRend = fs.readFileSync(__dirname + '/renderer.js', 'utf8');
+  /* OHNE KOMMENTARE gesucht, und das ist hier keine Feinheit: die Notiz ueber der
+   * Zeile nennt selbst das Stylesheet-Element, und die Erklaerung in thema.js nennt
+   * den alten Nachlade-Aufruf. Beide Pruefungen unten waren beim ersten Anlauf rot -
+   * wegen der PROSA, nicht wegen des Codes. Gemessen wird der Code.
+   * Die beiden Filter sind absichtlich schlicht; sie laufen ueber zwei kleine,
+   * bekannte Dateien ohne Zeichenketten, in denen Kommentarzeichen vorkommen. */
+  function tOhneHtmlKomm(q) { return q.replace(/<!--[\s\S]*?-->/g, ' '); }
+  function tOhneJsKomm(q) { return q.replace(/\/\*[\s\S]*?\*\//g, ' ').replace(/(^|[^:])\/\/[^\n]*/g, '$1'); }
+  var tKopf = tOhneHtmlKomm(html.slice(0, html.indexOf('</head>')));
+  /* 1) Die STELLE ist der ganze Trick: vor dem <style> und vor jedem anderen Skript.
+   *    Rutscht die Zeile ans Ende zu den anderen, blitzt es wieder - und nichts an der
+   *    App waere kaputt. Genau deshalb steht diese Pruefung hier. */
+  ok(tKopf.indexOf('<script src="thema.js"></script>') !== -1,
+     'thema.js wird im <head> geladen');
+  ok(tKopf.indexOf('<script src="thema.js"></script>') < tKopf.indexOf('<style>'),
+     'und zwar VOR dem Stylesheet - danach waere der erste Aufbau schon falsch gefaerbt');
+  var tSkripte = (html.match(/<script src="[^"]+"><\/script>/g) || []);
+  ok(tSkripte[0] === '<script src="thema.js"></script>',
+     'thema.js ist das ERSTE Skript der Seite ueberhaupt', tSkripte[0]);
+  /* 2) Der uebliche Weg waere ein Inline-Skript. Der ist hier durch die CSP verboten,
+   *    und die wird fuer eine Kosmetikfrage nicht aufgeweicht. Wer thema.js spaeter
+   *    "vereinfacht", indem er die CSP oeffnet, macht aus einem Schoenheitsfehler ein
+   *    Sicherheitsloch. */
+  ok(!/<script(?![^>]*\ssrc=)[^>]*>/.test(html),
+     'Kein Inline-Skript in index.html - die CSP verbietet es, und das bleibt so');
+  /* 3) Der Wert kommt OHNE IPC herein: Startargument des Fensters statt store-get.
+   *    Ueber IPC ist er eine Runde zu spaet - genau das war der Fehler. */
+  ok(/additionalArguments: \['--startthema=' \+ THEMA_START\]/.test(tMain),
+     'main.js gibt das Thema als Startargument mit, nicht per IPC');
+  ok(/const THEMA_START = startThema\(\);/.test(tMain) && /function startThema\(\)/.test(tMain),
+     'und liest es synchron, BEVOR das Fenster entsteht');
+  /* 4) Die Fensterfarbe ist die zweite Ursache und eine eigene: sie faerbt die
+   *    Zehntelsekunde, in der die Seite noch gar nicht gemalt hat. Ohne sie blieben
+   *    9 von 9 Bildern dunkel, obwohl die Seite selbst schon hell gewesen waere. */
+  ok(/backgroundColor: THEMA_START === 'light' \? '#f9f9f7' : '#0d0d0d'/.test(tMain),
+     'Auch die Fensterfarbe folgt dem gespeicherten Thema - sonst blitzt der Rahmen');
+  /* 5) Was aus dem Startargument kommt, faerbt die ganze Oberflaeche und landet in einem
+   *    Attribut. Es wird deshalb geprueft und nicht durchgereicht. */
+  ok(/\^--startthema=\(light\|dark\)\$/.test(pre),
+     'preload.js laesst nur "light" und "dark" durch - nichts wird ungeprueft weitergereicht');
+  var tA = pre.indexOf('function startThemaAusArgv() {');
+  var tE = pre.indexOf('\n}\n', tA);
+  ok(tA !== -1 && tE > tA, 'startThemaAusArgv laesst sich herausloesen');
+  var tFn = new Function('process', pre.slice(tA, tE + 3) + '\nreturn startThemaAusArgv;');
+  ok(tFn({ argv: ['x', '--startthema=light'] })() === 'light', 'Startargument light kommt an');
+  ok(tFn({ argv: ['x', '--startthema=dark'] })() === 'dark', 'Startargument dark kommt an');
+  ok(tFn({ argv: ['x'] })() === null, 'Ohne Argument: null, also bleibt es beim <html>-Tag');
+  ok(tFn({ argv: ['x', '--startthema=hell'] })() === null, 'Unbekannter Wert wird verworfen');
+  ok(tFn({ argv: ['x', '--startthema=dark" onload="boese()'] })() === null,
+     'Kein Durchreichen von Anhaengseln - der Wert landet in einem Attribut');
+  /* 6) Der alte, langsame Weg bleibt als Netz. Ersatzlos gestrichen haenge die
+   *    gespeicherte Wahl an EINEM Pfad; faellt der aus, waere sie still vergessen. */
+  ok(/function themaLaden/.test(tRend) && /storeGet\('theme'\)/.test(tRend),
+     'renderer.js behaelt den Nachlade-Weg als Netz, falls das Startargument fehlt');
+  /* 7) thema.js darf nichts anderes tun. Es ist das erste Skript der Seite: ein Fehler
+   *    darin waere ein weisser Bildschirm, nicht ein falsches Farbthema. */
+  ok(tThema.indexOf('try {') !== -1 && tThema.indexOf('catch') !== -1,
+     'thema.js faengt alles ab - ein Fehler dort waere ein weisser Bildschirm');
+  ok(!/document\.(write|body)|innerHTML|addEventListener\(|fetch\(|storeGet\(/.test(tOhneJsKomm(tThema)),
+     'und fasst nichts an ausser data-theme');
+
   // --- Kein eval in irgendeiner ausgelieferten Datei ---
   var paket = fs.readdirSync(__dirname).filter(function (f) {
     return /\.js$/.test(f) && !/^test-/.test(f);

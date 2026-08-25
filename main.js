@@ -1135,6 +1135,21 @@ function storeDir() {
   return d;
 }
 function safeName(name) { return String(name).replace(/[^a-zA-Z0-9_-]/g, '_').slice(0, 80); }
+/* ---- Das gespeicherte Farbthema, SYNCHRON und vor dem Fenster ----
+ * Der Renderer holt es sonst per store-get, also ueber IPC - die Antwort kommt
+ * fruehestens im naechsten Umlauf, und bis dahin steht die dunkle Oberflaeche schon
+ * auf dem Schirm. Wer hell eingestellt hat, bekam bei jedem Start einen Blitz.
+ * Hier wird dieselbe Datei gelesen, die store-get liest, nur direkt: es geht um zwei
+ * Zeichenketten, und ein eigener Pfad zum Speicher waere eine zweite Wahrheit.
+ * Alles, was schiefgehen kann, endet bei "dark" - dem Zustand von vorher. */
+function startThema() {
+  try {
+    const f = path.join(storeDir(), safeName('theme') + '.json');
+    if (!fs.existsSync(f)) return 'dark';
+    const t = JSON.parse(fs.readFileSync(f, 'utf8'));
+    return (t === 'light' || t === 'dark') ? t : 'dark';
+  } catch (e) { return 'dark'; }
+}
 
 // Zugangsdaten liegen nicht mehr im Klartext auf der Platte. safeStorage nutzt den
 // Windows-Anmeldedaten-Schutz (DPAPI): entschlüsseln kann nur derselbe Benutzer auf
@@ -1246,17 +1261,26 @@ function ensureTray() {
 
 const STARTED_HIDDEN = process.argv.includes('--hidden');
 function createWindow() {
+  const THEMA_START = startThema();
   const win = new BrowserWindow({
     show: !STARTED_HIDDEN,   // beim Autostart minimiert im Tray starten
     width: 1240,
     height: 940,
     minWidth: 720,
     minHeight: 500,
-    backgroundColor: '#0d0d0d',
+    /* Die Fensterfarbe VOR dem ersten Aufbau. Sie ist das, was man in der Zehntel-
+     * sekunde zwischen Fensterrahmen und fertiger Seite sieht; stand sie fest auf
+     * Dunkel, blitzte es auch dann, wenn die Seite selbst schon hell gewesen waere.
+     * Die Werte sind --page aus index.html, beide Themen. */
+    backgroundColor: THEMA_START === 'light' ? '#f9f9f7' : '#0d0d0d',
     autoHideMenuBar: true,
     icon: path.join(__dirname, 'icon.png'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
+      /* Ohne IPC in den Renderer: preload.js liest das hier aus process.argv und legt
+       * es als window.api.startThema ab, thema.js setzt es im <head>. Eine Runde
+       * store-get waere eine Runde zu spaet. */
+      additionalArguments: ['--startthema=' + THEMA_START],
       contextIsolation: true,
       nodeIntegration: false,
       sandbox: true

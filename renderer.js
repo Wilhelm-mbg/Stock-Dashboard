@@ -1041,6 +1041,14 @@
     try { if (window.api && window.api.storeSet) window.api.storeSet('theme', neu); }
     catch (e) { /* ohne Speicher bleibt es bei dieser Sitzung */ }
   });
+  /* Seit dem 26.08.2026 steht das Thema normalerweise schon: thema.js setzt es im
+   * <head> aus window.api.startThema, also bevor irgendetwas gezeichnet wird.
+   * Dieser Weg hier bleibt als NETZ - fuer den Fall, dass das Startargument fehlt
+   * (aeltere Fassung des Hauptprozesses, geaenderte Startbedingungen). Er kommt eine
+   * Runde zu spaet und blitzt dann, aber er kommt. Wenn thema.js gegriffen hat,
+   * setzt er denselben Wert noch einmal und niemand merkt etwas.
+   * Ersatzlos streichen waere falsch: dann haenge die gespeicherte Wahl an EINEM
+   * Pfad, und faellt der aus, waere sie stillschweigend vergessen. */
   (function themaLaden() {
     if (!window.api || !window.api.storeGet) return;
     window.api.storeGet('theme').then(function (t) {
