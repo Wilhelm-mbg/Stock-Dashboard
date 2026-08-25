@@ -2504,6 +2504,9 @@
             capitalOk: HEALTH.capOk, capitalFehler: HEALTH.capFail,
             signaleVerworfenKursdatenVeraltet: HEALTH.staleBars || 0, killSwitchAusloesungen: HEALTH.killSwitch || 0,
             hintergrundRechnerAusfaelle: HEALTH.workerFail || 0,
+            spannenTageAusKerzen: HEALTH.spannenTage || 0,
+            spannenVerdrahtungFehlt: HEALTH.spannenVerdrahtung || 0,
+            spannenKerzenOhneBriefkurs: HEALTH.spannenOhneFeld || 0,
             killSwitchHeute: (D.killSwitch && D.killSwitch.day === new Date().toISOString().slice(0, 10)) ? D.killSwitch : null,
             handelspauseRegime: (D.handelsPause && D.handelsPause.bis > Date.now()) ? D.handelsPause : null,
             letzterFehler: HEALTH.lastError || null,
@@ -2954,10 +2957,45 @@
    *  Handelssignal je zahlen wuerde. */
   function spannenAusKerzen(sym, bars) {
     if (!D || !sym || !bars || !bars.length) return 0;
-    if (!window.Archiv || !window.Archiv.spannenJeTag) return 0;
+    /* EIN FEHLER, DER KEINEN FEHLER ERZEUGT, war hier die eigentliche Gefahr.
+     * Faellt die Verdrahtung weg - etwa weil archiv.js nicht mehr im Paket liegt -,
+     * sammelte diese Funktion lautlos nichts: kein Wurf, kein roter Test, nur eine
+     * Messreihe, die leer bleibt und erst auffaellt, wenn jemand sie vermisst.
+     * Genau so ist hier schon einmal ein ganzes Modul aus dem Installationspaket
+     * gefallen und erst beim Anwender aufgefallen.
+     *
+     * Ein Wurf waere trotzdem falsch: er wuerde den naechtlichen Backfill abbrechen,
+     * der ausser der Spanne auch das Kursarchiv fuellt. Also zaehlen und EINMAL
+     * melden - dasselbe Muster wie HEALTH.saveFail. */
+    if (!window.Archiv || typeof window.Archiv.spannenJeTag !== 'function') {
+      HEALTH.spannenVerdrahtung = (HEALTH.spannenVerdrahtung || 0) + 1;
+      if (HEALTH.spannenVerdrahtung === 1) {
+        melde('Spannen-Erfassung ausgefallen',
+          'archiv.js/spannenJeTag ist nicht erreichbar. Die Geld-Brief-Spanne wird nicht mehr ' +
+          'mitgeschrieben - die Kostenannahme von 0,10 % bleibt damit unbelegt. Das Kursarchiv ' +
+          'selbst fuellt sich weiter.');
+      }
+      return 0;
+    }
     var jeTag = window.Archiv.spannenJeTag(bars);
     var tage = Object.keys(jeTag);
-    if (!tage.length) return 0;
+    /* Kerzen kamen an, aber keine trug eine Spanne. Das ist NICHT dasselbe wie "keine
+     * Kerzen": dann liefert die Quelle ihr ask-Feld nicht mehr, und jede weitere Runde
+     * waere vergebens, ohne dass es irgendwo auffiele.
+     *
+     * Erst ab der fuenften Runde IN FOLGE gemeldet: ein einzelner Wert ohne Briefkurs
+     * ist ein Einzelfall, kein Befund. Jeder Erfolg setzt den Zaehler zurueck - gemeldet
+     * wird nur, was anhaelt. */
+    if (!tage.length) {
+      HEALTH.spannenOhneFeld = (HEALTH.spannenOhneFeld || 0) + 1;
+      if (HEALTH.spannenOhneFeld === 5) {
+        melde('Kerzen ohne Geld-Brief-Spanne',
+          'Fuenf Abrufe in Folge lieferten Kerzen, aber keine Briefkurse (zuletzt ' + sym +
+          ', ' + bars.length + ' Kerzen). Die Spannen-Historie waechst dadurch nicht weiter.');
+      }
+      return 0;
+    }
+    HEALTH.spannenOhneFeld = 0;
     if (!D.spannen) D.spannen = { proben: [], seit: Date.now() };
     if (!D.spannen.tage) D.spannen.tage = {};
     var neu = 0;
@@ -2968,6 +3006,7 @@
       tag[sym] = { n: jeTag[tage[i]].n, med: jeTag[tage[i]].med, q: 'kerze' };
       neu++;
     }
+    HEALTH.spannenTage = (HEALTH.spannenTage || 0) + neu;
     return neu;
   }
 

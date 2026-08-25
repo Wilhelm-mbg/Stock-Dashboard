@@ -6568,6 +6568,24 @@ console.log('\n46) Was die App dauerhaft aufzeichnet');
      'Ein aus Kerzen gewonnener Tag ueberschreibt nie einen aus Live-Proben');
   ok(/function spannenHistorie/.test(dep) && /Kerzenschluss-Bid\/Ask, nicht Quote-Proben/.test(dep),
      'Die Kerzen-Historie steht NEBEN der Live-Messung und sagt, was sie ist');
+  /* Ein Fehler, der keinen Fehler erzeugt, ist die teuerste Sorte: Faellt die
+   * Verdrahtung weg, sammelte spannenAusKerzen lautlos nichts. Ein Wurf waere hier
+   * falsch (er braeche den Backfill ab, der auch das Kursarchiv fuellt) - also muss
+   * es zaehlen und melden. Diese drei Zusicherungen halten genau das fest. */
+  ok(/HEALTH\.spannenVerdrahtung = \(HEALTH\.spannenVerdrahtung \|\| 0\) \+ 1/.test(dep) &&
+     /HEALTH\.spannenVerdrahtung === 1[\s\S]{0,120}melde\(/.test(dep),
+     'Fehlende Verdrahtung wird gezaehlt und einmal gemeldet, nicht verschwiegen');
+  ok(/HEALTH\.spannenOhneFeld === 5[\s\S]{0,140}melde\(/.test(dep) &&
+     /HEALTH\.spannenOhneFeld = 0;/.test(dep),
+     'Kerzen ohne Briefkurs: erst nach fuenf Runden in Folge gemeldet, jeder Erfolg setzt zurueck');
+  ok(/spannenTageAusKerzen: HEALTH\.spannenTage/.test(dep) &&
+     /spannenVerdrahtungFehlt: HEALTH\.spannenVerdrahtung/.test(dep),
+     'Der Analyse-Export nennt beides: wie viel ankam UND ob die Verdrahtung fehlte');
+  /* Warum der positive Zaehler mit muss: "kein Fehler gezaehlt" ist erst dann eine
+   * Auskunft, wenn danebensteht, wie viel wirklich angekommen ist. Sonst sieht ein
+   * abgeschalteter Sammler genauso aus wie ein fehlerfreier. */
+  ok(/HEALTH\.spannenTage = \(HEALTH\.spannenTage \|\| 0\) \+ neu;/.test(dep),
+     'Auch der Erfolg wird gezaehlt - sonst ist Stille nicht von Fehlerfreiheit zu unterscheiden');
   ok(/function kostenMessungNeu/.test(dep), 'Die Messung des echten Schlupfs bleibt bestehen');
 
   /* --- Die Kostenmessung darf nicht auf einen Trade warten muessen ---
