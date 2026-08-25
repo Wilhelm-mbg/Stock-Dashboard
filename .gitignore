@@ -5,3 +5,8 @@ dist/
 # Es wird nur in den Installer eingepackt (bewusster, dokumentierter Kompromiss),
 # aber ein Token in der Git-Historie waere fuer immer oeffentlich.
 telemetrie.json
+
+# Sitzungs-Arbeitsbaeume und maschinenlokale Einstellungen. Standen bisher nur in
+# .git/info/exclude - also nur auf diesem einen Rechner.
+.claude/worktrees/
+.claude/settings.local.json

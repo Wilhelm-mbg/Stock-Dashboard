@@ -24,8 +24,7 @@
  * GLEICHEN Zeitstempel. Weicht der Kurs im Median staerker ab als die Schwelle
  * (Vorgabe 2 %), ist die Reihe fremd - dann wird sie nicht ergaenzt, sondern ERSETZT.
  * Mischen waere hier das Schlimmste: eine Reihe, die zwischen zwei Kursniveaus springt.
- * Liegt die Abweichung unter der Schwelle, wird nur gemischt (Luecken auffuellen), wie
- * es tools/archiv-stempel-bereinigen.js fuer die Stempel-Reihen tut.
+ * Liegt die Abweichung unter der Schwelle, wird nur gemischt (Luecken auffuellen).
  *
  * EINE ABWEICHUNG IST NICHT IMMER EIN FREMDER WERT. Bei MNST stimmte das Epic, aber
  * Capital liefert die Historie UNbereinigt ueber einen 2:1-Split hinweg, waehrend Yahoo

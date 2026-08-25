@@ -40,18 +40,18 @@ const echteFehler = {
   'no-unsafe-negation': 'error',
   'no-async-promise-executor': 'error',
   'no-loss-of-precision': 'error',
-  /* skipRegExps: tools/massive*.js entfernt die BOM-Kennung ueber ein Muster, in dem
-   * das Zeichen woertlich stehen MUSS. Ausserhalb von Mustern bleibt es ein Fehler. */
+  /* skipRegExps: fuenf Dateien tragen die BOM-Kennung bzw. ein geschuetztes Leerzeichen
+   * in einem Muster, in dem das Zeichen woertlich stehen MUSS - depot.js, scoreboard.js,
+   * tools/massive.js, tools/stammdaten-holen.js, tools/wertpapierarten-holen.js.
+   * Ausserhalb von Mustern bleibt es ein Fehler. */
   'no-irregular-whitespace': ['error', { skipRegExps: true }],
   'use-isnan': 'error',
   'valid-typeof': 'error',
-  /* Aus: explorer.js parkt einen Kanal-Entwurf hinter `if (false)`. Das ist Absicht
-   * und dokumentiert - kein Fehler, den der Linter melden soll. */
-  'no-constant-condition': 'off'
+  'no-constant-condition': 'error'
 };
 
 export default [
-  { ignores: ['node_modules/**', 'dist/**', 'studien/**/ergebnisse/**', 'studien/**/protokolle/**', 'studien/**/logs/**'] },
+  { ignores: ['node_modules/**', 'dist/**'] },
 
   // Oberflaeche: laeuft im Renderer, kein Node
   {
