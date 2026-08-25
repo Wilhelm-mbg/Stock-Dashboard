@@ -7051,8 +7051,10 @@ console.log('\n46) Was die App dauerhaft aufzeichnet');
   ok(/HEALTH\.spannenOhneFeld === 5[\s\S]{0,140}melde\(/.test(ks6) &&
      /HEALTH\.spannenOhneFeld = 0;/.test(ks6),
      'Kerzen ohne Briefkurs: erst nach fuenf Runden in Folge gemeldet, jeder Erfolg setzt zurueck');
-  ok(/spannenTageAusKerzen: HEALTH\.spannenTage/.test(dep) &&
-     /spannenVerdrahtungFehlt: HEALTH\.spannenVerdrahtung/.test(dep),
+  /* Der Analyse-Export wohnt seit Stufe E in berichte.js - dort wird geschnitten. */
+  var br6 = fs.readFileSync(__dirname + '/berichte.js', 'utf8');
+  ok(/spannenTageAusKerzen: HEALTH\.spannenTage/.test(br6) &&
+     /spannenVerdrahtungFehlt: HEALTH\.spannenVerdrahtung/.test(br6),
      'Der Analyse-Export nennt beides: wie viel ankam UND ob die Verdrahtung fehlte');
   /* Warum der positive Zaehler mit muss: "kein Fehler gezaehlt" ist erst dann eine
    * Auskunft, wenn danebensteht, wie viel wirklich angekommen ist. Sonst sieht ein
@@ -7063,10 +7065,10 @@ console.log('\n46) Was die App dauerhaft aufzeichnet');
    * verlassen. Faellt er still aus, schweigen mit ihm alle Zaehler, die einen anderen
    * stillen Ausfall melden sollten. Ein Waechter, der selbst lautlos ausfallen kann,
    * ist keiner - deshalb steht diese Zusicherung hier und nicht bei der Diagnose. */
-  ok(/HEALTH\.exportFail = \(HEALTH\.exportFail \|\| 0\) \+ 1/.test(dep) &&
-     /HEALTH\.exportFail === 1[\s\S]{0,120}melde\(/.test(dep),
+  ok(/HEALTH\.exportFail = \(HEALTH\.exportFail \|\| 0\) \+ 1/.test(br6) &&
+     /HEALTH\.exportFail === 1[\s\S]{0,120}melde\(/.test(br6),
      'Ein fehlgeschlagener Analyse-Export wird gezaehlt und gemeldet, nicht zu null verschluckt');
-  ok(/analyseExportFehler: HEALTH\.exportFail/.test(dep) && /archivSchreibFehler:/.test(dep),
+  ok(/analyseExportFehler: HEALTH\.exportFail/.test(br6) && /archivSchreibFehler:/.test(br6),
      'Beide Schreibwege stehen in den Gesundheitszahlen: Export und Kursarchiv');
   /* Vier weitere stille Ausfaelle (25.08.2026), alle im Handels- und Nachtpfad. */
   ok(/if \(Date\.now\(\) - intradayScanSeit < 10 \* 60000\) return;/.test(dep) &&
@@ -7086,8 +7088,8 @@ console.log('\n46) Was die App dauerhaft aufzeichnet');
      'Eine Spiegelung ohne Bestaetigung gilt nicht mehr als voller Erfolg');
   ok(/ACHTUNG: ohne Bestätigung eröffnet/.test(dep),
      'und der Hinweis steht in der Trade-Begruendung, nicht nur in der Diagnose');
-  ok(/capitalOhneBestaetigung: HEALTH\.capOhneDealId/.test(dep) &&
-     /edgeWaechterAusfaelle: HEALTH\.edgeFail/.test(dep) && /scanSperreHaenger: HEALTH\.scanHaenger/.test(dep),
+  ok(/capitalOhneBestaetigung: HEALTH\.capOhneDealId/.test(br6) &&
+     /edgeWaechterAusfaelle: HEALTH\.edgeFail/.test(br6) && /scanSperreHaenger: HEALTH\.scanHaenger/.test(br6),
      'Alle drei neuen Zaehler stehen in den Gesundheitszahlen');
   /* Stufe 4: fuenf stille Ausfaelle in Anzeige und Zulieferung. Sie kosten kein Geld,
    * aber sie lassen jemanden glauben, er saehe etwas Vollstaendiges. */

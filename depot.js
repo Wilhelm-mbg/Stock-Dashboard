@@ -925,7 +925,7 @@
   }
 
   function save() {
-    exportAnalysis(false); // Analyse-Dateien im Downloads-Ordner aktuell halten (gedrosselt)
+    window.Berichte.exportAnalysis(false); // Analyse-Dateien im Downloads-Ordner aktuell halten (gedrosselt)
     /* Das Ergebnis wurde frueher nie geprueft: Volle Platte oder ein blockierendes
      * Programm hiess stilles Nicht-Speichern bei laufendem Handel - beim Beenden
      * war der ganze Tag weg. Jetzt: Warnband + Zaehler, und beim ersten Fehlschlag
@@ -1493,151 +1493,10 @@
     });
   }
 
-  /* ================= Claude-Bericht anzeigen ================= */
-  async function showReport() {
-    var st = document.getElementById('reportStatus');
-    st.textContent = 'Lade Bericht …';
-    var r = window.api.readReport ? await window.api.readReport() : { ok: false };
-    st.textContent = '';
-    if (!r.ok) {
-      st.textContent = 'Noch kein Bericht vorhanden – die automatische Analyse legt ihn im Daten-Ordner an.';
-      return;
-    }
-    document.getElementById('aiTitle').textContent = 'Analyse-Bericht (Stand: ' + U.dt(r.mtime) + ')';
-    document.getElementById('aiBody').innerHTML = U.md(r.body) + '<div class="warn">Simulation – keine Anlageberatung.</div>';
-    window.openModal('aiModalBg');
-  }
-
-  /* ================= Analyse-Export (Downloads\Markt-Dashboard-Daten) ================= */
-  var lastAnalysisExport = 0;
-  function csvString() {
-    var head = ['ID', 'Strategie', 'Symbol', 'Typ', 'Eröffnet', 'Geschlossen', 'Stück', 'Basispreis', 'Fällig', 'Einstieg', 'Exit', 'P/L ($)', 'Haltedauer (Min)', 'Exit-Grund', 'Nachgebildet', 'Auslöser', 'Vor Messschnitt'];
-    function f(v) { return '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"'; }
-    function num(v) { return v == null ? '' : String(Math.round(v * 10000) / 10000).replace('.', ','); }
-    var rows = D.trades.slice().reverse().map(function (t) {
-      return [t.id, t.strategy === 'intraday' ? 'Intraday' : 'Stunden', t.sym, t.dir.toUpperCase(),
-        new Date(t.openT).toLocaleString('de-DE'), t.closeT ? new Date(t.closeT).toLocaleString('de-DE') : '',
-        t.qty, num(t.strike), new Date(t.expiry).toLocaleDateString('de-DE'),
-        num(t.entry), num(t.exit), num(t.pnl), t.closeT ? Math.round((t.closeT - t.openT) / 60000) : '',
-        t.why || (t.status === 'open' ? 'offen' : ''), t.replicated ? 'ja' : '', t.reason || '', t.legacy ? 'ja' : ''
-      ].map(f).join(';');
-    });
-    return '﻿' + head.map(f).join(';') + '\n' + rows.join('\n');
-  }
-  async function exportAnalysis(force) {
-    if (!D || !window.api.exportAnalysis) return null;
-    var nowE = Date.now();
-    if (!force && nowE - lastAnalysisExport < 10 * 60000) return null;
-    lastAnalysisExport = nowE;
-    // Bewusst OHNE Einstellungen/Zugangsdaten – nur Handels- und Auswertungsdaten.
-    var payload = {
-      json: {
-        exportiert: new Date().toISOString(),
-        hinweis: 'Simulation, keine Anlageberatung. Automatischer Export des Markt-Dashboards für externe Auswertung.',
-        depotwert: Math.round(equityNow() * 100) / 100,
-        cash: Math.round(D.cash * 100) / 100,
-        startkapital: START_CAPITAL,
-        offenePositionen: D.positions,
-        trades: D.trades.slice(0, 500),
-        trefferquoten: D.stats,
-        gewichte: D.weights,
-        intradayKonfiguration: D.intraday,
-        risiko: D.risk,
-        geduldBilanz: D.patience || {},
-        screener: D.screen || null,
-        verlustSerie: D.lossStreak || null,
-        equityVerlauf: (D.equityHist || []).slice(-2000),
-        sentimentVerlauf: SENT,
-        analyseZentrale: D.central || null,
-        symbolSperren: D.symBlock || {},
-        schattenbuch: { bilanz: D.schattenStat || {}, offen: (D.schatten || []).filter(function (x) { return x.status === 'open'; }).length,
-          letzte: (D.schatten || []).slice(0, 60) },
-        strategieFarmAlt: D.farmAlt || null,
-        autopilot: D.autoOpt || null,
-        archivAbdeckung: EXPORT_ABDECKUNG || null,
-        marktRegime: D.regime || null,
-        automatik: D.autoOpt || null,
-        messschnitt: D.messStart ? { seit: new Date(D.messStart).toISOString(), grund: D.messGrund || '' } : null,
-        experimentJournal: D.tuneLog || [],
-        letzteAnpassung: D.lastTune || null,
-        gesundheit: (function () {
-          var h = { appLaeuftSeit: new Date(HEALTH.startedAt).toISOString(), scansGesamt: HEALTH.scans, scanFehler: HEALTH.scanErrors,
-            letzterScan: HEALTH.lastScanT ? new Date(HEALTH.lastScanT).toISOString() : null,
-            kursAbrufeOk: HEALTH.fetchOk, kursAbrufeFehler: HEALTH.fetchFail,
-            kiPruefungenOk: HEALTH.kiOk, kiPruefungenFehler: HEALTH.kiFail,
-            capitalOk: HEALTH.capOk, capitalFehler: HEALTH.capFail,
-            signaleVerworfenKursdatenVeraltet: HEALTH.staleBars || 0, killSwitchAusloesungen: HEALTH.killSwitch || 0,
-            hintergrundRechnerAusfaelle: HEALTH.workerFail || 0,
-            analyseExportFehler: HEALTH.exportFail || 0,
-            capitalOhneBestaetigung: HEALTH.capOhneDealId || 0,
-            edgeWaechterAusfaelle: HEALTH.edgeFail || 0,
-            scanSperreHaenger: HEALTH.scanHaenger || 0,
-            archivSchreibFehler: (window.Archiv && window.Archiv.flushFehler
-              ? window.Archiv.flushFehler().n : null),
-            spannenTageAusKerzen: HEALTH.spannenTage || 0,
-            spannenVerdrahtungFehlt: HEALTH.spannenVerdrahtung || 0,
-            spannenKerzenOhneBriefkurs: HEALTH.spannenOhneFeld || 0,
-            killSwitchHeute: (D.killSwitch && D.killSwitch.day === new Date().toISOString().slice(0, 10)) ? D.killSwitch : null,
-            handelspauseRegime: (D.handelsPause && D.handelsPause.bis > Date.now()) ? D.handelsPause : null,
-            letzterFehler: HEALTH.lastError || null,
-            marktOffen: !!(window.Dash && window.Dash.marketOpen()),
-            scanIntervallSollMs: modeParams().scanMs };
-          // Scan-Lücken der letzten Stunde (Hinweis auf Aussetzer)
-          var lastH = HEALTH.scanTimes.filter(function (t) { return Date.now() - t < 3600000; });
-          var gaps = [];
-          for (var i = 1; i < lastH.length; i++) { var g = lastH[i] - lastH[i - 1]; if (g > h.scanIntervallSollMs * 3) gaps.push(Math.round(g / 60000)); }
-          h.scanLueckenMin = gaps;
-          return h;
-        })(),
-        marktkontext: (function () {
-          if (!window.Dash) return null;
-          var out = {};
-          ['^VIX', '^GSPC', '^IXIC'].forEach(function (s) {
-            var q = window.Dash.quote(s);
-            if (q) out[s] = { kurs: Math.round(q.price * 100) / 100, tagesPct: q.pct == null ? null : Math.round(q.pct * 100) / 100 };
-          });
-          return out;
-        })()
-      },
-      // Kursdaten nur schreiben, wenn wirklich welche da sind – sonst überschreibt ein
-      // Export direkt nach dem Start die guten Daten des Vortags mit einer leeren Datei.
-      kurse: (Object.keys(LASTBARS).length || Object.keys(TAGES_CACHE).length) ? {
-        exportiert: new Date().toISOString(),
-        intervall: D.intraday.interval || '5m',
-        hinweis: 'bars = Serien des letzten Intraday-Scans [t,close,volumen,high,low]; tages = Tagesschluss-Historie [t,close]. Mit engine.js (identische Rechenlogik der App) direkt backtestbar.',
-        bars: LASTBARS,
-        tages: TAGES_CACHE
-      } : null,
-      csv: csvString(),
-      bericht: (D.central && D.central.berichtMd) || null
-    };
-    /* Der Analyse-Export ist die Leitung, ueber die SAEMTLICHE HEALTH-Zaehler die App
-     * verlassen (gesundheit:, weiter oben). Bis zum 25.08.2026 wurde sein Ergebnis
-     * verworfen: schlug er fehl, meldete niemand etwas - und mit ihm schwiegen still
-     * auch alle Zaehler, die einen anderen stillen Ausfall haetten melden sollen.
-     * Ein Waechter, der selbst lautlos ausfallen kann, ist kein Waechter.
-     *
-     * Ein Wurf waere falsch: exportAnalysis haengt an save(), das im laufenden Handel
-     * staendig laeuft. Die 10-Minuten-Sperre bleibt auch im Fehlerfall bestehen -
-     * sonst versuchte es jeder save() erneut und schriebe bei voller Platte im
-     * Sekundentakt vier Dateien. */
-    var rEx = null;
-    try { rEx = await window.api.exportAnalysis(payload); }
-    catch (e) { rEx = { ok: false, msg: String((e && e.message) || e) }; }
-    if (!rEx || rEx.ok === false) {
-      HEALTH.exportFail = (HEALTH.exportFail || 0) + 1;
-      if (HEALTH.exportFail === 1) {
-        melde('Analyse-Export fehlgeschlagen',
-          'analyse-daten.json, messbericht.md, trades.csv und kursdaten.json werden nicht ' +
-          'mehr geschrieben (' + ((rEx && rEx.msg) || 'unbekannt') + '). Damit fehlen auch ' +
-          'saemtliche Gesundheitszahlen der App - haeufigste Ursachen: Platte voll oder ein ' +
-          'Programm blockiert den Daten-Ordner.');
-      }
-      return rEx;
-    }
-    HEALTH.exportFail = 0;
-    return rEx;
-  }
+  /* ================= Claude-Bericht und Analyse-Export =================
+   * Seit Stufe E des Struktur-Plans in berichte.js (window.Berichte). save() ruft
+   * den Export weiter gedrosselt nach jedem Speichern; vor der Verkabelung kehrt
+   * er still um. */
 
   /* ================= Historie (lokaler Cache) ================= */
   var TAGES_CACHE = {};
@@ -4192,7 +4051,7 @@
 
   /* ================= CSV-Export ================= */
   function exportCsv() {
-    dateiSpeichern(new Blob([csvString()], { type: 'text/csv;charset=utf-8' }),
+    dateiSpeichern(new Blob([window.Berichte.csvString()], { type: 'text/csv;charset=utf-8' }),
       'trades-' + new Date().toISOString().slice(0, 10) + '.csv');
   }
 
@@ -4832,7 +4691,7 @@
       };
       await save();
       if (!silent) renderCentral();
-      exportAnalysis(true);
+      window.Berichte.exportAnalysis(true);
       return rec;
     } catch (e) {
       out.innerHTML = '<div class="empty"><span class="ico"></span>Fehler: ' + U.esc(e.message || e) + '</div>';
@@ -5315,227 +5174,10 @@
     return g.join(' · ') || 'knapp unter der Robustheits-Schwelle';
   }
 
-  /** Messbericht als Markdown – landet in Downloads/Markt-Dashboard-Daten/messbericht.md.
-   *  Klartext: für dich zum Nachlesen und für Claude zum Auswerten (die geplanten Claude-
-   *  Aufgaben lesen denselben Ordner). Pure Funktion, testbar über window.__pilotBericht. */
-  function baueMessbericht(c, a, extra) {
-    extra = extra || {};
-    var z = [];
-    z.push('# Autopilot-Messbericht');
-    z.push('');
-    z.push('Stand: ' + new Date(c.at || Date.now()).toLocaleString('de-DE') + ' Uhr' +
-      (a.lastCheck && a.lastCheck.dauerMin ? ' · Rechenzeit ' + a.lastCheck.dauerMin + ' Min' : '') +
-      (extra.version ? ' · App ' + extra.version : ''));
-    z.push('');
-    z.push('## Datenlage (Messbasis dieser Nacht)');
-    z.push('');
-    z.push('| Zeitrahmen | Werte | Handelstage |');
-    z.push('|---|---|---|');
-    var dl = c.datenlage || {};
-    ['1m', '5m', '15m', '60m'].forEach(function (iv) {
-      var d = dl[iv] || {};
-      z.push('| ' + iv + ' | ' + (d.werte || 0) + ' | ' + (d.handelstage || 0) + ' |');
-    });
-    z.push('');
-    if (a.lastBackfill) z.push('Capital-Backfill: zuletzt ' + new Date(a.lastBackfill.at).toLocaleString('de-DE') + ' – ' + a.lastBackfill.bars + ' Kerzen für ' + a.lastBackfill.symbole + ' Werte nachgeladen (' + a.lastBackfill.requests + ' Anfragen).');
-    if (a.lastBackfill) z.push('');
-    z.push('Das Kursarchiv sammelt rollierend 90 Kalendertage – die Tabelle wächst mit jedem Handelstag, an dem die App läuft. Hürde für ein belastbares Urteil: **' + MIN_OOS_TRADES + ' Out-of-Sample-Trades auf ' + MIN_OOS_TAGE + ' ungesehenen Handelstagen**.');
-    z.push('');
-    z.push('## Kostenrealität (woran das Modell geeicht ist)');
-    z.push('');
-    z.push('Die Simulation rechnet nicht mit Pauschalen, sondern mit echten Emittenten-Kursen (Stichprobe onvista, 20.08.2026). Befund: **die Geld-Brief-Spanne ist ein fester Cent-Betrag**, kein Prozentsatz – rund 1 ct bei Bezugsverhältnis 0,1 und 2 ct bei 1,0, unabhängig vom Preis des Scheins. Ein 8-Euro-Schein zahlt damit 0,13 % je Seite, ein 9-Cent-Schein 11,5 %.');
-    z.push('');
-    z.push('Daraus folgt der wichtigste Kostenhebel überhaupt: Ein Schein mit Bezugsverhältnis 1,0 kostet das Zehnfache je Stück, zahlt aber nur den doppelten Cent – also **ein Fünftel des relativen Spreads bei identischem Hebel** (Omega hängt nicht am Bezugsverhältnis). Was die Bewegung mindestens hergeben muss, damit ein Trade überhaupt lohnt:');
-    z.push('');
-    z.push('| Profil | Bezugsv. | Scheinpreis | Spread je Seite | Hebel | Basiswert muss laufen |');
-    z.push('|---|---|---|---|---|---|');
-    (function () {
-      var spotB = 100, nowB = Date.now();
-      Object.keys(Q.PROFILES).forEach(function (pk) {
-        var p = Q.PROFILES[pk], bv = p.ratio || Q.RATIO;
-        var w = { strike: Math.round(spotB * (1 + p.otmPct) * 100) / 100, expiry: nowB + p.days * 86400000, iv: 0.35, ratio: bv };
-        var wv = Q.warrantValue('call', w, spotB, nowB);
-        if (!(wv > 0.001)) return;
-        var sp = Q.effSpread(0.35, undefined, wv, bv), om = Q.warrantOmega('call', w, spotB, nowB);
-        var fee = D.intraday.orderFee || 0, budg = Math.max(1, equityNow() * D.intraday.budgetPct);
-        var rt = 2 * sp + (2 * fee) / budg;
-        z.push('| ' + p.name + ' | ' + String(bv).replace('.', ',') + ' | ' + wv.toFixed(2).replace('.', ',') + ' € | ' +
-          (sp * 100).toFixed(2).replace('.', ',') + ' % | ' + om.toFixed(1).replace('.', ',') + ' | **' +
-          (om > 0 ? U.dez(rt / om * 100, 3) : '–') + ' %** |');
-      });
-    })();
-    z.push('');
-    z.push('Ordergebühr steht auf ' + ((D.intraday.orderFee || 0) === 0 ? '**0** – Capital.com berechnet keine Kommission, alles steckt im Spread.' : (D.intraday.orderFee + ' $ je Order.')));
-    z.push('');
-    /* Wochenrueckblick: Eine einzelne Nacht kann Zufall sein - erst der
-     * 7-Tage-Blick zeigt, ob etwas TRAEGT. Rollierend statt Kalenderwoche,
-     * damit der Abschnitt in jedem Bericht steht und nie veraltet. */
-    z.push('## Wochenrückblick (rollierend, letzte 7 Tage)');
-    z.push('');
-    (function () {
-      var seitW = (c.at || Date.now()) - 7 * 86400000;
-      var wt = (D.trades || []).filter(function (t) { return t.status === 'closed' && t.closeT >= seitW; });
-      if (!wt.length) {
-        z.push('Keine abgeschlossenen Trades in den letzten 7 Tagen.');
-      } else {
-        z.push('| Strategie | Trades | Treffer | Ergebnis |');
-        z.push('|---|---|---|---|');
-        [['intraday', 'Intraday'], ['hourly', 'Stunden'], [null, 'Altbestand']].forEach(function (paar) {
-          var liste = wt.filter(function (t) { return paar[0] ? t.strategy === paar[0] : !t.strategy; });
-          if (!liste.length) return;
-          var wins = liste.filter(function (t) { return t.pnl > 0; }).length;
-          var summe = liste.reduce(function (a2, t) { return a2 + (t.pnl || 0); }, 0);
-          z.push('| ' + paar[1] + ' | ' + liste.length + ' | ' + Math.round(wins / liste.length * 100) + ' % | ' +
-            (summe > 0 ? '+' : '') + summe.toFixed(2).replace('.', ',') + ' $ |');
-        });
-        var wBasis = wt.filter(function (t) { return t.basis; }).length;
-        if (wBasis) z.push('');
-        if (wBasis) z.push('Davon ' + wBasis + ' über den Basiswert (statt Hebelschein).');
-      }
-      var wSch = (D.schatten || []).filter(function (s) { return s.status === 'closed' && s.closeT >= seitW; });
-      if (wSch.length) z.push('');
-      if (wSch.length) z.push('Vorwärtstest: ' + wSch.length + ' Schatten-Trades abgeschlossen (Bilanz je Grund steht im Vorwärtstest-Abschnitt der App).');
-      var wTune = (D.tuneLog || []).filter(function (e2) { return e2.at >= seitW; });
-      if (wTune.length) {
-        z.push('');
-        z.push('Eingriffe der Woche (Autopilot/Sicherungen, jüngste zuerst):');
-        wTune.slice(0, 8).forEach(function (e2) {
-          z.push('- ' + new Date(e2.at).toLocaleDateString('de-DE') + ' · ' + (e2.quelle || '?') + ': ' +
-            ((e2.applied || []).join(', ') || (e2.txt || '').slice(0, 90)));
-        });
-        if (wTune.length > 8) z.push('- … und ' + (wTune.length - 8) + ' weitere');
-      }
-      var mv = (D.mfVerlauf || []).filter(function (p) { return p.t >= seitW; });
-      if (mv.length >= 2) {
-        var e0 = mv[0], e1 = mv[mv.length - 1];
-        function pctW(a2, b2) { return a2 > 0 ? ((b2 / a2 - 1) * 100).toFixed(2) : '–'; }
-        z.push('');
-        z.push('Bücher über die Woche (' + mv.length + ' Tagespunkte): Momentum ' + pctW(e0.momentum, e1.momentum) +
-          ' % · Drift ' + pctW(e0.drift, e1.drift) + ' % · SPY ' + pctW(e0.spy, e1.spy) + ' %.');
-      }
-    })();
-    z.push('');
-    z.push('## Ergebnis dieser Messung');
-    z.push('');
-    z.push(a.lastCheck ? a.lastCheck.txt : '–');
-    if (c.rec && c.rec.richtung && (c.rec.richtung.callN || c.rec.richtung.putN)) {
-      var ri = c.rec.richtung;
-      z.push('');
-      z.push('Richtungs-Bilanz des besten Kandidaten: Calls ' + ri.callN + ' Trades (' + (ri.callPnl > 0 ? '+' : '') + ri.callPnl + ' $) · Puts ' + ri.putN + ' Trades (' + (ri.putPnl > 0 ? '+' : '') + ri.putPnl + ' $)' +
-        (ri.callN >= 10 && ri.putN >= 10 && ((ri.callPnl > 0) !== (ri.putPnl > 0)) ? ' – trägt bisher nur in EINE Richtung, beobachten.' : '.'));
-    }
-    if (a.pending && a.pending.rec) { z.push(''); z.push('**Vorgemerkt:** ' + a.pending.rec.modeName + ' · ' + a.pending.rec.interval + ' – wird angewendet, sobald die Börse geschlossen ist.'); }
-    if (a.lastApply) { z.push(''); z.push('Zuletzt automatisch übernommen: ' + new Date(a.lastApply.at).toLocaleString('de-DE') + ' – ' + (a.lastApply.name || '')); }
-    z.push('');
-    z.push('## Ranking – alle Kandidaten und woran sie scheitern');
-    z.push('');
-    z.push('| # | Setup | Zeitrahmen | WF-Rendite | Scheiben+ | Trades | Tage | PF | Treffer | Woran scheitert es |');
-    z.push('|---|---|---|---|---|---|---|---|---|---|');
-    (c.ranking || []).forEach(function (r, i) {
-      z.push('| ' + (i + 1) + ' | ' + r.name + ' | ' + r.interval + ' | ' + (r.wfRet > 0 ? '+' : '') + r.wfRet + ' % | ' +
-        (r.posSegs || 0) + '/' + (r.scheibenMax || 4) + ' | ' + (r.n || 0) + ' | ' + (r.oosTage || 0) + ' | ' + (r.pf != null ? r.pf : '–') + ' | ' +
-        (r.winRate != null ? r.winRate + ' %' : '–') + ' | ' + scheiterGrund(r) + ' |');
-    });
-    z.push('');
-    var fb = c.rec && c.rec.filterBilanz;
-    z.push('## Filter-Bilanz (bester Kandidat, ungesehene Daten)');
-    z.push('');
-    if (fb && fb.zeilen && fb.zeilen.length) {
-      z.push('Basis mit allen Filtern: ' + (fb.basisRet > 0 ? '+' : '') + fb.basisRet + ' % bei ' + fb.basisN + ' Trades. „Nutzen“ = Rendite mit Filter minus ohne – positiv heißt: der Filter spart Geld.');
-      z.push('');
-      z.push('| Filter | mit | ohne | Nutzen | Trades mit/ohne | Urteil |');
-      z.push('|---|---|---|---|---|---|');
-      fb.zeilen.forEach(function (r) {
-        var urteil = r.duenn ? 'zu wenig Trades für ein Urteil'
-          : r.nutzen > 0.5 ? 'spart Geld' : r.nutzen < -0.5 ? 'kostet Geld – Kandidat zum Lockern' : 'neutral';
-        z.push('| ' + r.name + ' | ' + (r.mitRet > 0 ? '+' : '') + r.mitRet + ' % | ' + (r.ohneRet > 0 ? '+' : '') + r.ohneRet + ' % | ' +
-          (r.nutzen > 0 ? '+' : '') + r.nutzen + ' Pp | ' + r.mitN + '/' + r.ohneN + ' | ' + urteil + ' |');
-      });
-    } else {
-      z.push('Keine Filter-Bilanz in dieser Messung (zu wenig Daten auf der Testscheibe).');
-    }
-    z.push('');
-    z.push('Nur live wirksame Filter (nicht im Backtest abbildbar) – Urteil aus dem Schattenbuch:');
-    z.push('');
-    var sst = extra.schatten || {};
-    var sk = Object.keys(sst);
-    if (sk.length) {
-      sk.forEach(function (g) {
-        var x = sst[g];
-        var u = x.n < 5 ? 'zu früh (' + x.n + ' Schatten)'
-          : x.gerettet > x.verhindert * 1.5 ? 'rettet Geld' : x.verhindert > x.gerettet * 1.5 ? 'verhindert eher Gewinne' : 'unentschieden';
-        z.push('- ' + g + ': ' + x.n + ' Schatten · Ø ' + (x.n ? Math.round(x.sumPct / x.n * 10) / 10 : 0) + ' % · gerettet ' + x.gerettet + ' / verhindert ' + x.verhindert + ' → ' + u);
-      });
-    } else {
-      z.push('- noch keine abgeschlossenen Schatten – entsteht im Live-Betrieb.');
-    }
-    z.push('');
-    if (a.tiefensuche) {
-      z.push('## Tiefensuche (Leerlaufstunden, rein aus dem Archiv)');
-      z.push('');
-      z.push('Zuletzt ' + new Date(a.tiefensuche.at).toLocaleString('de-DE') + ' · ' + a.tiefensuche.geprueft + ' Kombinationen in ' + a.tiefensuche.dauerMin + ' Min.');
-      if ((a.tiefensuche.top || []).length) {
-        z.push('');
-        z.push('| Kombination | Training | ungesehen | Trades |');
-        z.push('|---|---|---|---|');
-        a.tiefensuche.top.forEach(function (f) {
-          z.push('| ' + f.name + ' | ' + (f.trainRet > 0 ? '+' : '') + f.trainRet + ' % | ' + (f.testRet > 0 ? '+' : '') + f.testRet + ' % | ' + f.testN + ' |');
-        });
-      }
-      z.push('');
-      z.push(a.entdeckt ? 'Fund tritt in der naechsten Nacht-Messung an: ' + a.entdeckt.name : 'Kein Fund, der out-of-sample positiv war.');
-      z.push('');
-    }
-    if (a.kiKandidat) {
-      z.push('## KI-Vorschlag (lokales Modell, Whitelist-geprueft)');
-      z.push('');
-      var kiErg = (c.ranking || []).filter(function (r) { return r.modeKey === 'ki'; })[0];
-      z.push('- Kandidat: ' + a.kiKandidat.name);
-      if (a.kiKandidat.begruendung) z.push('- Begruendung des Modells: ' + a.kiKandidat.begruendung);
-      z.push(kiErg
-        ? '- Ergebnis dieser Messung: WF ' + (kiErg.wfRet > 0 ? '+' : '') + kiErg.wfRet + ' % · ' + kiErg.n + ' Trades · ' + kiErg.verdict
-        : '- Laeuft ab der naechsten Messung mit.');
-      z.push('');
-    }
-    z.push('## Verlauf der letzten Messungen');
-    z.push('');
-    if ((a.messHistorie || []).length) {
-      z.push('| Datum | bester Kandidat | WF-Rendite | Trades | Tage | belastbar |');
-      z.push('|---|---|---|---|---|---|');
-      a.messHistorie.slice(0, 14).forEach(function (h) {
-        z.push('| ' + new Date(h.at).toLocaleString('de-DE') + ' | ' + h.name + ' · ' + h.interval + ' | ' +
-          (h.wfRet > 0 ? '+' : '') + h.wfRet + ' % | ' + h.n + ' | ' + (h.oosTage || 0) + ' | ' + (h.belastbar ? 'ja' : 'nein') + ' |');
-      });
-      z.push('');
-      z.push('Steigen Trades und Tage von Nacht zu Nacht, wächst das Archiv wie geplant. Bleiben sie stehen, lief die App nachts nicht durch (Tray-Modus reicht).');
-    } else {
-      z.push('Noch keine früheren Messungen – der Verlauf entsteht ab der zweiten Nacht.');
-    }
-    z.push('');
-    var sp = Object.keys(extra.handSperre || {});
-    z.push('## Von Hand gesetzte Felder (für die Automatik gesperrt)');
-    z.push('');
-    z.push(sp.length ? sp.map(function (f) { return HAND_LABEL[f] || f; }).join(' · ') : 'keine – alle Felder werden vom Autopiloten gepflegt');
-    z.push('');
-    var cfg = extra.intraday || {};
-    z.push('## Aktuelle Handels-Konfiguration');
-    z.push('');
-    z.push('Setup ' + (cfg.mode || '?') + (cfg.exitStyle && cfg.exitStyle !== 'laufen' ? '/' + cfg.exitStyle : '') +
-      ' · Zeitrahmen ' + (cfg.interval || '?') + ' · ' + String(cfg.lineType || 'ema').toUpperCase() + (cfg.period || '') +
-      ' · Bestätigung ' + (cfg.confirmBps || '?') + ' bps · Zeitfenster ' + (cfg.window || 'all') +
-      ' · Stop ' + (cfg.scalpSL === 'auto' ? 'auto' : (cfg.scalpSL || '?') + ' %') +
-      ' · Cooldown ' + (cfg.cooldownMin != null ? cfg.cooldownMin + ' Min' : 'Modus-Standard') + ' · max. ' + (cfg.maxPerDay || '?') + ' Trades/Tag' +
-      ' · Trendfilter ' + (cfg.trendFilter ? 'an' : 'aus') + ' · Kanal ' + (cfg.channel !== false ? 'an' : 'aus'));
-    z.push('');
-    z.push('## Auswertung mit Claude');
-    z.push('');
-    z.push('Im selben Ordner liegen: analyse-daten.json (Depot, Trades, Geduld-Bilanz, Schattenbuch, Gesundheit), kursdaten.json (Bars des letzten Scans + Tageshistorie) und engine.js (identische Rechenlogik der App – eigene Backtests damit exakt vergleichbar). ' +
-      'Verbesserungsvorschläge zurück an die App: empfehlung.json mit {"quelle":"claude","id":"eindeutig","begruendung":"…","intraday":{…}} – die App übernimmt nur Whitelist-Felder und respektiert die Hand-Sperre.');
-    z.push('');
-    z.push('*Simulation – keine Anlageberatung.*');
-    return z.join('\n');
-  }
-  if (typeof window !== 'undefined') window.__pilotBericht = baueMessbericht;
+  /* ================= Messbericht-Markdown =================
+   * Seit Stufe E in berichte.js (window.Berichte.baueMessbericht); der Testgriff
+   * __pilotBericht wohnt dort. */
+
   /* __tiefensuche und __ladeArchivDaten wohnen seit Stufe E bei zucht.js. */
   if (typeof window !== 'undefined') { window.__pilotMessen = function () { return pilotMessen(true); }; }
   /* __warnband wird von renderer.js gebraucht: Bei gestoerter Kursquelle blieb das
@@ -6010,7 +5652,7 @@
         if (a.messHistorie.length > 30) a.messHistorie = a.messHistorie.slice(0, 30);
       }
       if (D.central) {
-        D.central.berichtMd = baueMessbericht(D.central, a, { handSperre: D.intraday.handSperre, intraday: D.intraday, version: APP_VER, schatten: D.schattenStat });
+        D.central.berichtMd = window.Berichte.baueMessbericht(D.central, a, { handSperre: D.intraday.handSperre, intraday: D.intraday, version: APP_VER, schatten: D.schattenStat });
       }
       // Filter, die in ZWEI aufeinanderfolgenden Messungen nachweislich Geld gekostet
       // haben, werden gelockert - dieselbe Zwei-Nächte-Disziplin wie bei den Setups.
@@ -6048,7 +5690,7 @@
        * Modus in die Auswahl und konnte damit den Waechter-Modus unterlaufen. */
       pilotAnwenden();          // Börse gerade zu? Dann direkt einspielen statt bis morgens zu warten
       await save();
-      exportAnalysis(true);     // messbericht.md + analyse-daten.json sofort in den Daten-Ordner
+      window.Berichte.exportAnalysis(true);     // messbericht.md + analyse-daten.json sofort in den Daten-Ordner
       renderTuneLog();
       renderCentral();
       render();
@@ -6544,15 +6186,20 @@
     });
 
     // Retrospektive & Wochenreport
-    /* Retrospektive und Wochenreport wohnen seit Stufe E in berichte.js - die
-     * Knoepfe verkabelt das Modul; hereingereicht wird nur, was es liest. */
+    /* Alle vier Berichte wohnen seit Stufe E in berichte.js - die Knoepfe verkabelt
+     * das Modul; hereingereicht wird nur, was gelesen wird. Neu zuweisbare Quellen
+     * (D, SENT, EXPORT_ABDECKUNG) kommen als Getter. */
     if (window.Berichte) window.Berichte.verkabeln({
       depot: function () { return D; }, equityNow: equityNow, istMess: istMess,
       stratOf: stratOf, normWeights: normWeights, kiSuggestions: kiSuggestions,
       getHistory: getHistory, patienceAgg: patienceAgg, dateiSpeichern: dateiSpeichern,
-      START_CAPITAL: START_CAPITAL
+      START_CAPITAL: START_CAPITAL,
+      HEALTH: function () { return HEALTH; }, SENT: function () { return SENT; },
+      EXPORT_ABDECKUNG: function () { return EXPORT_ABDECKUNG; },
+      LASTBARS: function () { return LASTBARS; }, TAGES_CACHE: function () { return TAGES_CACHE; },
+      modeParams: modeParams, melde: melde, scheiterGrund: scheiterGrund,
+      HAND_LABEL: HAND_LABEL, MIN_OOS_TRADES: MIN_OOS_TRADES, MIN_OOS_TAGE: MIN_OOS_TAGE
     });
-    document.getElementById('reportShowBtn').addEventListener('click', showReport);
     (function () {
       /* Der Strategie-Chart wohnt seit Stufe E in strategiechart.js und verkabelt
        * seine Bedienelemente selbst. Hier bleiben die benannten Regeln (Issue #36) -
@@ -6606,7 +6253,7 @@
     document.getElementById('exportDataBtn').addEventListener('click', async function () {
       var stE = document.getElementById('reportStatus');
       stE.textContent = 'Exportiere …';
-      var r = await exportAnalysis(true);
+      var r = await window.Berichte.exportAnalysis(true);
       stE.textContent = r && r.ok ? 'Gespeichert in ' + r.dir : 'Export fehlgeschlagen' + (r && r.msg ? ': ' + r.msg : ' (läuft die App als Installation?)');
     });
 
