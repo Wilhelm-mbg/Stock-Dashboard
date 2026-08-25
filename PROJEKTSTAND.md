@@ -49,10 +49,18 @@ alle vier zuerst, die Neumessung startet erst danach.**
 - ~~**#85** — laufende Quote-Stempel-Kerze abschneiden.~~ **Erledigt 26.08.** (`4e36674`):
   beide Archive verwerfen den unfertigen Balken, 2.841 vorhandene Teilkerzen entfernt.
   **Damit ist 1 von 4 Vorstufen fertig.**
-- **#86** — `aussicht` (Tage bis t=2) feuert nie, weil `block()` kein `sd` liefert.
-- **#87** — A7-Protokolltext nennt das falsche Ausschlussfenster (`[i-lese]` statt `[i-lese-H]`).
-- **#88** — Placebo-Lauf ignoriert die Einstiegskonvention; zugleich Vorbedingung für den
-  Tüftler-Kandidaten `glockendruck-nacht` Zweig T.
+- ~~**#86** — `aussicht` (Tage bis t=2) feuert nie.~~ **Erledigt 26.08.** (`ade84ec`):
+  in 59 abgelegten Urteilen stand die Zahl auf null. Gegenprobe des Analytikers meldet
+  jetzt 2 von 2 statt 0 von 2.
+- ~~**#87** — A7-Protokolltext nennt das falsche Ausschlussfenster.~~ **Erledigt 26.08.**
+- ~~**#88** — Placebo-Lauf ignoriert die Einstiegskonvention.~~ **Erledigt 26.08.**:
+  gemessen −0,5000 Pp gegen MDE 0,0055 Pp, nach der Reparatur 0,0000. Kein abgelegtes
+  Protokoll war betroffen. Damit ist `glockendruck-nacht` Zweig T an dieser Stelle frei.
+
+> **ALLE VIER VORSTUFEN SIND FERTIG (26.08.).** Die Neumessung ist damit nicht mehr
+> blockiert. Sie beginnt laut Auftrag mit der Versionierung der Messmaschine — und die
+> ist durch #86/#87 dringender geworden: die Protokollinhalte ändern sich (`aussicht`
+> wird gefüllt, A7-Text anders), die Version steht weiter auf `1.0.0`.
 
 **Danach — Messmaschine versionieren und alle Kanten neu messen** (freigegeben 25.08. spät):
 (1) Versionsnummer der Messmaschine an ihren Code koppeln (heute 7 Änderungen bei
@@ -93,9 +101,11 @@ Erst dann neue Untersuchungen.
 *Wer welche Dateien belegt. Trag dich ein, bevor du anfängst; nimm dich raus, wenn du
 fertig bist.*
 
-- **App-Codebase Master** — hat **#86, #87, #88** genommen (26.08.): die drei restlichen
-  Vorstufen der Neumessung. Sie liegen alle in der Messmaschine und würden sich sonst
-  gegenseitig blockieren. **Keine Handelslogik.** Zuletzt fertig: #76, #84, #85, #83/#89.
+- **App-Codebase Master** — hat **Messmaschine versionieren** genommen (26.08., Teil 1
+  des Neumessungs-Auftrags): Versionsnummer an den Code koppeln, veraltete Protokolle in
+  der Übersichtstafel kennzeichnen. Belegt `studien/messmaschine/`. **Das Neumessen der
+  zwölf Strategien (Teil 2) nimmt jemand anders** — langer Rechenlauf, kein Umbau.
+  Zuletzt fertig: #76, #84, #85, #83/#89, #86/#87/#88.
 
 ---
 
