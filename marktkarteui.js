@@ -163,6 +163,75 @@
     }
   }
 
+  /* ---------- Wenn die Stammdaten fehlen ----------
+   * Frueher stand hier nur ein Befehl fuer die Kommandozeile. Das war eine Sackgasse
+   * fuer jeden, der keine Entwicklungsumgebung hat - genau die, die schon beim Reiter
+   * "Messung" eine war. Die Begruendung dafuer war ausserdem schief: Die Regel des
+   * Projekts verbietet einen Netzwerkpfad zu KOSTENPFLICHTIGEN Schnittstellen. Die
+   * SEC ist kostenlos und braucht keinen Schluessel.
+   * Der Befehl bleibt daneben stehen - fuer den Massenlauf ueber das ganze Archiv ist
+   * er weiterhin der bessere Weg. */
+  function fehlenAnbieten(st) {
+    var kasten = document.getElementById('mkKarte');
+    var kann = window.api && typeof window.api.marktSecBasis === 'function';
+    kasten.innerHTML = '<div style="padding:14px; font-size:var(--fs-neben); line-height:1.65; max-width:76ch;">' +
+      '<b>Noch keine Stammdaten.</b> Die Karte braucht je Wert die Branche und die Anzahl ' +
+      'ausstehender Aktien – beides kommt von der US-Börsenaufsicht und ändert sich im ' +
+      'Jahresrhythmus.<br>' +
+      (kann
+        ? '<div style="margin:12px 0;"><button class="btn" type="button" id="mkHolen">Jetzt holen</button> ' +
+          '<span id="mkHolStatus" role="status" aria-live="polite" style="font-size:var(--fs-neben); color:var(--muted); margin-left:8px;"></span></div>' +
+          '<div style="color:var(--muted);">Das dauert einmalig ein bis zwei Minuten: erst drei Sammelabrufe, ' +
+          'dann die Kurse für die Rangfolge, dann die Branche für die Werte, die die Karte zeigt. ' +
+          'Danach nie wieder – die Datei bleibt liegen.</div>'
+        : '<div style="color:var(--muted); margin:12px 0;">Diese Programmfassung kann es noch nicht selbst holen.</div>') +
+      '<div style="color:var(--muted); margin-top:10px;">Für das ganze Archiv auf einmal ist das Werkzeug ' +
+      'daneben der bessere Weg – es nimmt alle Werte des 60m-Archivs statt nur der gezeigten:<br>' +
+      '<code>node tools/stammdaten-holen.js</code>   (ohne Archiv: <code>--alle</code>)</div>' +
+      (st && st.grund ? '<div style="color:var(--muted); margin-top:8px; font-size:var(--fs-klein);">' + esc(st.grund) + '</div>' : '') +
+      '</div>';
+    var k = document.getElementById('mkHolen');
+    if (k) k.addEventListener('click', holen);
+  }
+
+  /** Der Abruf aus der App. Die Arbeitsteilung ist dieselbe wie im Werkzeug, nur
+   *  laeuft die Rangfolge hier ueber echte Kurse: Der Hauptprozess holt bei der SEC,
+   *  der Renderer holt die Kurse, und erst danach steht fest, welche Werte ueberhaupt
+   *  eine Branche brauchen. Das spart den teuren Teil fuer tausende Firmen, die auf
+   *  der Karte ohnehin nie erscheinen. */
+  async function holen() {
+    var k = document.getElementById('mkHolen');
+    var hs = document.getElementById('mkHolStatus');
+    function sagH(t) { if (hs) hs.textContent = t; }
+    if (k) k.disabled = true;
+    try {
+      sagH('Sammelabruf bei der SEC …');
+      var b = await window.api.marktSecBasis();
+      if (!b || !b.ok) { sagH('Fehlgeschlagen: ' + ((b && b.grund) || 'unbekannt')); if (k) k.disabled = false; return; }
+      var kand = b.kandidaten || [];
+      if (!kand.length) { sagH('Die SEC lieferte keine Stückzahlen.'); if (k) k.disabled = false; return; }
+
+      sagH(kand.length + ' Firmen mit Stückzahl. Kurse für die Rangfolge …');
+      var liste = kand.map(function (x) { return { sym: x.sym, aktien: x.aktien }; });
+      await kurseHolen(liste, function (f, g) { sagH('Kurse: ' + f + ' von ' + g + ' …'); });
+      var mitKurs = liste.filter(function (w) { return w.groesse > 0; })
+        .sort(function (a, c) { return c.groesse - a.groesse; });
+      var wieViele = Math.min(Math.max(anzahlJetzt(), 100) * 2, 900);
+      var top = mitKurs.slice(0, wieViele).map(function (w) { return w.sym; });
+      if (!top.length) { sagH('Keine Kurse bekommen – Netz?'); if (k) k.disabled = false; return; }
+
+      sagH('Branche für ' + top.length + ' Werte …');
+      var r = await window.api.marktSecBranchen(top);
+      if (!r || !r.ok) { sagH('Fehlgeschlagen: ' + ((r && r.grund) || 'unbekannt')); if (k) k.disabled = false; return; }
+      stamm = r.daten;
+      sagH('Fertig: ' + r.mitGroesse + ' Werte mit Größe.');
+      await laden();
+    } catch (e) {
+      sagH('Fehler: ' + (e && e.message || e));
+      if (k) k.disabled = false;
+    }
+  }
+
   async function laden() {
     if (laeuft) return;
     laeuft = true;
@@ -172,14 +241,7 @@
     try {
       sag('Stammdaten lesen …');
       var st = await stammLaden();
-      if (!st || st.fehlt) {
-        kasten.innerHTML = '<div style="padding:14px; font-size:var(--fs-neben); line-height:1.6;">' +
-          '<b>Noch keine Stammdaten.</b><br>' + esc((st && st.grund) || 'Die Brücke fehlt.') +
-          '<br><br>Branche und Aktienanzahl holt ein eigenes Werkzeug neben der App – ' +
-          'absichtlich nicht die App selbst:<br><code>node tools/stammdaten-holen.js</code></div>';
-        sag('');
-        return;
-      }
+      if (!st || st.fehlt) { fehlenAnbieten(st); sag(''); return; }
       var a = auswahl(anzahlJetzt());
       if (!a.liste.length) {
         kasten.innerHTML = '<div style="padding:14px;">Keine Werte mit Branche und Stückzahl gefunden.</div>';
@@ -209,6 +271,15 @@
       var abstand = offen ? 60000 : 300000;
       if (Date.now() - letzterLauf >= abstand) laden();
     }, 20000);
+  }
+
+  if (window.api && typeof window.api.onMarktSecFortschritt === 'function') {
+    window.api.onMarktSecFortschritt(function (d) {
+      var hs = document.getElementById('mkHolStatus');
+      if (!hs || !d) return;
+      hs.textContent = (d.art === 'branche' ? 'Branche' : 'Stückzahl nachholen') +
+        ': ' + d.fertig + ' von ' + d.gesamt + ' …';
+    });
   }
 
   document.addEventListener('DOMContentLoaded', function () {

@@ -14,6 +14,17 @@ function ok(cond, name, extra) {
   console.log((cond ? '  ✅ ' : '  ❌ ') + name + (extra !== undefined ? '  [' + extra + ']' : ''));
   if (!cond) fails++;
 }
+/* Kommentare weg, bevor im Quelltext gesucht wird.
+ *
+ * Diese Zeile ist dreimal noetig geworden, jedes Mal aus demselben Grund: Eine
+ * Zusicherung suchte ein Wort ("keine Rangliste", "keine Marktkapitalisierung",
+ * "kein bars[i+1]") - und traf den Kommentar, der erklaert, dass es das NICHT gibt.
+ * Eine Pruefung, die an Prosa haengt, prueft nichts. Wer im Code sucht, sucht ab
+ * jetzt hiermit. */
+function ohneKommentare(quelle) {
+  return String(quelle).replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+}
+
 function lcg(seed) { var s = seed; return function () { s = (s * 1103515245 + 12345) % 2147483648; return s / 2147483648 - 0.5; }; }
 
 console.log('1) resampleBars & mtfAgrees');
@@ -6530,75 +6541,153 @@ console.log('\n47) Anzeige der Messmaschine: unbekannte Urteile und die Selbstpr
 })();
 /* ================= 54. Stammdaten: Branche und Groesse =================
  * Fuer eine Marktuebersicht braucht man je Wert drei Dinge: Tagesveraenderung (hat die
- * App live), Groesse (hatte sie nur fuer sechzehn handgepflegte Werte) und Branche
- * (hatte sie gar nicht). tools/stammdaten-holen.js holt die beiden fehlenden bei der
- * SEC.
+ * App live), Groesse und Branche. Die beiden letzten holt stammdaten.js bei der SEC.
  *
- * Geprueft wird hier die SETZUNG - die Faltung SIC -> Sektor. Der SIC-Code selbst ist
- * eine Tatsache der Behoerde; welcher Sektor daraus wird, ist eine Entscheidung, und
- * genau solche Entscheidungen verrutschen still. Die Beispiele im Kopf der Datei sind
- * hier ausgefuehrt statt nachgelesen: Steht Apple eines Tages nicht mehr unter
- * Technologie, wird dieser Abschnitt rot. */
+ * Die Datei ist rein - kein DOM, kein Netz, der Abruf wird HINEINGEREICHT. Deshalb
+ * laeuft hier alles wirklich, statt aus dem Quelltext geschnitten zu werden. Geprueft
+ * wird vor allem die SETZUNG: welcher SIC-Code welchen Sektor ergibt. Der Code selbst
+ * ist eine Tatsache der Behoerde, die Faltung ist eine Entscheidung - und genau solche
+ * Entscheidungen verrutschen still. */
 (function () {
-  console.log('\n54) Stammdaten: die Faltung SIC → Sektor');
-  var q = fs.readFileSync(__dirname + '/tools/stammdaten-holen.js', 'utf8');
+  console.log('\n54) Stammdaten: die Faltung SIC → Sektor und die Riegel dahinter');
+  var S = require(__dirname + '/stammdaten.js');
+  var werk = fs.readFileSync(__dirname + '/tools/stammdaten-holen.js', 'utf8');
+  var mainQ = fs.readFileSync(__dirname + '/main.js', 'utf8');
+  var ui = fs.readFileSync(__dirname + '/marktkarteui.js', 'utf8');
 
-  var mTab = /var SEKTOR_NACH_SIC2 = \{[\s\S]*?\n\};/.exec(q);
-  var mFn = /var SIC2_SEKTOR = \{\};[\s\S]*?function sektorVon\(sic\) \{[\s\S]*?\n\}/.exec(q);
-  var mFein = /var SIC3_SEKTOR = \{[\s\S]*?\n\};/.exec(q);
-  ok(!!mTab && !!mFn, 'Die Faltung steht als Tabelle und Funktion da');
-  if (!mTab || !mFn) return;
-  var sektorVon = new Function(mTab[0] + '\n' + (mFein ? mFein[0] : '') + '\n' + mFn[0] + '\nreturn sektorVon;')();
-
-  /* Die fuenf Beispiele, die im Kopf der Datei als Begruendung stehen. Wer die Tabelle
-   * aendert, ohne den Kopf anzupassen, faellt hier auf. */
+  /* Die Beispiele, die im Kopf der Datei als Begruendung stehen - hier ausgefuehrt
+   * statt nachgelesen. Steht Apple eines Tages nicht mehr unter Technologie, wird
+   * dieser Abschnitt rot. */
   var faelle = [
     [3571, 'Technologie', 'Apple, Electronic Computers'],
     [3674, 'Technologie', 'Nvidia und Intel, Semiconductors'],
     [7372, 'Technologie', 'Microsoft, Prepackaged Software'],
     [2834, 'Gesundheit', 'Pfizer, Pharmaceutical Preparations'],
-    [3841, 'Gesundheit', 'Medizingeraete - liegt im Zweisteller 38 neben Messtechnik'],
+    [3841, 'Gesundheit', 'Medizingeraete - im Zweisteller 38 neben Messtechnik'],
     [2821, 'Rohstoffe', 'Kunststoffe - derselbe Zweisteller 28 wie Pharma und Seife'],
+    [2844, 'Basiskonsum', 'Procter & Gamble, Toilet Preparations'],
     [3711, 'Industrie', 'Ford, Motor Vehicles'],
     [6021, 'Finanzen', 'JPMorgan, National Commercial Banks'],
     [6798, 'Finanzen', 'Prologis, REIT'],
     [1311, 'Energie', 'ExxonMobil, Crude Petroleum'],
     [4931, 'Versorger', 'NextEra, Electric & Other Services'],
     [4813, 'Telekommunikation', 'AT&T, Telephone Communications'],
-    [5331, 'Zyklischer Konsum', 'Walmart, Variety Stores'],
-    [2844, 'Basiskonsum', 'Procter & Gamble, Toilet Preparations']
+    [5331, 'Zyklischer Konsum', 'Walmart, Variety Stores']
   ];
-  var daneben = faelle.filter(function (f) { return sektorVon(f[0]) !== f[1]; });
+  var daneben = faelle.filter(function (f) { return S.sektorVon(f[0]) !== f[1]; });
   ok(daneben.length === 0,
-     'Zwoelf echte SIC-Codes landen im erwarteten Sektor  [' +
-     daneben.map(function (f) { return f[2] + ' → ' + sektorVon(f[0]) + ' statt ' + f[1]; }).join('; ') + ']');
-  ok(sektorVon(9999) === 'Sonstige' && sektorVon(0) === 'Sonstige',
+     'Vierzehn echte SIC-Codes landen im erwarteten Sektor  [' +
+     daneben.map(function (f) { return f[2] + ' → ' + S.sektorVon(f[0]) + ' statt ' + f[1]; }).join('; ') + ']');
+  ok(S.sektorVon(9999) === 'Sonstige' && S.sektorVon(0) === 'Sonstige',
      'Ein unbekannter Code faellt auf „Sonstige“, nicht auf undefined');
 
-  /* ---------- Die Riegel gegen falsche Groessen ----------
-   * Beide stammen aus einer Gegenprobe gegen die handgepflegten Zahlen in renderer.js:
-   * dreizehn von fuenfzehn stimmten auf ±1,4 %, zwei nicht - und beide Abweichungen
-   * waren echte Befunde, keine Rundung. */
-  ok(/MAX_ALTER_TAGE = 550/.test(q) && /aktienVeraltet/.test(q),
-     'Altersgrenze: Fords juengste Meldung war von 2011 - eine plausible, fuenfzehn Jahre alte Zahl');
-  ok(/f === '20-F' \|\| f === '40-F'/.test(q) && /auslaender = true/.test(q),
-     'ADR-Riegel: auslaendische Emittenten werden markiert - ihre Stueckzahl sind Stammaktien, gehandelt wird ein Buendel');
-  ok(/x\.end === letzt/.test(q) && /reduce\(function \(a, x\) \{ return a \+ x\.val; \}, 0\)/.test(q),
-     'Mehrere Aktiengattungen zum selben Stichtag werden addiert, nicht eine davon genommen');
+  /* Der Dreisteller ist kein Schmuck: Zweisteller 28 enthaelt Pfizer UND P&G. Die
+   * Sperrklinke hat genau das beim ersten Lauf gefunden. */
+  ok(S.sektorVon(2834) !== S.sektorVon(2844),
+     'Zweisteller 28 wird aufgeteilt - Arzneimittel und Koerperpflege sind nicht dasselbe');
 
-  /* Die Marktkapitalisierung darf NICHT im Werkzeug entstehen - sonst waere sie der
-   * Kurs von gestern. Sie ist Kurs mal Stueckzahl und gehoert in die Aktualisierung. */
-  /* Die erste Fassung dieser Zusicherung suchte das WORT - und traf damit den
-   * Kommentar, der erklaert, dass hier nichts gerechnet wird. Eine Pruefung, die an
-   * Prosa haengt, prueft nichts. Gesucht wird jetzt ein Feld im Ergebnis. */
-  ok(!/(marktkap|marketCap|mktCap)\s*[:=]/i.test(q),
-     'Das Werkzeug legt keine Marktkapitalisierung ab - sie entsteht live aus Kurs mal Stueckzahl');
-  ok(/e3\.aktien = best\.val/.test(q) && /e\.aktien = aktien\[e\.cik\]/.test(q),
-     'Abgelegt wird die Stueckzahl - die ist morgen noch richtig, ein Kurs waere es nicht');
-  ok(/tools\//.test('tools/stammdaten-holen.js') && !/require\(.*stammdaten-holen/.test(
-     fs.readdirSync(__dirname).filter(function (f) { return /\.js$/.test(f) && !/^test-/.test(f); })
-       .map(function (f) { return fs.readFileSync(__dirname + '/' + f, 'utf8'); }).join('\n')),
-     'Kein App-Code bindet das Werkzeug ein - die App fragt nie selbst bei der SEC an');
+  // ---------- Die Quartals-Kennungen ----------
+  var qs = S.quartalsKennungen(Date.UTC(2026, 7, 25));
+  ok(qs[0] === 'CY2026Q3I' && qs[1] === 'CY2026Q2I' && qs.length === 6,
+     'Quartale werden rueckwaerts durchprobiert, juengstes zuerst  [' + qs.slice(0, 3).join(' ') + ']');
+  var qj = S.quartalsKennungen(Date.UTC(2026, 0, 5));
+  ok(qj[1] === 'CY2025Q4I', 'Der Jahreswechsel wird richtig zurueckgezaehlt  [' + qj[1] + ']');
+
+  /* ---------- ALTERSGRENZE ----------
+   * Fords juengste Meldung dieses Konzepts stammt von 2011: eine plausible, fuenfzehn
+   * Jahre alte Zahl, aus der eine falsche Marktkapitalisierung geworden waere - und
+   * zwar eine, die niemandem auffaellt. */
+  var jetzt = Date.UTC(2026, 7, 25);
+  function facts(ende, wert) {
+    return { facts: { dei: { EntityCommonStockSharesOutstanding: { units: { shares: [{ end: ende, val: wert }] } } } } };
+  }
+  var alt = S.ausFacts(facts('2011-04-28', 3727332952), jetzt);
+  ok(alt && alt.zuAlt === '2011-04-28' && !alt.val,
+     'Eine fuenfzehn Jahre alte Zahl wird verworfen und ausgewiesen, nicht benutzt');
+  var frisch = S.ausFacts(facts('2026-05-15', 24200000000), jetzt);
+  ok(frisch && frisch.val === 24200000000, 'Eine frische Zahl kommt durch');
+  ok(S.ausFacts({ facts: {} }, jetzt) === null, 'Ohne jede Meldung kommt null - nicht null als Stueckzahl');
+  /* Genau an der Grenze: 550 Tage gelten noch, 551 nicht mehr. */
+  function vorTagen(n) { return new Date(jetzt - n * 86400000).toISOString().slice(0, 10); }
+  ok(S.ausFacts(facts(vorTagen(549), 100), jetzt).val === 100, 'Grenze: 549 Tage alt zaehlt noch');
+  ok(!!S.ausFacts(facts(vorTagen(560), 100), jetzt).zuAlt, 'Grenze: 560 Tage alt zaehlt nicht mehr');
+
+  /* ---------- Mehrere Aktiengattungen ----------
+   * Die Marktkapitalisierung ist die Summe ueber alle Gattungen, nicht eine davon.
+   * Wer hier die erste nimmt, macht aus Alphabet eine halb so grosse Firma. */
+  var zweiKlassen = { facts: { 'us-gaap': { CommonStockSharesOutstanding: { units: { shares: [
+    { end: '2026-06-30', val: 5800000000 }, { end: '2026-06-30', val: 6430000000 },
+    { end: '2025-06-30', val: 5000000000 }
+  ] } } } } };
+  var summe = S.ausFacts(zweiKlassen, jetzt);
+  ok(summe && summe.val === 12230000000,
+     'Zwei Gattungen zum selben Stichtag werden addiert  [' + (summe && summe.val) + ']');
+
+  // ---------- ADR-Riegel ----------
+  ok(S.istAuslaender({ filings: { recent: { form: ['10-Q', '20-F', '8-K'] } } }) === true,
+     'Wer 20-F einreicht, ist ein auslaendischer Emittent');
+  ok(S.istAuslaender({ filings: { recent: { form: ['10-K', '10-Q', '8-K'] } } }) === false,
+     'Wer nur 10-K und 10-Q einreicht, ist keiner');
+  ok(S.istAuslaender({}) === false, 'Ohne Angaben wird niemand faelschlich markiert');
+
+  // ---------- Der Sammelabruf uebernimmt nur, wo nichts steht ----------
+  var aktien = {}, quelle = {};
+  var n1 = S.ausRahmen({ data: [{ cik: 1, val: 100 }, { cik: 2, val: 200 }, { cik: 3, val: 0 }] }, 'dei', aktien, quelle);
+  var n2 = S.ausRahmen({ data: [{ cik: 2, val: 999 }, { cik: 4, val: 400 }] }, 'us-gaap', aktien, quelle);
+  ok(n1 === 2 && n2 === 1, 'Zweite Stufe fuellt nur die Luecken  [' + n1 + ' / ' + n2 + ']');
+  ok(aktien[2] === 200 && quelle[2] === 'dei', 'Die erste Stufe wird nicht ueberschrieben');
+  ok(aktien[3] === undefined, 'Eine Null gilt nicht als Stueckzahl');
+
+  // ---------- Aktienklassen: Bindestrich hier, Punkt dort ----------
+  ok(S.secName('BRK-B', { 'BRK.B': 1 }) === 'BRK.B', 'BRK-B wird zu BRK.B, wie die SEC es schreibt');
+  ok(S.secName('AAPL', { AAPL: 1 }) === 'AAPL', 'Was schon passt, bleibt');
+
+  /* ---------- Die Adressen stehen fest ----------
+   * Der Renderer reicht keine URL herein. Das ist dieselbe Haltung wie beim
+   * Yahoo-Kalender: ein allgemeiner Durchreicher waere eine offene Tuer. */
+  ok(/^https:\/\/data\.sec\.gov\//.test(S.URL.submissions(320193)) &&
+     S.URL.submissions(320193).indexOf('CIK0000320193') !== -1,
+     'Die CIK wird auf zehn Stellen aufgefuellt  [' + S.URL.submissions(320193) + ']');
+  ok(S.cik10('1750') === '0000001750', 'Auch eine kurze CIK bekommt ihre Nullen');
+  var hosts = ['tickers', 'rahmen', 'submissions', 'facts'].map(function (k) {
+    var u = k === 'rahmen' ? S.URL.rahmen('dei', 'X', 'CY2026Q2I') : S.URL[k](1);
+    return new URL(u).hostname;
+  });
+  ok(hosts.every(function (h) { return h === 'data.sec.gov' || h === 'www.sec.gov'; }),
+     'Alle Adressen zeigen zur SEC  [' + hosts.join(', ') + ']');
+
+  /* ---------- Der Abruf in der App ----------
+   * Nicht ueber fetch-text: dessen Erlaubnisliste zu oeffnen haette dem Renderer eine
+   * weitere Adresse freigegeben. Und die SEC verlangt einen Absender mit Kontakt -
+   * mit dem Browser-Absender von fetch-text gaebe es 403. */
+  ok(/function secJson\(url\)/.test(mainQ), 'App: es gibt einen eigenen Abruf fuer die SEC');
+  ok(/u\.hostname !== 'data\.sec\.gov' && u\.hostname !== 'www\.sec\.gov'/.test(mainQ),
+     'App: der Abruf endet nur bei der SEC, auch wenn die Adresse woanders herkaeme');
+  ok(/headers: Stammdaten\.KOPF/.test(mainQ),
+     'App: mit dem Absender der Behoerde, nicht dem Browser-Absender');
+  ok(!/ALLOWED_HOSTS[\s\S]{0,400}sec\.gov/.test(mainQ),
+     'App: die Erlaubnisliste von fetch-text bleibt unberuehrt - die SEC laeuft daran vorbei');
+  ok(/Stammdaten\.KOPF/.test(mainQ) && /'Markt-Dashboard \(/.test(fs.readFileSync(__dirname + '/stammdaten.js', 'utf8')),
+     'App: der Absender traegt eine Kontaktadresse, wie die SEC es verlangt');
+
+  // ---------- Der teure Teil nur fuer die gezeigten Werte ----------
+  ok(/ipcMain\.handle\('markt-sec-basis'/.test(mainQ) && /ipcMain\.handle\('markt-sec-branchen'/.test(mainQ),
+     'App: zwei Schritte - erst der Sammelabruf, dann die Branche nur fuer die Auswahl');
+  ok(/marktSecBasis\(\)/.test(ui) && /marktSecBranchen\(top\)/.test(ui),
+     'Karte: erst Kurse fuer die Rangfolge, dann Branche fuer die Besten');
+  ok(/id="mkHolen"/.test(ui) && /Jetzt holen/.test(ui),
+     'Karte: es gibt einen Knopf, keine Sackgasse mit Befehlszeile');
+  ok(/node tools\/stammdaten-holen\.js/.test(ui),
+     'Karte: der Befehl steht trotzdem daneben - fuer das ganze Archiv ist er der bessere Weg');
+
+  /* ---------- Eine Tabelle, nicht zwei ----------
+   * Genau diese Doppelung ist in diesem Projekt schon mehrfach auseinandergelaufen. */
+  ok(/require\('\.\.\/stammdaten\.js'\)/.test(werk),
+     'Das Werkzeug benutzt denselben Kern wie die App');
+  ok(!/SEKTOR_NACH_SIC2/.test(werk) && !/SIC3_SEKTOR/.test(werk),
+     'Die SIC-Tabelle steht nur noch an einer Stelle');
+  ok(!/marktkap|marketCap|mktCap/i.test(ohneKommentare(fs.readFileSync(__dirname + '/stammdaten.js', 'utf8'))),
+     'Der Kern rechnet keine Marktkapitalisierung - sie entsteht live aus Kurs mal Stueckzahl');
 })();
 
 /* ================= 55. Die Marktkarte =================
@@ -6738,11 +6827,8 @@ console.log('\n47) Anzeige der Messmaschine: unbekannte Urteile und die Selbstpr
    * danach ein. Gemessen ist an dieser hier nichts. */
   ok(/kein Signal/.test(ui) && /nichts gemessen/.test(ui),
      'Die Karte sagt selbst, dass an ihr nichts gemessen ist');
-  /* Geprueft wird der CODE, nicht der Kommentar: Die erste Fassung dieser Zeile
-   * schlug an, weil der Kommentar darueber erklaert, dass es keine Rangliste GIBT.
-   * Dieselbe Falle wie beim Platzhalter im Strategieformular. */
-  var uiOhneKommentar = ui.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
-  ok(!/bester Sektor|heissester|Rangliste|Top-?\d/i.test(uiOhneKommentar),
+  // Geprueft wird der CODE, nicht der Kommentar - siehe ohneKommentare() oben.
+  ok(!/bester Sektor|heissester|Rangliste|Top-?\d/i.test(ohneKommentare(ui)),
      'Keine Rangliste und kein „bester Sektor“ im Code - das saehe nach einem Befund aus');
   ok(/data-info="marktkarte"/.test(html), 'Der Reiter hat einen Erklaertext hinter dem i');
   ok(html.indexOf('marktkarte.js') < html.indexOf('marktkarteui.js'),
