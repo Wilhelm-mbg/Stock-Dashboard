@@ -332,23 +332,32 @@
     'NIEMALS gesendet werden: Zugangsdaten, Watchlist, einzelne Positionen oder Symbole, ' +
     'KI-Regeln, Namen, E-Mail. Die Wahl lässt sich jederzeit in den Einstellungen ändern.';
 
+  /* Die Frage steht im Dialog-Muster der App (index.html, #diagModalBg) und nicht mehr
+   * als eigenes Overlay am unteren Rand. Sie war das einzige Fenster ohne Abdunklung,
+   * ohne Fokusfalle und ohne Escape - ausgerechnet die Frage, die beim allerersten Start
+   * ueber einem halb geladenen Dashboard liegt.
+   *
+   * Der Text bleibt hier: eine Einwilligungserklaerung hat genau eine Quelle. Er wird
+   * als TEXT gesetzt, nicht als HTML - dann kann ihn kein Umbau versehentlich zu Markup
+   * machen.
+   *
+   * Wegklicken ohne Antwort (Escape, Klick auf den Rand) ist erlaubt und ungefaehrlich:
+   * unentschieden heisst weiterhin "es wird nichts gesendet" (Regel 1 oben), und beim
+   * naechsten Start wird erneut gefragt. Ein Ja gibt es nur durch Druecken. */
   function banner() {
-    var b = document.createElement('div');
-    b.id = 'diagBanner';
-    b.style.cssText = 'position:fixed; left:50%; bottom:18px; transform:translateX(-50%); z-index:9999;' +
-      'max-width:560px; background:var(--panel); border:1px solid var(--grid); border-radius:var(--r-gross);' +
-      'padding:14px 16px; box-shadow:0 6px 24px rgba(0,0,0,.35); font-size:var(--fs-text); line-height:1.55;';
-    b.innerHTML = '<div style="white-space:pre-wrap;">' + U.esc(EINWILLIGUNGSTEXT) + '</div>' +
-      '<div style="display:flex; gap:8px; margin-top:10px; justify-content:flex-end;">' +
-      '<button class="btn ghost" id="diagNein" type="button">Nein, nichts senden</button>' +
-      '<button class="btn" id="diagJa" type="button">Ja, anonym teilen</button></div>';
-    document.body.appendChild(b);
+    var box = document.getElementById('diagModalBg');
+    var txt = document.getElementById('diagEinwText');
+    if (!box || !txt) return;
+    txt.textContent = EINWILLIGUNGSTEXT;
+    /* once: der alte Code baute den Knopf jedes Mal neu, ein zweiter Aufruf konnte
+     * also keine doppelten Zuhoerer hinterlassen. Das leistet hier once. */
     document.getElementById('diagJa').addEventListener('click', async function () {
-      ZUSTAND.einwilligung = true; await speichere(); b.remove(); senden('Erststart'); zeigeStatus();
-    });
+      ZUSTAND.einwilligung = true; await speichere(); senden('Erststart'); zeigeStatus();
+    }, { once: true });
     document.getElementById('diagNein').addEventListener('click', async function () {
-      ZUSTAND.einwilligung = false; await speichere(); b.remove(); zeigeStatus();
-    });
+      ZUSTAND.einwilligung = false; await speichere(); zeigeStatus();
+    }, { once: true });
+    window.openModal('diagModalBg');
   }
 
   async function zeigeStatus() {

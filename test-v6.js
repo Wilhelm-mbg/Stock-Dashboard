@@ -8139,6 +8139,26 @@ console.log('\n61) Bausteinkasten: Kacheln');
   ok(/U\.kachel\(name, val,/.test(depK), 'depot.js: tile() baut nicht mehr selbst');
 })();
 
+console.log('\n62) Bausteinkasten: ein Overlay-Muster');
+(function () {
+  var dg = fs.readFileSync(__dirname + '/diagnose.js', 'utf8');
+  var html = fs.readFileSync(__dirname + '/index.html', 'utf8');
+  /* Das Einwilligungs-Fenster war das einzige Overlay ausserhalb des modal-bg-Musters:
+   * keine Abdunklung, keine Fokusfalle, kein Escape - und es lag beim ersten Start ueber
+   * einem halb geladenen Dashboard. */
+  ok(/class="modal-bg" id="diagModalBg"/.test(html),
+     'Die Einwilligungsfrage ist ein Dialog im modal-bg-Muster');
+  ok(!/diagBanner/.test(dg) && !/z-index:9999/.test(dg),
+     'Es gibt kein selbstgebautes Overlay mehr');
+  ok(/window\.openModal\('diagModalBg'\)/.test(dg),
+     'Sie wird ueber denselben Weg geoeffnet wie jeder andere Dialog');
+  /* Der Text hat eine Quelle - und er ist Text, nicht Markup. */
+  ok(/txt\.textContent = EINWILLIGUNGSTEXT;/.test(dg),
+     'Der Einwilligungstext steht weiterhin nur in diagnose.js und wird als Text gesetzt');
+  ok(!/EINWILLIGUNGSTEXT/.test(html) && !/Diagnosedaten teilen\?/.test(html),
+     'Er wurde nicht ins Markup kopiert - eine Einwilligung hat genau eine Quelle');
+})();
+
 Promise.all(offeneProben).then(function () {
   console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
   process.exit(fails ? 1 : 0);

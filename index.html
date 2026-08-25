@@ -1918,6 +1918,10 @@
         <span id="capTestStatus" style="font-size:var(--fs-neben); color:var(--muted);"></span>
       </div>
       <div id="capTestDetail" class="hinweis" style="margin-top:6px; display:none;"></div>
+      <!-- Struktur-Audit Punkt 9: Konfiguration und Zustand nebeneinander. Dieselbe
+           Zeile wie im Reiter Regeln (Spiegel aus updateCapStatus), keine zweite Wahrheit. -->
+      <div style="font-size:var(--fs-neben); color:var(--muted); margin-top:8px;"><b>Laufender Status:</b>
+        <span id="setCapStatusLive">– noch nicht geprüft (läuft nach dem Start und dann alle 10 Minuten).</span></div>
       <div style="font-size:var(--fs-neben); color:var(--muted); margin-top:8px;">
         Die App kennt ausschließlich den Demo-Server – Live-Handel mit echtem Geld ist technisch nicht möglich.
         Zugangsdaten werden nur lokal gespeichert (mit dem Windows-Anmeldedatenschutz verschlüsselt) und nur an
@@ -2042,6 +2046,23 @@
     <div class="modal-foot">
       <button class="btn" id="setSaveBtn">Speichern</button>
       <span id="setStatus" style="color:var(--muted); font-size:var(--fs-neben);"></span>
+    </div>
+  </div>
+</div>
+
+<!-- Einwilligungs-Dialog der Diagnose (Erststart).
+     Warum hier im Markup und nicht in diagnose.js gebaut: app-shell.js verdrahtet
+     Ruecken-Klick und data-close EINMAL beim Laden ueber querySelectorAll. Ein zur
+     Laufzeit erzeugtes .modal-bg bekaeme Escape, aber weder Ruecken-Klick noch
+     Schliess-Knopf - es waere wieder ein Sonderfall, nur besser getarnt.
+     Der Text steht bewusst NICHT hier: er ist eine Einwilligungserklaerung und hat
+     genau eine Quelle, naemlich diagnose.js. Er wird beim Oeffnen eingesetzt. -->
+<div class="modal-bg" id="diagModalBg">
+  <div class="modal" style="max-width:620px;" role="dialog" aria-modal="true" aria-labelledby="diagEinwText">
+    <div id="diagEinwText" style="white-space:pre-wrap;"></div>
+    <div style="display:flex; gap:8px; margin-top:10px; justify-content:flex-end;">
+      <button class="btn ghost" id="diagNein" type="button" data-close="diagModalBg">Nein, nichts senden</button>
+      <button class="btn" id="diagJa" type="button" data-close="diagModalBg">Ja, anonym teilen</button>
     </div>
   </div>
 </div>
