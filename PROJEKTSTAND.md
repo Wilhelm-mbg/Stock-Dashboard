@@ -119,6 +119,8 @@ fertig bist.*
 
 - **App-Codebase Master** — hat **#85** genommen (26.08. ~01:00, vom PM zugeteilt): die
   laufende Quote-Stempel-Kerze abschneiden, **beide** Archive (60m *und* `archiv1d`).
+- **#83/#89 (Meine Papiere ganz nach Vermoegen)** — genommen 26.08. Belegt:
+  `index.html`, `bestandui.js`, `test-v6.js`.
   Belegt Abruf-Werkzeug und Messmaschine. Zuletzt fertig: #76, #84, #84-Rest.
 
 ---
