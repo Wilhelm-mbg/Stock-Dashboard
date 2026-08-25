@@ -923,11 +923,14 @@ console.log('\n17b) Oberflaeche: Altlasten und Verdrahtung');
   ok(/storeSet\('depot', D\)\.then\(function \(r\)/.test(d) && /HEALTH\.saveFail/.test(d),
      'Store: save() prueft sein Ergebnis und meldet Fehlschlaege');
   // 3) Edge-Waechter hat jetzt die angekuendigte Konsequenz
-  ok(/a\.edgeHistorie\[1\]\.verfall/.test(d), 'Edge-Waechter: Eskalation erst nach ZWEI Naechten Verfall');
-  ok(/D\.intraday\.edgePause = \{ seit/.test(d), 'Edge-Waechter: Verfall pausiert neue Einstiege wirklich');
+  /* Seit 25.08.2026 laeuft der Waechter ueber BEIDE Arme (EDGE_ARME); Historie und Pause
+   * stehen je Arm unter einem berechneten Schluessel. Die geprueften Zusagen sind
+   * dieselben geblieben. */
+  ok(/a\[ARM\.histKey\]\[1\]\.verfall/.test(d), 'Edge-Waechter: Eskalation erst nach ZWEI Naechten Verfall');
+  ok(/D\.intraday\[ARM\.pauseKey\] = \{ seit/.test(d), 'Edge-Waechter: Verfall pausiert neue Einstiege wirklich');
   ok(/schattenNeu\('Edge-Wächter'/.test(d), 'Edge-Waechter: pausierte Signale laufen im Schattenbuch weiter');
   ok(/edgePauseHand/.test(d) && /data-edgefrei/.test(d), 'Edge-Waechter: Hand-Uebersteuerung existiert und wird respektiert');
-  ok(/roh > 0 && D\.intraday\.edgePause\) \{\s*\n\s*delete D\.intraday\.edgePause/.test(d),
+  ok(/roh > 0 && D\.intraday\[ARM\.pauseKey\]\) \{\s*\n\s*delete D\.intraday\[ARM\.pauseKey\]/.test(d),
      'Edge-Waechter: eine positive Nacht hebt die Pause automatisch auf');
   /* TOTBAND (24.08.2026): Vorher entschieden BEIDE Richtungen am auf zwei Stellen
    * gerundeten mittelPp. Ein wahrer Mittelwert von +0,004 Pp rundet auf 0,00, gilt
@@ -5117,7 +5120,7 @@ console.log('\n41) Zustaende: was die App sagt, wenn etwas fehlt oder klemmt');
      'Waechter: der tatsaechliche Zuwachs wird mitgeschrieben');
   ok(/KEIN unabhängiger zweiter Beleg/.test(dep),
      'Waechter: die Meldung nennt die zweite Messung ausdruecklich keinen zweiten Beleg');
-  ok(/a\.edgeHistorie\[1\]\.verfall/.test(dep),
+  ok(/a\[ARM\.histKey\]\[1\]\.verfall/.test(dep),
      'Waechter: die Ausloeseschwelle bleibt bei zwei Messungen - schuetzen darf auf duenner Grundlage');
   ok(!/in zwei Nächten hintereinander verfallen/.test(dep),
      'Waechter: die alte, zu starke Formulierung ist weg');
@@ -7311,6 +7314,71 @@ console.log('\n47) Anzeige der Messmaschine: unbekannte Urteile und die Selbstpr
   ok(/data-info="marktkarte"/.test(html), 'Der Reiter hat einen Erklaertext hinter dem i');
   ok(html.indexOf('marktkarte.js') < html.indexOf('marktkarteui.js'),
      'Ladereihenfolge: die Rechnung vor der Oberflaeche');
+})();
+
+console.log('\n48) Toter Schutz: gelesen, aber nie geschrieben');
+(function () {
+  var dep = fs.readFileSync(__dirname + '/depot.js', 'utf8');
+
+  /* DIE FEHLERKLASSE. Ein Zustandsfeld, das GELESEN und nie GESCHRIEBEN wird, ist
+   * dauerhaft undefined - und wenn daran eine Schutzhandlung haengt, greift sie nie.
+   * Im Quelltext sieht die Stelle aus wie eine Sicherung. Genau so lag
+   * D.intraday.edgePauseKapi da: die Lesestelle stand, der Schreiber fehlte, und der
+   * Kapitulations-Arm des Edge-Waechters wurde nie pausiert.
+   * Gemeldet aus einer fremden Sitzung, nicht von einem Test gefunden - deshalb hier
+   * ein Test, der die KLASSE faengt und nicht nur diesen Fall. */
+  var code = dep.replace(/\/\*[\s\S]*?\*\//g, '');   // Kommentare raus, sonst zaehlen Erklaerungen mit
+  var felder = {};
+  var re = /D\.intraday\.([A-Za-z_$][\w$]*)/g, m;
+  while ((m = re.exec(code))) { felder[m[1]] = felder[m[1]] || { lese: 0, schreib: 0 }; felder[m[1]].lese++; }
+  Object.keys(felder).forEach(function (f) {
+    /* Geschrieben heisst: Zuweisung, delete, oder ueber einen Schluessel-Zugriff. */
+    var zuweisung = new RegExp('D\\.intraday\\.' + f + '\\s*=[^=]');
+    var geloescht = new RegExp('delete\\s+D\\.intraday\\.' + f + '\\b');
+    if (zuweisung.test(code) || geloescht.test(code)) felder[f].schreib++;
+  });
+  /* Ueber einen berechneten Schluessel geschriebene Felder (D.intraday[ARM.pauseKey])
+   * findet die Regex oben nicht - sie werden hier ueber die Armtabelle nachgetragen. */
+  var tabelle = /pauseKey:\s*'([\w$]+)'/g, mt;
+  while ((mt = tabelle.exec(dep))) { if (felder[mt[1]]) felder[mt[1]].schreib++; }
+  /* Und was in der Vorgabe-Literale steht (intraday: { budgetPct: 0.03, … }), ist
+   * definiert - auch wenn es nie zugewiesen wird. Es hat einen Wert ab dem ersten Start. */
+  var literale = /intraday:\s*\{([\s\S]*?)\n/.exec(dep);
+  if (literale) {
+    var lm = /([A-Za-z_$][\w$]*)\s*:/g, l;
+    while ((l = lm.exec(literale[1]))) { if (felder[l[1]]) felder[l[1]].schreib++; }
+  }
+
+  /* NICHT jedes ungeschriebene Feld ist gefaehrlich. ivModell, symBlock, kryptoGebBp,
+   * klumpenMax und budgetPct werden nie geschrieben - aber IMMER mit ausdruecklichem
+   * Vorgabewert gelesen ('!= null ? x : 8', '=== false', '|| 0.03'). Das sind
+   * Einstellungen, die niemand vom Standard weggedreht hat; sie verhalten sich
+   * definiert.
+   * Gefaehrlich ist die andere Sorte: gelesen OHNE Vorgabe, und an dem Wert haengt eine
+   * Handlung. Dann heisst undefined still "nein" - so lag edgePauseKapi da:
+   *   var armPause = istKapiSignal ? D.intraday.edgePauseKapi : ...
+   * kein Vergleich, kein ||, kein Standard. Die Schutzpause griff nie. */
+  var tot = Object.keys(felder).filter(function (f) {
+    if (felder[f].schreib > 0) return false;
+    /* Hat mindestens eine Lesestelle einen Vorgabewert? Dann ist das Feld definiert. */
+    var mitVorgabe = new RegExp('D\\.intraday\\.' + f + '\\s*(!==|===|!=|==|\\|\\|)');
+    return !mitVorgabe.test(code);
+  });
+  ok(tot.length === 0,
+     'Kein Feld unter D.intraday wird ohne Vorgabewert gelesen und nie geschrieben' +
+     (tot.length ? '  [toter Schutz: ' + tot.join(', ') + ']' : ''));
+
+  /* Und der konkrete Fall, damit die Reparatur nicht still zurueckgedreht wird. */
+  ok(/var EDGE_ARME = \[/.test(dep) && /'rsi2seit'/.test(dep) && /'kapitulation'/.test(dep),
+     'Der Edge-Waechter kennt beide Arme als Tabelle');
+  ok(/edgeZustand\(ARM\.key\)/.test(dep) && !/await edgeZustand\(\)/.test(dep),
+     'Er ruft edgeZustand MIT Arm auf - ein Aufruf ohne Argument maesse nur rsi2seit');
+  ok(/D\.intraday\[ARM\.pauseKey\] = \{/.test(dep),
+     'Er schreibt die Pause je Arm, nicht eine gemeinsame');
+  ok(/delete D\.intraday\[ARM\.pauseKey\]/.test(dep),
+     'Und hebt sie je Arm wieder auf - sonst bliebe ein Arm fuer immer gesperrt');
+  ok(/pauseKey: 'edgePauseKapi'/.test(dep),
+     'Der Kapitulations-Arm hat eine EIGENE Pause - eine gemeinsame legte den gesunden Arm mit still');
 })();
 
 Promise.all(offeneProben).then(function () {

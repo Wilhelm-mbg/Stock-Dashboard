@@ -4152,6 +4152,9 @@
         /* D1: Jeder Arm haengt an SEINER eigenen Messung. Vorher sperrte eine
          * rsi2seit-Messung auch den Kapitulations-Dip - eine andere Kante mit
          * anderer Haltedauer (26 statt 8 Kerzen) und anderem Regime.
+         * Seit 25.08.2026 schreibt der Waechter beide Pausen (EDGE_ARME). Davor wurde
+         * edgePauseKapi nur GELESEN und nie gesetzt - die Schutzpause dieses Arms
+         * existierte nur auf dem Papier.
          * edgePauseKapi fehlt in alten Zustaenden; dann greift fuer diesen Arm
          * nichts, bis der Waechter ihn einmal gemessen hat. */
         var istKapiSignal = kapiTrade || isKapitulation;
@@ -8129,6 +8132,21 @@
    *  Ueberschuss gegen die Drift des Symbols, t UEBER SYMBOLE, exakt die
    *  Studien-Methodik. Das ist die eigentliche Aufgabe der Nacht: nicht neue
    *  Sieger kueren, sondern den belegten Edge BEWACHEN. */
+  /* Die beiden Arme des Intraday-Handels, mit je EIGENEM Zustand. Bis zum 25.08.2026
+   * gab es diese Tabelle nicht: der Waechter rief edgeZustand() ohne Argument, mass
+   * damit nur rsi2seit und schrieb nur edgePause. D.intraday.edgePauseKapi wurde
+   * gelesen, aber NIE geschrieben - die Schutzpause des Kapitulations-Arms existierte
+   * nur auf dem Papier.
+   * Eigene Pause je Arm und nicht eine gemeinsame, weil die Arme verschiedene
+   * Haltedauern und verschiedene Regime haben: eine gemeinsame Pause legt einen
+   * gesunden Arm still, weil der andere verfaellt. */
+  var EDGE_ARME = [
+    { key: 'rsi2seit',     name: 'rsi2seit',          pauseKey: 'edgePause',
+      histKey: 'edgeHistorie',     edgeKey: 'edge' },
+    { key: 'kapitulation', name: 'Kapitulations-Dip', pauseKey: 'edgePauseKapi',
+      histKey: 'edgeHistorieKapi', edgeKey: 'edgeKapi' }
+  ];
+
   async function edgeZustand(entry) {
     /* D1: Der Waechter misst den Arm, den er auch sperrt. Vorher stand hier fest
      * 'rsi2seit', pausiert wurden aber beide Kanten. */
@@ -8316,10 +8334,12 @@
       // Edge-Waechter im Anschluss - die eigentliche Frage der Nacht: Traegt der
       // belegte Vorsprung im frischen Fenster noch? (reine Archiv-Rechnung)
       try {
-        var edge = await edgeZustand();
+        for (var _ai = 0; _ai < EDGE_ARME.length; _ai++) {
+        var ARM = EDGE_ARME[_ai];
+        var edge = await edgeZustand(ARM.key);
         if (edge) {
-          a.edge = Object.assign({ at: Date.now() }, edge);
-          a.lastCheck.txt += '\n\n' + edge.txt;
+          a[ARM.edgeKey] = Object.assign({ at: Date.now(), arm: ARM.key }, edge);
+          a.lastCheck.txt += '\n\n[' + ARM.name + '] ' + edge.txt;
           /* Eskalation (Gegenpruefung 21.08.2026): Der Waechter KUENDIGTE eine
            * Konsequenz an ("naechste Nacht bestaetigt -> pausieren"), die es nie
            * gab - er war reine Anzeige. Jetzt: zwei Naechte VERFALL hintereinander
@@ -8332,21 +8352,21 @@
            * und konnte die Pause nie wieder aufheben - der Waechter hing fest. */
           var roh = edge.rohMittel != null ? edge.rohMittel : (edge.mittelPp != null ? edge.mittelPp / 100 : null);
           var verfall = roh != null && !(roh > 0) && (edge.nSym || 0) >= 5;
-          if (!a.edgeHistorie) a.edgeHistorie = [];
+          if (!a[ARM.histKey]) a[ARM.histKey] = [];
           /* ZWEI NAECHTE SIND NICHT ZWEI MESSUNGEN. Der Waechter rechnet ueber ein
            * rollendes 120-Tage-Fenster auf 60-Minuten-Kerzen. Eine Nacht bringt darin
            * rund 0,4 % neue Kerzen - "in zwei Naechten hintereinander verfallen" klang
            * nach zwei unabhaengigen Belegen und war in Wahrheit fast derselbe Datensatz,
            * zweimal angesehen. Deshalb wird jetzt der tatsaechliche ZUWACHS an Signalen
            * mitgeschrieben und in jeder Meldung genannt. */
-          var vorig = a.edgeHistorie[0] || null;
+          var vorig = a[ARM.histKey][0] || null;
           var zuwachs = (vorig && typeof vorig.n === 'number') ? (edge.n || 0) - vorig.n : null;
           var zuwachsPct = (vorig && vorig.n > 0 && zuwachs != null)
             ? Math.round(zuwachs / vorig.n * 1000) / 10 : null;
-          a.edgeHistorie.unshift({ at: Date.now(), mittelPp: edge.mittelPp != null ? edge.mittelPp : null,
+          a[ARM.histKey].unshift({ at: Date.now(), mittelPp: edge.mittelPp != null ? edge.mittelPp : null,
             t: edge.t != null ? edge.t : null, verfall: verfall,
             n: edge.n || 0, zuwachs: zuwachs, zuwachsPct: zuwachsPct });
-          if (a.edgeHistorie.length > 30) a.edgeHistorie = a.edgeHistorie.slice(0, 30);
+          if (a[ARM.histKey].length > 30) a[ARM.histKey] = a[ARM.histKey].slice(0, 30);
           /* Die Schwelle bleibt bewusst bei zwei Verfalls-Messungen und wird NICHT an
            * einen Mindestzuwachs gebunden. Das ist eine SCHUETZENDE Handlung: sie setzt
            * neue Einstiege aus und laesst die Messung weiterlaufen. Bei einer solchen
@@ -8357,32 +8377,34 @@
            * Umgekehrt ist es bei Aenderungen an der Konfiguration - siehe unten. */
           var zuwachsTxt = zuwachs == null ? 'die Vorgaengermessung ist ohne Zaehlstand'
             : (zuwachs + ' neue Signale' + (zuwachsPct != null ? ' (+' + zuwachsPct + ' %)' : '') + ' seit der letzten Messung');
-          if (verfall && a.edgeHistorie.length >= 2 && a.edgeHistorie[1].verfall &&
-              !D.intraday.edgePauseHand && !D.intraday.edgePause) {
-            D.intraday.edgePause = { seit: Date.now(), mittelPp: edge.mittelPp, t: edge.t,
+          if (verfall && a[ARM.histKey].length >= 2 && a[ARM.histKey][1].verfall &&
+              !D.intraday.edgePauseHand && !D.intraday[ARM.pauseKey]) {
+            D.intraday[ARM.pauseKey] = { seit: Date.now(), arm: ARM.key,
+              mittelPp: edge.mittelPp, t: edge.t,
               zuwachs: zuwachs, zuwachsPct: zuwachsPct };
             if (!D.tuneLog) D.tuneLog = [];
             D.tuneLog.unshift({ id: 'sicherung-' + Date.now(), at: Date.now(), quelle: 'sicherung',
-              applied: ['Edge-Wächter: neue Einstiege pausiert'],
-              txt: 'Der gemessene Vorsprung der belegten Kante war in zwei aufeinanderfolgenden Messungen ' +
+              applied: ['Edge-Wächter (' + ARM.name + '): neue Einstiege pausiert'],
+              txt: 'Der gemessene Vorsprung von ' + ARM.name + ' war in zwei aufeinanderfolgenden Messungen ' +
                 'verfallen (zuletzt ' + edge.mittelPp + ' Pp, t=' + edge.t + '; ' + zuwachsTxt + '). ' +
                 'Die zweite Messung ist KEIN unabhängiger zweiter Beleg – sie läuft über dasselbe rollende ' +
                 '120-Tage-Fenster. Ausgesetzt wird trotzdem: eine Pause kostet weniger als ein Irrtum in die ' +
                 'andere Richtung. Das Schattenbuch misst weiter. Eine positive Messung hebt die Pause ' +
                 'automatisch auf – oder du entscheidest von Hand „trotzdem handeln“ (wird dauerhaft respektiert).' });
-            melde('Edge-Wächter: Kante pausiert', 'Der gemessene Vorsprung ist zweimal in Folge verfallen (' + edge.mittelPp + ' Pp, ' + zuwachsTxt + '). Neue Einstiege sind ausgesetzt, die Messung läuft weiter.');
-            pilotLogAdd('Edge-Wächter: VERFALL zweimal in Folge (' + zuwachsTxt + ') – neue Einstiege pausiert.');
+            melde('Edge-Wächter: ' + ARM.name + ' pausiert', 'Der gemessene Vorsprung von ' + ARM.name + ' ist zweimal in Folge verfallen (' + edge.mittelPp + ' Pp, ' + zuwachsTxt + '). Neue Einstiege DIESES Arms sind ausgesetzt, der andere handelt weiter, die Messung läuft weiter.');
+            pilotLogAdd('Edge-Wächter [' + ARM.name + ']: VERFALL zweimal in Folge (' + zuwachsTxt + ') – neue Einstiege dieses Arms pausiert.');
           }
-          if (!verfall && roh != null && roh > 0 && D.intraday.edgePause) {
-            delete D.intraday.edgePause;
+          if (!verfall && roh != null && roh > 0 && D.intraday[ARM.pauseKey]) {
+            delete D.intraday[ARM.pauseKey];
             if (!D.tuneLog) D.tuneLog = [];
             D.tuneLog.unshift({ id: 'sicherung-' + Date.now(), at: Date.now(), quelle: 'sicherung',
-              applied: ['Edge-Wächter: Pause aufgehoben'],
-              txt: 'Die Nacht-Messung zeigt den Vorsprung wieder positiv (' + edge.mittelPp + ' Pp, t=' + edge.t + ') – die Einstiegs-Pause ist aufgehoben.' });
-            melde('Edge-Wächter: Kante handelt wieder', 'Der Vorsprung ist wieder positiv (' + edge.mittelPp + ' Pp) – neue Einstiege sind freigegeben.');
-            pilotLogAdd('Edge-Wächter: Vorsprung wieder positiv – Pause aufgehoben.');
+              applied: ['Edge-Wächter (' + ARM.name + '): Pause aufgehoben'],
+              txt: 'Die Nacht-Messung zeigt den Vorsprung von ' + ARM.name + ' wieder positiv (' + edge.mittelPp + ' Pp, t=' + edge.t + ') – die Einstiegs-Pause dieses Arms ist aufgehoben.' });
+            melde('Edge-Wächter: ' + ARM.name + ' handelt wieder', 'Der Vorsprung von ' + ARM.name + ' ist wieder positiv (' + edge.mittelPp + ' Pp) – neue Einstiege dieses Arms sind freigegeben.');
+            pilotLogAdd('Edge-Wächter [' + ARM.name + ']: Vorsprung wieder positiv – Pause aufgehoben.');
           }
         }
+        }   // Ende der Schleife ueber die Arme
       } catch (eEdge) {
         /* Der Waechter ist Zusatz - die Messung gilt auch ohne ihn. Sein Ausfall darf
          * aber nicht unsichtbar sein: mit ihm faellt eine SCHUETZENDE Handlung aus
