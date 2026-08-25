@@ -89,6 +89,9 @@ fertig bist.*
 *Entscheidungen von Wilhelm, mit Datum. Eine Entscheidung, die nur in einem Chatverlauf
 steht, ist nach zwei Stunden verloren.*
 
+- **25.08.2026 (spät)** — Geheimnis `TELEMETRIE_JSON` angelegt. Automatisch gebaute
+  Pakete tragen den Diagnose-Rueckkanal ab dem naechsten Release. Issue #76 damit
+  vollstaendig erledigt.
 - **25.08.2026** — Stufe C des Struktur-Plans wird gebaut, einschließlich Marktkarte als
   Pille unter „Heute".
 - **25.08.2026** — Stufe D Punkt 6 (Erklärtexte ins Info-Register) wird gebaut; das
@@ -121,10 +124,6 @@ steht, ist nach zwei Stunden verloren.*
 
 *Fragen, an denen Arbeit hängt.*
 
-- **Geheimnis `TELEMETRIE_JSON` anlegen** (Settings → Secrets and variables → Actions):
-  Inhalt der eigenen `telemetrie.json` hineinkopieren. Bis dahin bekommen automatisch
-  gebaute Pakete keinen Sendeschluessel — der Bau sagt es jetzt laut, statt zu schweigen.
-  Nur Wilhelm darf den Schluessel in der Hand haben. (#76.1)
 - **Zweites Ja zum Handel-aus-Renderer-Umbau** — fällig, sobald der Plan als Dokument vorliegt.
 
 ---
