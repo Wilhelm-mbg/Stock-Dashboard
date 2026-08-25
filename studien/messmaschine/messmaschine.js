@@ -21,10 +21,42 @@
  * ========================================================================== */
 var fs = require('fs');
 var path = require('path');
+var crypto = require('crypto');
+
+/* ---------- Codestand: die Nummer, die nicht behaupten kann ----------
+ * Bis zum 26.08.2026 stand hier eine von Hand gepflegte "1.0.0" - und sie stand da
+ * ueber sieben Aenderungen hinweg unveraendert. Eine Versionsnummer, die niemand
+ * mitzieht, ist schlimmer als keine: sie behauptet Gleichheit, wo keine ist. Zwei
+ * Protokolle mit derselben Nummer waren nicht mit derselben Maschine gemessen.
+ *
+ * Der Codestand ist deshalb KEINE Pflege-Angabe, sondern aus der Datei selbst
+ * gerechnet. Er aendert sich bei jeder Aenderung - auch bei einer im Kommentar. Das
+ * ist Absicht: er beantwortet "war das dieselbe Datei?", nicht "war das dasselbe
+ * Verfahren?". Die zweite Frage beantwortet version, und dass die gepflegt wird,
+ * erzwingt eine Sperrklinke in test-v6.js: dort steht der erwartete Codestand neben
+ * der Version. Wer die Datei anfasst, ohne beides nachzuziehen, bekommt einen roten
+ * Test - und muss entscheiden, ob sich das Verfahren geaendert hat.
+ *
+ * Zeilenenden werden vorher vereinheitlicht: sonst haette dieselbe Datei unter einem
+ * anderen autocrlf einen anderen Stand.
+ * Laesst sich die Datei nicht lesen, bleibt der Stand null - eine erfundene Kennung
+ * waere genau der Fehler, den das hier abstellen soll. */
+function codeStand() {
+  try {
+    var q = fs.readFileSync(__filename, 'utf8').replace(/\r\n/g, '\n');
+    return crypto.createHash('sha256').update(q, 'utf8').digest('hex').slice(0, 12);
+  } catch (e) { return null; }
+}
 
 /* ---------- Konstanten, die das Verfahren definieren (nicht einstellbar) ---------- */
 var VERFAHREN = {
-  version: '1.0.0',
+  /* version beantwortet 'war das dasselbe Verfahren?' und wird von Hand gesetzt.
+   * 1.1.0 (26.08.2026): #86 aussicht feuert wieder, #87 A7-Fenstertext berichtigt,
+   * #88 Placebo folgt der Einstiegskonvention. Protokollinhalte aendern sich damit,
+   * also eine neue mittlere Stelle - kein Fehlerstand. */
+  version: '1.1.0',
+  /* codeStand beantwortet 'war das dieselbe Datei?' und rechnet sich selbst aus. */
+  codeStand: codeStand(),
   mindestKerzenVorlauf: 261,        // EMA100 + Kanal 200, wie die Detektoren es brauchen
   bestaetigungsAnteil: 0.5,         // B5: zweite Haelfte der Handelstage ist Bestaetigung
   alpha: 0.05,                      // zweiseitig

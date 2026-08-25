@@ -73,6 +73,22 @@
     if (!pl || pl.tagesmittel == null || pl.mde == null) return null;   // ungeprueft
     return Math.abs(pl.tagesmittel) <= pl.mde;
   }
+  /* Wurde dieses Protokoll mit der Maschine gemessen, die jetzt hier liegt?
+   * true = ja, false = nein, null = laesst sich nicht sagen.
+   * Der dritte Fall ist der haeufige und darf nicht als "nein" durchgehen: bis zum
+   * 26.08.2026 trug kein Protokoll eine Kennung der Maschine, es waren 26 Stueck.
+   * Die stehen unter "unbekannt", nicht unter "veraltet" - das eine ist eine Luecke,
+   * das andere eine Aussage. */
+  function maschineAktuell(p) {
+    var st = p && p.verfahren && p.verfahren.codeStand;
+    if (!MASCHINE || typeof st !== 'string') return null;
+    return st === MASCHINE;
+  }
+  function standText(p) {
+    var v = p && p.verfahren;
+    if (!v) return '';
+    return 'Verfahren ' + U.esc(v.version || '?') + (v.codeStand ? ' · Stand ' + U.esc(v.codeStand) : ' · Stand unbekannt');
+  }
   function placeboBand(p) {
     var pl = p && p.placebo, ok = placeboOk(p);
     if (ok === null) {
@@ -92,11 +108,16 @@
   }
 
   var STAND = [];
+  /* Der Codestand der Messmaschine, die gerade hier liegt (26.08.2026). Solange er
+   * null ist - alte App, fehlende Datei -, kennzeichnet die Tafel GAR NICHTS. Eine
+   * Warnung, die immer leuchtet, liest nach einer Woche niemand mehr. */
+  var MASCHINE = null;
   async function laden() {
     var el = document.getElementById('scoreboard');
     if (!el || !window.api || !window.api.readProtokolle) return;
     var r = null;
     try { r = await window.api.readProtokolle(); } catch (e) { r = { ok: false, grund: String(e && e.message || e) }; }
+    MASCHINE = (r && typeof r.maschinenStand === 'string') ? r.maschinenStand : null;
     if (!r || !r.ok) { el.innerHTML = '<div style="color:var(--muted); font-size:var(--fs-neben);">Protokolle nicht lesbar' + (r && r.grund ? ': ' + U.esc(r.grund) : '') + '.</div>'; return; }
     if (!r.protokolle.length) {
       /* Der volle Windows-Pfad und der node-Befehl standen hier im Endnutzer-Satz. Wer
@@ -164,7 +185,10 @@
         '<td style="color:var(--muted);">' + U.esc(p.gemessenAm.slice(0, 10)) +
           (spOk === false ? ' <span title="Selbstprüfung fehlgeschlagen – der Nullpunkt dieser Messung liegt nicht bei null" style="color:var(--down); font-weight:600;">✖ Nullpunkt</span>'
            : spOk === null ? ' <span title="Ohne Selbstprüfung gemessen – Nullpunkt ungeprüft" style="color:var(--muted);">○</span>' : '') +
-          (warn ? ' <span title="' + warn + ' Warnung(en) – aufklappen" style="color:var(--series2);">⚠' + warn + '</span>' : '') + '</td>' +
+          (warn ? ' <span title="' + warn + ' Warnung(en) – aufklappen" style="color:var(--series2);">⚠' + warn + '</span>' : '') +
+          /* Mit welcher Fassung der Messmaschine? Zwei Zeilen mit verschiedenem Stand
+           * sind nicht ohne Weiteres vergleichbar - genau das war der Anlass. */
+          (maschineAktuell(p) === false ? ' <span title="Mit einer anderen Fassung der Messmaschine gemessen als der, die jetzt hier liegt (' + U.esc(String((p.verfahren && p.verfahren.codeStand) || '?')) + ' statt ' + U.esc(String(MASCHINE)) + '). Diese Zeile ist mit den anderen nicht ohne Weiteres vergleichbar – neu messen." style="color:var(--series2); font-weight:600;">⟳ alte Maschine</span>' : '') + '</td>' +
         '</tr>';
     }).join('');
     el.innerHTML = '<div style="overflow:auto;"><table class="tbl" style="width:100%;">' +
@@ -175,7 +199,9 @@
       '<div id="sbDetail" style="margin-top:10px;"></div>' +
       '<div style="font-size:var(--fs-neben); color:var(--muted); margin-top:6px;">Alle Werte aus der <b>Bestätigungshälfte</b> (zurückgehaltene Tage) in Prozentpunkten. „Tagesmittel" ist die Teststatistik, „je Signal" die handelbare Zahl – beide können verschiedene Vorzeichen haben, dann steht eine Warnung dabei. Zeile anklicken für den vollständigen Entscheidungsweg. ' +
       'Ein <b style="color:var(--down);">✖ Nullpunkt</b> heißt: Die Messung hat ihre eigene Selbstprüfung nicht bestanden – ' +
-      'ein Signal ohne jeden Kursbezug hätte null ergeben müssen und tat es nicht. Dann stimmt keine Zahl dieser Zeile.</div>';
+      'ein Signal ohne jeden Kursbezug hätte null ergeben müssen und tat es nicht. Dann stimmt keine Zahl dieser Zeile. ' +
+      'Ein <b style="color:var(--series2);">⟳ alte Maschine</b> heißt: Die Zeile wurde mit einer anderen Fassung der Messmaschine gerechnet als der, die jetzt hier liegt – ' +
+      'sie steht zum Vergleich, aber nicht auf gleicher Grundlage. Steht bei keiner Zeile eine Marke, tragen die Protokolle keine Kennung der Maschine (alle vor dem 26.08.2026) oder die Maschine fehlt.</div>';
     el.querySelectorAll('tr.sbRow').forEach(function (tr) {
       tr.addEventListener('click', function () { detail(parseInt(tr.getAttribute('data-i'), 10)); });
     });
@@ -187,7 +213,8 @@
     var h = '<div class="panel" style="background:var(--surface-2, var(--grid));">' +
       '<div style="display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:8px;">' +
       '<h3 style="margin:0;">' + U.esc(z.key) + ' – Entscheidungsweg</h3>' +
-      '<span style="font-size:var(--fs-neben); color:var(--muted);">Verfahren ' + U.esc(p.verfahren.version) + ' · ' + U.esc(z.aktuell.datei) + '</span></div>' +
+      '<span style="font-size:var(--fs-neben); color:var(--muted);">' + standText(p) + ' · ' + U.esc(z.aktuell.datei) +
+        (maschineAktuell(p) === false ? ' · <b style="color:var(--series2);">⟳ alte Maschine</b>' : '') + '</span></div>' +
       '<div style="font-size:var(--fs-neben); color:var(--ink-2); margin:6px 0 10px;"><b>Grund:</b> ' + U.esc(p.strategie.grund) + '</div>' +
       '<div style="font-size:var(--fs-neben); margin-bottom:10px;">Universum: <b>' + p.universum.werte + '</b> Werte, <b>' + p.universum.handelstage + '</b> Handelstage (' + U.esc(p.universum.von) + ' bis ' + U.esc(p.universum.bis) + '), Schnitt am <b>' + U.esc(p.universum.schnittTag) + '</b> · Haltedauer <b>' + p.strategie.haltedauerKerzen + '</b> Kerzen · Richtung <b>' + U.esc(p.strategie.richtung) + '</b> · ' + p.tests + ' Test(s)' + ausstiegText(p) + '</div>';
     h += placeboBand(p);

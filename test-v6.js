@@ -3925,6 +3925,64 @@ console.log('\n44) Messmaschine, Scoreboard und Strategie-Eingabe (23.08.2026)')
   /* Die Tests der Maschine selbst laufen gruen */
   var r = require('child_process').spawnSync(process.execPath, [__dirname + '/studien/messmaschine/test-messmaschine.js'], { encoding: 'utf8' });
   ok(r.status === 0 && /ALLE TESTS BESTANDEN/.test(r.stdout), 'test-messmaschine.js besteht (jeder Fehlertyp aus FEHLERTYPEN.md als Falle)');
+
+  /* ---- SPERRKLINKE: die Version der Messmaschine kann nicht mehr luegen ----
+   * Bis zum 26.08.2026 stand in VERFAHREN eine von Hand gepflegte "1.0.0" - ueber
+   * sieben Aenderungen hinweg unveraendert. Zwei Protokolle mit derselben Nummer
+   * waren also nicht mit derselben Maschine gemessen, und niemand konnte es sehen.
+   *
+   * codeStand rechnet sich aus der Datei selbst. Die beiden Zahlen stehen hier fest:
+   * wer messmaschine.js anfasst, macht diesen Test rot und MUSS entscheiden, ob sich
+   * das VERFAHREN geaendert hat (dann neue version) oder nur ein Kommentar (dann
+   * bleibt version, und nur der Stand wird nachgezogen). Genau diese Frage ist sieben
+   * Mal nicht gestellt worden. Die Reibung IST der Zweck: sie kostet zwei Zeilen und
+   * verhindert, dass Protokolle stillschweigend unvergleichbar werden. */
+  var MM_VERSION = '1.1.0';
+  var MM_STAND = 'adb9a60568fd';   // sha256 ueber messmaschine.js, erste 12 Zeichen
+  var mmV = require(__dirname + '/studien/messmaschine/messmaschine.js').VERFAHREN;
+  ok(mmV.version === MM_VERSION && mmV.codeStand === MM_STAND,
+     'Messmaschine: Version und Codestand stehen zusammen fest - eine Aenderung ohne Entscheid faellt auf',
+     mmV.version + ' / ' + mmV.codeStand);
+  /* Der Stand wird GERECHNET, nicht eingetragen - stuende er als Zeichenkette in der
+   * Maschine, waere er dieselbe Behauptung wie vorher, nur an anderer Stelle. */
+  var mmQ = fs.readFileSync(__dirname + '/studien/messmaschine/messmaschine.js', 'utf8');
+  ok(/codeStand: codeStand\(\),/.test(mmQ) && mmQ.indexOf(MM_STAND) === -1,
+     'Der Codestand rechnet sich selbst aus und steht NICHT als Zeichenkette in der Maschine');
+  /* Und der Hauptprozess fragt die Maschine, statt dieselbe Kennung ein zweites Mal zu
+   * rechnen - zwei Rechnungen fuer dieselbe Zahl, und die zweite ist irgendwann die
+   * falsche. */
+  var mainQ = fs.readFileSync(__dirname + '/main.js', 'utf8');
+  ok(mainQ.indexOf('M.VERFAHREN.codeStand') !== -1 && mainQ.indexOf('sha256') === -1,
+     'main.js erfragt den Stand bei der Maschine, statt ihn nachzurechnen');
+  ok(/maschinenStand: maschinenStand\(\)/.test(mainQ),
+     'und reicht ihn an die Uebersichtstafel durch');
+  var sbQ = fs.readFileSync(__dirname + '/scoreboard.js', 'utf8');
+  /* Der haeufige Fall ist "keine Kennung", nicht "veraltet": 26 Protokolle vom Stand vor
+   * dem 26.08.2026 tragen gar keine. Wer die als veraltet markiert, hat eine Tafel, auf
+   * der alles leuchtet - und die liest nach einer Woche niemand mehr. */
+  ok(/function maschineAktuell/.test(sbQ) && /typeof st !== 'string'\) return null/.test(sbQ),
+     'Die Tafel unterscheidet "mit einer anderen Maschine gemessen" von "keine Kennung"');
+  ok(/maschineAktuell\(p\) === false/.test(sbQ) && /alte Maschine/.test(sbQ),
+     'und kennzeichnet nur den ersten Fall');
+  ok(/MASCHINE = \(r && typeof r\.maschinenStand === 'string'\)/.test(sbQ),
+     'Ohne Kennung der laufenden Maschine kennzeichnet die Tafel gar nichts');
+  /* Die Entscheidung selbst wird AUSGEFUEHRT, nicht nur im Quelltext gesucht. Ein
+   * Muster im Text sagt, dass etwas dasteht; ob es das Richtige antwortet, sagt nur
+   * der Aufruf. Der wichtigste Fall ist der dritte: fehlt die Kennung, muss null
+   * herauskommen und nicht false - sonst traegt jedes der 26 alten Protokolle eine
+   * Warnung, und eine Tafel, auf der alles leuchtet, liest niemand mehr. */
+  var maA = sbQ.indexOf('function maschineAktuell(p) {');
+  var maE = sbQ.indexOf('\n  }\n', maA);
+  ok(maA !== -1 && maE > maA, 'maschineAktuell laesst sich herausloesen');
+  var maFn = new Function('MASCHINE', sbQ.slice(maA, maE + 4) + '\nreturn maschineAktuell;');
+  var mitK = { verfahren: { version: '1.1.0', codeStand: 'aaaaaaaaaaaa' } };
+  var altK = { verfahren: { version: '1.0.0', codeStand: 'bbbbbbbbbbbb' } };
+  var ohneK = { verfahren: { version: '1.0.0' } };
+  ok(maFn('aaaaaaaaaaaa')(mitK) === true, 'Gleiche Kennung: die Zeile gilt als aktuell');
+  ok(maFn('aaaaaaaaaaaa')(altK) === false, 'Andere Kennung: die Zeile wird als alte Maschine gekennzeichnet');
+  ok(maFn('aaaaaaaaaaaa')(ohneK) === null, 'KEINE Kennung im Protokoll: unbekannt, nicht veraltet');
+  ok(maFn(null)(mitK) === null && maFn(null)(altK) === null,
+     'Ohne laufende Maschine bleibt jede Zeile unmarkiert - lieber nichts sagen als alles anstreichen');
   var ft = fs.readFileSync(__dirname + '/studien/messmaschine/FEHLERTYPEN.md', 'utf8');
   /* Am Zeilenanfang verankert: sonst zaehlen die Zahlen in den erklaerenden
    * Tabellen mit (beim ersten Wurf 15.533 statt 35). */

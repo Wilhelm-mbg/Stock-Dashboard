@@ -590,7 +590,7 @@ ipcMain.handle('read-spekulationen', async () => ablageLesen('spekulationen.json
 ipcMain.handle('read-protokolle', async () => {
   try {
     const dir = path.join(app.getPath('downloads'), 'Markt-Dashboard-Daten', 'protokolle');
-    if (!fs.existsSync(dir)) return { ok: true, protokolle: [], ordner: dir };
+    if (!fs.existsSync(dir)) return { ok: true, protokolle: [], ordner: dir, maschinenStand: maschinenStand() };
     const out = [];
     fs.readdirSync(dir).filter((f) => /^[\w.-]+\.json$/.test(f)).forEach((f) => {
       try {
@@ -600,7 +600,7 @@ ipcMain.handle('read-protokolle', async () => {
         if (j && j.strategie && Array.isArray(j.urteile)) out.push({ datei: f, mtime: st.mtimeMs, protokoll: j });
       } catch (e) { /* eine kaputte Datei darf die Liste nicht kippen */ }
     });
-    return { ok: true, protokolle: out, ordner: dir };
+    return { ok: true, protokolle: out, ordner: dir, maschinenStand: maschinenStand() };
   } catch (e) { return { ok: false, grund: String(e && e.message || e) }; }
 });
 /* ---- Messmaschine: neue Strategie ablegen ----
@@ -669,6 +669,27 @@ function messmaschinePfad() {
   const drin = path.join(__dirname, 'studien', 'messmaschine', 'messen.js');
   const aus = entpackt(drin);
   return fs.existsSync(aus) ? aus : drin;
+}
+/* ---- Mit WELCHER Messmaschine liegt hier gerade? ----
+ * Die Uebersichtstafel soll ein Protokoll als veraltet kennzeichnen koennen, und
+ * dafuer braucht sie den Stand der Maschine, die JETZT hier liegt.
+ * Die Kennung wird NICHT hier nachgerechnet, sondern bei der Maschine erfragt - sonst
+ * gaebe es zwei Rechnungen fuer dieselbe Zahl, und die zweite waere irgendwann die
+ * falsche. Das Modul definiert nur; geladen wird es einmal und beim ersten Bedarf.
+ * Faellt das aus, bleibt der Stand null - dann kennzeichnet die Tafel GAR NICHTS,
+ * statt alles fuer veraltet zu erklaeren. Eine Warnung, die immer leuchtet, liest
+ * nach einer Woche niemand mehr. */
+let MASCHINEN_STAND;
+function maschinenStand() {
+  if (MASCHINEN_STAND !== undefined) return MASCHINEN_STAND;
+  MASCHINEN_STAND = null;
+  try {
+    const drin2 = path.join(__dirname, 'studien', 'messmaschine', 'messmaschine.js');
+    const aus2 = entpackt(drin2);
+    const M = require(fs.existsSync(aus2) ? aus2 : drin2);
+    if (M && M.VERFAHREN && typeof M.VERFAHREN.codeStand === 'string') MASCHINEN_STAND = M.VERFAHREN.codeStand;
+  } catch (e) { /* ohne Maschine keine Kennung - und keine erfundene */ }
+  return MASCHINEN_STAND;
 }
 function quellOrdner() {
   /* Woher die Strategie ihr quant.js laedt (STOCK_DASHBOARD_QUELLE).
