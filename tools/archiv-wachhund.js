@@ -25,7 +25,11 @@
  *   node tools/archiv-wachhund.js archiv60m       nur eines
  *   node tools/archiv-wachhund.js --stichprobe 200
  *
- * Exit 0: frisch.  Exit 1: Rueckstand ab zwei Handelstagen.  Exit 2: nicht pruefbar.
+ * Exit 0: frisch.  Exit 1: Rueckstand ab zwei Handelstagen.
+ * Exit 2: nicht pruefbar - Ordner fehlt, oder es wird GERADE GESCHRIEBEN. Der zweite
+ *         Fall ist der wichtige: waehrend eines Nachladelaufs ist das Archiv gemischt,
+ *         und ein Rueckstand waere dann eine Aussage ueber den Zeitpunkt der Frage,
+ *         nicht ueber das Archiv.
  */
 var fs = require('fs');
 var path = require('path');
@@ -69,6 +73,49 @@ function handelstageDazwischen(vonTag, bisTag) {
   return n;
 }
 
+/* ---------- SPERRE: hier wird gerade geschrieben ----------
+ * Ein Nachladelauf braucht rund 97 Minuten JE ARCHIV - der Bereich ist je Intervall
+ * fest verdrahtet (730d bzw. 40y), einen inkrementellen Modus gibt es nicht. Waehrend
+ * dieser Zeit ist das Archiv nicht kaputt, sondern GEMISCHT: ein Teil auf dem neuen
+ * Stand, ein Teil auf dem alten. Genau das sieht von aussen gesund aus, und genau
+ * darum geht es hier - wer um 03:15 darauf misst, misst auf wanderndem Grund.
+ * Deshalb: nicht auf die Uhr vertrauen, sondern fragen.
+ *
+ * DIE SPERRE MUSS EINEN ABSTURZ UEBERLEBEN KOENNEN. Stirbt der Abruf hart, bliebe sie
+ * liegen und der Wachhund sagte fuer immer "wird gerade geschrieben" - die Stille von
+ * heute in ihrer dritten Verkleidung. Sie traegt deshalb einen Zeitstempel und gilt
+ * nach VERWAIST_STUNDEN als verwaist. Verwaist heisst NICHT "alles gut": es wird
+ * eigens gemeldet, denn ein abgestuerzter Lauf ist selbst ein Befund.
+ * Geloescht wird sie hier nicht - ein Wachhund raeumt nicht auf, er bellt. Der
+ * naechste Lauf ueberschreibt sie. */
+var VERWAIST_STUNDEN = 6;
+function sperrePfad(ordner) { return path.join(ordner, '_laeuft.json'); }
+function sperreLesen(ordner, jetzt) {
+  jetzt = jetzt || new Date();
+  var p = sperrePfad(ordner);
+  if (!fs.existsSync(p)) return { aktiv: false, verwaist: false };
+  var j = null;
+  try { j = JSON.parse(fs.readFileSync(p, 'utf8')); } catch (e) { j = null; }
+  var start = j && j.start ? Date.parse(j.start) : NaN;
+  /* Unlesbar oder ohne Zeitstempel: als verwaist behandeln, nicht als aktiv. Eine
+   * kaputte Datei darf die Messung nicht auf Dauer blockieren. */
+  if (!isFinite(start)) return { aktiv: false, verwaist: true, alterStunden: null, roh: j };
+  var alter = (jetzt.getTime() - start) / 3600000;
+  return { aktiv: alter < VERWAIST_STUNDEN, verwaist: alter >= VERWAIST_STUNDEN,
+    alterStunden: alter, start: j.start, was: j.was || null };
+}
+function sperreSetzen(ordner, was) {
+  try {
+    fs.writeFileSync(sperrePfad(ordner), JSON.stringify(
+      { start: new Date().toISOString(), was: was || null, pid: process.pid }, null, 1));
+    return true;
+  } catch (e) { return false; }   // ohne Sperre laeuft der Abruf trotzdem
+}
+function sperreLoesen(ordner) {
+  try { if (fs.existsSync(sperrePfad(ordner))) fs.unlinkSync(sperrePfad(ordner)); return true; }
+  catch (e) { return false; }
+}
+
 function juengsteKerze(datei) {
   try {
     var j = JSON.parse(fs.readFileSync(datei, 'utf8'));
@@ -86,6 +133,13 @@ function pruefe(ordner, opt) {
   opt = opt || {};
   var jetzt = opt.jetzt || new Date();
   if (!fs.existsSync(ordner)) return { ok: false, grund: 'Ordner fehlt: ' + ordner, ordner: ordner };
+  /* Erst fragen, ob gerade geschrieben wird. Ein Rueckstand waehrend des Schreibens
+   * ist keine Aussage ueber das Archiv, sondern ueber den Zeitpunkt der Frage. */
+  var sp = sperreLesen(ordner, jetzt);
+  if (sp.aktiv) {
+    return { ok: false, gesperrt: true, ordner: ordner, seit: sp.start, was: sp.was,
+      grund: 'wird gerade geschrieben (seit ' + sp.start + ', ' + sp.alterStunden.toFixed(1) + ' h)' };
+  }
   var dateien = fs.readdirSync(ordner).filter(function (f) { return /^bars_.*\.json$/.test(f); });
   if (!dateien.length) return { ok: false, grund: 'keine Kursdateien in ' + ordner, ordner: ordner };
   /* Gleichmaessige Stichprobe statt der ersten N - die ersten sind alphabetisch und
@@ -108,14 +162,20 @@ function pruefe(ordner, opt) {
   var rueckstand = handelstageDazwischen(haeufigster, soll);
   return {
     ok: rueckstand < 2, ordner: ordner, dateien: dateien.length, gelesen: gelesen, unlesbar: unlesbar,
+    verwaisteSperre: sp.verwaist ? (sp.alterStunden == null ? true : Math.round(sp.alterStunden * 10) / 10) : false,
     juengsterTagHaeufig: haeufigster, juengsterTagSpaetester: spaetester,
-    anteilAufStand: tage[soll] ? tage[soll] / gelesen : 0,
+    /* "Auf Stand" heisst nicht "genau am Solltag", sondern "nicht dahinter". Sonst
+     * meldet ein Archiv, das den heutigen (noch laufenden) Tag schon enthaelt, 0 % -
+     * gemessen und korrigiert am 26.08.2026 an einem frisch geholten Wegwerf-Archiv. */
+    anteilAufStand: Object.keys(tage).reduce(function (a, t) { return a + (t >= soll ? tage[t] : 0); }, 0) / gelesen,
     sollTag: soll, rueckstandHandelstage: rueckstand,
     verteilung: tage
   };
 }
 
 function textZu(b) {
+  if (b.gesperrt) return path.basename(b.ordner) + ': WIRD GERADE GESCHRIEBEN - ' + b.grund +
+    '\n  Kein Urteil ueber den Stand: das Archiv ist in diesem Moment gemischt.';
   if (b.grund) return 'NICHT PRUEFBAR: ' + b.grund;
   var z = path.basename(b.ordner) + ': juengste Kerze ' + b.juengsterTagHaeufig +
     ', letzter abgeschlossener Handelstag ' + b.sollTag +
@@ -125,11 +185,17 @@ function textZu(b) {
   if (b.rueckstandHandelstage >= 2) z += '\n  ALARM: Das Archiv steht still. Ein Lauf ohne --aktualisieren holt NICHTS nach -' +
     '\n         er meldet "Nichts zu tun" und geht mit Erfolg aus.';
   else if (b.rueckstandHandelstage === 1) z += '\n  Hinweis: ein Handelstag Rueckstand - kann ein Feiertag sein, dieses Werkzeug kennt keine.';
+  /* Eine liegengebliebene Sperre ist selbst ein Befund: da ist ein Lauf gestorben. */
+  if (b.verwaisteSperre) z += '\n  VERWAISTE SPERRE: ein Nachladelauf hat sie vor ' +
+    (b.verwaisteSperre === true ? 'unbekannter Zeit' : b.verwaisteSperre + ' h') +
+    ' gesetzt und nie aufgeraeumt - er ist vermutlich abgestuerzt. Der Stand oben gilt trotzdem.';
   return z;
 }
 
 module.exports = { pruefe: pruefe, textZu: textZu, letzterAbgeschlossenerHandelstag: letzterAbgeschlossenerHandelstag,
-  handelstageDazwischen: handelstageDazwischen, ordnerVon: ordnerVon };
+  handelstageDazwischen: handelstageDazwischen, ordnerVon: ordnerVon,
+  sperreSetzen: sperreSetzen, sperreLoesen: sperreLoesen, sperreLesen: sperreLesen,
+  VERWAIST_STUNDEN: VERWAIST_STUNDEN };
 
 if (require.main === module) {
   var args = process.argv.slice(2);
@@ -141,7 +207,7 @@ if (require.main === module) {
   namen.forEach(function (nm) {
     var b = pruefe(ordnerVon(nm) || nm, { stichprobe: stich });
     console.log(textZu(b));
-    if (b.grund) unpruefbar++;
+    if (b.gesperrt || b.grund) unpruefbar++;
     else if (!b.ok) schlimm++;
   });
   process.exit(schlimm ? 1 : (unpruefbar ? 2 : 0));

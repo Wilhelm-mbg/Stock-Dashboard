@@ -261,6 +261,18 @@ function listeBauen(wahl) {
     return;
   }
 
+  /* SPERRE SETZEN. Der Lauf dauert rund 97 Minuten; solange ist das Archiv GEMISCHT -
+   * ein Teil neu, ein Teil alt. Wer in dieser Zeit darauf misst, misst auf wanderndem
+   * Grund, und das Ergebnis sieht dabei gesund aus. Die Sperre sagt es statt einer
+   * Uhrzeit, auf die man hoffen muesste.
+   * Sie wird auch bei Strg+C geloest - und traegt einen Zeitstempel, damit ein harter
+   * Absturz sie nicht auf Dauer stehenlaesst (siehe archiv-wachhund.js). */
+  Wachhund.sperreSetzen(ZIEL, IV + ' ' + (aktualisieren ? 'aktualisieren' : 'neu holen') + ', ' + nimm.length + ' Werte');
+  var sperreWeg = false;
+  function sperreRaeumen() { if (!sperreWeg) { sperreWeg = true; Wachhund.sperreLoesen(ZIEL); } }
+  process.on('SIGINT', function () { sperreRaeumen(); process.exit(130); });
+  process.on('SIGTERM', function () { sperreRaeumen(); process.exit(143); });
+
   var ok = 0, leer = 0, fehler = 0, kerzenGes = 0, ohneEroeffnung = 0;
   for (var i = 0; i < nimm.length; i++) {
     var sym = nimm[i];
@@ -320,6 +332,9 @@ function listeBauen(wahl) {
     if (i < nimm.length - 1) await warte(ABSTAND_MS);
   }
 
+  /* Erst die Sperre loesen, dann melden - sonst prueft standMelden() sein eigenes
+   * Archiv als "wird gerade geschrieben" und sagt gar nichts ueber den Stand. */
+  sperreRaeumen();
   console.log('\n' + ok + ' Reihen geholt (' + kerzenGes.toLocaleString('de-DE') + ' Kerzen), ' + leer + ' ohne Daten.');
   if (kerzenGes) console.log('Ohne Eroeffnungskurs: ' + ohneEroeffnung + ' Kerzen (' +
     (100 * ohneEroeffnung / kerzenGes).toFixed(2) + ' %).');

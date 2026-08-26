@@ -9153,6 +9153,73 @@ console.log('\nWachhund: steht das Kursarchiv still?');
      'beide Ausgaenge melden ihn', (yq.match(/standMelden\(aktualisieren\)/g) || []).length);
   ok(/require\('\.\/archiv-wachhund\.js'\)/.test(yq),
      'und das Werkzeug LAEDT den Wachhund, statt die Rechnung ein zweites Mal zu haben');
+
+  /* ---- Die Sperre: waehrend des Nachladens ist das Archiv GEMISCHT (26.08.2026) ----
+   * Ein Nachladelauf braucht rund 97 Minuten je Archiv - der Bereich ist je Intervall
+   * fest verdrahtet, einen inkrementellen Modus gibt es nicht. In dieser Zeit ist ein
+   * Teil der Reihen neu und ein Teil alt, und das sieht von aussen gesund aus. Wer um
+   * 03:15 darauf misst, misst auf wanderndem Grund.
+   * Geprueft wird die Rechnung, nicht der Text - mit festen Zeitpunkten. */
+  var tmpS = fs.mkdtempSync(pathT.join(osT.tmpdir(), 'sperre-test-'));
+  function legeS(sym, tag) {
+    fs.writeFileSync(pathT.join(tmpS, 'bars_60m_' + sym + '.json'),
+      JSON.stringify({ series: [[Date.parse(tag + 'T13:30:00Z'), 100, 1, 101, 99]] }));
+  }
+  for (var si = 0; si < 10; si++) legeS('S' + si, '2026-08-25');
+  var JETZT = new Date('2026-08-26T09:00:00Z');
+  ok(W.pruefe(tmpS, { jetzt: JETZT }).ok === true, 'Ohne Sperre gibt es ein Urteil');
+
+  /* Frische Sperre: KEIN Urteil. Ein Rueckstand waere hier eine Aussage ueber den
+   * Zeitpunkt der Frage, nicht ueber das Archiv. */
+  W.sperreSetzen(tmpS, 'Testlauf');
+  var bGes = W.pruefe(tmpS, { jetzt: new Date() });
+  ok(bGes.gesperrt === true && bGes.ok === false,
+     'Mit frischer Sperre gibt der Wachhund KEIN Urteil ab');
+  ok(/WIRD GERADE GESCHRIEBEN/.test(W.textZu(bGes)), 'und sagt im Klartext, warum');
+
+  /* DER WICHTIGE FALL: eine liegengebliebene Sperre darf nicht ewig blockieren.
+   * Beim Erproben am 26.08.2026 ist genau das passiert - ein hart abgebrochener Lauf
+   * hat seinen Signal-Handler nicht ausgefuehrt und die Sperre liegengelassen. Die
+   * Frist ist deshalb nicht der Notnagel, sondern die eigentliche Sicherung. */
+  fs.writeFileSync(pathT.join(tmpS, '_laeuft.json'),
+    JSON.stringify({ start: new Date(Date.now() - 7 * 3600000).toISOString(), was: 'abgestuerzt' }));
+  var bVer = W.pruefe(tmpS, { jetzt: new Date() });
+  ok(bVer.gesperrt !== true && bVer.ok === true,
+     'Eine verwaiste Sperre blockiert das Urteil NICHT mehr - sonst schwiege der Wachhund fuer immer');
+  ok(bVer.verwaisteSperre && /VERWAISTE SPERRE/.test(W.textZu(bVer)),
+     'aber sie wird eigens gemeldet - ein abgestuerzter Lauf ist selbst ein Befund',
+     bVer.verwaisteSperre);
+  /* Knapp unter der Frist gilt sie noch. */
+  fs.writeFileSync(pathT.join(tmpS, '_laeuft.json'),
+    JSON.stringify({ start: new Date(Date.now() - (W.VERWAIST_STUNDEN - 0.5) * 3600000).toISOString() }));
+  ok(W.pruefe(tmpS, { jetzt: new Date() }).gesperrt === true,
+     'Eine halbe Stunde vor der Frist gilt sie noch als aktiv');
+  /* Eine kaputte Sperrdatei darf nicht als "aktiv" durchgehen - sonst legt ein
+   * einziger Schreibfehler die Messung fuer immer still. */
+  fs.writeFileSync(pathT.join(tmpS, '_laeuft.json'), 'kein JSON');
+  var bKaputt = W.pruefe(tmpS, { jetzt: new Date() });
+  ok(bKaputt.gesperrt !== true && bKaputt.verwaisteSperre === true,
+     'Eine unlesbare Sperrdatei gilt als verwaist, nicht als aktiv');
+  W.sperreLoesen(tmpS);
+  ok(W.pruefe(tmpS, { jetzt: JETZT }).ok === true && !W.pruefe(tmpS, { jetzt: JETZT }).verwaisteSperre,
+     'Nach dem Loesen ist alles wie vorher');
+  fs.rmSync(tmpS, { recursive: true, force: true });
+
+  /* Und das Abrufwerkzeug setzt sie wirklich - vor der Schleife, geloest vor der
+   * Standmeldung. Andersherum pruefte es sein eigenes Archiv als "wird gerade
+   * geschrieben" und sagte gar nichts ueber den Stand. */
+  ok(/Wachhund\.sperreSetzen\(ZIEL/.test(yq) && /function sperreRaeumen/.test(yq),
+     'Das Abrufwerkzeug setzt die Sperre und raeumt sie wieder weg');
+  ok(yq.indexOf('sperreRaeumen();') < yq.indexOf("' Reihen geholt ('"),
+     'Es loest sie VOR der Standmeldung - sonst meldet es sich selbst als gesperrt');
+  ok(/process\.on\('SIGINT'/.test(yq) && /process\.on\('SIGTERM'/.test(yq),
+     'Auch bei Abbruch mit Strg+C wird sie geloest (soweit das Betriebssystem den Handler laesst)');
+  /* Der naechtliche Laeufer schweigt nicht, wenn etwas ist. */
+  var nq = fs.readFileSync(__dirname + '/tools/archiv-nachladen.js', 'utf8');
+  ok(/if \(code !== 0 \|\| verwaist\)/.test(nq),
+     'Der naechtliche Laeufer schreibt die Meldedatei auch bei verwaister Sperre - sonst faende ein abgestuerzter Lauf keinen Leser');
+  ok(/archiv-alarm-' \+ new Date\(\)\.toISOString\(\)\.slice\(0, 10\)/.test(nq),
+     'Die Meldedatei traegt das Datum - ein Alarm von gestern sieht nicht aus wie einer von heute');
 })();
 
 Promise.all(offeneProben).then(function () {
