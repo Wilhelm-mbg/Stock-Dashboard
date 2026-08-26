@@ -1870,6 +1870,40 @@ Dateien je Archiv — **990.509 Kerzen**):
 
 **Bestätigt: null Randzeiten-Kerzen in den App-Archiven.**
 
+> **⚠ Einschränkung dieser PM-Zahl, selbst benannt:** Sie zählt mit einer **festen Schablone
+> 13:30–20:00 UTC**. Das trägt hier nur, weil das Fenster günstig liegt — die App-Archive
+> reichen vom 02.06. bis 26.08.2026, durchgehend Sommerzeit, **kein Halbtag darin**. Für die
+> **60m-Seite wäre dieselbe Schablone falsch**: an Halbtagen ließe sie AH-Kerzen ab 17 Uhr als
+> „in der Sitzung" durchgehen, im Winter verschöbe sie alles um eine Stunde. **`-06` zählt
+> dort richtig** über `minutenSeitOeffnung`/`sitzungsMinuten` (`population-60m.js`, nur
+> lesend, verweigert bei aktiver Sperre selbst). *Für 60m gilt seine Zahl, nicht meine.*
+
+### ⭐ 27.08. ~01:55 — die womöglich entscheidende Zahl, noch UNAUFGESCHLÜSSELT
+
+**`markt-dashboard-1d` hat gegen die Tagesbalken gemessen: 76,4 % der „reparierbaren" Dochte
+sind ECHTE TAGESEXTREME.** Trägt das, ist die Reparatur nicht formfalsch, sondern
+**gegenstandslos** — sie würde Tageshochs und -tiefs beschneiden, die im Tagesarchiv
+unabhängig belegt sind.
+
+**Der PM hat die Zahl NICHT übernommen, sondern aufgeschlüsselt angefordert**, weil sie in
+zwei Richtungen gelesen werden kann:
+
+**Der Fall, mit dem diese ganze Kette anfing, war AAPL am 03.07.2025 — ein HALBTAG — mit
+Docht-Tief 201,25 gegen ein Tagestief von 211,81.** Das ist ersichtlich *kein* echtes
+Tagesextrem. Läuft die Quote über alle Tage, **könnten die Normaltage sie tragen und die
+sieben Halbtage die Ausreißer stellen** — und genau die sind der ursprüngliche Datenfund.
+*„76,4 % sind echt" und „an den betroffenen Halbtagen sind es 5 %" wären zwei völlig
+verschiedene Lagen.*
+
+**Angefordert:** (1) Quote **getrennt** nach den sieben Halbtagen und allen übrigen Tagen;
+(2) heißt „echtes Tagesextrem" exakte Gleichheit mit `archiv1d` oder eine Toleranz, und
+welche; (3) wie viele reparierbare Dochte liegen **außerhalb** der Tagesspanne — ist das der
+23,6-%-Rest oder eine andere Menge; (4) **Gegenprobe:** der AAPL-Fall vom 03.07.2025 muss bei
+der Prüfung durchfallen, sonst stimmt die Zuordnung nicht.
+
+*Bis zur Aufschlüsselung wird die Zahl nirgends als geklärt geführt — auch nicht in
+Skript-Kopfzeilen, die später gern als Beleg zitiert werden.*
+
 ### 🔴 ZWEI POLITIKEN IN EINEM ARCHIVBESTAND — der Zwei-Quellen-Schaden in neuer Form
 
 | Bestand | befüllt von | Randzeiten-Kerzen |
