@@ -1,0 +1,20 @@
+{
+ "hinweis": "Reine Abzaehlung. Keine Rendite gemittelt, kein Ertrag berechnet.",
+ "frage": "Wie oft druckt der Schluss der ausgewaehlten Tage wirklich auf dem Tagestief?",
+ "archiv": "E:/Markt-Dashboard-Archiv/archiv1d",
+ "stichprobe": 400,
+ "handelstage": 9499,
+ "ersterTag": "1986-08-26",
+ "letzterTag": "2026-08-20",
+ "unterstesSQuintil": {
+  "anteil_Schluss_exakt_auf_Tagestief": 0.064,
+  "anteil_S_kleiner_005": 0.231,
+  "S_median_der_Auswahl": 0.124,
+  "tagesspanne_median_Pp": 2.516,
+  "tagesspanne_median_Korb_Pp": 2.304
+ },
+ "einordnung": {
+  "halbeSpanne_Aktie_Pp": 0.02,
+  "kommentar": "Die halbe notierte Spanne (Kostentabelle Aktie 0,04 Pp je Umlauf) ist die Groessenordnung, um die ein Schluss auf dem Geldkurs die gemessene Uebernachtrendite mechanisch hebt. Zu vergleichen mit MDE 0,0256 Pp und delta80 0,0395 Pp des Kandidaten."
+ }
+}
