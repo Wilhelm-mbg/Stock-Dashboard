@@ -3580,17 +3580,29 @@
       : '–';
   }
 
-  /** Ertragskurve über den Depot-Kacheln: Gesamtrendite, Hoch, max. Rücksetzer und eine
-   *  schlichte Fläche im Stil der Dashboard-Sparklines. Erst ab 5 Punkten – vorher bleibt
-   *  das Panel versteckt, eine 3-Punkte-Kurve sagt nichts. */
+  /** Die drei Kennzahlen des Depotverlaufs: Gesamtrendite, Hoch, groesster Ruecksetzer.
+   *
+   * Bis zum 26.08.2026 zeichnete diese Funktion zusaetzlich eine schlichte Flaeche -
+   * ein ZWEITES Bild derselben Daten, direkt ueber dem ausfuehrlichen Verlaufsbild mit
+   * Achsen, Startkapital-Linie und Maus-Hinweis. Zwei Bilder derselben Zahlen
+   * untereinander, und das schlichtere konnte weniger. Es ist entfallen; die Zahlen
+   * sind geblieben und stehen jetzt ueber dem ausfuehrlichen Bild.
+   *
+   * ZWEI DINGE, DIE BEIM UMZUG LEICHT VERLORENGEHEN:
+   * 1. Die Zahlen rechnen ueber die GESAMTE Historie. Das Bild daneben zeigt einen
+   *    Ausschnitt - frueher die letzten 800 Punkte, jetzt was drawEquity waehlt. Wer
+   *    die Zahlen aus dem gezeichneten Bild herleitet statt aus D.equityHist, aendert
+   *    sie stillschweigend: ein Hoch von vor zwei Jahren verschwaende einfach.
+   * 2. Unter 5 Punkten bleibt der Kopf VERSTECKT. Drei Kennzahlen aus vier Punkten
+   *    sind keine Auskunft, sondern eine Behauptung. Diese Regel ist mit umgezogen. */
   function renderEquity() {
-    var el = document.getElementById('eqPanel');
+    var el = document.getElementById('eqKopf');
     if (!el || !D) return;
     var h = D.equityHist || [];
     if (h.length < 5) { el.style.display = 'none'; return; }
-    el.style.display = 'block';
+    el.style.display = 'flex';
 
-    // Kopfzahlen über die GESAMTE Historie, die Kurve nur über die letzten 800 Punkte
+    /* Ueber ALLE Punkte, nicht ueber den gezeichneten Ausschnitt. */
     var hoch = h[0][1], peak = h[0][1], dd = 0;
     h.forEach(function (p) {
       if (p[1] > peak) peak = p[1];
@@ -3600,37 +3612,10 @@
     });
     var eqLast = h[h.length - 1][1];
 
-    var pts = h.slice(-800);
-    var x0 = pts[0][0], x1 = pts[pts.length - 1][0];
-    if (x1 - x0 < 1) x1 = x0 + 1;
-    var ys = pts.map(function (p) { return p[1]; });
-    var minV = Math.min.apply(null, ys), maxV = Math.max.apply(null, ys);
-    // Referenzlinie 10.000 gehört mit in den Wertebereich, sonst hinge sie außerhalb
-    var lo = Math.min(minV, START_CAPITAL), hi = Math.max(maxV, START_CAPITAL);
-    if (hi - lo < 1e-9) { lo -= 1; hi += 1; }
-    var yPad = (hi - lo) * 0.08;
-    lo -= yPad; hi += yPad;
-
-    var W = Math.max(320, (el.clientWidth || 620) - 28), H = 120;
-    function X(t) { return (t - x0) / (x1 - x0) * W; }
-    function Y(v) { return (H - 4) - (v - lo) / (hi - lo) * (H - 8); }
-    var line = pts.map(function (p, i) { return (i ? 'L' : 'M') + X(p[0]).toFixed(1) + ' ' + Y(p[1]).toFixed(1); }).join(' ');
-    var area = line + ' L' + W + ' ' + H + ' L0 ' + H + ' Z';
-    var yB = Y(START_CAPITAL).toFixed(1);
-
     el.innerHTML =
-      '<div class="eq-kopf">' +
-        '<span><span class="ckl">Verlauf</span><b>' + pz1((eqLast / START_CAPITAL - 1) * 100) + '</b></span>' +
-        '<span><span class="ckl">Hoch</span><b>' + U.nf0.format(hoch) + ' $</b></span>' +
-        '<span><span class="ckl">Max. Rücksetzer</span><b' + (dd < 0 ? ' class="down"' : '') + '>' + pz1(dd * 100) + '</b></span>' +
-      '</div>' +
-      '<svg viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none">' +
-        '<path d="' + area + '" fill="var(--series-soft)" stroke="none"></path>' +
-        '<line x1="0" x2="' + W + '" y1="' + yB + '" y2="' + yB + '" stroke="var(--baseline)" stroke-width="1" stroke-dasharray="4 3"></line>' +
-        '<path d="' + line + '" fill="none" stroke="var(--series)" stroke-width="1.5"></path>' +
-        '<text x="' + (W - 3) + '" y="' + Math.max(10, Y(maxV) - 4).toFixed(1) + '" text-anchor="end" fill="var(--muted)" font-size="10">' + U.nf0.format(maxV) + ' $</text>' +
-        '<text x="' + (W - 3) + '" y="' + Math.min(H - 3, Y(minV) + 11).toFixed(1) + '" text-anchor="end" fill="var(--muted)" font-size="10">' + U.nf0.format(minV) + ' $</text>' +
-      '</svg>';
+      '<span><span class="ckl">Verlauf</span><b>' + pz1((eqLast / START_CAPITAL - 1) * 100) + '</b></span>' +
+      '<span><span class="ckl">Hoch</span><b>' + U.nf0.format(hoch) + ' $</b></span>' +
+      '<span><span class="ckl">Max. Rücksetzer</span><b' + (dd < 0 ? ' class="down"' : '') + '>' + pz1(dd * 100) + '</b></span>';
   }
 
   function normWeights() {

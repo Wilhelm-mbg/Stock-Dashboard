@@ -369,10 +369,13 @@
   .heat .hz .ppk { display: block; color: var(--ink-2); }
 
   /* Ertragskurve im Depot */
-  .eq-panel { padding: 12px 14px; margin-bottom: 10px; }
-  .eq-panel .eq-kopf { display: flex; gap: 18px; align-items: baseline; flex-wrap: wrap; margin-bottom: 6px; font-variant-numeric: tabular-nums; }
-  .eq-panel .eq-kopf .ckl { color: var(--muted); font-size: var(--fs-klein); text-transform: uppercase; letter-spacing: 0.06em; margin-right: 4px; }
-  .eq-panel svg { width: 100%; height: 120px; display: block; }
+  /* Die Kopfzahlen des Depotverlaufs. Bis zum 26.08.2026 hingen diese Regeln an
+     am Behaelter des ZWEITEN, schlichteren Verlaufsbildes, das direkt
+     ueber dem ausfuehrlichen stand und dieselben Daten zeigte. Das schlichte ist
+     entfallen, die Zahlen sind zum ausfuehrlichen umgezogen; die Regeln stehen
+     deshalb fuer sich und nicht mehr unter einem Behaelternamen. */
+  .eq-kopf { display: flex; gap: 18px; align-items: baseline; flex-wrap: wrap; margin-bottom: 8px; font-variant-numeric: tabular-nums; }
+  .eq-kopf .ckl { color: var(--muted); font-size: var(--fs-klein); text-transform: uppercase; letter-spacing: 0.06em; margin-right: 4px; }
 
   /* Kurs-Readout im Explorer-Chart (Fadenkreuz-Werte oben links) */
   .chartwrap { position: relative; }
@@ -1570,12 +1573,16 @@
 
   <!-- ============ DEPOT ============ -->
   <div class="sub active" id="sub-depot">
-    <div id="eqPanel" class="panel eq-panel" style="display:none;"></div>
     <div class="depot-stats" id="depotStats"></div>
     <div id="messNote" style="color:var(--muted); font-size:var(--fs-neben); margin:8px 0 0;"></div>
     <div id="calWarn"></div>
     <div class="panel" style="margin-bottom:14px;">
       <h3>Depotverlauf (seit Start der Simulation)</h3>
+      <!-- Die drei Kennzahlen standen bis zum 26.08.2026 ueber einem zweiten,
+           schlichteren Verlaufsbild derselben Daten. Das Bild ist entfallen, die
+           Zahlen sind hierher gezogen - sie rechnen ueber die GESAMTE Historie,
+           waehrend die Kurve daneben einen Ausschnitt zeigt. -->
+      <div class="eq-kopf" id="eqKopf" style="display:none;"></div>
       <svg id="equityChart" style="width:100%; height:150px; display:block;"></svg>
     </div>
     <div style="display:flex; gap:14px; align-items:center; flex-wrap:wrap; margin-bottom:10px;">

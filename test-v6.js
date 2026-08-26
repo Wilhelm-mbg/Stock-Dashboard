@@ -4195,6 +4195,55 @@ console.log('\n44) Messmaschine, Scoreboard und Strategie-Eingabe (23.08.2026)')
   ok(/nicht entscheidbar/.test(dep2.slice(dep2.indexOf('var hinweisUrteil'), dep2.indexOf('var hinweisUrteil') + 1400)),
      'Er benennt den Unterschied zu "nicht entscheidbar" - sonst liest sich beides gleich');
 
+  /* ---- Depotverlauf: EIN Bild, und die Zahlen ueber die ganze Historie (26.08.2026) ----
+   * Unter Vermoegen -> Depot standen zwei Bilder DERSELBEN Daten untereinander: eine
+   * schlichte Flaeche mit drei Kennzahlen darueber und darunter das ausfuehrliche Bild
+   * mit Achsen, Startkapital-Linie und Maus-Hinweis. Das schlichtere konnte weniger und
+   * ist entfallen; die Kennzahlen sind zum ausfuehrlichen umgezogen.
+   * Diese Stelle hatte bis dahin KEINE einzige Zusicherung - deshalb konnten zwei
+   * Ansichten derselben Zahlen nebeneinander bestehen, ohne dass es auffiel. */
+  var b2Html = fs.readFileSync(__dirname + '/index.html', 'utf8'), b2Dep = dep2;
+  ok(b2Html.indexOf('id="equityChart"') !== -1, 'Das ausfuehrliche Verlaufsbild steht');
+  ok(b2Html.indexOf('id="eqPanel"') === -1,
+     'Das zweite, schlichtere Verlaufsbild ist weg - nicht zwei Bilder derselben Daten');
+  ok((b2Html.match(/id="eqKopf"/g) || []).length === 1,
+     'Die drei Kennzahlen haben genau einen Ort');
+  ok(b2Html.indexOf('id="eqKopf"') < b2Html.indexOf('id="equityChart"'),
+     'und stehen ueber dem Bild, zu dem sie gehoeren');
+  /* renderEquity zeichnet nichts mehr - sonst waere das zweite Bild nur unsichtbar
+   * geworden statt entfallen. */
+  var reA = b2Dep.indexOf('function renderEquity() {');
+  var reE = b2Dep.indexOf('\n  }\n', reA);
+  ok(reA !== -1 && reE > reA, 'renderEquity laesst sich herausloesen');
+  var reQ = b2Dep.slice(reA, reE);
+  ok(reQ.indexOf('<svg') === -1 && reQ.indexOf('<path') === -1,
+     'renderEquity zeichnet keine zweite Kurve mehr - es setzt nur noch die Zahlen');
+  ok(reQ.indexOf("getElementById('eqKopf')") !== -1, 'und schreibt in den neuen Ort');
+  /* Die 5-Punkte-Regel ist mit umgezogen: drei Kennzahlen aus vier Punkten sind keine
+   * Auskunft, sondern eine Behauptung. */
+  ok(/if \(h\.length < 5\) \{ el\.style\.display = 'none'; return; \}/.test(reQ),
+     'Unter 5 Punkten bleiben die Kennzahlen versteckt');
+  /* DIE WICHTIGE FALLE: die Zahlen rechnen ueber die GESAMTE Historie, das Bild daneben
+   * zeigt einen Ausschnitt. Wer sie aus dem gezeichneten Bild herleitet, aendert sie
+   * stillschweigend - ein Hoch von vor zwei Jahren verschwaende einfach.
+   * Deshalb AUSGEFUEHRT geprueft, mit einem Verlauf, dessen Hoch ganz am Anfang liegt. */
+  ok(reQ.indexOf('.slice(') === -1,
+     'Die Kennzahlen rechnen ueber ALLE Punkte - kein Ausschnitt in renderEquity');
+  var rzA = b2Dep.indexOf('var hoch = h[0][1], peak = h[0][1], dd = 0;');
+  var rzE = b2Dep.indexOf('var eqLast = h[h.length - 1][1];', rzA);
+  ok(rzA !== -1 && rzE > rzA, 'Die Kennzahlen-Rechnung laesst sich herausloesen');
+  var rzFn = new Function('h', b2Dep.slice(rzA, rzE) + '\nreturn { hoch: hoch, dd: dd };');
+  /* 1000 Punkte: Hoch 20.000 bei Punkt 3, danach faellt es auf 9.000 und laeuft flach.
+   * Ein Ausschnitt der letzten 800 Punkte saehe weder das Hoch noch den Ruecksetzer. */
+  var verlauf = [];
+  for (var vi = 0; vi < 1000; vi++) verlauf.push([vi, vi === 3 ? 20000 : (vi < 3 ? 10000 : 9000)]);
+  var rz = rzFn(verlauf);
+  ok(rz.hoch === 20000,
+     'Das Hoch aus dem Anfang der Historie ueberlebt - es wird nicht aus dem Bildausschnitt geholt', rz.hoch);
+  ok(Math.abs(rz.dd - (-0.55)) < 1e-9,
+     'und der groesste Ruecksetzer wird gegen dieses Hoch gerechnet, nicht gegen den Ausschnitt',
+     (rz.dd * 100).toFixed(1) + ' %');
+
   /* A6 (23.08.2026): Der Nullpunkt der Maschine liegt nicht bei null. Auf Daten mit
    * vertauschter Reihenfolge kam eine These als "bestaetigt" durch (t=+2,97), eine
    * andere als "widerlegt" (t=-8,07). Ohne dieses Werkzeug ist kein Urteil belastbar. */
