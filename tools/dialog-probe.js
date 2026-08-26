@@ -57,28 +57,38 @@ const DIALOGE = [
   { id: 'wasNeuModalBg', name: 'Was ist neu', ausloeser: null },
 ];
 
-function taste(wc, key, mods) {
-  wc.sendInputEvent({ type: 'keyDown', keyCode: key, modifiers: mods || [] });
-  wc.sendInputEvent({ type: 'char', keyCode: key, modifiers: mods || [] });
-  wc.sendInputEvent({ type: 'keyUp', keyCode: key, modifiers: mods || [] });
+/* Electron erwartet den NAMEN der Taste, nicht ihren Code - eine Zahl quittiert es
+ * mit "Invalid event object". Beim ersten Wurf ist die Probe daran ins Zeitlimit
+ * gelaufen, statt den Fehler zu zeigen; deshalb steht es hier. */
+function taste(wc, name, mods) {
+  wc.sendInputEvent({ type: 'keyDown', keyCode: name, modifiers: mods || [] });
+  wc.sendInputEvent({ type: 'keyUp', keyCode: name, modifiers: mods || [] });
 }
 const pause = (ms) => new Promise((r) => setTimeout(r, ms));
 
-async function probe(win) {
+async function probe(win, opt) {
+  opt = opt || {};
   const wc = win.webContents;
   const js = (code) => wc.executeJavaScript(code, true);
   const befunde = [];
+  const hinweise = [];
   const zeilen = [];
 
   /* Wilhelms Rechner hat prefers-reduced-motion AKTIV. Das ist bei ihm der
    * Normalfall, nicht der Sonderfall - deshalb wird es mitgemessen und nicht
    * wegemuliert. */
-  const rm = await js("window.matchMedia('(prefers-reduced-motion: reduce)').matches");
-  zeilen.push('prefers-reduced-motion: ' + (rm ? 'AKTIV (wie bei Wilhelm)' : 'aus'));
+  /* WILHELMS RECHNER HAT prefers-reduced-motion AKTIV - das ist bei ihm der
+   * Normalfall, nicht der Sonderfall. Der erste Wurf dieser Sonde hat "aus"
+   * gemessen und damit die Bedingung, unter der er die App NIE sieht. Deshalb
+   * wird der Zustand jetzt emuliert und die Messung in BEIDEN Zustaenden
+   * gefahren: ohne Bewegung koennen Elemente beim Fokussieren schon liegen,
+   * mit Bewegung noch nicht - und die Fokusfalle filtert nach Groesse. */
+  zeilen.push('Bewegung: ' + (opt.reduziert ? 'REDUZIERT (wie bei Wilhelm)' : 'normal'));
 
   for (const d of DIALOGE) {
     const da = await js("!!document.getElementById('" + d.id + "')");
     if (!da) { befunde.push(d.name + ': Dialog fehlt im Dokument'); continue; }
+    console.log('  ... ' + d.name);
 
     /* Einen Ausloeser setzen, damit "Fokus kehrt zurueck" ueberhaupt pruefbar ist.
      * Ohne merkbaren Ausloeser waere Punkt 5 nicht entscheidbar - und "nicht
@@ -101,7 +111,24 @@ async function probe(win) {
       "(function () { var bg = document.getElementById('" + d.id + "');" +
       " return !!(bg && bg.classList.contains('open') && bg.contains(document.activeElement)); })()");
     const erstes = await js('document.activeElement.tagName + "/" + (document.activeElement.textContent||"").trim().slice(0,24)');
+    /* Punkt 2 stand in der Beschreibung, wurde beim ersten Wurf aber gar nicht
+     * geprueft - eine Sonde, die eine Frage nennt und nicht stellt, ist die
+     * Verkleidung, gegen die dieses Projekt seit zwei Naechten kaempft.
+     * Auf dem Schliessen-Kreuz zu landen ist NICHT falsch (die Norm laesst das
+     * erste fokussierbare Element zu), aber es ist die schlechteste erlaubte Wahl:
+     * wer den Dialog oeffnet, will ihn benutzen, nicht schliessen. Deshalb wird es
+     * als Hinweis ausgewiesen und nicht als Befund gezaehlt - die Entscheidung
     if (!drin) befunde.push(d.name + ': Der Fokus wandert beim Oeffnen NICHT in den Dialog (steht auf ' + erstes + ')');
+    /* Punkt 2 stand in der Beschreibung dieser Sonde, wurde beim ersten Wurf aber
+     * gar nicht geprueft - eine Sonde, die eine Frage NENNT und nicht STELLT, ist
+     * genau die Verkleidung, gegen die hier seit zwei Naechten gekaempft wird.
+     * Auf dem Schliessen-Kreuz zu landen ist NICHT falsch (die Norm laesst das erste
+     * fokussierbare Element zu), aber es ist die schlechteste erlaubte Wahl: wer
+     * einen Dialog oeffnet, will ihn benutzen, nicht schliessen. Deshalb Hinweis
+     * und nicht Befund - die Entscheidung darueber gehoert nicht der Sonde. */
+    if (/Schlie|Abbrechen|Nein,/.test(erstes)) {
+      hinweise.push(d.name + ': Der Fokus landet zuerst auf "' + erstes.split("/")[1] + '"');
+    }
 
     /* Name fuer die Vorlesehilfe: aria-labelledby muss auf etwas Vorhandenes zeigen. */
     const name = await js(
@@ -123,7 +150,7 @@ async function probe(win) {
     if (!anzahl) {
       befunde.push(d.name + ': Kein fokussierbares Element im Dialog - die Fokusfalle ist nicht pruefbar');
     } else {
-      taste(wc, 9);                       // Tab
+      taste(wc, 'Tab');                       // Tab
       await pause(160);
       const nochDrin = await js(
         "(function () { var bg = document.getElementById('" + d.id + "');" +
@@ -136,7 +163,7 @@ async function probe(win) {
         " var f = [].slice.call(bg.querySelectorAll('a[href],button:not([disabled]),input:not([disabled]):not([type=\"hidden\"]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex=\"-1\"])'))" +
         "  .filter(function (e) { return e.offsetWidth || e.offsetHeight || e.getClientRects().length; });" +
         " if (f.length) f[0].focus(); })()");
-      taste(wc, 9, ['shift']);
+      taste(wc, 'Tab', ['shift']);
       await pause(160);
       const nochDrin2 = await js(
         "(function () { var bg = document.getElementById('" + d.id + "');" +
@@ -145,7 +172,7 @@ async function probe(win) {
     }
 
     /* Escape: schliesst er, und kommt der Fokus zum Ausloeser zurueck? */
-    taste(wc, 27);
+    taste(wc, 'Escape');
     await pause(260);
     const zu = await js("!document.getElementById('" + d.id + "').classList.contains('open')");
     if (!zu) befunde.push(d.name + ': Escape schliesst den Dialog nicht');
@@ -167,10 +194,10 @@ async function probe(win) {
   }
 
   const seitenFehler = await js('(window.__probeFehler || []).slice(0, 10)');
-  return { befunde, zeilen, seitenFehler: seitenFehler || [] };
+  return { befunde, hinweise, zeilen, seitenFehler: seitenFehler || [] };
 }
 
-setTimeout(() => { console.error('Dialog-Probe: Zeitlimit (120 s).'); app.exit(2); }, 120000);
+setTimeout(() => { console.error('Dialog-Probe: Zeitlimit (240 s).'); app.exit(2); }, 240000);
 
 let gestartet = false;
 app.on('browser-window-created', (ev, win) => {
@@ -183,12 +210,35 @@ app.on('browser-window-created', (ev, win) => {
         "window.__probeFehler = [];" +
         "window.addEventListener('error', function (e) { window.__probeFehler.push(String(e.message || e)); });" +
         "'bereit'", true);
-      const erg = await probe(win);
+      /* Erst wie Wilhelm es sieht, dann der Gegenfall. */
+      const dbg = win.webContents.debugger;
+      async function medien(reduziert) {
+        try {
+          if (!dbg.isAttached()) dbg.attach();
+          await dbg.sendCommand('Emulation.setEmulatedMedia', {
+            features: [{ name: 'prefers-reduced-motion', value: reduziert ? 'reduce' : 'no-preference' }] });
+          return true;
+        } catch (e) { return false; }
+      }
+      const konnte = await medien(true);
+      const erg = await probe(win, { reduziert: konnte });
+      if (!konnte) erg.befunde.push('Die Bewegungs-Einstellung liess sich nicht emulieren - gemessen wurde nur ein Zustand');
+      if (konnte) {
+        await medien(false);
+        const erg2 = await probe(win, { reduziert: false });
+        erg2.befunde.forEach(function (b) { if (erg.befunde.indexOf(b) === -1) erg.befunde.push(b + ' (nur ohne Bewegungsreduktion)'); });
+        erg.zeilen = erg.zeilen.concat([''], erg2.zeilen);
+      }
       console.log('Dialog-Probe: Fokusreihenfolge in Dialogen\n');
       erg.zeilen.forEach((z) => console.log(z));
       if (erg.seitenFehler.length) {
         console.log('\nSeitenfehler waehrend der Probe:');
         erg.seitenFehler.forEach((f) => console.log('  ' + f));
+      }
+      if (erg.hinweise && erg.hinweise.length) {
+        console.log('\nHinweise (kein Befund - die Norm laesst es zu):');
+        erg.hinweise.filter(function (h, i, a) { return a.indexOf(h) === i; })
+          .forEach(function (h) { console.log('  - ' + h); });
       }
       if (erg.befunde.length) {
         console.log('\n' + erg.befunde.length + ' BEFUND(E):');
@@ -204,3 +254,9 @@ app.on('browser-window-created', (ev, win) => {
     }
   });
 });
+
+/* Ohne diese Zeile startet die App gar nicht - es wird kein Fenster erzeugt, der
+ * Zuhoerer oben feuert nie, und die Probe laeuft stumm ins Zeitlimit. Genau das ist
+ * beim ersten Wurf passiert: ein Zeitlimit sieht aus wie ein Haenger, war aber ein
+ * fehlender Start. */
+app.whenReady().then(() => { require(path.join(WURZEL, 'main.js')); });
