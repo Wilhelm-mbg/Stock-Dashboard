@@ -1,6 +1,6 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-26 17:00
-gesehener-tag: v8.33.3
+letzter-bericht: 2026-08-26 16:50
+gesehener-tag: v8.33.4
 -->
 
 # Projektstand
@@ -139,6 +139,36 @@ Rollen (Auditor 01:00, Analytiker 03:15, Tüftler 04:30, Archiv-Nachladen bis ~0
 enden zu Zeiten, zu denen **kein PM läuft**. Ihre Bereitschaft läuft dort ins Leere; es
 trägt allein die Übergabe-Datei, die der PM um 08:00 liest. **Das ist kein Fehler des
 Aufbaus, sondern eine Frage des Zeitplans** — siehe Frage (5) an Wilhelm.
+
+---
+
+### ⚠ Richtigstellung 26.08. 16:50 — **v8.33.4 IST ausgeliefert.** Der PM hat es falsch gemeldet
+
+Ich habe seit 11:15 mehrfach geschrieben, die Version „hänge auf 8.33.4 ohne Tag" und die
+Release-Wache sei „nicht zurückgekommen". **Das war falsch.** In Git nachgesehen:
+
+| | |
+|---|---|
+| Tag `v8.33.4` | **existiert**, auf `69c27ed` (26.08. 12:07) |
+| `package.json` | 8.33.4 |
+| Notizen für 8.33.4 | alle verbraucht |
+
+Die Wache hat um 12:07 sauber abgeschlossen: 19 Commits seit `v8.33.3`, Updater sieht
+8.33.4, sha512-Gegenprobe stimmt, alle 43 Skripte im Paket, Release nicht als Entwurf,
+Arbeitsbaum sauber, HEAD auf dem Tag.
+
+**Wie der Fehler entstand — er gehört zur selben Familie wie der Rest des Tages:** Ich
+hatte um 11:08 geprüft, **vor** dem Release, und danach nie wieder `git fetch --tags`
+gemacht. Meine Zwischenstände liefen auf einem Stand, der bei jedem Blick älter wurde,
+**ohne dass sich der Blick änderte**. Genau das Muster, das ich heute dreimal an anderen
+gemeldet habe: *ein Lauf, der nichts dazulernt, sieht von außen aus wie ein gesunder Lauf.*
+
+**Regel für den PM, ab sofort:** Jede Aussage über Version oder Auslieferung wird
+unmittelbar vor dem Aussprechen mit `git fetch -q --tags` frisch geholt. Ein Stand von
+vor zwei Stunden ist kein Stand.
+
+**Es warten schon wieder drei Notizen** auf die nächste Auslieferung:
+`archiv-nachladen`, `ausstieg-schalter`, `lesbarkeit-nachgemessen`.
 
 ---
 
