@@ -238,6 +238,33 @@ Aufgabe ausdrücklich nicht; das ist Wilhelms Entscheid.
 
 ---
 
+### 📋 DER GROSSE PLAN — `studien/grosser-plan-2026-08-26/PLAN.md` (26.08., PM)
+
+**Wilhelm hat einen Gesamtplan bestellt. Er liegt vor und ist ein Vorschlag, keine
+Festlegung.** Jede Sitzung liest ihn, bevor sie sich etwas nimmt — er sagt, **warum**
+etwas dran ist, nicht nur was.
+
+**Die Lage in einem Satz:** Neun von zwölf Strategien sind nicht am Markt gescheitert,
+sondern am Messgerät — eine Kante in Größe der Kostenhürde bräuchte 35 Jahre Daten.
+
+**Die drei Hebel, alle bereits vermessen:** Messanordnung (Faktor 1,5, **geeicht**) ·
+Haltedauer (Faktor 15) · Kostenhürde (Faktor bis 5,75). **Nicht mehr Detektoren** — der
+Suchraum ist nicht das Problem, das Auflösungsvermögen ist es.
+
+**Die Stränge:**
+- **A** — `momentum` nicht überlappend messen. Der einzige Ort, an dem eine große Kante
+  noch möglich ist, gerade weil er schlecht gemessen ist. Anordnung geeicht, Messung offen.
+- **B** — Übernacht-Familie: zwei Kandidaten vorregistriert, seit heute technisch messbar.
+- **C** — Kostenhürde angreifen: Auktionskosten am Demo-Konto (freigegeben, **nicht
+  angefangen**) und Basiswert statt Schein.
+- **D** — die App sagt die Wahrheit über sich selbst (Wand sichtbar machen, #92, #80, #96).
+- **E** — Betrieb, läuft bereits.
+
+**Teil IV nimmt ernst, dass hier nichts zu finden sein könnte**, und schlägt ein
+Abbruchkriterium vor. **Die Engstelle ist nicht Arbeitskraft, sondern Entscheidung.**
+
+---
+
 ## Aufträge
 
 *Was freigegeben ist und noch niemand macht. Wer eine Zeile nimmt, trägt sich unter
