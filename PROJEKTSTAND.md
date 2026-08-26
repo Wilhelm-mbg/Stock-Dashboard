@@ -121,7 +121,13 @@ Untersuchungen.**
 *Wer welche Dateien belegt. Trag dich ein, bevor du anfängst; nimm dich raus, wenn du
 fertig bist.*
 
-- **Niemand.** Letzter Commit 03:27 (Analytiker). Arbeitsbaum sauber.
+- **App-Codebase Master** — hat **#91** und danach **#90** genommen (26.08., vom PM
+  zugeteilt). Belegt `studien/messmaschine/messmaschine.js` und `test-v6.js`, danach das
+  News-Laufband.
+  **Auftrag 1 (rote CI) ist erledigt und GEPUSHT** (`d689e62`): zwei Lanczos-Konstanten
+  standen in Literatur-Schreibweise, JS speichert die letzte Ziffer anders. Bitgleich
+  ersetzt, KEINE eslint-Ausnahme — die Regel fängt echte Tippfehler, und in der Datei
+  stehen sechs lange Konstanten nebeneinander. Selbstkontrolle unverändert 4,26e-14.
 - Zuletzt fertig (App-Codebase Master): #76, #84, #85, #83/#89, #86/#87/#88,
   Messmaschine versionieren, Stufe F Punkt 1.
 
