@@ -706,6 +706,10 @@ mit #93/#94 zusammen runder.
 *Wer welche Dateien belegt. Trag dich ein, bevor du anfängst; nimm dich raus, wenn du
 fertig bist.*
 
+- **App-Codebase Master** — sitzt seit **15:15 am `ausstieg`-Schalter** (PM zugeteilt,
+  belegt `studien/messmaschine/messmaschine.js`). **V4 wurde ausdrücklich NICHT zugeteilt** —
+  Begründung unter „Richtigstellung" oben.
+
 - **App-Codebase Master** — **Kursarchiv erledigt.** Beide Archive stehen auf dem
   25.08., Rückstand **0 Handelstage, 100 % der Reihen** (Wachhund Exit 0). 60m: 2.913
   Reihen, 14,78 Mio Kerzen, 3 ohne Daten. Tagesarchiv danach, 15:06 fertig.
