@@ -4244,11 +4244,26 @@ console.log('\n44) Messmaschine, Scoreboard und Strategie-Eingabe (23.08.2026)')
      'Der Abschnitt traegt Wilhelms Wortlaut von der Tafel (1b)');
   ok(/weder gut noch schlecht/.test(sb9) && /bleiben wählbar/.test(sb9),
      'Der Erklaersatz sagt ausdruecklich: keine Abwertung, nichts wird abgeschaltet (1b)');
-  ok(/Handelstage bis entscheidbar/.test(sb9),
-     'Die Aussicht-Spalte erklaert ihre Einheit im Kopf (1b)');
+  /* BERICHTIGT (Baustopp 26.08. 20:40): die erste Fassung dieser Marke verlangte
+   * "Handelstage" - und schrieb damit den Einheitenfehler fest, den der A-Fund von
+   * 21:05 aufdeckte: tage80 zaehlt SIGNALTAGE. Eine Marke, deren Aussage sich als
+   * falsch erwiesen hat, wird berichtigt, nicht ergaenzt - sonst verlangt die
+   * Klinke den Fehler zurueck. */
+  ok(/Signaltage bis entscheidbar/.test(sb9) && !/Handelstage bis entscheidbar/.test(sb9),
+     'Die Aussicht-Spalte traegt die EHRLICHE Einheit: Signaltage, nicht Handelstage (Baustopp 1b)');
+  ok(/nicht-messbar/.test(sb9.slice(sb9.indexOf('function aussichtVariante'), sb9.indexOf('function minAussicht'))),
+     'Eine nicht-messbar-Variante liefert der Anzeige KEINE Aussicht - die Zahl stammt aus der Maschinenluecke (Baustopp 1b)');
+  ok(/nicht-messbar/.test(dep2.slice(dep2.indexOf('var t80Min'), dep2.indexOf('var t80Min') + 600)),
+     'Auch die Bruecke ueberspringt nicht-messbar-Varianten beim Aussicht-Minimum (Baustopp 1b)');
+  ok(/Gemessen – zeigt in die Gegenrichtung/.test(sb9) && /function gegenRichtung/.test(sb9),
+     'Der dritte Abschnitt trennt "zeigt in die Gegenrichtung" von "zu wenig Daten" (Baustopp 1b)');
+  ok(/gegenRichtung\(p\)\) return false/.test(sb9),
+     'Gegenrichtung geht der Wand vor - winkelgrad landet nicht faelschlich bei "zu wenig Daten" (Baustopp 1b)');
   var st9 = fs.readFileSync(__dirname + '/strategien.js', 'utf8');
   ok(/aussichtTage80/.test(st9) && /entscheidbar frühestens/.test(st9),
      'Auch die Strategien-Karten nennen die Aussicht - dieselbe Quelle ueber DepotAPI (1b)');
+  ok(/weiteren Signaltagen/.test(st9) && /weiteren Signaltagen/.test(dep2),
+     'Regelkopf und Karten sagen Signaltage - nirgendwo mehr die falsche Einheit (Baustopp 1b)');
   /* Eigenschafts-Pruefung gegen ein ECHTES Protokoll: aendert die Messmaschine die
    * Ablage der Aussicht, wird die Anzeige still leer - das soll hier laut werden.
    * kapitulation 26.08.: Varianten 1551/2330/224, kleinste 224 (Tafel-Tabelle). */

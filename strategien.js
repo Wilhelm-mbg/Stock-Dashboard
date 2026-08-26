@@ -268,7 +268,7 @@
            * Frage entscheidbar wuerde - kleinste Aussicht ueber alle Varianten,
            * aus dem Protokoll gelesen. Kein Werturteil. */
           (pk.urteil === 'nicht-entscheidbar' && pk.aussichtTage80 != null
-            ? ', entscheidbar frühestens mit rund ' + U.nf0.format(pk.aussichtTage80) + ' weiteren Handelstagen'
+            ? ', entscheidbar frühestens mit rund ' + U.nf0.format(pk.aussichtTage80) + ' weiteren Signaltagen'
             : '');
       }).join(' · ') +
       ' <span style="color:var(--muted);">– die App liest dieses Urteil, sie rechnet es nicht.</span></div>';

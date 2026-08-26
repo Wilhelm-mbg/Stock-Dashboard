@@ -178,7 +178,17 @@
    * nicht "schlecht". Die Trennung unten ist ein Hinweis auf das Messgeraet,
    * keine Abwertung der Strategie - und sie greift in nichts ein. */
   var WAND_TAGE = 2500;
+  /* BAUSTOPP-Korrektur (PM 26.08. 20:40, nach dem ersten Wurf):
+   * 1. Die Einheit von tage80 sind SIGNALTAGE, nicht Handelstage (A-Fund 21:05) -
+   *    bei monatsende-kauf liegen 21,5 Handelstage zwischen zwei Signaltagen, die
+   *    erste Beschriftung untertrieb also bis Faktor 20. Signaltage <= Handelstage,
+   *    die 2.500er-Trennung bleibt damit als Untergrenze gueltig.
+   * 2. Eine Variante mit Urteil "nicht-messbar" traegt ihre Aussicht aus einer
+   *    bekannten Maschinenluecke (Schranke tage > 0 statt >= 30, messmaschine.js).
+   *    Diese Zahl wird NICHT angezeigt, bis die Maschine repariert ist - sonst
+   *    truege die Oberflaeche einen Maschinenfehler nach aussen. */
   function aussichtVariante(p, vi) {
+    if (p.urteile && p.urteile[vi] === 'nicht-messbar') return null;
     var e = (p.entscheidungen || []).filter(function (en) { return en.regel === 'Urteil Variante ' + vi; })[0];
     var a = e && e.ergebnis && e.ergebnis.aussicht;
     return a && isFinite(a.tage80) ? a.tage80 : null;
@@ -191,14 +201,32 @@
     });
     return min;
   }
+  /* Dritter Abschnitt (QS-Vorschlag, vom PM uebernommen): Strategien OHNE jede
+   * Aussicht, deren Ueberschuss in allen Varianten negativ ist, sind kein
+   * Datenmangel - sie zeigen in die Gegenrichtung. Das ist etwas anderes als
+   * "zu wenig Daten", und es in denselben Abschnitt zu stellen waere die
+   * naechste Verwechslung von "wir wissen es nicht" und "gemessen". */
+  function gegenRichtung(p) {
+    if (minAussicht(p) != null) return false;
+    var maxT = -Infinity;
+    (p.ergebnisse || []).forEach(function (e) {
+      var u = e && e.bestaetigung && e.bestaetigung.ueberschuss;
+      if (u && isFinite(u.tagesmittel) && u.tagesmittel > maxT) maxT = u.tagesmittel;
+    });
+    return maxT !== -Infinity && maxT <= 0;
+  }
   function hinterWand(p) {
+    if (gegenRichtung(p)) return false;
     var min = minAussicht(p);
     return p.bestesUrteil === 'nicht-entscheidbar' && (min == null || min > WAND_TAGE);
   }
   function aussichtZelle(p) {
     var min = minAussicht(p);
     if (min == null) {
-      return '<td class="num"><span title="Keine Variante hat einen positiven Punktschätzer – mehr Daten allein würden die Frage nicht entscheiden." style="color:var(--muted);">–</span></td>';
+      var grund = (p.urteile || []).indexOf('nicht-messbar') !== -1
+        ? 'Der Lauf kam nicht zustande (Urteil „nicht messbar"). Die im Protokoll mitgeschriebene Aussicht stammt aus einer bekannten Maschinenlücke (Mindesttage-Schranke) und wird nicht angezeigt, bis die Maschine repariert ist.'
+        : 'Keine Variante hat einen positiven Punktschätzer – mehr Daten allein würden die Frage nicht entscheiden.';
+      return '<td class="num"><span title="' + grund + '" style="color:var(--muted);">–</span></td>';
     }
     return '<td class="num">' + U.nf0.format(min) + '</td>';
   }
@@ -231,27 +259,41 @@
           (maschineAktuell(p) === false ? ' <span title="Mit einer anderen Fassung der Messmaschine gemessen als der, die jetzt hier liegt (' + U.esc(String((p.verfahren && p.verfahren.codeStand) || '?')) + ' statt ' + U.esc(String(MASCHINE)) + '). Diese Zeile ist mit den anderen nicht ohne Weiteres vergleichbar – neu messen." style="color:var(--series2); font-weight:600;">⟳ alte Maschine</span>' : '') + '</td>' +
         '</tr>';
     };
-    /* Zweiteilung (1b): was jenseits der Wand liegt, steht in einem eigenen
-     * Abschnitt DERSELBEN Tabelle - gleiche Spalten, gleiche Klickbarkeit,
-     * nichts wird ausgeblendet oder abgeschaltet. Die Reihenfolge innerhalb
-     * beider Abschnitte bleibt die bestehende Sortierung aus laden(). */
-    var oben = [], wand = [];
-    STAND.forEach(function (z, i) { (hinterWand(z.aktuell.protokoll) ? wand : oben).push(i); });
+    /* Dreiteilung (1b, Baustopp-Fassung): was jenseits der Wand liegt und was in
+     * die Gegenrichtung zeigt, steht in eigenen Abschnitten DERSELBEN Tabelle -
+     * gleiche Spalten, gleiche Klickbarkeit, nichts wird ausgeblendet oder
+     * abgeschaltet. Die Reihenfolge innerhalb der Abschnitte bleibt die
+     * bestehende Sortierung aus laden(). */
+    var oben = [], wand = [], gegen = [];
+    STAND.forEach(function (z, i) {
+      var p9 = z.aktuell.protokoll;
+      (gegenRichtung(p9) ? gegen : hinterWand(p9) ? wand : oben).push(i);
+    });
+    var trennzeile = function (titel, satz) {
+      return '<tr><td colspan="9" style="padding:16px 8px 6px; border-top:2px solid var(--grid);">' +
+        '<b>' + titel + '</b><br>' +
+        '<span style="font-weight:400; color:var(--muted); font-size:var(--fs-neben);">' + satz + '</span></td></tr>';
+    };
     var rows = oben.map(zeile).join('') +
       (wand.length
-        ? '<tr><td colspan="9" style="padding:16px 8px 6px; border-top:2px solid var(--grid);">' +
-          '<b>Nicht entscheidbar mit diesen Daten</b><br>' +
-          '<span style="font-weight:400; color:var(--muted); font-size:var(--fs-neben);">' +
+        ? trennzeile('Nicht entscheidbar mit diesen Daten',
           'Diese Strategien sind nicht am Markt gescheitert, sondern am Messgerät: Eine Entscheidung bräuchte mehr als ' +
-          U.nf0.format(WAND_TAGE) + ' weitere Bestätigungs-Handelstage. Sie bleiben wählbar und vollständig einsehbar – ' +
-          'die App behauptet nur nichts über sie, weder gut noch schlecht.</span></td></tr>'
+          U.nf0.format(WAND_TAGE) + ' weitere Bestätigungs-Signaltage – in Handelstagen mindestens ebenso viele. ' +
+          'Sie bleiben wählbar und vollständig einsehbar – die App behauptet nur nichts über sie, weder gut noch schlecht.')
         : '') +
-      wand.map(zeile).join('');
+      wand.map(zeile).join('') +
+      (gegen.length
+        ? trennzeile('Gemessen – zeigt in die Gegenrichtung',
+          'Für diese Strategien gibt es keine Zahl an weiteren Tagen: Ihr gemessener Überschuss ist in allen Varianten negativ. ' +
+          'Das ist etwas anderes als „zu wenig Daten" – sie brauchen keine weiteren Daten, sie zeigen in die falsche Richtung. ' +
+          'Auch sie bleiben wählbar und vollständig einsehbar.')
+        : '') +
+      gegen.map(zeile).join('');
     el.innerHTML = '<div style="overflow:auto;"><table class="tbl" style="width:100%;">' +
       '<tr><th>Urteil</th><th>Strategie</th><th style="text-align:right;">Überschuss<br><span style="font-weight:400; color:var(--muted);">Tagesmittel</span></th>' +
       '<th style="text-align:right;">Überschuss<br><span style="font-weight:400; color:var(--muted);">je Signal</span></th>' +
       '<th style="text-align:right;">t</th><th style="text-align:right;">MDE</th><th style="text-align:right;">Tage / Signale</th>' +
-      '<th style="text-align:right;">Aussicht<br><span style="font-weight:400; color:var(--muted);">Handelstage bis entscheidbar</span></th>' +
+      '<th style="text-align:right;">Aussicht<br><span style="font-weight:400; color:var(--muted);">Signaltage bis entscheidbar</span></th>' +
       '<th>gemessen</th></tr>' +
       rows + '</table></div>' +
       '<div id="sbDetail" style="margin-top:10px;"></div>' +
@@ -260,9 +302,12 @@
       'ein Signal ohne jeden Kursbezug hätte null ergeben müssen und tat es nicht. Dann stimmt keine Zahl dieser Zeile. ' +
       'Ein <b style="color:var(--series2);">⟳ alte Maschine</b> heißt: Die Zeile wurde mit einer anderen Fassung der Messmaschine gerechnet als der, die jetzt hier liegt – ' +
       'sie steht zum Vergleich, aber nicht auf gleicher Grundlage. Steht bei keiner Zeile eine Marke, tragen die Protokolle keine Kennung der Maschine (alle vor dem 26.08.2026) oder die Maschine fehlt. ' +
-      '<b>„Aussicht"</b> ist die kleinste Zahl weiterer Bestätigungs-Handelstage über alle Varianten, nach der das Urteil entscheidbar würde – ' +
-      'unter der Annahme des Protokolls, dass Effekt und Signaldichte konstant bleiben. ' +
-      'Ein „–" heißt: Keine Variante hat einen positiven Punktschätzer, mehr Daten allein würden nichts entscheiden.</div>';
+      '<b>„Aussicht"</b> ist die kleinste Zahl weiterer Bestätigungs-<b>Signaltage</b> über alle Varianten, nach der das Urteil entscheidbar würde – ' +
+      'unter der Annahme des Protokolls, dass Effekt und Signaldichte konstant bleiben. Signaltage sind Tage, an denen die Strategie auch feuert: ' +
+      'je seltener sie feuert, desto mehr Handelstage stecken in einem Signaltag – die Zahl ist also eine Untergrenze in Handelstagen. ' +
+      'Sie ist zudem eine Ableitung aus dem geschätzten Effekt (im Nenner, quadriert) und schwankt entsprechend stark mit ihm – ' +
+      'Überschuss, MDE und Tage daneben gehören immer mitgelesen. ' +
+      'Ein „–" trägt seinen Grund als Hinweis beim Zeigen mit der Maus.</div>';
     el.querySelectorAll('tr.sbRow').forEach(function (tr) {
       tr.addEventListener('click', function () { detail(parseInt(tr.getAttribute('data-i'), 10)); });
     });

@@ -714,7 +714,7 @@
              * "nicht entscheidbar" heisst "wir wissen es nicht", nicht "schlecht". */
             (belegAusProtokoll.stand === 'nicht-entscheidbar' && belegAusProtokoll.aussichtTage80 != null
               ? 'Entscheidbar würde die Frage nach dem Protokoll frühestens mit rund ' +
-                U.nf0.format(belegAusProtokoll.aussichtTage80) + ' weiteren Bestätigungs-Handelstagen. '
+                U.nf0.format(belegAusProtokoll.aussichtTage80) + ' weiteren Signaltagen (Tage mit Signal – in Handelstagen mindestens ebenso viele). '
               : '') +
             'Die App liest dieses Urteil, sie rechnet es nicht. ' +
             '<a href="#" data-sprung-messung>Protokoll im Scoreboard ansehen</a></span>'
@@ -795,11 +795,18 @@
          * tage80 ueber alle Varianten (Wilhelms Vorgabe von der Tafel) - nicht die
          * erste, nicht die der besten Variante. Hat KEINE Variante eine Aussicht
          * (das passiert, wenn kein Punktschaetzer positiv ist), bleibt null stehen:
-         * dann gibt es keine Zahl an Handelstagen, die die Frage noch entscheiden
-         * wuerde. */
+         * dann gibt es keine Zahl an Signaltagen, die die Frage noch entscheiden
+         * wuerde.
+         * Baustopp-Korrektur (PM 26.08. 20:40): die Einheit sind SIGNALTAGE, nicht
+         * Handelstage (A-Fund 21:05). Und eine Variante mit Urteil "nicht-messbar"
+         * traegt ihre Aussicht aus einer bekannten Maschinenluecke (Schranke
+         * tage > 0 statt >= 30) - sie wird uebersprungen, sonst truege die
+         * Oberflaeche einen Maschinenfehler nach aussen. */
         var t80Min = null;
         (j.entscheidungen || []).forEach(function (en) {
           if (!/^Urteil Variante/.test(en.regel || '') || !en.ergebnis) return;
+          var vi9 = parseInt(String(en.regel).slice('Urteil Variante '.length), 10);
+          if (j.urteile && j.urteile[vi9] === 'nicht-messbar') return;
           var a = en.ergebnis.aussicht;
           if (a && isFinite(a.tage80) && (t80Min == null || a.tage80 < t80Min)) t80Min = a.tage80;
         });
