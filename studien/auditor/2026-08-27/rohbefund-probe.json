@@ -1,0 +1,2171 @@
+{
+ "commit": "04c9be5",
+ "bilder": "C:\\Users\\Wilhe\\AppData\\Local\\Temp\\md-auditor27-axeK3N\\bilder",
+ "tabs": 5,
+ "protokolle": 38,
+ "scoreboard": [
+  {
+   "fehlt": false,
+   "tabelle": true,
+   "kopfSpalten": 10,
+   "kopfTexte": [
+    "URTEIL",
+    "STRATEGIE",
+    "ÜBERSCHUSS TAGESMITTEL",
+    "ÜBERSCHUSS JE SIGNAL",
+    "T",
+    "MDE",
+    "TAGE / SIGNALE",
+    "FEINHEIT DELTA80 IN PROZENTPUNKTEN",
+    "AUSSICHT SIGNALTAGE BIS ENTSCHEIDBAR",
+    "GEMESSEN"
+   ],
+   "kopfAusricht": [
+    {
+     "t": "URTEIL",
+     "a": "left"
+    },
+    {
+     "t": "STRATEGIE",
+     "a": "left"
+    },
+    {
+     "t": "ÜBERSCHUSS TAGESMITTEL",
+     "a": "right"
+    },
+    {
+     "t": "ÜBERSCHUSS JE SIGNAL",
+     "a": "right"
+    },
+    {
+     "t": "T",
+     "a": "right"
+    },
+    {
+     "t": "MDE",
+     "a": "right"
+    },
+    {
+     "t": "TAGE / SIGNALE",
+     "a": "right"
+    },
+    {
+     "t": "FEINHEIT DELTA80 IN PROZ",
+     "a": "right"
+    },
+    {
+     "t": "AUSSICHT SIGNALTAGE BIS ",
+     "a": "right"
+    },
+    {
+     "t": "GEMESSEN",
+     "a": "left"
+    }
+   ],
+   "zeilenZahl": 15,
+   "datenzeilen": 12,
+   "abweichendeZeilen": [],
+   "trennzeilen": [
+    {
+     "nr": 5,
+     "spalten": 10,
+     "klasse": "",
+     "trenner": true,
+     "text": "Nicht entscheidbar mit diesen Daten Diese Strategien sind nicht am Markt gescheitert, sondern am Messgerät: Selbst im günstigsten Fall hätte die Messung nur Effekte ab 0,183 Pp erkannt – mehr, als nac"
+    },
+    {
+     "nr": 12,
+     "spalten": 10,
+     "klasse": "",
+     "trenner": true,
+     "text": "Gemessen – zeigt in die Gegenrichtung Für diese Strategien gibt es keine Zahl an weiteren Tagen: Ihr gemessener Überschuss ist in allen Varianten negativ. Das ist etwas anderes als „zu wenig Daten\" – "
+    }
+   ],
+   "proben": [
+    {
+     "urteil": "nicht bestätigt",
+     "strategie": "kapitulation (3 Varianten)",
+     "feinheit": {
+      "t": "1,151",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": "Der kleinste wahre Effekt, den dieser Lauf mit 80 % Wahrsche"
+     },
+     "aussicht": {
+      "t": "224",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": ""
+     },
+     "ueberschuss": {
+      "t": "+1,107",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": ""
+     },
+     "tage": {
+      "t": "98 / 1740",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": ""
+     }
+    },
+    {
+     "urteil": "nicht entscheidbar",
+     "strategie": "rsi2seit-mcp (5 Varianten)",
+     "feinheit": {
+      "t": "0,077",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": "Der kleinste wahre Effekt, den dieser Lauf mit 80 % Wahrsche"
+     },
+     "aussicht": {
+      "t": "1.070",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": ""
+     },
+     "ueberschuss": {
+      "t": "+0,039",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": ""
+     },
+     "tage": {
+      "t": "364 / 56112",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": ""
+     }
+    },
+    {
+     "urteil": "nicht entscheidbar",
+     "strategie": "t3-stundendrift (7 Varianten)",
+     "feinheit": {
+      "t": "0,035",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": "Der kleinste wahre Effekt, den dieser Lauf mit 80 % Wahrsche"
+     },
+     "aussicht": {
+      "t": "12.655",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": ""
+     },
+     "ueberschuss": {
+      "t": "+0,001",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": ""
+     },
+     "tage": {
+      "t": "365 / 1342065",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": ""
+     }
+    },
+    {
+     "urteil": "nicht messbar",
+     "strategie": "monatsende-kauf",
+     "feinheit": {
+      "t": "–",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": "Keine Variante dieses Laufs weist einen delta80 aus – entwed"
+     },
+     "aussicht": {
+      "t": "–",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": "Der Lauf kam nicht zustande (Urteil „nicht messbar"
+     },
+     "ueberschuss": {
+      "t": "+0,155",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": ""
+     },
+     "tage": {
+      "t": "17 / 45833",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": ""
+     }
+    },
+    {
+     "urteil": "nicht entscheidbar",
+     "strategie": "momentum (4 Varianten)",
+     "feinheit": {
+      "t": "2,949",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": "Der kleinste wahre Effekt, den dieser Lauf mit 80 % Wahrsche"
+     },
+     "aussicht": {
+      "t": "33.683",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": ""
+     },
+     "ueberschuss": {
+      "t": "+1,160",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": ""
+     },
+     "tage": {
+      "t": "4975 / 827399",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": ""
+     }
+    },
+    {
+     "urteil": "nicht entscheidbar",
+     "strategie": "quartalsschub-betrag (2 Varianten)",
+     "feinheit": {
+      "t": "0,613",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": "Der kleinste wahre Effekt, den dieser Lauf mit 80 % Wahrsche"
+     },
+     "aussicht": {
+      "t": "13.257",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": ""
+     },
+     "ueberschuss": {
+      "t": "+0,184",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": ""
+     },
+     "tage": {
+      "t": "1198 / 2421",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": ""
+     }
+    },
+    {
+     "urteil": "nicht entscheidbar",
+     "strategie": "monatswende-breit (4 Varianten)",
+     "feinheit": {
+      "t": "0,605",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": "Der kleinste wahre Effekt, den dieser Lauf mit 80 % Wahrsche"
+     },
+     "aussicht": {
+      "t": "3.803",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": ""
+     },
+     "ueberschuss": {
+      "t": "+0,150",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": ""
+     },
+     "tage": {
+      "t": "241 / 398414",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": ""
+     }
+    },
+    {
+     "urteil": "nicht entscheidbar",
+     "strategie": "rsi2seit",
+     "feinheit": {
+      "t": "0,183",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": "Der kleinste wahre Effekt, den dieser Lauf mit 80 % Wahrsche"
+     },
+     "aussicht": {
+      "t": "4.116",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": ""
+     },
+     "ueberschuss": {
+      "t": "+0,054",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": ""
+     },
+     "tage": {
+      "t": "364 / 56112",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": ""
+     }
+    },
+    {
+     "urteil": "nicht entscheidbar",
+     "strategie": "t2-umsatzschock (7 Varianten)",
+     "feinheit": {
+      "t": "0,219",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": "Der kleinste wahre Effekt, den dieser Lauf mit 80 % Wahrsche"
+     },
+     "aussicht": {
+      "t": "17.317",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": ""
+     },
+     "ueberschuss": {
+      "t": "+0,018",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": ""
+     },
+     "tage": {
+      "t": "364 / 49111",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": ""
+     }
+    },
+    {
+     "urteil": "nicht entscheidbar",
+     "strategie": "t1-zwangsglattstellung (7 Varianten)",
+     "feinheit": {
+      "t": "0,206",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": "Der kleinste wahre Effekt, den dieser Lauf mit 80 % Wahrsche"
+     },
+     "aussicht": {
+      "t": "34.691",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": ""
+     },
+     "ueberschuss": {
+      "t": "-0,005",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": ""
+     },
+     "tage": {
+      "t": "361 / 57506",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": ""
+     }
+    },
+    {
+     "urteil": "nicht bestätigt",
+     "strategie": "winkelbestaetigt (5 Varianten)",
+     "feinheit": {
+      "t": "0,188",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": "Der kleinste wahre Effekt, den dieser Lauf mit 80 % Wahrsche"
+     },
+     "aussicht": {
+      "t": "–",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": "Keine Variante hat einen positiven Punktschätzer – mehr Date"
+     },
+     "ueberschuss": {
+      "t": "-0,128",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": ""
+     },
+     "tage": {
+      "t": "360 / 46543",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": ""
+     }
+    },
+    {
+     "urteil": "nicht entscheidbar",
+     "strategie": "winkelgrad (5 Varianten)",
+     "feinheit": {
+      "t": "0,195",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": "Der kleinste wahre Effekt, den dieser Lauf mit 80 % Wahrsche"
+     },
+     "aussicht": {
+      "t": "–",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": "Keine Variante hat einen positiven Punktschätzer – mehr Date"
+     },
+     "ueberschuss": {
+      "t": "-0,038",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": ""
+     },
+     "tage": {
+      "t": "364 / 2944995",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": ""
+     }
+    }
+   ],
+   "huerde": {
+    "pp": 0.1,
+    "produkt": "Aktie 1x",
+    "hebel": 1,
+    "einsatz": 3000,
+    "haltenMin": 480,
+    "angenommen": false,
+    "instrument": "basis"
+   },
+   "tabelleBreite": 1200,
+   "kastenBreite": 1200,
+   "rollbar": false,
+   "fusstext": "Feinheit (delta80) ist der kleinste wahre Effekt, den ein Lauf mit 80 % Wahrscheinlichkeit über die Schwelle gebracht hätte – in Prozentpunkten, kleiner ist feiner. Sie ist mit der Kostenhürde des gehandelten Produkts zu vergleichen (gemessen an 15 US-Großwerten 2026: Aktie 0,04 · Schein am Geld 0,05 · CFD 0,10 · Standard-Schein 0,23 Pp je Umlauf). Achtung, zwei Einheiten: die Feinheit zählt Prozentpunkte, die Aussicht daneben zählt Signaltage. Die Signaltage sind zwischen Strategien nicht vergleichbar: wer selten feuert, braucht wenige Signaltage, aber sehr viele Handelstage dafür – gemessen reicht dieser Faktor von 1,0 bis 21,5. Die Feinheit hat dieses Problem nicht, sie ist eine Effektgröße und keine Zählung. Die Trennung unten misst an der Feinheit gegen die Kostenhürde Ihrer aktuellen Einstellung – Produkt und Haltedauer stehen dort dabei. Strategien ohne ausgewiesene Feinheit werde",
+   "groesse": "1280x800"
+  },
+  {
+   "fehlt": false,
+   "tabelle": true,
+   "kopfSpalten": 10,
+   "kopfTexte": [
+    "URTEIL",
+    "STRATEGIE",
+    "ÜBERSCHUSS TAGESMITTEL",
+    "ÜBERSCHUSS JE SIGNAL",
+    "T",
+    "MDE",
+    "TAGE / SIGNALE",
+    "FEINHEIT DELTA80 IN PROZENTPUNKTEN",
+    "AUSSICHT SIGNALTAGE BIS ENTSCHEIDBAR",
+    "GEMESSEN"
+   ],
+   "kopfAusricht": [
+    {
+     "t": "URTEIL",
+     "a": "left"
+    },
+    {
+     "t": "STRATEGIE",
+     "a": "left"
+    },
+    {
+     "t": "ÜBERSCHUSS TAGESMITTEL",
+     "a": "right"
+    },
+    {
+     "t": "ÜBERSCHUSS JE SIGNAL",
+     "a": "right"
+    },
+    {
+     "t": "T",
+     "a": "right"
+    },
+    {
+     "t": "MDE",
+     "a": "right"
+    },
+    {
+     "t": "TAGE / SIGNALE",
+     "a": "right"
+    },
+    {
+     "t": "FEINHEIT DELTA80 IN PROZ",
+     "a": "right"
+    },
+    {
+     "t": "AUSSICHT SIGNALTAGE BIS ",
+     "a": "right"
+    },
+    {
+     "t": "GEMESSEN",
+     "a": "left"
+    }
+   ],
+   "zeilenZahl": 15,
+   "datenzeilen": 12,
+   "abweichendeZeilen": [],
+   "trennzeilen": [
+    {
+     "nr": 5,
+     "spalten": 10,
+     "klasse": "",
+     "trenner": true,
+     "text": "Nicht entscheidbar mit diesen Daten Diese Strategien sind nicht am Markt gescheitert, sondern am Messgerät: Selbst im günstigsten Fall hätte die Messung nur Effekte ab 0,183 Pp erkannt – mehr, als nac"
+    },
+    {
+     "nr": 12,
+     "spalten": 10,
+     "klasse": "",
+     "trenner": true,
+     "text": "Gemessen – zeigt in die Gegenrichtung Für diese Strategien gibt es keine Zahl an weiteren Tagen: Ihr gemessener Überschuss ist in allen Varianten negativ. Das ist etwas anderes als „zu wenig Daten\" – "
+    }
+   ],
+   "proben": [
+    {
+     "urteil": "nicht bestätigt",
+     "strategie": "kapitulation (3 Varianten)",
+     "feinheit": {
+      "t": "1,151",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": "Der kleinste wahre Effekt, den dieser Lauf mit 80 % Wahrsche"
+     },
+     "aussicht": {
+      "t": "224",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": ""
+     },
+     "ueberschuss": {
+      "t": "+1,107",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": ""
+     },
+     "tage": {
+      "t": "98 / 1740",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": ""
+     }
+    },
+    {
+     "urteil": "nicht entscheidbar",
+     "strategie": "rsi2seit-mcp (5 Varianten)",
+     "feinheit": {
+      "t": "0,077",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": "Der kleinste wahre Effekt, den dieser Lauf mit 80 % Wahrsche"
+     },
+     "aussicht": {
+      "t": "1.070",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": ""
+     },
+     "ueberschuss": {
+      "t": "+0,039",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": ""
+     },
+     "tage": {
+      "t": "364 / 56112",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": ""
+     }
+    },
+    {
+     "urteil": "nicht entscheidbar",
+     "strategie": "t3-stundendrift (7 Varianten)",
+     "feinheit": {
+      "t": "0,035",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": "Der kleinste wahre Effekt, den dieser Lauf mit 80 % Wahrsche"
+     },
+     "aussicht": {
+      "t": "12.655",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": ""
+     },
+     "ueberschuss": {
+      "t": "+0,001",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": ""
+     },
+     "tage": {
+      "t": "365 / 1342065",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": ""
+     }
+    },
+    {
+     "urteil": "nicht messbar",
+     "strategie": "monatsende-kauf",
+     "feinheit": {
+      "t": "–",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": "Keine Variante dieses Laufs weist einen delta80 aus – entwed"
+     },
+     "aussicht": {
+      "t": "–",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": "Der Lauf kam nicht zustande (Urteil „nicht messbar"
+     },
+     "ueberschuss": {
+      "t": "+0,155",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": ""
+     },
+     "tage": {
+      "t": "17 / 45833",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": ""
+     }
+    },
+    {
+     "urteil": "nicht entscheidbar",
+     "strategie": "momentum (4 Varianten)",
+     "feinheit": {
+      "t": "2,949",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": "Der kleinste wahre Effekt, den dieser Lauf mit 80 % Wahrsche"
+     },
+     "aussicht": {
+      "t": "33.683",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": ""
+     },
+     "ueberschuss": {
+      "t": "+1,160",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": ""
+     },
+     "tage": {
+      "t": "4975 / 827399",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": ""
+     }
+    },
+    {
+     "urteil": "nicht entscheidbar",
+     "strategie": "quartalsschub-betrag (2 Varianten)",
+     "feinheit": {
+      "t": "0,613",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": "Der kleinste wahre Effekt, den dieser Lauf mit 80 % Wahrsche"
+     },
+     "aussicht": {
+      "t": "13.257",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": ""
+     },
+     "ueberschuss": {
+      "t": "+0,184",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": ""
+     },
+     "tage": {
+      "t": "1198 / 2421",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": ""
+     }
+    },
+    {
+     "urteil": "nicht entscheidbar",
+     "strategie": "monatswende-breit (4 Varianten)",
+     "feinheit": {
+      "t": "0,605",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": "Der kleinste wahre Effekt, den dieser Lauf mit 80 % Wahrsche"
+     },
+     "aussicht": {
+      "t": "3.803",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": ""
+     },
+     "ueberschuss": {
+      "t": "+0,150",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": ""
+     },
+     "tage": {
+      "t": "241 / 398414",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": ""
+     }
+    },
+    {
+     "urteil": "nicht entscheidbar",
+     "strategie": "rsi2seit",
+     "feinheit": {
+      "t": "0,183",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": "Der kleinste wahre Effekt, den dieser Lauf mit 80 % Wahrsche"
+     },
+     "aussicht": {
+      "t": "4.116",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": ""
+     },
+     "ueberschuss": {
+      "t": "+0,054",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": ""
+     },
+     "tage": {
+      "t": "364 / 56112",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": ""
+     }
+    },
+    {
+     "urteil": "nicht entscheidbar",
+     "strategie": "t2-umsatzschock (7 Varianten)",
+     "feinheit": {
+      "t": "0,219",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": "Der kleinste wahre Effekt, den dieser Lauf mit 80 % Wahrsche"
+     },
+     "aussicht": {
+      "t": "17.317",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": ""
+     },
+     "ueberschuss": {
+      "t": "+0,018",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": ""
+     },
+     "tage": {
+      "t": "364 / 49111",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": ""
+     }
+    },
+    {
+     "urteil": "nicht entscheidbar",
+     "strategie": "t1-zwangsglattstellung (7 Varianten)",
+     "feinheit": {
+      "t": "0,206",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": "Der kleinste wahre Effekt, den dieser Lauf mit 80 % Wahrsche"
+     },
+     "aussicht": {
+      "t": "34.691",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": ""
+     },
+     "ueberschuss": {
+      "t": "-0,005",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": ""
+     },
+     "tage": {
+      "t": "361 / 57506",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": ""
+     }
+    },
+    {
+     "urteil": "nicht bestätigt",
+     "strategie": "winkelbestaetigt (5 Varianten)",
+     "feinheit": {
+      "t": "0,188",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": "Der kleinste wahre Effekt, den dieser Lauf mit 80 % Wahrsche"
+     },
+     "aussicht": {
+      "t": "–",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": "Keine Variante hat einen positiven Punktschätzer – mehr Date"
+     },
+     "ueberschuss": {
+      "t": "-0,128",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": ""
+     },
+     "tage": {
+      "t": "360 / 46543",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": ""
+     }
+    },
+    {
+     "urteil": "nicht entscheidbar",
+     "strategie": "winkelgrad (5 Varianten)",
+     "feinheit": {
+      "t": "0,195",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": "Der kleinste wahre Effekt, den dieser Lauf mit 80 % Wahrsche"
+     },
+     "aussicht": {
+      "t": "–",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": "Keine Variante hat einen positiven Punktschätzer – mehr Date"
+     },
+     "ueberschuss": {
+      "t": "-0,038",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": ""
+     },
+     "tage": {
+      "t": "364 / 2944995",
+      "klasse": "num",
+      "ausricht": "start",
+      "farbe": "rgb(11, 11, 11)",
+      "titel": ""
+     }
+    }
+   ],
+   "huerde": {
+    "pp": 0.1,
+    "produkt": "Aktie 1x",
+    "hebel": 1,
+    "einsatz": 3000,
+    "haltenMin": 480,
+    "angenommen": false,
+    "instrument": "basis"
+   },
+   "tabelleBreite": 920,
+   "kastenBreite": 920,
+   "rollbar": false,
+   "fusstext": "Feinheit (delta80) ist der kleinste wahre Effekt, den ein Lauf mit 80 % Wahrscheinlichkeit über die Schwelle gebracht hätte – in Prozentpunkten, kleiner ist feiner. Sie ist mit der Kostenhürde des gehandelten Produkts zu vergleichen (gemessen an 15 US-Großwerten 2026: Aktie 0,04 · Schein am Geld 0,05 · CFD 0,10 · Standard-Schein 0,23 Pp je Umlauf). Achtung, zwei Einheiten: die Feinheit zählt Prozentpunkte, die Aussicht daneben zählt Signaltage. Die Signaltage sind zwischen Strategien nicht vergleichbar: wer selten feuert, braucht wenige Signaltage, aber sehr viele Handelstage dafür – gemessen reicht dieser Faktor von 1,0 bis 21,5. Die Feinheit hat dieses Problem nicht, sie ist eine Effektgröße und keine Zählung. Die Trennung unten misst an der Feinheit gegen die Kostenhürde Ihrer aktuellen Einstellung – Produkt und Haltedauer stehen dort dabei. Strategien ohne ausgewiesene Feinheit werde",
+   "groesse": "1000x700"
+  }
+ ],
+ "archiv": [
+  {
+   "fehlt": false,
+   "ladetextDa": false,
+   "ladetext": null,
+   "tabelle": true,
+   "zeilen": [
+    {
+     "spalten": 7,
+     "teil": "THEAD",
+     "zellen": [
+      {
+       "tag": "TH",
+       "t": "AUFLÖSUNG",
+       "klasse": "",
+       "ausricht": "left",
+       "schreibung": "uppercase",
+       "groesse": "12px"
+      },
+      {
+       "tag": "TH",
+       "t": "WERTE",
+       "klasse": "zahl",
+       "ausricht": "left",
+       "schreibung": "uppercase",
+       "groesse": "12px"
+      },
+      {
+       "tag": "TH",
+       "t": "JÜNGSTE KERZE",
+       "klasse": "",
+       "ausricht": "left",
+       "schreibung": "uppercase",
+       "groesse": "12px"
+      },
+      {
+       "tag": "TH",
+       "t": "ZULETZT GESAMMELT",
+       "klasse": "",
+       "ausricht": "left",
+       "schreibung": "uppercase",
+       "groesse": "12px"
+      },
+      {
+       "tag": "TH",
+       "t": "OFFEN",
+       "klasse": "zahl",
+       "ausricht": "left",
+       "schreibung": "uppercase",
+       "groesse": "12px"
+      },
+      {
+       "tag": "TH",
+       "t": "STAND",
+       "klasse": "",
+       "ausricht": "left",
+       "schreibung": "uppercase",
+       "groesse": "12px"
+      },
+      {
+       "tag": "TH",
+       "t": "",
+       "klasse": "",
+       "ausricht": "left",
+       "schreibung": "uppercase",
+       "groesse": "12px"
+      }
+     ]
+    },
+    {
+     "spalten": 7,
+     "teil": "TBODY",
+     "zellen": [
+      {
+       "tag": "TH",
+       "t": "1 Minute",
+       "klasse": "",
+       "ausricht": "left",
+       "schreibung": "none",
+       "groesse": "13px"
+      },
+      {
+       "tag": "TD",
+       "t": "0",
+       "klasse": "zahl",
+       "ausricht": "start",
+       "schreibung": "none",
+       "groesse": "13px"
+      },
+      {
+       "tag": "TD",
+       "t": "nichts da",
+       "klasse": "",
+       "ausricht": "start",
+       "schreibung": "none",
+       "groesse": "13px"
+      },
+      {
+       "tag": "TD",
+       "t": "noch nie",
+       "klasse": "",
+       "ausricht": "start",
+       "schreibung": "none",
+       "groesse": "13px"
+      },
+      {
+       "tag": "TD",
+       "t": "–",
+       "klasse": "zahl",
+       "ausricht": "start",
+       "schreibung": "none",
+       "groesse": "13px"
+      },
+      {
+       "tag": "TD",
+       "t": "geht nicht",
+       "klasse": "",
+       "ausricht": "start",
+       "schreibung": "none",
+       "groesse": "13px"
+      },
+      {
+       "tag": "TD",
+       "t": "Jetzt holen",
+       "klasse": "",
+       "ausricht": "start",
+       "schreibung": "none",
+       "groesse": "13px"
+      }
+     ]
+    },
+    {
+     "spalten": 7,
+     "teil": "TBODY",
+     "zellen": [
+      {
+       "tag": "TD",
+       "t": "Kein Punkt-in-Zeit-Universum im Datenordner (massive/univers",
+       "klasse": "",
+       "ausricht": "start",
+       "schreibung": "none",
+       "groesse": "11px"
+      }
+     ]
+    },
+    {
+     "spalten": 7,
+     "teil": "TBODY",
+     "zellen": [
+      {
+       "tag": "TH",
+       "t": "5 Minuten",
+       "klasse": "",
+       "ausricht": "left",
+       "schreibung": "none",
+       "groesse": "13px"
+      },
+      {
+       "tag": "TD",
+       "t": "0",
+       "klasse": "zahl",
+       "ausricht": "start",
+       "schreibung": "none",
+       "groesse": "13px"
+      },
+      {
+       "tag": "TD",
+       "t": "nichts da",
+       "klasse": "",
+       "ausricht": "start",
+       "schreibung": "none",
+       "groesse": "13px"
+      },
+      {
+       "tag": "TD",
+       "t": "noch nie",
+       "klasse": "",
+       "ausricht": "start",
+       "schreibung": "none",
+       "groesse": "13px"
+      },
+      {
+       "tag": "TD",
+       "t": "–",
+       "klasse": "zahl",
+       "ausricht": "start",
+       "schreibung": "none",
+       "groesse": "13px"
+      },
+      {
+       "tag": "TD",
+       "t": "geht nicht",
+       "klasse": "",
+       "ausricht": "start",
+       "schreibung": "none",
+       "groesse": "13px"
+      },
+      {
+       "tag": "TD",
+       "t": "Jetzt holen",
+       "klasse": "",
+       "ausricht": "start",
+       "schreibung": "none",
+       "groesse": "13px"
+      }
+     ]
+    },
+    {
+     "spalten": 7,
+     "teil": "TBODY",
+     "zellen": [
+      {
+       "tag": "TD",
+       "t": "Kein Punkt-in-Zeit-Universum im Datenordner (massive/univers",
+       "klasse": "",
+       "ausricht": "start",
+       "schreibung": "none",
+       "groesse": "11px"
+      }
+     ]
+    },
+    {
+     "spalten": 7,
+     "teil": "TBODY",
+     "zellen": [
+      {
+       "tag": "TH",
+       "t": "15 Minuten",
+       "klasse": "",
+       "ausricht": "left",
+       "schreibung": "none",
+       "groesse": "13px"
+      },
+      {
+       "tag": "TD",
+       "t": "0",
+       "klasse": "zahl",
+       "ausricht": "start",
+       "schreibung": "none",
+       "groesse": "13px"
+      },
+      {
+       "tag": "TD",
+       "t": "nichts da",
+       "klasse": "",
+       "ausricht": "start",
+       "schreibung": "none",
+       "groesse": "13px"
+      },
+      {
+       "tag": "TD",
+       "t": "noch nie",
+       "klasse": "",
+       "ausricht": "start",
+       "schreibung": "none",
+       "groesse": "13px"
+      },
+      {
+       "tag": "TD",
+       "t": "–",
+       "klasse": "zahl",
+       "ausricht": "start",
+       "schreibung": "none",
+       "groesse": "13px"
+      },
+      {
+       "tag": "TD",
+       "t": "geht nicht",
+       "klasse": "",
+       "ausricht": "start",
+       "schreibung": "none",
+       "groesse": "13px"
+      },
+      {
+       "tag": "TD",
+       "t": "Jetzt holen",
+       "klasse": "",
+       "ausricht": "start",
+       "schreibung": "none",
+       "groesse": "13px"
+      }
+     ]
+    },
+    {
+     "spalten": 7,
+     "teil": "TBODY",
+     "zellen": [
+      {
+       "tag": "TD",
+       "t": "Kein Punkt-in-Zeit-Universum im Datenordner (massive/univers",
+       "klasse": "",
+       "ausricht": "start",
+       "schreibung": "none",
+       "groesse": "11px"
+      }
+     ]
+    }
+   ],
+   "knoepfe": [
+    {
+     "text": "Jetzt holen",
+     "id": "",
+     "aus": false,
+     "br": 74,
+     "ho": 24,
+     "iv": "1m"
+    },
+    {
+     "text": "Jetzt holen",
+     "id": "",
+     "aus": false,
+     "br": 74,
+     "ho": 24,
+     "iv": "5m"
+    },
+    {
+     "text": "Jetzt holen",
+     "id": "",
+     "aus": false,
+     "br": 74,
+     "ho": 24,
+     "iv": "15m"
+    }
+   ],
+   "textLaenge": 1260,
+   "text": "Die App holt die feinen Kerzen selbst und legt sie im Kursarchiv ab – dasselbe Format und dieselbe Ablage, die auch das Abrufwerkzeug schreibt. Yahoo hält Intraday-Kerzen nur begrenzt vor (1 Minute 7 Tage, 5 und 15 Minuten 60 Tage). Was in dieser Zeit nicht geholt wurde, ist nicht später nachzuholen, sondern fort. AUFLÖSUNG WERTE JÜNGSTE KERZE ZULETZT GESAMMELT OFFEN STAND 1 Minute 0 nichts da noch nie – geht nicht Jetzt holen Kein Punkt-in-Zeit-Universum im Datenordner (massive/universum-*.json). 5 Minuten 0 nichts da noch nie – geht nicht Jetzt holen Kein Punkt-in-Zeit-Universum im Datenordner (massive/universum-*.json). 15 Minuten 0 nichts da noch nie – geht nicht Jetzt holen Kein Punkt-in-Zeit-Universum im Datenordner (massive/universum-*.json). So ist es eingestellt: Universum top500 · 1 Minute alle 1 Tag(e) · 5 Minuten alle 7 · 15 Minuten alle 7 · 1.2 s Abstand je Anfrage · frühestens 30 Minuten nach Handelsschluss. Warum nach Handelsschluss: Yahoo korrigiert fertige Kerzen noch rund 18 Minuten rückwirkend nach (am 26.08.2026 über sechs Runden gemessen). Wer mitten in der Sitzung sammelt, schreibt vorläufige Zahlen. Stunden- und Tageskerzen holt die App nicht: die umfassen da",
+   "rollbar": false,
+   "kopfDa": true,
+   "kopfText": "KURSARCHIV – die App holt die feinen Kerzen selbst und legt sie ab.",
+   "groesse": "1280x800"
+  },
+  {
+   "fehlt": false,
+   "ladetextDa": false,
+   "ladetext": null,
+   "tabelle": true,
+   "zeilen": [
+    {
+     "spalten": 7,
+     "teil": "THEAD",
+     "zellen": [
+      {
+       "tag": "TH",
+       "t": "AUFLÖSUNG",
+       "klasse": "",
+       "ausricht": "left",
+       "schreibung": "uppercase",
+       "groesse": "12px"
+      },
+      {
+       "tag": "TH",
+       "t": "WERTE",
+       "klasse": "zahl",
+       "ausricht": "left",
+       "schreibung": "uppercase",
+       "groesse": "12px"
+      },
+      {
+       "tag": "TH",
+       "t": "JÜNGSTE KERZE",
+       "klasse": "",
+       "ausricht": "left",
+       "schreibung": "uppercase",
+       "groesse": "12px"
+      },
+      {
+       "tag": "TH",
+       "t": "ZULETZT GESAMMELT",
+       "klasse": "",
+       "ausricht": "left",
+       "schreibung": "uppercase",
+       "groesse": "12px"
+      },
+      {
+       "tag": "TH",
+       "t": "OFFEN",
+       "klasse": "zahl",
+       "ausricht": "left",
+       "schreibung": "uppercase",
+       "groesse": "12px"
+      },
+      {
+       "tag": "TH",
+       "t": "STAND",
+       "klasse": "",
+       "ausricht": "left",
+       "schreibung": "uppercase",
+       "groesse": "12px"
+      },
+      {
+       "tag": "TH",
+       "t": "",
+       "klasse": "",
+       "ausricht": "left",
+       "schreibung": "uppercase",
+       "groesse": "12px"
+      }
+     ]
+    },
+    {
+     "spalten": 7,
+     "teil": "TBODY",
+     "zellen": [
+      {
+       "tag": "TH",
+       "t": "1 Minute",
+       "klasse": "",
+       "ausricht": "left",
+       "schreibung": "none",
+       "groesse": "13px"
+      },
+      {
+       "tag": "TD",
+       "t": "0",
+       "klasse": "zahl",
+       "ausricht": "start",
+       "schreibung": "none",
+       "groesse": "13px"
+      },
+      {
+       "tag": "TD",
+       "t": "nichts da",
+       "klasse": "",
+       "ausricht": "start",
+       "schreibung": "none",
+       "groesse": "13px"
+      },
+      {
+       "tag": "TD",
+       "t": "noch nie",
+       "klasse": "",
+       "ausricht": "start",
+       "schreibung": "none",
+       "groesse": "13px"
+      },
+      {
+       "tag": "TD",
+       "t": "–",
+       "klasse": "zahl",
+       "ausricht": "start",
+       "schreibung": "none",
+       "groesse": "13px"
+      },
+      {
+       "tag": "TD",
+       "t": "geht nicht",
+       "klasse": "",
+       "ausricht": "start",
+       "schreibung": "none",
+       "groesse": "13px"
+      },
+      {
+       "tag": "TD",
+       "t": "Jetzt holen",
+       "klasse": "",
+       "ausricht": "start",
+       "schreibung": "none",
+       "groesse": "13px"
+      }
+     ]
+    },
+    {
+     "spalten": 7,
+     "teil": "TBODY",
+     "zellen": [
+      {
+       "tag": "TD",
+       "t": "Kein Punkt-in-Zeit-Universum im Datenordner (massive/univers",
+       "klasse": "",
+       "ausricht": "start",
+       "schreibung": "none",
+       "groesse": "11px"
+      }
+     ]
+    },
+    {
+     "spalten": 7,
+     "teil": "TBODY",
+     "zellen": [
+      {
+       "tag": "TH",
+       "t": "5 Minuten",
+       "klasse": "",
+       "ausricht": "left",
+       "schreibung": "none",
+       "groesse": "13px"
+      },
+      {
+       "tag": "TD",
+       "t": "0",
+       "klasse": "zahl",
+       "ausricht": "start",
+       "schreibung": "none",
+       "groesse": "13px"
+      },
+      {
+       "tag": "TD",
+       "t": "nichts da",
+       "klasse": "",
+       "ausricht": "start",
+       "schreibung": "none",
+       "groesse": "13px"
+      },
+      {
+       "tag": "TD",
+       "t": "noch nie",
+       "klasse": "",
+       "ausricht": "start",
+       "schreibung": "none",
+       "groesse": "13px"
+      },
+      {
+       "tag": "TD",
+       "t": "–",
+       "klasse": "zahl",
+       "ausricht": "start",
+       "schreibung": "none",
+       "groesse": "13px"
+      },
+      {
+       "tag": "TD",
+       "t": "geht nicht",
+       "klasse": "",
+       "ausricht": "start",
+       "schreibung": "none",
+       "groesse": "13px"
+      },
+      {
+       "tag": "TD",
+       "t": "Jetzt holen",
+       "klasse": "",
+       "ausricht": "start",
+       "schreibung": "none",
+       "groesse": "13px"
+      }
+     ]
+    },
+    {
+     "spalten": 7,
+     "teil": "TBODY",
+     "zellen": [
+      {
+       "tag": "TD",
+       "t": "Kein Punkt-in-Zeit-Universum im Datenordner (massive/univers",
+       "klasse": "",
+       "ausricht": "start",
+       "schreibung": "none",
+       "groesse": "11px"
+      }
+     ]
+    },
+    {
+     "spalten": 7,
+     "teil": "TBODY",
+     "zellen": [
+      {
+       "tag": "TH",
+       "t": "15 Minuten",
+       "klasse": "",
+       "ausricht": "left",
+       "schreibung": "none",
+       "groesse": "13px"
+      },
+      {
+       "tag": "TD",
+       "t": "0",
+       "klasse": "zahl",
+       "ausricht": "start",
+       "schreibung": "none",
+       "groesse": "13px"
+      },
+      {
+       "tag": "TD",
+       "t": "nichts da",
+       "klasse": "",
+       "ausricht": "start",
+       "schreibung": "none",
+       "groesse": "13px"
+      },
+      {
+       "tag": "TD",
+       "t": "noch nie",
+       "klasse": "",
+       "ausricht": "start",
+       "schreibung": "none",
+       "groesse": "13px"
+      },
+      {
+       "tag": "TD",
+       "t": "–",
+       "klasse": "zahl",
+       "ausricht": "start",
+       "schreibung": "none",
+       "groesse": "13px"
+      },
+      {
+       "tag": "TD",
+       "t": "geht nicht",
+       "klasse": "",
+       "ausricht": "start",
+       "schreibung": "none",
+       "groesse": "13px"
+      },
+      {
+       "tag": "TD",
+       "t": "Jetzt holen",
+       "klasse": "",
+       "ausricht": "start",
+       "schreibung": "none",
+       "groesse": "13px"
+      }
+     ]
+    },
+    {
+     "spalten": 7,
+     "teil": "TBODY",
+     "zellen": [
+      {
+       "tag": "TD",
+       "t": "Kein Punkt-in-Zeit-Universum im Datenordner (massive/univers",
+       "klasse": "",
+       "ausricht": "start",
+       "schreibung": "none",
+       "groesse": "11px"
+      }
+     ]
+    }
+   ],
+   "knoepfe": [
+    {
+     "text": "Jetzt holen",
+     "id": "",
+     "aus": false,
+     "br": 74,
+     "ho": 24,
+     "iv": "1m"
+    },
+    {
+     "text": "Jetzt holen",
+     "id": "",
+     "aus": false,
+     "br": 74,
+     "ho": 24,
+     "iv": "5m"
+    },
+    {
+     "text": "Jetzt holen",
+     "id": "",
+     "aus": false,
+     "br": 74,
+     "ho": 24,
+     "iv": "15m"
+    }
+   ],
+   "textLaenge": 1260,
+   "text": "Die App holt die feinen Kerzen selbst und legt sie im Kursarchiv ab – dasselbe Format und dieselbe Ablage, die auch das Abrufwerkzeug schreibt. Yahoo hält Intraday-Kerzen nur begrenzt vor (1 Minute 7 Tage, 5 und 15 Minuten 60 Tage). Was in dieser Zeit nicht geholt wurde, ist nicht später nachzuholen, sondern fort. AUFLÖSUNG WERTE JÜNGSTE KERZE ZULETZT GESAMMELT OFFEN STAND 1 Minute 0 nichts da noch nie – geht nicht Jetzt holen Kein Punkt-in-Zeit-Universum im Datenordner (massive/universum-*.json). 5 Minuten 0 nichts da noch nie – geht nicht Jetzt holen Kein Punkt-in-Zeit-Universum im Datenordner (massive/universum-*.json). 15 Minuten 0 nichts da noch nie – geht nicht Jetzt holen Kein Punkt-in-Zeit-Universum im Datenordner (massive/universum-*.json). So ist es eingestellt: Universum top500 · 1 Minute alle 1 Tag(e) · 5 Minuten alle 7 · 15 Minuten alle 7 · 1.2 s Abstand je Anfrage · frühestens 30 Minuten nach Handelsschluss. Warum nach Handelsschluss: Yahoo korrigiert fertige Kerzen noch rund 18 Minuten rückwirkend nach (am 26.08.2026 über sechs Runden gemessen). Wer mitten in der Sitzung sammelt, schreibt vorläufige Zahlen. Stunden- und Tageskerzen holt die App nicht: die umfassen da",
+   "rollbar": false,
+   "kopfDa": true,
+   "kopfText": "KURSARCHIV – die App holt die feinen Kerzen selbst und legt sie ab.",
+   "groesse": "1000x700"
+  }
+ ],
+ "perzentil": {
+  "fehlt": true
+ },
+ "strategien": [
+  {
+   "fehlt": false,
+   "aktiveSub": "sub-regeln",
+   "tabellen": [],
+   "panels": [
+    {
+     "kopf": "DIE STRATEGIEN IM ÜBERBLICK i",
+     "laenge": 116,
+     "hatBedien": true
+    },
+    {
+     "kopf": "",
+     "laenge": 809,
+     "hatBedien": true
+    },
+    {
+     "kopf": "",
+     "laenge": 495,
+     "hatBedien": true
+    },
+    {
+     "kopf": "",
+     "laenge": 606,
+     "hatBedien": true
+    },
+    {
+     "kopf": "",
+     "laenge": 507,
+     "hatBedien": true
+    }
+   ],
+   "textLaenge": 2841,
+   "ueberschriften": [
+    "DIE STRATEGIEN IM ÜBERBLICK i"
+   ],
+   "sub": "regeln",
+   "groesse": "1280x800"
+  },
+  {
+   "fehlt": false,
+   "aktiveSub": "sub-strategien",
+   "tabellen": [],
+   "panels": [
+    {
+     "kopf": "EIGENE WATCHLIST – WIRD BEI JEDEM SCAN MITGEPRÜFT",
+     "laenge": 403,
+     "hatBedien": false
+    },
+    {
+     "kopf": "LIVE-SIGNAL-MONITOR",
+     "laenge": 262,
+     "hatBedien": false
+    }
+   ],
+   "textLaenge": 2757,
+   "ueberschriften": [
+    "Intraday-Strategie",
+    "Risikomanagement",
+    "EIGENE WATCHLIST – WIRD BEI JEDEM SCAN MITGEPRÜFT",
+    "",
+    "LIVE-SIGNAL-MONITOR"
+   ],
+   "sub": "strategien",
+   "groesse": "1280x800"
+  },
+  {
+   "fehlt": false,
+   "aktiveSub": "sub-mittelfrist",
+   "tabellen": [],
+   "panels": [
+    {
+     "kopf": "MOMENTUM IM QUERSCHNITT · AKTIEN, KEINE HEBELSCHEI",
+     "laenge": 667,
+     "hatBedien": true
+    },
+    {
+     "kopf": "WAS JETZT ZU HALTEN WÄRE",
+     "laenge": 46,
+     "hatBedien": false
+    },
+    {
+     "kopf": "WIE ES SICH GESCHLAGEN HAT",
+     "laenge": 48,
+     "hatBedien": false
+    },
+    {
+     "kopf": "WAS DU DABEI WISSEN MUSST",
+     "laenge": 710,
+     "hatBedien": false
+    },
+    {
+     "kopf": "MITTELFRIST-BÜCHER STEUERN",
+     "laenge": 239,
+     "hatBedien": true
+    },
+    {
+     "kopf": "ERGEBNIS-DRIFT · AKTIEN, KEINE HEBELSCHEINE",
+     "laenge": 1763,
+     "hatBedien": true
+    }
+   ],
+   "textLaenge": 3479,
+   "ueberschriften": [
+    "MOMENTUM IM QUERSCHNITT · AKTIEN, KEINE HEBELSCHEINE",
+    "WAS JETZT ZU HALTEN WÄRE",
+    "WIE ES SICH GESCHLAGEN HAT",
+    "WAS DU DABEI WISSEN MUSST",
+    "MITTELFRIST-BÜCHER STEUERN",
+    "ERGEBNIS-DRIFT · AKTIEN, KEINE HEBELSCHEINE",
+    "WAS WÄRE HEUTE OFFEN?"
+   ],
+   "sub": "mittelfrist",
+   "groesse": "1280x800"
+  },
+  {
+   "fehlt": false,
+   "aktiveSub": "sub-regelbuch",
+   "tabellen": [
+    {
+     "zeilen": 7,
+     "spalten": 2,
+     "ungleich": 0,
+     "erstesFeld": "Auslöser"
+    },
+    {
+     "zeilen": 4,
+     "spalten": 7,
+     "ungleich": 0,
+     "erstesFeld": "RANG"
+    }
+   ],
+   "panels": [
+    {
+     "kopf": "DIE REGEL, DIE HANDELT i",
+     "laenge": 864,
+     "hatBedien": true
+    },
+    {
+     "kopf": "REGELN, DIE NUR MESSEN i",
+     "laenge": 356,
+     "hatBedien": true
+    },
+    {
+     "kopf": "BILANZ DIESER REGEL",
+     "laenge": 2830,
+     "hatBedien": true
+    },
+    {
+     "kopf": "WAS HAT GEWIRKT?",
+     "laenge": 1948,
+     "hatBedien": true
+    },
+    {
+     "kopf": "WANN DIE STRATEGIE NICHTS GETAN HAT",
+     "laenge": 307,
+     "hatBedien": false
+    },
+    {
+     "kopf": "DEPOT GEGEN BUY & HOLD",
+     "laenge": 314,
+     "hatBedien": true
+    }
+   ],
+   "textLaenge": 4052,
+   "ueberschriften": [
+    "DIE REGEL, DIE HANDELT i",
+    "REGELN, DIE NUR MESSEN i",
+    "BILANZ DIESER REGEL",
+    "WAS HAT GEWIRKT?",
+    "WANN DIE STRATEGIE NICHTS GETAN HAT",
+    "DEPOT GEGEN BUY & HOLD"
+   ],
+   "sub": "regelbuch",
+   "groesse": "1280x800"
+  },
+  {
+   "fehlt": false,
+   "aktiveSub": "sub-stratchart",
+   "tabellen": [],
+   "panels": [
+    {
+     "kopf": "STRATEGIE-CHART – SIGNAL UND BEDINGUNGEN NACHVOLLZ",
+     "laenge": 775,
+     "hatBedien": true
+    }
+   ],
+   "textLaenge": 775,
+   "ueberschriften": [
+    "STRATEGIE-CHART – SIGNAL UND BEDINGUNGEN NACHVOLLZIEHEN i"
+   ],
+   "sub": "stratchart",
+   "groesse": "1280x800"
+  },
+  {
+   "fehlt": false,
+   "aktiveSub": "sub-auswertung",
+   "tabellen": [],
+   "panels": [
+    {
+     "kopf": "AUTOPILOT – DIE APP VERBESSERT SICH SELBST",
+     "laenge": 2029,
+     "hatBedien": true
+    },
+    {
+     "kopf": "",
+     "laenge": 0,
+     "hatBedien": true
+    }
+   ],
+   "textLaenge": 2050,
+   "ueberschriften": [
+    "AUTOPILOT – DIE APP VERBESSERT SICH SELBST"
+   ],
+   "sub": "auswertung",
+   "groesse": "1280x800"
+  },
+  {
+   "fehlt": false,
+   "aktiveSub": "sub-regeln",
+   "tabellen": [],
+   "panels": [
+    {
+     "kopf": "DIE STRATEGIEN IM ÜBERBLICK i",
+     "laenge": 116,
+     "hatBedien": true
+    },
+    {
+     "kopf": "",
+     "laenge": 809,
+     "hatBedien": true
+    },
+    {
+     "kopf": "",
+     "laenge": 495,
+     "hatBedien": true
+    },
+    {
+     "kopf": "",
+     "laenge": 606,
+     "hatBedien": true
+    },
+    {
+     "kopf": "",
+     "laenge": 507,
+     "hatBedien": true
+    }
+   ],
+   "textLaenge": 2841,
+   "ueberschriften": [
+    "DIE STRATEGIEN IM ÜBERBLICK i"
+   ],
+   "sub": "regeln",
+   "groesse": "1000x700"
+  },
+  {
+   "fehlt": false,
+   "aktiveSub": "sub-strategien",
+   "tabellen": [],
+   "panels": [
+    {
+     "kopf": "EIGENE WATCHLIST – WIRD BEI JEDEM SCAN MITGEPRÜFT",
+     "laenge": 403,
+     "hatBedien": false
+    },
+    {
+     "kopf": "LIVE-SIGNAL-MONITOR",
+     "laenge": 262,
+     "hatBedien": false
+    }
+   ],
+   "textLaenge": 2757,
+   "ueberschriften": [
+    "Intraday-Strategie",
+    "Risikomanagement",
+    "EIGENE WATCHLIST – WIRD BEI JEDEM SCAN MITGEPRÜFT",
+    "",
+    "LIVE-SIGNAL-MONITOR"
+   ],
+   "sub": "strategien",
+   "groesse": "1000x700"
+  },
+  {
+   "fehlt": false,
+   "aktiveSub": "sub-mittelfrist",
+   "tabellen": [],
+   "panels": [
+    {
+     "kopf": "MOMENTUM IM QUERSCHNITT · AKTIEN, KEINE HEBELSCHEI",
+     "laenge": 668,
+     "hatBedien": true
+    },
+    {
+     "kopf": "WAS JETZT ZU HALTEN WÄRE",
+     "laenge": 46,
+     "hatBedien": false
+    },
+    {
+     "kopf": "WIE ES SICH GESCHLAGEN HAT",
+     "laenge": 48,
+     "hatBedien": false
+    },
+    {
+     "kopf": "WAS DU DABEI WISSEN MUSST",
+     "laenge": 710,
+     "hatBedien": false
+    },
+    {
+     "kopf": "MITTELFRIST-BÜCHER STEUERN",
+     "laenge": 239,
+     "hatBedien": true
+    },
+    {
+     "kopf": "ERGEBNIS-DRIFT · AKTIEN, KEINE HEBELSCHEINE",
+     "laenge": 1828,
+     "hatBedien": true
+    }
+   ],
+   "textLaenge": 3545,
+   "ueberschriften": [
+    "MOMENTUM IM QUERSCHNITT · AKTIEN, KEINE HEBELSCHEINE",
+    "WAS JETZT ZU HALTEN WÄRE",
+    "WIE ES SICH GESCHLAGEN HAT",
+    "WAS DU DABEI WISSEN MUSST",
+    "MITTELFRIST-BÜCHER STEUERN",
+    "ERGEBNIS-DRIFT · AKTIEN, KEINE HEBELSCHEINE",
+    "WAS WÄRE HEUTE OFFEN?"
+   ],
+   "sub": "mittelfrist",
+   "groesse": "1000x700"
+  },
+  {
+   "fehlt": false,
+   "aktiveSub": "sub-regelbuch",
+   "tabellen": [
+    {
+     "zeilen": 7,
+     "spalten": 2,
+     "ungleich": 0,
+     "erstesFeld": "Auslöser"
+    },
+    {
+     "zeilen": 4,
+     "spalten": 7,
+     "ungleich": 0,
+     "erstesFeld": "RANG"
+    }
+   ],
+   "panels": [
+    {
+     "kopf": "DIE REGEL, DIE HANDELT i",
+     "laenge": 864,
+     "hatBedien": true
+    },
+    {
+     "kopf": "REGELN, DIE NUR MESSEN i",
+     "laenge": 356,
+     "hatBedien": true
+    },
+    {
+     "kopf": "BILANZ DIESER REGEL",
+     "laenge": 2830,
+     "hatBedien": true
+    },
+    {
+     "kopf": "WAS HAT GEWIRKT?",
+     "laenge": 1948,
+     "hatBedien": true
+    },
+    {
+     "kopf": "WANN DIE STRATEGIE NICHTS GETAN HAT",
+     "laenge": 307,
+     "hatBedien": false
+    },
+    {
+     "kopf": "DEPOT GEGEN BUY & HOLD",
+     "laenge": 314,
+     "hatBedien": true
+    }
+   ],
+   "textLaenge": 4052,
+   "ueberschriften": [
+    "DIE REGEL, DIE HANDELT i",
+    "REGELN, DIE NUR MESSEN i",
+    "BILANZ DIESER REGEL",
+    "WAS HAT GEWIRKT?",
+    "WANN DIE STRATEGIE NICHTS GETAN HAT",
+    "DEPOT GEGEN BUY & HOLD"
+   ],
+   "sub": "regelbuch",
+   "groesse": "1000x700"
+  },
+  {
+   "fehlt": false,
+   "aktiveSub": "sub-stratchart",
+   "tabellen": [],
+   "panels": [
+    {
+     "kopf": "STRATEGIE-CHART – SIGNAL UND BEDINGUNGEN NACHVOLLZ",
+     "laenge": 775,
+     "hatBedien": true
+    }
+   ],
+   "textLaenge": 775,
+   "ueberschriften": [
+    "STRATEGIE-CHART – SIGNAL UND BEDINGUNGEN NACHVOLLZIEHEN i"
+   ],
+   "sub": "stratchart",
+   "groesse": "1000x700"
+  },
+  {
+   "fehlt": false,
+   "aktiveSub": "sub-auswertung",
+   "tabellen": [],
+   "panels": [
+    {
+     "kopf": "AUTOPILOT – DIE APP VERBESSERT SICH SELBST",
+     "laenge": 2029,
+     "hatBedien": true
+    },
+    {
+     "kopf": "",
+     "laenge": 0,
+     "hatBedien": true
+    }
+   ],
+   "textLaenge": 2050,
+   "ueberschriften": [
+    "AUTOPILOT – DIE APP VERBESSERT SICH SELBST"
+   ],
+   "sub": "auswertung",
+   "groesse": "1000x700"
+  }
+ ],
+ "seitenFehler": [],
+ "konsoleFehler": [],
+ "funde": [
+  {
+   "marke": "dashboard @1280x800",
+   "art": "unsichtbarBedienbar",
+   "e": {
+    "wo": "div#sub-ueberblick.sub.active > div#newsTicker > div.tickSpur > a",
+    "grund": "ausserhalb: left=1961"
+   }
+  },
+  {
+   "marke": "strategien @1280x800",
+   "art": "rohschluessel",
+   "e": {
+    "text": "nicht-entscheidbar",
+    "wo": "div#stratListe > div.panel > div > b"
+   }
+  },
+  {
+   "marke": "strategien @1280x800",
+   "art": "rohschluessel",
+   "e": {
+    "text": "nicht-bestaetigt",
+    "wo": "div#stratListe > div.panel > div > b"
+   }
+  },
+  {
+   "marke": "strategien/mittelfrist @1280x800",
+   "art": "unfertig",
+   "e": {
+    "text": "Am 21.08.2026 durchgerechnet: Der Basiswert müsste 5,5 bis 11 %\n      laufen, damit ein Schein nach Zeitwertverfall und ",
+    "wo": "div#tab-strategien.tab.active > div#sub-mittelfrist.sub.active > div.panel > div"
+   }
+  },
+  {
+   "marke": "strategien/regelbuch @1280x800",
+   "art": "unfertig",
+   "e": {
+    "text": "Die Trefferquoten zählten noch Trades aus der Zeit des Buchungsfehlers mit. Einmalig auf null gesetzt – ab jetzt zählen ",
+    "wo": "tbody > tr > td > div"
+   }
+  },
+  {
+   "marke": "depot @1280x800",
+   "art": "unfertig",
+   "e": {
+    "text": "bestanden – ein Signal ohne jeden Kursbezug ergab +0.0072 Pp (richtige Antwort: null, Auflösung 0.1310).",
+    "wo": "div#tab-depot.tab.active > div#sub-depot.sub.active > div#messband.panel > div"
+   }
+  },
+  {
+   "marke": "depot @1280x800",
+   "art": "rohschluessel",
+   "e": {
+    "text": "nicht-entscheidbar",
+    "wo": "div#sub-depot.sub.active > div#messband.panel > div > b"
+   }
+  },
+  {
+   "marke": "messung @1280x800",
+   "art": "unfertig",
+   "e": {
+    "text": "heißt: Die Messung hat ihre eigene Selbstprüfung nicht bestanden – ein Signal ohne jeden Kursbezug hätte null ergeben mü",
+    "wo": "div#tab-messung.tab.active > div#scoreboardKarte.panel > div#scoreboard > div"
+   }
+  },
+  {
+   "marke": "messung @1280x800",
+   "art": "unfertig",
+   "e": {
+    "text": "function ersteKerzeDesTages(bars, i) {\n  /* Die erste Kerze eines Handelstages - erkannt am Datumswechsel gegen die\n   *",
+    "wo": "div#strategieEingabe.panel > div#stBaukasten > details#stCodeAuf > pre#stCodeVorschau"
+   }
+  },
+  {
+   "marke": "messung @1280x800",
+   "art": "rohschluessel",
+   "e": {
+    "text": "monatsende-kauf",
+    "wo": "tbody > tr.sbRow > td > b"
+   }
+  },
+  {
+   "marke": "messung @1280x800",
+   "art": "rohschluessel",
+   "e": {
+    "text": "quartalsschub-betrag",
+    "wo": "tbody > tr.sbRow > td > b"
+   }
+  },
+  {
+   "marke": "messung @1280x800",
+   "art": "rohschluessel",
+   "e": {
+    "text": "monatswende-breit",
+    "wo": "tbody > tr.sbRow > td > b"
+   }
+  },
+  {
+   "marke": "dashboard/ueberblick @1000x700",
+   "art": "unsichtbarBedienbar",
+   "e": {
+    "wo": "div#sub-ueberblick.sub.active > div#newsTicker > div.tickSpur > a",
+    "grund": "ausserhalb: left=1573"
+   }
+  }
+ ]
+}

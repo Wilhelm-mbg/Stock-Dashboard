@@ -1,0 +1,143 @@
+{
+ "commit": "04c9be5",
+ "bilder": "C:\\Users\\Wilhe\\AppData\\Local\\Temp\\md-auditor27h-IGRSkD\\bilder",
+ "umstellung": {
+  "ok": true,
+  "vorher": "basis",
+  "jetzt": "schein"
+ },
+ "vorher": {
+  "rechnung": {
+   "pp": 0.1,
+   "produkt": "Aktie 1x",
+   "hebel": 1,
+   "einsatz": 3000,
+   "haltenMin": 480,
+   "angenommen": false,
+   "instrument": "basis"
+  },
+  "trenner": [
+   "Nicht entscheidbar mit diesen Daten Diese Strategien sind nicht am Markt gescheitert, sondern am Messgerät: Selbst im günstigsten Fall hätte die Messung nur Effekte ab 0,183 Pp erkannt – mehr, als nach Kosten übrig bliebe. Verglichen wird mit Ihrer aktuellen Einstellung: Aktie 1x, Haltedauer 8,0 h, Einsatz 3000 $ → Kostenhürde 0,100 Pp je Umlauf. Ändern Sie das Produkt oder die Haltedauer, verschiebt sich diese Grenze. Sie bleiben wählbar und vollständig einsehbar – die App behauptet nur nichts ",
+   "Gemessen – zeigt in die Gegenrichtung Für diese Strategien gibt es keine Zahl an weiteren Tagen: Ihr gemessener Überschuss ist in allen Varianten negativ. Das ist etwas anderes als „zu wenig Daten\" – sie brauchen keine weiteren Daten, sie zeigen in die falsche Richtung. Auch sie bleiben wählbar und vollständig einsehbar."
+  ],
+  "reihen": [
+   {
+    "strategie": "kapitulation (3 Varianten)",
+    "feinheit": "1,151"
+   },
+   {
+    "strategie": "rsi2seit-mcp (5 Varianten)",
+    "feinheit": "0,077"
+   },
+   {
+    "strategie": "t3-stundendrift (7 Varianten)",
+    "feinheit": "0,035"
+   },
+   {
+    "strategie": "monatsende-kauf",
+    "feinheit": "–"
+   },
+   {
+    "strategie": "momentum (4 Varianten)",
+    "feinheit": "2,949"
+   },
+   {
+    "strategie": "quartalsschub-betrag (2 Varianten)",
+    "feinheit": "0,613"
+   },
+   {
+    "strategie": "monatswende-breit (4 Varianten)",
+    "feinheit": "0,605"
+   },
+   {
+    "strategie": "rsi2seit",
+    "feinheit": "0,183"
+   },
+   {
+    "strategie": "t2-umsatzschock (7 Varianten)",
+    "feinheit": "0,219"
+   },
+   {
+    "strategie": "t1-zwangsglattstellung (7 Varianten)",
+    "feinheit": "0,206"
+   },
+   {
+    "strategie": "winkelbestaetigt (5 Varianten)",
+    "feinheit": "0,188"
+   },
+   {
+    "strategie": "winkelgrad (5 Varianten)",
+    "feinheit": "0,195"
+   }
+  ],
+  "messband": "Was die Messmaschine zur laufenden Regel sagt · reine Anzeige, hier wird nichts gerechnet nicht-entscheidbar rsi2seit · gemessen 2026-08-26 · Einstieg schlusskerze Überschuss je Signal +0.021 Pp, Kostenhürde 0.10 Pp → netto -0.079 Pp · t = 0.83 · 364 Tage / 56112 Signale Das Urteil lautet nicht-entscheidbar. Diese Zahl ist kein belegter Vorsprung – auch dann nicht, wenn sie positiv ist. Auflösung: Dieser Lauf hätte eine echte Kante erst ab +0.218 Pp mit 80 % Wahrscheinlichkeit gefunden. Das ist mehr als die Kostenhürde von 0.10 Pp – eine handelbare Kante hätte er also gar nicht sehen können. „Nicht entscheidbar“ heißt hier: zu wenig Daten, nicht „kein Effekt“. Selbstprüfung: bestanden – ein ",
+  "regelkopf": "Kostenhürde: 0,100 Pp je Umlauf · Aktie 1x · Haltedauer 8 h · Einsatz 3000 $. So weit muss sich der Basiswert bewegen, bevor etwas übrig bleibt.Davon Spanne 0,100 · Zeitwert 0,000 · Ordergebühr 0,000 Pp.Capital.com berechnet keine Kommission; ohne Hebel entfällt auch die Übernacht-Finanzierung. Für diesen Weg ist die Spanne der ganze Preis.Messung vom 2026-08-26: Überschuss je Signal +0,021 Pp gegen eine gepaarte Kontrolle → netto -0,079 PpUrteil der Messmaschine: nicht entscheidbar. Diese Zahl ist kein belegter Vorsprung – auch dann nicht, wenn sie positiv ist."
+ },
+ "nachher": {
+  "rechnung": {
+   "pp": 0.0664851037785955,
+   "produkt": "Ruhig, BV 1,0 (ATM, 60 Tage)",
+   "hebel": 9.77000790548549,
+   "einsatz": 3000,
+   "haltenMin": 480,
+   "angenommen": false,
+   "instrument": "schein"
+  },
+  "trenner": [
+   "Nicht entscheidbar mit diesen Daten Diese Strategien sind nicht am Markt gescheitert, sondern am Messgerät: Selbst im günstigsten Fall hätte die Messung nur Effekte ab 0,077 Pp erkannt – mehr, als nach Kosten übrig bliebe. Verglichen wird mit Ihrer aktuellen Einstellung: Ruhig, BV 1,0 (ATM, 60 Tage), Haltedauer 8,0 h, Einsatz 3000 $ → Kostenhürde 0,066 Pp je Umlauf. Ändern Sie das Produkt oder die Haltedauer, verschiebt sich diese Grenze. Sie bleiben wählbar und vollständig einsehbar – die App b",
+   "Gemessen – zeigt in die Gegenrichtung Für diese Strategien gibt es keine Zahl an weiteren Tagen: Ihr gemessener Überschuss ist in allen Varianten negativ. Das ist etwas anderes als „zu wenig Daten\" – sie brauchen keine weiteren Daten, sie zeigen in die falsche Richtung. Auch sie bleiben wählbar und vollständig einsehbar."
+  ],
+  "reihen": [
+   {
+    "strategie": "kapitulation (3 Varianten)",
+    "feinheit": "1,151"
+   },
+   {
+    "strategie": "t3-stundendrift (7 Varianten)",
+    "feinheit": "0,035"
+   },
+   {
+    "strategie": "monatsende-kauf",
+    "feinheit": "–"
+   },
+   {
+    "strategie": "rsi2seit-mcp (5 Varianten)",
+    "feinheit": "0,077"
+   },
+   {
+    "strategie": "momentum (4 Varianten)",
+    "feinheit": "2,949"
+   },
+   {
+    "strategie": "quartalsschub-betrag (2 Varianten)",
+    "feinheit": "0,613"
+   },
+   {
+    "strategie": "monatswende-breit (4 Varianten)",
+    "feinheit": "0,605"
+   },
+   {
+    "strategie": "rsi2seit",
+    "feinheit": "0,183"
+   },
+   {
+    "strategie": "t2-umsatzschock (7 Varianten)",
+    "feinheit": "0,219"
+   },
+   {
+    "strategie": "t1-zwangsglattstellung (7 Varianten)",
+    "feinheit": "0,206"
+   },
+   {
+    "strategie": "winkelbestaetigt (5 Varianten)",
+    "feinheit": "0,188"
+   },
+   {
+    "strategie": "winkelgrad (5 Varianten)",
+    "feinheit": "0,195"
+   }
+  ],
+  "messband": "Was die Messmaschine zur laufenden Regel sagt · reine Anzeige, hier wird nichts gerechnet nicht-entscheidbar rsi2seit · gemessen 2026-08-26 · Einstieg schlusskerze Überschuss je Signal +0.021 Pp, Kostenhürde 0.10 Pp → netto -0.079 Pp · t = 0.83 · 364 Tage / 56112 Signale Das Urteil lautet nicht-entscheidbar. Diese Zahl ist kein belegter Vorsprung – auch dann nicht, wenn sie positiv ist. Auflösung: Dieser Lauf hätte eine echte Kante erst ab +0.218 Pp mit 80 % Wahrscheinlichkeit gefunden. Das ist mehr als die Kostenhürde von 0.10 Pp – eine handelbare Kante hätte er also gar nicht sehen können. „Nicht entscheidbar“ heißt hier: zu wenig Daten, nicht „kein Effekt“. Selbstprüfung: bestanden – ein ",
+  "regelkopf": "Kostenhürde: 0,066 Pp je Umlauf · Ruhig, BV 1,0 (ATM, 60 Tage) (Hebel 9,8) · Haltedauer 8 h · Einsatz 3000 $. So weit muss sich der Basiswert bewegen, bevor etwas übrig bleibt.Davon Spanne 0,037 · Zeitwert 0,029 · Ordergebühr 0,000 Pp.Messung vom 2026-08-26: Überschuss je Signal +0,021 Pp gegen eine gepaarte Kontrolle → netto -0,046 PpUrteil der Messmaschine: nicht entscheidbar. Diese Zahl ist kein belegter Vorsprung – auch dann nicht, wenn sie positiv ist."
+ }
+}
