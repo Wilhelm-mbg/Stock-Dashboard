@@ -1,0 +1,46 @@
+=== (1) normInv/bonferroniSchwelle gegen Referenz ===
+  tests=    1  p=2.500e-2  Maschine 1.959964  Referenz 1.959964  |Abw| 1.58e-9
+  tests=    2  p=1.250e-2  Maschine 2.241403  Referenz 2.241403  |Abw| 1.14e-9
+  tests=    3  p=8.333e-3  Maschine 2.393980  Referenz 2.393980  |Abw| 1.42e-9
+  tests=    4  p=6.250e-3  Maschine 2.497705  Referenz 2.497705  |Abw| 2.55e-9
+  tests=    6  p=4.167e-3  Maschine 2.638257  Referenz 2.638257  |Abw| 2.87e-9
+  tests=   12  p=2.083e-3  Maschine 2.865260  Referenz 2.865260  |Abw| 1.16e-9
+  tests=   24  p=1.042e-3  Maschine 3.078088  Referenz 3.078088  |Abw| 1.32e-9
+  tests=   51  p=4.902e-4  Maschine 3.296094  Referenz 3.296094  |Abw| 3.27e-9
+  tests=  200  p=1.250e-4  Maschine 3.662260  Referenz 3.662260  |Abw| 3.60e-9
+  tests= 1000  p=2.500e-5  Maschine 4.055627  Referenz 4.055627  |Abw| 6.51e-10
+  tests= 3372  p=7.414e-6  Maschine 4.331228  Referenz 4.331228  |Abw| 2.03e-9
+  groesste Abweichung: 3.60e-9  -> traegt
+  Selbstkontrolle der Referenz an 3 Literaturwerten: |Abw| max 4.26e-14
+
+=== (2) B4-Schwellen aller abgelegten Protokolle nachgerechnet ===
+  21 Protokolle mit B4 geprueft, 0 Abweichungen
+
+=== (3) Newey-West: L=7 (Maschine) gegen L=1 (tages-richtig) gegen L=0 (naiv) ===
+  Aufbau: 252 Tage x 7 Kerzen, iid N(0,1) je Kerze, 1 Signal/Tag (Position 3),
+  H=8 Kerzen => Nachbartage teilen genau 1 Kerze: wahre Tages-Autokovarianz
+  gamma1=1, gamma0=8, Langfristvarianz je Tag = 10.
+  -- Signal jeden Tag, echte Ueberlappung 1 Tag (n je Lauf 252, 4000 Wiederholungen)
+     empirische wahre se des Mittels: 0.2007
+     L=0: mittleres se 0.1778 (Streuung 0.0082)  Verwerfungsrate |t|>1,96: 8.28 % (soll 5 %)
+     L=1: mittleres se 0.1882 (Streuung 0.0108)  Verwerfungsrate |t|>1,96: 6.45 % (soll 5 %)
+     L=7: mittleres se 0.1927 (Streuung 0.0205)  Verwerfungsrate |t|>1,96: 6.25 % (soll 5 %)
+
+=== (4) Signal nur jeden 2. Tag - Reihe hat KEINE echte Ueberlappung, Maschine korrigiert trotzdem mit L=7 ===
+  -- Signal jeden 2. Tag (n je Lauf 126, 4000 Wiederholungen)
+     empirische wahre se des Mittels: 0.2514
+     L=0: mittleres se 0.2514 (Streuung 0.0158)  Verwerfungsrate |t|>1,96: 5.10 % (soll 5 %)
+     L=7: mittleres se 0.2421 (Streuung 0.0359)  Verwerfungsrate |t|>1,96: 6.70 % (soll 5 %)
+
+=== (5) aussicht.tage80 rechnet mit zAlpha=1,96 - das Urteil faellt gegen die Bonferroni-Schwelle ===
+  tests= 1: Schwelle 1.960 -> wahre Tage bis zur SCHWELLE = tage80 x 1.000  (deckungsgleich)
+  tests= 2: Schwelle 2.241 -> wahre Tage bis zur SCHWELLE = tage80 x 1.211  (aussicht untertreibt um 21 %)
+  tests= 3: Schwelle 2.394 -> wahre Tage bis zur SCHWELLE = tage80 x 1.334  (aussicht untertreibt um 33 %)
+  tests= 4: Schwelle 2.498 -> wahre Tage bis zur SCHWELLE = tage80 x 1.421  (aussicht untertreibt um 42 %)
+  tests=12: Schwelle 2.865 -> wahre Tage bis zur SCHWELLE = tage80 x 1.751  (aussicht untertreibt um 75 %)
+
+=== (6) Nebenbefunde am Schaetzer, beziffert ===
+  (a) Autokovarianz-Teiler n-k statt n: bei n=250, k=7 Faktor 1.0288 - vernachlaessigbar,
+      verliert aber die Garantie positiver Definitheit; die Maschine faengt das mit dem Rueckfall lang>0 ab.
+  (b) Rueckfall bei negativer Langfristvarianz nimmt die UNKORRIGIERTE Varianz - bei negativer
+      Autokorrelation ist das die groessere Zahl, der Fehler geht in die vorsichtige Richtung.
