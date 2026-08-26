@@ -1798,7 +1798,11 @@ bei 1.063 Kalendertagen). Rechenwege: `Markt-Dashboard-Daten/qs-audit-2026-08-26
 
 ## Aufträge
 
-### ⭐ NEU, VOR der Phantom-Docht-Reparatur (PM, 27.08. ~01:35) — an die Mess-Sitzung: hebt sich der Docht-Effekt im Überschuss auf?
+### ~~⭐ NEU, VOR der Phantom-Docht-Reparatur~~ **ÜBERNOMMEN 27.08. 00:45 von „Berechnungen"** (PM, 27.08. ~01:35) — an die Mess-Sitzung: hebt sich der Docht-Effekt im Überschuss auf?
+
+*Ich baue den eigenen Treiber jetzt (Archiv gesperrt bis ~03:40) und fahre den Lauf,
+sobald der Wachhund freigibt — Vergleichsmaßstab wird VOR dem Lauf festgeschrieben.
+Stand siehe „Läuft gerade". Auftragstext bleibt als Beleg:*
 
 **Die eine Messung, an der die Dringlichkeit des Datenfund-1 hängt** (QS-Empfehlung,
 PM übernimmt): die drei Stop-Strategien (`kapitulation`, `rsi2seit-mcp`,
@@ -3138,7 +3142,14 @@ fertig bist.*
   Ich gebe `scoreboard.js` wieder frei, bis das entschieden ist — gebaut ist nichts,
   gemessen ist alles oben. Übergabe liegt im Briefkasten.
 
-- **Desingner** — **#80 Perzentil ist GELIEFERT** (Baustopp 1b davor in `e11d7e9`).
+- **Desingner** — hat die **Scoreboard-Wand auf die Live-Hürde** genommen (Wilhelms
+  Weg-1-Entscheid 27.08. ~00:55; `markt-dashboard-6c` hatte `scoreboard.js` vor dem
+  App-Neustart ausdrücklich freigegeben, ihre Vorarbeit — Feinheit-Spalte,
+  delta80-Helfer — ist eingebaut und wird benutzt). Belegt `scoreboard.js` und
+  `depot.js` (nur DepotAPI-Lesezugriff auf `kostenHuerdePp`). Alle vier Auflagen
+  aus dem Auftragstext werden beachtet; Eintrag 27.08. ~01:5x.
+
+- **Desingner (erledigt)** — **#80 Perzentil ist GELIEFERT** (Baustopp 1b davor in `e11d7e9`).
   Eichung: 32.722 Zufallskanäle aus derselben Such-Pipeline (deterministisch,
   `studien/kanal-guete-2026-08-26/eichung.js` + `eichtabelle.json`) — **der
   Rauschen-Median liegt je Fensterlänge bei 75–94, der #80-Befund (75) war also
@@ -3149,6 +3160,14 @@ fertig bist.*
   dafür nie gemessen). test-channel Nr. 19 prüft den Nullpunkt (Zufall → Median
   43 %, sauberer Trend → 100 %). npm test grün, ui-probe grün, Funktionstest am
   echten AAPL-Chart (10 Tooltips Perzentil, 0 Alt-Güte).
+
+- **Berechnungen** (27.08. 00:45) — **Docht-Empfindlichkeitsmessung übernommen**
+  (Auftrag »hebt sich der Docht-Effekt im Überschuss auf?«): baut eigenen Treiber unter
+  `studien/docht-empfindlichkeit-2026-08-27/` (überschreibt KEINE Protokolle gleichen
+  Datums — die messen.js-Falle ist bekannt), Lauf erst nach Wachhund-Freigabe (~03:40,
+  Exit 2 = nicht messen). Vergleichsmaßstab wird vor dem Lauf festgeschrieben.
+  Danach: Strang-A-Vorregistrierung nach F1=1a/F2=2c/F3=3a (bauen ja, Lauf blockiert
+  bis Datenfunde + ~20 Aktienrunden). Belegt nur neue Dateien unter `studien/`.
 
 - **Berechnungen** — **Verzerrungsrichtung FERTIG gemessen (26.08. ~22:2x):**
   erstes belegtes Richtungsurteil — **das Überlebenden-Archiv beschönigt die
