@@ -1357,6 +1357,68 @@ Satz „der Stand oben gilt trotzdem" und behandelt die Sperre dann als aufgehob
 
 ---
 
+### ✅ NACHRECHNUNG VOLLSTÄNDIG — zwölf von zwölf, elf stabil, eines gekippt
+
+**Die Neumessung von heute früh hält** — auf einer **zwei Versionen neueren** Maschine
+(1.4.0 statt 1.2.0) und mit frischen Handelstagen.
+
+| Strategie | Archiv | Urteil | Placebo t | B10 |
+|---|---|---|---|---|
+| rsi2seit | 60m | **stabil** | −0,156 | 1,09 |
+| kapitulation | 60m | **stabil** | −0,559 | – |
+| monatsende-kauf | 60m | **stabil** | 0,071 | 0,61 |
+| t2-umsatzschock | 60m | **stabil** | −0,138 | – |
+| t1-zwangsglattstellung | 60m | **stabil** | 0,031 | – |
+| t3-stundendrift | 60m | **stabil** | 0,385 | 1,00 |
+| **rsi2seit-mcp** | 60m | **gekippt** → nicht bestätigt | 0,998 | 0,98 |
+| winkelbestaetigt | 60m | **stabil** | 0,088 | 1,39 |
+| winkelgrad | 60m | **stabil** | −0,015 | 1,14 |
+| quartalsschub-betrag | 1d | **stabil** | 0,626 | 1,22 |
+| monatswende-breit | 1d | **stabil** | 0,265 | 0,87 |
+| **momentum** | 1d | **stabil** | 0,120 | **6,33** ⚠ |
+
+**Kein einziges Urteil geht Richtung „bestätigt". Der Bestand bleibt bei null belegten
+Kanten** — jetzt unabhängig nachgerechnet statt einmal gemessen.
+
+### 🔴 Der B10-Wächter feuert zum ersten Mal — und zwar auf `momentum`
+
+```
+B10-Ueberlappung: {"faktorGroesster": 6.33}
+[B10] Der Standardfehler waechst um Faktor 6.33 durch ueberlappende
+      Halteperioden. Ein Urteil, das ohne diese Korrektur zustande kaeme,
+      waere wertlos.
+```
+
+**Mehr als das Doppelte der Warnschwelle.** Über die anderen elf liegt der Faktor zwischen
+0,61 und 1,39 — `momentum` ist ein Ausreißer um Größenordnungen, weil es **63 Handelstage
+hält und jeden Tag neu eröffnet.**
+
+**Auf dieser Tafel stand zu #98:** *„Vorbedingung für Strang A: Momentum ist genau der
+Fall, für den dieser Wächter gebaut wurde — und er ist blind."* **Er ist es nicht mehr, und
+beim allerersten Blick schreit er.** Der ganze Sinn von Strang A ist, `momentum` nicht
+überlappend zu messen; der Wächter beziffert jetzt zum ersten Mal, **was die Überlappung
+kostet.**
+
+**⚠ Vorsicht bei der Deutung — Warnung der QS, und sie gehört ernst genommen:**
+Der Faktor sagt **nicht**, dass eine nicht überlappende Messung sechsmal schärfer wäre. Die
+Newey-West-Korrektur ist bereits angewandt, **das Urteil ist korrekt.** Er sagt, **wie viel
+Auflösung die überlappende Anordnung kostet.**
+
+> **→ VOR Strang A zu klären: Wie verhält sich der B10-Faktor (6,33) zum
+> Eichungsverhältnis vom 25.08. (1,543)?** Die beiden messen **verschiedene Größen**. Wird
+> das nicht vorher geklärt, **wird eine Verbesserung nachher dem falschen Effekt
+> zugeschrieben** — und Strang A ist die größte offene Frage des Projekts.
+
+*`momentum` selbst ist unauffällig stabil:* alle vier Varianten nicht entscheidbar,
+Überschuss +1,1600 → +1,1599 Pp, t 1,03 → 1,03, Aussicht 52.578 → 52.579. **Ein Tag ändert
+dort nichts — sie hat 4.976 Bestätigungstage.**
+
+*Rollendatei des Analytikers: bereits vom PM behoben (siehe oben) — die QS hat es
+unabhängig ein zweites Mal gemeldet.*
+
+
+---
+
 ## Aufträge
 
 *Was freigegeben ist und noch niemand macht. Wer eine Zeile nimmt, trägt sich unter
