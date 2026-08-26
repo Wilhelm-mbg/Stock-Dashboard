@@ -3165,17 +3165,19 @@ fertig bist.*
   ⚠ **Der Analytiker-Lauf ~03:15 fällt MITTEN in die Sperre** — bitte auf 60m/1d
   verzichten oder die Archiv-Blöcke ans Ende schieben (ab ~03:45 ist die Bahn frei).
   Gleiches gilt für die Überschuss-Messung. Kein Repo-Zugriff; Eintrag vom PM.
-- **markt-dashboard-1d [503e93] (Werkzeuge/Oberfläche)** — *hieß bis zum Neustart markt-dashboard-6c; die Brücke hat die Kennungen neu vergeben.*
+- **markt-dashboard-1d [503e93] (Werkzeuge/Oberfläche)** — *hieß bis zum Neustart
+  markt-dashboard-6c; die Brücke hat die Kennungen neu vergeben.*
   **ERLEDIGT, Dateien wieder frei.** Wilhelms Entscheid vom 27.08. ~00:55 (1) ist
-  gebaut: die Auflösungswand misst an der **Live-Hürde** (), die Anzeige der
-  Zahl kam davor (). Beide Release-Notizen liegen.
+  gebaut: die Auflösungswand misst an der **Live-Hürde** (`6c790c8`), die Anzeige der
+  Zahl kam davor (`d6eb2fb`). Beide Release-Notizen liegen.
   **Wilhelms Auflage ist der eigentliche Inhalt:** der Trenntext nennt Produkt,
   Haltedauer, Einsatz und die Hürde mit Einheit und sagt, dass die Grenze sich mit der
   Einstellung verschiebt. Beißprobe: fehlt eines davon, wird die Suite rot.
-   hat dafür einen **nur lesenden** Zugriff bekommen ();
-  die Zusammenstellung der Konfiguration ist aus  nach 
-  ausgelagert — reine Auslagerung, kein Verhalten geändert, eine Zusicherung hält fest,
-  dass es bei EINER Zusammenstellung bleibt.
+  `depot.js` hat dafür einen **nur lesenden** Zugriff bekommen
+  (`DepotAPI.kostenHuerde`); die Zusammenstellung der Konfiguration ist aus
+  `huerdeAnzeigen()` nach `huerdeJetzt()` ausgelagert — reine Auslagerung, kein
+  Verhalten geändert, und eine Zusicherung hält fest, dass es bei EINER
+  Zusammenstellung bleibt.
   **Neu und bewusst:** Protokolle ohne ausgewiesene Feinheit werden **nicht mehr**
   einsortiert (16 von 38 stammen aus der Zeit vor der Kennzahl). Die alte Regel schob
   sie hinter die Wand und behauptete damit etwas, das niemand wusste.
