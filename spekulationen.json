@@ -1,94 +1,66 @@
 {
-  "stand": "2026-08-25T12:55:31.930Z",
+  "stand": "2026-08-26T04:56:53.529Z",
   "hinweis": "Spekulationen aus öffentlichen Quellen – ungemessen, keine Handelsempfehlung, keine Anlageberatung.",
   "eintraege": [
-    {
-      "id": "20260821-BMPS-uebernahme",
-      "sym": "BMPS.MI",
-      "name": "Banca Monte dei Paschi di Siena S.p.A.",
-      "art": "uebernahme",
-      "chance": "hoch",
-      "these": "MPS wehrt sich mit einem Doppelgebot für Banco BPM und Banca Generali gegen die feindliche Offerte von Intesa Sanpaolo; die eigenen Aktionäre müssen den Plan am 29. Oktober mit Zweidrittelmehrheit freigeben.",
-      "begruendung": "Beide Seiten des Übernahmekampfs sind belegt: Intesas Offerte über rund 30,6 Mrd. Euro und die MPS-Gegenwehr werden von Reuters, FT und italienischen Häusern übereinstimmend beschrieben, die Umtauschverhältnisse sind veröffentlicht, der MPS-Verwaltungsrat hat mit neun Ja-Stimmen bei vier Enthaltungen zugestimmt. Konkreter Anlass, mehrere seriöse Quellen, deshalb hoch. Neu gegenüber gestern: Wegen Intesas laufendem Gebot greift die Passivity Rule, die MPS-Hauptversammlung muss am 29. Oktober mit zwei Dritteln zustimmen; Intesa bereitet laut italienischen Medien eine Beschwerde bei der Consob vor. Der Ausgang ist offen und politisch aufgeladen.",
-      "quellen": [
-        {
-          "titel": "Euronews",
-          "url": "https://www.euronews.com/business/2026/08/20/monte-dei-paschi-board-approves-dual-exchange-offers-for-banco-bpm-and-banca-generali"
-        },
-        {
-          "titel": "MarketScreener",
-          "url": "https://www.marketscreener.com/news/monte-paschi-tender-offer-banco-bpm-to-hold-extraordinary-board-meeting-tuesday-ce7858dbd98bf22d"
-        },
-        {
-          "titel": "Borsa Italiana / Radiocor",
-          "url": "https://www.borsaitaliana.it/borsa/notizie/radiocor/finance/dettaglio/european-share-prices-little-changed-2-nRC_24082026_1200_204206320.html?lang=en"
-        },
-        {
-          "titel": "SoldiOnline",
-          "url": "https://www.soldionline.it/notizie/azioni-italia/mps-banco-bpm-banca-generali-perche-lops-divide-mercato-e-analisti"
-        },
-        {
-          "titel": "Reuters Factbox via AOL",
-          "url": "https://www.aol.com/articles/factbox-italys-banking-shake-m-140318000.html"
-        }
-      ],
-      "zeit": "2026-08-25T06:00:00Z"
-    },
     {
       "id": "20260821-BAMI-uebernahme",
       "sym": "BAMI.MI",
       "name": "Banco BPM S.p.A.",
       "art": "uebernahme",
       "chance": "hoch",
-      "these": "Der Verwaltungsrat von Banco BPM tagt heute außerplanmäßig über das Umtauschangebot von Monte dei Paschi (1,567 MPS-Aktien je BPM-Aktie); bis zum US-Vormarkt lag kein Beschluss vor.",
-      "begruendung": "Der Sitzungstermin für Dienstag, den 25. August, ist von mehreren Häusern übereinstimmend gemeldet, die Konditionen des Angebots sind veröffentlicht – konkreter, datierter Anlass aus mehreren seriösen Quellen, deshalb hoch. Eine Nachsuche am Dienstagmittag brachte weiterhin keine Stellungnahme des Gremiums. Der Ausgang hängt an der Annahmequote, an der Haltung des französischen Großaktionärs Crédit Agricole und an Intesas Gegenzug; S&P hat zuletzt neue Zweifel angemeldet.",
+      "these": "Der Verwaltungsrat von Banco BPM hat das 25,3-Mrd.-Euro-Umtauschangebot von Monte dei Paschi einstimmig als \"weder abgestimmt noch erbeten\" bewertet: es sei eine Übernahme ohne Prämie für die Aktionäre, keine Fusion.",
+      "begruendung": "Der Beschluss vom Dienstagabend ist da und einstimmig – auch die Vertreter des französischen Großaktionärs Crédit Agricole (29,3 Prozent) trugen ihn mit. Il Sole 24 Ore, Il Messaggero, LaPresse und Agenzia Nova geben den Wortlaut der Mitteilung übereinstimmend wieder, Moody’s meldet \"erhebliche Unsicherheiten\" an. Konkreter, datierter Anlass aus mehreren seriösen Quellen, deshalb hoch. Das Gremium hat sich nicht endgültig festgelegt, sondern Zeit genommen; der nächste Prüfstein ist der Generali-Verwaltungsrat am Donnerstag, dem 27. August. Das italienische Wirtschaftsministerium hat seine eigene Beteiligung vorerst eingefroren.",
       "quellen": [
-        {
-          "titel": "MarketScreener",
-          "url": "https://www.marketscreener.com/news/monte-paschi-tender-offer-banco-bpm-to-hold-extraordinary-board-meeting-tuesday-ce7858dbd98bf22d"
-        },
-        {
-          "titel": "Repubblica Finanza",
-          "url": "https://finanza.repubblica.it/News/2026/08/24/mps_banco_bpm_riunisce_cda_straordinario_per_domani_su_ops_arrivano_intanto_nuovi_dubbi_da_s_p-5/"
-        },
         {
           "titel": "Il Sole 24 Ore",
-          "url": "https://en.ilsole24ore.com/art/mps-bpm-board-of-directors-upcoming-crucial-french-tests-AJXgCJs"
+          "url": "https://www.ilsole24ore.com/art/mps-bpm-prende-tempo-e-un-acquisizione-senza-premio-AJUZ3Ou"
         },
         {
-          "titel": "Financial Times",
-          "url": "https://www.ft.com/content/ecafb9a8-b9a6-48a4-8d3c-a626b26fe82b"
+          "titel": "Il Messaggero",
+          "url": "https://www.ilmessaggero.it/economia/bpm_boccia_offerta_mps_moodys_incertezze_fusione-9725311.html"
+        },
+        {
+          "titel": "LaPresse",
+          "url": "https://www.lapresse.it/economia/2026/08/25/mps-banco-bpm-offerta-diversa-dalla-nostra-non-concordata-ne-sollecitata/"
+        },
+        {
+          "titel": "Agenzia Nova",
+          "url": "https://www.agenzianova.com/news/banco-bpm-ops-di-mps-non-concordata-ne-sollecitata-diversa-dalla-nostra-proposta/"
+        },
+        {
+          "titel": "Adnkronos",
+          "url": "https://www.adnkronos.com/finanza/banco-bpm-fredda-su-mps-acquisizione-non-concordata-senza-premio_11pYBfTy5IVrYiLMyoHGej"
         }
       ],
-      "zeit": "2026-08-25T06:00:00Z"
+      "zeit": "2026-08-25T18:00:00Z"
     },
     {
-      "id": "20260822-CBK-uebernahme",
-      "sym": "CBK.DE",
-      "name": "Commerzbank AG",
+      "id": "20260821-BMPS-uebernahme",
+      "sym": "BMPS.MI",
+      "name": "Banca Monte dei Paschi di Siena S.p.A.",
       "art": "uebernahme",
       "chance": "hoch",
-      "these": "UniCredit hat die Kontrolle über die Commerzbank faktisch erlangt, ohne dass die Mehrheit der Aktionäre angedient hätte; Aufsichtsratschef Weidmann fordert eine Überprüfung des deutschen Übernahmerechts und rät dem Bund, seine restlichen Anteile vorerst zu behalten.",
-      "begruendung": "Reuters zitiert Weidmann mit harten Zahlen: von rund 73 Prozent andienbarer Aktien wurden weniger als 18 Prozent angedient, UniCredit steht rechnerisch bei knapp 49,65 Prozent. In einem ausführlichen Interview mit der Süddeutschen hat Weidmann am Montag nachgelegt. Mehrere seriöse Häuser berichten unabhängig, der Vorgang ist konkret und belegt, deshalb hoch. Offen bleiben die EZB-Entscheidung, die im vierten Quartal erwartet wird, und die Haltung des Bundes zu den verbliebenen 12,7 Prozent.",
+      "these": "MPS wehrt sich mit einem Doppelgebot für Banco BPM und Banca Generali gegen die feindliche Offerte von Intesa Sanpaolo; nach der kühlen Antwort des BPM-Verwaltungsrats steht der Plan unter Druck.",
+      "begruendung": "Beide Seiten des Übernahmekampfs sind belegt: Intesas Offerte über rund 30,6 Mrd. Euro und die MPS-Gegenwehr werden von Reuters, Il Sole 24 Ore und italienischen Häusern übereinstimmend beschrieben, die Umtauschverhältnisse sind veröffentlicht. Konkreter Anlass, mehrere seriöse Quellen, deshalb hoch. Neu über Nacht: Banco BPM hat das Gebot einstimmig als Übernahme ohne Prämie bezeichnet, und die Stimmrechtsberater haben sich für Intesas Offerte ausgesprochen – beides schwächt die Position von Siena. Wegen Intesas laufendem Gebot greift die Passivity Rule, die MPS-Hauptversammlung muss am 29. Oktober mit zwei Dritteln zustimmen.",
       "quellen": [
         {
-          "titel": "Reuters",
-          "url": "https://www.reuters.com/legal/transactional/commerzbank-chair-calls-review-german-takeover-rules-after-unicredit-bid-2026-08-23/"
+          "titel": "Il Sole 24 Ore",
+          "url": "https://www.ilsole24ore.com/art/mps-bpm-prende-tempo-e-un-acquisizione-senza-premio-AJUZ3Ou"
         },
         {
-          "titel": "Süddeutsche Zeitung",
-          "url": "https://www.sueddeutsche.de/wirtschaft/commerzbank-uebernahme-jens-weidmann-unicredit-zukunft-li.3532729"
+          "titel": "Corriere di Siena",
+          "url": "https://www.corrieredisiena.it/news/economia/463117/offerta-di-mps-il-cda-bpm-valuta-e-prende-tempo-mef-congela-la-quota.html"
         },
         {
-          "titel": "Handelsblatt",
-          "url": "https://www.handelsblatt.com/finanzen/banken-versicherungen/banken/commerzbank-regierungsvertreter-wohl-offen-fuer-verkauf-der-bundesanteile/100247767.html"
+          "titel": "Euronews",
+          "url": "https://www.euronews.com/business/2026/08/20/monte-dei-paschi-board-approves-dual-exchange-offers-for-banco-bpm-and-banca-generali"
         },
         {
-          "titel": "Investing.com",
-          "url": "https://www.investing.com/news/stock-market-news/commerzbank-chair-calls-for-review-of-german-takeover-rules-93CH-4872466"
+          "titel": "Reuters Factbox via AOL",
+          "url": "https://www.aol.com/articles/factbox-italys-banking-shake-m-140318000.html"
         }
       ],
-      "zeit": "2026-08-24T06:00:00Z"
+      "zeit": "2026-08-25T18:00:00Z"
     },
     {
       "id": "20260823-WBD-ereignis",
@@ -96,27 +68,27 @@
       "name": "Warner Bros. Discovery Inc.",
       "art": "ereignis",
       "chance": "hoch",
-      "these": "Kalifornien hat die Vergleichsgespräche ueber die Paramount-Skydance-Übernahme von Warner Bros. Discovery abgesagt; ab dem 1. Oktober fällt fuer Paramount eine Verzögerungsgebühr von 7 Mio. Dollar je Tag an.",
-      "begruendung": "Generalstaatsanwalt Bonta hat die Absage selbst bestätigt und wirft Paramount vor, Inhalte des Vortreffens durchgestochen zu haben; Paramount weist das zurück. NBC, CNBC, Reuters, LA Times und Variety berichten unabhängig und übereinstimmend, dazu die vertraglich fixierte Gebühr von 7 Mio. Dollar je Tag ab dem 1. Oktober und ein Prozesstermin im Frühjahr – konkreter, belegter Anlass mit klarem Zeitdruck, deshalb hoch. Über Nacht kam die Gegenbewegung: Gouverneur Newsom soll einem Vergleich zuneigen, während Paramount mit dem Wegzug aus Kalifornien droht. Insgesamt klagen zwölf Bundesstaaten; ob die Gespräche wieder aufgenommen werden, ist offen.",
+      "these": "Kaliforniens Generalstaatsanwalt Bonta zeigt sich wieder gesprächsbereit über die Paramount-Skydance-Übernahme von Warner Bros. Discovery, hat aber keinen Termin angesetzt; ab dem 1. Oktober fällt für Paramount eine Verzögerungsgebühr von 7 Mio. Dollar je Tag an.",
+      "begruendung": "Bonta hat sich am Dienstag selbst geäußert: eine Einigung sei möglich, wenn Paramount die Spielchen lasse, terminiert sei aber nichts; er verlangt strukturelle Auflagen. Los Angeles Times, Deadline, Bloomberg und Broadband TV News berichten unabhängig, dazu die vertraglich fixierte Gebühr ab dem 1. Oktober – konkreter, belegter Anlass mit klarem Zeitdruck, deshalb hoch. Zwei Dinge sind neu: Der Paramount-Verwaltungsrat hat einen Wegzug aus Kalifornien ab dem 1. Oktober bereits genehmigt, und laut Bloomberg umkreisen Kaufinteressenten einzelne Warner-Vermögenswerte, während sich der Rechtsstreit hinzieht. Insgesamt klagen zwölf Bundesstaaten.",
       "quellen": [
         {
-          "titel": "NBC News",
-          "url": "https://www.nbcnews.com/business/media/paramount-warner-bros-merger-california-attorney-general-cancels-talks-rcna594160"
-        },
-        {
-          "titel": "CNBC",
-          "url": "https://www.cnbc.com/2026/08/24/paramount-ceo-david-ellison-wbd-acquisition-final-hurdle.html"
-        },
-        {
           "titel": "Los Angeles Times",
-          "url": "https://www.latimes.com/entertainment-arts/business/story/2026-08-24/california-cancels-mediation-session-for-paramount-warner-bros-discovery-deal"
+          "url": "https://www.latimes.com/entertainment-arts/business/story/2026-08-25/california-ag-bonta-open-to-warner-bros-settlement-talks-if-paramount-stops-playing-games"
         },
         {
-          "titel": "Variety",
-          "url": "https://variety.com/2026/film/news/paramount-leak-discussions-california-attorney-general-1236841669/"
+          "titel": "Deadline",
+          "url": "https://deadline.com/2026/08/rob-bonta-paramount-warner-bros-settlement-1237049993/"
+        },
+        {
+          "titel": "Bloomberg",
+          "url": "https://www.bloomberg.com/news/articles/2026-08-25/buyers-circle-warner-assets-with-paramount-legal-fight-extended"
+        },
+        {
+          "titel": "Broadband TV News",
+          "url": "https://www.broadbandtvnews.com/2026/08/25/paramount-denies-leaking-settlement-discussions-with-california-ag/"
         }
       ],
-      "zeit": "2026-08-25T02:00:00Z"
+      "zeit": "2026-08-25T20:00:00Z"
     },
     {
       "id": "20260824-WDAY-uebernahme",
@@ -124,27 +96,47 @@
       "name": "Workday Inc.",
       "art": "uebernahme",
       "chance": "mittel",
-      "these": "Der Finanzinvestor Silver Lake soll ueber eine Übernahme von Workday verhandeln; die Quartalszahlen am 27. August sind der nächste Prüfstein fuer den eingepreisten Übernahmeaufschlag.",
-      "begruendung": "Die Meldung geht auf einen Reuters-Bericht vom 13. August zurück, auf den die Aktie rund 18 Prozent zulegte; seither ist der Aufschlag im Kurs geblieben (rund 5 Mrd. Dollar gegenueber dem Stand davor), bestätigt wurde von keiner Seite etwas. Analystenhäuser rechnen mit 224 bis 227 Dollar je Aktie als möglichem Preis. Eine seriöse Erstquelle, viel Zweitverwertung, kein Filing und keine Bestaetigung, deshalb mittel.",
+      "these": "Der Finanzinvestor Silver Lake soll über eine Übernahme von Workday verhandeln; die Quartalszahlen am 27. August sind der nächste Prüfstein für den eingepreisten Übernahmeaufschlag.",
+      "begruendung": "Die Meldung geht auf einen Reuters-Bericht vom 13. August zurück, auf den die Aktie rund 18 Prozent zulegte; seither ist der Aufschlag im Kurs geblieben, bestätigt wurde von keiner Seite etwas, ein Filing gibt es nicht. Eine seriöse Erstquelle, viel Zweitverwertung, deshalb mittel. Über Nacht kam nichts Neues zur Sache selbst – nur die Beobachtung, dass die gemeldeten Gespräche den ganzen Software-Sektor mitgezogen haben (Workday rund 47 Prozent über dem Tief) und Bewertungsmodelle die Aktie inzwischen als nicht mehr günstig einstufen.",
       "quellen": [
         {
-          "titel": "Reuters via Yahoo Finance",
-          "url": "https://finance.yahoo.com/markets/stocks/articles/exclusive-silver-lake-talks-buy-183537331.html"
+          "titel": "Reuters",
+          "url": "https://www.reuters.com/world/silver-lake-talks-buy-workday-sources-say-2026-08-13/"
         },
         {
-          "titel": "Investors Business Daily",
-          "url": "https://www.investors.com/news/technology/workday-stock-silver-lake-analyst/"
+          "titel": "Stocktwits",
+          "url": "https://stocktwits.com/news-articles/markets/equity/sp500-8000-morningstar-crm-now-wday-msft-august-rebound/cZYIhnzRJm9"
         },
         {
-          "titel": "TheStreet",
-          "url": "https://www.thestreet.com/investing/stocks/workday-silver-lake-software-takeover-targets-hubspot-others"
+          "titel": "Simply Wall St.",
+          "url": "https://simplywall.st/stocks/us/software/nasdaq-wday/workday/news/workday-wday-stock-still-does-not-look-cheap-after-its-47-re"
         },
         {
-          "titel": "24/7 Wall St.",
-          "url": "https://247wallst.com/investing/2026/08/24/investors-may-want-to-own-workday-before-august-27th/"
+          "titel": "Moneycontrol",
+          "url": "https://www.moneycontrol.com/news/business/markets/software-stocks-get-an-earnings-gut-check-after-hot-summer-rally-14015450.html/amp"
         }
       ],
-      "zeit": "2026-08-24T12:00:00Z"
+      "zeit": "2026-08-25T22:00:00Z"
+    },
+    {
+      "id": "20260826-MRVL-analyst",
+      "sym": "MRVL",
+      "name": "Marvell Technology Inc.",
+      "art": "analyst",
+      "chance": "mittel",
+      "these": "Vor den Quartalszahlen am Donnerstag haben mehrere Häuser ihre Kursziele für Marvell deutlich angehoben – Rosenblatt von 240 auf 300 Dollar, Susquehanna von 230 auf 265 Dollar – begründet mit anziehender Nachfrage im KI-Netzwerkgeschäft.",
+      "begruendung": "Zwei benannte Häuser mit bezifferten Anhebungen von je gut 15 bis 25 Prozent, dazu ein datierter Anlass: der Bericht zum zweiten Geschäftsquartal am Donnerstag. Die Meldung läuft bislang über Zweitverwerter (Stocktwits über TradingView, BigGo), eine Erstquelle der Häuser selbst liegt nicht vor, und Zielkurse sind Meinung, keine Tatsache – deshalb mittel und nicht hoch. Aufgenommen, weil die Anhebungen ungewöhnlich groß sind und unmittelbar vor dem Ereignis liegen.",
+      "quellen": [
+        {
+          "titel": "TradingView / Stocktwits",
+          "url": "https://www.tradingview.com/news/stocktwits:ad30b305c094b:0-mrvl-stock-gains-ahead-of-q2-earnings-wall-street-hikes-price-target-betting-on-ai-networking-upside/"
+        },
+        {
+          "titel": "BigGo Finance",
+          "url": "https://finance.biggo.com/news/63c197d4-3c15-4d0a-9e49-a670608b343c"
+        }
+      ],
+      "zeit": "2026-08-26T03:00:00Z"
     },
     {
       "id": "20260825-MLM-beteiligung",
@@ -177,7 +169,7 @@
       "art": "geruecht",
       "chance": "niedrig",
       "these": "BioCryst legte nachbörslich über 10 Prozent zu, nachdem erneut über einen Einstieg eines großen US-Pharmaunternehmens spekuliert wurde.",
-      "begruendung": "Der Ursprung ist eine \"uncooked\"-Meldung des Gerüchtedienstes Betaville aus der Vorwoche, wonach ein US-Biopharmaunternehmen mit über 15 Mrd. Dollar Börsenwert Interesse haben soll – kein Name, keine Bestätigung, kein Filing. Was danach kam, ist Forum-Verkehr: Die Erwähnungen auf Stocktwits erreichten den höchsten Stand des Jahres. Einzelquelle plus Stimmungslärm, deshalb niedrig; die Kursreaktion ist real, der Anlass nicht überprüfbar.",
+      "begruendung": "Der Ursprung ist eine \"uncooked\"-Meldung des Gerüchtedienstes Betaville aus der Vorwoche, wonach ein US-Biopharmaunternehmen mit über 15 Mrd. Dollar Börsenwert Interesse haben soll – kein Name, keine Bestätigung, kein Filing. Was danach kam, ist Forum-Verkehr: Die Erwähnungen auf Stocktwits erreichten den höchsten Stand des Jahres. Einzelquelle plus Stimmungslärm, deshalb niedrig; die Kursreaktion ist real, der Anlass nicht überprüfbar. Eine Nachsuche am Mittwochmorgen brachte nichts Neues.",
       "quellen": [
         {
           "titel": "Stocktwits",
