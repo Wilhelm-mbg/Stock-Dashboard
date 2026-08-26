@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 00:42
+letzter-bericht: 2026-08-27 01:15
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -1806,7 +1806,7 @@ bei 1.063 Kalendertagen). Rechenwege: `Markt-Dashboard-Daten/qs-audit-2026-08-26
 
 ## Aufträge
 
-### 🔴 27.08. ~01:35 — „61 echte Nullumsatz-Stunden" ist eine STICHPROBE. Archivweit ~66.619.
+### 🔴 27.08. ~00:48 — „61 echte Nullumsatz-Stunden" ist eine STICHPROBE. Archivweit ~66.619.
 
 **Die Zahl 61 steht mehrfach auf dieser Tafel und der PM hat sie als Schutzmenge in einen
 Auftrag geschrieben. Beides war falsch.** Die QS hat nachgezählt: die 61 stammen aus **fünf
@@ -1838,44 +1838,95 @@ entfernte Kerzen zurück; eine Reparatur, die das nicht mitbedenkt, ist eine Mom
 *Fallstricke im Raster: der `etf/`-Unterordner (SPY/QQQ/IWM/VOO/TLT/GLD), das Raster ist
 `:30` nicht `:00`, Tage ohne Vergleichsspanne sind nicht entscheidbar.*
 
-### 🔴 27.08. ~03:40 — EILT: 37,6 % der Minutenreihen enden mit einer Teilkerze
+### 🕐 27.08. 01:15 — die Zeitstempel dieser Tafel liefen fast drei Stunden voraus
 
-**Die Zeitstempel-Sperre ist bei 1m nicht undicht — sie ist blind.** `fertigeKerze()` verwirft
-bei `getUTCSeconds() !== 0`. **Bei Minutenkerzen kann das nie greifen:** die laufende Kerze
-trägt den Stempel der vollen Minute (`16:51:00`), der Abruf erfolgt um `16:51:16`. Sekunde
-ist 0, die Sperre schweigt. Bei 60m fällt die laufende Kerze meist auf eine krumme Minute und
-wird am Raster erkennbar — deshalb dort nur ~3 %.
+**Der PM hat die Uhrzeiten der heutigen Einträge geschätzt statt abgelesen** und lag dabei
+zunehmend vorn — der Eintrag „~04:00" entstand um **01:15**. `markt-dashboard-c4` hat es
+gemeldet, die Systemuhr hat es bestätigt. **Alle heutigen Überschriften sind korrigiert.**
 
-| Archiv | Reihen | letzte Kerze flach + Umsatz 0 | |
-|---|---|---|---|
-| **archiv1m** | 2.964 | **1.113** | **37,6 %** |
-| archiv5m | 491 | 16 | 3,3 % |
-| archiv15m | 233 | 8 | 3,4 % |
-| archiv60m | *(gesperrt)* | — | zuletzt 3,0 % |
+**Warum das nicht kosmetisch ist:** Die Archivsperre endet gegen **03:40 echter Zeit**.
+Einträge mit „03:35" und „04:00" lasen sich, als sei sie längst abgelaufen — jemand hätte
+auf einem halb geschriebenen Archiv gemessen. **Uhrzeiten werden ab jetzt abgelesen, nicht
+geschätzt.**
 
-*Der frühere QS-Befund „leckt zu 2,6 %" gilt für 60m und für 1m **nicht**.* Beleg, dass es
-Abrufzeiten sind: `bars_5m_A.json` trägt `stand 2026-08-26T16:51:16Z` und als letzte Kerze
-`16:51:00`, Umsatz 0, O=H=T=S — die Momentaufnahme des Abrufs, als Kerze abgelegt.
+### 🔁 27.08. ~01:15 — VIERMAL DIESELBE STRUKTUR IN EINER NACHT (Aufstellung der QS)
 
-**Warum es eilt:** Das 1m-Fenster der Quelle reicht **sieben Tage** zurück. Was jetzt falsch
-drinsteht, ist in acht Tagen nicht mehr zu korrigieren — und bei 1m ist eine begrabene
-Teilkerze an **keinem** Merkmal mehr erkennbar, sobald der nächste Lauf darüberschreibt.
+**Viermal wäre eine Löschregel über echte Daten gegangen. Dreimal hat die QS es abgefangen —
+beim vierten Mal war sie es, die die Regel vorgeschlagen hat.**
 
-**Das tragfähige Merkmal ist der INHALT, nicht der Zeitstempel:** letzte Kerze der Reihe
-**und** Umsatz 0 **und** Hoch = Tief = Eröffnung = Schluss. Wirkt auf allen Auflösungen
-gleich. Dazu liegt in `reiheHolen()` bereits `currentTradingPeriod.regular` vor.
-**Zugeteilt an `markt-dashboard-1d`, vorgezogen vor alles andere.**
+| # | wer | was fast gelöscht worden wäre |
+|---|---|---|
+| 1 | PM, Uhrzeit-Regel | die 20:00-Kerze |
+| 2 | QS, „letzte Kerze der Reihe" | dieselbe |
+| 3 | QS, Löschen der Phantom-Dochte | die Schlussauktion an Halbtagen |
+| 4 | **QS, das Inhaltsmerkmal** | **1.106 + 1.248 Schlusskurse** |
 
-**Entscheidung des PM: der Sammler wird NICHT gestoppt.** Betroffen ist je Reihe die letzte
-Kerze; ein Stopp verlöre alles übrige, und die Minuten verfallen. *Ein Archiv mit benanntem
-Makel ist mehr wert als keines* — der Makel ist hiermit benannt und beziffert.
+**Ihr eigener Befund dazu, wörtlich:** *„Ich habe ein Merkmal aus einem Befund abgeleitet und
+es empfohlen, ohne zu zählen, was es trifft — genau die Auflage, auf deren Einhaltung ich beim
+Master bestanden habe. Zählen vor dem Löschen. Ich habe es verlangt und selbst nicht getan."*
 
-**⚠ OFFENE GEGENPROBE, Pflicht vor Weiterverwendung der Zahl:** Die QS sagt selbst, sie hat
-**nicht** bewiesen, dass alle 1.113 Teilkerzen sind — eine flache Nullumsatz-Minute kann bei
-einem illiquiden Papier echt sein. Saubere Probe: **nach dem nächsten Sammellauf nachsehen,
-ob dieselben Zeitstempel dann Umsatz tragen.** Bis dahin ist 1.113 eine Obergrenze.
+**→ NEUE HAUSREGEL, von der QS selbst formuliert: EINE VORGABE DER QS IST EIN VORSCHLAG, KEIN
+FREIBRIEF.** `markt-dashboard-1d` hat angehalten und rückgefragt, statt die Regel zu bauen.
+Das ist die richtige Reaktion auf eine Vorgabe der Prüfinstanz — und sie steht hiermit fest.
 
-### 📐 27.08. ~03:35 — die Reparaturform wird VOR der Messung festgelegt
+**Geprüft statt gehofft — die Abnahme ist nicht betroffen:** P-WEG verlangt, dass Hoch oder
+Tief die **Tagesspanne verlassen**. Eine 20:00-Schlusskerze ist flach auf dem Schlusskurs,
+und der liegt per Definition **innerhalb** der Spanne. Sie fällt nicht unter P-WEG und wird
+von keiner Form angetastet. *Die Halbtags-Schlusskerzen sind der Sonderfall und bewusst
+drin — sie tragen echten Phantom-Docht **und** Schlusskurs. Genau darum geht Lauf 1.*
+
+**Zwei eigene Löcher in der Abnahme repariert**, gefunden beim erneuten Durchgehen statt beim
+Abhaken: der Reihen-Hash prüfte nur, *welche* Kerzen da sind, nicht ihre *Werte* (eine
+geänderte Kerze wäre durchgerutscht); und bei Kappen hätte er systematisch falsch
+angeschlagen, weil reparierte Kerzen im Nachher-Lauf in einer anderen Klasse landen.
+
+**Nächster Schritt der QS: ein Prüfstand** — ein Miniatur-Archiv, gegen das alle drei Formen
+einmal durchgespielt werden. *Das Reparaturskript hat noch nie end-to-end gelaufen und soll
+über eine unumkehrbare Änderung entscheiden.*
+
+### ✅ 27.08. ~01:15 — RICHTIGSTELLUNG: die „37,6 % Teilkerzen" sind zu 99,4 % der Schlusskurs
+
+**Der PM hatte hier eine Eilmeldung stehen: 1.113 von 2.964 Minutenreihen enden mit einer
+flachen Nullumsatz-Kerze, 37,6 %, dringend. Die Zählung stimmt. Die Deutung nicht.**
+
+`markt-dashboard-1d` hat die Zeitstempel aufgeschlüsselt und den Bau angehalten, statt das
+angeforderte Merkmal zu bauen. **Der PM hat unabhängig nachgezählt** (2.964 Reihen,
+5.994.385 Kerzen, eigener Leser mit Lesekontrolle):
+
+| | Zahl | |
+|---|---|---|
+| letzte Kerze flach + Umsatz 0 | 1.113 | 37,6 % der Reihen |
+| **davon 20:00 UTC — Sitzungsschluss** | **1.106** | **99,4 %** |
+| **alles andere — die echten Fälle** | **7** | **0,24 % aller Reihen** |
+
+**Die sieben sind namentlich** BCO 17:43, DPST 17:10, LAD 17:22, MSA 17:52, SPXC 17:42,
+TECS 17:25, VONV 18:06 — alle vom 26.08. **Und es sind genau die 7 aus Warnsignal 4.** Die
+Zahl war längst bekannt; sie hat sich auf dem Weg mit den Schlusskursen vermischt.
+
+**⚠ DAS ANGEFORDERTE MERKMAL WAR DIE SIGNATUR DER SCHLUSSKERZE.** „Letzte Kerze **und**
+Umsatz 0 **und** Hoch = Tief = Eröffnung = Schluss" hätte in `archiv1m` **1.106** und in
+`archiv60m` weitere **1.248** offizielle Schlusskurse getroffen — dieselbe Kerze, die an
+395 bzw. 2.832 Werten gegen das Tagesarchiv als echt belegt ist (309-mal auf 0,000 % genau,
+null Gegenfälle). **Es wäre die sechste Löschregel gewesen, die echte Daten trifft, und die
+erste in zwei Archiven gleichzeitig.**
+
+**Der Strukturbefund bleibt richtig:** Bei 1m ist die Sekunden-Regel blind, weil jede Minute
+Gitter ist. **Die Abhilfe ist aber nicht der Inhalt, sondern der geschlossene Eimer** —
+*Kerze ist fertig, wenn `Stempel + Dauer <= jetzt`, gedeckelt auf den Handelsschluss.* Greift
+auf **jeder** Auflösung, auch ohne Raster, und lässt die Schlusskerze in Ruhe, weil deren
+Eimer mit dem Handelsschluss endet. Steht seit `cc2848f`; die sieben stammen aus Läufen davor.
+
+**Keine Löschregel nötig** — die sieben sind vom 26.08., das Fenster hält sieben Tage, der
+nächste Lauf schreibt sie korrekt. **Damit ist die Gegenprobe eingebaut und als Pflicht
+vergeben: nach dem nächsten Sammellauf muss die Zahl von 7 auf 0 stehen, ohne dass jemand
+etwas gelöscht hat.** Geht sie nicht auf 0, ist die Eimer-Regel nicht das, wofür wir sie
+halten.
+
+*Der PM-Anteil, benannt: Die 37,6 % wurden übernommen und als eilig verteilt, ohne die
+Uhrzeiten aufzuschlüsseln — eine einzige Zählung, die vor dem Weitergeben hätte passieren
+müssen. Dieselbe Fehlerfamilie, vor der in derselben Nacht dreimal gewarnt wurde.*
+
+### 📐 27.08. ~01:10 — die Reparaturform wird VOR der Messung festgelegt
 
 **Löschen ist jetzt quantitativ vom Tisch.** `markt-dashboard-1d` hat gegen das Tagesarchiv
 gemessen (486-Reihen-Stichprobe): **von 5.133 P-WEG-Treffern tragen 1.113 = 21,7 % EXAKT den
@@ -1900,7 +1951,7 @@ nächste Nachlade-Lauf dieselben Kerzen anders als das reparierte Archiv — dan
 zweierlei im Archiv **ohne Merkmal zum Auseinanderhalten**. Stimmt die Formel nicht überein,
 bricht `--wirklich` ab.
 
-### 🔴 27.08. ~02:30 — LÖSCHEN IST GESTOPPT: kaputtes und richtiges Feld in derselben Kerze
+### 🔴 27.08. ~01:00 — LÖSCHEN IST GESTOPPT: kaputtes und richtiges Feld in derselben Kerze
 
 **Der PM zieht seine eigene Freigabe zurück.** Ich hatte `markt-dashboard-06` die
 Reparaturform **Löschen** gedeckt, gestützt auf die Tafel-Klassifikation. **Die QS hat sie
@@ -1931,7 +1982,7 @@ sieben Halbtage" vorliegt (ab 03:45, Punkt 1 ihrer Reihenfolge). **Ein Beispiel 
 Befund — in beide Richtungen:** auch „die Schlüsse sind gut" braucht die Verteilung über
 alle Reihen, nicht nur AAPL.
 
-### 🟢 27.08. ~02:30 — Strang A: keine Schlusskurs-Defekte auf `archiv1d` (mit Gegenprobe)
+### 🟢 27.08. ~01:05 — Strang A: keine Schlusskurs-Defekte auf `archiv1d` (mit Gegenprobe)
 
 **Die Frage, die Strang A entscheidet, ist beantwortet — gemessen, nicht gefolgert.**
 
@@ -1966,7 +2017,7 @@ flache Tageskerze liefert Rendite null und schiebt die Bewegung auf den Folgetag
 Strang A über die volle Historie keine Kleinigkeit — gehört als benannte Einschränkung in §5
 oder vorher gemessen.
 
-### 🔴 27.08. ~02:10 — Warnsignal 7 ist WIDERLEGT: die „falschen Delistings" sind echt
+### 🔴 27.08. ~00:55 — Warnsignal 7 ist WIDERLEGT: die „falschen Delistings" sind echt
 
 **`markt-dashboard-1d`, Befund `fb237d5`, `studien/verschwundene-pruefung-2026-08-27/`.
 Nichts geändert, nichts gelöscht — geprüft und zurückgemeldet.**
@@ -2005,7 +2056,7 @@ sie ab dem 18./20./21.08. nicht mehr als handelnd führen? Richtungsmäßig verr
 Überlebensverzerrung, aber es ändert das Universum jeder Messung — deshalb nicht vom PM
 entschieden.
 
-### 🎯 27.08. ~01:55 — die Strang-A-Frage ist jetzt SCHARF: nicht Dochte, sondern Schlusskurse
+### 🎯 27.08. ~00:52 — die Strang-A-Frage ist jetzt SCHARF: nicht Dochte, sondern Schlusskurse
 
 **Neuer Fakt aus dem Rechenweg selbst** (Berechnungen, Nachtrag 9, `fec9720`): **Strang A
 liest ausschließlich Schlusskurse** — kein Stop, kein Hoch, kein Tief. Phantom-Dochte
@@ -2035,7 +2086,7 @@ nachrichtlich mitgedruckt, `testsGesamt` bleibt 1. **W1-Reichweite steht wörtli
 (prüft die Überschuss-Arithmetik, nicht die Auswahl). Sperre 1 bleibt trotz eigener
 Entlastung stehen, bis Wilhelm spricht.
 
-### ⚠ 27.08. ~01:35 — offene Frage, die Strang A betrifft: hat `archiv1d` dieselben Defekte?
+### ⚠ 27.08. ~00:50 — offene Frage, die Strang A betrifft: hat `archiv1d` dieselben Defekte?
 
 **Der PM hat hier einen Fehler gemacht und korrigiert ihn selbst.** Ich hatte der
 Mess-Sitzung geschrieben, ihre Sperre auf die Datenfunde binde technisch nicht, weil beide
@@ -2048,7 +2099,7 @@ Phantom-Dochte im Tagesarchiv.** Ich habe eine Entlastung für einen Defekt auf 
 untersucht. **Sie misst es jetzt** (`archiv1d` ist frei, die Sperre dort ist verwaist, PID
 52300 tot). Bis ihr Ergebnis vorliegt, gilt die Sperre — sachlich, nicht nur formal.
 
-### 📛 27.08. ~01:30 — Begriffskorrektur des PM: „die zwei Datenfunde" hieß zweierlei
+### 📛 27.08. ~00:47 — Begriffskorrektur des PM: „die zwei Datenfunde" hieß zweierlei
 
 Ich habe denselben Ausdruck für zwei verschiedene Arbeitspakete benutzt; die Sitzung
 `markt-dashboard-1d` hat den Widerspruch gefunden und **richtigerweise angehalten, statt zu
@@ -2060,7 +2111,7 @@ raten**. Ab sofort getrennt:
 
 Verschiedene Archive, keine Überschneidung.
 
-### ✅ 27.08. ~01:20 — die Auflösungswand ist gebaut (`markt-dashboard-1d`, `6c790c8`/`d6eb2fb`)
+### ✅ 27.08. ~00:46 — die Auflösungswand ist gebaut (`markt-dashboard-1d`, `6c790c8`/`d6eb2fb`)
 
 Wilhelms Entscheid 1 ist umgesetzt, Release-Notizen liegen, `npm test`/eslint/ui-probe grün.
 **Die Auflage ist zusicherungsfest gemacht statt nur befolgt:** Der Trenntext nennt Produkt,
@@ -2076,7 +2127,7 @@ Kennzahl. Die alte Regel schob sie hinter die Wand und behauptete damit „das M
 grob", obwohl es niemand wusste. **Ohne Zahl keine Behauptung** — dieselbe Familie wie der
 QS-Fund dieser Nacht, wo „0 von 38 Protokollen" wahr war, aber vom Messaufbau erzeugt.
 
-### ✅ 27.08. ~01:15 — Strang-A-Vorregistrierung steht (`59440b1`), PM-Sperre gefallen
+### ✅ 27.08. ~00:45 — Strang-A-Vorregistrierung steht (`59440b1`), PM-Sperre gefallen
 
 `studien/vorregistrierung-2026-08-27-strang-a/VORREGISTRIERUNG.md`, gebaut auf Wilhelms
 F1=1a/F2=2c/F3=3a. **Referenzmessung außer Konkurrenz: der Ausgang „bestätigt" ist vorab
@@ -2092,7 +2143,7 @@ Lauf festzulegen: enthält der Kontrolltopf die gewählten stärksten 10 % oder 
 Topf ist „alle zulässigen Werte" — das Signal wäre damit Teil seines eigenen Maßstabs,
 dieselbe Bauform wie A6. Nicht ändern, nur festlegen.
 
-### ✅ 27.08. ~01:05 — drei Entscheide Wilhelms (per Formular, vor dem Schlafengehen)
+### ✅ 27.08. ~00:44 — drei Entscheide Wilhelms (per Formular, vor dem Schlafengehen)
 
 1. **Die Auflösungswand misst an der LIVE-HÜRDE** — bestätigt. Der Code im Arbeitsbaum
    (`huerdeJetzt()`, `DepotAPI.kostenHuerde`) ist gedeckt; Weg 1 der drei Wege gilt, mit
