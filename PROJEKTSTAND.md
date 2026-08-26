@@ -196,8 +196,16 @@ und die `window.confirm`-Gatter bleiben unberuehrt. Text aus dem Protokoll, nie 
 Sinnvollerweise zusammen mit (1a) — dieselbe Stelle, und der Hinweis soll das richtige
 Urteil zeigen.
 
-**(3a) ZUGETEILT an Desingner (Wilhelm 26.08., Abruf) — Liste der betroffenen
-Darstellungen fuer Stufe F (2).** Wilhelm entscheidet
+**(3a) ~~ZUGETEILT an Desingner~~ ERLEDIGT 26.08. 09:10 (`5084da0`) — Liste der
+betroffenen Darstellungen fuer Stufe F (2).**
+Liegt unter `studien/chart-darstellungen-2026-08-26/LISTE.md`. **Wilhelm ist am Zug.**
+**Die Vorab-Zaehlung des PM war falsch, in beide Richtungen** — der Desingner hat durch
+Lesen erhoben statt per Textsuche und es korrigiert, der PM hat die Korrekturen im Code
+nachgeprueft und bestaetigt: `backtestui.js drawEquity` ist **kein** eigener Zeichner
+(ein Einzeiler auf `Chart.drawLines`), dafuer fehlten `renderer.js sparkSVG` und
+`depot.js renderEquity`. Sie tragen nicht das Namensmuster `draw*`/`zeichne*`, nach dem
+der PM gesucht hatte. **Es sind sechs Zeichenwerke an zehn Stellen, nicht sieben.**
+(Alte Fassung des Auftragstextes unten steht nur noch als Beleg, was beauftragt war.) Wilhelm entscheidet
 ueber die Zusammenlegung der Chart-Renderer erst, wenn er sieht, **was wegfaellt**.
 Auftrag ist die **Liste, kein Umbau**: je Darstellung eine Zeile in Anwendersprache — wo
 sie vorkommt, was sie kann, was bei einer Zusammenlegung davon verloren ginge, und ob es
@@ -215,7 +223,21 @@ sieht, was ein Zusammenlegen kostet. Kollidiert mit niemandem: der Master sitzt 
 
 ### Wartet auf Wilhelm (nicht anfangen)
 
-- **Stufe F (2), ein einziger Chart-Renderer** — neu hinzugekommen 26.08. 08:40. Der
+- **Stufe F (2), ein einziger Chart-Renderer — ENTSCHEIDUNGSREIF seit 26.08. 09:10.**
+  Die Liste liegt vor: `studien/chart-darstellungen-2026-08-26/LISTE.md`. Der Kern des
+  Entscheids steht dort als Befund **B3**: es gibt **zwei mit Absicht unvereinbare
+  Zeitachsen** — der gemeinsame Zeichner setzt Punkte nach der **Uhr** (richtig fuer
+  Depot- und Backtest-Kurven), die Kursbilder nach **Kerzen** (Naechte herausgerechnet).
+  Vom PM im Code nachgeprueft: `chart.js:103` rechnet `X(t)` aus dem Zeitstempel,
+  `strategiechart.js:344` aus dem Kerzen-Index. Ein einziger Zeichner muesste **beide**
+  Betriebsarten koennen. Ebenfalls nachgeprueft: **B2** stimmt — `renderEquity` (Z. 3589)
+  und `drawEquity` (Z. 3249) zeichnen beide `D.equityHist`, zwei Bilder derselben Daten
+  untereinander.
+  Real strittig sind **vier** Spezial-Zeichner (Strategie-Chart samt Indikator-Streifen,
+  Explorer, Trendfinder, Mini-Kurven) — an drei Stellen ist die Zusammenlegung laengst
+  passiert. Die laengste Verlustliste haengt am **Explorer-Chart** (Zoom, Kerzen,
+  Kanaele mit Guete, Fadenkreuz, anklickbare Signale).
+  *Vorgeschichte:* neu hinzugekommen 26.08. 08:40. Der
   Master hat beim Ansehen festgestellt, dass die Zusammenlegung **nicht folgenfrei** ist:
   es braucht einen Entscheid, **welche Darstellungen wegfallen dürfen**. Das ist Wilhelms
   Entscheidung, nicht die einer Sitzung. Bis dahin **gesperrt**, auch Stufe F (3) dahinter.
