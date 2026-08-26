@@ -146,12 +146,22 @@ function pruefe(ordner, opt) {
    * damit womoeglich alle aus einem Nachladelauf. */
   var n = opt.stichprobe && opt.stichprobe < dateien.length ? opt.stichprobe : dateien.length;
   var schritt = Math.max(1, Math.floor(dateien.length / n));
-  var tage = {}, gelesen = 0, unlesbar = 0;
+  var tage = {}, gelesen = 0, unlesbar = 0, nachzuegler = [];
+  var sollFuerNachzuegler = letzterAbgeschlossenerHandelstag(jetzt);
   for (var i = 0; i < dateien.length; i += schritt) {
     var t = juengsteKerze(path.join(ordner, dateien[i]));
     if (!t) { unlesbar++; continue; }
     tage[t] = (tage[t] || 0) + 1; gelesen++;
+    /* WER genau zurueckhaengt, nicht nur wie viele. Zehn namentlich genannte Reihen
+     * sind handlungsfaehig, ein Prozentsatz ist es nicht - und genau daran ist am
+     * 26.08.2026 eine falsche Delisting-Liste entstanden: fuenf Reihen standen im
+     * Archiv still, wurden aber als "verschwunden" gelesen. */
+    if (t < sollFuerNachzuegler) {
+      nachzuegler.push({ sym: dateien[i].replace(/^bars_[^_]+_/, '').replace(/\.json$/, ''),
+        tag: t, tageZurueck: handelstageDazwischen(t, sollFuerNachzuegler) });
+    }
   }
+  nachzuegler.sort(function (a, b) { return a.tageZurueck - b.tageZurueck; });
   if (!gelesen) return { ok: false, grund: 'keine Datei lesbar', ordner: ordner };
   /* Der HAEUFIGSTE juengste Tag, nicht der spaeteste: ein einzelner frisch
    * nachgeladener Wert soll das Archiv nicht gesund aussehen lassen. Genau so ist
@@ -169,8 +179,23 @@ function pruefe(ordner, opt) {
      * gemessen und korrigiert am 26.08.2026 an einem frisch geholten Wegwerf-Archiv. */
     anteilAufStand: Object.keys(tage).reduce(function (a, t) { return a + (t >= soll ? tage[t] : 0); }, 0) / gelesen,
     sollTag: soll, rueckstandHandelstage: rueckstand,
+    nachzuegler: nachzuegler, vollstaendig: n >= dateien.length,
     verteilung: tage
   };
+}
+
+/* NIE AUF 100 AUFRUNDEN, WENN ES NICHT 100 IST. Am 26.08.2026 meldete dieses Werkzeug
+ * "2.965 von 2.965, 100 % auf Stand", waehrend ZEHN Reihen zurueckhingen - 99,6627 %
+ * wurde von Math.round zu 100. Gezaehlt wurde richtig, die Anzeige nahm die Wahrheit
+ * weg. Und zwar in der Sicherung, die genau gegen stilles Veralten gebaut wurde.
+ * Die Luecke ist dann ueber eine falsche Delisting-Liste aufgefallen statt hier.
+ * Jetzt: abgerundet auf eine Nachkommastelle, und "100 %" steht nur, wenn wirklich
+ * jede gepruefte Reihe auf Stand ist. */
+function anteilText(b) {
+  var n = b.nachzuegler ? b.nachzuegler.length : 0;
+  if (!n) return '100 %';
+  var p = Math.floor(b.anteilAufStand * 1000) / 10;
+  return p.toFixed(1).replace('.', ',') + ' %';
 }
 
 function textZu(b) {
@@ -180,11 +205,31 @@ function textZu(b) {
   var z = path.basename(b.ordner) + ': juengste Kerze ' + b.juengsterTagHaeufig +
     ', letzter abgeschlossener Handelstag ' + b.sollTag +
     ' -> Rueckstand ' + b.rueckstandHandelstage + ' Handelstag(e)' +
-    '  [' + b.gelesen + ' von ' + b.dateien + ' geprueft, ' +
-    Math.round(b.anteilAufStand * 100) + ' % auf Stand]';
+    '  [' + b.gelesen + ' von ' + b.dateien + ' geprueft, ' + anteilText(b) + ' auf Stand]';
   if (b.rueckstandHandelstage >= 2) z += '\n  ALARM: Das Archiv steht still. Ein Lauf ohne --aktualisieren holt NICHTS nach -' +
     '\n         er meldet "Nichts zu tun" und geht mit Erfolg aus.';
   else if (b.rueckstandHandelstage === 1) z += '\n  Hinweis: ein Handelstag Rueckstand - kann ein Feiertag sein, dieses Werkzeug kennt keine.';
+  /* WER haengt zurueck? Der haeufigste Tag ist die richtige Kennzahl fuer das Ganze,
+   * aber er sagt nichts ueber die Ausreisser. Ein Name mit Datum ist handlungsfaehig.
+   * WICHTIG: eine stillstehende Reihe ist nicht automatisch ein Fehler - ein Papier,
+   * das wirklich vom Markt ist, steht zu Recht still. Der Unterschied liegt im ALTER:
+   * ein paar Handelstage sind verdaechtig, zwei Jahre sind plausibel. Deshalb steht
+   * der Abstand dabei und nicht nur der Name. */
+  if (b.nachzuegler && b.nachzuegler.length) {
+    var kurz = b.nachzuegler.filter(function (x) { return x.tageZurueck <= 10; });
+    z += '\n  ' + b.nachzuegler.length + ' Reihe(n) haengen zurueck' +
+      (b.vollstaendig ? '' : ' (nur in der Stichprobe gesehen - es koennen mehr sein)') + ':';
+    b.nachzuegler.slice(0, 12).forEach(function (x) {
+      z += '\n      ' + x.sym + '  ' + x.tag + '  (' + x.tageZurueck +
+        ' Handelstag' + (x.tageZurueck === 1 ? '' : 'e') + ')';
+    });
+    if (b.nachzuegler.length > 12) z += '\n      (+' + (b.nachzuegler.length - 12) + ' weitere)';
+    if (kurz.length) {
+      z += '\n    Davon ' + kurz.length + ' erst seit hoechstens 10 Handelstagen - das sind die' +
+        '\n    verdaechtigen: ein frisch stillstehender Wert ist eher ein Abruffehler als' +
+        '\n    ein Delisting. Wer sie als "verschwunden" fuehrt, wirft sie aus dem Universum.';
+    }
+  }
   /* Eine liegengebliebene Sperre ist selbst ein Befund: da ist ein Lauf gestorben. */
   if (b.verwaisteSperre) z += '\n  VERWAISTE SPERRE: ein Nachladelauf hat sie vor ' +
     (b.verwaisteSperre === true ? 'unbekannter Zeit' : b.verwaisteSperre + ' h') +

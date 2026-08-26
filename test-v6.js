@@ -9203,6 +9203,53 @@ console.log('\nWachhund: steht das Kursarchiv still?');
   W.sperreLoesen(tmpS);
   ok(W.pruefe(tmpS, { jetzt: JETZT }).ok === true && !W.pruefe(tmpS, { jetzt: JETZT }).verwaisteSperre,
      'Nach dem Loesen ist alles wie vorher');
+
+  /* ---- Nie auf 100 aufrunden, wenn es nicht 100 ist (26.08.2026) ----
+   * Der Wachhund meldete "2.965 von 2.965, 100 % auf Stand", waehrend ZEHN Reihen
+   * zurueckhingen: 99,6627 % wurde von Math.round zu 100. Gezaehlt wurde richtig, die
+   * ANZEIGE nahm die Wahrheit weg - und zwar in der Sicherung, die genau gegen stilles
+   * Veralten gebaut wurde. Die Luecke fiel dann ueber eine falsche Delisting-Liste auf
+   * statt hier: fuenf stillstehende Reihen wurden als "verschwunden" gefuehrt.
+   * Das ist am selben Tag der sechste Fall, in dem ein defekter Zustand wie ein gesunder
+   * aussieht, weil die Meldung eine Stelle zu grob ist. */
+  var tmpR = fs.mkdtempSync(pathT.join(osT.tmpdir(), 'rundung-test-'));
+  function legeR(sym, tag) {
+    fs.writeFileSync(pathT.join(tmpR, 'bars_1d_' + sym + '.json'),
+      JSON.stringify({ series: [[Date.parse(tag + 'T13:30:00Z'), 100, 1, 101, 99]] }));
+  }
+  /* 299 auf Stand, EINE zurueck: 99,67 % - genau der Bereich, in dem gerundet wurde. */
+  for (var ri = 0; ri < 299; ri++) legeR('AKT' + ri, '2026-08-25');
+  legeR('ZURUECK', '2026-08-21');
+  var bR = W.pruefe(tmpR, { jetzt: new Date('2026-08-26T09:00:00Z') });
+  var tR = W.textZu(bR);
+  ok(!/100 % auf Stand/.test(tR),
+     'Bei 299 von 300 steht NICHT "100 % auf Stand"', (tR.match(/[\d,]+ % auf Stand/) || [])[0]);
+  ok(/99,6 % auf Stand/.test(tR),
+     'sondern der abgerundete Wert mit Nachkommastelle', (tR.match(/[\d,]+ % auf Stand/) || [])[0]);
+  /* Und die eine Reihe wird BEIM NAMEN genannt - ein Prozentsatz ist nicht
+   * handlungsfaehig, ein Kuerzel mit Datum schon. Genau daran haette man die falsche
+   * Delisting-Liste erkannt. */
+  ok(bR.nachzuegler.length === 1 && bR.nachzuegler[0].sym === 'ZURUECK',
+     'Die zurueckhaengende Reihe wird namentlich genannt', JSON.stringify(bR.nachzuegler));
+  ok(/ZURUECK\s+2026-08-21\s+\(2 Handelstage\)/.test(tR),
+     'mit Datum und Abstand in Handelstagen');
+  /* Der Abstand ist der Unterschied zwischen "verdaechtig" und "vermutlich echt weg":
+   * ein paar Tage sind ein Abruffehler, zwei Jahre sind ein Delisting. */
+  legeR('LANGEWEG', '2024-12-17');
+  var bR2 = W.pruefe(tmpR, { jetzt: new Date('2026-08-26T09:00:00Z') });
+  var lang = bR2.nachzuegler.filter(function (x) { return x.sym === 'LANGEWEG'; })[0];
+  ok(lang && lang.tageZurueck > 400,
+     'Eine seit zwei Jahren stillstehende Reihe wird als solche ausgewiesen', lang && lang.tageZurueck);
+  ok(/hoechstens 10 Handelstagen/.test(W.textZu(bR2)),
+     'und der Text trennt die frisch stillstehenden von den lange stillstehenden');
+  /* Wenn wirklich alles auf Stand ist, steht auch 100 % da - sonst waere die Anzeige
+   * in die andere Richtung falsch. */
+  fs.unlinkSync(pathT.join(tmpR, 'bars_1d_ZURUECK.json'));
+  fs.unlinkSync(pathT.join(tmpR, 'bars_1d_LANGEWEG.json'));
+  var bR3 = W.pruefe(tmpR, { jetzt: new Date('2026-08-26T09:00:00Z') });
+  ok(/100 % auf Stand/.test(W.textZu(bR3)) && bR3.nachzuegler.length === 0,
+     'Ist wirklich jede Reihe auf Stand, steht 100 % da');
+  fs.rmSync(tmpR, { recursive: true, force: true });
   fs.rmSync(tmpS, { recursive: true, force: true });
 
   /* Und das Abrufwerkzeug setzt sie wirklich - vor der Schleife, geloest vor der
