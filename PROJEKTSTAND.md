@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 02:05
+letzter-bericht: 2026-08-27 01:56
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -1963,6 +1963,18 @@ Gleitkommavergleich ohne fachliche Toleranz.
 > *„Meine 76,4 % waren richtig gerechnet, aber sie beantworteten die Frage über alle Tage,
 > während der Fund die Halbtage meinte."* Eine richtige Zahl, die eine andere Frage
 > beantwortet als die gestellte — diesmal in der Aggregation.
+
+### 🕵 27.08. 01:55 — der PM hätte fast einen Fehlalarm gemeldet, wegen seiner eigenen Prüfung
+
+Eine schnelle Prüfung (`tasklist` gefiltert) meldete **„NACHLADER BEENDET"** — zwei Stunden zu
+früh. **Falsch.** Die saubere Prüfung zeigt: PID 5852 und 7896 leben, **303 Dateien in zehn
+Minuten**, keine Alarmdatei. Der Filter passte nicht zum Ausgabeformat und lieferte einen
+Nulltreffer, der wie ein Befund aussah.
+
+> **Dieselbe Familie wie alles andere heute Nacht, diesmal in einer Prozessprüfung:** *Was
+> genau hat diese Prüfung geprüft?* — Auch eine Betriebsprüfung braucht eine
+> Positivkontrolle. Die Archiv-Wache macht es richtig: sie zählt die **Schreibrate** statt nur
+> zu fragen, ob eine PID existiert.
 
 ### ⏳ 27.08. ~02:00 — ENTSCHEIDUNG (2) IST ZEITKRITISCH: heute Kosmetik, ab nächster Woche Messhygiene
 
