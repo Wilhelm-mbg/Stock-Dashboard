@@ -168,9 +168,45 @@
     return p.ergebnisse[idx] || p.ergebnisse[0];
   }
 
+  /* ================= Aufloesungswand (1b, Wilhelm 26.08.2026) =================
+   * Die Aussicht (aussicht.tage80) steht im Protokoll in den Entscheidungs-
+   * Eintraegen "Urteil Variante N" - dieselbe Stelle, aus der die Nachrechnung
+   * des Analytikers liest. Planungsrelevant ist die KLEINSTE Zahl ueber alle
+   * Varianten. null heisst: keine Variante hat einen positiven Punktschaetzer,
+   * mehr Daten allein wuerden die Frage nicht entscheiden.
+   * WICHTIG fuer den Ton: "nicht entscheidbar" heisst "wir wissen es nicht",
+   * nicht "schlecht". Die Trennung unten ist ein Hinweis auf das Messgeraet,
+   * keine Abwertung der Strategie - und sie greift in nichts ein. */
+  var WAND_TAGE = 2500;
+  function aussichtVariante(p, vi) {
+    var e = (p.entscheidungen || []).filter(function (en) { return en.regel === 'Urteil Variante ' + vi; })[0];
+    var a = e && e.ergebnis && e.ergebnis.aussicht;
+    return a && isFinite(a.tage80) ? a.tage80 : null;
+  }
+  function minAussicht(p) {
+    var min = null;
+    (p.ergebnisse || []).forEach(function (e, vi) {
+      var t = aussichtVariante(p, vi);
+      if (t != null && (min == null || t < min)) min = t;
+    });
+    return min;
+  }
+  function hinterWand(p) {
+    var min = minAussicht(p);
+    return p.bestesUrteil === 'nicht-entscheidbar' && (min == null || min > WAND_TAGE);
+  }
+  function aussichtZelle(p) {
+    var min = minAussicht(p);
+    if (min == null) {
+      return '<td class="num"><span title="Keine Variante hat einen positiven Punktschätzer – mehr Daten allein würden die Frage nicht entscheiden." style="color:var(--muted);">–</span></td>';
+    }
+    return '<td class="num">' + U.nf0.format(min) + '</td>';
+  }
+
   function zeichnen() {
     var el = document.getElementById('scoreboard');
-    var rows = STAND.map(function (z, i) {
+    var zeile = function (i) {
+      var z = STAND[i];
       var p = z.aktuell.protokoll, e = bestesErgebnis(p), b = e.bestaetigung.ueberschuss;
       var u = p.bestesUrteil;
       var warn = (p.warnungen || []).length;
@@ -185,6 +221,7 @@
         '<td class="num">' + t2(b.t) + '</td>' +
         '<td class="num">' + pp(b.mde) + '</td>' +
         '<td class="num">' + (b.tage || 0) + ' / ' + (b.signale || 0) + '</td>' +
+        aussichtZelle(p) +
         '<td style="color:var(--muted);">' + U.esc(p.gemessenAm.slice(0, 10)) +
           (spOk === false ? ' <span title="Selbstprüfung fehlgeschlagen – der Nullpunkt dieser Messung liegt nicht bei null" style="color:var(--down); font-weight:600;">✖ Nullpunkt</span>'
            : spOk === null ? ' <span title="Ohne Selbstprüfung gemessen – Nullpunkt ungeprüft" style="color:var(--muted);">○</span>' : '') +
@@ -193,18 +230,39 @@
            * sind nicht ohne Weiteres vergleichbar - genau das war der Anlass. */
           (maschineAktuell(p) === false ? ' <span title="Mit einer anderen Fassung der Messmaschine gemessen als der, die jetzt hier liegt (' + U.esc(String((p.verfahren && p.verfahren.codeStand) || '?')) + ' statt ' + U.esc(String(MASCHINE)) + '). Diese Zeile ist mit den anderen nicht ohne Weiteres vergleichbar – neu messen." style="color:var(--series2); font-weight:600;">⟳ alte Maschine</span>' : '') + '</td>' +
         '</tr>';
-    }).join('');
+    };
+    /* Zweiteilung (1b): was jenseits der Wand liegt, steht in einem eigenen
+     * Abschnitt DERSELBEN Tabelle - gleiche Spalten, gleiche Klickbarkeit,
+     * nichts wird ausgeblendet oder abgeschaltet. Die Reihenfolge innerhalb
+     * beider Abschnitte bleibt die bestehende Sortierung aus laden(). */
+    var oben = [], wand = [];
+    STAND.forEach(function (z, i) { (hinterWand(z.aktuell.protokoll) ? wand : oben).push(i); });
+    var rows = oben.map(zeile).join('') +
+      (wand.length
+        ? '<tr><td colspan="9" style="padding:16px 8px 6px; border-top:2px solid var(--grid);">' +
+          '<b>Nicht entscheidbar mit diesen Daten</b><br>' +
+          '<span style="font-weight:400; color:var(--muted); font-size:var(--fs-neben);">' +
+          'Diese Strategien sind nicht am Markt gescheitert, sondern am Messgerät: Eine Entscheidung bräuchte mehr als ' +
+          U.nf0.format(WAND_TAGE) + ' weitere Bestätigungs-Handelstage. Sie bleiben wählbar und vollständig einsehbar – ' +
+          'die App behauptet nur nichts über sie, weder gut noch schlecht.</span></td></tr>'
+        : '') +
+      wand.map(zeile).join('');
     el.innerHTML = '<div style="overflow:auto;"><table class="tbl" style="width:100%;">' +
       '<tr><th>Urteil</th><th>Strategie</th><th style="text-align:right;">Überschuss<br><span style="font-weight:400; color:var(--muted);">Tagesmittel</span></th>' +
       '<th style="text-align:right;">Überschuss<br><span style="font-weight:400; color:var(--muted);">je Signal</span></th>' +
-      '<th style="text-align:right;">t</th><th style="text-align:right;">MDE</th><th style="text-align:right;">Tage / Signale</th><th>gemessen</th></tr>' +
+      '<th style="text-align:right;">t</th><th style="text-align:right;">MDE</th><th style="text-align:right;">Tage / Signale</th>' +
+      '<th style="text-align:right;">Aussicht<br><span style="font-weight:400; color:var(--muted);">Handelstage bis entscheidbar</span></th>' +
+      '<th>gemessen</th></tr>' +
       rows + '</table></div>' +
       '<div id="sbDetail" style="margin-top:10px;"></div>' +
       '<div style="font-size:var(--fs-neben); color:var(--muted); margin-top:6px;">Alle Werte aus der <b>Bestätigungshälfte</b> (zurückgehaltene Tage) in Prozentpunkten. „Tagesmittel" ist die Teststatistik, „je Signal" die handelbare Zahl – beide können verschiedene Vorzeichen haben, dann steht eine Warnung dabei. Zeile anklicken für den vollständigen Entscheidungsweg. ' +
       'Ein <b style="color:var(--down);">✖ Nullpunkt</b> heißt: Die Messung hat ihre eigene Selbstprüfung nicht bestanden – ' +
       'ein Signal ohne jeden Kursbezug hätte null ergeben müssen und tat es nicht. Dann stimmt keine Zahl dieser Zeile. ' +
       'Ein <b style="color:var(--series2);">⟳ alte Maschine</b> heißt: Die Zeile wurde mit einer anderen Fassung der Messmaschine gerechnet als der, die jetzt hier liegt – ' +
-      'sie steht zum Vergleich, aber nicht auf gleicher Grundlage. Steht bei keiner Zeile eine Marke, tragen die Protokolle keine Kennung der Maschine (alle vor dem 26.08.2026) oder die Maschine fehlt.</div>';
+      'sie steht zum Vergleich, aber nicht auf gleicher Grundlage. Steht bei keiner Zeile eine Marke, tragen die Protokolle keine Kennung der Maschine (alle vor dem 26.08.2026) oder die Maschine fehlt. ' +
+      '<b>„Aussicht"</b> ist die kleinste Zahl weiterer Bestätigungs-Handelstage über alle Varianten, nach der das Urteil entscheidbar würde – ' +
+      'unter der Annahme des Protokolls, dass Effekt und Signaldichte konstant bleiben. ' +
+      'Ein „–" heißt: Keine Variante hat einen positiven Punktschätzer, mehr Daten allein würden nichts entscheiden.</div>';
     el.querySelectorAll('tr.sbRow').forEach(function (tr) {
       tr.addEventListener('click', function () { detail(parseInt(tr.getAttribute('data-i'), 10)); });
     });
@@ -236,13 +294,15 @@
     }
     // Alle Varianten mit Entdeckung UND Bestaetigung - nichts wird versteckt
     h += '<h4 style="margin:12px 0 6px;">Alle Varianten</h4><div style="overflow:auto;"><table class="tbl" style="font-size:var(--fs-neben);">' +
-      '<tr><th>#</th><th>Parameter</th><th>Signale</th><th colspan="2" style="text-align:center;">Entdeckung</th><th colspan="3" style="text-align:center;">Bestätigung</th><th>Urteil</th></tr>' +
-      '<tr><th></th><th></th><th></th><th style="text-align:right;">roh</th><th style="text-align:right;">Überschuss (t)</th><th style="text-align:right;">roh</th><th style="text-align:right;">Überschuss (t)</th><th style="text-align:right;">je Signal</th><th></th></tr>';
+      '<tr><th>#</th><th>Parameter</th><th>Signale</th><th colspan="2" style="text-align:center;">Entdeckung</th><th colspan="3" style="text-align:center;">Bestätigung</th><th style="text-align:right;">Aussicht</th><th>Urteil</th></tr>' +
+      '<tr><th></th><th></th><th></th><th style="text-align:right;">roh</th><th style="text-align:right;">Überschuss (t)</th><th style="text-align:right;">roh</th><th style="text-align:right;">Überschuss (t)</th><th style="text-align:right;">je Signal</th><th></th><th></th></tr>';
     (p.ergebnisse || []).forEach(function (e, vi) {
+      var av = aussichtVariante(p, vi);
       h += '<tr><td>' + vi + '</td><td style="font-family:var(--mono, monospace); font-size:var(--fs-klein);">' + U.esc(JSON.stringify(e.params)).slice(0, 80) + '</td><td class="num">' + e.signale + '</td>' +
         '<td class="num">' + pp(e.entdeckung.roh.tagesmittel) + '</td><td class="num">' + pp(e.entdeckung.ueberschuss.tagesmittel) + ' (' + t2(e.entdeckung.ueberschuss.t) + ')</td>' +
         '<td class="num">' + pp(e.bestaetigung.roh.tagesmittel) + '</td><td class="num">' + pp(e.bestaetigung.ueberschuss.tagesmittel) + ' (' + t2(e.bestaetigung.ueberschuss.t) + ')</td>' +
         '<td class="num">' + pp(e.bestaetigung.ueberschuss.jeSignal) + '</td>' +
+        '<td class="num">' + (av == null ? '<span style="color:var(--muted);">–</span>' : U.nf0.format(av)) + '</td>' +
         '<td style="color:' + farbe(p.urteile[vi]) + ';">' + U.esc(label(p.urteile[vi])) + '</td></tr>';
     });
     h += '</table></div>';

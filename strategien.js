@@ -258,8 +258,18 @@
       treffer.map(function (t) {
         var pk = t.pk;
         return 'Messprotokoll <code>' + U.esc(t.key) + '</code> vom ' + U.esc(pk.datum) + ': <b>' + U.esc(pk.urteil) +
-          '</b>, Überschuss je Signal ' + (pk.jeSignalPp >= 0 ? '+' : '') + U.dez(pk.jeSignalPp, 3) + ' Pp' +
-          (pk.varianten > 1 ? ' (beste von ' + pk.varianten + ' Varianten)' : '');
+          /* Seit der Variantenwahl nach Protokoll-Urteil kann die Zahl je Signal
+           * fehlen - dann steht hier nichts statt einer fremden Zahl (dieselbe
+           * Regel wie im Regelkopf). */
+          '</b>' + (pk.jeSignalPp == null ? ''
+            : ', Überschuss je Signal ' + (pk.jeSignalPp >= 0 ? '+' : '') + U.dez(pk.jeSignalPp, 3) + ' Pp') +
+          (pk.varianten > 1 ? ' (beste von ' + pk.varianten + ' Varianten)' : '') +
+          /* Aufloesungswand (1b): bei "nicht entscheidbar" gehoert dazu, wann die
+           * Frage entscheidbar wuerde - kleinste Aussicht ueber alle Varianten,
+           * aus dem Protokoll gelesen. Kein Werturteil. */
+          (pk.urteil === 'nicht-entscheidbar' && pk.aussichtTage80 != null
+            ? ', entscheidbar frühestens mit rund ' + U.nf0.format(pk.aussichtTage80) + ' weiteren Handelstagen'
+            : '');
       }).join(' · ') +
       ' <span style="color:var(--muted);">– die App liest dieses Urteil, sie rechnet es nicht.</span></div>';
   }

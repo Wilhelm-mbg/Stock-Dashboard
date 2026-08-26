@@ -4223,6 +4223,49 @@ console.log('\n44) Messmaschine, Scoreboard und Strategie-Eingabe (23.08.2026)')
   ok(/huerdeAnzeigen\(\)/.test(kaBlock) && /regelKopfAnzeigen\(\)/.test(kaBlock),
      'Nach dem Laden der Protokolle werden BEIDE Anzeigen neu gezeichnet (#100)');
 
+  /* ---- 1b: die Aufloesungswand steht in der Oberflaeche ----
+   * Die Aussicht (aussicht.tage80) stand in jedem Protokoll, aber nirgends in der
+   * App - alle zwoelf Strategien standen gleichberechtigt da, obwohl sieben mit
+   * diesen Daten nie entscheidbar sein werden. Wilhelms Vorgabe (Tafel 26.08.):
+   * die KLEINSTE Aussicht ueber alle Varianten zeigen, ab rund 2.500 Handelstagen
+   * ein eigener Abschnitt. Hinweis, kein Eingriff. */
+  ok(/Urteil Variante/.test(dep2) && /aussichtTage80: t80Min/.test(dep2),
+     'Die Bruecke liest die Aussicht aus den "Urteil Variante"-Eintraegen der Protokolle (1b)');
+  ok(/a\.tage80 < t80Min/.test(dep2),
+     'und nimmt die KLEINSTE ueber alle Varianten - nicht die erste, nicht die beste (1b)');
+  ok(/aussichtTage80: k\.aussichtTage80/.test(dep2),
+     'DepotAPI.protokollKante gibt die Aussicht weiter - eine Quelle fuer alle Anzeigen (1b)');
+  var sb9 = fs.readFileSync(__dirname + '/scoreboard.js', 'utf8');
+  ok(/WAND_TAGE = 2500/.test(sb9),
+     'Die Wand-Schwelle im Scoreboard ist Wilhelms 2.500 von der Tafel (1b)');
+  ok(/bestesUrteil === 'nicht-entscheidbar'/.test(sb9.slice(sb9.indexOf('function hinterWand'), sb9.indexOf('function hinterWand') + 400)),
+     'Hinter die Wand wandert NUR "nicht entscheidbar" - ein entschiedenes Urteil ist keine Messgeraet-Frage (1b)');
+  ok(/Nicht entscheidbar mit diesen Daten/.test(sb9),
+     'Der Abschnitt traegt Wilhelms Wortlaut von der Tafel (1b)');
+  ok(/weder gut noch schlecht/.test(sb9) && /bleiben wählbar/.test(sb9),
+     'Der Erklaersatz sagt ausdruecklich: keine Abwertung, nichts wird abgeschaltet (1b)');
+  ok(/Handelstage bis entscheidbar/.test(sb9),
+     'Die Aussicht-Spalte erklaert ihre Einheit im Kopf (1b)');
+  var st9 = fs.readFileSync(__dirname + '/strategien.js', 'utf8');
+  ok(/aussichtTage80/.test(st9) && /entscheidbar frühestens/.test(st9),
+     'Auch die Strategien-Karten nennen die Aussicht - dieselbe Quelle ueber DepotAPI (1b)');
+  /* Eigenschafts-Pruefung gegen ein ECHTES Protokoll: aendert die Messmaschine die
+   * Ablage der Aussicht, wird die Anzeige still leer - das soll hier laut werden.
+   * kapitulation 26.08.: Varianten 1551/2330/224, kleinste 224 (Tafel-Tabelle). */
+  (function () {
+    var kp = __dirname + '/studien/messmaschine/protokolle/kapitulation-2026-08-26.json';
+    if (!fs.existsSync(kp)) return; // aeltere Checkouts haben das Protokoll nicht
+    var j9 = JSON.parse(fs.readFileSync(kp, 'utf8'));
+    var min9 = null;
+    (j9.entscheidungen || []).forEach(function (en) {
+      if (!/^Urteil Variante/.test(en.regel || '') || !en.ergebnis) return;
+      var a = en.ergebnis.aussicht;
+      if (a && isFinite(a.tage80) && (min9 == null || a.tage80 < min9)) min9 = a.tage80;
+    });
+    ok(min9 === 224,
+       'Die Lesevorschrift findet im echten Protokoll die kleinste Aussicht (kapitulation: 224)', min9);
+  })();
+
   /* ---- #102: interne Schluessel gehoeren nicht in die Anzeige ----
    * Sichtbar wurde es erst durch die Reparatur von #100: sobald der Regelkopf das
    * Protokoll ueberhaupt zu sehen bekam, stand dort woertlich "Beleg nicht-bestaetigt". */

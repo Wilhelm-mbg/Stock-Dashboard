@@ -668,7 +668,8 @@
     var pk = PROTOKOLL_KANTE[cfg.mode];
     var belegAusProtokoll = null;
     if (pk && pk.urteil && pk.urteil !== 'unbekannt') {
-      belegAusProtokoll = { stand: pk.urteil, datum: pk.datum, jeSignalPp: pk.jeSignalPp };
+      belegAusProtokoll = { stand: pk.urteil, datum: pk.datum, jeSignalPp: pk.jeSignalPp,
+        aussichtTage80: pk.aussichtTage80 };
       b = { stand: pk.urteil, txt: b.txt };
     }
     /* HINWEIS BEI "nicht bestaetigt" (26.08.2026, Wilhelms Entscheid 2b).
@@ -707,6 +708,14 @@
             (belegAusProtokoll.jeSignalPp == null ? 'keine Zahl je Signal zu diesem Urteil. '
               : 'Überschuss je Signal ' + (belegAusProtokoll.jeSignalPp >= 0 ? '+' : '') +
                 U.dez(belegAusProtokoll.jeSignalPp, 3) + ' Pp. ') +
+            /* AUFLOESUNGSWAND (1b): bei "nicht entscheidbar" gehoert dazu, WANN die
+             * Frage entscheidbar wuerde - die Zahl steht im Protokoll (kleinste
+             * Aussicht ueber alle Varianten), nirgendwo sonst. Kein Werturteil:
+             * "nicht entscheidbar" heisst "wir wissen es nicht", nicht "schlecht". */
+            (belegAusProtokoll.stand === 'nicht-entscheidbar' && belegAusProtokoll.aussichtTage80 != null
+              ? 'Entscheidbar würde die Frage nach dem Protokoll frühestens mit rund ' +
+                U.nf0.format(belegAusProtokoll.aussichtTage80) + ' weiteren Bestätigungs-Handelstagen. '
+              : '') +
             'Die App liest dieses Urteil, sie rechnet es nicht. ' +
             '<a href="#" data-sprung-messung>Protokoll im Scoreboard ansehen</a></span>'
           : '<br><span style="color:var(--muted); font-size:var(--fs-neben);">Kein Messprotokoll im Datenordner – dieser Stand steht fest im Code und kann veralten.</span>')]
@@ -780,6 +789,20 @@
           if (tw > besterT) { besterT = tw; beste = u; }
         });
         if (!urteilProtokoll) return;
+        /* AUFLOESUNGSWAND (1b, 26.08.2026): die Aussicht steht im Protokoll in den
+         * Entscheidungs-Eintraegen "Urteil Variante N" - dieselbe Stelle, aus der die
+         * Nachrechnung des Analytikers liest. Planungsrelevant ist die KLEINSTE
+         * tage80 ueber alle Varianten (Wilhelms Vorgabe von der Tafel) - nicht die
+         * erste, nicht die der besten Variante. Hat KEINE Variante eine Aussicht
+         * (das passiert, wenn kein Punktschaetzer positiv ist), bleibt null stehen:
+         * dann gibt es keine Zahl an Handelstagen, die die Frage noch entscheiden
+         * wuerde. */
+        var t80Min = null;
+        (j.entscheidungen || []).forEach(function (en) {
+          if (!/^Urteil Variante/.test(en.regel || '') || !en.ergebnis) return;
+          var a = en.ergebnis.aussicht;
+          if (a && isFinite(a.tage80) && (t80Min == null || a.tage80 < t80Min)) t80Min = a.tage80;
+        });
         var vorhanden = neu[j.strategie.key];
         if (vorhanden && vorhanden.datum >= String(j.gemessenAm || '').slice(0, 10)) return;
         neu[j.strategie.key] = {
@@ -787,6 +810,7 @@
           urteil: urteilProtokoll,
           datum: String(j.gemessenAm || '').slice(0, 10),
           varianten: j.ergebnisse.length,
+          aussichtTage80: t80Min,
         };
       });
       PROTOKOLL_KANTE = neu;
@@ -4077,7 +4101,8 @@
      * angezeigt, nie vermischt. */
     protokollKante: function (key) {
       var k = PROTOKOLL_KANTE[key];
-      return k ? { urteil: k.urteil, datum: k.datum, jeSignalPp: k.jeSignalPp, varianten: k.varianten } : null;
+      return k ? { urteil: k.urteil, datum: k.datum, jeSignalPp: k.jeSignalPp, varianten: k.varianten,
+        aussichtTage80: k.aussichtTage80 == null ? null : k.aussichtTage80 } : null;
     },
     regelStatus: function () {
       if (!D) return null;
