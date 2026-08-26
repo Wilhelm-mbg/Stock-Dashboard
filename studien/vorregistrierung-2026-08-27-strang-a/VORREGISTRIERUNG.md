@@ -211,4 +211,37 @@ Nullumsatz-Tagen), NACH dem Referenzlauf, nicht darin.
 
 ---
 
+## 11. Nachtrag 27.08. ~02:0x — Nullumsatz-Sprungkerzen: mit dem eigenen Filter nachgezählt
+
+Auf QS-Befund (Stempel-Kerzen LBRDA/LBRDK, ~89 mutmaßliche Split-Ränder) habe ich rein
+lesend gezählt, was davon **meinen** Universumsfilter überlebt (WP.istAktie + F1 +
+Mindesthistorie — exakt der Lader dieses Werkzeugs). **Positivkontrolle bestanden:** die
+Zählung fand die drei von der QS benannten, im Universum erwarteten Fälle exakt wieder
+(LBRDA +16,6 %, LBRDK +16,8 % am 21.08.; PECO +200,0 % = 3:1).
+
+**Ergebnis:** F1 wirft die harten Split-Ränder als **ganze Reihen** (ASTH +750 %,
+ARWR −88 % → beide komplett draußen; insgesamt 36 Reihen). Im Universum **verbleiben
+50 Nullumsatz-Kerzen mit |Sprung| > 10 %** über ~30 von 2.213 Reihen: 39 vor 2005,
+6 bis 2014, **5 ab 2015** — bei ~22 Mio Kerzen ein 2-ppm-Phänomen, konzentriert in der
+Kleinwert-Illiquidität der 80er/90er (+50 %/+100 %-Einzelkerzen bei Regionalbanken),
+dazu PECO 2021 (Split-Rand, +200 %) und die zwei bestätigten Stempel LBRDA/LBRDK
+(21.08.2026, jeweils letzte Kerze der Datei).
+
+**Einordnung und Festlegung:** Ein solcher Tag kann über den Level-Shift im
+Rückblickfenster einen Merkmals-Rang verschieben und im Haltefenster eine
+Periodenrendite prägen — bei 50 Kerzen auf 155 × ~2.000 Perioden-Beobachtungen ist der
+erwartete Einfluss klein, aber nicht null, und die Richtung nicht vorab bestimmbar.
+**Geführt als benannte Einschränkung neben Nachtrag 10b; nicht behandelt** (jede
+Bereinigungsregel wäre eine neue Anordnung). Die Liste der 50 liegt reproduzierbar im
+Zähl-Einzeiler dieser Prüfung (Kriterium: Umsatz 0 und |Schluss/Vortagesschluss − 1| >
+10 %); wer sie beziffert haben will: dieselbe kleine A/B-Empfindlichkeitsmessung wie
+für Nachtrag 10b, NACH dem Referenzlauf.
+
+*Nebenbefund an die Datenqualität (nicht meine Baustelle, aber gezählt): F1 verwirft
+36 ganze Reihen wegen einzelner kaputter Ränder — darunter frische Fälle wie BYND
++2920 % am 2026-07-20 und CHRD +25733 % am 2020-11-20. Das ist die bekannte harte
+Bauart des Filters; die Fälle gehören auf die Tafel, nicht in diese Messung.*
+
+---
+
 *Simulation mit virtuellem Kapital. Keine Anlageberatung.*
