@@ -305,10 +305,6 @@ Werkzeugs sollte es jemand wissen, der sich auf die Weigerung verlaesst.
 *Wer welche Dateien belegt. Trag dich ein, bevor du anfängst; nimm dich raus, wenn du
 fertig bist.*
 
-- **Desingner** — hat **(3a) die Liste der Chart-Darstellungen** fuer Stufe F (2)
-  (26.08., vom PM zugeteilt auf Wilhelms Vorschlag). **Kein Code** — ein Dokument unter
-  `studien/`. Belegt keine Quelldatei, liest nur.
-
 - **App-Codebase Master** — hat die **Neumessung aller zwölf Strategien** genommen
   (26.08., vom PM zugeteilt). Langer Rechenlauf, KEIN Umbau — es wird kein Quelltext
   angefasst. Gemessen wird auf den bezeichneten Archiven (E:, 2.887 Werte 60m / 2.966
