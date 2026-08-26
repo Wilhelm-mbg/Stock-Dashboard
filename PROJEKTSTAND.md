@@ -346,6 +346,61 @@ Zwei Funde des Auditors aus dem 2. Lauf, **beide stecken in der ausgelieferten v
 sieht an zwei Stellen der App verschieden aus. **Achtung:** das ist `depot.js` — dieselbe
 Datei, in der der Master sitzt. Vorher mit ihm abstimmen oder er nimmt es mit.
 
+### ✅ `ausstiegsZeitpunkt` fertig (Master, 26.08. `8fc2c8a`) — Maschine jetzt **1.3.0**
+
+Vom PM in `messmaschine.js:810` nachgesehen. **Er heißt `ausstiegsZeitpunkt`, nicht
+`ausstieg`** — der Namenshinweis von der Tafel ist aufgenommen, und wer die alte
+Schreibweise benutzt, bekommt eine **Verweigerung** statt eines stillen Nichtstuns
+(Zeile 807).
+
+**„Alle drei Stellen zugleich" ist belegt, nicht zugesichert:**
+
+| Probe | Ergebnis |
+|---|---|
+| Rohrendite | −0,1020 → −0,4000 Pp (der Schalter greift überhaupt) |
+| Überschuss, alles zusammen umgestellt | Unterschied **0,0000 Pp** |
+| nur Signalpfad umgestellt | Überschuss wandert 0,2980 **und** Placebo −0,2980 |
+| nur Placebo zurückgedreht | Nullpunkt +0,2980 gegen MDE 0,0049 — **60-fach** |
+
+Die letzte Zeile ist der eigentliche Beleg: hätte der Schalter nur halb gegriffen, wäre
+das der C7-Fehler gewesen, der hier aus t 5,96 schon einmal t −0,75 gemacht hat.
+
+**Merken für später:** die zwölf Protokolle von heute tragen **1.2.0**. Wer sie mit
+künftigen Läufen vergleicht, vergleicht zwei Maschinen — genau dafür gibt es die
+Versionsnummer.
+
+### Zu (4): die Dauer ist Bauart, nicht Nachlässigkeit — und zwei Entscheidungen des PM
+
+**Gemessen und vom PM im Quelltext bestätigt:** ein Aktualisierungslauf ist **kein**
+Nachholen eines Tages, sondern ein vollständiger Neuabruf. `range` steht je Intervall
+fest verdrahtet (`730d` für 60m, `40y` für 1d — `yahoo-60m-holen.js:59-60`); einen
+inkrementellen Modus **gibt es nicht**. Deshalb 97 Minuten je Archiv, auch wenn nur ein
+Tag fehlt. Zusammen rund **3 Stunden 20**.
+
+**Entscheidung 1 des PM — die Sperrdatei wird gebaut.** Start 22:15, Ende gegen 01:35,
+Analytiker 03:15: 1 Stunde 40 Puffer. Das ist als **einzige** Sicherung zu wenig, und der
+Schadensfall ist der unangenehme — ein **gemischtes** Archiv (halb aktuell, halb einen
+Tag alt) sieht von außen gesund aus. Das Abrufwerkzeug legt künftig während des Laufs
+eine Sperrdatei an; der Wachhund meldet sie mit **Exit 2** („nicht prüfbar, es wird
+gerade geschrieben"). Damit fragt man den Zustand, statt auf die Uhr zu vertrauen — die
+Lehre, die heute schon zweimal getragen hat.
+**Auflage des PM:** die Sperrdatei muss einen Absturz überleben können. Bleibt sie nach
+einem harten Abbruch liegen, sagt der Wachhund für immer „wird gerade geschrieben" —
+das wäre die Stille von heute in ihrer dritten Verkleidung. Zeitstempel hinein, nach
+großzügiger Frist als verwaist melden.
+**Der Analytiker gehört nicht dem Master.** Er baut Sperre und Exit 2; dass die
+Nacht-Rolle vor ihrer Messung fragt, **trägt der PM nach**.
+
+**Entscheidung 2 des PM — der Alarm wird eine datierte Datei im Datenordner.** Nicht
+Issue, nicht App-Anzeige. Der PM läuft sechsmal täglich und liest ohnehin den Stand; er
+nimmt die Alarmdatei in seinen Durchgang auf und meldet sie Wilhelm im Klartext. So
+entsteht kein neues System und keine Issue-Flut, und der Weg endet bei einem Menschen
+statt in einer Liste.
+**Das hat der PM entschieden, nicht Wilhelm — er kann es mit einer Zeile drehen.**
+
+> **Für den PM selbst, bei jedem Lauf zu prüfen:** liegt im Datenordner eine
+> Wachhund-Alarmdatei? Wenn ja, gehört sie in den nächsten Bericht.
+
 ### ⚙ VORRANG — tägliche Nachladung der Kursarchive (Wilhelm 26.08. 15:30, Antwort 4a)
 
 **Wilhelm hat dies vor die Fragen (1) und (2) gestellt.** Zugeteilt an den
@@ -381,7 +436,7 @@ Auftrag, nicht das Kommando:**
 drei Stellen zugleich greifen; ein Abbruch mittendrin hinterlässt genau den C7-Zustand,
 vor dem der Auftrag warnt. Einschieben, sobald ein sauberer Punkt erreicht ist.
 
-### ⚙ ZUGETEILT an App-Codebase Master (PM, 26.08. 15:15) — `ausstieg`-Schalter in der Messmaschine
+### ~~⚙ ZUGETEILT — `ausstieg`-Schalter~~ **ERLEDIGT 26.08.** (`8fc2c8a`, heißt jetzt `ausstiegsZeitpunkt`)
 
 *Wilhelm 26.08. 09:00, Antwort 2a. Der wertvollste freie Auftrag: er blockiert **zwei**
 vorregistrierte Tüftler-Kandidaten (`glockendruck-nacht`, `nachtstoss-umkehr`) — von
