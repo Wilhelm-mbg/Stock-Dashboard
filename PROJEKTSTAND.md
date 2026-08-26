@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-26 08:40
+letzter-bericht: 2026-08-26 09:00
 gesehener-tag: v8.33.2
 -->
 
@@ -13,7 +13,7 @@ Wenn du hier etwas änderst, dann nur deine eigene Zeile unter „Läuft gerade"
 
 ---
 
-## Stand: 26.08.2026, 08:40 (Nachtrag zum 08:10-Bericht)
+## Stand: 26.08.2026, 09:00 (Wilhelms Antworten eingetragen)
 
 Ausgeliefert ist **v8.33.2** — unverändert seit gestern Abend. Der Quellstand ist
 vierzehn Commits weiter; **sieben Release-Notizen warten** auf die Wache. Arbeitsbaum
@@ -79,16 +79,55 @@ Umbau**. Danach tragen die Protokolle einen echten Stand statt „unbekannt" (26
 Protokolle stehen heute ohne Kennung da). **Erst danach neue Untersuchungen.**
 Zugeteilt an **App-Codebase Master**.
 
+### FREI — `ausstieg`-Schalter in der Messmaschine (Wilhelm 26.08. 09:00, Antwort 2a)
+
+Auftragsvorschlag A des Tüftlers, **freigegeben**. Spiegelbild des vorhandenen
+`einstieg`-Schalters: `ausstieg: 'schluss' | 'folgeEroeffnung'`. Ohne ihn ist vom
+Kandidaten `glockendruck-nacht` nur das Tagbein messbar, nicht das Nachtbein.
+
+**Zwei Bedingungen, beide hart:**
+
+1. **Nicht auf `main` und nicht in der laufenden Datei.** Solange die Neumessung läuft
+   (Sperre oben), wird auf einem eigenen Zweig entwickelt und **erst danach**
+   zusammengeführt. Anfangen geht sofort — Wilhelms „jetzt" ist damit erfüllt, ohne den
+   Rechenlauf zu vergiften.
+2. **An allen drei Stellen zugleich** greifen: Signal, Kontrolltopf, Placebo. Nur den
+   Signalpfad umzustellen heißt, zwei verschiedene Ausführungen zu vergleichen und den
+   Unterschied Effekt zu nennen — der **C7**-Fehler, der hier schon aus t 5,96 ein
+   t −0,75 gemacht hat. Testfall nach dem Muster von C6/C7.
+
+Dazu: `eroeffnungKurs()` fällt heute beim Fehlen der Eröffnung still auf `bars[k−1][1]`
+zurück. Für einen **Ausstieg** ist dieser Rückfall unzulässig — er setzt die Rendite
+mechanisch auf die Schluss-Fassung und verdünnt jeden Unterschied gegen null. Das Signal
+muss dann **ausgeworfen** werden.
+
+### FREI — Auktionskosten am Demo-Konto messen (Wilhelm 26.08. 09:00, Antwort 3a)
+
+Auftragsvorschlag B des Tüftlers, **freigegeben**. Die Kostentabelle (Aktie 0,04 · CFD
+0,10 · Schein 0,23 Pp je Umlauf) beschreibt die **notierte Spanne**. Ein Übernacht-Handel
+füllt aber in der **Schluss- und der Eröffnungsauktion**, und was eine Auktionsfüllung
+wirklich kostet, ist hier nie gemessen worden. Die laufende Kostenmessung des Demo-Kontos
+(seit 8.23.32) wird um Auktionsorders erweitert.
+
+**Demo-Konto, kein echtes Geld** — Wilhelm hat das ausdrücklich freigegeben. Trotzdem
+gilt die Klick-Sperrliste weiter: keine Order außerhalb der Kostenmessung.
+Unabhängig von der Neumessung, kann sofort und parallel laufen.
+
 ### Wartet auf Wilhelm (nicht anfangen)
 
-- **`ausstieg`-Schalter in der Messmaschine** (Auftragsvorschlag A des Tüftlers).
-  Vorbedingung für den Studien-Kandidaten `glockendruck-nacht`. PM-Frage 2 vom 26.08.
-- **Auktionskosten am Demo-Konto messen** (Auftragsvorschlag B). PM-Frage 3 vom 26.08.
-- **Release** — gehört der Release-Wache, die nur von Hand läuft. PM-Frage 1 vom 26.08.
 - **Stufe F (2), ein einziger Chart-Renderer** — neu hinzugekommen 26.08. 08:40. Der
   Master hat beim Ansehen festgestellt, dass die Zusammenlegung **nicht folgenfrei** ist:
   es braucht einen Entscheid, **welche Darstellungen wegfallen dürfen**. Das ist Wilhelms
   Entscheidung, nicht die einer Sitzung. Bis dahin **gesperrt**, auch Stufe F (3) dahinter.
+
+### An die Release-Wache (Wilhelm 26.08. 09:00, Antwort 1a)
+
+**Ausliefern, sobald es geht — neun Notizen warten.** Wilhelm hat „sofort" gesagt, nicht
+„nach der Neumessung". Es geht aber gerade physisch nicht: der Lauf schreibt laufend neue
+Protokolldateien, und `tools/release.js` weigert sich zu bauen, wenn der Arbeitsbaum
+schmutzig ist — diese Weigerung ist richtig und bleibt. **Also: der erste saubere
+Arbeitsbaum nach dem Ende der Neumessung ist der Startschuss.** Dann gehen die zwölf
+frischen Protokolle gleich mit raus, was das Paket besser macht, nicht schlechter.
 
 ### Danach — schon freigegeben, Reihenfolge fest
 
@@ -131,18 +170,16 @@ fertig bist.*
   Datum im Namen, **überschreiben also nichts** — die 26 alten bleiben als Archiv liegen.
   Zwischenstände melde ich hier.
 
-- **App-Codebase Master** — nichts belegt, alle drei Aufträge vom 08:10-Lauf erledigt:
-  **(1) rote CI** (`d689e62`, gepusht) — zwei Lanczos-Konstanten in Literatur-Schreibweise,
-  bitgleich ersetzt statt eslint-Ausnahme; Selbstkontrolle unverändert 4,26e-14.
-  **(2) #91** (`e3998b1`) — Aussicht rechnet gegen die Bonferroni-Schwelle. Nachgezählt:
-  **17** von 21 Protokollen mit >1 Test, nicht 16; für 5 Tests fehlten 49 % in der Tabelle.
-  **Maschinenversion auf 1.2.0, entgegen der Zuteilung** — Begründung im Commit und im
-  Issue: bei gleichen Daten meldete 1.1.0 vorher und nachher bis zu 59 % andere tage80.
-  Die Sperrklinke ist genau dafür gebaut; sie durchzuwinken wäre ihr erster Ausfall.
-  **(3) #90** (`4276380`) — Laufband bei reduzierter Bewegung schiebbar. Gemessen 6 von 6
-  Schlagzeilen erreichbar statt dauerhaft 3.
-  Zuletzt fertig davor: #76, #84, #85, #83/#89, #86/#87/#88, Messmaschine versionieren,
-  Stufe F Punkt 1.
+  *(Zuletzt fertig davor, 26.08.: rote CI `d689e62`, #91 `e3998b1`, #90 `4276380`;
+  davor #76, #84, #85, #83/#89, #86/#87/#88, Messmaschine versionieren, Stufe F (1).
+  PM hat die doppelte Zeile 09:00 zusammengefasst.)*
+
+> ### ⚠ SPERRE, solange die Neumessung läuft (PM, 26.08. 09:00)
+> **Niemand fasst `studien/messmaschine/messmaschine.js` an, bis die zwölf Protokolle
+> geschrieben sind.** Der Lauf lädt die Maschine je Strategie neu; eine Änderung
+> mittendrin heißt, die ersten Strategien sind mit einem anderen `codeStand` gemessen
+> als die letzten — genau der Vergleichbarkeitsfehler, den die Versionierung von gestern
+> Nacht sichtbar machen soll. Das betrifft ausdrücklich den `ausstieg`-Schalter unten.
 
 ---
 
@@ -151,9 +188,19 @@ fertig bist.*
 *Entscheidungen von Wilhelm, mit Datum. Eine Entscheidung, die nur in einem Chatverlauf
 steht, ist nach zwei Stunden verloren.*
 
+- **26.08.2026, 09:00 (drei Antworten auf den 08:10-Bericht) — „1a 2a 3a los!"**
+  (1) *Release jetzt oder nach den Reparaturen bündeln?* → **(a) sofort ausliefern.**
+  Der PM hatte (b) empfohlen (eine Stunde warten, alles zusammen); Wilhelm will es jetzt.
+  Umsetzung siehe „An die Release-Wache" oben — der Rechenlauf hält den Arbeitsbaum
+  gerade schmutzig, deshalb ist der Startschuss der erste saubere Baum danach.
+  Die Wache startet **Wilhelm selbst** („nur von Hand"), keine Sitzung und nicht der PM.
+  (2) *`ausstieg`-Schalter jetzt bauen?* → **(a) ja, jetzt, parallel.** Auf eigenem
+  Zweig, weil die Neumessung dieselbe Datei liest.
+  (3) *Auktionskosten am Demo-Konto messen?* → **(a) ja.**
+
 - **26.08.2026, 01:40 — Release jetzt.** → **(a) Jetzt ausliefern.**
-  **STATUS 08:10: nicht ausgeführt.** Die Release-Wache läuft „nur von Hand"; kein
-  Automatismus startet sie. Inzwischen warten **sieben** Notizen.
+  Nicht ausgeführt, weil die Wache nur von Hand läuft. Am 26.08. 09:00 bestätigt und
+  erneuert (siehe oben).
 
 - **26.08.2026, ~01:45 — die Issue-Wache ist zurück, aber als TRIAGE.** Sie war
   unbemerkt aus der Aufgabenliste verschwunden (mindestens zum zweiten Mal); #83 und #89
