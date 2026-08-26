@@ -1838,6 +1838,60 @@ entfernte Kerzen zurück; eine Reparatur, die das nicht mitbedenkt, ist eine Mom
 *Fallstricke im Raster: der `etf/`-Unterordner (SPY/QQQ/IWM/VOO/TLT/GLD), das Raster ist
 `:30` nicht `:00`, Tage ohne Vergleichsspanne sind nicht entscheidbar.*
 
+### 🛑 27.08. ~01:45 — DIE REPARATUR IST ANGEHALTEN: sie wäre womöglich selbst der Datenfehler
+
+**Die Frage ist nicht mehr „flach oder kappen". Sie lautet: gehören Randzeiten-Kerzen
+überhaupt ins 60m-Archiv?** Das ist eine Wilhelm-Frage — aber jetzt eine mit Zahlen.
+
+**Was `-06` gemessen hat, in drei Schritten:**
+
+1. **Die 5m-vs-15m-Prüfung ist strukturell leer** — aus einem dritten Grund, den weder er
+   noch der PM auf dem Schirm hatte: **die App-Archive führen überhaupt keine
+   Randzeiten-Kerzen.** Positivkontrolle bestanden (358.675 stimmige Sitzungspaare, die
+   Paarung würde Widersprüche sehen).
+2. **Die Quelle direkt gefragt** (ein Lese-Abruf, AAPL 5d/5m mit `includePrePost`, kein
+   Archiv berührt): Nachhandel 20–24 UTC → **234 Kerzen, davon 233 mit Volumen 0 — und 233
+   mit echter Kursspanne** (z. B. 20.08. 20:20: h 311,90 / l 310,81 / vol 0). AAPL handelt
+   nachbörslich real; Yahoo liefert die Kurse und schreibt Volumen 0.
+   **Die Mechanik ist für den Nachhandel belegt.**
+3. **Der Befund dahinter:** Die P-WEG-Kerzen sind mutmaßlich **Nachhandels-Kerzen** — 17/18
+   Uhr an Halbtagen ist AH-Beginn, die 21,7 % exakten Tagesschlüsse sind die Schlussauktion,
+   und echte AH-Spannen dürfen die Sitzungsspanne **legitim** verlassen.
+
+**→ Dann wäre auch KAPPEN falsch: es würde echte Nachhandelskurse beschneiden.**
+
+**PM-Gegenprüfung der tragenden Behauptung** (eigenes Skript, freie Archive, Stichprobe 120
+Dateien je Archiv — **990.509 Kerzen**):
+
+    archiv5m    552.071 Kerzen   Sitzung 552.071   vorboerslich 0   nachboerslich 0
+    archiv15m   185.545 Kerzen   Sitzung 185.545   vorboerslich 0   nachboerslich 0
+    archiv1m    252.893 Kerzen   Sitzung 252.893   vorboerslich 0   nachboerslich 0
+    frueheste Uhrzeit 13:30, spaeteste 20:00 UTC — exakt die regulaere Sitzung
+
+**Bestätigt: null Randzeiten-Kerzen in den App-Archiven.**
+
+### 🔴 ZWEI POLITIKEN IN EINEM ARCHIVBESTAND — der Zwei-Quellen-Schaden in neuer Form
+
+| Bestand | befüllt von | Randzeiten-Kerzen |
+|---|---|---|
+| `archiv60m`, `archiv1d` | Nachlader (`archiv-nachladen.js`) | **ja** (mutmaßlich) |
+| `archiv5m/15m/1m` | App-Sammler (`kerzenquelle.js`) | **nein — gemessen, 0 von 990.509** |
+
+*Dieselbe Struktur wie der Schaden vom 23.08., als Capital-CFD und Yahoo in einer Reihe
+standen: nicht die Naht war das Problem, sondern dass zwei Politiken ohne Merkmal
+nebeneinander lagen.*
+
+**→ ⭐ FRAGE AN WILHELM (Morgenliste, hat Vorrang vor der Formfrage):**
+
+- **(a) Randzeiten raus** — konsequent wie bei 5m/15m. Die Schlussauktions-Schlüsse stehen
+  ohnehin in `archiv1d`. Dann ist die „Reparatur" ein Entfernen fremder Population, keine
+  Wertkorrektur.
+- **(b) Randzeiten rein** — dann sind viele „Phantom-Dochte" **echte AH-Kurse und die
+  Reparatur wäre selbst der Datenfehler.** Verdächtig blieben nur echte Ausreißer (die
+  −5,8-%-Klasse), und die trennt die QS-Strukturprüfung nach Sperrfall.
+
+**Bis dahin wird nichts verändert.** `--wirklich` bleibt gesperrt, unabhängig von der Form.
+
 ### 🔬 27.08. ~01:30 — „Umsatz 0 ⇒ keine Spanne" ist WIDERLEGT. Die Formfrage bleibt offen.
 
 **Der PM hatte seine Flach-Regel damit begründet, dass eine Nullumsatz-Kerze kein Geschäft
