@@ -1219,6 +1219,46 @@ die planungsrelevante. Die Zahlen stehen oben unter „Stand".
 **Achtung:** hängt an **#100** (der Regelkopf sieht die Protokolle nie). Erst #100, sonst
 baust du auf einer Anzeige, die ihre Daten gar nicht bekommt.
 
+### 🔴 VORRANG — die Schranke reparieren, dann Release (Wilhelm 26.08. 20:25, Formular)
+
+**Wilhelms Entscheid: erst reparieren, dann ausliefern.** Das Release (26 Commits,
+4 Notizen) wartet darauf; die Wache startet er selbst, sobald das hier steht.
+
+**Zu tun, `studien/messmaschine/messmaschine.js`:**
+1. **Zeile 1266** — die Aussicht wird unter `if (u.tagesmittel > 0 && u.se > 0 &&
+   u.tage > 0)` auch für Läufe berechnet, die die Maschine in Zeile 1226 selbst
+   `nicht-messbar` nennt (`u.tage < 30`). **Schranke auf `u.tage >= 30` ziehen.**
+   Folge: `monatsende-kauf` verliert seine 187-Tage-Zahl aus 17 Messtagen — die Zahl,
+   die derzeit die Aussichts-Tabelle anführt und mit der neuen Anzeige ausgeliefert
+   würde.
+2. **Im selben Eingriff #92** (Rangfolge, Inhaltsanker `bestesUrteil: ['bestaetigt', …`,
+   derzeit Z. 1305) — Wilhelms Entscheid vom 17:40 liegt seit Stunden.
+3. **Maschinenversion hochziehen** (1.4.0 → 1.5.0) und im Commit ausweisen, was sich an
+   den Zahlen ändert. Ohne das sind spätere Protokolle nicht einzuordnen.
+
+**Auflagen:** Nur die Urteils-/Aussichtslogik, keine Handelslogik. Vorher prüfen, ob
+`archiv1d` gesperrt ist. Fertigmeldung per Nachricht an den PM.
+
+### ⭐ NEU (Wilhelm 26.08. 20:30, Formular) — die Schranke misst künftig `delta80`, nicht Handelstage
+
+**Der Fund:** `tage80` skaliert mit 1/Effekt² und schwankt über die eigene Messhistorie
+um **Median-Faktor 2,4, im Extrem 72**. Dieselbe Strategie kann heute 224 und morgen 500
+sagen. **Wilhelms 1.000-Tage-Eintrittskarte war damit feiner als die Reproduzierbarkeit
+der Zahl, an der sie misst.**
+
+**Entschieden: auf `delta80` gegen die Kostenhürde umstellen** — Effektgröße gegen
+Effektgröße, ohne Schätzer im Nenner. Betrifft **zwei** Stellen:
+- **Die Tüftler-Regel** („nur Kandidaten unter 1.000 Handelstagen") in
+  `studien/rolle-strategie-tueftler.md` bzw. seiner Aufgabe — neu formuliert gegen
+  `delta80` und die Hürde des gewählten Produkts.
+- **Die neue Anzeige** (1b, `scoreboard.js`, Schwelle `WAND_TAGE = 2500`) — dieselbe
+  Frage, dieselbe Antwort. Die Handelstage dürfen **daneben** stehen bleiben, sie sind
+  anschaulich; entschieden wird an `delta80`.
+
+**Achtung, Einheiten:** `delta80` ist eine Effektgröße in **Prozentpunkten**, die alte
+Schranke zählte **Handelstage**. Genau diese Verwechslung ist am 26.08. 17:50 schon
+einmal passiert — die neue Regel muss die Einheit im Text nennen.
+
 ### ⭐ (2a) #92 — das schärfste Urteil gewinnt (Wilhelm 26.08. 17:40)
 
 Die Rangfolge steht in `messmaschine.js` bei der Zeile, die mit
