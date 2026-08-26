@@ -878,6 +878,41 @@ Die Zahlen zu `rsi2seit-mcp` stammten aus einem Lauf, den die QS selbst abgescho
 
 ---
 
+### ⚠ #96: „Löschen" ist womöglich nicht der richtige Umgang — zwei offene Fragen
+
+Aus einer beiläufigen Bemerkung des PM („eine Kerze ohne Umsatz trägt vermutlich keine
+Information") hat die QS zwei Punkte entwickelt, **die vorher niemand bedacht hatte** und
+die **Wilhelms Entscheidung berühren**:
+
+**1. Eine gelöschte Kerze ist etwas anderes als eine flache Kerze.**
+Wer sie entfernt, **ändert die Kerzenzahl je Reihe** — und damit jeden Vorlauf, der in
+**Kerzen** zählt statt in Tagen: `leseFensterKerzen: 261` bei rsi2seit, **430** bei t3.
+Eine Reihe, aus der eine Kerze verschwindet, hat ab diesem Punkt eine um eins verschobene
+Indizierung. **Ob das die Messungen bewegt, ist offen. Dass es sie bewegen kann, ist neu.**
+
+**2. „Flach" ist nicht dasselbe wie „erfunden".**
+Bei den ~410 echten leeren Stunden ist die flache Kerze der **ehrliche Zustand des
+Marktes**. Behält die Regel sie, führt das Archiv künftig **zwei Sorten flacher Kerzen** —
+und die nächste Sitzung, die eine davon sieht, kann sie nicht mehr auseinanderhalten.
+
+**Denkbare Alternative zum Löschen, noch von niemandem geprüft:** die Kerze **markieren**
+statt entfernen. Dann bleibt die Indizierung unberührt, und jede spätere Auswertung kann
+selbst entscheiden, ob sie sie einbezieht. Kostet ein Feld je Kerze.
+
+**Das geht als offene Frage in die Übergabe, unabhängig vom Urteil der Skeptiker.**
+An Wilhelms Entscheidung („Platzhalter raus, echte Kerzen bleiben") ändert es nichts —
+**aber am Wie**, und das war bisher stillschweigend als „löschen" angenommen. Vom PM.
+
+*Nebenbei, weil es zur Sorgfalt gehört:* Der PM hatte vor der Last der acht Skeptiker
+gewarnt. Die QS hat **nachgesehen statt geschätzt**: 68 % CPU auf 16 Kernen, 18,7 GB frei,
+**zwei** Node-Prozesse (einer davon ihr Block-D-Lauf). Die Skeptiker lesen Quelltext und
+rechnen kurze Zählungen — schwere Messungen sind ihnen ausdrücklich untersagt
+(`keine Läufe über 3 Minuten`, `niemals messen.js`, `niemals archiv1d`). Sie staffelt
+deshalb **nicht**. **Und sie schreibt die Uhrzeit ihrer Messung dazu — mit ausdrücklichem
+Verweis auf den Versionsstands-Fehler des PM von heute Mittag.**
+
+---
+
 ## Aufträge
 
 *Was freigegeben ist und noch niemand macht. Wer eine Zeile nimmt, trägt sich unter
