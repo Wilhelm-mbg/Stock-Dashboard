@@ -1676,11 +1676,6 @@ mit #93/#94 zusammen runder.
 *Wer welche Dateien belegt. Trag dich ein, bevor du anfängst; nimm dich raus, wenn du
 fertig bist.*
 
-- **Desingner** — hat **(1b) Auflösungswand sichtbar machen** (Anzeige in depot.js/
-  strategien.js/index.html, Hinweis ohne Eingriff, liest bestesUrteil + kleinste
-  Aussicht) und **#80 Kanal-Güte als Drei-Wege-Vorlage** (nur Dokument unter
-  `studien/`, kein Code). Beides 26.08. abends vom PM zugeteilt (Wilhelm 1b / #80).
-
 - **Berechnungen** (seit 26.08. 19:47) — **Richtung der Überlebensverzerrung messen**
   (PM-Freigabe 19:15, Reihenfolge bestätigt: Verzerrung → Strang A → #92). Erster
   Schritt: Vorregistrierung nach `studien/vorregistrierung-2026-08-26/`, Meldung an den
