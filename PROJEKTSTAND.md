@@ -316,6 +316,34 @@ Werkzeugs sollte es jemand wissen, der sich auf die Weigerung verlaesst.
 - **Kleine Wünsche, Reihenfolge fest:** #69 lokales Backup → #82 Herkunftsland-Filter
   Marktkarte → #70 Radar-Streusuchen → #33 zweiter Trendwende-Detektor.
 
+### ⚠ Beobachtung des PM 26.08. — das Kursarchiv hat den 25.08. nicht (kein Auftrag, ungeklaerte Ursache)
+
+Aufgefallen beim Abschluss-Durchgang, **nicht gemeldet worden**. Zwei harte Befunde:
+
+- **`archiv60m`:** die Spiegelung **lief** am 25.08. um 22:49 UTC und schrieb alle 2.887
+  Dateien — aber die **letzte Kerze ist vom 24.08.**, 16:30 UTC. Stichprobe ueber 40
+  Dateien: **40 von 40 ohne den 25.08.** Der 25.08. war ein Handelstag (Dienstag), die
+  US-Sitzung war um 20:00 UTC geschlossen, also fast drei Stunden vor dem Lauf.
+- **`archiv1d`:** `stand` steht auf **24.08. 17:27 UTC** — seit ueber zwei Tagen nicht
+  mehr angefasst. Letzte Tageskerze 24.08.
+
+**Die Ursache kenne ich nicht** und rate nicht. Denkbar ist ein Lag der Quelle, eine
+Regel „nur abgeschlossene Tage" oder ein stiller Abbruch — `teilkerzenEntfernt: 1` steht
+in den Dateien, aber das erklaert das Fehlen eines **ganzen** Handelstags nicht.
+
+**Was daran haengt, damit niemand ins Leere plant:**
+1. **`rsi2seit-mcp` V4** steht auf der Liste unten und wartet auf frische Handelstage.
+   Sie kommen derzeit nicht. Wer die Messung ansetzt, misst dieselben Daten wie beim
+   letzten Mal.
+2. Die **zwoelf Neumessungen von heute** laufen auf einem Archiv, das am 24.08. endet.
+   Das macht sie **nicht falsch** — sie messen Geschichte — aber ihr `bis` ist 24.08.,
+   nicht 26.08., und so gehoert es zitiert.
+
+Wer das aufklaert, faengt bei der Spiegelung an, nicht am Archiv: die Dateien wurden ja
+geschrieben, nur ohne neuen Inhalt. **Ein Lauf, der nichts dazulernt und trotzdem alles
+neu schreibt, sieht von aussen aus wie ein gesunder Lauf** — das ist der Grund, warum es
+zwei Tage niemandem auffiel.
+
 ### Hinweise des Tüftlers an alle (keine Aufträge)
 
 - Das Feld `quelle` der **1d**-Archivdateien trägt ein falsches Etikett
