@@ -1964,6 +1964,67 @@ Gleitkommavergleich ohne fachliche Toleranz.
 > während der Fund die Halbtage meinte."* Eine richtige Zahl, die eine andere Frage
 > beantwortet als die gestellte — diesmal in der Aggregation.
 
+### 🚨 27.08. ~01:45 — DIE SIGNATUR IST IN UNSEREN EIGENEN ARCHIVEN. Drei bestätigte Fälle.
+
+**Aus Sorge wurde Befund** (QS, `uebergabe/qs-audit-2026-08-27-0330-STEMPEL-ZWEITER-ART.md`):
+
+| Archiv | Fall | |
+|---|---|---|
+| **archiv5m** | **AVB** — 21 Handelstage sauber zwischen 64 und 70 $, Umsätze 300.000–1,1 Mio. Letzte Kerze 14.08. 20:00: `19:55 c 65,91 v 203.245` → `20:00 o=h=l=c 184,06 v 0` | **+179,3 % in fünf Minuten ohne einen einzigen Umsatz** |
+| **archiv1d** | **LBRDA / LBRDK** — handeln normal bis 17.07.2026, dann fünf Wochen nichts, dann je eine flache Nullumsatz-Kerze am 21.08. | **+16,6 % / +16,8 % — ein Handelstag, den es nicht gab** |
+| archiv1m | 0 von 2.964 Reihen | Positivkontrolle bestanden |
+| archiv15m | 0 von 233 | Positivkontrolle bestanden |
+| archiv60m | steht aus (Sperre) | |
+
+**🔄 DIE QS ZIEHT DABEI IHRE EIGENE FRÜHERE AUSSAGE EIN**, und die Begründung ist die
+wichtigste Zeile dieses Abschnitts: Sie hatte protokolliert, das Tagesarchiv sei frei von
+Quote-Stempeln, **mit bestandener Positivkontrolle**. *„Für das geprüfte Merkmal war das
+richtig. Als Aussage war es zu weit."*
+
+`stempel-sucher.js` prüft **Uhrzeit außerhalb des Rasters, Sekunde ≠ 0, letzte Kerze auf dem
+`stand`-Zeitstempel**. Der LBRDA-Fall trifft **keines** davon: der 21.08. ist ein regulärer
+Handelstag, 13:30 legitimes Raster, `stand` liegt fünf Tage später.
+
+> **Ihre Positivkontrolle hat belegt, dass der Sucher auf einen künstlichen Stempel
+> anschlägt. Sie hat NICHT belegt, dass er alle Bauformen kennt — und genau das wurde daraus
+> gelesen.** *Eine Positivkontrolle prüft die Empfindlichkeit, nicht die Vollständigkeit.*
+
+**Der neue Sucher geht über den SPRUNG statt über die Uhrzeit:** Umsatz 0, flach, weit vom
+Schluss der Vorkerze, **bei ruhigem Vorlauf** (`werkzeuge/kurssprung-stempel.js`,
+archivparametrisch, Positivkontrolle als Sperrklinke).
+
+**Ein Fehlweg unterwegs, damit er nicht wiederkommt:** Der erste Entwurf maß gegen das
+**Tagesmittel** statt gegen die **Vorkerze** und warf **48 Treffer** aus — fast alle bei
+Papieren unter drei Dollar (HAIN bei 0,53 $, CRMT bei 2,87 $), wo wenige Cent zweistellige
+Prozentwerte ergeben. *Beinahe als Fund gemeldet.* Die Umstellung entfernt alle 48, ohne AVB
+zu verlieren.
+
+**→ FOLGE FÜR DIE REPARATUR: Der Unterscheider ist der SPRUNG bei ruhigem Vorlauf, nicht die
+GESTALT der Kerze.** Eine Löschregel auf „flach und Umsatz 0" hätte heute Nacht schon einmal
+1.106 echte Schlusskerzen getroffen.
+
+### ⚠ 27.08. ~01:45 — 89 Nullumsatz-Kerzen mit Sprung >10 % in `archiv1d`: mutmaßlich SPLIT-Ränder
+
+**Nebenbefund desselben Laufs, und er ist NICHT dasselbe wie ein Stempel.** 23 der 89 liegen
+auf **glattem Verhältnis**: ASTH 4,50 → 0,45 ist genau **1:10**, PECO 7,23 → 21,69 genau
+**3:1**, ARWR 39,00 → 19,50 genau **1:2**. Also mutmaßlich **nicht rückangepasste Reihen**,
+kein Lieferfehler.
+
+**Zeitlich überwiegend vor 2005; ab 2015 bleiben 8 Fälle.** Jeder einzelne ist für eine
+Messung ein Tag mit **−90 % oder +200 % Rendite, den es nicht gab.**
+
+> **Die QS sagt ausdrücklich dazu, und es gehört zitiert:** *„Ob die Messmaschine diese Tage
+> überhaupt liest, habe ich NICHT geprüft. Das ist die nächste Frage, nicht dieser Befund —
+> und ich sage es dazu, weil ‚8 Phantomtage im Tagesarchiv' sich nach mehr anhört, als bisher
+> belegt ist."*
+
+**→ Vom PM an `markt-dashboard-c4` gegeben, weil es Strang A direkt trifft:** `momentum` misst
+auf `archiv1d` über die **volle Historie**, Rückblick 231 Handelstage, Haltedauer 63. Ein
+solcher Tag kann eine Aktie ins stärkste Zehntel heben oder eine Periodenrendite dominieren.
+**Aufgetragen: prüfen, ob Universumsfilter und Mindesthistorie diese Reihen überhaupt
+zulassen** — fallen sie heraus, in einem Satz ausweisen; sind sie drin, als benannte
+Einschränkung in die Vorregistrierung, nicht behandeln.
+
 ### 🚨 27.08. ~01:35 — DIE QUELLE VERGIFTET HISTORISCHE ABRUFE MIT DEM HEUTIGEN KURS
 
 **Live reproduzierbar, mutmaßlich der Erzeugungsmechanismus hinter #96** (`-06`, 72 Abrufe
