@@ -172,6 +172,43 @@ Protokoll bereits belegt — er beschreibt dort, *wie* ausgestiegen wurde
 (`{art: 'Zeit', mittlereKerzen: 26}`). Der neue Konfigurationsschalter darf damit nicht
 kollidieren.
 
+### #96 — die achte Stundenkerze am 25.08. (Master gemeldet, PM nachgemessen, **kein Auftrag**)
+
+Der zuletzt geholte Handelstag bekommt eine **achte** Stundenkerze um 20:00 UTC mit
+Umsatz 0 — Yahoos Platzhalter für den Sitzungsschluss, keine gehandelte Stunde.
+**Vom PM in den Dateien nachgezählt**, nicht übernommen: AAPL und KO zeigen beide
+`{4 Kerzen: 7 Tage, 7 Kerzen: 723 Tage, 8 Kerzen: 1 Tag}` — die Acht trifft **genau den
+25.08.** Die Kerze ist flach: Hoch = Tief = Eröffnung = Schluss = der Schlusskurs von
+19:30, Umsatz 0.
+
+**Der Master hat den Filter NICHT angefasst und den Lauf nicht abgebrochen. Beides
+richtig.** Seine Begründung hält der Nachprüfung stand: eine Regel „Umsatz 0 wegwerfen"
+wäre zu weit. Allein bei AAPL gibt es **19** Kerzen mit Umsatz 0, und 18 davon sind
+echte Handelsstunden mit richtiger Kursspanne.
+
+**Ein Befund des PM beim Nachmessen, der zur Regel gehört** (Beitrag zu #96, *keine*
+Anweisung, wie sie zu lauten hat):
+
+| Bedingung | AAPL | KO | XOM | MSFT | SPY |
+|---|---|---|---|---|---|
+| Umsatz 0 **und** Hoch=Tief=Eröffnung=Schluss | 1 | 1 | 1 | 1 | 1 |
+| Umsatz 0, aber mit Kursspanne (echte Stunde) | 18 | 7 | 8 | 18 | 10 |
+
+Die flache Kerze ist über alle fünf Werte **immer genau `2026-08-25T20:00`**. Die
+Zusatzbedingung *völlig flach* trennt den Platzhalter also sauber von 43 echten Kerzen,
+die eine reine Umsatzregel mitgelöscht hätte. **Ob und wie gefiltert wird, bleibt eine
+Entscheidung über die Archivregel** — sie gehört in eine Sitzung mit Begründung oder zum
+Analytiker, nicht nebenbei erledigt.
+
+**Warum es niemand größer machen soll:** die Kerze ist die letzte des Archivs; ein
+Einstieg kann dort wegen der Haltedauer gar nicht liegen. Die zwölf Protokolle von heute
+rechnen bis zum 24.08. und sind unberührt. Der nächste volle Lauf räumt sie weg — der
+24.08. hat schon wieder sieben.
+
+**Richtigstellung des Masters, damit sie sich nicht festsetzt:** SPY schien
+zwischenzeitlich ganz zu fehlen. Er liegt im Unterordner `etf/` („Maßstab, nicht
+Messobjekt"). Vom PM bestätigt — dort gefunden und aktuell.
+
 ### ⚠ AUFGEKLÄRT 26.08. 12:00 — das Archiv stand still, weil **niemand** es holt
 
 **Die Diagnose des PM war in der Ursache falsch und ist hiermit richtiggestellt.** Ich
