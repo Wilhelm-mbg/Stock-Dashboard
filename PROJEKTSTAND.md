@@ -180,12 +180,11 @@ welche Auswahl guenstiger aussieht.
 der Variante gehoeren, die das Urteil traegt — nicht zur bestaussehenden.
 Reine Anzeige — der Master hat die vier Lesestellen von `PROTOKOLL_KANTE` einzeln
 nachgesehen, keine gatet etwas.
-**Zur Reihenfolge: Wilhelms „vor der Auslieferung“ stand auf einer Begruendung, die sich
-als falsch erwiesen hat** (die zwoelf frischen Protokolle sind gar nicht betroffen, und
-der Fehler steckt seit je in `v8.33.2`). Der Master schlaegt vor: erst die Wache bauen
-lassen, dann (1a) — sonst ist der Baum sofort wieder schmutzig und die Auslieferung
-wartet erneut. **Liegt bei Wilhelm; bis zu seiner Antwort gilt seine urspruengliche
-Reihenfolge.**
+**Zur Reihenfolge — ENTSCHIEDEN 26.08.: erst ausliefern, dann (1a). Beides ist bereits
+geschehen bzw. freigegeben:** `v8.33.3` ist draussen, (1a) und (2b) sind ab sofort dran.
+Die urspruengliche Begruendung des PM war falsch (die zwoelf frischen Protokolle sind gar nicht betroffen, und
+der Fehler steckt seit je in `v8.33.2` und steckt jetzt auch in `v8.33.3`). Der Vorschlag
+kam vom Master, Wilhelm hat ihn angenommen.
 
 **(2b) FREI — Warnhinweis vor `kapitulation`.** Die Regel steht seit heute auf
 **nicht bestaetigt** (gemessen, traegt nicht) — schaerfer als alles, was hier bisher an
@@ -223,14 +222,23 @@ sieht, was ein Zusammenlegen kostet. Kollidiert mit niemandem: der Master sitzt 
   **26.08. (Abruf, Antwort 3a): Wilhelm entscheidet nach einer Liste.** Die Liste ist
   freigegeben und steht oben unter „Neu freigegeben“ (3a); der Entscheid selbst steht weiter aus.
 
-### An die Release-Wache (Wilhelm 26.08. 09:00, Antwort 1a)
+### ~~An die Release-Wache~~ **Erledigt 26.08. — `v8.33.3` ist ausgeliefert**
 
-**Ausliefern, sobald es geht — neun Notizen warten.** Wilhelm hat „sofort" gesagt, nicht
-„nach der Neumessung". Es geht aber gerade physisch nicht: der Lauf schreibt laufend neue
-Protokolldateien, und `tools/release.js` weigert sich zu bauen, wenn der Arbeitsbaum
-schmutzig ist — diese Weigerung ist richtig und bleibt. **Also: der erste saubere
-Arbeitsbaum nach dem Ende der Neumessung ist der Startschuss.** Dann gehen die zwölf
-frischen Protokolle gleich mit raus, was das Paket besser macht, nicht schlechter.
+Wilhelm hat die Wache selbst gestartet. Tag `v8.33.3` auf `b0a3020`, `package.json` auf
+8.33.3, **alle neun Notizen verbraucht** — `release-notizen/` ist leer. Vom PM in Git
+nachgesehen, nicht bei der App erfragt.
+
+**Eine Annahme dieses Abschnitts war falsch und gehoert richtiggestellt:** hier stand,
+mit dem Release gingen „die zwoelf frischen Protokolle gleich mit raus". Das stimmt
+nicht — Protokolle sind **gar nicht Teil des Pakets**. Die App liest sie zur Laufzeit aus
+`<Downloads>/Markt-Dashboard-Daten/protokolle/` (`main.js:592`). Folgenlos, weil der Lauf
+sie genau dorthin schreibt (26 Dateien, davon 7 von heute) — sie sind also in der App,
+ohne dass ein Release noetig waere. Aber die Begruendung war Zufall, nicht Sachkenntnis.
+
+Ebenfalls beobachtet: der Baum war beim Bauen **nicht** sauber (die Protokolle lagen als
+unverfolgte Dateien da), und `tools/release.js` hat trotzdem gebaut. Seine Weigerung
+zaehlt unverfolgte Dateien offenbar nicht mit. Diesmal harmlos; als Eigenschaft des
+Werkzeugs sollte es jemand wissen, der sich auf die Weigerung verlaesst.
 
 ### Danach — schon freigegeben, Reihenfolge fest
 
@@ -343,6 +351,11 @@ steht, ist nach zwei Stunden verloren.*
   **Nachtrag, gleiche Sitzung:** (3a) geht an den **Desingner** — Wilhelms Vorschlag, vom
   PM uebernommen: die Frage „was ginge verloren“ ist eine Gestaltungsfrage, und die
   Sitzung kollidiert mit niemandem.
+  **Nachtrag 2, Reihenfolge:** *(1a) vor oder nach der Auslieferung?* → **(b) erst
+  ausliefern, dann (1a).** Wilhelm: „b, es ist bereits geschehen" — die Wache war zu dem
+  Zeitpunkt schon gelaufen, `v8.33.3` ist draussen. Der PM hatte (b) empfohlen, nachdem
+  seine eigene Begruendung fuer (a) sich als falsch erwiesen hatte; der Vorschlag kam
+  urspruenglich vom Master.
   **Ebenfalls Nachtrag:** das erste Beispiel des PM zu (1a) war falsch (`kapitulation` ist
   nicht betroffen). Vom Master gefunden, vom PM ueber alle 26 Protokolle nachgeprueft.
   Der Fehler bleibt echt, betrifft aber genau `winkelbestaetigt-2026-08-25`. **Damit steht
