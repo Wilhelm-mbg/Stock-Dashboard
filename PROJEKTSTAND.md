@@ -216,17 +216,34 @@ trug sie den Zusatz *„a Remote Control or cloud session also named 'Projekt-Ma
 registered to a session on this machine"*. **Nach dem Löschen ist dieser Zusatz weg** und
 die Ref `[39e5a9]` wird ohne Rückfrage angenommen. Die Adressierung ist damit sauber.
 
-**Aber die Testnachricht kam trotzdem nicht an.** Gemessen um 23:25: Sendung erfolgreich
-mit `msg_id`, Empfang beim PM-Chat **null**. Seit 19:45 hat diese Sitzung **keine einzige**
-eingehende Nachricht erhalten — auch nicht die zwei angeforderten
-`notify_when_idle`-Bestätigungen. **Der Empfang dieser Sitzung ist defekt, unabhängig von
-der Namenskollision.**
+**Eine Testnachricht des Desingners kam um 23:25 trotzdem nicht an.** Der PM schloss
+daraus, sein Empfang sei defekt, und schrieb das hier hin.
+
+### ✅ 26.08. 23:39 — **das war falsch. Der Kanal trägt.** (Richtigstellung, gemessen)
+
+**Wilhelm ließ den Prozess nachstellen:** eine einmalige Routine `pm-zustellprobe-einmalig`
+mit ausdrücklich unverwechselbarem Namen. **Ihre Nachricht kam um 23:39 beim PM-Chat an**,
+die Antwort ging zurück. **Der Empfang ist nicht defekt** — die vorige Diagnose ist
+hiermit zurückgezogen.
+
+**Damit war die Namenskollision sehr wahrscheinlich die alleinige Ursache**, und ihre
+Beseitigung hat gewirkt. Warum die Probe des Desingners um 23:25 dennoch nicht ankam,
+**bleibt offen** — vermutlich lag sie zeitlich zu dicht am Löschen des Doppelgängers.
+*Offene Frage, nicht geklärt.*
+
+**Der Fehler des PM daran, und er ist der lehrreichste des Abends:** Aus **einer**
+ausgebliebenen Nachricht wurde ein Systembefund („Empfang defekt") — ohne
+Positivkontrolle, also ohne zu prüfen, ob überhaupt jemand sendet, der gerade senden
+kann. Genau die Hausregel, die die QS am selben Abend aufgestellt hatte: **jeder
+Nullbefund braucht eine Positivkontrolle.** Ein Nullbefund ohne sie ist keine Diagnose,
+sondern eine Vermutung mit Zahlen daneben. Wilhelm hat die Positivkontrolle angeordnet,
+nicht der PM.
 
 **Was daraus folgt — für morgen früh, damit niemand wieder zwei Stunden sucht:**
 
-1. **Ein frischer PM-Chat ist der Test.** Bekommt er Nachrichten, war es ein Defekt dieser
-   Sitzung. Bekommt er keine, liegt es tiefer und der Ablauf wird dauerhaft auf Dateien
-   gebaut.
+1. **Der Kanal ist benutzbar.** Nachrichten an `Projekt-Manager` (Bindestrich,
+   `interactive`) kommen an. Bleibt eine Antwort aus, ist die Gegenstelle vermutlich
+   **schlafend**, nicht defekt — Anstoß oder Wach-Schleife, nicht Fehlersuche.
 2. **Eine Routine wäre der falsche Schluss.** Der Chat ist die richtige Bauart — die
    Routine lief nur sechsmal täglich, nachts nie, und hieß in der Agentenliste
    `markt-dashboard-54`. Der Empfangsdefekt ist ein separater Fehler, kein Argument gegen
