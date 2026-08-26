@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 01:39
+letzter-bericht: 2026-08-27 01:58
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -1963,6 +1963,183 @@ Gleitkommavergleich ohne fachliche Toleranz.
 > *„Meine 76,4 % waren richtig gerechnet, aber sie beantworteten die Frage über alle Tage,
 > während der Fund die Halbtage meinte."* Eine richtige Zahl, die eine andere Frage
 > beantwortet als die gestellte — diesmal in der Aggregation.
+
+### 🔴 27.08. ~01:55 — KORREKTUR NACH OBEN: SECHS Phantom-Handelstage, nicht zwei
+
+**Die QS zieht ihre eigene Entwarnung von vor einer Viertelstunde ein.** Sie hatte die
+übrigen sieben flachen Nullumsatz-Schlusskerzen als harmlos abgehakt (Lücke ein Tag, Sprung
+0,00 %). **Die entscheidende Frage war nicht gestellt: war der Tag des Stempels überhaupt ein
+Handelstag?** Gemessen an der Zahl der Reihen, die am selben Tag eine Kerze **mit Umsatz**
+tragen:
+
+    AVB    2026-08-21   2.957 Reihen handelten   -> PHANTOMTAG
+    BTSGU  2026-08-25   2.954 Reihen handelten   -> PHANTOMTAG
+    EQR    2026-08-21   2.957 Reihen handelten   -> PHANTOMTAG
+    WBS    2026-08-20   2.957 Reihen handelten   -> PHANTOMTAG
+    LBRDA  2026-08-21   2.957 Reihen handelten   -> PHANTOMTAG
+    LBRDK  2026-08-21   2.957 Reihen handelten   -> PHANTOMTAG
+    BSCO   2024-12-17       0   Reihe ausgelaufen  -> harmlos
+    IBDP   2024-12-19       0   Reihe ausgelaufen  -> harmlos
+    IBTE   2024-12-19       0   Reihe ausgelaufen  -> harmlos
+
+**Bei AVB, BTSGU, EQR und WBS stimmt das Kursniveau, aber der Tag ist erfunden:** eine Rendite
+von exakt 0 % an einem Tag, an dem das Papier tatsächlich gehandelt hat.
+
+> **Der Satz, der bleibt:** *„Eine falsche Null ist schlimmer als eine Lücke, weil keine
+> Vollständigkeitsprüfung sie findet — die Reihe sieht lückenlos aus."* Die QS dazu über sich
+> selbst: *„Genau deshalb hatte ich sie als harmlos abgehakt: sie sahen unauffällig aus, und
+> ich habe die Unauffälligkeit für Unbedenklichkeit genommen."*
+
+**Gegenprobe, die die naheliegende Gegenerklärung ausschließt:** AVB steht im Tagesarchiv am
+21.08. auf **65,90**, im 5m-Archiv auf **184,06** — selbes Papier, selbe Quelle, selber Tag.
+Also ein fremder Einzelwert, **nicht** die ganze Reihe auf falschem Maßstab.
+
+### 🔗 PM-Verbindung: FÜNF DER SECHS PHANTOMTAGE SIND DELISTING-TAGE
+
+**Nur der PM konnte das sehen, weil die beiden Befunde aus verschiedenen Sitzungen stammen.**
+Gegen `1d`s SEC-Prüfung von heute Nacht gehalten:
+
+| | formale Abmeldung (`25-NSE`) | Phantomtag |
+|---|---|---|
+| AVB | 2026-08-17 | 2026-08-21 |
+| EQR | 2026-08-17 | 2026-08-21 |
+| WBS | 2026-08-20 | 2026-08-20 |
+| LBRDA | 2026-08-20 | 2026-08-21 |
+| LBRDK | 2026-08-20 | 2026-08-21 |
+
+**Das passt exakt zum Mechanismus:** Die Quelle hängt am Ende einer Reihe eine Kerze mit dem
+aktuellen Quote-Stempel an. Bei einer laufenden Aktie landet sie auf dem heutigen Tag und
+fällt kaum auf. **Bei einer Reihe, die aufgehört hat zu existieren, landet sie unmittelbar
+hinter dem letzten echten Handelstag — und sieht dort aus wie ein weiterer Handelstag.** Das
+erklärt auch, warum das Kursniveau stimmt: der letzte Quote eines gerade abgemeldeten Papiers
+liegt beim letzten echten Kurs.
+
+**→ Zur Prüfung an die QS gegeben: trägt JEDE ausgelaufene Reihe eine flache Nullumsatz-Kerze
+hinter ihrem letzten Umsatztag?** Wenn ja, ist es eine **Regel statt sechs Einzelfällen** —
+und betrifft den ganzen `verschwundene.json`-Bestand, nicht fünf Ticker.
+
+### ⚖ ZWEI REGELN, DIE EINANDER NICHT ERSETZEN — Satz der QS, hier festgehalten
+
+| Regel | taugt für | taugt NICHT für |
+|---|---|---|
+| **Fenster-Regel** (`3fbc9b5`) | **Vorbeugung** bei neuen Abrufen — fängt auch die unauffälligen Fälle (Sprung 1–3 %) | **Prüfung bestehender Archive**: dort ist nicht überliefert, welches Fenster damals angefragt wurde, und LBRDAs Stempel lag **innerhalb jedes plausiblen Fensters** |
+| **Sprung-Detektor** | **Prüfung** bestehender Archive | die unauffälligen Fälle — AVB, BTSGU, EQR, WBS haben **Sprung 0,00 %** und sind trotzdem Phantomtage |
+
+**Beide werden gebraucht.** *Sonst baut jemand später die eine und hält die andere für
+erledigt.* — Die Signatur wurde von **zwei Sitzungen unabhängig** umgesetzt und liefert
+dasselbe Bild: `-06` 26 Treffer über 72 frische Abrufe, die QS über die Archive.
+
+### ✅ 27.08. ~01:50 — Antwort auf die QS-Frage: JA, die Maschine liest 50 dieser Tage
+
+**`markt-dashboard-c4` hat mit dem EIGENEN Filter nachgezählt** (`WP.istAktie` + F1 +
+Mindesthistorie, rein lesend, **Positivkontrolle bestanden** — die Zählung fand LBRDA +16,6 %,
+LBRDK +16,8 % und PECO +200,0 % exakt wieder), Commit `a2115cd`, Nachtrag 11:
+
+| | |
+|---|---|
+| **F1 wirft die harten Split-Ränder als ganze Reihen** | ASTH +750 %, ARWR −88 % → komplett draußen |
+| **PECO, LBRDA, LBRDK bleiben im Universum** | |
+| **überlebende Nullumsatz-Kerzen mit \|Sprung\| > 10 %** | **50** über ~30 von 2.213 Reihen |
+| davon vor 2005 / bis 2014 / **ab 2015** | 39 / 6 / **5** |
+| Größenordnung | **2 ppm** bei ~22 Mio Kerzen, Schwerpunkt 80er/90er-Kleinwert-Illiquidität |
+
+**Als benannte Einschränkung in die Vorregistrierung aufgenommen** (neben den 158.733
+Nullumsatz-Tagen): *geführt, nicht behandelt* — eine Behandlung wäre eine neue Anordnung.
+
+**Für Wilhelms Vorlage in einem Satz:** *Der Referenzlauf steht auf Tagen, von denen 50 in
+22 Millionen fragwürdig sind, die zwei bestätigten Stempel eingeschlossen — benannt und
+beziffert, Wirkung klein aber nicht null, Richtung offen.*
+
+### 🔴 27.08. ~01:50 — F1 verwirft 36 GANZE REIHEN wegen einzelner kaputter Ränder
+
+**Nebenbefund derselben Zählung, und er ist ein eigener, teilweise FRISCHER Datenfund:**
+- **BYND +2920 % am 2026-07-20** — letzter Monat, im Zeitraum des laufenden Nachladers
+- **CHRD +25733 % am 2020-11-20**
+
+**Zwei Fragen, die zweite ist die schwerere** (an `markt-dashboard-06` gegeben, nach dem
+Populationszähler):
+
+1. **Produziert der Nachlade-Prozess solche Ränder?** BYND liegt im frisch geschriebenen
+   Zeitraum. Wenn ja, ist es ein aktueller Fund, kein Altlastenthema — *an den Rohdaten zu
+   prüfen, nicht an der Vermutung.*
+2. **Ist es richtig, eine ganze Reihe wegen einer einzelnen Kerze zu verwerfen?** Dieselbe
+   Familie wie die Löschregeln dieser Nacht, **nur eine Ebene höher: statt einer Kerze stirbt
+   die ganze Aktie.** Und es trifft ausgerechnet die Überlebensverzerrung, an der ohnehin
+   ≥ 12,7 % des Querschnitts fehlen — *wer wegen eines kaputten Randes eine echte Reihe
+   auswirft, verkleinert das Universum in genau der Richtung, in der wir uns ohnehin
+   täuschen.*
+
+**Auftrag lautet zählen und melden, nicht entscheiden.** Der Filter ist Messmaschinerie; eine
+Änderung dort verschiebt jedes künftige Ergebnis. **Ergebnis geht an Wilhelm.**
+
+### 💊 Ergänzung zur Fenstersperre: der Sprung ist Detektor, die Fensterregel ist die Sperre
+
+**`-06` hat unabhängig nachgezählt** — 26 Giftkerzen über alle 72 Rohantworten, **alle in
+nopp-Abrufen (26/30), null in pp (0/36)**, alle mit Stempel `2026-08-26T20:00`. Bestätigt die
+Korrektur der Ursachenzuordnung.
+
+**Seine wichtigere Beobachtung:** Die Giftkerze steckt mutmaßlich **auch in den
+Positivtag-Abrufen** — dort beträgt der Sprung nur **~1–3 %, unter jeder Schwelle**.
+**Ein Schwellenwert findet die auffälligen Fälle, eine Strukturregel alle.** Deshalb ist die
+Fenster-Regel aus `3fbc9b5` die tragfähige Sperre und der Sprung nur der Detektor.
+
+*Präzisierung der latenten Gefahr: `studien/datenfund-dochte-2026-08-27/quellabruf-halbtage.js`
+IST ein historischer `period1/period2`-Abrufer — er schreibt aber bewusst **nie** ins Archiv,
+nur in den Studienordner, und sagt das im Skriptkopf. So muss es aussehen.*
+
+### 🔍 27.08. 01:00–01:32 — der Auditor lief: 1 A, 3 B, 5 C, null Seiten- und Konsolenfehler
+
+*Übergabe `auditor-2026-08-27-0120.md`, Befund `studien/auditor/2026-08-27/BEFUND.md`,
+Commit `2d624d5`. Geprüfte Spanne `d964891..04c9be5` (117 Commits), Rotationsblock
+`strategien`. App dreimal isoliert gestartet (frisches Profil, echte Installation nicht
+angefasst), 5 Reiter und 17 Pillen in zwei Fenstergrößen, 43 Bildschirmfotos, 44
+Flächenbesuche.*
+
+**✅ ZUERST: WILHELMS AUFLAGE ZUR WAND TRÄGT — GEMESSEN, NICHT BEHAUPTET.** Der Auditor hat
+mit eigener Probe das Produkt im Testprofil umgestellt: Rechnung 0,100 → **0,0665 Pp**, der
+Satz wandert von „ab 0,183" auf „ab 0,077 Pp", `rsi2seit-mcp` rutscht hinter die Wand.
+Einsortierung folgt der Einstellung.
+
+**🔴 #105 (A) — ZWEI ZAHLEN UNTER DEMSELBEN NAMEN „KOSTENHÜRDE".** Das Messband auf
+*Vermögen → Depot* rechnet mit **fest verdrahteter** `HUERDE_PP = 0.10` (`messband.js:27`),
+während das Scoreboard seit `6c790c8` `DepotAPI.kostenHuerde()` benutzt. **In der
+Voreinstellung ergeben beide zufällig 0,100 Pp — deshalb fällt es niemandem auf.** Mit
+umgestelltem Produkt wandert die Wand, **das Messband nicht**: es zeigt weiter „Kostenhürde
+0.10 Pp → netto −0.079 Pp", richtig wären **−0,045 Pp**. Die Kopfzeile derselben Seite weiß
+zu dem Zeitpunkt schon „Gehandelt wird der Hebelschein".
+
+> **Der Auditor warnt ausdrücklich vor der falschen Ablage:** *„#105 ist keine Regression von
+> `messband.js` — die Datei liegt außerhalb der Änderungsmenge. Der Widerspruch ist trotzdem
+> neu: er entsteht erst dadurch, dass das Scoreboard seit `6c790c8` live rechnet. Wer die
+> Historie liest, könnte den Fund fälschlich als ‚war schon immer so' abtun. War es nicht."*
+
+**→ ⭐ FRAGE AN WILHELM (Morgenliste):** Soll das Messband die **Live-Hürde des gehandelten
+Produkts** zeigen (dann wie das Scoreboard) — oder ausdrücklich eine **feste Referenz auf den
+Basiswert**? *Beides ist vertretbar; unvertretbar ist nur, dass zwei Zahlen unter demselben
+Namen nebeneinanderstehen.* Der Auditor hat die Reparatur Richtung „live" formuliert, **weil
+das Scoreboard es so tut — und nennt das selbst eine Annahme, keinen Entscheid.**
+
+**Zugeteilt an `markt-dashboard-1d` (unstrittig, alle drei):** **#106** roher Schlüssel
+`nicht-entscheidbar` auf zwei weiteren Flächen (`strategien.js:260`, `messband.js:143`/`:159`
+→ `U.urteilText(...)`, liegt seit 26.08. in `app-shell.js:36`) — *dieselbe Protokollzahl wird
+in der App **vierfach verschieden** geschrieben.* **#107** `class="num"` (Scoreboard, 14×) hat
+im ganzen Repo **keine** CSS-Regel, `class="zahl"` gilt nur unter `#bestandTabelle` — neun
+Zahlenspalten linksbündig unter rechtsbündigen Köpfen; *zwei Klassen für dieselbe Sache sind
+die eigentliche Ursache.* **#108** englische Dezimalschreibweise (`messband.js:41`,
+`archivkarte.js`) plus Bindestrich- statt Minuszeichen.
+
+**Für den Analytiker, kein Oberflächenfund:** `quant.js`, **`gueteZufallsAnteil(null, n)` gibt
+`0` statt `null` zurück, weil `isFinite(null) === true` ist.** Über die Oberfläche derzeit
+nicht erreichbar — aber die Funktion ist neu und wird mehrfach aufgerufen.
+
+**Nicht geschafft, ausdrücklich benannt:** dunkles Thema (nur hell geprüft),
+Barrierefreiheit vollständig, netzabhängige Flächen (isoliertes Profil hat keinen Zugang —
+leere Karten dort sind erwartet, kein Fund). **Nächster Rotationspunkt: `werkzeuge`.**
+
+> **Eigene Richtigstellung des Auditors:** Seine erste Probe meldete für #80 „fehlt". *Das
+> war sein Fehler, kein Fund — sie fragte nach `window.Q`, veröffentlicht ist `window.Quant`.*
+> Mit Positivkontrolle nachgemessen, alles in Ordnung. **Ohne die Gegenprobe hätte er eine
+> fehlende Funktion behauptet, die es längst gibt.**
 
 ### 🚨 27.08. ~01:45 — DIE SIGNATUR IST IN UNSEREN EIGENEN ARCHIVEN. Drei bestätigte Fälle.
 
