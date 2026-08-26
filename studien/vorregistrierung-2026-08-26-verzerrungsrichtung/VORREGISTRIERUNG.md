@@ -426,6 +426,23 @@ und `8e0ef59`, **beides vor dem Kohortenlauf**:
    (17-Tage-Lauf)"** berichtet. Es wird nicht gestrichen — die Familie bleibt bei
    5 Tests, ein Streichen nach dem Wächterlauf wäre Auswahl nach Ergebnislage.
 
+## 12. Nachtrag 26.08. 22:2x — Befunde der QS-Gegenprüfung (`7f63e7e`), vor dem Kohortenlauf
+
+1. **Einheiten-Korrektur an §3:** `aussicht.tage80` zählt **Signaltage, nicht
+   Handelstage** (A-Fund der Gegenprüfung; 187 Signaltage ≈ 4.016 Handelstage). Die
+   Spaltenüberschrift in §3 war also falsch beschriftet. Folgen für diese Messung:
+   keine — die Auswahl der drei Ziele bleibt die vom PM freigegebene (Nachtrag 11.1),
+   und R1–R6 benutzen tage80 nirgends.
+2. **Phantom-Dochte an US-Halbtagen** (Hoch/Tief ohne Umsatz): berühren diese Messung
+   nicht — alle Endpunkte rechnen ausschließlich mit Schlusskursen und
+   Schluss×Umsatz; Hoch/Tief werden nie gelesen.
+3. **Fraglicher 25.08.** (womöglich neu zu holen): liegt außerhalb des Fensters
+   (FENSTER_BIS = 2026-08-21) — unberührt.
+4. **Neue Hausregel „jeder Nullbefund braucht eine Positivkontrolle":** ist hier von
+   Anfang an erfüllt — W1 (Kunstarchiv mit eingebautem −40-%-Effekt) ist genau diese
+   Positivkontrolle und hat bestanden (Wiederfindung 0,903), bevor irgendein Nullbefund
+   berichtet werden kann.
+
 ---
 
 *Simulation mit virtuellem Kapital. Keine Anlageberatung.*
