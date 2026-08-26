@@ -5,265 +5,376 @@
 
 <style>
   :root {
-    --grund:      #f4f6f4;
-    --flaeche:    #fbfcfb;
-    --kante:      #dde2df;
-    --kante-satt: #c3ccc6;
-    --tinte:      #16191b;
-    --tinte-2:    #5c6a70;
-    --tinte-3:    #879499;
-    --akzent:     #a8561f;
-    --akzent-weich:#f0e4da;
-    --kritisch:   #9c3226;
-    --wartet:     #8a6410;
-    --erledigt:   #2c6455;
-    --skala:      #e6eae7;
+    --grund:#f4f6f4; --flaeche:#fbfcfb; --kante:#dde2df; --kante-satt:#c3ccc6;
+    --tinte:#16191b; --tinte-2:#5c6a70; --tinte-3:#879499;
+    --akzent:#a8561f; --akzent-weich:#f0e4da;
+    --kritisch:#9c3226; --wartet:#8a6410; --erledigt:#2c6455;
+    --skala:#e6eae7; --schatten:rgba(20,28,30,.16);
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
-      --grund:      #14181a;
-      --flaeche:    #1b2023;
-      --kante:      #2b3336;
-      --kante-satt: #3d484c;
-      --tinte:      #e8ece9;
-      --tinte-2:    #9aa8ae;
-      --tinte-3:    #6f7f86;
-      --akzent:     #d98a4e;
-      --akzent-weich:#33231a;
-      --kritisch:   #d6705f;
-      --wartet:     #cfa03c;
-      --erledigt:   #63b39c;
-      --skala:      #232a2d;
+      --grund:#14181a; --flaeche:#1b2023; --kante:#2b3336; --kante-satt:#3d484c;
+      --tinte:#e8ece9; --tinte-2:#9aa8ae; --tinte-3:#6f7f86;
+      --akzent:#d98a4e; --akzent-weich:#33231a;
+      --kritisch:#d6705f; --wartet:#cfa03c; --erledigt:#63b39c;
+      --skala:#232a2d; --schatten:rgba(0,0,0,.5);
     }
   }
   :root[data-theme="dark"] {
-    --grund:      #14181a;
-    --flaeche:    #1b2023;
-    --kante:      #2b3336;
-    --kante-satt: #3d484c;
-    --tinte:      #e8ece9;
-    --tinte-2:    #9aa8ae;
-    --tinte-3:    #6f7f86;
-    --akzent:     #d98a4e;
-    --akzent-weich:#33231a;
-    --kritisch:   #d6705f;
-    --wartet:     #cfa03c;
-    --erledigt:   #63b39c;
-    --skala:      #232a2d;
+    --grund:#14181a; --flaeche:#1b2023; --kante:#2b3336; --kante-satt:#3d484c;
+    --tinte:#e8ece9; --tinte-2:#9aa8ae; --tinte-3:#6f7f86;
+    --akzent:#d98a4e; --akzent-weich:#33231a;
+    --kritisch:#d6705f; --wartet:#cfa03c; --erledigt:#63b39c;
+    --skala:#232a2d; --schatten:rgba(0,0,0,.5);
   }
 
   * { box-sizing: border-box; }
   body {
-    margin: 0;
-    background: var(--grund);
-    color: var(--tinte);
-    font-family: "Source Sans 3", system-ui, sans-serif;
-    font-size: 15px;
-    line-height: 1.5;
-    -webkit-font-smoothing: antialiased;
+    margin:0; background:var(--grund); color:var(--tinte);
+    font-family:"Source Sans 3",system-ui,sans-serif; font-size:15px; line-height:1.5;
+    -webkit-font-smoothing:antialiased;
   }
-  .blatt { max-width: 1080px; margin: 0 auto; padding: 28px 20px 56px; }
+  .blatt { max-width:1080px; margin:0 auto; padding:28px 20px 56px; }
+  :focus-visible { outline:2px solid var(--akzent); outline-offset:2px; }
 
-  /* ---- Kopf ---- */
-  .kopf {
-    display: flex; flex-wrap: wrap; align-items: baseline;
-    gap: 8px 16px; padding-bottom: 14px;
-    border-bottom: 2px solid var(--tinte);
-  }
-  .kopf h1 {
-    margin: 0; font-family: Archivo, system-ui, sans-serif;
-    font-weight: 700; font-size: 25px; letter-spacing: -0.015em;
-  }
-  .stempel {
-    margin-left: auto; font-family: "IBM Plex Mono", monospace;
-    font-size: 12px; color: var(--tinte-2); font-variant-numeric: tabular-nums;
-  }
+  .kopf { display:flex; flex-wrap:wrap; align-items:baseline; gap:8px 16px;
+    padding-bottom:14px; border-bottom:2px solid var(--tinte); }
+  .kopf h1 { margin:0; font-family:Archivo,system-ui,sans-serif; font-weight:700;
+    font-size:25px; letter-spacing:-.015em; }
+  .stempel { margin-left:auto; font-family:"IBM Plex Mono",monospace; font-size:12px;
+    color:var(--tinte-2); font-variant-numeric:tabular-nums; }
 
-  /* ---- Der Befund ---- */
-  .befund {
-    margin: 22px 0 0; padding: 20px 22px;
-    background: var(--flaeche); border: 1px solid var(--kante);
-    border-left: 4px solid var(--akzent);
-    display: flex; flex-wrap: wrap; align-items: center; gap: 20px 30px;
-  }
-  .zaehler { display: flex; align-items: baseline; gap: 9px; }
-  .zaehler b {
-    font-family: Archivo, sans-serif; font-weight: 700; font-size: 46px;
-    line-height: 0.9; letter-spacing: -0.03em; font-variant-numeric: tabular-nums;
-  }
-  .zaehler span { font-size: 14px; color: var(--tinte-2); max-width: 15ch; }
-  .befund p { margin: 0; flex: 1 1 320px; min-width: 260px; color: var(--tinte-2); }
-  .befund p strong { color: var(--tinte); font-weight: 600; }
+  .befund { margin:22px 0 0; padding:20px 22px; background:var(--flaeche);
+    border:1px solid var(--kante); border-left:4px solid var(--akzent);
+    display:flex; flex-wrap:wrap; align-items:center; gap:20px 30px; }
+  .zaehler { display:flex; align-items:baseline; gap:9px; }
+  .zaehler b { font-family:Archivo,sans-serif; font-weight:700; font-size:46px;
+    line-height:.9; letter-spacing:-.03em; font-variant-numeric:tabular-nums; }
+  .zaehler span { font-size:14px; color:var(--tinte-2); max-width:15ch; }
+  .befund p { margin:0; flex:1 1 320px; min-width:260px; color:var(--tinte-2); }
+  .befund p strong { color:var(--tinte); font-weight:600; }
 
-  /* ---- Skala ---- */
-  .skala-block { margin-top: 20px; }
-  .skala-titel {
-    font-family: Archivo, sans-serif; font-size: 11px; font-weight: 600;
-    text-transform: uppercase; letter-spacing: 0.09em; color: var(--tinte-3);
-    margin-bottom: 9px;
+  .skala-block { margin-top:20px; }
+  .skala-titel { font-family:Archivo,sans-serif; font-size:11px; font-weight:600;
+    text-transform:uppercase; letter-spacing:.09em; color:var(--tinte-3); margin-bottom:9px; }
+  .balken { display:flex; height:28px; border:1px solid var(--kante-satt); overflow:hidden; }
+  .balken button {
+    border:0; padding:0; font:inherit; cursor:pointer; color:#fff;
+    font-family:"IBM Plex Mono",monospace; font-size:11px; font-weight:600;
+    display:flex; align-items:center; justify-content:center; white-space:nowrap;
+    position:relative;
   }
-  .balken { display: flex; height: 26px; border: 1px solid var(--kante-satt); overflow: hidden; }
-  .balken div {
-    display: flex; align-items: center; justify-content: center;
-    font-family: "IBM Plex Mono", monospace; font-size: 11px; font-weight: 600;
-    color: #fff; white-space: nowrap;
-  }
-  .b-nein { background: var(--kritisch); }
-  .b-unent { background: var(--wartet); }
-  .b-unmess { background: var(--tinte-3); }
-  .legende {
-    display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 7px;
-    font-size: 12.5px; color: var(--tinte-2);
-  }
-  .legende i { display: inline-block; width: 9px; height: 9px; margin-right: 6px; }
+  .balken button:hover, .balken button:focus-visible { filter:brightness(1.14); }
+  .balken button::after { content:""; position:absolute; inset:auto 0 0 0; height:3px;
+    background:rgba(255,255,255,.55); opacity:0; }
+  .balken button:hover::after { opacity:1; }
+  .b-nein { background:var(--kritisch); }
+  .b-unent { background:var(--wartet); }
+  .b-unmess { background:var(--tinte-3); }
+  .legende { display:flex; flex-wrap:wrap; gap:6px 18px; margin-top:7px;
+    font-size:12.5px; color:var(--tinte-2); }
+  .legende i { display:inline-block; width:9px; height:9px; margin-right:6px; }
 
-  /* ---- Karten ---- */
-  .raster {
-    margin-top: 26px; display: grid; gap: 14px;
-    grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
-  }
-  .karte {
-    background: var(--flaeche); border: 1px solid var(--kante);
-    padding: 15px 17px 17px;
-  }
-  .karte > h2 {
-    margin: 0 0 11px; font-family: Archivo, sans-serif; font-size: 11px;
-    font-weight: 600; text-transform: uppercase; letter-spacing: 0.09em;
-    color: var(--tinte-3); display: flex; align-items: center; gap: 8px;
-  }
-  .karte > h2 em {
-    font-style: normal; font-family: "IBM Plex Mono", monospace;
-    font-size: 11px; color: var(--tinte-2); margin-left: auto;
-    font-variant-numeric: tabular-nums;
-  }
-  ul.liste { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 9px; }
-  ul.liste li { display: flex; gap: 9px; align-items: flex-start; line-height: 1.42; }
-  .marke {
-    flex: none; margin-top: 3px; width: 3px; height: 15px; background: var(--kante-satt);
-  }
-  .m-wartet { background: var(--wartet); }
-  .m-laeuft { background: var(--akzent); }
-  .m-ok { background: var(--erledigt); }
-  .m-kritisch { background: var(--kritisch); }
-  .liste b { font-weight: 600; }
-  .liste small { display: block; color: var(--tinte-2); font-size: 13px; }
-  .leer { color: var(--tinte-3); font-style: italic; font-size: 14px; }
+  .raster { margin-top:26px; display:grid; gap:14px;
+    grid-template-columns:repeat(auto-fit,minmax(290px,1fr)); }
+  .karte { background:var(--flaeche); border:1px solid var(--kante); padding:15px 17px 17px; }
+  .karte h2 { margin:0 0 11px; font-family:Archivo,sans-serif; font-size:11px;
+    font-weight:600; text-transform:uppercase; letter-spacing:.09em; color:var(--tinte-3);
+    display:flex; align-items:center; gap:8px; }
+  .karte h2 em { font-style:normal; font-family:"IBM Plex Mono",monospace; font-size:11px;
+    color:var(--tinte-2); margin-left:auto; font-variant-numeric:tabular-nums; }
+  ul.liste { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:2px; }
 
-  /* ---- Messwerte ---- */
-  .werte {
-    margin-top: 26px; display: grid; gap: 1px; background: var(--kante);
-    border: 1px solid var(--kante);
-    grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
+  ul.liste button {
+    width:100%; text-align:left; background:none; border:0; font:inherit; color:inherit;
+    cursor:pointer; display:flex; gap:9px; align-items:flex-start;
+    padding:6px 7px 7px; margin:0 -7px; border-radius:2px; line-height:1.42;
   }
-  .wert { background: var(--flaeche); padding: 11px 13px; }
-  .wert dt {
-    font-family: Archivo, sans-serif; font-size: 10px; font-weight: 600;
-    text-transform: uppercase; letter-spacing: 0.08em; color: var(--tinte-3);
-    margin-bottom: 3px;
-  }
-  .wert dd {
-    margin: 0; font-family: "IBM Plex Mono", monospace; font-size: 19px;
-    font-weight: 500; font-variant-numeric: tabular-nums;
-  }
-  .wert dd s { text-decoration: none; font-size: 12px; color: var(--tinte-2); }
-  .achtung dd { color: var(--wartet); }
+  ul.liste button:hover { background:var(--skala); }
+  ul.liste button[aria-expanded="true"] { background:var(--akzent-weich); }
+  .marke { flex:none; margin-top:3px; width:3px; height:15px; background:var(--kante-satt); }
+  .m-wartet { background:var(--wartet); } .m-laeuft { background:var(--akzent); }
+  .m-ok { background:var(--erledigt); } .m-kritisch { background:var(--kritisch); }
+  ul.liste b { font-weight:600; }
+  ul.liste small { display:block; color:var(--tinte-2); font-size:13px; }
+  .pfeil { flex:none; margin-left:auto; margin-top:2px; color:var(--tinte-3); font-size:15px;
+    font-family:"IBM Plex Mono",monospace; }
+  .leer { color:var(--tinte-3); font-style:italic; font-size:14px; margin:0; }
 
-  .fuss {
-    margin-top: 30px; padding-top: 13px; border-top: 1px solid var(--kante);
-    font-size: 12.5px; color: var(--tinte-3);
+  .werte { margin-top:26px; display:grid; gap:1px; background:var(--kante);
+    border:1px solid var(--kante); grid-template-columns:repeat(auto-fit,minmax(132px,1fr)); }
+  .wert { background:var(--flaeche); padding:0; }
+  .wert button { width:100%; text-align:left; background:none; border:0; font:inherit;
+    color:inherit; cursor:pointer; padding:11px 13px; display:block; }
+  .wert button:hover { background:var(--skala); }
+  .wert dt { font-family:Archivo,sans-serif; font-size:10px; font-weight:600;
+    text-transform:uppercase; letter-spacing:.08em; color:var(--tinte-3); margin-bottom:3px; }
+  .wert dd { margin:0; font-family:"IBM Plex Mono",monospace; font-size:19px; font-weight:500;
+    font-variant-numeric:tabular-nums; }
+  .wert dd s { text-decoration:none; font-size:12px; color:var(--tinte-2); }
+
+  .fuss { margin-top:30px; padding-top:13px; border-top:1px solid var(--kante);
+    font-size:12.5px; color:var(--tinte-3); }
+  .fuss code { font-family:"IBM Plex Mono",monospace; font-size:12px; background:var(--skala);
+    padding:1px 5px; color:var(--tinte-2); }
+
+  /* ---- Detailtafel ---- */
+  .schleier { position:fixed; inset:0; background:rgba(10,16,18,.42); border:0; padding:0;
+    margin:0; width:100%; cursor:default; }
+  .schleier[hidden], .tafel[hidden] { display:none; }
+  .tafel {
+    position:fixed; top:0; right:0; bottom:0; width:min(430px,100%);
+    background:var(--flaeche); border-left:1px solid var(--kante-satt);
+    box-shadow:-14px 0 34px var(--schatten);
+    display:flex; flex-direction:column; z-index:10;
   }
-  .fuss code {
-    font-family: "IBM Plex Mono", monospace; font-size: 12px;
-    background: var(--skala); padding: 1px 5px; color: var(--tinte-2);
-  }
-  @media (max-width: 560px) {
-    .zaehler b { font-size: 38px; }
-    .kopf h1 { font-size: 21px; }
-  }
+  .tafel-kopf { padding:17px 19px 13px; border-bottom:1px solid var(--kante);
+    display:flex; align-items:flex-start; gap:12px; }
+  .tafel-kopf h3 { margin:0; font-family:Archivo,sans-serif; font-size:17px; font-weight:600;
+    letter-spacing:-.01em; text-wrap:balance; }
+  .tafel-kopf .art { display:block; font-family:Archivo,sans-serif; font-size:10px;
+    font-weight:600; text-transform:uppercase; letter-spacing:.09em; margin-bottom:4px; }
+  .zu { flex:none; background:none; border:1px solid var(--kante); color:var(--tinte-2);
+    font:inherit; font-size:17px; line-height:1; width:29px; height:29px; cursor:pointer;
+    border-radius:2px; }
+  .zu:hover { background:var(--skala); color:var(--tinte); }
+  .tafel-koerper { padding:16px 19px 26px; overflow-y:auto; }
+  .tafel-koerper p { margin:0 0 12px; }
+  .tafel-koerper p:last-child { margin-bottom:0; }
+  .tafel-koerper strong { font-weight:600; }
+  .tafel-koerper code { font-family:"IBM Plex Mono",monospace; font-size:12.5px;
+    background:var(--skala); padding:1px 5px; }
+  .tafel-koerper dl { margin:0 0 14px; display:grid; grid-template-columns:auto 1fr;
+    gap:5px 14px; font-size:14px; }
+  .tafel-koerper dt { color:var(--tinte-3); }
+  .tafel-koerper dd { margin:0; font-family:"IBM Plex Mono",monospace;
+    font-variant-numeric:tabular-nums; font-size:13.5px; }
+  .tafel-koerper ul { margin:0 0 12px; padding-left:17px; }
+  .tafel-koerper li { margin-bottom:5px; }
+  .frage { margin-top:14px; padding:11px 13px; background:var(--akzent-weich);
+    border-left:3px solid var(--akzent); font-size:14px; }
+  .frage b { display:block; margin-bottom:5px; }
+
+  @media (min-width:761px) { .tafel { top:12px; bottom:12px; right:12px; border:1px solid var(--kante-satt); } }
+  @media (max-width:560px) { .zaehler b { font-size:38px; } .kopf h1 { font-size:21px; } }
 </style>
 
 <div class="blatt">
-
   <header class="kopf">
     <h1>Lagebild</h1>
-    <span class="stempel">Stand 26.08.2026 · 18:30</span>
+    <span class="stempel" id="stempel"></span>
   </header>
 
   <section class="befund">
-    <div class="zaehler">
-      <b>0</b><span>von 12 Strategien belegt</span>
-    </div>
-    <p>Neun davon sind <strong>nicht am Markt gescheitert, sondern am Messgerät</strong>.
-    Eine Kante in Größe der Handelskosten bräuchte 35 Jahre Daten — vorhanden sind 20.</p>
+    <div class="zaehler"><b id="kern-zahl"></b><span id="kern-text"></span></div>
+    <p id="kern-satz"></p>
   </section>
 
   <div class="skala-block">
-    <div class="skala-titel">Die zwölf Urteile</div>
-    <div class="balken" role="img" aria-label="2 nicht bestätigt, 9 nicht entscheidbar, 1 nicht messbar">
-      <div class="b-nein" style="width:16.7%">2</div>
-      <div class="b-unent" style="width:75%">9</div>
-      <div class="b-unmess" style="width:8.3%">1</div>
-    </div>
-    <div class="legende">
-      <span><i class="b-nein"></i>nicht bestätigt — gemessen, trägt nicht</span>
-      <span><i class="b-unent"></i>nicht entscheidbar — Lineal zu grob</span>
-      <span><i class="b-unmess"></i>nicht messbar</span>
-    </div>
+    <div class="skala-titel">Die zwölf Urteile <span style="text-transform:none;letter-spacing:0;color:var(--tinte-3)">— anklickbar</span></div>
+    <div class="balken" id="balken"></div>
+    <div class="legende" id="legende"></div>
   </div>
 
-  <div class="raster">
-
-    <section class="karte">
-      <h2>Wartet auf dich <em>3</em></h2>
-      <ul class="liste">
-        <li><span class="marke m-wartet"></span><div><b>#96 Platzhalterkerze</b>
-          <small>Verwerfen oder behalten? 147 von 152 Reihen betroffen</small></div></li>
-        <li><span class="marke m-wartet"></span><div><b>#80 Kanal-Güte</b>
-          <small>Rauschen bekommt im Median 75 von 100 — drei Wege zur Wahl</small></div></li>
-        <li><span class="marke m-wartet"></span><div><b>Kostenhürde, Richtung</b>
-          <small>Längere Haltedauer, Basiswert oder engere Spannen</small></div></li>
-      </ul>
-    </section>
-
-    <section class="karte">
-      <h2>Läuft gerade <em>2</em></h2>
-      <ul class="liste">
-        <li><span class="marke m-laeuft"></span><div><b>App sammelt Intraday</b>
-          <small>Master baut — Minutenkerzen verfallen nach 7 Tagen</small></div></li>
-        <li><span class="marke m-laeuft"></span><div><b>Erstlauf sichert das Fenster</b>
-          <small>1m, 5m, 15m für die 500 liquidesten Werte</small></div></li>
-      </ul>
-    </section>
-
-    <section class="karte">
-      <h2>Warnsignale <em>0</em></h2>
-      <p class="leer">Keine. Tests grün, Archive aktuell, nichts ungepusht.</p>
-      <h2 style="margin-top:16px">Heute erledigt <em>7</em></h2>
-      <ul class="liste">
-        <li><span class="marke m-ok"></span><div><b>Warnhinweis wirkt wieder</b>
-          <small>War ausgeliefert und tot — #100</small></div></li>
-        <li><span class="marke m-ok"></span><div><b>Kursarchiv steht</b>
-          <small>Stand zwei Tage still, niemand hat es gemerkt</small></div></li>
-        <li><span class="marke m-ok"></span><div><b>Überlappungswächter repariert</b>
-          <small>Vorbedingung für die Momentum-Messung</small></div></li>
-      </ul>
-    </section>
-
-  </div>
-
-  <dl class="werte">
-    <div class="wert"><dt>Ausgeliefert</dt><dd>8.33.5</dd></div>
-    <div class="wert achtung"><dt>Ungeliefert</dt><dd>18 <s>Commits</s></dd></div>
-    <div class="wert achtung"><dt>Notizen warten</dt><dd>4</dd></div>
-    <div class="wert"><dt>Heute</dt><dd>114 <s>Commits</s></dd></div>
-    <div class="wert"><dt>Tests</dt><dd style="color:var(--erledigt)">grün</dd></div>
-    <div class="wert"><dt>Offene Issues</dt><dd>12</dd></div>
-  </dl>
+  <div class="raster" id="raster"></div>
+  <dl class="werte" id="werte"></dl>
 
   <p class="fuss">
-    Wird bei jedem Abruf überschrieben — diese Adresse bleibt gleich.
-    Ausführlich auf der Tafel: <code>PROJEKTSTAND.md</code>,
-    der Plan unter <code>studien/grosser-plan-2026-08-26/PLAN.md</code>.
+    Alles Angezeigte ist anklickbar. Wird bei jedem Abruf überschrieben — diese Adresse bleibt gleich.
+    Ausführlich: <code>PROJEKTSTAND.md</code>, Plan unter <code>studien/grosser-plan-2026-08-26/PLAN.md</code>.
   </p>
-
 </div>
+
+<button class="schleier" id="schleier" hidden aria-label="Detail schließen"></button>
+<aside class="tafel" id="tafel" hidden role="dialog" aria-modal="true" aria-labelledby="tafel-titel">
+  <div class="tafel-kopf">
+    <div>
+      <span class="art" id="tafel-art"></span>
+      <h3 id="tafel-titel"></h3>
+    </div>
+    <button class="zu" id="tafel-zu" aria-label="Schließen">✕</button>
+  </div>
+  <div class="tafel-koerper" id="tafel-koerper"></div>
+</aside>
+
+<script>
+/* ============================================================
+   NUR DIESES OBJEKT WIRD BEIM ABRUF AUSGETAUSCHT.
+   Struktur, Farben und Verhalten bleiben, wie sie sind.
+   Jeder Eintrag: kurz = was in der Karte steht, detail = was beim Klick erscheint.
+   ============================================================ */
+const DATEN = {
+  stand: "26.08.2026 · 18:45",
+
+  kern: {
+    zahl: "0", text: "von 12 Strategien belegt",
+    satz: "Neun davon sind <strong>nicht am Markt gescheitert, sondern am Messgerät</strong>. Eine Kante in Größe der Handelskosten bräuchte 35 Jahre Daten — vorhanden sind 20."
+  },
+
+  urteile: [
+    { klasse:"b-nein", zahl:2, name:"nicht bestätigt", zusatz:"gemessen, trägt nicht",
+      detail:`<p><strong>Gemessen — und die Regel hat den Nachweis nicht erbracht.</strong> Das ist etwas anderes als „wir wissen es nicht": hier wurde nachgesehen.</p>
+        <dl><dt>kapitulation</dt><dd>224 Tage Aussicht</dd><dt>winkelbestaetigt</dt><dd>keine ausgewiesen</dd></dl>
+        <p><code>kapitulation</code> bleibt wählbar, trägt aber seit heute einen Warnhinweis — deine Entscheidung von heute früh.</p>` },
+    { klasse:"b-unent", zahl:9, name:"nicht entscheidbar", zusatz:"Lineal zu grob",
+      detail:`<p><strong>Der häufigste Fall — und der teuerste Irrtum wäre, ihn für ein Nein zu halten.</strong> Diese neun sind nicht widerlegt; die Daten reichen schlicht nicht aus, um die Frage zu beantworten.</p>
+        <dl><dt>rsi2seit-mcp</dt><dd>1.070 Tage</dd><dt>monatswende-breit</dt><dd>3.803</dd><dt>rsi2seit</dt><dd>4.116</dd><dt>t3-stundendrift</dt><dd>12.655</dd><dt>quartalsschub</dt><dd>13.257</dd><dt>t2-umsatzschock</dt><dd>17.317</dd><dt>momentum</dt><dd>33.683</dd><dt>t1-zwangsglatt.</dt><dd>34.691</dd><dt>winkelgrad</dt><dd>keine</dd></dl>
+        <p><strong>Sieben liegen jenseits von 12.000 Handelstagen</strong> — über fünfzig Jahre Börse. Mit diesem Datenbestand nie entscheidbar, egal wie lange gewartet wird.</p>` },
+    { klasse:"b-unmess", zahl:1, name:"nicht messbar", zusatz:"",
+      detail:`<p><code>monatsende-kauf</code> — die einzige Strategie, die nicht aus dem Programmordner stammt, sondern aus dem Baukasten in der App.</p>
+        <p>Ihre Aussicht ist mit <strong>187 Tagen die kürzeste von allen</strong> — und trotzdem steht sie auf „nicht messbar". Eine kurze Aussicht heißt <em>entscheidbar</em>, nicht <em>lohnend</em>.</p>` }
+  ],
+
+  karten: [
+    { titel:"Wartet auf dich", marke:"m-wartet", eintraege:[
+      { kurz:"#96 Platzhalterkerze", unter:"147 von 152 Reihen betroffen",
+        detail:`<p>Die Datenquelle hängt jeder Stundenreihe am zuletzt geholten Tag eine <strong>achte Kerze</strong> an — ohne Umsatz, mit demselben Kurs wie die Stunde davor. Ein Platzhalter für den Sitzungsschluss, keine gehandelte Stunde.</p>
+          <p><strong>Das Tagesarchiv ist nicht betroffen</strong>, nur die Stundenkerzen.</p>
+          <p>Warum es nicht einfach weggefiltert wird: Eine Regel „ohne Umsatz raus" würde <strong>echte Handelsstunden mitlöschen</strong> — allein bei Apple 18 Stück, viele davon am Schluss verkürzter Sitzungen.</p>
+          <div class="frage"><b>Deine Wahl</b>Verwerfen mit der schärferen Regel (ohne Umsatz <em>und</em> völlig flach — trifft über fünf geprüfte Werte genau den Platzhalter), stehen lassen, oder erst mit einem Feiertagskalender nachrüsten.</div>` },
+      { kurz:"#80 Kanal-Güte", unter:"Rauschen bekommt im Median 75 von 100",
+        detail:`<p>Die App zeigt für jeden Kanal eine Güte von 0 bis 100. Gemessen wurde: <strong>reines Rauschen bekommt im Median 75.</strong> Die Zahl unterscheidet also kaum zwischen einem echten Kanal und Zufall — steht aber so in der Oberfläche.</p>
+          <div class="frage"><b>Drei Wege</b>Den Bezugspunkt danebenschreiben („75 = Rauschen"), auf ein Perzentil umstellen, oder die Zahl nur noch als Rangfolge kennzeichnen statt als Note.</div>
+          <p>Betroffen sind sechs Stellen im Programm, darunter die Sortierung der Kanalliste.</p>` },
+      { kurz:"Kostenhürde, Richtung", unter:"der stärkste Hebel überhaupt",
+        detail:`<p>Jede gemessene Kante wird gegen die Handelskosten gehalten. Die Hürde je Umlauf:</p>
+          <dl><dt>Aktie</dt><dd>0,04 Pp</dd><dt>CFD</dt><dd>0,10 Pp</dd><dt>Standard-Schein</dt><dd>0,23 Pp</dd></dl>
+          <p><strong>Vom Schein auf den Basiswert zu wechseln senkt die Hürde um fast das Sechsfache</strong> — das wirkt stärker als jede Strategie-Idee, die hier je gemessen wurde.</p>
+          <p>Du hast das grundsätzlich schon freigegeben. Offen ist die zweite Hälfte: längere Haltedauern und engere Spannen — beides ändert, welche Strategien überhaupt in Frage kommen.</p>` }
+    ]},
+
+    { titel:"Läuft gerade", marke:"m-laeuft", eintraege:[
+      { kurz:"App sammelt Intraday", unter:"Minutenkerzen verfallen nach 7 Tagen",
+        detail:`<p>Die Quelle liefert Intraday nur in einem <strong>rollierenden Fenster</strong>: Minutenkerzen sieben Tage zurück, 5- und 15-Minuten sechzig Tage. <strong>Was nicht geholt wird, ist danach für immer weg.</strong></p>
+          <p>Bisher hat das niemand gesammelt. Deshalb baut der Master es jetzt in die App selbst — sie läuft ohnehin, dann hängt es an keiner Kette, die reißen kann.</p>
+          <p><strong>Warum es sich lohnt:</strong> In der großen Signalstudie hatten die Minutenkerzen mit nur 22 Tagen Datenbasis die <em>schärfste</em> Auflösung von allen vier Zeitrahmen — dreimal besser als die Stundenkerzen mit 242 Tagen.</p>
+          <p>Der Haken: Je öfter gehandelt wird, desto öfter fällt die Kostenhürde an. Ob sich das rechnet, ist noch niemand durchgegangen.</p>` },
+      { kurz:"Erstlauf sichert das Fenster", unter:"1m, 5m, 15m für 500 Werte",
+        detail:`<p>Von Hand angestoßen um 18:21, während die App-Funktion gebaut wird. Er rettet das Fenster, das sonst diese Woche verfallen wäre.</p>
+          <p>Reihenfolge nach Dringlichkeit: <strong>Minutenkerzen zuerst</strong> (nur 7 Tage Fenster), dann die gröberen mit ihren 60 Tagen Puffer.</p>
+          <p>Beschränkt auf die 500 liquidesten Werte — 17 statt 97 Minuten je Auflösung. Auf alle 2.900 erweiterbar, Platz ist reichlich da (1,65 TB frei).</p>` }
+    ]},
+
+    { titel:"Heute erledigt", marke:"m-ok", eintraege:[
+      { kurz:"Warnhinweis wirkt wieder", unter:"war ausgeliefert und tot",
+        detail:`<p>Dein Entscheid von heute früh — <code>kapitulation</code> bleibt wählbar, aber mit Warnhinweis — war gebaut, ausgeliefert und <strong>erschien nie</strong>.</p>
+          <p>Der Regelkopf behauptete dauerhaft „Kein Messprotokoll im Datenordner", während sechs Zeilen tiefer dasselbe Protokoll mit einem <em>anderen</em> Urteil stand. <strong>Zwei Wahrheiten gleichzeitig auf einer Seite.</strong></p>
+          <p>Der Master hat es in der laufenden App nachgestellt, statt der Meldung zu glauben. Beim Reparieren kam gleich der nächste Fehler zum Vorschein: hinter einer toten Anzeige verstecken sich deren eigene Fehler.</p>` },
+      { kurz:"Kursarchiv steht", unter:"stand zwei Tage still, unbemerkt",
+        detail:`<p>Das Archiv war seit dem 24.08. eingefroren. Die Ursache war nicht eine gestörte Aufgabe — <strong>es gab gar keine.</strong> Das Holen war ein Handgriff, und den hat zwei Tage lang niemand gemacht.</p>
+          <p>Verdeckt wurde es davon, dass das Werkzeug bei jedem Lauf zufrieden „Nichts zu tun" meldete. <strong>Ein Lauf, der nichts dazulernt, sieht von außen aus wie ein gesunder Lauf.</strong></p>
+          <p>Repariert ist deshalb nicht der Lauf, sondern das Schweigen: Ab 22:15 lädt eine Aufgabe jede Nacht nach, und ein Wächter meldet das Alter der jüngsten Kerze — nicht das Datum der Datei, denn genau das war die Täuschung.</p>` },
+      { kurz:"Überlappungswächter repariert", unter:"Vorbedingung für die Momentum-Messung",
+        detail:`<p>Eine Warnung, die anspringen sollte, wenn sich Messungen zu stark überlappen — sie ist in keinem der 38 Protokolle je angesprungen. <strong>Eine Zeile hat gefehlt</strong>, der Wert wurde nie durchgereicht.</p>
+          <p>Unangenehm passend: <strong>Momentum ist genau der Fall, für den dieser Wächter gebaut wurde</strong> — und er war blind.</p>
+          <p>Kaum war er sichtbar, zeigte sich der nächste Fehler: Sein Text behauptete, der Messfehler <em>wachse</em> um einen Faktor. Auf dem Testarchiv schrumpft er.</p>` }
+    ]}
+  ],
+
+  werte: [
+    { name:"Ausgeliefert", wert:"8.33.5", detail:`<p>Heute dreimal ausgeliefert: 8.33.3 am Vormittag, 8.33.4 am Mittag, 8.33.5 um 17:17.</p><p>Bei jeder Auslieferung wird geprüft, ob alle 43 Programmteile im Paket stecken — an dieser Stelle ist hier schon einmal ein ganzes Modul hängengeblieben.</p>` },
+    { name:"Ungeliefert", wert:"18", zusatz:"Commits", warn:true, detail:`<p>Fertige Arbeit, die noch nicht bei dir angekommen ist — darunter der reparierte Warnhinweis und der Überlappungswächter.</p><p>Vier Release-Notizen warten. Die Auslieferung startest du selbst; keine Sitzung und auch nicht ich.</p>` },
+    { name:"Notizen warten", wert:"4", warn:true, detail:`<p>Jede fertige Arbeit hinterlässt eine Notiz in Anwendersprache. Bei der nächsten Auslieferung werden sie zum Änderungstext.</p>` },
+    { name:"Heute", wert:"114", zusatz:"Commits", detail:`<p>Der bislang dichteste Tag des Projekts — Neumessung aller zwölf Strategien, Archiv-Reparatur, Barrierefreiheit, der neue Arbeitsablauf und der große Plan.</p>` },
+    { name:"Tests", wert:"grün", gut:true, detail:`<p>Programmprüfung, Kanalprüfung und die große Regressionsprüfung laufen bei jedem Push. Zuletzt geprüft um 18:05.</p><p>Dazu zwei Sonden, die die laufende App fernsteuern: eine für die Bedienung, eine für Lesbarkeit und Kontrast.</p>` },
+    { name:"Offene Issues", wert:"12", detail:`<p>Vier Fehler, drei Wünsche, der Rest Merkliste. Eine Wache sichtet sie alle 30 Minuten und antwortet — sie baut aber nichts.</p><p>Drei davon warten auf deine Entscheidung, nicht auf Arbeitskraft.</p>` }
+  ]
+};
+
+/* ---------- Aufbau ---------- */
+const $ = (id) => document.getElementById(id);
+const alle = [];
+
+$("stempel").textContent = "Stand " + DATEN.stand;
+$("kern-zahl").textContent = DATEN.kern.zahl;
+$("kern-text").textContent = DATEN.kern.text;
+$("kern-satz").innerHTML = DATEN.kern.satz;
+
+const gesamt = DATEN.urteile.reduce((s, u) => s + u.zahl, 0);
+DATEN.urteile.forEach((u) => {
+  const b = document.createElement("button");
+  b.className = u.klasse;
+  b.style.width = (100 * u.zahl / gesamt) + "%";
+  b.textContent = u.zahl;
+  b.title = u.zahl + " × " + u.name;
+  b.setAttribute("aria-label", u.zahl + " " + u.name + " — Details anzeigen");
+  verdrahten(b, u.name, u.zusatz || "Urteil", u.detail);
+  $("balken").appendChild(b);
+  const l = document.createElement("span");
+  l.innerHTML = '<i class="' + u.klasse + '"></i>' + u.name + (u.zusatz ? " — " + u.zusatz : "");
+  $("legende").appendChild(l);
+});
+
+DATEN.karten.forEach((k) => {
+  const sec = document.createElement("section");
+  sec.className = "karte";
+  sec.innerHTML = '<h2>' + k.titel + ' <em>' + k.eintraege.length + '</em></h2>';
+  if (!k.eintraege.length) {
+    sec.insertAdjacentHTML("beforeend", '<p class="leer">Keine.</p>');
+  } else {
+    const ul = document.createElement("ul");
+    ul.className = "liste";
+    k.eintraege.forEach((e) => {
+      const li = document.createElement("li");
+      const b = document.createElement("button");
+      b.innerHTML = '<span class="marke ' + k.marke + '"></span>' +
+        '<span><b>' + e.kurz + '</b><small>' + e.unter + '</small></span>' +
+        '<span class="pfeil" aria-hidden="true">›</span>';
+      verdrahten(b, e.kurz, k.titel, e.detail);
+      li.appendChild(b);
+      ul.appendChild(li);
+    });
+    sec.appendChild(ul);
+  }
+  $("raster").appendChild(sec);
+});
+
+DATEN.werte.forEach((w) => {
+  const div = document.createElement("div");
+  div.className = "wert";
+  const b = document.createElement("button");
+  const farbe = w.warn ? "var(--wartet)" : (w.gut ? "var(--erledigt)" : "inherit");
+  b.innerHTML = '<dt>' + w.name + '</dt><dd style="color:' + farbe + '">' + w.wert +
+    (w.zusatz ? ' <s>' + w.zusatz + '</s>' : '') + '</dd>';
+  verdrahten(b, w.name, "Messwert", w.detail);
+  div.appendChild(b);
+  $("werte").appendChild(div);
+});
+
+/* ---------- Detailtafel ---------- */
+let zuletzt = null;
+
+function verdrahten(knopf, titel, art, inhalt) {
+  knopf.setAttribute("aria-expanded", "false");
+  alle.push(knopf);
+  knopf.addEventListener("click", () => oeffnen(knopf, titel, art, inhalt));
+}
+
+function oeffnen(knopf, titel, art, inhalt) {
+  alle.forEach((k) => k.setAttribute("aria-expanded", "false"));
+  knopf.setAttribute("aria-expanded", "true");
+  zuletzt = knopf;
+  $("tafel-art").textContent = art;
+  $("tafel-art").style.color = art === "Wartet auf dich" ? "var(--wartet)" :
+    (art === "Heute erledigt" ? "var(--erledigt)" : "var(--akzent)");
+  $("tafel-titel").textContent = titel;
+  $("tafel-koerper").innerHTML = inhalt;
+  $("tafel-koerper").scrollTop = 0;
+  $("tafel").hidden = false;
+  $("schleier").hidden = false;
+  $("tafel-zu").focus();
+}
+
+function schliessen() {
+  $("tafel").hidden = true;
+  $("schleier").hidden = true;
+  alle.forEach((k) => k.setAttribute("aria-expanded", "false"));
+  if (zuletzt) { zuletzt.focus(); zuletzt = null; }
+}
+
+$("tafel-zu").addEventListener("click", schliessen);
+$("schleier").addEventListener("click", schliessen);
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && !$("tafel").hidden) schliessen();
+});
+</script>
