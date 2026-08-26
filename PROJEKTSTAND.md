@@ -14,6 +14,53 @@ Wenn du hier etwas änderst, dann nur deine eigene Zeile unter „Läuft gerade"
 
 ---
 
+## 📋 NACHTBILANZ 27.08. (Stand 02:00) — die 30-Sekunden-Fassung
+
+**Ertrag der Nacht: null neue Kanten, sechs verhinderte Datenverluste.** Der Belegstand bleibt
+**0 von 12**. Was stattdessen passiert ist: sechsmal wurde eine Reparatur oder eine Zahl
+angehalten, die echte Kurse zerstört oder ein falsches Urteil getragen hätte. **Zweimal traf
+es Anweisungen des PM, zweimal Vorgaben der QS, zweimal eigene Befunde der Sitzungen.**
+Gefunden hat es jedes Mal eine Gegenprobe.
+
+### ⭐ Was auf Wilhelm wartet — drei Entscheidungen
+
+| | Frage | Lage |
+|---|---|---|
+| **1** | **Gehören Randzeiten-Kerzen ins 60m-Archiv?** | **Blockiert alles andere.** Nachlader-Bestand führt sie, App-Bestand nicht (0 von 990.509 gezählt) — zwei Politiken ohne Kennzeichen. Ohne diesen Entscheid ist unentscheidbar, ob die „Phantom-Dochte" Fehler oder echte Nachhandelskurse sind. |
+| **2** | **Bekommen die delisteten Papiere ihr Abmeldedatum?** | **⏳ zeitkritisch: heute Kosmetik, ab ~einer Handelswoche Messhygiene.** Gemessen: AVB/EQR sind im Universum, heute außerhalb jedes Fensters, ab nächster Woche wähl- und haltbar mit eingefrorener Nullrendite. |
+| **3** | **Welche „Kostenhürde" zeigt das Messband?** | Zwei verschiedene Zahlen tragen denselben Namen; in der Voreinstellung stimmen sie zufällig überein. Live-Hürde oder feste Referenz — beides vertretbar, der Doppelname nicht. |
+
+### 🔒 Was läuft, und wann es meldet
+
+**Archivsperre bis ~03:40** (Nachlader gesund, ~300 Dateien/10 Min, keine Alarme).
+**Nichts wird verändert, `--wirklich` ist gesperrt**, unabhängig von jeder Methode.
+Danach fünf vorregistrierte Läufe, ein Prozess je Lauf, **Sperrprüfung vor jedem einzelnen**:
+
+    [1] Phantom-Schluss ueber alle sieben Halbtage   blockiert die Reparatur
+    [2] Schiedsrichter-Test (A/B/C)                  entscheidet ueber Option (c)
+    [3] 1d-Schluss gegen 60m-Schluss                 fuer Strang A
+    [4] Stempel-Sucher auf 60m gegen die 149         Kontrolle
+    [5] Kurssprung auf 60m                           zweite Stempel-Familie
+
+*Alle fünf verweigern bei stehender Sperre nachweislich — gemessen, nicht angenommen. Der
+Treiber **wartet nicht, er verweigert**: „ein Treiber, der wartet, verdeckt nur, dass er
+nichts tut."*
+
+### 🧭 Der rote Faden der Nacht
+
+**Acht Fehler hatten dieselbe Form: eine Zahl ist richtig gerechnet und beantwortet trotzdem
+eine andere Frage als die gestellte.** 37,6 % „Teilkerzen", die zu 99,4 % Schlusskurse waren.
+76,4 % „echte Extreme", die von den Normaltagen getragen wurden. Eine Positivkontrolle, die
+Empfindlichkeit belegt und für Vollständigkeit gehalten wird. Eine Asymmetrie, die als Beleg
+für Verfälschung diente und ohne jede Verfälschung entsteht.
+
+**Und der Satz, der bleibt** (QS, nachdem sie in derselben Nacht zum zweiten Mal auf dieselbe
+Zahl hereingefallen war): ***Die Falle verschwindet nicht durch einmaliges Erkennen.***
+
+*Alle Einzelheiten in den datierten Abschnitten unterhalb und unter „Aufträge".*
+
+---
+
 ## 🔴 27.08.2026, 00:42 — App-Neustart: alle Sitzungen weg, der Nachlade-Lauf lebt
 
 **Wilhelm hat die App um ~00:40 neu gestartet.** Damit sind **alle acht wachen Chat-Sitzungen
