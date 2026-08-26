@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-26 16:20
+letzter-bericht: 2026-08-26 17:00
 gesehener-tag: v8.33.3
 -->
 
@@ -74,6 +74,46 @@ Der Struktur-Plan vom 25.08. (`studien/struktur-plan-2026-08-25/PLAN.md`):
 | F (1) | Theme ohne Dunkel-Blitz | **fertig** (26.08.) |
 | F (2) | Ein einziger Chart-Renderer | **entschieden 26.08.: NEIN** — nur die Doppelung (B2) raeumen |
 | F (3) | Barrierefreiheit | **frei** (die Sperre dahinter ist mit F (2) weggefallen) |
+
+---
+
+### 🔄 Neuer Arbeitsablauf ab 26.08.2026 — jede Rolle übergibt, keine schaltet sich stumm ab
+
+**Wilhelms Anordnung, 26.08.:** *„alle tasks so anpassen, dass sie einen report geben,
+sobald sie fertig sind … dann 10 Min auf Bereitschaft bleiben … damit nichts mehr liegen
+bleibt oder wer auf seine Anweisungen warten muss."* Umgesetzt vom PM in allen neun
+Rollen.
+
+**Was jede Rolle jetzt am Ende tut:**
+
+1. **Übergabe schreiben** nach
+   `<Downloads>/Markt-Dashboard-Daten/uebergabe/<rolle>-<datum-uhrzeit>.md` — mit dem Kopf
+   `ERREICHBAR-BIS: <HH:MM>` und fünf Punkten. **Punkt 4 ist der tragende: „Was jemand
+   anders übernehmen müsste", mit Datei und Zeile.**
+2. **Zehn Minuten Bereitschaft** über ein Hintergrundkommando (`sleep 600`). Die Sitzung
+   endet nicht sofort und kann in dieser Zeit angesprochen werden — Rückfrage oder
+   gleich der nächste Auftrag. Ein Auftrag, der länger dauert, wird trotzdem zu Ende
+   gebracht; zehn Minuten sind ein Mindestmaß, keine Obergrenze.
+
+**Was der PM jetzt zuerst tut:** den Übergabe-Ordner lesen, verteilen, das Bleibende auf
+diese Tafel übertragen, die Datei wegräumen. **Fehlt die Übergabe einer Rolle, die laut
+Zeitplan gelaufen ist, gilt das selbst als Warnsignal** — eine Rolle, die schweigt, ist
+der Zustand, den dieses Projekt am teuersten bezahlt hat.
+
+**Warum Datei und nicht einfach eine Nachricht — gemessen, nicht vermutet:**
+Sitzungsnamen werden **zufällig** vergeben (`markt-dashboard-xy`) und kommen mehrfach
+vor; in der Liste standen heute 58 Einträge, elf Namen doppelt. Es gibt also keine feste
+Adresse, unter der der PM erreichbar wäre — und er läuft selbst nur sechsmal täglich,
+**nachts nie**. Eine Nachricht an ihn bliebe liegen, bis er das nächste Mal etwas tut.
+**Die Datei trägt immer, die Bereitschaft ist die Abkürzung für den Fall, dass er wach
+ist.** Dass ein Hintergrundkommando die Sitzung wirklich offenhält, hat der PM an sich
+selbst geprüft, nicht angenommen.
+
+**Die ehrliche Lücke, damit niemand mehr erwartet als drinsteckt:** Die vier nächtlichen
+Rollen (Auditor 01:00, Analytiker 03:15, Tüftler 04:30, Archiv-Nachladen bis ~01:35)
+enden zu Zeiten, zu denen **kein PM läuft**. Ihre Bereitschaft läuft dort ins Leere; es
+trägt allein die Übergabe-Datei, die der PM um 08:00 liest. **Das ist kein Fehler des
+Aufbaus, sondern eine Frage des Zeitplans** — siehe Frage (5) an Wilhelm.
 
 ---
 
@@ -840,7 +880,17 @@ mit #93/#94 zusammen runder.
 *Wer welche Dateien belegt. Trag dich ein, bevor du anfängst; nimm dich raus, wenn du
 fertig bist.*
 
-- **App-Codebase Master** — sitzt seit **15:15 am `ausstieg`-Schalter** (PM zugeteilt,
+- **App-Codebase Master** — sitzt seit **16:30 an Stufe F (3), Barrierefreiheit.**
+  Belegt `index.html`, `depot.js`, `scoreboard.js`, `test-v6.js` und ein neues Werkzeug
+  unter `tools/`. **Fängt mit einer Messung an, nicht mit Reparaturen** — bei drei der vier
+  Punkte (aria-live zu breit, Kontrast der Chips, Fokusreihenfolge) weiß heute niemand, wie
+  groß das Problem überhaupt ist; das sind Vermutungen aus dem Plan, keine Befunde. Erst
+  eine Sonde nach dem Muster von `ui-probe.js` über alle fünf Reiter, dann Reparatur mit
+  Vorher-Nachher-Zahlen. Findet die Sonde nichts, ist der Punkt **erledigt statt gemacht**.
+  *(PM: genau richtig — und es ist die einzige Art, hinterher zu belegen, dass es besser
+  geworden ist statt nur anders.)*
+
+- **App-Codebase Master** — war seit **15:15 am `ausstieg`-Schalter** (PM zugeteilt,
   belegt `studien/messmaschine/messmaschine.js`). **V4 wurde ausdrücklich NICHT zugeteilt** —
   Begründung unter „Richtigstellung" oben.
 
