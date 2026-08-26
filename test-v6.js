@@ -9074,6 +9074,82 @@ console.log('\n63) Nur fertige Kerzen kommen ins Archiv (Issue #85)');
   }
 })();
 
+
+/* ================= Wachhund fuer die Kursarchive (26.08.2026) ================= */
+console.log('\nWachhund: steht das Kursarchiv still?');
+(function () {
+  /* Am 26.08.2026 stand das Stundenarchiv zwei Tage still, ohne dass es auffiel:
+   * `yahoo-60m-holen.js alle` ueberspringt jeden Wert, den es schon hat, meldet
+   * "Nichts zu tun" und geht mit Erfolg aus. Ein Lauf, der nichts dazulernt, sah von
+   * aussen aus wie ein gesunder Lauf.
+   * Geprueft wird hier die RECHNUNG des Wachhunds, nicht sein Text - mit festen
+   * Zeitpunkten, damit die Probe nicht davon abhaengt, wann sie laeuft. */
+  var W = require(__dirname + '/tools/archiv-wachhund.js');
+  var osT = require('os'), pathT = require('path');
+
+  /* Die US-Sitzung endet 20:00 UTC. Vorher ist der heutige Tag NICHT abgeschlossen -
+   * sonst gilt ein Archiv als veraltet, das nur noch nicht fertig sein kann. */
+  ok(W.letzterAbgeschlossenerHandelstag(new Date('2026-08-26T09:00:00Z')) === '2026-08-25',
+     'Vormittags gilt der Vortag als letzter abgeschlossener Handelstag',
+     W.letzterAbgeschlossenerHandelstag(new Date('2026-08-26T09:00:00Z')));
+  ok(W.letzterAbgeschlossenerHandelstag(new Date('2026-08-26T20:45:00Z')) === '2026-08-26',
+     'Nach Sitzungsschluss zaehlt der heutige Tag');
+  ok(W.letzterAbgeschlossenerHandelstag(new Date('2026-08-26T20:15:00Z')) === '2026-08-25',
+     'Punkt 20:00 reicht nicht - Yahoo hat die Schlusskerze nicht in derselben Sekunde');
+  /* Wochenenden: Sonntagfrueh muss auf den Freitag zeigen, nicht auf den Samstag. */
+  ok(W.letzterAbgeschlossenerHandelstag(new Date('2026-08-30T09:00:00Z')) === '2026-08-28',
+     'Am Sonntag ist der Freitag der letzte abgeschlossene Handelstag',
+     W.letzterAbgeschlossenerHandelstag(new Date('2026-08-30T09:00:00Z')));
+  ok(W.handelstageDazwischen('2026-08-21', '2026-08-24') === 1,
+     'Ueber ein Wochenende hinweg zaehlt nur EIN Handelstag', W.handelstageDazwischen('2026-08-21', '2026-08-24'));
+  ok(W.handelstageDazwischen('2026-08-24', '2026-08-24') === 0, 'Derselbe Tag ist kein Rueckstand');
+
+  /* DIE ENTSCHEIDENDE REGEL: der HAEUFIGSTE juengste Tag zaehlt, nicht der spaeteste.
+   * Genau so ist der Fehler entstanden - waehrend der Reparatur waren 69 von 2.916
+   * Werten aktuell und der Rest zwei Tage alt. Wer den spaetesten nimmt, meldet
+   * "frisch", obwohl 97 % des Archivs stillstehen. */
+  var tmp = fs.mkdtempSync(pathT.join(osT.tmpdir(), 'wachhund-test-'));
+  function lege(sym, tag) {
+    fs.writeFileSync(pathT.join(tmp, 'bars_60m_' + sym + '.json'),
+      JSON.stringify({ series: [[Date.parse(tag + 'T13:30:00Z'), 100, 1, 101, 99]] }));
+  }
+  for (var i = 0; i < 97; i++) lege('ALT' + i, '2026-08-21');
+  for (var j = 0; j < 3; j++) lege('NEU' + j, '2026-08-25');
+  var b = W.pruefe(tmp, { jetzt: new Date('2026-08-26T09:00:00Z') });
+  ok(b.juengsterTagSpaetester === '2026-08-25' && b.juengsterTagHaeufig === '2026-08-21',
+     'Ein paar frische Werte machen ein stehendes Archiv nicht gesund',
+     'haeufigster ' + b.juengsterTagHaeufig + ', spaetester ' + b.juengsterTagSpaetester);
+  ok(b.rueckstandHandelstage === 2 && b.ok === false,
+     'Zwei Handelstage Rueckstand sind ALARM, kein Feiertag', b.rueckstandHandelstage);
+  ok(Math.round(b.anteilAufStand * 100) === 3, 'und der Anteil auf Stand wird beziffert',
+     Math.round(b.anteilAufStand * 100) + ' %');
+  /* Ein Tag Rueckstand kann ein Feiertag sein - dort wird gewarnt, nicht Alarm
+   * geschlagen. Dieses Werkzeug kennt keinen Kalender und behauptet auch keinen. */
+  fs.readdirSync(tmp).forEach(function (f) { fs.unlinkSync(pathT.join(tmp, f)); });
+  for (var k = 0; k < 10; k++) lege('X' + k, '2026-08-24');
+  var b1 = W.pruefe(tmp, { jetzt: new Date('2026-08-26T09:00:00Z') });
+  ok(b1.rueckstandHandelstage === 1 && b1.ok === true,
+     'Ein Handelstag Rueckstand ist eine Warnung, kein Alarm - es koennte ein Feiertag sein');
+  ok(/Feiertag/.test(W.textZu(b1)) && /ALARM/.test(W.textZu(b)),
+     'Der Text sagt beides deutlich: Warnung mit Feiertagsvorbehalt, Alarm ohne');
+  /* Ein leerer oder fehlender Ordner ist NICHT "frisch" - sonst meldet ein kaputter
+   * Pfad Gesundheit. */
+  fs.readdirSync(tmp).forEach(function (f) { fs.unlinkSync(pathT.join(tmp, f)); });
+  ok(!!W.pruefe(tmp, {}).grund, 'Ein leerer Ordner meldet "nicht pruefbar", nicht "frisch"');
+  ok(!!W.pruefe(tmp + '-gibtsnicht', {}).grund, 'und ein fehlender ebenso');
+  fs.rmSync(tmp, { recursive: true, force: true });
+
+  /* Und der Melder haengt an BEIDEN Ausgaengen des Abrufwerkzeugs - der stille war
+   * der eigentliche Fehler. */
+  var yq = fs.readFileSync(__dirname + '/tools/yahoo-60m-holen.js', 'utf8');
+  ok(/Nichts zu tun[\s\S]{0,200}standMelden\(aktualisieren\)/.test(yq),
+     'Auch der Lauf ohne Arbeit meldet den Stand des Archivs');
+  ok((yq.match(/standMelden\(aktualisieren\)/g) || []).length === 2,
+     'beide Ausgaenge melden ihn', (yq.match(/standMelden\(aktualisieren\)/g) || []).length);
+  ok(/require\('\.\/archiv-wachhund\.js'\)/.test(yq),
+     'und das Werkzeug LAEDT den Wachhund, statt die Rechnung ein zweites Mal zu haben');
+})();
+
 Promise.all(offeneProben).then(function () {
   console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
   process.exit(fails ? 1 : 0);

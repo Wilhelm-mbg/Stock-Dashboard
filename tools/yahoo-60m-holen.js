@@ -48,6 +48,7 @@ var fs = require('fs');
 var path = require('path');
 var os = require('os');
 var https = require('https');
+var Wachhund = require('./archiv-wachhund.js');
 
 var DATEN = path.join(os.homedir(), 'Downloads', 'Markt-Dashboard-Daten');
 
@@ -91,6 +92,20 @@ function zielFuerIntervall() {
   return path.join(path.dirname(basis), CFG.ordner);
 }
 var ZIEL = zielFuerIntervall();
+
+/* Wie alt ist das Archiv WIRKLICH? Nicht "wann wurde geschrieben" - am 26.08.2026
+ * wurden alle 2.887 Dateien neu geschrieben (von der Teilkerzen-Bereinigung) und
+ * trugen trotzdem nur Daten bis zum 24.08. Gefragt ist die juengste KERZE.
+ * Die Rechnung dazu steht in archiv-wachhund.js und wird von dort geholt. */
+function standMelden(nachgezogen) {
+  try {
+    var b = Wachhund.pruefe(ZIEL, { stichprobe: 400 });
+    console.log('\n' + Wachhund.textZu(b));
+    if (!b.grund && b.rueckstandHandelstage >= 1 && !nachgezogen) {
+      console.log('  Zum Nachziehen:  node tools/yahoo-60m-holen.js alle --aktualisieren');
+    }
+  } catch (e) { console.log('\n(Stand nicht pruefbar: ' + (e && e.message || e) + ')'); }
+}
 var STAND = path.join(ZIEL, 'stand.json');
 var DATEI_PRAEFIX = 'bars_' + IV + '_';
 var MASSIVE = path.join(DATEN, 'massive');
@@ -235,7 +250,16 @@ function listeBauen(wahl) {
   console.log('  dieser Lauf: ' + nimm.length + ', geschaetzt ' + Math.ceil(nimm.length * ABSTAND_MS / 60000) + ' Minuten');
   console.log('  Ablage: ' + ZIEL);
   console.log('  Abbruch mit Strg+C ist gefahrlos.\n');
-  if (!nimm.length) { console.log('Nichts zu tun.'); return; }
+  /* HIER LAG DER FEHLER (26.08.2026). Ohne --aktualisieren ueberspringt der Lauf
+   * jeden Wert, den er schon hat, meldet "Nichts zu tun" und geht mit Erfolg aus.
+   * Genau so stand das Stundenarchiv zwei Tage still, ohne dass es jemand merkte:
+   * ein Lauf, der nichts dazulernt, sah von aussen aus wie ein gesunder Lauf.
+   * Er sagt jetzt, wie alt das Archiv wirklich ist - und was zu tun waere. */
+  if (!nimm.length) {
+    console.log('Nichts zu tun: alle gewaehlten Werte liegen schon im Archiv.');
+    standMelden(aktualisieren);
+    return;
+  }
 
   var ok = 0, leer = 0, fehler = 0, kerzenGes = 0, ohneEroeffnung = 0;
   for (var i = 0; i < nimm.length; i++) {
@@ -301,4 +325,5 @@ function listeBauen(wahl) {
     (100 * ohneEroeffnung / kerzenGes).toFixed(2) + ' %).');
   var rest = offen.length - nimm.length;
   if (rest > 0) console.log('Noch offen: ' + rest + ' - einfach erneut aufrufen.');
+  standMelden(aktualisieren);
 })();

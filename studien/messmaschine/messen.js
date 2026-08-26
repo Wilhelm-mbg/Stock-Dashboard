@@ -92,7 +92,7 @@ r.ergebnisse.forEach(function (e, i) {
   console.log('    Entdeckung   roh ' + pp(e.entdeckung.roh.tagesmittel) + '  Ueberschuss ' + pp(e.entdeckung.ueberschuss.tagesmittel) + ' (t ' + (e.entdeckung.ueberschuss.t || 0).toFixed(2) + ')');
   console.log('    Bestaetigung roh ' + pp(b.roh.tagesmittel) + '  Ueberschuss ' + pp(b.ueberschuss.tagesmittel) + ' (t ' + (b.ueberschuss.t || 0).toFixed(2) + ', MDE ' + pp(b.ueberschuss.mde) + ')');
   console.log('    je Signal (handelbar): ' + pp(b.ueberschuss.jeSignal) + '  netto nach Spanne: ' + pp(e.nettoJeSignalBestaetigung));
-  console.log('    URTEIL: ' + u.ergebnis.urteil.toUpperCase() + (u.ergebnis.aussicht ? '  (bis t=2 mit 80 %: ' + u.ergebnis.aussicht.tage80.toLocaleString('de') + ' Tage)' : ''));
+  console.log('    URTEIL: ' + u.ergebnis.urteil.toUpperCase() + (u.ergebnis.aussicht ? '  (bis zum Urteil mit 80 %: ' + u.ergebnis.aussicht.tage80.toLocaleString('de') + ' Tage)' : ''));
   console.log('    ' + u.begruendung);
 });
 if (r.warnungen.length) { console.log('\n  WARNUNGEN:'); r.warnungen.forEach(function (w) { console.log('   [' + w.kennung + '] ' + w.text); }); }
