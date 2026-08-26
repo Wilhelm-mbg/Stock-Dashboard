@@ -671,6 +671,21 @@
       belegAusProtokoll = { stand: pk.urteil, datum: pk.datum, jeSignalPp: pk.jeSignalPp };
       b = { stand: pk.urteil, txt: b.txt };
     }
+    /* HINWEIS BEI "nicht bestaetigt" (26.08.2026, Wilhelms Entscheid 2b).
+     * kapitulation steht seit der Neumessung auf diesem Urteil. Es ist NICHT dasselbe
+     * wie "nicht entscheidbar", und der Unterschied geht im Wort unter: dort reicht
+     * die Datenmenge nicht, hier hat die Messung stattgefunden und die Regel hat den
+     * Nachweis nicht erbracht. Genau diese Verwechslung hat hier schon einmal eine
+     * Formel monatelang durch Code und Befunde getragen.
+     * NUR HINWEIS, KEIN EINGRIFF: der Ausloeser bleibt waehlbar. Was gehandelt wird,
+     * entscheidet weiter Wilhelm; diese Zeile sagt ihm nur, was das Urteil bedeutet.
+     * Der Urteilswert kommt aus dem Protokoll, der erklaerende Satz sagt nichts ueber
+     * DIESE Strategie, sondern nur, was das Urteil heisst. */
+    var hinweisUrteil = (belegAusProtokoll && b.stand === 'nicht-bestaetigt')
+      ? '<br><span class="warn">Gemessen, und die Regel hat den Nachweis NICHT erbracht. ' +
+        'Das ist etwas anderes als „nicht entscheidbar“: dort reicht die Datenmenge nicht aus, ' +
+        'hier hat die Messung stattgefunden. Wählbar bleibt der Auslöser – belegt ist er nicht.</span>'
+      : '';
     /* Gruen nur, wenn ein PROTOKOLL "bestaetigt" sagt. Ein im Code stehendes "belegt"
      * reicht nicht - das war der Fehler, den die fest verdrahtete Kante 0,11 gemacht hat. */
     var farbe = (belegAusProtokoll && b.stand === 'bestaetigt') ? 'var(--up)'
@@ -683,12 +698,16 @@
       ['Produkt', cfg.instrument === 'basis' ? 'Basiswert ohne Hebel' : 'Hebelschein' + (cfg.profile ? ' · ' + cfg.profile : '')],
       ['Positionsgröße', parseFloat(cfg.sizing) > 0 ? 'nach Risiko ' + cfg.sizing + ' % je Stop' : 'fest ' + Math.round((cfg.budgetPct || 0.03) * 100) + ' % des Depots'],
       ['Not-Stop', (cfg.scalpSL || 20) + ' %'],
-      ['Beleg', '<b style="color:' + farbe + ';">' + U.esc(b.stand) + '</b> – ' + U.esc(b.txt) +
+      ['Beleg', '<b style="color:' + farbe + ';">' + U.esc(b.stand) + '</b> – ' + U.esc(b.txt) + hinweisUrteil +
         (belegAusProtokoll
           ? '<br><span style="color:var(--muted); font-size:var(--fs-neben);">Aus dem Messprotokoll vom ' +
-            U.esc(belegAusProtokoll.datum) + ': Überschuss je Signal ' +
-            (belegAusProtokoll.jeSignalPp >= 0 ? '+' : '') + U.dez(belegAusProtokoll.jeSignalPp, 3) +
-            ' Pp. Die App liest dieses Urteil, sie rechnet es nicht. ' +
+            U.esc(belegAusProtokoll.datum) + ': ' +
+            /* Die Zahl fehlt, wenn keine Variante mit diesem Urteil eine brauchbare
+             * Zahl je Signal hat. Dann steht hier nichts statt einer fremden Zahl. */
+            (belegAusProtokoll.jeSignalPp == null ? 'keine Zahl je Signal zu diesem Urteil. '
+              : 'Überschuss je Signal ' + (belegAusProtokoll.jeSignalPp >= 0 ? '+' : '') +
+                U.dez(belegAusProtokoll.jeSignalPp, 3) + ' Pp. ') +
+            'Die App liest dieses Urteil, sie rechnet es nicht. ' +
             '<a href="#" data-sprung-messung>Protokoll im Scoreboard ansehen</a></span>'
           : '<br><span style="color:var(--muted); font-size:var(--fs-neben);">Kein Messprotokoll im Datenordner – dieser Stand steht fest im Code und kann veralten.</span>')]
     ];
@@ -727,21 +746,39 @@
       r.protokolle.forEach(function (eintrag) {
         var j = eintrag && eintrag.protokoll;
         if (!j || !j.strategie || !j.strategie.key || !Array.isArray(j.ergebnisse)) return;
-        /* Von mehreren Varianten die mit dem staerksten Bestaetigungs-t - und die
-         * Variantenzahl wird mit angezeigt, damit die Auswahl sichtbar bleibt. */
-        var beste = null, besterT = -Infinity, besterIdx = 0;
+        /* WELCHE VARIANTE SPRICHT FUER DAS PROTOKOLL? (26.08.2026)
+         * Bis hierher gewann die mit dem staerksten Bestaetigungs-t. Das ist eine
+         * ANDERE Auswahl als die des Protokolls - und das Scoreboard trifft laengst
+         * die andere: es zeigt bestesUrteil und die Variante, die es traegt
+         * (scoreboard.js, bestesErgebnis). Zwei Stellen derselben App sagten damit
+         * fuer dasselbe Protokoll verschiedene Urteile. DAS ist der Grund fuer die
+         * Aenderung - nicht, dass eine Auswahl freundlicher klaenge.
+         * Betroffen war genau eines von 26 Protokollen: winkelbestaetigt-2026-08-25,
+         * t = -0,96 / -1,34 / -1,54 / -1,58 / -2,11. Alle t negativ, "staerkstes t"
+         * heisst dort "am wenigsten negativ" - die Anzeige sagte "nicht entscheidbar",
+         * das Protokoll "nicht bestaetigt". Das eine heisst "wir wissen es nicht", das
+         * andere "gemessen, und es traegt nicht".
+         * Jetzt gilt: das Urteil ist das des PROTOKOLLS (bestesUrteil, eine Quelle),
+         * und die gezeigte Zahl je Signal gehoert zu einer Variante, die genau dieses
+         * Urteil traegt. Findet sich keine solche Variante mit brauchbarer Zahl, wird
+         * KEINE Zahl gezeigt - lieber das Urteil ohne Zahl als eine Zahl, die zu einem
+         * anderen Urteil gehoert. Unter gleichrangigen Varianten gewinnt weiter das
+         * staerkste t, damit die Auswahl bei Gleichstand bestimmt bleibt. */
+        var urteilProtokoll = j.bestesUrteil || null;
+        var beste = null, besterT = -Infinity;
         j.ergebnisse.forEach(function (e, i) {
+          if (!urteilProtokoll || !j.urteile || j.urteile[i] !== urteilProtokoll) return;
           var u = e && e.bestaetigung && e.bestaetigung.ueberschuss;
           if (!u || u.jeSignal == null || !isFinite(u.jeSignal)) return;
           var tw = isFinite(u.t) ? u.t : -Infinity;
-          if (tw > besterT) { besterT = tw; beste = u; besterIdx = i; }
+          if (tw > besterT) { besterT = tw; beste = u; }
         });
-        if (!beste) return;
+        if (!urteilProtokoll) return;
         var vorhanden = neu[j.strategie.key];
         if (vorhanden && vorhanden.datum >= String(j.gemessenAm || '').slice(0, 10)) return;
         neu[j.strategie.key] = {
-          jeSignalPp: beste.jeSignal * 100,
-          urteil: (j.urteile && j.urteile[besterIdx]) || j.bestesUrteil || 'unbekannt',
+          jeSignalPp: beste ? beste.jeSignal * 100 : null,
+          urteil: urteilProtokoll,
           datum: String(j.gemessenAm || '').slice(0, 10),
           varianten: j.ergebnisse.length,
         };
@@ -808,7 +845,9 @@
       var belegt = kante.urteil === "bestaetigt";
       txt += "<br>Messung vom " + kante.datum + ": Überschuss je Signal <b>" +
         (kante.jeSignalPp >= 0 ? "+" : "") + U.dez(kante.jeSignalPp, 3) + " Pp</b> gegen eine gepaarte Kontrolle" +
-        (kante.varianten > 1 ? " (beste von " + kante.varianten + " Varianten)" : "") +
+        /* Nicht mehr "beste von N": gezeigt wird die Variante, die das Urteil des
+         * Protokolls traegt - nicht die mit der schoensten Zahl. */
+        (kante.varianten > 1 ? " (die Variante mit dem Urteil des Protokolls, von " + kante.varianten + ")" : "") +
         " → <span class=\"" + (belegt && netto > 0 ? "gut" : "warn") + "\">netto " +
         (netto >= 0 ? "+" : "") + U.dez(netto, 3) + " Pp</span>";
       if (!belegt) {
@@ -5009,8 +5048,10 @@
        * der alte Backtest-Wert da, aber ALS das gekennzeichnet, was er ist. */
       var pkK = PROTOKOLL_KANTE[c.mode];
       var messSatz = pkK
-        ? ' Messprotokoll vom ' + pkK.datum + ': ' + pkK.urteil + ', Überschuss je Signal ' +
-          (pkK.jeSignalPp >= 0 ? '+' : '') + U.dez(pkK.jeSignalPp, 3) + ' Pp – die App liest dieses Urteil, sie rechnet es nicht.'
+        ? ' Messprotokoll vom ' + pkK.datum + ': ' + pkK.urteil +
+          (pkK.jeSignalPp == null ? ' (keine Zahl je Signal zu diesem Urteil)'
+            : ', Überschuss je Signal ' + (pkK.jeSignalPp >= 0 ? '+' : '') + U.dez(pkK.jeSignalPp, 3) + ' Pp') +
+          ' – die App liest dieses Urteil, sie rechnet es nicht.'
         : (c.mode === 'rsi2seit'
           ? ' Backtest vor der Kontrollmessung: +0,147 Pp auf 8 Handelsstunden über die übliche Drift – kein Messprotokoll im Datenordner, dieser Stand kann veralten.'
           : ' Backtest vor der Kontrollmessung: Median +0,44 % je Trade – kein Messprotokoll im Datenordner, dieser Stand kann veralten.');

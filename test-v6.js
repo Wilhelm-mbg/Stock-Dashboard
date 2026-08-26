@@ -4116,6 +4116,85 @@ console.log('\n44) Messmaschine, Scoreboard und Strategie-Eingabe (23.08.2026)')
   ok(dep2.indexOf('kante.jeSignalPp') !== -1,
      'Verglichen wird der Ueberschuss JE SIGNAL mit der Huerde je Umlauf - nicht das Tagesmittel');
 
+  /* ---- Welche Variante spricht fuer das Protokoll? (26.08.2026) ----
+   * Bis dahin nahm depot.js die Variante mit dem staerksten Bestaetigungs-t, das
+   * Scoreboard dagegen bestesUrteil samt der Variante, die es traegt. Zwei Stellen
+   * derselben App sagten fuer dasselbe Protokoll verschiedene Urteile. Das ist der
+   * Grund - nicht, dass eine Auswahl freundlicher klaenge.
+   * Betroffen war genau eines von 26 Protokollen: winkelbestaetigt-2026-08-25.
+   * Die Auswahl wird AUSGEFUEHRT, nicht im Quelltext gesucht: ein Muster sagt, dass
+   * etwas dasteht, nicht dass es das Richtige waehlt. */
+  var kaA = dep2.indexOf('var urteilProtokoll = j.bestesUrteil || null;');
+  /* Die Endmarke schliesst die Schleife MIT ein. Ohne das reicht eine zweite Zeile
+   * 'if (!urteilProtokoll) return;' irgendwo davor, und herausgeloest wird ein
+   * halber Block - der wirft dann beim Bauen, statt eine Falschauswahl zu zeigen.
+   * Genau das ist am 26.08.2026 beim Gegenprobieren passiert und sah aus wie ein
+   * bestandener Test. Deshalb steht die Eindeutigkeit hier als eigene Zusicherung. */
+  var kaMarke = '        });\n        if (!urteilProtokoll) return;';
+  var kaE = dep2.indexOf(kaMarke, kaA);
+  ok(kaA !== -1 && kaE > kaA, 'Die Variantenwahl laesst sich herausloesen');
+  ok(kaE !== -1 && dep2.indexOf(kaMarke, kaE + 1) === -1,
+     'Die Endmarke der Variantenwahl kommt genau einmal vor - sonst loest der Test etwas anderes heraus');
+  kaE += '        });\n'.length;
+  var kaFn = new Function('j', dep2.slice(kaA, kaE) +
+    'return { urteil: urteilProtokoll, jeSignal: beste ? beste.jeSignal : null };');
+  function varianten(ts, urteile) {
+    return ts.map(function (t, i) {
+      return { bestaetigung: { ueberschuss: { t: t, jeSignal: (i + 1) / 1000 } } };
+    });
+  }
+  /* Der echte Fall: alle t negativ. "Staerkstes t" heisst dort "am wenigsten negativ",
+   * und genau das kippte die Auswahl auf Variante 0. */
+  var wb = kaFn({ bestesUrteil: 'nicht-bestaetigt',
+    urteile: ['nicht-entscheidbar', 'nicht-entscheidbar', 'nicht-entscheidbar', 'nicht-entscheidbar', 'nicht-bestaetigt'],
+    ergebnisse: varianten([-0.96, -1.34, -1.54, -1.58, -2.11]) });
+  ok(wb.urteil === 'nicht-bestaetigt',
+     'winkelbestaetigt-Fall: gezeigt wird das Urteil des Protokolls, nicht das der staerksten Variante',
+     wb.urteil);
+  ok(Math.abs(wb.jeSignal - 0.005) < 1e-12,
+     'und die Zahl je Signal gehoert zu genau dieser Variante (der fuenften)', wb.jeSignal);
+  /* Gegenprobe, dass die Regel nicht einfach immer die letzte nimmt: bei kapitulation
+   * traegt die Variante mit dem staerksten t das Urteil - dort aendert sich nichts. */
+  var kp = kaFn({ bestesUrteil: 'nicht-bestaetigt',
+    urteile: ['nicht-entscheidbar', 'nicht-entscheidbar', 'nicht-bestaetigt'],
+    ergebnisse: varianten([1.51, 1.19, 2.14]) });
+  ok(kp.urteil === 'nicht-bestaetigt' && Math.abs(kp.jeSignal - 0.003) < 1e-12,
+     'kapitulation-Fall: unveraendert, die dritte Variante traegt das Urteil');
+  /* Bei mehreren Varianten MIT dem Urteil gewinnt das staerkste t - sonst haenge die
+   * Auswahl an der Reihenfolge in der Datei. */
+  var gl = kaFn({ bestesUrteil: 'nicht-entscheidbar',
+    urteile: ['nicht-entscheidbar', 'nicht-entscheidbar', 'nicht-bestaetigt'],
+    ergebnisse: varianten([0.4, 1.9, 2.5]) });
+  ok(Math.abs(gl.jeSignal - 0.002) < 1e-12,
+     'Unter gleichrangigen Varianten gewinnt das staerkste t', gl.jeSignal);
+  /* Und wenn KEINE Variante mit diesem Urteil eine brauchbare Zahl hat, steht das
+   * Urteil ohne Zahl da. Eine Zahl aus einer anderen Variante waere schlimmer als
+   * keine: sie sieht aus, als gehoerte sie dazu. */
+  var ohne = kaFn({ bestesUrteil: 'nicht-bestaetigt',
+    urteile: ['nicht-entscheidbar', 'nicht-bestaetigt'],
+    ergebnisse: [{ bestaetigung: { ueberschuss: { t: 1.2, jeSignal: 0.001 } } },
+                 { bestaetigung: { ueberschuss: { t: 2.0, jeSignal: null } } }] });
+  ok(ohne.urteil === 'nicht-bestaetigt' && ohne.jeSignal === null,
+     'Ohne passende Zahl steht das Urteil allein da - nie eine Zahl aus einer anderen Variante');
+  /* Beide Anzeigen muessen mit der fehlenden Zahl umgehen koennen. */
+  ok(/jeSignalPp: beste \? beste\.jeSignal \* 100 : null/.test(dep2),
+     'Die fehlende Zahl wird als null weitergereicht, nicht als NaN');
+  ok((dep2.match(/jeSignalPp == null/g) || []).length >= 2,
+     'und beide Anzeigen fangen sie ab', (dep2.match(/jeSignalPp == null/g) || []).length + ' Stellen');
+  ok(!/beste von " \+ kante\.varianten/.test(dep2),
+     'Der Text "beste von N Varianten" ist weg - gezeigt wird nicht die beste, sondern die massgebliche');
+
+  /* ---- Hinweis bei "nicht bestaetigt" (Wilhelms Entscheid 2b, 26.08.2026) ----
+   * kapitulation steht seit der Neumessung auf diesem Urteil. "Nicht bestaetigt" und
+   * "nicht entscheidbar" sind verschiedene Aussagen, und der Unterschied geht im Wort
+   * unter. NUR HINWEIS: der Ausloeser bleibt waehlbar. */
+  ok(/var hinweisUrteil = \(belegAusProtokoll && b\.stand === 'nicht-bestaetigt'\)/.test(dep2),
+     'Bei "nicht bestaetigt" steht ein Hinweis im Regelkopf');
+  ok(/Wählbar bleibt der Auslöser/.test(dep2),
+     'und er sagt ausdruecklich, dass der Ausloeser waehlbar bleibt - Hinweis, kein Eingriff');
+  ok(/nicht entscheidbar/.test(dep2.slice(dep2.indexOf('var hinweisUrteil'), dep2.indexOf('var hinweisUrteil') + 1400)),
+     'Er benennt den Unterschied zu "nicht entscheidbar" - sonst liest sich beides gleich');
+
   /* A6 (23.08.2026): Der Nullpunkt der Maschine liegt nicht bei null. Auf Daten mit
    * vertauschter Reihenfolge kam eine These als "bestaetigt" durch (t=+2,97), eine
    * andere als "widerlegt" (t=-8,07). Ohne dieses Werkzeug ist kein Urteil belastbar. */
