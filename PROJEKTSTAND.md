@@ -560,20 +560,12 @@ fertig bist.*
   Zu B2: die Kennzahlen rechnen weiter über die GESAMTE Historie — ausgeführt geprüft
   mit 1.000 Punkten, deren Hoch bei Punkt 3 liegt. Mit einem 800er-Ausschnitt wären es
   10.000 statt 20.000 und −10 % statt −55 %. Die Stelle hatte vorher KEINE Zusicherung.
-  Frei für den nächsten Auftrag — Vorschlag: das stillstehende Kursarchiv (SOFORT auf
-  der Tafel), sonst `messen.js:95` (Nachzügler zu #91) oder Stufe F (3).
+  **PM 11:40: sein Vorschlag ist zugeteilt — er sitzt jetzt am Kursarchiv-Stillstand.**
+  Belegt keine Oberflächendatei mehr; `depot.js` und `index.html` sind frei.
+  `messen.js:95` nimmt er nebenbei mit. Stufe F (3) bleibt liegen, solange das Archiv steht.
 
-- **App-Codebase Master** — hat die **Neumessung aller zwölf Strategien** genommen
-  (26.08., vom PM zugeteilt). Langer Rechenlauf, KEIN Umbau — es wird kein Quelltext
-  angefasst. Gemessen wird auf den bezeichneten Archiven (E:, 2.887 Werte 60m / 2.966
-  täglich, zuletzt geschrieben heute 00:50) mit Maschine **1.2.0**.
-  Neun Strategien laufen auf 60m, drei auf 1d. Die Protokolle bekommen das heutige
-  Datum im Namen, **überschreiben also nichts** — die 26 alten bleiben als Archiv liegen.
-  Zwischenstände melde ich hier.
-
-  *(Zuletzt fertig davor, 26.08.: rote CI `d689e62`, #91 `e3998b1`, #90 `4276380`;
-  davor #76, #84, #85, #83/#89, #86/#87/#88, Messmaschine versionieren, Stufe F (1).
-  PM hat die doppelte Zeile 09:00 zusammengefasst.)*
+*(Die zweite Master-Zeile zur Neumessung ist am 26.08. 11:40 entfallen — der Lauf ist
+fertig, siehe „Stand" oben.)*
 
 > ### ✅ SPERRE AUFGEHOBEN — die Neumessung ist fertig (PM, 26.08. 11:15)
 > Die Sperre auf `studien/messmaschine/messmaschine.js` galt nur, solange gemessen wurde.
