@@ -1,0 +1,651 @@
+{
+ "bilder": "C:\\Users\\Wilhe\\AppData\\Local\\Temp\\md-auditor-wK6qaF\\bilder",
+ "tabs": 5,
+ "thema": {
+  "start": "light",
+  "gesetzt": "light"
+ },
+ "bestandListeNochDa": false,
+ "laufband": {
+  "da": true,
+  "ruhig": true,
+  "sichtbar": true,
+  "overflowX": "auto",
+  "schiebbar": true,
+  "spurBreite": 3022,
+  "rahmen": 1228,
+  "links": 6,
+  "animation": "none",
+  "titel": "Markt-News. Seitwärts schieben zeigt die übrigen Meldungen – das Band läuft nicht, weil auf diesem Rechner „Bewegung red"
+ },
+ "tabellen": [
+  {
+   "fehlt": false,
+   "tabelle": true,
+   "zeilen": [
+    {
+     "zellen": 10,
+     "klasse": "",
+     "inhalt": [
+      {
+       "t": "WERT",
+       "c": ""
+      },
+      {
+       "t": "STÜCK",
+       "c": ""
+      },
+      {
+       "t": "KURS",
+       "c": ""
+      },
+      {
+       "t": "WERT",
+       "c": ""
+      },
+      {
+       "t": "HEUTE",
+       "c": ""
+      },
+      {
+       "t": "SEIT JAHRESBEGINN",
+       "c": ""
+      },
+      {
+       "t": "KURZFRIST",
+       "c": ""
+      },
+      {
+       "t": "MITTELFRIST",
+       "c": ""
+      },
+      {
+       "t": "ISIN",
+       "c": ""
+      },
+      {
+       "t": "",
+       "c": ""
+      }
+     ]
+    },
+    {
+     "zellen": 10,
+     "klasse": "",
+     "inhalt": [
+      {
+       "t": "AAPL\nApple Inc.",
+       "c": ""
+      },
+      {
+       "t": "12",
+       "c": ""
+      },
+      {
+       "t": "309.90 $",
+       "c": ""
+      },
+      {
+       "t": "3719 $",
+       "c": ""
+      },
+      {
+       "t": "-0.14 %",
+       "c": "muted"
+      },
+      {
+       "t": "+14.3 %",
+       "c": "up"
+      },
+      {
+       "t": "noch nicht geprüft",
+       "c": "muted"
+      },
+      {
+       "t": "in keinem Buch",
+       "c": "muted"
+      },
+      {
+       "t": "US0378331005",
+       "c": ""
+      },
+      {
+       "t": "Entfernen",
+       "c": ""
+      }
+     ]
+    },
+    {
+     "zellen": 10,
+     "klasse": "",
+     "inhalt": [
+      {
+       "t": "MSFT\nMicrosoft Corporation",
+       "c": ""
+      },
+      {
+       "t": "5",
+       "c": ""
+      },
+      {
+       "t": "491.71 $",
+       "c": ""
+      },
+      {
+       "t": "2459 $",
+       "c": ""
+      },
+      {
+       "t": "+0.90 %",
+       "c": "up"
+      },
+      {
+       "t": "+2.3 %",
+       "c": "up"
+      },
+      {
+       "t": "noch nicht geprüft",
+       "c": "muted"
+      },
+      {
+       "t": "in keinem Buch",
+       "c": "muted"
+      },
+      {
+       "t": "US5949181045",
+       "c": ""
+      },
+      {
+       "t": "Entfernen",
+       "c": ""
+      }
+     ]
+    },
+    {
+     "zellen": 10,
+     "klasse": "",
+     "inhalt": [
+      {
+       "t": "NVDA\nNVIDIA Corporation",
+       "c": ""
+      },
+      {
+       "t": "40",
+       "c": ""
+      },
+      {
+       "t": "213.05 $",
+       "c": ""
+      },
+      {
+       "t": "8522 $",
+       "c": ""
+      },
+      {
+       "t": "+2.19 %",
+       "c": "up"
+      },
+      {
+       "t": "+14.4 %",
+       "c": "up"
+      },
+      {
+       "t": "noch nicht geprüft",
+       "c": "muted"
+      },
+      {
+       "t": "in keinem Buch",
+       "c": "muted"
+      },
+      {
+       "t": "US67066G1040",
+       "c": ""
+      },
+      {
+       "t": "Entfernen",
+       "c": ""
+      }
+     ]
+    },
+    {
+     "zellen": 10,
+     "klasse": "",
+     "inhalt": [
+      {
+       "t": "AMZN\nAmazon.com Incorporated Registered Shares",
+       "c": ""
+      },
+      {
+       "t": "3",
+       "c": ""
+      },
+      {
+       "t": "261.06 $",
+       "c": ""
+      },
+      {
+       "t": "783 $",
+       "c": ""
+      },
+      {
+       "t": "-0.39 %",
+       "c": "muted"
+      },
+      {
+       "t": "+13.1 %",
+       "c": "up"
+      },
+      {
+       "t": "noch nicht geprüft",
+       "c": "muted"
+      },
+      {
+       "t": "in keinem Buch",
+       "c": "muted"
+      },
+      {
+       "t": "US0231351067",
+       "c": ""
+      },
+      {
+       "t": "Entfernen",
+       "c": ""
+      }
+     ]
+    },
+    {
+     "zellen": 10,
+     "klasse": "summe",
+     "inhalt": [
+      {
+       "t": "Zusammen",
+       "c": ""
+      },
+      {
+       "t": "",
+       "c": ""
+      },
+      {
+       "t": "",
+       "c": ""
+      },
+      {
+       "t": "15483 $",
+       "c": ""
+      },
+      {
+       "t": "+196 $",
+       "c": "up"
+      },
+      {
+       "t": "+12.2 %",
+       "c": "up"
+      },
+      {
+       "t": "",
+       "c": ""
+      },
+      {
+       "t": "",
+       "c": ""
+      },
+      {
+       "t": "",
+       "c": ""
+      },
+      {
+       "t": "",
+       "c": ""
+      }
+     ]
+    }
+   ],
+   "breiteTabelle": 1210,
+   "breiteKasten": 1240,
+   "rollbar": false,
+   "ueberKasten": -15,
+   "fusstext": "Diese Papiere werden nicht gehandelt und zählen nicht zum simulierten Depotwert.",
+   "groesse": "1280x800"
+  },
+  {
+   "fehlt": false,
+   "tabelle": true,
+   "zeilen": [
+    {
+     "zellen": 10,
+     "klasse": "",
+     "inhalt": [
+      {
+       "t": "WERT",
+       "c": ""
+      },
+      {
+       "t": "STÜCK",
+       "c": ""
+      },
+      {
+       "t": "KURS",
+       "c": ""
+      },
+      {
+       "t": "WERT",
+       "c": ""
+      },
+      {
+       "t": "HEUTE",
+       "c": ""
+      },
+      {
+       "t": "SEIT JAHRESBEGINN",
+       "c": ""
+      },
+      {
+       "t": "KURZFRIST",
+       "c": ""
+      },
+      {
+       "t": "MITTELFRIST",
+       "c": ""
+      },
+      {
+       "t": "ISIN",
+       "c": ""
+      },
+      {
+       "t": "",
+       "c": ""
+      }
+     ]
+    },
+    {
+     "zellen": 10,
+     "klasse": "",
+     "inhalt": [
+      {
+       "t": "AAPL\nApple Inc.",
+       "c": ""
+      },
+      {
+       "t": "12",
+       "c": ""
+      },
+      {
+       "t": "309.90 $",
+       "c": ""
+      },
+      {
+       "t": "3719 $",
+       "c": ""
+      },
+      {
+       "t": "-0.14 %",
+       "c": "muted"
+      },
+      {
+       "t": "+14.3 %",
+       "c": "up"
+      },
+      {
+       "t": "noch nicht geprüft",
+       "c": "muted"
+      },
+      {
+       "t": "in keinem Buch",
+       "c": "muted"
+      },
+      {
+       "t": "US0378331005",
+       "c": ""
+      },
+      {
+       "t": "Entfernen",
+       "c": ""
+      }
+     ]
+    },
+    {
+     "zellen": 10,
+     "klasse": "",
+     "inhalt": [
+      {
+       "t": "MSFT\nMicrosoft Corporation",
+       "c": ""
+      },
+      {
+       "t": "5",
+       "c": ""
+      },
+      {
+       "t": "491.71 $",
+       "c": ""
+      },
+      {
+       "t": "2459 $",
+       "c": ""
+      },
+      {
+       "t": "+0.90 %",
+       "c": "up"
+      },
+      {
+       "t": "+2.3 %",
+       "c": "up"
+      },
+      {
+       "t": "noch nicht geprüft",
+       "c": "muted"
+      },
+      {
+       "t": "in keinem Buch",
+       "c": "muted"
+      },
+      {
+       "t": "US5949181045",
+       "c": ""
+      },
+      {
+       "t": "Entfernen",
+       "c": ""
+      }
+     ]
+    },
+    {
+     "zellen": 10,
+     "klasse": "",
+     "inhalt": [
+      {
+       "t": "NVDA\nNVIDIA Corporation",
+       "c": ""
+      },
+      {
+       "t": "40",
+       "c": ""
+      },
+      {
+       "t": "213.05 $",
+       "c": ""
+      },
+      {
+       "t": "8522 $",
+       "c": ""
+      },
+      {
+       "t": "+2.19 %",
+       "c": "up"
+      },
+      {
+       "t": "+14.4 %",
+       "c": "up"
+      },
+      {
+       "t": "noch nicht geprüft",
+       "c": "muted"
+      },
+      {
+       "t": "in keinem Buch",
+       "c": "muted"
+      },
+      {
+       "t": "US67066G1040",
+       "c": ""
+      },
+      {
+       "t": "Entfernen",
+       "c": ""
+      }
+     ]
+    },
+    {
+     "zellen": 10,
+     "klasse": "",
+     "inhalt": [
+      {
+       "t": "AMZN\nAmazon.com Incorporated Registered Shares",
+       "c": ""
+      },
+      {
+       "t": "3",
+       "c": ""
+      },
+      {
+       "t": "261.06 $",
+       "c": ""
+      },
+      {
+       "t": "783 $",
+       "c": ""
+      },
+      {
+       "t": "-0.39 %",
+       "c": "muted"
+      },
+      {
+       "t": "+13.1 %",
+       "c": "up"
+      },
+      {
+       "t": "noch nicht geprüft",
+       "c": "muted"
+      },
+      {
+       "t": "in keinem Buch",
+       "c": "muted"
+      },
+      {
+       "t": "US0231351067",
+       "c": ""
+      },
+      {
+       "t": "Entfernen",
+       "c": ""
+      }
+     ]
+    },
+    {
+     "zellen": 10,
+     "klasse": "summe",
+     "inhalt": [
+      {
+       "t": "Zusammen",
+       "c": ""
+      },
+      {
+       "t": "",
+       "c": ""
+      },
+      {
+       "t": "",
+       "c": ""
+      },
+      {
+       "t": "15483 $",
+       "c": ""
+      },
+      {
+       "t": "+196 $",
+       "c": "up"
+      },
+      {
+       "t": "+12.2 %",
+       "c": "up"
+      },
+      {
+       "t": "",
+       "c": ""
+      },
+      {
+       "t": "",
+       "c": ""
+      },
+      {
+       "t": "",
+       "c": ""
+      },
+      {
+       "t": "",
+       "c": ""
+      }
+     ]
+    }
+   ],
+   "breiteTabelle": 920,
+   "breiteKasten": 950,
+   "rollbar": false,
+   "ueberKasten": -15,
+   "fusstext": "Diese Papiere werden nicht gehandelt und zählen nicht zum simulierten Depotwert.",
+   "groesse": "1000x700"
+  }
+ ],
+ "seitenFehler": [],
+ "konsoleFehler": [],
+ "funde": [
+  {
+   "marke": "dashboard @1280x800",
+   "art": "unsichtbarBedienbar",
+   "e": {
+    "wo": "div#sub-ueberblick.sub.active > div#newsTicker > div.tickSpur > a",
+    "grund": "ausserhalb: left=1868"
+   }
+  },
+  {
+   "marke": "dashboard @1280x800",
+   "art": "unsichtbarBedienbar",
+   "e": {
+    "wo": "div#sub-ueberblick.sub.active > div#newsTicker > div.tickSpur > a",
+    "grund": "ausserhalb: left=2268"
+   }
+  },
+  {
+   "marke": "dashboard @1280x800",
+   "art": "unsichtbarBedienbar",
+   "e": {
+    "wo": "div#sub-ueberblick.sub.active > div#newsTicker > div.tickSpur > a",
+    "grund": "ausserhalb: left=2605"
+   }
+  },
+  {
+   "marke": "strategien/mittelfrist @1280x800",
+   "art": "unfertig",
+   "e": {
+    "text": "Am 21.08.2026 durchgerechnet: Der Basiswert müsste 5,5 bis 11 %\n      laufen, damit ein Schein nach Zeitwertverfall und ",
+    "wo": "div#tab-strategien.tab.active > div#sub-mittelfrist.sub.active > div.panel > div"
+   }
+  },
+  {
+   "marke": "strategien/regelbuch @1280x800",
+   "art": "unfertig",
+   "e": {
+    "text": "Die Trefferquoten zählten noch Trades aus der Zeit des Buchungsfehlers mit. Einmalig auf null gesetzt – ab jetzt zählen ",
+    "wo": "tbody > tr > td > div"
+   }
+  },
+  {
+   "marke": "messung @1280x800",
+   "art": "unfertig",
+   "e": {
+    "text": "function ersteKerzeDesTages(bars, i) {\n  /* Die erste Kerze eines Handelstages - erkannt am Datumswechsel gegen die\n   *",
+    "wo": "div#strategieEingabe.panel > div#stBaukasten > details#stCodeAuf > pre#stCodeVorschau"
+   }
+  }
+ ]
+}
