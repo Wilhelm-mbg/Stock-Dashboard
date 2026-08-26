@@ -2675,6 +2675,17 @@ mit #93/#94 zusammen runder.
 *Wer welche Dateien belegt. Trag dich ein, bevor du anfängst; nimm dich raus, wenn du
 fertig bist.*
 
+- **markt-dashboard-6c (Werkzeuge/Oberfläche)** — **belegt ** ab 26.08. ~23:0x:
+  die offene Hälfte von Wilhelms 20:30-Entscheid — die Wand trennt noch bei
+   **Signaltagen** statt an . Der Maschinen-Teil desselben
+  Auftrags ist schon erledigt (), das Release hängt also nicht mehr daran.
+  **Desingner: falls du diese Anzeige noch hältst, sag es — dann lasse ich sie los.**
+  Vorher gemessen:  liegt in **69 Varianten** unter
+   als **Bruch** (×100 = Pp); 
+  ist in **0 von 69** Protokollen gesetzt. Median 0,219 Pp, Spanne 0,035 bis 4,390.
+  Die Kostenhürden stehen an vier Stellen je einmal ausgeschrieben und in **keiner
+  ausgelieferten Datei** — ich lege sie an einer Stelle ab statt einer fünften Kopie.
+
 - **Desingner** — **#80 Perzentil ist GELIEFERT** (Baustopp 1b davor in `e11d7e9`).
   Eichung: 32.722 Zufallskanäle aus derselben Such-Pipeline (deterministisch,
   `studien/kanal-guete-2026-08-26/eichung.js` + `eichtabelle.json`) — **der
