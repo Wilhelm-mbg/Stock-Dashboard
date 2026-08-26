@@ -1,5 +1,5 @@
 {
-  "stand": "2026-08-26T04:56:53.529Z",
+  "stand": "2026-08-26T11:02:40.746Z",
   "hinweis": "Spekulationen aus öffentlichen Quellen – ungemessen, keine Handelsempfehlung, keine Anlageberatung.",
   "eintraege": [
     {
@@ -8,31 +8,31 @@
       "name": "Banco BPM S.p.A.",
       "art": "uebernahme",
       "chance": "hoch",
-      "these": "Der Verwaltungsrat von Banco BPM hat das 25,3-Mrd.-Euro-Umtauschangebot von Monte dei Paschi einstimmig als \"weder abgestimmt noch erbeten\" bewertet: es sei eine Übernahme ohne Prämie für die Aktionäre, keine Fusion.",
-      "begruendung": "Der Beschluss vom Dienstagabend ist da und einstimmig – auch die Vertreter des französischen Großaktionärs Crédit Agricole (29,3 Prozent) trugen ihn mit. Il Sole 24 Ore, Il Messaggero, LaPresse und Agenzia Nova geben den Wortlaut der Mitteilung übereinstimmend wieder, Moody’s meldet \"erhebliche Unsicherheiten\" an. Konkreter, datierter Anlass aus mehreren seriösen Quellen, deshalb hoch. Das Gremium hat sich nicht endgültig festgelegt, sondern Zeit genommen; der nächste Prüfstein ist der Generali-Verwaltungsrat am Donnerstag, dem 27. August. Das italienische Wirtschaftsministerium hat seine eigene Beteiligung vorerst eingefroren.",
+      "these": "Der Verwaltungsrat von Banco BPM hat das 25-Mrd.-Euro-Umtauschangebot von Monte dei Paschi einstimmig als \"weder abgestimmt noch erbeten\" und als Übernahme ohne Prämie eingestuft – ausdrücklich keine Fusion unter Gleichen.",
+      "begruendung": "Der einstimmige Beschluss steht, auch die Vertreter des französischen Großaktionärs Crédit Agricole (29,3 Prozent) trugen ihn mit. Il Sole 24 Ore, La Stampa, La7 und Adnkronos geben den Wortlaut übereinstimmend wieder, Moody’s meldet \"erhebliche Unsicherheiten\" an – konkreter, datierter Anlass aus mehreren seriösen Quellen, deshalb hoch. Neu am Mittwoch: Das Gremium hat sich nicht endgültig festgelegt, sondern Zeit genommen; der nächste Prüfstein ist der Generali-Verwaltungsrat am Donnerstag, dem 27. August. Wirtschaftsminister Giorgetti hat den Verkauf des Staatsanteils von 4,8 Prozent an MPS ausgesetzt, die Stimmrechtsberater haben sich für die konkurrierende Intesa-Offerte ausgesprochen.",
       "quellen": [
         {
           "titel": "Il Sole 24 Ore",
           "url": "https://www.ilsole24ore.com/art/mps-bpm-prende-tempo-e-un-acquisizione-senza-premio-AJUZ3Ou"
         },
         {
-          "titel": "Il Messaggero",
-          "url": "https://www.ilmessaggero.it/economia/bpm_boccia_offerta_mps_moodys_incertezze_fusione-9725311.html"
+          "titel": "La Stampa",
+          "url": "https://www.lastampa.it/economia/2026/08/26/news/bpm_gela_lovaglio_nessun_premio_mps_giorgetti_sospende_vendita-15722483/"
         },
         {
-          "titel": "LaPresse",
-          "url": "https://www.lapresse.it/economia/2026/08/25/mps-banco-bpm-offerta-diversa-dalla-nostra-non-concordata-ne-sollecitata/"
+          "titel": "TG La7",
+          "url": "https://tg.la7.it/economia/banco-bpm-boccia-offerta-mps-tesoro-golden-power-25-08-2026-261646"
         },
         {
-          "titel": "Agenzia Nova",
-          "url": "https://www.agenzianova.com/news/banco-bpm-ops-di-mps-non-concordata-ne-sollecitata-diversa-dalla-nostra-proposta/"
+          "titel": "Il Mattino",
+          "url": "https://www.ilmattino.it/economia/news/bpm_critca_offerta_mps_moodys_incertezze_ultime_notizie-9726363.html"
         },
         {
           "titel": "Adnkronos",
           "url": "https://www.adnkronos.com/finanza/banco-bpm-fredda-su-mps-acquisizione-non-concordata-senza-premio_11pYBfTy5IVrYiLMyoHGej"
         }
       ],
-      "zeit": "2026-08-25T18:00:00Z"
+      "zeit": "2026-08-26T08:00:00Z"
     },
     {
       "id": "20260821-BMPS-uebernahme",
@@ -40,27 +40,27 @@
       "name": "Banca Monte dei Paschi di Siena S.p.A.",
       "art": "uebernahme",
       "chance": "hoch",
-      "these": "MPS wehrt sich mit einem Doppelgebot für Banco BPM und Banca Generali gegen die feindliche Offerte von Intesa Sanpaolo; nach der kühlen Antwort des BPM-Verwaltungsrats steht der Plan unter Druck.",
-      "begruendung": "Beide Seiten des Übernahmekampfs sind belegt: Intesas Offerte über rund 30,6 Mrd. Euro und die MPS-Gegenwehr werden von Reuters, Il Sole 24 Ore und italienischen Häusern übereinstimmend beschrieben, die Umtauschverhältnisse sind veröffentlicht. Konkreter Anlass, mehrere seriöse Quellen, deshalb hoch. Neu über Nacht: Banco BPM hat das Gebot einstimmig als Übernahme ohne Prämie bezeichnet, und die Stimmrechtsberater haben sich für Intesas Offerte ausgesprochen – beides schwächt die Position von Siena. Wegen Intesas laufendem Gebot greift die Passivity Rule, die MPS-Hauptversammlung muss am 29. Oktober mit zwei Dritteln zustimmen.",
+      "these": "MPS wehrt sich mit einem Doppelgebot für Banco BPM und Banca Generali gegen die feindliche Offerte von Intesa Sanpaolo; nach der kühlen Antwort des BPM-Verwaltungsrats und dem eingefrorenen Staatsanteil steht der Plan zunehmend unter Druck.",
+      "begruendung": "Beide Seiten des Übernahmekampfs sind belegt: Intesas Offerte über rund 30,6 Mrd. Euro und die MPS-Gegenwehr werden von Reuters, Il Sole 24 Ore und italienischen Häusern übereinstimmend beschrieben, die Umtauschverhältnisse sind veröffentlicht. Konkreter Anlass, mehrere seriöse Quellen, deshalb hoch. Der Mittwoch bringt drei Verschlechterungen für Siena: Banco BPM nennt das Gebot einstimmig eine Übernahme ohne Prämie, die Stimmrechtsberater empfehlen Intesas Offerte, und das Wirtschaftsministerium hat den Verkauf seiner 4,8 Prozent ausgesetzt. Vorstandschef Lovaglio hält im Financial Times dagegen, sein Plan sei falsch dargestellt worden. Wegen Intesas laufendem Gebot greift die Passivity Rule; die MPS-Hauptversammlung muss am 29. Oktober mit zwei Dritteln zustimmen.",
       "quellen": [
         {
           "titel": "Il Sole 24 Ore",
           "url": "https://www.ilsole24ore.com/art/mps-bpm-prende-tempo-e-un-acquisizione-senza-premio-AJUZ3Ou"
         },
         {
-          "titel": "Corriere di Siena",
-          "url": "https://www.corrieredisiena.it/news/economia/463117/offerta-di-mps-il-cda-bpm-valuta-e-prende-tempo-mef-congela-la-quota.html"
+          "titel": "La Stampa",
+          "url": "https://www.lastampa.it/economia/2026/08/26/news/bpm_gela_lovaglio_nessun_premio_mps_giorgetti_sospende_vendita-15722483/"
         },
         {
-          "titel": "Euronews",
-          "url": "https://www.euronews.com/business/2026/08/20/monte-dei-paschi-board-approves-dual-exchange-offers-for-banco-bpm-and-banca-generali"
+          "titel": "Radio Siena TV",
+          "url": "https://www.radiosienatv.it/mps-banco-bpm-gela-lofferta-di-siena-lovaglio-al-financial-times-il-nostro-piano-e-stato-travisato/"
         },
         {
-          "titel": "Reuters Factbox via AOL",
-          "url": "https://www.aol.com/articles/factbox-italys-banking-shake-m-140318000.html"
+          "titel": "Borsa Italiana / Teleborsa",
+          "url": "https://www.borsaitaliana.it/borsa/notizie/teleborsa/finanza/mps-giornate-calde-tra-cda-bpm-su-ops-ed-enti-locali-da-giorgetti-in-attesa-del-board-di-generali-81_2026-08-25_TLB.html?lang=it"
         }
       ],
-      "zeit": "2026-08-25T18:00:00Z"
+      "zeit": "2026-08-26T08:00:00Z"
     },
     {
       "id": "20260823-WBD-ereignis",
@@ -68,24 +68,24 @@
       "name": "Warner Bros. Discovery Inc.",
       "art": "ereignis",
       "chance": "hoch",
-      "these": "Kaliforniens Generalstaatsanwalt Bonta zeigt sich wieder gesprächsbereit über die Paramount-Skydance-Übernahme von Warner Bros. Discovery, hat aber keinen Termin angesetzt; ab dem 1. Oktober fällt für Paramount eine Verzögerungsgebühr von 7 Mio. Dollar je Tag an.",
-      "begruendung": "Bonta hat sich am Dienstag selbst geäußert: eine Einigung sei möglich, wenn Paramount die Spielchen lasse, terminiert sei aber nichts; er verlangt strukturelle Auflagen. Los Angeles Times, Deadline, Bloomberg und Broadband TV News berichten unabhängig, dazu die vertraglich fixierte Gebühr ab dem 1. Oktober – konkreter, belegter Anlass mit klarem Zeitdruck, deshalb hoch. Zwei Dinge sind neu: Der Paramount-Verwaltungsrat hat einen Wegzug aus Kalifornien ab dem 1. Oktober bereits genehmigt, und laut Bloomberg umkreisen Kaufinteressenten einzelne Warner-Vermögenswerte, während sich der Rechtsstreit hinzieht. Insgesamt klagen zwölf Bundesstaaten.",
+      "these": "Kaliforniens Generalstaatsanwalt Bonta hat das für Montag angesetzte Vergleichstreffen mit Paramount Skydance abgesagt und erklärt, es seien derzeit keine Gespräche über die 110-Mrd.-Dollar-Übernahme von Warner Bros. Discovery angesetzt; der Kartellprozess steuert auf den Termin im März zu.",
+      "begruendung": "Reuters berichtet es direkt, mehrere Häuser bestätigen unabhängig: Bonta wirft Paramount vor, Einzelheiten vertraulicher Gespräche durchgestochen und falsch dargestellt zu haben, und nennt das bösgläubig; Paramount bestreitet die Weitergabe. Konkreter, datierter Anlass aus erster Quelle, deshalb hoch – die Richtung hat sich gegenüber dem Vortag allerdings umgekehrt: nicht Annäherung, sondern abgesagte Gespräche. Bonta will wieder zusammenkommen, wenn ernsthaft verhandelt wird, terminiert ist nichts. Kalifornien und elf weitere Staaten hatten am 13. Juli geklagt; parallel läuft eine Klage der Drehbuchautoren-Gewerkschaft. Für Paramount fällt ab dem 1. Oktober eine Verzögerungsgebühr von 7 Mio. Dollar je Tag an, und der Verwaltungsrat hat einen Wegzug aus Kalifornien zum selben Datum bereits genehmigt.",
       "quellen": [
+        {
+          "titel": "Reuters",
+          "url": "https://www.reuters.com/legal/litigation/california-ag-says-no-settlement-talks-scheduled-with-paramount-2026-08-25/"
+        },
+        {
+          "titel": "The Hill",
+          "url": "https://thehill.com/media/6050281-paramount-warner-bros-merger-antitrust-lawsuit-rob-bonta/"
+        },
         {
           "titel": "Los Angeles Times",
           "url": "https://www.latimes.com/entertainment-arts/business/story/2026-08-25/california-ag-bonta-open-to-warner-bros-settlement-talks-if-paramount-stops-playing-games"
         },
         {
-          "titel": "Deadline",
-          "url": "https://deadline.com/2026/08/rob-bonta-paramount-warner-bros-settlement-1237049993/"
-        },
-        {
-          "titel": "Bloomberg",
-          "url": "https://www.bloomberg.com/news/articles/2026-08-25/buyers-circle-warner-assets-with-paramount-legal-fight-extended"
-        },
-        {
-          "titel": "Broadband TV News",
-          "url": "https://www.broadbandtvnews.com/2026/08/25/paramount-denies-leaking-settlement-discussions-with-california-ag/"
+          "titel": "MyNewsLA",
+          "url": "https://mynewsla.com/life/2026/08/25/bonta-says-no-settlement-talks-scheduled-with-paramount-2/"
         }
       ],
       "zeit": "2026-08-25T20:00:00Z"
@@ -97,23 +97,19 @@
       "art": "uebernahme",
       "chance": "mittel",
       "these": "Der Finanzinvestor Silver Lake soll über eine Übernahme von Workday verhandeln; die Quartalszahlen am 27. August sind der nächste Prüfstein für den eingepreisten Übernahmeaufschlag.",
-      "begruendung": "Die Meldung geht auf einen Reuters-Bericht vom 13. August zurück, auf den die Aktie rund 18 Prozent zulegte; seither ist der Aufschlag im Kurs geblieben, bestätigt wurde von keiner Seite etwas, ein Filing gibt es nicht. Eine seriöse Erstquelle, viel Zweitverwertung, deshalb mittel. Über Nacht kam nichts Neues zur Sache selbst – nur die Beobachtung, dass die gemeldeten Gespräche den ganzen Software-Sektor mitgezogen haben (Workday rund 47 Prozent über dem Tief) und Bewertungsmodelle die Aktie inzwischen als nicht mehr günstig einstufen.",
+      "begruendung": "Die Meldung geht auf einen Reuters-Bericht vom 13. August zurück, auf den die Aktie rund 18 Prozent zulegte; seither ist der Aufschlag im Kurs geblieben, bestätigt wurde von keiner Seite etwas, ein Filing gibt es nicht. Eine seriöse Erstquelle, viel Zweitverwertung, deshalb mittel. Eine Nachsuche am Mittwochmittag brachte zur Sache selbst nichts Neues – nur die Beobachtung, dass die gemeldeten Gespräche den ganzen Software-Sektor mitgezogen haben (Workday rund 47 Prozent über dem Tief) und Bewertungsmodelle die Aktie inzwischen als nicht mehr günstig einstufen.",
       "quellen": [
         {
           "titel": "Reuters",
           "url": "https://www.reuters.com/world/silver-lake-talks-buy-workday-sources-say-2026-08-13/"
         },
         {
-          "titel": "Stocktwits",
-          "url": "https://stocktwits.com/news-articles/markets/equity/sp500-8000-morningstar-crm-now-wday-msft-august-rebound/cZYIhnzRJm9"
-        },
-        {
           "titel": "Simply Wall St.",
           "url": "https://simplywall.st/stocks/us/software/nasdaq-wday/workday/news/workday-wday-stock-still-does-not-look-cheap-after-its-47-re"
         },
         {
-          "titel": "Moneycontrol",
-          "url": "https://www.moneycontrol.com/news/business/markets/software-stocks-get-an-earnings-gut-check-after-hot-summer-rally-14015450.html/amp"
+          "titel": "Investing.com",
+          "url": "https://m.investing.com/news/stock-market-news/intuit-earnings-preview-what-does-this-mean-for-the-software-sector-93CH-4875722?ampMode=1"
         }
       ],
       "zeit": "2026-08-25T22:00:00Z"
@@ -136,51 +132,27 @@
           "url": "https://finance.biggo.com/news/63c197d4-3c15-4d0a-9e49-a670608b343c"
         }
       ],
-      "zeit": "2026-08-26T03:00:00Z"
+      "zeit": "2026-08-26T08:00:00Z"
     },
     {
-      "id": "20260825-MLM-beteiligung",
-      "sym": "MLM",
-      "name": "Martin Marietta Materials Inc.",
-      "art": "beteiligung",
+      "id": "20260826-EXPE-analyst",
+      "sym": "EXPE",
+      "name": "Expedia Group Inc.",
+      "art": "analyst",
       "chance": "niedrig",
-      "these": "Mit dem Abschluss der 13,5 Mrd. Dollar schweren Übernahme von Lhoist North America ist die Familienholding LNA Holding SRL über 10.953.543 neu ausgegebene Aktien zum größten Einzelaktionär von Martin Marietta geworden (15,4 Prozent).",
-      "begruendung": "Das Schedule 13D ist amtlich und eindeutig, die Konditionen sind über mehrere Häuser belegt. Trotzdem niedrig: Der Melder ist der Verkäufer, der neben 7 Mrd. Dollar in bar in Aktien bezahlt wurde – kein Einstieg aus Überzeugung und keine aktivistische Absicht. Interessant ist eher die Struktur: Haltefrist für 50 Prozent der Stücke bis 21. August 2027, für den Rest bis 2028, dazu eine Stillhaltevereinbarung bei 18 Prozent. Die Aktie stand zuletzt auf einem 52-Wochen-Tief.",
+      "these": "Expedia legte rund 5 Prozent zu, nachdem Evercore ISI und Wedbush ihre Kursziele auf 430 beziehungsweise 417 Dollar angehoben haben; der Mittelwert der Ziele liegt damit bei rund 424 Dollar.",
+      "begruendung": "Zwei benannte Häuser mit bezifferten Zielen und eine tatsächliche Kursreaktion am selben Tag; Expedia taucht zudem in der Benzinga-Sammelmeldung der Analystenbewegungen vom Dienstag auf. Trotzdem niedrig: Die Meldung läuft über Zweitverwerter, für Evercore ist kein Ausgangswert genannt, sodass sich die Größe der Anhebung nicht beziffern lässt – und Kursziele sind Meinung, kein Anlass. Aufgenommen, weil der Wert liquide ist und die Kursreaktion belegt.",
       "quellen": [
         {
-          "titel": "SEC EDGAR (Schedule 13D)",
-          "url": "https://www.sec.gov/Archives/edgar/data/916076/000149315226039879/0001493152-26-039879-index.htm"
+          "titel": "TIKR",
+          "url": "https://www.tikr.com/blog/expeexpedia-stock-jumps-evercore-isi-price-target-430"
         },
         {
-          "titel": "GuruFocus",
-          "url": "https://www.gurufocus.com/news/9049757/martin-marietta-mlm-completes-135-billion-acquisition-of-lhoist-north-america"
-        },
-        {
-          "titel": "StockTitan",
-          "url": "https://www.stocktitan.net/sec-filings/MLM/schedule-13d-martin-marietta-materials-inc-major-shareholder-acquisit-8231b00802e3.html"
+          "titel": "Benzinga",
+          "url": "https://www.benzinga.com/news/26/08/61404324/nvidia-to-rally-more-than-8-here-are-10-top-analyst-forecasts-for-tuesday"
         }
       ],
-      "zeit": "2026-08-24T20:00:00Z"
-    },
-    {
-      "id": "20260825-BCRX-geruecht",
-      "sym": "BCRX",
-      "name": "BioCryst Pharmaceuticals Inc.",
-      "art": "geruecht",
-      "chance": "niedrig",
-      "these": "BioCryst legte nachbörslich über 10 Prozent zu, nachdem erneut über einen Einstieg eines großen US-Pharmaunternehmens spekuliert wurde.",
-      "begruendung": "Der Ursprung ist eine \"uncooked\"-Meldung des Gerüchtedienstes Betaville aus der Vorwoche, wonach ein US-Biopharmaunternehmen mit über 15 Mrd. Dollar Börsenwert Interesse haben soll – kein Name, keine Bestätigung, kein Filing. Was danach kam, ist Forum-Verkehr: Die Erwähnungen auf Stocktwits erreichten den höchsten Stand des Jahres. Einzelquelle plus Stimmungslärm, deshalb niedrig; die Kursreaktion ist real, der Anlass nicht überprüfbar. Eine Nachsuche am Mittwochmorgen brachte nichts Neues.",
-      "quellen": [
-        {
-          "titel": "Stocktwits",
-          "url": "https://stocktwits.com/news-articles/markets/equity/biocryst-stock-after-hours-big-pharma-takeover-buzz-retail-sentiment-2026-high/cZ3nTt1RIKa"
-        },
-        {
-          "titel": "Stocktwits (Marktüberblick)",
-          "url": "https://stocktwits.com/news-articles/markets/equity/dow-sp500-nasdaq-futures-flip-gains-iran-talk-cools-vcx-mu-bcrx-dkng-after-hours/cZ3ncAQRIKO"
-        }
-      ],
-      "zeit": "2026-08-24T22:30:00Z"
+      "zeit": "2026-08-25T22:00:00Z"
     }
   ]
 }
