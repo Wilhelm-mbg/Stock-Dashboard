@@ -75,3 +75,40 @@ Messungen sie ab dem 18./20./21.08.2026 nicht mehr als handelnd führen. Das ist
 **Offen und nicht von mir gemessen:** ob es weitere Werte im Archiv gibt, die delistet
 sind, aber (noch) kein Delisting-Datum in der Liste tragen. Die Liste stammt vom
 23.08.; alles seither Delistete fehlt darin.
+
+---
+
+## Nachtrag für Wilhelms Markierungs-Entscheidung (auf Bitte des PM ausgezählt)
+
+**Wie viele Werte wären betroffen — und über welchen Zeitraum:**
+
+| | Zahl |
+|---|---|
+| Einträge mit Delisting-Datum | 6.707 |
+| **davon im lebenden 60m-Archiv — also von einer Markierung betroffen** | **5** |
+| Zeitraum ihrer Delistings | 18.08. bis 21.08.2026 |
+
+Die Entscheidung betrifft also **fünf Werte in einem Fenster von vier Tagen**, nicht
+Hunderte. Sie ist klein — und sie wird jede Woche wieder anfallen, weil laufend Werte
+verschwinden. Das eigentliche Thema ist deshalb nicht diese Handvoll, sondern ob es
+**einen Weg** gibt, der das regelmäßig tut.
+
+**Die Größenordnung daneben, damit die Zahl einzuordnen ist:**
+
+| | Zahl |
+|---|---|
+| Delistete Werte, die das Archiv **nie** hatte | 6.702 |
+| **davon delistet innerhalb des Archivzeitraums (ab 26.09.2023)** | **1.824** |
+
+Diese 1.824 sind die Überlebensverzerrung in absoluten Zahlen: Werte, die im Zeitraum
+gehandelt haben und im Querschnitt fehlen. Gegen sie sind die fünf ein Rundungsfehler —
+**aber sie zeigen in die entgegengesetzte Richtung.** Die 1.824 fehlen; die fünf sind zu
+viel da. Nur die fünf lassen sich mit dem vorhandenen Bestand überhaupt beheben.
+
+## TWO — der sechste Nachzügler, ein anderer Fall
+
+`TWO` stand mit den fünf zusammen in der Nachzügler-Meldung des Archiv-Wachhunds, gehört
+aber nicht zu ihnen: **kein Delisting-Datum** in der Liste, und bei Yahoo am 24.08.2026
+ein Schluss von 12,18 mit **19.390.300** Umsatz. Der Wert handelt. Warum seine Reihe im
+Archiv einen Tag zurückhängt, ist damit **offen** — es ist kein Delisting. Nicht
+gemessen, nicht erklärt, hier nur festgehalten, damit er nicht als Rest liegenbleibt.
