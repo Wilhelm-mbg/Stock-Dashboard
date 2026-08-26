@@ -9502,6 +9502,18 @@ console.log('\n63) Nur fertige Kerzen kommen ins Archiv (Issue #85)');
   ok(repD.repariert === 1 && repD.klasseR === 1,
      'Ein Docht repariert, ein Fall der Klasse R nur gezaehlt',
      repD.repariert + ' / ' + repD.klasseR);
+  /* DIE ANWENDUNG RUHT (27.08.2026). Die Funktion selbst wird weiter geprueft -
+   * sie ist gebaut und richtig -, aber zusammenfuehren() aendert nichts mehr:
+   * gegen das Tagesarchiv gemessen liegen 76,4 % der Dochte INNERHALB des
+   * Tagesbalkens, viele exakt AUF dem Tagesextrem. Umsatz 0 heisst bei dieser
+   * Quelle nicht -nicht gehandelt-, sondern -Volumen nicht geliefert-.
+   * Diese Zusicherung haelt fest, dass die Anwendung ruht. */
+  var vereintD = KQ.zusammenfuehren(reiheD, [], '60m');
+  ok(vereintD.dochte === 0 && vereintD.dochteErkannt === 1,
+     'Dochte werden GEZAEHLT, aber nicht mehr veraendert - der zweite Zeuge fehlt',
+     vereintD.dochteErkannt + ' erkannt, ' + vereintD.dochte + ' geaendert');
+  ok(vereintD.serie[2][3] === 101 && vereintD.serie[2][4] === 80,
+     'und die Kerze kommt unveraendert aus dem Vereinigen heraus');
   ok(repD.serie[2][1] === 99 && repD.serie[2][3] === 99 && repD.serie[2][4] === 99,
      'Der Schlusskurs bleibt unangetastet, Hoch und Tief kommen auf max/min von Eroeffnung und Schluss');
   /* OHLC-Invariante: tief <= min(o,c) <= max(o,c) <= hoch. Deshalb NICHT

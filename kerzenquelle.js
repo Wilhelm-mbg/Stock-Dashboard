@@ -426,9 +426,27 @@ function zusammenfuehren(alt, neu, intervall) {
    * naechsten Nachladen erneut, und ein Aufraeumlauf waere eine Momentaufnahme.
    * Die Tagesspanne wird aus der VEREINIGTEN Reihe gebildet, sonst fehlten der
    * Pruefung genau die frischen Umsatz-Kerzen, die den Tag aufspannen. */
+  /* DIE REPARATUR RUHT, und der Grund ist ein Fund GEGEN die eigene Regel
+   * (27.08.2026, gemessen gegen das TAGESARCHIV als unabhaengige zweite Reihe):
+   * Von den reparierbaren P-WEG-Kerzen liegen 2.067 von 2.705 - also 76,4 % - mit
+   * ihrem Docht INNERHALB des Tagesbalkens, viele davon exakt AUF dem Tageshoch
+   * oder Tagestief:
+   *     AAT  2023-09-27   Kerze H 19,28  T 18,90   Tagesbalken H 19,28  T 18,90
+   *     ABEV 2024-07-03   Kerze H  2,09  T  2,06   Tagesbalken H  2,09  T  2,06
+   * Diese Kerzen tragen die tatsaechlichen Tagesextreme. Umsatz 0 heisst bei dieser
+   * Quelle nicht "nicht gehandelt", sondern "Volumen nicht geliefert" - im Projekt
+   * seit dem 23.08.2026 an der Vorboersen-Karte belegt. Die Reparatur haette drei
+   * von vier echten Hoch- und Tiefwerten plattgemacht.
+   *
+   * WAS FEHLT, IST EIN ZWEITER ZEUGE. Die Tagesspanne der Umsatz-Stunden allein
+   * traegt die Unterscheidung nicht - der Tagesbalken traegt sie, steht an dieser
+   * Stelle aber nicht zur Verfuegung. Bis das entschieden ist, wird GEZAEHLT und
+   * NICHT geaendert: dieselbe Antwort wie bei Klasse R, und aus demselben Grund.
+   * Das Merkmal bleibt gebaut und geprueft, nur seine Anwendung ruht. Wer sie
+   * einschaltet, braucht den Tagesbalken als Gegenzeugen. */
   var ph = dochteReparieren(serie, intervall);
-  return { serie: ph.serie, dazu: ph.serie.length - vorher,
-    gereinigt: gereinigt, dochte: ph.repariert, klasseR: ph.klasseR };
+  return { serie: serie, dazu: serie.length - vorher,
+    gereinigt: gereinigt, dochte: 0, dochteErkannt: ph.repariert, klasseR: ph.klasseR };
 }
 
 /** Der Datensatz, wie er auf die Platte geht.
