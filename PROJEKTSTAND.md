@@ -1838,6 +1838,65 @@ entfernte Kerzen zurück; eine Reparatur, die das nicht mitbedenkt, ist eine Mom
 *Fallstricke im Raster: der `etf/`-Unterordner (SPY/QQQ/IWM/VOO/TLT/GLD), das Raster ist
 `:30` nicht `:00`, Tage ohne Vergleichsspanne sind nicht entscheidbar.*
 
+### 🔬 27.08. ~01:30 — „Umsatz 0 ⇒ keine Spanne" ist WIDERLEGT. Die Formfrage bleibt offen.
+
+**Der PM hatte seine Flach-Regel damit begründet, dass eine Nullumsatz-Kerze kein Geschäft
+und darum keine Spanne haben könne. Das ist für diese Quelle nachweislich falsch.**
+
+**Der Beleg (QS), AAPL mitten in der Sitzung, 11:30 ET:**
+
+    15:15  Umsatz    801.245   H 298,16  T 297,23  S 297,37
+    15:25  Umsatz  1.410.520   H 297,49  T 296,96  S 297,11
+    15:30  Umsatz          0   H 297,28  T 296,85  S 297,17   <-- 43 Cent Spanne
+    15:35  Umsatz    350.700   H 297,39  T 296,75  S 297,08
+
+**Der Kurspfad läuft lückenlos durch die Nullumsatz-Kerze hindurch** (297,11 → 297,10 …
+297,17 → 297,17). Es wurde gehandelt; **das kaputte Feld ist der Umsatz, nicht die Spanne.**
+Kein Einzelfall: von 169 Nullumsatz-Kerzen mit Spanne im 5m-Archiv liegen **159 mitten in der
+Sitzung** (14:00–19:30 UTC), wo Umsatz 0 unglaubwürdig ist.
+
+**Unabhängig dieselbe Antwort aus einer älteren Messung** (`-06`, Vorbörsen-Karte #55 vom
+23.08.): Yahoo liefert **jede** Vorbörsen-Kerze mit Volumen 0, bei real stattfindendem Handel.
+**„Umsatz 0" heißt bei dieser Quelle „Volumen nicht geliefert", nicht „kein Geschäft".** Das
+erklärt zwanglos auch die 21,7 % exakten Tagesschlüsse: die Schlussauktion *hat* Umsatz.
+
+**⚠ ABER ES ENTSCHEIDET DIE FORMFRAGE NICHT — und die QS sagt es selbst:**
+
+| Aussage | Stand |
+|---|---|
+| „Umsatz 0 ⇒ keine Spanne" | **widerlegt** |
+| „also ist der Docht echt" | **folgt nicht** |
+| Formentscheidung | **offen, entscheidet Lauf 1** |
+
+**Der Beleg betrifft Spannen INNERHALB des Tagesbandes** — die AAPL-Kerze liegt vollständig
+im Band und ist als Klasse S2 ohnehin geschützt. **P-WEG ist die andere Menge: Dochte, die
+das Band VERLASSEN.** Für AAPL am 03.07.2025 hieße „echt" ein nachbörslicher Handel **5 %
+unter dem Sitzungstief** bei einem Megacap. *„Unplausibel" ist keine Messung.*
+
+**→ DIE TRENNFRAGE FÜR LAUF 1** (von `-06` gestellt, von der QS übernommen): **Tragen viele
+Reihen am selben Halbtag strukturgleiche Docht-Muster oder individuelle?**
+- **strukturgleich** (gleiches Verhältnis zum Schluss, gleiche Uhrzeit über hunderte Reihen)
+  → **Quellfehler**, Docht unbelegt → **flach**
+- **individuell** (jede Reihe ein eigenes Muster) → **echter Handel** → **kappen**
+- **gemischt** → *keine einheitliche Form ist richtig* → **nichts reparieren, Frage an
+  Wilhelm.* **Die QS hält diesen Ausgang ausdrücklich für möglich.**
+
+**Eine geplante Gegenprobe fiel vorher aus, vom PM gemessen bevor Zeit hineinfloss:** Der
+Abgleich der Halbtags-Dochte gegen 5m/15m ist mit den vorhandenen Daten **unmöglich** —
+
+    archiv5m/15m   2026-06-02 bis 2026-08-26   (85 Tage)
+    archiv1m       2026-08-18 bis 2026-08-26   ( 8 Tage)
+    Halbtage im Bereich: KEINE
+
+Die sieben Halbtage liegen zwischen 24.11.2023 und 24.12.2025, alle vor Beginn dieser
+Archive. **Der Lauf hätte null Treffer aus Datenmangel gemeldet — und das sieht aus wie null
+Treffer aus Sachgründen.**
+
+*Die QS notiert dazu über ihr eigenes Werkzeug: `aggregation-test.js` fand auf der 15m/5m-Stufe
+**null klärbare Fälle** (nur 8 Nullumsatz-Kerzen im 15m-Archiv, alle flach) — die Antwort kam
+aus einer breiteren Zählung über alle drei freien Archive. **Der Test, der für die Frage
+gebaut war, hat sie nicht beantwortet.***
+
 ### 🧪 27.08. ~01:20 — der Prüfstand steht, elf Fälle, und er fand zwei Fehler übereinander
 
 **Die Abnahme ist jetzt belegt scharf statt angenommen scharf.** Die QS hat ein
