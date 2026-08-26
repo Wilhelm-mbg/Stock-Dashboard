@@ -234,6 +234,14 @@ stehen in `studien/tueftler/WARTESCHLANGE.md`.*
   einer 80er-Stichprobe, AAPL 15,0 statt 46,8 Mio Stück). Warteschlange: 1 Entwurf,
   2 Auftragsvorschläge (`ausstieg`-Schalter der Maschine als Vorbedingung; Auktionskosten
   am Demo-Konto). Keine Messung, kein Maschinencode, 0 von 5 Web-Suchen verbraucht.
+- **26.08. (Literatur)** — Dossier zu Übernacht-Renditen/Schlussauktion liegt
+  (`studien/tueftler/recherche-2026-08-26/DOSSIER.md`). Kernaussage: die Bausteine sind
+  publiziert (Übernacht-Prämie; MOC-Abweichungen ~8 Bp kehren über Nacht fast vollständig
+  um; Kurzfrist-Umkehrprämie sitzt laut Lou/Polk/Skouras im Nachtbein) — zur konkreten
+  These ist die Literatur stumm; ernstester Gegenspieler ist der Bid-Ask-Bounce
+  (Tief-Schluss = Geldseite, mechanisch ~½ Spanne „Nachtrendite" in Größe der gesuchten
+  Kante) plus überhöhte/dünne Eröffnung als Ausstieg; CFD-Nachtfinanzierung ~2–3 Bp/Nacht
+  fehlt in der 0,10-Pp-Hürde. Sieben Prüfideen für die Mess-Kette in Abschnitt (d).
 
 ---
 
