@@ -52,9 +52,18 @@ function codeStand() {
 var VERFAHREN = {
   /* version beantwortet 'war das dasselbe Verfahren?' und wird von Hand gesetzt.
    * 1.1.0 (26.08.2026): #86 aussicht feuert wieder, #87 A7-Fenstertext berichtigt,
-   * #88 Placebo folgt der Einstiegskonvention. Protokollinhalte aendern sich damit,
-   * also eine neue mittlere Stelle - kein Fehlerstand. */
-  version: '1.1.0',
+   *   #88 Placebo folgt der Einstiegskonvention.
+   * 1.2.0 (26.08.2026): #91 - die Aussicht rechnet gegen die Bonferroni-Schwelle statt
+   *   gegen t=2 und nennt Schwelle und Testzahl.
+   * Zur 1.2.0 gab es eine ANDERE Meinung, und sie war vertretbar: die Messung selbst
+   * aendert sich nicht, kein Urteil kippt, es ist 'nur' eine Planungszahl - also
+   * koennte 1.1.0 stehenbleiben. Dagegen steht, was diese Nummer LEISTEN soll: zwei
+   * Protokolle mit derselben Version sollen vergleichbar sein. Bei gleichen Daten
+   * meldete 1.1.0 vor und nach dieser Zeile bis zu 59 % verschiedene tage80. Wer die
+   * Zahlen nebeneinanderlegt, haette keinen Anhaltspunkt. Deshalb neue Stelle.
+   * Genau diese Frage soll die Sperrklinke in test-v6.js erzwingen - sie deshalb
+   * durchzuwinken waere ihr erster Ausfall gewesen. */
+  version: '1.2.0',
   /* codeStand beantwortet 'war das dieselbe Datei?' und rechnet sich selbst aus. */
   codeStand: codeStand(),
   mindestKerzenVorlauf: 261,        // EMA100 + Kanal 200, wie die Detektoren es brauchen
@@ -1147,7 +1156,7 @@ function messe(strategie, archivPfad, optionen) {
       P.warne('B2', 'Variante ' + r.variante + ': Tagesmittel (' + (u.tagesmittel * 100).toFixed(4) + ' Pp) und Erwartung je Signal (' +
         (u.jeSignal * 100).toFixed(4) + ' Pp) haben verschiedene Vorzeichen. Duenne Tage tragen den Schaetzer. Handelbar ist die Zahl je Signal.');
     }
-    // Aussicht: wie viele Tage bis t=2 mit 80 % - nur, wenn der Punktschaetzer positiv ist
+    // Aussicht: wie viele Tage bis zum URTEIL mit 80 % - nur, wenn der Punktschaetzer positiv ist
     var aussicht = null;
     /* #86 (26.08.2026): die Bedingung fragte u.sd ab - ein Feld, das block() nie
      * geliefert hat. Sie war damit IMMER falsch, und in JEDEM Protokoll stand
@@ -1166,8 +1175,24 @@ function messe(strategie, archivPfad, optionen) {
      * welche Zahl kleiner ist, sondern welche zum Test passt. */
     if (u.tagesmittel > 0 && u.se > 0 && u.tage > 0) {
       var sd = u.se * Math.sqrt(u.tage);
-      aussicht = { tage80: Math.ceil(Math.pow(VERFAHREN.zAlpha + VERFAHREN.zPower80, 2) * sd * sd / (u.tagesmittel * u.tagesmittel)),
-        annahme: 'Effekt bleibt konstant; Signaldichte bleibt konstant. Beides ist NICHT gesichert.' };
+      /* #91 (26.08.2026): hier stand VERFAHREN.zAlpha - 1,96, die Schwelle fuer EINEN
+       * Test. Entschieden wird aber gegen die Bonferroni-Schwelle, und delta80 rechnet
+       * eine Handvoll Zeilen weiter oben laengst damit. Die beiden Planungszahlen
+       * DESSELBEN Urteilsblocks widersprachen sich also.
+       * Gemessen an den abgelegten Protokollen: 16 von 21 haben mehr als einen Test;
+       * dort untertrieb die Aussicht um 21 % (2 Tests) bis 59 % (7 Tests). Bei tests=1
+       * ist schwelle == zAlpha, dort aendert sich nichts.
+       * Die Alternative waere gewesen, die Zahl als 'Tage bis t=2 ohne Testzahl-
+       * Korrektur' stehenzulassen und das im annahme-Text zu sagen. Dagegen spricht,
+       * wofuer sie gebraucht wird: die Planung der Aufloesungswand fragt, wann ein
+       * URTEIL moeglich ist - und ein Urteil faellt an der Schwelle, nicht bei t=2.
+       * Damit die Zahl sich nicht wieder still verschiebt, nennt sie ihre Schwelle und
+       * ihre Testzahl jetzt selbst. */
+      aussicht = { tage80: Math.ceil(Math.pow(schwelle + VERFAHREN.zPower80, 2) * sd * sd / (u.tagesmittel * u.tagesmittel)),
+        schwelle: schwelle, tests: P.tests,
+        annahme: 'Effekt bleibt konstant; Signaldichte bleibt konstant. Beides ist NICHT gesichert. ' +
+          'Gerechnet gegen die Bonferroni-Schwelle ' + schwelle.toFixed(2) + ' bei ' + P.tests +
+          ' Test(s): Tage bis zum URTEIL, nicht bis t=2.' };
     }
     return P.entscheide('Urteil Variante ' + r.variante,
       { ueberschussTagesmittelPp: u.tagesmittel != null ? u.tagesmittel * 100 : null, mdePp: u.mde != null ? u.mde * 100 : null,

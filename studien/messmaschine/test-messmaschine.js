@@ -525,6 +525,83 @@ console.log('\n17) #88: der Nullpunktwaechter misst dieselbe Ausfuehrung wie das
   try { fs.rmSync(N, { recursive: true, force: true }); } catch (e) { }
 })();
 
+/* ========== #91: die Aussicht rechnet gegen die Schwelle, nicht gegen t=2 ========== */
+console.log('\n18) #91: Tage bis zum URTEIL, nicht bis t=2');
+leereArchiv();
+(function () {
+  /* Dieselbe schwache Kante wie in Block 15 - stark genug fuer ein bestaetigtes
+   * Urteil, schwach genug fuer ein zweistelliges tage80. Bei tage80 = 1 rundete
+   * jeder Faktor auf dieselbe Zahl und die Probe waere hohl. */
+  var rnd = lcg(99);
+  for (var s = 0; s < 40; s++) {
+    var bars = [], preis = 100, t0 = Date.UTC(2024, 0, 1, 14, 0), zaehler = 0;
+    for (var d = 0; d < 400; d++) {
+      var tagMs = t0 + d * 86400000, wt = new Date(tagMs).getUTCDay(); if (wt === 0 || wt === 6) continue;
+      for (var h = 0; h < 7; h++) {
+        var bonus = (zaehler % 20 > 0 && zaehler % 20 <= 8) ? 0.0001 : 0;
+        preis *= 1 + bonus + (rnd() - 0.5) * 0.006;
+        bars.push([tagMs + h * 3600000, preis, 1000, preis * 1.002, preis * 0.998]);
+        zaehler++;
+      }
+    }
+    fs.writeFileSync(path.join(TMP, 'bars_60m_W' + s + '.json'), JSON.stringify({ series: bars }));
+  }
+  /* Zwei Laeufe auf DEMSELBEN Archiv mit derselben einen Variante. Der Unterschied ist
+   * allein die angemeldete Testzahl (B8-Testfamilie). Damit ist alles gleich ausser der
+   * Schwelle - sonst vergliche man zwei Messungen und nennte die Differenz einen Effekt. */
+  function lauf(testsGesamt) {
+    var S = { key: 'aussicht-schwelle',
+      grund: 'Prueft, ob die Aussicht mit der Bonferroni-Schwelle rechnet oder mit t=2.',
+      haltedauerKerzen: 8, richtung: 'long',
+      signal: function (b, i) { return (i - 261) % 20 === 0 ? { dir: 1 } : null; } };
+    if (testsGesamt) S.testfamilie = { name: 'Probe #91', testsGesamt: testsGesamt, begruendung: 'Testfall.' };
+    var r = M.messe(S, TMP);
+    var uz = r.entscheidungen.filter(function (e) { return e.regel.indexOf('Urteil Variante') === 0; })[0];
+    return { u: r.ergebnisse[0].bestaetigung.ueberschuss, a: uz && uz.ergebnis.aussicht, tests: r.tests };
+  }
+  var e1 = lauf(0), e7 = lauf(7);
+  ok(e1.tests === 1 && e7.tests === 7, 'Die Testzahl unterscheidet die beiden Laeufe', e1.tests + ' / ' + e7.tests);
+  ok(e1.u.tagesmittel === e7.u.tagesmittel && e1.u.se === e7.u.se && e1.u.tage === e7.u.tage,
+     'Beide Laeufe messen dieselben Daten - allein die Schwelle unterscheidet sie');
+  ok(!!(e1.a && e7.a), 'Beide Laeufe weisen eine Aussicht aus');
+
+  var z80 = M.VERFAHREN.zPower80;
+  var s1 = M._intern.bonferroniSchwelle(1), s7 = M._intern.bonferroniSchwelle(7);
+  /* Bei EINEM Test faellt die Bonferroni-Schwelle mit zAlpha zusammen - genau deshalb
+   * ist der alte Fehler nie aufgefallen: die meisten Probelaeufe hatten eine Variante.
+   * NICHT auf die letzte Stelle: zAlpha ist ein gerundetes Literal (1,959964), die
+   * Schwelle wird gerechnet (1,9599639861...). Die Differenz ist 1,4e-8 und verschiebt
+   * tage80 um den Faktor 0,99999999 - nach dem Aufrunden also gar nicht. Erst mit
+   * 1e-9 nachgemessen und rot bekommen; die Toleranz sagt jetzt, was wirklich gilt. */
+  ok(Math.abs(s1 - M.VERFAHREN.zAlpha) < 1e-6,
+     'Bei einem Test faellt die Schwelle mit zAlpha zusammen - dort aendert #91 nichts',
+     s1.toPrecision(12) + ' gegen ' + M.VERFAHREN.zAlpha + ', Differenz ' + Math.abs(s1 - M.VERFAHREN.zAlpha).toExponential(1));
+  var faktor = Math.pow((s7 + z80) / (s1 + z80), 2);
+  ok(Math.abs(faktor - 1.59) < 0.02, 'Bei sieben Tests sind rund 59 % mehr Tage noetig', faktor.toFixed(3));
+
+  /* Exakt nachgerechnet aus VEROEFFENTLICHTEN Feldern - der Vergleich ueber das
+   * Verhaeltnis allein waere durch das Aufrunden unscharf. */
+  function soll(e, sch) {
+    var sd = e.u.se * Math.sqrt(e.u.tage);
+    return Math.ceil(Math.pow(sch + z80, 2) * sd * sd / (e.u.tagesmittel * e.u.tagesmittel));
+  }
+  ok(e1.a.tage80 === soll(e1, s1), 'Ein Test: die Zahl stimmt mit der Schwellenrechnung', e1.a.tage80 + ' / ' + soll(e1, s1));
+  ok(e7.a.tage80 === soll(e7, s7), 'Sieben Tests: ebenso', e7.a.tage80 + ' / ' + soll(e7, s7));
+  /* Und der Fehler selbst: mit zAlpha statt der Schwelle kaeme bei sieben Tests
+   * dieselbe Zahl heraus wie bei einem - das war der Zustand bis zum 26.08.2026. */
+  ok(e7.a.tage80 !== soll(e7, M.VERFAHREN.zAlpha),
+     'Sieben Tests geben NICHT dieselbe Zahl wie einer - genau das war der Fehler',
+     e7.a.tage80 + ' statt ' + soll(e7, M.VERFAHREN.zAlpha));
+  ok(e7.a.tage80 > e1.a.tage80 * 1.4,
+     'Mehr Tests heissen deutlich mehr noetige Tage', e1.a.tage80 + ' -> ' + e7.a.tage80);
+  /* Ohne Schwelle und Testzahl im Protokoll ist die Zahl nicht lesbar: dieselbe
+   * Strategie kann je nach angemeldeter Familie verschiedene tage80 haben. */
+  ok(e1.a.tests === 1 && e7.a.tests === 7 && Math.abs(e7.a.schwelle - s7) < 1e-9,
+     'Die Aussicht nennt Schwelle und Testzahl selbst');
+  ok(/Bonferroni-Schwelle/.test(e7.a.annahme || '') && /nicht bis t=2/.test(e7.a.annahme || ''),
+     'und sagt im Klartext, wogegen sie rechnet');
+})();
+
 fs.rmSync(TMP, { recursive: true, force: true });
 console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
 process.exit(fails ? 1 : 0);
