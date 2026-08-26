@@ -658,15 +658,20 @@ mit #93/#94 zusammen runder.
 *Wer welche Dateien belegt. Trag dich ein, bevor du anfängst; nimm dich raus, wenn du
 fertig bist.*
 
-- **App-Codebase Master** — nichts belegt. Heute fertig: Neumessung (`49a6278`),
-  (1a)+(2b) (`0b7f767`), **B2** (`10ae955`), **#93/#94** (`a5641d3`). Alles grün,
-  Arbeitsbaum sauber, gepusht.
-  Zu B2: die Kennzahlen rechnen weiter über die GESAMTE Historie — ausgeführt geprüft
-  mit 1.000 Punkten, deren Hoch bei Punkt 3 liegt. Mit einem 800er-Ausschnitt wären es
-  10.000 statt 20.000 und −10 % statt −55 %. Die Stelle hatte vorher KEINE Zusicherung.
-  **PM 11:40: sein Vorschlag ist zugeteilt — er sitzt jetzt am Kursarchiv-Stillstand.**
-  Belegt keine Oberflächendatei mehr; `depot.js` und `index.html` sind frei.
-  `messen.js:95` nimmt er nebenbei mit. Stufe F (3) bleibt liegen, solange das Archiv steht.
+- **App-Codebase Master** — **Kursarchiv erledigt.** Beide Archive stehen auf dem
+  25.08., Rückstand **0 Handelstage, 100 % der Reihen** (Wachhund Exit 0). 60m: 2.913
+  Reihen, 14,78 Mio Kerzen, 3 ohne Daten. Tagesarchiv danach, 15:06 fertig.
+  **Befund: es gab nie eine Spiegelung** — kein Skript, keine Windows-Aufgabe, kein
+  Aufrufer im Repo. Der Lauf, der alle 2.887 Dateien schrieb, war meine #85-Bereinigung.
+  Die Falle war die Stille: ohne den Aktualisieren-Schalter meldet das Werkzeug
+  „Nichts zu tun" und geht mit Erfolg aus. Repariert ist die Stille (ad4e6a8), nicht
+  der Lauf.
+  **Offen als ENTSCHEIDUNG, nicht als Reparatur: #96** — Yahoo hängt jeder Stundenreihe
+  eine flache 20:00-Kerze mit Umsatz 0 an (147 von 147 in der Stichprobe). Das
+  Tagesarchiv ist nicht betroffen (echte Umsätze). Filterregel bewusst NICHT gebaut:
+  61 echte Nullumsatz-Stunden liegen am Schluss verkürzter Sitzungen und würden von
+  einer zu weiten Regel gelöscht.
+  Frei für den nächsten Auftrag.
 
 *(Die zweite Master-Zeile zur Neumessung ist am 26.08. 11:40 entfallen — der Lauf ist
 fertig, siehe „Stand" oben.)*
