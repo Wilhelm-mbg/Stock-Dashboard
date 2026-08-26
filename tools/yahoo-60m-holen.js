@@ -47,21 +47,20 @@
 var fs = require('fs');
 var path = require('path');
 var os = require('os');
-var https = require('https');
 var Wachhund = require('./archiv-wachhund.js');
+/* DIE DEFINITION EINER KERZE STEHT SEIT DEM 26.08.2026 AN EINER STELLE.
+ * Seit die App selbst Intraday sammelt, schreiben zwei Programme in dieselben
+ * Archive. Zwei Vorstellungen davon, was eine Kerze ist, waeren der Fehler, der hier
+ * schon 66 Reihen unbrauchbar gemacht hat. Also holt sich dieses Werkzeug die
+ * Definition, statt sie zu haben. */
+var Q = require('../kerzenquelle.js');
 
 var DATEN = path.join(os.homedir(), 'Downloads', 'Markt-Dashboard-Daten');
 
 /* Was Yahoo je Intervall hergibt - am 24.08.2026 an AAPL gemessen, nicht geraten.
  * range=max ignoriert das Intervall und liefert Monatskerzen; deshalb je Intervall
  * die groesste Spanne, die noch die gewuenschte Aufloesung liefert. */
-var INTERVALLE = {
-  '1d':  { range: '40y',  ordner: 'archiv1d',  etwa: 10076 },
-  '60m': { range: '730d', ordner: 'archiv60m', etwa: 5087 },
-  '15m': { range: '60d',  ordner: 'archiv15m', etwa: 1551 },
-  '5m':  { range: '60d',  ordner: 'archiv5m',  etwa: 4651 },
-  '1m':  { range: '7d',   ordner: 'archiv1m',  etwa: 2577 },
-};
+var INTERVALLE = Q.INTERVALLE;
 var IV = process.env.MD_INTERVALL || '60m';
 if (!INTERVALLE[IV]) { console.error('Unbekanntes Intervall: ' + IV + ' (bekannt: ' + Object.keys(INTERVALLE).join(' ') + ')'); process.exit(2); }
 var CFG = INTERVALLE[IV];
@@ -76,21 +75,10 @@ var MIN_KERZEN = Math.max(50, Math.round(CFG.etwa * 0.04));
  *   3. Rueckfall: <Datenordner>/archiv60m
  * Die Zeigerdatei ist der bequeme Weg: einmal setzen, und jedes Studienskript
  * findet das Archiv, ohne dass irgendwo ein Pfad fest verdrahtet steht. */
-function archivOrdner() {
-  if (process.env.MD_ARCHIV60M) return process.env.MD_ARCHIV60M;
-  var zeiger = path.join(DATEN, 'archiv60m-pfad.txt');
-  try {
-    var p = fs.readFileSync(zeiger, 'utf8').replace(/^\uFEFF/, '').trim();
-    if (p) return p;
-  } catch (e) { /* keine Zeigerdatei: Rueckfall */ }
-  return path.join(DATEN, 'archiv60m');
-}
-/* Der Zeiger nennt den 60m-Ordner; die anderen Intervalle liegen daneben. */
-function zielFuerIntervall() {
-  var basis = archivOrdner();
-  if (IV === '60m') return basis;
-  return path.join(path.dirname(basis), CFG.ordner);
-}
+/* Wo das Archiv liegt, entscheidet kerzenquelle.js - dieselbe Kette, die auch die App
+ * und der Wachhund benutzen. Bis zum 26.08.2026 stand sie hier ein zweites Mal, und
+ * die beiden Fassungen gaben fuer 1m/5m/15m verschiedene Antworten. */
+function zielFuerIntervall() { return Q.ordnerVon(IV); }
 var ZIEL = zielFuerIntervall();
 
 /* Wie alt ist das Archiv WIRKLICH? Nicht "wann wurde geschrieben" - am 26.08.2026
@@ -128,89 +116,18 @@ function istEtfSym(s) { return !!ETF_SATZ[s]; }
 function ordnerFuer(sym) { return istEtfSym(sym) ? path.join(ZIEL, 'etf') : ZIEL; }
 
 /* Massive schreibt Aktienklassen mit Punkt (BRK.B), Yahoo mit Bindestrich (BRK-B). */
-function yahooName(sym) { return sym.replace(/\./g, '-'); }
+var yahooName = Q.yahooName;
+var warte = Q.warte;
 
-function warte(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+var hole = Q.hole;
 
-function hole(url) {
-  return new Promise(function (res, rej) {
-    var r = https.get(url, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120 Safari/537.36',
-        'Accept': 'application/json',
-        'Origin': 'https://finance.yahoo.com',
-        'Referer': 'https://finance.yahoo.com/',
-      },
-    }, function (a) {
-      var d = '';
-      a.on('data', function (c) { d += c; });
-      a.on('end', function () { res({ status: a.statusCode, body: d }); });
-    });
-    r.on('error', rej);
-    r.setTimeout(30000, function () { r.destroy(new Error('Zeitueberschreitung')); });
-  });
-}
+var kursOk = Q.kursOk;
 
-/* Dieselbe Kurspruefung wie in der App: '== null' allein reicht nicht, eine 0
- * oder ein NaN kaeme durch. Ein verworfener Balken zaehlt wie ein fehlender. */
-function kursOk(x) { return typeof x === 'number' && isFinite(x) && x > 0; }
-
-/* Ist diese Kerze FERTIG? Eine unfertige gehoert nicht ins Archiv: sie ist eine
- * Momentaufnahme mitten in der Sitzung und wandert mit jedem Abruf weiter.
- * Gemessen am 26.08.2026 (Issue 85):
- *   archiv60m  400 von 400 Reihen endeten mit Sekunde != 0, mitten in der Reihe 0.
- *              Yahoo stempelt die laufende Kerze mit der Quote-Uhrzeit (16:57:27
- *              statt 16:30); eine Gitterkerze traegt immer Sekunde 0.
- *   archiv1d   0 von 400 am Stempel erkennbar - eine Tageskerze traegt den
- *              Sitzungsbeginn und sieht auch als Teiltag normal aus. Sie ist fertig,
- *              sobald die Sitzung zu ist.
- * Bewusst NICHT "Stempel + Intervall <= jetzt": die letzte Sitzungskerze ist kuerzer
- * als das Intervall (19:30 bis 20:00 UTC) und waere faelschlich verworfen worden. */
-function fertigeKerze(tsMs, reg, jetzt) {
-  if (new Date(tsMs).getUTCSeconds() !== 0) return false;
-  if (IV === '1d' && reg && tsMs === reg.start * 1000) return jetzt >= reg.end * 1000;
-  return true;
-}
-
-async function reiheHolen(sym) {
-  var url = 'https://query1.finance.yahoo.com/v8/finance/chart/' +
-    encodeURIComponent(yahooName(sym)) + '?range=' + CFG.range + '&interval=' + IV;
-  var r = await hole(url);
-  if (r.status === 429) {
-    await warte(8000);
-    r = await hole(url);
-  }
-  if (r.status !== 200) return { fehler: 'HTTP ' + r.status };
-  var j;
-  try { j = JSON.parse(r.body); } catch (e) { return { fehler: 'unlesbare Antwort' }; }
-  var res = j.chart && j.chart.result && j.chart.result[0];
-  if (!res) return { fehler: (j.chart && j.chart.error && j.chart.error.description) || 'keine Reihe' };
-  var q = res.indicators && res.indicators.quote && res.indicators.quote[0];
-  if (!q) return { fehler: 'keine Kursspalten' };
-  var ts = res.timestamp || [], cl = q.close || [], vo = q.volume || [],
-      hi = q.high || [], lo = q.low || [], op = q.open || [];
-  var serie = [];
-  for (var i = 0; i < ts.length; i++) {
-    if (!kursOk(cl[i])) continue;
-    var h = kursOk(hi[i]) ? hi[i] : cl[i];
-    var l = kursOk(lo[i]) ? lo[i] : cl[i];
-    if (l > h) { var w = h; h = l; l = w; }
-    /* Der Eroeffnungskurs ist das Neue. Fehlt er, bleibt das Feld null - eine
-     * erfundene Zahl waere schlimmer als eine fehlende. */
-    var o = kursOk(op[i]) ? op[i] : null;
-    serie.push([ts[i] * 1000, cl[i], vo[i] || 0, h, l, o]);
-  }
-  /* Was am Ende nicht fertig ist, kommt gar nicht erst ins Archiv. */
-  var reg = res.meta && res.meta.currentTradingPeriod && res.meta.currentTradingPeriod.regular;
-  var jetzt = Date.now();
-  var abgeschnitten = 0;
-  while (serie.length && !fertigeKerze(serie[serie.length - 1][0], reg, jetzt)) {
-    serie.pop(); abgeschnitten++;
-  }
-  if (serie.length < MIN_KERZEN) return { fehler: 'nur ' + serie.length + ' Kerzen' };
-  return { serie: serie, waehrung: res.meta && res.meta.currency,
-           boerse: res.meta && res.meta.exchangeName, abgeschnitten: abgeschnitten };
-}
+/* Das Holen samt Abschneiden des unfertigen Randes steht in kerzenquelle.js - dort
+ * auch die Regel, was eine fertige Kerze ist (Issue 85). Hier stand bis zum
+ * 26.08.2026 noch ein Durchreicher fuer fertigeKerze; den ruft seither niemand mehr
+ * auf, und er las sich, als wohnte die Regel hier. */
+function reiheHolen(sym) { return Q.reiheHolen(sym, IV, { mindestKerzen: MIN_KERZEN }); }
 
 function listeBauen(wahl) {
   if (wahl && wahl.indexOf(',') !== -1) return wahl.split(',').map(function (s) { return s.trim().toUpperCase(); });
@@ -295,32 +212,18 @@ function listeBauen(wahl) {
       if (fs.existsSync(datei)) {
         try {
           var alt = JSON.parse(fs.readFileSync(datei, 'utf8')).series || [];
-          /* Auch das Vorhandene reinigen. Die Vereinigung laeuft ueber den
-           * Zeitstempel, und eine alte Teilkerze (16:57:27) hat einen anderen
-           * Stempel als die richtige Kerze derselben Stunde (16:30) - sie wuerde
-           * sonst ewig stehenbleiben, kuenftig mitten in der Reihe. Hier ist die
-           * Sitzung von damals laengst zu, deshalb reicht die Stempelregel. */
-          var altVor = alt.length;
-          alt = alt.filter(function (k) { return new Date(k[0]).getUTCSeconds() === 0; });
-          altgereinigt += altVor - alt.length;
-          var karte = {};
-          alt.forEach(function (k) { karte[k[0]] = k; });
-          var vorher = alt.length;
-          r.serie.forEach(function (k) { karte[k[0]] = k; });
-          r.serie = Object.keys(karte).map(Number).sort(function (a, b) { return a - b; })
-            .map(function (ms) { return karte[ms]; });
-          dazu = r.serie.length - vorher;
+          var v = Q.zusammenfuehren(alt, r.serie);
+          r.serie = v.serie; dazu = v.dazu; altgereinigt += v.gereinigt;
         } catch (e) { /* unlesbar: die frische Reihe ersetzt sie */ }
       }
       neuAbgeschnitten += r.abgeschnitten || 0;
       var ohneO = r.serie.filter(function (k) { return k[5] == null; }).length;
       ohneEroeffnung += ohneO;
-      fs.writeFileSync(datei, JSON.stringify({
-        sym: sym, quelle: 'yahoo v8 chart, range=730d interval=60m',
-        format: '[zeit, schluss, umsatz, hoch, tief, eroeffnung]',
-        waehrung: r.waehrung, boerse: r.boerse, stand: new Date().toISOString(),
-        series: r.serie,
-      }));
+      /* quelle nennt jetzt den WIRKLICH abgefragten Bereich - bis zum 26.08.2026
+       * stand hier fest 'range=730d interval=60m', auch in jeder Datei des
+       * Tagesarchivs mit 40 Jahren Tageskerzen. */
+      fs.writeFileSync(datei, JSON.stringify(
+        Q.satz(sym, IV, r.serie, { waehrung: r.waehrung, boerse: r.boerse })));
       stand.fertig[sym] = { kerzen: r.serie.length, ohneEroeffnung: ohneO, am: new Date().toISOString().slice(0, 10) };
       ok++; kerzenGes += r.serie.length;
       console.log('  ' + String(i + 1).padStart(4) + '/' + nimm.length + '  ' + sym.padEnd(8) +

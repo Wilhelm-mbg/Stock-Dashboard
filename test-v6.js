@@ -4387,10 +4387,35 @@ console.log('\n44) Messmaschine, Scoreboard und Strategie-Eingabe (23.08.2026)')
   ok(/P\.warne\('C7'/.test(mm2),
      'Fuehrt das Archiv keine Eroeffnungskurse, warnt die Maschine - keine stille Naeherung');
   var yh = fs.readFileSync(__dirname + '/tools/yahoo-60m-holen.js', 'utf8');
-  ok(yh.indexOf('serie.push([ts[i] * 1000, cl[i], vo[i] || 0, h, l, o])') !== -1,
-     'Das Abrufwerkzeug schreibt den Eroeffnungskurs als SECHSTES Element - die ersten fuenf bleiben');
-  ok(yh.indexOf('karte[k[0]] = k') !== -1 && yh.indexOf('--aktualisieren') !== -1,
+  /* Beide Marken sind am 26.08.2026 nach kerzenquelle.js gewandert, damit die App
+   * beim eigenen Sammeln dieselbe Zeile schreibt. Geprueft wird sie dort - und dass
+   * das Werkzeug wirklich durch das Modul geht statt daran vorbei. */
+  var kq = fs.readFileSync(__dirname + '/kerzenquelle.js', 'utf8');
+  var K7 = require(__dirname + '/kurse.js');
+  ok(K7.zerlege(JSON.stringify({ chart: { result: [{ timestamp: [100],
+    indicators: { quote: [{ close: [10], open: [9], high: [10], low: [9], volume: [5] }] },
+    meta: {} }] } }), { bereinigt: false }).bars[0].length === 6,
+     'Eine Kerze hat SECHS Felder - der Eroeffnungskurs ist das sechste, die ersten fuenf bleiben');
+  /* DIE LUECKE MUSS EINE LUECKE BLEIBEN. Faellt ein fehlender Eroeffnungskurs schon
+   * beim Zerlegen still auf den Schlusskurs, kann die Warnung oben nie mehr feuern:
+   * die Maschine saehe ueberall Eroeffnungskurse und rechnete mit einer Naeherung,
+   * von der niemand mehr erfaehrt. Aus einer offengelegten Naeherung waere eine
+   * verschwiegene geworden - und das ist schlimmer als gar keine. */
+  var luecke7 = JSON.stringify({ chart: { result: [{ timestamp: [100, 200],
+    indicators: { quote: [{ close: [10, 11], open: [null, 9], high: [10, 11],
+      low: [10, 11], volume: [5, 6] }] }, meta: {} }] } });
+  ok(K7.zerlege(luecke7, { bereinigt: false, offenRoh: true }).bars[0][5] === null,
+     'Fehlt er im Archivpfad, bleibt er LEER - sonst koennte C7 nie warnen');
+  ok(K7.zerlege(luecke7, { bereinigt: false }).bars[0][5] === 10,
+     'Fuer die Anzeige faellt er weiter auf den Schluss - dort ist die Luecke laestiger');
+  ok(K7.zerlege(luecke7, { bereinigt: false, offenRoh: true }).bars[1][5] === 9,
+     'und ein vorhandener Eroeffnungskurs bleibt in beiden Faellen unangetastet');
+  ok(/offenRoh: true/.test(kq),
+     'Das Kursarchiv holt wirklich mit offenRoh - sonst naehme es die stille Naeherung mit');
+  ok(kq.indexOf('karte[k[0]] = k') !== -1 && yh.indexOf('--aktualisieren') !== -1,
      'Es fuehrt Reihen fort statt sie zu ueberschreiben (Yahoo liefert nur 730 Tage)');
+  ok(/Q\.reiheHolen\(/.test(yh) && /Q\.zusammenfuehren\(/.test(yh),
+     'und das Abrufwerkzeug holt und vereinigt DURCH das Modul, nicht daneben');
 
   /* Der Weg muss auch durch die Oberflaeche fuehren - sonst weicht man wieder auf
    * ein Wegwerf-Skript aus, und genau dort passierten beide Fehler. */
@@ -9134,12 +9159,25 @@ console.log('\n63) Nur fertige Kerzen kommen ins Archiv (Issue #85)');
  * den juengsten Tag, und jeder Verbraucher, der das Reihenende liest, erbt ihn. */
 (function () {
   var yh = fs.readFileSync(__dirname + '/tools/yahoo-60m-holen.js', 'utf8');
+  var kq = fs.readFileSync(__dirname + '/kerzenquelle.js', 'utf8');
 
-  /* EINE Definition, nicht zwei. Zwei Regeln fuer dieselbe Frage laufen auseinander. */
-  ok(/function fertigeKerze\(tsMs, reg, jetzt\)/.test(yh),
-     'Es gibt genau eine Regel dafuer, wann eine Kerze fertig ist');
-  var reg = (/function fertigeKerze[\s\S]*?\n\}/.exec(yh) || [''])[0];
-  var F = new Function('IV', reg + '\nreturn fertigeKerze;');
+  /* EINE Definition, nicht zwei. Zwei Regeln fuer dieselbe Frage laufen auseinander.
+   * Seit dem 26.08.2026 wohnt sie in kerzenquelle.js, weil die App selbst sammelt und
+   * tools/ nicht mit ausgeliefert wird (build.files). Waere die Regel im Werkzeug
+   * geblieben, haette die App eine zweite gebraucht - und genau das ist der Fehler,
+   * gegen den diese Probe steht. Geprueft wird deshalb beides: dass es sie gibt, und
+   * dass es sie nur einmal gibt. */
+  ok(/function fertigeKerze\(tsMs, reg, jetzt, intervall\)/.test(kq),
+     'Die Regel steht in kerzenquelle.js - dort, wo App und Werkzeug beide hinkommen');
+  ok(!/function fertigeKerze/.test(yh),
+     'Und NUR dort - das Abrufwerkzeug haelt keine eigene Fassung');
+  var reg = (/function fertigeKerze[\s\S]*?\n\}/.exec(kq) || [''])[0];
+  /* Das Modul nennt den vierten Parameter intervall; die Faelle unten reichen ihn
+   * als IV herein, damit sie lesbar bleiben. */
+  var F = function (iv) {
+    var f = new Function(reg + '\nreturn fertigeKerze;')();
+    return function (a, x, c) { return f(a, x, c, iv); };
+  };
 
   /* Die laufende Kerze traegt Sekunden - eine Gitterkerze nie. */
   var f60 = F('60m');
@@ -9167,12 +9205,12 @@ console.log('\n63) Nur fertige Kerzen kommen ins Archiv (Issue #85)');
      'Ein aelterer Tag ist immer fertig');
 
   /* Der Abruf schneidet wirklich ab - eine Regel ohne Aufrufer waere toter Code. */
-  ok(/while \(serie\.length && !fertigeKerze\(/.test(yh),
+  ok(/while \(serie\.length && !fertigeKerze\(/.test(kq),
      'Der Abruf schneidet unfertige Kerzen am Ende ab');
   /* Und das Zusammenfuehren reinigt das VORHANDENE mit. Das ist der eigentliche
    * Haken: die Vereinigung laeuft ueber den Zeitstempel, und 16:57:27 ist ein anderer
    * Schluessel als 16:30 - eine alte Teilkerze bliebe sonst ewig stehen. */
-  ok(/alt\.filter\(function \(k\) \{ return new Date\(k\[0\]\)\.getUTCSeconds\(\) === 0; \}\)/.test(yh),
+  ok(/alt\.filter\(function \(k\) \{ return new Date\(k\[0\]\)\.getUTCSeconds\(\) === 0; \}\)/.test(kq),
      'Das Zusammenfuehren wirft alte Teilkerzen mit hinaus - sonst blieben sie ewig stehen');
 
   /* Und es gibt ein Werkzeug, das ein vorhandenes Archiv sofort reinigt, ohne Netz. */

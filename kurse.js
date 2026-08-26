@@ -108,7 +108,15 @@
        * depot.js hat das bisher abgefangen; wer die Kanten eines Kanals daran
        * ausrichtet, bekam anderswo ein Hoch unter dem Tief. */
       if (lo > hi) { var tausch = hi; hi = lo; lo = tausch; }
-      var op = kursOk(ops[i]) ? ops[i] : c;
+      /* o.offenRoh: fehlt der Eroeffnungskurs, bleibt er LEER statt auf den Schluss
+       * zu fallen. Nur das Kursarchiv will das, und es will es aus einem Grund: die
+       * Messmaschine warnt eigens (C7), wenn eine Reihe keine Eroeffnungskurse fuehrt,
+       * und rechnet dann sichtbar mit dem Vorkerzen-Schluss weiter. Faellt der Wert
+       * schon beim Zerlegen still auf den Schluss, kann diese Warnung nie mehr feuern -
+       * aus einer offengelegten Naeherung waere eine verschwiegene geworden.
+       * Fuer die Anzeige gilt weiter das Gegenteil: dort ist eine Luecke laestiger als
+       * eine Naeherung, und jede Zeile soll dieselbe Form haben. */
+      var op = kursOk(ops[i]) ? ops[i] : (o.offenRoh ? null : c);
       var vo = (typeof vols[i] === 'number' && isFinite(vols[i])) ? vols[i] : 0;
       bars.push([ts[i] * 1000, c, vo, hi, lo, op]);
     }

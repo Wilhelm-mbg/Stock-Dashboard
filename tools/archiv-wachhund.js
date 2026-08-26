@@ -33,22 +33,15 @@
  */
 var fs = require('fs');
 var path = require('path');
-var os = require('os');
+var Quelle = require('../kerzenquelle.js');
 
-var DATEN = path.join(os.homedir(), 'Downloads', 'Markt-Dashboard-Daten');
-var ZEIGER = { archiv60m: { env: 'MD_ARCHIV60M', datei: 'archiv60m-pfad.txt' },
-               archiv1d: { env: 'MD_ARCHIV1D', datei: 'archiv1d-pfad.txt' } };
 
-function ordnerVon(name) {
-  var z = ZEIGER[name];
-  if (!z) return null;
-  if (process.env[z.env]) return process.env[z.env];
-  try {
-    var p = fs.readFileSync(path.join(DATEN, z.datei), 'utf8').replace(/^﻿/, '').trim();
-    if (p) return p;
-  } catch (e) { /* keine Zeigerdatei */ }
-  return path.join(DATEN, name);
-}
+/* Dieselbe Kette wie das Abrufwerkzeug und die App - sie steht in kerzenquelle.js.
+ * Vorher suchte dieser Waechter je Intervall einen eigenen Zeiger, das Werkzeug legte
+ * die Intervalle NEBEN den 60m-Ordner. Fuer 60m und 1d gibt es Zeiger, also fiel es
+ * nicht auf; fuer 1m/5m/15m gibt es keine - der Waechter haette am falschen Ort
+ * nachgesehen und ein leeres Archiv gemeldet, waehrend die Daten anderswo lagen. */
+function ordnerVon(name) { return Quelle.ordnerVon(name); }
 
 /* Der letzte Handelstag, der ABGESCHLOSSEN ist. Die US-Sitzung endet um 20:00 UTC;
  * eine halbe Stunde Zuschlag, weil Yahoo die Schlusskerze nicht in derselben Sekunde
@@ -88,33 +81,15 @@ function handelstageDazwischen(vonTag, bisTag) {
  * eigens gemeldet, denn ein abgestuerzter Lauf ist selbst ein Befund.
  * Geloescht wird sie hier nicht - ein Wachhund raeumt nicht auf, er bellt. Der
  * naechste Lauf ueberschreibt sie. */
-var VERWAIST_STUNDEN = 6;
-function sperrePfad(ordner) { return path.join(ordner, '_laeuft.json'); }
-function sperreLesen(ordner, jetzt) {
-  jetzt = jetzt || new Date();
-  var p = sperrePfad(ordner);
-  if (!fs.existsSync(p)) return { aktiv: false, verwaist: false };
-  var j = null;
-  try { j = JSON.parse(fs.readFileSync(p, 'utf8')); } catch (e) { j = null; }
-  var start = j && j.start ? Date.parse(j.start) : NaN;
-  /* Unlesbar oder ohne Zeitstempel: als verwaist behandeln, nicht als aktiv. Eine
-   * kaputte Datei darf die Messung nicht auf Dauer blockieren. */
-  if (!isFinite(start)) return { aktiv: false, verwaist: true, alterStunden: null, roh: j };
-  var alter = (jetzt.getTime() - start) / 3600000;
-  return { aktiv: alter < VERWAIST_STUNDEN, verwaist: alter >= VERWAIST_STUNDEN,
-    alterStunden: alter, start: j.start, was: j.was || null };
-}
-function sperreSetzen(ordner, was) {
-  try {
-    fs.writeFileSync(sperrePfad(ordner), JSON.stringify(
-      { start: new Date().toISOString(), was: was || null, pid: process.pid }, null, 1));
-    return true;
-  } catch (e) { return false; }   // ohne Sperre laeuft der Abruf trotzdem
-}
-function sperreLoesen(ordner) {
-  try { if (fs.existsSync(sperrePfad(ordner))) fs.unlinkSync(sperrePfad(ordner)); return true; }
-  catch (e) { return false; }
-}
+/* Das alles steht seit dem 26.08.2026 in kerzenquelle.js, weil die App die Sperre
+ * genauso setzen muss und tools/ nicht mit ausgeliefert wird. Hier stand es bis
+ * dahin ein zweites Mal - zwei Fassungen derselben Regel sind zwei Gelegenheiten,
+ * dass eine davon still veraltet. */
+var VERWAIST_STUNDEN = Quelle.VERWAIST_STUNDEN;
+var sperrePfad = Quelle.sperrePfad;
+var sperreLesen = Quelle.sperreLesen;
+var sperreSetzen = Quelle.sperreSetzen;
+var sperreLoesen = Quelle.sperreLoesen;
 
 function juengsteKerze(datei) {
   try {

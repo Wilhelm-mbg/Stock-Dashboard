@@ -56,7 +56,7 @@ export default [
   // Oberflaeche: laeuft im Renderer, kein Node
   {
     files: ['*.js'],
-    ignores: ['main.js', 'preload.js', 'test-*.js', 'bt-worker.js'],
+    ignores: ['main.js', 'preload.js', 'kerzenquelle.js', 'test-*.js', 'bt-worker.js'],
     languageOptions: {
       ecmaVersion: 2022, sourceType: 'script',
       globals: { ...globals.browser, ...fensterGlobals, module: 'writable', require: 'readonly' }
@@ -64,9 +64,11 @@ export default [
     rules: echteFehler
   },
 
-  // Hauptprozess und Bruecke: Node plus Electron
+  // Hauptprozess, Bruecke und das geteilte Kerzenmodul: Node.
+  // kerzenquelle.js liegt in der Wurzel, weil tools/ nicht ausgeliefert wird - sie ist
+  // aber ein Node-Modul und kein Oberflaechenskript.
   {
-    files: ['main.js', 'preload.js'],
+    files: ['main.js', 'preload.js', 'kerzenquelle.js'],
     languageOptions: { ecmaVersion: 2022, sourceType: 'script', globals: { ...globals.node } },
     rules: echteFehler
   },
