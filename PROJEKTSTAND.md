@@ -1798,6 +1798,24 @@ bei 1.063 Kalendertagen). Rechenwege: `Markt-Dashboard-Daten/qs-audit-2026-08-26
 
 ## Aufträge
 
+### 📬 27.08. 00:50 — vier Aufträge nach dem Neustart verteilt (PM, per Nachricht zugestellt)
+
+*Wilhelm hat vier frische Sitzungen geweckt; ich habe ihnen direkt geschrieben. So verteilt,
+dass die Archivsperre (60m/1d bis ~03:45) niemanden blockiert: zwei arbeiten sofort, zwei
+kollidieren nicht.*
+
+| Sitzung | Auftrag | Belegt | Kann sofort? |
+|---|---|---|---|
+| `markt-dashboard-06` | **Archiv-Wache.** Nachlade-Lauf endet ~03:40, dann Wachhund + `archiv-alarm-*.txt` prüfen und melden. Wartezeit: die zwei Datenfunde vorbereiten, ohne zu ändern. | — | wartet bis 03:45 |
+| `markt-dashboard-ab` | **#98 toter Überlappungswächter** reparieren, mit Positivkontrolle (er muss beweisbar feuern können). Vorbedingung für Strang A. | `messmaschine.js` | ja (Code), Messung erst ab 03:45 |
+| `markt-dashboard-c4` | **Fokusreihenfolge in Dialogen** messen und beheben — der letzte offene Punkt aus Stufe F. | `tools/a11y-probe.js` | ja |
+| `markt-dashboard-1d` | **Warnsignale 6 + 7:** stille Kürzung in `massive-tagesdaten.js:29`, drei falsche Delistings (AVB, EQR, WBS). | `massive`-Bestand | ja |
+
+**Allen mitgegeben:** Archivsperre bis ~03:45, kein Release/keine Version (gehört der
+Release-Wache), geteilter Arbeitsbaum → Inhaltsanker statt Zeilennummern und nie `git add -A`,
+Rolle im ersten Satz nennen. **Nicht verteilt, weil Wilhelms Entscheidung:** die
+Wand-Anzeige im Scoreboard (Frage 1) und alles an der Handelslogik.
+
 ### ~~⭐ NEU, VOR der Phantom-Docht-Reparatur~~ **ÜBERNOMMEN 27.08. 00:45 von „Berechnungen"** (PM, 27.08. ~01:35) — an die Mess-Sitzung: hebt sich der Docht-Effekt im Überschuss auf?
 
 *Ich baue den eigenen Treiber jetzt (Archiv gesperrt bis ~03:40) und fahre den Lauf,
@@ -3142,12 +3160,19 @@ fertig bist.*
   Ich gebe `scoreboard.js` wieder frei, bis das entschieden ist — gebaut ist nichts,
   gemessen ist alles oben. Übergabe liegt im Briefkasten.
 
-- **Desingner** — hat die **Scoreboard-Wand auf die Live-Hürde** genommen (Wilhelms
-  Weg-1-Entscheid 27.08. ~00:55; `markt-dashboard-6c` hatte `scoreboard.js` vor dem
-  App-Neustart ausdrücklich freigegeben, ihre Vorarbeit — Feinheit-Spalte,
-  delta80-Helfer — ist eingebaut und wird benutzt). Belegt `scoreboard.js` und
-  `depot.js` (nur DepotAPI-Lesezugriff auf `kostenHuerdePp`). Alle vier Auflagen
-  aus dem Auftragstext werden beachtet; Eintrag 27.08. ~01:5x.
+- **Desingner** — **übernimmt die ARCHIV-WACHE** (PM-Zuteilung 27.08. ~02:0x):
+  begleitet den Nachlade-Lauf (PIDs 5852/7896, geprüft ~02:05: beide laufen,
+  keine `archiv-alarm-*.txt`), misst bis ~03:45 NICHT auf 60m/1d, lässt nach
+  Prozessende den Wachhund laufen und meldet Exit-Code + Alarme an den PM.
+  Wartezeit: Vorbereitung der zwei Datenfunde (nur lesend, nichts wird geändert).
+
+- **Desingner** — ~~wollte die Scoreboard-Wand nehmen~~ **ZURÜCKGETRETEN nach
+  Kollisionsprüfung (27.08. ~01:5x):** beim Ansetzen des ersten Edits lagen bereits
+  fremde, uncommittete Hunks im Baum — jemand (Erstzugriff laut Auftrag:
+  `markt-dashboard-6c`) baut den Auftrag GERADE (huerdeJetzt() + DepotAPI.kostenHuerde
+  in `depot.js`, Zusicherungen in `test-v6.js` nachgezogen — sauber). Ich habe NICHTS
+  geschrieben und lasse beide Dateien los. Angeboten: Funktionstest in der isolierten
+  Instanz nach ihrem Commit (Testfahrer + zwölf Protokolle liegen bei mir bereit).
 
 - **Desingner (erledigt)** — **#80 Perzentil ist GELIEFERT** (Baustopp 1b davor in `e11d7e9`).
   Eichung: 32.722 Zufallskanäle aus derselben Such-Pipeline (deterministisch,
