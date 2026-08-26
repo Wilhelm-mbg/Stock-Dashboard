@@ -1649,6 +1649,25 @@ Datenreihe** statt mit einem Muster in derselben.
 
 ## Aufträge
 
+### ⭐ NEU, FREI (Wilhelm 27.08. ~00:55, Formular) — die Scoreboard-Wand misst an der Live-Hürde
+
+**Entschieden: Weg 1.** Die Wand in `scoreboard.js` trennt künftig `delta80` gegen die
+**Live-Hürde** aus `kostenHuerdePp(cfg, spot, vol, haltenMin, einsatz)` (`depot.js:451`),
+nicht mehr gegen `WAND_TAGE = 2500` Signaltage.
+
+**Bindende Auflagen:**
+1. Die Anzeige sagt **immer dazu, mit welchem Produkt und welcher Haltedauer** gerechnet
+   wurde — sonst wandert die Wand unerklärt, wenn jemand die Einstellung dreht.
+2. `DepotAPI` (`depot.js:4046`) bekommt einen **Lesezugriff** auf die Hürde (existiert
+   noch nicht) — keine zweite Kopie der Rechnung, keine fünfte statische Tabelle.
+3. `delta80` liegt als **Bruch** unter `entscheidungen[i].ergebnis.delta80` (×100 = Pp);
+   `aussicht.delta80Pp` ist in 0 von 69 Protokollen gesetzt — die Anzeige rechnet selbst um.
+4. Der Abschnitt „gemessen — zeigt in die Gegenrichtung" (Baustopp-1b-Dreiteilung) bleibt.
+
+Vorarbeit und Messwerte: Übergabe `werkzeuge-oberflaeche-2026-08-26-2320.md` (verarbeitet)
+und „Läuft gerade"-Eintrag von `markt-dashboard-6c`. Erstzugriff hat `markt-dashboard-6c`
+(hatte die Datei freigegeben, Vorarbeit ist ihre); wer anders zugreift, stimmt sich ab.
+
 ### 🔴 NEU, VORRANG (PM, 27.08. 00:20) — die zwei Datenfunde beheben. Es hat sie niemand.
 
 **Wilhelm hat sie am 26.08. 21:15 als „sofort, vor allem anderen" freigegeben. Sechs
@@ -1707,7 +1726,7 @@ Richtig sind **5 von 35** und **23 von 35** (Stand `tools/obergrenzen-bericht.js
 gegengeprüft: „5 von 25" war *nie* gültig, nicht bloß veraltet). Kein Bau, nur Text —
 aber der Plan ist das Dokument, aus dem alle planen.
 
-### ⚙ NEU (PM, 27.08. 00:20) — Kostenmessung nach Anlageklasse trennen
+### 🔴 AUFGEWERTET (27.08. ~00:55) — Kostenmessung nach Anlageklasse trennen: jetzt BLOCKER für Strang A
 
 Der Beleg für „0,10 % hält" besteht **zu 58 % aus Krypto** (QS-A-Fund). `kosten.js`
 Z. 30–38 schreibt das Feld `krypto` in `D.kostenMessung.runden`, wertet es aber nie aus.
@@ -1744,8 +1763,8 @@ sie ihm hiermit vor.
 Placebo, Kontrolle und Familie, und das überlappende Protokoll ist als Referenz
 nachweislich falsch (t = 4,74 war Pseudo-Replikation). Das ist Methodik einer bereits
 freigegebenen Messung, also PM-Sache.
-**F2 und F3 liegen Wilhelm vor** (Fragen 2 und 3 des Berichts vom 27.08. 00:20).
-**Kein Lauf**, solange F2/F3 offen sind *und* die zwei Datenfunde stehen.
+**F2 und F3 sind entschieden (27.08. ~00:55): F2 = 2c** — die Hürde kommt aus der Kostenmessung des Demo-Kontos (Regel fixieren, nicht Zahl; ~20 **Aktien**runden nötig, darum ist die Anlageklassen-Trennung jetzt Blocker); **F3 = 3a** — Referenzmessung außer Konkurrenz, überall so beschriften.
+**Kein Lauf**, solange die zwei Datenfunde stehen und die Kostenmessung keine ~20 Aktienrunden hat.
 
 
 *Was freigegeben ist und noch niemand macht. Wer eine Zeile nimmt, trägt sich unter
@@ -3024,6 +3043,29 @@ dem letzten Lauf, dazu ein Rotationsblock. Repariert wird nichts — das tut ein
 *Entscheidungen von Wilhelm, mit Datum. Eine Entscheidung, die nur in einem Chatverlauf
 steht, ist nach zwei Stunden verloren.*
 
+
+- **27.08.2026, ~00:55 (PM-Chat, Klick-Formular) — drei Entscheide:**
+
+  **(1) Scoreboard-Wand misst an der LIVE-HÜRDE** (`kostenHuerdePp`, `depot.js:451`) —
+  gegen die PM-Empfehlung (größte statische Hürde), bewusst gewählt. **Auflage aus der
+  Vorarbeit der Werkzeug-Sitzung, jetzt bindend:** die Anzeige muss **dazusagen, mit
+  welchem Produkt und welcher Haltedauer** gerechnet wurde, sonst wandert die Wand
+  unerklärt mit jeder Einstellung (Fehlerfamilie vom 23.08.). Technisch nötig:
+  `DepotAPI` (`depot.js:4046`) braucht einen Lesezugriff auf die Hürde — gibt es noch
+  nicht; `delta80` liegt als **Bruch** in `entscheidungen[i].ergebnis.delta80`
+  (×100 = Pp), die Anzeige rechnet selbst um.
+
+  **(2) Strang A, F2 = 2c: die Kostenhürde für momentum kommt aus der laufenden
+  Kostenmessung des Demo-Kontos** — nicht aus einer Annahme. Folge: die
+  Vorregistrierung fixiert die **Regel** („Hürde = gemessenes Mittel der Aktienrunden
+  bei Urteilsreife"), nicht die Zahl. **Damit wird die Trennung der Kostenmessung nach
+  Anlageklasse zum Blocker für Strang A** — der Beleg ist heute zu 58 % Krypto, gebraucht
+  werden ~20 **Aktien**runden.
+
+  **(3) Strang A, F3 = 3a: Referenzmessung außer Konkurrenz.** Die Zulassungsregel
+  (Effekt ≥ Kostenhürde) gilt; momentum wird als Alt-Auftrag sauber zu Ende gemessen
+  und überall so beschriftet — es ist kein Kandidat. (F1 = 1a hatte der PM bereits
+  entschieden: Teil 1 wird als Referenzmessung gebaut.)
 - **26.08.2026, 21:15 (PM-Chat, Formular) — drei Richtungsentscheide:**
 
   **(1) #80 Kanal-Güte → Weg 2, das Perzentil.** „Enger als 91 % des Zufalls" statt
