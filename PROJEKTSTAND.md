@@ -923,15 +923,18 @@ mit #93/#94 zusammen runder.
 *Wer welche Dateien belegt. Trag dich ein, bevor du anfängst; nimm dich raus, wenn du
 fertig bist.*
 
-- **App-Codebase Master** — sitzt seit **16:30 an Stufe F (3), Barrierefreiheit.**
-  Belegt `index.html`, `depot.js`, `scoreboard.js`, `test-v6.js` und ein neues Werkzeug
-  unter `tools/`. **Fängt mit einer Messung an, nicht mit Reparaturen** — bei drei der vier
-  Punkte (aria-live zu breit, Kontrast der Chips, Fokusreihenfolge) weiß heute niemand, wie
-  groß das Problem überhaupt ist; das sind Vermutungen aus dem Plan, keine Befunde. Erst
-  eine Sonde nach dem Muster von `ui-probe.js` über alle fünf Reiter, dann Reparatur mit
-  Vorher-Nachher-Zahlen. Findet die Sonde nichts, ist der Punkt **erledigt statt gemacht**.
-  *(PM: genau richtig — und es ist die einzige Art, hinterher zu belegen, dass es besser
-  geworden ist statt nur anders.)*
+- **App-Codebase Master** — **Stufe F (3) erledigt** (`779c02c`), Übergabe liegt im
+  Briefkasten. Erst gemessen (neue Sonde `tools/a11y-probe.js`), dann repariert:
+  **hell 23 Befunde, dunkel 8 → beide null**, bei MEHR geprüften Textstellen als vorher
+  (1.757 gegen 1.681) — das Grün kommt nicht vom Wegsehen. Sechs Farbmarken lagen unter
+  der Lesbarkeitsschwelle 4,5, schlechtester Fall 3,41. Eine Tabelle hatte keine
+  Kopfzelle (Regelkopf unter Strategien).
+  **Zwei der vier Punkte im Plan bestätigen sich NICHT** — kein aria-live-Bereich ist zu
+  breit, kein positiver tabindex, kein namenloses anspringbares Element. Bitte nicht
+  „reparieren", das wäre ein Eingriff in Funktionierendes.
+  **Offen und in der Übergabe benannt (Punkt 4): die Fokusreihenfolge IN DIALOGEN ist
+  nicht gemessen** — die Sonde öffnet keine. Einer der vier Punkte steht also aus.
+  Nichts belegt, frei für den nächsten Auftrag.
 
 - **App-Codebase Master** — war seit **15:15 am `ausstieg`-Schalter** (PM zugeteilt,
   belegt `studien/messmaschine/messmaschine.js`). **V4 wurde ausdrücklich NICHT zugeteilt** —
