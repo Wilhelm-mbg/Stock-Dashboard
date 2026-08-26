@@ -1798,6 +1798,95 @@ bei 1.063 Kalendertagen). Rechenwege: `Markt-Dashboard-Daten/qs-audit-2026-08-26
 
 ## Aufträge
 
+### 🔴 27.08. ~01:35 — „61 echte Nullumsatz-Stunden" ist eine STICHPROBE. Archivweit ~66.619.
+
+**Die Zahl 61 steht mehrfach auf dieser Tafel und der PM hat sie als Schutzmenge in einen
+Auftrag geschrieben. Beides war falsch.** Die QS hat nachgezählt: die 61 stammen aus **fünf
+Werten** (AAPL 18, KO 7, XOM 8, MSFT 18, SPY 10). **Archivweit sind es rund 66.619.**
+
+*Ihr Satz dazu, und er gehört auswendig gelernt:* **„Wer gegen 61 abnimmt, nimmt gegen einen
+Tippfehler ab."** Eine Löschregel, deren Schutzprobe gegen 61 grün wird, kann trotzdem
+Zehntausende echter Kerzen vernichten.
+
+**Vier Schutzklassen — was eine Reparatur NICHT anfassen darf** (QS, `phantom-abnahme.js`):
+
+| | Was | Umfang |
+|---|---|---|
+| **S1** | die 20:00-Kerzen vom 25.08. — **sie tragen den offiziellen Schlusskurs** | 2.839 + 31 ETF |
+| **S2** | Nullumsatz **mit** Spanne | ~66.619 |
+| **S3** | flach, mitten in der Reihe (illiquide Papiere) | ~410 |
+| **S4** | alles mit Umsatz > 0 | 13.350 flache Kerzen |
+
+**Das Prüfraster liegt fertig und lauffähig** in `Markt-Dashboard-Daten/qs-audit-2026-08-26/`
+(`PRUEFRASTER-phantom-dochte.md`, `werkzeuge/phantom-abnahme.js`, nur lesend) — **vor** der
+Reparatur festgelegt, damit die Kriterien nicht nachträglich zur Lösung passend werden.
+Tragend sind **A2** (keine geschützte Kerze weg) und **A6** (entfernte Zahl exakt gleich der
+Basiszählung); A1 allein lässt sich durch Löschen von zu viel erfüllen.
+
+**Ablauf, verbindlich:** `--basis` **nach** dem Nachladen und **vor** der Reparatur, dann
+reparieren, dann `--pruefen`. Alle Zahlen von vor dem Nachtlauf sind als Abnahmebasis
+unbrauchbar. **Und `zusammenfuehren()` löscht nie** — ein späterer Nachlade-Lauf bringt
+entfernte Kerzen zurück; eine Reparatur, die das nicht mitbedenkt, ist eine Momentaufnahme.
+*Fallstricke im Raster: der `etf/`-Unterordner (SPY/QQQ/IWM/VOO/TLT/GLD), das Raster ist
+`:30` nicht `:00`, Tage ohne Vergleichsspanne sind nicht entscheidbar.*
+
+### ⚠ 27.08. ~01:35 — offene Frage, die Strang A betrifft: hat `archiv1d` dieselben Defekte?
+
+**Der PM hat hier einen Fehler gemacht und korrigiert ihn selbst.** Ich hatte der
+Mess-Sitzung geschrieben, ihre Sperre auf die Datenfunde binde technisch nicht, weil beide
+Funde im 60m-Archiv sitzen und Strang A auf `archiv1d` misst — mit Verweis auf den
+Tafelsatz „Das Tagesarchiv ist nicht betroffen".
+
+**Dieser Satz bezieht sich auf #96** (die flache 20:00-Kerze) **und sagt nichts über
+Phantom-Dochte im Tagesarchiv.** Ich habe eine Entlastung für einen Defekt auf einen anderen
+übertragen. Die QS hat es benannt: sie hat Dochte und Quote-Stempel **bisher nur auf 60m**
+untersucht. **Sie misst es jetzt** (`archiv1d` ist frei, die Sperre dort ist verwaist, PID
+52300 tot). Bis ihr Ergebnis vorliegt, gilt die Sperre — sachlich, nicht nur formal.
+
+### 📛 27.08. ~01:30 — Begriffskorrektur des PM: „die zwei Datenfunde" hieß zweierlei
+
+Ich habe denselben Ausdruck für zwei verschiedene Arbeitspakete benutzt; die Sitzung
+`markt-dashboard-1d` hat den Widerspruch gefunden und **richtigerweise angehalten, statt zu
+raten**. Ab sofort getrennt:
+
+- **„die zwei Datenfunde"** = Phantom-Dochte + der 25.08. im 60m-Archiv → `markt-dashboard-06`
+- **„die massive-Datenfehler"** = `massive-tagesdaten.js:29` + `verschwundene.json`
+  (Warnsignale 6/7) → `markt-dashboard-1d`
+
+Verschiedene Archive, keine Überschneidung.
+
+### ✅ 27.08. ~01:20 — die Auflösungswand ist gebaut (`markt-dashboard-1d`, `6c790c8`/`d6eb2fb`)
+
+Wilhelms Entscheid 1 ist umgesetzt, Release-Notizen liegen, `npm test`/eslint/ui-probe grün.
+**Die Auflage ist zusicherungsfest gemacht statt nur befolgt:** Der Trenntext nennt Produkt,
+Haltedauer, Einsatz und Hürde mit Einheit und sagt dazu, dass die Grenze sich mit der
+Einstellung verschiebt — **fehlt eines davon, wird die Suite rot.** `depot.js` hat einen
+**nur lesenden** Zugriff bekommen (`DepotAPI.kostenHuerde`); `huerdeJetzt()` ist reine
+Auslagerung aus `huerdeAnzeigen()`, und eine Zusicherung hält fest, dass es bei **einer**
+Zusammenstellung bleibt statt zwei.
+
+**Eine Entscheidung darin, die die Tabelle sichtbar ändert:** Protokolle **ohne**
+ausgewiesene Feinheit werden nicht mehr einsortiert — 16 der 38 stammen aus der Zeit vor der
+Kennzahl. Die alte Regel schob sie hinter die Wand und behauptete damit „das Messgerät war zu
+grob", obwohl es niemand wusste. **Ohne Zahl keine Behauptung** — dieselbe Familie wie der
+QS-Fund dieser Nacht, wo „0 von 38 Protokollen" wahr war, aber vom Messaufbau erzeugt.
+
+### ✅ 27.08. ~01:15 — Strang-A-Vorregistrierung steht (`59440b1`), PM-Sperre gefallen
+
+`studien/vorregistrierung-2026-08-27-strang-a/VORREGISTRIERUNG.md`, gebaut auf Wilhelms
+F1=1a/F2=2c/F3=3a. **Referenzmessung außer Konkurrenz: der Ausgang „bestätigt" ist vorab
+ausgeschlossen**, die Beschriftung wandert in jede zitierende Zeile, der Belegstand bleibt
+**NULL belegte Kanten**. W1-Kunstinjektion (+2 Pp) als Positivkontrolle, kursblinder Placebo,
+Überlebenslücke als Pflichtblock mit gemessenem Vorzeichen, Hürden-REGEL statt Zahl,
+prospektiver Ledger mit **ehrlicher JA-Zahl: ~19 Jahre**.
+
+**PM-Rückmeldung (Sperre 3) ist erteilt, mit drei Anmerkungen:** (1) die `delta80`-Einheit
+ist richtig — die QS-Korrektur betraf `tage80` (Signaltage), `delta80` ist eine Effektgröße
+in Pp, da gibt es nichts umzurechnen; (2) die archiv1d-Frage oben; (3) **offen und vor dem
+Lauf festzulegen: enthält der Kontrolltopf die gewählten stärksten 10 % oder nicht?** Der
+Topf ist „alle zulässigen Werte" — das Signal wäre damit Teil seines eigenen Maßstabs,
+dieselbe Bauform wie A6. Nicht ändern, nur festlegen.
+
 ### ✅ 27.08. ~01:05 — drei Entscheide Wilhelms (per Formular, vor dem Schlafengehen)
 
 1. **Die Auflösungswand misst an der LIVE-HÜRDE** — bestätigt. Der Code im Arbeitsbaum
