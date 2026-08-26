@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-26 08:10
+letzter-bericht: 2026-08-26 08:40
 gesehener-tag: v8.33.2
 -->
 
@@ -13,17 +13,18 @@ Wenn du hier etwas änderst, dann nur deine eigene Zeile unter „Läuft gerade"
 
 ---
 
-## Stand: 26.08.2026, 08:10
+## Stand: 26.08.2026, 08:40 (Nachtrag zum 08:10-Bericht)
 
-Ausgeliefert ist **v8.33.2** — unverändert seit gestern Abend. Der Quellstand ist neun
-Commits weiter; **sieben Release-Notizen warten** auf die Wache. Arbeitsbaum sauber,
-nichts Ungepusht.
+Ausgeliefert ist **v8.33.2** — unverändert seit gestern Abend. Der Quellstand ist
+vierzehn Commits weiter; **sieben Release-Notizen warten** auf die Wache. Arbeitsbaum
+sauber, nichts Ungepusht.
 
-**Die Tests sind rot** (siehe Aufträge) — seit 03:27, aus einer Studien-Datei, nicht aus
-dem Programm.
+**Die Tests sind wieder grün** (PM geprüft 08:40: `eslint` + `test-channel` + `test-v6`
+alle bestanden). Alle drei SOFORT-Aufträge des 08:10-Laufs sind in 17 Minuten erledigt
+worden.
 
-Seit 03:27 hat niemand mehr etwas committet. Der große freigegebene Auftrag — die
-**Neumessung aller zwölf Strategien** — liegt seit 01:40 unangetastet.
+Der große freigegebene Auftrag — die **Neumessung aller zwölf Strategien** — ist jetzt
+vollständig unblockiert und dem App-Codebase Master zugeteilt.
 
 Der Struktur-Plan vom 25.08. (`studien/struktur-plan-2026-08-25/PLAN.md`):
 
@@ -31,8 +32,8 @@ Der Struktur-Plan vom 25.08. (`studien/struktur-plan-2026-08-25/PLAN.md`):
 |---|---|---|
 | A–E, E-Rest | Politur, Navigation, Reiter, Bausteinkasten, `depot.js` zerlegen | fertig |
 | F (1) | Theme ohne Dunkel-Blitz | **fertig** (26.08.) |
-| F (2) | Ein einziger Chart-Renderer | offen, frei |
-| F (3) | Barrierefreiheit | offen, nach (2) |
+| F (2) | Ein einziger Chart-Renderer | offen, GESPERRT (Entscheid Wilhelm) |
+| F (3) | Barrierefreiheit | offen, hinter (2) |
 
 ---
 
@@ -41,43 +42,42 @@ Der Struktur-Plan vom 25.08. (`studien/struktur-plan-2026-08-25/PLAN.md`):
 *Was freigegeben ist und noch niemand macht. Wer eine Zeile nimmt, trägt sich unter
 „Läuft gerade" ein und streicht sie hier.*
 
-### SOFORT — rote Tests (PM zugeteilt 26.08. 08:10)
+### ~~SOFORT — rote Tests~~ **Erledigt 26.08. 08:20** (`d689e62`)
 
-`npm test` scheitert an `studien/analytiker/2026-08-26-dritter-lauf/f2-signifikanz.js`
-Zeilen 26 und 30: `no-loss-of-precision`. Es sind die Lanczos-Koeffizienten der
-Gammafunktion — die Zahlen sind absichtlich so lang, aber JavaScript rundet sie ohnehin.
-Kürzen auf die darstellbare Genauigkeit oder die Regel für diese eine Datei ausnehmen;
-das Ergebnis des Laufs darf sich nicht ändern (die Selbstkontrolle in der Datei muss
-weiter |Abw| ≤ 4,3e−14 melden). **Blockiert CI für jeden Push.**
+Zwei Lanczos-Konstanten standen in Literatur-Schreibweise; JS speichert die letzte
+Ziffer anders. Bitgleich ersetzt, **keine eslint-Ausnahme** für die Datei — die Regel
+fängt echte Tippfehler, und dort stehen sechs lange Konstanten nebeneinander. Warum die
+Zahlen jetzt anders aussehen als im Lehrbuch, steht als Kommentar daneben.
+PM-Gegenprobe 08:40: `npm test` grün.
 
-### SOFORT — #91, fünfte Vorstufe der Neumessung (PM zugeteilt 26.08. 08:10)
+### ~~SOFORT — #91~~ **Erledigt 26.08. 08:25** (`e3998b1`)
 
-Der Analytiker hat in derselben Nacht einen fünften Instrumentenfehler gefunden, der
-**genau die Zahlen betrifft, die die Neumessung erzeugen wird**:
-`messmaschine.js:1169` rechnet `aussicht.tage80` gegen t=2, entschieden wird aber gegen
-die Bonferroni-Schwelle. Bei 16 von 21 Protokollen (tests>1) untertreibt die Zahl die
-nötigen Tage um 21–59 %. Reparatur ist eine Zeile: `schwelle` statt `VERFAHREN.zAlpha`.
-Brisant, weil #86 die `aussicht` gerade erst zum Feuern gebracht hat.
-**Diese Reparatur gehört VOR die Neumessung** — sonst tragen alle zwölf frischen
-Protokolle eine zu optimistische Planungszahl.
-Sperrklinke der Messmaschine beachten: der `codeStand` ändert sich, es ist aber
-**keine** Verfahrensänderung (nur eine Planungszahl) — Version bleibt 1.1.0.
+`aussicht.tage80` rechnet jetzt gegen die Bonferroni-Schwelle. Gegenprobe: zwei Läufe
+auf demselben Archiv, tests 1 → 7, tage80 **11 → 17**.
+**Zwei Zahlen meiner Zuteilung waren falsch und sind korrigiert:** es sind **17** von 21
+Protokollen mit mehr als einem Test (nicht 16), und in der Tabelle fehlte die Zeile für
+5 Tests (49 %).
+**Maschinenversion steht auf 1.2.0, nicht 1.1.0** — der Master ist bewusst von meiner
+Zuteilung abgewichen und hat recht: bei gleichen Daten meldete 1.1.0 vor und nach dieser
+Zeile bis zu 59 % andere `tage80`; genau diese Frage soll die Version beantworten. Die
+Sperrklinke beim allerersten Anlass durchzuwinken wäre ihr erster Ausfall gewesen.
+**Der PM übernimmt das.** Wilhelm kann es mit einer Zeile zurückdrehen, wenn er es
+anders sieht; die Gegenmeinung steht im Code.
 
-### SOFORT — #90, totes News-Laufband (PM zugeteilt 26.08. 08:10)
+### ~~SOFORT — #90~~ **Erledigt 26.08. 08:27** (`4276380`)
 
-Auditor-Fund der Nacht: das News-Laufband steht bei „Bewegung reduzieren" still und
-zeigt dann nur die Hälfte. **Kein Randfall** — auf Wilhelms Rechner ist „Bewegung
-reduzieren" dauerhaft aktiv (am 26.08. gemessen), das ist also sein Normalzustand.
-Reparatur: bei reduzierter Bewegung nicht scrollen, sondern alle Meldungen zeigen.
+Das News-Laufband ist bei reduzierter Bewegung jetzt schiebbar statt tot: **6 von 6**
+Schlagzeilen erreichbar statt dauerhaft 3. Zusätzlich zur Auditor-Sonde gemessen, denn
+`overflow: auto` heißt nur, dass ein Rollbalken erlaubt ist — nicht, dass er etwas
+freigibt. Die Sonde des Auditors blieb unangetastet, sie ist der Beleg des Funds.
 
-### DANN — Neumessung aller zwölf Strategien (freigegeben 25.08., frei seit 01:40)
+### JETZT DRAN — Neumessung aller zwölf Strategien (PM zugeteilt 26.08. 08:40)
 
-**Immer noch niemand dran.** Alle Vorbedingungen sind erfüllt (#85–#88 repariert,
-Maschine versioniert auf 1.1.0 mit `codeStand`); es fehlt nur noch #91 oben.
-Das ist **ein langer Rechenlauf, kein Umbau** — es braucht eine Sitzung mit Zeit, nicht
-eine, die Code anfasst. Danach tragen die Protokolle einen echten Stand statt
-„unbekannt" (26 alte Protokolle stehen heute ohne Kennung da). **Erst danach neue
-Untersuchungen.**
+**Vollständig unblockiert.** Alle fünf Vorstufen sind repariert (#85–#88, #91), die
+Maschine steht auf **1.2.0** mit `codeStand`. Das ist **ein langer Rechenlauf, kein
+Umbau**. Danach tragen die Protokolle einen echten Stand statt „unbekannt" (26 alte
+Protokolle stehen heute ohne Kennung da). **Erst danach neue Untersuchungen.**
+Zugeteilt an **App-Codebase Master**.
 
 ### Wartet auf Wilhelm (nicht anfangen)
 
@@ -85,6 +85,10 @@ Untersuchungen.**
   Vorbedingung für den Studien-Kandidaten `glockendruck-nacht`. PM-Frage 2 vom 26.08.
 - **Auktionskosten am Demo-Konto messen** (Auftragsvorschlag B). PM-Frage 3 vom 26.08.
 - **Release** — gehört der Release-Wache, die nur von Hand läuft. PM-Frage 1 vom 26.08.
+- **Stufe F (2), ein einziger Chart-Renderer** — neu hinzugekommen 26.08. 08:40. Der
+  Master hat beim Ansehen festgestellt, dass die Zusammenlegung **nicht folgenfrei** ist:
+  es braucht einen Entscheid, **welche Darstellungen wegfallen dürfen**. Das ist Wilhelms
+  Entscheidung, nicht die einer Sitzung. Bis dahin **gesperrt**, auch Stufe F (3) dahinter.
 
 ### Danach — schon freigegeben, Reihenfolge fest
 
