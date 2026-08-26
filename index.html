@@ -19,13 +19,24 @@
     --ink-2:       #52514e;
     /* Dunkler als frueher (#898781, Kontrast 3,4): Nebentext muss auch im
        Hell-Thema die 4,5 schaffen - er traegt echte Information, keine Deko. */
-    --muted:       #6e6c66;
+    /* 26.08.2026: 4,31 auf --panel-2 (Code-Vorschau, Hinweiskaesten) - knapp unter
+       4,5. Auf allen anderen Untergruenden war die Farbe schon in Ordnung; die
+       Aenderung ist deshalb winzig und holt genau diesen einen Fall herein. */
+    --muted:       #6b6963;
     --grid:        #e1e0d9;
     --baseline:    #c3c2b7;
     --border:      rgba(11,11,11,0.10); --line: var(--border);
-    --series:      #2a78d6;
+    /* 26.08.2026 gemessen: #2a78d6 kam auf --panel-2 nur auf 3,63 und auf --surface
+       auf 4,30 - beides unter der Lesbarkeitsschwelle 4,5 fuer Text. Jetzt 4,55 auf
+       dem schlechtesten Untergrund. Kein Text steht auf dieser Farbe, sie faerbt
+       ausser Schrift nur Balken und Markierungen. */
+    --series:      #1967c5;
     --series-soft: rgba(42,120,214,0.12);
-    --series2:     #d4531f;   /* war #eb6834: 3,12 gegen --surface, Soll 3,0 fuer Grafik */
+    /* War #eb6834 (3,12 gegen --surface, Soll 3,0 fuer Grafik), dann #d4531f. Am
+       26.08.2026 als TEXTFARBE nachgemessen - und dafuer gilt 4,5, nicht 3,0:
+       3,41 auf --panel-2, 4,05 auf --surface. Betroffen waren "nicht bestaetigt",
+       das Warnzeichen im Scoreboard und "alte Maschine". Jetzt 4,52. */
+    --series2:     #bd3c08;
     --series3:     #12855c;   /* war #1baf7a: 2,74 */
     --up:          #006300;
     --up-soft:     rgba(12,163,12,0.12);
@@ -116,11 +127,18 @@
     --grid:        #2c2c2a;
     --baseline:    #383835;
     --border:      rgba(255,255,255,0.10);
-    --series:      #3987e5;
+    /* 26.08.2026: 4,06 auf --panel-2 - unter 4,5. Jetzt 4,54. */
+    --series:      #4290ee;
     --series-soft: rgba(57,135,229,0.16);
-    --series2:     #d95926;
+    /* 26.08.2026: 3,80 auf --panel-2 und 4,48 auf --panel - beides unter 4,5 fuer
+       Text. Jetzt 4,55. */
+    --series2:     #e86835;
     --series3:     #199e70;
-    --up:          #0ca30c;
+    /* 26.08.2026: 4,40 auf --panel-2 - knapp unter 4,5. Von der Sonde NICHT gefunden,
+       weil in keinem besuchten Zustand gruener Text auf diesem Untergrund stand; die
+       Nachrechnung in test-v6.js prueft alle Paarungen und fand ihn. Jetzt 4,51.
+       Die Farbe traegt nirgends Text auf sich - nur Punkte und den Schalterknopf. */
+    --up:          #0ea50e;
     --up-soft:     rgba(12,163,12,0.16);
     /* Heller als im Licht-Thema: #d03b3b kam auf dunklem Grund nur auf Kontrast
        3,6 - unter der Lesbarkeitsschwelle von 4,5 fuer Fliesstext. */

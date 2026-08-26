@@ -712,7 +712,13 @@
           : '<br><span style="color:var(--muted); font-size:var(--fs-neben);">Kein Messprotokoll im Datenordner – dieser Stand steht fest im Code und kann veralten.</span>')]
     ];
     el.innerHTML = '<table class="tbl" style="font-size:var(--fs-text);">' + zeilen.map(function (r) {
-      return '<tr><td style="color:var(--muted); white-space:nowrap; width:130px;">' + U.esc(r[0]) + '</td><td>' + r[1] + '</td></tr>';
+      /* Die linke Spalte BESCHRIFTET die rechte - das ist eine Kopfzelle, kein
+       * Datenfeld. Ohne <th scope="row"> liest ein Screenreader die rechte Spalte als
+       * Folge zusammenhangloser Werte vor: "60m (so gemessen)", "8 Stunden", "belegt"
+       * - ohne je zu sagen, wovon die Rede ist. Gemessen am 26.08.2026: die einzige
+       * sichtbare Tabelle der App ganz ohne <th>. */
+      return '<tr><th scope="row" style="color:var(--muted); white-space:nowrap; width:130px; text-align:left; font-weight:400;">' +
+        U.esc(r[0]) + '</th><td>' + r[1] + '</td></tr>';
     }).join('') + '</table>';
     /* Struktur-Audit Punkt 4: der Beleg verweist auf seine Quelle. Der Reiterwechsel
      * laeuft ueber den echten Reiterknopf - dieselbe Schaltung wie ein Klick. */

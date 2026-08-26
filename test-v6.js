@@ -9222,6 +9222,70 @@ console.log('\nWachhund: steht das Kursarchiv still?');
      'Die Meldedatei traegt das Datum - ein Alarm von gestern sieht nicht aus wie einer von heute');
 })();
 
+
+/* ================= Barrierefreiheit: Kontrast und Tabellensemantik ================= */
+console.log('\nBarrierefreiheit (Stufe F 3, 26.08.2026)');
+(function () {
+  /* Die Sonde tools/a11y-probe.js misst am gerenderten Bild und braucht ein Fenster.
+   * Was sie gefunden hat, laesst sich hier ohne Fenster NACHRECHNEN: die Farbmarken
+   * stehen in index.html, die Rechnung ist die von WCAG. Damit haelt npm test die
+   * Schwelle, ohne die App zu starten.
+   * Gemessen am 26.08.2026: hell 23 Befunde, dunkel 8 - danach beide null, bei mehr
+   * geprueften Textstellen als vorher (1.757 gegen 1.681). */
+  var aHtml = fs.readFileSync(__dirname + '/index.html', 'utf8');
+  function marken(sel) {
+    var i = aHtml.indexOf(sel), e = aHtml.indexOf('\n  }', i), out = {};
+    aHtml.slice(i, e).replace(/--([a-z0-9-]+):\s*(#[0-9a-fA-F]{6})\s*;/g, function (_, k, v) { out[k] = v; return _; });
+    return out;
+  }
+  function zuRgb(c) { return { r: parseInt(c.slice(1, 3), 16), g: parseInt(c.slice(3, 5), 16), b: parseInt(c.slice(5, 7), 16) }; }
+  function leucht(c) {
+    function k(v) { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }
+    return 0.2126 * k(c.r) + 0.7152 * k(c.g) + 0.0722 * k(c.b);
+  }
+  function kontrast(a, b) {
+    var l1 = leucht(zuRgb(a)), l2 = leucht(zuRgb(b));
+    return (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
+  }
+  var aHell = marken('  :root {'), aDunkel = marken('  :root[data-theme="dark"] {');
+  ok(aHell.series && aDunkel.series && aHell.muted, 'Die Farbmarken lassen sich aus index.html lesen');
+  /* Erst die Rechnung selbst pruefen - eine Kontrastformel, die niemand nachrechnet,
+   * ist so viel wert wie gar keine. Schwarz auf Weiss ist per Definition 21. */
+  ok(Math.abs(kontrast('#000000', '#ffffff') - 21) < 0.01, 'Die Kontrastrechnung stimmt (Schwarz auf Weiss = 21)');
+  ok(Math.abs(kontrast('#767676', '#ffffff') - 4.54) < 0.02,
+     'und trifft den bekannten Grenzfall #767676 auf Weiss', kontrast('#767676', '#ffffff').toFixed(2));
+
+  /* Jede Marke, die TEXT faerbt, gegen JEDEN Untergrund, auf dem Text steht. Gegen den
+   * bequemsten zu rechnen waere Selbstbetrug - deshalb alle Paarungen. */
+  var TEXTFARBEN = ['ink', 'ink-2', 'muted', 'series', 'series2', 'up', 'warn'];
+  var GRUENDE = ['page', 'surface', 'panel', 'panel-2'];
+  [['hell', aHell], ['dunkel', aDunkel]].forEach(function (paar) {
+    var name = paar[0], T = paar[1], schwach = [];
+    TEXTFARBEN.forEach(function (f) {
+      var fv = T[f] || aHell[f];
+      if (!fv) return;
+      GRUENDE.forEach(function (g) {
+        var gv = T[g] || aHell[g];
+        if (!gv) return;
+        var v = kontrast(fv, gv);
+        if (v < 4.5) schwach.push(f + ' auf ' + g + ' = ' + v.toFixed(2));
+      });
+    });
+    ok(schwach.length === 0,
+       'Thema ' + name + ': jede Textfarbe erreicht 4,5 auf jedem Untergrund',
+       schwach.length ? schwach.join(' | ') : 'alle ' + (TEXTFARBEN.length * GRUENDE.length) + ' Paarungen');
+  });
+
+  /* Und die Tabellensemantik: die Beschriftungsspalte des Regelkopfs war die einzige
+   * sichtbare Tabelle der App ganz ohne Kopfzelle. Ohne <th scope="row"> liest ein
+   * Screenreader die rechte Spalte als Folge zusammenhangloser Werte vor. */
+  var aDep = fs.readFileSync(__dirname + '/depot.js', 'utf8');
+  ok(/<th scope="row"[^>]*>' \+\s*\n?\s*U\.esc\(r\[0\]\)/.test(aDep) || /<th scope="row"/.test(aDep),
+     'Der Regelkopf beschriftet seine Zeilen mit <th scope="row">');
+  ok(!/<tr><td style="color:var\(--muted\); white-space:nowrap; width:130px;">' \+ U\.esc\(r\[0\]\)/.test(aDep),
+     'und nicht mehr mit einer gewoehnlichen Datenzelle');
+})();
+
 Promise.all(offeneProben).then(function () {
   console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
   process.exit(fails ? 1 : 0);
