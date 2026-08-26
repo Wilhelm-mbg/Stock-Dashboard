@@ -351,6 +351,46 @@ Hintergrundkommando gestartet.
 
 ---
 
+### ⚠ Richtigstellung 26.08. 17:50 — der PM hat Prozentpunkte mit Handelstagen verglichen
+
+Ich hatte dem Tüftler geschrieben, seine beiden Kandidaten seien von der neuen
+1.000-Tage-Regel „nicht betroffen — sie liegen mit `delta80` 0,0396 bzw. 0,0397 klar
+darunter". **Das vergleicht zwei verschiedene Einheiten:** `delta80` ist eine Effektgröße
+in **Prozentpunkten**, die Schwelle zählt **Handelstage**. Der Tüftler hat es
+nachgerechnet (nötige Signaltage skalieren mit 1/d²):
+
+| | vorhanden | für 0,10 Pp (CFD) | für 0,04 Pp (Aktie) |
+|---|---|---|---|
+| `glockendruck-nacht` | 4.665 | **735 — besteht** | 4.595 — **reißt** |
+| `nachtstoss-umkehr` | 4.736 | **743 — besteht** | 4.642 — **reißt** |
+| familienweit (4 Tests) | 4.736 | **872 — besteht** | 5.448 — **reißt** |
+
+**Die Schlussfolgerung stimmt, aber aus einem anderen Grund als dem genannten — und sie
+ist genauer, als ich sie hatte:** Die Schwelle trifft nicht die Entwürfe, sondern **eine
+ihrer beiden vorregistrierten Antworten.** Die **JA-Seite besteht komfortabel**, auch
+familienweit. Die **NEIN-Seite an der Aktienhürde reißt klar** und ist deshalb auf die
+CFD-Hürde (0,10 Pp) gestellt. Datierte Nachträge liegen in beiden
+Vorregistrierungs-Ordnern; die Vorregistrierungen selbst sind unverändert.
+
+Bei `glockendruck-nacht` ist das der **zweite, unabhängige** Grund gegen dieselbe
+Aussage — der Spannen-Rückprall hatte sie schon verworfen (Marge 0,0005 Pp). Zwei Wege,
+dasselbe Ergebnis. Bei `nachtstoss-umkehr` ist es neu; der hat den Rückprall nicht.
+
+**Zweiter eigener Fehler, ebenfalls vom Tüftler gefunden und vom PM repariert:** Beim
+Einbau der neuen Regel in seine Rollendatei traf der Einfügepunkt eine `##`-Erwähnung
+**im Fließtext** statt einer echten Überschrift — der Startabsatz, den jede künftige
+Sitzung **zuerst** liest, war mitten im Satz zerrissen. Behoben; der Block steht jetzt als
+eigener Abschnitt. *Er hat die Datei bewusst nicht selbst repariert — Konfiguration ändert
+er nicht auf Zuruf, auch nicht zur Reparatur. Richtig so.*
+
+**Hinweis des Tüftlers zur beauftragten Verzerrungs-Messung, der die Vorregistrierung
+erheblich verkleinert:** Die Frage „ab welchem Wert ändert das die Urteile der zwölf
+Protokolle?" hat eine natürliche Verankerung — **bei sieben der zwölf liegt die Aussicht
+jenseits von 12.000 Handelstagen; deren Urteil kann keine Verzerrungskorrektur drehen.**
+Entscheidbar ist die Frage nur für die **drei unter 1.500**.
+
+---
+
 ## Aufträge
 
 *Was freigegeben ist und noch niemand macht. Wer eine Zeile nimmt, trägt sich unter
