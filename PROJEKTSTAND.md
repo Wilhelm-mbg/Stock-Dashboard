@@ -913,6 +913,45 @@ Verweis auf den Versionsstands-Fehler des PM von heute Mittag.**
 
 ---
 
+### ✅ #96: die Verschiebungs-Sorge ist entkräftet — gemessen statt vermutet
+
+Die QS hat die eigene Warnung nachgemessen. **Sie trägt nicht**, und der Grund ist eine
+Zahl statt einer Überlegung.
+
+Die Maschine läuft über **Array-Positionen** (`for (var i = vorlauf; i < b.length - H; i++)`),
+und `leseFensterKerzen` zählt **Kerzen** (261, bei t3 430) — eine entfernte Kerze verschiebt
+also alles danach. Die Frage war deshalb berechtigt. **Entscheidend ist, wo die Kandidaten
+sitzen** (Abstand vom Reihenende, über alle 2.885 Reihen, Reihenlänge im Median 5.099):
+
+| | n | Median | max |
+|---|---|---|---|
+| **Platzhalter 25.08.** | 2.839 | **2** | **4** |
+| echte leere Stunden | 410 | 4.112 | 5.097 |
+
+**Die Platzhalter sitzen ausnahmslos in den letzten vier Kerzen.** Sie zu entfernen
+verschiebt nichts, was vor ihnen liegt — und sie liegen ohnehin **hinter** dem
+Messzeitraum aller zwölf Protokolle, der am 24.08. endet. Die 410 echten Leerstunden
+liegen umgekehrt tief in der Geschichte (387 von 410 weiter als 430 Kerzen vom Ende) und
+sind seit jeher Teil der gemessenen Daten.
+
+**Was von der Frage offen bleibt:** Behält die Regel die 410 — und das soll sie —, führt
+das Archiv **zwei Sorten flacher Kerzen**, ohne Merkmal zum Auseinanderhalten. Das ist kein
+Argument gegen das Löschen, sondern eines dafür, **im Datensatz zu vermerken, dass gelöscht
+wurde.**
+
+**Eine Selbsteinschränkung der QS, die hierher gehört:** Ihre Block-D-Läufe gehen bis zum
+**26.08.** und enthalten damit die Platzhalter *und* die heutigen Teilkerzen; die
+Morgenprotokolle (bis 24.08.) enthalten beides nicht. Ein flacher Balken unter 5.099 und
+~87 Teilkerzen über 2.885 Reihen seien vernachlässigbar — *„aber ‚vernachlässigbar' ist
+bei mir geschätzt, nicht gemessen."* **Sie sagt den Satz über die eigene Arbeit, den sie
+heute an anderen beanstandet hat.**
+
+**Block D: `winkelbestaetigt` reproduziert** (nicht bestätigt, alle fünf Varianten, alle
+ohne Aussicht wegen negativem Überschuss) — **damit ist der Tafel-Fund (a) im frischen Lauf
+auf Maschine 1.4.0 bestätigt: es sind fünf, nicht sieben.** `winkelgrad` ist der letzte.
+
+---
+
 ## Aufträge
 
 *Was freigegeben ist und noch niemand macht. Wer eine Zeile nimmt, trägt sich unter
