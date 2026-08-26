@@ -384,18 +384,16 @@ zwei Tage niemandem auffiel.
 *Wer welche Dateien belegt. Trag dich ein, bevor du anfängst; nimm dich raus, wenn du
 fertig bist.*
 
-- **App-Codebase Master** — **(1a)+(2b) sind fertig, noch nicht committet** (er wartet den
-  Lauf ab, damit ein Commit reicht). Die Anzeige nimmt jetzt `bestesUrteil` und die
-  Variante, die dieses Urteil traegt; fehlt dazu eine brauchbare Zahl je Signal, steht das
-  Urteil **ohne Zahl** da statt mit einer aus einer fremden Variante. (2b) ist ein Hinweis,
-  kein Eingriff — der Ausloeser bleibt waehlbar.
-  **Er nimmt anschliessend den Depotkurven-Auftrag (B2)** — dieselbe Datei, deshalb er.
-  Dazu ein Fund aus seinem eigenen Gegenprobieren, der hierher gehoert: sein erster
-  Widerlegungsversuch liess den Test **abstuerzen**, und sein zu enger Grep las den
-  Absturz als „bestanden". Ursache war eine Endmarke, die nach der Aenderung zweimal
-  vorkam. Er prueft seither den Exit-Code statt nur die Textzeile und hat die
-  Eindeutigkeit der Marke zur eigenen Zusicherung gemacht. **Das ist die Testmarken-Falle
-  in neuer Gestalt** — nicht die Marke wurde rot, sondern gruen aus dem falschen Grund.
+- **App-Codebase Master** — **Neumessung fertig** (`49a6278`), **(1a)+(2b) fertig**
+  (`0b7f767`). Arbeitsbaum sauber, npm test grün. Nimmt als Nächstes **B2** (die zwei
+  Depotverlauf-Bilder zusammenführen) — belegt dann `depot.js` und `index.html`.
+  Ergebnis der Neumessung in einem Satz: **33 von 34 Varianten unverändert**; die eine
+  Ausnahme (`rsi2seit-mcp` Var 3) kippt um 0,0002 Pp. Alle zwölf Protokolle tragen
+  1.2.0 und denselben Codestand — die Sperre hat belegbar gehalten.
+  Zwei eigene Fehler stehen im Befund: der Läufer maß elf Repo-Strategien plus die
+  verweigerte Hilfsdatei `wertpapierart` statt der zwölften aus dem Datenordner
+  (`monatsende-kauf`) — die Zahl zwölf hätte trotzdem gestimmt. Und die erste
+  Auswertung verglich verschiedene Varianten miteinander.
 
 - **App-Codebase Master** — hat die **Neumessung aller zwölf Strategien** genommen
   (26.08., vom PM zugeteilt). Langer Rechenlauf, KEIN Umbau — es wird kein Quelltext
