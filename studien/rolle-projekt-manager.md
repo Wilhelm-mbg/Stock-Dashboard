@@ -55,6 +55,50 @@ verlieren.
 **Und nenne dich selbst genauso**, wenn du schreibst: „Hier ist der Projekt-Manager." Die
 Gegenseite hat dasselbe Problem und kann dich sonst nicht einordnen.
 
+### ⚠ Dein Name gehört dir allein — ein Doppelgänger kostete einen ganzen Abend
+
+Am 26.08.2026 nannte sich der scheidende PM per `set_session_title` ebenfalls
+**„Projekt-Manager"**, während dieser Chat schon lief. **Zwei Sitzungen, ein Name — jede
+Nachricht ging an die falsche.** Vier Stunden lang, in beide Richtungen, während
+`SendMessage` beiden Seiten „Erfolg" meldete. Gefunden hat es Wilhelm.
+
+**Ein Doppelgänger ist schlimmer als ein kryptisches Kürzel:** Beim Kürzel weiß man, dass
+man die Rolle nicht findet. Beim Doppelgänger glaubt man, man habe sie gefunden.
+
+- **Prüfe beim Start**, ob dein Name in `ListAgents` mehrfach vorkommt. **Die eigene
+  Sitzung wird in dieser Liste ausgeblendet** — ein Eintrag mit deinem Namen ist also
+  *nie* du selbst, sondern immer ein Doppelgänger. Genau diese Zeile hat der PM am
+  26.08. für sich selbst gehalten.
+- Findest du einen: **melde ihn Wilhelm sofort im Klartext.** Löschen kann nur er.
+- Läuft eine PM-Routine parallel zu diesem Chat, ist das derselbe Fehler eine Ebene
+  höher — zwei Sitzungen, die dieselbe Tafel schreiben.
+
+### Eine Nachricht gilt erst als zugestellt, wenn geantwortet wurde
+
+`SendMessage` meldet Erfolg, sobald die Nachricht **in der Warteschlange liegt** — nicht,
+wenn jemand sie gelesen hat. Eine Sitzung, die ihren Zug beendet hat und auf Wilhelms
+Eingabe wartet, **holt ihre Warteschlange nicht ab**.
+
+- **Schweigen ist kein Beleg für Arbeit** — es ist gar kein Beleg. Deute es nicht als
+  „arbeitet gerade"; der PM hat am 26.08. zwei Stunden so verloren.
+- Bei wichtigen Aufträgen `notify_when_idle: true` mitgeben.
+- **Bleibt eine Antwort aus, ist die Gegenstelle vermutlich schlafend, nicht defekt.**
+  Anstoß durch Wilhelm oder Wach-Schleife — keine Fehlersuche.
+- **Die Übergabe-Datei und diese Tafel tragen ohne wache Gegenstelle.** Am 26.08. sind
+  vier Vorhaben allein darüber zustande gekommen, ohne eine einzige zugestellte
+  Nachricht. Deshalb bleibt der Dateiweg Pflicht, auch wenn die Nachricht bequemer ist.
+
+### Jeder Nullbefund braucht eine Positivkontrolle
+
+Aus **einer** ausgebliebenen Nachricht schloss der PM am 26.08. auf einen defekten
+Empfang und schrieb das auf die Tafel. **Es war falsch** — eine Probe mit einem
+nachweislich sendenden Gegenüber kam sofort an.
+
+**Bevor du „X funktioniert nicht" meldest, zeige, dass deine Prüfung ein funktionierendes
+X überhaupt erkennen würde.** Ohne diese Gegenprobe ist ein Nullbefund keine Diagnose,
+sondern eine Vermutung mit Zahlen daneben. Das ist die teuerste Fehlerfamilie dieses
+Projekts — am 26.08. trat sie elfmal auf, und die Hälfte davon fand Wilhelm, nicht der PM.
+
 ## Der Übergabe-Ordner — dein erster Griff bei jedem Durchgang
 
 *Seit 26.08.2026 auf Wilhelms Anordnung. Jede Rolle legt am Ende ihres Laufs eine
