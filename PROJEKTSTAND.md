@@ -3165,51 +3165,21 @@ fertig bist.*
   ⚠ **Der Analytiker-Lauf ~03:15 fällt MITTEN in die Sperre** — bitte auf 60m/1d
   verzichten oder die Archiv-Blöcke ans Ende schieben (ab ~03:45 ist die Bahn frei).
   Gleiches gilt für die Überschuss-Messung. Kein Repo-Zugriff; Eintrag vom PM.
-- **markt-dashboard-6c (Werkzeuge/Oberfläche)** — **belegt `scoreboard.js`** ab 26.08. ~23:0x:
-  die offene Hälfte von Wilhelms 20:30-Entscheid — die Wand trennt noch bei
-  `WAND_TAGE = 2500` **Signaltagen** statt an `delta80`. Der Maschinen-Teil
-  desselben Auftrags ist schon erledigt (`799ba96`: Version 1.5.0, `u.tage >= 30`,
-  #92-Rangfolge) — **das Release hängt also nicht mehr daran.**
-  **Desingner: falls du diese Anzeige noch hältst, sag es — dann lasse ich sie los.**
-  Vorher gemessen, weil es die Umsetzung bestimmt: `delta80` liegt in **69 Varianten**
-  unter `entscheidungen[i].ergebnis.delta80` als **Bruch** (×100 = Prozentpunkte);
-  `aussicht.delta80Pp` schreibt die Maschine erst seit Kurzem und ist in **0 von 69**
-  Protokollen gesetzt — die Anzeige muss selbst umrechnen. Median 0,219 Pp, Spanne
-  0,035 (t3-stundendrift) bis 4,390 (momentum).
-  **RICHTIGSTELLUNG meiner eigenen Zeile von vorhin.** Ich hatte hier stehen, die
-  Kostenhürden stünden „in keiner ausgelieferten Datei" und ich lege sie neu ab.
-  **Das war falsch, und der Fehler war meine Suche:** ich hatte nach der ganzen
-  Viererliste gesucht (`Aktie.*Schein.*CFD`), die eine *einzelne* berechnete Hürde
-  gar nicht finden kann. Es gibt sie: `kostenHuerdePp(cfg, spot, vol, haltenMin,`
-  `einsatz)` in `depot.js:451` — und sie rechnet genau das, was Wilhelms Entscheid
-  verlangt: die Hürde des **gewählten** Produkts, aus Instrument, Hebel, Haltedauer
-  und Einsatz, aufgeschlüsselt nach Spanne / Zeitwert / Gebühr / Übernacht.
-  Eine fünfte Kopie der statischen Tabelle wäre also genau der Fehler gewesen, den
-  ich heute den ganzen Abend beseitigt habe.
-
-  **DAMIT STEHT EINE ENTSCHEIDUNG AN, DIE ICH NICHT ALLEIN TREFFE — sie ist der
-  Grund, warum ich hier anhalte statt weiterzubauen:**
-  `kostenHuerdePp` gilt für die **laufende Intraday-Konfiguration** (welches Produkt
-  Wilhelm gerade eingestellt hat). Das Scoreboard zeigt aber **gemessene Strategien**,
-  deren Protokolle **kein** Produkt und keine Haltedauer dieser Art führen. Eine
-  Zeile mit der Hürde der Live-Einstellung zu bewerten hieße, jeder Messung ein
-  Produkt anzuhängen, das nicht ihres ist — **derselbe Fehler wie am 23.08.**, als
-  die Produkt-Vorgabe an drei Stellen stand und zwei davon falsch waren (Hürde 0,26
-  statt 0,07 Pp).
-
-  **Drei Wege, einer muss entschieden werden:**
-  1. Gegen die **Live-Hürde** aus `kostenHuerdePp` — dann muss die Anzeige dazusagen,
-     mit welchem Produkt und welcher Haltedauer gerechnet wurde, sonst wandert die
-     Wand, sobald jemand die Einstellung dreht.
-  2. Gegen die **größte** statische Hürde (Standard-Schein 0,23 Pp) — dann heißt
-     „hinter der Wand" *für kein Produkt entscheidbar*. Das ist die Aussage, die
-     niemand abstreiten kann. **31 von 69** Varianten lägen dahinter.
-  3. Gegen die **Aktien-Hürde** (0,04 Pp), also den günstigsten handelbaren Weg —
-     **67 von 69** Varianten lägen dahinter. Ehrlich, aber die Wand verschluckt fast
-     alles und sagt dann kaum noch etwas.
-
-  Ich gebe `scoreboard.js` wieder frei, bis das entschieden ist — gebaut ist nichts,
-  gemessen ist alles oben. Übergabe liegt im Briefkasten.
+- **markt-dashboard-1d [503e93] (Werkzeuge/Oberfläche)** — *hieß bis zum Neustart markt-dashboard-6c; die Brücke hat die Kennungen neu vergeben.*
+  **ERLEDIGT, Dateien wieder frei.** Wilhelms Entscheid vom 27.08. ~00:55 (1) ist
+  gebaut: die Auflösungswand misst an der **Live-Hürde** (), die Anzeige der
+  Zahl kam davor (). Beide Release-Notizen liegen.
+  **Wilhelms Auflage ist der eigentliche Inhalt:** der Trenntext nennt Produkt,
+  Haltedauer, Einsatz und die Hürde mit Einheit und sagt, dass die Grenze sich mit der
+  Einstellung verschiebt. Beißprobe: fehlt eines davon, wird die Suite rot.
+   hat dafür einen **nur lesenden** Zugriff bekommen ();
+  die Zusammenstellung der Konfiguration ist aus  nach 
+  ausgelagert — reine Auslagerung, kein Verhalten geändert, eine Zusicherung hält fest,
+  dass es bei EINER Zusammenstellung bleibt.
+  **Neu und bewusst:** Protokolle ohne ausgewiesene Feinheit werden **nicht mehr**
+  einsortiert (16 von 38 stammen aus der Zeit vor der Kennzahl). Die alte Regel schob
+  sie hinter die Wand und behauptete damit etwas, das niemand wusste.
+  npm test, eslint und ui-probe grün.
 
 - **Desingner (Adresse: markt-dashboard-06)** — ⚠ Adress-Korrektur ~02:15: die
   Brücke hat nach ihrem Neustart neue Kürzel vergeben; diese Sitzung hieß gestern
