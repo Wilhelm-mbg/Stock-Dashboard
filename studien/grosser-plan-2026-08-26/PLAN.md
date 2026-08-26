@@ -221,3 +221,52 @@ gemessen" darf für `glockendruck-nacht` und `nachtstoss-umkehr` **nicht fallen*
    Sicherung, die genau dagegen gebaut wurde.** Und sie hätte Fund 1 verhindert: hätte er
    „99,7 %" gemeldet, wäre die Lücke am selben Tag aufgefallen statt über eine
    Delisting-Liste.
+
+---
+
+## Teil IV-a — Das Abbruchkriterium, verschärft (Wilhelm, 26.08. 18:35)
+
+**Wilhelms Entscheidung zu allen drei Vorlagen: ja, ja, ja — aber das Abbruchkriterium
+gilt nicht so, wie der PM es vorgeschlagen hatte.** Wörtlich:
+
+> *„nach messverfahrensprüfung und gegenprobe mit ideenfindung warum es nicht geklappt
+> haben könnte, wenn dann immernoch nichts bei rumkommt ist das wohl das
+> abbruchkriterium, ich will zu 100 % sicher sein nicht zu 99,9"*
+
+**Der Vorschlag des PM war zu billig.** Er lautete: Strang A und B durchmessen, beide kein
+Ja, Ende. Das hätte einen Abbruch erlaubt, dessen wahrer Grund ein kaputtes Messgerät ist
+— **und genau dieser Fehler ist an diesem Projekt schon sechsmal an einem einzigen Tag
+aufgetreten.** Ein Nein aus einer defekten Messung ist kein Nein, es sieht nur so aus.
+
+### Vor jedem Abbruch sind drei Stufen zu durchlaufen
+
+**Stufe 1 — Messverfahrensprüfung.**
+Bevor ein Nein gilt, wird das Instrument geprüft, nicht das Ergebnis. Placebo-Lauf
+(richtige Antwort: null), Nullpunkt, Kontrolltopf, Live-gleich-Messung, alle Sperrklinken.
+**Ein Nein, das aus einer ungeprüften Maschine kommt, zählt nicht.**
+
+**Stufe 2 — Gegenprobe mit Ideenfindung: warum könnte es nicht geklappt haben?**
+Ausdrücklich **nicht** „war die Idee schlecht", sondern: *Was hätte die Messung daran
+hindern können, eine vorhandene Kante zu sehen?* Zu prüfen sind mindestens:
+Auflösungswand · Überlebenslücke · geteilte Kurse · Haltedauer · Kostenannahme ·
+Produktwahl · Zeitzonen · Universumsfilter · Testfamilie · Regime.
+**Jede dieser Erklärungen ist eine eigene Messung wert, bevor sie verworfen wird.**
+
+**Stufe 3 — erst dann.**
+Bleibt nach Stufe 1 und 2 immer noch nichts, ist das das Abbruchkriterium.
+
+### Die Haltung dahinter, und sie gilt über diesen Plan hinaus
+
+**„Zu 100 % sicher, nicht zu 99,9."** Das ist an demselben Tag gesagt worden, an dem der
+frisch gebaute Wachhund 99,66 % auf 100 % gerundet und damit zehn veraltete Datenreihen
+verschluckt hat. **Die 0,1 %, die man wegrundet, sind genau die, in denen der Fehler
+sitzt.** Das gilt hier für Abbruchentscheidungen genauso wie dort für Prozentanzeigen.
+
+### Was das für die Reihenfolge bedeutet — abgeleitet, nicht angeordnet
+
+Die drei Datenfunde vom 26.08. und die Überlebenslücke sind damit **keine Nebenarbeit
+mehr, sondern Vorbedingung.** Strang A auf einem Universum zu messen, dem 12,7 %
+ausschließlich Nicht-Überlebende fehlen und dessen Ausschlussliste handelnde Werte
+auswirft, erzeugt ein Ergebnis, das Stufe 2 ohnehin wieder einkassiert.
+
+**Reihenfolge daher: Datenqualität → Strang A → Strang B.**

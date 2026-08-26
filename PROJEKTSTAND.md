@@ -274,10 +274,10 @@ Strang A und B rechnen beide darauf, und jede positive Rohrendite ist dadurch na
 verzerrt, in genau der Richtung, in der wir etwas finden wollen. Ausführlich im Plan.
 
 **Zugeteilt an den Master (Datenqualität, unstrittig):**
-1. Falsche Delistings in  — **Vorrang.** AVB, EQR, LBRDA,
+1. Falsche Delistings in `massive/verschwundene.json` — **Vorrang.** AVB, EQR, LBRDA,
    LBRDK, WBS gelten als delistet und handeln. *Ursache vom PM gefunden: nicht delistet,
    sondern im Archiv stehengeblieben.*
-2.  — holt neun Monate weniger als es glaubt.
+2. `tools/massive-tagesdaten.js:29` — holt neun Monate weniger als es glaubt.
 3. **Der Wachhund rundet 99,66 % auf 100 %** und verschluckt damit zehn zurückhängende
    Reihen. Sechste Verkleidung derselben Sache an einem Tag, diesmal in der Sicherung,
    die dagegen gebaut wurde.
@@ -292,6 +292,49 @@ Verzerrung messen, bevor irgendwer Daten kauft.
 
 *Was freigegeben ist und noch niemand macht. Wer eine Zeile nimmt, trägt sich unter
 „Läuft gerade" ein und streicht sie hier.*
+
+### ⭐ STRANG A — `momentum` nicht überlappend messen (Wilhelm 26.08. 18:35, freigegeben)
+
+**Die größte offene Frage des Projekts.** Der einzige Ort im ganzen Korpus, an dem eine
+große Kante noch möglich ist — und zwar gerade weil er so schlecht gemessen ist.
+
+**Vorbedingung, hart: erst die Datenqualität.** Die drei Funde vom 26.08. und die
+Überlebenslücke sind keine Nebenarbeit mehr, sondern Vorbedingung. Ein Momentum-Ergebnis
+auf einem Universum, dem 12,7 % ausschließlich Nicht-Überlebende fehlen und dessen
+Ausschlussliste handelnde Werte auswirft, kassiert Stufe 2 des Abbruchkriteriums ohnehin
+wieder ein.
+
+**Was schon da ist:**
+- Die **Eichung ist bestanden** (25.08.): Newey-West war für lange Haltedauern 54 % zu
+  konservativ, Verhältnis 1,543, über alle 63 Rasterlagen Minimum 1,342.
+- Die **Anordnung existiert bereits** als virtuelles Buch in `mfdepot.js`
+  („MOMENTUM stärkstes Zehntel, Rebalancing alle 63 Handelstage") — sie ist nie durch die
+  Mühle gegangen.
+- In dieser Anordnung geht `momentum` von t = 1,03 auf **t = 2,10**.
+
+**Was fehlt: eine eigene Vorregistrierung.** Vor dem ersten Rechenschritt, nicht danach.
+Sie muss ausweisen: Testfamilie · Schwellen für JA und NEIN vorab · Bestätigungshälfte ·
+Placebo · Kontrolltopf · und **die Überlebenslücke als benannte Einschränkung**.
+
+**Ausdrücklich:** Das sucht nichts Neues. Es misst das Einzige richtig, was noch offen ist.
+Wer dabei einen neuen Detektor einbaut, hat den Auftrag missverstanden.
+
+### ⭐ STRANG C (2) — Basiswert statt Schein als Regelfall (Wilhelm 26.08. 18:35, freigegeben)
+
+Die Kostenhürde je Umlauf: Aktie **0,04** · CFD 0,10 · Standard-Schein **0,23 Pp**. Jede
+Kante wird gegen diese Zahl gemessen. **Der Wechsel wirkt stärker als jede Detektor-Idee,
+die hier je gemessen wurde** — Faktor bis 5,75.
+
+**Achtung, das berührt Handelslogik.** Die Produkt-Vorgabe stand hier schon einmal an drei
+Stellen, zwei davon falsch (Hürde 0,26 statt 0,07 Pp). **Zuerst erheben, wo die
+Produktannahme überall steckt, und die Liste vorlegen** — dann ändern, an allen Stellen
+zugleich. Nicht nebenbei.
+
+Dazu gehört die zweite Hälfte von Strang C: **Auktionskosten am Demo-Konto messen**
+(Wilhelm 09:00 freigegeben, immer noch **nicht angefangen**). Übernacht-Handel füllt in
+der Schluss- und der Eröffnungsauktion, und was das wirklich kostet, ist nie gemessen
+worden — die Tabelle beschreibt die notierte Spanne. Kein echtes Geld.
+
 
 ### ~~SOFORT — rote Tests~~ **Erledigt 26.08. 08:20** (`d689e62`)
 
@@ -1158,6 +1201,25 @@ dem letzten Lauf, dazu ein Rotationsblock. Repariert wird nichts — das tut ein
 
 *Entscheidungen von Wilhelm, mit Datum. Eine Entscheidung, die nur in einem Chatverlauf
 steht, ist nach zwei Stunden verloren.*
+
+- **26.08.2026, 18:35 — der große Plan ist angenommen, das Abbruchkriterium verschärft.**
+  Wilhelm zu allen drei Vorlagen: **„ja, ja, ja"** —
+  (1) **Strang A** (`momentum` nicht überlappend messen) wird angefangen.
+  (2) **Basiswert statt Schein** als Regelfall — der stärkste Einzelhebel.
+  (3) Das **Abbruchkriterium** gilt, **aber nicht so, wie der PM es vorgeschlagen hatte.**
+  Wörtlich: *„nach messverfahrensprüfung und gegenprobe mit ideenfindung warum es nicht
+  geklappt haben könnte, wenn dann immernoch nichts bei rumkommt ist das wohl das
+  abbruchkriterium, ich will zu 100 % sicher sein nicht zu 99,9"*.
+  **Vor jedem Abbruch drei Stufen:** Messverfahren prüfen (Placebo, Nullpunkt,
+  Kontrolltopf, Live-gleich-Messung) → Gegenprobe mit Ideenfindung, *warum die Messung
+  eine vorhandene Kante übersehen haben könnte* (Wand, Überlebenslücke, geteilte Kurse,
+  Haltedauer, Kosten, Produkt, Zeitzonen, Universum, Testfamilie, Regime) → erst dann Ende.
+  **Der Vorschlag des PM war zu billig** und hätte einen Abbruch erlaubt, dessen wahrer
+  Grund ein kaputtes Messgerät ist. Ausführlich in `studien/grosser-plan-2026-08-26/PLAN.md`,
+  Teil IV-a.
+  **Abgeleitete Reihenfolge, vom PM vorgelegt:** Datenqualität → Strang A → Strang B.
+  Strang A auf einem Universum zu messen, dem 12,7 % Nicht-Überlebende fehlen, erzeugt ein
+  Ergebnis, das Stufe 2 ohnehin wieder einkassiert.
 
 - **26.08.2026, 15:30 — Frage (4): das Kursarchiv lädt künftig von selbst nach.**
   Wilhelm: *„Dann lass uns doch erst 4 vervollständigen oder?"* → **(a) tägliche
