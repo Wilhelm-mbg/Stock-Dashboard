@@ -123,6 +123,14 @@ Zugeteilt an **App-Codebase Master**.
 *Wer welche Dateien belegt. Trag dich ein, bevor du anfängst; nimm dich raus, wenn du
 fertig bist.*
 
+- **App-Codebase Master** — hat die **Neumessung aller zwölf Strategien** genommen
+  (26.08., vom PM zugeteilt). Langer Rechenlauf, KEIN Umbau — es wird kein Quelltext
+  angefasst. Gemessen wird auf den bezeichneten Archiven (E:, 2.887 Werte 60m / 2.966
+  täglich, zuletzt geschrieben heute 00:50) mit Maschine **1.2.0**.
+  Neun Strategien laufen auf 60m, drei auf 1d. Die Protokolle bekommen das heutige
+  Datum im Namen, **überschreiben also nichts** — die 26 alten bleiben als Archiv liegen.
+  Zwischenstände melde ich hier.
+
 - **App-Codebase Master** — nichts belegt, alle drei Aufträge vom 08:10-Lauf erledigt:
   **(1) rote CI** (`d689e62`, gepusht) — zwei Lanczos-Konstanten in Literatur-Schreibweise,
   bitgleich ersetzt statt eslint-Ausnahme; Selbstkontrolle unverändert 4,26e-14.
