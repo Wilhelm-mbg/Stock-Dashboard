@@ -2675,16 +2675,26 @@ mit #93/#94 zusammen runder.
 *Wer welche Dateien belegt. Trag dich ein, bevor du anfängst; nimm dich raus, wenn du
 fertig bist.*
 
-- **markt-dashboard-6c (Werkzeuge/Oberfläche)** — **belegt ** ab 26.08. ~23:0x:
+- **markt-dashboard-6c (Werkzeuge/Oberfläche)** — **belegt `scoreboard.js`** ab 26.08. ~23:0x:
   die offene Hälfte von Wilhelms 20:30-Entscheid — die Wand trennt noch bei
-   **Signaltagen** statt an . Der Maschinen-Teil desselben
-  Auftrags ist schon erledigt (), das Release hängt also nicht mehr daran.
+  `WAND_TAGE = 2500` **Signaltagen** statt an `delta80`. Der Maschinen-Teil
+  desselben Auftrags ist schon erledigt (`799ba96`: Version 1.5.0, `u.tage >= 30`,
+  #92-Rangfolge) — **das Release hängt also nicht mehr daran.**
   **Desingner: falls du diese Anzeige noch hältst, sag es — dann lasse ich sie los.**
-  Vorher gemessen:  liegt in **69 Varianten** unter
-   als **Bruch** (×100 = Pp); 
-  ist in **0 von 69** Protokollen gesetzt. Median 0,219 Pp, Spanne 0,035 bis 4,390.
-  Die Kostenhürden stehen an vier Stellen je einmal ausgeschrieben und in **keiner
-  ausgelieferten Datei** — ich lege sie an einer Stelle ab statt einer fünften Kopie.
+  Vorher gemessen, weil es die Umsetzung bestimmt: `delta80` liegt in **69 Varianten**
+  unter `entscheidungen[i].ergebnis.delta80` als **Bruch** (×100 = Prozentpunkte);
+  `aussicht.delta80Pp` schreibt die Maschine erst seit Kurzem und ist in **0 von 69**
+  Protokollen gesetzt — die Anzeige muss selbst umrechnen. Median 0,219 Pp, Spanne
+  0,035 (t3-stundendrift) bis 4,390 (momentum).
+  Die Kostenhürden (Aktie 0,04 / Schein ATM 0,05 / CFD 0,10 / Standard-Schein 0,23 Pp)
+  stehen an **vier** Stellen je einmal ausgeschrieben und in **keiner ausgelieferten
+  Datei** — `tools/` wird nicht ausgeliefert. Ich lege sie an **einer** Stelle im
+  ausgelieferten Code ab statt einer fünften Kopie.
+  **Offene Frage an Wilhelm/PM:** gegen **welche** Hürde trennt die Wand? Ich baue
+  vorerst gegen die **größte** (Standard-Schein 0,23 Pp) — dann heißt „hinter der Wand"
+  *für kein Produkt entscheidbar*, und das ist die Aussage, die man nicht abstreiten
+  kann. Damit liegen 31 der 69 Varianten hinter der Wand; gegen die Aktien-Hürde
+  (0,04 Pp) wären es 67 von 69.
 
 - **Desingner** — **#80 Perzentil ist GELIEFERT** (Baustopp 1b davor in `e11d7e9`).
   Eichung: 32.722 Zufallskanäle aus derselben Such-Pipeline (deterministisch,
