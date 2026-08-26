@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-26 15:15
+letzter-bericht: 2026-08-26 16:20
 gesehener-tag: v8.33.3
 -->
 
@@ -401,7 +401,52 @@ statt in einer Liste.
 > **Für den PM selbst, bei jedem Lauf zu prüfen:** liegt im Datenordner eine
 > Wachhund-Alarmdatei? Wenn ja, gehört sie in den nächsten Bericht.
 
-### ⚙ VORRANG — tägliche Nachladung der Kursarchive (Wilhelm 26.08. 15:30, Antwort 4a)
+### ✅ (4) IST FERTIG — die Aufgabe `archiv-nachladen` läuft ab heute Nacht
+
+**Angelegt vom PM am 26.08. um 16:20**, nachdem der Master gemeldet hatte und der PM
+gegengeprüft hat. Der Prüflauf ist vom PM selbst gefahren worden
+(`node tools/archiv-nachladen.js --nurpruefen`): beide Archive 100 % auf Stand,
+**Exit 0**, keine Meldedatei.
+
+| | |
+|---|---|
+| Aufgabe | `archiv-nachladen`, täglich **22:15** |
+| Befehl | `node tools/archiv-nachladen.js` |
+| Dauer | ~3 h 20, Ende gegen 01:35 |
+| Alarm | datierte Datei `archiv-alarm-JJJJ-MM-TT.txt` im Datenordner |
+
+Die Aufgabe ist bewusst **eng geschrieben**: ein Befehl, ein Bericht, keine
+Reparaturversuche, kein Quelltext, kein Commit, keine Version. Ein halb repariertes
+Archiv wäre schlimmer als ein erkennbar veraltetes.
+
+**Der Analytiker ist an der Leine** (PM hat seine Rolle ergänzt, 26.08.): Er fragt vor
+jeder Messung `node tools/archiv-wachhund.js` statt auf die Uhr zu sehen. **Exit 2 heißt:
+nicht auf den Archiven messen** — dann bleiben ihm die Blöcke A, C und F, die keine
+Archivdaten brauchen. Bei Exit 1 misst er, schreibt aber den Rückstand in den Befund,
+weil sein `bis` dann nicht das heutige Datum ist.
+
+**Der Absturz-Einwand war nicht theoretisch.** Beim Erproben ist dem Master genau das
+passiert: ein hart abgebrochener Lauf hat seinen Aufräum-Handler **nicht** ausgeführt und
+die Sperre liegengelassen — unter Windows ist auf diese Handler kein Verlass. **Damit ist
+die Verwaisungsfrist (6 h) nicht der Notnagel, sondern die eigentliche Sicherung.** Eine
+unlesbare Sperrdatei gilt ebenfalls als verwaist; ein Schreibfehler darf die Messung
+nicht auf Dauer stilllegen.
+
+**Vierte Verkleidung derselben Stille, vom Master beim Erproben gefunden und
+geschlossen:** verwaiste Sperre **und** frisches Archiv ergab Rückstand null, Exit 0 —
+und **keine Datei**. Der abgestürzte Lauf stand nur auf einer Konsole, die nachts niemand
+liest. Jetzt wird auch dort geschrieben, mit der Überschrift **HINWEIS** statt ALARM,
+Rückgabewert bleibt 0 (er beantwortet „ist das Archiv benutzbar" — und das ist es).
+
+**Für den PM, Unterscheidung im Durchgang:** `ARCHIV-ALARM` = *die Daten sind nicht in
+Ordnung*. `ARCHIV-HINWEIS` = *die Daten sind in Ordnung, aber ein Lauf ist gestorben*.
+
+*Nebenbei berichtigt (Master): `anteilAufStand` meldete 0 %, wenn das Archiv dem Solltag
+**voraus** ist. „Auf Stand" heißt jetzt „nicht dahinter".*
+
+### ~~⚙ VORRANG — tägliche Nachladung~~ **ERLEDIGT, siehe oben.** *(Auftragstext bleibt als Beleg stehen, was beauftragt war.)*
+
+
 
 **Wilhelm hat dies vor die Fragen (1) und (2) gestellt.** Zugeteilt an den
 **App-Codebase Master** — er kennt das Werkzeug seit heute.
