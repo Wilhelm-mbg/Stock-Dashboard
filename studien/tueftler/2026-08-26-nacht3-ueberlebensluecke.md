@@ -220,3 +220,44 @@ Zahlen in die Warteschlange, ohne Empfehlung zur Höhe.
 
 **Firecrawl-Suchen verbraucht: 0 von 5.** Diese Nacht brauchte keine Literatur, sondern
 Abfragen an die eigenen Quellen.
+
+---
+
+# Nachtrag 26.08. 18:40 — Befund 3 differenziert, ein Teil davon zurückgenommen
+
+Der Projekt-Manager hat Befund 3 nachgemessen und einen Zusammenhang gefunden, den ich
+nicht hatte: **dieselben fünf Kürzel hängen im Tagesarchiv zurück** (letzte Kerze 20./21.08.,
+während 2.955 von 2.965 Reihen auf dem 25.08. stehen), zusammen mit fünf weiteren —
+`TWO`, `WHLR`, `BSCO`, `IBDP`, `IBTE`. Der Wachhund meldete trotzdem „100 % auf Stand",
+weil die Ausgabe 99,66 % rundet (`tools/archiv-wachhund.js:170,184`).
+
+Ich habe daraufhin gefragt, was **Yahoo** für diese zehn im Fenster 16.–27.08.2026 führt.
+Das trennt „Quelle hat nichts" von „Archiv holt es nicht" — zwei Ursachen, die im
+Rückstand gleich aussehen.
+
+| Kürzel | Typ | Kerzen bei Yahoo 17.–26.08. | Deutung |
+|---|---|---|---|
+| AVB, EQR, WBS, TWO | EQUITY | **8** (lückenlos, bis 26.08.) | **Quelle hat alles — das Archiv holt es nicht** |
+| LBRDA, LBRDK | EQUITY | 4 — **nichts vom 17. bis 20.08.**, ab 21.08. wieder | echte Datenlücke, Strukturereignis |
+| WHLR | EQUITY | 1 (nur 26.08.) | Sonderfall, ungeklärt |
+| BSCO, IBDP, IBTE | **ETF** | 0 | keine Aktien; gehören ohnehin nicht ins Aktienuniversum |
+
+**Was das an meinem Befund 3 ändert:**
+
+1. **Die Kernaussage steht:** `AVB`, `EQR`, `WBS` handeln lückenlos bis heute und sind
+   nicht delistet. Die Massive-Liste führt sie falsch. Das bleibt.
+2. **`LBRDA`/`LBRDK` nehme ich aus dieser Gruppe heraus.** Dort gibt es eine reale
+   Datenlücke vom 17. bis 20.08.; Massives Delisting-Vermerk zum 21.08. könnte ein echtes
+   Strukturereignis abbilden (Liberty Broadband) statt eines Quellenfehlers. Ich hatte
+   beide in einem Atemzug mit AvalonBay genannt — **das war zu grob.** Von 33
+   August-Delistings sind damit **mindestens 3** belegt falsch, nicht 5.
+3. **Neu, und für den Archiv-Rückstand die eigentliche Zahl:** von den zehn
+   zurückhängenden Reihen sind **vier reines Nachladen** — die Kerzen liegen bei der
+   Quelle bereit und werden nicht geholt. Drei weitere sind **ETFs**, die in einem
+   Aktienuniversum nichts verloren haben. Der Rückstand ist also kleiner *und* anders
+   verteilt, als „zehn veraltete Reihen" nahelegt.
+
+**Eigener Fehler dabei:** die erste Abfrage lief mit einem Zeitfenster, das um genau ein
+Jahr danebenlag (`period1` aus einer Konstante statt gerechnet) und lieferte
+2025er-Kerzen, die plausibel aussahen. Aufgefallen nur, weil die Datumsangaben mit
+ausgegeben wurden. **Zeitfenster ausrechnen und mitdrucken, nie als Konstante setzen.**

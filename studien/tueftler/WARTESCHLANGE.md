@@ -199,13 +199,26 @@ gehört vor dem Lauf ausgerechnet, nicht danach.
   sondern mit stillschweigend abgeschnittenen Daten — ohne Warnung, ohne Vermerk in der
   Datei. Wer die 1.164 Dateien liest, hält sie für länger, als sie sind. *(Liegt außerhalb
   meiner Rolle: Code der Werkzeuge ändere ich nicht.)*
-- **Neu, 26.08. 18:20 — die Verschwundenen-Liste hat falsche Positive am jüngsten Rand.**
-  `AVB`, `EQR`, `LBRDA`, `LBRDK`, `WBS` stehen mit Delisting-Datum 18.–21.08.2026 in
-  `massive/verschwundene.json` — **alle fünf handeln heute an ihrer Heimatbörse**
-  (Gegenprobe bei Yahoo, 26.08.). Von 33 August-Delistings sind mindestens 5 falsch
-  (15 %, untere Schranke). Wer die Liste als Ausschlussliste verwendet, wirft AvalonBay
-  und Equity Residential aus dem Universum. **Regel: Delistings der letzten ~30 Tage vor
-  dem Listenstand sind unbestätigt und gehören gegengeprüft.**
+- **Neu, 26.08. 18:20, präzisiert 18:40 — die Verschwundenen-Liste hat falsche Positive am
+  jüngsten Rand.** `AVB`, `EQR`, `WBS` stehen mit Delisting-Datum 18.–21.08.2026 in
+  `massive/verschwundene.json` und handeln **lückenlos bis heute** an ihrer Heimatbörse
+  (Gegenprobe bei Yahoo, 26.08.: EQUITY, NYSE, 8 von 8 Kerzen im Fenster 17.–26.08.).
+  Von 33 August-Delistings sind damit **mindestens 3 belegt falsch**. Wer die Liste als
+  Ausschlussliste verwendet, wirft AvalonBay und Equity Residential aus dem Universum.
+  **Regel: Delistings der letzten ~30 Tage vor dem Listenstand sind unbestätigt und
+  gehören gegengeprüft.**
+  **Zurückgenommen:** `LBRDA`/`LBRDK` hatte ich zunächst mitgezählt. Dort fehlen bei Yahoo
+  die Kerzen vom 17.–20.08. und laufen ab 21.08. wieder — das ist eine reale Datenlücke,
+  Massives Vermerk könnte ein echtes Strukturereignis abbilden (Liberty Broadband) statt
+  eines Quellenfehlers. Beide in einem Atemzug mit AvalonBay zu nennen war zu grob.
+- **Neu, 26.08. 18:40 — zum Archiv-Rückstand, den der PM gefunden hat** (zehn Reihen
+  hängen zurück, vom Wachhund wegen Rundung auf „100 %" nicht gemeldet): ich habe
+  gefragt, was die *Quelle* für diese zehn führt. Das trennt „Quelle hat nichts" von
+  „Archiv holt es nicht" — im Rückstand sehen beide gleich aus.
+  **`AVB`, `EQR`, `WBS`, `TWO`: Yahoo hat alle 8 Kerzen bis 26.08. — reines Nachladen.**
+  `LBRDA`/`LBRDK`: echte Lücke 17.–20.08. `WHLR`: nur eine Kerze (26.08.), ungeklärt.
+  **`BSCO`, `IBDP`, `IBTE` sind ETFs** und gehören ohnehin nicht in ein Aktienuniversum.
+  Der Rückstand ist also kleiner und anders verteilt als „zehn veraltete Reihen".
 - **Neu, 26.08. 18:20 — Fehlerkatalog, Beschaffungsfehler:** *„Die Quelle hat geantwortet"
   ist kein Beleg dafür, dass sie den gesuchten Wert hat.* Sieben von acht Yahoo-Antworten
   auf delistete Kürzel waren Fonds (`instrumentType: MUTUALFUND`, Pseudo-Börse `YHD`,
