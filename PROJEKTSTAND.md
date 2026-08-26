@@ -1974,24 +1974,48 @@ für die fünf erreichbaren Halbtage, nur lesend, Rohantworten gespeichert):
 Yahoo hängt an historische `includePrePost`-Abrufe eine Abschlusskerze mit dem **aktuellen
 Quote-Stempel**.
 
-**⚠ PM-Befund dazu, an `1d` zur Prüfung gegeben: diese Kerze rutscht mutmaßlich durch BEIDE
-bestehenden Sperren.**
+**✅ BEHOBEN 01:42 (`3fbc9b5`, PM gegen Git und Code geprüft) — und dabei kippte die
+Ursachenzuordnung.**
 
-| Sperre | greift? | warum |
-|---|---|---|
-| **Eimer-Regel** (`Stempel + Dauer <= jetzt`) | **nein** | Stempel ist 13 Monate alt, Eimer längst geschlossen. Sie schützt gegen die *laufende* Kerze, nicht gegen eine *alte* mit frischem Inhalt. |
-| **Raster-Regel** (krumme Stempel) | **nein** | 20:00 liegt exakt auf dem Raster. |
+**Der PM hatte vermutet, dass beide bestehenden Sperren versagen. Das stimmt** — `1d` hat es
+gegen den Code geprüft: Die **Eimer-Regel** greift nicht (der Eimer ist längst geschlossen;
+sie schützt gegen die *laufende* Kerze, nicht gegen eine alte mit frischem Inhalt), die
+**Raster-Regel** greift nicht (20:00 liegt exakt darauf).
 
-**Das ist die gefährlichste Sorte: der Zeitstempel ist plausibel, nur der KURS verrät es.**
-Kandidat für ein tragfähiges Merkmal wäre der **Kursabstand zu den Nachbarkerzen derselben
-Reihe** — +47 % ist kein Grenzfall, und eine echte Schlusskerze liegt beim Schlusskurs.
-**Testfall liegt vor:** `-06`s Rohantworten enthalten die Kerze als bekannten Positivfall —
-die Sperre MUSS sie fangen, und die echten Schlusskerzen desselben Abrufs müssen durchgehen.
+**⚠ ABER DIE URSACHE WAR FALSCH HERUM ZUGEORDNET — vom PM so weitergetragen.** Live gemessen,
+derselbe Zeitraum, zwei Abrufe:
 
-**Offen und von `-06` benannt: laufen ALLE Einlesepfade durch `kerzenquelle.js`?** Niemand hat
-das bisher beantwortet. **Das trifft nicht nur die Halbtags-Reparatur, sondern jeden künftigen
-historischen Abruf** — ein Nachlade-Lauf könnte den heutigen Kurs als historische Kerze
-schreiben, mitten in die Messbasis, mit plausiblem Zeitstempel.
+    OHNE prePost:  33 Kerzen, letzte 2026-08-26T20:00  c=313,45  v=0   <-- das Gift
+    MIT  prePost:  81 Kerzen, letzte 2025-07-07T23:00  c=209,10  v=0   <-- kein Gift
+
+**Nicht `includePrePost` erzeugt die Kerze — dort fehlt sie sogar. Betroffen ist gerade der
+Pfad, den die App benutzt.** Und der Stempel ist **nicht** der 03.07.2025, sondern **heute
+20:00**; die Kerze hängt einfach hinten dran.
+
+**Das Merkmal, und es braucht keine Kursheuristik:** *Was außerhalb des angefragten Fensters
+liegt, wurde nicht angefragt.* **Die echte Schlusskerze kann davon nicht getroffen werden —
+sie liegt immer innerhalb.** *`1d` ist dem PM-Vorschlag (Kursabstand zu den Nachbarn)
+ausdrücklich **nicht** gefolgt: „er wäre ein Schwellenwert mehr, und Schwellenwerte haben uns
+heute Nacht siebenmal in die Irre geführt." Richtig.*
+
+**An `-06`s Rohabruf geprüft, beide Richtungen:** Giftkerze verworfen **1**, echte Kerzen
+verloren **0**, übrige 32 identisch. Sperre sitzt in `kurse.js/zerlege` und greift für
+**jeden** Aufrufer mit Fenster.
+
+**Die Pfadfrage ist beantwortet — nachgesehen statt vermutet:** Ins Archiv schreiben
+`kerzenquelle.js` (App-Sammler *und* Abrufwerkzeug) und `tools/archiv-fremdreihe-nachladen.js`.
+**Beide holen mit `range=`, nie mit `period1`/`period2`.** Die offene Stelle war die
+**Anzeige** (`explorer.js:112` mit nutzergewähltem Zeitraum; `driftui.js`/`mittelfrist.js` mit
+`von: 0` — Fenster reicht bis heute, harmlos).
+
+> **🔻 LATENTE GEFAHR, von `1d` selbst benannt und deshalb hier:** *Die Sorge um den laufenden
+> Nachlader ist entkräftet — **aber nicht, weil die Sperre greift, sondern weil er nie
+> historisch anfragt.*** Das ist ein **schwächerer Schutz als eine Sperre: er hält nur,
+> solange niemand einen Nachladelauf mit `period1`/`period2` baut.** Wer je einen historischen
+> Nachlade-Pfad ergänzt, muss die Fenstersperre ausdrücklich mitziehen.
+> *(`depot.js:2406–2413` dokumentiert, warum `range=` gewählt wurde: Yahoo lehnt
+> `period1/period2` bei Intraday ab einer Grenze ab — 15m max. 41 Handelstage gegen 60 über
+> `range`, 60m ganz abgelehnt. Der Umweg **kostete** Daten.)*
 
 *Nebenbefund derselben Erhebung:* Das Ur-Beispiel **AAPL 03.07.2025 17:00 (Tief 201,25) kommt
 heute identisch von der Quelle** — die Dochte sind **konsistente Lieferung**, kein damaliges
