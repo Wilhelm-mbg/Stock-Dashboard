@@ -55,6 +55,9 @@ var VERFAHREN = {
    *   #88 Placebo folgt der Einstiegskonvention.
    * 1.2.0 (26.08.2026): #91 - die Aussicht rechnet gegen die Bonferroni-Schwelle statt
    *   gegen t=2 und nennt Schwelle und Testzahl.
+   * 1.3.0 (26.08.2026): ausstiegsZeitpunkt - Spiegelbild der Einstiegskonvention, an
+   *   Signal, beiden Kontrollen und dem Placebo zugleich. Die Vorgabe schluss ist das
+   *   bisherige Verhalten; neu im Protokoll sind das Feld und die Entscheidung C9.
    * Zur 1.2.0 gab es eine ANDERE Meinung, und sie war vertretbar: die Messung selbst
    * aendert sich nicht, kein Urteil kippt, es ist 'nur' eine Planungszahl - also
    * koennte 1.1.0 stehenbleiben. Dagegen steht, was diese Nummer LEISTEN soll: zwei
@@ -63,7 +66,7 @@ var VERFAHREN = {
    * Zahlen nebeneinanderlegt, haette keinen Anhaltspunkt. Deshalb neue Stelle.
    * Genau diese Frage soll die Sperrklinke in test-v6.js erzwingen - sie deshalb
    * durchzuwinken waere ihr erster Ausfall gewesen. */
-  version: '1.2.0',
+  version: '1.3.0',
   /* codeStand beantwortet 'war das dieselbe Datei?' und rechnet sich selbst aus. */
   codeStand: codeStand(),
   mindestKerzenVorlauf: 261,        // EMA100 + Kanal 200, wie die Detektoren es brauchen
@@ -182,6 +185,34 @@ function einstiegKurs(bars, i, konvention) {
   return s > 0 ? s : null;
 }
 
+/* AUSSTIEGSKONVENTION (26.08.2026). Spiegelbild von einstiegKurs, und aus demselben
+ * Grund: wer den Ausstieg nur im Signalpfad umstellt, vergleicht zwei verschiedene
+ * Ausfuehrungen und nennt den Unterschied Effekt - der C7-Fehler, der hier schon aus
+ * t 5,96 ein t -0,75 gemacht hat. Der Schalter gilt fuer Signal UND BEIDE KONTROLLEN
+ * UND den Placebo.
+ *
+ * VERANKERT AN DER KERZE i+H, nicht an i+H+1. Die Vorregistrierung glockendruck-nacht
+ * sagt es woertlich: "Zweig N: Einstieg Schluss(i), Ausstieg Eroeffnung(i+1)" bei H=1.
+ * Der Schalter waehlt also INNERHALB der Ausstiegskerze - Eroeffnung oder Schluss -
+ * und verlaengert die Haltedauer nie.
+ *
+ * KEIN RUECKFALL. eroeffnungKurs() nimmt beim Fehlen der Eroeffnung den Schluss der
+ * Vorkerze. Fuer einen EINSTIEG ist das eine benannte Naeherung; fuer einen AUSSTIEG
+ * waere es toedlich: der Schluss der Vorkerze IST bei H=1 der Einstiegskurs der
+ * Schluss-Fassung. Die Rendite faellt damit mechanisch auf die andere Fassung zurueck
+ * und verduennt genau den Unterschied, den die Messung sucht - gegen null, und zwar
+ * unsichtbar. Fehlt die Eroeffnung, wird das Signal AUSGEWORFEN. Wie viele, steht im
+ * Protokoll; ein stiller Ersatz stuende dort nicht. */
+function ausstiegKurs(bars, k, konvention) {
+  if (konvention === 'folgeEroeffnung') {
+    var b = bars[k];
+    if (!b || b.length <= 5 || typeof b[5] !== 'number' || !isFinite(b[5]) || !(b[5] > 0)) return null;
+    return b[5];
+  }
+  var sc = bars[k] ? bars[k][1] : 0;
+  return sc > 0 ? sc : null;
+}
+
 function eroeffnungKurs(bars, k) {
   var b = bars[k];
   if (b && b.length > 5 && typeof b[5] === 'number' && isFinite(b[5]) && b[5] > 0) return b[5];
@@ -296,7 +327,7 @@ function sitzungsPosition(bars) {
 /* ACHTUNG bei Ausstiegsregeln: Die Kontrolle bekommt denselben Ausstieg wie das
  * Signal. Sonst vergleicht man "Signal mit Stop" gegen "Zufallskerze ohne Stop" -
  * und misst den Stop statt das Signal. */
-function baueKontrolle(universum, haltedauerKerzen, schnittTag, vorlauf, stopNiveau, params, konvention) {
+function baueKontrolle(universum, haltedauerKerzen, schnittTag, vorlauf, stopNiveau, params, konvention, ausKonvention) {
   /* A7: Der Topf haelt jetzt die einzelnen Kerzen (Index + Wert), nicht nur Summe und
    * Anzahl. Nur so laesst sich das Lesefenster des Signals wieder herausrechnen.
    * Praefixsummen dazu, damit das je Signal O(log n) bleibt statt O(Topfgroesse). */
@@ -307,7 +338,7 @@ function baueKontrolle(universum, haltedauerKerzen, schnittTag, vorlauf, stopNiv
     var H = K[sym] = { entdeckung: {}, bestaetigung: {} };
     for (var i = vorlauf; i < b.length - haltedauerKerzen; i++) {
       var s0 = einstiegKurs(b, i, konvention); if (!(s0 > 0)) continue;
-      var sH = b[i + haltedauerKerzen][1]; if (!(sH > 0)) continue;
+      var sH = ausstiegKurs(b, i + haltedauerKerzen, ausKonvention); if (!(sH > 0)) continue;
       var h = POS[i];                     // F3/E3: Sitzungsschicht statt UTC-Stunde
       var hf = tagVon(b[i][0]) < schnittTag ? 'entdeckung' : 'bestaetigung';
       var z = H[hf][h] = H[hf][h] || { idx: [], wert: [] };
@@ -318,7 +349,11 @@ function baueKontrolle(universum, haltedauerKerzen, schnittTag, vorlauf, stopNiv
           pf.push({ auf: eroeffnungKurs(b, pk), hoch: b[pk][3] != null ? b[pk][3] : b[pk][1],
             tief: b[pk][4] != null ? b[pk][4] : b[pk][1], schluss: b[pk][1] });
         }
-        ende = fuehreAus(pf, s0, stopNiveau, params).kurs;
+        var aA = fuehreAus(pf, s0, stopNiveau, params);
+        /* Nur der ZEIT-Ausstieg folgt der Konvention. Ein Stop fuellt zu seinem
+         * Niveau, egal wann - dort waere die Eroeffnung der Ausstiegskerze eine
+         * Ausfuehrung, die es nicht gibt. Dieselbe Ausnahme steht im Signalpfad. */
+        ende = aA.grund === 'Zeit' ? sH : aA.kurs;
       }
       z.idx.push(i); z.wert.push(ende / s0 - 1);   // C3: Anteil, kein Prozent
     }
@@ -520,7 +555,7 @@ function fuehreAus(pfad, einKurs, stopNiveau, params) {
  * positionen: {position -> Zahl der echten Signale}. Der Placebo feuert auf
  * denselben Positionen, mit einem festen Schritt so gewaehlt, dass ungefaehr
  * dieselbe Menge zusammenkommt. Kein Zufall - derselbe Aufruf ergibt dasselbe. */
-function placeboLauf(U, K, H, schnittTag, vorlauf, leseFenster, positionen, haelfte, konvention) {
+function placeboLauf(U, K, H, schnittTag, vorlauf, leseFenster, positionen, haelfte, konvention, ausKonvention) {
   /* S7: Bis zum 25.08.2026 lief der Placebo NUR auf der Bestaetigung. Damit hatte die
    * Entdeckungshaelfte keinen geprueften Nullpunkt - und genau von dort kommen die
    * Zahlen, auf die Kandidaten vorregistriert werden. Beide Kandidaten vom 25.08. sind
@@ -561,7 +596,7 @@ function placeboLauf(U, K, H, schnittTag, vorlauf, leseFenster, positionen, hael
        * mittlere Uebernachtluecke als Schein-Ueberschuss - ausgerechnet im
        * Nullpunktwaechter, der das Urteil "bestaetigt" freigibt. Ein verschobener
        * Nullpunkt im Waechter ist schlimmer als gar keiner: an ihn gewoehnt man sich. */
-      var s0 = einstiegKurs(b, i, konvention), sH = b[i + H][1];
+      var s0 = einstiegKurs(b, i, konvention), sH = ausstiegKurs(b, i + H, ausKonvention);
       if (!(s0 > 0) || !(sH > 0)) continue;
       var tag = tagVon(b[i][0]);
       var hf = tag < schnittTag ? 'entdeckung' : 'bestaetigung';
@@ -596,13 +631,13 @@ function placeboLauf(U, K, H, schnittTag, vorlauf, leseFenster, positionen, hael
  * dessen "andere Werte" SIND das eigene Portfolio. Dort geht der Ueberschuss per
  * Konstruktion gegen null, und das ist kein Befund, sondern eine Probe auf dieses
  * Werkzeug: ginge er dort NICHT gegen null, waere die Implementierung falsch. */
-function baueQuerschnittKontrolle(universum, haltedauerKerzen, vorlauf, stopNiveau, params, konvention) {
+function baueQuerschnittKontrolle(universum, haltedauerKerzen, vorlauf, stopNiveau, params, konvention, ausKonvention) {
   var Q = new Map();          // Zeitstempel -> { wert: [] }  spaeter { summe, n, lo, hi }
   Object.keys(universum).forEach(function (sym) {
     var b = universum[sym];
     for (var i = vorlauf; i < b.length - haltedauerKerzen; i++) {
       var s0 = einstiegKurs(b, i, konvention); if (!(s0 > 0)) continue;
-      var sH = b[i + haltedauerKerzen][1]; if (!(sH > 0)) continue;
+      var sH = ausstiegKurs(b, i + haltedauerKerzen, ausKonvention); if (!(sH > 0)) continue;
       var ende = sH;
       if (typeof stopNiveau === 'function') {
         var pf = [];
@@ -610,7 +645,11 @@ function baueQuerschnittKontrolle(universum, haltedauerKerzen, vorlauf, stopNive
           pf.push({ auf: eroeffnungKurs(b, pk), hoch: b[pk][3] != null ? b[pk][3] : b[pk][1],
             tief: b[pk][4] != null ? b[pk][4] : b[pk][1], schluss: b[pk][1] });
         }
-        ende = fuehreAus(pf, s0, stopNiveau, params).kurs;
+        var aA = fuehreAus(pf, s0, stopNiveau, params);
+        /* Nur der ZEIT-Ausstieg folgt der Konvention. Ein Stop fuellt zu seinem
+         * Niveau, egal wann - dort waere die Eroeffnung der Ausstiegskerze eine
+         * Ausfuehrung, die es nicht gibt. Dieselbe Ausnahme steht im Signalpfad. */
+        ende = aA.grund === 'Zeit' ? sH : aA.kurs;
       }
       var ms = b[i][0];
       var z = Q.get(ms); if (!z) { z = { wert: [] }; Q.set(ms, z); }
@@ -757,6 +796,21 @@ function messe(strategie, archivPfad, optionen) {
   if (KONVENTION !== 'schlusskerze' && KONVENTION !== 'folgeEroeffnung') {
     return { verweigert: true, grund: 'einstiegsZeitpunkt muss schlusskerze oder folgeEroeffnung sein, nicht "' + KONVENTION + '".' };
   }
+  /* AUSSTIEGSKONVENTION (26.08.2026, Vorregistrierung glockendruck-nacht Abschnitt 9).
+   * Der Name heisst ausstiegsZeitpunkt, nicht ausstieg: 'ausstieg' ist im PROTOKOLL
+   * bereits vergeben - dort beschreibt es, WIE ausgestiegen wurde ({art, mittlereKerzen}).
+   * Zwei verschiedene Dinge duerfen nicht denselben Namen tragen.
+   * Wer die alte Schreibweise benutzt, bekommt eine VERWEIGERUNG statt eines stillen
+   * Nichtstuns: ein ignorierter Schalter waere hier der teuerste aller Fehler - die
+   * Messung liefe durch und beantwortete eine andere Frage. */
+  if (S.ausstieg !== undefined) {
+    return { verweigert: true, grund: 'Der Schalter heisst ausstiegsZeitpunkt, nicht ausstieg - ' +
+      'ausstieg ist im Protokoll fuer die Ausstiegsbeschreibung vergeben. Bitte umbenennen.' };
+  }
+  var AUS_KONVENTION = S.ausstiegsZeitpunkt || 'schluss';
+  if (AUS_KONVENTION !== 'schluss' && AUS_KONVENTION !== 'folgeEroeffnung') {
+    return { verweigert: true, grund: 'ausstiegsZeitpunkt muss schluss oder folgeEroeffnung sein, nicht "' + AUS_KONVENTION + '".' };
+  }
   P.entscheide('C8 Einstiegskonvention', { einstiegsZeitpunkt: KONVENTION },
     { gilt_fuer: 'Signal und beide Kontrollen' },
     KONVENTION === 'schlusskerze'
@@ -765,6 +819,15 @@ function messe(strategie, archivPfad, optionen) {
         + 'Sitzungsgrenze +0,055 Pp bei sd 1,7652. Wer auf der Schlusskerze feuert, misst eine Uebernachtluecke mit.'
       : 'Einstieg zum ersten handelbaren Kurs NACH dem Signal (Eroeffnung der Folgekerze). Gilt fuer Signal und '
         + 'beide Kontrollen - nur den Signalpfad umzustellen waere ein C7-Fehler.');
+  P.entscheide('C9 Ausstiegskonvention', { ausstiegsZeitpunkt: AUS_KONVENTION },
+    { gilt_fuer: 'Signal, beide Kontrollen und der Placebo', verankert_an: 'Kerze i+H' },
+    AUS_KONVENTION === 'schluss'
+      ? 'Ausstieg zum Schluss der Kerze i+H - wie bisher.'
+      : 'Ausstieg zur EROEFFNUNG der Kerze i+H. Die Haltedauer aendert sich dadurch nicht; der Schalter '
+        + 'waehlt innerhalb derselben Kerze. Fehlt dort ein echter Eroeffnungskurs, wird das Signal '
+        + 'AUSGEWORFEN und nicht auf den Vorkerzen-Schluss zurueckgesetzt - der waere bei H=1 der '
+        + 'Einstiegskurs der Schluss-Fassung und wuerde den gesuchten Unterschied unsichtbar gegen null '
+        + 'verduennen. Ein Stop-Ausstieg fuellt weiter zu seinem Niveau, nicht zur Eroeffnung.');
 
   var hatAusstieg = typeof S.stopNiveau === 'function';
   var kontrollen = {};
@@ -772,7 +835,7 @@ function messe(strategie, archivPfad, optionen) {
     var schluessel = hatAusstieg ? String(vi) : 'gemeinsam';
     if (!kontrollen[schluessel]) {
       kontrollen[schluessel] = baueKontrolle(U, H, schnittTag, vorlauf,
-        hatAusstieg ? S.stopNiveau : null, varianten[vi], KONVENTION);
+        hatAusstieg ? S.stopNiveau : null, varianten[vi], KONVENTION, AUS_KONVENTION);
     }
     return kontrollen[schluessel];
   }
@@ -829,7 +892,7 @@ function messe(strategie, archivPfad, optionen) {
     var schluessel = hatAusstieg ? vi : 0;
     if (!QSK[schluessel]) {
       QSK[schluessel] = baueQuerschnittKontrolle(U, H, vorlauf,
-        hatAusstieg ? S.stopNiveau : null, varianten[schluessel], KONVENTION);
+        hatAusstieg ? S.stopNiveau : null, varianten[schluessel], KONVENTION, AUS_KONVENTION);
     }
     return QSK[schluessel];
   }
@@ -895,7 +958,9 @@ function messe(strategie, archivPfad, optionen) {
           var _c = b[i][1], _o = eroeffnungKurs(b, i + 1);
           if (_c > 0 && _o > 0) { lueckeSumme += _o / _c - 1; lueckeN++; }
         }
-        var s0 = einstiegKurs(b, i, KONVENTION), sH = b[i + H][1];
+        var s0 = einstiegKurs(b, i, KONVENTION), sH = ausstiegKurs(b, i + H, AUS_KONVENTION);
+        /* Fehlt der Ausstiegskurs, wird das Signal ausgeworfen statt still ersetzt -
+         * die Zahl steht als gruende.kurs im Protokoll. */
         if (!(s0 > 0) || !(sH > 0)) { gruende.kurs = (gruende.kurs || 0) + 1; continue; }
         /* Mit Ausstiegsregel: den Kursverlauf der Haltedauer sammeln und die Regel
          * anwenden. Ohne Regel bleibt es beim Zeit-Ausstieg - dann ist sH der Schluss
@@ -910,7 +975,10 @@ function messe(strategie, archivPfad, optionen) {
               schluss: b[pk][1] });
           }
           var a = fuehreAus(pfad, s0, S.stopNiveau, params);
-          ausKurs = a.kurs; ausKerze = a.kerze; ausGrund = a.grund;
+          /* Nur der ZEIT-Ausstieg folgt der Konvention; ein Stop fuellt zu seinem
+           * Niveau. Ohne diese Unterscheidung wuerde ein Stop-Ausstieg zur Eroeffnung
+           * der letzten Kerze umgebogen - eine Ausfuehrung, die es nicht gibt. */
+          ausKurs = a.grund === 'Zeit' ? sH : a.kurs; ausKerze = a.kerze; ausGrund = a.grund;
           gruende['aus_' + ausGrund] = (gruende['aus_' + ausGrund] || 0) + 1;
           kerzenSumme += ausKerze;
         }
@@ -1043,10 +1111,10 @@ function messe(strategie, archivPfad, optionen) {
   var placebo = null, placeboEntdeckung = null;
   try {
     var _pos = ergebnisse[0] && ergebnisse[0].positionen ? ergebnisse[0].positionen : {};
-    placebo = placeboLauf(U, kontrolleFuer(0), H, schnittTag, vorlauf, leseFenster, _pos, 'bestaetigung', KONVENTION);
+    placebo = placeboLauf(U, kontrolleFuer(0), H, schnittTag, vorlauf, leseFenster, _pos, 'bestaetigung', KONVENTION, AUS_KONVENTION);
     /* S7: derselbe Lauf auf der Entdeckungshaelfte. Er faellt kein Urteil - aber ohne
      * ihn ist jede Entdeckungszahl ein Punktschaetzer ohne geprueften Nullpunkt. */
-    placeboEntdeckung = placeboLauf(U, kontrolleFuer(0), H, schnittTag, vorlauf, leseFenster, _pos, 'entdeckung', KONVENTION);
+    placeboEntdeckung = placeboLauf(U, kontrolleFuer(0), H, schnittTag, vorlauf, leseFenster, _pos, 'entdeckung', KONVENTION, AUS_KONVENTION);
   } catch (e) { placebo = null; placeboEntdeckung = null; }
   var placeboOk = true;
   if (placebo && placebo.t != null) {
@@ -1205,6 +1273,7 @@ function messe(strategie, archivPfad, optionen) {
     verfahren: VERFAHREN,
     strategie: { key: S.key, grund: S.grund, zeitrahmen: S.zeitrahmen || '60m', haltedauerKerzen: H, richtung: S.richtung || 'beide',
       einstiegsZeitpunkt: KONVENTION,
+      ausstiegsZeitpunkt: AUS_KONVENTION,
       universum: S.universum || 'aktien', varianten: varianten.length },
     gemessenAm: new Date(start).toISOString(), dauerMs: Date.now() - start,
     universum: { werte: syms.length, handelstage: tage.length, von: tage[0], bis: tage[tage.length - 1], schnittTag: schnittTag,

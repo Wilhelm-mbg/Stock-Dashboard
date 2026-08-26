@@ -602,6 +602,136 @@ leereArchiv();
      'und sagt im Klartext, wogegen sie rechnet');
 })();
 
+/* ========== C9: die Ausstiegskonvention, an allen drei Stellen zugleich ========== */
+console.log('\n19) C9: ausstiegsZeitpunkt - Signal, Kontrollen UND Placebo');
+leereArchiv();
+(function () {
+  /* Ein Archiv mit systematischer Uebernachtluecke: jede erste Tageskerze oeffnet 0,4 %
+   * UNTER dem Vorschluss. Wer zum Schluss aussteigt, bekommt etwas anderes als wer zur
+   * Eroeffnung aussteigt - der Schalter muss also beissen.
+   * Das Signal feuert auf der VORLETZTEN Kerze des Tages, H=1: der Ausstieg liegt damit
+   * auf der letzten Tageskerze, und deren Eroeffnung ist nicht ihr Schluss. */
+  function baueLuecke(seed, mitEroeffnung) {
+    var rnd = lcg(seed), bars = [], preis = 100 + seed, t0 = Date.UTC(2024, 0, 1, 14, 0);
+    for (var d = 0; d < 400; d++) {
+      var tagMs = t0 + d * 86400000, wt = new Date(tagMs).getUTCDay();
+      if (wt === 0 || wt === 6) continue;
+      for (var h = 0; h < 7; h++) {
+        /* Die erste Tageskerze oeffnet 0,4 % unter dem Vorschluss UND erholt sich
+         * innerhalb der Kerze systematisch um 0,3 %. Das zweite ist entscheidend:
+         * ohne es unterscheiden sich Eroeffnung und Schluss der AUSSTIEGSkerze nur
+         * zufaellig, und dann kann keine der Proben unten etwas zeigen. */
+        var auf = h === 0 ? preis * 0.996 : preis * (1 + (rnd() - 0.5) * 0.002);
+        var drin = h === 0 ? 0.003 : 0;
+        preis = auf * (1 + drin + (rnd() - 0.5) * 0.004);
+        var k = [tagMs + h * 3600000, preis, 1000,
+                 Math.max(auf, preis) * 1.001, Math.min(auf, preis) * 0.999];
+        if (mitEroeffnung) k.push(auf);
+        bars.push(k);
+      }
+    }
+    return bars;
+  }
+  var MIT = TMP + '-ausMit', OHNE = TMP + '-ausOhne';
+  [MIT, OHNE].forEach(function (p) { if (!fs.existsSync(p)) fs.mkdirSync(p, { recursive: true }); });
+  for (var s = 0; s < 12; s++) {
+    fs.writeFileSync(path.join(MIT, 'bars_60m_A' + s + '.json'), JSON.stringify({ series: baueLuecke(s + 5, true) }));
+    fs.writeFileSync(path.join(OHNE, 'bars_60m_A' + s + '.json'), JSON.stringify({ series: baueLuecke(s + 5, false) }));
+  }
+  function lauf(archiv, aus) {
+    var S = { key: 'ausstiegsprobe',
+      grund: 'Prueft, ob die Ausstiegskonvention an Signal, Kontrollen und Placebo zugleich greift.',
+      haltedauerKerzen: 1, richtung: 'long', universum: 'aktien', kosten: { spanneBp: 0 },
+      leseFensterKerzen: 0,
+      /* Das Signal feuert auf der LETZTEN Kerze des Tages. Damit liegt der Ausstieg
+       * (H=1) auf der ersten Kerze des naechsten Tages - und genau deren Eroeffnung
+       * traegt die Uebernachtluecke. Erster Anlauf feuerte mitten im Tag; dort ist der
+       * Unterschied zwischen Eroeffnung und Schluss blosses Rauschen, und die
+       * Placebo-Probe konnte gar nicht fehlschlagen. */
+      signal: function (b, i) { return i % 7 === 6 ? { dir: 1 } : null; } };
+    if (aus) S.ausstiegsZeitpunkt = aus;
+    return M.messe(S, archiv);
+  }
+  /* 1) Vorgabe ist das bisherige Verhalten - Feld weglassen und 'schluss' setzen muessen
+   *    DASSELBE ergeben, sonst hat der Schalter beim Nichtstun etwas veraendert. */
+  var rOhne = lauf(MIT, null), rSchluss = lauf(MIT, 'schluss');
+  var uOhne = rOhne.ergebnisse[0].bestaetigung.ueberschuss, uSchluss = rSchluss.ergebnisse[0].bestaetigung.ueberschuss;
+  ok(uOhne.tagesmittel === uSchluss.tagesmittel && uOhne.se === uSchluss.se && rOhne.ergebnisse[0].signale === rSchluss.ergebnisse[0].signale,
+     'Ohne Angabe und mit "schluss" kommt bitgleich dasselbe heraus - die Vorgabe aendert nichts');
+  ok(rSchluss.strategie.ausstiegsZeitpunkt === 'schluss', 'und der Stand steht im Protokoll');
+
+  /* 2) Der Schalter muss BEISSEN - aber an der RICHTIGEN Groesse.
+   * Erster Anlauf pruefte den UEBERSCHUSS und wurde rot. Zu Recht: wenn Signal UND
+   * Kontrolle zugleich umgestellt werden, hebt sich die Uebernachtluecke im
+   * Ueberschuss gerade auf - das ist der ganze Zweck. Was sich bewegen MUSS, ist die
+   * ROHRENDITE; was sich NICHT bewegen darf, ist der Ueberschuss. Beides zusammen ist
+   * erst die Aussage. */
+  var rAuf = lauf(MIT, 'folgeEroeffnung');
+  var uAuf = rAuf.ergebnisse[0].bestaetigung.ueberschuss;
+  var rohAuf = rAuf.ergebnisse[0].bestaetigung.roh, rohSchluss = rSchluss.ergebnisse[0].bestaetigung.roh;
+  ok(Math.abs(rohAuf.tagesmittel - rohSchluss.tagesmittel) > 1e-5,
+     'Die ROHRENDITE aendert sich deutlich - der Schalter greift ueberhaupt',
+     (rohSchluss.tagesmittel * 100).toFixed(4) + ' -> ' + (rohAuf.tagesmittel * 100).toFixed(4) + ' Pp');
+  ok(Math.abs(uAuf.tagesmittel - uSchluss.tagesmittel) < Math.abs(rohAuf.tagesmittel - rohSchluss.tagesmittel) / 10,
+     'Der UEBERSCHUSS bleibt dagegen fast unberuehrt - Signal und Kontrolle sind zusammen umgestellt',
+     'Roh ' + (Math.abs(rohAuf.tagesmittel - rohSchluss.tagesmittel) * 100).toFixed(4) +
+     ' Pp gegen Ueberschuss ' + (Math.abs(uAuf.tagesmittel - uSchluss.tagesmittel) * 100).toFixed(4) + ' Pp');
+  ok(rAuf.ergebnisse[0].signale === rSchluss.ergebnisse[0].signale,
+     'und zwar bei GLEICHER Signalzahl - es ist der Ausstieg, der sich aendert, nicht die Auswahl');
+
+  /* 3) DIE EIGENTLICHE PROBE (C7). Griffe der Schalter nur im Signalpfad, waere der
+   *    Ueberschuss gegen eine Kontrolle mit anderem Ausstieg gerechnet - und der
+   *    Placebo, der genau diesen Nullpunkt misst, wuerde wandern. Er tut es nicht. */
+  ok(rAuf.placebo && Math.abs(rAuf.placebo.tagesmittel) <= rAuf.placebo.mde,
+     'Der Nullpunkt bleibt bei folgeEroeffnung im Rahmen - Signal, Kontrollen und Placebo sind zusammen umgestellt',
+     rAuf.placebo && ((rAuf.placebo.tagesmittel * 100).toFixed(4) + ' Pp, MDE ' + (rAuf.placebo.mde * 100).toFixed(4)));
+  ok(rSchluss.placebo && Math.abs(rSchluss.placebo.tagesmittel) <= rSchluss.placebo.mde,
+     'und bei schluss ebenso');
+  /* Die Falle muss beissen koennen: die Luecke muss gross gegen die MDE des Placebo sein. */
+  /* Gemessen wird gegen den UNTERSCHIED DER AUSSTIEGE (0,3 % innerhalb der ersten
+   * Tageskerze), nicht gegen die Uebernachtluecke - die steckt bei beiden Konventionen
+   * schon im Einstieg und koennte gar nichts zeigen. */
+  ok(rAuf.placebo && 0.003 > 5 * rAuf.placebo.mde,
+     'Der Ausstiegsunterschied ist gross genug, dass eine halbe Umstellung auffallen MUESSTE',
+     'Unterschied 0,3000 Pp gegen MDE ' + (rAuf.placebo.mde * 100).toFixed(4) + ' Pp');
+
+  /* 4) OHNE Eroeffnungskurse: das Signal wird AUSGEWORFEN, nicht still ersetzt.
+   *    Der stille Rueckfall von eroeffnungKurs() waere hier toedlich - er setzt den
+   *    Ausstieg auf den Vorkerzen-Schluss, und das ist bei H=1 der Einstiegskurs der
+   *    Schluss-Fassung. Die Messung liefe durch und zeigte "kein Unterschied". */
+  var rLeer = lauf(OHNE, 'folgeEroeffnung');
+  /* signale zaehlt die GEFUNDENEN Signale, nicht die gemessenen - das Auswerfen steht
+   * in verworfen.kurs. Erster Anlauf sah auf die falsche Zahl und meldete 2.988.
+   * Geprueft wird deshalb, dass ALLE gefundenen Signale verworfen wurden und am Ende
+   * kein Tag uebrig bleibt - ein stiller Ersatz haette hier normal weitergemessen. */
+  var eLeer = rLeer.ergebnisse && rLeer.ergebnisse[0];
+  ok(!!eLeer && eLeer.verworfen && eLeer.verworfen.kurs === eLeer.signale && eLeer.signale > 100,
+     'Ohne Eroeffnungskurse wird bei folgeEroeffnung JEDES Signal ausgeworfen',
+     eLeer && (eLeer.verworfen.kurs + ' von ' + eLeer.signale + ' verworfen'));
+  ok(!!eLeer && !(eLeer.bestaetigung.roh.tage > 0),
+     'und es bleibt kein einziger Messtag uebrig - nichts wird still ersetzt',
+     eLeer && eLeer.bestaetigung.roh.tage);
+  var rLeerSchluss = lauf(OHNE, 'schluss');
+  ok(rLeerSchluss.ergebnisse && rLeerSchluss.ergebnisse[0].signale > 100,
+     'waehrend dieselbe Datei mit "schluss" ganz normal misst - es liegt am Ausstieg, nicht am Archiv',
+     rLeerSchluss.ergebnisse && rLeerSchluss.ergebnisse[0].signale);
+
+  /* 5) Der falsche Name wird VERWEIGERT statt ignoriert. Ein stiller Schalter waere hier
+   *    der teuerste Fehler: die Messung liefe durch und beantwortete eine andere Frage. */
+  var rName = M.messe({ key: 'falscher-name',
+    grund: 'Benutzt absichtlich den alten Namen aus der Vorregistrierung.',
+    haltedauerKerzen: 1, richtung: 'long', leseFensterKerzen: 0,
+    ausstieg: 'folgeEroeffnung',
+    signal: function (b, i) { return i % 7 === 5 ? { dir: 1 } : null; } }, MIT);
+  ok(rName.verweigert === true && /ausstiegsZeitpunkt/.test(rName.grund || ''),
+     'Der alte Name "ausstieg" wird verweigert - er ist im Protokoll fuer etwas anderes vergeben',
+     rName.verweigert ? 'verweigert' : 'DURCHGELAUFEN');
+  var rMuell = lauf(MIT, 'irgendwas');
+  ok(rMuell.verweigert === true, 'und ein unbekannter Wert ebenso');
+
+  [MIT, OHNE].forEach(function (p) { try { fs.rmSync(p, { recursive: true, force: true }); } catch (e) { } });
+})();
+
 fs.rmSync(TMP, { recursive: true, force: true });
 console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
 process.exit(fails ? 1 : 0);

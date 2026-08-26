@@ -3937,8 +3937,8 @@ console.log('\n44) Messmaschine, Scoreboard und Strategie-Eingabe (23.08.2026)')
    * bleibt version, und nur der Stand wird nachgezogen). Genau diese Frage ist sieben
    * Mal nicht gestellt worden. Die Reibung IST der Zweck: sie kostet zwei Zeilen und
    * verhindert, dass Protokolle stillschweigend unvergleichbar werden. */
-  var MM_VERSION = '1.2.0';
-  var MM_STAND = '6a7d9e29db6f';   // sha256 ueber messmaschine.js, erste 12 Zeichen
+  var MM_VERSION = '1.3.0';
+  var MM_STAND = 'd844463e008d';   // sha256 ueber messmaschine.js, erste 12 Zeichen
   var mmV = require(__dirname + '/studien/messmaschine/messmaschine.js').VERFAHREN;
   ok(mmV.version === MM_VERSION && mmV.codeStand === MM_STAND,
      'Messmaschine: Version und Codestand stehen zusammen fest - eine Aenderung ohne Entscheid faellt auf',
@@ -7874,8 +7874,13 @@ console.log('\n47c) Stufe 0: delta80, Placebo je Haelfte, Pflichtzeilen, Kostena
    * der Nullpunktwaechter eine ANDERE Ausfuehrung als Signal und Kontrollen - bei
    * folgeEroeffnung die mittlere Uebernachtluecke als Schein-Ueberschuss, gemessen
    * -0,5000 Pp gegen eine MDE von 0,0055 Pp (test-messmaschine.js, Block 17). */
-  ok((mm.match(/_pos, '(bestaetigung|entdeckung)', KONVENTION\)/g) || []).length === 2,
-     'Beide Placebo-Laeufe fahren die Einstiegskonvention des Signals (#88)');
+  /* Seit dem ausstieg-Schalter (26.08.2026) traegt der Placebo BEIDE Konventionen.
+   * Die Marke ist damit nicht gelockert, sondern schaerfer: sie verlangt jetzt, dass
+   * Ein- UND Ausstieg durchgereicht werden. Faellt eine der beiden weg, misst der
+   * Nullpunktwaechter wieder eine andere Ausfuehrung als das Signal - #88 in neuer
+   * Kleidung. */
+  ok((mm.match(/_pos, '(bestaetigung|entdeckung)', KONVENTION, AUS_KONVENTION\)/g) || []).length === 2,
+     'Beide Placebo-Laeufe fahren Ein- UND Ausstiegskonvention des Signals (#88, C9)');
   ok(/placeboEntdeckung: placeboEntdeckung/.test(mm),
      'und er steht im Protokoll');
 
