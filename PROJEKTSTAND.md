@@ -1,6 +1,6 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-26 17:05
-gesehener-tag: v8.33.4
+letzter-bericht: 2026-08-26 17:35
+gesehener-tag: v8.33.5
 -->
 
 # Projektstand
@@ -293,6 +293,61 @@ verzerrt, in genau der Richtung, in der wir etwas finden wollen. Ausführlich im
 **Offen für Wilhelm: Vorschlag C** — wie mit der Lücke umgehen. PM und Tüftler empfehlen
 denselben Weg: erst auf den 1.164 schon beschafften Verschwundenen die **Richtung** der
 Verzerrung messen, bevor irgendwer Daten kauft.
+
+---
+
+### 🔴 26.08. 17:35 — fünf Übergaben, ein A-Fund: **Wilhelms Entscheid 2b ist tot ausgeliefert**
+
+*Erste volle Runde des PM im Dauerlauf. Fünf Rollen hatten abgelegt — Auditor, Analytiker,
+Release-Wache, Tüftler, Issue-Wache. **Der Briefkasten trägt.***
+
+**#100 (A, Auditor) — hat Vorrang vor allem, auch vor den Datenfunden.**
+`kantenAusProtokollen()` ruft nach dem Füllen von `PROTOKOLL_KANTE` nur
+`huerdeAnzeigen()`, **nicht** `regelKopfAnzeigen()` (`depot.js:793`). Der Regelkopf
+behauptet dauerhaft „Kein Messprotokoll im Datenordner", während die Kostenhürde **sechs
+Zeilen tiefer** dasselbe Protokoll mit einem **anderen** Urteil zeigt. Zwei Wahrheiten
+gleichzeitig auf einer Seite.
+
+**Die Folge, die zählt:** Wilhelms Entscheid **2b** (Warnhinweis vor `kapitulation`) ist
+in v8.33.4 ausgeliefert und **in der Anzeige tot** — er hängt an `belegAusProtokoll`, das
+nie gefüllt wird. Gemessen: `hatWarnhinweis = false` ausgerechnet bei `kapitulation`.
+Dasselbe trifft die Variantenwahl aus `8fc2c8a`. **Zwei frisch ausgelieferte Arbeiten
+wirkungslos, eine davon eine Entscheidung Wilhelms.** Keine Regression — älter als die
+Änderungsmenge.
+
+**#98 (Analytiker) — der B10-Überlappungs-Wächter ist toter Code.** `block()` reicht
+`ueberlappungsFaktor` nicht weiter; **0 von 38 Protokollen** trägt den Eintrag, die
+Warnung ab Faktor 3 kann **nie** feuern. Die Korrektur selbst wirkt.
+`messmaschine.js` Z. 1010–1016. **Vorbedingung für Strang A:** Momentum ist genau der
+Fall, für den dieser Wächter gebaut wurde — und er ist blind.
+
+**Drei B-Funde:** #101 (Max. Rücksetzer steht schwarz statt rot — `.down` ist nur unter
+`#cockpit` definiert), #102 (roher Schlüssel `nicht-bestaetigt` in der Anzeige;
+`scoreboard.js` hat `label()`, exportiert sie aber nicht), #103 (Regression aus
+`779c02c`: der `<th scope="row">`-Umbau zieht Großbuchstaben und einen 130-px-Reststrich mit).
+
+**#99 (Analytiker) — gute Nachricht mit Nachspiel:** Der Depot-Reset vom 25.08. löschte
+**37 von 38 Kostenrunden**. Die geretteten sagen **0,0855 %** gegen die Annahme von
+0,10 % — **die Kostenannahme ist konservativ, sie hält.** Zu tun: die 38 Runden aus
+`depot_vor_reset.json` zurückspielen und `kostenMessung` vom Depot-Store trennen
+(`kosten.js` Z. 30–38, Reset-Dialog `depot.js` Z. 6723). Passt zum freigegebenen
+Auktionskosten-Auftrag.
+
+### ⚠ Die vorhergesagte Kollision ist bereits eingetreten
+
+**Der Analytiker konnte seine Blöcke B und D nicht fahren — „weil das 60m-Archiv während
+des gesamten Laufs beschrieben wurde".** Genau der Fall, wegen dem die Sperrdatei gebaut
+wurde. Sie kam heute Nachmittag; der Lauf war vorher. **Ab heute Nacht greift sie** — und
+der Analytiker fragt ab sofort den Wachhund, statt auf die Uhr zu sehen.
+Die Kanten-Neuberechnung über die zwölf frischen Protokolle steht damit **noch aus**.
+
+### ✅ v8.33.5 ist sauber draußen (Release-Wache, 17:17)
+
+Alle Prüfungen bestanden: Updater meldet 8.33.5, Prüfsumme stimmt, **43 Skripte im Paket,
+keines fehlt** — die Prüfung, an der hier schon einmal ein ganzes Modul hängenblieb.
+*Hinweis der Wache für die Zukunft:* Das Bauen lief in den 10-Minuten-Deckel des
+Vordergrund-Befehls (13 Min). Kein Schaden, aber `--bauen` gehört gleich als
+Hintergrundkommando gestartet.
 
 ---
 
