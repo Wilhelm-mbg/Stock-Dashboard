@@ -46,8 +46,11 @@ function statistik(werte) {
 }
 
 function wachhundOk() {
-  var r = cp.spawnSync(process.execPath, [REPO + '/tools/archiv-wachhund.js'], { encoding: 'utf8', timeout: 300000 });
-  console.log('[Wachhund] Exit ' + r.status);
+  /* Nur archiv1d - dieses Werkzeug liest 60m nie; die globale Pruefung wuerde
+   * waehrend eines 60m-Nachladelaufs grundlos sperren (Wachhund sperrt je Archiv). */
+  var r = cp.spawnSync(process.execPath, [REPO + '/tools/archiv-wachhund.js', 'archiv1d'], { encoding: 'utf8', timeout: 300000 });
+  console.log('[Wachhund archiv1d] Exit ' + r.status);
+  if (r.stdout) console.log(r.stdout.trim().split('\n').slice(-3).join('\n'));
   if (r.status === 2) { console.error('ABBRUCH: Sperre (Exit 2).'); return false; }
   if (r.status !== 0) { console.error('ABBRUCH: Wachhund Exit ' + r.status + '.'); return false; }
   return true;
