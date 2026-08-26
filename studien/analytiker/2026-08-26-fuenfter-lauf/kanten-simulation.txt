@@ -1,0 +1,14 @@
+Nachbau depot.js kantenAusProtokollen (Z.746-792), Analytiker 5. Lauf 26.08.2026
+
+kapitulation            nicht-bestaetigt     jeSignal 1.0707 Pp | 2026-08-26 kapitulation-2026-08-26.json
+momentum                nicht-entscheidbar   jeSignal 2.0203 Pp | 2026-08-26 momentum-2026-08-26.json
+monatsende-kauf         nicht-messbar        jeSignal 0.1103 Pp | 2026-08-26 monatsende-kauf-2026-08-26.json
+monatswende-breit       nicht-entscheidbar   jeSignal 0.1427 Pp | 2026-08-26 monatswende-breit-2026-08-26.json
+quartalsschub-betrag    nicht-entscheidbar   jeSignal 0.1474 Pp | 2026-08-26 quartalsschub-betrag-2026-08-26.json
+rsi2seit                nicht-entscheidbar   jeSignal 0.0205 Pp | 2026-08-26 rsi2seit-2026-08-26.json
+rsi2seit-mcp            nicht-entscheidbar   jeSignal 0.0526 Pp | 2026-08-26 rsi2seit-mcp-2026-08-26.json
+t1-zwangsglattstellung  nicht-entscheidbar   jeSignal -0.5555 Pp | 2026-08-26 t1-zwangsglattstellung-2026-08-26.json
+t2-umsatzschock         nicht-entscheidbar   jeSignal -0.0587 Pp | 2026-08-26 t2-umsatzschock-2026-08-26.json
+t3-stundendrift         nicht-entscheidbar   jeSignal 0.0046 Pp | 2026-08-26 t3-stundendrift-2026-08-26.json
+winkelbestaetigt        nicht-bestaetigt     jeSignal -0.1238 Pp | 2026-08-26 winkelbestaetigt-2026-08-26.json
+winkelgrad              nicht-entscheidbar   jeSignal -0.0139 Pp | 2026-08-26 winkelgrad-2026-08-26.json

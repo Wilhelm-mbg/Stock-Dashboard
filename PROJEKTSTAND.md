@@ -1021,6 +1021,28 @@ mit #93/#94 zusammen runder.
 *Eine Zeile, vom Strategie-Tüftler selbst gepflegt. Übergabe läuft über
 `studien/tueftler/WARTESCHLANGE.md`, nicht über diese Tafel.*
 
+- **26.08.2026, 18:20 — Nacht-Typ B (Datenbestand).** Warteschlange bei Beginn 2, formal
+  kein Stau — **bewusst kein dritter Entwurf**: beide offenen messen dasselbe Fenster
+  (Familien-Testzahl schon 4) und warten auf dieselbe ungebaute Vorbedingung.
+  Stattdessen die **Überlebenslücke des großen Archivs vermessen**
+  (`studien/tueftler/2026-08-26-nacht3-ueberlebensluecke.md`, zwei Werkzeuge, zwei
+  Ablagen). **Über 2008–2026 fehlen mindestens 12,7 % des Querschnitts**, steigend von
+  ~8 % (2008) auf ~20 % (2023), ausschließlich Nicht-Überlebende; vor dem 29.06.2004
+  nicht einmal diagnostizierbar. **Und sie ist mit den vorhandenen Mitteln nicht zu
+  schließen:** Yahoo liefert 1 von 46 (und in **7 von 46 einen Fonds unter demselben
+  Kürzel** — `MUTUALFUND`/`YHD`/Währung null, die stille Falle), die zweite Quelle
+  deckelt auf den Tag genau bei zwei Jahren (2024-08-25 → 403, 2024-08-27 → 200, mit
+  Positivprobe abgesichert). **Zwei Funde, die andere angehen:**
+  `tools/massive-tagesdaten.js:29` fragt ab 2023-11-13 an und bekommt stillschweigend
+  abgeschnittene Daten ab 2024-08-23 — neun Monate kürzer, ohne Warnung; und
+  `verschwundene.json` führt **AVB, EQR, LBRDA, LBRDK, WBS** als delistet, obwohl alle
+  fünf heute an ihrer Heimatbörse handeln (≥ 15 % des jüngsten Rands falsch).
+  **Neuer Auftragsvorschlag C** — eine Entscheidung für Wilhelm, kein Bauauftrag; der
+  Tüftler rät, erst auf den schon beschafften 1.164 die *Richtung* der Verzerrung zu
+  messen, bevor über eine bezahlte Stufe entschieden wird. Drei eigene Fehler im Lauf
+  gefunden und korrigiert (Einträge statt Kürzel gezählt, Urteilsregel zu grob,
+  Windows-Pfad im Heredoc verloren). 0 von 5 Firecrawl-Suchen verbraucht.
+  **Warteschlange jetzt: 2 offene Entwürfe, 1 Auftragsvorschlag.**
 - **26.08.2026, 08:48 — Nacht-Typ A (Entwurf).** Warteschlange bei Beginn 1 offener
   Entwurf, kein Stau. Entstanden: zweiter vorregistrierter Kandidat **`nachtstoss-umkehr`**
   (`studien/vorregistrierung-2026-08-26-nachtstoss-umkehr/`), zwei selbst verworfene
@@ -1094,6 +1116,7 @@ fertig, siehe „Stand" oben.)*
 
 ## Analytiker
 
+- **26.08. (5. Lauf, ~15:00, nachmittags)** — archiv60m war gesperrt (Nachzieh-Lauf seit 14:13 UTC), deshalb nur A/C/E/F ohne Archive; B/D entfallen, ersatzweise alle 12 Protokoll-Placebos geprüft (|t| ≤ 1,25). A und C bestanden (Kanten-Anzeige unabhängig nachgebaut, ZTHR-Nachbildung geprüft); **2 Funde: #98 (B10-Überlappungs-Wächter toter Code, 0/38 Protokolle, Gattung #86) und #99 (Depot-Reset 25.08. löschte 37/38 Kostenrunden; die 38 Runden sagen 0,0855 % gegen 0,10 % Annahme — konservativ)**; F-Rotation Punkt 3 (Clusterung über Tage) vertieft: Methode trägt, Lag-Einheiten-Wortlaut falsch, aber synthetisch entlastet (Fehlalarme 6,6 % statt 9,1 %), Details `studien/analytiker/2026-08-26-fuenfter-lauf/`; Richtigstellung zum 4. Lauf: „seit fünf Tagen keine Kostenrunde" war falsch. Nächste Nacht: D vollständig über die 12 frischen Protokolle (Sonntags-Regel vorziehen, sobald Archive frei), sonst F-Punkt 4 (Überlebensverzerrung).
 - **26.08. (4. Lauf, ~09:00, außerplanmäßig)** — bewusst leicht während der Neumessung (Maschine nicht aufgerufen): die 6 vorliegenden 1.2.0-Protokolle unabhängig nachgerechnet — 17/17 Variantenurteile, delta80 und tage80 exakt bestätigt (#91 wirkt im Feld, alte Formel hätte z. B. 168 statt 224 gesagt), `codeStand 6a7d9e29db6f` einheitlich, alle 6 Protokoll-Placebos |t| ≤ 1,25; C und E unverändert bestanden; **1 Fund gemeldet (#92: `bestesUrteil`-Rangfolge kann `widerlegt` verdecken, `bestaetigt-aber-nullpunkt-verschoben` unrepräsentierbar — latent, aber (1a) macht die Zahl zur maßgeblichen Anzeige)**, Details in `studien/analytiker/2026-08-26-vierter-lauf/BEFUND.md`; nächste Nacht D über die vollständigen 12 frischen Protokolle, sonst F-Rotation Punkt 3 (Clusterung über Tage).
 
 ---
