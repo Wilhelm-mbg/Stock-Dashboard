@@ -831,6 +831,53 @@ genau das, was hier gerade aufgefallen ist.
 
 ---
 
+### ⚖ Die QS lässt ihre eigenen Funde widerlegen — acht unabhängige Skeptiker
+
+**Alle heutigen QS-Funde stehen ab sofort als *gemeldet*, nicht als *bestätigt*.** Die QS
+hat es selbst angestoßen, und der PM zieht die Kennzeichnung auf dieser Tafel nach — er
+hatte mehrere davon bereits als Befund eingetragen.
+
+**Ihre Begründung, und sie ist zwingend:** Ihre Funde **stoppen gerade Bauarbeiten** —
+der Master hat #96 liegengelassen, dem Desingner wurde (1b) in Frage gestellt, und sie
+empfiehlt Eingriffe in `kerzenquelle.js`. Dazu musste sie sich **heute dreimal selbst
+korrigieren**: abgeschnittene Ausgabe, falsches Stundenraster, „85 echte Kerzen", die
+keine waren.
+
+**Jeder dieser drei Fehler hatte dieselbe Form: eine unvollständige Sicht sieht aus wie
+ein Befund über die Sache.** Genau die Form, die dieses Projekt heute achtmal bezahlt hat.
+*„Ich habe keinen Grund anzunehmen, dass ich sie ein viertes Mal nicht produziere."*
+
+**Geprüft werden acht Funde, je ein Agent, Auftrag: widerlegen statt bestätigen, Zahlen
+unabhängig neu herleiten statt ihre Skripte benutzen.**
+
+1. die #96-Zählung (3.409 Treffer, 264 Reihen mehrfach)
+2. das Gleichzeitigkeits-Kriterium (98,4 % gegen 0,9 %) — **einschließlich der Frage, ob
+   „löschen" für die 2.839 überhaupt richtig ist**
+3. die wirkungslose Teilkerzen-Sperre und die 160 Teilkerzen
+4. die Krypto-Beimischung in der Kostenmessung
+5. die Aussicht trotz „nicht messbar"
+6. die drei Zählfehler auf Tafel und Plan
+7. die zwei veralteten Auftragsangaben
+8. „der App-Store ist sauber, der Defekt sitzt nur im Mess-Archiv"
+
+**Punkt 2 ist der, den niemand gestellt hatte** — auch der PM nicht, obwohl Wilhelms
+Entscheidung „Platzhalter raus" darauf beruht. *Ist Löschen überhaupt der richtige Umgang,
+oder trägt die Kerze eine Information, die dann fehlt?*
+
+**Was sich dadurch NICHT ändert:** Bei #96 und `kerzenquelle.js` bleibt es bei
+**„nicht anwenden, bis geklärt"** — diese Empfehlung ist in beide Richtungen sicher.
+
+### ✅ Der Urteilswechsel ist unabhängig bestätigt
+
+Die Zahlen zu `rsi2seit-mcp` stammten aus einem Lauf, den die QS selbst abgeschossen hatte.
+**Ein frischer Einzelprozess hat die Messung wiederholt und liefert jede Zahl identisch**
+(Var3 0,0554/0,0553 · Var4 0,0600/0,0596 · Placebo t 0,998 · B10-Faktor 0,98).
+**Kein Artefakt des Abbruchs** — beide Urteilswechsel stehen.
+
+**Block D: 8 von 9 durch**, sieben stabil, eines gekippt. `winkelgrad` läuft.
+
+---
+
 ## Aufträge
 
 *Was freigegeben ist und noch niemand macht. Wer eine Zeile nimmt, trägt sich unter
