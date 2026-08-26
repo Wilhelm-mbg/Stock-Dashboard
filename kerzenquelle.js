@@ -340,7 +340,22 @@ function aufGitter(tsMs, intervall) {
  *   flach   hoch := max(o,c), tief := min(o,c)
  *   kappen  Hoch und Tief auf die Tagesspanne der gehandelten Stunden ziehen
  * Umschalten heisst: DIESE Zeile aendern und dochtForm() entsprechend. */
-var PHANTOM_FORM = 'flach';
+/* KEINE FORM, SOLANGE DIE FRAGE DAVOR OFFEN IST (PM-Weisung 27.08.2026).
+ * Hier stand kurz 'flach'. Das war eine Vorspannung - und damit eine stille
+ * Vorwegnahme einer Entscheidung, die Wilhelm noch gar nicht getroffen hat.
+ * Denn die offene Frage ist nicht die FORM, sondern die POPULATION: gehoeren
+ * Nachhandels-Kerzen ueberhaupt ins 60m-Archiv? Sind sie echt - und die Messung
+ * gegen das Tagesarchiv sagt zu 76,4 %, dass sie es sind -, dann ist nicht die
+ * Form falsch, sondern die Praemisse.
+ * null heisst: nicht entschieden. Die Naht-Klinke des Reparaturwerkzeugs bricht
+ * damit hart ab, statt eine vorgespannte Form zu bestaetigen - genau so herum ist
+ * es richtig, denn ein versehentliches --wirklich darf nicht auf einer Annahme
+ * aufsetzen, die niemand getroffen hat.
+ * Zwei Formen stehen zur Wahl, wenn es je soweit kommt:
+ *   flach   hoch := max(o,c), tief := min(o,c)
+ *   kappen  Hoch und Tief auf die Tagesspanne der gehandelten Stunden ziehen
+ * Beide setzen voraus, dass die Kerzen ueberhaupt falsch sind. */
+var PHANTOM_FORM = null;
 
 function dochtForm(k) {
   var o = k[5] == null ? k[1] : k[5];

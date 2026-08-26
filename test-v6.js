@@ -5830,6 +5830,28 @@ console.log('\n41) Zustaende: was die App sagt, wenn etwas fehlt oder klemmt');
   ok(volLuecke.bars[0][2] === 0, 'Volumen: fehlend wird 0, nicht null');
 
   // --- Unbrauchbare Antworten ---
+  /* ---- KERZEN AUSSERHALB DES ANGEFRAGTEN FENSTERS (27.08.2026) ----
+   * Live gemessen: ein Abruf fuer den 30.06. bis 07.07.2025 liefert als letzte Kerze
+   * den HEUTIGEN Kurs mit heutigem Stempel - plus 47 % gegen den Kursstand jener
+   * Woche. Yahoo haengt an jede Anfrage eine Abschlusskerze aus dem aktuellen Quote.
+   * Bei range= faellt das nicht auf (das Fenster reicht bis jetzt, die Kerze gehoert
+   * dorthin). Bei einem HISTORISCHEN Fenster ist sie Gift - und die gefaehrlichste
+   * Sorte, weil der Zeitstempel plausibel ist und nur der Kurs es verraet.
+   * Die Sperre braucht keine Kursheuristik: was ausserhalb des angefragten Fensters
+   * liegt, wurde nicht angefragt. Damit kann sie die echte Schlusskerze nicht
+   * treffen - die liegt immer innerhalb. */
+  var fensterRoh = JSON.stringify({ chart: { result: [{ timestamp: [1000, 2000, 9999],
+    indicators: { quote: [{ close: [10, 11, 313], open: [10, 11, 313], high: [10, 11, 313],
+      low: [10, 11, 313], volume: [5, 6, 0] }] }, meta: {} }] } });
+  var mitF = K.zerlege(fensterRoh, { bereinigt: false, von: 1000 * 1000, bis: 2000 * 1000 });
+  ok(mitF.bars.length === 2 && mitF.ausserhalbFenster === 1,
+     'Eine Kerze ausserhalb des angefragten Fensters fliegt raus',
+     mitF.bars.length + ' Kerzen, ' + mitF.ausserhalbFenster + ' verworfen');
+  ok(mitF.bars[0][1] === 10 && mitF.bars[1][1] === 11,
+     'und die angefragten Kerzen kommen unveraendert durch - sonst waere die Sperre selbst der Schaden');
+  var ohneF = K.zerlege(fensterRoh, { bereinigt: false });
+  ok(ohneF.bars.length === 3 && ohneF.ausserhalbFenster === 0,
+     'Ohne Fensterangabe wird nichts verworfen - bei range= gehoert die letzte Kerze dazu');
   ok(K.zerlege('kein JSON', { bereinigt: false }) === null, 'Antwort: Muell gibt null, keine Ausnahme');
   ok(K.zerlege('{}', { bereinigt: false }) === null, 'Antwort: leeres Objekt gibt null');
   ok(K.zerlege(JSON.stringify({ chart: { result: [], error: 'x' } }), { bereinigt: false }) === null,
@@ -9539,8 +9561,17 @@ console.log('\n63) Nur fertige Kerzen kommen ins Archiv (Issue #85)');
    * Archiv sie fuehrt - und im Archiv stuende zweierlei ohne Merkmal, es
    * auseinanderzuhalten. Das Reparaturwerkzeug liest diese Konstante und bricht ab,
    * wenn sie nicht zu seiner Form passt. */
-  ok(/var PHANTOM_FORM = '(flach|kappen)';/.test(kq),
-     'Die Form steht als benannte Konstante da - maschinell pruefbar, nicht nur vereinbart');
+  /* FORM UND ANWENDUNG MUESSEN ZUSAMMENPASSEN. Ruht die Reparatur, darf die
+   * Konstante KEINE Form tragen - sonst bestaetigt die Naht-Klinke des
+   * Reparaturwerkzeugs bei einem versehentlichen --wirklich eine Form, die
+   * niemand entschieden hat. Und umgekehrt: wirkt sie wieder, MUSS eine Form
+   * dastehen. Diese eine Zusicherung haelt beide Richtungen. */
+  var formZeile = /var PHANTOM_FORM = (null|'flach'|'kappen');/.exec(kq);
+  ok(!!formZeile, 'Die Form steht als benannte Konstante da - maschinell pruefbar, nicht nur vereinbart');
+  var ruht = /dochte: 0, dochteErkannt:/.test(kq);
+  ok(formZeile && (ruht ? formZeile[1] === 'null' : formZeile[1] !== 'null'),
+     'Ruht die Reparatur, traegt die Konstante KEINE Form - und umgekehrt',
+     (ruht ? 'ruht' : 'wirkt') + ' / ' + (formZeile ? formZeile[1] : '?'));
 
   /* Und es gibt ein Werkzeug, das ein vorhandenes Archiv sofort reinigt, ohne Netz. */
   var tk = fs.existsSync(__dirname + '/tools/archiv-teilkerzen-entfernen.js');

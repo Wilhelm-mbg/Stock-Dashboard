@@ -120,7 +120,30 @@
       var vo = (typeof vols[i] === 'number' && isFinite(vols[i])) ? vols[i] : 0;
       bars.push([ts[i] * 1000, c, vo, hi, lo, op]);
     }
-    return { bars: bars, meta: r.meta || {}, verworfen: verworfen, gesamt: ts.length, feld: feld };
+    /* KERZEN AUSSERHALB DES ANGEFRAGTEN FENSTERS FLIEGEN RAUS.
+     * Am 27.08.2026 live gemessen: ein Abruf fuer den 30.06. bis 07.07.2025 liefert
+     * als letzte Kerze
+     *     2026-08-26T20:00   c = 313,45   v = 0
+     * also den HEUTIGEN Kurs mit heutigem Stempel, angehaengt an einen dreizehn
+     * Monate alten Zeitraum - plus 47 % gegen den Kursstand jener Woche. Yahoo haengt
+     * an jede Anfrage eine Abschlusskerze aus dem aktuellen Quote. Bei einer Anfrage
+     * mit range= faellt das nicht auf, weil das Fenster bis jetzt reicht und die
+     * Kerze dort hingehoert. Bei einem HISTORISCHEN Fenster ist sie Gift, und zwar
+     * die gefaehrlichste Sorte: der Zeitstempel ist plausibel, nur der Kurs verraet es.
+     * (Anders als zunaechst vermutet liegt es NICHT an includePrePost - mit prePost
+     * war die Kerze in derselben Messung gar nicht da.)
+     *
+     * Die Sperre braucht keine Kursheuristik: was ausserhalb des angefragten
+     * Fensters liegt, wurde nicht angefragt. Damit kann sie die echte Schlusskerze
+     * nicht treffen - die liegt immer innerhalb. */
+    var ausserhalbFenster = 0;
+    if (o.von != null && o.bis != null) {
+      var vorFilter = bars.length;
+      bars = bars.filter(function (b) { return b[0] >= o.von && b[0] <= o.bis; });
+      ausserhalbFenster = vorFilter - bars.length;
+    }
+    return { bars: bars, meta: r.meta || {}, verworfen: verworfen, gesamt: ts.length,
+      feld: feld, ausserhalbFenster: ausserhalbFenster };
   }
 
   /** Nur Zeit und Schlusskurs - die Form, die die meisten Aufrufer wollen. */
