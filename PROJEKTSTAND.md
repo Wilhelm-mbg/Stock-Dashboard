@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 01:58
+letzter-bericht: 2026-08-27 02:05
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -1963,6 +1963,61 @@ Gleitkommavergleich ohne fachliche Toleranz.
 > *„Meine 76,4 % waren richtig gerechnet, aber sie beantworteten die Frage über alle Tage,
 > während der Fund die Halbtage meinte."* Eine richtige Zahl, die eine andere Frage
 > beantwortet als die gestellte — diesmal in der Aggregation.
+
+### 📏 27.08. ~02:05 — AUS EINZELFÄLLEN WIRD EINE REGEL: „Reihe hat aufgehört"
+
+**Die PM-Verbindung hält und ist allgemeiner als vermutet.** Gemessen (QS): **Im Tagesarchiv
+tragen ALLE 6 Reihen, deren letzter Umsatz über zehn Tage zurückliegt, flache
+Nullumsatz-Kerzen dahinter — 6 von 6, keine Ausnahme.**
+
+**Und es ist ein Stempel JE SAMMELLAUF, nicht je Reihe.** AVB trägt **fünf aufeinanderfolgende
+Phantomtage** (15.–21.08.), EQR vier, IBDP und IBTE je drei. *Die erste Zählung sagte „ein Tag
+Lücke" — sie las die Vorkerze, und die war selbst schon ein Stempel.*
+
+    archiv1d    9 Reihen,  21 Phantomtage
+    archiv1m    2 Reihen,   2 Kerzen  (LBRDK, WBS)
+    archiv5m    2 Reihen,   2 Kerzen  (AVB, EA)
+    archiv15m   0
+    archiv60m   steht aus (Sperre)
+
+**Die richtige Fassung ist „Reihe hat aufgehört", nicht „Reihe ist delistet"** — vier der neun
+sind ausgelaufene Anleihe-ETFs und eine SPAC-Einheit, die die SEC-Liste nicht als
+Aktien-Delisting führt. *Die weitere Fassung ist die richtige.*
+
+**Abgleich gegen `massive/verschwundene.json` (6.921 Einträge):**
+
+    LBRDA/LBRDK  letzter Umsatz 17.07.  Delisting 21.08.  Stempel 21.08.
+    AVB          letzter Umsatz 14.08.  Delisting 18.08.  Stempel 15.-21.08.
+    EQR          letzter Umsatz 17.08.  Delisting 18.08.  Stempel 18.-21.08.
+    WBS          letzter Umsatz 19.08.  Delisting 20.08.  Stempel 20.08.
+    EA (5m)      letzter Umsatz 04.08.  Delisting 05.08.  Stempel 05.08.
+
+**Der Sucher ist jetzt unabhängig belegt:** derselbe unveränderte Sucher gegen `-06`s 72
+Rohabrufe → **26 Treffer, exakt dieselbe Zahl, die `-06` mit eigener Umsetzung fand.** *Zwei
+Implementierungen, dieselben Daten, dieselbe Zahl* — belegt an einem unabhängig entstandenen
+Fall, nicht nur an der eigenen Injektion.
+
+> **⚠ DIESELBE FALLE, DIESELBE NACHT, ZUM ZWEITEN MAL.** Der erste Intraday-Lauf meldete
+> **1.113 betroffene 1m-Reihen** — *„Ich hatte den Zähler schon vor mir."* Es sind exakt die
+> offiziellen 20:00-Schlusskerzen, über die dieselbe Sitzung sich in derselben Nacht schon
+> einmal korrigiert hatte. Der Filter prüfte nur, ob **hinter** der letzten Umsatzkerze noch
+> etwas steht. Mit dem richtigen Kriterium („letzter Umsatz mindestens einen Tag älter als der
+> Archivstand") bleiben von 1.113 genau **2** übrig.
+> **Die QS schreibt es in den Vermerk, „weil die Falle offenbar nicht durch einmaliges
+> Erkennen verschwindet".**
+
+**→ OFFENE FRAGE, an `markt-dashboard-c4` gegeben:** *„Ein Papier, das gerade delistet wurde,
+ist genau die Sorte, die ein Momentum-Filter aufgreift."* **Die Mechanik ist hier nicht
+falsche Rendite, sondern falsche EXISTENZ:** Ein delistetes Papier ohne Abmeldedatum bleibt im
+Universum, die Phantomtage lassen es handeln aussehen — wird es gewählt und 63 Tage gehalten,
+liefert es **Rendite null** statt des echten Ausgangs (Übernahmepreis, Abwicklung,
+Totalverlust). *Null ist in beide Richtungen falsch, und es ist die Richtung, in der eine
+Überlebensverzerrung entsteht, nicht die, in der sie auffällt.*
+
+**🔗 DAS HÄNGT AN WILHELMS ENTSCHEIDUNG (2):** Falls `c4` bestätigt, dass solche Reihen gewählt
+und gehalten werden können, ist das Markieren der Delisting-Daten **keine Kosmetik mehr,
+sondern genau die Reparatur dafür** — ein Papier mit Abmeldedatum kann nicht über sein Ende
+hinaus gehalten werden.
 
 ### 🔴 27.08. ~01:55 — KORREKTUR NACH OBEN: SECHS Phantom-Handelstage, nicht zwei
 
