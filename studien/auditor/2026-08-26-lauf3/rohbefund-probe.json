@@ -1,0 +1,1437 @@
+{
+ "commit": "d964891",
+ "bilder": "C:\\Users\\Wilhe\\AppData\\Local\\Temp\\md-auditor3-c8ChZd\\bilder",
+ "tabs": 5,
+ "eqSaat": {
+  "ok": true,
+  "punkte": 15,
+  "ersterWert": 100000,
+  "hoch": 111400,
+  "letzter": 107300
+ },
+ "eq": [
+  {
+   "altNochDa": false,
+   "kopfDa": true,
+   "anzeige": "flex",
+   "text": "VERLAUF+7,3 % | HOCH111.400 $ | MAX. RÜCKSETZER-7,2 %",
+   "spannen": 3,
+   "klassenImKopf": [
+    {
+     "t": "+7,3 %",
+     "c": ""
+    },
+    {
+     "t": "111.400 $",
+     "c": ""
+    },
+    {
+     "t": "-7,2 %",
+     "c": "down"
+    }
+   ],
+   "kopfRechteck": {
+    "l": 35,
+    "r": 1235,
+    "o": 555,
+    "u": 576,
+    "br": 1200,
+    "ho": 20
+   },
+   "karteRechteck": {
+    "l": 20,
+    "r": 1250,
+    "o": 517,
+    "u": 747,
+    "br": 1230,
+    "ho": 230
+   },
+   "svgDa": true,
+   "svgPfade": 2,
+   "svgText": "100.000102.000104.000106.000108.000110.000112.00017:0617:5318:4019:26",
+   "svgHoehe": 150,
+   "regelEqPanel": 0,
+   "groesse": "1280x800"
+  },
+  {
+   "altNochDa": false,
+   "kopfDa": true,
+   "anzeige": "flex",
+   "text": "VERLAUF+7,3 % | HOCH111.400 $ | MAX. RÜCKSETZER-7,2 %",
+   "spannen": 3,
+   "klassenImKopf": [
+    {
+     "t": "+7,3 %",
+     "c": ""
+    },
+    {
+     "t": "111.400 $",
+     "c": ""
+    },
+    {
+     "t": "-7,2 %",
+     "c": "down"
+    }
+   ],
+   "kopfRechteck": {
+    "l": 35,
+    "r": 955,
+    "o": 555,
+    "u": 576,
+    "br": 920,
+    "ho": 20
+   },
+   "karteRechteck": {
+    "l": 20,
+    "r": 970,
+    "o": 517,
+    "u": 747,
+    "br": 950,
+    "ho": 230
+   },
+   "svgDa": true,
+   "svgPfade": 2,
+   "svgText": "100.000102.000104.000106.000108.000110.000112.00017:0617:5318:4019:26",
+   "svgHoehe": 150,
+   "regelEqPanel": 0,
+   "groesse": "1000x700"
+  }
+ ],
+ "tabellen": [
+  {
+   "fehlt": false,
+   "tabelle": true,
+   "zeilen": [
+    {
+     "zellen": 10,
+     "klasse": "",
+     "inhalt": [
+      {
+       "t": "WERT",
+       "c": "",
+       "farbe": "rgb(107, 105, 99)",
+       "umbruchAus": "normal",
+       "ausricht": "left",
+       "zeilen": 1
+      },
+      {
+       "t": "STÜCK",
+       "c": "zahl",
+       "farbe": "rgb(107, 105, 99)",
+       "umbruchAus": "normal",
+       "ausricht": "right",
+       "zeilen": 1
+      },
+      {
+       "t": "KURS",
+       "c": "zahl",
+       "farbe": "rgb(107, 105, 99)",
+       "umbruchAus": "normal",
+       "ausricht": "right",
+       "zeilen": 1
+      },
+      {
+       "t": "WERT",
+       "c": "zahl",
+       "farbe": "rgb(107, 105, 99)",
+       "umbruchAus": "normal",
+       "ausricht": "right",
+       "zeilen": 1
+      },
+      {
+       "t": "HEUTE",
+       "c": "zahl",
+       "farbe": "rgb(107, 105, 99)",
+       "umbruchAus": "normal",
+       "ausricht": "right",
+       "zeilen": 1
+      },
+      {
+       "t": "SEIT JAHRESBEGINN",
+       "c": "zahl",
+       "farbe": "rgb(107, 105, 99)",
+       "umbruchAus": "normal",
+       "ausricht": "right",
+       "zeilen": 1
+      },
+      {
+       "t": "KURZFRIST",
+       "c": "",
+       "farbe": "rgb(107, 105, 99)",
+       "umbruchAus": "normal",
+       "ausricht": "left",
+       "zeilen": 1
+      },
+      {
+       "t": "MITTELFRIST",
+       "c": "",
+       "farbe": "rgb(107, 105, 99)",
+       "umbruchAus": "normal",
+       "ausricht": "left",
+       "zeilen": 1
+      },
+      {
+       "t": "ISIN",
+       "c": "",
+       "farbe": "rgb(107, 105, 99)",
+       "umbruchAus": "normal",
+       "ausricht": "left",
+       "zeilen": 1
+      },
+      {
+       "t": "",
+       "c": "",
+       "farbe": "rgb(107, 105, 99)",
+       "umbruchAus": "normal",
+       "ausricht": "left",
+       "zeilen": 0
+      }
+     ]
+    },
+    {
+     "zellen": 10,
+     "klasse": "",
+     "inhalt": [
+      {
+       "t": "AAPL\nApple Inc.",
+       "c": "",
+       "farbe": "rgb(11, 11, 11)",
+       "umbruchAus": "normal",
+       "ausricht": "start",
+       "zeilen": 2
+      },
+      {
+       "t": "12",
+       "c": "zahl",
+       "farbe": "rgb(11, 11, 11)",
+       "umbruchAus": "nowrap",
+       "ausricht": "right",
+       "zeilen": 1
+      },
+      {
+       "t": "313,33 $",
+       "c": "zahl",
+       "farbe": "rgb(11, 11, 11)",
+       "umbruchAus": "nowrap",
+       "ausricht": "right",
+       "zeilen": 1
+      },
+      {
+       "t": "3.759,96 $",
+       "c": "zahl",
+       "farbe": "rgb(11, 11, 11)",
+       "umbruchAus": "nowrap",
+       "ausricht": "right",
+       "zeilen": 1
+      },
+      {
+       "t": "+1,11 %",
+       "c": "zahl pos",
+       "farbe": "rgb(0, 99, 0)",
+       "umbruchAus": "nowrap",
+       "ausricht": "right",
+       "zeilen": 1
+      },
+      {
+       "t": "+15,6 %",
+       "c": "zahl pos",
+       "farbe": "rgb(0, 99, 0)",
+       "umbruchAus": "nowrap",
+       "ausricht": "right",
+       "zeilen": 1
+      },
+      {
+       "t": "noch nicht geprüft",
+       "c": "muted",
+       "farbe": "rgb(107, 105, 99)",
+       "umbruchAus": "normal",
+       "ausricht": "start",
+       "zeilen": 1
+      },
+      {
+       "t": "in keinem Buch",
+       "c": "muted",
+       "farbe": "rgb(107, 105, 99)",
+       "umbruchAus": "normal",
+       "ausricht": "start",
+       "zeilen": 1
+      },
+      {
+       "t": "US0378331005",
+       "c": "",
+       "farbe": "rgb(107, 105, 99)",
+       "umbruchAus": "normal",
+       "ausricht": "start",
+       "zeilen": 1
+      },
+      {
+       "t": "Entfernen",
+       "c": "",
+       "farbe": "rgb(11, 11, 11)",
+       "umbruchAus": "normal",
+       "ausricht": "start",
+       "zeilen": 1
+      }
+     ]
+    },
+    {
+     "zellen": 10,
+     "klasse": "",
+     "inhalt": [
+      {
+       "t": "MSFT\nMicrosoft Corporation",
+       "c": "",
+       "farbe": "rgb(11, 11, 11)",
+       "umbruchAus": "normal",
+       "ausricht": "start",
+       "zeilen": 2
+      },
+      {
+       "t": "5",
+       "c": "zahl",
+       "farbe": "rgb(11, 11, 11)",
+       "umbruchAus": "nowrap",
+       "ausricht": "right",
+       "zeilen": 1
+      },
+      {
+       "t": "495,09 $",
+       "c": "zahl",
+       "farbe": "rgb(11, 11, 11)",
+       "umbruchAus": "nowrap",
+       "ausricht": "right",
+       "zeilen": 1
+      },
+      {
+       "t": "2.475,42 $",
+       "c": "zahl",
+       "farbe": "rgb(11, 11, 11)",
+       "umbruchAus": "nowrap",
+       "ausricht": "right",
+       "zeilen": 1
+      },
+      {
+       "t": "+0,69 %",
+       "c": "zahl pos",
+       "farbe": "rgb(0, 99, 0)",
+       "umbruchAus": "nowrap",
+       "ausricht": "right",
+       "zeilen": 1
+      },
+      {
+       "t": "+3,0 %",
+       "c": "zahl pos",
+       "farbe": "rgb(0, 99, 0)",
+       "umbruchAus": "nowrap",
+       "ausricht": "right",
+       "zeilen": 1
+      },
+      {
+       "t": "noch nicht geprüft",
+       "c": "muted",
+       "farbe": "rgb(107, 105, 99)",
+       "umbruchAus": "normal",
+       "ausricht": "start",
+       "zeilen": 1
+      },
+      {
+       "t": "in keinem Buch",
+       "c": "muted",
+       "farbe": "rgb(107, 105, 99)",
+       "umbruchAus": "normal",
+       "ausricht": "start",
+       "zeilen": 1
+      },
+      {
+       "t": "US5949181045",
+       "c": "",
+       "farbe": "rgb(107, 105, 99)",
+       "umbruchAus": "normal",
+       "ausricht": "start",
+       "zeilen": 1
+      },
+      {
+       "t": "Entfernen",
+       "c": "",
+       "farbe": "rgb(11, 11, 11)",
+       "umbruchAus": "normal",
+       "ausricht": "start",
+       "zeilen": 1
+      }
+     ]
+    },
+    {
+     "zellen": 10,
+     "klasse": "",
+     "inhalt": [
+      {
+       "t": "NVDA\nNVIDIA Corporation",
+       "c": "",
+       "farbe": "rgb(11, 11, 11)",
+       "umbruchAus": "normal",
+       "ausricht": "start",
+       "zeilen": 2
+      },
+      {
+       "t": "40",
+       "c": "zahl",
+       "farbe": "rgb(11, 11, 11)",
+       "umbruchAus": "nowrap",
+       "ausricht": "right",
+       "zeilen": 1
+      },
+      {
+       "t": "211,28 $",
+       "c": "zahl",
+       "farbe": "rgb(11, 11, 11)",
+       "umbruchAus": "nowrap",
+       "ausricht": "right",
+       "zeilen": 1
+      },
+      {
+       "t": "8.451,00 $",
+       "c": "zahl",
+       "farbe": "rgb(11, 11, 11)",
+       "umbruchAus": "nowrap",
+       "ausricht": "right",
+       "zeilen": 1
+      },
+      {
+       "t": "-0,83 %",
+       "c": "zahl neg",
+       "farbe": "rgb(208, 59, 59)",
+       "umbruchAus": "nowrap",
+       "ausricht": "right",
+       "zeilen": 1
+      },
+      {
+       "t": "+13,4 %",
+       "c": "zahl pos",
+       "farbe": "rgb(0, 99, 0)",
+       "umbruchAus": "nowrap",
+       "ausricht": "right",
+       "zeilen": 1
+      },
+      {
+       "t": "noch nicht geprüft",
+       "c": "muted",
+       "farbe": "rgb(107, 105, 99)",
+       "umbruchAus": "normal",
+       "ausricht": "start",
+       "zeilen": 1
+      },
+      {
+       "t": "in keinem Buch",
+       "c": "muted",
+       "farbe": "rgb(107, 105, 99)",
+       "umbruchAus": "normal",
+       "ausricht": "start",
+       "zeilen": 1
+      },
+      {
+       "t": "US67066G1040",
+       "c": "",
+       "farbe": "rgb(107, 105, 99)",
+       "umbruchAus": "normal",
+       "ausricht": "start",
+       "zeilen": 1
+      },
+      {
+       "t": "Entfernen",
+       "c": "",
+       "farbe": "rgb(11, 11, 11)",
+       "umbruchAus": "normal",
+       "ausricht": "start",
+       "zeilen": 1
+      }
+     ]
+    },
+    {
+     "zellen": 10,
+     "klasse": "",
+     "inhalt": [
+      {
+       "t": "AMZN\nAmazon.com Incorporated Registered Shares",
+       "c": "",
+       "farbe": "rgb(11, 11, 11)",
+       "umbruchAus": "normal",
+       "ausricht": "start",
+       "zeilen": 2
+      },
+      {
+       "t": "3",
+       "c": "zahl",
+       "farbe": "rgb(11, 11, 11)",
+       "umbruchAus": "nowrap",
+       "ausricht": "right",
+       "zeilen": 1
+      },
+      {
+       "t": "260,38 $",
+       "c": "zahl",
+       "farbe": "rgb(11, 11, 11)",
+       "umbruchAus": "nowrap",
+       "ausricht": "right",
+       "zeilen": 1
+      },
+      {
+       "t": "781,14 $",
+       "c": "zahl",
+       "farbe": "rgb(11, 11, 11)",
+       "umbruchAus": "nowrap",
+       "ausricht": "right",
+       "zeilen": 1
+      },
+      {
+       "t": "-0,26 %",
+       "c": "zahl neg",
+       "farbe": "rgb(208, 59, 59)",
+       "umbruchAus": "nowrap",
+       "ausricht": "right",
+       "zeilen": 1
+      },
+      {
+       "t": "+12,8 %",
+       "c": "zahl pos",
+       "farbe": "rgb(0, 99, 0)",
+       "umbruchAus": "nowrap",
+       "ausricht": "right",
+       "zeilen": 1
+      },
+      {
+       "t": "noch nicht geprüft",
+       "c": "muted",
+       "farbe": "rgb(107, 105, 99)",
+       "umbruchAus": "normal",
+       "ausricht": "start",
+       "zeilen": 1
+      },
+      {
+       "t": "in keinem Buch",
+       "c": "muted",
+       "farbe": "rgb(107, 105, 99)",
+       "umbruchAus": "normal",
+       "ausricht": "start",
+       "zeilen": 1
+      },
+      {
+       "t": "US0231351067",
+       "c": "",
+       "farbe": "rgb(107, 105, 99)",
+       "umbruchAus": "normal",
+       "ausricht": "start",
+       "zeilen": 1
+      },
+      {
+       "t": "Entfernen",
+       "c": "",
+       "farbe": "rgb(11, 11, 11)",
+       "umbruchAus": "normal",
+       "ausricht": "start",
+       "zeilen": 1
+      }
+     ]
+    },
+    {
+     "zellen": 10,
+     "klasse": "summe",
+     "inhalt": [
+      {
+       "t": "Zusammen",
+       "c": "",
+       "farbe": "rgb(11, 11, 11)",
+       "umbruchAus": "normal",
+       "ausricht": "start",
+       "zeilen": 1
+      },
+      {
+       "t": "",
+       "c": "",
+       "farbe": "rgb(11, 11, 11)",
+       "umbruchAus": "normal",
+       "ausricht": "start",
+       "zeilen": 0
+      },
+      {
+       "t": "",
+       "c": "",
+       "farbe": "rgb(11, 11, 11)",
+       "umbruchAus": "normal",
+       "ausricht": "start",
+       "zeilen": 0
+      },
+      {
+       "t": "15.467,53 $",
+       "c": "zahl",
+       "farbe": "rgb(11, 11, 11)",
+       "umbruchAus": "nowrap",
+       "ausricht": "right",
+       "zeilen": 1
+      },
+      {
+       "t": "-15,00 $",
+       "c": "zahl neg",
+       "farbe": "rgb(208, 59, 59)",
+       "umbruchAus": "nowrap",
+       "ausricht": "right",
+       "zeilen": 1
+      },
+      {
+       "t": "+12,1 %",
+       "c": "zahl pos",
+       "farbe": "rgb(0, 99, 0)",
+       "umbruchAus": "nowrap",
+       "ausricht": "right",
+       "zeilen": 1
+      },
+      {
+       "t": "",
+       "c": "",
+       "farbe": "rgb(11, 11, 11)",
+       "umbruchAus": "normal",
+       "ausricht": "start",
+       "zeilen": 0
+      },
+      {
+       "t": "",
+       "c": "",
+       "farbe": "rgb(11, 11, 11)",
+       "umbruchAus": "normal",
+       "ausricht": "start",
+       "zeilen": 0
+      },
+      {
+       "t": "",
+       "c": "",
+       "farbe": "rgb(11, 11, 11)",
+       "umbruchAus": "normal",
+       "ausricht": "start",
+       "zeilen": 0
+      },
+      {
+       "t": "",
+       "c": "",
+       "farbe": "rgb(11, 11, 11)",
+       "umbruchAus": "normal",
+       "ausricht": "start",
+       "zeilen": 0
+      }
+     ]
+    }
+   ],
+   "breiteTabelle": 1210,
+   "breiteKasten": 1240,
+   "rollbar": false,
+   "ueberKasten": -15,
+   "fusstext": "Diese Papiere werden nicht gehandelt und zählen nicht zum simulierten Depotwert.",
+   "groesse": "1280x800"
+  },
+  {
+   "fehlt": false,
+   "tabelle": true,
+   "zeilen": [
+    {
+     "zellen": 10,
+     "klasse": "",
+     "inhalt": [
+      {
+       "t": "WERT",
+       "c": "",
+       "farbe": "rgb(107, 105, 99)",
+       "umbruchAus": "normal",
+       "ausricht": "left",
+       "zeilen": 1
+      },
+      {
+       "t": "STÜCK",
+       "c": "zahl",
+       "farbe": "rgb(107, 105, 99)",
+       "umbruchAus": "normal",
+       "ausricht": "right",
+       "zeilen": 1
+      },
+      {
+       "t": "KURS",
+       "c": "zahl",
+       "farbe": "rgb(107, 105, 99)",
+       "umbruchAus": "normal",
+       "ausricht": "right",
+       "zeilen": 1
+      },
+      {
+       "t": "WERT",
+       "c": "zahl",
+       "farbe": "rgb(107, 105, 99)",
+       "umbruchAus": "normal",
+       "ausricht": "right",
+       "zeilen": 1
+      },
+      {
+       "t": "HEUTE",
+       "c": "zahl",
+       "farbe": "rgb(107, 105, 99)",
+       "umbruchAus": "normal",
+       "ausricht": "right",
+       "zeilen": 1
+      },
+      {
+       "t": "SEIT JAHRESBEGINN",
+       "c": "zahl",
+       "farbe": "rgb(107, 105, 99)",
+       "umbruchAus": "normal",
+       "ausricht": "right",
+       "zeilen": 2
+      },
+      {
+       "t": "KURZFRIST",
+       "c": "",
+       "farbe": "rgb(107, 105, 99)",
+       "umbruchAus": "normal",
+       "ausricht": "left",
+       "zeilen": 1
+      },
+      {
+       "t": "MITTELFRIST",
+       "c": "",
+       "farbe": "rgb(107, 105, 99)",
+       "umbruchAus": "normal",
+       "ausricht": "left",
+       "zeilen": 1
+      },
+      {
+       "t": "ISIN",
+       "c": "",
+       "farbe": "rgb(107, 105, 99)",
+       "umbruchAus": "normal",
+       "ausricht": "left",
+       "zeilen": 1
+      },
+      {
+       "t": "",
+       "c": "",
+       "farbe": "rgb(107, 105, 99)",
+       "umbruchAus": "normal",
+       "ausricht": "left",
+       "zeilen": 0
+      }
+     ]
+    },
+    {
+     "zellen": 10,
+     "klasse": "",
+     "inhalt": [
+      {
+       "t": "AAPL\nApple Inc.",
+       "c": "",
+       "farbe": "rgb(11, 11, 11)",
+       "umbruchAus": "normal",
+       "ausricht": "start",
+       "zeilen": 2
+      },
+      {
+       "t": "12",
+       "c": "zahl",
+       "farbe": "rgb(11, 11, 11)",
+       "umbruchAus": "nowrap",
+       "ausricht": "right",
+       "zeilen": 1
+      },
+      {
+       "t": "313,33 $",
+       "c": "zahl",
+       "farbe": "rgb(11, 11, 11)",
+       "umbruchAus": "nowrap",
+       "ausricht": "right",
+       "zeilen": 1
+      },
+      {
+       "t": "3.759,90 $",
+       "c": "zahl",
+       "farbe": "rgb(11, 11, 11)",
+       "umbruchAus": "nowrap",
+       "ausricht": "right",
+       "zeilen": 1
+      },
+      {
+       "t": "+1,11 %",
+       "c": "zahl pos",
+       "farbe": "rgb(0, 99, 0)",
+       "umbruchAus": "nowrap",
+       "ausricht": "right",
+       "zeilen": 1
+      },
+      {
+       "t": "+15,6 %",
+       "c": "zahl pos",
+       "farbe": "rgb(0, 99, 0)",
+       "umbruchAus": "nowrap",
+       "ausricht": "right",
+       "zeilen": 1
+      },
+      {
+       "t": "Kursreihe zu kurz (155 < 261 Kerzen) – Signal wäre nicht das",
+       "c": "muted",
+       "farbe": "rgb(107, 105, 99)",
+       "umbruchAus": "normal",
+       "ausricht": "start",
+       "zeilen": 4
+      },
+      {
+       "t": "in keinem Buch",
+       "c": "muted",
+       "farbe": "rgb(107, 105, 99)",
+       "umbruchAus": "normal",
+       "ausricht": "start",
+       "zeilen": 2
+      },
+      {
+       "t": "US0378331005",
+       "c": "",
+       "farbe": "rgb(107, 105, 99)",
+       "umbruchAus": "normal",
+       "ausricht": "start",
+       "zeilen": 1
+      },
+      {
+       "t": "Entfernen",
+       "c": "",
+       "farbe": "rgb(11, 11, 11)",
+       "umbruchAus": "normal",
+       "ausricht": "start",
+       "zeilen": 1
+      }
+     ]
+    },
+    {
+     "zellen": 10,
+     "klasse": "",
+     "inhalt": [
+      {
+       "t": "MSFT\nMicrosoft Corporation",
+       "c": "",
+       "farbe": "rgb(11, 11, 11)",
+       "umbruchAus": "normal",
+       "ausricht": "start",
+       "zeilen": 3
+      },
+      {
+       "t": "5",
+       "c": "zahl",
+       "farbe": "rgb(11, 11, 11)",
+       "umbruchAus": "nowrap",
+       "ausricht": "right",
+       "zeilen": 1
+      },
+      {
+       "t": "494,94 $",
+       "c": "zahl",
+       "farbe": "rgb(11, 11, 11)",
+       "umbruchAus": "nowrap",
+       "ausricht": "right",
+       "zeilen": 1
+      },
+      {
+       "t": "2.474,70 $",
+       "c": "zahl",
+       "farbe": "rgb(11, 11, 11)",
+       "umbruchAus": "nowrap",
+       "ausricht": "right",
+       "zeilen": 1
+      },
+      {
+       "t": "+0,70 %",
+       "c": "zahl pos",
+       "farbe": "rgb(0, 99, 0)",
+       "umbruchAus": "nowrap",
+       "ausricht": "right",
+       "zeilen": 1
+      },
+      {
+       "t": "+3,0 %",
+       "c": "zahl pos",
+       "farbe": "rgb(0, 99, 0)",
+       "umbruchAus": "nowrap",
+       "ausricht": "right",
+       "zeilen": 1
+      },
+      {
+       "t": "Kursreihe zu kurz (155 < 261 Kerzen) – Signal wäre nicht das",
+       "c": "muted",
+       "farbe": "rgb(107, 105, 99)",
+       "umbruchAus": "normal",
+       "ausricht": "start",
+       "zeilen": 4
+      },
+      {
+       "t": "in keinem Buch",
+       "c": "muted",
+       "farbe": "rgb(107, 105, 99)",
+       "umbruchAus": "normal",
+       "ausricht": "start",
+       "zeilen": 2
+      },
+      {
+       "t": "US5949181045",
+       "c": "",
+       "farbe": "rgb(107, 105, 99)",
+       "umbruchAus": "normal",
+       "ausricht": "start",
+       "zeilen": 1
+      },
+      {
+       "t": "Entfernen",
+       "c": "",
+       "farbe": "rgb(11, 11, 11)",
+       "umbruchAus": "normal",
+       "ausricht": "start",
+       "zeilen": 1
+      }
+     ]
+    },
+    {
+     "zellen": 10,
+     "klasse": "",
+     "inhalt": [
+      {
+       "t": "NVDA\nNVIDIA Corporation",
+       "c": "",
+       "farbe": "rgb(11, 11, 11)",
+       "umbruchAus": "normal",
+       "ausricht": "start",
+       "zeilen": 2
+      },
+      {
+       "t": "40",
+       "c": "zahl",
+       "farbe": "rgb(11, 11, 11)",
+       "umbruchAus": "nowrap",
+       "ausricht": "right",
+       "zeilen": 1
+      },
+      {
+       "t": "211,27 $",
+       "c": "zahl",
+       "farbe": "rgb(11, 11, 11)",
+       "umbruchAus": "nowrap",
+       "ausricht": "right",
+       "zeilen": 1
+      },
+      {
+       "t": "8.450,80 $",
+       "c": "zahl",
+       "farbe": "rgb(11, 11, 11)",
+       "umbruchAus": "nowrap",
+       "ausricht": "right",
+       "zeilen": 1
+      },
+      {
+       "t": "-0,80 %",
+       "c": "zahl neg",
+       "farbe": "rgb(208, 59, 59)",
+       "umbruchAus": "nowrap",
+       "ausricht": "right",
+       "zeilen": 1
+      },
+      {
+       "t": "+13,4 %",
+       "c": "zahl pos",
+       "farbe": "rgb(0, 99, 0)",
+       "umbruchAus": "nowrap",
+       "ausricht": "right",
+       "zeilen": 1
+      },
+      {
+       "t": "Kursreihe zu kurz (155 < 261 Kerzen) – Signal wäre nicht das",
+       "c": "muted",
+       "farbe": "rgb(107, 105, 99)",
+       "umbruchAus": "normal",
+       "ausricht": "start",
+       "zeilen": 4
+      },
+      {
+       "t": "in keinem Buch",
+       "c": "muted",
+       "farbe": "rgb(107, 105, 99)",
+       "umbruchAus": "normal",
+       "ausricht": "start",
+       "zeilen": 2
+      },
+      {
+       "t": "US67066G1040",
+       "c": "",
+       "farbe": "rgb(107, 105, 99)",
+       "umbruchAus": "normal",
+       "ausricht": "start",
+       "zeilen": 1
+      },
+      {
+       "t": "Entfernen",
+       "c": "",
+       "farbe": "rgb(11, 11, 11)",
+       "umbruchAus": "normal",
+       "ausricht": "start",
+       "zeilen": 1
+      }
+     ]
+    },
+    {
+     "zellen": 10,
+     "klasse": "",
+     "inhalt": [
+      {
+       "t": "AMZN\nAmazon.com Incorporated Registered Shares",
+       "c": "",
+       "farbe": "rgb(11, 11, 11)",
+       "umbruchAus": "normal",
+       "ausricht": "start",
+       "zeilen": 4
+      },
+      {
+       "t": "3",
+       "c": "zahl",
+       "farbe": "rgb(11, 11, 11)",
+       "umbruchAus": "nowrap",
+       "ausricht": "right",
+       "zeilen": 1
+      },
+      {
+       "t": "260,34 $",
+       "c": "zahl",
+       "farbe": "rgb(11, 11, 11)",
+       "umbruchAus": "nowrap",
+       "ausricht": "right",
+       "zeilen": 1
+      },
+      {
+       "t": "781,02 $",
+       "c": "zahl",
+       "farbe": "rgb(11, 11, 11)",
+       "umbruchAus": "nowrap",
+       "ausricht": "right",
+       "zeilen": 1
+      },
+      {
+       "t": "-0,24 %",
+       "c": "zahl neg",
+       "farbe": "rgb(208, 59, 59)",
+       "umbruchAus": "nowrap",
+       "ausricht": "right",
+       "zeilen": 1
+      },
+      {
+       "t": "+12,8 %",
+       "c": "zahl pos",
+       "farbe": "rgb(0, 99, 0)",
+       "umbruchAus": "nowrap",
+       "ausricht": "right",
+       "zeilen": 1
+      },
+      {
+       "t": "Kursreihe zu kurz (155 < 261 Kerzen) – Signal wäre nicht das",
+       "c": "muted",
+       "farbe": "rgb(107, 105, 99)",
+       "umbruchAus": "normal",
+       "ausricht": "start",
+       "zeilen": 4
+      },
+      {
+       "t": "in keinem Buch",
+       "c": "muted",
+       "farbe": "rgb(107, 105, 99)",
+       "umbruchAus": "normal",
+       "ausricht": "start",
+       "zeilen": 2
+      },
+      {
+       "t": "US0231351067",
+       "c": "",
+       "farbe": "rgb(107, 105, 99)",
+       "umbruchAus": "normal",
+       "ausricht": "start",
+       "zeilen": 1
+      },
+      {
+       "t": "Entfernen",
+       "c": "",
+       "farbe": "rgb(11, 11, 11)",
+       "umbruchAus": "normal",
+       "ausricht": "start",
+       "zeilen": 1
+      }
+     ]
+    },
+    {
+     "zellen": 10,
+     "klasse": "summe",
+     "inhalt": [
+      {
+       "t": "Zusammen",
+       "c": "",
+       "farbe": "rgb(11, 11, 11)",
+       "umbruchAus": "normal",
+       "ausricht": "start",
+       "zeilen": 1
+      },
+      {
+       "t": "",
+       "c": "",
+       "farbe": "rgb(11, 11, 11)",
+       "umbruchAus": "normal",
+       "ausricht": "start",
+       "zeilen": 0
+      },
+      {
+       "t": "",
+       "c": "",
+       "farbe": "rgb(11, 11, 11)",
+       "umbruchAus": "normal",
+       "ausricht": "start",
+       "zeilen": 0
+      },
+      {
+       "t": "15.466,42 $",
+       "c": "zahl",
+       "farbe": "rgb(11, 11, 11)",
+       "umbruchAus": "nowrap",
+       "ausricht": "right",
+       "zeilen": 1
+      },
+      {
+       "t": "-11,99 $",
+       "c": "zahl neg",
+       "farbe": "rgb(208, 59, 59)",
+       "umbruchAus": "nowrap",
+       "ausricht": "right",
+       "zeilen": 1
+      },
+      {
+       "t": "+12,1 %",
+       "c": "zahl pos",
+       "farbe": "rgb(0, 99, 0)",
+       "umbruchAus": "nowrap",
+       "ausricht": "right",
+       "zeilen": 1
+      },
+      {
+       "t": "",
+       "c": "",
+       "farbe": "rgb(11, 11, 11)",
+       "umbruchAus": "normal",
+       "ausricht": "start",
+       "zeilen": 0
+      },
+      {
+       "t": "",
+       "c": "",
+       "farbe": "rgb(11, 11, 11)",
+       "umbruchAus": "normal",
+       "ausricht": "start",
+       "zeilen": 0
+      },
+      {
+       "t": "",
+       "c": "",
+       "farbe": "rgb(11, 11, 11)",
+       "umbruchAus": "normal",
+       "ausricht": "start",
+       "zeilen": 0
+      },
+      {
+       "t": "",
+       "c": "",
+       "farbe": "rgb(11, 11, 11)",
+       "umbruchAus": "normal",
+       "ausricht": "start",
+       "zeilen": 0
+      }
+     ]
+    }
+   ],
+   "breiteTabelle": 920,
+   "breiteKasten": 950,
+   "rollbar": false,
+   "ueberKasten": -15,
+   "fusstext": "Diese Papiere werden nicht gehandelt und zählen nicht zum simulierten Depotwert.",
+   "groesse": "1000x700"
+  }
+ ],
+ "regelkopf": {
+  "fehlt": false,
+  "tabelle": true,
+  "zeilen": [
+   {
+    "nr": 0,
+    "ersteTag": "TH",
+    "scope": "row",
+    "text": "AUSLÖSER",
+    "stilErste": {
+     "schreibung": "uppercase",
+     "sperrung": "0.48px",
+     "groesse": "12px",
+     "gewicht": "400",
+     "farbe": "rgb(107, 105, 99)",
+     "ausricht": "left",
+     "unten": "1px solid",
+     "breite": 130
+    },
+    "stilZweite": {
+     "schreibung": "none",
+     "sperrung": "normal",
+     "groesse": "13px",
+     "gewicht": "400",
+     "farbe": "rgb(11, 11, 11)",
+     "ausricht": "start",
+     "unten": "1px solid",
+     "breite": 1070
+    }
+   },
+   {
+    "nr": 1,
+    "ersteTag": "TH",
+    "scope": "row",
+    "text": "KERZEN",
+    "stilErste": {
+     "schreibung": "uppercase",
+     "sperrung": "0.48px",
+     "groesse": "12px",
+     "gewicht": "400",
+     "farbe": "rgb(107, 105, 99)",
+     "ausricht": "left",
+     "unten": "1px solid",
+     "breite": 130
+    },
+    "stilZweite": {
+     "schreibung": "none",
+     "sperrung": "normal",
+     "groesse": "13px",
+     "gewicht": "400",
+     "farbe": "rgb(11, 11, 11)",
+     "ausricht": "start",
+     "unten": "1px solid",
+     "breite": 1070
+    }
+   },
+   {
+    "nr": 2,
+    "ersteTag": "TH",
+    "scope": "row",
+    "text": "HALTEDAUER",
+    "stilErste": {
+     "schreibung": "uppercase",
+     "sperrung": "0.48px",
+     "groesse": "12px",
+     "gewicht": "400",
+     "farbe": "rgb(107, 105, 99)",
+     "ausricht": "left",
+     "unten": "1px solid",
+     "breite": 130
+    },
+    "stilZweite": {
+     "schreibung": "none",
+     "sperrung": "normal",
+     "groesse": "13px",
+     "gewicht": "400",
+     "farbe": "rgb(11, 11, 11)",
+     "ausricht": "start",
+     "unten": "1px solid",
+     "breite": 1070
+    }
+   },
+   {
+    "nr": 3,
+    "ersteTag": "TH",
+    "scope": "row",
+    "text": "PRODUKT",
+    "stilErste": {
+     "schreibung": "uppercase",
+     "sperrung": "0.48px",
+     "groesse": "12px",
+     "gewicht": "400",
+     "farbe": "rgb(107, 105, 99)",
+     "ausricht": "left",
+     "unten": "1px solid",
+     "breite": 130
+    },
+    "stilZweite": {
+     "schreibung": "none",
+     "sperrung": "normal",
+     "groesse": "13px",
+     "gewicht": "400",
+     "farbe": "rgb(11, 11, 11)",
+     "ausricht": "start",
+     "unten": "1px solid",
+     "breite": 1070
+    }
+   },
+   {
+    "nr": 4,
+    "ersteTag": "TH",
+    "scope": "row",
+    "text": "POSITIONSGRÖSSE",
+    "stilErste": {
+     "schreibung": "uppercase",
+     "sperrung": "0.48px",
+     "groesse": "12px",
+     "gewicht": "400",
+     "farbe": "rgb(107, 105, 99)",
+     "ausricht": "left",
+     "unten": "1px solid",
+     "breite": 130
+    },
+    "stilZweite": {
+     "schreibung": "none",
+     "sperrung": "normal",
+     "groesse": "13px",
+     "gewicht": "400",
+     "farbe": "rgb(11, 11, 11)",
+     "ausricht": "start",
+     "unten": "1px solid",
+     "breite": 1070
+    }
+   },
+   {
+    "nr": 5,
+    "ersteTag": "TH",
+    "scope": "row",
+    "text": "NOT-STOP",
+    "stilErste": {
+     "schreibung": "uppercase",
+     "sperrung": "0.48px",
+     "groesse": "12px",
+     "gewicht": "400",
+     "farbe": "rgb(107, 105, 99)",
+     "ausricht": "left",
+     "unten": "1px solid",
+     "breite": 130
+    },
+    "stilZweite": {
+     "schreibung": "none",
+     "sperrung": "normal",
+     "groesse": "13px",
+     "gewicht": "400",
+     "farbe": "rgb(11, 11, 11)",
+     "ausricht": "start",
+     "unten": "1px solid",
+     "breite": 1070
+    }
+   },
+   {
+    "nr": 6,
+    "ersteTag": "TH",
+    "scope": "row",
+    "text": "BELEG",
+    "stilErste": {
+     "schreibung": "uppercase",
+     "sperrung": "0.48px",
+     "groesse": "12px",
+     "gewicht": "400",
+     "farbe": "rgb(107, 105, 99)",
+     "ausricht": "left",
+     "unten": "1px solid",
+     "breite": 130
+    },
+    "stilZweite": {
+     "schreibung": "none",
+     "sperrung": "normal",
+     "groesse": "13px",
+     "gewicht": "400",
+     "farbe": "rgb(11, 11, 11)",
+     "ausricht": "start",
+     "unten": "0px none",
+     "breite": 1070
+    }
+   }
+  ],
+  "hatWarnhinweis": false,
+  "warntext": null,
+  "volltext": "AUSLÖSER\tRSI(2) im Seitwärtskanal\nKERZEN\t60m (so gemessen)\nHALTEDAUER\t8 Stunden\nPRODUKT\tBasiswert ohne Hebel\nPOSITIONSGRÖSSE\tfest 3 % des Depots\nNOT-STOP\t20 %\nBELEG\tnicht entscheidbar – +0,065 Pp Überschuss gegen eine Kontrolle aus echten Kerzen desselben Werts zur selben Tagesstunde (6.509 Trades, 675 Tage). Die Rohkante von +0,170 Pp besteht damit zu rund zwei Dritteln aus schlichtem Halten – nicht die Regel verdient sie, sondern die Zeit im Markt.\nKein Messprotokoll im Datenordner – dieser Stand steht fest im Code und kann veralten."
+ },
+ "messung": {
+  "fehlt": false,
+  "tabellen": [
+   {
+    "zeilen": 15,
+    "kopfIstTh": true,
+    "spalten": 5,
+    "ungleicheZeilen": 0,
+    "erstesFeld": "Strategie"
+   }
+  ],
+  "ueberschriften": [
+   "SCOREBOARD – jede Strategie, die durch die Messmaschine gelaufen ist. Sortiert nach Belegs",
+   "STRATEGIEN – alle Regeln, die es gibt: wo sie liegen und was aus ihnen wurde. i",
+   "NEUE STRATEGIE INS RENNEN SCHICKEN i"
+  ],
+  "textLaenge": 3984,
+  "leerHinweise": [
+   {
+    "kopf": "",
+    "laenge": 681
+   },
+   {
+    "kopf": "",
+    "laenge": 1075
+   },
+   {
+    "kopf": "",
+    "laenge": 1990
+   },
+   {
+    "kopf": "",
+    "laenge": 113
+   }
+  ]
+ },
+ "seitenFehler": [],
+ "konsoleFehler": [],
+ "funde": [
+  {
+   "marke": "dashboard @1280x800",
+   "art": "unsichtbarBedienbar",
+   "e": {
+    "wo": "div#sub-ueberblick.sub.active > div#newsTicker > div.tickSpur > a",
+    "grund": "ausserhalb: left=1675"
+   }
+  },
+  {
+   "marke": "dashboard @1280x800",
+   "art": "unsichtbarBedienbar",
+   "e": {
+    "wo": "div#sub-ueberblick.sub.active > div#newsTicker > div.tickSpur > a",
+    "grund": "ausserhalb: left=2244"
+   }
+  },
+  {
+   "marke": "dashboard @1280x800",
+   "art": "unsichtbarBedienbar",
+   "e": {
+    "wo": "div#sub-ueberblick.sub.active > div#newsTicker > div.tickSpur > a",
+    "grund": "ausserhalb: left=2696"
+   }
+  },
+  {
+   "marke": "strategien/mittelfrist @1280x800",
+   "art": "unfertig",
+   "e": {
+    "text": "Am 21.08.2026 durchgerechnet: Der Basiswert müsste 5,5 bis 11 %\n      laufen, damit ein Schein nach Zeitwertverfall und ",
+    "wo": "div#tab-strategien.tab.active > div#sub-mittelfrist.sub.active > div.panel > div"
+   }
+  },
+  {
+   "marke": "strategien/regelbuch @1280x800",
+   "art": "unfertig",
+   "e": {
+    "text": "Die Trefferquoten zählten noch Trades aus der Zeit des Buchungsfehlers mit. Einmalig auf null gesetzt – ab jetzt zählen ",
+    "wo": "tbody > tr > td > div"
+   }
+  },
+  {
+   "marke": "messung @1280x800",
+   "art": "unfertig",
+   "e": {
+    "text": "function ersteKerzeDesTages(bars, i) {\n  /* Die erste Kerze eines Handelstages - erkannt am Datumswechsel gegen die\n   *",
+    "wo": "div#strategieEingabe.panel > div#stBaukasten > details#stCodeAuf > pre#stCodeVorschau"
+   }
+  }
+ ]
+}

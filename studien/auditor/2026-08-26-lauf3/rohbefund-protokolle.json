@@ -1,0 +1,211 @@
+{
+ "commit": "d964891",
+ "laeufe": [
+  {
+   "modus": "rsi2seit",
+   "saat": {
+    "ok": true,
+    "modus": "rsi2seit"
+   },
+   "beleg": {
+    "fehlt": false,
+    "zeilen": [
+     {
+      "kopf": "AUSLÖSER",
+      "wert": "RSI(2) im Seitwärtskanal"
+     },
+     {
+      "kopf": "KERZEN",
+      "wert": "60m (so gemessen)"
+     },
+     {
+      "kopf": "HALTEDAUER",
+      "wert": "8 Stunden"
+     },
+     {
+      "kopf": "PRODUKT",
+      "wert": "Basiswert ohne Hebel"
+     },
+     {
+      "kopf": "POSITIONSGRÖSSE",
+      "wert": "fest 3 % des Depots"
+     },
+     {
+      "kopf": "NOT-STOP",
+      "wert": "20 %"
+     },
+     {
+      "kopf": "BELEG",
+      "wert": "nicht entscheidbar – +0,065 Pp Überschuss gegen eine Kontrolle aus echten Kerzen desselben Werts zur selben Tagesstunde (6.509 Trades, 675 Tage). Die Rohkante von +0,170 Pp besteht damit zu rund zwei Dritteln aus schlichtem Halten – nicht die Regel verdient sie, sondern die Zeit im Markt. Kein Messprotokoll im Datenordner – dieser Stand steht fest im Code und kann veralten."
+     }
+    ],
+    "urteilRoh": "nicht entscheidbar",
+    "urteilFarbe": "rgb(145, 91, 0)",
+    "hatWarnhinweis": false,
+    "warntext": null
+   },
+   "huerde": {
+    "gefunden": true,
+    "id": "kostenHuerde",
+    "text": "Kostenhürde: 0,100 Pp je Umlauf · Aktie 1x · Haltedauer 8 h · Einsatz 3000 $. So weit muss sich der Basiswert bewegen, bevor etwas übrig bleibt.Davon Spanne 0,100 · Zeitwert 0,000 · Ordergebühr 0,000 Pp.Capital.com berechnet keine Kommission; ohne Hebel entfällt auch die Übernacht-Finanzierung. Für diesen Weg ist die Spanne der ganze Preis.Messung vom 2026-08-26: Überschuss je Signal +0,021 Pp gegen eine gepaarte Kontrolle → netto -0,079 PpUrteil der Messmaschine: nicht-entscheidbar. Diese Zahl ist kein belegter Vorsprung – auch dann nicht, wenn sie positiv ist."
+   },
+   "down": {
+    "fehlt": false,
+    "downDa": true,
+    "downFarbe": "rgb(11, 11, 11)",
+    "sollDown": "rgb(208, 59, 59)",
+    "normaleTinte": "rgb(11, 11, 11)",
+    "alle": [
+     {
+      "t": "+7,3 %",
+      "c": "",
+      "farbe": "rgb(11, 11, 11)"
+     },
+     {
+      "t": "111.400 $",
+      "c": "",
+      "farbe": "rgb(11, 11, 11)"
+     },
+     {
+      "t": "-7,2 %",
+      "c": "down",
+      "farbe": "rgb(11, 11, 11)"
+     }
+    ]
+   }
+  },
+  {
+   "modus": "kapitulation",
+   "saat": {
+    "ok": true,
+    "modus": "kapitulation"
+   },
+   "beleg": {
+    "fehlt": false,
+    "zeilen": [
+     {
+      "kopf": "AUSLÖSER",
+      "wert": "Kapitulations-Dip im Abwärtskanal"
+     },
+     {
+      "kopf": "KERZEN",
+      "wert": "60m (so gemessen)"
+     },
+     {
+      "kopf": "HALTEDAUER",
+      "wert": "8 Stunden"
+     },
+     {
+      "kopf": "PRODUKT",
+      "wert": "Basiswert ohne Hebel"
+     },
+     {
+      "kopf": "POSITIONSGRÖSSE",
+      "wert": "fest 3 % des Depots"
+     },
+     {
+      "kopf": "NOT-STOP",
+      "wert": "20 %"
+     },
+     {
+      "kopf": "BELEG",
+      "wert": "nicht entscheidbar – Der Ertrag sitzt fast vollständig in wenigen Trades: In der Bestätigungshälfte tragen 6 von 676 Trades die Hälfte des Gesamtertrags, und ohne die besten 5 % bleiben −0,505 Pp. Die Datenmenge kann die Frage nicht beantworten – dafür bräuchte es rund die 23-fache Zahl an Werten. Was belastbar ist, ist die Aussage über das Risiko, nicht die über den Ertrag. Kein Messprotokoll im "
+     }
+    ],
+    "urteilRoh": "nicht entscheidbar",
+    "urteilFarbe": "rgb(145, 91, 0)",
+    "hatWarnhinweis": false,
+    "warntext": null
+   },
+   "huerde": {
+    "gefunden": true,
+    "id": "kostenHuerde",
+    "text": "Kostenhürde: 0,100 Pp je Umlauf · Aktie 1x · Haltedauer 8 h · Einsatz 3000 $. So weit muss sich der Basiswert bewegen, bevor etwas übrig bleibt.Davon Spanne 0,100 · Zeitwert 0,000 · Ordergebühr 0,000 Pp.Capital.com berechnet keine Kommission; ohne Hebel entfällt auch die Übernacht-Finanzierung. Für diesen Weg ist die Spanne der ganze Preis.Messung vom 2026-08-26: Überschuss je Signal +1,071 Pp gegen eine gepaarte Kontrolle (die Variante mit dem Urteil des Protokolls, von 3) → netto +0,971 PpUrteil der Messmaschine: nicht-bestaetigt. Diese Zahl ist kein belegter Vorsprung – auch dann nicht, wenn sie positiv ist."
+   },
+   "down": {
+    "fehlt": false,
+    "downDa": true,
+    "downFarbe": "rgb(11, 11, 11)",
+    "sollDown": "rgb(208, 59, 59)",
+    "normaleTinte": "rgb(11, 11, 11)",
+    "alle": [
+     {
+      "t": "+7,3 %",
+      "c": "",
+      "farbe": "rgb(11, 11, 11)"
+     },
+     {
+      "t": "111.400 $",
+      "c": "",
+      "farbe": "rgb(11, 11, 11)"
+     },
+     {
+      "t": "-7,2 %",
+      "c": "down",
+      "farbe": "rgb(11, 11, 11)"
+     }
+    ]
+   }
+  }
+ ],
+ "scoreboard": {
+  "fehlt": false,
+  "tabellen": [
+   {
+    "zeilen": 13,
+    "spalten": 8,
+    "kopfIstTh": true,
+    "ungleich": 0,
+    "kopfzeile": [
+     "URTEIL",
+     "STRATEGIE",
+     "ÜBERSCHUSS\nTAGESMITTEL",
+     "ÜBERSCHUSS\nJE SIGNAL",
+     "T",
+     "MDE",
+     "TAGE / SIGNALE",
+     "GEMESSEN"
+    ],
+    "ersteDaten": [
+     "nicht bestätigt",
+     "kapitulation (3 Varianten)",
+     "+1,107",
+     "+1,071",
+     "+2,14",
+     "+1,034",
+     "98 / 1740",
+     "2026-08-26 ⟳ alte Maschine"
+    ]
+   },
+   {
+    "zeilen": 16,
+    "spalten": 6,
+    "kopfIstTh": true,
+    "ungleich": 0,
+    "kopfzeile": [
+     "Strategie",
+     "Ort",
+     "Läufe",
+     "Zuletzt",
+     "Urteil",
+     "Im Betrieb"
+    ],
+    "ersteDaten": [
+     "winkelgrad",
+     "Projekt",
+     "2",
+     "26.08.",
+     "nicht entscheidbar",
+     "–"
+    ]
+   }
+  ],
+  "urteilsWorte": [
+   "nicht bestätigt",
+   "nicht entscheidbar",
+   "nicht messbar"
+  ],
+  "textLaenge": 6276
+ },
+ "konsoleFehler": []
+}
