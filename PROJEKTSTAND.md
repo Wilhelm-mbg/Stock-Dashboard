@@ -1992,7 +1992,62 @@ eine Datei. Wer sonst zugreift, stimmt sich vorher mit ihm ab.
 
 ### Wartet auf Wilhelm (nicht anfangen)
 
-- *(nichts offen — Stufe F (2) ist am 26.08. entschieden, siehe „Neu freigegeben" oben.)*
+- *(nichts offen — die drei Richtungsentscheide vom 26.08. 21:15 sind gefallen, siehe
+  „Entschieden" und die drei Aufträge unten.)*
+
+### 🔴 SOFORT, vor allem anderen — die zwei Datenfunde beheben (Wilhelm 26.08. 21:15)
+
+**Wilhelms Entscheid: sofort beheben, vor dem Release und vor Strang A.** Begründung, die
+er mitträgt: erfundene Kurse verzerren jede Messung, die diese Tage berührt — und niemand
+würde es später am Ergebnis erkennen.
+
+1. **Phantom-Dochte an sieben US-Halbtagen.** Tiefstkurse ohne jeden Umsatz; belegt bei
+   AAPL **Tief 201,25 gegen echte 211,81** — rund 5 % erfundene Spanne. Erst **erheben**,
+   wie viele Reihen und Tage betroffen sind, dann beheben. Auflage wie bei #96: **zählen
+   vor dem Ändern**, und die Regel darf keine echten Kerzen treffen.
+2. **Der 25.08. ist womöglich ganz neu zu holen** — auch die 19:30-Kerze wurde unfertig
+   eingefroren. Prüfen, ob Neuholen des Tages sauberer ist als Nachbessern.
+
+**Danach erst** ist das Release dran (das ohnehin auf der Schranken-Reparatur wartet).
+
+### ⭐ #80 — die Güte wird ein Perzentil (Wilhelm 26.08. 21:15, Formular)
+
+**Entschieden: Weg 2.** Statt „Güte 82/100" künftig **„enger als 91 % des Zufalls"** — eine
+Zahl mit echtem Nullpunkt: 50 % heißt „wie Zufall", erst hohe Werte heißen etwas.
+Vorlage mit allen Einzelheiten: `studien/kanal-guete-2026-08-26/VORLAGE.md`.
+
+**Wilhelm hat damit den teuersten der drei Wege gewählt — bewusst.** Was daran hängt,
+und es ist die eigentliche Arbeit:
+
+1. **Die Zufallsverteilung muss je Fensterlänge geeicht** und als feste Tabelle abgelegt
+   werden. Präzedenz im eigenen Code: die Seitwärts-Enge rechnet bereits gegen eine
+   ausgemessene Zufallserwartung (3.000 Läufe je Fensterlänge) — dieselbe Technik.
+2. **Die versteckten Schwellen müssen mit umgeeicht werden** — der 50er-Filter, die
+   Blass-Zeichnung, die Bester-Kanal-Auswahl (`quant.js` ~2517/2543/2578). **Ohne das
+   ändert sich still, welche Kanäle überhaupt erscheinen** — der Weg wäre dann eine
+   Verschlimmbesserung.
+3. **Befund B1 des Desingners mitentscheiden:** „Güte" sind in der App **zwei
+   verschiedene Zahlen** — Explorer/Strategie-Chart zeigen die `kanaele`-Güte, der
+   Live-Signal-Monitor den strenger gebauten `trendChannel.score` (`quant.js` ~1529).
+   **Für den zweiten ist der Rauschen-Median nie gemessen worden.** Wer baut, muss sagen,
+   ob die Umstellung auch ihn betrifft — sonst stehen zwei Skalen unter einem Wort.
+4. Alte Bildschirmfotos und das eigene Gedächtnis brechen (ein gewohntes „82" wird
+   vielleicht „68 %"). Das ist der Preis, den Wilhelm ausdrücklich in Kauf nimmt.
+
+**Grenze:** Die Güte löst nirgendwo einen Handel aus — gemessen und mit Absicht so. Es
+geht um Ehrlichkeit der Anzeige, nicht um Handelsregeln.
+
+### ⭐ STRANG C (2) — erst die Bestandsaufnahme, dann umstellen (Wilhelm 26.08. 21:15)
+
+**Entschieden: erst erheben, wo die Produktannahme überall im Code steckt, Liste
+vorlegen — dann an allen Stellen zugleich ändern.** Nicht sofort umstellen.
+
+Seine Begründung ist die Projektgeschichte: die Produkt-Vorgabe stand hier schon einmal an
+drei Stellen, **zwei davon falsch** (Hürde 0,26 statt 0,07 Pp). **Auftrag ist die Liste,
+kein Umbau.** Danach kommt der Entscheid über die Umstellung selbst.
+
+Die Zahlen zur Erinnerung: Aktie **0,04** · CFD 0,10 · Standard-Schein **0,23 Pp** je
+Umlauf — Faktor 5,75, der stärkste bekannte Einzelhebel.
 
 ### ~~An die Release-Wache~~ **Erledigt 26.08. — `v8.33.3` ist ausgeliefert**
 
@@ -2330,6 +2385,32 @@ dem letzten Lauf, dazu ein Rotationsblock. Repariert wird nichts — das tut ein
 
 *Entscheidungen von Wilhelm, mit Datum. Eine Entscheidung, die nur in einem Chatverlauf
 steht, ist nach zwei Stunden verloren.*
+
+- **26.08.2026, 21:15 (PM-Chat, Formular) — drei Richtungsentscheide:**
+
+  **(1) #80 Kanal-Güte → Weg 2, das Perzentil.** „Enger als 91 % des Zufalls" statt
+  „Güte 82/100". **Der teuerste der drei Wege, bewusst gewählt** — nicht der kleine
+  Zusatz (Weg 1), nicht die Rangfolge (Weg 3). Was dranhängt: die versteckten Schwellen
+  müssen mit umgeeicht werden, sonst ändert sich still, welche Kanäle erscheinen.
+  Auftrag steht oben.
+
+  **(2) Strang C → erst Bestandsaufnahme.** Erheben, wo die Produktannahme im Code
+  steckt, Liste vorlegen; erst danach umstellen. Nicht sofort, nicht später.
+
+  **(3) Die zwei Datenfunde → sofort beheben, vor allem anderen.** Phantom-Dochte und
+  der unfertig eingefrorene 25.08. gehen vor das Release. Nicht nur ausweisen, nicht
+  vertagen.
+
+- **26.08.2026, 20:25/20:30 (PM-Chat, Formular) — drei Entscheidungen:**
+  **(a) Minutenkerzen:** der PM holt sie nach Börsenschluss selbst nach. Der Stopp um
+  20:09 war richtig (laufende US-Sitzung erzeugt Teilkerzen), die Begründung „der
+  22:15-Lauf holt sie dann" war **falsch** — `tools/archiv-nachladen.js:68-69` holt nur
+  60m und 1d, keine Intraday-Intervalle.
+  **(b) Release wartet auf die Schranken-Reparatur**, nicht jetzt ausliefern.
+  **(c) Die Eintrittskarte misst künftig `delta80` gegen die Kostenhürde** statt
+  Handelstage. *Nachträglich bestätigt durch den A-Fund von 21:05: `tage80` zählt
+  **Signaltage**, die Schranke verglich **Handelstage** — 187 Signaltage sind rund 4.016
+  Handelstage. Die Entscheidung war richtiger, als zum Zeitpunkt bekannt war.*
 
 - **26.08.2026, abends (PM-Chat) — die QS/Audit legt ihre Funde selbst als GitHub-Issues
   an und benachrichtigt den PM.** Wilhelm: „beides bitte als issue und dich
