@@ -35,8 +35,8 @@ Der Struktur-Plan vom 25.08. (`studien/struktur-plan-2026-08-25/PLAN.md`):
 |---|---|---|
 | A–E, E-Rest | Politur, Navigation, Reiter, Bausteinkasten, `depot.js` zerlegen | fertig |
 | F (1) | Theme ohne Dunkel-Blitz | **fertig** (26.08.) |
-| F (2) | Ein einziger Chart-Renderer | offen, GESPERRT (Entscheid Wilhelm) |
-| F (3) | Barrierefreiheit | offen, hinter (2) |
+| F (2) | Ein einziger Chart-Renderer | **entschieden 26.08.: NEIN** — nur die Doppelung (B2) raeumen |
+| F (3) | Barrierefreiheit | **frei** (die Sperre dahinter ist mit F (2) weggefallen) |
 
 ---
 
@@ -221,28 +221,35 @@ damit der Entscheid nicht spaeter an einer uebersehenen Darstellung haengt.
 sieht, was ein Zusammenlegen kostet. Kollidiert mit niemandem: der Master sitzt in
 `depot.js` und auf dem Rechenlauf.
 
+### FREI — die doppelte Depotkurve raeumen (Wilhelm 26.08., Antwort b zu Stufe F (2))
+
+**Stufe F (2) ist entschieden: NICHT zusammenlegen.** Die vier Spezial-Zeichner bleiben,
+wie sie sind — namentlich der Explorer-Chart, dessen Verlustliste die laengste war.
+Freigegeben ist **nur Befund B2** aus `studien/chart-darstellungen-2026-08-26/LISTE.md`.
+
+**Was zu tun ist:** Auf *Vermoegen → Depot* stehen zwei Bilder **derselben Daten**
+untereinander. Beide zeichnen `D.equityHist` — vom PM nachgesehen: `depot.js:3589`
+(`renderEquity`, schlichte Flaeche mit drei Kopfzahlen) und `depot.js:3249`
+(`drawEquity` → `Chart.drawLines`, mit Achsen, Startkapital-Linie und Maus-Hinweis).
+**Das reichere Bild bleibt** (Nr. 7); die drei Kopfzahlen — Verlauf, Hoch, groesster
+Ruecksetzer — **ziehen dorthin um**; die schlichte Flaeche faellt weg.
+
+**Zwei Fallen, beide vom Desingner beim Lesen gefunden:**
+1. Die Kopfzahlen rechnen ueber die **gesamte** Historie, die schlichte Flaeche zeigte nur
+   die letzten 800 Punkte. Wer die Zahlen beim Umzug aus dem neu gezeichneten Bild
+   herleitet statt aus `D.equityHist`, **aendert sie stillschweigend**. Sie muessen weiter
+   ueber alles rechnen.
+2. `renderEquity` blendet sich unter 5 Punkten ganz aus. Diese Regel gehoert mit umgezogen,
+   sonst stehen bei frischem Depot drei Kennzahlen ohne Aussage da.
+
+**Reine Anzeige, Reiter Vermoegen.** Handelslogik wird nicht beruehrt.
+**Achtung Kollision:** das ist `depot.js`, dieselbe Datei, in der der Master (1a)+(2b)
+macht. **Empfehlung des PM: der Master nimmt es hinterher gleich mit** — eine Sitzung,
+eine Datei. Wer sonst zugreift, stimmt sich vorher mit ihm ab.
+
 ### Wartet auf Wilhelm (nicht anfangen)
 
-- **Stufe F (2), ein einziger Chart-Renderer — ENTSCHEIDUNGSREIF seit 26.08. 09:10.**
-  Die Liste liegt vor: `studien/chart-darstellungen-2026-08-26/LISTE.md`. Der Kern des
-  Entscheids steht dort als Befund **B3**: es gibt **zwei mit Absicht unvereinbare
-  Zeitachsen** — der gemeinsame Zeichner setzt Punkte nach der **Uhr** (richtig fuer
-  Depot- und Backtest-Kurven), die Kursbilder nach **Kerzen** (Naechte herausgerechnet).
-  Vom PM im Code nachgeprueft: `chart.js:103` rechnet `X(t)` aus dem Zeitstempel,
-  `strategiechart.js:344` aus dem Kerzen-Index. Ein einziger Zeichner muesste **beide**
-  Betriebsarten koennen. Ebenfalls nachgeprueft: **B2** stimmt — `renderEquity` (Z. 3589)
-  und `drawEquity` (Z. 3249) zeichnen beide `D.equityHist`, zwei Bilder derselben Daten
-  untereinander.
-  Real strittig sind **vier** Spezial-Zeichner (Strategie-Chart samt Indikator-Streifen,
-  Explorer, Trendfinder, Mini-Kurven) — an drei Stellen ist die Zusammenlegung laengst
-  passiert. Die laengste Verlustliste haengt am **Explorer-Chart** (Zoom, Kerzen,
-  Kanaele mit Guete, Fadenkreuz, anklickbare Signale).
-  *Vorgeschichte:* neu hinzugekommen 26.08. 08:40. Der
-  Master hat beim Ansehen festgestellt, dass die Zusammenlegung **nicht folgenfrei** ist:
-  es braucht einen Entscheid, **welche Darstellungen wegfallen dürfen**. Das ist Wilhelms
-  Entscheidung, nicht die einer Sitzung. Bis dahin **gesperrt**, auch Stufe F (3) dahinter.
-  **26.08. (Abruf, Antwort 3a): Wilhelm entscheidet nach einer Liste.** Die Liste ist
-  freigegeben und steht oben unter „Neu freigegeben“ (3a); der Entscheid selbst steht weiter aus.
+- *(nichts offen — Stufe F (2) ist am 26.08. entschieden, siehe „Neu freigegeben" oben.)*
 
 ### ~~An die Release-Wache~~ **Erledigt 26.08. — `v8.33.3` ist ausgeliefert**
 
@@ -264,6 +271,15 @@ Werkzeugs sollte es jemand wissen, der sich auf die Weigerung verlaesst.
 
 ### Danach — schon freigegeben, Reihenfolge fest
 
+- **#92 — Nachzuegler zu (1a), gefunden vom Analytiker im 4. Lauf.** (1a) macht
+  `bestesUrteil` zur massgeblichen Anzeige — aber dessen eigene **Rangfolge** in
+  `messmaschine.js:1214` kann ein `widerlegt` hinter einem freundlicheren Etikett
+  verstecken, und `bestaetigt-aber-nullpunkt-verschoben` kommt darin gar nicht vor.
+  **Heute latent:** ueber alle 32 Protokolle (76 Variantenurteile) tritt kein Fall auf,
+  (1a) ist also nicht falsch und muss nicht warten. Aber der erste `widerlegt`-Lauf einer
+  Mehrvarianten-Strategie verschwaende still. **Nicht waehrend der Neumessung anfassen**
+  (Sperre auf `messmaschine.js`). Die Rangfolge selbst ist eine Entscheidung, keine
+  Reparatur — sie gehoert Wilhelm oder einer Bausitzung mit Begruendung, nicht nebenbei.
 - **`messen.js` Zeile 95 — Nachzügler zu #91.** Die Konsolenzeile sagt weiter
   *„bis t=2 mit 80 %"*, während die Rechnung längst gegen die Bonferroni-Schwelle geht.
   **Nur die Anzeige, nicht die Daten** — der PM hat es nachgesehen: die Protokolle
@@ -385,6 +401,18 @@ steht, ist nach zwei Stunden verloren.*
   **Nachtrag, gleiche Sitzung:** (3a) geht an den **Desingner** — Wilhelms Vorschlag, vom
   PM uebernommen: die Frage „was ginge verloren“ ist eine Gestaltungsfrage, und die
   Sitzung kollidiert mit niemandem.
+  **Nachtrag 3, Stufe F (2) — der Entscheid selbst, nach Vorlage der Liste:**
+  *Ein einziger Chart-Zeichner — zusammenlegen oder nicht?* → **(b) nur die Doppelung
+  raeumen.** Nicht (a) alles lassen, nicht (c) zusaetzlich die Mini-Kurven einschmelzen,
+  **nicht (d) voll zusammenlegen.** Der PM hatte (b) empfohlen, mit (c) als naechstem
+  Schritt und einer ausdruecklichen Warnung vor (d): der Explorer-Chart ist Wilhelms
+  bestes Werkzeug, und (d) haette ihn fuer Pflegeleichtigkeit riskiert, die einem
+  Auftraggeber nichts einbringt.
+  **Folge, vom PM abgeleitet und hiermit vorgelegt:** damit ist **Stufe F (3)
+  (Barrierefreiheit) nicht mehr gesperrt** — sie hing nur hinter F (2). Sie steht jetzt
+  als frei in der Stufentabelle. Wilhelm kann das mit einer Zeile zurueckdrehen.
+  Umsetzung siehe „FREI — die doppelte Depotkurve raeumen" oben.
+
   **Nachtrag 2, Reihenfolge:** *(1a) vor oder nach der Auslieferung?* → **(b) erst
   ausliefern, dann (1a).** Wilhelm: „b, es ist bereits geschehen" — die Wache war zu dem
   Zeitpunkt schon gelaufen, `v8.33.3` ist draussen. Der PM hatte (b) empfohlen, nachdem
