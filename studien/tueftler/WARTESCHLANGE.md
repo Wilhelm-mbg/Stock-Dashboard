@@ -3,6 +3,24 @@
 Entwürfe, die auf Messung durch die Mess-Kette warten. Der Tüftler trägt ein,
 der Projekt-Manager verteilt, die Mess-Kette streicht nach der Messung.
 
+**⚠ Neu am 26.08. 19:25 — die Reihenfolge hat sich geändert (großer Plan, Teil IV-a).**
+Wilhelms verschärftes Abbruchkriterium ordnet an: **Datenqualität → Strang A → Strang B.**
+Beide Entwürfe unten sind **Strang B** und stehen damit hinter der Datenqualitätsarbeit
+*und* hinter Strang A — zusätzlich zur schon vermerkten Vorbedingung
+(`ausstieg`-Schalter). Die alte Sperre (Neumessung der zwölf) ist erledigt, diese neue
+tritt an ihre Stelle. **Kein Grund zur Eile also**, aber ein Grund, den Status nicht als
+„als Nächstes dran" zu lesen.
+
+**Was dabei für diese beiden spricht:** Teil IV-a verlangt vor jedem Nein eine Stufe 2 —
+*was hätte die Messung daran hindern können, eine vorhandene Kante zu sehen?* — und nennt
+zehn zu prüfende Erklärungen. Bei diesen beiden Entwürfen sind **sieben davon bereits
+vorregistriert behandelt**: Auflösungswand und Überlebenslücke (Nachträge vom 26.08.),
+geteilte Kurse (Spannen-Rückprall-Nachtrag), Testfamilie, Haltedauer (H = 1 ist der Grund
+für die gute Auflösung), Produktwahl (Basiswert/CFD, Schein ausgeschlossen), Kostenannahme
+(0,104 % gemessen). Offen bleiben Zeitzonen, Universumsfilter und Regime. **Ein Nein aus
+diesen beiden wäre also deutlich belastbarer als die zwölf alten** — dort kam die Prüfung
+erst nach dem Ergebnis.
+
 **⚠ Neu am 26.08. 19:05 — die Eintrittsschwelle trifft NICHT die Entwürfe, aber eine
 ihrer beiden Antworten.** Wilhelms Entscheidung (Aussicht muss vorab unter 1.000
 Handelstagen liegen) auf beide offenen Entwürfe gerechnet — Machbarkeits-Rechnung, keine
