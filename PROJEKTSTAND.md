@@ -433,6 +433,36 @@ danach die Datenfunde.
 *Was freigegeben ist und noch niemand macht. Wer eine Zeile nimmt, trägt sich unter
 „Läuft gerade" ein und streicht sie hier.*
 
+### ⭐ #96 — Platzhalterkerze verwerfen (Wilhelm 26.08. 18:55) — an den Master
+
+**Die trennscharfe Bedingung, vom PM über fünf Werte gemessen:**
+
+| Bedingung | AAPL | KO | XOM | MSFT | SPY |
+|---|---|---|---|---|---|
+| Umsatz 0 **und** Hoch=Tief=Eröffnung=Schluss | 1 | 1 | 1 | 1 | 1 |
+| Umsatz 0, aber mit Kursspanne (**echte** Stunde) | 18 | 7 | 8 | 18 | 10 |
+
+Die flache Kerze ist über alle fünf **immer exakt `2026-08-25T20:00`**. Die Zusatzbedingung
+*völlig flach* trennt sie von **61 echten Stunden**, die eine reine Umsatzregel mitgelöscht
+hätte.
+
+**Fünf Auflagen, alle hart:**
+
+1. **Nur der Stundenpfad.** Die Tageskerze zum 25.08. ist echt (AAPL 25,8 Mio Umsatz gegen
+   34,7 am Vortag). Im Tagesarchiv wäre die Regel Risiko ohne Nutzen.
+2. **Nicht an der Uhrzeit festmachen.** Die echten Nullumsatz-Kerzen liegen am Schluss
+   **verkürzter** Sitzungen (24.11.2023 und 29.11.2024 um 18:00, 03.07.2024 und 03.07.2025
+   um 17:00). Eine 20:00-Regel verfehlt sie, eine „letzte Kerze des Tages"-Regel löscht sie.
+3. **Dorthin, wo `fertigeKerze` wohnt** — nicht als zweite Stelle daneben, sonst gibt es
+   zwei Wahrheiten darüber, was eine gültige Kerze ist.
+4. **Zählen, bevor gelöscht wird.** Über das ganze Stundenarchiv erheben, wie viele Kerzen
+   die Regel trifft. **Erwartung: genau eine je Reihe.** Trifft sie mehr — anhalten und
+   melden, nicht anwenden.
+5. **Beim Holen greifen, nicht nur nachträglich** — sonst kommt der Platzhalter mit dem
+   nächsten Lauf zurück. **Die neue Intraday-Sammelfunktion muss dieselbe Regel benutzen**,
+   sonst schreibt sie Platzhalter in die Minutenarchive.
+
+
 ### 🔴 VORRANG — die App sammelt Intraday-Kerzen selbst (Wilhelm 26.08. 18:20)
 
 **Wilhelms Worte:** *„ich will das die app das sammelt und ablegt über die api"*.
@@ -1444,6 +1474,14 @@ dem letzten Lauf, dazu ein Rotationsblock. Repariert wird nichts — das tut ein
 
 *Entscheidungen von Wilhelm, mit Datum. Eine Entscheidung, die nur in einem Chatverlauf
 steht, ist nach zwei Stunden verloren.*
+
+- **26.08.2026, 18:55 — #96: die Platzhalterkerze wird verworfen.**
+  Wilhelm: *„müssen wir beheben wir brauchen alle kerzen keine platzhalter"*.
+  Sein Satz sagt beides: **Platzhalter raus, alle echten Kerzen bleiben.** Nicht (b)
+  stehen lassen, nicht (c) auf einen Feiertagskalender warten.
+  **Die Gefahr liegt in der Bedingung, nicht im Auftrag** — eine Regel, die Kerzen
+  wegwirft, löscht bei falschem Zuschnitt echte Daten, und zwar unwiederbringlich.
+  Auftrag mit fünf Auflagen siehe oben.
 
 - **26.08.2026, 17:40 — drei Entscheidungen: „c (schau mal was das kosten würde), b und d, a"**
 
