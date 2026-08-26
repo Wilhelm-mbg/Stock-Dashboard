@@ -16,15 +16,18 @@ Wenn du hier etwas änderst, dann nur deine eigene Zeile unter „Läuft gerade"
 ## Stand: 26.08.2026, 09:00 (Wilhelms Antworten eingetragen)
 
 Ausgeliefert ist **v8.33.2** — unverändert seit gestern Abend. Der Quellstand ist
-vierzehn Commits weiter; **sieben Release-Notizen warten** auf die Wache. Arbeitsbaum
-sauber, nichts Ungepusht.
+siebzehn Commits weiter; **neun Release-Notizen warten** auf die Wache. Nichts Ungepusht.
 
 **Die Tests sind wieder grün** (PM geprüft 08:40: `eslint` + `test-channel` + `test-v6`
 alle bestanden). Alle drei SOFORT-Aufträge des 08:10-Laufs sind in 17 Minuten erledigt
 worden.
 
-Der große freigegebene Auftrag — die **Neumessung aller zwölf Strategien** — ist jetzt
-vollständig unblockiert und dem App-Codebase Master zugeteilt.
+Die **Neumessung aller zwölf Strategien** läuft — 5 von 12 Protokollen geschrieben
+(Stand 09:00). Sie hält den Arbeitsbaum schmutzig; das ist normal und der Grund, warum
+das Release erst danach anlaufen kann.
+
+**Wilhelm hat 09:00 geantwortet: 1a / 2a / 3a.** Alles Weitere unter „Aufträge" und
+„Entschieden".
 
 Der Struktur-Plan vom 25.08. (`studien/struktur-plan-2026-08-25/PLAN.md`):
 
