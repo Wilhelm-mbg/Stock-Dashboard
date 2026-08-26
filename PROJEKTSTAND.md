@@ -1838,6 +1838,68 @@ entfernte Kerzen zurück; eine Reparatur, die das nicht mitbedenkt, ist eine Mom
 *Fallstricke im Raster: der `etf/`-Unterordner (SPY/QQQ/IWM/VOO/TLT/GLD), das Raster ist
 `:30` nicht `:00`, Tage ohne Vergleichsspanne sind nicht entscheidbar.*
 
+### 🔴 27.08. ~03:40 — EILT: 37,6 % der Minutenreihen enden mit einer Teilkerze
+
+**Die Zeitstempel-Sperre ist bei 1m nicht undicht — sie ist blind.** `fertigeKerze()` verwirft
+bei `getUTCSeconds() !== 0`. **Bei Minutenkerzen kann das nie greifen:** die laufende Kerze
+trägt den Stempel der vollen Minute (`16:51:00`), der Abruf erfolgt um `16:51:16`. Sekunde
+ist 0, die Sperre schweigt. Bei 60m fällt die laufende Kerze meist auf eine krumme Minute und
+wird am Raster erkennbar — deshalb dort nur ~3 %.
+
+| Archiv | Reihen | letzte Kerze flach + Umsatz 0 | |
+|---|---|---|---|
+| **archiv1m** | 2.964 | **1.113** | **37,6 %** |
+| archiv5m | 491 | 16 | 3,3 % |
+| archiv15m | 233 | 8 | 3,4 % |
+| archiv60m | *(gesperrt)* | — | zuletzt 3,0 % |
+
+*Der frühere QS-Befund „leckt zu 2,6 %" gilt für 60m und für 1m **nicht**.* Beleg, dass es
+Abrufzeiten sind: `bars_5m_A.json` trägt `stand 2026-08-26T16:51:16Z` und als letzte Kerze
+`16:51:00`, Umsatz 0, O=H=T=S — die Momentaufnahme des Abrufs, als Kerze abgelegt.
+
+**Warum es eilt:** Das 1m-Fenster der Quelle reicht **sieben Tage** zurück. Was jetzt falsch
+drinsteht, ist in acht Tagen nicht mehr zu korrigieren — und bei 1m ist eine begrabene
+Teilkerze an **keinem** Merkmal mehr erkennbar, sobald der nächste Lauf darüberschreibt.
+
+**Das tragfähige Merkmal ist der INHALT, nicht der Zeitstempel:** letzte Kerze der Reihe
+**und** Umsatz 0 **und** Hoch = Tief = Eröffnung = Schluss. Wirkt auf allen Auflösungen
+gleich. Dazu liegt in `reiheHolen()` bereits `currentTradingPeriod.regular` vor.
+**Zugeteilt an `markt-dashboard-1d`, vorgezogen vor alles andere.**
+
+**Entscheidung des PM: der Sammler wird NICHT gestoppt.** Betroffen ist je Reihe die letzte
+Kerze; ein Stopp verlöre alles übrige, und die Minuten verfallen. *Ein Archiv mit benanntem
+Makel ist mehr wert als keines* — der Makel ist hiermit benannt und beziffert.
+
+**⚠ OFFENE GEGENPROBE, Pflicht vor Weiterverwendung der Zahl:** Die QS sagt selbst, sie hat
+**nicht** bewiesen, dass alle 1.113 Teilkerzen sind — eine flache Nullumsatz-Minute kann bei
+einem illiquiden Papier echt sein. Saubere Probe: **nach dem nächsten Sammellauf nachsehen,
+ob dieselben Zeitstempel dann Umsatz tragen.** Bis dahin ist 1.113 eine Obergrenze.
+
+### 📐 27.08. ~03:35 — die Reparaturform wird VOR der Messung festgelegt
+
+**Löschen ist jetzt quantitativ vom Tisch.** `markt-dashboard-1d` hat gegen das Tagesarchiv
+gemessen (486-Reihen-Stichprobe): **von 5.133 P-WEG-Treffern tragen 1.113 = 21,7 % EXAKT den
+offiziellen Tagesschluss**, auf die letzte Stelle. An Halbtagen *ist* die 17/18-Uhr-Kerze die
+Schlussauktion — dieselbe Rolle wie die gerettete 20:00-Kerze. Hochgerechnet **~7.500
+offizielle Schlusskurse**, die eine Löschregel vernichtet hätte.
+
+**Entscheidungsregel des PM, festgelegt bevor die QS-Messung läuft:**
+
+1. **Schlüsse systematisch brauchbar** (großer Anteil exakter Treffer, kein Bereich mit
+   systematischer Abweichung) → **FLACH**: `hoch := max(eröffnung, schluss)`,
+   `tief := min(eröffnung, schluss)`. Der Docht ist der defekte Teil; flach entfernt ihn
+   ganz, statt ihn auf eine Spanne zu begrenzen, die aus anderen Kerzen stammt.
+2. **Gemischtes Bild** — brauchbare Schlüsse, aber auch Kerzen, deren Eröffnung oder Schluss
+   **selbst** außerhalb der Tagesspanne liegt → **KAPPUNG an der Tagesspanne**. Flach würde
+   dort einen falschen Kurs zum neuen Hoch machen.
+3. **Uneindeutig** → **nichts ändern**, Frage an Wilhelm.
+
+**🔗 NAHTPFLICHT, verbindlich:** Archiv-Reparatur (`reparatur.js`) und Einlese-Regel
+(`kerzenquelle.js`) **müssen dieselbe Formel tragen**. Läuft das auseinander, behandelt der
+nächste Nachlade-Lauf dieselben Kerzen anders als das reparierte Archiv — dann steht
+zweierlei im Archiv **ohne Merkmal zum Auseinanderhalten**. Stimmt die Formel nicht überein,
+bricht `--wirklich` ab.
+
 ### 🔴 27.08. ~02:30 — LÖSCHEN IST GESTOPPT: kaputtes und richtiges Feld in derselben Kerze
 
 **Der PM zieht seine eigene Freigabe zurück.** Ich hatte `markt-dashboard-06` die
