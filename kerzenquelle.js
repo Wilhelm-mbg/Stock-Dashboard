@@ -266,6 +266,143 @@ async function reiheHolen(sym, intervall, opt) {
            boerse: res.meta && res.meta.exchangeName, abgeschnitten: abgeschnitten };
 }
 
+/* ---------- LIEGT DER STEMPEL AUF DEM GITTER? ----------
+ * Die Sperre aus Issue 85 fragte "Sekunde != 0". Das trifft ueber vier Archive und
+ * 23,4 Mio Kerzen NULL Faelle - nicht weil sie nie feuert, sondern weil sie beim
+ * Schreiben schon gefeuert hat. Was durchkommt, sind Stempel MIT Sekunde 0, die
+ * trotzdem nicht auf dem Gitter liegen: 15:12, 16:54, 17:43.
+ *
+ * Gemessen am 27.08.2026 ueber alle vier Archive:
+ *   60m  151 ausserhalb des Gitters, davon 0 MIT UMSATZ   (QS zaehlte unabhaengig 151)
+ *   15m    8                          davon 0
+ *   5m    14                          davon 0
+ *   1m     0  - bei einem Minutengitter ist JEDE Minute Gitter, hier hilft der
+ *              Stempel prinzipiell nicht. Das steht so da, weil es die Grenze
+ *              dieser Regel ist und nicht verschwiegen gehoert.
+ *
+ * Die Schlusskerze auf Minute 0 gehoert AUSDRUECKLICH zum Gitter: sie traegt den
+ * offiziellen Schlusskurs (27.08.2026 an 395 Werten gegen das Tagesarchiv geprueft,
+ * 309-mal auf 0,000 % genau). Eine Regel, die sie mitnimmt, loescht den wichtigsten
+ * Kurs des Tages - im 60m-Archiv sind das 4.147 Kerzen, im 1m-Archiv 1.106. */
+function aufGitter(tsMs, intervall) {
+  var d = new Date(tsMs);
+  if (d.getUTCSeconds() !== 0) return false;
+  var m = d.getUTCMinutes();
+  if (intervall === '60m') return m === 30 || m === 0;
+  if (intervall === '15m') return m % 15 === 0;
+  if (intervall === '5m') return m % 5 === 0;
+  if (intervall === '1m') return true;
+  return true;   // 1d und Unbekanntes: kein Minutengitter
+}
+
+/* ---------- PHANTOM-DOCHTE (Desingner-Fund, 27.08.2026) ----------
+ * An sieben US-Halbtagen liefert die Quelle Nullumsatz-Kerzen, deren Hoch oder Tief
+ * die Tagesspanne der gehandelten Stunden VERLAESST - AAPL am 03.07.2025 mit einem
+ * Tief von 201,25 gegen ein Sitzungstief von 211,81, also -5,0 % ohne einen
+ * gehandelten Anteil. Archivweit 34.363 solcher Kerzen, 3.171 davon ueber 1 %.
+ * Sie treffen alles, was Hoch und Tief liest: Kanalkanten, Spannen, Stopps, ATR.
+ *
+ * WARUM DIE SPERRE HIER STEHT UND NICHT NUR IM REPARATURWERKZEUG: zusammenfuehren()
+ * loescht nie. Was ein Aufraeumlauf entfernt, bringt der naechste Nachladelauf
+ * zurueck - die Reparatur waere eine Momentaufnahme.
+ *
+ * DREI AUSNAHMEN, und jede einzelne ist teuer erkauft:
+ *   1. Der Vergleich braucht MINDESTENS ZWEI Umsatz-Kerzen desselben UTC-Tages.
+ *      Ohne Spanne ist nichts entscheidbar, und dann bleibt die Kerze. Nicht
+ *      entscheidbar heisst nicht verdaechtig.
+ *   2. Eine Nullumsatz-Kerze INNERHALB der Tagesspanne bleibt. Das sind die echten
+ *      leeren Stunden illiquider Papiere - archivweit rund 66.619. Zwei Regeln,
+ *      die diese Gruppe mit den Phantomen verwechselt haben, haetten sie geloescht.
+ *   3. Die Schlusskerze bleibt immer. Sie ist flach und ohne Umsatz und sieht damit
+ *      aus wie ein Phantom - sie traegt aber den offiziellen Schlusskurs.
+ * Vier Loeschregeln sind in zwei Naechten an dieser Verwechslung gescheitert. Jede
+ * Gruppe braucht ihr eigenes Merkmal. */
+/* DIE FORM DER REPARATUR - EINE benannte Stelle, absichtlich austauschbar.
+ * Der Entscheid zwischen "flach" und "auf die Tagesspanne kappen" liegt beim
+ * Projekt-Manager nach der QS-Messung. Bis dahin steht hier "flach", und zwar in
+ * der Fassung, die der Desingner fuer die Archiv-Reparatur gebaut hat.
+ *
+ * WARUM NICHT hoch = tief = schluss: bei Eroeffnung != Schluss braeche das die
+ * OHLC-Invariante (tief <= min(o,c) <= max(o,c) <= hoch). Die Kerze saehe dann
+ * ungueltiger aus als vorher.
+ *
+ * EINE NAHT, DIE HALTEN MUSS: Archiv-Reparatur und Einlese-Regel fahren DIESELBE
+ * Formel. Liefen sie auseinander, behandelte der naechste Nachladelauf dieselben
+ * Kerzen anders, als das reparierte Archiv sie fuehrt - und die Wiederhol-Abnahme
+ * fiele genau an dieser Naht durch. */
+/* DIE NAHT-KLINKE (Vereinbarung mit markt-dashboard-06, PM-Auflage 27.08.).
+ * tools/.../reparatur.js liest diese Zeile beim Schreiben und bricht ab, wenn sie
+ * nicht mit seiner --form uebereinstimmt. Damit ist die Formgleichheit zwischen
+ * Archiv-Reparatur und Einlese-Regel MASCHINELL erzwungen statt vereinbart: liefen
+ * die beiden auseinander, stuende zweierlei im Archiv ohne Merkmal, es
+ * auseinanderzuhalten.
+ * Zwei Formen kommen in Frage, der Entscheid liegt beim PM nach der QS-Messung:
+ *   flach   hoch := max(o,c), tief := min(o,c)
+ *   kappen  Hoch und Tief auf die Tagesspanne der gehandelten Stunden ziehen
+ * Umschalten heisst: DIESE Zeile aendern und dochtForm() entsprechend. */
+var PHANTOM_FORM = 'flach';
+
+function dochtForm(k) {
+  var o = k[5] == null ? k[1] : k[5];
+  var hoch = Math.max(o, k[1]);
+  var tief = Math.min(o, k[1]);
+  return [k[0], k[1], k[2], hoch, tief, k[5]];
+}
+
+/* ---------- PHANTOM-DOCHTE: REPARIEREN, NICHT LOESCHEN ----------
+ * An sieben US-Halbtagen liefert die Quelle Nullumsatz-Kerzen, deren Hoch oder Tief
+ * die Tagesspanne der GEHANDELTEN Stunden verlaesst - AAPL am 03.07.2025 mit einem
+ * Tief von 201,25 gegen ein Sitzungstief von 211,81, also -5,0 % ohne einen
+ * gehandelten Anteil. Archivweit rund 34.400 solcher Kerzen. Sie treffen alles, was
+ * Hoch und Tief liest: Kanalkanten, Spannen, Stopps, ATR.
+ *
+ * WARUM REPARIERT UND NICHT GELOESCHT - am 27.08.2026 gemessen, und es war knapp:
+ * Eine Loeschregel haette in der Stichprobe (486 Reihen, 5.133 Treffer) **1.113 =
+ * 21,7 %** entfernt, die AUF DIE LETZTE STELLE der offizielle Tagesschluss sind.
+ * Der Grund ist der Halbtag selbst: dort endet die Sitzung um 17:00/18:00 UTC, und
+ * die Kerze an dieser Stelle IST die Schlussauktion - dieselbe Rolle wie die
+ * 20:00-Kerze an einem normalen Tag. Hochgerechnet waeren rund 7.500 Schlusskurse
+ * verloren gewesen, und zwar unwiederbringlich.
+ * Der Defekt sitzt in Hoch und Tief, nicht in der Kerze. Also wird er dort behoben.
+ *
+ * DREI FAELLE, DIE UNANGETASTET BLEIBEN:
+ *   1. Weniger als ZWEI Umsatz-Kerzen desselben UTC-Tages: ohne Vergleichsspanne
+ *      ist nichts entscheidbar. Nicht entscheidbar heisst nicht verdaechtig.
+ *   2. Nullumsatz-Kerzen INNERHALB der Tagesspanne - die echten leeren Stunden
+ *      illiquider Papiere, archivweit rund 66.619.
+ *   3. KLASSE R: Kerzen, deren Eroeffnung oder Schluss SELBST ausserhalb der
+ *      Tagesspanne liegt. Dort ist nicht der Docht kaputt, sondern der Kurs - das
+ *      waere eine andere Reparatur mit einer anderen Begruendung. Sie werden
+ *      GEZAEHLT und ausgewiesen, nicht angefasst. */
+function dochteReparieren(serie, intervall) {
+  if (intervall === '1d') return { serie: serie, repariert: 0, klasseR: 0 };
+  var proTag = Object.create(null);
+  serie.forEach(function (k) {
+    if (!(k[2] > 0)) return;                       // nur GEHANDELTE Stunden spannen den Tag auf
+    var t = new Date(k[0]).toISOString().slice(0, 10);
+    var g = proTag[t] || (proTag[t] = { n: 0, hoch: -Infinity, tief: Infinity });
+    g.n++;
+    if (k[3] > g.hoch) g.hoch = k[3];
+    if (k[4] < g.tief) g.tief = k[4];
+  });
+  var repariert = 0, klasseR = 0;
+  var aus = serie.map(function (k) {
+    if (k[2] > 0) return k;
+    var t = new Date(k[0]).toISOString().slice(0, 10);
+    var g = proTag[t];
+    if (!g || g.n < 2) return k;                              // Fall 1
+    if (k[3] <= g.hoch && k[4] >= g.tief) return k;           // Fall 2
+    var o = k[5] == null ? k[1] : k[5];
+    if (k[1] > g.hoch || k[1] < g.tief || o > g.hoch || o < g.tief) {
+      klasseR++;                                              // Fall 3: der KURS liegt draussen
+      return k;
+    }
+    repariert++;
+    return dochtForm(k);
+  });
+  return { serie: aus, repariert: repariert, klasseR: klasseR };
+}
+
 /** Alte und neue Reihe vereinigen.
  *  Was schon da ist, bleibt: Yahoo liefert nur ein Fenster, wer ueberschreibt verliert
  *  bei jedem Lauf den aeltesten Rand. Bei gleichem Zeitstempel gewinnt die NEUE Kerze -
@@ -273,10 +410,10 @@ async function reiheHolen(sym, intervall, opt) {
  *  Das Vorhandene wird MITGEREINIGT: eine alte Teilkerze (16:57:27) hat einen anderen
  *  Stempel als die richtige Kerze derselben Stunde (16:30) und bliebe sonst ewig
  *  stehen, kuenftig mitten in der Reihe. */
-function zusammenfuehren(alt, neu) {
+function zusammenfuehren(alt, neu, intervall) {
   alt = Array.isArray(alt) ? alt : [];
   var vorGereinigt = alt.length;
-  alt = alt.filter(function (k) { return new Date(k[0]).getUTCSeconds() === 0; });
+  alt = alt.filter(function (k) { return aufGitter(k[0], intervall); });
   var gereinigt = vorGereinigt - alt.length;
   var karte = {};
   alt.forEach(function (k) { karte[k[0]] = k; });
@@ -284,7 +421,14 @@ function zusammenfuehren(alt, neu) {
   (neu || []).forEach(function (k) { karte[k[0]] = k; });
   var serie = Object.keys(karte).map(Number).sort(function (a, b) { return a - b; })
     .map(function (ms) { return karte[ms]; });
-  return { serie: serie, dazu: serie.length - vorher, gereinigt: gereinigt };
+  /* DIE PHANTOME ERST NACH DER VEREINIGUNG - und damit auf BEIDEN Seiten. Nur das
+   * Vorhandene zu reinigen genuegt nicht: die Quelle liefert dieselben Dochte beim
+   * naechsten Nachladen erneut, und ein Aufraeumlauf waere eine Momentaufnahme.
+   * Die Tagesspanne wird aus der VEREINIGTEN Reihe gebildet, sonst fehlten der
+   * Pruefung genau die frischen Umsatz-Kerzen, die den Tag aufspannen. */
+  var ph = dochteReparieren(serie, intervall);
+  return { serie: ph.serie, dazu: ph.serie.length - vorher,
+    gereinigt: gereinigt, dochte: ph.repariert, klasseR: ph.klasseR };
 }
 
 /** Der Datensatz, wie er auf die Platte geht.
@@ -509,7 +653,7 @@ async function sammle(opt) {
   var erg = {
     intervall: intervall, ordner: ziel, geplant: symbole.length,
     verarbeitet: 0, ok: 0, leer: 0, kerzen: 0, dazu: 0, ohneEroeffnung: 0,
-    abgeschnitten: 0, gereinigt: 0, abgebrochen: false, grund: null,
+    abgeschnitten: 0, gereinigt: 0, dochte: 0, klasseR: 0, abgebrochen: false, grund: null,
     begonnen: new Date().toISOString(), beendet: null,
   };
   try {
@@ -539,8 +683,9 @@ async function sammle(opt) {
         if (fs.existsSync(datei)) {
           try {
             var alt = JSON.parse(fs.readFileSync(datei, 'utf8')).series || [];
-            var v = zusammenfuehren(alt, r.serie);
+            var v = zusammenfuehren(alt, r.serie, intervall);
             r.serie = v.serie; dazu = v.dazu; erg.gereinigt += v.gereinigt;
+            erg.dochte += v.dochte || 0; erg.klasseR += v.klasseR || 0;
           } catch (e2) { /* unlesbar: die frische Reihe ersetzt sie */ }
         }
         erg.abgeschnitten += r.abgeschnitten || 0;
@@ -579,6 +724,8 @@ module.exports = {
   yahooName: yahooName, warte: warte, kursOk: kursOk, hole: hole,
   fertigeKerze: fertigeKerze, reiheHolen: reiheHolen,
   zusammenfuehren: zusammenfuehren, satz: satz,
+  aufGitter: aufGitter, dochteReparieren: dochteReparieren, dochtForm: dochtForm,
+  PHANTOM_FORM: PHANTOM_FORM,
   /* DATEN als Funktion, nicht als Wert: ein Wert waere eine Kopie vom Ladezeitpunkt
    * und wuerde datenOrdnerSetzen() still ueberleben. */
   datenOrdner: datenOrdner, datenOrdnerSetzen: datenOrdnerSetzen, ordnerVon: ordnerVon,

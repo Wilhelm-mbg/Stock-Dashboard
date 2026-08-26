@@ -9453,8 +9453,82 @@ console.log('\n63) Nur fertige Kerzen kommen ins Archiv (Issue #85)');
   /* Und das Zusammenfuehren reinigt das VORHANDENE mit. Das ist der eigentliche
    * Haken: die Vereinigung laeuft ueber den Zeitstempel, und 16:57:27 ist ein anderer
    * Schluessel als 16:30 - eine alte Teilkerze bliebe sonst ewig stehen. */
-  ok(/alt\.filter\(function \(k\) \{ return new Date\(k\[0\]\)\.getUTCSeconds\(\) === 0; \}\)/.test(kq),
-     'Das Zusammenfuehren wirft alte Teilkerzen mit hinaus - sonst blieben sie ewig stehen');
+  /* Die Sekunden-Marke ist am 27.08.2026 durch das RASTER ersetzt worden. Grund:
+   * "Sekunde != 0" trifft ueber vier Archive und 23,4 Mio Kerzen null Faelle - nicht
+   * weil sie nie feuert, sondern weil sie beim Schreiben schon gefeuert hat. Was
+   * durchkommt, sind Stempel MIT Sekunde 0, die trotzdem nicht auf dem Gitter liegen
+   * (15:12, 16:54, 17:43). Das Raster faengt sie und ist eine Obermenge der alten
+   * Regel. */
+  ok(/alt\.filter\(function \(k\) \{ return aufGitter\(k\[0\], intervall\); \}\)/.test(kq),
+     'Das Zusammenfuehren reinigt das Vorhandene am RASTER - sonst blieben alte Teilkerzen ewig stehen');
+
+  /* ---- DAS RASTER (27.08.2026) ----
+   * Gemessen ueber alle vier Archive: 60m 151 Kerzen ausserhalb des Gitters, 15m 8,
+   * 5m 14 - und JEWEILS 0 MIT UMSATZ. Bei 1m ist jede Minute Gitter, dort hilft der
+   * Stempel prinzipiell nicht; das ist die Grenze der Regel und steht so im Code. */
+  ok(KQ.aufGitter(Date.parse('2026-08-26T15:30:00Z'), '60m') === true &&
+     KQ.aufGitter(Date.parse('2026-08-26T15:12:00Z'), '60m') === false,
+     'Das Stundengitter liegt auf Minute 30 - 15:12 gehoert nicht dazu');
+  /* DIE AUSNAHME, DIE ALLES TRAEGT: die Schlusskerze liegt auf Minute 0 und ist
+   * KEIN Fehler. Sie traegt den offiziellen Schlusskurs - im 60m-Archiv 4.147
+   * Kerzen, im 1m-Archiv 1.106. Sechs Loeschregeln in zwei Naechten sind an genau
+   * dieser Verwechslung gescheitert. */
+  ok(KQ.aufGitter(Date.parse('2026-08-26T20:00:00Z'), '60m') === true,
+     'Die Schlusskerze auf Minute 0 gehoert zum Gitter - sie ist der offizielle Schlusskurs');
+  ok(KQ.aufGitter(Date.parse('2026-08-26T16:45:00Z'), '15m') === true &&
+     KQ.aufGitter(Date.parse('2026-08-26T16:54:00Z'), '15m') === false,
+     'und bei 15m liegt es auf Viertelstunden');
+  ok(KQ.aufGitter(Date.parse('2026-08-26T17:43:00Z'), '1m') === true,
+     'Bei 1m ist jede Minute Gitter - dort taugt der Stempel nicht, und das wird nicht behauptet');
+  ok(KQ.aufGitter(Date.parse('2026-08-26T16:57:27Z'), '60m') === false,
+     'Ein Quote-Stempel mit Sekunden faellt weiterhin heraus');
+
+  /* ---- DOCHTE WERDEN REPARIERT, NICHT GELOESCHT ----
+   * Eine Loeschregel haette in der Stichprobe 21,7 % Kerzen entfernt, die AUF DIE
+   * LETZTE STELLE der offizielle Tagesschluss sind - an Halbtagen ist die Kerze am
+   * Sitzungsende die Schlussauktion. Hochgerechnet rund 7.500 Schlusskurse.
+   * Der Defekt sitzt in Hoch und Tief, also wird er dort behoben. */
+  var tagD = '2026-08-26T';
+  var reiheD = [
+    [Date.parse(tagD + '14:30:00Z'), 100, 5000, 101, 99, 100],
+    [Date.parse(tagD + '15:30:00Z'), 102, 7000, 103, 100, 100],
+    [Date.parse(tagD + '16:30:00Z'), 99, 0, 101, 80, 99],      // Docht nach unten
+    [Date.parse(tagD + '17:30:00Z'), 101, 0, 101, 101, 100],   // innerhalb -> bleibt
+    [Date.parse(tagD + '18:30:00Z'), 150, 0, 150, 150, 150],   // Kurs SELBST draussen -> Klasse R
+  ];
+  var repD = KQ.dochteReparieren(reiheD, '60m');
+  ok(repD.serie.length === 5,
+     'KEINE Kerze wird geloescht - der Defekt sitzt im Docht, nicht in der Kerze');
+  ok(repD.repariert === 1 && repD.klasseR === 1,
+     'Ein Docht repariert, ein Fall der Klasse R nur gezaehlt',
+     repD.repariert + ' / ' + repD.klasseR);
+  ok(repD.serie[2][1] === 99 && repD.serie[2][3] === 99 && repD.serie[2][4] === 99,
+     'Der Schlusskurs bleibt unangetastet, Hoch und Tief kommen auf max/min von Eroeffnung und Schluss');
+  /* OHLC-Invariante: tief <= min(o,c) <= max(o,c) <= hoch. Deshalb NICHT
+   * hoch = tief = schluss - bei Eroeffnung != Schluss braeche das die Form. */
+  var kD = repD.serie[2];
+  ok(kD[4] <= Math.min(kD[5], kD[1]) && Math.max(kD[5], kD[1]) <= kD[3],
+     'Die reparierte Kerze bleibt eine gueltige Kerze (tief <= o,c <= hoch)');
+  ok(repD.serie[3][3] === 101 && repD.serie[3][4] === 101,
+     'Eine Nullumsatz-Kerze INNERHALB der Tagesspanne bleibt unberuehrt - das sind die echten leeren Stunden');
+  ok(repD.serie[4][3] === 150 && repD.serie[4][4] === 150,
+     'Klasse R wird nicht angefasst - dort ist der KURS draussen, das waere eine andere Reparatur');
+  /* Ohne Vergleichsspanne ist nichts entscheidbar. Nicht entscheidbar heisst nicht
+   * verdaechtig - genau diese Verwechslung war schon zweimal der Fehler. */
+  var einTagD = [reiheD[0], reiheD[2]];
+  ok(KQ.dochteReparieren(einTagD, '60m').repariert === 0,
+     'Mit nur EINER Umsatzkerze am Tag wird nichts repariert - ohne Spanne ist nichts entscheidbar');
+  ok(KQ.dochteReparieren(reiheD, '1d').repariert === 0,
+     'Das Tagesarchiv wird gar nicht angefasst - dort gibt es keine Stunden, die einen Tag aufspannen');
+
+  /* ---- DIE NAHT ZUR ARCHIV-REPARATUR ----
+   * Einlese-Regel und Archiv-Reparatur MUESSEN dieselbe Formel fahren. Sonst
+   * behandelt der naechste Nachladelauf dieselben Kerzen anders, als das reparierte
+   * Archiv sie fuehrt - und im Archiv stuende zweierlei ohne Merkmal, es
+   * auseinanderzuhalten. Das Reparaturwerkzeug liest diese Konstante und bricht ab,
+   * wenn sie nicht zu seiner Form passt. */
+  ok(/var PHANTOM_FORM = '(flach|kappen)';/.test(kq),
+     'Die Form steht als benannte Konstante da - maschinell pruefbar, nicht nur vereinbart');
 
   /* Und es gibt ein Werkzeug, das ein vorhandenes Archiv sofort reinigt, ohne Netz. */
   var tk = fs.existsSync(__dirname + '/tools/archiv-teilkerzen-entfernen.js');
