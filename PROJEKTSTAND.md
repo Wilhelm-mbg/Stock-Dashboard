@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 01:56
+letzter-bericht: 2026-08-27 02:10
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -27,7 +27,7 @@ Gefunden hat es jedes Mal eine Gegenprobe.
 | | Frage | Lage |
 |---|---|---|
 | **1** | **Gehören Randzeiten-Kerzen ins 60m-Archiv?** | **Blockiert alles andere.** Nachlader-Bestand führt sie, App-Bestand nicht (0 von 990.509 gezählt) — zwei Politiken ohne Kennzeichen. Ohne diesen Entscheid ist unentscheidbar, ob die „Phantom-Dochte" Fehler oder echte Nachhandelskurse sind. |
-| **2** | **Bekommen die delisteten Papiere ihr Abmeldedatum?** | **⏳ zeitkritisch: heute Kosmetik, ab ~einer Handelswoche Messhygiene.** Gemessen: AVB/EQR sind im Universum, heute außerhalb jedes Fensters, ab nächster Woche wähl- und haltbar mit eingefrorener Nullrendite. |
+| **2** | **Bekommen die delisteten Papiere ihr Abmeldedatum?** | **Lohnt sich, ist aber nicht dringend** *(um 02:10 nach unten korrigiert)*. AVB/EQR sind im Universum und heute außerhalb jedes Fensters; ab ~einer Handelswoche können die Phantomtage in ein Haltefenster geraten. **Aber der Schwanz ist auf 1–5 Tage gedeckelt** — der gefährliche Fall (dauerhaft flache Reihe, die eine Momentum-Rangfolge nach oben spült) tritt **nicht** ein. |
 | **3** | **Welche „Kostenhürde" zeigt das Messband?** | Zwei verschiedene Zahlen tragen denselben Namen; in der Voreinstellung stimmen sie zufällig überein. Live-Hürde oder feste Referenz — beides vertretbar, der Doppelname nicht. |
 
 ### 🔒 Was läuft, und wann es meldet
@@ -2010,6 +2010,74 @@ Gleitkommavergleich ohne fachliche Toleranz.
 > *„Meine 76,4 % waren richtig gerechnet, aber sie beantworteten die Frage über alle Tage,
 > während der Fund die Halbtage meinte."* Eine richtige Zahl, die eine andere Frage
 > beantwortet als die gestellte — diesmal in der Aggregation.
+
+### 🔽 27.08. ~02:10 — KORREKTUR NACH UNTEN: der Phantom-Schwanz ist gedeckelt, nicht wachsend
+
+**Die QS korrigiert ihre eigene Formulierung, bevor sie härter auf der Tafel steht als sie
+darf** — und der PM seine daraus gebaute Dringlichkeit.
+
+Gesagt war: *„einer je Sammellauf, nicht einer je Reihe."* **Das gilt nur für ein kurzes
+Fenster nach dem letzten Handelstag.** Gemessen: Alle neun Reihen wurden zuletzt abgerufen,
+sechs davon mit Archivstand 26.08. — **und keine hat seit ihrem letzten Phantomtag eine
+weitere Kerze bekommen.** BSCO, IBDP und IBTE wurden am 26.08. angefasst und haben seit
+Dezember 2024 nichts Neues.
+
+**Das Muster:** Nach dem letzten echten Handel liefert die Quelle noch **wenige Tage** lang
+Stempelkerzen — AVB fünf, EQR vier, WBS eine — **und verstummt dann ganz. Der Zähler friert
+ein.**
+
+> **⚠ DER GEFÄHRLICHE FALL TRITT NICHT EIN.** Ein delistetes Papier wird **nicht** zu einer
+> dauerhaft flachen Reihe mit null Schwankung und null Rückschlag — **genau die Gestalt, die
+> eine Momentum-Rangfolge nach oben spülen würde.** Es bleibt bei einem Schwanz von 1–5 Tagen.
+
+**Was bleibt:** Jedes neue Delisting hinterlässt einen neuen Schwanz. **Die Gesamtzahl wächst
+mit der Zahl der Delistings, der Beitrag je Papier ist gedeckelt.** Die Formulierung
+„strukturell real und wachsend" braucht diese Einschränkung — sie ist an die
+Berechnungen-Sitzung gegangen.
+
+**Eine Falsifikationsbedingung, die von selbst reift:** AVB und EQR sind unbestätigt, ihr
+Stand ist zwei Tage alt. *„Wenn der nächste Sammellauf sie anfasst und weiter nichts kommt,
+ist das Muster für alle neun belegt — ich muss nichts dafür tun außer nachsehen."*
+
+**Ausdrücklich unbekannt, und die Grenze ist richtig gezogen:** ob **die Quelle verstummt**
+oder **der Sammler das Symbol fallen lässt**. Beobachtbar ist nur, dass die Datei angefasst
+wurde und nichts dazukam. *Für die Risikobewertung ist das gleich, für eine Reparatur nicht —
+dann müsste jemand den Sammler ansehen.* **Offen, niemandem zugeteilt.**
+
+### ✅ 27.08. ~02:10 — STUFE F IST VOLLSTÄNDIG: Fokusreihenfolge gemessen, kein Befund
+
+**Der letzte offene Punkt der Barrierefreiheit** (`markt-dashboard-1d`, `48e78f6`,
+`tools/dialog-probe.js`). Gemessen mit **echten Tastenanschlägen** über alle fünf Dialoge, in
+**beiden** Bewegungs-Einstellungen — Ergebnis identisch:
+
+| Prüfung | |
+|---|---|
+| Fokus wandert beim Öffnen hinein | 5 von 5 |
+| Tab am Ende fängt sich | 5 von 5 |
+| Umschalt+Tab am Anfang ebenso | 5 von 5 |
+| Escape schließt | 5 von 5 |
+| **Fokus kehrt zum Auslöser zurück** | **5 von 5** |
+| Name für die Vorlesehilfe | 5 von 5 |
+
+*Die Mechanik in `app-shell.js` tut, was sie soll — das war bisher **gelesen**, jetzt ist es
+**gemessen**. Punkt 5 bemerkt man ohne Tastatur nie.*
+
+**Zur Bewegungs-Einstellung:** Der erste Lauf maß `prefers-reduced-motion: aus` — **den
+Zustand, in dem Wilhelm die App nie sieht.** Die Sonde emuliert ihn jetzt und fährt beide.
+*Sie sind gleich; das ist das Ergebnis, nicht die Annahme.*
+
+**Hinweis, ausdrücklich kein Befund:** In vier von fünf Dialogen landet der Fokus zuerst auf
+dem **Schließen-Kreuz**. Die Norm erlaubt das, aber es ist die schlechteste erlaubte Wahl —
+*wer einen Dialog öffnet, will ihn benutzen.* **Nicht ungefragt repariert** (Auflage zu den
+unbestätigten Planpunkten). **Fünf Zeilen, wenn Wilhelm es will** — reitet auf Frage 3 mit.
+
+> **Drei Fehler beim Bau der Sonde, im Commit festgehalten, weil sie dieselbe Form haben wie
+> das, was sie messen soll:** `sendInputEvent` will den Namen der Taste statt ihres Codes;
+> der Sonde fehlte die Zeile, die die App überhaupt startet (**sie lief stumm ins Zeitlimit —
+> ein Zeitlimit sieht aus wie ein Hänger, war aber ein fehlender Start**); und **Punkt 2 ihrer
+> eigenen Beschreibung wurde beim ersten Wurf gar nicht geprüft.** *„Eine Sonde, die eine
+> Frage nennt und nicht stellt, ist genau die Verkleidung, gegen die wir hier seit zwei
+> Nächten kämpfen."*
 
 ### 🕵 27.08. 01:55 — der PM hätte fast einen Fehlalarm gemeldet, wegen seiner eigenen Prüfung
 
