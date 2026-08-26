@@ -4195,6 +4195,61 @@ console.log('\n44) Messmaschine, Scoreboard und Strategie-Eingabe (23.08.2026)')
   ok(/nicht entscheidbar/.test(dep2.slice(dep2.indexOf('var hinweisUrteil'), dep2.indexOf('var hinweisUrteil') + 1400)),
      'Er benennt den Unterschied zu "nicht entscheidbar" - sonst liest sich beides gleich');
 
+  /* ---- #100: beide Anzeigen lesen dieselbe Quelle, also brauchen sie denselben Takt ----
+   * kantenAusProtokollen() rief nach dem Fuellen von PROTOKOLL_KANTE nur huerdeAnzeigen().
+   * Der Regelkopf auf derselben Seite erfuhr nie, dass Protokolle da sind, und behauptete
+   * dauerhaft "Kein Messprotokoll im Datenordner" - waehrend die Huerde sechs Zeilen
+   * tiefer dasselbe Protokoll mit einem ANDEREN Urteil zeigte.
+   * Reproduziert am 26.08.2026 in der laufenden App: Kopf "nicht entscheidbar" (aus dem
+   * Code), Huerde "nicht bestaetigt" (aus dem Protokoll). Zwei Wahrheiten auf einer Seite.
+   * Daran hingen zwei frisch ausgelieferte Arbeiten - Wilhelms Entscheid 2b und die
+   * Variantenwahl nach Protokoll-Urteil -, weil beide in belegAusProtokoll leben. */
+  /* Bis zum Ende der Funktion, nicht 900 Zeichen weit - der erklaerende Kommentar
+   * dazwischen ist laenger als das Fenster, und die Probe wurde dadurch rot, obwohl
+   * der Code stimmte. Schon wieder die Prosa. */
+  var kaVon = dep2.indexOf('PROTOKOLL_KANTE = neu;');
+  var kaBlock = dep2.slice(kaVon, dep2.indexOf('kanten-geladen', kaVon));
+  ok(/huerdeAnzeigen\(\)/.test(kaBlock) && /regelKopfAnzeigen\(\)/.test(kaBlock),
+     'Nach dem Laden der Protokolle werden BEIDE Anzeigen neu gezeichnet (#100)');
+
+  /* ---- #102: interne Schluessel gehoeren nicht in die Anzeige ----
+   * Sichtbar wurde es erst durch die Reparatur von #100: sobald der Regelkopf das
+   * Protokoll ueberhaupt zu sehen bekam, stand dort woertlich "Beleg nicht-bestaetigt". */
+  var aSh = fs.readFileSync(__dirname + '/app-shell.js', 'utf8');
+  var hHtml = fs.readFileSync(__dirname + '/index.html', 'utf8');   // html ist in diesem Block nicht in Reichweite
+  ok(/urteilText: function \(u\)/.test(aSh), 'Die Uebersetzung der Urteile wohnt in app-shell');
+  var utA = aSh.indexOf('urteilText: function (u) {');
+  var utE = aSh.indexOf('\n    },', utA);
+  ok(utA !== -1 && utE > utA, 'urteilText laesst sich herausloesen');
+  var utFn = new Function('return { ' + aSh.slice(utA, utE + 6) + ' };')().urteilText;
+  ok(utFn('nicht-bestaetigt') === 'nicht bestätigt', 'nicht-bestaetigt wird lesbar', utFn('nicht-bestaetigt'));
+  ok(utFn('bestaetigt') === 'bestätigt' && utFn('nicht-entscheidbar') === 'nicht entscheidbar',
+     'und die uebrigen Urteile ebenso');
+  ok(utFn('bestaetigt-aber-nullpunkt-verschoben') === 'bestätigt – aber Nullpunkt verschoben',
+     'auch das Urteil mit Vorbehalt');
+  /* Ein unbekanntes Urteil darf nicht verschluckt werden - die Maschine darf neue
+   * erfinden, und ein stilles "?" waere schlimmer als ein ungewohntes Wort. */
+  ok(utFn('ganz-neues-urteil') === 'ganz neues urteil', 'Ein unbekanntes Urteil wird lesbar statt verschluckt');
+  ok(utFn(null) === '?', 'und ohne Urteil steht ein Fragezeichen');
+  /* Alle vier Anzeigen benutzen dieselbe Uebersetzung - zwei Tabellen an zwei Orten
+   * waeren die naechste Stelle, an der eine veraltet. */
+  ok((dep2.match(/U\.urteilText\(/g) || []).length >= 3,
+     'depot.js zeigt kein Urteil mehr roh an', (dep2.match(/U\.urteilText\(/g) || []).length + ' Stellen');
+  var sbQ2 = fs.readFileSync(__dirname + '/scoreboard.js', 'utf8');
+  ok(/function label\(u\) \{ return U\.urteilText\(u\); \}/.test(sbQ2),
+     'und das Scoreboard benutzt dieselbe statt einer eigenen');
+  ok(!/rang: \d+, text:/.test(sbQ2),
+     'Die zweite Tabelle ist weg - kein gepflegter Text ohne Leser');
+
+  /* ---- #103: Zeilenkoepfe sind keine Spaltenkoepfe ----
+   * Meine eigene Regression aus 779c02c: table.tbl th bringt Grossbuchstaben, Sperrung
+   * und einen Unterstrich mit. Die Regel, die den Strich in der letzten Zeile entfernt,
+   * gilt nur fuer td - unter der letzten Zeile blieb ein 130 px breiter Rest stehen. */
+  ok(/table\.tbl th\[scope="row"\] \{[^}]*text-transform: none/.test(hHtml),
+     'Zeilenkoepfe schreien nicht in Versalien (#103)');
+  ok(/table\.tbl tr:last-child th\[scope="row"\] \{[^}]*border-bottom: none/.test(hHtml),
+     'und hinterlassen in der letzten Zeile keinen Reststrich');
+
   /* ---- Depotverlauf: EIN Bild, und die Zahlen ueber die ganze Historie (26.08.2026) ----
    * Unter Vermoegen -> Depot standen zwei Bilder DERSELBEN Daten untereinander: eine
    * schlichte Flaeche mit drei Kennzahlen darueber und darunter das ausfuehrliche Bild
@@ -7964,9 +8019,19 @@ console.log('\n47) Anzeige der Messmaschine: unbekannte Urteile und die Selbstpr
   var von = sb.indexOf('  var URTEIL = {');
   var bis = sb.indexOf('  function placeboBand(p) {');
   ok(von !== -1 && bis > von, 'Der reine Teil des Scoreboards ist auffindbar');
-  var rein = { }; 
-  (new Function('E', sb.slice(von, bis) +
-     '\nE.rang = rang; E.label = label; E.farbe = farbe; E.placeboOk = placeboOk; E.URTEIL = URTEIL;'))(rein);
+  var rein = { };
+  /* label() holt die Uebersetzung seit dem 26.08.2026 aus app-shell (#102) - zwei
+   * Tabellen an zwei Orten waren die naechste Stelle, an der eine veraltet.
+   * Hier wird die ECHTE Funktion durchgereicht, nicht eine Kopie: eine nachgebaute
+   * Uebersetzung im Test wuerde genau die Doppelung wieder einfuehren, die der Umbau
+   * beseitigt hat - und sie wuerde gruen bleiben, wenn das Original sich aendert. */
+  var aShU = fs.readFileSync(__dirname + '/app-shell.js', 'utf8');
+  var utV = aShU.indexOf('urteilText: function (u) {');
+  var utB = aShU.indexOf('\n    },', utV);
+  ok(utV !== -1 && utB > utV, 'urteilText laesst sich aus app-shell holen');
+  var Uecht = new Function('return { ' + aShU.slice(utV, utB + 6) + ' };')();
+  (new Function('E', 'U', sb.slice(von, bis) +
+     '\nE.rang = rang; E.label = label; E.farbe = farbe; E.placeboOk = placeboOk; E.URTEIL = URTEIL;'))(rein, Uecht);
 
   /* Der Kern: ein Urteil mit Vorbehalt ist KEIN gruenes Licht. */
   ok(rein.farbe('bestaetigt') === 'var(--up)',
@@ -7994,9 +8059,21 @@ console.log('\n47) Anzeige der Messmaschine: unbekannte Urteile und die Selbstpr
    * Der Fehler war still: nichts brach, es stand nur zweierlei da. */
   ok(!/URTEIL_TEXT/.test(sb),
      'Es gibt keine zweite Urteil-Tabelle mehr');
+  /* Die Beschriftung wohnt seit dem 26.08.2026 nicht mehr in dieser Tabelle, sondern
+   * in U.urteilText (#102) - sie stand zweimal da und damit vor dem Auseinanderlaufen.
+   * Die Aussage bleibt dieselbe und wird NICHT abgeschwaecht: jedes bekannte Urteil
+   * braucht Rang, Beschriftung und Farbe. Nur der Ort der Beschriftung hat sich
+   * geaendert, also wird sie dort geprueft - ueber label(), das genau diesen Weg geht. */
   var luecken = Object.keys(rein.URTEIL).filter(function (k) {
     var e = rein.URTEIL[k];
-    return !e || e.rang == null || !e.text || !e.farbe;
+    var beschriftung = rein.label(k);
+    /* Woran erkennt man einen ROHEN Schluessel auf dem Bildschirm? Am Bindestrich
+     * ("nicht-bestaetigt") und am ASCII-Ersatz fuer den Umlaut ("bestaetigt").
+     * Erster Anlauf verlangte, die Beschriftung muesse sich vom Schluessel
+     * unterscheiden - das war zu streng: "widerlegt" heisst auf Deutsch genauso.
+     * Gefragt ist nicht Verschiedenheit, sondern Lesbarkeit. */
+    return !e || e.rang == null || !e.farbe ||
+      !beschriftung || beschriftung.indexOf('-') !== -1 || /ae|oe|ue/.test(beschriftung);
   });
   ok(luecken.length === 0,
      'Jedes bekannte Urteil hat Rang, Beschriftung und Farbe', luecken.join(', ') || 'keine Luecke');

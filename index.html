@@ -569,6 +569,15 @@
   table.tbl { width: 100%; border-collapse: collapse; font-size: var(--fs-text); }
   table.tbl th { text-align: left; color: var(--muted); font-weight: 600; font-size: var(--fs-neben);
     text-transform: uppercase; letter-spacing: 0.04em; padding: 6px 8px; border-bottom: 1px solid var(--grid); }
+  /* ZEILENKOEPFE sind keine Spaltenkoepfe. Die Regel darueber gilt fuer die Kopfzeile
+     einer Tabelle - Grossbuchstaben, Sperrung, Unterstrich. Eine beschriftende LINKE
+     Spalte (scope="row") ist etwas anderes: sie steht mitten im Fliesstext einer Zeile.
+     Ohne diese Ausnahme schrien die Beschriftungen des Regelkopfs in Versalien, und
+     unter der letzten Zeile blieb ein 130 px breiter Reststrich stehen - denn die Regel,
+     die den Strich in der letzten Zeile entfernt, gilt nur fuer td, nicht fuer th.
+     Eingebaut am 26.08.2026 zusammen mit den Zeilenkoepfen (#103). */
+  table.tbl th[scope="row"] { text-transform: none; letter-spacing: 0; font-weight: 400; }
+  table.tbl tr:last-child th[scope="row"] { border-bottom: none; }
   table.tbl td { padding: 5px 8px; border-bottom: 1px solid var(--grid); vertical-align: top; }
   table.tbl tr:last-child td { border-bottom: none; }
   /* Die eigenen Papiere auf "Heute" (Felix, #71): Gruppenzeile INNERHALB der Tabelle,

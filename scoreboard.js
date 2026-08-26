@@ -38,12 +38,12 @@
    * Urteil laufen auseinander, ohne dass etwas bricht; wer ein neues Urteil eintraegt,
    * muss es an genau einer Stelle tun. */
   var URTEIL = {
-    'bestaetigt':                           { rang: 0, text: 'bestätigt',                             farbe: 'var(--up)' },
-    'nicht-bestaetigt':                     { rang: 1, text: 'nicht bestätigt',                       farbe: 'var(--series2)' },
-    'nicht-entscheidbar':                   { rang: 2, text: 'nicht entscheidbar',                    farbe: 'var(--muted)' },
-    'bestaetigt-aber-nullpunkt-verschoben': { rang: 3, text: 'bestätigt – aber Nullpunkt verschoben', farbe: 'var(--down)' },
-    'nicht-messbar':                        { rang: 4, text: 'nicht messbar',                         farbe: 'var(--muted)' },
-    'widerlegt':                            { rang: 5, text: 'widerlegt',                             farbe: 'var(--down)' }
+    'bestaetigt':                           { rang: 0, farbe: 'var(--up)' },
+    'nicht-bestaetigt':                     { rang: 1, farbe: 'var(--series2)' },
+    'nicht-entscheidbar':                   { rang: 2, farbe: 'var(--muted)' },
+    'bestaetigt-aber-nullpunkt-verschoben': { rang: 3, farbe: 'var(--down)' },
+    'nicht-messbar':                        { rang: 4, farbe: 'var(--muted)' },
+    'widerlegt':                            { rang: 5, farbe: 'var(--down)' }
   };
 
   /* RUECKFALL FUER UNBEKANNTE URTEILE. Die Maschine darf neue Urteile erfinden - das
@@ -52,7 +52,10 @@
    * "color:undefined" wirft der Browser weg. Deshalb Funktionen statt Tabellen, mit
    * einem Rueckfall, der im Zweifel gegen die Strategie ausschlaegt. */
   function rang(u) { return URTEIL[u] ? URTEIL[u].rang : 90; }
-  function label(u) { return (URTEIL[u] && URTEIL[u].text) || String(u == null ? '?' : u).replace(/-/g, ' '); }
+  /* Die Uebersetzung wohnt seit dem 26.08.2026 in app-shell (#102) - dieselbe, die der
+   * Regelkopf benutzt. Die Tabelle hier behaelt Rang und Farbe; der Text kam zweimal
+   * vor und stand damit vor dem Auseinanderlaufen. */
+  function label(u) { return U.urteilText(u); }
   function farbe(u) {
     if (URTEIL[u]) return URTEIL[u].farbe;
     /* Gruen gibt es nur fuer den einen Schluessel, der genau 'bestaetigt' heisst.

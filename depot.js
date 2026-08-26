@@ -698,7 +698,7 @@
       ['Produkt', cfg.instrument === 'basis' ? 'Basiswert ohne Hebel' : 'Hebelschein' + (cfg.profile ? ' · ' + cfg.profile : '')],
       ['Positionsgröße', parseFloat(cfg.sizing) > 0 ? 'nach Risiko ' + cfg.sizing + ' % je Stop' : 'fest ' + Math.round((cfg.budgetPct || 0.03) * 100) + ' % des Depots'],
       ['Not-Stop', (cfg.scalpSL || 20) + ' %'],
-      ['Beleg', '<b style="color:' + farbe + ';">' + U.esc(b.stand) + '</b> – ' + U.esc(b.txt) + hinweisUrteil +
+      ['Beleg', '<b style="color:' + farbe + ';">' + U.esc(U.urteilText(b.stand)) + '</b> – ' + U.esc(b.txt) + hinweisUrteil +
         (belegAusProtokoll
           ? '<br><span style="color:var(--muted); font-size:var(--fs-neben);">Aus dem Messprotokoll vom ' +
             U.esc(belegAusProtokoll.datum) + ': ' +
@@ -717,7 +717,7 @@
        * Folge zusammenhangloser Werte vor: "60m (so gemessen)", "8 Stunden", "belegt"
        * - ohne je zu sagen, wovon die Rede ist. Gemessen am 26.08.2026: die einzige
        * sichtbare Tabelle der App ganz ohne <th>. */
-      return '<tr><th scope="row" style="color:var(--muted); white-space:nowrap; width:130px; text-align:left; font-weight:400;">' +
+      return '<tr><th scope="row" style="color:var(--muted); white-space:nowrap; width:130px;">' +
         U.esc(r[0]) + '</th><td>' + r[1] + '</td></tr>';
     }).join('') + '</table>';
     /* Struktur-Audit Punkt 4: der Beleg verweist auf seine Quelle. Der Reiterwechsel
@@ -790,7 +790,18 @@
         };
       });
       PROTOKOLL_KANTE = neu;
+      /* #100 (26.08.2026): hier stand nur huerdeAnzeigen(). Der Regelkopf sechs Zeilen
+       * weiter oben auf derselben Seite erfuhr nie, dass Protokolle geladen sind, und
+       * behauptete dauerhaft "Kein Messprotokoll im Datenordner" - waehrend die Huerde
+       * darunter dasselbe Protokoll mit einem ANDEREN Urteil zeigte. Reproduziert am
+       * 26.08.: Kopf "nicht entscheidbar" (aus dem Code), Huerde "nicht bestaetigt"
+       * (aus dem Protokoll). Zwei Wahrheiten auf einer Seite.
+       * Daran hingen zwei frisch ausgelieferte Arbeiten: Wilhelms Entscheid 2b (der
+       * Warnhinweis vor "nicht bestaetigt") und die Variantenwahl nach Protokoll-Urteil.
+       * Beide leben in belegAusProtokoll, das nie gefuellt wurde.
+       * BEIDE Anzeigen lesen dieselbe Quelle, also muessen beide denselben Takt haben. */
       try { huerdeAnzeigen(); } catch (e) { /* Anzeige noch nicht da - beim naechsten Mal */ }
+      try { regelKopfAnzeigen(); } catch (e2) { /* dito */ }
       /* Struktur-Audit Punkt 3: andere Anzeigen (Strategien-Uebersicht) lesen dieselben
        * Kanten ueber DepotAPI - das Ereignis sagt ihnen, dass jetzt welche da sind. */
       try { document.dispatchEvent(new CustomEvent('kanten-geladen')); } catch (e2) { /* optional */ }
@@ -857,7 +868,7 @@
         " → <span class=\"" + (belegt && netto > 0 ? "gut" : "warn") + "\">netto " +
         (netto >= 0 ? "+" : "") + U.dez(netto, 3) + " Pp</span>";
       if (!belegt) {
-        txt += "<br><span class=\"warn\">Urteil der Messmaschine: <b>" + kante.urteil +
+        txt += "<br><span class=\"warn\">Urteil der Messmaschine: <b>" + U.esc(U.urteilText(kante.urteil)) +
           "</b>. Diese Zahl ist kein belegter Vorsprung – auch dann nicht, wenn sie positiv ist.</span>";
       } else if (netto <= 0) {
         txt += " – mit diesem Produkt trägt der Vorsprung die Kosten nicht.";
@@ -5039,7 +5050,7 @@
        * der alte Backtest-Wert da, aber ALS das gekennzeichnet, was er ist. */
       var pkK = PROTOKOLL_KANTE[c.mode];
       var messSatz = pkK
-        ? ' Messprotokoll vom ' + pkK.datum + ': ' + pkK.urteil +
+        ? ' Messprotokoll vom ' + pkK.datum + ': ' + U.urteilText(pkK.urteil) +
           (pkK.jeSignalPp == null ? ' (keine Zahl je Signal zu diesem Urteil)'
             : ', Überschuss je Signal ' + (pkK.jeSignalPp >= 0 ? '+' : '') + U.dez(pkK.jeSignalPp, 3) + ' Pp') +
           ' – die App liest dieses Urteil, sie rechnet es nicht.'

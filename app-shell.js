@@ -24,6 +24,22 @@
     dt: function (ms) { return new Date(ms).toLocaleString('de-DE', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' }) + ' Uhr'; },
     d: function (ms) { return new Date(ms).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: '2-digit' }); },
     signCls: function (v) { return v > 0 ? 'pos' : (v < 0 ? 'neg' : ''); },
+    /* URTEILE DER MESSMASCHINE LESBAR MACHEN (#102, 26.08.2026).
+     * Die Maschine benennt ihre Urteile mit internen Schluesseln ('nicht-bestaetigt').
+     * Die gehoeren nicht in die Anzeige - im Regelkopf stand woertlich
+     * "Beleg nicht-bestaetigt", sobald er das Protokoll ueberhaupt zu sehen bekam.
+     * EINE Uebersetzung fuer die ganze App: das Scoreboard hatte eine eigene Tabelle,
+     * und zwei Tabellen an zwei Orten sind die naechste Stelle, an der eine veraltet.
+     * Ein UNBEKANNTER Schluessel wird nicht verschluckt, sondern lesbar gemacht - die
+     * Maschine darf neue Urteile erfinden, und ein stilles "?" waere schlimmer als ein
+     * ungewohntes Wort. */
+    urteilText: function (u) {
+      var T = { 'bestaetigt': 'bestätigt', 'nicht-bestaetigt': 'nicht bestätigt',
+        'nicht-entscheidbar': 'nicht entscheidbar', 'nicht-messbar': 'nicht messbar',
+        'widerlegt': 'widerlegt',
+        'bestaetigt-aber-nullpunkt-verschoben': 'bestätigt – aber Nullpunkt verschoben' };
+      return T[u] || String(u == null ? '?' : u).replace(/-/g, ' ');
+    },
     signTxt: function (v, unit) { return (v > 0 ? '+' : '') + U.nf2.format(v) + (unit || ''); },
     /* Statuszeile setzen. ziel = Element oder Kennung, text = TEXT (nie HTML),
      * art = undefined | 'ok' | 'fehler'.
