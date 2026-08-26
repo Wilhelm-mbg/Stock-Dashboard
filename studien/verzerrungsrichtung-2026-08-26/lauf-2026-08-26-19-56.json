@@ -1,0 +1,242 @@
+{
+ "gemessenAm": "2026-08-26T19:56:13.434Z",
+ "seed": 20260826,
+ "schwelleFamilie": 2.5758293064439264,
+ "bezuege": {
+  "kapitulation": {
+   "name": "kapitulation",
+   "variante": 2,
+   "bestesUrteil": "nicht-bestaetigt",
+   "tests": 3,
+   "kerzen": 26,
+   "H": 4,
+   "se": 0.005169063550579101,
+   "t": 2.1422397201146133,
+   "delta80Prot": 0.016725027199734885,
+   "schwelleProt": 2.3939798012415388
+  },
+  "monatsende-kauf": {
+   "name": "monatsende-kauf",
+   "variante": 0,
+   "bestesUrteil": "nicht-messbar",
+   "tests": 1,
+   "kerzen": 8,
+   "H": 1,
+   "se": 0.0018264930377953404,
+   "t": 0.8466594274125673,
+   "delta80Prot": 0.005117075837239099,
+   "schwelleProt": 1.959963986120195
+  },
+  "rsi2seit-mcp": {
+   "name": "rsi2seit-mcp",
+   "variante": 0,
+   "bestesUrteil": "nicht-entscheidbar",
+   "tests": 5,
+   "kerzen": 2.518083889418494,
+   "H": 1,
+   "se": 0.00022432436874212725,
+   "t": 1.7202557709482311,
+   "delta80Prot": 0.0007666174275654968,
+   "schwelleProt": 2.5758293064439264
+  }
+ },
+ "waechter": {
+  "gemessenAm": "2026-08-26T19:56:11.644Z",
+  "modus": "kohorte",
+  "seed": 20260826,
+  "schwelleFamilie": 2.5758293064439264,
+  "schwellenQuelle": "messmaschine.js (_intern)",
+  "filter": {
+   "ueberlebende": {
+    "dateien": 2965,
+    "ohneArt": 0,
+    "falscheArt": 716,
+    "ausserhalbFenster": 0,
+    "geladen": 2249,
+    "leseFehler": 0
+   },
+   "verschwundene": {
+    "dateien": 1164,
+    "keinAktienartig": 0,
+    "falschesDelisting": 0,
+    "zuKurz": 116,
+    "brauchbar": 1048,
+    "leseFehler": 0
+   },
+   "falscheDelistings": [],
+   "verschwundeneNachFilter": 1048
+  },
+  "haltedauern": {
+   "H_Z1": 4,
+   "H_Z2": 1
+  },
+  "bezuege": {
+   "kapitulation": {
+    "name": "kapitulation",
+    "variante": 2,
+    "bestesUrteil": "nicht-bestaetigt",
+    "tests": 3,
+    "kerzen": 26,
+    "H": 4,
+    "se": 0.005169063550579101,
+    "t": 2.1422397201146133,
+    "delta80Prot": 0.016725027199734885,
+    "schwelleProt": 2.3939798012415388
+   },
+   "monatsende-kauf": {
+    "name": "monatsende-kauf",
+    "variante": 0,
+    "bestesUrteil": "nicht-messbar",
+    "tests": 1,
+    "kerzen": 8,
+    "H": 1,
+    "se": 0.0018264930377953404,
+    "t": 0.8466594274125673,
+    "delta80Prot": 0.005117075837239099,
+    "schwelleProt": 1.959963986120195
+   },
+   "rsi2seit-mcp": {
+    "name": "rsi2seit-mcp",
+    "variante": 0,
+    "bestesUrteil": "nicht-entscheidbar",
+    "tests": 5,
+    "kerzen": 2.518083889418494,
+    "H": 1,
+    "se": 0.00022432436874212725,
+    "t": 1.7202557709482311,
+    "delta80Prot": 0.0007666174275654968,
+    "schwelleProt": 2.5758293064439264
+   }
+  },
+  "W1": {
+   "bestanden": true,
+   "soll": -0.010725156607722287,
+   "c": -0.009683499157735224,
+   "t": -2.9003146429175297,
+   "tage": 454
+  },
+  "W2b": {
+   "Z1": {
+    "mitte": -0.00003591841359498349,
+    "sd": 0.003746082507622349,
+    "grenze": 0.003200512890713683,
+    "bestanden": true,
+    "band": 0.004491011562072314
+   },
+   "Z2": {
+    "mitte": 0.000033296977318566754,
+    "sd": 0.0008917658688587849,
+    "grenze": 0.0007618914300402157,
+    "bestanden": true,
+    "band": 0.001317164236418501
+   }
+  },
+  "W2sockel": {
+   "Z1": {
+    "sockel": -0.0014507389024824705,
+    "sd": 0.0029884525329395488,
+    "q10": -0.005118082276812616,
+    "q90": 0.0019207572451514388
+   },
+   "Z2": {
+    "sockel": 0.0005033143875251759,
+    "sd": 0.0005706333561271733,
+    "q10": -0.00021556653121523962,
+    "q90": 0.0012700267898224905
+   }
+  },
+  "Z9vor": {
+   "Z9": {
+    "c": 0.000004809207241695402,
+    "ok": true
+   },
+   "Z0": {
+    "c": 0.000097865985811526,
+    "ok": true
+   }
+  }
+ },
+ "ergebnisse": {
+  "Z0": {
+   "nw": {
+    "mittel": -0.0012504114939286888,
+    "se": 0.0005810540887442659,
+    "t": -2.1519709062386814,
+    "n": 476
+   },
+   "tage": 476,
+   "wMittel": 0.06774980514633373,
+   "nV": 77758,
+   "nU": 1104307,
+   "gestutzt": 23644,
+   "delta80": 0.0019857235898504055,
+   "gefallen": 358
+  },
+  "Z9": {
+   "nw": {
+    "mittel": -0.001317556995479698,
+    "se": 0.0007054539310356829,
+    "t": -1.867672625405009,
+    "n": 97
+   },
+   "tage": 97,
+   "wMittel": 0.06749445541889994,
+   "nV": 15776,
+   "nU": 225708,
+   "gestutzt": 4832,
+   "delta80": 0.002410853893890753,
+   "gefallen": 65
+  },
+  "Z1": {
+   "nw": {
+    "mittel": -0.037815369175165134,
+    "se": 0.006104483094240543,
+    "t": -6.1946881646446315,
+    "n": 450
+   },
+   "tage": 450,
+   "wMittel": 0.12669403033533877,
+   "nV": 5123,
+   "nU": 49457,
+   "gestutzt": 1094,
+   "delta80": 0.020861768841990733,
+   "gefallen": 24,
+   "ohneLuecke": {
+    "c": -0.04283059476392039,
+    "se": 0.0058413058697379455,
+    "t": -7.332366378178014,
+    "tage": 451
+   }
+  },
+  "Z2": {
+   "nw": {
+    "mittel": 0.00029587953800061084,
+    "se": 0.00033743788642406626,
+    "t": 0.8768414866988941,
+    "n": 23
+   },
+   "tage": 23,
+   "wMittel": 0.06831419070442113,
+   "nV": 3790,
+   "nU": 53121,
+   "gestutzt": 1140,
+   "delta80": 0.0011531772758532934,
+   "gefallen": 44,
+   "ohneLuecke": {
+    "c": -0.0010782157691205353,
+    "se": 0.0005708507800522991,
+    "t": -1.8887874148507835,
+    "tage": 23
+   }
+  }
+ },
+ "z9diff": 0.00006714550155100907,
+ "urteile": {
+  "Richtung Z1": "Richtung belegt: NEGATIV (Archiv beschoenigt)",
+  "Richtung Z2": "im Fenster ohne messbare Richtung",
+  "Materialitaet kapitulation": "im Fenster unerheblich (obere Grenze 0.6078 Pp < delta80Prot/2; E-F1-Vorbehalt gilt)",
+  "Materialitaet rsi2seit-mcp": "Verzerrung materiell (dB_Quer=-0.4803 Pp >= delta80Prot)",
+  "Materialitaet monatsende-kauf": "im Fenster unerheblich (obere Grenze 0.0108 Pp < delta80Prot/2; E-F1-Vorbehalt gilt)"
+ },
+ "wQuer": 0.127
+}

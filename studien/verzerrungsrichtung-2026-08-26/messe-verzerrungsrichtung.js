@@ -222,8 +222,10 @@ function monatsenden(spyDates) {
   for (const d of spyDates) { if (d >= FENSTER_VON && d <= FENSTER_BIS) proMonat.set(d.slice(0, 7), d); }
   return new Set(proMonat.values());
 }
-function signaleFuerReihe(S, sonde, H, monatsendSet) {
-  /* liefert [{datum, entry, exit}] - Indizes; exit = min(t+1+H, letzte) (Nachtrag 3) */
+function signaleFuerReihe(S, sonde, H, monatsendSet, ohneLuecke) {
+  /* liefert [{datum, entry, exit}] - Indizes; exit = min(einstieg+H, letzte) (Nachtrag 3).
+   * ohneLuecke: Empfindlichkeitsvariante aus §4.1 (Einstieg am Signalschluss t statt t+1;
+   * teilt den Kurs mit dem Signal - wird berichtet, nie beurteilt). */
   const aus = [], n = S.dates.length;
   for (let t = S.fensterStart; t < n; t++) {
     const dt = S.dates[t];
@@ -235,8 +237,9 @@ function signaleFuerReihe(S, sonde, H, monatsendSet) {
     else if (sonde === 'Z2') feuert = monatsendSet.has(dt);
     else if (sonde === 'Z9') feuert = wochentag(dt) === 3;
     if (!feuert) continue;
-    if (t + 1 >= n) { aus.push({ datum: dt, entry: -1, exit: -1 }); continue; } // faellt, wird gezaehlt
-    aus.push({ datum: dt, entry: t + 1, exit: Math.min(t + 1 + H, n - 1) });
+    const einstieg = ohneLuecke ? t : t + 1;
+    if (einstieg >= n) { aus.push({ datum: dt, entry: -1, exit: -1 }); continue; } // faellt, wird gezaehlt
+    aus.push({ datum: dt, entry: einstieg, exit: Math.min(einstieg + H, n - 1) });
   }
   return aus;
 }
@@ -606,6 +609,24 @@ const urteile = {
   'Materialitaet monatsende-kauf': materialitaet(ergebnisse.Z2, bezuege['monatsende-kauf'])
 };
 for (const [k, v] of Object.entries(urteile)) console.log(k + ': ' + v);
+/* Empfindlichkeitsvariante ohne Luecken-Kerze (§4.1) - berichtet, nie beurteilt */
+console.log('\n-- Empfindlichkeit (Einstieg am Signalschluss, teilt den Kurs - kein Urteil) --');
+for (const [sonde, H] of [['Z1', H_Z1], ['Z2', H_Z2]]) {
+  const eintraegeV = [];
+  for (const m of gefiltert.rest) {
+    const S = m._S;
+    const rr = renditen(S, signaleFuerReihe(S, sonde, H, monatsendSet, true));
+    for (const e of rr.aus) eintraegeV.push({ datum: e.datum, wert: e.wert });
+  }
+  const eintraegeU = [];
+  for (const S of U.reihen) {
+    const rr = renditen(S, signaleFuerReihe(S, sonde, H, monatsendSet, true));
+    for (const e of rr.aus) eintraegeU.push({ datum: e.datum, wert: e.wert });
+  }
+  const E = endpunkt(eintraegeV, eintraegeU, H);
+  console.log(sonde + '(ohne Luecke): c=' + (E.nw.mittel != null ? (E.nw.mittel * 100).toFixed(4) : '?') + ' Pp  t=' + (E.nw.t != null ? E.nw.t.toFixed(2) : '?') + '  Paartage=' + E.tage);
+  ergebnisse[sonde].ohneLuecke = { c: E.nw.mittel, se: E.nw.se, t: E.nw.t, tage: E.tage };
+}
 console.log('\nSperrliste (Vorreg. §5) gilt woertlich: kein Kanten-Urteil, kein E1-Leiserstellen, momentum nur Einschraenkung, 60m nur mit Ue1-Vorbehalt.');
 const lauf = { gemessenAm: new Date().toISOString(), seed: SEED, schwelleFamilie, bezuege, waechter: waechterErgebnis, ergebnisse, z9diff, urteile, wQuer: W_QUER };
 fs.writeFileSync(path.join(HIER, 'lauf-' + new Date().toISOString().slice(0, 16).replace(/[:T]/g, '-') + '.json'), JSON.stringify(lauf, null, 1));

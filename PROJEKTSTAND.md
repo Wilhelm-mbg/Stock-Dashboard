@@ -2413,12 +2413,17 @@ mit #93/#94 zusammen runder.
 *Wer welche Dateien belegt. Trag dich ein, bevor du anfängst; nimm dich raus, wenn du
 fertig bist.*
 
-- **Berechnungen** (seit 26.08. 19:47) — **Richtung der Überlebensverzerrung messen**
-  (PM-Freigabe 19:15, Reihenfolge bestätigt: Verzerrung → Strang A → #92). Erster
-  Schritt: Vorregistrierung nach `studien/vorregistrierung-2026-08-26/`, Meldung an den
-  PM, **bevor** gerechnet wird. Belegt nur neue Dateien unter `studien/`; fasst
-  `messmaschine.js` nicht an. Hinweis des Tüftlers ist eingearbeitet: nur die drei
-  Protokolle mit Aussicht unter 1.500 Handelstagen sind überhaupt drehbar.
+- **Berechnungen** — **Verzerrungsrichtung FERTIG gemessen (26.08. ~22:2x):**
+  erstes belegtes Richtungsurteil — **das Überlebenden-Archiv beschönigt die
+  Dip-Familie** (Dip-Rutsch-Zwilling c = −3,78 Pp, t = −6,19, 450 Paartage; Sockel
+  nur −0,15). **Für rsi2seit-mcp materiell** (ΔB −0,48 Pp ≥ 6× dessen delta80, unter
+  Ü1-Vorbehalt); kapitulation/monatsende im Fenster unerheblich; Monatsende ohne
+  messbare Richtung. Wächter alle grün (Positivkontrolle 0,903). Gilt fürs Fenster
+  2024-08→2026-08, NICHT für 2008/09. Vollständig: `studien/verzerrungsrichtung-
+  2026-08-26/ERGEBNIS.md` + Vorregistrierung mit Nachträgen 9–12. Kohortenlauf auf
+  Wilhelms »weiter«, nachdem der PM-Chat zwei Anfragen nicht beantwortete (Warnsignal:
+  pm-lebt.txt steht seit 18:06). **Nächster Auftrag laut Freigabe-Reihenfolge:
+  Strang A (momentum), eigene Vorregistrierung folgt.** Belegt nur `studien/`-Dateien.
 
 - **App-Codebase Master** — **Stufe F (3) erledigt** (`779c02c`), Übergabe liegt im
   Briefkasten. Erst gemessen (neue Sonde `tools/a11y-probe.js`), dann repariert:
