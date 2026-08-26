@@ -58,6 +58,9 @@ var VERFAHREN = {
    * 1.3.0 (26.08.2026): ausstiegsZeitpunkt - Spiegelbild der Einstiegskonvention, an
    *   Signal, beiden Kontrollen und dem Placebo zugleich. Die Vorgabe schluss ist das
    *   bisherige Verhalten; neu im Protokoll sind das Feld und die Entscheidung C9.
+   * 1.4.0 (26.08.2026): #98 - der Ueberlappungsfaktor erreicht seinen Leser. Neu im
+   *   Protokoll sind das Feld je Block und die Entscheidung B10, die bisher in KEINEM
+   *   der 38 Protokolle stand. Die Rechnung selbst aendert sich nicht.
    * Zur 1.2.0 gab es eine ANDERE Meinung, und sie war vertretbar: die Messung selbst
    * aendert sich nicht, kein Urteil kippt, es ist 'nur' eine Planungszahl - also
    * koennte 1.1.0 stehenbleiben. Dagegen steht, was diese Nummer LEISTEN soll: zwei
@@ -66,7 +69,7 @@ var VERFAHREN = {
    * Zahlen nebeneinanderlegt, haette keinen Anhaltspunkt. Deshalb neue Stelle.
    * Genau diese Frage soll die Sperrklinke in test-v6.js erzwingen - sie deshalb
    * durchzuwinken waere ihr erster Ausfall gewesen. */
-  version: '1.3.0',
+  version: '1.4.0',
   /* codeStand beantwortet 'war das dieselbe Datei?' und rechnet sich selbst aus. */
   codeStand: codeStand(),
   mindestKerzenVorlauf: 261,        // EMA100 + Kanal 200, wie die Detektoren es brauchen
@@ -1012,6 +1015,15 @@ function messe(strategie, archivPfad, optionen) {
       var tm = tagesMittel(liste), st = statistik(tm.mittel, H - 1), js = jeSignal(liste);
       return { tage: st.n, signale: js.n,
         tagesmittel: st.mittel, t: st.t, se: st.se, mde: st.mde,          // B1: Teststatistik ueber Tage
+        /* #98 (26.08.2026): DIESE ZEILE FEHLTE. statistik() rechnet den Faktor laengst
+         * (se/seNaiv), aber block() reichte ihn nicht weiter - und der einzige Leser
+         * weiter unten filtert auf "nicht null". Die Liste war also IMMER leer: der
+         * B10-Eintrag stand in keinem der 38 Protokolle, und die Warnung ab Faktor 3
+         * konnte nie feuern. Die Newey-West-Korrektur selbst hat immer gewirkt - nur
+         * ihre Sichtbarkeit fehlte, und damit die Warnung, wie STARK sie wirkt.
+         * ABSICHTLICH kein rohes sd daneben (siehe #86): der Faktor ist eine
+         * Verhaeltniszahl und verleitet zu keiner falschen Rechnung. */
+        ueberlappungsFaktor: st.ueberlappungsFaktor,
         jeSignal: js.mittel, anteilPositiv: js.anteilPositiv };           // B2: die handelbare Zahl
     }
     var E = { roh: block(teil(roh, 'entdeckung')), ueberschuss: block(teil(ueber, 'entdeckung')) };
@@ -1051,9 +1063,19 @@ function messe(strategie, archivPfad, optionen) {
     P.entscheide('B10 Ueberlappung', { haltedauerKerzen: H, verzoegerungen: H - 1 },
       { faktorGroesster: fMax },
       H > 1
+        /* DER FAKTOR KANN UNTER 1 LIEGEN, und der Text muss das aushalten. Sichtbar
+         * geworden am 26.08.2026, als der Eintrag ueberhaupt zum ersten Mal erschien
+         * (#98): auf dem Kunstarchiv kam 0,62 heraus - der korrigierte Standardfehler
+         * ist dort KLEINER als der naive, weil die Tagesmittel negativ autokorreliert
+         * sind. "waechst um Faktor 0,62" waere schlicht falsch gewesen.
+         * Genau dasselbe war bei #86 aufgefallen: die Richtung der Korrektur haengt am
+         * Vorzeichen der Autokorrelation und ist NICHT festgelegt. */
         ? 'Die Ergebnisfenster aufeinanderfolgender Signaltage ueberlappen um ' + (H - 1) + ' Kerzen. ' +
-          'Der Standardfehler ist Newey-West-korrigiert; er waechst dadurch um bis zu Faktor ' + fMax.toFixed(2) +
-          ' gegenueber der Annahme unabhaengiger Tage.'
+          'Der Standardfehler ist Newey-West-korrigiert; er ' +
+          (fMax >= 1 ? 'waechst dadurch um bis zu Faktor ' + fMax.toFixed(2)
+                     : 'FAELLT dadurch auf Faktor ' + fMax.toFixed(2)) +
+          ' gegenueber der Annahme unabhaengiger Tage. Unter 1 heisst: die Tagesmittel sind ' +
+          'negativ autokorreliert, die Korrektur macht die Messung dort schaerfer statt stumpfer.'
         : 'Haltedauer 1 Kerze - nichts ueberlappt, die Korrektur ist wirkungslos (Faktor 1,00).');
     if (fMax > 3) P.warne('B10', 'Der Standardfehler waechst um Faktor ' + fMax.toFixed(2) +
       ' durch ueberlappende Halteperioden. Ein Urteil, das ohne diese Korrektur zustande kaeme, waere wertlos.');

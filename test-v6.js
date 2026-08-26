@@ -3937,8 +3937,8 @@ console.log('\n44) Messmaschine, Scoreboard und Strategie-Eingabe (23.08.2026)')
    * bleibt version, und nur der Stand wird nachgezogen). Genau diese Frage ist sieben
    * Mal nicht gestellt worden. Die Reibung IST der Zweck: sie kostet zwei Zeilen und
    * verhindert, dass Protokolle stillschweigend unvergleichbar werden. */
-  var MM_VERSION = '1.3.0';
-  var MM_STAND = 'd844463e008d';   // sha256 ueber messmaschine.js, erste 12 Zeichen
+  var MM_VERSION = '1.4.0';
+  var MM_STAND = 'b8613cfa5384';   // sha256 ueber messmaschine.js, erste 12 Zeichen
   var mmV = require(__dirname + '/studien/messmaschine/messmaschine.js').VERFAHREN;
   ok(mmV.version === MM_VERSION && mmV.codeStand === MM_STAND,
      'Messmaschine: Version und Codestand stehen zusammen fest - eine Aenderung ohne Entscheid faellt auf',
@@ -4037,8 +4037,19 @@ console.log('\n44) Messmaschine, Scoreboard und Strategie-Eingabe (23.08.2026)')
      'Die Maschine korrigiert den Standardfehler nach Newey-West');
   ok(mm2.indexOf('statistik(tm.mittel, H - 1)') !== -1,
      'Die Zahl der Verzoegerungen kommt aus der Haltedauer, nicht aus einer Annahme');
+  /* #98 (26.08.2026): Diese Probe hat vier Tage lang bestanden, WAEHREND die Warnung
+   * unerreichbar war. Dass P.warne dasteht, sagt nichts darueber, ob es je erreicht
+   * wird - der Leser filtert auf einen Faktor, den block() nicht weiterreichte, und
+   * die Liste war damit immer leer. In KEINEM der 38 Protokolle stand der B10-Eintrag.
+   * Sie prueft jetzt den WEG des Faktors; ob die Warnung wirklich feuert, misst
+   * test-messmaschine.js Block 20 ausgefuehrt. */
   ok(/P\.warne\('B10'/.test(mm2),
      'Waechst der Fehler um mehr als Faktor 3, warnt die Maschine');
+  ok(/ueberlappungsFaktor: st\.ueberlappungsFaktor/.test(mm2),
+     'und block() reicht den Faktor an seinen Leser durch - sonst ist die Warnung tot');
+  var b10Leser = mm2.indexOf('var faktoren = ergebnisse.map(');
+  ok(b10Leser !== -1 && /bestaetigung\.ueberschuss\.ueberlappungsFaktor/.test(mm2.slice(b10Leser, b10Leser + 200)),
+     'Leser und Lieferant meinen dasselbe Feld');
 
   /* Und die Gegenprobe: bei H = 1 darf die Korrektur nichts tun. */
   var mmMod = require(__dirname + '/studien/messmaschine/messmaschine.js');

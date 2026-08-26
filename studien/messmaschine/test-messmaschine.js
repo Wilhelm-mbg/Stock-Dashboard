@@ -732,6 +732,77 @@ leereArchiv();
   [MIT, OHNE].forEach(function (p) { try { fs.rmSync(p, { recursive: true, force: true }); } catch (e) { } });
 })();
 
+/* ========== #98: der Ueberlappungswaechter war toter Code ========== */
+console.log('\n20) #98: B10 - der Ueberlappungsfaktor erreicht seinen Leser');
+leereArchiv();
+baueArchiv();
+(function () {
+  /* statistik() rechnete den Faktor (se/seNaiv) laengst, aber block() reichte ihn nicht
+   * weiter - und der einzige Leser filtert auf "nicht null". Die Liste war IMMER leer:
+   * der B10-Eintrag stand in KEINEM der 38 Protokolle, und die Warnung ab Faktor 3
+   * konnte nie feuern. Die Newey-West-Korrektur selbst hat immer gewirkt; unsichtbar
+   * war nur, WIE STARK.
+   * Geprueft wird das Verhalten, nicht der Quelltext: dass P.warne('B10') irgendwo
+   * dasteht, hat vier Tage lang nichts darueber gesagt, ob es je erreicht wird. */
+  function lauf(H) {
+    return M.messe({ key: 'b10-probe',
+      grund: 'Prueft, ob der Ueberlappungsfaktor im Protokoll ankommt und die B10-Warnung feuern kann.',
+      haltedauerKerzen: H, richtung: 'long', leseFensterKerzen: 0,
+      signal: function (b, i) { return (i - 261) % 20 === 0 ? { dir: 1 } : null; } }, TMP);
+  }
+  var r8 = lauf(8);
+  var u8 = r8.ergebnisse[0].bestaetigung.ueberschuss;
+  ok(u8.ueberlappungsFaktor != null && isFinite(u8.ueberlappungsFaktor),
+     'Der Ueberlappungsfaktor steht im Ergebnis', u8.ueberlappungsFaktor);
+  /* Er ist se/seNaiv - nachgerechnet aus dem, was sonst noch im Block steht, waere er
+   * nicht pruefbar (seNaiv wird nicht ausgewiesen). Also gegen statistik() selbst. */
+  var b10 = r8.entscheidungen.filter(function (e) { return e.regel.indexOf('B10') === 0; })[0];
+  ok(!!b10, 'Der B10-Eintrag steht im Protokoll - er stand in KEINEM der 38 vorherigen');
+  ok(b10 && b10.eingabe.verzoegerungen === 7,
+     'und nennt die Zahl der Verzoegerungen (H-1)', b10 && b10.eingabe.verzoegerungen);
+  ok(b10 && Math.abs(b10.ergebnis.faktorGroesster - Math.max.apply(null,
+       r8.ergebnisse.map(function (r) { return r.bestaetigung.ueberschuss.ueberlappungsFaktor; }))) < 1e-9,
+     'Der ausgewiesene Faktor ist der groesste ueber alle Varianten');
+
+  /* Bei H=1 ueberlappt nichts - der Faktor MUSS 1,00 sein. Waere er es nicht, rechnete
+   * die Korrektur etwas, das es nicht gibt. */
+  var r1 = lauf(1);
+  var u1 = r1.ergebnisse[0].bestaetigung.ueberschuss;
+  ok(Math.abs(u1.ueberlappungsFaktor - 1) < 1e-9,
+     'Bei Haltedauer 1 ist der Faktor genau 1,00 - nichts ueberlappt', u1.ueberlappungsFaktor);
+  var b10eins = r1.entscheidungen.filter(function (e) { return e.regel.indexOf('B10') === 0; })[0];
+  ok(b10eins && /wirkungslos/.test(b10eins.begruendung),
+     'und der Eintrag sagt das auch, statt eine Korrektur zu behaupten');
+
+  /* DIE WARNUNG MUSS FEUERN KOENNEN. Das ist der eigentliche Punkt von #98: sie stand
+   * vier Tage im Quelltext und war unerreichbar. Geprueft wird die Bedingung an
+   * derselben Stelle, an der die Maschine sie prueft - mit einem kuenstlich hohen
+   * Faktor, weil ein echtes Archiv mit Faktor > 3 hier nicht zur Hand ist. */
+  var mmQ98 = fs.readFileSync(__dirname + '/messmaschine.js', 'utf8');
+  var wA = mmQ98.indexOf('var faktoren = ergebnisse.map(');
+  /* +4, damit die schliessende Klammer mitkommt - sonst endet der Ausschnitt mitten
+   * im Block und new Function wirft, statt eine Falschauswahl zu zeigen. */
+  var wE = mmQ98.indexOf('\n  }\n', wA) + 4;
+  ok(wA !== -1 && wE > wA, 'Der B10-Block laesst sich herausloesen');
+  var gewarnt = [];
+  var P0 = { entscheide: function () { return {}; }, warne: function (k, t) { gewarnt.push(k + ': ' + t); } };
+  function b10Lauf(faktor, H) {
+    gewarnt.length = 0;
+    new Function('ergebnisse', 'P', 'H', mmQ98.slice(wA, wE))(
+      [{ bestaetigung: { ueberschuss: { ueberlappungsFaktor: faktor } } }], P0, H);
+    return gewarnt.slice();
+  }
+  ok(b10Lauf(3.4, 8).length === 1 && /Faktor 3.40/.test(b10Lauf(3.4, 8)[0]),
+     'Bei Faktor 3,4 warnt die Maschine - die Warnung ist erreichbar', b10Lauf(3.4, 8)[0] ? 'gewarnt' : 'STUMM');
+  ok(b10Lauf(2.5, 8).length === 0, 'bei Faktor 2,5 nicht - die Schwelle steht bei 3');
+  /* Und der Fall, der vier Tage lang galt: ohne den Faktor bleibt alles stumm. */
+  gewarnt.length = 0;
+  new Function('ergebnisse', 'P', 'H', mmQ98.slice(wA, wE))(
+    [{ bestaetigung: { ueberschuss: {} } }], P0, 8);
+  ok(gewarnt.length === 0,
+     'Ohne den Faktor bleibt der ganze Block stumm - genau das war der Zustand bis zum 26.08.2026');
+})();
+
 fs.rmSync(TMP, { recursive: true, force: true });
 console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
 process.exit(fails ? 1 : 0);
