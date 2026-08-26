@@ -244,4 +244,36 @@ Bauart des Filters; die Fälle gehören auf die Tafel, nicht in diese Messung.*
 
 ---
 
+## 12. Nachtrag 27.08. ~02:1x — Phantom-Schwänze (falsche Existenz): geprüft, benannt
+
+Auf PM/QS-Befund (Reihen, die aufgehört haben, tragen flache Nullumsatz-Schwänze — ein
+Stempel je Sammellauf, der Schwanz **wächst** also täglich) rein lesend geprüft, mit
+meinem eigenen Lader:
+
+1. **Im Universum:** AVB (Schwanz 5 Kerzen, 17.–21.08.) und EQR (4 Kerzen) — beide
+   Aktie, F1-sauber, **JA**. Die drei Anleihe-ETF-Schwänze (IBDP, IBTE, BSCO) wirft
+   der Wertpapierart-Filter. LBRDA/LBRDK tragen keinen flachen Schwanz, sondern je
+   eine Sprung-Stempelkerze — das ist die Fallklasse aus Nachtrag 11.
+2. **Wählbar und haltbar?** **Heute realisiert: nein.** Die letzte vollständige
+   Phase-0-Periode läuft 02.03.–01.06.2026 — der Schwanz liegt dahinter, außerhalb
+   jedes Halte- und Merkmalfensters; und in der letzten Periode ranken AVB/EQR mit
+   Merkmal −21,6 %/−16,0 % auf Rang 1845/1751 von 2.213 (Zehntel-Schwelle: +84,7 %).
+   **Strukturell: ja.** Sobald das Archiv ~eine Handelswoche wächst, entsteht die
+   Periode 01.06.→Anfang September, die die Phantomtage mit eingefrorener Rendite
+   durchträgt; und ein künftiger Fall mit Übernahme-Run-up (die typische Konstellation)
+   würde gewählt UND gehalten. Nullrendite statt echtem Ausgang ist in beide Richtungen
+   falsch — und es ist die Richtung, in der Überlebensverzerrung entsteht, nicht die,
+   in der sie auffällt.
+3. **Benannt, nicht behandelt** (Reihe: 158.733 flache Tage → 50 Sprungkerzen →
+   Phantom-Schwänze). Für den JETZT anstehenden Referenzlauf ist der realisierte
+   Einfluss null; für jeden späteren Lauf auf gewachsenem Archiv ist er strukturell
+   angelegt und wachsend.
+
+**Entscheidungsbezug für Wilhelm (der PM trägt ihn vor):** Das Setzen der
+Abmeldedaten für beendete Reihen ist **genau die strukturelle Reparatur** dieses
+Mechanismus — ein Papier mit Ende kann nicht über sein Ende hinaus gehalten werden.
+Mein Befund sagt: heute Kosmetik, ab nächster Woche Messhygiene.
+
+---
+
 *Simulation mit virtuellem Kapital. Keine Anlageberatung.*
