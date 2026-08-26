@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-26 16:50
+letzter-bericht: 2026-08-26 17:05
 gesehener-tag: v8.33.4
 -->
 
@@ -169,6 +169,72 @@ vor zwei Stunden ist kein Stand.
 
 **Es warten schon wieder drei Notizen** auf die nächste Auslieferung:
 `archiv-nachladen`, `ausstieg-schalter`, `lesbarkeit-nachgemessen`.
+
+---
+
+### ✅ Der neue Ablauf trägt — erster Beleg noch am selben Tag
+
+**Drei Übergaben lagen beim ersten Blick in den Briefkasten** (zwei Issue-Wache, eine vom
+Master). Der Umbau ist damit nicht nur geschrieben, sondern **gelaufen**.
+
+**Und er hat sofort geleistet, wofür er gebaut wurde.** Der Master meldet Stufe F (3) als
+erledigt — **aber unter Punkt 3 steht: die Fokusreihenfolge in den Dialogen ist NICHT
+gemessen.** Einer von vier Auftragspunkten, offen und benannt statt stillschweigend
+mitgemeldet. Ohne den Pflichtpunkt „was ich nicht geschafft habe" wäre F (3) als fertig
+in die Bücher gegangen und dieser Teil hätte auf niemandes Liste gestanden.
+
+### Stufe F (3), Barrierefreiheit — gemessen, nicht behauptet (`779c02c`)
+
+Neue Sonde `tools/a11y-probe.js`: startet die App isoliert, schaltet alle fünf Reiter und
+achtzehn Pillen durch, misst Kontrast gegen den **wirklich gerenderten** Untergrund.
+
+**Befunde: hell 23, dunkel 8 → danach beide null** — bei *mehr* geprüften Textstellen als
+vorher (1.757 gegen 1.681). Das Grün kommt also nicht vom Wegsehen. Sechs Farbmarken
+lagen unter der Schwelle 4,5 und liegen jetzt darüber.
+
+Dazu ein echter Fund: der Regelkopf unter *Strategien* war die einzige Tabelle ohne
+Kopfzelle — eine Vorlesesoftware las „60m", „8 Stunden", „nicht bestätigt" als Folge
+zusammenhangloser Werte.
+
+**Zwei der vier Planpunkte bestätigen sich NICHT und sollen nicht „repariert" werden:**
+kein `aria-live`-Bereich ist zu breit, kein positiver `tabindex`, kein anspringbares
+Element ohne Namen. Wer hier eingreift, ändert etwas Funktionierendes.
+
+**Offen (a):** Fokusreihenfolge in Dialogen — `tools/a11y-probe.js`, Messcode ab ~95,
+Ablauf ab ~250. Klein und gut abgegrenzt.
+**Beobachtung (b), gehört Wilhelm:** alle sechs Kontrastbefunde traten gegen `--panel-2`
+auf (`index.html:51` hell, `:137` dunkel). Der Master hat die **Schriftfarben** nachgezogen;
+den **Untergrund** aufzuhellen hätte alle sechs auf einmal erledigt — das ist eine
+Gestaltungsentscheidung, keine Reparatur.
+**(c)** Rückgängig zu machen mit je einer Zeile: `index.html` 28/34/41 und 121/130/137,
+alte Werte stehen im Kommentar daneben.
+
+**Ein methodischer Satz, der über den Auftrag hinausgeht:** Der erste Sondenlauf meldete
+„keine Befunde" — auf einem frischen Profil wird fast nichts gezeichnet. **Eine grüne
+Prüfung ohne Inhalt sagt nur, dass sie nichts zu sehen bekam.** Die Sonde sät jetzt selbst
+ein Depot, drei Papiere und vier Protokolle. Fünfte Verkleidung derselben Stille an
+einem Tag.
+
+### Aus der Issue-Wache: was auf Wilhelm wartet, nicht auf Arbeitskraft
+
+Ihr Lauf war leer (alle acht Issues gesichtet, letzter Beitrag jeweils ihr eigener). Sie
+trennt aber sauber, **was blockiert**:
+
+**Wartet auf eine Entscheidung von Wilhelm:**
+- **#96** — ob die 20:00-Platzhalterkerze verworfen wird (147 von 152 Reihen betroffen,
+  Tagesarchiv sauber).
+- **#80** — welcher der drei Wege für die Kanal-Güte. Betrifft `explorer.js:628/656/664/669`,
+  `depot.js:1251/2040`, Sortierung `depot.js:1998`.
+- **#72 Punkt 3** — Richtung zur Kostenhürde (längere Haltedauer / Basiswert / engere Spannen).
+
+**Baubereit und unstrittig, sobald jemand Zeit hat:** #92 (Rangfolge,
+`messmaschine.js:1214–1215`), #69 (Backup/Restore, Anforderung vollständig), #82
+(Herkunftsland — das Feld fehlt im Programm noch ganz), #95 (Felix' fehlende
+`stammdaten.json`, Gegenprobe steht aus).
+
+**Vorschlag der Wache in eigener Sache:** Seit sie alle 30 Minuten nur noch sichtet, ist
+der Leerlauf der Normalfall — ein längerer Takt täte es auch. Sie ändert ihre eigene
+Aufgabe ausdrücklich nicht; das ist Wilhelms Entscheid.
 
 ---
 
