@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-26 11:15
+letzter-bericht: 2026-08-26 11:40
 gesehener-tag: v8.33.3
 -->
 
@@ -172,7 +172,12 @@ Protokoll bereits belegt — er beschreibt dort, *wie* ausgestiegen wurde
 (`{art: 'Zeit', mittlereKerzen: 26}`). Der neue Konfigurationsschalter darf damit nicht
 kollidieren.
 
-### ⚠ SOFORT — der Kursarchiv-Stillstand (PM zugeteilt 26.08. 11:15, noch niemand)
+### ⚠ SOFORT — der Kursarchiv-Stillstand — **ZUGETEILT an App-Codebase Master, 26.08. 11:40**
+
+*Der Master hat es von sich aus vorgeschlagen, der PM hat zugeteilt. Grenzen: reine
+Datenbeschaffung, keine Handelslogik, keine Version. Liegt die Ursache ausserhalb des
+Repos (Windows-Aufgabe, App-Funktion), wird gemeldet statt gebastelt. Kernstueck ist der
+Waechter, nicht die Reparatur.*
 
 **Steht seit 09:30 als Beobachtung auf der Tafel und hat sich seither nicht bewegt.**
 Der PM hat es 11:10 in den Dateien nachgemessen, nicht aus der Tafel übernommen:
@@ -199,7 +204,10 @@ Kerze älter ist als der letzte abgeschlossene Handelstag, muss das laut werden.
 **Reine Datenbeschaffung — Handelslogik wird nicht berührt.** Belegt keine Datei, an der
 der Master sitzt.
 
-### FREI — #93 und #94, die Bestandstabelle unter *Vermögen → Meine Papiere*
+### ~~FREI — #93 und #94~~ **ERLEDIGT 26.08. 11:35** (`a5641d3`, Master) — Bestandstabelle unter *Vermögen → Meine Papiere*
+
+*Beides waren seine eigenen Regressionen aus `79a505b`. Vom PM gegengeprueft: Commit auf
+origin, Baum sauber, npm test Exit 0. Der Nebenbefund steht weiter unten.*
 
 Zwei Funde des Auditors aus dem 2. Lauf, **beide stecken in der ausgelieferten v8.33.3**:
 
@@ -425,6 +433,36 @@ Wer das aufklaert, faengt bei der Spiegelung an, nicht am Archiv: die Dateien wu
 geschrieben, nur ohne neuen Inhalt. **Ein Lauf, der nichts dazulernt und trotzdem alles
 neu schreibt, sieht von aussen aus wie ein gesunder Lauf** — das ist der Grund, warum es
 zwei Tage niemandem auffiel.
+
+### Hinweis an alle — „grün aus dem falschen Grund" (Master, 26.08., vom PM übernommen)
+
+Zwei Muster aus einem einzigen Arbeitstag, beide betreffen **Prüfungen, nicht Code**:
+
+1. **Textprüfungen werden vom eigenen Kommentar rot.** Viermal an einem Tag
+   (`<style>`, `storeGet()`, `.eq-panel`, `toFixed`): die Prüfung verbietet einen
+   Bezeichner, und der erklärende Kommentar daneben nennt ihn. Die Prüfungen rechnen
+   Kommentare jetzt heraus. **Nie die Prüfung abschwächen** — auf Verwendung richten.
+
+2. **Die gefährlichere Richtung: grün, obwohl abgestürzt.** Ein zu enger Grep ließ einen
+   Absturz wie „bestanden" aussehen. Seither wird der **Exit-Code** geprüft, und die
+   Eindeutigkeit der Endmarke ist selbst eine Zusicherung.
+
+Das gehört zusammen mit dem Archiv-Fund von heute: **ein Lauf, der nichts dazulernt und
+trotzdem alles neu schreibt, sieht von außen aus wie ein gesunder Lauf.** Dreimal
+dieselbe Sorte Fehler — der Erfolgsnachweis prüft etwas anderes als das, was gelten soll.
+
+### Nebenbefund zu #94, der über den Fehler hinausgeht
+
+Die Klassen `up`/`muted` hießen in der entfallenen Signalliste *Signal / kein Signal* und
+wurden beim Umzug in die Bestandstabelle **still zu *Gewinn / Verlust* umgedeutet**.
+Umfärben hätte deshalb nicht gereicht — es sind zwei Bedeutungen, also zwei Klassen. Beim
+Reparieren fielen **drei** Fälle auf, die vorher alle gleich grau waren: Verlust (jetzt
+rot), genau null (jetzt neutral) und keine Angabe (bleibt grau — und heißt jetzt wirklich
+nur das).
+
+Ebenfalls festgehalten: die beiden Depotverlauf-Bilder hatten **keine einzige
+Zusicherung**. Das erklärt, wie zwei Ansichten derselben Zahlen nebeneinander stehen
+konnten, ohne dass der Widerspruch auffiel.
 
 ### Hinweise des Tüftlers an alle (keine Aufträge)
 
