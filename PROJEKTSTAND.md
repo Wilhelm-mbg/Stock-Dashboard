@@ -802,6 +802,24 @@ Fehler, die Aufgabe kann das auswerten.
 **Nicht zu verwechseln mit dem Ausliefern** — das bleibt bei der Release-Wache und bei
 dir. Hier geht es nur um Kursdaten.
 
+**(5) NEU — soll der Projekt-Manager auch nachts einmal laufen?**
+Der neue Ablauf steht, aber er hat eine Lücke, die nur du schließen kannst. Die vier
+nächtlichen Rollen enden zwischen 01:35 und 05:00 — **zu dieser Zeit läuft kein
+Projekt-Manager** (er läuft 08, 11, 14, 17, 19, 21 Uhr). Ihre zehn Minuten Bereitschaft
+laufen dort ins Leere, und ihre Übergaben liegen bis 08:00. Nichts geht verloren, aber
+die Nacht bleibt sechs bis sieben Stunden unverteilt.
+- **(a)** Ein zusätzlicher Durchgang um **05:30**, direkt nachdem die letzte Nachtrolle
+  fertig ist. Er sammelt die Nacht ein, verteilt sofort und legt dir um 08:00 einen
+  Bericht vor, der schon Antworten enthält statt nur Meldungen.
+- **(b)** So lassen — die Übergaben warten bis 08:00, das reicht.
+- **(c)** Statt eines festen Durchgangs die Nachtrollen später legen, damit sie in
+  Reichweite eines bestehenden Durchgangs enden.
+*Empfehlung: **a**.* Es kostet einen Durchgang und schließt genau die Lücke, wegen der du
+den Umbau bestellt hast. **(c)** empfehle ich nicht: die Nachtzeiten sind nicht beliebig,
+der Analytiker misst nach dem Archiv-Nachladen, und Verschieben würde diese Kette
+durcheinanderbringen.
+**Das ist eine Änderung an meinem eigenen Zeitplan — deshalb frage ich, statt es zu tun.**
+
 **(1) Zwölf laufende Strategien, null Belege — was soll die App damit machen?**
 Sieben von zwölf brauchen mehr als 12.000 weitere Handelstage, bis sich ihre Frage
 überhaupt entscheiden lässt. Das ist keine Geduldsfrage mehr, das ist unerreichbar.
