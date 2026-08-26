@@ -1798,6 +1798,57 @@ bei 1.063 Kalendertagen). Rechenwege: `Markt-Dashboard-Daten/qs-audit-2026-08-26
 
 ## Aufträge
 
+### ✅ 27.08. ~01:05 — drei Entscheide Wilhelms (per Formular, vor dem Schlafengehen)
+
+1. **Die Auflösungswand misst an der LIVE-HÜRDE** — bestätigt. Der Code im Arbeitsbaum
+   (`huerdeJetzt()`, `DepotAPI.kostenHuerde`) ist gedeckt; Weg 1 der drei Wege gilt, mit
+   Wilhelms Auflage: **die Anzeige muss Produkt und Haltedauer dazusagen**, sonst wandert
+   die Wand unerklärt mit jeder Einstellung. Die bauende Sitzung baut fertig.
+   *(Der PM hatte den Entscheid nur aus einem Code-Kommentar und hat nachgefragt — er
+   stimmte. Jetzt steht er hier, wo er den nächsten Neustart übersteht.)*
+2. **Vorrang ab 03:45: die zwei Datenfunde beheben.** Phantom-Dochte an den sieben
+   US-Halbtagen und der fehlerhafte 25.08. im 60m-Archiv. Sie blockieren Release *und*
+   Strang A; bis eben arbeitete niemand daran. Neumessung auf 1.5.0 und `tNaiv` kommen
+   danach.
+3. **Das Release bleibt blockiert** — bei Wilhelms früherem Entscheid. Die acht Notizen und
+   >70 Commits gehen raus, sobald die Datenfunde behoben sind.
+
+### 🔧 27.08. ~01:05 — Auftragslage berichtigt: zwei der vier Aufträge waren falsch adressiert
+
+**Die vier Sitzungen waren NICHT frisch.** Sie sind die alten, von Wilhelm geweckt — die
+Brücke hat nach ihrem Neustart nur **neue Kennungen vergeben**. Wer sich für „markt-dashboard-1d"
+hielt, war es nicht mehr; das Kürzel gehört jetzt jemand anderem. **Merksatz für den nächsten
+PM: nach einem Neustart ist jede Selbstauskunft aus der Zeit davor wertlos — die Kennung neu
+erfragen, nicht aus dem Gedächtnis nehmen.**
+
+| Kennung | Wer es wirklich ist | Auftrag jetzt |
+|---|---|---|
+| `markt-dashboard-06` | **Desingner** (hieß gestern 1d) | Archiv-Wache bis ~03:45, **danach die zwei Datenfunde** (Wilhelms Vorrang) |
+| `markt-dashboard-ab` | **QS/Audit** | ~~#98~~ **zurückgezogen.** Prüfauftrag statt Bauauftrag — die Rolle baut nicht |
+| `markt-dashboard-c4` | **Berechnungen** (hieß e7) | ~~Fokusreihenfolge~~ **zurückgezogen.** Bleibt beim Docht-Lauf ab 03:45 |
+| `markt-dashboard-1d` | massive-Datenfehler | unverändert |
+
+**#98 war schon repariert — mein Auftrag stützte sich auf einen veralteten Tafeleintrag.**
+Die QS hat es nachgewiesen, der PM hat es gegen Git geprüft: `943ad24` (26.08. 18:21) ist
+Vorfahr von HEAD, `block()` reicht `ueberlappungsFaktor` weiter (`messmaschine.js:1034`).
+**Der Analytiker-Satz „0 von 38 Protokollen" ist trotzdem wörtlich wahr** — aber nicht, weil
+die Reparatur fehlt, sondern weil **alle 38 Protokolle auf Maschine 1.2.0 entstanden, also
+vor der Reparatur.** Genau die Fehlerfamilie, vor der dieses Projekt überall warnt: *ein
+Nullbefund, den der Messaufbau erzeugt und nicht die Sache.*
+
+**Positivkontrolle liegt vor** (QS, Block D, Maschine 1.4.0): Der Wächter feuert auf
+`momentum` mit **Faktor 6,33** — mehr als das Doppelte der Warnschwelle 3 — und feuert bei
+den anderen elf Strategien **nicht** (0,61 bis 1,39). Beides belegt: er erkennt den echten
+Fall und schlägt nicht blind an.
+
+**ECHTER Restauftrag, von der QS benannt, noch unvergeben:** Die Gegenprobe verlangte
+`ueberlappungsFaktor` **und `tNaiv`** in `block()`. Umgesetzt ist nur die erste Hälfte.
+`statistik()` rechnet `seNaiv` und `tNaiv` (`messmaschine.js:143–148`), `block()` reicht sie
+nicht weiter. Rekonstruierbar als `t × Faktor`, aber nur auf ~0,08 % genau (der Faktor wird
+gerundet). **Eine Zeile, dieselbe Stelle — und danach muss einmal neu gemessen und abgelegt
+werden, sonst bleibt „0 von 38" stehen und der übernächste PM vergibt den Auftrag zum
+dritten Mal.**
+
 ### 📬 27.08. 00:50 — vier Aufträge nach dem Neustart verteilt (PM, per Nachricht zugestellt)
 
 *Wilhelm hat vier frische Sitzungen geweckt; ich habe ihnen direkt geschrieben. So verteilt,
@@ -3160,7 +3211,11 @@ fertig bist.*
   Ich gebe `scoreboard.js` wieder frei, bis das entschieden ist — gebaut ist nichts,
   gemessen ist alles oben. Übergabe liegt im Briefkasten.
 
-- **Desingner** — **übernimmt die ARCHIV-WACHE** (PM-Zuteilung 27.08. ~02:0x):
+- **Desingner (Adresse: markt-dashboard-06)** — ⚠ Adress-Korrektur ~02:15: die
+  Brücke hat nach ihrem Neustart neue Kürzel vergeben; diese Sitzung hieß gestern
+  „markt-dashboard-1d", das Kürzel gehört jetzt einer ANDEREN Sitzung
+  (massive-Datenfehler). Nachrichten an den Desingner ab jetzt an
+  **markt-dashboard-06**. — **übernimmt die ARCHIV-WACHE** (PM-Zuteilung 27.08. ~02:0x):
   begleitet den Nachlade-Lauf (PIDs 5852/7896, geprüft ~02:05: beide laufen,
   keine `archiv-alarm-*.txt`), misst bis ~03:45 NICHT auf 60m/1d, lässt nach
   Prozessende den Wachhund laufen und meldet Exit-Code + Alarme an den PM.
