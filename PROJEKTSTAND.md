@@ -153,12 +153,46 @@ wirklich kostet, ist hier nie gemessen worden. Die laufende Kostenmessung des De
 gilt die Klick-Sperrliste weiter: keine Order außerhalb der Kostenmessung.
 Unabhängig von der Neumessung, kann sofort und parallel laufen.
 
+### Neu freigegeben (Wilhelm 26.08., Abruf-Bericht — Antworten 1a / 2b / 3a)
+
+**(1a) NACH DEM RECHENLAUF, VOR DER AUSLIEFERUNG — die Oberflaeche waehlt die falsche
+Messvariante.** `kantenAusProtokollen()` in `depot.js` (rund Zeile 733) sucht unter mehreren
+Varianten eines Protokolls die mit dem **staerksten Bestaetigungs-t** und zeigt deren
+Urteil. Das Protokoll faellt sein Urteil aber selbst, in `bestesUrteil`. Bei
+`kapitulation` stehen die drei Varianten auf `nicht-entscheidbar`, `nicht-entscheidbar`
+und `nicht-bestaetigt`, das Protokoll insgesamt auf **nicht bestaetigt** — die Oberflaeche
+wuerde die freundlichere Variante zeigen. Das ist derselbe Fehler, den der PM heute frueh
+in seiner eigenen Tabelle korrigiert hat, eine Etage tiefer.
+**Regel: `bestesUrteil` gewinnt.** Wird ausserdem eine Zahl je Signal gezeigt, muss sie zu
+der Variante gehoeren, die das Urteil traegt — nicht zur bestaussehenden.
+Reine Anzeige. **Erst wenn der Rechenlauf durch ist**, und **vor** der Auslieferung, damit
+die zwoelf frischen Protokolle nicht mit dieser Auswahl rausgehen.
+
+**(2b) FREI — Warnhinweis vor `kapitulation`.** Die Regel steht seit heute auf
+**nicht bestaetigt** (gemessen, traegt nicht) — schaerfer als alles, was hier bisher an
+einer laufenden Regel stand. Wilhelm laesst sie waehlbar, will aber einen Warnhinweis
+davor, nach dem Muster der ungeeichten Kanal-Guete (#80).
+**Grenze, hart: nur Hinweis, kein Eingriff.** Die Auswahl bleibt, es wird nichts gesperrt
+und nichts umgeschaltet. `intradayScan`, Autopilot- und Edge-Ring, `SETUPS`, `modeParams`
+und die `window.confirm`-Gatter bleiben unberuehrt. Text aus dem Protokoll, nie aus Prosa.
+Sinnvollerweise zusammen mit (1a) — dieselbe Stelle, und der Hinweis soll das richtige
+Urteil zeigen.
+
+**(3a) FREI — Liste der betroffenen Darstellungen fuer Stufe F (2).** Wilhelm entscheidet
+ueber die Zusammenlegung der Chart-Renderer erst, wenn er sieht, **was wegfaellt**.
+Auftrag ist die **Liste, kein Umbau**: je Darstellung eine Zeile in Anwendersprache — wo
+sie vorkommt, was sie kann, was bei einer Zusammenlegung davon verloren ginge, und ob es
+einen Ersatz gibt. Als Dokument unter `studien/`. Stufe F (2) und (3) bleiben bis zu
+seinem Entscheid gesperrt.
+
 ### Wartet auf Wilhelm (nicht anfangen)
 
 - **Stufe F (2), ein einziger Chart-Renderer** — neu hinzugekommen 26.08. 08:40. Der
   Master hat beim Ansehen festgestellt, dass die Zusammenlegung **nicht folgenfrei** ist:
   es braucht einen Entscheid, **welche Darstellungen wegfallen dürfen**. Das ist Wilhelms
   Entscheidung, nicht die einer Sitzung. Bis dahin **gesperrt**, auch Stufe F (3) dahinter.
+  **26.08. (Abruf, Antwort 3a): Wilhelm entscheidet nach einer Liste.** Die Liste ist
+  freigegeben und steht oben unter „Neu freigegeben“ (3a); der Entscheid selbst steht weiter aus.
 
 ### An die Release-Wache (Wilhelm 26.08. 09:00, Antwort 1a)
 
@@ -234,6 +268,20 @@ fertig bist.*
 
 *Entscheidungen von Wilhelm, mit Datum. Eine Entscheidung, die nur in einem Chatverlauf
 steht, ist nach zwei Stunden verloren.*
+
+- **26.08.2026 (Abruf-Bericht, von Wilhelm von Hand gestartet) — „1a 2b 3a“**
+  (1) *Die Oberflaeche zeigt unter mehreren Messvarianten die bestaussehende statt das
+  Urteil des Protokolls — wann reparieren?* → **(a) kleiner Auftrag direkt nach dem
+  Rechenlauf, vor der Auslieferung.** So empfohlen; die Alternative waere gewesen, ihn
+  parallel auf eigenem Zweig zu bauen (b) oder hinten anzustellen (c).
+  (2) *`kapitulation` steht jetzt auf „nicht bestaetigt“ und ist im Autopilot weiter
+  waehlbar — was tun?* → **(b) waehlbar lassen, aber Warnhinweis davor.** Nicht (c) aus
+  der Auswahl nehmen, nicht (a) unveraendert lassen. Der PM hatte (b) empfohlen.
+  (3) *Stufe F (2), ein einziger Chart-Renderer — wie entscheiden?* → **(a) erst eine
+  Liste der betroffenen Darstellungen, dann der Entscheid.** Nicht (b) folgenfrei
+  zusammenlegen, nicht (c) streichen. **Der Entscheid selbst steht damit weiter aus**;
+  Stufe F (2) und (3) bleiben gesperrt.
+  Umsetzung aller drei siehe „Neu freigegeben“ oben.
 
 - **26.08.2026, 09:00 (drei Antworten auf den 08:10-Bericht) — „1a 2a 3a los!"**
   (1) *Release jetzt oder nach den Reparaturen bündeln?* → **(a) sofort ausliefern.**
