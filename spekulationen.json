@@ -1,5 +1,5 @@
 {
-  "stand": "2026-08-26T11:02:40.746Z",
+  "stand": "2026-08-26T12:59:49.621Z",
   "hinweis": "Spekulationen aus öffentlichen Quellen – ungemessen, keine Handelsempfehlung, keine Anlageberatung.",
   "eintraege": [
     {
@@ -8,8 +8,8 @@
       "name": "Banco BPM S.p.A.",
       "art": "uebernahme",
       "chance": "hoch",
-      "these": "Der Verwaltungsrat von Banco BPM hat das 25-Mrd.-Euro-Umtauschangebot von Monte dei Paschi einstimmig als \"weder abgestimmt noch erbeten\" und als Übernahme ohne Prämie eingestuft – ausdrücklich keine Fusion unter Gleichen.",
-      "begruendung": "Der einstimmige Beschluss steht, auch die Vertreter des französischen Großaktionärs Crédit Agricole (29,3 Prozent) trugen ihn mit. Il Sole 24 Ore, La Stampa, La7 und Adnkronos geben den Wortlaut übereinstimmend wieder, Moody’s meldet \"erhebliche Unsicherheiten\" an – konkreter, datierter Anlass aus mehreren seriösen Quellen, deshalb hoch. Neu am Mittwoch: Das Gremium hat sich nicht endgültig festgelegt, sondern Zeit genommen; der nächste Prüfstein ist der Generali-Verwaltungsrat am Donnerstag, dem 27. August. Wirtschaftsminister Giorgetti hat den Verkauf des Staatsanteils von 4,8 Prozent an MPS ausgesetzt, die Stimmrechtsberater haben sich für die konkurrierende Intesa-Offerte ausgesprochen.",
+      "these": "Der Verwaltungsrat von Banco BPM hat das 25-Mrd.-Euro-Umtauschangebot von Monte dei Paschi einstimmig als „weder abgestimmt noch erbeten“ und als Übernahme ohne Prämie eingestuft; entschieden ist damit nichts, das Gremium hat sich Zeit genommen.",
+      "begruendung": "Der einstimmige Beschluss steht, auch die Vertreter des französischen Großaktionärs Crédit Agricole (29,3 Prozent) trugen ihn mit. Il Sole 24 Ore, La Stampa und Il Mattino geben den Wortlaut übereinstimmend wieder, Moody’s meldet „erhebliche Unsicherheiten“ an – konkreter, datierter Anlass aus mehreren seriösen Quellen, deshalb hoch. Neu am Mittwochmittag: Der Generali-Verwaltungsrat ist außerordentlich für Donnerstag, den 27. August, einberufen, zur ersten Bewertung des MPS-Angebots auf Banca Generali; Generali hält dort 50,2 Prozent. Außenminister Tajani sagt, über das Bankenkarussell sollten die Märkte entscheiden, nicht die Politik. Wirtschaftsminister Giorgetti hat den Verkauf des Staatsanteils von 4,8 Prozent an MPS ausgesetzt.",
       "quellen": [
         {
           "titel": "Il Sole 24 Ore",
@@ -20,19 +20,19 @@
           "url": "https://www.lastampa.it/economia/2026/08/26/news/bpm_gela_lovaglio_nessun_premio_mps_giorgetti_sospende_vendita-15722483/"
         },
         {
-          "titel": "TG La7",
-          "url": "https://tg.la7.it/economia/banco-bpm-boccia-offerta-mps-tesoro-golden-power-25-08-2026-261646"
+          "titel": "Agenzia Nova",
+          "url": "https://www.agenzianova.com/news/mps-fonti-domani-cda-di-generali-per-la-valutazione-preliminare-dellops/"
+        },
+        {
+          "titel": "SoldiOnline",
+          "url": "https://www.soldionline.it/notizie/azioni-italia/generali-cda-straordinario-sullofferta-mps-per-banca-generali"
         },
         {
           "titel": "Il Mattino",
           "url": "https://www.ilmattino.it/economia/news/bpm_critca_offerta_mps_moodys_incertezze_ultime_notizie-9726363.html"
-        },
-        {
-          "titel": "Adnkronos",
-          "url": "https://www.adnkronos.com/finanza/banco-bpm-fredda-su-mps-acquisizione-non-concordata-senza-premio_11pYBfTy5IVrYiLMyoHGej"
         }
       ],
-      "zeit": "2026-08-26T08:00:00Z"
+      "zeit": "2026-08-26T11:30:00Z"
     },
     {
       "id": "20260821-BMPS-uebernahme",
@@ -41,26 +41,30 @@
       "art": "uebernahme",
       "chance": "hoch",
       "these": "MPS wehrt sich mit einem Doppelgebot für Banco BPM und Banca Generali gegen die feindliche Offerte von Intesa Sanpaolo; nach der kühlen Antwort des BPM-Verwaltungsrats und dem eingefrorenen Staatsanteil steht der Plan zunehmend unter Druck.",
-      "begruendung": "Beide Seiten des Übernahmekampfs sind belegt: Intesas Offerte über rund 30,6 Mrd. Euro und die MPS-Gegenwehr werden von Reuters, Il Sole 24 Ore und italienischen Häusern übereinstimmend beschrieben, die Umtauschverhältnisse sind veröffentlicht. Konkreter Anlass, mehrere seriöse Quellen, deshalb hoch. Der Mittwoch bringt drei Verschlechterungen für Siena: Banco BPM nennt das Gebot einstimmig eine Übernahme ohne Prämie, die Stimmrechtsberater empfehlen Intesas Offerte, und das Wirtschaftsministerium hat den Verkauf seiner 4,8 Prozent ausgesetzt. Vorstandschef Lovaglio hält im Financial Times dagegen, sein Plan sei falsch dargestellt worden. Wegen Intesas laufendem Gebot greift die Passivity Rule; die MPS-Hauptversammlung muss am 29. Oktober mit zwei Dritteln zustimmen.",
+      "begruendung": "Beide Seiten des Übernahmekampfs sind belegt: Intesas Offerte über rund 30,6 Mrd. Euro und die MPS-Gegenwehr werden von Reuters, Il Sole 24 Ore und italienischen Häusern übereinstimmend beschrieben, die Umtauschverhältnisse sind veröffentlicht. Konkreter Anlass, mehrere seriöse Quellen, deshalb hoch. Nächster Prüfstein ist der außerordentliche Generali-Verwaltungsrat am Donnerstag, dem 27. August, zur vorläufigen Bewertung des Angebots auf Banca Generali. Der Druck auf Siena hat sich am Mittwoch weiter erhöht: Banco BPM nennt das Gebot einstimmig eine Übernahme ohne Prämie, Moody’s sieht in den parallelen Integrationen (Banco BPM, Banca Generali, dazu die laufende Mediobanca-Integration) eine erhebliche Unsicherheit, und der Financial Times nennt den Plan laut Il Post „völlig absurd“. Vorstandschef Lovaglio hält dagegen, sein Plan sei falsch dargestellt worden. Wegen Intesas laufendem Gebot greift die Passivity Rule; die MPS-Hauptversammlung muss am 29. Oktober mit zwei Dritteln zustimmen.",
       "quellen": [
         {
           "titel": "Il Sole 24 Ore",
           "url": "https://www.ilsole24ore.com/art/mps-bpm-prende-tempo-e-un-acquisizione-senza-premio-AJUZ3Ou"
         },
         {
-          "titel": "La Stampa",
-          "url": "https://www.lastampa.it/economia/2026/08/26/news/bpm_gela_lovaglio_nessun_premio_mps_giorgetti_sospende_vendita-15722483/"
+          "titel": "Il Post",
+          "url": "https://www.ilpost.it/2026/08/26/piano-mps-banco-bpm-banca-generali-dubbi/"
         },
         {
-          "titel": "Radio Siena TV",
-          "url": "https://www.radiosienatv.it/mps-banco-bpm-gela-lofferta-di-siena-lovaglio-al-financial-times-il-nostro-piano-e-stato-travisato/"
+          "titel": "Agenzia Nova",
+          "url": "https://www.agenzianova.com/news/mps-fonti-domani-cda-di-generali-per-la-valutazione-preliminare-dellops/"
         },
         {
-          "titel": "Borsa Italiana / Teleborsa",
-          "url": "https://www.borsaitaliana.it/borsa/notizie/teleborsa/finanza/mps-giornate-calde-tra-cda-bpm-su-ops-ed-enti-locali-da-giorgetti-in-attesa-del-board-di-generali-81_2026-08-25_TLB.html?lang=it"
+          "titel": "Citywire Italia",
+          "url": "https://citywire.com/it/news/generali-riunir%C3%A0-il-cda-in-settimana-per-lofferta-di-mps-su-b-generali/a2496574"
+        },
+        {
+          "titel": "Wall Street Italia",
+          "url": "https://www.wallstreetitalia.com/mps-ora-la-partita-si-sposta-su-banco-bpm-credit-agricole-decisivo-nel-risiko-bancario/"
         }
       ],
-      "zeit": "2026-08-26T08:00:00Z"
+      "zeit": "2026-08-26T11:30:00Z"
     },
     {
       "id": "20260823-WBD-ereignis",
@@ -113,6 +117,46 @@
         }
       ],
       "zeit": "2026-08-25T22:00:00Z"
+    },
+    {
+      "id": "20260826-MLM-beteiligung",
+      "sym": "MLM",
+      "name": "Martin Marietta Materials, Inc.",
+      "art": "beteiligung",
+      "chance": "mittel",
+      "these": "Die belgische Lhoist-Gruppe hält seit dem 21. August 15,4 Prozent an Martin Marietta und erhält einen Sitz im Verwaltungsrat – als Gegenleistung für den Verkauf ihres Nordamerika-Geschäfts.",
+      "begruendung": "Amtliche Quelle, kein Gerücht: Das Schedule 13D von LNA Holding SRL und Kalk en Dolomiet Maatschappij SA (angenommen am 24. August, 16:34 Uhr New Yorker Zeit) weist 10.953.543 Aktien oder 15,4 Prozent von 71,0 Mio. ausstehenden Aktien aus. Martin Marietta hat Lhoist North America am 21. August für 7 Mrd. Dollar in bar plus diese neu ausgegebenen Aktien übernommen. Hier steigt kein Aktivist ein, sondern ein Verkäufer bleibt als Großaktionär an Bord – deshalb mittel und nicht hoch. Kursrelevant ist, was im Aktionärsvertrag steht: Haltefrist für die Hälfte der Aktien bis 21. August 2027, für den Rest bis 2028, ein eigener Verwaltungsratssitz plus Beobachter, dazu eine Stillhaltevereinbarung mit Obergrenze 12.783.660 Aktien. Das Filing nennt ausdrücklich die Möglichkeit, später außergewöhnliche Unternehmenstransaktionen anzuregen – das ist allerdings Standardformulierung und trägt für sich genommen nichts.",
+      "quellen": [
+        {
+          "titel": "SEC EDGAR (Schedule 13D)",
+          "url": "https://www.sec.gov/Archives/edgar/data/916076/000149315226039879/0001493152-26-039879-index.htm"
+        }
+      ],
+      "zeit": "2026-08-24T20:34:00Z"
+    },
+    {
+      "id": "20260826-CZR-ereignis",
+      "sym": "CZR",
+      "name": "Caesars Entertainment, Inc.",
+      "art": "ereignis",
+      "chance": "mittel",
+      "these": "Caesars hat heute den endgültigen Fusionsprospekt eingereicht und setzt damit die Aktionärsabstimmung über den 31-Dollar-Barausstieg an Fertitta Gaming auf September an; die Aktie notiert weiter unter dem Angebotspreis.",
+      "begruendung": "Gegen EDGAR geprüft: Das DEFM14A trägt das Datum 26. August 2026, der vorläufige Entwurf lag am 12. August – der Termin ist also frisch und nicht aufgewärmt. Der Vertrag selbst stammt aus dem Mai (31 Dollar je Aktie in bar, rund 17,6 Mrd. Dollar). Die Einstufung bleibt mittel, weil der Abstand zum Angebotspreis genau die offene Frage abbildet: Carl Icahn hatte im Juli ein höheres Gebot vorgelegt, das der Verwaltungsrat zugunsten der gesicherten Fertitta-Finanzierung ausschlug – ob vor der Abstimmung noch jemand nachlegt, ist offen. Die Angaben zum Icahn-Gebot stammen aus einem Branchenmedium, nicht aus erster Hand.",
+      "quellen": [
+        {
+          "titel": "SEC EDGAR (DEFM14A)",
+          "url": "https://www.sec.gov/Archives/edgar/data/1590895/000119312526365696/d143368ddefm14a.htm"
+        },
+        {
+          "titel": "TipRanks",
+          "url": "https://www.tipranks.com/news/company-announcements/caesars-sets-september-vote-on-fertitta-gaming-cash-buyout"
+        },
+        {
+          "titel": "PlayNJ",
+          "url": "https://www.playnj.com/news/why-caesars-chose-fertittas-secured-offer-over-icahns-higher-bid/99377/"
+        }
+      ],
+      "zeit": "2026-08-26T12:00:00Z"
     },
     {
       "id": "20260826-MRVL-analyst",
