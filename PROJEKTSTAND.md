@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-26 17:35
+letzter-bericht: 2026-08-26 18:05
 gesehener-tag: v8.33.5
 -->
 
@@ -388,6 +388,43 @@ erheblich verkleinert:** Die Frage „ab welchem Wert ändert das die Urteile de
 Protokolle?" hat eine natürliche Verankerung — **bei sieben der zwölf liegt die Aussicht
 jenseits von 12.000 Handelstagen; deren Urteil kann keine Verzerrungskorrektur drehen.**
 Entscheidbar ist die Frage nur für die **drei unter 1.500**.
+
+---
+
+### ✅ 26.08. 18:05 — #100 ist zu: **Wilhelms Entscheid 2b wirkt jetzt** (`5be41dd`)
+
+Vom PM gegengeprüft: Commit auf origin, `npm test` Exit 0, `depot.js:792` ruft jetzt
+beides, `app-shell.js:36` hält die Urteils-Übersetzung an **einer** Stelle.
+**Der Master hat es in der laufenden App mit `kapitulation` reproduziert**, statt der
+Meldung zu glauben:
+
+| | vorher | jetzt |
+|---|---|---|
+| Regelkopf kennt das Protokoll | nein | **ja** |
+| Warnhinweis (Wilhelms 2b) | nein | **ja** |
+
+**Ein Muster, das über den Tag hinaus gilt:** Die #100-Reparatur hat **#102 erst sichtbar
+gemacht** — „Beleg nicht-bestaetigt" stand erst da, als der Kopf das Protokoll überhaupt
+zu sehen bekam. *Hinter einer toten Anzeige verstecken sich die Fehler der Anzeige selbst.
+Wer eine reaktiviert, sollte mit dem nächsten Fund darunter rechnen.*
+
+**Der Wachhund nennt die Ausreißer jetzt beim Namen** (`590aca6`): 99,6 % statt gerundeter
+100 %, dazu jede zurückhängende Reihe mit Datum und Abstand in Handelstagen — **sieben
+unter zehn Tagen, drei seit 438**. Damit ist aus der Ausgabe selbst ablesbar, was der
+Tüftler getrennt erarbeitet hatte. **Die Einordnung bleibt bewusst draußen:** ob ein
+Papier ins Aktienuniversum gehört, entscheidet der Universumsfilter, nicht der
+Archivwächter. Er meldet den Stand, nicht die Bedeutung.
+
+**Zwei Reste, an den Master zurück:**
+- **#103 unvollständig** (Fund der Issue-Wache, vom PM in `index.html:579` nachgesehen):
+  die neue Regel setzt `text-transform`, `letter-spacing` und `font-weight` zurück,
+  **aber nicht `font-size`** — Zeilenköpfe stehen weiter auf 12 px statt 13 px.
+- **#101 unangetastet**, Befund bestätigt: `.down` steht vier Mal in `index.html`
+  (261, 294, 345, 367), jedes Mal kontextgebunden. Für den Rücksetzer im Depotverlauf
+  greift keine davon.
+
+**Reihenfolge unverändert:** #98 (toter Überlappungswächter, Vorbedingung für Strang A),
+danach die Datenfunde.
 
 ---
 
