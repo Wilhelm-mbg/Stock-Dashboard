@@ -269,6 +269,17 @@ meinem eigenen Lader:
    Einfluss null; für jeden späteren Lauf auf gewachsenem Archiv ist er strukturell
    angelegt und wachsend.
 
+**Ergänzung nach der vollständigen QS-Liste (~02:2x, 9 Reihen / 21 Tage):** Auch
+**WBS** (1 Phantomtag, 20.08.) ist Aktie und im Universum — gleiche Lage wie AVB/EQR
+(Schwanz jenseits der letzten Periode). **BTSGU** (1 Phantomtag 25.08., kein
+Delisting-Eintrag, frischester Fall) fällt als Nicht-Aktie aus dem Universum. Und die
+QS-Präzisierung ist wichtig und übernommen: **LBRDA/LBRDK liefern auf ihrem
+Stempeltag keinen Nullstand, sondern +16,6/16,8 % ERFUNDENEN GEWINN** — die Fallklasse
+mit der größten Wirkung, falls ein künftiges Periodenende auf so einen Stempel fällt.
+Diese Messung hat keinen Liquiditätsfilter, der die Phantomtage abfangen würde
+(nur WP-Art + F1) — die Existenz-Mechanik greift hier also strukturell, sobald das
+Fenster sie erreicht.
+
 **Entscheidungsbezug für Wilhelm (der PM trägt ihn vor):** Das Setzen der
 Abmeldedaten für beendete Reihen ist **genau die strukturelle Reparatur** dieses
 Mechanismus — ein Papier mit Ende kann nicht über sein Ende hinaus gehalten werden.
