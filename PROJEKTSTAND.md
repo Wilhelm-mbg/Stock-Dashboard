@@ -648,6 +648,76 @@ darunter `momentum` und damit Strang A, bleiben ungeprüft.**
 
 ---
 
+### 🔴 Die Teilkerzen-Sperre feuert seit Monaten nie — und der Sammler schreibt gerade hinein
+
+**`fertigeKerze()` verwirft eine Kerze, wenn `getUTCSeconds() !== 0`.** Das war die Messung
+zu Issue 85: *„Yahoo stempelt die laufende Kerze mit der Quote-Uhrzeit (16:57:27 statt
+16:30)."* **Diese Prämisse gilt nicht mehr.** Yahoo stempelt inzwischen auf **volle
+Minuten** — `17:51:00`, `15:12:00`. Über rund **7 Millionen Kerzen in vier Archiven**:
+
+| | |
+|---|---|
+| Kerzen mit Sekunde ≠ 0 | **0** |
+| krumme Kerzen im 60m-Archiv | 151 — **davon Sekunde = 0: alle 151** |
+
+**Die Sperre sieht gesund aus und feuert nie.** Achte Verkleidung desselben Musters, und
+diesmal an einer Sperrklinke, die eigens gegen diese Fehlerform gebaut wurde.
+
+**Richtigstellung des PM: meine Entwarnung fürs Minutenarchiv war nach dem falschen
+Merkmal geprüft.** Ich hatte auf Sekunde ≠ 0 getestet — dasselbe Merkmal, das die kaputte
+Sperre benutzt. **Am Inhalt gemessen sieht es anders aus** (PM selbst nachgezählt, 20:50):
+
+| Archiv | Reihen | letzte Kerze flach **und** Umsatz 0 |
+|---|---|---|
+| **archiv1m** | 1.647 | **7** (0,4 %) |
+| archiv5m | 491 | **16** (3,3 %) |
+| archiv15m | 232 | **8** (3,4 %) |
+| archiv60m | 2.885 | **87** (3,0 %) |
+
+Beispiele von heute: `BCO 17:43`, `LAD 17:22`, `DPST 17:10`, `A 16:51`, `EQIX 16:57` —
+**laufende Kerzen, mitten in der Sitzung eingefroren.**
+
+**Warum es im Minutenarchiv am gefährlichsten ist:** Bei Minutenkerzen ist `17:43:00` ein
+**völlig gültiger Rasterplatz**. Kein Zeitstempel-Test kann eine Teilkerze dort je finden.
+**Je feiner das Raster, desto unsichtbarer der Fehler** — und 1m ist genau das Archiv, das
+täglich gesammelt wird und **nie nachgeholt werden kann**.
+
+**Entscheidung des PM: der laufende Abruf wird NICHT gestoppt.** 0,4 % betroffen, alle
+eindeutig identifizierbar und nachträglich entfernbar — die Kerzen selbst verfallen nach
+sieben Tagen unwiederbringlich. **Ein Archiv mit einem benannten Makel ist mehr wert als
+keines.** Der Makel steht hiermit benannt.
+
+### #96 sortiert sich damit in DREI Populationen, nicht zwei
+
+| Gruppe | Zahl (60m) | Merkmal | Umgang |
+|---|---|---|---|
+| **Platzhalter** | 2.870 | alle am **selben** Zeitstempel, 98,4 % aller Reihen | löschen |
+| **Teilkerzen** | ~87 | **letzte** Kerze, flach, Umsatz 0, **heutiges** Datum | löschen **und beim Schreiben verhindern** |
+| **echte leere Stunden** | ~410 | **mitten** in der Reihe, illiquide Papiere, verstreut | **behalten** |
+
+**Jede Gruppe braucht ihr eigenes Merkmal.** Die Verwechslung von 1 und 3 war der
+ursprüngliche Fehler (PM), die von 2 und 3 der zweite (QS) — *sie hat ihn selbst
+zurückgenommen: die vermeintlichen 85 „echten" Kerzen waren laufende Teilkerzen von heute.
+Ihre Schlussfolgerung stand, die Begründung war falsch.*
+
+### Was daraus folgt — **an den Master, über diese Tafel, weil nicht erreichbar**
+
+**Die Teilkerzen-Prüfung darf nicht am Zeitstempel hängen.** Das tragfähige Merkmal steht
+in den Daten: **letzte Kerze der Reihe, Umsatz 0, Hoch = Tief = Eröffnung = Schluss.** Das
+wirkt auf allen vier Auflösungen gleich, auch dort, wo das Raster nichts hergibt. Ein
+Zusatzmerkmal hat `reiheHolen()` schon zur Hand: die Quelle liefert
+`currentTradingPeriod.regular` — ob die Sitzung überhaupt zu ist.
+
+**Betroffen sind beide Stellen in `kerzenquelle.js`:** `fertigeKerze()` (~Z. 150)
+verhindert neue, `zusammenfuehren()` (~Z. 195) räumt vorhandene weg. **Nur eine zu ändern
+reicht nicht.**
+
+**Und das ist Punkt 1 des Intraday-Auftrags in seiner schärfsten Form:** Würde die neue
+Sammelfunktion die bestehende Sperre übernehmen, übernähme sie eine, die nachweislich nie
+feuert — und schriebe Teilkerzen in genau die Archive, die nie nachgeholt werden können.
+
+---
+
 ## Aufträge
 
 *Was freigegeben ist und noch niemand macht. Wer eine Zeile nimmt, trägt sich unter
