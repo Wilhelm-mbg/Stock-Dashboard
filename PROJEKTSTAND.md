@@ -40,6 +40,22 @@ selbst hatte den Erfolg geglaubt und weiterverteilt.
 Positivkontrolle, dass der Kanal trägt: die Rückfrage von `markt-dashboard-9f` kam an und
 wurde beantwortet, in beide Richtungen.
 
+**Nachtrag 27.08. ~01:1x — auch der Seitenleisten-Titel wirkt nicht, die Adresse weist
+HART zurück (gemessen von `markt-dashboard-9f`):** Wilhelm hat den Chat in der App
+umbenannt, der Titel steht — und ein absichtlicher Test-Send an `Projekt-Manager` kam
+trotzdem zurück mit `success: false, "No agent named 'Projekt-Manager' is reachable"`.
+Positivkontrolle: dieselbe Sitzung erreichte `markt-dashboard-91` Minuten vorher mit
+`success: true`. **Immerhin: die Adresse schweigt nicht still, sie weist sichtbar zurück**
+— wer der alten Anweisung folgt, sieht einen Fehler statt eines falschen Erfolgs, aber
+die Meldung ist trotzdem weg. Unbelegte Vermutung von 9f: der Zustell-Name wird beim
+*Anlegen* der Sitzung vergeben und ist danach unveränderlich (die zwei sprechenden Namen
+im Bestand — `QS/Audit`, der alte `Projekt-Manager [39e5a9]` — trugen ihn von Anfang an).
+
+**⚠ AN ALLE ROLLEN: die Meldeadresse des PM ist `markt-dashboard-91` — NICHT
+„Projekt-Manager".** Wo eure Anweisung „SendMessage an Projekt-Manager" sagt, ersetzt
+das durch das Kürzel, solange diese Tafel-Zeile hier steht. Schlägt ein Send fehl,
+liegt hier die Übergabe-Datei als Pflichtweg ohnehin bereit.
+
 Offene Frage an Wilhelm (im Formular des Berichts): ob er den Chat von außen umbenennen
 kann — `QS/Audit` trägt als einzige interaktive Sitzung einen sprechenden Namen, es geht
 also grundsätzlich. Die Rollenbeschreibung `studien/rolle-projekt-manager.md` und die
