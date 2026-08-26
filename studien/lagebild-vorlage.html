@@ -1,0 +1,269 @@
+<title>Lagebild Markt-Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Sans+3:wght@400;600&display=swap">
+
+<style>
+  :root {
+    --grund:      #f4f6f4;
+    --flaeche:    #fbfcfb;
+    --kante:      #dde2df;
+    --kante-satt: #c3ccc6;
+    --tinte:      #16191b;
+    --tinte-2:    #5c6a70;
+    --tinte-3:    #879499;
+    --akzent:     #a8561f;
+    --akzent-weich:#f0e4da;
+    --kritisch:   #9c3226;
+    --wartet:     #8a6410;
+    --erledigt:   #2c6455;
+    --skala:      #e6eae7;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --grund:      #14181a;
+      --flaeche:    #1b2023;
+      --kante:      #2b3336;
+      --kante-satt: #3d484c;
+      --tinte:      #e8ece9;
+      --tinte-2:    #9aa8ae;
+      --tinte-3:    #6f7f86;
+      --akzent:     #d98a4e;
+      --akzent-weich:#33231a;
+      --kritisch:   #d6705f;
+      --wartet:     #cfa03c;
+      --erledigt:   #63b39c;
+      --skala:      #232a2d;
+    }
+  }
+  :root[data-theme="dark"] {
+    --grund:      #14181a;
+    --flaeche:    #1b2023;
+    --kante:      #2b3336;
+    --kante-satt: #3d484c;
+    --tinte:      #e8ece9;
+    --tinte-2:    #9aa8ae;
+    --tinte-3:    #6f7f86;
+    --akzent:     #d98a4e;
+    --akzent-weich:#33231a;
+    --kritisch:   #d6705f;
+    --wartet:     #cfa03c;
+    --erledigt:   #63b39c;
+    --skala:      #232a2d;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--grund);
+    color: var(--tinte);
+    font-family: "Source Sans 3", system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  .blatt { max-width: 1080px; margin: 0 auto; padding: 28px 20px 56px; }
+
+  /* ---- Kopf ---- */
+  .kopf {
+    display: flex; flex-wrap: wrap; align-items: baseline;
+    gap: 8px 16px; padding-bottom: 14px;
+    border-bottom: 2px solid var(--tinte);
+  }
+  .kopf h1 {
+    margin: 0; font-family: Archivo, system-ui, sans-serif;
+    font-weight: 700; font-size: 25px; letter-spacing: -0.015em;
+  }
+  .stempel {
+    margin-left: auto; font-family: "IBM Plex Mono", monospace;
+    font-size: 12px; color: var(--tinte-2); font-variant-numeric: tabular-nums;
+  }
+
+  /* ---- Der Befund ---- */
+  .befund {
+    margin: 22px 0 0; padding: 20px 22px;
+    background: var(--flaeche); border: 1px solid var(--kante);
+    border-left: 4px solid var(--akzent);
+    display: flex; flex-wrap: wrap; align-items: center; gap: 20px 30px;
+  }
+  .zaehler { display: flex; align-items: baseline; gap: 9px; }
+  .zaehler b {
+    font-family: Archivo, sans-serif; font-weight: 700; font-size: 46px;
+    line-height: 0.9; letter-spacing: -0.03em; font-variant-numeric: tabular-nums;
+  }
+  .zaehler span { font-size: 14px; color: var(--tinte-2); max-width: 15ch; }
+  .befund p { margin: 0; flex: 1 1 320px; min-width: 260px; color: var(--tinte-2); }
+  .befund p strong { color: var(--tinte); font-weight: 600; }
+
+  /* ---- Skala ---- */
+  .skala-block { margin-top: 20px; }
+  .skala-titel {
+    font-family: Archivo, sans-serif; font-size: 11px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.09em; color: var(--tinte-3);
+    margin-bottom: 9px;
+  }
+  .balken { display: flex; height: 26px; border: 1px solid var(--kante-satt); overflow: hidden; }
+  .balken div {
+    display: flex; align-items: center; justify-content: center;
+    font-family: "IBM Plex Mono", monospace; font-size: 11px; font-weight: 600;
+    color: #fff; white-space: nowrap;
+  }
+  .b-nein { background: var(--kritisch); }
+  .b-unent { background: var(--wartet); }
+  .b-unmess { background: var(--tinte-3); }
+  .legende {
+    display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 7px;
+    font-size: 12.5px; color: var(--tinte-2);
+  }
+  .legende i { display: inline-block; width: 9px; height: 9px; margin-right: 6px; }
+
+  /* ---- Karten ---- */
+  .raster {
+    margin-top: 26px; display: grid; gap: 14px;
+    grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+  }
+  .karte {
+    background: var(--flaeche); border: 1px solid var(--kante);
+    padding: 15px 17px 17px;
+  }
+  .karte > h2 {
+    margin: 0 0 11px; font-family: Archivo, sans-serif; font-size: 11px;
+    font-weight: 600; text-transform: uppercase; letter-spacing: 0.09em;
+    color: var(--tinte-3); display: flex; align-items: center; gap: 8px;
+  }
+  .karte > h2 em {
+    font-style: normal; font-family: "IBM Plex Mono", monospace;
+    font-size: 11px; color: var(--tinte-2); margin-left: auto;
+    font-variant-numeric: tabular-nums;
+  }
+  ul.liste { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 9px; }
+  ul.liste li { display: flex; gap: 9px; align-items: flex-start; line-height: 1.42; }
+  .marke {
+    flex: none; margin-top: 3px; width: 3px; height: 15px; background: var(--kante-satt);
+  }
+  .m-wartet { background: var(--wartet); }
+  .m-laeuft { background: var(--akzent); }
+  .m-ok { background: var(--erledigt); }
+  .m-kritisch { background: var(--kritisch); }
+  .liste b { font-weight: 600; }
+  .liste small { display: block; color: var(--tinte-2); font-size: 13px; }
+  .leer { color: var(--tinte-3); font-style: italic; font-size: 14px; }
+
+  /* ---- Messwerte ---- */
+  .werte {
+    margin-top: 26px; display: grid; gap: 1px; background: var(--kante);
+    border: 1px solid var(--kante);
+    grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
+  }
+  .wert { background: var(--flaeche); padding: 11px 13px; }
+  .wert dt {
+    font-family: Archivo, sans-serif; font-size: 10px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.08em; color: var(--tinte-3);
+    margin-bottom: 3px;
+  }
+  .wert dd {
+    margin: 0; font-family: "IBM Plex Mono", monospace; font-size: 19px;
+    font-weight: 500; font-variant-numeric: tabular-nums;
+  }
+  .wert dd s { text-decoration: none; font-size: 12px; color: var(--tinte-2); }
+  .achtung dd { color: var(--wartet); }
+
+  .fuss {
+    margin-top: 30px; padding-top: 13px; border-top: 1px solid var(--kante);
+    font-size: 12.5px; color: var(--tinte-3);
+  }
+  .fuss code {
+    font-family: "IBM Plex Mono", monospace; font-size: 12px;
+    background: var(--skala); padding: 1px 5px; color: var(--tinte-2);
+  }
+  @media (max-width: 560px) {
+    .zaehler b { font-size: 38px; }
+    .kopf h1 { font-size: 21px; }
+  }
+</style>
+
+<div class="blatt">
+
+  <header class="kopf">
+    <h1>Lagebild</h1>
+    <span class="stempel">Stand 26.08.2026 · 18:30</span>
+  </header>
+
+  <section class="befund">
+    <div class="zaehler">
+      <b>0</b><span>von 12 Strategien belegt</span>
+    </div>
+    <p>Neun davon sind <strong>nicht am Markt gescheitert, sondern am Messgerät</strong>.
+    Eine Kante in Größe der Handelskosten bräuchte 35 Jahre Daten — vorhanden sind 20.</p>
+  </section>
+
+  <div class="skala-block">
+    <div class="skala-titel">Die zwölf Urteile</div>
+    <div class="balken" role="img" aria-label="2 nicht bestätigt, 9 nicht entscheidbar, 1 nicht messbar">
+      <div class="b-nein" style="width:16.7%">2</div>
+      <div class="b-unent" style="width:75%">9</div>
+      <div class="b-unmess" style="width:8.3%">1</div>
+    </div>
+    <div class="legende">
+      <span><i class="b-nein"></i>nicht bestätigt — gemessen, trägt nicht</span>
+      <span><i class="b-unent"></i>nicht entscheidbar — Lineal zu grob</span>
+      <span><i class="b-unmess"></i>nicht messbar</span>
+    </div>
+  </div>
+
+  <div class="raster">
+
+    <section class="karte">
+      <h2>Wartet auf dich <em>3</em></h2>
+      <ul class="liste">
+        <li><span class="marke m-wartet"></span><div><b>#96 Platzhalterkerze</b>
+          <small>Verwerfen oder behalten? 147 von 152 Reihen betroffen</small></div></li>
+        <li><span class="marke m-wartet"></span><div><b>#80 Kanal-Güte</b>
+          <small>Rauschen bekommt im Median 75 von 100 — drei Wege zur Wahl</small></div></li>
+        <li><span class="marke m-wartet"></span><div><b>Kostenhürde, Richtung</b>
+          <small>Längere Haltedauer, Basiswert oder engere Spannen</small></div></li>
+      </ul>
+    </section>
+
+    <section class="karte">
+      <h2>Läuft gerade <em>2</em></h2>
+      <ul class="liste">
+        <li><span class="marke m-laeuft"></span><div><b>App sammelt Intraday</b>
+          <small>Master baut — Minutenkerzen verfallen nach 7 Tagen</small></div></li>
+        <li><span class="marke m-laeuft"></span><div><b>Erstlauf sichert das Fenster</b>
+          <small>1m, 5m, 15m für die 500 liquidesten Werte</small></div></li>
+      </ul>
+    </section>
+
+    <section class="karte">
+      <h2>Warnsignale <em>0</em></h2>
+      <p class="leer">Keine. Tests grün, Archive aktuell, nichts ungepusht.</p>
+      <h2 style="margin-top:16px">Heute erledigt <em>7</em></h2>
+      <ul class="liste">
+        <li><span class="marke m-ok"></span><div><b>Warnhinweis wirkt wieder</b>
+          <small>War ausgeliefert und tot — #100</small></div></li>
+        <li><span class="marke m-ok"></span><div><b>Kursarchiv steht</b>
+          <small>Stand zwei Tage still, niemand hat es gemerkt</small></div></li>
+        <li><span class="marke m-ok"></span><div><b>Überlappungswächter repariert</b>
+          <small>Vorbedingung für die Momentum-Messung</small></div></li>
+      </ul>
+    </section>
+
+  </div>
+
+  <dl class="werte">
+    <div class="wert"><dt>Ausgeliefert</dt><dd>8.33.5</dd></div>
+    <div class="wert achtung"><dt>Ungeliefert</dt><dd>18 <s>Commits</s></dd></div>
+    <div class="wert achtung"><dt>Notizen warten</dt><dd>4</dd></div>
+    <div class="wert"><dt>Heute</dt><dd>114 <s>Commits</s></dd></div>
+    <div class="wert"><dt>Tests</dt><dd style="color:var(--erledigt)">grün</dd></div>
+    <div class="wert"><dt>Offene Issues</dt><dd>12</dd></div>
+  </dl>
+
+  <p class="fuss">
+    Wird bei jedem Abruf überschrieben — diese Adresse bleibt gleich.
+    Ausführlich auf der Tafel: <code>PROJEKTSTAND.md</code>,
+    der Plan unter <code>studien/grosser-plan-2026-08-26/PLAN.md</code>.
+  </p>
+
+</div>
