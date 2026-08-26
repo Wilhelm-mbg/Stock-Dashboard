@@ -1663,7 +1663,50 @@ Datenreihe** statt mit einem Muster in derselben.
 
 ---
 
+
+### 🔴 NEU 27.08. ~01:30 — Hoch und Tief sind die unzuverlässigsten Felder der Quelle (QS + Werkzeuge, unabhängig)
+
+**Zwei Sitzungen, zwei Methoden, dasselbe Ergebnis — der folgenreichste Befund der Nacht:**
+
+- **Im Querschnitt (QS):** 34.363 Nullumsatz-Kerzen mit Docht außerhalb der Tagesspanne;
+  tragend sind **3.171 mit ≥ 1 %** Abweichung (die Spitzen überwiegend ZVZZT — das
+  NASDAQ-**Testsymbol** — und illiquide ETFs; **die Messmaschine hat keinen
+  Liquiditätsfilter**, die sind mitgemessen). Die sieben US-Halbtage führen die Liste an.
+- **In der Zeit (Werkzeuge):** der **Schlusskurs ist nach einem Tag stabil** (<1 %
+  Änderungen), aber ~6 % der Kerzen ändern noch monatelang **Umsatz, Hoch oder Tief**.
+  Nur der frische Rand ist wirklich wild (13,45 % der Schlusskurse am Vortag anders).
+
+**Warum es zählt:** `messmaschine.js:526` — **der Stop liest das Tief.** Drei der zwölf
+Strategien setzen einen Stop (`kapitulation`, `rsi2seit-mcp`, `t1-zwangsglattstellung`) —
+darunter das gekippte Urteil und eine der drei unter der Eintrittskarte. Ein Phantom-Tief
+löst dort einen Stop aus, den es nie gab. Betroffen außerdem: Kanalkanten, ATR, Ausbrüche, ORB.
+
+**Reihenfolge (QS-Empfehlung, PM übernimmt): ERST MESSEN, DANN BAUEN.** Offen ist, ob sich
+der Effekt im Überschuss aufhebt (Signal und Kontrolle laufen durch dieselbe `fuehreAus`).
+Gegenprobe: Lauf der drei Stop-Strategien mit ausgeschlossenen Nullumsatz-Kerzen — **als
+Auftrag an die Mess-Sitzung ausgeschrieben, siehe Aufträge.** Der Vorrang-Auftrag
+„Phantom-Dochte beheben" wartet auf dieses Ergebnis: hebt es sich auf, wäre die Reparatur
+Aufwand ohne Wirkung; hebt es sich nicht auf, ist sie dringend.
+
+Ungeklärt und ausdrücklich nicht behauptet: warum die Quelle alte Kerzen noch anfasst, und
+der Faktor-8-Sprung bei ~730 Handelstagen (liegt NICHT an der Fenstergrenze — die sitzt
+bei 1.063 Kalendertagen). Rechenwege: `Markt-Dashboard-Daten/qs-audit-2026-08-26/`.
+
 ## Aufträge
+
+### ⭐ NEU, VOR der Phantom-Docht-Reparatur (PM, 27.08. ~01:35) — an die Mess-Sitzung: hebt sich der Docht-Effekt im Überschuss auf?
+
+**Die eine Messung, an der die Dringlichkeit des Datenfund-1 hängt** (QS-Empfehlung,
+PM übernimmt): die drei Stop-Strategien (`kapitulation`, `rsi2seit-mcp`,
+`t1-zwangsglattstellung`) einmal mit **ausgeschlossenen Nullumsatz-Kerzen** laufen lassen
+und gegen die vorliegenden Protokolle halten. Signal und Kontrolle laufen durch dieselbe
+`fuehreAus` — der Effekt **könnte** sich im Überschuss aufheben; ob er es tut, ist nicht
+gemessen. Hebt er sich auf → Reparatur unnötig; hebt er sich nicht auf → Datenfund 1 ist
+dringend und seine Behebung ändert womöglich das gekippte rsi2seit-mcp-Urteil erneut.
+**Achtung Messhygiene:** `messen.js` überschreibt Protokolle gleichen Datums — eigener
+Treiber nötig, die QS hat einen (`werkzeuge/`-Ordner). Kein Kanten-Urteil, reine
+Empfindlichkeitsmessung.
+
 
 ### ⭐ NEU, FREI (Wilhelm 27.08. ~00:55, Formular) — die Scoreboard-Wand misst an der Live-Hürde
 
@@ -1690,7 +1733,7 @@ und „Läuft gerade"-Eintrag von `markt-dashboard-6c`. Erstzugriff hat `markt-d
 Stunden später arbeitet nachweislich niemand daran** (Übergabe-Ordner und `Läuft gerade`
 geprüft). Sie blockieren **beides**: das Release und Strang A.
 
-1. **Phantom-Dochte an sieben US-Halbtagen.** Tiefstkurse ohne jeden Umsatz. Belegt:
+1. **Phantom-Dochte an sieben US-Halbtagen — WARTET jetzt auf die Überschuss-Messung (Auftrag oben, 27.08. ~01:35).** Tiefstkurse ohne jeden Umsatz. Belegt:
    `AAPL 2025-07-03, 17:00` — Tief 201,25 gegen Sitzungstief 211,81, **−5,8 %**. QS zählt
    34.363 betroffene Kerzen, davon **3.171 über 1 %**. Tage: 2023-11-24, 2024-07-03,
    2024-11-29, 2024-12-24, 2025-07-03, 2025-11-28, 2025-12-24.
@@ -1834,7 +1877,17 @@ ihn niemand.
 steht — nicht erst nach dem Lauf.
 
 
-### ⭐ #96 — Platzhalterkerze verwerfen (Wilhelm 26.08. 18:55) — an den Master
+### ~~⭐ #96 — Platzhalterkerze verwerfen~~ 🛑 NICHT ANWENDEN (27.08. ~01:30) — die Prämisse ist widerlegt
+
+**Wilhelms Entscheid von 18:55 beruhte auf einer falschen Prämisse und wird nicht
+angewendet** (QS-Nachtrag 27.08. 00:30, Wilhelm im PM-Chat informiert): die vermeintliche
+Platzhalterkerze trägt den **offiziellen Tagesschluss** — zweifach unabhängig gemessen
+(QS: 2.814 von 2.832 exakt gleich dem Tagesschluss, 99,4 %; Master: 309 von 395 auf
+0,000 %). **Die Löschregel hätte 2.839 offizielle Schlusskurse vernichtet.** Was von #96
+bleibt: die **151 krummen Quote-Stempel** löschen (echter Müll, nur 24./26.08.) und
+**Teilkerzen beim Schreiben verhindern** — beides steht in den Vorrang-Aufträgen oben.
+*Der ursprüngliche Auftragstext ist gestrichen; Beleg in
+`uebergabe/verarbeitet/qs-audit-2026-08-27-0030-NACHTRAG-96.md`.*
 
 **Die trennscharfe Bedingung, vom PM über fünf Werte gemessen:**
 
@@ -3059,6 +3112,10 @@ dem letzten Lauf, dazu ein Rotationsblock. Repariert wird nichts — das tut ein
 *Entscheidungen von Wilhelm, mit Datum. Eine Entscheidung, die nur in einem Chatverlauf
 steht, ist nach zwei Stunden verloren.*
 
+
+- **27.08.2026, ~01:30 (PM-Chat, Klick-Formular) — PM-Adresse: beim Kürzel bleiben.**
+  Der PM bleibt unter `markt-dashboard-91 [779ff5]` erreichbar; kein Neuanlegen der
+  Sitzung. Die Tafel-Zeile mit der Meldeadresse bleibt stehen, bis sich das je ändert.
 
 - **27.08.2026, ~00:55 (PM-Chat, Klick-Formular) — drei Entscheide:**
 
