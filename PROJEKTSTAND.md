@@ -274,9 +274,17 @@ Strang A und B rechnen beide darauf, und jede positive Rohrendite ist dadurch na
 verzerrt, in genau der Richtung, in der wir etwas finden wollen. Ausführlich im Plan.
 
 **Zugeteilt an den Master (Datenqualität, unstrittig):**
-1. Falsche Delistings in `massive/verschwundene.json` — **Vorrang.** AVB, EQR, LBRDA,
-   LBRDK, WBS gelten als delistet und handeln. *Ursache vom PM gefunden: nicht delistet,
-   sondern im Archiv stehengeblieben.*
+1. Falsche Delistings in `massive/verschwundene.json` — **Vorrang.**
+   **Korrigiert 18:45: belegt falsch sind DREI, nicht fünf** — AVB, EQR, WBS. Der Tüftler
+   hat gefragt, was die *Quelle* im Fenster 17.–26.08. führt, und damit „Quelle hat nichts"
+   von „Archiv holt es nicht" getrennt; im Rückstand sehen beide gleich aus. Er hat
+   LBRDA/LBRDK selbst aus seiner Gruppe genommen — dort fehlen die Kerzen auch bei der
+   Quelle, der Delisting-Vermerk könnte also stimmen (Liberty Broadband).
+   *Der PM hatte die Fünf ungeprüft weitergereicht — seine Ungenauigkeit, nicht dessen.*
+
+   **Die zehn Rückstände zerfallen in drei Gruppen:** AVB, EQR, WBS, TWO = **reines
+   Nachladen** (8 Kerzen liegen bei der Quelle bereit) · LBRDA, LBRDK, WHLR = echte
+   Datenlücke · BSCO, IBDP, IBTE = **ETFs**, gehören womöglich gar nicht in die Prüfmenge.
 2. `tools/massive-tagesdaten.js:29` — holt neun Monate weniger als es glaubt.
 3. **Der Wachhund rundet 99,66 % auf 100 %** und verschluckt damit zehn zurückhängende
    Reihen. Sechste Verkleidung derselben Sache an einem Tag, diesmal in der Sicherung,
