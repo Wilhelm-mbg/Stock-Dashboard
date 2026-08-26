@@ -1838,6 +1838,72 @@ entfernte Kerzen zurück; eine Reparatur, die das nicht mitbedenkt, ist eine Mom
 *Fallstricke im Raster: der `etf/`-Unterordner (SPY/QQQ/IWM/VOO/TLT/GLD), das Raster ist
 `:30` nicht `:00`, Tage ohne Vergleichsspanne sind nicht entscheidbar.*
 
+### 🔴 27.08. ~02:30 — LÖSCHEN IST GESTOPPT: kaputtes und richtiges Feld in derselben Kerze
+
+**Der PM zieht seine eigene Freigabe zurück.** Ich hatte `markt-dashboard-06` die
+Reparaturform **Löschen** gedeckt, gestützt auf die Tafel-Klassifikation. **Die QS hat sie
+beim Gegenlesen aufgehoben**, an `AAPL 2025-07-03` (Halbtag):
+
+| | | |
+|---|---|---|
+| **Tagesschluss aus `archiv1d`** | **213,55** | die Wahrheit |
+| letzte 60m-Kerze **mit** Umsatz (15:30) | 214,10 | Abstand **0,55** |
+| **Phantom-Kerze** (17:00) | **213,25** | Abstand **0,30** |
+
+**Die Phantom-Kerze liegt NÄHER am echten Tagesschluss als die letzte reguläre.** Ihr
+**Tief** ist zweifelsfrei falsch (201,25 gegen ein Tagestief von 211,81) — **ihr Schluss
+offenbar nicht.** *Kaputtes Feld und richtiges Feld in derselben Kerze. Wer sie löscht,
+wirft beides weg.*
+
+**Das ist zum zweiten Mal in einer Nacht dieselbe Struktur wie #96**, wo die 20:00-Kerze wie
+Müll aussah und in 99,4 % der Fälle exakt den offiziellen Schluss trug. **Der PM kannte #96
+und hat die Struktur trotzdem übersehen.**
+
+**KAPPEN STATT LÖSCHEN ist der Kandidat** — Hoch und Tief begrenzen, Schluss und Umsatz
+unangetastet. `-06` hatte das von sich aus erwogen und wegen des zu engen QS-Kriteriums A3
+verworfen; **die QS hat A3 selbst korrigiert, statt es zu verteidigen.** `reparatur.js` wird
+um den Kapp-Weg erweitert, sodass **die Messung entscheidet, nicht die Vorab-Meinung**.
+
+**`--wirklich` ist gesperrt**, bis der QS-Lauf „Phantom-Schluss gegen Tagesschluss über alle
+sieben Halbtage" vorliegt (ab 03:45, Punkt 1 ihrer Reihenfolge). **Ein Beispiel ist kein
+Befund — in beide Richtungen:** auch „die Schlüsse sind gut" braucht die Verteilung über
+alle Reihen, nicht nur AAPL.
+
+### 🟢 27.08. ~02:30 — Strang A: keine Schlusskurs-Defekte auf `archiv1d` (mit Gegenprobe)
+
+**Die Frage, die Strang A entscheidet, ist beantwortet — gemessen, nicht gefolgert.**
+
+**Positivkontrolle zuerst** (der PM hatte sie zur Bedingung gemacht):
+
+| Probe | Ergebnis | |
+|---|---|---|
+| unveränderte AAPL-Reihe (10.077 Kerzen) | 0 Treffer | richtig, kein Fehlalarm |
+| dieselbe Reihe **mit eingebautem** Quote-Stempel | **1 Treffer** | Sucher schlägt an |
+| Stempel mit Sekunde 43 **mitten** in der Reihe | **1 Treffer** | Sucher schlägt an |
+
+**Erst danach der Lauf:** 2.965 Reihen, **15.509.301 Tageskerzen, 0 Treffer, 0 betroffene
+Reihen.**
+
+**Der Strukturgrund ist der eigentliche Beleg:** Das Tagesarchiv benutzt über 15,5 Mio
+Kerzen **genau zwei** Zeitstempel — `13:30:00` (63,6 %) und `14:30:00` (36,4 %), Sitzungs-
+beginn in EDT und EST, **ohne eine einzige Ausnahme**. Ein Quote-Stempel trüge die Abrufzeit
+und fiele sofort auf. Er ist nicht da.
+
+**Dazu:** der 25.08. ist auf 1d sauber (1 Nullumsatz-Reihe von 2.955; am 21.08. sind es 4),
+und **keine der drei Tagesstrategien setzt einen Stop** — `momentum` liest überhaupt kein
+Hoch/Tief. Der Schadensweg ist `messmaschine.js:526`, `if (stop != null && p.tief <= stop)`
+— **ohne Stop kein Schaden.**
+
+**→ Beide Datenfunde dieser Nacht binden Strang A sachlich nicht.** *Entscheidung über
+Sperre 1 bleibt Wilhelms; sie steht auf der Morgenliste.* **Älter und unverändert bleibt die
+Überlebenslücke.**
+
+**Noch offen, von der QS selbst benannt und NICHT beantwortet:** 158.733 Nullumsatz-Tage im
+Tagesarchiv (1,02 %), Schwerpunkt in den 1990ern (verkürzte Sitzungen illiquider Werte). *„Eine
+flache Tageskerze liefert Rendite null und schiebt die Bewegung auf den Folgetag."* Für
+Strang A über die volle Historie keine Kleinigkeit — gehört als benannte Einschränkung in §5
+oder vorher gemessen.
+
 ### 🔴 27.08. ~02:10 — Warnsignal 7 ist WIDERLEGT: die „falschen Delistings" sind echt
 
 **`markt-dashboard-1d`, Befund `fb237d5`, `studien/verschwundene-pruefung-2026-08-27/`.
