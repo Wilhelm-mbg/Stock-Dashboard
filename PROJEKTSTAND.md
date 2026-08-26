@@ -1,6 +1,6 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-26 09:30
-gesehener-tag: v8.33.2
+letzter-bericht: 2026-08-26 11:15
+gesehener-tag: v8.33.3
 -->
 
 # Projektstand
@@ -13,21 +13,58 @@ Wenn du hier etwas änderst, dann nur deine eigene Zeile unter „Läuft gerade"
 
 ---
 
-## Stand: 26.08.2026, 09:00 (Wilhelms Antworten eingetragen)
+## Stand: 26.08.2026, 11:15
 
-Ausgeliefert ist **v8.33.2** — unverändert seit gestern Abend. Der Quellstand ist
-siebzehn Commits weiter; **neun Release-Notizen warten** auf die Wache. Nichts Ungepusht.
+Ausgeliefert ist **v8.33.3** (Tag auf `b0a3020`, 09:04). Der Quellstand ist **drei
+Commits weiter**, **zwei Release-Notizen** warten auf die Wache. Arbeitsbaum sauber,
+nichts ungepusht, `npm test` **grün** (PM selbst gelaufen, 11:10).
 
-**Die Tests sind wieder grün** (PM geprüft 08:40: `eslint` + `test-channel` + `test-v6`
-alle bestanden). Alle drei SOFORT-Aufträge des 08:10-Laufs sind in 17 Minuten erledigt
-worden.
+**Die Neumessung ist fertig — und das ist die Nachricht des Tages.** Zwölf Protokolle
+liegen, alle auf Maschine **1.2.0** und demselben `codeStand 6a7d9e29db6f` (PM hat alle
+zwölf Dateien selbst gelesen, nicht den Bericht übernommen). Ergebnis:
 
-Die **Neumessung aller zwölf Strategien** läuft — 5 von 12 Protokollen geschrieben
-(Stand 09:00). Sie hält den Arbeitsbaum schmutzig; das ist normal und der Grund, warum
-das Release erst danach anlaufen kann.
+| | Zahl |
+|---|---|
+| bestätigt | **0** |
+| nicht bestätigt (gemessen, trägt nicht) | 2 — `kapitulation`, `winkelbestaetigt` |
+| nicht entscheidbar (Lineal zu grob) | 9 |
+| nicht messbar | 1 — `monatsende-kauf` |
 
-**Wilhelm hat 09:00 geantwortet: 1a / 2a / 3a.** Alles Weitere unter „Aufträge" und
-„Entschieden".
+**Die Auflösungswand über alle zwölf**, vom PM aus den Protokollen gezogen (die Tafel
+zeigte bis 09:30 nur fünf Zeilen). Gelesen wird `bestesUrteil` und die **kleinste**
+Aussicht über alle Varianten — sie ist die planungsrelevante:
+
+| Strategie | Urteil | kleinste Aussicht (Handelstage) | alle Varianten |
+|---|---|---|---|
+| monatsende-kauf | nicht messbar | **187** | 187 |
+| kapitulation | **nicht bestätigt** | **224** | 1.551 · 2.330 · **224** |
+| rsi2seit-mcp | nicht entscheidbar | 1.070 | 1.437 · 1.476 · 1.156 · **1.070** · 1.079 |
+| monatswende-breit | nicht entscheidbar | 3.803 | 3.942 · 3.803 |
+| rsi2seit | nicht entscheidbar | 4.116 | 4.116 |
+| t3-stundendrift | nicht entscheidbar | 12.655 | 294.710 · 12.655 |
+| quartalsschub-betrag | nicht entscheidbar | 13.257 | 13.257 · 19.416 |
+| t2-umsatzschock | nicht entscheidbar | 17.317 | 51.183 · 17.317 |
+| momentum | nicht entscheidbar | 33.683 | 52.578 · 157.689 · 33.683 · 562.398 |
+| t1-zwangsglattstellung | nicht entscheidbar | 34.691 | 34.691 |
+| winkelbestaetigt | **nicht bestätigt** | — | (keine Aussicht ausgewiesen) |
+| winkelgrad | nicht entscheidbar | — | (keine Aussicht ausgewiesen) |
+
+**Sieben der zwölf liegen jenseits von 12.000 Handelstagen** — mehr als fünfzig Jahre
+Börse. Sie sind mit diesem Datenbestand nicht entscheidbar, egal wie lange gewartet wird.
+Nur drei liegen unter 1.500 Tagen, und die kürzeste von allen trägt das Urteil
+*nicht messbar*.
+
+**Vorsicht bei der kurzen Zahl:** eine kleine Aussicht heißt *entscheidbar*, nicht
+*lohnend*. `kapitulation` steht mit 224 Tagen ganz vorn und ist zugleich eine der beiden,
+die **gemessen wurden und nicht getragen haben**.
+
+Der Zeitraum aller zwölf ist **26.09.2023 bis 24.08.2026** — nicht bis heute. Grund ist
+der Archiv-Stillstand weiter unten; er macht die Messungen nicht falsch, gehört aber so
+zitiert.
+
+**(1a) und (2b) sind fertig** (`0b7f767`): Depot und Scoreboard zeigen jetzt dasselbe
+Urteil, und vor `kapitulation` steht der Warnhinweis. Vom PM in `depot.js:767`
+nachgesehen — dort steht `bestesUrteil`, nicht mehr das stärkste t.
 
 Der Struktur-Plan vom 25.08. (`studien/struktur-plan-2026-08-25/PLAN.md`):
 
@@ -74,7 +111,10 @@ Schlagzeilen erreichbar statt dauerhaft 3. Zusätzlich zur Auditor-Sonde gemesse
 `overflow: auto` heißt nur, dass ein Rollbalken erlaubt ist — nicht, dass er etwas
 freigibt. Die Sonde des Auditors blieb unangetastet, sie ist der Beleg des Funds.
 
-### JETZT DRAN — Neumessung aller zwölf Strategien (PM zugeteilt 26.08. 08:40)
+### ~~JETZT DRAN — Neumessung aller zwölf Strategien~~ **ERLEDIGT 26.08. 09:50** (`49a6278`)
+
+**Zwölf Protokolle, null Bestätigungen.** Die Zahlen stehen oben unter „Stand". Der
+Auftragstext bleibt als Beleg stehen, was beauftragt war.
 
 **Vollständig unblockiert.** Alle fünf Vorstufen sind repariert (#85–#88, #91), die
 Maschine steht auf **1.2.0** mit `codeStand`. Das ist **ein langer Rechenlauf, kein
@@ -131,6 +171,48 @@ Protokolls verwenden — und `bestesUrteil` lesen, nicht die erste Variante.
 Protokoll bereits belegt — er beschreibt dort, *wie* ausgestiegen wurde
 (`{art: 'Zeit', mittlereKerzen: 26}`). Der neue Konfigurationsschalter darf damit nicht
 kollidieren.
+
+### ⚠ SOFORT — der Kursarchiv-Stillstand (PM zugeteilt 26.08. 11:15, noch niemand)
+
+**Steht seit 09:30 als Beobachtung auf der Tafel und hat sich seither nicht bewegt.**
+Der PM hat es 11:10 in den Dateien nachgemessen, nicht aus der Tafel übernommen:
+
+- `archiv1d`: `stand` = **24.08. 17:27 UTC**, letzte Tageskerze **24.08.** — seit über
+  zwei Tagen unverändert.
+- `archiv60m`: die Spiegelung **lief** am 25.08. 22:49 UTC und schrieb alle Dateien —
+  letzte Kerze trotzdem **24.08. 16:30 UTC** (AAPL, MSFT, NVDA einzeln nachgesehen).
+
+**Neu und wichtig:** unter den Claude-Aufgaben (`list_scheduled_tasks`) gibt es
+**gar keine Spiegelungs-Aufgabe**. Der 22:49-Lauf kam von woanders her — von Hand, aus
+der App oder aus einer Windows-Aufgabe. **Der PM weiß nicht, woher; er rät nicht.**
+Das erklärt aber, warum niemandem etwas auffiel: es gibt keine Stelle, die es meldet.
+
+**Was daran hängt:** die zwölf frischen Protokolle enden am 24.08. · `rsi2seit-mcp` V4
+wartet auf frische Handelstage, die nicht kommen · jede weitere Messung misst dieselben
+Daten wie gestern.
+
+**Auftrag:** Ursache finden und beheben. Anfangen bei der Spiegelung, nicht am Archiv —
+die Dateien wurden ja geschrieben, nur ohne neuen Inhalt. **Ein Lauf, der nichts
+dazulernt und trotzdem alles neu schreibt, sieht von außen aus wie ein gesunder Lauf.**
+Dazu gehört ein Wächter, der genau das meldet: schreibt der Lauf Dateien, deren jüngste
+Kerze älter ist als der letzte abgeschlossene Handelstag, muss das laut werden.
+**Reine Datenbeschaffung — Handelslogik wird nicht berührt.** Belegt keine Datei, an der
+der Master sitzt.
+
+### FREI — #93 und #94, die Bestandstabelle unter *Vermögen → Meine Papiere*
+
+Zwei Funde des Auditors aus dem 2. Lauf, **beide stecken in der ausgelieferten v8.33.3**:
+
+- **#93** — Zahl und Einheit brechen bei 1000 px Fensterbreite auf zwei Zeilen
+  (`309.90` und `$` untereinander). Regression aus dem Wachstum von sieben auf zehn
+  Spalten.
+- **#94** — englisches Zahlenformat statt deutschem, und Verluste stehen grau statt rot,
+  während dieselben Werte auf *Heute* deutsch und rot erscheinen. Die Hausmittel
+  `U.money` / `U.nf2` / `U.signCls` sind an dieser Stelle ungenutzt.
+
+**Reine Anzeige, Reiter Vermögen.** #94 ist der unangenehmere von beiden: dieselbe Zahl
+sieht an zwei Stellen der App verschieden aus. **Achtung:** das ist `depot.js` — dieselbe
+Datei, in der der Master sitzt. Vorher mit ihm abstimmen oder er nimmt es mit.
 
 ### FREI — `ausstieg`-Schalter in der Messmaschine (Wilhelm 26.08. 09:00, Antwort 2a)
 
@@ -199,7 +281,7 @@ Die urspruengliche Begruendung des PM war falsch (die zwoelf frischen Protokolle
 der Fehler steckt seit je in `v8.33.2` und steckt jetzt auch in `v8.33.3`). Der Vorschlag
 kam vom Master, Wilhelm hat ihn angenommen.
 
-**(2b) FREI — Warnhinweis vor `kapitulation`.** Die Regel steht seit heute auf
+**(2b) ~~FREI~~ ERLEDIGT 26.08. 09:50 (`0b7f767`) — Warnhinweis vor `kapitulation`.** Die Regel steht seit heute auf
 **nicht bestaetigt** (gemessen, traegt nicht) — schaerfer als alles, was hier bisher an
 einer laufenden Regel stand. Wilhelm laesst sie waehlbar, will aber einen Warnhinweis
 davor, nach dem Muster der ungeeichten Kanal-Guete (#80).
@@ -354,6 +436,56 @@ zwei Tage niemandem auffiel.
 
 ---
 
+## Offene Fragen an Wilhelm (Stand 26.08. 11:15)
+
+*Antworten genügen als Ziffernfolge, z. B. „1b 2a 3a".*
+
+**(1) Zwölf laufende Strategien, null Belege — was soll die App damit machen?**
+Sieben von zwölf brauchen mehr als 12.000 weitere Handelstage, bis sich ihre Frage
+überhaupt entscheiden lässt. Das ist keine Geduldsfrage mehr, das ist unerreichbar.
+Trotzdem stehen sie alle gleichberechtigt zur Auswahl.
+- **(a)** Alles lassen, wie es ist — nur die Aussicht als Zahl daneben anzeigen.
+- **(b)** Aussicht anzeigen **und** die aussichtslosen sichtbar abtrennen: wer mehr als
+  ~2.500 Handelstage (zehn Jahre) braucht, wandert in einen eigenen Abschnitt
+  „nicht entscheidbar mit diesen Daten". Wählbar bleibt alles.
+- **(c)** Aussichtslose ganz aus der Auswahl nehmen.
+- **(d)** Umgekehrt herangehen: nicht die Anzeige ändern, sondern nur noch Kandidaten
+  entwerfen, deren Aussicht **vor** der Messung unter 1.000 Tagen liegt — die Wand als
+  Eintrittskarte statt als Nachbemerkung.
+*Empfehlung: **b**, und **d** gleich dazu.* (b) kostet wenig und ist ehrlich, ohne dir
+etwas wegzunehmen. (d) ist die eigentliche Lehre: der Tüftler prüft die Wand längst vorab
+— dass sie auch für die zwölf Altbestände gilt, ist heute zum ersten Mal in Zahlen zu
+sehen. **(c)** empfehle ich ausdrücklich nicht: „nicht entscheidbar" heißt nicht
+„schlecht", sondern „wir wissen es nicht" — das wegzusperren wäre dieselbe Verwechslung,
+die dieses Projekt schon einmal Geld gekostet hat.
+
+**(2) #92 — die Rangfolge der Urteile. Sie gehört dir, nicht einer Bausitzung.**
+Seit heute entscheidet `bestesUrteil`, was die App anzeigt (das war (1a)). Diese Zahl
+wird aus mehreren Varianten gewählt — und in der jetzigen Rangfolge kann ein
+**`widerlegt`** hinter einem freundlicher klingenden Urteil verschwinden. Ein
+Variantenurteil (`bestaetigt-aber-nullpunkt-verschoben`) kommt in der Rangfolge gar nicht
+vor. **Heute tritt der Fall in keinem der 32 Protokolle auf** — es ist Vorsorge, kein
+Brand.
+- **(a)** Das schärfste Urteil gewinnt immer: `widerlegt` schlägt alles andere.
+- **(b)** Wie (a), aber zusätzlich sichtbar machen, dass die Varianten uneins sind.
+- **(c)** Später entscheiden, wenn der Fall zum ersten Mal wirklich auftritt.
+*Empfehlung: **a**.* Es ist die vorsichtige Richtung, und sie ist billig, solange kein
+echter Fall existiert. (b) ist gut gemeint, aber eine neue Anzeige für einen Fall, den es
+noch nie gab.
+
+**(3) Zwei Release-Notizen warten. Jetzt ausliefern oder sammeln?**
+Fertig und ungeliefert: das gemeinsame Urteil in Depot und Scoreboard, der Warnhinweis
+vor `kapitulation`, die zwölf Neumessungen. In v8.33.3 stecken außerdem zwei frische
+Anzeigefehler (#93/#94), die noch niemand repariert hat.
+- **(a)** Jetzt ausliefern — du startest die Wache selbst.
+- **(b)** Warten, bis #93/#94 mit drin sind (Aufwand: eine kurze Sitzung).
+*Empfehlung: **b**.* Anders als heute früh drängt nichts: die zwölf Protokolle liegen
+schon in deinem Datenordner und sind in der App sichtbar, **ganz ohne Release** — die
+App liest sie zur Laufzeit. Was ein Release brächte, ist die Anzeige-Korrektur; die wäre
+mit #93/#94 zusammen runder.
+
+---
+
 ## Tüftler
 
 *Eine Zeile, vom Strategie-Tüftler selbst gepflegt. Übergabe läuft über
@@ -385,8 +517,10 @@ zwei Tage niemandem auffiel.
 fertig bist.*
 
 - **App-Codebase Master** — **Neumessung fertig** (`49a6278`), **(1a)+(2b) fertig**
-  (`0b7f767`). Arbeitsbaum sauber, npm test grün. Nimmt als Nächstes **B2** (die zwei
-  Depotverlauf-Bilder zusammenführen) — belegt dann `depot.js` und `index.html`.
+  (`0b7f767`). Arbeitsbaum sauber, npm test grün. Sitzt seit 09:51 an **B2** (die zwei
+  Depotverlauf-Bilder zusammenführen) — belegt `depot.js` und `index.html`.
+  **PM 11:15: seit 09:51 kein Commit — das ist für einen Umbau normal, aber wer #93/#94
+  oder B2-Nachbarschaft anfassen will, stimmt sich vorher mit ihm ab.**
   Ergebnis der Neumessung in einem Satz: **33 von 34 Varianten unverändert**; die eine
   Ausnahme (`rsi2seit-mcp` Var 3) kippt um 0,0002 Pp. Alle zwölf Protokolle tragen
   1.2.0 und denselben Codestand — die Sperre hat belegbar gehalten.
@@ -407,12 +541,14 @@ fertig bist.*
   davor #76, #84, #85, #83/#89, #86/#87/#88, Messmaschine versionieren, Stufe F (1).
   PM hat die doppelte Zeile 09:00 zusammengefasst.)*
 
-> ### ⚠ SPERRE, solange die Neumessung läuft (PM, 26.08. 09:00)
-> **Niemand fasst `studien/messmaschine/messmaschine.js` an, bis die zwölf Protokolle
-> geschrieben sind.** Der Lauf lädt die Maschine je Strategie neu; eine Änderung
-> mittendrin heißt, die ersten Strategien sind mit einem anderen `codeStand` gemessen
-> als die letzten — genau der Vergleichbarkeitsfehler, den die Versionierung von gestern
-> Nacht sichtbar machen soll. Das betrifft ausdrücklich den `ausstieg`-Schalter unten.
+> ### ✅ SPERRE AUFGEHOBEN — die Neumessung ist fertig (PM, 26.08. 11:15)
+> Die Sperre auf `studien/messmaschine/messmaschine.js` galt nur, solange gemessen wurde.
+> Alle zwölf Protokolle liegen; der PM hat in jeder Datei nachgesehen, dass sie **denselben**
+> `codeStand 6a7d9e29db6f` und dieselbe Version **1.2.0** trägt — die Sperre hat belegbar
+> gehalten. **Damit ist der `ausstieg`-Schalter frei** (Wilhelm hatte ihn 09:00 mit 2a
+> freigegeben, er hing nur an dieser Sperre). Die zweite Bedingung bleibt bestehen: an allen
+> drei Stellen zugleich — Signal, Kontrolltopf, Placebo. Ebenso frei: **#92** und die
+> Konsolenzeile `messen.js:95`.
 
 ---
 
