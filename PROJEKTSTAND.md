@@ -433,6 +433,70 @@ danach die Datenfunde.
 *Was freigegeben ist und noch niemand macht. Wer eine Zeile nimmt, trägt sich unter
 „Läuft gerade" ein und streicht sie hier.*
 
+### 🔴 VORRANG — die App sammelt Intraday-Kerzen selbst (Wilhelm 26.08. 18:20)
+
+**Wilhelms Worte:** *„ich will das die app das sammelt und ablegt über die api"*.
+Zugeteilt an den **App-Codebase Master**, vor die Datenfunde gesetzt.
+
+**Warum es keinen Tag warten darf:** Die Quelle liefert Intraday nur in einem
+**rollierenden Fenster** — 1-Minuten-Kerzen **7 Tage**, 5m/15m **60 Tage**. Was nicht
+geholt wird, ist danach **für immer weg**. Bei Tageskursen kann man Jahre später
+nachladen, hier nicht. **Bisher sammelt niemand.** Die Ordner `archiv1m/5m/15m` waren im
+Ladewerkzeug vorgesehen, aber nie angelegt.
+
+*Der PM hat 18:15 von Hand einen Erstlauf angestoßen (1m/5m/15m, top500) — er sichert die
+aktuellen Fenster. **Das ist eine Momentaufnahme, keine Lösung.***
+
+**Warum die App und nicht eine geplante Aufgabe:** Sie läuft ohnehin. Dann hängt das
+Sammeln an nichts weiter — keine Claude-Sitzung, kein Zeitplan, keine Kette, die reißt.
+
+**Sieben Punkte, die den Auftrag ausmachen:**
+
+1. **Format identisch zu `tools/yahoo-60m-holen.js`** — dieselben Felder, dieselbe
+   Kerzen-Definition, dieselbe Teilkerzen-Regel. Zwei Schreiber mit zwei Formaten im
+   selben Archiv wären der „zwei Quellen in einer Reihe"-Fehler, der hier schon einmal 66
+   Reihen unbrauchbar gemacht hat. **Gemeinsamer Code statt Nachbau.**
+2. **Die App ist nicht immer an.** Beim Start prüfen, wie alt das Archiv ist, und
+   nachholen, was das Fenster hergibt. War sie acht Tage aus, sind die Minutenkerzen
+   verloren — **dann muss sie das sagen**, nicht stillschweigend weitermachen.
+3. **Schonend und nicht blockierend** — 1,2 s Abstand, wachsende Pause bei
+   Ratenbegrenzung, Fortschritt nach jedem Wert auf die Platte.
+4. **Sperrdatei setzen** wie das Abrufwerkzeug, sonst misst der Analytiker hinein.
+5. **Sichtbar machen, dass gesammelt wird — und ob es klappt.** Wann zuletzt gesammelt,
+   wie alt die jüngste Kerze, wie viele Werte. **Eine stille Sammelfunktion, die eines
+   Tages aufhört, ist der Fehler dieses Tages in seiner siebten Verkleidung.**
+6. **Nur sammeln, nicht messen.** `intradayScan`, Autopilot- und Edge-Ring, `SETUPS`,
+   `modeParams` und die `window.confirm`-Gatter bleiben unberührt.
+7. **Vorgabe, offen gelegt und drehbar:** 500 liquideste Werte, 1m täglich, 5m/15m
+   wöchentlich. Platz ist reichlich (1,65 TB frei); 2.900 Werte kosten rund 97 statt 17
+   Minuten je Auflösung.
+
+**Belegte Dateien: noch offen** — der Master trägt sie ein, wenn er anfängt.
+
+### Warum Intraday überhaupt interessant ist (PM, aus der Signalstudie gezogen)
+
+Die große Signalstudie hat auf allen vier Zeitrahmen gemessen — und dort steht eine Zahl,
+die gegen die Intuition läuft:
+
+| Zeitrahmen | Bestätigungstage | nachweisbar ab |
+|---|---|---|
+| **1m** | 22 | **0,179 Pp** |
+| 5m | 22 | 0,270 Pp |
+| 15m | 22 | 0,374 Pp |
+| 60m | 242 | **0,540 Pp** |
+
+**Die Minutenkerzen hatten mit nur 22 Tagen die schärfste Auflösung von allen** — dreimal
+besser als die Stundenkerzen mit 242 Tagen. Je kürzer der Zeitraum, desto weniger streut
+die Rendite. **Das ist Hebel 2 des großen Plans (Haltedauer) in anderer Verkleidung.**
+Ein Jahr Sammeln ergäbe 252 statt 22 Tage bei dieser Auflösung.
+
+**Der Haken, und er ist groß:** Je öfter gehandelt wird, desto öfter fällt die Kostenhürde
+an. Genau daran ist die Intraday-Idee hier schon einmal gescheitert. **Ob eine Kante mit
+der Auflösung schneller schrumpft als die Kosten wachsen, ist eine Rechnung, keine
+Meinung — und sie ist nicht gemacht.** Das Sammeln vorzuziehen ist trotzdem richtig: die
+Rechnung lässt sich nachholen, die Kerzen nicht.
+
+
 ### ⭐ Richtung der Überlebensverzerrung messen (Wilhelm 26.08. 17:40, Antwort c)
 
 **Vorbedingung für Strang A und B** — solange sie offen ist, bedeutet eine positive
