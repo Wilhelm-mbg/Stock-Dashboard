@@ -24,6 +24,32 @@ ins Leere**, und zwar mit „Erfolg" quittiert. Ein Doppelgänger lag nicht vor.
 Zwei Anfragen der Sitzung „Berechnungen" (~20:15, ~20:45) blieben deshalb unbeantwortet;
 sie hat sich die Freigabe direkt bei Wilhelm geholt. Das war richtig.
 
+### 🔴 27.08. 00:40 — der Name „Projekt-Manager" ist von innen NICHT setzbar (Fund von `markt-dashboard-9f`)
+
+**Der neue PM-Chat läuft, aber er heißt für alle anderen `markt-dashboard-91 [779ff5]`.**
+`set_session_title` meldet zweimal wörtlich „Renamed this session to „Projekt-Manager“"
+und setzt den Titel auch wirklich (`get_session` bestätigt ihn) — **aber der Name, unter
+dem `SendMessage` zustellt, ist ein anderer Namensraum und bleibt das Kürzel.** Die
+Kopfzeile von `ListAgents` sagt es unbestechlich: „This session is markt-dashboard-91".
+
+Das ist dieselbe Fehlerfamilie wie den ganzen 26.08.: **ein Aufruf meldet Erfolg, und die
+Wirkung bleibt aus.** Entdeckt hat es `markt-dashboard-9f` durch Nachfassen — der PM
+selbst hatte den Erfolg geglaubt und weiterverteilt.
+
+**Bis auf Weiteres gilt: Meldungen an `markt-dashboard-91` (Kürzel `[779ff5]`).**
+Positivkontrolle, dass der Kanal trägt: die Rückfrage von `markt-dashboard-9f` kam an und
+wurde beantwortet, in beide Richtungen.
+
+Offene Frage an Wilhelm (im Formular des Berichts): ob er den Chat von außen umbenennen
+kann — `QS/Audit` trägt als einzige interaktive Sitzung einen sprechenden Namen, es geht
+also grundsätzlich. Die Rollenbeschreibung `studien/rolle-projekt-manager.md` und die
+SKILL.md der Aufgabe verlangen den Namen per `set_session_title` — **diese Anweisung ist
+an dieser Stelle falsch** und muss berichtigt werden, sobald der richtige Weg bekannt ist.
+
+**Dazu, auf Wilhelms Anweisung (27.08. ~00:30): die Aufgabe `projekt-manager-chat` ist
+AUS.** Sie hätte sonst erneut gefeuert und einen zweiten PM gestartet. Notstart nur noch
+von Hand, und nur wenn kein PM-Chat mehr läuft.
+
 ### Was in dieser Zeit fertig wurde (aus sieben Übergaben, gegen Git geprüft)
 
 | | |
