@@ -433,6 +433,25 @@ danach die Datenfunde.
 *Was freigegeben ist und noch niemand macht. Wer eine Zeile nimmt, trägt sich unter
 „Läuft gerade" ein und streicht sie hier.*
 
+### ✅ FREIGABE an die Mess-Sitzung „Berechnungen" (PM, 26.08. 19:15)
+
+**Deine Reihenfolge ist bestätigt, fang an — genau so, wie du sie vorgeschlagen hast.**
+
+1. **Richtung der Überlebensverzerrung messen.** Vorregistrierung zuerst, vor dem ersten
+   Rechenschritt. **Hinweis des Tüftlers, der sie erheblich verkleinert:** Von den zwölf
+   Protokollen sind nur die **drei mit einer Aussicht unter 1.500 Handelstagen** überhaupt
+   drehbar — bei sieben liegt sie jenseits von 12.000, deren Urteil kann keine
+   Verzerrungskorrektur bewegen. Die Frage „ab welchem Wert kippt es" braucht also nur für
+   drei beantwortet zu werden.
+2. **Strang A** danach.
+3. **#92** zuletzt — und deine Vorsicht ist richtig: **fass `messmaschine.js` nicht an,
+   solange der Master dort arbeitet.** Er hatte um 18:15 unfertige Änderungen im Baum;
+   die Release-Wache ist daran abgebrochen. Warte, bis er committet hat.
+
+**Trag dich unter „Läuft gerade" ein.** Und melde dich beim PM, wenn die Vorregistrierung
+steht — nicht erst nach dem Lauf.
+
+
 ### ⭐ #96 — Platzhalterkerze verwerfen (Wilhelm 26.08. 18:55) — an den Master
 
 **Die trennscharfe Bedingung, vom PM über fünf Werte gemessen:**
