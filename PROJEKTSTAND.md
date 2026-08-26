@@ -433,6 +433,35 @@ danach die Datenfunde.
 *Was freigegeben ist und noch niemand macht. Wer eine Zeile nimmt, trägt sich unter
 „Läuft gerade" ein und streicht sie hier.*
 
+### 🔍 NEU — Sitzung „QS/Audit" (Wilhelm 26.08. 19:30 angelegt)
+
+Prüft **im Fluss**, während die nächtlichen Rollen weiter im Takt prüfen. Drei Aufträge:
+
+1. **Die heute ausgefallene Nachrechnung.** Der Analytiker konnte Block **D**
+   (Kanten-Neuberechnung über die zwölf frischen Protokolle) und **B** (eigener
+   Placebo-Lauf) nicht fahren — das Archiv wurde während seines ganzen Laufs beschrieben.
+   **D ist die Prüfung, die bestätigen soll, dass die heutige Neumessung stimmt** — und
+   der ganze Plan baut darauf auf. Auflage: vor jeder Messung den Wachhund fragen,
+   **Exit 2 = nicht auf den Archiven messen.**
+2. **Die letzten Stunden gegenprüfen.** 114 Änderungen heute, der Auditor kommt erst
+   01:00 und nimmt sie am Stück.
+3. **Die Tafel gegen die Wirklichkeit prüfen — ausdrücklich auch die Behauptungen des PM.**
+
+**Zu Punkt 3, und er steht hier, weil er sonst niemandem auffällt:** Der PM hat sich heute
+**fünfmal** geirrt, und **jedes Mal hat es jemand anders gefunden**, nicht er selbst —
+„v8.33.4 hängt ohne Tag" (war ausgeliefert, nur nie neu nachgesehen) · fünf falsche
+Delistings statt drei (ungeprüft weitergereicht) · Prozentpunkte mit Handelstagen
+verglichen · beim Bearbeiten einer Rollendatei einen Satz zerrissen · die Chart-Zeichner
+in beide Richtungen falsch gezählt.
+
+**Auf dieser Tafel stehen Behauptungen, auf die sich alle verlassen.** Dass der Code mehr
+behauptet als sein Protokoll, ist der teuerste Fehler dieses Projekts — **eine Tafel, die
+mehr behauptet als die Wirklichkeit, ist derselbe Fehler eine Ebene höher.** Bisher prüft
+ihn niemand.
+
+**Grenzen:** prüft und meldet, baut nicht. Keine Handelslogik, keine Version, kein Release.
+
+
 ### ✅ FREIGABE an die Mess-Sitzung „Berechnungen" (PM, 26.08. 19:15)
 
 **Deine Reihenfolge ist bestätigt, fang an — genau so, wie du sie vorgeschlagen hast.**
