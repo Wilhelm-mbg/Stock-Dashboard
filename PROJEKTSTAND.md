@@ -1830,6 +1830,36 @@ entfernte Kerzen zurück; eine Reparatur, die das nicht mitbedenkt, ist eine Mom
 *Fallstricke im Raster: der `etf/`-Unterordner (SPY/QQQ/IWM/VOO/TLT/GLD), das Raster ist
 `:30` nicht `:00`, Tage ohne Vergleichsspanne sind nicht entscheidbar.*
 
+### 🎯 27.08. ~01:55 — die Strang-A-Frage ist jetzt SCHARF: nicht Dochte, sondern Schlusskurse
+
+**Neuer Fakt aus dem Rechenweg selbst** (Berechnungen, Nachtrag 9, `fec9720`): **Strang A
+liest ausschließlich Schlusskurse** — kein Stop, kein Hoch, kein Tief. Phantom-Dochte
+könnten die Messung also **selbst dann nicht verzerren, wenn die QS sie auf 1d findet**;
+sie sitzen in Hoch und Tief, die Strang A nie anfasst.
+
+**Aber daraus folgt NICHT „Dochte egal, also frei".** Dieses Projekt hat **zwei
+dokumentierte Schlusskurs-Defekte**, beide bisher nur auf 60m gezählt:
+
+1. **Quote-Stempel** — 149 im Archiv, 75 im 60m-Messfenster, alle in der
+   Bestätigungshälfte. Eine solche Kerze trägt als Schluss den **Live-Quote statt des
+   Sitzungsschlusses**. Reiner Schlusskurs-Defekt, und schon einmal Ursache verseuchter
+   Live-Signale und Messbasis.
+2. **Abweichende Schlüsse wie am 25.08.** — die archivierte 19:30-Kerze von AAPL mit
+   **c 309,8999** gegen die Quelle. Das `c`, nicht der Docht.
+
+**Die entscheidende Frage lautet damit: gibt es auf `archiv1d` Quote-Stempel oder
+abweichende Schlüsse?** Die QS misst genau das, mit Vorrang vor den 1d-Dochten. **Auflage
+des PM: Ein Nullbefund braucht hier zwingend die Positivkontrolle** — die Stempel-Erkennung
+ist auf 60m-Daten entwickelt; ob das Merkmal auf Tageskerzen genauso aussieht, ist selbst
+offen. Ein ungeprüfter Nullbefund würde Strang A freigeben, das wäre der teuerste denkbare
+Ort für diese Fehlerfamilie.
+
+*Nachtrag 9 hält außerdem fest:* **Kontrolltopf ENTHÄLT die gewählten 10 %** — Begründung:
+nichts Neues, deterministische Dämpfung 1/(1−a) ≈ 1,11, **kein A6-Fall**; Rest-Fassung wird
+nachrichtlich mitgedruckt, `testsGesamt` bleibt 1. **W1-Reichweite steht wörtlich drin**
+(prüft die Überschuss-Arithmetik, nicht die Auswahl). Sperre 1 bleibt trotz eigener
+Entlastung stehen, bis Wilhelm spricht.
+
 ### ⚠ 27.08. ~01:35 — offene Frage, die Strang A betrifft: hat `archiv1d` dieselben Defekte?
 
 **Der PM hat hier einen Fehler gemacht und korrigiert ihn selbst.** Ich hatte der
