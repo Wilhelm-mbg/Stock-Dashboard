@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-26 18:05
+letzter-bericht: 2026-08-27 00:20
 gesehener-tag: v8.33.5
 -->
 
@@ -13,6 +13,84 @@ Wenn du hier etwas änderst, dann nur deine eigene Zeile unter „Läuft gerade"
 
 ---
 
+## Stand: 27.08.2026, 00:20 — neuer PM-Chat, und die Schleife war fast sechs Stunden tot
+
+**Der Projekt-Manager ist wieder besetzt.** Diese Sitzung trägt seit 23:58 den Namen
+`Projekt-Manager` in `ListAgents`. Vorher trug ihn **niemand** — geprüft, nicht vermutet:
+76 Einträge, kein Treffer. **Jede `SendMessage` an „Projekt-Manager" lief in dieser Zeit
+ins Leere**, und zwar mit „Erfolg" quittiert. Ein Doppelgänger lag nicht vor.
+
+**Die Lücke: `pm-lebt.txt` stand auf 18:06, es war 23:58 — 5 Stunden 52 Minuten ohne PM.**
+Zwei Anfragen der Sitzung „Berechnungen" (~20:15, ~20:45) blieben deshalb unbeantwortet;
+sie hat sich die Freigabe direkt bei Wilhelm geholt. Das war richtig.
+
+### Was in dieser Zeit fertig wurde (aus sieben Übergaben, gegen Git geprüft)
+
+| | |
+|---|---|
+| **Verzerrungsrichtung GEMESSEN** (Berechnungen, `533d5a6`) | erstes belegtes Richtungsurteil: das Überlebenden-Archiv **beschönigt** die Dip-Familie (−3,78 Pp, t = −6,19). Für `rsi2seit-mcp` **materiell** (−0,48 Pp ≈ 6× dessen delta80). Gilt fürs Fenster 24-08→26-08, nicht für 2008/09. |
+| **#80 geliefert** (Desingner, `818d58a`) | die Kanal-Güte ist jetzt ein Perzentil gegen Zufall („besser als X % des Zufalls", 32.722 Eich-Kanäle). Befund: der Rauschen-Median liegt je Fenster bei **75–94** — die alte „75" war noch geschmeichelt. |
+| **Baustopp (1b) umgesetzt** (Desingner, `e11d7e9`) | Signaltage statt Handelstage in allen fünf Texten, `monatsende-kauf` zeigt keine Aussicht mehr, dritter Abschnitt „gemessen — zeigt in die Gegenrichtung". |
+| **Messmaschine 1.5.0** (`799ba96`) | Aussichts-Schranke (`u.tage >= 30`) **und** #92-Rangfolge. **Beides vom PM im Code nachgesehen:** `messmaschine.js:1321` führt `bestaetigt-aber-nullpunkt-verschoben` jetzt. **#92 und der QS-A-Fund (B) sind damit erledigt.** |
+| **Die App sammelt Intraday selbst** (Werkzeuge, `b9512ab`/`a180e1d`) | plus `kerzenquelle.js`: **eine** Stelle entscheidet, was eine Kerze ist. |
+| **#96 aufgelöst** (Werkzeuge, `6d44354`/`cdbe398`) | **die „Platzhalterkerze" ist keine** — sie trägt den offiziellen Tagesschluss. 395 Werte gegen das Tagesarchiv: 309-mal auf 0,000 % genau, **null** Gegenfälle. Alle drei diskutierten Löschregeln hätten echte Daten vernichtet, bis zu **1.171 Kerzen mit Umsatz**. |
+| **QS/Audit: Block D vollständig** | zwölf von zwölf nachgerechnet, **elf stabil, `rsi2seit-mcp` gekippt** — und zwar an **0,0001 Pp**. Block B (Placebo): sieben Läufe, alle bestanden. |
+| **VOR-Strang-A-Frage beantwortet** (Berechnungen, `44bac39`) | 6,33 und 1,543 sind eine Rechenkette, kein Widerspruch. Folge: **der t-Sprung 1,03 → 2,10 ist zu 100 % Schätzer, null neue Marktinformation.** |
+
+### Was das für die Auslieferung heißt
+
+`v8.33.5` ist der letzte Tag. Der Quellstand ist **74 Commits weiter**, **sieben
+Release-Notizen** liegen bereit, Arbeitsbaum sauber, nichts ungepusht (PM selbst geprüft,
+00:05). Die Release-Wache brach um 18:20 an einem schmutzigen Baum ab — **dieser Grund ist
+weg.** Es bleibt Wilhelms Reihenfolge vom 26.08. 21:15: **erst die zwei Datenfunde, dann
+das Release.** Die Schranken-Reparatur, an der es ebenfalls hing, ist erledigt.
+
+**Das ist das größte offene Paket des Projekts** — sieben Notizen mit sichtbarer
+Oberflächenarbeit (rote Verluste, Auflösungswand, Kanal-Perzentil, Selbst-Sammler) stehen
+seit gestern Nachmittag in der Warteschlange.
+
+### Drei Zahlen auf dieser Tafel waren falsch — berichtigt (QS-Fund, Punkt 7)
+
+- „**sieben** der zwölf jenseits von 12.000 Handelstagen" → es sind **fünf**; zwei weitere
+  haben *gar keine* Aussicht, weil sie in die Gegenrichtung zeigen. Stand an drei Stellen.
+- `messmaschine.js:1214` → die Rangfolge steht in **Zeile 1305**. Stand an drei Stellen.
+- Der FREI-Auftrag „doppelte Depotkurve" war **seit dem Vormittag erledigt** (`10ae955`)
+  und stand mit einer halbtagsalten Sichtung offen auf der Tafel. Gestrichen.
+
+*Nicht von mir korrigiert, weil nicht meine Datei:* `studien/grosser-plan-2026-08-26/PLAN.md`
+Teil I sagt „5 von 25 / 13 von 25", richtig sind **5 von 35 / 23 von 35**. Als Auftrag unten.
+
+### 🔴 Warnsignale
+
+1. **Sieben Release-Notizen und 74 Commits liegen unausgeliefert** — siehe oben.
+2. **SPY fehlt in allen Intraday-Archiven.** SPY ist der Anker des Regime-Tors
+   (R-TREND). Die App holt ab jetzt selbst, aber nur 1m/5m/15m — 60m und 1d fehlen.
+3. **Drei Abrufe sind am 26.08. abends gestorben**: 15m bei 233 von 432 Werten, 1m bei
+   1.834 von 2.732. Nie zu Ende gelaufen.
+4. **Die Teilkerzen-Sperre leckt** (~2,6 %, QS gegengeprüft) — sie prüft den Zeitstempel,
+   nicht den Inhalt. Bei 1m ist eine Teilkerze am Zeitstempel prinzipiell nicht erkennbar,
+   und der Sammler läuft.
+5. **Die zwei Datenfunde sind unbehoben** (Phantom-Dochte an sieben US-Halbtagen; der
+   25.08. im 60m-Archiv). Sie blockieren nach Wilhelms Entscheid *sowohl* das Release
+   *als auch* Strang A. **Ich sehe keine Sitzung, die daran arbeitet.**
+6. **`tools/massive-tagesdaten.js:29`** fragt ab 2023-11-13 an, während die früheste
+   Kerze vom 2024-08-23 ist — die Quelle kürzt still.
+7. **Drei nachweislich falsche Delistings** in `massive/verschwundene.json`: AVB, EQR, WBS.
+
+### Was liegen geblieben ist
+
+- **`scoreboard.js` ist wieder frei** — die Sitzung Werkzeuge/Oberfläche hat den Bau
+  angehalten, weil die Wand-Anzeige eine Entscheidung braucht (Frage 1 unten). Gemessen
+  ist alles, gebaut nichts.
+- **Strang A wartet** auf F2/F3 (Fragen 2 und 3 unten) *und* auf die zwei Datenfunde.
+- **Die Kostenannahme 0,10 % gilt als bestätigt, obwohl der Beleg zu 58 % aus Krypto
+  besteht** (QS-A-Fund). Trennung nach Anlageklasse steht aus.
+- **Fokusreihenfolge in Dialogen** ist der einzige Barrierefreiheits-Punkt, der nie
+  gemessen wurde — `tools/a11y-probe.js` öffnet keine Dialoge.
+- **Der E1-Vermerk für `rsi2seit-mcp`** („Verzerrung materiell, −0,48 Pp, beschönigend")
+  ist noch in keinem Protokoll eingetragen.
+
+---
 ## Stand: 26.08.2026, 11:15
 
 Ausgeliefert ist **v8.33.3** (Tag auf `b0a3020`, 09:04). Der Quellstand ist **drei
@@ -344,7 +422,7 @@ trennt aber sauber, **was blockiert**:
 - **#72 Punkt 3** — Richtung zur Kostenhürde (längere Haltedauer / Basiswert / engere Spannen).
 
 **Baubereit und unstrittig, sobald jemand Zeit hat:** #92 (Rangfolge,
-`messmaschine.js:1214–1215`), #69 (Backup/Restore, Anforderung vollständig), #82
+`messmaschine.js:1305`), #69 (Backup/Restore, Anforderung vollständig), #82
 (Herkunftsland — das Feld fehlt im Programm noch ganz), #95 (Felix' fehlende
 `stammdaten.json`, Gegenprobe steht aus).
 
@@ -501,7 +579,7 @@ er nicht auf Zuruf, auch nicht zur Reparatur. Richtig so.*
 
 **Hinweis des Tüftlers zur beauftragten Verzerrungs-Messung, der die Vorregistrierung
 erheblich verkleinert:** Die Frage „ab welchem Wert ändert das die Urteile der zwölf
-Protokolle?" hat eine natürliche Verankerung — **bei sieben der zwölf liegt die Aussicht
+Protokolle?" hat eine natürliche Verankerung — **bei fünf der zwölf liegt die Aussicht
 jenseits von 12.000 Handelstagen; deren Urteil kann keine Verzerrungskorrektur drehen.**
 Entscheidbar ist die Frage nur für die **drei unter 1.500**.
 
@@ -1545,6 +1623,105 @@ Datenreihe** statt mit einem Muster in derselben.
 
 ## Aufträge
 
+### 🔴 NEU, VORRANG (PM, 27.08. 00:20) — die zwei Datenfunde beheben. Es hat sie niemand.
+
+**Wilhelm hat sie am 26.08. 21:15 als „sofort, vor allem anderen" freigegeben. Sechs
+Stunden später arbeitet nachweislich niemand daran** (Übergabe-Ordner und `Läuft gerade`
+geprüft). Sie blockieren **beides**: das Release und Strang A.
+
+1. **Phantom-Dochte an sieben US-Halbtagen.** Tiefstkurse ohne jeden Umsatz. Belegt:
+   `AAPL 2025-07-03, 17:00` — Tief 201,25 gegen Sitzungstief 211,81, **−5,8 %**. QS zählt
+   34.363 betroffene Kerzen, davon **3.171 über 1 %**. Tage: 2023-11-24, 2024-07-03,
+   2024-11-29, 2024-12-24, 2025-07-03, 2025-11-28, 2025-12-24.
+   **Auflage wie bei #96: zählen vor dem Ändern.** #96 hat gerade gezeigt, wohin die
+   Abkürzung führt — alle drei plausiblen Löschregeln hätten echte Daten vernichtet.
+   Betrifft jede Messung mit Hoch/Tief: Ausbrüche, ATR, Stopps, Kanäle, ORB. Drei
+   Strategien lesen das Tief.
+2. **Der 25.08. im 60m-Archiv.** Nicht nur die 20:00-Kerze: auch die archivierte
+   **19:30**-Kerze von AAPL weicht ab (v 2.851.594 / c 309,8999 archiviert gegen
+   v 2.846.819 / c 309,8299 live). Ob das allgemein gilt, ist **ungeprüft** —
+   Abrufvergleich über ~20 Symbole, dann entscheiden: nachbessern oder Tag neu holen.
+
+*Wer das nimmt, trägt sich unter „Läuft gerade" ein und sagt dem PM Bescheid.*
+
+### 🔴 NEU, VORRANG (PM, 27.08. 00:20) — die Teilkerzen-Sperre auf ein Inhaltsmerkmal umstellen
+
+QS-A-Fund, gegengeprüft: `fertigeKerze()` (~Z. 150) und `zusammenfuehren()` (~Z. 195) in
+`kerzenquelle.js` prüfen `getUTCSeconds() !== 0`. Das trifft über vier Archive und ~7 Mio.
+Kerzen **null** Fälle, während in allen vier laufende Teilkerzen stehen (1m 7, 5m 16,
+15m 8, 60m 87). Nach der Gegenprüfung heißt der Befund präzise: **die Sperre leckt zu
+~2,6 %**, nicht „sie feuert nie".
+
+**Beide Stellen, nicht nur eine** — die erste verhindert neue, die zweite räumt vorhandene
+weg. Merkmal: letzte Kerze **und** Umsatz 0 **und** Hoch = Tief = Eröffnung = Schluss;
+`currentTradingPeriod.regular` steht in `reiheHolen()` bereits zur Verfügung.
+**Warum es eilt:** das 1m-Fenster reicht nur sieben Tage zurück, der Sammler läuft, und
+bei 1m ist eine Teilkerze am Zeitstempel prinzipiell nicht erkennbar.
+Zählskripte (nur lesend): `Markt-Dashboard-Daten/qs-audit-2026-08-26/werkzeuge/letzte-kerze.js`,
+`.../sekunden.js`, `.../intraday-raster.js`.
+
+### ⚙ NEU (PM, 27.08. 00:20) — drei Werkzeugläufe nachziehen
+
+1. **Die ETFs fehlen in allen Intraday-Archiven** — `node tools/yahoo-60m-holen.js etf`
+   für 60m **und** 1d. **SPY ist der Anker des Regime-Tors**; ohne ihn ist R-TREND blind.
+2. **Drei abgebrochene Abrufe zu Ende bringen**: 15m stehen 233 von 432 Werten, 1m 1.834
+   von 2.732.
+3. **`tools/massive-tagesdaten.js:29`** fragt ab 2023-11-13, früheste Kerze ist 2024-08-23
+   — die Quelle kürzt still. Und **AVB, EQR, WBS** stehen falsch in
+   `massive/verschwundene.json`.
+
+*Nicht während der US-Sitzung sammeln* — Yahoo korrigiert **fertige** Kerzen noch rund
+18 Minuten rückwirkend, und zwar Umsatz **und** Kurse (Werkzeuge-Sitzung, 6 Runden über
+3 Werte, 17,1–18,0 min).
+
+### ⚙ NEU (PM, 27.08. 00:20) — Textstelle im großen Plan richtigstellen
+
+`studien/grosser-plan-2026-08-26/PLAN.md` Teil I sagt „5 von 25" und „13 von 25".
+Richtig sind **5 von 35** und **23 von 35** (Stand `tools/obergrenzen-bericht.js`, QS
+gegengeprüft: „5 von 25" war *nie* gültig, nicht bloß veraltet). Kein Bau, nur Text —
+aber der Plan ist das Dokument, aus dem alle planen.
+
+### ⚙ NEU (PM, 27.08. 00:20) — Kostenmessung nach Anlageklasse trennen
+
+Der Beleg für „0,10 % hält" besteht **zu 58 % aus Krypto** (QS-A-Fund). `kosten.js`
+Z. 30–38 schreibt das Feld `krypto` in `D.kostenMessung.runden`, wertet es aber nie aus.
+Nötig: getrenntes Mittel **und** getrennte Rundenzählung — die „~20 Runden bis zum Urteil"
+müssen **20 Aktienrunden** sein. Nebenbei widersprechen sich zwei Stellen zur selben
+Frage: `diagnose.js` Z. 149–160 filtert Krypto **nicht**, `kosten.js:363` schon.
+Hängt am ohnehin freigegebenen Auktionskosten-Auftrag (Strang C) und an #99.
+
+### ⚙ NEU (PM, 27.08. 00:20) — an die QS: das 6,33 ablegen
+
+Die Sitzung „Berechnungen" kann nicht nachvollziehen, auf welcher Variante und welcher
+Hälfte die QS ihren B10-Faktor **6,33** gerechnet hat — die Abend-Nachrechnung hat kein
+neues `momentum`-Protokoll nach `protokolle/` geschrieben. Bitte Variante und Hälfte in
+ein abgelegtes Protokoll oder in eine Tafel-Zeile bringen. Die Rechenkette
+(6,33 → 1,543 → se) hängt daran.
+
+### ⚙ NEU (PM, 27.08. 00:20) — der E1-Vermerk für `rsi2seit-mcp`
+
+Wer die E1-Zeile der Protokolle pflegt: eintragen
+**„Verzerrung materiell, −0,48 Pp, Richtung beschönigend, Fenster 24-08→26-08"**
+(Quelle: `studien/verzerrungsrichtung-2026-08-26/ERGEBNIS.md`).
+
+### ⚙ NEU (PM, 27.08. 00:20) — eine Zeile in `analytiker/SKILL.md`
+
+Dort steht als Verwaisungsregel nur „länger als sechs Stunden". Seit dem 26.08. erkennt
+`tools/archiv-wachhund.js:152` auch **tote Prozesse** — bei 3,9 h hätte der Analytiker
+nach seiner eigenen Anweisung weitergewartet und drei Protokolle wieder liegen lassen.
+**Konfiguration gehört Wilhelm**; die QS hat sie ausdrücklich nicht angefasst. Ich lege
+sie ihm hiermit vor.
+
+### 🟡 NEU (PM, 27.08. 00:20) — Freigabe an „Berechnungen": F1 ist beantwortet
+
+**F1 = 1a.** Teil 1 wird als **Referenzmessung** gebaut. Begründung: die Mühle erzwingt
+Placebo, Kontrolle und Familie, und das überlappende Protokoll ist als Referenz
+nachweislich falsch (t = 4,74 war Pseudo-Replikation). Das ist Methodik einer bereits
+freigegebenen Messung, also PM-Sache.
+**F2 und F3 liegen Wilhelm vor** (Fragen 2 und 3 des Berichts vom 27.08. 00:20).
+**Kein Lauf**, solange F2/F3 offen sind *und* die zwei Datenfunde stehen.
+
+
 *Was freigegeben ist und noch niemand macht. Wer eine Zeile nimmt, trägt sich unter
 „Läuft gerade" ein und streicht sie hier.*
 
@@ -1584,7 +1761,7 @@ ihn niemand.
 1. **Richtung der Überlebensverzerrung messen.** Vorregistrierung zuerst, vor dem ersten
    Rechenschritt. **Hinweis des Tüftlers, der sie erheblich verkleinert:** Von den zwölf
    Protokollen sind nur die **drei mit einer Aussicht unter 1.500 Handelstagen** überhaupt
-   drehbar — bei sieben liegt sie jenseits von 12.000, deren Urteil kann keine
+   drehbar — bei fünf liegt sie jenseits von 12.000 (zwei weitere haben gar keine), deren Urteil kann keine
    Verzerrungskorrektur bewegen. Die Frage „ab welchem Wert kippt es" braucht also nur für
    drei beantwortet zu werden.
 2. **Strang A** danach.
@@ -2329,7 +2506,14 @@ damit der Entscheid nicht spaeter an einer uebersehenen Darstellung haengt.
 sieht, was ein Zusammenlegen kostet. Kollidiert mit niemandem: der Master sitzt in
 `depot.js` und auf dem Rechenlauf.
 
-### FREI — die doppelte Depotkurve raeumen (Wilhelm 26.08., Antwort b zu Stufe F (2))
+### ~~FREI — die doppelte Depotkurve raeumen~~ **ERLEDIGT 26.08. 11:29** (`10ae955`)
+
+*Vom Desingner am 27.08. 00:10 gegengeprüft, BEVOR er anfing: Kennzahlen rechnen über
+alle Punkte von `D.equityHist`, `eqPanel` existiert nicht mehr (`index.html:1624`),
+`test-v6.js` trägt B2-Marken und war in den grünen Läufen enthalten (Positivkontrolle).
+**Der Auftragstext unten wurde mit einer Sichtung von VOR 11:29 ausgeschrieben** — die
+zitierten Zeilennummern zeigen auf den alten Stand. Text bleibt als Beleg stehen, was
+beauftragt war; **nicht mehr anfangen.**
 
 **Stufe F (2) ist entschieden: NICHT zusammenlegen.** Die vier Spezial-Zeichner bleiben,
 wie sie sind — namentlich der Explorer-Chart, dessen Verlustliste die laengste war.
@@ -2436,7 +2620,7 @@ Werkzeugs sollte es jemand wissen, der sich auf die Weigerung verlaesst.
 
 - **#92 — Nachzuegler zu (1a), gefunden vom Analytiker im 4. Lauf.** (1a) macht
   `bestesUrteil` zur massgeblichen Anzeige — aber dessen eigene **Rangfolge** in
-  `messmaschine.js:1214` kann ein `widerlegt` hinter einem freundlicheren Etikett
+  `messmaschine.js:1305` kann ein `widerlegt` hinter einem freundlicheren Etikett
   verstecken, und `bestaetigt-aber-nullpunkt-verschoben` kommt darin gar nicht vor.
   **Heute latent:** ueber alle 32 Protokolle (76 Variantenurteile) tritt kein Fall auf,
   (1a) ist also nicht falsch und muss nicht warten. Aber der erste `widerlegt`-Lauf einer
@@ -2576,7 +2760,7 @@ durcheinanderbringen.
 **Das ist eine Änderung an meinem eigenen Zeitplan — deshalb frage ich, statt es zu tun.**
 
 **(1) Zwölf laufende Strategien, null Belege — was soll die App damit machen?**
-Sieben von zwölf brauchen mehr als 12.000 weitere Handelstage, bis sich ihre Frage
+Fünf von zwölf brauchen mehr als 12.000 weitere Handelstage, bis sich ihre Frage
 überhaupt entscheiden lässt. Das ist keine Geduldsfrage mehr, das ist unerreichbar.
 Trotzdem stehen sie alle gleichberechtigt zur Auswahl.
 - **(a)** Alles lassen, wie es ist — nur die Aussicht als Zahl daneben anzeigen.
@@ -2891,7 +3075,7 @@ steht, ist nach zwei Stunden verloren.*
   **(2) → (a): das schärfste Urteil gewinnt immer.** `widerlegt` schlägt alles andere;
   `bestaetigt-aber-nullpunkt-verschoben` gehört in die Rangfolge aufgenommen. Kein
   zusätzlicher Uneinigkeits-Hinweis (das wäre (b) gewesen), kein Vertagen (c).
-  Das ist **#92**, `messmaschine.js:1214–1215`.
+  Das ist **#92**, `messmaschine.js:1305`.
 
 - **26.08.2026, 18:35 — der große Plan ist angenommen, das Abbruchkriterium verschärft.**
   Wilhelm zu allen drei Vorlagen: **„ja, ja, ja"** —
