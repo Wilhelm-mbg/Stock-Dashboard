@@ -174,6 +174,35 @@ Dauerbereitschaft (Wilhelms Anordnung).** Zwei Änderungen:
    Sein Wortlaut: *„nicht solche walls of text pleeassee"*. Steht in
    `studien/rolle-projekt-manager.md` Punkt 6.
 
+### 🔴 26.08. 21:45 — **„Versendet" heißt nicht „zugestellt".** Zehnte Verkleidung, diesmal beim PM
+
+**Wilhelm meldete, dass die Nachrichten des PM bei den Sitzungen nicht ankommen** —
+obwohl `SendMessage` **jedes Mal Erfolg meldete**. Nachgemessen: Die Erfolgsmeldung
+bedeutet nur *in die Warteschlange gelegt*. Zugestellt wird erst beim **nächsten
+Arbeitsschritt der Empfänger-Sitzung**.
+
+**Eine Chat-Sitzung, die ihren Zug beendet hat und auf Wilhelms Eingabe wartet, arbeitet
+nicht — sie holt die Warteschlange nie ab.** Die Nachricht liegt unsichtbar da, für
+beide Seiten.
+
+**Der Fehler des PM war die Deutung:** Er hat das Schweigen von vier Sitzungen zwei
+Stunden lang als „arbeitet gerade" gelesen. Genau dasselbe Muster, das er an diesem Tag
+neunmal bei anderen gemeldet hatte — *der Erfolgsnachweis prüft etwas anderes als das,
+worauf es ankommt.* Hier prüft er das Absenden, nicht das Ankommen.
+
+**Regeln ab sofort, für alle:**
+
+- **Eine Nachricht gilt erst als zugestellt, wenn geantwortet wurde.** Schweigen ist kein
+  Beleg für Arbeit — es ist gar kein Beleg.
+- Bei wichtigen Aufträgen `notify_when_idle: true` mitgeben. Das meldet, wenn die
+  Gegenstelle ihren nächsten Zug beendet, und ist der einzige belastbare Hinweis, dass
+  dort jemand zuhört.
+- **Die Wach-Schleife ist keine Kür, sondern die Voraussetzung dafür, dass Punkt 2 oben
+  überhaupt funktioniert.** Wer sie nicht fährt, ist nach seinem letzten Satz taub.
+- **Die Übergabe-Datei bleibt der einzige Kanal, der ohne wache Gegenstelle trägt.**
+  Deshalb bleibt sie Pflicht, auch wenn die Nachricht bequemer ist.
+- Ist eine Sitzung taub, hilft nur ein Anstoß durch Wilhelm in ihrem Fenster.
+
 ---
 
 ### ⚠ Richtigstellung 26.08. 16:50 — **v8.33.4 IST ausgeliefert.** Der PM hat es falsch gemeldet
