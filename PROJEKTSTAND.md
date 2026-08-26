@@ -159,14 +159,33 @@ Unabhängig von der Neumessung, kann sofort und parallel laufen.
 Messvariante.** `kantenAusProtokollen()` in `depot.js` (rund Zeile 733) sucht unter mehreren
 Varianten eines Protokolls die mit dem **staerksten Bestaetigungs-t** und zeigt deren
 Urteil. Das Protokoll faellt sein Urteil aber selbst, in `bestesUrteil`. Bei
-`kapitulation` stehen die drei Varianten auf `nicht-entscheidbar`, `nicht-entscheidbar`
-und `nicht-bestaetigt`, das Protokoll insgesamt auf **nicht bestaetigt** — die Oberflaeche
-wuerde die freundlichere Variante zeigen. Das ist derselbe Fehler, den der PM heute frueh
-in seiner eigenen Tabelle korrigiert hat, eine Etage tiefer.
+**Das erste Beispiel des PM (`kapitulation`) war falsch** — der Master hat es
+nachgerechnet, der PM hat es unabhaengig ueber alle 26 Protokolle nachgeprueft und
+bestaetigt. Bei `kapitulation-2026-08-26` (t = 1,51 / 1,19 / 2,14) IST die staerkste
+Variante die, die `bestesUrteil` traegt; Anzeige und Protokoll sagen dasselbe.
+
+**Betroffen ist genau ein Protokoll von 26 — und in der strengeren Richtung:**
+`winkelbestaetigt-2026-08-25`, t = −0,96 / −1,34 / −1,54 / −1,58 / −2,11. Alle t sind
+negativ, „staerkstes t“ heisst dort „am wenigsten negativ“, und das kippt die Auswahl:
+die **Anzeige sagt „nicht entscheidbar“, wo das Protokoll „nicht bestaetigt“ sagt** —
+sie behauptet Unwissen, wo gemessen wurde. Kein einziges der zwoelf frischen Protokolle
+ist betroffen.
+
+**Der tragende Grund ist deshalb ein anderer als der zuerst genannte** (Fund des
+Masters, vom PM in `scoreboard.js` nachgesehen): `scoreboard.js` waehlt bereits ueber
+`bestesUrteil` + `bestesErgebnis()`, `depot.js` ueber das staerkste t. **Zwei Stellen
+derselben App zeigen fuer dasselbe Protokoll verschiedene Urteile** — unabhaengig davon,
+welche Auswahl guenstiger aussieht.
 **Regel: `bestesUrteil` gewinnt.** Wird ausserdem eine Zahl je Signal gezeigt, muss sie zu
 der Variante gehoeren, die das Urteil traegt — nicht zur bestaussehenden.
-Reine Anzeige. **Erst wenn der Rechenlauf durch ist**, und **vor** der Auslieferung, damit
-die zwoelf frischen Protokolle nicht mit dieser Auswahl rausgehen.
+Reine Anzeige — der Master hat die vier Lesestellen von `PROTOKOLL_KANTE` einzeln
+nachgesehen, keine gatet etwas.
+**Zur Reihenfolge: Wilhelms „vor der Auslieferung“ stand auf einer Begruendung, die sich
+als falsch erwiesen hat** (die zwoelf frischen Protokolle sind gar nicht betroffen, und
+der Fehler steckt seit je in `v8.33.2`). Der Master schlaegt vor: erst die Wache bauen
+lassen, dann (1a) — sonst ist der Baum sofort wieder schmutzig und die Auslieferung
+wartet erneut. **Liegt bei Wilhelm; bis zu seiner Antwort gilt seine urspruengliche
+Reihenfolge.**
 
 **(2b) FREI — Warnhinweis vor `kapitulation`.** Die Regel steht seit heute auf
 **nicht bestaetigt** (gemessen, traegt nicht) — schaerfer als alles, was hier bisher an
@@ -178,12 +197,22 @@ und die `window.confirm`-Gatter bleiben unberuehrt. Text aus dem Protokoll, nie 
 Sinnvollerweise zusammen mit (1a) — dieselbe Stelle, und der Hinweis soll das richtige
 Urteil zeigen.
 
-**(3a) FREI — Liste der betroffenen Darstellungen fuer Stufe F (2).** Wilhelm entscheidet
+**(3a) ZUGETEILT an Desingner (Wilhelm 26.08., Abruf) — Liste der betroffenen
+Darstellungen fuer Stufe F (2).** Wilhelm entscheidet
 ueber die Zusammenlegung der Chart-Renderer erst, wenn er sieht, **was wegfaellt**.
 Auftrag ist die **Liste, kein Umbau**: je Darstellung eine Zeile in Anwendersprache — wo
 sie vorkommt, was sie kann, was bei einer Zusammenlegung davon verloren ginge, und ob es
 einen Ersatz gibt. Als Dokument unter `studien/`. Stufe F (2) und (3) bleiben bis zu
 seinem Entscheid gesperrt.
+**Der Bestand, vom PM vorab gezaehlt** (damit niemand bei null anfaengt): gezeichnet wird
+ueberall in SVG, in sieben Funktionen — `chart.js drawLines`, `explorer.js drawBig` und
+`drawAktuell`, `strategiechart.js drawStrategieChart` und `drawStrategieIndikator`,
+`wendeui.js zeichneWendeChart`, `backtestui.js drawEquity`. Der Struktur-Plan nennt als
+Kern `explorer.js drawBig` gegen `chart.js`; die anderen fuenf gehoeren in die Liste,
+damit der Entscheid nicht spaeter an einer uebersehenen Darstellung haengt.
+**Kein Code, keine Empfehlung fuer eine Variante** — nur die Aufstellung, damit Wilhelm
+sieht, was ein Zusammenlegen kostet. Kollidiert mit niemandem: der Master sitzt in
+`depot.js` und auf dem Rechenlauf.
 
 ### Wartet auf Wilhelm (nicht anfangen)
 
@@ -268,6 +297,10 @@ frischen Protokolle gleich mit raus, was das Paket besser macht, nicht schlechte
 *Wer welche Dateien belegt. Trag dich ein, bevor du anfängst; nimm dich raus, wenn du
 fertig bist.*
 
+- **Desingner** — hat **(3a) die Liste der Chart-Darstellungen** fuer Stufe F (2)
+  (26.08., vom PM zugeteilt auf Wilhelms Vorschlag). **Kein Code** — ein Dokument unter
+  `studien/`. Belegt keine Quelldatei, liest nur.
+
 - **App-Codebase Master** — hat die **Neumessung aller zwölf Strategien** genommen
   (26.08., vom PM zugeteilt). Langer Rechenlauf, KEIN Umbau — es wird kein Quelltext
   angefasst. Gemessen wird auf den bezeichneten Archiven (E:, 2.887 Werte 60m / 2.966
@@ -307,6 +340,14 @@ steht, ist nach zwei Stunden verloren.*
   zusammenlegen, nicht (c) streichen. **Der Entscheid selbst steht damit weiter aus**;
   Stufe F (2) und (3) bleiben gesperrt.
   Umsetzung aller drei siehe „Neu freigegeben“ oben.
+  **Nachtrag, gleiche Sitzung:** (3a) geht an den **Desingner** — Wilhelms Vorschlag, vom
+  PM uebernommen: die Frage „was ginge verloren“ ist eine Gestaltungsfrage, und die
+  Sitzung kollidiert mit niemandem.
+  **Ebenfalls Nachtrag:** das erste Beispiel des PM zu (1a) war falsch (`kapitulation` ist
+  nicht betroffen). Vom Master gefunden, vom PM ueber alle 26 Protokolle nachgeprueft.
+  Der Fehler bleibt echt, betrifft aber genau `winkelbestaetigt-2026-08-25`. **Damit steht
+  Wilhelms Reihenfolge „vor der Auslieferung“ auf einer hinfaelligen Begruendung und
+  wurde ihm erneut vorgelegt.**
 
 - **26.08.2026, 09:00 (drei Antworten auf den 08:10-Bericht) — „1a 2a 3a los!"**
   (1) *Release jetzt oder nach den Reparaturen bündeln?* → **(a) sofort ausliefern.**
