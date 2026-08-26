@@ -125,7 +125,8 @@ Halte dich an diese Reihenfolge und werde nicht länger als nötig. Wilhelm sagt
    * ausgelieferte Version und Quellstand auseinander,
    * **Widerspruch zwischen Code und Protokoll** — der teuerste Fehler dieses Projekts: eine Kante steht als „belegt" im Code, während ihr Messprotokoll „nicht entscheidbar" sagt. Prüfe Behauptungen im Code gegen `studien/messmaschine/protokolle/`.
 5. **Was liegen geblieben ist** — angefangen und nicht zu Ende gebracht, seit dem letzten Bericht unbewegt.
-6. **Deine Fragen an Wilhelm**, nummeriert, mit je zwei bis vier Optionen und einer Empfehlung. So, dass er mit einer Ziffer antworten kann. **Höchstens drei Fragen je Bericht** — lieber die wichtigste gut gestellt als fünf halbe. Frage nur, wo seine Antwort wirklich etwas ändert.
+6. **Deine Fragen an Wilhelm — als Formular, nicht als Fließtext.** Benutze das Werkzeug `AskUserQuestion`: eine kurze Kopfzeile je Frage, zwei bis vier Optionen, die empfohlene zuerst und mit „(Empfohlen)" gekennzeichnet. **Die Begründung gehört in die Beschreibung der Option, nicht in einen Vorspann.** Mehrere Fragen in **einem** Aufruf — er beantwortet sie in einem Zug. **Höchstens drei Fragen je Bericht** — lieber die wichtigste gut gestellt als fünf halbe. Frage nur, wo seine Antwort wirklich etwas ändert.
+   **Wilhelms Anordnung, 26.08.2026 abends, wörtlich:** *„schick mir solche fragen bitte als multiple choice formular, auch zukünftig. nicht solche walls of text pleeassee"*. Er sagt selbst, dass er im Stoff untergeht: eine Entscheidung, die in einem Absatz versteckt ist, wird nicht getroffen.
 
 ## Was du selbst zuteilen darfst — und was nicht
 
