@@ -251,7 +251,7 @@ beiden — **jeder Zweig ist erreichbar.**
 ## 7. Gatter — jedes einzeln bindend, alle vorab
 
 1. **`ausstieg`-Schalter, und zwar an allen drei Stellen.** Zweig N verlangt Ausstieg zur
-   Folge-Eröffnung. Der Schalter ist am 26.08. freigegeben (Tafel, Wilhelms Antwort 2a).
+   Folge-Eröffnung. Der Schalter ist am 26.08. freigegeben (Tafel, Antwortsatz vom 26.08. **09:00**, Frage 2 — nicht zu verwechseln mit dem Abruf-Satz 1a/2b/3a vom selben Tag).
    Er muss **Signal, Kontrolltopf und Placebo zugleich** umstellen; nur den Signalpfad
    umzustellen heißt, zwei verschiedene Ausführungen zu vergleichen und den Unterschied
    Effekt zu nennen — der **C7**-Fehler, der hier schon aus t 5,96 ein t −0,75 gemacht hat.
@@ -291,7 +291,7 @@ beiden — **jeder Zweig ist erreichbar.**
 8. **Kostenzahl als unbelegt kennzeichnen.** 0,04 Pp beschreibt die *notierte Spanne*.
    Dieser Handel füllt in der **Schluss- und der Eröffnungsauktion**. Was eine
    Auktionsfüllung wirklich kostet, ist hier nie gemessen worden; die Messung ist am
-   26.08. freigegeben (Tafel, Antwort 3a). Solange sie offen ist, steht unter jeder
+   26.08. freigegeben (Tafel, Antwortsatz vom 26.08. **09:00**, Frage 3). Solange sie offen ist, steht unter jeder
    Netto-Aussage dieses Entwurfs ein Vorbehalt.
 
 ## 8. Die Testzahl der Familie — offen ausgewiesen

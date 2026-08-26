@@ -125,8 +125,11 @@ Auswahlen sind unabhängig) — das ist ein Argument, keine Erlaubnis.
 
 ## Auftragsvorschläge
 
-*Beide Vorschläge des ersten Laufs sind am 26.08. 09:00 von Wilhelm freigegeben (Antworten
-2a und 3a) und stehen auf der Tafel unter „Aufträge". Hier bleibt nur der Verweis:*
+*Beide Vorschläge des ersten Laufs sind am 26.08. um **09:00** von Wilhelm freigegeben
+(Antwortsatz „1a 2a 3a", Fragen 2 und 3) und stehen auf der Tafel unter „Aufträge".
+Nicht zu verwechseln mit dem Abruf-Antwortsatz „1a 2b 3a" vom selben Tag — der betrifft
+Oberfläche, `kapitulation`-Warnhinweis und Stufe F (2) und berührt diese Entwürfe nicht.
+Hier bleibt nur der Verweis:*
 
 - **A. `ausstieg`-Schalter in der Messmaschine** — freigegeben, auf eigenem Zweig, weil die
   laufende Neumessung dieselbe Datei liest. **Vorbedingung für beide Entwürfe.**
