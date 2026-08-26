@@ -134,4 +134,55 @@ Schreibt nur in diesen Ordner. Überschreibt nichts.
 
 ---
 
+## 9. Nachtrag 27.08. ~01:2x — PM-Zustimmung und zwei Festlegungen VOR dem Lauf
+
+**Sperre 3 ist gefallen:** Der PM hat die Vorregistrierung gelesen und zustimmend
+beantwortet (Nachricht ~01:15). Seine dritte Anmerkung verlangt eine Festlegung, sie
+kommt hiermit:
+
+**a) Der Kontrolltopf ENTHÄLT die gewählten stärksten 10 % — absichtlich, unverändert
+zur Eichung.** Gründe: (1) Der Auftrag verbietet Neues; die Eichung, das überlappende
+Protokoll und das laufende virtuelle Buch messen alle gegen den Alle-Werte-Topf — eine
+Referenz, die den Maßstab wechselt, wäre mit nichts vergleichbar. (2) Die Dämpfung ist
+**deterministisch und bekannt**: enthält der Topf den Anteil a der Gewählten, gilt
+algebraisch Überschuss_gegen_Rest = Überschuss_gegen_Alle / (1 − a); bei a ≈ 0,10 ist
+das Faktor ≈ 1,11 — konservativ (dämpft zur Null, erzeugt nichts). **Das unterscheidet
+diese Bauform von A6**, wo die gepaarte Kontrolle den Effekt fast vollständig absorbierte
+(Faktor 45). (3) Die Rest-Fassung wird **nachrichtlich mitgedruckt** — als reine
+Umrechnung über die je Periode gemessenen a_P, nicht als zweiter Test; testsGesamt
+bleibt 1.
+
+**b) Reichweite von W1, damit es später niemand falsch liest:** Die Kunstinjektion
+trifft die **bereits gewählten** Zehntel-Mitglieder. W1 prüft also die
+**Überschuss-Arithmetik** (findet die Maschine einen eingebauten Effekt der Gewählten
+wieder?), **nicht die Auswahl** (ob das Merkmal die Richtigen wählt). Dieser Satz
+wandert wörtlich ins Ergebnis. Operationalisierung, vorab: je Periode wird für gewählte
+Werte die Folgerendite ersetzt durch (1+folge)·1,02 − 1; der **Sollwert wird exakt aus
+den injizierten Beträgen berechnet** (einschließlich der Topf-Verwässerung um a_P und
+des multiplikativen Anteils) und vor dem Vergleich gedruckt; Band ±30 %. W2-Regel
+operationalisiert: |Placebo-Mittel| < (1,960 + 0,8416) · se_Placebo.
+
+**c) Kettenabdruck (§2) präzisiert:** Der 5-%-Abgleich der B10/g-Kette läuft auf der
+**Bestätigungshälfte** dieses Laufs gegen se_NW = 1,1293 Pp aus dem abgelegten
+überlappenden Protokoll (Var 0) — die Hälfte, auf der g = 1,543 gemessen wurde; die
+Gesamthistorie hat eine andere Basis und wäre kein fairer Abdruck.
+
+**Sperrenstand nach diesem Nachtrag:** **Sperre 1 steht** (Wilhelms Datenfund-Vorrang).
+Der PM hatte zunächst vermutet, sie binde archiv1d technisch nicht, und hat diese
+Prämisse selbst zurückgezogen (~01:25): der Tafelsatz „Tagesarchiv nicht betroffen"
+galt #96 (flache 20:00-Kerze), **nicht** den Phantom-Dochten — ob die auch auf 1d
+sitzen, misst die QS gerade (markt-dashboard-ab). **Bis zu Wilhelms Wort gilt die
+Sperre.** Sachlich dazu, für die Vorlage an Wilhelm: **diese Messung liest
+ausschließlich Schlusskurse** (Merkmal aus Schlüssen t−252/t−21, Folgerendite
+Schluss→Schluss; kein Stop, kein Hoch/Tief im Rechenweg) — Phantom-DOCHTE könnten sie
+also selbst dann nicht verzerren, wenn die QS sie auf 1d findet; relevant für diese
+Messung wäre nur ein Schlusskurs-Defekt (QS-Zeitbefund: Schlüsse nach einem Tag <1 %
+Änderungen). Das ist ein Fakt zur Entscheidung, keine Aufhebung — entscheiden tut
+Wilhelm. Sperre 2 nur fürs Hürden-Urteil. Sperre 3 gefallen. Sperre 4 Wachhund
+(die verwaiste 1d-Sperre — PID 52300 tot — bewertet der Wachhund, nicht ich).
+Das Werkzeug (§8) wird jetzt gebaut, damit der Lauf sofort starten kann, wenn Wilhelm
+Sperre 1 löst.
+
+---
+
 *Simulation mit virtuellem Kapital. Keine Anlageberatung.*
