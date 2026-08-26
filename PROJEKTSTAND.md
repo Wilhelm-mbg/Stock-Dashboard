@@ -997,7 +997,7 @@ verrauschter Punktschätzer im Nenner, quadriert. Halbiert sich der geschätzte 
 | rsi2seit V0 | 1.197 | 30.354 | 25,4 |
 | t3-stundendrift V1 | 9.680 | 131.888 | 13,6 |
 
-**Median über alle 23 Varianten: Faktor 2,4.** Die Hälfte davon passiert bei **identischer
+~~Median über alle 23 Varianten: Faktor 2,4.~~ **ZURÜCKGEZOGEN — konfundiert mit dem Universumswechsel.** Die Hälfte davon passiert bei **identischer
 Tageszahl** — ohne einen einzigen neuen Handelstag.
 
 *Ehrliche Einschränkung der QS:* Gleiche Tageszahl und trotzdem andere Zahl heißt, dass
@@ -1037,6 +1037,144 @@ Schätzer geteilt wird'."**
 — er ist neu und ungeprüft. Rechenwege liegen unter
 `Markt-Dashboard-Daten/qs-audit-2026-08-26/werkzeuge/` (`aussicht-verlauf.js`,
 `aussicht-streuung.js`, beide nur lesend).
+
+---
+
+### ⚠ ZURÜCKGEZOGEN: „~~Median-Faktor 2,4, im Extrem 72~~ (ZURÜCKGEZOGEN, siehe oben)" — die Zahlen sind konfundiert
+
+**Diese beiden Zahlen stehen in `8e0ef59` und in der Begründung zu Wilhelms Entscheidung
+in `ae80caa`. Die QS hat sie selbst zurückgezogen.** Sie hatte nach Maschinenversion
+gruppiert, **aber nicht nach Universum** — und zwischen dem 23. und 24.08. kam das große
+Archiv dazu:
+
+```
+rsi2seit-2026-08-23    191 Werte
+rsi2seit-2026-08-24  2.885 Werte
+```
+
+**Ein Universumswechsel um Faktor 15, verbucht als „acht zusätzliche Handelstage".** Sauber
+nachgerechnet — gleiche Strategie, gleiche Variante, gleiche Maschine, **gleiches
+Universum** — ergibt: **null vergleichbare Gruppen.** Es gibt in der gesamten
+Protokollhistorie keinen einzigen sauberen Vergleich.
+
+**Wilhelms Entscheidung hält trotzdem — auf anderem Fundament:**
+
+| trägt weiter | trägt nicht mehr |
+|---|---|
+| `tage80` skaliert mit **1/Effekt²** — Arithmetik, keine Messung | ~~Median-Faktor 2,4~~ |
+| `delta80` ist **Effektgröße gegen Effektgröße**, kein Schätzer im Nenner | ~~im Extrem 72~~ |
+| einzige saubere Beobachtung: **ein** Handelstag bewegte die Aussicht um bis zu **59 %** (kapitulation V1, 2.330 → 3.704) | ~~„feiner als die Reproduzierbarkeit"~~ — jetzt **unbelegt, nicht widerlegt** |
+
+**„delta80 ist die robustere Größe, weil sie nicht durch einen verrauschten Schätzer
+geteilt wird" ist strukturell und braucht keine Messung.** Die Entscheidung steht.
+
+**Regel für alle, aus diesem Vorfall:** *Eine Kennzahl über die Zeit zu vergleichen setzt
+voraus, dass sich dazwischen **nur die Zeit** geändert hat.* Hier haben sich Universum
+(191 → 2.874), Maschine (1.0.0 → 1.4.0) und Rechenvorschrift (#86, #91) geändert — **drei
+Wechsel in drei Tagen. Der Protokollbestand ist als Zeitreihe über sich selbst nicht
+auswertbar.**
+
+---
+
+### 🔴 A-FUND: `tage80` zählt SIGNALTAGE — die Eintrittskarte vergleicht HANDELSTAGE
+
+**Ein Einheitenfehler mitten in Wilhelms Entscheidung — dieselbe Familie wie der
+delta80-Fehler des PM vom Mittag.**
+
+Bei `monatsende-kauf` stehen **17 Signaltage** in **365 Bestätigungs-Handelstagen** — rund
+21,5 Handelstage je Signaltag. **Die ausgewiesenen 187 Signaltage sind ≈ 4.016
+Handelstage ≈ 16 Jahre.**
+
+Gegen die alte Eintrittskarte („unter 1.000 **Handelstagen**") liest sich die rohe 187 als
+bequemes Ja. **Richtig umgerechnet ist es ein Nein um Faktor vier.**
+
+**Damit war Wilhelms Umstellung auf `delta80` richtiger, als irgendwer wusste** — sie
+umgeht das Einheitenproblem vollständig, weil sie Effektgrößen vergleicht statt Zeiten.
+
+Dazu: `scoreboard.js:196` markiert nur bei `bestesUrteil === 'nicht-entscheidbar'` als
+„hinter der Wand" — ein `nicht-messbar`-Protokoll zeigt die 187 **unkommentiert in der
+oberen Tabelle**. Die Schranke `>= 30` verhindert die Zahl bei nicht-messbaren Läufen;
+**die Einheit stimmt auch bei den anderen elf nicht.**
+
+### 🔴 A-FUND: ein sechstes Urteil erzeugt ein FALSCHES Etikett
+
+`messmaschine.js:1235` vergibt `bestaetigt-aber-nullpunkt-verschoben`. Das Array in `:1305`
+kennt nur fünf Werte. Ein Lauf, dessen einzige Variante so ausfällt, läuft über
+`|| 'nicht-messbar'`. **Eine bestätigte Kante würde als „nicht messbar" gemeldet.**
+
+Schärfer als #92: dort wird ein Urteil **verdeckt**, hier ein **falsches erzeugt**.
+Einzeiler, derzeit 0 Vorkommen — **#92 ist ohnehin offen, gehört zusammen erledigt.**
+
+*Nebenbei: Die Rangfolge ist keine konsistente Ordnung. `winkelbestaetigt-2026-08-25` hat
+4× nicht-entscheidbar + 1× nicht-bestätigt und meldet das **härtere** — während `widerlegt`
+hinten steht und dort das mildere gewänne.*
+
+### 🔴 DATENFUND A: der 25.08. ist womöglich ganz neu zu holen
+
+In 2.839 von 2.885 Reihen steht `2026-08-25T20:00Z`, Umsatz 0, Kurs = Schluss der
+19:30-Kerze. **Live gegengeprüft: die Quelle liefert für den 25.08. keine 20:00-Kerze
+mehr.** Da `zusammenfuehren()` nur nach Zeitstempel vereinigt und **nie löscht**, bleibt
+sie für immer stehen.
+
+**Und schwerer:** Die archivierte **19:30**-Kerze von AAPL trägt v = 2.851.594 /
+c = 309,8999 — die Quelle heute v = 2.846.819 / c = 309,8299. **Auch die 19:30 wurde
+unfertig eingefroren.** Gilt das allgemein, ist nicht eine Kerze zu löschen, sondern
+**der ganze 25.08. neu zu holen.** *Ungeprüft — ein Abrufvergleich über 20 Symbole klärt es.*
+
+### 🔴 DATENFUND B: Phantom-Dochte an sieben US-Halbtagen
+
+`AAPL 2025-07-03, 17:00, Umsatz 0, Tief 201,25` — gegen ein Sitzungstief von **211,81**.
+**Ein Docht von −5,8 % ohne einen einzigen gehandelten Anteil**, live reproduziert.
+
+Betroffen: 2023-11-24 · 2024-07-03 · 2024-11-29 · 2024-12-24 · 2025-07-03 · 2025-11-28 ·
+2025-12-24.
+
+**Jede Messung, die Hoch/Tief benutzt — Ausbrüche, ATR, Stopps, Kanäle, ORB — bekommt an
+diesen Tagen im ganzen Querschnitt falsche Extremwerte.** Die Sekunden-Sperre kann das
+nicht abfangen.
+
+---
+
+### Was die acht Skeptiker an den QS-Funden korrigiert haben
+
+| Fund | Korrektur |
+|---|---|
+| „#96 trifft 3.409" | **3.440** archivweit. Und: die **implementierte** Regel trifft **0** — richtig ist „das **vorgeschlagene** Prädikat trifft 3.440" |
+| „Die Sperre greift ins Leere" | **„Sie leckt zu ~2,6 %."** 0 von 21,3 Mio mit Sekunde ≠ 0 ist genau das, was ein **arbeitender** Filter hinterlässt. *„Abwesenheit als Beleg gegen den Mechanismus, der die Abwesenheit erzeugt."* |
+| **„Der App-Store ist sauber"** | **Falsch — Werkzeugfehler.** Store-Zeilen haben **5** Felder, Archiv-Zeilen 6; der Test prüfte `k[5]` → immer `undefined` → **konnte nie feuern.** Richtig: **1.170 Stempel im Store** |
+| „7 von 1.603" (1m) | **Auf wanderndem Grund erhoben** — `_laeuft.json` war aktiv |
+| Gleichzeitigkeits-Kriterium | **hinreichend, nicht notwendig** — ließe die 151 krummen Stempel durch. Bessere Regel: (i) krumme Minute, (ii) Zeitstempel, den es an **keinem anderen Handelstag** gibt |
+| „etf-Ordner still ausgeschlossen" | **kein Fund** — `kapitulation.js:80` liest ihn gezielt, „ETFs sind Maßstab, nicht Messobjekt" |
+| „5 von 25 ist veraltet" | **war nie ein gültiger Stand** — Zähler aus dem 35er-Satz, Nenner aus einem gedachten 25er |
+
+**Unverändert bestätigt:** Krypto-Beimischung (jede Zahl exakt reproduziert) · Aussicht
+trotz nicht-messbar · zwei veraltete Tafelangaben · drei Zählfehler.
+
+**Drei Verschärfungen dazu:**
+- **Die 16 Aktien-Kostenrunden sind EIN Marktmoment** — 13:31:52 bis 13:32:26 UTC,
+  **34 Sekunden**, zwei Minuten nach Eröffnung, quer über 15 Megacaps. Keine 16 Ziehungen
+  über „Handelskosten"; der SE misst Querschnittsstreuung. **Ohne die eine ARM-Runde sind
+  es 0,0959 % — unter der Annahme.**
+- **`diagnose.js` Z. 149–160 aggregiert ohne Krypto-Filter**, während `kosten.js:363`
+  filtert. Zwei Stellen, die sich widersprechen.
+- **„sieben" steht noch an drei weiteren Stellen**, die falsche `:1214` ebenfalls.
+
+### Das Muster — und das Gegenmittel
+
+**„Der Test misst nicht, was er zu messen scheint."** Vier Typen: Prädikat aus dem falschen
+Datenformat · Grundmenge ≠ Grundmenge des Werkzeugs · Abwesenheit als Beleg gegen den
+Mechanismus, der sie erzeugt · Zeilennummern als Referenz.
+
+**Der Kern: die Prüfwerkzeuge waren selbst nicht gegengeprüft.** Wörtlich der Befund aus
+*„Gegenprüfung rettete ein Studien-Nein"* — dort fand die Werkzeugprüfung vier Fehler
+**vor** der Meldung, hier kam sie danach.
+
+> **Neue Hausregel: Jeder Nullbefund braucht eine Positivkontrolle — den Test einmal dort
+> laufen lassen, wo er feuern MUSS.** Ein Lauf des Store-Prüfers gegen das Archiv hätte den
+> Formatfehler in einer Sekunde gezeigt.
+
+**Alles liegt** unter `Markt-Dashboard-Daten/qs-audit-2026-08-26/gegenpruefung/` — Synthese,
+acht Urteile, 42 Skripte.
 
 ---
 
@@ -1242,7 +1380,7 @@ baust du auf einer Anzeige, die ihre Daten gar nicht bekommt.
 ### ⭐ NEU (Wilhelm 26.08. 20:30, Formular) — die Schranke misst künftig `delta80`, nicht Handelstage
 
 **Der Fund:** `tage80` skaliert mit 1/Effekt² und schwankt über die eigene Messhistorie
-um **Median-Faktor 2,4, im Extrem 72**. Dieselbe Strategie kann heute 224 und morgen 500
+um **~~Median-Faktor 2,4, im Extrem 72~~ (ZURÜCKGEZOGEN, siehe oben)**. Dieselbe Strategie kann heute 224 und morgen 500
 sagen. **Wilhelms 1.000-Tage-Eintrittskarte war damit feiner als die Reproduzierbarkeit
 der Zahl, an der sie misst.**
 
