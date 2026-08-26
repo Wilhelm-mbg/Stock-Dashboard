@@ -85,6 +85,26 @@ function ordnerVon(intervallOderName) {
  * also nicht der Notnagel, sondern die eigentliche Sicherung. */
 var VERWAIST_STUNDEN = 6;
 function sperrePfad(ordner) { return path.join(ordner, '_laeuft.json'); }
+
+/* LEBT DER SCHREIBER NOCH? Die Frist oben ist eine Uhr, und eine Uhr weiss nichts.
+ * Am 26.08.2026 um 20:00 lagen drei Sperren (1d, 15m, 1m) von Laeufen, die laengst
+ * tot waren - kein einziger node-Prozess lief mehr. Der Waechter haette bis 23:26
+ * "wird gerade geschrieben" gesagt und kein Urteil abgegeben. Das ist dieselbe
+ * Stille wie die, gegen die die Sperre gebaut wurde, nur mit umgekehrtem Vorzeichen.
+ * signal 0 stellt keine Frage an den Prozess, es prueft nur, ob es ihn gibt.
+ *   ESRCH  -> es gibt ihn nicht: die Sperre ist verwaist, egal wie jung sie ist
+ *   EPERM  -> es gibt ihn, er gehoert nur jemand anderem: er lebt
+ * ZWEI FAELLE, IN DENEN DIE PID NICHT GEFRAGT WIRD, und beide sind wichtiger als
+ * die Bequemlichkeit: eine Sperre ohne pid (alte Fassung) und eine von einem
+ * ANDEREN Rechner - ein Archiv kann auf einer Freigabe liegen, und dort ist eine
+ * fremde Prozessnummer eine beliebige Zahl. Dann entscheidet weiter die Frist.
+ * Die Frist bleibt ohnehin: eine wiederverwendete Prozessnummer koennte eine tote
+ * Sperre lebendig aussehen lassen, und die Frist raeumt auch das weg. */
+function prozessLebt(pid) {
+  if (typeof pid !== 'number' || !isFinite(pid) || pid <= 0) return null;
+  try { process.kill(pid, 0); return true; }
+  catch (e) { return e && e.code === 'EPERM'; }
+}
 function sperreLesen(ordner, jetzt) {
   jetzt = jetzt || new Date();
   var p = sperrePfad(ordner);
@@ -96,14 +116,26 @@ function sperreLesen(ordner, jetzt) {
    * kaputte Datei darf die Messung nicht auf Dauer blockieren. */
   if (!isFinite(start)) return { aktiv: false, verwaist: true, alterStunden: null, roh: j };
   var alter = (jetzt.getTime() - start) / 3600000;
+  /* Die Prozessnummer schlaegt die Uhr - aber nur, wenn sie ueberhaupt etwas ueber
+   * diesen Rechner aussagt. Sonst bleibt es bei der Frist. */
+  var vonHier = !j.rechner || j.rechner === os.hostname();
+  var lebt = vonHier ? prozessLebt(j.pid) : null;
+  if (lebt === false) {
+    return { aktiv: false, verwaist: true, alterStunden: alter, start: j.start,
+      was: j.was || null, grundVerwaist: 'Prozess ' + j.pid + ' laeuft nicht mehr' };
+  }
   return { aktiv: alter < VERWAIST_STUNDEN, verwaist: alter >= VERWAIST_STUNDEN,
-    alterStunden: alter, start: j.start, was: j.was || null };
+    alterStunden: alter, start: j.start, was: j.was || null,
+    grundVerwaist: alter >= VERWAIST_STUNDEN ? 'aelter als ' + VERWAIST_STUNDEN + ' Stunden' : null };
 }
 function sperreSetzen(ordner, was) {
   try {
     fs.mkdirSync(ordner, { recursive: true });
+    /* rechner dazu: ohne ihn wuerde eine Sperre von einer Netzfreigabe an der
+     * hiesigen Prozesstabelle gemessen, wo ihre Nummer nichts bedeutet. */
     fs.writeFileSync(sperrePfad(ordner), JSON.stringify(
-      { start: new Date().toISOString(), was: was || null, pid: process.pid }, null, 1));
+      { start: new Date().toISOString(), was: was || null, pid: process.pid,
+        rechner: os.hostname() }, null, 1));
     return true;
   } catch (e) { return false; }   // ohne Sperre laeuft der Abruf trotzdem
 }
@@ -242,6 +274,6 @@ module.exports = {
   fertigeKerze: fertigeKerze, reiheHolen: reiheHolen,
   zusammenfuehren: zusammenfuehren, satz: satz,
   DATEN: DATEN, ordnerVon: ordnerVon,
-  VERWAIST_STUNDEN: VERWAIST_STUNDEN, sperrePfad: sperrePfad,
+  VERWAIST_STUNDEN: VERWAIST_STUNDEN, sperrePfad: sperrePfad, prozessLebt: prozessLebt,
   sperreLesen: sperreLesen, sperreSetzen: sperreSetzen, sperreLoesen: sperreLoesen,
 };

@@ -147,7 +147,15 @@ function pruefe(ordner, opt) {
   var rueckstand = handelstageDazwischen(haeufigster, soll);
   return {
     ok: rueckstand < 2, ordner: ordner, dateien: dateien.length, gelesen: gelesen, unlesbar: unlesbar,
-    verwaisteSperre: sp.verwaist ? (sp.alterStunden == null ? true : Math.round(sp.alterStunden * 10) / 10) : false,
+    /* JA ODER NEIN, nicht "wie alt". Bis zum 26.08.2026 stand hier das Alter in
+     * Stunden - solange eine Sperre erst nach sechs Stunden verwaisen konnte, war
+     * das nie null. Seit sie auch verwaist, wenn ihr Prozess tot ist, kann sie es:
+     * eine gerade gestorbene rundete auf 0,0 - und 0 ist falsy. Der Melder haette
+     * geschwiegen, und archiv-nachladen.js haette sie nicht gezaehlt. Genau die
+     * Sorte Fehler, gegen die dieses Werkzeug gebaut ist. */
+    verwaisteSperre: sp.verwaist === true,
+    verwaistStunden: sp.verwaist && sp.alterStunden != null ? Math.round(sp.alterStunden * 10) / 10 : null,
+    verwaistWarum: sp.verwaist ? (sp.grundVerwaist || null) : null,
     juengsterTagHaeufig: haeufigster, juengsterTagSpaetester: spaetester,
     /* "Auf Stand" heisst nicht "genau am Solltag", sondern "nicht dahinter". Sonst
      * meldet ein Archiv, das den heutigen (noch laufenden) Tag schon enthaelt, 0 % -
@@ -207,8 +215,12 @@ function textZu(b) {
   }
   /* Eine liegengebliebene Sperre ist selbst ein Befund: da ist ein Lauf gestorben. */
   if (b.verwaisteSperre) z += '\n  VERWAISTE SPERRE: ein Nachladelauf hat sie vor ' +
-    (b.verwaisteSperre === true ? 'unbekannter Zeit' : b.verwaisteSperre + ' h') +
-    ' gesetzt und nie aufgeraeumt - er ist vermutlich abgestuerzt. Der Stand oben gilt trotzdem.';
+    (b.verwaistStunden == null ? 'unbekannter Zeit' : b.verwaistStunden + ' h') +
+    ' gesetzt und nie aufgeraeumt' +
+    /* Steht der Grund dabei, ist es keine Vermutung mehr: dann wurde nachgesehen,
+     * ob es den Schreiber ueberhaupt noch gibt. */
+    (b.verwaistWarum ? ' (' + b.verwaistWarum + ')' : ' - er ist vermutlich abgestuerzt') +
+    '. Der Stand oben gilt trotzdem.';
   return z;
 }
 

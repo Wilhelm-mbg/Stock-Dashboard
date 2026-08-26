@@ -9392,6 +9392,56 @@ console.log('\nWachhund: steht das Kursarchiv still?');
   ok(W.pruefe(tmpS, { jetzt: JETZT }).ok === true && !W.pruefe(tmpS, { jetzt: JETZT }).verwaisteSperre,
      'Nach dem Loesen ist alles wie vorher');
 
+  /* ---- DIE FRIST IST EINE UHR, UND EINE UHR WEISS NICHTS (26.08.2026 abends) ----
+   * Um 20:00 lagen drei Sperren - 1d, 15m, 1m -, gesetzt vor 1,2 bis 2,7 Stunden.
+   * Kein einziger node-Prozess lief mehr; alle drei Laeufe waren tot. Der Wachhund
+   * haette bis 23:26 "wird gerade geschrieben" gesagt und kein Urteil abgegeben,
+   * waehrend die Intraday-Archive halbfertig dalagen (15m bei 233 von 432 Werten).
+   * Das ist dieselbe Stille, gegen die die Sperre gebaut wurde, nur andersherum.
+   * Sie fragt seither nach, ob es den Schreiber ueberhaupt noch gibt. */
+  var Kq = require(__dirname + '/kerzenquelle.js');
+  /* Eine Prozessnummer, die sicher tot ist: ein Kind starten und sterben lassen. */
+  var totePid = require('child_process').spawnSync(process.execPath, ['-e', '0']).pid;
+  ok(Kq.prozessLebt(process.pid) === true,
+     'Der eigene Prozess lebt - ohne diese Gegenprobe misst der Rest hier nichts');
+  ok(Kq.prozessLebt(totePid) === false,
+     'und ein beendeter ist tot', totePid);
+  ok(Kq.prozessLebt(undefined) === null && Kq.prozessLebt(0) === null,
+     'Ohne Prozessnummer bleibt die Antwort offen - eine alte Sperrdatei hat keine');
+
+  /* Der Fall von heute Abend: FRISCHE Sperre, toter Schreiber. */
+  fs.writeFileSync(pathT.join(tmpS, '_laeuft.json'), JSON.stringify(
+    { start: new Date().toISOString(), was: 'gestorben', pid: totePid, rechner: osT.hostname() }));
+  var bTot = W.pruefe(tmpS, { jetzt: new Date() });
+  ok(bTot.gesperrt !== true && bTot.ok === true,
+     'Eine frische Sperre eines TOTEN Laufs blockiert das Urteil nicht - die Frist haette sechs Stunden geschwiegen');
+  ok(bTot.verwaisteSperre === true && /laeuft nicht mehr/.test(W.textZu(bTot)),
+     'und der Wachhund sagt, warum er es weiss - nachgesehen, nicht vermutet');
+  /* Beim Bauen aufgelaufen: das Feld trug das ALTER in Stunden, und eine gerade
+   * gestorbene Sperre rundet auf 0,0. Der Melder haette geschwiegen und der
+   * naechtliche Nachladelauf sie nicht gezaehlt - eine Null, die "nein" bedeutet. */
+  ok(bTot.verwaistStunden === 0,
+     'Sie ist keine Sekunde alt - und wird trotzdem gemeldet', bTot.verwaistStunden);
+
+  /* Die Gegenrichtung, und sie ist die gefaehrlichere: ein LEBENDER Lauf darf nie
+   * fuer tot erklaert werden. Dann liefe eine Messung auf wanderndem Grund. */
+  fs.writeFileSync(pathT.join(tmpS, '_laeuft.json'), JSON.stringify(
+    { start: new Date().toISOString(), was: 'laeuft wirklich', pid: process.pid, rechner: osT.hostname() }));
+  ok(W.pruefe(tmpS, { jetzt: new Date() }).gesperrt === true,
+     'Ein lebender Schreiber sperrt weiter - das ist die Richtung, die wehtut');
+
+  /* Eine Sperre von einem ANDEREN Rechner wird nicht an der hiesigen Prozesstabelle
+   * gemessen: dort ist ihre Nummer eine beliebige Zahl. Dann entscheidet die Frist. */
+  fs.writeFileSync(pathT.join(tmpS, '_laeuft.json'), JSON.stringify(
+    { start: new Date().toISOString(), was: 'fremd', pid: totePid, rechner: 'ein-anderer-rechner' }));
+  ok(W.pruefe(tmpS, { jetzt: new Date() }).gesperrt === true,
+     'Eine fremde Prozessnummer wird nicht befragt - sonst raeumte ein Rechner die Sperre des anderen weg');
+  fs.writeFileSync(pathT.join(tmpS, '_laeuft.json'), JSON.stringify(
+    { start: new Date(Date.now() - 7 * 3600000).toISOString(), pid: totePid, rechner: 'ein-anderer-rechner' }));
+  ok(W.pruefe(tmpS, { jetzt: new Date() }).gesperrt !== true,
+     'aber die Frist greift auch dort - sonst blockierte eine fremde Sperre fuer immer');
+  W.sperreLoesen(tmpS);
+
   /* ---- Nie auf 100 aufrunden, wenn es nicht 100 ist (26.08.2026) ----
    * Der Wachhund meldete "2.965 von 2.965, 100 % auf Stand", waehrend ZEHN Reihen
    * zurueckhingen: 99,6627 % wurde von Math.round zu 100. Gezaehlt wurde richtig, die
