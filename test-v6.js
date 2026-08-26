@@ -4242,6 +4242,52 @@ console.log('\n44) Messmaschine, Scoreboard und Strategie-Eingabe (23.08.2026)')
      'Hinter die Wand wandert NUR "nicht entscheidbar" - ein entschiedenes Urteil ist keine Messgeraet-Frage (1b)');
   ok(/Nicht entscheidbar mit diesen Daten/.test(sb9),
      'Der Abschnitt traegt Wilhelms Wortlaut von der Tafel (1b)');
+
+  /* ---- delta80 STEHT IN DER ANZEIGE (Wilhelm 26.08. 20:30) ----
+   * Sein Entscheid: entschieden wird kuenftig an delta80, nicht an Handelstagen -
+   * tage80 skaliert mit 1/Effekt^2 und schwankt ueber die eigene Messhistorie.
+   * Die Zahl stand bis dahin in KEINER Anzeige; man konnte sie nicht einmal
+   * ansehen. Sie steht jetzt da. Die TRENNUNG laeuft weiter ueber die Signaltage,
+   * bis entschieden ist, gegen welche Produkthuerde getrennt wird - das ist hier
+   * ausdruecklich mitgeprueft, damit niemand die halbe Umstellung fuer die ganze
+   * haelt. */
+  var d80Blk = sb9.slice(sb9.indexOf('function delta80Variante'), sb9.indexOf('function minAussicht'));
+  ok(d80Blk.length > 200, 'Es gibt eine Leseroutine fuer delta80');
+  var D80 = new Function(d80Blk + '; return { min: minDelta80 };')();
+
+  /* Die Einheit ist die Falle, und sie ist an einem Tag dreimal zugeschnappt:
+   * delta80 steht im Protokoll als BRUCH, tage80 in SIGNALTAGEN, range=730d in
+   * HANDELStagen. Hier wird der Faktor 100 an einer festen Zahl geprueft. */
+  var pMitD80 = { ergebnisse: [{}, {}], urteile: ['nicht-entscheidbar', 'nicht-entscheidbar'],
+    entscheidungen: [{ regel: 'Urteil Variante 0', ergebnis: { delta80: 0.0117 } },
+                     { regel: 'Urteil Variante 1', ergebnis: { delta80: 0.0043 } }] };
+  ok(Math.abs(D80.min(pMitD80) - 0.43) < 1e-9,
+     'delta80 wird als Bruch gelesen und in PROZENTPUNKTE umgerechnet (0,0043 -> 0,43 Pp)', D80.min(pMitD80));
+  ok(D80.min(pMitD80) < 1.17,
+     'und die KLEINSTE Variante gewinnt - sie sagt, wie fein das Geraet im besten Fall war');
+
+  /* Die beiden Gegenproben. Ohne sie misst die Zusicherung oben nichts: eine
+   * Routine, die immer null gibt, waere an der Positivkontrolle gescheitert -
+   * eine, die immer eine Zahl gibt, faellt erst hier auf. */
+  ok(D80.min({ ergebnisse: [{}], urteile: ['nicht-entscheidbar'], entscheidungen: [] }) === null,
+     'Ohne die Kennzahl steht ein Strich, keine erfundene Zahl');
+  ok(D80.min({ ergebnisse: [{}], urteile: ['nicht-messbar'],
+    entscheidungen: [{ regel: 'Urteil Variante 0', ergebnis: { delta80: 0.05 } }] }) === null,
+     'Ein "nicht messbar" gemessener Lauf zeigt seine Zahl NICHT - sie kaeme aus einer Maschinenluecke');
+
+  /* Und sie steht wirklich in der Tabelle, mit Einheit. Eine Prozentpunkt-Zahl
+   * neben einer Tage-Zahl ohne Ansage ist genau die Verwechslung von 17:50. */
+  ok(/delta80Zelle\(p\)/.test(sb9), 'Die Zelle haengt in der Zeile - sonst rechnet sie ins Leere');
+  ok(/delta80 in Prozentpunkten/.test(sb9),
+     'Die Spaltenueberschrift nennt die EINHEIT');
+  ok(/Achtung, zwei Einheiten/.test(sb9),
+     'und der Fusstext sagt ausdruecklich, dass zwei verschiedene Einheiten nebeneinander stehen');
+  ok(/Die Trennung unten läuft noch über die Signaltage/.test(sb9),
+     'Die Anzeige sagt selbst, dass die Umstellung erst zur Haelfte da ist - eine halbe Umstellung darf nicht wie eine ganze aussehen');
+  /* Die Trennzeilen mussten eine Spalte breiter werden. Eine Trennzeile, die zu
+   * kurz spannt, zerreisst die Tabelle - das sieht man nur im Bild, nicht im Text. */
+  ok(/colspan="10"/.test(sb9) && !/colspan="9"/.test(sb9),
+     'Die Trennzeilen spannen ueber alle zehn Spalten');
   ok(/weder gut noch schlecht/.test(sb9) && /bleiben wählbar/.test(sb9),
      'Der Erklaersatz sagt ausdruecklich: keine Abwertung, nichts wird abgeschaltet (1b)');
   /* BERICHTIGT (Baustopp 26.08. 20:40): die erste Fassung dieser Marke verlangte

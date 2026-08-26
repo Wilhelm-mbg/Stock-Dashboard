@@ -193,6 +193,38 @@
     var a = e && e.ergebnis && e.ergebnis.aussicht;
     return a && isFinite(a.tage80) ? a.tage80 : null;
   }
+  /* DELTA80 - der kleinste WAHRE Effekt, den ein Lauf mit 80 % Wahrscheinlichkeit
+   * ueber die Schwelle gebracht haette. Wilhelms Entscheid vom 26.08. 20:30:
+   * entschieden wird kuenftig an DIESER Zahl, nicht an Handelstagen - denn tage80
+   * skaliert mit 1/Effekt(hoch 2) und schwankt ueber die eigene Messhistorie, waehrend
+   * delta80 eine Effektgroesse gegen eine Effektgroesse stellt, ohne Schaetzer im
+   * Nenner.
+   *
+   * ZWEI EINHEITEN-FALLEN, und beide sind an einem Tag schon zugeschnappt:
+   *   1. delta80 steht im Protokoll als BRUCH (0,0117), nicht in Prozentpunkten.
+   *      Mal 100 sind es Pp. aussicht.delta80Pp schreibt die Maschine erst seit
+   *      Kurzem und ist in NULL von 69 vorhandenen Varianten gesetzt - wer sich
+   *      darauf verlaesst, zeigt einen leeren Strich statt einer Zahl.
+   *   2. delta80 sind PROZENTPUNKTE, tage80 sind SIGNALTAGE. Am 26.08. 17:50 wurde
+   *      genau das einmal verwechselt. Deshalb steht die Einheit an jeder Zahl.
+   *
+   * Die KLEINSTE ueber alle Varianten ist die planungsrelevante: sie sagt, wie fein
+   * das Messgeraet im besten Fall war. Ist schon die feinste Variante groeber als die
+   * Kostenhuerde, war der Lauf fuer jede handelbare Kante blind. */
+  function delta80Variante(p, vi) {
+    if (p.urteile && p.urteile[vi] === 'nicht-messbar') return null;
+    var e = (p.entscheidungen || []).filter(function (en) { return en.regel === 'Urteil Variante ' + vi; })[0];
+    var d = e && e.ergebnis && e.ergebnis.delta80;
+    return isFinite(d) && d > 0 ? d * 100 : null;
+  }
+  function minDelta80(p) {
+    var min = null;
+    (p.ergebnisse || []).forEach(function (e, vi) {
+      var d = delta80Variante(p, vi);
+      if (d != null && (min == null || d < min)) min = d;
+    });
+    return min;
+  }
   function minAussicht(p) {
     var min = null;
     (p.ergebnisse || []).forEach(function (e, vi) {
@@ -231,6 +263,20 @@
     return '<td class="num">' + U.nf0.format(min) + '</td>';
   }
 
+  /* Die Zahl, an der Wilhelm entscheiden will - bisher stand sie nirgends in der
+   * Oberflaeche. Ohne sie kann man sie nicht einmal ansehen, geschweige denn
+   * danach entscheiden. Die Einheit steht als Kopfzeile ueber der Spalte und im
+   * Titel jeder Zelle - eine Prozentpunkt-Zahl neben einer Tage-Zahl ohne Ansage
+   * ist genau die Verwechslung, die es schon einmal gab. */
+  function delta80Zelle(p) {
+    var d = minDelta80(p);
+    if (d == null) {
+      return '<td class="num"><span title="Keine Variante dieses Laufs weist einen delta80 aus – entweder ist der Punktschätzer nicht positiv, oder die Messung stammt aus der Zeit vor dieser Kennzahl." style="color:var(--muted);">–</span></td>';
+    }
+    return '<td class="num"><span title="Der kleinste wahre Effekt, den dieser Lauf mit 80 % Wahrscheinlichkeit über die Schwelle gebracht hätte – in Prozentpunkten des Basiswerts. Kleiner ist feiner. Liegt die Zahl über der Kostenhürde des gehandelten Produkts, war der Lauf für jede handelbare Kante von vornherein blind.">' +
+      U.dez(d, 3) + '</span></td>';
+  }
+
   function zeichnen() {
     var el = document.getElementById('scoreboard');
     var zeile = function (i) {
@@ -249,6 +295,7 @@
         '<td class="num">' + t2(b.t) + '</td>' +
         '<td class="num">' + pp(b.mde) + '</td>' +
         '<td class="num">' + (b.tage || 0) + ' / ' + (b.signale || 0) + '</td>' +
+        delta80Zelle(p) +
         aussichtZelle(p) +
         '<td style="color:var(--muted);">' + U.esc(p.gemessenAm.slice(0, 10)) +
           (spOk === false ? ' <span title="Selbstprüfung fehlgeschlagen – der Nullpunkt dieser Messung liegt nicht bei null" style="color:var(--down); font-weight:600;">✖ Nullpunkt</span>'
@@ -270,7 +317,7 @@
       (gegenRichtung(p9) ? gegen : hinterWand(p9) ? wand : oben).push(i);
     });
     var trennzeile = function (titel, satz) {
-      return '<tr><td colspan="9" style="padding:16px 8px 6px; border-top:2px solid var(--grid);">' +
+      return '<tr><td colspan="10" style="padding:16px 8px 6px; border-top:2px solid var(--grid);">' +
         '<b>' + titel + '</b><br>' +
         '<span style="font-weight:400; color:var(--muted); font-size:var(--fs-neben);">' + satz + '</span></td></tr>';
     };
@@ -293,11 +340,12 @@
       '<tr><th>Urteil</th><th>Strategie</th><th style="text-align:right;">Überschuss<br><span style="font-weight:400; color:var(--muted);">Tagesmittel</span></th>' +
       '<th style="text-align:right;">Überschuss<br><span style="font-weight:400; color:var(--muted);">je Signal</span></th>' +
       '<th style="text-align:right;">t</th><th style="text-align:right;">MDE</th><th style="text-align:right;">Tage / Signale</th>' +
+      '<th style="text-align:right;">Feinheit<br><span style="font-weight:400; color:var(--muted);">delta80 in Prozentpunkten</span></th>' +
       '<th style="text-align:right;">Aussicht<br><span style="font-weight:400; color:var(--muted);">Signaltage bis entscheidbar</span></th>' +
       '<th>gemessen</th></tr>' +
       rows + '</table></div>' +
       '<div id="sbDetail" style="margin-top:10px;"></div>' +
-      '<div style="font-size:var(--fs-neben); color:var(--muted); margin-top:6px;">Alle Werte aus der <b>Bestätigungshälfte</b> (zurückgehaltene Tage) in Prozentpunkten. „Tagesmittel" ist die Teststatistik, „je Signal" die handelbare Zahl – beide können verschiedene Vorzeichen haben, dann steht eine Warnung dabei. Zeile anklicken für den vollständigen Entscheidungsweg. ' +
+      '<div style="font-size:var(--fs-neben); color:var(--muted); margin-top:6px;"><b>Feinheit (delta80)</b> ist der kleinste wahre Effekt, den ein Lauf mit 80 % Wahrscheinlichkeit über die Schwelle gebracht hätte – <b>in Prozentpunkten</b>, kleiner ist feiner. Sie ist mit der Kostenhürde des gehandelten Produkts zu vergleichen (gemessen an 15 US-Großwerten 2026: Aktie 0,04 · Schein am Geld 0,05 · CFD 0,10 · Standard-Schein 0,23 Pp je Umlauf). <b>Achtung, zwei Einheiten:</b> die Feinheit zählt Prozentpunkte, die Aussicht daneben zählt Signaltage. <b>Die Signaltage sind zwischen Strategien nicht vergleichbar:</b> wer selten feuert, braucht wenige Signaltage, aber sehr viele Handelstage dafür – gemessen reicht dieser Faktor von 1,0 bis 21,5. Die Feinheit hat dieses Problem nicht, sie ist eine Effektgröße und keine Zählung. <b>Die Trennung unten läuft noch über die Signaltage</b> – die Umstellung auf die Feinheit ist entschieden, aber noch offen, gegen welche Produkthürde getrennt wird.<br>Alle Werte aus der <b>Bestätigungshälfte</b> (zurückgehaltene Tage) in Prozentpunkten. „Tagesmittel" ist die Teststatistik, „je Signal" die handelbare Zahl – beide können verschiedene Vorzeichen haben, dann steht eine Warnung dabei. Zeile anklicken für den vollständigen Entscheidungsweg. ' +
       'Ein <b style="color:var(--down);">✖ Nullpunkt</b> heißt: Die Messung hat ihre eigene Selbstprüfung nicht bestanden – ' +
       'ein Signal ohne jeden Kursbezug hätte null ergeben müssen und tat es nicht. Dann stimmt keine Zahl dieser Zeile. ' +
       'Ein <b style="color:var(--series2);">⟳ alte Maschine</b> heißt: Die Zeile wurde mit einer anderen Fassung der Messmaschine gerechnet als der, die jetzt hier liegt – ' +
