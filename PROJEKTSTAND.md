@@ -1964,6 +1964,26 @@ Gleitkommavergleich ohne fachliche Toleranz.
 > während der Fund die Halbtage meinte."* Eine richtige Zahl, die eine andere Frage
 > beantwortet als die gestellte — diesmal in der Aggregation.
 
+### ⏳ 27.08. ~02:00 — ENTSCHEIDUNG (2) IST ZEITKRITISCH: heute Kosmetik, ab nächster Woche Messhygiene
+
+**Gemessen statt vermutet** (`markt-dashboard-c4`, Commit `9e79a3a`, Nachtrag 12). Die Antwort
+auf „können solche Reihen gewählt UND gehalten werden" ist **zweigeteilt, und beide Hälften
+zählen:**
+
+| | |
+|---|---|
+| **Im Universum?** | **AVB** (Schwanz 5 Tage) und **EQR** (4 Tage) **ja**; die drei Anleihe-ETFs wirft der Wertpapierart-Filter. *LBRDA/LBRDK tragen keinen flachen Schwanz, sondern Sprung-Stempel — andere Fallklasse.* |
+| **Heute realisiert?** | **NEIN.** Die letzte vollständige Phase-0-Periode läuft 02.03.–01.06.2026; der Schwanz (17.–21.08.) liegt **außerhalb jedes Halte- und Merkmalfensters**. In der letzten Periode ranken AVB/EQR mit −21,6 % / −16,0 % auf **Rang 1845 / 1751 von 2.213** bei einer Zehntel-Schwelle von +84,7 %. |
+| **Strukturell?** | **JA.** Sobald das Archiv **~eine Handelswoche** wächst, entsteht die Periode 01.06. → Anfang September, **die die Phantomtage mit eingefrorener Nullrendite durchträgt.** Ein künftiger Fall mit **Übernahme-Run-up** — die typische Konstellation — würde gewählt **und** gehalten. |
+
+**Der PM-Verdacht ist damit bestätigt: falsche Existenz, nicht falsche Rendite**, in der
+Richtung, in der eine Überlebensverzerrung **entsteht** statt aufzufallen. *Nur der Zeitpunkt
+ist noch nicht erreicht — und der Schwanz wächst mit jedem Sammellauf.*
+
+> **⭐ FÜR WILHELMS ENTSCHEIDUNG (2), in einem Satz:** **Das Abmeldedatum-Setzen ist heute
+> Kosmetik und ab nächster Woche Messhygiene** — es ist genau die strukturelle Reparatur des
+> Mechanismus, den die Referenzmessung sonst beim nächsten Archivwachstum einsammelt.
+
 ### 📏 27.08. ~02:05 — AUS EINZELFÄLLEN WIRD EINE REGEL: „Reihe hat aufgehört"
 
 **Die PM-Verbindung hält und ist allgemeiner als vermutet.** Gemessen (QS): **Im Tagesarchiv
