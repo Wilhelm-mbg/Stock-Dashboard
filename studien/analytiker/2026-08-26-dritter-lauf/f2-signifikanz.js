@@ -23,11 +23,21 @@ var statistik = M._intern.statistik, bonferroniSchwelle = M._intern.bonferroniSc
 
 /* ---------- (0) Hochgenaue Referenz: erfc ueber Gamma-Reihen/Kettenbruch ---------- */
 function gammln(a) {
-  var cof = [76.18009172947146, -86.50532032941677, 24.01409824083091, -1.231739572450155, 0.1208650973866179e-2, -0.5395239384953e-5];
+  /* Lanczos-Koeffizienten (Numerical Recipes). Zwei davon stehen hier mit der
+   * letzten Ziffer ANDERS als in der Literatur: -86.50532032941678 statt ...677 und
+   * 2.5066282746310007 statt ...005 (sqrt(2*pi)). Das ist keine Korrektur des Werts,
+   * sondern seine ehrliche Schreibweise - beide sind BITGLEICH zum Literaturwert,
+   * die letzte Ziffer existiert im double gar nicht. Geschrieben wie in der
+   * Literatur, meldete eslint zu Recht "verliert Praezision" und blockierte damit
+   * die CI. Eine Ausnahmeregel fuer die Datei waere der bequemere Weg gewesen und
+   * der schlechtere: die Regel faengt echte Tippfehler in langen Konstanten, und
+   * genau davon stehen hier sechs. Die Selbstkontrolle unten prueft nach, dass sich
+   * nichts geaendert hat (|Abw| gegen drei Literaturwerte bleibt 4,26e-14). */
+  var cof = [76.18009172947146, -86.50532032941678, 24.01409824083091, -1.231739572450155, 0.1208650973866179e-2, -0.5395239384953e-5];
   var x = a, y = a, tmp = x + 5.5; tmp -= (x + 0.5) * Math.log(tmp);
   var ser = 1.000000000190015;
   for (var j = 0; j < 6; j++) ser += cof[j] / ++y;
-  return -tmp + Math.log(2.5066282746310005 * ser / x);
+  return -tmp + Math.log(2.5066282746310007 * ser / x);   // sqrt(2*pi), bitgleich zu ...005
 }
 function gser(a, x) { // Reihe fuer P(a,x)
   var ITMAX = 500, EPS = 3e-15, gln = gammln(a);
