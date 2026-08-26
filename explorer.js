@@ -618,14 +618,20 @@
           var oS1 = mS1 + (sg.oben - sg.mitteJetzt), oS2 = sg.oben;
           var uS1 = mS1 + (sg.unten - sg.mitteJetzt), uS2 = sg.unten;
           var fS = sg.trend === 'auf' ? 'var(--up)' : sg.trend === 'ab' ? 'var(--down)' : '#7c9cf5';
-          var dS = (0.30 + Math.min(0.5, sg.guete / 100 * 0.5)).toFixed(2);
+          /* #80 (Wilhelms Weg 2): angezeigt und gewichtet wird das PERZENTIL gegen
+           * Rauschen, nicht die Roh-Guete - deren Nullpunkt liegt bei ~75-94, je
+           * Fensterlaenge (Eichung studien/kanal-guete-2026-08-26). Die Auswahl,
+           * WELCHE Abschnitte erscheinen, blieb unveraendert in Roh-Guete. */
+          var pS = Q.gueteZufallsAnteil(sg.guete, sg.n);
+          var dS = (0.30 + Math.min(0.5, (pS == null ? 50 : pS) / 100 * 0.5)).toFixed(2);
           function linS(p1, p2, br, str) {
             return '<line x1="' + X(tS1).toFixed(1) + '" y1="' + Y(p1).toFixed(1) + '" x2="' + X(tS2).toFixed(1) +
               '" y2="' + Y(p2).toFixed(1) + '" stroke="' + fS + '" stroke-width="' + br + '"' +
               (str ? ' stroke-dasharray="' + str + '"' : '') + ' opacity="' + dS + '"></line>';
           }
           var titelS = sg.name + ' · ' + (sg.trend === 'auf' ? 'aufwärts' : sg.trend === 'ab' ? 'abwärts' : 'seitwärts') +
-            ' · ' + sg.n + ' Kerzen · Güte ' + sg.guete + '/100 · Breite ' + sg.breitePct.toFixed(1) + ' %';
+            ' · ' + sg.n + ' Kerzen · ' + (pS == null ? 'Ordnung nicht einordbar' : 'besser als ' + pS + ' % des Zufalls (Roh-Güte ' + sg.guete + '/100)') +
+            ' · Breite ' + sg.breitePct.toFixed(1) + ' %';
           indiPfad += '<g><title>' + titelS + '</title>' + linS(mS1, mS2, 1.2) +
             linS(oS1, oS2, 1, '4 3') + linS(uS1, uS2, 1, '4 3') +
             '<text x="' + ((X(tS1) + X(tS2)) / 2).toFixed(1) + '" y="' + (Y(Math.max(oS1, oS2)) - 3).toFixed(1) +
@@ -644,8 +650,11 @@
           var oben1 = mit1 + (kk.oben - kk.mitteJetzt), oben2 = kk.oben;
           var unt1 = mit1 + (kk.unten - kk.mitteJetzt), unt2 = kk.unten;
           var farbe = FARBEN[kk.name] || '#a78bfa';
-          // Schwache Kanaele blasser zeichnen - die Guete soll man SEHEN, nicht lesen muessen
-          var deck = 0.25 + Math.min(0.55, kk.guete / 100 * 0.55);
+          // Schwache Kanaele blasser zeichnen - die Ordnung soll man SEHEN, nicht lesen
+          // muessen. Seit #80 speist das Perzentil die Deckkraft: zufallsnahe Kanaele
+          // werden blass, obwohl ihre Roh-Guete hoch aussieht (Rauschen-Median 75-94).
+          var pK = Q.gueteZufallsAnteil(kk.guete, kk.n);
+          var deck = 0.25 + Math.min(0.55, (pK == null ? 50 : pK) / 100 * 0.55);
           function lin(p1, p2, br, str) {
             return '<line x1="' + X(t1).toFixed(1) + '" y1="' + Y(p1).toFixed(1) + '" x2="' + X(t2).toFixed(1) +
               '" y2="' + Y(p2).toFixed(1) + '" stroke="' + farbe + '" stroke-width="' + br + '"' +
@@ -653,7 +662,8 @@
           }
           var titel = 'Kanal ' + kk.name + ' · ' +
             (kk.trend === 'auf' ? 'aufwärts' : kk.trend === 'ab' ? 'abwärts' : 'seitwärts') +
-            ' · Güte ' + kk.guete + '/100 (Passgenauigkeit ' + kk.r2 + ', Kanten berührt ' +
+            ' · ' + (pK == null ? 'Ordnung nicht einordbar' : 'besser als ' + pK + ' % des Zufalls') +
+            ' (Roh-Güte ' + kk.guete + '/100, Passgenauigkeit ' + kk.r2 + ', Kanten berührt ' +
             kk.beruehrungenOben + '× oben / ' + kk.beruehrungenUnten + '× unten)' +
             ' · Breite ' + kk.breitePct.toFixed(1) + ' % · Kurs steht bei ' + Math.round(kk.pos * 100) + ' % im Kanal';
           indiPfad += '<g><title>' + titel + '</title>' + lin(mit1, mit2, 1.2) +
@@ -661,12 +671,18 @@
           if (ki === 0 || kk.name === 'lang') {
             indiPfad += '<text x="' + (X(t2) - 4).toFixed(1) + '" y="' + (Y(oben2) - 3).toFixed(1) +
               '" fill="' + farbe + '" font-size="9" text-anchor="end">' + kk.name + ' ' +
-              (kk.trend === 'auf' ? '▲' : kk.trend === 'ab' ? '▼' : '▬') + ' ' + kk.guete + '</text>';
+              (kk.trend === 'auf' ? '▲' : kk.trend === 'ab' ? '▼' : '▬') + ' ' +
+              (pK == null ? '' : pK + '&#8202;%') + '</text>';
           }
         });
         var kEl = document.getElementById('expKanalInfo');
         if (kEl) kEl.textContent = kListe.length
-          ? kListe.map(function (k5) { return k5.name + ': ' + (k5.trend === 'auf' ? 'aufwärts' : k5.trend === 'ab' ? 'abwärts' : 'seitwärts') + ' (Güte ' + k5.guete + (k5.wendeBestaetigt ? ', beginnt an echtem Wendepunkt' : '') + ')'; }).join(' · ')
+          ? kListe.map(function (k5) {
+            var p5 = Q.gueteZufallsAnteil(k5.guete, k5.n);
+            return k5.name + ': ' + (k5.trend === 'auf' ? 'aufwärts' : k5.trend === 'ab' ? 'abwärts' : 'seitwärts') +
+              ' (' + (p5 == null ? 'nicht einordbar' : 'besser als ' + p5 + ' % des Zufalls') +
+              (k5.wendeBestaetigt ? ', beginnt an echtem Wendepunkt' : '') + ')';
+          }).join(' · ')
           : 'Zu wenige Kerzen im Fenster für einen Kanal.';
 
         /* Wie spät ist der Kanal? Ein Regressionskanal beschreibt, was war – er kann der

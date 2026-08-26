@@ -1425,7 +1425,13 @@
         '<td>' + (g.spot != null ? U.nf2.format(g.spot) : '–') + '</td>' +
         '<td>' + (g.score != null ? g.score + '/100' : '–') + '</td>' +
         '<td>' + (g.z != null ? g.z : '–') + '</td>' +
-        '<td>' + (g.chanPos != null ? Math.round(g.chanPos * 100) + ' % · Güte ' + (g.chanQ != null ? g.chanQ : '–') : '–') + '</td>' +
+        /* #80, Befund B1: chanQ ist der trendChannel-Score - eine ANDERS gebaute
+         * Zahl als die Kanal-Guete des Explorers, und fuer ihn ist Rauschen nie
+         * gemessen worden. Er wird deshalb NICHT aufs Perzentil umgestellt,
+         * verliert aber das Wort "Guete" - sonst stuenden zwei Skalen unter
+         * einem Wort. "Pendel" sagt, was er misst: nachgewiesenes Pendeln
+         * zwischen den Kanten. */
+        '<td>' + (g.chanPos != null ? Math.round(g.chanPos * 100) + ' % · Pendel ' + (g.chanQ != null ? g.chanQ : '–') : '–') + '</td>' +
         '<td class="' + (g.ok ? 'pos' : '') + '">' + U.esc(g.grund || (g.ok ? 'gehandelt' : 'kein Signal')) + '</td>' +
         '<td style="color:var(--muted);">' + (g.t ? new Date(g.t).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }) : '–') + '</td></tr>' });
     });

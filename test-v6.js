@@ -3937,8 +3937,8 @@ console.log('\n44) Messmaschine, Scoreboard und Strategie-Eingabe (23.08.2026)')
    * bleibt version, und nur der Stand wird nachgezogen). Genau diese Frage ist sieben
    * Mal nicht gestellt worden. Die Reibung IST der Zweck: sie kostet zwei Zeilen und
    * verhindert, dass Protokolle stillschweigend unvergleichbar werden. */
-  var MM_VERSION = '1.4.0';
-  var MM_STAND = 'b8613cfa5384';   // sha256 ueber messmaschine.js, erste 12 Zeichen
+  var MM_VERSION = '1.5.0';        // 26.08. Wilhelms Entscheid 20:25: Aussichts-Schranke + #92-Rangfolge
+  var MM_STAND = 'ce5dfca39cc0';   // sha256 ueber messmaschine.js, erste 12 Zeichen
   var mmV = require(__dirname + '/studien/messmaschine/messmaschine.js').VERFAHREN;
   ok(mmV.version === MM_VERSION && mmV.codeStand === MM_STAND,
      'Messmaschine: Version und Codestand stehen zusammen fest - eine Aenderung ohne Entscheid faellt auf',
@@ -4264,6 +4264,28 @@ console.log('\n44) Messmaschine, Scoreboard und Strategie-Eingabe (23.08.2026)')
      'Auch die Strategien-Karten nennen die Aussicht - dieselbe Quelle ueber DepotAPI (1b)');
   ok(/weiteren Signaltagen/.test(st9) && /weiteren Signaltagen/.test(dep2),
      'Regelkopf und Karten sagen Signaltage - nirgendwo mehr die falsche Einheit (Baustopp 1b)');
+
+  /* ---- #80: die Kanal-Guete ist ein Perzentil gegen Rauschen (Wilhelms Weg 2) ----
+   * Rauschen bekam von der Roh-Guete im Median 75-94 von 100. Angezeigt wird jetzt
+   * "besser als X % des Zufalls" (Eichung: studien/kanal-guete-2026-08-26). Die
+   * EIGENSCHAFT der Eichung prueft test-channel Nr. 19; hier steht, dass die
+   * Anzeigen sie benutzen und die interne Auswahl unveraendert blieb. */
+  var qn9 = fs.readFileSync(__dirname + '/quant.js', 'utf8');
+  ok(/GUETE_RAUSCHEN/.test(qn9) && /gueteZufallsAnteil: gueteZufallsAnteil/.test(qn9),
+     'quant.js traegt die Eichtabelle und exportiert das Perzentil (#80)');
+  ok(/opt\.mindestGuete != null \? opt\.mindestGuete : 50/.test(qn9),
+     'Die interne Auswahl-Schwelle blieb in Roh-Guete - es aendert sich nicht, welche Kanaele erscheinen (#80)');
+  var ex9 = fs.readFileSync(__dirname + '/explorer.js', 'utf8');
+  ok((ex9.match(/des Zufalls/g) || []).length >= 3,
+     'Der Explorer zeigt das Perzentil an allen Kanal-Stellen (#80)');
+  ok(/gueteZufallsAnteil\(sg\.guete, sg\.n\)/.test(ex9) && /gueteZufallsAnteil\(kk\.guete, kk\.n\)/.test(ex9),
+     'Abschnitte UND Ebenen-Kanaele rechnen ihr Perzentil aus derselben Funktion (#80)');
+  var sc9 = fs.readFileSync(__dirname + '/strategiechart.js', 'utf8');
+  ok(/gueteZufallsAnteil/.test(sc9) && /des Zufalls/.test(sc9),
+     'Auch der Strategie-Chart-Kontext nennt das Perzentil statt der Roh-Guete (#80)');
+  var mon9 = dep2.slice(dep2.indexOf('function renderSigMonitor'), dep2.indexOf('function renderSigMonitor') + 4000);
+  ok(/· Pendel /.test(mon9) && !/· Güte /.test(mon9),
+     'Der Live-Signal-Monitor sagt nicht mehr "Guete" - sein Score ist eine andere Skala (#80, Befund B1)');
   /* Eigenschafts-Pruefung gegen ein ECHTES Protokoll: aendert die Messmaschine die
    * Ablage der Aussicht, wird die Anzeige still leer - das soll hier laut werden.
    * kapitulation 26.08.: Varianten 1551/2330/224, kleinste 224 (Tafel-Tabelle). */

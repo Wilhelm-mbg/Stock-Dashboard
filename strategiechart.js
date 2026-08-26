@@ -45,7 +45,10 @@
     var vAvg = vn ? vs / vn : 0, vLast = win[n - 1][2] || 0;
     var vOk = vAvg > 0 && vLast > 1.3 * vAvg;
     var vTxt = 'Volumen der Signalkerze über dem 1,3-fachen der 50 Kerzen davor' + (vAvg > 0 ? ' – aktuell ' + (vLast / vAvg).toFixed(2) + '×' : ' – kein Volumen in der Reihe');
-    var kTxt = kanal ? ' – aktuell ' + (kName[kanal.trend] || kanal.trend) + ', Güte ' + Math.round(kanal.guete) + '/100' : ' – kein Kanal berechenbar';
+    /* #80 (Weg 2): Perzentil statt Roh-Guete - deren Nullpunkt liegt bei ~75-94. */
+    var kPz = kanal ? Q.gueteZufallsAnteil(kanal.guete, kanal.n) : null;
+    var kTxt = kanal ? ' – aktuell ' + (kName[kanal.trend] || kanal.trend) +
+      (kPz == null ? '' : ', besser als ' + kPz + ' % des Zufalls') : ' – kein Kanal berechenbar';
     if (mode === 'rsi2seit') {
       var r2 = n >= 3 ? Q.rsi(closes, 2) : null;
       var e100 = Q.emaSeries(closes, 100);

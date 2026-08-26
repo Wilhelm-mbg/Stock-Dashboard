@@ -2590,6 +2590,39 @@
     return raus;
   }
 
+  /* ================= #80: die Guete als Perzentil gegen Rauschen =================
+   *
+   * Der Befund (#80): reines Rauschen bekommt von der Guete-Formel im Median 75
+   * von 100 - die Zahl sah aus wie eine Schulnote, ihr Nullpunkt lag aber nicht
+   * bei null. Wilhelms Entscheid vom 26.08.2026 (Weg 2): angezeigt wird ein
+   * PERZENTIL gegen Rauschen - "besser als X % des Zufalls" hat einen echten
+   * Nullpunkt (50 % heisst "wie Zufall").
+   *
+   * Die Tabelle stammt aus studien/kanal-guete-2026-08-26/eichung.js
+   * (deterministisch, xorshift-Seeds): 32.722 Kanaele, die DIESELBE Suche
+   * (kanaele + kanalSegmente) auf additiven Random Walks ausgegeben hat -
+   * Pipeline-Eichung, damit die Bester-Kanal-Auswahl der Suche in der Referenz
+   * steckt und nicht nur der Einzel-Fit. Je n-Klasse steht fuer jede ganze
+   * Guete 0..100 der Anteil der Zufallskanaele mit echt kleinerer Guete, in
+   * Promille. Die Eichung fiel schlimmer aus als der Befund: je nach
+   * Fensterlaenge liegt der Rauschen-Median zwischen 75 und 94.
+   *
+   * WICHTIG (Auflage aus Wilhelms Entscheid): die INTERNEN Schwellen
+   * (mindestGuete 50 oben, die Bester-Kanal-Vergleiche in kanalUeber) bleiben
+   * in Roh-Guete definiert - dadurch aendert sich beweisbar NICHT, welche
+   * Kanaele erscheinen; umgestellt sind Anzeige und Deckkraft. */
+  var GUETE_RAUSCHEN = [{"von":25,"anteil":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,13,31,49,68,88,109,128,147,168,186,205,222,238,255,271,286,303,318,334,351,367,386,403,419,437,456,475,493,515,536,559,583,609,634,660,690,722,754,786,822,857,893,923,946,963,978,990,996,999,1000,1000]},{"von":40,"anteil":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,13,23,34,44,53,64,79,94,105,119,135,150,162,175,188,203,217,234,250,263,274,288,306,323,341,361,381,399,424,452,481,513,547,580,618,661,702,746,795,839,888,933,970,993,1000]},{"von":55,"anteil":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12,21,30,40,47,57,66,78,91,102,114,127,138,153,166,178,189,200,214,228,242,254,272,288,306,326,348,368,388,408,434,460,492,520,555,592,633,684,742,798,862,922,967,995,1000]},{"von":75,"anteil":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,17,27,38,52,63,71,89,100,110,123,135,146,159,168,179,198,210,224,233,245,260,274,287,303,316,333,350,367,384,405,434,458,488,523,551,588,628,673,720,774,831,893,951,994,1000]},{"von":100,"anteil":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,20,39,50,66,81,95,110,122,142,157,169,187,204,221,240,252,264,280,297,309,320,337,353,368,383,398,413,430,450,468,491,516,538,563,590,623,655,696,733,781,834,892,951,993,1000]},{"von":135,"anteil":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,2,2,4,4,7,7,7,11,16,20,29,38,40,47,51,62,75,84,86,95,109,118,135,155,171,188,204,224,253,286,324,370,401,466,528,641,745,869,965,1000]},{"von":180,"anteil":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,37,61,86,115,138,161,186,215,240,262,286,308,331,345,363,375,395,419,448,468,485,500,514,529,551,570,586,614,637,657,676,699,728,757,787,817,840,862,885,909,934,961,981,995,1000]},{"von":240,"anteil":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,37,76,105,128,146,172,197,225,251,278,296,317,344,368,392,409,428,453,471,489,515,537,554,570,591,619,639,661,681,699,724,742,764,788,811,831,854,874,906,929,952,976,989,998,1000]}];
+  /** Anteil der Zufallskanaele (gleiche Suche, gleiche Fensterklasse), die eine
+   *  ECHT kleinere Guete bekommen - in ganzen Prozent 0..100. null, wenn die
+   *  Eingaben nicht taugen. Rein beschreibend: keine Schwelle, kein Ausloeser. */
+  function gueteZufallsAnteil(guete, n) {
+    if (!isFinite(guete) || !isFinite(n)) return null;
+    var kl = GUETE_RAUSCHEN[0];
+    for (var gi = 1; gi < GUETE_RAUSCHEN.length; gi++) if (n >= GUETE_RAUSCHEN[gi].von) kl = GUETE_RAUSCHEN[gi];
+    var g = Math.max(0, Math.min(100, Math.round(guete)));
+    return Math.round(kl.anteil[g] / 10);
+  }
+
   /** Trendwechsel-Beobachtung (Felix' Winkel-Detektor, Ticket #33/#35).
    *  EXAKT die Logik der Trendwende-Studie vom 21.08.2026 - hier nur als
    *  BEOBACHTUNG, nicht als Handelssignal: Der Detektor war der einzige
@@ -3076,6 +3109,7 @@
     bewaehrungsUrteil: bewaehrungsUrteil,
     trendChannel: trendChannel, projectTrendChannel: projectTrendChannel,
     wendepunkte: wendepunkte, kanalUeber: kanalUeber, kanaele: kanaele, kanalSegmente: kanalSegmente, trendwechsel: trendwechsel,
+    gueteZufallsAnteil: gueteZufallsAnteil,
     KANAL_MIN: KANAL_MIN, RECHENSTAND: RECHENSTAND, degapBarArray: degapBarArray,
     degapCloses: degapCloses, degapBars: degapBars,
     computeStats: computeStats, bootstrapTrades: bootstrapTrades, bestOfN: bestOfN, gegenprobeRichtung: gegenprobeRichtung, kanalVerzug: kanalVerzug, monatsStatistik: monatsStatistik, schattenKonfig: schattenKonfig, signalMerkmale: signalMerkmale, merkmalsBilanz: merkmalsBilanz, MERK_MIN: MERK_MIN, scheinKennzahlen: scheinKennzahlen, scheinRisikostufe: scheinRisikostufe, scheinRaster: scheinRaster, altlastGrund: altlastGrund

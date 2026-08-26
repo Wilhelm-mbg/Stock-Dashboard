@@ -538,7 +538,7 @@
         'Entscheidungskanal: die 200 Kerzen, die der Regel die Erlaubnis geben (Regression, 92-%-Kanten) – verankert an der Kerze, die gerade geprüft wird.',
         'Derselbe Kanal heute wird nur gezeigt, wenn ein historisches Signal ausgewählt ist.',
         'Überdehnungsband um die Leitlinie: nur im Kapitulations-Modus – dort ist die Unterkante der Auslöser.',
-        'Die Güte eines Kanals ist beschreibend – die Regel fragt nur die Richtung ab, es gibt keine Güte-Schwelle, und kanalUeber liefert immer einen Kanal, nie „keiner“.',
+        'Die Ordnung eines Kanals („besser als X % des Zufalls“) ist beschreibend – die Regel fragt nur die Richtung ab, es gibt keine Schwelle, und kanalUeber liefert immer einen Kanal, nie „keiner“. Seit #80 wird sie als Perzentil gegen Rauschen gezeigt: die frühere Roh-Güte gab reinem Zufall im Median 75–94 von 100.',
         'Die Leitlinie EMA20 gehört zum Kapitulations-Modus; beim RSI(2)-Modus ist sie nur Orientierung und entscheidet dort nichts.'
       ]
     },

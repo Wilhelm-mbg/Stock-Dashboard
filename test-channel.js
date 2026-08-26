@@ -375,5 +375,42 @@ console.log('17) Trendwechsel-Beobachtung (Felix #33/#35): Winkel-Detektor als r
      'ohne fertigen jungen Abschnitt bleibt der junge Kanal leer statt geraten');
 })();
 
+console.log('19) #80: das Guete-Perzentil hat einen echten Nullpunkt');
+(function () {
+  /* Die Eichtabelle in quant.js stammt aus der Pipeline-Eichung
+   * (studien/kanal-guete-2026-08-26/eichung.js). Hier wird ihre EIGENSCHAFT
+   * geprueft, nicht ihr Inhalt: Zufallskanaele muessen im Mittel nahe 50 %
+   * landen (das ist die Definition des Nullpunkts), ein sauberer Trendkanal
+   * weit darueber. Der Pfadbau ist bewusst DERSELBE wie in Test 15c. */
+  ok(typeof Q.gueteZufallsAnteil === 'function', 'Q.gueteZufallsAnteil existiert');
+  ok(Q.gueteZufallsAnteil(NaN, 100) === null && Q.gueteZufallsAnteil(80, NaN) === null,
+     'untaugliche Eingaben ergeben null, keine Zahl');
+  var seed = 0;
+  function rnd() { seed ^= seed << 13; seed ^= seed >>> 17; seed ^= seed << 5; return ((seed >>> 0) / 4294967296) - 0.5; }
+  var pz = [];
+  for (var l9 = 0; l9 < 40; l9++) {
+    seed = 42000 + l9;
+    var rw9 = [], p9 = 100;
+    for (var i9 = 0; i9 < 250; i9++) { p9 += rnd() * 2.5; rw9.push([i9 * 3600000, p9, 1000]); }
+    Q.kanaele(rw9).forEach(function (k9) {
+      var a9 = Q.gueteZufallsAnteil(k9.guete, k9.n);
+      if (a9 != null) pz.push(a9);
+    });
+  }
+  pz.sort(function (a, b) { return a - b; });
+  var medianPz = pz.length ? pz[Math.floor(pz.length / 2)] : null;
+  ok(pz.length >= 30, 'genug Zufallskanaele fuer einen Median', pz.length);
+  /* Toleranz 35-65: andere Seeds als die Eichung, endliche Stichprobe. Die alte
+   * Roh-Guete lag hier im Median bei 75-94 - DAS ist der Unterschied. */
+  ok(medianPz != null && medianPz >= 35 && medianPz <= 65,
+     'Zufallskanaele landen im Median nahe 50 % (Nullpunkt stimmt)', medianPz);
+  // Sauberer Trendkanal (Muster aus Test 13a): weit ueber Zufall
+  var sauber = [];
+  for (var s9 = 0; s9 < 60; s9++) sauber.push([s9 * 3600000, 100 + s9 * 0.8 + (s9 % 2 ? 0.5 : -0.5), 1000]);
+  var bS9 = Q.kanaele(sauber).sort(function (a, b) { return b.guete - a.guete; })[0];
+  ok(bS9 && Q.gueteZufallsAnteil(bS9.guete, bS9.n) >= 90,
+     'ein sauberer Trendkanal steht ueber 90 % des Zufalls', bS9 && Q.gueteZufallsAnteil(bS9.guete, bS9.n));
+})();
+
 console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
 process.exit(fails ? 1 : 0);

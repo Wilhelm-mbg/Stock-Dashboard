@@ -2622,16 +2622,17 @@ mit #93/#94 zusammen runder.
 *Wer welche Dateien belegt. Trag dich ein, bevor du anfängst; nimm dich raus, wenn du
 fertig bist.*
 
-- **Desingner** — **Baustopp (1b) ist umgesetzt** (`e11d7e9`: Signaltage statt
-  Handelstage überall, nicht-messbar-Aussicht wird nicht mehr gezeigt, dritter
-  Abschnitt „Gemessen – zeigt in die Gegenrichtung"; 12/12 Funktionsprüfungen).
-  Jetzt: **#80 Perzentil-Umbau** (Wilhelms Weg 2) — belegt `quant.js` (Eichtabelle
-  + Perzentil-Funktion), `explorer.js`, `strategiechart.js` (Anzeige), Eichskript
-  unter `studien/kanal-guete-2026-08-26/`. Die interne Auswahl (Filter 50,
-  Bester-Kanal) bleibt in Roh-Güte — es ändert sich NICHT, welche Kanäle
-  erscheinen; nur Anzeige und Deckkraft werden Perzentil. B1: der Monitor-Score
-  wird NICHT umgestellt (Rauschen dafür nie gemessen), verliert aber das Wort
-  „Güte" — sonst stünden wieder zwei Skalen unter einem Wort.
+- **Desingner** — **#80 Perzentil ist GELIEFERT** (Baustopp 1b davor in `e11d7e9`).
+  Eichung: 32.722 Zufallskanäle aus derselben Such-Pipeline (deterministisch,
+  `studien/kanal-guete-2026-08-26/eichung.js` + `eichtabelle.json`) — **der
+  Rauschen-Median liegt je Fensterlänge bei 75–94, der #80-Befund (75) war also
+  noch geschmeichelt.** Anzeige überall „besser als X % des Zufalls" (Explorer
+  beide Kanalarten inkl. Bild-Labels und Deckkraft, Strategie-Chart-Kontext,
+  Info-Text); interne Auswahl unverändert in Roh-Güte (beweisbar gleiche
+  Kanäle); Monitor-Score heißt jetzt „Pendel" (B1 — nicht umgestellt, Rauschen
+  dafür nie gemessen). test-channel Nr. 19 prüft den Nullpunkt (Zufall → Median
+  43 %, sauberer Trend → 100 %). npm test grün, ui-probe grün, Funktionstest am
+  echten AAPL-Chart (10 Tooltips Perzentil, 0 Alt-Güte).
 
 - **Berechnungen** — **Verzerrungsrichtung FERTIG gemessen (26.08. ~22:2x):**
   erstes belegtes Richtungsurteil — **das Überlebenden-Archiv beschönigt die
