@@ -1475,6 +1475,18 @@ dem letzten Lauf, dazu ein Rotationsblock. Repariert wird nichts — das tut ein
 *Entscheidungen von Wilhelm, mit Datum. Eine Entscheidung, die nur in einem Chatverlauf
 steht, ist nach zwei Stunden verloren.*
 
+- **26.08.2026, 19:05 — die Issue-Wache läuft nur noch 8, 13 und 15 Uhr.**
+  Vorher alle 30 Minuten, also 48 Läufe am Tag. Wilhelms Anweisung, nachdem die CPU auf
+  97 % stand.
+  **Der gemessene Grund:** 85 Claude-Prozesse liefen, **genau eine Sitzung arbeitete
+  wirklich.** Jeder abgeschlossene Routine-Lauf lässt seinen Prozess stehen — rund 5 % CPU
+  und 370 MB, dauerhaft. 85 × 5 % ÷ 16 Kerne = **96 %**, exakt die gemessene Last. Neun der
+  Leichen waren von der Issue-Wache, dreizehn von der Release-Wache.
+  **Sie hatte den längeren Takt selbst vorgeschlagen** (Übergabe 17:32): seit sie nur noch
+  sichtet, ist Leerlauf der Normalfall.
+  **Folge für alle Rollen:** Ein abgeschlossener Lauf ist nicht kostenlos. Wer einen Takt
+  entwirft, rechnet die Prozesse mit, die er hinterlässt.
+
 - **26.08.2026, 18:55 — #96: die Platzhalterkerze wird verworfen.**
   Wilhelm: *„müssen wir beheben wir brauchen alle kerzen keine platzhalter"*.
   Sein Satz sagt beides: **Platzhalter raus, alle echten Kerzen bleiben.** Nicht (b)
