@@ -1964,22 +1964,72 @@ Gleitkommavergleich ohne fachliche Toleranz.
 > während der Fund die Halbtage meinte."* Eine richtige Zahl, die eine andere Frage
 > beantwortet als die gestellte — diesmal in der Aggregation.
 
-### 💡 Daraus ergibt sich eine dritte Option, die der PM Wilhelm empfiehlt
+### ❌ 27.08. ~02:25 — OPTION (c) IST ZURÜCKGEZOGEN. Der PM hatte einen Zirkelschluss gebaut.
 
-**Das Tagesarchiv ist ein unabhängiger Schiedsrichter.** Ein Docht, der die Tagesspanne
-verlässt, ist **beweisbar falsch** — kein Kurs kann außerhalb des Tagesbandes gehandelt
-worden sein. Ein Docht innerhalb ist **nicht beweisbar falsch**.
+**Der PM hatte Wilhelm eine dritte Option empfohlen:** *„Das Tagesarchiv ist ein unabhängiger
+Schiedsrichter — ein Docht außerhalb der Tagesspanne kann nicht gehandelt worden sein, ist
+also beweisbar falsch. Nur die anfassen."* **Die QS hat die Prämisse zerlegt, auf Nachfrage,
+bevor Wilhelm sie zu sehen bekam. Sie ist falsch, auf vier Wegen.**
 
-**Option (c): nur die beweisbar falschen anfassen.** Ziel wären die **2.141** Dochte an
-Halbtagen außerhalb des Balkens, oder — wenn man konsequent ist — alle **3.168** außerhalb.
-Alles andere bleibt unberührt.
+**🎯 Der schwerste Einwand: die überlappende Randkerze erklärt GENAU DIE ZAHLEN, die ich als
+Beleg angeführt habe.**
 
-**Warum das der PM empfiehlt:** Es braucht Wilhelms Populationsentscheid **nicht abzuwarten**
-(auch echte Nachhandelskurse liegen im Tagesband, wenn das Tagesband sie enthält), es stützt
-sich auf eine **unabhängige zweite Quelle** statt auf eine Plausibilitätsannahme, und es
-lässt 10.367 Kerzen in Ruhe, die nach heutigem Stand echt sind.
-**Die Populationsfrage bleibt trotzdem zu entscheiden** — aber als Frage der
-Archiv-Einheitlichkeit, nicht als Vorbedingung einer Reparatur.
+Das US-60m-Raster liegt auf `:30`. Halbtagsschluss ist 13:00 ET → **die 12:30-Kerze spannt
+12:30–13:30: halb Sitzung, halb Nachhandel.** Am Normaltag schließt der Markt 16:00 ET → die
+15:30-Kerze spannt 15:30–16:30, dieselbe Überlappung.
+
+- **Normaltag:** Sitzungsspanne über **6,5 Stunden** breit — 30 Minuten Nachhandel
+  überschreiten sie **selten**.
+- **Halbtag:** Spanne über **3,5 Stunden** bei dünnem Handel schmal — Nachhandel
+  überschreitet sie **leicht**.
+
+**Vorhergesagt: wenige außerhalb an Normaltagen, viele an Halbtagen.
+Gemessen: 10,9 % gegen 52,0 %.**
+
+> **Mein Beleg für Verfälschung ist exakt das, was ohne jede Verfälschung herauskommen
+> müsste.** Solange dieser Weg nicht ausgeschlossen ist, trägt die Asymmetrie gar nichts.
+
+**Die drei weiteren Wege:** (1) **Nachhandel** — der Tagesbalken deckt die reguläre Sitzung
+ab, das 60m-Archiv führt Nachhandel; ein Kurs dort außerhalb der Sitzungsspanne ist legitim.
+*Tagesbalken und 60m-Kerze messen nicht dasselbe Fenster — das ist kein Schiedsrichter,
+sondern eine andere Frage.* (3) **Kursanpassung** — ist die Tagesreihe für Splits
+rückangepasst und die 60m-Reihe nicht, liegen beide Bänder auf verschiedenen Maßstäben, und
+zwar für ganze Reihen auf einmal. (4) **Tageszuordnung** — eine Randkerze am falschen
+Kalendertag wird gegen den falschen Balken geprüft; *genau dieser Fehler steckte in der
+Ergebnis-Drift.*
+
+**🔁 UND DER SCHIEDSRICHTER IST VERMUTLICH KEINER — das steht in meinen eigenen Zahlen:**
+**78,2 % der Fälle liegen EXAKT auf dem Extrem** (Toleranz `1e-9`). Das heißt, die
+Tagesextreme sind in aller Regel identisch mit den Intraday-Extremen — **der Tagesbalken ist
+mit hoher Wahrscheinlichkeit nichts anderes als die Aggregation derselben Intraday-Lieferung,
+beschränkt auf die reguläre Sitzung.** Dann ist „außerhalb des Tagesbalkens" im Wesentlichen
+ein Test auf **„außerhalb der regulären Sitzung"** — also **keine unabhängige Zweitmeinung,
+sondern dieselbe Populationsfrage unter falscher Überschrift.**
+
+**Billiger Test, hängt an Lauf 2:** Ist der Tageshöchstkurs gleich dem Maximum der
+Sitzungs-Intraday-Höchstkurse? Kommt das für nahezu alle Tage heraus, ist der Schiedsrichter
+keiner.
+
+**WAS VON (c) ÜBRIG BLEIBT — und das ist nicht nichts:** P-WEG-Kerzen, die zeitlich **strikt
+innerhalb** der regulären Sitzung liegen **und nicht die überlappende Randkerze** sind,
+können kein Nachhandel sein. **Für die trägt das Argument.** Wie groß diese Menge ist, misst
+Block (5) von Lauf 1. **→ (c) wird auf genau diese Teilmenge eingeengt, und die Zahl wird
+abgewartet — die 2.141 bzw. 3.168 werden nicht mehr genannt.**
+
+### 🧾 Nebenbefund, stützt „Lücke in der Lieferung" unabhängig von den 18 Einzelfällen
+
+Häufigkeit von „Umsatz 0 **mit** Spanne" über die Intraday-Archive:
+
+    1m : 2.357 von 5.994.385 Kerzen (0,0393 %), 1.237 Reihen betroffen
+    5m :   169 von 2.269.386 Kerzen (0,0074 %),   120 Reihen
+    15m:     0 von   358.865 Kerzen
+
+**Wäre der 5m-Ausfall bloß die Folge von fünf zufälligen 1m-Ausfällen, müsste er bei 0,0393 %
+Grundrate praktisch nie auftreten. Er tritt bei 0,0074 % auf.** Der Ausfall passiert also je
+Lieferung **eigenständig auf jeder Auflösung** — und verschwindet auf 15m ganz. Dazu: die
+leere Minute sitzt an jeder Position gleich häufig (6/4/5/2/1 über fünf Plätze) — **kein
+Aggregationsrand**; 17 der 18 leeren Minutenkerzen tragen selbst eine Spanne; WBD zeigt
+55.464 / 0 / 21.016 Stück in drei aufeinanderfolgenden Minuten.
 
 ### ⭐ 27.08. ~01:55 — die Anforderung der Aufschlüsselung (Vorgeschichte)
 
