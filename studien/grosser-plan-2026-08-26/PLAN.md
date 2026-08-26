@@ -175,3 +175,49 @@ was sie ohnehin am besten kann — ein ehrliches Messgerät und ein gutes Werkze
 
 **Die Engstelle ist nicht Arbeitskraft, sondern Entscheidung.** Die **[W]**-Punkte
 blockieren derzeit mehr als jede fehlende Sitzung.
+
+---
+
+## Nachtrag 26.08. 18:30 — die Überlebenslücke trifft diesen Plan an der Wurzel
+
+Der Strategie-Tüftler hat die Lücke des großen Archivs vermessen (Lauf 16:56–18:20):
+
+- Über 2008–2026 fehlen **mindestens 12,7 %** des Querschnitts — **ausschließlich
+  Nicht-Überlebende**, steigend von rund 8 % (2008) auf **20 % (2023)**.
+- Vor dem 29.06.2004 ist die Lücke nicht einmal diagnostizierbar.
+- **Mit den vorhandenen Mitteln nicht zu schließen:** die eine Quelle liefert 1 von 46,
+  die andere deckelt auf den Tag genau bei zwei Jahren.
+
+**Warum das hier oben steht und nicht in einer Fußnote:** Strang A und Strang B rechnen
+beide auf diesem Universum. Fehlen ausschließlich die Verschwundenen, ist **jede positive
+Rohrendite nach oben verzerrt — in genau der Richtung, in der wir etwas finden wollen.**
+Das ist kein Nebenrisiko, das ist die Hauptfehlerquelle dieses Plans.
+
+**Vorschlag C des Tüftlers (Entscheidung, kein Bauauftrag) [W]:** drei Wege — bezahlte
+Datenstufe · Lücke offen lassen und ausweisen · **auf den bereits beschafften 1.164
+Verschwundenen die *Richtung* der Verzerrung messen.**
+
+*Der PM unterstützt die Reihenfolge des Tüftlers: **den dritten zuerst.** Er ist der
+billigste und beantwortet, ob die anderen beiden überhaupt eine Frage sind. Daten zu
+kaufen, bevor man weiß, ob die Lücke die Ergebnisse dreht, wäre die falsche Reihenfolge.*
+
+**Für Strang B festgehalten:** Die Einschränkung „auf einem Universum ohne Rückschau
+gemessen" darf für `glockendruck-nacht` und `nachtstoss-umkehr` **nicht fallen**.
+
+### Drei Datenfunde, am 26.08. zugeteilt (Datenqualität, unstrittig)
+
+1. **Falsche Delistings** in `massive/verschwundene.json` — AVB, EQR, LBRDA, LBRDK, WBS
+   stehen als delistet, handeln aber. **Ursache vom PM gefunden: sie sind nicht delistet,
+   sie sind im Archiv stehengeblieben** (letzte Kerze 20./21.08., während 2.955 von 2.965
+   auf dem 25.08. stehen). Eine Ausschlussliste, die AvalonBay auswirft, verzerrt jedes
+   Universum, das sie benutzt.
+2. **`tools/massive-tagesdaten.js:29`** holt neun Monate weniger als es glaubt — die
+   Quelle antwortet bei Überlappung der Zwei-Jahres-Grenze nicht mit einem Fehler, sondern
+   mit **stillschweigend abgeschnittenen Daten**.
+3. **Der Wachhund rundet die Wahrheit weg.** Er meldete „100 % auf Stand", tatsächlich
+   hängen **zehn Reihen** zurück. Gezählt wird richtig (`archiv-wachhund.js:170`), aber
+   Zeile 184 rundet 99,66 % auf 100 %.
+   **Das ist die sechste Verkleidung derselben Sache an einem Tag — diesmal in der
+   Sicherung, die genau dagegen gebaut wurde.** Und sie hätte Fund 1 verhindert: hätte er
+   „99,7 %" gemeldet, wäre die Lücke am selben Tag aufgefallen statt über eine
+   Delisting-Liste.

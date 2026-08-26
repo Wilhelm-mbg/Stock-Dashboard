@@ -265,6 +265,29 @@ Abbruchkriterium vor. **Die Engstelle ist nicht Arbeitskraft, sondern Entscheidu
 
 ---
 
+### ⚠ 26.08. 18:30 — Überlebenslücke vermessen, drei Datenfunde zugeteilt
+
+**Der Tüftler hat die Lücke des großen Archivs beziffert: mindestens 12,7 % des
+Querschnitts fehlen, ausschließlich Nicht-Überlebende**, steigend auf 20 % (2023). Mit
+den vorhandenen Quellen nicht zu schließen. **Das trifft den großen Plan an der Wurzel** —
+Strang A und B rechnen beide darauf, und jede positive Rohrendite ist dadurch nach oben
+verzerrt, in genau der Richtung, in der wir etwas finden wollen. Ausführlich im Plan.
+
+**Zugeteilt an den Master (Datenqualität, unstrittig):**
+1. Falsche Delistings in  — **Vorrang.** AVB, EQR, LBRDA,
+   LBRDK, WBS gelten als delistet und handeln. *Ursache vom PM gefunden: nicht delistet,
+   sondern im Archiv stehengeblieben.*
+2.  — holt neun Monate weniger als es glaubt.
+3. **Der Wachhund rundet 99,66 % auf 100 %** und verschluckt damit zehn zurückhängende
+   Reihen. Sechste Verkleidung derselben Sache an einem Tag, diesmal in der Sicherung,
+   die dagegen gebaut wurde.
+
+**Offen für Wilhelm: Vorschlag C** — wie mit der Lücke umgehen. PM und Tüftler empfehlen
+denselben Weg: erst auf den 1.164 schon beschafften Verschwundenen die **Richtung** der
+Verzerrung messen, bevor irgendwer Daten kauft.
+
+---
+
 ## Aufträge
 
 *Was freigegeben ist und noch niemand macht. Wer eine Zeile nimmt, trägt sich unter
