@@ -1178,6 +1178,80 @@ acht Urteile, 42 Skripte.
 
 ---
 
+### ✅ Die App sammelt selbst (`b9512ab`, `a180e1d`) — und drei Funde, die schwerer wiegen
+
+**Werkzeuge › Kursarchiv:** je Auflösung Werte, Alter der jüngsten Kerze, zuletzt
+gesammelt, offene Werte — Begründung im Klartext, Knopf je Auflösung, Anhalten. **Gesammelt
+wird durch `kerzenquelle.js`, nicht nachgebaut** — dieselbe Stelle wie das Abrufwerkzeug,
+nachgewiesen mit einer isolierten Probe (eigener Datenordner, danach dieselben Dateien in
+denselben Unterordnern mit demselben `stand.json`). 2.306 Zusicherungen grün.
+
+### ⚠ Die drei toten Sperren von 20:00 — zwei davon gehören dem abgebenden PM
+
+Der Master fand drei Sperren, deren Prozesse längst tot waren; der Wachhund hätte bis 23:26
+„wird gerade geschrieben" gemeldet und über den Stand **gar nichts** gesagt. **Behoben in
+`300e9a9`: die Sperre fragt jetzt zuerst die Prozessnummer und erst dann die Uhr.**
+
+**Herkunft, vom PM aufgeklärt:**
+
+| Sperre | Stand | Ursache |
+|---|---|---|
+| **15m** | 233/432 | Teil des PM-Erstlaufs von 18:21 — **beim Neustart gegen die CPU-Last gestorben** |
+| **1m** | 1.834/2.732 | **vom PM absichtlich gestoppt** (21:10), weil er mitten in der Sitzung Teilkerzen schrieb — **die Sperre nicht aufgeräumt, das war sein Fehler** |
+| 1d | – | **nicht vom PM.** Lief schon um 19:30 und blockierte der QS den ganzen Abend die drei Tagesarchiv-Protokolle, darunter `momentum` |
+
+### 🔴 SPY fehlt in den Intraday-Archiven — der Anker des Regime-Tors
+
+31 von 531 offenen Werten sind **die ETFs**: Die Werkzeugläufe gingen über `alle`, und die
+ETF-Liste ist aus dem Universum herausgefiltert. **Die App holt sie ab jetzt immer mit; für
+60m/1d muss jemand `node tools/yahoo-60m-holen.js etf` nachziehen.**
+
+*Dieselbe Lücke von der anderen Seite hat den PM heute Nachmittag erwischt:* Er stellte
+SPY-Zahlen aus `etf/` neben vier Zahlen aus dem Hauptbestand und gab sie als fünfte
+Stichprobe aus. **Der `etf/`-Ordner ist in beide Richtungen eine Falle.**
+
+### 🔴 Yahoo korrigiert FERTIGE Kerzen noch ~18 Minuten rückwirkend
+
+Gemessen: 6 Runden über 3 Werte, **17,1 bis 18,0 Minuten — und nicht nur den Umsatz, auch
+die Kurse.** Wer während der Sitzung misst oder sammelt, **rechnet auf vorläufigen Zahlen.**
+
+**Das erklärt rückwirkend einen Befund der QS**, den wir für einen reinen Teilkerzen-Fall
+hielten: dass die archivierte 19:30-Kerze von AAPL andere Werte trägt als die Quelle heute
+(v 2.851.594 gegen 2.846.819). **Kein Einfrieren — die Nachkorrektur.**
+
+### 🔴 Der Eimer-Fund (`cc2848f`): die Erklärung, die den ganzen Abend gefehlt hat
+
+Die Regel aus Issue 85 warf die Quote-Kerze am Reihenende hinaus — **aber darunter lag der
+gerade laufende Eimer mit glattem Gitterstempel.** Um 18:51 UTC endete XOM 15m auf 18:45,
+mitten im Eimer 18:45–19:00; **zwei Abrufe drei Minuten auseinander schrieben verschiedene
+Werte in dieselbe Kerze.** Betroffen war **jedes** Intraday-Intervall, **60m eingeschlossen**.
+
+Gefragt wird jetzt, **wann der Eimer zu ist** — Stempel plus Dauer, gedeckelt auf den
+Handelsschluss (sonst verwürfe es die kurze Schlusskerze 19:30–20:00 jeden Abend).
+
+**Was das für den Bestand heißt:** *Im vorhandenen 60m-Archiv steht bei jeder Reihe, die
+während einer Sitzung geholt wurde, eine unfertige letzte Stunde.* Sie wird beim nächsten
+Lauf überschrieben — **wer heute darauf misst, sollte es wissen.**
+
+*Einordnung des PM:* Die QS und er haben heute Abend **drei** Regeln durchprobiert, um die
+flachen Kerzen zu trennen, und alle drei scheiterten an derselben Stelle — **sie haben am
+Zeitstempel gemessen, statt zu fragen, ob der Eimer überhaupt zu ist.** Dass es jedes
+Intervall betrifft, macht diesen Fund größer als #96.
+
+### #96 bleibt angehalten — mit einer besseren Hypothese
+
+**Nichts eingebaut, nichts gelöscht.** Der Master schlägt vor: der Platzhalter liegt bei
+20:00 UTC, und das ist **das Sitzungsende** — ein Eimer, der genau dort beginnt, liegt
+außerhalb der Sitzung. **Strukturell prüfbar statt statistisch**, und er würde FSECs und
+PAAAs echte leere Stunden mitten im Tag nicht anfassen.
+
+**Zählen muss es trotzdem jemand, bevor daraus eine Regel wird** — der Master schreibt es
+selbst dazu. *Heute Abend sind drei plausible Ideen an der Wirklichkeit gescheitert, zwei
+davon vom PM.*
+
+
+---
+
 ## Aufträge
 
 *Was freigegeben ist und noch niemand macht. Wer eine Zeile nimmt, trägt sich unter
