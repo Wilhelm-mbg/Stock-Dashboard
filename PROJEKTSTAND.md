@@ -356,6 +356,44 @@ Hintergrundkommando gestartet.
 *Was freigegeben ist und noch niemand macht. Wer eine Zeile nimmt, trägt sich unter
 „Läuft gerade" ein und streicht sie hier.*
 
+### ⭐ Richtung der Überlebensverzerrung messen (Wilhelm 26.08. 17:40, Antwort c)
+
+**Vorbedingung für Strang A und B** — solange sie offen ist, bedeutet eine positive
+Rohrendite aus beiden Strängen nichts.
+
+**Auftrag:** Auf den **1.164 bereits beschafften Verschwundenen** messen, **wie stark und
+in welche Richtung** die Lücke verzerrt. Nicht: die Lücke schließen. Nicht: Daten kaufen.
+
+Der Tüftler hat die Lücke beziffert (mindestens 12,7 %, ausschließlich Nicht-Überlebende,
+steigend auf 20 % in 2023) und die Daten liegen. **Er misst nie selbst** — das gehört in
+eine Bausitzung oder die Messkette.
+
+**Braucht eine Vorregistrierung**, wie jede Messung: Was heißt „stark"? Ab welchem Wert
+ändert das die Urteile der zwölf Protokolle? Vorher festlegen, nicht nachher.
+
+### ⭐ (1b) Die Auflösungswand sichtbar machen (Wilhelm 26.08. 17:40)
+
+Die Aussicht je Strategie steht in jedem Protokoll (`aussicht.tage80`), aber nirgends in
+der Oberfläche. **Zu bauen:** Zahl anzeigen, und wer mehr als rund **2.500 Handelstage**
+braucht, wandert in einen eigenen Abschnitt „nicht entscheidbar mit diesen Daten".
+
+**Grenze, hart: Hinweis, kein Eingriff.** Wählbar bleibt alles. `intradayScan`,
+Autopilot- und Edge-Ring, `SETUPS`, `modeParams` und die `window.confirm`-Gatter
+bleiben unberührt. Text aus dem Protokoll, nie aus Prosa.
+
+**Lies `bestesUrteil` und die kleinste Aussicht über alle Varianten** — die kleinste ist
+die planungsrelevante. Die Zahlen stehen oben unter „Stand".
+**Achtung:** hängt an **#100** (der Regelkopf sieht die Protokolle nie). Erst #100, sonst
+baust du auf einer Anzeige, die ihre Daten gar nicht bekommt.
+
+### ⭐ (2a) #92 — das schärfste Urteil gewinnt (Wilhelm 26.08. 17:40)
+
+`messmaschine.js:1214–1215`: `widerlegt` schlägt in der Rangfolge alles andere, und
+`bestaetigt-aber-nullpunkt-verschoben` wird aufgenommen (fehlt bisher ganz).
+Heute tritt der Fall in keinem der 38 Protokolle auf — **es ist Vorsorge, kein Brand.**
+Nicht während eines laufenden Rechenlaufs anfassen.
+
+
 ### ⭐ STRANG A — `momentum` nicht überlappend messen (Wilhelm 26.08. 18:35, freigegeben)
 
 **Die größte offene Frage des Projekts.** Der einzige Ort im ganzen Korpus, an dem eine
@@ -1265,6 +1303,27 @@ dem letzten Lauf, dazu ein Rotationsblock. Repariert wird nichts — das tut ein
 
 *Entscheidungen von Wilhelm, mit Datum. Eine Entscheidung, die nur in einem Chatverlauf
 steht, ist nach zwei Stunden verloren.*
+
+- **26.08.2026, 17:40 — drei Entscheidungen: „c (schau mal was das kosten würde), b und d, a"**
+
+  **(C) Überlebenslücke → (c): erst die Richtung der Verzerrung messen.** Nicht Daten
+  kaufen, nicht die Lücke bloß ausweisen. Gemessen wird auf den **1.164 bereits
+  beschafften Verschwundenen**: wie stark und in welche Richtung verzerrt die Lücke?
+  *Wilhelm will zusätzlich die Kosten einer bezahlten Quelle wissen — als Information für
+  später, nicht als Kaufauftrag.* Kostenschätzung siehe unten.
+
+  **(1) → (b) UND (d).**
+  **(b)** Die Aussicht je Strategie wird angezeigt, und wer mehr als rund 2.500
+  Handelstage braucht, wandert in einen eigenen Abschnitt „nicht entscheidbar mit diesen
+  Daten". **Wählbar bleibt alles** — Hinweis, kein Eingriff.
+  **(d)** Künftig werden **nur noch Kandidaten entworfen, deren Aussicht vorab unter
+  1.000 Handelstagen liegt.** Das ist eine Regel für den Strategie-Tüftler und gilt ab
+  sofort — die Wand wird zur Eintrittskarte statt zur Nachbemerkung.
+
+  **(2) → (a): das schärfste Urteil gewinnt immer.** `widerlegt` schlägt alles andere;
+  `bestaetigt-aber-nullpunkt-verschoben` gehört in die Rangfolge aufgenommen. Kein
+  zusätzlicher Uneinigkeits-Hinweis (das wäre (b) gewesen), kein Vertagen (c).
+  Das ist **#92**, `messmaschine.js:1214–1215`.
 
 - **26.08.2026, 18:35 — der große Plan ist angenommen, das Abbruchkriterium verschärft.**
   Wilhelm zu allen drei Vorlagen: **„ja, ja, ja"** —
