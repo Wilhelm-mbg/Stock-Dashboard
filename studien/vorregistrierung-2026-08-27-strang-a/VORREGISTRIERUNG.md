@@ -287,4 +287,34 @@ Mein Befund sagt: heute Kosmetik, ab nächster Woche Messhygiene.
 
 ---
 
+## 13. Nachtrag 27.08. ~02:3x — QS-Einschränkung übernommen: der Schwanz ist gedeckelt, das Raster verengt weiter
+
+**Die QS hat ihr eigenes „ein Stempel je Sammellauf" korrigiert** (Übergabe
+qs-audit-2026-08-27-0145-STEMPEL-ZWEITER-ART.md): Nach 1–5 Stempeltagen **verstummt die
+Reihe ganz** — keine der neun hat seit ihrem letzten Phantomtag eine weitere Kerze
+bekommen (sechs mit Archivstand 26.08. belegt, AVB/EQR mit Stand 24.08. noch
+unbestätigt; Falsifikationsbedingung reift beim nächsten Sammellauf). **Die gefährliche
+Gestalt — eine dauerhaft flache Reihe ohne Rückschlag, die jede Momentum-Rangfolge nach
+oben spült — tritt damit NICHT ein.**
+
+**Meine Formel aus Nachtrag 12 („strukturell real und wachsend") wird ersetzt durch:
+strukturell möglich, je Papier eng gedeckelt, im aktuellen Raster nicht realisiert.**
+Denn die Perioden-Mechanik verengt die QS-Deckelung weiter: Ein Papier **ohne Kerze am
+Periodenende ist gar kein Kandidat** dieser Periode (der Lader verlangt beide
+Grenzkerzen). Wirkung entsteht also nur, wenn ein Phase-0-Periodenende **exakt in das
+1–5-Tage-Schwanzfenster fällt.** Für AVB/EQR/WBS und das aktuelle Raster: nie — das
+nächste Rasterende liegt bei ~02.09., die Reihen enden 20./21.08. Das Restrisiko
+schrumpft auf: künftige Delistings, deren Schwanzfenster zufällig ein Rasterende
+enthält — dann 1–5 eingefrorene Tage bzw. im LBRDA/LBRDK-Fall ein erfundener
+Sprung als Periodenschluss. Größenordnung: ≤5/63 Wahrscheinlichkeit je betroffenem
+Papier für genau eine Periode.
+
+Offen bleibt (QS-Grenze, nicht meine): ob die Quelle verstummt oder der Sammler das
+Symbol fallen lässt — für die Messung gleichgültig, für eine Reparatur nicht.
+Wilhelms Abmeldedatum-Entscheid bleibt die saubere strukturelle Lösung; der
+Dringlichkeitsgrad sinkt durch diesen Nachtrag von „ab nächster Woche Messhygiene"
+auf „geordnete Hygiene ohne Termindruck".
+
+---
+
 *Simulation mit virtuellem Kapital. Keine Anlageberatung.*
