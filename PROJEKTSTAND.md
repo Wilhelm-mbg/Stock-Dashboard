@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 01:15
+letzter-bericht: 2026-08-27 01:39
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -1878,7 +1878,7 @@ Dateien je Archiv — **990.509 Kerzen**):
 > dort richtig** über `minutenSeitOeffnung`/`sitzungsMinuten` (`population-60m.js`, nur
 > lesend, verweigert bei aktiver Sperre selbst). *Für 60m gilt seine Zahl, nicht meine.*
 
-### 🏅 27.08. ~02:10 — der Prüfstand schlug die eigene Regel, und die QS drehte sie NICHT
+### 🏅 27.08. ~01:36 — der Prüfstand schlug die eigene Regel, und die QS drehte sie NICHT
 
 **Die stärkste Einzelentscheidung dieser Nacht.** Die QS hat Lauf 1 vorregistriert (`vorregistrierung/lauf1-strukturpruefung.md`, festgelegt **01:40, Sperre stand noch, keine Zahl bekannt**) und die Regel anschließend gegen einen eigenen Prüfstand mit vier erfundenen Tagen laufen lassen, deren Urteil vorher feststand.
 
@@ -1911,7 +1911,7 @@ liegen (Sitzungsende aus den Daten, nicht aus einem Kalender). Überwiegt „nac
 mutmaßlich echte Nachhandelskerzen — *und ein Docht außerhalb der Sitzungsspanne wäre dann
 gar kein Fehler.*
 
-### 🔬 27.08. ~02:10 — Mechanik-Beweis auf der Minutenstufe, härter als der AAPL-Fall
+### 🔬 27.08. ~01:34 — Mechanik-Beweis auf der Minutenstufe, härter als der AAPL-Fall
 
 Die 15m-gegen-5m-Stufe lief auf null klärbare Fälle. **Eine Stufe feiner trägt:** 5m-Kerzen
 mit Umsatz 0 gegen die fünf 1m-Kerzen darin, Überlappung 18.–26.08. **18 klärbare Fälle, in
@@ -1929,7 +1929,7 @@ an Kerzen **innerhalb** des Bandes. Über P-WEG-Dochte **außerhalb** der Tagess
 nichts. *Die Flach-Begründung ist damit zweifach widerlegt — die Kappen-Begründung ist damit
 nicht belegt.*
 
-### ✅ 27.08. ~02:05 — AUFGESCHLÜSSELT: die Normaltage trugen die Quote, die Halbtage sind ein Münzwurf
+### ✅ 27.08. ~01:28 — AUFGESCHLÜSSELT: die Normaltage trugen die Quote, die Halbtage sind ein Münzwurf
 
 **Volllauf über alle 2.916 Reihen (`markt-dashboard-1d`). Die Vermutung des PM trifft zu.**
 Die sieben Halbtage wurden **aus den Daten abgeleitet**, nicht aus einer Liste (Tage, deren
@@ -1964,7 +1964,67 @@ Gleitkommavergleich ohne fachliche Toleranz.
 > während der Fund die Halbtage meinte."* Eine richtige Zahl, die eine andere Frage
 > beantwortet als die gestellte — diesmal in der Aggregation.
 
-### ❌ 27.08. ~02:25 — OPTION (c) IST ZURÜCKGEZOGEN. Der PM hatte einen Zirkelschluss gebaut.
+### 🚨 27.08. ~01:35 — DIE QUELLE VERGIFTET HISTORISCHE ABRUFE MIT DEM HEUTIGEN KURS
+
+**Live reproduzierbar, mutmaßlich der Erzeugungsmechanismus hinter #96** (`-06`, 72 Abrufe
+für die fünf erreichbaren Halbtage, nur lesend, Rohantworten gespeichert):
+
+**Der frische Abruf des 13 Monate alten Tages 03.07.2025 enthält eine 20:00-UTC-Kerze mit
+`o=h=l=c=313,45`, `v=0` — das ist der HEUTIGE AAPL-Kurs, +47 % gegen den echten Tagesstand.**
+Yahoo hängt an historische `includePrePost`-Abrufe eine Abschlusskerze mit dem **aktuellen
+Quote-Stempel**.
+
+**⚠ PM-Befund dazu, an `1d` zur Prüfung gegeben: diese Kerze rutscht mutmaßlich durch BEIDE
+bestehenden Sperren.**
+
+| Sperre | greift? | warum |
+|---|---|---|
+| **Eimer-Regel** (`Stempel + Dauer <= jetzt`) | **nein** | Stempel ist 13 Monate alt, Eimer längst geschlossen. Sie schützt gegen die *laufende* Kerze, nicht gegen eine *alte* mit frischem Inhalt. |
+| **Raster-Regel** (krumme Stempel) | **nein** | 20:00 liegt exakt auf dem Raster. |
+
+**Das ist die gefährlichste Sorte: der Zeitstempel ist plausibel, nur der KURS verrät es.**
+Kandidat für ein tragfähiges Merkmal wäre der **Kursabstand zu den Nachbarkerzen derselben
+Reihe** — +47 % ist kein Grenzfall, und eine echte Schlusskerze liegt beim Schlusskurs.
+**Testfall liegt vor:** `-06`s Rohantworten enthalten die Kerze als bekannten Positivfall —
+die Sperre MUSS sie fangen, und die echten Schlusskerzen desselben Abrufs müssen durchgehen.
+
+**Offen und von `-06` benannt: laufen ALLE Einlesepfade durch `kerzenquelle.js`?** Niemand hat
+das bisher beantwortet. **Das trifft nicht nur die Halbtags-Reparatur, sondern jeden künftigen
+historischen Abruf** — ein Nachlade-Lauf könnte den heutigen Kurs als historische Kerze
+schreiben, mitten in die Messbasis, mit plausiblem Zeitstempel.
+
+*Nebenbefund derselben Erhebung:* Das Ur-Beispiel **AAPL 03.07.2025 17:00 (Tief 201,25) kommt
+heute identisch von der Quelle** — die Dochte sind **konsistente Lieferung**, kein damaliges
+Einlese-Problem. *QS-Einschränkung: konsistent ≠ korrekt.*
+
+### 🎯 27.08. ~01:38 — der Schiedsrichter-Test hat DREI Bezugsmengen, nicht zwei
+
+**Die QS hat den zugesagten Test beim Bauen geschärft** — und dabei bemerkt, dass die
+zugesagte Fassung die entscheidende Trennung verfehlt hätte:
+
+| | Bezugsmenge | Was es bedeutet, wenn der Tagesbalken sie trifft |
+|---|---|---|
+| **A** | Kerzen **voll** in der Sitzung, **ohne** Randkerze | Der Balken ist die Aggregation derselben Sitzungslieferung → **als Schiedsrichter erledigt** |
+| **B** | A **plus** die überlappende Randkerze | Es hängt daran, wie die Quelle die Randkerze beschneidet |
+| **C** | **alle** Kerzen des Tages, Nachhandel eingeschlossen | Der Balken führt Nachhandel mit → ein Docht außerhalb wäre **wirklich** beweisbar falsch, **(c) stünde wieder** |
+
+*Der Sitzungsbeginn kommt aus dem Zeitstempel des Tagesbalkens selbst, nicht aus einem
+Kalender — an Halbtagen ist der Kalender genau die Größe, die man nicht voraussetzen darf.*
+
+**Prüfstand: sechs erfundene Reihen mit vorab bekannter Einordnung, alle sechs richtig.**
+Dabei ist die **Randkerzen-Annahme belegt worden, auf der mein ganzer Einwand ruhte**:
+Normaltag **19:30 UTC**, Halbtag **16:30 UTC** — erkennbar daran, dass B das gesetzte Hoch
+mitnimmt und A nicht. *Diese Zahl stand bis dahin nur in einem Kopf.*
+
+**Und ein Fehler im eigenen ersten Entwurf, gefunden bevor er lief:** ein Tageszähler war per
+Hoisting `undefined`, `undefined++` ergibt `NaN`, **die Normaltage-Summe wäre stumm als NaN
+durchgelaufen.**
+
+**Reihenfolge nach Sperrfall:** (1) Lauf 1 — blockiert die Reparatur · (2) Schiedsrichter-Test
+— entscheidet, ob von (c) etwas übrig bleibt · (3) Lauf 2 · (4) Datenfund 2 beziffern ·
+(5) Kontrolllauf `stempel-sucher.js` auf 60m gegen die bekannten 149.
+
+### ❌ 27.08. ~01:32 — OPTION (c) IST ZURÜCKGEZOGEN. Der PM hatte einen Zirkelschluss gebaut.
 
 **Der PM hatte Wilhelm eine dritte Option empfohlen:** *„Das Tagesarchiv ist ein unabhängiger
 Schiedsrichter — ein Docht außerhalb der Tagesspanne kann nicht gehandelt worden sein, ist
