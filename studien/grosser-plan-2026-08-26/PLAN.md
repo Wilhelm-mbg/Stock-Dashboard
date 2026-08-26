@@ -300,3 +300,18 @@ Strategien unter 1.500 Handelstagen sind erledigt — `monatsende-kauf` (Zahl en
 `kapitulation` und `rsi2seit-mcp` (beide nicht bestätigt). **Aus dem laufenden Korpus
 kommt nichts mehr nach.** Neues muss aus Strang A oder B kommen; das ist jetzt keine
 Bevorzugung mehr, sondern der einzige Weg.
+
+
+### Nachtrag 26.08. 22:00 — Teil IV-b ist teilweise falsch
+
+Oben steht, die Aussicht werde durch frische Handelstage schlechter. **Das war eine
+Zwei-Tage-Momentaufnahme.** Über die ganze Messhistorie zurückgerechnet: **14 Übergänge
+gefallen, 12 gestiegen** — praktisch ein Münzwurf. *Die Aussage ist gestrichen; die QS hat
+sie selbst widerlegt.*
+
+**Was an ihre Stelle tritt und schwerer wiegt:**  skaliert mit 1/Effekt² und ist
+über die eigene Messhistorie **nicht reproduzierbar** — Median-Faktor **2,4**, im Extrem
+**72** bei derselben Variante. **Wilhelms Eintrittskarte bei 1.000 Handelstagen ist damit
+feiner als die Zahl, an der sie misst.** Empfehlung der QS: als Schranke ** gegen
+die Kostenhürde** nehmen — Effektgröße gegen Effektgröße, ohne Schätzer im Nenner.
+**Entscheidung offen, liegt bei Wilhelm.**

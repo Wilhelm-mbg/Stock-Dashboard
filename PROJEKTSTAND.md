@@ -160,6 +160,20 @@ Dauerbereitschaft (Wilhelms Anordnung).** Zwei Änderungen:
    **Die Routinen behalten die einmalige 10-Minuten-Bereitschaft** — eine Endlosschleife
    dort wäre die Prozesslast, die heute um 19:05 die CPU auf 97 % getrieben hat.
 
+3. **Jede Rolle meldet sich beim PM, wenn sie fertig ist — per Nachricht, nicht nur per
+   Datei.** Wilhelm: *„stell auch bitte sicher das sich alle Teammitglieder bei dir
+   melden wenn sie fertig sind! per message"*. Vier Angaben genügen: wer du bist, was
+   fertig ist, der wichtigste Fund in einem Satz (oder ausdrücklich „nichts gefunden"),
+   was du als Nächstes brauchst. **Die Übergabe-Datei bleibt Pflicht** — sie geht nie
+   verloren, erreicht den PM aber erst beim nächsten Durchgang; die Nachricht erreicht
+   ihn sofort und macht die Bereitschaft erst nutzbar. In allen sieben Routinen-Rollen
+   eingetragen, an die laufenden Chats verteilt.
+
+4. **Fragen an Wilhelm gehen als Formular, nicht als Fließtext** (`AskUserQuestion`):
+   Kopfzeile, zwei bis vier Optionen, empfohlene zuerst, Begründung in der Option.
+   Sein Wortlaut: *„nicht solche walls of text pleeassee"*. Steht in
+   `studien/rolle-projekt-manager.md` Punkt 6.
+
 ---
 
 ### ⚠ Richtigstellung 26.08. 16:50 — **v8.33.4 IST ausgeliefert.** Der PM hat es falsch gemeldet
@@ -949,6 +963,80 @@ heute an anderen beanstandet hat.**
 **Block D: `winkelbestaetigt` reproduziert** (nicht bestätigt, alle fünf Varianten, alle
 ohne Aussicht wegen negativem Überschuss) — **damit ist der Tafel-Fund (a) im frischen Lauf
 auf Maschine 1.4.0 bestätigt: es sind fünf, nicht sieben.** `winkelgrad` ist der letzte.
+
+---
+
+### 🔴 Die Aussicht ist keine belastbare Zahl — und die Eintrittskarte misst an ihr
+
+**Zuerst eine Richtigstellung, die den Plan betrifft.** Die QS hatte gemeldet, die Aussicht
+werde durch frische Handelstage **durchweg schlechter**; der PM hat das als Teil IV-b in
+den großen Plan übernommen. **Über zwei Tage stimmte es. Über die ganze Messhistorie
+nicht:**
+
+```
+Uebergaenge mit MEHR Bestaetigungstagen:
+  Aussicht GEFALLEN (Warten half) : 14
+  Aussicht GESTIEGEN              : 12
+```
+
+**Praktisch ein Münzwurf.** Die Aussage war eine Zwei-Tage-Momentaufnahme und ist aus dem
+Plan gestrichen. *Sie hat es selbst nachgerechnet, weil sie ihre eigene Behauptung prüfen
+wollte.*
+
+**Dabei fiel das Eigentliche auf: `tage80` skaliert mit 1/Effekt²** — ein kleiner,
+verrauschter Punktschätzer im Nenner, quadriert. Halbiert sich der geschätzte Effekt,
+**vervierfacht** sich die Aussicht.
+
+**Spannweite derselben Variante über die Messhistorie des Projekts:**
+
+| Variante | von | bis | Faktor |
+|---|---|---|---|
+| monatsende-kauf V0 | 180 | 16.185 | **89,9** |
+| **rsi2seit-mcp V3** | **1.056** | **75.988** | **72,0** |
+| rsi2seit-mcp V4 | 1.050 | 29.867 | 28,4 |
+| rsi2seit V0 | 1.197 | 30.354 | 25,4 |
+| t3-stundendrift V1 | 9.680 | 131.888 | 13,6 |
+
+**Median über alle 23 Varianten: Faktor 2,4.** Die Hälfte davon passiert bei **identischer
+Tageszahl** — ohne einen einzigen neuen Handelstag.
+
+*Ehrliche Einschränkung der QS:* Gleiche Tageszahl und trotzdem andere Zahl heißt, dass
+sich **Maschine oder Konfiguration** geändert hat, nicht die Daten (bei monatsende-kauf
+nachweislich ein anderes Universum, bei momentum ein älterer Maschinenstand). **Es ist
+also nicht reines Schätzrauschen — aber es heißt, dass die Zahl über die eigene
+Messhistorie des Projekts nicht reproduzierbar ist.**
+
+### Warum das eine Entscheidung berührt, nicht nur eine Methode
+
+**Wilhelms Eintrittskarte lautet „unter 1.000 nötigen Handelstagen".** `rsi2seit-mcp` V3
+steht auf dieser Tafel mit **1.070** — dieselbe Variante hat in der eigenen Historie
+zwischen **1.056 und 75.988** gestanden.
+
+> **Eine Schranke bei 1.000 ist feiner als die Reproduzierbarkeit der Zahl, an der sie
+> misst.** Ob ein Kandidat durchkommt, entscheidet damit teils, auf welchem Maschinenstand
+> er gemessen wurde.
+
+**Dasselbe trifft (1b):** Der Auftrag will die Zahl anzeigen und bei 2.500 trennen. Bei
+einem Median-Faktor von 2,4 wandern Strategien über diese Grenze, ohne dass sich am Markt
+etwas geändert hat.
+
+**Empfehlung der QS, ungebaut:**
+1. Die Aussicht **nie ohne ihren Effekt und ihre Tageszahl** zitieren — sie ist eine
+   Ableitung aus beiden, keine eigenständige Größe.
+2. Für die Eintrittskarte **nicht die Aussicht** als Schranke nehmen, sondern **`delta80`
+   gegen die Kostenhürde**: Effektgröße gegen Effektgröße, dieselben Einheiten, **ohne
+   Quadrierung im Nenner**.
+3. Wird die Aussicht angezeigt, dann **als Bereich, nicht als Zahl**.
+
+*Ihr Hinweis dazu, und er sitzt:* Genau diese Verwechslung ist dem PM heute Mittag
+unterlaufen — nur andersherum, er hatte `delta80` als Tageszahl gelesen. **„Die Lehre
+daraus ist nicht ‚nimm Tage statt Pp', sondern ‚nimm die Größe, die nicht durch einen
+Schätzer geteilt wird'."**
+
+**Status: gemeldet, nicht bestätigt.** Dieser Fund ist **nicht** unter den acht Skeptikern
+— er ist neu und ungeprüft. Rechenwege liegen unter
+`Markt-Dashboard-Daten/qs-audit-2026-08-26/werkzeuge/` (`aussicht-verlauf.js`,
+`aussicht-streuung.js`, beide nur lesend).
 
 ---
 
