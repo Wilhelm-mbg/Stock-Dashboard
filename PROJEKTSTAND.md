@@ -789,6 +789,48 @@ Block-B-Placebos, beide a11y-Läufe. Nicht im Scratch, der mit der Sitzung versc
 
 ---
 
+### 🛑 Der Minutenkerzen-Abruf ist gestoppt (PM, 26.08. 21:10) — mit Begründung
+
+**Ich hatte vor zwanzig Minuten entschieden, ihn weiterlaufen zu lassen. Das war falsch,
+und der Grund ist erst durch die exakte Auszählung der QS sichtbar geworden.**
+
+**Zwei Befunde, beide vom PM selbst nachgesehen:**
+
+**1. Der Lauf begräbt nichts — er erzeugt.** Ohne `--aktualisieren` überspringt das
+Werkzeug vorhandene Reihen (`yahoo-60m-holen.js:170`). Die bereits vorhandenen Teilkerzen
+sind also unberührt. **Aber jede frisch geholte Reihe bekommt eine neue**, weil die
+US-Sitzung noch läuft: **in zwanzig Minuten von 7 auf 9 gewachsen** (neu: MSA, VONV, TECS,
+SPXC).
+
+**2. Deshalb ist nicht das Sammeln der Fehler, sondern der Zeitpunkt.** Wer **während der
+Sitzung** sammelt, holt zwangsläufig die laufende Kerze mit. Der nächtliche Lauf um 22:15
+liegt nach Börsenschluss — **derselbe Befehl wäre dort sauber.**
+
+**Warum das schwerer wiegt als bei 60m:** Eine Teilkerze hört auf, die letzte zu sein,
+sobald der nächste Lauf läuft. Im 60m-Bestand verrät sie sich danach noch am krummen
+Raster (75 von 75). **Bei Minutenkerzen gibt es dieses Raster nicht** — `17:43:00` ist ein
+gültiger Platz. **Eine begrabene 1m-Teilkerze ist dauerhaft nicht mehr von einer echten zu
+unterscheiden.** Und Yahoo liefert sie nicht noch einmal.
+
+**Vorher gesichert:** die neun betroffenen Reihen stehen mit Symbol, Zeitstempel und Kurs
+in `Markt-Dashboard-Daten/teilkerzen-1m-2026-08-26.json` — **damit sie auffindbar bleiben,
+auch wenn ein späterer Lauf sie begräbt.** Billige Versicherung, einmal geschrieben.
+
+**Stand des Minutenarchivs:** 1.647+ Reihen statt der 490 vom Nachmittag. Der größte Teil
+der Erweiterung ist also drin; es fehlt der Rest der rund 2.900.
+
+**Was daraus als Regel folgt — sie fehlte bisher überall:**
+
+> **Intraday-Archive werden nur nach Börsenschluss gesammelt.** Ein Lauf während der
+> Sitzung schreibt in jede frisch geholte Reihe eine eingefrorene Teilkerze.
+
+Das gehört in die Sammelfunktion des Masters, in die nächtliche Aufgabe und in jede
+Rolle, die ein Intraday-Archiv anfasst. **Der Auftrag „App sammelt selbst" muss diese
+Bedingung tragen** — eine App, die tagsüber offen ist und nebenbei sammelt, produziert
+genau das, was hier gerade aufgefallen ist.
+
+---
+
 ## Aufträge
 
 *Was freigegeben ist und noch niemand macht. Wer eine Zeile nimmt, trägt sich unter
