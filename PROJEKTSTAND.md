@@ -1419,6 +1419,77 @@ unabhängig ein zweites Mal gemeldet.*
 
 ---
 
+### ✅ #96 AUFGELÖST — **die „Platzhalterkerze" ist keine. Sie trägt den Tagesschluss.**
+
+Befund und Zählskript: `studien/platzhalterkerze-2026-08-26/BEFUND.md` (`6d44354`).
+**Nichts gelöscht, nichts eingebaut.**
+
+**Die Gegenprobe, die es entscheidet** — für den 25.08. bei 395 Werten die 20:00-Kerze des
+Stundenarchivs gegen den Schlusskurs aus dem **Tagesarchiv** gehalten, also zwei getrennte
+Reihen:
+
+| | Werte |
+|---|---|
+| **20:00-Kerze näher am Tagesschluss** | **309** (auf 0,000 % genau) |
+| 19:30-Kerze näher | **0** |
+| beide gleich weit | 86 |
+
+**In keinem einzigen Fall ist die letzte reguläre Stunde näher.** Es ist die
+**Schlussauktion** — Yahoo meldet dafür keinen Umsatz, deshalb sieht sie flach aus.
+
+### Alle drei Regeln hätten Schaden angerichtet
+
+| Regel | trifft | davon mit Umsatz |
+|---|---|---|
+| Umsatz 0 **und** völlig flach — **Vorgabe des PM** | 3.440 | 0 — aber **429 echte Leerstunden** mitten in der Sitzung (FSEC 50, PAAA 42, BILZ 33) |
+| nach dem letzten Eimer des Tages — **Idee des Masters** | 23.325 | **1.171** — echte Schlussauktionen an Halbtagen |
+| beides zusammen | 2.924 | 0 — aber **76,3 % tragen einen ANDEREN Kurs als die Vorkerze** |
+
+**Die letzte Zeile war der Wendepunkt.** Ein Platzhalter würde den Schluss der Vorkerze
+wiederholen — das tun nur **23,7 %**. 302 weichen um mehr als 0,1 % ab, die größte um
+**2,93 %**. *Auch die Hypothese der QS ist damit widerlegt: „letzte Kerze der Reihe" trifft
+auf 2,5 % zu, „Schlusskurs der Vorkerze" auf 21,6 %.*
+
+**Zwei eigene Fehlversuche stehen im Befund**, weil sie zum Ergebnis gehören: Der
+Sitzungsschluss lässt sich aus dem Gitter **nicht als Uhrzeit** ableiten — der letzte Eimer
+des Tages ist *kürzer* als das Gitter (19:30–20:00). Die erste Rechnung ergab 19:30, die
+zweite 20:30, und die zweite hätte **1.858 Kerzen mit Umsatz** getroffen. Erst die dritte
+Fassung vergleicht nur Positionen.
+
+### Was das für Wilhelms Entscheidung heißt
+
+Sein Satz lautete: **„wir brauchen alle kerzen keine platzhalter"**. Nach dieser Messung
+spricht er **fürs Behalten** — **es ist keine Platzhalterkerze, es ist der Tagesschluss.**
+Die Entscheidung wird nicht zurückgenommen, sie wird auf den gemessenen Sachverhalt
+angewandt: *echte Kerzen bleiben.*
+
+**Was tatsächlich stört, ist die Form, nicht die Existenz:** Eine Auswertung, die Stunden
+zählt oder nach Umsatz filtert, sieht eine **leere Stunde**, wo der **Tagesschluss** steht.
+Wer sie mitzählt, bekommt **acht statt sieben Stunden je Handelstag.**
+
+> **→ Das ist eine Frage der Auswertung, nicht der Ablage — und damit eine Frage an die
+> Mess-Sitzung.** Nicht an eine Bausitzung, und nicht durch Löschen zu lösen.
+
+**Offener Nebenbefund:** 2.870 der 2.924 Treffer liegen auf **einem** Tag (25.08.), je
+Reihe genau einer; über die anderen 731 Handelstage verteilen sich nur 54. **Warum die
+Kerze nur für den jeweils letzten abgeschlossenen Tag auftaucht und nicht kumuliert, ist
+ungeklärt.**
+
+### Die Kette, die hier endet
+
+**Vier Regeln, vier Widerlegungen, an einem Abend:**
+1. PM: „flach + Umsatz 0" — hätte 429 echte Leerstunden gelöscht
+2. QS: „+ letzte Kerze der Reihe" — hätte 2 von 2.839 getroffen und 85 Teilkerzen erwischt
+3. QS: „marktweite Gleichzeitigkeit" — hinreichend, aber nicht notwendig
+4. Master: „nach dem letzten Eimer" — hätte 1.171 echte Schlussauktionen gelöscht
+
+**Erst die fünfte Frage war die richtige, und sie war keine Regel, sondern eine Messung:**
+*Wo liegt der offizielle Tagesschluss?* — beantwortet mit einer **zweiten, unabhängigen
+Datenreihe** statt mit einem Muster in derselben.
+
+
+---
+
 ## Aufträge
 
 *Was freigegeben ist und noch niemand macht. Wer eine Zeile nimmt, trägt sich unter
@@ -2550,6 +2621,17 @@ mit #93/#94 zusammen runder.
 
 *Wer welche Dateien belegt. Trag dich ein, bevor du anfängst; nimm dich raus, wenn du
 fertig bist.*
+
+- **Desingner** — **Baustopp (1b) ist umgesetzt** (`e11d7e9`: Signaltage statt
+  Handelstage überall, nicht-messbar-Aussicht wird nicht mehr gezeigt, dritter
+  Abschnitt „Gemessen – zeigt in die Gegenrichtung"; 12/12 Funktionsprüfungen).
+  Jetzt: **#80 Perzentil-Umbau** (Wilhelms Weg 2) — belegt `quant.js` (Eichtabelle
+  + Perzentil-Funktion), `explorer.js`, `strategiechart.js` (Anzeige), Eichskript
+  unter `studien/kanal-guete-2026-08-26/`. Die interne Auswahl (Filter 50,
+  Bester-Kanal) bleibt in Roh-Güte — es ändert sich NICHT, welche Kanäle
+  erscheinen; nur Anzeige und Deckkraft werden Perzentil. B1: der Monitor-Score
+  wird NICHT umgestellt (Rauschen dafür nie gemessen), verliert aber das Wort
+  „Güte" — sonst stünden wieder zwei Skalen unter einem Wort.
 
 - **Berechnungen** — **Verzerrungsrichtung FERTIG gemessen (26.08. ~22:2x):**
   erstes belegtes Richtungsurteil — **das Überlebenden-Archiv beschönigt die
