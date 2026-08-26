@@ -1,0 +1,85 @@
+=== momentum START 08:34:08 ===
+=== momentum FERTIG exit=0 nach 170s ===
+    Bestaetigung roh +3.9200 Pp  Ueberschuss +0.2774 Pp (t 0.31, MDE +1.7664 Pp)
+    je Signal (handelbar): +0.4178 Pp  netto nach Spanne: +0.3178 Pp
+    URTEIL: NICHT-ENTSCHEIDBAR  (bis t=2 mit 80 %: 562.398 Tage)
+    Ueberschuss 0.2774 Pp liegt unter der MDE 1.7664 Pp. Das heisst NICHT "kein Effekt" - es heisst, dass diese Datenmenge die Frage nicht beantworten kann. Dieser Lauf haette eine wahre Kante erst ab 2.9493 Pp mit 80 % Wahrscheinlichkeit ueber die Schwelle gebracht (delta80).
+
+Protokoll: C:\Users\Wilhe\Downloads\Stock-Dashboard\studien\messmaschine\protokolle\momentum-2026-08-26.json
+=== monatswende-breit START 08:36:58 ===
+=== monatswende-breit FERTIG exit=0 nach 92s ===
+    Bestaetigung roh +0.4465 Pp  Ueberschuss +0.1548 Pp (t 0.84, MDE +0.3682 Pp)
+    je Signal (handelbar): +0.1427 Pp  netto nach Spanne: +0.0427 Pp
+    URTEIL: NICHT-ENTSCHEIDBAR  (bis t=2 mit 80 %: 3.803 Tage)
+    Ueberschuss 0.1548 Pp liegt unter der MDE 0.3682 Pp. Das heisst NICHT "kein Effekt" - es heisst, dass diese Datenmenge die Frage nicht beantworten kann. Dieser Lauf haette eine wahre Kante erst ab 0.6148 Pp mit 80 % Wahrscheinlichkeit ueber die Schwelle gebracht (delta80).
+
+Protokoll: C:\Users\Wilhe\Downloads\Stock-Dashboard\studien\messmaschine\protokolle\monatswende-breit-2026-08-26.json
+=== quartalsschub-betrag START 08:38:30 ===
+=== quartalsschub-betrag FERTIG exit=0 nach 8s ===
+    Bestaetigung roh +0.5078 Pp  Ueberschuss +0.1621 Pp (t 0.70, MDE +0.4644 Pp)
+    je Signal (handelbar): +0.2223 Pp  netto nach Spanne: +0.1223 Pp
+    URTEIL: NICHT-ENTSCHEIDBAR  (bis t=2 mit 80 %: 19.416 Tage)
+    Ueberschuss 0.1621 Pp liegt unter der MDE 0.4644 Pp. Das heisst NICHT "kein Effekt" - es heisst, dass diese Datenmenge die Frage nicht beantworten kann. Dieser Lauf haette eine wahre Kante erst ab 0.7158 Pp mit 80 % Wahrscheinlichkeit ueber die Schwelle gebracht (delta80).
+
+Protokoll: C:\Users\Wilhe\Downloads\Stock-Dashboard\studien\messmaschine\protokolle\quartalsschub-betrag-2026-08-26.json
+=== rsi2seit START 08:38:38 ===
+=== rsi2seit FERTIG exit=0 nach 314s ===
+    Bestaetigung roh +0.1690 Pp  Ueberschuss +0.0543 Pp (t 0.83, MDE +0.1304 Pp)
+    je Signal (handelbar): +0.0205 Pp  netto nach Spanne: -0.0795 Pp
+    URTEIL: NICHT-ENTSCHEIDBAR  (bis t=2 mit 80 %: 4.116 Tage)
+    Ueberschuss 0.0543 Pp liegt unter der MDE 0.1304 Pp. Das heisst NICHT "kein Effekt" - es heisst, dass diese Datenmenge die Frage nicht beantworten kann. Dieser Lauf haette eine wahre Kante erst ab 0.1827 Pp mit 80 % Wahrscheinlichkeit ueber die Schwelle gebracht (delta80).
+
+Protokoll: C:\Users\Wilhe\Downloads\Stock-Dashboard\studien\messmaschine\protokolle\rsi2seit-2026-08-26.json
+=== rsi2seit-mcp START 08:43:53 ===
+=== rsi2seit-mcp FERTIG exit=0 nach 1127s ===
+    Bestaetigung roh +0.1024 Pp  Ueberschuss +0.0593 Pp (t 1.99, MDE +0.0597 Pp)
+    je Signal (handelbar): +0.0533 Pp  netto nach Spanne: -0.0467 Pp
+    URTEIL: NICHT-ENTSCHEIDBAR  (bis t=2 mit 80 %: 1.079 Tage)
+    Ueberschuss 0.0593 Pp liegt unter der MDE 0.0597 Pp. Das heisst NICHT "kein Effekt" - es heisst, dass diese Datenmenge die Frage nicht beantworten kann. Dieser Lauf haette eine wahre Kante erst ab 0.1021 Pp mit 80 % Wahrscheinlichkeit ueber die Schwelle gebracht (delta80).
+
+Protokoll: C:\Users\Wilhe\Downloads\Stock-Dashboard\studien\messmaschine\protokolle\rsi2seit-mcp-2026-08-26.json
+=== t1-zwangsglattstellung START 09:02:40 ===
+=== t1-zwangsglattstellung FERTIG exit=0 nach 203s ===
+    Ueberschuss 0.0272 Pp liegt unter der MDE 0.1512 Pp. Das heisst NICHT "kein Effekt" - es heisst, dass diese Datenmenge die Frage nicht beantworten kann. Dieser Lauf haette eine wahre Kante erst ab 0.2670 Pp mit 80 % Wahrscheinlichkeit ueber die Schwelle gebracht (delta80).
+
+  WARNUNGEN:
+   [B2] Variante 2: Tagesmittel (0.0272 Pp) und Erwartung je Signal (-0.5555 Pp) haben verschiedene Vorzeichen. Duenne Tage tragen den Schaetzer. Handelbar ist die Zahl je Signal.
+
+Protokoll: C:\Users\Wilhe\Downloads\Stock-Dashboard\studien\messmaschine\protokolle\t1-zwangsglattstellung-2026-08-26.json
+=== t2-umsatzschock START 09:06:03 ===
+=== t2-umsatzschock FERTIG exit=0 nach 180s ===
+
+  WARNUNGEN:
+   [B2] Variante 0: Tagesmittel (0.0184 Pp) und Erwartung je Signal (-0.0163 Pp) haben verschiedene Vorzeichen. Duenne Tage tragen den Schaetzer. Handelbar ist die Zahl je Signal.
+   [B2] Variante 1: Tagesmittel (0.0428 Pp) und Erwartung je Signal (-0.0587 Pp) haben verschiedene Vorzeichen. Duenne Tage tragen den Schaetzer. Handelbar ist die Zahl je Signal.
+
+Protokoll: C:\Users\Wilhe\Downloads\Stock-Dashboard\studien\messmaschine\protokolle\t2-umsatzschock-2026-08-26.json
+=== t3-stundendrift START 09:09:04 ===
+=== t3-stundendrift FERTIG exit=0 nach 454s ===
+    Ueberschuss 0.0077 Pp liegt unter der MDE 0.0256 Pp. Das heisst NICHT "kein Effekt" - es heisst, dass diese Datenmenge die Frage nicht beantworten kann. Dieser Lauf haette eine wahre Kante erst ab 0.0452 Pp mit 80 % Wahrscheinlichkeit ueber die Schwelle gebracht (delta80).
+
+  WARNUNGEN:
+   [B2] Variante 0: Tagesmittel (0.0012 Pp) und Erwartung je Signal (-0.0007 Pp) haben verschiedene Vorzeichen. Duenne Tage tragen den Schaetzer. Handelbar ist die Zahl je Signal.
+
+Protokoll: C:\Users\Wilhe\Downloads\Stock-Dashboard\studien\messmaschine\protokolle\t3-stundendrift-2026-08-26.json
+=== wertpapierart START 09:16:37 ===
+=== wertpapierart FERTIG exit=3 nach 1s ===
+Messe undefined auf E:/Markt-Dashboard-Archiv/archiv60m
+VERWEIGERT: Strategie ohne Begruendung (mindestens 20 Zeichen). Ein Preismuster ohne Grund ist eine Beobachtung, keine These.
+=== winkelbestaetigt START 09:16:39 ===
+=== winkelbestaetigt FERTIG exit=0 nach 686s ===
+    Bestaetigung roh -0.0027 Pp  Ueberschuss -0.1284 Pp (t -2.13, MDE +0.1207 Pp)
+    je Signal (handelbar): -0.1238 Pp  netto nach Spanne: -0.2238 Pp
+    URTEIL: NICHT-BESTAETIGT
+    Ueberschuss ueber MDE, aber t=-2.13 unter der Schwelle 2.58. Dieser Lauf haette eine wahre Kante erst ab 0.2063 Pp mit 80 % Wahrscheinlichkeit ueber die Schwelle gebracht (delta80).
+
+Protokoll: C:\Users\Wilhe\Downloads\Stock-Dashboard\studien\messmaschine\protokolle\winkelbestaetigt-2026-08-26.json
+=== winkelgrad START 09:28:04 ===
+=== winkelgrad FERTIG exit=0 nach 1045s ===
+    Bestaetigung roh +0.0544 Pp  Ueberschuss -0.0711 Pp (t -1.22, MDE +0.1169 Pp)
+    je Signal (handelbar): -0.0441 Pp  netto nach Spanne: -0.1441 Pp
+    URTEIL: NICHT-ENTSCHEIDBAR
+    Ueberschuss -0.0711 Pp liegt unter der MDE 0.1169 Pp. Das heisst NICHT "kein Effekt" - es heisst, dass diese Datenmenge die Frage nicht beantworten kann. Dieser Lauf haette eine wahre Kante erst ab 0.1997 Pp mit 80 % Wahrscheinlichkeit ueber die Schwelle gebracht (delta80).
+
+Protokoll: C:\Users\Wilhe\Downloads\Stock-Dashboard\studien\messmaschine\protokolle\winkelgrad-2026-08-26.json
+=== ALLE ELF DURCH 09:45:29 ===
