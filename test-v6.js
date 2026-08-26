@@ -3776,7 +3776,24 @@ console.log('\n42) Kostenhuerde: Gebuehr und Haltedauer (Befund 23.08.2026)');
   /* 2) Die Haltedauer muss aus modeParams() kommen, nicht aus einem Feld, das es nicht gibt.
    *    cfg.maxHoldMin existierte in D.intraday nie - die Anzeige fiel immer auf 60 Minuten
    *    zurueck, obwohl rsi2seit 480 Minuten haelt. */
-  var anz = d5.slice(d5.indexOf('function huerdeAnzeigen'), d5.indexOf('window.__huerde'));
+  /* Der Ausschnitt beginnt bei huerdeJetzt(), nicht erst bei huerdeAnzeigen():
+   * am 27.08.2026 ist die Zusammenstellung der Konfiguration dorthin ausgelagert
+   * worden, damit das Scoreboard sie ueber DepotAPI lesen kann (Wilhelms Entscheid
+   * zur Aufloesungswand). Die geprueften Eigenschaften sind dieselben geblieben -
+   * nur ihr Wohnort hat sich geaendert. Die Zeile darunter haelt fest, dass es bei
+   * EINER Zusammenstellung bleibt und nicht zwei daraus werden.
+   * (Zwei Zusicherungen wurden hierdurch rot, obwohl sich am Verhalten nichts
+   * geaendert hatte - genau der Fall, in dem die Zusicherung nachzuziehen ist und
+   * nicht das Verhalten.) */
+  var anz = d5.slice(d5.indexOf('function huerdeJetzt'), d5.indexOf('window.__huerde'));
+  /* Die Klammern MUESSEN escaped sein. Unescaped ist "()" eine leere Gruppe, und
+   * /huerdeJetzt()/ trifft dann schon auf den blossen Namen - die zweite dieser
+   * beiden Zusicherungen war beim ersten Wurf genau deshalb gruen, ohne etwas
+   * geprueft zu haben. */
+  ok(/var h = huerdeJetzt\(\);/.test(anz),
+     'Die Anzeige holt die Huerde aus huerdeJetzt() - eine Zusammenstellung, nicht zwei');
+  ok(/kostenHuerde: function/.test(d5) && /huerdeJetzt\(\)/.test(d5.slice(d5.indexOf('kostenHuerde: function'), d5.indexOf('kostenHuerde: function') + 400)),
+     'und DepotAPI liest DIESELBE - das Scoreboard bekommt keine zweite Rechnung');
   // Kommentare raus: der Grund der Aenderung steht als Text im Code und ist kein Verstoss.
   var anzCode = anz.replace(new RegExp('/\\*[\\s\\S]*?\\*/', 'g'), '')
                    .replace(new RegExp('//[^\\n]*', 'g'), '');
@@ -4238,7 +4255,8 @@ console.log('\n44) Messmaschine, Scoreboard und Strategie-Eingabe (23.08.2026)')
   var sb9 = fs.readFileSync(__dirname + '/scoreboard.js', 'utf8');
   ok(/WAND_TAGE = 2500/.test(sb9),
      'Die Wand-Schwelle im Scoreboard ist Wilhelms 2.500 von der Tafel (1b)');
-  ok(/bestesUrteil === 'nicht-entscheidbar'/.test(sb9.slice(sb9.indexOf('function hinterWand'), sb9.indexOf('function hinterWand') + 400)),
+  var wandBlk = sb9.slice(sb9.indexOf('function hinterWand'), sb9.indexOf('function aussichtZelle'));
+  ok(/bestesUrteil !== 'nicht-entscheidbar'\) return false;/.test(wandBlk),
      'Hinter die Wand wandert NUR "nicht entscheidbar" - ein entschiedenes Urteil ist keine Messgeraet-Frage (1b)');
   ok(/Nicht entscheidbar mit diesen Daten/.test(sb9),
      'Der Abschnitt traegt Wilhelms Wortlaut von der Tafel (1b)');
@@ -4282,8 +4300,58 @@ console.log('\n44) Messmaschine, Scoreboard und Strategie-Eingabe (23.08.2026)')
      'Die Spaltenueberschrift nennt die EINHEIT');
   ok(/Achtung, zwei Einheiten/.test(sb9),
      'und der Fusstext sagt ausdruecklich, dass zwei verschiedene Einheiten nebeneinander stehen');
-  ok(/Die Trennung unten läuft noch über die Signaltage/.test(sb9),
-     'Die Anzeige sagt selbst, dass die Umstellung erst zur Haelfte da ist - eine halbe Umstellung darf nicht wie eine ganze aussehen');
+  /* ---- DIE WAND MISST AN DER LIVE-HUERDE (Wilhelm 27.08. ~00:55) ----
+   * Bis dahin trennte sie bei 2.500 Signaltagen. Wilhelm hat sich ausdruecklich
+   * GEGEN die groesste statische Huerde entschieden und fuer die Huerde der
+   * laufenden Einstellung - mit einer bindenden Auflage: die Anzeige muss
+   * dazusagen, mit welchem Produkt und welcher Haltedauer gerechnet wurde. Sonst
+   * wandert die Wand unerklaert mit jeder Einstellung, und dieselbe Strategie
+   * stuende morgen woanders, ohne dass sich an ihr etwas geaendert haette.
+   * (Die Marke, die hier bis eben stand - "die Umstellung ist erst zur Haelfte
+   * da" - ist damit erfuellt und abgeloest, nicht geloescht.) */
+  ok(/window\.DepotAPI\.kostenHuerde\(\)/.test(sb9),
+     'Die Huerde kommt aus depot.js - eine Rechnung, nicht zwei');
+  ok(/var HL = liveHuerde\(\);/.test(sb9) && /hinterWand\(p9, HL\)/.test(sb9),
+     'Sie wird EINMAL je Tabelle geholt - sonst waeren zwei Zeilen gegen verschiedene Massstaebe geprueft');
+
+  /* Wilhelms Auflage, woertlich geprueft. */
+  var wandSatzBlk = sb9.slice(sb9.indexOf('var wandSatz = function'), sb9.indexOf('var minDelta80Anzeige'));
+  ok(/h\.produkt/.test(wandSatzBlk) && /Haltedauer/.test(wandSatzBlk),
+     'Der Trenntext nennt PRODUKT und HALTEDAUER - Wilhelms Auflage vom 27.08.');
+  ok(/Kostenhürde/.test(wandSatzBlk) && /je Umlauf/.test(wandSatzBlk),
+     'und die Huerde selbst, mit Einheit');
+  ok(/verschiebt sich diese Grenze/.test(wandSatzBlk),
+     'und sagt, dass die Grenze mit der Einstellung wandert - sonst haelt man sie fuer eine Eigenschaft der Strategie');
+
+  /* Die Rechnung selbst, an festen Zahlen. Ohne diese vier Faelle prueft alles
+   * oben nur Text. */
+  var wandFn = new Function('gegenRichtung', 'minAussicht', 'minDelta80', 'WAND_TAGE',
+    wandBlk.slice(wandBlk.indexOf('function hinterWand')) + '; return hinterWand;');
+  var HW = wandFn(function () { return false; }, function () { return 100; },
+    function (p) { return p.d; }, 2500);
+  var nE = { bestesUrteil: 'nicht-entscheidbar' };
+  ok(HW(Object.assign({ d: 0.30 }, nE), { pp: 0.10 }) === true,
+     'Feinheit 0,30 Pp gegen Huerde 0,10 Pp: das Geraet war zu grob, hinter die Wand');
+  ok(HW(Object.assign({ d: 0.05 }, nE), { pp: 0.10 }) === false,
+     'Feinheit 0,05 Pp gegen dieselbe Huerde: fein genug, bleibt oben');
+  /* DIE WICHTIGE: ohne Zahl keine Behauptung. Die alte Regel schob Protokolle
+   * ohne Kennzahl hinter die Wand und sagte damit "das Geraet war zu grob",
+   * obwohl es niemand wusste. 16 der 38 Protokolle stammen aus der Zeit davor. */
+  ok(HW(Object.assign({ d: null }, nE), { pp: 0.10 }) === false,
+     'Ohne ausgewiesene Feinheit wird NICHT einsortiert - ohne Zahl keine Behauptung');
+  /* Und der Rueckfall, wenn die Einstellung nicht lesbar ist: dann gilt wieder die
+   * alte Signaltage-Regel - und zwar in BEIDE Richtungen. Der erste Wurf dieser
+   * Zusicherung prueft nur eine und war deshalb rot: mit 100 Signaltagen gegen die
+   * 2.500er-Schwelle gehoert die Zeile nach oben, nicht hinter die Wand. Die
+   * Erwartung war falsch, nicht der Code. */
+  var HWviel = wandFn(function () { return false; }, function () { return 9999; },
+    function (p) { return p.d; }, 2500);
+  ok(HWviel(Object.assign({ d: 0.05 }, nE), null) === true,
+     'Ohne lesbare Huerde entscheiden wieder die Signaltage: 9.999 liegen ueber 2.500, hinter die Wand');
+  ok(HW(Object.assign({ d: 0.05 }, nE), null) === false,
+     'und 100 Signaltage bleiben oben - sonst wuerde der Rueckfall alles einsortieren');
+  ok(/Gemessen wird hier noch an den Signaltagen/.test(wandSatzBlk),
+     'und der Text sagt dann, dass er etwas anderes misst als angeschrieben');
   /* Die Trennzeilen mussten eine Spalte breiter werden. Eine Trennzeile, die zu
    * kurz spannt, zerreisst die Tabelle - das sieht man nur im Bild, nicht im Text. */
   ok(/colspan="10"/.test(sb9) && !/colspan="9"/.test(sb9),

@@ -840,9 +840,16 @@
   }
   document.addEventListener('DOMContentLoaded', function () { kantenAusProtokollen(); });
 
-  function huerdeAnzeigen() {
-    var el = document.getElementById("kostenHuerde"); if (!el) return;
-    var cfg = D.intraday || {};
+  /* DIE HUERDE DER LAUFENDEN EINSTELLUNG, an einer Stelle zusammengesucht.
+   * Bis zum 27.08.2026 stand diese Zusammenstellung nur in huerdeAnzeigen() und war
+   * von aussen nicht lesbar. Wilhelms Entscheid vom 27.08. ~00:55 verlangt, dass die
+   * Aufloesungswand im Scoreboard an genau dieser Zahl misst - also muss sie abrufbar
+   * sein, ohne dass jemand die Rechnung ein zweites Mal aufschreibt.
+   * Gibt zusaetzlich haltenMin und angenommen zurueck: Wilhelms Auflage ist, dass die
+   * Anzeige DAZUSAGT, mit welchem Produkt und welcher Haltedauer gerechnet wurde -
+   * sonst wandert die Wand unerklaert mit jeder Einstellung. */
+  function huerdeJetzt() {
+    var cfg = D && D.intraday ? D.intraday : {};
     /* Haltedauer aus DERSELBEN Quelle wie der Handel: modeParams() liefert sie auch
      * dem Live-Pfad. Vorher stand hier cfg.maxHoldMin - ein Feld, das D.intraday nicht
      * hat; die Anzeige rechnete deshalb immer mit 60 Minuten statt mit 480. */
@@ -855,7 +862,19 @@
     try { eq = equityNow() > 0 ? equityNow() : 10000; } catch (eE) { eq = 10000; }
     var einsatz = positionsWert(cfg, eq, slAbs, 1);
     var h = kostenHuerdePp(cfg, 200, 0.30, halten, einsatz);
+    if (!h) return null;
+    h.haltenMin = halten;
+    h.angenommen = offenesEnde;   // dieser Modus hat keinen Zeitausstieg
+    h.instrument = cfg.instrument || null;
+    return h;
+  }
+
+  function huerdeAnzeigen() {
+    var el = document.getElementById("kostenHuerde"); if (!el) return;
+    var cfg = D.intraday || {};
+    var h = huerdeJetzt();
     if (!h) { el.textContent = ""; return; }
+    var halten = h.haltenMin, offenesEnde = h.angenommen;
     /* D2: Die Kante kommt aus dem Protokoll, nicht aus dem Code. Steht keins da,
      * wird nichts behauptet - die Huerde allein ist dann die Aussage.
      * (Bis 23.08.2026 stand hier KANTE = { rsi2seit: 0.11 } fest verdrahtet. Die
@@ -4044,6 +4063,20 @@
     });
   }
   window.DepotAPI = {
+    /** Die Kostenhuerde der LAUFENDEN Einstellung, in Prozentpunkten des Basiswerts.
+     *  Nur eine KOPIE und nur lesend - wie signal() und protokollKante().
+     *  Wilhelms Entscheid 27.08.: das Scoreboard trennt seine Aufloesungswand an
+     *  dieser Zahl. Sie haengt an Instrument, Hebel, Haltedauer und Einsatz und
+     *  aendert sich deshalb mit der Einstellung - genau darum gibt sie produkt und
+     *  haltenMin mit heraus, damit die Anzeige es dazusagen kann.
+     *  null heisst: noch keine Einstellung gelesen (Depot nicht hochgefahren). */
+    kostenHuerde: function () {
+      var h = null;
+      try { h = huerdeJetzt(); } catch (e) { return null; }
+      if (!h) return null;
+      return { pp: h.pp, produkt: h.produkt, hebel: h.hebel, einsatz: h.einsatz,
+        haltenMin: h.haltenMin, angenommen: !!h.angenommen, instrument: h.instrument };
+    },
     /** Was die Kurzfrist-Regeln zu einem Symbol zuletzt gesagt haben.
      *  Nur eine KOPIE - das Bestandsdepot (Issue #71) liest mit, es greift nicht ein. */
     signal: function (sym) {

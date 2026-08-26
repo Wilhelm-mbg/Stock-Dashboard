@@ -247,10 +247,36 @@
     });
     return maxT !== -Infinity && maxT <= 0;
   }
-  function hinterWand(p) {
+  /* DIE KOSTENHUERDE DER LAUFENDEN EINSTELLUNG. Wilhelms Entscheid vom 27.08.:
+   * die Wand trennt daran, nicht an einer festen Tabelle - und ausdruecklich gegen
+   * die Empfehlung, die groesste statische Huerde zu nehmen.
+   * Sie kommt aus depot.js (DepotAPI.kostenHuerde), damit es bei EINER Rechnung
+   * bleibt. Ist das Depot noch nicht hochgefahren, gibt es keine Huerde - dann
+   * faellt die Trennung auf die alte Signaltage-Regel zurueck UND sagt das. Eine
+   * Wand, die stillschweigend etwas anderes misst als angeschrieben, waere genau
+   * der Fehler, gegen den diese ganze Anzeige gebaut ist. */
+  function liveHuerde() {
+    try {
+      var h = window.DepotAPI && window.DepotAPI.kostenHuerde ? window.DepotAPI.kostenHuerde() : null;
+      return h && isFinite(h.pp) && h.pp > 0 ? h : null;
+    } catch (e) { return null; }
+  }
+  function hinterWand(p, h) {
     if (gegenRichtung(p)) return false;
-    var min = minAussicht(p);
-    return p.bestesUrteil === 'nicht-entscheidbar' && (min == null || min > WAND_TAGE);
+    if (p.bestesUrteil !== 'nicht-entscheidbar') return false;
+    if (!h) {
+      /* Rueckfall: keine Einstellung gelesen, also die alte Regel. */
+      var min = minAussicht(p);
+      return min == null || min > WAND_TAGE;
+    }
+    var d = minDelta80(p);
+    /* OHNE delta80 KEINE BEHAUPTUNG. Die alte Regel schob Protokolle ohne Zahl
+     * hinter die Wand; das hiess "das Geraet war zu grob", obwohl niemand es
+     * wusste. 16 der 38 vorliegenden Protokolle stammen aus der Zeit vor dieser
+     * Kennzahl. Sie stehen jetzt oben und tragen einen Strich in der Spalte -
+     * das ist "wir wissen es nicht", und genau so sieht es aus. */
+    if (d == null) return false;
+    return d > h.pp;
   }
   function aussichtZelle(p) {
     var min = minAussicht(p);
@@ -312,10 +338,47 @@
      * abgeschaltet. Die Reihenfolge innerhalb der Abschnitte bleibt die
      * bestehende Sortierung aus laden(). */
     var oben = [], wand = [], gegen = [];
+    /* EINMAL holen, nicht je Zeile: sonst koennte sich die Huerde mitten in der
+     * Tabelle aendern und zwei Zeilen waeren gegen verschiedene Massstaebe geprueft. */
+    var HL = liveHuerde();
     STAND.forEach(function (z, i) {
       var p9 = z.aktuell.protokoll;
-      (gegenRichtung(p9) ? gegen : hinterWand(p9) ? wand : oben).push(i);
+      (gegenRichtung(p9) ? gegen : hinterWand(p9, HL) ? wand : oben).push(i);
     });
+    /* WILHELMS AUFLAGE, woertlich: die Anzeige muss dazusagen, mit welchem Produkt
+     * und welcher Haltedauer gerechnet wurde. Ohne das wandert die Wand unerklaert
+     * mit jeder Einstellung - und dieselbe Strategie stuende morgen woanders, ohne
+     * dass sich an ihr etwas geaendert haette. Das ist die Fehlerfamilie vom
+     * 23.08.2026 (Produkt-Vorgabe an drei Stellen, zwei davon falsch). */
+    var wandSatz = function (h) {
+      if (!h) {
+        return 'Diese Strategien sind nicht am Markt gescheitert, sondern am Messgerät: Eine ' +
+          'Entscheidung bräuchte mehr als ' + U.nf0.format(WAND_TAGE) + ' weitere ' +
+          'Bestätigungs-Signaltage. <b>Gemessen wird hier noch an den Signaltagen</b> – die ' +
+          'Kostenhürde Ihrer Einstellung ließ sich nicht lesen (das Depot ist noch nicht ' +
+          'geladen). Sie bleiben wählbar und vollständig einsehbar – die App behauptet nur ' +
+          'nichts über sie, weder gut noch schlecht.';
+      }
+      var std = h.haltenMin >= 60 ? U.dez(h.haltenMin / 60, 1) + ' h' : h.haltenMin + ' Min';
+      return 'Diese Strategien sind nicht am Markt gescheitert, sondern am Messgerät: Selbst ' +
+        'im günstigsten Fall hätte die Messung nur Effekte ab <b>' + U.dez(minDelta80Anzeige(), 3) + ' Pp</b> ' +
+        'erkannt – mehr, als nach Kosten übrig bliebe. <b>Verglichen wird mit Ihrer aktuellen ' +
+        'Einstellung:</b> ' + U.esc(h.produkt) + ', Haltedauer ' + std +
+        (h.angenommen ? ' (angenommen – dieser Modus hat keinen Zeitausstieg)' : '') +
+        ', Einsatz ' + Math.round(h.einsatz) + ' $ → Kostenhürde <b>' + U.dez(h.pp, 3) + ' Pp je Umlauf</b>. ' +
+        'Ändern Sie das Produkt oder die Haltedauer, verschiebt sich diese Grenze. ' +
+        'Sie bleiben wählbar und vollständig einsehbar – die App behauptet nur nichts über sie, ' +
+        'weder gut noch schlecht.';
+    };
+    /* Nur fuer den Satz oben: die feinste Zahl unter den Zeilen hinter der Wand. */
+    var minDelta80Anzeige = function () {
+      var m = null;
+      wand.forEach(function (i) {
+        var d = minDelta80(STAND[i].aktuell.protokoll);
+        if (d != null && (m == null || d < m)) m = d;
+      });
+      return m == null ? 0 : m;
+    };
     var trennzeile = function (titel, satz) {
       return '<tr><td colspan="10" style="padding:16px 8px 6px; border-top:2px solid var(--grid);">' +
         '<b>' + titel + '</b><br>' +
@@ -323,10 +386,7 @@
     };
     var rows = oben.map(zeile).join('') +
       (wand.length
-        ? trennzeile('Nicht entscheidbar mit diesen Daten',
-          'Diese Strategien sind nicht am Markt gescheitert, sondern am Messgerät: Eine Entscheidung bräuchte mehr als ' +
-          U.nf0.format(WAND_TAGE) + ' weitere Bestätigungs-Signaltage – in Handelstagen mindestens ebenso viele. ' +
-          'Sie bleiben wählbar und vollständig einsehbar – die App behauptet nur nichts über sie, weder gut noch schlecht.')
+        ? trennzeile('Nicht entscheidbar mit diesen Daten', wandSatz(HL))
         : '') +
       wand.map(zeile).join('') +
       (gegen.length
@@ -345,7 +405,7 @@
       '<th>gemessen</th></tr>' +
       rows + '</table></div>' +
       '<div id="sbDetail" style="margin-top:10px;"></div>' +
-      '<div style="font-size:var(--fs-neben); color:var(--muted); margin-top:6px;"><b>Feinheit (delta80)</b> ist der kleinste wahre Effekt, den ein Lauf mit 80 % Wahrscheinlichkeit über die Schwelle gebracht hätte – <b>in Prozentpunkten</b>, kleiner ist feiner. Sie ist mit der Kostenhürde des gehandelten Produkts zu vergleichen (gemessen an 15 US-Großwerten 2026: Aktie 0,04 · Schein am Geld 0,05 · CFD 0,10 · Standard-Schein 0,23 Pp je Umlauf). <b>Achtung, zwei Einheiten:</b> die Feinheit zählt Prozentpunkte, die Aussicht daneben zählt Signaltage. <b>Die Signaltage sind zwischen Strategien nicht vergleichbar:</b> wer selten feuert, braucht wenige Signaltage, aber sehr viele Handelstage dafür – gemessen reicht dieser Faktor von 1,0 bis 21,5. Die Feinheit hat dieses Problem nicht, sie ist eine Effektgröße und keine Zählung. <b>Die Trennung unten läuft noch über die Signaltage</b> – die Umstellung auf die Feinheit ist entschieden, aber noch offen, gegen welche Produkthürde getrennt wird.<br>Alle Werte aus der <b>Bestätigungshälfte</b> (zurückgehaltene Tage) in Prozentpunkten. „Tagesmittel" ist die Teststatistik, „je Signal" die handelbare Zahl – beide können verschiedene Vorzeichen haben, dann steht eine Warnung dabei. Zeile anklicken für den vollständigen Entscheidungsweg. ' +
+      '<div style="font-size:var(--fs-neben); color:var(--muted); margin-top:6px;"><b>Feinheit (delta80)</b> ist der kleinste wahre Effekt, den ein Lauf mit 80 % Wahrscheinlichkeit über die Schwelle gebracht hätte – <b>in Prozentpunkten</b>, kleiner ist feiner. Sie ist mit der Kostenhürde des gehandelten Produkts zu vergleichen (gemessen an 15 US-Großwerten 2026: Aktie 0,04 · Schein am Geld 0,05 · CFD 0,10 · Standard-Schein 0,23 Pp je Umlauf). <b>Achtung, zwei Einheiten:</b> die Feinheit zählt Prozentpunkte, die Aussicht daneben zählt Signaltage. <b>Die Signaltage sind zwischen Strategien nicht vergleichbar:</b> wer selten feuert, braucht wenige Signaltage, aber sehr viele Handelstage dafür – gemessen reicht dieser Faktor von 1,0 bis 21,5. Die Feinheit hat dieses Problem nicht, sie ist eine Effektgröße und keine Zählung. <b>Die Trennung unten misst an der Feinheit</b> gegen die Kostenhürde Ihrer aktuellen Einstellung – Produkt und Haltedauer stehen dort dabei. Strategien ohne ausgewiesene Feinheit werden nicht einsortiert: ohne Zahl keine Behauptung.<br>Alle Werte aus der <b>Bestätigungshälfte</b> (zurückgehaltene Tage) in Prozentpunkten. „Tagesmittel" ist die Teststatistik, „je Signal" die handelbare Zahl – beide können verschiedene Vorzeichen haben, dann steht eine Warnung dabei. Zeile anklicken für den vollständigen Entscheidungsweg. ' +
       'Ein <b style="color:var(--down);">✖ Nullpunkt</b> heißt: Die Messung hat ihre eigene Selbstprüfung nicht bestanden – ' +
       'ein Signal ohne jeden Kursbezug hätte null ergeben müssen und tat es nicht. Dann stimmt keine Zahl dieser Zeile. ' +
       'Ein <b style="color:var(--series2);">⟳ alte Maschine</b> heißt: Die Zeile wurde mit einer anderen Fassung der Messmaschine gerechnet als der, die jetzt hier liegt – ' +
