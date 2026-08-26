@@ -721,6 +721,74 @@ feuert — und schriebe Teilkerzen in genau die Archive, die nie nachgeholt werd
 
 ---
 
+### 🔴 Ein Urteil ist gekippt — und der eigentliche Fund ist, dass die Grenze Rauschen ist
+
+**`rsi2seit-mcp`: nicht entscheidbar → nicht bestätigt.** Zwei von fünf Varianten wechseln,
+damit das `bestesUrteil` der ganzen Strategie.
+
+**Woran es hängt:**
+
+| | Überschuss | MDE | Abstand |
+|---|---|---|---|
+| Var 3 **alt** | 0,0552 | 0,0554 | **−0,0002 Pp** |
+| Var 3 **neu** | 0,0554 | 0,0553 | **+0,0001 Pp** |
+| Var 4 alt | 0,0593 | 0,0597 | −0,0004 Pp |
+| Var 4 neu | 0,0600 | 0,0596 | +0,0005 Pp |
+
+**Das Urteil der Variante 3 hängt an 0,0001 Prozentpunkten** — einem Zehntausendstel, einem
+Viertelprozent der Aktienhürde. An der Strategie hat sich nichts geändert; es sind zwei
+Handelstage dazugekommen.
+
+**Und es ist heute das zweite Mal.** Vom PM in `studien/neumessung-2026-08-26/AUSGABE.md`
+Zeile 44–45 nachgesehen — heute früh kippte **dieselbe Variante** in die **andere**
+Richtung: *„nicht-bestaetigt → nicht-entscheidbar, Überschuss 0.0556 → 0.0552 gegen MDE
+0.0554 (Abstand −0,0002 Pp)."*
+
+**Zweimal an einem Tag, in beide Richtungen, auf Margen von 0,0002 und 0,0001 Pp.**
+
+**Der Fund ist deshalb nicht „rsi2seit-mcp ist jetzt nicht bestätigt".** Er ist:
+
+> **Die Grenze zwischen „nicht entscheidbar" und „nicht bestätigt" ist bei dieser Strategie
+> keine Eigenschaft des Marktes, sondern Rauschen.**
+
+Und auf genau diesen Etiketten steht die Kopfzeile dieser Tafel — *„2 nicht bestätigt, 9
+nicht entscheidbar, 1 nicht messbar"*. **Die 2 war heute schon 3 und wieder 2.**
+
+*Einordnung, damit es nicht größer klingt als es ist:* **„bestätigt" war nie in Reichweite.**
+Die Bonferroni-Schwelle liegt bei fünf Tests auf 2,576, t steht bei 2,00. Es wechselt nur
+die **Art des Nein**, nicht das Nein selbst.
+
+### Die Folge für den Plan: die Eintrittskarte hat keinen Kandidaten mehr
+
+`rsi2seit-mcp` war eine der **drei** Strategien unter 1.500 Handelstagen. Steht sie auf
+„nicht bestätigt", sind **alle drei erledigt**:
+
+| Strategie | Aussicht | Urteil |
+|---|---|---|
+| monatsende-kauf | 187 | nicht messbar (17 Tage, A7-Warnung — Zahl entwertet) |
+| kapitulation | 224 | **nicht bestätigt** |
+| rsi2seit-mcp | 1.070 | **nicht bestätigt** |
+
+**Aus dem laufenden Korpus kommt nichts mehr nach, was die 1.000-Tage-Eintrittskarte
+durchließe und noch offen wäre.** Neues muss aus **Strang A** (momentum, nicht
+überlappend) oder **Strang B** (Übernacht-Familie) kommen. Das ist keine Katastrophe —
+aber es gehört neben das Abbruchkriterium, weil es dessen Voraussetzungen ändert.
+
+*Zur Sorgfalt der QS:* Der abgeschossene erste Lauf hatte `rsi2seit-mcp` **fertig
+gemessen** und das Protokoll um 19:45 geschrieben; verloren ging nur die Bildschirmausgabe,
+weil Node beim harten Abschuss den Puffer nicht leert. **Ein unabhängiger Zweitlauf misst
+gerade nach.**
+
+**Stand Block D: 7 von 9 — sechs stabil, eines gekippt.** Es fehlen `winkelbestaetigt` und
+`winkelgrad`. Die drei Tagesarchiv-Protokolle bleiben gesperrt (`archiv1d`, über 2 h) —
+darunter `momentum`, also Strang A.
+
+**Alle Skripte und Rohergebnisse liegen dauerhaft** unter
+`Markt-Dashboard-Daten/qs-audit-2026-08-26/` — Werkzeuge, Block-D-Protokolle,
+Block-B-Placebos, beide a11y-Läufe. Nicht im Scratch, der mit der Sitzung verschwindet.
+
+---
+
 ## Aufträge
 
 *Was freigegeben ist und noch niemand macht. Wer eine Zeile nimmt, trägt sich unter

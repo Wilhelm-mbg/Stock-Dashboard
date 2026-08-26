@@ -278,3 +278,25 @@ ausschließlich Nicht-Überlebende fehlen und dessen Ausschlussliste handelnde W
 auswirft, erzeugt ein Ergebnis, das Stufe 2 ohnehin wieder einkassiert.
 
 **Reihenfolge daher: Datenqualität → Strang A → Strang B.**
+
+
+---
+
+## Teil IV-b — Nachtrag 26.08. 21:00: die Etiketten selbst sind unscharf
+
+**Beobachtet an , zweimal an einem Tag:** Variante 3 kippte morgens von
+„nicht bestätigt" auf „nicht entscheidbar" (Abstand −0,0002 Pp) und abends zurück
+(+0,0001 Pp). **Dieselbe Variante, beide Richtungen, auf Zehntausendstel eines
+Prozentpunkts** — ausgelöst allein durch zwei zusätzliche Handelstage.
+
+**Die Grenze zwischen den beiden Nein-Sorten ist dort keine Eigenschaft des Marktes,
+sondern Rauschen.** Wer in diesem Plan mit „2 nicht bestätigt, 9 nicht entscheidbar"
+rechnet, rechnet mit Etiketten, die für Grenzfälle nicht stabil sind. **Für die
+Unterscheidung, auf die es ankommt — trägt eine Kante die Kosten? — ändert das nichts:**
+„bestätigt" war bei t = 2,00 gegen eine Schwelle von 2,576 nie in Reichweite.
+
+**Was sich sehr wohl ändert: die Eintrittskarte hat keinen Kandidaten mehr.** Alle drei
+Strategien unter 1.500 Handelstagen sind erledigt —  (Zahl entwertet),
+ und  (beide nicht bestätigt). **Aus dem laufenden Korpus
+kommt nichts mehr nach.** Neues muss aus Strang A oder B kommen; das ist jetzt keine
+Bevorzugung mehr, sondern der einzige Weg.
