@@ -309,9 +309,9 @@ Zwei-Tage-Momentaufnahme.** Über die ganze Messhistorie zurückgerechnet: **14 
 gefallen, 12 gestiegen** — praktisch ein Münzwurf. *Die Aussage ist gestrichen; die QS hat
 sie selbst widerlegt.*
 
-**Was an ihre Stelle tritt und schwerer wiegt:**  skaliert mit 1/Effekt² und ist
+**Was an ihre Stelle tritt und schwerer wiegt:** `tage80` skaliert mit 1/Effekt² und ist
 über die eigene Messhistorie **nicht reproduzierbar** — Median-Faktor **2,4**, im Extrem
 **72** bei derselben Variante. **Wilhelms Eintrittskarte bei 1.000 Handelstagen ist damit
-feiner als die Zahl, an der sie misst.** Empfehlung der QS: als Schranke ** gegen
+feiner als die Zahl, an der sie misst.** Empfehlung der QS: als Schranke **`delta80` gegen
 die Kostenhürde** nehmen — Effektgröße gegen Effektgröße, ohne Schätzer im Nenner.
 **Entscheidung offen, liegt bei Wilhelm.**
