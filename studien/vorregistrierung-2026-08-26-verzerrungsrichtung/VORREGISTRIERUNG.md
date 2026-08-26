@@ -408,6 +408,24 @@ hier Schluss gewesen — Umbau statt Abbruch gilt nur, weil die Abweichung klein
 und in eine als Messgröße sinnvolle Zahl überführbar ist. Der PM sieht diesen Nachtrag
 vor dem Kohortenlauf.
 
+## 11. Nachtrag 26.08. 22:0x — Wilhelms delta80-Entscheid und der monatsende-Vorbehalt
+
+Nach `ae80caa` (Wilhelm: Eintrittskarte misst künftig **delta80 gegen die Kostenhürde
+statt Handelstage**; tage80 schwankt über die eigene Messhistorie um Median-Faktor 2,4)
+und `8e0ef59`, **beides vor dem Kohortenlauf**:
+
+1. **An den Regeln dieser Messung ändert das nichts** — R1–R6 messen von Anfang an
+   Effektgröße gegen Effektgröße (t gegen Familienschwelle, ΔB gegen delta80Prot);
+   tage80 diente in §3 nur der AUSWAHL der drei Zielprotokolle und steckt in keiner
+   Urteilsregel. Die Auswahl selbst bleibt, weil sie die vom PM freigegebene ist.
+2. **Vorbehalt monatsende-kauf:** Dessen Bezugsgrößen (se 0,1826 Pp, delta80Prot
+   0,5117 Pp) stammen aus einem Lauf mit **17 Messtagen** — die 187-Tage-Aussicht ist
+   nach Wilhelms Entscheid (1) ein Artefakt von `messmaschine.js:1266` (Aussicht wird
+   auch für nicht-messbare Läufe gerechnet). Das Materialitätsurteil R4–R6 für
+   monatsende-kauf wird deshalb mit dem festen Zusatz **„Bezug unter Vorbehalt
+   (17-Tage-Lauf)"** berichtet. Es wird nicht gestrichen — die Familie bleibt bei
+   5 Tests, ein Streichen nach dem Wächterlauf wäre Auswahl nach Ergebnislage.
+
 ---
 
 *Simulation mit virtuellem Kapital. Keine Anlageberatung.*
