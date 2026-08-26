@@ -1838,6 +1838,59 @@ entfernte Kerzen zurück; eine Reparatur, die das nicht mitbedenkt, ist eine Mom
 *Fallstricke im Raster: der `etf/`-Unterordner (SPY/QQQ/IWM/VOO/TLT/GLD), das Raster ist
 `:30` nicht `:00`, Tage ohne Vergleichsspanne sind nicht entscheidbar.*
 
+### 🧪 27.08. ~01:20 — der Prüfstand steht, elf Fälle, und er fand zwei Fehler übereinander
+
+**Die Abnahme ist jetzt belegt scharf statt angenommen scharf.** Die QS hat ein
+Miniatur-Archiv gebaut und alle drei Formen dagegen durchgespielt — *das Reparaturskript
+hatte nie end-to-end gelaufen und sollte über eine unumkehrbare Änderung entscheiden.*
+
+    A) korrekte Reparaturen bestehen : loeschen · kappen · flach          3/3
+    B) jede Verletzung wird gefunden : A1 · A2(S1) · A2(R) · A3(fremd)
+                                       A3(Kernfeld) · A6(zu viel)         6/6
+    C) Verweigerungen                : ohne --form · ohne Basis           2/2
+
+*Enthalten sind die Halbtags-Kerze mit echtem Docht **und** Schlusskurs (an ihr trennen sich
+kappen und flach messbar: Tief 99 gegen 101), ein Fall mit Schluss außerhalb der Tagesspanne,
+die 20:00-Schlusskerze, S2, S3 und eine Reihe im `etf/`-Unterordner für die Rekursion.*
+
+**🔍 ZWEI FEHLER LAGEN ÜBEREINANDER — und das ist der Lehrsatz:**
+
+1. **Im Werkzeug, echt:** Eine korrekte Kappung fiel durch A3 mit „OHLC-Invariante verletzt",
+   weil die Kerze **schon vor der Reparatur** in sich schief war. *Die Abnahme hätte eine
+   richtige Reparatur abgelehnt, weil sie einen Altschaden dem Reparateur anlastete.*
+2. **Im Prüfstand selbst:** Der simulierte Kappen-Schritt rechnete gegen die falsche
+   Tagesspanne (101 statt 103). **Das Werkzeug hatte recht, der Testfall war falsch.**
+
+**Hätte die QS nach dem ersten Befund aufgehört, wäre der zweite still im Abnahmelauf
+mitgelaufen** — ein Testfall, der gegen die falsche Spanne rechnet, hätte künftig jede
+Kappung falsch bewertet. *Ein Fehler, der einen zweiten verdeckt, ist die teuerste Sorte:
+das Aufhören nach dem ersten fühlt sich wie Gründlichkeit an.*
+
+**→ KLASSE R HAT JETZT ZWEI GRÜNDE:** Schluss/Eröffnung außerhalb der Tagesspanne **oder**
+OHLC schon vorher verletzt. Beide unantastbar, beide ausgewiesen.
+
+**Damit ist die Entscheidungsregel des PM nachgeschärft** (weiterhin vor der Messung):
+Weil die in sich schiefen Kerzen jetzt in Klasse R fallen und **gar nicht** repariert werden,
+ist der alte Zweig „gemischtes Bild → Kappung" gegenstandslos. Es bleibt:
+
+1. **Schlüsse systematisch brauchbar → FLACH.** Begründung: Diese Kerzen haben **Umsatz 0** —
+   es hat kein Geschäft stattgefunden, also gibt es keine Spanne. Hoch und Tief jenseits von
+   Eröffnung und Schluss sind **unbelegt**, nicht nur zu weit.
+2. **Schlüsse nicht verlässlich → gar keine Reparatur**, Frage an Wilhelm.
+3. **KAPPUNG nur**, wenn ein Grund gefunden wird, warum die Spanne *innerhalb* des Tagesbands
+   echt sein könnte, obwohl kein Umsatz stattfand.
+
+**⚠ OFFENE FRAGE AN LAUF 1, die zwischen flach und kappen entscheidet:** *Gibt es eine
+Mechanik, durch die eine Nullumsatz-Kerze ein **echtes** Hoch oder Tief trägt?* Etwa eine
+Quelle, die aus feineren Kerzen aggregiert und dabei den Umsatz verliert — dann wäre die
+Spanne echt und **der Umsatz das kaputte Feld**, und die Regel kippte zugunsten von Kappung.
+Prüfbar daran, ob sich die Spannen in feineren Auflösungen mit Umsatz wiederfinden.
+**„Nicht entscheidbar" ist ein zulässiger Ausgang** — dann wird nichts repariert.
+
+*Zwei weitere Löcher hatte die QS davor beim erneuten Durchgehen des Ablaufs gefunden: der
+Reihen-Hash prüfte nur, welche Kerzen da sind, nicht ihre Werte; und bei Kappen schlug er
+systematisch falsch an, weil reparierte Kerzen im Nachher-Lauf in eine andere Klasse fallen.*
+
 ### 🕐 27.08. 01:15 — die Zeitstempel dieser Tafel liefen fast drei Stunden voraus
 
 **Der PM hat die Uhrzeiten der heutigen Einträge geschätzt statt abgelesen** und lag dabei
