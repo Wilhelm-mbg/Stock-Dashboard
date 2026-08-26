@@ -84,4 +84,45 @@ baldige Bestätigung.
 
 ---
 
+## 5. Anhang 26.08. ~23:5x — die »VOR Strang A zu klären«-Frage, beantwortet
+
+**Frage der Tafel:** Wie verhält sich der B10-Faktor (6,33, QS-Nachrechnung heute Abend)
+zum Eichungsverhältnis vom 25.08. (1,543)? *(Sie messen verschiedene Größen — ohne
+Klärung würde eine spätere »Verbesserung« dem falschen Effekt zugeschrieben.)*
+
+**Antwort: Es sind zwei Faktoren derselben multiplikativen Kette, und sie schließen
+aufeinander.** Drei Standardfehler desselben Bestätigungs-Mittels (Pp je Umlauf, Var 0):
+
+| Größe | Wert | was sie ist |
+|---|---:|---|
+| se_naiv (überlappend, als wären 4.975 Tage unabhängig) | ≈ 0,178 | Illusion durch Pseudo-Replikation |
+| se_unabhängig (nicht überlappend, 79 echte Perioden) | 0,732 | die physikalisch erreichbare Auflösung |
+| se_NW (überlappend, Newey-West) | 1,129 | die korrigierte, aber übervorsichtige Zahl |
+
+- **B10 = se_NW / se_naiv = 6,33** — der Preis der Überlappung, gemessen an der naiven
+  Illusion. Theorie-Anker: bei H = 63 mit täglicher Eröffnung wächst die Varianz des
+  Mittels um ≈ (2H+1)/3 ⇒ se-Faktor √42,3 ≈ **6,51** — 6,33 gemessen passt.
+- **g = se_NW / se_unabhängig = 1,543** — die Übervorsicht von Newey-West gegenüber der
+  echt unabhängigen Anordnung (die Eichung).
+- **Identität:** 6,33 / 1,543 = **4,10** = wahre Überlappungskosten. Probe auf den
+  veröffentlichten Zahlen: 1,129 / 6,33 = 0,178; 0,178 × 4,10 = **0,732** ✓ (< 0,1 %
+  Abweichung; mit dem historischen 6,42 vom 24.08. schließt sie auf 1,5 %).
+
+**Folgen für Strang A, damit nichts falsch zugeschrieben wird:**
+1. Der Sprung t 1,03 → 2,10 beim Wechsel auf die nicht überlappende Anordnung ist zu
+   **100 % Schätzer** (Wegfall der NW-Übervorsicht, Faktor 1,543) — **null neue
+   Information über den Markt.** Jede künftige Formulierung muss das so sagen.
+2. Das historische t = 4,74 war nie real — es stand auf se_naiv (Faktor 6,33 zu klein).
+3. Die beiden Zahlen widersprechen sich nicht; sie teilen nur den Zähler se_NW.
+4. Dass B10 bei momentum »schreit« (6,33 ≫ Warnschwelle 3), ist die Bauart von
+   H=63-mit-Tageseröffnung — die QS-Warnung (»das Urteil ist korrekt«) steht.
+
+**Was genau diese Prüfung geprüft hat:** eine Rechenidentität auf drei bereits
+veröffentlichten Zahlen (Protokoll momentum Var 0 se_NW; Eichung se-Paar; QS-B10).
+Sie hat NICHT geprüft, auf welcher Variante/Hälfte die QS ihr 6,33 gerechnet hat —
+die Abend-Nachrechnung hat kein neues momentum-Protokoll nach `protokolle/`
+geschrieben; schließt die Identität dort nicht, gehört das gemeldet.
+
+---
+
 *Simulation mit virtuellem Kapital. Keine Anlageberatung.*
