@@ -2686,15 +2686,40 @@ fertig bist.*
   `aussicht.delta80Pp` schreibt die Maschine erst seit Kurzem und ist in **0 von 69**
   Protokollen gesetzt — die Anzeige muss selbst umrechnen. Median 0,219 Pp, Spanne
   0,035 (t3-stundendrift) bis 4,390 (momentum).
-  Die Kostenhürden (Aktie 0,04 / Schein ATM 0,05 / CFD 0,10 / Standard-Schein 0,23 Pp)
-  stehen an **vier** Stellen je einmal ausgeschrieben und in **keiner ausgelieferten
-  Datei** — `tools/` wird nicht ausgeliefert. Ich lege sie an **einer** Stelle im
-  ausgelieferten Code ab statt einer fünften Kopie.
-  **Offene Frage an Wilhelm/PM:** gegen **welche** Hürde trennt die Wand? Ich baue
-  vorerst gegen die **größte** (Standard-Schein 0,23 Pp) — dann heißt „hinter der Wand"
-  *für kein Produkt entscheidbar*, und das ist die Aussage, die man nicht abstreiten
-  kann. Damit liegen 31 der 69 Varianten hinter der Wand; gegen die Aktien-Hürde
-  (0,04 Pp) wären es 67 von 69.
+  **RICHTIGSTELLUNG meiner eigenen Zeile von vorhin.** Ich hatte hier stehen, die
+  Kostenhürden stünden „in keiner ausgelieferten Datei" und ich lege sie neu ab.
+  **Das war falsch, und der Fehler war meine Suche:** ich hatte nach der ganzen
+  Viererliste gesucht (`Aktie.*Schein.*CFD`), die eine *einzelne* berechnete Hürde
+  gar nicht finden kann. Es gibt sie: `kostenHuerdePp(cfg, spot, vol, haltenMin,`
+  `einsatz)` in `depot.js:451` — und sie rechnet genau das, was Wilhelms Entscheid
+  verlangt: die Hürde des **gewählten** Produkts, aus Instrument, Hebel, Haltedauer
+  und Einsatz, aufgeschlüsselt nach Spanne / Zeitwert / Gebühr / Übernacht.
+  Eine fünfte Kopie der statischen Tabelle wäre also genau der Fehler gewesen, den
+  ich heute den ganzen Abend beseitigt habe.
+
+  **DAMIT STEHT EINE ENTSCHEIDUNG AN, DIE ICH NICHT ALLEIN TREFFE — sie ist der
+  Grund, warum ich hier anhalte statt weiterzubauen:**
+  `kostenHuerdePp` gilt für die **laufende Intraday-Konfiguration** (welches Produkt
+  Wilhelm gerade eingestellt hat). Das Scoreboard zeigt aber **gemessene Strategien**,
+  deren Protokolle **kein** Produkt und keine Haltedauer dieser Art führen. Eine
+  Zeile mit der Hürde der Live-Einstellung zu bewerten hieße, jeder Messung ein
+  Produkt anzuhängen, das nicht ihres ist — **derselbe Fehler wie am 23.08.**, als
+  die Produkt-Vorgabe an drei Stellen stand und zwei davon falsch waren (Hürde 0,26
+  statt 0,07 Pp).
+
+  **Drei Wege, einer muss entschieden werden:**
+  1. Gegen die **Live-Hürde** aus `kostenHuerdePp` — dann muss die Anzeige dazusagen,
+     mit welchem Produkt und welcher Haltedauer gerechnet wurde, sonst wandert die
+     Wand, sobald jemand die Einstellung dreht.
+  2. Gegen die **größte** statische Hürde (Standard-Schein 0,23 Pp) — dann heißt
+     „hinter der Wand" *für kein Produkt entscheidbar*. Das ist die Aussage, die
+     niemand abstreiten kann. **31 von 69** Varianten lägen dahinter.
+  3. Gegen die **Aktien-Hürde** (0,04 Pp), also den günstigsten handelbaren Weg —
+     **67 von 69** Varianten lägen dahinter. Ehrlich, aber die Wand verschluckt fast
+     alles und sagt dann kaum noch etwas.
+
+  Ich gebe `scoreboard.js` wieder frei, bis das entschieden ist — gebaut ist nichts,
+  gemessen ist alles oben. Übergabe liegt im Briefkasten.
 
 - **Desingner** — **#80 Perzentil ist GELIEFERT** (Baustopp 1b davor in `e11d7e9`).
   Eichung: 32.722 Zufallskanäle aus derselben Such-Pipeline (deterministisch,
