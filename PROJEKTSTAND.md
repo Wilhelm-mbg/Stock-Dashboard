@@ -592,7 +592,9 @@ Meinung — und sie ist nicht gemacht.** Das Sammeln vorzuziehen ist trotzdem ri
 Rechnung lässt sich nachholen, die Kerzen nicht.
 
 
-### ⭐ Richtung der Überlebensverzerrung messen (Wilhelm 26.08. 17:40, Antwort c)
+### ~~⭐ Richtung der Überlebensverzerrung messen~~ **ÜBERNOMMEN 26.08. 19:47 von „Berechnungen"** (Wilhelm 26.08. 17:40, Antwort c; PM-Freigabe 19:15)
+
+*Auftragstext bleibt als Beleg stehen; Stand siehe „Läuft gerade".*
 
 **Vorbedingung für Strang A und B** — solange sie offen ist, bedeutet eine positive
 Rohrendite aus beiden Strängen nichts.
@@ -1470,6 +1472,18 @@ mit #93/#94 zusammen runder.
 
 *Wer welche Dateien belegt. Trag dich ein, bevor du anfängst; nimm dich raus, wenn du
 fertig bist.*
+
+- **Desingner** — hat **(1b) Auflösungswand sichtbar machen** (Anzeige in depot.js/
+  strategien.js/index.html, Hinweis ohne Eingriff, liest bestesUrteil + kleinste
+  Aussicht) und **#80 Kanal-Güte als Drei-Wege-Vorlage** (nur Dokument unter
+  `studien/`, kein Code). Beides 26.08. abends vom PM zugeteilt (Wilhelm 1b / #80).
+
+- **Berechnungen** (seit 26.08. 19:47) — **Richtung der Überlebensverzerrung messen**
+  (PM-Freigabe 19:15, Reihenfolge bestätigt: Verzerrung → Strang A → #92). Erster
+  Schritt: Vorregistrierung nach `studien/vorregistrierung-2026-08-26/`, Meldung an den
+  PM, **bevor** gerechnet wird. Belegt nur neue Dateien unter `studien/`; fasst
+  `messmaschine.js` nicht an. Hinweis des Tüftlers ist eingearbeitet: nur die drei
+  Protokolle mit Aussicht unter 1.500 Handelstagen sind überhaupt drehbar.
 
 - **App-Codebase Master** — **Stufe F (3) erledigt** (`779c02c`), Übergabe liegt im
   Briefkasten. Erst gemessen (neue Sonde `tools/a11y-probe.js`), dann repariert:
