@@ -36,7 +36,7 @@ Aussicht über alle Varianten — sie ist die planungsrelevante:
 
 | Strategie | Urteil | kleinste Aussicht (Handelstage) | alle Varianten |
 |---|---|---|---|
-| monatsende-kauf | nicht messbar | **187** | 187 |
+| monatsende-kauf | nicht messbar | **187** ⚠ | 187 — **entwertet, siehe Warnkanal unten** |
 | kapitulation | **nicht bestätigt** | **224** | 1.551 · 2.330 · **224** |
 | rsi2seit-mcp | nicht entscheidbar | 1.070 | 1.437 · 1.476 · 1.156 · **1.070** · 1.079 |
 | monatswende-breit | nicht entscheidbar | 3.803 | 3.942 · 3.803 |
@@ -442,6 +442,76 @@ Archivwächter. Er meldet den Stand, nicht die Bedeutung.
 
 **Reihenfolge unverändert:** #98 (toter Überlappungswächter, Vorbedingung für Strang A),
 danach die Datenfunde.
+
+---
+
+### ⚠ 26.08. 20:15 — der Warnkanal der Protokolle kam auf dieser Tafel nie an (QS-Fund)
+
+**Vier der zwölf Protokolle tragen Warnungen. Keine einzige stand hier.** Der PM hat
+Urteil und Aussicht übertragen und das Feld `warnungen` schlicht nie gelesen. Vom PM in
+allen zwölf Dateien nachgezählt:
+
+| Strategie | Kennung | Kern |
+|---|---|---|
+| **monatsende-kauf** | **A7** | keine Lesefenster-Angabe → Kontrolle **nicht** bereinigt, Nullpunktverschiebung 0,02–0,04 Pp je Signal möglich |
+| **monatsende-kauf** | **F4** | 6,2 % der Signale **ohne Kontrolle**, und der Verlust trifft **nicht zufällig** die Randpositionen der Sitzung |
+| t1-zwangsglattstellung | B2 | Var 2: Tagesmittel +0,0272 Pp, Erwartung je Signal **−0,5555** Pp — dünne Tage tragen das Ergebnis |
+| t2-umsatzschock | B2 ×2 | Var 0 und 1: dasselbe Vorzeichenproblem |
+| t3-stundendrift | B2 | Var 0: dasselbe |
+
+**Regel ab sofort:** Wer Urteil oder Aussicht auf diese Tafel überträgt, überträgt die
+**Warnungen mit**. Eine Zahl ohne ihre Warnung ist genau die Sorte Halbwahrheit, die
+dieses Projekt am teuersten bezahlt.
+
+### 🔴 Die kleinste Aussicht der Tabelle ist die schwächste Messung im Bestand
+
+`monatsende-kauf` steht mit **187 Handelstagen ganz oben** — und wäre damit die Strategie,
+die die 1.000-Tage-Eintrittskarte am mühelosesten passiert. Was wirklich dahintersteht:
+
+- **17 Bestätigungstage.** Die Aussicht extrapoliert Effekt *und* Streuung daraus, und der
+  Effekt steht quadriert im Nenner.
+- **Keine A7-Bereinigung.** Gemessener Überschuss 0,110 Pp je Signal, mögliche
+  Nullpunktverschiebung 0,02–0,04 Pp — **18 bis 36 % des ganzen Effekts, Vorzeichen offen.**
+- **6,2 % der Signale ohne Kontrolle**, nicht zufällig verteilt.
+
+**Der Maschinenfehler dahinter, vom PM in `messmaschine.js` nachgesehen:** Zeile **1226**
+wirft bei `u.tage < 30` sofort auf `nicht-messbar`. Zeile **1266** berechnet die Aussicht
+trotzdem — die Schranke dort lautet `u.tage > 0`, **nicht** `>= 30`. **Ein Lauf, den die
+Maschine selbst für nicht messbar erklärt, gibt eine Zahl aus, die aussieht wie eine
+Planungsgröße.** Über alle 38 Protokolle tritt der Fall **genau einmal** auf — bei genau
+dieser Strategie. Auf 1.4.0 nachgemessen: unverändert, Aussicht 187 → 180.
+
+**Fehlerfamilie #86/#91: eine Bedingung, die fast richtig ist.**
+
+### ✅ Block B (Placebo) bestanden — Stufe 1 des Abbruchkriteriums ist für diesen Pfad belegt
+
+Fünf Saaten, Signal ohne jeden Kursbezug, bewusst **eine** Variante (Schwelle 1,96 statt
+2,39 — der schärfste Fall, weil der Bonferroni-Puffer fehlt). Alle fünf:
+**nicht-entscheidbar**, |t| ≤ 0,34. **Die Maschine sieht nichts, wo nichts ist.**
+
+**Beobachtung, ausdrücklich kein Fund:** alle fünf Punktschätzer sind **positiv**, Mittel
+rund **+0,011 Pp** — ein Viertel der Aktienhürde. Für ein Projekt, das per Hebel 2 genau
+in dieser Größenordnung sucht, keine Nebensache. **Mit neuen Saaten nicht zu klären** (sie
+teilen die Kurse und damit die Tagesschwankung); dafür bräuchte es disjunkte Zeitfenster.
+Möglicher Grund aus dem Code: das maschineneigene Placebo schichtet nach
+**Sitzungsposition** und bildet die Verteilung des echten Signals nach — das der QS streut
+gleichmäßig. Steckt Tageszeit-Struktur in der Kontrolle, sieht das eine sie und das andere
+nicht. **Für den Analytiker, nicht für eine Bausitzung.**
+
+### Zwei Selbstmeldungen der QS, beide in der Hausform des Tages
+
+- Sie hat einen a11y-Lauf durch `tail -50` geschickt und daraufhin geglaubt, die Sonde
+  prüfe nur 355 statt 1.757 Stellen. **Eine abgeschnittene Ausgabe sieht aus wie eine
+  unvollständige Prüfung.** Sie war eine Minute davor, einen selbst erzeugten Fund zu melden.
+- Ihr erster Nachrechen-Treiber maß alle neun in **einem** Prozess; nach zwei Strategien
+  stand der Heap bei 4,18 GB und der Lauf drehte im Dauer-GC. Neu: **ein Prozess je
+  Messung** — `monatsende-kauf` läuft jetzt in 64 s statt gar nicht.
+
+**Beide Oberflächen-Sonden grün**, und die Abdeckungs-Behauptung dieser Tafel stimmt
+genau: 1.757 Textstellen, 16 Pillen — deckungsgleich. *(Nur dunkles Thema; hell steht aus.)*
+
+**Nachrechnung Block D: 3 von 9, alle drei reproduzieren** — rsi2seit (t 0,83 → 0,79),
+kapitulation (3 von 3 Varianten), monatsende-kauf (Urteil stabil).
 
 ---
 
