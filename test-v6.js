@@ -4457,8 +4457,16 @@ console.log('\n44) Messmaschine, Scoreboard und Strategie-Eingabe (23.08.2026)')
      'Das Kursarchiv holt wirklich mit offenRoh - sonst naehme es die stille Naeherung mit');
   ok(kq.indexOf('karte[k[0]] = k') !== -1 && yh.indexOf('--aktualisieren') !== -1,
      'Es fuehrt Reihen fort statt sie zu ueberschreiben (Yahoo liefert nur 730 Tage)');
-  ok(/Q\.reiheHolen\(/.test(yh) && /Q\.zusammenfuehren\(/.test(yh),
-     'und das Abrufwerkzeug holt und vereinigt DURCH das Modul, nicht daneben');
+  /* Seit dem 26.08.2026 ist nicht nur das Zerlegen geteilt, sondern der ganze
+   * Sammellauf: holen, vereinigen, schreiben, Sperre setzen und loesen. Das
+   * Werkzeug ruft ihn auf, die App ruft ihn auf. Haette das Werkzeug seine eigene
+   * Schleife behalten, waere die zweite Vorstellung davon entstanden, wie eine
+   * Reihe fortgeschrieben wird - und genau daran sind hier schon 66 Reihen
+   * kaputtgegangen. */
+  ok(/Q\.sammle\(/.test(yh),
+     'Das Abrufwerkzeug sammelt DURCH das Modul, nicht daneben');
+  ok(!/function reiheHolen|for \(var i = 0; i < nimm\.length/.test(yh),
+     'und hat keine eigene Abrufschleife mehr');
 
   /* Der Weg muss auch durch die Oberflaeche fuehren - sonst weicht man wieder auf
    * ein Wegwerf-Skript aus, und genau dort passierten beide Fehler. */
@@ -9214,12 +9222,15 @@ console.log('\n63) Nur fertige Kerzen kommen ins Archiv (Issue #85)');
      'Die Regel steht in kerzenquelle.js - dort, wo App und Werkzeug beide hinkommen');
   ok(!/function fertigeKerze/.test(yh),
      'Und NUR dort - das Abrufwerkzeug haelt keine eigene Fassung');
-  var reg = (/function fertigeKerze[\s\S]*?\n\}/.exec(kq) || [''])[0];
-  /* Das Modul nennt den vierten Parameter intervall; die Faelle unten reichen ihn
-   * als IV herein, damit sie lesbar bleiben. */
+  /* Geprueft wird das MODUL, nicht eine Textkopie davon. Bis zum 26.08.2026 wurde
+   * die Funktion hier als Text herausgeschnitten und einzeln ausgefuehrt - das ging,
+   * solange sie nichts ausserhalb ihrer selbst brauchte. Seit sie die Intervalldauer
+   * aus INTERVALLE liest, sprengt der Ausschnitt: 'INTERVALLE is not defined'. Am
+   * Modul zu pruefen ist ohnehin richtiger - eine Textkopie kann bestehen, waehrend
+   * die Datei nicht einmal laedt. */
+  var KQ = require(__dirname + '/kerzenquelle.js');
   var F = function (iv) {
-    var f = new Function(reg + '\nreturn fertigeKerze;')();
-    return function (a, x, c) { return f(a, x, c, iv); };
+    return function (a, x, c) { return KQ.fertigeKerze(a, x, c, iv); };
   };
 
   /* Die laufende Kerze traegt Sekunden - eine Gitterkerze nie. */
@@ -9233,6 +9244,44 @@ console.log('\n63) Nur fertige Kerzen kommen ins Archiv (Issue #85)');
    * trotzdem fertig und darf nicht verworfen werden. */
   ok(f60(Date.parse('2026-08-24T19:30:00Z'), null, Date.now()) === true,
      'Die kurze letzte Sitzungskerze bleibt - sie ist fertig, nur kuerzer');
+
+  /* ---- ZWEITE SCHICHT: der laufende Eimer (26.08.2026, 18:51 UTC gemessen) ----
+   * Die Quote-Kerze abzuschneiden genuegt nicht. Darunter liegt der GERADE
+   * LAUFENDE Eimer, und der traegt einen glatten Gitterstempel - die Sekundenregel
+   * sieht ihn nicht. XOM 15m endete nach dem Abschneiden auf 18:45, mitten im
+   * Eimer 18:45-19:00; zwei Abrufe drei Minuten auseinander gaben fuer dieselbe
+   * Kerze verschiedene Werte (Umsatz 136.744 gegen 169.080). Jedes Intraday-
+   * Intervall war betroffen, 60m eingeschlossen. */
+  var sitzung = { start: Date.parse('2026-08-26T13:30:00Z') / 1000,
+    end: Date.parse('2026-08-26T20:00:00Z') / 1000 };
+  var umAcht = Date.parse('2026-08-26T18:51:00Z');
+  var f15 = F('15m'), f5 = F('5m'), f1 = F('1m');
+  ok(f15(Date.parse('2026-08-26T18:45:00Z'), sitzung, umAcht) === false,
+     'Der laufende 15m-Eimer kommt NICHT ins Archiv - auch mit glattem Stempel nicht');
+  ok(f15(Date.parse('2026-08-26T18:30:00Z'), sitzung, umAcht) === true,
+     'Der davor ist zu und bleibt');
+  ok(f5(Date.parse('2026-08-26T18:50:00Z'), sitzung, umAcht) === false &&
+     f5(Date.parse('2026-08-26T18:45:00Z'), sitzung, umAcht) === true,
+     'Dasselbe bei 5m - die Grenze liegt genau am Ende des Eimers');
+  ok(f1(Date.parse('2026-08-26T18:51:00Z'), sitzung, umAcht) === false &&
+     f1(Date.parse('2026-08-26T18:50:00Z'), sitzung, umAcht) === true,
+     'und bei 1m');
+  /* 60m war genauso betroffen: um 18:51 lief der Eimer 18:30-19:30. */
+  ok(f60(Date.parse('2026-08-26T18:30:00Z'), sitzung, umAcht) === false,
+     'Auch das Stundenarchiv nahm die laufende Stunde mit - jetzt nicht mehr');
+
+  /* DIE GEGENRICHTUNG, und sie ist die teurere: die kurze Schlusskerze darf nicht
+   * verlorengehen. 19:30 bis 20:00 ist eine halbe Stunde im Stundengitter; eine
+   * reine "Stempel + Dauer"-Regel haette sie bis 20:30 fuer unfertig gehalten und
+   * jeden Abend verworfen. Deshalb wird der Eimer auf den Handelsschluss gedeckelt. */
+  var nachSchluss = Date.parse('2026-08-26T20:05:00Z');
+  ok(f60(Date.parse('2026-08-26T19:30:00Z'), sitzung, nachSchluss) === true,
+     'Nach Handelsschluss ist die kurze Schlusskerze fertig - der Deckel macht das aus');
+  ok(f60(Date.parse('2026-08-26T19:30:00Z'), sitzung, Date.parse('2026-08-26T19:45:00Z')) === false,
+     'waehrend der Sitzung aber noch nicht');
+  /* Und Kerzen frueherer Tage bleiben unberuehrt - deren Eimer ist laengst zu. */
+  ok(f15(Date.parse('2026-08-24T14:00:00Z'), sitzung, umAcht) === true,
+     'Eine Kerze von vorgestern ist fertig, egal wo der heutige Schluss liegt');
 
   /* Tageskerzen sind am Stempel NICHT zu erkennen (nachgemessen: 0 von 400). Sie
    * tragen den Sitzungsbeginn und sehen auch als Teiltag normal aus. Fertig sind sie,
@@ -9490,15 +9539,38 @@ console.log('\nWachhund: steht das Kursarchiv still?');
   fs.rmSync(tmpR, { recursive: true, force: true });
   fs.rmSync(tmpS, { recursive: true, force: true });
 
-  /* Und das Abrufwerkzeug setzt sie wirklich - vor der Schleife, geloest vor der
-   * Standmeldung. Andersherum pruefte es sein eigenes Archiv als "wird gerade
-   * geschrieben" und sagte gar nichts ueber den Stand. */
-  ok(/Wachhund\.sperreSetzen\(ZIEL/.test(yq) && /function sperreRaeumen/.test(yq),
-     'Das Abrufwerkzeug setzt die Sperre und raeumt sie wieder weg');
-  ok(yq.indexOf('sperreRaeumen();') < yq.indexOf("' Reihen geholt ('"),
-     'Es loest sie VOR der Standmeldung - sonst meldet es sich selbst als gesperrt');
-  ok(/process\.on\('SIGINT'/.test(yq) && /process\.on\('SIGTERM'/.test(yq),
-     'Auch bei Abbruch mit Strg+C wird sie geloest (soweit das Betriebssystem den Handler laesst)');
+  /* Die Sperre wird seit dem 26.08.2026 im gemeinsamen Sammellauf gesetzt und
+   * geloest, nicht mehr im Werkzeug. Das ist der Punkt: die App sammelt jetzt
+   * selbst, und zwei Stellen, die eine Sperre setzen, waeren zwei Stellen, an
+   * denen sie liegenbleiben kann. Geprueft wird nicht die Textmarke, sondern das
+   * VERHALTEN - dass sie auch dann weggeht, wenn mittendrin etwas fliegt. */
+  var KQs = require(__dirname + '/kerzenquelle.js');
+  /* Das Warten laeuft ueber probe() - die Zusage wird am Ende der Suite eingeloest. */
+  probe((async function () {
+    var tmpF = fs.mkdtempSync(pathT.join(osT.tmpdir(), 'sammel-fehler-'));
+    var geflogen = null;
+    await KQs.sammle({
+      intervall: '15m', ziel: tmpF, symbole: ['AAPL'],
+      melde: function () { throw new Error('Bumm'); },
+    }).catch(function (e) { geflogen = e.message; });
+    ok(geflogen === 'Bumm', 'Ein Fehler im Sammellauf wird nicht verschluckt', geflogen);
+    ok(fs.existsSync(pathT.join(tmpF, '_laeuft.json')) === false,
+       'und die Sperre ist trotzdem weg - sonst haelt ein einziger Ausrutscher das Archiv stundenlang fuer belegt');
+    fs.rmSync(tmpF, { recursive: true, force: true });
+  })());
+  /* Der Fall, an dem es beim Bauen haengengeblieben ist: die Startmeldung stand
+   * VOR dem try, also ausserhalb der Absicherung. */
+  var kqQ = fs.readFileSync(__dirname + '/kerzenquelle.js', 'utf8');
+  var tryPos = kqQ.indexOf('  try {\n    /* Die Startmeldung');
+  ok(tryPos !== -1 && kqQ.indexOf("melde({ art: 'start'", tryPos) > tryPos,
+     'Die Startmeldung liegt INNERHALB der Absicherung, nicht davor');
+  /* Und das Werkzeug loest sie vor der Standmeldung - andersherum pruefte es sein
+   * eigenes Archiv als "wird gerade geschrieben" und sagte gar nichts ueber den
+   * Stand. Da sammle() sie im finally loest, genuegt die Reihenfolge der Aufrufe. */
+  ok(yq.indexOf('Q.sammle({') < yq.indexOf("' Reihen geholt ('"),
+     'Das Werkzeug meldet den Stand erst NACH dem Lauf - dann ist die Sperre weg');
+  ok(/process\.on\('SIGINT'/.test(yq) && /weiter: function \(\) \{ return !anhalten; \}/.test(yq),
+     'Strg+C haelt den Lauf an, statt ihn hart abzuschneiden - dann raeumt er selbst auf');
   /* Der naechtliche Laeufer schweigt nicht, wenn etwas ist. */
   var nq = fs.readFileSync(__dirname + '/tools/archiv-nachladen.js', 'utf8');
   ok(/if \(code !== 0 \|\| verwaist\)/.test(nq),

@@ -94,75 +94,40 @@ function standMelden(nachgezogen) {
     }
   } catch (e) { console.log('\n(Stand nicht pruefbar: ' + (e && e.message || e) + ')'); }
 }
-var STAND = path.join(ZIEL, 'stand.json');
-var DATEI_PRAEFIX = 'bars_' + IV + '_';
-var MASSIVE = path.join(DATEN, 'massive');
-var ABSTAND_MS = 1200;
-
-/* Die grossen Index- und Sektor-ETFs. SPY steht bewusst vorn: Das Regime-Tor im
- * Live-Handel prueft SPY gegen seine Stunden-EMA200, und weil SPY im App-Archiv
- * fehlt, musste die Kapitulations-Messung es ueber eine Tagesreihe naehern. */
-var ETFS = ('SPY QQQ IWM DIA VOO IVV RSP TLT HYG LQD GLD SLV USO ' +
-  'XLF XLK XLE XLV XLI XLP XLY XLU XLB XLRE XLC SMH SOXX EEM EFA FXI GDX VXX').split(' ');
-
-/* ETFs kommen in einen eigenen Unterordner. Die Messmaschine waehlt "aktien" ueber
- * sym.indexOf('-USD') === -1 - das ist ein Filter gegen Krypto, nicht gegen
- * Indexfonds. Laegen SPY und QQQ zwischen den Aktien, wuerde eine Aktienstrategie
- * sie mitmessen; bei SPY waere es schlimmer, denn es ist zugleich der Anker des
- * Regime-Tors - Messobjekt und Massstab in einem. */
-var ETF_SATZ = {};
-ETFS.forEach(function (s) { ETF_SATZ[s] = 1; });
-function istEtfSym(s) { return !!ETF_SATZ[s]; }
-function ordnerFuer(sym) { return istEtfSym(sym) ? path.join(ZIEL, 'etf') : ZIEL; }
-
-/* Massive schreibt Aktienklassen mit Punkt (BRK.B), Yahoo mit Bindestrich (BRK-B). */
-var yahooName = Q.yahooName;
-var warte = Q.warte;
-
-var hole = Q.hole;
-
-var kursOk = Q.kursOk;
-
-/* Das Holen samt Abschneiden des unfertigen Randes steht in kerzenquelle.js - dort
- * auch die Regel, was eine fertige Kerze ist (Issue 85). Hier stand bis zum
- * 26.08.2026 noch ein Durchreicher fuer fertigeKerze; den ruft seither niemand mehr
- * auf, und er las sich, als wohnte die Regel hier. */
-function reiheHolen(sym) { return Q.reiheHolen(sym, IV, { mindestKerzen: MIN_KERZEN }); }
-
-function listeBauen(wahl) {
-  if (wahl && wahl.indexOf(',') !== -1) return wahl.split(',').map(function (s) { return s.trim().toUpperCase(); });
-  if (!wahl || wahl === 'etf') return ETFS.slice();
-  var dat = fs.existsSync(MASSIVE) ? fs.readdirSync(MASSIVE).filter(function (f) { return f.indexOf('universum-') === 0; }) : [];
-  if (!dat.length) { console.error('Kein Punkt-in-Zeit-Universum. Erst: node tools/universum-punkt-in-zeit.js'); process.exit(2); }
-  var U = JSON.parse(fs.readFileSync(path.join(MASSIVE, dat[0]), 'utf8'));
-  var w = (U.werte || []).slice().sort(function (a, b) { return b.umsatzMio - a.umsatzMio; });
-  /* ETFs stehen vorn im Universum, gehoeren aber nicht in ein Aktien-Universum.
-   * Sie kommen ueber die eigene Liste - dort weiss man, dass es welche sind. */
-  var istEtf = {}; ETFS.forEach(function (s) { istEtf[s] = 1; });
-  w = w.filter(function (x) { return !istEtf[x.sym]; });
-  if (wahl === 'top500') return w.slice(0, 500).map(function (x) { return x.sym; });
-  return w.map(function (x) { return x.sym; });
-}
+/* Welche Werte, wohin sie kommen, wie eine Reihe fortgeschrieben wird und wie oft
+ * Yahoo gefragt werden darf: alles in kerzenquelle.js. Bis zum 26.08.2026 stand
+ * es hier, und die App haette es nachbauen muessen - ein Nachbau waere die zweite
+ * Vorstellung davon, was ins Archiv gehoert. */
+var ABSTAND_MS = Q.ABSTAND_MS;
+var ETFS = Q.ETFS;
+var listeBauen = Q.listeBauen;
 
 (async function () {
   var wahl = process.argv[2] || 'etf';
   var maxWerte = parseInt(process.argv[3], 10) || Infinity;
+  var aktualisieren = process.argv.indexOf('--aktualisieren') !== -1;
 
   if (!fs.existsSync(ZIEL)) fs.mkdirSync(ZIEL, { recursive: true });
-  var stand = fs.existsSync(STAND) ? JSON.parse(fs.readFileSync(STAND, 'utf8')) : { fertig: {}, ohne: {} };
+  var stand = Q.standLesen(ZIEL);
 
-  var aktualisieren = process.argv.indexOf('--aktualisieren') !== -1;
-  var altgereinigt = 0, neuAbgeschnitten = 0;
-  var liste = aktualisieren ? Object.keys(stand.fertig) : listeBauen(wahl);
   /* Beim Aktualisieren ist nichts "schon erledigt" - es geht ja gerade darum,
    * das Vorhandene fortzuschreiben. */
+  var liste, quelle;
+  if (aktualisieren) {
+    liste = Object.keys(stand.fertig);
+    quelle = 'FORTFUEHREN: ' + liste.length + ' vorhandene Werte werden nachgezogen';
+  } else {
+    var b = listeBauen(wahl);
+    if (b.grund) { console.error(b.grund); process.exit(2); }
+    liste = b.symbole;
+    quelle = 'Auswahl "' + wahl + '": ' + liste.length + ' Werte (' + b.quelle + ')';
+  }
   var offen = aktualisieren ? liste
     : liste.filter(function (s) { return !stand.fertig[s] && !stand.ohne[s]; });
   var nimm = offen.slice(0, maxWerte);
 
   console.log(IV + '-Kerzen von Yahoo (range=' + CFG.range + '), eigenes Archiv mit Eroeffnungskurs');
-  console.log('  ' + (aktualisieren ? 'FORTFUEHREN: ' + liste.length + ' vorhandene Werte werden nachgezogen'
-                                     : 'Auswahl "' + wahl + '": ' + liste.length + ' Werte'));
+  console.log('  ' + quelle);
   console.log('  schon geholt: ' + Object.keys(stand.fertig).length + ' | ohne Daten: ' + Object.keys(stand.ohne).length);
   console.log('  dieser Lauf: ' + nimm.length + ', geschaetzt ' + Math.ceil(nimm.length * ABSTAND_MS / 60000) + ' Minuten');
   console.log('  Ablage: ' + ZIEL);
@@ -178,70 +143,35 @@ function listeBauen(wahl) {
     return;
   }
 
-  /* SPERRE SETZEN. Der Lauf dauert rund 97 Minuten; solange ist das Archiv GEMISCHT -
-   * ein Teil neu, ein Teil alt. Wer in dieser Zeit darauf misst, misst auf wanderndem
-   * Grund, und das Ergebnis sieht dabei gesund aus. Die Sperre sagt es statt einer
-   * Uhrzeit, auf die man hoffen muesste.
-   * Sie wird auch bei Strg+C geloest - und traegt einen Zeitstempel, damit ein harter
-   * Absturz sie nicht auf Dauer stehenlaesst (siehe archiv-wachhund.js). */
-  Wachhund.sperreSetzen(ZIEL, IV + ' ' + (aktualisieren ? 'aktualisieren' : 'neu holen') + ', ' + nimm.length + ' Werte');
-  var sperreWeg = false;
-  function sperreRaeumen() { if (!sperreWeg) { sperreWeg = true; Wachhund.sperreLoesen(ZIEL); } }
-  process.on('SIGINT', function () { sperreRaeumen(); process.exit(130); });
-  process.on('SIGTERM', function () { sperreRaeumen(); process.exit(143); });
+  /* Strg+C loest die Sperre. Der Lauf selbst raeumt sie ohnehin auf, auch wenn
+   * etwas fliegt - aber ein hartes Abwuergen kommt dort nie an. Gemessen am
+   * 26.08.2026: ein mit timeout beendeter Lauf fuehrt seinen Handler NICHT aus,
+   * deshalb fragt die Sperre inzwischen selbst nach, ob ihr Schreiber noch lebt. */
+  var anhalten = false;
+  process.on('SIGINT', function () { anhalten = true; });
 
-  var ok = 0, leer = 0, fehler = 0, kerzenGes = 0, ohneEroeffnung = 0;
-  for (var i = 0; i < nimm.length; i++) {
-    var sym = nimm[i];
-    var r;
-    try { r = await reiheHolen(sym); } catch (e) { r = { fehler: e.message.slice(0, 50) }; }
-    if (r.fehler) {
-      stand.ohne[sym] = { grund: r.fehler, am: new Date().toISOString().slice(0, 10) };
-      leer++;
-      console.log('  ' + String(i + 1).padStart(4) + '/' + nimm.length + '  ' + sym.padEnd(8) + r.fehler);
-    } else {
-      /* FORTFUEHREN: Was schon da ist, bleibt. Yahoo liefert nur die letzten 730
-       * Tage - wer ueberschreibt, verliert bei jedem Lauf den aeltesten Rand. Wer
-       * zusammenfuehrt, dessen Archiv waechst ueber Yahoos Grenze hinaus.
-       * Bei gleichem Zeitstempel gewinnt die NEUE Kerze: sie ist nachtraeglich
-       * bereinigt (Splits, Dividenden) und damit die richtigere. */
-      var unterOrdner = ordnerFuer(sym);
-      if (!fs.existsSync(unterOrdner)) fs.mkdirSync(unterOrdner, { recursive: true });
-      var datei = path.join(unterOrdner, DATEI_PRAEFIX + sym + '.json');
-      var dazu = 0;
-      if (fs.existsSync(datei)) {
-        try {
-          var alt = JSON.parse(fs.readFileSync(datei, 'utf8')).series || [];
-          var v = Q.zusammenfuehren(alt, r.serie);
-          r.serie = v.serie; dazu = v.dazu; altgereinigt += v.gereinigt;
-        } catch (e) { /* unlesbar: die frische Reihe ersetzt sie */ }
-      }
-      neuAbgeschnitten += r.abgeschnitten || 0;
-      var ohneO = r.serie.filter(function (k) { return k[5] == null; }).length;
-      ohneEroeffnung += ohneO;
-      /* quelle nennt jetzt den WIRKLICH abgefragten Bereich - bis zum 26.08.2026
-       * stand hier fest 'range=730d interval=60m', auch in jeder Datei des
-       * Tagesarchivs mit 40 Jahren Tageskerzen. */
-      fs.writeFileSync(datei, JSON.stringify(
-        Q.satz(sym, IV, r.serie, { waehrung: r.waehrung, boerse: r.boerse })));
-      stand.fertig[sym] = { kerzen: r.serie.length, ohneEroeffnung: ohneO, am: new Date().toISOString().slice(0, 10) };
-      ok++; kerzenGes += r.serie.length;
-      console.log('  ' + String(i + 1).padStart(4) + '/' + nimm.length + '  ' + sym.padEnd(8) +
-        String(r.serie.length).padStart(5) + ' Kerzen' + (dazu > 0 ? '  (+' + dazu + ' neu)' : '') +
-        (ohneO ? '  (' + ohneO + ' ohne Eroeffnung)' : ''));
-    }
-    fs.writeFileSync(STAND, JSON.stringify(stand, null, 1));
-    if (fehler >= 8) { console.log('\nAcht Fehler in Folge - Abbruch.'); break; }
-    if (i < nimm.length - 1) await warte(ABSTAND_MS);
-  }
+  var erg = await Q.sammle({
+    intervall: IV,
+    ziel: ZIEL,
+    symbole: nimm,
+    was: IV + ' ' + (aktualisieren ? 'aktualisieren' : 'neu holen') + ', ' + nimm.length + ' Werte',
+    weiter: function () { return !anhalten; },
+    melde: function (m) {
+      if (m.art !== 'wert') return;
+      console.log('  ' + String(m.nr).padStart(4) + '/' + m.von + '  ' + m.sym.padEnd(8) +
+        (m.fehler ? m.fehler
+          : String(m.kerzen).padStart(5) + ' Kerzen' + (m.dazu > 0 ? '  (+' + m.dazu + ' neu)' : '') +
+            (m.ohneEroeffnung ? '  (' + m.ohneEroeffnung + ' ohne Eroeffnung)' : '')));
+    },
+  });
 
-  /* Erst die Sperre loesen, dann melden - sonst prueft standMelden() sein eigenes
-   * Archiv als "wird gerade geschrieben" und sagt gar nichts ueber den Stand. */
-  sperreRaeumen();
-  console.log('\n' + ok + ' Reihen geholt (' + kerzenGes.toLocaleString('de-DE') + ' Kerzen), ' + leer + ' ohne Daten.');
-  if (kerzenGes) console.log('Ohne Eroeffnungskurs: ' + ohneEroeffnung + ' Kerzen (' +
-    (100 * ohneEroeffnung / kerzenGes).toFixed(2) + ' %).');
-  var rest = offen.length - nimm.length;
+  console.log('\n' + erg.ok + ' Reihen geholt (' + erg.kerzen.toLocaleString('de-DE') + ' Kerzen), ' + erg.leer + ' ohne Daten.');
+  if (erg.kerzen) console.log('Ohne Eroeffnungskurs: ' + erg.ohneEroeffnung + ' Kerzen (' +
+    (100 * erg.ohneEroeffnung / erg.kerzen).toFixed(2) + ' %).');
+  if (erg.abgebrochen) console.log('ABGEBROCHEN: ' + erg.grund);
+  var rest = offen.length - erg.verarbeitet;
   if (rest > 0) console.log('Noch offen: ' + rest + ' - einfach erneut aufrufen.');
+  /* Erst ist die Sperre weg (das erledigt sammle), dann wird gemeldet - sonst
+   * prueft standMelden sein eigenes Archiv als "wird gerade geschrieben". */
   standMelden(aktualisieren);
 })();

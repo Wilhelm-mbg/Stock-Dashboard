@@ -28,11 +28,11 @@ var os = require('os');
  * IMMER weg. Bei Tageskursen kann man Jahre spaeter nachladen, bei Minutenkerzen
  * nicht. Das ist der ganze Grund, warum die App selbst sammelt. */
 var INTERVALLE = {
-  '1d':  { range: '40y',  ordner: 'archiv1d',  etwa: 10076, fensterTage: null },
-  '60m': { range: '730d', ordner: 'archiv60m', etwa: 5087,  fensterTage: 730 },
-  '15m': { range: '60d',  ordner: 'archiv15m', etwa: 1551,  fensterTage: 60 },
-  '5m':  { range: '60d',  ordner: 'archiv5m',  etwa: 4651,  fensterTage: 60 },
-  '1m':  { range: '7d',   ordner: 'archiv1m',  etwa: 2577,  fensterTage: 7 },
+  '1d':  { range: '40y',  ordner: 'archiv1d',  etwa: 10076, fensterTage: null, dauerMs: null },
+  '60m': { range: '730d', ordner: 'archiv60m', etwa: 5087,  fensterTage: 730,  dauerMs: 3600000 },
+  '15m': { range: '60d',  ordner: 'archiv15m', etwa: 1551,  fensterTage: 60,   dauerMs: 900000 },
+  '5m':  { range: '60d',  ordner: 'archiv5m',  etwa: 4651,  fensterTage: 60,   dauerMs: 300000 },
+  '1m':  { range: '7d',   ordner: 'archiv1m',  etwa: 2577,  fensterTage: 7,    dauerMs: 60000 },
 };
 
 /* SCHONEND: Yahoo bekommt hoechstens alle 1,2 Sekunden eine Anfrage. Die Zahl steht
@@ -179,14 +179,36 @@ function hole(url) {
  *   archiv1d   0 von 400 am Stempel erkennbar - eine Tageskerze traegt den
  *              Sitzungsbeginn und sieht auch als Teiltag normal aus. Sie ist fertig,
  *              sobald die Sitzung zu ist.
- * Bewusst NICHT "Stempel + Intervall <= jetzt": die letzte Sitzungskerze ist kuerzer
- * als das Intervall (19:30 bis 20:00 UTC) und waere faelschlich verworfen worden.
+ *
+ * ZWEITE SCHICHT, gemessen am 26.08.2026 um 18:51 UTC: die Quote-Kerze abzuschneiden
+ * genuegt nicht. Darunter liegt der GERADE LAUFENDE Eimer, und der traegt einen
+ * glatten Gitterstempel - die Sekundenregel sieht ihn nicht. XOM 15m endete nach
+ * dem Abschneiden auf 18:45, also mitten im Eimer 18:45-19:00; zwei Abrufe drei
+ * Minuten auseinander gaben fuer dieselbe Kerze verschiedene Werte (Umsatz 136.744
+ * gegen 169.080). Betroffen war jedes Intraday-Intervall, 60m eingeschlossen.
+ * Deshalb wird gefragt, wann der Eimer ZU ist: Stempel plus Dauer, gedeckelt auf
+ * den Handelsschluss. Die Deckelung ist der Grund, warum eine reine
+ * "Stempel + Dauer"-Regel falsch waere: die letzte Sitzungskerze ist kuerzer als
+ * das Intervall (19:30 bis 20:00 UTC) und waere jeden Abend verworfen worden.
  * Das Intervall kommt als Parameter, weil diese Datei zwei Aufrufer hat - eine
  * modulweite Variable waere die erste Stelle, an der die beiden auseinanderlaufen. */
 function fertigeKerze(tsMs, reg, jetzt, intervall) {
   if (new Date(tsMs).getUTCSeconds() !== 0) return false;
-  if (intervall === '1d' && reg && tsMs === reg.start * 1000) return jetzt >= reg.end * 1000;
-  return true;
+  if (intervall === '1d') {
+    return reg && tsMs === reg.start * 1000 ? jetzt >= reg.end * 1000 : true;
+  }
+  var cfg = INTERVALLE[intervall];
+  if (!cfg || !cfg.dauerMs) return true;
+  /* Wann ist dieser Eimer zu? Normalerweise nach seiner Dauer - aber nie spaeter
+   * als zum Handelsschluss. Genau daran haengt die kurze letzte Sitzungskerze:
+   * 19:30 bis 20:00 UTC ist eine halbe Stunde im Stundengitter. Eine reine
+   * "Stempel + Dauer"-Regel haette sie bis 20:30 fuer unfertig gehalten und
+   * jeden Abend verworfen. Fuer Kerzen frueherer Tage aendert die Deckelung
+   * nichts: deren Eimer ist laengst zu, bevor der heutige Schluss ueberhaupt
+   * eine Rolle spielt. */
+  var zu = tsMs + cfg.dauerMs;
+  if (reg && reg.end) zu = Math.min(zu, reg.end * 1000);
+  return jetzt >= zu;
 }
 
 /** Eine Reihe holen und in das Archivformat bringen.
@@ -268,6 +290,275 @@ function satz(sym, intervall, serie, meta) {
   };
 }
 
+/* ================= WELCHE WERTE, UND WOHIN ================= */
+
+/* Die grossen Index- und Sektor-ETFs. SPY steht bewusst vorn: Das Regime-Tor im
+ * Live-Handel prueft SPY gegen seine Stunden-EMA200, und weil SPY im App-Archiv
+ * fehlte, musste die Kapitulations-Messung es ueber eine Tagesreihe naehern. */
+var ETFS = ('SPY QQQ IWM DIA VOO IVV RSP TLT HYG LQD GLD SLV USO ' +
+  'XLF XLK XLE XLV XLI XLP XLY XLU XLB XLRE XLC SMH SOXX EEM EFA FXI GDX VXX').split(' ');
+var ETF_SATZ = {};
+ETFS.forEach(function (s) { ETF_SATZ[s] = 1; });
+function istEtfSym(s) { return !!ETF_SATZ[s]; }
+
+/* ETFs kommen in einen eigenen Unterordner. Die Messmaschine waehlt "aktien" ueber
+ * sym.indexOf('-USD') === -1 - das ist ein Filter gegen Krypto, nicht gegen
+ * Indexfonds. Laegen SPY und QQQ zwischen den Aktien, wuerde eine Aktienstrategie
+ * sie mitmessen; bei SPY waere es schlimmer, denn es ist zugleich der Anker des
+ * Regime-Tors - Messobjekt und Massstab in einem. */
+function ordnerFuer(sym, ziel) { return istEtfSym(sym) ? path.join(ziel, 'etf') : ziel; }
+function dateiPraefix(intervall) { return 'bars_' + intervall + '_'; }
+function dateiFuer(sym, intervall, ziel) {
+  return path.join(ordnerFuer(sym, ziel), dateiPraefix(intervall) + sym + '.json');
+}
+
+function heuteTag() { return new Date().toISOString().slice(0, 10); }
+function standPfad(ziel) { return path.join(ziel, 'stand.json'); }
+function standLesen(ziel) {
+  try { return JSON.parse(fs.readFileSync(standPfad(ziel), 'utf8')); }
+  catch (e) { return { fertig: {}, ohne: {} }; }
+}
+function standSchreiben(ziel, stand) {
+  try { fs.writeFileSync(standPfad(ziel), JSON.stringify(stand, null, 1)); return true; }
+  catch (e) { return false; }
+}
+
+/* Das Punkt-in-Zeit-Universum, nach Umsatz sortiert. Gibt es keines, ist die
+ * Antwort null und nicht eine leere Liste - eine leere Liste sieht aus wie
+ * "nichts zu tun". */
+function universumWerte() {
+  var mv = path.join(DATEN, 'massive');
+  var dat = [];
+  try {
+    dat = fs.readdirSync(mv).filter(function (f) { return f.indexOf('universum-') === 0; });
+  } catch (e) { return null; }
+  if (!dat.length) return null;
+  try {
+    var U = JSON.parse(fs.readFileSync(path.join(mv, dat[0]), 'utf8'));
+    var w = (U.werte || []).slice().sort(function (a, b) { return b.umsatzMio - a.umsatzMio; });
+    /* ETFs stehen vorn im Universum, gehoeren aber nicht in ein Aktien-Universum.
+     * Sie kommen ueber die eigene Liste - dort weiss man, dass es welche sind. */
+    return w.filter(function (x) { return !ETF_SATZ[x.sym]; });
+  } catch (e) { return null; }
+}
+
+/* wahl: 'etf' | 'topN' | 'alle' | 'SYM,SYM,...'
+ * Gibt { symbole, quelle, grund } zurueck, nie nur eine Liste: eine leere Liste
+ * ohne Grund waere genau die Stille, gegen die hier ueberall gebaut wird. */
+function listeBauen(wahl) {
+  wahl = wahl || 'etf';
+  if (wahl.indexOf(',') !== -1) {
+    return {
+      symbole: wahl.split(',').map(function (s) { return s.trim().toUpperCase(); }).filter(Boolean),
+      quelle: 'eigene Liste',
+    };
+  }
+  if (wahl === 'etf') return { symbole: ETFS.slice(), quelle: 'ETF-Liste' };
+  var w = universumWerte();
+  if (!w) {
+    return {
+      symbole: [], quelle: null,
+      grund: 'Kein Punkt-in-Zeit-Universum im Datenordner (massive/universum-*.json).',
+    };
+  }
+  var m = /^top(\d+)$/.exec(wahl);
+  if (m) {
+    var n = parseInt(m[1], 10);
+    return {
+      symbole: w.slice(0, n).map(function (x) { return x.sym; }),
+      quelle: 'die ' + Math.min(n, w.length) + ' umsatzstaerksten von ' + w.length,
+    };
+  }
+  if (wahl === 'alle') {
+    return { symbole: w.map(function (x) { return x.sym; }), quelle: 'ganzes Universum (' + w.length + ')' };
+  }
+  return { symbole: [wahl.toUpperCase()], quelle: 'ein Wert' };
+}
+
+/* ================= WAS DAS ARCHIV GERADE HERGIBT ================= */
+
+/* Der Zeitstempel der juengsten Kerze einer Datei. Die Rechnung darauf - Rueckstand
+ * in Handelstagen, Nachzuegler - steht in tools/archiv-wachhund.js; hier steht nur
+ * das Ablesen, weil die App den Waechter nicht laden kann (tools/ wird nicht
+ * ausgeliefert) und zwei Arten, eine Reihe zu lesen, wieder zwei Wahrheiten waeren. */
+function juengsteKerzeVon(datei) {
+  try {
+    var j = JSON.parse(fs.readFileSync(datei, 'utf8'));
+    var s = j.series || j.bars || [];
+    if (!s.length) return null;
+    return s[s.length - 1][0];
+  } catch (e) { return null; }
+}
+
+function archivDateien(ziel) {
+  var aus = [];
+  ['', 'etf'].forEach(function (unter) {
+    var o = unter ? path.join(ziel, unter) : ziel;
+    var f = [];
+    try { f = fs.readdirSync(o); } catch (e) { return; }
+    f.forEach(function (n) { if (/^bars_.*\.json$/.test(n)) aus.push(path.join(o, n)); });
+  });
+  return aus;
+}
+
+/* Ein Ueberblick ueber ein Archiv, guenstig genug fuer eine Anzeige.
+ * DIE STICHPROBENGROESSE STEHT IM ERGEBNIS, sie wird nicht verschwiegen: "juengste
+ * Kerze von heute" heisst etwas anderes, wenn dafuer 120 von 2.900 Reihen angesehen
+ * wurden. Genau diese Verwechslung hat das Stundenarchiv zwei Tage stillstehen
+ * lassen, ohne dass es auffiel. */
+function archivUeberblick(ziel, opt) {
+  opt = opt || {};
+  var stichprobe = opt.stichprobe != null ? opt.stichprobe : 120;
+  var erg = {
+    ordner: ziel, dateien: 0, angesehen: 0, juengsteMs: null, juengsterTag: null,
+    zuletztGesammelt: null, imStand: 0, ohneDaten: 0, sperre: null, grund: null,
+  };
+  var dateien = archivDateien(ziel);
+  erg.dateien = dateien.length;
+  if (!dateien.length) erg.grund = 'Noch nichts gesammelt';
+  /* Gleichmaessig ueber den Bestand greifen, nicht die ersten N: die ersten sind
+   * alphabetisch sortiert und damit kein Querschnitt. */
+  var schritt = Math.max(1, Math.ceil(dateien.length / stichprobe));
+  for (var i = 0; i < dateien.length; i += schritt) {
+    var t = juengsteKerzeVon(dateien[i]);
+    erg.angesehen++;
+    if (t != null && (erg.juengsteMs == null || t > erg.juengsteMs)) erg.juengsteMs = t;
+  }
+  if (erg.juengsteMs != null) erg.juengsterTag = new Date(erg.juengsteMs).toISOString().slice(0, 10);
+  var stand = standLesen(ziel);
+  erg.imStand = Object.keys(stand.fertig || {}).length;
+  erg.ohneDaten = Object.keys(stand.ohne || {}).length;
+  Object.keys(stand.fertig || {}).forEach(function (s) {
+    var am = stand.fertig[s].am;
+    if (am && (!erg.zuletztGesammelt || am > erg.zuletztGesammelt)) erg.zuletztGesammelt = am;
+  });
+  var sp = sperreLesen(ziel);
+  if (sp.aktiv) erg.sperre = { aktiv: true, seit: sp.start, was: sp.was };
+  else if (sp.verwaist) erg.sperre = { aktiv: false, verwaist: true, seit: sp.start, warum: sp.grundVerwaist };
+  return erg;
+}
+
+/* WAS UNWIEDERBRINGLICH WEG IST. Yahoo fuehrt je Intervall ein rollendes Fenster -
+ * 1m sieben Tage, 5m und 15m sechzig. Was darin nicht geholt wurde, ist nicht
+ * "spaeter nachzuholen", sondern fort. Die App laeuft nicht durch; war sie acht Tage
+ * aus, fehlt eine Woche Minutenkerzen fuer immer. Das muss sie sagen und nicht
+ * stillschweigend weitermachen. */
+function fensterLuecke(intervall, juengsteMs, jetzt) {
+  var cfg = INTERVALLE[intervall] || {};
+  jetzt = jetzt || Date.now();
+  if (!cfg.fensterTage) return { fensterTage: null, verloren: false, luecke: 0 };
+  if (juengsteMs == null) return { fensterTage: cfg.fensterTage, verloren: false, luecke: 0, unbekannt: true };
+  var tage = (jetzt - juengsteMs) / 86400000;
+  var luecke = tage - cfg.fensterTage;
+  return {
+    fensterTage: cfg.fensterTage, tageAus: tage,
+    verloren: luecke > 0, luecke: luecke > 0 ? luecke : 0,
+  };
+}
+
+/* ================= SAMMELN ================= */
+
+/* Der Lauf, den bis zum 26.08.2026 nur tools/yahoo-60m-holen.js hatte. Er steht
+ * hier, weil die App dasselbe tut und ihn sonst nachbauen muesste - und ein Nachbau
+ * waere die zweite Vorstellung davon, wie eine Reihe fortgeschrieben wird.
+ *
+ * SCHONEND UND NICHT BLOCKIEREND: zwischen zwei Werten wird gewartet, nicht
+ * gerechnet. Nach JEDEM Wert steht der Fortschritt auf der Platte; ein Abbruch
+ * kostet nichts.
+ *
+ * opt.melde bekommt nach jedem Wert eine Zeile, opt.weiter wird davor gefragt - so
+ * kann ein Aufrufer anhalten, ohne dass hier ein Signal-Handler noetig waere. */
+async function sammle(opt) {
+  opt = opt || {};
+  var intervall = opt.intervall;
+  var cfg = INTERVALLE[intervall];
+  if (!cfg) throw new Error('unbekanntes Intervall: ' + intervall);
+  var ziel = opt.ziel || ordnerVon(intervall);
+  var symbole = (opt.symbole || []).slice();
+  var abstand = opt.abstandMs != null ? opt.abstandMs : ABSTAND_MS;
+  var melde = typeof opt.melde === 'function' ? opt.melde : function () {};
+  var weiter = typeof opt.weiter === 'function' ? opt.weiter : function () { return true; };
+  var mindest = opt.mindestKerzen != null ? opt.mindestKerzen
+    : Math.max(50, Math.round(cfg.etwa * 0.04));
+  /* Acht Fehlschlaege HINTEREINANDER heissen nicht "acht kaputte Werte", sondern
+   * "das Netz ist weg" oder "wir sind gesperrt". Im Abrufwerkzeug stand diese
+   * Bremse auch - aber ihr Zaehler wurde nie hochgezaehlt, sie konnte nie
+   * ausloesen. Unbeaufsichtigt in der App waere das teuer. */
+  var bremse = opt.abbruchNachFehlern != null ? opt.abbruchNachFehlern : 8;
+
+  fs.mkdirSync(ziel, { recursive: true });
+  var stand = standLesen(ziel);
+  var praefix = dateiPraefix(intervall);
+
+  sperreSetzen(ziel, opt.was || (intervall + ', ' + symbole.length + ' Werte'));
+  var erg = {
+    intervall: intervall, ordner: ziel, geplant: symbole.length,
+    verarbeitet: 0, ok: 0, leer: 0, kerzen: 0, dazu: 0, ohneEroeffnung: 0,
+    abgeschnitten: 0, gereinigt: 0, abgebrochen: false, grund: null,
+    begonnen: new Date().toISOString(), beendet: null,
+  };
+  try {
+    /* Die Startmeldung steht INNERHALB des try. Sie stand einen Nachmittag lang
+     * davor, und damit haette ein Aufrufer, dessen melde() wirft, die Sperre fuer
+     * immer stehen lassen - genau der Fall, gegen den das finally unten steht. */
+    melde({ art: 'start', intervall: intervall, geplant: symbole.length, ordner: ziel });
+    var inFolge = 0;
+    for (var i = 0; i < symbole.length; i++) {
+      if (!weiter()) { erg.abgebrochen = true; erg.grund = 'angehalten'; break; }
+      var sym = symbole[i];
+      var r;
+      try {
+        r = await reiheHolen(sym, intervall, { mindestKerzen: mindest, jetzt: opt.jetzt });
+      } catch (e) { r = { fehler: String((e && e.message) || e).slice(0, 60) }; }
+      erg.verarbeitet++;
+      if (r.fehler) {
+        stand.ohne[sym] = { grund: r.fehler, am: heuteTag() };
+        erg.leer++; inFolge++;
+        melde({ art: 'wert', nr: i + 1, von: symbole.length, sym: sym, fehler: r.fehler });
+      } else {
+        inFolge = 0;
+        var unter = ordnerFuer(sym, ziel);
+        fs.mkdirSync(unter, { recursive: true });
+        var datei = path.join(unter, praefix + sym + '.json');
+        var dazu = 0;
+        if (fs.existsSync(datei)) {
+          try {
+            var alt = JSON.parse(fs.readFileSync(datei, 'utf8')).series || [];
+            var v = zusammenfuehren(alt, r.serie);
+            r.serie = v.serie; dazu = v.dazu; erg.gereinigt += v.gereinigt;
+          } catch (e2) { /* unlesbar: die frische Reihe ersetzt sie */ }
+        }
+        erg.abgeschnitten += r.abgeschnitten || 0;
+        var ohneO = 0;
+        r.serie.forEach(function (k) { if (k[5] == null) ohneO++; });
+        erg.ohneEroeffnung += ohneO;
+        fs.writeFileSync(datei, JSON.stringify(
+          satz(sym, intervall, r.serie, { waehrung: r.waehrung, boerse: r.boerse })));
+        stand.fertig[sym] = { kerzen: r.serie.length, ohneEroeffnung: ohneO, am: heuteTag() };
+        erg.ok++; erg.kerzen += r.serie.length; erg.dazu += dazu;
+        melde({
+          art: 'wert', nr: i + 1, von: symbole.length, sym: sym,
+          kerzen: r.serie.length, dazu: dazu, ohneEroeffnung: ohneO,
+        });
+      }
+      standSchreiben(ziel, stand);
+      if (bremse && inFolge >= bremse) {
+        erg.abgebrochen = true;
+        erg.grund = bremse + ' Fehlschlaege hintereinander - das ist keine Reihe kaputter Werte';
+        break;
+      }
+      if (i < symbole.length - 1) await warte(abstand);
+    }
+  } finally {
+    /* Die Sperre geht auch dann weg, wenn hier etwas fliegt. Sonst haelt ein
+     * einziger Ausrutscher das Archiv stundenlang fuer "wird geschrieben". */
+    sperreLoesen(ziel);
+    erg.beendet = new Date().toISOString();
+  }
+  melde({ art: 'ende', ergebnis: erg });
+  return erg;
+}
+
 module.exports = {
   INTERVALLE: INTERVALLE, ABSTAND_MS: ABSTAND_MS,
   yahooName: yahooName, warte: warte, kursOk: kursOk, hole: hole,
@@ -275,5 +566,11 @@ module.exports = {
   zusammenfuehren: zusammenfuehren, satz: satz,
   DATEN: DATEN, ordnerVon: ordnerVon,
   VERWAIST_STUNDEN: VERWAIST_STUNDEN, sperrePfad: sperrePfad, prozessLebt: prozessLebt,
+  ETFS: ETFS, istEtfSym: istEtfSym, ordnerFuer: ordnerFuer,
+  dateiPraefix: dateiPraefix, dateiFuer: dateiFuer,
+  standPfad: standPfad, standLesen: standLesen, standSchreiben: standSchreiben,
+  universumWerte: universumWerte, listeBauen: listeBauen,
+  juengsteKerzeVon: juengsteKerzeVon, archivDateien: archivDateien,
+  archivUeberblick: archivUeberblick, fensterLuecke: fensterLuecke, sammle: sammle,
   sperreLesen: sperreLesen, sperreSetzen: sperreSetzen, sperreLoesen: sperreLoesen,
 };
