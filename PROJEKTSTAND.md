@@ -154,7 +154,38 @@ zwölf Dateien selbst gelesen, nicht den Bericht übernommen). Ergebnis:
 zeigte bis 09:30 nur fünf Zeilen). Gelesen wird `bestesUrteil` und die **kleinste**
 Aussicht über alle Varianten — sie ist die planungsrelevante:
 
-| Strategie | Urteil | kleinste Aussicht (Handelstage) | alle Varianten |
+**⚠ KORRIGIERT 27.08. ~02:1x (QS-Fund „Einheit tage80"): die Spalte zählte SIGNALTAGE,
+nicht Handelstage — und der Umrechnungsfaktor ist je Strategie verschieden (1,0 bis
+21,5), die alte Rangfolge war deshalb in sich nicht vergleichbar.** Umrechnung je
+Strategie aus dem Protokoll (Handelstage der Bestätigungshälfte ÷ Signaltage), Rechenweg
+`qs-audit-2026-08-26/werkzeuge/einheit-tage80.js`:
+
+| Strategie | Urteil | **Handelstage bis entscheidbar** | (Signaltage) |
+|---|---|---|---|
+| kapitulation | **nicht bestätigt** | **834** | 224 |
+| rsi2seit-mcp | nicht entscheidbar | **1.073** | 1.070 |
+| monatsende-kauf | nicht messbar | **4.015** ⚠ aus 17 Tagen | 187 |
+| rsi2seit | nicht entscheidbar | 4.127 | 4.116 |
+| t3-stundendrift | nicht entscheidbar | 12.655 | 12.655 |
+| t2-umsatzschock | nicht entscheidbar | 17.365 | 17.317 |
+| momentum | nicht entscheidbar | 34.110 | 33.683 |
+| t1-zwangsglattstellung | nicht entscheidbar | 35.075 | 34.691 |
+| quartalsschub-betrag | nicht entscheidbar | **55.750** | 13.257 |
+| monatswende-breit | nicht entscheidbar | **79.500** | 3.803 |
+| winkelbestaetigt | **nicht bestätigt** | — | (keine Aussicht) |
+| winkelgrad | nicht entscheidbar | — | (keine Aussicht) |
+
+**Was dadurch kippt:** `monatswende-breit` fällt von Platz 4 auf den letzten,
+`monatsende-kauf` von Platz 1 auf Platz 3; die drei dünn feuernden
+Tagesarchiv-Strategien waren systematisch zu gut dargestellt. **Durch die
+1.000-Handelstage-Eintrittskarte kommt nur noch `kapitulation` (834)** — und die ist
+gemessen und trägt nicht. **SECHS liegen jenseits von 12.000 Handelstagen** (nicht fünf),
+zwei weitere ohne Aussicht. Wilhelms delta80-Entscheid räumt das Problem ab, sobald er
+in der Anzeige steht — delta80 ist eine Effektgröße, da gibt es nichts umzurechnen.
+
+*Die ursprüngliche Tabelle (Signaltage, falsche Überschrift) bleibt darunter als Beleg:*
+
+| Strategie | Urteil | kleinste Aussicht (SIGNALTAGE — Überschrift war falsch) | alle Varianten |
 |---|---|---|---|
 | monatsende-kauf | nicht messbar | **187** ⚠ | 187 — **entwertet, siehe Warnkanal unten** |
 | kapitulation | **nicht bestätigt** | **224** | 1.551 · 2.330 · **224** |
@@ -168,6 +199,8 @@ Aussicht über alle Varianten — sie ist die planungsrelevante:
 | t1-zwangsglattstellung | nicht entscheidbar | 34.691 | 34.691 |
 | winkelbestaetigt | **nicht bestätigt** | — | (keine Aussicht ausgewiesen) |
 | winkelgrad | nicht entscheidbar | — | (keine Aussicht ausgewiesen) |
+
+*(Der folgende Absatz gehört zur alten Signaltage-Tabelle — in Handelstagen sind es SECHS jenseits von 12.000 und nur ZWEI unter 1.500, siehe Korrektur oben.)*
 
 **FÜNF der zwölf liegen jenseits von 12.000 Handelstagen (zwei weitere haben GAR KEINE Aussicht — sie zeigen in die Gegenrichtung)** — mehr als fünfzig Jahre
 Börse. Sie sind mit diesem Datenbestand nicht entscheidbar, egal wie lange gewartet wird.
