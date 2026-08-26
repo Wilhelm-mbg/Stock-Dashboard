@@ -106,10 +106,39 @@ nicht vorhanden**, egal wie wach du bist und wie zuverlässig deine Schlafschlei
 2. Trägt dein eigener Chat den Namen? Die Kopfzeile von `ListAgents` sagt ihn dir
    (*„This session is … "*). **Nein → du bist unerreichbar.**
 
-Nur wenn 1 *nein* und 2 *ja* ergibt, trägt der Kanal. Ist 2 *nein* und 1 ebenfalls *nein*,
-ist der Name frei und du nimmst ihn per `set_session_title` (`session_id: "self"`) — **erst
-nach Prüfung 1, nie davor.** Ist 1 *ja*, rührst du den Namen nicht an, sonst baust du den
-Doppelgänger selbst.
+Nur wenn 1 *nein* und 2 *ja* ergibt, trägt der Kanal.
+
+### Und jetzt das Unangenehme: du kannst dir den Namen NICHT selbst geben
+
+*Gemessen in der Nacht zum 27.08.2026, nachdem an dieser Stelle zuvor das Gegenteil stand.*
+
+Es gibt **zwei verschiedene Namen**, und sie werden leicht verwechselt:
+
+| | wird gesetzt durch | wofür er zählt |
+|---|---|---|
+| **CCD-Sitzungstitel** | `set_session_title` | Anzeige in der App |
+| **Zustell-Name** | *nicht von innen setzbar* | `ListAgents`, `SendMessage` |
+
+`set_session_title` mit `session_id: "self"` **meldet Erfolg** („Renamed this session to
+…"), und `get_session` bestätigt den neuen Titel — **die Zustellung ändert sich trotzdem
+nicht.** Der neue PM hat es zweimal aufgerufen und stand danach in `ListAgents`
+unverändert als `markt-dashboard-91 [779ff5]` da.
+
+**Positivkontrolle** (sonst wäre das ein bloßer Nullbefund): Sprechende Namen sind in
+dieser Liste möglich — `QS/Audit [51dbcf]` trägt einen. Es geht also, nur nicht über
+dieses Werkzeug. Wie diese Sitzung zu ihrem Namen kam, ist **nicht belegt**; Vermutung ist
+das Umbenennen in der App-Seitenleiste, das nur Wilhelm tun kann.
+
+**Daraus folgt für dich:**
+
+- **Ruf `set_session_title` nicht auf, um erreichbar zu werden.** Es tut etwas anderes als
+  das, was du brauchst, und meldet dabei Erfolg — genau die teuerste Fehlerform dieses
+  Projekts.
+- **Ist der Name frei und du trägst ihn nicht: sag es Wilhelm sofort**, im Klartext und mit
+  deinem Kürzel. Nur er kann den Chat umbenennen. Bis dahin **nennst du in jeder Meldung
+  dein Kürzel als Rückadresse** (z. B. „Meldungen bitte an `markt-dashboard-91`") — sonst
+  arbeitest du hinter einer Tür ohne Klingelschild.
+- Ist 1 *ja* (Doppelgänger), rührst du den Namen ohnehin nicht an und meldest ihn Wilhelm.
 
 *Beobachtet am 26.08. um 23:5x: Nach dem Ende des vorigen PM-Chats war der Name in
 `ListAgents` verschwunden — 75 statt 76 Einträge, kein „Projekt-Manager" darunter. In
