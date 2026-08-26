@@ -61,6 +61,14 @@ var VERFAHREN = {
    * 1.4.0 (26.08.2026): #98 - der Ueberlappungsfaktor erreicht seinen Leser. Neu im
    *   Protokoll sind das Feld je Block und die Entscheidung B10, die bisher in KEINEM
    *   der 38 Protokolle stand. Die Rechnung selbst aendert sich nicht.
+   * 1.5.0 (26.08.2026): Wilhelms Formular-Entscheid 20:25, zwei Stellen in einem
+   *   Eingriff. (a) Die Aussicht bekommt dieselbe 30-Tage-Schranke wie das Urteil -
+   *   ein nicht-messbarer Lauf liefert keine tage80 mehr (vorher: 187 aus 17
+   *   Messtagen). (b) #92: bestesUrteil-Rangfolge - widerlegt gewinnt vor allem,
+   *   und der sechste Urteilswert aus Z. 1235 ist aufgenommen (fiel vorher auf den
+   *   Rueckfallwert nicht-messbar durch). Messwerte aendern sich nicht, Etiketten
+   *   und Planungszahlen koennen kippen - abgelegte Protokolle behalten ihre alten
+   *   Werte, bis sie neu gemessen werden.
    * Zur 1.2.0 gab es eine ANDERE Meinung, und sie war vertretbar: die Messung selbst
    * aendert sich nicht, kein Urteil kippt, es ist 'nur' eine Planungszahl - also
    * koennte 1.1.0 stehenbleiben. Dagegen steht, was diese Nummer LEISTEN soll: zwei
@@ -69,7 +77,7 @@ var VERFAHREN = {
    * Zahlen nebeneinanderlegt, haette keinen Anhaltspunkt. Deshalb neue Stelle.
    * Genau diese Frage soll die Sperrklinke in test-v6.js erzwingen - sie deshalb
    * durchzuwinken waere ihr erster Ausfall gewesen. */
-  version: '1.4.0',
+  version: '1.5.0',
   /* codeStand beantwortet 'war das dieselbe Datei?' und rechnet sich selbst aus. */
   codeStand: codeStand(),
   mindestKerzenVorlauf: 261,        // EMA100 + Kanal 200, wie die Detektoren es brauchen
@@ -1263,7 +1271,11 @@ function messe(strategie, archivPfad, optionen) {
      * UNTER der rohen Streuung (11 statt 25 Tage, also negative Autokorrelation der
      * Tagesmittel); bei positiver Autokorrelation waere es umgekehrt. Es zaehlt nicht,
      * welche Zahl kleiner ist, sondern welche zum Test passt. */
-    if (u.tagesmittel > 0 && u.se > 0 && u.tage > 0) {
+    /* Wilhelms Auflage 26.08. 20:25: dieselbe 30-Tage-Schranke wie das Urteil in
+     * Z. 1226 - ein Lauf, den die Maschine selbst fuer zu kurz erklaert, bekommt
+     * keine Aussichts-Hochrechnung (17 Messtage erzeugten sonst eine 187-Tage-Zahl,
+     * die die Aussichts-Tabelle anfuehrte). */
+    if (u.tagesmittel > 0 && u.se > 0 && u.tage >= 30) {
       var sd = u.se * Math.sqrt(u.tage);
       /* #91 (26.08.2026): hier stand VERFAHREN.zAlpha - 1,96, die Schwelle fuer EINEN
        * Test. Entschieden wird aber gegen die Bonferroni-Schwelle, und delta80 rechnet
@@ -1302,7 +1314,11 @@ function messe(strategie, archivPfad, optionen) {
       herkunft: 'Archiv-Store, Auswahl zum Messzeitpunkt (Ueberlebende)' },
     ergebnisse: ergebnisse,
     urteile: urteile.map(function (u) { return u.urteil; }),
-    bestesUrteil: ['bestaetigt', 'nicht-bestaetigt', 'nicht-entscheidbar', 'nicht-messbar', 'widerlegt']
+    /* #92 (Wilhelm 17:40, 2a): das schaerfste Urteil gewinnt - ein widerlegtes darf
+     * nicht hinter freundlicheren Etiketten verschwinden. Und der sechste Wert aus
+     * Z. 1235 steht jetzt in der Liste; vorher fiel er durch und der Rueckfallwert
+     * meldete ausgerechnet das schwaechste Etikett. */
+    bestesUrteil: ['widerlegt', 'bestaetigt', 'bestaetigt-aber-nullpunkt-verschoben', 'nicht-bestaetigt', 'nicht-entscheidbar', 'nicht-messbar']
       .filter(function (k) { return urteile.some(function (u) { return u.urteil === k; }); })[0] || 'nicht-messbar',
     /* Der Nullpunkt dieser Messung, gemessen statt angenommen - je Haelfte einer (S7). */
     placebo: placebo || null,
