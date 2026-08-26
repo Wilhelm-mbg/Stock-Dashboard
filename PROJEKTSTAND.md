@@ -516,18 +516,14 @@ mit #93/#94 zusammen runder.
 *Wer welche Dateien belegt. Trag dich ein, bevor du anfängst; nimm dich raus, wenn du
 fertig bist.*
 
-- **App-Codebase Master** — **Neumessung fertig** (`49a6278`), **(1a)+(2b) fertig**
-  (`0b7f767`). Arbeitsbaum sauber, npm test grün. Sitzt seit 09:51 an **B2** (die zwei
-  Depotverlauf-Bilder zusammenführen) — belegt `depot.js` und `index.html`.
-  **PM 11:15: seit 09:51 kein Commit — das ist für einen Umbau normal, aber wer #93/#94
-  oder B2-Nachbarschaft anfassen will, stimmt sich vorher mit ihm ab.**
-  Ergebnis der Neumessung in einem Satz: **33 von 34 Varianten unverändert**; die eine
-  Ausnahme (`rsi2seit-mcp` Var 3) kippt um 0,0002 Pp. Alle zwölf Protokolle tragen
-  1.2.0 und denselben Codestand — die Sperre hat belegbar gehalten.
-  Zwei eigene Fehler stehen im Befund: der Läufer maß elf Repo-Strategien plus die
-  verweigerte Hilfsdatei `wertpapierart` statt der zwölften aus dem Datenordner
-  (`monatsende-kauf`) — die Zahl zwölf hätte trotzdem gestimmt. Und die erste
-  Auswertung verglich verschiedene Varianten miteinander.
+- **App-Codebase Master** — nichts belegt. Heute fertig: Neumessung (`49a6278`),
+  (1a)+(2b) (`0b7f767`), **B2** (`10ae955`), **#93/#94** (`a5641d3`). Alles grün,
+  Arbeitsbaum sauber, gepusht.
+  Zu B2: die Kennzahlen rechnen weiter über die GESAMTE Historie — ausgeführt geprüft
+  mit 1.000 Punkten, deren Hoch bei Punkt 3 liegt. Mit einem 800er-Ausschnitt wären es
+  10.000 statt 20.000 und −10 % statt −55 %. Die Stelle hatte vorher KEINE Zusicherung.
+  Frei für den nächsten Auftrag — Vorschlag: das stillstehende Kursarchiv (SOFORT auf
+  der Tafel), sonst `messen.js:95` (Nachzügler zu #91) oder Stufe F (3).
 
 - **App-Codebase Master** — hat die **Neumessung aller zwölf Strategien** genommen
   (26.08., vom PM zugeteilt). Langer Rechenlauf, KEIN Umbau — es wird kein Quelltext
