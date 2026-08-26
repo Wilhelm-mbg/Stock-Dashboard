@@ -4250,6 +4250,25 @@ console.log('\n44) Messmaschine, Scoreboard und Strategie-Eingabe (23.08.2026)')
   ok(/table\.tbl tr:last-child th\[scope="row"\] \{[^}]*border-bottom: none/.test(hHtml),
      'und hinterlassen in der letzten Zeile keinen Reststrich');
 
+  /* ---- #101: eine Klasse, die es nur gebunden gibt, faerbt nichts ----
+   * Der Ruecksetzer im Depotverlauf trug class="down". Die gibt es in index.html vier
+   * Mal - .card .pp.down, .chip.down, #cockpit .down, .ppk.down - jedes Mal an einen
+   * Zusammenhang gebunden. Im Kennzahlenkopf greift keine davon, der Verlust blieb
+   * schwarz. Fuer Vorzeichen hat die App .pos/.neg, und U.signCls waehlt sie. */
+  ok(!/class=\\"down\\"/.test(dep2) || !/Max\. Rücksetzer[^;]*class=\\"down\\"/.test(dep2),
+     'Der Ruecksetzer traegt keine kontextgebundene Klasse mehr (#101)');
+  var eqK = dep2.slice(dep2.indexOf('Max. Rücksetzer') - 400, dep2.indexOf('Max. Rücksetzer') + 200);
+  ok(/U\.signCls\(dd\)/.test(eqK), 'sondern .pos/.neg ueber U.signCls');
+  ok(/U\.signCls\(vGesamt\)/.test(dep2),
+     'und der Verlauf ebenso - er kann genauso negativ sein und stand ganz ohne Klasse da');
+  /* Die Klassen muessen es auch ungebunden geben - sonst haette man die eine tote
+   * Klasse gegen die naechste getauscht. */
+  ok(/^\s*\.neg \{[^}]*var\(--down\)/m.test(hHtml) && /^\s*\.pos \{[^}]*var\(--up\)/m.test(hHtml),
+     '.pos und .neg gibt es ungebunden - sonst waere die Farbe wieder nur eine Behauptung');
+  /* #103, Rest: die Zeilenkoepfe standen einen Punkt kleiner als ihre eigenen Werte. */
+  ok(/table\.tbl th\[scope="row"\] \{[^}]*font-size: inherit/.test(hHtml),
+     'Zeilenkoepfe haben dieselbe Schriftgroesse wie die Zellen daneben (#103, Rest)');
+
   /* ---- Depotverlauf: EIN Bild, und die Zahlen ueber die ganze Historie (26.08.2026) ----
    * Unter Vermoegen -> Depot standen zwei Bilder DERSELBEN Daten untereinander: eine
    * schlichte Flaeche mit drei Kennzahlen darueber und darunter das ausfuehrliche Bild

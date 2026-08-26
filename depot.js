@@ -3629,10 +3629,17 @@
     });
     var eqLast = h[h.length - 1][1];
 
+    /* #101: der Ruecksetzer trug class="down" - eine Klasse, die es nur GEBUNDEN gibt
+     * (.card .pp.down, .chip.down, #cockpit .down, .ppk.down). Hier greift keine davon,
+     * der Verlust blieb schwarz. Die App hat dafuer .pos/.neg, und U.signCls waehlt sie
+     * - dieselbe Hausregel wie in der Bestandstabelle seit #94.
+     * Der VERLAUF bekommt sie mit: er kann genauso negativ sein und stand ganz ohne
+     * Klasse da. "Hoch" bleibt farblos - das ist ein Stand, keine Veraenderung. */
+    var vGesamt = (eqLast / START_CAPITAL - 1) * 100;
     el.innerHTML =
-      '<span><span class="ckl">Verlauf</span><b>' + pz1((eqLast / START_CAPITAL - 1) * 100) + '</b></span>' +
+      '<span><span class="ckl">Verlauf</span><b class="' + U.signCls(vGesamt) + '">' + pz1(vGesamt) + '</b></span>' +
       '<span><span class="ckl">Hoch</span><b>' + U.nf0.format(hoch) + ' $</b></span>' +
-      '<span><span class="ckl">Max. Rücksetzer</span><b' + (dd < 0 ? ' class="down"' : '') + '>' + pz1(dd * 100) + '</b></span>';
+      '<span><span class="ckl">Max. Rücksetzer</span><b class="' + U.signCls(dd) + '">' + pz1(dd * 100) + '</b></span>';
   }
 
   function normWeights() {

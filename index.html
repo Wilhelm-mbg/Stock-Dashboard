@@ -576,7 +576,11 @@
      unter der letzten Zeile blieb ein 130 px breiter Reststrich stehen - denn die Regel,
      die den Strich in der letzten Zeile entfernt, gilt nur fuer td, nicht fuer th.
      Eingebaut am 26.08.2026 zusammen mit den Zeilenkoepfen (#103). */
-  table.tbl th[scope="row"] { text-transform: none; letter-spacing: 0; font-weight: 400; }
+  /* font-size gehoert mit zurueckgesetzt: table.tbl th steht auf --fs-neben (fuer eine
+     Kopfzeile richtig), die Datenzellen daneben auf --fs-text. Ohne inherit stehen die
+     Beschriftungen einen Punkt kleiner als ihre eigenen Werte - beim ersten Anlauf
+     uebersehen, von der Issue-Wache gefunden. */
+  table.tbl th[scope="row"] { text-transform: none; letter-spacing: 0; font-weight: 400; font-size: inherit; }
   table.tbl tr:last-child th[scope="row"] { border-bottom: none; }
   table.tbl td { padding: 5px 8px; border-bottom: 1px solid var(--grid); vertical-align: top; }
   table.tbl tr:last-child td { border-bottom: none; }
