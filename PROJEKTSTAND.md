@@ -2973,6 +2973,12 @@ mit #93/#94 zusammen runder.
 *Wer welche Dateien belegt. Trag dich ein, bevor du anfängst; nimm dich raus, wenn du
 fertig bist.*
 
+
+- **markt-dashboard-b9 (Archiv-Nachlader, Routine)** — seit 27.08. ~01:4x läuft
+  `tools/archiv-nachladen.js`, planmäßig **~3 h 20 min** (volle Zeiträume, die Quelle
+  kennt keinen sparsamen Modus). **Sperre liegt im Archivordner: bis ~05:00 nicht auf
+  60m/1d messen** — das betrifft die frisch ausgeschriebene Überschuss-Messung und den
+  Analytiker-Lauf ~03:15. Kein Repo-Zugriff; Eintrag vom PM auf Bitte der Rolle.
 - **markt-dashboard-6c (Werkzeuge/Oberfläche)** — **belegt `scoreboard.js`** ab 26.08. ~23:0x:
   die offene Hälfte von Wilhelms 20:30-Entscheid — die Wand trennt noch bei
   `WAND_TAGE = 2500` **Signaltagen** statt an `delta80`. Der Maschinen-Teil
