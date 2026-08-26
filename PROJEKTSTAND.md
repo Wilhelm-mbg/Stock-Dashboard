@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-26 11:40
+letzter-bericht: 2026-08-26 15:15
 gesehener-tag: v8.33.3
 -->
 
@@ -346,7 +346,13 @@ Zwei Funde des Auditors aus dem 2. Lauf, **beide stecken in der ausgelieferten v
 sieht an zwei Stellen der App verschieden aus. **Achtung:** das ist `depot.js` — dieselbe
 Datei, in der der Master sitzt. Vorher mit ihm abstimmen oder er nimmt es mit.
 
-### FREI — `ausstieg`-Schalter in der Messmaschine (Wilhelm 26.08. 09:00, Antwort 2a)
+### ⚙ ZUGETEILT an App-Codebase Master (PM, 26.08. 15:15) — `ausstieg`-Schalter in der Messmaschine
+
+*Wilhelm 26.08. 09:00, Antwort 2a. Der wertvollste freie Auftrag: er blockiert **zwei**
+vorregistrierte Tüftler-Kandidaten (`glockendruck-nacht`, `nachtstoss-umkehr`) — von
+beiden ist ohne ihn nur das Tagbein messbar. **Bedingung 1 (eigener Zweig) ist hinfällig**,
+sie galt nur für die Dauer des Rechenlaufs; **Bedingung 2 (alle drei Stellen zugleich)
+bleibt hart.***
 
 Auftragsvorschlag A des Tüftlers, **freigegeben**. Spiegelbild des vorhandenen
 `einstieg`-Schalters: `ausstieg: 'schluss' | 'folgeEroeffnung'`. Ohne ihn ist vom
