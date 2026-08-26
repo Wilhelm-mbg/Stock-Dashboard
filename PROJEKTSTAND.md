@@ -172,6 +172,53 @@ Protokoll bereits belegt — er beschreibt dort, *wie* ausgestiegen wurde
 (`{art: 'Zeit', mittlereKerzen: 26}`). Der neue Konfigurationsschalter darf damit nicht
 kollidieren.
 
+### ⚠ AUFGEKLÄRT 26.08. 12:00 — das Archiv stand still, weil **niemand** es holt
+
+**Die Diagnose des PM war in der Ursache falsch und ist hiermit richtiggestellt.** Ich
+hatte geschrieben, „die Spiegelung lief und schrieb ohne neuen Inhalt". Der Master hat
+nachgesehen, der PM hat es unabhängig geprüft:
+
+**Es gibt keine gestörte Spiegelung — es gibt gar keine.** Kein npm-Skript, keine
+Windows-Aufgabe (`schtasks` durchsucht: nichts), kein Aufrufer im Repo außer Doku und
+Tests, keine Claude-Aufgabe. `tools/yahoo-60m-holen.js` ist ein **Handaufruf** und war es
+immer.
+
+**Der Lauf am 25.08. um 22:49 UTC war der Master selbst** — die Teilkerzen-Bereinigung
+aus #85, drei Minuten vor Commit `4e36674`. Deshalb 2.887 frisch geschriebene Dateien mit
+Inhalt vom 24.08.: geschrieben, aber nichts geholt. Die letzte echte Datenholung war am
+**24.08. 17:27 UTC**, und genau dort endet das Archiv.
+
+**Die Falle dahinter — Punkt 3 des Auftrags, wörtlich eingetreten:**
+
+```
+schon geholt: 2916 | ohne Daten: 347
+dieser Lauf: 0, geschaetzt 0 Minuten
+Nichts zu tun.
+```
+
+Das Werkzeug überspringt jeden Wert, den es schon hat; neue Kerzen holt nur
+`--aktualisieren`. **Ein Lauf, der nichts dazulernt, ging mit Erfolg aus und schwieg.**
+
+**Gebaut ist deshalb nicht der Lauf, sondern das Ende der Stille** (`ad4e6a8`,
+`tools/archiv-wachhund.js`): beide Ausgänge melden jetzt das Alter der **jüngsten Kerze**
+— nicht das Änderungsdatum der Datei, denn genau das war die Falle. Steht das Archiv
+hinterher, nennt der Lauf den Befehl dagegen. Exit 1 bei Alarm, damit eine Aufgabe ihn
+auswerten kann.
+
+**Eine Entwurfsentscheidung, die hier festgehalten gehört:** maßgeblich ist der
+**häufigste** jüngste Tag, nicht der späteste. Während der Reparatur waren 69 von 2.916
+Werten aktuell — wer den spätesten nimmt, meldet „frisch", während 97 % stillstehen.
+Ausgeführt geprüft mit 97 alten gegen 3 frische Reihen.
+
+**Feiertage kennt er nicht und behauptet es auch nicht:** ein Tag Rückstand ist Warnung
+mit Feiertagsvorbehalt, ab zwei Tagen Alarm. Ein Kalender wäre eine eigene Entscheidung.
+
+**Punkt 4 des Auftrags ist beantwortet:** keine historisch falschen Kurse. Es fehlen
+Tage, es stehen keine falschen drin. Messungen sind nicht umzuwerfen.
+
+**Offen und Wilhelms Sache:** ob die Datenholung künftig **regelmäßig** läuft. Der Master
+hat an Wilhelms Maschine nichts eingerichtet — richtig so. Siehe Frage (4) unten.
+
 ### ⚠ SOFORT — der Kursarchiv-Stillstand — **ZUGETEILT an App-Codebase Master, 26.08. 11:40**
 
 *Der Master hat es von sich aus vorgeschlagen, der PM hat zugeteilt. Grenzen: reine
@@ -478,6 +525,24 @@ konnten, ohne dass der Widerspruch auffiel.
 
 *Antworten genügen als Ziffernfolge, z. B. „1b 2a 3a".*
 
+**(4) NEU und dringender als die anderen drei — soll das Kursarchiv künftig von selbst
+nachladen?**
+Heute um 12:00 hat sich herausgestellt: **niemand holt die Kurse.** Es gibt keine
+gestörte Aufgabe — es gibt gar keine. Seit dem 24.08. ist das Archiv nur deshalb
+stehengeblieben, weil das Holen ein Handaufruf ist und ihn zwei Tage lang niemand
+gemacht hat. Der Master zieht gerade von Hand nach; ohne Entscheidung passiert dasselbe
+in ein paar Tagen wieder.
+- **(a)** Eine tägliche Aufgabe, die nach US-Schluss beide Archive nachlädt und den
+  Wachhund auswertet. Einrichten musst du sie selbst — sie läuft auf deiner Maschine.
+- **(b)** Nur der Wachhund läuft täglich und **meldet**, nachgeladen wird von Hand.
+- **(c)** Alles von Hand lassen; du denkst selbst daran.
+*Empfehlung: **a**.* (b) klingt vorsichtig, verlegt aber nur den Handgriff — und der ist
+schon zweimal zwei Tage lang ausgeblieben. (c) ist genau der Zustand, der uns die zwei
+Tage gekostet hat. Der Wachhund macht (a) sicher: er beendet sich bei Alarm mit einem
+Fehler, die Aufgabe kann das auswerten.
+**Nicht zu verwechseln mit dem Ausliefern** — das bleibt bei der Release-Wache und bei
+dir. Hier geht es nur um Kursdaten.
+
 **(1) Zwölf laufende Strategien, null Belege — was soll die App damit machen?**
 Sieben von zwölf brauchen mehr als 12.000 weitere Handelstage, bis sich ihre Frage
 überhaupt entscheiden lässt. Das ist keine Geduldsfrage mehr, das ist unerreichbar.
@@ -511,7 +576,9 @@ Brand.
 echter Fall existiert. (b) ist gut gemeint, aber eine neue Anzeige für einen Fall, den es
 noch nie gab.
 
-**(3) Zwei Release-Notizen warten. Jetzt ausliefern oder sammeln?**
+**(3) ~~Zwei Release-Notizen warten. Jetzt ausliefern oder sammeln?~~ ERLEDIGT 26.08. 11:56** — Wilhelm hat `package.json` selbst auf 8.33.4 gesetzt (`e323c8f`) und damit (a) gewählt; #93/#94 sind inzwischen ohnehin drin, es ist also faktisch (b) geworden. **Achtung: es gibt noch keinen Tag `v8.33.4` und fünf Notizen liegen unverbraucht** — der Release-Lauf ist entweder gerade unterwegs oder steckengeblieben. Frage nicht mehr beantworten.
+
+*(alter Wortlaut:)*
 Fertig und ungeliefert: das gemeinsame Urteil in Depot und Scoreboard, der Warnhinweis
 vor `kapitulation`, die zwölf Neumessungen. In v8.33.3 stecken außerdem zwei frische
 Anzeigefehler (#93/#94), die noch niemand repariert hat.
