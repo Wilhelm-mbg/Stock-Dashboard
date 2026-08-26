@@ -1,0 +1,53 @@
+normInv-Selbstkontrolle: 2 Literaturwerte |Abw|<=5e-7, Rundlauf tests=1..7 |Abw|<=1e-12. OK
+
+== kapitulation-2026-08-26.json  tests=3  Schwelle(eigen)=2.393980
+  V0: eigen=nicht-entscheidbar  protokoll=nicht-entscheidbar  delta80 relAbw=1.7e-9  tage80 eigen=1551 protokoll=1551 (alteFormel=1163)
+  V1: eigen=nicht-entscheidbar  protokoll=nicht-entscheidbar  delta80 relAbw=1.7e-9  tage80 eigen=2330 protokoll=2330 (alteFormel=1747)
+  V2: eigen=nicht-bestaetigt  protokoll=nicht-bestaetigt  delta80 relAbw=1.7e-9  tage80 eigen=224 protokoll=224 (alteFormel=168)
+  bestesUrteil: protokoll=nicht-bestaetigt  rangfolge-nachvollzogen=nicht-bestaetigt
+  placebo: t=-0.233  MDE=0.3354 Pp  tage=361
+
+== momentum-2026-08-26.json  tests=4  Schwelle(eigen)=2.497705
+  V0: eigen=nicht-entscheidbar  protokoll=nicht-entscheidbar  delta80 relAbw=3.2e-9  tage80 eigen=52578 protokoll=52578 (alteFormel=37008)
+  V1: eigen=nicht-entscheidbar  protokoll=nicht-entscheidbar  delta80 relAbw=3.2e-9  tage80 eigen=157689 protokoll=157689 (alteFormel=110992)
+  V2: eigen=nicht-entscheidbar  protokoll=nicht-entscheidbar  delta80 relAbw=3.2e-9  tage80 eigen=33683 protokoll=33683 (alteFormel=23708)
+  V3: eigen=nicht-entscheidbar  protokoll=nicht-entscheidbar  delta80 relAbw=3.2e-9  tage80 eigen=562398 protokoll=562398 (alteFormel=395853)
+  bestesUrteil: protokoll=nicht-entscheidbar  rangfolge-nachvollzogen=nicht-entscheidbar
+  placebo: t=0.108  MDE=1.9146 Pp  tage=4975
+
+== monatswende-breit-2026-08-26.json  tests=4  Schwelle(eigen)=2.497705
+  V0: eigen=nicht-entscheidbar  protokoll=nicht-entscheidbar  delta80 relAbw=3.2e-9  tage80 eigen=3942 protokoll=3942 (alteFormel=2775)
+  V1: eigen=nicht-entscheidbar  protokoll=nicht-entscheidbar  delta80 relAbw=3.2e-9  tage80 eigen=3803 protokoll=3803 (alteFormel=2677)
+  bestesUrteil: protokoll=nicht-entscheidbar  rangfolge-nachvollzogen=nicht-entscheidbar
+  placebo: t=0.334  MDE=0.1622 Pp  tage=5033
+
+== quartalsschub-betrag-2026-08-26.json  tests=2  Schwelle(eigen)=2.241403
+  V0: eigen=nicht-entscheidbar  protokoll=nicht-entscheidbar  delta80 relAbw=1.7e-10  tage80 eigen=13257 protokoll=13257 (alteFormel=10947)
+  V1: eigen=nicht-entscheidbar  protokoll=nicht-entscheidbar  delta80 relAbw=1.7e-10  tage80 eigen=19416 protokoll=19416 (alteFormel=16033)
+  bestesUrteil: protokoll=nicht-entscheidbar  rangfolge-nachvollzogen=nicht-entscheidbar
+  placebo: t=1.101  MDE=0.2677 Pp  tage=1653
+
+== rsi2seit-2026-08-26.json  tests=1  Schwelle(eigen)=1.959964
+  V0: eigen=nicht-entscheidbar  protokoll=nicht-entscheidbar  delta80 relAbw=1.9e-9  tage80 eigen=4116 protokoll=4116
+  bestesUrteil: protokoll=nicht-entscheidbar  rangfolge-nachvollzogen=nicht-entscheidbar
+  placebo: t=0.109  MDE=0.1310 Pp  tage=364
+
+== rsi2seit-mcp-2026-08-26.json  tests=5  Schwelle(eigen)=2.575829
+  V0: eigen=nicht-entscheidbar  protokoll=nicht-entscheidbar  delta80 relAbw=4.5e-9  tage80 eigen=1437 protokoll=1437 (alteFormel=966)
+  V1: eigen=nicht-entscheidbar  protokoll=nicht-entscheidbar  delta80 relAbw=4.5e-9  tage80 eigen=1476 protokoll=1476 (alteFormel=992)
+  V2: eigen=nicht-entscheidbar  protokoll=nicht-entscheidbar  delta80 relAbw=4.5e-9  tage80 eigen=1156 protokoll=1156 (alteFormel=777)
+  V3: eigen=nicht-entscheidbar  protokoll=nicht-entscheidbar  delta80 relAbw=4.5e-9  tage80 eigen=1070 protokoll=1070 (alteFormel=720)
+  V4: eigen=nicht-entscheidbar  protokoll=nicht-entscheidbar  delta80 relAbw=4.5e-9  tage80 eigen=1079 protokoll=1079 (alteFormel=725)
+  bestesUrteil: protokoll=nicht-entscheidbar  rangfolge-nachvollzogen=nicht-entscheidbar
+  placebo: t=1.247  MDE=0.1301 Pp  tage=364
+
+Maschinen-Staende der frischen Protokolle: {"1.2.0@6a7d9e29db6f":6}
+Varianten geprueft: 17, Abweichungen: 0
+
+Urteilsarten ueber alle abgelegten Protokolle: {"nicht-entscheidbar":70,"nicht-bestaetigt":5,"nicht-messbar":1}
+Protokolle mit gemischten Urteilen:
+  kapitulation-2026-08-24-fremdarchiv.json: [nicht-entscheidbar, nicht-entscheidbar, nicht-bestaetigt] -> nicht-bestaetigt
+  kapitulation-2026-08-25.json: [nicht-entscheidbar, nicht-entscheidbar, nicht-bestaetigt] -> nicht-bestaetigt
+  kapitulation-2026-08-26.json: [nicht-entscheidbar, nicht-entscheidbar, nicht-bestaetigt] -> nicht-bestaetigt
+  rsi2seit-mcp-2026-08-25.json: [nicht-entscheidbar, nicht-entscheidbar, nicht-entscheidbar, nicht-bestaetigt, nicht-entscheidbar] -> nicht-bestaetigt
+  winkelbestaetigt-2026-08-25.json: [nicht-entscheidbar, nicht-entscheidbar, nicht-entscheidbar, nicht-entscheidbar, nicht-bestaetigt] -> nicht-bestaetigt

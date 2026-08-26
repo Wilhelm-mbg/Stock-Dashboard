@@ -1,0 +1,6 @@
+["widerlegt","nicht-entscheidbar"] -> nicht-entscheidbar
+["widerlegt","nicht-messbar"] -> nicht-messbar
+["bestaetigt","widerlegt"] -> bestaetigt
+["widerlegt","widerlegt"] -> widerlegt
+["bestaetigt-aber-nullpunkt-verschoben"] -> nicht-messbar
+["bestaetigt-aber-nullpunkt-verschoben","nicht-entscheidbar"] -> nicht-entscheidbar
