@@ -185,4 +185,30 @@ Sperre 1 löst.
 
 ---
 
+## 10. Nachtrag 27.08. ~01:5x — Sperrlage aktualisiert, eine neue benannte Einschränkung
+
+**a) Sperrlage (PM-Meldung ~01:45):** Von den drei 26.08.-Datenfunden sind zwei
+erledigt (markt-dashboard-1d): die fünf „falschen" Delistings sind in Wahrheit **echt**
+(SEC-belegt, 25-NSE + 8-K Item 2.01 — das Warnsignal selbst war der Fehler), und
+`massive-tagesdaten.js:29` ist als rollendes 730-Tage-Fenster geklärt. Offen: die
+Wachhund-Rundung. Wilhelms Sperre 1 (Phantom-Dochte, 25.08.) steht unverändert bis zu
+seinem Wort; die QS-Befunde (1d nicht betroffen, Schlusskurs-Konsistenztest ab 03:45)
+liegen ihm morgen vor. **Auswirkung der Delisting-Korrektur auf die Verzerrungsmessung
+vom 26.08.: keine** — AVB/EQR/WBS & Co. hatten keine Kursdateien im massive-Bestand und
+standen in keiner Kohorte; der dortige Automatik-Filter fand folgerichtig 0 Fälle.
+
+**b) Neue benannte Einschränkung zu §5 (QS-Zählung, vom PM auf die Tafel gehoben):**
+Das Tagesarchiv enthält **158.733 Nullumsatz-Tage (1,02 %), Schwerpunkt in den
+1990ern.** Eine flache Tageskerze liefert Rendite null und schiebt die Bewegung auf den
+Folgetag (Stale-Price-Effekt). Für diese Messung heißt das: Merkmals-Ränge illiquider
+Werte und der gleichgewichtete Kontrolltopf können in der Frühzeit der Historie auf
+veralteten Kursen stehen; die Richtung ist nicht vorab bestimmbar. **Sie wird als
+Einschränkung geführt, nicht behandelt** — eine Behandlung (z. B. Liquiditätsboden)
+wäre eine neue Anordnung und damit ein zweiter Test, den der Auftrag verbietet. Wenn
+Wilhelm die Größe beziffert haben will: das wäre eine eigene, klein vorregistrierte
+Empfindlichkeitsmessung nach dem Muster der Docht-Messung (A/B mit ausgeschlossenen
+Nullumsatz-Tagen), NACH dem Referenzlauf, nicht darin.
+
+---
+
 *Simulation mit virtuellem Kapital. Keine Anlageberatung.*
