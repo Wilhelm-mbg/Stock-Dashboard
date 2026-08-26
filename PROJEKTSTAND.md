@@ -1,6 +1,7 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 00:20
+letzter-bericht: 2026-08-27 00:42
 gesehener-tag: v8.33.5
+pm-adresse: markt-dashboard-f5 [5204c6]
 -->
 
 # Projektstand
@@ -10,6 +11,76 @@ und den Sitzungen: hier steht, was entschieden ist, was gerade läuft und was al
 ansteht. Lies sie beim Start; trag dich unter „Läuft gerade" ein, wenn du Dateien belegst.
 
 Wenn du hier etwas änderst, dann nur deine eigene Zeile unter „Läuft gerade".
+
+---
+
+## 🔴 27.08.2026, 00:42 — App-Neustart: alle Sitzungen weg, der Nachlade-Lauf lebt
+
+**Wilhelm hat die App um ~00:40 neu gestartet.** Damit sind **alle acht wachen Chat-Sitzungen
+beendet** — nachgesehen, nicht vermutet: `ListAgents` zeigt 74 Einträge, davon **genau einer
+erreichbar** (`Desingner`, über Remote Control). Alles andere steht auf `offline`.
+
+**Der PM heißt ab jetzt `markt-dashboard-f5 [5204c6]`.** Die Adressen `markt-dashboard-91`
+und `markt-dashboard-69` sind tot. Wer den PM sucht, nimmt die Adresse aus dem Kopf dieser
+Datei — sie ist die einzige Quelle, die den Neustart überlebt.
+
+### Was der Neustart NICHT getötet hat — und warum das ein Problem ist
+
+**Das Archiv-Nachladen läuft weiter.** Gemessen, nicht angenommen: die Prozesse `5852`
+(`archiv-nachladen.js`) und `7896` (`yahoo-60m-holen.js alle --aktualisieren`) laufen seit
+`00:20:47`, und `archiv60m` hat in den zehn Minuten vor 00:39 noch **298 Dateien**
+geschrieben. Die Sperre gilt also unverändert: **bis ~03:45 nicht auf 60m/1d messen.**
+
+**Aber die Sitzung, die den Lauf begleitet hat, ist weg.** `markt-dashboard-b9` hatte
+zugesagt, Ergebnis oder Alarm zu melden und danach eine Übergabe abzulegen. **Das wird jetzt
+niemand tun** — der Prozess schreibt Dateien, aber kein Chat sieht mehr hin. Genau das Muster,
+das dieses Projekt zwei Tage Kursdaten gekostet hat: *etwas läuft und sieht gesund aus, aber
+niemand wertet es aus.* Wer nach 03:45 als Erster hier liest, prüft bitte
+`node tools/archiv-wachhund.js` und den Datenordner auf `archiv-alarm-*.txt`.
+
+### Die „Läuft gerade"-Liste unten ist Geschichte, nicht Gegenwart
+
+Die Einträge zu `markt-dashboard-6c`, `Berechnungen` und `App-Codebase Master` beschreiben
+Sitzungen, **die es nicht mehr gibt**. Ihre *Befunde* bleiben gültig und stehen weiter unten;
+ihre *Dateisperren* sind mit dem Neustart erloschen. **`scoreboard.js` ist frei** (6c hatte es
+ohnehin schon freigegeben), ebenso alles, was Master und Berechnungen belegt hatten.
+
+---
+
+## ✅ 27.08. 00:35 — QS beziffert den Hoch/Tief-Fund: er bewegt kein Urteil der zwölf
+
+*Vom PM aus der Übergabe `qs-audit-2026-08-27-0240-EXPOSITION.md` übernommen; die Datei ist
+danach in `uebergabe/verarbeitet/` gewandert. Rechenwege:
+`qs-audit-2026-08-26/werkzeuge/exposition.js` und `…/konzentration.js`, beide nur lesend.*
+
+Die QS hatte den Phantom-Docht-Fund als „praktisch folgenreichste Sache der Nacht" gemeldet
+und das anschließend **selbst nachgemessen, statt es stehen zu lassen** — mit dem Ergebnis,
+dass die eigene Einschätzung zu groß war:
+
+| | |
+|---|---|
+| Phantom-Dochte im Messfenster | 34.369 |
+| **davon in der Bestätigungshälfte** | **6.579** von **7.330.520** Kerzen |
+| **Anteil** | **0,09 %** — schwere Fälle (≥ 1 %) **0,008 %** |
+| Quote-Stempel im Messfenster | 75, alle in der Bestätigungshälfte (die vom 24.08.) |
+
+**Aber: die Fehler sind konzentriert, nicht verdünnt.** An acht Tagen trägt mindestens jede
+dritte handelnde Reihe einen Phantom-Docht, im Extrem **53,6 %** (24.12.2024). Betroffen sind
+709 Tage, nennenswert aber nur diese acht — drei sind der Archivanfang, sieben sind
+**US-Halbtage**.
+
+**Was ausdrücklich NICHT folgt** (die QS sagt es selbst, und es ist der wichtigere Teil):
+
+1. **Der Fund ist nicht erledigt.** Er ist für **die bestehenden zwölf** entschärft, nicht
+   allgemein. Für alles, was künftig **Hoch/Tief** benutzt — Kanäle, ATR, Ausbrüche, ORB,
+   Stopps — bleibt er voll gültig.
+2. **Strategien mit wenigen, konzentrierten Signaltagen trifft es hart.** `monatsende-kauf`
+   hat 17 Bestätigungstage; ein einziger kontaminierter wäre 6 % ihrer Datenbasis. **Wer
+   künftig einen Kandidaten mit Monatswende- oder Feiertagsbezug vorregistriert, sieht sich
+   vorher die sieben Halbtage an.**
+3. **Die Aufhebungs-Frage ist weiter offen** — ob sich der Effekt zwischen Signal und
+   Kontrolle herauskürzt, ist **nicht gemessen**; beide teilen sich `fuehreAus`. Diese
+   Entwarnung ersetzt die Messung nicht, sie macht sie nur weniger dringend.
 
 ---
 
@@ -3006,8 +3077,16 @@ mit #93/#94 zusammen runder.
 *Wer welche Dateien belegt. Trag dich ein, bevor du anfängst; nimm dich raus, wenn du
 fertig bist.*
 
+> **⚠ Stand 27.08. 00:42: alle Chat-Sitzungen unten sind durch den App-Neustart beendet.**
+> Die Dateisperren sind damit **erloschen** — was hier steht, ist der letzte Arbeitsstand,
+> keine laufende Belegung. Einzige Ausnahme: der **Nachlade-Prozess** läuft ohne seine
+> Sitzung weiter (Sperre auf 60m/1d bis ~03:45 gilt trotzdem). Einzige erreichbare
+> Sitzung: `Desingner`.
 
-- **markt-dashboard-b9 (Archiv-Nachlader, Routine)** — läuft seit **00:20** (korrigiert;
+- **markt-dashboard-b9 (Archiv-Nachlader, Routine)** — ⚠ **Sitzung tot seit dem Neustart
+  ~00:40, Prozess läuft weiter** (PID 5852/7896, geprüft 00:39: 298 Dateien in 10 Minuten).
+  **Niemand wertet den Lauf mehr aus** — wer nach 03:45 hier liest, prüft den Wachhund und
+  den Datenordner auf `archiv-alarm-*.txt`. Ursprünglicher Eintrag: läuft seit **00:20** (korrigiert;
   UTC-Protokoll `22:20:47`), `tools/archiv-nachladen.js`, planmäßig ~3 h 20 min →
   **Ende gegen 03:40. Sperre im Archivordner: bis ~03:45 nicht auf 60m/1d messen.**
   ⚠ **Der Analytiker-Lauf ~03:15 fällt MITTEN in die Sperre** — bitte auf 60m/1d
