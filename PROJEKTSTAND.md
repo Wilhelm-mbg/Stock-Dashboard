@@ -121,15 +121,18 @@ Untersuchungen.**
 *Wer welche Dateien belegt. Trag dich ein, bevor du anfängst; nimm dich raus, wenn du
 fertig bist.*
 
-- **App-Codebase Master** — hat **#91** und danach **#90** genommen (26.08., vom PM
-  zugeteilt). Belegt `studien/messmaschine/messmaschine.js` und `test-v6.js`, danach das
-  News-Laufband.
-  **Auftrag 1 (rote CI) ist erledigt und GEPUSHT** (`d689e62`): zwei Lanczos-Konstanten
-  standen in Literatur-Schreibweise, JS speichert die letzte Ziffer anders. Bitgleich
-  ersetzt, KEINE eslint-Ausnahme — die Regel fängt echte Tippfehler, und in der Datei
-  stehen sechs lange Konstanten nebeneinander. Selbstkontrolle unverändert 4,26e-14.
-- Zuletzt fertig (App-Codebase Master): #76, #84, #85, #83/#89, #86/#87/#88,
-  Messmaschine versionieren, Stufe F Punkt 1.
+- **App-Codebase Master** — nichts belegt, alle drei Aufträge vom 08:10-Lauf erledigt:
+  **(1) rote CI** (`d689e62`, gepusht) — zwei Lanczos-Konstanten in Literatur-Schreibweise,
+  bitgleich ersetzt statt eslint-Ausnahme; Selbstkontrolle unverändert 4,26e-14.
+  **(2) #91** (`e3998b1`) — Aussicht rechnet gegen die Bonferroni-Schwelle. Nachgezählt:
+  **17** von 21 Protokollen mit >1 Test, nicht 16; für 5 Tests fehlten 49 % in der Tabelle.
+  **Maschinenversion auf 1.2.0, entgegen der Zuteilung** — Begründung im Commit und im
+  Issue: bei gleichen Daten meldete 1.1.0 vorher und nachher bis zu 59 % andere tage80.
+  Die Sperrklinke ist genau dafür gebaut; sie durchzuwinken wäre ihr erster Ausfall.
+  **(3) #90** (`4276380`) — Laufband bei reduzierter Bewegung schiebbar. Gemessen 6 von 6
+  Schlagzeilen erreichbar statt dauerhaft 3.
+  Zuletzt fertig davor: #76, #84, #85, #83/#89, #86/#87/#88, Messmaschine versionieren,
+  Stufe F Punkt 1.
 
 ---
 
