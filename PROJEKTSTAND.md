@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-26 00:30
+letzter-bericht: 2026-08-26 08:10
 gesehener-tag: v8.33.2
 -->
 
@@ -13,24 +13,26 @@ Wenn du hier etwas änderst, dann nur deine eigene Zeile unter „Läuft gerade"
 
 ---
 
-## Stand: 26.08.2026, 00:30
+## Stand: 26.08.2026, 08:10
 
-Ausgeliefert ist **v8.33.2**. Arbeitsbaum sauber, nichts Ungepushtes, alle Tests grün.
-Eine Release-Notiz wartet auf die Wache (`2026-08-26-belegt-heisst-bestaetigt.md`).
+Ausgeliefert ist **v8.33.2** — unverändert seit gestern Abend. Der Quellstand ist neun
+Commits weiter; **sieben Release-Notizen warten** auf die Wache. Arbeitsbaum sauber,
+nichts Ungepusht.
+
+**Die Tests sind rot** (siehe Aufträge) — seit 03:27, aus einer Studien-Datei, nicht aus
+dem Programm.
+
+Seit 03:27 hat niemand mehr etwas committet. Der große freigegebene Auftrag — die
+**Neumessung aller zwölf Strategien** — liegt seit 01:40 unangetastet.
 
 Der Struktur-Plan vom 25.08. (`studien/struktur-plan-2026-08-25/PLAN.md`):
 
 | Stufe | Inhalt | Stand |
 |---|---|---|
-| A | Politur, Sammelzeilen, Leerzustände, Kleintexte | fertig |
-| B | Navigation gehört der Shell | fertig |
-| C | Mittelfrist, Meine Papiere, Marktkarte als Pille | fertig |
-| D | Bausteinkasten, Info-Register | fertig |
-| E | `depot.js` zerlegen — sieben Blöcke | fertig (9.972 → 6.988 Zeilen) |
-| E-Rest | `init()` dritteln, Speicher-Nebeneffekt aus `render()` | **fertig** (25./26.08.) |
-| F | Ein Chart-Renderer, Barrierefreiheit, Theme ohne Blitz | **offen** |
-
-Damit ist vom Struktur-Plan nur noch Stufe F offen.
+| A–E, E-Rest | Politur, Navigation, Reiter, Bausteinkasten, `depot.js` zerlegen | fertig |
+| F (1) | Theme ohne Dunkel-Blitz | **fertig** (26.08.) |
+| F (2) | Ein einziger Chart-Renderer | offen, frei |
+| F (3) | Barrierefreiheit | offen, nach (2) |
 
 ---
 
@@ -39,73 +41,78 @@ Damit ist vom Struktur-Plan nur noch Stufe F offen.
 *Was freigegeben ist und noch niemand macht. Wer eine Zeile nimmt, trägt sich unter
 „Läuft gerade" ein und streicht sie hier.*
 
-**Erledigt 26.08.:** ~~#83 / #89 — „Meine Papiere“ ganz nach Vermögen.~~ `79a505b`,
-beide Meldungen geschlossen. Der Signalstand ist als zwei Spalten mitgezogen; Felix’
-Gruppierung aus #71 kommt bewusst nicht mit (Begründung im Commit und in #83).
+### SOFORT — rote Tests (PM zugeteilt 26.08. 08:10)
 
-**Dann — Vorstufen der Neumessung (Messwerkzeug, keine Handelslogik). Wilhelm 26.08.:
-alle vier zuerst, die Neumessung startet erst danach.**
+`npm test` scheitert an `studien/analytiker/2026-08-26-dritter-lauf/f2-signifikanz.js`
+Zeilen 26 und 30: `no-loss-of-precision`. Es sind die Lanczos-Koeffizienten der
+Gammafunktion — die Zahlen sind absichtlich so lang, aber JavaScript rundet sie ohnehin.
+Kürzen auf die darstellbare Genauigkeit oder die Regel für diese eine Datei ausnehmen;
+das Ergebnis des Laufs darf sich nicht ändern (die Selbstkontrolle in der Datei muss
+weiter |Abw| ≤ 4,3e−14 melden). **Blockiert CI für jeden Push.**
 
-- ~~**#85** — laufende Quote-Stempel-Kerze abschneiden.~~ **Erledigt 26.08.** (`4e36674`):
-  beide Archive verwerfen den unfertigen Balken, 2.841 vorhandene Teilkerzen entfernt.
-  **Damit ist 1 von 4 Vorstufen fertig.**
-- ~~**#86** — `aussicht` (Tage bis t=2) feuert nie.~~ **Erledigt 26.08.** (`ade84ec`):
-  in 59 abgelegten Urteilen stand die Zahl auf null. Gegenprobe des Analytikers meldet
-  jetzt 2 von 2 statt 0 von 2.
-- ~~**#87** — A7-Protokolltext nennt das falsche Ausschlussfenster.~~ **Erledigt 26.08.**
-- ~~**#88** — Placebo-Lauf ignoriert die Einstiegskonvention.~~ **Erledigt 26.08.**:
-  gemessen −0,5000 Pp gegen MDE 0,0055 Pp, nach der Reparatur 0,0000. Kein abgelegtes
-  Protokoll war betroffen. Damit ist `glockendruck-nacht` Zweig T an dieser Stelle frei.
+### SOFORT — #91, fünfte Vorstufe der Neumessung (PM zugeteilt 26.08. 08:10)
 
-> **ALLE VIER VORSTUFEN SIND FERTIG (26.08.).** Die Neumessung ist damit nicht mehr
-> blockiert. Sie beginnt laut Auftrag mit der Versionierung der Messmaschine — und die
-> ist durch #86/#87 dringender geworden: die Protokollinhalte ändern sich (`aussicht`
-> wird gefüllt, A7-Text anders), die Version steht weiter auf `1.0.0`.
+Der Analytiker hat in derselben Nacht einen fünften Instrumentenfehler gefunden, der
+**genau die Zahlen betrifft, die die Neumessung erzeugen wird**:
+`messmaschine.js:1169` rechnet `aussicht.tage80` gegen t=2, entschieden wird aber gegen
+die Bonferroni-Schwelle. Bei 16 von 21 Protokollen (tests>1) untertreibt die Zahl die
+nötigen Tage um 21–59 %. Reparatur ist eine Zeile: `schwelle` statt `VERFAHREN.zAlpha`.
+Brisant, weil #86 die `aussicht` gerade erst zum Feuern gebracht hat.
+**Diese Reparatur gehört VOR die Neumessung** — sonst tragen alle zwölf frischen
+Protokolle eine zu optimistische Planungszahl.
+Sperrklinke der Messmaschine beachten: der `codeStand` ändert sich, es ist aber
+**keine** Verfahrensänderung (nur eine Planungszahl) — Version bleibt 1.1.0.
 
-**Messmaschine versionieren und alle Kanten neu messen** (freigegeben 25.08. spät):
+### SOFORT — #90, totes News-Laufband (PM zugeteilt 26.08. 08:10)
 
-- ~~(1) Versionsnummer der Messmaschine an ihren Code koppeln, veraltete Protokolle in
-  der Übersichtstafel kennzeichnen.~~ **Erledigt 26.08.** (`118ad72`): `version` bleibt
-  von Hand (jetzt 1.1.0), dazu ein `codeStand`, der sich selbst ausrechnet; eine
-  Sperrklinke macht jede Änderung an der Maschine rot, bis jemand entschieden hat, ob
-  sich das Verfahren geändert hat. Die Tafel zeigt "↻ alte Maschine" — aber nur, wo
-  eine Kennung da ist; die 26 alten Protokolle stehen als *unbekannt*, nicht veraltet.
-- **(2) Alle zwölf Strategien einmal auf dem aktuellen Instrumenten-Stand neu messen.**
-  **JETZT DRAN und frei** — die vier Vorstufen (#85–#88) und die Versionierung sind
-  fertig. Das ist ein langer Rechenlauf, kein Umbau: es braucht eine Sitzung mit Zeit,
-  nicht eine, die Code anfasst. Danach tragen die Protokolle einen echten Stand statt
-  "unbekannt". **Erst dann neue Untersuchungen.**
+Auditor-Fund der Nacht: das News-Laufband steht bei „Bewegung reduzieren" still und
+zeigt dann nur die Hälfte. **Kein Randfall** — auf Wilhelms Rechner ist „Bewegung
+reduzieren" dauerhaft aktiv (am 26.08. gemessen), das ist also sein Normalzustand.
+Reparatur: bei reduzierter Bewegung nicht scrollen, sondern alle Meldungen zeigen.
 
-**Danach — Nachtaufträge Wilhelms vom 26.08.:**
+### DANN — Neumessung aller zwölf Strategien (freigegeben 25.08., frei seit 01:40)
 
-- **Großer Archiv-Ausbau:** Backfill 60m und täglich auf E:, Universum nach Wertpapierart
-  verbreitern. Ausdrücklich NACH der Neumessung, damit die zwölf Protokolle auf einem
-  festen Archivstand messen.
-- **Literatur-Tiefenrecherche** Übernacht-/Schlussauktions-Effekte (einmaliger Lauf 02:30,
-  Ergebnis nach `studien/tueftler/recherche-2026-08-26/`).
+**Immer noch niemand dran.** Alle Vorbedingungen sind erfüllt (#85–#88 repariert,
+Maschine versioniert auf 1.1.0 mit `codeStand`); es fehlt nur noch #91 oben.
+Das ist **ein langer Rechenlauf, kein Umbau** — es braucht eine Sitzung mit Zeit, nicht
+eine, die Code anfasst. Danach tragen die Protokolle einen echten Stand statt
+„unbekannt" (26 alte Protokolle stehen heute ohne Kennung da). **Erst danach neue
+Untersuchungen.**
 
-**Oberfläche, parallel möglich:**
+### Wartet auf Wilhelm (nicht anfangen)
 
-- **Stufe F, Reihenfolge fest:**
-  - ~~(1) Theme ohne Dunkel-Blitz beim Start.~~ **Erledigt 26.08.** (`2d90433`): zwei
-    Ursachen, beide belegt — die feste Fensterfarbe und das Nachladen per IPC.
-    Neue Probe `tools/thema-probe.js` misst es in Bildern: 0 von 210 dunkel statt
-    vorher 9 von 9. Gehoert VOR und NACH jede Änderung am Startweg des Themas.
-  - **(2) Ein einziger Chart-Renderer** (`drawBig` vs. `chart.js` — Entscheid nach
-    Funktionsvergleich). **Frei.**
-  - **(3) Barrierefreiheit** (Rest #59 Stufe 3). Frei, aber nach (2).
-- **Nachbilden-Dialog:** Belegstatus sichtbar in den Dialog „Trade nachbilden" —
+- **`ausstieg`-Schalter in der Messmaschine** (Auftragsvorschlag A des Tüftlers).
+  Vorbedingung für den Studien-Kandidaten `glockendruck-nacht`. PM-Frage 2 vom 26.08.
+- **Auktionskosten am Demo-Konto messen** (Auftragsvorschlag B). PM-Frage 3 vom 26.08.
+- **Release** — gehört der Release-Wache, die nur von Hand läuft. PM-Frage 1 vom 26.08.
+
+### Danach — schon freigegeben, Reihenfolge fest
+
+- **Großer Archiv-Ausbau:** Backfill 60m und täglich auf E:, Universum nach
+  Wertpapierart verbreitern. Ausdrücklich NACH der Neumessung.
+- **Stufe F (2)** — ein einziger Chart-Renderer (`drawBig` vs. `chart.js`, Entscheid
+  nach Funktionsvergleich). **Frei, parallel möglich.**
+- **Stufe F (3)** — Barrierefreiheit (Rest #59 Stufe 3), nach (2).
+- **Nachbilden-Dialog:** Belegstatus sichtbar im Dialog „Trade nachbilden" —
   Belegtexte aus den Protokollen (`DepotAPI.protokollKante`), nie aus Prosa.
-- **Handel raus aus dem Renderer — NUR PLAN:** ein Umbauplan als Dokument unter
-  `studien/`, kein Code. Gebaut wird erst nach Wilhelms zweitem Ja.
-- **#80 Kanal-Güte neu eichen:** Studien-Strang. Bis die Eichung steht, bekommt die
-  Güte-Zahl in der Oberfläche einen Warnhinweis („ungeeicht").
-- **rsi2seit-mcp V4: Bestätigungsmessung vorregistrieren** (Studien-Strang). Ehrlicher
-  Rahmen: Intervall [+0,018, +0,117] gegen Hürde 0,10 — läuft, sobald genug frische Tage da sind.
-- **Zweig `claude/dashboard-integrated-browser-plvkv7` prüfen** (1 Commit: Browser-Treiber,
-  Aufzeichnung, Einzeldatei) und bei Tauglichkeit einbauen; sonst mit Begründung vorlegen.
-- **Danach die kleinen Wünsche, Reihenfolge fest:** #69 lokales Backup → #82 Herkunftsland-
-  Filter Marktkarte → #70 Radar-Streusuchen → #33 zweiter Trendwende-Detektor.
+- **Handel raus aus dem Renderer — NUR PLAN:** Umbauplan als Dokument unter `studien/`,
+  kein Code. Gebaut wird erst nach Wilhelms zweitem Ja.
+- **#80 Kanal-Güte neu eichen** (Studien-Strang). Bis dahin Warnhinweis „ungeeicht"
+  an der Güte-Zahl.
+- **rsi2seit-mcp V4: Bestätigungsmessung** — vorregistriert, wartet auf frische
+  Handelstage (beide Archive enden am 24.08.).
+- **Zweig `claude/dashboard-integrated-browser-plvkv7` prüfen** (1 Commit) und bei
+  Tauglichkeit einbauen; sonst mit Begründung vorlegen.
+- **Kleine Wünsche, Reihenfolge fest:** #69 lokales Backup → #82 Herkunftsland-Filter
+  Marktkarte → #70 Radar-Streusuchen → #33 zweiter Trendwende-Detektor.
+
+### Hinweise des Tüftlers an alle (keine Aufträge)
+
+- Das Feld `quelle` der **1d**-Archivdateien trägt ein falsches Etikett
+  (`"yahoo v8 chart, range=730d interval=60m"`) — drin sind Tageskerzen ab 1986.
+- Neuer Entwurfsfehler für `FEHLERTYPEN.md`: *Ein Querschnittsmerkmal, dessen Auswahl
+  von Tag zu Tag beharrt, kann gegen eine Symbol-Eigen-Kontrolle (A7) keinen Überschuss
+  zeigen. Beharrlichkeit gegen die Zufallserwartung gehört vor die Vorregistrierung.*
 
 ---
 
@@ -114,8 +121,9 @@ alle vier zuerst, die Neumessung startet erst danach.**
 *Wer welche Dateien belegt. Trag dich ein, bevor du anfängst; nimm dich raus, wenn du
 fertig bist.*
 
-- **App-Codebase Master** — nichts belegt. Zuletzt fertig: #76, #84, #85, #83/#89,
-  #86/#87/#88, Messmaschine versionieren, Stufe F Punkt 1 (`2d90433`).
+- **Niemand.** Letzter Commit 03:27 (Analytiker). Arbeitsbaum sauber.
+- Zuletzt fertig (App-Codebase Master): #76, #84, #85, #83/#89, #86/#87/#88,
+  Messmaschine versionieren, Stufe F Punkt 1.
 
 ---
 
@@ -124,11 +132,9 @@ fertig bist.*
 *Entscheidungen von Wilhelm, mit Datum. Eine Entscheidung, die nur in einem Chatverlauf
 steht, ist nach zwei Stunden verloren.*
 
-- **26.08.2026, 01:40 — Release jetzt.** *Frage des PM-Abrufs: Release-Wache jetzt
-  bündeln lassen oder auf die Messmaschinen-Versionierung bzw. die Neumessung warten?*
-  → **(a) Jetzt ausliefern.** Fünf wartende Notizen (u. a. der sichtbare Umzug von
-  „Meine Papiere“ nach Vermögen) sind genug. Die Messmaschinen-Versionierung kommt,
-  wenn sie fertig ist, ins nächste Release.
+- **26.08.2026, 01:40 — Release jetzt.** → **(a) Jetzt ausliefern.**
+  **STATUS 08:10: nicht ausgeführt.** Die Release-Wache läuft „nur von Hand"; kein
+  Automatismus startet sie. Inzwischen warten **sieben** Notizen.
 
 - **26.08.2026, ~01:45 — die Issue-Wache ist zurück, aber als TRIAGE.** Sie war
   unbemerkt aus der Aufgabenliste verschwunden (mindestens zum zweiten Mal); #83 und #89
@@ -137,130 +143,39 @@ steht, ist nach zwei Stunden verloren.*
   Cloud-Umgebung (`ccr.environment_id`), die an das Repo gebunden ist; auf diesem Rechner
   ist keine hinterlegt, und einrichten kann sie nur Wilhelm selbst. Er hat entschieden,
   **das vorerst zu lassen**. Stattdessen läuft sie wieder **lokal alle 30 Minuten**.
-  **Wichtige Änderung gegenüber der alten Fassung:** sie **baut nichts und liefert nichts
-  aus**. Sie sichtet, ordnet ein, antwortet freundlich auf Deutsch und lässt Issues offen;
-  schließen darf sie nur nachweislich Erledigtes und exakte Doppel. Grund: die alte
-  Fassung durfte selbst releasen und stand damit gegen die Regel vom 25.08. („Versionen
-  gehören der Release-Wache") — bei zehn parallelen Sitzungen im selben Arbeitsbaum ist
-  das der Zusammenstoß vom 23.08. Sie schreibt auch **nicht** auf diese Tafel; die
-  gehört dem PM, der die Issues ohnehin bei jedem Lauf liest.
+  Sie **baut nichts und liefert nichts aus**: sie sichtet, ordnet ein, antwortet
+  freundlich auf Deutsch und lässt Issues offen; schließen darf sie nur nachweislich
+  Erledigtes und exakte Doppel. Sie schreibt auch **nicht** auf diese Tafel.
 - **26.08.2026, ~01:45** — Neue Aufgabe **`projekt-manager-abruf`**, „nur von Hand".
-  Damit kann Wilhelm einen Projektstand abrufen, wann er will, statt auf den nächsten
-  Termin zu warten. Sie berichtet nur und **schreibt die Tafel nicht neu** — einzige
-  Ausnahme: trifft Wilhelm dabei eine Entscheidung, trägt sie diese unter „Entschieden"
-  ein und gibt sie an die laufenden Sitzungen weiter.
+  Damit kann Wilhelm einen Projektstand abrufen, wann er will. Sie berichtet nur und
+  schreibt die Tafel nicht neu — Ausnahme: trifft Wilhelm dabei eine Entscheidung,
+  trägt sie diese unter „Entschieden" ein und gibt sie weiter.
 - **26.08.2026, ~01:15** — *#83 und #89 widersprachen sich: bleibt unter „Heute" etwas von
   „Meine Papiere" stehen?* → **(b) Unter „Heute" verschwindet der Abschnitt ganz.** Damit
-  gilt #89 vor #83. Der PM hatte (a) empfohlen (kleine Liste bleibt); Wilhelm hat anders
-  entschieden. **Folge, die mitentschieden ist:** das überschreibt Felix' Wunsch #71
-  („Signalstand prominent auf Heute") — der Signalstand zieht deshalb in die Vermögen-
-  Tabelle um, statt ersatzlos zu verschwinden. Einzelheiten unter „Aufträge".
-- **26.08.2026** — #85 erledigt (Vorstufe 1 von 4). Beide Archive geprueft: 60m
-  gereinigt (2.841 Teilkerzen), 1d heilt sich beim naechsten Abruf selbst. Es bleiben
-  #86, #87, #88 vor der Neumessung.
-- **26.08.2026** — #84-Rest erledigt: alle 21 Kommentare umgeschrieben, Sperrklinke
-  deckt jetzt auch Kommentare ab. Bewiesen, dass sich kein Verhalten geaendert hat.
+  gilt #89 vor #83. Der PM hatte (a) empfohlen; Wilhelm hat anders entschieden.
+  **Folge, mitentschieden:** das überschreibt Felix' Wunsch #71 („Signalstand prominent
+  auf Heute") — der Signalstand zog deshalb in die Vermögen-Tabelle um.
 - **26.08.2026, 00:45 (drei Antworten)** —
-  (1) *Wohin mit #83/#89 („Meine Papiere" nach Vermögen)?* → **sofort erledigen**, nicht
-  hinter die Neumessung stellen.
+  (1) *Wohin mit #83/#89?* → **sofort erledigen**, nicht hinter die Neumessung stellen.
   (2) *Die „belegt"-Formel in 21 Quellcode-Kommentaren?* → **alle 21 umschreiben.** Der
-  PM hatte „stehen lassen, Zeile in CLAUDE.md" empfohlen (die Kommentare tragen Geschichte);
-  Wilhelm hat anders entschieden. Umschreiben heißt: die Behauptung entfernen, den
-  historischen Bezug erhalten („die Inventur vom 21.08. fand …" bleibt lesbar, nur ohne
-  das Wort „belegt" als Urteil). Reine Kommentaränderung, kein Verhalten.
+  PM hatte „stehen lassen" empfohlen; Wilhelm hat anders entschieden.
   (3) *Neumessung: alle vier Vorstufen abwarten oder früher starten?* → **alle vier
   (#85–#88) zuerst.** Erst wenn die Instrumente stimmen, wird gemessen.
-- **26.08.2026** — #84 erledigt: sieben sichtbare Texte auf „gemessen" gezogen, vierte
-  Sperrklinke gesetzt.
-- **25.08.2026 (spät)** — Geheimnis `TELEMETRIE_JSON` angelegt. Automatisch gebaute
-  Pakete tragen den Diagnose-Rückkanal ab dem nächsten Release. Issue #76 damit
-  vollständig erledigt.
-- **25.08.2026** — Stufe C des Struktur-Plans wird gebaut, einschließlich Marktkarte als
-  Pille unter „Heute".
-- **25.08.2026** — Stufe D Punkt 6 (Erklärtexte ins Info-Register) wird gebaut; das
-  Diagnose-Banner kommt auf das Dialog-Muster, **kein** Onboarding.
+- **25.08.2026 (spät)** — Geheimnis `TELEMETRIE_JSON` angelegt; #76 vollständig erledigt.
 - **25.08.2026** — Kommerzielles und Mehrbenutzer sind vorerst kein Thema. Das Werkzeug
   ist für Wilhelm allein; Schwerpunkt sind Werkzeuge, Bedienbarkeit, Optik und ein
   vollständiger Marktüberblick.
 - **25.08.2026 (spät)** — Messmaschine wird versioniert, alle zwölf Strategien werden auf
   dem aktuellen Stand neu gemessen; erst danach neue Untersuchungen.
-- **25.08.2026 (spät)** — Neue Rolle **Strategie-Tüftler**: läuft jede Nacht 04:30; bei
-  ≥3 wartenden Entwürfen arbeitet er stattdessen am Datenbestand. Entwirft Kandidaten mit
-  Machbarkeits-Check gegen die Auflösungswand, vorregistriert, erweitert Daten; misst NIE
-  selbst. Übergabe über `studien/tueftler/WARTESCHLANGE.md`.
-- **25.08.2026 (spät)** — Neue Rolle **Analytiker**: läuft jede Nacht 03:15, prüft alles,
+- **25.08.2026 (spät)** — Neue Rolle **Strategie-Tüftler**: jede Nacht 04:30; bei
+  ≥3 wartenden Entwürfen arbeitet er stattdessen am Datenbestand. Misst NIE selbst.
+  Übergabe über `studien/tueftler/WARTESCHLANGE.md`.
+- **25.08.2026 (spät)** — Neue Rolle **Analytiker**: jede Nacht 03:15, prüft alles,
   meldet per Issue nur bei Fund, sonst eine Zeile hier auf der Tafel.
-- **25.08.2026 (abends, 9 Antworten auf einmal)** — E-Rest: ja, jetzt. Stufe F: alle drei,
-  Reihenfolge Theme → Chart → Barrierefreiheit. Nachbilden-Dialog: Belegstatus rein.
+- **25.08.2026 (abends, 9 Antworten)** — E-Rest: ja. Stufe F: alle drei, Reihenfolge
+  Theme → Chart → Barrierefreiheit. Nachbilden-Dialog: Belegstatus rein.
   Handel-aus-Renderer: erst Plan, Bau nur mit zweitem Ja. #80: neu eichen, solange
-  Warnhinweis. V4: Bestätigungsmessung vorregistrieren. Browser-Zweig: prüfen und
-  einbauen. #71/#78/#81: geschlossen. Wünsche: #69 → #82 → #70 → #33.
+  Warnhinweis. V4: vorregistrieren. Browser-Zweig: prüfen und einbauen.
+  #71/#78/#81: geschlossen. Wünsche: #69 → #82 → #70 → #33.
 - **25.08.2026** — Der Projekt-Manager darf Unstrittiges selbst zuteilen; alles, was die
   Handelslogik berührt, neu ist oder Geld kostet, wird vorgelegt.
-
----
-
-## Wartet auf Wilhelm
-
-*Fragen, an denen Arbeit hängt.*
-
-- **Zweites Ja zum Handel-aus-Renderer-Umbau** — fällig, sobald der Plan als Dokument vorliegt.
-
----
-
-## Analytiker
-
-*Eine Zeile je Nacht, geschrieben von der Analytiker-Aufgabe (03:15). Issues nur bei Fund.*
-
-- **26.08.** — Erster Lauf: A–C, E + D geprüft; Placebo sauber (t −0,10), Live = Messung bestätigt, keine frischen Tage für Kanten-Neuberechnung; 2 Funde gemeldet (#84 „belegt"-Prosa, #85 laufende Quote-Stempel-Kerze im 60m-Archiv), Details in `studien/analytiker/2026-08-26/BEFUND.md`; nächste Nacht F-Rotation Punkt 1 (Kontrollgruppen-Konstruktion / A7-Lesefenster).
-- **26.08. (2. Lauf, 23:36)** — A–C, E verkürzt (nichts geändert seit dem ersten Lauf) + F-Rotation Punkt 1: **A7-Konstruktion trägt** (Ausschnitt-Arithmetik exakt gegen Brute-Force, Nullpunkt auf Kunstarchiv mit Selektions-Köder im Rahmen); 3 Funde gemeldet (#86 `aussicht` feuert nie, #87 A7-Protokolltext nennt falsches Fenster, #88 Placebo ignoriert Einstiegskonvention), Details in `studien/analytiker/2026-08-26-zweiter-lauf/BEFUND.md`; nächste Nacht F-Rotation Punkt 2 (Signifikanz-Rechnung/Testzahl, dabei Newey-West-Verzögerung Tage-gegen-Kerzen nachrechnen).
-- **26.08. (3. Lauf, 03:15)** — A–C, E auf den Nacht-Änderungen (#85–#88, Versionierung, UI-Umzug): alles bestanden — Placebo frisch auf dem gereinigten Realarchiv mit Maschine 1.1.0 sauber (t −0,11; `folgeEroeffnung`-Pfad t −0,13, #88-Reparatur damit extern bestätigt), Live = Messung deckungsgleich, Kostenmessung weiter 1 Runde; + F-Rotation Punkt 2: **Signifikanz-Rechnung trägt** (normInv bis 3,6e−9 exakt, alle 21 B4-Schwellen nachgerechnet 0 Abweichungen, NW-Verzögerung Kerzen-statt-Tage per Simulation unschädlich — Verwerfungsrate 6,25 % gegen 6,45 % bei tagesrichtiger Wahl); 1 Fund gemeldet (#91 `aussicht.tage80` rechnet gegen 1,96 statt gegen die Bonferroni-Schwelle, untertreibt bei tests>1 um 21–59 %), Details in `studien/analytiker/2026-08-26-dritter-lauf/BEFUND.md`; nächste Nacht D falls frische Handelstage (Archiv endet 24.08.), sonst F-Rotation Punkt 3 (Clusterung über Tage).
-
----
-
-## Tüftler
-
-*Eine Zeile je Nacht, geschrieben von der Strategie-Tüftler-Aufgabe (04:30). Übergaben
-stehen in `studien/tueftler/WARTESCHLANGE.md`.*
-
-- **26.08.** — Nacht-Typ A (Entwurf), Warteschlange war leer. Entstanden: `glockendruck-nacht`
-  vorregistriert (`studien/vorregistrierung-2026-08-26-glockendruck-nacht/`) — Schlussdruck
-  `(Schluss−Tief)/(Hoch−Tief)`, unterstes Quintil, long über Nacht auf `archiv1d`. Der Fund
-  ist die Auflösung, nicht die These: **`delta80` = 0,0397 Pp gegen einen Korpus-Median von
-  0,605** (Faktor 15,2), weil H = 1 keine Überlappung hat und das Tagesarchiv 4.665
-  Bestätigungstage trägt statt 361 — beide Zweige (JA ≥ 0,10 / NEIN < 0,04) sind erreichbar.
-  Der erste Entwurf der Nacht wurde **selbst verworfen** (Beharrlichkeit 0,943 gegen Zufall
-  0,198: ein fast festes Symbolmerkmal, das A7 per Konstruktion wegkürzt) — daraus ein
-  Vorschlag für `FEHLERTYPEN.md`. Nebenbei gemessen: **#85 betrifft auch `archiv1d`** (56 %
-  einer 80er-Stichprobe, AAPL 15,0 statt 46,8 Mio Stück). Warteschlange: 1 Entwurf,
-  2 Auftragsvorschläge (`ausstieg`-Schalter der Maschine als Vorbedingung; Auktionskosten
-  am Demo-Konto). Keine Messung, kein Maschinencode, 0 von 5 Web-Suchen verbraucht.
-- **26.08. (Literatur)** — Dossier zu Übernacht-Renditen/Schlussauktion liegt
-  (`studien/tueftler/recherche-2026-08-26/DOSSIER.md`). Kernaussage: die Bausteine sind
-  publiziert (Übernacht-Prämie; MOC-Abweichungen ~8 Bp kehren über Nacht fast vollständig
-  um; Kurzfrist-Umkehrprämie sitzt laut Lou/Polk/Skouras im Nachtbein) — zur konkreten
-  These ist die Literatur stumm; ernstester Gegenspieler ist der Bid-Ask-Bounce
-  (Tief-Schluss = Geldseite, mechanisch ~½ Spanne „Nachtrendite" in Größe der gesuchten
-  Kante) plus überhöhte/dünne Eröffnung als Ausstieg; CFD-Nachtfinanzierung ~2–3 Bp/Nacht
-  fehlt in der 0,10-Pp-Hürde. Sieben Prüfideen für die Mess-Kette in Abschnitt (d).
-
----
-
-## Auditor
-
-*Eine Zeile je Nacht, geschrieben von der Auditor-Aufgabe (01:00). Sie prüft die **Oberfläche** —
-funktional und optisch —, nicht die Messungen; sie repariert nichts. Issue nur bei Fund (A/B).*
-
-- **26.08.** — Erster Lauf, deshalb volle Grundprüfung über alle fünf Reiter und 16 Pillen in zwei Fenstergrößen (Änderungsmenge: 7 Tage, 405 Commits). `npm test` **rot (6)** — aber vollständig aus der offenen fremden Arbeit an `bestandui.js`/`index.html` (Signalliste raus aus „Heute", Sperrklinken noch nicht nachgezogen); `eslint` allein grün, `ui-probe` **grün**, vertiefte Probe 0 unbehandelte Fehler. **1 B-Fund gemeldet (#90):** das News-Laufband steht unter `prefers-reduced-motion` still und zeigt dauerhaft nur 3 von 6 Schlagzeilen (Spur 5367 px in 1230 px Rahmen, `overflow:hidden`, kein Rollbalken) — und die Einstellung ist auf diesem Rechner **ohne Emulation aktiv**, das Band ist im echten Betrieb tot. 0 A-Funde, 3 C (Umbrüche im Trendfinder und bei „Max. offene Positionen", eine Umschrift „ueber" in den Radar-Daten). Barrierefreiheit: 0 Knöpfe ohne zugänglichen Namen, die Null durch Gegenprobe abgesichert. Details in `studien/auditor/2026-08-26/BEFUND.md`; nächste Nacht Rotationspunkt **depot**.
-
----
-
-## Was nicht angefasst wird
-
-Gilt unabhängig von dieser Tafel und steht ausführlich in `CLAUDE.md`:
-
-- **Handelslogik** — `intradayScan`, Autopilot- und Edge-Ring, `SETUPS`, `modeParams`,
-  Gates, die `window.confirm`-Gatter vor `takt()` und der Demo-Order. Nur mit eigenem,
-  abgesprochenem Auftrag.
-- **Versionen und Releases** — die vergibt die Release-Wache, keine Sitzung.
-- **`telemetrie.json`** wird nie committet. `git clean -xdf` wird nie ausgeführt.
