@@ -1239,6 +1239,173 @@ ipcMain.handle('store-set', async (_ev, name, value) => {
   } catch (e) { return { ok: false, msg: String(e.message || e) }; }
 });
 
+/* ================= DIE APP SAMMELT SELBST (26.08.2026) =================
+ *
+ * Bis heute kamen die Intraday-Archive nur aus tools/yahoo-60m-holen.js, das jemand
+ * von Hand starten musste. Drei dieser Laeufe sind heute Abend gestorben und haben
+ * halbfertige Archive hinterlassen - 15m bei 233 von 432 Werten. Wilhelm: "ich will
+ * das die app das sammelt und ablegt ueber die api".
+ *
+ * WAS HIER NICHT PASSIERT: gemessen und gehandelt wird nicht. Dieser Teil schreibt
+ * Kursdateien und sonst nichts. intradayScan, der Autopilot-Ring, SETUPS, modeParams
+ * und die Rueckfragen vor takt() und vor einer Demo-Order bleiben unberuehrt.
+ *
+ * DAS FORMAT IST NICHT NACHGEBAUT, sondern dasselbe: geholt, vereinigt und
+ * geschrieben wird durch kerzenquelle.js, genau wie im Abrufwerkzeug. Nachgemessen
+ * am 26.08.2026: beide schreiben Zeit fuer Zeit, Kurs fuer Kurs und Umsatz fuer
+ * Umsatz dieselben Reihen, in dieselben Ordner, mit demselben stand.json.
+ */
+const Kerzen = require('./kerzenquelle.js');
+const Plan = require('./sammelplan.js');
+/* Der Datenordner kommt von Electron, nicht aus einer Annahme ueber das
+ * Benutzerverzeichnis: app.getPath('downloads') folgt einer Umleitung, os.homedir()
+ * nicht. Und die isolierten Proben setzen ihn eigens um - ohne diese Zeile griffen
+ * sie am Testordner vorbei in das echte Archiv. */
+Kerzen.datenOrdnerSetzen(path.join(app.getPath('downloads'), 'Markt-Dashboard-Daten'));
+
+function sammlerDatei() {
+  return path.join(app.getPath('downloads'), 'Markt-Dashboard-Daten', 'sammler.json');
+}
+function sammlerEinstellungen() {
+  try { return Plan.einstellungen(JSON.parse(fs.readFileSync(sammlerDatei(), 'utf8'))); }
+  catch (e) { return Plan.einstellungen(null); }
+}
+
+/* Ein Lauf zur Zeit. Nicht weil zwei nicht gingen, sondern weil zwei gleichzeitig
+ * die Hoeflichkeit gegenueber Yahoo halbieren wuerden - der Abstand von 1,2 s gilt
+ * der QUELLE, nicht dem Aufrufer. */
+const SAMMLER = {
+  laeuft: false, intervall: null, begonnen: 0, anhalten: false,
+  nr: 0, von: 0, sym: null, ok: 0, leer: 0,
+  letzter: null,      // Ergebnis des letzten Laufs
+  letzterFehler: null,
+  vonHand: false,
+};
+
+function sammlerFunk(kanal, nutzlast) {
+  BrowserWindow.getAllWindows().forEach((w) => {
+    try { if (!w.isDestroyed()) w.webContents.send(kanal, nutzlast); } catch (e) { /* Fenster zu */ }
+  });
+}
+
+function sammlerStand() {
+  const einst = sammlerEinstellungen();
+  let zeilen = [];
+  let fehler = null;
+  try { zeilen = Plan.lage(einst, Date.now()); }
+  catch (e) { fehler = String((e && e.message) || e); }
+  return {
+    einstellungen: einst,
+    zeilen: zeilen,
+    fehler: fehler,
+    laeuft: SAMMLER.laeuft,
+    laufIntervall: SAMMLER.intervall,
+    fortschritt: SAMMLER.laeuft
+      ? { nr: SAMMLER.nr, von: SAMMLER.von, sym: SAMMLER.sym, ok: SAMMLER.ok, leer: SAMMLER.leer,
+          vonHand: SAMMLER.vonHand, begonnen: SAMMLER.begonnen }
+      : null,
+    letzter: SAMMLER.letzter,
+    letzterFehler: SAMMLER.letzterFehler,
+    marktOffen: Plan.marktOffen(Date.now()),
+  };
+}
+
+async function sammelLauf(intervall, symbole, vonHand) {
+  if (SAMMLER.laeuft) return { ok: false, grund: 'Es sammelt schon (' + SAMMLER.intervall + ').' };
+  const einst = sammlerEinstellungen();
+  SAMMLER.laeuft = true; SAMMLER.intervall = intervall; SAMMLER.begonnen = Date.now();
+  SAMMLER.anhalten = false; SAMMLER.nr = 0; SAMMLER.von = symbole.length;
+  SAMMLER.sym = null; SAMMLER.ok = 0; SAMMLER.leer = 0; SAMMLER.vonHand = !!vonHand;
+  SAMMLER.letzterFehler = null;
+  sammlerFunk('sammler-fortschritt', sammlerStand());
+  try {
+    const erg = await Kerzen.sammle({
+      intervall: intervall,
+      symbole: symbole,
+      abstandMs: einst.abstandMs,
+      was: 'App sammelt ' + intervall + ', ' + symbole.length + ' Werte',
+      weiter: () => !SAMMLER.anhalten,
+      melde: (m) => {
+        if (m.art !== 'wert') return;
+        SAMMLER.nr = m.nr; SAMMLER.sym = m.sym;
+        if (m.fehler) SAMMLER.leer++; else SAMMLER.ok++;
+        /* Nicht jede Zeile ans Fenster: bei 531 Werten waere das ein Trommelfeuer
+         * fuer eine Anzeige, die ohnehin nur eine Zahl zeigt. */
+        if (m.nr === 1 || m.nr === m.von || m.nr % 10 === 0) sammlerFunk('sammler-fortschritt', sammlerStand());
+      },
+    });
+    SAMMLER.letzter = {
+      intervall: intervall, ok: erg.ok, leer: erg.leer, kerzen: erg.kerzen, dazu: erg.dazu,
+      abgebrochen: erg.abgebrochen, grund: erg.grund, vonHand: !!vonHand,
+      begonnen: erg.begonnen, beendet: erg.beendet,
+    };
+    return { ok: true, ergebnis: SAMMLER.letzter };
+  } catch (e) {
+    SAMMLER.letzterFehler = String((e && e.message) || e);
+    return { ok: false, grund: SAMMLER.letzterFehler };
+  } finally {
+    SAMMLER.laeuft = false; SAMMLER.intervall = null; SAMMLER.sym = null;
+    sammlerFunk('sammler-fortschritt', sammlerStand());
+  }
+}
+
+/* Der Blick auf die Uhr. Er entscheidet NICHTS selbst - alles Urteil steht in
+ * sammelplan.js, damit es sich ohne Electron pruefen laesst. */
+async function sammlerNachsehen(grundZeile) {
+  if (SAMMLER.laeuft) return;
+  const einst = sammlerEinstellungen();
+  if (!einst.an) return;
+  let zeilen;
+  try { zeilen = Plan.lage(einst, Date.now()); }
+  catch (e) { SAMMLER.letzterFehler = String((e && e.message) || e); return; }
+  /* Was am ehesten verlorengeht, kommt zuerst: ein zugelaufenes Fenster ist
+   * unwiederbringlich, ein planmaessiger Lauf kann warten. */
+  const dran = zeilen.filter((z) => z.faellig)
+    .sort((a, b) => (a.art === 'aufholen' ? 0 : 1) - (b.art === 'aufholen' ? 0 : 1));
+  if (!dran.length) return;
+  const z = dran[0];
+  const offen = Plan.offeneSymbole(z.intervall, einst, Date.now());
+  if (!offen.dran || !offen.dran.length) return;
+  sammlerFunk('sammler-hinweis', {
+    art: 'start', intervall: z.intervall, werte: offen.dran.length,
+    grund: (grundZeile ? grundZeile + ': ' : '') + z.grund,
+    verloren: z.verloren, verloreneTage: z.verloreneTage,
+  });
+  await sammelLauf(z.intervall, offen.dran, false);
+}
+
+ipcMain.handle('sammler-stand', async () => sammlerStand());
+
+ipcMain.handle('sammler-start', async (_ev, intervall) => {
+  if (Plan.ERLAUBTE_INTERVALLE.indexOf(String(intervall)) === -1) {
+    return { ok: false, grund: 'Unbekannte Aufloesung: ' + intervall };
+  }
+  const einst = sammlerEinstellungen();
+  const offen = Plan.offeneSymbole(intervall, einst, Date.now());
+  if (offen.grund) return { ok: false, grund: offen.grund };
+  /* Von Hand heisst wirklich von Hand: sind alle Werte auf Stand, wird trotzdem
+   * geholt. Sonst sagt der Knopf "nichts zu tun" und der Anwender weiss nicht, ob
+   * er kaputt ist. */
+  const liste = offen.dran.length ? offen.dran : Plan.symboleFuer(einst).symbole;
+  return await sammelLauf(intervall, liste, true);
+});
+
+ipcMain.handle('sammler-stop', async () => {
+  if (!SAMMLER.laeuft) return { ok: false, grund: 'Es sammelt gerade nichts.' };
+  SAMMLER.anhalten = true;
+  return { ok: true };
+});
+
+ipcMain.handle('sammler-einstellen', async (_ev, roh) => {
+  try {
+    const e = Plan.einstellungen(roh);
+    const d = path.dirname(sammlerDatei());
+    if (!fs.existsSync(d)) fs.mkdirSync(d, { recursive: true });
+    schreibAtomar(sammlerDatei(), JSON.stringify(e, null, 1));
+    return { ok: true, einstellungen: e };
+  } catch (e) { return { ok: false, grund: String((e && e.message) || e) }; }
+});
+
 // ---- Tray-Modus (App läuft beim Schließen im Hintergrund weiter) ----
 let tray = null;
 let trayMode = false;
@@ -1401,5 +1568,11 @@ if (HAT_SPERRE) app.whenReady().then(() => {
   // Kurz nach dem Start und danach alle 6 Stunden nach Updates sehen
   setTimeout(() => { const u = setupUpdater(); if (u) u.checkForUpdates().catch(() => {}); }, 25000);
   setInterval(() => { const u = setupUpdater(); if (u) u.checkForUpdates().catch(() => {}); }, 6 * 3600000);
+  /* SAMMELN. Eine Minute nach dem Start einmal nachsehen - das ist der Fall aus
+   * Wilhelms Auftrag: die App ist nicht immer an, und was Yahoos rollendes Fenster
+   * inzwischen hergegeben hat, soll sie nachholen. Danach alle 20 Minuten; die
+   * Entscheidung selbst kostet kein Netz, sie liest nur das Archiv. */
+  setTimeout(() => { sammlerNachsehen('nach dem Start').catch(() => {}); }, 60000);
+  setInterval(() => { sammlerNachsehen('planmaessig').catch(() => {}); }, 20 * 60000);
 });
 app.on('window-all-closed', () => { if (process.platform !== 'darwin' && !trayMode) app.quit(); });

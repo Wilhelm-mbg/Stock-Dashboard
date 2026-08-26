@@ -56,7 +56,7 @@ export default [
   // Oberflaeche: laeuft im Renderer, kein Node
   {
     files: ['*.js'],
-    ignores: ['main.js', 'preload.js', 'kerzenquelle.js', 'test-*.js', 'bt-worker.js'],
+    ignores: ['main.js', 'preload.js', 'kerzenquelle.js', 'sammelplan.js', 'test-*.js', 'bt-worker.js'],
     languageOptions: {
       ecmaVersion: 2022, sourceType: 'script',
       globals: { ...globals.browser, ...fensterGlobals, module: 'writable', require: 'readonly' }
@@ -68,7 +68,7 @@ export default [
   // kerzenquelle.js liegt in der Wurzel, weil tools/ nicht ausgeliefert wird - sie ist
   // aber ein Node-Modul und kein Oberflaechenskript.
   {
-    files: ['main.js', 'preload.js', 'kerzenquelle.js'],
+    files: ['main.js', 'preload.js', 'kerzenquelle.js', 'sammelplan.js'],
     languageOptions: { ecmaVersion: 2022, sourceType: 'script', globals: { ...globals.node } },
     rules: echteFehler
   },

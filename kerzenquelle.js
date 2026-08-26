@@ -45,7 +45,22 @@ var ABSTAND_MS = 1200;
  * Unterordner des Datenordners. Diese Kette stand bisher in tools/archiv-wachhund.js -
  * die App kann sie von dort nicht holen, weil tools/ nicht mit ausgeliefert wird.
  * Zwei Ketten waeren zwei Orte, an denen dasselbe Archiv liegen kann. */
-var DATEN = path.join(os.homedir(), 'Downloads', 'Markt-Dashboard-Daten');
+/* WO DER DATENORDNER LIEGT, SAGT DER AUFRUFER - sonst raet diese Datei.
+ * Bis zum 26.08.2026 stand hier fest os.homedir() + '/Downloads/...', waehrend
+ * main.js durchgaengig app.getPath('downloads') benutzt. Das faellt erst auf, wenn
+ * die beiden auseinandergehen - und sie tun es zweimal: wenn der Downloads-Ordner
+ * umgeleitet ist, und bei jedem isolierten Test. Die UI-Probe setzt eigens einen
+ * frischen Datenordner, damit sie die Installation des Nutzers nicht beruehrt; die
+ * Kursarchiv-Karte zeigte darin trotzdem das ECHTE Archiv (1.834 Reihen auf E:),
+ * weil diese Zeile daran vorbeirechnete. Eine Probe, die in die Wirklichkeit
+ * greift, ist keine Probe.
+ * Reihenfolge: was der Aufrufer setzt, dann MD_DATEN, dann die alte Annahme. */
+var DATEN = process.env.MD_DATEN || path.join(os.homedir(), 'Downloads', 'Markt-Dashboard-Daten');
+function datenOrdner() { return DATEN; }
+function datenOrdnerSetzen(p) {
+  if (p && typeof p === 'string') DATEN = p;
+  return DATEN;
+}
 /* Ein eigener Zeiger, wenn es einen gibt - sonst NEBEN dem 60m-Ordner.
  * Die zweite Haelfte ist die wichtige und war am 26.08.2026 fast ein Fehler: das
  * Abrufwerkzeug leitet seit je alle Intervalle vom 60m-Zeiger ab ("die anderen liegen
@@ -564,7 +579,9 @@ module.exports = {
   yahooName: yahooName, warte: warte, kursOk: kursOk, hole: hole,
   fertigeKerze: fertigeKerze, reiheHolen: reiheHolen,
   zusammenfuehren: zusammenfuehren, satz: satz,
-  DATEN: DATEN, ordnerVon: ordnerVon,
+  /* DATEN als Funktion, nicht als Wert: ein Wert waere eine Kopie vom Ladezeitpunkt
+   * und wuerde datenOrdnerSetzen() still ueberleben. */
+  datenOrdner: datenOrdner, datenOrdnerSetzen: datenOrdnerSetzen, ordnerVon: ordnerVon,
   VERWAIST_STUNDEN: VERWAIST_STUNDEN, sperrePfad: sperrePfad, prozessLebt: prozessLebt,
   ETFS: ETFS, istEtfSym: istEtfSym, ordnerFuer: ordnerFuer,
   dateiPraefix: dateiPraefix, dateiFuer: dateiFuer,

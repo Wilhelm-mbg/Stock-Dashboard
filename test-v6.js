@@ -9643,6 +9643,183 @@ console.log('\nBarrierefreiheit (Stufe F 3, 26.08.2026)');
      'und nicht mehr mit einer gewoehnlichen Datenzelle');
 })();
 
+
+console.log('\nDie App sammelt selbst: Kursarchiv (26.08.2026)');
+(function () {
+  var KQ = require(__dirname + '/kerzenquelle.js');
+  var SP = require(__dirname + '/sammelplan.js');
+  var osS = require('os'), pS = require('path');
+
+  /* ---- 1. Der Datenordner wird GESAGT, nicht geraten ----
+   * kerzenquelle.js rechnete ihn aus os.homedir(), main.js aus app.getPath('downloads').
+   * Solange beide dasselbe ergeben, faellt es nicht auf. Die isolierte UI-Probe setzt
+   * eigens einen frischen Datenordner, damit sie die Installation nicht beruehrt - und
+   * die Kursarchiv-Karte zeigte darin trotzdem das ECHTE Archiv mit 1.834 Reihen.
+   * Eine Probe, die in die Wirklichkeit greift, ist keine Probe. */
+  var alterOrdner = KQ.datenOrdner();
+  var tmpD = fs.mkdtempSync(pS.join(osS.tmpdir(), 'sammler-test-'));
+  try {
+    KQ.datenOrdnerSetzen(tmpD);
+    ok(KQ.datenOrdner() === tmpD, 'Der Datenordner laesst sich von aussen setzen');
+    ok(KQ.ordnerVon('1m').indexOf(tmpD) === 0,
+       'und das Archiv folgt ihm - sonst greift jede Probe am Testordner vorbei', KQ.ordnerVon('1m'));
+    ok(/datenOrdnerSetzen\(/.test(fs.readFileSync(__dirname + '/main.js', 'utf8')),
+       'main.js sagt ihn beim Start - Electron kennt eine Umleitung, os.homedir() nicht');
+
+    /* ---- 2. Was der Anwender NICHT verlieren darf ----
+     * Yahoo fuehrt je Intervall ein rollendes Fenster. Was darin nicht geholt wurde,
+     * ist fort - und genau das muss die App sagen statt weiterzumachen. */
+    var jetztT = Date.parse('2026-08-26T12:00:00Z');
+    var vor3 = KQ.fensterLuecke('1m', jetztT - 3 * 86400000, jetztT);
+    var vor9 = KQ.fensterLuecke('1m', jetztT - 9 * 86400000, jetztT);
+    ok(vor3.verloren === false && vor3.fensterTage === 7,
+       'Drei Tage Pause kosten bei Minutenkerzen nichts - das Fenster ist sieben Tage');
+    ok(vor9.verloren === true && Math.round(vor9.luecke) === 2,
+       'Neun Tage kosten zwei Tage Minutenkerzen, und die sind unwiederbringlich', vor9.luecke);
+    ok(KQ.fensterLuecke('1d', jetztT - 400 * 86400000, jetztT).verloren === false,
+       'Tageskerzen haben kein Fenster - dort geht nichts verloren');
+    ok(KQ.fensterLuecke('1m', null, jetztT).unbekannt === true,
+       'Ohne Archiv bleibt die Antwort offen - das ist etwas anderes als nichts verloren');
+
+    /* ---- 3. Der Ueberblick verschweigt seine Stichprobe nicht ----
+     * "Juengste Kerze von heute" heisst etwas anderes, wenn dafuer 2 von 2.900
+     * Reihen angesehen wurden. */
+    var arch = KQ.ordnerVon('15m');
+    fs.mkdirSync(arch, { recursive: true });
+    for (var q = 0; q < 12; q++) {
+      fs.writeFileSync(pS.join(arch, 'bars_15m_T' + q + '.json'), JSON.stringify({
+        series: [[Date.parse('2026-08-2' + (q % 5 + 1) + 'T14:00:00Z'), 10, 1, 11, 9, 10]] }));
+    }
+    var ueb = KQ.archivUeberblick(arch, { stichprobe: 4 });
+    ok(ueb.dateien === 12 && ueb.angesehen <= 4 && ueb.angesehen > 0,
+       'Der Ueberblick nennt beides: wie viele da sind und wie viele angesehen wurden',
+       ueb.dateien + ' da, ' + ueb.angesehen + ' angesehen');
+    ok(KQ.archivUeberblick(pS.join(tmpD, 'gibtsnicht')).grund === 'Noch nichts gesammelt',
+       'Ein leeres Archiv meldet einen Grund, nicht Gesundheit');
+
+    /* ---- 4. Welche Werte sind dran - je WERT, nicht je Archiv ----
+     * Am 26.08.2026 stand "1m: zuletzt vor 0,8 Tagen, nicht dran" ueber einem Archiv,
+     * dessen Lauf bei 1.834 von 2.732 Werten gestorben war. Ein abgebrochener Lauf
+     * darf nicht wie ein fertiger aussehen. */
+    fs.mkdirSync(pS.join(tmpD, 'massive'), { recursive: true });
+    fs.writeFileSync(pS.join(tmpD, 'massive', 'universum-test.json'), JSON.stringify({
+      werte: [{ sym: 'AAA', umsatzMio: 900 }, { sym: 'BBB', umsatzMio: 800 },
+               { sym: 'CCC', umsatzMio: 700 }, { sym: 'DDD', umsatzMio: 600 }] }));
+    var einstT = SP.einstellungen({ universum: 'top4', intervalle: { '1m': 1 } });
+    var arch1m = KQ.ordnerVon('1m');
+    fs.mkdirSync(arch1m, { recursive: true });
+    var heuteT = new Date(Date.parse('2026-08-26T12:00:00Z')).toISOString().slice(0, 10);
+    KQ.standSchreiben(arch1m, { fertig: { AAA: { am: heuteT }, BBB: { am: heuteT } }, ohne: {} });
+    var offenT = SP.offeneSymbole('1m', einstT, Date.parse('2026-08-26T12:00:00Z'));
+    ok(offenT.dran.indexOf('CCC') !== -1 && offenT.dran.indexOf('DDD') !== -1,
+       'Ein abgebrochener Lauf laesst die uebrigen Werte offen - der naechste nimmt sie');
+    ok(offenT.dran.indexOf('AAA') === -1 && offenT.dran.indexOf('BBB') === -1,
+       'und die schon geholten bleiben in Ruhe');
+    ok(offenT.dran.indexOf('SPY') !== -1,
+       'SPY ist immer dabei - es ist der Anker des Regime-Tors, und ein Anker, der nur manchmal da ist, ist keiner');
+
+    /* Ein Wert ohne Daten wird nicht bei jedem Lauf neu gefragt - aber auch nicht
+     * fuer immer aufgegeben. Ein dauerhafter stiller Ausschluss waere der Fehler. */
+    KQ.standSchreiben(arch1m, { fertig: {}, ohne: { CCC: { am: heuteT, grund: 'keine Reihe' } } });
+    var o1 = SP.offeneSymbole('1m', einstT, Date.parse('2026-08-26T12:00:00Z'));
+    ok(o1.dran.indexOf('CCC') === -1, 'Ein Wert ohne Daten wird nicht am selben Tag noch einmal gefragt');
+    var o2 = SP.offeneSymbole('1m', einstT, Date.parse('2026-09-20T12:00:00Z'));
+    ok(o2.dran.indexOf('CCC') !== -1, 'nach dem zehnfachen Abstand aber doch wieder');
+
+    /* ---- 5. Der Zeitpunkt: New York, nicht UTC ----
+     * Eine feste UTC-Stunde waere von November bis Maerz um eine Stunde daneben -
+     * die App haette den ganzen Winter mitten in der Sitzung gesammelt. */
+    ok(SP.marktOffen(Date.parse('2026-08-26T19:00:00Z')) === true,
+       'Im August ist 19:00 UTC (15:00 New York) mitten in der Sitzung');
+    ok(SP.marktOffen(Date.parse('2026-08-26T20:35:00Z')) === false,
+       'und 20:35 UTC (16:35 New York) danach');
+    ok(SP.marktOffen(Date.parse('2026-12-15T20:35:00Z')) === true,
+       'DIESELBE UTC-Uhrzeit ist im Dezember 15:35 New York - der Markt ist offen',
+       SP.newYork(Date.parse('2026-12-15T20:35:00Z')).minutenSeitMitternacht);
+    ok(SP.marktOffen(Date.parse('2026-08-29T18:00:00Z')) === false,
+       'Am Samstag ist nie Sitzung');
+    ok(SP.ruhig(Date.parse('2026-08-26T20:25:00Z'), 30) === false &&
+       SP.ruhig(Date.parse('2026-08-26T20:35:00Z'), 30) === true,
+       'Der Nachlauf von 30 Minuten wird eingehalten - Yahoo korrigiert rund 18 Minuten rueckwirkend');
+    ok(SP.ruhig(Date.parse('2026-08-26T12:00:00Z'), 30) === true,
+       'Vor der Eroeffnung ist es auch ruhig - da steht der Vortag fest');
+
+    /* ---- 6. Die Vorgabe steht offen und laesst sich drehen ---- */
+    var v = SP.einstellungen(null);
+    ok(v.universum === 'top500' && v.intervalle['1m'] === 1 &&
+       v.intervalle['5m'] === 7 && v.intervalle['15m'] === 7 && v.nachSchlussMinuten === 30,
+       'Vorgabe: 500 liquideste, 1m taeglich, 5m/15m woechentlich, 30 Minuten Nachlauf',
+       JSON.stringify(v.intervalle));
+    var kaputt = SP.einstellungen({ intervalle: { '1m': 'viele' }, abstandMs: 1, nachSchlussMinuten: -5 });
+    ok(kaputt.intervalle['1m'] === 1 && kaputt.abstandMs === 300 && kaputt.nachSchlussMinuten === 0,
+       'Eine Zahl mit Tippfehler legt das Sammeln nicht still, sie wird zurechtgezogen',
+       JSON.stringify([kaputt.intervalle['1m'], kaputt.abstandMs, kaputt.nachSchlussMinuten]));
+    ok(SP.ERLAUBTE_INTERVALLE.join(',') === '1m,5m,15m',
+       '60m und 1d holt die App NICHT - die umfassen das ganze Universum und gehoeren den naechtlichen Werkzeugen',
+       SP.ERLAUBTE_INTERVALLE.join());
+
+    /* ---- 7. Waehrend der Sitzung wird planmaessig NICHT gesammelt ...
+     * ... aber ein zulaufendes Fenster schlaegt das: eine vorlaeufige Kerze ist
+     * besser als gar keine, denn was aus dem Fenster faellt, kommt nie wieder. */
+    var ub = { juengsteMs: Date.parse('2026-08-26T12:00:00Z') - 2 * 86400000, sperre: null };
+    var offenViel = { alle: 10, dran: ['X'] };
+    var imMarkt = SP.faellig('1m', ub, einstT, Date.parse('2026-08-26T19:00:00Z'), offenViel);
+    ok(imMarkt.faellig === false && /Markt ist offen/.test(imMarkt.grund),
+       'Bei offenem Markt wird planmaessig nicht gesammelt');
+    var ubEng = { juengsteMs: Date.parse('2026-08-26T12:00:00Z') - 6 * 86400000, sperre: null };
+    var engT = SP.faellig('1m', ubEng, einstT, Date.parse('2026-08-26T19:00:00Z'), offenViel);
+    ok(engT.faellig === true && engT.art === 'aufholen',
+       'Laeuft das Fenster ab, wird auch mitten in der Sitzung geholt', engT.grund);
+    var ubSperre = { juengsteMs: Date.parse('2026-08-26T12:00:00Z'), sperre: { aktiv: true } };
+    ok(SP.faellig('1m', ubSperre, einstT, Date.parse('2026-08-27T02:00:00Z'), offenViel).faellig === false,
+       'Und solange jemand anders in dieses Archiv schreibt, wird gar nicht gesammelt');
+    ok(SP.faellig('1m', ub, SP.einstellungen({ an: false }), Date.parse('2026-08-27T02:00:00Z'), offenViel).faellig === false,
+       'Ausgeschaltet ist ausgeschaltet');
+  } finally {
+    KQ.datenOrdnerSetzen(alterOrdner);
+    fs.rmSync(tmpD, { recursive: true, force: true });
+  }
+  ok(KQ.datenOrdner() === alterOrdner, 'Der Datenordner steht danach wieder wie vorher');
+
+  /* ---- 8. NUR SAMMELN. Wilhelms Auflage, und die wichtigste hier ----
+   * Der Sammler fasst die Handelslogik nicht an: kein intradayScan, kein
+   * Autopilot-Ring, keine SETUPS, keine modeParams, keine Order.
+   * Geprueft wird der CODE, nicht der Kommentar - main.js nennt genau diese Namen
+   * in der Erklaerung, warum es sie NICHT anfasst. Ohne ohneKommentare() waere
+   * diese Zusicherung an ihrem eigenen Erklaertext rot geworden. */
+  var TABU = /intradayScan|autopilotRing|SETUPS|TRIG_BELEGT|modeParams|demoOrder|takt\(/;
+  ['kerzenquelle.js', 'sammelplan.js', 'archivkarte.js'].forEach(function (d) {
+    var rein = ohneKommentare(fs.readFileSync(__dirname + '/' + d, 'utf8'));
+    ok(!TABU.test(rein), d + ' fasst die Handelslogik nicht an');
+  });
+  var mainQ = ohneKommentare(fs.readFileSync(__dirname + '/main.js', 'utf8'));
+  var sammelTeil = mainQ.slice(mainQ.indexOf('const SAMMLER = {'), mainQ.indexOf("ipcMain.handle('sammler-einstellen'"));
+  ok(sammelTeil.length > 500 && !TABU.test(sammelTeil),
+     'und der Sammler in main.js ebenso wenig', sammelTeil.length + ' Zeichen geprueft');
+
+  /* ---- 9. Die Karte haengt wirklich an der Bruecke ----
+   * Sechs tote Schalter hat das UI-Audit schon einmal gefunden. Ein Knopf, der
+   * nichts aufruft, sieht genauso aus wie einer, der funktioniert. */
+  var pre = fs.readFileSync(__dirname + '/preload.js', 'utf8');
+  ['sammlerStand', 'sammlerStart', 'sammlerStop', 'onSammler'].forEach(function (n) {
+    ok(pre.indexOf(n + ':') !== -1, 'preload reicht ' + n + ' durch');
+  });
+  ['sammler-stand', 'sammler-start', 'sammler-stop', 'sammler-einstellen'].forEach(function (n) {
+    ok(mainQ.indexOf("ipcMain.handle('" + n + "'") !== -1, 'main.js beantwortet ' + n);
+  });
+  var karte = fs.readFileSync(__dirname + '/archivkarte.js', 'utf8');
+  ok(/api\.sammlerStart\(/.test(karte) && /api\.sammlerStop\(/.test(karte) && /api\.sammlerStand\(/.test(karte),
+     'und die Karte ruft sie auch auf - ein Knopf ohne Aufruf sieht aus wie einer, der geht');
+  var htmlQ = fs.readFileSync(__dirname + '/index.html', 'utf8');
+  ok(/data-sub="archiv"/.test(htmlQ) && /id="sub-archiv"/.test(htmlQ) && /archivkarte\.js/.test(htmlQ),
+     'Pille, Unterseite und Skript sind eingehaengt');
+
+  /* ---- 10. Nachgeholt wird beim Start, nicht erst am naechsten Tag ----
+   * Wilhelms Punkt 2: "Die App ist nicht immer an." */
+  ok(/setTimeout\(\(\) => \{ sammlerNachsehen/.test(mainQ) && /setInterval\(\(\) => \{ sammlerNachsehen/.test(mainQ),
+     'Nach dem Start wird einmal nachgesehen und danach regelmaessig');
+})();
+
 Promise.all(offeneProben).then(function () {
   console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
   process.exit(fails ? 1 : 0);

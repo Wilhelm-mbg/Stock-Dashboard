@@ -1698,6 +1698,7 @@
     <button data-sub="explorer" class="active">Aktien-Explorer</button>
     <button data-sub="scheine">Schein-Finder</button>
     <button data-sub="wende">Trendfinder</button>
+    <button data-sub="archiv">Kursarchiv</button>
     <!-- Ohne data-sub: der Umschalter laesst diese Pille in Ruhe, sie oeffnet nur den
          vorhandenen Einstellungs-Dialog. Felix wollte die Einstellungen bei den
          Werkzeugen; ihn hierher zu kopieren waere eine zweite Wahrheit gewesen. -->
@@ -1897,6 +1898,10 @@
     </div>
   </div>
 
+  <div class="sub" id="sub-archiv">
+    <h2>Kursarchiv <span style="color:var(--muted); font-size:var(--fs-neben); font-weight:400; text-transform:none; letter-spacing:0;">– die App holt die feinen Kerzen selbst und legt sie ab.</span></h2>
+    <div class="panel" id="archivKarte"><div class="loading">Sehe im Archiv nach …</div></div>
+  </div>
 </div><!-- /tab-werkzeuge -->
 
 <div id="tab-messung" class="tab" role="tabpanel" aria-labelledby="reiter-messung">
@@ -2263,5 +2268,6 @@
 <!-- Nach depot.js: das Messband liest window.__D() fuer den laufenden Ausloeser. Es haengt
      sich selbst in #sub-depot ein und braucht deshalb keine weitere Zeile in dieser Datei. -->
 <script src="messband.js"></script>
+<script src="archivkarte.js"></script>
 </body>
 </html>

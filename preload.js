@@ -56,5 +56,11 @@ contextBridge.exposeInMainWorld('api', {
   updateCheck: () => ipcRenderer.invoke('update-check'),
   updateInstall: () => ipcRenderer.invoke('update-install'),
   updateSetAuto: (on) => ipcRenderer.invoke('update-set-auto', on),
-  onUpdate: (cb) => ipcRenderer.on('update-state', (_ev, st) => cb(st))
+  onUpdate: (cb) => ipcRenderer.on('update-state', (_ev, st) => cb(st)),
+  sammlerStand: () => ipcRenderer.invoke('sammler-stand'),
+  sammlerStart: (intervall) => ipcRenderer.invoke('sammler-start', intervall),
+  sammlerStop: () => ipcRenderer.invoke('sammler-stop'),
+  sammlerEinstellen: (e) => ipcRenderer.invoke('sammler-einstellen', e),
+  onSammler: (cb) => ipcRenderer.on('sammler-fortschritt', (_ev, d) => cb(d)),
+  onSammlerHinweis: (cb) => ipcRenderer.on('sammler-hinweis', (_ev, d) => cb(d))
 });
