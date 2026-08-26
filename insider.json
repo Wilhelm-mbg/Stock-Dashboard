@@ -1,5 +1,5 @@
 {
-  "stand": "2026-08-25T12:55:38.001Z",
+  "stand": "2026-08-26T04:58:49.954Z",
   "hinweis": "Meldepflichtige Eigengeschäfte von Insidern (SEC Form 4, nur offene Marktkäufe). Ungemessen, keine Handelsempfehlung, keine Anlageberatung.",
   "eintraege": [
     {
@@ -37,6 +37,40 @@
       "zeit": "2026-08-24T20:00:00.000Z"
     },
     {
+      "id": "20260825-AMR-insider",
+      "sym": "AMR",
+      "name": "Alpha Metallurgical Resources",
+      "anzahl": 2,
+      "wert": 3171834,
+      "stueck": 15000,
+      "kurs": 211.46,
+      "rang": 1,
+      "imUniversum": false,
+      "wer": [
+        {
+          "person": "Gorzynski Michael",
+          "rolle": "Aufsichtsrat",
+          "wert": 2089169
+        },
+        {
+          "person": "Courtis Kenneth S.",
+          "rolle": "Aufsichtsrat",
+          "wert": 1082665
+        }
+      ],
+      "quellen": [
+        {
+          "titel": "SEC Form 4 (1)",
+          "url": "https://www.sec.gov/Archives/edgar/data/1704715/000092189526002305/0000921895-26-002305-index.htm"
+        },
+        {
+          "titel": "SEC Form 4 (2)",
+          "url": "https://www.sec.gov/Archives/edgar/data/1704715/000181274626000010/0001812746-26-000010-index.htm"
+        }
+      ],
+      "zeit": "2026-08-25T20:00:00.000Z"
+    },
+    {
       "id": "20260818-ET-insider",
       "sym": "ET",
       "name": "Energy Transfer",
@@ -60,6 +94,31 @@
         }
       ],
       "zeit": "2026-08-18T20:00:00.000Z"
+    },
+    {
+      "id": "20260825-BABA-insider",
+      "sym": "BABA",
+      "name": "Alibaba Group Holding",
+      "anzahl": 1,
+      "wert": 10418400,
+      "stueck": 720000,
+      "kurs": 14.47,
+      "rang": 1,
+      "imUniversum": false,
+      "wer": [
+        {
+          "person": "Tsai Joseph C",
+          "rolle": "Aufsichtsrat",
+          "wert": 10418400
+        }
+      ],
+      "quellen": [
+        {
+          "titel": "SEC Form 4",
+          "url": "https://www.sec.gov/Archives/edgar/data/1577552/000119312526364044/0001193125-26-364044-index.htm"
+        }
+      ],
+      "zeit": "2026-08-25T20:00:00.000Z"
     },
     {
       "id": "20260821-AMR-insider",
@@ -160,6 +219,31 @@
         }
       ],
       "zeit": "2026-08-24T20:00:00.000Z"
+    },
+    {
+      "id": "20260825-TTMI-insider",
+      "sym": "TTMI",
+      "name": "TTM TECHNOLOGIES",
+      "anzahl": 1,
+      "wert": 1117700,
+      "stueck": 10000,
+      "kurs": 111.77,
+      "rang": 3,
+      "imUniversum": false,
+      "wer": [
+        {
+          "person": "Roks Edwin",
+          "rolle": "President and CEO",
+          "wert": 1117700
+        }
+      ],
+      "quellen": [
+        {
+          "titel": "SEC Form 4",
+          "url": "https://www.sec.gov/Archives/edgar/data/1116942/000119312526365628/0001193125-26-365628-index.htm"
+        }
+      ],
+      "zeit": "2026-08-25T20:00:00.000Z"
     },
     {
       "id": "20260820-ALK-insider",
@@ -282,6 +366,31 @@
         {
           "titel": "SEC Form 4",
           "url": "https://www.sec.gov/Archives/edgar/data/1364479/000136447926000121/0001364479-26-000121-index.htm"
+        }
+      ],
+      "zeit": "2026-08-21T20:00:00.000Z"
+    },
+    {
+      "id": "20260821-AMT-insider",
+      "sym": "AMT",
+      "name": "AMERICAN TOWER CORP /MA/",
+      "anzahl": 1,
+      "wert": 500733,
+      "stueck": 2829,
+      "kurs": 177,
+      "rang": 1,
+      "imUniversum": true,
+      "wer": [
+        {
+          "person": "Kalathur Rajesh",
+          "rolle": "Aufsichtsrat",
+          "wert": 500733
+        }
+      ],
+      "quellen": [
+        {
+          "titel": "SEC Form 4",
+          "url": "https://www.sec.gov/Archives/edgar/data/1053507/000105350726000139/0001053507-26-000139-index.htm"
         }
       ],
       "zeit": "2026-08-21T20:00:00.000Z"
@@ -532,106 +641,6 @@
         {
           "titel": "SEC Form 4",
           "url": "https://www.sec.gov/Archives/edgar/data/1046179/000104617926000543/0001046179-26-000543-index.htm"
-        }
-      ],
-      "zeit": "2026-08-18T20:00:00.000Z"
-    },
-    {
-      "id": "20260821-PODD-insider",
-      "sym": "PODD",
-      "name": "INSULET",
-      "anzahl": 1,
-      "wert": 162217,
-      "stueck": 1100,
-      "kurs": 147.47,
-      "rang": 3,
-      "imUniversum": false,
-      "wer": [
-        {
-          "person": "McEvoy Ashley",
-          "rolle": "President and CEO",
-          "wert": 162217
-        }
-      ],
-      "quellen": [
-        {
-          "titel": "SEC Form 4",
-          "url": "https://www.sec.gov/Archives/edgar/data/1145197/000114519726000172/0001145197-26-000172-index.htm"
-        }
-      ],
-      "zeit": "2026-08-21T20:00:00.000Z"
-    },
-    {
-      "id": "20260817-BFC-insider",
-      "sym": "BFC",
-      "name": "Bank First",
-      "anzahl": 1,
-      "wert": 160737,
-      "stueck": 1024,
-      "kurs": 156.97,
-      "rang": 1,
-      "imUniversum": false,
-      "wer": [
-        {
-          "person": "Pearson Tracy C",
-          "rolle": "Aufsichtsrat",
-          "wert": 160737
-        }
-      ],
-      "quellen": [
-        {
-          "titel": "SEC Form 4",
-          "url": "https://www.sec.gov/Archives/edgar/data/1746109/000110465926100257/0001104659-26-100257-index.htm"
-        }
-      ],
-      "zeit": "2026-08-17T20:00:00.000Z"
-    },
-    {
-      "id": "20260818-SGRY-insider",
-      "sym": "SGRY",
-      "name": "Surgery Partners",
-      "anzahl": 1,
-      "wert": 143500,
-      "stueck": 10000,
-      "kurs": 14.35,
-      "rang": 1,
-      "imUniversum": false,
-      "wer": [
-        {
-          "person": "DeLuca Teresa",
-          "rolle": "Aufsichtsrat",
-          "wert": 143500
-        }
-      ],
-      "quellen": [
-        {
-          "titel": "SEC Form 4",
-          "url": "https://www.sec.gov/Archives/edgar/data/1638833/000163883326000079/0001638833-26-000079-index.htm"
-        }
-      ],
-      "zeit": "2026-08-18T20:00:00.000Z"
-    },
-    {
-      "id": "20260818-CORZ-insider",
-      "sym": "CORZ",
-      "name": "Core Scientific, Inc./tx",
-      "anzahl": 1,
-      "wert": 134358,
-      "stueck": 7000,
-      "kurs": 19.19,
-      "rang": 1,
-      "imUniversum": false,
-      "wer": [
-        {
-          "person": "Weiss Eric Stanton",
-          "rolle": "Aufsichtsrat",
-          "wert": 134358
-        }
-      ],
-      "quellen": [
-        {
-          "titel": "SEC Form 4",
-          "url": "https://www.sec.gov/Archives/edgar/data/1839341/000090514826003841/0000905148-26-003841-index.htm"
         }
       ],
       "zeit": "2026-08-18T20:00:00.000Z"
