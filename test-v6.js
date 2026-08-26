@@ -4898,6 +4898,54 @@ console.log('\n41) Zustaende: was die App sagt, wenn etwas fehlt oder klemmt');
   ok(!/document\.(write|body)|innerHTML|addEventListener\(|fetch\(|storeGet\(/.test(tOhneJsKomm(tThema)),
      'und fasst nichts an ausser data-theme');
 
+  /* ---- #90: Bewegung wegnehmen heisst nicht Inhalt wegnehmen (26.08.2026) ----
+   * Bei "Bewegung reduzieren" stand im Laufband nur "animation: none". Die Spur fror auf
+   * translateX(0) ein, obwohl sie 4,4-mal breiter ist als ihr Rahmen: drei von sechs
+   * Schlagzeilen waren DAUERHAFT unerreichbar. Auf Wilhelms Rechner ist die Einstellung
+   * dauerhaft aktiv - das war der Normalfall, nicht ein Sonderfall.
+   * Gemessen nach der Reparatur (studien/auditor/2026-08-26/probe-reduzierte-bewegung.js
+   * plus eine Erreichbarkeitsmessung): 6 von 6 Schlagzeilen lassen sich hereinschieben,
+   * die letzte eingeschlossen; ohne reduzierte Bewegung laeuft alles wie vorher. */
+  var nCss = html.slice(html.indexOf('@media (prefers-reduced-motion: reduce)'));
+  nCss = nCss.slice(0, nCss.indexOf('\n  }\n') + 5);
+  ok(/#newsTicker \.tickSpur \{ animation: none; \}/.test(nCss),
+     'Bei reduzierter Bewegung laeuft das Band nicht - das war und bleibt richtig');
+  ok(/#newsTicker \{[^}]*overflow-x: auto/.test(nCss),
+     'aber der Rahmen wird schiebbar - sonst ist der Inhalt weg statt nur still');
+  ok(!/#newsTicker[^}]*overflow: hidden;[^}]*\}/.test(nCss),
+     'und nicht gleichzeitig wieder abgeschnitten');
+  /* Die Verdopplung dient allein der nahtlosen Schleife. Steht das Band, schoebe man
+   * dieselben Schlagzeilen zweimal durch - gemessen 12 statt 6 Anker. */
+  var nRend = fs.readFileSync(__dirname + '/renderer.js', 'utf8');
+  ok(/function reduzierteBewegung\(\)/.test(nRend) && /prefers-reduced-motion: reduce/.test(nRend),
+     'renderer.js fragt die Einstellung');
+  ok(/stueck \+ \(ruhig \? '' : stueck\)/.test(nRend),
+     'und verdoppelt den Inhalt NUR, wenn das Band wirklich laeuft');
+  /* Ein title, der etwas verspricht, das nicht passiert, ist schlimmer als keiner:
+   * "haelt unter dem Mauszeiger an" lief ins Leere, weil nie etwas lief. */
+  ok(!/id="newsTicker"[^>]*title=/.test(html),
+     'Das Markup verspricht nichts mehr - der Hinweis kommt aus dem Renderer');
+  ok(/el\.title = ruhig/.test(nRend) && /Bewegung reduzieren/.test(nRend),
+     'und sagt bei stehendem Band, dass man seitwaerts schieben kann');
+  /* Die Einstellung kann sich im Betrieb aendern. Ohne Nachziehen bliebe entweder
+   * doppelter Text stehen oder ein Band, das nicht mehr laeuft. */
+  ok(/addEventListener\('change', function \(\) \{ renderTicker\(\); \}\)/.test(nRend),
+     'Ein Umschalten waehrend des Betriebs baut das Band neu auf');
+  /* Und die Abfrage selbst wird AUSGEFUEHRT. Der interessante Fall ist der dritte:
+   * wirft matchMedia, muss es beim bisherigen Verhalten bleiben und nicht abstuerzen -
+   * die Funktion laeuft bei jedem Aufbau des Bandes. */
+  var rbA = nRend.indexOf('function reduzierteBewegung() {');
+  var rbE = nRend.indexOf('\n  }\n', rbA);
+  ok(rbA !== -1 && rbE > rbA, 'reduzierteBewegung laesst sich herausloesen');
+  var rbFn = new Function('window', nRend.slice(rbA, rbE + 4) + '\nreturn reduzierteBewegung;');
+  ok(rbFn({ matchMedia: function () { return { matches: true }; } })() === true,
+     'Reduzierte Bewegung wird erkannt');
+  ok(rbFn({ matchMedia: function () { return { matches: false }; } })() === false,
+     'und normale Bewegung ebenso');
+  ok(rbFn({})() === false, 'Ohne matchMedia bleibt es beim Laufband - kein Absturz');
+  ok(rbFn({ matchMedia: function () { throw new Error('nein'); } })() === false,
+     'Und wenn die Abfrage wirft, laeuft das Band weiter statt die Seite mitzureissen');
+
   // --- Kein eval in irgendeiner ausgelieferten Datei ---
   var paket = fs.readdirSync(__dirname).filter(function (f) {
     return /\.js$/.test(f) && !/^test-/.test(f);

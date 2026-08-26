@@ -855,9 +855,24 @@
 
   /* Laufband oben im Dashboard (Tester-Wunsch #20): dieselben Schlagzeilen wie im
      News-Kasten, als endlos durchlaufendes Band. Der Inhalt wird verdoppelt, damit
-     die CSS-Schleife (-50 %) nahtlos wieder am Anfang ankommt. Bewegung nervt
-     manche - deshalb pausiert das Band unter dem Mauszeiger (CSS) und respektiert
-     prefers-reduced-motion (ebenfalls CSS). */
+     die CSS-Schleife (-50 %) nahtlos wieder am Anfang ankommt. Unter dem Mauszeiger
+     pausiert es (CSS).
+     Bei "Bewegung reduzieren" laeuft nichts, und dann waere die Verdopplung schaedlich:
+     man schoebe dieselben sechs Schlagzeilen zweimal durch. Sie faellt deshalb weg -
+     das ist der einzige Grund, warum der Renderer die Einstellung ueberhaupt kennen
+     muss; das Aussehen regelt weiter CSS (#90). */
+  /* Die Einstellung kann sich waehrend des Betriebs aendern (Windows-Schalter,
+     Fernwartung). Sie wird deshalb bei jedem Aufbau gefragt statt einmal gemerkt, und
+     eine Aenderung baut das Band neu auf - sonst schoebe man nach dem Umschalten
+     weiter doppelten Text oder saehe ein Band, das nicht mehr laeuft. */
+  function reduzierteBewegung() {
+    try { return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches); }
+    catch (e) { return false; }   // ohne Antwort lieber wie bisher
+  }
+  try {
+    var mqBewegung = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)');
+    if (mqBewegung && mqBewegung.addEventListener) mqBewegung.addEventListener('change', function () { renderTicker(); });
+  } catch (e) { /* ohne Beobachter bleibt es beim Stand des letzten Aufbaus */ }
   function renderTicker() {
     var el = document.getElementById('newsTicker');
     if (!el) return;
@@ -869,7 +884,12 @@
     el.style.display = 'block';
     // Laufzeit an die Textmenge koppeln, sonst rast ein kurzes Band und kriecht ein langes
     var dauer = Math.max(30, Math.min(240, NEWS.slice(0, 20).reduce(function (a, n) { return a + n.title.length; }, 0) / 6));
-    el.innerHTML = '<div class="tickSpur" style="animation-duration:' + Math.round(dauer) + 's;">' + stueck + stueck + '</div>';
+    var ruhig = reduzierteBewegung();
+    el.title = ruhig
+      ? 'Markt-News. Seitwärts schieben zeigt die übrigen Meldungen – das Band läuft nicht, weil auf diesem Rechner „Bewegung reduzieren“ eingeschaltet ist. Klick öffnet die Meldung.'
+      : 'Markt-News als Laufband – unter dem Mauszeiger hält es an. Klick öffnet die Meldung.';
+    el.innerHTML = '<div class="tickSpur" style="animation-duration:' + Math.round(dauer) + 's;">' +
+      stueck + (ruhig ? '' : stueck) + '</div>';
   }
 
   /* ================= Info-Fenster beim Draufzeigen (Tester-Wunsch #24) =========

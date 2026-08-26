@@ -169,7 +169,23 @@
   #newsTicker a:hover { color: var(--ink); }
   #newsTicker .tickTrenn { color: var(--muted); margin: 0 14px; }
   @keyframes tickLauf { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-  @media (prefers-reduced-motion: reduce) { #newsTicker .tickSpur { animation: none; } }
+  /* Bei "Bewegung reduzieren" stand hier nur "animation: none" - und damit fror die
+     Spur auf translateX(0) ein, obwohl sie 4,4-mal breiter ist als ihr Rahmen. Drei von
+     sechs Schlagzeilen waren dauerhaft unerreichbar: kein Rollbalken, kein Umbruch, und
+     das versprochene "haelt unter dem Mauszeiger an" lief ins Leere, weil nie etwas lief
+     (#90). Auf Wilhelms Rechner ist die Einstellung dauerhaft aktiv - das war also der
+     Normalfall, nicht ein konstruierter Sonderfall.
+     Bewegung wegzunehmen ist richtig; den Inhalt wegzunehmen war es nicht. Statt zu
+     laufen laesst sich das Band jetzt schieben: derselbe schmale Streifen, aber alles
+     ist erreichbar - mit der Maus, mit dem Rad und mit der Tabulatortaste, weil die
+     Links selbst anspringbar sind und der Rahmen sie hereinrollt.
+     Die Verlaufsmaske faellt hier weg: sie soll andeuten, dass etwas hereinlaeuft.
+     Steht das Band, ist der Rollbalken der ehrlichere Hinweis, und die Maske wuerde ihn
+     nur ausbleichen. */
+  @media (prefers-reduced-motion: reduce) {
+    #newsTicker .tickSpur { animation: none; }
+    #newsTicker { overflow-x: auto; overflow-y: hidden; -webkit-mask-image: none; }
+  }
 
   /* Info-Fenster beim Draufzeigen (Tester-Wunsch #24) */
   #hoverInfo {
@@ -785,7 +801,9 @@
   </div>
 
   <div class="sub active" id="sub-ueberblick">
-<div id="newsTicker" style="display:none;" title="Markt-News als Laufband – unter dem Mauszeiger hält es an. Klick öffnet die Meldung."></div>
+<!-- Der title wird in renderTicker() gesetzt: bei "Bewegung reduzieren" laeuft nichts,
+     und dann darf dort auch nicht stehen, dass es unter dem Mauszeiger anhaelt. -->
+<div id="newsTicker" style="display:none;"></div>
 <h2>Marktüberblick</h2>
 <div class="tiles" id="tiles"><div class="loading">Lade Kurse …</div></div>
 
