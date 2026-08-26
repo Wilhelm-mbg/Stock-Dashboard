@@ -346,6 +346,41 @@ Zwei Funde des Auditors aus dem 2. Lauf, **beide stecken in der ausgelieferten v
 sieht an zwei Stellen der App verschieden aus. **Achtung:** das ist `depot.js` — dieselbe
 Datei, in der der Master sitzt. Vorher mit ihm abstimmen oder er nimmt es mit.
 
+### ⚙ VORRANG — tägliche Nachladung der Kursarchive (Wilhelm 26.08. 15:30, Antwort 4a)
+
+**Wilhelm hat dies vor die Fragen (1) und (2) gestellt.** Zugeteilt an den
+**App-Codebase Master** — er kennt das Werkzeug seit heute.
+
+**Was gebraucht wird:** ein Kommando, das beide Archive nachlädt und danach den Wachhund
+auswertet. Die Bausteine liegen alle schon da:
+
+```
+MD_INTERVALL=60m node tools/yahoo-60m-holen.js alle --aktualisieren
+MD_INTERVALL=1d  node tools/yahoo-60m-holen.js alle --aktualisieren
+node tools/archiv-wachhund.js          # Exit 1 bei Rueckstand ab zwei Tagen
+```
+
+**Drei Punkte, die vor dem Einrichten geklärt sein müssen — sie sind der eigentliche
+Auftrag, nicht das Kommando:**
+
+1. **Dauer.** Gemessen wurden heute 2,0 s je Wert bei 2.913 Reihen — rund 97 Minuten je
+   Archiv, also **über drei Stunden für beide**. Das ist tragbar, aber es muss bekannt
+   sein, bevor eine Uhrzeit gewählt wird.
+2. **Kollision mit dem Analytiker (03:15).** Er rechnet auf genau diesen Archiven. Läuft
+   die Nachladung um 03:15 noch, **misst er auf einem halb geschriebenen Archiv** — das
+   ist dieselbe Klasse Fehler wie die, die heute repariert wurde, nur andersherum.
+   Entweder früh genug starten (US-Schluss ist 22:00 unserer Zeit) oder eine Sperre, die
+   beide Seiten kennen.
+3. **Was bei Alarm passiert.** Der Wachhund endet mit Exit 1. Was die Aufgabe damit tut,
+   gehört festgelegt — schweigen wäre der Fehler von heute in neuer Form.
+
+**Der Master baut und erprobt; die Aufgabe selbst legt der PM an**, sobald er
+„erprobt" meldet. Kein Blindstart.
+
+**Zum laufenden `ausstieg`-Schalter:** nicht halbfertig liegen lassen. Er muss an allen
+drei Stellen zugleich greifen; ein Abbruch mittendrin hinterlässt genau den C7-Zustand,
+vor dem der Auftrag warnt. Einschieben, sobald ein sauberer Punkt erreicht ist.
+
 ### ⚙ ZUGETEILT an App-Codebase Master (PM, 26.08. 15:15) — `ausstieg`-Schalter in der Messmaschine
 
 *Wilhelm 26.08. 09:00, Antwort 2a. Der wertvollste freie Auftrag: er blockiert **zwei**
@@ -610,8 +645,7 @@ konnten, ohne dass der Widerspruch auffiel.
 
 *Antworten genügen als Ziffernfolge, z. B. „1b 2a 3a".*
 
-**(4) NEU und dringender als die anderen drei — soll das Kursarchiv künftig von selbst
-nachladen?**
+**(4) ~~NEU und dringender als die anderen drei — soll das Kursarchiv künftig von selbst nachladen?~~ BEANTWORTET 26.08. 15:30: (a), mit Vorrang.**
 Heute um 12:00 hat sich herausgestellt: **niemand holt die Kurse.** Es gibt keine
 gestörte Aufgabe — es gibt gar keine. Seit dem 24.08. ist das Archiv nur deshalb
 stehengeblieben, weil das Holen ein Handaufruf ist und ihn zwei Tage lang niemand
@@ -759,6 +793,17 @@ dem letzten Lauf, dazu ein Rotationsblock. Repariert wird nichts — das tut ein
 
 *Entscheidungen von Wilhelm, mit Datum. Eine Entscheidung, die nur in einem Chatverlauf
 steht, ist nach zwei Stunden verloren.*
+
+- **26.08.2026, 15:30 — Frage (4): das Kursarchiv lädt künftig von selbst nach.**
+  Wilhelm: *„Dann lass uns doch erst 4 vervollständigen oder?"* → **(a) tägliche
+  Aufgabe**, und sie hat **Vorrang vor den offenen Fragen (1) und (2)**. Nicht (b) nur
+  melden, nicht (c) von Hand.
+  Der PM hatte (a) empfohlen: (b) verlegt nur den Handgriff, und der ist zweimal zwei
+  Tage lang ausgeblieben; (c) ist genau der Zustand, der die zwei Tage gekostet hat.
+  **Umsetzung siehe Auftrag „tägliche Nachladung" oben.** Die Aufgabe selbst legt der PM
+  an, sobald der Master das Kommando erprobt gemeldet hat — nicht vorher, denn eine
+  falsch eingerichtete tägliche Aufgabe erzeugt genau wieder die Stille, die gerade
+  repariert wurde.
 
 - **26.08.2026 (Abruf-Bericht, von Wilhelm von Hand gestartet) — „1a 2b 3a“**
   (1) *Die Oberflaeche zeigt unter mehreren Messvarianten die bestaussehende statt das
