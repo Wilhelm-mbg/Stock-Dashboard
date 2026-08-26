@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-26 09:00
+letzter-bericht: 2026-08-26 09:15
 gesehener-tag: v8.33.2
 -->
 
@@ -82,6 +82,27 @@ Umbau**. Danach tragen die Protokolle einen echten Stand statt „unbekannt" (26
 Protokolle stehen heute ohne Kennung da). **Erst danach neue Untersuchungen.**
 Zugeteilt an **App-Codebase Master**.
 
+**Zwischenstand 09:15, vom PM aus den Dateien nachgezählt (nicht übernommen):**
+5 von 12 geschrieben, ~5 Min. je Strategie. Alle fünf tragen **dieselbe** Maschine
+(1.2.0) und **denselben `codeStand` `6a7d9e29db6f`** — die Sperre auf `messmaschine.js`
+hält also nachweislich. Der Master prüft das am Ende über alle zwölf noch einmal selbst.
+
+| Strategie | Urteil | `tage80` |
+|---|---|---|
+| kapitulation | nicht entscheidbar | 1.551 |
+| monatswende-breit | nicht entscheidbar | 3.942 |
+| rsi2seit | nicht entscheidbar | 4.116 |
+| quartalsschub-betrag | nicht entscheidbar | 13.257 |
+| momentum | nicht entscheidbar | 52.578 |
+
+Das ist die **Auflösungswand erstmals in Zahlen** — genau die Spalte, die bis gestern in
+jedem Protokoll auf `null` stand (#86). Fünf von fünf „nicht entscheidbar" ist kein
+schlechtes Ergebnis, sondern das erste ehrliche.
+
+**Sprachregelung, weil dieses Projekt genau daran schon einmal Geld verloren hat:**
+„nicht entscheidbar" ist **nicht** dasselbe wie „nicht bestätigt". Ersteres heißt: das
+Lineal ist zu grob. In den Berichten bitte die Formulierung des Protokolls verwenden.
+
 ### FREI — `ausstieg`-Schalter in der Messmaschine (Wilhelm 26.08. 09:00, Antwort 2a)
 
 Auftragsvorschlag A des Tüftlers, **freigegeben**. Spiegelbild des vorhandenen
@@ -134,6 +155,13 @@ frischen Protokolle gleich mit raus, was das Paket besser macht, nicht schlechte
 
 ### Danach — schon freigegeben, Reihenfolge fest
 
+- **`messen.js` Zeile 95 — Nachzügler zu #91.** Die Konsolenzeile sagt weiter
+  *„bis t=2 mit 80 %"*, während die Rechnung längst gegen die Bonferroni-Schwelle geht.
+  **Nur die Anzeige, nicht die Daten** — der PM hat es nachgesehen: die Protokolle
+  tragen den richtigen Text („Tage bis zum URTEIL, nicht bis t=2"). Die zwölf Läufe
+  müssen deshalb **nicht** wiederholt werden. Der Master zieht es nach seinem Lauf nach
+  (mittendrin nicht, sonst haben die ersten fünf eine andere Konsolenausgabe als die
+  letzten sieben). Gefunden vom Master selbst am eigenen Werk.
 - **Großer Archiv-Ausbau:** Backfill 60m und täglich auf E:, Universum nach
   Wertpapierart verbreitern. Ausdrücklich NACH der Neumessung.
 - **Stufe F (2) und (3)** — stehen jetzt oben unter „Wartet auf Wilhelm", nicht mehr hier.
