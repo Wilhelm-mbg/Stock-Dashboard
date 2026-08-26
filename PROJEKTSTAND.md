@@ -94,9 +94,7 @@ Zugeteilt an **App-Codebase Master**.
 
 - **Großer Archiv-Ausbau:** Backfill 60m und täglich auf E:, Universum nach
   Wertpapierart verbreitern. Ausdrücklich NACH der Neumessung.
-- **Stufe F (2)** — ein einziger Chart-Renderer (`drawBig` vs. `chart.js`, Entscheid
-  nach Funktionsvergleich). **Frei, parallel möglich.**
-- **Stufe F (3)** — Barrierefreiheit (Rest #59 Stufe 3), nach (2).
+- **Stufe F (2) und (3)** — stehen jetzt oben unter „Wartet auf Wilhelm", nicht mehr hier.
 - **Nachbilden-Dialog:** Belegstatus sichtbar im Dialog „Trade nachbilden" —
   Belegtexte aus den Protokollen (`DepotAPI.protokollKante`), nie aus Prosa.
 - **Handel raus aus dem Renderer — NUR PLAN:** Umbauplan als Dokument unter `studien/`,
