@@ -515,6 +515,83 @@ kapitulation (3 von 3 Varianten), monatsende-kauf (Urteil stabil).
 
 ---
 
+### ✅ #96 — das trennscharfe Kriterium ist gefunden: **marktweite Gleichzeitigkeit** (QS, gezählt)
+
+**Zwei Regeln sind vorher gescheitert, beide an einer Annahme über den *Ort* der Kerze:**
+
+| Regel | Urheber | Ergebnis |
+|---|---|---|
+| flach + Umsatz 0 | **PM**, aus 5 Stichproben | 3.409 Treffer statt 2.885 — **570 echte leere Stunden** mitgelöscht |
+| zusätzlich „letzte Kerze der Reihe" | **QS**, als Hypothese | **2 von 2.839** Platzhaltern getroffen, **85 echte** gelöscht |
+
+*Grund für das zweite Scheitern, banal: das Archiv ist seit dem 25.08. weitergelaufen, der
+Platzhalter steht längst mitten in der Reihe.* **Die QS hat ihre eigene Hypothese
+widerlegt, bevor jemand darauf gebaut hat.**
+
+**Was stattdessen trägt — über alle 2.885 Reihen gezählt:**
+
+```
+2026-08-25T20:00  ->  2.839 von 2.885 Reihen   (98,4 %)   <- Platzhalter
+2025-10-10T13:30  ->     27 Reihen             ( 0,9 %)   <- illiquide Stunde
+2023-11-24T17:30  ->     15 Reihen
+```
+
+**98,4 % gegen 0,9 %, und dazwischen liegt nichts.** Eine völlig flache Nullumsatz-Kerze,
+die zur selben Sekunde in fast allen Papieren steht, kann kein Marktereignis sein. Eine,
+die in 27 von 2.885 steht, ist eine wirklich nicht gehandelte Stunde.
+
+**Warum dieses Kriterium hält, wo die beiden anderen scheiterten:** Es kommt **ohne jede
+Annahme über Uhrzeit, Position oder Sitzungsende** aus — die Auflagen 2 und 3 zweifelten zu
+Recht genau daran. Es sagt nicht, *wo* der Platzhalter steht, sondern *was er ist*. Und die
+Trennung ist keine Schwelle, die kalibriert werden muss, sondern ein Abgrund.
+
+**Die flachen Kerzen zerfallen damit in drei Gruppen:**
+
+| Gruppe | Zahl | was damit geschehen soll |
+|---|---|---|
+| `2026-08-25T20:00` | 2.839 | **löschen** — der Platzhalter |
+| krumme Zeitstempel | 151 | **löschen** — Quote-Stempel, keine Kerzen (siehe unten) |
+| Rest auf gültigem Raster | 419 | **behalten** — nicht gehandelte Stunden |
+
+### 🔴 Die Stempel-Kerzen sind zurück — und zwar an genau den Nachladetagen
+
+Der Fehler, den das Gedächtnis als **„Stempel-Kerzen der Quelle"** führt und der seit
+8.23.13 als behoben galt:
+
+| | |
+|---|---|
+| Kerzen weder auf `:30` noch `:00` | **151** |
+| betroffene Reihen | 150 von 2.885 |
+| Tage | **nur zwei: 24.08. (75) und 26.08. (76)** — die beiden Nachladetage |
+| Umsatz | alle null, alle völlig flach |
+
+Beispiele: `AAON 2026-08-26T15:12`, `AGL 2026-08-24T17:51`, `ACMR 2026-08-24T17:50`.
+
+**Entwarnung für die Sammelfunktion, vom PM nachgesehen:** Das **Minutenarchiv ist
+sauber** — 300 Reihen Stichprobe, **null** krumme Zeitstempel, bei inzwischen 1.369
+gesammelten Reihen. Der Fehler sitzt im 60m-Pfad, nicht in dem, was gerade frisch
+entsteht. **Punkt 1 des Intraday-Auftrags („Format identisch, dieselbe Teilkerzen-Regel")
+bleibt trotzdem der wichtigste** — er ist der Grund, warum es hier nicht durchgeschlagen ist.
+
+### Nachrechnung Block D: **5 von 9, kein einziges Urteil gekippt**
+
+rsi2seit · kapitulation (3/3 Varianten) · monatsende-kauf · t2-umsatzschock (2/2) ·
+t1-zwangsglattstellung (Placebo t 0,031). Offen: t3, rsi2seit-mcp, winkelbestaetigt,
+winkelgrad.
+
+**Block B komplett: sieben Saaten, alle bestanden**, Mittel +0,0068 Pp, mittleres t +0,12,
+eine Saat negativ. *Selbstkorrektur der QS: Nach vier Saaten hatte sie „alle positiv,
++0,014 Pp" als beobachtenswert gemeldet — mit allen sieben halbiert sich der Wert und eine
+ist negativ. **Vier Würfe waren kein Muster.*** Beide Oberflächen-Sonden grün, jetzt in
+**beiden** Themen, 1.757 Textstellen — die Abdeckungs-Behauptung dieser Tafel stimmt genau.
+
+**Die Aussichts-Beobachtung verdichtet sich: 6 von 7 Varianten sind durch zwei frische
+Handelstage schlechter geworden**, nicht besser (t2 Var0 51.183 → 57.345, Var1 17.317 →
+18.237). Das trifft die Annahme des großen Plans, mehr Tage machten die Frage
+entscheidbar.
+
+---
+
 ## Aufträge
 
 *Was freigegeben ist und noch niemand macht. Wer eine Zeile nimmt, trägt sich unter
