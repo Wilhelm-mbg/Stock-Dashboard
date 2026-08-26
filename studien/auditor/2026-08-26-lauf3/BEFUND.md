@@ -257,3 +257,22 @@ Beide Funde stammten aus v8.33.3 und sind in **v8.33.4** behoben.
 * Im gesäten Profil widersprechen sich Depotkacheln (`100.000,00 $`, `0,00 % seit Start`)
   und Verlaufskopf (`+7,3 %`). Das ist **mein Versuchsaufbau**: der Verlauf ist künstlich
   gesetzt, der Kassenstand nicht. Kein Fund.
+
+---
+
+## Nachtrag: der Arbeitsbaum ist während des Laufs gewandert
+
+Gemessen wurde durchgehend auf `d964891`. Beim Commit stand der geteilte Arbeitsbaum
+bereits auf `f3896c7` (v8.33.5) — eine Parallelsitzung hat zwischendurch gepusht, und der
+Baum ist mitgezogen. Das ist der bekannte Fall „mehrere Sitzungen, ein Arbeitsbaum".
+
+**Gegengeprüft, ob das die Funde entwertet:** `git diff --name-only d964891..f3896c7`
+berührt **keine** Oberflächen-Datei — nur `PROJEKTSTAND.md`, `package.json` (Versionsschub
+auf 8.33.5), drei Release-Notizen und Studienordner von Analytiker und Tüftler.
+
+**Alle vier Funde gelten damit unverändert für den heutigen Stand.** Der tote Hinweissatz
+aus A1 ist mit v8.33.4 ausgeliefert worden und steht auch in **v8.33.5** noch so da.
+
+Gepusht wurde ausschließlich der eigene Commit (`git log f3896c7..2c4d984` = eine Zeile);
+die fremden Änderungen an `test-v6.js` und `tools/archiv-wachhund.js` blieben unberührt
+im Arbeitsbaum liegen.
