@@ -35,9 +35,14 @@ Sie sind nicht zu weit weg, sie zeigen in die Gegenrichtung — ein anderer Sach
 „Nicht entscheidbar" heißt nicht „wertlos". Aus denselben Protokollen lässt sich eine
 **obere Grenze** lesen — und dort steht bereits echtes Wissen:
 
-- **5 von 25 Varianten sind erledigt**: selbst der optimistischste mit den Daten
+- **5 von 35 Varianten sind erledigt**: selbst der optimistischste mit den Daten
   verträgliche Wert trägt die Kosten nicht. Diese fünf müssen nie wieder durchsucht werden.
-- Beim Standard-Schein (0,23 Pp) sind es sogar 13 von 25.
+- Beim Standard-Schein (0,23 Pp) sind es sogar 23 von 35.
+
+*(Richtigstellung 26.08. abends: hier stand „von 25" und „13 von 25" — Stand vor der
+Messung der zwei Winkel-Strategien mit je 5 Varianten. Aktuelle Zahlen aus
+`tools/obergrenzen-bericht.js`, von der QS gezogen; der Fehler ging zugunsten des
+Projekts — es ist mehr ausgeschlossen als behauptet.)*
 
 **Das ist der ehrlichste Ertrag des bisherigen Aufwands:** nicht eine gefundene Kante,
 sondern ein systematisch verkleinerter Suchraum.

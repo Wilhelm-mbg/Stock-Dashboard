@@ -58,9 +58,12 @@ Nur drei liegen unter 1.500 Tagen, und die kürzeste von allen trägt das Urteil
 *lohnend*. `kapitulation` steht mit 224 Tagen ganz vorn und ist zugleich eine der beiden,
 die **gemessen wurden und nicht getragen haben**.
 
-Der Zeitraum aller zwölf ist **26.09.2023 bis 24.08.2026** — nicht bis heute. Grund ist
-der Archiv-Stillstand weiter unten; er macht die Messungen nicht falsch, gehört aber so
-zitiert.
+Der Zeitraum ist **für neun der zwölf 26.09.2023 bis 24.08.2026** (60m-Archiv) — nicht
+bis heute; Grund ist der Archiv-Stillstand weiter unten. **Die drei Tagesarchiv-Protokolle
+(momentum, monatswende-breit, quartalsschub-betrag) laufen dagegen ab 25.08.1986 über
+10.076 Handelstage** — Faktor 14 im Datenbestand. *(Richtigstellung 26.08. abends nach
+QS-Prüfung: hier stand „aller zwölf", das war für die drei falsch; der große Plan hat
+immer richtig gerechnet.)*
 
 **(1a) und (2b) sind fertig** (`0b7f767`): Depot und Scoreboard zeigen jetzt dasselbe
 Urteil, und vor `kapitulation` steht der Warnhinweis. Vom PM in `depot.js:767`
@@ -433,9 +436,9 @@ Papier ins Aktienuniversum gehört, entscheidet der Universumsfilter, nicht der
 Archivwächter. Er meldet den Stand, nicht die Bedeutung.
 
 **Zwei Reste, an den Master zurück:**
-- **#103 unvollständig** (Fund der Issue-Wache, vom PM in `index.html:579` nachgesehen):
-  die neue Regel setzt `text-transform`, `letter-spacing` und `font-weight` zurück,
-  **aber nicht `font-size`** — Zeilenköpfe stehen weiter auf 12 px statt 13 px.
+- ~~**#103 unvollständig**~~ **ERLEDIGT** (QS 26.08. abends nachgesehen: `index.html:583`
+  trägt `font-size: inherit`, mit Kommentar, der die Issue-Wache als Finderin nennt —
+  die Tafel führte es fälschlich noch als offen).
 - **#101 unangetastet**, Befund bestätigt: `.down` steht vier Mal in `index.html`
   (261, 294, 345, 367), jedes Mal kontextgebunden. Für den Rücksetzer im Depotverlauf
   greift keine davon.
@@ -899,10 +902,19 @@ baust du auf einer Anzeige, die ihre Daten gar nicht bekommt.
 
 ### ⭐ (2a) #92 — das schärfste Urteil gewinnt (Wilhelm 26.08. 17:40)
 
-`messmaschine.js:1214–1215`: `widerlegt` schlägt in der Rangfolge alles andere, und
-`bestaetigt-aber-nullpunkt-verschoben` wird aufgenommen (fehlt bisher ganz).
-Heute tritt der Fall in keinem der 38 Protokolle auf — **es ist Vorsorge, kein Brand.**
-Nicht während eines laufenden Rechenlaufs anfassen.
+Die Rangfolge steht in `messmaschine.js` bei der Zeile, die mit
+`bestesUrteil: ['bestaetigt', …` beginnt — **derzeit Zeile 1305, nicht 1214** (QS
+nachgesehen; Zeilennummern wandern im geteilten Baum, darum der Inhaltsanker).
+`widerlegt` schlägt künftig alles andere, und `bestaetigt-aber-nullpunkt-verschoben`
+wird aufgenommen (fehlt bisher ganz). Heute tritt der Fall in keinem der 38 Protokolle
+auf (QS: 94 Variantenurteile, kein einziges Vorkommen) — **es ist Vorsorge, kein
+Brand.** Nicht während eines laufenden Rechenlaufs anfassen.
+**Dazugehörig, gleiche Datei, aus dem QS-Fund zu `monatsende-kauf`:** die Aussicht wird
+unter `if (u.tagesmittel > 0 …)` (~Z. 1266) auch für Läufe berechnet, die die Maschine
+selbst `nicht-messbar` nennt (`tage < 30`) — daher die Planungszahl „187" aus 17
+Messtagen. **Schranke auf `u.tage >= 30` ziehen, im selben Eingriff.** Achtung: beides
+ändert die Maschine → Versionsnummer hochziehen, Protokolle sind danach formal ein
+neuer Stand.
 
 
 ### ⭐ STRANG A — `momentum` nicht überlappend messen (Wilhelm 26.08. 18:35, freigegeben)
@@ -1821,6 +1833,18 @@ dem letzten Lauf, dazu ein Rotationsblock. Repariert wird nichts — das tut ein
 
 *Entscheidungen von Wilhelm, mit Datum. Eine Entscheidung, die nur in einem Chatverlauf
 steht, ist nach zwei Stunden verloren.*
+
+- **26.08.2026, abends (PM-Chat) — die QS/Audit legt ihre Funde selbst als GitHub-Issues
+  an und benachrichtigt den PM.** Wilhelm: „beides bitte als issue und dich
+  benachrichtigen" — auf die zwei A-Funde des Abends (#96-Regel gestoppt,
+  Kostenannahme-Beleg zu 58 % Krypto). Gilt ab jetzt allgemein für A- und B-Funde der
+  QS; ihre übrigen Grenzen (prüfen und melden, nicht bauen, keine Version) bleiben.
+
+- **26.08.2026, abends (PM-Chat) — Routinen aufgeräumt, Chats in Dauerbereitschaft.**
+  Wilhelms Anordnung an den neuen PM-Chat: `literatur-recherche-uebernacht` und
+  `projekt-manager-abruf` gelöscht (redundant), PM-Routine als Notstart umgeschrieben,
+  Release-Wache baut künftig im Hintergrundkommando; Chat-Sitzungen halten sich nach
+  Abschluss mit `sleep 600` wach (Details im Nachtrag 19:45 oben).
 
 - **26.08.2026, 19:05 — die Issue-Wache läuft nur noch 8, 13 und 15 Uhr.**
   Vorher alle 30 Minuten, also 48 Läufe am Tag. Wilhelms Anweisung, nachdem die CPU auf
