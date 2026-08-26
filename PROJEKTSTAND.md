@@ -172,6 +172,46 @@ Protokoll bereits belegt — er beschreibt dort, *wie* ausgestiegen wurde
 (`{art: 'Zeit', mittlereKerzen: 26}`). Der neue Konfigurationsschalter darf damit nicht
 kollidieren.
 
+### ✅ Beide Archive stehen (Master, 26.08. 15:06 — PM gegengeprüft)
+
+Rückstand **0 Handelstage**, jüngste Kerze **25.08.** Vom PM über je 400 zufällige
+Reihen nachgezählt, nicht übernommen: `archiv60m` 399/400 auf dem 25.08., `archiv1d`
+398/400. 60m umfasst 2.913 Reihen mit 14,78 Mio Kerzen. `npm test` Exit 0.
+
+### ⚠ Richtigstellung des PM: **`rsi2seit-mcp` V4 ist NICHT „wieder messbar"**
+
+Das habe ich um 11:15 selbst geschrieben und es war die Begründung für das SOFORT. Es
+stimmt so nicht, und es ist besser, das hier zu korrigieren, als es sich festsetzen zu
+lassen. Die Vorregistrierung
+(`studien/vorregistrierung-2026-08-25-einstiegskonvention/ERGEBNIS-N.md`) sagt
+ausdrücklich, was V4 braucht:
+
+1. eine **eigene Vorregistrierung** mit `testfamilie`, die `rsi2seit` mitzählt — **gibt
+   es nicht**,
+2. eine **Werkzeugprobe**, die Stop-Strategien wirklich abdeckt — **gibt es nicht**,
+3. **frische Bestätigungstage** — dazugekommen ist **genau einer** (der 25.08.).
+
+„Die einzige unverbrauchte Hälfte ist die Zukunft" heißt: ein einzelner Handelstag ist
+keine Bestätigungsmessung. **Wer V4 jetzt misst, verbraucht den Kandidaten, statt ihn zu
+prüfen.** Dazu die Warnung aus derselben Datei: sein Intervall reicht von +0,018 bis
++0,117 Pp, die Kostenhürde liegt bei 0,10 — selbst im günstigsten Fall wäre die Kante
+knapp.
+
+**Was vom SOFORT bleibt, bleibt trotzdem richtig:** das Archiv stand zwei Tage still,
+ohne dass es jemand gemerkt hätte, und die Stille ist repariert. Nur die Begründung „V4
+wartet darauf" war meine, nicht die der Vorregistrierung.
+
+### Nachträge zu #96, jetzt mit vollem Archiv (Master, PM übernimmt)
+
+Die flache 20:00-Kerze ist **kein Einzelfall, sondern die Regel**: 147 von 152 Reihen
+enden darauf, alle 147 flach mit Umsatz 0. Die übrigen fünf haben für den 25.08. keine
+Daten. **Das Tagesarchiv ist nicht betroffen** — die Tageskerze zum 25.08. ist echt
+(AAPL 25,8 Mio Umsatz gegen 34,7 Mio am Vortag). Eine Regel gehört deshalb
+**ausschließlich** in den Stundenpfad.
+
+*Korrektur an eigener Sache: der PM hatte die echten Nullumsatz-Kerzen mit „zusammen 43"
+angegeben; 18+7+8+18+10 sind **61**. Die Einzelzahlen und der Schluss daraus stimmen.*
+
 ### #96 — die achte Stundenkerze am 25.08. (Master gemeldet, PM nachgemessen, **kein Auftrag**)
 
 Der zuletzt geholte Handelstag bekommt eine **achte** Stundenkerze um 20:00 UTC mit
@@ -483,8 +523,10 @@ Werkzeugs sollte es jemand wissen, der sich auf die Weigerung verlaesst.
   kein Code. Gebaut wird erst nach Wilhelms zweitem Ja.
 - **#80 Kanal-Güte neu eichen** (Studien-Strang). Bis dahin Warnhinweis „ungeeicht"
   an der Güte-Zahl.
-- **rsi2seit-mcp V4: Bestätigungsmessung** — vorregistriert, wartet auf frische
-  Handelstage (beide Archive enden am 24.08.).
+- **rsi2seit-mcp V4: Bestätigungsmessung** — **NICHT anfangen.** Die Archive stehen zwar
+  wieder (25.08.), aber es fehlen zwei von drei Voraussetzungen: eigene Vorregistrierung
+  mit `testfamilie` und Werkzeugprobe für Stop-Strategien. Dazugekommen ist **ein**
+  Handelstag. Siehe Richtigstellung oben.
 - **Zweig `claude/dashboard-integrated-browser-plvkv7` prüfen** (1 Commit) und bei
   Tauglichkeit einbauen; sonst mit Begründung vorlegen.
 - **Kleine Wünsche, Reihenfolge fest:** #69 lokales Backup → #82 Herkunftsland-Filter
