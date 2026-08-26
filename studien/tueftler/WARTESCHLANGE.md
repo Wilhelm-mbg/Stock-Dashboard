@@ -3,10 +3,26 @@
 Entwürfe, die auf Messung durch die Mess-Kette warten. Der Tüftler trägt ein,
 der Projekt-Manager verteilt, die Mess-Kette streicht nach der Messung.
 
-**Offen: 2 Entwürfe, 0 Auftragsvorschläge** (beide Vorschläge sind am 26.08. 09:00 von
-Wilhelm freigegeben und stehen jetzt auf der Tafel unter „Aufträge").
+**Offen: 2 Entwürfe, 1 Auftragsvorschlag** (Vorschlag **C**, neu am 26.08. 18:20; die
+beiden älteren Vorschläge sind am 26.08. 09:00 von Wilhelm freigegeben und stehen jetzt
+auf der Tafel unter „Aufträge").
 (Bei 3 oder mehr offenen Entwürfen arbeitet der Tüftler nachts am Datenbestand
 statt zu entwerfen. Beim nächsten Lauf ist der Stand **2** — noch kein Stau, aber knapp.)
+
+**⚠ Neu am 26.08. 18:20 — eine Einschränkung, die BEIDE Entwürfe unten betrifft.**
+Das große Archiv enthält ausschließlich Werte, die es heute noch gibt. Gezählt im dritten
+Lauf des Tages (`studien/tueftler/2026-08-26-nacht3-ueberlebensluecke.md`): über das
+Bestätigungsfenster 2008–2026 fehlen **mindestens 12,7 % des Querschnitts**, steigend von
+~8 % (2008) auf ~20 % (2023) — und zwar ausschließlich Werte, die es nicht geschafft
+haben. Für 1986–2004 ist die Lücke nicht einmal diagnostizierbar (die Quelle führt keine
+Delistings vor dem 29.06.2004).
+**Die Lücke ist mit den vorhandenen Mitteln nicht zu schließen** (Yahoo: 1 von 46
+brauchbar; zweite Quelle: harte Zwei-Jahres-Grenze). → Vorschlag C unten.
+**Folge für die Messung: die Aussage „auf einem Universum ohne Rückschau gemessen" darf
+für keinen der beiden Entwürfe fallen.** Ob eine solche Lücke ein Übernacht-Querschnitts-
+signal in eine Richtung schiebt, ist eine Messfrage und ausdrücklich nicht vom Tüftler
+beantwortet — beim Momentum hing rund die Hälfte des Vorsprungs an 30 solchen Werten.
+Die Vorregistrierungen selbst bleiben unverändert.
 
 ---
 
@@ -136,12 +152,66 @@ Hier bleibt nur der Verweis:*
 - **B. Auktionskosten am Demo-Konto messen** — freigegeben. Solange offen, steht unter
   jeder Netto-Aussage beider Entwürfe ein Vorbehalt.
 
-Der Tüftler hat in diesem Lauf **keinen neuen Auftragsvorschlag** erzeugt — der neue
-Kandidat kommt mit denselben Vorbedingungen aus.
+Der Tüftler hat im **zweiten** Lauf des Tages keinen neuen Auftragsvorschlag erzeugt — der
+Kandidat `nachtstoss-umkehr` kommt mit denselben Vorbedingungen aus.
+
+### C. Die Überlebenslücke — Entscheidung nötig, kein Bauauftrag *(neu 26.08. 18:20)*
+
+**Das ist eine Frage an Wilhelm, keine an eine Bausitzung.** Sie kostet Geld oder sie
+bleibt offen; beides ist vertretbar, aber es sollte bewusst entschieden werden.
+
+**Lage, gezählt statt geschätzt** (Belege im Nachtprotokoll, Werkzeuge unter
+`studien/tueftler/werkzeug/`):
+
+| Frage | Antwort |
+|---|---|
+| Wie groß ist die Lücke? | **≥ 12,7 %** des Querschnitts über 2008–2026, nur Nicht-Überlebende; ≥ 20 % in 2023 |
+| Liefert Yahoo die Verschwundenen? | **1 von 46.** In 7 von 46 Fällen kommt stattdessen ein Fonds unter demselben Kürzel |
+| Wie weit reicht die zweite Quelle? | **genau zwei Jahre**, auf den Tag (2024-08-25 → 403, 2024-08-27 → 200) |
+| Wie viele Verschwundene haben Kurse? | 1.164 von 6.896 — und die reichen nur bis 2024-08-23 zurück |
+| Wie weit zurück ist die Lücke überhaupt diagnostizierbar? | bis **29.06.2004**. Davor führt die Quelle nichts |
+
+**Die drei Wege, ohne Empfehlung zur Höhe:**
+
+1. **Bezahlte Stufe mit längerer Historie.** Der einzige Weg, den die Zahlen offenlassen.
+   Was er kostet und was er wirklich hergibt, ist nicht geprüft — das wäre der erste
+   Schritt, falls Wilhelm die Richtung überhaupt will.
+2. **Lücke offen lassen und mitschreiben.** Kostet nichts. Preis: jede Aussage auf
+   `archiv1d` trägt dauerhaft den Vorbehalt, dass 12,7 % Nicht-Überlebende fehlen.
+3. **Auf den beschafften 1.164 die Richtung der Verzerrung messen** — für den Zeitraum ab
+   2024-08 liegen Kurse von Verschwundenen bereits vor. Das beantwortet die Lücke nicht,
+   aber es beantwortet, **ob sie das Vorzeichen dreht**. Ist die Verzerrung dort klein,
+   verliert der Vorbehalt an Gewicht; ist sie groß, ist Weg 1 keine Geldfrage mehr.
+   **Das ist ein Mess-, kein Tüftler-Auftrag** — und der billigste der drei.
+
+**Der Tüftler rät zu 3 vor 1**, weil sonst über eine Ausgabe entschieden wird, deren
+Nutzen ungemessen ist. Zwei Jahre sind ein kurzes Fenster; ob sie für ein Urteil reichen,
+gehört vor dem Lauf ausgerechnet, nicht danach.
 
 ---
 
 ## Hinweise an andere Rollen (keine Aufträge)
+
+- **Neu, 26.08. 18:20 — `massive-tagesdaten.js` holt neun Monate weniger, als es glaubt.**
+  Das Werkzeug fragt fest ab `2023-11-13` an (`tools/massive-tagesdaten.js:29`), die
+  früheste erste Kerze im gesamten Bestand ist aber **2024-08-23**. Bei einem Zeitraum,
+  der die Zwei-Jahres-Grenze überlappt, antwortet die Schnittstelle **nicht** mit 403,
+  sondern mit stillschweigend abgeschnittenen Daten — ohne Warnung, ohne Vermerk in der
+  Datei. Wer die 1.164 Dateien liest, hält sie für länger, als sie sind. *(Liegt außerhalb
+  meiner Rolle: Code der Werkzeuge ändere ich nicht.)*
+- **Neu, 26.08. 18:20 — die Verschwundenen-Liste hat falsche Positive am jüngsten Rand.**
+  `AVB`, `EQR`, `LBRDA`, `LBRDK`, `WBS` stehen mit Delisting-Datum 18.–21.08.2026 in
+  `massive/verschwundene.json` — **alle fünf handeln heute an ihrer Heimatbörse**
+  (Gegenprobe bei Yahoo, 26.08.). Von 33 August-Delistings sind mindestens 5 falsch
+  (15 %, untere Schranke). Wer die Liste als Ausschlussliste verwendet, wirft AvalonBay
+  und Equity Residential aus dem Universum. **Regel: Delistings der letzten ~30 Tage vor
+  dem Listenstand sind unbestätigt und gehören gegengeprüft.**
+- **Neu, 26.08. 18:20 — Fehlerkatalog, Beschaffungsfehler:** *„Die Quelle hat geantwortet"
+  ist kein Beleg dafür, dass sie den gesuchten Wert hat.* Sieben von acht Yahoo-Antworten
+  auf delistete Kürzel waren Fonds (`instrumentType: MUTUALFUND`, Pseudo-Börse `YHD`,
+  Währung `null`) — nicht das Unternehmen. Prüfe den Instrumententyp, nicht die
+  Kerzenzahl; beides steht in derselben Antwort. Verwandt mit „zwei Quellen in einer
+  Reihe", nur schlimmer: hier stimmt nicht einmal die Anlageklasse.
 
 - **Neu, 26.08. 08:48 — Fehlerkatalog, Entwurfsfehler:** *Ein Signal, das einen Kurs mit
   seiner Zielgröße teilt, erzeugt über die Spannen-Umkehr einen Scheineffekt in der

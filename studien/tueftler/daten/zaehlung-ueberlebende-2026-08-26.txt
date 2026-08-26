@@ -1,0 +1,53 @@
+== ARCHIV ==
+  archiv1d Symbole:             2965
+== VERSCHWUNDENE (massive, Stand 2026-08-23) ==
+  Eintraege:                    6921
+  eindeutige Kuerzel:           6896
+  davon mit Delisting-Datum:    6682
+  davon mit Listing-Datum:      0   <- deshalb nur untere Schranken unten
+  Delisting-Daten reichen von:  2004-06-29 bis 2026-08-21
+  ==> Vor 2004-06-29 fuehrt die Quelle NICHTS. Fuer 1986-2004 ist die
+      Luecke nicht einmal diagnostizierbar, geschweige denn zu fuellen.
+== SCHNITTMENGE ==
+  Kuerzel in beiden Listen:     5   (Obergrenze; Kuerzel werden neu vergeben)
+  AVB/2026-08-18  EQR/2026-08-18  LBRDA/2026-08-21  LBRDK/2026-08-21  WBS/2026-08-20
+
+== UNTERE SCHRANKE DER LUECKE JE JAHR ==
+  Nur Werte, die IN dem Jahr verschwanden - die handelten in dem Jahr
+  mit Sicherheit und fehlen im Archiv mit Sicherheit.
+
+  Jahr | Archiv (hochger.) | verschwand in dem Jahr | Anteil am Querschnitt
+  2004 |              1245 |                     38 |   3.0 %
+  2005 |              1308 |                     80 |   5.8 %
+  2006 |              1420 |                    101 |   6.6 %
+  2007 |              1496 |                    142 |   8.7 %
+  2008 |              1552 |                    134 |   7.9 %
+  2009 |              1601 |                    205 |  11.4 %
+  2010 |              1692 |                    149 |   8.1 %
+  2011 |              1769 |                    107 |   5.7 %
+  2012 |              1853 |                    150 |   7.5 %
+  2013 |              1916 |                    158 |   7.6 %
+  2014 |              2007 |                    140 |   6.5 %
+  2015 |              2091 |                    159 |   7.1 %
+  2016 |              2140 |                    232 |   9.8 %
+  2017 |              2224 |                    374 |  14.4 %
+  2018 |              2343 |                    368 |  13.6 %
+  2019 |              2427 |                    394 |  14.0 %
+  2020 |              2573 |                    363 |  12.4 %
+  2021 |              2748 |                    506 |  15.6 %
+  2022 |              2867 |                    562 |  16.4 %
+  2023 |              2930 |                    740 |  20.2 %
+  2024 |              2965 |                    609 |  17.0 %
+  2025 |              2965 |                    550 |  15.6 %
+  2026 |              2965 |                    421 |  12.4 %
+
+  Bestaetigungsfenster der offenen Entwuerfe (2008-2026):
+    Summe der Jahres-Delistings: 6321
+    Summe der Archiv-Jahre:      43628
+    ==> im Mittel fehlen mindestens 12.7 % des Querschnitts,
+        und zwar ausschliesslich Werte, die es nicht geschafft haben.
+
+== BESCHAFFT ==
+  Tagesdaten-Dateien:           1164
+  davon in der Verschwundenen-Liste: 1164
+  Verschwundene noch ohne Kurse:     5732
