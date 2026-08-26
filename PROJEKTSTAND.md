@@ -82,6 +82,19 @@ Umbau**. Danach tragen die Protokolle einen echten Stand statt „unbekannt" (26
 Protokolle stehen heute ohne Kennung da). **Erst danach neue Untersuchungen.**
 Zugeteilt an **App-Codebase Master**.
 
+**Korrektur 26.08. (Master, vom PM nachgeprueft): „alle zwoelf" stimmte zufaellig,
+die Zusammensetzung nicht.** Im Repo liegen 14 Dateien, davon sind **elf** Strategien —
+`tageshilfen.js`, `test-tageshilfen.js` und `wertpapierart.js` sind Hilfen.
+`wertpapierart.js` ist der Universumsfilter; die Maschine hat sie **von sich aus
+verweigert** (Exit 3, kein Protokoll geschrieben) — die Sperrklinke gegen „Strategie ohne
+Begruendung" hat im Feld gehalten, der Lauf ist unberuehrt.
+**Die zwoelfte liegt gar nicht im Repo:** `monatsende-kauf.js` steht unter
+`<Downloads>/Markt-Dashboard-Daten/strategien/` — das ist, was der Baukasten IN der App
+schreibt. `main.js:708-709` kennt beide Orte ausdruecklich und sagt sogar, welcher welcher
+ist; der Laeufer kannte nur einen. **Es sind also elf aus dem Repo + eine aus dem
+Datenordner.** Ohne den Fund waeren es elf gewesen und niemandem aufgefallen, weil die
+Zahl gestimmt haette. Vom Master selbst gefunden, vom PM in beiden Ordnern nachgesehen.
+
 **Zwischenstand 09:15, vom PM aus den Dateien nachgezählt (nicht übernommen):**
 5 von 12 geschrieben, ~5 Min. je Strategie. Alle fünf tragen **dieselbe** Maschine
 (1.2.0) und **denselben `codeStand` `6a7d9e29db6f`** — die Sperre auf `messmaschine.js`
@@ -342,6 +355,19 @@ Werkzeugs sollte es jemand wissen, der sich auf die Weigerung verlaesst.
 
 *Wer welche Dateien belegt. Trag dich ein, bevor du anfängst; nimm dich raus, wenn du
 fertig bist.*
+
+- **App-Codebase Master** — **(1a)+(2b) sind fertig, noch nicht committet** (er wartet den
+  Lauf ab, damit ein Commit reicht). Die Anzeige nimmt jetzt `bestesUrteil` und die
+  Variante, die dieses Urteil traegt; fehlt dazu eine brauchbare Zahl je Signal, steht das
+  Urteil **ohne Zahl** da statt mit einer aus einer fremden Variante. (2b) ist ein Hinweis,
+  kein Eingriff — der Ausloeser bleibt waehlbar.
+  **Er nimmt anschliessend den Depotkurven-Auftrag (B2)** — dieselbe Datei, deshalb er.
+  Dazu ein Fund aus seinem eigenen Gegenprobieren, der hierher gehoert: sein erster
+  Widerlegungsversuch liess den Test **abstuerzen**, und sein zu enger Grep las den
+  Absturz als „bestanden". Ursache war eine Endmarke, die nach der Aenderung zweimal
+  vorkam. Er prueft seither den Exit-Code statt nur die Textzeile und hat die
+  Eindeutigkeit der Marke zur eigenen Zusicherung gemacht. **Das ist die Testmarken-Falle
+  in neuer Gestalt** — nicht die Marke wurde rot, sondern gruen aus dem falschen Grund.
 
 - **App-Codebase Master** — hat die **Neumessung aller zwölf Strategien** genommen
   (26.08., vom PM zugeteilt). Langer Rechenlauf, KEIN Umbau — es wird kein Quelltext
