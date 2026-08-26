@@ -24,8 +24,11 @@ Umlauf) bräuchte rund **8.770 Bestätigungs-Signaltage — 35 Jahre**. Das Tage
 5.038 in der Bestätigungshälfte. Nicht mit einer besseren Methode, nicht mit einem
 besseren Detektor: **nie.**
 
-Sieben der zwölf liegen jenseits von 12.000 Handelstagen. Sie sind mit diesem
-Datenbestand unerreichbar, egal wie lange gewartet wird.
+**Fünf** der zwölf liegen jenseits von 12.000 Handelstagen — unerreichbar mit diesem
+Datenbestand, egal wie lange gewartet wird. **Zwei weitere haben GAR KEINE Aussicht**
+(`winkelbestaetigt`, `winkelgrad`): ihr Überschuss ist in allen zehn Varianten negativ.
+Sie sind nicht zu weit weg, sie zeigen in die Gegenrichtung — ein anderer Sachverhalt.
+*(Richtigstellung 26.08. 20:40: hier stand „sieben", der PM hatte beides in eine Zahl geworfen.)*
 
 ### Was das NICHT heißt
 

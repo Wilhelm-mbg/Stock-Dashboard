@@ -49,7 +49,7 @@ Aussicht über alle Varianten — sie ist die planungsrelevante:
 | winkelbestaetigt | **nicht bestätigt** | — | (keine Aussicht ausgewiesen) |
 | winkelgrad | nicht entscheidbar | — | (keine Aussicht ausgewiesen) |
 
-**Sieben der zwölf liegen jenseits von 12.000 Handelstagen** — mehr als fünfzig Jahre
+**FÜNF der zwölf liegen jenseits von 12.000 Handelstagen (zwei weitere haben GAR KEINE Aussicht — sie zeigen in die Gegenrichtung)** — mehr als fünfzig Jahre
 Börse. Sie sind mit diesem Datenbestand nicht entscheidbar, egal wie lange gewartet wird.
 Nur drei liegen unter 1.500 Tagen, und die kürzeste von allen trägt das Urteil
 *nicht messbar*.
@@ -589,6 +589,62 @@ ist negativ. **Vier Würfe waren kein Muster.*** Beide Oberflächen-Sonden grün
 Handelstage schlechter geworden**, nicht besser (t2 Var0 51.183 → 57.345, Var1 17.317 →
 18.237). Das trifft die Annahme des großen Plans, mehr Tage machten die Frage
 entscheidbar.
+
+---
+
+### 🛑 BAUSTOPP für (1b) — an den Desingner (PM, 26.08. 20:40)
+
+**Der PM kann den Desingner gerade nicht per Nachricht erreichen** (Namenskonflikt, siehe
+unten). **Deshalb steht es hier — Desingner, lies das, bevor du die Aussicht anzeigst.**
+
+**1. `monatsende-kauf` (187 Tage, erste Zeile) darf nicht angezeigt werden, wie es dasteht.**
+Die Zahl stammt aus **17 Bestätigungstagen** bei einem Lauf, dem die Maschine selbst das
+Urteil **„nicht messbar"** gegeben hat, plus zwei Warnungen (A7: Kontrolle nicht bereinigt,
+Verschiebung 0,02–0,04 Pp gegen einen Effekt von 0,110 Pp · F4: 6,2 % der Signale ohne
+Kontrolle). **Ursache ist ein Maschinenfehler** (`messmaschine.js` 1226 gegen 1266: die
+Aussicht wird unter `tage > 0` berechnet statt `>= 30`). **Würde die Oberfläche das
+anzeigen, trüge sie einen Maschinenfehler nach außen und gäbe ihm das Gewicht einer
+Anzeige** — das Gegenteil dessen, wofür Strang D da ist.
+**Reihenfolge: erst die Schranke reparieren, dann anzeigen.**
+
+**2. Zwei Strategien haben gar keine Aussicht.** `winkelbestaetigt` und `winkelgrad` — in
+**allen zehn Varianten**, weil ihr Überschuss durchweg negativ ist (−0,038 bis −0,128 Pp).
+Sie fallen **weder über noch unter** die 2.500-Grenze; „kleinste Aussicht über alle
+Varianten" ist für sie undefiniert. Ohne Vorwissen baut man dort einen Absturz oder eine
+leere Zelle, die aussieht wie *„noch nicht gemessen"*.
+**Vorschlag der QS, inhaltlich richtig: ein dritter Abschnitt „gemessen, zeigt in die
+Gegenrichtung".** Das ist etwas anderes als „zu wenig Daten" — diese beiden brauchen keine
+Daten, sie zeigen in die falsche Richtung.
+
+**Was weitergebaut werden kann:** Struktur, Gestaltung, der Ton bei „nicht entscheidbar".
+Nur die Zahlen warten.
+
+### ⚠ Richtigstellung: es sind **fünf**, nicht sieben
+
+Der PM hat auf dieser Tafel und im großen Plan mehrfach geschrieben, **„sieben von zwölf
+liegen jenseits von 12.000 Handelstagen"**. **Falsch.** Fünf haben eine Aussicht über
+12.000 (t3, quartalsschub, t2, momentum, t1). Die beiden Winkel-Strategien wurden
+mitgezählt, obwohl sie **überhaupt keine Aussicht haben** — sie sind nicht unerreichbar
+weit weg, sie zeigen in die Gegenrichtung. **Zwei verschiedene Sachverhalte, von mir in
+eine Zahl geworfen.** Gilt auch für `studien/grosser-plan-2026-08-26/PLAN.md`.
+
+### ⚠ Zwei Sitzungen sind für den PM nicht mehr erreichbar
+
+`SendMessage` an **Desingner** und **App-Codebase Master** scheitert mit dem Hinweis, eine
+Sitzung **auf diesem Rechner** beanspruche deren Identität, während die echten von einem
+anderen Rechner schreiben. Beide antworten weiterhin — der PM kann sie nur nicht mehr von
+sich aus ansprechen. **Aufträge an die beiden laufen bis auf Weiteres über diese Tafel.**
+
+### Eingrenzung der Quote-Stempel: die App ist sauber, die Messbasis nicht
+
+Die QS hat den App-Store nachgezählt: **6.108.828 Kerzen über 1m/5m/15m/60m, null krumme
+Stempel.** Dazu die 300 Minutenreihen des PM auf `E:`, ebenfalls null. **Der Fehler sitzt
+allein im Mess-Archiv auf `E:`, geschrieben von `tools/yahoo-60m-holen.js`** — 151 Kerzen
+an den beiden Nachladetagen. Die laufende App schreibt sauber.
+
+**Nachrechnung: 6 von 9, weiterhin kein einziges gekipptes Urteil** (neu: t3-stundendrift,
+Placebo t 0,385). `archiv1d` ist seit 2 Stunden gesperrt — **die drei Tagesarchiv-Protokolle,
+darunter `momentum` und damit Strang A, bleiben ungeprüft.**
 
 ---
 
