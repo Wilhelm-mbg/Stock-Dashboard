@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-26 09:15
+letzter-bericht: 2026-08-26 09:30
 gesehener-tag: v8.33.2
 -->
 
@@ -87,21 +87,37 @@ Zugeteilt an **App-Codebase Master**.
 (1.2.0) und **denselben `codeStand` `6a7d9e29db6f`** — die Sperre auf `messmaschine.js`
 hält also nachweislich. Der Master prüft das am Ende über alle zwölf noch einmal selbst.
 
-| Strategie | Urteil | `tage80` |
-|---|---|---|
-| kapitulation | nicht entscheidbar | 1.551 |
-| monatswende-breit | nicht entscheidbar | 3.942 |
-| rsi2seit | nicht entscheidbar | 4.116 |
-| quartalsschub-betrag | nicht entscheidbar | 13.257 |
-| momentum | nicht entscheidbar | 52.578 |
+**Die erste Fassung dieser Tabelle war falsch und ist am 26.08. 09:30 ersetzt worden.**
+Sie las je Protokoll die **erste Variante** statt `bestesUrteil` und zeigte nur deren
+`tage80`. Der Master hat es bemerkt, der PM hat es in den Dateien nachgeprüft und
+übernimmt seinen Vorschlag: **`bestesUrteil` und die kleinste Aussicht über alle
+Varianten** — die kleinste ist die planungsrelevante.
+
+| Strategie | `bestesUrteil` | kleinste Aussicht | alle Varianten (Tage) |
+|---|---|---|---|
+| kapitulation | **nicht-bestaetigt** | **224** | 1.551 · 2.330 · **224** |
+| monatswende-breit | nicht-entscheidbar | 3.803 | 3.942 · 3.803 |
+| rsi2seit | nicht-entscheidbar | 4.116 | 4.116 |
+| quartalsschub-betrag | nicht-entscheidbar | 13.257 | 13.257 · 19.416 |
+| momentum | nicht-entscheidbar | 33.683 | 52.578 · 157.689 · 33.683 · 562.398 |
 
 Das ist die **Auflösungswand erstmals in Zahlen** — genau die Spalte, die bis gestern in
-jedem Protokoll auf `null` stand (#86). Fünf von fünf „nicht entscheidbar" ist kein
-schlechtes Ergebnis, sondern das erste ehrliche.
+jedem Protokoll auf `null` stand (#86).
+
+**Die eine Zahl, die heraussticht: 224 Tage** (kapitulation, dritte Variante). Knapp ein
+Handelsjahr — die einzige Aussicht des bisherigen Laufs, die überhaupt in Reichweite
+liegt. Am anderen Ende steht momentums vierte Variante mit **562.398 Tagen**, gut
+zweitausend Jahre. Beides verschwindet, wenn man je Protokoll nur eine Variante zeigt.
 
 **Sprachregelung, weil dieses Projekt genau daran schon einmal Geld verloren hat:**
-„nicht entscheidbar" ist **nicht** dasselbe wie „nicht bestätigt". Ersteres heißt: das
-Lineal ist zu grob. In den Berichten bitte die Formulierung des Protokolls verwenden.
+„nicht entscheidbar" (*das Lineal ist zu grob*) ist **nicht** dasselbe wie
+„nicht bestätigt" (*gemessen und nicht getragen*). In Berichten die Formulierung des
+Protokolls verwenden — und `bestesUrteil` lesen, nicht die erste Variante.
+
+**Für die Sitzung, die den `ausstieg`-Schalter baut:** der Name `ausstieg` ist im
+Protokoll bereits belegt — er beschreibt dort, *wie* ausgestiegen wurde
+(`{art: 'Zeit', mittlereKerzen: 26}`). Der neue Konfigurationsschalter darf damit nicht
+kollidieren.
 
 ### FREI — `ausstieg`-Schalter in der Messmaschine (Wilhelm 26.08. 09:00, Antwort 2a)
 
