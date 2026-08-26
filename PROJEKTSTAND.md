@@ -186,9 +186,17 @@ Teil I sagt „5 von 25 / 13 von 25", richtig sind **5 von 35 / 23 von 35**. Als
 5. **Die zwei Datenfunde sind unbehoben** (Phantom-Dochte an sieben US-Halbtagen; der
    25.08. im 60m-Archiv). Sie blockieren nach Wilhelms Entscheid *sowohl* das Release
    *als auch* Strang A. **Ich sehe keine Sitzung, die daran arbeitet.**
-6. **`tools/massive-tagesdaten.js:29`** fragt ab 2023-11-13 an, während die früheste
-   Kerze vom 2024-08-23 ist — die Quelle kürzt still.
-7. **Drei nachweislich falsche Delistings** in `massive/verschwundene.json`: AVB, EQR, WBS.
+6. ~~**`tools/massive-tagesdaten.js:29`** fragt ab 2023-11-13 an, während die früheste
+   Kerze vom 2024-08-23 ist — die Quelle kürzt still.~~ **URSACHE GEKLÄRT 27.08. ~02:10**
+   (`markt-dashboard-1d`): **Die Quelle liefert ein rollendes 730-Tage-Fenster.** Gemessen
+   ohne einen einzigen Abruf, an den 1.164 vorhandenen Reihen: Abruf am 23.08. → früheste
+   Kerze 2024-08-23 (**exakt 730 Tage**), Abruf am 25.08. → 2024-08-26 (davor Wochenende);
+   889 Reihen beginnen am selben Tag. **Die Anfrage ist nicht falsch gestellt — die Quelle
+   gibt nicht mehr her, und die Mauer wandert täglich mit.** Offen bleibt nur die Ansage im
+   Werkzeug (wird gebaut), damit die Kürzung nicht mehr still passiert.
+7. ~~**Drei nachweislich falsche Delistings** in `massive/verschwundene.json`: AVB, EQR,
+   WBS.~~ **🔴 WIDERLEGT 27.08. ~02:10 — DIESES WARNSIGNAL WAR SELBST DER FEHLER.**
+   Siehe eigener Abschnitt unter „Aufträge".
 
 ### Was liegen geblieben ist
 
@@ -1829,6 +1837,45 @@ unbrauchbar. **Und `zusammenfuehren()` löscht nie** — ein späterer Nachlade-
 entfernte Kerzen zurück; eine Reparatur, die das nicht mitbedenkt, ist eine Momentaufnahme.
 *Fallstricke im Raster: der `etf/`-Unterordner (SPY/QQQ/IWM/VOO/TLT/GLD), das Raster ist
 `:30` nicht `:00`, Tage ohne Vergleichsspanne sind nicht entscheidbar.*
+
+### 🔴 27.08. ~02:10 — Warnsignal 7 ist WIDERLEGT: die „falschen Delistings" sind echt
+
+**`markt-dashboard-1d`, Befund `fb237d5`, `studien/verschwundene-pruefung-2026-08-27/`.
+Nichts geändert, nichts gelöscht — geprüft und zurückgemeldet.**
+
+**Es sind fünf, nicht drei** (dazu LBRDA und LBRDK), und die SEC entscheidet es eindeutig:
+
+| | `25-NSE` (formale Abmeldung) | 8-K Item 2.01 (Übernahme vollzogen) | `massive` sagt |
+|---|---|---|---|
+| AVB | 2026-08-17 | 2026-08-17 | 2026-08-18 |
+| EQR | 2026-08-17 | 2026-08-17 | 2026-08-18 |
+| WBS | 2026-08-20 | 2026-08-20 | 2026-08-20 |
+| LBRDA/LBRDK | 2026-08-20 | 2026-08-21 | 2026-08-21 |
+
+**`massive` meldet auf einen Tag genau. Die Liste war die ganze Zeit richtig.**
+
+**⚠ WAS EINE „REPARATUR" ANGERICHTET HÄTTE:** Fünf tote Ticker wären zurück ins lebende
+Universum gewandert. Ein delisteter Wert fällt bei jeder künftigen Messung **still aus dem
+Zähler und steht weiter im Nenner** — die Überlebensverzerrung wäre nicht kleiner geworden,
+**sondern unsichtbar.** Der Auftrag hätte den Schaden erzeugt, den er beheben sollte.
+
+**Die Positivkontrolle hat das Ergebnis gerettet — sie gehört in die Sammlung dieser Nacht:**
+**KO hat ebenfalls ein `25-NSE`** (08.03.2024) **und handelt täglich mit 17 Mio Umsatz.**
+Eine Firma meldet einzelne Wertpapiere ab, während die Stammaktie weiterläuft. Ohne diesen
+Kontrollwert hätte „25-NSE gefunden" als Beleg gegolten und die Regel wäre allgemein falsch
+gewesen. **Erst die Kombination trennt: 25-NSE UND Item 2.01 am selben Tag UND
+zusammenbrechender Umsatz.**
+
+**Nebenbefund, schließt eine offene Frage:** Die fünf sind genau die Nachzügler, die der
+Archiv-Wachhund am 26.08. gemeldet hat. **Kein Abruffehler — sie sind delistet.** Der
+sechste, **TWO**, ist ein anderer Fall (kein Delisting-Datum, 19 Mio Umsatz am 24.08.) und
+bleibt offen.
+
+**→ Daraus folgt eine UNIVERSUMS-ENTSCHEIDUNG für Wilhelm, keine Reparatur** (steht auf der
+Morgenliste): Sollen die fünf **mit ihrem Delisting-Datum markiert** werden, damit Messungen
+sie ab dem 18./20./21.08. nicht mehr als handelnd führen? Richtungsmäßig verringert das die
+Überlebensverzerrung, aber es ändert das Universum jeder Messung — deshalb nicht vom PM
+entschieden.
 
 ### 🎯 27.08. ~01:55 — die Strang-A-Frage ist jetzt SCHARF: nicht Dochte, sondern Schlusskurse
 
