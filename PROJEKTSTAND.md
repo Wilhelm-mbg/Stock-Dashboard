@@ -203,6 +203,42 @@ worauf es ankommt.* Hier prüft er das Absenden, nicht das Ankommen.
   Deshalb bleibt sie Pflicht, auch wenn die Nachricht bequemer ist.
 - Ist eine Sitzung taub, hilft nur ein Anstoß durch Wilhelm in ihrem Fenster.
 
+### 🔴 26.08. 23:25 — die Ursache ist gefunden, **und der PM-Chat bleibt trotzdem taub**
+
+**Wilhelm hat die Ursache gefunden, nicht der PM:** Der alte Projekt-Manager hatte sich
+per `set_session_title` ebenfalls **„Projekt-Manager"** genannt. Es gab also **zwei
+Sitzungen mit identischem Namen**, und jede Nachricht an diesen Namen ging an ihn — in
+beide Richtungen. Deshalb blieb es beidseitig still, während beide Seiten „Erfolg"
+gemeldet bekamen.
+
+**Belegt an der Erfolgsmeldung selbst** (Beobachtung des Desingners): Vor dem Löschen
+trug sie den Zusatz *„a Remote Control or cloud session also named 'Projekt-Manager' is
+registered to a session on this machine"*. **Nach dem Löschen ist dieser Zusatz weg** und
+die Ref `[39e5a9]` wird ohne Rückfrage angenommen. Die Adressierung ist damit sauber.
+
+**Aber die Testnachricht kam trotzdem nicht an.** Gemessen um 23:25: Sendung erfolgreich
+mit `msg_id`, Empfang beim PM-Chat **null**. Seit 19:45 hat diese Sitzung **keine einzige**
+eingehende Nachricht erhalten — auch nicht die zwei angeforderten
+`notify_when_idle`-Bestätigungen. **Der Empfang dieser Sitzung ist defekt, unabhängig von
+der Namenskollision.**
+
+**Was daraus folgt — für morgen früh, damit niemand wieder zwei Stunden sucht:**
+
+1. **Ein frischer PM-Chat ist der Test.** Bekommt er Nachrichten, war es ein Defekt dieser
+   Sitzung. Bekommt er keine, liegt es tiefer und der Ablauf wird dauerhaft auf Dateien
+   gebaut.
+2. **Eine Routine wäre der falsche Schluss.** Der Chat ist die richtige Bauart — die
+   Routine lief nur sechsmal täglich, nachts nie, und hieß in der Agentenliste
+   `markt-dashboard-54`. Der Empfangsdefekt ist ein separater Fehler, kein Argument gegen
+   den Chat.
+3. **Nie zwei Sitzungen mit demselben Namen.** Wer sich umbenennt, prüft vorher, ob der
+   Name schon vergeben ist. Ein Doppelgänger ist schlimmer als ein kryptischer Name: Beim
+   kryptischen weiß man, dass man ihn nicht findet — beim Doppelgänger glaubt man, man
+   habe ihn gefunden.
+4. **Der Dateiweg hat den ganzen Abend getragen und alles Wichtige transportiert.** Die
+   Verzerrungsmessung, #80, #96 und der Strang-A-Entwurf sind **ohne eine einzige
+   zugestellte Nachricht** entstanden — über Übergabe-Dateien und diese Tafel.
+
 ---
 
 ### ⚠ Richtigstellung 26.08. 16:50 — **v8.33.4 IST ausgeliefert.** Der PM hat es falsch gemeldet
