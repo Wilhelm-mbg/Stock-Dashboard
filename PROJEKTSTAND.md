@@ -1878,7 +1878,110 @@ Dateien je Archiv — **990.509 Kerzen**):
 > dort richtig** über `minutenSeitOeffnung`/`sitzungsMinuten` (`population-60m.js`, nur
 > lesend, verweigert bei aktiver Sperre selbst). *Für 60m gilt seine Zahl, nicht meine.*
 
-### ⭐ 27.08. ~01:55 — die womöglich entscheidende Zahl, noch UNAUFGESCHLÜSSELT
+### 🏅 27.08. ~02:10 — der Prüfstand schlug die eigene Regel, und die QS drehte sie NICHT
+
+**Die stärkste Einzelentscheidung dieser Nacht.** Die QS hat Lauf 1 vorregistriert (`vorregistrierung/lauf1-strukturpruefung.md`, festgelegt **01:40, Sperre stand noch, keine Zahl bekannt**) und die Regel anschließend gegen einen eigenen Prüfstand mit vier erfundenen Tagen laufen lassen, deren Urteil vorher feststand.
+
+**Drei Urteile kamen wie geplant. Der vierte deckte eine echte Schwäche auf:** Der Kernanteil misst die Häufung **am Median**. Liegen 35 % der Reihen auf exakt demselben Docht und der Rest streut, fällt der Median *in den Rest*, der Kernanteil wird 2,5 %, und der Tag heißt „individuell" — **obwohl 35 % identischer Dochte über verschiedene Reihen genau die Quellfehler-Signatur wären, die gesucht wird.**
+
+> **Ihre Reaktion, wörtlich:** *„Ich habe die Regel NICHT geändert. Sie nachträglich zu drehen,
+> nachdem ich ihre Schwäche kenne, wäre dieselbe Bauform, die die Vorregistrierung verhindern
+> soll, nur eine Ebene höher."*
+
+Stattdessen läuft **eine zweite Zahl beschreibend mit, die nichts entscheidet**: der dichteste
+Kern *irgendwo*, nicht nur am Median. Am Prüffall trennt sie sauber (35,0 % gegen 5,0 %), was
+die Regel zusammenwirft. **Weicht sie am Tag des Laufs stark ab, wird das als Fund gemeldet —
+und das Urteil nicht gedreht.** Der Nachtrag steht datiert **unter** der ursprünglichen Regel,
+nicht an ihrer Stelle.
+
+**Die vorregistrierte Regel:** Kernanteil = Anteil der Dochte innerhalb ±0,05 Pp um den
+Tagesmedian (bindungsfrei; 0,05 Pp sind bei 100 $ fünf Cent, die Größenordnung einer
+Geld-Brief-Spanne). **Kontrolle als Sperrklinke:** dieselbe Kennzahl für die Kerzen **mit**
+Umsatz desselben Tages — *ohne sie misst ein hoher Kernanteil nur, dass an Halbtagen wenig
+passiert.* Kein Abstand zur Kontrolle → Befund **null**, egal wie hoch der Absolutwert.
+Je Tag: Kern > 50 % **und** ≥ 20 Pp über Kontrolle → strukturgleich; Kern < 20 % **oder**
+< 5 Pp Abstand → individuell; sonst unentschieden; unter 30 Kerzen nicht gewertet.
+Gesamt: **5 von 7** in eine Richtung entscheidet, sonst **GEMISCHT → an Wilhelm**; unter 4
+wertbare Tage → nicht messbar. *Ausgewiesen wird die Tabelle je Tag mit n, Median, Kern %,
+Kontrolle, Abstand und Urteil — nicht ein Urteilssatz.*
+
+**Die Populationstrennung ist in den Lauf eingebaut**, nicht nachträglich erwähnt: Er weist
+aus, wie viele P-WEG-Kerzen **vor, auf und nach** der letzten Umsatzkerze desselben Tages
+liegen (Sitzungsende aus den Daten, nicht aus einem Kalender). Überwiegt „nach", sind sie
+mutmaßlich echte Nachhandelskerzen — *und ein Docht außerhalb der Sitzungsspanne wäre dann
+gar kein Fehler.*
+
+### 🔬 27.08. ~02:10 — Mechanik-Beweis auf der Minutenstufe, härter als der AAPL-Fall
+
+Die 15m-gegen-5m-Stufe lief auf null klärbare Fälle. **Eine Stufe feiner trägt:** 5m-Kerzen
+mit Umsatz 0 gegen die fünf 1m-Kerzen darin, Überlappung 18.–26.08. **18 klärbare Fälle, in
+allen 18 dasselbe Ergebnis:**
+
+- **4 von 5** Minutenkerzen tragen Umsatz, zusammen **748.213 Stück**
+- die 5m-Spanne ist in **18 von 18** Fällen **exakt deckungsgleich** mit der der Minutenkerzen
+- alle 18 liegen **mitten in der Sitzung** (14:45–19:30 UTC), kein Nachhandel
+
+**Deckungsgleiche Spanne bei vorhandenem Minutenumsatz heißt: die Quelle hat richtig
+aggregiert und allein das Umsatzfeld verloren.** „Umsatz 0" ist eine Lücke in der Lieferung.
+
+**Und dieselbe Grenze wie beim AAPL-Fall, von der QS erneut ausdrücklich gezogen:** gemessen
+an Kerzen **innerhalb** des Bandes. Über P-WEG-Dochte **außerhalb** der Tagesspanne sagt das
+nichts. *Die Flach-Begründung ist damit zweifach widerlegt — die Kappen-Begründung ist damit
+nicht belegt.*
+
+### ✅ 27.08. ~02:05 — AUFGESCHLÜSSELT: die Normaltage trugen die Quote, die Halbtage sind ein Münzwurf
+
+**Volllauf über alle 2.916 Reihen (`markt-dashboard-1d`). Die Vermutung des PM trifft zu.**
+Die sieben Halbtage wurden **aus den Daten abgeleitet**, nicht aus einer Liste (Tage, deren
+letzter Umsatz-Eimer früher liegt als 19:30/20:30) — und es sind genau die sieben.
+
+| | Fälle | im Tagesbalken | davon **exakt auf** dem Extrem | **außerhalb** |
+|---|---|---|---|---|
+| **an den sieben Halbtagen** | 4.114 | 1.973 (**48,0 %**) | 1.263 | **2.141 (52,0 %)** |
+| an allen übrigen Tagen | 9.421 | 8.394 (**89,1 %**) | 6.842 | 1.027 (10,9 %) |
+| zusammen | 13.535 | 10.367 (76,6 %) | 8.105 | 3.168 (23,4 %) |
+
+**An Normaltagen tragen die Nullumsatz-Kerzen fast immer echte Extreme** — dort heißt
+„Umsatz 0" wirklich „Volumen nicht geliefert". **An den Halbtagen, dem eigentlichen
+Datenfund, liegt jeder zweite Docht außerhalb** und ist verdächtig.
+
+**„Innerhalb" könnte Zufall sein — „exakt auf dem Extrem" ist keiner:** 8.105 von 10.367
+(**78,2 %**) sitzen *genau auf* Tageshoch oder Tagestief, Toleranz `1e-9`, also
+Gleitkommavergleich ohne fachliche Toleranz.
+
+**Positivkontrolle bestanden — der Ursprungsfall fällt durch:**
+
+    AAPL 2025-07-03 17:00   Kerze  H 214,14  T 201,25
+                            Balken H 214,65  T 211,81   ->  AUSSERHALB
+
+*Ohne diese Kontrolle wäre „76 % sind echt" ein Befund ohne Nachweis, dass die Prüfung
+überhaupt etwas ablehnt.*
+
+**Die 3.168 außerhalb sind der 23,4-%-Rest — eine Menge, nicht zwei.**
+
+> **Der Selbstbefund von `1d`, und er ist der achte Fall derselben Form heute Nacht:**
+> *„Meine 76,4 % waren richtig gerechnet, aber sie beantworteten die Frage über alle Tage,
+> während der Fund die Halbtage meinte."* Eine richtige Zahl, die eine andere Frage
+> beantwortet als die gestellte — diesmal in der Aggregation.
+
+### 💡 Daraus ergibt sich eine dritte Option, die der PM Wilhelm empfiehlt
+
+**Das Tagesarchiv ist ein unabhängiger Schiedsrichter.** Ein Docht, der die Tagesspanne
+verlässt, ist **beweisbar falsch** — kein Kurs kann außerhalb des Tagesbandes gehandelt
+worden sein. Ein Docht innerhalb ist **nicht beweisbar falsch**.
+
+**Option (c): nur die beweisbar falschen anfassen.** Ziel wären die **2.141** Dochte an
+Halbtagen außerhalb des Balkens, oder — wenn man konsequent ist — alle **3.168** außerhalb.
+Alles andere bleibt unberührt.
+
+**Warum das der PM empfiehlt:** Es braucht Wilhelms Populationsentscheid **nicht abzuwarten**
+(auch echte Nachhandelskurse liegen im Tagesband, wenn das Tagesband sie enthält), es stützt
+sich auf eine **unabhängige zweite Quelle** statt auf eine Plausibilitätsannahme, und es
+lässt 10.367 Kerzen in Ruhe, die nach heutigem Stand echt sind.
+**Die Populationsfrage bleibt trotzdem zu entscheiden** — aber als Frage der
+Archiv-Einheitlichkeit, nicht als Vorbedingung einer Reparatur.
+
+### ⭐ 27.08. ~01:55 — die Anforderung der Aufschlüsselung (Vorgeschichte)
 
 **`markt-dashboard-1d` hat gegen die Tagesbalken gemessen: 76,4 % der „reparierbaren" Dochte
 sind ECHTE TAGESEXTREME.** Trägt das, ist die Reparatur nicht formfalsch, sondern
