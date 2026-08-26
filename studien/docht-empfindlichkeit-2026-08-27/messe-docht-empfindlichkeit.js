@@ -11,12 +11,18 @@
  *   Maschine 1.2.0 -> 1.5.0, Ausschluss) und ist nur nachrichtlicher Kontext.
  * - KEIN Kanten-Urteil. Reine Empfindlichkeitsmessung.
  *
- * MASSSTAB (vorab):
+ * MASSSTAB (vorab; Praezisierung 27.08. ~01:30 VOR dem Lauf, auf QS-Warnung):
  *   je Strategie, ueber alle Varianten, Block bestaetigung.ueberschuss:
- *   "hebt sich auf"        := kein Urteilswechsel A->B in irgendeiner Variante
+ *   "hebt sich auf"        := kein TRAGENDER Urteilswechsel A->B
  *                             UND |tagesmittel_B - tagesmittel_A| < delta80_A je Variante
- *   "hebt sich NICHT auf"  := mindestens ein Urteilswechsel A->B
+ *   "hebt sich NICHT auf"  := mindestens ein TRAGENDER Urteilswechsel A->B
  *                             ODER |Delta| >= delta80_A in irgendeiner Variante
+ *   TRAGEND heisst: der Wechsel geht mit |Delta| >= delta80_A der Variante einher ODER
+ *   der Abstand zur gewechselten Urteilsgrenze betrug in Arm A mehr als 0,01 Pp.
+ *   Grund (QS-Messung 27.08.): rsi2seit-mcp Var 3 kippt an 0,0001-Pp-Margen zweimal
+ *   am Tag in beide Richtungen - ein Etiketten-Wechsel dort ist Rauschen, kein Signal.
+ *   Reine Rand-Wechsel werden als "Randrauschen" berichtet, begruenden aber kein
+ *   "hebt sich nicht auf".
  *   Zusatz (Mechanik, nachrichtlich): Anteil Stop-Ausstiege je Arm, entfernte
  *   Kerzen je Reihe, Placebo-t beider Arme.
  *
@@ -106,25 +112,42 @@ function vergleich() {
     var pa = HIER + '/' + key + '-A.json', pb = HIER + '/' + key + '-B.json';
     if (!fs.existsSync(pa) || !fs.existsSync(pb)) { console.log(key + ': Laeufe fehlen'); return; }
     var A = JSON.parse(fs.readFileSync(pa, 'utf8')), B = JSON.parse(fs.readFileSync(pb, 'utf8'));
-    var wechsel = [], grosse = [], zeilen = [];
+    var schwelleA = (function () {
+      var e = (A.entscheidungen || []).filter(function (x) { return x.regel === 'B4 Bonferroni'; })[0];
+      return e ? e.ergebnis.schwelleT : 1.96;
+    })();
+    var wechsel = [], grosse = [], rand = [], zeilen = [];
     A.ergebnisse.forEach(function (ea, i) {
       var eb = B.ergebnisse[i]; if (!eb) return;
       var ua = urteilVon(A, i), ub = urteilVon(B, i);
       var ba = ea.bestaetigung.ueberschuss, bb = eb.bestaetigung.ueberschuss;
       var d = (bb.tagesmittel != null && ba.tagesmittel != null) ? bb.tagesmittel - ba.tagesmittel : null;
-      var w = ua && ub && ua.urteil !== ub.urteil;
       var g = d != null && ua && ua.delta80 != null && Math.abs(d) >= ua.delta80;
-      if (w) wechsel.push(i); if (g) grosse.push(i);
-      zeilen.push({ variante: i, urteilA: ua && ua.urteil, urteilB: ub && ub.urteil,
+      var w = ua && ub && ua.urteil !== ub.urteil;
+      /* TRAGEND (Praezisierung ~01:30): Abstand von Arm A zur naechsten Urteilsgrenze in Pp */
+      var marge = null;
+      if (w && ba.tagesmittel != null) {
+        var bMDE = ba.mde != null ? Math.abs(Math.abs(ba.tagesmittel) - ba.mde) : Infinity;
+        var seA = (ba.t && ba.tagesmittel) ? Math.abs(ba.tagesmittel / ba.t) : null;
+        var bT = seA != null ? Math.abs(Math.abs(ba.t) - schwelleA) * seA : Infinity;
+        marge = Math.min(bMDE, bT);
+      }
+      var tragend = w && (g || (marge != null && marge > 0.0001)); /* 0,01 Pp */
+      if (tragend) wechsel.push(i); else if (w) rand.push(i);
+      if (g) grosse.push(i);
+      zeilen.push({ variante: i, urteilA: ua && ua.urteil, urteilB: ub && ub.urteil, wechselTragend: !!tragend,
+        wechselRand: !!(w && !tragend), margeA: marge,
         tagesmittelA: ba.tagesmittel, tagesmittelB: bb.tagesmittel, delta: d, delta80A: ua && ua.delta80,
         tA: ba.t, tB: bb.t, signaleA: ba.signale, signaleB: bb.signale });
-      console.log(key + ' Var' + i + ': ' + (ua && ua.urteil) + ' -> ' + (ub && ub.urteil) + (w ? '  *** URTEILSWECHSEL ***' : '') +
+      console.log(key + ' Var' + i + ': ' + (ua && ua.urteil) + ' -> ' + (ub && ub.urteil) +
+        (tragend ? '  *** URTEILSWECHSEL (tragend) ***' : (w ? '  (Randrauschen, Marge ' + pp(marge) + ' Pp)' : '')) +
         '   Ueberschuss ' + pp(ba.tagesmittel) + ' -> ' + pp(bb.tagesmittel) + '  Delta ' + pp(d) +
         ' (delta80_A ' + pp(ua && ua.delta80) + (g ? '  *** GROSS ***' : '') + ')' +
         '   Signale ' + ba.signale + ' -> ' + bb.signale);
     });
     var urteilStrategie = (wechsel.length || grosse.length) ? 'hebt sich NICHT auf' : 'hebt sich auf';
     if (!wechsel.length && grosse.length) urteilStrategie += ' (Groesse, Urteile heute unberuehrt)';
+    if (rand.length) urteilStrategie += '   [Randrauschen-Wechsel ohne Wertung: Var ' + rand.join(',') + ']';
     console.log(key + ' => ' + urteilStrategie + '   Placebo t A ' + (A.placebo ? A.placebo.t.toFixed(2) : '-') +
       ' / B ' + (B.placebo ? B.placebo.t.toFixed(2) : '-') +
       '   Stop-Anteil A ' + (stopAnteil(A) != null ? (100 * stopAnteil(A)).toFixed(2) + ' %' : '-') +
