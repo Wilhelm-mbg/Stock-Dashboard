@@ -6919,8 +6919,57 @@ console.log('\n44) Oberflaeche nach Themen sortiert (Felix, Issue #68)');
    * aus dem Blick genommen, und die Summenzeile aus #83 haette keinen eindeutigen
    * Bezug mehr gehabt. Wer die Gruppierung zurueckwill, baut sie in der Tabelle. */
   var bu = fs.readFileSync(__dirname + '/bestandui.js', 'utf8');
-  ok(/<th>seit Jahresbeginn<\/th>/.test(bu) && /<th>Kurzfrist<\/th>/.test(bu),
+  /* Die Kopfzellen duerfen Attribute tragen - seit #93 haengt an den Zahlenspalten
+   * eine Klasse, damit Zahl und Einheit nicht auf zwei Zeilen brechen. Gemessen wird,
+   * dass die SPALTEN da sind, nicht wie ihr Markup geschrieben ist. */
+  ok(/<th[^>]*>seit Jahresbeginn<\/th>/.test(bu) && /<th[^>]*>Kurzfrist<\/th>/.test(bu),
      'Die Bestandstabelle traegt Signalstand UND Jahresentwicklung (#83)');
+
+  /* ---- #93/#94: deutsche Zahlen, rote Verluste, kein Umbruch (26.08.2026) ----
+   * Beides Regressionen aus 79a505b, also aus dem Umbau derselben Tabelle. Die Tabelle
+   * baute Zahlen und Farben von Hand, statt die Hausmittel aus app-shell.js zu benutzen:
+   * "309.90 $" statt "309,90 $", und ein Verlust trug dieselbe graue Farbe wie
+   * "es liegt hier nichts vor". */
+  var buOhneKomm = bu.replace(/\/\*[\s\S]*?\*\//g, ' ').replace(/(^|[^:])\/\/[^\n]*/g, '$1');
+  ok(buOhneKomm.indexOf('toFixed') === -1,
+     'Keine Zahl mehr von Hand formatiert - toFixed schreibt englisch (#94)');
+  ok(/U\.money\(/.test(buOhneKomm) && /U\.nf0\.format\(/.test(buOhneKomm),
+     'Geld und Stueckzahl kommen aus den Hausmitteln');
+  /* Die beiden Helfer werden AUSGEFUEHRT. Ein Muster im Text sagt, dass sie dastehen,
+   * nicht dass "-0,14" herauskommt und rot wird. */
+  var pkA = bu.indexOf('function prozentKlasse(v) {');
+  var pkE = bu.indexOf('\n  }\n', bu.indexOf('function prozentText(v, stellen) {'));
+  ok(pkA !== -1 && pkE > pkA, 'Die beiden Prozent-Helfer lassen sich herausloesen');
+  var pkFn = new Function('U', bu.slice(pkA, pkE + 4) +
+    '\nreturn { klasse: prozentKlasse, text: prozentText };');
+  var Ufake = { esc: function (x) { return x; }, signCls: function (v) { return v > 0 ? 'pos' : (v < 0 ? 'neg' : ''); } };
+  var PZ = pkFn(Ufake);
+  ok(PZ.text(-0.14, 2) === '-0,14 %', 'Deutsche Schreibweise mit Komma', PZ.text(-0.14, 2));
+  ok(PZ.text(0.9, 2) === '+0,90 %', 'Gewinn mit Vorzeichen und zwei Stellen', PZ.text(0.9, 2));
+  ok(PZ.text(12.3, 1) === '+12,3 %', 'und die Jahresspalte mit einer Stelle', PZ.text(12.3, 1));
+  /* Die Hausregel: rot fuer Verlust. Vorher war ALLES ausser Gewinn grau - ein Verlust
+   * sah damit aus wie eine fehlende Angabe. */
+  ok(PZ.klasse(-0.14) === 'neg', 'Verlust wird rot, nicht grau (#94 Teil 2)', PZ.klasse(-0.14));
+  ok(PZ.klasse(0.9) === 'pos', 'Gewinn bleibt gruen');
+  /* Genau null ist weder Gewinn noch Verlust - und "keine Angabe" ist etwas Drittes.
+   * Grau darf nur heissen "keine Auskunft", sonst faerbt die Tabelle eine Aussage,
+   * die sie gar nicht hat. */
+  ok(PZ.klasse(0) === '', 'Null ist weder gruen noch rot');
+  ok(PZ.klasse(null) === 'muted' && PZ.text(null, 2) === '–',
+     'Ohne Zahl steht ein Gedankenstrich und grau heisst "keine Auskunft"');
+  ok(PZ.klasse(Infinity) === 'muted', 'und eine unbrauchbare Zahl faerbt gar nichts ein');
+  /* #93: Zahl und Einheit bleiben zusammen. Bei 1000 px stand der Gesamtwert sonst als
+   * "15483" ueber "$" - zwei Zeilen fuer eine Zahl. */
+  ok(/#bestandTabelle td\.zahl \{[^}]*white-space: nowrap/.test(html),
+     'Zahlenspalten brechen nicht zwischen Zahl und Einheit um (#93)');
+  ok((buOhneKomm.match(/class="zahl/g) || []).length >= 8,
+     'und jede Zahlenspalte traegt die Klasse - Zeilen wie Summenzeile',
+     (buOhneKomm.match(/class="zahl/g) || []).length + ' Zellen');
+  /* up/muted bleiben den SIGNAL-Spalten vorbehalten. Zwei Bedeutungen auf einer Klasse
+   * waren der Ursprung von Teil 2: beim Umzug wurden "Signal/kein Signal" still zu
+   * "Gewinn/Verlust" umgedeutet. */
+  ok(/#bestandTabelle td\.up/.test(html) && /kurzText\(st\.kurz\)/.test(bu),
+     'Die Signalspalten behalten ihre eigene Faerbung - Signal ist nicht Gewinn');
 
   /* Die beiden Textfunktionen werden AUSGEFUEHRT: sie sind rein und ohne DOM-Zugriff.
    * Geprueft wird die Eigenschaft, auf der die ganze Gruppierung ruht - dass das

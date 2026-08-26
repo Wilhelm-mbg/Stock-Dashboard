@@ -563,6 +563,14 @@
      entfallen (#89), der Signalstand steht als zwei Spalten in der Tabelle. Ohne
      diesen Umzug waere die Faerbung still verschwunden - und mit ihr das "auf einen
      Blick sehen, wo etwas anliegt" aus Felix' Wunsch #71. */
+  /* Zahlenspalten: Zahl und Einheit gehoeren zusammen. Bei 1000 px brach sonst das
+     Dollarzeichen auf eine eigene Zeile - der Gesamtwert stand als "15483" ueber "$"
+     (#93). Rechtsbuendig und Ziffern gleicher Breite, wie in den uebrigen Tabellen. */
+  #bestandTabelle td.zahl { white-space: nowrap; text-align: right; font-variant-numeric: tabular-nums; }
+  #bestandTabelle th.zahl { text-align: right; }
+  /* up/muted faerben die beiden SIGNAL-Spalten: Signal / kein Signal. Fuer Geld und
+     Prozent gilt die Hausregel gruen/rot ueber .pos/.neg (#94) - zwei verschiedene
+     Bedeutungen, deshalb zwei verschiedene Klassen. */
   #bestandTabelle td.up { color: var(--up); font-weight: 600; }
   #bestandTabelle td.muted { color: var(--muted); }
   #bestandTabelle tr.summe td { border-top: 2px solid var(--kante); font-weight: 700; }

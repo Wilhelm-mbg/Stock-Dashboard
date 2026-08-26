@@ -72,6 +72,24 @@
   /** Die Uebersicht unter "Vermoegen -> Meine Papiere" (Felix, #71). Schlanker als die
    *  Karte auf "Heute": dort geht es um den Signalstand, hier um den Bestand - und hier
    *  steht auch das Uebernahme-Formular. */
+  /* PROZENTZAHLEN: deutsche Schreibweise und die Hausregel gruen/rot.
+   * Bis zum 26.08.2026 stand hier toFixed(2) - also "309.90 $" und "-0.14 %", waehrend
+   * dieselben Werte zwei Klicks entfernt als "309,90 $" und "-0,14 %" stehen (#94).
+   * Und die Farbe war gruen-oder-grau: ein Verlust trug damit dieselbe Farbe wie
+   * "es liegt hier nichts vor". Rot fuer Verlust ist die Hausregel der App.
+   * U.signCls gibt bei GENAU NULL eine leere Klasse - null ist kein Gewinn und kein
+   * Verlust. Nur wenn gar keine Zahl da ist, wird grau: dann steht auch nur ein
+   * Gedankenstrich da, und grau heisst hier "keine Auskunft", nicht "schlecht". */
+  function prozentKlasse(v) {
+    if (v == null || !isFinite(v)) return 'muted';
+    return U.signCls(v) || '';
+  }
+  function prozentText(v, stellen) {
+    if (v == null || !isFinite(v)) return '–';
+    var nf = new Intl.NumberFormat('de-DE', { minimumFractionDigits: stellen, maximumFractionDigits: stellen });
+    return U.esc((v > 0 ? '+' : '') + nf.format(v) + ' %');
+  }
+
   function zeichnenTabelle() {
     var kasten = el('bestandTabelle');
     if (!kasten || !B) return;
@@ -116,13 +134,11 @@
           'font-weight:700; color:var(--series); cursor:pointer; text-decoration:underline dotted;">' +
           U.esc(w.sym) + '</button>' +
           '<div style="color:var(--muted); font-size:var(--fs-klein);">' + U.esc(w.name) + '</div></td>' +
-        '<td>' + (w.stueck != null ? U.esc(w.stueck) : '–') + '</td>' +
-        '<td>' + (kurs ? U.esc(kurs.kurs.toFixed(2)) + ' $' : '–') + '</td>' +
-        '<td>' + (wert != null ? U.esc(Math.round(wert)) + ' $' : '–') + '</td>' +
-        '<td class="' + (kurs && kurs.pct != null && kurs.pct >= 0 ? 'up' : 'muted') + '">' +
-          (kurs && kurs.pct != null ? (kurs.pct >= 0 ? '+' : '') + U.esc(kurs.pct.toFixed(2)) + ' %' : '–') + '</td>' +
-        '<td class="' + (jPct != null && jPct >= 0 ? 'up' : 'muted') + '">' +
-          (jPct != null ? (jPct >= 0 ? '+' : '') + U.esc(jPct.toFixed(1)) + ' %' : '–') + '</td>' +
+        '<td class="zahl">' + (w.stueck != null ? U.esc(U.nf0.format(w.stueck)) : '–') + '</td>' +
+        '<td class="zahl">' + (kurs ? U.esc(U.money(kurs.kurs)) : '–') + '</td>' +
+        '<td class="zahl">' + (wert != null ? U.esc(U.money(wert)) : '–') + '</td>' +
+        '<td class="zahl ' + prozentKlasse(kurs && kurs.pct) + '">' + prozentText(kurs && kurs.pct, 2) + '</td>' +
+        '<td class="zahl ' + prozentKlasse(jPct) + '">' + prozentText(jPct, 1) + '</td>' +
         '<td class="' + k.cls + '">' + U.esc(k.txt) + '</td>' +
         '<td class="' + m.cls + '">' + U.esc(m.txt) + '</td>' +
         '<td style="color:var(--muted); font-size:var(--fs-klein);">' + U.esc(w.isin || w.wkn || '') + '</td>' +
@@ -137,16 +153,15 @@
     var jPctSum = sumJahrBasis > 0 ? (sumJahrJetzt / sumJahrBasis - 1) * 100 : null;
     var summe = vollstaendig
       ? '<tr class="summe"><td>Zusammen</td><td></td><td></td>' +
-          '<td>' + U.esc(Math.round(sumWert)) + ' $</td>' +
-          '<td class="' + (sumHeute >= 0 ? 'up' : 'muted') + '">' +
-            (sumHeute >= 0 ? '+' : '') + U.esc(Math.round(sumHeute)) + ' $</td>' +
-          '<td class="' + (jPctSum != null && jPctSum >= 0 ? 'up' : 'muted') + '">' +
-            (jPctSum != null ? (jPctSum >= 0 ? '+' : '') + U.esc(jPctSum.toFixed(1)) + ' %' : '–') + '</td>' +
+          '<td class="zahl">' + U.esc(U.money(sumWert)) + '</td>' +
+          '<td class="zahl ' + (U.signCls(sumHeute) || '') + '">' +
+            U.esc((sumHeute > 0 ? '+' : '') + U.money(sumHeute)) + '</td>' +
+          '<td class="zahl ' + prozentKlasse(jPctSum) + '">' + prozentText(jPctSum, 1) + '</td>' +
           '<td></td><td></td><td></td><td></td></tr>'
       : '';
 
-    kasten.innerHTML = '<table class="tbl"><tr><th>Wert</th><th>Stück</th><th>Kurs</th>' +
-      '<th>Wert</th><th>Heute</th><th>seit Jahresbeginn</th>' +
+    kasten.innerHTML = '<table class="tbl"><tr><th>Wert</th><th class="zahl">Stück</th><th class="zahl">Kurs</th>' +
+      '<th class="zahl">Wert</th><th class="zahl">Heute</th><th class="zahl">seit Jahresbeginn</th>' +
       '<th>Kurzfrist</th><th>Mittelfrist</th><th>ISIN</th><th></th></tr>' + zeilen + summe + '</table>' +
       '<div style="color:var(--muted); font-size:var(--fs-klein); margin-top:6px;">' +
       (vollstaendig ? '' : 'Zu mindestens einem Papier fehlt die Stückzahl oder der Kurs – deshalb steht hier keine Summe. ') +
