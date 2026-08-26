@@ -3,6 +3,28 @@
 Entwürfe, die auf Messung durch die Mess-Kette warten. Der Tüftler trägt ein,
 der Projekt-Manager verteilt, die Mess-Kette streicht nach der Messung.
 
+**⚠ Neu am 26.08. 19:05 — die Eintrittsschwelle trifft NICHT die Entwürfe, aber eine
+ihrer beiden Antworten.** Wilhelms Entscheidung (Aussicht muss vorab unter 1.000
+Handelstagen liegen) auf beide offenen Entwürfe gerechnet — Machbarkeits-Rechnung, keine
+Messung; nötige Signaltage skalieren mit 1/d²:
+
+| | vorhanden | für 0,10 Pp | für 0,04 Pp |
+|---|---|---|---|
+| `glockendruck-nacht` (2 Tests) | 4.665 | **735 — besteht** | 4.595 — reißt |
+| `nachtstoss-umkehr` (2 Tests) | 4.736 | **743 — besteht** | 4.642 — reißt |
+| beide familienweit (4 Tests) | 4.736 | **872 — besteht** | 5.448 — reißt |
+
+**Die JA-Seite besteht, auch familienweit. Die NEIN-Seite an der Aktienhürde (0,04 Pp)
+reißt die Schwelle klar und wird auf die CFD-Hürde (0,10 Pp) gestellt.** Datierte
+Nachträge liegen in beiden Vorregistrierungs-Ordnern
+(`NACHTRAG-2026-08-26-eintrittsschwelle.md`), die Vorregistrierungen selbst sind
+unverändert. Bei `glockendruck-nacht` ist das der **zweite, unabhängige** Grund — der
+Spannen-Rückprall hatte dieselbe Aussage schon verworfen.
+
+**Hinweis zur Formulierung auf der Tafel:** `delta80` ist eine Effektgröße in
+Prozentpunkten, die Schwelle zählt **Handelstage**. „delta80 0,0396 liegt unter 1.000"
+vergleicht zwei verschiedene Größen; die tragende Zahl ist die oben gerechnete.
+
 **Offen: 2 Entwürfe, 1 Auftragsvorschlag** (Vorschlag **C**, neu am 26.08. 18:20; die
 beiden älteren Vorschläge sind am 26.08. 09:00 von Wilhelm freigegeben und stehen jetzt
 auf der Tafel unter „Aufträge").
