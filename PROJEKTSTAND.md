@@ -109,6 +109,31 @@ Adresse, unter der der PM erreichbar wäre — und er läuft selbst nur sechsmal
 ist.** Dass ein Hintergrundkommando die Sitzung wirklich offenhält, hat der PM an sich
 selbst geprüft, nicht angenommen.
 
+**Nachtrag 26.08. 17:20 — der Weg über sprechende Namen ist geprüft und zu.**
+Wilhelm fragte, ob die Rollen einander nicht an den Namen aus seiner Seitenleiste
+erkennen können. **Es gibt zwei getrennte Listen, und sie hängen nicht zusammen:**
+
+| Liste | zeigt | taugt zum Senden? |
+|---|---|---|
+| `ListAgents` (Adressen für `SendMessage`) | 59 Einträge, fast alle `markt-dashboard-xy` | **ja**, auch aus Aufgaben heraus |
+| CCD-Sitzungsverwaltung (`list_sessions`) | dieselben Sitzungen **mit Titeln** — „Auditor", „Issue wache", „Archiv nachladen" — samt „läuft gerade" | **nein**: `ccd send_message` ist für geplante Aufgaben ausdrücklich gesperrt, in beide Richtungen |
+
+**Getestet, nicht vermutet:** Der PM hat sich per `set_session_title` in „Projekt-Manager"
+umbenannt; der Master hat danach in `ListAgents` nachgesehen — **unverändert
+`markt-dashboard-ea`**. Ein Titel im laufenden Betrieb schlägt nicht durch.
+*Zwei Einschränkungen, vom Master selbst benannt:* geschaut wurde wenige Minuten danach,
+ein Durchschlagen erst beim nächsten Start ist damit nicht ausgeschlossen. Und es gibt
+einen unerklärten Gegenbeleg — `Desingner` und `App-Codebase Master` stehen sprechend in
+der Liste, **ohne** je `set_session_title` gerufen zu haben. Es gibt also einen Weg,
+sprechende Namen dorthin zu bekommen; das Umbenennen zur Laufzeit ist es nicht.
+
+**Was daraus gebaut wurde, statt zu raten:** Der Übergabe-Kopf trägt jetzt drei Zeilen —
+`ROLLE`, `GESTARTET`, `ERREICHBAR-BIS`. `ListAgents` nennt zwar keine Namen, aber **wie
+lange jede Sitzung schon läuft**. Der PM vergleicht das mit `GESTARTET` und weiß, welcher
+Eintrag die Rolle ist. Passt keine Laufzeit eindeutig, **lässt er es** — eine Nachricht an
+die falsche Sitzung ist schlimmer als keine. (Elf Namen kommen ohnehin doppelt vor; auch
+sprechende Namen lösten das nicht, sobald zwei Läufe derselben Rolle gleichzeitig liefen.)
+
 **Die ehrliche Lücke, damit niemand mehr erwartet als drinsteckt:** Die vier nächtlichen
 Rollen (Auditor 01:00, Analytiker 03:15, Tüftler 04:30, Archiv-Nachladen bis ~01:35)
 enden zu Zeiten, zu denen **kein PM läuft**. Ihre Bereitschaft läuft dort ins Leere; es
