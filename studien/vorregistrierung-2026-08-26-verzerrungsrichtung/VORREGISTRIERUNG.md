@@ -323,4 +323,91 @@ echte Kohorte bleibt bis zur Rückmeldung unberührt.
 
 ---
 
+## 9. Nachtrag 26.08. 20:35 — Detailfestlegungen VOR dem Bau des Werkzeugs
+
+*Alles hier wurde festgelegt, bevor das Werkzeug geschrieben wurde und bevor irgendeine
+Kohortenzahl existiert. Nichts davon ändert Endpunkte oder Urteilsregeln; es schließt
+Lücken, die beim Formatstudium auffielen.*
+
+1. **rsi2seit-mcp-Etikett ist Rauschen** (Commit `90fb109`: Var 3 kippte heute zwischen
+   „nicht entscheidbar" und „nicht bestaetigt", Abstand ±0,0002 Pp). Die Tabelle in §3
+   ist ein Schnappschuss; **die Bezugswerte (se, delta80, Variante) liest der Lauf aus
+   den dann gültigen Protokolldateien.** R4–R6 hängen an se/delta80, nicht am Etikett —
+   unverändert gültig.
+2. **Haltedauer je Sonde, eindeutig:** Z1 → aus `kapitulation` (kleinste Aussicht der
+   bedienten Protokolle), Z2 → aus `monatsende-kauf`. „Variante des bestesUrteil" heißt:
+   der erste Eintrag im `urteile`-Array, der dem `bestesUrteil` gleicht; dessen
+   `ausstieg.mittlereKerzen`.
+3. **Beschnitt am Reihenende:** Ausstieg = Schluss[min(t+1+H, letzte Kerze)]. Ein Signal
+   fällt nur, wenn nach t keine Kerze mehr existiert (wird gezählt und gedruckt).
+   Grund: hartes Verwerfen sterbender Signale wäre Auswahl nach Zeit-bis-zum-Tod —
+   exakt der 25.08.-Fehler in neuer Form. Gilt für beide Arme gleich.
+4. **Stutzung = Winsorisierung 1 % je Seite an den Quantilen des Topfes** (Haus-
+   Konvention, `messmaschine.js` Z. 367 ff.), je Sonde × Arm, Zähler wird gedruckt.
+5. **Aktienartig = {CS, ADRC}** (aus `verschwundene.json` gezählt: 6.610 CS, 311 ADRC).
+   Überlebende ohne Eintrag in `wertpapierarten.json` werden ausgeschlossen und gezählt.
+6. **Kalendertag-Zuordnung über America/New_York** (Intl-Zeitzonen): die beiden Quellen
+   stempeln verschieden (Mitternacht ET gegen Handelsbeginn ET). Das Werkzeug bricht ab,
+   wenn die Zeitzonen-Umrechnung nicht verfügbar ist — geraten wird nicht.
+7. **W2-Paarung konkret:** je echtem Verschwundenen (nach Filter) ein Überlebender aus
+   demselben Liquiditätsdezil (Dollarumsatz-Median der ersten 21 Fensterkerzen), ohne
+   Zurücklegen, beschnitten auf die Kalender-Spanne des Verschwundenen (stellt Länge und
+   Lage nach). **delta80_null für die W2-Regel** kommt aus der Tausch-Streuung selbst:
+   se_null = Stichproben-sd der 200 ĉ_swap, delta80_null = (Schwelle₅ + z₈₀)·se_null.
+8. **Z9-Vorprüfung ohne Kohorte:** Im Wächter-Modus läuft Z9-gegen-Z0 auf einer
+   zufälligen Zwei-Teilung der Überlebenden (Seed 20260826): beide Pseudo-ĉ müssen im
+   Null-Band von W2 liegen. Die echte Z9/Z0-Zeile rechnet erst der Kohortenlauf, nach
+   den Wächtern, vor den Urteilen.
+9. **Betriebsarten des Werkzeugs:** `--waechter` (Vorgabe) rechnet Zensus, Schwellen,
+   Haltedauern, W1, W2, Z9-Vorprüfung — **liest von den Verschwundenen nur Metadaten,
+   Längen und Umsätze, keine Renditen.** `--kohorte` fährt danach den einen echten Lauf.
+   Start von `--kohorte` erst nach PM-Rückmeldung (§8).
+10. **Kalender-Korrektur (erster Wächterlauf 20:5x, VOR jeder Kohortenzahl):** SPY liegt
+    nicht im Aktien-Archiv — der Wertpapierart-Filter beim Beschaffen schließt ETFs aus
+    (der Zensus zählt 716 ausgefilterte Nicht-Aktien). §4.1 sagte „Kalender = Handelstage
+    von SPY"; **stattdessen: Kalender = alle Fenstertage, an denen mindestens 500
+    Überlebenden-Reihen eine Kerze führen; Monatsende (Z2) = letzter solcher Tag je
+    Kalendermonat.** Das ist quellenunabhängig und hängt an keiner Einzelreihe.
+
+## 10. Nachtrag 26.08. 21:20 — der Wächterlauf hat gegriffen: W2 wird umgebaut, VOR jeder Kohortenzahl
+
+**Befund des Wächterlaufs (nur Überlebenden-Daten):** W1 bestanden (Sollwert −1,073 Pp,
+gemessen −0,968, Verhältnis 0,903). W2-Z1 bestanden (Mittel −0,145 Pp, Band
+[−0,512 .. +0,192]). **W2-Z2 verfehlt die Mittel-Regel knapp** (+0,0503 Pp gegen Grenze
+0,0488; das Band enthält die 0). Nach dem Buchstaben von R0b wäre die Messung damit
+ungültig, bevor sie begann.
+
+**Diagnose, ohne eine einzige Kohortenzahl:** Der Tausch zieht liquiditätsgepaart zur
+Verschwundenen-Verteilung, also illiquide-lastig — verglichen wird aber gegen das ganze
+Universum. Der Monatswende-Effekt ist größenabhängig; die +0,05 Pp sind **Zusammensetzung
+(klein/illiquide), nicht Maschinenfehler.** Und für die Frage dieser Messung — wie
+verzerrt das Fehlen dieser Werte die Archiv-Messwerte — **gehört die Zusammensetzung zur
+Antwort**: dem Archiv fehlen diese Werte samt ihrer Kleinheit. W2 hat also nicht die
+Konstruktion widerlegt, sondern die Null falsch definiert.
+
+**Umbau, hiermit festgelegt:**
+
+a) **W2 wird vom Gültigkeits-Tor zum Messwert:** Mittel(ĉ_swap) je Sonde heißt fortan
+   **Zusammensetzungs-Sockel k̂** (mit Ziehungs-Streuung) und wird im Ergebnis neben
+   c_total ausgewiesen: c_jenseits = c_total − k̂ (nachrichtlich, ohne eigenes Urteil).
+   Die Urteile R1–R6 laufen unverändert auf **c_total** — Ziel ist die Archiv-Lücke
+   einschließlich Zusammensetzung.
+b) **Neues Gültigkeits-Tor W2b (reiner Maschinen-Null):** je Ziehung werden je echtem
+   Verschwundenen **zwei** Überlebende desselben Liquiditätsdezils gezogen; **beide**
+   erhalten dieselbe Kalender-Spanne (Beschnitt identisch), einer geht in Arm A, einer
+   in Arm B. Erwartung exakt 0, jede Abweichung ist Maschine. Regel:
+   |Mittel über 200 Ziehungen| < ¼ · (Schwelle₅+z₈₀) · sd(Ziehungen), je Sonde (Z1, Z2).
+   W2b verfehlt ⇒ Messung ungültig (ersetzt die alte Mittel-Regel von R0b; die
+   Band-Regel des alten W2 entfällt als Tor, da k̂ jetzt ein legitimer Nicht-Null-Wert
+   sein darf).
+c) **Reihenfolge neu:** W1 → W2b → (W2 als Sockel-Messung) → Z9-Vorprüfung → Kohorte.
+
+**Festgehalten wird auch das Gegenteil:** Hätte das Band von W2-Z2 die 0 nicht enthalten
+oder wäre die Abweichung groß gewesen (Größenordnung delta80 statt Viertel davon), wäre
+hier Schluss gewesen — Umbau statt Abbruch gilt nur, weil die Abweichung klein, erklärbar
+und in eine als Messgröße sinnvolle Zahl überführbar ist. Der PM sieht diesen Nachtrag
+vor dem Kohortenlauf.
+
+---
+
 *Simulation mit virtuellem Kapital. Keine Anlageberatung.*

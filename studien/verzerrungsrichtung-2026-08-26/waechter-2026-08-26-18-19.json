@@ -1,0 +1,104 @@
+{
+ "gemessenAm": "2026-08-26T18:19:06.280Z",
+ "modus": "waechter",
+ "seed": 20260826,
+ "schwelleFamilie": 2.5758293064439264,
+ "schwellenQuelle": "messmaschine.js (_intern)",
+ "filter": {
+  "ueberlebende": {
+   "dateien": 2965,
+   "ohneArt": 0,
+   "falscheArt": 716,
+   "ausserhalbFenster": 0,
+   "geladen": 2249,
+   "leseFehler": 0
+  },
+  "verschwundene": {
+   "dateien": 1164,
+   "keinAktienartig": 0,
+   "falschesDelisting": 0,
+   "zuKurz": 116,
+   "brauchbar": 1048,
+   "leseFehler": 0
+  },
+  "falscheDelistings": [],
+  "verschwundeneNachFilter": 1048
+ },
+ "haltedauern": {
+  "H_Z1": 4,
+  "H_Z2": 1
+ },
+ "bezuege": {
+  "kapitulation": {
+   "name": "kapitulation",
+   "variante": 2,
+   "bestesUrteil": "nicht-bestaetigt",
+   "tests": 3,
+   "kerzen": 26,
+   "H": 4,
+   "se": 0.005169063550579101,
+   "t": 2.1422397201146133,
+   "delta80Prot": 0.016725027199734885,
+   "schwelleProt": 2.3939798012415388
+  },
+  "monatsende-kauf": {
+   "name": "monatsende-kauf",
+   "variante": 0,
+   "bestesUrteil": "nicht-messbar",
+   "tests": 1,
+   "kerzen": 8,
+   "H": 1,
+   "se": 0.0018264930377953404,
+   "t": 0.8466594274125673,
+   "delta80Prot": 0.005117075837239099,
+   "schwelleProt": 1.959963986120195
+  },
+  "rsi2seit-mcp": {
+   "name": "rsi2seit-mcp",
+   "variante": 0,
+   "bestesUrteil": "nicht-entscheidbar",
+   "tests": 5,
+   "kerzen": 2.518083889418494,
+   "H": 1,
+   "se": 0.00022432436874212725,
+   "t": 1.7202557709482311,
+   "delta80Prot": 0.0007666174275654968,
+   "schwelleProt": 2.5758293064439264
+  }
+ },
+ "W1": {
+  "bestanden": true,
+  "soll": -0.010725156607722287,
+  "c": -0.009683499157735224,
+  "t": -2.9003146429175297,
+  "tage": 454
+ },
+ "W2": {
+  "Z1": {
+   "mitte": -0.0014507389024824705,
+   "sd": 0.0029884525329395488,
+   "q10": -0.005118082276812616,
+   "q90": 0.0019207572451514388,
+   "delta80Null": 0.010212888622177896,
+   "bestanden": true
+  },
+  "Z2": {
+   "mitte": 0.0005033143875251759,
+   "sd": 0.0005706333561271733,
+   "q10": -0.00021556653121523962,
+   "q90": 0.0012700267898224905,
+   "delta80Null": 0.0019501112518906058,
+   "bestanden": false
+  }
+ },
+ "Z9vor": {
+  "Z9": {
+   "c": 0.000004809207241695402,
+   "ok": true
+  },
+  "Z0": {
+   "c": 0.000097865985811526,
+   "ok": true
+  }
+ }
+}
