@@ -1281,6 +1281,82 @@ davon vom PM.*
 
 ---
 
+### 🔴 Phantom-Dochte bestätigt — und sie führen über den Stop direkt ins Urteil
+
+**Gemessen über das ganze 60m-Archiv** (Nullumsatz-Kerzen, deren Hoch oder Tief die Spanne
+der **übrigen** Kerzen desselben Tages verlässt):
+
+| | |
+|---|---|
+| geprüfte Nullumsatz-Kerzen mit Tagesvergleich | 69.826 |
+| Docht außerhalb der Tagesspanne | **34.363 (49,2 %)** |
+| betroffene Reihen | **2.857** von 2.885 |
+| verschiedene Tage | **705** |
+
+Die sieben Halbtage führen die Liste an (24.12.2024: 1.564 · 29.11.2024: 1.504 · …), aber
+**es ist nicht auf sie beschränkt.**
+
+**Der Kronzeuge reproduziert exakt:**
+
+```
+AAPL 2025-07-03
+  13:30  Umsatz 11.914.855   H 213,86  T 211,81
+  15:30  Umsatz  5.268.462   H 214,65  T 213,67
+  17:00  Umsatz          0   H 214,14  T 201,25   <-- 5,0 % unter dem Tagestief
+```
+
+**Die ehrliche Einordnung der QS, die der Skeptiker nicht gegeben hatte:** Von den 34.363
+überschreiten nur **3.171 die Marke von 1 %** und **90 die von 5 %**. Die große Mehrheit ist
+trivial. Die Extremwerte gehören überwiegend **ZVZZT — dem NASDAQ-Testsymbol** (sechs der
+zwölf größten) sowie illiquiden ETFs. **„34.363" ist die falsche Zahl zum Zitieren; die
+tragende ist 3.171.**
+
+**Warum es trotzdem zählt — der Weg von der Kerze ins Urteil ist kurz:**
+`messmaschine.js:526` — `if (stop != null && p.tief <= stop)`. **Der Stop liest das Tief.**
+
+**Drei der zwölf Strategien setzen einen Stop:** `kapitulation`, `rsi2seit-mcp`,
+`t1-zwangsglattstellung`. Das sind ausgerechnet **die Strategie, deren Urteil heute gekippt
+ist**, und **eine der drei unter der Eintrittskarte**. Ein Phantom-Tief löst dort einen
+Stop aus, den es nie gab.
+
+**Die entscheidende Frage ist offen — und sie ist messbar, nicht diskutierbar:** Hebt es
+sich im Überschuss auf? Signal und Kontrolle benutzen dieselbe `fuehreAus`, und die
+A7-Kontrolle ist „derselbe Wert, dieselbe Stunde" — es **könnte** beide Seiten gleich
+treffen und sich herauskürzen. **Gemessen ist das nicht.**
+
+**→ AUFTRAG an die Mess-Sitzung: die drei Stop-Strategien einmal mit ausgeschlossenen
+Nullumsatz-Kerzen laufen lassen** und mit dem Bestand vergleichen. Das ist eine Messung,
+keine Meinung. Vorregistrierung wie üblich: Was gilt als „bewegt sich"? Vorher festlegen.
+
+*Dazu: Die Maschine hat **keinen Liquiditätsfilter** — `universum: „Archiv-Store, Auswahl
+zum Messzeitpunkt"`. **ZVZZT und die illiquiden ETFs sind mitgemessen worden.***
+
+### ✅ Block D vollständig — die 1d-Sperre war verwaist, nicht aktiv
+
+`archiv1d` ist frei, und **der Wachhund hat es selbst gemeldet:** *„VERWAISTE SPERRE: ein
+Nachladelauf hat sie vor 3,9 h gesetzt und nie aufgeräumt (Prozess 52300 läuft nicht mehr).
+Der Stand oben gilt trotzdem."* PID 52300 existiert nicht mehr; das Archiv ist vollständig
+(2.965/2.965, Rückstand 0). **Der Lauf, der die QS den ganzen Abend blockiert hat, war
+schon tot.**
+
+| | Urteil | |
+|---|---|---|
+| quartalsschub-betrag | nicht-entscheidbar → **stabil** | Placebo t 0,626 |
+| monatswende-breit | nicht-entscheidbar → **stabil** | Placebo t 0,265 |
+| **momentum** | *rechnet gerade* | **Strang A hängt daran** |
+
+**Block D: 11 von 12 — zehn stabil, eines gekippt.**
+
+**⚠ Vom PM behoben:** Die **Rollendatei des Analytikers kannte die neue Wachhund-Meldung
+nicht** — dort stand nur die Sechs-Stunden-Frist. **Bei 3,9 h hätte er nach seiner eigenen
+Anweisung weiter gewartet**, obwohl das Archiv benutzbar war. Ergänzt: er liest jetzt den
+Satz „der Stand oben gilt trotzdem" und behandelt die Sperre dann als aufgehoben.
+*Die Verbesserung am Wachhund ist von heute Abend; die Rolle wurde nachmittags geschrieben.
+**Wer ein Werkzeug verbessert, muss die Rollen nachziehen, die es benutzen.***
+
+
+---
+
 ## Aufträge
 
 *Was freigegeben ist und noch niemand macht. Wer eine Zeile nimmt, trägt sich unter
