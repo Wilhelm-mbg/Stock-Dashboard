@@ -140,6 +140,23 @@ enden zu Zeiten, zu denen **kein PM läuft**. Ihre Bereitschaft läuft dort ins 
 trägt allein die Übergabe-Datei, die der PM um 08:00 liest. **Das ist kein Fehler des
 Aufbaus, sondern eine Frage des Zeitplans** — siehe Frage (5) an Wilhelm.
 
+**Nachtrag 26.08. 19:45 — der PM ist jetzt ein fester Chat, und Chat-Sitzungen gehen in
+Dauerbereitschaft (Wilhelms Anordnung).** Zwei Änderungen:
+
+1. **Der PM steht in `ListAgents` als „Projekt-Manager"** — von außen gemessen, nicht
+   angenommen. Übergaben gehen zusätzlich per `SendMessage` dorthin, auch nachts; die
+   Datei bleibt Pflicht (ein Chat kann geschlossen sein). Die sieben Rollen-Anweisungen
+   sind entsprechend nachgezogen. Damit ist die Nachtlücke oben praktisch geschlossen,
+   solange der PM-Chat offen ist; die alte PM-Routine bleibt als ausgeschalteter
+   Notstart bestehen.
+2. **Chat-Sitzungen (Master, Berechnungen, Desingner, QS/Audit …) enden nach ihrer
+   Aufgabe nicht mehr**, sondern gehen in eine Schleife: Übergabe ablegen, dann
+   `sleep 600` als **Hintergrundkommando**; beim Aufwachen Nachrichten und neue
+   Aufträge abarbeiten, sonst wieder schlafen — eine Zeile, keine Tools, kein Bericht.
+   Ende der Schleife: Wilhelm schließt den Chat oder der PM entlässt ausdrücklich.
+   **Die Routinen behalten die einmalige 10-Minuten-Bereitschaft** — eine Endlosschleife
+   dort wäre die Prozesslast, die heute um 19:05 die CPU auf 97 % getrieben hat.
+
 ---
 
 ### ⚠ Richtigstellung 26.08. 16:50 — **v8.33.4 IST ausgeliefert.** Der PM hat es falsch gemeldet
