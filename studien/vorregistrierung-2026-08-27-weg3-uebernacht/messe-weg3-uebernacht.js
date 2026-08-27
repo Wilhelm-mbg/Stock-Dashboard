@@ -48,6 +48,33 @@ function reiheKaputt(bars, iKurs) {
 }
 function pp(x) { return x == null || isNaN(x) ? '-' : ((x >= 0 ? '+' : '') + x.toFixed(4)); }
 
+/* STABILITAETSPRUEFUNG (Nachtrag 3): Der Wachhund prueft beim START, ob ein Archiv
+ * gerade geschrieben wird - er sagt nichts darueber, ob sich waehrend des Lesens
+ * etwas aendert. Und fuer massive/tagesdaten gibt es gar keine Sperre: steht der
+ * Vollauf bei 95 %, passiert W3 die Schranke und liest trotzdem einen wachsenden
+ * Stand. Ein zu 95 % gefuelltes STABILES und ein zu 95 % gefuelltes gerade
+ * WACHSENDES Verzeichnis sehen fuer eine Vollstaendigkeitspruefung gleich aus.
+ * Deshalb: Fingerabdruck vor UND nach dem Einlesen; weicht er ab, ist der Lauf
+ * nicht messbar statt heimlich auf gemischtem Stand gerechnet. */
+function fingerabdruck(ordner, praefix) {
+  var n = 0, maxMtime = 0, summe = 0;
+  var dateien;
+  try { dateien = fs.readdirSync(ordner); } catch (e) { return { fehler: String(e.code || e) }; }
+  dateien.forEach(function (f) {
+    if (praefix && f.indexOf(praefix) !== 0) return;
+    if (f.slice(-5) !== '.json') return;
+    var st;
+    try { st = fs.statSync(path.join(ordner, f)); } catch (e) { return; }
+    n++; summe += st.size;
+    if (st.mtimeMs > maxMtime) maxMtime = st.mtimeMs;
+  });
+  return { dateien: n, bytes: summe, juengsteSchreibzeit: maxMtime };
+}
+function gleich(a, b) {
+  return a && b && !a.fehler && !b.fehler &&
+    a.dateien === b.dateien && a.bytes === b.bytes && a.juengsteSchreibzeit === b.juengsteSchreibzeit;
+}
+
 function wachhundOk() {
   var r = cp.spawnSync(process.execPath, [REPO + '/tools/archiv-wachhund.js', 'archiv1d'], { encoding: 'utf8', timeout: 300000 });
   console.log('[Wachhund archiv1d] Exit ' + r.status);
@@ -163,8 +190,18 @@ if (!w4st.bestanden) { console.error('ABBRUCH: W4 faengt nicht, was er fangen so
 if (!wachhundOk()) process.exit(2);
 
 console.log('Lade Ueberlebende ...');
+var fpS_vor = fingerabdruck(ARCHIV, 'bars_1d_');
 var wS = { kandidat: 0, gueltig: 0, ungueltig: 0 };
 var U = ladeUeberlebende(wS);
+var fpS_nach = fingerabdruck(ARCHIV, 'bars_1d_');
+if (!gleich(fpS_vor, fpS_nach)) {
+  console.error('\nSTABILITAETSRISS (Ueberlebenden-Arm): das Archiv hat sich WAEHREND des Einlesens geaendert.');
+  console.error('  vor:  ' + JSON.stringify(fpS_vor));
+  console.error('  nach: ' + JSON.stringify(fpS_nach));
+  console.error('  -> Lauf NICHT MESSBAR (gemischter Stand). Erst warten, bis der schreibende Lauf durch ist.');
+  process.exit(3);
+}
+console.log('  Stabilitaet Ueberlebenden-Arm: unveraendert waehrend des Lesens (' + fpS_vor.dateien + ' Dateien)');
 var uSyms = Object.keys(U.reihen);
 console.log('Ueberlebende: ' + U.zaehl.genutzt + ' genutzt, ' + U.zaehl.verworfen + ' verworfen, mit Beobachtungen: ' + uSyms.length);
 druckeW34('W3/W4 Ueberlebenden-Arm', wS);
@@ -218,6 +255,7 @@ if (modus !== 'kohorte') { console.log('Kohortenlauf erst mit --kohorte (nach 1d
 /* ================= KOHORTE (ein Lauf) ================= */
 console.log('\n== KOHORTE ==');
 var tdOrdner = path.join(DATEN, 'tagesdaten');
+var fpV_vor = fingerabdruck(tdOrdner, '');
 var tdDateien = fs.readdirSync(tdOrdner).filter(function (f) { return f.slice(-5) === '.json'; });
 var wV = { kandidat: 0, gueltig: 0, ungueltig: 0 };
 var reihenV = [], zV = { genutzt: 0, verworfen: 0 };
@@ -233,7 +271,16 @@ tdDateien.forEach(function (f) {
   var beob = beobachtungen(b, wV);
   if (beob.length) reihenV.push(beob);
 });
+var fpV_nach = fingerabdruck(tdOrdner, '');
+if (!gleich(fpV_vor, fpV_nach)) {
+  console.error('\nSTABILITAETSRISS (Verschwundenen-Arm): tagesdaten hat sich WAEHREND des Einlesens geaendert.');
+  console.error('  vor:  ' + JSON.stringify(fpV_vor));
+  console.error('  nach: ' + JSON.stringify(fpV_nach));
+  console.error('  -> Lauf NICHT MESSBAR (gemischter Stand, vermutlich laeuft der Vollauf noch).');
+  process.exit(3);
+}
 console.log('Verschwundene: ' + zV.genutzt + ' genutzt, ' + zV.verworfen + ' verworfen (von ' + tdDateien.length + ' Dateien)');
+console.log('  Stabilitaet Verschwundenen-Arm: unveraendert waehrend des Lesens (' + fpV_vor.dateien + ' Dateien)');
 druckeW34('W3/W4 Verschwundenen-Arm', wV);
 druckeW34('W3/W4 Ueberlebenden-Arm ', wS);
 

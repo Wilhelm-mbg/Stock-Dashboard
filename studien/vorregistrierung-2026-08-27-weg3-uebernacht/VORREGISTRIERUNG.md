@@ -127,4 +127,32 @@ Die Refaktorierung ist nachweislich logikneutral: Der Wächterlauf reproduziert 
 der Änderung exakt dieselben Zahlen (1.068.469 Kandidaten, 100,00 %, W1-Verhältnis
 1,095, W2b −0,0005).
 
+## Nachtrag 3 (~18:2x, VOR dem Kohortenlauf) — Stabilitätsprüfung gegen den wandernden Stand
+
+**Anlass:** Eine parallele Sitzung fährt seit 17:52 einen Archiv-Nachladelauf (bis
+~21:15), und der Vollauf schreibt weiter in `massive/tagesdaten`. **Gemessen:** Der
+Wachhund erkennt die Sperre nachweislich — `archiv-wachhund.js archiv60m` liefert in
+diesem Moment **Exit 2** (»wird gerade geschrieben«), `archiv1d` **Exit 0** (frei);
+Sperrdatei ist `_laeuft.json` im Archivordner. Der Kohortenlauf liest archiv1d und
+`massive/tagesdaten`, **archiv60m gar nicht** — er ist vom laufenden Nachlader also
+nicht betroffen, und wechselte dieser auf 1d, bräche der Lauf beim Start korrekt ab.
+
+**Die verbleibende Lücke, und sie ist die Form des Tages:** Der Wachhund prüft beim
+**Start**; er sagt nichts darüber, ob sich etwas **während** des Lesens ändert. Für
+`massive/tagesdaten` gibt es überhaupt keine Sperre — steht der Vollauf bei 95 %,
+passiert W3 die Schranke und liest trotzdem einen wachsenden Stand. **Ein zu 95 %
+gefülltes STABILES und ein zu 95 % gefülltes gerade WACHSENDES Verzeichnis sehen für
+eine Vollständigkeitsprüfung gleich aus.**
+
+**Festlegung:** Vor und nach dem Einlesen **jedes Arms** wird ein Fingerabdruck
+gebildet (Dateizahl, Summe der Dateigrößen, jüngste Schreibzeit). Weicht er ab, ist
+der Lauf **»nicht messbar«** und bricht ab — kein Ergebnis auf gemischtem Stand.
+Verschärfung, kein Aufweichen; Kriterien und Endpunkte unverändert.
+
+**Positivkontrolle (ausgeführt, 4/4):** Die Prüffunktionen wurden aus dem Werkzeug
+selbst gezogen, nicht nachgebaut. Lage 1 nichts geändert → gleich · Lage 2 neue Datei
+→ erkannt · Lage 3 Inhalt geändert, **Zeitstempel zurückgedreht** → über die Größe
+erkannt · Lage 4 **gleiche Größe**, neue Schreibzeit → über die Zeit erkannt. Die
+beiden letzten prüfen, dass nicht ein einzelnes Merkmal die ganze Last trägt.
+
 *Simulation mit virtuellem Kapital. Keine Anlageberatung.*
