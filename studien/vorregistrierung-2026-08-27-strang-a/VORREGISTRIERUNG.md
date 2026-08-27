@@ -317,4 +317,31 @@ auf „geordnete Hygiene ohne Termindruck".
 
 ---
 
+## 14. Nachtrag 27.08. ~04:1x — die Deckelungs-These ist falsifiziert; Nachtrag 13 teilweise zurückgenommen
+
+Die QS hat ihre eigene Falsifikationsbedingung ausgelöst (Lauf 6, Vermerk
+qs-audit-2026-08-27-0400-VIER-LAEUFE.md): **BTSGU hat nach dem Nachtlauf einen
+weiteren Phantomtag bekommen — die These »der Schwanz friert ein« ist damit als
+allgemeine Aussage widerlegt** (sie fiel durch eine Beobachtung außerhalb der eng
+gefassten registrierten Bedingungen; die QS meldet es selbst).
+
+**Was das an Nachtrag 13 ändert:** Die Formel »je Papier eng gedeckelt« ist als
+Allgemeinaussage zurückgenommen. Beobachtet bleibt: die Universums-Reihen (AVB, EQR,
+WBS) haben weiterhin KEINE neuen Phantomtage; der wachsende Fall (BTSGU) liegt als
+Nicht-Aktie außerhalb des Universums. **Unverändert gilt die Raster-Mechanik** (ohne
+Kerze am Periodenende kein Kandidat) — aber wenn Schwänze wachsen KÖNNEN, kann ein
+künftiger Universums-Fall die gefährliche Dauerflach-Gestalt doch ausbilden, und dann
+trifft irgendwann auch ein Rasterende hinein. **Die Dringlichkeit von Wilhelms
+Abmeldedatum-Entscheid steigt damit zurück von »geordnete Hygiene« auf »Messhygiene
+mit Beobachtung«**: solange kein Abmeldedatum existiert, gehört das Schwanz-Wachstum
+der Universums-Reihen beobachtet (die QS-Falsifikationsprüfung läuft ohnehin je
+Sammellauf weiter).
+
+*Bilanz der Nachträge 12–14, damit niemand die Kette verliert: 12 = Mechanik real,
+heute nicht realisiert · 13 = Deckelung (QS) verengt weiter — 14 = Deckelung
+widerlegt, Beobachtungspflicht statt Entwarnung. Der Referenzlauf selbst bleibt von
+allen dreien unberührt (letzte vollständige Periode endet 01.06., vor jedem Schwanz).*
+
+---
+
 *Simulation mit virtuellem Kapital. Keine Anlageberatung.*
