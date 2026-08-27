@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 14:05 (Windows-Uhr)
+letzter-bericht: 2026-08-27 14:15 (Windows-Uhr)
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -299,6 +299,14 @@ schon da.**
 > >
 > > ***„Egal welche 20 es waren, nur WHLR KONNTE betroffen sein."*** *Die Symbol-Liste, die
 > > nicht vorlag, wurde damit **unnötig** statt beschafft.*
+> >
+> > **Randfall 25.08. nachgefragt und DOPPELT geschlossen** *(PM-Rückfrage, weil „das Fenster
+> > beginnt einen Tag nach dem Datentag" eine Annahme war)*: **mechanisch** — *eine Ausführung am
+> > 25.08. wirkt vor Handelsbeginn, dann stehen Rohkurse **und** adjusted-Ansicht schon auf der
+> > neuen Skala; die Rückanpassung träfe nur Daten **vor** dem 25.08., die nicht in der
+> > Stichprobe waren* — **und gemessen**: *marktweit genau zwei Ausführungen am 25.08. (REAX
+> > 10:1, GPUS 5:1), **beide nicht in unseren Archiven**.* **Dem Mechanismus nach irrelevant, der
+> > Population nach leer.**
 > >
 > > **Und der Mechanismus ist geschlossen, nicht nur die Stichprobe:** *Der Artefakt entsteht nur,
 > > wenn `adjusted=true` zwischen Datentag und Abfragetag eine Rückanpassung einbaut. **Massive
