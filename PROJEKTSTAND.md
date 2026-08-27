@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 13:25 (Windows-Uhr)
+letzter-bericht: 2026-08-27 13:45 (Windows-Uhr)
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -263,6 +263,31 @@ schon da.**
 | **BYND** | **`60m` stimmt** | Reverse Split 30:1 am 14.08.; 1d-Historie blieb auf der alten Skala |
 | **SITC** | mechanisch `60m` | Faktor 3,361 **ohne Ereignis** — *was es war, geben diese Endpunkte nicht her (naheliegend Spin-off)* |
 | **B** | **keine Versatz-Frage** | **Ticker-Neuvergabe** — Dividendenreihe bricht, Quote **driftet** statt konstant: **zwei Firmen unter einem Kürzel.** Braucht **Trennung**, kein Schiedsurteil |
+
+> ### 🔴 EINSCHRÄNKUNG 13:4x (QS) — **den fünf Urteilen fehlt die ZEITANGABE**
+> **`WHLR`, dieselbe Reihe, zwei Zeitpunkte, zwei verschiedene kaputte Seiten:**
+>
+>     2026-08-25   Massive 1,3600-1,4960 = archiv1d      ->  das 60m ist kaputt (Faktor 4)
+>     Sept. 2024   archiv1d traegt 6,8 bis 62 MILLIONEN $ bei Umsaetzen 0-13 Stueck
+>                                                        ->  das 1d ist kaputt
+>
+> ***„Bei WHLR ist das `1d` kaputt" ist ohne Zeitangabe zur Hälfte falsch — und zwar genau für
+> den AKTUELLEN RAND, also für den Zeitraum, den eine Messung am ehesten liest."***
+>
+> **→ Die fünf Urteile bekommen Zeiträume. Ein Urteil ohne Zeitraum liest sich als „immer" —
+> und dann repariert jemand in vier Wochen den falschen Rand.**
+> **→ Und das Urteils-Gerüst muss je SEGMENT urteilen, nicht je REIHE.** *Ein Reihen-Urteil ist
+> bei so einer Reihe **notwendig falsch für einen Teil des Zeitraums** — und es fällt nicht auf,
+> weil es für den geprüften Ausschnitt stimmt.*
+>
+> *Fair gekennzeichnet von der QS: **ein Datenpunkt je Reihe** — „zu wenig, um den Befund zu
+> bestreiten, aber genug, um ihn einzuschränken".*
+>
+> **⚠ Nebenwirkung der Semantik-Umkehrung, ebenfalls von der QS:** *„Ich hatte **ARWR, BYRN und
+> ASTH** als ‚mehrfache Splits illiquider Papiere' abgetan, also als **harmlos**. Nach der neuen
+> Regel sind ihre Sprünge **Anpassungsfehler**. Ich hatte die Sprünge als Beleg für Splits
+> gelesen, wo sie das Gegenteil belegen."* **Drei Reihen, die als erledigt galten, sind wieder
+> Kandidaten** — *BYRN und ASTH stehen in der F1-Verworfenen-Liste.*
 
 > ***„Ein Archiv ist rückangepasst, das andere nicht" stimmt als pauschale Richtung NICHT.***
 > **Eine pauschale Reparatur hätte mindestens eine Reihe falsch herum angefasst** — *und zwar
