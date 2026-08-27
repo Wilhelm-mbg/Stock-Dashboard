@@ -140,6 +140,34 @@ function juengsteKerze(datei) {
   } catch (e) { return null; }
 }
 
+/* DIE LETZTE KERZE MIT UMSATZ - und warum das eine zweite Zahl sein muss.
+ *
+ * juengsteKerze() oben liest den Zeitstempel der letzten Kerze, egal was drinsteht.
+ * Eine Reihe, die taeglich Stempelkerzen bekommt (Umsatz 0, eingefrorener Schluss),
+ * ALTERT damit nie: BTSGU handelte zuletzt am 24.08.2026 und trug am 26.08. noch einen
+ * frischen Stempel - fuer den Rueckstands-Test sah es taggenau aktuell aus und tauchte
+ * in der Nachzueglerliste gar nicht erst auf. Von 10 bekannten Faellen zeigte der
+ * Waechter 9 und sah dabei vollstaendig aus. Gefunden von 06 am 27.08.2026, und es ist
+ * dieselbe Falle wie bei AVB, nur von der anderen Seite: dort log der Stempel die Reihe
+ * juenger, hier haelt er sie dauerhaft jung.
+ *
+ * WARUM NICHT EINFACH juengsteKerze() UMSTELLEN: Aus juengsteKerze() entsteht die
+ * Tagesverteilung und daraus der haeufigste Tag, der Rueckstand und der Exit-Code -
+ * an dem die Startsperre von sechs Vorregistrierungen haengt. Eine Umstellung dort
+ * verschoebe womoeglich das Urteil ueber das ganze Archiv, um eine Handvoll Reihen
+ * richtig einzusortieren. Also zwei Zahlen: die alte entscheidet ueber das Archiv,
+ * die neue darueber, WER in der Liste steht. */
+function letzteUmsatzKerze(datei) {
+  try {
+    var j = JSON.parse(fs.readFileSync(datei, 'utf8'));
+    var s = j.series || j.bars || [];
+    for (var i = s.length - 1; i >= 0; i--) {
+      if (s[i][2] > 0) return new Date(s[i][0]).toISOString().slice(0, 10);
+    }
+    return null;   // nie Umsatz gehabt: keine Aussage, nicht "uralt"
+  } catch (e) { return null; }
+}
+
 /** Prueft einen Archivordner. Gibt einen Befund zurueck statt zu drucken - so kann
  *  das Abrufwerkzeug denselben Befund am Ende SEINES Laufs melden, ohne die Logik
  *  ein zweites Mal zu haben. Zwei Rechnungen fuer dieselbe Frage waeren die naechste
@@ -171,9 +199,16 @@ function pruefe(ordner, opt) {
      * sind handlungsfaehig, ein Prozentsatz ist es nicht - und genau daran ist am
      * 26.08.2026 eine falsche Delisting-Liste entstanden: fuenf Reihen standen im
      * Archiv still, wurden aber als "verschwunden" gelesen. */
-    if (t < sollFuerNachzuegler) {
+    /* NACH DEM LETZTEN UMSATZ URTEILEN, nicht nach der letzten Kerze. Sonst ist eine
+     * Reihe mit taeglichem Stempel dauerhaft "aktuell" und erscheint hier nie.
+     * Der Zeitstempel oben bleibt fuer die Tagesverteilung zustaendig; hier zaehlt,
+     * wann zuletzt wirklich gehandelt wurde. Faellt die Umsatzangabe ganz aus
+     * (Reihe hatte nie Umsatz), wird auf den Zeitstempel zurueckgefallen - lieber
+     * die alte Auskunft als gar keine. */
+    var h = letzteUmsatzKerze(path.join(ordner, dateien[i])) || t;
+    if (h < sollFuerNachzuegler) {
       nachzuegler.push({ sym: dateien[i].replace(/^bars_[^_]+_/, '').replace(/\.json$/, ''),
-        tag: t, tageZurueck: handelstageDazwischen(t, sollFuerNachzuegler) });
+        tag: t, letzterUmsatz: h, tageZurueck: handelstageDazwischen(h, sollFuerNachzuegler) });
     }
   }
   nachzuegler.sort(function (a, b) { return a.tageZurueck - b.tageZurueck; });
@@ -293,9 +328,12 @@ function textZu(b) {
       var t = '\n      ' + x.sym + '  ' + x.tag + '  (' + x.tageZurueck +
         ' Handelstag' + (x.tageZurueck === 1 ? '' : 'e') + ')';
       /* Beide Daten, wenn sie auseinanderliegen: die letzte Kerze kann ein Stempel
-       * sein, das Handelsende ist die letzte Kerze MIT Umsatz. */
-      if (x.handelsende && x.handelsende !== x.tag) {
-        t += '  - gehandelt nur bis ' + x.handelsende +
+       * sein, das Handelsende ist die letzte Kerze MIT Umsatz.
+       * Der SELBST gemessene Wert hat Vorrang vor dem aus der Pflegeliste - so steht
+       * der Stempelschwanz auch dann da, wenn es die Liste gar nicht gibt. */
+      var ende = x.letzterUmsatz || x.handelsende;
+      if (ende && ende !== x.tag) {
+        t += '  - gehandelt nur bis ' + ende +
           (x.stempelSchwanz ? ', danach ' + x.stempelSchwanz + ' Stempelkerze' +
             (x.stempelSchwanz === 1 ? '' : 'n') : '');
       }

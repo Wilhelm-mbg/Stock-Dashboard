@@ -8279,6 +8279,43 @@ console.log('\n46) Was die App dauerhaft aufzeichnet');
        'Jede neue Runde traegt die abgelesene Marktlage in den Daten');
   })();
 
+  /* --- Die Messreihe ueberlebt den Depot-Reset (Wilhelms Entscheid 27.08.) ---
+   * 38 gerettete Runden standen neben EINER im aktiven Store - der Reset hatte
+   * die Reihe abgetrennt, und die Auswertung haette auf der einen gerechnet,
+   * ohne etwas zu melden. Die Reihe wohnt jetzt im eigenen Store. FUNKTIONAL:
+   * die Misch-Regel wird mit gestellten Daten durchgespielt; dazu der Nachweis,
+   * dass der Reset-Pfad diesen Store gar nicht erreichen kann. */
+  (function () {
+    var aM = ks7.indexOf('function messungMischen');
+    var eM = ks7.indexOf('\n  }', aM);
+    ok(aM !== -1 && eM > aM, 'Die Misch-Regel des Nebenlagers laesst sich herausloesen');
+    var misch = new Function(ks7.slice(aM, eM + 4) + '\nreturn messungMischen;')();
+    var q1 = { at: 1000, sym: 'AAPL', runde: 0.001 };
+    var q2 = { at: 2000, sym: 'MSFT', runde: 0.001 };
+    var q3 = { at: 3000, sym: 'KO', runde: 0.001 };
+    var n1 = misch({ seit: 7, runden: [q1, q2] }, [], []);
+    ok(n1.runden.length === 2 && n1.seit === 7,
+       'Nach einem Depot-Reset (Depot leer) traegt das Nebenlager die Reihe unveraendert weiter');
+    var n2 = misch({ seit: 7, runden: [q1, q2] }, [], [q2, q3]);
+    ok(n2.runden.length === 3,
+       'Was der aktive Depot-Store noch traegt, kommt einmalig mit - ohne Dublette', String(n2.runden.length));
+    var n3 = misch(null, [q3], []);
+    ok(n3.runden.length === 1,
+       'Runden aus der Zeit vor dem ersten Laden gehen nicht verloren');
+    /* Der Reset-Pfad schreibt die Sicherung und dann das frische Depot - den
+     * kostenmessung-Store kennt er nicht. */
+    var resetA = dep.indexOf("storeSet('depot_vor_reset'");
+    var resetSchnitt = dep.slice(Math.max(0, resetA - 500), resetA + 1400);
+    ok(resetA !== -1 && /defaultDepot\(\)/.test(resetSchnitt) && resetSchnitt.indexOf('kostenmessung') === -1,
+       'Der Reset-Knopf erreicht den kostenmessung-Store nicht');
+    ok(!/D\.kostenMessung\.runden\.unshift/.test(ks7),
+       'Keine Runde wird mehr in den zuruecksetzbaren Depot-Store geschrieben');
+    ok(/storeGet\('kostenmessung'\)/.test(ks7) && /storeSet\('kostenmessung'/.test(ks7),
+       'Die Messreihe wohnt im eigenen Store mit eigener Datei');
+    ok(/krypto: istKrypto \? !!istKrypto\(p\.sym\) : false/.test(ks7),
+       'Auch Runden aus dem Handelspfad tragen das krypto-Feld - keine halb bekannte Runde mehr');
+  })();
+
   /* --- Jeder Versuch hinterlaesst eine Spur, auch der gescheiterte ---
    * Am 25.08.2026 drueckte Wilhelm den Knopf, und danach stand weder eine Runde noch
    * ein Fehlschlag in den Daten: der Lauf war an einer fruehen Sperre umgekehrt, und
@@ -10140,11 +10177,34 @@ console.log('\nWachhund: die neun bekannten und der eine unerklaerte Fall');
    * selbst als Nachzuegler und die Probe zaehlte 22 unerklaerte statt 2. */
   for (var iW = 0; iW < 20; iW++) legeW('AKTUELL' + iW, '2026-08-26');
   legeW('BEKANNT', '2026-08-10');
-  legeW('HAENGT', '2026-08-21');
+  /* HAENGT traegt den Stempelschwanz WIRKLICH, den seine Listenzeile behauptet
+   * (letzter Handel 14.08., danach 5 Stempel bis 21.08.). Im ersten Anlauf stand hier
+   * eine Reihe mit Umsatz am 21.08. und daneben eine Liste, die 14.08. behauptete -
+   * die Zusicherung prueft dann eine Kulisse statt des Falls. */
+  fs.writeFileSync(pathW.join(tmpW, 'bars_1d_HAENGT.json'), JSON.stringify({ series: [
+    [Date.parse('2026-08-14T13:30:00Z'), 100, 8123, 101, 99],
+    [Date.parse('2026-08-17T13:30:00Z'), 100, 0, 100, 100],
+    [Date.parse('2026-08-18T13:30:00Z'), 100, 0, 100, 100],
+    [Date.parse('2026-08-19T13:30:00Z'), 100, 0, 100, 100],
+    [Date.parse('2026-08-20T13:30:00Z'), 100, 0, 100, 100],
+    [Date.parse('2026-08-21T13:30:00Z'), 100, 0, 100, 100],
+  ] }));
   legeW('LEER', '2026-08-12');
   legeW('FREMD', '2026-08-13');
   legeW('NIX', '2026-08-14');
   legeW('SCHUTZ', '2026-08-11');
+  /* DER FALL, DEN DER WAECHTER BIS ZUM 27.08.2026 GAR NICHT SAH (gefunden von 06):
+   * eine Reihe, die taeglich Stempelkerzen bekommt - Umsatz 0, eingefrorener Schluss.
+   * Ihr Zeitstempel ist immer frisch, also ALTERT sie nie und tauchte in der
+   * Nachzueglerliste nie auf. Real war das BTSGU: letzter Handel 24.08., Stempel bis
+   * 26.08. - von 10 bekannten Faellen zeigte der Waechter 9 und sah vollstaendig aus.
+   * Dieselbe Falle wie bei AVB, nur andersherum: dort log der Stempel die Reihe
+   * juenger, hier haelt er sie fuer immer jung. */
+  fs.writeFileSync(pathW.join(tmpW, 'bars_1d_STEMPEL.json'), JSON.stringify({ series: [
+    [Date.parse('2026-08-12T13:30:00Z'), 100, 4711, 101, 99],   // letzter echter Handel
+    [Date.parse('2026-08-25T13:30:00Z'), 100, 0, 100, 100],     // Stempel
+    [Date.parse('2026-08-26T13:30:00Z'), 100, 0, 100, 100],     // Stempel, taggenau frisch
+  ] }));
 
   var listeW = { stand: '2026-08-26T06:00:00.000Z', alterStunden: 5, anzahl: 5, veraltet: false,
     karte: {
@@ -10153,6 +10213,7 @@ console.log('\nWachhund: die neun bekannten und der eine unerklaerte Fall');
       LEER:    { sym: 'LEER',    befund: 'quelle-leer', handelsende: '2026-08-12', stempelSchwanz: 0 },
       FREMD:   { sym: 'FREMD',   befund: 'irgendwas-neues', handelsende: '2026-08-13', stempelSchwanz: 0 },
       SCHUTZ:  { sym: 'SCHUTZ',  befund: 'historie-zurueckgesetzt', handelsende: '2026-08-11', stempelSchwanz: 0, quelleKerzen: 1 },
+      STEMPEL: { sym: 'STEMPEL', befund: 'abgemeldet-bestaetigt', handelsende: '2026-08-12', stempelSchwanz: 2 },
     } };
   var jetztW = new Date('2026-08-26T20:45:00Z');
   var bW = W.pruefe(tmpW, { jetzt: jetztW, abmeldungen: listeW });
@@ -10162,7 +10223,7 @@ console.log('\nWachhund: die neun bekannten und der eine unerklaerte Fall');
      'Die unerklaerten Faelle stehen als eigene Gruppe voran', (tW.match(/UNERKLAERT \([0-9]+\)/) || ['-'])[0]);
   ok(/UNERKLAERT[\s\S]*NIX/.test(tW) && /UNERKLAERT[\s\S]*LEER/.test(tW),
      'Eine Reihe OHNE Eintrag und eine mit "quelle-leer" gelten beide als unerklaert');
-  ok(!/UNERKLAERT[\s\S]*?\n    [A-Z][^\n]*\n[\s\S]*BEKANNT  2026/.test(tW) && /Bekannt abgemeldet \(1[^)]*\): BEKANNT/.test(tW),
+  ok(!/UNERKLAERT[\s\S]*?\n    [A-Z][^\n]*\n[\s\S]*BEKANNT  2026/.test(tW) && /Bekannt abgemeldet \([^)]*\):[^\n]*BEKANNT/.test(tW),
      'Die bestaetigte Abmeldung steht in der Sammelzeile, nicht bei den unerklaerten');
   ok(/ARCHIV HAENGT \(1\)[\s\S]*HAENGT/.test(tW),
      'Ein Abruffehler bekommt seine eigene Gruppe - er verlangt etwas anderes als eine Abmeldung');
@@ -10184,6 +10245,24 @@ console.log('\nWachhund: die neun bekannten und der eine unerklaerte Fall');
      'Und die Handlung steht dabei: nicht nachladen, sonst faellt der Schutz weg');
   ok(!/Bekannt abgemeldet \([^)]*\):[^\n]*SCHUTZ/.test(tW),
      'Sie landet NICHT in der Sammelzeile der Erledigten - dort wuerde sie niemand mehr ansehen');
+
+  /* DIE STEMPEL-LUECKE: die Reihe muss ueberhaupt erst in der Nachzueglermenge landen.
+   * Ihr Zeitstempel ist taggenau aktuell - nur der letzte UMSATZ ist alt. */
+  var stW = bW.nachzuegler.filter(function (x) { return x.sym === 'STEMPEL'; })[0];
+  ok(!!stW, 'Eine Reihe mit taeglichem Stempel wird als Nachzuegler erkannt - vorher blieb sie unsichtbar');
+  ok(stW && stW.tag === '2026-08-26' && stW.letzterUmsatz === '2026-08-12',
+     'Beide Zahlen stehen dabei: letzte Kerze taggenau frisch, letzter Umsatz zwei Wochen alt',
+     stW ? stW.tag + ' / ' + stW.letzterUmsatz : '-');
+  ok(stW && stW.tageZurueck === W.handelstageDazwischen('2026-08-12', '2026-08-26'),
+     'Der Rueckstand rechnet ab dem letzten UMSATZ, nicht ab dem Stempel',
+     stW ? stW.tageZurueck : '-');
+  ok(/Bekannt abgemeldet \([^)]*\):[^\n]*STEMPEL/.test(tW),
+     'Und sie erscheint in ihrer Gruppe - der Ueberblick zeigt nicht mehr 9 von 10 und sieht dabei vollstaendig aus');
+  /* POSITIVKONTROLLE ZUR STEMPELREGEL: eine Reihe, die am Solltag WIRKLICH gehandelt
+   * hat, darf dadurch nicht zum Nachzuegler werden. Ohne diese Gegenprobe koennte die
+   * neue Regel einfach alles einsammeln und saehe trotzdem gruen aus. */
+  ok(bW.nachzuegler.filter(function (x) { return /^AKTUELL/.test(x.sym); }).length === 0,
+     'Positivkontrolle: Reihen mit echtem Umsatz am Solltag bleiben aussen vor');
 
   /* DIE POSITIVKONTROLLE, ohne die alles darueber wertlos waere: OHNE Liste darf der
    * Waechter nichts zuordnen und muss sagen, dass er nichts hat. Eine Gruppierung, die
