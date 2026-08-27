@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 02:10
+letzter-bericht: 2026-08-27 02:08
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -2011,7 +2011,61 @@ Gleitkommavergleich ohne fachliche Toleranz.
 > während der Fund die Halbtage meinte."* Eine richtige Zahl, die eine andere Frage
 > beantwortet als die gestellte — diesmal in der Aggregation.
 
-### 🛑 27.08. 02:01 — DER PHASENWECHSEL SIEHT AUS WIE DAS ENDE. Zwei Läufe gestoppt.
+### ✅ 27.08. 02:05 — LAUF 4 UND 5 SIND DURCH: die 149 sind reproduziert, und das Werkzeug steht auf der Kippe
+
+**LAUF 5 (neuer Sprung-Sucher auf 60m): KEINE Delisting-Phantomfamilie im Stundenarchiv.**
+8 Treffer, **alle in EINER Reihe — `ZVZZT`, dem Testkürzel der Nasdaq**, kein handelbares
+Papier. Und keiner der acht hat einen ruhigen Vorlauf (5 bis 93 %). Nach der Lesart des
+Werkzeugs also **keine Stempel**.
+
+**LAUF 4 (alter Stempel-Sucher gegen die bekannten 149): reproduziert.** Roh **26.067**
+Treffer, alle über Merkmal M1 (Uhrzeit außerhalb des hergeleiteten Rasters). *Das sieht nach
+einer Katastrophe aus und ist keine:*
+
+    18:00:00   14.382 Kerzen   0,0971 %   <- Halbtagsschluss Winter (13:00 ET)
+    17:00:00    5.778 Kerzen   0,0390 %   <- Halbtagsschluss Sommer
+    20:00:00    5.755 Kerzen   0,0388 %   <- regulaerer Schluss-Stempel
+    zusammen   25.915
+
+    26.067 - 25.915 = 152 echte Ausreisser, auf 107 Uhrzeiten und 151 Reihen
+
+**152 gegen den Bezugswert 149 — die Zahl ist bestätigt.**
+
+> **🔪 DER EIGENTLICHE BEFUND IST DIE SCHWELLE.** Der Sucher hält eine Uhrzeit für legitim,
+> wenn sie in über **0,1 %** der Kerzen vorkommt. Bei 14.815.281 Kerzen sind das **14.815**.
+> **Die 18:00-Kerze kommt 14.382-mal vor — sie verfehlt die Schwelle um 433 Kerzen.** Wären ein
+> paar Halbtage mehr im Archiv, wäre sie legitim und die Trefferzahl fiele von **26.067 auf
+> 11.685**. *Das Werkzeug steht bei genau dieser Archivgröße auf der Kippe, und welche Seite es
+> wählt, hängt an 433 von fast fünfzehn Millionen Kerzen.*
+
+**Beide Sucher nebeneinander, wie angefordert: alt 152 echte Ausreißer, neu 0.** **Die Mengen
+überschneiden sich NICHT** — es sind zwei verschiedene Familien, **und keiner der beiden
+Sucher findet die des anderen.** *(Bestätigt damit den Satz von vorhin: beide Regeln werden
+gebraucht und ersetzen einander nicht.)*
+
+### 🔴 27.08. 02:05 — die Positivkontrolle des alten Suchers KONNTE NICHT DURCHFALLEN
+
+**Die QS meldet einen Fehler in genau der Stelle, die sie selbst „Sperrklinke, nicht
+Beipackzettel" genannt hat:**
+
+    a) unveraendert            : 9 Treffer
+    b) mit eingebautem Stempel : 9 Treffer   -> "SUCHER SCHLAEGT AN"
+
+**Neun gegen neun, und die Sperrklinke meldete Erfolg.** Zwei Fehler übereinander: Die
+Injektion **ersetzte** die letzte Kerze statt sie **anzuhängen** — war die selbst schon ein
+Treffer, blieb die Zahl gleich. Und die Prüfung verglich **gegen null** statt gegen den
+Ausgangswert. **Bei einer Probereihe mit Treffern konnte diese Kontrolle gar nicht mehr
+durchfallen.**
+
+> *Ihr eigener Kommentar: „Das ist genau die Bauform, die ich heute Nacht bei anderen dreimal
+> benannt habe, in meinem eigenen Werkzeug, an der Stelle, die ich selbst Sperrklinke genannt
+> habe."*
+
+**Behoben:** wird angehängt statt ersetzt, verglichen wird gegen den Ausgangswert,
+nachgeprüft (9 → 10). **Die Erkennungslogik ist unverändert — die 26.067 und die 152 stehen
+unberührt.**
+
+### 🛑 27.08. 02:01 — DER PHASENWECHSEL SIEHT AUS WIE DAS ENDE. Drei Läufe abgebrochen.
 
 **Um 01:58:55 fiel eine Sperre, und sie wurde als das Ende des Nachladens gelesen. Es war der
 Anfang der zweiten Hälfte.**
@@ -2028,15 +2082,35 @@ weg, Rate im alten Archiv auf null, Sperrdatei verschwunden.
     Phase begann 01:58:47, juengste 02:00:03
     Sperrdateien im Archivordner: KEINE
 
-**⚠ UND DIE SPERRPRÜFUNG SCHÜTZTE HIER NICHT — sie ließ durch, weil GAR KEINE Sperrdatei
-existiert**, nicht weil das Archiv ruhig wäre. *Dieselbe Bauform, die in dieser Nacht viermal
-auseinandergenommen wurde: eine Prüfung, die grün wird, weil sie das Falsche prüft.* Die
-1d-Sperre war schon vorher als verwaist erkannt (PID 52300 tot) — **jetzt schreibt ein
-lebender Prozess hinein, und die Prüfung sieht es nicht.**
+**❌ RICHTIGSTELLUNG 02:06 — DER GEFÄHRLICHE TEIL DIESER MELDUNG WAR FALSCH, UND ZWAR MEINER.**
 
-**Gestoppt: Lauf 2 (Schiedsrichter-Test) und Lauf 3 (1d gegen 60m)** — beide brauchen
-`archiv1d`. **Läufe 1, 4 und 5 laufen weiter**, sie lesen nur 60m, und das ist fertig.
-**Kriterium für 1d ist ab jetzt die Schreibrate, nicht die Sperrdatei.**
+Ich hatte geschrieben, es liege **gar keine Sperrdatei** und die Sperrprüfung schütze deshalb
+nicht. **Beides ist falsch.** Nachgemessen um 02:06:06:
+
+    E:/Markt-Dashboard-Archiv/archiv1d/_laeuft.json   EXISTIERT, gesetzt 01:58:47
+    {"start":"2026-08-26T23:58:47.218Z","was":"1d aktualisieren, 2965 Werte","pid":5004}
+
+**Der Nachlader hat beim Phasenwechsel korrekt UMGESPERRT** — die 60m-Sperre abgemeldet und in
+derselben Sekunde die 1d-Sperre gesetzt. **Und sie hat gegriffen:** Die betroffenen Läufe sind
+von selbst abgebrochen, **bevor sie eine einzige Datei gelesen haben**:
+
+    ABBRUCH: .../archiv1d wird geschrieben (seit 2026-08-26T23:58:47.218Z, PID 5004)
+
+> **Warum mein Befund falsch war — und es ist die Fehlerform dieser Nacht, diesmal bei mir zum
+> zweiten Mal:** Ich habe nach Dateinamen mit `lock` und `sperre` gesucht. **Die Datei heißt
+> `_laeuft.json`.** Mein Nulltreffer sagte nichts über das Archiv aus, sondern nur über meinen
+> Filter. *Ich habe einer funktionierenden Prüfung vorgeworfen, das Falsche zu prüfen — mit
+> einer Prüfung, die das Falsche prüfte.*
+
+**⚠ DIESE RICHTIGSTELLUNG IST WICHTIG, NICHT KOSMETISCH:** Bliebe „die Sperrprüfung schützt
+nicht" stehen, **würde die nächste Sitzung eine zweite Sicherung gegen ein Problem bauen, das
+keines ist.** Die QS hat genau darauf bestanden, und zu Recht.
+
+**Betroffen waren DREI von fünf Läufen, nicht zwei** — auch Lauf 1 liest `archiv1d`, er
+braucht die Tagesschlüsse als Vergleichsgröße. Auch der PM hatte das falsch gezählt.
+**Läufe 4 und 5 sind durch** (nur 60m, nachweislich fertig: 0 Dateien in 60 s, PID der
+60m-Sperre tot). **Läufe 1–3 werden nachgeholt**, sobald 1d frei ist; der Treiber prüft jetzt
+je Lauf nur noch die Archive, die er wirklich liest, und kann gezielt nachholen.
 
 **Voraussichtliches Ende: gegen 03:32** (2.967 Dateien bei ~32/Min ab 01:58:47).
 
