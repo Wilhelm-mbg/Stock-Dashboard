@@ -1,0 +1,25 @@
+{
+ "reihen": 73,
+ "tage": 53420,
+ "uneinigA": 1708,
+ "uneinigB": 1465,
+ "nurAUneinig": 309,
+ "nurBUneinig": 66,
+ "extremVonUmsatzlos": 757,
+ "extremUmsatzlosBestaetigt": 652,
+ "extremUmsatzlosWidersprochen": 105,
+ "lagen": {
+  "nachhandel": {
+   "traegtExtrem": 237,
+   "bestaetigt": 144,
+   "widersprochen": 93
+  },
+  "sitzung": {
+   "traegtExtrem": 520,
+   "bestaetigt": 508,
+   "widersprochen": 12
+  }
+ },
+ "skala": 0,
+ "ohne1d": 0
+}

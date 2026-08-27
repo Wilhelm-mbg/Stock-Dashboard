@@ -1,0 +1,31 @@
+{
+ "reihen": 479,
+ "tage": 349692,
+ "uneinigA": 10334,
+ "uneinigB": 9032,
+ "uneinigC": 8839,
+ "nurAUneinig": 1786,
+ "nurBUneinig": 484,
+ "extremVonUmsatzlos": 5977,
+ "extremUmsatzlosBestaetigt": 5283,
+ "extremUmsatzlosWidersprochen": 694,
+ "lagen": {
+  "nachhandel": {
+   "traegtExtrem": 1693,
+   "bestaetigt": 1029,
+   "widersprochen": 664
+  },
+  "sitzung": {
+   "traegtExtrem": 4277,
+   "bestaetigt": 4247,
+   "widersprochen": 30
+  },
+  "schlusskurs": {
+   "traegtExtrem": 7,
+   "bestaetigt": 7,
+   "widersprochen": 0
+  }
+ },
+ "skala": 232,
+ "ohne1d": 2
+}
