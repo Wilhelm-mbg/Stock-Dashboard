@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 05:50 (abgelesen)
+letzter-bericht: 2026-08-27 07:55 (abgelesen)
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -39,6 +39,23 @@ Sitzungen.** Gefunden hat es jedes Mal eine Gegenprobe, nie ein Verdacht.
 > **→ Damit ist die Reparatur, um die diese Nacht gestritten wurde, für die MESSSEITE
 > gegenstandslos.** *Was bleibt, ist die Frage der Archiv-Sauberkeit — und die ist Entscheidung
 > 1 unten.*
+
+### 🚀 27.08. 07:55 — WILHELM HEBT DIE RELEASE-SPERRE AUF: **JETZT AUSLIEFERN**
+
+**Die Sperre aus `83796d8` ist aufgehoben.** Begründung des Entscheids: *Die Datenfunde
+betreffen das **Kursarchiv**, nicht die App-Oberfläche. Die Messseite ist gemessen entlastet
+(Docht-Lauf, Faktor 6–27), Fund 1 ist entschieden. Der Stau von **188 Commits und 12
+Release-Notizen** erreicht damit Wilhelm; die Archiv-Arbeit läuft davon unabhängig weiter.*
+
+**→ An die Release-Wache: ausliefern.** *Version und Bau gehören ihr allein — nicht dem PM und
+keiner Sitzung.*
+
+**Die Archiv-Arbeit ist damit NICHT erledigt**, nur entkoppelt: Kennzeichnung der
+Randzeiten-Kerzen (Entscheid 1) und Nachzählen des 25.08. (Datenfund 2) laufen weiter.
+
+*Die Release-Wache hatte ausdrücklich **davon abgeraten**, wegen der Staugröße zu lockern —
+„188 Commits sind unangenehm, aber kein Sachgrund". **Der Entscheid stützt sich nicht auf den
+Stau, sondern darauf, dass Archiv und Oberfläche verschiedene Dinge sind.***
 
 ### ✅ 27.08. 05:50 — WILHELM HAT ALLE DREI ENTSCHIEDEN (per Formular)
 
