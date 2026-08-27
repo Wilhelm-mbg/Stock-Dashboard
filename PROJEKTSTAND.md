@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 02:30
+letzter-bericht: 2026-08-27 02:45
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -2053,6 +2053,71 @@ werden.*
 > und der Bearbeiter „repariert" etwas Funktionierendes. *(Dazu: der Prüfausschnitt war auf
 > 420 Zeichen geraten und schnitt mitten in die Funktion — **ein Syntaxfehler sieht aus wie
 > ein Befund.**)*
+
+### 🚨🚨 27.08. ~02:45 — DIE DRITTE KATEGORIE: eine Kerze, die beim nächsten Hinsehen etwas anderes sagt
+
+**Möglicherweise der schwerwiegendste Fund der Nacht — er trifft nicht das Archiv, sondern die
+Messgröße selbst.** *(QS, `uebergabe/qs-audit-2026-08-27-0245-DATENFUND2.md`, 40 Reihen,
+320 Kerzen.)*
+
+**Erst die Entwarnung: die Abweichung reicht NICHT über die letzte Kerze hinaus.**
+
+    13:30  40 geprueft  0 abweichend      18:30  40  0
+    14:30  40           0                 19:30  40  0
+    15:30  40           0                 20:00  40  40   <--
+    16:30  40           0
+    17:30  40           0
+
+*Sieben von acht Positionen stimmen bei allen vierzig Reihen bis auf die letzte
+Nachkommastelle. Die ursprüngliche Beobachtung „auch die 19:30-Kerze weicht ab" gilt auf dem
+neuen Stand **nicht**: 0 von 40. Ob das Nachladen es behoben hat oder damals ein
+Zwischenzustand gemessen wurde, ist mit den Daten **nicht unterscheidbar** — beides bleibt
+stehen.*
+
+**Und jetzt die Größenordnung, die es zu einem eigenen Befund macht:**
+
+    Abweichung der 20:00-Kerze im Schluss, relativ
+      p50   0,0978 %      p90   0,3906 %      max  1,0912 %
+      ueber der Kostenhuerde von 0,10 %:  17 von 36
+
+    betroffene Felder: schluss 36, hoch 37, tief 36, eroeffnung 15, UMSATZ 0
+
+**Der Umsatz weicht nie ab, weil er in beiden Fassungen null ist. Die 20:00-Kerze ist keine
+aggregierte Handelsstunde, sondern der Schluss-Quote der Quelle — eine Momentaufnahme.** Zwei
+Abrufe zu verschiedenen Zeitpunkten liefern verschiedene Werte; **kein Archivfehler, sondern
+die Natur der Sache.**
+
+> **🔴 DIE MEDIANE ABWEICHUNG LIEGT BEI 0,0978 % — PRAKTISCH EXAKT AUF DER KOSTENHÜRDE VON
+> 0,10 %, AN DER FAST JEDE STUDIE HIER HÄNGT.**
+> *„Eine Größe, die zwischen zwei Abrufen stärker schwankt als die Hürde, die sie überwinden
+> soll, taugt nicht als Messgröße."*
+
+**⭐ DIE ENTSCHEIDENDE FRAGE, an `markt-dashboard-c4` mit Vorrang gegeben: LIEST DIE
+MESSMASCHINE DIE 20:00-KERZE?** Nimmt sie irgendwo den Tagesschluss aus dem 60m-Archiv als
+„letzte Kerze des Tages" — für Renditen, Stops, Kontrolltopf, Regime-Prüfung? **Wenn ja, steht
+jede Messung auf einem Wert, der sich beim nächsten Sammellauf um die Größenordnung einer
+Kostenhürde ändert — und es beträfe die zwölf Protokolle rückwirkend.** *Ein klares Nein wäre
+die beste Nachricht der Nacht.* **Kein Umbau, bevor die Gegenprobe steht.**
+
+> **🧭 WARUM DAS DURCH ALLE NETZE GEFALLEN IST — die Einordnung der QS, und sie fasst die
+> ganze Nacht zusammen:** Die 20:00-Kerze wurde von **beiden** Stempel-Suchern als legitim
+> eingestuft, **und beide hatten recht.** Sie ist kein verirrter Zeitstempel. Sie ist eine
+> **dritte Kategorie, für die es bisher keinen Namen gab: eine Kerze an der richtigen Stelle,
+> mit Umsatz null, deren Inhalt sich zwischen Abrufen ändert.**
+>
+> ***„Jedes Kriterium prüfte, ob die Kerze an der richtigen Stelle steht. Keines prüfte, ob sie
+> beim nächsten Hinsehen noch dasselbe sagt."***
+
+**Die tragende methodische Entscheidung:** Die QS hat für den Vergleich **einen eigenen Abruf
+gebaut statt `kerzenquelle.js` zu benutzen** — *geprüft wird, ob das Archiv zur Quelle passt;
+mit dem Code des Sammlers hätte sie dessen Fehler reproduziert und Übereinstimmung gesehen, wo
+keine ist.* **Dieselbe Struktur wie der Nullpunkt der Messmaschine, wo Signal und Kontrolle aus
+demselben Topf schöpften.**
+
+**Gegenprobe genehmigt** auf zwei bis drei weiteren Tagen — **mit unterschiedlichem Charakter**
+(Volltag, Halbtag, bewegter Tag), nicht drei ähnliche. *Gilt die Abweichung überall in
+derselben Größenordnung, ist es eine Eigenschaft der Quelle; liegt sie an Halbtagen anders,
+ist es eine zweite Geschichte.* **Bis dahin: ein Tag, 40 Reihen — plausibel, aber unbelegt.**
 
 ### 🔄 27.08. ~02:20 — DIE „149" WAREN NIE EIN BESTAND, SONDERN EINE RATE
 
