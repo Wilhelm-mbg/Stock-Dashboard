@@ -1,0 +1,14 @@
+{
+ "name": "QXO, Inc.",
+ "composite_figi": "BBG000BV5627",
+ "cik": "0001236275",
+ "events": [
+  {
+   "ticker_change": {
+    "ticker": "QXO"
+   },
+   "type": "ticker_change",
+   "date": "2024-06-06"
+  }
+ ]
+}

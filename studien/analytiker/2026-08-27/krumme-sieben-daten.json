@@ -1,0 +1,979 @@
+{
+ "CBSH-splits": [
+  {
+   "execution_date": "2025-12-02",
+   "id": "E4f128ecf0b519000b34666801f8e0ca4f2c0fc55c3cd100a9829f13250e9d496",
+   "split_from": 1,
+   "split_to": 1.05,
+   "ticker": "CBSH"
+  },
+  {
+   "execution_date": "2024-12-03",
+   "id": "E8ded0bc3abdbc8f32931d425606b0b5a556ee8a5262a14aa96d88a841dc8ab7f",
+   "split_from": 1,
+   "split_to": 1.05,
+   "ticker": "CBSH"
+  },
+  {
+   "execution_date": "2023-12-01",
+   "id": "Ef58a1f4805c732a6ac1b806d11c471793fd9045d5ee2794245eacb54984d8e70",
+   "split_from": 1,
+   "split_to": 1.05,
+   "ticker": "CBSH"
+  },
+  {
+   "execution_date": "2022-12-01",
+   "id": "E6bd67264d464fec3cedce404c35196d2e53051ad3d772287bfe6ab66537cf1e9",
+   "split_from": 1,
+   "split_to": 1.05,
+   "ticker": "CBSH"
+  },
+  {
+   "execution_date": "2021-12-01",
+   "id": "Eb74bc5d40766dcf2c57b93c9da56739f31afb550fbb680407fff8ce8ca131d3f",
+   "split_from": 1,
+   "split_to": 1.05,
+   "ticker": "CBSH"
+  },
+  {
+   "execution_date": "2020-12-01",
+   "id": "E968e79186a334707f3350a50be9772160b9a0f1b00f42bbe3c7e018a42df5569",
+   "split_from": 1,
+   "split_to": 1.05,
+   "ticker": "CBSH"
+  },
+  {
+   "execution_date": "2019-12-02",
+   "id": "E10c643cbf659b1ce30ad3fc2dffecdebfdd6f23d7483900b207dcc9f7b41757f",
+   "split_from": 1,
+   "split_to": 1.05,
+   "ticker": "CBSH"
+  },
+  {
+   "execution_date": "2018-11-29",
+   "id": "Eea4aeae6ce46c9d3b2ea722115d523dbf17465ea46310bc51f0922cb78fc8f20",
+   "split_from": 1,
+   "split_to": 1.05,
+   "ticker": "CBSH"
+  },
+  {
+   "execution_date": "2017-11-29",
+   "id": "Ea69f59ec19761fad9ee71db0db66514763ccaa3ef136642021be75d8979d5018",
+   "split_from": 1,
+   "split_to": 1.05,
+   "ticker": "CBSH"
+  },
+  {
+   "execution_date": "2016-11-30",
+   "id": "Ef98afdc73f1bfd573bbd844eceee5d96322c7b581a7f898f9fb3aa1542ccb327",
+   "split_from": 1,
+   "split_to": 1.05,
+   "ticker": "CBSH"
+  },
+  {
+   "execution_date": "2015-11-24",
+   "id": "E652869ed9ec7eba0bd1ba569d3a7cdaa8545659c3554d360a8f2b55cf7bcb1d2",
+   "split_from": 1,
+   "split_to": 1.05,
+   "ticker": "CBSH"
+  },
+  {
+   "execution_date": "2014-11-25",
+   "id": "E3f6fa23d67284288da907c992b962d62cf0189e997763a83d4d646794b906013",
+   "split_from": 1,
+   "split_to": 1.05,
+   "ticker": "CBSH"
+  },
+  {
+   "execution_date": "2013-11-26",
+   "id": "E91c62200525df1c2efaa36a77359df6c5a4b4b6d38396f9a617f2cd464b6fb20",
+   "split_from": 1,
+   "split_to": 1.05,
+   "ticker": "CBSH"
+  },
+  {
+   "execution_date": "2012-11-28",
+   "id": "Effdf085a8b4acab643d4ca44b20d177dbde85037aa409108a90b82049ac1b360",
+   "split_from": 1,
+   "split_to": 1.05,
+   "ticker": "CBSH"
+  },
+  {
+   "execution_date": "2011-11-28",
+   "id": "E3cfe384a97e07dc28c84c3f2272f0efc7bfe000a65cf30214c67c7865551a139",
+   "split_from": 1,
+   "split_to": 1.05,
+   "ticker": "CBSH"
+  },
+  {
+   "execution_date": "2010-12-02",
+   "id": "E576bc456e9eeb55224e9c742e897e0a815c9db35079f8e2d3586638cf09ac4f0",
+   "split_from": 1,
+   "split_to": 1.05,
+   "ticker": "CBSH"
+  },
+  {
+   "execution_date": "2009-11-25",
+   "id": "E3a291ff98aaa50dce3c78444912b4a4b7c94d8dced0132e77201859bb41c079f",
+   "split_from": 1,
+   "split_to": 1.05,
+   "ticker": "CBSH"
+  },
+  {
+   "execution_date": "2008-11-12",
+   "id": "E8e30f709ac82f76d7759086974ca3b0e20bb5eebc4514c934d48112a4d4fb624",
+   "split_from": 1,
+   "split_to": 1.05,
+   "ticker": "CBSH"
+  },
+  {
+   "execution_date": "2007-11-27",
+   "id": "E66404366dfbaa4fcbde8d6d9d890183e5b7d7f34ca91a9a0f7498fc4a7a7166f",
+   "split_from": 1,
+   "split_to": 1.05,
+   "ticker": "CBSH"
+  },
+  {
+   "execution_date": "2006-11-27",
+   "id": "E67b54abaa20a32d3cc26f37adea3ed40fff963ec96bc043bd2e6b9b05bc79f97",
+   "split_from": 1,
+   "split_to": 1.05,
+   "ticker": "CBSH"
+  },
+  {
+   "execution_date": "2005-11-25",
+   "id": "Ef55f4e205674df7c741e93244cc389c4b1b014ed9fc287d52af82c3b1c5b8da5",
+   "split_from": 1,
+   "split_to": 1.05,
+   "ticker": "CBSH"
+  },
+  {
+   "execution_date": "2004-11-24",
+   "id": "E2a47c302cb1a8ad4953b494c18a0fc21b4ede6eee21472b3fe29371ab1d5c995",
+   "split_from": 100,
+   "split_to": 105,
+   "ticker": "CBSH"
+  }
+ ],
+ "GBTC-splits": [
+  {
+   "execution_date": "2018-01-19",
+   "id": "E67c50fc11ff045686f3b829a4ab461839383d44197da9ac15cb27cf350c8974d",
+   "split_from": 1,
+   "split_to": 91,
+   "ticker": "GBTC"
+  }
+ ],
+ "ETHE-splits": [
+  {
+   "execution_date": "2020-12-18",
+   "id": "Ec577a90882760718cc871e7adf3972f12abf0924779672f770702ad765392781",
+   "split_from": 1,
+   "split_to": 9,
+   "ticker": "ETHE"
+  }
+ ],
+ "DOC-events": {
+  "name": "Healthpeak Properties, Inc.",
+  "composite_figi": "BBG000BKYDP9",
+  "cik": "0000765880",
+  "events": [
+   {
+    "ticker_change": {
+     "ticker": "DOC"
+    },
+    "type": "ticker_change",
+    "date": "2024-03-04"
+   },
+   {
+    "ticker_change": {
+     "ticker": "PEAK"
+    },
+    "type": "ticker_change",
+    "date": "2019-11-05"
+   }
+  ]
+ },
+ "DOC-divs": [
+  {
+   "cash_amount": 0.10167,
+   "currency": "USD",
+   "declaration_date": "2026-07-09",
+   "dividend_type": "CD",
+   "ex_dividend_date": "2026-09-14",
+   "frequency": 12,
+   "id": "E1e313b03fd527ac57cdc8151c152ae3dd6b3178cbdf0049e1bd76ed4b106d4f0",
+   "pay_date": "2026-09-25",
+   "record_date": "2026-09-14",
+   "ticker": "DOC"
+  },
+  {
+   "cash_amount": 0.10167,
+   "currency": "USD",
+   "declaration_date": "2026-07-09",
+   "dividend_type": "CD",
+   "ex_dividend_date": "2026-08-17",
+   "frequency": 12,
+   "id": "E11c8e1bfb595d76ef64c6932bc56753c8b0432c09f87339e887a61f1f335557f",
+   "pay_date": "2026-08-28",
+   "record_date": "2026-08-17",
+   "ticker": "DOC"
+  },
+  {
+   "cash_amount": 0.10167,
+   "currency": "USD",
+   "declaration_date": "2026-07-09",
+   "dividend_type": "CD",
+   "ex_dividend_date": "2026-07-20",
+   "frequency": 12,
+   "id": "E2d0fbeb801afcdbab066bf997580a555f1e85129eb30024aea3ce98091ee7117",
+   "pay_date": "2026-07-31",
+   "record_date": "2026-07-20",
+   "ticker": "DOC"
+  },
+  {
+   "cash_amount": 0.10167,
+   "currency": "USD",
+   "declaration_date": "2026-04-06",
+   "dividend_type": "CD",
+   "ex_dividend_date": "2026-06-15",
+   "frequency": 12,
+   "id": "E7198dd4d8d1c0fc94f3c9713002703b98c956a0d439b773cf09bc09eea584441",
+   "pay_date": "2026-06-26",
+   "record_date": "2026-06-15",
+   "ticker": "DOC"
+  },
+  {
+   "cash_amount": 0.10167,
+   "currency": "USD",
+   "declaration_date": "2026-04-06",
+   "dividend_type": "CD",
+   "ex_dividend_date": "2026-05-18",
+   "frequency": 12,
+   "id": "E2cc03ea4bdad5685c88592add13878f7b780bd1bc5fce34b8d94393c79602630",
+   "pay_date": "2026-05-29",
+   "record_date": "2026-05-18",
+   "ticker": "DOC"
+  },
+  {
+   "cash_amount": 0.10167,
+   "currency": "USD",
+   "declaration_date": "2026-04-06",
+   "dividend_type": "CD",
+   "ex_dividend_date": "2026-04-17",
+   "frequency": 12,
+   "id": "E829247f230be5c30dd62c9e8c50aa62e9228151e49e91e81007d57dc007906e3",
+   "pay_date": "2026-04-30",
+   "record_date": "2026-04-17",
+   "ticker": "DOC"
+  },
+  {
+   "cash_amount": 0.10167,
+   "currency": "USD",
+   "declaration_date": "2026-01-04",
+   "dividend_type": "CD",
+   "ex_dividend_date": "2026-03-17",
+   "frequency": 12,
+   "id": "E96e8ebf16714ef5425f25b8500be65f34ee088d0a9c4e0a801b6109c03758ea4",
+   "pay_date": "2026-03-31",
+   "record_date": "2026-03-17",
+   "ticker": "DOC"
+  },
+  {
+   "cash_amount": 0.10167,
+   "currency": "USD",
+   "declaration_date": "2026-01-04",
+   "dividend_type": "CD",
+   "ex_dividend_date": "2026-02-13",
+   "frequency": 12,
+   "id": "E13f80d59f0a7f2f15a91b8604b3a5afe98a44a285183bfe76f5df19d0271c4c7",
+   "pay_date": "2026-02-27",
+   "record_date": "2026-02-13",
+   "ticker": "DOC"
+  },
+  {
+   "cash_amount": 0.10167,
+   "currency": "USD",
+   "declaration_date": "2026-01-04",
+   "dividend_type": "CD",
+   "ex_dividend_date": "2026-01-16",
+   "frequency": 12,
+   "id": "E70c8e8b66210d1bfcc8b899e3180b86d0f1177d82cd963bb46ec9f8bebad6fab",
+   "pay_date": "2026-01-30",
+   "record_date": "2026-01-16",
+   "ticker": "DOC"
+  },
+  {
+   "cash_amount": 0.10167,
+   "currency": "USD",
+   "declaration_date": "2025-10-06",
+   "dividend_type": "CD",
+   "ex_dividend_date": "2025-12-19",
+   "frequency": 12,
+   "id": "Ebcfe2e6ba92096bd39ae84f497d305bea9f2e0bd302f2fe5b8c02a027a3f3df5",
+   "pay_date": "2025-12-30",
+   "record_date": "2025-12-19",
+   "ticker": "DOC"
+  },
+  {
+   "cash_amount": 0.10167,
+   "currency": "USD",
+   "declaration_date": "2025-10-06",
+   "dividend_type": "CD",
+   "ex_dividend_date": "2025-11-14",
+   "frequency": 12,
+   "id": "E163a2f407eab0565c95df600caa2b681018b7b0c071e7e407cd8a7429a1d793a",
+   "pay_date": "2025-11-26",
+   "record_date": "2025-11-14",
+   "ticker": "DOC"
+  },
+  {
+   "cash_amount": 0.10167,
+   "currency": "USD",
+   "declaration_date": "2025-10-06",
+   "dividend_type": "CD",
+   "ex_dividend_date": "2025-10-17",
+   "frequency": 12,
+   "id": "Ed84af03d07a0674f520aae2d3037d501ee1f8961316d84fc221ba0c2c8d97805",
+   "pay_date": "2025-10-30",
+   "record_date": "2025-10-17",
+   "ticker": "DOC"
+  },
+  {
+   "cash_amount": 0.10167,
+   "currency": "USD",
+   "declaration_date": "2025-07-07",
+   "dividend_type": "CD",
+   "ex_dividend_date": "2025-09-19",
+   "frequency": 12,
+   "id": "E539d39d222455c2dd5119e8cf83a74a7bed0a535d20008b178cf5cc84a802591",
+   "pay_date": "2025-09-30",
+   "record_date": "2025-09-19",
+   "ticker": "DOC"
+  },
+  {
+   "cash_amount": 0.10167,
+   "currency": "USD",
+   "declaration_date": "2025-07-07",
+   "dividend_type": "CD",
+   "ex_dividend_date": "2025-08-18",
+   "frequency": 12,
+   "id": "Efb4cb8d9691561c93cea025e620848298b099dc4d855faca50add9aa0ceca0fb",
+   "pay_date": "2025-08-29",
+   "record_date": "2025-08-18",
+   "ticker": "DOC"
+  },
+  {
+   "cash_amount": 0.10167,
+   "currency": "USD",
+   "declaration_date": "2025-07-07",
+   "dividend_type": "CD",
+   "ex_dividend_date": "2025-07-18",
+   "frequency": 12,
+   "id": "Ecac0ba3447235c85ff3f8c8db425798eac7e22d487f315bacf78be304f000a1a",
+   "pay_date": "2025-07-31",
+   "record_date": "2025-07-18",
+   "ticker": "DOC"
+  },
+  {
+   "cash_amount": 0.10167,
+   "currency": "USD",
+   "declaration_date": "2025-04-07",
+   "dividend_type": "CD",
+   "ex_dividend_date": "2025-06-16",
+   "frequency": 12,
+   "id": "Ec087d943db976204ab579e56bafdbc8c4b2731bd10699abbe6a9e341d38c5308",
+   "pay_date": "2025-06-27",
+   "record_date": "2025-06-16",
+   "ticker": "DOC"
+  },
+  {
+   "cash_amount": 0.10167,
+   "currency": "USD",
+   "declaration_date": "2025-04-07",
+   "dividend_type": "CD",
+   "ex_dividend_date": "2025-05-19",
+   "frequency": 12,
+   "id": "E89d0a4c29d4e3eaf3e8d1b959c7d678096bb3e911890795b5bb053f9be8f6241",
+   "pay_date": "2025-05-30",
+   "record_date": "2025-05-19",
+   "ticker": "DOC"
+  },
+  {
+   "cash_amount": 0.10167,
+   "currency": "USD",
+   "declaration_date": "2025-04-07",
+   "dividend_type": "CD",
+   "ex_dividend_date": "2025-04-17",
+   "frequency": 12,
+   "id": "E94fb15d3c86216e34b4a7b5c4f0ab182eb25324f90690c017adb0c6213910b74",
+   "pay_date": "2025-04-30",
+   "record_date": "2025-04-18",
+   "ticker": "DOC"
+  },
+  {
+   "cash_amount": 0.305,
+   "currency": "USD",
+   "declaration_date": "2025-02-03",
+   "dividend_type": "CD",
+   "ex_dividend_date": "2025-02-14",
+   "frequency": 4,
+   "id": "Ed33e56568de7288e50da65257865e75265bb8ef4a6acc8f3a4bfcce9ba4c6410",
+   "pay_date": "2025-02-26",
+   "record_date": "2025-02-14",
+   "ticker": "DOC"
+  },
+  {
+   "cash_amount": 0.3,
+   "currency": "USD",
+   "declaration_date": "2024-10-24",
+   "dividend_type": "CD",
+   "ex_dividend_date": "2024-11-04",
+   "frequency": 4,
+   "id": "E15c4bfd27399e9d5e9ed0cde03996c15e0dcf1ff0373f14d11253dbd6501e464",
+   "pay_date": "2024-11-15",
+   "record_date": "2024-11-04",
+   "ticker": "DOC"
+  },
+  {
+   "cash_amount": 0.3,
+   "currency": "USD",
+   "declaration_date": "2024-07-24",
+   "dividend_type": "CD",
+   "ex_dividend_date": "2024-08-05",
+   "frequency": 4,
+   "id": "E2daa4947e3771ef5c1d157621786b37ff4322bd9ebed51953db21b7f5bf093a7",
+   "pay_date": "2024-08-16",
+   "record_date": "2024-08-05",
+   "ticker": "DOC"
+  },
+  {
+   "cash_amount": 0.3,
+   "currency": "USD",
+   "declaration_date": "2024-04-25",
+   "dividend_type": "CD",
+   "ex_dividend_date": "2024-05-03",
+   "frequency": 4,
+   "id": "E91029f85e420f64918d87a599907fbeb1215b20c3590847a44a373fbe9f16de5",
+   "pay_date": "2024-05-17",
+   "record_date": "2024-05-06",
+   "ticker": "DOC"
+  },
+  {
+   "cash_amount": 0.3,
+   "currency": "USD",
+   "declaration_date": "2024-01-31",
+   "dividend_type": "CD",
+   "ex_dividend_date": "2024-02-13",
+   "frequency": 4,
+   "id": "E687ba162644fb27c1fe13b73b2e449d09218deec705fa96012e2dc3aa50f1f8c",
+   "pay_date": "2024-02-26",
+   "record_date": "2024-02-14",
+   "ticker": "DOC"
+  },
+  {
+   "cash_amount": 0.23,
+   "currency": "USD",
+   "declaration_date": "2023-12-21",
+   "dividend_type": "CD",
+   "ex_dividend_date": "2024-01-02",
+   "frequency": 4,
+   "id": "E894aec768eb309d84d5b6caefe2493e05c95aae163a0ef827132c35a353408cd",
+   "pay_date": "2024-01-18",
+   "record_date": "2024-01-03",
+   "ticker": "DOC"
+  },
+  {
+   "cash_amount": 0.23,
+   "currency": "USD",
+   "declaration_date": "2023-09-21",
+   "dividend_type": "CD",
+   "ex_dividend_date": "2023-10-02",
+   "frequency": 4,
+   "id": "E8345030513698bc0924ebdf8998b12b6f5e45c6afd1d3a03adfce361a0cce944",
+   "pay_date": "2023-10-17",
+   "record_date": "2023-10-03",
+   "ticker": "DOC"
+  },
+  {
+   "cash_amount": 0.23,
+   "currency": "USD",
+   "declaration_date": "2023-05-16",
+   "dividend_type": "CD",
+   "ex_dividend_date": "2023-07-03",
+   "frequency": 4,
+   "id": "E2e877159dd9c12ddebbb1a386dac5fa4a697d1fb7fab4aaa8ab901f17315eee0",
+   "pay_date": "2023-07-18",
+   "record_date": "2023-07-05",
+   "ticker": "DOC"
+  },
+  {
+   "cash_amount": 0.23,
+   "currency": "USD",
+   "declaration_date": "2023-03-17",
+   "dividend_type": "CD",
+   "ex_dividend_date": "2023-04-03",
+   "frequency": 4,
+   "id": "E07e4fb0c961b811e2d9f8a6d1c729616c1c684ae505105ea515234fa2d66b0ff",
+   "pay_date": "2023-04-18",
+   "record_date": "2023-04-04",
+   "ticker": "DOC"
+  },
+  {
+   "cash_amount": 0.23,
+   "currency": "USD",
+   "declaration_date": "2022-12-22",
+   "dividend_type": "CD",
+   "ex_dividend_date": "2023-01-03",
+   "frequency": 4,
+   "id": "E3c50bf54d3caba0a6ac99bdabd9f50a89995f1ae573e99bd221909de56106b4b",
+   "pay_date": "2023-01-18",
+   "record_date": "2023-01-04",
+   "ticker": "DOC"
+  },
+  {
+   "cash_amount": 0.23,
+   "currency": "USD",
+   "declaration_date": "2022-09-23",
+   "dividend_type": "CD",
+   "ex_dividend_date": "2022-10-03",
+   "frequency": 4,
+   "id": "E0a908f670f3aad047cfd25ea55acf97a89e80340d712bd651827ef0d517e6ff1",
+   "pay_date": "2022-10-14",
+   "record_date": "2022-10-04",
+   "ticker": "DOC"
+  },
+  {
+   "cash_amount": 0.23,
+   "currency": "USD",
+   "declaration_date": "2022-06-17",
+   "dividend_type": "CD",
+   "ex_dividend_date": "2022-07-01",
+   "frequency": 4,
+   "id": "E4557c1a5a72cc55ae1e183f9cd1e937b07b32695cbee685e84a00578b297f57d",
+   "pay_date": "2022-07-19",
+   "record_date": "2022-07-05",
+   "ticker": "DOC"
+  },
+  {
+   "cash_amount": 0.23,
+   "currency": "USD",
+   "declaration_date": "2022-03-18",
+   "dividend_type": "CD",
+   "ex_dividend_date": "2022-03-30",
+   "frequency": 4,
+   "id": "Ee4632552ac0c07fcfb63ff16413adf6e66c720b2e996857ad35c2e24e20e512a",
+   "pay_date": "2022-04-14",
+   "record_date": "2022-03-31",
+   "ticker": "DOC"
+  },
+  {
+   "cash_amount": 0.23,
+   "currency": "USD",
+   "declaration_date": "2021-12-22",
+   "dividend_type": "CD",
+   "ex_dividend_date": "2022-01-03",
+   "frequency": 4,
+   "id": "Ebf4744223eff6fcb7fbdc93080d31fc321b37e43e68b9f54d789d84e61547b18",
+   "pay_date": "2022-01-18",
+   "record_date": "2022-01-04",
+   "ticker": "DOC"
+  },
+  {
+   "cash_amount": 0.23,
+   "currency": "USD",
+   "declaration_date": "2021-09-22",
+   "dividend_type": "CD",
+   "ex_dividend_date": "2021-10-01",
+   "frequency": 4,
+   "id": "E11a21f7e29979bf11b3655fb252f75be8c2f1d98e204eac38386db6c789d0576",
+   "pay_date": "2021-10-15",
+   "record_date": "2021-10-04",
+   "ticker": "DOC"
+  },
+  {
+   "cash_amount": 0.23,
+   "currency": "USD",
+   "declaration_date": "2021-06-18",
+   "dividend_type": "CD",
+   "ex_dividend_date": "2021-07-01",
+   "frequency": 4,
+   "id": "E1104a11e104694b032f670c2a291c2eb17b315d8ecb7926dca30e632280783f7",
+   "pay_date": "2021-07-16",
+   "record_date": "2021-07-02",
+   "ticker": "DOC"
+  },
+  {
+   "cash_amount": 0.23,
+   "currency": "USD",
+   "declaration_date": "2021-03-19",
+   "dividend_type": "CD",
+   "ex_dividend_date": "2021-03-31",
+   "frequency": 4,
+   "id": "E874499d061d7d62062ea3814f35504e259c739481b4b40a3834c34cacee860bf",
+   "pay_date": "2021-04-16",
+   "record_date": "2021-04-02",
+   "ticker": "DOC"
+  },
+  {
+   "cash_amount": 0.23,
+   "currency": "USD",
+   "declaration_date": "2020-12-18",
+   "dividend_type": "CD",
+   "ex_dividend_date": "2021-01-04",
+   "frequency": 4,
+   "id": "Edc256fe83c0869b761c62fa98fa6eadf9e2aa91c3300ff869b557c99180f88ca",
+   "pay_date": "2021-01-20",
+   "record_date": "2021-01-05",
+   "ticker": "DOC"
+  },
+  {
+   "cash_amount": 0.23,
+   "currency": "USD",
+   "declaration_date": "2020-09-21",
+   "dividend_type": "CD",
+   "ex_dividend_date": "2020-10-01",
+   "frequency": 4,
+   "id": "Ec0db7b07bfcfa490c3e175f5613ba1e43eed4b2046c2147067841ddd5dc86e83",
+   "pay_date": "2020-10-16",
+   "record_date": "2020-10-02",
+   "ticker": "DOC"
+  },
+  {
+   "cash_amount": 0.23,
+   "currency": "USD",
+   "declaration_date": "2020-06-18",
+   "dividend_type": "CD",
+   "ex_dividend_date": "2020-07-01",
+   "frequency": 4,
+   "id": "E0a23d036ee2bdb956aad869234b779e38342dbfb402ab70cb074e5dc06dc7b4d",
+   "pay_date": "2020-07-17",
+   "record_date": "2020-07-02",
+   "ticker": "DOC"
+  },
+  {
+   "cash_amount": 0.23,
+   "currency": "USD",
+   "declaration_date": "2020-03-19",
+   "dividend_type": "CD",
+   "ex_dividend_date": "2020-04-01",
+   "frequency": 4,
+   "id": "E7f4f139e90d76c205b7ce78beabb1da23e83f51d9b3ce9b6a8d99141c2b26bf8",
+   "pay_date": "2020-04-16",
+   "record_date": "2020-04-02",
+   "ticker": "DOC"
+  },
+  {
+   "cash_amount": 0.23,
+   "currency": "USD",
+   "declaration_date": "2019-12-20",
+   "dividend_type": "CD",
+   "ex_dividend_date": "2020-01-02",
+   "frequency": 4,
+   "id": "E26154731287ed2186806e42c5e170b1ca395bb280427490a22ac6666eb7e6d76",
+   "pay_date": "2020-01-17",
+   "record_date": "2020-01-03",
+   "ticker": "DOC"
+  },
+  {
+   "cash_amount": 0.23,
+   "currency": "USD",
+   "declaration_date": "2019-09-20",
+   "dividend_type": "CD",
+   "ex_dividend_date": "2019-10-02",
+   "frequency": 4,
+   "id": "Ee343c422c5afbe563fc390be278f37bec72de36159ca914e00b3f2ae1ab61fe1",
+   "pay_date": "2019-10-18",
+   "record_date": "2019-10-03",
+   "ticker": "DOC"
+  },
+  {
+   "cash_amount": 0.23,
+   "currency": "USD",
+   "declaration_date": "2019-06-21",
+   "dividend_type": "CD",
+   "ex_dividend_date": "2019-07-02",
+   "frequency": 4,
+   "id": "E92428f03721905136054e703578fe5e24d37139126adc5c636fed41552988c29",
+   "pay_date": "2019-07-18",
+   "record_date": "2019-07-03",
+   "ticker": "DOC"
+  },
+  {
+   "cash_amount": 0.23,
+   "currency": "USD",
+   "declaration_date": "2019-03-22",
+   "dividend_type": "CD",
+   "ex_dividend_date": "2019-04-02",
+   "frequency": 4,
+   "id": "E936211dbd9b50fe581acf3b691b4e4e2cf68421b95f4a255b75fc6fa7402b207",
+   "pay_date": "2019-04-18",
+   "record_date": "2019-04-03",
+   "ticker": "DOC"
+  },
+  {
+   "cash_amount": 0.23,
+   "currency": "USD",
+   "declaration_date": "2018-12-21",
+   "dividend_type": "CD",
+   "ex_dividend_date": "2019-01-03",
+   "frequency": 4,
+   "id": "E195f0573837998c8ae0f06e125f0df475b6d5303bc34e8cc42566bfb82d03375",
+   "pay_date": "2019-01-18",
+   "record_date": "2019-01-04",
+   "ticker": "DOC"
+  },
+  {
+   "cash_amount": 0.23,
+   "currency": "USD",
+   "declaration_date": "2018-09-19",
+   "dividend_type": "CD",
+   "ex_dividend_date": "2018-10-02",
+   "frequency": 4,
+   "id": "E4f157329860af4170df830fda03a108247e98ce822b56aafc940b76e9f00fdcb",
+   "pay_date": "2018-10-18",
+   "record_date": "2018-10-03",
+   "ticker": "DOC"
+  },
+  {
+   "cash_amount": 0.23,
+   "currency": "USD",
+   "declaration_date": "2018-06-21",
+   "dividend_type": "CD",
+   "ex_dividend_date": "2018-07-02",
+   "frequency": 4,
+   "id": "E81db8672b1cf65bd3736c322599dcad8b4bf64f6049cc5d2dbd2f3733a3c10a6",
+   "pay_date": "2018-07-18",
+   "record_date": "2018-07-03",
+   "ticker": "DOC"
+  },
+  {
+   "cash_amount": 0.23,
+   "currency": "USD",
+   "declaration_date": "2018-03-23",
+   "dividend_type": "CD",
+   "ex_dividend_date": "2018-04-02",
+   "frequency": 4,
+   "id": "Ed310f9a5b098545d5f21df1e9dbd6b4cdb935698f4025561a09869549ec7db6f",
+   "pay_date": "2018-04-18",
+   "record_date": "2018-04-03",
+   "ticker": "DOC"
+  },
+  {
+   "cash_amount": 0.23,
+   "currency": "USD",
+   "declaration_date": "2017-12-21",
+   "dividend_type": "CD",
+   "ex_dividend_date": "2018-01-02",
+   "frequency": 4,
+   "id": "E849fadcf84e75f0aee94b700fe9724a39d2aa6b7092de1066066f1d506c3737c",
+   "pay_date": "2018-01-18",
+   "record_date": "2018-01-03",
+   "ticker": "DOC"
+  },
+  {
+   "cash_amount": 0.23,
+   "currency": "USD",
+   "declaration_date": "2017-09-21",
+   "dividend_type": "CD",
+   "ex_dividend_date": "2017-10-02",
+   "frequency": 4,
+   "id": "E807438a32d27505ca929f4a7b0c376de6f0d8165da6c6164d987620f21b9bb5a",
+   "pay_date": "2017-10-18",
+   "record_date": "2017-10-03",
+   "ticker": "DOC"
+  },
+  {
+   "cash_amount": 0.23,
+   "currency": "USD",
+   "declaration_date": "2017-06-12",
+   "dividend_type": "CD",
+   "ex_dividend_date": "2017-06-29",
+   "frequency": 4,
+   "id": "E37b015ed7e724f336a4461465eaa484ee24997cdbbed8702b803ab242dd52dc1",
+   "pay_date": "2017-07-18",
+   "record_date": "2017-07-03",
+   "ticker": "DOC"
+  },
+  {
+   "cash_amount": 0.225,
+   "currency": "USD",
+   "declaration_date": "2017-03-17",
+   "dividend_type": "CD",
+   "ex_dividend_date": "2017-04-03",
+   "frequency": 4,
+   "id": "Ee9c6e9ab9473b658db42a28b2892bf38bca4d33a6b6437ccfd5bce229a23f6f7",
+   "pay_date": "2017-04-18",
+   "record_date": "2017-04-05",
+   "ticker": "DOC"
+  },
+  {
+   "cash_amount": 0.225,
+   "currency": "USD",
+   "declaration_date": "2016-12-22",
+   "dividend_type": "CD",
+   "ex_dividend_date": "2017-01-03",
+   "frequency": 4,
+   "id": "E423c072acfeef8aa6f84b891f4740050dafb0877a1ee3b40b41857fd7ca964f9",
+   "pay_date": "2017-01-18",
+   "record_date": "2017-01-05",
+   "ticker": "DOC"
+  },
+  {
+   "cash_amount": 0.225,
+   "currency": "USD",
+   "declaration_date": "2016-09-26",
+   "dividend_type": "CD",
+   "ex_dividend_date": "2016-10-04",
+   "frequency": 4,
+   "id": "Eec61a3127be8d867cb4a6fc48d3b70e6bb76d2bc62d344cf283850a09b6e2ae9",
+   "pay_date": "2016-10-18",
+   "record_date": "2016-10-06",
+   "ticker": "DOC"
+  },
+  {
+   "cash_amount": 0.225,
+   "currency": "USD",
+   "declaration_date": "2016-06-23",
+   "dividend_type": "CD",
+   "ex_dividend_date": "2016-06-30",
+   "frequency": 4,
+   "id": "Ebef2978c2fc76dc736db9ed6001783d09b6b6022d84c90e750402a899f42501d",
+   "pay_date": "2016-07-18",
+   "record_date": "2016-07-05",
+   "ticker": "DOC"
+  },
+  {
+   "cash_amount": 0.225,
+   "currency": "USD",
+   "declaration_date": "2016-03-18",
+   "dividend_type": "CD",
+   "ex_dividend_date": "2016-03-30",
+   "frequency": 4,
+   "id": "Ebcba9beac8b8f32e5ef29fcea868957ba1e171ca64ec4bc6d5f10b243da96b5d",
+   "pay_date": "2016-04-18",
+   "record_date": "2016-04-01",
+   "ticker": "DOC"
+  },
+  {
+   "cash_amount": 0.225,
+   "currency": "USD",
+   "declaration_date": "2015-01-04",
+   "dividend_type": "CD",
+   "ex_dividend_date": "2016-01-13",
+   "frequency": 4,
+   "id": "E8d50d4a3e5f9f17995b51020249ee77fb9c458298928e8969260c175de82883b",
+   "pay_date": "2016-01-29",
+   "record_date": "2016-01-15",
+   "ticker": "DOC"
+  },
+  {
+   "cash_amount": 0.225,
+   "currency": "USD",
+   "declaration_date": "2015-09-28",
+   "dividend_type": "CD",
+   "ex_dividend_date": "2015-10-14",
+   "frequency": 4,
+   "id": "E16e8bf165645fed60232fa6d380fc6c3c762e6eb551d0acfa584723c56cb6b81",
+   "pay_date": "2015-10-30",
+   "record_date": "2015-10-16",
+   "ticker": "DOC"
+  },
+  {
+   "cash_amount": 0.225,
+   "currency": "USD",
+   "declaration_date": "2015-07-01",
+   "dividend_type": "CD",
+   "ex_dividend_date": "2015-07-15",
+   "frequency": 4,
+   "id": "Edd74212ae3b25c04a038767eed8321e2ffed450dd463f33b99922b4016996379",
+   "pay_date": "2015-07-31",
+   "record_date": "2015-07-17",
+   "ticker": "DOC"
+  },
+  {
+   "cash_amount": 0.225,
+   "currency": "USD",
+   "declaration_date": "2015-04-02",
+   "dividend_type": "CD",
+   "ex_dividend_date": "2015-04-15",
+   "frequency": 4,
+   "id": "Ed9aea03cf455d610a04d2eaac0531fd6f750c656ef8c3980e2b55dfc934161c5",
+   "pay_date": "2015-05-01",
+   "record_date": "2015-04-17",
+   "ticker": "DOC"
+  },
+  {
+   "cash_amount": 0.225,
+   "currency": "USD",
+   "declaration_date": "2014-12-30",
+   "dividend_type": "CD",
+   "ex_dividend_date": "2015-01-21",
+   "frequency": 4,
+   "id": "Ee4cff9efed9fd6dcc37f7579372685ec7235f3ecaf347981adc1a5a1d34c5a0c",
+   "pay_date": "2015-02-06",
+   "record_date": "2015-01-23",
+   "ticker": "DOC"
+  },
+  {
+   "cash_amount": 0.225,
+   "currency": "USD",
+   "declaration_date": "2014-09-26",
+   "dividend_type": "CD",
+   "ex_dividend_date": "2014-10-15",
+   "frequency": 4,
+   "id": "Ebe65a3197de0a17099590b7f8badcb83d9a4b5b4560707f4ebd5f3ac597ae078",
+   "pay_date": "2014-10-30",
+   "record_date": "2014-10-17",
+   "ticker": "DOC"
+  },
+  {
+   "cash_amount": 0.225,
+   "currency": "USD",
+   "declaration_date": "2014-06-26",
+   "dividend_type": "CD",
+   "ex_dividend_date": "2014-07-16",
+   "frequency": 4,
+   "id": "E54f791d8b3b59340c4b8e16894e68504df5a5f560f57f5fa1f3aad9b190e481c",
+   "pay_date": "2014-08-01",
+   "record_date": "2014-07-18",
+   "ticker": "DOC"
+  },
+  {
+   "cash_amount": 0.225,
+   "currency": "USD",
+   "declaration_date": "2014-03-27",
+   "dividend_type": "CD",
+   "ex_dividend_date": "2014-04-09",
+   "frequency": 4,
+   "id": "E9059070907a83b45228c5368099899071e7e1bc72cd4c3c44ccde1dd20b8c185",
+   "pay_date": "2014-04-25",
+   "record_date": "2014-04-11",
+   "ticker": "DOC"
+  },
+  {
+   "cash_amount": 0.225,
+   "currency": "USD",
+   "declaration_date": "2013-12-30",
+   "dividend_type": "CD",
+   "ex_dividend_date": "2014-01-22",
+   "frequency": 4,
+   "id": "E1519d654c067728f23751e86ce78801ff73b4279d0f616f2cb7ce26850dbb628",
+   "pay_date": "2014-02-07",
+   "record_date": "2014-01-24",
+   "ticker": "DOC"
+  },
+  {
+   "cash_amount": 0.18,
+   "currency": "USD",
+   "declaration_date": "2013-09-30",
+   "dividend_type": "CD",
+   "ex_dividend_date": "2013-10-16",
+   "frequency": 4,
+   "id": "Eff5caca39ababb8f6b7995b9ecaed3b0da48832f4bf69ec93aeb8752a2645580",
+   "pay_date": "2013-11-01",
+   "record_date": "2013-10-18",
+   "ticker": "DOC"
+  }
+ ]
+}

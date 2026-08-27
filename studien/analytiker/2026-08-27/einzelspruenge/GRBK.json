@@ -1,0 +1,17 @@
+{
+ "sym": "GRBK",
+ "ereignisse": [
+  {
+   "datum": "2012-06-15",
+   "art": "split",
+   "faktor": 20
+  }
+ ],
+ "quelle": "Massive REST /v3/reference/splits (Bearer, Gratis-Stufe)",
+ "abgerufen": "2026-08-27T10:43:14.443Z",
+ "abgedeckt": [
+  "split"
+ ],
+ "konvention": "faktor bei art=split: Kursfaktor am Ausfuehrungstag = split_from/split_to (Reverse 4:1 -> 4; Forward 1:4 -> 0.25). datum: execution_date.",
+ "hinweis": "Dritte Kandidatenmenge (Einzelspruenge ohne Rueckkehr, PM-Budget 27.08.); Dividenden bewusst nicht abgerufen."
+}

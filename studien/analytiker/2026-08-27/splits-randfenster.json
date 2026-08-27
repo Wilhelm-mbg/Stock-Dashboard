@@ -1,0 +1,107 @@
+[
+ {
+  "execution_date": "2026-08-28",
+  "id": "Ee9417837f3051539def0d0a1ea5464eda9f3218f97d2518e7a5372e8246da8d6",
+  "split_from": 1,
+  "split_to": 2,
+  "ticker": "SGIPF"
+ },
+ {
+  "execution_date": "2026-08-28",
+  "id": "Ed20247e0c0d19ebe662482571aa00bcfff402c9a65bc3486b3a48a919d58445a",
+  "split_from": 8,
+  "split_to": 1,
+  "ticker": "CYCU"
+ },
+ {
+  "execution_date": "2026-08-27",
+  "id": "E5c743677c516d826adcbc6f9c67a1696b9f00234cd5310c0ab07b503f6d95175",
+  "split_from": 16,
+  "split_to": 1,
+  "ticker": "YMT"
+ },
+ {
+  "execution_date": "2026-08-27",
+  "id": "E451433c377f588b2e528e8d772e415033770fddc3ca737d0d98f06b47156b01b",
+  "split_from": 4,
+  "split_to": 1,
+  "ticker": "WHLR"
+ },
+ {
+  "execution_date": "2026-08-27",
+  "id": "Ede00ebd36c278ca3b3775fce41b41b98596243ec8a868bdbe01da80d274249f6",
+  "split_from": 10,
+  "split_to": 1,
+  "ticker": "NVX"
+ },
+ {
+  "execution_date": "2026-08-27",
+  "id": "E41b13933d12576ebac73c3eb402c44bca86cbf875fd436f0f7dc485e047b6040",
+  "split_from": 10,
+  "split_to": 1,
+  "ticker": "LGVN"
+ },
+ {
+  "execution_date": "2026-08-27",
+  "id": "E0530683c0c3405ddfe41201c6b703dbef1e0b5077fde465bb6cfb075753d8cf2",
+  "split_from": 30,
+  "split_to": 1,
+  "ticker": "IMCC"
+ },
+ {
+  "execution_date": "2026-08-27",
+  "id": "Ed42330769dca47bf45a3fcf5ad738c88e4ba96cd958a711df6aaf3b4768fc317",
+  "split_from": 5,
+  "split_to": 1,
+  "ticker": "IDXG"
+ },
+ {
+  "execution_date": "2026-08-27",
+  "id": "E8c2fa38bcab3fdea6db9fc1526b7290056da051fabb636c13e6bb66942e88c86",
+  "split_from": 194,
+  "split_to": 195,
+  "ticker": "GPMXY"
+ },
+ {
+  "execution_date": "2026-08-27",
+  "id": "E26d4ba8af8a2e97a6f8e51c07c7c5dfc6492006bccb28e5596718f2c420e9622",
+  "split_from": 194,
+  "split_to": 195,
+  "ticker": "GMBXF"
+ },
+ {
+  "execution_date": "2026-08-27",
+  "id": "E2c910903ceb2e734e5132c476d40bfaf9c7cf6a645f2c0b8d4295cb27e5b0e0e",
+  "split_from": 3,
+  "split_to": 1,
+  "ticker": "GLTK"
+ },
+ {
+  "execution_date": "2026-08-27",
+  "id": "E56e7d3260194a7d2e8c535e0822ea2e32bcc4668faab1ba4588faafd741735d1",
+  "split_from": 10000,
+  "split_to": 1,
+  "ticker": "FUNR"
+ },
+ {
+  "execution_date": "2026-08-26",
+  "id": "E09af3d0040e84743959ac7306dbadead86fa09de84d52781a635ebbe0ef8a007",
+  "split_from": 10,
+  "split_to": 1,
+  "ticker": "VMAR"
+ },
+ {
+  "execution_date": "2026-08-26",
+  "id": "E5a19da1bf2894de1ccef21330ce06cb172226278aacf4eca1cadc864bdb18700",
+  "split_from": 5,
+  "split_to": 1,
+  "ticker": "PDIYF"
+ },
+ {
+  "execution_date": "2026-08-26",
+  "id": "Ebdcca3578e8eaaefa752569a8bde0831e60c41e5eb65b4b5e25b8214b561b251",
+  "split_from": 7,
+  "split_to": 1,
+  "ticker": "BBKCF"
+ }
+]

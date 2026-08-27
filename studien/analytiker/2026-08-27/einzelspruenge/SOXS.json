@@ -1,0 +1,62 @@
+{
+ "sym": "SOXS",
+ "ereignisse": [
+  {
+   "datum": "2026-07-15",
+   "art": "split",
+   "faktor": 10
+  },
+  {
+   "datum": "2026-03-05",
+   "art": "split",
+   "faktor": 20
+  },
+  {
+   "datum": "2024-04-15",
+   "art": "split",
+   "faktor": 10
+  },
+  {
+   "datum": "2022-03-28",
+   "art": "split",
+   "faktor": 10
+  },
+  {
+   "datum": "2020-08-28",
+   "art": "split",
+   "faktor": 12
+  },
+  {
+   "datum": "2019-06-28",
+   "art": "split",
+   "faktor": 10
+  },
+  {
+   "datum": "2017-05-01",
+   "art": "split",
+   "faktor": 5
+  },
+  {
+   "datum": "2015-05-20",
+   "art": "split",
+   "faktor": 4
+  },
+  {
+   "datum": "2013-08-20",
+   "art": "split",
+   "faktor": 4
+  },
+  {
+   "datum": "2011-02-24",
+   "art": "split",
+   "faktor": 5
+  }
+ ],
+ "quelle": "Massive REST /v3/reference/splits (Bearer, Gratis-Stufe)",
+ "abgerufen": "2026-08-27T11:24:33.226Z",
+ "abgedeckt": [
+  "split"
+ ],
+ "konvention": "faktor bei art=split: Kursfaktor am Ausfuehrungstag = split_from/split_to (Reverse 4:1 -> 4; Forward 1:4 -> 0.25). datum: execution_date.",
+ "hinweis": "Dritte Kandidatenmenge (Einzelspruenge ohne Rueckkehr, PM-Budget 27.08.); Dividenden bewusst nicht abgerufen."
+}

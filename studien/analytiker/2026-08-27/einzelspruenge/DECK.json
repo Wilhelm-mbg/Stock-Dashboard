@@ -1,0 +1,22 @@
+{
+ "sym": "DECK",
+ "ereignisse": [
+  {
+   "datum": "2024-09-17",
+   "art": "split",
+   "faktor": 0.16666666666666666
+  },
+  {
+   "datum": "2010-07-06",
+   "art": "split",
+   "faktor": 0.3333333333333333
+  }
+ ],
+ "quelle": "Massive REST /v3/reference/splits (Bearer, Gratis-Stufe)",
+ "abgerufen": "2026-08-27T10:37:10.189Z",
+ "abgedeckt": [
+  "split"
+ ],
+ "konvention": "faktor bei art=split: Kursfaktor am Ausfuehrungstag = split_from/split_to (Reverse 4:1 -> 4; Forward 1:4 -> 0.25). datum: execution_date.",
+ "hinweis": "Dritte Kandidatenmenge (Einzelspruenge ohne Rueckkehr, PM-Budget 27.08.); Dividenden bewusst nicht abgerufen."
+}

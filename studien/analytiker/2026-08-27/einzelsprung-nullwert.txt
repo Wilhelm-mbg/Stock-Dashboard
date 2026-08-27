@@ -1,0 +1,1 @@
+Erwartung=0.42 p95=2 max=4 analytisch=0.45 reihenMitSplits=113

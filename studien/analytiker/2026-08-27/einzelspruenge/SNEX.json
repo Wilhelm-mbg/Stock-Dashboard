@@ -1,0 +1,32 @@
+{
+ "sym": "SNEX",
+ "ereignisse": [
+  {
+   "datum": "2026-07-20",
+   "art": "split",
+   "faktor": 0.6666666666666666
+  },
+  {
+   "datum": "2026-03-23",
+   "art": "split",
+   "faktor": 0.6666666666666666
+  },
+  {
+   "datum": "2025-03-24",
+   "art": "split",
+   "faktor": 0.6666666666666666
+  },
+  {
+   "datum": "2023-11-27",
+   "art": "split",
+   "faktor": 0.6666666666666666
+  }
+ ],
+ "quelle": "Massive REST /v3/reference/splits (Bearer, Gratis-Stufe)",
+ "abgerufen": "2026-08-27T11:24:07.224Z",
+ "abgedeckt": [
+  "split"
+ ],
+ "konvention": "faktor bei art=split: Kursfaktor am Ausfuehrungstag = split_from/split_to (Reverse 4:1 -> 4; Forward 1:4 -> 0.25). datum: execution_date.",
+ "hinweis": "Dritte Kandidatenmenge (Einzelspruenge ohne Rueckkehr, PM-Budget 27.08.); Dividenden bewusst nicht abgerufen."
+}

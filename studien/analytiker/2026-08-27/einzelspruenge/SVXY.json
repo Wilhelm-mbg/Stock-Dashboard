@@ -1,0 +1,37 @@
+{
+ "sym": "SVXY",
+ "ereignisse": [
+  {
+   "datum": "2024-04-11",
+   "art": "split",
+   "faktor": 0.5
+  },
+  {
+   "datum": "2018-09-18",
+   "art": "split",
+   "faktor": 4
+  },
+  {
+   "datum": "2017-07-17",
+   "art": "split",
+   "faktor": 0.5
+  },
+  {
+   "datum": "2014-01-24",
+   "art": "split",
+   "faktor": 0.5
+  },
+  {
+   "datum": "2012-10-05",
+   "art": "split",
+   "faktor": 0.5
+  }
+ ],
+ "quelle": "Massive REST /v3/reference/splits (Bearer, Gratis-Stufe)",
+ "abgerufen": "2026-08-27T11:26:56.327Z",
+ "abgedeckt": [
+  "split"
+ ],
+ "konvention": "faktor bei art=split: Kursfaktor am Ausfuehrungstag = split_from/split_to (Reverse 4:1 -> 4; Forward 1:4 -> 0.25). datum: execution_date.",
+ "hinweis": "Dritte Kandidatenmenge (Einzelspruenge ohne Rueckkehr, PM-Budget 27.08.); Dividenden bewusst nicht abgerufen."
+}

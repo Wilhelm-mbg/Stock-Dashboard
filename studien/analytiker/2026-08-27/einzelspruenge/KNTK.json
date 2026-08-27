@@ -1,0 +1,22 @@
+{
+ "sym": "KNTK",
+ "ereignisse": [
+  {
+   "datum": "2022-06-09",
+   "art": "split",
+   "faktor": 0.5
+  },
+  {
+   "datum": "2020-07-01",
+   "art": "split",
+   "faktor": 20
+  }
+ ],
+ "quelle": "Massive REST /v3/reference/splits (Bearer, Gratis-Stufe)",
+ "abgerufen": "2026-08-27T10:51:02.746Z",
+ "abgedeckt": [
+  "split"
+ ],
+ "konvention": "faktor bei art=split: Kursfaktor am Ausfuehrungstag = split_from/split_to (Reverse 4:1 -> 4; Forward 1:4 -> 0.25). datum: execution_date.",
+ "hinweis": "Dritte Kandidatenmenge (Einzelspruenge ohne Rueckkehr, PM-Budget 27.08.); Dividenden bewusst nicht abgerufen."
+}

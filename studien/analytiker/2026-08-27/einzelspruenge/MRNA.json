@@ -1,0 +1,27 @@
+{
+ "sym": "MRNA",
+ "ereignisse": [
+  {
+   "datum": "2017-08-03",
+   "art": "split",
+   "faktor": 10
+  },
+  {
+   "datum": "2011-12-23",
+   "art": "split",
+   "faktor": 10
+  },
+  {
+   "datum": "2010-07-22",
+   "art": "split",
+   "faktor": 4
+  }
+ ],
+ "quelle": "Massive REST /v3/reference/splits (Bearer, Gratis-Stufe)",
+ "abgerufen": "2026-08-27T10:55:35.880Z",
+ "abgedeckt": [
+  "split"
+ ],
+ "konvention": "faktor bei art=split: Kursfaktor am Ausfuehrungstag = split_from/split_to (Reverse 4:1 -> 4; Forward 1:4 -> 0.25). datum: execution_date.",
+ "hinweis": "Dritte Kandidatenmenge (Einzelspruenge ohne Rueckkehr, PM-Budget 27.08.); Dividenden bewusst nicht abgerufen."
+}
