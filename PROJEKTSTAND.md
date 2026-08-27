@@ -40,6 +40,10 @@ Wenn du hier etwas änderst, dann nur deine eigene Zeile unter „Läuft gerade"
   *`sichtbar()` misst am Rechteck; `content-visibility` in zugeklappten `<details>` lässt das
   Rechteck gefüllt. **Mit unrepariertem Prüfer produzieren die Teile 2–5 dieselben Scheinbefunde
   wie #109** — und ein Scheinbefund, der jede Nacht wiederkommt, kostet mehr als ein echter Fehler.*
+  **⚠ UND DIE REPARATUR BRAUCHT EINE POSITIVKONTROLLE: ein Knopf, der wirklich in falscher
+  Reihenfolge steht.** *„Sonst wird der geschärfte Prüfer grün, **weil er gar nichts mehr
+  findet**" — die Reparatur eines zu lauten Prüfers erzeugt sonst einen zu leisen, und der fällt
+  niemandem auf.*
 
 **⛔ NICHT NOCH EINMAL NEHMEN — erledigt und ausgeliefert:** *#105 Live-Hürde (`5f79ca1`, in
 `v8.34.1`) · Rest von #108 (selber Commit) · Abmeldelisten-Pflege (`0623e6e`, im Nachtlauf) ·
