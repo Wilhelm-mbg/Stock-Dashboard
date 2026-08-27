@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 05:00 (abgelesen)
+letzter-bericht: 2026-08-27 05:50 (abgelesen)
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -40,7 +40,17 @@ Sitzungen.** Gefunden hat es jedes Mal eine Gegenprobe, nie ein Verdacht.
 > gegenstandslos.** *Was bleibt, ist die Frage der Archiv-Sauberkeit — und die ist Entscheidung
 > 1 unten.*
 
-### ⭐ Was auf Wilhelm wartet — drei Entscheidungen
+### ✅ 27.08. 05:50 — WILHELM HAT ALLE DREI ENTSCHIEDEN (per Formular)
+
+| | Entscheid | Was daraus folgt |
+|---|---|---|
+| **1** | **Randzeiten-Kerzen BEHALTEN und KENNZEICHNEN** | Es sind echte Kursdaten aus einem anderen Handelsfenster. **Nichts wird gelöscht.** Zu bauen ist die **Kennzeichnung**, damit jede Messung weiß, was sie liest. *Die Reparatur-Werkzeuge bleiben im Wartestand und werden nicht angewendet.* |
+| **2** | **Abmeldedatum SETZEN** | Messhygiene: Ein Papier mit Abmeldedatum kann nicht über sein Ende hinaus gehalten werden. **Achtung: die Daten am jüngsten Rand sind unzuverlässig** — AVB steht mit 18.08. in der Liste, handelte aber bis 24.08. *Handelsende statt Listendatum verwenden, wo beide bekannt sind.* |
+| **3** | **Messband auf die LIVE-Hürde umstellen** | Beide Anzeigen zeigen dann dasselbe wie das Scoreboard. **Eine Zeile** — die Stelle wurde heute Nacht dafür freigelegt (`huerdePp()`), ohne zu entscheiden. |
+
+*Der Dialog-Fokus (Schließen-Kreuz zuerst) war nicht Teil des Entscheids und bleibt offen.*
+
+### ⭐ ~~Was auf Wilhelm wartet~~ — die drei Entscheidungen (Vorgeschichte)
 
 | | Frage | Lage |
 |---|---|---|
