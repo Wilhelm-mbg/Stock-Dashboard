@@ -32,6 +32,74 @@ Gegenprobe, nie ein Verdacht.
 **Der siebte Fall war der lehrreichste, weil er den PM selbst betraf und binnen 40 Minuten
 auffiel:**
 
+### ⭐ Was auf Wilhelm wartet — drei Entscheidungen
+
+| | Frage | Lage |
+|---|---|---|
+| **1** | **Gehören Randzeiten-Kerzen ins 60m-Archiv?** | **ENTSCHIEDEN VORBEREITET — der Streit ist beigelegt, es bleibt eine reine Populationsfrage.** *Die Halbtage sind **nicht verdorben**: Sie sind die einzigen Tage, an denen Nachhandelsdaten überhaupt ins Archiv gelangt sind — genau **eine** Stunde je Reihe. **Warum, ist offen**: die naheliegende Erklärung („Filter greift eine Stunde zu weit") ist gemessen widerlegt; die Antwort steht im Sammelcode, nicht im Archiv.* **Drei Versuche, die Dochte als Fehler zu isolieren, sind alle gescheitert — am Normaltag sieht es genauso aus oder schlechter.** Die QS: *„Beide Erklärungen sagen dieselben Formen voraus; was trennen würde, wäre eine zweite Datenquelle — die haben wir nicht. Das ist ein Ergebnis, keine offene Aufgabe."* **→ Also: (a) fremde Population konsequent entfernen, oder (b) sie als legitime Nachhandelsdaten behalten und kennzeichnen. Werte reparieren steht nicht mehr zur Wahl.** *Größe: je Reihe und Halbtag genau EINE Kerze, davon 1,5 % mit tiefem Docht (2 von 133), Median-Ausschlag 0,000 %.* |
+| **2** | **Bekommen die delisteten Papiere ihr Abmeldedatum?** | **Lohnt sich, ist aber nicht dringend** *(um 02:10 nach unten korrigiert)*. AVB/EQR sind im Universum und heute außerhalb jedes Fensters; ab ~einer Handelswoche können die Phantomtage in ein Haltefenster geraten. **Aber der Schwanz ist auf 1–5 Tage gedeckelt** — der gefährliche Fall (dauerhaft flache Reihe, die eine Momentum-Rangfolge nach oben spült) tritt **nicht** ein. |
+| **3** | **Welche „Kostenhürde" zeigt das Messband?** | Zwei verschiedene Zahlen tragen denselben Namen; in der Voreinstellung stimmen sie zufällig überein. Live-Hürde oder feste Referenz — beides vertretbar, der Doppelname nicht. |
+
+### 🔒 Was läuft, und wann es meldet
+
+**Archivsperre bis ~03:40** (Nachlader gesund, ~300 Dateien/10 Min, keine Alarme).
+**Nichts wird verändert, `--wirklich` ist gesperrt**, unabhängig von jeder Methode.
+Danach fünf vorregistrierte Läufe, ein Prozess je Lauf, **Sperrprüfung vor jedem einzelnen**:
+
+    [1] Phantom-Schluss ueber alle sieben Halbtage   blockiert die Reparatur
+    [2] Schiedsrichter-Test (A/B/C)                  entscheidet ueber Option (c)
+    [3] 1d-Schluss gegen 60m-Schluss                 fuer Strang A
+    [4] Stempel-Sucher auf 60m gegen die 149         Kontrolle
+    [5] Kurssprung auf 60m                           zweite Stempel-Familie
+
+*Alle fünf verweigern bei stehender Sperre nachweislich — gemessen, nicht angenommen. Der
+Treiber **wartet nicht, er verweigert**: „ein Treiber, der wartet, verdeckt nur, dass er
+nichts tut."*
+
+### 📐 VIER NEUE HAUSREGELN AUS DIESER NACHT — alle gegen dieselbe Krankheit
+
+**Neben der bestehenden Regel „jeder Nullbefund braucht eine Positivkontrolle" stehen ab
+sofort zwei weitere. Alle drei behandeln denselben Defekt: eine Zahl ohne ihren Geltungsbereich.**
+
+| Regel | woher sie kommt |
+|---|---|
+| **1. Jeder Nullbefund braucht eine Positivkontrolle.** *(bestand schon)* | Eine Prüfung, die nichts findet, muss zeigen können, dass sie überhaupt etwas finden würde. |
+| **2. Jede Messung nennt die Tage und Reihen, für die sie gilt.** | Die 20:00-Kerze: an **einem** Tag gemessen, auf **alle** Tage gelesen — und vom PM als größter Fund der Nacht an die Spitze gesetzt. Sie existiert an genau zwei Tagen. |
+| **3. Jedes Warnsignal trägt sein Messdatum.** | „1m bei 1.834 von 2.732" war beim Schreiben richtig und beim Weitergeben überholt. Der PM hat zwei solche Einträge als eilig verteilt. |
+| **4. Zieht eine Aussage eine HANDLUNG nach sich, steht „gemessen" oder „gefolgert" IM SATZ — nicht im Nebensatz.** | Fünf zurückgezogene Sätze in einer Nacht, **bei allen fünf war die Messung richtig und der Satz darüber zu groß.** Vier betrafen Deutungen; **der fünfte hätte jemanden an einer Datei arbeiten lassen** („der Filter greift eine Stunde zu weit" — gefolgert, als Befund formuliert, mit Codestelle auf dem Weg in Wilhelms Vorlage). |
+| **5. Bei einem Ergebnis von 100 % zuerst fragen, ob das Kriterium auch anders ausgehen KÖNNTE.** | Die „210 von 210" — beide Klassen 100 %. *Ein Kriterium, das für alles gilt, unterscheidet nichts.* |
+
+> **Regel 2 und 3 sind dieselbe Regel in zwei Richtungen: Eine Zahl braucht ihren Umfang
+> (welche Tage, welche Reihen) und ihren Zeitpunkt (wann gemessen). Ohne beides altert oder
+> wandert sie, ohne dass es jemand merkt.**
+
+*Beide Regeln wurden von den Sitzungen vorgeschlagen, nicht vom PM — und beide Male an einem
+Fehler des PM.* **Regel 2 hat sich sofort selbst bewährt:** Die Auflage „drei Tage
+unterschiedlichen Charakters" war der einzige Grund, warum die falsche Reichweite auffiel.
+
+### 🧭 Der rote Faden der Nacht
+
+**Acht Fehler hatten dieselbe Form: eine Zahl ist richtig gerechnet und beantwortet trotzdem
+eine andere Frage als die gestellte.** 37,6 % „Teilkerzen", die zu 99,4 % Schlusskurse waren.
+76,4 % „echte Extreme", die von den Normaltagen getragen wurden. Eine Positivkontrolle, die
+Empfindlichkeit belegt und für Vollständigkeit gehalten wird. Eine Asymmetrie, die als Beleg
+für Verfälschung diente und ohne jede Verfälschung entsteht.
+
+**Und der Satz, der bleibt** (QS, nachdem sie in derselben Nacht zum zweiten Mal auf dieselbe
+Zahl hereingefallen war): ***Die Falle verschwindet nicht durch einmaliges Erkennen.***
+
+*Alle Einzelheiten in den datierten Abschnitten unterhalb und unter „Aufträge".*
+
+---
+
+
+---
+
+## 🔎 Die Funde der Nacht im Detail — chronologisch rückwärts
+
+*Alles unterhalb dieser Zeile ist Beleg zur Bilanz oben. Wer nur wissen will, was zu
+entscheiden ist, hat es bereits gelesen.*
+
 > ### ⚠→✅ EINE SCHLAGZEILE, DIE SICH IN ZWEI STUFEN AUFGELÖST HAT — und am Ende ins Gegenteil
 > **Hier stand: „die letzte Kerze jedes Handelstages ist eine instabile Momentaufnahme, und
 > die Messmaschine liest sie." Das war falsch, und der PM hatte es an die Spitze gesetzt.**
@@ -544,66 +612,6 @@ auffiel:**
 > Definition** — und genau das tut ein Handelssystem, das heute ein Signal rechnet nach Regeln,
 > die auf der Historie geeicht sind. *Zur Einordnung an die Mess-Sitzung gegeben; **nicht** vom
 > PM als groß behauptet, nachdem er es heute Nacht zweimal zu groß gelesen hat.*
-
-### ⭐ Was auf Wilhelm wartet — drei Entscheidungen
-
-| | Frage | Lage |
-|---|---|---|
-| **1** | **Gehören Randzeiten-Kerzen ins 60m-Archiv?** | **ENTSCHIEDEN VORBEREITET — der Streit ist beigelegt, es bleibt eine reine Populationsfrage.** *Die Halbtage sind **nicht verdorben**: Sie sind die einzigen Tage, an denen Nachhandelsdaten überhaupt ins Archiv gelangt sind — genau **eine** Stunde je Reihe. **Warum, ist offen**: die naheliegende Erklärung („Filter greift eine Stunde zu weit") ist gemessen widerlegt; die Antwort steht im Sammelcode, nicht im Archiv.* **Drei Versuche, die Dochte als Fehler zu isolieren, sind alle gescheitert — am Normaltag sieht es genauso aus oder schlechter.** Die QS: *„Beide Erklärungen sagen dieselben Formen voraus; was trennen würde, wäre eine zweite Datenquelle — die haben wir nicht. Das ist ein Ergebnis, keine offene Aufgabe."* **→ Also: (a) fremde Population konsequent entfernen, oder (b) sie als legitime Nachhandelsdaten behalten und kennzeichnen. Werte reparieren steht nicht mehr zur Wahl.** *Größe: je Reihe und Halbtag genau EINE Kerze, davon 1,5 % mit tiefem Docht (2 von 133), Median-Ausschlag 0,000 %.* |
-| **2** | **Bekommen die delisteten Papiere ihr Abmeldedatum?** | **Lohnt sich, ist aber nicht dringend** *(um 02:10 nach unten korrigiert)*. AVB/EQR sind im Universum und heute außerhalb jedes Fensters; ab ~einer Handelswoche können die Phantomtage in ein Haltefenster geraten. **Aber der Schwanz ist auf 1–5 Tage gedeckelt** — der gefährliche Fall (dauerhaft flache Reihe, die eine Momentum-Rangfolge nach oben spült) tritt **nicht** ein. |
-| **3** | **Welche „Kostenhürde" zeigt das Messband?** | Zwei verschiedene Zahlen tragen denselben Namen; in der Voreinstellung stimmen sie zufällig überein. Live-Hürde oder feste Referenz — beides vertretbar, der Doppelname nicht. |
-
-### 🔒 Was läuft, und wann es meldet
-
-**Archivsperre bis ~03:40** (Nachlader gesund, ~300 Dateien/10 Min, keine Alarme).
-**Nichts wird verändert, `--wirklich` ist gesperrt**, unabhängig von jeder Methode.
-Danach fünf vorregistrierte Läufe, ein Prozess je Lauf, **Sperrprüfung vor jedem einzelnen**:
-
-    [1] Phantom-Schluss ueber alle sieben Halbtage   blockiert die Reparatur
-    [2] Schiedsrichter-Test (A/B/C)                  entscheidet ueber Option (c)
-    [3] 1d-Schluss gegen 60m-Schluss                 fuer Strang A
-    [4] Stempel-Sucher auf 60m gegen die 149         Kontrolle
-    [5] Kurssprung auf 60m                           zweite Stempel-Familie
-
-*Alle fünf verweigern bei stehender Sperre nachweislich — gemessen, nicht angenommen. Der
-Treiber **wartet nicht, er verweigert**: „ein Treiber, der wartet, verdeckt nur, dass er
-nichts tut."*
-
-### 📐 VIER NEUE HAUSREGELN AUS DIESER NACHT — alle gegen dieselbe Krankheit
-
-**Neben der bestehenden Regel „jeder Nullbefund braucht eine Positivkontrolle" stehen ab
-sofort zwei weitere. Alle drei behandeln denselben Defekt: eine Zahl ohne ihren Geltungsbereich.**
-
-| Regel | woher sie kommt |
-|---|---|
-| **1. Jeder Nullbefund braucht eine Positivkontrolle.** *(bestand schon)* | Eine Prüfung, die nichts findet, muss zeigen können, dass sie überhaupt etwas finden würde. |
-| **2. Jede Messung nennt die Tage und Reihen, für die sie gilt.** | Die 20:00-Kerze: an **einem** Tag gemessen, auf **alle** Tage gelesen — und vom PM als größter Fund der Nacht an die Spitze gesetzt. Sie existiert an genau zwei Tagen. |
-| **3. Jedes Warnsignal trägt sein Messdatum.** | „1m bei 1.834 von 2.732" war beim Schreiben richtig und beim Weitergeben überholt. Der PM hat zwei solche Einträge als eilig verteilt. |
-| **4. Zieht eine Aussage eine HANDLUNG nach sich, steht „gemessen" oder „gefolgert" IM SATZ — nicht im Nebensatz.** | Fünf zurückgezogene Sätze in einer Nacht, **bei allen fünf war die Messung richtig und der Satz darüber zu groß.** Vier betrafen Deutungen; **der fünfte hätte jemanden an einer Datei arbeiten lassen** („der Filter greift eine Stunde zu weit" — gefolgert, als Befund formuliert, mit Codestelle auf dem Weg in Wilhelms Vorlage). |
-| **5. Bei einem Ergebnis von 100 % zuerst fragen, ob das Kriterium auch anders ausgehen KÖNNTE.** | Die „210 von 210" — beide Klassen 100 %. *Ein Kriterium, das für alles gilt, unterscheidet nichts.* |
-
-> **Regel 2 und 3 sind dieselbe Regel in zwei Richtungen: Eine Zahl braucht ihren Umfang
-> (welche Tage, welche Reihen) und ihren Zeitpunkt (wann gemessen). Ohne beides altert oder
-> wandert sie, ohne dass es jemand merkt.**
-
-*Beide Regeln wurden von den Sitzungen vorgeschlagen, nicht vom PM — und beide Male an einem
-Fehler des PM.* **Regel 2 hat sich sofort selbst bewährt:** Die Auflage „drei Tage
-unterschiedlichen Charakters" war der einzige Grund, warum die falsche Reichweite auffiel.
-
-### 🧭 Der rote Faden der Nacht
-
-**Acht Fehler hatten dieselbe Form: eine Zahl ist richtig gerechnet und beantwortet trotzdem
-eine andere Frage als die gestellte.** 37,6 % „Teilkerzen", die zu 99,4 % Schlusskurse waren.
-76,4 % „echte Extreme", die von den Normaltagen getragen wurden. Eine Positivkontrolle, die
-Empfindlichkeit belegt und für Vollständigkeit gehalten wird. Eine Asymmetrie, die als Beleg
-für Verfälschung diente und ohne jede Verfälschung entsteht.
-
-**Und der Satz, der bleibt** (QS, nachdem sie in derselben Nacht zum zweiten Mal auf dieselbe
-Zahl hereingefallen war): ***Die Falle verschwindet nicht durch einmaliges Erkennen.***
-
-*Alle Einzelheiten in den datierten Abschnitten unterhalb und unter „Aufträge".*
-
----
 
 ## 🔴 27.08.2026, 00:42 — App-Neustart: alle Sitzungen weg, der Nachlade-Lauf lebt
 
