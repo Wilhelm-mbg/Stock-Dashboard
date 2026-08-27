@@ -58,6 +58,33 @@ Dateien: 58 Wurzel-Skripte, `index.html`, Icons, `telemetrie.json`, 301 `node_mo
 > im Verdacht hatte.* ***Aus der Einzelfallprüfung von heute früh ist nie ein Verfahren
 > geworden.*** **→ Vergeben an `c4` mit der Auflage: eine Sperrklinke, die prüft, dass JEDE von
 > `messmaschine.js` geladene Datei im Paket landet — keine Liste bekannter Namen.**
+>
+> ### 🔺 NACHGEPRÜFT UND GRÖSSER: **es fehlt nicht eine Datei, sondern die ganze Sammlung**
+> ***„`messen.js:51` lädt die zu messende Strategie per `require(path.resolve(datei))` — es ist
+> dafür gebaut, eine Strategie-Datei als Argument zu bekommen. Sämtliche Strategien liegen in
+> `strategien/`, also fehlt nicht eine Datei, sondern die gesamte Sammlung, die `messen.js`
+> überhaupt erst arbeitsfähig macht."***
+> **Die Schranke ist die Stelle, an der es zuerst knallt — nicht die Ursache.**
+>
+> **Vermessung statt Einzelreparatur angestoßen:** *(1) vollständige **transitive**
+> Abhängigkeitskette gegen die `build.files`-Muster, inklusive dynamischer `require`s · (2) der
+> **Fork-Pfad**: was `main.js` bei `mess-lauf` startet, **ob es überhaupt einen Auslöser in der
+> Oberfläche gibt**, wie ein `MODULE_NOT_FOUND` im Unterprozess behandelt wird · (3) breite Suche
+> nach **weiteren** Dateien derselben Fehlerform · dann die Sperrklinke plus **zwei adversarische
+> Prüfer**, die sie zu widerlegen versuchen.*
+>
+> **⚖ Und die Gegenthese, die die messende Sitzung selbst aufgestellt hat:** *„**die installierte
+> Fassung enthält meine Schranke vielleicht gar nicht**" — ist das gepackte `messmaschine.js`
+> älter als Zeile 778, ist der Defekt theoretisch.*
+>
+> > ### ❓ PM-Frage zum ZUSCHNITT, nicht zum Ob:
+> > | Gibt es einen Auslöser in der Oberfläche? | richtige Reparatur |
+> > |---|---|
+> > | **ja** | `strategien/` mitliefern — echter Defekt |
+> > | **nein** | **den toten Fork-Pfad ZURÜCKBAUEN**, nicht Studienmaterial ins Paket schieben |
+> >
+> > ***„Viel zu viel" gilt für Pakete genauso wie für Oberflächen.*** *Die Sperrklinke bleibt in
+> > beiden Fällen richtig — auch ein zurückgebauter Pfad kann morgen neu entstehen.*
 
 **❓ DIE EINE FRAGE AN FELIX** *(über Wilhelm)*: **„Startet die App überhaupt — und wenn ja:
 welcher Reiter ist leer oder zeigt eine Meldung, und wie lautet sie wörtlich? Ein Bildschirmfoto
