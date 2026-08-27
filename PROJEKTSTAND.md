@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 02:50 (abgelesen)
+letzter-bericht: 2026-08-27 02:55 (abgelesen)
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -100,6 +100,37 @@ auffiel:**
 > heraus) und **(b) der Zeitplan** (frühestens 30 Minuten nach Schluss).
 > **Fällt eine von beiden weg, schreibt der Sammler einen Zwischenstands-Quote als Tagesschluss
 > ins Archiv** — und zwar einen, der aussieht wie der genaueste Wert im Bestand.
+>
+> ### 📐 „DIE LETZTE KERZE EINES TAGES" IST DREIERLEI — und nur eine davon ist der Schlusskurs
+>
+> *(QS, Halbtag 2025-11-28, 25 Reihen, gegen den amtlichen Tagesschluss aus der Quelle.)*
+>
+> | Tagesart | letzte Kerze | was sie ist | Abstand zum Tagesschluss (p50) | exakt gleich |
+> |---|---|---|---|---|
+> | **jüngste zwei Tage** | 20:00 | eingefrorener Quote = **amtlicher Schluss** | **0,000 %** | 29 von 30 |
+> | ältere Volltage | 19:30 | letzter Handel **vor** der Auktion | 0,028 % | 10 von 30 |
+> | **Halbtage** | 18:00 | **erste Nachhandelsstunde** | **0,107 %** *(p90 0,491 %, max 1,143 %)* | 6 von 25 |
+>
+> **Die Halbtagszeile ist die einzige über der Kostenhürde — im Median beim Doppelten, im
+> Maximum beim Elffachen.** Und **sie trifft genau die sieben Tage, um die sich diese ganze
+> Nacht dreht:** dort sitzen auch die Phantom-Dochte. *Vermutlich derselbe Mechanismus von der
+> anderen Seite — an Halbtagen liefert die Quelle Nachhandelsstunden im 60m-Strom.*
+>
+> **Warum die drei verschieden sind:** Für **alte** Tage schreibt der Nachlader aus dem
+> 60m-Strom, und der enthält **kein** Quote-Anhängsel für einen neun Monate alten Tag. Für die
+> **jüngsten** Tage schreibt der Sammler den eingefrorenen Quote.
+>
+> **Kein Selbstwiderspruch zu Lauf 1, von der QS selbst vorweg aufgelöst:** Lauf 1 nimmt den
+> Tagesschluss aus **`archiv1d`**, nicht aus 60m — *und ist damit nicht betroffen.*
+>
+> **Gegenerklärung ausgeschlossen:** Hätten die beiden Endpunkte verschieden angepasste Kurse
+> geliefert (Splits, Ausschüttungen über neun Monate), wären **alle 25 systematisch
+> verschoben.** Sechs stimmen exakt — **kein systematischer Versatz.**
+>
+> **Offen:** Nur **ein** Halbtag ist gemessen. *„Dieselbe Bauform ist keine Messung."* Die
+> restlichen sechs sind genehmigt und laufen. **→ Und eine bewusst klein gehaltene Prüffrage an
+> `c4`: nimmt irgendetwas außer Lauf 1 den Tagesschluss aus dem 60m-Archiv?** *Kein Verdacht,
+> ein Prüfpunkt — „kommt nicht vor" ist ein vollwertiges Ergebnis.*
 >
 > ### ✅ MESSSEITE: ERLEDIGT — nicht „zu klein", sondern „nicht vorhanden"
 > **Alle Messungen** (die zwölf Protokolle, die Strang-A-Referenz, der laufende Docht-Lauf)
