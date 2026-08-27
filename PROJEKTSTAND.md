@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 19:25 (Windows-Uhr)
+letzter-bericht: 2026-08-27 20:30 (Windows-Uhr)
 gesehener-tag: v8.34.2 (installiert 17:00)
 pm-adresse: markt-dashboard-f5 [5204c6]   <- HIERHIN melden, NICHT an "Projekt-Manager"
 -->
@@ -541,6 +541,195 @@ frischen Wert genommen, wie vorgesehen.*
 **Für die Messseite relevant: bei Kursen unter einem Cent sind vier Nachkommastellen bis zu 2 %
 Verlust.** *Wer auf dieser Preisklasse misst, sollte es wissen — 8 von 200.913, nichts dagegen
 gebaut.*
+
+---
+
+## 🧩 27.08. 20:2x — **FELIX' FEHLER IST GEFUNDEN — und es ist eine ANDERE Datei als vermutet**
+
+**Der Screenshot aus `#111` ist gelesen. Die Meldung wörtlich:**
+> ### **„Sammeln nicht möglich: Kein Punkt-in-Zeit-Universum im Datenordner (`massive/universum-*.json`)."**
+*Doppelt: als modaler Dialog **und** als rote Zeile unter **jeder** Auflösungszeile. Tabelle: 1m
+und 5m je **0 Werte**, „nichts da", „noch nie", „geht nicht".*
+**Das Archiv ist nicht halb gefüllt oder veraltet — es ist bei null und war nie befüllt. Die App
+selbst läuft normal** *(Börse offen, Kurse aktuell, 9 Positionen).* ***Es ist die
+Datenbeschaffung, die steht, nicht die Anwendung.***
+
+> ### ⚠ **UND DAS BEWAHRT VOR DER FALSCHEN REPARATUR**
+> *Meine Untersuchung von heute Nachmittag zeigte auf **`wertpapierarten.json`** und
+> `tools/arten-fuer-karte.js`. **Das Bild zeigt auf `massive/universum-*.json`.***
+> **Die Bauform-Diagnose passt haargenau — nur die benannte Datei stimmt nicht.**
+> ***„Wer jetzt `wertpapierarten.json` ins Paket legt, hat sauber gearbeitet und Felix' Fehler
+> nicht behoben."***
+> *Ob **daneben** auch noch das andere Problem existiert, sagt das Bild nicht. **Möglich sind
+> beide.***
+
+**Gegenprobe sofort gemacht (PM, lokal):** *Die Datei **existiert bei Wilhelm** —
+`universum-2024-09-02.json`, **154.889 Bytes**, vom 24.08.* **Die Frage ist also „warum kommt sie
+nicht mit", nicht „gibt es sie".**
+
+**⛔ Und eine Vermutung ist widerlegt, bevor sie Schaden anrichten konnte:** *Die Release-Wache
+hatte als ungeprüfte Richtung angeboten, es könne die Schutz-Sperre aus dem Abrufwerkzeug sein —
+**und die Gegenprobe gleich danebengestellt**.* ***„Wirf sie weg. Das Sammeln scheitert an einer
+fehlenden Datei, bevor irgendeine Sperre greifen könnte."*** **Sie hat ihre eigene Vermutung
+widerlegt, bevor jemand ihr folgen konnte.**
+
+> ### ⭐ **ENTSCHIEDEN (Wilhelm, 20:2x): DIE APP SOLL SIE SELBST BAUEN**
+> *Wie die Kursarchive: fehlt sie, legt die App sie beim ersten Start selbst an.* **Löst auch das
+> Altern — die vorhandene Datei trägt ein Datum von 2024.**
+> **Nicht gewählt:** *einmal schicken (altert, und beim nächsten Rechner dasselbe) · mit dem
+> Installer ausliefern (löst das Altern nicht).*
+
+---
+
+## 🔎 27.08. 20:2x — **ZWEI BESTÄNDE DESSELBEN ANBIETERS WIDERSPRECHEN SICH**
+
+**Das 1m-Fenster ist gezählt (2.964 Reihen, null Abrufe): alle beginnen am 18.08., Abdeckung der
+sieben Handelstage 100 %.** *Und die entscheidende Beobachtung: **das rollende Fenster reicht nur
+bis 20.08. zurück — der 18. und 19. liegen längst draußen und sind trotzdem da.*** **Der Bestand
+führt zusammen, er ersetzt nicht. Es gibt keinen laufenden Verlust; die einzige echte Gefahr ist
+eine Sammelpause von über sieben Tagen.**
+
+> **⚠ „Die 100 % sind fast nichts wert, und ich schreibe das dazu, statt sie zu melden":** *der
+> Abruf holt das ganze Fenster in einem Zug — eine Reihe hat danach **alle sieben Tage oder gar
+> keinen**. Eine Lücke **innerhalb** des Fensters ist bauartbedingt kaum möglich.* **Die Zahl
+> belegt, dass der Abruf funktioniert, nicht dass nichts fehlt.**
+
+### 🔴 Der Fund liegt daneben
+
+| | `archiv1m` (Abruf 26.08.) | `archiv1d` (Stand 27.08.) |
+|---|---|---|
+| **LBRDA** | **284 Umsatzminuten am 18./19.08.** | letzter echter Tag **17.07.** |
+| **LBRDK** | **741 Umsatzminuten am 18./19.08.** | letzter echter Tag **17.07.** |
+
+*`archiv1d` hat ein **Loch von fünf Wochen** — und die Datei wurde heute Nacht aktualisiert, das
+Loch ist also **das, was der Tagesabruf hergibt**, nicht Stillstand des Archivs.*
+
+> ### ***„Zwei Bestände desselben Anbieters sind nicht automatisch zwei Zeugen. Widersprechen sie sich, ist mindestens einer keiner."***
+
+**🔻 Und damit die dritte Selbstkorrektur derselben Sitzung heute:** *Ihre Rücknahme-Tabelle von
+04:50 führte LBRDA/LBRDK als „gehandelt 0 → stimmig" — aus einem frischen **Tages**-Abruf.*
+***„Die Null war die Antwort des Tagesabrufs, nicht die des Marktes."***
+**Ihre eigene Regel von heute früh — „die Gegenprobe muss nach Umsatz fragen, nicht nach Kerzen" —
+war richtig und reicht nicht: es kommt zusätzlich darauf an, WELCHEN ENDPUNKT desselben Anbieters
+man fragt.**
+
+*Entscheiden würde eine dritte Quelle: **Form 25 mit Frist** (EDGAR). **Bestehen bleibt: beide
+sind abgemeldet, offen ist nur der letzte Handelstag.***
+*✅ Sauberer Nebenbeleg für `06`: **für `TWO` bestätigen beide Bestände unabhängig den 24.08.** als
+Handelsende, mit 19,4 Mio Stück Schlussabwicklung.*
+
+**Nüchtern zur Nutzbarkeit des 1m-Bestands:** *harter Anfang 18.08.2026 = **sieben Handelstage**;
+bis 250 vergeht ein Jahr, und 1m-Haltedauern stehen an der Auflösungswand schlechter als das
+Übernachtfenster.* **Kein Kandidat kann sich absehbar darauf stützen — kein Grund, die Sammlung zu
+stoppen, nur einer, keine Hoffnung daran zu hängen.**
+
+---
+
+## 🔄 27.08. 20:1x — **BAUFORM-SWEEP: NEIN — und die Umkehrung widerlegt einen PM-Vorschlag**
+
+**Die Frage war: führt Yahoo Split-Ereignisse, ohne die Historie anzupassen?**
+> ### **Antwort: NEIN. Yahoo führt keine Ereignisse, ohne sie einzurechnen.**
+*Von 26 gemeldeten Split-Ereignissen sind **20 sauber eingerechnet** (kein Sprung am Datum — die
+gesunde Signatur), **kein einziger belastbarer Gegenfall**. Gegenkontrolle bestanden: AAPL und
+NVDA haben ein gefülltes `events`-Feld.*
+
+**Der einzige formale Treffer ist nicht belastbar, und der Grund verbindet zwei Messungen von
+heute:** *`SITC` 10.03.2009, Ereignisfaktor 0,9376 — **die relative ±10-%-Toleranz spannt dort ein
+18,8 Prozentpunkte breites Band**, und der 10. März 2009 war ein Finanzkrisentag mit −11,9 %.*
+> ***„Bei Ereignisfaktoren nahe 1 ist eine relative Toleranz wertlos."*** **Exakt dieselbe
+> Trennschärfe-Grenze wie bei den kleinen Faktoren heute Nachmittag** *(1,2-%-Ereignis →
+> Zufallstrefferrate 11,7 %).* **Zwei unabhängige Messungen, dieselbe Wand.**
+
+> ### 🔴 DIE UMKEHRUNG — **`RGR` 24.10.2025 ist EINGERECHNET**
+> *Yahoo hat die Giftpille nicht nur als 374:1000-Split **gemeldet**, sondern die Historie
+> **konsequent danach umgeschrieben** — Feld und Kurse stimmen überein.*
+>
+> ### **Der Defekt sitzt nicht in der Verarbeitung, sondern im EREIGNIS-KATALOG.**
+> *Yahoo arbeitet sauber und rechnet zuverlässig ein, was in seinem Katalog steht; **der Schaden
+> entsteht, weil dort ein wirtschaftlich wertloses Ereignis als Split geführt wird**.*
+
+> ### ⚖ **UND DAS WIDERLEGT DEN KENNZEICHNUNGS-VORSCHLAG DES PM — an seinem eigenen Anlassfall**
+> *Ich hatte geboardet und vergeben: **„das `events`-Feld wäre der Weg, solche Fälle zu
+> KENNZEICHNEN — nicht sie zu reparieren."***
+>
+> ***„Eine Kennzeichnung über das `events`-Feld hätte den RGR-Fall NICHT gefunden — dort
+> widerspricht sich nichts, es ist nur beides falsch."***
+>
+> **Ein Widerspruch zwischen zwei Feldern derselben Quelle findet nur Fälle, in denen die Quelle
+> sich uneins ist. Ist sie in sich stimmig und trotzdem falsch, schweigt jede
+> Konsistenzprüfung.** *Was `RGR` entlarvt hat, war **der dritte Zeuge (EDGAR)** — und daran
+> ändert der Sweep nichts.*
+
+*Der Werkzeugfehler des ersten Laufs steht als Grenze im Ergebnis: **bei `range=max` schaltet
+Yahoo still auf Monatskerzen um** (NVDA: 332 Kerzen für 27 Jahre) — der erste Lauf verglich
+Monatsbewegungen mit Split-Faktoren und meldete „25 von 26 nicht eingerechnet". **Verraten hat es
+die Kerzenzahl in der eigenen Ausgabe, nicht ein Verdacht. Er starb vor der Meldung.***
+
+---
+
+## 🏷 27.08. 19:5x — **VIER AUSLÖSER STEHEN ALS „NICHT GEMESSEN", OBWOHL SIE WIDERLEGT SIND**
+
+*Antwort auf Wilhelms „teilweise unlogisch und verwirrend" — Punkt 1 des Regeln-Inventars, `ab`.*
+
+**Die Erwartung war „ungekennzeichnete Schalter". Die App macht das überwiegend GUT:**
+*`#hourlyEnabled` hinter der Widerlegt-Klappe · Übersichtskarte mit `widerlegt – abgeschaltet` in
+Rot · `#idKryptoHandeln` mit ausdrücklicher ACHTUNG-Warnung · `#idInstrument`/`#idProfile` mit den
+gemessenen Hürden im Klartext · **`#idTrigger` wird aus `PROTOKOLL_KANTE` gefüllt statt aus einer
+Liste im Code** — der Kommentar dokumentiert, dass genau dieser Fehler am 25.08. gefunden wurde.*
+**Kein Schalter bietet ein Widerlegtes UNBENANNT an.**
+
+> ### 🔴 FUND 1 — **wirkt HEUTE: gemessen-und-verworfen steht als „Nicht gemessen"**
+>
+>     depot.js:6376
+>       function triggerBelegstand(k) {
+>         var p = PROTOKOLL_KANTE[k];
+>         if (!p) return 'ungemessen';        <-- hier
+>
+> **Die Einordnung liest ausschließlich die Messmaschinen-Protokolle.** *Die Auslöser des Setups
+> „Ausbruch" — `kreuzung`, `range`, `ruecksetzer`, `donchian`, `squeeze`, `kanaltrend` — haben
+> **kein einziges** Protokoll. **Alle sechs erscheinen als „Nicht gemessen".***
+>
+> **Drei davon sind gemessen und verworfen, und die App weiß es selbst** — *`strategien.js` führt
+> wörtlich: „Auf diesen Daten OHNE tragfähige Zelle: Donchian, Squeeze, Pullback — in keiner
+> Marktlage überzufällig."* **Und `kanaltrend` ist nicht bloß unbelegt, sondern als Bedingung
+> SCHÄDLICH gemessen (−0,17 Pp, t −4,1).**
+>
+> ***„Nicht gemessen" ist von den drei Beschriftungen die einladendste — sie liest sich als
+> „unbekannt, könnte gehen". Sie steht auf vier Auslösern, bei denen das Gegenteil bekannt ist.***
+>
+> **Die Ursache ist keine Nachlässigkeit, sondern eine NAHT:** *der Belegstand kommt aus den
+> Messmaschinen-Protokollen; diese vier wurden von **anderen Studien** gemessen, die dort nichts
+> ablegen.* ***„Wer nur eine Quelle liest, hält deren Lücke für die Welt."***
+
+> ### 🔴 FUND 2 — **wirkt MORGEN: es gibt keine Gruppe für „widerlegt"**
+> *Dieselbe Zeile faltet **jedes** Urteil außer `bestätigt` auf `gemessen`.* **Der Wert
+> `widerlegt` EXISTIERT im Datenmodell** und wird an drei Stellen als eigener Zustand behandelt
+> und rot gefärbt *(`app-shell.js:39`, `messband.js:136`, `scoreboard.js:46`)*. **Nur die Auswahl,
+> die entscheidet WELCHE STRATEGIE LÄUFT, kennt ihn nicht.**
+>
+> *Der Kommentar über der Gruppierung argumentiert selbst dagegen: „Drei Gruppen statt zwei, weil
+> es **drei** Zustände gibt…" — **es sind vier.***
+>
+> **⭐ Und nachgezählt, ob es heute schon feuert: NEIN.** *Kein Protokoll trägt derzeit
+> `widerlegt`, alle sagen `nicht-entscheidbar` oder `nicht-messbar`.* ***„Hätte ich es als ‚wirkt
+> heute' gemeldet, wäre es falsch gewesen. Es feuert bei der ersten Widerlegung — und dann
+> still."***
+
+**FUND 3, klein:** *`#btMode` umgeht den Belegstand ganz — **erste Option und damit Voreinstellung
+ist die Stunden-Strategie**, dieselbe, die zwei Bildschirme weiter in Rot als widerlegt steht.*
+*Die Schwesterauswahl im Chart macht es vor: `stcMode` sagt „(gemessen, nicht bestätigt)".*
+
+> **📐 BEIDE HAUPTFUNDE HABEN EINE URSACHE: die Einordnung kennt nur EINE Quelle und nur DREI
+> Zustände.** *Eine vierte Gruppe plus ein Weg, wie eine Studie **außerhalb** der Messmaschine ihr
+> Urteil einträgt, erledigt beide.*
+> **Ob die vier Auslöser ENTFERNT gehören, ist ausdrücklich nicht geprüft — das ist eine
+> Streichung, und die macht Wilhelm.**
+
+**Was `ab` ausdrücklich LIEGEN LÄSST, mit gutem Grund:** *die drei Lesebereiche in Wilhelms
+Sprache, was jedes Bedienelement tut, und die Markierungsspalte.* ***„Das ist Textarbeit und
+Tonfall-Urteil. Ich müsste raten, welche Formulierung Wilhelm meint, und meine Nacht bestand
+daraus, Ratereien durch Messungen zu ersetzen. Wer den Reiter umbaut, sollte den Text schreiben;
+ich prüfe ihn danach gern gegen den Messstand."*** **Noch niemandem zugeteilt.**
 
 ---
 
