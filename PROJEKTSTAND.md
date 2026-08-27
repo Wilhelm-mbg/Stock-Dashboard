@@ -185,6 +185,55 @@ Nicht-Krypto, **alle am 25.08., null erfasste Marktlagen** → **nicht erfüllt,
 
 ---
 
+## 🧱 27.08. nachmittags — **DIE CBSH-BLINDSTELLE IST LEER — und die Grenze ist der FAKTOR, nicht die Datenmenge**
+
+**Ergebnis: `F = 0` gegen Nullwert 0,13.** *25 Kandidaten-Ereignisse mit Faktor zwischen 0,5 und
+2, 20 durchs Beurteilbarkeits-Gate, **keines** zeigt am Ereignisdatum ± 1 HT einen passenden
+Sprung* (ein `F?`: LEN 2003, Faktor 3 Pp daneben). *Registrierung, Machbarkeit, Werkzeug und
+Ergebnis in `studien/vorregistrierung-2026-08-27-kleine-faktoren/`.*
+
+> ### 🎯 DER EIGENTLICHE FUND: **eine Blindheit, die MEHR DATEN NICHT HEILEN**
+>
+>     Zufalls-Trefferrate nach Ereignisgroesse
+>       33 %   ->  0,001 %
+>        9 %   ->  0,18 %
+>        7,7 % ->  0,34 %
+>        3 %   ->  3,2 %
+>        1,2 % ->  11,7 %   <- Aktiendividende: STRUKTURELL BLIND
+>
+> ***„Ein 1-%-Ereignis in einer Reihe, die täglich 2 % schwankt, hinterlässt keine
+> unterscheidbare Signatur — und mehr Daten helfen dagegen nicht."***
+>
+> **Fünf Ereignisse** *(darunter **beide SCCO-Quartalsdividenden und QGEN**)* **bekommen deshalb
+> kein Urteil, sondern „strukturell nicht entscheidbar".**
+>
+> **⚠ UNTERSCHIED ZUR AUFLÖSUNGSWAND, und er ist wichtig:** *Die Wand ist eine **Stichprobenfrage**
+> — genug Bestätigungstage, und sie fällt. **Das hier ist keine.** Der Rest ist **prinzipiell
+> unerreichbar, nicht nur ungemessen.***
+>
+> *Für Wilhelm: Die Sorge „22 CBSH-Einträge, nie nachgesehen" ist beantwortet, **soweit sie
+> beantwortbar ist**.*
+
+> ### ⚖ EIN SELBST GEFANGENER FEHLER — **dieselbe Codezeile, zwei Bedeutungen**
+> **Der erste Lauf meldete „KLASSE BELEGT". Artefakt.** *Der eine Treffer (NWG 2022) kam über eine
+> **inverse** Faktor-Prüfung, die der Code aus dem großen Join **geerbt** hatte — **die
+> Registrierung sieht sie nicht vor**. Realer Sprung −7,2 %, erwarteter Anpassungssprung +7,7 %:
+> **eine gewöhnliche Bankbewegung, in der Gegenrichtung als Beleg gezählt.*** Code auf den
+> registrierten Wortlaut zurückgeführt → **`F = 0`**.
+>
+> **Im großen Join bleibt die inverse Prüfung RICHTIG** *(Faktoren 4/8/30, Konventionen kippen)* —
+> **bei Faktoren nahe 1 verdoppelt sie die Zufallsfläche.**
+>
+> ***„Dieselbe Codezeile, zwei Bedeutungen — und die Registrierung war der Schiedsrichter, nicht
+> mein Urteil."*** **Genau dafür gibt es sie: geerbter Code bringt geerbte Annahmen mit, und die
+> passen nicht automatisch zur neuen Frage.**
+
+*Der Extreme-Lauf steht bei Messung 1 von 4. **Die Kopie-Stufe hat den QS-Zensus unabhängig
+reproduziert** — 2.101.792 Tage gegen QS 2.101.732; 2,62 % strittige Tage, 45.138 Kerzen
+chirurgisch neutralisiert in 2.680 Reihen.*
+
+---
+
 ## 🏛 27.08. 15:2x — **EDGAR ENTSCHEIDET DEN RGR-DISSENS: das Ereignis ist REAL und seine Größe ist NULL**
 
 > ### **Die dritte Möglichkeit, die niemand auf dem Zettel hatte.**
