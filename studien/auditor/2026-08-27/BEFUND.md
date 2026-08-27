@@ -249,3 +249,71 @@ Positivkontrolle" hat sich hier viermal selbst bezahlt.*
    angekommen.
 2. **`dist/bau-stand.json` fehlt.** Nach `tools/release.js:154` bricht `--hoch` ohne diese
    Datei ab. Sache der Release-Wache.
+
+---
+
+# NACHTRAG 2 — 27.08., 08:35–09:00: Barrierefreiheit, Teil 1 (Tastaturreihenfolge)
+
+Auftrag des PM mit zwei Auflagen: den `offsetParent`-Prüfer **vor** dem Lauf reparieren und
+den `fixed`-Köder drinlassen; Kontrast liegen lassen, dafür alle fünf Reiter. Beides
+eingehalten. `probe-tastatur.js`.
+
+## P1. Erst der Prüfer, dann die Messung — drei Köder
+
+Weil an diesem Tag schon vier Nullbefunde beinahe als Ergebnis durchgingen, trägt die Probe
+drei Köder mit, die sie selbst finden **muss**:
+
+| Köder | prüft | auf allen 5 Reitern gefunden |
+|---|---|---|
+| K1 — `position: fixed`, ohne Namen | dass die Sichtbarkeitsprüfung feste Elemente **sieht** | **ja** |
+| K2 — visuell oben, im DOM zuletzt | dass Reihenfolge-Brüche auffallen | **ja** |
+| K3 — `tabindex="5"` | dass positiver `tabindex` auffällt | **ja** |
+
+**Damit sind die Nullen dieses Blocks belegte Nullen** — anders als das „0 von 1.747" von
+heute früh.
+
+## P2. Was in Ordnung ist (gemessen)
+
+- **0** Elemente mit positivem `tabindex`, auf allen fünf Reitern.
+- **0** fokussierbare Elemente ohne zugänglichen Namen (nach Korrektur meines eigenen
+  Fehlers, siehe P4).
+- **0** Reihenfolge-Brüche auf `dashboard`, `strategien`, `depot`, `werkzeuge`.
+- **Fokus ist sichtbar:** `outline: solid 2px rgb(25,103,197)` auf den geprüften
+  Bedienelementen — ein Tastatursprung ohne sichtbaren Rahmen wäre so gut wie kein Fokus.
+
+## P3. Zwei Funde
+
+**#109 (B) — Tabulator erreicht `#stUebernehmen` vor den Feldern, zu denen er gehört.**
+Auf *Messung* steht der Knopf „In den Expertenmodus übernehmen" im DOM auf Position 12, auf
+dem Schirm aber an letzter Stelle (y 2853 gegen 2405 des ersten Feldes). **Es ist EINE
+Vertauschung, nicht sieben** — die sechs weiteren gemeldeten Positionen sind nur die
+Verschiebung, die daraus folgt. Die Rohzahl „7 Brüche" lässt es größer aussehen, als es ist.
+**Ursache nicht bestimmt:** im Quelltext (`index.html:1963`, in `<details id="stCodeAuf">`)
+steht der Knopf folgerichtig **vor** `#stKey` (1968); warum er unterhalb rendert, habe ich
+in der Zeit nicht geklärt und deshalb im Issue offen gelassen.
+
+**#110 (B) — gleiche zugängliche Namen.** 3× „Jetzt holen" in der Kursarchiv-Karte (die
+Auflösung steckt nur in `data-iv`), 2× „einschalten" und 2× „läuft – ausschalten" auf
+*Regeln → Übersicht*. Der Kursarchiv-Fall wiegt schwerer: die drei Knöpfe starten **echte
+Abrufe** für drei verschiedene Auflösungen.
+
+## P4. Ein fünfter eigener Fehler — abgefangen
+
+Die Probe meldete zuerst `textarea#stGrund` als „ohne zugänglichen Namen". **Das war mein
+Fehler:** meine Namensauflösung zog das umschließende `<label>` und den `placeholder` nur
+für `INPUT` heran, nicht für `TEXTAREA`. Die Textfläche ist in `index.html:1977` sauber in
+ein `<label>` gefasst („Warum sollte das funktionieren?") und trägt zusätzlich einen
+Platzhalter. **Kein Fund** — vor dem Melden bemerkt.
+
+*Damit sind es an diesem Tag fünf eigene Fehlgriffe, die ohne Gegenprobe als Ergebnis
+durchgegangen wären: `window.Q`, der gelöschte Arbeitsbaum, `.down/.up` statt `pos/neg`,
+`offsetParent` bei `fixed`, und dieser. Vier davon waren Nullbefunde, einer war ein
+Falschbefund. Die Regel greift in beide Richtungen.*
+
+## P5. Was von der Barrierefreiheit weiter offen ist
+
+- **Kontrast über alle Reiter** — vom PM bewusst zurückgestellt. Der breite Durchlauf von
+  heute früh („0 von 1.747") **bleibt nicht zitierfähig**; er muss mit dem reparierten
+  Prüfer wiederholt werden.
+- Vorlesereihenfolge, Überschriftenhierarchie, `aria-live` bei den Statusmeldungen,
+  Tastaturfallen in den Dialogen — alles ungeprüft.

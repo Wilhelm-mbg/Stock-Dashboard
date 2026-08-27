@@ -1,0 +1,222 @@
+{
+ "protokolle": 38,
+ "bilder": "C:\\Users\\Wilhe\\AppData\\Local\\Temp\\md-auditor-tast-ALlbEj\\bilder",
+ "reiter": [
+  {
+   "marke": "dashboard",
+   "fokussierbar": 26,
+   "positivTab": [],
+   "ohneNamen": [],
+   "doppelt": [
+    {
+     "name": "Nvidia-Aktie: 100%-Meldung!",
+     "anzahl": 3,
+     "wo": [
+      "a",
+      "a",
+      "a"
+     ]
+    }
+   ],
+   "brueche": [],
+   "bruecheGesamt": 0,
+   "koederGesetzt": false,
+   "koederGefunden": {
+    "K1": true,
+    "K2": true,
+    "K3": true
+   }
+  },
+  {
+   "marke": "strategien",
+   "fokussierbar": 21,
+   "positivTab": [],
+   "ohneNamen": [],
+   "doppelt": [
+    {
+     "name": "einschalten",
+     "anzahl": 2,
+     "wo": [
+      "button.btn",
+      "button.btn"
+     ]
+    },
+    {
+     "name": "läuft – ausschalten",
+     "anzahl": 2,
+     "wo": [
+      "button.btn",
+      "button.btn"
+     ]
+    }
+   ],
+   "brueche": [],
+   "bruecheGesamt": 0,
+   "koederGesetzt": false,
+   "koederGefunden": {
+    "K1": true,
+    "K2": true,
+    "K3": true
+   }
+  },
+  {
+   "marke": "depot",
+   "fokussierbar": 10,
+   "positivTab": [],
+   "ohneNamen": [],
+   "doppelt": [],
+   "brueche": [],
+   "bruecheGesamt": 0,
+   "koederGesetzt": false,
+   "koederGefunden": {
+    "K1": true,
+    "K2": true,
+    "K3": true
+   }
+  },
+  {
+   "marke": "werkzeuge",
+   "fokussierbar": 21,
+   "positivTab": [],
+   "ohneNamen": [],
+   "doppelt": [],
+   "brueche": [],
+   "bruecheGesamt": 0,
+   "koederGesetzt": false,
+   "koederGefunden": {
+    "K1": true,
+    "K2": true,
+    "K3": true
+   }
+  },
+  {
+   "marke": "messung",
+   "fokussierbar": 19,
+   "positivTab": [],
+   "ohneNamen": [
+    {
+     "wo": "textarea#stGrund",
+     "tag": "TEXTAREA",
+     "typ": ""
+    }
+   ],
+   "doppelt": [],
+   "brueche": [
+    {
+     "position": 12,
+     "sollte": "input#stKey",
+     "name": "z. B. quartalsende-kauf",
+     "domIndex": 13,
+     "x": 35,
+     "y": 2405
+    },
+    {
+     "position": 13,
+     "sollte": "input#stHalten",
+     "name": "Wie lange halten? 8 Stundenker",
+     "domIndex": 14,
+     "x": 639,
+     "y": 2405
+    },
+    {
+     "position": 14,
+     "sollte": "select#stRichtung",
+     "name": "Kurs steigt (nur Long)Kurs fäl",
+     "domIndex": 15,
+     "x": 35,
+     "y": 2482
+    },
+    {
+     "position": 15,
+     "sollte": "input#stSpanne",
+     "name": "Handelskosten je Seite 5 Basis",
+     "domIndex": 16,
+     "x": 639,
+     "y": 2482
+    },
+    {
+     "position": 16,
+     "sollte": "textarea#stGrund",
+     "name": "",
+     "domIndex": 17,
+     "x": 35,
+     "y": 2561
+    },
+    {
+     "position": 17,
+     "sollte": "button#stAblegen.btn",
+     "name": "Strategie ablegen",
+     "domIndex": 18,
+     "x": 35,
+     "y": 2758
+    },
+    {
+     "position": 18,
+     "sollte": "button#stUebernehmen.btn",
+     "name": "In den Expertenmodus übernehme",
+     "domIndex": 12,
+     "x": 35,
+     "y": 2853
+    }
+   ],
+   "bruecheGesamt": 7,
+   "koederGesetzt": false,
+   "koederGefunden": {
+    "K1": true,
+    "K2": true,
+    "K3": true
+   }
+  }
+ ],
+ "archiv": {
+  "marke": "werkzeuge/archiv",
+  "fokussierbar": 13,
+  "positivTab": [],
+  "ohneNamen": [],
+  "doppelt": [
+   {
+    "name": "Jetzt holen",
+    "anzahl": 3,
+    "wo": [
+     "button.btn",
+     "button.btn",
+     "button.btn"
+    ]
+   }
+  ],
+  "brueche": [],
+  "bruecheGesamt": 0,
+  "koederGesetzt": false,
+  "koederGefunden": {
+   "K1": false,
+   "K2": false,
+   "K3": false
+  }
+ },
+ "fokusSicht": [
+  {
+   "wo": "#reiter-dashboard",
+   "text": "Heute",
+   "umriss": "solid 2px rgb(25, 103, 197)",
+   "umrissAus": false,
+   "schatten": "",
+   "rand": "rgba(0, 0, 0, 0)"
+  },
+  {
+   "wo": "#reiter-strategien",
+   "text": "Regeln",
+   "umriss": "solid 2px rgb(25, 103, 197)",
+   "umrissAus": false,
+   "schatten": "",
+   "rand": "rgba(0, 0, 0, 0)"
+  },
+  {
+   "wo": "#reiter-depot",
+   "text": "Vermögen",
+   "umriss": "solid 2px rgb(25, 103, 197)",
+   "umrissAus": false,
+   "schatten": "",
+   "rand": "rgba(0, 0, 0, 0)"
+  }
+ ]
+}
