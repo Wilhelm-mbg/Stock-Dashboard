@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 08:25 (abgelesen)
+letzter-bericht: 2026-08-27 08:35 (abgelesen)
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -62,9 +62,27 @@ exakt (25.915) — auf einer anderen Rechenstrecke.**
 und **1.150** (Wache/Einstufung) in den Unterlagen — zwei Rechenwege, fünf Kerzen Unterschied,
 **nicht aufgelöst**. Wer die Zahl zitiert, nennt ihre Herkunft.*
 
-*Kein `index.html`-Eintrag, solange kein Anzeige-Verbraucher existiert. Der Einbau in die
-Messmaschine liegt bei `markt-dashboard-c4` — **ob ausgeschlossen oder im Kontrolltopf
-getrennt wird, ist die Entscheidung der Messseite.***
+*Kein `index.html`-Eintrag, solange kein Anzeige-Verbraucher existiert.*
+
+> ### ⚖ ENTSCHIEDEN 27.08. 08:3x (Messseite, `markt-dashboard-c4`) — dauerhaft
+> **Die Messmaschine bleibt UNVERÄNDERT. `kerzenlage.js` ist als Instrument registriert, nicht
+> eingebaut.**
+>
+> **Begründung gemessen statt gemeint:** Der A/B-Lauf hat den Ausschluss **genau dieser**
+> Kerzenfamilien als **wirkungslos** vermessen — Faktor 6–27 unter `delta80`. *Ein Einbau wäre
+> ein Versionssprung und Protokoll-Unvergleichbarkeit **ohne messbaren Gegenwert**.*
+>
+> **Drei Revisions-Kriterien, benannt statt offen gelassen:**
+> 1. Live-Zähler-Flips auf `schlusskurs`-Kerzen,
+> 2. ein künftiger lagenabhängiger Effekt **≥ `delta80`**,
+> 3. **und dann zuerst AUSWEISEN je Lage — wie bei Schicht G —, NIE Ausschluss zuerst.**
+>
+> **Für Empfindlichkeitsläufe außerhalb der Maschine ist `kerzenlage` ab sofort Mittel der
+> Wahl.**
+>
+> *Punkt 3 ist die verallgemeinerbare Lehre: **erst messen, was eine Klasse beiträgt, dann
+> entscheiden, ob sie hinaussoll** — genau die Reihenfolge, die diese Nacht siebenmal
+> gerettet hat.*
 
 ### 🚀 27.08. 07:55 — WILHELM HEBT DIE RELEASE-SPERRE AUF: **JETZT AUSLIEFERN**
 
