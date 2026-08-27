@@ -622,6 +622,43 @@ function listeBauen(wahl) {
  * in Handelstagen, Nachzuegler - steht in tools/archiv-wachhund.js; hier steht nur
  * das Ablesen, weil die App den Waechter nicht laden kann (tools/ wird nicht
  * ausgeliefert) und zwei Arten, eine Reihe zu lesen, wieder zwei Wahrheiten waeren. */
+/* DER LETZTE ABGESCHLOSSENE HANDELSTAG - die Regel wohnt ab jetzt hier.
+ *
+ * Sie stand in tools/archiv-wachhund.js. Dort kommt der Sammelplan nicht hin: tools/
+ * ist vom Build ausgenommen, die App wuerde die Datei nicht mitbringen. Ein Nachbau
+ * waere die zweite Vorstellung davon, wann ein Handelstag zu Ende ist - genau die
+ * Sorte Doppelung, an der hier schon mehrfach eine der beiden still falsch wurde.
+ * Der Waechter holt sie jetzt von hier, wie er ordnerVon() von hier holt.
+ *
+ * Die US-Sitzung endet 20:00 UTC; eine halbe Stunde Zuschlag, weil die Quelle die
+ * Schlusskerze nicht in derselben Sekunde hat. Samstag und Sonntag zaehlen nie,
+ * Feiertage kennt diese Regel nicht - sie liefert also eher einen zu jungen Tag. */
+function letzterAbgeschlossenerHandelstag(jetzt) {
+  var d = new Date((jetzt && jetzt.getTime ? jetzt.getTime() : jetzt) || Date.now());
+  var heuteFertig = d.getUTCHours() > 20 || (d.getUTCHours() === 20 && d.getUTCMinutes() >= 30);
+  if (!heuteFertig) d.setUTCDate(d.getUTCDate() - 1);
+  while (d.getUTCDay() === 0 || d.getUTCDay() === 6) d.setUTCDate(d.getUTCDate() - 1);
+  return d.toISOString().slice(0, 10);
+}
+
+/* WAS EINE REIHE WIRKLICH ENTHAELT - der Tag der letzten Kerze.
+ *
+ * Gebraucht, weil der Stempel im Stand bis zum 27.08.2026 das Datum des ABRUFS trug
+ * und nicht den erreichten Handelstag. Gemessen an diesem Tag: 840 Reihen ueber drei
+ * Intervalle trugen "am: 2026-08-27", und in der Stichprobe enthielt KEINE EINZIGE
+ * den 27.08. Der Sammellauf lief um 12:18 - vor der US-Eroeffnung, wo es den Tag noch
+ * gar nicht geben konnte - und verbrauchte den Tagesstempel, ohne etwas zu holen.
+ * Der Plan las das als "heute erledigt" und meldete "alle 531 Werte sind auf Stand".
+ *
+ * Es ist an diesem Tag die DRITTE Stelle derselben Bauform: die Abmeldeliste stempelte
+ * das Listendatum statt des Handelsendes, der Archiv-Waechter die letzte Kerze statt
+ * des letzten Umsatzes. Ein Stempel muss das Ereignis festhalten, das ihn
+ * rechtfertigt - nicht den Zeitpunkt, zu dem jemand hingesehen hat. */
+function letzterTagVon(serie) {
+  if (!serie || !serie.length) return null;
+  return new Date(serie[serie.length - 1][0]).toISOString().slice(0, 10);
+}
+
 function juengsteKerzeVon(datei) {
   try {
     var j = JSON.parse(fs.readFileSync(datei, 'utf8'));
@@ -796,7 +833,13 @@ async function sammle(opt) {
         erg.ohneEroeffnung += ohneO;
         fs.writeFileSync(datei, JSON.stringify(
           satz(sym, intervall, r.serie, { waehrung: r.waehrung, boerse: r.boerse })));
-        stand.fertig[sym] = { kerzen: r.serie.length, ohneEroeffnung: ohneO, am: heuteTag() };
+        /* am = wann nachgesehen wurde, bisTag = was dabei herauskam. Beide, nicht
+         * eines: am beantwortet "wann lief der Sammler zuletzt", bisTag beantwortet
+         * "was steht drin" - und nur die zweite Frage darf ueber "auf Stand"
+         * entscheiden. Bis zum 27.08.2026 gab es nur am, und der Plan las es als
+         * Antwort auf die zweite Frage. */
+        stand.fertig[sym] = { kerzen: r.serie.length, ohneEroeffnung: ohneO,
+          am: heuteTag(), bisTag: letzterTagVon(r.serie) };
         erg.ok++; erg.kerzen += r.serie.length; erg.dazu += dazu;
         melde({
           art: 'wert', nr: i + 1, von: symbole.length, sym: sym,
@@ -858,7 +901,9 @@ module.exports = {
   dateiPraefix: dateiPraefix, dateiFuer: dateiFuer,
   standPfad: standPfad, standLesen: standLesen, standSchreiben: standSchreiben,
   universumWerte: universumWerte, listeBauen: listeBauen,
-  juengsteKerzeVon: juengsteKerzeVon, archivDateien: archivDateien,
+  juengsteKerzeVon: juengsteKerzeVon,
+  letzterAbgeschlossenerHandelstag: letzterAbgeschlossenerHandelstag,
+  letzterTagVon: letzterTagVon, archivDateien: archivDateien,
   archivUeberblick: archivUeberblick, fensterLuecke: fensterLuecke, sammle: sammle,
   laufProtokoll: laufProtokoll,
   sperreLesen: sperreLesen, sperreSetzen: sperreSetzen, sperreLoesen: sperreLoesen,

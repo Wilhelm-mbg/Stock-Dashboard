@@ -83,15 +83,12 @@ function abmeldungenPfad() {
   return path.join(Quelle.datenOrdner(), 'massive', 'abmeldungen.json');
 }
 
-/* Der letzte Handelstag, der ABGESCHLOSSEN ist. Die US-Sitzung endet um 20:00 UTC;
- * eine halbe Stunde Zuschlag, weil Yahoo die Schlusskerze nicht in derselben Sekunde
- * hat. Samstag und Sonntag zaehlen nie. */
+/* Die Rechnung steht jetzt in kerzenquelle.js - dort kommt auch der Sammelplan hin,
+ * der sie seit dem 27.08.2026 braucht (tools/ ist vom Build ausgenommen). Hier bleibt
+ * nur der Durchgriff, damit es EINE Vorstellung davon gibt, wann ein Handelstag zu
+ * Ende ist. */
 function letzterAbgeschlossenerHandelstag(jetzt) {
-  var d = new Date(jetzt.getTime());
-  var heuteFertig = d.getUTCHours() > 20 || (d.getUTCHours() === 20 && d.getUTCMinutes() >= 30);
-  if (!heuteFertig) d.setUTCDate(d.getUTCDate() - 1);
-  while (d.getUTCDay() === 0 || d.getUTCDay() === 6) d.setUTCDate(d.getUTCDate() - 1);
-  return d.toISOString().slice(0, 10);
+  return Quelle.letzterAbgeschlossenerHandelstag(jetzt);
 }
 
 /* Handelstage zwischen zwei Datumsangaben - Wochenenden ausgenommen, Feiertage nicht

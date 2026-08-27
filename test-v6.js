@@ -1409,7 +1409,15 @@ console.log('\n17b) Oberflaeche: Altlasten und Verdrahtung');
      'Kosten: nur vollstaendige Runden zaehlen');
   ok(/function kostenBilanz/.test(ks) && /medianPct/.test(ks), 'Kosten: Bilanz ueber den Median, kein Ausreisser dominiert');
   ok(/angenommen: /.test(d), 'Kosten: die gemessene Zahl steht neben der Annahme der Studien');
-  ok(/kb\.n < 20 \? 'noch zu wenige Runden/.test(d), 'Kosten: unter 20 Runden gibt es kein Urteil');
+  /* BIS ZUM 27.08. verlangte diese Klinke "unter 20 Runden gibt es kein Urteil".
+   * Wilhelms Schwellen-Entscheid hat die Rundenzahl ersetzt: gefordert sind Runden
+   * ueber verschiedene TAGE und MARKTLAGEN, weil zwanzig Klicks in einer Minute
+   * die alte Bedingung erfuellten und dabei eine einzige Marktlage massen. Die
+   * Anzeige hing bis heute noch an der alten Zahl - die Klinke ist umformuliert,
+   * nicht geloescht, und haelt jetzt fest, dass das Urteil an der Streuung haengt. */
+  ok(/st9 && st9\.erfuellt/.test(d) && /verschiedene Tage UND Marktlagen/.test(d),
+     'Kosten: das Urteil haengt an Wilhelms Schwelle (Tage UND Marktlagen), nicht an einer Rundenzahl');
+  ok(!/kb\.n < 20/.test(d), 'Kosten: die abgeloeste 20-Runden-Bedingung steht nirgends mehr');
   var diag2 = fs.readFileSync(__dirname + '/diagnose.js', 'utf8');
   ok(/handelskosten: \(function/.test(diag2) && !/slipOpen/.test(diag2),
      'Kosten: Diagnose meldet nur Aggregate, keine einzelnen Ausfuehrungen');
@@ -8203,17 +8211,86 @@ console.log('\n46) Was die App dauerhaft aufzeichnet');
   /* Der Marktzustand wird geprueft: eine Runde bei geschlossener Boerse misst nichts. */
   ok(/marketOpen/.test(kr), 'Bei geschlossener Boerse wird gar nicht erst gemessen');
 
-  /* --- Und sie laeuft NIE von allein --- 
-   * Sie setzt echte Orders auf dem Demo-Konto ab. Was Orders absetzt, gehoert an eine
-   * Hand, nicht an einen Taktgeber. */
+  /* --- Sie laeuft automatisch, aber streng begrenzt (Wilhelm, 27.08.2026) ---
+   * BIS ZUM 27.08. VERLANGTE DIESE KLINKE DAS GEGENTEIL: "Kein Taktgeber loest die
+   * Messrunde aus - nur der Knopf." Der Grund war richtig und gilt weiter: jede
+   * Runde setzt eine ECHTE Order auf dem Demo-Konto ab. Geaendert hat sich nicht
+   * die Bequemlichkeit, sondern die ABSICHT - Wilhelms Freigabeschwelle verlangt
+   * Runden ueber verschiedene Tage und Marktlagen, und die ist durch Klicken
+   * praktisch nicht erreichbar (der einzige Versuch ergab 16 Runden in einer
+   * Minute). Die Klinke wurde deshalb UMFORMULIERT, nicht geloescht: sie haelt
+   * jetzt fest, was die Automatik begrenzt. */
   var h68 = fs.readFileSync(__dirname + '/index.html', 'utf8');
-  ok(/id="kostenRundeBtn"/.test(h68), 'Die Messrunde haengt an einem Knopf');
-  ok(!/setInterval\([^)]*kostenRunde/.test(dep) && !/setTimeout\([^)]*kostenRundeMessen/.test(dep),
-     'Kein Taktgeber loest die Messrunde aus - nur der Knopf');
+  ok(/id="kostenRundeBtn"/.test(h68), 'Der Handausloeser bleibt - Wilhelm MUSS nicht klicken, er darf');
+  ok(/automatNachsehen/.test(dep) && /60000/.test(dep),
+     'Der Automat sieht nur auf die Uhr - der Takt selbst setzt keine Order ab');
   var draht = dep.slice(dep.indexOf("getElementById('kostenRundeBtn')"), dep.indexOf('setTimeout(updateCapStatus, 3000)'));
   ok(/window\.confirm\(/.test(draht), 'Vor der Order wird gefragt');
   ok(/DEMO/.test(draht), 'Und die Frage sagt ausdruecklich, dass es das Demo-Konto ist');
   ok(/kostenRundeLaeuft/.test(draht), 'Ein Doppelklick loest nicht zwei Runden aus');
+  ok(/RUNDE_LAEUFT/.test(ks7) && /try \{ return await kostenRundeKern\(sym, marktlage\); \}/.test(ks7),
+     'Knopf und Automat teilen EINE Laufsperre - zwei Wege duerfen nie gleichzeitig eine Order absetzen');
+
+  /* --- Die zweiteilige Abschaltbedingung, FUNKTIONAL (Wilhelms Entscheid 27.08.) ---
+   * Beide Teile werden einzeln geprueft. Die erfuellte Schwelle allein darf NICHT
+   * stoppen, solange eine Lage unter der Mindestzahl steht - sonst waere genau der
+   * Fall gebaut, den Wilhelm ausgeschlossen hat: 30 Runden im Aufwaertsregime, eine
+   * einzige im Abwaertsregime, Automat aus, und der Median der zweiten Lage stuende
+   * auf einer Messung. */
+  (function () {
+    function schneid(name) {
+      var a = ks7.indexOf('function ' + name);
+      var e = ks7.indexOf('\n  }', a);
+      ok(a !== -1 && e > a, 'Automat: ' + name + ' laesst sich herausloesen');
+      return ks7.slice(a, e + 4);
+    }
+    var aS = ks7.indexOf('function kostenStreuung');
+    var eS = ks7.indexOf('\n  }', aS);
+    var mind = Number((ks7.match(/var LAGE_MINDEST = (\d+)/) || [])[1]);
+    ok(mind === 10, 'Die Mindestzahl je Lage steht an einer benannten Stelle', String(mind));
+    var bau = new Function('LAGE_MINDEST', 'RUNDEN',
+      ks7.slice(aS, eS + 4) + '\n' + schneid('automatFertig').replace('kostenRunden()', 'RUNDEN') +
+      '\nreturn automatFertig;');
+    function runden(je) {
+      var out = [], t = Date.parse('2026-09-01T14:00:00Z'), i = 0;
+      Object.keys(je).forEach(function (lage) {
+        for (var k = 0; k < je[lage]; k++) {
+          out.push({ at: t + (i++) * 86400000, sym: 'AAPL', krypto: false, marktlage: lage, runde: 0.001 });
+        }
+      });
+      return out;
+    }
+    ok(bau(10, runden({ 'trend-auf': 30, 'trend-ab': 1 }))() === false,
+       'Schwelle erfuellt, aber eine Lage steht bei 1: der Automat laeuft WEITER (Wilhelms 30-zu-1-Fall)');
+    ok(bau(10, runden({ 'trend-auf': 30, 'trend-ab': 10 }))() === true,
+       'Beide Lagen tragen genug: der Automat stellt sich ab');
+    ok(bau(10, runden({ 'trend-auf': 50 }))() === false,
+       'Nur eine Lage, egal wie viele Runden: die Schwelle selbst ist nicht erfuellt');
+    ok(bau(10, runden({ 'trend-auf': 9, 'trend-ab': 12 }))() === false,
+       'Auch die andere Richtung zaehlt - nicht nur die zuletzt gemessene Lage');
+    /* Eine Runde je HANDELSTAG, nicht je Programmstart: das Merkmal im
+     * Arbeitsspeicher waere nach einem Neustart leer, also entscheiden die
+     * Daten mit. Auch eine von Hand geklickte Runde verbraucht den Tag. */
+    var hsA = ks7.indexOf('function heuteSchonGemessen');
+    var hsE = ks7.indexOf('\n  }', hsA);
+    ok(hsA !== -1 && hsE > hsA, 'Automat: heuteSchonGemessen laesst sich herausloesen');
+    var hsFn = new Function('kostenRunden', ks7.slice(hsA, hsE + 4) + '\nreturn heuteSchonGemessen;');
+    var heute9 = '2026-09-01';
+    var handRunde = [{ at: Date.parse(heute9 + 'T14:00:00Z'), sym: 'KO', krypto: false, runde: 0.001 }];
+    ok(hsFn(function () { return handRunde; })(heute9) === true,
+       'Nach einem Neustart erkennt der Automat an den DATEN, dass der Tag schon gemessen ist');
+    ok(hsFn(function () { return handRunde; })('2026-09-02') === false,
+       'Am naechsten Handelstag misst er wieder');
+    ok(hsFn(function () { return [{ at: Date.parse(heute9 + 'T14:00:00Z'), sym: 'BTCUSD', krypto: true, runde: 0.002 }]; })(heute9) === false,
+       'Eine Krypto-Runde verbraucht den Aktien-Tag NICHT');
+    ok(/if \(heuteSchonGemessen\(tag\)\) return;/.test(ks7),
+       'Und der Automat fragt das auch wirklich, bevor er misst');
+    /* Und die Zaehlregel selbst ist unveraendert: jeLage kam additiv dazu. */
+    var strFn = new Function(ks7.slice(aS, eS + 4) + '\nreturn kostenStreuung;')();
+    var s9 = strFn(runden({ 'trend-auf': 2, 'trend-ab': 1 }));
+    ok(s9.erfuellt === true && s9.jeLage['trend-auf'] === 2,
+       'kostenStreuung zaehlt weiter wie vorgelegt und weist die Runden je Lage zusaetzlich aus');
+  })();
 
   /* --- Krypto misst rund um die Uhr, gehoert aber NICHT in die Aktien-Zahl ---
    * Die Spanne auf BTC sagt nichts ueber die Spanne auf MSFT, und die Annahme
@@ -10288,6 +10365,94 @@ console.log('\nWachhund: die neun bekannten und der eine unerklaerte Fall');
      'Eine veraltete Abmeldeliste wird als solche ausgewiesen, statt still zu entlasten');
 
   try { fs.readdirSync(tmpW).forEach(function (f) { fs.unlinkSync(pathW.join(tmpW, f)); }); fs.rmdirSync(tmpW); } catch (eW) { /* Aufraeumen ist kein Testziel */ }
+})();
+
+
+/* ========== Der Stempel haelt fest, was erreicht wurde - nicht, wann jemand hinsah ========== */
+console.log('\nSammelplan: faellig ist, wer inhaltlich zurueckhaengt (27.08.2026)');
+(function () {
+  /* WOZU. Am 27.08.2026 trugen 840 Reihen ueber drei Intervalle den Stempel
+   * "am: 2026-08-27", und in der Stichprobe enthielt KEINE EINZIGE den 27.08. Der
+   * Sammellauf lief um 12:18 - vor der US-Eroeffnung, wo es den Tag noch gar nicht
+   * geben konnte - und verbrauchte damit den Tagesstempel. Die Karte meldete "alle
+   * 531 Werte sind auf Stand", waehrend der laufende Handelstag fehlte.
+   *
+   * Es war an diesem Tag die DRITTE Stelle derselben Bauform:
+   *   Abmeldeliste    stempelte das Listendatum   statt des Handelsendes
+   *   Archiv-Waechter las die letzte Kerze        statt der letzten Umsatzkerze
+   *   Sammelplan      merkte sich den Abruf       statt des erreichten Tages
+   * Ein Stempel muss das Ereignis festhalten, das ihn rechtfertigt - nicht den
+   * Zeitpunkt, zu dem jemand hingesehen hat.
+   *
+   * NICHT KOSMETIK: bleibt die App laenger als sieben Tage aus, faellt die Luecke aus
+   * dem Quellfenster von 1m und ist wirklich weg - waehrend der Plan die ganze Zeit
+   * "auf Stand" sagte. */
+  var SP = require(__dirname + '/sammelplan.js');
+  var KQ2 = require(__dirname + '/kerzenquelle.js');
+
+  /* Die Regel wohnt jetzt in kerzenquelle.js, weil der Sammelplan sie braucht und
+   * tools/ nicht mit ausgeliefert wird. Der Waechter greift durch - eine Regel, nicht
+   * zwei. */
+  var WH2 = require(__dirname + '/tools/archiv-wachhund.js');
+  var probe = new Date('2026-08-27T10:18:00Z');
+  ok(KQ2.letzterAbgeschlossenerHandelstag(probe) === WH2.letzterAbgeschlossenerHandelstag(probe),
+     'Waechter und Sammelplan benutzen DIESELBE Vorstellung davon, wann ein Handelstag zu Ende ist');
+
+  /* Der Ausloeser: 10:18 UTC ist vor der US-Eroeffnung. */
+  ok(KQ2.letzterAbgeschlossenerHandelstag(new Date('2026-08-27T10:18:00Z')) === '2026-08-26',
+     'Vor der Eroeffnung ist der letzte abgeschlossene Handelstag der VORTAG',
+     KQ2.letzterAbgeschlossenerHandelstag(new Date('2026-08-27T10:18:00Z')));
+  ok(KQ2.letzterAbgeschlossenerHandelstag(new Date('2026-08-27T20:45:00Z')) === '2026-08-27',
+     'Nach Handelsschluss zaehlt der heutige Tag');
+
+  /* DIE SPERRKLINKE AUF DIE GEGENRICHTUNG: ein Abruf vor Handelsbeginn darf den Tag
+   * nicht als erledigt stempeln. Genau das war der Ausloeser. */
+  var vorOeffnung = Date.parse('2026-08-27T10:18:00Z');
+  var nachSchluss = Date.parse('2026-08-27T20:45:00Z');
+  var vollstaendig = { kerzen: 2689, am: '2026-08-27', bisTag: '2026-08-26' };
+
+  ok(SP.istFaellig(vollstaendig, '2026-08-26', 1, vorOeffnung) === false,
+     'Vor der Eroeffnung gilt eine Reihe mit dem Vortag als vollstaendig - sie wird gar nicht erst geholt');
+  ok(SP.istFaellig(vollstaendig, '2026-08-27', 1, nachSchluss) === true,
+     'Nach Handelsschluss wird dieselbe Reihe faellig - der Bezugspunkt ist weitergerutscht');
+
+  /* DER FALL VON HEUTE, wortwoertlich: heute abgerufen, aber nur der Vortag drin.
+   * Die alte Rechnung sagte "erledigt", weil am == heute. */
+  var derFallVonHeute = { kerzen: 2689, am: '2026-08-27', bisTag: '2026-08-26' };
+  ok(SP.istFaellig(derFallVonHeute, '2026-08-27', 1, nachSchluss) === true,
+     'Heute abgerufen, aber nur der Vortag drin: faellig. Der Abrufstempel entscheidet nicht mehr');
+
+  /* POSITIVKONTROLLE, ohne die alles darueber wertlos waere: eine wirklich
+   * vollstaendige Reihe darf NICHT faellig werden. Eine Regel, die immer "faellig"
+   * sagt, repariert den Fehler auch - und holt dafuer jeden Wert bei jedem Lauf neu. */
+  ok(SP.istFaellig({ kerzen: 2689, am: '2026-08-27', bisTag: '2026-08-27' }, '2026-08-27', 1, nachSchluss) === false,
+     'Positivkontrolle: eine Reihe MIT dem letzten abgeschlossenen Handelstag ist nicht faellig');
+
+  /* Der Abstand bleibt erhalten - sonst wuerde aus "alle sieben Tage" ploetzlich
+   * "jeden Tag", und 5m/15m zoegen das Siebenfache an Abrufen. */
+  ok(SP.istFaellig({ bisTag: '2026-08-24' }, '2026-08-27', 7, nachSchluss) === false,
+     'Bei Abstand 7 ist ein Rueckstand von drei Tagen noch nicht faellig');
+  ok(SP.istFaellig({ bisTag: '2026-08-19' }, '2026-08-27', 7, nachSchluss) === true,
+     'Bei Abstand 7 ist ein Rueckstand von acht Tagen faellig');
+
+  /* Alte Eintraege ohne bisTag: alte Rechnung, damit nichts stehenbleibt. */
+  ok(SP.istFaellig({ am: '2026-08-27' }, '2026-08-27', 1, nachSchluss) === false &&
+     SP.istFaellig({ am: '2026-08-25' }, '2026-08-27', 1, nachSchluss) === true,
+     'Ein Eintrag von vor der Aenderung faellt auf die alte Rechnung zurueck, statt zu blockieren');
+
+  /* Und der Stempel selbst: er liest den letzten enthaltenen Tag aus der Reihe. */
+  ok(KQ2.letzterTagVon([[Date.parse('2026-08-25T13:30:00Z'), 1, 1, 1, 1],
+                        [Date.parse('2026-08-26T13:30:00Z'), 1, 1, 1, 1]]) === '2026-08-26',
+     'Der Stempel liest den letzten enthaltenen Handelstag aus der Reihe');
+  ok(KQ2.letzterTagVon([]) === null && KQ2.letzterTagVon(null) === null,
+     'Ohne Kerzen gibt es keinen Tag - und keine erfundene Angabe');
+
+  /* Die Sperrklinke auf die Quelle: der Stempel im Stand MUSS bisTag mitschreiben.
+   * Ohne diese Zeile faellt der Plan dauerhaft auf die alte Rechnung zurueck und
+   * niemand merkt es - der Fehler kaeme still zurueck. */
+  var kqQuelle = ohneKommentare(fs.readFileSync(__dirname + '/kerzenquelle.js', 'utf8'));
+  ok(/stand\.fertig\[sym\] = \{[^}]*bisTag: letzterTagVon\(r\.serie\)/.test(kqQuelle),
+     'Der Sammler schreibt bisTag mit - sonst faellt der Plan lautlos auf das Abrufdatum zurueck');
 })();
 
 

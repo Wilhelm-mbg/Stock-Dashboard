@@ -145,6 +145,39 @@ function symboleFuer(einst) {
  * die das Stundenarchiv zwei Tage stillstehen liess.
  * Nebenbei loest das die Wiederaufnahme von selbst: ein abgebrochener Lauf laesst
  * genau die uebrigen Werte offen, und der naechste nimmt sie. */
+/* IST DIESER WERT FAELLIG? Gemessen wird der Rueckstand des INHALTS, nicht das Alter
+ * des Abrufs.
+ *
+ * Vorher entschied tageSeit(f.am) - das Datum, an dem zuletzt nachgesehen wurde. Ein
+ * Lauf VOR der US-Eroeffnung kann zwangslaeufig nur den Vortag holen, setzte aber den
+ * heutigen Stempel; danach galt der Wert bis morgen als erledigt. Am 27.08.2026 trugen
+ * so 840 Reihen ueber drei Intervalle den Tagesstempel, und in der Stichprobe enthielt
+ * KEINE EINZIGE den 27.08. - waehrend die Karte "alle 531 Werte sind auf Stand" meldete.
+ * Wer daraus schloss, der heutige Tag sei im Archiv, mass auf einem Archiv ohne ihn.
+ *
+ * DER BEZUGSPUNKT IST DER LETZTE ABGESCHLOSSENE HANDELSTAG, nicht "heute". Damit loest
+ * sich der Ausloeser von selbst: vor der Eroeffnung ist der letzte abgeschlossene Tag
+ * der Vortag; eine Reihe, die den Vortag enthaelt, ist dann vollstaendig und wird gar
+ * nicht erst geholt - es kann also auch nichts falsch gestempelt werden. Nach
+ * Handelsschluss rutscht der Bezugspunkt weiter und der Wert wird faellig.
+ *
+ * WARUM DAS MEHR IST ALS KOSMETIK: Bleibt die App laenger als sieben Tage aus, faellt
+ * die Luecke aus dem Quellfenster von 1m und ist wirklich weg - waehrend der Plan die
+ * ganze Zeit "auf Stand" sagte. Der Verlust waere bis zuletzt unsichtbar gewesen.
+ *
+ * Eintraege ohne bisTag stammen von vor dieser Aenderung und fallen auf die alte
+ * Rechnung zurueck. Das heilt sich beim naechsten Abruf von selbst, denn der schreibt
+ * bisTag mit; ein Nachtragen von Hand haette 3.000 Dateien lesen muessen. */
+function istFaellig(eintrag, sollTag, abstandTage, jetzt) {
+  if (!eintrag) return true;
+  if (eintrag.bisTag) {
+    var rueck = tageSeit(eintrag.bisTag, Date.parse(sollTag + 'T00:00:00Z'));
+    return rueck == null || rueck >= abstandTage;
+  }
+  var seit = tageSeit(eintrag.am, jetzt);
+  return seit == null || seit >= abstandTage;
+}
+
 function offeneSymbole(intervall, einst, jetzt) {
   jetzt = jetzt || Date.now();
   var b = symboleFuer(einst);
@@ -155,12 +188,12 @@ function offeneSymbole(intervall, einst, jetzt) {
    * Rueckstand aussieht, wo gar nichts geplant ist. */
   if (!abstandTage) return { alle: b.symbole.length, dran: [], aus: true, quelle: b.quelle };
   var stand = Q.standLesen(Q.ordnerVon(intervall));
+  var soll = Q.letzterAbgeschlossenerHandelstag(new Date(jetzt));
   var dran = [];
   b.symbole.forEach(function (sym) {
     var f = stand.fertig && stand.fertig[sym];
     if (f) {
-      var seit = tageSeit(f.am, jetzt);
-      if (seit == null || seit >= abstandTage) dran.push(sym);
+      if (istFaellig(f, soll, abstandTage, jetzt)) dran.push(sym);
       return;
     }
     /* Werte ohne Daten (delistet, nie gelistet, an einem Tag mit Netzstoerung
@@ -274,7 +307,7 @@ function dauerSchaetzungMin(anzahl, abstandMs) {
 module.exports = {
   VORGABE: VORGABE, ERLAUBTE_INTERVALLE: ERLAUBTE_INTERVALLE,
   einstellungen: einstellungen, newYork: newYork, marktOffen: marktOffen, ruhig: ruhig,
-  symboleFuer: symboleFuer, offeneSymbole: offeneSymbole,
+  symboleFuer: symboleFuer, offeneSymbole: offeneSymbole, istFaellig: istFaellig,
   faellig: faellig, lage: lage,
   dauerSchaetzungMin: dauerSchaetzungMin, tageSeit: tageSeit,
   OEFFNET: OEFFNET, SCHLIESST: SCHLIESST,
