@@ -221,7 +221,36 @@ Nicht-Krypto, **alle am 25.08., null erfasste Marktlagen** → **nicht erfüllt,
 > ***„1ds `mindestKerzen`-Sperre war monatelang der einzige Schutz vor stiller Löschung, ohne
 > dass es jemand wusste."***
 
-> ### ❓ OFFENE FRAGE AN DEN LAUFENDEN VOLLAUF — gestellt, noch nicht beantwortet
+> ### ✅ BEANTWORTET, GEMESSEN — **der Lauf ist sicher, und die Frage hat eine echte Löschstelle gefunden**
+> **Szenario direkt gefüttert:** `Bestand 8.166 + Stummel 30 → 8.166 Kerzen · behalten 8.136 ·
+> **verloren 0** · die 30 frischen tragen die Eröffnung.` *Dazu im Vollauf-Pfad eine eigene
+> Sperre: **unter 20 Kerzen wird gar nicht erst geschrieben**, die Reihe wird als `ohneDaten`
+> vermerkt.*
+>
+> ***„Die Archiv-Sperre verhindert das Überschreiben — das Mischen macht Überschreiben
+> unmöglich."*** *Deshalb ist die 403er-Sperre dort nicht nötig.*
+>
+> ### 🎯 **ABER DIE FRAGE HAT DIE LETZTE LÖSCHSTELLE IM WERKZEUG GEFUNDEN**
+> > **Eine UNLESBARE Bestandsdatei wurde stillschweigend durch die frische Reihe ERSETZT.**
+> > *Kommentar im Code: „unlesbar: die frische Reihe ersetzt sie."*
+>
+> **Solange überschrieben wurde, war das folgenlos — die Datei war ohnehin verloren. Seit dem
+> Mischen ist es die letzte Stelle, an der das Werkzeug vernichten konnte — und sie träfe genau
+> die gefährdete Klasse.** *Jetzt: **überspringen, laut melden, weiterlaufen**.*
+>
+> ***„Eine kaputte Datei kann ein Mensch noch retten, ein Überschreiben kann niemand
+> zurücknehmen."***
+>
+> **Der laufende Lauf ist nicht betroffen, gemessen statt gehofft:** *alle 1.164 Dateien vor dem
+> Start auf Lesbarkeit geprüft, **0 unlesbar** — und die Codeänderung wirkt ohnehin erst ab dem
+> nächsten Lauf, weil Node das Modul beim Start geladen hat.*
+>
+> **📌 Lehre: Eine Reparatur kann eine bis dahin harmlose Stelle scharf machen.** *Das
+> Überschreiben deckte diese Löschstelle zu; das Mischen hat sie freigelegt, ohne sie zu
+> berühren. **Wer eine Schreibstrategie ändert, muss jede Stelle neu bewerten, die von der alten
+> lebte.*** *Heute der zweite Fall dieser Art (die 23 Doppeleinträge waren der erste).*
+
+> ### ~~❓ OFFENE FRAGE AN DEN LAUFENDEN VOLLAUF~~ *(beantwortet, siehe oben)*
 > **Der Vollauf holt gerade Eröffnungskurse für 1.164 Reihen — und das sind genau die
 > VERSCHWUNDENEN, also exakt die Klasse, deren Historie die Quelle schrittweise entsorgt.**
 >
