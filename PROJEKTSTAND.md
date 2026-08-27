@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 12:36 (Windows-Uhr)
+letzter-bericht: 2026-08-27 12:52 (Windows-Uhr)
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -40,6 +40,61 @@ Sitzungen.** Gefunden hat es jedes Mal eine Gegenprobe, nie ein Verdacht.
 > gegenstandslos.** *Was bleibt, ist die Frage der Archiv-Sauberkeit — und die ist Entscheidung
 > 1 unten.*
 
+## ⚖ 27.08. 12:4x — **DER DRITTE ZEUGE SPRICHT: das 60m-Archiv liegt in BEIDEN Richtungen falsch**
+
+**Massive gegen beide Archive, zehn Fälle, Toleranz 0,2 %** *(ausgewählt auf **Uneinigkeit** — die
+Frage war „wer hat recht, wenn sie sich widersprechen", und die ist beantwortet)*:
+
+| | | |
+|---|---:|---|
+| **`archiv1d` bestätigt** | **9** | |
+| `archiv60m` bestätigt | **1** | *`GOVT`* |
+| keins | 0 | |
+
+**In sechs Fällen war das 60m breiter — die Extreme gab es nicht** (Massive und `1d` sagen
+übereinstimmend etwas anderes). **In drei von vier Fällen, wo es enger war, hat es echte Extreme
+nicht.** *`WHLR` als Kontrolle: Massive bestätigt `1d` mit 1,36–1,50, das 60m steht bei
+0,34–0,37 — **der Faktor 4 ist als 60m-Fehler belegt**, und das deckt sich mit dem unabhängigen
+Split-Befund (Reverse Split 4:1). **Zwei verschiedene Endpunkte, dieselbe Antwort.***
+
+> **⚠ `GOVT` IST DER GEGENFALL UND GEHÖRT DAZU:** *`archiv1d` hat dort ein Hoch von **23,53**,
+> das **weder Massive noch das 60m-Archiv** kennen.* **Auch der Tagesbalken ist nicht fehlerfrei
+> — er ist nur deutlich seltener falsch.** *Ein 9:1 ohne diesen Gegenfall würde als „1d ist
+> richtig" gelesen, und das steht da nicht.*
+
+> ### ⚖ RICHTIGSTELLUNG — **die QS nimmt ihren „Normalzustand"-Satz zurück, und der PM seinen Sprung**
+> **Auf der Tafel stand:** *„Wenn in fast jedem fünften Reihen-Tag eine gewöhnliche Sitzungsstunde
+> ein Extrem außerhalb der Tagesspanne trägt, dann ist ‚außerhalb der Tagesspanne' ein häufiger
+> **Normalzustand** und **kein Fehlermerkmal**."*
+>
+> **Der erste Teil stimmt weiter, der zweite ist widerlegt** — *in sechs von sechs geprüften
+> Fällen war das 60m-Extrem **nicht echt**.*
+>
+> **Richtig ist:** *„Außerhalb der Tagesspanne" **kommt häufig vor** UND ist bei Abweichungen
+> über 0,2 % nach dem dritten Zeugen **überwiegend ein Fehler des 60m-Archivs**.*
+>
+> ***Der Sprung von der Häufigkeit zur Harmlosigkeit war meiner, nicht ihrer.*** *Sie hatte
+> „kommt häufig vor" gemeldet; ich habe daraus „ist normal, also kein Fehlermerkmal" geboardet.*
+> **Option (c) bleibt aus dem anderen Grund erledigt.**
+
+**Mengenverhältnis über zwei Normaltage, > 0,2 %: 348 Fälle mit 60m breiter gegen 34 mit 1d
+breiter.** *Erweiterung auf 30–40 Fälle läuft (~8 Min) — **bei 9:1 aus zehn Fällen ist die
+Richtung klar, die Rate nicht.***
+
+> **🔴 OFFENE FRAGE, VOM PM GESTELLT, weil sie über die Größe entscheidet:** **Auf `archiv60m`
+> laufen neun von zwölf Strategien.** *Sind Hoch und Tief dort über 0,2 % in beiden Richtungen
+> unzuverlässig, trifft das **jede Regel, die Hoch oder Tief liest** — Stopps, Ausbrüche, ORB,
+> Kanalgrenzen.* **Beim erweiterten Lauf zusätzlich zu beziffern:** *Größenordnung gegen die
+> Kostenhürde (0,10 Pp)? · Hoch und Tief gleich betroffen? · **Sind die SCHLUSSkurse auch
+> betroffen** — falls nein (und die 20:00-Kerze trifft den amtlichen Schluss zu 99,33 % exakt),
+> **ist der Schaden auf Hoch/Tief begrenzt, und das gehört ausgesprochen**.*
+>
+> **⚠ Und die Auswahl bleibt zu nennen: die zehn wurden auf UNEINIGKEIT ausgewählt.** *Die
+> Fehlerrate über das ganze Archiv ist eine andere Frage als „wer hat recht, wenn sie sich
+> widersprechen" — **nur die zweite ist gestellt worden**.*
+
+---
+
 ## 🔑 27.08. 12:1x — **DIE ZWEITE QUELLE LAG IM HAUS. Vier Stränge sind für 0 € arbeitsfähig**
 
 **Der vorhandene `massive.key` schaltet Splits und Dividenden frei.** *Zehn lesende Abrufe,
@@ -77,7 +132,38 @@ geworden.*
 gegen eine zweite Quelle geprüft. **Der harte Rest sind RGR und SITC: ein Sprung OHNE Ereignis
 ist entweder ein Archivfehler oder ein Ereignis, das diese Endpunkte nicht führen.**
 
-**→ Die 132 Skalenwechsel (S1) sind ≈ 132 Abrufe ≈ 29 Minuten. Vergeben an `22`.**
+**→ Die Skalenwechsel (S1) sind vergeben an `22`.**
+
+> ### 🔢 NACHTRAG 12:5x — **die gezählte Menge ist ein FÜNFTEL der auffälligen** *(vom PM nachgefragt)*
+> **Ich wollte „69 statt 132" nicht boarden, ohne zu wissen, ob beide dasselbe zählen. Sie tun
+> es — die Einheit ist beidseitig `Paare`, wörtlich aus der QS-Übergabe belegt** (*„gegenläufige
+> Sprungpaare gesamt: 141 / im 60m-Fenster prüfbar: 9 / außerhalb: **132**"*). **Keine
+> Populations-Verwechslung.** *Die Differenz ist Archivstand (heute neu geschrieben) plus
+> Schwellen — **die der QS sind nicht abgelegt und nicht rekonstruierbar**.*
+>
+> **Der Tafel-Satz, wörtlich vom Analytiker:**
+> > *„`I1` findet auf dem neuen Archiv **69 Pendel-Paare in 29 Reihen** (QS-Zahl 141/132 vom alten
+> > Stand, Schwellen nicht rekonstruierbar, Einheit beidseitig: Paare). **Einzelsprünge ohne
+> > Rückkehr — 534 in 275 Reihen — sind vorregistriert ausgeschlossen und ungezählt**; darunter
+> > liegen sowohl echte Splits (WHLR-Klasse) als auch RGR-artige Skalenfehler, trennbar nur per
+> > Ereignis-Abgleich."*
+>
+> **672 Sprünge insgesamt, nur 138 Legs (20,5 %) in Pendel-Paaren.** *Das ist kein Fehler der
+> Vorregistrierung — `I1` darf eng sein —, aber es ändert, was „69 Kandidaten" bedeutet.*
+> **⚠ Und: Einzelsprünge sind NICHT automatisch Defekte** — *allein `WHLR` trägt 16 davon, alle
+> echt.* **Ohne diesen Zusatz läse sich „534 ungezählte Sprünge" wie 534 Fehler.**
+>
+> **✅ Freigegeben: die 275 Einzelsprung-Reihen per Splits-Abruf sortieren** (~60 Min, lesend,
+> kostenlos) — *die systematische Jagd auf die Klasse, die den RGR-Fehler erzeugt hat.* **Als
+> DRITTE Menge neben `I1` ∪ F1-Verworfene, `WHLR`s 16 als Positivkontrolle, Trennregel vor den
+> Ergebnissen festgelegt.**
+>
+> > **🔴 DIE AUFLAGE, DIE ALLES TRÄGT: „ohne Ereignis" ist NICHT dasselbe wie „kein Ereignis".**
+> > *Spin-offs stehen in **keinem** der beiden Endpunkte — gemessen.* **Drei Klassen, nicht
+> > zwei:** *Split-belegt · kein Ereignis, **aber der Endpunkt deckt die Frage ab** · **der
+> > Endpunkt kann es gar nicht wissen**. Die dritte darf niemals in „RGR-Verdacht" fallen* —
+> > **sonst misst die Länge der Verdachtsliste die Lücke des Endpunkts statt die Fehler des
+> > Archivs.** *Und die **Grundrate** ist das Ergebnis, nicht die Verdachtsliste.*
 
 ---
 
