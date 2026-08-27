@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 02:40 (abgelesen)
+letzter-bericht: 2026-08-27 02:45 (abgelesen)
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -78,6 +78,28 @@ auffiel:**
 >
 > **→ Rückwirkend auf die zwölf Protokolle kann NICHTS durchschlagen.** Weder ist die Kerze
 > instabil, noch existiert sie in der Historie.
+>
+> ### 🔑 DIE ERKLÄRUNG, DIE DEN GANZEN ABEND GEFEHLT HAT — und eine ungeschriebene Abhängigkeit
+> **Richtigstellung einer PM-Formulierung:** Auf der Tafel stand, die Vermutung von
+> `markt-dashboard-1d` (die 20:00-Kerze sei ein Quote-Anhängsel des Abrufs) sei widerlegt.
+> **Sie war nur zur Hälfte falsch — und die richtige Hälfte ist die Begründung, die fehlte.**
+> Nachgemessen, ohne `includePrePost`, bei zu Markt:
+>
+>     NVDA   meta.regularMarketTime  = 2026-08-26T20:00:00Z
+>            meta.regularMarketPrice = 209,66
+>            letzte Kerze  2026-08-26T20:00:00Z   c=209,6600037   v=0
+>
+> **Die 20:00-Kerze IST das Quote-Anhängsel** — gestempelt mit `regularMarketTime`, auf die
+> Minute gerundet, Preis gleich `regularMarketPrice`. **Damit ist endlich erklärt, warum
+> ausgerechnet eine flache Nullumsatz-Kerze den amtlichen Schluss trägt:** *Nach Handelsschluss
+> friert der reguläre Quote auf dem Schlusskurs ein — deshalb stimmt sie.*
+>
+> **⚠ UND DARAUS FOLGT EINE ABHÄNGIGKEIT, DIE BISHER NIRGENDS STAND:** Die Richtigkeit dieser
+> Kerze **ruht auf zwei Sicherungen**, die niemand miteinander verbunden hatte —
+> **(a) die Sekundenregel aus #85** (ein Quote *während* der Sitzung trägt `16:57:27` und fällt
+> heraus) und **(b) der Zeitplan** (frühestens 30 Minuten nach Schluss).
+> **Fällt eine von beiden weg, schreibt der Sammler einen Zwischenstands-Quote als Tagesschluss
+> ins Archiv** — und zwar einen, der aussieht wie der genaueste Wert im Bestand.
 >
 > ### ✅ MESSSEITE: ERLEDIGT — nicht „zu klein", sondern „nicht vorhanden"
 > **Alle Messungen** (die zwölf Protokolle, die Strang-A-Referenz, der laufende Docht-Lauf)
@@ -2354,14 +2376,19 @@ entstehen beim Abruf während der Sitzung, aus der laufenden Intraday-Sammlung d
 Welcher Abruf genau sie schreibt, steht im Sammelcode, und den anzusehen ist nicht meine
 Rolle."*
 
-**⚠ OFFENE FRAGE AN DIE FENSTER-SPERRE (`3fbc9b5`), vom PM an `1d` gegeben:** Die Regel lautet
-„was außerhalb des angefragten Fensters liegt, wurde nicht angefragt". **Die archivschreibenden
-Pfade holen aber mit `range=`, nie mit `period1`/`period2`** — bekommt `zerlege` dann überhaupt
-ein `von`/`bis`, gegen das es prüfen kann? **Falls nein, wäre die Sperre genau dort blind, wo
-die Stempel nachweislich entstehen.** *Kein Fehler der damaligen Arbeit — sie wurde gegen den
-damals bekannten Fall gebaut. Eine Lücke, die erst dieser Befund sichtbar macht.*
-**Testfall liegt vor und ist besser als jede Injektion:** 152 echte Stempel mit Symbol und
-Zeitstempel; die Regel muss sie fangen und die legitimen Sitzungsschlüsse durchlassen.
+**✅ BEANTWORTET UND BEHOBEN (`f9462e4`) — und die Lücke saß tiefer als vermutet.** Die Antwort
+auf die PM-Frage lautete **nein**: Die Fenster-Sperre greift bei `range=`-Abrufen nicht. **Aber
+die eigentliche Lücke saß im Raster:** `zusammenfuehren()` filterte **nur das Vorhandene, nicht
+das frisch Geholte**, und `fertigeKerze()` lässt `15:12:00` durch, **weil die Sekunde 0 ist.**
+*Genau so entstehen die Stempel.* **Das Raster steht jetzt hinter der Vereinigung und trifft
+beide Seiten.**
+
+**Gegen die 152 echten Stempel der QS geprüft — beide Richtungen:**
+
+    gefangen  : 152 von 152
+    falsch    :   0 von 25.915 legitimen Schlusskerzen
+
+*Der eine Durchrutscher aus der Vorprüfung (NYT 15:00) hat die Regel dabei geschärft.*
 
 **Dringlichkeit, ehrlich:** gering. Die Regel verhindert **keinen wachsenden Bestand** — sie
 schließt die Tür für die Fälle, die **künftig** aufhören zu handeln.
