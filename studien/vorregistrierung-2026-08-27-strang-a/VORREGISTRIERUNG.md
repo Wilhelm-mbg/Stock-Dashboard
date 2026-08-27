@@ -352,9 +352,19 @@ schärfere Frage — Pendel UNTER der F1-Schranke — rein lesend nachgezählt: 
 Die Liste ist gemischt und darf nicht pauschal als Defekt gelesen werden: AMC
 27./28.01.2021 (×4,01 → ×0,43) ist der reale Meme-Squeeze; CTO 1992 deckt sich mit
 der Nullumsatz-Sprungliste aus Nachtrag 11 (Datenfehler); Mehrheit vor 2005 in
-Kleinwerten. **Benannt, nicht behandelt** — gleiche Familie wie Nachtrag 11, eine
-Bereinigungsregel wäre eine neue Anordnung und müsste erst echte von realen Sprüngen
-trennen (Signatur der Defekte: Nullumsatz oder gegenläufiger Umsatzsprung).
+Kleinwerten. **Benannt, nicht behandelt.**
+
+**Korrektur zur Trenn-Signatur (QS-Messung ~04:4x):** Meine hier zunächst
+vorgeschlagene Signatur (Nullumsatz oder gegenläufiger Umsatzsprung) ist **gemessen
+widerlegt** — echte Abstürze tragen dieselbe (GME-Squeeze und CHRD-COVID landeten im
+Geldumsatz-Test unter den »Artefakten«). **Das tragende Merkmal ist das zweite
+Archiv als Zeuge:** ein echtes Ereignis steht in 1d UND 60m, eine Umskalierung nur in
+einem — 9 von 9 Sprungpaaren im 60m-Fenster perfekt getrennt (BYND 6× nur-1d =
+Artefakt; DFEN/HOLO/REPL beide = echt). **Harte Grenze: entscheidbar nur für die
+letzten ~730 Tage** (60m-Reichweite); für die historischen 132 von 141 Sprungpaaren —
+und damit für die Mehrheit meiner 25 — gibt es keinen zweiten Zeugen und keine
+Entscheidung. Eine Bereinigungsregel darauf ließe sich **nur vorwärts** anwenden;
+für den Referenzlauf bleibt es bei benannt-nicht-behandelt.
 
 ---
 
