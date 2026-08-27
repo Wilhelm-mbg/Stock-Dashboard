@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 04:58 (abgelesen)
+letzter-bericht: 2026-08-27 05:05 (abgelesen)
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -1795,14 +1795,34 @@ verzerrt, in genau der Richtung, in der wir etwas finden wollen. Ausführlich im
    LBRDA/LBRDK hatte er selbst aus seiner Gruppe genommen.)*
    *Der PM hatte die Fünf ungeprüft weitergereicht — seine Ungenauigkeit, nicht dessen.*
 
-   > **⚠ UND HIER STEHT EIN WIDERSPRUCH ZWISCHEN ZWEI SITZUNGEN, den der PM NICHT auflöst,
-   > weil er ihn nicht messen kann:**
-   > **Der Tüftler sagt: AVB handelt wirklich — 24.08., 6,2 Mio Stück.**
-   > **Die QS sagt: AVB, letzter Umsatz 14.08.** (und `-06`s Wachhund führt AVB mit 8 Tagen
-   > Rückstand, `1d` hat für AVB ein SEC-`25-NSE` vom 17.08. plus 8-K Item 2.01 gefunden).
-   > **Beide können nicht zugleich stimmen.** Vermutlich verschiedene Bestände — der Tüftler
-   > misst im `massive`-Bestand, die QS im `archiv1d`. **Zu klären, bevor AVB in irgendeiner
-   > Richtung als Beleg zitiert wird.**
+   > **✅ AUFGELÖST 05:05 — und es war kein Widerspruch, sondern ein HÄNGENDES ARCHIV gegen die
+   > lebende Quelle. Beide Sitzungen hatten recht.**
+   >
+   > | | 14.08. | 17.–21.08. | 24.08. | ab 25.08. |
+   > |---|---|---|---|---|
+   > | **`archiv1d`** *(Stand 24.08. 18:38)* | v = 6.938.895 | **5× v = 0**, Schluss identisch **bis zur 15. Stelle** | fehlt | fehlt |
+   > | **frischer Abruf 27.08.** | — | 20.08. v = 4,33 Mio · 21.08. v = 7,16 Mio | **v = 6.201.087** | `null` |
+   >
+   > **`archiv1d` ist für AVB seit dem 14.08. stehengeblieben und hat statt Daten Stempel
+   > gesammelt.** *Der Wachhund bestätigt es unabhängig: **8 Tage Rückstand ist genau die Lücke
+   > 14. → 24.08.*** **Kein Quellstreit — derselbe Anbieter, zweimal, mit zehn Tagen Abstand.**
+   >
+   > *Feldsemantik, damit daraus nicht die nächste Differenz wird: `archiv1d` führt
+   > **bereinigte** Schlusskurse (daher die 15 Stellen), der frische Abruf las den
+   > **unbereinigten** `quote.close` — 65,90 gegen 65,14. **Für den Umsatz folgenlos.***
+   >
+   > **🔻 UND DAMIT FÄLLT AUCH DER LETZTE FALL:** Yahoo zeigt AVB-Handel **bis 24.08.** und
+   > danach nichts. Zusammen mit dem `25-NSE` vom 17.08. passt das: **Eine Abmeldung nach Form
+   > 25 wird nicht am Einreichungstag wirksam, sondern mit Frist danach** — Handel bis kurz vor
+   > dem Wirksamwerden ist der **Normalfall**, nicht der Widerspruch.
+   > **→ AVB ist kein Falsch-Positiv der Liste, sondern ein Papier mit falschem DATUM in der
+   > Liste** (18.08. statt Handelsende 24.08., rund 4 Handelstage).
+   > **Von den ursprünglich drei „belegt falsch delisteten" bleibt NULL.**
+   >
+   > **Was bleibt, ist schwächer und immer noch nützlich: die Delisting-DATEN am jüngsten Rand
+   > sind unzuverlässig — die Delistings selbst sind es nicht.**
+   > *Als plausible Zusammenführung gekennzeichnet, nicht als Befund: Die Form-25-Frist wäre am
+   > Filing selbst zu prüfen; das liegt bei `markt-dashboard-1d`, die das `25-NSE` hat.*
 
    **Die zehn Rückstände zerfallen in drei Gruppen:** AVB, EQR, WBS, TWO = **reines
    Nachladen** (8 Kerzen liegen bei der Quelle bereit) · LBRDA, LBRDK, WHLR = echte
