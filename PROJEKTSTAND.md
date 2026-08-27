@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 04:35 (abgelesen)
+letzter-bericht: 2026-08-27 04:30 (abgelesen)
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -102,6 +102,62 @@ Sitzungen.** Gefunden hat es jedes Mal eine Gegenprobe, nie ein Verdacht.
 > zur Wahl** — der Docht-Effekt hebt sich im Überschuss auf (Faktor 6–27 Abstand), und drei
 > Versuche, die Kerzen als Fehler zu isolieren, sind gescheitert. *Für **(B)** empfiehlt der PM
 > ausdrücklich: **behalten**, sie ist der beste Schlusskurs im Bestand.*
+
+### 💰 27.08. 05:10 — DIE KOSTENMESSUNG: die Annahme stimmt, der Beleg ist schwächer als gedacht
+
+**Die QS hat nicht bis morgen gewartet, weil an dieser Messung die 0,10-%-Annahme hängt.**
+*(Vermerk `qs-audit-2026-08-27-0510-KOSTENMESSUNG.md`.)* **Zwei getrennte Ursachen, nicht eine:**
+
+**1. Ein Depot-Reset hat 38 gemessene Runden abgetrennt — sie sind NICHT verloren.**
+
+    store/depot.json             kostenMessung:  1 Runde
+    store/depot_vor_reset.json   kostenMessung: 38 Runden, 25.08. 12:02-13:32
+
+*Niemand hat gemerkt, dass sie noch da sind.*
+**→ ✅ VOM PM GESICHERT (04:28) nach `Markt-Dashboard-Daten/kostenmessung-sicherung-2026-08-27/`,
+bevor `depot_vor_reset.json` beim nächsten Reset überschrieben wird. Unabhängig nachgezählt:
+38 Runden, 22 Krypto, 16 Aktien — deckungsgleich mit der QS.** *Es sind die einzigen echten
+Kostenmessungen, die das Projekt hat.*
+
+**2. Seither scheitert die Spiegelung an der Margin.** `capFehler` nennt dreimal
+`RC_NOT_ENOUGH_MARGIN`, jüngster **26.08. 14:58 ABBV**. Ohne gespiegelte Ausführung keine
+Schlupfwerte, und `kostenMessungNeu` bricht ohne beide ab. *Im Export vom 27.08. trägt **kein
+einziger** Trade ein `capSlipOpen`-Feld, alle drei offenen Positionen haben `capDealId` null.*
+**→ Seit dem 25.08. kann gar keine Runde mehr entstehen.**
+
+**3. 🔴 UND DER ZÄHLER ZÄHLT DAS FALSCHE.** Alle 38 Runden tragen `basis: true` — der Marker
+heißt **BASISWERT** (im Gegensatz zum Schein), **und Krypto zählt dort mit. 22 der 38 sind
+ETHUSD.**
+
+    Anlageart    n    Median      Mittel     p90       max     ueber 0,10 %
+    alle        38   0,0707 %   0,0855 %   0,1142   0,2525        8
+    KRYPTO      22   0,0706 %   0,0708 %   0,0719   0,0986        0
+    AKTIEN      16   0,1031 %   0,1057 %   0,1672   0,2525        8
+
+> **Wer den Basis-Marker als Aktienzähler liest, hält 38 für erreicht, wo 16 stehen.**
+> *Die Strang-A-Freigabe verlangt **20 Aktienrunden**.*
+
+**✅ DIE GUTE NACHRICHT: Für Aktien liegt die gemessene Rundenkosten bei Median 0,1031 % und
+Mittel 0,1057 %. Die Annahme von 0,10 % ist bemerkenswert gut getroffen** — weder zu
+optimistisch noch zu vorsichtig. *Gepoolt ergäbe sich 0,0707 % — **30 % unter der Annahme, und
+falsch**, weil es die Aktienkosten mit Krypto verdünnt.*
+
+> **⚠ DIE EINSCHRÄNKUNG WIEGT SCHWERER ALS DIE ZAHL, und die QS stellt sie deshalb voran statt
+> in eine Fußnote: ALLE 16 AKTIENRUNDEN STAMMEN AUS EINER MINUTE** — 25.08., 13:31 bis 13:32
+> UTC, 15 verschiedene Werte. ***Das sind nicht 16 unabhängige Beobachtungen der Handelskosten,
+> sondern eine Marktlage, 15-fach abgetastet.*** *Die 22 Krypto-Runden verteilen sich dagegen
+> über anderthalb Stunden — ihre enge Streuung ist deshalb aussagekräftiger.*
+>
+> **→ Die Freigabeschwelle „20 Aktienrunden" muss als das gelesen werden, was sie prüfen soll:
+> 20 Runden aus VERSCHIEDENEN Marktlagen, nicht 20 aus einer Minute. Sonst erfüllt man sie mit
+> einem einzigen Klick.**
+
+**Drei Bauarbeiten, von der QS benannt und ausdrücklich nicht ausgeführt:** die 38 Runden
+sichern *(erledigt, PM)* · die **Margin-Ursache im Handelspfad** · der Zähler sollte
+**`istKrypto`** benutzen, *das im Handelsmodul zwölfmal aufgerufen wird und in der
+Kostenmessung nicht.*
+**Nicht geprüft:** ob die 38 vollständig sind oder der Reset-Abzug selbst schon eine Auswahl
+ist, und ob es **weitere Abzüge mit weiteren Runden** gibt.
 
 ### 📗 SCHLUSSSTAND DER NACHT — was gilt, was gesperrt ist, was offen bleibt
 
