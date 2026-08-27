@@ -185,6 +185,49 @@ Nicht-Krypto, **alle am 25.08., null erfasste Marktlagen** → **nicht erfüllt,
 
 ---
 
+## ✅ 27.08. abends — **DIE EXTREME-FRAGE IST BEANTWORTET: der Mechanismus ist ECHT, aber zu klein**
+
+> ### **Urteil: verschiebt NICHT messbar.**
+> *Δ des Bestätigungs-Überschusses von `rsi2seit-mcp`: **−0,0001 bis −0,0010 Pp** gegen `delta80`
+> **0,08–0,10 Pp** — **Faktor 100 bis 800 unter der Nachweisgrenze**. Kein Urteilswechsel, nicht
+> einmal Randflackern, beide Placebos sauber.*
+>
+> **Negativkontrolle `kapitulation`: Δ exakt ±0,0000**, Ausstiegsart „Zeit", Haltedauer unverändert
+> 26 Kerzen. *Die schlusskurs-blinde Strategie ist buchstäblich unberührt — **das Geschirr misst
+> also nicht sich selbst**.*
+
+> ### 🎯 **DER TEIL, DER DEN NULLBEFUND ERST WERTVOLL MACHT: der Mechanismus IST nachgewiesen**
+> *Gegengeprüft, ob der Stopp-Pfad die strittigen Extreme überhaupt berührt — **sonst wäre der
+> Nullbefund wertlos**. Er wird berührt:*
+>
+>     mittlere Haltedauer steigt in ALLEN fuenf Varianten,
+>     und MONOTON mit der Stopp-Enge:
+>       mcp 0,9  ->  +3,00 %o Kerzen
+>       mcp 0,1  ->  +5,29 %o Kerzen
+>     in Summe 315 bis 555 Kerzen auf 104.968 Signale
+>
+> **Richtung und Ordnung sind exakt die vorhergesagten:** *Ohne den falschen Tief-Docht löst der
+> Trailing-Stopp später aus, die Position hält länger — **und je enger der Stopp, desto stärker**.*
+>
+> ***Der QS-Mechanismus („ein zu tiefes Tief löst einen Stopp aus, den es nie gab") ist im
+> Messpfad NACHGEWIESEN — er ist nur zu selten und zu klein, um die Kante zu bewegen.***
+> **Das ist ein anderes Ergebnis als „kein Effekt", und es gehört so zitiert.**
+
+**Zwei Deutungsgrenzen, die mitgehören:**
+1. **Es ist eine OBERGRENZE** — *die Neutralisierung entfernt auch echte Dochte, und bei rund der
+   Hälfte der strittigen Tage ist ohnehin das `1d` die falsche Seite.*
+2. **🔴 FÜR DIE LIVE-SEITE FOLGT DARAUS NICHTS.** *Dort löst **ein einzelner Stopp an einem
+   einzelnen Tag** aus, statt dass ein Mittelwert über 104.968 Signale entsteht.* **Ein
+   Durchschnitt von 0,0005 Pp sagt nichts über den einen Tag, an dem es dich trifft.**
+
+> ### ❓ OFFEN FÜR WILHELM — **Live-Frage, ausdrücklich NICHT Teil des Laufs**
+> **Soll die Stopp-Regel robuster gebaut werden — gegen den SCHLUSS statt gegen das TIEF?**
+> *Das Tief ist die Seite, die in ~4,7 % der Reihen-Tage abweicht (Hoch nur 2,04 %), und es ist
+> die Seite, auf der ein Long-Stopp auslöst.* **Handelslogik → Wilhelms Entscheid, nicht der
+> Messseite. Blockiert nichts.**
+
+---
+
 ## 🛡 27.08. nachmittags — **EINE SPERRE HAT ZWEI VOLLE KURSHISTORIEN GERETTET, und niemand wusste davon**
 
 > ### ⚖ RICHTIGSTELLUNG: **`AVB` ist KEIN Nachladefall** *(ich hatte es so geboardet)*
