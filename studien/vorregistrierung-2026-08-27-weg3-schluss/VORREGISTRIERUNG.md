@@ -94,4 +94,37 @@ Vorregistrierung — wie bei den zwei Messungen zuvor.
 
 ---
 
+## 7. Nachtrag 27.08. ~09:3x — Endpunkt korrigiert, VOR dem Werkzeugbau
+
+Beim Spiegeln des Tüftler-Werkzeugs (`zaehle-lueckenfenster.js`, Zeile 157) zeigte
+sich: **Meine §1/§2-Beschreibung war falsch — die gezählte Differenzreihe ist
+ANTEILS-GEWICHTET:** d_t = f_t · (Mittel_V − Mittel_S) · 100 mit f_t = Anteil der
+Verschwundenen am Tages-Querschnitt (~7,7 %). Nur für DIESE Reihe gilt σ = 0,0586 Pp
+und der Faktor 24; die rohe Kohortendifferenz wäre ~13-fach breiter und läge NICHT
+über der Schwelle. Festlegung hiermit:
+
+1. **Primärendpunkt = die gewichtete Reihe, exakt wie gezählt.** Sie hat die richtige
+   Bedeutung für die Frage: f·(V−S) ist die Verschiebung, die die Lücke dem gepoolten
+   Tages-Querschnitt des Archivs aufprägt — »wie stark drückt das Fehlen dieser Werte
+   den Archiv-Messwert«, direkt in Archiv-Einheiten.
+2. **B13-Vorkehrung (die 25.08.-Falle: gewichteter Schätzer gegen feste Hürde):**
+   Die ungewichtete Kohortendifferenz ĉ_roh UND die f-Zeitreihe werden getrennt
+   ausgewiesen; jeder Anker-Vergleich (0,04/0,10 Pp) nennt ausdrücklich, dass er die
+   GEWICHTETE Größe misst, und bleibt nachrichtlich (kein Urteil — wie registriert).
+   Das Richtungsurteil R1 fällt auf der gewichteten Reihe; das Vorzeichen beider
+   Größen ist identisch (f > 0), die Richtung ist also gewichtsfrei gültig.
+3. **Weitere gespiegelte Konventionen, jetzt exakt:** Überlebende min. 100 Kerzen,
+   Verschwundene min. 20; Umsatzschnitt je BEOBACHTUNG (Schluss × Tagesumsatz ≥ 5 Mio $);
+   Überlebenden-Tage ab 2024-08-23; BREITE_MIN 20 Überlebende je Tag; Tage ohne
+   Verschwundene fallen. Mein zusätzlicher Beschnitt am Delisting-Datum ist gegenüber
+   der Zählung redundant (Phantom-Schwänze haben Umsatz 0 und fallen am
+   5-Mio-Schnitt von selbst) — er bleibt als Gürtel-und-Hosenträger, ändert aber
+   nachweislich keine Beobachtung.
+
+*Korrigiert vor Werkzeugbau und Lauf; kein Wert existiert. Der Fehler wäre im Lauf
+als Faktor-13-Diskrepanz zwischen registrierter und gezählter σ sofort aufgefallen —
+besser, er fällt hier auf.*
+
+---
+
 *Simulation mit virtuellem Kapital. Keine Anlageberatung.*
