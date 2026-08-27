@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 04:10 (abgelesen)
+letzter-bericht: 2026-08-27 04:20 (abgelesen)
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -174,6 +174,60 @@ Zahl hereingefallen war): ***Die Falle verschwindet nicht durch einmaliges Erken
 
 *Alles unterhalb dieser Zeile ist Beleg zur Bilanz oben. Wer nur wissen will, was zu
 entscheiden ist, hat es bereits gelesen.*
+
+### 🔴 27.08. ~04:20 — DIE GEGENRECHNER HABEN EINEN ECHTEN FEHLER GEFUNDEN: Auswahl auf die Zielgröße
+
+**Fünf unabhängige Prüfer, angesetzt je auf eine Anomalie — und einer hat den Nullpunkt-Fehler
+im QS-Werkzeug selbst gefunden. Von der QS nachgemessen und bestätigt.**
+
+**Der Fehler:** Eine Phantom-Kerze wird ausgeschlossen (Klasse R), wenn **ihr Schluss**
+außerhalb der Sitzungsspanne liegt. **Genau dieser Schluss ist die Größe, deren Nähe zum
+Tagesschluss gemessen wird.** *Ausgeschlossen werden also bevorzugt die Kerzen, die weit
+danebenliegen.*
+
+    Gruppe                                  n      Phantom naeher   exakt Phantom
+    wie Lauf 1 (Klasse R ausgeschlossen)  4.113        67,5 %          42,8 %
+    nur die ausgeschlossenen (Klasse R)   5.613        50,5 %          31,1 %
+    ALLE zusammen, ohne Ausschluss        9.726        57,7 %          36,1 %
+
+> **Derselbe Mechanismus wie der Nullpunkt der Messmaschine: Auswahl und Messgröße schöpfen aus
+> derselben Zahl.** *Die QS dazu: „Ich habe die Bauform heute Nacht **dreimal bei anderen
+> benannt** und in meinem eigenen Werkzeug nicht gesehen."*
+>
+> *(Die falschen Zahlen haben es **nie auf diese Tafel** geschafft — der PM hatte Lauf 1 nur
+> mit dem Urteil und den Kontrollabständen aufgenommen, nicht mit dieser Kennzahl.)*
+
+**✅ WAS DIE KORREKTUR ÜBERLEBT — und das ist der Teil für Wilhelm:**
+
+    exakte Treffer des amtlichen Tagesschlusses   Phantom   regulaer   Faktor
+      Definition A, gepoolt                        36,1 %     3,1 %      12
+      Definition B                                 18,4 %     2,3 %       8
+
+**Unter BEIDEN Populationsdefinitionen trifft die Phantom-Kerze den amtlichen Tagesschluss
+acht- bis zwölfmal häufiger exakt als die letzte Umsatzkerze.** *Das hängt nicht an der
+Definition und ist der belastbare Teil.*
+
+**❌ NICHT BELASTBAR und ausdrücklich NICHT weiterzugeben:** *„Die Phantom-Kerze liegt näher am
+Tagesschluss."* **57,7 % gegen 41,7 %, je nach Definition** — die Aussage kehrt sich um.
+
+**Und die QS lehnt eine angebotene Verschärfung ab, obwohl der Prüfer sie mit Nachdruck
+vertrat:** Er meldete, die Aussage kehre sich um. *Sie tut es — aber nur unter Definition B,
+und **B hat genau den Fehler, den die QS gerade an sich korrigiert hat**, nur in die andere
+Richtung: **B wählt die Population über Hoch und Tief des Tagesbalkens aus — also über
+denselben Balken, der auch den Tagesschluss liefert.*** A wählt über die 60m-Umsatzspanne,
+**unabhängig von der Zielgröße**. *Saubere Schätzung ist A ohne Ausschluss: 57,7 %.*
+
+**🧩 NEBENBEFUND, der zwei Sitzungen betrifft:** `vorherSchief`, das **zweite** Kriterium von
+Klasse R — auf das QS und `-06` ihre Definitionen heute Nacht **sorgfältig angeglichen
+haben** — **feuert NULL Mal in 14.815.281 Kerzen.** *„Wir haben einen Zweig abgeglichen, der
+nie ausgeführt wird. Klasse R ist faktisch ein Kriterium, nicht zwei."* **Der Abgleich
+verliert dadurch nicht seinen Wert** — er hätte eine echte Differenz gefunden, wenn es eine
+gegeben hätte. *Aber die Sorgfalt galt einer Stelle ohne Wirkung.*
+
+**Noch in Prüfung, bevor gemeldet wird:** ob die 435 „vor"-Fälle echte Eröffnungsstunden mit
+fehlendem Umsatzfeld sind (411 von 435 um 09:30 ET), und ob der dichte Kern am 24.12.2025 eine
+**Fondsgruppe** ist statt eines Marktfaktors. *„Beides klingt plausibel und ist genau deshalb
+zu prüfen."*
 
 ### 🔍 27.08. ~04:05 — DIE GEGENLESE: alle vier tragfähig, mit vier präzisierenden Auflagen
 
