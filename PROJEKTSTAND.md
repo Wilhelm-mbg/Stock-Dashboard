@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 04:30 (abgelesen)
+letzter-bericht: 2026-08-27 04:45 (abgelesen)
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -102,6 +102,42 @@ Sitzungen.** Gefunden hat es jedes Mal eine Gegenprobe, nie ein Verdacht.
 > zur Wahl** — der Docht-Effekt hebt sich im Überschuss auf (Faktor 6–27 Abstand), und drei
 > Versuche, die Kerzen als Fehler zu isolieren, sind gescheitert. *Für **(B)** empfiehlt der PM
 > ausdrücklich: **behalten**, sie ist der beste Schlusskurs im Bestand.*
+
+### 📋 27.08. 05:15 — DIE POLITIK-ZEILE FÜR WILHELM, wörtlich aus der Desingner-Übergabe
+
+**Falls der Entscheid „verwerfen" lautet, gehören DREI SCHUTZKLAUSELN dazu — jede hat heute
+Nacht einen konkreten Schaden verhindert:**
+
+1. **Die Schlusskurs-Familie bleibt separat** (5.755 Kerzen an Normaltagen, 20:00 UTC — in
+   99,4 % der offizielle Schluss).
+2. **Umsatz-Kerzen auf dem Sitzungsende sind die AUKTION** (1.145 Kerzen, 115,6 Mio Stück; am
+   24.12.2024 allein 647 Reihen).
+3. **Die Verwerf-Regel muss SITZUNGSBEWUSST sein** — Prüffall sind die vier Tagestypen aus
+   `werkzeuge/halbtagsschluss.js`.
+
+> **⚠ UND EIN SATZ, DEN DIE ARCHIV-WACHE ÜBER IHR EIGENES WERKZEUG SCHREIBT — der wertvollste
+> der Übergabe:**
+> ***„Mein `reparatur.js` ist dafür NICHT das Werkzeug — P-WEG misst gegen die falsche Spanne,
+> an Halbtagen 3 statt 3,5 Stunden."***
+> *Wer sein Werkzeug nach vier Stunden Arbeit selbst disqualifiziert, verhindert genau den
+> Fehler, den sonst der Nächste macht: Er findet ein fertiges Werkzeug im Ordner, hält es für
+> das passende und benutzt es.* **Bei Entscheid „verwerfen" braucht es die Einlese-Regel in
+> `kerzenquelle.js` (Formel als benannte Konstante) plus eine einmalige Bereinigung — nicht
+> dieses Skript.**
+
+**F1-POLITIK, ebenfalls an Wilhelm:** das **BRK.A-Falsch-Positiv** · der **Schnitt am letzten
+Sprung** als Rettungsoption (CHRD ~1.446 saubere Kerzen) · und **die Offenlegung der
+Frisch-Fenster-Setzung** (bei weiterem Fenster **3 statt 1** frische Fälle: ELME, MLTX).
+
+**OFFEN, eigener Punkt:** die **Anpassungs-Inkonsistenz 60m gegen 1d** bei BYND, RGR, SITC, B
+— *der einzige echte neue Datenfund der letzten Stunde und der einzige, bei dem **zwei
+Sitzungen unabhängig auf dasselbe Papier** gestoßen sind.*
+
+**PM-Entscheid zu den Belegen:** Die Studien-Skripte **und** die 72 Rohantworten kommen ins
+Repo (1,1 MB gesamt). *Sie sind der einzige unabhängig entstandene Positivsatz für die
+Giftkerzen — die QS hat ihren Sucher daran belegt, `1d` die Fenstersperre (152 von 152
+gefangen, 0 von 25.915 falsch). **Ohne die Rohdaten ist das eine Behauptung über eine Prüfung,
+die niemand nachvollziehen kann.***
 
 ### 💰 27.08. 05:10 — DIE KOSTENMESSUNG: die Annahme stimmt, der Beleg ist schwächer als gedacht
 
