@@ -80,6 +80,61 @@ Einstellungen justieren, **nicht** Mittelfrist.
 > **→ Eine Vorlage, kein Neubau.** *Was mit einer widerlegten Strategie richtig gemacht wurde,
 > lässt sich auf die übrigen anwenden.*
 
+> ## 🤖 WILHELM 17:4x — **„Messungen sollen automatisch laufen, dafür braucht es keinen Button"**
+> *„…wenn sie nicht mehr gebraucht wird kann das ja auch stoppen. **Aber erst dann**, das gilt
+> auch für die anderen ähnlichen Buttons"*
+>
+> **⚠ Das überstimmt eine Sperrklinke** (`test-v6.js:8192`: *„Kein Taktgeber löst die Messrunde
+> aus — nur der Knopf"*), *weil jede Runde **echte Demo-Orders** setzt.* **Sein Recht, sein
+> Demo-Konto.** **→ Die Klinke wird UMFORMULIERT, nicht gelöscht**, mit Vermerk, dass sie bis
+> zum 27.08. das Gegenteil verlangte. *Nie abschwächen, um grün zu werden — hier ändert sich die
+> **Absicht**, nicht die Bequemlichkeit.*
+>
+> **✅ Und die Anweisung schließt eine Lücke, die der PM selbst gemeldet hatte:** *Wilhelms
+> Freigabeschwelle verlangt Runden über **verschiedene Tage und Marktlagen** — durch Klicken
+> praktisch unerreichbar.* **Die Automatik ist die Voraussetzung dafür, dass seine eigene
+> Schwelle je erfüllt wird.** *Und die Abschaltbedingung hat er mitgeliefert, ohne es zu sagen:
+> „wenn sie nicht mehr gebraucht wird" = **`kostenStreuung()`**.*
+> **Auflagen: Rate konservativ (1–2 Runden je Handelstag, nur bei offenem Markt) · Stopp sichtbar
+> melden, nicht still · der Knopf BLEIBT als Handauslöser · Sperrklinke auf die
+> Abschaltbedingung.**
+
+> ### ⭐ **ZWEI KNÖPFE LAUFEN LÄNGST VON SELBST — belegt, nicht vermutet** *(Auditor)*
+> | Knopf | Befund | Beleg |
+> |---|---|---|
+> | `#mfdTaktBtn` „Jetzt prüfen" | **`takt()` alle 30 Minuten**, dazu 12 s nach dem Start | `mfdepot.js:313–314` |
+> | `#pilotBtn` „jetzt messen (10–20 Min)" | **misst jede Nacht nach US-Schluss** | die Karte sagt es selbst |
+>
+> ***„Es geht nicht darum, dass sie automatisch laufen KÖNNTEN — sie laufen bereits, und der Knopf
+> daneben ist der Handauslöser für etwas, das ohnehin passiert."***
+>
+> **→ Wilhelms zwei Beschwerden treffen sich hier: „zu viele Knöpfe" und „soll automatisch
+> laufen" sind bei diesen zweien DASSELBE Problem.** *Der Knopf suggeriert, man müsse etwas tun,
+> das längst getan wird.*
+
+> ### ⛔ DIE NIEMALS-LISTE, vorläufig — **und ein Fall, der sich nicht am Namen entscheiden lässt**
+> **`#kostenRundeBtn`** *(echte Demo-Order — Wilhelms bewusster Grenzfall)* · **`#stratEmpfohlenBtn`**
+> *(stellt die ganze Konfiguration um)* · **`#regelNeuBtn`** *(schreibt eine Regel fest)* · die vier
+> Strategie-Schalter, „Ausbruch"/„Umkehr" *(**Wilhelms Urteil ist der Punkt, das ist keine
+> Messung**)* · **`#btRunBtn`** *(langer Lauf)*.
+> **Kein Auftrag dahinter:** `#stcBtn` „Chart laden", `#exportDataBtn` — **und `#massenStopBtn`:
+> ein Halteknopf muss von Hand bleiben.**
+>
+> **🔴 DER GEFÄHRLICHE FALL:** *`#mfdRebalanceBtn` und `#mfdDriftBtn` schichten Buchpositionen um
+> — **und rufen dieselbe Funktion `takt()` wie der harmlose `#mfdTaktBtn`**, nur mit
+> Buch-Argument und Rückfrage.* **Derselbe Code, zwei Sicherheitsklassen.** *Wer hier nach dem
+> Namen automatisiert, automatisiert das Falsche mit.*
+
+> ### 🔎 Und eine Doppelung, die Wilhelms andere Frage mitbeantwortet
+> **`#massenBtn` / `#massen1mBtn` überschneiden sich mit der neuen Kursarchiv-Karte
+> (`sammelplan.js`), die seit `v8.34.0` von selbst sammelt.** *Zwei Wege für dieselbe Arbeit —
+> **und einer davon ist schon der automatische, den Wilhelm sich wünscht**, nur wurde der alte
+> Knopf nie entfernt.*
+
+*13 weitere Kandidaten stehen benannt, **aus dem Namen gelesen und ausdrücklich nicht
+verifiziert** — sie werden im Nachtlauf einzeln geprüft.* **„Nach heute melde ich nichts mehr,
+was ich nur aus einer Beschriftung geschlossen habe."**
+
 **📌 Der Nachtlauf-Auftrag liegt in `studien/auditor/AUFTRAG-NACHTLAUF.md` (`b5fe512`), nicht nur
 in einem Chat** — *die Nachtsitzung ist eine frische Sitzung ohne Gedächtnis dieser Unterhaltung.
 Wilhelms Satz „Nachsehen was passiert ist" steht dort als Abschnitt 0.*
