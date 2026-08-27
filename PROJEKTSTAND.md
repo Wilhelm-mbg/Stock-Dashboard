@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 05:05 (abgelesen)
+letzter-bericht: 2026-08-27 05:00 (abgelesen)
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -102,6 +102,28 @@ Sitzungen.** Gefunden hat es jedes Mal eine Gegenprobe, nie ein Verdacht.
 > zur Wahl** — der Docht-Effekt hebt sich im Überschuss auf (Faktor 6–27 Abstand), und drei
 > Versuche, die Kerzen als Fehler zu isolieren, sind gescheitert. *Für **(B)** empfiehlt der PM
 > ausdrücklich: **behalten**, sie ist der beste Schlusskurs im Bestand.*
+
+### 🔚 27.08. 05:20 — „Ergebnis oder Heap-Tod" — es wurde ein DRITTES: ein Hänger
+
+**Der PM hatte gesagt: „Ergebnis oder Heap-Tod, beides ist eins."** Es ist keins von beiden
+geworden. Die IO-Sonde der Archiv-Wache zeigt:
+
+    --basis-Prozess: liest seit >20 s NICHTS mehr
+    ReadTransferCount eingefroren bei 786 MB (~ halbes Archiv)
+    CPU: Volllast seit Stunden.  RAM: aufs MB konstant.
+
+**Endlos- oder quadratische Schleife — kein Fortschritt.** *Der Prozess stört nichts außer CPU
+und läuft weiter, bis die QS über Kill und Fix entscheidet; es ist ihr Werkzeug.*
+
+> **🧭 UND DIE LEHRE IST DIE PASSENDSTE ZUM SCHLUSS DIESER NACHT, weil sie dieselbe Form hat
+> wie alles davor — diesmal an einer Betriebsprüfung:**
+> ***„CPU wächst" belegt Rechnen, nicht Fortschritt. Die Lese-Sonde ist die richtige
+> Positivkontrolle.***
+>
+> *Ein Prozess unter Volllast **sieht** aus wie einer, der arbeitet. Genau wie eine PID, die
+> existiert; wie eine Prüfung, die grün wird, weil sie das Falsche sucht; wie eine
+> Wartebedingung, die vorher schon wahr war; wie ein Kriterium, das für alles gilt.*
+> **Fünfmal dieselbe Frage in einer Nacht: Was genau hat diese Prüfung geprüft?**
 
 ### 📋 27.08. 05:15 — DIE POLITIK-ZEILE FÜR WILHELM, wörtlich aus der Desingner-Übergabe
 
