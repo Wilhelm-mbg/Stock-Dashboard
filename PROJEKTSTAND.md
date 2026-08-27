@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 02:35 (abgelesen)
+letzter-bericht: 2026-08-27 02:40 (abgelesen)
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -79,7 +79,36 @@ auffiel:**
 > **→ Rückwirkend auf die zwölf Protokolle kann NICHTS durchschlagen.** Weder ist die Kerze
 > instabil, noch existiert sie in der Historie.
 >
-> ### 🔹 WAS ALS ECHTER BEFUND ÜBRIG BLEIBT — klein, aber real
+> ### ✅ MESSSEITE: ERLEDIGT — nicht „zu klein", sondern „nicht vorhanden"
+> **Alle Messungen** (die zwölf Protokolle, die Strang-A-Referenz, der laufende Docht-Lauf)
+> **rechnen auf konsolidierter Historie, die einheitlich auf 19:30 endet — eine Definition,
+> durchgängig.** *(Geprüft von `markt-dashboard-c4`.)*
+>
+> ### 🔻 LIVE-RAND: echt, und die ZWEITE Komponente ist die schwere
+>
+> **1. Wert-Definition:** Live rechnet der Rand auf dem **Auktionsschluss**, die Eichung stand
+> auf dem **letzten Handel davor** — Median 0,0275 %, Maximum 0,42 %. Wirkt nur bei Signalen,
+> die näher als diese Spanne an ihrer Schwelle stehen. *Dass es solche gibt, zeigt das bekannte
+> 0,0001-Pp-Randrauschen; wie viele, ist ungemessen.*
+>
+> **2. ⚠ INDEX-VERSCHIEBUNG — diskret, nicht 0,0275-%-klein:** Verschwindet die 20:00-Kerze
+> beim Konsolidieren, **verliert der Tag eine Kerze — acht werden sieben.** Für alles, was in
+> **Kerzen** zählt — Haltedauern, Rückblickfenster, RSI-Perioden der 60m-Detektoren —
+> **verschiebt sich jeder Index um eins über diesen Tag hinweg.** *Dieselbe Regel liefert beim
+> Nachrechnen nicht nur einen anderen Wert, sondern rechnet auf einem **anders nummerierten
+> Pfad**.*
+>
+> **→ Das ist Fall FÜNF der Familie „Live driftet von der Messung weg"** — diesmal nicht in
+> einem Parameter, sondern **in der Bedeutung eines Feldes**.
+>
+> **Zugeteilt an `markt-dashboard-1d`, Spezifikation von `c4`: eine stehende Invariante nach
+> dem Muster „Live = Messung"** — Signale des Vortags **nach** der Konsolidierung nachrechnen
+> und Abweichungen **zählen**, **die zwei Sorten getrennt** (Wert-Flips, Index-Verschiebungen).
+> **Erst diese Zählung sagt, ob es materiell ist.** *Der Zähler ändert nichts am Verhalten und
+> ist deshalb unstrittig — **fällt die Zählung materiell aus, gehört die Reparatur Wilhelm**,
+> sie beträfe den Live-Signalpfad.*
+>
+> ### 🔹 Der Kern des Restbefunds in einem Satz
 >
 > **Die 20:00-Kerze existiert nur an den beiden neuesten Tagen; ältere Tage enden auf 19:30.
 > Damit ist „die letzte Kerze eines Tages" je nach Alter etwas anderes** — an den zwei jüngsten
