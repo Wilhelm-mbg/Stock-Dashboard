@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 16:45 (Windows-Uhr)
+letzter-bericht: 2026-08-27 16:55 (Windows-Uhr)
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -124,6 +124,55 @@ Nicht-Krypto, **alle am 25.08., null erfasste Marktlagen** → **nicht erfüllt,
 > *Nebenbemerkung von `06`, der Vollständigkeit halber: der 30-Minuten-Zwischenspeicher bedeutet,
 > dass eine Runde bei einem Seitenwechsel innerhalb einer halben Stunde noch die alte Lage trüge
 > — **für eine Schwelle über Tage belanglos**, aber gesagt.*
+
+---
+
+## ⚖ 27.08. 16:5x — **RICHTIGSTELLUNG GEGEN DEN PM: `1d` hat NICHT geschwiegen, ich habe den falschen Kanal geprüft**
+
+**Ich habe Wilhelm den ganzen Tag gemeldet, `1d` sei der Engpass und melde sich nicht.
+Falsch — sie hat um 05:20 geliefert (`7301fdc`) und sich auf der Tafel eingetragen (`27e1c40`).**
+*Ich habe den **Nachrichtenkanal** geprüft und daraus auf die **Arbeit** geschlossen.* **`git log`
+hätte es in fünf Sekunden gezeigt.** *Dreizehnte Erscheinungsform derselben Krankheit, und die
+einzige, die den ganzen Tag über in meinen Lageberichten stand.*
+
+### ✅ DER ERÖFFNUNGSKURS IST NACHGETRAGEN — **und der Pilot fand den größeren Fehler**
+
+**Alle 1.164 Reihen (305.908 Kerzen) führten KEINEN Eröffnungskurs**, obwohl die Quelle ihn
+liefert. *`b.o` kommt jetzt als **sechstes Feld hinten** dazu — die ersten fünf bleiben, wo sie
+sind, wie beauftragt.*
+
+> ### 🔴 **DER PILOT DECKTE DEN ZWEITEN, GRÖSSEREN FEHLER AUF:**
+> **Das Werkzeug schrieb die Datei NEU statt zu mischen — und weil die Quelle nur ein rollendes
+> 730-Tage-Fenster führt, verloren 15 von 20 erneuerten Reihen je eine Kerze.**
+> ***Ein Lauf, der den Eröffnungskurs retten soll, hätte bei jedem Wert einen Tag vernichtet.***
+> *Über 1.164 Reihen: über tausend zerstörte Handelstage — für einen Kurs, der beim Nachladen
+> ohnehin mitgekommen wäre.* **Die 20 Reihen sind aus der Sicherung zurückgesetzt;
+> `vereinigen()` mischt jetzt nach Zeitstempel, frisch gewinnt, Kerzen außerhalb des Fensters
+> bleiben stehen.**
+
+> ### 🎯 **UND DIE FALLE IM MISCHEN — die schärfste Form der Fehlerklasse dieses Tages**
+> *`geliefertVon`, `gekuerzt` und `fruehesteGeliefert` rechneten auf der **gemischten** Reihe.*
+> ***Ab dem zweiten Lauf hätte die Kürzungswarnung gemeldet: „der angefragte Zeitraum kam
+> vollständig an" — eine ENTWARNUNG ausgerechnet über den Vorgang, der die Daten frisst.***
+> **Eine Warnung, die durch die Reparatur selbst verstummt wäre** — *gefunden, bevor sie einmal
+> falsch grün war. Abruf und Datei sind jetzt getrennt (`rohVon`).*
+
+**23 Doppeleinträge in der Verschwundenen-Liste**, *harmlos solange überschrieben wurde —* **seit
+dem Mischen aber nicht mehr: bei einem neu vergebenen Ticker lägen zwei Firmen in EINER
+Kursreihe.** *Die Reparatur hat einen schlafenden Fehler geweckt und ihn im selben Zug erledigt
+(`entdoppeln()`, heute 0 Fälle, Alarm bei getrennten Zeiträumen).*
+
+**Pilot in beide Richtungen geprüft, 19 Reihen:** *0 Kerzen verloren · 0 Kurse abweichend · 0
+falsche Feldzahl · 5.107 → 5.111 · **99,5 % mit Eröffnung** (die 26 ohne sind Bestand außerhalb
+des Fensters).* **15 neue Zusicherungen, die die Funktionen AUFRUFEN statt im Quelltext zu suchen,
+mit Positivkontrolle.**
+
+> ### ✅ **VOLLAUF FREIGEGEBEN (PM, 16:5x)** — 1.116 Reihen, ~4 Stunden
+> **Auflagen:** *(1) **Sperre prüfen** — der nächtliche Archiv-Nachlauf fasst das Archiv ebenfalls
+> an; **nicht parallel**, falls derselbe Wachhund greift. (2) **Sicherung vor dem Start.**
+> (3) **Melden mit Zahlen — und auch melden, wenn er stirbt.***
+> **Danach hängen zwei vorregistrierte Läufe daran:** *Wilhelms Strang-A-Entscheid und die
+> Übernacht-Fassung von Weg 3.*
 
 ---
 
