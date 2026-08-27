@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 20:30 (Windows-Uhr)
+letzter-bericht: 2026-08-27 19:21 (Windows-Uhr)
 gesehener-tag: v8.34.2 (installiert 17:00)
 pm-adresse: markt-dashboard-f5 [5204c6]   <- HIERHIN melden, NICHT an "Projekt-Manager"
 -->
@@ -30,6 +30,128 @@ und den Sitzungen: hier steht, was entschieden ist, was gerade läuft und was al
 ansteht. Lies sie beim Start; trag dich unter „Läuft gerade" ein, wenn du Dateien belegst.
 
 Wenn du hier etwas änderst, dann nur deine eigene Zeile unter „Läuft gerade".
+
+---
+
+## 🔬 27.08. 19:1x — **DER EREIGNIS-KATALOG IST AN ZWEI STELLEN ZU ENG** (`c229f21`, Berechnungen)
+
+**Der EDGAR-Zeuge steht:** *Grayscale hat bei GBTC und ETHE je **10 % der Bestände** in einen Mini
+Trust abgespalten und 1:1 pro rata ausgeschüttet (Stichtage 30.07. bzw. 18.07.2024, DEF 14C im
+Volltext geprüft).* **Erwarteter Kursfaktor ≈ 0,90 gegen gemessene Archiv-Quoten 0,903 und 0,890.**
+*Eine Vorhersage aus unabhängiger Quelle, die den gemessenen Wert trifft.*
+
+**⚖ Und das Urteil wurde NICHT angehoben:** *„EDGAR sagt, WAS geschehen ist — nicht, welche der
+beiden Archivseiten die angepasste ist."* **Das Endpunkt-Urteil bleibt „unentscheidbar mit diesen
+zwei Endpunkten".** *Der dritte Zeuge ändert die Deutung, nicht das Urteil. Wer eine befriedigende
+Ursache findet, hält damit üblicherweise auch die Frage für beantwortet — hier nicht.*
+
+> ### 🎯 **DIE FORMEL, wörtlich von der messenden Sitzung:**
+> ***Der Ereignis-Katalog ist an zwei Stellen zu eng — die Quelle führt Nicht-Ereignisse als Splits
+> (RGR), und sie führt echte Ereignisse gar nicht (GBTC/ETHE). Ein Werkzeug, das nur Splits
+> abgleicht, sieht beide Fehler nicht.***
+
+**🔴 Der Sprung-Detektor ist doppelt blind, und die härtere Blindheit liegt VOR der Deutung:**
+*`FAKTOR_MIN = 2` sammelt nur Sprünge ≥ 2 bzw. ≤ 0,5, **bevor** die Paar-Logik anläuft.* **Neun der
+17 bekannten Skalenreihen liegen darunter — 53 %** *(SCCO 1,012 · CLM 0,984 · GBTC 0,903 · QGEN
+1,032 · ETHE 0,890 · CBSH 0,952 · LBRDK 0,936 · LBRDA 0,937 · DOC 1,509).* **Die Schwelle ist auf
+Aktiensplits geeicht; Kapitalmaßnahmen liegen genau darunter.** *Dazu die schon bekannte
+Pendel-Schwäche: eine dauerhafte Stufe hat keinen Gegensprung.*
+
+**Gefunden hat die Fälle ein ANDERES Instrument** — *der Konventions-Zensus der QS, der **Niveaus**
+vergleicht statt Sprünge und deshalb keine Faktor-Schwelle hat.* **Seine eigene Grenze:** *er
+braucht 730 Tage Archiv-Überlappung; ältere Fälle hat niemand gezählt, und „beide Archive gleich
+falsch" findet auch er nicht.* **Deshalb sind die 17 keine Zählung, sondern: siebzehn Fälle, die EIN
+Instrument in EINEM 730-Tage-Fenster sehen konnte.**
+
+**→ Vorbehalt VOR Wilhelms „reparieren untersuchen", jetzt gemessen statt vermutet:** *`join.js:57`
+filtert `art === 'split'`; für GBTC/ETHE existiert nicht einmal eine Ereignisdatei.* **Ein Abgleich,
+der nur Splits kennt, kann eine Reparatur nicht begründen, deren Klasse Nicht-Splits enthält.**
+*Offene Frage an die messende Sitzung: **welche stehenden Zahlen im Projekt stammen aus dem
+Sprung-Detektor?** Sie wären Untergrenzen mit unbekanntem Abstand, sähen aber aus wie Zählungen.*
+
+---
+
+## 🎲 27.08. 19:1x — **DER PLACEBO WAR ZWEIMAL MEHR WERT ALS DER KANDIDAT** (`b5aacc2`/`2e5957b`, Entwürfe)
+
+**Die Querschnitts-Kontrolle im Übernachtfenster senkt die Streuung stark** *(σ von 0,88 auf
+0,21–0,32, `f` = 2,8–3,3)* — **aber der mitlaufende Placebo, ein Gatter mit einer Reihenfolge ohne
+jeden Kurs- und Umsatzbezug, erreicht den BESTEN Faktor von allen (4,425).**
+
+> ### ⭐ ***„`f` misst, wie gut sich der Marktfaktor wegkürzt. Es misst NICHT, ob ein Signal etwas
+> weiß. Ein f von 3,3 auf einem Signal ohne Kante ist dreimal so scharfes Nichts."***
+
+**Ohne den Placebo wäre die 3,3 als Qualitätsmerkmal gemeldet worden — das schreibt die messende
+Sitzung selbst.** *Auflage: Der Placebo-Wert steht in **derselben Tabelle, in derselben Zeile
+Sichtweite** wie der Kandidatenwert, nie in einer Fußnote — eine nackte Zahl reist, ihre
+Einschränkung nicht („zwei validierte Kanten" tat das wochenlang).*
+
+**📏 Vorhersage VOR dem Lauf abgelegt (`8523fd8`), dann auf 1.200 Symbole verdreifacht — zur Hälfte
+getroffen:** *σ Niveau fiel um 4,7 % („< 5 %" ✅) → **alle drei `delta80` stehen, ~5 % konservativ,
+kein Nachtrag nötig**. σ gepaart fiel um 22,6 % statt der vorhergesagten ~40 % ❌.*
+
+**⚠ PM-Einwand gegen die Deutung der verfehlten Hälfte** *(von der messenden Sitzung noch
+nachzurechnen)*: **Der Placebo verfehlt dasselbe Modell fast genauso stark** *(0,756 gegen Modell
+0,640; Kandidat 0,774)*. **Also kann die Abweichung nicht von einer Stilrichtung der Auswahl
+kommen** — *sie zeigt, dass das Nullmodell für **jeden** Korb falsch ist: zufällige Aktienkörbe sind
+keine unabhängigen Ziehungen.* **Belastbar ist allein das Verhältnis zum Placebo, und das ist bei
+`abgabedruck` 1,089 — neun Prozent.**
+
+**Das neue Maß, vereinfacht:** *weil σ Niveau sich herauskürzt, ist `f_Placebo / f_Kandidat`
+schlicht **σ_gepaart(Kandidat) / σ_gepaart(Placebo)** — „wieviel mehr gepaarte Streuung trägt diese
+Auswahl als eine Auswahl ohne jede Information".* **So aufgeschrieben kann es niemand als Güte
+lesen.** *Rangfolge 1,089 / 1,188 / 1,423 — **ohne Unsicherheitsangabe eine Beobachtung, keine
+Ordnung**; mehrere Placebo-Ziehungen liefern die Streuung umsonst.*
+
+**✅ Unstrittig:** *Der Auflösungsgewinn **sättigt** (vom 1.200er aufs volle Universum nur noch ~−12 %)
+— **wer `f` hochrechnet, überschätzt**.* **Und: es ist nach wie vor NICHT gemessen, ob überhaupt ein
+Überschuss da ist.**
+
+**📌 PM-Entscheid zur gepaarten Fassung — angenommen, aber EINSEITIG:** *Sie darf ein **NEIN
+verstärken**, nie ein **JA erzeugen**.* **Grund ist Bedeutung, nicht Vorsicht:** *„wer long geht,
+verdient Markt + Kante, nicht die Differenz" — ein gepaartes JA ist eine Existenzaussage, kein
+Handelsurteil.* **Zwei Endpunkte ohne vorab festgelegte Vorrangregel sind kein schärferes Werkzeug,
+sondern zwei Lose.**
+
+---
+
+## 📦 27.08. 19:1x — **DIE APP HOLT 60m UND 1d SELBST** (`1620665`, Designer)
+
+**Universum je Intervall setzbar** *(60m/1d = `alle` = 3.263 Werte, Intraday bleibt bei 531)*,
+**Deckel 300 Werte je Automatenlauf** (Handläufe ungedeckelt), **ein Sammler, eine Warteschlange,
+kein neuer Zeitplan.** *Die alte Klinke „60m und 1d holt die App NICHT" ist **umformuliert statt
+gelöscht**, mit Vermerk was galt und warum es entfiel — sie hält jetzt die Reihenfolge fest
+(Intraday vor Messbestand).*
+
+**Wilhelms 1m-Ruhe ist funktional gesichert, nicht nur beachtet:** *zwei Klinken prüfen, dass 1m bei
+531 bleibt und dass eine per Abstand 0 stillgelegte Auflösung stillgelegt bleibt und sich
+ausdrücklich als AUS meldet.* **Nötig war das, weil das Universums-Feld in derselben Datei liegt wie
+die Abschaltung und von derselben Funktion gelesen wird.**
+
+> **⚠ ZWEI DINGE HEISSEN „UNIVERSUM" UND SIND ES NICHT** — *steht jetzt im Kopf der Einstellung:
+> die **AUSWAHL** (`sammler.json`: top500/alle/etf — was gesammelt wird) gegen den
+> **PUNKT-IN-ZEIT-BESTAND** (`massive/universum-*.json` — welcher Wert wann im Universum war,
+> Grundlage der Überlebensverzerrung).* **Nicht umbenannt: eine Umbenennung wäre eine Migration mit
+> eigenem Risiko; die Klarstellung ist billiger und haltbarer.**
+
+**🔴 Blocker, entschieden:** *Die Abmeldelisten-Pflege konnte nicht mitfahren — **`tools/` wird nicht
+ausgeliefert***, `build.files` enthält nur Wurzel-`*.js`, `index.html`, Icons, `telemetrie.json` und
+drei Messmaschinen-Dateien. **In der installierten App existiert `tools/abmeldungen-pflegen.js`
+nicht; ein Aufruf liefe ins Leere, und zwar still.** *Dieselbe Fehlerform wie bei `wertpapierart.js`
+heute Nachmittag, nur andersherum entdeckt.*
+
+**→ PM-Entscheid: Herauslösung freigegeben, als eigener Schritt** — *Kernlogik in ein
+Wurzelmodul (`abmeldungen.js`), Werkzeug in `tools/` wird dünne Hülle darum; geteilter Code, kein
+Nachbau, Vorbild `kerzenquelle.js`.* **Drei Auflagen:** *(1) das Werkzeug muss danach weiter
+funktionieren — es funktioniert heute, das ist der Risikoteil; (2) eine Klinke prüft **beide** Wege
+gegen dieselbe Kernlogik; (3) **auf leerem Datenordner sauber nichts tun und es sagen** — nicht
+abstürzen und vor allem nicht „0 Abmeldungen" melden, wo „kein Archiv" richtig wäre.* **Grund für
+(3): der Code läuft ab dann auch bei Felix, und dort ist das Archiv leer.** *„0 gefunden" und
+„nichts zu durchsuchen" sind von außen ununterscheidbar.*
+
+*Nebenbefund über den PM: **ein Entscheid von heute Mittag hat seine Grundlage überlebt.** „Die
+Abmeldelisten-Pflege gehört in den Nachtlauf, nicht an eine Rolle" war richtig, als er fiel — dann
+löschte Wilhelm die Nachtläufe, und derselbe Entscheid führte Code an eine Stelle, die es nicht mehr
+gibt. **Fünfter Fall dieser Form heute; diesmal war die Regel meine.***
 
 ---
 
