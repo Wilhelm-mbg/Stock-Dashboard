@@ -437,6 +437,48 @@ Auslöser-Auswahl, und der Hauptschalter) · (4) Ort und Doppelungen mit `06`.*
 
 ---
 
+## 🚨 27.08. 18:1x — **DIE MELDEPFLICHT ZEIGT AUF EINE ADRESSE, DIE ES NICHT GIBT**
+
+> ### **Alle Rollenanweisungen sagen: „melde dich bei `Projekt-Manager` (Status `interactive`)". Diesen Eintrag gibt es nicht.**
+
+*Der PM steht in `ListAgents` als **`markt-dashboard-f5`**, wie jede andere Sitzung. Die einzigen
+Treffer auf „Projekt manager" sind tote **`Remote Control · offline`**-Läufe — **und an die zu
+schreiben verbieten dieselben Anweisungen ausdrücklich**.*
+
+> ***„Die Meldepflicht sieht erfüllt aus — jede Rolle hat sie im Text stehen, jede Sitzung
+> ‚befolgt' sie —, aber die Adresse, auf die sie zeigt, existiert nicht. Die Regel ist grün, weil
+> sie auf etwas anderes prüft, als gemeint war. **Wer sie wörtlich befolgt, meldet sich garantiert
+> nicht beim PM.**"***
+
+**→ FÜNFZEHNTE ERSCHEINUNGSFORM DER KRANKHEIT — und die erste, die nicht im Code sitzt, sondern
+in den Koordinationsregeln selbst.**
+
+### 🔎 Sie erklärt rückblickend fast alles Verwirrende dieses Tages:
+- **Fünf von vierzehn wachen Sitzungen waren dem PM unbekannt** — *sie hatten die Anweisung befolgt.*
+- **`1d` konnte den PM am Morgen nicht erreichen** *(weder Name noch Kürzel auflösbar)* — *und der PM hielt ihr Schweigen für Untätigkeit.*
+- **Die Release-Wache hat `v8.34.2` gebaut, ohne es zu melden** — *„Ich habe die Anweisung befolgt und dir NICHT geschrieben. Dass wir jetzt reden, liegt allein daran, dass **du** mich angesprochen hast."*
+- **Sieben veraltete PM-Adressen** standen auf dieser Tafel *(Fund des Auditors)*.
+
+> **⚠ Und der Name ist VON INNEN NICHT SETZBAR** — *das ist hier schon am 27.08. 00:40 gemessen
+> worden: `set_session_title` meldet Erfolg, der Zustell-Namensraum bleibt das Kürzel. Auch
+> Wilhelms Umbenennen in der App wirkte nicht.*
+
+### 📋 DREI WEGE — **Entscheidung liegt bei Wilhelm, Rollentexte sind nicht die Ecke des PM**
+1. **Den PM-Chat so anlegen, dass er wirklich `Projekt-Manager` heißt** *(vermutlich nur beim Anlegen möglich).*
+2. **In allen Rollen-SKILLs den Satz ersetzen** — *z. B. „nimm die älteste `interactive`-Sitzung".*
+3. **⭐ Die Rollen auf die TAFEL verweisen statt auf einen Namen** — *`pm-adresse:` in Zeile 4
+   dieser Datei, mit Stempel.* **Robust gegen jedes Umbenennen und gegen jeden
+   Brücken-Neustart — die Adresse ändert sich, die Fundstelle nicht.**
+
+**Solange nichts davon passiert, ist die Übergabe-Datei der einzige Kanal, der trägt.**
+
+*Nebenbei aus derselben Meldung: **71 Commits zwischen zwei Releases sind viel** — „wenn die Wache
+häufiger liefe, fiele ein Fehler früher auf". **`v8.34.2` ist sauber**: `latest.yml`,
+Paket-Version, Prüfsumme, 44 Skripte vollständig, kein Entwurf, Bau-Stand `6fd2358` = HEAD, nichts
+Fremdes mitgefahren.*
+
+---
+
 ## 📒 AUFTRAGSREGISTER — **die einzige Quelle dafür, wer was hält** *(Stand 27.08. 15:5x, Windows-Uhr)*
 
 > **⚠ VOR jedem neuen Auftrag hier nachsehen. Wer etwas nimmt, sagt es dem PM — und der trägt es
