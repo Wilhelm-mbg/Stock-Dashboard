@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 08:05 (abgelesen)
+letzter-bericht: 2026-08-27 08:25 (abgelesen)
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -40,6 +40,32 @@ Sitzungen.** Gefunden hat es jedes Mal eine Gegenprobe, nie ein Verdacht.
 > gegenstandslos.** *Was bleibt, ist die Frage der Archiv-Sauberkeit — und die ist Entscheidung
 > 1 unten.*
 
+### ✅ 27.08. 08:2x — DIE KENNZEICHNUNG STEHT (`a5b66e0`), und sie ist feiner als ihre Vorlage
+
+**Vier Lagen, aus Zeitstempel + Umsatz + Sitzungskontext abgeleitet** — nichts materialisiert,
+nichts gepflegt, kann nicht veralten.
+
+> **🔎 Und ein schönes Detail: die Einstufung trennt die alte Zahl „Halbtage 20.160" sauber auf
+> in 19.010 `nachhandel` + 1.150 `auktion`. Die Kennzeichnung ist feiner als die Zählung, aus
+> der sie entstanden ist.**
+
+**Die PM-Auflage zu den Tests ist wörtlich umgesetzt:** Zugesichert sind **nur die
+alterungsfesten Invarianten** (vorbörslich 0 · `nachhandel` an Normaltagen 0), **die wandernden
+Beträge stehen als berichteter Ausgangsstand mit Datum** in `lage-invarianten.js`. *Beide
+Invarianten halten am echten Archiv.* Prüffall sind die **vier Tagestypen** plus 12
+synthetische Fälle, inklusive des ACGL-Auktionsfalls und des Ur-Docht-Falls.
+
+**Unabhängige Bestätigung, ungeplant:** Die **Kreuzsumme trifft die Zahl der Populationszählung
+exakt (25.915) — auf einer anderen Rechenstrecke.**
+
+*Zahlen-Hinweis nach eigener Hausregel: Die Auktionsfamilie steht mit **1.145** (QS-Zählung)
+und **1.150** (Wache/Einstufung) in den Unterlagen — zwei Rechenwege, fünf Kerzen Unterschied,
+**nicht aufgelöst**. Wer die Zahl zitiert, nennt ihre Herkunft.*
+
+*Kein `index.html`-Eintrag, solange kein Anzeige-Verbraucher existiert. Der Einbau in die
+Messmaschine liegt bei `markt-dashboard-c4` — **ob ausgeschlossen oder im Kontrolltopf
+getrennt wird, ist die Entscheidung der Messseite.***
+
 ### 🚀 27.08. 07:55 — WILHELM HEBT DIE RELEASE-SPERRE AUF: **JETZT AUSLIEFERN**
 
 **Die Sperre aus `83796d8` ist aufgehoben.** Begründung des Entscheids: *Die Datenfunde
@@ -77,7 +103,7 @@ Stau, sondern darauf, dass Archiv und Oberfläche verschiedene Dinge sind.***
 
 | | Entscheid | Was daraus folgt |
 |---|---|---|
-| **1** | **Randzeiten-Kerzen BEHALTEN und KENNZEICHNEN** | Es sind echte Kursdaten aus einem anderen Handelsfenster. **Nichts wird gelöscht.** Zu bauen ist die **Kennzeichnung**, damit jede Messung weiß, was sie liest. *Die Reparatur-Werkzeuge bleiben im Wartestand und werden nicht angewendet.* |
+| **1** | **Randzeiten-Kerzen BEHALTEN und KENNZEICHNEN** | ✅ **UMGESETZT 08:2x (`a5b66e0`).** Es sind echte Kursdaten aus einem anderen Handelsfenster; **nichts wurde gelöscht.** Gebaut ist eine **abgeleitete Einstufung** mit vier Lagen — `sitzung` / `auktion` / `schlusskurs` / `nachhandel` — statt eines Feldes an der Kerze oder einer Liste im Archivkopf. *Begründung der Wache: „Eine Liste im Archivkopf würde vom nächsten Nachlade-Lauf überschrieben — **das wäre die nächste Naht, an der zwei Wahrheiten entstehen.**"* |
 | **2** | **Abmeldedatum SETZEN** | Messhygiene: Ein Papier mit Abmeldedatum kann nicht über sein Ende hinaus gehalten werden. **Achtung: die Daten am jüngsten Rand sind unzuverlässig** — AVB steht mit 18.08. in der Liste, handelte aber bis 24.08. *Handelsende statt Listendatum verwenden, wo beide bekannt sind.* |
 | **3** | **Messband auf die LIVE-Hürde umstellen** | Beide Anzeigen zeigen dann dasselbe wie das Scoreboard. **Eine Zeile** — die Stelle wurde heute Nacht dafür freigelegt (`huerdePp()`), ohne zu entscheiden. |
 
