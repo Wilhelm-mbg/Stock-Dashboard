@@ -1,0 +1,197 @@
+{
+ "sym": "GME",
+ "ereignisse": [
+  {
+   "datum": "2022-07-22",
+   "art": "split",
+   "faktor": 0.25
+  },
+  {
+   "datum": "2019-03-14",
+   "art": "dividende",
+   "faktor": 0.38,
+   "typ": "CD"
+  },
+  {
+   "datum": "2018-12-10",
+   "art": "dividende",
+   "faktor": 0.38,
+   "typ": "CD"
+  },
+  {
+   "datum": "2018-09-17",
+   "art": "dividende",
+   "faktor": 0.38,
+   "typ": "CD"
+  },
+  {
+   "datum": "2018-06-11",
+   "art": "dividende",
+   "faktor": 0.38,
+   "typ": "CD"
+  },
+  {
+   "datum": "2018-03-02",
+   "art": "dividende",
+   "faktor": 0.38,
+   "typ": "CD"
+  },
+  {
+   "datum": "2017-11-30",
+   "art": "dividende",
+   "faktor": 0.38,
+   "typ": "CD"
+  },
+  {
+   "datum": "2017-09-07",
+   "art": "dividende",
+   "faktor": 0.38,
+   "typ": "CD"
+  },
+  {
+   "datum": "2017-06-05",
+   "art": "dividende",
+   "faktor": 0.38,
+   "typ": "CD"
+  },
+  {
+   "datum": "2017-03-10",
+   "art": "dividende",
+   "faktor": 0.38,
+   "typ": "CD"
+  },
+  {
+   "datum": "2016-11-29",
+   "art": "dividende",
+   "faktor": 0.37,
+   "typ": "CD"
+  },
+  {
+   "datum": "2016-09-07",
+   "art": "dividende",
+   "faktor": 0.37,
+   "typ": "CD"
+  },
+  {
+   "datum": "2016-06-06",
+   "art": "dividende",
+   "faktor": 0.37,
+   "typ": "CD"
+  },
+  {
+   "datum": "2016-03-04",
+   "art": "dividende",
+   "faktor": 0.37,
+   "typ": "CD"
+  },
+  {
+   "datum": "2015-12-01",
+   "art": "dividende",
+   "faktor": 0.36,
+   "typ": "CD"
+  },
+  {
+   "datum": "2015-09-04",
+   "art": "dividende",
+   "faktor": 0.36,
+   "typ": "CD"
+  },
+  {
+   "datum": "2015-06-08",
+   "art": "dividende",
+   "faktor": 0.36,
+   "typ": "CD"
+  },
+  {
+   "datum": "2015-03-13",
+   "art": "dividende",
+   "faktor": 0.36,
+   "typ": "CD"
+  },
+  {
+   "datum": "2014-11-21",
+   "art": "dividende",
+   "faktor": 0.33,
+   "typ": "CD"
+  },
+  {
+   "datum": "2014-08-29",
+   "art": "dividende",
+   "faktor": 0.33,
+   "typ": "CD"
+  },
+  {
+   "datum": "2014-06-02",
+   "art": "dividende",
+   "faktor": 0.33,
+   "typ": "CD"
+  },
+  {
+   "datum": "2014-03-13",
+   "art": "dividende",
+   "faktor": 0.33,
+   "typ": "CD"
+  },
+  {
+   "datum": "2013-12-02",
+   "art": "dividende",
+   "faktor": 0.275,
+   "typ": "CD"
+  },
+  {
+   "datum": "2013-08-29",
+   "art": "dividende",
+   "faktor": 0.275,
+   "typ": "CD"
+  },
+  {
+   "datum": "2013-05-31",
+   "art": "dividende",
+   "faktor": 0.275,
+   "typ": "CD"
+  },
+  {
+   "datum": "2013-03-01",
+   "art": "dividende",
+   "faktor": 0.275,
+   "typ": "CD"
+  },
+  {
+   "datum": "2012-11-26",
+   "art": "dividende",
+   "faktor": 0.25,
+   "typ": "CD"
+  },
+  {
+   "datum": "2012-08-24",
+   "art": "dividende",
+   "faktor": 0.25,
+   "typ": "CD"
+  },
+  {
+   "datum": "2012-05-24",
+   "art": "dividende",
+   "faktor": 0.15,
+   "typ": "CD"
+  },
+  {
+   "datum": "2012-02-16",
+   "art": "dividende",
+   "faktor": 0.15,
+   "typ": "CD"
+  },
+  {
+   "datum": "2007-03-19",
+   "art": "split",
+   "faktor": 0.5
+  }
+ ],
+ "quelle": "Massive REST /v3/reference/splits und /v3/reference/dividends (Bearer, Gratis-Stufe)",
+ "abgerufen": "2026-08-27T10:17:38.445Z",
+ "abgedeckt": [
+  "split",
+  "dividende"
+ ],
+ "konvention": "faktor bei art=split: Kursfaktor am Ausfuehrungstag = split_from/split_to (Reverse 4:1 -> 4; Forward 1:4 -> 0.25). faktor bei art=dividende: Barbetrag in USD je Aktie (KEIN Kursfaktor). datum: execution_date bzw. ex_dividend_date.",
+ "hinweis": "I1-Kandidat (Pendel-Paar im Tagesarchiv, Enumeration des Analytikers nach der vorregistrierten I1-Definition auf dem am 27.08. neu geschriebenen Archiv)."
+}

@@ -1,0 +1,229 @@
+{
+ "sym": "GGAL",
+ "ereignisse": [
+  {
+   "datum": "2026-08-24",
+   "art": "dividende",
+   "faktor": 0.048166,
+   "typ": "CD"
+  },
+  {
+   "datum": "2026-05-11",
+   "art": "dividende",
+   "faktor": 0.41091,
+   "typ": "CD"
+  },
+  {
+   "datum": "2026-05-04",
+   "art": "dividende",
+   "faktor": 0.163888,
+   "typ": "CD"
+  },
+  {
+   "datum": "2026-03-30",
+   "art": "dividende",
+   "faktor": 0.159965,
+   "typ": "CD"
+  },
+  {
+   "datum": "2026-03-02",
+   "art": "dividende",
+   "faktor": 0.154105,
+   "typ": "CD"
+  },
+  {
+   "datum": "2026-02-02",
+   "art": "dividende",
+   "faktor": 0.145521,
+   "typ": "CD"
+  },
+  {
+   "datum": "2025-12-29",
+   "art": "dividende",
+   "faktor": 0.142253,
+   "typ": "CD"
+  },
+  {
+   "datum": "2025-12-01",
+   "art": "dividende",
+   "faktor": 0.140631,
+   "typ": "CD"
+  },
+  {
+   "datum": "2025-11-03",
+   "art": "dividende",
+   "faktor": 0.134852,
+   "typ": "CD"
+  },
+  {
+   "datum": "2025-09-30",
+   "art": "dividende",
+   "faktor": 0.138097,
+   "typ": "SC"
+  },
+  {
+   "datum": "2025-08-29",
+   "art": "dividende",
+   "faktor": 0.150347,
+   "typ": "SC"
+  },
+  {
+   "datum": "2025-07-29",
+   "art": "dividende",
+   "faktor": 0.151476,
+   "typ": "SC"
+  },
+  {
+   "datum": "2025-06-03",
+   "art": "dividende",
+   "faktor": 0.269107,
+   "typ": "CD"
+  },
+  {
+   "datum": "2024-08-19",
+   "art": "dividende",
+   "faktor": 0.724786,
+   "typ": "SC"
+  },
+  {
+   "datum": "2024-07-26",
+   "art": "dividende",
+   "faktor": 0.657481,
+   "typ": "SC"
+  },
+  {
+   "datum": "2024-06-21",
+   "art": "dividende",
+   "faktor": 0.700193,
+   "typ": "SC"
+  },
+  {
+   "datum": "2024-06-10",
+   "art": "dividende",
+   "faktor": 0.29034,
+   "typ": "CD"
+  },
+  {
+   "datum": "2023-09-22",
+   "art": "dividende",
+   "faktor": 0.115391,
+   "typ": "SC"
+  },
+  {
+   "datum": "2023-08-24",
+   "art": "dividende",
+   "faktor": 0.143328,
+   "typ": "SC"
+  },
+  {
+   "datum": "2023-07-28",
+   "art": "dividende",
+   "faktor": 0.160573,
+   "typ": "SC"
+  },
+  {
+   "datum": "2023-07-10",
+   "art": "dividende",
+   "faktor": 0.17073,
+   "typ": "SC"
+  },
+  {
+   "datum": "2023-05-31",
+   "art": "dividende",
+   "faktor": 0.454093,
+   "typ": "SC"
+  },
+  {
+   "datum": "2023-01-27",
+   "art": "dividende",
+   "faktor": 0.076413,
+   "typ": "SC"
+  },
+  {
+   "datum": "2022-09-30",
+   "art": "dividende",
+   "faktor": 0.089542,
+   "typ": "SC"
+  },
+  {
+   "datum": "2022-05-13",
+   "art": "dividende",
+   "faktor": 0.305052,
+   "typ": "CD"
+  },
+  {
+   "datum": "2021-05-14",
+   "art": "dividende",
+   "faktor": 0.064185,
+   "typ": "CD"
+  },
+  {
+   "datum": "2020-10-09",
+   "art": "dividende",
+   "faktor": 0.075625,
+   "typ": "CD"
+  },
+  {
+   "datum": "2019-05-15",
+   "art": "dividende",
+   "faktor": 0.306733,
+   "typ": "CD"
+  },
+  {
+   "datum": "2018-05-11",
+   "art": "dividende",
+   "faktor": 0.361747,
+   "typ": "CD"
+  },
+  {
+   "datum": "2017-05-10",
+   "art": "dividende",
+   "faktor": 0.118585,
+   "typ": "CD"
+  },
+  {
+   "datum": "2016-05-19",
+   "art": "dividende",
+   "faktor": 0.0815127,
+   "typ": "CD"
+  },
+  {
+   "datum": "2015-05-26",
+   "art": "dividende",
+   "faktor": 0.059987,
+   "typ": "CD"
+  },
+  {
+   "datum": "2014-05-22",
+   "art": "dividende",
+   "faktor": 0.036474,
+   "typ": "CD"
+  },
+  {
+   "datum": "2013-05-15",
+   "art": "dividende",
+   "faktor": 0.036567,
+   "typ": "CD"
+  },
+  {
+   "datum": "2012-05-15",
+   "art": "dividende",
+   "faktor": 0.032305,
+   "typ": "CD"
+  },
+  {
+   "datum": "2011-05-11",
+   "art": "dividende",
+   "faktor": 0.048923,
+   "typ": "CD"
+  }
+ ],
+ "quelle": "Massive REST /v3/reference/splits und /v3/reference/dividends (Bearer, Gratis-Stufe)",
+ "abgerufen": "2026-08-27T10:17:12.521Z",
+ "abgedeckt": [
+  "split",
+  "dividende"
+ ],
+ "konvention": "faktor bei art=split: Kursfaktor am Ausfuehrungstag = split_from/split_to (Reverse 4:1 -> 4; Forward 1:4 -> 0.25). faktor bei art=dividende: Barbetrag in USD je Aktie (KEIN Kursfaktor). datum: execution_date bzw. ex_dividend_date.",
+ "hinweis": "I1-Kandidat (Pendel-Paar im Tagesarchiv, Enumeration des Analytikers nach der vorregistrierten I1-Definition auf dem am 27.08. neu geschriebenen Archiv)."
+}
