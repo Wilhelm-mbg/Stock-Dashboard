@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 02:22
+letzter-bericht: 2026-08-27 02:30
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -222,17 +222,37 @@ Teil I sagt „5 von 25 / 13 von 25", richtig sind **5 von 35 / 23 von 35**. Als
 
 ### 🔴 Warnsignale
 
-1. **Sieben Release-Notizen und 74 Commits liegen unausgeliefert** — siehe oben.
-2. **SPY fehlt in allen Intraday-Archiven.** SPY ist der Anker des Regime-Tors
-   (R-TREND). Die App holt ab jetzt selbst, aber nur 1m/5m/15m — 60m und 1d fehlen.
-3. **Drei Abrufe sind am 26.08. abends gestorben**: 15m bei 233 von 432 Werten, 1m bei
-   1.834 von 2.732. Nie zu Ende gelaufen.
-4. **Die Teilkerzen-Sperre leckt** (~2,6 %, QS gegengeprüft) — sie prüft den Zeitstempel,
-   nicht den Inhalt. Bei 1m ist eine Teilkerze am Zeitstempel prinzipiell nicht erkennbar,
-   und der Sammler läuft.
-5. **Die zwei Datenfunde sind unbehoben** (Phantom-Dochte an sieben US-Halbtagen; der
-   25.08. im 60m-Archiv). Sie blockieren nach Wilhelms Entscheid *sowohl* das Release
-   *als auch* Strang A. **Ich sehe keine Sitzung, die daran arbeitet.**
+> **📅 NEUE PFLICHT AB 27.08. (Vorschlag von `markt-dashboard-1d`, sofort übernommen): JEDES
+> WARNSIGNAL TRÄGT SEIN MESSDATUM.**
+> *„Die Warnsignale altern, weil sie keinen Stand tragen. ‚1m bei 1.834 von 2.732' war zum
+> Zeitpunkt des Schreibens richtig. Was fehlte, war das Datum der Messung neben der Zahl."*
+> **Genau diese zwei Einträge hat der PM in dieser Nacht als eilig weitergegeben, obwohl beide
+> überholt waren.** Eine Zeile „gemessen TT.MM. HH:MM" hätte beide Fälle verhindert — **und sie
+> ist billiger als jede Prüfregel, die wir uns gegenseitig auferlegen.**
+
+1. **Unausgeliefert: 104 Commits, 9 Release-Notizen** *(gemessen 27.08. 02:00)* — Stau ist
+   gewollt, siehe Wilhelms Entscheid.
+2. ~~**SPY fehlt in allen Intraday-Archiven.**~~ **TEILWEISE WIDERLEGT** *(gemessen 27.08.
+   02:15, `markt-dashboard-1d`)*: **60m ist vollständig** — SPY mit 5.105 Kerzen, **31 von 31
+   ETFs**. **Das Regime-Tor R-TREND läuft auf Stundenkerzen und ist NICHT blind.** Echte Lücke:
+   **`archiv1d` (0 von 31)** sowie 1m/5m. *Der Nachlader zieht die ETFs **nicht** mit (seine
+   Liste ist `Object.keys(stand.fertig)`, dort stehen 0 von 31) — der ETF-Lauf ist also nötig
+   und nicht doppelt. Freigegeben, wartet auf Wachhund-Grün.*
+3. ~~**Drei Abrufe sind am 26.08. abends gestorben** (15m 233/432, 1m 1.834/2.732).~~
+   **ÜBERHOLT** *(gemessen 27.08. 02:15)*: **1m ist durch — alle 3.232 abgearbeitet, 0 nie
+   angefasst, nichts verloren.** Für 15m/5m reicht das Quellfenster **60 Tage**, nicht sieben.
+   *Todesursache: interner Abbruch und Netzstörung ausgeschlossen, bleibt äußere Beendigung.
+   **Behoben wird das Nichtwissen**: seit `d13c9f2` schreibt jeder Lauf eine Zeile nach
+   `<Archiv>/laeufe.log` — mit Prozessnummer und Rechner, genau dem, was diesmal fehlte.*
+4. **Die Teilkerzen-Sperre leckt** *(gemessen 26.08., ~2,6 %, QS gegengeprüft)* — sie prüft den
+   Zeitstempel, nicht den Inhalt. **Bei 1m ist eine Teilkerze am Zeitstempel prinzipiell nicht
+   erkennbar.** *Abhilfe gebaut (`cc2848f`, geschlossener Eimer); die 2,6 % gelten für 60m, für
+   1m galt die Zahl nie — siehe Richtigstellung 01:15.*
+5. **Die zwei Datenfunde** *(Stand 27.08. 02:25)* — **Reparatur angehalten, nicht liegen
+   geblieben.** Phantom-Dochte: Formfrage offen, wartet auf Wilhelms Populationsentscheid.
+   Der 25.08. im 60m-Archiv: **der beanstandete Zustand existiert nicht mehr**, das Nachladen
+   hat das Archiv neu geschrieben — die sinnvolle Frage ist jetzt „stimmt der 25.08. **jetzt**".
+   *Nach Messung binden sie Strang A **sachlich** nicht; die Sperre steht formal bis Wilhelm.*
 6. ~~**`tools/massive-tagesdaten.js:29`** fragt ab 2023-11-13 an, während die früheste
    Kerze vom 2024-08-23 ist — die Quelle kürzt still.~~ **URSACHE GEKLÄRT 27.08. ~02:10**
    (`markt-dashboard-1d`): **Die Quelle liefert ein rollendes 730-Tage-Fenster.** Gemessen
@@ -2060,9 +2080,61 @@ Mechanismus, zwei entgegengesetzte Ausgänge — **und die Phantomtage im Tagesa
 die Teilmenge, die nie überschrieben wird.** *Der Bestandsschaden ist also nicht null, aber
 beschränkt auf die aufgehörten Reihen.*
 
-**Falsifikationsbedingung mit ZWEI Seiten** (zur Prüfung nach dem nächsten Lauf): Die Stempel
-auf **lebenden** Reihen müssen verschwinden **und** die auf **toten** stehen bleiben. *Das
-unterscheidet „selbstheilend" von „selbstheilend, außer dort, wo es zählt".*
+**✅ BELEGT 02:25 — und der nächste Lauf war gar nicht nötig.** Die beiden Populationen liegen
+bereits nebeneinander vor: **ein natürliches Experiment, keine Warteschleife.**
+
+    60m-Stempel, 151 betroffene Reihen
+      davon lebend               151
+      davon aufgehoert/delistet    0
+      Alter: alle vom 24.08. und 26.08., KEINER aelter
+
+    Tagesarchiv, Stempel auf aufgehoerten Reihen
+      BSCO, IBDP, IBTE: Dezember 2024 — stehen seit 20 Monaten
+
+> **Der Beleg liegt in der Null:** Dass unter **151 lebenden** Reihen **kein einziger alter
+> Stempel** steht, zeigt das Überschreiben. **Wäre der Stempel dauerhaft, hätten sich über die
+> Jahre Tausende angesammelt — es sind null.** Und auf den toten Reihen steht er zwanzig
+> Monate. *Derselbe Mechanismus, zwei Populationen, entgegengesetzte Alter.*
+
+**⭐ FORMULIERUNG FÜR WILHELM, von der QS um fünf entscheidende Wörter ergänzt:**
+
+> *„Die 149 waren nie ein Schaden im Archiv, den man reparieren kann, sondern die Rate, mit
+> der die Quelle Stempel liefert — rund 75 je Lauf, die sich bei lebenden Papieren selbst
+> ausräumen. Was bleibt, sind die Stempel auf Papieren, die niemand mehr beliefert: im
+> Tagesarchiv **21 Phantomtage über 9 Reihen, im 60m-Archiv keine.**"*
+
+*Ihre Begründung für den Zusatz: „Sonst liest jemand in einem halben Jahr ‚was bleibt' und
+sucht im 60m-Archiv nach einem Bestand, den ich dort ausdrücklich nicht gefunden habe."*
+
+### 🎯 27.08. ~02:25 — der Verursacher: die laufende Intraday-Sammlung, nicht der Nachtlauf
+
+    Verteilung der 152 Stempel ueber die Stunde (UTC)
+      14:xx 29   15:xx 48   16:xx 9   17:xx 50   18:xx 16
+    Alle 152 INNERHALB der US-Sitzung (13:30-20:00 UTC), 53 verschiedene Minutenwerte.
+
+**Keine feste Uhrzeit, sondern der jeweilige Abrufzeitpunkt — mitten im Handelstag.** Der
+nächtliche Nachlader lief um **22:20 UTC**, kann es also nicht gewesen sein. **Die Stempel
+entstehen beim Abruf während der Sitzung, aus der laufenden Intraday-Sammlung der App.**
+
+*Die QS benennt die Festigkeit selbst: „Die Uhrzeiten schließen den Nachtlauf aus, mehr nicht.
+Welcher Abruf genau sie schreibt, steht im Sammelcode, und den anzusehen ist nicht meine
+Rolle."*
+
+**⚠ OFFENE FRAGE AN DIE FENSTER-SPERRE (`3fbc9b5`), vom PM an `1d` gegeben:** Die Regel lautet
+„was außerhalb des angefragten Fensters liegt, wurde nicht angefragt". **Die archivschreibenden
+Pfade holen aber mit `range=`, nie mit `period1`/`period2`** — bekommt `zerlege` dann überhaupt
+ein `von`/`bis`, gegen das es prüfen kann? **Falls nein, wäre die Sperre genau dort blind, wo
+die Stempel nachweislich entstehen.** *Kein Fehler der damaligen Arbeit — sie wurde gegen den
+damals bekannten Fall gebaut. Eine Lücke, die erst dieser Befund sichtbar macht.*
+**Testfall liegt vor und ist besser als jede Injektion:** 152 echte Stempel mit Symbol und
+Zeitstempel; die Regel muss sie fangen und die legitimen Sitzungsschlüsse durchlassen.
+
+**Dringlichkeit, ehrlich:** gering. Die Regel verhindert **keinen wachsenden Bestand** — sie
+schließt die Tür für die Fälle, die **künftig** aufhören zu handeln.
+
+**Zweiseitige Falsifikationsbedingung bleibt bestehen** (nach dem nächsten Sammellauf): Die 75
+vom 24.08. müssen weg sein **und** die Phantomtage der toten Reihen unverändert dastehen.
+*Trifft nur eine Hälfte zu, ist die Deutung falsch.*
 
 ### ✅ 27.08. ~02:20 — die stabile Bauform trägt: Raster aus der Sitzungslogik statt aus der Häufigkeit
 
