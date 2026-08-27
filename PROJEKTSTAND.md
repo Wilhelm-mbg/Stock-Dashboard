@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 04:25 (abgelesen)
+letzter-bericht: 2026-08-27 04:35 (abgelesen)
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -102,6 +102,61 @@ Sitzungen.** Gefunden hat es jedes Mal eine Gegenprobe, nie ein Verdacht.
 > zur Wahl** — der Docht-Effekt hebt sich im Überschuss auf (Faktor 6–27 Abstand), und drei
 > Versuche, die Kerzen als Fehler zu isolieren, sind gescheitert. *Für **(B)** empfiehlt der PM
 > ausdrücklich: **behalten**, sie ist der beste Schlusskurs im Bestand.*
+
+### 📗 SCHLUSSSTAND DER NACHT — was gilt, was gesperrt ist, was offen bleibt
+
+**✅ BELASTBAR UND WEITERGEBBAR**
+
+- **Die Reparatur ist keine.** Die Quelle liefert an Halbtagen **genau eine** Kerze nach
+  Sitzungsende, an Normaltagen **keine**; das Archiv kopiert das 1:1. **Zweifach unabhängig
+  belegt** (12/12 bei der QS, 30/30 bei `-06`). **Es gibt keine Codestelle zu richten — es gibt
+  eine Entscheidung zu treffen.**
+- **Option (c) ist erledigt.** Der Tagesbalken ist das **Sitzungsaggregat** — A dominiert auf
+  **jeder** Sprosse der Toleranzleiter, C liegt an Normaltagen durchgehend bei **0,0 %**.
+- **⚠ Eine Verwerf-Regel darf NUR Kerzen nach Sitzungsende MIT UMSATZ 0 treffen.** Die **1.145
+  mit Umsatz sind Sitzungsdaten** — am 24.12.2024 hätte eine Pauschalregel bei **647 Reihen die
+  Schlussauktion gelöscht.**
+- **Strukturprüfung: kein Strukturüberschuss, 7 von 7.** Überlebt die Teilung nach
+  Wertpapierart (0 strukturgleich bei Aktien **wie** bei ETFs). **Das heißt NICHT „Beleg für
+  Handel", sondern „nicht stärker gehäuft als gewöhnliche Kerzen".**
+- **Die Phantom-Kerze trifft den amtlichen Tagesschluss 8- bis 12-mal häufiger exakt** als die
+  letzte Umsatzkerze — **unter beiden Populationsdefinitionen.**
+
+**🚫 GESPERRT — NICHT WEITERGEBEN** *(alle fünf waren zeitweise geglaubt)*
+
+| Satz | warum er fällt |
+|---|---|
+| „Die Phantom-Kerze liegt **näher** am Tagesschluss" | 57,7 % gegen 41,7 % je nach Definition; die ursprünglichen **67,5 % waren ein Auswahleffekt** |
+| „Der dichte Kern am 24.12.2025 ist ein Fund" | er misst **ETF-Gleichlauf** |
+| „Der Zähler friert ein" | durch **BTSGU** widerlegt |
+| „Die letzten 30 Handelsminuten fehlen" | sie fehlen im 17:30-Feld und **tauchen bei einem Teil der Reihen im 18:00-Feld auf** |
+| „Der Sitzungsfilter greift eine Stunde zu weit" | widerlegt — **die Quelle liefert es so** |
+
+**🔓 OFFEN UND BENANNT:** die **132 historischen Skalenwechsel** ohne zweiten Zeugen · der
+**12-%-C-Anteil an Halbtagen** im Schiedsrichter · **wo die 435 Eröffnungskerzen ihr Umsatzfeld
+verlieren** · die **Kostenmessung** (1 Runde seit 25.08., Prüfbedingung läuft) · **TWO**.
+
+### 🧠 Die Bilanz der QS über sich selbst — und die drei Gegenmittel, die gewirkt haben
+
+> **„Ich habe in dieser Nacht acht eigene Aussagen zurückgezogen. Bei allen acht war die
+> Messung richtig und der Satz darüber zu weit oder das Werkzeug schief. Fünf davon haben es
+> gar nicht erst auf die Tafel geschafft, weil jemand vorher nachgefragt hat."**
+
+**Fünf Werkzeug-Fallen, ins Rollengedächtnis geschrieben, damit die nächste Sitzung sie nicht
+neu findet:** Auswahl auf die Zielgröße · Poolung heterogener Populationen · eine
+Wartebedingung, die vorher schon wahr war · Bezugswerte aus gerundeter Anzeige · der Abgleich
+eines Kriteriums, das nie feuert.
+
+**Drei Gegenmittel, die tatsächlich funktioniert haben:**
+1. **Ein zweiter Leser findet anderes als eine zweite Messung.**
+2. **Eine Toleranz-Leiter statt einer nachträglich gewählten Schwelle.**
+3. **Bei einem Ergebnis von 100 % zuerst fragen, ob das Kriterium überhaupt anders ausgehen
+   könnte.**
+
+> **Und der Satz, den die QS ausdrücklich NICHT als Regel abgelegt hat, weil er in die Übergabe
+> gehört und nicht in ein Regelwerk:**
+> ***„Die entscheidenden Korrekturen dieser Nacht kamen nicht aus mehr Messung, sondern daraus,
+> dass drei Sitzungen dieselben Zahlen mit anderen Augen gelesen haben."***
 
 ### 🔒 Was läuft — Stand 03:45
 
