@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 03:02 (abgelesen)
+letzter-bericht: 2026-08-27 03:05 (abgelesen)
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -23,11 +23,22 @@ Wenn du hier etwas änderst, dann nur deine eigene Zeile unter „Läuft gerade"
 > gegen 03:38.** *(Zweiter Anlauf: derselbe Fehler war um 01:15 schon einmal korrigiert
 > worden.)*
 
-**Ertrag der Nacht: null neue Kanten und sieben verhinderte Datenverluste.** Der Belegstand
-bleibt **0 von 12**. Siebenmal wurde eine Reparatur, eine Zahl oder eine Deutung angehalten,
-die echte Kurse zerstört oder ein falsches Urteil getragen hätte — **dreimal traf es den PM,
-zweimal Vorgaben der QS, zweimal eigene Befunde der Sitzungen.** Gefunden hat es jedes Mal eine
-Gegenprobe, nie ein Verdacht.
+**Ertrag der Nacht: null neue Kanten, sieben verhinderte Datenverluste — und eine Messung, die
+den Streit beendet.** Der Belegstand bleibt **0 von 12**. Siebenmal wurde eine Reparatur, eine
+Zahl oder eine Deutung angehalten, die echte Kurse zerstört oder ein falsches Urteil getragen
+hätte — **dreimal traf es den PM, zweimal Vorgaben der QS, zweimal eigene Befunde der
+Sitzungen.** Gefunden hat es jedes Mal eine Gegenprobe, nie ein Verdacht.
+
+> ### ✅ DIE DOCHT-FRAGE IST BEANTWORTET (03:15) — der Effekt hebt sich auf
+> **Vorregistriert gefragt, gepaart gemessen, Maßstab vor dem Lauf fixiert:** Entfernt man alle
+> verdächtigen Kerzen (76.339 von 14,66 Mio = 0,52 %), ändert sich am Überschuss **bei allen
+> drei Strategien praktisch nichts** — der Abstand zur Entscheidungsschwelle liegt beim
+> **6- bis 27-Fachen**. Placebos beider Arme unauffällig, identischer Archivstand für beide
+> Arme.
+>
+> **→ Damit ist die Reparatur, um die diese Nacht gestritten wurde, für die MESSSEITE
+> gegenstandslos.** *Was bleibt, ist die Frage der Archiv-Sauberkeit — und die ist Entscheidung
+> 1 unten.*
 
 ### ⭐ Was auf Wilhelm wartet — drei Entscheidungen
 
@@ -93,6 +104,30 @@ Zahl hereingefallen war): ***Die Falle verschwindet nicht durch einmaliges Erken
 
 *Alles unterhalb dieser Zeile ist Beleg zur Bilanz oben. Wer nur wissen will, was zu
 entscheiden ist, hat es bereits gelesen.*
+
+### 🏁 27.08. ~03:15 — DER DOCHT-LAUF IST DURCH: der Effekt HEBT SICH AUF, bei allen dreien
+
+**Das ist die Antwort auf die Frage, an der die halbe Nacht hing** — vorregistriert gestellt,
+gepaart gemessen, Maßstab vor dem Lauf fixiert. *(`dd6827a`, `ERGEBNIS.md` + Rohdaten,
+Übergabe `berechnungen-2026-08-27-0315.md`.)*
+
+| Strategie | G-Anteil | max \|Δ\| | `delta80` | Abstand |
+|---|---|---|---|---|
+| `kapitulation` | 8–10 % | **0,043 Pp** | ≥ 1,17 | **Faktor ~27** |
+| `rsi2seit-mcp` | 36,4 % | **0,006 Pp** | 0,08 | **Faktor ~13** |
+| `t1-zwangsglattstellung` | 100 % | **0,034 Pp** | 0,21 | **Faktor ~6** |
+
+**Placebos beider Arme unauffällig. Identischer frischer Archivstand für A und B** (Vermerk
+steht im Befund). **Entfernt wurden 76.339 von 14,66 Mio Kerzen — 0,52 %.**
+
+**→ Nach der ursprünglichen Auftragslogik („hebt er sich auf → Reparatur unnötig") ist die
+Phantom-Docht-Reparatur FÜR DIE MESSSEITE keine Dringlichkeit mehr.** *Datenfund 2 (der 25.08.
+im 60m-Archiv) bleibt davon unberührt offen.*
+
+> **🎯 UND DER MASSSTAB HAT SICH SOFORT VERDIENT GEMACHT:** `rsi2seit-mcp` Var 3/4 wechselten
+> Etiketten an **+0,005-Pp-Margen**. Nach der **vorab** präzisierten Randrauschen-Regel zählt
+> das nicht — **ohne sie hätte der Lauf auf Rauschbasis „hebt sich NICHT auf" gemeldet.**
+> *Das Geflacker dieser Urteilsgrenze ist damit zum **dritten Mal unabhängig** belegt.*
 
 > ### ⚠→✅ EINE SCHLAGZEILE, DIE SICH IN ZWEI STUFEN AUFGELÖST HAT — und am Ende ins Gegenteil
 > **Hier stand: „die letzte Kerze jedes Handelstages ist eine instabile Momentaufnahme, und
