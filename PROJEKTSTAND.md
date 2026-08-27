@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 12:30 (Windows-Uhr)
+letzter-bericht: 2026-08-27 12:36 (Windows-Uhr)
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -234,6 +234,19 @@ jemand irgendwo hingesehen hat.*
 ---
 
 ## ⭐ WILHELMS ENTSCHEIDE 27.08. ~11:30 (per Formular) — **alle drei gelten ab sofort**
+
+> ### 0. Freigabeschwelle Strang A → **RUNDEN ÜBER VERSCHIEDENE TAGE UND MARKTLAGEN**
+> *(entschieden ~12:35, nach der QS-Rücknahme unten)*
+> **Nicht mehr „≥ 20 Aktienrunden", sondern Runden verteilt über verschiedene Tage und
+> Marktlagen.** *Grund: Die Messung läuft nur auf Knopfdruck und schaltet dabei durchs
+> Universum — **zwanzig Klicks in einer Minute erfüllten die alte Schwelle und maßen eine
+> einzige Marktlage.*** **Die 16 Runden vom 25.08. 13:31 erfüllen die neue Schwelle NICHT** —
+> sie sind ein Tag, eine Klickfolge.
+>
+> **⚠ WAS WILHELM NICHT GEWÄHLT HAT und deshalb NICHT gilt:** *Die daneben angebotene Fassung
+> **mit Breiten-Vorgabe** (Zusammensetzung, nicht nur Verteilung) wurde nicht gewählt.* **Die
+> Mega-Cap-Einschränkung bleibt ein dokumentierter Vorbehalt, KEINE Schwellenbedingung.** *Wer
+> sie später doch als Bedingung will, fragt neu — sie wird nicht stillschweigend mitgeführt.*
 
 > ### 1. Kostenhürde → **LIVE-HÜRDE DES GEHANDELTEN PRODUKTS**
 > **Das Messband (Vermögen → Depot) rechnet ab jetzt wie das Scoreboard.** *„Kostenhürde" heißt
