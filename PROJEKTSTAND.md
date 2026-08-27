@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 02:15
+letzter-bericht: 2026-08-27 02:22
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -2033,6 +2033,69 @@ werden.*
 > und der Bearbeiter „repariert" etwas Funktionierendes. *(Dazu: der Prüfausschnitt war auf
 > 420 Zeichen geraten und schnitt mitten in die Funktion — **ein Syntaxfehler sieht aus wie
 > ein Befund.**)*
+
+### 🔄 27.08. ~02:20 — DIE „149" WAREN NIE EIN BESTAND, SONDERN EINE RATE
+
+**Der eigentliche Befund lag unter 26.067 Treffern begraben. Die Tagesverteilung:**
+
+    152 Stempel, 151 Reihen, auf ZWEI Tagen:
+      2026-08-26   77
+      2026-08-24   75
+
+**Die Stempel sind nicht historisch — sie sind von vorgestern und gestern. Rund 75 je
+Sammellauf.** Passt zum Mechanismus: Der Nachlader schreibt die Dateien neu, der nächste Abruf
+liefert für den abgeschlossenen Zeitraum saubere Kerzen **und überschreibt den Stempel**. Es
+überleben nur ein bis zwei Läufe.
+
+> **⚠ FÜR DIE DEUTUNG HEISST DAS:** *„149 Stempel im 60m-Archiv" liest sich wie ein Bestand,
+> den man reparieren kann. Richtiger ist: **rund 75 je Lauf, die sich selbst ausräumen.** Die
+> Zahl misst **nicht einen Schaden**, sondern **die Rate, mit der die Quelle Stempel liefert.***
+> Reproduziert ist sie (152 heute) — aber sie war immer eine Momentaufnahme.
+
+**🔗 PM-VERBINDUNG aus zwei QS-Messungen — eine Vermutung, keine dritte Messung:** Das
+Selbstausräumen gilt **nur für Reihen, die noch beliefert werden.** Und dieselbe Sitzung hat
+gemessen, dass **delistete Reihen aufhören, beliefert zu werden.**
+**→ Bei lebenden Reihen ist der Stempel flüchtig. Bei toten Reihen ist er ewig.** Derselbe
+Mechanismus, zwei entgegengesetzte Ausgänge — **und die Phantomtage im Tagesarchiv sind genau
+die Teilmenge, die nie überschrieben wird.** *Der Bestandsschaden ist also nicht null, aber
+beschränkt auf die aufgehörten Reihen.*
+
+**Falsifikationsbedingung mit ZWEI Seiten** (zur Prüfung nach dem nächsten Lauf): Die Stempel
+auf **lebenden** Reihen müssen verschwinden **und** die auf **toten** stehen bleiben. *Das
+unterscheidet „selbstheilend" von „selbstheilend, außer dort, wo es zählt".*
+
+### ✅ 27.08. ~02:20 — die stabile Bauform trägt: Raster aus der Sitzungslogik statt aus der Häufigkeit
+
+**Auf PM-Anregung gebaut und gemessen** — und sie löst die Kippe vollständig auf:
+
+    Minute 30                       -> Stundenraster der US-Sitzung
+    Minute 0 NUR zu den Schlussstunden -> gekappte Schlusskerze
+                                       20:00/21:00 UTC regulaer (16:00 ET Sommer/Winter)
+                                       17:00/18:00 UTC an Halbtagen (13:00 ET)
+    alles andere                    -> Ausreisser
+
+**Ergebnis: 152 Treffer** — exakt die Zahl, die aus der Häufigkeitsfassung erst durch Abzug der
+drei Sitzungsschlüsse herauszurechnen war. **Kein Fluten, keine Kippe, dieselbe Aussage.**
+
+**Fragilität wird jetzt mitgeliefert** (erste PM-Bitte): Der Sucher gibt Schwelle, nächste
+Uhrzeit unter der Schwelle und **Abstand zur Kippe** aus.
+
+> **🎯 DER NYT-FALL — der lehrreichste Teil.** Die reine Minutenregel lieferte zuerst **151
+> statt 152**. Der fehlende Fall: **NYT am 26.08. um 15:00:00** — Minute 0, nach naiver Regel
+> also legitim, **aber 15:00 ist kein Sitzungsschluss.** Daher die Einschränkung „Minute 0 NUR
+> zu den Schlussstunden". *Ohne diesen einen aufgeklärten Fall wäre die stabile Regel eine
+> gewesen, die etwas verliert — **Stabilität mit Trefferverlust erkauft, ohne es zu merken.***
+
+**Unerwarteter Nebeneffekt, der auf die Tafel gehört:** In der Häufigkeitsfassung hatte die
+Probereihe **neun Grundtreffer** (lauter legitime Halbtagskerzen), die Kontrolle musste 9
+gegen 10 unterscheiden. In der Logikfassung sind es **null**, die Kontrolle läuft **0 gegen 1**.
+**Ein Werkzeug, das keine falschen Treffer produziert, macht auch seine eigene Kontrolle
+schärfer.**
+
+**PM-Entscheid (braucht Wilhelm nicht):** **Logikfassung kanonisch für alles Neue.** Die
+Häufigkeitsfassung **bleibt** als Bezug für alles, was bisher auf „149" steht — *nicht heimlich
+austauschen war richtig.* **Auflage: Wo künftig eine Trefferzahl steht, gehört die Fassung
+dazu.**
 
 ### ❌ 27.08. ~02:15 — BEIDE DRINGLICHKEITEN DES PM WAREN FALSCH: veraltete Warnsignale weitergereicht
 
