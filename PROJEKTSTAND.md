@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 16:20 (Windows-Uhr)
+letzter-bericht: 2026-08-27 16:35 (Windows-Uhr)
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -188,7 +188,35 @@ unten) · **WY 20.07.2010** (Aktien-Sonderausschüttung, Faktor 0,409) · **EXPE
 > *Ab 24.08. sind alle drei Ansichten identisch; die Vorher-Sicherung von `06` am lebenden Archiv
 > (685,04 → 325,01, ~×0,47) passt auf den Punkt.*
 >
-> ### 🎯 **DER TEST IST AUF EINEN ABRUF REDUZIERT: ein direkter Yahoo-Abruf der IESC-Historie**
+> ### ✅ 16:3x — **ENTSCHIEDEN, schon heute Abend als T0-Messung: QUELLEN-VERZUG, kein Misch-Fehler**
+> **Yahoo liefert die IESC-Historie SELBST noch unangepasst** — *19.–21.08. kommen als
+> 697,38 / 683,27 / 685,04 zurück, **exakt unser Archivstand**.* **`zusammenfuehren()` bekommt
+> nichts Neues und lässt korrekt stehen, was da ist. Unser Verhalten ist richtig.**
+>
+> ### 🔴 **ABER DIESELBE ANTWORT WEIST DEN 2:1-SPLIT IM `events`-FELD AUS.**
+> ### **Die Quelle KENNT das Ereignis — und passt die Historie trotzdem nicht an.**
+>
+> **→ Falls das die Bauform der anderen Versager ist (RGR, SITC, B, BYND), dreht sich die
+> Erwartung des ganzen Tages um:**
+> ***Selbstheilung durch Nachladen ist für diese Fälle PRINZIPIELL unmöglich. Wenn die Quelle
+> selbst nie anpasst, holt das Archiv nie auf — die Versätze sind dauerhaft, nicht
+> vorübergehend.***
+>
+> **Damit ist meine WHLR-Beruhigung endgültig eingeordnet:** *„Der Nachtlauf holt es" stimmt **nur
+> unter der Bedingung, dass die Quelle je anpasst**. Bei IESC hat sie es drei Tage lang nicht
+> getan, obwohl Massive es längst führt.*
+>
+> **📋 VERGEBEN an `22` für den nächsten Lauf:** *Zeigen RGR / SITC / B / BYND dasselbe Muster?*
+> **Auflagen: beide Richtungen** (*AAPL/NVDA als Gegenprobe — **gibt es dort gar kein
+> `events`-Feld, misst man etwas anderes als man denkt**) · **Grundmenge zählen** · **ZÄHLEN VOR
+> ÄNDERN**: das `events`-Feld wäre der Weg, solche Fälle zu **kennzeichnen**, nicht sie zu
+> reparieren — *eine Kennzeichnung ist umkehrbar, eine Umrechnung nicht.*
+>
+> *Kuriosität am Rande, aber nicht bedeutungslos: **die 24.08.-Kerze fehlt im 1mo-Fenster der
+> Quelle komplett**, während unser Archiv sie mit 325,01 hat. **Wir halten dort Daten, die die
+> Quelle gerade nicht ausliefert** — die „löscht nie"-Eigenschaft zahlt sich aus.*
+
+> ### ~~🎯 DER TEST IST AUF EINEN ABRUF REDUZIERT~~ *(ausgeführt, siehe oben)*
 > | Yahoo liefert … | Diagnose |
 > |---|---|
 > | die **alte, unangepasste** Historie | **Quellen-Verzug — korrektes Verhalten.** *`zusammenfuehren()` löscht nie, also bleibt Altes stehen, wenn die Quelle nichts Neues schickt.* |
