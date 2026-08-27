@@ -185,6 +185,48 @@ Nicht-Krypto, **alle am 25.08., null erfasste Marktlagen** → **nicht erfüllt,
 
 ---
 
+## 🔀 27.08. abends — **UMSATZ IST DER FALSCHE UNTERSCHEIDER. DIE LAGE IST DER RICHTIGE**
+
+*(479 Reihen, 349.692 Tage, `4b4de54`)*
+
+> ### 🎯 ZUERST DIE EINORDNUNG, die alles andere relativiert
+> **Die MESSMASCHINE aggregiert überhaupt nicht auf Tage.** *Sie liest 60m-Kerzen sequenziell;
+> `sitzungsPosition`/`sitzungsSchicht` zählen **alle** Kerzen ohne Umsatzfilter durch und bilden
+> **nie** ein Tageshoch oder -tief.*
+> **→ Die Aggregations-Differenz steht in KEINEM Messprotokoll — sie betrifft nur die
+> Diagnose-Werkzeuge.** *Das nimmt der Frage die Dringlichkeit, nicht die Bedeutung.*
+
+**Beide Aggregationen nebeneinander:** *A (nur umsatztragend) **2,96 %** uneinig · B (alle Kerzen)
+**2,58 %** · C (alle außer Lage `nachhandel`) **2,53 %**.* **Der Pilot traf mit 3,20 % die
+Zensus-Zahl 3,22 % fast genau — die Differenz zwischen den Läufen ist damit als
+**Aggregations-Artefakt** identifiziert, nicht als Messfehler.** *(Die 6,67 % des Populationslaufs
+bleiben unerklärt — dessen Zuschnitt ist nicht bekannt.)*
+
+> ### **DIE KERNZAHL: in 5.977 Fällen trägt eine UMSATZLOSE Kerze das Tagesextrem — 88,4 % davon bestätigt das `1d`.**
+> ***Die scheinbar vorsichtige Aggregation A verliert siebenmal mehr echte Information, als sie
+> an Stempeln vermeidet.***
+
+**Und der eigentliche Fund zerlegt die Klasse sauber:**
+
+    umsatzlose Stunde INNERHALB der Sitzung : 99,3 % echt  (4.247 von 4.277)
+        -> der Umsatz fehlt, weil in einem illiquiden Wert nicht gehandelt wurde,
+           nicht weil die Kerze unecht waere
+    Lage »nachhandel«                       : 60,8 % echt  (664 Faelle)
+        -> die einzige gemischte Klasse - und sie stellt 96 % ALLER Stempel
+
+> ### ⭐ **DAS BESTÄTIGT WILHELMS ENTSCHEID VOM MORGEN VON EINER SEITE, DIE NIEMAND KANNTE**
+> *Er entschied „Randzeiten **behalten und kennzeichnen**", und `kerzenlage.js` entstand daraufhin
+> als reine Kennzeichnung ohne Verbraucher.* **Heute Abend ist gemessen, dass genau diese
+> Kennzeichnung der richtige Unterscheider ist — und der intuitive (Umsatz) der falsche.**
+> *Das Instrument war vor der Frage da, die es beantwortet.*
+
+**⚠ Variante C ist DATENGETRIEBEN entstanden, nicht vorab festgelegt** — *beziffert, **nicht
+empfohlen**; **nichts umgestellt**.* **Deutungsgrenze mitgeliefert:** *Maßstab ist das
+`1d`-Archiv, das bei Uneinigkeit selbst nur zur Hälfte recht hat — **„bestätigt" ist deshalb
+belastbarer als „widersprochen"**.*
+
+---
+
 ## 🔬 27.08. abends — **#109 ZURÜCKGEZOGEN: das Messen selbst hat den Zustand verändert**
 
 **Der Auditor hat seinen eigenen Befund widerlegt und das Issue geschlossen.** *`06` hatte nichts
