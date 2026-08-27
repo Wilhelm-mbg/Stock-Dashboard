@@ -8741,6 +8741,41 @@ mit #93/#94 zusammen runder.
 *Eine Zeile, vom Strategie-Tüftler selbst gepflegt. Übergabe läuft über
 `studien/tueftler/WARTESCHLANGE.md`, nicht über diese Tafel.*
 
+- **27.08.2026, ~19:00 — Recherche-Lauf (neue Pflicht: jede zweite Runde Literatur).**
+  Kein Auftrag offen, also selbst genommen. Dossier
+  `studien/tueftler/recherche-2026-08-27/DOSSIER.md`, Übergabe
+  `uebergabe/tueftler-2026-08-27-1900.md`. **(1) 🔴 Der Fund trifft fremde, zur Messung
+  anstehende Arbeit: Boyarchenko/Larsen/Whelan — eine der zwei Richtungssäulen von
+  `nachtstoss-umkehr` — haben am 01.07.2026 veröffentlicht, dass ihr Effekt seit Jan 2021
+  nahe null ist** (Fenster 02:00–03:00 ET, ~3,7 % p. a. → null). *Grund ausdrücklich NICHT
+  Veröffentlichungs-Arbitrage, sondern Zusammenbruch des **Eingangs**: Streuung der
+  Schluss-Orderungleichgewichte sd 6,5 % → 2,9 %.* → **Regimeschnitt 2021 als
+  Berichtspflicht VOR der Messung registriert** (Nachtrag), sonst wäre „anderes Regime"
+  nach einem schwachen Ergebnis eine nachträgliche Schwellenanpassung. **(2) Nagel (2012)
+  beziffert den Spannen-Rückprall auf die HÄLFTE** einer schluss-verankerten Umkehrrendite
+  und liefert die schärfere Regel: *er hebt sich im breiten Korb auf und bleibt genau dort
+  stehen, wo die AUSWAHL nach der Lage des Schlusses im Tagesband fragt.* **`glockendruck-nacht`
+  tut genau das** → Nagels Hälfte ist dort eine **untere** Schranke; die CFD-Stellung der
+  NEIN-Seite bekommt einen zweiten Grund, die JA-Seite bleibt. Beide Nachträge liegen in den
+  Vorregistrierungs-Ordnern, **die Vorregistrierungen selbst unverändert**. **(3) Neuer
+  Entwurf 3 `abgabedruck-nacht`** — Wiederaufnahme von `t2-umsatzschock`, der mit
+  MDE 0,23/0,36 auf 60m „nicht entscheidbar" war, also an der Auflösung starb und nicht an
+  Evidenz. Signal liest am Signaltag **keinen Kurs**, Schnitt mit der Zielgröße leer;
+  4.678 Bestätigungstage, `delta80` 0,0399, **744 Tage nötig für 0,10 Pp (Faktor 6,3)**,
+  Beharrlichkeit 0,150 unter Zufall 0,190, Überschneidung mit den zwei anderen 0,19/0,17.
+  **Familien-Testzahl steigt 4 → 6, das kostet die zwei älteren rund 4 % `delta80` — meine
+  Rechnung, offen ausgewiesen; alle drei JA-Seiten bleiben mit Faktor 4,7–4,9 erreichbar.**
+  **(4) Befund über den Entwurf hinaus: in diesem Fenster ist die Auflösung eine Eigenschaft
+  der KORBBREITE, nicht der Idee** — fünf strukturell verschiedene Auswahlregeln landen alle
+  bei `delta80` 0,0390–0,0408 (Spanne 4,5 %); erst Verengung zerstört sie (Breite 2 → 0,085).
+  ***Zum Aussortieren von Kandidaten taugt die Machbarkeitszahl hier gar nicht*** — ein Beleg
+  für Wilhelms Regel vom 27.08. **(5) Eigenfund beim Bau: meinen Placebo zweimal falsch
+  gebaut**, beide Male derselbe Denkfehler (ein *additiver* Tagesterm verschiebt alle
+  Schlüssel gemeinsam und erhält die Reihenfolge) — der Placebo war ein festes Depot mit
+  autokorrelierten Tagesmitteln und sah dadurch **schärfer** aus als der Kandidat. Steht als
+  Kommentar am Werkzeug. **Warteschlange jetzt 3 Entwürfe → Stau-Bremse greift, der Nachtlauf
+  28.08. 04:30 ist ein Datenbestands-Lauf.**
+
 - **27.08.2026, 08:25 — Zusatzauftrag des PM, außer der Reihe: F1-„Schnitt am letzten
   Sprung", Zähl-Hälfte.** Commit `d77f6cc`, Protokoll
   `studien/tueftler/2026-08-27-f1-schnitt-am-letzten-sprung.md`, Übergabe

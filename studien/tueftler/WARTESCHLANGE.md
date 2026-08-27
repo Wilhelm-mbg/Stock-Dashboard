@@ -3,6 +3,43 @@
 Entwürfe, die auf Messung durch die Mess-Kette warten. Der Tüftler trägt ein,
 der Projekt-Manager verteilt, die Mess-Kette streicht nach der Messung.
 
+## 🔴 NEU 27.08. abends — EINE RICHTUNGSSÄULE VON ENTWURF 2 IST VON IHREN AUTOREN ZURÜCKGENOMMEN
+
+**Wer `nachtstoss-umkehr` oder `glockendruck-nacht` misst, liest vorher die zwei Nachträge.**
+Beide sind vor jeder Messung geschrieben; **die Vorregistrierungen selbst sind unverändert.**
+
+- `…-nachtstoss-umkehr/NACHTRAG-2026-08-27-boyarchenko-widerrufen.md`
+- `…-glockendruck-nacht/NACHTRAG-2026-08-27-nagel-haelfte.md`
+- Belege: `studien/tueftler/recherche-2026-08-27/DOSSIER.md`
+
+**(1) Boyarchenko/Larsen/Whelan — Säule 2 der Richtung von Entwurf 2 — haben am 01.07.2026
+veröffentlicht, dass ihr Effekt seit Januar 2021 nahe null ist.** *Fenster 02:00–03:00 ET: von
+~3,7 % p. a. auf nahe null. Der Grund ist ausdrücklich **nicht** Veröffentlichungs-Arbitrage,
+sondern der Zusammenbruch des **Eingangs**: die Streuung der Schluss-Orderungleichgewichte fiel
+von sd 6,5 % auf sd 2,9 %.* → **Regimeschnitt 2021 ist jetzt VOR der Messung registriert**, als
+Berichtspflicht, nicht als zweites Urteil. *Ohne das wäre „2021–26 war ein anderes Regime" nach
+einem schwachen Ergebnis eine nachträgliche Schwellenanpassung.*
+
+**(2) Nagel (2012) beziffert den Spannen-Rückprall auf die HÄLFTE** einer schluss-verankerten
+Umkehrrendite — und liefert die schärfere Regel: *der Rückprall hebt sich im breiten Korb auf;
+er bleibt genau dort stehen, wo die **Auswahl** nach der Lage des Schlusses im Tagesband fragt.*
+**`glockendruck-nacht` tut genau das (`S` ist diese Lage).** → Nagels „Hälfte" ist dort eine
+**untere** Schranke. Die am 26.08. beschlossene Stellung der NEIN-Seite auf die CFD-Hürde
+bekommt damit einen zweiten, unabhängigen Grund. **Die JA-Seite bleibt.**
+
+**(3) Und ein Rückschlag auf Säule 1 von Entwurf 2:** Lou/Polk/Skouras sortieren nach
+schluss-verankerten Renditen; ihr Muster „Umkehr-Alpha im Nachtbein, negativ im Tagbein" ist von
+einem reinen Rückprall **nicht unterscheidbar**. *Entwurf 2 selbst bleibt sauber — seine Auswahl
+teilt keinen Kurs mit der Zielgröße. Schwächer ist nur die äußere Stütze.*
+
+> **Eine Vermutung, die eine Vermutung bleibt und nicht als Erklärung benutzt werden darf:**
+> Bricht die Streuung der Schluss-Ungleichgewichte marktweit um mehr als die Hälfte ein, ist
+> **jede** Übernacht-Inventarprämie nach 2021 kleiner. Unser Belegstand ist 0 von 12. Ein Teil
+> davon *könnte* strukturell sein. **Ungemessen. Prüfbar über einen Regimeschnitt in einer
+> Messung, die in beiden Hälften genug Auflösung hat.**
+
+---
+
 **⚠ Neu am 26.08. 19:25 — die Reihenfolge hat sich geändert (großer Plan, Teil IV-a).**
 Wilhelms verschärftes Abbruchkriterium ordnet an: **Datenqualität → Strang A → Strang B.**
 Beide Entwürfe unten sind **Strang B** und stehen damit hinter der Datenqualitätsarbeit
@@ -43,12 +80,15 @@ Spannen-Rückprall hatte dieselbe Aussage schon verworfen.
 Prozentpunkten, die Schwelle zählt **Handelstage**. „delta80 0,0396 liegt unter 1.000"
 vergleicht zwei verschiedene Größen; die tragende Zahl ist die oben gerechnete.
 
-**Offen: 2 Entwürfe, 2 Auftragsvorschläge** (Vorschlag **C** vom 26.08. 18:20 — dazu jetzt
+**Offen: 3 Entwürfe** *(seit 27.08. abends, `abgabedruck-nacht` kam dazu)*,
+**2 Auftragsvorschläge** (Vorschlag **C** vom 26.08. 18:20 — dazu jetzt
 die gerechnete Antwort weiter unten — und Vorschlag **D**, neu am 27.08. 04:50; die beiden
 älteren Vorschläge sind am 26.08. 09:00 von Wilhelm freigegeben und stehen auf der Tafel
 unter „Aufträge").
-(Bei 3 oder mehr offenen Entwürfen arbeitet der Tüftler nachts am Datenbestand
-statt zu entwerfen. Beim nächsten Lauf ist der Stand **2** — noch kein Stau, aber knapp.)
+**⚠ Aktualisiert 27.08. abends: es sind jetzt 3 Entwürfe.** (Bei 3 oder mehr offenen
+Entwürfen arbeitet der Tüftler nachts am Datenbestand statt zu entwerfen. **Die Stau-Bremse
+greift damit ab dem nächsten Lauf** — der Nachtlauf 28.08. 04:30 ist ein Datenbestands-Lauf,
+kein Entwurfs-Lauf, solange keiner der drei gemessen ist.)
 
 **⚠ Neu am 27.08. 04:50 — Vorschlag D eilt als einziger.** Den 1.164 beschafften Reihen der
 Verschwundenen fehlt der **Eröffnungskurs** (305.908 von 305.908 Kerzen). Die Quelle führt
@@ -186,6 +226,76 @@ demselben Korpus. Familienweit sind das **4 Tests** → `delta80` = **0,0429 Pp*
 NEIN-Aussage „unterhalb der Aktienhürde geschlossen" gilt **studienweise, nicht
 familienweit** und muss so berichtet werden. Bonferroni ist hier konservativ (die
 Auswahlen sind unabhängig) — das ist ein Argument, keine Erlaubnis.
+
+---
+
+### 3. `abgabedruck-nacht` — eingetragen 27.08.2026 (abends)
+
+**Status:** wartet auf Messung. **Dieselbe** Vorbedingung wie Entwürfe 1 und 2
+(`ausstieg`-Schalter) — keine zusätzliche Bauarbeit. Steht wie sie hinter Datenqualität und
+Strang A.
+
+**Vorregistrierung:** `studien/vorregistrierung-2026-08-27-abgabedruck-nacht/VORREGISTRIERUNG.md`
+**Literatur:** `studien/tueftler/recherche-2026-08-27/DOSSIER.md`
+**Zählung:** `studien/tueftler/werkzeug/zaehle-abgabedruck.js` → `…/daten/zaehlung-abgabedruck-2026-08-27.json`
+
+**Herkunft: ein Verlierer, der an der Auflösung starb, nicht an Evidenz.**
+`t2-umsatzschock` (23.08.) kam mit +0,078 / +0,090 Pp bei **MDE 0,226 / 0,360** als „nicht
+entscheidbar" durch — gemessen auf 60m mit 8 Kerzen Haltedauer, also im strukturell blinden
+Fenster. **Über die These wurde nichts gelernt.** Dieser Entwurf setzt denselben Mechanismus
+dorthin, wo er messbar ist, und baut ihn gegen die zwei Fehler um, an denen die alte Fassung
+hing: harte Schwellen und geteilte Kurse.
+
+**These.** Intermediäre nehmen das Orderungleichgewicht zum Börsenschluss auf und werden dafür
+über die Übernachtrendite entschädigt (Boyarchenko/Larsen/Whelan 2023, RFS 36). Die
+Halbwertszeit des Händlerbestands ist bei großen Werten ein halber Tag — **das
+Übernachtfenster ist rund eine Halbwertszeit.** Signal: Umsatzschock `U(i)` (kursfrei),
+abflauend `v(i)<v(i−1)` (kursfrei), Vorzeichen aus dem **Vortag** `Schluss(i−1)/Eröffnung(i−1)−1 < 0`.
+Long über Nacht, Einstieg `Schluss(i)`, Ausstieg `Eröffnung(i+1)`.
+
+**🔒 Signal und Zielgröße teilen keinen einzigen Kurs**, und die Auswahl liest am Signaltag
+überhaupt keinen Kurs — sie kann den Korb also nicht einseitig mit Geldkurs-Schlüssen laden
+(Nagel-Regel, siehe oben).
+
+**Machbarkeits-Zahlen** (gezählt, 400er-Stichprobe; 9.474 Handelstage 1986–2026):
+
+| Größe | Wert |
+|---|---|
+| Handelstage mit Signal / Bestätigung | 9.356 (98,8 %) / **4.678** |
+| Signalanteil | 19 %, Breite 24/Tag (≈ 134/Tag im vollen Universum) |
+| **Beharrlichkeit** | **0,150** bei Zufallserwartung 0,190 — **unter** Zufall, A7-tauglich |
+| Überschneidung mit Entwurf 1 / Entwurf 2 | **0,192 / 0,171** (Erwartung ≈ 0,19) → **dritter unabhängiger Schuss** |
+| Streuung σ / se / MDE | 0,8848 / 0,01294 / 0,02587 Pp |
+| **`delta80` bei 2 Tests** | **0,03988 Pp** — Korpus-Median 0,605 → Faktor 15,2 schärfer |
+| Umsatz-Median Auswahl / Korb | 36,8 / 37,1 Mio $ — **keine Kostenneigung** |
+| **nötige Tage für 0,10 Pp** | **744** (vorhanden 4.678 → **Faktor 6,3**) |
+| nötige Tage für 0,04 Pp | 4.651 (vorhanden 4.678 → Faktor **1,006**, auf der Kante) |
+
+**JA-Seite besteht deutlich. NEIN-Seite an der Aktienhürde steht auf der Kante und reißt
+familienweit** → NEIN wird auf die CFD-Hürde (0,10 Pp) gestellt, wie bei beiden Schwestern.
+
+> **⚠ Familien-Testzahl steigt von 4 auf 6 — das kostet die zwei älteren Entwürfe rund 4 %.**
+> `delta80` familienweit: `glockendruck` 0,0429 → **0,0446**, `nachtstoss` 0,0429 → **0,0447**,
+> dieser 0,0450. **Alle drei JA-Schwellen bleiben locker erreichbar (Faktor 4,7–4,9)**, die
+> NEIN-Aussagen standen schon vorher auf der CFD-Hürde. *Bonferroni ist konservativ — die drei
+> Auswahlen überschneiden sich nur auf Zufallsniveau. Das ist ein Argument, keine Erlaubnis.*
+
+> ### 📐 UND EIN BEFUND, DER ÜBER DIESEN ENTWURF HINAUSGEHT
+> **In diesem Fenster ist die Auflösung eine Eigenschaft der KORBBREITE, nicht der Idee.**
+> Fünf strukturell verschiedene Auswahlregeln mit ~20 %-Quintil und ~4.700 Bestätigungstagen
+> landen alle bei `delta80` **0,0390–0,0408 Pp — Spanne 4,5 %.** Erst Verengung zerstört sie:
+> Breite 2 → 0,085, Breite 1 → 0,163.
+>
+> ***Die Machbarkeitszahl unterscheidet hier nicht zwischen Ideen. Sie bestraft nur Schmalheit.***
+> **Damit ist Wilhelms Regel vom 27.08. an einem Fall belegt:** zum Aussortieren von Kandidaten
+> taugt die Zahl in diesem Fenster gar nicht — wohl aber zum Etikettieren des Ergebnisses.
+>
+> **Zwei Bauartlehren fallen dabei ab:** *(a)* **Rangieren statt schwellen** — `U ≥ 2` schnürt
+> den Korb auf 2 Werte und verdoppelt `delta80`; genau daran ist `t2-umsatzschock` schon einmal
+> gestorben. *(b)* **Der Umsatzschock-Rang kauft keine Auflösung, er kostet welche**: bei
+> gleicher Breite σ 0,909 gegen 0,870 beim informationsfreien Kunstrang, und die Beharrlichkeit
+> steigt aufs 1,47-Fache. **Er steht in diesem Entwurf allein auf dem Mechanismus.** Offen
+> ausgewiesen in Abschnitt 5 und 7 der Vorregistrierung.
 
 ---
 
