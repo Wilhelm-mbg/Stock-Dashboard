@@ -1,0 +1,14 @@
+{
+ "sym": "BYND",
+ "ereignisse": [
+  {
+   "datum": "2026-08-14",
+   "art": "split",
+   "faktor": 30
+  }
+ ],
+ "quelle": "Massive REST /v3/reference/splits und /v3/reference/dividends (Bearer, Gratis-Stufe)",
+ "abgerufen": "2026-08-27T08:45:00Z",
+ "konvention": "faktor bei art=split: Kursfaktor am Ausfuehrungstag = split_from/split_to (Reverse 4:1 -> 4; Forward 1:4 -> 0.25). faktor bei art=dividende: Barbetrag in USD je Aktie (KEIN Kursfaktor). datum: execution_date bzw. ex_dividend_date.",
+ "hinweis": "Eichfall aus dem Analytiker-Befund BEFUND-MASSIVE-PROBE.md; Dividenden nur fuer RGR/SITC/B abgerufen, fuer WHLR/BYND/AAPL/ARM NICHT (dort fehlt der Dividenden-Teil bewusst)"
+}

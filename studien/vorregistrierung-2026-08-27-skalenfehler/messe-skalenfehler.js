@@ -105,9 +105,13 @@ probe.forEach(function (r, idx) {
   var start = -1;
   for (var v = 0; v < 50; v++) {
     var s = 50 + Math.floor(rnd() * (closes.length - zone - 100));
-    var m1n = Math.abs(closes[s] / closes[s - 1] - 1);
-    var m2n = Math.abs(closes[s + zone] / closes[s + zone - 1] - 1);
-    if (m1n < 0.10 && m2n < 0.10) { start = s; break; }
+    /* Verbundkriterium (Nachtrag 1, praezisiert nach zweitem W1-Fehlschlag): das
+     * PRODUKT der beiden Grenz-Bewegungen geht in |q1*q2-1| ein - zwei 6-%-Tage in
+     * gleicher Richtung sprengen die 0,10-Toleranz, obwohl jede Grenze einzeln
+     * "ruhig" aussieht. Stelle nur, wenn das Produkt <=0,08 Abstand haelt. */
+    var n1 = closes[s] / closes[s - 1];
+    var n2 = closes[s + zone] / closes[s + zone - 1];
+    if (n1 > 0 && n2 > 0 && Math.abs(n1 * n2 - 1) <= 0.08) { start = s; break; }
     w1Verworfen++;
   }
   if (start < 0) { w1Fehl.push(r.sym + ' (keine ruhige Stelle in 50 Versuchen)'); return; }

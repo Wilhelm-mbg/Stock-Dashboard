@@ -1,0 +1,523 @@
+{
+ "sym": "SITC",
+ "ereignisse": [
+  {
+   "datum": "2026-08-03",
+   "art": "dividende",
+   "faktor": 1,
+   "typ": "SC"
+  },
+  {
+   "datum": "2025-12-15",
+   "art": "dividende",
+   "faktor": 1,
+   "typ": "SC"
+  },
+  {
+   "datum": "2025-10-31",
+   "art": "dividende",
+   "faktor": 1,
+   "typ": "SC"
+  },
+  {
+   "datum": "2025-08-15",
+   "art": "dividende",
+   "faktor": 3.25,
+   "typ": "SC"
+  },
+  {
+   "datum": "2025-06-30",
+   "art": "dividende",
+   "faktor": 1.5,
+   "typ": "SC"
+  },
+  {
+   "datum": "2024-08-19",
+   "art": "split",
+   "faktor": 4
+  },
+  {
+   "datum": "2024-06-18",
+   "art": "dividende",
+   "faktor": 0.13,
+   "typ": "CD"
+  },
+  {
+   "datum": "2024-03-13",
+   "art": "dividende",
+   "faktor": 0.13,
+   "typ": "CD"
+  },
+  {
+   "datum": "2023-12-26",
+   "art": "dividende",
+   "faktor": 0.16,
+   "typ": "SC"
+  },
+  {
+   "datum": "2023-12-08",
+   "art": "dividende",
+   "faktor": 0.13,
+   "typ": "CD"
+  },
+  {
+   "datum": "2023-09-25",
+   "art": "dividende",
+   "faktor": 0.13,
+   "typ": "CD"
+  },
+  {
+   "datum": "2023-06-13",
+   "art": "dividende",
+   "faktor": 0.13,
+   "typ": "CD"
+  },
+  {
+   "datum": "2023-03-16",
+   "art": "dividende",
+   "faktor": 0.13,
+   "typ": "CD"
+  },
+  {
+   "datum": "2022-12-08",
+   "art": "dividende",
+   "faktor": 0.13,
+   "typ": "CD"
+  },
+  {
+   "datum": "2022-09-19",
+   "art": "dividende",
+   "faktor": 0.13,
+   "typ": "CD"
+  },
+  {
+   "datum": "2022-06-08",
+   "art": "dividende",
+   "faktor": 0.13,
+   "typ": "CD"
+  },
+  {
+   "datum": "2022-03-16",
+   "art": "dividende",
+   "faktor": 0.13,
+   "typ": "CD"
+  },
+  {
+   "datum": "2021-12-09",
+   "art": "dividende",
+   "faktor": 0.12,
+   "typ": "CD"
+  },
+  {
+   "datum": "2021-09-23",
+   "art": "dividende",
+   "faktor": 0.12,
+   "typ": "CD"
+  },
+  {
+   "datum": "2021-06-09",
+   "art": "dividende",
+   "faktor": 0.12,
+   "typ": "CD"
+  },
+  {
+   "datum": "2021-03-17",
+   "art": "dividende",
+   "faktor": 0.11,
+   "typ": "CD"
+  },
+  {
+   "datum": "2020-12-10",
+   "art": "dividende",
+   "faktor": 0.05,
+   "typ": "CD"
+  },
+  {
+   "datum": "2020-03-09",
+   "art": "dividende",
+   "faktor": 0.2,
+   "typ": "CD"
+  },
+  {
+   "datum": "2019-12-12",
+   "art": "dividende",
+   "faktor": 0.2,
+   "typ": "CD"
+  },
+  {
+   "datum": "2019-09-20",
+   "art": "dividende",
+   "faktor": 0.2,
+   "typ": "CD"
+  },
+  {
+   "datum": "2019-06-11",
+   "art": "dividende",
+   "faktor": 0.2,
+   "typ": "CD"
+  },
+  {
+   "datum": "2019-03-14",
+   "art": "dividende",
+   "faktor": 0.2,
+   "typ": "CD"
+  },
+  {
+   "datum": "2018-12-13",
+   "art": "dividende",
+   "faktor": 0.2,
+   "typ": "CD"
+  },
+  {
+   "datum": "2018-09-25",
+   "art": "dividende",
+   "faktor": 0.2,
+   "typ": "CD"
+  },
+  {
+   "datum": "2018-06-12",
+   "art": "dividende",
+   "faktor": 0.38,
+   "typ": "CD"
+  },
+  {
+   "datum": "2018-05-21",
+   "art": "split",
+   "faktor": 2
+  },
+  {
+   "datum": "2018-03-15",
+   "art": "dividende",
+   "faktor": 0.19,
+   "typ": "CD"
+  },
+  {
+   "datum": "2017-12-11",
+   "art": "dividende",
+   "faktor": 0.19,
+   "typ": "CD"
+  },
+  {
+   "datum": "2017-09-25",
+   "art": "dividende",
+   "faktor": 0.19,
+   "typ": "CD"
+  },
+  {
+   "datum": "2017-06-13",
+   "art": "dividende",
+   "faktor": 0.19,
+   "typ": "CD"
+  },
+  {
+   "datum": "2017-03-14",
+   "art": "dividende",
+   "faktor": 0.19,
+   "typ": "CD"
+  },
+  {
+   "datum": "2016-12-09",
+   "art": "dividende",
+   "faktor": 0.19,
+   "typ": "CD"
+  },
+  {
+   "datum": "2016-09-21",
+   "art": "dividende",
+   "faktor": 0.19,
+   "typ": "CD"
+  },
+  {
+   "datum": "2016-06-07",
+   "art": "dividende",
+   "faktor": 0.19,
+   "typ": "CD"
+  },
+  {
+   "datum": "2016-03-08",
+   "art": "dividende",
+   "faktor": 0.19,
+   "typ": "CD"
+  },
+  {
+   "datum": "2015-12-11",
+   "art": "dividende",
+   "faktor": 0.1725,
+   "typ": "CD"
+  },
+  {
+   "datum": "2015-09-18",
+   "art": "dividende",
+   "faktor": 0.1725,
+   "typ": "CD"
+  },
+  {
+   "datum": "2015-06-09",
+   "art": "dividende",
+   "faktor": 0.1725,
+   "typ": "CD"
+  },
+  {
+   "datum": "2015-03-10",
+   "art": "dividende",
+   "faktor": 0.1725,
+   "typ": "CD"
+  },
+  {
+   "datum": "2014-12-12",
+   "art": "dividende",
+   "faktor": 0.155,
+   "typ": "CD"
+  },
+  {
+   "datum": "2014-09-24",
+   "art": "dividende",
+   "faktor": 0.155,
+   "typ": "CD"
+  },
+  {
+   "datum": "2014-06-10",
+   "art": "dividende",
+   "faktor": 0.155,
+   "typ": "CD"
+  },
+  {
+   "datum": "2014-03-11",
+   "art": "dividende",
+   "faktor": 0.155,
+   "typ": "CD"
+  },
+  {
+   "datum": "2013-12-13",
+   "art": "dividende",
+   "faktor": 0.135,
+   "typ": "CD"
+  },
+  {
+   "datum": "2013-09-19",
+   "art": "dividende",
+   "faktor": 0.135,
+   "typ": "CD"
+  },
+  {
+   "datum": "2013-06-11",
+   "art": "dividende",
+   "faktor": 0.135,
+   "typ": "CD"
+  },
+  {
+   "datum": "2013-03-12",
+   "art": "dividende",
+   "faktor": 0.135,
+   "typ": "CD"
+  },
+  {
+   "datum": "2012-12-13",
+   "art": "dividende",
+   "faktor": 0.12,
+   "typ": "CD"
+  },
+  {
+   "datum": "2012-09-12",
+   "art": "dividende",
+   "faktor": 0.12,
+   "typ": "CD"
+  },
+  {
+   "datum": "2012-06-15",
+   "art": "dividende",
+   "faktor": 0.12,
+   "typ": "CD"
+  },
+  {
+   "datum": "2012-03-14",
+   "art": "dividende",
+   "faktor": 0.12,
+   "typ": "CD"
+  },
+  {
+   "datum": "2011-12-14",
+   "art": "dividende",
+   "faktor": 0.08,
+   "typ": "CD"
+  },
+  {
+   "datum": "2011-09-23",
+   "art": "dividende",
+   "faktor": 0.06,
+   "typ": "CD"
+  },
+  {
+   "datum": "2011-06-16",
+   "art": "dividende",
+   "faktor": 0.04,
+   "typ": "CD"
+  },
+  {
+   "datum": "2011-03-18",
+   "art": "dividende",
+   "faktor": 0.04,
+   "typ": "CD"
+  },
+  {
+   "datum": "2010-12-15",
+   "art": "dividende",
+   "faktor": 0.02,
+   "typ": "CD"
+  },
+  {
+   "datum": "2010-09-17",
+   "art": "dividende",
+   "faktor": 0.02,
+   "typ": "CD"
+  },
+  {
+   "datum": "2010-06-17",
+   "art": "dividende",
+   "faktor": 0.02,
+   "typ": "CD"
+  },
+  {
+   "datum": "2010-03-19",
+   "art": "dividende",
+   "faktor": 0.02,
+   "typ": "CD"
+  },
+  {
+   "datum": "2009-12-21",
+   "art": "dividende",
+   "faktor": 0.02,
+   "typ": "CD"
+  },
+  {
+   "datum": "2009-09-21",
+   "art": "dividende",
+   "faktor": 0.02,
+   "typ": "CD"
+  },
+  {
+   "datum": "2008-09-24",
+   "art": "dividende",
+   "faktor": 0.69,
+   "typ": "CD"
+  },
+  {
+   "datum": "2008-06-18",
+   "art": "dividende",
+   "faktor": 0.69,
+   "typ": "CD"
+  },
+  {
+   "datum": "2008-03-18",
+   "art": "dividende",
+   "faktor": 0.69,
+   "typ": "CD"
+  },
+  {
+   "datum": "2007-12-19",
+   "art": "dividende",
+   "faktor": 0.66,
+   "typ": "CD"
+  },
+  {
+   "datum": "2007-09-20",
+   "art": "dividende",
+   "faktor": 0.66,
+   "typ": "CD"
+  },
+  {
+   "datum": "2007-06-18",
+   "art": "dividende",
+   "faktor": 0.66,
+   "typ": "CD"
+  },
+  {
+   "datum": "2007-03-21",
+   "art": "dividende",
+   "faktor": 0.66,
+   "typ": "CD"
+  },
+  {
+   "datum": "2006-12-20",
+   "art": "dividende",
+   "faktor": 0.59,
+   "typ": "CD"
+  },
+  {
+   "datum": "2006-09-14",
+   "art": "dividende",
+   "faktor": 0.59,
+   "typ": "CD"
+  },
+  {
+   "datum": "2006-06-15",
+   "art": "dividende",
+   "faktor": 0.59,
+   "typ": "CD"
+  },
+  {
+   "datum": "2006-03-20",
+   "art": "dividende",
+   "faktor": 0.59,
+   "typ": "CD"
+  },
+  {
+   "datum": "2005-12-21",
+   "art": "dividende",
+   "faktor": 0.54,
+   "typ": "CD"
+  },
+  {
+   "datum": "2005-09-15",
+   "art": "dividende",
+   "faktor": 0.54,
+   "typ": "CD"
+  },
+  {
+   "datum": "2005-06-16",
+   "art": "dividende",
+   "faktor": 0.54,
+   "typ": "CD"
+  },
+  {
+   "datum": "2005-03-17",
+   "art": "dividende",
+   "faktor": 0.54,
+   "typ": "CD"
+  },
+  {
+   "datum": "2004-12-22",
+   "art": "dividende",
+   "faktor": 0.51,
+   "typ": "CD"
+  },
+  {
+   "datum": "2004-09-16",
+   "art": "dividende",
+   "faktor": 0.51,
+   "typ": "CD"
+  },
+  {
+   "datum": "2004-06-17",
+   "art": "dividende",
+   "faktor": 0.46,
+   "typ": "CD"
+  },
+  {
+   "datum": "2004-03-18",
+   "art": "dividende",
+   "faktor": 0.46,
+   "typ": "CD"
+  },
+  {
+   "datum": "2003-12-18",
+   "art": "dividende",
+   "faktor": 0.46,
+   "typ": "CD"
+  }
+ ],
+ "quelle": "Massive REST /v3/reference/splits und /v3/reference/dividends (Bearer, Gratis-Stufe)",
+ "abgerufen": "2026-08-27T08:45:00Z",
+ "konvention": "faktor bei art=split: Kursfaktor am Ausfuehrungstag = split_from/split_to (Reverse 4:1 -> 4; Forward 1:4 -> 0.25). faktor bei art=dividende: Barbetrag in USD je Aktie (KEIN Kursfaktor). datum: execution_date bzw. ex_dividend_date.",
+ "hinweis": "Eichfall aus dem Analytiker-Befund BEFUND-MASSIVE-PROBE.md; Dividenden nur fuer RGR/SITC/B abgerufen, fuer WHLR/BYND/AAPL/ARM NICHT (dort fehlt der Dividenden-Teil bewusst)"
+}

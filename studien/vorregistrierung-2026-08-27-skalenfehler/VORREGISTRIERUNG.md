@@ -79,14 +79,18 @@ einen Tag mit ≥10 % natürlicher Bewegung, die das Produkt-Kriterium (|q1·q2�
 sprengt. **Festlegungen, ohne den Erkenner anzufassen** (ihn nach dem Wächter zu
 weiten wäre Tuning auf den Wächter):
 
-1. **Hüllkurve ausgesprochen:** Der Erkenner findet Skalen-Pendel konstruktionsbedingt
-   NUR, wenn die Grenztage < 10 % natürliche Bewegung tragen. Diese Deckungslücke wird
-   im Ergebnis beziffert (Anteil der Handelstage mit |Bewegung| ≥ 10 % je
-   Kandidatenmenge) — sie ist eine RECALL-Grenze, keine Fehlfeuer-Quelle.
-2. **W1-Stellenbedingung:** Injektionen erfolgen nur an Stellen, deren beide
-   Grenzübergänge < 10 % natürliche Bewegung tragen (geprüft auf der UNVERÄNDERTEN
-   Reihe, deterministisch, kein Ergebnisblick); verworfene Stellen werden geloggt —
-   der Rerun belegt damit die CIFR-Ursache, statt sie zu behaupten. Soll bleibt 50/50.
+1. **Hüllkurve ausgesprochen — nach dem zweiten W1-Fehlschlag präzisiert (47/50,
+   CIFR/HUT/APLD, alle hochvolatil):** Maßgeblich ist das **PRODUKT der natürlichen
+   Bewegungen beider Grenztage**, denn es geht direkt in |q1·q2−1| ein — zwei 6-%-Tage
+   in gleicher Richtung sprengen die 0,10-Toleranz, obwohl jeder einzeln »ruhig«
+   wirkt. Der Erkenner findet Pendel nur, wo dieses Produkt ≤ ~0,10 Abstand zur 1
+   hält. Die Deckungslücke wird im Ergebnis beziffert; sie ist eine RECALL-Grenze,
+   keine Fehlfeuer-Quelle, und trifft volatile Werte am stärksten.
+2. **W1-Stellenbedingung (Verbundkriterium):** Injektionen nur an Stellen mit
+   |n1·n2 − 1| ≤ 0,08 auf der UNVERÄNDERTEN Reihe (deterministisch, kein
+   Ergebnisblick; 0,08 lässt Marge zur 0,10-Toleranz); verworfene Stellen werden
+   geloggt. Soll bleibt 50/50. Die Einzeltag-Fassung (<10 % je Grenze) aus der ersten
+   Nachtragsfassung war unzureichend — der zweite Fehlschlag hat es belegt.
 3. Für das Urteils-Gerüst ändert sich nichts: Der Ereignis-Zeuge (Datum+Faktor) hängt
    nicht an der Hüllkurve — ein Ereignis-Abgleich findet auch Flips auf bewegten
    Grenztagen; die Hüllkurve begrenzt nur die ereignis-LOSE Enumeration.

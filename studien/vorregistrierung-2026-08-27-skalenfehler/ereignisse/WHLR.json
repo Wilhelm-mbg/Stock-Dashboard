@@ -1,0 +1,89 @@
+{
+ "sym": "WHLR",
+ "ereignisse": [
+  {
+   "datum": "2026-08-27",
+   "art": "split",
+   "faktor": 4
+  },
+  {
+   "datum": "2026-07-28",
+   "art": "split",
+   "faktor": 5
+  },
+  {
+   "datum": "2026-06-18",
+   "art": "split",
+   "faktor": 4
+  },
+  {
+   "datum": "2026-04-20",
+   "art": "split",
+   "faktor": 3
+  },
+  {
+   "datum": "2026-01-20",
+   "art": "split",
+   "faktor": 3
+  },
+  {
+   "datum": "2025-12-01",
+   "art": "split",
+   "faktor": 2
+  },
+  {
+   "datum": "2025-09-23",
+   "art": "split",
+   "faktor": 5
+  },
+  {
+   "datum": "2025-05-27",
+   "art": "split",
+   "faktor": 7
+  },
+  {
+   "datum": "2025-03-27",
+   "art": "split",
+   "faktor": 5
+  },
+  {
+   "datum": "2025-01-28",
+   "art": "split",
+   "faktor": 4
+  },
+  {
+   "datum": "2024-11-19",
+   "art": "split",
+   "faktor": 2
+  },
+  {
+   "datum": "2024-09-20",
+   "art": "split",
+   "faktor": 3
+  },
+  {
+   "datum": "2024-06-28",
+   "art": "split",
+   "faktor": 5
+  },
+  {
+   "datum": "2024-05-17",
+   "art": "split",
+   "faktor": 24
+  },
+  {
+   "datum": "2023-08-18",
+   "art": "split",
+   "faktor": 10
+  },
+  {
+   "datum": "2017-04-03",
+   "art": "split",
+   "faktor": 8
+  }
+ ],
+ "quelle": "Massive REST /v3/reference/splits und /v3/reference/dividends (Bearer, Gratis-Stufe)",
+ "abgerufen": "2026-08-27T08:45:00Z",
+ "konvention": "faktor bei art=split: Kursfaktor am Ausfuehrungstag = split_from/split_to (Reverse 4:1 -> 4; Forward 1:4 -> 0.25). faktor bei art=dividende: Barbetrag in USD je Aktie (KEIN Kursfaktor). datum: execution_date bzw. ex_dividend_date.",
+ "hinweis": "Eichfall aus dem Analytiker-Befund BEFUND-MASSIVE-PROBE.md; Dividenden nur fuer RGR/SITC/B abgerufen, fuer WHLR/BYND/AAPL/ARM NICHT (dort fehlt der Dividenden-Teil bewusst)"
+}
