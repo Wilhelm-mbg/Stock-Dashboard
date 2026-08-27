@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 03:05
+letzter-bericht: 2026-08-27 02:28 (abgelesen)
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -14,13 +14,23 @@ Wenn du hier etwas änderst, dann nur deine eigene Zeile unter „Läuft gerade"
 
 ---
 
-## 📋 NACHTBILANZ 27.08. (Stand 02:00) — die 30-Sekunden-Fassung
+## 📋 NACHTBILANZ 27.08. — die 30-Sekunden-Fassung *(Stand 02:28 echter Zeit)*
 
-**Ertrag der Nacht: null neue Kanten, sechs verhinderte Datenverluste — und ein Fund, der die
-Messbasis betrifft.** Der Belegstand bleibt **0 von 12**. Sechsmal wurde eine Reparatur oder
-eine Zahl angehalten, die echte Kurse zerstört oder ein falsches Urteil getragen hätte;
-**zweimal traf es Anweisungen des PM, zweimal Vorgaben der QS, zweimal eigene Befunde der
-Sitzungen.** Gefunden hat es jedes Mal eine Gegenprobe.
+> **🕐 Zu den Uhrzeiten in diesem Abschnitt und darunter:** Die Überschriften der Nacht tragen
+> **vom PM geschätzte** Zeiten, die gegen Ende **bis zu ~35 Minuten vorlaufen**. Maßgeblich ist
+> allein der `letzter-bericht`-Stempel im Kopf dieser Datei — er wird abgelesen, nicht
+> geschätzt. **Operativ wichtig und in echter Zeit: die Archivsperre auf `archiv1d` fällt
+> gegen 03:38.** *(Zweiter Anlauf: derselbe Fehler war um 01:15 schon einmal korrigiert
+> worden.)*
+
+**Ertrag der Nacht: null neue Kanten und sieben verhinderte Datenverluste.** Der Belegstand
+bleibt **0 von 12**. Siebenmal wurde eine Reparatur, eine Zahl oder eine Deutung angehalten,
+die echte Kurse zerstört oder ein falsches Urteil getragen hätte — **dreimal traf es den PM,
+zweimal Vorgaben der QS, zweimal eigene Befunde der Sitzungen.** Gefunden hat es jedes Mal eine
+Gegenprobe, nie ein Verdacht.
+
+**Der siebte Fall war der lehrreichste, weil er den PM selbst betraf und binnen 40 Minuten
+auffiel:**
 
 > ### ⚠→✅ EINE SCHLAGZEILE, DIE SICH IN 40 MINUTEN AUFGELÖST HAT (02:50 → 03:05)
 > **Hier stand: „die letzte Kerze jedes Handelstages ist eine instabile Momentaufnahme, und
