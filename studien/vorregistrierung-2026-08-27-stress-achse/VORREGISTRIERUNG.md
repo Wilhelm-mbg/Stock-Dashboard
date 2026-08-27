@@ -74,6 +74,13 @@ der Differenz werden ausgewiesen; eine Achse, deren Trennung sich mit diesen Dat
 nicht belegen lässt, wird nicht gebaut). Kein Tuning der Schwelle 1,5 nach dem Lauf;
 eine andere Schwelle wäre eine neue Vorregistrierung.
 
+**Präzisierungen vor dem Bau (~13:45, vor jedem Lauf):** (a) »Überschuss« meint
+durchgängig die **Bestätigungs-Hälfte** der gepaarten A7-Kontrolle
+(Maschinen-Konvention, zurückgehaltene Tage) — auch für Welch-Differenz und
+Positivkontrolle. (b) Die Maschine erzwingt Testzahl = Variantenzahl (**6**, nicht 2);
+die Bonferroni-Schwelle wird damit STRENGER als registriert — ein JA wird schwerer,
+nie leichter; das Welch-Kriterium (≥ 2) bleibt wie fixiert.
+
 ## 4. Sperrliste
 
 Kein Kanten-Urteil über Kapitulation selbst (sie ist validiert; hier geht es NUR um
