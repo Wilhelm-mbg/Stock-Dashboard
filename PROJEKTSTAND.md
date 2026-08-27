@@ -1508,6 +1508,24 @@ jemand irgendwo hingesehen hat.*
 
 ## ⭐ WILHELMS ENTSCHEIDE 27.08. ~11:30 (per Formular) — **alle drei gelten ab sofort**
 
+> ### 0b. Die 38 geretteten Kostenrunden → **LIEGEN LASSEN, URSACHE BEHEBEN** *(17:2x)*
+> **Die Messreihe wird aus dem zurücksetzbaren Store HERAUSGELÖST**, damit der nächste Reset sie
+> nicht wieder abtrennt. *Die 38 bleiben in der Sicherung — Archivmaterial. Vergeben an `06`,
+> Issue #99.*
+>
+> **Der Anlass (Fund der Issue-Wache):** *Sicherung **38** Runden, aktiver Store **1**.* **Ich
+> hatte sie heute Nacht gerettet, aber nie zurückgeholt** — *wer die Kostenauswertung jetzt
+> anfasst, rechnet auf 1 statt 39 und bekommt eine Zahl, die wie ein Ergebnis aussieht.*
+> **Vierzehnte Erscheinungsform: nichts kaputt, nichts meldet einen Fehler, die Datenbasis ist
+> nur still weg.**
+>
+> **⚠ Ausdrücklich NICHT gewählt:** *Zurückschreiben in den Store* — **die App läuft und schreibt
+> dieselbe Datei** *(zuletzt 17:17); ein Schreibkonflikt hätte es schlimmer gemacht.* Und *die
+> Auswertung die Sicherung mitlesen lassen* — **eine Krücke, die das Problem konserviert.**
+>
+> *Kostet keinen Fortschritt: **alle 39 Runden stammen vom 25.08.**, die 16 Aktienrunden aus
+> einer Minute — **das Zurückholen hätte die Schwelle ohnehin nicht erfüllt.***
+
 > ### 0. Freigabeschwelle Strang A → **RUNDEN ÜBER VERSCHIEDENE TAGE UND MARKTLAGEN**
 > *(entschieden ~12:35, nach der QS-Rücknahme unten)*
 > **Nicht mehr „≥ 20 Aktienrunden", sondern Runden verteilt über verschiedene Tage und
