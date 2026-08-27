@@ -14,6 +14,41 @@ Wenn du hier etwas änderst, dann nur deine eigene Zeile unter „Läuft gerade"
 
 ---
 
+## 🛡 27.08. 18:5x — **DIE SCHRANKE IST GEHÄRTET** (`8bd5866`, Maschine 1.6.2)
+
+**Existenzprüfung vor dem `require`, kein `catch` dahinter** — *die Unterscheidung liegt in der
+Reihenfolge zweier Anweisungen, nicht in der Deutung einer Fehlermeldung.* **Richtig in beiden
+Zweigen der offenen Zuschnitt-Frage, deshalb unabhängig vom Vermessungsergebnis gebaut.**
+
+**Drei Positivkontrollen, echt gemessen:** *Datei fehlt → **kein Absturz**, Verweigerung mit
+benanntem Pfad · Datei da, Syntaxfehler → **fliegt** · Datei da, **ihr** fehlt eine Abhängigkeit →
+**fliegt**.*
+**Jede Lage in einem eigenen Modulordner** — *sonst gibt Nodes Modul-Speicher die zuerst geladene
+Fassung zurück **und der Test prüft sich selbst**.*
+**Und die Gegenprobe gegen Tautologie:** *mit zurückgebauter Härtung (nur diese eine Zeile)
+stürzt Lage 1 — **die Klinke erzwingt die Bauform wirklich**.*
+
+> ### 🎯 **UND BEIM BAUEN PROMPT IN DIE FORM DES TAGES GELAUFEN — der lehrreichste Testfehler**
+> *Die erste Probe-Strategie war unvollständig. Die Maschine verweigerte deshalb **früher** — an
+> der Begründungspflicht, später an der Haltedauer — **und erreichte die Schranke nie**. Der Test
+> war rot, aber aus dem falschen Grund.*
+>
+> > ***„Hätte ich nur `verweigert === true` geprüft, wäre Lage 1 GRÜN gewesen, ohne die Schranke
+> > je berührt zu haben."***
+>
+> **Ein Test, der nur das Ergebnis prüft und nicht den GRUND, bestätigt jede Verweigerung — auch
+> die, die aus einem anderen Defekt kommt.** *„Dass ich auf den konkreten Grund geprüft habe, war
+> kein Ehrgeiz, sondern hat den Fehler sichtbar gemacht."* **Steht als Kommentar am Test, nicht
+> nur in der Commit-Nachricht.**
+
+*Offen bleibt der Zuschnitt (was ins Paket muss, ob es einen Auslöser gibt).* **Der
+`asarUnpack`-Punkt ist bestätigt und aufgenommen:** *Einpacken ohne Entpacken hieße — **die
+Existenzprüfung meldet korrekt „fehlt", während die Datei ausgeliefert ist**. Rot aus dem falschen
+Grund, exakt dieselbe Form.* **Die Sperrklinke aus der Vermessung muss deshalb BEIDE Muster
+prüfen, nicht nur `build.files`.**
+
+---
+
 ## ✅ 27.08. 18:4x — **DER MESSAUTOMAT STEHT** (`de05c43`) — mit zwei Selbstfunden vor dem Commit
 
 **Alle bestätigten Parameter umgesetzt:** *1 Runde je Handelstag · nur Aktien · rotierendes
