@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 03:10 (abgelesen)
+letzter-bericht: 2026-08-27 03:00 (abgelesen)
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -100,6 +100,42 @@ auffiel:**
 > heraus) und **(b) der Zeitplan** (frühestens 30 Minuten nach Schluss).
 > **Fällt eine von beiden weg, schreibt der Sammler einen Zwischenstands-Quote als Tagesschluss
 > ins Archiv** — und zwar einen, der aussieht wie der genaueste Wert im Bestand.
+>
+> ### 🔬 27.08. ~03:10 — LAUF 6: der laufende Nachlader IST das Experiment
+>
+> **Kunstgriff der QS:** Die Falsifikationsbedingung zu den Phantomtagen braucht keinen eigenen
+> Lauf — **der Nachlader fasst gerade alle 2.965 Tagesdateien an, darunter die neun mit
+> Phantomtagen.** Er entscheidet die Frage von selbst.
+>
+> **Die Erwartung ist vorregistriert und der Vorher-Stand fest im Werkzeug eingetragen**, damit
+> der Vergleich nicht an einer nachträglich erhobenen Zahl hängt:
+>
+>     (a) die 21 Phantomtage stehen unveraendert da, obwohl der Nachlader
+>         die Dateien angefasst hat
+>     (b) AVB und EQR bekommen KEINE neuen dazu
+>
+> **Nur wenn beides eintritt, ist die Deutung belegt.** *Tritt (a) nicht ein, war „149 ist kein
+> Bestand, sondern eine Rate" **falsch** — und dieser Satz steht in Wilhelms Vorlage. Tritt nur
+> (b) nicht ein, war die Einschränkung an die Mess-Sitzung falsch und der Zähler friert nicht
+> ein.* **Das Werkzeug schreibt beide Fälle als Urteil aus, nicht nur den erwarteten.**
+>
+> ### ✂ Ein Fehler, den der PM in derselben Form heute Nacht ZWEIMAL selbst gemacht hat
+>
+> Beim Einhängen fand die QS einen Fehler im Treiber: **Eine frühere Ersetzung war am Anker
+> gescheitert und hatte nichts geschrieben.** Sie hielt sie für erfolgreich, *weil sie die
+> Ausgabe mit `head -20` abgeschnitten hatte und die ersten drei Läufe wie erwartet aussahen.*
+>
+> **Praktisch hätte der Treiber nach dem Sperrfall wieder alle sechs Läufe gestartet — darunter
+> die fertigen 4 und 5 — und deren Ergebnisdateien überschrieben.** Behoben und geprüft.
+>
+> > **Ihre Regel daraus:** *„Bei einer Prüfung, ob eine Änderung gegriffen hat, nie die Ausgabe
+> > kürzen, sondern gezielt auf das Merkmal prüfen."* — Zweiter Fall bei ihr heute Nacht (vorher
+> > `tail -50` bei der Barrierefreiheits-Zählung).
+> >
+> > **Und dieselbe Familie hat den PM heute Nacht zweimal erwischt:** die `tasklist`-Prüfung,
+> > die „Nachlader beendet" meldete, während er lief — und die Sperrdatei-Suche nach `lock` und
+> > `sperre`, während die Datei `_laeuft.json` heißt. **Beide Male sagte der Nulltreffer nichts
+> > über die Sache aus, sondern nur über den Filter.**
 >
 > ### 🏁 27.08. ~03:05 — DER STREIT DIESER NACHT IST ENTSCHIEDEN: die Halbtage sind nicht verdorben
 >
