@@ -14,7 +14,9 @@
  *  - Obergrenze je Lauf, damit man nicht versehentlich Stunden bindet.
  *  - Werte ohne Daten werden vermerkt und nie erneut abgerufen.
  *
- * Aufruf:  node tools/massive-tagesdaten.js [maxWerte] [--alle]
+ * Aufruf:  node tools/massive-tagesdaten.js [maxWerte] [--alle] [--erneuern]
+ *          --erneuern holt schon Vorhandenes noch einmal (etwa um ein fehlendes
+ *          Feld nachzutragen). Ohne den Schalter wird Vorhandenes uebersprungen.
  *          ohne --alle werden nur Werte an NYSE/NASDAQ geholt, die im Messzeitraum
  *          ueberhaupt existierten - der Rest waere fuer ein Grosswerte-Universum
  *          ohnehin nie in Frage gekommen.
@@ -23,6 +25,82 @@
 var fs = require('fs');
 var path = require('path');
 var M = require('./massive.js');
+
+/* VEREINIGEN STATT UEBERSCHREIBEN.
+ * Im Piloten am 27.08.2026 aufgefallen: 15 von 20 erneuerten Reihen hatten
+ * HINTERHER EINE KERZE WENIGER. Die Ursache ist dieselbe rollende 730-Tage-Grenze,
+ * die den ganzen Auftrag ausgeloest hat - seit dem Erstabruf ist sie
+ * weitergewandert, der aelteste Tag faellt aus der Antwort, und ein blankes
+ * writeFileSync warf ihn damit weg. Das waere absurd gewesen: ein Lauf, der den
+ * Eroeffnungskurs RETTEN soll, haette bei jedem Wert einen ganzen Tag vernichtet.
+ *
+ * Bei gleichem Zeitstempel gewinnt die FRISCHE Kerze - sie hat den Eroeffnungskurs.
+ * Alte Kerzen ausserhalb des Fensters bleiben stehen; sie haben keinen, aber sie
+ * sind die einzigen, die es je geben wird.
+ * Eine alte Kerze mit fuenf Feldern bekommt die Eroeffnung als null HINTEN
+ * angehaengt, nie eingeschoben - sonst laese jeder Verbraucher lautlos falsch.
+ *
+ * Eigene Funktion, damit test-v6 sie ohne Netz aufrufen kann. Sie gibt die
+ * frische Reihe NICHT veraendert zurueck, sondern eine neue: die Lauf-Statistik
+ * unten muss weiter sagen koennen, was die QUELLE geliefert hat, und nicht, was
+ * nach dem Mischen in der Datei steht. Genau das ging beim ersten Versuch schief.
+ * (Dieselbe Lehre wie im Kursarchiv, wo zusammenfuehren() dafuer da ist. Dieses
+ * Werkzeug hatte sie nie gelernt.) */
+/* EIN SYMBOL, EINE DATEI.
+ * Im Piloten am 27.08.2026 aufgefallen: AC stand auf Platz 10 UND 11 - zwei
+ * Zeilen, dieselbe Firma, Loeschdatum einen Tag auseinander. Die Liste der
+ * Verschwundenen ist aus mehreren Abzuegen zusammengesetzt, und wer an zwei
+ * aufeinanderfolgenden Tagen verschwand, steht zweimal drin: 23 von 1.633.
+ * Der Lauf holte solche Werte zweimal - 23 Abrufe zu je 13 s, rund fuenf Minuten.
+ *
+ * WICHTIGER ALS DIE FUENF MINUTEN: seit dem Vereinigen ist ein Doppeleintrag
+ * nicht mehr harmlos. Frueher ueberschrieb der zweite Abruf den ersten, jetzt
+ * MISCHT er sich hinein. Solange beide Zeilen dieselbe Firma meinen, ist das
+ * folgenlos - gemessen am 27.08.2026 ist das bei allen 23 der Fall. Wird ein
+ * Ticker aber je neu vergeben (in den USA ueblich, sobald er frei ist), lagen
+ * zwei verschiedene Unternehmen in EINER Kursreihe, ohne dass es jemand saehe.
+ * Genau davor warnt die Meldung unten - sie ist bewusst laut, weil so ein Fund
+ * ein anderes Werkzeug braucht und nicht stillschweigend gemittelt werden darf.
+ *
+ * Behalten wird der Eintrag mit dem SPAETESTEN Loeschdatum: er deckt den
+ * laengeren Zeitraum ab, und der Abruf holt ohnehin alles bis heute. */
+function entdoppeln(kandidaten) {
+  var nach = Object.create(null);
+  kandidaten.forEach(function (t) { (nach[t.sym] = nach[t.sym] || []).push(t); });
+  var raus = [], doppelt = 0, verdaechtig = [];
+  kandidaten.forEach(function (t) {
+    var e = nach[t.sym];
+    if (!e) return;                       // schon abgehandelt
+    delete nach[t.sym];                   // Reihenfolge des ersten Vorkommens bleibt
+    if (e.length > 1) {
+      doppelt += e.length - 1;
+      /* Zwei Zeitraeume, die sich NICHT beruehren, sind kein Abzugs-Artefakt,
+       * sondern zwei Firmen. Ein Tag Unterschied im Loeschdatum ist eines. */
+      var spannen = e.map(function (x) { return { von: x.von || null, bis: x.bis || null }; });
+      var echt = spannen.some(function (a) {
+        return spannen.some(function (b) {
+          return a.bis && b.von && b.von > a.bis;
+        });
+      });
+      if (echt) verdaechtig.push(t.sym);
+    }
+    var beste = e[0];
+    e.forEach(function (x) { if ((x.bis || '') > (beste.bis || '')) beste = x; });
+    raus.push(beste);
+  });
+  return { liste: raus, doppelt: doppelt, verdaechtig: verdaechtig };
+}
+
+function vereinigen(vorhanden, frisch) {
+  var karte = Object.create(null);
+  (vorhanden || []).forEach(function (k) {
+    karte[k[0]] = k.length >= 6 ? k : [k[0], k[1], k[2], k[3], k[4], null];
+  });
+  frisch.forEach(function (k) { karte[k[0]] = k; });
+  var reihe = Object.keys(karte).map(Number).sort(function (a, b) { return a - b; })
+    .map(function (ms) { return karte[ms]; });
+  return { reihe: reihe, behalten: reihe.length - frisch.length };
+}
 
 /* Zeitraum: der Beginn des eigenen 60m-Archivs, damit beide Universen dieselbe
  * Spanne abdecken.
@@ -49,7 +127,12 @@ var VON = '2023-11-13';
 var FENSTER_TAGE = 730;   // gemessen 27.08.2026, siehe oben
 var BIS = new Date().toISOString().slice(0, 10);
 
-(async function () {
+/* Der Lauf startet nur als Programm. Beim require aus test-v6 wird nur die
+ * Funktion oben geholt - sonst zoege ein Testlauf ueber Stunden Daten.
+ * Kein top-level return: node erlaubt ihn im CommonJS-Wrapper, der Linter nicht. */
+module.exports = { vereinigen: vereinigen, entdoppeln: entdoppeln };
+
+if (require.main === module) (async function () {
   var key;
   try { key = M.schluessel(); } catch (e) { console.error(e.message); process.exit(2); }
 
@@ -74,8 +157,21 @@ var BIS = new Date().toISOString().slice(0, 10);
     return t.boerse === 'XNYS' || t.boerse === 'XNAS' || t.boerse === 'ARCX' || t.boerse === 'BATS';
   });
 
-  var ordner = M.ablage('tagesdaten');
-  var standDatei = path.join(M.ablage(), 'tagesdaten-stand.json');
+  var ed = entdoppeln(kandidaten);
+  if (ed.doppelt) {
+    console.log('Doppelt in der Liste: ' + ed.doppelt + ' Eintraege - je Symbol bleibt einer.');
+  }
+  if (ed.verdaechtig.length) {
+    console.log('');
+    console.log('!! TICKER OFFENBAR NEU VERGEBEN: ' + ed.verdaechtig.join(', '));
+    console.log('   Zwei Eintraege desselben Kuerzels mit getrennten Zeitraeumen - das sind');
+    console.log('   zwei Firmen. Eine Datei kann sie nicht beide fuehren; die Reihe waere');
+    console.log('   eine Mischung. Von Hand klaeren, bevor diese Werte gemessen werden.');
+    console.log('');
+  }
+  kandidaten = ed.liste;
+
+  var ordner = M.ablage('tagesdaten');  var standDatei = path.join(M.ablage(), 'tagesdaten-stand.json');
   var stand = fs.existsSync(standDatei) ? JSON.parse(fs.readFileSync(standDatei, 'utf8')) : { fertig: {}, ohneDaten: {} };
 
   /* STICHPROBE - fuer schnelle Vorlaeufe, nicht als Ersatz der Vollerhebung.
@@ -97,7 +193,21 @@ var BIS = new Date().toISOString().slice(0, 10);
     kandidaten = kopie.slice(0, stichprobe);
     console.log('Zufallsstichprobe: ' + stichprobe + ' von ' + kopie.length + ' (fester Startwert, wiederholbar)');
   }
-  var offen = kandidaten.filter(function (t) { return !stand.fertig[t.sym] && !stand.ohneDaten[t.sym]; });
+  /* --erneuern: schon Geholtes NOCH EINMAL holen. Ohne diesen Schalter ueberspringt
+   * der Lauf jeden Wert, den er hat, und meldet "Nichts zu tun" - dieselbe Stille,
+   * an der das Kursarchiv zwei Tage stillstand.
+   * Gebraucht wird er, seit am 27.08.2026 auffiel, dass allen 1.164 Reihen der
+   * EROEFFNUNGSKURS fehlt, obwohl die Quelle ihn liefert. Ohne Erneuern waere der
+   * Fehler zwar behoben, aber nur fuer kuenftige Werte - und das Quellfenster rollt
+   * mit 730 Tagen, es sind rund 980 Symbol-Tage je Handelstag.
+   * Die Reihenfolge ist die des Universums, also stabil: ein Pilot ueber die ersten
+   * zwanzig ist wiederholbar und deckt dieselben Werte ab wie der Anfang des
+   * Vollaufs. */
+  var erneuern = process.argv.indexOf('--erneuern') !== -1;
+  var offen = erneuern
+    ? kandidaten.filter(function (t) { return stand.fertig[t.sym]; })
+    : kandidaten.filter(function (t) { return !stand.fertig[t.sym] && !stand.ohneDaten[t.sym]; });
+  if (erneuern) console.log('ERNEUERN: ' + offen.length + ' vorhandene Reihen werden neu geholt.');
   console.log('Verschwundene im Messzeitraum: ' + kandidaten.length +
     (alle ? ' (alle Boersen)' : ' (nur Hauptboersen; mit --alle sind es mehr)'));
   console.log('  schon geholt : ' + Object.keys(stand.fertig).length);
@@ -121,35 +231,80 @@ var BIS = new Date().toISOString().slice(0, 10);
   console.log('');
 
   var geholt = 0, leer = 0, fehler = 0;
-  var gekuerzt = 0, fruehesteGeliefert = null;
+  var gekuerzt = 0, fruehesteGeliefert = null, ausserhalbBehalten = 0;
   for (var i = 0; i < nimm.length; i++) {
     var t = nimm[i];
     var pfad = '/v2/aggs/ticker/' + encodeURIComponent(t.sym) + '/range/1/day/' + VON + '/' + BIS +
       '?adjusted=true&sort=asc&limit=50000';
     try {
       var j = await M.hole(pfad, key);
-      var bars = (j.results || []).map(function (b) { return [b.t, b.c, b.v || 0, b.h, b.l]; });
+      /* DER EROEFFNUNGSKURS WURDE HIER WEGGEWORFEN - 305.908 von 305.908 Kerzen
+       * ohne, obwohl die Quelle ihn liefert (Feldliste c h l n o t v vw; an AVB
+       * belegt: o = 185,60). Gefunden vom Tueftler am 27.08.2026.
+       *
+       * WARUM DAS TEUER WAR: Jede Uebernacht-Frage braucht die Eroeffnung des
+       * Folgetags, und ueber Nacht ist die Aufloesungswand ueberhaupt nur zu
+       * unterbieten. Ohne diesen Kurs laesst sich fuer das Uebernachtfenster nicht
+       * pruefen, ob die Ueberlebensluecke das Vorzeichen dreht - also genau der
+       * Vorbehalt nicht ausraeumen, der in beiden Vorregistrierungen steht.
+       * Und das Quellfenster rollt: rund 980 Symbol-Tage je Handelstag fallen
+       * hinten heraus und sind dauerhaft weg.
+       *
+       * DIE EROEFFNUNG KOMMT HINTEN DRAN, die ersten fuenf Felder bleiben, wo sie
+       * sind - genau wie im Kursarchiv. Ein stiller Wechsel der Feldreihenfolge
+       * waere schlimmer als das fehlende Feld: jeder vorhandene Leser laese dann
+       * lautlos falsch.
+       * null statt Rueckfall auf den Schluss, wenn er fehlt: die Messmaschine warnt
+       * eigens (C7), wenn eine Reihe keine Eroeffnungskurse fuehrt. Faellt der Wert
+       * still auf den Schluss, kann diese Warnung nie mehr feuern. */
+      var bars = (j.results || []).map(function (b) {
+        var o = (typeof b.o === 'number' && isFinite(b.o) && b.o > 0) ? b.o : null;
+        return [b.t, b.c, b.v || 0, b.h, b.l, o];
+      });
       if (bars.length < 20) {
         stand.ohneDaten[t.sym] = { grund: bars.length + ' Kerzen', am: new Date().toISOString().slice(0, 10) };
         leer++;
         console.log('  ' + String(i + 1).padStart(3) + '/' + nimm.length + '  ' + t.sym.padEnd(8) + 'nur ' + bars.length + ' Kerzen - vermerkt, wird nicht erneut geholt');
       } else {
-        fs.writeFileSync(path.join(ordner, t.sym + '.json'), JSON.stringify({
+        /* WAS DIE QUELLE GELIEFERT HAT - festgehalten, BEVOR gemischt wird.
+         * Die Kuerzungswarnung unten ist die einzige Stelle, an der dieses Werkzeug
+         * ueberhaupt merkt, dass das Quellfenster rollt. Rechnete sie auf der
+         * gemischten Reihe, meldete sie ab dem zweiten Lauf "der angefragte Zeitraum
+         * kam vollstaendig an" - eine Entwarnung ausgerechnet ueber den Vorgang, der
+         * die Daten frisst. */
+        var rohVon = new Date(bars[0][0]).toISOString().slice(0, 10);
+        var datei = path.join(ordner, t.sym + '.json');
+        var vorhanden = null;
+        if (fs.existsSync(datei)) {
+          try { vorhanden = JSON.parse(fs.readFileSync(datei, 'utf8')).series || null; }
+          catch (e) { vorhanden = null; /* unlesbar: die frische Reihe ersetzt sie */ }
+        }
+        var v = vereinigen(vorhanden, bars);
+        var reihe = v.reihe;
+        if (v.behalten > 0) ausserhalbBehalten += v.behalten;
+        fs.writeFileSync(datei, JSON.stringify({
           sym: t.sym, name: t.name, boerse: t.boerse, delistet: t.bis,
           quelle: 'massive /v2/aggs 1/day, adjusted', stand: new Date().toISOString(),
+          format: '[zeit, schluss, umsatz, hoch, tief, eroeffnung]',
           angefragtVon: VON, angefragtBis: BIS,
-          geliefertVon: new Date(bars[0][0]).toISOString().slice(0, 10),
-          geliefertBis: new Date(bars[bars.length - 1][0]).toISOString().slice(0, 10),
-          series: bars,
+          /* Diese beiden Felder beschreiben die DATEI, nicht den Abruf: was der
+           * Verbraucher hier vorfindet. quellfensterVon nennt daneben den Rand des
+           * Abonnements bei diesem Lauf - daran ist spaeter ablesbar, welche Tage
+           * nur noch deshalb existieren, weil sie einmal gesichert wurden. */
+          geliefertVon: new Date(reihe[0][0]).toISOString().slice(0, 10),
+          geliefertBis: new Date(reihe[reihe.length - 1][0]).toISOString().slice(0, 10),
+          quellfensterVon: rohVon,
+          series: reihe,
         }));
         /* Was DIESE Reihe wirklich abdeckt - nicht, was angefragt war. Ohne diese
          * beiden Felder muss jeder Verbraucher die Reihe selbst aufmachen, um zu
          * erfahren, ob sie den gewuenschten Zeitraum ueberhaupt enthaelt. */
-        var abVon = new Date(bars[0][0]).toISOString().slice(0, 10);
-        var bisBis = new Date(bars[bars.length - 1][0]).toISOString().slice(0, 10);
-        stand.fertig[t.sym] = { kerzen: bars.length, bis: t.bis, von: abVon, letzte: bisBis };
-        if (abVon > VON) gekuerzt++;
-        if (!fruehesteGeliefert || abVon < fruehesteGeliefert) fruehesteGeliefert = abVon;
+        var abVon = new Date(reihe[0][0]).toISOString().slice(0, 10);
+        var bisBis = new Date(reihe[reihe.length - 1][0]).toISOString().slice(0, 10);
+        stand.fertig[t.sym] = { kerzen: reihe.length, bis: t.bis, von: abVon, letzte: bisBis };
+        /* rohVon, nicht abVon: siehe oben. */
+        if (rohVon > VON) gekuerzt++;
+        if (!fruehesteGeliefert || rohVon < fruehesteGeliefert) fruehesteGeliefert = rohVon;
         geholt++;
         console.log('  ' + String(i + 1).padStart(3) + '/' + nimm.length + '  ' + t.sym.padEnd(8) +
           String(bars.length).padStart(4) + ' Tage  bis ' + t.bis + '  ' + (t.name || '').slice(0, 34));
@@ -169,6 +324,8 @@ var BIS = new Date().toISOString().slice(0, 10);
    * einer, der bekommen hat, wonach er fragte. Genau diese Stille hat das Kursarchiv
    * zwei Tage unbemerkt stillstehen lassen. */
   if (geholt) {
+    if (ausserhalbBehalten) console.log("Aus dem Bestand behalten (ausserhalb des Fensters): " +
+      ausserhalbBehalten + " Kerzen - sie waeren beim Ueberschreiben verloren gewesen.");
     console.log("Frueheste gelieferte Kerze in diesem Lauf: " + fruehesteGeliefert +
       "  (angefragt ab " + VON + ")");
     if (gekuerzt) {

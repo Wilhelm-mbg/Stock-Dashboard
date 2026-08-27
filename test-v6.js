@@ -4692,9 +4692,32 @@ console.log('\n45) Massive-Anbindung: Schluessel, Tempolimit, Aussengrenze');
      'Bereits geholte und ergebnislose Werte werden nie erneut abgerufen');
   ok(/fehler >= 5/.test(td), 'Nach fuenf Fehlern bricht der Lauf ab, statt gegen eine Sperre zu laufen');
   ok(/maxWerte/.test(td), 'Die Zahl der Werte je Lauf ist gedeckelt und einstellbar');
-  var tdSchreibt = td.match(new RegExp('writeFileSync\\([^,)]*', 'g')) || [];
-  ok(tdSchreibt.length > 0 && tdSchreibt.every(function (s) { return /ordner|standDatei/.test(s); }),
-     'Auch der Tagesdaten-Abruf schreibt nur in die eigene Ablage', tdSchreibt.join(' | '));
+  /* SCHREIBT NUR IN DIE EIGENE ABLAGE - und die Pruefung folgt der Zuweisung.
+   * Diese Zusicherung stand frueher auf den NAMEN der Zielvariablen. Am 27.08.2026
+   * wurde das Ziel in eine Variable gezogen, damit die Datei vor dem Schreiben
+   * GELESEN werden kann (vereinigen statt ueberschreiben) - und die Zusicherung ging
+   * rot, obwohl sich an der Ablage nichts geaendert hatte.
+   * Eine Namensliste prueft den Namen, nicht die Ablage; der naechste Umbenenner
+   * haette sie einfach erweitert, bis sie nichts mehr haelt. Jetzt wird die Zuweisung
+   * verfolgt: ein Ziel ist gut, wenn es aus dem eigenen Ordner gebaut wird - egal,
+   * wie es heisst. Die Selbstprobe darunter zeigt, dass die Pruefung noch beisst. */
+  function zieleSauber(quelle) {
+    var roh = quelle.match(/writeFileSync\(\s*([A-Za-z_$][\w$]*)/g) || [];
+    return roh.map(function (z) { return z.replace(/writeFileSync\(\s*/, ''); })
+      .map(function (name) {
+        var zuweisung = new RegExp('var\\s+' + name + '\\s*=\\s*path\\.join\\(\\s*(ordner\\b|M\\.ablage\\()');
+        return { name: name, ok: zuweisung.test(quelle) };
+      });
+  }
+  var tdZiele = zieleSauber(ohneKommentare(td));
+  ok(tdZiele.length > 0 && tdZiele.every(function (z) { return z.ok; }),
+     'Auch der Tagesdaten-Abruf schreibt nur in die eigene Ablage - jedes Ziel ist aus dem eigenen Ordner gebaut',
+     tdZiele.map(function (z) { return z.name + (z.ok ? '' : ' <-- FREMD'); }).join(' | '));
+  /* Selbstprobe: eine erfundene Quelle, die woandershin schreibt, MUSS durchfallen.
+   * Ohne sie waere gruen kein Beleg - eine Pruefung, die nie ablehnt, prueft nichts. */
+  var erfunden = 'var woanders = path.join(os.homedir(), "x"); fs.writeFileSync(woanders, 1);';
+  ok(zieleSauber(erfunden).some(function (z) { return !z.ok; }),
+     'Selbstprobe: ein Schreibaufruf ausserhalb der eigenen Ablage faellt durch');
 })();
 
 
@@ -10213,6 +10236,78 @@ console.log('\nDie App sammelt selbst: Kursarchiv (26.08.2026)');
   ok(/setTimeout\(\(\) => \{ sammlerNachsehen/.test(mainQ) && /setInterval\(\(\) => \{ sammlerNachsehen/.test(mainQ),
      'Nach dem Start wird einmal nachgesehen und danach regelmaessig');
 })();
+
+/* ================= Tagesdaten der Verschwundenen: nichts darf verlorengehen ================= */
+console.log('\nmassive-tagesdaten: Vereinigen und Entdoppeln (27.08.2026)');
+(function () {
+  /* WARUM DIESE ZUSICHERUNGEN. Am 27.08.2026 fiel auf, dass allen 1.164 Reihen der
+   * EROEFFNUNGSKURS fehlte, obwohl die Quelle ihn liefert. Beim Nachholen zeigte der
+   * Pilot den zweiten, groesseren Fehler: das Werkzeug SCHRIEB die Datei neu, statt zu
+   * mischen - und weil das Quellfenster mit 730 Tagen rollt, verlor jede erneuerte
+   * Reihe ihren aeltesten Tag. 15 von 20 im ersten Piloten. Ein Lauf, der Daten retten
+   * soll, haette Daten vernichtet.
+   * Beide Funktionen sind deshalb aus dem Werkzeug herausgeloest und werden hier
+   * AUFGERUFEN, nicht im Quelltext gesucht. Der Aufruf startet den Lauf nicht und
+   * braucht kein Netz. */
+  var MT = require(__dirname + '/tools/massive-tagesdaten.js');
+
+  ok(typeof MT.vereinigen === 'function' && typeof MT.entdoppeln === 'function',
+     'Das Werkzeug laesst sich laden, ohne stundenlang Daten zu ziehen');
+
+  /* --- Vereinigen --- */
+  var alt = [[100, 10, 5, 11, 9], [200, 20, 5, 21, 19]];               // Bestand, 5 Felder
+  var neu = [[200, 20, 5, 21, 19, 19.5], [300, 30, 7, 31, 29, 29.5]];  // Abruf, mit Eroeffnung
+  var v = MT.vereinigen(alt, neu);
+  ok(v.reihe.length === 3, 'Die Kerze ausserhalb des Quellfensters ueberlebt das Erneuern', v.reihe.length);
+  ok(v.reihe[0][0] === 100 && v.reihe[1][0] === 200 && v.reihe[2][0] === 300,
+     'Die Reihe bleibt nach Zeit sortiert');
+  ok(v.behalten === 1, 'Das Werkzeug weist aus, wie viele Kerzen nur noch aus dem Bestand stammen', v.behalten);
+  ok(v.reihe[1][5] === 19.5, 'Bei gleichem Zeitstempel gewinnt der frische Abruf - er hat die Eroeffnung');
+  ok(v.reihe[0].length === 6 && v.reihe[0][5] === null,
+     'Eine alte Kerze bekommt die Eroeffnung als null HINTEN angehaengt');
+  ok(v.reihe[0][1] === 10 && v.reihe[0][2] === 5 && v.reihe[0][3] === 11 && v.reihe[0][4] === 9,
+     'Schluss, Umsatz, Hoch und Tief bleiben, wo sie waren - kein stiller Feldwechsel');
+  ok(neu.length === 2 && neu[0].length === 6,
+     'Die frische Reihe wird nicht veraendert - die Lauf-Statistik muss weiter sagen koennen, was die QUELLE lieferte');
+
+  /* Positivkontrolle: ohne Bestand darf nichts erfunden werden. */
+  var leer = MT.vereinigen(null, neu);
+  ok(leer.reihe.length === 2 && leer.behalten === 0,
+     'Ohne Bestand kommt genau der Abruf heraus', leer.reihe.length);
+
+  /* --- Entdoppeln --- */
+  /* Positivkontrolle zuerst: eine saubere Liste darf KEINEN Alarm ausloesen. Ohne sie
+   * waere "0 verdaechtig" auf den echten Daten wertlos - eine Funktion, die immer
+   * schweigt, schweigt auch im Ernstfall. */
+  var rein = MT.entdoppeln([{ sym: 'A', bis: '2025-01-01' }, { sym: 'B', bis: '2025-02-01' }]);
+  ok(rein.liste.length === 2 && rein.doppelt === 0 && rein.verdaechtig.length === 0,
+     'Positivkontrolle: eine Liste ohne Doppel meldet nichts');
+
+  /* Der reale Fall: AC stand im Piloten auf Platz 10 UND 11. */
+  var ac = MT.entdoppeln([
+    { sym: 'X', bis: '2025-01-01' },
+    { sym: 'AC', bis: '2025-09-05' },
+    { sym: 'AC', bis: '2025-09-06' },
+  ]);
+  ok(ac.liste.length === 2 && ac.doppelt === 1,
+     'Dieselbe Firma zweimal in der Liste wird auf einen Abruf zusammengezogen', ac.doppelt);
+  ok(ac.liste.filter(function (t) { return t.sym === 'AC'; })[0].bis === '2025-09-06',
+     'Behalten wird der Eintrag mit dem spaeteren Loeschdatum - er deckt den laengeren Zeitraum ab');
+  ok(ac.liste[0].sym === 'X' && ac.liste[1].sym === 'AC',
+     'Die Reihenfolge des Universums bleibt - sonst waere der Pilot nicht mehr derselbe Ausschnitt wie der Anfang des Vollaufs');
+  ok(ac.verdaechtig.length === 0,
+     'Ein Tag Unterschied im Loeschdatum ist ein Abzugs-Artefakt und kein Alarm');
+
+  /* Der gefaehrliche Fall, den es heute (noch) nicht gibt: ein neu vergebener Ticker.
+   * Seit dem Vereinigen laegen dann ZWEI Firmen in einer Kursreihe. */
+  var reuse = MT.entdoppeln([
+    { sym: 'ZZ', von: '2019-01-01', bis: '2021-06-30' },
+    { sym: 'ZZ', von: '2023-01-01', bis: '2025-01-01' },
+  ]);
+  ok(reuse.verdaechtig.length === 1 && reuse.verdaechtig[0] === 'ZZ',
+     'Getrennte Zeitraeume unter einem Kuerzel = zwei Firmen: das Werkzeug schlaegt Alarm, statt sie zu mischen');
+})();
+
 
 Promise.all(offeneProben).then(function () {
   console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
