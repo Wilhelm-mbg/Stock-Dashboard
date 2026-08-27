@@ -49,6 +49,41 @@ Einstellungen justieren, **nicht** Mittelfrist.
 > unübersichtlich" besser als jede Zählung: **er muss sich durch einen Steuerstand wühlen, um an
 > einen Bericht zu kommen.***
 
+> ## 🎯 DIE ERSTE KONKRETE ANTWORT AUF „WAS IST ZU VIEL?" — **und sie ist keine Zählung**
+>
+> ### **`#idMode` — die Auswahl, WELCHE gemessene Strategie überhaupt läuft — liegt hinter einer zugeklappten Klappe namens „Experten-Einstellungen anzeigen".**
+> ***Wer sie sucht, muss erst wissen, dass er Experte ist.*** *Fünf weitere Schalter liegen mit ihr dort.*
+>
+> **Daneben liegen 4.045 Zeichen Regelbuch offen.**
+> ***Die zentrale Einstellung des Handelssystems ist versteckt, der Bericht liegt offen — das ist
+> die Umkehrung dessen, was Wilhelm braucht.***
+
+> ### ⚖ Die Vermutung war FALSCH — gemessen sind es DREI Ursachen, nicht eine
+> | Ursache | Elemente | Bewertung |
+> |---|---|---|
+> | `<details id="idExperte">` zugeklappt | **`#idMode`** + 5 | **der Fund** |
+> | Vorfahr-`<label>` auf `display:none` | `#idExit`, `#idTrend`, `#idTrail`, `#idMtf`, `#idChannel` | bedingt eingeblendet |
+> | `<details id="archivWiderlegt">` | `#hourlyEnabled` | **richtig so** |
+> | `opacity:0` + sichtbare `.knob` daneben | `#idEnabled` | **kein Fund — Bauweise** |
+> | **eigener Messfehler** | `#pilotOn`, `#aoRegime` | **kein Fund** |
+>
+> **Zwei der 13 waren gar keine Funde** — *`#pilotOn`/`#aoRegime` standen nur auf „unsichtbar",
+> **weil beim Messen eine andere Pille offen war** und der ganze Unterreiter `display:none` hatte.*
+> **Aufnahmefehler, kein Befund über die Oberfläche. Summe korrigiert: 14 statt 16.**
+>
+> ***Die falsche Fassung war schon committet — die Nachtsitzung hätte sie geerbt.*** *Genau
+> deshalb wurde sie korrigiert und nicht nur im Chat richtiggestellt.*
+
+> ### ⭐ **DAS MUSTER ZUM AUSDÜNNEN EXISTIERT SCHON — es ist nur nicht überall angewandt**
+> **`#hourlyEnabled` sitzt hinter einer Klappe, die ausdrücklich „Archiv: gemessen und widerlegt
+> – Stunden…" heißt.** *Für die Stunden-Strategie **ist das Ausdünnen also bereits geschehen**.*
+> **→ Eine Vorlage, kein Neubau.** *Was mit einer widerlegten Strategie richtig gemacht wurde,
+> lässt sich auf die übrigen anwenden.*
+
+**📌 Der Nachtlauf-Auftrag liegt in `studien/auditor/AUFTRAG-NACHTLAUF.md` (`b5fe512`), nicht nur
+in einem Chat** — *die Nachtsitzung ist eine frische Sitzung ohne Gedächtnis dieser Unterhaltung.
+Wilhelms Satz „Nachsehen was passiert ist" steht dort als Abschnitt 0.*
+
 ### 📋 Stand der Bestandsaufnahme
 **Fertig:** *Umfang · **kein toter Schalter** (25/25 verdrahtet) · Karten- und Textmengen.*
 **Nachtlauf, neu gewichtet:** *(1) **steuert etwas Widerlegtes?** — Belegstand 0 von 12, und ein
