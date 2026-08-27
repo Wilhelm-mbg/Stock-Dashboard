@@ -24,7 +24,19 @@
  * Schlaegt er aus, ist jede Zahl daneben um diesen Betrag verschoben.
  */
 (function () {
+  /* FESTE REFERENZ AUF DEN BASISWERT - noch nicht die Huerde des gehandelten
+   * Produkts. Das Scoreboard benutzt seit 6c790c8 DepotAPI.kostenHuerde(); hier
+   * steht die Zahl fest. In der Voreinstellung ergeben beide ZUFAELLIG 0,100 Pp,
+   * deshalb faellt der Unterschied niemandem auf - mit umgestelltem Produkt driften
+   * sie auseinander (Auditor 27.08.: 0,100 gegen 0,0665).
+   * #105 ist Wilhelms Entscheidung: soll hier die LIVE-Huerde stehen oder eine
+   * ausdrueckliche feste Referenz? Beides ist vertretbar, nur nicht zwei Zahlen
+   * unter demselben Namen. Bis dahin bleibt es fest - aber ueber huerdePp(), damit
+   * das Umschalten eine Zeile ist und nicht eine Suche. */
   var HUERDE_PP = 0.10;          // je Umlauf auf dem Basiswert, am Demo-Konto gemessen (0,104 %)
+  function huerdePp() {
+    return (window.U && window.U.dez) ? window.U.dez(HUERDE_PP, 2) : HUERDE_PP.toFixed(2);
+  }
   var Z80 = 0.8416212;
 
   /* KEINE EIGENE ESC-KOPIE. Das Programm hat genau eine Escaping-Funktion (U.esc in
@@ -37,8 +49,21 @@
   function esc(s) {
     return (window.U && window.U.esc) ? window.U.esc(s) : '';
   }
+  /* Deutsche Schreibweise und ein echtes Minuszeichen (#108, Auditor 27.08.).
+   * Vorher: "netto -0.079" - englischer Punkt und ein BINDESTRICH als Minus, direkt
+   * neben "100.000,00 $" im selben Blickfeld. Dieselbe Substanz wie das reparierte
+   * #94. U.dez ist die eine Stelle dafuer; das Vorzeichen kommt hier davor, weil
+   * U.dez das Plus nicht kennt. */
+  function urteilKlartext(u) {
+    return (window.U && window.U.urteilText) ? window.U.urteilText(u) : String(u == null ? "?" : u);
+  }
   function pp(x, d) {
-    return (x == null || !isFinite(x)) ? '–' : ((x >= 0 ? '+' : '') + x.toFixed(d == null ? 3 : d));
+    if (x == null || !isFinite(x)) return '–';
+    var s = (window.U && window.U.dez) ? window.U.dez(Math.abs(x), d == null ? 3 : d)
+      : Math.abs(x).toFixed(d == null ? 3 : d);
+    /* Das echte Minuszeichen (U+2212), nicht der Bindestrich - und literal im
+     * Quelltext statt als Escape, damit man beim Lesen sieht, was dasteht. */
+    return (x < 0 ? '\u2212' : '+') + s;
   }
 
   /* Der laufende Auslöser - dieselbe Quelle, aus der der Handel ihn nimmt. */
@@ -140,7 +165,9 @@
 
     return '' +
       '<div style="display:flex; align-items:baseline; gap:10px; flex-wrap:wrap;">' +
-        '<b style="color:' + farbe(k.urteil) + '; font-size:var(--fs-text);">' + esc(k.urteil) + '</b>' +
+        /* Klartext statt rohem Schluessel (#106). urteilText liegt seit dem
+         * 26.08. in app-shell.js; hier stand bis zum 27.08. der Schluessel. */
+        '<b style="color:' + farbe(k.urteil) + '; font-size:var(--fs-text);">' + esc(urteilKlartext(k.urteil)) + '</b>' +
         '<span style="color:var(--muted); font-size:var(--fs-neben);">' + esc(k.key) +
           ' · gemessen ' + esc(k.datum) +
           (k.varianten > 1 ? ' · beste von ' + k.varianten + ' Varianten' : '') +
@@ -148,7 +175,10 @@
       '</div>' +
       '<div style="margin-top:6px; font-size:var(--fs-neben);">' +
         'Überschuss je Signal <b>' + pp(k.jeSignalPp) + ' Pp</b>, Kostenhürde ' +
-        HUERDE_PP.toFixed(2) + ' Pp → <b style="color:' +
+        /* #105 wartet auf Wilhelms Entscheid: feste Referenz oder Live-Huerde des
+         * gehandelten Produkts. Die Zahl steht deshalb weiter fest - aber sie geht
+         * jetzt durch huerdePp(), damit ein Umschalten EINE Zeile ist. */
+        huerdePp() + ' Pp → <b style="color:' +
         (belegt && netto > 0 ? 'var(--up)' : 'var(--warn, var(--series2))') + ';">netto ' +
         pp(netto) + ' Pp</b>' +
         ' · t = ' + (k.t == null ? '–' : k.t.toFixed(2)) +
@@ -156,7 +186,7 @@
       '</div>' +
       (belegt ? '' :
         '<div style="margin-top:4px; font-size:var(--fs-neben); color:var(--warn, var(--series2));">' +
-        'Das Urteil lautet <b>' + esc(k.urteil) + '</b>. Diese Zahl ist <b>kein belegter ' +
+        'Das Urteil lautet <b>' + esc(urteilKlartext(k.urteil)) + '</b>. Diese Zahl ist <b>kein belegter ' +
         'Vorsprung</b> – auch dann nicht, wenn sie positiv ist.</div>') +
       aufl + sp;
   }

@@ -52,12 +52,12 @@
     var h = '';
     h += '<tr>';
     h += '<th scope="row">' + U.esc(NAME[z.intervall] || z.intervall) + '</th>';
-    h += '<td class="zahl">' + z.werte.toLocaleString('de-DE') + '</td>';
+    h += '<td class="num">' + z.werte.toLocaleString('de-DE') + '</td>';
     h += '<td>' + U.esc(z.juengsterTag ? alterText(z.juengsteMs) : 'nichts da') + '</td>';
     h += '<td>' + U.esc(tagText(z.zuletztGesammelt)) + '</td>';
     /* Abgeschaltet sieht anders aus als "nichts offen": eine Aufloesung mit Abstand 0
      * ist nicht auf Stand, sie ist gar nicht vorgesehen. */
-    h += '<td class="zahl">' + (!z.abstandTage ? 'aus'
+    h += '<td class="num">' + (!z.abstandTage ? 'aus'
       : (z.offeneWerte ? z.offeneWerte.toLocaleString('de-DE') + ' / ' + z.imUniversum.toLocaleString('de-DE') : '–')) + '</td>';
     h += '<td>';
     if (laeuftHier) {
@@ -131,8 +131,8 @@
     }
 
     h += '<div style="overflow-x:auto;"><table class="tbl" id="archivTabelle"><thead><tr>' +
-      '<th>Auflösung</th><th class="zahl">Werte</th><th>Jüngste Kerze</th><th>Zuletzt gesammelt</th>' +
-      '<th class="zahl">Offen</th><th>Stand</th><th></th></tr></thead><tbody>';
+      '<th>Auflösung</th><th class="num">Werte</th><th>Jüngste Kerze</th><th>Zuletzt gesammelt</th>' +
+      '<th class="num">Offen</th><th>Stand</th><th></th></tr></thead><tbody>';
     (st.zeilen || []).forEach(function (z) { h += zeileHtml(z, st); });
     h += '</tbody></table></div>';
 
@@ -142,7 +142,7 @@
       '<b>So ist es eingestellt:</b> Universum <code>' + U.esc(e.universum || '?') + '</code>' +
       ' · 1 Minute alle ' + e.intervalle['1m'] + ' Tag(e)' +
       ' · 5 Minuten alle ' + e.intervalle['5m'] + ' · 15 Minuten alle ' + e.intervalle['15m'] +
-      ' · ' + (e.abstandMs / 1000).toFixed(1) + ' s Abstand je Anfrage' +
+      ' · ' + U.dez(e.abstandMs / 1000, 1) + ' s Abstand je Anfrage' +
       ' · frühestens ' + e.nachSchlussMinuten + ' Minuten nach Handelsschluss.' +
       '<br>Warum nach Handelsschluss: Yahoo korrigiert fertige Kerzen noch rund 18 Minuten rückwirkend nach ' +
       '(am 26.08.2026 über sechs Runden gemessen). Wer mitten in der Sitzung sammelt, schreibt vorläufige Zahlen.' +

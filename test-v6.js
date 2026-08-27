@@ -9912,6 +9912,64 @@ console.log('\nBarrierefreiheit (Stufe F 3, 26.08.2026)');
 })();
 
 
+console.log('\nAnzeigefehler aus dem Auditor-Lauf 27.08. (#106, #107, #108)');
+(function () {
+  var idx = fs.readFileSync(__dirname + '/index.html', 'utf8');
+  /* #107: ZWEI Klassen fuer dieselbe Sache. "num" stand 14-mal im Scoreboard und
+   * hatte im ganzen Repo KEINE Regel; "zahl" galt nur unter #bestandTabelle. Neun
+   * Zahlenspalten standen damit linksbuendig unter rechtsbuendigen Koepfen. Der
+   * Fehler war nicht die fehlende Regel, sondern die zweite Klasse. */
+  ok(/table\.tbl td\.num/.test(idx) && /table\.tbl th\.num/.test(idx),
+     'Zahlenspalten haben eine Regel, die ueberall gilt - nicht nur unter einer Tabelle (#107)');
+  var numRegel = idx.slice(idx.indexOf('table.tbl td.num'), idx.indexOf('table.tbl td.num') + 260);
+  ok(/tabular-nums/.test(numRegel) && /text-align: right/.test(numRegel),
+     'und sie fluchten und stehen rechts - gleich breite Ziffern, kein Umbruch');
+  var ak = fs.readFileSync(__dirname + '/archivkarte.js', 'utf8');
+  ok(ak.indexOf('class="zahl"') === -1 && ak.indexOf('class="num"') !== -1,
+     'Die Kursarchiv-Karte benutzt DIESELBE Klasse wie das Scoreboard - eine, nicht zwei (#107)');
+
+  /* #106: der rohe Schluessel ist keine Sprache. Dieselbe Protokollzahl stand in
+   * der App an vier Stellen verschieden geschrieben, zwei davon in benachbarten
+   * Pillen desselben Reiters. */
+  var stg = ohneKommentare(fs.readFileSync(__dirname + '/strategien.js', 'utf8'));
+  var mb = ohneKommentare(fs.readFileSync(__dirname + '/messband.js', 'utf8'));
+  ok(/urteilText\(pk\.urteil\)/.test(stg),
+     'strategien.js schreibt das Urteil im Klartext (#106)');
+  ok(!/esc\(k\.urteil\)/.test(mb) && (mb.match(/urteilKlartext\(k\.urteil\)/g) || []).length === 2,
+     'und das Messband an BEIDEN Stellen ebenso - nicht nur an einer (#106)',
+     (mb.match(/urteilKlartext\(k\.urteil\)/g) || []).length);
+
+  /* #108: deutsche Schreibweise und ein ECHTES Minuszeichen. Vorher stand
+   * "netto -0.079" neben "100.000,00 $" im selben Blickfeld. */
+  ok(/window\.U\.dez/.test(mb) && !/x\.toFixed\(d == null/.test(mb),
+     'Das Messband schreibt Zahlen deutsch (#108)');
+  /* GEPRUEFT WIRD DIE WIRKUNG, NICHT DIE SCHREIBWEISE. Der erste Wurf suchte das
+   * Minuszeichen im QUELLTEXT und wurde rot, obwohl die Ausgabe stimmte: die Datei
+   * schreibt es als Escape (\u2212), und der ist im Text nun einmal nicht das
+   * Zeichen. Eine Zusicherung, die bei richtigem Verhalten rot wird, misst die
+   * falsche Groesse - also misst sie jetzt das Ergebnis. */
+  /* Bis zur schliessenden Klammer schneiden, nicht auf gut Glueck 420 Zeichen -
+   * ein Schnitt mitten in der Funktion ergibt einen Syntaxfehler und der sieht aus
+   * wie ein Befund. */
+  var ppA = mb.indexOf('function pp(x, d)');
+  var ppE = mb.indexOf(String.fromCharCode(10) + '  }', ppA);
+  var ppQuelle = mb.slice(ppA, ppE + 4);
+  var ppFn = new Function('window', ppQuelle + '; return pp;')({ U: { dez: function (x, n) { return x.toFixed(n).replace('.', ','); } } });
+  ok(ppFn(-0.079).charCodeAt(0) === 8722,
+     'Eine negative Zahl beginnt mit dem echten Minuszeichen, nicht mit dem Bindestrich (#108)',
+     ppFn(-0.079));
+  ok(ppFn(0.079).charAt(0) === '+' && ppFn(-0.079).indexOf(',') !== -1,
+     'und das Vorzeichen steht vorn, die Nachkommastelle deutsch', ppFn(0.079) + ' / ' + ppFn(-0.079));
+  ok(/U\.dez\(e\.abstandMs/.test(ak),
+     'Die Kursarchiv-Karte ebenso (#108)');
+
+  /* #105 ist NICHT repariert - er wartet auf Wilhelms Entscheid (feste Referenz
+   * oder Live-Huerde). Er ist aber so freigelegt, dass ein Umschalten EINE Zeile
+   * ist. Diese Zusicherung verlangt die Durchleitung, nicht die Entscheidung. */
+  ok(/function huerdePp\(\)/.test(mb) && /huerdePp\(\) \+ /.test(mb),
+     'Die Kostenhuerde des Messbands geht durch EINE Funktion - #105 bleibt in beide Richtungen billig');
+})();
+
 console.log('\nDie App sammelt selbst: Kursarchiv (26.08.2026)');
 (function () {
   var KQ = require(__dirname + '/kerzenquelle.js');

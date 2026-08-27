@@ -257,7 +257,11 @@
     return '<div style="font-size:var(--fs-neben); color:var(--ink-2); margin-top:3px;">' +
       treffer.map(function (t) {
         var pk = t.pk;
-        return 'Messprotokoll <code>' + U.esc(t.key) + '</code> vom ' + U.esc(pk.datum) + ': <b>' + U.esc(pk.urteil) +
+        /* U.urteilText statt U.esc: der rohe Schluessel "nicht-entscheidbar" ist
+         * keine Sprache. Dieselbe Protokollzahl stand in der App an vier Stellen
+         * verschieden geschrieben, zwei davon in benachbarten Pillen desselben
+         * Reiters (#106, die nicht mitreparierte Haelfte von #102). */
+        return 'Messprotokoll <code>' + U.esc(t.key) + '</code> vom ' + U.esc(pk.datum) + ': <b>' + U.esc(U.urteilText(pk.urteil)) +
           /* Seit der Variantenwahl nach Protokoll-Urteil kann die Zahl je Signal
            * fehlen - dann steht hier nichts statt einer fremden Zahl (dieselbe
            * Regel wie im Regelkopf). */

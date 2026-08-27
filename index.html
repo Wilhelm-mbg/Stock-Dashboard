@@ -597,8 +597,18 @@
   /* Zahlenspalten: Zahl und Einheit gehoeren zusammen. Bei 1000 px brach sonst das
      Dollarzeichen auf eine eigene Zeile - der Gesamtwert stand als "15483" ueber "$"
      (#93). Rechtsbuendig und Ziffern gleicher Breite, wie in den uebrigen Tabellen. */
-  #bestandTabelle td.zahl { white-space: nowrap; text-align: right; font-variant-numeric: tabular-nums; }
-  #bestandTabelle th.zahl { text-align: right; }
+  /* ZAHLENSPALTEN: EINE Klasse, und sie gilt ueberall (#107, Auditor 27.08.).
+   * Vorher gab es zwei fuer dieselbe Sache: "num" im Scoreboard (14 Vorkommen)
+   * hatte im ganzen Repo GAR KEINE Regel, "zahl" galt nur unter #bestandTabelle.
+   * Neun Zahlenspalten standen linksbuendig unter rechtsbuendigen Koepfen. Der
+   * eigentliche Fehler war nicht die fehlende Regel, sondern die zweite Klasse -
+   * deshalb wird jetzt "num" bedient und "zahl" als Altbestand mitgefuehrt, bis
+   * die letzte Stelle umgestellt ist.
+   * tabular-nums: gleich breite Ziffern, damit Zahlen untereinander fluchten.
+   * nowrap: eine Zahl, die umbricht, liest sich als zwei. */
+  table.tbl td.num, table.tbl td.zahl, #bestandTabelle td.zahl {
+    white-space: nowrap; text-align: right; font-variant-numeric: tabular-nums; }
+  table.tbl th.num, table.tbl th.zahl, #bestandTabelle th.zahl { text-align: right; }
   /* up/muted faerben die beiden SIGNAL-Spalten: Signal / kein Signal. Fuer Geld und
      Prozent gilt die Hausregel gruen/rot ueber .pos/.neg (#94) - zwei verschiedene
      Bedeutungen, deshalb zwei verschiedene Klassen. */
