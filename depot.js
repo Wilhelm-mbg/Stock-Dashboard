@@ -6250,8 +6250,10 @@
         try { r = await kostenRundeMessen(sym, lage); }
         catch (e) { r = { ok: false, grund: 'Fehler: ' + (e && e.message || e) }; }
         if (r && r.ok) {
-          var s9 = (window.Kosten && window.Kosten.kostenStreuung)
-            ? window.Kosten.kostenStreuung(((D.kostenMessung || {}).runden) || []) : null;
+          /* Die Runden kommen seit dem 27.08. aus dem reset-festen Nebenlager,
+           * nicht mehr aus dem Depot-Store (Wilhelms Entscheid: Ursache beheben). */
+          var s9 = (window.Kosten && window.Kosten.kostenStreuung && window.Kosten.kostenRunden)
+            ? window.Kosten.kostenStreuung(window.Kosten.kostenRunden()) : null;
           st.textContent = sym + ': Umlauf ' + r.rundePct.toFixed(3) + ' %' +
             (r.notiertPct != null ? ' (notiert ' + r.notiertPct.toFixed(3) + ' %, Rest ist Schlupf)' : '') +
             (s9 ? ' · ' + s9.runden + ' Aktienrunden über ' + s9.tage + ' Tag(e) und ' +

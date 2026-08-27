@@ -19,6 +19,74 @@
       istKrypto = null, HEALTH = null;
   var D = null;
 
+  /* ============ Reset-festes Nebenlager der Messreihe (Wilhelms Entscheid 27.08.) ============
+   * Die Kostenrunden lagen im Depot-Store und wurden von jedem Depot-Reset mit
+   * abgetrennt: am 27.08. standen 38 gesicherte Runden neben EINER im aktiven
+   * Store, und wer die Auswertung anfasste, rechnete auf der einen - ohne
+   * Fehlermeldung, die Datenbasis war nur still weg. Die Reihe wohnt jetzt im
+   * eigenen Store 'kostenmessung' (eigene Datei, atomar geschrieben, rotierend
+   * gesichert), den der Reset-Knopf nie anfasst. Die geretteten 38 vom 25.08.
+   * bleiben unangetastet in der Sicherung - Archivmaterial, kein Rueckspielen
+   * (die App laeuft und schreibt; ausserdem waere die Schwelle mit einem
+   * Ein-Tages-Bestand ohnehin nicht erfuellt). Mitgenommen wird beim ersten
+   * Laden nur, was der AKTIVE Depot-Store noch traegt, rein lesend und ohne
+   * Dubletten. Das Versuchs-Protokoll (kostenVersuche, rollierend 30) bleibt
+   * bewusst beim Depot: Diagnose, kein Beleg. */
+  var MESSUNG = null;
+  var messungLadenP = null;
+  function messungMischen(geladen, frueh, depotAlt) {
+    var m = (geladen && Array.isArray(geladen.runden)) ? geladen : { seit: Date.now(), runden: [] };
+    var da = {};
+    m.runden.forEach(function (r) { da[r.at + '|' + r.sym] = 1; });
+    [frueh, depotAlt].forEach(function (liste) {
+      (liste || []).forEach(function (r) {
+        var k = r.at + '|' + r.sym;
+        if (!da[k]) { da[k] = 1; m.runden.push(r); }
+      });
+    });
+    m.runden.sort(function (a, b) { return (b.at || 0) - (a.at || 0); });
+    if (m.runden.length > 300) m.runden = m.runden.slice(0, 300);
+    return m;
+  }
+  function messungHolen() {
+    if (messungLadenP) return messungLadenP;
+    if (!(window.api && window.api.storeGet)) {
+      if (!MESSUNG) MESSUNG = { seit: Date.now(), runden: [] };
+      messungLadenP = Promise.resolve(MESSUNG);
+      return messungLadenP;
+    }
+    messungLadenP = window.api.storeGet('kostenmessung').then(function (v) {
+      var frueh = MESSUNG ? MESSUNG.runden : [];
+      var depotAlt = (D && D.kostenMessung && Array.isArray(D.kostenMessung.runden)) ? D.kostenMessung.runden : [];
+      MESSUNG = messungMischen(v, frueh, depotAlt);
+      if (frueh.length || depotAlt.length) messungSchreiben();
+      return MESSUNG;
+    }).catch(function () {
+      if (!MESSUNG) MESSUNG = { seit: Date.now(), runden: [] };
+      return MESSUNG;
+    });
+    return messungLadenP;
+  }
+  function messungSchreiben() {
+    try { if (window.api && window.api.storeSet) window.api.storeSet('kostenmessung', MESSUNG); }
+    catch (e) { /* der Wert bleibt im Speicher; der naechste Eintrag schreibt erneut */ }
+  }
+  function rundeAblegen(eintrag) {
+    if (!MESSUNG) { MESSUNG = { seit: Date.now(), runden: [] }; messungHolen(); }
+    MESSUNG.runden.unshift(eintrag);
+    if (MESSUNG.runden.length > 300) MESSUNG.runden = MESSUNG.runden.slice(0, 300);
+    messungSchreiben();
+  }
+  /** Die Runden fuer Bilanz, Streuung und Anzeige - aus dem Nebenlager. Solange
+   *  es noch nicht geladen ist, traegt der alte Depot-Ort ueber (nur lesend). */
+  function kostenRunden() {
+    if (!MESSUNG) {
+      messungHolen();
+      return (D && D.kostenMessung && D.kostenMessung.runden) || [];
+    }
+    return MESSUNG.runden;
+  }
+
   /* ================= Echte Handelskosten (Capital.com-Demo) =================
    * Alle Studien dieses Projekts rechnen mit der ANNAHME 0,10 % je Runde. Die
    * Demo-Anbindung ist die einzige Stelle mit echten Ausfuehrungen - bisher warf
@@ -26,17 +94,17 @@
    * was Ein- und Ausstieg WIRKLICH gekostet haben, und gegen die Annahme gestellt.
    * Reine Messung: die Studien bleiben unveraendert, bis genug Runden vorliegen. */
   function kostenMessungNeu(p) {
-    if (!D) return;
     if (p.capSlipOpen == null || p.capSlipClose == null) return;   // erst vollstaendige Runden zaehlen
-    if (!D.kostenMessung) D.kostenMessung = { runden: [], seit: Date.now() };
-    D.kostenMessung.runden.unshift({
+    rundeAblegen({
       at: Date.now(), sym: p.sym, dir: p.dir, basis: !!p.basis,
+      /* Ohne dieses Feld zaehlte eine gespiegelte Krypto-Runde als Aktie -
+       * dieselbe Verwechslung, die den Zaehler am 27.08. 22 Krypto-Runden
+       * als Basiswerte fuehren liess. */
+      krypto: istKrypto ? !!istKrypto(p.sym) : false,
       slipOpen: Math.round(p.capSlipOpen * 1e6) / 1e6,
       slipClose: Math.round(p.capSlipClose * 1e6) / 1e6,
       runde: Math.round((p.capSlipOpen + p.capSlipClose) * 1e6) / 1e6
     });
-    if (D.kostenMessung.runden.length > 300) D.kostenMessung.runden = D.kostenMessung.runden.slice(0, 300);
-    save();
   }
   /** Warum die Spiegelung aufs Demo-Konto scheiterte - dauerhaft, nicht nur im
    *  Arbeitsspeicher. HEALTH.capFail zaehlt mit, ist aber beim naechsten Start weg,
@@ -324,8 +392,7 @@
     var aufKosten = auf.fill / vor.mid - 1;
     var zuKosten = 1 - zu.fill / vor.mid;
     var runde = aufKosten + zuKosten;
-    if (!D.kostenMessung) D.kostenMessung = { runden: [], seit: Date.now() };
-    D.kostenMessung.runden.unshift({
+    rundeAblegen({
       at: Date.now(), sym: sym, dir: 'call', basis: true, quelle: 'messrunde', krypto: krypto,
       marktlage: marktlage || null,
       groesse: groesse,
@@ -334,8 +401,6 @@
       runde: Math.round(runde * 1e6) / 1e6,
       notiert: vor.spreadPct != null ? Math.round(vor.spreadPct * 1e6) / 1e6 : null
     });
-    if (D.kostenMessung.runden.length > 300) D.kostenMessung.runden = D.kostenMessung.runden.slice(0, 300);
-    save();
     kostenVersuchNeu(sym, true, 'Umlauf ' + (runde * 100).toFixed(4) + ' %');
     /* C5, gefunden am 25.08.2026: Hier stand `spreadPct * 200` - doppelt gezaehlt.
      *
@@ -400,15 +465,15 @@
 
   /** Bilanz der echten Kosten - Median statt Mittel, ein Ausreisser soll nicht dominieren. */
   function kostenBilanz() {
-    var km = D && D.kostenMessung;
-    if (!km || !km.runden || !km.runden.length) return null;
+    var runden = kostenRunden();
+    if (!runden.length) return null;
     /* Krypto NICHT mitzaehlen: Die Spanne auf BTC sagt nichts ueber die Spanne auf
      * MSFT, und die Annahme 0,10 %, gegen die hier geprueft wird, stammt aus den
      * Aktien-Studien. Eine einzige BTC-Runde wuerde den Median verschieben, an dem
      * fast jede Studie haengt - unsichtbar. Zwei Quellen in einer Reihe haben hier
      * schon einmal Schaden angerichtet; das passiert nicht noch einmal. */
     function werte(nurKrypto) {
-      return km.runden
+      return runden
         .filter(function (x) { return !!x.krypto === nurKrypto; })
         .map(function (x) { return x.runde; })
         .filter(function (v) { return v != null && isFinite(v); });
@@ -417,9 +482,10 @@
     var r = werte(false);
     var k = werte(true);
     if (!r.length && !k.length) return null;
-    var aus = { n: r.length, annahmePct: 0.10, seit: km.seit,
+    var aus = { n: r.length, annahmePct: 0.10,
+                seit: (MESSUNG && MESSUNG.seit) || (D && D.kostenMessung && D.kostenMessung.seit) || null,
                 kryptoN: k.length, kryptoMedianPct: k.length ? med(k) * 100 : null,
-                streuung: kostenStreuung(km.runden) };
+                streuung: kostenStreuung(runden) };
     if (r.length) {
       aus.medianPct = med(r) * 100;
       aus.mittelPct = r.reduce(function (a, b) { return a + b; }, 0) / r.length * 100;
@@ -505,6 +571,9 @@
     universe = deps.universe;
     istKrypto = deps.istKrypto;
     HEALTH = deps.HEALTH;
+    /* Das Nebenlager frueh laden - dann steht die Reihe, bevor die erste
+     * Bilanz gezeichnet oder die erste Runde geschrieben wird. */
+    messungHolen();
   }
 
   window.Kosten = {
@@ -518,6 +587,7 @@
     kostenRundeMessen: mitFrischemD(kostenRundeMessen),
     kostenBilanz: mitFrischemD(kostenBilanz),
     kostenStreuung: kostenStreuung,   /* rein rechnend, braucht kein frisches D */
+    kostenRunden: mitFrischemD(kostenRunden),
     probe: mitFrischemD(spannenProbe),
     tagFestschreiben: mitFrischemD(spannenTagFestschreiben)
   };

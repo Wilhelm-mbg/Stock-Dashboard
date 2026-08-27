@@ -146,7 +146,14 @@
        * keine einzelnen Ausfuehrungen, keine Symbole, keine Kontodaten. Das ist die
        * einzige Messung im Projekt, die die Kostenannahme aller Studien pruefen kann. */
       handelskosten: (function () {
-        var km = depot.kostenMessung;
+        /* Seit dem 27.08. wohnen die Runden im reset-festen Nebenlager (kosten.js),
+         * nicht mehr im Depot-Store - der Depot-Pfad bleibt nur als Rueckfall fuer
+         * den Fall, dass die Diagnose vor dem Kosten-Modul laeuft. */
+        var K = (typeof window !== 'undefined' && window.Kosten) ? window.Kosten : null;
+        var km = (K && K.kostenRunden)
+          ? { runden: K.kostenRunden(),
+              seit: (K.kostenBilanz && (K.kostenBilanz() || {}).seit) || null }
+          : depot.kostenMessung;
         if (!km || !km.runden || !km.runden.length) return null;
         var r = km.runden.map(function (x) { return x.runde; }).filter(function (v) { return v != null && isFinite(v); });
         if (!r.length) return null;
