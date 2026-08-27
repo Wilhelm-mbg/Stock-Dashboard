@@ -128,6 +128,66 @@ function pruefen() {
   return u;
 }
 
+/* ------------------------------------------------- die zwei Riegel (27.08.) */
+/* Anlass, konkret: Am 27.08. um 07:57 lief der Bau auf b5c0243; um 07:59 kam
+ * a5b66e0 nach origin - der Push der Wache wurde abgelehnt, und dass sie es
+ * MERKTE, war Handarbeit (Log gelesen, Uhrzeiten verglichen) und Glueck. Die
+ * Funkstille ist eine VERABREDUNG - sie wirkt nur, solange alle vor dem Push
+ * nachsehen. Diese zwei Riegel decken verschiedene Loecher, keiner ersetzt
+ * den anderen. */
+
+/** RIEGEL 2 (der wichtigere): --hoch verlangt HEAD == Bau-Stand.
+ *  Eine Pruefung, die nicht von Kooperation abhaengt, schlaegt eine
+ *  Verabredung, die vier Sitzungen einhalten muessen: Sie faengt den
+ *  Parallel-Push AUCH ohne Funkstille - und zusaetzlich den Fall, den keine
+ *  Sperrdatei sieht: ein Commit nach dem Bau und vor dem --hoch, ganz ohne
+ *  Push. bauen() verzeichnet den Stand in dist/bau-stand.json; ein dist ohne
+ *  diese Datei ist ein Alt- oder Fremdbau und wird nicht hochgeladen. */
+function bauStandSchreiben(dist, ver) {
+  fs.writeFileSync(path.join(dist, 'bau-stand.json'), JSON.stringify({
+    sha: sh('git rev-parse HEAD'), version: ver, gebaut: new Date().toISOString()
+  }, null, 2) + '\n', 'utf8');
+}
+function bauStandPruefen(dist) {
+  const datei = path.join(dist, 'bau-stand.json');
+  if (!fs.existsSync(datei)) {
+    schluss('Im dist fehlt bau-stand.json - dieses Paket wurde vor Riegel 2 oder ' +
+            'von fremder Hand gebaut. Der Stand, aus dem es entstand, ist nicht ' +
+            'belegbar: neu bauen.');
+  }
+  const bau = JSON.parse(fs.readFileSync(datei, 'utf8'));
+  const kopf = sh('git rev-parse HEAD');
+  if (bau.sha !== kopf) {
+    schluss('HEAD (' + kopf.slice(0, 7) + ') ist nicht der Stand, aus dem gebaut wurde (' +
+            bau.sha.slice(0, 7) + ', ' + bau.gebaut + ').\n' +
+            'Zwischen Bau und Hochladen ist etwas dazugekommen - das Paket enthaelt es ' +
+            'nicht, der Tag wuerde aber dahinter zeigen: neu bauen.');
+  }
+  console.log('  ok: HEAD == Bau-Stand (' + kopf.slice(0, 7) + ')');
+}
+
+/** RIEGEL 1 (die Bequemlichkeit obendrauf): release-baut.json im Repo, solange
+ *  ein Lauf laeuft - Sitzungen KOENNEN vor dem Push nachsehen. Im finally
+ *  geloest, nicht am Ende: gerade der Bau, der mittendrin stirbt, ist der,
+ *  dessen Sperre sonst liegen bleibt. Mit Verwaisungs-Pruefung ueber die PID,
+ *  sonst sperrt ein toter Bau alle aus (der Archiv-Fall derselben Nacht). */
+const BAUT = path.join(REPO, 'release-baut.json');
+function lebtPid(pid) { try { process.kill(pid, 0); return true; } catch (e) { return false; } }
+function sperreSetzen(phase, ziel) {
+  if (fs.existsSync(BAUT)) {
+    let alt = null; try { alt = JSON.parse(fs.readFileSync(BAUT, 'utf8')); } catch (e) { alt = null; }
+    if (alt && alt.pid && lebtPid(alt.pid)) {
+      schluss('Es laeuft schon ein Release-Lauf (' + alt.phase + ' fuer ' + alt.ziel +
+              ', PID ' + alt.pid + ', seit ' + alt.start + '). Nicht parallel ausliefern.');
+    }
+    console.log('  Hinweis: verwaiste release-baut.json (PID tot) wird uebernommen.');
+  }
+  fs.writeFileSync(BAUT, JSON.stringify({
+    phase: phase, ziel: ziel, pid: process.pid, start: new Date().toISOString()
+  }, null, 2) + '\n', 'utf8');
+}
+function sperreLoesen() { try { fs.unlinkSync(BAUT); } catch (e) { } }
+
 /* ------------------------------------------------------------------ bauen */
 
 /** Den Baubaum wegräumen, OHNE das echte node_modules mitzunehmen.
@@ -180,6 +240,10 @@ function naechsteVersion(minor) {
 }
 
 function bauen(minor) {
+  sperreSetzen('bauen', naechsteVersion(minor));
+  try { return bauenKern(minor); } finally { sperreLoesen(); }
+}
+function bauenKern(minor) {
   const u = unveroeffentlicht();
   if (!u.commits.length) schluss('Seit ' + u.tag + ' gibt es keinen Commit. Nichts auszuliefern.');
   /* NICHT geprueft wird "irgendetwas liegt offen herum". Gebaut wird in einem eigenen
@@ -300,6 +364,8 @@ function bauen(minor) {
   const setup = path.join(dist, 'Markt-Dashboard-Setup.exe');
   const yml = path.join(dist, 'latest.yml');
   if (!fs.existsSync(setup) || !fs.existsSync(yml)) schluss('Im dist fehlt Setup.exe oder latest.yml.');
+  /* Riegel 2: der Stand, aus dem DIESES Paket entstand - --hoch verlangt ihn. */
+  bauStandSchreiben(dist, neu);
   console.log('\n  fertig: ' + setup + '  (' + Math.round(fs.statSync(setup).size / 1048576) + ' MB)');
   console.log('  Version ' + neu + ' gebaut. Weiter mit --hoch');
   return neu;
@@ -311,12 +377,21 @@ function sha512(datei) {
 }
 
 function hoch() {
-  const v = version();
+  const v0 = version();
+  sperreSetzen('hoch', v0);
+  try { return hochKern(v0); } finally { sperreLoesen(); }
+}
+function hochKern(v) {
   const tag = 'v' + v;
   const dist = process.env.DIST || path.join(BAUBAUM, 'dist');
   const setup = path.join(dist, 'Markt-Dashboard-Setup.exe');
   const yml = path.join(dist, 'latest.yml');
   if (!fs.existsSync(setup)) schluss('Kein Paket unter ' + dist + '. Erst --bauen.');
+
+  /* Riegel 2, VOR allem anderen - insbesondere vor dem Notizen-Wegraeumen, das
+   * selbst einen (gewollten) Commit macht. */
+  titel('Bau-Stand gegen HEAD');
+  bauStandPruefen(dist);
 
   /* Die Pruefsumme in latest.yml muss zu der Datei passen, die daneben liegt -
    * sonst laedt der Updater und verwirft dann. */

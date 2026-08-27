@@ -10,3 +10,4 @@ telemetrie.json
 # .git/info/exclude - also nur auf diesem einen Rechner.
 .claude/worktrees/
 .claude/settings.local.json
+release-baut.json

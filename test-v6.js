@@ -4430,6 +4430,24 @@ console.log('\n44) Messmaschine, Scoreboard und Strategie-Eingabe (23.08.2026)')
      * Archiv-Invarianten prueft studien/datenfund-dochte-2026-08-27/
      * lage-invarianten.js, ausserhalb von npm test. */
   })();
+
+  /* ---- Die zwei Release-Riegel (27.08., Anlass: Bau 07:57 auf b5c0243,
+   * Push a5b66e0 um 07:59 - die Wache merkte es nur per Handarbeit) ---- */
+  (function () {
+    var rl = fs.readFileSync(__dirname + '/tools/release.js', 'utf8');
+    ok(/function bauStandPruefen/.test(rl) && /bau-stand\.json/.test(rl),
+       'Riegel 2 existiert: --hoch prueft HEAD gegen den verzeichneten Bau-Stand');
+    var hk = rl.slice(rl.indexOf('function hochKern'), rl.indexOf('Notizen einsammeln'));
+    ok(/bauStandPruefen\(dist\)/.test(hk),
+       'Riegel 2 greift in hochKern VOR dem Notizen-Wegraeumen (das selbst committet)');
+    ok(/bauStandSchreiben\(dist, neu\)/.test(rl),
+       'bauen() verzeichnet den Stand im dist - ein Fremdbau ohne Datei wird abgelehnt');
+    ok(/try \{ return bauenKern\(minor\); \} finally \{ sperreLoesen\(\); \}/.test(rl) &&
+       /try \{ return hochKern\(v0\); \} finally \{ sperreLoesen\(\); \}/.test(rl),
+       'Riegel 1: die Sperrdatei wird im finally geloest - ein sterbender Lauf laesst sie nicht liegen');
+    ok(/lebtPid\(alt\.pid\)/.test(rl),
+       'Riegel 1: Verwaisungs-Pruefung ueber die PID - ein toter Bau sperrt niemanden aus');
+  })();
   /* Eigenschafts-Pruefung gegen ein ECHTES Protokoll: aendert die Messmaschine die
    * Ablage der Aussicht, wird die Anzeige still leer - das soll hier laut werden.
    * kapitulation 26.08.: Varianten 1551/2330/224, kleinste 224 (Tafel-Tabelle). */
