@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 02:55 (abgelesen)
+letzter-bericht: 2026-08-27 03:00 (abgelesen)
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -101,24 +101,61 @@ auffiel:**
 > **Fällt eine von beiden weg, schreibt der Sammler einen Zwischenstands-Quote als Tagesschluss
 > ins Archiv** — und zwar einen, der aussieht wie der genaueste Wert im Bestand.
 >
-> ### 🔟 27.08. ~02:55 — 210 VON 210: der Tagesschluss liegt IMMER im Band der Nachhandelskerze
+> ### ❌ 27.08. ~03:00 — DIE „210 VON 210" SIND ZURÜCKGEZOGEN: das Kriterium war tautologisch
 >
-> **Gefunden, ohne danach gesucht zu haben** — die QS wollte ihre eigene Ursachen-Vermutung
-> prüfen und hat dabei etwas anderes gemessen:
+> **Hier stand: „der Tagesschluss liegt in 210 von 210 Fällen im Band der ersten
+> Nachhandelskerze — sie trägt Kursinformation." Der PM hatte es als stärksten Einzelbefund
+> der Nacht bezeichnet. Die QS hat widersprochen, nachdem sie es selbst gemeldet hatte.**
 >
->     Der amtliche Tagesschluss liegt INNERHALB von Hoch und Tief
->     der ersten Nachhandelskerze:  210 von 210 Faellen.  100,0 %.
+> **Das Kriterium ist beinahe tautologisch:** *Der Nachhandel beginnt beim Schlusskurs.* Die
+> Kerze startet also dort, und ihr Band enthält ihn **fast zwangsläufig.**
 >
-> **Nicht 98 %, nicht 99 % — alle.** Über sieben Halbtage, dreißig Reihen, drei Jahre.
+> **Der Beleg kam aus dem nächsten Lauf:**
 >
-> > **Das sagt etwas über die Dochte, um die seit Stunden gestritten wird:** Die Spanne der
-> > ersten Nachhandelskerze ist **an den echten Schlusskurs gebunden — sie umschließt ihn
-> > ausnahmslos.** Eine Kerze, deren Hoch-Tief-Band einen **unabhängig belegten** Kurs in 210
-> > von 210 Fällen enthält, **trägt Kursinformation.** *Kein Beweis, dass jeder einzelne Docht
-> > echt ist — aber das Gegenteil eines Zufallsmusters.*
+>     P-WEG-Kerzen (die strittigen)   133   gebunden 133   100,0 %
+>     uebrige Nachhandelskerzen       138   gebunden 138   100,0 %
 >
-> **Praktische Folge:** Den Tagesschluss kann man aus dieser Kerze **nicht ablesen** — weder aus
-> Eröffnung noch aus Schluss. **Man kann ihn nur eingrenzen.**
+> > **Ein Kriterium, das für ALLES gilt, unterscheidet NICHTS.** Es kann also gerade nicht
+> > zeigen, dass die strittigen Kerzen Kursinformation tragen — **es zeigt nur, dass jede
+> > Nachhandelskerze dort anfängt, wo die Sitzung aufgehört hat.** *Ein Zufallsmuster sagt
+> > keine 100 % voraus — **ein Artefakt, das den Schlusskurs als Anker nimmt und einen Docht
+> > anhängt, aber auch.** Beide Erklärungen sagen dasselbe voraus.*
+>
+> **⚠ FOLGE FÜR WILHELMS ERSTE ENTSCHEIDUNG:** Die PM-Umformulierung *„behalten wir
+> Kursinformation aus einem anderen Handelsfenster" statt „behalten wir kaputte Werte"* ist
+> **durch diesen Befund NICHT gedeckt.** Sie mag richtig sein, aber sie steht auf **anderen**
+> Belegen — **der Lücken-Befund (40 von 40 leere Sitzungskerzen) trägt weiter; die 210 von 210
+> tragen nicht.**
+>
+> ### ✅ Was derselbe Lauf BELASTBAR ergeben hat
+>
+> **Das Archiv hält an Halbtagen genau EINE Nachhandelskerze je Reihe:**
+>
+>     0 Kerzen:    9 Reihen-Tage
+>     1 Kerze : 271 Reihen-Tage
+>     mehr    : keine
+>
+> Der Quellstrom liefert **vier** (18:00–21:00 UTC), das Archiv behält die **erste**.
+> **→ Der Auftrag an `-06`, die späten AH-Kerzen zu prüfen, ist gegenstandslos — es gibt sie
+> nicht.**
+>
+> **Die „tiefe Docht-Klasse" ist viel seltener, als die Diskussion vermuten lässt:**
+>
+>     tiefe Dochte unter -3 %:  2 von 133 P-WEG-Kerzen  =  1,5 %
+>       MARA 2025-11-28  -6,01 %      RIVN 2025-11-28  -4,03 %
+>     Verteilung: p10 -0,907 %   p50 0,000 %   p90 +0,494 %   min -6,007 %
+>
+> **Die Hälfte der strittigen Kerzen hat praktisch keinen Ausschlag über den eigenen Schluss
+> hinaus.** *Der ganze Streit dieser Nacht drehte sich um einen Schwanz von 1,5 %.*
+>
+> > **📢 ZWEITE META-REGEL DER QS, und sie ist schärfer als die erste:**
+> > ***„Bei einem Ergebnis von 100 % zuerst fragen, ob das Kriterium auch anders ausgehen
+> > KÖNNTE."*** — *Die Gegenrichtung war mitgemessen, aber die falsche: geprüft wurde, ob 19:30
+> > näher liegt, statt ob die Kennzahl überhaupt **trennscharf** ist.*
+> >
+> > Und: ***„Eine falsch gewichtete Messung verbreitet sich schneller als eine markierte
+> > Vermutung, weil niemand Anlass sieht nachzufragen."*** *Diesmal war es kein markierter
+> > Verdacht, sondern ein als Befund gemeldetes Ergebnis — und der PM hat es sofort verstärkt.*
 >
 > **Und die QS kassiert dabei zwei eigene Sätze:**
 > - *Vermutung 1 (ihre):* Die exakten Treffer entstehen, weil nicht gehandelt wurde und die
@@ -405,7 +442,7 @@ auffiel:**
 
 | | Frage | Lage |
 |---|---|---|
-| **1** | **Gehören Randzeiten-Kerzen ins 60m-Archiv?** | **Blockiert alles andere — aber die Frage hat sich über Nacht geklärt und VERENGT.** Nachlader-Bestand führt sie, App-Bestand nicht (0 von 990.509) — zwei Politiken ohne Kennzeichen. **NEU 02:50, strukturell belegt: die „Phantom-Dochte" an Halbtagen SIND Nachhandelskerzen** — die Sitzungskerze daneben kommt aus der Quelle leer (40 von 40). **Damit ist „die Docht-Werte reparieren" vom Tisch, in beiden Antworten:** bei (a) werden sie als **fremde Population entfernt**, bei (b) sind sie **legitime Daten und bleiben**. *Was nicht mehr in Frage kommt, ist sie als kaputte Werte zu behandeln.* |
+| **1** | **Gehören Randzeiten-Kerzen ins 60m-Archiv?** | **Blockiert alles andere — die Frage hat sich über Nacht VERENGT und deutlich verkleinert.** Zwei Politiken ohne Kennzeichen: Nachlader-Bestand führt sie, App-Bestand nicht (0 von 990.509). **Strukturell belegt: die „Phantom-Dochte" an Halbtagen SIND Nachhandelskerzen** — die Sitzungskerze daneben kommt aus der Quelle **leer, 40 von 40**. **Damit ist „die Docht-Werte reparieren" in beiden Antworten vom Tisch:** bei (a) **fremde Population entfernen**, bei (b) **legitime Daten behalten**. *Nicht mehr in Frage kommt, sie als kaputte Werte zu behandeln.* **Und die Größe ist klein: je Reihe und Halbtag genau EINE solche Kerze, und nur 1,5 % davon haben einen tiefen Docht** (2 von 133; p50 des Ausschlags = 0,000 %). |
 | **2** | **Bekommen die delisteten Papiere ihr Abmeldedatum?** | **Lohnt sich, ist aber nicht dringend** *(um 02:10 nach unten korrigiert)*. AVB/EQR sind im Universum und heute außerhalb jedes Fensters; ab ~einer Handelswoche können die Phantomtage in ein Haltefenster geraten. **Aber der Schwanz ist auf 1–5 Tage gedeckelt** — der gefährliche Fall (dauerhaft flache Reihe, die eine Momentum-Rangfolge nach oben spült) tritt **nicht** ein. |
 | **3** | **Welche „Kostenhürde" zeigt das Messband?** | Zwei verschiedene Zahlen tragen denselben Namen; in der Voreinstellung stimmen sie zufällig überein. Live-Hürde oder feste Referenz — beides vertretbar, der Doppelname nicht. |
 
