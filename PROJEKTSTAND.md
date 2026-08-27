@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 04:45 (abgelesen)
+letzter-bericht: 2026-08-27 04:58 (abgelesen)
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -1783,12 +1783,26 @@ verzerrt, in genau der Richtung, in der wir etwas finden wollen. Ausführlich im
 
 **Zugeteilt an den Master (Datenqualität, unstrittig):**
 1. Falsche Delistings in `massive/verschwundene.json` — **Vorrang.**
-   **Korrigiert 18:45: belegt falsch sind DREI, nicht fünf** — AVB, EQR, WBS. Der Tüftler
-   hat gefragt, was die *Quelle* im Fenster 17.–26.08. führt, und damit „Quelle hat nichts"
-   von „Archiv holt es nicht" getrennt; im Rückstand sehen beide gleich aus. Er hat
-   LBRDA/LBRDK selbst aus seiner Gruppe genommen — dort fehlen die Kerzen auch bei der
-   Quelle, der Delisting-Vermerk könnte also stimmen (Liberty Broadband).
+   ~~**Korrigiert 18:45: belegt falsch sind DREI, nicht fünf** — AVB, EQR, WBS.~~
+   **🔴 ERNEUT KORRIGIERT 27.08. 04:55 vom Tüftler selbst: ES IST EINER, NICHT DREI.**
+   *„Ich hatte **Kerzen gezählt statt Umsatz**."* Nachgezählt: **EQR (letzter Umsatz 17.08.)
+   und WBS (19.08.) sind zurückgenommen — ihre Listeneinträge stimmen.** Übrig bleibt **AVB**.
+   **Und auch der Warnsatz war zu groß:** Von **6.921** aktienartigen Listeneinträgen stehen
+   **genau 5** überhaupt im Kursarchiv — *der Schaden einer Ausschlussliste ist damit auf
+   **eine** Reihe begrenzt, nicht auf zwei Schwergewichte.*
+   *(Ursprünglicher Kontext: Der Tüftler hatte gefragt, was die **Quelle** im Fenster
+   17.–26.08. führt, und damit „Quelle hat nichts" von „Archiv holt es nicht" getrennt.
+   LBRDA/LBRDK hatte er selbst aus seiner Gruppe genommen.)*
    *Der PM hatte die Fünf ungeprüft weitergereicht — seine Ungenauigkeit, nicht dessen.*
+
+   > **⚠ UND HIER STEHT EIN WIDERSPRUCH ZWISCHEN ZWEI SITZUNGEN, den der PM NICHT auflöst,
+   > weil er ihn nicht messen kann:**
+   > **Der Tüftler sagt: AVB handelt wirklich — 24.08., 6,2 Mio Stück.**
+   > **Die QS sagt: AVB, letzter Umsatz 14.08.** (und `-06`s Wachhund führt AVB mit 8 Tagen
+   > Rückstand, `1d` hat für AVB ein SEC-`25-NSE` vom 17.08. plus 8-K Item 2.01 gefunden).
+   > **Beide können nicht zugleich stimmen.** Vermutlich verschiedene Bestände — der Tüftler
+   > misst im `massive`-Bestand, die QS im `archiv1d`. **Zu klären, bevor AVB in irgendeiner
+   > Richtung als Beleg zitiert wird.**
 
    **Die zehn Rückstände zerfallen in drei Gruppen:** AVB, EQR, WBS, TWO = **reines
    Nachladen** (8 Kerzen liegen bei der Quelle bereit) · LBRDA, LBRDK, WHLR = echte
