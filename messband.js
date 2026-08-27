@@ -24,18 +24,23 @@
  * Schlaegt er aus, ist jede Zahl daneben um diesen Betrag verschoben.
  */
 (function () {
-  /* FESTE REFERENZ AUF DEN BASISWERT - noch nicht die Huerde des gehandelten
-   * Produkts. Das Scoreboard benutzt seit 6c790c8 DepotAPI.kostenHuerde(); hier
-   * steht die Zahl fest. In der Voreinstellung ergeben beide ZUFAELLIG 0,100 Pp,
-   * deshalb faellt der Unterschied niemandem auf - mit umgestelltem Produkt driften
+  /* DIE HUERDE DES TATSAECHLICH GEHANDELTEN PRODUKTS - Wilhelms Entscheid zu
+   * #105 (27.08., Formular): das Messband rechnet wie das Scoreboard, damit
+   * "Kostenhuerde" ueberall dasselbe heisst. Die Quelle ist dieselbe Schnittstelle
+   * (DepotAPI.kostenHuerde, seit 6c790c8), die Bauform dieselbe wie im Scoreboard.
+   * In der Voreinstellung ergaben feste Referenz und Produkt ZUFAELLIG beide
+   * 0,100 Pp, weshalb die Abweichung nie auffiel - mit umgestelltem Produkt lagen
    * sie auseinander (Auditor 27.08.: 0,100 gegen 0,0665).
-   * #105 ist Wilhelms Entscheidung: soll hier die LIVE-Huerde stehen oder eine
-   * ausdrueckliche feste Referenz? Beides ist vertretbar, nur nicht zwei Zahlen
-   * unter demselben Namen. Bis dahin bleibt es fest - aber ueber huerdePp(), damit
-   * das Umschalten eine Zeile ist und nicht eine Suche. */
-  var HUERDE_PP = 0.10;          // je Umlauf auf dem Basiswert, am Demo-Konto gemessen (0,104 %)
-  function huerdePp() {
-    return (window.U && window.U.dez) ? window.U.dez(HUERDE_PP, 2) : HUERDE_PP.toFixed(2);
+   * Ist das Depot noch nicht hochgefahren, gibt es keine Produkthuerde; dann
+   * rechnet das Band mit der Basiswert-Referenz und SAGT es - dieselbe Regel
+   * wie beim Scoreboard-Rueckfall: nie stillschweigend etwas anderes messen als
+   * angeschrieben. */
+  var HUERDE_PP = 0.10;          // Rueckfall Basiswert, am Demo-Konto gemessen (0,104 %)
+  function liveHuerde() {
+    try {
+      var h = window.DepotAPI && window.DepotAPI.kostenHuerde ? window.DepotAPI.kostenHuerde() : null;
+      return h && isFinite(h.pp) && h.pp > 0 ? h : null;
+    } catch (e) { return null; }
   }
   var Z80 = 0.8416212;
 
@@ -64,6 +69,15 @@
     /* Das echte Minuszeichen (U+2212), nicht der Bindestrich - und literal im
      * Quelltext statt als Escape, damit man beim Lesen sieht, was dasteht. */
     return (x < 0 ? '\u2212' : '+') + s;
+  }
+
+  /* Vorzeichenlose Zahl, deutsch. Der Rest von #108: drei Stellen dieser Datei
+   * schrieben weiter englisch, weil sie ausserhalb der damals angefassten Zeilen
+   * lagen - ein grep an den Aenderungsstellen konnte sie nicht finden. Jetzt gehen
+   * ALLE sichtbaren Zahlen durch U.dez; nackte Formatierung gibt es nur noch als
+   * Vorspann fuer den Fall, dass U selbst fehlt (dann zeigt esc ohnehin nichts). */
+  function dez(x, d) {
+    return (window.U && window.U.dez) ? window.U.dez(x, d) : x.toFixed(d);
   }
 
   /* Der laufende Auslöser - dieselbe Quelle, aus der der Handel ihn nimmt. */
@@ -129,19 +143,21 @@
         'Für den laufenden Auslöser liegt <b>keine Messung</b> vor. Was hier gehandelt wird, ' +
         'beruht damit auf keiner Zahl.</div>';
     }
-    var netto = k.jeSignalPp - HUERDE_PP;
+    var h = liveHuerde();
+    var huerde = h ? h.pp : HUERDE_PP;
+    var netto = k.jeSignalPp - huerde;
     var belegt = k.urteil === 'bestaetigt';
 
     /* Die Auflösung ist der Satz, der am haeufigsten fehlt. */
     var aufl = '';
     if (k.delta80Pp != null) {
-      var blind = k.delta80Pp > HUERDE_PP;
+      var blind = k.delta80Pp > huerde;
       aufl = '<div style="margin-top:6px; font-size:var(--fs-neben); color:' +
         (blind ? 'var(--warn, var(--series2))' : 'var(--ink-2)') + ';">' +
         '<b>Auflösung:</b> Dieser Lauf hätte eine echte Kante erst ab <b>' + pp(k.delta80Pp) +
         ' Pp</b> mit 80 % Wahrscheinlichkeit gefunden. ' +
         (blind
-          ? 'Das ist <b>mehr als die Kostenhürde</b> von ' + HUERDE_PP.toFixed(2) +
+          ? 'Das ist <b>mehr als die Kostenhürde</b> von ' + dez(huerde, 3) +
             ' Pp – eine handelbare Kante hätte er also gar nicht sehen können. „Nicht ' +
             'entscheidbar“ heißt hier: zu wenig Daten, nicht „kein Effekt“.'
           : 'Das liegt unter der Kostenhürde – eine handelbare Kante wäre sichtbar gewesen.') +
@@ -156,7 +172,7 @@
         (ok ? 'var(--muted)' : 'var(--down)') + ';"><b>Selbstprüfung:</b> ' +
         (ok ? 'bestanden' : 'FEHLGESCHLAGEN') + ' – ein Signal ohne jeden Kursbezug ergab ' +
         pp(k.placebo.tagesmittel * 100, 4) + ' Pp (richtige Antwort: null, Auflösung ' +
-        (k.placebo.mde * 100).toFixed(4) + ').' +
+        dez(k.placebo.mde * 100, 4) + ').' +
         (ok ? '' : ' <b>Jede Zahl hier ist um diesen Betrag verschoben.</b>') + '</div>';
     } else {
       sp = '<div style="margin-top:4px; font-size:var(--fs-neben); color:var(--muted);">' +
@@ -175,13 +191,16 @@
       '</div>' +
       '<div style="margin-top:6px; font-size:var(--fs-neben);">' +
         'Überschuss je Signal <b>' + pp(k.jeSignalPp) + ' Pp</b>, Kostenhürde ' +
-        /* #105 wartet auf Wilhelms Entscheid: feste Referenz oder Live-Huerde des
-         * gehandelten Produkts. Die Zahl steht deshalb weiter fest - aber sie geht
-         * jetzt durch huerdePp(), damit ein Umschalten EINE Zeile ist. */
-        huerdePp() + ' Pp → <b style="color:' +
+        /* #105 ist entschieden (Wilhelm, 27.08.): die Huerde des tatsaechlich
+         * gehandelten Produkts, aus derselben Schnittstelle wie im Scoreboard.
+         * Der Klammerzusatz sagt, WESSEN Huerde da steht - und beim Rueckfall,
+         * DASS es einer ist. */
+        '<b>' + dez(huerde, 3) + ' Pp</b> <span style="color:var(--muted);">(' +
+        (h ? esc(h.produkt) : 'Basiswert-Referenz – Depot-Einstellung noch nicht gelesen') +
+        ')</span> → <b style="color:' +
         (belegt && netto > 0 ? 'var(--up)' : 'var(--warn, var(--series2))') + ';">netto ' +
         pp(netto) + ' Pp</b>' +
-        ' · t = ' + (k.t == null ? '–' : k.t.toFixed(2)) +
+        ' · t = ' + (k.t == null ? '–' : pp(k.t, 2)) +
         ' · ' + (k.tage || 0) + ' Tage / ' + (k.signale || 0) + ' Signale' +
       '</div>' +
       (belegt ? '' :
@@ -219,11 +238,15 @@
   document.addEventListener('DOMContentLoaded', function () {
     zeichnen();
     /* Neu zeichnen, wenn der Auslöser wechselt - sonst steht im Depot die Messung einer
-     * Regel, die gar nicht mehr läuft. */
-    var letzter = null;
+     * Regel, die gar nicht mehr läuft. Seit #105 ebenso, wenn die Produkthuerde
+     * wechselt (Instrument/Hebel/Haltedauer umgestellt oder das Depot erst nach dem
+     * ersten Zeichnen hochgefahren) - sonst rechnet das Band mit der Huerde von vorhin. */
+    var letzter = null, letzteHuerdePp = null;
     setInterval(function () {
       var m = modus();
-      if (m !== letzter) { letzter = m; zeichnen(); }
+      var hJetzt = liveHuerde();
+      var hPp = hJetzt ? hJetzt.pp : null;
+      if (m !== letzter || hPp !== letzteHuerdePp) { letzter = m; letzteHuerdePp = hPp; zeichnen(); }
     }, 5000);
   });
 
