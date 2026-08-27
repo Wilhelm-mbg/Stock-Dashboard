@@ -59,8 +59,13 @@ Zufallsprodukt**; WHLRs 2 F-Treffer sind damit auch global gedeckt.
 - **Trennfall-Liste jetzt zu dritt und datumsfest:** B (2025-05-09), QXO (2024-06-06),
   **DOC (2024-03-04**, ticker_change + Dividendenbruch + Drift — Analytiker-Befund,
   außerhalb meiner Kandidatenmenge).
-- **IESC 24.08.2026** = frischer F-Fall (1:2-Split ungeglättet) — Analytiker-Sweep,
-  nicht in meinen 16 Zeilen.
+- **IESC 24.08.2026** (1:2-Split, Analytiker-Sweep, nicht in meinen 16 Zeilen) —
+  *präzisiert ~16:05:* Massive hat den Split eingearbeitet (adjusted ≈ 342 für
+  19.–21.08.), unser 1d-Archiv steht EXAKT auf Massives Roh-Ansicht (697/683/685).
+  Das ist die **VERZUG-Signatur** (Archiv konsistent-roh, Vendor fertig), noch kein
+  belegter F-Fall — ob Yahoo-Verzug oder Misch-Fehler, entscheidet 06 morgen per
+  direktem Yahoo-Abruf. Gleiche Vorsicht wie beim WHLR-Rand: **nicht heute
+  reparieren, was der Nachtabruf morgen selbst setzt.**
 - **Reichweiten-Grenze meines Joins, jetzt benannt (CBSH-Klasse):** Massive führt
   Aktiendividenden als 1:1,05-Splits. Sprünge unter Faktor 2 liegen außerhalb der
   vorregistrierten I1-Definition — **der Join sieht sie nicht.** Wer Aktiendividenden
