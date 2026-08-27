@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 04:05 (abgelesen)
+letzter-bericht: 2026-08-27 04:10 (abgelesen)
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -57,8 +57,38 @@ Sitzungen.** Gefunden hat es jedes Mal eine Gegenprobe, nie ein Verdacht.
 >
 > | Familie | Zahl | was es ist |
 > |---|---|---|
-> | **(A) Halbtage** | **20.160** — 5.778 um 17:00 (Sommer), 14.382 um 18:00 (Winter) | **die eigentliche Streitpopulation.** Echter Nachhandel; genau eine Kerze je Reihe und Halbtag. Von drei Seiten belegt, drei Isolierungsversuche gescheitert. |
+> | **(A) Halbtage, OHNE Umsatz** | **~19.015** | **die eigentliche Streitpopulation.** Echter Nachhandel; genau eine Kerze je Reihe und Halbtag. Von drei Seiten belegt, drei Isolierungsversuche gescheitert. |
+> | **(A2) Halbtage, MIT Umsatz** | **1.145** über 859 Reihen, zusammen **115,6 Mio Stück** | **⚠ DIE SCHLUSSAUKTION — echte Sitzungsdaten.** *Unabhängig gegengezählt: `-06` kam auf 1.150.* |
 > | **(B) Normaltage** | **5.755** — **alle** um 20:00 UTC | **die Schlusskurs-Familie.** Beginnt exakt am Sommersitzungsende und trug in **99,4 %** der Fälle den **offiziellen Schluss** — es ist der genaueste Wert im Archiv. |
+>
+> **🔴 (A2) IST HEUTE NACHT UM 04:10 DAZUGEKOMMEN UND HÄTTE DEN ENTSCHEID SONST TEUER GEMACHT.**
+> An Halbtagen trägt die Kerze auf dem Sitzungsende **bei einem Teil der Reihen echten Umsatz**
+> — und zwar den der **Schlussauktion**:
+>
+>     ACGL 2024-12-24   16:30  c 92,31  v 149.262   (Sitzungsstunde)
+>                       18:00  c 92,67  v 335.604   <-- MEHR als jede Stunde davor
+>     ACGL 2025-12-24   18:00  c 96,40  v 0         derselbe Titel, anderer Halbtag
+>
+> **Wie oft, je Halbtag:** 2023-11-24 **0,0 %** · 2024-07-03 **9,8 %** · 2024-11-29 1,9 % ·
+> **2024-12-24 22,5 % (647 von 2.879)** · 2025-07-03 5,6 % · 2025-11-28 0,0 % · 2025-12-24 0,0 %
+>
+> > **Eine Regel, die „die Kerze nach Sitzungsende" pauschal entfernt, löscht am 24.12.2024 bei
+> > 647 Reihen die Schlussauktion.** *Dieselbe Sorte Kollateralschaden wie bei den 1.111
+> > Schlusskerzen im Minutenarchiv — heute Nacht zum zweiten Mal knapp verhindert.*
+>
+> **→ DER UNTERSCHEIDER LIEGT IN DEN DATEN UND IST EINFACH: UMSATZ.**
+> **Mit Umsatz = Sitzung. Ohne Umsatz = Nachhandel.** *Der Populationszähler hat es bereits so
+> getrennt (25.915 nach Sitzungsende, davon **24.765 ohne** Umsatz). **Diese Trennung ist nicht
+> kosmetisch — sie entscheidet über echte Kursdaten.***
+>
+> *Korrigiert damit eine frühere QS-Aussage: „an Halbtagen fehlt die letzte halbe Sitzungsstunde,
+> 40 von 40" gilt weiter **für die 17:30-Kerze** — aber die Daten dieser Halbstunde tauchen bei
+> einem Teil der Reihen **in der 18:00-Kerze wieder auf**, statt zu fehlen. „Die letzten 30
+> Handelsminuten fehlen" war zu absolut.*
+>
+> *Und es stützt Lauf 1 ungeplant: Der 24.12.2024 hat dort mit **420** die wenigsten
+> auswertbaren Strukturfälle aller sieben Halbtage — **genau der Tag, an dem 647 Reihen eine
+> 18:00-Kerze mit Umsatz haben**, die damit die Tagesspanne erweitert statt Phantom zu sein.*
 >
 > > **🔴 DESHALB BRAUCHT DER ENTSCHEID ZWEI ZEILEN: Ein pauschales „kein Nachhandel im
 > > 60m-Archiv" würde die 5.755 offiziellen Schlusskurse mitlöschen.** *Familie B sieht formal
