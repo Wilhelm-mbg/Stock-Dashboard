@@ -74,6 +74,25 @@ Danach fünf vorregistrierte Läufe, ein Prozess je Lauf, **Sperrprüfung vor je
 Treiber **wartet nicht, er verweigert**: „ein Treiber, der wartet, verdeckt nur, dass er
 nichts tut."*
 
+### 📐 ZWEI NEUE HAUSREGELN AUS DIESER NACHT — beide gegen dieselbe Krankheit
+
+**Neben der bestehenden Regel „jeder Nullbefund braucht eine Positivkontrolle" stehen ab
+sofort zwei weitere. Alle drei behandeln denselben Defekt: eine Zahl ohne ihren Geltungsbereich.**
+
+| Regel | woher sie kommt |
+|---|---|
+| **1. Jeder Nullbefund braucht eine Positivkontrolle.** *(bestand schon)* | Eine Prüfung, die nichts findet, muss zeigen können, dass sie überhaupt etwas finden würde. |
+| **2. Jede Messung nennt die Tage und Reihen, für die sie gilt.** | Die 20:00-Kerze: an **einem** Tag gemessen, auf **alle** Tage gelesen — und vom PM als größter Fund der Nacht an die Spitze gesetzt. Sie existiert an genau zwei Tagen. |
+| **3. Jedes Warnsignal trägt sein Messdatum.** | „1m bei 1.834 von 2.732" war beim Schreiben richtig und beim Weitergeben überholt. Der PM hat zwei solche Einträge als eilig verteilt. |
+
+> **Regel 2 und 3 sind dieselbe Regel in zwei Richtungen: Eine Zahl braucht ihren Umfang
+> (welche Tage, welche Reihen) und ihren Zeitpunkt (wann gemessen). Ohne beides altert oder
+> wandert sie, ohne dass es jemand merkt.**
+
+*Beide Regeln wurden von den Sitzungen vorgeschlagen, nicht vom PM — und beide Male an einem
+Fehler des PM.* **Regel 2 hat sich sofort selbst bewährt:** Die Auflage „drei Tage
+unterschiedlichen Charakters" war der einzige Grund, warum die falsche Reichweite auffiel.
+
 ### 🧭 Der rote Faden der Nacht
 
 **Acht Fehler hatten dieselbe Form: eine Zahl ist richtig gerechnet und beantwortet trotzdem
