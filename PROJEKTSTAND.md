@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 02:52 (abgelesen)
+letzter-bericht: 2026-08-27 02:46 (abgelesen)
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -100,6 +100,39 @@ auffiel:**
 > heraus) und **(b) der Zeitplan** (frühestens 30 Minuten nach Schluss).
 > **Fällt eine von beiden weg, schreibt der Sammler einen Zwischenstands-Quote als Tagesschluss
 > ins Archiv** — und zwar einen, der aussieht wie der genaueste Wert im Bestand.
+>
+> ### 🎯 27.08. ~02:45 — ZWEI UNABHÄNGIGE MESSUNGEN TREFFEN SICH AUF 0,3 PROZENTPUNKTE
+>
+> **`1d` hatte gefunden: 21,7 % der P-WEG-Kerzen tragen exakt den amtlichen Tagesschluss**
+> (1.113 von 5.133, Stichprobe gegen das Tagesarchiv). **Die QS hat es nachgerechnet statt es
+> stehenzulassen** — 30 Reihen über **alle sieben** Halbtage, erste Nachhandelskerze gegen den
+> amtlichen Tagesschluss aus der Quelle:
+>
+>     2023-11-24  23,3 %   2024-07-03  20,0 %   2024-11-29  20,0 %
+>     2024-12-24  23,3 %   2025-07-03  20,0 %   2025-11-28  20,0 %
+>     2025-12-24  23,3 %
+>     ZUSAMMEN    45 von 210 exakt gleich  =  21,4 %
+>
+> **21,4 % gegen 21,7 % — anderes Verfahren, andere Stichprobe, andere Fragestellung.** Und die
+> Streuung über die sieben Tage ist auffallend eng: **20,0 bis 23,3 %.**
+>
+> **⚠ UND DIE QS SCHRÄNKT DIE DARAUS ABGELEITETE REGEL SOFORT EIN**, weil `-06`s Satz („die
+> Quelle führt den amtlichen Schluss als ersten Nachhandelskurs") sich wie eine allgemeine
+> Regel liest: **Er gilt in 21,4 % der Fälle. In den übrigen 78,6 % trägt die erste
+> Nachhandelskerze einen anderen Kurs, im Median 0,073 % daneben.**
+> ***Wer daraus schließt, man könne den Tagesschluss eines Halbtags dort ablesen, liegt in vier
+> von fünf Fällen falsch.***
+>
+> *Vermutung zur Ursache, ausdrücklich ungemessen: In etwa einem Fünftel der Fälle findet in
+> der ersten Nachhandelsstunde **kein Handel** statt, und die Quelle schreibt den Schlusskurs
+> fort. Das würde die enge Streuung erklären.*
+>
+> **📌 Offene Frage, bewusst NICHT als Auftrag gestellt (QS an `c4`, wenn Kapazität da ist):**
+> Dass die Halbtage in `tageshilfen.js` **nie feuern**, ist die vorsichtige Richtung und
+> dokumentiert — *aber es heißt auch, dass an sieben Tagen je Jahr kein T-Signal entsteht und
+> der Beitrag dieser Tage in einer Zwei-Sitzungs-Rendite steckt.* **Ob das die Ergebnisse der
+> drei T-Strategien messbar verändert, ist ungeprüft.** *Keine Fehlerfrage, sondern die Frage
+> nach der Wirkung einer bewussten Entscheidung.*
 >
 > ### 🧩 27.08. ~02:50 — AN HALBTAGEN FEHLT DIE LETZTE HALBE HANDELSSTUNDE — in der QUELLE
 >
