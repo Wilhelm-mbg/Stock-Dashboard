@@ -1,5 +1,5 @@
 {
-  "stand": "2026-08-26T13:00:04.935Z",
+  "stand": "2026-08-27T05:00:59.066Z",
   "hinweis": "Meldepflichtige Eigengeschäfte von Insidern (SEC Form 4, nur offene Marktkäufe). Ungemessen, keine Handelsempfehlung, keine Anlageberatung.",
   "eintraege": [
     {
@@ -69,6 +69,74 @@
         }
       ],
       "zeit": "2026-08-25T20:00:00.000Z"
+    },
+    {
+      "id": "20260824-AMRC-insider",
+      "sym": "AMRC",
+      "name": "Ameresco",
+      "anzahl": 2,
+      "wert": 416736,
+      "stueck": 19700,
+      "kurs": 21.15,
+      "rang": 3,
+      "imUniversum": false,
+      "wer": [
+        {
+          "person": "Sakellaris George P",
+          "rolle": "Chief Executive Officer",
+          "wert": 214297
+        },
+        {
+          "person": "Sutton Joseph W.",
+          "rolle": "Aufsichtsrat",
+          "wert": 202439
+        }
+      ],
+      "quellen": [
+        {
+          "titel": "SEC Form 4 (1)",
+          "url": "https://www.sec.gov/Archives/edgar/data/1488139/000162828026059096/0001628280-26-059096-index.htm"
+        },
+        {
+          "titel": "SEC Form 4 (2)",
+          "url": "https://www.sec.gov/Archives/edgar/data/1488139/000162828026059097/0001628280-26-059097-index.htm"
+        }
+      ],
+      "zeit": "2026-08-24T20:00:00.000Z"
+    },
+    {
+      "id": "20260826-AMRZ-insider",
+      "sym": "AMRZ",
+      "name": "Amrize",
+      "anzahl": 2,
+      "wert": 341236,
+      "stueck": 7650,
+      "kurs": 44.61,
+      "rang": 2,
+      "imUniversum": false,
+      "wer": [
+        {
+          "person": "Sanche Jacques Wolf",
+          "rolle": "Aufsichtsrat",
+          "wert": 186833
+        },
+        {
+          "person": "Singleton Denise R",
+          "rolle": "Chief Legal Officer & Corp Sec",
+          "wert": 154403
+        }
+      ],
+      "quellen": [
+        {
+          "titel": "SEC Form 4 (1)",
+          "url": "https://www.sec.gov/Archives/edgar/data/2035989/000203598926000074/0002035989-26-000074-index.htm"
+        },
+        {
+          "titel": "SEC Form 4 (2)",
+          "url": "https://www.sec.gov/Archives/edgar/data/2035989/000152459526000005/0001524595-26-000005-index.htm"
+        }
+      ],
+      "zeit": "2026-08-26T20:00:00.000Z"
     },
     {
       "id": "20260818-ET-insider",
@@ -296,6 +364,31 @@
       "zeit": "2026-08-20T20:00:00.000Z"
     },
     {
+      "id": "20260824-NOMD-insider",
+      "sym": "NOMD",
+      "name": "Nomad Foods",
+      "anzahl": 1,
+      "wert": 619000,
+      "stueck": 50000,
+      "kurs": 12.38,
+      "rang": 3,
+      "imUniversum": false,
+      "wer": [
+        {
+          "person": "Brisby Dominic",
+          "rolle": "Chief Executive Officer",
+          "wert": 619000
+        }
+      ],
+      "quellen": [
+        {
+          "titel": "SEC Form 4",
+          "url": "https://www.sec.gov/Archives/edgar/data/1651717/000211158026000010/0002111580-26-000010-index.htm"
+        }
+      ],
+      "zeit": "2026-08-24T20:00:00.000Z"
+    },
+    {
       "id": "20260824-ABCL-insider",
       "sym": "ABCL",
       "name": "AbCellera Biologics",
@@ -319,6 +412,31 @@
         }
       ],
       "zeit": "2026-08-24T20:00:00.000Z"
+    },
+    {
+      "id": "20260825-MAIR-insider",
+      "sym": "MAIR",
+      "name": "Madison Air Solutions",
+      "anzahl": 1,
+      "wert": 556800,
+      "stueck": 20000,
+      "kurs": 27.84,
+      "rang": 1,
+      "imUniversum": false,
+      "wer": [
+        {
+          "person": "La Force Andrew Hudson Iii",
+          "rolle": "Aufsichtsrat",
+          "wert": 556800
+        }
+      ],
+      "quellen": [
+        {
+          "titel": "SEC Form 4",
+          "url": "https://www.sec.gov/Archives/edgar/data/2098430/000162828026059013/0001628280-26-059013-index.htm"
+        }
+      ],
+      "zeit": "2026-08-25T20:00:00.000Z"
     },
     {
       "id": "20260824-TTMI-insider",
@@ -421,6 +539,31 @@
       "zeit": "2026-08-19T20:00:00.000Z"
     },
     {
+      "id": "20260824-OPLN-insider",
+      "sym": "OPLN",
+      "name": "OPENLANE",
+      "anzahl": 1,
+      "wert": 499999,
+      "stueck": 14830,
+      "kurs": 33.72,
+      "rang": 3,
+      "imUniversum": false,
+      "wer": [
+        {
+          "person": "Kelly Peter J",
+          "rolle": "Chief Executive Officer",
+          "wert": 499999
+        }
+      ],
+      "quellen": [
+        {
+          "titel": "SEC Form 4",
+          "url": "https://www.sec.gov/Archives/edgar/data/1395942/000153201026000003/0001532010-26-000003-index.htm"
+        }
+      ],
+      "zeit": "2026-08-24T20:00:00.000Z"
+    },
+    {
       "id": "20260817-MFP-insider",
       "sym": "MFP",
       "name": "Midera Food Processing",
@@ -516,131 +659,6 @@
         {
           "titel": "SEC Form 4",
           "url": "https://www.sec.gov/Archives/edgar/data/832480/000083248026000024/0000832480-26-000024-index.htm"
-        }
-      ],
-      "zeit": "2026-08-18T20:00:00.000Z"
-    },
-    {
-      "id": "20260824-VST-insider",
-      "sym": "VST",
-      "name": "Vistra",
-      "anzahl": 1,
-      "wert": 270000,
-      "stueck": 2000,
-      "kurs": 135,
-      "rang": 3,
-      "imUniversum": false,
-      "wer": [
-        {
-          "person": "Burke James A",
-          "rolle": "President and CEO",
-          "wert": 270000
-        }
-      ],
-      "quellen": [
-        {
-          "titel": "SEC Form 4",
-          "url": "https://www.sec.gov/Archives/edgar/data/1692819/000126840626000007/0001268406-26-000007-index.htm"
-        }
-      ],
-      "zeit": "2026-08-24T20:00:00.000Z"
-    },
-    {
-      "id": "20260818-PSUS-insider",
-      "sym": "PSUS",
-      "name": "Pershing Square USA",
-      "anzahl": 1,
-      "wert": 243683,
-      "stueck": 6177,
-      "kurs": 39.45,
-      "rang": 1,
-      "imUniversum": false,
-      "wer": [
-        {
-          "person": "Polsky Lisa",
-          "rolle": "Aufsichtsrat",
-          "wert": 243683
-        }
-      ],
-      "quellen": [
-        {
-          "titel": "SEC Form 4",
-          "url": "https://www.sec.gov/Archives/edgar/data/2002660/000119312526358101/0001193125-26-358101-index.htm"
-        }
-      ],
-      "zeit": "2026-08-18T20:00:00.000Z"
-    },
-    {
-      "id": "20260817-ARE-insider",
-      "sym": "ARE",
-      "name": "ALEXANDRIA REAL ESTATE EQUITIES",
-      "anzahl": 1,
-      "wert": 231400,
-      "stueck": 5000,
-      "kurs": 46.28,
-      "rang": 2,
-      "imUniversum": false,
-      "wer": [
-        {
-          "person": "Marcus Joel S",
-          "rolle": "Executive Chairman",
-          "wert": 231400
-        }
-      ],
-      "quellen": [
-        {
-          "titel": "SEC Form 4",
-          "url": "https://www.sec.gov/Archives/edgar/data/1035443/000121695526000019/0001216955-26-000019-index.htm"
-        }
-      ],
-      "zeit": "2026-08-17T20:00:00.000Z"
-    },
-    {
-      "id": "20260820-BNL-insider",
-      "sym": "BNL",
-      "name": "Broadstone Net Lease",
-      "anzahl": 1,
-      "wert": 211600,
-      "stueck": 10000,
-      "kurs": 21.16,
-      "rang": 1,
-      "imUniversum": false,
-      "wer": [
-        {
-          "person": "Imperiale Richard P",
-          "rolle": "Aufsichtsrat",
-          "wert": 211600
-        }
-      ],
-      "quellen": [
-        {
-          "titel": "SEC Form 4",
-          "url": "https://www.sec.gov/Archives/edgar/data/1424182/000131161826000005/0001311618-26-000005-index.htm"
-        }
-      ],
-      "zeit": "2026-08-20T20:00:00.000Z"
-    },
-    {
-      "id": "20260818-TSM-insider",
-      "sym": "TSM",
-      "name": "TAIWAN SEMICONDUCTOR MANUFACTURING CO",
-      "anzahl": 1,
-      "wert": 174023,
-      "stueck": 2350,
-      "kurs": 74.05,
-      "rang": 2,
-      "imUniversum": true,
-      "wer": [
-        {
-          "person": "Yuan Lipen",
-          "rolle": "VP",
-          "wert": 174023
-        }
-      ],
-      "quellen": [
-        {
-          "titel": "SEC Form 4",
-          "url": "https://www.sec.gov/Archives/edgar/data/1046179/000104617926000543/0001046179-26-000543-index.htm"
         }
       ],
       "zeit": "2026-08-18T20:00:00.000Z"
