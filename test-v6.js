@@ -4506,10 +4506,15 @@ console.log('\n44) Messmaschine, Scoreboard und Strategie-Eingabe (23.08.2026)')
    * getragen (21.08. statt echtem 17.07.). */
   (function () {
     var aq = fs.readFileSync(__dirname + '/tools/abmeldungen-pflegen.js', 'utf8');
-    var a0 = aq.indexOf('function befundVon');
-    var e0 = aq.indexOf('\n}', a0) + 2;
-    ok(a0 !== -1 && e0 > a0, 'abmeldungen-pflegen: die Handelsende-Regel laesst sich herausloesen');
-    var befundVon = new Function(aq.slice(a0, e0) + '\nreturn befundVon;')();
+    /* Die Regel ist am 27.08. in die Wurzel gezogen (abmeldungen.js), weil tools/
+     * nicht ausgeliefert wird und die App sie sonst nicht erreicht. Geprueft wird
+     * WEITERHIN dieselbe Sache, nur an ihrer neuen Adresse - und ausdruecklich am
+     * Modul, das auch die App laedt, nicht an einer Kopie. */
+    var wq = fs.readFileSync(__dirname + '/abmeldungen.js', 'utf8');
+    var a0 = wq.indexOf('function befundVon');
+    var e0 = wq.indexOf('\n}', a0) + 2;
+    ok(a0 !== -1 && e0 > a0, 'abmeldungen.js: die Handelsende-Regel laesst sich herausloesen');
+    var befundVon = new Function(wq.slice(a0, e0) + '\nreturn befundVon;')();
     var T = function (tag) { return Date.parse(tag + 'T00:00:00Z'); };
     var stempler = befundVon([[T('2026-08-14'), 65.9, 6938895], [T('2026-08-17'), 65.9, 0],
       [T('2026-08-18'), 65.9, 0], [T('2026-08-19'), 65.9, 0]]);
@@ -4524,6 +4529,43 @@ console.log('\n44) Messmaschine, Scoreboard und Strategie-Eingabe (23.08.2026)')
      * Nachtrolle. Gesichert wird die Einbau-Stelle samt ihrer Vorbedingung -
      * ohne die Vorbedingung wuerde ein haengendes Archiv der Liste beibringen,
      * dass fast alles abgemeldet sei. */
+    /* ---- Die Kernlogik wohnt in der WURZEL, das Werkzeug ist eine Huelle (27.08.) ----
+     * tools/ wird nicht ausgeliefert (package.json build.files kennt nur *.js aus der
+     * Wurzel). Solange die Pflege dort wohnte, konnte die App sie nicht aufrufen - der
+     * Aufruf waere ins Leere gelaufen, und zwar STILL. Diese Klinke haelt fest, dass
+     * beide Wege DIESELBE Regel benutzen; zwei Fassungen waeren zwei Wahrheiten. */
+    var A9 = require(__dirname + '/abmeldungen.js');
+    var pkg9 = JSON.parse(fs.readFileSync(__dirname + '/package.json', 'utf8'));
+    ok((pkg9.build.files || []).indexOf('*.js') !== -1,
+       'Die Wurzel wird ausgeliefert - dort kann die App die Pflege erreichen');
+    ok(!(pkg9.build.files || []).some(function (f) { return /^tools\//.test(f); }),
+       'tools/ wird NICHT ausgeliefert - deshalb darf dort keine Regel wohnen, nur eine Huelle');
+    ok(/require\('\.\.\/abmeldungen\.js'\)/.test(aq),
+       'Das Werkzeug laedt die Kernlogik, statt sie nachzubauen');
+    ['function befundVon', 'function auffaellige', 'function istStummel', 'function befundAusQuelle']
+      .forEach(function (fn) {
+        ok(aq.indexOf(fn) === -1, 'Keine zweite Fassung von ' + fn.replace('function ', '') + ' im Werkzeug');
+      });
+    /* LEER IST KEIN BEFUND - und das gilt jetzt fuer jede Installation, nicht nur
+     * fuer Wilhelms Rechner: Felix' Datenordner ist leer und war nie befuellt.
+     * "0 Abmeldungen" und "nichts zu durchsuchen" waeren von aussen nicht zu
+     * unterscheiden. Funktional geprueft, mit einem echten leeren Ordner. */
+    var leer9 = fs.mkdtempSync(require('path').join(require('os').tmpdir(), 'abm-leer-'));
+    var r9a = A9.reihenLesen(require('path').join(leer9, 'gibtsnicht'));
+    var r9b = A9.reihenLesen(leer9);
+    ok(r9a.leer === true && !r9a.reihen && /gibt es nicht/.test(r9a.grund),
+       'Fehlender Archivordner: ausdruecklich leer mit Begruendung, keine leere Liste');
+    ok(r9b.leer === true && /keine einzige Reihe/.test(r9b.grund),
+       'Leerer Archivordner ebenso - "nichts zu durchsuchen" ist nicht "nichts gefunden"');
+    ok(A9.zeugenKalender(leer9).leer === true,
+       'Und ohne Kalender-Zeugen wird gar nicht erst gerechnet');
+    /* Positivkontrolle: auf einer echten Reihe MUSS die Kernlogik etwas finden -
+     * sonst ist "leer" oben nur ein Werkzeug, das immer schweigt. */
+    var t9 = Date.parse('2026-08-24T00:00:00Z');
+    var b9 = A9.befundVon([[t9 - 86400000, 12.0, 500], [t9, 12.2, 900], [t9 + 86400000, 12.2, 0]]);
+    ok(b9.handelsende === t9 && b9.stempelSchwanz === 1,
+       'Positivkontrolle: auf einer echten Reihe findet dieselbe Regel Handelsende und Stempel');
+
     var nl = fs.readFileSync(__dirname + '/tools/archiv-nachladen.js', 'utf8');
     ok(nl.indexOf("'abmeldungen-pflegen.js'), '--schreiben'") !== -1 &&
        /code === 0 && !nurPruefen/.test(nl),
@@ -4533,20 +4575,40 @@ console.log('\n44) Messmaschine, Scoreboard und Strategie-Eingabe (23.08.2026)')
      * (behalten und kennzeichnen, nie herausnehmen). Dafuer sichert diese
      * Klinke die Schnittstelle: die Eintragsfelder und die drei moeglichen
      * Befund-Werte. Wer sie aendert, muss den Wachhund mitziehen. */
-    ['sym:', 'handelsende:', 'rueckstand:', 'stempelSchwanz:', 'listeBis', 'quelleGeprueftAm', 'befund', 'quelleKerzen'].forEach(function (f) {
-      ok(aq.indexOf(f) !== -1, 'Abmeldelisten-Vertrag: Feld ' + f.replace(':', '') + ' wird geschrieben');
+    /* Der Vertrag wird an der ERZEUGTEN Struktur geprueft, nicht am Text: seit die
+     * Regel in der Wurzel wohnt, entstehen die Felder an zwei Stellen (auffaellige
+     * in abmeldungen.js, die Quellfelder in der Huelle). Ein Textfund haette nach
+     * dem Umzug rot gemeldet, obwohl die Daten stimmen - und umgekehrt gruen
+     * bleiben koennen, wenn ein Feld nur noch im Kommentar steht. */
+    var kal9 = ['2026-08-24', '2026-08-25', '2026-08-26'];
+    var reihen9 = { STILL: { handelsende: Date.parse('2026-08-21T00:00:00Z'), stempelSchwanz: 2, kerzen: 4000, ersteMs: 0, istEtf: false } };
+    var erzeugt9 = A9.auffaellige(reihen9, kal9)[0];
+    ['sym', 'handelsende', 'rueckstand', 'stempelSchwanz'].forEach(function (f) {
+      ok(erzeugt9 && erzeugt9[f] !== undefined, 'Abmeldelisten-Vertrag: Feld ' + f + ' entsteht wirklich',
+         erzeugt9 ? String(erzeugt9[f]) : 'kein Eintrag');
+    });
+    ['listeBis', 'quelleGeprueftAm', 'befund', 'quelleKerzen'].forEach(function (f) {
+      ok(aq.indexOf(f) !== -1, 'Abmeldelisten-Vertrag: Feld ' + f + ' wird von der Huelle ergaenzt');
     });
     /* Der vierte Wert kam per Absprache dazu (1d-Messung 27.08.: AVB/EQR -
      * die Quelle fuehrt nur noch einen Stummel, das Archiv ist die einzige
      * Kopie; die Handlung kippt von nachladen auf schuetzen). */
-    ["'abgemeldet-bestaetigt'", "'abruffehler'", "'quelle-leer'", "'historie-zurueckgesetzt'"].forEach(function (w) {
-      ok(aq.indexOf('a.befund = ' + w) !== -1, 'Abmeldelisten-Vertrag: Befund-Wert ' + w + ' existiert');
+    /* Die Befunde stehen seit dem Umzug als benannte Liste im Modul - der Waechter
+     * gruppiert danach, ein fuenfter Wert braucht die Absprache. Geprueft wird die
+     * Liste UND dass die Regel wirklich nur diese Werte vergibt. */
+    ['abgemeldet-bestaetigt', 'abruffehler', 'quelle-leer', 'historie-zurueckgesetzt'].forEach(function (w) {
+      ok(A9.BEFUNDE.indexOf(w) !== -1, 'Abmeldelisten-Vertrag: Befund-Wert ' + w + ' existiert');
     });
-    var befundWerte = {};
-    (aq.match(/a\.befund = '[^']+'/g) || []).forEach(function (z) { befundWerte[z.split("'")[1]] = 1; });
-    ok(Object.keys(befundWerte).length === 4,
-       'Abmeldelisten-Vertrag: es gibt GENAU vier verschiedene Befund-Werte - ein fuenfter braucht die Absprache mit dem Wachhund',
-       Object.keys(befundWerte).sort().join(', '));
+    ok(A9.BEFUNDE.length === 4,
+       'Abmeldelisten-Vertrag: es gibt GENAU vier Befund-Werte - ein fuenfter braucht die Absprache mit dem Wachhund',
+       A9.BEFUNDE.join(', '));
+    var wq9 = fs.readFileSync(__dirname + '/abmeldungen.js', 'utf8');
+    var vergeben9 = {};
+    (wq9.match(/befund: '[^']+'/g) || []).forEach(function (z) { vergeben9[z.split("'")[1]] = 1; });
+    Object.keys(vergeben9).forEach(function (w) {
+      ok(A9.BEFUNDE.indexOf(w) !== -1,
+         'Abmeldelisten-Vertrag: der vergebene Wert ' + w + ' steht auch in der benannten Liste');
+    });
   })();
   /* Eigenschafts-Pruefung gegen ein ECHTES Protokoll: aendert die Messmaschine die
    * Ablage der Aussicht, wird die Anzeige still leer - das soll hier laut werden.
