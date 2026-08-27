@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 03:05 (abgelesen)
+letzter-bericht: 2026-08-27 03:45 (abgelesen)
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -44,17 +44,57 @@ Sitzungen.** Gefunden hat es jedes Mal eine Gegenprobe, nie ein Verdacht.
 
 | | Frage | Lage |
 |---|---|---|
-| **1** | **Gehören Randzeiten-Kerzen ins 60m-Archiv?** | **ENTSCHIEDEN VORBEREITET — der Streit ist beigelegt, es bleibt eine reine Populationsfrage.** *Die Halbtage sind **nicht verdorben**: Sie sind die einzigen Tage, an denen Nachhandelsdaten überhaupt ins Archiv gelangt sind — genau **eine** Stunde je Reihe. **Warum, ist offen**: die naheliegende Erklärung („Filter greift eine Stunde zu weit") ist gemessen widerlegt; die Antwort steht im Sammelcode, nicht im Archiv.* **Drei Versuche, die Dochte als Fehler zu isolieren, sind alle gescheitert — am Normaltag sieht es genauso aus oder schlechter.** Die QS: *„Beide Erklärungen sagen dieselben Formen voraus; was trennen würde, wäre eine zweite Datenquelle — die haben wir nicht. Das ist ein Ergebnis, keine offene Aufgabe."* **→ Also: (a) fremde Population konsequent entfernen, oder (b) sie als legitime Nachhandelsdaten behalten und kennzeichnen. Werte reparieren steht nicht mehr zur Wahl.** *Größe: je Reihe und Halbtag genau EINE Kerze, davon 1,5 % mit tiefem Docht (2 von 133), Median-Ausschlag 0,000 %.* |
+| **1** | **Was geschieht mit den Kerzen nach Sitzungsende?** ⚠ **ZWEI Familien — sie brauchen ZWEI Zeilen im Entscheid.** | **Siehe eigener Kasten unter der Tabelle.** *Ein pauschales „kein Nachhandel im Archiv" würde **5.755 offizielle Schlusskurse mitlöschen.*** |
 | **2** | **Bekommen die delisteten Papiere ihr Abmeldedatum?** | **Lohnt sich, ist aber nicht dringend** *(um 02:10 nach unten korrigiert)*. AVB/EQR sind im Universum und heute außerhalb jedes Fensters; ab ~einer Handelswoche können die Phantomtage in ein Haltefenster geraten. **Aber der Schwanz ist auf 1–5 Tage gedeckelt** — der gefährliche Fall (dauerhaft flache Reihe, die eine Momentum-Rangfolge nach oben spült) tritt **nicht** ein. |
-| **3** | **Welche „Kostenhürde" zeigt das Messband?** | Zwei verschiedene Zahlen tragen denselben Namen; in der Voreinstellung stimmen sie zufällig überein. Live-Hürde oder feste Referenz — beides vertretbar, der Doppelname nicht. |
+| **3** | **Welche „Kostenhürde" zeigt das Messband?** | Zwei verschiedene Zahlen tragen denselben Namen; in der Voreinstellung stimmen sie zufällig überein. Live-Hürde oder feste Referenz — beides vertretbar, der Doppelname nicht. *(Kleiner Zusatz, mitentscheidbar: In vier von fünf Dialogen landet der Tastaturfokus zuerst auf dem Schließen-Kreuz — erlaubt, aber die schlechteste erlaubte Wahl. Fünf Zeilen Arbeit.)* |
 
-### 🔒 Was läuft, und wann es meldet
+> ### ⚠ ZU ENTSCHEIDUNG 1 — die Zahl liegt vor, und sie zerfällt in zwei Familien
+>
+> **Gemessen (Populationszähler, sitzungsbewusst über Sommer/Winter und Halbtage):**
+> `archiv60m` hat **14.815.281 Kerzen in 2.916 Reihen**. Nach Sitzungsende: **25.915** (0,17 %),
+> davon 24.765 mit Volumen 0. **Vor der Sitzung: 0. Lage unbestimmbar: 0.**
+> Betroffen sind **2.915 von 2.916 Reihen — flächendeckend, nicht vereinzelt.**
+>
+> | Familie | Zahl | was es ist |
+> |---|---|---|
+> | **(A) Halbtage** | **20.160** — 5.778 um 17:00 (Sommer), 14.382 um 18:00 (Winter) | **die eigentliche Streitpopulation.** Echter Nachhandel; genau eine Kerze je Reihe und Halbtag. Von drei Seiten belegt, drei Isolierungsversuche gescheitert. |
+> | **(B) Normaltage** | **5.755** — **alle** um 20:00 UTC | **die Schlusskurs-Familie.** Beginnt exakt am Sommersitzungsende und trug in **99,4 %** der Fälle den **offiziellen Schluss** — es ist der genaueste Wert im Archiv. |
+>
+> > **🔴 DESHALB BRAUCHT DER ENTSCHEID ZWEI ZEILEN: Ein pauschales „kein Nachhandel im
+> > 60m-Archiv" würde die 5.755 offiziellen Schlusskurse mitlöschen.** *Familie B sieht formal
+> > aus wie Familie A — nach Sitzungsende, Volumen 0 — und ist inhaltlich ihr Gegenteil.*
+> > **Das ist derselbe Fehler wie die sieben gestoppten Löschregeln dieser Nacht, nur auf der
+> > Ebene einer Politik statt einer Regel.**
+>
+> **Zu entscheiden ist also nur (A):** *(a)* die 20.160 Halbtags-Nachhandelskerzen **entfernen**
+> — konsequent wie in den App-Archiven, wo 0 von 990.509 Randzeiten-Kerzen stehen; oder *(b)*
+> sie **behalten und kennzeichnen** als das, was sie sind. **Werte reparieren steht nicht mehr
+> zur Wahl** — der Docht-Effekt hebt sich im Überschuss auf (Faktor 6–27 Abstand), und drei
+> Versuche, die Kerzen als Fehler zu isolieren, sind gescheitert. *Für **(B)** empfiehlt der PM
+> ausdrücklich: **behalten**, sie ist der beste Schlusskurs im Bestand.*
 
-**Archivsperre bis ~03:40** (Nachlader gesund, ~300 Dateien/10 Min, keine Alarme).
-**Nichts wird verändert, `--wirklich` ist gesperrt**, unabhängig von jeder Methode.
-Danach fünf vorregistrierte Läufe, ein Prozess je Lauf, **Sperrprüfung vor jedem einzelnen**:
+### 🔒 Was läuft — Stand 03:45
 
-    [1] Phantom-Schluss ueber alle sieben Halbtage   blockiert die Reparatur
+**✅ DAS NACHLADEN IST SAUBER DURCH.** Sperre gefallen **03:34:34**, Wachhund **Exit 0**,
+`archiv1d` Rückstand **0 Handelstage**, 2.965 von 2.965 geprüft, **keine einzige Alarmdatei
+über die ganze Wache.** *Beide Archive vollzählig; letzte geschriebene Datei bei 60m und 1d
+dasselbe Symbol — also alphabetisch bis zum Ende gelaufen, nicht abgebrochen.*
+
+> **🔗 EINE UNABHÄNGIGE BESTÄTIGUNG, DIE NIEMAND GEPLANT HAT:** Der Wachhund weist **9
+> zurückhängende Reihen** aus — **TWO, AVB, EQR, LBRDA, LBRDK, WBS** plus drei Altfälle.
+> **Das sind exakt die Reihen, die diese Nacht aus drei ganz anderen Richtungen gefunden hat:**
+> der Wachhund misst **Rückstand**, die QS misst **Stempelkerzen**, `1d` hat die **SEC**
+> gefragt. *Drei Verfahren, dieselbe Menge.* Und sichtbar ist es nur, weil die
+> Rundungs-Reparatur den Rückstand jetzt **ehrlich ausweist statt ihn wegzurunden.**
+
+**Nichts wird verändert. `--wirklich` bleibt gesperrt** — und seit dem Docht-Ergebnis hat die
+Reparatur ohnehin **keine Dringlichkeit** mehr. *Das Werkzeug bleibt mit allen Sperren im
+Wartestand, falls Wilhelms Politik-Entscheid je eine Anwendung verlangt.*
+
+**Seit 03:37 laufen vier vorregistrierte Messungen** (die fertigen 4 und 5 werden korrekt
+ausgelassen), ein Prozess je Lauf, Sperrprüfung vor jedem einzelnen:
+
+    [1] Phantom-Schluss ueber alle sieben Halbtage   Strukturfrage fuer Wilhelms Entscheid
     [2] Schiedsrichter-Test (A/B/C)                  entscheidet ueber Option (c)
     [3] 1d-Schluss gegen 60m-Schluss                 fuer Strang A
     [4] Stempel-Sucher auf 60m gegen die 149         Kontrolle
