@@ -648,6 +648,26 @@ function fensterLuecke(intervall, juengsteMs, jetzt) {
   };
 }
 
+/* ---------- WAS BEI DIESEM LAUF PASSIERT IST ----------
+ * Am 27.08.2026 sind drei Abrufe gestorben, und die Todesursache war aus den
+ * Artefakten nicht mehr zu ermitteln: ein interner Abbruch liess sich
+ * ausschliessen, eine Netzstoerung auch, es blieb "aeussere Beendigung" - mehr
+ * gaben die Spuren nicht her, weil die Werkzeuge kein Protokoll schreiben.
+ * Die naechste Todesursache waere genauso unauffindbar gewesen.
+ *
+ * Eine Zeile je Lauf, angehaengt, nie ueberschrieben. Sie kostet nichts und
+ * beantwortet beim naechsten Mal die Frage, die diesmal offenblieb: wann fing er
+ * an, wie weit kam er, warum hoerte er auf - und WER er war.
+ *
+ * SCHREIBT NIE EINEN FEHLER WEITER: ein Protokoll, das den Lauf umbringt, den es
+ * dokumentieren soll, waere die schlechteste aller Fassungen. */
+function laufProtokoll(ziel, zeile) {
+  try {
+    fs.appendFileSync(path.join(ziel, 'laeufe.log'), zeile + '\n');
+    return true;
+  } catch (e) { return false; }
+}
+
 /* ================= SAMMELN ================= */
 
 /* Der Lauf, den bis zum 26.08.2026 nur tools/yahoo-60m-holen.js hatte. Er steht
@@ -742,11 +762,32 @@ async function sammle(opt) {
       }
       if (i < symbole.length - 1) await warte(abstand);
     }
+  } catch (e) {
+    /* EIN ABGESTUERZTER LAUF DARF IM PROTOKOLL NICHT "durch" HEISSEN. Der erste
+     * Wurf dieses Protokolls schrieb genau das: die Ausnahme sprang am
+     * Abbruch-Merker vorbei ins finally, und die Zeile las sich wie ein geglueckter
+     * Lauf. Damit haette das Protokoll den Fehler verdeckt, gegen den es gebaut
+     * wurde - dieselbe Verkleidung, in der das Kursarchiv zwei Tage stillstand.
+     * Der Fehler wird gemerkt und WEITERGEWORFEN: das Protokoll ist ein Zeuge,
+     * kein Schlucker. */
+    erg.abgebrochen = true;
+    erg.grund = 'Ausnahme: ' + String((e && e.message) || e).slice(0, 80);
+    throw e;
   } finally {
     /* Die Sperre geht auch dann weg, wenn hier etwas fliegt. Sonst haelt ein
      * einziger Ausrutscher das Archiv stundenlang fuer "wird geschrieben". */
     sperreLoesen(ziel);
     erg.beendet = new Date().toISOString();
+    /* IM finally, nicht danach: gerade der Lauf, der mittendrin stirbt, ist der,
+     * ueber den man spaeter etwas wissen will. Ein Protokoll, das nur den
+     * geglueckten Lauf festhaelt, beantwortet nie die Frage, die man stellt. */
+    laufProtokoll(ziel, [
+      erg.begonnen, erg.beendet, intervall,
+      'geplant=' + erg.geplant, 'verarbeitet=' + erg.verarbeitet,
+      'ok=' + erg.ok, 'ohne=' + erg.leer, 'kerzen=' + erg.kerzen, 'neu=' + erg.dazu,
+      'ende=' + (erg.abgebrochen ? 'ABGEBROCHEN: ' + (erg.grund || '?') : 'durch'),
+      'wer=' + (opt.was || '?'), 'pid=' + process.pid, 'rechner=' + os.hostname(),
+    ].join('  '));
   }
   melde({ art: 'ende', ergebnis: erg });
   return erg;
@@ -769,5 +810,6 @@ module.exports = {
   universumWerte: universumWerte, listeBauen: listeBauen,
   juengsteKerzeVon: juengsteKerzeVon, archivDateien: archivDateien,
   archivUeberblick: archivUeberblick, fensterLuecke: fensterLuecke, sammle: sammle,
+  laufProtokoll: laufProtokoll,
   sperreLesen: sperreLesen, sperreSetzen: sperreSetzen, sperreLoesen: sperreLoesen,
 };

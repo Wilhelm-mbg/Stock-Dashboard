@@ -9813,6 +9813,34 @@ console.log('\nWachhund: steht das Kursarchiv still?');
    * denen sie liegenbleiben kann. Geprueft wird nicht die Textmarke, sondern das
    * VERHALTEN - dass sie auch dann weggeht, wenn mittendrin etwas fliegt. */
   var KQs = require(__dirname + '/kerzenquelle.js');
+  /* ---- JEDER LAUF SCHREIBT EINE ZEILE (27.08.2026) ----
+   * Drei Abrufe sind in der Nacht gestorben, und die Ursache war aus den Artefakten
+   * nicht mehr zu ermitteln - die Werkzeuge schrieben kein Protokoll. Die naechste
+   * Todesursache waere genauso unauffindbar gewesen.
+   * DER WICHTIGE FALL IST DER ABGESTUERZTE LAUF: der erste Wurf schrieb fuer ihn
+   * "ende=durch", weil die Ausnahme am Abbruch-Merker vorbei ins finally sprang.
+   * Damit haette das Protokoll genau den Fehler verdeckt, gegen den es gebaut
+   * wurde. Beide Faelle stehen deshalb hier. */
+  probe((async function () {
+    var tmpL = fs.mkdtempSync(pathT.join(osT.tmpdir(), 'lauflog-test-'));
+    var KQl = require(__dirname + '/kerzenquelle.js');
+    await KQl.sammle({ intervall: '15m', ziel: tmpL, symbole: [], was: 'geglueckt' });
+    await KQl.sammle({
+      intervall: '15m', ziel: tmpL, symbole: ['AAPL'], was: 'stirbt',
+      melde: function (m) { if (m.art === 'start') throw new Error('Bumm'); },
+    }).catch(function () { /* der Absturz ist der Testfall */ });
+    var log = fs.readFileSync(pathT.join(tmpL, 'laeufe.log'), 'utf8').trim().split('\n');
+    ok(log.length === 2,
+       'Jeder Lauf hinterlaesst eine Zeile - auch der, der mittendrin stirbt', log.length);
+    ok(/wer=geglueckt/.test(log[0]) && /ende=durch/.test(log[0]),
+       'Der geglueckte Lauf steht als durchgelaufen da');
+    ok(/wer=stirbt/.test(log[1]) && /ende=ABGEBROCHEN: Ausnahme: Bumm/.test(log[1]),
+       'und der abgestuerzte NENNT den Absturz - sonst verdeckt das Protokoll genau das, wofuer es da ist');
+    ok(/pid=\d+/.test(log[1]) && /rechner=/.test(log[1]),
+       'Mit Prozessnummer und Rechner - ohne die laesst sich eine aeussere Beendigung spaeter nicht zuordnen');
+    fs.rmSync(tmpL, { recursive: true, force: true });
+  })());
+
   /* Das Warten laeuft ueber probe() - die Zusage wird am Ende der Suite eingeloest. */
   probe((async function () {
     var tmpF = fs.mkdtempSync(pathT.join(osT.tmpdir(), 'sammel-fehler-'));
