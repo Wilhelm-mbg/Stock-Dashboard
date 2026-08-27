@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 16:35 (Windows-Uhr)
+letzter-bericht: 2026-08-27 16:45 (Windows-Uhr)
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -124,6 +124,54 @@ Nicht-Krypto, **alle am 25.08., null erfasste Marktlagen** → **nicht erfüllt,
 > *Nebenbemerkung von `06`, der Vollständigkeit halber: der 30-Minuten-Zwischenspeicher bedeutet,
 > dass eine Runde bei einem Seitenwechsel innerhalb einer halben Stunde noch die alte Lage trüge
 > — **für eine Schwelle über Tage belanglos**, aber gesagt.*
+
+---
+
+## ⚠ 27.08. 16:4x — **EREIGNIS-DISSENS: die zwei Quellen widersprechen sich darüber, OB etwas passiert ist**
+
+> ### 🔴 **DAS RGR-URTEIL VON HEUTE FRÜH STEHT UNTER VORBEHALT — es könnte falsch herum sein.**
+> **Auf der Tafel steht (von mir): „RGR: das `1d` stimmt, das 60m ist vor dem 24.10.2025 um Faktor
+> 2,674 zu hoch — **kein Ereignis existiert**." Der zweite Halbsatz ist widerlegt.**
+
+**Ein einziger Abruf hat es gefunden:**
+
+| | |
+|---|---|
+| **Yahoo** | führt für RGR ein **Split-Ereignis 374:1000 am 24.10.2025** — ***exakt der gemessene Versatzfaktor 0,3740*** — und liefert die ÷2,674-angepasste Historie, **die unser `1d` trägt** |
+| **Massive** | kennt für RGR in der **gesamten Firmengeschichte keinen Split**, um den Termin nur **0,04 $ Dividende** |
+
+*So kodiert Yahoo mitunter große Sonderausschüttungen — als **synthetische Splits**. Massive passt
+Ausschüttungen ohnehin nie an.*
+
+> ### **→ Die 60m-Historie war womöglich schlicht die unangepasste Rohansicht — das IESC-Muster.**
+> **Dann wäre nicht das 60m kaputt, sondern das `1d` angepasst. Das ist die Gegenrichtung meines
+> geboardeten Urteils.**
+
+**Und die Frage ist von keinem der beiden Vendoren entscheidbar:**
+> ***Ob die ÷2,674-Anpassung berechtigt ist, hängt daran, ob das Ereignis real ist — das
+> entscheidet EDGAR (8-K / Ausschüttungsunterlagen um den 24.10.2025), keiner der beiden.***
+
+**Beide Ausgänge sind wertvoll, und zwar über RGR hinaus:** *Ein **62,6-%-Ereignis** bei Ruger
+wäre enorm, und **Massives Schweigen dazu ist ebenso auffällig**. Entweder **Yahoo trägt ein
+Phantom-Ereignis**, oder **Massive hat ein reales verpasst**.* **In beiden Fällen ist es ein
+Befund über den Zeugen, nicht nur über die Reihe** — *und wir stützen uns seit heute auf beide.*
+
+> ### 📐 DIE BAUFORM HAT ZWEI VARIANTEN, beide heute belegt
+> **`IESC`:** *Quelle **kennt** den Split im `events`-Feld, **passt aber nicht an*** (+ fehlende
+> 24.08.-Kerze im 1mo-Fenster).
+> **`RGR`:** *Quelle führt ein Ereignis, **das der andere Vendor nicht kennt**, und **passt an**.*
+>
+> ***Selbstheilung durch Nachladen hängt an EREIGNIS-FÜHRUNG UND ANPASSUNGS-PRAXIS der Quelle —
+> und beide sind je Reihe verschieden.***
+
+**⭐ EDGAR ist damit vom Zusatz-Zeugen zum SCHIEDSRICHTER geworden.** *Es ist heute die zweite
+Stelle, an der es die entscheidende Instanz ist (nach der Grayscale-Frage) — und es ist
+kostenlos, im Haus und wird für die Insider-Karte bereits benutzt.* **Wenn zwei Kursquellen sich
+darüber uneinig sind, OB etwas passiert ist, ist die Aufsichtsunterlage der einzige Zeuge, der
+kein Anbieter ist.**
+
+*Der systematische Sweep (RGR / SITC / B / BYND + AAPL/NVDA-Gegenkontrolle, Grundmenge zählen,
+**nichts ändern**) bleibt der Auftrag für den nächsten Lauf.*
 
 ---
 
@@ -650,7 +698,7 @@ schon da.**
 > inkompatibel sein.***
 >
 > **Die fünf Urteile mit „gilt für":**
-> - **RGR:** 60m **vor** dem 24.10.2025 Faktor 2,674 zu hoch (**kein Ereignis existiert**); ab
+> - **RGR:** ⚠ UNTER VORBEHALT, siehe Ereignis-Dissens oben - Yahoo FUEHRT ein Ereignis 374:1000 am 24.10.2025; ab
 >   24.10.2025 stimmen beide überein.
 > - **WHLR:** **drei Segmente** — historisch (z. B. Sept. 2024) **1d kaputt** (+ F-Fund
 >   03.04.2017) · heute früh vor Ausführung: 60m konsistent auf Rohskala, **1d in sich
