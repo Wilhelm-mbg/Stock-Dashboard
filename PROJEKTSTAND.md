@@ -8781,6 +8781,32 @@ mit #93/#94 zusammen runder.
 *Eine Zeile, vom Strategie-Tüftler selbst gepflegt. Übergabe läuft über
 `studien/tueftler/WARTESCHLANGE.md`, nicht über diese Tafel.*
 
+- **27.08.2026, ~19:4x — Quellverfall Stufe 1 (Auftrag des PM, null Netzabrufe).** Commit
+  `5f0eee8`, Protokoll `studien/tueftler/2026-08-27-quellverfall-stufe1.md`. **Zeuge ist
+  nicht eine zweite Quelle, sondern DIESELBE Quelle zu zwei Zeitpunkten:**
+  `massive-sicherung` (Abruf 23.08. 17:21) gegen `massive/tagesdaten` (27.08. 13:41), 3,8
+  Tage Abstand aus den Stempeln gerechnet; die 288 vom Vollauf noch nicht erneuerten Reihen
+  ausgeschlossen, weil sie bytegleich wären und als „kein Verfall" durchgingen. **(1) Über
+  876 Reihen wanderte die Vorderkante Median 0, min 0, max 0 — keine verlor einen Tag.**
+  753 hängen an genau einer Kante (2024-08-23 = die 730-Tage-Grenze *vom 23.08.*).
+  Positivkontrolle: 84 Reihen wuchsen an der Hinterkante, der Vergleich erkennt Veränderung
+  also. Und die Falle geprüft, in die ich fast lief — der Vollauf *behält* Kerzen, dann
+  hätte ich unsere Zusammenführung gemessen statt der Quelle: für alle 879 beginnt die Datei
+  exakt bei `geliefertVon`, kein Artefakt. **(2) Der Verfall trifft ganze REIHEN, nicht
+  Kerzen:** eine Reihe, die am Tag D aufhörte, führt nur das Stück zwischen Wand und D —
+  rückt die Wand über D, verschwindet sie **vollständig**. 65 % haben > 1 Jahr Luft, eine
+  Minderheit fällt ganz weg (76 in 90 Tagen, davon 17 ohne Eröffnungskurs). **Die
+  Fristentabelle unterstellt tägliches Nachrücken — genau das ist NICHT bestätigt; 3,8 Tage
+  trennen „rückt nie" nicht von „rückt monatsweise".** **(3) 🔻 Rücknahme meiner eigenen
+  Zahl von 04:50:** „1.894 Symbol-Tage draußen, ~3.917 je Woche, nach 90 Tagen 20,6 %" kam
+  aus einem gerechneten Modell, gemessen sind es **0 verlorene Vordertage**. Und die **Form**
+  war falsch — gleichmäßiger Abrieb gegen Reihen, die ganz wegfallen. *Daraus folgt nicht
+  „alles schnell nachholen", sondern „die an der Kante zuerst": andere Reihenfolge, nicht
+  andere Geschwindigkeit.* **Vorrangliste für `1d` liegt bereit**
+  (`studien/tueftler/daten/vorrang-eroeffnungskurse-2026-08-27.json`, 276 Reihen nach Luft
+  sortiert; knappste BFI mit 28 Tagen). **Stufe 2 (rückt die Wand?) braucht 5 Abrufe, nicht
+  60, und wartet auf freie Leitung.**
+
 - **27.08.2026, ~19:00 — Recherche-Lauf (neue Pflicht: jede zweite Runde Literatur).**
   Kein Auftrag offen, also selbst genommen. Dossier
   `studien/tueftler/recherche-2026-08-27/DOSSIER.md`, Übergabe
