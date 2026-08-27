@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 18:20 (Windows-Uhr)
+letzter-bericht: 2026-08-27 19:25 (Windows-Uhr)
 gesehener-tag: v8.34.2 (installiert 17:00)
 pm-adresse: markt-dashboard-f5 [5204c6]   <- HIERHIN melden, NICHT an "Projekt-Manager"
 -->
@@ -541,6 +541,46 @@ frischen Wert genommen, wie vorgesehen.*
 **Für die Messseite relevant: bei Kursen unter einem Cent sind vier Nachkommastellen bis zu 2 %
 Verlust.** *Wer auf dieser Preisklasse misst, sollte es wissen — 8 von 200.913, nichts dagegen
 gebaut.*
+
+---
+
+## ⛔ 27.08. 19:2x — **ES GIBT KEINE NACHTLÄUFE MEHR. Zwei Aufträge sind damit verwaist**
+
+**Wilhelm hat die geplanten Aufgaben abgeräumt. Nachgeprüft mit `list_scheduled_tasks` — es sind
+noch GENAU ZWEI:**
+
+| taskId | Zeitplan |
+|---|---|
+| `spekulations-radar` | `45 6,12,14 * * *`, aktiv |
+| `release-wache` | **Manual only**, aktiv |
+
+> ### **Weg sind: `auditor` · `analytiker` · `issue-wache` · `strategie-tueftler` · `archiv-nachladen`.**
+> **Wer heute Nacht auf einen Auditor- oder Analytiker-Lauf wartet, wartet vergeblich.**
+
+**⚠ Alles auf dieser Tafel mit „im Nachtlauf", „Rotationspunkt", „der 8-Uhr-Lauf prüft" oder
+„kommender Nachtlauf" ist damit ÜBERHOLT** — *einschließlich der Zeile weiter unten, die den
+Takt (Auditor 01:00, Analytiker 03:15, Tüftler 04:30) noch als laufend führt.*
+
+### 🔴 ZWEI SUBSTANZIELLE ARBEITSPAKETE SIND VERWAIST
+
+**1. Das Inventar des Reiters „Regeln"** *(Wilhelms neues Vorhaben von heute Nachmittag)*.
+*Fertig ist das Gerüst — Umfang, 83 Bedienelemente, kein toter Schalter, der `#idMode`-Fund.*
+**Offen und niemandem zugeteilt: was jedes Bedienelement TUT, ob etwas WIDERLEGTES steuert, die
+drei Lese-Bereiche in Wilhelms Sprache, die Markierungsspalte „könnte automatisch laufen".**
+*Der Auftrag liegt abgelegt in `studien/auditor/AUFTRAG-NACHTLAUF.md` — **er wartet auf einen Lauf,
+den es nicht mehr gibt.***
+
+**2. Der Bauform-Sweep des Analytikers** *(RGR/SITC/B/BYND: führt Yahoo Split-Ereignisse, ohne die
+Historie anzupassen? plus AAPL/NVDA-Gegenkontrolle)* **und der registrierte EDGAR-Schritt für
+GBTC/ETHE.**
+
+> **📐 Und die Hausregel von heute gilt hier gegen mich selbst:** ***„Ein Entscheid, nichts zu tun,
+> sieht ohne Begründung genauso aus wie ein Versäumnis."*** *Ohne diese Zeile hätte morgen jemand
+> auf Ergebnisse gewartet, die niemand mehr erzeugt.*
+
+*Nebenwirkung: die sieben Rollen-SKILLs, die heute auf die Tafel-Adresse umgestellt wurden,
+**steuern derzeit nichts mehr** — die Änderung bleibt richtig, falls eine Aufgabe je wieder
+eingetragen wird.*
 
 ---
 
