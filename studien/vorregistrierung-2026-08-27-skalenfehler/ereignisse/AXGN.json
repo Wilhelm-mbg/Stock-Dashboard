@@ -1,18 +1,25 @@
 {
- "sym": "BYND",
+ "sym": "AXGN",
  "ereignisse": [
   {
-   "datum": "2026-08-14",
-   "art": "split",
-   "faktor": 30
+   "datum": "2010-01-27",
+   "art": "dividende",
+   "faktor": 1,
+   "typ": "CD"
+  },
+  {
+   "datum": "2005-02-23",
+   "art": "dividende",
+   "faktor": 0.06,
+   "typ": "CD"
   }
  ],
  "quelle": "Massive REST /v3/reference/splits und /v3/reference/dividends (Bearer, Gratis-Stufe)",
- "abgerufen": "2026-08-27T10:14:10.334Z",
+ "abgerufen": "2026-08-27T10:12:39.325Z",
  "abgedeckt": [
   "split",
   "dividende"
  ],
  "konvention": "faktor bei art=split: Kursfaktor am Ausfuehrungstag = split_from/split_to (Reverse 4:1 -> 4; Forward 1:4 -> 0.25). faktor bei art=dividende: Barbetrag in USD je Aktie (KEIN Kursfaktor). datum: execution_date bzw. ex_dividend_date.",
- "hinweis": "Splits aus der Morgen-Probe 08:45Z uebernommen; I1-Kandidat (Pendel-Paar im Tagesarchiv, Enumeration des Analytikers nach der vorregistrierten I1-Definition auf dem am 27.08. neu geschriebenen Archiv)."
+ "hinweis": "I1-Kandidat (Pendel-Paar im Tagesarchiv, Enumeration des Analytikers nach der vorregistrierten I1-Definition auf dem am 27.08. neu geschriebenen Archiv)."
 }

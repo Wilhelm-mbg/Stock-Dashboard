@@ -1,0 +1,872 @@
+{
+ "gemessenAm": "2026-08-27T10:11:01.599Z",
+ "seed": 20260827,
+ "erkenner": {
+  "faktorMin": 2,
+  "fenster": 30,
+  "produktEps": 0.1
+ },
+ "W1": {
+  "treffer": 50,
+  "soll": 50
+ },
+ "W2basis": 1,
+ "M1": [
+  {
+   "sym": "ARWR",
+   "von": "1994-08-11",
+   "bis": "1994-09-20",
+   "q1": 0.4,
+   "produkt": 0.9744,
+   "zonenLaenge": 28,
+   "zonenAnteilProzent": 0.34
+  },
+  {
+   "sym": "CHRD",
+   "von": "2020-03-16",
+   "bis": "2020-04-22",
+   "q1": 0.42,
+   "produkt": 0.9703,
+   "zonenLaenge": 27,
+   "zonenAnteilProzent": 0.66
+  },
+  {
+   "sym": "IOVA",
+   "von": "2013-04-03",
+   "bis": "2013-05-02",
+   "q1": 0.3333,
+   "produkt": 1,
+   "zonenLaenge": 22,
+   "zonenAnteilProzent": 0.55
+  },
+  {
+   "sym": "BYRN",
+   "von": "2009-07-07",
+   "bis": "2009-08-03",
+   "q1": 2.2,
+   "produkt": 1.0185,
+   "zonenLaenge": 20,
+   "zonenAnteilProzent": 0.4
+  },
+  {
+   "sym": "IOVA",
+   "von": "2013-05-13",
+   "bis": "2013-06-10",
+   "q1": 2,
+   "produkt": 1,
+   "zonenLaenge": 20,
+   "zonenAnteilProzent": 0.5
+  },
+  {
+   "sym": "QXO",
+   "von": "2013-01-15",
+   "bis": "2013-02-11",
+   "q1": 0.4545,
+   "produkt": 0.974,
+   "zonenLaenge": 19,
+   "zonenAnteilProzent": 0.53
+  },
+  {
+   "sym": "ASTH",
+   "von": "2009-07-20",
+   "bis": "2009-08-11",
+   "q1": 0.5,
+   "produkt": 1,
+   "zonenLaenge": 17,
+   "zonenAnteilProzent": 0.39
+  },
+  {
+   "sym": "IOVA",
+   "von": "2013-03-11",
+   "bis": "2013-04-03",
+   "q1": 0.5,
+   "produkt": 1,
+   "zonenLaenge": 17,
+   "zonenAnteilProzent": 0.43
+  },
+  {
+   "sym": "ARWR",
+   "von": "1997-07-31",
+   "bis": "1997-08-18",
+   "q1": 2.2581,
+   "produkt": 1,
+   "zonenLaenge": 13,
+   "zonenAnteilProzent": 0.16
+  },
+  {
+   "sym": "ARWR",
+   "von": "2002-08-30",
+   "bis": "2002-09-18",
+   "q1": 6,
+   "produkt": 1,
+   "zonenLaenge": 13,
+   "zonenAnteilProzent": 0.16
+  },
+  {
+   "sym": "ARWR",
+   "von": "1995-06-09",
+   "bis": "1995-06-26",
+   "q1": 2,
+   "produkt": 1,
+   "zonenLaenge": 12,
+   "zonenAnteilProzent": 0.15
+  },
+  {
+   "sym": "HROW",
+   "von": "2011-11-22",
+   "bis": "2011-12-07",
+   "q1": 2.1429,
+   "produkt": 1.0204,
+   "zonenLaenge": 11,
+   "zonenAnteilProzent": 0.23
+  },
+  {
+   "sym": "ARWR",
+   "von": "2003-10-13",
+   "bis": "2003-10-24",
+   "q1": 2.5,
+   "produkt": 1,
+   "zonenLaenge": 10,
+   "zonenAnteilProzent": 0.12
+  },
+  {
+   "sym": "ARWR",
+   "von": "1995-01-16",
+   "bis": "1995-01-26",
+   "q1": 2.9841,
+   "produkt": 1,
+   "zonenLaenge": 9,
+   "zonenAnteilProzent": 0.11
+  },
+  {
+   "sym": "ASTH",
+   "von": "2009-10-30",
+   "bis": "2009-11-11",
+   "q1": 2,
+   "produkt": 1,
+   "zonenLaenge": 9,
+   "zonenAnteilProzent": 0.2
+  },
+  {
+   "sym": "BYRN",
+   "von": "2009-10-06",
+   "bis": "2009-10-15",
+   "q1": 2.1053,
+   "produkt": 1.0526,
+   "zonenLaenge": 8,
+   "zonenAnteilProzent": 0.16
+  },
+  {
+   "sym": "BYRN",
+   "von": "2010-06-10",
+   "bis": "2010-06-21",
+   "q1": 3.0667,
+   "produkt": 0.9303,
+   "zonenLaenge": 8,
+   "zonenAnteilProzent": 0.16
+  },
+  {
+   "sym": "ARWR",
+   "von": "2002-10-02",
+   "bis": "2002-10-09",
+   "q1": 4,
+   "produkt": 1,
+   "zonenLaenge": 6,
+   "zonenAnteilProzent": 0.07
+  },
+  {
+   "sym": "ARWR",
+   "von": "2000-03-03",
+   "bis": "2000-03-09",
+   "q1": 2,
+   "produkt": 1,
+   "zonenLaenge": 5,
+   "zonenAnteilProzent": 0.06
+  },
+  {
+   "sym": "BYND",
+   "von": "2026-07-31",
+   "bis": "2026-08-06",
+   "q1": 30.5396,
+   "produkt": 1.0373,
+   "zonenLaenge": 5,
+   "zonenAnteilProzent": 0.27
+  },
+  {
+   "sym": "BLNK",
+   "von": "2010-04-05",
+   "bis": "2010-04-08",
+   "q1": 0.0938,
+   "produkt": 0.9375,
+   "zonenLaenge": 4,
+   "zonenAnteilProzent": 0.1
+  },
+  {
+   "sym": "BYRN",
+   "von": "2011-09-02",
+   "bis": "2011-09-08",
+   "q1": 0.4167,
+   "produkt": 1.0417,
+   "zonenLaenge": 4,
+   "zonenAnteilProzent": 0.08
+  },
+  {
+   "sym": "CHRD",
+   "von": "2020-03-09",
+   "bis": "2020-03-12",
+   "q1": 0.3837,
+   "produkt": 1.0371,
+   "zonenLaenge": 4,
+   "zonenAnteilProzent": 0.1
+  },
+  {
+   "sym": "HROW",
+   "von": "2011-12-09",
+   "bis": "2011-12-14",
+   "q1": 2,
+   "produkt": 1,
+   "zonenLaenge": 4,
+   "zonenAnteilProzent": 0.08
+  },
+  {
+   "sym": "BYND",
+   "von": "2026-07-20",
+   "bis": "2026-07-22",
+   "q1": 30.203,
+   "produkt": 0.9444,
+   "zonenLaenge": 3,
+   "zonenAnteilProzent": 0.16
+  },
+  {
+   "sym": "BYND",
+   "von": "2026-08-03",
+   "bis": "2026-08-05",
+   "q1": 0.036,
+   "produkt": 0.9359,
+   "zonenLaenge": 3,
+   "zonenAnteilProzent": 0.16
+  },
+  {
+   "sym": "IOVA",
+   "von": "2013-04-05",
+   "bis": "2013-04-09",
+   "q1": 0.5,
+   "produkt": 1,
+   "zonenLaenge": 3,
+   "zonenAnteilProzent": 0.08
+  },
+  {
+   "sym": "ARWR",
+   "von": "1994-08-12",
+   "bis": "1994-08-15",
+   "q1": 2,
+   "produkt": 1,
+   "zonenLaenge": 2,
+   "zonenAnteilProzent": 0.02
+  },
+  {
+   "sym": "ARWR",
+   "von": "1995-12-29",
+   "bis": "1996-01-02",
+   "q1": 0.4,
+   "produkt": 0.9008,
+   "zonenLaenge": 2,
+   "zonenAnteilProzent": 0.02
+  },
+  {
+   "sym": "HROW",
+   "von": "2011-03-10",
+   "bis": "2011-03-11",
+   "q1": 0.5,
+   "produkt": 1,
+   "zonenLaenge": 2,
+   "zonenAnteilProzent": 0.04
+  },
+  {
+   "sym": "INDV",
+   "von": "2022-11-23",
+   "bis": "2022-11-25",
+   "q1": 0.1594,
+   "produkt": 1.0707,
+   "zonenLaenge": 2,
+   "zonenAnteilProzent": 0.07
+  },
+  {
+   "sym": "ARWR",
+   "von": "1994-06-22",
+   "bis": "1994-06-22",
+   "q1": 0.5,
+   "produkt": 1,
+   "zonenLaenge": 1,
+   "zonenAnteilProzent": 0.01
+  },
+  {
+   "sym": "ARWR",
+   "von": "1995-01-09",
+   "bis": "1995-01-09",
+   "q1": 2.8571,
+   "produkt": 1,
+   "zonenLaenge": 1,
+   "zonenAnteilProzent": 0.01
+  },
+  {
+   "sym": "ARWR",
+   "von": "1997-05-05",
+   "bis": "1997-05-05",
+   "q1": 2.0108,
+   "produkt": 1,
+   "zonenLaenge": 1,
+   "zonenAnteilProzent": 0.01
+  },
+  {
+   "sym": "ARWR",
+   "von": "1997-12-18",
+   "bis": "1997-12-18",
+   "q1": 0.5,
+   "produkt": 1,
+   "zonenLaenge": 1,
+   "zonenAnteilProzent": 0.01
+  },
+  {
+   "sym": "ARWR",
+   "von": "2002-06-11",
+   "bis": "2002-06-11",
+   "q1": 0.5,
+   "produkt": 1,
+   "zonenLaenge": 1,
+   "zonenAnteilProzent": 0.01
+  },
+  {
+   "sym": "ASTH",
+   "von": "2013-11-07",
+   "bis": "2013-11-07",
+   "q1": 18.537,
+   "produkt": 1,
+   "zonenLaenge": 1,
+   "zonenAnteilProzent": 0.02
+  },
+  {
+   "sym": "BYRN",
+   "von": "2016-04-01",
+   "bis": "2016-04-01",
+   "q1": 0.1852,
+   "produkt": 1,
+   "zonenLaenge": 1,
+   "zonenAnteilProzent": 0.02
+  },
+  {
+   "sym": "BYRN",
+   "von": "2017-06-29",
+   "bis": "2017-06-29",
+   "q1": 0.5,
+   "produkt": 1,
+   "zonenLaenge": 1,
+   "zonenAnteilProzent": 0.02
+  },
+  {
+   "sym": "HROW",
+   "von": "2011-03-08",
+   "bis": "2011-03-08",
+   "q1": 0.5,
+   "produkt": 1,
+   "zonenLaenge": 1,
+   "zonenAnteilProzent": 0.02
+  },
+  {
+   "sym": "HROW",
+   "von": "2011-11-18",
+   "bis": "2011-11-18",
+   "q1": 0.4286,
+   "produkt": 1,
+   "zonenLaenge": 1,
+   "zonenAnteilProzent": 0.02
+  },
+  {
+   "sym": "IOVA",
+   "von": "2012-08-02",
+   "bis": "2012-08-02",
+   "q1": 0.4231,
+   "produkt": 0.9615,
+   "zonenLaenge": 1,
+   "zonenAnteilProzent": 0.03
+  },
+  {
+   "sym": "TGTX",
+   "von": "2011-10-27",
+   "bis": "2011-10-27",
+   "q1": 3.6364,
+   "produkt": 1.0909,
+   "zonenLaenge": 1,
+   "zonenAnteilProzent": 0.02
+  },
+  {
+   "sym": "WT",
+   "von": "2004-10-25",
+   "bis": "2004-10-25",
+   "q1": 0.5,
+   "produkt": 1,
+   "zonenLaenge": 1,
+   "zonenAnteilProzent": 0.01
+  }
+ ],
+ "M2": {
+  "pendel": [
+   {
+    "sym": "APLD",
+    "von": "2022-06-13",
+    "bis": "2022-07-18",
+    "q1": 0.474,
+    "produkt": 0.949,
+    "zonenLaenge": 24,
+    "zeuge": "ausserhalb"
+   },
+   {
+    "sym": "AXGN",
+    "von": "2003-01-30",
+    "bis": "2003-02-13",
+    "q1": 0.435,
+    "produkt": 0.994,
+    "zonenLaenge": 11,
+    "zeuge": "ausserhalb"
+   },
+   {
+    "sym": "BLFS",
+    "von": "2009-03-12",
+    "bis": "2009-03-13",
+    "q1": 2,
+    "produkt": 1,
+    "zonenLaenge": 2,
+    "zeuge": "ausserhalb"
+   },
+   {
+    "sym": "BLFS",
+    "von": "2009-03-20",
+    "bis": "2009-03-20",
+    "q1": 2,
+    "produkt": 1,
+    "zonenLaenge": 1,
+    "zeuge": "ausserhalb"
+   },
+   {
+    "sym": "BLFS",
+    "von": "2009-04-03",
+    "bis": "2009-04-09",
+    "q1": 2.4,
+    "produkt": 1,
+    "zonenLaenge": 5,
+    "zeuge": "ausserhalb"
+   },
+   {
+    "sym": "BLFS",
+    "von": "2011-09-13",
+    "bis": "2011-09-13",
+    "q1": 0.333,
+    "produkt": 1,
+    "zonenLaenge": 1,
+    "zeuge": "ausserhalb"
+   },
+   {
+    "sym": "BLFS",
+    "von": "2011-12-05",
+    "bis": "2011-12-13",
+    "q1": 2,
+    "produkt": 1,
+    "zonenLaenge": 7,
+    "zeuge": "ausserhalb"
+   },
+   {
+    "sym": "BLFS",
+    "von": "2011-12-07",
+    "bis": "2012-01-20",
+    "q1": 2.25,
+    "produkt": 1,
+    "zonenLaenge": 30,
+    "zeuge": "ausserhalb"
+   },
+   {
+    "sym": "BLFS",
+    "von": "2011-12-13",
+    "bis": "2012-01-11",
+    "q1": 2,
+    "produkt": 1,
+    "zonenLaenge": 20,
+    "zeuge": "ausserhalb"
+   },
+   {
+    "sym": "BOKF",
+    "von": "1991-10-30",
+    "bis": "1991-11-11",
+    "q1": 2,
+    "produkt": 1,
+    "zonenLaenge": 9,
+    "zeuge": "ausserhalb"
+   },
+   {
+    "sym": "CSR",
+    "von": "1999-07-16",
+    "bis": "1999-07-16",
+    "q1": 2.2,
+    "produkt": 1,
+    "zonenLaenge": 1,
+    "zeuge": "ausserhalb"
+   },
+   {
+    "sym": "CTO",
+    "von": "1992-08-18",
+    "bis": "1992-08-18",
+    "q1": 2,
+    "produkt": 0.964,
+    "zonenLaenge": 1,
+    "zeuge": "ausserhalb"
+   },
+   {
+    "sym": "EGY",
+    "von": "1995-12-27",
+    "bis": "1995-12-27",
+    "q1": 2.021,
+    "produkt": 1,
+    "zonenLaenge": 1,
+    "zeuge": "ausserhalb"
+   },
+   {
+    "sym": "GGAL",
+    "von": "2002-08-27",
+    "bis": "2002-08-27",
+    "q1": 0.342,
+    "produkt": 0.987,
+    "zonenLaenge": 1,
+    "zeuge": "ausserhalb"
+   },
+   {
+    "sym": "GME",
+    "von": "2021-01-27",
+    "bis": "2021-02-01",
+    "q1": 2.348,
+    "produkt": 0.939,
+    "zonenLaenge": 4,
+    "zeuge": "ausserhalb"
+   },
+   {
+    "sym": "HIG",
+    "von": "2008-10-30",
+    "bis": "2008-12-04",
+    "q1": 0.484,
+    "produkt": 0.98,
+    "zonenLaenge": 25,
+    "zeuge": "ausserhalb"
+   },
+   {
+    "sym": "IPAR",
+    "von": "1990-08-03",
+    "bis": "1990-08-07",
+    "q1": 0.4,
+    "produkt": 0.923,
+    "zonenLaenge": 3,
+    "zeuge": "ausserhalb"
+   },
+   {
+    "sym": "LCII",
+    "von": "1988-12-27",
+    "bis": "1988-12-27",
+    "q1": 0.5,
+    "produkt": 1,
+    "zonenLaenge": 1,
+    "zeuge": "ausserhalb"
+   },
+   {
+    "sym": "MARA",
+    "von": "2012-09-10",
+    "bis": "2012-09-10",
+    "q1": 0.29,
+    "produkt": 1,
+    "zonenLaenge": 1,
+    "zeuge": "ausserhalb"
+   },
+   {
+    "sym": "MNST",
+    "von": "1987-10-20",
+    "bis": "1987-11-16",
+    "q1": 0.5,
+    "produkt": 1,
+    "zonenLaenge": 20,
+    "zeuge": "ausserhalb"
+   },
+   {
+    "sym": "MNST",
+    "von": "1987-11-30",
+    "bis": "1987-12-23",
+    "q1": 0.5,
+    "produkt": 1,
+    "zonenLaenge": 18,
+    "zeuge": "ausserhalb"
+   },
+   {
+    "sym": "MNST",
+    "von": "1987-12-28",
+    "bis": "1988-01-07",
+    "q1": 0.5,
+    "produkt": 1,
+    "zonenLaenge": 8,
+    "zeuge": "ausserhalb"
+   },
+   {
+    "sym": "PECO",
+    "von": "2021-07-06",
+    "bis": "2021-07-09",
+    "q1": 3,
+    "produkt": 1.008,
+    "zonenLaenge": 4,
+    "zeuge": "ausserhalb"
+   },
+   {
+    "sym": "SUZ",
+    "von": "2008-12-11",
+    "bis": "2008-12-19",
+    "q1": 0.352,
+    "produkt": 1.051,
+    "zonenLaenge": 7,
+    "zeuge": "ausserhalb"
+   }
+  ],
+  "reihenMitFeuer": 16,
+  "rate": 0.0072300045187528245,
+  "schranke": 0.02,
+  "zeuge": {
+   "echt": 0,
+   "nur1d": 0,
+   "offen": 24,
+   "fensterAb": "2023-09-26"
+  }
+ },
+ "I2": [
+  {
+   "sym": "ARWR",
+   "diagnose": "unentschieden",
+   "segmente": [
+    {
+     "von": "2016-11-30",
+     "tage": 732,
+     "quoteMedian": 1,
+     "spannweite": 0.0141
+    }
+   ]
+  },
+  {
+   "sym": "ASTH",
+   "diagnose": "unentschieden",
+   "segmente": [
+    {
+     "von": "2016-12-01",
+     "tage": 628,
+     "quoteMedian": 1,
+     "spannweite": 0.0228
+    }
+   ]
+  },
+  {
+   "sym": "B",
+   "diagnose": "TRENNFALL-VERDACHT (Quote driftet)",
+   "segmente": [
+    {
+     "von": "1986-08-25",
+     "tage": 659,
+     "quoteMedian": 0.7535,
+     "spannweite": 0.9004
+    }
+   ]
+  },
+  {
+   "sym": "BLNK",
+   "diagnose": "unentschieden",
+   "segmente": [
+    {
+     "von": "2018-05-07",
+     "tage": 732,
+     "quoteMedian": 1,
+     "spannweite": 0.0461
+    }
+   ]
+  },
+  {
+   "sym": "BYND",
+   "diagnose": "SKALEN-VERSATZ (Quote konstant je Segment, Segmente verschieden)",
+   "segmente": [
+    {
+     "von": "2019-05-02",
+     "tage": 518,
+     "quoteMedian": 0.0333,
+     "spannweite": 0.0255
+    },
+    {
+     "von": "2025-10-21",
+     "tage": 185,
+     "quoteMedian": 0.0333,
+     "spannweite": 0.0367
+    },
+    {
+     "von": "2026-08-11",
+     "tage": 12,
+     "quoteMedian": 1,
+     "spannweite": 0.0239
+    }
+   ]
+  },
+  {
+   "sym": "BYRN",
+   "diagnose": "unentschieden",
+   "segmente": [
+    {
+     "von": "2017-06-30",
+     "tage": 732,
+     "quoteMedian": 1,
+     "spannweite": 0.0373
+    }
+   ]
+  },
+  {
+   "sym": "CHRD",
+   "diagnose": "unentschieden",
+   "segmente": [
+    {
+     "von": "2020-11-20",
+     "tage": 732,
+     "quoteMedian": 1,
+     "spannweite": 0.0114
+    }
+   ]
+  },
+  {
+   "sym": "HROW",
+   "diagnose": "konsistent (Quote konstant)",
+   "segmente": [
+    {
+     "von": "2012-03-19",
+     "tage": 732,
+     "quoteMedian": 1,
+     "spannweite": 0.007
+    }
+   ]
+  },
+  {
+   "sym": "INDV",
+   "diagnose": "TRENNFALL-VERDACHT (Quote driftet)",
+   "segmente": [
+    {
+     "von": "2022-11-28",
+     "tage": 732,
+     "quoteMedian": 1,
+     "spannweite": 0.0737
+    }
+   ]
+  },
+  {
+   "sym": "IOVA",
+   "diagnose": "unentschieden",
+   "segmente": [
+    {
+     "von": "2022-05-27",
+     "tage": 732,
+     "quoteMedian": 1,
+     "spannweite": 0.0238
+    }
+   ]
+  },
+  {
+   "sym": "QXO",
+   "diagnose": "TRENNFALL-VERDACHT (Quote driftet)",
+   "segmente": [
+    {
+     "von": "2023-12-04",
+     "tage": 36,
+     "quoteMedian": 0.9996,
+     "spannweite": 0.112
+    },
+    {
+     "von": "2024-07-30",
+     "tage": 521,
+     "quoteMedian": 1,
+     "spannweite": 0.049
+    }
+   ]
+  },
+  {
+   "sym": "RGR",
+   "diagnose": "TRENNFALL-VERDACHT (Quote driftet)",
+   "segmente": [
+    {
+     "von": "1986-08-25",
+     "tage": 732,
+     "quoteMedian": 0.3741,
+     "spannweite": 1.6882
+    }
+   ]
+  },
+  {
+   "sym": "SITC",
+   "diagnose": "TRENNFALL-VERDACHT (Quote driftet)",
+   "segmente": [
+    {
+     "von": "1993-02-02",
+     "tage": 732,
+     "quoteMedian": 0.9993,
+     "spannweite": 0.7079
+    }
+   ]
+  },
+  {
+   "sym": "TGTX",
+   "diagnose": "unentschieden",
+   "segmente": [
+    {
+     "von": "2012-02-06",
+     "tage": 732,
+     "quoteMedian": 1,
+     "spannweite": 0.0259
+    }
+   ]
+  },
+  {
+   "sym": "WHLR",
+   "diagnose": "TRENNFALL-VERDACHT (Quote driftet)",
+   "segmente": [
+    {
+     "von": "2017-04-03",
+     "tage": 237,
+     "quoteMedian": 3.9386,
+     "spannweite": 0.9069
+    },
+    {
+     "von": "2024-09-06",
+     "tage": 196,
+     "quoteMedian": 4.0049,
+     "spannweite": 0.1038
+    },
+    {
+     "von": "2025-06-20",
+     "tage": 297,
+     "quoteMedian": 4.0002,
+     "spannweite": 0.1489
+    }
+   ]
+  },
+  {
+   "sym": "WT",
+   "diagnose": "TRENNFALL-VERDACHT (Quote driftet)",
+   "segmente": [
+    {
+     "von": "2004-11-19",
+     "tage": 732,
+     "quoteMedian": 1,
+     "spannweite": 0.0504
+    }
+   ]
+  }
+ ],
+ "eichfaelle": [
+  "RGR",
+  "WHLR",
+  "BYND",
+  "SITC",
+  "B"
+ ]
+}

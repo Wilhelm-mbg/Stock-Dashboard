@@ -1,18 +1,23 @@
 {
- "sym": "BYND",
+ "sym": "APLD",
  "ereignisse": [
   {
-   "datum": "2026-08-14",
+   "datum": "2022-04-13",
    "art": "split",
-   "faktor": 30
+   "faktor": 6
+  },
+  {
+   "datum": "2003-12-16",
+   "art": "split",
+   "faktor": 800
   }
  ],
  "quelle": "Massive REST /v3/reference/splits und /v3/reference/dividends (Bearer, Gratis-Stufe)",
- "abgerufen": "2026-08-27T10:14:10.334Z",
+ "abgerufen": "2026-08-27T10:11:21.271Z",
  "abgedeckt": [
   "split",
   "dividende"
  ],
  "konvention": "faktor bei art=split: Kursfaktor am Ausfuehrungstag = split_from/split_to (Reverse 4:1 -> 4; Forward 1:4 -> 0.25). faktor bei art=dividende: Barbetrag in USD je Aktie (KEIN Kursfaktor). datum: execution_date bzw. ex_dividend_date.",
- "hinweis": "Splits aus der Morgen-Probe 08:45Z uebernommen; I1-Kandidat (Pendel-Paar im Tagesarchiv, Enumeration des Analytikers nach der vorregistrierten I1-Definition auf dem am 27.08. neu geschriebenen Archiv)."
+ "hinweis": "I1-Kandidat (Pendel-Paar im Tagesarchiv, Enumeration des Analytikers nach der vorregistrierten I1-Definition auf dem am 27.08. neu geschriebenen Archiv)."
 }
