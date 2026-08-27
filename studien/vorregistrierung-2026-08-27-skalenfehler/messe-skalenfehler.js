@@ -96,17 +96,27 @@ var kandidaten = sauber.filter(function (r) { return r.closes.length > 400; });
 var probe = [];
 for (var p = 0; p < 50; p++) probe.push(kandidaten[Math.floor(rnd() * kandidaten.length)]);
 var qWahl = [4, 10, 30], zWahl = [2, 5, 17];
-var w1Treffer = 0, w1Fehl = [];
+var w1Treffer = 0, w1Fehl = [], w1Verworfen = 0;
 probe.forEach(function (r, idx) {
   var closes = r.closes.slice();
   var q = qWahl[idx % 3], zone = zWahl[Math.floor(idx / 3) % 3];
-  var start = 50 + Math.floor(rnd() * (closes.length - zone - 100));
+  /* Nachtrag 1.2: Stellenbedingung - beide Grenzuebergaenge < 10 % natuerliche
+   * Bewegung (auf der UNVERAENDERTEN Reihe geprueft); verworfene Stellen geloggt. */
+  var start = -1;
+  for (var v = 0; v < 50; v++) {
+    var s = 50 + Math.floor(rnd() * (closes.length - zone - 100));
+    var m1n = Math.abs(closes[s] / closes[s - 1] - 1);
+    var m2n = Math.abs(closes[s + zone] / closes[s + zone - 1] - 1);
+    if (m1n < 0.10 && m2n < 0.10) { start = s; break; }
+    w1Verworfen++;
+  }
+  if (start < 0) { w1Fehl.push(r.sym + ' (keine ruhige Stelle in 50 Versuchen)'); return; }
   for (var k = start; k < start + zone; k++) closes[k] *= q;      /* Pendel: rein und exakt zurueck */
   var funde = findePendel(closes);
   var ok = funde.some(function (x) { return x.von === start && x.bis === start + zone - 1; });
   if (ok) w1Treffer++; else w1Fehl.push(r.sym + ' (q=' + q + ', zone=' + zone + ')');
 });
-console.log('W1: ' + w1Treffer + '/50 synthetische Pendel exakt gefunden' + (w1Fehl.length ? ' - FEHLEND: ' + w1Fehl.slice(0, 3).join(', ') : '') + '  -> ' + (w1Treffer === 50 ? 'BESTANDEN' : 'VERFEHLT'));
+console.log('W1: ' + w1Treffer + '/50 synthetische Pendel exakt gefunden (unruhige Stellen verworfen: ' + w1Verworfen + ')' + (w1Fehl.length ? ' - FEHLEND: ' + w1Fehl.slice(0, 3).join(', ') : '') + '  -> ' + (w1Treffer === 50 ? 'BESTANDEN' : 'VERFEHLT'));
 var w2Feuer = 0;
 probe.forEach(function (r) { if (findePendel(r.closes).length) w2Feuer++; });
 /* W2 misst hier ROHE Feuer auf den 50 unveraenderten Probenreihen - erwartet 0,
