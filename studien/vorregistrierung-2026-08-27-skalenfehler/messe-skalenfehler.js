@@ -206,12 +206,21 @@ Object.keys(kandidatenSyms).sort().forEach(function (sym) {
   var r = verworfen.concat(sauber).filter(function (v) { return v.sym === sym; })[0];
   var t60 = tages60mSchluss(sym);
   if (!r || !t60) { i2.push({ sym: sym, diagnose: 'ohne 60m-Ueberlappung' }); return; }
-  /* Sprungdaten der 1d-Reihe als Segmentgrenzen */
-  var grenzen = [];
+  /* Segmentgrenzen = Spruenge BEIDER Archive (Nachtrag 2: nur-1d-Schnitte machten
+   * 60m-seitige Flips unsichtbar - die Quote sah dann nach Drift aus; genau daran
+   * sind 3 von 5 Eichfaellen gescheitert). 60m-Spruenge auf Tages-Schlussbasis. */
+  var grenzTage = {};
   for (var i = 1; i < r.closes.length; i++) {
     var a = r.closes[i - 1], b = r.closes[i];
-    if (a > 0 && b > 0) { var q = b / a; if (q >= FAKTOR_MIN || q <= 1 / FAKTOR_MIN) grenzen.push(i); }
+    if (a > 0 && b > 0) { var q = b / a; if (q >= FAKTOR_MIN || q <= 1 / FAKTOR_MIN) grenzTage[tag(r.reihe[i].t)] = 1; }
   }
+  var t60Tage = Object.keys(t60).sort();
+  for (var g = 1; g < t60Tage.length; g++) {
+    var a60 = t60[t60Tage[g - 1]], b60 = t60[t60Tage[g]];
+    if (a60 > 0 && b60 > 0) { var q60 = b60 / a60; if (q60 >= FAKTOR_MIN || q60 <= 1 / FAKTOR_MIN) grenzTage[t60Tage[g]] = 1; }
+  }
+  var grenzen = [];
+  for (var i2i = 1; i2i < r.closes.length; i2i++) if (grenzTage[tag(r.reihe[i2i].t)]) grenzen.push(i2i);
   var segmente = [], start = 0;
   grenzen.concat([r.closes.length]).forEach(function (g) { if (g > start) segmente.push([start, g]); start = g; });
   var segErg = [];
