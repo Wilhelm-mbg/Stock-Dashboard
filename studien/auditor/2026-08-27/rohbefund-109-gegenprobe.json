@@ -1,0 +1,79 @@
+{
+ "positivkontrolle": {
+  "wo": "reiter-dashboard",
+  "fokussierbar": true
+ },
+ "detailsDa": true,
+ "zu": true,
+ "zugeklappt": {
+  "bild": {
+   "anzeige": "inline-block",
+   "sicht": "visible",
+   "inhaltSichtbar": "visible",
+   "breite": 358,
+   "hoehe": 27,
+   "y": 1847,
+   "x": 35,
+   "rechteckGefuellt": true
+  },
+  "fokussierbar": false
+ },
+ "aufgeklappt": {
+  "bild": {
+   "anzeige": "inline-block",
+   "sicht": "visible",
+   "inhaltSichtbar": "visible",
+   "breite": 358,
+   "hoehe": 27,
+   "y": 1847,
+   "x": 35,
+   "rechteckGefuellt": true
+  },
+  "fokussierbar": true
+ },
+ "ketteLaenge": 18,
+ "uebernehmenInKette": false,
+ "bruecheEchteKette": 11,
+ "ketteAusschnitt": [
+  {
+   "wo": "#stMuster",
+   "y": 545,
+   "x": 35
+  },
+  {
+   "wo": "input",
+   "y": 626,
+   "x": 35
+  },
+  {
+   "wo": "#stKey",
+   "y": 778,
+   "x": 35
+  },
+  {
+   "wo": "#stHalten",
+   "y": 763,
+   "x": 639
+  },
+  {
+   "wo": "#stRichtung",
+   "y": 382,
+   "x": 35
+  },
+  {
+   "wo": "#stSpanne",
+   "y": 382,
+   "x": 639
+  },
+  {
+   "wo": "#stGrund",
+   "y": 460,
+   "x": 35
+  },
+  {
+   "wo": "#stAblegen",
+   "y": 658,
+   "x": 35
+  }
+ ]
+}

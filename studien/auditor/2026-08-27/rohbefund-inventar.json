@@ -1,0 +1,2337 @@
+{
+ "protokolle": 38,
+ "subs": [
+  {
+   "sub": "sub-regeln",
+   "textZeichen": 2840,
+   "elemente": [
+    {
+     "nr": 0,
+     "id": "",
+     "tag": "button",
+     "typ": "button",
+     "name": "Erklärung: Die Strategien im Überblick",
+     "karte": "Die Strategien im Überblick i",
+     "karteId": "",
+     "sichtbar": true,
+     "fokussierbar": true,
+     "gesperrt": false,
+     "y": 258,
+     "x": 227,
+     "wert": null,
+     "datenAttribute": [
+      "data-info=regeln.uebersicht"
+     ],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 1,
+     "id": "stratEmpfohlenBtn",
+     "tag": "button",
+     "typ": "button",
+     "name": "Gemessene Voreinstellungen übernehmen",
+     "karte": "(ausserhalb jeder Karte)",
+     "karteId": "",
+     "sichtbar": true,
+     "fokussierbar": true,
+     "gesperrt": false,
+     "y": 344,
+     "x": 20,
+     "wert": null,
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 2,
+     "id": "",
+     "tag": "button",
+     "typ": "",
+     "name": "Kurzfristig · Intraday einschalten",
+     "karte": "nicht entscheidbar",
+     "karteId": "",
+     "sichtbar": true,
+     "fokussierbar": true,
+     "gesperrt": false,
+     "y": 402,
+     "x": 1114,
+     "wert": null,
+     "datenAttribute": [
+      "data-strat=kurz"
+     ],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 3,
+     "id": "",
+     "tag": "button",
+     "typ": "button",
+     "name": "Erklärung: Kurzfristig · Intraday",
+     "karte": "nicht entscheidbar",
+     "karteId": "",
+     "sichtbar": true,
+     "fokussierbar": true,
+     "gesperrt": false,
+     "y": 411,
+     "x": 1218,
+     "wert": null,
+     "datenAttribute": [
+      "data-info=strategie.kurz"
+     ],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 4,
+     "id": "",
+     "tag": "button",
+     "typ": "",
+     "name": "Kurzfristig · Stunden-Strategie einschalten",
+     "karte": "(Karte ohne Ueberschrift)",
+     "karteId": "",
+     "sichtbar": true,
+     "fokussierbar": true,
+     "gesperrt": false,
+     "y": 616,
+     "x": 1114,
+     "wert": null,
+     "datenAttribute": [
+      "data-strat=stunden"
+     ],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 5,
+     "id": "",
+     "tag": "button",
+     "typ": "button",
+     "name": "Erklärung: Kurzfristig · Stunden-Strategie",
+     "karte": "(Karte ohne Ueberschrift)",
+     "karteId": "",
+     "sichtbar": true,
+     "fokussierbar": true,
+     "gesperrt": false,
+     "y": 625,
+     "x": 1218,
+     "wert": null,
+     "datenAttribute": [
+      "data-info=strategie.stunden"
+     ],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 6,
+     "id": "",
+     "tag": "button",
+     "typ": "",
+     "name": "Mittelfristig · Momentum im Querschnitt läuft – ausschalten",
+     "karte": "nicht entscheidbar",
+     "karteId": "",
+     "sichtbar": true,
+     "fokussierbar": true,
+     "gesperrt": false,
+     "y": 792,
+     "x": 1073,
+     "wert": null,
+     "datenAttribute": [
+      "data-strat=mittel"
+     ],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 7,
+     "id": "",
+     "tag": "button",
+     "typ": "button",
+     "name": "Erklärung: Mittelfristig · Momentum im Querschnitt",
+     "karte": "nicht entscheidbar",
+     "karteId": "",
+     "sichtbar": true,
+     "fokussierbar": true,
+     "gesperrt": false,
+     "y": 800,
+     "x": 1218,
+     "wert": null,
+     "datenAttribute": [
+      "data-info=strategie.mittel"
+     ],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 8,
+     "id": "",
+     "tag": "button",
+     "typ": "",
+     "name": "Mittelfristig · Ergebnis-Drift läuft – ausschalten",
+     "karte": "(Karte ohne Ueberschrift)",
+     "karteId": "",
+     "sichtbar": true,
+     "fokussierbar": true,
+     "gesperrt": false,
+     "y": 967,
+     "x": 1073,
+     "wert": null,
+     "datenAttribute": [
+      "data-strat=drift"
+     ],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 9,
+     "id": "",
+     "tag": "button",
+     "typ": "button",
+     "name": "Erklärung: Mittelfristig · Ergebnis-Drift",
+     "karte": "(Karte ohne Ueberschrift)",
+     "karteId": "",
+     "sichtbar": true,
+     "fokussierbar": true,
+     "gesperrt": false,
+     "y": 975,
+     "x": 1218,
+     "wert": null,
+     "datenAttribute": [
+      "data-info=strategie.drift"
+     ],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    }
+   ],
+   "karten": [
+    {
+     "id": "",
+     "kopf": "Die Strategien im Überblick i",
+     "zeichen": 116,
+     "bedienelemente": 1,
+     "anfang": "DIE STRATEGIEN IM ÜBERBLICK i Jede Regel hat ihren eigenen Zeithorizont und lässt sich einzeln ein- und ausschalten."
+    },
+    {
+     "id": "",
+     "kopf": "nicht entscheidbar",
+     "zeichen": 808,
+     "bedienelemente": 2,
+     "anfang": "Kurzfristig · Intraday gemessen – gegen Kontrolle nicht entscheidbar einschalten i Kauft im laufenden Handel den RSI(2)-Rücklauf im Seitwärtskanal. Zuschaltbar:"
+    },
+    {
+     "id": "",
+     "kopf": "(ohne Ueberschrift)",
+     "zeichen": 495,
+     "bedienelemente": 2,
+     "anfang": "Kurzfristig · Stunden-Strategie widerlegt – abgeschaltet einschalten i Verrechnete jede Stunde Technik-Score und Nachrichtenlage zu einem Gesamtscore und kaufte"
+    },
+    {
+     "id": "",
+     "kopf": "nicht entscheidbar",
+     "zeichen": 606,
+     "bedienelemente": 2,
+     "anfang": "Mittelfristig · Momentum im Querschnitt gemessen – hält die volle Historie, nicht die zurückgehaltenen Jahre läuft – ausschalten i Vergleicht alle Werte miteina"
+    },
+    {
+     "id": "",
+     "kopf": "(ohne Ueberschrift)",
+     "zeichen": 507,
+     "bedienelemente": 2,
+     "anfang": "Mittelfristig · Ergebnis-Drift gemessen – Zeitzonen-Fehler gefunden, Neumessung offen läuft – ausschalten i Kauft nach einer Quartalsmeldung das oberste Fünftel"
+    }
+   ],
+   "ueberschriften": [
+    {
+     "stufe": "H3",
+     "text": "Die Strategien im Überblick i"
+    }
+   ],
+   "zahlSichtbar": 10,
+   "zahlGesamt": 10,
+   "pille": "Übersicht"
+  },
+  {
+   "sub": "sub-strategien",
+   "textZeichen": 2762,
+   "elemente": [
+    {
+     "nr": 0,
+     "id": "idEnabled",
+     "tag": "input",
+     "typ": "checkbox",
+     "name": "",
+     "karte": "(ausserhalb jeder Karte)",
+     "karteId": "",
+     "sichtbar": false,
+     "fokussierbar": null,
+     "gesperrt": false,
+     "y": 279,
+     "x": 568,
+     "wert": {
+      "wert": "aus"
+     },
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 1,
+     "id": "idPool",
+     "tag": "select",
+     "typ": "",
+     "name": "Beobachtungs-Pool Standard (99 gemessene Werte) Volatiles Drittel (33 Werte – gemessen +0,",
+     "karte": "(ausserhalb jeder Karte)",
+     "karteId": "",
+     "sichtbar": true,
+     "fokussierbar": true,
+     "gesperrt": false,
+     "y": 642,
+     "x": 54,
+     "wert": {
+      "wert": "auto",
+      "gezeigt": "Standard (99 gemessene Werte)",
+      "moeglich": 5
+     },
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 2,
+     "id": "idKapiZusatz",
+     "tag": "input",
+     "typ": "checkbox",
+     "name": "Kapitulations-Dip zusätzlich",
+     "karte": "(ausserhalb jeder Karte)",
+     "karteId": "",
+     "sichtbar": true,
+     "fokussierbar": true,
+     "gesperrt": false,
+     "y": 642,
+     "x": 192,
+     "wert": {
+      "wert": "aus"
+     },
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 3,
+     "id": "idRegime",
+     "tag": "input",
+     "typ": "checkbox",
+     "name": "Regime-Zuteilung (Marktlage)",
+     "karte": "(ausserhalb jeder Karte)",
+     "karteId": "",
+     "sichtbar": true,
+     "fokussierbar": true,
+     "gesperrt": false,
+     "y": 642,
+     "x": 331,
+     "wert": {
+      "wert": "aus"
+     },
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 4,
+     "id": "",
+     "tag": "button",
+     "typ": "button",
+     "name": "Erklärung: Signal-Einstellungen",
+     "karte": "(ausserhalb jeder Karte)",
+     "karteId": "",
+     "sichtbar": true,
+     "fokussierbar": false,
+     "gesperrt": false,
+     "y": 743,
+     "x": 94,
+     "wert": null,
+     "datenAttribute": [
+      "data-info=regeln.param.signal"
+     ],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 5,
+     "id": "",
+     "tag": "button",
+     "typ": "button",
+     "name": "Ausbruch",
+     "karte": "(ausserhalb jeder Karte)",
+     "karteId": "",
+     "sichtbar": true,
+     "fokussierbar": false,
+     "gesperrt": false,
+     "y": 795,
+     "x": 39,
+     "wert": null,
+     "datenAttribute": [
+      "data-setup=ausbruch"
+     ],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 6,
+     "id": "",
+     "tag": "button",
+     "typ": "button",
+     "name": "Umkehr",
+     "karte": "(ausserhalb jeder Karte)",
+     "karteId": "",
+     "sichtbar": true,
+     "fokussierbar": false,
+     "gesperrt": false,
+     "y": 795,
+     "x": 121,
+     "wert": null,
+     "datenAttribute": [
+      "data-setup=umkehr"
+     ],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 7,
+     "id": "idTrigger",
+     "tag": "select",
+     "typ": "",
+     "name": "AuslöserÜberdehnungWellentalRSI(2)-ExtremRSI(2) im Seitwärtskanal (nur Long)Kapitulations-",
+     "karte": "(ausserhalb jeder Karte)",
+     "karteId": "",
+     "sichtbar": true,
+     "fokussierbar": false,
+     "gesperrt": false,
+     "y": 860,
+     "x": 39,
+     "wert": {
+      "wert": "rsi2seit",
+      "gezeigt": "RSI(2) im Seitwärtskanal (nur Long)",
+      "moeglich": 5
+     },
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 8,
+     "id": "idExit",
+     "tag": "select",
+     "typ": "",
+     "name": "Ausstieglaufen lassenkurz (Rückkehr zur Linie)blitz (max. 3 Min)halten, bis der Kanal dreh",
+     "karte": "(ausserhalb jeder Karte)",
+     "karteId": "",
+     "sichtbar": false,
+     "fokussierbar": null,
+     "gesperrt": false,
+     "y": 367,
+     "x": 0,
+     "wert": {
+      "wert": "laufen",
+      "gezeigt": "laufen lassen",
+      "moeglich": 4
+     },
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 9,
+     "id": "idMode",
+     "tag": "select",
+     "typ": "",
+     "name": "breakoutwavesreversionwaveorbpullbackrsi2donchiansqueezekanaltrendrsi2seitkapitulation",
+     "karte": "(ausserhalb jeder Karte)",
+     "karteId": "",
+     "sichtbar": false,
+     "fokussierbar": null,
+     "gesperrt": false,
+     "y": 367,
+     "x": 0,
+     "wert": {
+      "wert": "rsi2seit",
+      "gezeigt": "rsi2seit",
+      "moeglich": 12
+     },
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 10,
+     "id": "idInterval",
+     "tag": "select",
+     "typ": "",
+     "name": "Zeitrahmen1 Min5 Min15 Min60 Min",
+     "karte": "(ausserhalb jeder Karte)",
+     "karteId": "",
+     "sichtbar": true,
+     "fokussierbar": false,
+     "gesperrt": false,
+     "y": 860,
+     "x": 185,
+     "wert": {
+      "wert": "60m",
+      "gezeigt": "60 Min",
+      "moeglich": 4
+     },
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 11,
+     "id": "idPeriod",
+     "tag": "select",
+     "typ": "",
+     "name": "EMA-Periode92050",
+     "karte": "(ausserhalb jeder Karte)",
+     "karteId": "",
+     "sichtbar": true,
+     "fokussierbar": false,
+     "gesperrt": false,
+     "y": 860,
+     "x": 331,
+     "wert": {
+      "wert": "20",
+      "gezeigt": "20",
+      "moeglich": 3
+     },
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 12,
+     "id": "idConfirm",
+     "tag": "select",
+     "typ": "",
+     "name": "Bestätigung0,05 %0,15 %0,30 %",
+     "karte": "(ausserhalb jeder Karte)",
+     "karteId": "",
+     "sichtbar": true,
+     "fokussierbar": false,
+     "gesperrt": false,
+     "y": 860,
+     "x": 476,
+     "wert": {
+      "wert": "15",
+      "gezeigt": "0,15 %",
+      "moeglich": 3
+     },
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 13,
+     "id": "idLine",
+     "tag": "select",
+     "typ": "",
+     "name": "LeitlinieEMAVWAP",
+     "karte": "(ausserhalb jeder Karte)",
+     "karteId": "",
+     "sichtbar": true,
+     "fokussierbar": false,
+     "gesperrt": false,
+     "y": 922,
+     "x": 39,
+     "wert": {
+      "wert": "ema",
+      "gezeigt": "EMA",
+      "moeglich": 2
+     },
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 14,
+     "id": "",
+     "tag": "button",
+     "typ": "button",
+     "name": "Erklärung: Risiko und Kosten",
+     "karte": "(ausserhalb jeder Karte)",
+     "karteId": "",
+     "sichtbar": true,
+     "fokussierbar": false,
+     "gesperrt": false,
+     "y": 966,
+     "x": 155,
+     "wert": null,
+     "datenAttribute": [
+      "data-info=regeln.param.risiko"
+     ],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 15,
+     "id": "idSizing",
+     "tag": "select",
+     "typ": "",
+     "name": "Positionsgrößefix 3 %Risiko 0,25 %Risiko 0,5 %Risiko 1 %",
+     "karte": "(ausserhalb jeder Karte)",
+     "karteId": "",
+     "sichtbar": true,
+     "fokussierbar": false,
+     "gesperrt": false,
+     "y": 1018,
+     "x": 39,
+     "wert": {
+      "wert": "fix",
+      "gezeigt": "fix 3 %",
+      "moeglich": 4
+     },
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 16,
+     "id": "idScalpSL",
+     "tag": "select",
+     "typ": "",
+     "name": "Not-Stop-Loss−15 %−20 %−30 %auto",
+     "karte": "(ausserhalb jeder Karte)",
+     "karteId": "",
+     "sichtbar": true,
+     "fokussierbar": false,
+     "gesperrt": false,
+     "y": 1018,
+     "x": 185,
+     "wert": {
+      "wert": "20",
+      "gezeigt": "−20 %",
+      "moeglich": 4
+     },
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 17,
+     "id": "idProfile",
+     "tag": "select",
+     "typ": "",
+     "name": "Hebel-ProfilRuhig 60 T · BV 1,0 — Hürde 0,07 PpModerat · BV 1,0 — Hürde 0,09 PpSpekulativ ",
+     "karte": "(ausserhalb jeder Karte)",
+     "karteId": "",
+     "sichtbar": true,
+     "fokussierbar": false,
+     "gesperrt": false,
+     "y": 1018,
+     "x": 331,
+     "wert": {
+      "wert": "atm60_b",
+      "gezeigt": "Ruhig 60 T · BV 1,0 — Hürde 0,07 Pp",
+      "moeglich": 6
+     },
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 18,
+     "id": "idInstrument",
+     "tag": "select",
+     "typ": "",
+     "name": "InstrumentAktie 1× (Basiswert)Hebelschein",
+     "karte": "(ausserhalb jeder Karte)",
+     "karteId": "",
+     "sichtbar": true,
+     "fokussierbar": false,
+     "gesperrt": false,
+     "y": 1018,
+     "x": 476,
+     "wert": {
+      "wert": "basis",
+      "gezeigt": "Aktie 1× (Basiswert)",
+      "moeglich": 2
+     },
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 19,
+     "id": "idMaxStufe",
+     "tag": "select",
+     "typ": "",
+     "name": "max. Risikostufe1 – defensiv23 – moderat45 – keine Grenze",
+     "karte": "(ausserhalb jeder Karte)",
+     "karteId": "",
+     "sichtbar": true,
+     "fokussierbar": false,
+     "gesperrt": false,
+     "y": 1080,
+     "x": 39,
+     "wert": {
+      "wert": "3",
+      "gezeigt": "3 – moderat",
+      "moeglich": 5
+     },
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 20,
+     "id": "idKryptoHandeln",
+     "tag": "input",
+     "typ": "checkbox",
+     "name": "Krypto handeln",
+     "karte": "(ausserhalb jeder Karte)",
+     "karteId": "",
+     "sichtbar": false,
+     "fokussierbar": null,
+     "gesperrt": false,
+     "y": 1097,
+     "x": 185,
+     "wert": {
+      "wert": "aus"
+     },
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 21,
+     "id": "idFee",
+     "tag": "select",
+     "typ": "",
+     "name": "Ordergebühr0 (keine Kommission)1,50 $5 $",
+     "karte": "(ausserhalb jeder Karte)",
+     "karteId": "",
+     "sichtbar": true,
+     "fokussierbar": false,
+     "gesperrt": false,
+     "y": 1080,
+     "x": 331,
+     "wert": {
+      "wert": "0",
+      "gezeigt": "0 (keine Kommission)",
+      "moeglich": 3
+     },
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 22,
+     "id": "",
+     "tag": "button",
+     "typ": "button",
+     "name": "Erklärung: Filter und Schutz",
+     "karte": "(ausserhalb jeder Karte)",
+     "karteId": "",
+     "sichtbar": true,
+     "fokussierbar": false,
+     "gesperrt": false,
+     "y": 1310,
+     "x": 154,
+     "wert": null,
+     "datenAttribute": [
+      "data-info=regeln.param.filter"
+     ],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 23,
+     "id": "idTrend",
+     "tag": "select",
+     "typ": "",
+     "name": "Trendfilterausnur mit Trend",
+     "karte": "(ausserhalb jeder Karte)",
+     "karteId": "",
+     "sichtbar": false,
+     "fokussierbar": null,
+     "gesperrt": false,
+     "y": 367,
+     "x": 0,
+     "wert": {
+      "wert": "0",
+      "gezeigt": "aus",
+      "moeglich": 2
+     },
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 24,
+     "id": "idWindow",
+     "tag": "select",
+     "typ": "",
+     "name": "Zeitfensterganzer Tag15:30–17:3015:30–19:3020–22 Uhr",
+     "karte": "(ausserhalb jeder Karte)",
+     "karteId": "",
+     "sichtbar": true,
+     "fokussierbar": false,
+     "gesperrt": false,
+     "y": 1362,
+     "x": 39,
+     "wert": {
+      "wert": "all",
+      "gezeigt": "ganzer Tag",
+      "moeglich": 4
+     },
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 25,
+     "id": "idLiq",
+     "tag": "select",
+     "typ": "",
+     "name": "Liquidität min.aus10 Mio $50 Mio $200 Mio $",
+     "karte": "(ausserhalb jeder Karte)",
+     "karteId": "",
+     "sichtbar": true,
+     "fokussierbar": false,
+     "gesperrt": false,
+     "y": 1362,
+     "x": 185,
+     "wert": {
+      "wert": "50",
+      "gezeigt": "50 Mio $",
+      "moeglich": 4
+     },
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 26,
+     "id": "idBlackout",
+     "tag": "select",
+     "typ": "",
+     "name": "Event-Blackoutaus±45 Min+ glattstellen",
+     "karte": "(ausserhalb jeder Karte)",
+     "karteId": "",
+     "sichtbar": true,
+     "fokussierbar": false,
+     "gesperrt": false,
+     "y": 1362,
+     "x": 331,
+     "wert": {
+      "wert": "block",
+      "gezeigt": "±45 Min",
+      "moeglich": 3
+     },
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 27,
+     "id": "idMtf",
+     "tag": "input",
+     "typ": "checkbox",
+     "name": "5-Min-Bestätigung",
+     "karte": "(ausserhalb jeder Karte)",
+     "karteId": "",
+     "sichtbar": false,
+     "fokussierbar": null,
+     "gesperrt": false,
+     "y": 367,
+     "x": 0,
+     "wert": {
+      "wert": "an"
+     },
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 28,
+     "id": "idChannel",
+     "tag": "input",
+     "typ": "checkbox",
+     "name": "Trendkanal",
+     "karte": "(ausserhalb jeder Karte)",
+     "karteId": "",
+     "sichtbar": false,
+     "fokussierbar": null,
+     "gesperrt": false,
+     "y": 367,
+     "x": 0,
+     "wert": {
+      "wert": "an"
+     },
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 29,
+     "id": "idScreener",
+     "tag": "input",
+     "typ": "checkbox",
+     "name": "Wellen-Screener",
+     "karte": "(ausserhalb jeder Karte)",
+     "karteId": "",
+     "sichtbar": false,
+     "fokussierbar": null,
+     "gesperrt": false,
+     "y": 1379,
+     "x": 476,
+     "wert": {
+      "wert": "aus"
+     },
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 30,
+     "id": "idAutoTune",
+     "tag": "input",
+     "typ": "checkbox",
+     "name": "Empfehlungen übernehmen",
+     "karte": "(ausserhalb jeder Karte)",
+     "karteId": "",
+     "sichtbar": false,
+     "fokussierbar": null,
+     "gesperrt": false,
+     "y": 1457,
+     "x": 39,
+     "wert": {
+      "wert": "an"
+     },
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 31,
+     "id": "idKrypto",
+     "tag": "input",
+     "typ": "checkbox",
+     "name": "Krypto-Messdaten sammeln",
+     "karte": "(ausserhalb jeder Karte)",
+     "karteId": "",
+     "sichtbar": false,
+     "fokussierbar": null,
+     "gesperrt": false,
+     "y": 1457,
+     "x": 185,
+     "wert": {
+      "wert": "an"
+     },
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 32,
+     "id": "idSchattenImmer",
+     "tag": "input",
+     "typ": "checkbox",
+     "name": "Signale immer aufzeichnen",
+     "karte": "(ausserhalb jeder Karte)",
+     "karteId": "",
+     "sichtbar": false,
+     "fokussierbar": null,
+     "gesperrt": false,
+     "y": 1457,
+     "x": 331,
+     "wert": {
+      "wert": "an"
+     },
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 33,
+     "id": "",
+     "tag": "button",
+     "typ": "button",
+     "name": "Erklärung: Haltedauer und Ausstieg",
+     "karte": "(ausserhalb jeder Karte)",
+     "karteId": "",
+     "sichtbar": true,
+     "fokussierbar": false,
+     "gesperrt": false,
+     "y": 1587,
+     "x": 204,
+     "wert": null,
+     "datenAttribute": [
+      "data-info=regeln.param.haltedauer"
+     ],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 34,
+     "id": "idHold",
+     "tag": "select",
+     "typ": "",
+     "name": "Max. Haltedauer3 Min5 Min15 Min30 Min60 Min2 h4 h8 h (RSI2-Seitwärts, gemessen)26 h (Kapit",
+     "karte": "(ausserhalb jeder Karte)",
+     "karteId": "",
+     "sichtbar": true,
+     "fokussierbar": false,
+     "gesperrt": false,
+     "y": 1639,
+     "x": 39,
+     "wert": {
+      "wert": "480",
+      "gezeigt": "8 h (RSI2-Seitwärts, gemessen)",
+      "moeglich": 10
+     },
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 35,
+     "id": "idTrail",
+     "tag": "select",
+     "typ": "",
+     "name": "Trailing-Stopaus−10 %−15 %−25 %",
+     "karte": "(ausserhalb jeder Karte)",
+     "karteId": "",
+     "sichtbar": false,
+     "fokussierbar": null,
+     "gesperrt": false,
+     "y": 367,
+     "x": 0,
+     "wert": {
+      "wert": "15",
+      "gezeigt": "−15 %",
+      "moeglich": 4
+     },
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 36,
+     "id": "screenBtn",
+     "tag": "button",
+     "typ": "",
+     "name": "Screener jetzt laufen lassen",
+     "karte": "(ausserhalb jeder Karte)",
+     "karteId": "",
+     "sichtbar": true,
+     "fokussierbar": false,
+     "gesperrt": false,
+     "y": 1756,
+     "x": 39,
+     "wert": null,
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 37,
+     "id": "kostenRundeSym",
+     "tag": "select",
+     "typ": "",
+     "name": "Aktien – der Reihe nachBTCUSD – rund um die UhrETHUSD – rund um die Uhr",
+     "karte": "(ausserhalb jeder Karte)",
+     "karteId": "",
+     "sichtbar": true,
+     "fokussierbar": true,
+     "gesperrt": false,
+     "y": 847,
+     "x": 39,
+     "wert": {
+      "wert": "",
+      "gezeigt": "Aktien – der Reihe nach",
+      "moeglich": 3
+     },
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 38,
+     "id": "kostenRundeBtn",
+     "tag": "button",
+     "typ": "button",
+     "name": "Kostenrunde messen",
+     "karte": "(ausserhalb jeder Karte)",
+     "karteId": "",
+     "sichtbar": true,
+     "fokussierbar": true,
+     "gesperrt": false,
+     "y": 847,
+     "x": 233,
+     "wert": null,
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 39,
+     "id": "rkMaxPos",
+     "tag": "select",
+     "typ": "",
+     "name": "Max. offene Positionen4812",
+     "karte": "(ausserhalb jeder Karte)",
+     "karteId": "",
+     "sichtbar": true,
+     "fokussierbar": true,
+     "gesperrt": false,
+     "y": 360,
+     "x": 660,
+     "wert": {
+      "wert": "8",
+      "gezeigt": "8",
+      "moeglich": 3
+     },
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 40,
+     "id": "rkDayLoss",
+     "tag": "select",
+     "typ": "",
+     "name": "Max. Tagesverlust3 %5 %10 %aus",
+     "karte": "(ausserhalb jeder Karte)",
+     "karteId": "",
+     "sichtbar": true,
+     "fokussierbar": true,
+     "gesperrt": false,
+     "y": 344,
+     "x": 806,
+     "wert": {
+      "wert": "3",
+      "gezeigt": "3 %",
+      "moeglich": 4
+     },
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 41,
+     "id": "rkExposure",
+     "tag": "select",
+     "typ": "",
+     "name": "Max. Schein-Anteil20 %40 %60 %aus",
+     "karte": "(ausserhalb jeder Karte)",
+     "karteId": "",
+     "sichtbar": true,
+     "fokussierbar": true,
+     "gesperrt": false,
+     "y": 344,
+     "x": 952,
+     "wert": {
+      "wert": "40",
+      "gezeigt": "40 %",
+      "moeglich": 4
+     },
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 42,
+     "id": "hourlyEnabled",
+     "tag": "input",
+     "typ": "checkbox",
+     "name": "",
+     "karte": "(ausserhalb jeder Karte)",
+     "karteId": "",
+     "sichtbar": false,
+     "fokussierbar": null,
+     "gesperrt": false,
+     "y": 977,
+     "x": 1189,
+     "wert": {
+      "wert": "aus"
+     },
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 43,
+     "id": "runJobBtn",
+     "tag": "button",
+     "typ": "",
+     "name": "Bestand jetzt prüfen",
+     "karte": "(ausserhalb jeder Karte)",
+     "karteId": "",
+     "sichtbar": true,
+     "fokussierbar": false,
+     "gesperrt": false,
+     "y": 1089,
+     "x": 39,
+     "wert": null,
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    }
+   ],
+   "karten": [
+    {
+     "id": "",
+     "kopf": "Eigene Watchlist – wird bei jedem Scan mitgeprüft",
+     "zeichen": 403,
+     "bedienelemente": 0,
+     "anfang": "EIGENE WATCHLIST – WIRD BEI JEDEM SCAN MITGEPRÜFT Diese Werte und die 15 Standard-Werte werden in jeder Runde geprüft. Die gemessenen 60-Minuten-Einstiege schau"
+    },
+    {
+     "id": "",
+     "kopf": "Live-Signal-Monitor",
+     "zeichen": 262,
+     "bedienelemente": 0,
+     "anfang": "LIVE-SIGNAL-MONITOR Noch kein Scan gelaufen – der Monitor füllt sich, sobald die Intraday-Strategie aktiv ist und die US-Börse geöffnet hat. Gesperrte Werte (au"
+    }
+   ],
+   "ueberschriften": [
+    {
+     "stufe": "H3",
+     "text": "Intraday-Strategie"
+    },
+    {
+     "stufe": "H3",
+     "text": "Risikomanagement"
+    },
+    {
+     "stufe": "H3",
+     "text": "Eigene Watchlist – wird bei jedem Scan mitgeprüft"
+    },
+    {
+     "stufe": "H3",
+     "text": "Stunden-Strategie"
+    },
+    {
+     "stufe": "H3",
+     "text": "Live-Signal-Monitor"
+    }
+   ],
+   "zahlSichtbar": 31,
+   "zahlGesamt": 44,
+   "pille": "Schalter & Einstellungen"
+  },
+  {
+   "sub": "sub-mittelfrist",
+   "textZeichen": 3445,
+   "elemente": [
+    {
+     "nr": 0,
+     "id": "mfRueck",
+     "tag": "select",
+     "typ": "",
+     "name": "Rückblick 126 Tage (6 Mon.) 189 Tage (9 Mon.) 231 Tage (11 Mon.) 273 Tage (13 Mon.)",
+     "karte": "Momentum im Querschnitt · Aktien, keine Hebelscheine",
+     "karteId": "",
+     "sichtbar": true,
+     "fokussierbar": true,
+     "gesperrt": false,
+     "y": 338,
+     "x": 90,
+     "wert": {
+      "wert": "231",
+      "gezeigt": "231 Tage (11 Mon.)",
+      "moeglich": 4
+     },
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 1,
+     "id": "mfLuecke",
+     "tag": "select",
+     "typ": "",
+     "name": "Lücke keine21 Tage",
+     "karte": "Momentum im Querschnitt · Aktien, keine Hebelscheine",
+     "karteId": "",
+     "sichtbar": true,
+     "fokussierbar": true,
+     "gesperrt": false,
+     "y": 338,
+     "x": 271,
+     "wert": {
+      "wert": "21",
+      "gezeigt": "21 Tage",
+      "moeglich": 2
+     },
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 2,
+     "id": "mfHalten",
+     "tag": "select",
+     "typ": "",
+     "name": "Halten 42 Tage 63 Tage (3 Mon.) 126 Tage (6 Mon.)",
+     "karte": "Momentum im Querschnitt · Aktien, keine Hebelscheine",
+     "karteId": "",
+     "sichtbar": true,
+     "fokussierbar": true,
+     "gesperrt": false,
+     "y": 338,
+     "x": 396,
+     "wert": {
+      "wert": "63",
+      "gezeigt": "63 Tage (3 Mon.)",
+      "moeglich": 3
+     },
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 3,
+     "id": "mfAnteil",
+     "tag": "select",
+     "typ": "",
+     "name": "Anteil stärkste 10 %15 %20 %",
+     "karte": "Momentum im Querschnitt · Aktien, keine Hebelscheine",
+     "karteId": "",
+     "sichtbar": true,
+     "fokussierbar": true,
+     "gesperrt": false,
+     "y": 338,
+     "x": 570,
+     "wert": {
+      "wert": "0.10",
+      "gezeigt": "stärkste 10 %",
+      "moeglich": 3
+     },
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 4,
+     "id": "mfKosten",
+     "tag": "select",
+     "typ": "",
+     "name": "Kosten 0 Bp10 Bp20 Bp40 Bp",
+     "karte": "Momentum im Querschnitt · Aktien, keine Hebelscheine",
+     "karteId": "",
+     "sichtbar": true,
+     "fokussierbar": true,
+     "gesperrt": false,
+     "y": 338,
+     "x": 726,
+     "wert": {
+      "wert": "20",
+      "gezeigt": "20 Bp",
+      "moeglich": 4
+     },
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 5,
+     "id": "mfLadenBtn",
+     "tag": "button",
+     "typ": "",
+     "name": "Daten holen und rechnen",
+     "karte": "Momentum im Querschnitt · Aktien, keine Hebelscheine",
+     "karteId": "",
+     "sichtbar": true,
+     "fokussierbar": true,
+     "gesperrt": false,
+     "y": 334,
+     "x": 801,
+     "wert": null,
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 6,
+     "id": "mfdTaktBtn",
+     "tag": "button",
+     "typ": "",
+     "name": "Jetzt prüfen",
+     "karte": "Mittelfrist-Bücher steuern",
+     "karteId": "",
+     "sichtbar": true,
+     "fokussierbar": true,
+     "gesperrt": false,
+     "y": 743,
+     "x": 35,
+     "wert": null,
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 7,
+     "id": "mfdRebalanceBtn",
+     "tag": "button",
+     "typ": "",
+     "name": "Momentum jetzt umschichten",
+     "karte": "Mittelfrist-Bücher steuern",
+     "karteId": "",
+     "sichtbar": true,
+     "fokussierbar": true,
+     "gesperrt": false,
+     "y": 744,
+     "x": 149,
+     "wert": null,
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 8,
+     "id": "mfdDriftBtn",
+     "tag": "button",
+     "typ": "",
+     "name": "Drift jetzt abgleichen",
+     "karte": "Mittelfrist-Bücher steuern",
+     "karteId": "",
+     "sichtbar": true,
+     "fokussierbar": true,
+     "gesperrt": false,
+     "y": 744,
+     "x": 368,
+     "wert": null,
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 9,
+     "id": "drHalten",
+     "tag": "select",
+     "typ": "",
+     "name": "Halten 20 Tage 40 Tage 60 Tage (geprüft) 90 Tage",
+     "karte": "Ergebnis-Drift · Aktien, keine Hebelscheine",
+     "karteId": "",
+     "sichtbar": true,
+     "fokussierbar": true,
+     "gesperrt": false,
+     "y": 1015,
+     "x": 75,
+     "wert": {
+      "wert": "60",
+      "gezeigt": "60 Tage (geprüft)",
+      "moeglich": 4
+     },
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 10,
+     "id": "drAnteil",
+     "tag": "select",
+     "typ": "",
+     "name": "Anteil je Bein 10 % 20 % (geprüft) 33 %",
+     "karte": "Ergebnis-Drift · Aktien, keine Hebelscheine",
+     "karteId": "",
+     "sichtbar": true,
+     "fokussierbar": true,
+     "gesperrt": false,
+     "y": 1015,
+     "x": 284,
+     "wert": {
+      "wert": "0.2",
+      "gezeigt": "20 % (geprüft)",
+      "moeglich": 3
+     },
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 11,
+     "id": "drFenster",
+     "tag": "select",
+     "typ": "",
+     "name": "Vergleichsfenster 60 Tage 120 Tage (geprüft) 250 Tage",
+     "karte": "Ergebnis-Drift · Aktien, keine Hebelscheine",
+     "karteId": "",
+     "sichtbar": true,
+     "fokussierbar": true,
+     "gesperrt": false,
+     "y": 1015,
+     "x": 499,
+     "wert": {
+      "wert": "120",
+      "gezeigt": "120 Tage (geprüft)",
+      "moeglich": 3
+     },
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 12,
+     "id": "drKosten",
+     "tag": "select",
+     "typ": "",
+     "name": "Kosten keine 10 Basispunkte 20 Basispunkte 40 Basispunkte",
+     "karte": "Ergebnis-Drift · Aktien, keine Hebelscheine",
+     "karteId": "",
+     "sichtbar": true,
+     "fokussierbar": true,
+     "gesperrt": false,
+     "y": 1015,
+     "x": 681,
+     "wert": {
+      "wert": "10",
+      "gezeigt": "10 Basispunkte",
+      "moeglich": 4
+     },
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 13,
+     "id": "drLadeBtn",
+     "tag": "button",
+     "typ": "",
+     "name": "Termine nachladen",
+     "karte": "Ergebnis-Drift · Aktien, keine Hebelscheine",
+     "karteId": "",
+     "sichtbar": true,
+     "fokussierbar": true,
+     "gesperrt": false,
+     "y": 1010,
+     "x": 805,
+     "wert": null,
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 14,
+     "id": "drLadeAlleBtn",
+     "tag": "button",
+     "typ": "",
+     "name": "Alle Termine laden",
+     "karte": "Ergebnis-Drift · Aktien, keine Hebelscheine",
+     "karteId": "",
+     "sichtbar": true,
+     "fokussierbar": true,
+     "gesperrt": false,
+     "y": 1010,
+     "x": 958,
+     "wert": null,
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 15,
+     "id": "drRechneBtn",
+     "tag": "button",
+     "typ": "",
+     "name": "Neu rechnen",
+     "karte": "Ergebnis-Drift · Aktien, keine Hebelscheine",
+     "karteId": "",
+     "sichtbar": true,
+     "fokussierbar": true,
+     "gesperrt": false,
+     "y": 1010,
+     "x": 1109,
+     "wert": null,
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    }
+   ],
+   "karten": [
+    {
+     "id": "",
+     "kopf": "Momentum im Querschnitt · Aktien, keine Hebelscheine",
+     "zeichen": 642,
+     "bedienelemente": 6,
+     "anfang": "MOMENTUM IM QUERSCHNITT · AKTIEN, KEINE HEBELSCHEINE Diese Strategie vergleicht alle Werte des Universums miteinander und hält das stärkste Zehntel. Kein Chartm"
+    },
+    {
+     "id": "",
+     "kopf": "Was jetzt zu halten wäre",
+     "zeichen": 46,
+     "bedienelemente": 0,
+     "anfang": "WAS JETZT ZU HALTEN WÄRE Noch nicht gerechnet."
+    },
+    {
+     "id": "",
+     "kopf": "Wie es sich geschlagen hat",
+     "zeichen": 48,
+     "bedienelemente": 0,
+     "anfang": "WIE ES SICH GESCHLAGEN HAT Noch nicht gerechnet."
+    },
+    {
+     "id": "",
+     "kopf": "Was du dabei wissen musst",
+     "zeichen": 706,
+     "bedienelemente": 0,
+     "anfang": "WAS DU DABEI WISSEN MUSST Der größte Rückschlag lag bei 52 Prozent (2008). Das ist kein ruhiges Investment. Wer bei so einem Einbruch aussteigt, hat den Effekt "
+    },
+    {
+     "id": "",
+     "kopf": "Mittelfrist-Bücher steuern",
+     "zeichen": 239,
+     "bedienelemente": 3,
+     "anfang": "MITTELFRIST-BÜCHER STEUERN Jetzt prüfen Momentum jetzt umschichten Drift jetzt abgleichen Erster Start: Tageskurse für 193 Werte werden geladen (einmalig, ein p"
+    },
+    {
+     "id": "",
+     "kopf": "Ergebnis-Drift · Aktien, keine Hebelscheine",
+     "zeichen": 1759,
+     "bedienelemente": 7,
+     "anfang": "ERGEBNIS-DRIFT · AKTIEN, KEINE HEBELSCHEINE Nach einer Quartalsmeldung läuft der Kurs noch Wochen in Richtung der Überraschung weiter. Gekauft wird das oberste "
+    }
+   ],
+   "ueberschriften": [
+    {
+     "stufe": "H3",
+     "text": "Momentum im Querschnitt · Aktien, keine Hebelscheine"
+    },
+    {
+     "stufe": "H3",
+     "text": "Was jetzt zu halten wäre"
+    },
+    {
+     "stufe": "H3",
+     "text": "Wie es sich geschlagen hat"
+    },
+    {
+     "stufe": "H3",
+     "text": "Was du dabei wissen musst"
+    },
+    {
+     "stufe": "H3",
+     "text": "Mittelfrist-Bücher steuern"
+    },
+    {
+     "stufe": "H3",
+     "text": "Ergebnis-Drift · Aktien, keine Hebelscheine"
+    },
+    {
+     "stufe": "H3",
+     "text": "Was wäre heute offen?"
+    }
+   ],
+   "zahlSichtbar": 16,
+   "zahlGesamt": 16,
+   "pille": "Mittelfrist"
+  },
+  {
+   "sub": "sub-regelbuch",
+   "textZeichen": 4045,
+   "elemente": [
+    {
+     "nr": 0,
+     "id": "",
+     "tag": "button",
+     "typ": "button",
+     "name": "Erklärung: Die Regel, die handelt",
+     "karte": "Die Regel, die handelt i",
+     "karteId": "regelKarte",
+     "sichtbar": true,
+     "fokussierbar": true,
+     "gesperrt": false,
+     "y": 260,
+     "x": 189,
+     "wert": null,
+     "datenAttribute": [
+      "data-info=regeln.handelt"
+     ],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 1,
+     "id": "",
+     "tag": "a",
+     "typ": "",
+     "name": "Protokoll im Scoreboard ansehen",
+     "karte": "Die Regel, die handelt i",
+     "karteId": "regelKarte",
+     "sichtbar": true,
+     "fokussierbar": true,
+     "gesperrt": false,
+     "y": 571,
+     "x": 637,
+     "wert": null,
+     "datenAttribute": [
+      "data-sprung-messung="
+     ],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 2,
+     "id": "",
+     "tag": "button",
+     "typ": "button",
+     "name": "Erklärung: Regeln, die nur messen",
+     "karte": "Regeln, die nur messen i",
+     "karteId": "regelnKarte",
+     "sichtbar": true,
+     "fokussierbar": true,
+     "gesperrt": false,
+     "y": 632,
+     "x": 198,
+     "wert": null,
+     "datenAttribute": [
+      "data-info=regeln.messen"
+     ],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 3,
+     "id": "regelName",
+     "tag": "input",
+     "typ": "text",
+     "name": "Name, z. B. „Felix: Winkel 1m“",
+     "karte": "Regeln, die nur messen i",
+     "karteId": "regelnKarte",
+     "sichtbar": true,
+     "fokussierbar": true,
+     "gesperrt": false,
+     "y": 731,
+     "x": 35,
+     "wert": {
+      "wert": ""
+     },
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 4,
+     "id": "regelNeuBtn",
+     "tag": "button",
+     "typ": "button",
+     "name": "Aktuelle Einstellungen festschreiben",
+     "karte": "Regeln, die nur messen i",
+     "karteId": "regelnKarte",
+     "sichtbar": true,
+     "fokussierbar": true,
+     "gesperrt": false,
+     "y": 732,
+     "x": 984,
+     "wert": null,
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 5,
+     "id": "filterBtn",
+     "tag": "button",
+     "typ": "",
+     "name": "Mit vs. ohne Filter rechnen",
+     "karte": "Was hat gewirkt?",
+     "karteId": "",
+     "sichtbar": true,
+     "fokussierbar": true,
+     "gesperrt": false,
+     "y": 1402,
+     "x": 50,
+     "wert": null,
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    }
+   ],
+   "karten": [
+    {
+     "id": "regelKarte",
+     "kopf": "Die Regel, die handelt i",
+     "zeichen": 864,
+     "bedienelemente": 1,
+     "anfang": "DIE REGEL, DIE HANDELT i Was gerade eingestellt ist – mit Chart, Bedingungen und Bilanz an einem Ort. Auslöser RSI(2) im Seitwärtskanal Kerzen 60m (so gemessen)"
+    },
+    {
+     "id": "regelnKarte",
+     "kopf": "Regeln, die nur messen i",
+     "zeichen": 356,
+     "bedienelemente": 3,
+     "anfang": "REGELN, DIE NUR MESSEN i Eine Regel festschreiben und mitlaufen lassen, ohne dass Geld bewegt wird – geprüft auf denselben Kerzen wie die gehandelte Regel, mit "
+    },
+    {
+     "id": "regelBilanz",
+     "kopf": "Bilanz dieser Regel",
+     "zeichen": 2823,
+     "bedienelemente": 1,
+     "anfang": "BILANZ DIESER REGEL Was die Regel getan hat, was sie nicht getan hat, und wie sie gegen einfaches Halten steht. Der Vergleich gegen Buy & Hold ist dabei die wic"
+    },
+    {
+     "id": "",
+     "kopf": "Was hat gewirkt?",
+     "zeichen": 1941,
+     "bedienelemente": 1,
+     "anfang": "WAS HAT GEWIRKT? Jede automatische Änderung mit gemessener Wirkung: Ø Gewinn je Intraday-Trade davor gegen danach, sortiert nach Wirkung, jede einzeln zurückneh"
+    },
+    {
+     "id": "",
+     "kopf": "Wann die Strategie nichts getan hat",
+     "zeichen": 307,
+     "bedienelemente": 0,
+     "anfang": "WANN DIE STRATEGIE NICHTS GETAN HAT Wie oft die Filter ein Signal bewusst verworfen haben – und warum. Der häufigste Grund ist der stärkste Hebel: „Wer nicht we"
+    },
+    {
+     "id": "",
+     "kopf": "Depot gegen Buy & Hold",
+     "zeichen": 314,
+     "bedienelemente": 0,
+     "anfang": "DEPOT GEGEN BUY & HOLD Noch zu wenig Depot-Verlauf – die Kurve entsteht, sobald die Simulation ein paar Stunden läuft. News-Sentiment noch keine Daten Technik n"
+    }
+   ],
+   "ueberschriften": [
+    {
+     "stufe": "H3",
+     "text": "Die Regel, die handelt i"
+    },
+    {
+     "stufe": "H3",
+     "text": "Regeln, die nur messen i"
+    },
+    {
+     "stufe": "H3",
+     "text": "Bilanz dieser Regel"
+    },
+    {
+     "stufe": "H3",
+     "text": "Was hat gewirkt?"
+    },
+    {
+     "stufe": "H4",
+     "text": "Bringen die Filter etwas?"
+    },
+    {
+     "stufe": "H3",
+     "text": "Wann die Strategie nichts getan hat"
+    },
+    {
+     "stufe": "H3",
+     "text": "Depot gegen Buy & Hold"
+    }
+   ],
+   "zahlSichtbar": 6,
+   "zahlGesamt": 6,
+   "pille": "Regelbuch"
+  },
+  {
+   "sub": "sub-stratchart",
+   "textZeichen": 772,
+   "elemente": [
+    {
+     "nr": 0,
+     "id": "",
+     "tag": "button",
+     "typ": "button",
+     "name": "Erklärung: Strategie-Chart",
+     "karte": "Strategie-Chart – Signal und Bedingungen nachvollziehen i",
+     "karteId": "stratChartPanel",
+     "sichtbar": true,
+     "fokussierbar": true,
+     "gesperrt": false,
+     "y": 258,
+     "x": 445,
+     "wert": null,
+     "datenAttribute": [
+      "data-info=regeln.chart"
+     ],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 1,
+     "id": "stcMode",
+     "tag": "select",
+     "typ": "",
+     "name": "RSI(2) im Seitwärtskanal (gemessen, nicht bestätigt) Kapitulations-Dip im Abwärtskanal (in",
+     "karte": "Strategie-Chart – Signal und Bedingungen nachvollziehen i",
+     "karteId": "stratChartPanel",
+     "sichtbar": true,
+     "fokussierbar": true,
+     "gesperrt": false,
+     "y": 327,
+     "x": 35,
+     "wert": {
+      "wert": "rsi2seit",
+      "gezeigt": "RSI(2) im Seitwärtskanal (gemessen, nich",
+      "moeglich": 2
+     },
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 2,
+     "id": "stcSym",
+     "tag": "select",
+     "typ": "",
+     "name": "AAPLMSFTNVDAGOOGLAMZNMETATSLAAMDAVGOTSMASMLINTCQCOMMUARM",
+     "karte": "Strategie-Chart – Signal und Bedingungen nachvollziehen i",
+     "karteId": "stratChartPanel",
+     "sichtbar": true,
+     "fokussierbar": true,
+     "gesperrt": false,
+     "y": 327,
+     "x": 405,
+     "wert": {
+      "wert": "AAPL",
+      "gezeigt": "AAPL",
+      "moeglich": 15
+     },
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 3,
+     "id": "stcIv",
+     "tag": "select",
+     "typ": "",
+     "name": "Kerzenlänge 60 Minuten (so gemessen) 15 Minuten (nur Ansicht) 5 Minuten (nur Ansicht)",
+     "karte": "Strategie-Chart – Signal und Bedingungen nachvollziehen i",
+     "karteId": "stratChartPanel",
+     "sichtbar": true,
+     "fokussierbar": true,
+     "gesperrt": false,
+     "y": 327,
+     "x": 570,
+     "wert": {
+      "wert": "60m",
+      "gezeigt": "60 Minuten (so gemessen)",
+      "moeglich": 3
+     },
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 4,
+     "id": "stcSpanne",
+     "tag": "select",
+     "typ": "",
+     "name": "Zeitraum 160 Kerzen 320 Kerzen 640 Kerzen 1200 Kerzen",
+     "karte": "Strategie-Chart – Signal und Bedingungen nachvollziehen i",
+     "karteId": "stratChartPanel",
+     "sichtbar": true,
+     "fokussierbar": true,
+     "gesperrt": false,
+     "y": 327,
+     "x": 835,
+     "wert": {
+      "wert": "320",
+      "gezeigt": "320 Kerzen",
+      "moeglich": 4
+     },
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 5,
+     "id": "stcKontext",
+     "tag": "input",
+     "typ": "checkbox",
+     "name": "Kontext-Kanäle (kurz/mittel/lang)",
+     "karte": "Strategie-Chart – Signal und Bedingungen nachvollziehen i",
+     "karteId": "stratChartPanel",
+     "sichtbar": true,
+     "fokussierbar": true,
+     "gesperrt": false,
+     "y": 337,
+     "x": 961,
+     "wert": {
+      "wert": "aus"
+     },
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 6,
+     "id": "stcBtn",
+     "tag": "button",
+     "typ": "button",
+     "name": "Chart laden",
+     "karte": "Strategie-Chart – Signal und Bedingungen nachvollziehen i",
+     "karteId": "stratChartPanel",
+     "sichtbar": true,
+     "fokussierbar": true,
+     "gesperrt": false,
+     "y": 372,
+     "x": 35,
+     "wert": null,
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 7,
+     "id": "",
+     "tag": "button",
+     "typ": "button",
+     "name": "Erklärung: Zeichen im Chart",
+     "karte": "Strategie-Chart – Signal und Bedingungen nachvollziehen i",
+     "karteId": "stratChartPanel",
+     "sichtbar": false,
+     "fokussierbar": null,
+     "gesperrt": false,
+     "y": 0,
+     "x": 0,
+     "wert": null,
+     "datenAttribute": [
+      "data-info=regeln.legende"
+     ],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    }
+   ],
+   "karten": [
+    {
+     "id": "stratChartPanel",
+     "kopf": "Strategie-Chart – Signal und Bedingungen nachvollziehen i",
+     "zeichen": 772,
+     "bedienelemente": 8,
+     "anfang": "STRATEGIE-CHART – SIGNAL UND BEDINGUNGEN NACHVOLLZIEHEN i Rechnet die gemessene Regel auf den Kerzen eines Werts nach. Jede Markierung ist ein Einstieg, den die"
+    }
+   ],
+   "ueberschriften": [
+    {
+     "stufe": "H3",
+     "text": "Strategie-Chart – Signal und Bedingungen nachvollziehen i"
+    }
+   ],
+   "zahlSichtbar": 7,
+   "zahlGesamt": 8,
+   "pille": "Chart"
+  },
+  {
+   "sub": "sub-auswertung",
+   "textZeichen": 2046,
+   "elemente": [
+    {
+     "nr": 0,
+     "id": "pilotOn",
+     "tag": "input",
+     "typ": "checkbox",
+     "name": "Autopilot",
+     "karte": "Autopilot – die App verbessert sich selbst",
+     "karteId": "",
+     "sichtbar": false,
+     "fokussierbar": null,
+     "gesperrt": false,
+     "y": 411,
+     "x": 99,
+     "wert": {
+      "wert": "an"
+     },
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 1,
+     "id": "pilotBtn",
+     "tag": "button",
+     "typ": "",
+     "name": "jetzt messen (10–20 Min)",
+     "karte": "Autopilot – die App verbessert sich selbst",
+     "karteId": "",
+     "sichtbar": true,
+     "fokussierbar": true,
+     "gesperrt": false,
+     "y": 394,
+     "x": 145,
+     "wert": null,
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 2,
+     "id": "quelleTestBtn",
+     "tag": "button",
+     "typ": "",
+     "name": "Datenquelle testen",
+     "karte": "Autopilot – die App verbessert sich selbst",
+     "karteId": "",
+     "sichtbar": true,
+     "fokussierbar": true,
+     "gesperrt": false,
+     "y": 527,
+     "x": 246,
+     "wert": null,
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 3,
+     "id": "massenBtn",
+     "tag": "button",
+     "typ": "",
+     "name": "jetzt auffüllen",
+     "karte": "Autopilot – die App verbessert sich selbst",
+     "karteId": "",
+     "sichtbar": true,
+     "fokussierbar": true,
+     "gesperrt": false,
+     "y": 527,
+     "x": 382,
+     "wert": null,
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 4,
+     "id": "massen1mBtn",
+     "tag": "button",
+     "typ": "",
+     "name": "nur 1-Minuten",
+     "karte": "Autopilot – die App verbessert sich selbst",
+     "karteId": "",
+     "sichtbar": true,
+     "fokussierbar": true,
+     "gesperrt": false,
+     "y": 527,
+     "x": 491,
+     "wert": null,
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 5,
+     "id": "massenStopBtn",
+     "tag": "button",
+     "typ": "",
+     "name": "anhalten",
+     "karte": "Autopilot – die App verbessert sich selbst",
+     "karteId": "",
+     "sichtbar": true,
+     "fokussierbar": true,
+     "gesperrt": false,
+     "y": 527,
+     "x": 603,
+     "wert": null,
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 6,
+     "id": "aoRegime",
+     "tag": "input",
+     "typ": "checkbox",
+     "name": "Marktlage messen",
+     "karte": "Autopilot – die App verbessert sich selbst",
+     "karteId": "",
+     "sichtbar": false,
+     "fokussierbar": null,
+     "gesperrt": false,
+     "y": 633,
+     "x": 151,
+     "wert": {
+      "wert": "an"
+     },
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 7,
+     "id": "regimeBtn",
+     "tag": "button",
+     "typ": "",
+     "name": "jetzt messen",
+     "karte": "Autopilot – die App verbessert sich selbst",
+     "karteId": "",
+     "sichtbar": true,
+     "fokussierbar": true,
+     "gesperrt": false,
+     "y": 616,
+     "x": 197,
+     "wert": null,
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 8,
+     "id": "retroBtn",
+     "tag": "button",
+     "typ": "",
+     "name": "Retrospektive",
+     "karte": "(ausserhalb jeder Karte)",
+     "karteId": "",
+     "sichtbar": true,
+     "fokussierbar": false,
+     "gesperrt": false,
+     "y": 773,
+     "x": 20,
+     "wert": null,
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 9,
+     "id": "weeklyBtn",
+     "tag": "button",
+     "typ": "",
+     "name": "Wochenreport",
+     "karte": "(ausserhalb jeder Karte)",
+     "karteId": "",
+     "sichtbar": true,
+     "fokussierbar": false,
+     "gesperrt": false,
+     "y": 773,
+     "x": 138,
+     "wert": null,
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 10,
+     "id": "reportShowBtn",
+     "tag": "button",
+     "typ": "",
+     "name": "Analyse-Bericht",
+     "karte": "(ausserhalb jeder Karte)",
+     "karteId": "",
+     "sichtbar": true,
+     "fokussierbar": false,
+     "gesperrt": false,
+     "y": 773,
+     "x": 262,
+     "wert": null,
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 11,
+     "id": "exportDataBtn",
+     "tag": "button",
+     "typ": "",
+     "name": "Analyse-Export",
+     "karte": "(ausserhalb jeder Karte)",
+     "karteId": "",
+     "sichtbar": true,
+     "fokussierbar": false,
+     "gesperrt": false,
+     "y": 773,
+     "x": 392,
+     "wert": null,
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 12,
+     "id": "btMode",
+     "tag": "select",
+     "typ": "",
+     "name": "Stunden-Strategie (Technik + Elliott, Tagesdaten) Intraday: eingestelltes Setup auf Option",
+     "karte": "Backtest (Handwerkzeug)",
+     "karteId": "",
+     "sichtbar": true,
+     "fokussierbar": false,
+     "gesperrt": false,
+     "y": 860,
+     "x": 35,
+     "wert": {
+      "wert": "daily",
+      "gezeigt": "Stunden-Strategie (Technik + Elliott, Ta",
+      "moeglich": 3
+     },
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 13,
+     "id": "btRange",
+     "tag": "select",
+     "typ": "",
+     "name": "1 Jahr2 Jahre5 Jahre",
+     "karte": "Backtest (Handwerkzeug)",
+     "karteId": "",
+     "sichtbar": true,
+     "fokussierbar": false,
+     "gesperrt": false,
+     "y": 860,
+     "x": 390,
+     "wert": {
+      "wert": "1y",
+      "gezeigt": "1 Jahr",
+      "moeglich": 3
+     },
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    },
+    {
+     "nr": 14,
+     "id": "btRunBtn",
+     "tag": "button",
+     "typ": "",
+     "name": "Backtest starten",
+     "karte": "Backtest (Handwerkzeug)",
+     "karteId": "",
+     "sichtbar": true,
+     "fokussierbar": false,
+     "gesperrt": false,
+     "y": 861,
+     "x": 484,
+     "wert": null,
+     "datenAttribute": [],
+     "onclickEigenschaft": false,
+     "onchangeEigenschaft": false
+    }
+   ],
+   "karten": [
+    {
+     "id": "",
+     "kopf": "Autopilot – die App verbessert sich selbst",
+     "zeichen": 2025,
+     "bedienelemente": 8,
+     "anfang": "AUTOPILOT – DIE APP VERBESSERT SICH SELBST Das Kursarchiv sammelt jede geladene Kursreihe dauerhaft – die Messbasis wächst mit jedem Handelstag, statt an Yahoos"
+    },
+    {
+     "id": "",
+     "kopf": "Backtest (Handwerkzeug)",
+     "zeichen": 0,
+     "bedienelemente": 3,
+     "anfang": ""
+    }
+   ],
+   "ueberschriften": [
+    {
+     "stufe": "H3",
+     "text": "Autopilot – die App verbessert sich selbst"
+    },
+    {
+     "stufe": "H4",
+     "text": "Backtest (Handwerkzeug)"
+    }
+   ],
+   "zahlSichtbar": 13,
+   "zahlGesamt": 15,
+   "pille": "Autopilot"
+  }
+ ]
+}

@@ -1,0 +1,136 @@
+# Inventar: Reiter „Regeln" — Bestandsaufnahme am laufenden Programm
+
+**Auftrag:** Wilhelm, 27.08.2026, über den PM — *„können wir bitte auch den gesamten Tab
+Regeln (mit Unterverzeichnissen) weitgehend überarbeiten, UI-mäßig und inhaltlich? das ist
+mir alles viel zu viel und unübersichtlich und teilweise unlogisch und verwirrend"*.
+
+**Was das hier ist:** eine Aufnahme, keine Bewertung und kein Plan. Gemessen am laufenden
+Programm in einem isolierten Profil (`v8.34.1`, 38 gesäte Messprotokolle, 1280×900).
+**Nichts wurde angeklickt außer Reitern und Pillen.**
+
+**Was das hier NICHT ist:** die Streichliste. Die macht Wilhelm.
+
+---
+
+## 1. Der Umfang, gemessen
+
+| Unterreiter | sichtbare Bedienelemente | davon versteckt | Karten | Textzeichen |
+|---|---:|---:|---:|---:|
+| Übersicht | 10 | 0 | 5 | 2.840 |
+| **Schalter & Einstellungen** | **31** | **13** | 2 | 2.762 |
+| Mittelfrist | 16 | 0 | 6 | 3.445 |
+| **Regelbuch** | 6 | 0 | 6 | **4.045** |
+| Chart | 7 | 1 | 1 | 772 |
+| Autopilot | 13 | 2 | 2 | 2.046 |
+| **Summe** | **83** | **16** | **22** | **15.910** |
+
+**83 Bedienelemente und rund 16.000 Zeichen Text auf sechs Unterreitern.** Zum Vergleich:
+Wilhelms Beschwerde nennt genau diese Menge.
+
+Die Zahl der PM-Messung (44 im HTML für „Schalter & Einstellungen") und meine (44 gesamt,
+31 sichtbar) stimmen überein — **13 davon stehen im HTML, sind aber nicht auf dem Schirm.**
+
+## 2. Lebt alles? — **Kein toter Schalter gefunden**
+
+Wilhelms Frage 2 zielt auf die sechs toten Schalter, die hier schon einmal gefunden wurden.
+
+- **0** Bedienelemente ohne jede Fundstelle im Code.
+- **25** Knöpfe mit Kennung geprüft: **alle 25 sind verdrahtet.**
+
+**Wie belastbar das ist:** Meine Textsuche meldete zuerst 23 „nie verdrahtet", dann nach
+Verbesserung noch 3 (`#mfdTaktBtn`, `#mfdRebalanceBtn`, `#mfdDriftBtn`). **Ich habe alle
+drei von Hand nachgesehen — sie sind verdrahtet** (`mfdepot.js:310–312`, zwölf Zeilen nach
+der Stelle, an der ihre Kennungen stehen). Das Idiom `var b1 = el('x'), b2 = el('y'); …`
+mit der Verdrahtung weiter unten schlägt jede fensterbasierte Textsuche.
+
+> ⚠ **Damit ist „kein toter Schalter" ein Befund mit Vorbehalt.** Eine Textsuche kann
+> Verdrahtung über Delegation grundsätzlich nicht sehen. **Für die Gegenrichtung — ein
+> Knopf, der zwar verdrahtet ist, dessen Handler aber nichts mehr tut — sagt sie gar
+> nichts.** Das kann nur `06` von der Code-Seite prüfen.
+
+## 3. Was mir strukturell aufgefallen ist
+
+Fünf Beobachtungen, die zu Wilhelms Worten „zu viel", „unübersichtlich", „unlogisch"
+passen. **Beobachtungen, keine Empfehlungen.**
+
+### 3.1 Ein Drittel der Einstellungen ist unsichtbar — und es sind die zentralen
+
+In *Schalter & Einstellungen* stehen 13 Bedienelemente im HTML, die nicht auf dem Schirm
+sind:
+
+`#idEnabled` · `#idMode` (Auslöser-Auswahl!) · `#idExit` · `#idTrend` · `#idTrail` ·
+`#idMtf` · `#idChannel` · `#idScreener` · `#idAutoTune` · `#idKrypto` ·
+`#idKryptoHandeln` · `#idSchattenImmer` · `#hourlyEnabled`
+
+Darunter ist `#idMode` — **die Auswahl des Auslösers**, also die zentrale Einstellung der
+Intraday-Strategie. Auch der Hauptschalter `#idEnabled` ist unsichtbar. Dasselbe Muster in
+*Autopilot* (`#pilotOn`, `#aoRegime`).
+
+**Vermutung, nicht gemessen:** die Blöcke hängen daran, ob die jeweilige Strategie
+eingeschaltet ist. Im Testprofil ist alles aus, also ist alles verborgen.
+**Warum es hierher gehört:** Einstellungen, die je nach Schalterstellung erscheinen und
+verschwinden, sind genau die Sorte, die eine Seite „unlogisch und verwirrend" macht — man
+sucht etwas, das man gestern gesehen hat, und es ist weg. **Ob das so gewollt ist, kann ich
+nicht beurteilen; ich kann nur sagen, dass es so ist.**
+
+### 3.2 Die Strategiekarten der Übersicht haben keine Überschrift
+
+Auf *Übersicht* fand meine Kartenaufnahme zweimal „(ohne Überschrift)" und zweimal die
+Überschrift **„nicht entscheidbar"** — das ist die Urteils-Pille, die mangels `h2/h3/h4` als
+Kopf der Karte durchgeht. **Die vier Strategiekarten tragen ihren Namen also in einem
+`<span>`, nicht in einem Überschriftenelement.** Das betrifft Übersichtlichkeit **und**
+Barrierefreiheit (Vorlesereihenfolge, Sprungmarken).
+
+### 3.3 Das Regelbuch ist die Textwand des Reiters
+
+6 Bedienelemente, aber **4.045 Zeichen** — der höchste Textanteil bei der geringsten
+Bedienbarkeit. Zwei Karten allein tragen **2.823** („Bilanz dieser Regel") und **1.941**
+Zeichen („Was hat gewirkt?").
+
+### 3.4 Eine Karte mit drei Knöpfen und null Text
+
+*Autopilot* → **„Backtest (Handwerkzeug)"**: 3 Bedienelemente, **0 Zeichen** sichtbarer
+Text. Was sie tut, steht nirgends auf der Karte.
+
+### 3.5 Die Last ist sehr ungleich verteilt
+
+*Chart* hat eine Karte und 772 Zeichen; *Regelbuch* hat sechs Karten und 4.045. **Der
+Reiter hat keinen erkennbaren gemeinsamen Maßstab dafür, was einen eigenen Unterreiter
+verdient.**
+
+## 4. Doppelungen — nichts gefunden, mit engem Prüfmaß
+
+**0** Beschriftungen kommen in mehreren Unterreitern vor.
+
+> ⚠ **Das Maß war eng.** Ich habe auf **gleiche Beschriftung** geprüft. Wilhelms Frage 3
+> („derselbe Wert unter zwei Namen") verlangt den Vergleich der **Speicherschlüssel**, auf
+> die die Bedienelemente schreiben — das steht im Code, nicht auf dem Schirm. **Diese Frage
+> ist offen** und gehört mit `06` zusammen beantwortet.
+
+## 5. Was ich NICHT beurteilen kann
+
+Ausdrücklich markiert, statt geraten:
+
+1. **„Wirkt es?" im Sinne von: tut der Handler noch etwas.** Textsuche sieht Verdrahtung,
+   nicht Wirkung.
+2. **Ob eine Einstellung etwas Widerlegtes steuert.** Dafür muss jeder Schalter gegen den
+   Messstand gehalten werden (Belegstand 0 von 12). **Das ist der aufwendigste Teil und
+   noch nicht gemacht.**
+3. **Warum die 13 Elemente unsichtbar sind** — vermutet, nicht gemessen.
+4. **Ob zwei Bedienelemente denselben Speicherwert schreiben** (siehe 4).
+5. **Was jedes einzelne Bedienelement in Wilhelms Sprache tut.** 83 Stück; das ist die
+   eigentliche Fleißarbeit und steht noch aus.
+
+## 6. Rohdaten
+
+| Datei | Inhalt |
+|---|---|
+| `probe-inventar-regeln.js` | Aufnahme am laufenden Programm |
+| `inventar-abgleich.js` | Abgleich der Kennungen gegen die Quelltexte, mit Selbstprüfung |
+| `rohbefund-inventar.json` | jedes Bedienelement mit Kennung, Beschriftung, Karte, Wert, Sichtbarkeit, Fokussierbarkeit, Ort |
+| `rohbefund-inventar-abgleich.json` | Fundstellen je Kennung |
+
+**Methodische Vorsicht, aus den Fehlern dieses Tages:** Rechtecke werden **vor** dem
+Fokussieren erfasst (`focus()` scrollt), Sichtbarkeit **und** Fokussierbarkeit werden
+getrennt bestimmt (ein gefülltes Rechteck heißt nicht, dass man hinkommt — das war der
+Fehler in #109), und jeder Melder trägt eine Selbstprüfung.
