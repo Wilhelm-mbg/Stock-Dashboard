@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 03:05 (abgelesen)
+letzter-bericht: 2026-08-27 03:10 (abgelesen)
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -120,9 +120,35 @@ auffiel:**
 > ### ⭐ DIE AUFLÖSUNG, in einem Satz
 >
 > > **Die Halbtage sind nicht verdorben. Sie sind die einzigen Tage, an denen
-> > Nachhandelsdaten überhaupt ins Archiv gelangt sind — weil der Sitzungsfilter dort eine
-> > Stunde zu weit greift. Die Eigenschaften dieser Daten, tiefe isolierte Dochte
-> > eingeschlossen, hat Nachhandel überall.**
+> > Nachhandelsdaten überhaupt ins Archiv gelangt sind. Die Eigenschaften dieser Daten, tiefe
+> > isolierte Dochte eingeschlossen, hat Nachhandel überall.**
+>
+> **❌ Der Halbsatz „weil der Sitzungsfilter dort eine Stunde zu weit greift" ist ZURÜCKGEZOGEN
+> (03:10) — er war eine Folgerung, als Befund formuliert, und ist von beiden Seiten
+> widerlegt.** *Der PM hatte ihn übernommen und weitergemeldet; `-06` wollte ihn mit Codestelle
+> in Wilhelms Vorlage nehmen und wurde gestoppt.*
+>
+> **Gemessen, vier Tagestypen, Quelle gegen Archiv:**
+>
+>     Normaltag Winter   Sitzung bis 21:00   Archiv endet 20:30   Nachhandel: alles verworfen
+>     Normaltag Sommer   Sitzung bis 20:00   Archiv endet 19:30   Nachhandel: alles verworfen
+>     Halbtag   Winter   Sitzung bis 18:00   Archiv endet 18:00   erste AH-Stunde BEHALTEN,
+>                                                                 die drei folgenden verworfen
+>     Halbtag   Sommer   Sitzung bis 17:00   Archiv endet 17:00   dasselbe Muster
+>
+> *Griffe der Filter **eine Stunde zu weit**, müssten **Normaltage genauso lecken** — sie tun es
+> nicht. Griffe er an Halbtagen mit einem **festen Normaltags-Ende**, kämen dort auch 19:00 und
+> 20:00 durch — tun sie nicht.* **Von beiden Seiten widerlegt.**
+>
+> **Was belegt ist und allein in die Vorlage gehört:** (1) Normaltage verwerfen den **gesamten**
+> Nachhandel — korrekt. (2) Halbtage behalten **genau eine** Nachhandelsstunde, die erste.
+> (3) Die leere Sitzungs-Restkerze wird verworfen, *vermutlich* weil ihr Kurs null ist.
+> (4) Das Leck ist **genau eine Kerze je Reihe und Halbtag** — passt zu den 271 von 271.
+>
+> **Welche Regel dieses Muster erzeugt, ist vom Archiv aus NICHT bestimmbar.** *„Jede Regel, die
+> mir eingefallen ist, sagt an mindestens einem der vier Tagestypen etwas Falsches voraus. Die
+> Antwort steht im Sammelcode."* **Auflage an `-06`: die vermutete Codestelle vorher gegen
+> diese vier Zeilen halten — erklärt sie das Muster nicht, ist sie nicht die Stelle.**
 >
 > **→ Die Reparaturfrage ist damit endgültig KEINE Frage nach kaputten Werten mehr. Sie ist die
 > Populationsfrage, und die gehört Wilhelm.** *(Die PM-Umformulierung „behalten wir
@@ -487,7 +513,7 @@ auffiel:**
 
 | | Frage | Lage |
 |---|---|---|
-| **1** | **Gehören Randzeiten-Kerzen ins 60m-Archiv?** | **ENTSCHIEDEN VORBEREITET — der Streit ist beigelegt, es bleibt eine reine Populationsfrage.** *Die Halbtage sind **nicht verdorben**: Sie sind die einzigen Tage, an denen Nachhandelsdaten überhaupt ins Archiv gelangt sind, weil der Sitzungsfilter dort eine Stunde zu weit greift.* **Drei Versuche, die Dochte als Fehler zu isolieren, sind alle gescheitert — am Normaltag sieht es genauso aus oder schlechter.** Die QS: *„Beide Erklärungen sagen dieselben Formen voraus; was trennen würde, wäre eine zweite Datenquelle — die haben wir nicht. Das ist ein Ergebnis, keine offene Aufgabe."* **→ Also: (a) fremde Population konsequent entfernen, oder (b) sie als legitime Nachhandelsdaten behalten und kennzeichnen. Werte reparieren steht nicht mehr zur Wahl.** *Größe: je Reihe und Halbtag genau EINE Kerze, davon 1,5 % mit tiefem Docht (2 von 133), Median-Ausschlag 0,000 %.* |
+| **1** | **Gehören Randzeiten-Kerzen ins 60m-Archiv?** | **ENTSCHIEDEN VORBEREITET — der Streit ist beigelegt, es bleibt eine reine Populationsfrage.** *Die Halbtage sind **nicht verdorben**: Sie sind die einzigen Tage, an denen Nachhandelsdaten überhaupt ins Archiv gelangt sind — genau **eine** Stunde je Reihe. **Warum, ist offen**: die naheliegende Erklärung („Filter greift eine Stunde zu weit") ist gemessen widerlegt; die Antwort steht im Sammelcode, nicht im Archiv.* **Drei Versuche, die Dochte als Fehler zu isolieren, sind alle gescheitert — am Normaltag sieht es genauso aus oder schlechter.** Die QS: *„Beide Erklärungen sagen dieselben Formen voraus; was trennen würde, wäre eine zweite Datenquelle — die haben wir nicht. Das ist ein Ergebnis, keine offene Aufgabe."* **→ Also: (a) fremde Population konsequent entfernen, oder (b) sie als legitime Nachhandelsdaten behalten und kennzeichnen. Werte reparieren steht nicht mehr zur Wahl.** *Größe: je Reihe und Halbtag genau EINE Kerze, davon 1,5 % mit tiefem Docht (2 von 133), Median-Ausschlag 0,000 %.* |
 | **2** | **Bekommen die delisteten Papiere ihr Abmeldedatum?** | **Lohnt sich, ist aber nicht dringend** *(um 02:10 nach unten korrigiert)*. AVB/EQR sind im Universum und heute außerhalb jedes Fensters; ab ~einer Handelswoche können die Phantomtage in ein Haltefenster geraten. **Aber der Schwanz ist auf 1–5 Tage gedeckelt** — der gefährliche Fall (dauerhaft flache Reihe, die eine Momentum-Rangfolge nach oben spült) tritt **nicht** ein. |
 | **3** | **Welche „Kostenhürde" zeigt das Messband?** | Zwei verschiedene Zahlen tragen denselben Namen; in der Voreinstellung stimmen sie zufällig überein. Live-Hürde oder feste Referenz — beides vertretbar, der Doppelname nicht. |
 
@@ -507,7 +533,7 @@ Danach fünf vorregistrierte Läufe, ein Prozess je Lauf, **Sperrprüfung vor je
 Treiber **wartet nicht, er verweigert**: „ein Treiber, der wartet, verdeckt nur, dass er
 nichts tut."*
 
-### 📐 ZWEI NEUE HAUSREGELN AUS DIESER NACHT — beide gegen dieselbe Krankheit
+### 📐 VIER NEUE HAUSREGELN AUS DIESER NACHT — alle gegen dieselbe Krankheit
 
 **Neben der bestehenden Regel „jeder Nullbefund braucht eine Positivkontrolle" stehen ab
 sofort zwei weitere. Alle drei behandeln denselben Defekt: eine Zahl ohne ihren Geltungsbereich.**
@@ -517,6 +543,8 @@ sofort zwei weitere. Alle drei behandeln denselben Defekt: eine Zahl ohne ihren 
 | **1. Jeder Nullbefund braucht eine Positivkontrolle.** *(bestand schon)* | Eine Prüfung, die nichts findet, muss zeigen können, dass sie überhaupt etwas finden würde. |
 | **2. Jede Messung nennt die Tage und Reihen, für die sie gilt.** | Die 20:00-Kerze: an **einem** Tag gemessen, auf **alle** Tage gelesen — und vom PM als größter Fund der Nacht an die Spitze gesetzt. Sie existiert an genau zwei Tagen. |
 | **3. Jedes Warnsignal trägt sein Messdatum.** | „1m bei 1.834 von 2.732" war beim Schreiben richtig und beim Weitergeben überholt. Der PM hat zwei solche Einträge als eilig verteilt. |
+| **4. Zieht eine Aussage eine HANDLUNG nach sich, steht „gemessen" oder „gefolgert" IM SATZ — nicht im Nebensatz.** | Fünf zurückgezogene Sätze in einer Nacht, **bei allen fünf war die Messung richtig und der Satz darüber zu groß.** Vier betrafen Deutungen; **der fünfte hätte jemanden an einer Datei arbeiten lassen** („der Filter greift eine Stunde zu weit" — gefolgert, als Befund formuliert, mit Codestelle auf dem Weg in Wilhelms Vorlage). |
+| **5. Bei einem Ergebnis von 100 % zuerst fragen, ob das Kriterium auch anders ausgehen KÖNNTE.** | Die „210 von 210" — beide Klassen 100 %. *Ein Kriterium, das für alles gilt, unterscheidet nichts.* |
 
 > **Regel 2 und 3 sind dieselbe Regel in zwei Richtungen: Eine Zahl braucht ihren Umfang
 > (welche Tage, welche Reihen) und ihren Zeitpunkt (wann gemessen). Ohne beides altert oder
