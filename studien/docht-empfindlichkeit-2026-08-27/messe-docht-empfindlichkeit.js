@@ -168,6 +168,10 @@ var args = process.argv.slice(2);
 if (args[0] === '--einzel') { einzelLauf(args[1], args[2]); process.exit(0); }
 if (args[0] === '--vergleich') { vergleich(); process.exit(0); }
 
+/* Die Strategien im Kind-Prozess filtern ueber wertpapierart.js; ohne Klassifizierung
+ * laesst das ALLES durch (still). Gemessen 27.08.: kein Aufrufer prueft es - hier schon. */
+var WPGUARD = require(REPO + '/studien/messmaschine/strategien/wertpapierart.js');
+if (!WPGUARD.klassifizierungDa()) { console.error('ABBRUCH: wertpapierarten.json fehlt oder unbrauchbar - Universum waere ungefiltert.'); process.exit(2); }
 if (!wachhundOk()) process.exit(2);
 console.log('\n[1/3] Gefilterte Kopie bauen (Umsatz === 0 raus) ...');
 baueKopieOhneNullumsatz();

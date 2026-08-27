@@ -204,6 +204,9 @@ function referenz(D, waechter) {
 /* ---------------- Ablauf ---------------- */
 var modus = process.argv.indexOf('--alles') >= 0 ? 'alles' : process.argv.indexOf('--referenz') >= 0 ? 'referenz' : 'waechter';
 console.log('== messe-strang-a ==  Modus ' + modus + '  Archiv ' + ARCHIV + '  Seed ' + SEED);
+/* Ohne Klassifizierung laesst istAktie ALLES durch - das Universum waere still
+ * verdreifacht. Gemessen 27.08.: kein einziger Aufrufer prueft das; dieser hier tut es. */
+if (!WP.klassifizierungDa()) { console.error('ABBRUCH: wertpapierarten.json fehlt oder unbrauchbar - Universum waere ungefiltert.'); process.exit(2); }
 if (!wachhundOk()) process.exit(2);
 console.log('Lade Universum ...');
 var D = lade();
