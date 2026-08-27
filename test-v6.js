@@ -4400,6 +4400,36 @@ console.log('\n44) Messmaschine, Scoreboard und Strategie-Eingabe (23.08.2026)')
   var mon9 = dep2.slice(dep2.indexOf('function renderSigMonitor'), dep2.indexOf('function renderSigMonitor') + 4000);
   ok(/· Pendel /.test(mon9) && !/· Güte /.test(mon9),
      'Der Live-Signal-Monitor sagt nicht mehr "Guete" - sein Score ist eine andere Skala (#80, Befund B1)');
+
+  /* ---- Kerzenlage (Wilhelms Kennzeichnungs-Entscheid 27.08.) ----
+   * Die vier Lagen werden mit dem VIER-TAGESTYPEN-Prueffall der QS gefuettert -
+   * synthetische Zeitstempel, kein Archiv. Genau an den Tagestypen ist die
+   * Sitzungsbewusstheit schwer (Sommer/Winter x Normaltag/Halbtag); eine
+   * Schablonen-Regel wuerde hier an mindestens einem Typ scheitern. */
+  (function () {
+    var KL = require('./kerzenlage.js');
+    var L = KL.kerzenLage;
+    // Normaltag Winter 2025-11-26 (Sitzung 14:30-21:00 UTC)
+    ok(L(Date.parse('2025-11-26T15:30:00Z'), 5000) === 'sitzung', 'Winter-Normaltag 15:30 = sitzung');
+    ok(L(Date.parse('2025-11-26T21:00:00Z'), 0) === 'schlusskurs', 'Winter-Normaltag 21:00 v=0 = schlusskurs');
+    ok(L(Date.parse('2025-11-26T21:00:00Z'), 777) === 'auktion', 'Winter-Normaltag 21:00 v>0 = auktion');
+    // Normaltag Sommer 2025-07-01 (Sitzung 13:30-20:00 UTC)
+    ok(L(Date.parse('2025-07-01T19:30:00Z'), 5000) === 'sitzung', 'Sommer-Normaltag 19:30 = sitzung');
+    ok(L(Date.parse('2025-07-01T20:00:00Z'), 0) === 'schlusskurs', 'Sommer-Normaltag 20:00 v=0 = schlusskurs');
+    // Halbtag Winter 2025-11-28 (Sitzung 14:30-18:00 UTC)
+    ok(L(Date.parse('2025-11-28T16:30:00Z'), 5000) === 'sitzung', 'Winter-Halbtag 16:30 = sitzung');
+    ok(L(Date.parse('2025-11-28T18:00:00Z'), 0) === 'nachhandel', 'Winter-Halbtag 18:00 v=0 = nachhandel');
+    ok(L(Date.parse('2025-11-28T18:00:00Z'), 335604) === 'auktion', 'Winter-Halbtag 18:00 v>0 = auktion (ACGL-Fall)');
+    ok(L(Date.parse('2025-11-28T19:00:00Z'), 0) === 'nachhandel', 'Winter-Halbtag 19:00 v=0 = nachhandel');
+    // Halbtag Sommer 2025-07-03 (Sitzung 13:30-17:00 UTC)
+    ok(L(Date.parse('2025-07-03T17:00:00Z'), 0) === 'nachhandel', 'Sommer-Halbtag 17:00 v=0 = nachhandel (der Ur-Docht-Fall)');
+    ok(L(Date.parse('2025-07-03T13:00:00Z'), 0) === 'vorboerse', 'Sommer-Halbtag 13:00 = vorboerse');
+    ok(L(NaN, 0) === 'unbekannt', 'untauglicher Stempel = unbekannt, keine geratene Lage');
+    /* Die absoluten Archiv-Zahlen (20.160/5.755/1.150) sind hier BEWUSST KEINE
+     * Zusicherung - sie wandern mit jedem Halbtag (PM-Auflage). Die alternden
+     * Archiv-Invarianten prueft studien/datenfund-dochte-2026-08-27/
+     * lage-invarianten.js, ausserhalb von npm test. */
+  })();
   /* Eigenschafts-Pruefung gegen ein ECHTES Protokoll: aendert die Messmaschine die
    * Ablage der Aussicht, wird die Anzeige still leer - das soll hier laut werden.
    * kapitulation 26.08.: Varianten 1551/2330/224, kleinste 224 (Tafel-Tabelle). */
