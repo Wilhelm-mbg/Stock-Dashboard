@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 02:45 (abgelesen)
+letzter-bericht: 2026-08-27 02:50 (abgelesen)
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -113,12 +113,43 @@ auffiel:**
 > die näher als diese Spanne an ihrer Schwelle stehen. *Dass es solche gibt, zeigt das bekannte
 > 0,0001-Pp-Randrauschen; wie viele, ist ungemessen.*
 >
-> **2. ⚠ INDEX-VERSCHIEBUNG — diskret, nicht 0,0275-%-klein:** Verschwindet die 20:00-Kerze
-> beim Konsolidieren, **verliert der Tag eine Kerze — acht werden sieben.** Für alles, was in
-> **Kerzen** zählt — Haltedauern, Rückblickfenster, RSI-Perioden der 60m-Detektoren —
-> **verschiebt sich jeder Index um eins über diesen Tag hinweg.** *Dieselbe Regel liefert beim
-> Nachrechnen nicht nur einen anderen Wert, sondern rechnet auf einem **anders nummerierten
-> Pfad**.*
+> **2. ⚠ INDEX-VERSCHIEBUNG — der Mechanismus ist ein ANDERER als der PM beschrieben hat, und
+> die Wirkung reicht weiter.** *(Vorabprüfung `markt-dashboard-1d`, vor dem Bau des Zählers.)*
+>
+> **Live und Messung teilen KEINE Datei.** `depot.js:2404 fetchIntradayYahoo()` holt **direkt
+> bei Yahoo** über `Kurse.hole(sym, {range: …})` und **greift nie auf Archivdateien zu**; die
+> Messmaschine liest die Archivdateien. **Zwei getrennte Bezüge auf dieselbe Quelle** — es gibt
+> also keine gemeinsame Reihe, aus der eine Kerze „verschwinden" könnte.
+>
+> **Der Unterschied steht im Code:**
+>
+>     kurse.js          getUTCSeconds:  0 Vorkommen
+>     kerzenquelle.js   getUTCSeconds:  2 Vorkommen
+>
+> `kerzenquelle.js` wirft die Quote-Kerze am Reihenende hinaus, `kurse.js` nicht.
+> **→ Der Live-Pfad bekommt eine Kerze MEHR als die Messung — aber NUR während der Sitzung.**
+> Nach Handelsschluss ist der Quote auf `20:00:00` gerundet, hat Sekunde 0 und **passiert beide
+> Wege**; die Reihen sind dann identisch (nachgemessen, AAPL 60m und 5m: **Unterschied 0**).
+>
+> **Nicht „acht werden sieben über einen Tag hinweg", sondern: die Live-Reihe ist während der
+> Sitzung um genau eine Kerze länger, am jungen Ende — und damit verschiebt sich jeder
+> rückwärts gezählte Index DURCHGEHEND**, nicht nur über einen Tag. *Die Sorge war berechtigt,
+> die Größenordnung eher größer, der Mechanismus ein anderer.*
+>
+> > **🎯 UND DIE VORABPRÜFUNG HAT EINEN ZÄHLER VERHINDERT, DER ZUVERLÄSSIG NULL GEMELDET
+> > HÄTTE.** Der PM hatte „nach der Konsolidierung nachrechnen" beauftragt — **also genau die
+> > Bedingung, in der der Effekt nicht auftreten kann.** Er hätte null gemeldet und **wie eine
+> > Entwarnung ausgesehen.** *Dieselbe Fehlerform wie alles andere heute Nacht — diesmal im
+> > Prüfwerkzeug, gefunden **bevor** es gebaut war.*
+>
+> **Der Zähler misst deshalb WÄHREND der Sitzung**, und eine Zahl gibt es erst, wenn die Börse
+> wieder offen ist. *„Eine Zahl aus der Nacht wäre eine Zahl aus einer Bedingung, in der der
+> Effekt nicht existiert, und die will ich niemandem geben."*
+>
+> **Offene Annahme, ausdrücklich als solche benannt und an `c4` zur Gegenprüfung gegeben:**
+> dass die Messmaschine wirklich auf Archivdateien rechnet und nicht irgendwo selbst abruft —
+> gelesen wurde nur `depot.js`. *Genau solche ungeprüften Annahmen waren heute Nacht mehrfach
+> die Ursache.*
 >
 > **→ Das ist Fall FÜNF der Familie „Live driftet von der Messung weg"** — diesmal nicht in
 > einem Parameter, sondern **in der Bedeutung eines Feldes**.
