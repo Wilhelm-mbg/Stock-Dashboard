@@ -23,9 +23,12 @@ F-ECHO = nur Faktor (Skalen-Mischung) · U = kein Ereignis-Bezug)
 | HROW | U (14) + 1 Echo ×5 2011 — **schwach**: der geführte ×5-Split liegt 2013, zwei Jahre nach dem Sprung | 0/0/1/14 | 0,009 |
 | IOVA/TGTX/WT/CHRD/INDV/BLNK | nur U → unentscheidbar (Quote am Rand konsistent) | — | ≈0 |
 
-*Null lokal = provisorische Zufalls-Erwartung für Datums-Treffer (nSprünge·nSplitTage·3/nHandelstage);
-der unabhängige Analytiker-Nullwert aus dem 275er-Lauf ersetzt sie. WHLRs 2 F-Treffer
-gegen lokal 0,069 erwartete: kein Zufallsprodukt.
+*Null lokal = provisorische Zufalls-Erwartung für Datums-Treffer (nSprünge·nSplitTage·3/nHandelstage).
+**Ersetzt durch den finalen Analytiker-Nullwert (~15:45):** Permutation, 1.000
+Ziehungen, Saat 20260827, 113 Reihen mit Splits → **Erwartung 0,42 Datums-Treffer,
+p95 = 2, Maximum 4** (analytische Schranke 0,45). Global beobachtet: **8** (F = 5,
+F? = 3 aus 534 Einzelsprüngen über 275 Reihen) ≫ p95 — **die F-Klasse ist kein
+Zufallsprodukt**; WHLRs 2 F-Treffer sind damit auch global gedeckt.
 
 ## Was die drei PM-/QS-Fragen jetzt messbar beantwortet
 
@@ -50,5 +53,20 @@ gegen lokal 0,069 erwartete: kein Zufallsprodukt.
   für jede S1-Erweiterung.
 - Der lokale Nullwert ist eine Erwartungs-Formel, kein gemessenes Placebo; die
   Grundrate des Analytikers ist maßgeblich.
+
+## Nachtrag (~15:45) — Analytiker-Endlieferung (BEFUND-EINZELSPRUENGE.md)
+
+- **Trennfall-Liste jetzt zu dritt und datumsfest:** B (2025-05-09), QXO (2024-06-06),
+  **DOC (2024-03-04**, ticker_change + Dividendenbruch + Drift — Analytiker-Befund,
+  außerhalb meiner Kandidatenmenge).
+- **IESC 24.08.2026** = frischer F-Fall (1:2-Split ungeglättet) — Analytiker-Sweep,
+  nicht in meinen 16 Zeilen.
+- **Reichweiten-Grenze meines Joins, jetzt benannt (CBSH-Klasse):** Massive führt
+  Aktiendividenden als 1:1,05-Splits. Sprünge unter Faktor 2 liegen außerhalb der
+  vorregistrierten I1-Definition — **der Join sieht sie nicht.** Wer Aktiendividenden
+  prüfen will, braucht eine eigene Registrierung mit kleinerer Faktor-Schwelle und
+  entsprechend härterem Nullwert (viel mehr Zufalls-Kandidaten nahe 1,0).
+- GBTC/ETHE: unentscheidbar mit EDGAR-Hypothese (registrierter Übergabepunkt beim
+  Analytiker).
 
 *Simulation mit virtuellem Kapital. Keine Anlageberatung.*
