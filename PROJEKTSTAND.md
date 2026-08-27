@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 02:55 (abgelesen)
+letzter-bericht: 2026-08-27 02:45 (abgelesen)
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -100,6 +100,71 @@ auffiel:**
 > heraus) und **(b) der Zeitplan** (frühestens 30 Minuten nach Schluss).
 > **Fällt eine von beiden weg, schreibt der Sammler einen Zwischenstands-Quote als Tagesschluss
 > ins Archiv** — und zwar einen, der aussieht wie der genaueste Wert im Bestand.
+>
+> ### 🔔 27.08. ~02:45 — ZÄHLER A STEHT, und er kann eine Null nicht mehr als Entwarnung melden
+>
+> **`aa11642`, `tools/randzaehler.js`.** Kontrolllauf bei zu Markt, 12 Reihen: **60.925 Kerzen
+> auf beiden Seiten, Differenz 0, bestanden.** *Beide Kerzenzahlen werden ausgewiesen, nicht
+> nur die Differenz — sonst ließe sich Randeffekt nicht von durchgehender Verschiebung
+> trennen.*
+>
+> **Zwei Urteile stehen IM WERKZEUG, nicht im Kopf des Lesers:**
+>
+>     Markt zu    und Abweichung 0  ->  Kontrolle bestanden
+>     Markt OFFEN und Abweichung 0  ->  Verdacht auf defekte Sonde
+>
+> > **Das zweite Urteil rettet den ursprünglich falsch gestellten PM-Auftrag:** *Eine Null ist
+> > hier nur dann eine Entwarnung, wenn sie zur richtigen Zeit gemessen wurde.* **Aus meinem
+> > Fehler ist eine Sperrklinke geworden.**
+>
+> **Ein Fehler in der Spezifikation, vor dem Bau gefangen:** `c4` hatte eine dritte Fassung der
+> Regel geliefert — *„Sekunde ≠ 0 **oder Umsatz 0**"*. **Das hätte nach Schluss die amtliche
+> Schlusskerze aus der Mess-Basis geworfen und den Kontrolllauf JEDE NACHT falschen Alarm
+> schlagen lassen.** Sofort angenommen; **die Mess-Basis kommt jetzt per Import aus
+> `fertigeKerze()`** — also per Konstruktion dieselbe Regel statt einer nachgebauten.
+>
+> **Zähler B wartet auf die offene Börse.** Zugang verifiziert: die zwölf **reinen**
+> Strategie-Module der Messmaschine, zweimal aufgerufen — B rechnet damit gegen genau das, was
+> die zwölf Protokolle messen. **Die Grenze steht ausdrücklich dabei:** B misst die reinen
+> Detektoren, **nicht** die Live-Gates und Confirm-Gatter. *Das bräuchte ein Mandat auf den
+> Handelspfad, das sich weder `1d` noch `c4` nehmen — richtig so.*
+>
+> **⚠ Zusätzliche Einschränkung, die eine unserer Gegenproben betrifft:** **Eine Tageskerze des
+> LAUFENDEN Tages taugt nicht als Zeuge** — sie sieht aus wie eine fertige, trägt aber nur den
+> Umsatz bis jetzt. *Alle heute Nacht benutzten Fälle waren abgeschlossen; die Gegenproben
+> halten.*
+>
+> ### ✅ 27.08. ~02:40 — DREI OFFENE FRAGEN GESCHLOSSEN, alle drei mit guten Antworten
+>
+> **1. Bildet irgendetwas einen Tagesschluss aus 60m? JA — an genau EINER Stelle.**
+> `studien/messmaschine/strategien/tageshilfen.js`, der Rechenkern der drei T-Strategien
+> (`t1-zwangsglattstellung`, `t2-umsatzschock`, `t3-stundendrift`). **Sonst niemand:**
+> `kapitulation` rechnet sein Regime auf Stunden-EMA200 („genau wie live"), und
+> `momentum`/`monatsende`/`monatswende`/`quartalsschub` feuern zwar zu 100 % auf der letzten
+> Tageskerze, benutzen aber deren **nativen** Kerzenschluss — *nichts wird gebildet.*
+>
+> **Und die eine Stelle ist gegen genau diese Frage gebaut, dokumentiert im Dateikopf:** Die
+> Schlusskerze wird **ohne Blick nach vorn** über die Zeitumstellung bestimmt (Anfangsstunde
+> 13 UTC → letzte Kerze 19er-Stunde; 14 UTC → 20er-Stunde). **Folge (a): die sieben verkürzten
+> Tage feuern NIE** — wörtlich als *„die vorsichtige Richtung"* dokumentiert; die
+> 18:00-Nachhandelskerze wird nie als Schluss verwendet, der Halbtag fällt aus der
+> Tagesrenditen-Reihe und sein Beitrag steckt in einer Zwei-Sitzungs-Rendite von Vollschluss zu
+> Vollschluss. **Folge (b): die Sommer-20:00-Quote-Kerze schließt die Regel automatisch aus.**
+> **→ Theoretisch betroffen, praktisch halbtagsfest. Frage zu.**
+>
+> **2. Liest die Messmaschine wirklich nur Archivdateien? JA — die Annahme ist jetzt Befund.**
+> `grep` über `studien/messmaschine/**` samt aller Strategien: **kein `http`, kein `fetch`, kein
+> `Kurse.hole`, kein `kerzenquelle`-Require.** *Damit steht der Zähler, den `1d` baut, auf
+> geprüftem Boden statt auf einer gelesenen Datei.*
+>
+> **3. Jetzt ausgesprochen statt stillschweigend:** Die gebildeten Tagesschlüsse sind
+> durchgängig **„letzter Handel vor der Auktion"**, im Median **0,028 %** neben dem amtlichen
+> Schluss — **einheitlich, unter der Hürde**, und ab jetzt festgehalten. *Geht in den
+> Docht-Befund mit ein; die drei Stop-Strategien sind genau die Docht-Kandidaten.*
+>
+> **📊 Erstes Teilergebnis des Docht-Laufs:** `kapitulation` fertig, **beide Arme „nicht
+> bestätigt"** — das Entfernen der Nullumsatz-Kerzen ändert dort das Urteil nicht.
+> *Vollergebnis kommt gesammelt.*
 >
 > ### 📐 „DIE LETZTE KERZE EINES TAGES" IST DREIERLEI — und nur eine davon ist der Schlusskurs
 >
