@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 13:45 (Windows-Uhr)
+letzter-bericht: 2026-08-27 13:55 (Windows-Uhr)
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -264,7 +264,45 @@ schon da.**
 | **SITC** | mechanisch `60m` | Faktor 3,361 **ohne Ereignis** — *was es war, geben diese Endpunkte nicht her (naheliegend Spin-off)* |
 | **B** | **keine Versatz-Frage** | **Ticker-Neuvergabe** — Dividendenreihe bricht, Quote **driftet** statt konstant: **zwei Firmen unter einem Kürzel.** Braucht **Trennung**, kein Schiedsurteil |
 
-> ### 🔴 EINSCHRÄNKUNG 13:4x (QS) — **den fünf Urteilen fehlt die ZEITANGABE**
+> ### ✅ AUFGELÖST 13:5x — **beide hatten recht, es waren zwei KONVENTIONEN** *(Rohkurs-Abruf `adjusted=false`)*
+> **Real gehandelt wurde `WHLR` am 25.08. zu `0,3665`. `0,3665 × 4 = 1,466` — exakt die
+> QS-Zahlen.** *Massives Standard-Ansicht ist `adjusted=true` und arbeitet den **heute**
+> ausgeführten 4:1-Reverse-Split bereits in die Historie ein.* **Kein Messfehler auf irgendeiner
+> Seite — zwei Konventionen um einen Split, der heute ausgeführt wird.**
+>
+> ### 📐 HAUSREGEL DARAUS
+> ***Ein Archiv-Urteil ohne (a) ZEITRAUM und (b) KONVENTIONS-Angabe (roh vs. rückangepasst) ist
+> unvollständig — um einen Ausführungstag herum können beide Archive „recht haben" und trotzdem
+> inkompatibel sein.***
+>
+> **Die fünf Urteile mit „gilt für":**
+> - **RGR:** 60m **vor** dem 24.10.2025 Faktor 2,674 zu hoch (**kein Ereignis existiert**); ab
+>   24.10.2025 stimmen beide überein.
+> - **WHLR:** **drei Segmente** — historisch (z. B. Sept. 2024) **1d kaputt** (+ F-Fund
+>   03.04.2017) · heute früh vor Ausführung: 60m konsistent auf Rohskala, **1d in sich
+>   inkonsistent** (Historie ×4, der 26.08. roh) · **ab Ausführung 27.08. ist ×4
+>   konventionskonform** — *das 60m muss beim nächsten Nachziehen folgen, **sonst ist DANN das
+>   60m das falsche**.*
+> - **BYND:** vor dem 14.08.2026: 60m konventionskonform, 1d auf Rohskala + Juli-Flip-Flops (**in
+>   jeder Konvention Fehler**); ab 14.08. identisch.
+> - **SITC:** vor dem 01.10.2024: 1d um 3,361 rückangepasst (**Ereignis unbelegt, vermutlich
+>   Spin-off**), 60m roh; ab 01.10.2024 exakt identisch.
+> - **B:** Trennfall mit Datum — `ticker_change` Barrick **09.05.2025**; ab ~18.06.2025
+>   identisch; **kein Skalen-Urteil sinnvoll.**
+>
+> > **🔴 UND DAS TRIFFT DAS 10:9 ZURÜCK — Zahl steht bis auf Weiteres IN PRÜFUNG.**
+> > **`WHLR` war einer der zwanzig Fälle und wurde als „`1d` richtig, `60m` falsch" gezählt** —
+> > *nach dieser Auflösung ein **Konventions-Artefakt**, kein Archivfehler.* **Mindestens einer
+> > der zwanzig ist falsch klassiert.**
+> > *Geprüft wird, ob weitere darunter sind (Ereignis nahe am 25./26.08., wo `adjusted=true` und
+> > ein rohes Archiv **auseinandergehen müssen**).* **Bis dahin ist „rund drei von hundert
+> > Reihen-Tagen haben ein falsches Hoch oder Tief" nicht zitierfähig** — *sie steht auf der
+> > Tafel und betrifft neun Strategien.*
+> >
+> > *Diese Verzerrung war von innen nicht findbar: **sie sitzt nicht in der Stichprobe, sondern
+> > in der Quelle** — es brauchte einen Rohkurs-Abruf, den es heute früh noch nicht gab.*
+
+> ### 🔴 EINSCHRÄNKUNG 13:4x (QS) — **den fünf Urteilen fehlt die ZEITANGABE** *(erledigt, siehe oben)*
 > **`WHLR`, dieselbe Reihe, zwei Zeitpunkte, zwei verschiedene kaputte Seiten:**
 >
 >     2026-08-25   Massive 1,3600-1,4960 = archiv1d      ->  das 60m ist kaputt (Faktor 4)
