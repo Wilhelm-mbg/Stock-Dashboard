@@ -9481,8 +9481,11 @@ console.log('\n63) Nur fertige Kerzen kommen ins Archiv (Issue #85)');
    * durchkommt, sind Stempel MIT Sekunde 0, die trotzdem nicht auf dem Gitter liegen
    * (15:12, 16:54, 17:43). Das Raster faengt sie und ist eine Obermenge der alten
    * Regel. */
-  ok(/alt\.filter\(function \(k\) \{ return aufGitter\(k\[0\], intervall\); \}\)/.test(kq),
-     'Das Zusammenfuehren reinigt das Vorhandene am RASTER - sonst blieben alte Teilkerzen ewig stehen');
+  /* Der Filter sass bis zum 27.08. VOR der Vereinigung und traf nur das Vorhandene.
+   * Er steht jetzt DAHINTER und trifft beide Seiten - der Pruefgegenstand ist
+   * umgezogen, die Eigenschaft dieselbe. */
+  ok(kq.indexOf('serie = rasterFilter(serie, intervall);') !== -1,
+     'Das Raster wirkt auf die VEREINIGTE Reihe - also auf Vorhandenes UND frisch Geholtes');
 
   /* ---- DAS RASTER (27.08.2026) ----
    * Gemessen ueber alle vier Archive: 60m 151 Kerzen ausserhalb des Gitters, 15m 8,
@@ -9504,6 +9507,43 @@ console.log('\n63) Nur fertige Kerzen kommen ins Archiv (Issue #85)');
      'Bei 1m ist jede Minute Gitter - dort taugt der Stempel nicht, und das wird nicht behauptet');
   ok(KQ.aufGitter(Date.parse('2026-08-26T16:57:27Z'), '60m') === false,
      'Ein Quote-Stempel mit Sekunden faellt weiterhin heraus');
+
+  /* ---- DAS RASTER GILT FUER BEIDE SEITEN (27.08.2026) ----
+   * Bis dahin filterte zusammenfuehren() nur das VORHANDENE; frisch geholte Kerzen
+   * kamen ungeprueft durch. Genau so entstehen die krummen Stempel: fertigeKerze()
+   * laesst 15:12:00 durch (Sekunde 0, Eimer zu), erst das Raster sieht, dass 15:12
+   * im Stundengitter nichts zu suchen hat. Sie raeumten sich beim naechsten Lauf
+   * von selbst weg - aber nur, solange die Reihe noch beliefert wird. Auf einer
+   * Reihe, die aufhoert zu handeln, bleiben sie fuer immer. */
+  var krummNeu = [[Date.parse('2026-08-26T15:12:00Z'), 1, 0, 1, 1, 1]];
+  ok(KQ.zusammenfuehren([], krummNeu, '60m').serie.length === 0,
+     'Eine NEU geholte krumme Kerze kommt nicht ins Archiv - nicht nur eine alte');
+  var krummAlt = [[Date.parse('2026-08-26T16:54:00Z'), 1, 0, 1, 1, 1]];
+  ok(KQ.zusammenfuehren(krummAlt, [], '60m').serie.length === 0,
+     'und eine vorhandene wird weiterhin ausgeraeumt');
+
+  /* ---- MINUTE 0 NUR ALS SPAETESTE KERZE DES TAGES ----
+   * aufGitter() laesst Minute 0 zu, weil dort die Schlusskerze sitzt. Ein
+   * Abrufzeitpunkt kann aber ZUFAELLIG auf eine volle Stunde fallen - an den 152
+   * echten Stempeln der QS gemessen traf das genau einen (NYT 15:00). Minute 0 ist
+   * deshalb nur legitim, wenn die Kerze die spaeteste ihres Tages ist. */
+  var tagMitStempel = [
+    [Date.parse('2026-08-26T14:30:00Z'), 1, 100, 1, 1, 1],
+    [Date.parse('2026-08-26T15:00:00Z'), 1, 0, 1, 1, 1],   // Stempel auf voller Stunde
+    [Date.parse('2026-08-26T15:30:00Z'), 1, 100, 1, 1, 1],
+    [Date.parse('2026-08-26T20:00:00Z'), 2, 0, 2, 2, 2],   // echte Schlusskerze
+  ];
+  var nachRaster = KQ.rasterFilter(tagMitStempel, '60m');
+  ok(nachRaster.length === 3,
+     'Der Stempel auf der vollen Stunde faellt heraus, die uebrigen bleiben', nachRaster.length);
+  ok(nachRaster[nachRaster.length - 1][0] === Date.parse('2026-08-26T20:00:00Z'),
+     'und die Schlusskerze bleibt - sie ist die spaeteste ihres Tages');
+  ok(!nachRaster.some(function (k) { return k[0] === Date.parse('2026-08-26T15:00:00Z'); }),
+     'waehrend dieselbe Minute 0 mitten am Tag als Stempel erkannt wird');
+
+  /* Gegen die echten Daten geprueft (nicht in der Suite, weil sie das Archiv
+   * braucht): 152 von 152 Stempeln der QS gefangen, 0 von 25.915 legitimen
+   * Sitzungsschluss-Kerzen faelschlich. Beide Richtungen, fremd erhoben. */
 
   /* ---- DOCHTE WERDEN REPARIERT, NICHT GELOESCHT ----
    * Eine Loeschregel haette in der Stichprobe 21,7 % Kerzen entfernt, die AUF DIE

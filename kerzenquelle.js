@@ -364,6 +364,38 @@ function dochtForm(k) {
   return [k[0], k[1], k[2], hoch, tief, k[5]];
 }
 
+/* ---------- DAS RASTER MIT TAGESKONTEXT ----------
+ * aufGitter() laesst Minute 0 zu, weil dort die Schlusskerze sitzt - und das ist
+ * richtig, sie traegt den offiziellen Schlusskurs. Aber ein Abrufzeitpunkt kann
+ * ZUFAELLIG auf eine volle Stunde fallen, und dann rutscht der Stempel durch.
+ * An den 152 echten Stempeln der QS gemessen: 151 gefangen, EINER durch -
+ *     NYT|2026-08-26T15:00:00Z
+ * Bei 53 verschiedenen Minutenwerten trifft es also etwa jeden 53.
+ *
+ * Die Verschaerfung braucht keinen Kalender und keine Sitzungszeiten: Minute 0 ist
+ * nur dann legitim, wenn die Kerze die SPAETESTE ihres UTC-Tages ist. Der
+ * Sitzungsschluss ist das immer; ein Stempel mitten am Tag nie.
+ *
+ * DIE GRENZE STEHT HIER, WEIL SIE JEMAND KENNEN MUSS: laege ein Stempel NACH dem
+ * Sitzungsschluss, waere er der spaeteste und der echte Schluss davor der
+ * verdaechtige. Alle 152 gemessenen liegen INNERHALB der Sitzung, der Fall tritt
+ * also nicht auf - aber er ist denkbar, und dann irrt diese Regel. */
+function rasterFilter(serie, intervall) {
+  var spaetesteJeTag = Object.create(null);
+  serie.forEach(function (k) {
+    var t = new Date(k[0]).toISOString().slice(0, 10);
+    if (spaetesteJeTag[t] == null || k[0] > spaetesteJeTag[t]) spaetesteJeTag[t] = k[0];
+  });
+  return serie.filter(function (k) {
+    if (!aufGitter(k[0], intervall)) return false;
+    var d = new Date(k[0]);
+    if (intervall === '1d' || d.getUTCMinutes() !== 0) return true;
+    /* Minute 0: nur als spaeteste Kerze ihres Tages. */
+    var t = d.toISOString().slice(0, 10);
+    return spaetesteJeTag[t] === k[0];
+  });
+}
+
 /* ---------- PHANTOM-DOCHTE: REPARIEREN, NICHT LOESCHEN ----------
  * An sieben US-Halbtagen liefert die Quelle Nullumsatz-Kerzen, deren Hoch oder Tief
  * die Tagesspanne der GEHANDELTEN Stunden verlaesst - AAPL am 03.07.2025 mit einem
@@ -428,14 +460,31 @@ function dochteReparieren(serie, intervall) {
 function zusammenfuehren(alt, neu, intervall) {
   alt = Array.isArray(alt) ? alt : [];
   var vorGereinigt = alt.length;
-  alt = alt.filter(function (k) { return aufGitter(k[0], intervall); });
-  var gereinigt = vorGereinigt - alt.length;
+  /* Der Filter sass hier und traf nur das Vorhandene. Er steht jetzt hinter der
+   * Vereinigung und trifft beide Seiten - siehe dort. */
+  var gereinigt = 0;
+  void vorGereinigt;
   var karte = {};
   alt.forEach(function (k) { karte[k[0]] = k; });
   var vorher = alt.length;
   (neu || []).forEach(function (k) { karte[k[0]] = k; });
   var serie = Object.keys(karte).map(Number).sort(function (a, b) { return a - b; })
     .map(function (ms) { return karte[ms]; });
+  /* DAS RASTER GILT FUER BEIDE SEITEN - und das war es bis zum 27.08.2026 NICHT.
+   * Gefiltert wurde nur das Vorhandene; frisch geholte Kerzen kamen ungeprueft
+   * durch. Genau so entstehen die krummen Stempel:
+   *   fertigeKerze() laesst 15:12:00 durch - Sekunde ist 0, der Eimer ist zu.
+   *   Erst das Raster sieht, dass 15:12 im Stundengitter nichts zu suchen hat.
+   * Die QS hat 152 solcher Stempel im 60m-Archiv gezaehlt, alle vom 24. und 26.08.,
+   * alle MITTEN in der Sitzung und auf 53 verschiedenen Minutenwerten - also der
+   * Abrufzeitpunkt selbst. Sie raeumten sich bisher beim naechsten Lauf von allein
+   * weg (dann sind sie "alt"), aber nur solange die Reihe noch beliefert wird. Auf
+   * einer Reihe, die aufhoert zu handeln, bleiben sie fuer immer stehen - dort
+   * liegen sie seit zwanzig Monaten.
+   * Die Schlusskerze auf Minute 0 gehoert zum Gitter und ist nicht betroffen. */
+  var vorRaster = serie.length;
+  serie = rasterFilter(serie, intervall);
+  gereinigt += vorRaster - serie.length;
   /* DIE PHANTOME ERST NACH DER VEREINIGUNG - und damit auf BEIDEN Seiten. Nur das
    * Vorhandene zu reinigen genuegt nicht: die Quelle liefert dieselben Dochte beim
    * naechsten Nachladen erneut, und ein Aufraeumlauf waere eine Momentaufnahme.
@@ -798,7 +847,8 @@ module.exports = {
   yahooName: yahooName, warte: warte, kursOk: kursOk, hole: hole,
   fertigeKerze: fertigeKerze, reiheHolen: reiheHolen,
   zusammenfuehren: zusammenfuehren, satz: satz,
-  aufGitter: aufGitter, dochteReparieren: dochteReparieren, dochtForm: dochtForm,
+  aufGitter: aufGitter, rasterFilter: rasterFilter,
+  dochteReparieren: dochteReparieren, dochtForm: dochtForm,
   PHANTOM_FORM: PHANTOM_FORM,
   /* DATEN als Funktion, nicht als Wert: ein Wert waere eine Kopie vom Ladezeitpunkt
    * und wuerde datenOrdnerSetzen() still ueberleben. */
