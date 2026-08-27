@@ -1,0 +1,66 @@
+{
+ "sym": "SUZ",
+ "ereignisse": [
+  {
+   "datum": "2026-05-04",
+   "art": "dividende",
+   "faktor": 0.000919,
+   "typ": "SC"
+  },
+  {
+   "datum": "2025-12-22",
+   "art": "dividende",
+   "faktor": 0.212299,
+   "typ": "SC"
+  },
+  {
+   "datum": "2024-12-18",
+   "art": "dividende",
+   "faktor": 0.330125,
+   "typ": "SC"
+  },
+  {
+   "datum": "2023-12-08",
+   "art": "dividende",
+   "faktor": 0.237452,
+   "typ": "CD"
+  },
+  {
+   "datum": "2022-12-19",
+   "art": "dividende",
+   "faktor": 0.339836,
+   "typ": "CD"
+  },
+  {
+   "datum": "2022-05-05",
+   "art": "dividende",
+   "faktor": 0.115983,
+   "typ": "SC"
+  },
+  {
+   "datum": "2022-01-19",
+   "art": "dividende",
+   "faktor": 0.137095,
+   "typ": "CD"
+  },
+  {
+   "datum": "2019-09-24",
+   "art": "split",
+   "faktor": 0.5
+  },
+  {
+   "datum": "2019-04-22",
+   "art": "dividende",
+   "faktor": 0.225062,
+   "typ": "CD"
+  }
+ ],
+ "quelle": "Massive REST /v3/reference/splits und /v3/reference/dividends (Bearer, Gratis-Stufe)",
+ "abgerufen": "2026-08-27T10:22:24.541Z",
+ "abgedeckt": [
+  "split",
+  "dividende"
+ ],
+ "konvention": "faktor bei art=split: Kursfaktor am Ausfuehrungstag = split_from/split_to (Reverse 4:1 -> 4; Forward 1:4 -> 0.25). faktor bei art=dividende: Barbetrag in USD je Aktie (KEIN Kursfaktor). datum: execution_date bzw. ex_dividend_date.",
+ "hinweis": "I1-Kandidat (Pendel-Paar im Tagesarchiv, Enumeration des Analytikers nach der vorregistrierten I1-Definition auf dem am 27.08. neu geschriebenen Archiv)."
+}

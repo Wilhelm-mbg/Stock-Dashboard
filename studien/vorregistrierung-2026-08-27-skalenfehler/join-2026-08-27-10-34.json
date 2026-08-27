@@ -1,0 +1,1043 @@
+{
+ "gemessenAm": "2026-08-27T10:34:19.790Z",
+ "basisLauf": "lauf-2026-08-27-10-14.json",
+ "tabelle": [
+  {
+   "sym": "ARWR",
+   "urteilReihenZusammenfassung": "unentscheidbar mit diesen zwei Endpunkten (nur U-Spruenge)",
+   "gegenlaeufig": false,
+   "i2": "konsistent (Quote konstant nahe 1)",
+   "segmente": [
+    {
+     "von": "2016-11-30",
+     "tage": 732,
+     "quoteMedian": 1,
+     "spannweiteP": 0.0013
+    }
+   ],
+   "rand": null,
+   "spruenge": {
+    "F": 0,
+    "F?": 0,
+    "F_ECHO": 0,
+    "U": 60
+   },
+   "nullwertLokal": 0.022,
+   "splitsGefuehrt": 1,
+   "letzterBalken": {
+    "d1": "2026-08-26",
+    "m60": "2026-08-26"
+   },
+   "detail": [
+    {
+     "datum": "1994-05-06",
+     "q": 0.4,
+     "klasse": "U",
+     "bezug": "",
+     "tick": ""
+    },
+    {
+     "datum": "1994-05-13",
+     "q": 3,
+     "klasse": "U",
+     "bezug": "",
+     "tick": ""
+    },
+    {
+     "datum": "1994-06-22",
+     "q": 0.5,
+     "klasse": "U",
+     "bezug": "",
+     "tick": ""
+    },
+    {
+     "datum": "1994-06-23",
+     "q": 2,
+     "klasse": "U",
+     "bezug": "",
+     "tick": ""
+    },
+    {
+     "datum": "1994-08-11",
+     "q": 0.4,
+     "klasse": "U",
+     "bezug": "",
+     "tick": ""
+    },
+    {
+     "datum": "1994-08-12",
+     "q": 2,
+     "klasse": "U",
+     "bezug": "",
+     "tick": ""
+    }
+   ]
+  },
+  {
+   "sym": "ASTH",
+   "urteilReihenZusammenfassung": "unentscheidbar mit diesen zwei Endpunkten (nur U-Spruenge)",
+   "gegenlaeufig": false,
+   "i2": "konsistent (Quote konstant nahe 1)",
+   "segmente": [
+    {
+     "von": "2016-12-01",
+     "tage": 628,
+     "quoteMedian": 1,
+     "spannweiteP": 0.0024
+    }
+   ],
+   "rand": null,
+   "spruenge": {
+    "F": 0,
+    "F?": 0,
+    "F_ECHO": 0,
+    "U": 18
+   },
+   "nullwertLokal": 0,
+   "splitsGefuehrt": 0,
+   "letzterBalken": {
+    "d1": "2026-08-26",
+    "m60": "2026-08-26"
+   },
+   "detail": [
+    {
+     "datum": "2009-04-06",
+     "q": 0.213,
+     "klasse": "U",
+     "bezug": "",
+     "tick": ""
+    },
+    {
+     "datum": "2009-04-13",
+     "q": 8.5,
+     "klasse": "U",
+     "bezug": "",
+     "tick": ""
+    },
+    {
+     "datum": "2009-06-22",
+     "q": 0.071,
+     "klasse": "U",
+     "bezug": "",
+     "tick": ""
+    },
+    {
+     "datum": "2009-07-20",
+     "q": 0.5,
+     "klasse": "U",
+     "bezug": "",
+     "tick": "Kurs<1$"
+    },
+    {
+     "datum": "2009-08-12",
+     "q": 2,
+     "klasse": "U",
+     "bezug": "",
+     "tick": "Kurs<1$"
+    },
+    {
+     "datum": "2009-10-30",
+     "q": 2,
+     "klasse": "U",
+     "bezug": "",
+     "tick": "Kurs<1$"
+    }
+   ]
+  },
+  {
+   "sym": "B",
+   "urteilReihenZusammenfassung": "TRENNFALL (teilen, nicht reparieren)",
+   "gegenlaeufig": false,
+   "i2": "TRENNFALL-VERDACHT (Quote driftet innerhalb von Segmenten)",
+   "segmente": [
+    {
+     "von": "1986-08-25",
+     "tage": 334,
+     "quoteMedian": 0.4444,
+     "spannweiteP": 0.489
+    },
+    {
+     "von": "2025-05-12",
+     "tage": 325,
+     "quoteMedian": 1,
+     "spannweiteP": 0.0011
+    }
+   ],
+   "rand": null,
+   "spruenge": {
+    "F": 0,
+    "F?": 0,
+    "F_ECHO": 0,
+    "U": 0
+   },
+   "nullwertLokal": 0,
+   "splitsGefuehrt": 1,
+   "letzterBalken": {
+    "d1": "2026-08-26",
+    "m60": "2026-08-26"
+   },
+   "detail": []
+  },
+  {
+   "sym": "BLNK",
+   "urteilReihenZusammenfassung": "unentschieden",
+   "gegenlaeufig": false,
+   "i2": "unentschieden",
+   "segmente": [
+    {
+     "von": "2018-05-07",
+     "tage": 732,
+     "quoteMedian": 1,
+     "spannweiteP": 0.0109
+    }
+   ],
+   "rand": null,
+   "spruenge": {
+    "F": 0,
+    "F?": 0,
+    "F_ECHO": 0,
+    "U": 4
+   },
+   "nullwertLokal": 0,
+   "splitsGefuehrt": 0,
+   "letzterBalken": {
+    "d1": "2026-08-26",
+    "m60": "2026-08-26"
+   },
+   "detail": [
+    {
+     "datum": "2010-04-05",
+     "q": 0.094,
+     "klasse": "U",
+     "bezug": "",
+     "tick": ""
+    },
+    {
+     "datum": "2010-04-09",
+     "q": 10,
+     "klasse": "U",
+     "bezug": "",
+     "tick": ""
+    },
+    {
+     "datum": "2018-02-14",
+     "q": 0.367,
+     "klasse": "U",
+     "bezug": "",
+     "tick": ""
+    },
+    {
+     "datum": "2018-05-07",
+     "q": 2.73,
+     "klasse": "U",
+     "bezug": "",
+     "tick": ""
+    }
+   ]
+  },
+  {
+   "sym": "BYND",
+   "urteilReihenZusammenfassung": "VERSATZ, ereignis-belegt: 1d-Seite traegt Anpassungsfehler/Skalen-Mischung",
+   "gegenlaeufig": false,
+   "i2": "SKALEN-VERSATZ (Quote konstant, Niveau wechselt)",
+   "segmente": [
+    {
+     "von": "2019-05-02",
+     "tage": 518,
+     "quoteMedian": 0.0333,
+     "spannweiteP": 0.0052
+    },
+    {
+     "von": "2025-10-21",
+     "tage": 185,
+     "quoteMedian": 0.0333,
+     "spannweiteP": 0.0134
+    },
+    {
+     "von": "2026-08-11",
+     "tage": 12,
+     "quoteMedian": 1,
+     "spannweiteP": 0.004
+    }
+   ],
+   "rand": null,
+   "spruenge": {
+    "F": 0,
+    "F?": 0,
+    "F_ECHO": 5,
+    "U": 4
+   },
+   "nullwertLokal": 0.015,
+   "splitsGefuehrt": 1,
+   "letzterBalken": {
+    "d1": "2026-08-26",
+    "m60": "2026-08-26"
+   },
+   "detail": [
+    {
+     "datum": "2026-07-20",
+     "q": 30.203,
+     "klasse": "F-ECHO",
+     "bezug": "x30 (Split 2026-08-14)",
+     "tick": "Kurs<1$"
+    },
+    {
+     "datum": "2026-07-23",
+     "q": 0.031,
+     "klasse": "F-ECHO",
+     "bezug": "x30 (Split 2026-08-14)",
+     "tick": ""
+    },
+    {
+     "datum": "2026-07-31",
+     "q": 30.54,
+     "klasse": "F-ECHO",
+     "bezug": "x30 (Split 2026-08-14)",
+     "tick": "Kurs<1$"
+    },
+    {
+     "datum": "2026-08-03",
+     "q": 0.036,
+     "klasse": "F-ECHO",
+     "bezug": "x30 (Split 2026-08-14)",
+     "tick": ""
+    },
+    {
+     "datum": "2026-08-07",
+     "q": 0.034,
+     "klasse": "F-ECHO",
+     "bezug": "x30 (Split 2026-08-14)",
+     "tick": ""
+    },
+    {
+     "datum": "2025-10-20",
+     "q": 2.276,
+     "klasse": "U",
+     "bezug": "",
+     "tick": "Kurs<1$"
+    },
+    {
+     "datum": "2025-10-21",
+     "q": 2.463,
+     "klasse": "U",
+     "bezug": "",
+     "tick": ""
+    },
+    {
+     "datum": "2026-08-06",
+     "q": 25.967,
+     "klasse": "U",
+     "bezug": "",
+     "tick": "Kurs<1$"
+    },
+    {
+     "datum": "2026-08-11",
+     "q": 24.115,
+     "klasse": "U",
+     "bezug": "",
+     "tick": "Kurs<1$"
+    }
+   ]
+  },
+  {
+   "sym": "BYRN",
+   "urteilReihenZusammenfassung": "unentscheidbar mit diesen zwei Endpunkten (nur U-Spruenge)",
+   "gegenlaeufig": false,
+   "i2": "konsistent (Quote konstant nahe 1)",
+   "segmente": [
+    {
+     "von": "2017-06-30",
+     "tage": 732,
+     "quoteMedian": 1,
+     "spannweiteP": 0.0043
+    }
+   ],
+   "rand": null,
+   "spruenge": {
+    "F": 0,
+    "F?": 0,
+    "F_ECHO": 0,
+    "U": 23
+   },
+   "nullwertLokal": 0.014,
+   "splitsGefuehrt": 1,
+   "letzterBalken": {
+    "d1": "2026-08-26",
+    "m60": "2026-08-26"
+   },
+   "detail": [
+    {
+     "datum": "2009-06-18",
+     "q": 2.16,
+     "klasse": "U",
+     "bezug": "",
+     "tick": ""
+    },
+    {
+     "datum": "2009-06-30",
+     "q": 0.364,
+     "klasse": "U",
+     "bezug": "",
+     "tick": ""
+    },
+    {
+     "datum": "2009-07-07",
+     "q": 2.2,
+     "klasse": "U",
+     "bezug": "",
+     "tick": ""
+    },
+    {
+     "datum": "2009-07-13",
+     "q": 0.286,
+     "klasse": "U",
+     "bezug": "",
+     "tick": ""
+    },
+    {
+     "datum": "2009-08-03",
+     "q": 2.077,
+     "klasse": "U",
+     "bezug": "",
+     "tick": ""
+    },
+    {
+     "datum": "2009-08-04",
+     "q": 0.463,
+     "klasse": "U",
+     "bezug": "",
+     "tick": ""
+    }
+   ]
+  },
+  {
+   "sym": "CHRD",
+   "urteilReihenZusammenfassung": "unentscheidbar mit diesen zwei Endpunkten (nur U-Spruenge)",
+   "gegenlaeufig": false,
+   "i2": "konsistent (Quote konstant nahe 1)",
+   "segmente": [
+    {
+     "von": "2020-11-20",
+     "tage": 732,
+     "quoteMedian": 1,
+     "spannweiteP": 0.001
+    }
+   ],
+   "rand": null,
+   "spruenge": {
+    "F": 0,
+    "F?": 0,
+    "F_ECHO": 0,
+    "U": 6
+   },
+   "nullwertLokal": 0,
+   "splitsGefuehrt": 0,
+   "letzterBalken": {
+    "d1": "2026-08-26",
+    "m60": "2026-08-26"
+   },
+   "detail": [
+    {
+     "datum": "2020-03-09",
+     "q": 0.384,
+     "klasse": "U",
+     "bezug": "",
+     "tick": "Kurs<1$"
+    },
+    {
+     "datum": "2020-03-13",
+     "q": 2.703,
+     "klasse": "U",
+     "bezug": "",
+     "tick": "Kurs<1$"
+    },
+    {
+     "datum": "2020-03-16",
+     "q": 0.42,
+     "klasse": "U",
+     "bezug": "",
+     "tick": ""
+    },
+    {
+     "datum": "2020-04-23",
+     "q": 2.31,
+     "klasse": "U",
+     "bezug": "",
+     "tick": "Kurs<1$"
+    },
+    {
+     "datum": "2020-06-05",
+     "q": 2.25,
+     "klasse": "U",
+     "bezug": "",
+     "tick": "Kurs<1$"
+    },
+    {
+     "datum": "2020-11-20",
+     "q": 258.333,
+     "klasse": "U",
+     "bezug": "",
+     "tick": "Kurs<1$"
+    }
+   ]
+  },
+  {
+   "sym": "HROW",
+   "urteilReihenZusammenfassung": "unentscheidbar mit diesen zwei Endpunkten (nur U-Spruenge)",
+   "gegenlaeufig": false,
+   "i2": "konsistent (Quote konstant nahe 1)",
+   "segmente": [
+    {
+     "von": "2012-03-19",
+     "tage": 732,
+     "quoteMedian": 1,
+     "spannweiteP": 0.0022
+    }
+   ],
+   "rand": null,
+   "spruenge": {
+    "F": 0,
+    "F?": 0,
+    "F_ECHO": 1,
+    "U": 14
+   },
+   "nullwertLokal": 0.009,
+   "splitsGefuehrt": 1,
+   "letzterBalken": {
+    "d1": "2026-08-26",
+    "m60": "2026-08-26"
+   },
+   "detail": [
+    {
+     "datum": "2011-06-29",
+     "q": 0.2,
+     "klasse": "F-ECHO",
+     "bezug": "x5 (Split 2013-02-08)",
+     "tick": ""
+    },
+    {
+     "datum": "2011-03-08",
+     "q": 0.5,
+     "klasse": "U",
+     "bezug": "",
+     "tick": ""
+    },
+    {
+     "datum": "2011-03-09",
+     "q": 2,
+     "klasse": "U",
+     "bezug": "",
+     "tick": ""
+    },
+    {
+     "datum": "2011-03-10",
+     "q": 0.5,
+     "klasse": "U",
+     "bezug": "",
+     "tick": ""
+    },
+    {
+     "datum": "2011-03-14",
+     "q": 2,
+     "klasse": "U",
+     "bezug": "",
+     "tick": ""
+    },
+    {
+     "datum": "2011-03-15",
+     "q": 0.44,
+     "klasse": "U",
+     "bezug": "",
+     "tick": ""
+    },
+    {
+     "datum": "2011-11-18",
+     "q": 0.429,
+     "klasse": "U",
+     "bezug": "",
+     "tick": ""
+    }
+   ]
+  },
+  {
+   "sym": "INDV",
+   "urteilReihenZusammenfassung": "unentscheidbar mit diesen zwei Endpunkten (nur U-Spruenge)",
+   "gegenlaeufig": false,
+   "i2": "konsistent (Quote konstant nahe 1)",
+   "segmente": [
+    {
+     "von": "2022-11-28",
+     "tage": 732,
+     "quoteMedian": 1,
+     "spannweiteP": 0.0022
+    }
+   ],
+   "rand": null,
+   "spruenge": {
+    "F": 0,
+    "F?": 0,
+    "F_ECHO": 0,
+    "U": 3
+   },
+   "nullwertLokal": 0,
+   "splitsGefuehrt": 0,
+   "letzterBalken": {
+    "d1": "2026-08-26",
+    "m60": "2026-08-26"
+   },
+   "detail": [
+    {
+     "datum": "2019-04-10",
+     "q": 0.393,
+     "klasse": "U",
+     "bezug": "",
+     "tick": ""
+    },
+    {
+     "datum": "2022-11-23",
+     "q": 0.159,
+     "klasse": "U",
+     "bezug": "",
+     "tick": ""
+    },
+    {
+     "datum": "2022-11-28",
+     "q": 6.719,
+     "klasse": "U",
+     "bezug": "",
+     "tick": ""
+    }
+   ]
+  },
+  {
+   "sym": "IOVA",
+   "urteilReihenZusammenfassung": "unentscheidbar mit diesen zwei Endpunkten (nur U-Spruenge)",
+   "gegenlaeufig": false,
+   "i2": "konsistent (Quote konstant nahe 1)",
+   "segmente": [
+    {
+     "von": "2022-05-27",
+     "tage": 732,
+     "quoteMedian": 1,
+     "spannweiteP": 0.0053
+    }
+   ],
+   "rand": null,
+   "spruenge": {
+    "F": 0,
+    "F?": 0,
+    "F_ECHO": 0,
+    "U": 16
+   },
+   "nullwertLokal": 0,
+   "splitsGefuehrt": 0,
+   "letzterBalken": {
+    "d1": "2026-08-26",
+    "m60": "2026-08-26"
+   },
+   "detail": [
+    {
+     "datum": "2012-08-02",
+     "q": 0.423,
+     "klasse": "U",
+     "bezug": "",
+     "tick": ""
+    },
+    {
+     "datum": "2012-08-03",
+     "q": 2.273,
+     "klasse": "U",
+     "bezug": "",
+     "tick": ""
+    },
+    {
+     "datum": "2012-08-15",
+     "q": 0.493,
+     "klasse": "U",
+     "bezug": "",
+     "tick": ""
+    },
+    {
+     "datum": "2013-03-11",
+     "q": 0.5,
+     "klasse": "U",
+     "bezug": "",
+     "tick": ""
+    },
+    {
+     "datum": "2013-04-03",
+     "q": 0.333,
+     "klasse": "U",
+     "bezug": "",
+     "tick": ""
+    },
+    {
+     "datum": "2013-04-04",
+     "q": 2,
+     "klasse": "U",
+     "bezug": "",
+     "tick": ""
+    }
+   ]
+  },
+  {
+   "sym": "QXO",
+   "urteilReihenZusammenfassung": "TRENNFALL (teilen, nicht reparieren)",
+   "gegenlaeufig": false,
+   "i2": "TRENNFALL-VERDACHT (Quote driftet innerhalb von Segmenten)",
+   "segmente": [
+    {
+     "von": "2023-12-04",
+     "tage": 36,
+     "quoteMedian": 0.9996,
+     "spannweiteP": 0.0589
+    },
+    {
+     "von": "2024-07-30",
+     "tage": 521,
+     "quoteMedian": 1,
+     "spannweiteP": 0.0019
+    }
+   ],
+   "rand": null,
+   "spruenge": {
+    "F": 0,
+    "F?": 0,
+    "F_ECHO": 0,
+    "U": 5
+   },
+   "nullwertLokal": 0,
+   "splitsGefuehrt": 0,
+   "letzterBalken": {
+    "d1": "2026-08-26",
+    "m60": "2026-08-26"
+   },
+   "detail": [
+    {
+     "datum": "2013-01-15",
+     "q": 0.455,
+     "klasse": "U",
+     "bezug": "",
+     "tick": ""
+    },
+    {
+     "datum": "2013-02-11",
+     "q": 0.467,
+     "klasse": "U",
+     "bezug": "",
+     "tick": ""
+    },
+    {
+     "datum": "2013-02-12",
+     "q": 2.143,
+     "klasse": "U",
+     "bezug": "",
+     "tick": ""
+    },
+    {
+     "datum": "2023-12-04",
+     "q": 3.403,
+     "klasse": "U",
+     "bezug": "",
+     "tick": ""
+    },
+    {
+     "datum": "2024-07-30",
+     "q": 0.199,
+     "klasse": "U",
+     "bezug": "",
+     "tick": ""
+    }
+   ]
+  },
+  {
+   "sym": "RGR",
+   "urteilReihenZusammenfassung": "VERSATZ ohne Ereignis-Beleg -> unentscheidbar mit diesen zwei Endpunkten",
+   "gegenlaeufig": false,
+   "i2": "SKALEN-VERSATZ (Quote konstant, Niveau wechselt)",
+   "segmente": [
+    {
+     "von": "1986-08-25",
+     "tage": 522,
+     "quoteMedian": 0.374,
+     "spannweiteP": 0.0016
+    },
+    {
+     "von": "2025-10-24",
+     "tage": 210,
+     "quoteMedian": 1,
+     "spannweiteP": 0.0026
+    }
+   ],
+   "rand": null,
+   "spruenge": {
+    "F": 0,
+    "F?": 0,
+    "F_ECHO": 0,
+    "U": 0
+   },
+   "nullwertLokal": 0,
+   "splitsGefuehrt": 0,
+   "letzterBalken": {
+    "d1": "2026-08-26",
+    "m60": "2026-08-26"
+   },
+   "detail": []
+  },
+  {
+   "sym": "SITC",
+   "urteilReihenZusammenfassung": "VERSATZ ohne Ereignis-Beleg -> unentscheidbar mit diesen zwei Endpunkten",
+   "gegenlaeufig": false,
+   "i2": "SKALEN-VERSATZ (Quote konstant, Niveau wechselt)",
+   "segmente": [
+    {
+     "von": "1993-02-02",
+     "tage": 255,
+     "quoteMedian": 0.2975,
+     "spannweiteP": 0.0014
+    },
+    {
+     "von": "2024-10-01",
+     "tage": 477,
+     "quoteMedian": 1,
+     "spannweiteP": 0.0029
+    }
+   ],
+   "rand": null,
+   "spruenge": {
+    "F": 0,
+    "F?": 0,
+    "F_ECHO": 0,
+    "U": 0
+   },
+   "nullwertLokal": 0,
+   "splitsGefuehrt": 2,
+   "letzterBalken": {
+    "d1": "2026-08-26",
+    "m60": "2026-08-26"
+   },
+   "detail": []
+  },
+  {
+   "sym": "TGTX",
+   "urteilReihenZusammenfassung": "unentscheidbar mit diesen zwei Endpunkten (nur U-Spruenge)",
+   "gegenlaeufig": false,
+   "i2": "konsistent (Quote konstant nahe 1)",
+   "segmente": [
+    {
+     "von": "2012-02-06",
+     "tage": 732,
+     "quoteMedian": 1,
+     "spannweiteP": 0.0015
+    }
+   ],
+   "rand": null,
+   "spruenge": {
+    "F": 0,
+    "F?": 0,
+    "F_ECHO": 0,
+    "U": 8
+   },
+   "nullwertLokal": 0.006,
+   "splitsGefuehrt": 1,
+   "letzterBalken": {
+    "d1": "2026-08-26",
+    "m60": "2026-08-26"
+   },
+   "detail": [
+    {
+     "datum": "2010-10-18",
+     "q": 0.5,
+     "klasse": "U",
+     "bezug": "",
+     "tick": ""
+    },
+    {
+     "datum": "2011-07-19",
+     "q": 0.286,
+     "klasse": "U",
+     "bezug": "",
+     "tick": ""
+    },
+    {
+     "datum": "2011-07-21",
+     "q": 3,
+     "klasse": "U",
+     "bezug": "",
+     "tick": ""
+    },
+    {
+     "datum": "2011-08-02",
+     "q": 0.5,
+     "klasse": "U",
+     "bezug": "",
+     "tick": ""
+    },
+    {
+     "datum": "2011-10-26",
+     "q": 0.5,
+     "klasse": "U",
+     "bezug": "",
+     "tick": ""
+    },
+    {
+     "datum": "2011-10-27",
+     "q": 3.636,
+     "klasse": "U",
+     "bezug": "",
+     "tick": ""
+    }
+   ]
+  },
+  {
+   "sym": "WHLR",
+   "urteilReihenZusammenfassung": "VERSATZ, ereignis-belegt: 1d-Seite traegt Anpassungsfehler/Skalen-Mischung",
+   "gegenlaeufig": true,
+   "i2": "SKALEN-VERSATZ (Quote konstant, Niveau fern der 1)",
+   "segmente": [
+    {
+     "von": "2023-09-28",
+     "tage": 235,
+     "quoteMedian": 3.94,
+     "spannweiteP": 0.0446
+    },
+    {
+     "von": "2024-09-06",
+     "tage": 196,
+     "quoteMedian": 4.0049,
+     "spannweiteP": 0.0282
+    },
+    {
+     "von": "2025-06-20",
+     "tage": 297,
+     "quoteMedian": 4.0002,
+     "spannweiteP": 0.0249
+    }
+   ],
+   "rand": {
+    "klasse": "VERZUG",
+    "text": "60m konsistent-roh bis 2026-08-26, 1d rueckangepasst um x4 (Split(s) 2026-08-27) — Verzug, keine kaputte Seite"
+   },
+   "spruenge": {
+    "F": 2,
+    "F?": 0,
+    "F_ECHO": 2,
+    "U": 1
+   },
+   "nullwertLokal": 0.069,
+   "splitsGefuehrt": 16,
+   "letzterBalken": {
+    "d1": "2026-08-26",
+    "m60": "2026-08-26"
+   },
+   "detail": [
+    {
+     "datum": "2017-04-03",
+     "q": 8.237,
+     "klasse": "F",
+     "bezug": "2017-04-03 x8",
+     "tick": ""
+    },
+    {
+     "datum": "2024-09-05",
+     "q": 4.019,
+     "klasse": "F-ECHO",
+     "bezug": "x4 (Split 2026-08-27)",
+     "tick": ""
+    },
+    {
+     "datum": "2025-06-20",
+     "q": 2.105,
+     "klasse": "F-ECHO",
+     "bezug": "x2 (Split 2025-12-01)",
+     "tick": ""
+    },
+    {
+     "datum": "2026-08-26",
+     "q": 0.272,
+     "klasse": "F",
+     "bezug": "2026-08-27 x4",
+     "tick": ""
+    },
+    {
+     "datum": "2024-09-06",
+     "q": 2.476,
+     "klasse": "U",
+     "bezug": "",
+     "tick": ""
+    }
+   ]
+  },
+  {
+   "sym": "WT",
+   "urteilReihenZusammenfassung": "unentscheidbar mit diesen zwei Endpunkten (nur U-Spruenge)",
+   "gegenlaeufig": false,
+   "i2": "konsistent (Quote konstant nahe 1)",
+   "segmente": [
+    {
+     "von": "2004-11-19",
+     "tage": 732,
+     "quoteMedian": 1,
+     "spannweiteP": 0.0021
+    }
+   ],
+   "rand": null,
+   "spruenge": {
+    "F": 0,
+    "F?": 0,
+    "F_ECHO": 0,
+    "U": 7
+   },
+   "nullwertLokal": 0,
+   "splitsGefuehrt": 0,
+   "letzterBalken": {
+    "d1": "2026-08-26",
+    "m60": "2026-08-26"
+   },
+   "detail": [
+    {
+     "datum": "2002-10-28",
+     "q": 2.333,
+     "klasse": "U",
+     "bezug": "",
+     "tick": "Kurs<1$"
+    },
+    {
+     "datum": "2002-11-06",
+     "q": 2.714,
+     "klasse": "U",
+     "bezug": "",
+     "tick": "Kurs<1$"
+    },
+    {
+     "datum": "2003-06-13",
+     "q": 2.4,
+     "klasse": "U",
+     "bezug": "",
+     "tick": "Kurs<1$"
+    },
+    {
+     "datum": "2004-10-25",
+     "q": 0.5,
+     "klasse": "U",
+     "bezug": "",
+     "tick": "Kurs<1$"
+    },
+    {
+     "datum": "2004-10-26",
+     "q": 2,
+     "klasse": "U",
+     "bezug": "",
+     "tick": "Kurs<1$"
+    },
+    {
+     "datum": "2004-11-18",
+     "q": 37.5,
+     "klasse": "U",
+     "bezug": "",
+     "tick": "Kurs<1$"
+    }
+   ]
+  }
+ ]
+}

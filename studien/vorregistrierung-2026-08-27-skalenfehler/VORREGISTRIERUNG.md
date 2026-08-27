@@ -114,6 +114,65 @@ Ereignisdatum ±1 HT) wird nur zusammen mit dem **Zufalls-Nullwert** ausgewiesen
 oft träfe ein Sprung ein Ereignisdatum rein zufällig — der Analytiker liefert ihn);
 eine F-Quote ohne Nullwert daneben ist nicht lesbar und wird nicht berichtet.
 
+## Nachtrag 5 — Join-Präzisierungen, VOR dem ersten Join-Lauf fixiert
+
+Nach Sichtung der Ereignis-Dateien (Konventionen), aber **vor jedem Klassifizierungs-
+Lauf**. Anlass: PM-Segment-Auflage (WHLR hat nachweislich zu verschiedenen Zeiten
+verschiedene kaputte Seiten) und die Eichfall-Geometrie (der sechste Eichfall ist ein
+Einzelsprung, kein Pendel).
+
+1. **Einzelsprünge werden mitklassifiziert**, nicht nur Pendel: jeder Faktor-≥2-Sprung
+   der Reihe bekommt eine Klasse. Pendel bleiben die Kandidaten-Definition (I1
+   unverändert); die Klassifizierung dient dem §2-Urteil, nicht der Kandidatur.
+2. **Klassen je Sprung:** `F` (Datum trifft Ereignis ±1 **Handelstag** im Tagesraster
+   der Reihe UND |q/faktor−1| ≤ 0,10, auch invers) · `F?` (Datum trifft, Faktor weicht
+   ab — beziffert) · `F-ECHO` (Datum trifft nicht, aber Faktor ≈ ein geführter
+   Split-Faktor der Reihe — die BYND-Mechanik: Mischung verschieden skalierter Abrufe
+   zeigt den Ereignisfaktor an ereignisfremden Daten) · `U` (kein Ereignis-Bezug;
+   Tick-Spalte Kurs < 1 $ wird mitgeführt).
+3. **VERZUG-Klasse für den Rand:** Liegt ein Ereignis NACH dem letzten Balken des
+   einen Archivs, aber vor/auf dem letzten Balken des anderen, und die Rand-Quote ≈
+   Ereignisfaktor, ist das **Anpassungs-Verzug der älteren Seite** (die Rückanpassung
+   fehlt ihr noch) — messbar an den letzten Balken beider Archive, keine Reparatur-
+   Aussage. Erwartung: WHLR-Rand (Split ×4 heute 27.08., Quote ≈ 4).
+   *Eich-Iteration 1 (~13:15, nach Eichung 7/9):* Ein heute ausgeführter Split liegt
+   nach dem letzten Balken BEIDER Archive und ist trotzdem in die 1d-Historie
+   eingebacken (Abruf nach Ausführung wirkt rückwirkend). Fenster korrigiert: VERZUG
+   prüft Splits nach dem letzten 60m-Balken mit Toleranz +5 Kalendertage über den
+   1d-Rand hinaus; für den Datums-Treffer bekommt ein Split jenseits des Rasters den
+   virtuellen Index »letzter Balken + 1«, damit der Rand-Sprung (WHLR 26.08.,
+   q ≈ 1/4) als F zählt. Urteilslogik unverändert.
+   *Präzisierung ~13:05 (Analytiker-Rohkurs-Befund, vor dem Lauf):* Jedes
+   Segment-Urteil trägt **»gilt für <Zeitraum>, Konvention <roh|rückangepasst>«** —
+   Massive adjusted=true bäckt selbst HEUTE ausgeführte Splits in die Historie, eine
+   Seite kann also konsistent-roh und die andere rückangepasst sein, ohne dass eine
+   »falsch« ist; kaputt ist nur eine IN SICH gemischte Seite. Am WHLR-Rand erwartet:
+   60m konsistent-roh (VERZUG), 1d-Historie ×4 mit möglichem rohen Rand-Balken
+   (26.08.) — läge er so im Archiv, fände der Join dort einen F-Sprung.
+4. **Segment-Pflicht (PM-Auflage):** Das Urteil fällt **je Sprung/Segment**, die
+   Reihen-Zeile ist nur Zusammenfassung; Reihen mit zeitlich gegenläufigen Befunden
+   (alte F-Sprünge der 1d-Seite UND Rand-Verzug der 60m-Seite o. ä.) bekommen das
+   Flag **»gegenläufige Segmente«** — beide Archive haben an der Reihe gearbeitet.
+5. **Lokaler Nullwert (provisorisch):** E = nSprünge · nSplitTage · 3 / nHandelstage
+   je Reihe wird neben jeder Treffer-Zahl gedruckt; der unabhängige Analytiker-
+   Nullwert (aus dem 275er-Lauf) ersetzt ihn im Endbericht.
+6. **ETF-Vorbehalt:** Massive-Split-Abdeckung für ETFs ist unbelegt (DFEN-Fall des
+   Analytikers). Alle aktuellen Kandidaten sind Aktien; bei S1-Erweiterung wird die
+   Wertpapierart je Zeile ausgewiesen und ETF-Zeilen tragen »Abdeckung unklar«.
+7. **Eichfall-Erwartungen, vor dem Lauf ausgesprochen:** BYND = Versatz + Sprünge
+   F/F-ECHO ≈ 30 (1d mischt Skalen) · WHLR = **beides**: Sprung 03.04.2017 r 8,24 →
+   `F` (×8) UND Rand-Quote ≈ 4 → `VERZUG` (Split ×4 vom 27.08. nach letztem
+   60m-Balken) + Flag gegenläufig — der Eichfall prüft damit genau die
+   Segment-Fähigkeit · RGR (0 geführte Splits) = Versatz ohne Ereignis-Beleg →
+   »unentscheidbar mit diesen zwei Endpunkten« (die Seite kennt nur der externe
+   Massive-Zeuge des Analytikers) · SITC = Segmentgrenze ohne passendes Ereignis →
+   unentscheidbar (Spin-off nicht in den Endpunkten) · B und QXO = TRENNFALL
+   (I2-Drift; dritter Zeuge ticker_change 2025-05-09 / 2024-06-06 als Annotation) ·
+   ARWR/BYRN/ASTH (PM-Neubewertung nach Semantik-Drehung) = Erwartung `U`: die
+   geführten Splits (×10 bzw. keine) passen weder Datum noch Faktor der alten
+   Pendel — sie bleiben »unentscheidbar«, werden also weder »harmlos« noch
+   »Anpassungsfehler« genannt.
+
 ---
 
 *Simulation mit virtuellem Kapital. Keine Anlageberatung.*
