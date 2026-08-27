@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 02:28 (abgelesen)
+letzter-bericht: 2026-08-27 02:35 (abgelesen)
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -32,9 +32,34 @@ Gegenprobe, nie ein Verdacht.
 **Der siebte Fall war der lehrreichste, weil er den PM selbst betraf und binnen 40 Minuten
 auffiel:**
 
-> ### ⚠→✅ EINE SCHLAGZEILE, DIE SICH IN 40 MINUTEN AUFGELÖST HAT (02:50 → 03:05)
+> ### ⚠→✅ EINE SCHLAGZEILE, DIE SICH IN ZWEI STUFEN AUFGELÖST HAT — und am Ende ins Gegenteil
 > **Hier stand: „die letzte Kerze jedes Handelstages ist eine instabile Momentaufnahme, und
 > die Messmaschine liest sie." Das war falsch, und der PM hatte es an die Spitze gesetzt.**
+>
+> **Stufe 2 der Auflösung: der Vergleich selbst war ungültig, und die Kerze ist das GEGENTEIL
+> eines Problems.** Die Quelle liefert bei `includePrePost` die erweiterten Handelszeiten **auf
+> der vollen Stunde**, die Sitzung dagegen auf `:30`. **Die 20:00 der Quelle ist die erste
+> Nachhandelsstunde — die 20:00 im Archiv ist der amtliche Tagesschluss.**
+>
+>     Quelle 20:00   c 213,5900   <- erste Nachhandelsstunde
+>     Archiv 20:00   c 213,0500   <- amtlicher Tagesschluss
+>
+> *Zwei verschiedene Dinge auf demselben Zeitstempel; der Abgleich hat sie gegeneinander
+> gehalten. Die „40 von 40 abweichend, Median 0,0978 %" messen **keinen Fehler**, sondern den
+> Abstand zwischen Schlusskurs und Nachhandel.*
+>
+> **Gegen den Tagesschluss direkt aus der Quelle gemessen** (`interval=1d`, unabhängig von
+> **beiden** Archiven, 30 Reihen):
+>
+> | | Abweichung zum amtlichen Tagesschluss | exakt gleich |
+> |---|---|---|
+> | **20:00-Kerze** | p50 **0,0000 %**, max 0,0169 % | **29 von 30** |
+> | 19:30-Kerze | p50 0,0275 %, max 0,4216 % | 10 von 30 |
+> | näher am Tagesschluss | **20:00 in 20 Fällen, 19:30 in 0** | |
+>
+> **Die 20:00-Kerze ist der amtliche Schlusskurs — und der genaueste Wert, den das Archiv
+> hat.** Genauer als die 19:30-Kerze, die den letzten Handel **vor** der Schlussauktion trägt,
+> nicht die Auktion selbst.
 >
 > **Die Gegenprobe auf drei Tage unterschiedlichen Charakters — die der PM verlangt hatte —
 > ergab null Abweichungen.** Und der Grund ist nicht, dass die Kerze dort stimmt, **sondern
@@ -51,14 +76,21 @@ auffiel:**
 > und die ist an allen geprüften Tagen **exakt stabil**. Nur die beiden jüngsten Tage tragen
 > die zusätzliche Quote-Kerze, und sie verschwindet, sobald der Tag durchkonsolidiert ist.
 >
-> **→ Rückwirkend auf die zwölf Protokolle kann es NICHT durchschlagen.** Die „100 % Signale
-> auf der letzten Tageskerze" bleiben richtig — **aber historisch ist diese letzte Kerze die
-> stabile 19:30, nicht die unstete Quote.** Betroffen ist höchstens der **aktuelle Rand**, also
-> der Live-Betrieb. **Dieselbe Bauform wie die Quote-Stempel: ein flüchtiges Artefakt der
-> jüngsten Läufe, das sich beim Durchkonsolidieren selbst ausräumt.**
+> **→ Rückwirkend auf die zwölf Protokolle kann NICHTS durchschlagen.** Weder ist die Kerze
+> instabil, noch existiert sie in der Historie.
 >
-> *Die Zahlen zum 25.08. stehen unverändert (40 von 40 Reihen, Median 0,0978 %, max 1,0912 %).
-> **Nur die Reichweite war zu groß** — auf einem Tag gemessen, auf alle Tage gelesen.*
+> ### 🔹 WAS ALS ECHTER BEFUND ÜBRIG BLEIBT — klein, aber real
+>
+> **Die 20:00-Kerze existiert nur an den beiden neuesten Tagen; ältere Tage enden auf 19:30.
+> Damit ist „die letzte Kerze eines Tages" je nach Alter etwas anderes** — an den zwei jüngsten
+> Tagen der **Auktionsschluss**, in der Historie der **letzte Handel davor**. Der Unterschied
+> liegt im Median bei **0,0275 %**, im Maximum bei **0,42 %**.
+>
+> **Für eine Messung, die über Historie läuft, ist das einheitlich und harmlos. Für eine
+> Messung, die den aktuellen Rand mit der Historie vergleicht, ist es ein Bruch in der
+> Definition** — und genau das tut ein Handelssystem, das heute ein Signal rechnet nach Regeln,
+> die auf der Historie geeicht sind. *Zur Einordnung an die Mess-Sitzung gegeben; **nicht** vom
+> PM als groß behauptet, nachdem er es heute Nacht zweimal zu groß gelesen hat.*
 
 ### ⭐ Was auf Wilhelm wartet — drei Entscheidungen
 
