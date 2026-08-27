@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 16:55 (Windows-Uhr)
+letzter-bericht: 2026-08-27 17:05 (Windows-Uhr)
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -124,6 +124,57 @@ Nicht-Krypto, **alle am 25.08., null erfasste Marktlagen** → **nicht erfüllt,
 > *Nebenbemerkung von `06`, der Vollständigkeit halber: der 30-Minuten-Zwischenspeicher bedeutet,
 > dass eine Runde bei einem Seitenwechsel innerhalb einer halben Stunde noch die alte Lage trüge
 > — **für eine Schwelle über Tage belanglos**, aber gesagt.*
+
+---
+
+## 🏛 27.08. 17:0x — **EDGAR ENTSCHEIDET DEN RGR-DISSENS: das Ereignis ist REAL und seine Größe ist NULL**
+
+> ### **Die dritte Möglichkeit, die niemand auf dem Zettel hatte.**
+
+**Es gibt ein reales Ereignis exakt am 24.10.2025 — aber seine ökonomische Größe ist NULL.**
+*Das 8-K vom 14.10.2025 ist ein **Rights Agreement (Giftpille)**: eine Kaufrecht-Dividende je
+Aktie, **Record Date Handelsschluss 24.10.2025**, Kaufpreis 200 $, Flip-in-Standard. Das 8-A12B
+registriert die Rechte als neue NYSE-Klasse (CERT 16.10.). Auslöser ist ein Aktivist (13D 22.09.,
+13D/A 02.10. und 01.12.).*
+
+> **Die Rechte handeln UNTRENNBAR mit der Aktie und sind bis zum Übernahme-Trigger nicht
+> ausübbar — kein Börsenplatz passt dafür Kurse an.**
+> ***Die Zahl 374 kommt im gesamten 8-K nicht vor.*** *Kein Split, keine Sonderausschüttung im
+> ganzen Sep–Dez-Fenster (alle vier 8-Ks gelesen, vollständiges Einreichungsverzeichnis).*
+
+### ⚖ MEIN URTEIL WAR NICHT „FALSCH HERUM" — **BEIDE Richtungen waren falsch**
+*Nicht „60m kaputt" (mein Mittags-Stand). Nicht „1d korrekt angepasst" (der IESC-Verdacht von
+16:4x).*
+
+> ### **Das `1d` trägt Yahoos PHANTOM-ANPASSUNG auf einem realen, aber kursneutralen Ereignis-Datum. Die 60m-Rohansicht ist ökonomisch die richtige — Massive ist im Recht.**
+
+*Mutmaßlicher Mechanismus, ausdrücklich als **Hypothese** gekennzeichnet: Yahoos Pipeline hat die
+Rechtedividende oder die neue Klasse „Rights" **als Split kodiert**.*
+
+> ### 🔴 **DER ZWEITE ZEUGEN-BEFUND DES TAGES — und zusammen ergeben sie eine Regel**
+> **Vormittag: Massives Abdeckungslücken** *(1990er-Microcaps, ETFs).*
+> **Jetzt: Yahoos Phantom-Anpassungen** *(kursneutrale Ereignisse als Splits kodiert).*
+>
+> ***„Beide Quellen brauchen den jeweils anderen — plus EDGAR als Schiedsrichter."***
+>
+> **Und das ist keine Redensart: Bei RGR hätte JEDE Zweierkombination die falsche Antwort
+> gegeben.** *Yahoo allein → Split geglaubt. Massive allein → nichts gesehen. Beide gegeneinander
+> → „unentscheidbar". **Erst der dritte, der kein Anbieter ist, hat es entschieden.***
+
+**Die Join-Zeile bleibt unverändert** — *„unentscheidbar mit diesen zwei Endpunkten" war und ist
+richtig; **entschieden hat der dritte Zeuge, genau wie im Gerüst vorgesehen**.*
+
+**Grenze ehrlich benannt:** *„In EDGAR nicht gefunden" gilt **fürs geprüfte Fenster**; ein
+NYSE-Split ohne jede SEC-Einreichung ist praktisch ausgeschlossen, **formal unbewiesen**.*
+
+> ### 📋 DARAUS FOLGT EIN SCHÄRFERER SWEEP-AUFTRAG (an `22`, nächster Lauf)
+> **Bisher:** *„Zeigen RGR/SITC/B/BYND dasselbe Muster?"*
+> **Jetzt zusätzlich, und es ist die größere Frage:** ***Wie viele Yahoo-Split-Ereignisse in
+> unserem Bestand haben KEINE ökonomische Grundlage?*** *Giftpillen, Rechteausgaben und neue
+> Wertpapierklassen sind **nicht selten** — jede Aktivisten-Situation kann eine auslösen.*
+> **Suchmuster ist jetzt scharf: Yahoo führt ein Split-Ereignis, Massive kennt keines, und der
+> Faktor taucht in keiner Einreichung auf.**
+> **⚠ ZÄHLEN VOR ÄNDERN gilt weiter: kennzeichnen, nicht zurückrechnen.**
 
 ---
 
