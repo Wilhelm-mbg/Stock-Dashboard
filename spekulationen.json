@@ -1,5 +1,5 @@
 {
-  "stand": "2026-08-27T10:58:35.277Z",
+  "stand": "2026-08-27T13:01:49.534Z",
   "hinweis": "Spekulationen aus öffentlichen Quellen – ungemessen, keine Handelsempfehlung, keine Anlageberatung.",
   "eintraege": [
     {
@@ -8,16 +8,16 @@
       "name": "Banca Monte dei Paschi di Siena S.p.A.",
       "art": "uebernahme",
       "chance": "hoch",
-      "these": "MPS wehrt sich mit einem Doppelgebot über rund 34 Mrd. Euro für Banco BPM und Banca Generali gegen die feindliche Offerte von Intesa Sanpaolo; Intesa hat dagegen jetzt eine Beschwerde bei der Börsenaufsicht Consob eingereicht, und der Generali-Verwaltungsrat tagt heute zum Banca-Generali-Teil.",
-      "begruendung": "Beide Seiten des Übernahmekampfs sind belegt: Intesas Offerte über rund 30,6 Mrd. Euro und die MPS-Gegenwehr werden von Reuters, Il Sole 24 Ore und italienischen Häusern übereinstimmend beschrieben, die Umtauschverhältnisse sind veröffentlicht. Konkreter Anlass, mehrere seriöse Quellen, deshalb hoch. NEU am Donnerstagmittag: Intesa Sanpaolo hat der Consob „Beobachtungen und Überlegungen zu Kritikpunkten aus Operationen, die nach dem Start des Opas auf MPS angekündigt wurden“ vorgelegt – im Kern der Vorwurf, das Doppelgebot verstoße gegen die Passivity Rule. Damit liegt der Streit erstmals bei der Aufsicht. Der Generali-Verwaltungsrat ist heute zusammengetreten und bewertet das Angebot auf Banca Generali vorläufig; berichtet wird über die Bestellung von Beratern, eine Entscheidung fällt heute nicht. Generali hält 50,2 Prozent an Banca Generali, MPS braucht 50 Prozent plus eine Aktie. Von der anderen Front kommt Gegenwind: Banco BPM nennt das Gebot einstimmig eine Übernahme ohne Prämie, die gebotene Prämie von 10 Prozent gilt laut Cfo Sim als möglicherweise zu niedrig, Moody’s sieht in den parallelen Integrationen erhebliche Unsicherheit. Die MPS-Hauptversammlung muss am 29. Oktober mit zwei Dritteln zustimmen.",
+      "these": "MPS wehrt sich mit einem Doppelgebot über rund 34 Mrd. Euro für Banco BPM und Banca Generali gegen die feindliche Offerte von Intesa Sanpaolo; der Streit liegt jetzt bei der Börsenaufsicht Consob, und MPS-Chef Lovaglio verteidigt seinen Plan in einem Antwortbrief an die Financial Times.",
+      "begruendung": "Beide Seiten des Übernahmekampfs sind belegt: Intesas Offerte über rund 30,6 Mrd. Euro und die MPS-Gegenwehr werden von Reuters, Il Sole 24 Ore, Citywire Italia und weiteren Häusern übereinstimmend beschrieben, die Umtauschverhältnisse sind veröffentlicht. Konkreter Anlass, mehrere seriöse Quellen, deshalb hoch. Stand Donnerstagmittag: Intesa Sanpaolo hat der Consob „Beobachtungen und Überlegungen zu Kritikpunkten aus Operationen, die nach dem Start des Opas angekündigt wurden“ vorgelegt – im Kern der Vorwurf, das Doppelgebot verstoße gegen die Passivity Rule; angegriffen werden auch Zeitpunkt und Art der Mitteilung an den Markt. NEU seit dem Vormittag: MPS-Chef Lovaglio hat der Financial Times geantwortet, sein Industrieplan sei falsch dargestellt worden. Der Generali-Verwaltungsrat ist heute zu einer ersten Bewertung des Angebots auf Banca Generali zusammengetreten; berichtet wird über die Bestellung von Beratern, eine Entscheidung fällt heute nicht. Generali hält 50,2 Prozent an Banca Generali, MPS braucht 50 Prozent plus eine Aktie. Von der anderen Front kommt Gegenwind: Banco BPM nennt das Gebot einstimmig eine Übernahme ohne Prämie, Moody's sieht in den parallelen Integrationen erhebliche Unsicherheit. Die MPS-Hauptversammlung muss am 29. Oktober mit zwei Dritteln zustimmen.",
       "quellen": [
         {
-          "titel": "La Verità",
-          "url": "https://www.laverita.info/aziende/mps-intesa-consob-passivity-rule"
+          "titel": "Citywire Italia",
+          "url": "https://citywire.com/it/news/intesa-porta-il-risiko-in-consob-esposto-sulle-offerte-mps-per-banco-bpm-e-banca-generali/a2496750"
         },
         {
-          "titel": "Monetaweb",
-          "url": "https://www.monetaweb.it/investimenti-e-mercati/intesa-sanpaolo-presenta-un-esposto-alla-consob-sulle-offerte-di-mps/"
+          "titel": "Quotidiano.net",
+          "url": "https://www.quotidiano.net/economia/mps-lovaglio-difende-lofferta-il-116142f2"
         },
         {
           "titel": "Benzinga Italia",
@@ -32,7 +32,7 @@
           "url": "https://www.adnkronos.com/finanza/mps-tognoli-da-generali-esame-senza-pregiudizi-ma-freddezza-bpm-puo-complicare-piano_4MvNVVAqTdVuM7kZmJCpRJ"
         }
       ],
-      "zeit": "2026-08-27T08:00:00Z"
+      "zeit": "2026-08-27T10:30:00Z"
     },
     {
       "id": "20260821-BAMI-uebernahme",
@@ -40,16 +40,16 @@
       "name": "Banco BPM S.p.A.",
       "art": "uebernahme",
       "chance": "hoch",
-      "these": "Der Verwaltungsrat von Banco BPM hat das 25-Mrd.-Euro-Umtauschangebot von Monte dei Paschi einstimmig als „weder abgestimmt noch erbeten“ und als Übernahme ohne Prämie eingestuft; entschieden ist nichts, und der Streit liegt seit Mittwochabend zusätzlich bei der Börsenaufsicht Consob.",
-      "begruendung": "Der einstimmige Beschluss steht, auch die Vertreter des französischen Großaktionärs Crédit Agricole (29,3 Prozent) trugen ihn mit. Il Sole 24 Ore, La Stampa und Il Mattino geben den Wortlaut übereinstimmend wieder, Moody’s meldet „erhebliche Unsicherheiten“ an – konkreter, datierter Anlass aus mehreren seriösen Quellen, deshalb hoch. NEU: Intesa Sanpaolo hat der Consob eine Beschwerde gegen die MPS-Offerten vorgelegt und stellt sie unter dem Gesichtspunkt der Passivity Rule in Frage; das betrifft das Gebot auf Banco BPM unmittelbar mit. Parallel ist heute der Generali-Verwaltungsrat zum Banca-Generali-Teil zusammengetreten und bestellt zunächst Berater – eine Entscheidung fällt dort heute nicht. Der Analyst Tognoli (Cfo Sim) nennt die Kühle von Banco BPM eine Komplikation für den Gesamtplan. Wirtschaftsminister Giorgetti hat den Verkauf des Staatsanteils von 4,8 Prozent an MPS ausgesetzt.",
+      "these": "Der Verwaltungsrat von Banco BPM hat das 25-Mrd.-Euro-Umtauschangebot von Monte dei Paschi einstimmig als „weder abgestimmt noch erbeten“ und als Übernahme ohne Prämie eingestuft; entschieden ist nichts, und der Streit liegt seit Mittwoch zusätzlich bei der Börsenaufsicht Consob.",
+      "begruendung": "Der einstimmige Beschluss steht, auch die Vertreter des französischen Großaktionärs Crédit Agricole (29,3 Prozent) trugen ihn mit. Il Sole 24 Ore, La Stampa und Citywire Italia geben den Wortlaut übereinstimmend wieder, Moody's meldet „erhebliche Unsicherheiten“ an – konkreter, datierter Anlass aus mehreren seriösen Quellen, deshalb hoch. Intesa Sanpaolo hat der Consob eine Beschwerde gegen die MPS-Offerten vorgelegt und stellt sie unter dem Gesichtspunkt der Passivity Rule in Frage; das betrifft das Gebot auf Banco BPM unmittelbar mit. Stand Donnerstagmittag hat sich an der Lage von Banco BPM selbst nichts geändert – die Bewegung liegt heute auf der Generali-Seite des Doppelgebots, wo der Verwaltungsrat zusammengetreten ist und zunächst Berater bestellt. Der Analyst Tognoli (Cfo Sim) nennt die Kühle von Banco BPM eine Komplikation für den Gesamtplan. Wirtschaftsminister Giorgetti hat den Verkauf des Staatsanteils von 4,8 Prozent an MPS ausgesetzt.",
       "quellen": [
         {
           "titel": "Il Sole 24 Ore",
           "url": "https://www.ilsole24ore.com/art/mps-bpm-prende-tempo-e-un-acquisizione-senza-premio-AJUZ3Ou"
         },
         {
-          "titel": "La Verità",
-          "url": "https://www.laverita.info/aziende/mps-intesa-consob-passivity-rule"
+          "titel": "Citywire Italia",
+          "url": "https://citywire.com/it/news/intesa-porta-il-risiko-in-consob-esposto-sulle-offerte-mps-per-banco-bpm-e-banca-generali/a2496750"
         },
         {
           "titel": "Benzinga Italia",
@@ -64,7 +64,7 @@
           "url": "https://www.adnkronos.com/finanza/mps-tognoli-da-generali-esame-senza-pregiudizi-ma-freddezza-bpm-puo-complicare-piano_4MvNVVAqTdVuM7kZmJCpRJ"
         }
       ],
-      "zeit": "2026-08-27T08:00:00Z"
+      "zeit": "2026-08-27T10:30:00Z"
     },
     {
       "id": "20260823-WBD-ereignis",
@@ -72,27 +72,99 @@
       "name": "Warner Bros. Discovery Inc.",
       "art": "ereignis",
       "chance": "hoch",
-      "these": "Der Streit um die 111-Mrd.-Dollar-Übernahme von Warner Bros. Discovery eskaliert auf zwei neuen Ebenen: Iowa und Montana rufen den Supreme Court an, um die Kartellklage der zwölf Bundesstaaten zu stoppen, und Paramount verlangt von den Klägern Ersatz für die Verzögerungskosten.",
-      "begruendung": "Deadline, Variety und weitere Häuser berichten übereinstimmend, dass die republikanischen Generalstaatsanwälte Brenna Bird (Iowa) und Austin Knudsen (Montana) den Supreme Court anrufen und die Klage aus Kalifornien als politisiert bezeichnen; parallel beantragt Paramount bei einem Bundesrichter, den zwölf Staaten und der Drehbuchautoren-Gewerkschaft WGA die Verzögerungskosten aufzuerlegen. Mehrere unabhängige Quellen, konkrete und datierte Verfahrensschritte, deshalb hoch. Der Ausgangspunkt bleibt der Vortag: Kaliforniens Generalstaatsanwalt Bonta hatte das Vergleichstreffen abgesagt und erklärt, es seien keine Gespräche angesetzt. Aus dem Schriftsatz selbst stammt das schärfste Argument: Warner Bros. sei durch das Verfahren „eingefroren“ und brauche für Geschäftsentscheidungen die Zustimmung von Paramount. Der Prozesstermin steht im März; für Paramount fällt ab dem 1. Oktober eine Verzögerungsgebühr von 7 Mio. Dollar je Tag an.",
+      "these": "Im Streit um die 111-Mrd.-Dollar-Übernahme von Warner Bros. Discovery haben Iowa und Montana den Supreme Court jetzt tatsächlich angerufen – sie wollen die Kartellklage der zwölf Bundesstaaten stoppen lassen und obendrein eine Entscheidung des Gerichts über die Fusion selbst.",
+      "begruendung": "Gegenüber gestern ist das nicht mehr nur eine Ankündigung: Law360, Variety und Deadline berichten übereinstimmend, dass die republikanischen Generalstaatsanwälte Brenna Bird (Iowa) und Austin Knudsen (Montana) den Schriftsatz eingereicht haben; sie verlangen, die Klage aus Kalifornien zu untersagen und die Fusion durch den Supreme Court selbst beurteilen zu lassen. Mehrere unabhängige Quellen, konkreter und datierter Verfahrensschritt, deshalb hoch. Einzuordnen ist der Schritt als aussichtsarm – Variety nennt ihn ausdrücklich einen „long-shot move“, weil der Supreme Court als erste Instanz angerufen wird. Parallel beantragt Paramount bei einem Bundesrichter, den zwölf Staaten und der Drehbuchautoren-Gewerkschaft WGA die Verzögerungskosten aufzuerlegen; aus dem Schriftsatz stammt das schärfste Argument, Warner Bros. sei durch das Verfahren „eingefroren“. Kaliforniens Generalstaatsanwalt Bonta hatte das Vergleichstreffen abgesagt. Der Prozesstermin steht im März; für Paramount fällt ab dem 1. Oktober eine Verzögerungsgebühr von 7 Mio. Dollar je Tag an.",
       "quellen": [
         {
-          "titel": "Deadline",
-          "url": "https://deadline.com/2026/08/paramount-merger-supreme-court-threat-iowa-1237050615/"
+          "titel": "Law360",
+          "url": "https://www.law360.com/articles/2517934/iowa-montana-ask-justices-to-stop-paramount-merger-case"
         },
         {
           "titel": "Variety",
           "url": "https://variety.com/2026/film/news/iowa-montana-lawsuit-supreme-court-block-politicized-paramount-warner-bros-california-1236843929/"
         },
         {
-          "titel": "AOL / TheWrap",
-          "url": "https://www.aol.com/articles/paramount-wants-suing-states-wga-212832000.html"
+          "titel": "Deadline",
+          "url": "https://deadline.com/2026/08/paramount-merger-supreme-court-threat-iowa-1237050615/"
         },
         {
           "titel": "Reuters",
           "url": "https://www.reuters.com/legal/litigation/california-ag-says-no-settlement-talks-scheduled-with-paramount-2026-08-25/"
         }
       ],
-      "zeit": "2026-08-26T18:00:00Z"
+      "zeit": "2026-08-27T01:30:00Z"
+    },
+    {
+      "id": "20260827-NVDA-ereignis",
+      "sym": "NVDA",
+      "name": "NVIDIA Corporation",
+      "art": "ereignis",
+      "chance": "mittel",
+      "these": "Nvidia hat am Mittwochabend Quartalszahlen vorgelegt, die am Markt als „blockbuster“ gelesen werden; die Aktie legte vorbörslich bis zu 8 Prozent zu, Goldman Sachs und Citigroup haben ihre Kursziele angehoben.",
+      "begruendung": "Der Anlass selbst ist erstklassig belegt und gegen EDGAR geprüft: 8-K mit Item 2.02 (Ergebnisse) vom 26. August 2026, dazu der 10-Q für das am 26. Juli geendete Quartal – die Zahlen sind also von gestern Abend und nicht aufgewärmt. Das ist wichtig, weil noch am Mittwoch Vorschauartikel kursierten, die den Bericht auf „nächste Woche“ legten; die sind überholt. MarketWatch und TradingKey berichten übereinstimmend über den vorbörslichen Anstieg und die Kurszielanhebungen zweier großer Häuser. Trotzdem nur mittel und nicht hoch: Die Zahlen sind eine Tatsache, keine Spekulation – spekulativ ist allein, ob die Bewegung über den Handelstag trägt, und mit bis zu 8 Prozent vorbörslich ist ein erheblicher Teil bereits im Kurs. Die genauen neuen Kursziele liegen hier nicht aus erster Hand vor.",
+      "quellen": [
+        {
+          "titel": "SEC EDGAR (Einreichungen NVIDIA)",
+          "url": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001045810&type=8-K&dateb=&owner=include&count=10"
+        },
+        {
+          "titel": "MarketWatch",
+          "url": "https://www.marketwatch.com/story/nvidia-stock-is-climbing-after-another-set-of-blockbuster-results-heres-what-wall-street-is-saying-a2260a62"
+        },
+        {
+          "titel": "TradingKey",
+          "url": "https://www.tradingkey.com/analysis/stocks/us-stocks/262135632-nvidia-surges-pre-market-wall-street-analysts-raise-price-targets-tradingkey"
+        }
+      ],
+      "zeit": "2026-08-27T10:00:00Z"
+    },
+    {
+      "id": "20260826-CZR-ereignis",
+      "sym": "CZR",
+      "name": "Caesars Entertainment, Inc.",
+      "art": "ereignis",
+      "chance": "mittel",
+      "these": "Caesars hat den endgültigen Fusionsprospekt eingereicht und damit die Aktionärsabstimmung über den 31-Dollar-Barausstieg an Fertitta Gaming auf September angesetzt; die Aktie notiert weiter unter dem Angebotspreis.",
+      "begruendung": "Gegen EDGAR geprüft: Das DEFM14A trägt das Datum 26. August 2026, der vorläufige Entwurf lag am 12. August – der Termin ist also frisch und nicht aufgewärmt. Der Vertrag selbst stammt aus dem Mai (31 Dollar je Aktie in bar, rund 17,6 Mrd. Dollar). Die Einstufung bleibt mittel, weil der Abstand zum Angebotspreis genau die offene Frage abbildet: Carl Icahn hatte im Juli ein höheres Gebot vorgelegt, das der Verwaltungsrat zugunsten der gesicherten Fertitta-Finanzierung ausschlug – ob vor der Abstimmung noch jemand nachlegt, ist offen. Ein Nachfassen am Donnerstagmittag brachte nichts Neues; der Abschlag zum Angebotspreis besteht unverändert. Die Angaben zum Icahn-Gebot stammen aus einem Branchenmedium, nicht aus erster Hand.",
+      "quellen": [
+        {
+          "titel": "SEC EDGAR (DEFM14A)",
+          "url": "https://www.sec.gov/Archives/edgar/data/1590895/000119312526365696/d143368ddefm14a.htm"
+        },
+        {
+          "titel": "ad-hoc-news",
+          "url": "https://www.ad-hoc-news.de/boerse/news/corporate-news/caesars-entertainment-stock-trades-below-buyout-price-as-fertitta-deal/70002463"
+        },
+        {
+          "titel": "PlayNJ",
+          "url": "https://www.playnj.com/news/why-caesars-chose-fertittas-secured-offer-over-icahns-higher-bid/99377/"
+        }
+      ],
+      "zeit": "2026-08-27T06:50:00Z"
+    },
+    {
+      "id": "20260824-WDAY-uebernahme",
+      "sym": "WDAY",
+      "name": "Workday Inc.",
+      "art": "uebernahme",
+      "chance": "mittel",
+      "these": "Der Finanzinvestor Silver Lake soll über eine Übernahme von Workday verhandeln; die Quartalszahlen heute nach US-Börsenschluss sind der nächste Prüfstein für den eingepreisten Übernahmeaufschlag.",
+      "begruendung": "Die Meldung geht auf einen Reuters-Bericht vom 13. August zurück, auf den die Aktie rund 18 Prozent zulegte; seither ist der Aufschlag im Kurs geblieben, bestätigt wurde von keiner Seite etwas, ein Filing gibt es nicht. Eine seriöse Erstquelle, viel Zweitverwertung, deshalb mittel. Stand Donnerstagmittag, letzter Lauf vor der Eröffnung: Ein erneutes gezieltes Nachfassen brachte zum zweiten Mal in Folge KEINE Bestätigung und keine neue Meldung zu den Silver-Lake-Gesprächen – die Sache steht unverändert auf der Einzelquelle vom 13. August. Workday taucht heute nur noch als Teil der allgemeinen Software-Erholung auf; MarketWatch nennt den Bericht heute Abend ausdrücklich einen Prüfstein für den ganzen Sektor.",
+      "quellen": [
+        {
+          "titel": "Reuters",
+          "url": "https://www.reuters.com/world/silver-lake-talks-buy-workday-sources-say-2026-08-13/"
+        },
+        {
+          "titel": "Simply Wall St.",
+          "url": "https://simplywall.st/stocks/us/software/nasdaq-wday/workday/news/workday-wday-stock-still-does-not-look-cheap-after-its-47-re"
+        },
+        {
+          "titel": "Investing.com",
+          "url": "https://m.investing.com/news/stock-market-news/intuit-earnings-preview-what-does-this-mean-for-the-software-sector-93CH-4875722?ampMode=1"
+        }
+      ],
+      "zeit": "2026-08-27T04:00:00Z"
     },
     {
       "id": "20260827-SEDG-analyst",
@@ -101,7 +173,7 @@
       "art": "analyst",
       "chance": "mittel",
       "these": "UBS hat SolarEdge von Neutral auf Buy hochgestuft und das Kursziel angehoben, nachdem die FCC die Einfuhr ausländischer Wechselrichter untersagt hat; die Aktie legte vorbörslich rund 5 bis 8 Prozent zu.",
-      "begruendung": "Ungewöhnlich für eine Analysten-Bewegung: Dahinter steht ein konkreter regulatorischer Anlass, nicht nur eine Meinungsänderung – das FCC-Verbot ausländischer Wechselrichter soll rund die Hälfte des US-Marktes betreffen, was den verbleibenden Anbietern zufällt. UBS ist ein großes Haus, die Hochstufung erfolgte um eine volle Stufe, und Benzinga führt SEDG in der Sammelmeldung der Mittwochs-Hochstufungen. Die Kursreaktion ist belegt. Trotzdem mittel und nicht hoch: Die Meldung läuft über Zweitverwerter, das genaue neue Kursziel wird uneinheitlich wiedergegeben (eine Quelle nennt 40 Prozent Aufwärtspotenzial), und eine Bestätigung der FCC-Regelung aus erster Hand liegt hier nicht vor.",
+      "begruendung": "Ungewöhnlich für eine Analysten-Bewegung: Dahinter steht ein konkreter regulatorischer Anlass, nicht nur eine Meinungsänderung – das FCC-Verbot ausländischer Wechselrichter soll rund die Hälfte des US-Marktes betreffen, was den verbleibenden Anbietern zufällt. UBS ist ein großes Haus, die Hochstufung erfolgte um eine volle Stufe, und Benzinga führt SEDG in der Sammelmeldung der Mittwochs-Hochstufungen. Die Kursreaktion ist belegt. Trotzdem mittel und nicht hoch: Die Meldung läuft über Zweitverwerter, das genaue neue Kursziel wird uneinheitlich wiedergegeben (eine Quelle nennt 40 Prozent Aufwärtspotenzial), und eine Bestätigung der FCC-Regelung aus erster Hand liegt hier nicht vor. Ein Nachfassen am Donnerstagmittag brachte nichts Neues.",
       "quellen": [
         {
           "titel": "Benzinga",
@@ -125,7 +197,7 @@
       "art": "analyst",
       "chance": "mittel",
       "these": "Raymond James hat AMD auf Strong Buy hochgestuft und das Kursziel auf 641 Dollar gesetzt; begründet wird das mit einem auf 201 Mrd. Dollar veranschlagten Server-CPU-Markt und weiteren Marktanteilsgewinnen gegenüber Intel.",
-      "begruendung": "Eine benannte Hochstufung eines großen Hauses mit benanntem Analysten (Simon Leopold) und konkretem, beziffertem Kursziel – das ist deutlich mehr als die übliche Kurszielpflege, und es fällt in die Woche vor den Nvidia-Zahlen, in der die Halbleiterwerte ohnehin gesucht sind. Mehrere Zweitverwerter (TheStreet, Yahoo Finance) geben Rating, Ziel und Begründung übereinstimmend wieder, das genannte Aufwärtspotenzial liegt bei rund 30 Prozent. Trotzdem nur mittel: Es ist die Meinung eines einzelnen Hauses, kein Ereignis wie ein Angebot oder ein Filing, und eine Bestätigung aus erster Hand liegt hier nicht vor. AMD ist sehr liquide, die Spekulation ist also handelbar.",
+      "begruendung": "Eine benannte Hochstufung eines großen Hauses mit benanntem Analysten (Simon Leopold) und konkretem, beziffertem Kursziel – das ist deutlich mehr als die übliche Kurszielpflege. Mehrere Zweitverwerter (TheStreet, Yahoo Finance) geben Rating, Ziel und Begründung übereinstimmend wieder, das genannte Aufwärtspotenzial liegt bei rund 30 Prozent. Trotzdem nur mittel: Es ist die Meinung eines einzelnen Hauses, kein Ereignis wie ein Angebot oder ein Filing. Der Bezugspunkt hat sich seit gestern verschoben: Die Nvidia-Zahlen von Mittwochabend sind heraus und fallen gut aus, die Halbleiterwerte laufen vorbörslich freundlich – die Hochstufung trifft also auf einen bereits gehobenen Sektor. AMD ist sehr liquide, die Spekulation ist handelbar.",
       "quellen": [
         {
           "titel": "TheStreet",
@@ -139,37 +211,13 @@
       "zeit": "2026-08-26T16:00:00Z"
     },
     {
-      "id": "20260826-CZR-ereignis",
-      "sym": "CZR",
-      "name": "Caesars Entertainment, Inc.",
-      "art": "ereignis",
-      "chance": "mittel",
-      "these": "Caesars hat heute den endgültigen Fusionsprospekt eingereicht und setzt damit die Aktionärsabstimmung über den 31-Dollar-Barausstieg an Fertitta Gaming auf September an; die Aktie notiert weiter unter dem Angebotspreis.",
-      "begruendung": "Gegen EDGAR geprüft: Das DEFM14A trägt das Datum 26. August 2026, der vorläufige Entwurf lag am 12. August – der Termin ist also frisch und nicht aufgewärmt. Der Vertrag selbst stammt aus dem Mai (31 Dollar je Aktie in bar, rund 17,6 Mrd. Dollar). Die Einstufung bleibt mittel, weil der Abstand zum Angebotspreis genau die offene Frage abbildet: Carl Icahn hatte im Juli ein höheres Gebot vorgelegt, das der Verwaltungsrat zugunsten der gesicherten Fertitta-Finanzierung ausschlug – ob vor der Abstimmung noch jemand nachlegt, ist offen. Die Angaben zum Icahn-Gebot stammen aus einem Branchenmedium, nicht aus erster Hand.",
-      "quellen": [
-        {
-          "titel": "SEC EDGAR (DEFM14A)",
-          "url": "https://www.sec.gov/Archives/edgar/data/1590895/000119312526365696/d143368ddefm14a.htm"
-        },
-        {
-          "titel": "TipRanks",
-          "url": "https://www.tipranks.com/news/company-announcements/caesars-sets-september-vote-on-fertitta-gaming-cash-buyout"
-        },
-        {
-          "titel": "PlayNJ",
-          "url": "https://www.playnj.com/news/why-caesars-chose-fertittas-secured-offer-over-icahns-higher-bid/99377/"
-        }
-      ],
-      "zeit": "2026-08-26T12:00:00Z"
-    },
-    {
       "id": "20260826-MRVL-analyst",
       "sym": "MRVL",
       "name": "Marvell Technology Inc.",
       "art": "analyst",
       "chance": "mittel",
-      "these": "Vor den Quartalszahlen am Donnerstag haben mehrere Häuser ihre Kursziele für Marvell deutlich angehoben – Rosenblatt von 240 auf 300 Dollar, Susquehanna von 230 auf 265 Dollar – begründet mit anziehender Nachfrage im KI-Netzwerkgeschäft.",
-      "begruendung": "Zwei benannte Häuser mit bezifferten Anhebungen von je gut 15 bis 25 Prozent, dazu ein datierter Anlass: der Bericht zum zweiten Geschäftsquartal am Donnerstag. Die Meldung läuft bislang über Zweitverwerter (Stocktwits über TradingView, BigGo), eine Erstquelle der Häuser selbst liegt nicht vor, und Zielkurse sind Meinung, keine Tatsache – deshalb mittel und nicht hoch. Aufgenommen, weil die Anhebungen ungewöhnlich groß sind und unmittelbar vor dem Ereignis liegen.",
+      "these": "Vor den Quartalszahlen heute nach US-Börsenschluss haben mehrere Häuser ihre Kursziele für Marvell deutlich angehoben – Rosenblatt von 240 auf 300 Dollar, Susquehanna von 230 auf 265 Dollar – begründet mit anziehender Nachfrage im KI-Netzwerkgeschäft.",
+      "begruendung": "Zwei benannte Häuser mit bezifferten Anhebungen von je gut 15 bis 25 Prozent, dazu ein datierter Anlass: der Bericht zum zweiten Geschäftsquartal heute nach Handelsschluss. Die Meldung läuft bislang über Zweitverwerter (Stocktwits über TradingView, BigGo), eine Erstquelle der Häuser selbst liegt nicht vor, und Zielkurse sind Meinung, keine Tatsache – deshalb mittel und nicht hoch. Der Prüfstein steht damit heute Abend an; die gut aufgenommenen Nvidia-Zahlen vom Mittwochabend heben vorbörslich den ganzen KI-Halbleiterbereich mit, was die Messlatte für Marvell eher anhebt als senkt.",
       "quellen": [
         {
           "titel": "TradingView / Stocktwits",
@@ -183,48 +231,20 @@
       "zeit": "2026-08-26T08:00:00Z"
     },
     {
-      "id": "20260824-WDAY-uebernahme",
-      "sym": "WDAY",
-      "name": "Workday Inc.",
-      "art": "uebernahme",
-      "chance": "mittel",
-      "these": "Der Finanzinvestor Silver Lake soll über eine Übernahme von Workday verhandeln; die Quartalszahlen am 27. August sind der nächste Prüfstein für den eingepreisten Übernahmeaufschlag.",
-      "begruendung": "Die Meldung geht auf einen Reuters-Bericht vom 13. August zurück, auf den die Aktie rund 18 Prozent zulegte; seither ist der Aufschlag im Kurs geblieben, bestätigt wurde von keiner Seite etwas, ein Filing gibt es nicht. Eine seriöse Erstquelle, viel Zweitverwertung, deshalb mittel. Eine Nachsuche am Mittwochmittag brachte zur Sache selbst nichts Neues – nur die Beobachtung, dass die gemeldeten Gespräche den ganzen Software-Sektor mitgezogen haben (Workday rund 47 Prozent über dem Tief) und Bewertungsmodelle die Aktie inzwischen als nicht mehr günstig einstufen. Stand Donnerstagmittag: Ein gezieltes Nachfassen brachte KEINE Bestätigung und keine neue Meldung zu den Silver-Lake-Gesprächen – die Sache steht unverändert auf der Einzelquelle vom Montag. Die Quartalszahlen kommen heute nach US-Börsenschluss.",
-      "quellen": [
-        {
-          "titel": "Reuters",
-          "url": "https://www.reuters.com/world/silver-lake-talks-buy-workday-sources-say-2026-08-13/"
-        },
-        {
-          "titel": "Simply Wall St.",
-          "url": "https://simplywall.st/stocks/us/software/nasdaq-wday/workday/news/workday-wday-stock-still-does-not-look-cheap-after-its-47-re"
-        },
-        {
-          "titel": "Investing.com",
-          "url": "https://m.investing.com/news/stock-market-news/intuit-earnings-preview-what-does-this-mean-for-the-software-sector-93CH-4875722?ampMode=1"
-        }
-      ],
-      "zeit": "2026-08-25T22:00:00Z"
-    },
-    {
-      "id": "20260826-EXPE-analyst",
-      "sym": "EXPE",
-      "name": "Expedia Group Inc.",
+      "id": "20260827-OKTA-analyst",
+      "sym": "OKTA",
+      "name": "Okta, Inc.",
       "art": "analyst",
       "chance": "niedrig",
-      "these": "Expedia legte rund 5 Prozent zu, nachdem Evercore ISI und Wedbush ihre Kursziele auf 430 beziehungsweise 417 Dollar angehoben haben; der Mittelwert der Ziele liegt damit bei rund 424 Dollar.",
-      "begruendung": "Zwei benannte Häuser mit bezifferten Zielen und eine tatsächliche Kursreaktion am selben Tag; Expedia taucht zudem in der Benzinga-Sammelmeldung der Analystenbewegungen vom Dienstag auf. Trotzdem niedrig: Die Meldung läuft über Zweitverwerter, für Evercore ist kein Ausgangswert genannt, sodass sich die Größe der Anhebung nicht beziffern lässt – und Kursziele sind Meinung, kein Anlass. Aufgenommen, weil der Wert liquide ist und die Kursreaktion belegt.",
+      "these": "Guggenheim hat nach starken Quartalszahlen das Kursziel für Okta von 162 auf 188 Dollar angehoben und bleibt bei Buy.",
+      "begruendung": "Eine bezifferte Anhebung um rund 16 Prozent von einem benannten Haus, unmittelbar nach einem datierten Anlass – den Quartalszahlen. Trotzdem niedrig: Es ist ein einzelnes Haus, die Meldung liegt nur über einen Zweitverwerter (Investing.com) vor, eine zweite unabhängige Quelle fehlt, und ein Kursziel ist Meinung, kein Ereignis. Aufgenommen, weil die Meldung frisch vom Donnerstagvormittag ist und der Wert liquide gehandelt wird.",
       "quellen": [
         {
-          "titel": "TIKR",
-          "url": "https://www.tikr.com/blog/expeexpedia-stock-jumps-evercore-isi-price-target-430"
-        },
-        {
-          "titel": "Benzinga",
-          "url": "https://www.benzinga.com/news/26/08/61404324/nvidia-to-rally-more-than-8-here-are-10-top-analyst-forecasts-for-tuesday"
+          "titel": "Investing.com",
+          "url": "https://m.investing.com/news/analyst-ratings/guggenheim-raises-okta-stock-price-target-on-strong-results-93CH-4878820?ampMode=1"
         }
       ],
-      "zeit": "2026-08-25T22:00:00Z"
+      "zeit": "2026-08-27T10:50:00Z"
     }
   ]
 }
