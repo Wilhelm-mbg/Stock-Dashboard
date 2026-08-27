@@ -14,6 +14,49 @@ Wenn du hier etwas änderst, dann nur deine eigene Zeile unter „Läuft gerade"
 
 ---
 
+## 📒 AUFTRAGSREGISTER — **die einzige Quelle dafür, wer was hält** *(Stand 27.08. 15:5x, Windows-Uhr)*
+
+> **⚠ VOR jedem neuen Auftrag hier nachsehen. Wer etwas nimmt, sagt es dem PM — und der trägt es
+> hier ein.** *Grund: Am 27.08. konnte der PM Doppelvergaben nicht ausschließen, weil er fünf von
+> vierzehn wachen Sitzungen nicht kannte. **Dieses Register ersetzt sein Gedächtnis.***
+
+| Auftrag | bei | Stand |
+|---|---|---|
+| **Vollauf Eröffnungskurse** (1.116 Reihen, ~242 min) | `1d` | **LÄUFT** seit ~15:4x · Sperren geprüft, getrennte Ablagen · pristine Sicherung (1.164 Dateien) |
+| **Weg-3-Übernacht** (vorregistriert, Werkzeug gebaut) | `c4` | **wartet am Gate** auf die Vollauf-Meldung |
+| **Strang-A-Referenzlauf** | `c4` | **wartet** auf den Vollauf *(Wilhelms Entscheid)* |
+| **Yahoo-Phantom-Sweep** (~300 Reihen) + 17er-Gegenüberstellung | `22` | **LÄUFT** |
+| **„Verschieben falsche Hoch/Tief eine gemessene Kante?"** | `c4` | **LÄUFT** — A/B nach Docht-Muster, Registrierung vor dem Bau |
+| **CBSH-Blindstelle** (Aktiendividenden unter Faktor 2) | `c4` | danach, mit Machbarkeits-**Sperre** |
+| **Morgenprüfung WHLR + IESC** | `06` | morgen früh · *nichts von Hand anfassen* |
+| **`06`s Wachhund-Frage + AVB-Nachladefall** | `1d` | während des Vollaufs |
+| **EDGAR-Schritt GBTC/ETHE** | `22` | registrierter Übergabepunkt, nächster Lauf |
+
+**🟢 FREI, niemandem zugeteilt** *(erst melden, dann nehmen)*
+- **Aggregations-Differenz 3,22 % gegen 6,67 %** — *der Zensus zählte nur umsatztragende Kerzen;
+  die Auktionskerzen ohne Umsatzfeld tragen echte Extreme. **Bevor eine der beiden Zahlen allein
+  zitiert wird, muss die Aggregation festgelegt sein.***
+- **Barrierefreiheit Teile 2–5** — **⚠ VORBEDINGUNG: erst `probe-tastatur.js` reparieren.**
+  *`sichtbar()` misst am Rechteck; `content-visibility` in zugeklappten `<details>` lässt das
+  Rechteck gefüllt. **Mit unrepariertem Prüfer produzieren die Teile 2–5 dieselben Scheinbefunde
+  wie #109** — und ein Scheinbefund, der jede Nacht wiederkommt, kostet mehr als ein echter Fehler.*
+
+**⛔ NICHT NOCH EINMAL NEHMEN — erledigt und ausgeliefert:** *#105 Live-Hürde (`5f79ca1`, in
+`v8.34.1`) · Rest von #108 (selber Commit) · Abmeldelisten-Pflege (`0623e6e`, im Nachtlauf) ·
+Datenfund 2 (dreifach belegt) · 12-%-C-Anteile (Nullbefund, zweifach) · Stress-Achse (NEIN,
+Machbarkeit gerissen).*
+
+**🔴 Offen bei der Release-Wache** *(Handaufgabe, läuft nicht von selbst)*: **`0751035` (#110,
+aria-labels) steckt in keinem Tag** — *für den Anwender unbehoben; die Issue-Wache kann #110
+nicht mit Beleg schließen, solange kein Tag ihn enthält. Notiz liegt bereit.*
+
+**📋 Wachsitzungen mit bekannter Rolle** *(27.08. nachmittags)*: `1d` Datensammler · `c4`
+Berechnungen · `06` Desingner/Archiv-Wache · `22` Analytiker · `ab` QS · `7d` Auditor · `78`
+Strategie-Tüftler · `49` Release-Wache · `36`/`0a`/`91` Issue-Wache *(**drei Instanzen derselben
+geplanten Rolle**, aus dem Zeitplan)*. **Unbekannt: `c2` (antwortet seit 8 h nicht), `6a`, `87`.**
+
+---
+
 ## 📋 NACHTBILANZ 27.08. — die 30-Sekunden-Fassung *(Stand 03:00 echter Zeit)*
 
 > **🕐 Zu den Uhrzeiten in diesem Abschnitt und darunter:** Die Überschriften der Nacht tragen
