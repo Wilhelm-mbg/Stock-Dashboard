@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 04:30 (abgelesen)
+letzter-bericht: 2026-08-27 04:25 (abgelesen)
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -174,6 +174,59 @@ Zahl hereingefallen war): ***Die Falle verschwindet nicht durch einmaliges Erken
 
 *Alles unterhalb dieser Zeile ist Beleg zur Bilanz oben. Wer nur wissen will, was zu
 entscheiden ist, hat es bereits gelesen.*
+
+### 🔍 27.08. 03:15–03:45 — der Analytiker lief: KEIN FUND, und das ist diesmal ein starkes Ergebnis
+
+*(Übergabe `analytiker-2026-08-27-0330.md`, Befund `studien/analytiker/2026-08-27/BEFUND.md`,
+Commit `806cae5`.)*
+
+**Er hat alle 35 Varianten-Entscheidungen der zwölf frischen Protokolle mit einer EIGENEN,
+unabhängigen Implementierung nachgerechnet** (`nachrechnung-d.js`): **Schwelle, `delta80`,
+Urteile, `tage80` und `bestesUrteil` sind deckungsgleich.** Alle zwölf Placebos bestehen. **Live-
+Konfiguration = gemessene Konfiguration** (alle Wechselpfade laufen durch `applySetup`, ≥261
+Kerzen erzwungen). *Die einzige Abweichung ist erklärt und harmlos.*
+**`archiv1d` war die ganze Nacht gesperrt — es wurde nichts auf gemischtem Archiv gemessen.**
+
+**Nicht geschafft und ausdrücklich benannt:** kein frischer Placebo-**Maschinen**lauf (1d
+gesperrt; auf 60m unterlassen **wegen der bekannten `messen.js`-Falle, dass er Protokolle
+überschreibt** — richtige Zurückhaltung).
+
+### 💰 27.08. 04:25 — die Kostenmessung: der Store lebt, die Messung nicht
+
+**Der Analytiker meldet als Beobachtungsauftrag:** Der Live-Store steht **seit 25.08. 18:22 UTC
+bei EINER Runde**; am Handelstag 26.08. kam **keine** dazu. *Seine offene Frage: „Unklar bleibt,
+ob die App am 26.08. überhaupt lief — davon hängt ab, ob das ein Fund ist oder nur ein
+geschlossener Rechner."*
+
+**Der PM hat die Hälfte davon geklärt, weil sie sich in einer Minute klären ließ:**
+
+    Store-Datei zuletzt geschrieben : 27.08.2026 04:23 (also gerade eben)
+    kostenMessung.runden           : 1
+    einzige Runde                  : 25.08.2026 18:22 UTC, AAPL call, runde 0,00042
+    Messung laeuft seit            : 25.08.2026 18:22 UTC
+
+> **→ Der Store ist NICHT tot — er wird laufend geschrieben.** Was fehlt, ist die
+> **Kostenrunde**. Damit ist die Frage „lief die App?" für **heute** beantwortet (sie läuft),
+> und der Verdacht verengt sich auf den Messbetrieb selbst.
+>
+> **⚠ Warum das zählt:** An dieser Messung hängt die **0,10-%-Kostenannahme**, auf der fast
+> jede Studie dieses Projekts steht — und die Freigabe-Regel für Strang A verlangt **≥ 20
+> Aktienrunden**. **Bei einer Runde in zwei Tagen ist dieses Kriterium unerreichbar.**
+>
+> **Prüfbedingung des Analytikers bleibt gültig:** *Steht morgen Nacht immer noch 1 Runde,
+> obwohl die App an einem Handelstag lief, ist der Messbetrieb tot — dann ist es ein Fund und
+> braucht eine Bausitzung.*
+
+### ⚖ Richtigstellung zu den 6 nachhängenden Reihen — der Wachhund rät, die Nacht weiß es
+
+**Der Analytiker gibt weiter, was der Wachhund meldet:** die 6 nachhängenden 60m-Reihen (TWO 2
+Handelstage, LBRDA/LBRDK/WBS 5, EQR 7, AVB 8) seien **„eher Abruffehler als Delisting"**.
+
+> **Das ist überholt. Fünf der sechs sind SEC-belegte Delistings** (`25-NSE` **und** 8-K Item
+> 2.01 am selben Tag), von `markt-dashboard-1d` heute Nacht geprüft — und ihr Nachhängen ist
+> **genau der erwartete Zustand**, nicht ein Fehler. **Nur TWO bleibt offen** (kein
+> Delisting-Datum, 19 Mio Umsatz am 24.08.) — *und das ist derselbe Wert, den der Analytiker
+> als einzigen zur Nachschau vormerkt.* **Beide Wege kommen auf denselben Rest.**
 
 ### 🔴 27.08. ~04:20 — DIE GEGENRECHNER HABEN EINEN ECHTEN FEHLER GEFUNDEN: Auswahl auf die Zielgröße
 
@@ -429,6 +482,12 @@ steht im Befund). **Entfernt wurden 76.339 von 14,66 Mio Kerzen — 0,52 %.**
 **→ Nach der ursprünglichen Auftragslogik („hebt er sich auf → Reparatur unnötig") ist die
 Phantom-Docht-Reparatur FÜR DIE MESSSEITE keine Dringlichkeit mehr.** *Datenfund 2 (der 25.08.
 im 60m-Archiv) bleibt davon unberührt offen.*
+
+> **🔒 UND DAS ERGEBNIS IST KONSERVATIVER, ALS ES AUSSAH — nachträglich verstärkt (04:35):**
+> Der B-Arm hat **auch die 435 Eröffnungsstunden-Kerzen mitentfernt**, die sich später als
+> **echter Sitzungshandel** herausstellten (nur das Umsatzfeld fehlte). **Dass „hebt sich auf"
+> trotzdem mit Faktor 6–27 Abstand herauskam, obwohl Arm B echte Information verlor, macht das
+> Ergebnis konservativer, nicht schwächer.**
 
 > **🎯 UND DER MASSSTAB HAT SICH SOFORT VERDIENT GEMACHT:** `rsi2seit-mcp` Var 3/4 wechselten
 > Etiketten an **+0,005-Pp-Margen**. Nach der **vorab** präzisierten Randrauschen-Regel zählt
