@@ -1,0 +1,49 @@
+{
+ "gemessenAm": "2026-08-27T06:30:07.648Z",
+ "seed": 20260827,
+ "waechter": {
+  "gemessenAm": "2026-08-27T06:30:07.142Z",
+  "seed": 20260827,
+  "ueberlebende": {
+   "genutzt": 2213,
+   "verworfen": 36
+  },
+  "W1": {
+   "soll": -0.004380530240392551,
+   "gemessen": -0.004646350292786675,
+   "verhaeltnis": 1.0606821635296604,
+   "t": -5.575764094437284,
+   "N": 502,
+   "bestanden": true
+  },
+  "W2b": {
+   "mittel": -0.0007198254703460462,
+   "sd": 0.006845444100472505,
+   "grenze": 0.005276126040439184,
+   "ziehungen": 200,
+   "bestanden": true
+  }
+ },
+ "verschwundene": {
+  "genutzt": 1108,
+  "verworfen": 56
+ },
+ "ergebnis": {
+  "mittel": 0.0568473491012153,
+  "mittelRoh": 0.7842230524370696,
+  "sdFD": 0.06032568424761827,
+  "sdGew": 0.07189736301428945,
+  "se": 0.0027087031848163344,
+  "t": 20.986924451476906,
+  "N": 496,
+  "tageOhneV": 6,
+  "fMittel": 0.06666058107762564,
+  "delta80": 0.00835093191878876
+ },
+ "urteil": "Richtung belegt: POSITIV (Archiv untertreibt)",
+ "familie": {
+  "name": "ueberlebensluecke-wege",
+  "tests": 2,
+  "schwelle": 2.2414
+ }
+}
