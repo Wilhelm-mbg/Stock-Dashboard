@@ -14,6 +14,60 @@ Wenn du hier etwas änderst, dann nur deine eigene Zeile unter „Läuft gerade"
 
 ---
 
+## 📦 27.08. 18:1x — **FELIX' INSTALLATION: die Vermutung stimmt — und daneben liegt ein AUSGELIEFERTER DEFEKT**
+
+**Wilhelms Meldung:** *„Felix nutzt die App auf seinem Laptop, der Installer gibt scheinbar nicht
+alle relevanten Daten mit."* **Bestätigt: das Paket enthält KEINE einzige Datendatei** *(362
+Dateien: 58 Wurzel-Skripte, `index.html`, Icons, `telemetrie.json`, 301 `node_modules`, 3 aus
+`studien/`).* **Das ist Absicht und im Code sauber kommentiert.**
+
+| Frage | Antwort |
+|---|---|
+| Im Paket? | **kein `tools/`, kein Archiv, keine Referenzdatei** |
+| Erster Start? | Datenordner wird selbst angelegt (`main.js:318`), ist leer — **kein stiller Fehlzustand**, die App meldet sich überall |
+| Baut sich selbst auf? | **Kursarchive ja. `wertpapierarten.json` NEIN.** |
+| Erstausstattung? | **nein** — kein Erstlauf, keine Grundausstattung, kein Einrichtungsdialog |
+
+> ### 🎯 **DER HAKEN FÜR FELIX, und er ist bitter:**
+> **Die Fehlermeldung rät: *„Einmal `node tools/arten-fuer-karte.js` laufen lassen"* — und
+> `tools/` ist NICHT im Paket.**
+> ***Der Rat ist für Wilhelm richtig und für jeden anderen eine Sackgasse.***
+> *Und die Folge ist bekannt: **fehlt die Klassifizierung, läuft das Universum ungefiltert**
+> (2.213 → ~2.960).*
+
+> ## 🔴 UND DER FUND, DEN NIEMAND GESUCHT HAT — er betrifft nicht Felix, sondern uns
+> ### **`studien/messmaschine/strategien/wertpapierart.js` fehlt im Paket — wird aber seit heute von `messmaschine.js:778` geladen.**
+>
+> *`build.files` nimmt aus `studien/` nur `messmaschine.js` und `messen.js` mit; `asarUnpack`
+> entpackt nur Eingepacktes — **nachgesehen: `app.asar.unpacked/studien/messmaschine/` enthält
+> genau diese zwei, kein `strategien/`**. Und die App forkt Messungen wirklich (`mess-lauf`,
+> `main.js:775`); ihr Wächter greift nicht, weil `messen.js` da ist.*
+>
+> **→ Erreicht ein Lauf Zeile 778, wirft er `MODULE_NOT_FOUND` statt der beabsichtigten sauberen
+> Verweigerung.**
+>
+> **Das ist die Integritätsschranke von heute (`3e35b60`) — und sie steckt in `v8.34.1`,
+> ausgeliefert und bei Wilhelm installiert.**
+>
+> ***Eine Schranke, die einen stillen Fehlzustand verhindern soll, erzeugt in der installierten
+> App einen lauten Absturz — an genau der Stelle, an der sie „ich messe nicht ohne
+> Klassifizierung" sagen sollte.***
+>
+> **⚠ Die Release-QS fängt es nicht** *(sie prüft die in `index.html` eingebundenen Skripte).*
+> **Dritte Datei dieser Art heute** — *`kerzenlage.js` wurde nur deshalb geprüft, weil jemand sie
+> im Verdacht hatte.* ***Aus der Einzelfallprüfung von heute früh ist nie ein Verfahren
+> geworden.*** **→ Vergeben an `c4` mit der Auflage: eine Sperrklinke, die prüft, dass JEDE von
+> `messmaschine.js` geladene Datei im Paket landet — keine Liste bekannter Namen.**
+
+**❓ DIE EINE FRAGE AN FELIX** *(über Wilhelm)*: **„Startet die App überhaupt — und wenn ja:
+welcher Reiter ist leer oder zeigt eine Meldung, und wie lautet sie wörtlich? Ein Bildschirmfoto
+wäre besser als jede Beschreibung."** *Begründung: **die App meldet sich überall, wo nachgesehen
+wurde. „Funktioniert nicht" passt schlecht dazu.** Entweder Felix sieht eine dieser Meldungen —
+dann wissen wir sofort, welche Lücke — oder etwas anderes, und dann fehlt uns ein Fall, den der
+Code nicht hergibt.*
+
+---
+
 ## 🗓 27.08. 18:0x — **ENTWARNUNG beim 1m-Archiv — und darunter ein echter Fund**
 
 > ### ✅ **DER HEUTIGE HANDELSTAG IST NICHT VERLOREN.**
