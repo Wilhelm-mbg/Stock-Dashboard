@@ -40,8 +40,15 @@
  * eigener Quell-Lieferfehler daneben: identische Hoch/Tief-Paare in
  * aufeinanderfolgenden AH-Stunden (selten, tagestyp-unabhaengig).
  * DIE REPARATURFRAGE IST DAMIT ENDGUELTIG KEINE WERTE-FRAGE, SONDERN DIE
- * POPULATIONSFRAGE: gehoeren Nachhandelsdaten ins 60m-Archiv? Entscheid liegt
- * bei Wilhelm; dieses Werkzeug bleibt unscharf, bis er gefallen ist. ⚠⚠ */
+ * POPULATIONSFRAGE: gehoeren Nachhandelsdaten ins 60m-Archiv?
+ *
+ * WILHELMS ENTSCHEID (27.08. frueh): BEHALTEN UND KENNZEICHNEN. Nichts wird
+ * geloescht. Dieses Werkzeug ruht damit ENDGUELTIG - es ist das Werkzeug fuer
+ * eine Entscheidung, die anders ausgefallen ist. Es bleibt im Repo, weil es
+ * die Formfrage eine Nacht lang sauber offen gehalten hat (Formsperre,
+ * A6-Vorpruefung, Rueckspielprobe), waehrend die Sachfrage gemessen wurde -
+ * und weil sein Kopf dokumentiert, WARUM nie repariert wurde. Die
+ * Kennzeichnung ist ein eigenes Vorhaben (Bauform-Abstimmung beim PM). ⚠⚠ */
 /* ================= Datenfund 1: Phantom-Dochte ENTFERNEN =================
  *
  * SCHREIBT ins 60m-Archiv - einziges schreibendes Werkzeug dieses Vorhabens.
