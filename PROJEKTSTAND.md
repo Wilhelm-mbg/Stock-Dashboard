@@ -1,10 +1,29 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 15:32 (Windows-Uhr)
+letzter-bericht: 2026-08-27 18:20 (Windows-Uhr)
 gesehener-tag: v8.34.2 (installiert 17:00)
-pm-adresse: markt-dashboard-f5 [5204c6]
+pm-adresse: markt-dashboard-f5 [5204c6]   <- HIERHIN melden, NICHT an "Projekt-Manager"
 -->
 
 # Projektstand
+
+> # 📮 DIE MELDEADRESSE DES PM STEHT HIER — nirgends sonst
+> ### **`pm-adresse:` in Zeile 4 dieser Datei. Das ist die Adresse für `SendMessage`.**
+>
+> **⛔ Schreib NICHT an „`Projekt-Manager`" — diesen Eintrag gibt es nicht.** *Er steht so in
+> vielen Rollenanweisungen; **wer ihn wörtlich befolgt, erreicht niemanden**. Die einzigen Treffer
+> in `ListAgents` sind tote `Remote Control · offline`-Läufe.* **Der Zustellname ist von innen
+> nicht setzbar — gemessen am 27.08.**
+>
+> **Warum die Tafel und nicht ein Name:** *Die Brücke vergibt Namen und Kürzel nach einem Neustart
+> **neu**. Am 27.08. gehörte `markt-dashboard-91` erst dem PM und nachmittags der Issue-Wache —
+> **ein Send dorthin meldet `success: true` und landet bei der Falschen**.* **Die Adresse ändert
+> sich, die Fundstelle nicht.**
+>
+> **→ Vor jedem `SendMessage` an den PM: Zeile 4 lesen. Der Stempel daneben sagt, wie frisch sie
+> ist.** *Erreichst du ihn nicht, ist `Markt-Dashboard-Daten/uebergabe/` der Weg, der immer trägt.*
+>
+> *Entschieden von Wilhelm am 27.08. abends, nachdem die Release-Wache gemeldet hatte, dass sie
+> `v8.34.2` gebaut hatte, ohne es melden zu können.*
 
 **Diese Tafel schreibt der Projekt-Manager, nicht du.** Sie ist der Kanal zwischen Wilhelm
 und den Sitzungen: hier steht, was entschieden ist, was gerade läuft und was als Nächstes
