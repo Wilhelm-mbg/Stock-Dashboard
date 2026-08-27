@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 08:35 (abgelesen)
+letzter-bericht: 2026-08-27 08:40 (abgelesen)
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -94,7 +94,33 @@ Release-Notizen** erreicht damit Wilhelm; die Archiv-Arbeit läuft davon unabhä
 **→ An die Release-Wache: ausliefern.** *Version und Bau gehören ihr allein — nicht dem PM und
 keiner Sitzung.*
 
-**🏗 BAU LÄUFT SEIT 08:0x — Stufe `--minor`, also 8.34.0.** *Begründung: Unter den zwölf
+### ⛔ 27.08. 08:0x — DER PUSH IST GESCHEITERT, und der Neubau hat einen stillen Fehler verhindert
+
+**Während des Baus (Start 07:57) hat eine parallele Sitzung auf `main` gepusht** (`a5b66e0`,
+07:59) — der Release-Push wurde abgelehnt. **Nichts ist verloren:** Tag entfernt, alle 12
+Notizen zurückgeholt, nichts halb veröffentlicht.
+
+> **🎯 DER WICHTIGE TEIL IST, WARUM DIE WACHE NEU BAUT STATT DEN PUSH ZU WIEDERHOLEN:**
+> Das Skript baut in einem eigenen Worktree auf dem HEAD **von Bauanfang** — `kerzenlage.js`
+> ist also **nicht im Paket**, der Tag `v8.34.0` würde ihn aber tragen. **Ein Release, dessen
+> Tag Code verspricht, den der Installer nicht enthält.**
+>
+> **Und die QS hätte es NICHT gefangen:** Sie prüft die in `index.html` eingebundenen
+> Skripte — **`kerzenlage.js` steht dort nicht.** *Dieselbe Familie wie „Build lieferte Module
+> nicht aus", nur diesmal **vor** der Auslieferung bemerkt.*
+
+**Die Nummer bleibt 8.34.0** (steht in `package.json`, hat keinen Tag — es wird keine Nummer
+verbrannt). **Funkstille ausgesprochen:** vier Sitzungen angeschrieben, der PM hält seine
+eigenen Tafel-Pushes ebenfalls zurück.
+
+**→ PM-Vorschlag an die Release-Wache (ihre Entscheidung):** *„Vor dem Push auf die Tafel
+sehen" trägt nicht — zwischen Bau-Start und Kollision lagen **zwei Minuten**, und die Tafel
+erfährt es erst über eine Nachricht.* **Was nachweislich funktioniert hat, ist die Sperrdatei
+des Nachladers** (`_laeuft.json`: Startzeit, PID, Rechner — vier Sitzungen haben sie geprüft,
+drei Läufe korrekt daran abgebrochen). **`tools/release.js` könnte dasselbe tun** — ins
+`finally`, mit Verwaisungs-Prüfung.
+
+**🏗 NEUBAU LÄUFT — Stufe `--minor`, also 8.34.0.** *Begründung: Unter den zwölf
 Notizen sind **zwei sichtbare Neuerungen**, nicht nur Korrekturen — eine **neue Seite**
 (`Werkzeuge › Kursarchiv`) und eine **neue Spalte** (`Feinheit` im Scoreboard).* **Die
 endgültige Zahl kommt aus der letzten Zeile des Skripts, nicht aus dieser Rechnung** — bei
