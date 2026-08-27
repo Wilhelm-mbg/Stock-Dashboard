@@ -14,6 +14,43 @@ Wenn du hier etwas änderst, dann nur deine eigene Zeile unter „Läuft gerade"
 
 ---
 
+## ✅ 27.08. 18:4x — **DER MESSAUTOMAT STEHT** (`de05c43`) — mit zwei Selbstfunden vor dem Commit
+
+**Alle bestätigten Parameter umgesetzt:** *1 Runde je Handelstag · nur Aktien · rotierendes
+Symbol · nur bei offenem Markt · **Zeitpunkt je Tag neu gewürfelt** aus dem Sitzungsfenster (mit
+Halbtags-Berücksichtigung über `boerse.js`) · abschaltbar über `D.kostenAutomat` · **Knopf
+bleibt** · sichtbare Abschaltmeldung.*
+
+**Stoppbedingung wie von Wilhelm entschieden — und die Klinke prüft BEIDE Teile einzeln:**
+*sein **30-zu-1-Fall läuft nachweislich WEITER**, erst 10 je Lage stoppt · eine Lage allein mit 50
+Runden stoppt nicht (Schwelle unerfüllt) · die Prüfung greift in beide Richtungen, nicht nur für
+die zuletzt gemessene Lage.* **`LAGE_MINDEST=10` an benannter Stelle mit eigener Klinke auf die
+Zahl.**
+
+> ### 🔴 SELBSTFUND 1 — **„eine Runde je Handelstag" wäre „eine je Programmstart" geworden**
+> *Das Tagesmerkmal lag **nur im Arbeitsspeicher**. Nach einem App-Neustart hätte der Automat am
+> selben Tag erneut gemessen — **und Wilhelm startet die App regelmäßig neu**.* **Jetzt aus den
+> DATEN abgeleitet** *(eine Handrunde verbraucht den Tag mit, eine Krypto-Runde nicht).*
+> ***Zustand im Speicher ist keine Regel, sondern eine Hoffnung.***
+
+> ### 🔴 SELBSTFUND 2 — **Knopf und Automat hätten gleichzeitig eine ECHTE Order absetzen können**
+> *Es fehlte eine **gemeinsame** Laufsperre.* **Sie sitzt jetzt in `kostenRundeMessen` selbst
+> (Kern in `try`/`finally`, dasselbe Muster wie die Release-Sperre) — und gilt damit für JEDEN
+> künftigen Aufrufer**, nicht nur für die zwei heute bekannten.
+> *Beide Funde vor dem Commit geschlossen.*
+
+> ### 📐 DRITTER FALL HEUTE: **eine abgelöste Regel lebte an einer zweiten Stelle weiter**
+> **Zwei Sperrklinken umformuliert statt gelöscht, mit Vermerk „verlangte bis zum 27.08. das
+> Gegenteil" — die zweite war ungeplant:** *Die **20-Runden-Bedingung der Kostenanzeige** hing
+> noch, obwohl Wilhelms Schwelle sie mittags ersetzt hatte.* **Die Anzeige hätte weiter „ab 20
+> Runden gibt es ein Urteil" gesagt, während die Freigabe längst Tage und Marktlagen verlangt.**
+>
+> ***Wer eine Regel ersetzt, muss ihre Kopien suchen — sie melden sich nicht.*** *Heute dreimal:
+> die Zielrundenzahl in `depot.js`, die PM-Adresse an sieben Stellen, jetzt die
+> 20-Runden-Anzeige.*
+
+---
+
 ## 🔴 27.08. 18:3x — **ZWEI ZAHLEN VON DER TAFEL ZURÜCKGENOMMEN — beide waren zu alarmierend**
 
 > ### ⛔ Alles auf dieser Tafel mit „**Tief doppelt so oft**" oder „**drei von hundert**" ist ÜBERHOLT.
