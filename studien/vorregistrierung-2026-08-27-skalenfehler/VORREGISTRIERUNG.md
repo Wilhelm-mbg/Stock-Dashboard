@@ -43,10 +43,11 @@ Eingabe je Kandidat: Sprungliste (I1, beide Archive soweit vorhanden) + Drift-Di
 
 | Befundlage | Urteil |
 |---|---|
-| Sprung ↔ Ereignis passt (Datum ±1 Handelstag, Faktor ±10 %) in Archiv A, fehlt/verspätet in B | **»B weicht vom Ereignis ab«** (welche Seite stimmt, mit Beleg) |
+| **Sprung AM Ereignisdatum** (±1 Handelstag, Faktor ≈ Ereignisfaktor ±10 %) in Archiv A, **kein Sprung** in B | **»A hat die Anpassung verfehlt«** — A ist die kaputte Seite. *(Nachtrag 4: In einem rückangepassten Archiv glättet die Anpassung den Split weg — der Sprung am Split-Datum IST der Anpassungsfehler, nicht der Beleg. Gemessen vom Analytiker: AAPL/NVDA/TSLA, ~12 Splits, 0 Sprünge an Split-Daten.)* |
+| Sprung am Ereignisdatum, **Faktor weicht ab** (Datum trifft ±1, \|q/faktor − 1\| > 10 %) | **»teilweise/fehlerhaft angepasst«** (F?-Klasse, Abweichung beziffert) |
 | Sprung, KEIN Ereignis an dem Datum, Quote konstant | **»unentscheidbar mit diesen zwei Endpunkten«** (RGR/SITC-Klasse: Archivfehler ODER nicht geführtes Ereignis — nicht raten, Auflage 2) |
 | Quote driftet | **»Trennfall«** (B-Klasse: zwei Firmen, gehört geteilt, nicht repariert — Auflage 3) |
-| Ereignis vorhanden, beide Archive stimmen | **»konsistent«** (kein Befund) |
+| Ereignis vorhanden, **kein Sprung in beiden** Archiven am Datum | **»konsistent angepasst«** (die gesunde Signatur) |
 
 **Nie pauschal (Auflage 1):** Es gibt kein Sammel-Urteil über »die 132«; das Ergebnis
 ist eine Tabelle je Reihe. **Nichts schreiben (Auflage 4):** Ausgabe ausschließlich in
@@ -94,6 +95,19 @@ weiten wäre Tuning auf den Wächter):
 3. Für das Urteils-Gerüst ändert sich nichts: Der Ereignis-Zeuge (Datum+Faktor) hängt
    nicht an der Hüllkurve — ein Ereignis-Abgleich findet auch Flips auf bewegten
    Grenztagen; die Hüllkurve begrenzt nur die ereignis-LOSE Enumeration.
+
+## Nachtrag 4 — die Split-Prämisse war invertiert; §2 korrigiert VOR dem Join
+
+Der Analytiker hat gemessen (AAPL/NVDA/TSLA: ~12 Splits, **0** Sprünge an Split-Daten;
+WHLR-Positivkontrolle 5 statt 16 — elf wegangepasst): **In einem rückangepassten Archiv
+zeigt ein Split-Datum KEINEN Sprung; ein Sprung AM Split-Datum ist der
+Anpassungsfehler, nicht der Split.** Meine §2-Zeile 1 trug die alte Prämisse
+(»Sprung passt zum Ereignis ⇒ diese Seite stimmt«) — **das Vorzeichen war invertiert**
+und ist vor dem Bau des Joins korrigiert (Tabelle oben, neue Fassung). Zusätzlich
+aufgenommen: die **F?-Klasse** (Datum trifft, Faktor nicht = teilweise Anpassung) und
+der **sechste Eichfall WHLR 03.04.2017** (Sprung r = 8,24 exakt auf belegtem 8:1-Split,
+neun Jahre alt) — er prüft, ob das Gerüst auch in alten Archivteilen greift. Der Join
+war noch nicht gebaut; keine Zahl ist auf der falschen Prämisse entstanden.
 
 ---
 
