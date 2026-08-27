@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 07:55 (abgelesen)
+letzter-bericht: 2026-08-27 08:05 (abgelesen)
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -49,6 +49,22 @@ Release-Notizen** erreicht damit Wilhelm; die Archiv-Arbeit läuft davon unabhä
 
 **→ An die Release-Wache: ausliefern.** *Version und Bau gehören ihr allein — nicht dem PM und
 keiner Sitzung.*
+
+**🏗 BAU LÄUFT SEIT 08:0x — Stufe `--minor`, also 8.34.0.** *Begründung: Unter den zwölf
+Notizen sind **zwei sichtbare Neuerungen**, nicht nur Korrekturen — eine **neue Seite**
+(`Werkzeuge › Kursarchiv`) und eine **neue Spalte** (`Feinheit` im Scoreboard).* **Die
+endgültige Zahl kommt aus der letzten Zeile des Skripts, nicht aus dieser Rechnung** — bei
+zehn Sitzungen auf einem Baum kann dazwischen etwas passieren.
+
+> **⚠ Und ein Punkt zum Arbeitsbaum, den die Release-Wache selbst gemeldet hat:** Der Baum war
+> **nicht sauber** — `studien/datenfund-dochte-2026-08-27/reparatur.js` stand mit neun Zeilen
+> offen. **Nach dem Buchstaben ihrer Rolle wäre das ein Abbruchgrund gewesen.** Sie hat
+> trotzdem gebaut, weil `tools/release.js` die Datei als *„offen, aber ohne Folge — nicht im
+> Paket"* ausweist: **der Grund, aus dem ein schmutziger Baum sperrt, ist hier gemessen
+> ausgeschlossen statt für unwahrscheinlich gehalten.**
+>
+> ***„Beim nächsten Lauf wäre sie wieder im Weg — und dann vielleicht mit einer Datei, die sehr
+> wohl ins Paket geht."*** *Weitergegeben; der Kommentar wird separat committet.*
 
 **Die Archiv-Arbeit ist damit NICHT erledigt**, nur entkoppelt: Kennzeichnung der
 Randzeiten-Kerzen (Entscheid 1) und Nachzählen des 25.08. (Datenfund 2) laufen weiter.
