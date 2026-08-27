@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 13:10 (Windows-Uhr)
+letzter-bericht: 2026-08-27 13:25 (Windows-Uhr)
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -113,9 +113,13 @@ Nicht-Krypto, **alle am 25.08., null erfasste Marktlagen** → **nicht erfüllt,
 > der bindende Teil wird die Marktlage.** *Das kann Wochen dauern und ist von niemandem hier
 > beeinflussbar.*
 >
-> **❓ ENTSCHEIDUNG FÜR WILHELM** *(gestellt 13:1x)*: **so lassen und warten**, oder **feinere
-> Lagen** (Stress/ruhig wie bei der Kapitulations-Kante)? *Feinere Lagen wären eine Erweiterung
-> des **Stempels**, nicht der Zählregel — die zählt einfach verschiedene Werte.*
+> ### ⭐ **ENTSCHIEDEN 13:2x — WILHELM: „FEINERE LAGEN ZULASSEN."**
+> **Zusätzliche Zustände stempeln — Stress/ruhig wie bei der Kapitulations-Kante.** *Dann gibt es
+> mehr als zwei Lagen, die Schwelle wird in **Wochen statt Monaten** erreichbar und misst
+> trotzdem verschiedene Marktzustände.*
+> **→ Erweiterung des STEMPELS, nicht der Zählregel** *(die zählt einfach verschiedene Werte).*
+> **Vergeben an `06`.** *Er hat weder „so lassen und warten" noch „Tage reichen, Lage nur
+> ausweisen" gewählt — **die Marktlage bleibt eine Bedingung**, sie wird nur feiner aufgelöst.*
 >
 > *Nebenbemerkung von `06`, der Vollständigkeit halber: der 30-Minuten-Zwischenspeicher bedeutet,
 > dass eine Runde bei einem Seitenwechsel innerhalb einer halben Stunde noch die alte Lage trüge
@@ -123,7 +127,72 @@ Nicht-Krypto, **alle am 25.08., null erfasste Marktlagen** → **nicht erfüllt,
 
 ---
 
-## ⚖ 27.08. 12:4x — **DER DRITTE ZEUGE SPRICHT: das 60m-Archiv liegt in BEIDEN Richtungen falsch**
+## 🔴 27.08. 13:2x — **DIE 9:1 IST WIDERLEGT. Es ist ein Münzwurf** *(von der QS an sich selbst)*
+
+> ### ⛔ **Alles unten mit „9:1" und „`archiv1d` hat recht" ist ÜBERHOLT. Nicht zitieren.**
+
+**Geschichtet über die ganze Größenordnung statt nur über die größten Abweichungen:**
+
+| | |
+|---|---:|
+| nur `archiv1d` richtig | **10** |
+| nur `archiv60m` richtig | **9** |
+| beide | 0 |
+| keins | 1 *(WSM)* |
+
+> ***„Mein erster Lauf hat nicht gemessen, wer öfter recht hat, sondern wer bei den GRÖSSTEN
+> AUSREISSERN recht hat."*** *Die zehn Fälle waren nach Abweichungsgröße sortiert und die
+> größten genommen — bei den kleineren dreht es sich.*
+>
+> ### **KEIN ARCHIV IST SYSTEMATISCH IM RECHT. Widersprechen sie sich, kann jedes von beiden falsch sein.**
+
+**🎯 Die Selbstkritik ist das Lehrstück, und sie gehört wörtlich hierher:**
+> *„Ich habe vorhin gewarnt, die Zehnerstichprobe sei auf **Uneinigkeit** ausgewählt und deshalb
+> keine Fehlerrate. Das stimmte. **Ich habe dabei übersehen, dass sie zusätzlich auf GRÖSSE
+> ausgewählt war** — und genau das hat das Ergebnis erzeugt. **Ich habe die eine Verzerrung
+> benannt und die zweite im selben Satz mitgeliefert.**"*
+
+### ✅ DIE GUTE NACHRICHT ZUERST — **Massive ist als Zeuge tauglich, und Einigkeit heißt Richtigkeit**
+**Wo die beiden Archive einig sind, bestätigt Massive sie: 8 von 8**, *auf die Stelle genau (nur
+TPL 365,1615 gegen 365,1600).*
+
+### 📏 DIE DREI NACHGEFORDERTEN ZAHLEN
+
+**1. Größenordnung — messrelevant, keine Kosmetik.** *p50 **0,062 %** (unter der Kostenhürde),
+p90 **0,597 %** (Sechsfaches), p99 **2,349 %**. Die betroffenen Fälle liegen definitionsgemäß
+über 0,2 %, also beim Doppelten der Hürde.*
+
+**2. Hoch oder Tief — deutlich asymmetrisch:**
+
+    Tief weicht ab : 270 von 5.728   (4,71 %)
+    Hoch weicht ab : 117 von 5.728   (2,04 %)
+
+> **Das TIEF ist mehr als doppelt so oft betroffen — und bei einer Stopp-Regel auf der
+> Long-Seite ist genau das die gefährliche Seite.**
+
+**3. ✅ SCHLUSSKURSE SIND SAUBER** *— die gute Nachricht, ausgesprochen:* **Massive trifft den
+`archiv1d`-Schluss 20 von 20, den `archiv60m`-Schluss 19 von 20** — *und zwar in genau den
+Fällen, wo Hoch oder Tief auseinandergehen.* **Der Schaden ist auf Hoch und Tief begrenzt.**
+
+### 📊 RATE ÜBER DAS GANZE ARCHIV — **ausdrücklich als Zusammensetzung gekennzeichnet**
+
+    Uneinigkeit ueber 0,2 %                6,67 % der Reihen-Tage   <- gemessen
+    davon 60m falsch (rund die Haelfte)    ca. 3,2 %                <- aus 20 Faellen geschaetzt
+    davon 1d  falsch (rund die Haelfte)    ca. 3,2 %                <- dito
+    Schlusskurse                           unauffaellig
+
+**→ WAS DAS FÜR DIE NEUN STRATEGIEN AUF `60m` HEISST:** *rund **drei von hundert Reihen-Tagen**
+haben ein falsches Hoch oder Tief, **überwiegend das Tief**, typisch zwischen 0,2 und 0,6 %.*
+**Wer nur Schlusskurse liest, ist unberührt. Wer Stopps, Ausbrüche oder Kanalgrenzen rechnet,
+trifft es.**
+
+> **❓ OFFEN und ausdrücklich NICHT beantwortet:** *„Ob das eine gemessene Kante verschiebt, weiß
+> ich nicht — das hängt daran, wie oft ein Signal genau an so einem Tag auf genau so einem Wert
+> steht. **Das wäre eine Messung der Mess-Seite und nicht meine.**"* **Noch niemandem zugeteilt.**
+
+---
+
+## ~~⚖ 27.08. 12:4x — DER DRITTE ZEUGE SPRICHT~~ *(ÜBERHOLT — siehe oben)*
 
 **Massive gegen beide Archive, zehn Fälle, Toleranz 0,2 %** *(ausgewählt auf **Uneinigkeit** — die
 Frage war „wer hat recht, wenn sie sich widersprechen", und die ist beantwortet)*:
