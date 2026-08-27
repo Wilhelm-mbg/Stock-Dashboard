@@ -4520,6 +4520,22 @@ console.log('\n44) Messmaschine, Scoreboard und Strategie-Eingabe (23.08.2026)')
     ok(nl.indexOf("'abmeldungen-pflegen.js'), '--schreiben'") !== -1 &&
        /code === 0 && !nurPruefen/.test(nl),
        'Der Nachtlauf faehrt die Abmeldeliste - und nur bei benutzbarem Archiv');
+    /* Vertrag mit dem Wachhund (Absprache mit 1d, 27.08.): der Wachhund liest
+     * massive/abmeldungen.json und gruppiert bestaetigte Abmeldungen EIGENS
+     * (behalten und kennzeichnen, nie herausnehmen). Dafuer sichert diese
+     * Klinke die Schnittstelle: die Eintragsfelder und die drei moeglichen
+     * Befund-Werte. Wer sie aendert, muss den Wachhund mitziehen. */
+    ['sym:', 'handelsende:', 'rueckstand:', 'stempelSchwanz:', 'listeBis', 'quelleGeprueftAm', 'befund'].forEach(function (f) {
+      ok(aq.indexOf(f) !== -1, 'Abmeldelisten-Vertrag: Feld ' + f.replace(':', '') + ' wird geschrieben');
+    });
+    ["'abgemeldet-bestaetigt'", "'abruffehler'", "'quelle-leer'"].forEach(function (w) {
+      ok(aq.indexOf('a.befund = ' + w) !== -1, 'Abmeldelisten-Vertrag: Befund-Wert ' + w + ' existiert');
+    });
+    var befundWerte = {};
+    (aq.match(/a\.befund = '[^']+'/g) || []).forEach(function (z) { befundWerte[z.split("'")[1]] = 1; });
+    ok(Object.keys(befundWerte).length === 3,
+       'Abmeldelisten-Vertrag: es gibt GENAU drei verschiedene Befund-Werte - ein vierter braucht die Absprache mit dem Wachhund',
+       Object.keys(befundWerte).sort().join(', '));
   })();
   /* Eigenschafts-Pruefung gegen ein ECHTES Protokoll: aendert die Messmaschine die
    * Ablage der Aussicht, wird die Anzeige still leer - das soll hier laut werden.
