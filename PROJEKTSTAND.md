@@ -1445,6 +1445,30 @@ jemand irgendwo hingesehen hat.*
 >
 > **Auflage von `06`, übernommen:** *„Falls es wieder auftritt: **sofort in derselben Sekunde
 > beide Uhren ablesen**, sonst jagt man ein Gespenst."*
+
+> ### 🔴 NACHTRAG abends — **ZWEITE SITZUNG, ANDERE URSACHE, GLEICHER SCHADEN**
+> **Die Berechnungen-Sitzung hat abends durchgehend die Uhrzeit GESCHÄTZT statt gelesen — um
+> SECHS STUNDEN zu spät** *(„~21:0x", „22:15", „~23:0x" — es war 17:11)*. **Betroffen: vier
+> Studien-Kopfzeilen, zwei Nachträge, zwei Übergabe-Dateien. Korrigiert (`3d0f6be`),
+> Reihenfolge und Inhalt unberührt — alle „vor dem Lauf"-Aussagen bleiben wahr.**
+>
+> **Damit sind es heute ZWEI verschiedene Ursachen mit demselben Ergebnis:**
+> | | Ursache | Abweichung |
+> |---|---|---|
+> | PM | **falsche Uhr abgelesen** (`date` im Bash-Werkzeug) | 3 h 23 min |
+> | PM, später | **geschätzt statt gelesen** | ~1,5 h |
+> | Berechnungen | **geschätzt statt gelesen** | **6 h** |
+>
+> ### 📐 **DIE REGEL BRAUCHT BEIDE HÄLFTEN:**
+> **1. Nicht schätzen — ablesen.** **2. Die richtige Uhr ablesen** (`Get-Date` oder `git log`,
+> **nie** `date` im Bash-Werkzeug). **3. Die Quelle dazuschreiben.**
+> *Die erste Hälfte fehlte auf dieser Tafel; sie hat den größeren Schaden angerichtet.*
+>
+> ***Warum es in diesem Projekt zählt: Zeitstempel sind hier BEWEISMITTEL*** — *welcher
+> Archivstand galt, was lief wann, was stand vor welchem Lauf fest.* **Eine geschätzte Uhrzeit in
+> einer Vorregistrierung ist kein Schönheitsfehler.**
+>
+> *Gemeldet statt still korrigiert — genau richtig.*
 >
 > *Geprüft und unbedenklich: `abmeldungen-pflegen.js`, `release.js` (bau-stand + Sperre) und
 > `archiv-nachladen.js` stempeln alle mit Nodes `new Date()` im eigenen Prozess.*
