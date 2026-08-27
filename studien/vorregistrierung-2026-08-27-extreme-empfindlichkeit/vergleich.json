@@ -1,0 +1,152 @@
+{
+ "massstab": "VORREGISTRIERUNG.md (da47a89): tragender Wechsel ODER |Delta| >= delta80_A; kapitulation Negativkontrolle < 1/4 delta80_A",
+ "strategien": {
+  "rsi2seit-mcp": {
+   "urteil": "verschiebt nicht messbar",
+   "zeilen": [
+    {
+     "variante": 0,
+     "urteilA": "nicht-entscheidbar",
+     "urteilB": "nicht-entscheidbar",
+     "wechselTragend": false,
+     "wechselRand": false,
+     "margeA": null,
+     "tagesmittelA": 0.00032971260220966583,
+     "tagesmittelB": 0.0003289195217040896,
+     "delta": -7.930805055762357e-7,
+     "delta80A": 0.000794713572344995,
+     "tA": 1.417839758389353,
+     "tB": 1.41449933763965,
+     "signaleA": 56121,
+     "signaleB": 56121
+    },
+    {
+     "variante": 1,
+     "urteilA": "nicht-entscheidbar",
+     "urteilB": "nicht-entscheidbar",
+     "wechselTragend": false,
+     "wechselRand": false,
+     "margeA": null,
+     "tagesmittelA": 0.0003508836930867165,
+     "tagesmittelB": 0.0003510234438593335,
+     "delta": 1.397507726170013e-7,
+     "delta80A": 0.0008125754627392658,
+     "tA": 1.475712361039978,
+     "tB": 1.4788845474939705,
+     "signaleA": 56121,
+     "signaleB": 56121
+    },
+    {
+     "variante": 2,
+     "urteilA": "nicht-entscheidbar",
+     "urteilB": "nicht-entscheidbar",
+     "wechselTragend": false,
+     "wechselRand": false,
+     "margeA": null,
+     "tagesmittelA": 0.00043443025011691554,
+     "tagesmittelB": 0.000432343437279248,
+     "delta": -0.000002086812837667556,
+     "delta80A": 0.0008738147375872993,
+     "tA": 1.6990373524437037,
+     "tB": 1.6955919822303251,
+     "signaleA": 56121,
+     "signaleB": 56121
+    },
+    {
+     "variante": 3,
+     "urteilA": "nicht-entscheidbar",
+     "urteilB": "nicht-entscheidbar",
+     "wechselTragend": false,
+     "wechselRand": false,
+     "margeA": null,
+     "tagesmittelA": 0.0005110818619783138,
+     "tagesmittelB": 0.0005061688668459383,
+     "delta": -0.00000491299513237552,
+     "delta80A": 0.0009654935621047337,
+     "tA": 1.8090197973403246,
+     "tB": 1.7976969899382977,
+     "signaleA": 56121,
+     "signaleB": 56121
+    },
+    {
+     "variante": 4,
+     "urteilA": "nicht-entscheidbar",
+     "urteilB": "nicht-entscheidbar",
+     "wechselTragend": false,
+     "wechselRand": false,
+     "margeA": null,
+     "tagesmittelA": 0.0005582787324225021,
+     "tagesmittelB": 0.0005487441263479167,
+     "delta": -0.000009534606074585437,
+     "delta80A": 0.0010370563192730207,
+     "tA": 1.8397168036077243,
+     "tB": 1.8137913265161736,
+     "signaleA": 56121,
+     "signaleB": 56121
+    }
+   ],
+   "tragendeWechsel": [],
+   "grosseDeltas": [],
+   "randwechsel": [],
+   "kontrolleVerletzt": []
+  },
+  "kapitulation": {
+   "urteil": "Negativkontrolle bestanden",
+   "zeilen": [
+    {
+     "variante": 0,
+     "urteilA": "nicht-entscheidbar",
+     "urteilB": "nicht-entscheidbar",
+     "wechselTragend": false,
+     "wechselRand": false,
+     "margeA": null,
+     "tagesmittelA": 0.005139194708323627,
+     "tagesmittelB": 0.005139194708323627,
+     "delta": 0,
+     "delta80A": 0.011772003959613279,
+     "tA": 1.4125363532729736,
+     "tB": 1.4125363532729736,
+     "signaleA": 6423,
+     "signaleB": 6423
+    },
+    {
+     "variante": 1,
+     "urteilA": "nicht-entscheidbar",
+     "urteilB": "nicht-entscheidbar",
+     "wechselTragend": false,
+     "wechselRand": false,
+     "margeA": null,
+     "tagesmittelA": 0.0037994675482960058,
+     "tagesmittelB": 0.0037994675482960058,
+     "delta": 0,
+     "delta80A": 0.011731842653268276,
+     "tA": 1.0478798059933518,
+     "tB": 1.0478798059933518,
+     "signaleA": 3246,
+     "signaleB": 3246
+    },
+    {
+     "variante": 2,
+     "urteilA": "nicht-bestaetigt",
+     "urteilB": "nicht-bestaetigt",
+     "wechselTragend": false,
+     "wechselRand": false,
+     "margeA": null,
+     "tagesmittelA": 0.011335795128219169,
+     "tagesmittelB": 0.011335795128219169,
+     "delta": 0,
+     "delta80A": 0.01666221084541971,
+     "tA": 2.2012751133093107,
+     "tB": 2.2012751133093107,
+     "signaleA": 1723,
+     "signaleB": 1723
+    }
+   ],
+   "tragendeWechsel": [],
+   "grosseDeltas": [],
+   "randwechsel": [],
+   "kontrolleVerletzt": []
+  }
+ },
+ "gemessenAm": "2026-08-27T14:40:17.912Z"
+}
