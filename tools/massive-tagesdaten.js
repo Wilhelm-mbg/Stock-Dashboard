@@ -204,10 +204,23 @@ if (require.main === module) (async function () {
    * zwanzig ist wiederholbar und deckt dieselben Werte ab wie der Anfang des
    * Vollaufs. */
   var erneuern = process.argv.indexOf('--erneuern') !== -1;
+  /* --nochmal: auch Reihen, die schon durch das reparierte Werkzeug gegangen sind.
+   * Ohne den Schalter nimmt --erneuern nur die NOCH NICHT erneuerten - so setzt ein
+   * abgebrochener Lauf dort fort, wo er aufhoerte, statt von vorn zu beginnen. */
+  var nochmal = process.argv.indexOf('--nochmal') !== -1;
   var offen = erneuern
-    ? kandidaten.filter(function (t) { return stand.fertig[t.sym]; })
+    ? kandidaten.filter(function (t) {
+      var f = stand.fertig[t.sym];
+      return f && (nochmal || !f.mitEroeffnung);
+    })
     : kandidaten.filter(function (t) { return !stand.fertig[t.sym] && !stand.ohneDaten[t.sym]; });
-  if (erneuern) console.log('ERNEUERN: ' + offen.length + ' vorhandene Reihen werden neu geholt.');
+  if (erneuern) {
+    var schon = kandidaten.filter(function (t) {
+      return stand.fertig[t.sym] && stand.fertig[t.sym].mitEroeffnung;
+    }).length;
+    console.log('ERNEUERN: ' + offen.length + ' Reihen offen' +
+      (schon ? ', ' + schon + ' schon erneuert' + (nochmal ? ' (--nochmal: werden trotzdem geholt)' : ' - werden uebersprungen') : '') + '.');
+  }
   console.log('Verschwundene im Messzeitraum: ' + kandidaten.length +
     (alle ? ' (alle Boersen)' : ' (nur Hauptboersen; mit --alle sind es mehr)'));
   console.log('  schon geholt : ' + Object.keys(stand.fertig).length);
@@ -322,7 +335,15 @@ if (require.main === module) (async function () {
            * erfahren, ob sie den gewuenschten Zeitraum ueberhaupt enthaelt. */
           var abVon = new Date(reihe[0][0]).toISOString().slice(0, 10);
           var bisBis = new Date(reihe[reihe.length - 1][0]).toISOString().slice(0, 10);
-          stand.fertig[t.sym] = { kerzen: reihe.length, bis: t.bis, von: abVon, letzte: bisBis };
+          /* mitEroeffnung merkt sich, dass DIESE Reihe schon durch das reparierte
+           * Werkzeug gegangen ist. Ohne die Marke faengt --erneuern jedes Mal wieder
+           * beim ersten Wert an: der Lauf am 27.08.2026 brach nach 775 von 1.116
+           * Reihen ab (fuenf Netzfehler in Folge, Bremse hat gegriffen), und ein
+           * Neustart haette 775 Reihen noch einmal geholt - knapp drei Stunden fuer
+           * nichts. Bei rund vier Stunden Laufzeit und einem Netz, das gerade bewiesen
+           * hat, dass es wegbrechen kann, ist Wiederaufnahme keine Bequemlichkeit. */
+          stand.fertig[t.sym] = { kerzen: reihe.length, bis: t.bis, von: abVon, letzte: bisBis,
+            mitEroeffnung: true };
           /* rohVon, nicht abVon: siehe oben. */
           if (rohVon > VON) gekuerzt++;
           if (!fruehesteGeliefert || rohVon < fruehesteGeliefert) fruehesteGeliefert = rohVon;
