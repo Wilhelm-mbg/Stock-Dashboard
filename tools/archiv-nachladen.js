@@ -2,7 +2,8 @@
 /* ================= NAECHTLICHES NACHLADEN DER KURSARCHIVE =================
  *
  * Ein Befehl fuer die geplante Aufgabe: beide Archive nachziehen, danach pruefen, und
- * bei einem Befund NICHT schweigen.
+ * bei einem Befund NICHT schweigen. Seit dem 27.08. pflegt der Lauf danach auch die
+ * Abmeldeliste (tools/abmeldungen-pflegen.js) - aber nur bei benutzbarem Archiv.
  *
  * WARUM ES DIESE DATEI GIBT statt drei Zeilen in der Aufgabe. Das Verhalten im
  * Alarmfall ist der wichtigste Teil, und was in einer Aufgabenzeile steht, laesst sich
@@ -83,6 +84,37 @@ var schlimm = 0, unpruefbar = 0, verwaist = 0;
 
 var code = schlimm ? 1 : (unpruefbar ? 2 : 0);
 if (!abrufOk && code === 0) code = 2;   // Abruf gescheitert, Archiv zufaellig noch frisch
+
+/* ---------- Die Abmeldeliste (PM-Entscheid 27.08.: der Nachtlauf faehrt sie,
+ * keine Nachtrolle - Rollen koennen ausfallen, dieser Lauf fasst das Archiv
+ * ohnehin an). NUR bei benutzbarem Archiv: auf einem haengenden Stand saehe
+ * jede Reihe stillstehend aus, und die Liste wuerde Unsinn lernen. Befunde
+ * (neue Abmeldung, gedrehter Befund, Wiederauferstehung) landen als datierte
+ * Datei im Datenordner - derselbe Leseweg wie die Archiv-Alarme, denn ein
+ * Befund, der nur auf einer Nacht-Konsole steht, findet keinen Leser. ---------- */
+if (code === 0 && !nurPruefen) {
+  sagen('[' + jetztText() + '] Abmeldeliste pflegen ...');
+  var ab = cp.spawnSync(process.execPath,
+    [path.join(WURZEL, 'tools', 'abmeldungen-pflegen.js'), '--schreiben'],
+    { cwd: WURZEL, encoding: 'utf8', maxBuffer: 16 * 1024 * 1024 });
+  var abAus = String(ab.stdout || '').trim();
+  var wichtig = abAus.split('\n').filter(function (z) {
+    return /NEU seit der letzten Fahrt|BEFUND GEDREHT|WIEDER UNAUFFAELLIG/.test(z);
+  });
+  sagen(abAus.split('\n').slice(-3).join('\n'));
+  if (ab.status !== 0) wichtig.push('Die Pflege endete mit Code ' + ab.status +
+    ' - Deckel angeschlagen oder Fehler, von Hand ansehen: node tools/abmeldungen-pflegen.js');
+  if (wichtig.length) {
+    var zielAb = path.join(DATEN, 'abmeldungen-' + new Date().toISOString().slice(0, 10) + '.txt');
+    try {
+      fs.mkdirSync(DATEN, { recursive: true });
+      fs.writeFileSync(zielAb, 'ABMELDUNGEN  ' + jetztText() + '\n' + wichtig.join('\n') + '\n\n' + abAus + '\n', 'utf8');
+      sagen('Abmelde-Hinweis geschrieben: ' + zielAb);
+    } catch (e) { sagen('Abmelde-Hinweis NICHT schreibbar: ' + (e && e.message)); }
+  }
+} else if (code !== 0) {
+  sagen('Abmeldeliste NICHT gepflegt - das Archiv ist nicht benutzbar, die Liste wuerde Unsinn lernen.');
+}
 
 /* EINE VERWAISTE SPERRE IST EIGENS MELDENSWERT, auch wenn das Archiv frisch ist:
  * irgendwo ist ein Nachladelauf gestorben. Der Rueckgabewert bleibt trotzdem 0 - er

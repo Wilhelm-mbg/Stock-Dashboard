@@ -4512,6 +4512,14 @@ console.log('\n44) Messmaschine, Scoreboard und Strategie-Eingabe (23.08.2026)')
        'Stempelloser Abbruch: das Handelsende ist die letzte Umsatz-Kerze (TWO-Fall)');
     ok(/--schreiben/.test(aq) && /SCHREIBEN\b/.test(aq),
        'Das Werkzeug schreibt seine Ablage nur auf ausdrueckliches Verlangen');
+    /* PM-Entscheid 27.08.: die regelmaessige Fahrt gehoert dem NACHTLAUF, keiner
+     * Nachtrolle. Gesichert wird die Einbau-Stelle samt ihrer Vorbedingung -
+     * ohne die Vorbedingung wuerde ein haengendes Archiv der Liste beibringen,
+     * dass fast alles abgemeldet sei. */
+    var nl = fs.readFileSync(__dirname + '/tools/archiv-nachladen.js', 'utf8');
+    ok(nl.indexOf("'abmeldungen-pflegen.js'), '--schreiben'") !== -1 &&
+       /code === 0 && !nurPruefen/.test(nl),
+       'Der Nachtlauf faehrt die Abmeldeliste - und nur bei benutzbarem Archiv');
   })();
   /* Eigenschafts-Pruefung gegen ein ECHTES Protokoll: aendert die Messmaschine die
    * Ablage der Aussicht, wird die Anzeige still leer - das soll hier laut werden.
