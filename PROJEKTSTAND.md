@@ -2011,6 +2011,46 @@ Gleitkommavergleich ohne fachliche Toleranz.
 > während der Fund die Halbtage meinte."* Eine richtige Zahl, die eine andere Frage
 > beantwortet als die gestellte — diesmal in der Aggregation.
 
+### 🛑 27.08. 02:01 — DER PHASENWECHSEL SIEHT AUS WIE DAS ENDE. Zwei Läufe gestoppt.
+
+**Um 01:58:55 fiel eine Sperre, und sie wurde als das Ende des Nachladens gelesen. Es war der
+Anfang der zweiten Hälfte.**
+
+Der Nachlader arbeitet **zwei Archive nacheinander**. Um 01:58:46 endete der 60m-Teil und
+meldete sich sauber ab — 2.916 Reihen, exakt die Zahl aus der Sperrdatei. **In derselben
+Sekunde begann die Tagesarchiv-Phase.** Von außen sah es aus wie ein Abschluss: ein Prozess
+weg, Rate im alten Archiv auf null, Sperrdatei verschwunden.
+
+**PM-Messung 02:00:55:**
+
+    PID 5852 LEBT (archiv-nachladen.js)
+    archiv1d: 62 Dateien in den letzten ZWEI Minuten
+    Phase begann 01:58:47, juengste 02:00:03
+    Sperrdateien im Archivordner: KEINE
+
+**⚠ UND DIE SPERRPRÜFUNG SCHÜTZTE HIER NICHT — sie ließ durch, weil GAR KEINE Sperrdatei
+existiert**, nicht weil das Archiv ruhig wäre. *Dieselbe Bauform, die in dieser Nacht viermal
+auseinandergenommen wurde: eine Prüfung, die grün wird, weil sie das Falsche prüft.* Die
+1d-Sperre war schon vorher als verwaist erkannt (PID 52300 tot) — **jetzt schreibt ein
+lebender Prozess hinein, und die Prüfung sieht es nicht.**
+
+**Gestoppt: Lauf 2 (Schiedsrichter-Test) und Lauf 3 (1d gegen 60m)** — beide brauchen
+`archiv1d`. **Läufe 1, 4 und 5 laufen weiter**, sie lesen nur 60m, und das ist fertig.
+**Kriterium für 1d ist ab jetzt die Schreibrate, nicht die Sperrdatei.**
+
+**Voraussichtliches Ende: gegen 03:32** (2.967 Dateien bei ~32/Min ab 01:58:47).
+
+> **Zwei Deutungen, beide begründet, nur eine richtig:** Die Archiv-Wache las den
+> Phasenwechsel als Wechsel und behielt ihre Sperre bei; die QS las ihn als Ende und startete.
+> **Das Signal war identisch.** Der Unterschied lag darin, dass die eine Seite wusste, dass der
+> Lauf zwei Phasen hat.
+
+*Nebenbei, vor dem Start gefunden und deshalb billig:* Der Schiedsrichter-Test suchte die
+60m-Datei je Symbol mit einem **neuen rekursiven Verzeichnisdurchlauf** — bei 2.965 Symbolen
+über 2.916 Dateien rund **8,6 Millionen Dateizugriffe**. *„Der Lauf hätte Stunden gebraucht
+statt Minuten, und ich hätte es für eine schwere Rechnung gehalten statt für einen Fehler."*
+**Gefunden beim Lesen, nicht beim Warten.**
+
 ### 🔽 27.08. ~02:10 — KORREKTUR NACH UNTEN: der Phantom-Schwanz ist gedeckelt, nicht wachsend
 
 **Die QS korrigiert ihre eigene Formulierung, bevor sie härter auf der Tafel steht als sie
