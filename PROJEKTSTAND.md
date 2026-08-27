@@ -51,8 +51,19 @@ Datenfund 2 (dreifach belegt) · 12-%-C-Anteile (Nullbefund, zweifach) · Stress
 Machbarkeit gerissen).*
 
 **🔴 Offen bei der Release-Wache** *(Handaufgabe, läuft nicht von selbst)*: **`0751035` (#110,
-aria-labels) steckt in keinem Tag** — *für den Anwender unbehoben; die Issue-Wache kann #110
-nicht mit Beleg schließen, solange kein Tag ihn enthält. Notiz liegt bereit.*
+aria-labels) steckt in keinem Tag** — *für den Anwender unbehoben.* **PM-Entscheid 27.08.
+nachmittags: heute KEIN Release mehr** *(59 Commits und 2 Notizen lägen an, ein Bau wäre also
+berechtigt — aber der Eröffnungskurs-Vollauf läuft 242 Minuten, die Sitzung committet nebenher,
+und Riegel 2 bricht bei fremdem Commit **hart** ab: kompletter Neubau, kein Retten durch
+Push-Wiederholung. **Ein Vier-Stunden-Lauf gegen drei Knopf-Beschriftungen ist kein Tausch.**)*
+**Der 8-Uhr-Lauf der Issue-Wache prüft `git tag --contains 0751035` ohnehin als Erstes.**
+
+> ### 📐 HAUSREGEL AUS DIESEM VORGANG *(Issue-Wache)*
+> ***Ein Entscheid, NICHTS zu tun, sieht ohne Begründung genauso aus wie ein Versäumnis.***
+> *Die Sitzung hat den Entscheid samt Grund in ihre Übergabe geschrieben — **weil ihr 8-Uhr-Lauf
+> eine neue Sitzung ohne Gedächtnis dieser Unterhaltung ist**. Sie fände sonst ein offenes #110
+> vor und wüsste nicht, ob das eine Entscheidung war oder ein Loch.* **Gilt für jede Rolle, die
+> in Läufen arbeitet — und für diese Tafel.**
 
 **📋 Wachsitzungen mit bekannter Rolle** *(27.08. nachmittags)*: `1d` Datensammler · `c4`
 Berechnungen · `06` Desingner/Archiv-Wache · `22` Analytiker · `ab` QS · `7d` Auditor · `78`
