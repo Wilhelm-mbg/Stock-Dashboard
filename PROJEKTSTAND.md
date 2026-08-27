@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 17:05 (Windows-Uhr)
+letzter-bericht: 2026-08-27 15:32 (Windows-Uhr)
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -127,7 +127,7 @@ Nicht-Krypto, **alle am 25.08., null erfasste Marktlagen** → **nicht erfüllt,
 
 ---
 
-## 🏛 27.08. 17:0x — **EDGAR ENTSCHEIDET DEN RGR-DISSENS: das Ereignis ist REAL und seine Größe ist NULL**
+## 🏛 27.08. 15:2x — **EDGAR ENTSCHEIDET DEN RGR-DISSENS: das Ereignis ist REAL und seine Größe ist NULL**
 
 > ### **Die dritte Möglichkeit, die niemand auf dem Zettel hatte.**
 
@@ -178,7 +178,7 @@ NYSE-Split ohne jede SEC-Einreichung ist praktisch ausgeschlossen, **formal unbe
 
 ---
 
-## ⚖ 27.08. 16:5x — **RICHTIGSTELLUNG GEGEN DEN PM: `1d` hat NICHT geschwiegen, ich habe den falschen Kanal geprüft**
+## ⚖ 27.08. 15:1x — **RICHTIGSTELLUNG GEGEN DEN PM: `1d` hat NICHT geschwiegen, ich habe den falschen Kanal geprüft**
 
 **Ich habe Wilhelm den ganzen Tag gemeldet, `1d` sei der Engpass und melde sich nicht.
 Falsch — sie hat um 05:20 geliefert (`7301fdc`) und sich auf der Tafel eingetragen (`27e1c40`).**
@@ -218,7 +218,7 @@ falsche Feldzahl · 5.107 → 5.111 · **99,5 % mit Eröffnung** (die 26 ohne si
 des Fensters).* **15 neue Zusicherungen, die die Funktionen AUFRUFEN statt im Quelltext zu suchen,
 mit Positivkontrolle.**
 
-> ### ✅ **VOLLAUF FREIGEGEBEN (PM, 16:5x)** — 1.116 Reihen, ~4 Stunden
+> ### ✅ **VOLLAUF FREIGEGEBEN (PM, 15:1x)** — 1.116 Reihen, ~4 Stunden
 > **Auflagen:** *(1) **Sperre prüfen** — der nächtliche Archiv-Nachlauf fasst das Archiv ebenfalls
 > an; **nicht parallel**, falls derselbe Wachhund greift. (2) **Sicherung vor dem Start.**
 > (3) **Melden mit Zahlen — und auch melden, wenn er stirbt.***
@@ -227,7 +227,7 @@ mit Positivkontrolle.**
 
 ---
 
-## ⚠ 27.08. 16:4x — **EREIGNIS-DISSENS: die zwei Quellen widersprechen sich darüber, OB etwas passiert ist**
+## ⚠ 27.08. 15:0x — **EREIGNIS-DISSENS: die zwei Quellen widersprechen sich darüber, OB etwas passiert ist**
 
 > ### 🔴 **DAS RGR-URTEIL VON HEUTE FRÜH STEHT UNTER VORBEHALT — es könnte falsch herum sein.**
 > **Auf der Tafel steht (von mir): „RGR: das `1d` stimmt, das 60m ist vor dem 24.10.2025 um Faktor
