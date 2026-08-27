@@ -19,8 +19,30 @@ Fehlerklasse, neun Jahre alt. Fassung 1 bleibt unten als Geschichte stehen
 | Klasse | Bedingung (mechanisch) | Bedeutung |
 |---|---|---|
 | **F — Anpassungsfehler-Koinzidenz** | Split-Ereignis ±1 Handelstag, Kursfaktor trifft Sprungfaktor ±10 % (auch invers) | Das Archiv zeigt einen Sprung, den die Anpassung hätte wegglätten müssen → Anpassung fehlt/teilweise an dieser Stelle (BYND/WHLR-Klasse). Richtung benannt: das Archiv weicht vom Ereignis ab. Seltene Fehlklassifikation möglich (echter Marktsprung zufällig am Split-Datum mit passendem Faktor) — als Vorbehalt ausgewiesen. |
-| **U — kein Split, unentscheidbar** | kein Split-Match | „Kein Split" ist positiv belegt; ob Markt (AAPL-2000-Klasse), Spin-off, sonstige Maßnahme oder Skalenfehler (RGR-Klasse), können diese Endpunkte nicht wissen. NIE als „RGR-Verdacht" führen. Hinweis-Spalten H-Tick / H-Fenster / H-Extrem wie gehabt. |
+| **F? — Datum trifft, Faktor nicht** (PM-Nachforderung 2, VOR dem Lauf ergänzt) | Split-Ereignis ±1 Handelstag, aber KEIN Faktor-Match ±10 % (in beiden Orientierungen) | Die verdächtigste Klasse: am Split-Datum springt das Archiv, aber um den falschen Betrag — Teil- oder Falsch-Anpassung (der heutige WHLR-26.08.-Fall ohne saubere Faktor-Übereinstimmung wäre genau hier gelandet). Eigene, zählbare Zeile — NICHT in U versenken, denn hier weiß man, DASS etwas nicht stimmt, nur nicht was. |
+| **U — kein Split, unentscheidbar** | kein Datum-Match | „Kein Split" ist positiv belegt; ob Markt (AAPL-2000-Klasse), Spin-off, sonstige Maßnahme oder Skalenfehler (RGR-Klasse), können diese Endpunkte nicht wissen. NIE als „RGR-Verdacht" führen. Hinweis-Spalten H-Tick / H-Fenster / H-Extrem wie gehabt. |
 | **X — nicht prüfbar** | Abruf fehlgeschlagen | ausweisen. |
+
+## Nullwert (PM-Nachforderung 1, Methode VOR dem Lauf fixiert)
+
+Frage: Wie viele F/F?-Koinzidenzen erzeugte der pure Zufall? Zwei Rechnungen, beide
+werden nach dem Abruf, aber VOR der Veröffentlichung der Klassenzahlen ausgeführt
+und im Befund neben die Grundrate gestellt:
+
+1. **Analytisch (obere Schranke, nur Datum):** je Reihe p = (Anzahl Splits × 3) /
+   Handelstage der Reihe; Erwartung = Summe von p über alle 534 Sprünge. Vorab-
+   Überschlag aus den bekannten Dichten (typisch 0–3 Splits auf ~7.500 Handelstage):
+   p ≈ 0,1 % je Sprung, Erwartung über 534 Sprünge ≈ **unter 1 Zufallstreffer**;
+   selbst eine WHLR-artige Reihe (16 Splits auf ~2.400 Tage) läge bei 2 % je Sprung.
+   Die Faktor-Bedingung (±10 %) drückt den echten F-Nullwert weiter darunter.
+2. **Permutation (maßgeblich):** je Reihe 1.000 Ziehungen — die beobachtete Anzahl
+   Sprünge wird auf zufällige Handelstage der Reihe gelegt, gezählt wird die
+   Datum-Koinzidenz ±1 HT mit den echten Split-Daten. Ausgewiesen wird die
+   Erwartung und das 95. Perzentil der Zufalls-Koinzidenzen, gesamt über alle Reihen.
+
+Liegt die beobachtete F+F?-Zahl nicht klar über dem 95. Perzentil der Permutation,
+ist die Koinzidenz-Zählung als Ganzes nicht belegt — dann wird das genau so
+geschrieben.
 
 ## Fassung-2-Kontrollen (gelaufen VOR der Anwendung auf die 275)
 
