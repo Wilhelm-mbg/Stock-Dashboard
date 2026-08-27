@@ -40,7 +40,222 @@ Sitzungen.** Gefunden hat es jedes Mal eine Gegenprobe, nie ein Verdacht.
 > gegenstandslos.** *Was bleibt, ist die Frage der Archiv-Sauberkeit — und die ist Entscheidung
 > 1 unten.*
 
-### ✅ 27.08. 08:2x — DIE KENNZEICHNUNG STEHT (`a5b66e0`), und sie ist feiner als ihre Vorlage
+### 🚀 27.08. 08:03 (git) — **`v8.34.0` IST AUSGELIEFERT UND GEPRÜFT.** Bahn frei, Funkstille aufgehoben
+
+**191 Commits seit `v8.33.5`, alle 12 Notizen verbraucht** (`release-notizen/` ist leer). Stufe
+`--minor` wegen zweier **sichtbarer** Neuerungen: Seite `Werkzeuge › Kursarchiv` und Spalte
+`Feinheit` im Reiter Messung. Release ist **kein Entwurf**, `.qs-lauf` weggeräumt.
+
+| QS-Probe der Wache | Ergebnis |
+|---|---|
+| Was der Updater sieht | `version: 8.34.0` — die eben gebaute |
+| Paket-Version im asar | **8.34.0** = Tag-Version |
+| sha512-Gegenprobe | **stimmt** — kein paralleler Austausch |
+| Skripte aus `index.html` | **44, keines fehlt** |
+| ⭐ *Zusatzprobe `kerzenlage.js`* | *drin, **Byte-identisch mit HEAD*** |
+
+> **🎯 Die Zusatzprobe ist der eigentliche Ertrag, und die Wache hat sie selbst begründet:**
+> ***„Die Standard-QS wäre heute blind gewesen — sie prüft nur, was in `index.html` steht, und
+> `kerzenlage.js` steht dort nicht. Vorher war das eine begründete Annahme, jetzt ist es
+> gemessen."***
+>
+> **Damit ist belegt, dass der Neubau tat, wofür er angesetzt war** — der Kollisionsfall von
+> 08:0x ist nicht nur vermieden, sondern **nachgewiesen vermieden.** *Dritter Fall heute Nacht,
+> in dem eine Prüfung erst dadurch trägt, dass jemand fragt, was sie eigentlich prüft.*
+
+**Buchhaltungs-Commit ist diesmal NICHT entstanden:** Der Tag `v8.34.0` sitzt auf `87f9541`,
+und das **ist** der HEAD — Tag und HEAD liegen aufeinander, nichts hängt außerhalb. *Der
+nächste Wach-Lauf findet einen echten Nullstand und meldet korrekt „nichts auszuliefern".*
+
+**✅ FUNKSTILLE AUFGEHOBEN** — 06, 1d, c4 und ab sind unterrichtet, alle dürfen wieder pushen.
+*Der PM-Commit `0f3f94a` liegt oben; die Wache hat ihn als Elter mitgenommen.*
+
+---
+
+### 🔒 27.08. 08:0x — ZWEI RIEGEL VERGEBEN (an `06`), und der bessere ist nicht meiner
+
+**Die Release-Wache hat meinen Sperrdatei-Vorschlag angenommen, aber den Bau abgelehnt — mit
+einer Begründung, die ich für richtig halte:** *„Meine Rolle sagt: schreibe keinen Code. Und
+`tools/release.js` ist genau das Skript, das mich beaufsichtigt — **die Wache, die ihre eigene
+Aufsicht umschreibt, ist eine schlechte Bauform**, auch wenn die Änderung gut ist."*
+
+**Sie hat stattdessen einen zweiten Riegel danebengestellt und ihn höher eingestuft als meinen
+— zu Recht:**
+
+| | Riegel | greift |
+|---|---|---|
+| 1 | `release-baut.json` (Startzeit/PID/Zielversion), im `finally`, mit Verwaisungs-Prüfung *(PM)* | nur wenn **alle** vorher nachsehen |
+| **2** | **`--hoch` prüft: HEAD == Bau-Stand, sonst Abbruch mit „neu bauen"** *(Wache)* | **ohne jede Mitwirkung anderer** |
+
+> **📐 HAUSREGEL — und sie ist allgemeiner als der Release:**
+> ***„Eine Prüfung, die nicht von Kooperation abhängt, schlägt eine Verabredung, die vier
+> Sitzungen einhalten müssen."***
+>
+> **Die Sperrdatei ist eine Verabredung.** Heute Nacht hat sie beim Archiv getragen, weil vier
+> Sitzungen mitgemacht haben. **Beim fünften Mal macht einer nicht mit — und der Schaden trifft
+> dann nicht ihn, sondern das Release.** Riegel 2 hätte den heutigen Fall **auch bei gebrochener
+> Funkstille** gefangen und fängt zusätzlich den Fall, den **keine** Sperrdatei sieht: *jemand
+> committet nach dem Bau und vor dem `--hoch`, ganz ohne zu pushen.*
+
+**Der ehrlichste Satz der Wache gehört dazu, weil er den Auftrag begründet:** ***„Dass ich es
+gemerkt habe, war Handarbeit und ein bisschen Glück — ich habe den Log gelesen und die
+Uhrzeiten verglichen. Beim nächsten Mal sitzt dort vielleicht jemand, der nur den Push
+wiederholt, weil das Skript ihn ja gelassen hätte."***
+
+**Auflagen an `06`:** Riegel 2 **zuerst** · gegen den **echten** Fall prüfen (Bau-Stand
+`b5c0243`, gepusht `a5b66e0` → muss abbrechen; Bau ohne Zwischen-Commit → muss durchgehen),
+**beide Richtungen** · und die Release-Wache unterrichten, **bevor** sie das nächste Mal baut,
+weil `tools/release.js` ihre Aufsicht ist.
+
+> ### ✅ 27.08. 08:07 (git) — **BEIDE RIEGEL SIND GEBAUT UND GEPRÜFT (`21f7002`)**
+> **Riegel 2:** `bauen()` schreibt `dist/bau-stand.json` (HEAD-SHA, Version, Zeit). `--hoch`
+> prüft HEAD == Bau-Stand **als ALLERERSTES** — *vor der Gegenprobe und insbesondere **vor dem
+> Notizen-Wegräumen, das ja selbst committet***. Ein `dist` **ohne** `bau-stand.json` (Alt- oder
+> Fremdbau, auch über `DIST`) wird abgelehnt.
+>
+> **🎯 Die Reihenfolge ist der klügste Teil:** *Käme die Prüfung nach dem Notizen-Wegräumen,
+> würde der Riegel **sich selbst auslösen** — das Wegräumen bewegt HEAD. Ein Riegel, der beim
+> Zusehen zuschnappt.*
+>
+> **Gegen den echten Fall geprüft, drei Richtungen:** `b5c0243` + HEAD `a5b66e0` → **Abbruch,
+> mit genau der heutigen Situation im Text** · gleicher Stand → **durch** · fehlende Datei →
+> **Abbruch**.
+>
+> **Riegel 1:** `release-baut.json` (Phase, Zielversion, PID, Start) im Wurzelverzeichnis,
+> solange `--bauen`/`--hoch` läuft. **Im `finally` gelöst**, **Verwaisungs-Prüfung über die
+> PID** (toter Lauf sperrt niemanden aus und wird übernommen), lebender Parallel-Lauf bricht ab.
+> In `.gitignore`, wird nie committet. **Fünf Sperrklinken in `test-v6.js`; `npm test` grün.**
+>
+> **🔴 FÜR DEN NÄCHSTEN RELEASE-LAUF, weitergegeben:** *Das erste `--hoch` auf einem `dist` von
+> **vor** diesem Commit **wird abgelehnt** (`bau-stand.json` fehlt dort) — **gewollt, nicht
+> kaputt**: einmal neu bauen, dann trägt die Kette.*
+>
+> **✅ Unabhängig gegengelesen (Release-Wache, 08:0x), bevor sie das nächste Mal baut:**
+> `bauStandPruefen()` läuft als erstes in `hochKern()`, vor Gegenprobe und Notizen-Wegräumen ·
+> Fehlertexte benennen beide Fälle · `release-baut.json` in `.gitignore` Zeile 13 · beide Läufe
+> lösen im `finally`. ***„Der Riegel hätte den heutigen Fall gefangen — an genau der Stelle, an
+> der ich ihn per Handarbeit gefangen habe."***
+
+> ### 📌 ERWARTUNG AN JEDE KÜNFTIGE RELEASE-WACHE — kein Auftrag, eine Ansage
+> **Nach JEDEM gescheiterten `--hoch` ist ein Neubau ab sofort Pflicht, ausnahmslos.**
+>
+> **Grund:** Die Rückholung der Notizen macht **selbst einen Commit** (`release.js:460`).
+> Damit ist HEAD ≠ Bau-Stand, und Riegel 2 lehnt jeden Wiederholungsversuch ab — **auch dann,
+> wenn der Push nur an einer Netzstörung gescheitert ist und sich an der App nichts geändert
+> hat.**
+>
+> **🎯 Die Release-Wache schlägt ausdrücklich NICHT vor, das zu ändern, und ihre Begründung ist
+> die Hausregel:** *„Eine Ausnahme ‚der eigene Rückhol-Commit zählt nicht' wäre genau die Sorte
+> Schlauheit, die einen Riegel weich macht — **und sie müsste unterscheiden, was in diesem
+> Commit steckt, was sie nicht kann**."*
+>
+> **Der Preis ist beziffert und klein:** zehn Minuten Neubau im Fehlerfall, **keine verbrannte
+> Versionsnummer** (`naechsteVersion()` verwendet eine Nummer ohne Tag wieder). *Der Preis der
+> Gegenrichtung wäre ein Release, dessen Tag Code verspricht, den der Installer nicht enthält.*
+>
+> **→ Wer künftig auf `HEAD ist nicht der Stand, aus dem gebaut wurde` trifft: das ist der
+> Riegel bei der Arbeit, nicht ein Defekt. Neu bauen, nicht nach einem Weg daran vorbei
+> suchen.** *Diese Zeile steht hier, weil sonst jemand den Riegel für kaputt hält.*
+
+---
+
+### 🧪 27.08. 08:0x — ZVZZT: ein Testkürzel, das in **jeden** Detektor schlägt
+
+**`ZVZZT` ist das Testkürzel der Nasdaq und steht mit 5.105 Kerzen in `archiv60m`** — mit
+synthetischen Kursen, aber **echtem Umsatzfeld**. Es ist heute Nacht **zweimal unabhängig**
+aufgetaucht:
+
+- die **5** unerklärten Auktionskerzen (siehe oben) — **fünf von fünf ZVZZT**
+- der Kurssprung-Sucher der QS in `archiv60m` — **acht von acht ZVZZT**
+
+> **Zwei verschiedene Detektoren, dieselbe eine Reihe.** *Ein Papier mit erfundenen Kursen und
+> plausiblem Umsatz erfüllt die formalen Datenprüfungen und fällt genau dort auf, wo man einen
+> Fund vermutet.*
+
+> ### ⚖ RICHTIGSTELLUNG 27.08. 08:0x (c4, gemessen) — **die Messmaschine war NIE betroffen**
+> **Ich hatte ZVZZT als „stehenden Störer für jede künftige Studie" eingestuft. Das war zu
+> weit gegriffen und ist widerlegt:** *„Die zwölf Protokolle enthielten ZVZZT **nie**. Die
+> QS-Treffer stammen aus ihren eigenen **Roh-Archiv-Scans ohne Art-Filter**, nicht aus der
+> Messmaschine."*
+>
+> **ZVZZT ist doppelt draußen — aber nur ein Riegel ist Absicht, und der ist brüchig:**
+> 1. `WP.istAktie('ZVZZT') = false` — **greift vor allem anderen.** *Aber nur, weil das Kürzel
+>    in `wertpapierarten.json` schlicht **fehlt** (`undefined`), **nicht** weil es als
+>    Testsymbol benannt wäre.*
+> 2. F1 wirft die 60m-Reihe komplett (−89 % am 03.10.2023); in `archiv1d` existiert gar keine
+>    Datei.
+>
+> **→ Der Riegel beruht auf ABWESENHEIT in einer Referenzliste.** *„Ein künftiger
+> Referenz-Refresh, der ZVZZT als **CS** aufnimmt — **die Nasdaq führt es formal so** —, würde
+> ihn öffnen, und dann hinge alles an F1, das nur zufällig greift, solange die Synthetik-Kurse
+> wild genug sind."*
+>
+> **Das ist dieselbe Krankheit wie überall heute Nacht: eine Prüfung, die grün ist, weil sie
+> etwas anderes prüft, als man glaubt.** *„Draußen, weil unbekannt" sieht aus wie „draußen, weil
+> ausgeschlossen" — bis die Liste sich ändert.*
+
+**→ AUFTRAG VERGEBEN (an `c4`, mit Versionsvermerk): Testkürzel namentlich ausschließen** —
+ZVZZT und die Nasdaq-Geschwister **ZWZZT / ZXZZT / ZJZZT** — eine Zeile in `wertpapierart.js`,
+**damit „draußen" Absicht ist statt Nebenwirkung.** *Kleine Universums-Definitionsänderung,
+gehört deshalb als Auftrag vergeben und nicht nebenbei erledigt — c4 hat genau darauf bestanden.*
+
+---
+
+### 🧮 27.08. 08:1x — DIE DREI RESTPUNKTE: einer geschlossen, zwei benannt-nicht-entscheidbar
+
+**Die QS hat die offene Liste abgearbeitet — und bei zweien gesagt, warum sie sie NICHT nimmt.
+Das ist ein Ergebnis, keine Lücke.**
+
+> #### ✅ Punkt 3 GESCHLOSSEN — die Eröffnungskerzen ohne Umsatzfeld sind **kein zweiter Fund**
+>
+> | Position im Handelstag | betroffen | von | Anteil |
+> |---|---:|---:|---:|
+> | 1. Kerze | 26.940 | 2.126.078 | **1,2671 %** |
+> | Mitte | 9.353 | 10.563.389 | **0,0885 %** |
+> | letzte | 34.118 | 2.125.814 | **1,6049 %** |
+>
+> **Die Ränder verlieren ihr Umsatzfeld 14- bis 18-mal häufiger als die Mitte** — das sah nach
+> einem systematischen Randeffekt aus, und über die Jahre fiel die Rate um Faktor 6.
+> **Tageweise aufgelöst zerfällt der ganze Ausschlag:**
+>
+>     2025-11-28   2.908 von 5.822   49,9 %
+>     2025-12-24   2.904 von 5.822   49,9 %
+>     alle uebrigen Tage             0,1 bis 0,8 %
+>     Uhrzeiten: 18:00 (5.812) | 20:30 (862) | 14:30 (44) | 19:30 (2)
+>
+> **5.812 der Treffer liegen um 18:00 — exakt 2.908 + 2.904, die beiden Halbtags-Schlusskerzen.
+> Also genau das Phänomen, das diese Nacht bereits vollständig aufgeklärt ist.**
+>
+> **→ Es bleibt ein kleiner stetiger Rest** (0,5–0,7 % der letzten Sitzungskerzen an
+> Normaltagen, 862 Kerzen über gut 40 Tage; Eröffnungsstunde nur 44). **Ohne Ereignischarakter.**
+> *Und die **435 Eröffnungsfälle der Halbtage** sind damit eingeordnet: derselbe stetige
+> Randeffekt, nichts Eigenes.*
+>
+> **⚠ Der Satz, der die Zerlegung wertvoll macht:** *„Wer die 1,6 % bei den letzten Kerzen
+> **ohne** diese Zerlegung liest, hält **einen bekannten Befund für einen zweiten**."*
+
+> #### 🚫 Punkte 1 und 2 — **benannt, nicht entscheidbar mit den vorhandenen Quellen**
+> - **132 historische Skalenwechsel:** *„Das Trennmerkmal ist das zweite Archiv, und 60m reicht
+>   **730 Tage**. Für die 132 gibt es **keinen zweiten Zeugen**."*
+> - **BYND / RGR / SITC / B:** **BYND** wechselt tageweise die Skala — **belegter Defekt**, das
+>   zweite Archiv bezeugt es. **RGR, SITC und B** haben dagegen einen **konstanten Versatz**,
+>   keinen Wechsel. *„Ein Archiv ist rückangepasst, das andere nicht. **Welches richtig ist,
+>   entscheidet man nicht aus den beiden.** Ich kann sagen, DASS sie sich unterscheiden und um
+>   welchen Faktor — welches stimmt, kann ich nicht sagen."*
+>
+> **📐 Vorbildlich und ausdrücklich vermerkt:** *„Ich könnte Stunden damit verbringen und käme
+> mit ‚nicht entscheidbar' zurück — **das weiß ich jetzt schon und sage es lieber jetzt**."*
+> **Eine Grenze vorher zu benennen ist billiger, als sie zu erfahren.**
+
+> ### 🔴 DAS MUSTER DAHINTER — und es ist eine Frage an Wilhelm, keine Messfrage
+> **Vier Stränge dieser Nacht laufen auf DIESELBE Grenze zu:** die 132 Skalenwechsel · der
+> Archiv-Versatz bei RGR/SITC/B · die Überlebensverzerrung (≥ 12,7 % des Querschnitts fehlen,
+> steigend) · und der Abgleich der Anpassungsstände.
+>
+> ***„Was fehlt, ist keine Rechnung, sondern eine zweite Quelle."***
+>
+> **Das ist eine Beschaffungsfrage, keine Messfrage** — und damit nichts, was eine Sitzung
+> entscheiden kann. **Kommt als Formular an Wilhelm.**
 
 **Vier Lagen, aus Zeitstempel + Umsatz + Sitzungskontext abgeleitet** — nichts materialisiert,
 nichts gepflegt, kann nicht veralten.
@@ -58,9 +273,22 @@ synthetische Fälle, inklusive des ACGL-Auktionsfalls und des Ur-Docht-Falls.
 **Unabhängige Bestätigung, ungeplant:** Die **Kreuzsumme trifft die Zahl der Populationszählung
 exakt (25.915) — auf einer anderen Rechenstrecke.**
 
-*Zahlen-Hinweis nach eigener Hausregel: Die Auktionsfamilie steht mit **1.145** (QS-Zählung)
-und **1.150** (Wache/Einstufung) in den Unterlagen — zwei Rechenwege, fünf Kerzen Unterschied,
-**nicht aufgelöst**. Wer die Zahl zitiert, nennt ihre Herkunft.*
+> ### ✅ AUFGELÖST 27.08. 08:0x (QS) — die fünf Kerzen haben einen Namen: **ZVZZT**
+> **Beide Zahlen sind richtig gemessen, sie zählen verschiedene Grundmengen:**
+>
+> | | Kerzen | |
+> |---|---:|---|
+> | Umsatzkerzen auf dem Halbtags-Schlussstempel, **ohne jede Bedingung** | **1.150** | ← Einstufung |
+> | davon **mit 1d-Gegenstück** | **1.145** | ← QS-Zählung |
+> | davon **ohne** | **5** | *alle fünf ZVZZT* |
+>
+> **`ZVZZT` ist das Testkürzel der Nasdaq.** Es hat keine Reihe im Tagesarchiv, und die
+> QS-Zählung leitet das Sitzungsende aus dem Tagesbalken ab — ohne Tagesbalken fällt die Reihe
+> heraus. *Keine Rechenwegs-Differenz, kein Fehler auf einer der beiden Seiten.*
+>
+> **→ Welche Zahl gilt, hängt an der Frage:** **1.145** für Wilhelms Populationsentscheid (ZVZZT
+> ist kein handelbares Papier) · **1.150** für eine Bestandsaufnahme des Archivs (die Kerzen
+> sind da). **Wer eine der beiden zitiert, nennt weiter ihre Herkunft.**
 
 *Kein `index.html`-Eintrag, solange kein Anzeige-Verbraucher existiert.*
 
