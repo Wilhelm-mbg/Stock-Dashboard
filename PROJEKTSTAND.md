@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 11:58 (Windows-Uhr, NICHT bash date)
+letzter-bericht: 2026-08-27 12:15 (Windows-Uhr, NICHT bash date)
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -39,6 +39,112 @@ Sitzungen.** Gefunden hat es jedes Mal eine Gegenprobe, nie ein Verdacht.
 > **→ Damit ist die Reparatur, um die diese Nacht gestritten wurde, für die MESSSEITE
 > gegenstandslos.** *Was bleibt, ist die Frage der Archiv-Sauberkeit — und die ist Entscheidung
 > 1 unten.*
+
+## 🔑 27.08. 12:1x — **DIE ZWEITE QUELLE LAG IM HAUS. Vier Stränge sind für 0 € arbeitsfähig**
+
+**Der vorhandene `massive.key` schaltet Splits und Dividenden frei.** *Zehn lesende Abrufe,
+beide Richtungen geprüft (AAPL 5 Splits zurück bis 1987, ARM korrekt leer), nichts angemeldet,
+kein 401/403.* **Wilhelm hatte heute früh eine Anbieter-Recherche beauftragt — die Quelle war
+schon da.**
+
+### 🔴 UND DER NEUFUND IST GRÖSSER ALS DIE ANTWORT: **die Fehlrichtung ist je Reihe VERSCHIEDEN**
+
+| Reihe | wer hat recht | Ereignis |
+|---|---|---|
+| **RGR** | **`1d` stimmt** | **KEIN Split** in der ganzen Firmengeschichte — 60m vor dem 24.10.2025 um **Faktor 2,674 zu hoch**, fällt an dem Tag **ohne jedes Ereignis** auf die 1d-Linie |
+| **WHLR** | **`60m` stimmt** | Reverse Split 4:1, **heute** ausgeführt; 1d hat ihn bis 25.08. eingearbeitet, **den 26.08. roh gelassen** |
+| **BYND** | **`60m` stimmt** | Reverse Split 30:1 am 14.08.; 1d-Historie blieb auf der alten Skala |
+| **SITC** | mechanisch `60m` | Faktor 3,361 **ohne Ereignis** — *was es war, geben diese Endpunkte nicht her (naheliegend Spin-off)* |
+| **B** | **keine Versatz-Frage** | **Ticker-Neuvergabe** — Dividendenreihe bricht, Quote **driftet** statt konstant: **zwei Firmen unter einem Kürzel.** Braucht **Trennung**, kein Schiedsurteil |
+
+> ***„Ein Archiv ist rückangepasst, das andere nicht" stimmt als pauschale Richtung NICHT.***
+> **Eine pauschale Reparatur hätte mindestens eine Reihe falsch herum angefasst** — *und zwar
+> in der Richtung, in der sie „repariert" aussieht.*
+>
+> **⚠ NEUNTE VERHINDERTE DATENZERSTÖRUNG — und die erste, die einen laufenden PM-Auftrag traf.**
+> *Ich hatte `c4` eine halbe Stunde vorher beauftragt, genau diese Reparatur zu untersuchen —
+> **mit dieser Prämisse im Auftragstext**. Meine Auflage „beide Richtungen prüfen" meinte
+> Erkennungsfehler und hätte die Sache **nicht** gefangen.* **Auftrag sofort umgeleitet.**
+
+**✅ Und der Auftrag wurde dadurch nicht nur sicherer, sondern EINFACHER:** *Ein Split ist ein
+**belegtes Ereignis mit Datum und Faktor**, kein aus dem Kursverlauf erratenes Muster.* **Drei
+der vier Zulässigkeits-Bedenken des Tüftlers fallen weg** — keine Rückwärtsschau, keine Auswahl
+nach der Zielgröße. *Aus einem Ratespiel ist ein Abgleich gegen einen unabhängigen Zeugen
+geworden.*
+
+**Nicht beantwortbar, ausdrücklich benannt:** Vollständigkeit vor ~2017 nur punktuell belegt ·
+**Spin-offs und Ticker-Events stehen nicht in diesen zwei Endpunkten** · Dividendenlisten nicht
+gegen eine zweite Quelle geprüft. **Der harte Rest sind RGR und SITC: ein Sprung OHNE Ereignis
+ist entweder ein Archivfehler oder ein Ereignis, das diese Endpunkte nicht führen.**
+
+**→ Die 132 Skalenwechsel (S1) sind ≈ 132 Abrufe ≈ 29 Minuten. Vergeben an `22`.**
+
+---
+
+## 📦 27.08. 12:00 — **`v8.34.1` IST INSTALLIERT.** Wilhelms #105 ist auf seinem Bildschirm
+
+**Wilhelm hat die Installation freigegeben** (*„ich habe gerade keinen Zugriff und kann erst
+später updaten gegen 17 Uhr — wenn du updaten kannst mach das ruhig"*). **Ich habe NICHT
+`8.34.0` installiert, sondern erst `8.34.1` bauen lassen: `8.34.0` enthielt seinen eigenen,
+eine Stunde alten #105-Entscheid nicht.**
+
+**Belegt statt angenommen, an jedem Schritt:** sha512 des Installers gegen `latest.yml`
+**stimmt** · installierte Version **8.34.1** · **`#105` im installierten Paket** (`kostenHuerde`
+3× in `messband.js`, `toFixed` nur noch die 2 erlaubten Vorspann-Stellen) · **App läuft wieder**
+(4 Prozesse ab 12:00:29 — *der Installer hat sie nicht selbst neu gestartet*).
+
+**Store Zahl für Zahl gegen den QS-Vorher-Stand von 11:57:** `kostenMessung.runden` **1 = 1** ·
+`capFehler` **3 = 3** · offene Positionen **3 = 3** (TSLA, MS, ABBV) · `depot_vor_reset.json`
+**38 = 38**, Zeitstempel unverändert **25.08. 19:47:15**. **Kein Reset, kein Store-Umzug.**
+
+> **🎯 UND EIN BEINAHE-FEHLBEFUND DES PM, der hierher gehört:** *Mein erster Prüflauf meldete
+> `capFehler` 3→**1** und Positionen 3→**1**. Ich stand davor zu melden, meine Installation habe
+> Daten zerstört.* **Der Grund: falsche Feldnamen** (`positionen` statt `positions`; `capFehler`
+> liegt auf **oberster Ebene**) — **und `@($null).Count` ist in PowerShell `1`, nicht `0`.**
+>
+> ***Meine Prüfung meldete nicht „das Feld gibt es nicht", sondern „da ist genau eins".***
+> *Eine leere Kategorie, die als Messwert auftritt — **wortwörtlich der QS-Befund von heute
+> früh, eine Etage tiefer**. Gerettet hat eine danebengelegte Rohsuche im Klartext
+> (`RC_NOT_ENOUGH_MARGIN` 6×), deren Zahlen nicht zu „alles weg" passten.*
+
+**⚠ Release-Vorfall, den die Wache selbst gemeldet hat:** *`--hoch` stürzte in der
+**Schlussgegenprobe** mit einem Node-Stapel ab (`release.js:486`, `gh release download`) —
+**Leitungsflakiness**, derselbe Abbruch traf danach `curl` dreimal, über die API ging es sofort.
+Zu dem Zeitpunkt war alles Wesentliche erledigt: Tag gesetzt und remote, gepusht, Assets oben.*
+**Sie hat NICHT neu `--hoch` gestartet, sondern von Hand nachgeprüft.** *Für die Tafel:* **der
+Absturz der Schlussgegenprobe ist KEIN gescheitertes Release. Wer da neu `--hoch` startet, tut
+das Falsche.**
+
+---
+
+## 💸 27.08. 12:0x — **DIE KOSTENMESSUNG SCHÖPFT AUS DEM BILLIGSTEN ENDE DES UNIVERSUMS**
+
+**Die 16 Aktienrunden stammen ausnahmslos von Mega-Caps** (AAPL, NVDA, MSFT, AMZN, GOOGL, META,
+TSLA, AMD, AVGO, TSM, ASML, INTC, QCOM, MU, ARM). **Der Grund steht in den Fehlern selbst — es
+sind ZWEI Ursachen, nicht eine:**
+
+    14:58  ABBV  RC_NOT_ENOUGH_MARGIN
+    14:58  MS    Kein Markt fuer MS gefunden     <- der aufschlussreiche
+    14:58  TSLA  RC_NOT_ENOUGH_MARGIN
+
+**Gemessen werden kann nur, was der Broker führt — und das sind die liquidesten Werte.**
+
+> **→ „0,10 % ist bemerkenswert gut getroffen" ist nicht widerlegt, aber es gilt NUR FÜR
+> MEGA-CAPS.** *Handeln die Strategien breiter, ist die Annahme **optimistisch** statt gut
+> getroffen — um wie viel, ist ungemessen.* **An dieser Annahme hängt fast jede Studie dieses
+> Projekts.**
+>
+> **Und die Freigabeschwelle „≥ 20 Aktienrunden" ist damit eine Frage der ZUSAMMENSETZUNG, nicht
+> der Anzahl** — *gelingt die Spiegelung systematisch nur bei Mega-Caps, misst sie auch nach
+> zwanzig Runden noch die falschen Papiere.* **Die Nachmittagsfrage lautet deshalb nicht mehr
+> „entstehen neue Runden", sondern „bei welchen Symbolen gelingt die Spiegelung, bei welchen
+> nicht".** *Die QS hat es selbst umformuliert und dabei ihre eigene Meldung von heute Nacht
+> eingeschränkt.*
+
+*Ohne Margin auf dem Demo-Konto entsteht nie eine neue Runde — **Warten ist keine Strategie**,
+und „keine neue Runde" ist dann kein Befund, sondern die Fortsetzung.*
+
+---
 
 ## 🕐 27.08. 11:58 — **DIE UHR IM BASH-WERKZEUG GEHT 3 STUNDEN 23 MINUTEN NACH**
 
