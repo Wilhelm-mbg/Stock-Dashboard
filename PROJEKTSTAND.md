@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 08:40 (abgelesen)
+letzter-bericht: 2026-08-27 08:32 (abgelesen)
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -39,6 +39,122 @@ Sitzungen.** Gefunden hat es jedes Mal eine Gegenprobe, nie ein Verdacht.
 > **→ Damit ist die Reparatur, um die diese Nacht gestritten wurde, für die MESSSEITE
 > gegenstandslos.** *Was bleibt, ist die Frage der Archiv-Sauberkeit — und die ist Entscheidung
 > 1 unten.*
+
+## ☀ MORGENLAGE 27.08. 08:30 — was seit dem Aufwachen passiert ist
+
+**Zehn Sitzungen erreicht, alle arbeiten oder haben sauber abgeschlossen. Vier Ergebnisse, ein
+Fehlschluss von mir, zwei Entscheidungen für Wilhelm.**
+
+> ### ✅ DATENFUND 2 IST GESCHLOSSEN — **und zwar zweimal unabhängig**
+> **Der 25.08. stimmt im neu geschriebenen 60m-Archiv.** *Zwei Sitzungen haben dieselbe Frage
+> ohne Absprache auf verschiedenen Wegen beantwortet:*
+>
+> | | `ab` (QS) — Vollzählung, **ohne** Abrufe | `06` (Archiv) — Stichprobe **mit** frischem Abruf |
+> |---|---|---|
+> | Umfang | **alle 2.916 Reihen**, 23.231 Kerzen | 20 liquide Symbole, Kerze für Kerze |
+> | Ergebnis | **98,6 % exakt im Sollbild** · **0 OHLC-Verletzungen** · **keine fremde Uhrzeit** | **20/20 deckungsgleich**, Positivkontrolle 20.08. ebenfalls 20/20 |
+>
+> **Das ist stärker als zweimal dasselbe: die eine deckt den UMFANG, die andere den ABGLEICH MIT
+> DER QUELLE — genau die Lücke der jeweils anderen.** *Der AAPL-Beleg von gestern (v 2.851.594
+> archiviert vs. 2.846.819 live) ist heute deckungsgleich. Keine fremde Uhrzeit heißt: **auch
+> kein Quote-Stempel an diesem Tag.*** **Ursache der Heilung: der `range=730d`-Neuschrieb des
+> Nachtlaufs hat den Tag nebenbei frisch geholt.**
+>
+> **→ Wilhelms blockierter Entscheid „nachbessern vs. neu holen" ist GEGENSTANDSLOS.** *Neu
+> geholt ist bereits geschehen — jetzt gemessen statt vermutet.*
+>
+> **⚠ DREI DINGE, DIE DIESE ANTWORT NICHT SAGT** *(von der QS vorangestellt, nicht nachgereicht
+> — und sie gelten jetzt doppelt, weil **beide** gegen dieselbe Quelle geprüft haben)*:
+> 1. **Nicht, ob der Tag VOR dem Neuschreiben stimmte** — der beanstandete Zustand ist nicht
+>    mehr messbar.
+> 2. **Nicht, dass die Quelle recht hat** — *Übereinstimmung heißt kein Widerspruch zwischen
+>    zwei Abrufen, nicht dass beide richtig sind.* **Zwei Messungen, aber ein Zeuge.**
+> 3. **Nicht, dass andere Tage ebenso stimmen** — geprüft ist einer. *Die Vollzählung nimmt ein
+>    beliebiges Datum entgegen; ein zweiter Tag kostet zwei Minuten.*
+>
+> **Die vier Ausnahme-Reihen sind kein Defekt:** GOGL/HIGH/TIL sind **extrem illiquide**
+> (5.000–6.000 Stück am ganzen Tag → Stunden ohne Handel → keine Kerze). Die vierte ist
+> **ZVZZT, zum dritten Mal heute Nacht.** *Sechs Reihen ganz ohne Kerzen: AVB, EQR, LBRDA,
+> LBRDK, **TWO**, WBS — fünf bekannt, **TWO neu** und an `06` gegeben.*
+
+> ### 🔴 DER KRONZEUGE DER NACHT (`c4`, gemessen) — **eine Sichtbarkeits-Funktion ohne einen einzigen Anrufer**
+> **Das Wertpapierart-Modul verhält sich bei fehlender Referenz als „alles durch"** (`istAktie`
+> gibt ohne Karte `true` zurück, auch bei unlesbarer Datei oder ≤ 1.000 Einträgen). **Die
+> Modulautoren haben dafür ausdrücklich `klassifizierungDa()` als Sichtbarkeits-Funktion
+> gebaut — und von 24 Dateien, die am Modul hängen (~20 davon Mess-Werkzeuge: alle Strategien,
+> die Eichung, die Tüftler-Zähler, `test-v6`), ruft sie NIEMAND auf.**
+>
+> ### 🎯 ***Die Prüfung, die grün aussieht, weil niemand sie ansieht.***
+> **Das ist eine eigene Unterart der Krankheit dieser Nacht, und sie ist die heimtückischste:
+> Wer den Quelltext liest, SIEHT die Vorsorge und hält das Problem für gelöst.** *Die
+> Original-Absicht war richtig — sie liegt nur an einer Stelle, die niemanden erreicht.*
+>
+> **Zwei stille Richtungen, gegenläufig:**
+> 1. **Datei fehlt/kaputt/zu klein** → Universum still **verdreifacht** (2.213 → ~2.960)
+> 2. **Datei gesund, Einträge fehlen** → betroffene Symbole still **draußen** — *exakt die
+>    „draußen-weil-unbekannt"-Bauform der Delisting-Nacht, im selben Modul.*
+>
+> **✅ HEUTE AKUT: NICHTS — gemessen, nicht gehofft.** Referenz gesund (**36.479 Einträge**),
+> **alle bisherigen Protokolle standen nachweislich auf gefiltertem Universum** (Zählstände
+> 2.201/2.213/2.249 passen zur Karte). **Kein Protokoll ist infrage gestellt.** *Das Risiko ist
+> betrieblich: ein einziger missglückter Referenz-Refresh flippt alle Universen, und **kein
+> Protokollfeld würde es festhalten**.*
+>
+> **Abhilfe vergeben:** **(a)** E1 schreibt `klassifizierungDa` ins Protokoll und **verweigert
+> bei `false`** → `c4`, mit Versionsvermerk *(Auflage: Feld auch bei `true` schreiben, sonst ist
+> ein altes Protokoll von einem neuen nicht unterscheidbar)*. **(b)** laute **Einmal**-Warnung
+> auf `stderr`, wenn der Rückfall konsultiert wird → `06`, kein Verhaltenswechsel. **(c)** die
+> übrigen ~15 Werkzeuge: **Sammelposten je Besitzer, bewusst NICHT heute** — *mit (b) fällt
+> jeder Fall künftig von selbst im Log auf; erst sichtbar machen, dann einzeln nachziehen.*
+>
+> *c4s eigene zwei Werkzeuge brechen seit `955cbf0` bei fehlender Klassifizierung ab — eigener
+> Besitz, ohne Nachfrage, richtig so.*
+
+> ### ⚖ RICHTIGSTELLUNG GEGEN DEN PM — **mein Schluss war tautologisch** (Fund: Issue-Wache)
+> **Ich hatte geboardet und an zwei Sitzungen geschrieben: „alle vier Auditor-Funde stecken in
+> `v8.34.0`, die beiden Schaufenster-Neuerungen haben je einen sichtbaren Fehler." Das ist
+> falsch.**
+>
+> **Der Rechenweg `git merge-base --is-ancestor 04c9be5 v8.34.0` prüft, ob der PRÜFSTAND ein
+> Vorfahr des Tags ist — und das ist er immer.** *Ein Prüfstand kommt vor dem Release, sonst
+> wäre er keiner.* **Die Prüfung konnte gar nicht anders ausgehen und trennt deshalb nichts.**
+> Sie maß *„war der geprüfte Stand im Release enthalten"* statt *„ist der **Fehler** im Release
+> enthalten"*.
+>
+> **Nachgerechnet:** `04c9be5` liegt **101 Commits vor dem Tag**, die Reparatur `1b852bc` liegt
+> **dazwischen** und ist ebenfalls im Tag. Im Tag-Stand selbst stehen `table.tbl td.num` und
+> `U.dez(...)`. **→ #107 und #108 sind in `v8.34.0` REPARIERT. Keine Nachlieferung nötig. Von
+> den vier Funden steht dort nur #105 — mit Absicht.**
+>
+> ***Dieselbe Krankheit eine Etage höher, und diesmal war ich es: ein Kriterium, das für alles
+> gilt und nichts trennt.*** *Das ist heute Nacht der vierte PM-Fehler dieser Familie.*
+>
+> **Die Gegenprobe des Auditors bleibt trotzdem beauftragt — mit gedrehter Begründung:** *Der
+> Tag enthält die Reparatur; **ob das gebaute PAKET sie enthält, ist eine zweite Frage** — genau
+> die, an der der Beinahe-Unfall von 08:00 hing.* **Er misst am ausgelieferten Artefakt, nicht
+> an der Vorfahren-Beziehung.**
+
+### 📌 Wer woran sitzt *(Stand 08:30)*
+
+| Sitzung | Rolle | Auftrag |
+|---|---|---|
+| `1d` | — | **Eröffnungskurs** `massive-tagesdaten.js:130` (`b.o` **hinten** anhängen) + **Pilot 20 Reihen**; voller Lauf erst nach PM-Ja |
+| `c4` | Berechnungen | **(a)** E1-Schranke · dann **Weg 3 der Überlebenslücke** |
+| `06` | Archiv-Wache | **TWO / Abmeldeliste** (Handelsende, nicht Listendatum) · **(b)** stderr-Warnung |
+| `ab` | QS | **12-%-C-Anteile an Halbtagen** · Kostenmessung **heute Nachmittag** (bei offenem Markt) |
+| `7d` | Auditor | **`v8.34.0`-Gegenprobe am Artefakt** · dann **dunkles Thema** |
+| `78` | Strategie-Tüftler | **Zähl-Hälfte „Schnitt am letzten Sprung"** |
+| `49` | Release-Wache | fertig, Übergabe aktualisiert |
+| `36` | Issue-Wache | fertig, Bereitschaft ausgelaufen 08:35 |
+
+> **⭐ Der Fund, der KEINE Reparatur ist und trotzdem der wichtigste sein könnte** *(Strategie-Tüftler)*:
+> **Weg 3 der Überlebenslücke liegt um Faktor 24 über der Schwelle — 496 Handelstage vorhanden,
+> 21 nötig. Schluss-zu-Schluss ist JETZT startbar** (Übernacht erst nach Vorschlag D).
+> *Die Überlebensverzerrung ist seit Wochen als „mit den vorhandenen Quellen nicht zu schließen"
+> geführt. **Für Weg 3 ist diese Formel überholt** — und überholte Formeln, die sich durch Code
+> und Gedächtnis weitertragen, sind hier schon einmal teuer geworden.*
+
+---
 
 ### 🚀 27.08. 08:03 (git) — **`v8.34.0` IST AUSGELIEFERT UND GEPRÜFT.** Bahn frei, Funkstille aufgehoben
 
@@ -198,6 +314,29 @@ aufgetaucht:
 ZVZZT und die Nasdaq-Geschwister **ZWZZT / ZXZZT / ZJZZT** — eine Zeile in `wertpapierart.js`,
 **damit „draußen" Absicht ist statt Nebenwirkung.** *Kleine Universums-Definitionsänderung,
 gehört deshalb als Auftrag vergeben und nicht nebenbei erledigt — c4 hat genau darauf bestanden.*
+
+> ### ✅ ERLEDIGT 27.08. 08:2x (`8a2bd28`) — **und der Nebenfund ist größer als der Auftrag**
+> **Umsetzung mit allen drei Auflagen:** die vier Kürzel stehen **einzeln** im Aktienfilter
+> (*ausdrücklich kein Muster — das würfe irgendwann ein echtes Papier*), beide Richtungen
+> getestet (vier raus, **ZTS/ZM drin**), Reihenfolge per Quelltext-Zusicherung gesichert, die
+> Ausnahme vom „Keine-Namensliste"-Prinzip im Dateikopf begründet (**geschlossene Börsen-Menge,
+> kein Pflegefall**). Release-Notiz trägt den geforderten Satz wörtlich: ***ändert kein einziges
+> der zwölf Protokolle — gemessen, nicht angenommen.*** `test-v6` grün.
+>
+> **🔴 DER NEBENFUND — und er verschiebt den Befund von oben:**
+> ***„Der Ohne-Karte-Rückfall (»Referenz fehlt → alles durch«) hätte die Testkürzel schon HEUTE
+> hereingelassen. Der neue Riegel ist die einzige Stelle, die auch diesen Pfad schließt."***
+>
+> **Ich hatte geboardet, ZVZZT sei „draußen, weil unbekannt" — brüchig erst bei einem KÜNFTIGEN
+> Referenz-Refresh. Das war zu milde.** *Es ist schon jetzt brüchig, über einen vorhandenen
+> Pfad, den niemand anfassen muss, damit er aufgeht.* **c4 nennt es „den stillsten Teil der
+> Lücke" — der neue Riegel sitzt deshalb VOR dem Referenz-Nachschlagen.**
+>
+> **❓ OFFEN, an c4 gefragt, und davon hängt ab, ob wir fertig sind:** *Ist der Ohne-Karte-Rückfall
+> auf den Aktienfilter beschränkt — oder ist „Referenz fehlt → alles durch" das **allgemeine**
+> Verhalten des Moduls?* **Falls allgemein, ist ein Symptom geschlossen und nicht die Krankheit:
+> dann stehen alle Filter an derselben Referenz bei fehlender Karte offen — und zwar STILL, weil
+> ein Filter, der nichts auswirft, genauso aussieht wie einer, durch den nichts durchmusste.**
 
 ---
 
