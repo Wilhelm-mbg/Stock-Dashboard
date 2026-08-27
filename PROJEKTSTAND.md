@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 02:50
+letzter-bericht: 2026-08-27 03:05
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -22,22 +22,33 @@ eine Zahl angehalten, die echte Kurse zerstört oder ein falsches Urteil getrage
 **zweimal traf es Anweisungen des PM, zweimal Vorgaben der QS, zweimal eigene Befunde der
 Sitzungen.** Gefunden hat es jedes Mal eine Gegenprobe.
 
-> ### 🚨 DER FUND, DER ALLES ANDERE ÜBERWIEGT (02:50)
-> **Die letzte Kerze jedes Handelstages im Stundenarchiv ist keine Handelsstunde, sondern eine
-> Momentaufnahme des Schlusskurses — und sie ändert sich zwischen zwei Abrufen um im Mittel
-> 0,0978 %. Das ist praktisch genau die Kostenhürde von 0,10 %, an der fast jede Studie hängt.**
+> ### ⚠→✅ EINE SCHLAGZEILE, DIE SICH IN 40 MINUTEN AUFGELÖST HAT (02:50 → 03:05)
+> **Hier stand: „die letzte Kerze jedes Handelstages ist eine instabile Momentaufnahme, und
+> die Messmaschine liest sie." Das war falsch, und der PM hatte es an die Spitze gesetzt.**
 >
-> **Die Messmaschine liest diese Kerze.** Und sie hat die Belastung die ganze Zeit
-> mitgeschrieben, ohne dass jemand sie als solche gelesen hat: **fünf der zwölf Strategien
-> beziehen 100 % ihrer Signale aus solchen Kerzen**, `rsi2seit` 36,4 %.
+> **Die Gegenprobe auf drei Tage unterschiedlichen Charakters — die der PM verlangt hatte —
+> ergab null Abweichungen.** Und der Grund ist nicht, dass die Kerze dort stimmt, **sondern
+> dass es sie dort gar nicht gibt.** *(Vom PM unabhängig nachgezählt: 400 Reihen,
+> 2.031.300 Kerzen.)*
 >
-> **Was das heißt — und was NICHT:** Jedes Protokoll wurde auf **einem** Archivstand gemessen
-> und ist **in sich konsistent**. Die Zahlen sind nicht falsch. **Aber eine Neumessung nach dem
-> nächsten Sammellauf verschiebt sich um Hürden-Größenordnung.** *Möglicherweise die Erklärung
-> für das ungeklärte 0,0001-Pp-Urteilsgekippe von `rsi2seit-mcp` — Hypothese, nicht behauptet.*
+> | Kerze | an wie vielen Tagen vorhanden |
+> |---|---|
+> | **20:00** (die instabile) | **genau 2** — 25.08. und 26.08.2026, die zwei jüngsten |
+> | 19:30 (normaler Tagesschluss) | **725** |
+> | 18:00 (Halbtagsschluss Winter) | **5** — genau die fünf Winter-Halbtage |
 >
-> **Eine empirische Schranke kommt in Stunden** (der laufende Docht-Vergleich entfernt alle
-> Nullumsatz-Kerzen und misst die kombinierte Wirkung). **Nichts wird vorher umgebaut.**
+> **Für historische Tage existiert die instabile Kerze nicht.** Die letzte Kerze ist 19:30 —
+> und die ist an allen geprüften Tagen **exakt stabil**. Nur die beiden jüngsten Tage tragen
+> die zusätzliche Quote-Kerze, und sie verschwindet, sobald der Tag durchkonsolidiert ist.
+>
+> **→ Rückwirkend auf die zwölf Protokolle kann es NICHT durchschlagen.** Die „100 % Signale
+> auf der letzten Tageskerze" bleiben richtig — **aber historisch ist diese letzte Kerze die
+> stabile 19:30, nicht die unstete Quote.** Betroffen ist höchstens der **aktuelle Rand**, also
+> der Live-Betrieb. **Dieselbe Bauform wie die Quote-Stempel: ein flüchtiges Artefakt der
+> jüngsten Läufe, das sich beim Durchkonsolidieren selbst ausräumt.**
+>
+> *Die Zahlen zum 25.08. stehen unverändert (40 von 40 Reihen, Median 0,0978 %, max 1,0912 %).
+> **Nur die Reichweite war zu groß** — auf einem Tag gemessen, auf alle Tage gelesen.*
 
 ### ⭐ Was auf Wilhelm wartet — drei Entscheidungen
 
@@ -2071,7 +2082,7 @@ werden.*
 > 420 Zeichen geraten und schnitt mitten in die Funktion — **ein Syntaxfehler sieht aus wie
 > ein Befund.**)*
 
-### 🚨🚨🚨 27.08. ~02:50 — JA, DIE MASCHINE LIEST SIE. Und die Zahl stand die ganze Zeit in den Protokollen.
+### 🚨→⚠ 27.08. ~02:50 — JA, die Maschine liest sie — ABER die Kerze gibt es nur an zwei Tagen (siehe Richtigstellung 03:05 oben). Und die Zahl stand die ganze Zeit in den Protokollen.
 
 **Antwort der Mess-Sitzung, gegen den Code UND gegen die abgelegten Protokolle geprüft:**
 
