@@ -1,0 +1,102 @@
+{
+ "gemessenAm": "2026-08-27T10:47:39.160Z",
+ "anteil": 0.18012561686855091,
+ "schwelleBonferroni": null,
+ "tDiff": 0.1681968819679507,
+ "tPlacebo": -0.7409005790970437,
+ "kriterien": [
+  [
+   "1 Signalanteil <= 35 %",
+   true
+  ],
+  [
+   "2 Positivkontrolle Basis t >= 2",
+   false
+  ],
+  [
+   "3 Stress traegt (t >= Schwelle, jeSignal > 0)",
+   false
+  ],
+  [
+   "4 Ruhig traegt nicht (t < Schwelle)",
+   false
+  ],
+  [
+   "5 Differenz Welch-t >= 2",
+   false
+  ],
+  [
+   "6 Placebo-Differenz |t| < 2",
+   true
+  ]
+ ],
+ "urteil": "NICHT MESSBAR (Positivkontrolle versagt - kein NEIN, kein JA)",
+ "arme": {
+  "basis": {
+   "tage": 317,
+   "signale": 3246,
+   "tagesmittel": 0.0037994675482960058,
+   "t": 1.0478798059933518,
+   "se": 0.0036258619801287696,
+   "mde": 0.007251723960257539,
+   "ueberlappungsFaktor": 1.4,
+   "jeSignal": 0.006232990003228485,
+   "anteilPositiv": 0.5397412199630314
+  },
+  "stress": {
+   "tage": 48,
+   "signale": 517,
+   "tagesmittel": 0.004673260215827253,
+   "t": 0.956982269268167,
+   "se": 0.004883329990430267,
+   "mde": 0.009766659980860534,
+   "ueberlappungsFaktor": 0.75,
+   "jeSignal": 0.009608720424817783,
+   "anteilPositiv": 0.5918762088974855
+  },
+  "ruhig": {
+   "tage": 269,
+   "signale": 2729,
+   "tagesmittel": 0.003643549154089686,
+   "t": 0.9868109975141588,
+   "se": 0.003692246198378437,
+   "mde": 0.007384492396756874,
+   "ueberlappungsFaktor": 1.3,
+   "jeSignal": 0.005593469069567196,
+   "anteilPositiv": 0.5298644192011726
+  },
+  "placeboStress": {
+   "tage": 53,
+   "signale": 441,
+   "tagesmittel": 0.0011924888772726554,
+   "t": 1.0426388077393614,
+   "se": 0.0011437219374734358,
+   "mde": 0.0022874438749468716,
+   "ueberlappungsFaktor": 0.21,
+   "jeSignal": -0.002354215162420818,
+   "anteilPositiv": 0.5510204081632653
+  },
+  "placeboRuhig": {
+   "tage": 264,
+   "signale": 2805,
+   "tagesmittel": 0.0043228382663423595,
+   "t": 1.0628241946134966,
+   "se": 0.004067312626350578,
+   "mde": 0.008134625252701156,
+   "ueberlappungsFaktor": 1.39,
+   "jeSignal": 0.007583063970448218,
+   "anteilPositiv": 0.5379679144385027
+  },
+  "live": {
+   "tage": 97,
+   "signale": 1723,
+   "tagesmittel": 0.011335795128219169,
+   "t": 2.2012751133093107,
+   "se": 0.005149649428043267,
+   "mde": 0.010299298856086533,
+   "ueberlappungsFaktor": 0.95,
+   "jeSignal": 0.011147471349392628,
+   "anteilPositiv": 0.5693557748113756
+  }
+ }
+}
