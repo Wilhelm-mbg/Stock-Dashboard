@@ -185,6 +185,39 @@ Nicht-Krypto, **alle am 25.08., null erfasste Marktlagen** → **nicht erfüllt,
 
 ---
 
+## 🧪 27.08. abends — **„100,00 % gültig" war unbelegt. Jetzt ist es eine BELEGTE Null**
+
+**Der Übernacht-Wächter W4 meldete `1.068.469 Zeilen, 100,00 % gültig, null unplausible
+Eröffnungen`.** *W1 und W2b waren per Injektion belegt — **W4 sagte nur, dass er nichts gefunden
+hat**.*
+
+> **Ein glattes 100,00 % über eine Million Zeilen ist genau die Signatur, die heute dreizehnmal
+> ein Instrumentenfehler war** — *die leere Kategorie mit 0,0 % · der Prüfer, der feste Elemente
+> still übersprang · „0 von 1.747" mit blindem Prüfer.* **Alle drei sahen nach Sauberkeit aus und
+> waren Blindheit.**
+
+**Nachgeprüft (Nachtrag 2, `da44f4e`): zehn injizierte Fälle — Eröffnung über dem Hoch, unter dem
+Tief, null, fehlend, negativ — alle gefangen.** *Und die **Grenzfälle exakt = Hoch bzw. exakt =
+Tief bleiben korrekt gültig**, während knapp ±0,01 % daneben fällt.* **10/10, und der Selbsttest
+läuft ab jetzt vor jedem Lauf und bricht bei Fehlschlag ab.**
+
+> ### 🎯 **UND DABEI WÄRE BEINAHE GENAU DIE FALLE ENTSTANDEN, gegen die geprüft wurde**
+> ***„Mein erster Test hat die Prüfbedingung NACHGEBAUT statt sie aus dem Werkzeug zu nehmen — er
+> hätte also meinen Nachbau geprüft, nicht den Wächter."***
+>
+> *Selbst gefangen, mit Verweis auf die eigene Gedächtnisregel **„der Prüfstand prüft, was er
+> nachbilden kann"**.* **Die Bedingung steht jetzt an EINER benannten Stelle
+> (`eroeffnungPlausibel`), die Lauf und Selbsttest gemeinsam benutzen.**
+>
+> **Und die Logikneutralität der Umbauten ist belegt statt behauptet:** *Der Wächterlauf
+> reproduziert danach **exakt dieselben Zahlen** — 1.068.469 Kandidaten, 100,00 %, W1-Verhältnis
+> 1,095, W2b −0,0005.* **Eine Refaktorierung, die sich selbst als folgenlos ausweist.**
+
+**→ Mitglied 2 hat damit vier Wächter, und alle vier haben eine Positivkontrolle, statt nur zu
+schweigen.** *Der Kohortenlauf hängt allein an den Daten.*
+
+---
+
 ## ✅ 27.08. abends — **DIE EXTREME-FRAGE IST BEANTWORTET: der Mechanismus ist ECHT, aber zu klein**
 
 > ### **Urteil: verschiebt NICHT messbar.**
