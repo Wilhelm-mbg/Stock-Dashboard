@@ -76,8 +76,8 @@ function med(a) {
 function haelfte(a) { return a.slice(Math.floor(a.length / 2)); }
 /* Kunstrang fuer den Placebo: mischt Symbol und Tag so, dass die Reihenfolge
  * der Symbole taeglich NEU ist. Kein Kursbezug, keine Beharrlichkeit. */
-function mischen(a, b) {
-  var h = Math.imul(a, 0x9E3779B1) ^ Math.imul(b, 0x85EBCA6B);
+function mischen(a, b, saat) {
+  var h = Math.imul(a, 0x9E3779B1) ^ Math.imul(b, 0x85EBCA6B) ^ Math.imul(saat|0, 0x27220A95);
   h ^= h >>> 15; h = Math.imul(h, 0x2C1B3C6D);
   h ^= h >>> 13; h = Math.imul(h, 0x297A2D39);
   h ^= h >>> 16;
@@ -103,6 +103,10 @@ var KANDIDATEN = [
   { key: 'C3_schock_streng', was: 'GEGENPROBE: wie K, aber U(i)>=3 statt >=2.' },
   { key: 'K2_schock_rangiert', was: 'BAUFORM 2: dieselben zwei kursbasierten Gatter wie K (Vortag negativ, abflauend), aber der Umsatzschock wird RANGIERT statt geschwellt - Rang nach -U(i). Keine Schockschwelle, deshalb breiter.' },
   { key: 'K3_nur_vorzeichen_rang_U', was: 'BAUFORM 3 (der Kandidat): EIN Gatter - Vortag-Innentag negativ - und Rang nach -U(i). Das Abflau-Gatter faellt weg, weil es aus T2s Innentags-Logik stammt und nicht aus dem Uebernacht-Mechanismus.' },
+  { key: 'P2_placebo', was: 'PLACEBO 2 - gleiche Bauart, andere Startzahl. Dient allein dazu, die STREUUNG des Placebo-Masses zu zeigen.' },
+  { key: 'P3_placebo', was: 'PLACEBO 3 - andere Startzahl.' },
+  { key: 'P4_placebo', was: 'PLACEBO 4 - andere Startzahl.' },
+  { key: 'P5_placebo', was: 'PLACEBO 5 - andere Startzahl.' },
   { key: 'P_gatter_ohne_rang', was: 'GEGENPROBE zur Bauform 3: dasselbe Gatter, aber Rang nach Symbolnummer statt nach U - zeigt, wieviel der Umsatzrang an der Auswahl ueberhaupt aendert.' },
 ];
 
@@ -190,7 +194,11 @@ gewaehlt.forEach(function (sym, symNr) {
        *
        * Ein Kunstrang braucht MISCHUNG, nicht Verschiebung. */
       P_gatter_ohne_rang: (isFinite(rIntraVor) && rIntraVor < 0)
-        ? mischen(symNr + 1, Math.floor(b[i][0] / 86400000)) : INF,
+        ? mischen(symNr + 1, Math.floor(b[i][0] / 86400000), 1) : INF,
+      P2_placebo: (isFinite(rIntraVor) && rIntraVor < 0) ? mischen(symNr + 1, Math.floor(b[i][0] / 86400000), 20260827) : INF,
+      P3_placebo: (isFinite(rIntraVor) && rIntraVor < 0) ? mischen(symNr + 1, Math.floor(b[i][0] / 86400000), 77777) : INF,
+      P4_placebo: (isFinite(rIntraVor) && rIntraVor < 0) ? mischen(symNr + 1, Math.floor(b[i][0] / 86400000), 424242) : INF,
+      P5_placebo: (isFinite(rIntraVor) && rIntraVor < 0) ? mischen(symNr + 1, Math.floor(b[i][0] / 86400000), 999983) : INF,
     };
 
     var tag = new Date(b[i][0]).toISOString().slice(0, 10);
