@@ -456,6 +456,94 @@ Auslöser-Auswahl, und der Hauptschalter) · (4) Ort und Doppelungen mit `06`.*
 
 ---
 
+## 📦 27.08. 18:4x — **PAKET-DEFEKT REPARIERT: es war EINE Datei, nicht 348** (`87e52f8`)
+
+**Die Zuschnitt-Frage ist gemessen beantwortet:** *Es **gibt** einen Auslöser (Knopf „Jetzt
+messen" nach Ablegen einer Strategie im Baukasten), **aber kein Automat und keine Rolle benutzt
+ihn** — der Defekt war **ausgeliefert und ruhend**.*
+
+> **Nur die Klassifizierung kommt ins Paket, NICHT der Strategien-Ordner** — *die zu messende
+> Strategie holt der App-Pfad aus dem **Datenordner**.* **Meine Sorge vor 348 Studiendateien im
+> Installer war unbegründet.**
+
+**⚠ Und die Herkunft ist unangenehm klar: `v8.34.0` hatte den Defekt NICHT.** *Es ist eine
+**Regression aus der Schranke von heute früh**, eingeführt 08:21, ausgeliefert in **8.34.1 und
+8.34.2**.* **Heute eingebaut, heute ausgeliefert, heute gefunden.**
+*Vier Kontrollen belegen die Ursache; die Gegenthese ist widerlegt — der Messpfad läuft in der
+Installation aus dem Paket.*
+*`tools/release.js` kennt die Datei jetzt auch — **die dortige Sperrklinke hat das selbst
+eingefordert**, sonst wäre sie still aus der Release-Prüfung gefallen.*
+
+> ### 🎯 **DER WERTVOLLSTE TEIL IST EIN VERWORFENER ENTWURF**
+> *Die erste Sperrklinke sollte die Ladekette **statisch analysieren**. Die adversarische
+> Gegenprüfung hat sie kassiert: **sechs übersehene Ladeformen** (`module.require`, aliasierte
+> `require`, JSON über Ordner-Regeln, per `readFileSync` gelesene Dateien) — **und vier von fünf
+> plausiblen Reparaturen hätten sie ROT gemacht.**
+>
+> ### ***„Ein Test, der die Reparatur blockiert, ist schlimmer als keiner."***
+>
+> **Die jetzige Form fragt nicht, welche Dateien der Messpfad braucht — sie BAUT DAS PAKET NACH
+> UND PROBIERT ES AUS:** *nur die von `build.files` getroffenen Dateien kopieren, dann lädt Node
+> selbst.* **Gegen alle fünf Reparaturformen geprüft: 6/6, Defekt rot, jede Reparatur grün.**
+>
+> *Der Unterschied ist grundsätzlich: **die erste Fassung prüfte eine Behauptung über die Welt,
+> die zweite prüft die Welt.***
+
+**⚖ Selbstkorrektur nebenbei:** *Die Stress-Achsen-Begründung „SPY liegt nicht im Archiv" galt nur
+für `archiv1d` — **im 60m-Archiv liegt SPY im Unterordner `etf/`**, flach nicht sichtbar.*
+**Statt zu argumentieren nachgemessen: Stress-Tage aus SPY und SPXL stimmen auf 712 Tagen zu
+98,7 % überein (Kappa 0,956) — die Substitution ist belegt harmlos und war NICHT der Grund fürs
+Scheitern.** *Beruhigend: `kapitulation.js` kennt den `etf`-Ordner und sucht ihn zuerst,
+`ladeUniversum` liest bewusst flach (ETFs sind Maßstab, nicht Messobjekt) — **beides Absicht, die
+validierte Kante ist unberührt**.*
+
+---
+
+## 💾 27.08. 18:3x — **VOLLAUF KONTROLLIERT GESTORBEN — und der Pilot hat sich 1.339-fach ausgezahlt**
+
+**Abbruch nach 775 von 1.116 Reihen: fünf Netzfehler in Folge** *(Zeitüberschreitung, ETIMEDOUT,
+ECONNREFUSED)*. **Die eingebaute Bremse hat gegriffen und abgebrochen, statt gegen eine vermutete
+Sperre weiterzulaufen** — *sie hat genau das getan, wofür sie da ist.* **Die Quelle ist wieder
+erreichbar, der Rest läuft: 340 Reihen, ~74 Minuten.**
+
+**Gegenprüfung der 775 geschriebenen Reihen, beide Richtungen:**
+
+    Kerzen aus der Sicherung verloren : 0
+    Kerzen mit falscher Feldzahl      : 0
+    Kerzen 200.740 -> 200.913 (+173)
+    MIT Eroeffnung: 199.336 von 200.913  (99,2 %)
+    Aus dem Bestand BEHALTEN: 1.339 Kerzen
+
+> ### 🎯 **DIE 1.339 SIND DER BELEG, UM DEN ES HEUTE FRÜH GING**
+> *Genau so viele Kerzen lagen **außerhalb des rollenden Quellfensters**.* **Ein `writeFileSync`
+> hätte sie alle vernichtet — das war der Fehler, den der Pilot gefunden hat.**
+> ***„Dein Beharren auf ‚Pilot vor Vollauf' hat sich damit 1.339-fach ausgezahlt."***
+> *Heute früh war es eine Kerze je Reihe in einer Stichprobe von 20. Im Maßstab sind es 1.339.*
+
+> ### 🔴 **UND DER FUND BEIM NEUSTART WAR SCHLIMMER ALS DER ABBRUCH**
+> **`--erneuern` kannte keinen Fortschritt.** *Es hätte die 775 fertigen Reihen **noch einmal**
+> geholt — knapp drei Stunden für nichts.* **Und bei erneutem Netzabbruch wäre der Lauf NIE über
+> die ersten 775 hinausgekommen.**
+>
+> ***Ein wiederanlauffähiger Lauf, der immer bei null beginnt, kann bei wiederkehrenden Störungen
+> niemals fertig werden.*** *Behoben (`95a8d2b`): `stand.fertig` trägt `mitEroeffnung`,
+> `--erneuern` nimmt nur die noch nicht erneuerten.*
+>
+> **Die Marke für die 775 wurde aus dem BELEG nachgetragen, nicht aus dem Gedächtnis** — *gesetzt
+> nur dort, wo die Datei das Formatfeld wirklich trägt.* **Vierter Stempel-Fall heute, diesmal
+> richtig herum gebaut.**
+
+**⚠ Acht Kerzen weichen ab — nicht durchgewunken, sondern geprüft:** *in allen acht Fällen die
+**letzte** Kerze der Reihe, Umsatz identisch, Abweichung eine **Rundung auf vier
+Nachkommastellen** (NMHI 0,00051 → 0,0005). **Gegenprobe an der Quelle: sie liefert diese Werte
+inzwischen selbst gerundet** — die Rundung kommt nicht aus dem Werkzeug, das Mischen hat den
+frischen Wert genommen, wie vorgesehen.*
+**Für die Messseite relevant: bei Kursen unter einem Cent sind vier Nachkommastellen bis zu 2 %
+Verlust.** *Wer auf dieser Preisklasse misst, sollte es wissen — 8 von 200.913, nichts dagegen
+gebaut.*
+
+---
+
 ## 🚨 27.08. 18:1x — **DIE MELDEPFLICHT ZEIGT AUF EINE ADRESSE, DIE ES NICHT GIBT**
 
 > ### **Alle Rollenanweisungen sagen: „melde dich bei `Projekt-Manager` (Status `interactive`)". Diesen Eintrag gibt es nicht.**
