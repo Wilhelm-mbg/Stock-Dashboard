@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 03:50 (abgelesen)
+letzter-bericht: 2026-08-27 04:00 (abgelesen)
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -144,6 +144,79 @@ Zahl hereingefallen war): ***Die Falle verschwindet nicht durch einmaliges Erken
 
 *Alles unterhalb dieser Zeile ist Beleg zur Bilanz oben. Wer nur wissen will, was zu
 entscheiden ist, hat es bereits gelesen.*
+
+### 📊 27.08. ~04:00 — ALLE VIER LÄUFE DURCH *(Vermerk `qs-audit-2026-08-27-0400-VIER-LAEUFE.md`)*
+
+*Alle Zahlen gelten für den **neuen** Archivstand — 60m neu geschrieben 01:58:46, 1d 03:34:25.*
+
+**LAUF 2 — OPTION (c) IST ENDGÜLTIG ERLEDIGT, auch für die Teilmenge.**
+Die erste Auswertung war unbrauchbar: Gleichheit auf `1e-9` **absolut** zwischen zwei
+**float32**-Archiven → 40,6 % „keins der drei", Unterschiede in der dritten Nachkommastelle,
+Median 0,0007 %. **Speicherrauschen, kein Dissens.**
+**Statt eine neue Schwelle NACH dem Ergebnis zu wählen, läuft die Einordnung über eine Leiter:**
+
+    Toleranz        NORMALTAGE                      HALBTAGE
+                 A      B      C    keins        A      B      C    keins
+    exakt      42,6 % 16,8 %  0,0 % 40,6 %     38,1 %  0,2 %  8,9 % 52,8 %
+    1e-5       48,3 % 18,4 %  0,0 % 33,4 %     42,9 %  0,2 %  9,9 % 47,0 %
+    1e-3       76,9 % 18,6 %  0,0 %  4,5 %     74,8 %  0,1 % 12,1 % 13,0 %
+
+**Über die ganze Leiter stabil: A dominiert, C liegt an Normaltagen bei 0,0 %. Der Tagesbalken
+führt den Nachhandel NICHT mit.** *Das Urteil hängt nicht an der Schwelle, nur seine Schärfe.*
+**→ „Außerhalb der Tagesspanne" ist im Kern ein Test auf „außerhalb der Sitzung".**
+*Offen: an Halbtagen liegt C bei 9–12 %; Vermutung (ungemessen) ist die fehlende letzte
+Sitzungshalbstunde, deren echte Extreme in A fehlen.*
+
+**LAUF 1 — Urteil INDIVIDUELL, 7 von 7 Tagen. Aber schwächer, als das Wort klingt:**
+**Kein Tag erreicht den geforderten Abstand von 20 Anteils-Punkten zur Kontrolle** — die
+Abstände liegen zwischen **−0,7 und +5,6**. *Das Urteil sagt korrekt „kein Strukturüberschuss":
+die Phantom-Dochte sind **nicht stärker gehäuft** als gewöhnliche Kerzen.* **Es ist ein
+Nullbefund gegen Strukturgleichheit — kein positiver Beleg für Handel.**
+*Populationstrennung: 9.447 nach, 435 vor, 0 auf — **95,6 % nach der letzten Umsatzkerze.***
+*Kontrollgröße (c4s Sorge): je Halbtag 8.504–9.335 Umsatzkerzen gegen 1.176–1.586
+Phantom-Kerzen — **die Kontrolle ist sechsmal so groß wie die Messgruppe.***
+**Und die Probe aufs Exempel: Der dichte Kern am 24.12.2025 (17,8 % gegen 8,8 % Kontrolle)
+wird als Fund gemeldet — und das Urteil NICHT gedreht.** *Genau wie im Nachtrag angekündigt
+und von `c4` zur Prüfung gestellt.*
+
+**LAUF 3 — und hier steckt ein NEUER Datenfund:** 2.101.732 Paare, 23,43 % exakt, p50
+0,0269 %. **Die Riesenabweichungen sind aufgeklärt: VIER Reihen von 2.878 haben eine
+inkonsistente Kursanpassung ZWISCHEN den beiden Archiven.**
+
+    BYND  715 von 732 Paaren ueber 100 %   Faktor exakt 30,0000  (Reverse Split)
+    RGR   522 von 732                      Faktor  2,6738
+    SITC  255 von 732                      Faktor  3,3611
+    B     232 von 659                      Faktor  2,3348
+
+*Das erklärt auch die „max 2891 %" aus Lauf 1. **Auf Median und Perzentile wirken sie nicht**
+(0,08 % der Paare), **auf jeden Maximalwert schon.*** **→ 60m und 1d sind für diese vier
+Reihen nicht vergleichbar.**
+
+**LAUF 6 — die Falsifikationsbedingung ist ZUR HÄLFTE GESCHEITERT, an der eigenen Aussage:**
+
+    (a) 21 von 21 Phantomtage unveraendert, 0 verschwunden  -> eingetreten
+    (b) BTSGU hat einen Phantomtag DAZUbekommen            -> NICHT eingetreten
+
+**„Der Zähler friert ein" ist damit falsifiziert.** Von den vier heute Nacht überhaupt
+abgerufenen Reihen hat **eine** einen weiteren bekommen — BTSGU, letzter Handel zwei Tage her,
+also **noch im Antwortfenster der Quelle**. *AVB und EQR wurden gar nicht mehr abgerufen — für
+sie ist (b) **trivial erfüllt und ohne Aussagekraft**.*
+**Die frühere Fassung „gedeckelter Schwanz von 1–5 Tagen" hält. Die Zuspitzung hielt nicht.**
+
+### 🐛 Vier eigene Messfehler in diesem Durchgang — alle behoben und dokumentiert
+
+1. **Vorher-Stand aus gerundeter Bildschirmausgabe** (`toFixed(2)`) gegen Rohwerte auf `1e-6`
+   verglichen. *Ein vorregistrierter Vergleich mit gerundetem Bezugswert **kann nur
+   scheitern**.* Kostete einen Fehlalarm über 7 geänderte Kerzen.
+2. **Gleichheit auf `1e-9` zwischen zwei float32-Archiven** — die 40,6 % „keins".
+3. `Math.max.apply` mit 2.101.732 Werten **sprengt den Aufrufstapel**; Lauf 3 stürzte ab,
+   **nachdem** die übrigen Zahlen ausgegeben waren.
+4. **⚠ Der Wächter prüft auf das Wort „ABBRUCH" — das stand schon in der Datei des Laufs von
+   02:00.** *Ein zwei Stunden altes Ergebnis gelesen und beinahe damit weitergegangen.*
+
+> **Nummer 4 ist die lehrreichste: eine Wartebedingung, die auf einem Zustand von vorher schon
+> wahr ist, wartet nicht.** *Dieselbe Bauform wie die PM-Suche nach `lock` statt `_laeuft.json`
+> — **eine Prüfung, die grün wird, weil sie das Falsche prüft.***
 
 ### 🔢 27.08. ~03:50 — F1-ZÄHLUNG: die Ränder-Prämisse trägt nicht, und BRK.A fliegt per Bauart raus
 
