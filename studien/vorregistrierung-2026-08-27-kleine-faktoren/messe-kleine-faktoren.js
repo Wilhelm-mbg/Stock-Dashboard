@@ -63,10 +63,11 @@ function rateFuer(fk) {
     while (a < b) { var m2 = (a + b) >> 1; if (qAlle[m2] <= hi) a = m2 + 1; else b = m2; }
     return a - start;
   }
-  var n = anzahlIm(fk - TOL_ABS, fk + TOL_ABS);
-  /* inverse Seite: 1/q in [f-tol, f+tol]  <=>  q in [1/(f+tol), 1/(f-tol)] */
-  if (fk - TOL_ABS > 0) n += anzahlIm(1 / (fk + TOL_ABS), 1 / (fk - TOL_ABS));
-  return n / qAlle.length;
+  /* RICHTUNGSTREU (Registrierung: |q - f| <= tol, keine inverse Alternative).
+   * Die inverse Prüfung aus dem grossen Join ist hier falsch: bei Faktoren nahe 1
+   * verdoppelt sie die Zufallsflaeche und zaehlt einen Sprung in der GEGEN-Richtung
+   * als Treffer (NWG 2022-08-30: -7,2 % statt der erwarteten +7,7 %). */
+  return anzahlIm(fk - TOL_ABS, fk + TOL_ABS) / qAlle.length;
 }
 
 /* ---------- 3. Gate + Klassifizierung ---------- */
@@ -92,7 +93,7 @@ beurteilt.forEach(function (e) {
   var trefferDatum = false, qBest = null;
   for (var d = Math.max(1, idx - 1); d <= Math.min(b.length - 1, idx + 1); d++) {
     var q = b[d][1] / b[d - 1][1];
-    var passt = Math.abs(q - e.f) <= TOL_ABS || (e.f > TOL_ABS && Math.abs(1 / q - e.f) <= TOL_ABS);
+    var passt = Math.abs(q - e.f) <= TOL_ABS;     /* richtungstreu, wie registriert */
     if (!qBest || Math.abs(q - e.f) < Math.abs(qBest - e.f)) qBest = q;
     if (passt) { trefferDatum = true; break; }
   }
