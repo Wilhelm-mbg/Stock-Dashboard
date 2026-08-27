@@ -6166,12 +6166,24 @@
       var kb = kostenBilanz();
       if (kb) {
         var diff = kb.medianPct - kb.annahmePct;
+        /* Das Urteil haengt seit dem 27.08. an Wilhelms Schwelle (verschiedene
+         * Tage UND Marktlagen), nicht mehr an einer Rundenzahl - hier stand bis
+         * dahin noch die alte 20er-Bedingung, die eine Klickfolge erfuellt haette. */
+        var st9 = kb.streuung;
         txt += ' · Gemessene Handelskosten aus ' + kb.n + ' vollständigen Runden: Median ' +
           U.dez(kb.medianPct, 3) + ' % je Runde (angenommen: ' + U.dez(kb.annahmePct, 2) + ' %) – ' +
-          (kb.n < 20 ? 'noch zu wenige Runden für ein Urteil'
+          (!(st9 && st9.erfuellt)
+            ? 'noch kein Urteil: die Freigabe verlangt Runden über verschiedene Tage UND Marktlagen' +
+              (st9 ? ' (bisher ' + st9.tage + ' Tag(e), ' + st9.marktlagen + ' erfasste Marktlage(n))' : '')
             : Math.abs(diff) < 0.02 ? 'die Annahme der Studien trägt'
             : diff > 0 ? 'teurer als angenommen, die Studien rechnen zu günstig'
             : 'günstiger als angenommen – die Kostenhürde der Studien ist zu streng');
+        /* Der Automat endet NIE stillschweigend: erfuellt er seine Bedingung,
+         * steht das hier, und zwar dauerhaft und nicht nur als Klick-Status. */
+        var as9 = window.Kosten.automatStand ? window.Kosten.automatStand() : null;
+        if (as9 && as9.meldung) txt += ' · ' + as9.meldung;
+        else if (as9 && !as9.an) txt += ' · Messautomat ausgeschaltet – es wird nur noch von Hand gemessen.';
+        else if (as9) txt += ' · Messautomat läuft: eine Runde je Handelstag zu wechselnder Uhrzeit.';
       } else if (s0.ok) {
         /* Stand 25.08.2026 stimmte dieser Satz nicht mehr: gespiegelt wird nur im
          * Intraday-Pfad, und der ist seit dem 23.08. vom Edge-Waechter pausiert. Der
@@ -6590,7 +6602,10 @@
      * Aliase oben; hereingereicht wird, was das Modul liest und schreibt. */
     if (window.Kosten) window.Kosten.verkabeln({
       depot: function () { return D; }, save: save, melde: melde,
-      universe: universe, istKrypto: istKrypto, HEALTH: HEALTH
+      universe: universe, istKrypto: istKrypto, HEALTH: HEALTH,
+      /* Der validierte Regime-Anker fuer den Marktlagen-Stempel - hereingereicht
+       * statt nachgebaut, damit Automat und Knopf dieselbe Lage lesen. */
+      marktlage: spyTrendAuf
     });
     /* Tiefensuche/Zucht (Stufe E): rein archivgestuetzt; ob eine Messung laeuft,
      * beantwortet das Handelsmodul als EINE Frage statt dreier Zustaende. */
@@ -6785,6 +6800,12 @@
 
     setInterval(window.Kosten.probe, 8 * 60000);
     setTimeout(window.Kosten.probe, 40000);
+    /* Der Messautomat: EINE Kostenrunde je Handelstag, Zeitpunkt je Tag
+     * gewuerfelt (Wilhelms Auftrag 27.08.). Der Blick auf die Uhr ist billig und
+     * setzt fuer sich keine Order ab - die Bedingungen stehen in kosten.js.
+     * Abschaltbar wie der Krypto-Sammler: D.kostenAutomat === false. */
+    setInterval(function () { try { window.Kosten.automatNachsehen(); } catch (e) { } }, 60000);
+    setTimeout(function () { try { window.Kosten.automatNachsehen(); } catch (e) { } }, 90000);
     /* Depotverlauf-Puls: frueher ein Nebeneffekt von render() - die Kurve wuchs
      * nur, wenn jemand den Reiter ansah. Jetzt laeuft der Punkt (hoechstens einer
      * je 10 Minuten, die Drossel wohnt in equityPuls) unabhaengig vom Rendern. */

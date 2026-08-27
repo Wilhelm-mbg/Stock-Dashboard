@@ -16,7 +16,7 @@
 (function () {
   /* Von depot.js hereingereicht (verkabeln). */
   var holeDepot = null, save = null, melde = null, universe = null,
-      istKrypto = null, HEALTH = null;
+      istKrypto = null, HEALTH = null, marktlageLesen = null;
   var D = null;
 
   /* ============ Reset-festes Nebenlager der Messreihe (Wilhelms Entscheid 27.08.) ============
@@ -320,7 +320,25 @@
    * kann die Freigabeschwelle oben aus den DATEN zaehlen, ob verschiedene
    * Marktlagen gemessen wurden, statt es sich zusichern zu lassen. Runden aus
    * der Zeit davor tragen das Feld nicht und zaehlen als "nicht erfasst". */
+  var RUNDE_LAEUFT = false;
+  /** Eine Runde zur Zeit - fuer Knopf UND Automat dieselbe Sperre. Sie sitzt
+   *  hier und nicht beim Aufrufer: eine Sperre je Aufrufer waere genau die
+   *  Bauform, bei der zwei Wege gleichzeitig eine echte Order absetzen.
+   *  Dasselbe Muster wie die Release-Sperre: Kern in try/finally. */
   async function kostenRundeMessen(sym, marktlage) {
+    if (RUNDE_LAEUFT) {
+      /* Auch dieser Ausgang wird vermerkt: ein Versuch, dessen Ausgang niemand
+       * nachlesen kann, ist kein Messgeschirr - das galt fuer die fruehe Sperre
+       * am 25.08. und gilt fuer diese genauso. */
+      var gSperre = 'Es läuft bereits eine Messrunde.';
+      kostenVersuchNeu(sym, false, gSperre);
+      return { ok: false, grund: gSperre };
+    }
+    RUNDE_LAEUFT = true;
+    try { return await kostenRundeKern(sym, marktlage); }
+    finally { RUNDE_LAEUFT = false; }
+  }
+  async function kostenRundeKern(sym, marktlage) {
     if (!(window.CapAPI && window.CapAPI.enabled() && window.CapAPI.quote)) {
       var g1 = 'Capital.com-Demo ist nicht verbunden.';
       kostenVersuchNeu(sym, false, g1);
@@ -454,11 +472,15 @@
       if (x.runde == null || !isFinite(x.runde)) return;
       n++;
       tage[new Date(x.at).toISOString().slice(0, 10)] = 1;
-      if (x.marktlage) lagen[x.marktlage] = 1; else ohneLage++;
+      if (x.marktlage) lagen[x.marktlage] = (lagen[x.marktlage] || 0) + 1; else ohneLage++;
     });
     var t = Object.keys(tage).sort(), l = Object.keys(lagen).sort();
+    /* jeLage ist ADDITIV und aendert 'erfuellt' nicht: die Freigabe-Zaehlregel
+     * bleibt Wort fuer Wort, wie sie vorgelegt wurde. Die Zahl je Lage braucht
+     * der Messautomat fuer seine Abschaltbedingung - und sie an zwei Stellen
+     * zu zaehlen waere die Bauform, aus der zwei Wahrheiten entstehen. */
     return { runden: n, tage: t.length, tageListe: t,
-             marktlagen: l.length, marktlagenListe: l,
+             marktlagen: l.length, marktlagenListe: l, jeLage: lagen,
              rundenOhneMarktlage: ohneLage,
              erfuellt: t.length >= 2 && l.length >= 2 };
   }
@@ -493,6 +515,121 @@
     return aus;
   }
   if (typeof window !== 'undefined') window.__kostenBilanz = kostenBilanz;
+
+  /* ================= Der Messautomat (Wilhelms Auftrag 27.08.2026) =================
+   *
+   * WARUM ES IHN GIBT. Die Freigabeschwelle verlangt Runden ueber verschiedene
+   * TAGE und MARKTLAGEN. Durch Klicken ist das praktisch nicht erreichbar - man
+   * muesste an vielen verschiedenen Tagen daran denken, und der einzige Versuch
+   * ergab 16 Runden in einer Minute. Der Automat ist deshalb nicht Bequemlichkeit,
+   * sondern die Voraussetzung dafuer, dass die Schwelle je erfuellt werden kann.
+   *
+   * EINE RUNDE JE HANDELSTAG, nicht mehr. Jede Runde ist eine ECHTE Order auf dem
+   * Demo-Konto (200 $, sofort wieder geschlossen). Zwei Runden am selben Tag
+   * bringen der Schwelle null zusaetzlichen Fortschritt und kosten die doppelte
+   * Order - deshalb eine.
+   *
+   * DER ZEITPUNKT WIRD JE TAG NEU GEWUERFELT. Die 16 vorhandenen Runden stehen
+   * ausnahmslos auf 13:31-13:32 UTC - der ersten Minute nach US-Eroeffnung und
+   * damit der Tageszeit mit der systematisch weitesten Spanne. Ein fester Takt
+   * wuerde diese Verzerrung nur ordentlicher wiederholen.
+   *
+   * ABSCHALTEN: Schwelle erfuellt UND mindestens LAGE_MINDEST Runden JE erfasster
+   * Lage (Wilhelms Entscheid). Die Schwelle allein genuegt ausdruecklich NICHT -
+   * sie ist eine MINDESTbedingung fuer die Freigabe; als alleiniges Stoppsignal
+   * waere sie eine Obergrenze, und im unguenstigen Fall stuende die zweite Lage
+   * mit einer einzigen Messung da (30 zu 1). */
+  var LAGE_MINDEST = 10;   // Runden je Lage, bevor der Automat sich abstellt - Wilhelms Zahl, hier zu aendern
+  var AUTOMAT = { tag: null, zielMin: null, gemessenAm: null, letzterGrund: null };
+  var automatTakt = 0;
+
+  /** Fertig = Schwelle erfuellt UND jede erfasste Lage traegt genug Runden. */
+  function automatFertig() {
+    var s = kostenStreuung(kostenRunden());
+    if (!s.erfuellt) return false;
+    var lagen = s.jeLage || {};
+    var namen = Object.keys(lagen);
+    if (!namen.length) return false;
+    for (var i = 0; i < namen.length; i++) if (lagen[namen[i]] < LAGE_MINDEST) return false;
+    return true;
+  }
+  /** Der Stand fuer die Anzeige - der Automat endet nie stillschweigend. */
+  function automatStand() {
+    var s = kostenStreuung(kostenRunden());
+    var fertig = automatFertig();
+    return { an: !(D && D.kostenAutomat === false), fertig: fertig, streuung: s,
+             lageMindest: LAGE_MINDEST, zielMin: AUTOMAT.zielMin,
+             gemessenAm: AUTOMAT.gemessenAm, letzterGrund: AUTOMAT.letzterGrund,
+             meldung: fertig
+               ? 'Schwelle erfüllt, Messung eingestellt: ' + s.runden + ' Runden über ' + s.tage +
+                 ' Tage und ' + s.marktlagen + ' Marktlagen, jede mit mindestens ' + LAGE_MINDEST + ' Runden.'
+               : null };
+  }
+  function zielMinuteWuerfeln(jetzt) {
+    var sm = (window.Boerse && window.Boerse.sitzungsMinuten) ? window.Boerse.sitzungsMinuten(jetzt) : 390;
+    if (!sm) return null;                       // kein Handelstag
+    /* Nicht in den ersten Minuten (dort ist die Spanne am weitesten und die
+     * bisherige Stichprobe klebt ohnehin dort) und nicht in den letzten 20 -
+     * eine Runde braucht Zeit zum Oeffnen UND Schliessen. */
+    var von = 10, bis = Math.max(von + 1, sm - 20);
+    return von + Math.floor(Math.random() * (bis - von));
+  }
+  /** Steht fuer diesen Tag schon eine Aktien-Runde in den DATEN? Das Merkmal im
+   *  Arbeitsspeicher allein genuegt nicht: nach einem App-Neustart waere es leer,
+   *  und aus "eine Runde je Handelstag" wuerde "eine je Programmstart". Eine von
+   *  Hand geklickte Runde zaehlt ausdruecklich mit - der Tag ist gemessen, egal
+   *  wer ausgeloest hat. */
+  function heuteSchonGemessen(tag) {
+    var r = kostenRunden();
+    for (var i = 0; i < r.length; i++) {
+      if (r[i].krypto) continue;
+      if (new Date(r[i].at).toISOString().slice(0, 10) === tag) return true;
+    }
+    return false;
+  }
+  function naechstesAktiensymbol() {
+    var liste = [];
+    try { liste = (universe ? universe() : []) || []; } catch (e) { liste = []; }
+    liste = liste.filter(function (s) { return typeof s === 'string' && !(istKrypto && istKrypto(s)); });
+    if (!liste.length) return null;
+    var s = liste[automatTakt % liste.length];
+    automatTakt++;
+    return s;
+  }
+  /** Der Blick auf die Uhr. Setzt selbst keine Order ab, wenn irgendetwas fehlt. */
+  async function automatNachsehen() {
+    if (!D || D.kostenAutomat === false) return;
+    if (RUNDE_LAEUFT) return;
+    if (automatFertig()) return;               // fertig: nichts mehr, die Anzeige sagt es
+    var jetzt = Date.now();
+    var tag = new Date(jetzt).toISOString().slice(0, 10);
+    if (AUTOMAT.tag !== tag) { AUTOMAT.tag = tag; AUTOMAT.zielMin = zielMinuteWuerfeln(jetzt); }
+    if (AUTOMAT.zielMin == null) return;       // kein Handelstag
+    if (AUTOMAT.gemessenAm === tag) return;    // in dieser Sitzung schon versucht
+    if (heuteSchonGemessen(tag)) return;       // und die Daten sagen dasselbe ueber Neustarts hinweg
+    if (!(window.Dash && window.Dash.marketOpen && window.Dash.marketOpen())) return;
+    var m = (window.Quant && window.Quant.minutenSeitOeffnung) ? window.Quant.minutenSeitOeffnung(jetzt) : null;
+    if (m == null || m < AUTOMAT.zielMin) return;
+    var sym = naechstesAktiensymbol();
+    if (!sym) return;
+    /* Der Tag gilt als verbraucht, BEVOR gemessen wird: sonst versucht es ein
+     * Fehlschlag in der naechsten Minute erneut, und aus einer Runde je Tag
+     * wird Dauerfeuer echter Orders. */
+    AUTOMAT.gemessenAm = tag;
+    var lage = null;
+    try {
+      if (marktlageLesen) {
+        var auf = await marktlageLesen();
+        lage = auf === true ? 'trend-auf' : auf === false ? 'trend-ab' : null;
+      }
+    } catch (e) { lage = null; }
+    var r = null;
+    try { r = await kostenRundeMessen(sym, lage); }
+    catch (e) { r = { ok: false, grund: String((e && e.message) || e) }; }
+    AUTOMAT.letzterGrund = (r && r.ok)
+      ? sym + ': Umlauf ' + (r.rundePct != null ? r.rundePct.toFixed(3) : '?') + ' %'
+      : sym + ': ' + ((r && r.grund) || 'Die Runde lief nicht durch.');
+  }
 
     /* ===== Spannen-Messung (22.08.2026) =====
      * Capital.com liefert Geld- UND Briefkurs. Deren Abstand IST die Kostenhuerde
@@ -571,6 +708,10 @@
     universe = deps.universe;
     istKrypto = deps.istKrypto;
     HEALTH = deps.HEALTH;
+    /* Der Regime-Anker wohnt im Handelsmodul (validiert, t=3,2) und wird
+     * hereingereicht statt nachgebaut - der Automat soll dieselbe Marktlage
+     * stempeln wie der Knopf. */
+    marktlageLesen = deps.marktlage || null;
     /* Das Nebenlager frueh laden - dann steht die Reihe, bevor die erste
      * Bilanz gezeichnet oder die erste Runde geschrieben wird. */
     messungHolen();
@@ -588,6 +729,8 @@
     kostenBilanz: mitFrischemD(kostenBilanz),
     kostenStreuung: kostenStreuung,   /* rein rechnend, braucht kein frisches D */
     kostenRunden: mitFrischemD(kostenRunden),
+    automatNachsehen: mitFrischemD(automatNachsehen),
+    automatStand: mitFrischemD(automatStand),
     probe: mitFrischemD(spannenProbe),
     tagFestschreiben: mitFrischemD(spannenTagFestschreiben)
   };
