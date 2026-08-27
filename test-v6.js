@@ -10357,6 +10357,25 @@ console.log('\nmassive-tagesdaten: Vereinigen und Entdoppeln (27.08.2026)');
 })();
 
 
+(function () {
+  /* Testkuerzel der Boerse: namentlich draussen statt als Nebenwirkung einer
+   * Referenzluecke (Tafel-Entscheid 27.08.2026). Beide Richtungen einzeln geprueft,
+   * absichtlich KEIN Namensmuster - ein Muster wuerfe irgendwann ein echtes Papier. */
+  var WPA = require(__dirname + '/studien/messmaschine/strategien/wertpapierart.js');
+  ['ZVZZT', 'ZWZZT', 'ZXZZT', 'ZJZZT'].forEach(function (s) {
+    ok(WPA.istAktie(s) === false, 'Testkuerzel bleibt draussen, einzeln gefuehrt', s);
+  });
+  ['ZTS', 'ZM'].forEach(function (s) {
+    ok(WPA.istAktie(s) === true, 'Echtes Papier mit aehnlichem Kuerzel bleibt drin', s);
+  });
+  /* Reihenfolge im Quelltext: der namentliche Riegel sitzt VOR dem Karten-Laden,
+   * sonst kaeme im Ohne-Karte-Rueckfall (laesst alles durch) alles wieder herein. */
+  var q = require('fs').readFileSync(__dirname + '/studien/messmaschine/strategien/wertpapierart.js', 'utf8');
+  var fkt = q.slice(q.indexOf('function istAktie'));
+  ok(fkt.indexOf('TESTKUERZEL[') !== -1 && fkt.indexOf('TESTKUERZEL[') < fkt.indexOf('laden()'),
+     'Der namentliche Riegel greift vor Karte und Rueckfall');
+})();
+
 Promise.all(offeneProben).then(function () {
   console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
   process.exit(fails ? 1 : 0);

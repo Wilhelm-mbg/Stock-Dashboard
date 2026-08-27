@@ -28,12 +28,21 @@
  * Wertpapierart ist eine Tatsache und kommt aus tools/wertpapierarten-holen.js.
  * Fehlt die Datei, laesst der Filter ALLES durch und sagt es - lieber eine
  * sichtbare Luecke als ein stiller Filter.
- */
+ *
+ * EINE AUSNAHME VON "KEINE NAMENSLISTE", und warum sie keine ist (Tafel-Entscheid
+ * 27.08.2026): die Nasdaq-Testkuerzel. Synthetische Kurse mit echtem Umsatzfeld
+ * schlagen in jedem Detektor an; bis heute waren sie nur draussen, weil die
+ * Referenzliste sie NICHT KANNTE - "draussen, weil unbekannt" sieht aus wie
+ * "draussen, weil ausgeschlossen", bis ein Referenz-Refresh sie als CS aufnimmt
+ * (die Boerse fuehrt sie formal so). Und im Ohne-Karte-Rueckfall unten kaemen sie
+ * sogar heute durch. Die vier Kuerzel sind eine geschlossene Menge der Boerse,
+ * kein pflegebeduerftiger Bestand - genau deshalb duerfen sie als Namen stehen. */
 var fs = require('fs');
 var path = require('path');
 var os = require('os');
 
 var AKTIENARTEN = { CS: 1, ADRC: 1 };
+var TESTKUERZEL = { ZVZZT: 1, ZWZZT: 1, ZXZZT: 1, ZJZZT: 1 };
 var KARTE = null;
 
 function laden() {
@@ -51,6 +60,7 @@ function laden() {
  *  damit eine fehlende Datei nicht stillschweigend das Universum leert. */
 function istAktie(sym) {
   if (sym.indexOf('-USD') !== -1) return false;      // Krypto
+  if (TESTKUERZEL[sym]) return false;                // vor der Karte UND vor dem Rueckfall
   var k = laden();
   if (!k) return true;
   /* Yahoo schreibt Aktienklassen mit Bindestrich (BRK-B), die Schnittstelle mit
@@ -63,4 +73,4 @@ function istAktie(sym) {
 /** Fuer das Protokoll: liegt eine Klassifizierung vor? */
 function klassifizierungDa() { return !!laden(); }
 
-module.exports = { istAktie: istAktie, klassifizierungDa: klassifizierungDa, AKTIENARTEN: AKTIENARTEN };
+module.exports = { istAktie: istAktie, klassifizierungDa: klassifizierungDa, AKTIENARTEN: AKTIENARTEN, TESTKUERZEL: TESTKUERZEL };
