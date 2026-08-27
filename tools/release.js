@@ -83,6 +83,11 @@ function gehoertInsPaket(datei) {
   if (/^icon\.(png|ico)$/.test(datei)) return true;
   if (datei === 'studien/messmaschine/messmaschine.js') return true;
   if (datei === 'studien/messmaschine/messen.js') return true;
+  /* Einzeln, NICHT der ganze strategien/-Ordner: messmaschine.js laedt genau diese
+   * eine Datei hart ueber __dirname (Integritaetsschranke), die uebrigen Strategien
+   * kommen im App-Pfad aus dem Datenordner. Die Zeile folgt build.files - ohne sie
+   * fiele die Datei still aus der Release-Pruefung. */
+  if (datei === 'studien/messmaschine/strategien/wertpapierart.js') return true;
   /* Nur JS-Dateien im Wurzelverzeichnis, ohne die Tests. */
   return /^[^/]+\.js$/.test(datei) && !/^test-/.test(datei) && datei !== 'eslint.config.mjs';
 }

@@ -10944,6 +10944,115 @@ console.log('\nmassive-tagesdaten: Vereinigen und Entdoppeln (27.08.2026)');
      r3 && JSON.stringify(r3));
 })();
 
+
+(function () {
+  /* SPERRKLINKE: Traegt das PAKET den Messpfad? (27.08.2026, nach dem Befund, dass
+   * strategien/wertpapierart.js nicht ausgeliefert wurde und "Jetzt messen" in der
+   * installierten App deshalb tot war.)
+   *
+   * Die Frage wird NICHT durch Nachbauen der require-Kette beantwortet. Ein eigener
+   * Zerleger uebersieht module.require, aliasierte require, createRequire, JSON ueber
+   * eine Ordner-Regel und gelesene (statt geladene) Dateien - und er kann eine
+   * korrekte Reparatur rot machen, wenn sie eine andere Musterform waehlt als
+   * erwartet. Ein adversarischer Pruefer hat genau das an einem solchen Entwurf
+   * gezeigt: vier von fuenf plausiblen Reparaturen haetten ihn rot gemacht.
+   *
+   * Stattdessen wird das Paket NACHGEBAUT und ausprobiert: nur die von build.files
+   * getroffenen Dateien werden kopiert, dann laedt Node selbst. Das prueft die
+   * Zusicherung direkt ("der Messpfad ist im Paket lauffaehig") und ist gleichgueltig
+   * dagegen, WIE die Datei ins Paket kommt - jede Musterform, die sie einschliesst,
+   * macht den Test gruen. */
+  var fs = require('fs'), path = require('path'), os = require('os');
+  var pkg = JSON.parse(fs.readFileSync(__dirname + '/package.json', 'utf8'));
+  var muster = (pkg.build && pkg.build.files) || [];
+
+  /* electron-builder-Semantik, so weit dieser Test sie braucht: "*.js" trifft nur die
+   * Wurzel, "!x" schliesst aus, "a/b/**" trifft alles darunter, ein Pfad trifft sich
+   * selbst (und, wenn er ein Ordner ist, alles darunter). */
+  function trifft(muster, relPfad) {
+    var neg = muster.indexOf('!') === 0, m = neg ? muster.slice(1) : muster;
+    var treffer;
+    if (m.indexOf('**') !== -1) {
+      treffer = new RegExp('^' + m.replace(/[.+^${}()|[\]\\]/g, '\\$&').replace(/\*\*/g, '@@').replace(/\*/g, '[^/]*').replace(/@@/g, '.*') + '$').test(relPfad);
+    } else if (m.indexOf('*') !== -1) {
+      treffer = new RegExp('^' + m.replace(/[.+^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '[^/]*') + '$').test(relPfad);
+    } else {
+      treffer = relPfad === m || relPfad.indexOf(m + '/') === 0;
+    }
+    return { treffer: treffer, negativ: neg };
+  }
+  function imPaket(relPfad) {
+    var drin = false;
+    muster.forEach(function (mu) {
+      var t = trifft(mu, relPfad);
+      if (!t.treffer) return;
+      drin = !t.negativ;
+    });
+    return drin;
+  }
+
+  function sammle(wurzel, unter, raus) {
+    fs.readdirSync(path.join(wurzel, unter) || wurzel).forEach(function (n) {
+      if (n === 'node_modules' || n === '.git' || n === 'dist') return;
+      var rel = unter ? unter + '/' + n : n;
+      var st;
+      try { st = fs.statSync(path.join(wurzel, rel)); } catch (e) { return; }
+      if (st.isDirectory()) sammle(wurzel, rel, raus);
+      else if (imPaket(rel)) raus.push(rel);
+    });
+    return raus;
+  }
+
+  var dateien = sammle(__dirname, '', []);
+  ok(dateien.indexOf('studien/messmaschine/messen.js') !== -1 &&
+     dateien.indexOf('studien/messmaschine/messmaschine.js') !== -1 &&
+     dateien.indexOf('quant.js') !== -1,
+     'Paket-Nachbau: die Musterauswertung findet die bekannten Kerndateien', dateien.length + ' Dateien');
+
+  var paket = fs.mkdtempSync(path.join(os.tmpdir(), 'paketprobe-'));
+  dateien.forEach(function (rel) {
+    var ziel = path.join(paket, rel);
+    fs.mkdirSync(path.dirname(ziel), { recursive: true });
+    fs.copyFileSync(path.join(__dirname, rel), ziel);
+  });
+
+  /* Node selbst laden lassen - im Kindprozess, damit ein Absturz den Test nicht
+   * mitnimmt und der Modul-Speicher dieses Laufs unberuehrt bleibt. */
+  var probe = path.join(paket, 'paket-probe.js');
+  fs.writeFileSync(probe,
+    "var M = require('./studien/messmaschine/messmaschine.js');\n" +
+    "var S = { key: 'paketprobe', zeitrahmen: '60m', varianten: [{}],\n" +
+    "  grund: 'Probe: traegt das Paket den Messpfad? Misst nichts.',\n" +
+    "  haltedauerKerzen: 26, leseFensterKerzen: 261, richtung: 'long',\n" +
+    "  signal: function () { return null; } };\n" +
+    "var r = M.messe(S, 'X:/kein-archiv');\n" +
+    "console.log(JSON.stringify(r && r.grund || ''));\n");
+  var res = require('child_process').spawnSync(process.execPath, [probe],
+    { cwd: paket, encoding: 'utf8', timeout: 60000 });
+  var ausgabe = String(res.stdout || '') + String(res.stderr || '');
+
+  ok(!/MODULE_NOT_FOUND|Cannot find module/.test(ausgabe),
+     'Das Paket traegt den Messpfad: kein fehlendes Modul beim Laden',
+     ausgabe.split('\n').filter(function (z) { return /Cannot find module/.test(z); })[0] || '');
+  ok(!/nicht ladbar/.test(ausgabe),
+     'Das Paket traegt die Klassifizierung: die Maschine verweigert nicht wegen fehlender Datei',
+     ausgabe.slice(0, 200));
+
+  /* Gegenprobe: OHNE den Eintrag darf der Test nicht gruen sein - sonst prueft er nichts.
+   * Dieselbe Musterliste, nur ohne den Eintrag, der wertpapierart.js einschliesst. */
+  var ohne = muster.filter(function (mu) { return mu.indexOf('wertpapierart') === -1; });
+  var drinOhne = (function () {
+    var drin = false;
+    ohne.forEach(function (mu) {
+      var t = trifft(mu, 'studien/messmaschine/strategien/wertpapierart.js');
+      if (t.treffer) drin = !t.negativ;
+    });
+    return drin;
+  })();
+  ok(drinOhne === false,
+     'Gegenprobe: ohne den zustaendigen Eintrag waere die Datei NICHT im Paket - der Test prueft also etwas');
+})();
+
 Promise.all(offeneProben).then(function () {
   console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
   process.exit(fails ? 1 : 0);

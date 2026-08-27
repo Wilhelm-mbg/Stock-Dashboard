@@ -38,6 +38,27 @@ Maschinen-Placebo t −0,51 ✓ · Signalanteil 18,0 % ✓ (Gate ≤ 35 %).
    belegbar gewesen. Die Machbarkeits-Rechnung (18 % Anteil × ~365 Bestätigungstage
    → ~50 Tage im dünnen Arm) hätte VOR die Registrierung gehört; Lehre notiert.
 
+## Korrektur (~18:40) — meine Begründung der Referenzreihe war unvollständig
+
+In der Vorregistrierung steht »SPY liegt nicht im E:-Archiv«. **Das stimmt nur für
+archiv1d.** Im 60m-Archiv gibt es einen Unterordner `etf/` mit 31 Referenzreihen,
+darunter `bars_60m_SPY.json` — ich hatte flach gesucht und den Unterordner nicht
+gesehen. Die Tagesspannen wären daraus aggregierbar gewesen; die Substitution war
+also eine Wahl, keine Notwendigkeit.
+
+**Nachgemessen statt argumentiert:** Stress-Tage nach derselben Definition, einmal
+aus SPY (aus 60m auf Tage aggregiert), einmal aus SPXL — über 712 gemeinsame Tage:
+**98,7 % Übereinstimmung, Cohens Kappa 0,956** (118-mal beide Stress, 585-mal beide
+ruhig, 7 nur SPY, 2 nur SPXL); Stress-Anteil 17,6 % gegen 16,9 %. **Die Substitution
+ist damit belegt harmlos** — sie war nicht der Grund, warum der Lauf scheiterte (das
+war die Basis ohne Regime-Tor), und eine Wiederholung mit SPY würde an einem
+Welch-t von 0,17 nichts drehen.
+
+*Nebenbefund für alle, die auf diesen Archiven messen: `kapitulation.js` kennt den
+ETF-Unterordner und sucht ihn zuerst; `ladeUniversum` liest bewusst flach, weil ETFs
+Maßstab und nicht Messobjekt sind. Beides ist Absicht — wer aber eine Referenzreihe
+sucht, muss `etf/` mitlesen.*
+
 ## Fehler-Transparenz
 
 Der Treiber las die Bonferroni-Schwelle aus dem falschen Protokollfeld (»?« im
