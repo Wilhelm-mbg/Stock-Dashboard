@@ -4487,6 +4487,32 @@ console.log('\n44) Messmaschine, Scoreboard und Strategie-Eingabe (23.08.2026)')
     ok(rufe.length === 1 && /STILL/.test(rufe[0]) && /QQXYZQ/.test(rufe[0]),
        'Ausfallform 2 ruft genau EINMAL und nennt den ersten Fall', String(rufe.length));
   })();
+
+  /* ---- Abmeldeliste: das Handelsende kommt aus dem Umsatz (27.08.) ----
+   * TWO und BTSGU fielen nur als Nebenbefund fremder Zaehlungen auf; seither
+   * findet tools/abmeldungen-pflegen.js stillstehende Reihen von selbst. Der
+   * Kern, an dem alles haengt, wird hier funktional durchgespielt: eine
+   * eingefrorene Schlusskette mit Umsatz 0 (die Stempel-Bauform der QS vom
+   * 26.08.) zaehlt NICHT als Handel - sonst waere AVB "aktuell bis 21.08."
+   * gewesen und LBRDA haette als Handelsende den Stempel mit der Abfindung
+   * getragen (21.08. statt echtem 17.07.). */
+  (function () {
+    var aq = fs.readFileSync(__dirname + '/tools/abmeldungen-pflegen.js', 'utf8');
+    var a0 = aq.indexOf('function befundVon');
+    var e0 = aq.indexOf('\n}', a0) + 2;
+    ok(a0 !== -1 && e0 > a0, 'abmeldungen-pflegen: die Handelsende-Regel laesst sich herausloesen');
+    var befundVon = new Function(aq.slice(a0, e0) + '\nreturn befundVon;')();
+    var T = function (tag) { return Date.parse(tag + 'T00:00:00Z'); };
+    var stempler = befundVon([[T('2026-08-14'), 65.9, 6938895], [T('2026-08-17'), 65.9, 0],
+      [T('2026-08-18'), 65.9, 0], [T('2026-08-19'), 65.9, 0]]);
+    ok(new Date(stempler.handelsende).toISOString().slice(0, 10) === '2026-08-14' && stempler.stempelSchwanz === 3,
+       'Stempel-Bauform: drei eingefrorene Umsatz-0-Kerzen zaehlen nicht als Handel (AVB-Fall)');
+    var glatt = befundVon([[T('2026-08-21'), 12.05, 3591200], [T('2026-08-24'), 12.18, 19390300]]);
+    ok(new Date(glatt.handelsende).toISOString().slice(0, 10) === '2026-08-24' && glatt.stempelSchwanz === 0,
+       'Stempelloser Abbruch: das Handelsende ist die letzte Umsatz-Kerze (TWO-Fall)');
+    ok(/--schreiben/.test(aq) && /SCHREIBEN\b/.test(aq),
+       'Das Werkzeug schreibt seine Ablage nur auf ausdrueckliches Verlangen');
+  })();
   /* Eigenschafts-Pruefung gegen ein ECHTES Protokoll: aendert die Messmaschine die
    * Ablage der Aussicht, wird die Anzeige still leer - das soll hier laut werden.
    * kapitulation 26.08.: Varianten 1551/2330/224, kleinste 224 (Tafel-Tabelle). */
