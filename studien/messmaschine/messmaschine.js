@@ -69,6 +69,11 @@ var VERFAHREN = {
    *   Rueckfallwert nicht-messbar durch). Messwerte aendern sich nicht, Etiketten
    *   und Planungszahlen koennen kippen - abgelegte Protokolle behalten ihre alten
    *   Werte, bis sie neu gemessen werden.
+   * 1.6.0 (27.08.2026): Integritaetsschranke Wertpapier-Klassifizierung (PM-Auftrag).
+   *   Ohne wertpapierarten.json misst die Maschine nicht mehr still auf dem ganzen
+   *   Archiv, sondern verweigert; und E1 traegt den Zustand klassifizierungDa ab
+   *   jetzt IMMER - ein Protokoll ohne das Feld ist vor dieser Version entstanden.
+   *   Kein Messwert aendert sich; neu ist ein Feld und eine Verweigerung.
    * Zur 1.2.0 gab es eine ANDERE Meinung, und sie war vertretbar: die Messung selbst
    * aendert sich nicht, kein Urteil kippt, es ist 'nur' eine Planungszahl - also
    * koennte 1.1.0 stehenbleiben. Dagegen steht, was diese Nummer LEISTEN soll: zwei
@@ -77,7 +82,7 @@ var VERFAHREN = {
    * Zahlen nebeneinanderlegt, haette keinen Anhaltspunkt. Deshalb neue Stelle.
    * Genau diese Frage soll die Sperrklinke in test-v6.js erzwingen - sie deshalb
    * durchzuwinken waere ihr erster Ausfall gewesen. */
-  version: '1.5.0',
+  version: '1.6.0',
   /* codeStand beantwortet 'war das dieselbe Datei?' und rechnet sich selbst aus. */
   codeStand: codeStand(),
   mindestKerzenVorlauf: 261,        // EMA100 + Kanal 200, wie die Detektoren es brauchen
@@ -758,13 +763,25 @@ function messe(strategie, archivPfad, optionen) {
   }
 
   /* --- Universum --- */
+  /* Integritaetsschranke (27.08.2026, PM-Auftrag): Ohne Wertpapier-Klassifizierung
+   * laesst der Aktienfilter der Strategien ALLES durch - das Universum waere still
+   * ~verdreifacht, und kein Protokollfeld hielte es fest. Gemessen am 27.08.: von
+   * allen Aufrufern des Moduls prueft das sonst niemand. Deshalb: der Zustand steht
+   * ab jetzt IMMER in E1 (auch wenn er gesund ist - sonst ist ein altes Protokoll
+   * von einem neuen nicht unterscheidbar), und ohne Klassifizierung wird verweigert. */
+  var WPK = require(path.join(__dirname, 'strategien', 'wertpapierart.js'));
+  var klassifizierung = WPK.klassifizierungDa();
+  if (!klassifizierung) {
+    return { verweigert: true, grund: 'Wertpapier-Klassifizierung fehlt oder unbrauchbar (wertpapierarten.json) - ' +
+      'der Universumsfilter wuerde alles durchlassen und still auf dem ganzen Archiv messen.' };
+  }
   var filter = null;
   if (typeof S.universum === 'function') filter = S.universum;
   else if (S.universum === 'aktien' || !S.universum) filter = function (sym) { return sym.indexOf('-USD') === -1; };
   var U = ladeUniversum(archivPfad, S.zeitrahmen || '60m', filter);
   var syms = Object.keys(U);
   P.entscheide('E1 Universum', { archiv: archivPfad, zeitrahmen: S.zeitrahmen || '60m', filter: S.universum || 'aktien' },
-    { werte: syms.length },
+    { werte: syms.length, klassifizierungDa: klassifizierung },
     'Das Universum ist "alles, was heute im Archiv liegt". Das sind Ueberlebende: Werte, die aus der Beobachtung ' +
     'geflogen sind, fehlen. Die Renditen laufen ueber Zeitraeume, in denen das noch nicht bekannt war. ' +
     'Jede positive Rohrendite ist dadurch nach oben verzerrt; die Groesse der Verzerrung ist hier NICHT gemessen.');

@@ -3954,8 +3954,8 @@ console.log('\n44) Messmaschine, Scoreboard und Strategie-Eingabe (23.08.2026)')
    * bleibt version, und nur der Stand wird nachgezogen). Genau diese Frage ist sieben
    * Mal nicht gestellt worden. Die Reibung IST der Zweck: sie kostet zwei Zeilen und
    * verhindert, dass Protokolle stillschweigend unvergleichbar werden. */
-  var MM_VERSION = '1.5.0';        // 26.08. Wilhelms Entscheid 20:25: Aussichts-Schranke + #92-Rangfolge
-  var MM_STAND = 'ce5dfca39cc0';   // sha256 ueber messmaschine.js, erste 12 Zeichen
+  var MM_VERSION = '1.6.0';        // 27.08. PM-Auftrag: Integritaetsschranke Klassifizierung + E1-Feld
+  var MM_STAND = 'ebd414ead1c6';   // sha256 ueber messmaschine.js, erste 12 Zeichen
   var mmV = require(__dirname + '/studien/messmaschine/messmaschine.js').VERFAHREN;
   ok(mmV.version === MM_VERSION && mmV.codeStand === MM_STAND,
      'Messmaschine: Version und Codestand stehen zusammen fest - eine Aenderung ohne Entscheid faellt auf',
@@ -10374,6 +10374,17 @@ console.log('\nmassive-tagesdaten: Vereinigen und Entdoppeln (27.08.2026)');
   var fkt = q.slice(q.indexOf('function istAktie'));
   ok(fkt.indexOf('TESTKUERZEL[') !== -1 && fkt.indexOf('TESTKUERZEL[') < fkt.indexOf('laden()'),
      'Der namentliche Riegel greift vor Karte und Rueckfall');
+
+  /* Integritaetsschranke der Maschine (1.6.0): ohne Klassifizierung wird verweigert,
+   * und E1 traegt den Zustand IMMER - auch im gesunden Fall. Beide Zusicherungen am
+   * Quelltext verankert, weil ein Lauf ohne Referenzdatei im Test nicht stellbar ist. */
+  var mq = require('fs').readFileSync(__dirname + '/studien/messmaschine/messmaschine.js', 'utf8');
+  ok(mq.indexOf('klassifizierungDa()') !== -1 &&
+     mq.indexOf('Wertpapier-Klassifizierung fehlt') !== -1,
+     'Die Maschine fragt die Klassifizierung ab und verweigert ohne sie');
+  var e1 = mq.slice(mq.indexOf("'E1 Universum'"));
+  ok(e1.slice(0, 400).indexOf('klassifizierungDa:') !== -1,
+     'E1 traegt das Klassifizierungs-Feld im Ergebnis, nicht nur im Fehlerfall');
 })();
 
 Promise.all(offeneProben).then(function () {
