@@ -247,7 +247,12 @@
     save();
   }
 
-  async function kostenRundeMessen(sym) {
+  /* marktlage kommt vom Aufrufer (der Knopf in depot.js liest den validierten
+   * R-TREND-Anker ab, bevor er misst) und wird der Runde mitgegeben - nur so
+   * kann die Freigabeschwelle oben aus den DATEN zaehlen, ob verschiedene
+   * Marktlagen gemessen wurden, statt es sich zusichern zu lassen. Runden aus
+   * der Zeit davor tragen das Feld nicht und zaehlen als "nicht erfasst". */
+  async function kostenRundeMessen(sym, marktlage) {
     if (!(window.CapAPI && window.CapAPI.enabled() && window.CapAPI.quote)) {
       var g1 = 'Capital.com-Demo ist nicht verbunden.';
       kostenVersuchNeu(sym, false, g1);
@@ -322,6 +327,7 @@
     if (!D.kostenMessung) D.kostenMessung = { runden: [], seit: Date.now() };
     D.kostenMessung.runden.unshift({
       at: Date.now(), sym: sym, dir: 'call', basis: true, quelle: 'messrunde', krypto: krypto,
+      marktlage: marktlage || null,
       groesse: groesse,
       slipOpen: Math.round(aufKosten * 1e6) / 1e6,
       slipClose: Math.round(zuKosten * 1e6) / 1e6,
@@ -359,6 +365,39 @@
   }
   if (typeof window !== 'undefined') window.__kostenRundeMessen = kostenRundeMessen;
 
+  /* ===== Wilhelms Freigabeschwelle (27.08.2026) - eine Zaehlregel, kein Automat =====
+   * Ersetzt ">= 20 Aktienrunden" (Strang-A-Vorregistrierung, Nachtrag 16): die
+   * Freigabe verlangt Runden ueber VERSCHIEDENE TAGE UND MARKTLAGEN. Eine
+   * Rundenzahl steht hier absichtlich nicht mehr: 16 Werte entstanden am
+   * 25.08. um 13:31 als Klickfolge in zwei Minuten - eine Schwelle, die eine
+   * Klickfolge erfuellt, prueft die Ausdauer des Klickenden, nicht die Kosten.
+   * Gezaehlt wird ueber das Feld krypto, NICHT ueber basis: basis heisst
+   * Basiswert (Gegensatz: Schein) und zaehlt Krypto mit - wer es als
+   * Aktienzaehler liest, haelt 38 fuer erreicht, wo 16 stehen (QS-Abgleich
+   * 27.08.: krypto-Feld gegen die Kuerzel-Ableitung, null Abweichungen).
+   * "Verschiedene" ist als sprachliches Minimum hinterlegt (mindestens zwei
+   * Tage UND mindestens zwei erfasste Marktlagen); ob MEHR verlangt wird,
+   * entscheidet Wilhelm am Zahlenstand, nicht diese Funktion.
+   * VORBEHALT, dokumentiert und bewusst KEINE Bedingung (Wilhelm hat die
+   * Breiten-Fassung ausdruecklich nicht gewaehlt): der Broker fuehrt nur die
+   * liquidesten Werte, alle bisherigen Runden sind Mega-Caps - die
+   * Zusammensetzung bleibt schief, auch wenn die Schwelle erfuellt ist. */
+  function kostenStreuung(runden) {
+    var tage = {}, lagen = {}, ohneLage = 0, n = 0;
+    (runden || []).forEach(function (x) {
+      if (x.krypto) return;
+      if (x.runde == null || !isFinite(x.runde)) return;
+      n++;
+      tage[new Date(x.at).toISOString().slice(0, 10)] = 1;
+      if (x.marktlage) lagen[x.marktlage] = 1; else ohneLage++;
+    });
+    var t = Object.keys(tage).sort(), l = Object.keys(lagen).sort();
+    return { runden: n, tage: t.length, tageListe: t,
+             marktlagen: l.length, marktlagenListe: l,
+             rundenOhneMarktlage: ohneLage,
+             erfuellt: t.length >= 2 && l.length >= 2 };
+  }
+
   /** Bilanz der echten Kosten - Median statt Mittel, ein Ausreisser soll nicht dominieren. */
   function kostenBilanz() {
     var km = D && D.kostenMessung;
@@ -379,7 +418,8 @@
     var k = werte(true);
     if (!r.length && !k.length) return null;
     var aus = { n: r.length, annahmePct: 0.10, seit: km.seit,
-                kryptoN: k.length, kryptoMedianPct: k.length ? med(k) * 100 : null };
+                kryptoN: k.length, kryptoMedianPct: k.length ? med(k) * 100 : null,
+                streuung: kostenStreuung(km.runden) };
     if (r.length) {
       aus.medianPct = med(r) * 100;
       aus.mittelPct = r.reduce(function (a, b) { return a + b; }, 0) / r.length * 100;
@@ -477,6 +517,7 @@
     spannenHistorie: mitFrischemD(spannenHistorie),
     kostenRundeMessen: mitFrischemD(kostenRundeMessen),
     kostenBilanz: mitFrischemD(kostenBilanz),
+    kostenStreuung: kostenStreuung,   /* rein rechnend, braucht kein frisches D */
     probe: mitFrischemD(spannenProbe),
     tagFestschreiben: mitFrischemD(spannenTagFestschreiben)
   };

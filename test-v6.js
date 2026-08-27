@@ -8223,6 +8223,43 @@ console.log('\n46) Was die App dauerhaft aufzeichnet');
   ok(/id="kostenRundeSym"/.test(h68) && /BTCUSD/.test(h68),
      'Die Oberflaeche laesst den Wert waehlen, Krypto eingeschlossen');
 
+  /* --- Wilhelms Freigabeschwelle: verschiedene Tage UND Marktlagen (27.08.) ---
+   * Die alte Zahl (>= 20 Runden) war mit einer Klickfolge in zwei Minuten
+   * erfuellbar und mass dann EINE Marktlage. Die Zaehlregel wird hier
+   * FUNKTIONAL mit gestellten Runden durchgespielt - die Verteilung kommt aus
+   * den Daten, nicht aus einer Zusage. */
+  (function () {
+    var a9 = ks7.indexOf('function kostenStreuung');
+    var e9 = ks7.indexOf('\n  }', a9);
+    ok(a9 !== -1 && e9 > a9, 'Die Zaehlregel der Freigabeschwelle laesst sich herausloesen');
+    var zr = new Function(ks7.slice(a9, e9 + 4) + '\nreturn kostenStreuung;')();
+    var T0 = Date.parse('2026-08-25T13:31:00Z');
+    function runde9(tagVersatz, marktlage, krypto) {
+      return { at: T0 + tagVersatz * 86400000, sym: 'AAPL', basis: true,
+               krypto: !!krypto, marktlage: marktlage || null, runde: 0.001 };
+    }
+    var klick = []; for (var i9 = 0; i9 < 20; i9++) klick.push(runde9(0, 'trend-auf'));
+    var s1 = zr(klick);
+    ok(s1.runden === 20 && s1.tage === 1 && !s1.erfuellt,
+       'Eine Klickfolge erfuellt die Schwelle nicht, egal wie viele Runden sie hat', s1.tage + ' Tag');
+    var s2 = zr(klick.concat([runde9(1, 'trend-auf')]));
+    ok(s2.tage === 2 && s2.marktlagen === 1 && !s2.erfuellt,
+       'Zwei Tage in derselben Marktlage reichen nicht - beide Woerter der Schwelle zaehlen');
+    var s3 = zr(klick.concat([runde9(1, 'trend-ab')]));
+    ok(s3.tage === 2 && s3.marktlagen === 2 && s3.erfuellt,
+       'Verschiedene Tage und verschiedene Marktlagen erfuellen sie');
+    var s4 = zr(klick.concat([runde9(2, 'trend-ab', true)]));
+    ok(s4.runden === 20 && s4.tage === 1 && !s4.erfuellt,
+       'Eine Krypto-Runde zaehlt nicht mit, auch wenn basis=true an ihr steht - das krypto-Feld entscheidet');
+    var s5 = zr(klick.concat([runde9(1, null)]));
+    ok(s5.tage === 2 && s5.marktlagen === 1 && s5.rundenOhneMarktlage === 1 && !s5.erfuellt,
+       'Runden ohne erfasste Marktlage geben sich nicht als Marktlage aus');
+    ok(/kostenRundeMessen\(sym, lage\)/.test(dep) && dep.indexOf('von ~20 Runden') === -1,
+       'Der Knopf liest die Marktlage ab und gibt sie mit, und keine Anzeige nennt mehr eine Zielrundenzahl');
+    ok(/marktlage: marktlage \|\| null/.test(ks7),
+       'Jede neue Runde traegt die abgelesene Marktlage in den Daten');
+  })();
+
   /* --- Jeder Versuch hinterlaesst eine Spur, auch der gescheiterte ---
    * Am 25.08.2026 drueckte Wilhelm den Knopf, und danach stand weder eine Runde noch
    * ein Fehlschlag in den Daten: der Lauf war an einer fruehen Sperre umgekehrt, und

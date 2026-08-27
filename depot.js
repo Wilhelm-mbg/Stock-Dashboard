@@ -6238,14 +6238,25 @@
         kostenRundeTakt++;
         kostenRundeLaeuft = true; b.disabled = true;
         st.textContent = 'Messe ' + sym + ' …';
+        /* Die Marktlage wird VOR der Runde am validierten R-TREND-Anker
+         * abgelesen und der Runde mitgegeben - Wilhelms Freigabeschwelle
+         * zaehlt verschiedene Tage UND Marktlagen aus den Daten. */
+        var lage = null;
+        try {
+          var spyAuf = await spyTrendAuf();
+          lage = spyAuf === true ? 'trend-auf' : spyAuf === false ? 'trend-ab' : null;
+        } catch (e3) { lage = null; }
         var r = null;
-        try { r = await kostenRundeMessen(sym); }
+        try { r = await kostenRundeMessen(sym, lage); }
         catch (e) { r = { ok: false, grund: 'Fehler: ' + (e && e.message || e) }; }
         if (r && r.ok) {
-          var n = ((D.kostenMessung || {}).runden || []).length;
+          var s9 = (window.Kosten && window.Kosten.kostenStreuung)
+            ? window.Kosten.kostenStreuung(((D.kostenMessung || {}).runden) || []) : null;
           st.textContent = sym + ': Umlauf ' + r.rundePct.toFixed(3) + ' %' +
             (r.notiertPct != null ? ' (notiert ' + r.notiertPct.toFixed(3) + ' %, Rest ist Schlupf)' : '') +
-            ' · ' + n + ' von ~20 Runden';
+            (s9 ? ' · ' + s9.runden + ' Aktienrunden über ' + s9.tage + ' Tag(e) und ' +
+              s9.marktlagen + ' erfasste Marktlage(n)' +
+              (s9.erfuellt ? '' : ' – die Schwelle verlangt verschiedene Tage UND Marktlagen') : '');
         } else {
           st.textContent = (r && r.grund) || 'Die Runde lief nicht durch.';
         }
