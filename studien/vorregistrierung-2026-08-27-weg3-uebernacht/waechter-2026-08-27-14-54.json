@@ -1,0 +1,29 @@
+{
+ "gemessenAm": "2026-08-27T14:54:29.651Z",
+ "seed": 20260827,
+ "ueberlebende": {
+  "genutzt": 2213,
+  "verworfen": 36
+ },
+ "W3W4_S": {
+  "kandidat": 1068469,
+  "gueltig": 1068469,
+  "ungueltig": 0,
+  "quote": 1
+ },
+ "W1": {
+  "soll": -0.004380530240392551,
+  "gemessen": -0.0047985105575209415,
+  "verhaeltnis": 1.0954177449282794,
+  "t": -9.587455366079855,
+  "N": 502,
+  "bestanden": true
+ },
+ "W2b": {
+  "mittel": -0.0005172003803012139,
+  "sd": 0.005461911425213277,
+  "grenze": 0.004209768230983134,
+  "ziehungen": 200,
+  "bestanden": true
+ }
+}
