@@ -53,8 +53,10 @@ var STRATEGIEN = {
 };
 
 function wachhundOk() {
-  var r = cp.spawnSync(process.execPath, [REPO + '/tools/archiv-wachhund.js'], { encoding: 'utf8', timeout: 300000 });
-  console.log('[Wachhund] Exit ' + r.status);
+  /* Nur archiv60m - dieser Treiber liest 1d nie; der Nachlader wechselt nachts
+   * nahtlos von 60m auf 1d, eine globale Pruefung wuerde dann grundlos sperren. */
+  var r = cp.spawnSync(process.execPath, [REPO + '/tools/archiv-wachhund.js', 'archiv60m'], { encoding: 'utf8', timeout: 300000 });
+  console.log('[Wachhund archiv60m] Exit ' + r.status);
   if (r.stdout) console.log(r.stdout.split('\n').slice(-6).join('\n'));
   if (r.status === 2) { console.error('ABBRUCH: Wachhund meldet Sperre (Exit 2) - nicht auf den Archiven messen.'); return false; }
   if (r.status !== 0) { console.error('ABBRUCH: Wachhund Exit ' + r.status + ' - erst klaeren, dann messen.'); return false; }
