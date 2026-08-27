@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 12:52 (Windows-Uhr)
+letzter-bericht: 2026-08-27 13:10 (Windows-Uhr)
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -39,6 +39,89 @@ Sitzungen.** Gefunden hat es jedes Mal eine Gegenprobe, nie ein Verdacht.
 > **→ Damit ist die Reparatur, um die diese Nacht gestritten wurde, für die MESSSEITE
 > gegenstandslos.** *Was bleibt, ist die Frage der Archiv-Sauberkeit — und die ist Entscheidung
 > 1 unten.*
+
+## 🔄 27.08. 13:0x — **EINE POSITIVKONTROLLE HAT DIE SEMANTIK UMGEDREHT, vor dem ersten Abruf**
+
+**Der Analytiker wollte die 534 Einzelsprünge sortieren („Sprung mit Split-Beleg = echt"). Die
+vorgeschriebene Positivkontrolle an `WHLR` fand statt der erwarteten 16 nur 5 — und der Grund
+kippt die ganze Regel:**
+
+> ### **Ein RÜCKANGEPASSTES Archiv zeigt an Split-Daten GAR KEINEN Sprung — die Anpassung glättet ihn weg.**
+> **→ Ein Sprung AN einem Split-Datum ist deshalb nicht der Split, sondern der ANPASSUNGSFEHLER.**
+
+**Gemessen, nicht überlegt:** *AAPL/NVDA/TSLA mit zusammen ~12 echten Splits zeigen im
+Tagesarchiv **0 Sprünge** an Split-Daten. AAPLs einziger Faktor-2-Sprung überhaupt (29.09.2000,
+−52 %) ist der bekannte reale Kurssturz.*
+
+**🎯 Die Umkehrung macht den Lauf WERTVOLLER:** *Die Grundrate misst jetzt nicht „wie viele echte
+Splits", sondern **wie oft die Anpassung versagt hat** — eine Zahl, die dieses Projekt noch nie
+hatte.* **Und die Kontrolle hat dabei selbst einen Fund gemacht: `WHLR` 03.04.2017, Sprung
+r = 8,24 exakt auf dem belegten 8:1-Split — dieselbe Fehlerklasse wie der heutige Fall, neun
+Jahre alt, bisher unbekannt.**
+
+**Fassung 2, vor dem Abruf fixiert, Widerlegung offengelegt:** **`F`** = Anpassungsfehler-Koinzidenz
+(Datum ±1 HT **und** Faktor ±10 %, Richtung benannt) · **`U`** = kein Split, **unentscheidbar mit
+diesen Endpunkten** (Markt/Spin-off/Skalenfehler — **nie „RGR-Verdacht"**) · **`X`** = nicht
+prüfbar. *K1 (angepasste Reihen → 0 Koinzidenzen) und K2 (bekannter Fehler → F) bestanden.
+**Fassung 1 bleibt als Geschichte im Dokument** — eine widerlegte Fassung, die verschwindet,
+kommt in vier Wochen als neue Idee zurück.*
+
+> **🔴 ZWEI PM-NACHFORDERUNGEN vor dem 275er-Lauf:**
+> **1. Der NULLWERT fehlt.** *Wie oft träfe ein Sprung ein Split-Datum ±1 HT **rein zufällig**?
+> 534 Sprünge über Jahrzehnte gegen die Split-Dichte derselben Reihen.* **Läge die Zufallsquote
+> bei 3 % und man findet 5 % F, ist fast nichts belegt.** *Diese Nacht hat mehrfach gezeigt, dass
+> ein Detektor ohne Gegenrechnung seiner Feuerrate alles und nichts beweist (`kanalUeber`:
+> 52,7 % der Kerzen, Güte 75).*
+> **2. `F?` als vierte Klasse — Datum trifft, Faktor NICHT.** *Sonst verschwindet die
+> verdächtigste Klasse von allen in `U`: die **teilweise oder falsch durchgeführte** Anpassung —
+> genau der heutige WHLR-Fall (26.08. ↔ 27.08.).* **`U` heißt „unentscheidbar", was diese Fälle
+> gerade nicht sind: bei ihnen weiß man, dass etwas nicht stimmt, nur nicht was.**
+
+---
+
+## ✅ 27.08. 13:0x — Wilhelms neue Freigabeschwelle ist prüfbar hinterlegt (`06`, `9285468`)
+
+**`kostenStreuung()` in `kosten.js` — eine reine Zählregel, kein Automat.** *Zählt über das
+`krypto`-Feld (der Kommentar warnt ausdrücklich vor der `basis`-Lesart, mit den Zahlen
+38-gegen-16). **Die Zielrundenzahl ist per Ratsche aus `depot.js` verbannt** — der Status zeigt
+die erreichte Streuung statt „n von ~20".*
+
+**Damit die Marktlagen-Seite überhaupt aus Daten zählbar wird, stempelt jede NEUE Runde die am
+validierten R-TREND-Anker abgelesene Lage.** *Kein erfundenes Merkmal, sondern ein Instrument mit
+eigener Validierung (t = 3,2).* **Und: Alt-Runden ohne Feld zählen als „nicht erfasst", NIE als
+Lage** — *sonst hätte sich eine fehlende Angabe als „irgendeine Lage" getarnt.*
+
+**Sperrklinke funktional durchgespielt:** *die Klickfolge vom 25.08. erfüllt nie · zwei Tage in
+derselben Lage reichen nicht (**beide Wörter zählen**) · eine Krypto-Runde mit `basis=true`
+verschiebt nichts · eine Runde ohne Lagen-Feld gibt sich nicht als Lage aus.* **Alle vier sind
+Fälle, in die wir heute schon einmal gelaufen sind.**
+
+**Nachgemessen statt abgeschrieben:** *gegen die Sicherung von 02:45 — 38 Runden, davon 16
+Nicht-Krypto, **alle am 25.08., null erfasste Marktlagen** → **nicht erfüllt, Zähler bei 1 Tag**.*
+
+> ### ⚠ NACHGEMESSEN: **die Schwelle ist VIEL strenger, als sie klingt** *(`06` an `depot.js:2449 ff.`, abgelesen statt erinnert)*
+> **Der R-TREND-Anker kennt genau ZWEI Lagen plus einen Nicht-Zustand:** *letzter SPY-Stundenschluss
+> gegen die EMA200 → `true` (über) / `false` (unter) / `null` (keine tragfähige Reihe, < 220 Kerzen
+> oder Abruffehler). Der Stempel bildet das 1:1 ab; `null` → Feld bleibt leer, Runde zählt als
+> „nicht erfasst".*
+>
+> **→ Bei zwei möglichen Lagen heißt „≥ 2 erfasste Marktlagen": mindestens eine Runde im
+> AUFWÄRTS- UND eine im ABWÄRTSREGIME.**
+>
+> ***„Das lässt sich nicht erklicken und nicht erwarten, sondern nur abwarten — der Markt muss
+> dafür tatsächlich einmal die Seite wechseln."*** **Die Tage-Bedingung ist lange vorher erfüllt;
+> der bindende Teil wird die Marktlage.** *Das kann Wochen dauern und ist von niemandem hier
+> beeinflussbar.*
+>
+> **❓ ENTSCHEIDUNG FÜR WILHELM** *(gestellt 13:1x)*: **so lassen und warten**, oder **feinere
+> Lagen** (Stress/ruhig wie bei der Kapitulations-Kante)? *Feinere Lagen wären eine Erweiterung
+> des **Stempels**, nicht der Zählregel — die zählt einfach verschiedene Werte.*
+>
+> *Nebenbemerkung von `06`, der Vollständigkeit halber: der 30-Minuten-Zwischenspeicher bedeutet,
+> dass eine Runde bei einem Seitenwechsel innerhalb einer halben Stunde noch die alte Lage trüge
+> — **für eine Schwelle über Tage belanglos**, aber gesagt.*
+
+---
 
 ## ⚖ 27.08. 12:4x — **DER DRITTE ZEUGE SPRICHT: das 60m-Archiv liegt in BEIDEN Richtungen falsch**
 
