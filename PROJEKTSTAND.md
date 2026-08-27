@@ -185,6 +185,52 @@ Nicht-Krypto, **alle am 25.08., null erfasste Marktlagen** → **nicht erfüllt,
 
 ---
 
+## 🔬 27.08. abends — **#109 ZURÜCKGEZOGEN: das Messen selbst hat den Zustand verändert**
+
+**Der Auditor hat seinen eigenen Befund widerlegt und das Issue geschlossen.** *`06` hatte nichts
+angefasst — sie hatte ihn selbst als Scheinbefund erkannt und `index.html` bewusst nicht berührt.*
+
+| `#stUebernehmen`, Reiter *Messung* | `<details>` zu (Auslieferung) | aufgeklappt |
+|---|---|---|
+| Rechteck | 358×27 px, **gefüllt** | gefüllt |
+| `focus()` → wird es `activeElement`? | **NEIN** | ja |
+| in der echten Tabulatorkette (18 Glieder) | **nein** | ja |
+
+> ***„Es gibt keine Vertauschung, weil es keinen Fokusschritt gibt."***
+>
+> **Der benannte Fehler:** *„Ich habe Sichtbarkeit **am Rechteck** bestimmt und daraus auf
+> **Fokussierbarkeit** geschlossen. **Das ist zweierlei.**"* **Das einzig gültige Kriterium ist,
+> ob das Element `activeElement` wird.** *`06`s Diagnose (`content-visibility`) wies den Weg — die
+> Wurzel liegt eine Ebene tiefer.*
+
+> ### 🎯 **UND DIE GEGENPROBE WÄRE IN DIE GEGENFALLE GELAUFEN — der schärfste Fall des Tages**
+> **Die Gegenrechnung ergab 11 Brüche auf der echten Kette. Auch diese Zahl ist Müll:**
+>
+> > **`el.focus()` SCROLLT das Element in den Blick.** *Jedes danach gemessene
+> > `getBoundingClientRect()` steht auf einer anderen Scrollposition — Rohwerte
+> > `y 778, 763, 382, 382, 460, 658`: **eine Geometrie, die es nie gab.***
+>
+> ***„Hätte ich diese 11 gemeldet, hätte ich einen Falschbefund durch einen größeren ersetzt."***
+>
+> **DAS MESSEN SELBST HAT DEN ZUSTAND VERÄNDERT — hier wörtlich, nicht als Metapher.**
+> *Richtig: erst **alle** Rechtecke in Dokumentkoordinaten (`rect + scrollY`) bei **unveränderter**
+> Scrollposition erfassen, **dann** getrennt die Fokuskette bestimmen, **ohne dazwischen zu
+> messen**.*
+>
+> **→ Die PM-Auflage „die Prüfer-Reparatur braucht eine Positivkontrolle" war damit noch
+> wichtiger als gemeint:** *ohne sie wäre der geschärfte Prüfer grün geworden, **weil er gar
+> nichts mehr findet** — und mit der falschen Gegenprobe wäre stattdessen eine größere Falschzahl
+> herausgekommen.* **Beide Richtungen hätten getäuscht.**
+
+**❗ Die Frage „stimmt die Tabulatorreihenfolge auf *Messung*?" ist damit OFFEN, nicht
+beantwortet.** *Geht in den nächsten Auditor-Lauf.* **#110 ist nicht berührt.**
+
+**Tagesbilanz des Auditors, von ihm selbst korrigiert:** *sechs eigene Fehlgriffe statt fünf —
+**vier Nullbefunde, zwei Falschbefunde**. Von sechs gemeldeten Funden bleiben **fünf**.*
+**„Der sechste ist der teuerste, weil er als Issue draußen war und jemandem zugeteilt wurde."**
+
+---
+
 ## 🧪 27.08. abends — **„100,00 % gültig" war unbelegt. Jetzt ist es eine BELEGTE Null**
 
 **Der Übernacht-Wächter W4 meldete `1.068.469 Zeilen, 100,00 % gültig, null unplausible
