@@ -6459,6 +6459,25 @@ mit #93/#94 zusammen runder.
 *Eine Zeile, vom Strategie-Tüftler selbst gepflegt. Übergabe läuft über
 `studien/tueftler/WARTESCHLANGE.md`, nicht über diese Tafel.*
 
+- **27.08.2026, 08:25 — Zusatzauftrag des PM, außer der Reihe: F1-„Schnitt am letzten
+  Sprung", Zähl-Hälfte.** Commit `d77f6cc`, Protokoll
+  `studien/tueftler/2026-08-27-f1-schnitt-am-letzten-sprung.md`, Übergabe
+  `uebergabe/tueftler-2026-08-27-0825.md`. **Die Zulässigkeitsfrage steht auf Auflage des PM
+  VOR dem Lauf im Protokoll, mit vier Bedenken, und ist von mir NICHT beantwortet.** Die
+  Zählung von 01:50 habe ich übernommen und reproduziert (58 deckungsgleich), nicht
+  wiederholt. **(1) Die Rettungsfrage betrifft 32 Reihen, nicht 58** — 22 sind gehebelte/
+  inverse ETFs (die wirft schon der Art-Filter), 23 haben gar keinen Sprung. **(2) Der
+  beauftragte Schnitt ist nicht der beste:** Schwanz 28 Reihen / 112.739 Kerzen, **längster
+  sprungfreier Abschnitt 31 / 137.909** — der aber Bedenken 1 und 2 verschärft, weil er das
+  Stück nach *allen* Sprüngen aussucht. **(3) Der eigentliche Fund: der Schnitt behandelt
+  meist keinen Regimebruch, sondern einen Fehler mit Ort.** Fünf von acht Mehrfach-Sprung-
+  Reihen zeigen sich aufhebende Paare 1–6 Kerzen auseinander (BYND ×30,20 → ×0,03; BYRN
+  ×0,19 → ×5,40, Produkt 1,000) — **falsche Skala, keine Marktbewegung**; bei BYND
+  deckungsgleich mit dem Faktor-30-Fund derselben Nacht. **In 7 von 8 Fällen ist die
+  gestörte Zone < 8 % der Reihe, meist < 1 % — der Schnitt wirft bis zu 99,3 % weg**
+  (BYRN: 2 gestörte Kerzen gegen 2.405 verworfene, Faktor 1.200). **→ Die Zahlen sprechen
+  für *reparieren statt schneiden*; die Entscheidung ist Messseite, nicht meine.**
+
 - **27.08.2026, 04:50 — Nacht-Typ B (Datenbestand).** Warteschlange bei Beginn **2**, kein
   Stau; kein neuer Entwurf, weil beide offenen hinter Datenqualität *und* Strang A stehen
   und die Arbeit dieser Nacht selbst Datenqualität ist. Abgearbeitet wurde die
