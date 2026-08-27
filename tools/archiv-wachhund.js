@@ -43,6 +43,46 @@ var Quelle = require('../kerzenquelle.js');
  * nachgesehen und ein leeres Archiv gemeldet, waehrend die Daten anderswo lagen. */
 function ordnerVon(name) { return Quelle.ordnerVon(name); }
 
+/* DIE BEKANNTEN ABMELDUNGEN - gepflegt von tools/abmeldungen-pflegen.js (06).
+ *
+ * WOZU. Der Waechter zaehlt jede stillstehende Reihe als Nachzuegler. Neun davon sind
+ * seit Wochen bekannt und geklaert; die zehnte ist die, auf die es ankommt - und sie
+ * steht mitten zwischen ihnen. Wer neun Zeilen ueberfliegt, ueberfliegt auch die zehnte.
+ *
+ * WARUM NICHT HERAUSNEHMEN. 06 hatte vorgeschlagen, bestaetigte Abmeldungen aus dem
+ * Alarm zu STREICHEN. Dagegen sprechen zwei Dinge, die dieses Projekt teuer gelernt hat:
+ * In zwei Naechten wurden sieben Loeschregeln gestoppt, jede zielte auf etwas, das wie
+ * Muell aussah und der genaueste Wert im Archiv war - und Wilhelms Entscheid vom
+ * 27.08. lautet "behalten und kennzeichnen". Konkret hier: eine "bestaetigte Abmeldung"
+ * am juengsten Rand ist gerade NICHT verlaesslich (AVB stand mit dem 18.08. in der
+ * Liste und handelte bis zum 24.08.). Gestrichen koennte sie nie wieder auffallen -
+ * auch dann nicht, wenn die Reihe morgen wieder handelt.
+ * Gruppiert ist das Ziel trotzdem erreicht: der unerklaerte Fall steht allein.
+ *
+ * DIE DATEI IST EIN ZEUGE, KEINE WAHRHEIT. Steht sie nicht da, ist sie unlesbar oder
+ * ist sie alt, faellt der Waechter auf sein altes Verhalten zurueck und SAGT es -
+ * lieber ungruppiert warnen als mit einem veralteten Freispruch schweigen. */
+var ABMELDUNGEN_ALT_STUNDEN = 36;
+
+function abmeldungenLesen(datei) {
+  var roh;
+  try { roh = JSON.parse(fs.readFileSync(datei, 'utf8')); }
+  catch (e) { return null; }
+  var karte = Object.create(null), n = 0;
+  (roh.eintraege || []).forEach(function (e) { if (e && e.sym) { karte[e.sym] = e; n++; } });
+  var alterStunden = null;
+  if (roh.stand) {
+    var ms = Date.parse(roh.stand);
+    if (!isNaN(ms)) alterStunden = Math.round((Date.now() - ms) / 3600000 * 10) / 10;
+  }
+  return { stand: roh.stand || null, alterStunden: alterStunden, karte: karte, anzahl: n,
+    veraltet: alterStunden != null && alterStunden > ABMELDUNGEN_ALT_STUNDEN };
+}
+
+function abmeldungenPfad() {
+  return path.join(Quelle.datenOrdner(), 'massive', 'abmeldungen.json');
+}
+
 /* Der letzte Handelstag, der ABGESCHLOSSEN ist. Die US-Sitzung endet um 20:00 UTC;
  * eine halbe Stunde Zuschlag, weil Yahoo die Schlusskerze nicht in derselben Sekunde
  * hat. Samstag und Sonntag zaehlen nie. */
@@ -137,6 +177,27 @@ function pruefe(ordner, opt) {
     }
   }
   nachzuegler.sort(function (a, b) { return a.tageZurueck - b.tageZurueck; });
+  /* Jeden Nachzuegler mit dem beschriften, was ueber ihn bekannt ist. opt.abmeldungen
+   * laesst sich einspeisen, damit test-v6 die Gruppierung ohne Datei pruefen kann;
+   * null heisst ausdruecklich "keine Datei", undefined heisst "lies sie". */
+  var abm = opt.abmeldungen !== undefined ? opt.abmeldungen : abmeldungenLesen(abmeldungenPfad());
+  if (abm) {
+    nachzuegler.forEach(function (x) {
+      var e = abm.karte[x.sym];
+      if (!e) return;
+      x.befund = e.befund || null;
+      /* Das Handelsende der Pflegeliste ist die LETZTE KERZE MIT UMSATZ. Der Tag oben
+       * ist die letzte Kerze ueberhaupt - und die kann ein Stempel sein. Bei AVB lagen
+       * dazwischen fuenf Tage: der Waechter sah den 21.08., gehandelt wurde bis zum
+       * 14.08. Beide Daten nebeneinander machen den Stempelschwanz sichtbar, statt
+       * dass eine der beiden Zahlen still die andere ersetzt. */
+      x.handelsende = e.handelsende || null;
+      x.stempelSchwanz = e.stempelSchwanz != null ? e.stempelSchwanz : null;
+      /* Wie tief die Quelle die Reihe noch fuehrt (06, f29c959). Steht die Zahl da,
+       * ist "nur wir haben die Historie" keine Behauptung mehr, sondern abgezaehlt. */
+      x.quelleKerzen = e.quelleKerzen != null ? e.quelleKerzen : null;
+    });
+  }
   if (!gelesen) return { ok: false, grund: 'keine Datei lesbar', ordner: ordner };
   /* Der HAEUFIGSTE juengste Tag, nicht der spaeteste: ein einzelner frisch
    * nachgeladener Wert soll das Archiv nicht gesund aussehen lassen. Genau so ist
@@ -163,6 +224,8 @@ function pruefe(ordner, opt) {
     anteilAufStand: Object.keys(tage).reduce(function (a, t) { return a + (t >= soll ? tage[t] : 0); }, 0) / gelesen,
     sollTag: soll, rueckstandHandelstage: rueckstand,
     nachzuegler: nachzuegler, vollstaendig: n >= dateien.length,
+    abmeldungen: abm ? { stand: abm.stand, alterStunden: abm.alterStunden,
+      anzahl: abm.anzahl, veraltet: abm.veraltet } : null,
     verteilung: tage
   };
 }
@@ -199,14 +262,106 @@ function textZu(b) {
    * ein paar Handelstage sind verdaechtig, zwei Jahre sind plausibel. Deshalb steht
    * der Abstand dabei und nicht nur der Name. */
   if (b.nachzuegler && b.nachzuegler.length) {
-    var kurz = b.nachzuegler.filter(function (x) { return x.tageZurueck <= 10; });
+    /* GRUPPIEREN, NICHT STREICHEN. Neun bekannte Abmeldungen und ein unerklaerter Fall
+     * sahen bisher gleich aus. Jetzt steht der unerklaerte Fall allein - aber nichts
+     * verschwindet, und jede Gruppe sagt, WORAUF sie sich stuetzt. */
+    var kennt = function (x) { return x.befund || null; };
+    var unerklaert = b.nachzuegler.filter(function (x) {
+      /* 'quelle-leer' heisst HTTP-Fehler oder unlesbare Antwort - das ist KEIN Beleg
+       * fuer eine Abmeldung und gehoert ausdruecklich zu den unerklaerten. */
+      return !kennt(x) || x.befund === 'quelle-leer';
+    });
+    /* 'historie-zurueckgesetzt' SCHLAEGT die anderen Befunde (06, f29c959). Die Quelle
+     * hat die Historie dieser Reihe gekappt - unser Archiv ist die einzige Kopie, die
+     * es noch gibt. Das verlangt das Gegenteil aller anderen Gruppen: nicht nachladen,
+     * nicht als erledigt abhaken, sondern schuetzen. Deshalb steht die Reihe hier
+     * selbst dann, wenn sie zugleich bestaetigt abgemeldet ist - die Handlung
+     * dominiert die Ursache.
+     * Gemessen am 27.08.2026: AVB und EQR liefern nur noch 30 Kerzen ab 2026-07-17,
+     * BSCO/IBDP/IBTE nur noch EINE. Die mindestKerzen-Sperre im Abrufwerkzeug ist seit
+     * Monaten das einzige, was diese Historien vor dem Ueberschreiben bewahrt - sie hat
+     * ausgeloest, ohne dass es jemand gesehen hat. Diese Gruppe macht es sichtbar. */
+    var schutz = b.nachzuegler.filter(function (x) { return x.befund === 'historie-zurueckgesetzt'; });
+    var bekannt = b.nachzuegler.filter(function (x) { return x.befund === 'abgemeldet-bestaetigt'; });
+    var nachladen = b.nachzuegler.filter(function (x) { return x.befund === 'abruffehler'; });
+    var sonstige = b.nachzuegler.filter(function (x) {
+      return kennt(x) && x.befund !== 'abgemeldet-bestaetigt' && x.befund !== 'abruffehler' &&
+        x.befund !== 'quelle-leer' && x.befund !== 'historie-zurueckgesetzt';
+    });
+
+    var zeile = function (x) {
+      var t = '\n      ' + x.sym + '  ' + x.tag + '  (' + x.tageZurueck +
+        ' Handelstag' + (x.tageZurueck === 1 ? '' : 'e') + ')';
+      /* Beide Daten, wenn sie auseinanderliegen: die letzte Kerze kann ein Stempel
+       * sein, das Handelsende ist die letzte Kerze MIT Umsatz. */
+      if (x.handelsende && x.handelsende !== x.tag) {
+        t += '  - gehandelt nur bis ' + x.handelsende +
+          (x.stempelSchwanz ? ', danach ' + x.stempelSchwanz + ' Stempelkerze' +
+            (x.stempelSchwanz === 1 ? '' : 'n') : '');
+      }
+      return t;
+    };
+
     z += '\n  ' + b.nachzuegler.length + ' Reihe(n) haengen zurueck' +
       (b.vollstaendig ? '' : ' (nur in der Stichprobe gesehen - es koennen mehr sein)') + ':';
-    b.nachzuegler.slice(0, 12).forEach(function (x) {
-      z += '\n      ' + x.sym + '  ' + x.tag + '  (' + x.tageZurueck +
-        ' Handelstag' + (x.tageZurueck === 1 ? '' : 'e') + ')';
-    });
-    if (b.nachzuegler.length > 12) z += '\n      (+' + (b.nachzuegler.length - 12) + ' weitere)';
+
+    if (!b.abmeldungen) {
+      /* KEINE PFLEGELISTE - altes Verhalten, und der Grund steht dabei. Ein Waechter,
+       * der ohne seine Quelle so tut wie mit ihr, ist die schlimmere Variante. */
+      z += '\n    (keine gepflegte Abmeldeliste gefunden - alle Reihen stehen ungruppiert,' +
+        '\n     jede koennte eine bekannte Abmeldung oder ein frischer Fehler sein)';
+      b.nachzuegler.slice(0, 12).forEach(function (x) { z += zeile(x); });
+      if (b.nachzuegler.length > 12) z += '\n      (+' + (b.nachzuegler.length - 12) + ' weitere)';
+    } else {
+      if (b.abmeldungen.veraltet) {
+        z += '\n    WARNUNG: die Abmeldeliste ist ' + b.abmeldungen.alterStunden +
+          ' h alt. Die Gruppen unten stuetzen sich' +
+          '\n    auf einen alten Stand - eine Reihe, die seither still wurde, steht faelschlich' +
+          '\n    als "bekannt". Erst tools/abmeldungen-pflegen.js laufen lassen, dann urteilen.';
+      }
+      /* DIE UNERKLAERTEN ZUERST UND IMMER VOLLSTAENDIG. Sie sind der Grund, warum
+       * jemand diese Ausgabe liest; sie werden nie abgeschnitten. */
+      if (unerklaert.length) {
+        z += '\n    UNERKLAERT (' + unerklaert.length + ') - hier hinsehen:';
+        unerklaert.forEach(function (x) {
+          z += zeile(x) + (x.befund === 'quelle-leer' ? '  [Quelle antwortete nicht - kein Beleg fuer eine Abmeldung]' : '');
+        });
+      } else {
+        z += '\n    Kein unerklaerter Fall - jede stillstehende Reihe ist zugeordnet.';
+      }
+      /* Direkt hinter den unerklaerten: das hier ist kein Rueckstand, den man aufholt,
+       * sondern ein Bestand, den man behaelt. Wer die Zeile ueberliest, loescht sie. */
+      if (schutz.length) {
+        z += '\n    NUR WIR HABEN DIE HISTORIE (' + schutz.length + ') - die Quelle hat sie gekappt.' +
+          '\n    NICHT nachladen: ein Abruf laege unter der mindestKerzen-Sperre und wuerde' +
+          '\n    abgewiesen - genau das rettet diese Reihen. Faellt die Sperre, sind sie weg.';
+        schutz.forEach(function (x) {
+          z += zeile(x) + (x.quelleKerzen != null ? '  [Quelle fuehrt nur noch ' + x.quelleKerzen + ' Kerze' +
+            (x.quelleKerzen === 1 ? '' : 'n') + ']' : '');
+        });
+      }
+      if (nachladen.length) {
+        z += '\n    ARCHIV HAENGT (' + nachladen.length + ') - die Quelle handelt weiter, wir laden nicht nach:';
+        nachladen.forEach(function (x) { z += zeile(x); });
+      }
+      if (sonstige.length) {
+        /* Ein Befund, den dieses Werkzeug nicht kennt, wird NICHT stillschweigend zu
+         * "bekannt" - er wird als unbekannt benannt. Sonst waere die naechste neue
+         * Kennzeichnung ein lautloser Freispruch. */
+        z += '\n    UNBEKANNTE KENNZEICHNUNG (' + sonstige.length + ') - dieses Werkzeug kennt den Befund nicht:';
+        sonstige.forEach(function (x) { z += zeile(x) + '  [' + x.befund + ']'; });
+      }
+      if (bekannt.length) {
+        z += '\n    Bekannt abgemeldet (' + bekannt.length + ', geprueft ' +
+          (b.abmeldungen.stand ? String(b.abmeldungen.stand).slice(0, 10) : 'unbekannt') + '): ' +
+          bekannt.map(function (x) { return x.sym; }).join(', ');
+      }
+    }
+
+    /* Der Alters-Hinweis bleibt, aber er zaehlt jetzt nur die UNERKLAERTEN mit: bei
+     * den bekannten ist "frisch stillstehend" gerade kein Verdacht mehr. */
+    var kurz = (b.abmeldungen ? unerklaert : b.nachzuegler)
+      .filter(function (x) { return x.tageZurueck <= 10; });
     if (kurz.length) {
       z += '\n    Davon ' + kurz.length + ' erst seit hoechstens 10 Handelstagen - das sind die' +
         '\n    verdaechtigen: ein frisch stillstehender Wert ist eher ein Abruffehler als' +

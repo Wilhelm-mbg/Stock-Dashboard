@@ -231,7 +231,7 @@ if (require.main === module) (async function () {
   console.log('');
 
   var geholt = 0, leer = 0, fehler = 0;
-  var gekuerzt = 0, fruehesteGeliefert = null, ausserhalbBehalten = 0;
+  var gekuerzt = 0, fruehesteGeliefert = null, ausserhalbBehalten = 0, unlesbarGesehen = [];
   for (var i = 0; i < nimm.length; i++) {
     var t = nimm[i];
     var pfad = '/v2/aggs/ticker/' + encodeURIComponent(t.sym) + '/range/1/day/' + VON + '/' + BIS +
@@ -274,40 +274,62 @@ if (require.main === module) (async function () {
          * die Daten frisst. */
         var rohVon = new Date(bars[0][0]).toISOString().slice(0, 10);
         var datei = path.join(ordner, t.sym + '.json');
-        var vorhanden = null;
+        var vorhanden = null, unlesbar = false;
         if (fs.existsSync(datei)) {
           try { vorhanden = JSON.parse(fs.readFileSync(datei, 'utf8')).series || null; }
-          catch (e) { vorhanden = null; /* unlesbar: die frische Reihe ersetzt sie */ }
+          catch (e) { unlesbar = true; }
         }
-        var v = vereinigen(vorhanden, bars);
-        var reihe = v.reihe;
-        if (v.behalten > 0) ausserhalbBehalten += v.behalten;
-        fs.writeFileSync(datei, JSON.stringify({
-          sym: t.sym, name: t.name, boerse: t.boerse, delistet: t.bis,
-          quelle: 'massive /v2/aggs 1/day, adjusted', stand: new Date().toISOString(),
-          format: '[zeit, schluss, umsatz, hoch, tief, eroeffnung]',
-          angefragtVon: VON, angefragtBis: BIS,
-          /* Diese beiden Felder beschreiben die DATEI, nicht den Abruf: was der
-           * Verbraucher hier vorfindet. quellfensterVon nennt daneben den Rand des
-           * Abonnements bei diesem Lauf - daran ist spaeter ablesbar, welche Tage
-           * nur noch deshalb existieren, weil sie einmal gesichert wurden. */
-          geliefertVon: new Date(reihe[0][0]).toISOString().slice(0, 10),
-          geliefertBis: new Date(reihe[reihe.length - 1][0]).toISOString().slice(0, 10),
-          quellfensterVon: rohVon,
-          series: reihe,
-        }));
-        /* Was DIESE Reihe wirklich abdeckt - nicht, was angefragt war. Ohne diese
-         * beiden Felder muss jeder Verbraucher die Reihe selbst aufmachen, um zu
-         * erfahren, ob sie den gewuenschten Zeitraum ueberhaupt enthaelt. */
-        var abVon = new Date(reihe[0][0]).toISOString().slice(0, 10);
-        var bisBis = new Date(reihe[reihe.length - 1][0]).toISOString().slice(0, 10);
-        stand.fertig[t.sym] = { kerzen: reihe.length, bis: t.bis, von: abVon, letzte: bisBis };
-        /* rohVon, nicht abVon: siehe oben. */
-        if (rohVon > VON) gekuerzt++;
-        if (!fruehesteGeliefert || rohVon < fruehesteGeliefert) fruehesteGeliefert = rohVon;
-        geholt++;
-        console.log('  ' + String(i + 1).padStart(3) + '/' + nimm.length + '  ' + t.sym.padEnd(8) +
-          String(bars.length).padStart(4) + ' Tage  bis ' + t.bis + '  ' + (t.name || '').slice(0, 34));
+        /* EINE UNLESBARE DATEI WIRD NICHT UEBERSCHRIEBEN.
+         * Bis hierhin hiess "unlesbar" stillschweigend "die frische Reihe ersetzt sie".
+         * Solange ueberschrieben wurde, war das egal - seit dem Mischen ist es der
+         * EINZIGE Pfad, auf dem dieser Lauf noch Daten vernichten kann, und er trifft
+         * genau die Reihen, bei denen es am teuersten waere: die Quelle kappt die
+         * Historie abgemeldeter Werte schrittweise (gemessen 27.08.2026: AVB und EQR
+         * liefern noch 30 Kerzen, BSCO/IBDP/IBTE noch EINE). Bei so einem Wert stuende
+         * nach dem Ersetzen eine einzige Kerze da, wo Jahre lagen - und unser Archiv
+         * ist die letzte Kopie.
+         * Eine kaputte Datei ist ausserdem kein Grund zur Eile: sie liegt schon falsch
+         * da, und ein Mensch kann sie noch retten. Ein Ueberschreiben kann niemand
+         * mehr zuruecknehmen. Also: ueberspringen, laut melden, weiterlaufen.
+         * (Der laufende Vollauf ist davon nicht betroffen - alle 1.164 Dateien wurden
+         * vor dem Start als lesbar geprueft.) */
+        if (unlesbar) {
+          /* KEIN continue: das wuerde die Fortschritts-Sicherung am Schleifenende
+           * ueberspringen. Nur der Schreibvorgang faellt aus, der Rest laeuft weiter. */
+          unlesbarGesehen.push(t.sym);
+          console.log('  ' + String(i + 1).padStart(3) + '/' + nimm.length + '  ' + t.sym.padEnd(8) +
+            'BESTAND UNLESBAR - uebersprungen, NICHTS geschrieben. Von Hand ansehen: ' + datei);
+        } else {
+          var v = vereinigen(vorhanden, bars);
+          var reihe = v.reihe;
+          if (v.behalten > 0) ausserhalbBehalten += v.behalten;
+          fs.writeFileSync(datei, JSON.stringify({
+            sym: t.sym, name: t.name, boerse: t.boerse, delistet: t.bis,
+            quelle: 'massive /v2/aggs 1/day, adjusted', stand: new Date().toISOString(),
+            format: '[zeit, schluss, umsatz, hoch, tief, eroeffnung]',
+            angefragtVon: VON, angefragtBis: BIS,
+            /* Diese beiden Felder beschreiben die DATEI, nicht den Abruf: was der
+             * Verbraucher hier vorfindet. quellfensterVon nennt daneben den Rand des
+             * Abonnements bei diesem Lauf - daran ist spaeter ablesbar, welche Tage
+             * nur noch deshalb existieren, weil sie einmal gesichert wurden. */
+            geliefertVon: new Date(reihe[0][0]).toISOString().slice(0, 10),
+            geliefertBis: new Date(reihe[reihe.length - 1][0]).toISOString().slice(0, 10),
+            quellfensterVon: rohVon,
+            series: reihe,
+          }));
+          /* Was DIESE Reihe wirklich abdeckt - nicht, was angefragt war. Ohne diese
+           * beiden Felder muss jeder Verbraucher die Reihe selbst aufmachen, um zu
+           * erfahren, ob sie den gewuenschten Zeitraum ueberhaupt enthaelt. */
+          var abVon = new Date(reihe[0][0]).toISOString().slice(0, 10);
+          var bisBis = new Date(reihe[reihe.length - 1][0]).toISOString().slice(0, 10);
+          stand.fertig[t.sym] = { kerzen: reihe.length, bis: t.bis, von: abVon, letzte: bisBis };
+          /* rohVon, nicht abVon: siehe oben. */
+          if (rohVon > VON) gekuerzt++;
+          if (!fruehesteGeliefert || rohVon < fruehesteGeliefert) fruehesteGeliefert = rohVon;
+          geholt++;
+          console.log('  ' + String(i + 1).padStart(3) + '/' + nimm.length + '  ' + t.sym.padEnd(8) +
+            String(bars.length).padStart(4) + ' Tage  bis ' + t.bis + '  ' + (t.name || '').slice(0, 34));
+        }
       }
     } catch (e) {
       fehler++;
@@ -324,6 +346,14 @@ if (require.main === module) (async function () {
    * einer, der bekommen hat, wonach er fragte. Genau diese Stille hat das Kursarchiv
    * zwei Tage unbemerkt stillstehen lassen. */
   if (geholt) {
+    if (unlesbarGesehen.length) {
+      console.log("");
+      console.log("!! " + unlesbarGesehen.length + " BESTANDSDATEI(EN) UNLESBAR - uebersprungen, nichts geschrieben:");
+      console.log("   " + unlesbarGesehen.join(", "));
+      console.log("   Diese Reihen stehen unveraendert da. Erst ansehen, dann entscheiden -");
+      console.log("   ein Ueberschreiben kann niemand zuruecknehmen, eine kaputte Datei schon.");
+      console.log("");
+    }
     if (ausserhalbBehalten) console.log("Aus dem Bestand behalten (ausserhalb des Fensters): " +
       ausserhalbBehalten + " Kerzen - sie waeren beim Ueberschreiben verloren gewesen.");
     console.log("Frueheste gelieferte Kerze in diesem Lauf: " + fruehesteGeliefert +

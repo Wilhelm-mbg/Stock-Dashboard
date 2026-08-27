@@ -10116,6 +10116,102 @@ console.log('\nWachhund: steht das Kursarchiv still?');
 })();
 
 
+/* ========== Wachhund: bekannte Abmeldungen gruppiert statt gestrichen (27.08.2026) ========== */
+console.log('\nWachhund: die neun bekannten und der eine unerklaerte Fall');
+(function () {
+  /* WOZU. Der Waechter zaehlte jede stillstehende Reihe gleich. Neun davon waren seit
+   * Wochen geklaert, die zehnte war die, auf die es ankam - und sie stand mitten
+   * zwischen ihnen. 06 hatte vorgeschlagen, die bekannten zu STREICHEN; das waere die
+   * achte Loeschregel dieser Woche gewesen. Gruppieren erreicht dasselbe Ziel, ohne
+   * dass etwas verschwindet.
+   * Geprueft wird das VERHALTEN: pruefe() und textZu() werden aufgerufen, nicht im
+   * Quelltext gesucht. Die Abmeldeliste wird eingespeist, damit die Probe nicht davon
+   * abhaengt, was auf diesem Rechner in der echten Datei steht. */
+  var W = require(__dirname + '/tools/archiv-wachhund.js');
+  var osW = require('os'), pathW = require('path');
+  var tmpW = fs.mkdtempSync(pathW.join(osW.tmpdir(), 'wachhund-gruppen-'));
+  function legeW(sym, tag) {
+    fs.writeFileSync(pathW.join(tmpW, 'bars_1d_' + sym + '.json'),
+      JSON.stringify({ series: [[Date.parse(tag + 'T13:30:00Z'), 100, 1, 101, 99]] }));
+  }
+  /* Die Mehrheit ist aktuell, damit der Rueckstand 0 ist und der Exit-Code gruen bleibt.
+   * Der Tag muss der letzte ABGESCHLOSSENE Handelstag sein - bei jetzt = 26.08. 20:45 UTC
+   * ist das der 26.08. Im ersten Anlauf stand hier der 25.08.: dann galten diese zwanzig
+   * selbst als Nachzuegler und die Probe zaehlte 22 unerklaerte statt 2. */
+  for (var iW = 0; iW < 20; iW++) legeW('AKTUELL' + iW, '2026-08-26');
+  legeW('BEKANNT', '2026-08-10');
+  legeW('HAENGT', '2026-08-21');
+  legeW('LEER', '2026-08-12');
+  legeW('FREMD', '2026-08-13');
+  legeW('NIX', '2026-08-14');
+  legeW('SCHUTZ', '2026-08-11');
+
+  var listeW = { stand: '2026-08-26T06:00:00.000Z', alterStunden: 5, anzahl: 5, veraltet: false,
+    karte: {
+      BEKANNT: { sym: 'BEKANNT', befund: 'abgemeldet-bestaetigt', handelsende: '2026-08-10', stempelSchwanz: 0 },
+      HAENGT:  { sym: 'HAENGT',  befund: 'abruffehler', handelsende: '2026-08-14', stempelSchwanz: 5 },
+      LEER:    { sym: 'LEER',    befund: 'quelle-leer', handelsende: '2026-08-12', stempelSchwanz: 0 },
+      FREMD:   { sym: 'FREMD',   befund: 'irgendwas-neues', handelsende: '2026-08-13', stempelSchwanz: 0 },
+      SCHUTZ:  { sym: 'SCHUTZ',  befund: 'historie-zurueckgesetzt', handelsende: '2026-08-11', stempelSchwanz: 0, quelleKerzen: 1 },
+    } };
+  var jetztW = new Date('2026-08-26T20:45:00Z');
+  var bW = W.pruefe(tmpW, { jetzt: jetztW, abmeldungen: listeW });
+  var tW = W.textZu(bW);
+
+  ok(/UNERKLAERT \(2\)/.test(tW),
+     'Die unerklaerten Faelle stehen als eigene Gruppe voran', (tW.match(/UNERKLAERT \([0-9]+\)/) || ['-'])[0]);
+  ok(/UNERKLAERT[\s\S]*NIX/.test(tW) && /UNERKLAERT[\s\S]*LEER/.test(tW),
+     'Eine Reihe OHNE Eintrag und eine mit "quelle-leer" gelten beide als unerklaert');
+  ok(!/UNERKLAERT[\s\S]*?\n    [A-Z][^\n]*\n[\s\S]*BEKANNT  2026/.test(tW) && /Bekannt abgemeldet \(1[^)]*\): BEKANNT/.test(tW),
+     'Die bestaetigte Abmeldung steht in der Sammelzeile, nicht bei den unerklaerten');
+  ok(/ARCHIV HAENGT \(1\)[\s\S]*HAENGT/.test(tW),
+     'Ein Abruffehler bekommt seine eigene Gruppe - er verlangt etwas anderes als eine Abmeldung');
+  ok(/gehandelt nur bis 2026-08-14, danach 5 Stempelkerzen/.test(tW),
+     'Bei einem Stempelschwanz stehen BEIDE Daten da - die letzte Kerze und das echte Handelsende');
+  ok(/UNBEKANNTE KENNZEICHNUNG \(1\)[\s\S]*FREMD[\s\S]*irgendwas-neues/.test(tW),
+     'Ein Befund, den der Waechter nicht kennt, wird benannt statt stillschweigend freigesprochen');
+
+  /* DER VIERTE ZUSTAND (06, f29c959): die Quelle hat die Historie gekappt, unser Archiv
+   * ist die letzte Kopie. Er verlangt das GEGENTEIL der anderen Gruppen - nicht
+   * nachladen, nicht abhaken, sondern schuetzen. Deshalb steht er weit oben und nie in
+   * der Sammelzeile der Erledigten.
+   * Real am 27.08.2026: AVB/EQR noch 30 Kerzen an der Quelle, BSCO/IBDP/IBTE noch EINE. */
+  ok(/NUR WIR HABEN DIE HISTORIE \(1\)[\s\S]*SCHUTZ/.test(tW),
+     'Eine Reihe mit gekappter Quellhistorie bekommt eine eigene Gruppe');
+  ok(/SCHUTZ[^\n]*Quelle fuehrt nur noch 1 Kerze\]/.test(tW),
+     'Dabei steht, wie tief die Quelle sie noch fuehrt - abgezaehlt, nicht behauptet');
+  ok(/NICHT nachladen/.test(tW),
+     'Und die Handlung steht dabei: nicht nachladen, sonst faellt der Schutz weg');
+  ok(!/Bekannt abgemeldet \([^)]*\):[^\n]*SCHUTZ/.test(tW),
+     'Sie landet NICHT in der Sammelzeile der Erledigten - dort wuerde sie niemand mehr ansehen');
+
+  /* DIE POSITIVKONTROLLE, ohne die alles darueber wertlos waere: OHNE Liste darf der
+   * Waechter nichts zuordnen und muss sagen, dass er nichts hat. Eine Gruppierung, die
+   * auch ohne Datenquelle "alles zugeordnet" meldet, waere ein stiller Freispruch. */
+  var bOhne = W.pruefe(tmpW, { jetzt: jetztW, abmeldungen: null });
+  var tOhne = W.textZu(bOhne);
+  ok(/keine gepflegte Abmeldeliste gefunden/.test(tOhne),
+     'Positivkontrolle: ohne Abmeldeliste sagt der Waechter das, statt zu gruppieren');
+  ok(!/Bekannt abgemeldet/.test(tOhne) && !/UNERKLAERT/.test(tOhne),
+     'Positivkontrolle: ohne Liste wird NICHTS als bekannt oder unerklaert eingeordnet');
+
+  /* DIE INVARIANTE, an der sechs Vorregistrierungen haengen: sie starten nur, wenn der
+   * Waechter mit 0 endet. Die Gruppierung darf dieses Urteil NIE beruehren - sie
+   * ordnet die Nachzuegler, sie bewertet das Archiv nicht. */
+  ok(bW.ok === bOhne.ok && bW.rueckstandHandelstage === bOhne.rueckstandHandelstage,
+     'Die Gruppierung aendert das Urteil ueber das Archiv nicht - sonst kippte sie die Sperre von sechs Messungen',
+     'mit Liste ' + bW.ok + ' / ohne ' + bOhne.ok);
+
+  /* Eine alte Liste ist ein alter Freispruch. Das muss dastehen. */
+  var bAlt = W.pruefe(tmpW, { jetzt: jetztW,
+    abmeldungen: { stand: '2026-08-20T06:00:00.000Z', alterStunden: 158.8, anzahl: 4, veraltet: true, karte: listeW.karte } });
+  ok(/WARNUNG: die Abmeldeliste ist 158.8 h alt/.test(W.textZu(bAlt)),
+     'Eine veraltete Abmeldeliste wird als solche ausgewiesen, statt still zu entlasten');
+
+  try { fs.readdirSync(tmpW).forEach(function (f) { fs.unlinkSync(pathW.join(tmpW, f)); }); fs.rmdirSync(tmpW); } catch (eW) { /* Aufraeumen ist kein Testziel */ }
+})();
+
+
 /* ================= Barrierefreiheit: Kontrast und Tabellensemantik ================= */
 console.log('\nBarrierefreiheit (Stufe F 3, 26.08.2026)');
 (function () {
