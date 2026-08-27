@@ -10405,6 +10405,51 @@ console.log('\nSammelplan: faellig ist, wer inhaltlich zurueckhaengt (27.08.2026
   ok(KQ2.letzterAbgeschlossenerHandelstag(new Date('2026-08-27T20:45:00Z')) === '2026-08-27',
      'Nach Handelsschluss zaehlt der heutige Tag');
 
+  /* ---- 60m und 1d holt die App selbst (Wilhelm, 27.08.: "die app soll es machen,
+   * sie laeuft ohnehin") ----
+   * BIS ZUM 27.08. standen sie ausdruecklich NICHT in der erlaubten Liste, weil ein
+   * naechtliches Werkzeug sie holte und zwei Programme am selben Archiv doppelte
+   * Netzlast waeren. Die naechtlichen Aufgaben sind geloescht - ohne diesen Umbau
+   * altert das Archiv. Der alte Grund gilt weiter und wird anders eingeloest:
+   * Archivsperre plus Deckel je Lauf. */
+  ok(SP.ERLAUBTE_INTERVALLE.indexOf('60m') !== -1 && SP.ERLAUBTE_INTERVALLE.indexOf('1d') !== -1,
+     'Die App darf 60m und 1d selbst holen (Wilhelms Entscheid 27.08.)');
+  (function () {
+    /* Der Zweck steckt im Universum, nicht in einer zweiten Mechanik: Intraday
+     * braucht die Handelsmenge, 60m/1d den Messbestand. */
+    var eV = SP.einstellungen(null);
+    ok(eV.universen['1m'] === 'top500' && eV.universen['60m'] === 'alle' && eV.universen['1d'] === 'alle',
+       'Universum je Intervall: Intraday die Handelsmenge, 60m/1d den ganzen Messbestand',
+       JSON.stringify(eV.universen));
+    /* 1m DARF NICHT MITWACHSEN: sein Sieben-Tage-Fenster ist die knappste Ressource
+     * im Haus, das Sechsfache an Abrufen wuerde es reissen. */
+    var gross = SP.symboleFuer(eV, '60m').symbole.length;
+    var klein = SP.symboleFuer(eV, '1m').symbole.length;
+    ok(gross > klein * 3 && klein < 1000,
+       '1m bleibt bei der kleinen Menge, waehrend 60m/1d das ganze Universum fahren',
+       klein + ' gegen ' + gross);
+    /* UND DER UMBAU DARF EINE ABSCHALTUNG NICHT AUFHEBEN. Die 1m-Sammlung ist seit
+     * dem 27.08. per Abstand 0 stillgelegt; das Universums-Feld liegt in derselben
+     * Datei und wird von derselben Funktion gelesen. Genau dort waere die
+     * Nebenwirkung, die niemand sucht. */
+    var stillgelegt = SP.einstellungen({ intervalle: { '1m': 0 } });
+    ok(stillgelegt.intervalle['1m'] === 0,
+       'Eine per Abstand 0 stillgelegte Aufloesung bleibt stillgelegt - der Umbau hebt sie nicht auf');
+    ok(SP.offeneSymbole('1m', stillgelegt, Date.now()).aus === true,
+       'und sie meldet sich weiterhin ausdruecklich als AUS, nicht als "nichts zu tun"');
+    /* Der Deckel ist der Unterschied zum Drei-Stunden-Batch. */
+    ok(SP.DECKEL_JE_LAUF > 0 && SP.DECKEL_JE_LAUF <= 600,
+       'Es gibt einen Deckel je Lauf - ohne ihn belegt ein 3.200-Werte-Lauf die Sperre stundenlang',
+       String(SP.DECKEL_JE_LAUF));
+    var mainQ = fs.readFileSync(__dirname + '/main.js', 'utf8');
+    ok(/offen\.dran\.slice\(0, Plan\.DECKEL_JE_LAUF\)/.test(mainQ),
+       'und der Automat wendet ihn an');
+    ok(/Plan\.symboleFuer\(einst, intervall\)\.symbole/.test(mainQ),
+       'Der Handlauf holt das Universum SEINES Intervalls - sonst faehrt ein 60m-Lauf die kleine Menge');
+    ok(!/sammelLauf\(intervall, liste, true\)[\s\S]{0,200}DECKEL/.test(mainQ),
+       'Der Deckel gilt nur dem Automaten - wer den Knopf drueckt, bekommt alles');
+  })();
+
   /* DIE SPERRKLINKE AUF DIE GEGENRICHTUNG: ein Abruf vor Handelsbeginn darf den Tag
    * nicht als erledigt stempeln. Genau das war der Ausloeser. */
   var vorOeffnung = Date.parse('2026-08-27T10:18:00Z');
@@ -10722,8 +10767,17 @@ console.log('\nDie App sammelt selbst: Kursarchiv (26.08.2026)');
     ok(kaputt.intervalle['1m'] === 1 && kaputt.abstandMs === 300 && kaputt.nachSchlussMinuten === 0,
        'Eine Zahl mit Tippfehler legt das Sammeln nicht still, sie wird zurechtgezogen',
        JSON.stringify([kaputt.intervalle['1m'], kaputt.abstandMs, kaputt.nachSchlussMinuten]));
-    ok(SP.ERLAUBTE_INTERVALLE.join(',') === '1m,5m,15m',
-       '60m und 1d holt die App NICHT - die umfassen das ganze Universum und gehoeren den naechtlichen Werkzeugen',
+    /* BIS ZUM 27.08.2026 VERLANGTE DIESE KLINKE DAS GEGENTEIL: "60m und 1d holt
+     * die App NICHT - die gehoeren den naechtlichen Werkzeugen." Der Grund war
+     * richtig (zwei Programme am selben Archiv = doppelte Netzlast), aber seine
+     * Voraussetzung ist entfallen: die naechtlichen Aufgaben sind geloescht, das
+     * Archiv wuerde ohne Zutun altern. Wilhelms Entscheid: "die app soll es
+     * machen, sie laeuft ohnehin". Umformuliert, nicht geloescht - und was sie
+     * jetzt festhaelt, ist die REIHENFOLGE: die drei Intraday-Aufloesungen
+     * stehen vorn, damit ein draengendes 1m vor einem 3.200-Werte-Lauf drankommt
+     * (lage() haelt diese Reihenfolge, sammlerNachsehen nimmt die erste faellige). */
+    ok(SP.ERLAUBTE_INTERVALLE.join(',') === '1m,5m,15m,60m,1d',
+       'Die App holt alle fuenf Aufloesungen - Intraday zuerst, danach der Messbestand',
        SP.ERLAUBTE_INTERVALLE.join());
 
     /* ---- 7. Waehrend der Sitzung wird planmaessig NICHT gesammelt ...

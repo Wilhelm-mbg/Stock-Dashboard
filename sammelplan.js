@@ -34,17 +34,51 @@ var Q = require('./kerzenquelle.js');
 var VORGABE = {
   an: true,
   universum: 'top500',
+  /* Universum JE INTERVALL. Der Zweck ist verschieden: 1m/5m/15m fuettern den
+   * Intraday-Handel und brauchen die Handelsmenge; 60m und 1d sind Messbestand
+   * und brauchen alles. Wer hier nichts eintraegt, faellt auf 'universum' oben
+   * zurueck - eine Einstellung, die es schon gab, bleibt damit gueltig.
+   *
+   * ACHTUNG, ZWEI DINGE HEISSEN HIER "UNIVERSUM" UND SIND ES NICHT:
+   *   - diese Felder waehlen AUS, welche Werte gesammelt werden ('top500', 'alle',
+   *     'etf' oder eine eigene Liste). Sie sind eine Einstellung.
+   *   - massive/universum-<datum>.json ist der PUNKT-IN-ZEIT-BESTAND: welcher Wert
+   *     WANN zum Universum gehoerte. Er ist eine Tatsache, er ist die Grundlage der
+   *     Ueberlebensverzerrungs-Rechnung, und er ist die QUELLE, aus der die Auswahl
+   *     oben schoepft (Q.listeBauen liest ihn). Fehlt er, kann gar nicht gesammelt
+   *     werden - dann meldet offeneSymbole ein Hindernis, keinen Rueckstand.
+   * Wer die beiden verwechselt, aendert eine Einstellung und glaubt, er habe den
+   * Bestand geaendert - oder umgekehrt. */
+  universen: { '60m': 'alle', '1d': 'alle' },
   /* Intervall -> Abstand in Tagen. 0 heisst: nicht sammeln. */
-  intervalle: { '1m': 1, '5m': 7, '15m': 7 },
+  intervalle: { '1m': 1, '5m': 7, '15m': 7, '60m': 1, '1d': 1 },
   nachSchlussMinuten: 30,
   abstandMs: Q.ABSTAND_MS,
 };
 
-/* Nur diese Intervalle darf die App selbst holen. 60m und 1d stehen bewusst nicht
- * drin: sie umfassen das ganze Universum (2.900 Werte, rund 97 Minuten je Lauf) und
- * gehoeren zu den naechtlichen Werkzeugen. Zwei Programme, die dasselbe Archiv
- * fuellen, ohne voneinander zu wissen, waeren doppelte Netzlast fuer nichts. */
-var ERLAUBTE_INTERVALLE = ['1m', '5m', '15m'];
+/* Welche Intervalle die App selbst holt.
+ *
+ * BIS ZUM 27.08.2026 STANDEN 60m UND 1d BEWUSST NICHT HIER, und die Begruendung
+ * war richtig: sie umfassen das ganze Universum (rund 2.900 Werte, 97 Minuten je
+ * Lauf) und wurden von einem naechtlichen Werkzeug geholt - zwei Programme, die
+ * dasselbe Archiv fuellen, ohne voneinander zu wissen, waeren doppelte Netzlast
+ * fuer nichts. Diese Voraussetzung ist entfallen: die naechtlichen Aufgaben sind
+ * geloescht, das Archiv wuerde ohne Zutun altern. Wilhelms Entscheid dazu lautet
+ * "die app soll es machen, sie laeuft ohnehin" - sie ist der einzige Beteiligte,
+ * der nicht ausfaellt. Der Grund gegen die Doppelarbeit bleibt gueltig und wird
+ * jetzt anders eingeloest: die Archivsperre (_laeuft.json) haelt Handlaeufe und
+ * Automat auseinander, und der Deckel unten sorgt dafuer, dass kein Lauf das
+ * Archiv stundenlang belegt. */
+var ERLAUBTE_INTERVALLE = ['1m', '5m', '15m', '60m', '1d'];
+
+/* HOECHSTENS SO VIELE WERTE JE LAUF. Der Unterschied zwischen "die App sammelt"
+ * und "die App faehrt einen Drei-Stunden-Batch": ein gedeckelter Lauf gibt die
+ * Sperre nach rund zehn Minuten wieder frei, sodass ein draengendes Intervall
+ * (1m verliert nach sieben Tagen unwiederbringlich) dazwischenkommt. Der Rest
+ * bleibt offen und wird beim naechsten Mal geholt - die Buchfuehrung dafuer gibt
+ * es laengst, sie zaehlt je Wert und nicht je Archiv.
+ * NUR FUER DEN AUTOMATEN: ein Lauf von Hand holt weiterhin alles. */
+var DECKEL_JE_LAUF = 300;
 
 function zahl(x, klein, gross, ersatz) {
   var n = Number(x);
@@ -61,6 +95,7 @@ function einstellungen(roh) {
     an: roh.an === undefined ? VORGABE.an : !!roh.an,
     universum: typeof roh.universum === 'string' && roh.universum.trim()
       ? roh.universum.trim() : VORGABE.universum,
+    universen: {},
     intervalle: {},
     nachSchlussMinuten: Math.round(zahl(roh.nachSchlussMinuten, 0, 720, VORGABE.nachSchlussMinuten)),
     abstandMs: Math.round(zahl(roh.abstandMs, 300, 60000, VORGABE.abstandMs)),
@@ -68,6 +103,12 @@ function einstellungen(roh) {
   ERLAUBTE_INTERVALLE.forEach(function (iv) {
     var q = roh.intervalle && roh.intervalle[iv];
     e.intervalle[iv] = Math.round(zahl(q, 0, 365, VORGABE.intervalle[iv]));
+    /* Das Universum je Intervall: eigener Eintrag, sonst die Vorgabe fuer dieses
+     * Intervall, sonst das allgemeine Feld. Ein Tippfehler faellt damit auf eine
+     * gueltige Menge zurueck und nicht auf eine leere. */
+    var u = roh.universen && roh.universen[iv];
+    e.universen[iv] = (typeof u === 'string' && u.trim())
+      ? u.trim() : (VORGABE.universen[iv] || e.universum);
   });
   return e;
 }
@@ -125,8 +166,11 @@ function tageSeit(tag, jetzt) {
 /* Die Werte fuer einen Lauf. Die ETFs kommen IMMER mit, unabhaengig vom Universum:
  * SPY ist der Anker des Regime-Tors, und ein Anker, der nur manchmal da ist, ist
  * keiner. Doppelte fallen raus. */
-function symboleFuer(einst) {
-  var b = Q.listeBauen(einst.universum);
+function symboleFuer(einst, intervall) {
+  /* Ohne Intervall gilt das allgemeine Feld - so bleiben Aufrufer gueltig, die
+   * nur "die Sammelmenge" meinen (der Handlauf-Knopf zum Beispiel). */
+  var wahl = (intervall && einst.universen && einst.universen[intervall]) || einst.universum;
+  var b = Q.listeBauen(wahl);
   if (b.grund) return b;
   var gesehen = {};
   var aus = [];
@@ -180,7 +224,7 @@ function istFaellig(eintrag, sollTag, abstandTage, jetzt) {
 
 function offeneSymbole(intervall, einst, jetzt) {
   jetzt = jetzt || Date.now();
-  var b = symboleFuer(einst);
+  var b = symboleFuer(einst, intervall);
   if (b.grund) return { grund: b.grund, alle: 0, dran: [] };
   var abstandTage = einst.intervalle[intervall];
   /* Abstand 0 heisst AUS. Ohne diese Zeile fiel der Wert auf 1 zurueck, und die Karte
@@ -305,7 +349,7 @@ function dauerSchaetzungMin(anzahl, abstandMs) {
 }
 
 module.exports = {
-  VORGABE: VORGABE, ERLAUBTE_INTERVALLE: ERLAUBTE_INTERVALLE,
+  VORGABE: VORGABE, ERLAUBTE_INTERVALLE: ERLAUBTE_INTERVALLE, DECKEL_JE_LAUF: DECKEL_JE_LAUF,
   einstellungen: einstellungen, newYork: newYork, marktOffen: marktOffen, ruhig: ruhig,
   symboleFuer: symboleFuer, offeneSymbole: offeneSymbole, istFaellig: istFaellig,
   faellig: faellig, lage: lage,

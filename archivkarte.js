@@ -45,7 +45,11 @@
     return 'vor ' + (std / 24).toFixed(1) + ' Tagen';
   }
 
-  var NAME = { '1m': '1 Minute', '5m': '5 Minuten', '15m': '15 Minuten' };
+  /* 60m und 1d kamen am 27.08. dazu: die App holt sie seither selbst, nachdem die
+   * naechtlichen Werkzeuge geloescht wurden. Ohne Eintrag stuende hier die rohe
+   * Kennung ("60m") - lesbar, aber nicht Deutsch. */
+  var NAME = { '1m': '1 Minute', '5m': '5 Minuten', '15m': '15 Minuten',
+               '60m': '1 Stunde', '1d': '1 Tag' };
 
   function zeileHtml(z, st) {
     var laeuftHier = st.laeuft && st.laufIntervall === z.intervall;

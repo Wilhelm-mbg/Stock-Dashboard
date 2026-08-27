@@ -1366,12 +1366,22 @@ async function sammlerNachsehen(grundZeile) {
   const z = dran[0];
   const offen = Plan.offeneSymbole(z.intervall, einst, Date.now());
   if (!offen.dran || !offen.dran.length) return;
+  /* GEDECKELT, und nur hier: 60m und 1d umfassen das ganze Universum (rund 3.200
+   * Werte, gut anderthalb Stunden). Ohne Deckel haette der Automat die Archivsperre
+   * so lange belegt, dass ein draengendes Intervall nicht mehr dazwischenkaeme -
+   * 1m verliert nach sieben Tagen unwiederbringlich. Der Rest bleibt offen und
+   * wird beim naechsten Blick auf die Uhr geholt; die Buchfuehrung dafuer zaehlt
+   * je Wert und nicht je Archiv. Ein Lauf VON HAND (sammler-start) geht weiterhin
+   * ungedeckelt durch - wer den Knopf drueckt, will alles. */
+  const teil = offen.dran.slice(0, Plan.DECKEL_JE_LAUF);
+  const rest = offen.dran.length - teil.length;
   sammlerFunk('sammler-hinweis', {
-    art: 'start', intervall: z.intervall, werte: offen.dran.length,
-    grund: (grundZeile ? grundZeile + ': ' : '') + z.grund,
+    art: 'start', intervall: z.intervall, werte: teil.length, rest: rest,
+    grund: (grundZeile ? grundZeile + ': ' : '') + z.grund +
+      (rest ? ' (' + teil.length + ' in diesem Lauf, ' + rest + ' danach)' : ''),
     verloren: z.verloren, verloreneTage: z.verloreneTage,
   });
-  await sammelLauf(z.intervall, offen.dran, false);
+  await sammelLauf(z.intervall, teil, false);
 }
 
 ipcMain.handle('sammler-stand', async () => sammlerStand());
@@ -1386,7 +1396,7 @@ ipcMain.handle('sammler-start', async (_ev, intervall) => {
   /* Von Hand heisst wirklich von Hand: sind alle Werte auf Stand, wird trotzdem
    * geholt. Sonst sagt der Knopf "nichts zu tun" und der Anwender weiss nicht, ob
    * er kaputt ist. */
-  const liste = offen.dran.length ? offen.dran : Plan.symboleFuer(einst).symbole;
+  const liste = offen.dran.length ? offen.dran : Plan.symboleFuer(einst, intervall).symbole;
   return await sammelLauf(intervall, liste, true);
 });
 
