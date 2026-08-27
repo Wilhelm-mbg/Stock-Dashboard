@@ -8970,6 +8970,49 @@ mit #93/#94 zusammen runder.
 *Eine Zeile, vom Strategie-Tüftler selbst gepflegt. Übergabe läuft über
 `studien/tueftler/WARTESCHLANGE.md`, nicht über diese Tafel.*
 
+- **27.08.2026, ~20:5x — Querschnitts-Kontrolle im Übernachtfenster gezählt.** Commit
+  `b5aacc2`, Papier `studien/tueftler/2026-08-27-querschnittskontrolle-uebernacht.md`.
+  **Betrifft alle drei offenen Entwürfe.** Meine `delta80` stehen auf der **Niveau**streuung
+  (σ ≈ 0,88); der A7-Topf lässt den Marktzug des Tages drin. Gegen den **Rest desselben
+  Tages** gepaart fällt σ auf 0,27–0,32 → **f = 3,164 / 2,778 / 3,300** (glockendruck /
+  nachtstoss / abgabedruck). **Die NEIN-Seite an der Aktienhürde fiele von Faktor 1,006 auf
+  8–11.** **🔴 Und die Warnung ist genauso groß: mein Placebo — dasselbe Gatter, Reihenfolge
+  aus einem Streuwert ohne jeden Kurs- und Umsatzbezug, per Konstruktion null Information —
+  erreicht f = 3,495 und schlägt damit JEDEN echten Kandidaten.** *`f` misst, wie gut sich
+  der Marktfaktor wegkürzt, nicht ob ein Signal etwas weiß; ein f von 3,3 auf einem Signal
+  ohne Kante ist dreimal so scharfes Nichts.* **Zweitens ist es eine ANDERE Frage:** Niveau
+  = Auswahl gegen ihre eigene Vorgeschichte (trägt den Handelsanspruch), gepaart = gegen den
+  Rest (Querschnittsaussage, kein Ertrag — wer long geht, verdient Markt + Kante, nicht die
+  Differenz). **Nicht gemessen: ob der Überschuss die Paarung überlebt** (mein Werkzeug kennt
+  nur Streuungen). *Die Studie vom 25.08. (Median f = 1,410, JA nicht erfüllt) wird **nicht**
+  umgedeutet — sie bleibt richtig für ihren Korpus, nennt selbst den `1d`-Median 2,209 und
+  verlangt wörtlich, die Tagesdaten-Frage **vorher anzumelden**. Genau das ist mein Papier;
+  Übernacht-Quintile kommen unter ihren 24 Varianten nicht vor.* **Vorschlag: gepaarte
+  Fassung als zweiter, vorab angemeldeter Endpunkt neben dem ersten (Testzahl 12 statt 6
+  familienweit), Placebo in beiden Fassungen mit ausgewiesenem f.**
+
+- **27.08.2026, ~20:2x — 1m-Fenster gezählt (null Netzabrufe).** Commit `e335e8f`, Protokoll
+  `studien/tueftler/2026-08-27-1m-fenster.md`. **„Ist noch etwas zu retten?" → nein, weil
+  nichts verloren ist:** alle 2.964 Reihen beginnen ausnahmslos am 18.08., und die Tage
+  18./19.08. liegen längst **außerhalb** des rollenden Fensters und sind trotzdem da → **der
+  Bestand führt zusammen, er ersetzt nicht.** Einzige echte Gefahr: eine Sammelpause > 7 Tage.
+  *Die 100 % Abdeckung sind fast nichts wert und stehen mit dieser Warnung da — der Abruf
+  holt das ganze Fenster in einem Zug, eine Lücke darin ist bauartbedingt kaum möglich.*
+  **Nutzbarkeit nüchtern: harter Anfang 18.08.2026, sieben Handelstage; kein Kandidat kann
+  sich absehbar darauf stützen.** **🔴 Der Fund liegt daneben:** von den vier Reihen, die vor
+  dem 26.08. enden (LBRDA, LBRDK, TWO, WBS — alle ohnehin in der Abmelde-Arbeit, **kein
+  Sammelloch**), stimmen WBS und TWO mit `archiv1d` überein, **LBRDA und LBRDK
+  widersprechen hart**: `archiv1d` hat dort ein Loch von fünf Wochen (letzter echter Tag
+  17.07.), der **Minutenabruf desselben Anbieters** führt für den 18./19.08. **284 bzw. 741
+  Umsatzminuten**. **🔻 Damit fällt meine eigene Zeile von 04:50** („LBRDA/LBRDK gehandelt 0
+  → stimmig") — *die Null war die Antwort des Tagesabrufs, nicht die des Marktes.* **Meine
+  Regel von heute früh („nach Umsatz fragen, nicht nach Kerzen") war richtig und reicht
+  nicht: es kommt auch darauf an, WELCHEN Endpunkt desselben Anbieters man fragt.** *Zwei
+  Bestände desselben Anbieters sind nicht automatisch zwei Zeugen; widersprechen sie sich,
+  ist mindestens einer keiner.* **Entscheiden würde Form 25 mit Frist — EDGAR-Arbeit
+  (`22`/`06`), nicht meine.** *Für `06`s TWO-Auftrag nebenbei nützlich: **beide** Bestände
+  bestätigen unabhängig den 24.08. als Handelsende, mit 19,4 Mio Stück Schlussabwicklung.*
+
 - **27.08.2026, ~19:4x — Quellverfall Stufe 1 (Auftrag des PM, null Netzabrufe).** Commit
   `5f0eee8`, Protokoll `studien/tueftler/2026-08-27-quellverfall-stufe1.md`. **Zeuge ist
   nicht eine zweite Quelle, sondern DIESELBE Quelle zu zwei Zeitpunkten:**
