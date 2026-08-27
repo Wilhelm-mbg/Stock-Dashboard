@@ -1,0 +1,1770 @@
+{
+ "erzeugt": "2026-08-27T06:16:41.917Z",
+ "auftrag": "PM 27.08.: wie viel brauchbare Historie holt ein Schnitt am letzten Sprung zurueck?",
+ "hinweis": "Zaehlung. Die Zulaessigkeitsfrage steht VOR dem Lauf im Protokoll und wird hier NICHT beantwortet.",
+ "vorarbeit": "Reihenmenge und Sprungzahlen aus studien/datenfund-dochte-2026-08-27/f1-ergebnis.txt (andere Sitzung, ~01:50) - hier reproduziert, nicht ersetzt.",
+ "schwelleBrauchbar_Kerzen": 250,
+ "reihenGeprueft": 2965,
+ "vonF1Verworfen": 58,
+ "abgleichMitVorarbeit": "deckungsgleich (58)",
+ "nachWertpapierart": {
+  "CS_oder_ADRC": 36,
+  "andere_oder_unbekannt": 22,
+  "hinweis": "Reihen ausserhalb CS/ADRC wirft schon der Wertpapierart-Filter, nicht erst F1 - fuer sie ist die Rettungsfrage gegenstandslos."
+ },
+ "rettbarkeit": {
+  "ohneSprung_nichtSchneidbar": 23,
+  "mitSprung": 35,
+  "davonAktien": 32,
+  "schwanzBrauchbar": 30,
+  "schwanzBrauchbar_nurAktien": 28,
+  "kopfBrauchbar_nurAktien": 25,
+  "besterBrauchbar_nurAktien": 31,
+  "kerzenSchwanz_nurAktien": 112739,
+  "kerzenKopf_nurAktien": 63495,
+  "kerzenBester_nurAktien": 137909,
+  "kerzenGanzeReihen_nurAktien": 177995
+ },
+ "reihen": [
+  {
+   "sym": "ELME",
+   "art": "CS",
+   "istAktie": true,
+   "laenge": 10078,
+   "spruenge": 1,
+   "nurPreisschwelle": false,
+   "letzterSprung": "2026-01-08 (Kerze 9919/10078)",
+   "schwanzNachLetztemSprung": {
+    "kerzen": 159,
+    "von": "2026-01-08",
+    "bis": "2026-08-26",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": false
+   },
+   "kopfVorErstemSprung": {
+    "kerzen": 9919,
+    "von": "1986-08-25",
+    "bis": "2026-01-07",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   },
+   "besterAbschnitt": {
+    "kerzen": 9919,
+    "von": "1986-08-25",
+    "bis": "2026-01-07",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   }
+  },
+  {
+   "sym": "MUX",
+   "art": "CS",
+   "istAktie": true,
+   "laenge": 10078,
+   "spruenge": 1,
+   "nurPreisschwelle": false,
+   "letzterSprung": "1991-12-24 (Kerze 1349/10078)",
+   "schwanzNachLetztemSprung": {
+    "kerzen": 8729,
+    "von": "1991-12-24",
+    "bis": "2026-08-26",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   },
+   "kopfVorErstemSprung": {
+    "kerzen": 1349,
+    "von": "1986-08-25",
+    "bis": "1991-12-23",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   },
+   "besterAbschnitt": {
+    "kerzen": 8729,
+    "von": "1991-12-24",
+    "bis": "2026-08-26",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   }
+  },
+  {
+   "sym": "NVR",
+   "art": "CS",
+   "istAktie": true,
+   "laenge": 10078,
+   "spruenge": 1,
+   "nurPreisschwelle": false,
+   "letzterSprung": "1993-10-01 (Kerze 1797/10078)",
+   "schwanzNachLetztemSprung": {
+    "kerzen": 8281,
+    "von": "1993-10-01",
+    "bis": "2026-08-26",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   },
+   "kopfVorErstemSprung": {
+    "kerzen": 1797,
+    "von": "1986-08-25",
+    "bis": "1993-09-30",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   },
+   "besterAbschnitt": {
+    "kerzen": 8281,
+    "von": "1993-10-01",
+    "bis": "2026-08-26",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   }
+  },
+  {
+   "sym": "HST",
+   "art": "CS",
+   "istAktie": true,
+   "laenge": 10078,
+   "spruenge": 1,
+   "nurPreisschwelle": false,
+   "letzterSprung": "1993-10-12 (Kerze 1804/10078)",
+   "schwanzNachLetztemSprung": {
+    "kerzen": 8274,
+    "von": "1993-10-12",
+    "bis": "2026-08-26",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   },
+   "kopfVorErstemSprung": {
+    "kerzen": 1804,
+    "von": "1986-08-25",
+    "bis": "1993-10-11",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   },
+   "besterAbschnitt": {
+    "kerzen": 8274,
+    "von": "1993-10-12",
+    "bis": "2026-08-26",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   }
+  },
+  {
+   "sym": "SU",
+   "art": "CS",
+   "istAktie": true,
+   "laenge": 10078,
+   "spruenge": 1,
+   "nurPreisschwelle": false,
+   "letzterSprung": "1993-12-01 (Kerze 1839/10078)",
+   "schwanzNachLetztemSprung": {
+    "kerzen": 8239,
+    "von": "1993-12-01",
+    "bis": "2026-08-26",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   },
+   "kopfVorErstemSprung": {
+    "kerzen": 1839,
+    "von": "1986-08-25",
+    "bis": "1993-11-30",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   },
+   "besterAbschnitt": {
+    "kerzen": 8239,
+    "von": "1993-12-01",
+    "bis": "2026-08-26",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   }
+  },
+  {
+   "sym": "SAFE",
+   "art": "CS",
+   "istAktie": true,
+   "laenge": 9260,
+   "spruenge": 1,
+   "nurPreisschwelle": false,
+   "letzterSprung": "1993-12-06 (Kerze 1024/9260)",
+   "schwanzNachLetztemSprung": {
+    "kerzen": 8236,
+    "von": "1993-12-06",
+    "bis": "2026-08-26",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   },
+   "kopfVorErstemSprung": {
+    "kerzen": 1024,
+    "von": "1989-11-16",
+    "bis": "1993-12-03",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   },
+   "besterAbschnitt": {
+    "kerzen": 8236,
+    "von": "1993-12-06",
+    "bis": "2026-08-26",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   }
+  },
+  {
+   "sym": "HUBB",
+   "art": "CS",
+   "istAktie": true,
+   "laenge": 10078,
+   "spruenge": 1,
+   "nurPreisschwelle": false,
+   "letzterSprung": "1994-10-31 (Kerze 2070/10078)",
+   "schwanzNachLetztemSprung": {
+    "kerzen": 8008,
+    "von": "1994-10-31",
+    "bis": "2026-08-26",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   },
+   "kopfVorErstemSprung": {
+    "kerzen": 2070,
+    "von": "1986-08-25",
+    "bis": "1994-10-28",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   },
+   "besterAbschnitt": {
+    "kerzen": 8008,
+    "von": "1994-10-31",
+    "bis": "2026-08-26",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   }
+  },
+  {
+   "sym": "AGX",
+   "art": "CS",
+   "istAktie": true,
+   "laenge": 7806,
+   "spruenge": 1,
+   "nurPreisschwelle": false,
+   "letzterSprung": "1995-10-13 (Kerze 39/7806)",
+   "schwanzNachLetztemSprung": {
+    "kerzen": 7767,
+    "von": "1995-10-13",
+    "bis": "2026-08-26",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   },
+   "kopfVorErstemSprung": {
+    "kerzen": 39,
+    "von": "1995-08-18",
+    "bis": "1995-10-12",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": false
+   },
+   "besterAbschnitt": {
+    "kerzen": 7767,
+    "von": "1995-10-13",
+    "bis": "2026-08-26",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   }
+  },
+  {
+   "sym": "ARWR",
+   "art": "CS",
+   "istAktie": true,
+   "laenge": 8228,
+   "spruenge": 3,
+   "nurPreisschwelle": false,
+   "letzterSprung": "2002-09-19 (Kerze 2206/8228)",
+   "schwanzNachLetztemSprung": {
+    "kerzen": 6022,
+    "von": "2002-09-19",
+    "bis": "2026-08-26",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   },
+   "kopfVorErstemSprung": {
+    "kerzen": 2125,
+    "von": "1993-12-16",
+    "bis": "2002-05-23",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   },
+   "besterAbschnitt": {
+    "kerzen": 6022,
+    "von": "2002-09-19",
+    "bis": "2026-08-26",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   }
+  },
+  {
+   "sym": "EHC",
+   "art": "CS",
+   "istAktie": true,
+   "laenge": 10057,
+   "spruenge": 1,
+   "nurPreisschwelle": false,
+   "letzterSprung": "2003-03-26 (Kerze 4164/10057)",
+   "schwanzNachLetztemSprung": {
+    "kerzen": 5893,
+    "von": "2003-03-26",
+    "bis": "2026-08-26",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   },
+   "kopfVorErstemSprung": {
+    "kerzen": 4164,
+    "von": "1986-09-24",
+    "bis": "2003-03-25",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   },
+   "besterAbschnitt": {
+    "kerzen": 5893,
+    "von": "2003-03-26",
+    "bis": "2026-08-26",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   }
+  },
+  {
+   "sym": "MFA",
+   "art": "CS",
+   "istAktie": true,
+   "laenge": 7138,
+   "spruenge": 1,
+   "nurPreisschwelle": false,
+   "letzterSprung": "2020-03-24 (Kerze 5523/7138)",
+   "schwanzNachLetztemSprung": {
+    "kerzen": 1615,
+    "von": "2020-03-24",
+    "bis": "2026-08-26",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   },
+   "kopfVorErstemSprung": {
+    "kerzen": 5523,
+    "von": "1998-04-13",
+    "bis": "2020-03-23",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   },
+   "besterAbschnitt": {
+    "kerzen": 5523,
+    "von": "1998-04-13",
+    "bis": "2020-03-23",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   }
+  },
+  {
+   "sym": "WT",
+   "art": "CS",
+   "istAktie": true,
+   "laenge": 8428,
+   "spruenge": 1,
+   "nurPreisschwelle": false,
+   "letzterSprung": "2004-11-18 (Kerze 2952/8428)",
+   "schwanzNachLetztemSprung": {
+    "kerzen": 5476,
+    "von": "2004-11-18",
+    "bis": "2026-08-26",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   },
+   "kopfVorErstemSprung": {
+    "kerzen": 2952,
+    "von": "1993-03-04",
+    "bis": "2004-11-17",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   },
+   "besterAbschnitt": {
+    "kerzen": 5476,
+    "von": "2004-11-18",
+    "bis": "2026-08-26",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   }
+  },
+  {
+   "sym": "NVAX",
+   "art": "CS",
+   "istAktie": true,
+   "laenge": 7731,
+   "spruenge": 1,
+   "nurPreisschwelle": false,
+   "letzterSprung": "2016-09-16 (Kerze 5232/7731)",
+   "schwanzNachLetztemSprung": {
+    "kerzen": 2499,
+    "von": "2016-09-16",
+    "bis": "2026-08-26",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   },
+   "kopfVorErstemSprung": {
+    "kerzen": 5232,
+    "von": "1995-12-05",
+    "bis": "2016-09-15",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   },
+   "besterAbschnitt": {
+    "kerzen": 5232,
+    "von": "1995-12-05",
+    "bis": "2016-09-15",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   }
+  },
+  {
+   "sym": "BLNK",
+   "art": "CS",
+   "istAktie": true,
+   "laenge": 4195,
+   "spruenge": 2,
+   "nurPreisschwelle": false,
+   "letzterSprung": "2010-04-09 (Kerze 74/4195)",
+   "schwanzNachLetztemSprung": {
+    "kerzen": 4121,
+    "von": "2010-04-09",
+    "bis": "2026-08-26",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   },
+   "kopfVorErstemSprung": {
+    "kerzen": 70,
+    "von": "2009-12-21",
+    "bis": "2010-04-01",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": false
+   },
+   "besterAbschnitt": {
+    "kerzen": 4121,
+    "von": "2010-04-09",
+    "bis": "2026-08-26",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   }
+  },
+  {
+   "sym": "TGTX",
+   "art": "CS",
+   "istAktie": true,
+   "laenge": 4105,
+   "spruenge": 1,
+   "nurPreisschwelle": false,
+   "letzterSprung": "2012-02-06 (Kerze 445/4105)",
+   "schwanzNachLetztemSprung": {
+    "kerzen": 3660,
+    "von": "2012-02-06",
+    "bis": "2026-08-26",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   },
+   "kopfVorErstemSprung": {
+    "kerzen": 445,
+    "von": "2010-05-03",
+    "bis": "2012-02-03",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   },
+   "besterAbschnitt": {
+    "kerzen": 3660,
+    "von": "2012-02-06",
+    "bis": "2026-08-26",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   }
+  },
+  {
+   "sym": "HROW",
+   "art": "CS",
+   "istAktie": true,
+   "laenge": 4757,
+   "spruenge": 1,
+   "nurPreisschwelle": false,
+   "letzterSprung": "2012-03-19 (Kerze 1126/4757)",
+   "schwanzNachLetztemSprung": {
+    "kerzen": 3631,
+    "von": "2012-03-19",
+    "bis": "2026-08-26",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   },
+   "kopfVorErstemSprung": {
+    "kerzen": 1126,
+    "von": "2007-09-28",
+    "bis": "2012-03-16",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   },
+   "besterAbschnitt": {
+    "kerzen": 3631,
+    "von": "2012-03-19",
+    "bis": "2026-08-26",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   }
+  },
+  {
+   "sym": "IOVA",
+   "art": "CS",
+   "istAktie": true,
+   "laenge": 3989,
+   "spruenge": 1,
+   "nurPreisschwelle": false,
+   "letzterSprung": "2013-05-07 (Kerze 642/3989)",
+   "schwanzNachLetztemSprung": {
+    "kerzen": 3347,
+    "von": "2013-05-07",
+    "bis": "2026-08-26",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   },
+   "kopfVorErstemSprung": {
+    "kerzen": 642,
+    "von": "2010-10-15",
+    "bis": "2013-05-06",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   },
+   "besterAbschnitt": {
+    "kerzen": 3347,
+    "von": "2013-05-07",
+    "bis": "2026-08-26",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   }
+  },
+  {
+   "sym": "QXO",
+   "art": "CS",
+   "istAktie": true,
+   "laenge": 3611,
+   "spruenge": 1,
+   "nurPreisschwelle": false,
+   "letzterSprung": "2024-07-30 (Kerze 3090/3611)",
+   "schwanzNachLetztemSprung": {
+    "kerzen": 521,
+    "von": "2024-07-30",
+    "bis": "2026-08-26",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   },
+   "kopfVorErstemSprung": {
+    "kerzen": 3090,
+    "von": "2012-04-17",
+    "bis": "2024-07-29",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   },
+   "besterAbschnitt": {
+    "kerzen": 3090,
+    "von": "2012-04-17",
+    "bis": "2024-07-29",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   }
+  },
+  {
+   "sym": "ASTH",
+   "art": "CS",
+   "istAktie": true,
+   "laenge": 4393,
+   "spruenge": 6,
+   "nurPreisschwelle": false,
+   "letzterSprung": "2015-04-29 (Kerze 1544/4393)",
+   "schwanzNachLetztemSprung": {
+    "kerzen": 2849,
+    "von": "2015-04-29",
+    "bis": "2026-08-26",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   },
+   "kopfVorErstemSprung": {
+    "kerzen": 22,
+    "von": "2009-03-11",
+    "bis": "2009-04-09",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": false
+   },
+   "besterAbschnitt": {
+    "kerzen": 2849,
+    "von": "2015-04-29",
+    "bis": "2026-08-26",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   }
+  },
+  {
+   "sym": "CHRD",
+   "art": "CS",
+   "istAktie": true,
+   "laenge": 4073,
+   "spruenge": 1,
+   "nurPreisschwelle": false,
+   "letzterSprung": "2020-11-20 (Kerze 2627/4073)",
+   "schwanzNachLetztemSprung": {
+    "kerzen": 1446,
+    "von": "2020-11-20",
+    "bis": "2026-08-26",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   },
+   "kopfVorErstemSprung": {
+    "kerzen": 2627,
+    "von": "2010-06-17",
+    "bis": "2020-11-19",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   },
+   "besterAbschnitt": {
+    "kerzen": 2627,
+    "von": "2010-06-17",
+    "bis": "2020-11-19",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   }
+  },
+  {
+   "sym": "BYRN",
+   "art": "CS",
+   "istAktie": true,
+   "laenge": 5020,
+   "spruenge": 2,
+   "nurPreisschwelle": false,
+   "letzterSprung": "2016-04-04 (Kerze 2405/5020)",
+   "schwanzNachLetztemSprung": {
+    "kerzen": 2615,
+    "von": "2016-04-04",
+    "bis": "2026-08-26",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   },
+   "kopfVorErstemSprung": {
+    "kerzen": 2404,
+    "von": "2006-09-12",
+    "bis": "2016-03-31",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   },
+   "besterAbschnitt": {
+    "kerzen": 2615,
+    "von": "2016-04-04",
+    "bis": "2026-08-26",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   }
+  },
+  {
+   "sym": "KDP",
+   "art": "CS",
+   "istAktie": true,
+   "laenge": 4605,
+   "spruenge": 1,
+   "nurPreisschwelle": false,
+   "letzterSprung": "2018-07-10 (Kerze 2561/4605)",
+   "schwanzNachLetztemSprung": {
+    "kerzen": 2044,
+    "von": "2018-07-10",
+    "bis": "2026-08-26",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   },
+   "kopfVorErstemSprung": {
+    "kerzen": 2561,
+    "von": "2008-05-07",
+    "bis": "2018-07-09",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   },
+   "besterAbschnitt": {
+    "kerzen": 2561,
+    "von": "2008-05-07",
+    "bis": "2018-07-09",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   }
+  },
+  {
+   "sym": "WHLR",
+   "art": "CS",
+   "istAktie": true,
+   "laenge": 3462,
+   "spruenge": 1,
+   "nurPreisschwelle": false,
+   "letzterSprung": "2017-04-03 (Kerze 1099/3462)",
+   "schwanzNachLetztemSprung": {
+    "kerzen": 2363,
+    "von": "2017-04-03",
+    "bis": "2026-08-26",
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   },
+   "kopfVorErstemSprung": {
+    "kerzen": 1099,
+    "von": "2012-11-19",
+    "bis": "2017-03-31",
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   },
+   "besterAbschnitt": {
+    "kerzen": 2363,
+    "von": "2017-04-03",
+    "bis": "2026-08-26",
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   }
+  },
+  {
+   "sym": "HIVE",
+   "art": "CS",
+   "istAktie": true,
+   "laenge": 3914,
+   "spruenge": 1,
+   "nurPreisschwelle": false,
+   "letzterSprung": "2017-09-19 (Kerze 1668/3914)",
+   "schwanzNachLetztemSprung": {
+    "kerzen": 2246,
+    "von": "2017-09-19",
+    "bis": "2026-08-26",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   },
+   "kopfVorErstemSprung": {
+    "kerzen": 1668,
+    "von": "2011-02-02",
+    "bis": "2017-09-18",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   },
+   "besterAbschnitt": {
+    "kerzen": 2246,
+    "von": "2017-09-19",
+    "bis": "2026-08-26",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   }
+  },
+  {
+   "sym": "INDV",
+   "art": "CS",
+   "istAktie": true,
+   "laenge": 2932,
+   "spruenge": 2,
+   "nurPreisschwelle": false,
+   "letzterSprung": "2022-11-28 (Kerze 1993/2932)",
+   "schwanzNachLetztemSprung": {
+    "kerzen": 939,
+    "von": "2022-11-28",
+    "bis": "2026-08-26",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   },
+   "kopfVorErstemSprung": {
+    "kerzen": 1991,
+    "von": "2014-12-29",
+    "bis": "2022-11-22",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   },
+   "besterAbschnitt": {
+    "kerzen": 1991,
+    "von": "2014-12-29",
+    "bis": "2022-11-22",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   }
+  },
+  {
+   "sym": "IVT",
+   "art": "CS",
+   "istAktie": true,
+   "laenge": 3143,
+   "spruenge": 2,
+   "nurPreisschwelle": false,
+   "letzterSprung": "2021-09-24 (Kerze 1908/3143)",
+   "schwanzNachLetztemSprung": {
+    "kerzen": 1235,
+    "von": "2021-09-24",
+    "bis": "2026-08-26",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   },
+   "kopfVorErstemSprung": {
+    "kerzen": 1874,
+    "von": "2014-02-27",
+    "bis": "2021-08-05",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   },
+   "besterAbschnitt": {
+    "kerzen": 1874,
+    "von": "2014-02-27",
+    "bis": "2021-08-05",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   }
+  },
+  {
+   "sym": "BYND",
+   "art": "CS",
+   "istAktie": true,
+   "laenge": 1840,
+   "spruenge": 7,
+   "nurPreisschwelle": false,
+   "letzterSprung": "2026-08-11 (Kerze 1828/1840)",
+   "schwanzNachLetztemSprung": {
+    "kerzen": 12,
+    "von": "2026-08-11",
+    "bis": "2026-08-26",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": false
+   },
+   "kopfVorErstemSprung": {
+    "kerzen": 1812,
+    "von": "2019-05-02",
+    "bis": "2026-07-17",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   },
+   "besterAbschnitt": {
+    "kerzen": 1812,
+    "von": "2019-05-02",
+    "bis": "2026-07-17",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   }
+  },
+  {
+   "sym": "MLTX",
+   "art": "CS",
+   "istAktie": true,
+   "laenge": 1469,
+   "spruenge": 1,
+   "nurPreisschwelle": false,
+   "letzterSprung": "2025-09-29 (Kerze 1240/1469)",
+   "schwanzNachLetztemSprung": {
+    "kerzen": 229,
+    "von": "2025-09-29",
+    "bis": "2026-08-26",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": false
+   },
+   "kopfVorErstemSprung": {
+    "kerzen": 1240,
+    "von": "2020-10-20",
+    "bis": "2025-09-26",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   },
+   "besterAbschnitt": {
+    "kerzen": 1240,
+    "von": "2020-10-20",
+    "bis": "2025-09-26",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   }
+  },
+  {
+   "sym": "SEZL",
+   "art": "CS",
+   "istAktie": true,
+   "laenge": 741,
+   "spruenge": 1,
+   "nurPreisschwelle": false,
+   "letzterSprung": "2023-09-14 (Kerze 1/741)",
+   "schwanzNachLetztemSprung": {
+    "kerzen": 740,
+    "von": "2023-09-14",
+    "bis": "2026-08-26",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   },
+   "kopfVorErstemSprung": {
+    "kerzen": 1,
+    "von": "2023-09-13",
+    "bis": "2023-09-13",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": false
+   },
+   "besterAbschnitt": {
+    "kerzen": 740,
+    "von": "2023-09-14",
+    "bis": "2026-08-26",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   }
+  },
+  {
+   "sym": "HOLO",
+   "art": "CS",
+   "istAktie": true,
+   "laenge": 1269,
+   "spruenge": 2,
+   "nurPreisschwelle": false,
+   "letzterSprung": "2024-02-07 (Kerze 629/1269)",
+   "schwanzNachLetztemSprung": {
+    "kerzen": 640,
+    "von": "2024-02-07",
+    "bis": "2026-08-26",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   },
+   "kopfVorErstemSprung": {
+    "kerzen": 528,
+    "von": "2021-08-06",
+    "bis": "2023-09-12",
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   },
+   "besterAbschnitt": {
+    "kerzen": 640,
+    "von": "2024-02-07",
+    "bis": "2026-08-26",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   }
+  },
+  {
+   "sym": "RYDE",
+   "art": "CS",
+   "istAktie": true,
+   "laenge": 621,
+   "spruenge": 1,
+   "nurPreisschwelle": false,
+   "letzterSprung": "2024-09-12 (Kerze 131/621)",
+   "schwanzNachLetztemSprung": {
+    "kerzen": 490,
+    "von": "2024-09-12",
+    "bis": "2026-08-26",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   },
+   "kopfVorErstemSprung": {
+    "kerzen": 131,
+    "von": "2024-03-06",
+    "bis": "2024-09-11",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": false
+   },
+   "besterAbschnitt": {
+    "kerzen": 490,
+    "von": "2024-09-12",
+    "bis": "2026-08-26",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   }
+  },
+  {
+   "sym": "NMRA",
+   "art": "CS",
+   "istAktie": true,
+   "laenge": 740,
+   "spruenge": 1,
+   "nurPreisschwelle": false,
+   "letzterSprung": "2025-01-02 (Kerze 327/740)",
+   "schwanzNachLetztemSprung": {
+    "kerzen": 413,
+    "von": "2025-01-02",
+    "bis": "2026-08-26",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   },
+   "kopfVorErstemSprung": {
+    "kerzen": 327,
+    "von": "2023-09-14",
+    "bis": "2024-12-31",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   },
+   "besterAbschnitt": {
+    "kerzen": 413,
+    "von": "2025-01-02",
+    "bis": "2026-08-26",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   }
+  },
+  {
+   "sym": "BRK.A",
+   "art": "CS",
+   "istAktie": true,
+   "laenge": 10078,
+   "spruenge": 0,
+   "nurPreisschwelle": true,
+   "letzterSprung": null,
+   "schwanzNachLetztemSprung": {
+    "kerzen": 0,
+    "von": null,
+    "bis": null,
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   },
+   "kopfVorErstemSprung": {
+    "kerzen": 0,
+    "von": null,
+    "bis": null,
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   },
+   "besterAbschnitt": {
+    "kerzen": 0,
+    "von": null,
+    "bis": null,
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   }
+  },
+  {
+   "sym": "FCEL",
+   "art": "CS",
+   "istAktie": true,
+   "laenge": 8602,
+   "spruenge": 0,
+   "nurPreisschwelle": true,
+   "letzterSprung": null,
+   "schwanzNachLetztemSprung": {
+    "kerzen": 0,
+    "von": null,
+    "bis": null,
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   },
+   "kopfVorErstemSprung": {
+    "kerzen": 0,
+    "von": null,
+    "bis": null,
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   },
+   "besterAbschnitt": {
+    "kerzen": 0,
+    "von": null,
+    "bis": null,
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   }
+  },
+  {
+   "sym": "GEVO",
+   "art": "CS",
+   "istAktie": true,
+   "laenge": 3909,
+   "spruenge": 0,
+   "nurPreisschwelle": true,
+   "letzterSprung": null,
+   "schwanzNachLetztemSprung": {
+    "kerzen": 0,
+    "von": null,
+    "bis": null,
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   },
+   "kopfVorErstemSprung": {
+    "kerzen": 0,
+    "von": null,
+    "bis": null,
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   },
+   "besterAbschnitt": {
+    "kerzen": 0,
+    "von": null,
+    "bis": null,
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   }
+  },
+  {
+   "sym": "PARA",
+   "art": "CS",
+   "istAktie": true,
+   "laenge": 1390,
+   "spruenge": 0,
+   "nurPreisschwelle": true,
+   "letzterSprung": null,
+   "schwanzNachLetztemSprung": {
+    "kerzen": 0,
+    "von": null,
+    "bis": null,
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   },
+   "kopfVorErstemSprung": {
+    "kerzen": 0,
+    "von": null,
+    "bis": null,
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   },
+   "besterAbschnitt": {
+    "kerzen": 0,
+    "von": null,
+    "bis": null,
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   }
+  },
+  {
+   "sym": "SOXS",
+   "art": "ETF",
+   "istAktie": false,
+   "laenge": 4141,
+   "spruenge": 1,
+   "nurPreisschwelle": false,
+   "letzterSprung": "2026-05-26 (Kerze 4076/4141)",
+   "schwanzNachLetztemSprung": {
+    "kerzen": 65,
+    "von": "2026-05-26",
+    "bis": "2026-08-26",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": false
+   },
+   "kopfVorErstemSprung": {
+    "kerzen": 4076,
+    "von": "2010-03-11",
+    "bis": "2026-05-22",
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   },
+   "besterAbschnitt": {
+    "kerzen": 4076,
+    "von": "2010-03-11",
+    "bis": "2026-05-22",
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   }
+  },
+  {
+   "sym": "SVXY",
+   "art": "ETF",
+   "istAktie": false,
+   "laenge": 3745,
+   "spruenge": 1,
+   "nurPreisschwelle": false,
+   "letzterSprung": "2018-02-06 (Kerze 1595/3745)",
+   "schwanzNachLetztemSprung": {
+    "kerzen": 2150,
+    "von": "2018-02-06",
+    "bis": "2026-08-26",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   },
+   "kopfVorErstemSprung": {
+    "kerzen": 1595,
+    "von": "2011-10-04",
+    "bis": "2018-02-05",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   },
+   "besterAbschnitt": {
+    "kerzen": 2150,
+    "von": "2018-02-06",
+    "bis": "2026-08-26",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   }
+  },
+  {
+   "sym": "GUSH",
+   "art": "ETF",
+   "istAktie": false,
+   "laenge": 2828,
+   "spruenge": 1,
+   "nurPreisschwelle": false,
+   "letzterSprung": "2020-03-09 (Kerze 1202/2828)",
+   "schwanzNachLetztemSprung": {
+    "kerzen": 1626,
+    "von": "2020-03-09",
+    "bis": "2026-08-26",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   },
+   "kopfVorErstemSprung": {
+    "kerzen": 1202,
+    "von": "2015-05-29",
+    "bis": "2020-03-06",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   },
+   "besterAbschnitt": {
+    "kerzen": 1626,
+    "von": "2020-03-09",
+    "bis": "2026-08-26",
+    "reisstPreisschwelleWeiter": false,
+    "brauchbar": true
+   }
+  },
+  {
+   "sym": "BOIL",
+   "art": "ETV",
+   "istAktie": false,
+   "laenge": 3743,
+   "spruenge": 0,
+   "nurPreisschwelle": true,
+   "letzterSprung": null,
+   "schwanzNachLetztemSprung": {
+    "kerzen": 0,
+    "von": null,
+    "bis": null,
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   },
+   "kopfVorErstemSprung": {
+    "kerzen": 0,
+    "von": null,
+    "bis": null,
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   },
+   "besterAbschnitt": {
+    "kerzen": 0,
+    "von": null,
+    "bis": null,
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   }
+  },
+  {
+   "sym": "DUST",
+   "art": "ETF",
+   "istAktie": false,
+   "laenge": 3952,
+   "spruenge": 0,
+   "nurPreisschwelle": true,
+   "letzterSprung": null,
+   "schwanzNachLetztemSprung": {
+    "kerzen": 0,
+    "von": null,
+    "bis": null,
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   },
+   "kopfVorErstemSprung": {
+    "kerzen": 0,
+    "von": null,
+    "bis": null,
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   },
+   "besterAbschnitt": {
+    "kerzen": 0,
+    "von": null,
+    "bis": null,
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   }
+  },
+  {
+   "sym": "ERY",
+   "art": "ETF",
+   "istAktie": false,
+   "laenge": 4468,
+   "spruenge": 0,
+   "nurPreisschwelle": true,
+   "letzterSprung": null,
+   "schwanzNachLetztemSprung": {
+    "kerzen": 0,
+    "von": null,
+    "bis": null,
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   },
+   "kopfVorErstemSprung": {
+    "kerzen": 0,
+    "von": null,
+    "bis": null,
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   },
+   "besterAbschnitt": {
+    "kerzen": 0,
+    "von": null,
+    "bis": null,
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   }
+  },
+  {
+   "sym": "FAZ",
+   "art": "ETF",
+   "istAktie": false,
+   "laenge": 4468,
+   "spruenge": 0,
+   "nurPreisschwelle": true,
+   "letzterSprung": null,
+   "schwanzNachLetztemSprung": {
+    "kerzen": 0,
+    "von": null,
+    "bis": null,
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   },
+   "kopfVorErstemSprung": {
+    "kerzen": 0,
+    "von": null,
+    "bis": null,
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   },
+   "besterAbschnitt": {
+    "kerzen": 0,
+    "von": null,
+    "bis": null,
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   }
+  },
+  {
+   "sym": "FNGD",
+   "art": "ETN",
+   "istAktie": false,
+   "laenge": 2160,
+   "spruenge": 0,
+   "nurPreisschwelle": true,
+   "letzterSprung": null,
+   "schwanzNachLetztemSprung": {
+    "kerzen": 0,
+    "von": null,
+    "bis": null,
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   },
+   "kopfVorErstemSprung": {
+    "kerzen": 0,
+    "von": null,
+    "bis": null,
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   },
+   "besterAbschnitt": {
+    "kerzen": 0,
+    "von": null,
+    "bis": null,
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   }
+  },
+  {
+   "sym": "JDST",
+   "art": "ETF",
+   "istAktie": false,
+   "laenge": 3243,
+   "spruenge": 0,
+   "nurPreisschwelle": true,
+   "letzterSprung": null,
+   "schwanzNachLetztemSprung": {
+    "kerzen": 0,
+    "von": null,
+    "bis": null,
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   },
+   "kopfVorErstemSprung": {
+    "kerzen": 0,
+    "von": null,
+    "bis": null,
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   },
+   "besterAbschnitt": {
+    "kerzen": 0,
+    "von": null,
+    "bis": null,
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   }
+  },
+  {
+   "sym": "LABD",
+   "art": "ETF",
+   "istAktie": false,
+   "laenge": 2829,
+   "spruenge": 0,
+   "nurPreisschwelle": true,
+   "letzterSprung": null,
+   "schwanzNachLetztemSprung": {
+    "kerzen": 0,
+    "von": null,
+    "bis": null,
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   },
+   "kopfVorErstemSprung": {
+    "kerzen": 0,
+    "von": null,
+    "bis": null,
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   },
+   "besterAbschnitt": {
+    "kerzen": 0,
+    "von": null,
+    "bis": null,
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   }
+  },
+  {
+   "sym": "QID",
+   "art": "ETF",
+   "istAktie": false,
+   "laenge": 5062,
+   "spruenge": 0,
+   "nurPreisschwelle": true,
+   "letzterSprung": null,
+   "schwanzNachLetztemSprung": {
+    "kerzen": 0,
+    "von": null,
+    "bis": null,
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   },
+   "kopfVorErstemSprung": {
+    "kerzen": 0,
+    "von": null,
+    "bis": null,
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   },
+   "besterAbschnitt": {
+    "kerzen": 0,
+    "von": null,
+    "bis": null,
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   }
+  },
+  {
+   "sym": "SPXS",
+   "art": "ETF",
+   "istAktie": false,
+   "laenge": 4468,
+   "spruenge": 0,
+   "nurPreisschwelle": true,
+   "letzterSprung": null,
+   "schwanzNachLetztemSprung": {
+    "kerzen": 0,
+    "von": null,
+    "bis": null,
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   },
+   "kopfVorErstemSprung": {
+    "kerzen": 0,
+    "von": null,
+    "bis": null,
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   },
+   "besterAbschnitt": {
+    "kerzen": 0,
+    "von": null,
+    "bis": null,
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   }
+  },
+  {
+   "sym": "SPXU",
+   "art": "ETF",
+   "istAktie": false,
+   "laenge": 4319,
+   "spruenge": 0,
+   "nurPreisschwelle": true,
+   "letzterSprung": null,
+   "schwanzNachLetztemSprung": {
+    "kerzen": 0,
+    "von": null,
+    "bis": null,
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   },
+   "kopfVorErstemSprung": {
+    "kerzen": 0,
+    "von": null,
+    "bis": null,
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   },
+   "besterAbschnitt": {
+    "kerzen": 0,
+    "von": null,
+    "bis": null,
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   }
+  },
+  {
+   "sym": "SQQQ",
+   "art": "ETF",
+   "istAktie": false,
+   "laenge": 4160,
+   "spruenge": 0,
+   "nurPreisschwelle": true,
+   "letzterSprung": null,
+   "schwanzNachLetztemSprung": {
+    "kerzen": 0,
+    "von": null,
+    "bis": null,
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   },
+   "kopfVorErstemSprung": {
+    "kerzen": 0,
+    "von": null,
+    "bis": null,
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   },
+   "besterAbschnitt": {
+    "kerzen": 0,
+    "von": null,
+    "bis": null,
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   }
+  },
+  {
+   "sym": "SRTY",
+   "art": "ETF",
+   "istAktie": false,
+   "laenge": 4160,
+   "spruenge": 0,
+   "nurPreisschwelle": true,
+   "letzterSprung": null,
+   "schwanzNachLetztemSprung": {
+    "kerzen": 0,
+    "von": null,
+    "bis": null,
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   },
+   "kopfVorErstemSprung": {
+    "kerzen": 0,
+    "von": null,
+    "bis": null,
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   },
+   "besterAbschnitt": {
+    "kerzen": 0,
+    "von": null,
+    "bis": null,
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   }
+  },
+  {
+   "sym": "TECS",
+   "art": "ETF",
+   "istAktie": false,
+   "laenge": 4441,
+   "spruenge": 0,
+   "nurPreisschwelle": true,
+   "letzterSprung": null,
+   "schwanzNachLetztemSprung": {
+    "kerzen": 0,
+    "von": null,
+    "bis": null,
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   },
+   "kopfVorErstemSprung": {
+    "kerzen": 0,
+    "von": null,
+    "bis": null,
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   },
+   "besterAbschnitt": {
+    "kerzen": 0,
+    "von": null,
+    "bis": null,
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   }
+  },
+  {
+   "sym": "TZA",
+   "art": "ETF",
+   "istAktie": false,
+   "laenge": 4468,
+   "spruenge": 0,
+   "nurPreisschwelle": true,
+   "letzterSprung": null,
+   "schwanzNachLetztemSprung": {
+    "kerzen": 0,
+    "von": null,
+    "bis": null,
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   },
+   "kopfVorErstemSprung": {
+    "kerzen": 0,
+    "von": null,
+    "bis": null,
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   },
+   "besterAbschnitt": {
+    "kerzen": 0,
+    "von": null,
+    "bis": null,
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   }
+  },
+  {
+   "sym": "UVIX",
+   "art": "ETF",
+   "istAktie": false,
+   "laenge": 1106,
+   "spruenge": 0,
+   "nurPreisschwelle": true,
+   "letzterSprung": null,
+   "schwanzNachLetztemSprung": {
+    "kerzen": 0,
+    "von": null,
+    "bis": null,
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   },
+   "kopfVorErstemSprung": {
+    "kerzen": 0,
+    "von": null,
+    "bis": null,
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   },
+   "besterAbschnitt": {
+    "kerzen": 0,
+    "von": null,
+    "bis": null,
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   }
+  },
+  {
+   "sym": "UVXY",
+   "art": "ETF",
+   "istAktie": false,
+   "laenge": 3745,
+   "spruenge": 0,
+   "nurPreisschwelle": true,
+   "letzterSprung": null,
+   "schwanzNachLetztemSprung": {
+    "kerzen": 0,
+    "von": null,
+    "bis": null,
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   },
+   "kopfVorErstemSprung": {
+    "kerzen": 0,
+    "von": null,
+    "bis": null,
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   },
+   "besterAbschnitt": {
+    "kerzen": 0,
+    "von": null,
+    "bis": null,
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   }
+  },
+  {
+   "sym": "VIXY",
+   "art": "ETF",
+   "istAktie": false,
+   "laenge": 3934,
+   "spruenge": 0,
+   "nurPreisschwelle": true,
+   "letzterSprung": null,
+   "schwanzNachLetztemSprung": {
+    "kerzen": 0,
+    "von": null,
+    "bis": null,
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   },
+   "kopfVorErstemSprung": {
+    "kerzen": 0,
+    "von": null,
+    "bis": null,
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   },
+   "besterAbschnitt": {
+    "kerzen": 0,
+    "von": null,
+    "bis": null,
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   }
+  },
+  {
+   "sym": "YANG",
+   "art": "ETF",
+   "istAktie": false,
+   "laenge": 4207,
+   "spruenge": 0,
+   "nurPreisschwelle": true,
+   "letzterSprung": null,
+   "schwanzNachLetztemSprung": {
+    "kerzen": 0,
+    "von": null,
+    "bis": null,
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   },
+   "kopfVorErstemSprung": {
+    "kerzen": 0,
+    "von": null,
+    "bis": null,
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   },
+   "besterAbschnitt": {
+    "kerzen": 0,
+    "von": null,
+    "bis": null,
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   }
+  },
+  {
+   "sym": "ZSL",
+   "art": "ETV",
+   "istAktie": false,
+   "laenge": 4459,
+   "spruenge": 0,
+   "nurPreisschwelle": true,
+   "letzterSprung": null,
+   "schwanzNachLetztemSprung": {
+    "kerzen": 0,
+    "von": null,
+    "bis": null,
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   },
+   "kopfVorErstemSprung": {
+    "kerzen": 0,
+    "von": null,
+    "bis": null,
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   },
+   "besterAbschnitt": {
+    "kerzen": 0,
+    "von": null,
+    "bis": null,
+    "reisstPreisschwelleWeiter": true,
+    "brauchbar": false
+   }
+  }
+ ]
+}
