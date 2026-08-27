@@ -208,7 +208,34 @@ Nicht-Krypto, **alle am 25.08., null erfasste Marktlagen** → **nicht erfüllt,
 > **Die Sperre bleibt unverändert richtig; was fehlt, ist die Sichtbarkeit ihrer Entscheidungen.**
 > *Kein Auftrag heute — notiert.*
 
-> ### 🔴 UND DER BEUNRUHIGENDE TEIL: **die Quelle hat Historie GELÖSCHT**
+> ### 🔴 ES SIND FÜNF VON ZEHN, NICHT ZWEI *(`06`, erste Fahrt des neuen Werkzeugs)*
+> **`BSCO`, `IBDP`, `IBTE` führen an der Quelle nur noch EINE Kerze** — dazu AVB und EQR.
+> ***„Die Quelle entsorgt die Historie Abgemeldeter offenbar schrittweise."***
+> *Gegenprobe mitgeliefert: **LBRDA/LBRDK behalten ihre volle Quellhistorie** — das
+> 17.07.-Muster grenzt sich auf AVB/EQR ein, es ist nicht ein einziger Mechanismus.*
+>
+> **Vierter Abmelde-Befund gebaut (`f29c959`): `historie-zurueckgesetzt`** — *die Handlung kippt
+> von **nachladen** auf **schützen**.* **Maschinenlesbar in `abmeldungen.json`: diese fünf dürfen
+> NIE aus einem frischen Quellabruf überschrieben werden.**
+>
+> ***„1ds `mindestKerzen`-Sperre war monatelang der einzige Schutz vor stiller Löschung, ohne
+> dass es jemand wusste."***
+
+> ### ❓ OFFENE FRAGE AN DEN LAUFENDEN VOLLAUF — gestellt, noch nicht beantwortet
+> **Der Vollauf holt gerade Eröffnungskurse für 1.164 Reihen — und das sind genau die
+> VERSCHWUNDENEN, also exakt die Klasse, deren Historie die Quelle schrittweise entsorgt.**
+>
+> **Greift die `mindestKerzen`-Sperre auch im Vollauf-Pfad, oder nur im Nachtlauf?** *Wenn
+> `vereinigen()` mischt und Kerzen außerhalb des Fensters stehen lässt, kann eine Stummel-Antwort
+> nichts zerstören — dann ist die Frage erledigt.*
+>
+> **⚠ Und eine Beobachtung zum Piloten von heute früh:** *Er fand „Neuschreiben statt Mischen" mit
+> **einer** verlorenen Kerze je Reihe — weil unter den 20 Piloten-Reihen offenbar **kein**
+> Stummel-Fall war.* **Wären welche dabei gewesen, hätte derselbe Fehler nicht eine Kerze
+> gekostet, sondern eine ganze Historie.** *Der Pilot hat die schlimmste Variante des Fehlers
+> zufällig nicht gesehen.*
+
+> ### 🔴 DER BEUNRUHIGENDE TEIL: **die Quelle hat Historie GELÖSCHT**
 > *Für AVB und EQR reicht sie nur noch bis 17.07.2026 zurück.* **Damit ist unser Archiv für diese
 > Reihen die einzige verbliebene Kopie von 8.166 bzw. vergleichbar vielen Kerzen.**
 > **Die „löscht nie"-Eigenschaft von `zusammenfuehren()` ist damit kein Komfort mehr, sondern
