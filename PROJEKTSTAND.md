@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 08:18 (abgelesen)
+letzter-bericht: 2026-08-27 08:34 (abgelesen)
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -39,6 +39,78 @@ Sitzungen.** Gefunden hat es jedes Mal eine Gegenprobe, nie ein Verdacht.
 > **→ Damit ist die Reparatur, um die diese Nacht gestritten wurde, für die MESSSEITE
 > gegenstandslos.** *Was bleibt, ist die Frage der Archiv-Sauberkeit — und die ist Entscheidung
 > 1 unten.*
+
+## ⭐ WILHELMS ENTSCHEIDE 27.08. 08:2x (per Formular) — **alle drei gelten ab sofort**
+
+> ### 1. Kostenhürde → **LIVE-HÜRDE DES GEHANDELTEN PRODUKTS**
+> **Das Messband (Vermögen → Depot) rechnet ab jetzt wie das Scoreboard.** *„Kostenhürde" heißt
+> damit überall dasselbe.* **→ vergeben an `06`** (Umstellung ist eine Zeile, läuft schon 4× über
+> `huerdePp()`); **der Rest von #108 geht im selben Commit mit** — beides `messband.js`.
+> **Auflage: Sperrklinke darauf, dass beide Anzeigen DIESELBE Quelle benutzen** — sonst driften
+> sie beim nächsten Umbau wieder auseinander und fallen in der Voreinstellung wieder zufällig
+> zusammen.
+
+> ### 2. Zweite Datenquelle → **EINE SITZUNG SOLL RECHERCHIEREN**
+> **Kein Kauf, keine Anmeldung — nur eine Entscheidungsvorlage.** **→ vergeben an `22`.**
+> **Die entscheidende Spalte ist nicht der Preis, sondern der ANPASSUNGSSTAND:** *Eine Quelle,
+> die nur angepasste Kurse liefert, ist bei RGR/SITC/B/WHLR **kein zweiter Zeuge** — sie fügt
+> eine dritte Meinung hinzu, statt zu entscheiden, welches Archiv recht hat.* **Gesucht sind
+> Split-/Dividenden-Ereignisse als Datensatz oder unangepasste Rohkurse.** *Dazu: Reichweite,
+> Preis, und ob **abgemeldete** Papiere abgedeckt sind.* **Auflage: „unklar" schreiben statt
+> vermuten.**
+
+> ### 3. Strang-A-Referenzlauf → **ERST NACH DEM ERÖFFNUNGSKURS-NACHLAUF**
+> **Wartet auf Vorschlag D bei `1d`.** *Wilhelm will ihn auf dem vollständigeren Archiv.*
+> **Weg 3 ist davon nicht betroffen** und ist bereits gelaufen (siehe unten); nur die
+> **Übernacht-Fassung** (Familienmitglied 2) wartet ebenfalls auf D.
+
+---
+
+## 🏆 27.08. 08:3x — **WEG 3 IST GEMESSEN: das erste Ergebnis seit Wochen ÜBER der Auflösungswand**
+
+**c_gew = +0,0568 Pp je Handelstag · t = 20,99 · 496 Paartage · delta80 0,0084 → Faktor 6,8
+darüber.** *Ungewichtet c_roh +0,78 Pp bei f-Mittel 6,67 %.* **Und es fällt GEGEN die vorher
+deklarierte Z0-Andeutung der messenden Sitzung.**
+
+> ### 🎯 **DER FUND IST NICHT DIE ZAHL — ES IST DIE VERSÖHNUNG DREIER MESSUNGEN**
+> **Die Überlebensverzerrung dieses Fensters hat KEIN einheitliches Vorzeichen. Verschwinden hat
+> zwei Gesichter:**
+>
+> | | Bedingung | Richtung |
+> |---|---|---|
+> | **Übernahme-Prämien** | unbedingt, auf umsatzstarken Tagen | **das Archiv UNTERTREIBT** |
+> | **Sterbepfade** | bedingt auf Dip-Signalen | **das Archiv BESCHÖNIGT** *(−3,78 Pp, t −6,19 vom 26.08. — **bleibt voll bestehen**)* |
+>
+> **→ AUFLAGE FÜR JEDE KÜNFTIGE E1-ZEILE:** ***„Die E1-Zeile braucht künftig BEIDE Sätze, sonst
+> trägt sich eine halbe Wahrheit fort."*** *Genau der Mechanismus, an dem dieses Projekt schon
+> einmal wochenlang gelitten hat — „zwei validierte Kanten" war eine überholte Formel, die sich
+> durch Code, Befunde und Gedächtnis weitertrug, bis jemand nachrechnete.*
+>
+> **Zwei Messungen mit gegenläufigem Vorzeichen sind normalerweise ein Alarm — hier sind es zwei
+> verschiedene Fragen an denselben Datensatz.**
+
+> **⚠ DEUTUNGSGRENZE — von der messenden Sitzung selbst, und sie steht VOR dem Ergebnis:**
+> *„Der registrierte 5-Mio-$-**Tages**schnitt wählt auf der dünnen Verschwundenen-Seite
+> systematisch deren **heiße Tage** aus (Umsatz-Rendite-Kopplung, Übernahme-Pops). **Das Urteil
+> gilt exakt der registrierten Größe, nicht ‚allen Tagen aller Verschwundenen'.**"*
+>
+> **Und der Satz, der sie erst wertvoll macht:** *„Die Auswahl-Asymmetrie steckte **identisch**
+> in der Machbarkeits-Zählung — **deshalb** passen die σ (0,0603 gegen 0,0586)."* **Die
+> Übereinstimmung, die das Ergebnis stützt, ist teilweise gemeinsame Ursache.** *Zwei Rechenwege,
+> die denselben Auswahlfehler teilen, bestätigen sich gegenseitig, ohne unabhängig zu sein —
+> dieselbe Bauform wie der geteilte Kurs beim Spannen-Rückprall.* **Kein E1-Leiserstellen aus dem
+> günstigen Vorzeichen.**
+>
+> **„Mit den vorhandenen Quellen nicht zu schließen" ist FÜR WEG 3 überholt — nicht überhaupt.**
+> *Die anderen drei Stränge hängen weiter an der zweiten Quelle.*
+
+**Registrierfehler vom Messenden selbst gefunden und VOR dem Bau korrigiert (Nachtrag 7):** *Die
+Faktor-24-Auflösung gilt der **anteils-gewichteten** Differenzreihe, nicht der rohen (~13× breiter).*
+**Ein Einheiten-Fehler in der Auflösungsrechnung — dieselbe Familie wie „delta80 (Pp) als Schwelle
+für Handelstage".** *Nach dem Lauf wäre dieselbe Korrektur eine nachträgliche Schwellenanpassung
+gewesen.*
+
+---
 
 ## ☀ MORGENLAGE 27.08. 08:18 (abgelesen) — was seit dem Aufwachen passiert ist
 
@@ -162,6 +234,99 @@ Fehlschluss von mir, zwei Entscheidungen für Wilhelm.**
 > 18:00-Kerze" → **89,6 % tragen keinen Umsatz, widerlegt**; „die leere 17:30-Kerze liefert
 > wenigstens Hoch/Tief" → **liefert gar nichts, die Halbstunde fehlt wirklich**. Schönster
 > Einzelbeleg: **ACGL mit 335.604 Stück in der 18:00-Kerze — mehr als jede Sitzungsstunde.***
+
+> ### 🔬 27.08. 08:2x — **DER ERSTE BAU, DER VON DER QUELLE BIS IN DIE PAKET-BYTES DURCHGEMESSEN IST** (`7d`)
+> **Sechs Dateien byteweise Paket gegen Tag — alle identisch.** *Der Tag verspricht nichts, was
+> das Paket nicht enthält.* **Drei Reparaturen aus den Bytes des Pakets selbst gelesen**, nicht
+> aus dem Tag. *Die Release-Wache hatte nur `kerzenlage.js` geprüft, weil sie die im Verdacht
+> hatte; jetzt sind es sechs Dateien.*
+>
+> **🔴 UND EIN FUND, DEN NUR DAS LAUFENDE PROGRAMM ZEIGT: #108 ist UNVOLLSTÄNDIG repariert.**
+> `messband.js:144/159/184` tragen weiter `toFixed`. **Zeile 144 ist die unangenehme: dieselbe
+> Kostenhürde steht als `0,10` und als `0.10` in derselben Karte, acht Zeilen auseinander** —
+> *genau die Zwei-Wahrheiten-Form, gegen die die Reparatur angetreten war. Sie hat sich innerhalb
+> ihrer eigenen Reparatur reproduziert.*
+>
+> **Warum die Quellprüfung das nicht fangen konnte:** *„Ein `grep` an den **geänderten** Stellen
+> findet die drei nicht — sie stehen woanders in derselben Datei."* **→ Auflage an `06`: die
+> ganze Datei prüfen, nicht nur die Änderungsstellen.**
+>
+> **⭐ Vier eigene Nullbefunde in einem Lauf, die ohne Gegenprobe durchgegangen wären** — und der
+> lehrreichste: *„Sichtbarkeit über `el.offsetParent` — der ist bei `position: fixed` **immer**
+> null, jedes feste Element wurde stillschweigend übersprungen. **Aufgefallen ist es nur, weil
+> der Köder meiner Positivkontrolle selbst `fixed` war.**"* **Ohne den Köder wäre „0
+> Kontrastprobleme" gemeldet worden, während der Prüfer einen Teil der Seite gar nicht ansah.**
+> *Der breite Durchlauf „0 von 1.747" ist deshalb **nicht zitierfähig** und steht bewusst nicht
+> auf dieser Tafel — eine Zahl aus einem blinden Prüfer sieht nach Gründlichkeit aus.*
+
+> ### ✂ 27.08. 08:2x — **„SCHNEIDEN ODER REPARIEREN": der Tüftler dreht die Frage um** → Wilhelm
+> **Die Rettungsfrage betrifft 32 Reihen, nicht 58** *(22 wirft schon der Wertpapierart-Filter,
+> 23 haben gar keinen Sprung — an denen ist nichts zu schneiden).*
+>
+> **Der eigentliche Fund: der Schnitt behandelt meist keinen Regimebruch, sondern einen FEHLER
+> MIT ORT.** *Fünf der acht Mehrfach-Sprung-Reihen zeigen Paare, die sich fast genau aufheben,
+> 1–6 Kerzen auseinander:* `BYRN ×0,19 → ×5,40` **Produkt 1,000** · `BYND ×30,20 → ×0,03`
+> **Produkt 0,944**.
+>
+> ***„Ein Kurs, der um Faktor 30 springt und drei Tage später um 1/30 zurück, hat keine
+> Marktbewegung gemacht — er stand auf der falschen Skala."***
+>
+> | | gestörte Zone | Schnitt wirft weg |
+> |---|---|---|
+> | **BYRN** | **2 Kerzen (0,04 %)** | **2.405 (47,9 %) — Faktor 1.200** |
+> | **BYND** | 17 (0,92 %) | **1.828 (99,3 %)** |
+> | ASTH | 1.523 (34,7 %) | 1.544 (35,1 %) — *einziger echter Mehrjahresfall* |
+>
+> **In sieben von acht Fällen ist die gestörte Zone unter 8 % der Reihe, meist unter 1 %.**
+> *Und **ELME** zeigt, was „Schwanz-Schnitt" heißt: ein Sprung bei Kerze 9.919 von 10.078 —
+> **vierzig Jahre weg, um acht Monate zu behalten**.*
+>
+> **→ ENTSCHEIDUNG FÜR WILHELM: schneiden oder reparieren?** *Die Zahlen sprechen für reparieren.
+> **Der Tüftler hat diese Wertung ausdrücklich nicht getroffen** — es ist eine Messentscheidung.*
+> **Wird geschnitten: längster sprungfreier Abschnitt (77,5 %) statt Schwanz (63,3 %) — aber mit
+> seinem Vorbehalt:** *„er sucht das Stück nach **allen** Sprüngen aus. Zählerisch überlegen,
+> methodisch nicht harmloser."* **Die vier Zulässigkeits-Bedenken stehen VOR der ersten Zahl im
+> Protokoll, unbeantwortet — richtig so.**
+>
+> **Dieselbe Störungsklasse aus DREI unabhängigen Richtungen getroffen:** BYND Faktor 30
+> (Tüftler) · WHLR Faktor exakt 4,0 (Analytiker) · RGR/SITC/B konstanter Versatz (QS).
+
+> ### 📋 27.08. 08:3x — Abmelde-Seite geordnet (`06`, `0623e6e`) — **und der erste Lauf drehte einen Fall um**
+> **`tools/abmeldungen-pflegen.js`:** Handelsende = **letzte Umsatz-Kerze, nie das Listendatum** ·
+> auffällig ab 2 Handelstagen Rückstand · jede auffällige Reihe frisch gegen die Quelle
+> klassifiziert · Wiederauferstehungs-Alarm · Schnappschuss unberührt.
+>
+> **🔄 `AVB` ist KEIN Abmeldefall, sondern ein NACHLADEFALL** — *die Quelle handelt AVB bis 24.08.,
+> `archiv1d` hängt seit 14.08. hinter fünf Stempelkerzen.* **Damit hat der Unterscheidungs-Zweig
+> zugleich seine Positivkontrolle.** *Ein Werkzeug, das beim ersten Lauf einen Fall umdreht statt
+> ihn zu bestätigen, hat funktioniert.*
+>
+> **`BTSGU` ist ein SIEBTER stillstehender Fall**, den bisher niemand genannt hatte.
+> **Warum TWO nicht von selbst auffiel:** *`verschwundene.json` ist ein **Schnappschuss vom
+> 23.08.** — wer sich danach abmeldet, steht nicht drin. Es gab keine Stelle, an der er hätte
+> auffallen können.*
+> **`LBRDA` belegt die Auflage:** zuletzt gehandelt **17.07.**, Liste sagt **21.08.** — *und die
+> Kerze vom 21.08. ist ein einzelner Stempel mit dem **Abfindungskurs**.* **Fünf Wochen
+> Unterschied, und das Listendatum hätte einen Abfindungskurs als Handelstag geführt.**
+>
+> **Betriebsentscheid (PM):** **Der Nachtlauf fährt es regelmäßig, nicht eine Nachtrolle.**
+> *Rollen können ausfallen oder ihre Bereitschaft auslaufen lassen — heute Nacht mehrfach
+> gesehen. Der Nachlade-Lauf fasst das Archiv ohnehin an und kennt den Zeugen-Kalender.*
+
+> ### ⚠ 27.08. 08:15–08:19 — **vier Minuten, in denen `git add -A` sechs App-Dateien gelöscht hätte**
+> **Zwei Sitzungen haben unabhängig protokolliert, dass `git status` wechselnd bis zu sechs
+> gelöschte Dateien der obersten Ebene zeigte** — `index.html`, `app-shell.js`, `messband.js`,
+> `archivkarte.js`, `scoreboard.js`, `strategien.js`, zeitweise auch **`package.json`**.
+>
+> **Ursache, vom Verursacher selbst gemeldet:** *der Auditor hat ein `asar`-Paket ins
+> Repo-Arbeitsverzeichnis ausgepackt (`npx asar extract-file` schreibt ins Arbeitsverzeichnis);
+> sofort bemerkt, mit `git checkout --` wiederhergestellt.* **Kein Datenverlust, alle Dateien
+> waren unverändert auf HEAD.** *Seine eigene Lehre: **Auspacken gehört ins `%TEMP%`, nie ins
+> Repo.***
+>
+> **→ Der beste Beleg für die alte Hausregel „nie `git add -A`", den dieses Projekt je hatte:
+> zwei Sitzungen haben denselben Vier-Minuten-Spuk unabhängig gesehen.** *Eine dritte hatte ihn
+> als „transienten Umschreib-Zustand" abgetan — auch richtig, aber aus dem falschen Grund.*
 
 ### 📌 Wer woran sitzt *(Stand 08:18)*
 
