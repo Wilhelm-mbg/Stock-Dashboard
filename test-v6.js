@@ -3962,8 +3962,8 @@ console.log('\n44) Messmaschine, Scoreboard und Strategie-Eingabe (23.08.2026)')
    * bleibt version, und nur der Stand wird nachgezogen). Genau diese Frage ist sieben
    * Mal nicht gestellt worden. Die Reibung IST der Zweck: sie kostet zwei Zeilen und
    * verhindert, dass Protokolle stillschweigend unvergleichbar werden. */
-  var MM_VERSION = '1.6.1';        // 27.08. nur E1-Text: Verzerrung hat zwei Gesichter (gemessen)
-  var MM_STAND = '9cb0eb714ec2';   // sha256 ueber messmaschine.js, erste 12 Zeichen
+  var MM_VERSION = '1.6.2';        // 27.08. Schranke haerten: Existenzpruefung VOR dem require
+  var MM_STAND = '7219af3eb974';   // sha256 ueber messmaschine.js, erste 12 Zeichen
   var mmV = require(__dirname + '/studien/messmaschine/messmaschine.js').VERFAHREN;
   ok(mmV.version === MM_VERSION && mmV.codeStand === MM_STAND,
      'Messmaschine: Version und Codestand stehen zusammen fest - eine Aenderung ohne Entscheid faellt auf',
@@ -10888,6 +10888,60 @@ console.log('\nmassive-tagesdaten: Vereinigen und Entdoppeln (27.08.2026)');
   var e1 = mq.slice(mq.indexOf("'E1 Universum'"));
   ok(e1.slice(0, 400).indexOf('klassifizierungDa:') !== -1,
      'E1 traegt das Klassifizierungs-Feld im Ergebnis, nicht nur im Fehlerfall');
+})();
+
+
+(function () {
+  /* Die Schranke darf an ihrem eigenen Fall nicht stuerzen (27.08.2026, nach dem
+   * Release-Wache-Befund: strategien/ fehlt im ausgelieferten Paket). Geprueft wird
+   * das VERHALTEN in drei Lagen, nicht der Quelltext - eine Bauform, die einen Fall
+   * unmoeglich macht, muss trotzdem zeigen, dass sie es tut. Der dritte Fall ist der,
+   * den man ohne Absicht nie stellt: die Datei ist da, aber IHR fehlt etwas. */
+  var fs = require('fs'), path = require('path'), os = require('os');
+  var quelle = fs.readFileSync(__dirname + '/studien/messmaschine/messmaschine.js', 'utf8');
+  /* Die Probe muss alle Pruefungen VOR der Schranke passieren, sonst verweigert die
+   * Maschine aus einem anderen Grund und der Test faellt aus dem falschen Grund aus
+   * (beim Bau genau passiert: ohne "grund" scheiterte es an der Begruendungspflicht,
+   * und ein blosses verweigert===true haette Lage 1 faelschlich gruen gemeldet). */
+  var probeStrategie = { key: 'schrankenprobe', zeitrahmen: '60m', varianten: [{}],
+    grund: 'Probe der Integritaetsschranke - misst nichts, prueft nur die Verweigerung.',
+    haltedauerKerzen: 26, leseFensterKerzen: 261, richtung: 'long',
+    signal: function () { return null; } };
+
+  function baueKopie(inhaltWertpapierart) {
+    /* Jede Lage in einem eigenen Ordner - sonst liefert Nodes Modul-Speicher die
+     * zuerst geladene Fassung zurueck und der Test prueft sich selbst. */
+    var tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'schranke-'));
+    fs.writeFileSync(path.join(tmp, 'messmaschine.js'), quelle);
+    if (inhaltWertpapierart !== null) {
+      fs.mkdirSync(path.join(tmp, 'strategien'));
+      fs.writeFileSync(path.join(tmp, 'strategien', 'wertpapierart.js'), inhaltWertpapierart);
+    }
+    return require(path.join(tmp, 'messmaschine.js'));
+  }
+  function wirft(fn) { try { fn(); return null; } catch (e) { return e; } }
+
+  /* Lage 1: Datei fehlt -> saubere Verweigerung, KEIN Absturz. */
+  var M1 = baueKopie(null);
+  var r1 = null, e1f = wirft(function () { r1 = M1.messe(probeStrategie, 'X:/kein-archiv'); });
+  ok(e1f === null, 'Lage 1: fehlende Klassifizierungsdatei stuerzt die Maschine NICHT ab',
+     e1f && e1f.message);
+  ok(r1 && r1.verweigert === true && /nicht ladbar/.test(r1.grund || ''),
+     'Lage 1: die Maschine verweigert mit benanntem Grund', r1 && r1.grund);
+
+  /* Lage 2: Datei da, aber kaputt -> muss FLIEGEN, nicht als Verweigerung getarnt werden. */
+  var M2 = baueKopie('module.exports = { dies ist kein gueltiges JavaScript');
+  var r2 = null, e2 = wirft(function () { r2 = M2.messe(probeStrategie, 'X:/kein-archiv'); });
+  ok(e2 !== null, 'Lage 2: kaputte Klassifizierungsdatei fliegt laut', r2 && JSON.stringify(r2));
+
+  /* Lage 3: Datei da, aber IHR fehlt eine Abhaengigkeit -> muss ebenfalls fliegen.
+   * Ohne die Existenzpruefung-vor-require waere das derselbe Fehlercode wie Lage 1
+   * und ginge als "Klassifizierung nicht ladbar" durch - ein stiller Fehlzustand
+   * anstelle eines lauten. */
+  var M3 = baueKopie("var X = require('./gibt-es-nicht-abhaengigkeit.js');\nmodule.exports = { klassifizierungDa: function () { return true; } };");
+  var r3 = null, e3 = wirft(function () { r3 = M3.messe(probeStrategie, 'X:/kein-archiv'); });
+  ok(e3 !== null, 'Lage 3: fehlende Abhaengigkeit DER Datei fliegt, statt sich als Verweigerung zu tarnen',
+     r3 && JSON.stringify(r3));
 })();
 
 Promise.all(offeneProben).then(function () {

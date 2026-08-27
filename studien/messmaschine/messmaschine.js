@@ -88,7 +88,7 @@ var VERFAHREN = {
    * Zahlen nebeneinanderlegt, haette keinen Anhaltspunkt. Deshalb neue Stelle.
    * Genau diese Frage soll die Sperrklinke in test-v6.js erzwingen - sie deshalb
    * durchzuwinken waere ihr erster Ausfall gewesen. */
-  version: '1.6.1',
+  version: '1.6.2',
   /* codeStand beantwortet 'war das dieselbe Datei?' und rechnet sich selbst aus. */
   codeStand: codeStand(),
   mindestKerzenVorlauf: 261,        // EMA100 + Kanal 200, wie die Detektoren es brauchen
@@ -775,7 +775,22 @@ function messe(strategie, archivPfad, optionen) {
    * allen Aufrufern des Moduls prueft das sonst niemand. Deshalb: der Zustand steht
    * ab jetzt IMMER in E1 (auch wenn er gesund ist - sonst ist ein altes Protokoll
    * von einem neuen nicht unterscheidbar), und ohne Klassifizierung wird verweigert. */
-  var WPK = require(path.join(__dirname, 'strategien', 'wertpapierart.js'));
+  /* Existenzpruefung VOR dem require - nicht als try/catch drumherum (27.08., nach
+   * Release-Wache-Befund: strategien/ fehlt im ausgelieferten Paket, das nackte
+   * require warf dort MODULE_NOT_FOUND). Ein fehlendes Modul ist fuer DIESE Schranke
+   * kein Sonderfall, sondern der Regelfall, fuer den sie gebaut wurde - sie darf
+   * daran nicht stuerzen. Die Reihenfolge traegt die Unterscheidung, nicht die
+   * Fehlerauswertung: Danach wird NICHTS gefangen, damit "Datei da, aber kaputt"
+   * und "der Datei fehlt eine Abhaengigkeit" weiter laut fliegen statt sich als
+   * saubere Verweigerung zu tarnen (err.requireStack/Meldungstext waeren bruechig
+   * und aendern sich mit Node-Versionen). */
+  var wpPfad = path.join(__dirname, 'strategien', 'wertpapierart.js');
+  if (!fs.existsSync(wpPfad)) {
+    return { verweigert: true, grund: 'Wertpapier-Klassifizierung nicht ladbar: ' + wpPfad + ' fehlt ' +
+      '(unvollstaendiges Paket?) - ohne sie liesse der Universumsfilter alles durch und wuerde still ' +
+      'auf dem ganzen Archiv messen.' };
+  }
+  var WPK = require(wpPfad);
   var klassifizierung = WPK.klassifizierungDa();
   if (!klassifizierung) {
     return { verweigert: true, grund: 'Wertpapier-Klassifizierung fehlt oder unbrauchbar (wertpapierarten.json) - ' +
