@@ -1,0 +1,68 @@
+archiv1d: 2965 Reihen geprueft, F1-kaputt: 58  (PM nannte 36 - Abweichung waere selbst ein Fund: anderer Archivstand oder andere Grundmenge)
+
+DIE DREI ZAHLEN:
+  1. genau EIN Sprung: 25  |  mehrere Spruenge: 7  |  nur Kurs>100k: 23
+  2. mit Sprung im frischen Zeitraum (ab 2026-06-01): 1
+  3. alle Spruenge am Rand (erste/letzte 5 Kerzen) -> mit Rand-Bereinigung rettbar: 1
+
+Jede Reihe einzeln:
+  BYND    Spruenge 7  Rand:NEIN  frisch:7  Laenge 1840  | 2026-07-20 +2920 % (Kerze 1812/1840) · 2026-07-23 -97 % (Kerze 1815/1840) · 2026-07-31 +2954 % (Kerze 1821/1840)
+  ASTH    Spruenge 6  Rand:NEIN  frisch:0  Laenge 4393  | 2009-04-13 +750 % (Kerze 22/4393) · 2009-06-22 -93 % (Kerze 71/4393) · 2013-11-07 +1754 % (Kerze 1175/4393)
+  ARWR    Spruenge 3  Rand:NEIN  frisch:0  Laenge 8228  | 2002-05-24 -87 % (Kerze 2125/8228) · 2002-08-30 +500 % (Kerze 2193/8228) · 2002-09-19 -83 % (Kerze 2206/8228)
+  BLNK    Spruenge 2  Rand:NEIN  frisch:0  Laenge 4195  | 2010-04-05 -91 % (Kerze 70/4195) · 2010-04-09 +900 % (Kerze 74/4195)
+  BYRN    Spruenge 2  Rand:NEIN  frisch:0  Laenge 5020  | 2016-04-01 -81 % (Kerze 2404/5020) · 2016-04-04 +440 % (Kerze 2405/5020)
+  HOLO    Spruenge 2 +Kurs>100k  Rand:NEIN  frisch:0  Laenge 1269  | 2023-09-13 -80 % (Kerze 528/1269) · 2024-02-07 +1092 % (Kerze 629/1269)
+  INDV    Spruenge 2  Rand:NEIN  frisch:0  Laenge 2932  | 2022-11-23 -84 % (Kerze 1991/2932) · 2022-11-28 +572 % (Kerze 1993/2932)
+  IVT     Spruenge 2  Rand:NEIN  frisch:0  Laenge 3143  | 2021-08-06 -90 % (Kerze 1874/3143) · 2021-09-24 +908 % (Kerze 1908/3143)
+  AGX     Spruenge 1  Rand:NEIN  frisch:0  Laenge 7806  | 1995-10-13 +3100 % (Kerze 39/7806)
+  CHRD    Spruenge 1  Rand:NEIN  frisch:0  Laenge 4073  | 2020-11-20 +25733 % (Kerze 2627/4073)
+  EHC     Spruenge 1  Rand:NEIN  frisch:0  Laenge 10057  | 2003-03-26 -97 % (Kerze 4164/10057)
+  ELME    Spruenge 1  Rand:NEIN  frisch:0  Laenge 10078  | 2026-01-08 -84 % (Kerze 9919/10078)
+  GUSH    Spruenge 1  Rand:NEIN  frisch:0  Laenge 2828  | 2020-03-09 -81 % (Kerze 1202/2828)
+  HIVE    Spruenge 1  Rand:NEIN  frisch:0  Laenge 3914  | 2017-09-19 +758 % (Kerze 1668/3914)
+  HROW    Spruenge 1  Rand:NEIN  frisch:0  Laenge 4757  | 2012-03-19 -90 % (Kerze 1126/4757)
+  HST     Spruenge 1  Rand:NEIN  frisch:0  Laenge 10078  | 1993-10-12 -81 % (Kerze 1804/10078)
+  HUBB    Spruenge 1  Rand:NEIN  frisch:0  Laenge 10078  | 1994-10-31 +886 % (Kerze 2070/10078)
+  IOVA    Spruenge 1  Rand:NEIN  frisch:0  Laenge 3989  | 2013-05-07 -83 % (Kerze 642/3989)
+  KDP     Spruenge 1  Rand:NEIN  frisch:0  Laenge 4605  | 2018-07-10 -82 % (Kerze 2561/4605)
+  MFA     Spruenge 1  Rand:NEIN  frisch:0  Laenge 7138  | 2020-03-24 -87 % (Kerze 5523/7138)
+  MLTX    Spruenge 1  Rand:NEIN  frisch:0  Laenge 1469  | 2025-09-29 -90 % (Kerze 1240/1469)
+  MUX     Spruenge 1  Rand:NEIN  frisch:0  Laenge 10078  | 1991-12-24 +417 % (Kerze 1349/10078)
+  NMRA    Spruenge 1  Rand:NEIN  frisch:0  Laenge 740  | 2025-01-02 -81 % (Kerze 327/740)
+  NVAX    Spruenge 1  Rand:NEIN  frisch:0  Laenge 7731  | 2016-09-16 -85 % (Kerze 5232/7731)
+  NVR     Spruenge 1  Rand:NEIN  frisch:0  Laenge 10078  | 1993-10-01 +2633 % (Kerze 1797/10078)
+  QXO     Spruenge 1  Rand:NEIN  frisch:0  Laenge 3611  | 2024-07-30 -80 % (Kerze 3090/3611)
+  RYDE    Spruenge 1  Rand:NEIN  frisch:0  Laenge 621  | 2024-09-12 -84 % (Kerze 131/621)
+  SAFE    Spruenge 1  Rand:NEIN  frisch:0  Laenge 9260  | 1993-12-06 -94 % (Kerze 1024/9260)
+  SEZL    Spruenge 1  Rand:ja  frisch:0  Laenge 741  | 2023-09-14 -81 % (Kerze 1/741)
+  SOXS    Spruenge 1 +Kurs>100k  Rand:NEIN  frisch:0  Laenge 4141  | 2026-05-26 -95 % (Kerze 4076/4141)
+  SU      Spruenge 1  Rand:NEIN  frisch:0  Laenge 10078  | 1993-12-01 +3520 % (Kerze 1839/10078)
+  SVXY    Spruenge 1  Rand:NEIN  frisch:0  Laenge 3745  | 2018-02-06 -83 % (Kerze 1595/3745)
+  TGTX    Spruenge 1  Rand:NEIN  frisch:0  Laenge 4105  | 2012-02-06 +567 % (Kerze 445/4105)
+  WHLR    Spruenge 1 +Kurs>100k  Rand:NEIN  frisch:0  Laenge 3462  | 2017-04-03 +724 % (Kerze 1099/3462)
+  WT      Spruenge 1  Rand:NEIN  frisch:0  Laenge 8428  | 2004-11-18 +3650 % (Kerze 2952/8428)
+  BOIL    Spruenge 0 +Kurs>100k  Rand:NEIN  frisch:0  Laenge 3743  | 
+  BRK.A   Spruenge 0 +Kurs>100k  Rand:NEIN  frisch:0  Laenge 10078  | 
+  DUST    Spruenge 0 +Kurs>100k  Rand:NEIN  frisch:0  Laenge 3952  | 
+  ERY     Spruenge 0 +Kurs>100k  Rand:NEIN  frisch:0  Laenge 4468  | 
+  FAZ     Spruenge 0 +Kurs>100k  Rand:NEIN  frisch:0  Laenge 4468  | 
+  FCEL    Spruenge 0 +Kurs>100k  Rand:NEIN  frisch:0  Laenge 8602  | 
+  FNGD    Spruenge 0 +Kurs>100k  Rand:NEIN  frisch:0  Laenge 2160  | 
+  GEVO    Spruenge 0 +Kurs>100k  Rand:NEIN  frisch:0  Laenge 3909  | 
+  JDST    Spruenge 0 +Kurs>100k  Rand:NEIN  frisch:0  Laenge 3243  | 
+  LABD    Spruenge 0 +Kurs>100k  Rand:NEIN  frisch:0  Laenge 2829  | 
+  PARA    Spruenge 0 +Kurs>100k  Rand:NEIN  frisch:0  Laenge 1390  | 
+  QID     Spruenge 0 +Kurs>100k  Rand:NEIN  frisch:0  Laenge 5062  | 
+  SPXS    Spruenge 0 +Kurs>100k  Rand:NEIN  frisch:0  Laenge 4468  | 
+  SPXU    Spruenge 0 +Kurs>100k  Rand:NEIN  frisch:0  Laenge 4319  | 
+  SQQQ    Spruenge 0 +Kurs>100k  Rand:NEIN  frisch:0  Laenge 4160  | 
+  SRTY    Spruenge 0 +Kurs>100k  Rand:NEIN  frisch:0  Laenge 4160  | 
+  TECS    Spruenge 0 +Kurs>100k  Rand:NEIN  frisch:0  Laenge 4441  | 
+  TZA     Spruenge 0 +Kurs>100k  Rand:NEIN  frisch:0  Laenge 4468  | 
+  UVIX    Spruenge 0 +Kurs>100k  Rand:NEIN  frisch:0  Laenge 1106  | 
+  UVXY    Spruenge 0 +Kurs>100k  Rand:NEIN  frisch:0  Laenge 3745  | 
+  VIXY    Spruenge 0 +Kurs>100k  Rand:NEIN  frisch:0  Laenge 3934  | 
+  YANG    Spruenge 0 +Kurs>100k  Rand:NEIN  frisch:0  Laenge 4207  | 
+  ZSL     Spruenge 0 +Kurs>100k  Rand:NEIN  frisch:0  Laenge 4459  | 
+
+Keine Aenderung, keine Empfehlung - Zahlen fuer Wilhelms Entscheid (Filter ist Messmaschinerie).
