@@ -233,14 +233,22 @@ Object.keys(kandidatenSyms).sort().forEach(function (sym) {
     if (ratios.length < 10) return;
     ratios.sort(function (a, b) { return a - b; });
     var medR = ratios[Math.floor(ratios.length / 2)];
-    var spann = (ratios[ratios.length - 1] - ratios[0]) / medR;
-    segErg.push({ von: tag(r.reihe[seg[0]].t), tage: ratios.length, quoteMedian: +medR.toFixed(4), spannweite: +spann.toFixed(4) });
+    /* Robuste Spannweite (Nachtrag 3): P90/P10 statt Max-Min - das Max-Min-Mass
+     * explodierte bei Sub-Dollar-Kursen am Tick-Rauschen (WHLR-Eichfall). */
+    var p10 = ratios[Math.floor(ratios.length * 0.10)], p90 = ratios[Math.floor(ratios.length * 0.90)];
+    var spann = (p90 - p10) / medR;
+    segErg.push({ von: tag(r.reihe[seg[0]].t), tage: ratios.length, quoteMedian: +medR.toFixed(4), spannweiteP: +spann.toFixed(4) });
   });
-  var maxSpann = segErg.length ? Math.max.apply(null, segErg.map(function (s) { return s.spannweite; })) : null;
-  var versch = segErg.length >= 2 && Math.abs(segErg[0].quoteMedian / segErg[segErg.length - 1].quoteMedian - 1) > 0.5;
+  var maxSpann = segErg.length ? Math.max.apply(null, segErg.map(function (s) { return s.spannweiteP; })) : null;
+  var niveaus = segErg.map(function (s) { return s.quoteMedian; });
+  var niveauWechsel = segErg.length >= 2 && Math.abs(niveaus[0] / niveaus[niveaus.length - 1] - 1) > 0.5;
+  var niveauFern1 = niveaus.some(function (m) { return Math.abs(m - 1) > 0.5; });
+  /* Taxonomie (Nachtrag 3): Versatz auch OHNE Flip im Fenster - konstante Quote
+   * fern der 1 ueber die ganze Ueberlappung ist derselbe Befund (WHLR: ~4 durchweg). */
   var diagnose = !segErg.length ? 'zu wenig Ueberlappung'
-    : maxSpann > 0.05 ? 'TRENNFALL-VERDACHT (Quote driftet)'
-    : (versch ? 'SKALEN-VERSATZ (Quote konstant je Segment, Segmente verschieden)' : (maxSpann <= 0.01 ? 'konsistent (Quote konstant)' : 'unentschieden'));
+    : maxSpann > 0.05 ? 'TRENNFALL-VERDACHT (Quote driftet innerhalb von Segmenten)'
+    : (niveauWechsel || niveauFern1) ? 'SKALEN-VERSATZ (Quote konstant, Niveau ' + (niveauWechsel ? 'wechselt' : 'fern der 1') + ')'
+    : (maxSpann <= 0.01 ? 'konsistent (Quote konstant nahe 1)' : 'unentschieden');
   i2.push({ sym: sym, diagnose: diagnose, segmente: segErg });
   console.log('  ' + sym.padEnd(6) + diagnose + (segErg.length ? '  [' + segErg.map(function (s) { return s.quoteMedian; }).join(' | ') + ']' : ''));
 });
