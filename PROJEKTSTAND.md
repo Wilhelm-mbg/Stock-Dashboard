@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 03:00 (abgelesen)
+letzter-bericht: 2026-08-27 03:05 (abgelesen)
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -100,6 +100,51 @@ auffiel:**
 > heraus) und **(b) der Zeitplan** (frühestens 30 Minuten nach Schluss).
 > **Fällt eine von beiden weg, schreibt der Sammler einen Zwischenstands-Quote als Tagesschluss
 > ins Archiv** — und zwar einen, der aussieht wie der genaueste Wert im Bestand.
+>
+> ### 🏁 27.08. ~03:05 — DER STREIT DIESER NACHT IST ENTSCHIEDEN: die Halbtage sind nicht verdorben
+>
+> **Nach drei Versuchen, die Fehlerklasse über ein unabhängiges Kriterium zu isolieren — alle
+> drei negativ, und der dritte Nullbefund IST die Antwort:**
+>
+> | Versuch | Halbtag | Normaltag | Urteil |
+> |---|---|---|---|
+> | **1. Umschließung** des amtlichen Schlusses | 100 % | 100 % | **tautologisch** — Nachhandel beginnt beim Schlusskurs |
+> | **2. Isolierter Ausschlag** (erreicht eine andere Stunde den Extremwert?) | 62,5 % | **50,0 %** | **am Normaltag SCHLECHTER** — nicht halbtagsspezifisch |
+> | **3. Identische Extreme** in Folgestunden | 6,9 % | 1,6 % | viermal häufiger, aber **6 gegen 1 Fall** — zu klein |
+>
+> > **DIE KONTROLLE HAT DEN TEST GEKILLT, und das ist ihr Zweck.** *„Ohne den Normaltag im
+> > selben Lauf hätte ich die isolierten Ausschläge als Halbtags-Fehler gemeldet — sie sehen
+> > genau so aus."* Beispiele am **Normaltag**: RIVN −4,07 %, PLTR +5,42 %, NKE +5,25 % —
+> > **dieselbe Gestalt wie MARA −6,01 % am Halbtag.**
+>
+> ### ⭐ DIE AUFLÖSUNG, in einem Satz
+>
+> > **Die Halbtage sind nicht verdorben. Sie sind die einzigen Tage, an denen
+> > Nachhandelsdaten überhaupt ins Archiv gelangt sind — weil der Sitzungsfilter dort eine
+> > Stunde zu weit greift. Die Eigenschaften dieser Daten, tiefe isolierte Dochte
+> > eingeschlossen, hat Nachhandel überall.**
+>
+> **→ Die Reparaturfrage ist damit endgültig KEINE Frage nach kaputten Werten mehr. Sie ist die
+> Populationsfrage, und die gehört Wilhelm.** *(Die PM-Umformulierung „behalten wir
+> Kursinformation aus einem anderen Handelsfenster" trägt jetzt — aber auf **diesem** Befund,
+> nicht auf der zurückgezogenen Umschließung.)*
+>
+> **🔚 UND DAS ABSCHLIESSENDE URTEIL DER QS, das eine offene Aufgabe in ein Ergebnis
+> verwandelt:**
+> *„Ich habe kein Kriterium gefunden, das echten Nachhandel von einem Artefakt trennt, und ich
+> glaube nach drei Versuchen nicht, dass es aus den Kerzen allein eines gibt. **Beide
+> Erklärungen sagen dieselben Formen voraus.** Was trennen würde, wäre eine **zweite
+> Datenquelle** für den Nachhandel — die haben wir nicht.*
+> ***Das ist ein Ergebnis und keine offene Aufgabe. Wer es später aufgreifen will, braucht neue
+> Daten, nicht neue Rechnungen."***
+>
+> **🧾 Nebenbefund, unabhängig davon und belastbar:** Die Quelle liefert gelegentlich **zwei
+> aufeinanderfolgende Nachhandelsstunden mit identischem Hoch UND Tief.** NVDA am 28.11.: 19:00
+> und 20:00 beide `h 182,57 / t 164,48` bei Schlusskursen um 176,6 — **ein Band von 11 % um
+> einen Kurs, der sich kaum bewegt.** Ebenso MSFT, BAC, CSCO, INTC, NIO, am Normaltag F.
+> **Das ist ein Lieferfehler, kein Handel**, und betrifft rund **2–7 %** der Stundenpaare im
+> Nachhandel. *Ob es durchschlägt, hängt daran, ob Nachhandelsdaten überhaupt gelesen werden —
+> im Archiv steht davon heute nur die erste Stunde der sieben Halbtage.*
 >
 > ### ❌ 27.08. ~03:00 — DIE „210 VON 210" SIND ZURÜCKGEZOGEN: das Kriterium war tautologisch
 >
@@ -442,7 +487,7 @@ auffiel:**
 
 | | Frage | Lage |
 |---|---|---|
-| **1** | **Gehören Randzeiten-Kerzen ins 60m-Archiv?** | **Blockiert alles andere — die Frage hat sich über Nacht VERENGT und deutlich verkleinert.** Zwei Politiken ohne Kennzeichen: Nachlader-Bestand führt sie, App-Bestand nicht (0 von 990.509). **Strukturell belegt: die „Phantom-Dochte" an Halbtagen SIND Nachhandelskerzen** — die Sitzungskerze daneben kommt aus der Quelle **leer, 40 von 40**. **Damit ist „die Docht-Werte reparieren" in beiden Antworten vom Tisch:** bei (a) **fremde Population entfernen**, bei (b) **legitime Daten behalten**. *Nicht mehr in Frage kommt, sie als kaputte Werte zu behandeln.* **Und die Größe ist klein: je Reihe und Halbtag genau EINE solche Kerze, und nur 1,5 % davon haben einen tiefen Docht** (2 von 133; p50 des Ausschlags = 0,000 %). |
+| **1** | **Gehören Randzeiten-Kerzen ins 60m-Archiv?** | **ENTSCHIEDEN VORBEREITET — der Streit ist beigelegt, es bleibt eine reine Populationsfrage.** *Die Halbtage sind **nicht verdorben**: Sie sind die einzigen Tage, an denen Nachhandelsdaten überhaupt ins Archiv gelangt sind, weil der Sitzungsfilter dort eine Stunde zu weit greift.* **Drei Versuche, die Dochte als Fehler zu isolieren, sind alle gescheitert — am Normaltag sieht es genauso aus oder schlechter.** Die QS: *„Beide Erklärungen sagen dieselben Formen voraus; was trennen würde, wäre eine zweite Datenquelle — die haben wir nicht. Das ist ein Ergebnis, keine offene Aufgabe."* **→ Also: (a) fremde Population konsequent entfernen, oder (b) sie als legitime Nachhandelsdaten behalten und kennzeichnen. Werte reparieren steht nicht mehr zur Wahl.** *Größe: je Reihe und Halbtag genau EINE Kerze, davon 1,5 % mit tiefem Docht (2 von 133), Median-Ausschlag 0,000 %.* |
 | **2** | **Bekommen die delisteten Papiere ihr Abmeldedatum?** | **Lohnt sich, ist aber nicht dringend** *(um 02:10 nach unten korrigiert)*. AVB/EQR sind im Universum und heute außerhalb jedes Fensters; ab ~einer Handelswoche können die Phantomtage in ein Haltefenster geraten. **Aber der Schwanz ist auf 1–5 Tage gedeckelt** — der gefährliche Fall (dauerhaft flache Reihe, die eine Momentum-Rangfolge nach oben spült) tritt **nicht** ein. |
 | **3** | **Welche „Kostenhürde" zeigt das Messband?** | Zwei verschiedene Zahlen tragen denselben Namen; in der Voreinstellung stimmen sie zufällig überein. Live-Hürde oder feste Referenz — beides vertretbar, der Doppelname nicht. |
 
