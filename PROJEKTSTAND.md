@@ -14,6 +14,62 @@ Wenn du hier etwas änderst, dann nur deine eigene Zeile unter „Läuft gerade"
 
 ---
 
+## 🏗 NEUES VORHABEN 27.08. 17:3x — **DER REITER „REGELN" WIRD UMGEBAUT UND AUSGEDÜNNT**
+
+> **Wilhelms Auftrag:** *„können wir bitte auch den gesamten Tab **Regeln** (mit
+> Unterverzeichnissen) weitgehend überarbeiten, UI-mäßig und inhaltlich? **das ist mir alles viel
+> zu viel und unübersichtlich und teilweise unlogisch und verwirrend**"*
+
+**Gemessen, nicht empfunden** *(Auditor, `INVENTAR-REGELN.md`, `22ca1bf` — deckt sich mit der
+unabhängigen HTML-Zählung des PM)*:
+
+| Unterreiter | sichtbar | **versteckt** | Karten | Zeichen |
+|---|---:|---:|---:|---:|
+| Übersicht | 10 | 0 | 5 | 2.840 |
+| **Schalter & Einstellungen** | 31 | **13** | 2 | 2.762 |
+| Mittelfrist | 16 | 0 | 6 | 3.445 |
+| **Regelbuch** | 6 | 0 | 6 | **4.045** |
+| Chart | 7 | 1 | 1 | 772 |
+| Autopilot | 13 | 2 | 2 | 2.046 |
+| **Summe** | **83** | **16** | **22** | **15.910** |
+
+### ⭐ WILHELMS ZWEI ENTSCHEIDE — der zweite dreht die Blickrichtung um
+
+**1. Radikalität: „UMBAUEN UND AUSDÜNNEN."** *Struktur neu schneiden **und** Inhalte streichen —
+was widerlegt, tot oder doppelt ist, verschwindet.* **Er bekommt vorher eine Streichliste zum
+Abnicken; nichts verschwindet ungefragt.**
+
+**2. Was er dort regelmäßig tut: „NACHSEHEN WAS PASSIERT IST."** *Regelbuch, Chart,
+Autopilot-Auswertung — **lesen, nicht stellen**.* **Nicht** Strategien schalten, **nicht**
+Einstellungen justieren, **nicht** Mittelfrist.
+
+> ### 🎯 ***DIE SEITE IST ALS STEUERSTAND GEBAUT. ER BENUTZT SIE ALS BERICHT.***
+> **Der größte Unterreiter (44 Bedienelemente) ist der, den er am wenigsten braucht — und das
+> Regelbuch mit 4.045 Zeichen ist der, den er tatsächlich liest.** *Das erklärt „viel zu viel und
+> unübersichtlich" besser als jede Zählung: **er muss sich durch einen Steuerstand wühlen, um an
+> einen Bericht zu kommen.***
+
+### 📋 Stand der Bestandsaufnahme
+**Fertig:** *Umfang · **kein toter Schalter** (25/25 verdrahtet) · Karten- und Textmengen.*
+**Nachtlauf, neu gewichtet:** *(1) **steuert etwas Widerlegtes?** — Belegstand 0 von 12, und ein
+Schalter für eine widerlegte Sache ist **doppelt** überflüssig · (2) die drei **Lese**-Bereiche in
+Wilhelms Sprache · (3) **warum 13 Elemente unsichtbar sind** (darunter `#idMode`, die
+Auslöser-Auswahl, und der Hauptschalter) · (4) Ort und Doppelungen mit `06`.*
+
+> **⚠ Zwei ehrliche Grenzen, vom Auditor selbst gesetzt:**
+> **Der Nullbefund „kein toter Schalter" ist ein Anfangsverdacht, kein Freispruch** — *eine
+> Textsuche sieht Delegation nicht und sagt über die Gegenrichtung (Knopf verdrahtet, **Handler
+> tut nichts mehr**) gar nichts.* **Und „0 Doppelungen" wurde NICHT gemeldet, sondern die Frage
+> als offen gekennzeichnet** — *geprüft war gleiche **Beschriftung**, gefragt war gleicher
+> **Speicherschlüssel**.* **Der Unterschied zwischen einem Nullbefund und einer ungestellten
+> Frage.**
+>
+> *Nebenbei sein Weg zur Null: die Textsuche meldete erst **23** tote Schalter, nach Verbesserung
+> **3**, und **die drei hat er von Hand nachgesehen — auch verdrahtet**. **Gemeldet hat er null,
+> nicht drei.***
+
+---
+
 ## 📒 AUFTRAGSREGISTER — **die einzige Quelle dafür, wer was hält** *(Stand 27.08. 15:5x, Windows-Uhr)*
 
 > **⚠ VOR jedem neuen Auftrag hier nachsehen. Wer etwas nimmt, sagt es dem PM — und der trägt es
