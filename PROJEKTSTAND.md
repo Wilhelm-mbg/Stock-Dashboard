@@ -489,7 +489,38 @@ in den Koordinationsregeln selbst.**
    dieser Datei, mit Stempel.* **Robust gegen jedes Umbenennen und gegen jeden
    Brücken-Neustart — die Adresse ändert sich, die Fundstelle nicht.**
 
-**Solange nichts davon passiert, ist die Übergabe-Datei der einzige Kanal, der trägt.**
+### ✅ ENTSCHIEDEN UND ERLEDIGT 18:2x — **Wilhelm: „Rollen auf die Tafel verweisen"**
+
+**Umgesetzt in sieben Rollen-SKILLs, je drei Stellen, 21 Ersetzungen** *(Analytiker, Auditor,
+Issue-Wache, Release-Wache, Strategie-Tüftler, Archiv-Nachladen, Spekulations-Radar).* **Die vier
+PM-eigenen Dateien waren nicht betroffen** — *sie erwähnen den Namen, ohne jemanden dorthin zu
+schicken. Aus „11 Dateien, ~100 Erwähnungen" wurden **7 Dateien, 21 gezielte Stellen**.*
+
+*Sicherung unter `.claude/scheduled-tasks-sicherung-2026-08-27`.*
+
+**Was jetzt drinsteht:**
+> *„**⚠ BERICHTIGT 27.08.2026: Den Eintrag „Projekt-Manager" gibt es NICHT.** Der PM steht in
+> `ListAgents` unter einem Kürzel wie jede andere Sitzung — **such ihn NICHT unter diesem Namen,
+> sondern lies `pm-adresse:` in Zeile 4 von `PROJEKTSTAND.md`.** … Die Übergabe-Datei bleibt
+> trotzdem Pflicht — sie trägt immer."*
+
+**Die tote Tabellenzeile ist ersetzt**, mit einer zweiten Zeile, die den alten Eintrag
+ausdrücklich als „existiert nicht / kommt nirgends an" führt. *Eine gestrichene Zeile hätte
+niemanden gewarnt, der die alte Fassung im Kopf hat.*
+
+> ### 🪤 **UND DIE GEGENPROBE WURDE ROT — WEGEN DES EIGENEN ERKLÄRTEXTES**
+> *Die Prüfung „steht der schädliche Satz noch irgendwo?" fand ihn **in allen sieben Dateien**.*
+> **Es war der neue Text selbst**, der den alten Satz in Anführungszeichen zitiert („der frühere
+> Satz „such nicht nach ihm" hat dazu geführt, dass…").
+>
+> ***Die Sperrklinke frisst ihren eigenen Kommentar*** — hier schon dokumentiert, diesmal traf es
+> die **Verifikation** statt einen Test. **Die präzise Prüfung auf die alte ANWEISUNGSform ist
+> sauber: nirgends mehr.** *Wer hier nur gezählt hätte, hätte die Reparatur für gescheitert
+> gehalten.*
+
+**Der Kopf dieser Datei trägt die Adresse jetzt als eigenen Kasten**, mit der Begründung, warum
+es die Tafel ist und nicht ein Name: *die Brücke vergibt Namen und Kürzel nach einem Neustart neu
+— **die Adresse ändert sich, die Fundstelle nicht**.*
 
 *Nebenbei aus derselben Meldung: **71 Commits zwischen zwei Releases sind viel** — „wenn die Wache
 häufiger liefe, fiele ein Fehler früher auf". **`v8.34.2` ist sauber**: `latest.yml`,
