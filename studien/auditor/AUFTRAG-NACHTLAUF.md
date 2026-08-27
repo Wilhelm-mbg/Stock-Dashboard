@@ -57,6 +57,56 @@ danebengelegen (siehe 3.1 im Inventar).
 stehen im Code, nicht auf dem Schirm. Meine Prüfung auf gleiche *Beschriftung* war zu eng
 und hat deshalb **keine** Null gemeldet, sondern die Frage offen gelassen.
 
+**Platz 1b — Markierungsspalte: welcher Knopf braucht gar keinen Knopf?**
+*Wilhelms Zusatzfrage vom 27.08. abends, über den PM:*
+
+> *„die Messungen in der App wie z. B. die Kostenrunde sollten auch **automatisch im
+> Hintergrund** passieren. Dafür braucht es keinen Button, wenn sie nicht mehr gebraucht
+> wird kann das ja auch stoppen. Aber erst dann, **das gilt auch für die anderen ähnlichen
+> Buttons**"*
+
+Beim Durchgehen der 83 **mitlaufend** markieren — keine eigene Untersuchung:
+
+**Erkennungszeichen für „könnte von selbst laufen":**
+- startet etwas und **wartet auf ein Ergebnis** (statt sofort etwas zu schalten),
+- das Ergebnis wäre **morgen noch richtig** (hängt nicht daran, dass jetzt jemand hinsieht),
+- muss **wiederholt** gedrückt werden, um zu nützen → dann ist Klicken der Engpass.
+
+**⚠ Und die Gegenrichtung ausdrücklich mit benennen: welche dürfen NIEMALS von selbst
+laufen?** Alles, was **echtes Geld oder echte Orders** bewegt, und alles, wo **Wilhelms
+Urteil** der Punkt ist. *Die Kostenrunde setzt echte Demo-Orders ab — sie ist der
+Grenzfall, den er bewusst entschieden hat. Andere könnten jenseits der Grenze liegen, und
+die will der PM benannt haben, **bevor** jemand sie automatisiert.*
+
+**Erster Schnitt vom 27.08. 18:35 — zwei Fälle sind schon VERIFIZIERT, nicht vermutet:**
+
+| Knopf | Befund | Beleg |
+|---|---|---|
+| `#mfdTaktBtn` „Jetzt prüfen" | **läuft längst von selbst** — `takt()` alle **30 Minuten**, dazu 12 s nach dem Start | `mfdepot.js:313–314` |
+| `#pilotBtn` „jetzt messen (10–20 Min)" | **läuft längst von selbst** — der Autopilot misst jede Nacht nach US-Schluss; die Karte sagt es selbst | Kartentext *Autopilot* |
+
+**Das ist genau Wilhelms Muster, zweimal belegt: der Knopf ist der Handauslöser für etwas,
+das ohnehin läuft.**
+
+*Kandidaten (aus dem Namen gelesen, **nicht** verifiziert — im Nachtlauf einzeln prüfen):*
+`#screenBtn` · `#runJobBtn` · `#mfLadenBtn` · `#drLadeBtn` · `#drLadeAlleBtn` ·
+`#drRechneBtn` · `#massenBtn` · `#massen1mBtn` · `#regimeBtn` · `#filterBtn` ·
+`#retroBtn` · `#weeklyBtn` · `#reportShowBtn`
+
+*⚠ Vorläufige NIEMALS-Liste (Sicherheitsrichtung, im Zweifel drin lassen):*
+`#kostenRundeBtn` *(echte Demo-Order — Wilhelms bewusster Grenzfall, vergeben)* ·
+`#mfdRebalanceBtn` · `#mfdDriftBtn` *(schichten Buchpositionen um)* ·
+`#stratEmpfohlenBtn` *(stellt die ganze Konfiguration um)* ·
+`#regelNeuBtn` *(schreibt eine Regel fest)* · die vier Strategie-Schalter und
+„Ausbruch"/„Umkehr" *(Wilhelms Urteil ist der Punkt)* · `#btRunBtn` *(langer Lauf)*.
+
+*Nicht automatisierbar, weil es gar kein Auftrag ist:* `#stcBtn` „Chart laden" *(zeigt,
+was gerade gewählt ist)* · `#exportDataBtn` · `#massenStopBtn` *(Halteknopf muss bleiben)*.
+
+*Nebenbei zu prüfen:* `#massenBtn`/`#massen1mBtn` **überschneiden sich mit der neuen
+Kursarchiv-Karte** (`sammelplan.js`), die seit `v8.34.0` von selbst sammelt. **Zwei Wege
+für dieselbe Arbeit** — das ist zugleich Wilhelms Doppelungs-Frage.
+
 **Daneben, unverändert:** Rotationsblock **`werkzeuge`** und der Barrierefreiheits-Rest
 (Kontrast mit repariertem Prüfer, Vorlesereihenfolge, Überschriftenhierarchie, `aria-live`,
 **Tastaturfallen in den Dialogen** — letztere ungeprüft, weil die eigenen Proben den
