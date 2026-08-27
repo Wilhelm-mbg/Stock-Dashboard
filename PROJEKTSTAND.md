@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 15:45 (Windows-Uhr)
+letzter-bericht: 2026-08-27 15:55 (Windows-Uhr)
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -154,7 +154,37 @@ Lagen — Marktseitenwechsel nötig).* **`kostenStreuung()` bleibt unverändert 
 > Stress-Arm 1,70 Pp bei 48 Tagen). **„Die Machbarkeits-Rechnung hätte vor die Registrierung
 > gehört."***
 
-> ### ⭐ ENTSCHIEDEN 15:4x — WILHELM: **„NEUE MESSUNG BEAUFTRAGEN."**
+> ### 🛑 15:5x — **DIE SPERRE HAT GEGRIFFEN: nicht registriert, nicht gemessen** *(`07cecdb`)*
+> **Die Innerhalb-Frage ist mit dem vorhandenen Bestand nicht entscheidbar — hier ist die Zahl
+> statt eines Laufs:**
+>
+> | | |
+> |---|---|
+> | Basis liq + Regime | **97 Bestätigungstage** (se 0,515 Pp) |
+> | Spannen-Stress-Unterarm davon | 15,1–33,5 % → **~15–33 Tage** |
+> | delta80 | **3,0–4,5 Pp** |
+> | Welch-MDE der Differenz | **2,2–2,9 Pp** |
+>
+> **→ Der Lauf könnte nur Trennungen belegen, die DOPPELT so groß sind wie die gesamte Kante
+> (1,13 Pp).** *Damit eine Trennung in voller Kantengröße mit 80 % gefunden würde, bräuchte es
+> **~697–1.544 Regime-Bestätigungstage — Faktor 7 bis 16 über dem Bestand**, bei dieser
+> Signaldichte **Größenordnung 15–30 Jahre** Datensammlung.*
+>
+> **Ausweichen auf `archiv1d` wäre keine Abhilfe:** *Die Kapitulations-Kante ist **60m-definiert**;
+> auf Tageskerzen wäre es eine andere Strategie und damit **eine andere Frage**.*
+>
+> **Die Vorab-Antwort auf „was würde dich überraschen":** *„**Die Machbarkeit selbst** — die
+> se-/Tage-Arithmetik stand nach dem ersten Lauf fest, diese Rechnung konnte nur noch beziffern,
+> wie weit es nicht reicht."*
+>
+> ### ✅ **Die Frage ist NICHT verbrannt, sondern AUFGEHOBEN** — und das ist der Ertrag:
+> ***Die Rechnung liegt im Repo und sagt jedem künftigen Anlauf, ab welchem Bestand sie sich
+> lohnt.*** *Ein „nicht machbar" mit Schwellenwert ist etwas anderes als ein „nicht machbar".*
+>
+> **→ Es bleibt bei der binär-strengen Schwelle mit der einen validierten Achse.** *Nicht weil
+> Wilhelm es so gewählt hätte, sondern **weil beide von ihm gewählten Wege gemessen ausscheiden**.*
+
+> ### ⭐ ENTSCHIEDEN 15:4x — WILHELM: **„NEUE MESSUNG BEAUFTRAGEN."** *(ausgeführt → nicht machbar, siehe oben)*
 > **Frage: „Trennt die Spanne INNERHALB des Stress-Regimes?" — Basis liq + Regime, das Tor bleibt
 > drin.** *Vergeben an `c4`.*
 >
