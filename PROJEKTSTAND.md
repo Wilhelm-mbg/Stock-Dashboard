@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 15:15 (Windows-Uhr)
+letzter-bericht: 2026-08-27 15:35 (Windows-Uhr)
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -124,6 +124,43 @@ Nicht-Krypto, **alle am 25.08., null erfasste Marktlagen** → **nicht erfüllt,
 > *Nebenbemerkung von `06`, der Vollständigkeit halber: der 30-Minuten-Zwischenspeicher bedeutet,
 > dass eine Runde bei einem Seitenwechsel innerhalb einer halben Stunde noch die alte Lage trüge
 > — **für eine Schwelle über Tage belanglos**, aber gesagt.*
+
+---
+
+## 🚫 27.08. 15:3x — **DIE STRESS-ACHSE TRÄGT NICHT. Wilhelms gewählte Option ist nicht baubar**
+
+**Formal `NICHT MESSBAR`** *(die Positivkontrolle riss)*, **praktisch ein NEIN:** *Die
+Spannen-Quote trennt die Kapitulations-Kante nicht — **Stress-Arm 0,47 gegen Ruhig-Arm 0,36 Pp,
+Welch-t 0,17** bei Kriterium ≥ 2.* **Achsen-Placebo −0,74 sauber, Maschinen-Placebo −0,51 sauber,
+Signalanteil 18 % — also keine `kanalUeber`-Falle.** *Registrierung `ad27e31` **vor** dem Bau,
+Ergebnis `14c93bd`.*
+
+**→ `06` baut nichts. Die Schwelle bleibt vorerst streng** *(binär, ≥ 2 Tage UND ≥ 2 erfasste
+Lagen — Marktseitenwechsel nötig).* **`kostenStreuung()` bleibt unverändert in Kraft.**
+
+> ### ⭐ ZWEI BEFUNDE ÜBER DAS NEIN HINAUS
+> **1. „Spannen-Stress" und „EMA200-Stress" sind NICHT dasselbe — nur 52,8 % Überlappung.** *Und
+> im selben Lauf hebt **nur das alte Regime-Tor** die Kante (Basis 0,38 → 1,13 Pp, t 2,20), die
+> Spannen-Auswahl nicht.* **Die Verwechslung, aus der mein Auftrag überhaupt entstand, ist damit
+> gemessen statt vermutet.**
+>
+> **2. Warum die Positivkontrolle riss — Design-Lehre, kein Maschinenfehler:** *„Ich hatte als
+> Basis die Kante **ohne** Regime-Tor gewählt, um die neue Achse zu isolieren — **aber die Kante
+> lebt nur unter ihrem Tor** (Basis t 1,05)."* **Wer ein Tor entfernt, um ein zweites Merkmal
+> sauber zu prüfen, entfernt womöglich das, was den Effekt trägt.**
+>
+> *Dazu selbst gemeldet: ein Treiber-Patzer (Bonferroni-Feld falsch gelesen, nachgerechnet 2,638
+> — **Urteil unverändert**) und **der Split war zusätzlich strukturell unterpowert** (delta80
+> Stress-Arm 1,70 Pp bei 48 Tagen). **„Die Machbarkeits-Rechnung hätte vor die Registrierung
+> gehört."***
+
+> ### ❓ ZURÜCK AN WILHELM — **seine Absicht ist mit keinem der zwei Wege erfüllbar**
+> *Er wählte „feinere Lagen", **damit die Schwelle in Wochen statt Monaten erreichbar wird**.*
+> **Es bleiben:** *(a) die vorhandene **binäre** EMA200-Achse behalten → das ist „so lassen und
+> warten", die Option, die er **nicht** gewählt hatte · (b) **neue Registrierung** mit der anderen
+> Frage („trennt die Spanne **innerhalb** des Stress-Regimes?", Basis liq + Regime) → **braucht
+> deutlich mehr Bestätigungstage**, delta80-Rechnung vorab.*
+> **Die Messseite empfiehlt ausdrücklich keinen von beiden — das ist sein Entscheid.**
 
 ---
 
