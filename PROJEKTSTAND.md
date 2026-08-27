@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 04:20 (abgelesen)
+letzter-bericht: 2026-08-27 04:30 (abgelesen)
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -224,10 +224,59 @@ nie ausgeführt wird. Klasse R ist faktisch ein Kriterium, nicht zwei."* **Der A
 verliert dadurch nicht seinen Wert** — er hätte eine echte Differenz gefunden, wenn es eine
 gegeben hätte. *Aber die Sorgfalt galt einer Stelle ohne Wirkung.*
 
-**Noch in Prüfung, bevor gemeldet wird:** ob die 435 „vor"-Fälle echte Eröffnungsstunden mit
-fehlendem Umsatzfeld sind (411 von 435 um 09:30 ET), und ob der dichte Kern am 24.12.2025 eine
-**Fondsgruppe** ist statt eines Marktfaktors. *„Beides klingt plausibel und ist genau deshalb
-zu prüfen."*
+### ✅ 27.08. ~04:30 — beide offenen Punkte nachgemessen: beide Behauptungen stimmen
+
+**1. Die 435 „vor"-Fälle sind KEINE Phantome — es ist die Eröffnungsstunde.**
+Uhrzeiten: 14:30 (321), 13:30 (108), 15:30 (6) — **die Sitzungs-Eröffnungsstunde in Winter-
+bzw. Sommerzeit.** **394 von 435 (90,6 %) ihrer Dochte liegen vollständig innerhalb dessen,
+was der Tagesbalken ausweist** — *echter Sitzungshandel, dem nur das Umsatzfeld fehlt.*
+
+    AAXJ 2023-11-24 14:30   h 65,69  t 65,20  c 65,64  v 0
+         Sitzungsspanne aus Umsatzkerzen  65,60 - 65,70
+         Tagesspanne laut archiv1d        65,20 - 65,74     <-- das Tief IST das Tagestief
+
+*Die Trennung in Block (5) hatte sie bereits isoliert — **die Trennung war richtig, die
+Einordnung als Phantom nicht.***
+
+**2. ⚠ DER „DICHTESTE KERN" MISST ETF-GLEICHLAUF — und entwertet damit eine eigene Kennzahl.**
+
+    Tag           Kern    ETF im Kern   Grundrate   Faktor
+    2023-11-24    7,4 %      48,8 %       17,8 %     2,7
+    2024-11-29   10,3 %      69,2 %       27,5 %     2,5
+    2025-11-28    8,6 %      39,6 %       16,6 %     2,4
+    2025-07-03    9,4 %      46,0 %       22,2 %     2,1
+    2025-12-24   17,8 %      52,6 %       26,6 %     2,0
+    2024-07-03    6,8 %      18,9 %       19,7 %     1,0
+    2024-12-24   10,2 %      14,0 %       19,0 %     0,7
+
+**Auf fünf von sieben Halbtagen sind ETFs im Kern doppelt bis 2,7-fach überrepräsentiert.**
+*Der 24.12.2025 ist darin **nicht besonders** — er hat nur den größten Kern.*
+
+> **→ Die Kennzahl misst zu erheblichem Teil den Gleichlauf von Indexfonds, die dieselben Körbe
+> abbilden. Sie taugt NICHT als Anzeiger für einen Quellfehler — auch nicht an den anderen
+> Tagen.** *Das Problem, das sie lösen sollte (der Kernanteil erfasst keine Häufung abseits des
+> Medians), war richtig erkannt. **Die Ersatzzahl misst etwas anderes als gedacht.***
+>
+> **Und das betrifft die Probe, die `c4` gestellt hatte:** Der 24.12.-Kern war als **Fund**
+> gemeldet und das Urteil nicht gedreht — *die Disziplin hat gehalten, aber **die gemeldete
+> Zahl war kein Fund**.* Der Nachtrag steht weiter; nur sein Anwendungsfall war leer.
+
+### 🎯 Und eine Richtigstellung an den PM: warum die Verschärfung wirklich abgelehnt wurde
+
+**Der PM hatte gelobt, die QS habe der Autorität eines Prüfers standgehalten, der gerade einen
+echten Fehler gefunden hatte. Die QS rückt es gerade — und die ehrlichere Fassung ist die
+nützlichere:**
+
+> *„Ich habe die Umkehrung **nicht aus Prinzip** abgelehnt, sondern weil die Nachrechnung eine
+> Minute gedauert hat und das Ergebnis eindeutig war. **Hätte ich sie nicht nachgerechnet,
+> hätte ich sie übernommen** — der Prüfer hatte gerade einen echten Fehler in meiner Arbeit
+> gefunden, und das verleiht Gewicht.*
+> *Was mich zum Nachrechnen gebracht hat, war **nicht Skepsis, sondern dass die Zahl 41,7 %
+> nicht zu meiner eigenen 57,7 % passte und ich den Unterschied nicht erklären konnte.**"*
+
+**→ Das ist reproduzierbar und deshalb wertvoller als Haltung: Eine unerklärte Differenz
+zwischen zwei eigenen Zahlen ist ein Anlass zum Nachrechnen.** *Haltung hat man oder nicht; ein
+unerklärter Unterschied fällt auf.*
 
 ### 🔍 27.08. ~04:05 — DIE GEGENLESE: alle vier tragfähig, mit vier präzisierenden Auflagen
 
