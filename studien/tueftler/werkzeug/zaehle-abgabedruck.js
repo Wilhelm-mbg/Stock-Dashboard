@@ -218,7 +218,7 @@ function wahlDesTages(e, key) {
 }
 
 function auswerten(key) {
-  var mitten = [], breiten = [], umsaetze = [], umsaetzeKorb = [], beharr = [], anteile = [];
+  var mitten = [], diffs = [], breiten = [], umsaetze = [], umsaetzeKorb = [], beharr = [], anteile = [];
   var ueberB = [], ueberF = [], tageMitSignal = 0;
   var vor = null;
   tage.forEach(function (t) {
@@ -228,6 +228,14 @@ function auswerten(key) {
     tageMitSignal++;
     var s = 0, um = [], jetzt = new Set();
     for (i = 0; i < wahl.length; i++) { s += e.rN[wahl[i]]; um.push(e.um[wahl[i]]); jetzt.add(e.sy[wahl[i]]); }
+    /* Querschnitts-Gegenstueck: der REST des Tages, also der zugelassene
+     * Querschnitt OHNE die Auswahl. Nicht der ganze Querschnitt - der enthaelt
+     * die Auswahl und die Differenz waere um den Ueberlappungsanteil gestaucht.
+     * Beide Seiten tragen denselben Marktfaktor; in der Differenz kuerzt er sich
+     * weg, soweit die Auswahl kein anderes Beta hat. */
+    var inWahl = new Set(wahl), sRest = 0, nRest = 0;
+    for (i = 0; i < n; i++) if (!inWahl.has(i)) { sRest += e.rN[i]; nRest++; }
+    if (nRest > 0) diffs.push(s / wahl.length - sRest / nRest);
     mitten.push(s / wahl.length);            // bleibt in dieser Funktion, wird nie gedruckt
     breiten.push(wahl.length); umsaetze.push(med(um)); umsaetzeKorb.push(med(e.um));
     anteile.push(wahl.length / n);
@@ -251,6 +259,11 @@ function auswerten(key) {
   var N = mitten.length - Math.floor(mitten.length / 2);
   var streu = sd(haelfte(mitten));
   var se = streu / Math.sqrt(N);
+  /* Dieselbe Rechnung auf der Differenzreihe. WICHTIG: es entsteht dabei kein
+   * Mittelwert der Differenz - nur ihre Streuung. f ist der Faktor, um den eine
+   * Querschnitts-Kontrolle die Aufloesung schaerft. */
+  var streuD = sd(haelfte(diffs));
+  var seD = streuD / Math.sqrt(N);
   var r = {
     tageMitSignal: tageMitSignal,
     tageAnteil: Math.round(tageMitSignal / tage.length * 1000) / 10 + ' % der Handelstage',
@@ -269,6 +282,13 @@ function auswerten(key) {
     delta80_4Tests_Pp: Math.round((2.497706 + 0.8416212) * se * 100000) / 100000,
     noetigeTage_fuer_0_10Pp: Math.round(Math.pow((2.241403 + 0.8416212) * streu / 0.10, 2)),
     noetigeTage_fuer_0_04Pp: Math.round(Math.pow((2.241403 + 0.8416212) * streu / 0.04, 2)),
+    /* --- gegen den Rest des Tages gepaart --- */
+    q_streuung_Pp: Math.round(streuD * 10000) / 10000,
+    q_se_Pp: Math.round(seD * 100000) / 100000,
+    q_delta80_2Tests_Pp: Math.round((2.241403 + 0.8416212) * seD * 100000) / 100000,
+    q_noetigeTage_fuer_0_10Pp: Math.round(Math.pow((2.241403 + 0.8416212) * streuD / 0.10, 2)),
+    q_noetigeTage_fuer_0_04Pp: Math.round(Math.pow((2.241403 + 0.8416212) * streuD / 0.04, 2)),
+    q_faktor_f: Math.round(streu / streuD * 1000) / 1000,
   };
   /* Median UND Mittel: bei schmalen Koerben ist die Ueberschneidung je Tag
    * meist glatt 0 oder 1, dann ist der Median eine Stufenfunktion und sagt
