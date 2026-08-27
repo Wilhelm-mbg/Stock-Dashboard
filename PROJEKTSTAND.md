@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 02:46 (abgelesen)
+letzter-bericht: 2026-08-27 02:55 (abgelesen)
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -101,6 +101,41 @@ auffiel:**
 > **Fällt eine von beiden weg, schreibt der Sammler einen Zwischenstands-Quote als Tagesschluss
 > ins Archiv** — und zwar einen, der aussieht wie der genaueste Wert im Bestand.
 >
+> ### 🔟 27.08. ~02:55 — 210 VON 210: der Tagesschluss liegt IMMER im Band der Nachhandelskerze
+>
+> **Gefunden, ohne danach gesucht zu haben** — die QS wollte ihre eigene Ursachen-Vermutung
+> prüfen und hat dabei etwas anderes gemessen:
+>
+>     Der amtliche Tagesschluss liegt INNERHALB von Hoch und Tief
+>     der ersten Nachhandelskerze:  210 von 210 Faellen.  100,0 %.
+>
+> **Nicht 98 %, nicht 99 % — alle.** Über sieben Halbtage, dreißig Reihen, drei Jahre.
+>
+> > **Das sagt etwas über die Dochte, um die seit Stunden gestritten wird:** Die Spanne der
+> > ersten Nachhandelskerze ist **an den echten Schlusskurs gebunden — sie umschließt ihn
+> > ausnahmslos.** Eine Kerze, deren Hoch-Tief-Band einen **unabhängig belegten** Kurs in 210
+> > von 210 Fällen enthält, **trägt Kursinformation.** *Kein Beweis, dass jeder einzelne Docht
+> > echt ist — aber das Gegenteil eines Zufallsmusters.*
+>
+> **Praktische Folge:** Den Tagesschluss kann man aus dieser Kerze **nicht ablesen** — weder aus
+> Eröffnung noch aus Schluss. **Man kann ihn nur eingrenzen.**
+>
+> **Und die QS kassiert dabei zwei eigene Sätze:**
+> - *Vermutung 1 (ihre):* Die exakten Treffer entstehen, weil nicht gehandelt wurde und die
+>   Quelle den Schluss fortschreibt → dann müssten die Kerzen **flach** sein.
+>   **0 von 45 sind flach.** Alle tragen eine Spanne, im Median 0,461 %. **Widerlegt.**
+> - *Vermutung 2 (die naheliegende Rettung):* Die Kerze beginnt mit der Schlussauktion, dann
+>   wäre ihre **Eröffnung** der Schlusskurs. **6 von 210 (2,9 %). Auch widerlegt.**
+>
+> **→ Warum es 21,4 % sind, ist unbekannt — und bleibt es.** *„Ich lasse den Stand so stehen,
+> statt eine dritte Erklärung zu bauen, die ich dann wieder prüfen müsste."*
+>
+> > **📢 UND DER META-SATZ, der zu den Hausregeln gehört:**
+> > ***„Eine Vermutung, die als ungemessen markiert weitergegeben wird, wird trotzdem
+> > weitergegeben."*** *Die QS hatte ihre Vermutung ordnungsgemäß gekennzeichnet — `-06` hat sie
+> > als „plausibel und sauber als ungemessen markiert" übernommen. **Die Kennzeichnung hat die
+> > Verbreitung nicht aufgehalten.***
+>
 > ### 🎯 27.08. ~02:45 — ZWEI UNABHÄNGIGE MESSUNGEN TREFFEN SICH AUF 0,3 PROZENTPUNKTE
 >
 > **`1d` hatte gefunden: 21,7 % der P-WEG-Kerzen tragen exakt den amtlichen Tagesschluss**
@@ -127,12 +162,27 @@ auffiel:**
 > der ersten Nachhandelsstunde **kein Handel** statt, und die Quelle schreibt den Schlusskurs
 > fort. Das würde die enge Streuung erklären.*
 >
-> **📌 Offene Frage, bewusst NICHT als Auftrag gestellt (QS an `c4`, wenn Kapazität da ist):**
-> Dass die Halbtage in `tageshilfen.js` **nie feuern**, ist die vorsichtige Richtung und
-> dokumentiert — *aber es heißt auch, dass an sieben Tagen je Jahr kein T-Signal entsteht und
-> der Beitrag dieser Tage in einer Zwei-Sitzungs-Rendite steckt.* **Ob das die Ergebnisse der
-> drei T-Strategien messbar verändert, ist ungeprüft.** *Keine Fehlerfrage, sondern die Frage
-> nach der Wirkung einer bewussten Entscheidung.*
+> **✅ GESCHLOSSEN 02:50 — OHNE LAUF, MIT EINER SCHRANKE AUF VERÖFFENTLICHTEN ZAHLEN.**
+> Die Frage lautete: Dass die Halbtage in `tageshilfen.js` **nie feuern**, kostet an sieben
+> Tagen je Jahr ein T-Signal — verändert das die Ergebnisse messbar?
+>
+> **Die Rechnung (`c4`), und sie braucht keine neue Messung:** Halbtage sind **7 von ~252
+> Handelstagen ≈ 2,8 %** — real weniger, es sind umsatzarme Feiertagsränder. **Damit diese
+> Lücke einen Messwert um `delta80` verschieben könnte, müsste der wahre Halbtags-Effekt
+> `|B_halbtag − B_rest| ≈ delta80 / 0,028` betragen.** Bei den `delta80`-Werten der
+> T-Protokolle (Größenordnung ≥ 1 Pp je Signaltag) wären das **≥ 35 Pp je Tag — das
+> Hundertfache jeder hier je gemessenen Kante.**
+>
+> **→ Antwort: NEIN.** *Sieben stumme Tage können die T-Ergebnisse nicht messbar bewegen; die
+> Bauart kostet Abdeckung im Promillebereich und kauft dafür **Vorgriffsfreiheit**.*
+> **Als „geprüft und zu klein" auf der Tafel, nicht als „nicht nachgesehen".**
+>
+> *Einzige ehrliche Einschränkung, selbst benannt: Der **kontrafaktische** Halbtags-Effekt
+> bleibt ungemessen — dafür müsste man die Schlussregel umbauen, also eine neue Anordnung
+> fahren. **Die Schranke gilt für jede plausible Größe unterhalb des Absurden.***
+>
+> *(Die Anerkennung für die Import-statt-Nachbau-Lösung beim Zähler gehört `1d`, nicht `c4` —
+> selbst richtiggestellt.)*
 >
 > ### 🧩 27.08. ~02:50 — AN HALBTAGEN FEHLT DIE LETZTE HALBE HANDELSSTUNDE — in der QUELLE
 >
