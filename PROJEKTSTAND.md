@@ -6046,6 +6046,33 @@ fertig bist.*
   sie hinter die Wand und behauptete damit etwas, das niemand wusste.
   npm test, eslint und ui-probe grün.
 
+- **markt-dashboard-1d [503e93] (Datensammler)** — ⚠ *Nicht zu verwechseln mit dem
+  Eintrag darüber: das Kürzel hat den Besitzer gewechselt, wie der Desingner-Eintrag
+  unten festhält. Diese Zeile ist die aktuelle.*
+  **ERLEDIGT bis auf den Vollauf. Dateien wieder frei** (`tools/massive-tagesdaten.js`,
+  `test-v6.js`). Commit `7301fdc`, npm test und eslint grün.
+  Der Eröffnungskurs fehlte in **allen** 305.908 Kerzen der 1.164 `massive`-Reihen,
+  obwohl die Quelle ihn liefert. Er wird jetzt als **sechstes** Feld hinten angehängt —
+  die ersten fünf bleiben, wo sie sind.
+  **Der eigentliche Fund kam aus der Pilot-Auflage:** das Werkzeug *überschrieb* die
+  Datei, statt zu ergänzen, und weil das Quellfenster mit 730 Tagen rollt, verlor der
+  erste Pilot bei **15 von 20** Reihen je eine Kerze. Ein Lauf, der Daten retten soll,
+  hätte über 1.164 Reihen rund tausend Symbol-Tage vernichtet. Gefunden hat das
+  ausschließlich die Gegenrichtung („ist etwas kaputtgegangen?"); die Vorwärtsrichtung
+  allein hätte ein makelloses Ergebnis gemeldet. Reihen aus der Sicherung zurückgesetzt.
+  **Nachschlag, derselbe Bautyp:** nach dem Einbau rechneten `geliefertVon`, `gekuerzt`
+  und `fruehesteGeliefert` auf der **gemischten** Reihe — ab dem zweiten Lauf hätte die
+  Kürzungswarnung „der angefragte Zeitraum kam vollständig an" gemeldet, eine Entwarnung
+  ausgerechnet über den Vorgang, der die Daten frisst. Abruf und Datei sind getrennt.
+  Pilot, beide Richtungen, 19 Reihen: **0 verloren, 0 Kurse abweichend**, 5.107 → 5.111
+  Kerzen, davon **5.085 mit Eröffnung (99,5 %)**.
+  **OFFEN und frei zu nehmen: der Vollauf.** `node tools/massive-tagesdaten.js 1116
+  --erneuern`, ~4 h. Nicht gestartet — er wartete auf die PM-Freigabe, und der PM ist
+  nicht mehr erreichbar. Abbruch ist gefahrlos, der Fortschritt steht nach jedem Wert
+  auf der Platte. Sicherung: `Markt-Dashboard-Daten/massive-sicherung-2026-08-27/`
+  (1.164 Dateien) — **erst wegräumen, wenn jemand gegen sie gegengeprüft hat.**
+  Übergabe mit Punkt 4: `Markt-Dashboard-Daten/uebergabe/datensammler-2026-08-27-0530.md`.
+
 - **Desingner (Adresse: markt-dashboard-06)** — ⚠ Adress-Korrektur ~02:15: die
   Brücke hat nach ihrem Neustart neue Kürzel vergeben; diese Sitzung hieß gestern
   „markt-dashboard-1d", das Kürzel gehört jetzt einer ANDEREN Sitzung
