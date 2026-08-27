@@ -14,6 +14,76 @@ Wenn du hier etwas änderst, dann nur deine eigene Zeile unter „Läuft gerade"
 
 ---
 
+## 🔴 27.08. 18:3x — **ZWEI ZAHLEN VON DER TAFEL ZURÜCKGENOMMEN — beide waren zu alarmierend**
+
+> ### ⛔ Alles auf dieser Tafel mit „**Tief doppelt so oft**" oder „**drei von hundert**" ist ÜBERHOLT.
+
+### ⚖ RÜCKNAHME 1 — **die Asymmetrie gibt es nicht**
+
+    Aggregation A (Umsatz)   Hoch 1,541 %   Tief 1,453 %   Verhaeltnis 0,94
+    Aggregation B (alle)     Hoch 1,305 %   Tief 1,242 %   Verhaeltnis 0,95
+    2.089.420 Reihen-Tage, Skalenreihen ausgenommen
+
+**Gemeldet war 4,71 % gegen 2,04 % — Verhältnis 2,3. Gemessen ist es 0,94: das HOCH weicht sogar
+leicht häufiger ab.**
+
+> ***„Meine Zahl kam aus 5.728 Reihen-Tagen, also einem Querschnitt über ZWEI Handelstage. Ein
+> Querschnitt weniger Tage misst DIESE TAGE, nicht das Archiv — an einem Tag mit
+> Vormittagsabverkauf ist die Tiefseite marktweit aktiver, und das sieht wie eine
+> Archiv-Eigenschaft aus."***
+>
+> **Dieselbe Fehlerform wie die 16 Kostenrunden aus einer Minute.** *Heute zum dritten Mal:
+> **eine schmale Stichprobe misst ihren eigenen Zuschnitt und nennt es Struktur.***
+
+### ⚖ RÜCKNAHME 2 — **~3 % waren das FÜNFUNDSIEBZIGFACHE**
+
+*Die Maschine benutzt **alle** Kerzen; die Zahl kam aus der **Umsatz**-Aggregation.* In ihrem
+Zuschnitt: *60m sieht ein tieferes Tief als 1d in **0,282 %**; davon höchstens die Hälfte falsch
+(10:9), und **67,8 % der Träger sind Lage `sitzung` mit 99,3 % Bestätigung**.*
+
+> **Belastbare Obergrenze für Fehlauslösung: rund 0,04 % der Reihen-Tage.**
+
+### 🔄 UND DIE RICHTUNG WAR FALSCH HERUM — **das ist der eigentliche Fund**
+
+    60m sieht ein TIEFERES Tief (Fehlausloesung)  :  0,282 %
+    60m VERPASST ein Tief des Tagesbalkens        :  0,960 %   <- 3,4-mal haeufiger
+
+> **Ein verpasstes Tief löst KEINEN Stopp aus — der Trade läuft weiter. Das BESCHÖNIGT eine
+> gemessene Kante.**
+>
+> ***„Für Livehandel war meine Warnung richtig, für Messungen ist die andere Richtung die
+> wichtigere. Und Messungen sind hier die Währung."***
+
+---
+
+### 🏷 NEUER FUND: **die Lage `nachhandel` heißt falsch — für ihre GANZE Population**
+
+    Umsatzlose Kerzen, die ein 60m-Tagesextrem tragen
+      sitzung                                30.719   99,3 % bestaetigt
+      nachhandel AUF Sitzungsende (Auktion)   9.996   60,5 % bestaetigt
+      nachhandel NACH Sitzungsende                0   --
+      schlusskurs                                44  100,0 % bestaetigt
+
+> **Vermutet war eine Naht in der Klasse. Die Vermutung war falsch — und der Grund macht den Fund
+> größer: die zweite Hälfte ist LEER.** *Unter den Extremträgern gibt es **keine einzige echte
+> Nachhandelskerze**. Alle 9.996 sitzen auf dem **Sitzungsende** — genau dort, wo am Normaltag die
+> Schlussauktion liegt und die Lage `schlusskurs` heißt.*
+>
+> **Der Schnitt ist richtig** *(dieselbe Position trägt am Normaltag 100 %, am Halbtag 60,5 %)*.
+> ***Falsch ist nur der NAME — und der Name ist das, worauf jemand handelt.***
+>
+> **Wer `nachhandel` ausschließt, wirft 6.050 bestätigte Extreme weg, um 3.946 widersprochene zu
+> vermeiden.** **→ Vorschlag: `halbtagsschluss`.** *Bauarbeit, noch nicht vergeben.*
+
+**✅ Was hält:** *Die Entscheide sind im Code angekommen und **besser gebaut als verlangt** —
+`kerzenlage.js` setzt „behalten und kennzeichnen" als **abgeleitete Regel** statt als Feld um.
+**DST sitzt** (die Prüferin ist bei der ersten Probe selbst über EST/EDT gestolpert, das Modul
+nicht). Und die tragende Behauptung der Aggregationsstudie — **„die Messmaschine aggregiert
+überhaupt nicht auf Tage"** — ist unabhängig nachgeprüft: kein Tageshoch, kein Tagestief, kein
+Umsatzfilter.*
+
+---
+
 ## 📦 27.08. 18:1x — **FELIX' INSTALLATION: die Vermutung stimmt — und daneben liegt ein AUSGELIEFERTER DEFEKT**
 
 **Wilhelms Meldung:** *„Felix nutzt die App auf seinem Laptop, der Installer gibt scheinbar nicht
@@ -114,8 +184,18 @@ wörtlich „Alle 531 Werte sind auf Stand".*
 >            ...obwohl KEINE EINZIGE Kerze von heute drin ist.
 >
 > **Der Lauf um 12:18 — vor Eröffnung — hat den Tagesstempel „verbraucht", ohne den Tag zu
-> holen.** *Der Plan liest den Stempel als „heute erledigt" und meldet „auf Stand", während der
-> laufende Handelstag fehlt.*
+> holen.** *Der Plan liest den Stempel als „heute erledigt".*
+>
+> > ### ⚖ RICHTIGSTELLUNG (`1d`) — **die Meldung „auf Stand" war NICHT falsch**
+> > *Der letzte **abgeschlossene** Handelstag ist zur Stunde noch der 26.08. — **und den enthalten
+> > die Reihen**.* ***„Die Meldung war nicht falsch, sie war ihrer Grundlage nur voraus. Wer daraus
+> > schloss, der laufende Tag sei drin, hat einen Schluss gezogen, den die Meldung nie hergab."***
+> > **Ich hatte es so geboardet, als hätte das Werkzeug gelogen. Es hat nicht gelogen — wir haben
+> > falsch gelesen.**
+> >
+> > *Breite nachgemessen: **840 Reihen** über drei Intervalle tragen den heutigen Stempel
+> > (1m 520, 15m 289, 5m 31); **151 gelesen, keine einzige enthält den 27.08.** Der Fund selbst
+> > stimmt vollständig — nur seine Tragweite war zu groß beschrieben.*
 >
 > **Warum es trotz Entwarnung zählt — zwei Stellen:**
 > 1. **Wer aus „Alle 531 Werte sind auf Stand" schließt, der heutige Tag sei drin, misst auf einem
