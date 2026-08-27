@@ -1,0 +1,27 @@
+{
+ "sym": "QGEN",
+ "ereignisse": [
+  {
+   "datum": "2025-01-29",
+   "art": "split",
+   "faktor": 1.0285714285714285
+  },
+  {
+   "datum": "2024-01-30",
+   "art": "split",
+   "faktor": 1.0309278350515463
+  },
+  {
+   "datum": "2017-01-25",
+   "art": "split",
+   "faktor": 1.0384615384615385
+  }
+ ],
+ "quelle": "Massive REST /v3/reference/splits (Bearer, Gratis-Stufe)",
+ "abgerufen": "2026-08-27T13:38:26.598Z",
+ "abgedeckt": [
+  "split"
+ ],
+ "konvention": "faktor bei art=split: Kursfaktor am Ausfuehrungstag = split_from/split_to. datum: execution_date.",
+ "hinweis": "Nachtrag fuer die 17er-Skalenliste (Phantom-Sweep, zweite Grundmenge)."
+}

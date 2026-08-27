@@ -1,0 +1,72 @@
+{
+ "sym": "SCCO",
+ "ereignisse": [
+  {
+   "datum": "2026-08-11",
+   "art": "split",
+   "faktor": 0.9881422924901185
+  },
+  {
+   "datum": "2026-05-13",
+   "art": "split",
+   "faktor": 0.9900990099009901
+  },
+  {
+   "datum": "2026-02-10",
+   "art": "split",
+   "faktor": 0.991571641051066
+  },
+  {
+   "datum": "2025-11-12",
+   "art": "split",
+   "faktor": 0.991571641051066
+  },
+  {
+   "datum": "2025-08-15",
+   "art": "split",
+   "faktor": 0.99000099000099
+  },
+  {
+   "datum": "2025-05-02",
+   "art": "split",
+   "faktor": 0.9901970492127933
+  },
+  {
+   "datum": "2025-02-11",
+   "art": "split",
+   "faktor": 0.9927529038022436
+  },
+  {
+   "datum": "2024-11-06",
+   "art": "split",
+   "faktor": 0.9938382031405287
+  },
+  {
+   "datum": "2024-08-09",
+   "art": "split",
+   "faktor": 0.994431185361973
+  },
+  {
+   "datum": "2012-02-13",
+   "art": "split",
+   "faktor": 0.9894132779261898
+  },
+  {
+   "datum": "2008-07-10",
+   "art": "split",
+   "faktor": 0.3333333333333333
+  },
+  {
+   "datum": "2006-10-03",
+   "art": "split",
+   "faktor": 0.5
+  }
+ ],
+ "quelle": "Massive REST /v3/reference/splits (Bearer, Gratis-Stufe)",
+ "abgerufen": "2026-08-27T13:38:39.643Z",
+ "abgedeckt": [
+  "split"
+ ],
+ "konvention": "faktor bei art=split: Kursfaktor am Ausfuehrungstag = split_from/split_to. datum: execution_date.",
+ "hinweis": "Nachtrag fuer die 17er-Skalenliste (Phantom-Sweep, zweite Grundmenge)."
+}

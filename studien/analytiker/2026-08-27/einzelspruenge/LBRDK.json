@@ -1,0 +1,11 @@
+{
+ "sym": "LBRDK",
+ "ereignisse": [],
+ "quelle": "Massive REST /v3/reference/splits (Bearer, Gratis-Stufe)",
+ "abgerufen": "2026-08-27T13:38:13.602Z",
+ "abgedeckt": [
+  "split"
+ ],
+ "konvention": "faktor bei art=split: Kursfaktor am Ausfuehrungstag = split_from/split_to. datum: execution_date.",
+ "hinweis": "Nachtrag fuer die 17er-Skalenliste (Phantom-Sweep, zweite Grundmenge)."
+}
