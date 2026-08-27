@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 14:25 (Windows-Uhr)
+letzter-bericht: 2026-08-27 14:45 (Windows-Uhr)
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -124,6 +124,83 @@ Nicht-Krypto, **alle am 25.08., null erfasste Marktlagen** → **nicht erfüllt,
 > *Nebenbemerkung von `06`, der Vollständigkeit halber: der 30-Minuten-Zwischenspeicher bedeutet,
 > dass eine Runde bei einem Seitenwechsel innerhalb einer halben Stunde noch die alte Lage trüge
 > — **für eine Schwelle über Tage belanglos**, aber gesagt.*
+
+---
+
+## 🏁 27.08. 14:4x — **KONVENTIONS-FRAGE VOLLZÄHLIG ENTSCHIEDEN — ohne einen einzigen Abruf**
+
+> ### 🎯 DER TRICK: **Eine Rückanpassung ist MULTIPLIKATIV — sie trifft alle Felder mit demselben Faktor, den SCHLUSS eingeschlossen. Ein echter Hoch/Tief-Fehler lässt den Schluss in Ruhe.**
+>
+>     h1d/h60, l1d/l60, c1d/c60 alle gleich und fern von 1  ->  SKALA (Konvention)
+>     uneinheitlich                                         ->  echter Fehler
+>
+> **Damit ist „Konvention oder Fehler" allein aus den beiden Archiven entscheidbar. Es braucht
+> keine dritte Quelle.**
+
+**Vollzählung über 2.101.732 Reihen-Tage in 2.878 Reihen, nur lesend:**
+
+| | | |
+|---|---:|---:|
+| uneinig über 0,2 % | **67.655** | **3,22 %** |
+| davon SKALA / Konvention | 3.651 | **5,40 %** |
+| davon **echte** Hoch/Tief-Fehler | 64.004 | **94,60 %** |
+| betroffene Reihen | **34** von 2.878 | **1,18 %** |
+
+**✅ DIE TAFEL-ZAHL HÄLT — „in Prüfung" ist aufgehoben.** *3,22 % Widerspruch, davon 5,40 %
+Konvention → **3,05 % echte**. Die Korrektur ist **ein Zwanzigstel**.* **Und die
+Zwanziger-Stichprobe enthielt genau einen Konventionsfall = 5 % — in diesem Punkt war sie nicht
+verzerrt.** *WHLR war der eine, und er ist exakt der Fall, den der eigene Vermerk als „Massive
+trifft `archiv60m`-Schluss: **19 von 20**" verzeichnet hatte. **Die Vorhersage hielt.***
+
+**Der 10:9-Befund fällt rechnerisch auf `9:9` bei 19 Fällen** — *das macht ihn nicht schwächer,
+sondern **stärker**: noch genauer ein Münzwurf.*
+
+### 📋 DIE AUSSCHLUSSLISTE — 34 Reihen, der praktische Ertrag
+    ABUS B BYND CBSH CHGG CLM DDD DOC ELME ETHE FCEL GBTC GERN HAIN HPP IESC
+    KOS LBRDA LBRDK MNKD MNST NWL PACB PLUG QGEN RGR SCCO SITC SOXS TLRY TV
+    VNET WHLR XRX
+**Wer diese 1,18 % ausschließt, ist das Konventionsproblem vollständig los, ohne eine gute Reihe
+zu verlieren.**
+
+> ### ⭐ **ZWEI VERFAHREN, KEINE GEMEINSAME DATENQUELLE, DIESELBEN REIHEN**
+> **Alle fünf per Rohkurs-Abruf gefundenen Reihen — RGR, SITC, B, WHLR, BYND — stehen in diesen
+> 34.** *Massive-Abrufe von der einen Seite, ein reiner Verhältnistest auf dem eigenen Bestand
+> von der anderen.* **Das ist die stärkste Bestätigung des Tages, und keiner der beiden hätte
+> sie allein liefern können.**
+
+> ### 🕳 EINE ZAHL, DIE FAST GEMELDET WURDE — **72,73 %, erzeugt von der eigenen Schwelle**
+> *Der erste Lauf warf einen dritten Eimer aus, der **drei Viertel aller Fälle** hielt: „Schluss
+> weicht ab, aber nicht einheitlich". Ein unerklärter Restposten mit der Masse darin.*
+>
+> **Ursache: „Schluss identisch" war auf `1e-4` (0,01 %) gesetzt.** *Jeder gewöhnliche Fall,
+> dessen 60m-Schluss um 0,3 % danebenlag — **weil die letzte umsatztragende Kerze nicht die
+> Schlussstunde war** —, fiel damit aus „identisch" heraus.* **Gegenprobe ohne den Schluss, nur
+> Hoch und Tief unter sich: null von 4.013. Kein einziger Skalenfall in dem großen Eimer.**
+>
+> ### 📐 HAUSREGEL: ***„Die Größe einer Kategorie zeigt nichts über die Welt, sondern etwas über den Schnitt."***
+> *Gegenstück zur leeren Kategorie von heute früh: **diese sammelte alles ein, weil ihre
+> Nachbarin zu eng geschnitten war.** Beide Male log nicht die Welt, sondern die Grenze.*
+
+**Grenze, mitgeteilt statt verschwiegen:** *Erkannt wird eine **einheitliche** Skalendifferenz.
+Schriebe eine Quelle Hoch und Tief angepasst und den Schluss roh, sähe der Test das nicht.*
+**Dass beide Archive die Schlüsse auf 5e-5 teilen, ist ein starkes Indiz dagegen, aber kein
+Beweis.**
+
+> ### 🔴 OFFEN — **zwei Zahlen, die NICHT geglättet werden dürfen: 3,22 % gegen 6,67 %**
+> *Der Zensus findet **3,22 %** Uneinigkeit, der frühere Populationslauf **6,67 %**.* **Ursache:
+> die 60m-Tagesaggregation** — *der Zensus nahm nur **umsatztragende** Kerzen, und die
+> **Auktionskerzen ohne Umsatzfeld tragen bekanntlich echte Extreme** (Befund von heute früh).*
+>
+> **→ Bevor eine der beiden Zahlen ALLEIN auf die Tafel geht, muss die Aggregation festgelegt
+> sein.** *Beide sagen „ein paar Prozent", und für die **Konventionskorrektur** ist es egal, weil
+> die relativ wirkt.* **Noch niemandem zugeteilt.**
+
+*Werkzeug: `qs-audit-2026-08-26/werkzeuge/konventions-zensus.js`, nur lesend, prüft beide
+Sperren, ~4 Minuten.*
+
+**Hausregel ergänzt, auf ihren Vorschlag:** *Ein Archiv-Urteil braucht Zeitraum und
+Konventions-Angabe — **und die Konvention ist am Bestand selbst ablesbar, man muss sie nicht
+erfragen.***
 
 ---
 
