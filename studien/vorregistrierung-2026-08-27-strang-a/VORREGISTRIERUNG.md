@@ -342,6 +342,20 @@ heute nicht realisiert · 13 = Deckelung (QS) verengt weiter — 14 = Deckelung
 widerlegt, Beobachtungspflicht statt Entwarnung. Der Referenzlauf selbst bleibt von
 allen dreien unberührt (letzte vollständige Periode endet 01.06., vor jedem Schwanz).*
 
+## 15. Nachtrag 27.08. ~04:3x — Skalen-Pendel unterhalb der F1-Schranke (QS-Folgeprüfung)
+
+QS-Fund BYND (tageweiser Wechsel zwischen zwei Kursskalen im Tagesarchiv): **für diese
+Messung gegenstandslos — BYND ist F1-Rauswurf** (+2920 % am 20.07., steht seit
+Nachtrag 11 im Zensus); jeder Skalenwechsel ≥ Faktor 5 wirft die ganze Reihe. Die
+schärfere Frage — Pendel UNTER der F1-Schranke — rein lesend nachgezählt: **25 von
+2.213 Universums-Reihen** tragen gegenläufige Faktor-≥2-Sprünge binnen 30 Tagen.
+Die Liste ist gemischt und darf nicht pauschal als Defekt gelesen werden: AMC
+27./28.01.2021 (×4,01 → ×0,43) ist der reale Meme-Squeeze; CTO 1992 deckt sich mit
+der Nullumsatz-Sprungliste aus Nachtrag 11 (Datenfehler); Mehrheit vor 2005 in
+Kleinwerten. **Benannt, nicht behandelt** — gleiche Familie wie Nachtrag 11, eine
+Bereinigungsregel wäre eine neue Anordnung und müsste erst echte von realen Sprüngen
+trennen (Signatur der Defekte: Nullumsatz oder gegenläufiger Umsatzsprung).
+
 ---
 
 *Simulation mit virtuellem Kapital. Keine Anlageberatung.*
