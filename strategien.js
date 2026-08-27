@@ -297,7 +297,12 @@
             U.esc(s.stand) + '</span>' +
           '<span style="margin-left:auto; display:inline-flex; align-items:center; gap:8px;">' +
             (schaltbar
-              ? '<button class="btn' + (an ? '' : ' ghost') + '" data-strat="' + s.key + '">' + (an ? 'läuft – ausschalten' : 'einschalten') + '</button>'
+              /* Der zugaengliche Name traegt die Strategie (#110): zwei Karten
+               * sagen sonst woertlich dasselbe, und die Ueberschrift der Karte
+               * zaehlt fuer den Namen des Knopfs nicht mit. */
+              ? '<button class="btn' + (an ? '' : ' ghost') + '" data-strat="' + s.key + '"' +
+                ' aria-label="' + U.esc(s.name) + (an ? ' läuft – ausschalten' : ' einschalten') + '">' +
+                (an ? 'läuft – ausschalten' : 'einschalten') + '</button>'
               : '<span style="color:var(--muted); font-size:var(--fs-neben);">nicht verfügbar</span>') +
             (window.Info ? window.Info.knopf('strategie.' + s.key, s.name) : '') +
           '</span>' +

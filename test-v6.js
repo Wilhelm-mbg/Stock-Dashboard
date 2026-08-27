@@ -10205,6 +10205,15 @@ console.log('\nAnzeigefehler aus dem Auditor-Lauf 27.08. (#106, #107, #108)');
   ok(!/HUERDE_PP\.toFixed/.test(mb) && (mb.match(/\.toFixed\(/g) || []).length === 2,
      'Der Rest von #108: englisch formatiert wird nur noch im Vorspann ohne U - jede neue nackte Stelle macht das rot',
      String((mb.match(/\.toFixed\(/g) || []).length));
+
+  /* #110: gleichnamige Knoepfe fuer verschiedene, nicht folgenlose Aktionen.
+   * Der zugaengliche Name muss den Unterschied selbst tragen - die Zeilen-
+   * oder Kartenueberschrift daneben zaehlt fuer ihn nicht mit. */
+  ok(ak.indexOf('aria-label="Jetzt holen: \' + U.esc(NAME[z.intervall]') !== -1,
+     'Kursarchiv: jeder Hol-Knopf traegt die Aufloesung im zugaenglichen Namen (#110)');
+  ok(stg.indexOf('aria-label="\' + U.esc(s.name)') !== -1 &&
+     stg.indexOf("(an ? ' läuft – ausschalten' : ' einschalten')") !== -1,
+     'Regeln: jeder Schalter traegt die Strategie im zugaenglichen Namen, in beiden Zustaenden (#110)');
 })();
 
 console.log('\nDie App sammelt selbst: Kursarchiv (26.08.2026)');

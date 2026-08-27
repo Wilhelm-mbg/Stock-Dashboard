@@ -74,7 +74,12 @@
       h += '<span style="color:var(--muted);">auf Stand</span>';
     }
     h += '</td>';
+    /* Der zugaengliche Name traegt die Aufloesung (#110): drei Knoepfe, die
+     * dasselbe Wort sagen, aber drei verschiedene Abrufe starten, kann die
+     * Tastatur nicht unterscheiden - die Zeilenueberschrift zaehlt fuer den
+     * Namen des Knopfs nicht mit. Der sichtbare Text bleibt kurz. */
     h += '<td><button class="btn ghost arch-hol" type="button" data-iv="' + U.esc(z.intervall) + '"' +
+      ' aria-label="Jetzt holen: ' + U.esc(NAME[z.intervall] || z.intervall) + '"' +
       (st.laeuft ? ' disabled' : '') + ' style="padding:3px 9px; font-size:var(--fs-klein);">Jetzt holen</button></td>';
     h += '</tr>';
     /* Die Begruendung steht unter der Zeile, nicht als Titel-Attribut: was nur beim
