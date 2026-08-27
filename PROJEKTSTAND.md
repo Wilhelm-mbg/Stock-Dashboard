@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 12:15 (Windows-Uhr, NICHT bash date)
+letzter-bericht: 2026-08-27 12:30 (Windows-Uhr)
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -141,8 +141,37 @@ sind ZWEI Ursachen, nicht eine:**
 > nicht".** *Die QS hat es selbst umformuliert und dabei ihre eigene Meldung von heute Nacht
 > eingeschränkt.*
 
-*Ohne Margin auf dem Demo-Konto entsteht nie eine neue Runde — **Warten ist keine Strategie**,
-und „keine neue Runde" ist dann kein Befund, sondern die Fortsetzung.*
+> ### 🔴 NACHTRAG 12:2x — **DIE QS NIMMT IHRE EIGENE DEUTUNG ZURÜCK, und der PM seine auch**
+> **„Seit dem 25.08. steht die Messung bei einer Runde" ist KEIN Defekt, sondern die
+> Beschreibung eines Knopfes, den seither niemand gedrückt hat.**
+>
+> **`kostenVersuche` protokolliert JEDEN Versuch, auch gescheiterte — und steht bei 1.** *Nicht
+> versucht und gescheitert: **gar nicht versucht**.* **Und der Code sagt, dass das so gebaut
+> ist:** `depot.js:6228` ist der **einzige** Aufrufer (mit Rückfrage, weil echte Demo-Orders
+> abgesetzt werden), **`test-v6.js:8192` verbietet ausdrücklich einen Taktgeber**, der
+> Knopf-Titel sagt *„Läuft nur auf Klick, nie von selbst."*
+>
+> **⚠ Die `RC_NOT_ENOUGH_MARGIN`-Fehler stammen aus einem ANDEREN Pfad** (Spiegeln von
+> Handelspositionen) **und haben mit der Kostenmessung nichts zu tun.** *QS und PM hatten das
+> beide verwechselt; der PM hatte es sogar so ins Projektgedächtnis geschrieben — **korrigiert**.*
+>
+> **🎯 UND DAMIT IST DIE 16-AUS-EINER-MINUTE ERKLÄRT:** *„Der Knopf schaltet mit
+> `kostenRundeTakt` durch das Universum. Wer ihn sechzehnmal hintereinander drückt, bekommt
+> sechzehn Werte in zwei Minuten. **Das war kein Zufall der Marktlage, sondern eine
+> Klickfolge.**"* **Bisher stand dort „eine Marktlage, 15-fach abgetastet" — das klang nach
+> Pech. Es war ein Verfahren.** *Pech wiederholt sich vielleicht nicht, ein Verfahren schon.*
+>
+> **→ ENTSCHEIDUNG FÜR WILHELM: die Freigabeschwelle nicht in RUNDEN fassen, sondern in Runden
+> über VERSCHIEDENE TAGE UND MARKTLAGEN.** *Zwanzig Klicks in einer Minute erfüllen „≥ 20
+> Aktienrunden" und messen trotzdem **eine** Marktlage — **genau das ist am 25.08. um 13:31
+> schon einmal passiert**, unabsichtlich.* **Eine Schwelle, die mit einer Klickfolge erfüllbar
+> ist, prüft die Ausdauer des Klickenden, nicht die Kosten.**
+>
+> *Nachmittagstermin gestrichen: **es gibt nichts zu beobachten.** Warten produziert nichts.*
+>
+> *Bestätigung nebenbei: die gesicherten Runden tragen ein eigenes `krypto`-Feld — **22 Krypto /
+> 16 Nicht-Krypto laut Feld, null Abweichungen** gegen die Ableitung aus den Kürzeln. Die
+> Trennung ist die des Werkzeugs, nicht eine Interpretation.*
 
 ---
 
@@ -169,6 +198,38 @@ liefert `+0200`, also echte Ortszeit) — **07:59 `a5b66e0` · 08:02:46 `v8.34.0
 verwenden, NIE `date` im Bash-Werkzeug.** *Und wer eine Uhrzeit auf diese Tafel schreibt,
 nennt die Quelle — „(git)" oder „(Windows-Uhr)". Ein nacktes „(abgelesen)" sagt nur, dass
 jemand irgendwo hingesehen hat.*
+
+> **⚖ RICHTIGSTELLUNG GEGEN DEN PM (`06`, gemessen): „die Bash-Uhr geht nach" ist KEINE Konstante.**
+> *„In MEINER Sitzung stimmen alle drei Uhren gerade sekundengenau überein (bash `date -u`
+> 10:03:48, Node aus bash 10:03:48, PowerShell 10:03:53). **Die 3h23m-Abweichung ist nicht global
+> und nicht dauerhaft** — sie war sitzungs- oder zeitpunktgebunden."*
+>
+> **Ich hatte aus einer Messung eine Eigenschaft gemacht** — und diese Zeile hätte jeden
+> eingeladen, künftige Zeitfehler ungeprüft darauf zu schieben. **Die Regel oben bleibt (sie ist
+> billig und richtig), die Diagnose nicht.**
+>
+> **Auflage von `06`, übernommen:** *„Falls es wieder auftritt: **sofort in derselben Sekunde
+> beide Uhren ablesen**, sonst jagt man ein Gespenst."*
+>
+> *Geprüft und unbedenklich: `abmeldungen-pflegen.js`, `release.js` (bau-stand + Sperre) und
+> `archiv-nachladen.js` stempeln alle mit Nodes `new Date()` im eigenen Prozess.*
+
+> ### ⚠ 27.08. — **KORREKTUR AN MEINER EIGENEN FUNKSTILLEN-ANWEISUNG**
+> **Ich hatte fünf Sitzungen geschrieben: „lokal committen ist völlig in Ordnung — nur der Push
+> kollidiert." Das ist falsch.** *Es gilt für **Riegel 1** (Sperrdatei), nicht für **Riegel 2**.*
+>
+> **Riegel 2 vergleicht HEAD gegen den Bau-Stand — und ein lokaler Commit bewegt HEAD genauso
+> wie ein Push.** *Vom Erbauer des Riegels bestätigt: „nur **unkommittierte** Änderungen im
+> Arbeitsbaum sind unschädlich — der Riegel liest HEAD, nicht den Baum."*
+>
+> **→ BEI LAUFENDEM BAU GILT RUHE FÜR COMMITS UND PUSHES.**
+>
+> *Gefunden hat es `c4`, aus dem Zitat, das **ich** weitergegeben hatte: „er fängt zusätzlich den
+> Fall, den keine Sperrdatei sieht — dass jemand nach dem Bau und vor dem `--hoch` committet,
+> **ganz ohne zu pushen**." **Ich habe das Zitat verteilt und die Folgerung daraus nicht
+> gezogen.*** *Ihre Erstfassung des Skalen-Auftrags war dank ihrer Vorsicht noch nicht committet
+> — sonst stünde die inzwischen widerlegte Muster-Rückrechnung in der Historie und wäre
+> irgendwann als „die vorregistrierte Fassung" gelesen worden.*
 
 ---
 
