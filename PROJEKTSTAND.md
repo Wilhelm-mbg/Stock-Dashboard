@@ -3284,7 +3284,24 @@ ins Leere**, und zwar mit „Erfolg" quittiert. Ein Doppelgänger lag nicht vor.
 Zwei Anfragen der Sitzung „Berechnungen" (~20:15, ~20:45) blieben deshalb unbeantwortet;
 sie hat sich die Freigabe direkt bei Wilhelm geholt. Das war richtig.
 
-### 🔴 27.08. 00:40 — der Name „Projekt-Manager" ist von innen NICHT setzbar (Fund von `markt-dashboard-9f`)
+> # ⛔ VERALTETE ADRESSE — DER GANZE FOLGENDE ABSCHNITT GILT NICHT MEHR
+> ### **Der PM ist `markt-dashboard-f5 [5204c6]`. NICHT `markt-dashboard-91`.**
+>
+> **⚠ UND DAS IST DIE GEFÄHRLICHE SORTE FALSCHER ADRESSE: `markt-dashboard-91` EXISTIERT** —
+> aber mit dem Kürzel **`[b06478]`** und als **Issue-Wache**, seit ~15:03. *Wer der Anweisung
+> unten folgt, bekommt **kein** „nicht erreichbar", sondern **`success: true`** — und die Meldung
+> landet bei einer Sitzung, die den Auftrag nie hatte.*
+>
+> **Die Brücke vergibt Namen und Kürzel nach einem Neustart NEU** *(siehe auch die
+> Kürzel-Verwechslung weiter oben)*. **Eine Adresse auf dieser Tafel ist deshalb nur so lange
+> gültig, wie der Kopfstempel sie bestätigt: maßgeblich ist `pm-adresse:` in Zeile 4.**
+>
+> *Gefunden vom Auditor am Abend des 27.08. beim Suchen der PM-Adresse — **sieben Stellen in
+> dieser Datei nannten noch die alte**. Der Absatz bleibt als Fundstelle stehen, weil der
+> zugrunde liegende Befund (Umbenennen wirkt nicht) weiter stimmt; **nur die Adresse darin ist
+> tot**.*
+
+### 🔴 ~~27.08. 00:40 — der Name „Projekt-Manager" ist von innen NICHT setzbar~~ *(Adresse veraltet, siehe Kasten)*
 
 **Der neue PM-Chat läuft, aber er heißt für alle anderen `markt-dashboard-91 [779ff5]`.**
 `set_session_title` meldet zweimal wörtlich „Renamed this session to „Projekt-Manager“"
@@ -3296,7 +3313,7 @@ Das ist dieselbe Fehlerfamilie wie den ganzen 26.08.: **ein Aufruf meldet Erfolg
 Wirkung bleibt aus.** Entdeckt hat es `markt-dashboard-9f` durch Nachfassen — der PM
 selbst hatte den Erfolg geglaubt und weiterverteilt.
 
-**Bis auf Weiteres gilt: Meldungen an `markt-dashboard-91` (Kürzel `[779ff5]`).**
+**~~Bis auf Weiteres gilt: Meldungen an `markt-dashboard-91` (Kürzel `[779ff5]`).~~ VERALTET — heute `markt-dashboard-f5 [5204c6]`.**
 Positivkontrolle, dass der Kanal trägt: die Rückfrage von `markt-dashboard-9f` kam an und
 wurde beantwortet, in beide Richtungen.
 
@@ -3311,7 +3328,7 @@ die Meldung ist trotzdem weg. Unbelegte Vermutung von 9f: der Zustell-Name wird 
 *Anlegen* der Sitzung vergeben und ist danach unveränderlich (die zwei sprechenden Namen
 im Bestand — `QS/Audit`, der alte `Projekt-Manager [39e5a9]` — trugen ihn von Anfang an).
 
-**⚠ AN ALLE ROLLEN: die Meldeadresse des PM ist `markt-dashboard-91` — NICHT
+**⚠ VERALTET (die Meldeadresse ist heute `markt-dashboard-f5`): die Meldeadresse des PM war damals `markt-dashboard-91` — NICHT
 „Projekt-Manager".** Wo eure Anweisung „SendMessage an Projekt-Manager" sagt, ersetzt
 das durch das Kürzel, solange diese Tafel-Zeile hier steht. Schlägt ein Send fehl,
 liegt hier die Übergabe-Datei als Pflichtweg ohnehin bereit.
@@ -8272,7 +8289,7 @@ steht, ist nach zwei Stunden verloren.*
 
 
 - **27.08.2026, ~01:30 (PM-Chat, Klick-Formular) — PM-Adresse: beim Kürzel bleiben.**
-  Der PM bleibt unter `markt-dashboard-91 [779ff5]` erreichbar; kein Neuanlegen der
+  VERALTET: Der PM war unter `markt-dashboard-91 [779ff5]` erreichbar - HEUTE markt-dashboard-f5 [5204c6]; kein Neuanlegen der
   Sitzung. Die Tafel-Zeile mit der Meldeadresse bleibt stehen, bis sich das je ändert.
 
 - **27.08.2026, ~00:55 (PM-Chat, Klick-Formular) — drei Entscheide:**
