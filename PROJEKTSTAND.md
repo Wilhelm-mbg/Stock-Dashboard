@@ -2011,6 +2011,45 @@ Gleitkommavergleich ohne fachliche Toleranz.
 > während der Fund die Halbtage meinte."* Eine richtige Zahl, die eine andere Frage
 > beantwortet als die gestellte — diesmal in der Aggregation.
 
+### ✅ 27.08. ~02:10 — die drei Anzeigefehler des Auditors sind zu (`1b852bc`), #105 bleibt offen
+
+**#107** eine Klasse statt zwei — Regel für `table.tbl td.num/th.num`, `archivkarte.js`
+umgestellt; **`zahl` bleibt als benannter Altbestand**, bis `#bestandTabelle` nachzieht (*„es
+zu entfernen hieße, in eine Datei zu greifen, die mir nicht gehört"*) — die neun schiefen
+Spalten sind so oder so gerade. **#106** Klartext an beiden Stellen, **Kopf und Fuß**, und die
+Zusicherung **zählt beide** — genau daran ist #102 beim ersten Mal gescheitert. **#108**
+deutsch, mit echtem Minuszeichen.
+
+**#105 wurde FREIGELEGT, nicht entschieden.** Die feste `0.10` steht weiter da, geht aber
+jetzt durch `huerdePp()`; der Kommentar nennt **beide Wege** und die vom Auditor gemessene
+Drift (0,100 gegen 0,0665). **Umschalten ist eine Zeile.** *Eine Zusicherung verlangt die
+Durchleitung, nicht die Entscheidung — Wilhelms Frage bleibt offen, statt still beantwortet zu
+werden.*
+
+> **🔄 Ein Fehler in der UMGEKEHRTEN Richtung, und er ist mindestens so tückisch:** Die
+> Minuszeichen-Zusicherung suchte das Zeichen im **Quelltext** und wurde **rot, obwohl die
+> Ausgabe stimmte** — die Datei schreibt es als Escape. **Eine Prüfung, die bei korrektem
+> Verhalten fehlschlägt, misst die falsche Größe.** Sie erzeugt Arbeit statt sie zu ersparen,
+> und der Bearbeiter „repariert" etwas Funktionierendes. *(Dazu: der Prüfausschnitt war auf
+> 420 Zeichen geraten und schnitt mitten in die Funktion — **ein Syntaxfehler sieht aus wie
+> ein Befund.**)*
+
+### 📌 27.08. ~02:10 — drei Aufträge an `markt-dashboard-1d`, einer davon zeitkritisch
+
+1. **`stand.ohne`-Abgleich** (10 Min, rein lesend): Verstummt **die Quelle**, oder lässt **der
+   Sammler** das Symbol fallen? Steht für die Delisteten ein Grund → Sammler; steht nichts →
+   Quelle. *Ein leeres Feld ist hier eine Antwort, kein Nullbefund.* **Schließt den bisher
+   unzugeteilten Punkt.**
+2. **⏳ Warnsignal 3 — die drei toten Abrufe vom 26.08.** (15m bei 233 von 432, 1m bei 1.834
+   von 2.732). **Es eilt: das 1m-Fenster reicht sieben Tage zurück**, für ~900 nie geholte
+   Werte läuft die Frist, und der 26.08. ist einen Tag her. **Erst messen, wie groß der
+   Verlust ist, und WARUM sie gestorben sind** — ein Abruf, der bei 1.834 von 2.732 stirbt,
+   hat einen Grund; ohne den ist jeder Neuversuch ein Glücksspiel. **Nicht blind nachsammeln.**
+3. **Warnsignal 2 — SPY fehlt in allen Intraday-Archiven.** *Kein Schönheitsfehler:* **SPY ist
+   der Anker des Regime-Tors R-TREND**, also der Größe, die entscheidet, welche Strategie
+   überhaupt handeln darf. Die App holt seit 26.08. selbst, aber nur 1m/5m/15m — **60m und 1d
+   fehlen.** Messen und melden, bevor gesammelt wird.
+
 ### ✅ 27.08. 02:05 — LAUF 4 UND 5 SIND DURCH: die 149 sind reproduziert, und das Werkzeug steht auf der Kippe
 
 **LAUF 5 (neuer Sprung-Sucher auf 60m): KEINE Delisting-Phantomfamilie im Stundenarchiv.**
