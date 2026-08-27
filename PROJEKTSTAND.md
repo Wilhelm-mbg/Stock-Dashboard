@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 14:45 (Windows-Uhr)
+letzter-bericht: 2026-08-27 15:15 (Windows-Uhr)
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -155,12 +155,50 @@ trifft `archiv60m`-Schluss: **19 von 20**" verzeichnet hatte. **Die Vorhersage h
 **Der 10:9-Befund fällt rechnerisch auf `9:9` bei 19 Fällen** — *das macht ihn nicht schwächer,
 sondern **stärker**: noch genauer ein Münzwurf.*
 
-### 📋 DIE AUSSCHLUSSLISTE — 34 Reihen, der praktische Ertrag
-    ABUS B BYND CBSH CHGG CLM DDD DOC ELME ETHE FCEL GBTC GERN HAIN HPP IESC
-    KOS LBRDA LBRDK MNKD MNST NWL PACB PLUG QGEN RGR SCCO SITC SOXS TLRY TV
-    VNET WHLR XRX
-**Wer diese 1,18 % ausschließt, ist das Konventionsproblem vollständig los, ohne eine gute Reihe
+### 📋 DIE AUSSCHLUSSLISTE — **17 Reihen** *(korrigiert 15:10; die erste Fassung nannte 34)*
+    B  BYND  CBSH  CLM  DOC  ETHE  GBTC  IESC  LBRDA  LBRDK
+    MNST  QGEN  RGR  SCCO  SITC  SOXS  WHLR
+**Wer diese 0,59 % ausschließt, ist das Konventionsproblem vollständig los, ohne eine gute Reihe
 zu verlieren.**
+
+> ### ⚖ SELBSTKORREKTUR 15:10 — **die Hälfte der Liste gehörte nicht hinein**
+>
+>     ECHTE Skalenreihen : 17   mit 3.626 Tagen   (99,3 % der Masse)
+>     FEHLTREFFER        : 17   mit    25 Tagen   ( 0,7 %)
+>
+> *Die 17 Fehltreffer sind alle vom selben Zuschnitt — **ein bis vier Tage, Faktor 1,002 bis
+> 1,005**: gewöhnliche Widersprüche, bei denen Hoch, Tief und Schluss zufällig um denselben Hauch
+> danebenlagen und so durch die Einheitlichkeitsprüfung rutschten.* **Raus:** *ABUS, CHGG, DDD,
+> ELME, FCEL, GERN, HAIN, HPP, KOS, MNKD, NWL, PACB, PLUG, TLRY, TV, VNET, XRX.*
+>
+> **🎯 WARUM DAS TROTZ HARMLOSER RICHTUNG WICHTIG IST — der Satz ist der Ertrag:**
+> ***„Der Ausschluss selbst wäre harmlos gewesen — eine zu viel ausgeschlossene Reihe kostet
+> Daten, keine Richtigkeit. Aber der Reihen-Zähler wäre als Maß für die VERBREITUNG des Problems
+> zitiert worden, und der war um das Doppelte zu hoch. **Die Ausschlussliste irrt sicher, die
+> Verbreitungszahl nicht.**"***
+>
+> **Verbreitung: 0,59 % statt 1,18 %.** *Unverändert: der **Mengenanteil** (5,40 → 5,36 %), die
+> **Tafel-Zahl 3,05 %** echter Hoch/Tief-Widersprüche, und **alle fünf extern belegten Reihen
+> stehen weiter drin** — die gegenseitige Bestätigung übersteht die Korrektur.*
+>
+> **Und der Anlass gehört dazu:** *„Ich hatte gerade eine Zahl geliefert und sie **vollzählig**
+> genannt. **Genau dann ist der Moment, die eigene Liste von der anderen Seite anzusehen** — nicht
+> ‚wie viele finde ich', sondern **‚was steht drin, das nicht hineingehört'**."*
+
+> ### 🔀 DER FAKTOR SAGT, UM WELCHE ART EREIGNIS ES GEHT — **und hier hört der Test auf**
+>
+>     glatt  -> Split          MNST 2:1  IESC 2:1  SOXS 15:1  BYND 1:30  WHLR 4:1
+>     krumm  -> etwas anderes  RGR 0,374  SITC 0,2975  GBTC 0,9033  ETHE 0,8897
+>                              CBSH 0,9522  DOC 1,5094  B 0,4337
+>
+> **`B` steht mit 0,4337 in der krummen Gruppe — unabhängig bestätigt.**
+>
+> ***„Mein Test entscheidet SKALA JA/NEIN vollzählig und ohne Abruf. Er entscheidet nicht, WARUM.
+> Ticker-Neuvergabe und Abspaltung erzeugen beide krumme Verhältnisse."***
+>
+> **→ Die krummen sieben** (`RGR · SITC · GBTC · ETHE · CBSH · DOC · B`) **brauchen wieder die
+> Ereignisquelle von außen. Vergeben an `22`, nach dem 275er.** *Wo nicht trennbar: „unentscheidbar
+> mit diesen Endpunkten" — **nicht „Spin-off vermutet"**.*
 
 > ### ⭐ **ZWEI VERFAHREN, KEINE GEMEINSAME DATENQUELLE, DIESELBEN REIHEN**
 > **Alle fünf per Rohkurs-Abruf gefundenen Reihen — RGR, SITC, B, WHLR, BYND — stehen in diesen
