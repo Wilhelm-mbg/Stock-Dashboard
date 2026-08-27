@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 04:00 (abgelesen)
+letzter-bericht: 2026-08-27 04:05 (abgelesen)
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -45,7 +45,7 @@ Sitzungen.** Gefunden hat es jedes Mal eine Gegenprobe, nie ein Verdacht.
 | | Frage | Lage |
 |---|---|---|
 | **1** | **Was geschieht mit den Kerzen nach Sitzungsende?** ⚠ **ZWEI Familien — sie brauchen ZWEI Zeilen im Entscheid.** | **Siehe eigener Kasten unter der Tabelle.** *Ein pauschales „kein Nachhandel im Archiv" würde **5.755 offizielle Schlusskurse mitlöschen.*** |
-| **2** | **Bekommen die delisteten Papiere ihr Abmeldedatum?** | **Lohnt sich, ist aber nicht dringend** *(um 02:10 nach unten korrigiert)*. AVB/EQR sind im Universum und heute außerhalb jedes Fensters; ab ~einer Handelswoche können die Phantomtage in ein Haltefenster geraten. **Aber der Schwanz ist auf 1–5 Tage gedeckelt** — der gefährliche Fall (dauerhaft flache Reihe, die eine Momentum-Rangfolge nach oben spült) tritt **nicht** ein. |
+| **2** | **Bekommen die delisteten Papiere ihr Abmeldedatum?** | **⚠ DRINGLICHKEIT IST ZURÜCK — der Entscheid hat wieder einen Sachgrund, nicht nur Ordnungsliebe.** *(Zweimal korrigiert: 02:10 nach unten, 04:05 wieder hinauf.)* **Die Deckelungs-These ist falsifiziert:** BTSGU hat heute Nacht einen **weiteren** Phantomtag bekommen — **wenn Schwänze wachsen können, ist die dauerhaft flache Reihe nicht mehr ausgeschlossen**, und genau die würde eine Momentum-Rangfolge nach oben spülen. *Stand: Universums-Reihen bisher ohne Wachstum, Rastermechanik und Referenzlauf unberührt.* **→ „Messhygiene mit Beobachtung."** |
 | **3** | **Welche „Kostenhürde" zeigt das Messband?** | Zwei verschiedene Zahlen tragen denselben Namen; in der Voreinstellung stimmen sie zufällig überein. Live-Hürde oder feste Referenz — beides vertretbar, der Doppelname nicht. *(Kleiner Zusatz, mitentscheidbar: In vier von fünf Dialogen landet der Tastaturfokus zuerst auf dem Schließen-Kreuz — erlaubt, aber die schlechteste erlaubte Wahl. Fünf Zeilen Arbeit.)* |
 
 > ### ⚠ ZU ENTSCHEIDUNG 1 — die Zahl liegt vor, und sie zerfällt in zwei Familien
@@ -144,6 +144,28 @@ Zahl hereingefallen war): ***Die Falle verschwindet nicht durch einmaliges Erken
 
 *Alles unterhalb dieser Zeile ist Beleg zur Bilanz oben. Wer nur wissen will, was zu
 entscheiden ist, hat es bereits gelesen.*
+
+### 🔍 27.08. ~04:05 — DIE GEGENLESE: alle vier tragfähig, mit vier präzisierenden Auflagen
+
+*Unabhängig gegengelesen von `markt-dashboard-c4` — vor den Zahlen am Kriterium begonnen.*
+
+- **Lauf 1: tragfähig.** Die Pool-Antwort räumt die Kontrollgrößen-Sorge aus, und **die
+  Nachtrags-Disziplin hat im Ernstfall gehalten** (Abweichung gemeldet, Urteil steht).
+  **Auflage: die Reichweiten-Formel wörtlich übernehmen** — *„individuell = kein
+  Strukturüberschuss, **nicht** Beleg für Handel"*.
+- **Lauf 2: Schwellen-Änderung zulässig**, weil die Leiter **die Originalschwelle als oberste
+  Sprosse bewahrt**. *Auflagen: Kategorie je Sprosse ausweisen; Schluss nur bei
+  Sprossen-Stabilität `1e-6…1e-4`, sonst **GEMISCHT → Wilhelm**.*
+  **Und eine Präzisierung, die zählt: „Rechenweg-Rauschen" statt „Speicherung"** — *7e-6 liegt
+  etwa **60-fach über** dem float32-Epsilon, es ist also kein Speicherartefakt.*
+- **Lauf 3: tragfähig als deklarierte Beschreibung.** **⚠ Tafel-Wache: NIE als „die
+  1d-Schlüsse sind RICHTIG" zitieren — nur als „konsistent zwischen zwei Abrufen".**
+- **Lauf 6: Fund gültig, aber der Logik-Satz ist zu korrigieren.** *Nach dem **Buchstaben** der
+  Registrierung war (b) auf AVB/EQR gefasst — dann wäre die Deutung „belegt". **Falsifiziert
+  hat sie eine NICHT registrierte Beobachtung** (BTSGU +1).*
+  **Richtige Fassung: „Beide Bedingungen traten ein — eine außerregistrierte Beobachtung
+  widerlegt die Deutung trotzdem. Die Registrierung war zu eng."**
+  *Das ist stärker als „(b) NEIN" und die ehrlichere Form.*
 
 ### 📊 27.08. ~04:00 — ALLE VIER LÄUFE DURCH *(Vermerk `qs-audit-2026-08-27-0400-VIER-LAEUFE.md`)*
 
