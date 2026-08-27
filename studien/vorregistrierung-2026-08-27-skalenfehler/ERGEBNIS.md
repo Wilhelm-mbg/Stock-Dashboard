@@ -74,4 +74,31 @@ Zufallsprodukt**; WHLRs 2 F-Treffer sind damit auch global gedeckt.
 - GBTC/ETHE: unentscheidbar mit EDGAR-Hypothese (registrierter Übergabepunkt beim
   Analytiker).
 
+## Nachtrag (~19:35) — die Reichweite dieses Instruments, gemessen statt geschätzt
+
+Auf zwei Prüffragen des PM am Code nachgemessen — **der Sprung-Detektor dieser Studie
+ist für über die Hälfte der bekannten Fälle blind**, und zwar aus einem Grund, der
+vor der Pendel-Logik greift:
+
+1. **Die Faktor-2-Schwelle schneidet 53 % weg.** `FAKTOR_MIN = 2` sammelt nur Sprünge
+   ≥ 2 bzw. ≤ 0,5. Von den 17 belegten Skalenreihen liegen **9 dazwischen** und sind
+   damit unsichtbar, unabhängig von jeder Paar-Logik: SCCO 1,012 · CLM 0,984 ·
+   GBTC 0,903 · QGEN 1,032 · ETHE 0,890 · CBSH 0,952 · LBRDK 0,936 · LBRDA 0,937 ·
+   DOC 1,509. Dazu kommt die vom PM benannte zweite Blindheit: Eine **einmalige,
+   dauerhafte Stufe** (Spin-off) hat keinen Gegensprung und wäre auch oberhalb der
+   Schwelle kein Pendel.
+2. **Der Ereignis-Abgleich kennt nur Splits** (join.js:57, `art === 'split'`).
+   Ausschüttungen wie die Grayscale-Mini-Trust-Abspaltung tauchen dort per Definition
+   nicht auf; für GBTC/ETHE existiert nicht einmal eine Ereignisdatei.
+
+**Gefunden wurden diese Fälle von einem anderen Instrument** — dem Archiv-Quoten-
+Vergleich (Konventions-Zensus der QS), der Niveauunterschiede misst und deshalb keine
+Faktor-Schwelle hat. **Er ist die Zählung, nicht dieser Detektor.** Seine eigene
+Grenze ist die Überlappung beider Archive (730 Tage): ältere Fälle hat niemand
+gezählt, und Fälle, in denen beide Archive gleich falsch liegen, findet auch er nicht.
+
+**Folge für eine Reparatur-Untersuchung:** Ein Abgleich, der nur Splits kennt, kann
+eine Reparatur nicht begründen, deren Klasse auch Nicht-Splits enthält — der
+Vorbehalt gehört vor die Untersuchung, nicht hinter sie.
+
 *Simulation mit virtuellem Kapital. Keine Anlageberatung.*
