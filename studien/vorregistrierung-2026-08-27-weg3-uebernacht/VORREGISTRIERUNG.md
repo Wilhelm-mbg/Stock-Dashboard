@@ -109,4 +109,22 @@ großzügigen Raum für die Verschwundenen-Seite und reißt trotzdem, bevor eine
 ausgewählte Restpopulation den Endpunkt trägt. Beide Quoten werden unverändert
 immer ausgewiesen.
 
+## Nachtrag 2 (~22:5x, nach dem Wächterlauf, VOR dem Kohortenlauf) — W4 ist jetzt selbst geprüft
+
+**PM-Einwand, berechtigt:** W1 und W2b waren per Injektion belegt, **W4 meldete nur,
+dass er nichts gefunden hat** (1.068.469 Zeilen, 100,00 % gültig). Ein glattes
+100,00 % ist genau die Signatur, die heute mehrfach Blindheit statt Sauberkeit war.
+
+**Umgesetzt:** Die W4-Bedingung steht jetzt an EINER benannten Stelle
+(`eroeffnungPlausibel`), und ein **Selbsttest läuft vor jedem Lauf** gegen genau
+diese Funktion — nicht gegen einen Nachbau (Falle »der Prüfstand prüft, was er
+nachbilden kann«). Zehn Fälle: Eröffnung über dem Hoch, unter dem Tief, null,
+fehlend, negativ, sowie die Grenzfälle exakt = Hoch / exakt = Tief (müssen gültig
+bleiben) und knapp ±0,01 % daneben (müssen fallen). **Ergebnis 10/10; bei Fehlschlag
+bricht der Lauf ab.** Damit ist die 100,00 % eine **belegte** Null.
+
+Die Refaktorierung ist nachweislich logikneutral: Der Wächterlauf reproduziert nach
+der Änderung exakt dieselben Zahlen (1.068.469 Kandidaten, 100,00 %, W1-Verhältnis
+1,095, W2b −0,0005).
+
 *Simulation mit virtuellem Kapital. Keine Anlageberatung.*

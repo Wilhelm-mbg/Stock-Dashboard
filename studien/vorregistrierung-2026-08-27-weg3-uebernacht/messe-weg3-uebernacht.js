@@ -58,17 +58,41 @@ function wachhundOk() {
 /* Beobachtungen einer Reihe: {t, rUN, rID, rTag}; W3/W4-Zaehlung je Reihe mitgefuehrt.
  * kandidat = Zeile besteht alle Mitglied-1-Filter (Schluesse, Liquiditaet, Fenster);
  * gueltig  = zusaetzlich Eroeffnung plausibel (W4). */
+/* W4-Bedingung als EINE benannte Stelle - der Selbsttest unten prueft genau diese,
+ * nicht einen Nachbau (Falle: "der Pruefstand prueft, was er nachbilden kann"). */
+function eroeffnungPlausibel(z) {
+  var h = z[3], l = z[4], o = z[5];
+  return (o > 0) && (h > 0) && (l > 0) && (o >= l * (1 - EPS)) && (o <= h * (1 + EPS));
+}
+function w4Selbsttest() {
+  var faelle = [
+    ['Eroeffnung im Band', [0, 10, 100, 11, 9, 10.5], true],
+    ['ueber dem Hoch', [0, 10, 100, 11, 9, 11.5], false],
+    ['unter dem Tief', [0, 10, 100, 11, 9, 8.5], false],
+    ['exakt = Hoch', [0, 10, 100, 11, 9, 11], true],
+    ['exakt = Tief', [0, 10, 100, 11, 9, 9], true],
+    ['null', [0, 10, 100, 11, 9, 0], false],
+    ['fehlt', [0, 10, 100, 11, 9], false],
+    ['negativ', [0, 10, 100, 11, 9, -1], false],
+    ['knapp ueber Hoch (+0,01 %)', [0, 10, 100, 11, 9, 11.0011], false],
+    ['knapp unter Tief (-0,01 %)', [0, 10, 100, 11, 9, 8.9991], false]
+  ];
+  var ok = 0;
+  faelle.forEach(function (f) { if (eroeffnungPlausibel(f[1]) === f[2]) ok++; else console.log('  W4-Selbsttest FEHLER: ' + f[0]); });
+  return { bestanden: ok === faelle.length, ok: ok, n: faelle.length };
+}
+
 function beobachtungen(b, w) {
   var beob = [];
   for (var i = 1; i < b.length; i++) {
-    var c = b[i][1], cv = b[i - 1][1], vol = b[i][2] || 0, h = b[i][3], l = b[i][4], o = b[i][5];
+    var c = b[i][1], cv = b[i - 1][1], vol = b[i][2] || 0;
     if (!(c > 0) || !(cv > 0)) continue;
     if (!(c * vol >= UMSATZ_MIN)) continue;
     var t = tag(b[i][0]);
     if (t < START_TAG) continue;
     w.kandidat++;
-    var ok = (o > 0) && (h > 0) && (l > 0) && (o >= l * (1 - EPS)) && (o <= h * (1 + EPS));
-    if (!ok) { w.ungueltig++; continue; }
+    var o = b[i][5];
+    if (!eroeffnungPlausibel(b[i])) { w.ungueltig++; continue; }
     w.gueltig++;
     beob.push({ t: t, rUN: o / cv - 1, rID: c / o - 1, rTag: c / cv - 1 });
   }
@@ -133,6 +157,9 @@ function druckeW34(name, w) {
 var modus = process.argv.indexOf('--kohorte') >= 0 ? 'kohorte' : 'waechter';
 console.log('== messe-weg3-uebernacht ==  Modus ' + modus + '  Familie ueberlebensluecke-wege (2 Tests, |t|>=' + T_KRIT + ')  Seed ' + SEED);
 if (!WP.klassifizierungDa()) { console.error('ABBRUCH: Klassifizierung fehlt.'); process.exit(2); }
+var w4st = w4Selbsttest();
+console.log('W4-Selbsttest (Positivkontrolle des Waechters): ' + w4st.ok + '/' + w4st.n + ' -> ' + (w4st.bestanden ? 'BESTANDEN (eine Null von W4 ist eine belegte Null)' : 'DEFEKT'));
+if (!w4st.bestanden) { console.error('ABBRUCH: W4 faengt nicht, was er fangen soll.'); process.exit(3); }
 if (!wachhundOk()) process.exit(2);
 
 console.log('Lade Ueberlebende ...');
