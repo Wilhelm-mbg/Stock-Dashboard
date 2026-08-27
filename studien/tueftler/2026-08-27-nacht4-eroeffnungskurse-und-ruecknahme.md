@@ -116,7 +116,7 @@ seriell unauffällig ist und der erste Schätzer trägt.
 
 ---
 
-## 3. Rücknahme: von drei „belegt falsch delisteten" bleibt einer
+## 3. Rücknahme: von drei „belegt falsch delisteten" bleibt keiner
 
 Am 26.08. habe ich gemeldet, **AVB, EQR und WBS** stünden zu Unrecht als delistet in
 `massive/verschwundene.json` — sie handelten „lückenlos bis heute, 8 von 8 Kerzen im
@@ -127,13 +127,49 @@ Nachgezählt am 27.08. bei derselben Quelle, mit **drei** unterschiedenen Zustä
 
 | Symbol | gehandelt | Stempel (v = 0) | leer (v = null) | letzter Umsatz | Eintrag der Liste | Urteil |
 |---|---|---|---|---|---|---|
-| **AVB** | 21 | 0 | 2 | **2026-08-24**, 6,2 Mio Stück | 2026-08-18 | **falsch — bestätigt** |
+| **AVB** | 21 | 0 | 2 | **2026-08-24**, 6,2 Mio Stück | 2026-08-18 | **nur das DATUM falsch** (Nachtrag 05:05) |
 | **EQR** | 7 | 4 | 8 | **2026-08-17** | 2026-08-18 | **stimmig — zurückgenommen** |
 | **WBS** | 9 | 1 | 9 | **2026-08-19** | 2026-08-20 | **stimmig — zurückgenommen** |
 | LBRDA | **0** | 1 | 3 | — | 2026-08-21 | stimmig |
 | LBRDK | **0** | 1 | 3 | — | 2026-08-21 | stimmig |
 | *TWO (Kontrolle)* | 21 | 0 | 2 | 2026-08-24 | *nicht in der Liste* | lebt |
 | *AAPL (Positivkontrolle)* | **23** | 0 | 0 | 2026-08-26 | *nicht in der Liste* | lebt |
+
+### 🔴 Nachtrag 05:05 — der letzte Fall fällt auch: von drei bleibt **null**
+
+Der PM legte einen Widerspruch vor: QS misst für AVB letzten Umsatz **14.08.**, `-06`s
+Wachhund führt AVB mit **8 Tagen Rückstand**, `markt-dashboard-1d` hat ein SEC-**`25-NSE`
+vom 17.08.** Seine Vermutung, ich hätte im `massive`-Bestand gemessen, trifft nicht zu —
+meine Zahl kommt aus einem **frischen Yahoo-Abruf**, `indicators.quote[0].volume`,
+unbereinigt. **Es ist kein Quellstreit, sondern derselbe Anbieter zweimal, zehn Tage
+auseinander:**
+
+| | 14.08. | 17.–21.08. | 24.08. | 25./26.08. |
+|---|---|---|---|---|
+| `archiv1d` (`quelle`: *yahoo v8 chart*, `stand` 24.08. 18:38) | v = 6.938.895 | **5× v = 0**, Schluss identisch bis zur 15. Stelle | fehlt | fehlt |
+| frischer Abruf 27.08. | — | 20.08. v = 4,33 Mio · 21.08. v = 7,16 Mio | **v = 6.201.087** | `null` |
+
+**Die QS hat für `archiv1d` recht, und der Wachhund bestätigt es unabhängig:** 8 Tage
+Rückstand ist genau die Lücke 14.→24.08. `archiv1d` ist für AVB stehen geblieben und hat
+statt Daten Stempel gesammelt — **derselbe Fall, vor dem ich in Abschnitt 4 warne, diesmal
+an meinem eigenen Beispiel.**
+
+*Feldsemantik, damit daraus nicht die nächste Differenz wird: `archiv1d` führt **bereinigte**
+Schlusskurse (daher die 15 Stellen), mein Abruf den unbereinigten `quote.close` — 65,90
+gegen 65,14. Für den **Umsatz** ist das folgenlos.*
+
+**Folge für meinen letzten Fall:** Yahoo zeigt Handel bis 24.08. und danach nichts. Mit dem
+`25-NSE` vom 17.08. zusammen passt das — eine Abmeldung nach Form 25 wird nicht am
+Einreichungstag wirksam, sondern mit Frist danach; Handel bis kurz davor ist der Normalfall.
+**AVB ist damit kein Falsch-Positiv der Liste, sondern ein falsches DATUM** (18.08. statt
+Handelsende 24.08., rund 4 Handelstage). *Die Frist habe ich am Filing selbst nicht geprüft
+— plausible Zusammenführung, kein Befund.*
+
+**Was bleibt:** die Delisting-**Daten** am jüngsten Rand sind unzuverlässig, die Delistings
+selbst sind es nicht. Das ist schwächer als das, womit ich in die Nacht gegangen bin, und
+es ist die Aussage, die trägt.
+
+---
 
 **Die Kerzen, auf die ich mich gestern gestützt hatte, waren zum Teil Stempelkerzen mit
 Umsatz 0** — genau die Sorte, die im Projektgedächtnis seit Wochen als Falle steht. Ich bin

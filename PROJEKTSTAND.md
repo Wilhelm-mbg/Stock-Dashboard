@@ -5942,10 +5942,22 @@ mit #93/#94 zusammen runder.
   ~3.917 je Woche kommen dazu, nach 90 Tagen 20,6 % — dauerhaft.** Nachholen: 1.164 Abrufe
   ≈ 4,2 h. → **Auftragsvorschlag D** in der Warteschlange, der einzige eilige Punkt.
   **(3) Rücknahme eigener Arbeit:** von meinen drei „belegt falsch delisteten" bleibt
-  **einer**. Ich hatte am 26.08. **Kerzen gezählt statt Umsatz** — AVB handelt wirklich
-  (24.08., 6,2 Mio Stück), **EQR (letzter Umsatz 17.08.) und WBS (19.08.) sind zurück-
-  genommen**, ihre Listeneinträge stimmen. Auch mein Warnsatz war zu groß: von 6.921
-  aktienartigen Listeneinträgen stehen **genau 5** überhaupt im Kursarchiv.
+  **keiner**. Ich hatte am 26.08. **Kerzen gezählt statt Umsatz** — **EQR (letzter Umsatz
+  17.08.) und WBS (19.08.) sind zurückgenommen**, ihre Listeneinträge stimmen. Auch mein
+  Warnsatz war zu groß: von 6.921 aktienartigen Listeneinträgen stehen **genau 5** überhaupt
+  im Kursarchiv.
+  **Nachtrag 05:05, nach Vorhalt des PM — auch AVB fällt.** Der Widerspruch (QS: letzter
+  Umsatz 14.08.; Wachhund: 8 Tage Rückstand; SEC-`25-NSE` vom 17.08.) ist **kein
+  Quellstreit, sondern derselbe Anbieter zweimal**: `archiv1d` (`quelle`-Feld *yahoo v8
+  chart*, `stand` 24.08. 18:38) hat nach dem 14.08. **fünf Stempelkerzen mit v = 0** und
+  identischem Schluss bis zur 15. Stelle; mein frischer Abruf zeigt echten Umsatz bis
+  24.08. und danach nichts. **Die QS hat für ihren Bestand recht, der Wachhund bestätigt es
+  — 8 Tage Rückstand ist genau die Lücke 14.→24.08.** Mit dem `25-NSE` zusammen heißt das:
+  **AVB ist kein Falsch-Positiv, sondern ein falsches DATUM** (18.08. statt Handelsende
+  24.08.). *Die Form-25-Frist habe ich am Filing nicht geprüft — plausible Zusammenführung,
+  kein Befund.* **Was trägt: die Delisting-DATEN am jüngsten Rand sind unzuverlässig, die
+  Delistings selbst sind es nicht.** *Feldsemantik nebenbei: `archiv1d` führt bereinigte
+  Schlusskurse, mein Abruf den unbereinigten `quote.close` — für den Umsatz folgenlos.*
   **(4) Zwei Katalogeinträge:** *Kerzen zählen ist kein Handelsnachweis — Umsatz zählen ist
   einer* (die Quelle kennt drei Zustände: `v>0`, `v===0` Stempel, `v===null` keine Daten);
   und *ein Bestand mit bekanntem Rückstand taugt nicht als Zeuge dafür, ob etwas läuft* —

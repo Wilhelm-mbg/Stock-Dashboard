@@ -325,13 +325,40 @@ Bausitzung, keine Änderung.*
 
   | Symbol | gehandelt | Stempel (v=0) | leer (v=null) | letzter Umsatz | Listeneintrag | Urteil |
   |---|---|---|---|---|---|---|
-  | **AVB** | 21 | 0 | 2 | **24.08.**, 6,2 Mio Stück | 18.08. | **falsch — bestätigt** |
+  | **AVB** | 21 | 0 | 2 | **24.08.**, 6,2 Mio Stück | 18.08. | **nur das DATUM falsch** (Nachtrag oben) |
   | **EQR** | 7 | 4 | 8 | **17.08.** | 18.08. | **stimmig — zurückgenommen** |
   | **WBS** | 9 | 1 | 9 | **19.08.** | 20.08. | **stimmig — zurückgenommen** |
   | LBRDA / LBRDK | **0** | 1 | 3 | — | 21.08. | stimmig (gestrige Rücknahme war richtig) |
   | *AAPL (Positivkontrolle)* | **23** | 0 | 0 | 26.08. | — | lebt |
 
-  **Von drei belegt falschen bleibt einer.** Und mein Warnsatz war zu groß: gezählt
+  **🔴 Nachtrag 27.08. 05:05 — auch der letzte Fall fällt: von drei bleibt NULL.** Der PM
+  hat einen Widerspruch vorgelegt (QS: AVB letzter Umsatz 14.08.; `-06`s Wachhund: AVB 8
+  Tage Rückstand; `markt-dashboard-1d`: SEC-`25-NSE` vom 17.08.). **Es ist kein Quellstreit
+  — es ist derselbe Anbieter, zweimal, mit zehn Tagen Abstand:**
+
+  | | 14.08. | 17.–21.08. | 24.08. | 25./26.08. |
+  |---|---|---|---|---|
+  | `archiv1d` (`quelle`: *yahoo v8 chart*, `stand` 24.08. 18:38) | v = 6.938.895 | **5× v = 0**, Schluss identisch bis zur 15. Stelle | fehlt | fehlt |
+  | frischer Abruf 27.08. | — | 20.08. v = 4,33 Mio · 21.08. v = 7,16 Mio | **v = 6.201.087** | `null` |
+
+  **Die QS hat für `archiv1d` recht**, und der Wachhund bestätigt es unabhängig: 8 Tage
+  Rückstand ist genau die Lücke 14.→24.08. `archiv1d` ist für AVB stehen geblieben und hat
+  statt Daten Stempel gesammelt. **Meine Zahl stammt aus einem frischen Yahoo-Abruf**
+  (`indicators.quote[0].volume`, unbereinigt), nicht aus `massive`.
+  *Feldsemantik: `archiv1d` führt **bereinigte** Schlusskurse (daher die 15 Stellen), mein
+  Abruf den unbereinigten `quote.close` — 65,90 gegen 65,14. Für den **Umsatz** folgenlos.*
+
+  **Folge:** Yahoo zeigt Handel bis 24.08. und danach nichts. Mit dem `25-NSE` vom 17.08.
+  zusammen passt das — eine Abmeldung nach Form 25 wird nicht am Einreichungstag wirksam,
+  sondern mit Frist danach. **AVB ist also kein Falsch-Positiv, sondern ein falsches DATUM**
+  (18.08. statt Handelsende 24.08., rund 4 Handelstage). *Die Frist am Filing selbst habe
+  ich nicht geprüft — plausible Zusammenführung, kein Befund; das Filing liegt bei
+  `markt-dashboard-1d`.*
+
+  **Was bleibt, ist die schwächere und weiterhin nützliche Aussage: die Delisting-DATEN am
+  jüngsten Rand sind unzuverlässig, die Delistings selbst sind es nicht.**
+
+  *(Stand vor dem Nachtrag:)* **Von drei belegt falschen bleibt einer.** Und mein Warnsatz war zu groß: gezählt
   (`werkzeug/pruefe-delisting-liste.js`) stehen **von 6.921 aktienartigen Einträgen der
   Liste genau 5 überhaupt im Kursarchiv** — der Schaden einer Verwendung als Ausschluss-
   liste ist auf **eine** belegt lebende Reihe begrenzt (AVB), nicht auf zwei Schwergewichte.
