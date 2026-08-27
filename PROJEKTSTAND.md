@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 02:45 (abgelesen)
+letzter-bericht: 2026-08-27 02:52 (abgelesen)
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -100,6 +100,54 @@ auffiel:**
 > heraus) und **(b) der Zeitplan** (frühestens 30 Minuten nach Schluss).
 > **Fällt eine von beiden weg, schreibt der Sammler einen Zwischenstands-Quote als Tagesschluss
 > ins Archiv** — und zwar einen, der aussieht wie der genaueste Wert im Bestand.
+>
+> ### 🧩 27.08. ~02:50 — AN HALBTAGEN FEHLT DIE LETZTE HALBE HANDELSSTUNDE — in der QUELLE
+>
+> **Das erklärt die Phantom-Dochte strukturell und entscheidet Wilhelms Frage 1 mit.**
+> *(QS, `werkzeuge/halbtagsschluss.js`, eigener Quellabruf, nur lesend — ausgelöst durch die
+> PM-Auflage „alle sieben, nicht einen, und die Bandbreite ausweisen".)*
+>
+>     NVDA 28.11.2025, includePrePost:
+>     14:30   c 177,2900   v 30.011.592   Sitzung
+>     15:30   c 177,0814   v 17.490.994   Sitzung
+>     16:30   c 177,1342   v 14.456.367   Sitzung
+>     17:30   c -          v null         <-- LETZTE 30 SITZUNGSMINUTEN, LEER
+>     18:00   c 176,6200   v 0            erste Nachhandelsstunde
+>
+> **Die Kerze 17:30–18:00 enthält die letzten dreißig Handelsminuten einschließlich der
+> Schlussauktion. Sie kommt leer.** Systematisch: **40 von 40** — acht Reihen über fünf
+> Halbtage, kein einziger Fall mit Kurs. *(An Sommer-Halbtagen dieselbe Lücke eine Stunde
+> früher.)*
+>
+> **→ Das Archiv übernimmt die leere Kerze nicht und behält die erste Nachhandelsstunde. Die
+> letzte Kerze eines Halbtags im 60m-Archiv ist damit NACHHANDEL, nicht Sitzung — und der
+> amtliche Schlusskurs fehlt vollständig.**
+>
+> **⭐ UND DAMIT IST EIN DOCHT AUSSERHALB DER SITZUNGSSPANNE AN EINEM HALBTAG KEIN FEHLERBEWEIS
+> MEHR. Er ist erwartbar.** *Das ist keine Deutung mehr, sondern an der Struktur des
+> Quellabrufs ablesbar — und eine **unabhängige Bestätigung** dessen, was `-06` aus ganz
+> anderen Abrufen geschlossen hatte: nicht „die Kerzen sehen aus wie Nachhandel", sondern **„die
+> Sitzungskerze daneben ist leer, und die Uhrzeiten liegen nach dem Schluss".***
+>
+> **Alle sieben Halbtage, mit Kontrolle auf drei Normaltagen im selben Lauf** (je 25 Reihen,
+> Zeuge `interval=1d` direkt aus der Quelle):
+>
+>     Halbtage    Median 0,073 %   ueber der Kostenhuerde: 75 von 175  (42,9 %)
+>     Normaltage  Median 0,021 %   ueber der Kostenhuerde:  6 von  75  ( 8,0 %)
+>     Tageswerte Halbtage: 0,052 bis 0,135 %
+>
+> **Der Unterschied liegt an den Halbtagen, nicht am Verfahren** — *„ohne die Kontrolle im
+> selben Lauf wäre das nicht zu trennen gewesen."*
+>
+> **Selbstkorrektur der QS:** *„Ich hatte 0,107 % als **die** Halbtagszahl gemeldet. Das war der
+> **zweitschlechteste** der sieben Tage."* Median über alle sieben: **0,073 %**. **Genau
+> deshalb hatte der PM nach der Bandbreite gefragt.**
+>
+> **Was die QS ausdrücklich NICHT sagt:** nicht, dass die Dochte deshalb **echt** sind
+> (*Nachhandel darf die Sitzungsspanne verlassen; ob eine bestimmte Spanne echt ist, sagt das
+> nicht*); nicht, dass die Lücke **reparabel** ist (*sie sitzt in der Quelle — ein erneuter
+> Abruf liefert dieselbe leere Kerze*); nicht, dass **Normaltage** frei davon sind (*geprüft
+> sind drei*).
 >
 > ### 🔔 27.08. ~02:45 — ZÄHLER A STEHT, und er kann eine Null nicht mehr als Entwarnung melden
 >
@@ -274,7 +322,7 @@ auffiel:**
 
 | | Frage | Lage |
 |---|---|---|
-| **1** | **Gehören Randzeiten-Kerzen ins 60m-Archiv?** | **Blockiert alles andere.** Nachlader-Bestand führt sie, App-Bestand nicht (0 von 990.509 gezählt) — zwei Politiken ohne Kennzeichen. Ohne diesen Entscheid ist unentscheidbar, ob die „Phantom-Dochte" Fehler oder echte Nachhandelskurse sind. |
+| **1** | **Gehören Randzeiten-Kerzen ins 60m-Archiv?** | **Blockiert alles andere — aber die Frage hat sich über Nacht geklärt und VERENGT.** Nachlader-Bestand führt sie, App-Bestand nicht (0 von 990.509) — zwei Politiken ohne Kennzeichen. **NEU 02:50, strukturell belegt: die „Phantom-Dochte" an Halbtagen SIND Nachhandelskerzen** — die Sitzungskerze daneben kommt aus der Quelle leer (40 von 40). **Damit ist „die Docht-Werte reparieren" vom Tisch, in beiden Antworten:** bei (a) werden sie als **fremde Population entfernt**, bei (b) sind sie **legitime Daten und bleiben**. *Was nicht mehr in Frage kommt, ist sie als kaputte Werte zu behandeln.* |
 | **2** | **Bekommen die delisteten Papiere ihr Abmeldedatum?** | **Lohnt sich, ist aber nicht dringend** *(um 02:10 nach unten korrigiert)*. AVB/EQR sind im Universum und heute außerhalb jedes Fensters; ab ~einer Handelswoche können die Phantomtage in ein Haltefenster geraten. **Aber der Schwanz ist auf 1–5 Tage gedeckelt** — der gefährliche Fall (dauerhaft flache Reihe, die eine Momentum-Rangfolge nach oben spült) tritt **nicht** ein. |
 | **3** | **Welche „Kostenhürde" zeigt das Messband?** | Zwei verschiedene Zahlen tragen denselben Namen; in der Voreinstellung stimmen sie zufällig überein. Live-Hürde oder feste Referenz — beides vertretbar, der Doppelname nicht. |
 
