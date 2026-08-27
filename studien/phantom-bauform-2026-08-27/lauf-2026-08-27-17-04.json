@@ -1,0 +1,318 @@
+{
+ "gemessenAm": "2026-08-27T17:04:52.517Z",
+ "kontrolleOk": true,
+ "reihen": [
+  {
+   "sym": "AAPL",
+   "hatEventsFeld": true,
+   "splitsGemeldet": 5,
+   "kerzen": 168,
+   "von": "1984-12-01",
+   "bis": "2026-08-27",
+   "faelle": [
+    {
+     "datum": "1987-06-16",
+     "verhaeltnis": "2:1",
+     "kursfaktor": 0.5,
+     "tageskerzenImFenster": 17,
+     "sprungGefunden": null,
+     "faktorPasst": false,
+     "urteil": "eingerechnet (kein Sprung - die gesunde Signatur)"
+    },
+    {
+     "datum": "2000-06-21",
+     "verhaeltnis": "2:1",
+     "kursfaktor": 0.5,
+     "tageskerzenImFenster": 17,
+     "sprungGefunden": {
+      "datum": "2000-06-21",
+      "q": 1.0988
+     },
+     "faktorPasst": false,
+     "urteil": "Sprung vorhanden, Faktor passt nicht (1.0988 gegen 0.5000)"
+    },
+    {
+     "datum": "2005-02-28",
+     "verhaeltnis": "2:1",
+     "kursfaktor": 0.5,
+     "tageskerzenImFenster": 17,
+     "sprungGefunden": null,
+     "faktorPasst": false,
+     "urteil": "eingerechnet (kein Sprung - die gesunde Signatur)"
+    },
+    {
+     "datum": "2014-06-09",
+     "verhaeltnis": "7:1",
+     "kursfaktor": 0.1429,
+     "tageskerzenImFenster": 18,
+     "sprungGefunden": null,
+     "faktorPasst": false,
+     "urteil": "eingerechnet (kein Sprung - die gesunde Signatur)"
+    },
+    {
+     "datum": "2020-08-31",
+     "verhaeltnis": "4:1",
+     "kursfaktor": 0.25,
+     "tageskerzenImFenster": 17,
+     "sprungGefunden": null,
+     "faktorPasst": false,
+     "urteil": "eingerechnet (kein Sprung - die gesunde Signatur)"
+    }
+   ]
+  },
+  {
+   "sym": "NVDA",
+   "hatEventsFeld": true,
+   "splitsGemeldet": 6,
+   "kerzen": 332,
+   "von": "1999-02-01",
+   "bis": "2026-08-27",
+   "faelle": [
+    {
+     "datum": "2000-06-27",
+     "verhaeltnis": "2:1",
+     "kursfaktor": 0.5,
+     "tageskerzenImFenster": 16,
+     "sprungGefunden": {
+      "datum": "2000-06-27",
+      "q": 0.8588
+     },
+     "faktorPasst": false,
+     "urteil": "Sprung vorhanden, Faktor passt nicht (0.8588 gegen 0.5000)"
+    },
+    {
+     "datum": "2001-09-12",
+     "verhaeltnis": "2:1",
+     "kursfaktor": 0.5,
+     "tageskerzenImFenster": 12,
+     "sprungGefunden": {
+      "datum": "2001-09-17",
+      "q": 0.8973
+     },
+     "faktorPasst": false,
+     "urteil": "Sprung vorhanden, Faktor passt nicht (0.8973 gegen 0.5000)"
+    },
+    {
+     "datum": "2006-04-07",
+     "verhaeltnis": "2:1",
+     "kursfaktor": 0.5,
+     "tageskerzenImFenster": 17,
+     "sprungGefunden": null,
+     "faktorPasst": false,
+     "urteil": "eingerechnet (kein Sprung - die gesunde Signatur)"
+    },
+    {
+     "datum": "2007-09-11",
+     "verhaeltnis": "3:2",
+     "kursfaktor": 0.6667,
+     "tageskerzenImFenster": 16,
+     "sprungGefunden": null,
+     "faktorPasst": false,
+     "urteil": "eingerechnet (kein Sprung - die gesunde Signatur)"
+    },
+    {
+     "datum": "2021-07-20",
+     "verhaeltnis": "4:1",
+     "kursfaktor": 0.25,
+     "tageskerzenImFenster": 17,
+     "sprungGefunden": null,
+     "faktorPasst": false,
+     "urteil": "eingerechnet (kein Sprung - die gesunde Signatur)"
+    },
+    {
+     "datum": "2024-06-10",
+     "verhaeltnis": "10:1",
+     "kursfaktor": 0.1,
+     "tageskerzenImFenster": 17,
+     "sprungGefunden": null,
+     "faktorPasst": false,
+     "urteil": "eingerechnet (kein Sprung - die gesunde Signatur)"
+    }
+   ]
+  },
+  {
+   "sym": "RGR",
+   "hatEventsFeld": true,
+   "splitsGemeldet": 5,
+   "kerzen": 215,
+   "von": "1973-05-01",
+   "bis": "2026-08-27",
+   "faelle": [
+    {
+     "datum": "1981-06-16",
+     "verhaeltnis": "2:1",
+     "kursfaktor": 0.5,
+     "tageskerzenImFenster": 17,
+     "sprungGefunden": {
+      "datum": "1981-06-17",
+      "q": 0.9189
+     },
+     "faktorPasst": false,
+     "urteil": "Sprung vorhanden, Faktor passt nicht (0.9189 gegen 0.5000)"
+    },
+    {
+     "datum": "1989-06-02",
+     "verhaeltnis": "2:1",
+     "kursfaktor": 0.5,
+     "tageskerzenImFenster": 17,
+     "sprungGefunden": null,
+     "faktorPasst": false,
+     "urteil": "eingerechnet (kein Sprung - die gesunde Signatur)"
+    },
+    {
+     "datum": "1993-05-14",
+     "verhaeltnis": "2:1",
+     "kursfaktor": 0.5,
+     "tageskerzenImFenster": 18,
+     "sprungGefunden": null,
+     "faktorPasst": false,
+     "urteil": "eingerechnet (kein Sprung - die gesunde Signatur)"
+    },
+    {
+     "datum": "1996-09-17",
+     "verhaeltnis": "2:1",
+     "kursfaktor": 0.5,
+     "tageskerzenImFenster": 17,
+     "sprungGefunden": null,
+     "faktorPasst": false,
+     "urteil": "eingerechnet (kein Sprung - die gesunde Signatur)"
+    },
+    {
+     "datum": "2025-10-24",
+     "verhaeltnis": "374:1000",
+     "kursfaktor": 2.6738,
+     "tageskerzenImFenster": 17,
+     "sprungGefunden": null,
+     "faktorPasst": false,
+     "urteil": "eingerechnet (kein Sprung - die gesunde Signatur)"
+    }
+   ]
+  },
+  {
+   "sym": "SITC",
+   "hatEventsFeld": true,
+   "splitsGemeldet": 5,
+   "kerzen": 403,
+   "von": "1993-03-01",
+   "bis": "2026-08-27",
+   "faelle": [
+    {
+     "datum": "1998-08-04",
+     "verhaeltnis": "2:1",
+     "kursfaktor": 0.5,
+     "tageskerzenImFenster": 17,
+     "sprungGefunden": null,
+     "faktorPasst": false,
+     "urteil": "eingerechnet (kein Sprung - die gesunde Signatur)"
+    },
+    {
+     "datum": "2009-03-10",
+     "verhaeltnis": "1.0666:1",
+     "kursfaktor": 0.9376,
+     "tageskerzenImFenster": 17,
+     "sprungGefunden": {
+      "datum": "2009-03-11",
+      "q": 0.8814
+     },
+     "faktorPasst": true,
+     "urteil": "NICHT eingerechnet (Sprung in Ereignisgroesse steht in der Historie)"
+    },
+    {
+     "datum": "2009-06-09",
+     "verhaeltnis": "1.04016:1",
+     "kursfaktor": 0.9614,
+     "tageskerzenImFenster": 17,
+     "sprungGefunden": null,
+     "faktorPasst": false,
+     "urteil": "eingerechnet (kein Sprung - die gesunde Signatur)"
+    },
+    {
+     "datum": "2018-05-21",
+     "verhaeltnis": "1:2",
+     "kursfaktor": 2,
+     "tageskerzenImFenster": 17,
+     "sprungGefunden": null,
+     "faktorPasst": false,
+     "urteil": "eingerechnet (kein Sprung - die gesunde Signatur)"
+    },
+    {
+     "datum": "2024-08-19",
+     "verhaeltnis": "1:4",
+     "kursfaktor": 4,
+     "tageskerzenImFenster": 18,
+     "sprungGefunden": null,
+     "faktorPasst": false,
+     "urteil": "eingerechnet (kein Sprung - die gesunde Signatur)"
+    }
+   ]
+  },
+  {
+   "sym": "B",
+   "hatEventsFeld": true,
+   "splitsGemeldet": 4,
+   "kerzen": 168,
+   "von": "1985-02-01",
+   "bis": "2026-08-27",
+   "faelle": [
+    {
+     "datum": "1985-12-13",
+     "verhaeltnis": "1:5",
+     "kursfaktor": 5,
+     "tageskerzenImFenster": 17,
+     "sprungGefunden": null,
+     "faktorPasst": false,
+     "urteil": "eingerechnet (kein Sprung - die gesunde Signatur)"
+    },
+    {
+     "datum": "1987-07-16",
+     "verhaeltnis": "2:1",
+     "kursfaktor": 0.5,
+     "tageskerzenImFenster": 17,
+     "sprungGefunden": null,
+     "faktorPasst": false,
+     "urteil": "eingerechnet (kein Sprung - die gesunde Signatur)"
+    },
+    {
+     "datum": "1990-01-02",
+     "verhaeltnis": "2:1",
+     "kursfaktor": 0.5,
+     "tageskerzenImFenster": 15,
+     "sprungGefunden": null,
+     "faktorPasst": false,
+     "urteil": "eingerechnet (kein Sprung - die gesunde Signatur)"
+    },
+    {
+     "datum": "1993-03-02",
+     "verhaeltnis": "2:1",
+     "kursfaktor": 0.5,
+     "tageskerzenImFenster": 17,
+     "sprungGefunden": null,
+     "faktorPasst": false,
+     "urteil": "eingerechnet (kein Sprung - die gesunde Signatur)"
+    }
+   ]
+  },
+  {
+   "sym": "BYND",
+   "hatEventsFeld": true,
+   "splitsGemeldet": 1,
+   "kerzen": 384,
+   "von": "2019-04-29",
+   "bis": "2026-08-27",
+   "faelle": [
+    {
+     "datum": "2026-08-14",
+     "verhaeltnis": "1:30",
+     "kursfaktor": 30,
+     "tageskerzenImFenster": 18,
+     "sprungGefunden": {
+      "datum": "2026-08-14",
+      "q": 1.1032
+     },
+     "faktorPasst": false,
+     "urteil": "Sprung vorhanden, Faktor passt nicht (1.1032 gegen 30.0000)"
+    }
+   ]
+  }
+ ]
+}
