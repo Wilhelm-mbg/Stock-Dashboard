@@ -1,0 +1,457 @@
+[
+ {
+  "id": "idEnabled",
+  "tag": "input",
+  "typ": "checkbox",
+  "eigen": {
+   "anzeige": "inline-block",
+   "sicht": "visible",
+   "deckkraft": "0",
+   "br": 0,
+   "ho": 0,
+   "position": "static",
+   "clip": "",
+   "ueberlauf": "visible"
+  },
+  "grund": {
+   "art": "selbst opacity:0 (typisch fuer selbstgebaute Schalter)",
+   "wo": ""
+  },
+  "huelle": {
+   "klasse": "switch",
+   "anzeige": "block",
+   "br": 42,
+   "ho": 23
+  },
+  "sichtbarerErsatz": {
+   "klasse": "knob",
+   "br": 42,
+   "ho": 23,
+   "sichtbar": true
+  },
+  "zustand": "aus"
+ },
+ {
+  "id": "idExit",
+  "tag": "select",
+  "typ": "",
+  "eigen": {
+   "anzeige": "inline-block",
+   "sicht": "visible",
+   "deckkraft": "1",
+   "br": 0,
+   "ho": 0,
+   "position": "static",
+   "clip": "",
+   "ueberlauf": "visible"
+  },
+  "grund": {
+   "art": "Vorfahr display:none",
+   "wo": "label#lblExit"
+  },
+  "huelle": {
+   "klasse": "",
+   "anzeige": "none",
+   "br": 0,
+   "ho": 0
+  },
+  "sichtbarerErsatz": null,
+  "zustand": "laufen"
+ },
+ {
+  "id": "idMode",
+  "tag": "select",
+  "typ": "",
+  "eigen": {
+   "anzeige": "none",
+   "sicht": "visible",
+   "deckkraft": "1",
+   "br": 0,
+   "ho": 0,
+   "position": "static",
+   "clip": "",
+   "ueberlauf": "visible"
+  },
+  "grund": {
+   "art": "Vorfahr <details> zugeklappt",
+   "wo": "#idExperte \"Experten-Einstellungen anzeigen (stellt \""
+  },
+  "huelle": null,
+  "sichtbarerErsatz": null,
+  "zustand": "rsi2seit"
+ },
+ {
+  "id": "idKryptoHandeln",
+  "tag": "input",
+  "typ": "checkbox",
+  "eigen": {
+   "anzeige": "inline-block",
+   "sicht": "visible",
+   "deckkraft": "0",
+   "br": 0,
+   "ho": 0,
+   "position": "static",
+   "clip": "",
+   "ueberlauf": "visible"
+  },
+  "grund": {
+   "art": "Vorfahr <details> zugeklappt",
+   "wo": "#idExperte \"Experten-Einstellungen anzeigen (stellt \""
+  },
+  "huelle": {
+   "klasse": "switch",
+   "anzeige": "block",
+   "br": 42,
+   "ho": 23
+  },
+  "sichtbarerErsatz": {
+   "klasse": "knob",
+   "br": 42,
+   "ho": 23,
+   "sichtbar": true
+  },
+  "zustand": "aus"
+ },
+ {
+  "id": "idTrend",
+  "tag": "select",
+  "typ": "",
+  "eigen": {
+   "anzeige": "inline-block",
+   "sicht": "visible",
+   "deckkraft": "1",
+   "br": 0,
+   "ho": 0,
+   "position": "static",
+   "clip": "",
+   "ueberlauf": "visible"
+  },
+  "grund": {
+   "art": "Vorfahr display:none",
+   "wo": "label"
+  },
+  "huelle": {
+   "klasse": "",
+   "anzeige": "none",
+   "br": 0,
+   "ho": 0
+  },
+  "sichtbarerErsatz": null,
+  "zustand": "0"
+ },
+ {
+  "id": "idMtf",
+  "tag": "input",
+  "typ": "checkbox",
+  "eigen": {
+   "anzeige": "inline-block",
+   "sicht": "visible",
+   "deckkraft": "0",
+   "br": 0,
+   "ho": 0,
+   "position": "static",
+   "clip": "",
+   "ueberlauf": "visible"
+  },
+  "grund": {
+   "art": "Vorfahr display:none",
+   "wo": "label"
+  },
+  "huelle": {
+   "klasse": "switch",
+   "anzeige": "inline-block",
+   "br": 0,
+   "ho": 0
+  },
+  "sichtbarerErsatz": {
+   "klasse": "knob",
+   "br": 0,
+   "ho": 0,
+   "sichtbar": false
+  },
+  "zustand": "an"
+ },
+ {
+  "id": "idChannel",
+  "tag": "input",
+  "typ": "checkbox",
+  "eigen": {
+   "anzeige": "inline-block",
+   "sicht": "visible",
+   "deckkraft": "0",
+   "br": 0,
+   "ho": 0,
+   "position": "static",
+   "clip": "",
+   "ueberlauf": "visible"
+  },
+  "grund": {
+   "art": "Vorfahr display:none",
+   "wo": "label"
+  },
+  "huelle": {
+   "klasse": "switch",
+   "anzeige": "inline-block",
+   "br": 0,
+   "ho": 0
+  },
+  "sichtbarerErsatz": {
+   "klasse": "knob",
+   "br": 0,
+   "ho": 0,
+   "sichtbar": false
+  },
+  "zustand": "an"
+ },
+ {
+  "id": "idScreener",
+  "tag": "input",
+  "typ": "checkbox",
+  "eigen": {
+   "anzeige": "inline-block",
+   "sicht": "visible",
+   "deckkraft": "0",
+   "br": 0,
+   "ho": 0,
+   "position": "static",
+   "clip": "",
+   "ueberlauf": "visible"
+  },
+  "grund": {
+   "art": "Vorfahr <details> zugeklappt",
+   "wo": "#idExperte \"Experten-Einstellungen anzeigen (stellt \""
+  },
+  "huelle": {
+   "klasse": "switch",
+   "anzeige": "block",
+   "br": 42,
+   "ho": 23
+  },
+  "sichtbarerErsatz": {
+   "klasse": "knob",
+   "br": 42,
+   "ho": 23,
+   "sichtbar": true
+  },
+  "zustand": "aus"
+ },
+ {
+  "id": "idAutoTune",
+  "tag": "input",
+  "typ": "checkbox",
+  "eigen": {
+   "anzeige": "inline-block",
+   "sicht": "visible",
+   "deckkraft": "0",
+   "br": 0,
+   "ho": 0,
+   "position": "static",
+   "clip": "",
+   "ueberlauf": "visible"
+  },
+  "grund": {
+   "art": "Vorfahr <details> zugeklappt",
+   "wo": "#idExperte \"Experten-Einstellungen anzeigen (stellt \""
+  },
+  "huelle": {
+   "klasse": "switch",
+   "anzeige": "block",
+   "br": 42,
+   "ho": 23
+  },
+  "sichtbarerErsatz": {
+   "klasse": "knob",
+   "br": 42,
+   "ho": 23,
+   "sichtbar": true
+  },
+  "zustand": "an"
+ },
+ {
+  "id": "idKrypto",
+  "tag": "input",
+  "typ": "checkbox",
+  "eigen": {
+   "anzeige": "inline-block",
+   "sicht": "visible",
+   "deckkraft": "0",
+   "br": 0,
+   "ho": 0,
+   "position": "static",
+   "clip": "",
+   "ueberlauf": "visible"
+  },
+  "grund": {
+   "art": "Vorfahr <details> zugeklappt",
+   "wo": "#idExperte \"Experten-Einstellungen anzeigen (stellt \""
+  },
+  "huelle": {
+   "klasse": "switch",
+   "anzeige": "block",
+   "br": 42,
+   "ho": 23
+  },
+  "sichtbarerErsatz": {
+   "klasse": "knob",
+   "br": 42,
+   "ho": 23,
+   "sichtbar": true
+  },
+  "zustand": "an"
+ },
+ {
+  "id": "idSchattenImmer",
+  "tag": "input",
+  "typ": "checkbox",
+  "eigen": {
+   "anzeige": "inline-block",
+   "sicht": "visible",
+   "deckkraft": "0",
+   "br": 0,
+   "ho": 0,
+   "position": "static",
+   "clip": "",
+   "ueberlauf": "visible"
+  },
+  "grund": {
+   "art": "Vorfahr <details> zugeklappt",
+   "wo": "#idExperte \"Experten-Einstellungen anzeigen (stellt \""
+  },
+  "huelle": {
+   "klasse": "switch",
+   "anzeige": "block",
+   "br": 42,
+   "ho": 23
+  },
+  "sichtbarerErsatz": {
+   "klasse": "knob",
+   "br": 42,
+   "ho": 23,
+   "sichtbar": true
+  },
+  "zustand": "an"
+ },
+ {
+  "id": "idTrail",
+  "tag": "select",
+  "typ": "",
+  "eigen": {
+   "anzeige": "inline-block",
+   "sicht": "visible",
+   "deckkraft": "1",
+   "br": 0,
+   "ho": 0,
+   "position": "static",
+   "clip": "",
+   "ueberlauf": "visible"
+  },
+  "grund": {
+   "art": "Vorfahr display:none",
+   "wo": "label"
+  },
+  "huelle": {
+   "klasse": "",
+   "anzeige": "none",
+   "br": 0,
+   "ho": 0
+  },
+  "sichtbarerErsatz": null,
+  "zustand": "15"
+ },
+ {
+  "id": "hourlyEnabled",
+  "tag": "input",
+  "typ": "checkbox",
+  "eigen": {
+   "anzeige": "inline-block",
+   "sicht": "visible",
+   "deckkraft": "0",
+   "br": 0,
+   "ho": 0,
+   "position": "static",
+   "clip": "",
+   "ueberlauf": "visible"
+  },
+  "grund": {
+   "art": "Vorfahr <details> zugeklappt",
+   "wo": "#archivWiderlegt \"Archiv: gemessen und widerlegt – Stunden\""
+  },
+  "huelle": {
+   "klasse": "switch",
+   "anzeige": "block",
+   "br": 42,
+   "ho": 23
+  },
+  "sichtbarerErsatz": {
+   "klasse": "knob",
+   "br": 42,
+   "ho": 23,
+   "sichtbar": true
+  },
+  "zustand": "aus"
+ },
+ {
+  "id": "pilotOn",
+  "tag": "input",
+  "typ": "checkbox",
+  "eigen": {
+   "anzeige": "inline-block",
+   "sicht": "visible",
+   "deckkraft": "0",
+   "br": 0,
+   "ho": 0,
+   "position": "static",
+   "clip": "",
+   "ueberlauf": "visible"
+  },
+  "grund": {
+   "art": "Vorfahr display:none",
+   "wo": "div#sub-auswertung.sub"
+  },
+  "huelle": {
+   "klasse": "switch",
+   "anzeige": "block",
+   "br": 0,
+   "ho": 0
+  },
+  "sichtbarerErsatz": {
+   "klasse": "knob",
+   "br": 0,
+   "ho": 0,
+   "sichtbar": false
+  },
+  "zustand": "an"
+ },
+ {
+  "id": "aoRegime",
+  "tag": "input",
+  "typ": "checkbox",
+  "eigen": {
+   "anzeige": "inline-block",
+   "sicht": "visible",
+   "deckkraft": "0",
+   "br": 0,
+   "ho": 0,
+   "position": "static",
+   "clip": "",
+   "ueberlauf": "visible"
+  },
+  "grund": {
+   "art": "Vorfahr display:none",
+   "wo": "div#sub-auswertung.sub"
+  },
+  "huelle": {
+   "klasse": "switch",
+   "anzeige": "block",
+   "br": 0,
+   "ho": 0
+  },
+  "sichtbarerErsatz": {
+   "klasse": "knob",
+   "br": 0,
+   "ho": 0,
+   "sichtbar": false
+  },
+  "zustand": "an"
+ }
+]

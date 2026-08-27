@@ -21,8 +21,12 @@ Programm in einem isolierten Profil (`v8.34.1`, 38 gesäte Messprotokolle, 1280�
 | Mittelfrist | 16 | 0 | 6 | 3.445 |
 | **Regelbuch** | 6 | 0 | 6 | **4.045** |
 | Chart | 7 | 1 | 1 | 772 |
-| Autopilot | 13 | 2 | 2 | 2.046 |
-| **Summe** | **83** | **16** | **22** | **15.910** |
+| Autopilot | 13 | (2)¹ | 2 | 2.046 |
+| **Summe** | **83** | **14** | **22** | **15.910** |
+
+¹ Die zwei in *Autopilot* waren ein **Messfehler von mir** — beim Messen war eine andere
+Pille offen, also war der ganze Unterreiter `display:none`. Kein Befund über die
+Oberfläche. Siehe 3.1.
 
 **83 Bedienelemente und rund 16.000 Zeichen Text auf sechs Unterreitern.** Zum Vergleich:
 Wilhelms Beschwerde nennt genau diese Menge.
@@ -53,25 +57,42 @@ mit der Verdrahtung weiter unten schlägt jede fensterbasierte Textsuche.
 Fünf Beobachtungen, die zu Wilhelms Worten „zu viel", „unübersichtlich", „unlogisch"
 passen. **Beobachtungen, keine Empfehlungen.**
 
-### 3.1 Ein Drittel der Einstellungen ist unsichtbar — und es sind die zentralen
+### 3.1 Die Auslöser-Auswahl steckt hinter „Experten-Einstellungen"
 
-In *Schalter & Einstellungen* stehen 13 Bedienelemente im HTML, die nicht auf dem Schirm
-sind:
+> **Korrigiert am 27.08. 18:15.** Die erste Fassung dieses Abschnitts trug eine
+> **Vermutung** („die Blöcke hängen daran, ob die Strategie eingeschaltet ist"). Der PM
+> sagte: miss es. **Gemessen — und die Vermutung war falsch.** Es sind drei verschiedene
+> Ursachen, und zwei der 13 sind gar kein Fund. `probe-13-unsichtbare.js`.
 
-`#idEnabled` · `#idMode` (Auslöser-Auswahl!) · `#idExit` · `#idTrend` · `#idTrail` ·
-`#idMtf` · `#idChannel` · `#idScreener` · `#idAutoTune` · `#idKrypto` ·
-`#idKryptoHandeln` · `#idSchattenImmer` · `#hourlyEnabled`
+| Ursache | Bedienelemente | Bewertung |
+|---|---|---|
+| **Zugeklapptes `<details id="idExperte">` „Experten-Einstellungen anzeigen"** | **`#idMode`** · `#idKryptoHandeln` · `#idScreener` · `#idAutoTune` · `#idKrypto` · `#idSchattenImmer` | **der eigentliche Fund** |
+| Vorfahr-`<label>` auf `display:none` | `#idExit` (`#lblExit`) · `#idTrend` · `#idMtf` · `#idChannel` · `#idTrail` | bedingt eingeblendet |
+| Zugeklapptes `<details id="archivWiderlegt">` „Archiv: gemessen und widerlegt" | `#hourlyEnabled` | **richtig so** |
+| `opacity: 0`, sichtbarer Ersatz `.knob` 42×23 vorhanden | `#idEnabled` | **kein Fund — Bauweise** |
+| *(Messfehler von mir)* | `#pilotOn`, `#aoRegime` | **kein Fund** |
 
-Darunter ist `#idMode` — **die Auswahl des Auslösers**, also die zentrale Einstellung der
-Intraday-Strategie. Auch der Hauptschalter `#idEnabled` ist unsichtbar. Dasselbe Muster in
-*Autopilot* (`#pilotOn`, `#aoRegime`).
+**Der Fund: `#idMode` — die Auswahl des Auslösers — liegt hinter einer zugeklappten
+Klappe namens „Experten-Einstellungen".** Das ist die Einstellung, die bestimmt, *welche
+gemessene Strategie überhaupt läuft. Wer sie sucht, muss erst wissen, dass er Experte ist.
+Fünf weitere Schalter liegen mit ihr dort.
 
-**Vermutung, nicht gemessen:** die Blöcke hängen daran, ob die jeweilige Strategie
-eingeschaltet ist. Im Testprofil ist alles aus, also ist alles verborgen.
-**Warum es hierher gehört:** Einstellungen, die je nach Schalterstellung erscheinen und
-verschwinden, sind genau die Sorte, die eine Seite „unlogisch und verwirrend" macht — man
-sucht etwas, das man gestern gesehen hat, und es ist weg. **Ob das so gewollt ist, kann ich
-nicht beurteilen; ich kann nur sagen, dass es so ist.**
+**Zweitens:** fünf Einstellungen (`#idExit`, `#idTrend`, `#idTrail`, `#idMtf`,
+`#idChannel`) hängen an einem `<label>`, das auf `display:none` steht — sie erscheinen und
+verschwinden je nach Lage. **Das ist die Sorte, die eine Seite „unlogisch und verwirrend"
+macht:** man sucht etwas, das man gestern gesehen hat, und es ist weg. *Wovon genau sie
+abhängen, habe ich nicht gemessen.*
+
+**Positiv, und es gehört zu Frage 5:** `#hourlyEnabled` sitzt hinter einer Klappe, die
+ausdrücklich **„Archiv: gemessen und widerlegt – Stunden…"** heißt. **Für die
+Stunden-Strategie ist das Aufräumen also schon geschehen** — ein Muster, das für andere
+widerlegte Dinge taugen könnte.
+
+**Zwei meiner 13 waren keine Funde.** `#idEnabled` ist eine Checkbox mit `opacity:0` in
+einem selbstgebauten Schalter — die sichtbare `.knob` daneben ist 42×23 groß, das ist die
+Bauweise und kein Mangel. Und `#pilotOn`/`#aoRegime` standen nur deshalb auf „unsichtbar",
+**weil beim Messen eine andere Pille offen war** — ein Fehler meiner Aufnahme, kein Befund
+über die Oberfläche.
 
 ### 3.2 Die Strategiekarten der Übersicht haben keine Überschrift
 
@@ -116,7 +137,9 @@ Ausdrücklich markiert, statt geraten:
 2. **Ob eine Einstellung etwas Widerlegtes steuert.** Dafür muss jeder Schalter gegen den
    Messstand gehalten werden (Belegstand 0 von 12). **Das ist der aufwendigste Teil und
    noch nicht gemacht.**
-3. **Warum die 13 Elemente unsichtbar sind** — vermutet, nicht gemessen.
+3. ~~**Warum die 13 Elemente unsichtbar sind** — vermutet, nicht gemessen.~~
+   **Am 27.08. 18:15 nachgemessen (3.1), die Vermutung war falsch.** Offen bleibt nur
+   noch, *wovon* die fünf bedingt eingeblendeten Einstellungen abhängen.
 4. **Ob zwei Bedienelemente denselben Speicherwert schreiben** (siehe 4).
 5. **Was jedes einzelne Bedienelement in Wilhelms Sprache tut.** 83 Stück; das ist die
    eigentliche Fleißarbeit und steht noch aus.
