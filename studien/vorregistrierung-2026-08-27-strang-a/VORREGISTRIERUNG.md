@@ -368,4 +368,19 @@ für den Referenzlauf bleibt es bei benannt-nicht-behandelt.
 
 ---
 
+## 16. Nachtrag 27.08. mittags — Wilhelms neue Kosten-Freigabeschwelle (ersetzt »≥ 20 Aktienrunden«)
+
+Die Sperre-2-Formulierung (§7.2, F2 = 2c »≥ 20 Aktienrunden«) ist durch Wilhelms
+Entscheid ersetzt: **Freigabe erst bei Kostenrunden über VERSCHIEDENE TAGE UND
+MARKTLAGEN.** Grund (QS-Fund): Die Kostenmessung läuft nur auf Knopfdruck; die 16
+vorhandenen Aktienrunden entstanden als Klickfolge in zwei Minuten am 25.08. 13:31 —
+eine einzige Marktlage. Eine Rundenzahl-Schwelle wäre mit zwanzig Klicks in einer
+Minute erfüllbar und misst dann nichts. **Ausdrücklich NICHT gewählt** hat Wilhelm die
+Fassung mit Breiten-Vorgabe — die Mega-Cap-Zusammensetzung der Runden (der Broker
+führt nur die liquidesten Werte) bleibt **dokumentierter Vorbehalt, keine Bedingung**.
+Strang A wartet damit auf: (a) Eröffnungskurs-Nachlauf bei 1d UND (b) tage-/
+marktlagen-gestreute Kostenmessung; der Skalen-Auftrag geht vor (PM-Priorisierung).
+
+---
+
 *Simulation mit virtuellem Kapital. Keine Anlageberatung.*
