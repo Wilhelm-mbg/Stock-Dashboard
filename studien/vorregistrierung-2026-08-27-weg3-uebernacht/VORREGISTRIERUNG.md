@@ -89,4 +89,24 @@ aus diesem Lauf · Intraday nur nachrichtlich · Ergebnis nur in diesen Ordner �
 kein Urteil über die 5-Mio-Deutungsgrenze hinaus (heiße Tage der dünnen Seite,
 wie Mitglied 1).
 
+---
+
+## Nachtrag 1 (~18:40, VOR dem Bau) — W3 bekommt eine absolute Untergrenze
+
+**PM-Einwand, übernommen:** W3 verglich nur die Gültigkeitsquoten der Arme
+MITEINANDER und fing damit nur ASYMMETRISCHEN Ausfall. **Symmetrischer Ausfall
+(beide Arme verlieren gleichmäßig aus demselben Grund) bliebe grün — und der Lauf
+rechnete auf einer Population, die von der Auswahl selbst erzeugt sein kann.** Das
+ist die Fehlerform des Tages (»der Wächter prüft etwas anderes, als man meint«).
+
+**Festlegung:** Zusätzlich zur relativen 10-Pp-Schranke gilt: **Liegt die
+Gültigkeitsquote der Eröffnungen in AUCH NUR EINEM Arm unter 90 % (gezählt auf den
+tatsächlich gepaarten, liquiditätsgefilterten Zeilen), ist der Lauf »nicht
+messbar«.** Herleitung statt Ratens: Der 1d-Pilot maß 99,5 % Eröffnungs-Abdeckung
+im Fenster (Überlebende); nach dem 5-Mio-$-Tagesfilter ist ein fehlender
+Eröffnungsdruck kein Rauschen, sondern ein Strukturbefund im Feld — 90 % lässt
+großzügigen Raum für die Verschwundenen-Seite und reißt trotzdem, bevor eine
+ausgewählte Restpopulation den Endpunkt trägt. Beide Quoten werden unverändert
+immer ausgewiesen.
+
 *Simulation mit virtuellem Kapital. Keine Anlageberatung.*
