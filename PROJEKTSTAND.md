@@ -1,6 +1,6 @@
 <!-- PM-STAND
 letzter-bericht: 2026-08-27 15:32 (Windows-Uhr)
-gesehener-tag: v8.33.5
+gesehener-tag: v8.34.2 (installiert 17:00)
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
 
@@ -50,9 +50,23 @@ Wenn du hier etwas änderst, dann nur deine eigene Zeile unter „Läuft gerade"
 Datenfund 2 (dreifach belegt) · 12-%-C-Anteile (Nullbefund, zweifach) · Stress-Achse (NEIN,
 Machbarkeit gerissen).*
 
-**🔴 Offen bei der Release-Wache** *(Handaufgabe, läuft nicht von selbst)*: **`0751035` (#110,
-aria-labels) steckt in keinem Tag** — *für den Anwender unbehoben.* **PM-Entscheid 27.08.
-nachmittags: heute KEIN Release mehr** *(59 Commits und 2 Notizen lägen an, ein Bau wäre also
+**✅ ERLEDIGT 17:00 — `v8.34.2` IST GEBAUT UND BEI WILHELM INSTALLIERT.** *`git tag --contains
+0751035` → **`v8.34.2`** (`ece0100`, 17:00:56); `app.asar` 17:00:40, Version **8.34.2**, App läuft
+seit 17:07.* **`#110` ist damit schließbar — die Issue-Wache ist unterrichtet.** *Enthalten
+außerdem `9285468` (Kostenschwelle zählt Tage und Marktlagen statt Runden).*
+
+> **⚠ MEIN NACHMITTAGS-ENTSCHEID IST DAMIT ÜBERHOLT, NICHT BESTÄTIGT.** *Ich hatte „heute kein
+> Release mehr" geboardet — **Wilhelm hat die App aktualisiert, und es wurde dafür gebaut, an mir
+> vorbei.*** **Völlig in Ordnung: es ist seine App.** *Die Zeile steht hier korrigiert, damit der
+> 8-Uhr-Lauf der Issue-Wache morgen nicht auf einen falschen Stand trifft.*
+>
+> *Und die Sorge, die dem Entscheid zugrunde lag, hat sich **nicht** verwirklicht: **der
+> Vollauf lief durch den Bau hindurch weiter** (17:15: 426/1.164, Takt normal). Der Riegel hat
+> nicht ausgelöst.*
+
+**~~🔴 Offen bei der Release-Wache~~** *(Handaufgabe, läuft nicht von selbst)*: ~~**`0751035`
+(#110, aria-labels) steckt in keinem Tag** — für den Anwender unbehoben.~~ **PM-Entscheid 27.08.
+nachmittags (ÜBERHOLT): heute KEIN Release mehr** *(59 Commits und 2 Notizen lägen an, ein Bau wäre also
 berechtigt — aber der Eröffnungskurs-Vollauf läuft 242 Minuten, die Sitzung committet nebenher,
 und Riegel 2 bricht bei fremdem Commit **hart** ab: kompletter Neubau, kein Retten durch
 Push-Wiederholung. **Ein Vier-Stunden-Lauf gegen drei Knopf-Beschriftungen ist kein Tausch.**)*
