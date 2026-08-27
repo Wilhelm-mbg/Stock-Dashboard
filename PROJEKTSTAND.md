@@ -1372,8 +1372,11 @@ Teil I sagt „5 von 25 / 13 von 25", richtig sind **5 von 35 / 23 von 35**. Als
 > überholt waren.** Eine Zeile „gemessen TT.MM. HH:MM" hätte beide Fälle verhindert — **und sie
 > ist billiger als jede Prüfregel, die wir uns gegenseitig auferlegen.**
 
-1. **Unausgeliefert: 104 Commits, 9 Release-Notizen** *(gemessen 27.08. 02:00)* — Stau ist
-   gewollt, siehe Wilhelms Entscheid.
+1. ~~**Unausgeliefert: 104 Commits, 9 Release-Notizen** *(gemessen 27.08. 02:00)*~~
+   **✅ ERLEDIGT 27.08. 07:55 — Wilhelm hat die Sperre aufgehoben, es wird ausgeliefert.**
+   *Gemessen 07:53 von der Release-Wache: **188 Commits, 12 Notizen** — die 104/9 von 02:00
+   waren nach sechs Stunden bereits überholt. **Genau der Fall, für den die neue
+   Messdatum-Pflicht da ist**, und die Release-Wache hat ihn selbst gemeldet.*
 2. ~~**SPY fehlt in allen Intraday-Archiven.**~~ **TEILWEISE WIDERLEGT** *(gemessen 27.08.
    02:15, `markt-dashboard-1d`)*: **60m ist vollständig** — SPY mit 5.105 Kerzen, **31 von 31
    ETFs**. **Das Regime-Tor R-TREND läuft auf Stundenkerzen und ist NICHT blind.** Echte Lücke:
