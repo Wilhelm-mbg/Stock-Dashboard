@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 15:55 (Windows-Uhr)
+letzter-bericht: 2026-08-27 16:10 (Windows-Uhr)
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -124,6 +124,81 @@ Nicht-Krypto, **alle am 25.08., null erfasste Marktlagen** → **nicht erfüllt,
 > *Nebenbemerkung von `06`, der Vollständigkeit halber: der 30-Minuten-Zwischenspeicher bedeutet,
 > dass eine Runde bei einem Seitenwechsel innerhalb einer halben Stunde noch die alte Lage trüge
 > — **für eine Schwelle über Tage belanglos**, aber gesagt.*
+
+---
+
+## ✅ 27.08. 16:0x — **DER EINZELSPRUNG-LAUF IST DURCH: 98,5 % SAUBER, fünf benennbare Versager**
+
+> ### **98,5 % der 534 Einzelsprünge haben positiv belegt KEINEN Split — die Rückanpassung des Tagesarchivs funktioniert fast immer.**
+> *Nach einem Tag, an dem das Archiv von allen Seiten beschossen wurde, ist das die Zahl, die die
+> Verhältnisse zurechtrückt: **fünf benennbare Versager, nicht fünfhundert.***
+
+    GRUNDRATE  534 Einzelspruenge, 275 Reihen, 0 nicht pruefbar
+               F = 5      F? = 3      U = 526
+
+    NULLWERT   Permutation, 1.000 Ziehungen, Saat 20260827, 113 Reihen mit Splits
+               Erwartung 0,42   p95 = 2   Maximum 4
+               -> beobachtet 8 gegen p95 2  =  BELEGT, kein Zufall
+
+**Ohne die Nullwert-Zeile wären „8 von 534" eine Zahl gewesen, die man in jede Richtung hätte
+deuten können.**
+
+**Die fünf `F`-Fälle, alle benannt:** *zwei bekannte **WHLR** · **IESC 24.08.2026** (neu, siehe
+unten) · **WY 20.07.2010** (Aktien-Sonderausschüttung, Faktor 0,409) · **EXPE 21.12.2011**
+(mit ausgewiesenem Vorbehalt: Reverse Split **und** TripAdvisor-Abspaltung am selben Tag).*
+
+> **`F?` = SMCX / UCO / WEN — und `UCO` belegt, dass die vierte Klasse richtig war:** *der
+> **Ölcrash vom 21.04.2020** liegt **exakt** auf dem 25:1-Datum.* **Ein echter Crash an einem
+> Split-Tag: in `U` versenkt wäre er unsichtbar, als `F` gezählt wäre er ein Fehlurteil.**
+
+### 🔀 DIE KRUMMEN SIEBEN, gegen die vorab fixierten Kriterien
+- **`CBSH`: BESTÄTIGT in der starken Form** — *Massive führt die jährlichen 5-%-Aktiendividenden
+  als 1:1,05-Splits (**22 Einträge**), darunter **exakt der vorhergesagte 01.12.2023**.*
+  **📐 Nebenertrag fürs Regelwerk: Aktiendividenden stehen im SPLITS-Datensatz — künftige
+  Abgleiche müssen auch 1,0x-Faktoren prüfen.** *Eine Regel, die ohne diesen Fall niemand
+  aufgeschrieben hätte.*
+- **`DOC`: nach dem B-Standard BELEGT, alle drei Merkmale** — *`ticker_change` am **exakt
+  vorhergesagten** 04.03.2024 (Healthpeak, davor PEAK) + Dividendenbruch (0,23 bis 01/2024 →
+  0,30 ab 02/2024) + Drift.* **Trennfall der B-Klasse: teilen, nicht reparieren.**
+- **`GBTC`/`ETHE`: unentscheidbar mit diesen Endpunkten, wie registriert** — *an den
+  Juli-2024-Daten leer; **Alt-Splits (1:91/2018, 1:9/2020) zeigen aber, dass Trust-Splits
+  grundsätzlich geführt werden**. Das macht die Lücke aussagekräftiger, nicht schwächer.*
+  **EDGAR-Hypothese bleibt benannt und ist der registrierte Übergabepunkt.**
+
+> ### 🔴 **`IESC` IST DER BESSERE TEST ALS `WHLR` — Prüfpunkt für morgen früh**
+> | | Split ausgeführt | Nachtläufe seitdem |
+> |---|---|---|
+> | **WHLR** | **heute** | **0** → Versatz **erwartbar** |
+> | **IESC** | **vor 3 Tagen** | **~3** → Versatz **nicht** erwartbar |
+>
+> ***WHLR sagt nur, ob eine frische Anpassung ankommt. IESC sagt, ob eine drei Tage alte je
+> ankommt.***
+>
+> **Ist `IESC` morgen noch ungeglättet, greift die Selbstheilung NICHT zuverlässig — und die
+> WHLR-Beruhigung von heute Nachmittag wäre zu optimistisch formuliert gewesen.**
+> **⚠ Trotzdem: nichts von Hand reparieren, auch IESC nicht** — *eine Handreparatur würde genau
+> die Frage zerstören, die IESC beantworten kann.*
+> *Offene Trennfrage: **führt Massive `IESC` schon auf der neuen Skala?** Wenn ja, liegt es an
+> unserem Nachladen; wenn nein, an der Quelle — zwei völlig verschiedene Befunde.*
+
+*Betriebsvorfall ausgewiesen: ~90 min DNS-Ausfall mitten im Lauf, Prozess überlebte, zweiter
+Durchgang schloss alle 26 Lücken — **Endstand 275/275, 0 Fehler**.*
+
+> ### 🔎 EINE BENANNTE BLINDSTELLE — **der Join sieht die CBSH-Klasse strukturell nicht** (`c50838e`)
+> **Aktiendividenden liegen mit Faktor 1,05 UNTER der vorregistrierten Faktor-2-Schwelle.** *Der
+> Join ist dort nicht ungenau, sondern **blind** — er wurde so registriert.*
+>
+> **Warum das mehr ist als eine Fußnote:** *Allein `CBSH` trägt **22** solcher Einträge. Wenn eine
+> Firma zwei Dutzend hat, gibt es die Klasse breit — und **niemand hat je nachgesehen, ob die
+> Rückanpassung dort genauso zuverlässig ist** wie bei den großen Faktoren.*
+>
+> **→ Offen, nicht zugeteilt: eine eigene Registrierung mit härterem Nullwert.** *Härter, weil
+> kleine Faktoren häufiger zufällig zusammenfallen — genau die Falle, die der Nullwert beim
+> großen Lauf abgefangen hat.* **Es eilt nicht; es ist benannt, und das ist der Unterschied.**
+>
+> *Die Skalen-Diagnose ist damit **beidseitig abgeschlossen**: äußerer Ereignis-Zeuge und innerer
+> Verhältnistest, mit gegenseitiger Deckung (WHLRs 2 F-Treffer sind unabhängig bestätigt) und
+> drei datumsfesten Trennfällen (**B, QXO, DOC**).*
 
 ---
 
