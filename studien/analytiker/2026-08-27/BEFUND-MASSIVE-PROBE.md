@@ -57,3 +57,33 @@ Rückfallebene. Offen bleiben S1 (132 Skalenwechsel: dieselbe Probe skaliert auf
 Fälle ≈ 132 Abrufe ≈ 29 Minuten Tempolimit — machbar, aber Spin-off-Fälle bleiben
 unentscheidbar) und S3 (Abgemeldete in der Breite: dafür sagt die Vorlage Norgate/
 Sharadar/EODHD).
+
+---
+
+## NACHTRAG ~13:00 — Zeiträume ergänzt, WHLR-Urteil präzisiert (QS-Einwand war berechtigt)
+
+Die QS hielt meinem „WHLR: 60m stimmt" ihre 25.08.-Messung entgegen (Massive und
+archiv1d bei 1,36–1,496, archiv60m Faktor 4 darunter). **Auflösung per Rohkurs-Abruf
+(adjusted=false, 27.08.): real gehandelt wurde am 25.08. zu 0,3665 und am 26.08. zu
+0,399 — die niedrige Skala.** Der QS-Vergleich lief (heute abgefragt) gegen Massives
+rückangepasste Ansicht, die den HEUTE ausgeführten 4:1-Reverse-Split bereits in die
+Historie einarbeitet (0,3665×4 = 1,466). Beide Messungen sind richtig — sie reden
+über zwei Konventionen: Rohskala vor Ausführung vs. rückangepasste Skala nach
+Ausführung. Da die System-Konvention der Archive „rückangepasst" ist (AAPL/NVDA/
+TSLA-Beleg), war mein Satz „60m stimmt" **zu breit**: richtig ist „in sich
+konsistent auf der Vor-Ausführungs-Skala von heute früh".
+
+**Die fünf Urteile mit Geltungszeitraum („gilt für …"):**
+
+| Reihe | Urteil mit Zeitraum |
+|---|---|
+| **RGR** | 60m vor dem **24.10.2025** um Faktor 2,674 zu hoch (kein Ereignis existiert); **ab 24.10.2025 stimmen beide überein**. 1d über den ganzen Zeitraum plausibel-stetig. |
+| **WHLR** | **Drei Segmente:** (1) historisch, z. B. **Sept. 2024**: 1d kaputt (QS: Kurse bis 62 Mio $ bei 0–13 Stück — nicht mein Befund, übernommen); dazu mein F-Fund **03.04.2017** (8:1-Split nicht geglättet). (2) **Stand heute früh vor Split-Ausführung** (Fetches 01:58/03:34): 60m einheitlich auf roher Vor-Split-Skala, 1d **in sich inkonsistent** (Historie schon ×4, der 26.08. roh) — das bleibt der Befund. (3) **Ab Ausführung 27.08.** ist die rückangepasste Darstellung (×4, wie 1d-Historie) die konventionskonforme; das 60m muss beim nächsten Nachziehen ×4 folgen, sonst ist DANN das 60m das falsche. |
+| **BYND** | Vor dem **14.08.2026**: 60m rückangepasst (konventionskonform), 1d-Historie auf Rohskala (Konventionsbruch) **plus** tageweise Flip-Flops im **Juli 2026** (in jeder Konvention Fehler). Ab 14.08. identisch. |
+| **SITC** | Vor dem **01.10.2024**: 1d um 3,361 rückangepasst (Ereignis nicht in Splits/Dividenden — vermutl. Spin-off, unbelegt), 60m roh mit echtem Kurssprung. **Ab 01.10.2024 exakt identisch.** Der 1:4-Split (19.08.2024) steckt in beiden konsistent. |
+| **B** | Trennfall mit Datum: ticker_change auf Barrick am **09.05.2025** (Events-Endpunkt). 1d trägt davor die alte Firma, 60m durchgehend die Historie des neuen Inhabers; **ab ~18.06.2025 identisch**. Kein Skalen-Urteil sinnvoll. |
+
+**Lehre für alle künftigen Skalen-Urteile:** Ein Archiv-Urteil ohne (a) Zeitraum und
+(b) Konventions-Angabe (roh vs. rückangepasst) ist unvollständig — um einen
+Ausführungstag herum können beide Archive „recht haben" und trotzdem
+inkompatibel sein.
