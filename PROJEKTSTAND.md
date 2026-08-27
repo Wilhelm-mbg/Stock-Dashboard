@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 08:34 (abgelesen)
+letzter-bericht: 2026-08-27 11:58 (Windows-Uhr, NICHT bash date)
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -40,7 +40,33 @@ Sitzungen.** Gefunden hat es jedes Mal eine Gegenprobe, nie ein Verdacht.
 > gegenstandslos.** *Was bleibt, ist die Frage der Archiv-Sauberkeit — und die ist Entscheidung
 > 1 unten.*
 
-## ⭐ WILHELMS ENTSCHEIDE 27.08. 08:2x (per Formular) — **alle drei gelten ab sofort**
+## 🕐 27.08. 11:58 — **DIE UHR IM BASH-WERKZEUG GEHT 3 STUNDEN 23 MINUTEN NACH**
+
+**Gemessen, nicht vermutet:** `Get-Date` (PowerShell, Windows) sagt **11:57**, `date` im
+Bash-Werkzeug sagt zur selben Sekunde **08:34**. **Alle Zeitstempel dieser Tafel, die aus
+`date` stammen, waren ~3½ Stunden zu früh** — und sie trugen den Vermerk **„(abgelesen)"**,
+also genau die Kennzeichnung, die sie glaubwürdiger machte als eine Schätzung.
+
+> ### 🎯 **Der PM hat eine Uhr abgelesen — die falsche.**
+> *Fünfmal in dieser Nacht liefen meine Zeitangaben vor, und ich habe es viermal als
+> „schätzen statt ablesen" korrigiert. **Die Abhilfe war das Problem:** Umstellen auf
+> „ablesen" hat den Fehler nicht behoben, sondern ihm ein Echtheitssiegel gegeben.*
+> **Zehnte Erscheinungsform derselben Krankheit — eine Prüfung, die grün wird, weil sie
+> etwas anderes misst, als man glaubt.**
+
+**Was RICHTIG ist und bleibt:** *alle aus **Git** abgelesenen Stempel* (`git log --format=%ci`
+liefert `+0200`, also echte Ortszeit) — **07:59 `a5b66e0` · 08:02:46 `v8.34.0` · 08:06:35
+`21f7002`**. Die stimmen.
+**Was falsch war:** *alles, was ich aus `date` gezogen habe.* **Oben korrigiert.**
+
+**→ HAUSREGEL FÜR ALLE SITZUNGEN: Für Uhrzeiten `Get-Date` (PowerShell) oder `git log`
+verwenden, NIE `date` im Bash-Werkzeug.** *Und wer eine Uhrzeit auf diese Tafel schreibt,
+nennt die Quelle — „(git)" oder „(Windows-Uhr)". Ein nacktes „(abgelesen)" sagt nur, dass
+jemand irgendwo hingesehen hat.*
+
+---
+
+## ⭐ WILHELMS ENTSCHEIDE 27.08. ~11:30 (per Formular) — **alle drei gelten ab sofort**
 
 > ### 1. Kostenhürde → **LIVE-HÜRDE DES GEHANDELTEN PRODUKTS**
 > **Das Messband (Vermögen → Depot) rechnet ab jetzt wie das Scoreboard.** *„Kostenhürde" heißt
@@ -66,7 +92,7 @@ Sitzungen.** Gefunden hat es jedes Mal eine Gegenprobe, nie ein Verdacht.
 
 ---
 
-## 🏆 27.08. 08:3x — **WEG 3 IST GEMESSEN: das erste Ergebnis seit Wochen ÜBER der Auflösungswand**
+## 🏆 27.08. ~11:45 — **WEG 3 IST GEMESSEN: das erste Ergebnis seit Wochen ÜBER der Auflösungswand**
 
 **c_gew = +0,0568 Pp je Handelstag · t = 20,99 · 496 Paartage · delta80 0,0084 → Faktor 6,8
 darüber.** *Ungewichtet c_roh +0,78 Pp bei f-Mittel 6,67 %.* **Und es fällt GEGEN die vorher
@@ -112,7 +138,7 @@ gewesen.*
 
 ---
 
-## ☀ MORGENLAGE 27.08. 08:18 (abgelesen) — was seit dem Aufwachen passiert ist
+## ☀ MORGENLAGE 27.08. (Vormittag) — was seit dem Aufwachen passiert ist
 
 **Zehn Sitzungen erreicht, alle arbeiten oder haben sauber abgeschlossen. Vier Ergebnisse, ein
 Fehlschluss von mir, zwei Entscheidungen für Wilhelm.**
@@ -328,7 +354,7 @@ Fehlschluss von mir, zwei Entscheidungen für Wilhelm.**
 > zwei Sitzungen haben denselben Vier-Minuten-Spuk unabhängig gesehen.** *Eine dritte hatte ihn
 > als „transienten Umschreib-Zustand" abgetan — auch richtig, aber aus dem falschen Grund.*
 
-### 📌 Wer woran sitzt *(Stand 08:18)*
+### 📌 Wer woran sitzt *(Stand 11:58)*
 
 | Sitzung | Rolle | Auftrag |
 |---|---|---|
