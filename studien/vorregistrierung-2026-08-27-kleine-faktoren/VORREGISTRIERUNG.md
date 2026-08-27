@@ -1,6 +1,6 @@
 # Vorregistrierung — Kleine Split-Faktoren: die benannte Blindstelle des §2-Joins
 
-**Stand:** 27.08.2026 ~21:2x, vor jedem Urteils-Rechenschritt. **Rolle:** Berechnungen.
+**Stand:** 27.08.2026 ~15:2x, vor jedem Urteils-Rechenschritt. **Rolle:** Berechnungen.
 **Auftrag:** PM (»die CBSH-Blindstelle — deine eigene benannte Reichweiten-Grenze«).
 Der §2-Join sieht nur Sprünge mit Faktor ≥ 2 bzw. ≤ 0,5; Aktiendividenden (Massive
 führt sie als 1:1,0x-Splits) und mittlere Splits (3:2 = 0,667) fallen durch.

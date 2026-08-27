@@ -1,6 +1,6 @@
 # Ergebnis — Kleine Split-Faktoren: kein Anpassungsfehler belegt; die Klasse zerfällt in messbar und strukturell blind
 
-**Gemessen:** 27.08.2026 ~21:3x, Rolle Berechnungen. Vorregistrierung + Machbarkeit
+**Gemessen:** 27.08.2026 ~15:3x, Rolle Berechnungen. Vorregistrierung + Machbarkeit
 vorab (Commit 2ef4100). **Kein Kanten-Urteil, nichts am Archiv geändert, die
 Faktor-2-Schwelle des §2-Joins bleibt unverändert.**
 

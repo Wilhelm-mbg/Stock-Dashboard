@@ -1,6 +1,6 @@
 # Ergebnis — Aggregations-Differenz: die 3,22 % sind ein Aggregations-Artefakt, und die teurere Variante ist die scheinbar vorsichtige
 
-**Gemessen:** 27.08.2026 ~23:0x, Rolle Berechnungen. Auftrag PM (»3,22 % gegen 6,67 % —
+**Gemessen:** 27.08.2026 ~17:0x, Rolle Berechnungen. Auftrag PM (»3,22 % gegen 6,67 % —
 welche Aggregation ist die richtige und was kostet die falsche?«). Werkzeug
 `messe-aggregation.js` in diesem Ordner, nur lesend. **Nichts umgestellt, keine
 Empfehlung** (Auflage 4) — der Aggregations-Entscheid ist keiner des Messlaufs.

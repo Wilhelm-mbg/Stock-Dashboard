@@ -1,6 +1,6 @@
 # Vorregistrierung — Extreme-Empfindlichkeit: Verschieben die strittigen Hoch/Tief die gemessene Kante?
 
-**Stand:** 27.08.2026 ~20:5x, vor jedem Rechenschritt. **Rolle:** Berechnungen.
+**Stand:** 27.08.2026 ~14:5x, vor jedem Rechenschritt. **Rolle:** Berechnungen.
 **Auftrag:** PM (»die Frage, die die QS als ›Messung der Mess-Seite‹ abgegeben hat«).
 QS-Befund als Ausgang (uebergabe/qs-audit-2026-08-27-1330-DRITTER-ZEUGE.md):
 3,22 % der Reihen-Tage uneinig > 0,2 % auf Hoch/Tief, davon 5,4 % Skalen-Konvention →

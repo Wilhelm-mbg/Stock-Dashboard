@@ -1,6 +1,6 @@
 # Vorregistrierung — Überlebenslücke Weg 3, Familienmitglied 2: die Übernacht-Fassung
 
-**Stand:** 27.08.2026 ~18:15, **datenblind geschrieben, BEVOR der 1d-Vollauf gemeldet
+**Stand:** 27.08.2026 ~12:15, **datenblind geschrieben, BEVOR der 1d-Vollauf gemeldet
 ist** — kein Eröffnungskurs dieser Kohorte wurde gesehen. **Rolle:** Berechnungen.
 **Familie:** `ueberlebensluecke-wege`, testsGesamt = 2 (Mitglied 1 = Schluss-zu-Schluss,
 belegt 27.08. vormittags; dieses ist Mitglied 2 — die Familie wurde in Mitglied 1
@@ -91,7 +91,7 @@ wie Mitglied 1).
 
 ---
 
-## Nachtrag 1 (~18:40, VOR dem Bau) — W3 bekommt eine absolute Untergrenze
+## Nachtrag 1 (~12:40, VOR dem Bau) — W3 bekommt eine absolute Untergrenze
 
 **PM-Einwand, übernommen:** W3 verglich nur die Gültigkeitsquoten der Arme
 MITEINANDER und fing damit nur ASYMMETRISCHEN Ausfall. **Symmetrischer Ausfall
@@ -109,7 +109,7 @@ großzügigen Raum für die Verschwundenen-Seite und reißt trotzdem, bevor eine
 ausgewählte Restpopulation den Endpunkt trägt. Beide Quoten werden unverändert
 immer ausgewiesen.
 
-## Nachtrag 2 (~22:5x, nach dem Wächterlauf, VOR dem Kohortenlauf) — W4 ist jetzt selbst geprüft
+## Nachtrag 2 (~16:5x, nach dem Wächterlauf, VOR dem Kohortenlauf) — W4 ist jetzt selbst geprüft
 
 **PM-Einwand, berechtigt:** W1 und W2b waren per Injektion belegt, **W4 meldete nur,
 dass er nichts gefunden hat** (1.068.469 Zeilen, 100,00 % gültig). Ein glattes

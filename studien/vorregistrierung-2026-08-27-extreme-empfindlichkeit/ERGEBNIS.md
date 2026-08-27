@@ -1,6 +1,6 @@
 # Ergebnis — Extreme-Empfindlichkeit: der Stopp-Pfad wird berührt, die Kante wird nicht verschoben
 
-**Gemessen:** 27.08.2026 ~21:0x–22:0x, Rolle Berechnungen. Auftrag PM (die von der QS
+**Gemessen:** 27.08.2026 ~15:0x–16:0x, Rolle Berechnungen. Auftrag PM (die von der QS
 als »Messung der Mess-Seite« abgegebene Frage). Vorregistrierung da47a89, Treiber
 c91c34c — beide **vor** dem Lauf committet. Maschine 1.6.1, ein Lauf, vier
 Kinderprozesse. Rohdaten: `<strategie>-A/B.json`, `vergleich.json`,
