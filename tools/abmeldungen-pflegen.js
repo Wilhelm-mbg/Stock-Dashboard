@@ -24,7 +24,14 @@
  *   3. Jede auffaellige Reihe wird FRISCH gegen die Quelle geprueft: liefert
  *      sie nach dem Handelsende noch Kerzen mit Umsatz, ist es ein
  *      ABRUFFEHLER (Archiv haengt, nachladen); liefert sie nichts, ist die
- *      Abmeldung BESTAETIGT.
+ *      Abmeldung BESTAETIGT. VIERTER ZUSTAND (1d-Messung 27.08., AVB/EQR):
+ *      fuehrt die Quelle nur noch einen STUMMEL der Historie (AVB: 30 Kerzen
+ *      ab 17.07. gegen 8.166 im Archiv), ist NICHT nachladen die Antwort,
+ *      sondern schuetzen - das Archiv ist die einzige Kopie, und die
+ *      mindestKerzen-Sperre des Nachladens weist den Stummel ohnehin ab.
+ *      Dieser Zustand ueberschreibt die beiden anderen, denn die HANDLUNG
+ *      kippt: auch eine bestaetigt abgemeldete Reihe mit gekappter Historie
+ *      gehoert in die Schutz-Gruppe, nicht in die Abmelde-Ablage.
  *   4. Ergebnis wandert nach massive/abmeldungen.json - die GEPFLEGTE Liste
  *      mit Handelsende, getrennt vom Schnappschuss der Schnittstelle, den
  *      dieses Werkzeug nicht anfasst. Eine frueher abgemeldete Reihe, die
@@ -64,13 +71,17 @@ function befundVon(series) {
     if ((series[i][2] || 0) > 0) { ende = series[i][0]; break; }
     stempel++;
   }
-  return { handelsende: ende, stempelSchwanz: stempel, letzteKerze: series.length ? series[series.length - 1][0] : null };
+  return { handelsende: ende, stempelSchwanz: stempel, letzteKerze: series.length ? series[series.length - 1][0] : null,
+           kerzen: series.length, ersteMs: series.length ? series[0][0] : null };
 }
 
 function holeQuelle(sym) {
   return new Promise(function (resolve) {
+    /* 10 Jahre statt 1 Monat: dieselbe Antwort traegt dann BEIDE Auskuenfte -
+     * ob nach dem Handelsende noch Umsatz kam UND wie tief die Quelle die
+     * Historie ueberhaupt noch fuehrt (der Stummel-Test braucht die Tiefe). */
     var url = 'https://query1.finance.yahoo.com/v8/finance/chart/' + encodeURIComponent(sym) +
-      '?range=1mo&interval=1d&includePrePost=false';
+      '?range=10y&interval=1d&includePrePost=false';
     https.get(url, { headers: { 'User-Agent': 'Mozilla/5.0' } }, function (res) {
       var buf = '';
       res.on('data', function (d) { buf += d; });
@@ -155,7 +166,25 @@ function schlaf(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
     for (var t = 0; t < ts.length; t++) {
       if ((vol[t] || 0) > 0 && tagVon(ts[t] * 1000) > a.handelsende) frischer = tagVon(ts[t] * 1000);
     }
-    if (frischer) { a.befund = 'abruffehler'; a.quelleDetail = 'Quelle handelt bis ' + frischer + ' - das Archiv haengt, nachladen!'; }
+    a.quelleKerzen = ts.length;
+    a.quelleErsteTag = ts.length ? tagVon(ts[0] * 1000) : null;
+    /* Stummel-Test: die Quelle fuehrt nur noch einen Bruchteil der Historie,
+     * deren Anfang weit NACH unserem liegt. Die groben Grenzen (unter 100
+     * Kerzen gegen mindestens 1.000 im Archiv, Anfang mehr als ein Jahr
+     * spaeter) spiegeln die mindestKerzen-Sperre des Nachladens: gemeint ist
+     * der klare Fall (AVB: 30 gegen 8.166), nicht die Grauzone - unklare
+     * Faelle bleiben bei den beiden anderen Befunden, wo die Sperre des
+     * Nachladens ohnehin jedes Ueberschreiben abweist. */
+    var r0 = reihen[a.sym] || {};
+    var stummel = ts.length > 0 && ts.length < 100 && (r0.kerzen || 0) >= 1000 &&
+      r0.ersteMs != null && ts[0] * 1000 > r0.ersteMs + 365 * 86400000;
+    if (stummel) {
+      a.befund = 'historie-zurueckgesetzt';
+      a.quelleDetail = 'Quelle fuehrt nur noch ' + ts.length + (ts.length === 1 ? ' Kerze' : ' Kerzen') + ' ab ' + a.quelleErsteTag +
+        ', das Archiv haelt ' + r0.kerzen + ' - NICHT nachladen, das Archiv ist die einzige Kopie' +
+        (frischer ? '; Quelle zeigt Handel bis ' + frischer : '');
+    }
+    else if (frischer) { a.befund = 'abruffehler'; a.quelleDetail = 'Quelle handelt bis ' + frischer + ' - das Archiv haengt, nachladen!'; }
     else { a.befund = 'abgemeldet-bestaetigt'; a.quelleDetail = 'Quelle liefert nach dem Handelsende keinen Umsatz mehr'; }
   }
 

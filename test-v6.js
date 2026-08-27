@@ -4525,16 +4525,19 @@ console.log('\n44) Messmaschine, Scoreboard und Strategie-Eingabe (23.08.2026)')
      * (behalten und kennzeichnen, nie herausnehmen). Dafuer sichert diese
      * Klinke die Schnittstelle: die Eintragsfelder und die drei moeglichen
      * Befund-Werte. Wer sie aendert, muss den Wachhund mitziehen. */
-    ['sym:', 'handelsende:', 'rueckstand:', 'stempelSchwanz:', 'listeBis', 'quelleGeprueftAm', 'befund'].forEach(function (f) {
+    ['sym:', 'handelsende:', 'rueckstand:', 'stempelSchwanz:', 'listeBis', 'quelleGeprueftAm', 'befund', 'quelleKerzen'].forEach(function (f) {
       ok(aq.indexOf(f) !== -1, 'Abmeldelisten-Vertrag: Feld ' + f.replace(':', '') + ' wird geschrieben');
     });
-    ["'abgemeldet-bestaetigt'", "'abruffehler'", "'quelle-leer'"].forEach(function (w) {
+    /* Der vierte Wert kam per Absprache dazu (1d-Messung 27.08.: AVB/EQR -
+     * die Quelle fuehrt nur noch einen Stummel, das Archiv ist die einzige
+     * Kopie; die Handlung kippt von nachladen auf schuetzen). */
+    ["'abgemeldet-bestaetigt'", "'abruffehler'", "'quelle-leer'", "'historie-zurueckgesetzt'"].forEach(function (w) {
       ok(aq.indexOf('a.befund = ' + w) !== -1, 'Abmeldelisten-Vertrag: Befund-Wert ' + w + ' existiert');
     });
     var befundWerte = {};
     (aq.match(/a\.befund = '[^']+'/g) || []).forEach(function (z) { befundWerte[z.split("'")[1]] = 1; });
-    ok(Object.keys(befundWerte).length === 3,
-       'Abmeldelisten-Vertrag: es gibt GENAU drei verschiedene Befund-Werte - ein vierter braucht die Absprache mit dem Wachhund',
+    ok(Object.keys(befundWerte).length === 4,
+       'Abmeldelisten-Vertrag: es gibt GENAU vier verschiedene Befund-Werte - ein fuenfter braucht die Absprache mit dem Wachhund',
        Object.keys(befundWerte).sort().join(', '));
   })();
   /* Eigenschafts-Pruefung gegen ein ECHTES Protokoll: aendert die Messmaschine die
