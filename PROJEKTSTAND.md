@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 02:45
+letzter-bericht: 2026-08-27 02:50
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -16,11 +16,28 @@ Wenn du hier etwas änderst, dann nur deine eigene Zeile unter „Läuft gerade"
 
 ## 📋 NACHTBILANZ 27.08. (Stand 02:00) — die 30-Sekunden-Fassung
 
-**Ertrag der Nacht: null neue Kanten, sechs verhinderte Datenverluste.** Der Belegstand bleibt
-**0 von 12**. Was stattdessen passiert ist: sechsmal wurde eine Reparatur oder eine Zahl
-angehalten, die echte Kurse zerstört oder ein falsches Urteil getragen hätte. **Zweimal traf
-es Anweisungen des PM, zweimal Vorgaben der QS, zweimal eigene Befunde der Sitzungen.**
-Gefunden hat es jedes Mal eine Gegenprobe.
+**Ertrag der Nacht: null neue Kanten, sechs verhinderte Datenverluste — und ein Fund, der die
+Messbasis betrifft.** Der Belegstand bleibt **0 von 12**. Sechsmal wurde eine Reparatur oder
+eine Zahl angehalten, die echte Kurse zerstört oder ein falsches Urteil getragen hätte;
+**zweimal traf es Anweisungen des PM, zweimal Vorgaben der QS, zweimal eigene Befunde der
+Sitzungen.** Gefunden hat es jedes Mal eine Gegenprobe.
+
+> ### 🚨 DER FUND, DER ALLES ANDERE ÜBERWIEGT (02:50)
+> **Die letzte Kerze jedes Handelstages im Stundenarchiv ist keine Handelsstunde, sondern eine
+> Momentaufnahme des Schlusskurses — und sie ändert sich zwischen zwei Abrufen um im Mittel
+> 0,0978 %. Das ist praktisch genau die Kostenhürde von 0,10 %, an der fast jede Studie hängt.**
+>
+> **Die Messmaschine liest diese Kerze.** Und sie hat die Belastung die ganze Zeit
+> mitgeschrieben, ohne dass jemand sie als solche gelesen hat: **fünf der zwölf Strategien
+> beziehen 100 % ihrer Signale aus solchen Kerzen**, `rsi2seit` 36,4 %.
+>
+> **Was das heißt — und was NICHT:** Jedes Protokoll wurde auf **einem** Archivstand gemessen
+> und ist **in sich konsistent**. Die Zahlen sind nicht falsch. **Aber eine Neumessung nach dem
+> nächsten Sammellauf verschiebt sich um Hürden-Größenordnung.** *Möglicherweise die Erklärung
+> für das ungeklärte 0,0001-Pp-Urteilsgekippe von `rsi2seit-mcp` — Hypothese, nicht behauptet.*
+>
+> **Eine empirische Schranke kommt in Stunden** (der laufende Docht-Vergleich entfernt alle
+> Nullumsatz-Kerzen und misst die kombinierte Wirkung). **Nichts wird vorher umgebaut.**
 
 ### ⭐ Was auf Wilhelm wartet — drei Entscheidungen
 
@@ -2053,6 +2070,57 @@ werden.*
 > und der Bearbeiter „repariert" etwas Funktionierendes. *(Dazu: der Prüfausschnitt war auf
 > 420 Zeichen geraten und schnitt mitten in die Funktion — **ein Syntaxfehler sieht aus wie
 > ein Befund.**)*
+
+### 🚨🚨🚨 27.08. ~02:50 — JA, DIE MASCHINE LIEST SIE. Und die Zahl stand die ganze Zeit in den Protokollen.
+
+**Antwort der Mess-Sitzung, gegen den Code UND gegen die abgelegten Protokolle geprüft:**
+
+**`ladeUniversum` hat KEINEN Umsatzfilter** — die 20:00-Kerze wird geladen und behandelt wie
+jede andere. **Und die Maschine kennzeichnet sie sogar präzise:** `sitzungsSchicht` markiert
+die letzte Kerze des Tages als Schicht **»G«**, und die Protokolle zählen die Signale je
+Schicht.
+
+> **Die Quantifizierung lag also seit Wochen in den zwölf Protokollen — nur hat sie niemand
+> als Quote-Exposition gelesen.**
+
+| Strategie | Anteil Signale auf Grenzkerzen |
+|---|---|
+| **momentum, monatsende-kauf, monatswende-breit, quartalsschub-betrag, t1-zwangsglattstellung** | **100 %** |
+| rsi2seit + rsi2seit-mcp | **36,4 %** |
+| t3-familie | 20–24 % |
+| winkelfamilie | 14–16 % |
+| t2-familie | 12–13 % |
+| kapitulation | 8–10 % |
+
+*Die fünf 100-%-Fälle sind Tagesstrategien auf dem 60m-Archiv: jedes Signal feuert auf der
+letzten Tageskerze — an normalen Tagen ist das die 20:00-Quote. („G" zählt auch die echten
+Schlusskerzen verkürzter Sitzungen mit, eine Handvoll pro Jahr.)*
+
+**WO ES WIRKT — drei Stellen, und die zweite ist die schwerste:**
+- **(a) Signalbedingung** — Detektoren und Indikatoren (RSI, EMA, Ränge) rechnen über Schlüsse
+  **einschließlich** der Quote-Schlüsse. **Bei den fünf 100-%-Strategien steht die gesamte
+  Signalbasis darauf.**
+- **(b) Rendite** — `fuehreAus` läuft den Kerzenpfad; fällt der Ausstieg auf eine Grenzkerze,
+  **ist der gemessene Ausstiegskurs der Quote-Schnappschuss**, und der Stop liest deren Tief.
+  *Einstiege liegen über die Folge-Eröffnungs-Konvention meist auf echten Kerzen.*
+- **(c) Kontrolltopf** — A7 schichtet nach Position + G; **die G-Strata bestehen aus
+  Quote-Kerzen-Renditen.**
+
+**RÜCKWIRKEND — differenziert, und die Unterscheidung ist wichtig:** **Jedes einzelne Protokoll
+wurde auf EINEM Archivstand gemessen und ist in sich konsistent.** Die Instabilität heißt
+nicht „die Zahlen sind falsch", sondern: **eine Neumessung nach dem nächsten Sammellauf
+verschiebt sich um Hürden-Größenordnung** — am stärksten bei den fünf 100-%-Strategien.
+
+> **💡 UND DAS ERKLÄRT MÖGLICHERWEISE EIN ALTES RÄTSEL:** Das **0,0001-Pp-Urteilsgekippe von
+> `rsi2seit-mcp`** zwischen früh und abends — **36 % seiner Signalbasis stand auf Kerzen, die
+> ein Zwischenlauf neu gestempelt haben kann.** *Hypothese, ausdrücklich nicht behauptet;
+> prüfbar, sobald die Mehrtages-Gegenprobe steht.*
+
+**⏳ EINE EMPIRISCHE SCHRANKE KOMMT OHNEHIN IN STUNDEN:** Der B-Arm des Docht-Laufs entfernt
+**alle** Nullumsatz-Kerzen — also auch die 20:00-Quotes. Der A/B-Vergleich misst damit die
+**kombinierte** Empfindlichkeit (Dochte **+** Quote-Kerzen) der drei Stop-Strategien.
+**⚠ Wichtig für die Deutung: er trennt die beiden Klassen NICHT.** Sagt B „hebt sich nicht
+auf", braucht die Zuordnung einen kleinen Folgelauf (nur 20:00 raus). *Kein Umbau vorher.*
 
 ### 🚨🚨 27.08. ~02:45 — DIE DRITTE KATEGORIE: eine Kerze, die beim nächsten Hinsehen etwas anderes sagt
 
