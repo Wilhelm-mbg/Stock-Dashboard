@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 03:00 (abgelesen)
+letzter-bericht: 2026-08-27 03:02 (abgelesen)
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -14,7 +14,7 @@ Wenn du hier etwas änderst, dann nur deine eigene Zeile unter „Läuft gerade"
 
 ---
 
-## 📋 NACHTBILANZ 27.08. — die 30-Sekunden-Fassung *(Stand 02:28 echter Zeit)*
+## 📋 NACHTBILANZ 27.08. — die 30-Sekunden-Fassung *(Stand 03:00 echter Zeit)*
 
 > **🕐 Zu den Uhrzeiten in diesem Abschnitt und darunter:** Die Überschriften der Nacht tragen
 > **vom PM geschätzte** Zeiten, die gegen Ende **bis zu ~35 Minuten vorlaufen**. Maßgeblich ist
@@ -28,9 +28,6 @@ bleibt **0 von 12**. Siebenmal wurde eine Reparatur, eine Zahl oder eine Deutung
 die echte Kurse zerstört oder ein falsches Urteil getragen hätte — **dreimal traf es den PM,
 zweimal Vorgaben der QS, zweimal eigene Befunde der Sitzungen.** Gefunden hat es jedes Mal eine
 Gegenprobe, nie ein Verdacht.
-
-**Der siebte Fall war der lehrreichste, weil er den PM selbst betraf und binnen 40 Minuten
-auffiel:**
 
 ### ⭐ Was auf Wilhelm wartet — drei Entscheidungen
 
@@ -89,9 +86,6 @@ für Verfälschung diente und ohne jede Verfälschung entsteht.
 Zahl hereingefallen war): ***Die Falle verschwindet nicht durch einmaliges Erkennen.***
 
 *Alle Einzelheiten in den datierten Abschnitten unterhalb und unter „Aufträge".*
-
----
-
 
 ---
 
