@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 08:32 (abgelesen)
+letzter-bericht: 2026-08-27 08:18 (abgelesen)
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -40,7 +40,7 @@ Sitzungen.** Gefunden hat es jedes Mal eine Gegenprobe, nie ein Verdacht.
 > gegenstandslos.** *Was bleibt, ist die Frage der Archiv-Sauberkeit — und die ist Entscheidung
 > 1 unten.*
 
-## ☀ MORGENLAGE 27.08. 08:30 — was seit dem Aufwachen passiert ist
+## ☀ MORGENLAGE 27.08. 08:18 (abgelesen) — was seit dem Aufwachen passiert ist
 
 **Zehn Sitzungen erreicht, alle arbeiten oder haben sauber abgeschlossen. Vier Ergebnisse, ein
 Fehlschluss von mir, zwei Entscheidungen für Wilhelm.**
@@ -134,7 +134,36 @@ Fehlschluss von mir, zwei Entscheidungen für Wilhelm.**
 > die, an der der Beinahe-Unfall von 08:00 hing.* **Er misst am ausgelieferten Artefakt, nicht
 > an der Vorfahren-Beziehung.**
 
-### 📌 Wer woran sitzt *(Stand 08:30)*
+> ### 🛡 DIE 12 % SIND AUFGEKLÄRT — **und Wilhelms Entscheid war belegt richtig** (`ab`)
+> **Die Halbtags-Schlusskerze um 18:00 ist NICHT Nachhandel. Sie enthält die SCHLUSSAUKTION.**
+> *Halbtagsschluss 13:00 ET = exakt **18:00:00 UTC** — der Auktionsdruck fällt in den Eimer, der
+> um 18:00 beginnt. Auktion ist Sitzungsgeschäft, deshalb führt der Tagesbalken sie mit — und
+> **in 12 % der Fälle setzt sie das Tageshoch oder -tief.***
+>
+> **🔴 → Eine Regel „Kerzen nach Sitzungsende mit Umsatz 0 verwerfen" — DIE FASSUNG, AUF DIE WIR
+> UNS GEEINIGT HATTEN — würde an Halbtagen genau die Auktionskerzen treffen, deren Umsatzfeld
+> verlorengegangen ist. Der Kurs ist da, nur das Umsatzfeld fehlt.** *Achter verhinderter
+> Datenverlust der Nacht — und der erste, der eine **bereits vereinbarte** Regel trifft.*
+>
+> **✅ Wilhelm hat diese Klippe bereits umschifft, ohne sie zu kennen:** sein Entscheid von 05:50
+> lautet **„Randzeiten BEHALTEN und kennzeichnen"** — **es existiert keine Löschregel, die der
+> Fund treffen könnte.** *Der Befund macht seine Entscheidung nachträglich zur belegt richtigen.*
+>
+> **⭐ Die Selbstkorrektur der QS wiegt schwerer als der Fund:**
+> ***„Die 0,0 % waren leer, nicht negativ. Ein Merkmal, das nichts zu prüfen hat, prüft nichts."***
+> *Ihr Schiedsrichter meldete an Normaltagen C = 0,0 %, gelesen als „der Tagesbalken führt keinen
+> Nachhandel mit". Unzulässig: **das Archiv enthält an Normaltagen gar keine Nachhandelskerzen —
+> die Kategorie hatte nichts anzubieten und konnte nie gewinnen.*** **Neu gegen die Quelle
+> geführt (26.11.2025, zwölf Reihen): 10× „nur Sitzung", 0× „erst mit Nachhandel".** *Dieselbe
+> Aussage — jetzt belegt statt aus einer leeren Kategorie geschlossen.* **Vierte Erscheinungsform
+> der Krankheit heute, und die einzige, die jemand an sich selbst gefunden hat.**
+>
+> *Zwei eigene Vermutungen unterwegs kassiert: „die fehlende Halbstunde steckt in der
+> 18:00-Kerze" → **89,6 % tragen keinen Umsatz, widerlegt**; „die leere 17:30-Kerze liefert
+> wenigstens Hoch/Tief" → **liefert gar nichts, die Halbstunde fehlt wirklich**. Schönster
+> Einzelbeleg: **ACGL mit 335.604 Stück in der 18:00-Kerze — mehr als jede Sitzungsstunde.***
+
+### 📌 Wer woran sitzt *(Stand 08:18)*
 
 | Sitzung | Rolle | Auftrag |
 |---|---|---|
