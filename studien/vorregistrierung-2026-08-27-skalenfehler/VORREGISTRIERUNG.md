@@ -109,6 +109,11 @@ der **sechste Eichfall WHLR 03.04.2017** (Sprung r = 8,24 exakt auf belegtem 8:1
 neun Jahre alt) — er prüft, ob das Gerüst auch in alten Archivteilen greift. Der Join
 war noch nicht gebaut; keine Zahl ist auf der falschen Prämisse entstanden.
 
+**Nullwert-Pflicht (PM-Auflage):** Jede Quote von Datums-Treffern (Sprung trifft
+Ereignisdatum ±1 HT) wird nur zusammen mit dem **Zufalls-Nullwert** ausgewiesen (wie
+oft träfe ein Sprung ein Ereignisdatum rein zufällig — der Analytiker liefert ihn);
+eine F-Quote ohne Nullwert daneben ist nicht lesbar und wird nicht berichtet.
+
 ---
 
 *Simulation mit virtuellem Kapital. Keine Anlageberatung.*
