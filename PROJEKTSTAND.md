@@ -14,6 +14,50 @@ Wenn du hier etwas änderst, dann nur deine eigene Zeile unter „Läuft gerade"
 
 ---
 
+## 🗓 27.08. 18:0x — **ENTWARNUNG beim 1m-Archiv — und darunter ein echter Fund**
+
+> ### ✅ **DER HEUTIGE HANDELSTAG IST NICHT VERLOREN.**
+> *1m wird **ab 28.08. 00:00 UTC (02:00 MESZ)** fällig; dann greift die 20-Minuten-Automatik, und
+> **weil Yahoo sieben Tage rückwirkend liefert, wird der heutige Tag mitgeholt**. Läuft die App
+> um 02:00 nicht, holt es der erste Lauf nach dem nächsten Start — **das Fenster reicht bis zum
+> 03.09.***
+
+**Der Befund selbst ist bestätigt** *(AAPL 1m endet 26.08. 20:00 UTC, Kerzen von heute: 0,
+letzter Schreibvorgang 12:18 — vor US-Eröffnung).* **Und heute Abend läuft nichts:** *Fälligkeit
+für 15:47 / 20:00 / 20:35 / 23:00 UTC durchgespielt — **überall `faellig=false`**, Begründung
+wörtlich „Alle 531 Werte sind auf Stand".*
+
+> ## 🔴 DER FUND: **`stand.json` merkt sich das Datum des ABRUFS, nicht den letzten enthaltenen HANDELSTAG**
+>
+>     AAPL:  {"kerzen":2689, "am":"2026-08-27"}
+>            ...obwohl KEINE EINZIGE Kerze von heute drin ist.
+>
+> **Der Lauf um 12:18 — vor Eröffnung — hat den Tagesstempel „verbraucht", ohne den Tag zu
+> holen.** *Der Plan liest den Stempel als „heute erledigt" und meldet „auf Stand", während der
+> laufende Handelstag fehlt.*
+>
+> **Warum es trotz Entwarnung zählt — zwei Stellen:**
+> 1. **Wer aus „Alle 531 Werte sind auf Stand" schließt, der heutige Tag sei drin, misst auf einem
+>    Archiv, das ihn nicht kennt.** *Genau das ist heute passiert.*
+> 2. **⚠ Bleibt die App länger als sieben Tage aus** (Urlaub, Rechner aus), **fällt die Lücke aus
+>    dem Quellfenster — und dann ist sie WIRKLICH weg, während der Plan die ganze Zeit „auf Stand"
+>    sagte.** ***Der Verlust wäre unsichtbar bis zum Schluss.***
+
+> ### 📐 HAUSREGEL — **dritter Fall derselben Bauform an EINEM Tag**
+> | Stelle | falscher Stempel | richtiger |
+> |---|---|---|
+> | Abmeldeliste | Listendatum | **Handelsende** |
+> | Archiv-Wachhund | letzte Kerze | **letzter Umsatz** |
+> | **Sammelplan** | **Datum des Abrufs** | **letzter enthaltener Handelstag** |
+>
+> ***Ein Stempel muss das Ereignis festhalten, das ihn rechtfertigt — nicht den Zeitpunkt, zu dem
+> jemand hingesehen hat.*** **Alle drei Fälle melden „erledigt", wo „nachgesehen" richtig wäre.**
+>
+> **→ Vorgeschlagen, nicht gebaut** *(`sammelplan`/`kerzenquelle` ist `1d`s Ecke).* **An `1d`
+> weitergegeben — nicht dringend, das Quellfenster deckt es; sie sitzt am Vollauf.**
+
+---
+
 ## 🏗 NEUES VORHABEN 27.08. 17:3x — **DER REITER „REGELN" WIRD UMGEBAUT UND AUSGEDÜNNT**
 
 > **Wilhelms Auftrag:** *„können wir bitte auch den gesamten Tab **Regeln** (mit
