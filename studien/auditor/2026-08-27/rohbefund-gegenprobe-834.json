@@ -1,0 +1,660 @@
+{
+ "stand": "Arbeitsbaum == v8.34.0 an allen Funddateien (git diff leer)",
+ "protokolle": 38,
+ "bilder": "C:\\Users\\Wilhe\\AppData\\Local\\Temp\\md-auditor834-zAVodz\\bilder",
+ "hell": {
+  "marke": "hell",
+  "ausrichtMessung": {
+   "scoreboard": {
+    "fehlt": false,
+    "tabelle": true,
+    "koepfe": [
+     {
+      "t": "URTEIL",
+      "klasse": "",
+      "a": "left"
+     },
+     {
+      "t": "STRATEGIE",
+      "klasse": "",
+      "a": "left"
+     },
+     {
+      "t": "ÜBERSCHUSS TAGESMITTEL",
+      "klasse": "",
+      "a": "right"
+     },
+     {
+      "t": "ÜBERSCHUSS JE SIGNAL",
+      "klasse": "",
+      "a": "right"
+     },
+     {
+      "t": "T",
+      "klasse": "",
+      "a": "right"
+     },
+     {
+      "t": "MDE",
+      "klasse": "",
+      "a": "right"
+     },
+     {
+      "t": "TAGE / SIGNALE",
+      "klasse": "",
+      "a": "right"
+     },
+     {
+      "t": "FEINHEIT DELTA80 IN PROZEN",
+      "klasse": "",
+      "a": "right"
+     },
+     {
+      "t": "AUSSICHT SIGNALTAGE BIS EN",
+      "klasse": "",
+      "a": "right"
+     },
+     {
+      "t": "GEMESSEN",
+      "klasse": "",
+      "a": "left"
+     }
+    ],
+    "zahlzellen": 84,
+    "linksbuendig": 0,
+    "beispiele": [
+     {
+      "t": "+1,107",
+      "klasse": "num",
+      "a": "right",
+      "ziffern": "tabular-nums",
+      "umbruch": "nowrap"
+     },
+     {
+      "t": "+1,071",
+      "klasse": "num",
+      "a": "right",
+      "ziffern": "tabular-nums",
+      "umbruch": "nowrap"
+     },
+     {
+      "t": "+2,14",
+      "klasse": "num",
+      "a": "right",
+      "ziffern": "tabular-nums",
+      "umbruch": "nowrap"
+     },
+     {
+      "t": "+1,034",
+      "klasse": "num",
+      "a": "right",
+      "ziffern": "tabular-nums",
+      "umbruch": "nowrap"
+     }
+    ]
+   },
+   "archiv": {
+    "fehlt": false,
+    "tabelle": false
+   }
+  },
+  "ausrichtArchiv": {
+   "scoreboard": {
+    "fehlt": false,
+    "tabelle": true,
+    "koepfe": [
+     {
+      "t": "Urteil",
+      "klasse": "",
+      "a": "left"
+     },
+     {
+      "t": "Strategie",
+      "klasse": "",
+      "a": "left"
+     },
+     {
+      "t": "ÜberschussTagesmittel",
+      "klasse": "",
+      "a": "right"
+     },
+     {
+      "t": "Überschussje Signal",
+      "klasse": "",
+      "a": "right"
+     },
+     {
+      "t": "t",
+      "klasse": "",
+      "a": "right"
+     },
+     {
+      "t": "MDE",
+      "klasse": "",
+      "a": "right"
+     },
+     {
+      "t": "Tage / Signale",
+      "klasse": "",
+      "a": "right"
+     },
+     {
+      "t": "Feinheitdelta80 in Prozent",
+      "klasse": "",
+      "a": "right"
+     },
+     {
+      "t": "AussichtSignaltage bis ent",
+      "klasse": "",
+      "a": "right"
+     },
+     {
+      "t": "gemessen",
+      "klasse": "",
+      "a": "left"
+     }
+    ],
+    "zahlzellen": 84,
+    "linksbuendig": 0,
+    "beispiele": [
+     {
+      "t": "+1,107",
+      "klasse": "num",
+      "a": "right",
+      "ziffern": "tabular-nums",
+      "umbruch": "nowrap"
+     },
+     {
+      "t": "+1,071",
+      "klasse": "num",
+      "a": "right",
+      "ziffern": "tabular-nums",
+      "umbruch": "nowrap"
+     },
+     {
+      "t": "+2,14",
+      "klasse": "num",
+      "a": "right",
+      "ziffern": "tabular-nums",
+      "umbruch": "nowrap"
+     },
+     {
+      "t": "+1,034",
+      "klasse": "num",
+      "a": "right",
+      "ziffern": "tabular-nums",
+      "umbruch": "nowrap"
+     }
+    ]
+   },
+   "archiv": {
+    "fehlt": false,
+    "tabelle": true,
+    "koepfe": [
+     {
+      "t": "AUFLÖSUNG",
+      "klasse": "",
+      "a": "left"
+     },
+     {
+      "t": "WERTE",
+      "klasse": "num",
+      "a": "right"
+     },
+     {
+      "t": "JÜNGSTE KERZE",
+      "klasse": "",
+      "a": "left"
+     },
+     {
+      "t": "ZULETZT GESAMMELT",
+      "klasse": "",
+      "a": "left"
+     },
+     {
+      "t": "OFFEN",
+      "klasse": "num",
+      "a": "right"
+     },
+     {
+      "t": "STAND",
+      "klasse": "",
+      "a": "left"
+     },
+     {
+      "t": "",
+      "klasse": "",
+      "a": "left"
+     }
+    ],
+    "zahlzellen": 6,
+    "linksbuendig": 0,
+    "beispiele": [
+     {
+      "t": "0",
+      "klasse": "num",
+      "a": "right",
+      "ziffern": "tabular-nums",
+      "umbruch": "nowrap"
+     },
+     {
+      "t": "–",
+      "klasse": "num",
+      "a": "right",
+      "ziffern": "tabular-nums",
+      "umbruch": "nowrap"
+     },
+     {
+      "t": "0",
+      "klasse": "num",
+      "a": "right",
+      "ziffern": "tabular-nums",
+      "umbruch": "nowrap"
+     },
+     {
+      "t": "–",
+      "klasse": "num",
+      "a": "right",
+      "ziffern": "tabular-nums",
+      "umbruch": "nowrap"
+     }
+    ]
+   }
+  },
+  "band": {
+   "fehlt": false,
+   "text": "Was die Messmaschine zur laufenden Regel sagt · reine Anzeige, hier wird nichts gerechnet nicht entscheidbar rsi2seit · gemessen 2026-08-26 · Einstieg schlusskerze Überschuss je Signal +0,021 Pp, Kostenhürde 0,10 Pp → netto −0,079 Pp · t = 0.83 · 364 Tage / 56112 Signale Das Urteil lautet nicht entscheidbar. Diese Zahl ist kein belegter Vorsprung – auch dann nicht, wenn sie positiv ist. Auflösung: Dieser Lauf hätte eine echte Kante erst ab +0,218 Pp mit 80 % Wahrscheinlichkeit gefunden. Das ist mehr als die Kostenhürde von 0.10 Pp – eine handelbare Kante hätte er also gar nicht sehen können. „Nicht entscheidbar“ heißt hier: zu wenig Daten, nicht „kein Effekt“. Selbstprüfung: bestanden – ein ",
+   "englischeZahlen": [
+    "0.83",
+    "0.10",
+    "0.1310"
+   ],
+   "bindestrichMinus": 0,
+   "echtesMinus": 1,
+   "huerdeImText": "0,10",
+   "huerdeLive": 0.1
+  },
+  "farben": {
+   "thema": "light",
+   "hintergrund": "rgb(249, 249, 247)",
+   "tokens": {
+    "down": "rgb(208, 59, 59)",
+    "up": "rgb(0, 99, 0)",
+    "ink": "rgb(11, 11, 11)",
+    "muted": "rgb(107, 105, 99)"
+   },
+   "traeger": [],
+   "falsch": []
+  },
+  "kontrast": {
+   "geprueft": 1747,
+   "schwach": [],
+   "zahl": 0
+  },
+  "archivText": "Die App holt die feinen Kerzen selbst und legt sie im Kursarchiv ab – dasselbe Format und dieselbe Ablage, die auch das Abrufwerkzeug schreibt. Yahoo hält Intraday-Kerzen nur begrenzt vor (1 Minute 7 Tage, 5 und 15 Minuten 60 Tage). Was in dieser Zeit nicht geholt wurde, ist nicht später nachzuholen, sondern fort. AUFLÖSUNG WERTE JÜNGSTE KERZE ZULETZT GESAMMELT OFFEN STAND 1 Minute 0 nichts da noch nie – geht nicht Jetzt holen Kein Punkt-in-Zeit-Universum im Datenordner (massive/universum-*.json). 5 Minuten 0 nichts da noch nie – geht nicht Jetzt holen Kein Punkt-in-Zeit-Universum im Datenordner (massive/universum-*.json). 15 Minuten 0 nichts da noch nie – geht nicht Jetzt holen Kein Punkt-in-Zeit-Universum im Datenordner (massive/universum-*.json). So ist es eingestellt: Universum top500 · 1 Minute alle 1 Tag(e) · 5 Minuten alle 7 · 15 Minuten alle 7 · 1,2 s Abstand je Anfrage · frühest",
+  "roh": []
+ },
+ "dunkel": {
+  "marke": "dunkel",
+  "ausrichtMessung": {
+   "scoreboard": {
+    "fehlt": false,
+    "tabelle": true,
+    "koepfe": [
+     {
+      "t": "URTEIL",
+      "klasse": "",
+      "a": "left"
+     },
+     {
+      "t": "STRATEGIE",
+      "klasse": "",
+      "a": "left"
+     },
+     {
+      "t": "ÜBERSCHUSS TAGESMITTEL",
+      "klasse": "",
+      "a": "right"
+     },
+     {
+      "t": "ÜBERSCHUSS JE SIGNAL",
+      "klasse": "",
+      "a": "right"
+     },
+     {
+      "t": "T",
+      "klasse": "",
+      "a": "right"
+     },
+     {
+      "t": "MDE",
+      "klasse": "",
+      "a": "right"
+     },
+     {
+      "t": "TAGE / SIGNALE",
+      "klasse": "",
+      "a": "right"
+     },
+     {
+      "t": "FEINHEIT DELTA80 IN PROZEN",
+      "klasse": "",
+      "a": "right"
+     },
+     {
+      "t": "AUSSICHT SIGNALTAGE BIS EN",
+      "klasse": "",
+      "a": "right"
+     },
+     {
+      "t": "GEMESSEN",
+      "klasse": "",
+      "a": "left"
+     }
+    ],
+    "zahlzellen": 84,
+    "linksbuendig": 0,
+    "beispiele": [
+     {
+      "t": "+1,107",
+      "klasse": "num",
+      "a": "right",
+      "ziffern": "tabular-nums",
+      "umbruch": "nowrap"
+     },
+     {
+      "t": "+1,071",
+      "klasse": "num",
+      "a": "right",
+      "ziffern": "tabular-nums",
+      "umbruch": "nowrap"
+     },
+     {
+      "t": "+2,14",
+      "klasse": "num",
+      "a": "right",
+      "ziffern": "tabular-nums",
+      "umbruch": "nowrap"
+     },
+     {
+      "t": "+1,034",
+      "klasse": "num",
+      "a": "right",
+      "ziffern": "tabular-nums",
+      "umbruch": "nowrap"
+     }
+    ]
+   },
+   "archiv": {
+    "fehlt": false,
+    "tabelle": true,
+    "koepfe": [
+     {
+      "t": "Auflösung",
+      "klasse": "",
+      "a": "left"
+     },
+     {
+      "t": "Werte",
+      "klasse": "num",
+      "a": "right"
+     },
+     {
+      "t": "Jüngste Kerze",
+      "klasse": "",
+      "a": "left"
+     },
+     {
+      "t": "Zuletzt gesammelt",
+      "klasse": "",
+      "a": "left"
+     },
+     {
+      "t": "Offen",
+      "klasse": "num",
+      "a": "right"
+     },
+     {
+      "t": "Stand",
+      "klasse": "",
+      "a": "left"
+     },
+     {
+      "t": "",
+      "klasse": "",
+      "a": "left"
+     }
+    ],
+    "zahlzellen": 6,
+    "linksbuendig": 0,
+    "beispiele": [
+     {
+      "t": "0",
+      "klasse": "num",
+      "a": "right",
+      "ziffern": "tabular-nums",
+      "umbruch": "nowrap"
+     },
+     {
+      "t": "–",
+      "klasse": "num",
+      "a": "right",
+      "ziffern": "tabular-nums",
+      "umbruch": "nowrap"
+     },
+     {
+      "t": "0",
+      "klasse": "num",
+      "a": "right",
+      "ziffern": "tabular-nums",
+      "umbruch": "nowrap"
+     },
+     {
+      "t": "–",
+      "klasse": "num",
+      "a": "right",
+      "ziffern": "tabular-nums",
+      "umbruch": "nowrap"
+     }
+    ]
+   }
+  },
+  "ausrichtArchiv": {
+   "scoreboard": {
+    "fehlt": false,
+    "tabelle": true,
+    "koepfe": [
+     {
+      "t": "Urteil",
+      "klasse": "",
+      "a": "left"
+     },
+     {
+      "t": "Strategie",
+      "klasse": "",
+      "a": "left"
+     },
+     {
+      "t": "ÜberschussTagesmittel",
+      "klasse": "",
+      "a": "right"
+     },
+     {
+      "t": "Überschussje Signal",
+      "klasse": "",
+      "a": "right"
+     },
+     {
+      "t": "t",
+      "klasse": "",
+      "a": "right"
+     },
+     {
+      "t": "MDE",
+      "klasse": "",
+      "a": "right"
+     },
+     {
+      "t": "Tage / Signale",
+      "klasse": "",
+      "a": "right"
+     },
+     {
+      "t": "Feinheitdelta80 in Prozent",
+      "klasse": "",
+      "a": "right"
+     },
+     {
+      "t": "AussichtSignaltage bis ent",
+      "klasse": "",
+      "a": "right"
+     },
+     {
+      "t": "gemessen",
+      "klasse": "",
+      "a": "left"
+     }
+    ],
+    "zahlzellen": 84,
+    "linksbuendig": 0,
+    "beispiele": [
+     {
+      "t": "+1,107",
+      "klasse": "num",
+      "a": "right",
+      "ziffern": "tabular-nums",
+      "umbruch": "nowrap"
+     },
+     {
+      "t": "+1,071",
+      "klasse": "num",
+      "a": "right",
+      "ziffern": "tabular-nums",
+      "umbruch": "nowrap"
+     },
+     {
+      "t": "+2,14",
+      "klasse": "num",
+      "a": "right",
+      "ziffern": "tabular-nums",
+      "umbruch": "nowrap"
+     },
+     {
+      "t": "+1,034",
+      "klasse": "num",
+      "a": "right",
+      "ziffern": "tabular-nums",
+      "umbruch": "nowrap"
+     }
+    ]
+   },
+   "archiv": {
+    "fehlt": false,
+    "tabelle": true,
+    "koepfe": [
+     {
+      "t": "AUFLÖSUNG",
+      "klasse": "",
+      "a": "left"
+     },
+     {
+      "t": "WERTE",
+      "klasse": "num",
+      "a": "right"
+     },
+     {
+      "t": "JÜNGSTE KERZE",
+      "klasse": "",
+      "a": "left"
+     },
+     {
+      "t": "ZULETZT GESAMMELT",
+      "klasse": "",
+      "a": "left"
+     },
+     {
+      "t": "OFFEN",
+      "klasse": "num",
+      "a": "right"
+     },
+     {
+      "t": "STAND",
+      "klasse": "",
+      "a": "left"
+     },
+     {
+      "t": "",
+      "klasse": "",
+      "a": "left"
+     }
+    ],
+    "zahlzellen": 6,
+    "linksbuendig": 0,
+    "beispiele": [
+     {
+      "t": "0",
+      "klasse": "num",
+      "a": "right",
+      "ziffern": "tabular-nums",
+      "umbruch": "nowrap"
+     },
+     {
+      "t": "–",
+      "klasse": "num",
+      "a": "right",
+      "ziffern": "tabular-nums",
+      "umbruch": "nowrap"
+     },
+     {
+      "t": "0",
+      "klasse": "num",
+      "a": "right",
+      "ziffern": "tabular-nums",
+      "umbruch": "nowrap"
+     },
+     {
+      "t": "–",
+      "klasse": "num",
+      "a": "right",
+      "ziffern": "tabular-nums",
+      "umbruch": "nowrap"
+     }
+    ]
+   }
+  },
+  "band": {
+   "fehlt": false,
+   "text": "Was die Messmaschine zur laufenden Regel sagt · reine Anzeige, hier wird nichts gerechnet nicht entscheidbar rsi2seit · gemessen 2026-08-26 · Einstieg schlusskerze Überschuss je Signal +0,021 Pp, Kostenhürde 0,10 Pp → netto −0,079 Pp · t = 0.83 · 364 Tage / 56112 Signale Das Urteil lautet nicht entscheidbar. Diese Zahl ist kein belegter Vorsprung – auch dann nicht, wenn sie positiv ist. Auflösung: Dieser Lauf hätte eine echte Kante erst ab +0,218 Pp mit 80 % Wahrscheinlichkeit gefunden. Das ist mehr als die Kostenhürde von 0.10 Pp – eine handelbare Kante hätte er also gar nicht sehen können. „Nicht entscheidbar“ heißt hier: zu wenig Daten, nicht „kein Effekt“. Selbstprüfung: bestanden – ein ",
+   "englischeZahlen": [
+    "0.83",
+    "0.10",
+    "0.1310"
+   ],
+   "bindestrichMinus": 0,
+   "echtesMinus": 1,
+   "huerdeImText": "0,10",
+   "huerdeLive": 0.1
+  },
+  "farben": {
+   "thema": "dark",
+   "hintergrund": "rgb(13, 13, 13)",
+   "tokens": {
+    "down": "rgb(224, 94, 94)",
+    "up": "rgb(14, 165, 14)",
+    "ink": "rgb(255, 255, 255)",
+    "muted": "rgb(145, 143, 137)"
+   },
+   "traeger": [],
+   "falsch": []
+  },
+  "kontrast": {
+   "geprueft": 1796,
+   "schwach": [],
+   "zahl": 0
+  },
+  "archivText": "Die App holt die feinen Kerzen selbst und legt sie im Kursarchiv ab – dasselbe Format und dieselbe Ablage, die auch das Abrufwerkzeug schreibt. Yahoo hält Intraday-Kerzen nur begrenzt vor (1 Minute 7 Tage, 5 und 15 Minuten 60 Tage). Was in dieser Zeit nicht geholt wurde, ist nicht später nachzuholen, sondern fort. AUFLÖSUNG WERTE JÜNGSTE KERZE ZULETZT GESAMMELT OFFEN STAND 1 Minute 0 nichts da noch nie – geht nicht Jetzt holen Kein Punkt-in-Zeit-Universum im Datenordner (massive/universum-*.json). 5 Minuten 0 nichts da noch nie – geht nicht Jetzt holen Kein Punkt-in-Zeit-Universum im Datenordner (massive/universum-*.json). 15 Minuten 0 nichts da noch nie – geht nicht Jetzt holen Kein Punkt-in-Zeit-Universum im Datenordner (massive/universum-*.json). So ist es eingestellt: Universum top500 · 1 Minute alle 1 Tag(e) · 5 Minuten alle 7 · 15 Minuten alle 7 · 1,2 s Abstand je Anfrage · frühest",
+  "roh": []
+ },
+ "seitenFehler": [],
+ "konsoleFehler": []
+}

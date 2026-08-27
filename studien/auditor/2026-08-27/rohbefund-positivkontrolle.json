@@ -1,0 +1,48 @@
+{
+ "thema": "dark",
+ "saat": {
+  "ok": true,
+  "punkte": 15
+ },
+ "farben": {
+  "tokens": {
+   "down": "rgb(224, 94, 94)",
+   "up": "rgb(14, 165, 14)"
+  },
+  "traeger": [
+   {
+    "t": "+7,3 %",
+    "klasse": "pos",
+    "farbe": "rgb(14, 165, 14)",
+    "erwartet": "rgb(14, 165, 14)",
+    "stimmt": true,
+    "wo": "#eqKopf"
+   },
+   {
+    "t": "-7,2 %",
+    "klasse": "neg",
+    "farbe": "rgb(224, 94, 94)",
+    "erwartet": "rgb(224, 94, 94)",
+    "stimmt": true,
+    "wo": "#eqKopf"
+   }
+  ],
+  "falsch": [],
+  "eqKopfDa": true,
+  "eqKopfText": "VERLAUF+7,3 % HOCH111.400 $ MAX. RÜCKSETZER-7,2 %"
+ },
+ "kontrastOhneKoeder": {
+  "geprueft": 51,
+  "schwach": [],
+  "zahl": 0,
+  "koederGesetzt": false,
+  "koederGefunden": false
+ },
+ "kontrastMitKoeder": {
+  "geprueft": 52,
+  "schwach": [],
+  "zahl": 0,
+  "koederGesetzt": true,
+  "koederGefunden": true
+ }
+}

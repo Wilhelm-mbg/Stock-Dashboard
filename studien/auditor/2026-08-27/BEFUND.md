@@ -140,3 +140,112 @@ Dieselbe Substanz wie #94, das angenommen und repariert wurde.
 | `rohbefund-huerde.json` | vorher/nachher der Hürdenmessung |
 | `rohbefund-perzentil.json` | 808 Aufrufe von `gueteZufallsAnteil` |
 | `bilder/` | 5 Bildschirmfotos, je eines zu einem Fund (von 43 erzeugten) |
+
+---
+
+# NACHTRAG 27.08., 08:15–08:50 — Gegenprobe zu `v8.34.0` und das dunkle Thema
+
+Auftrag des Projekt-Managers (`markt-dashboard-f5`) nach der Auslieferung. Zwei Aufträge,
+beide erledigt. **Dazu drei eigene Fehler, die ich hier festhalte, weil sie zum Ergebnis
+gehören.**
+
+## N1. Was am ausgelieferten Artefakt gemessen wurde — und was das vorige Urteil ersetzt
+
+**Zurückgezogen:** Mein Satz „alle vier Funde stecken in `v8.34.0`" war falsch. Er beruhte
+auf `git merge-base --is-ancestor 04c9be5 v8.34.0`, und **dieser Test ist tautologisch:**
+ein Prüfstand ist *immer* Vorfahr des Release, sonst wäre er keiner. Das Kriterium galt für
+alles und trennte nichts. Zwischen meiner Messung (`04c9be5`) und dem Tag liegen 101
+Commits, darunter die Reparatur `1b852bc`. Gefunden hat den Fehlschluss die Issue-Wache,
+der PM hat ihn weitergegeben.
+
+**Richtig gemessen wird am Artefakt.** Gebautes Paket:
+`Downloads/build-clean/dist/win-unpacked/resources/app.asar`, gebaut 27.08. 08:01,
+`package.json` darin: **8.34.0**.
+
+| Prüfung | Ergebnis |
+|---|---|
+| Paket gegen Tag, byteweise (`index.html`, `scoreboard.js`, `archivkarte.js`, `messband.js`, `strategien.js`, `app-shell.js`) | **alle sechs identisch** |
+| #106 in den Paket-Bytes | **repariert** (`urteilKlartext` 3×, `U.urteilText(pk.urteil)`) |
+| #107 in den Paket-Bytes | **repariert** (`table.tbl td.num`-Regel da; 0× totes `class="zahl"`) |
+| #108 in den Paket-Bytes | **nur teilweise** — siehe N2 |
+| #105 in den Paket-Bytes | **steht, mit Absicht** (`HUERDE_PP = 0.10`, 4× über `huerdePp()`) |
+
+**Am laufenden Programm bestätigt** (hell und dunkel, Ergebnis identisch):
+- #106: **0** rohe Urteils-Schlüssel sichtbar, gegen die bekannte Liste der sechs Schlüssel geprüft.
+- #107: **84** Zahlzellen im Scoreboard und **6** in der Kursarchiv-Karte, **davon 0 nicht
+  rechtsbündig**; `tabular-nums` und `nowrap` greifen. Die Köpfe `FEINHEIT` und `AUSSICHT`
+  stehen über ihren Werten.
+- 0 Seitenfehler, 0 Konsolenfehler.
+
+**→ Nachzuliefern ist aus meiner Sicht nur der Rest von #108 (N2).**
+
+## N2. Neuer Fund: #108 ist unvollständig repariert — und in `v8.34.0` ausgeliefert
+
+Drei englische Dezimalzahlen stehen weiter im Messband, gelesen aus der gerenderten Karte:
+`t = 0.83`, `Kostenhürde von 0.10 Pp`, `Auflösung 0.1310`.
+
+| Zeile im Paket | Code |
+|---|---|
+| `messband.js:144` | `HUERDE_PP.toFixed(2)` |
+| `messband.js:159` | `(k.placebo.mde * 100).toFixed(4)` |
+| `messband.js:184` | `k.t.toFixed(2)` |
+
+**Zeile 144 ist die unangenehme:** dieselbe Kostenhürde steht als `0,10` **und** als `0.10`
+in derselben Karte, acht Zeilen auseinander — die Zwei-Wahrheiten-Form, gegen die die
+Reparatur angetreten war. An #108 kommentiert, mit dem Vorschlag, dort wieder zu öffnen
+statt neu anzulegen.
+
+**Warum die Quellprüfung es nicht fand:** ein `grep` an den *geänderten* Stellen findet die
+drei nicht, sie stehen woanders in derselben Datei. Sichtbar wird es erst an der gerenderten
+Karte. **Das ist der Ertrag der Arbeitsteilung** — die Issue-Wache prüft die Quelle, ich
+lese den Bildschirm.
+
+## N3. Dunkles Thema
+
+- **#101-Familie (Farbklassen):** `+7,3 %` steht grün (`rgb(14,165,14)` = `--up` dunkel),
+  `−7,2 %` rot (`rgb(224,94,94)` = `--down` dunkel). **Beide korrekt, #101 hält im Dunkeln.**
+  Positivkontrolle: 2 Träger gefunden, nicht null.
+- **#107 im Dunkeln:** identisch zum hellen Thema, alle Zahlspalten rechtsbündig.
+- **#108 im Dunkeln:** identisch, dieselben drei englischen Zahlen.
+- **Kontrast:** auf der Depot-Ansicht 51 Elemente geprüft, **0 unter der WCAG-Grenze**,
+  **mit funktionierender Positivkontrolle** (ein absichtlich zu blasser Köder wurde
+  gefunden). Kein Mojibake, keine abgeschnittenen Texte, Achsen lesbar.
+
+**Ausdrücklich NICHT belegt:** der breite Kontrast-Durchlauf über alle Reiter aus der
+Gegenprobe („0 von 1.747") — er lief mit dem blinden Instrument aus N4 und **darf nicht
+zitiert werden**. Der vollständige Kontrast-Durchgang gehört in den Barrierefreiheits-Block,
+den der PM auf eine Nacht später verschoben hat.
+
+## N4. Drei eigene Fehler — festgehalten, weil sie das Ergebnis geprägt haben
+
+1. **Sechs Kerndateien im geteilten Arbeitsbaum gelöscht.** `npx asar extract-file` schreibt
+   in das *Arbeitsverzeichnis*; mein `mv` trug die Repo-Originale von `index.html`,
+   `app-shell.js`, `archivkarte.js`, `messband.js`, `scoreboard.js`, `strategien.js` fort.
+   Sofort bemerkt, mit `git checkout --` wiederhergestellt, alle waren unverändert auf HEAD,
+   nichts ging verloren — aber rund 90 Sekunden lang hätte jede andere Sitzung sechs
+   gelöschte Kerndateien gesehen.
+   **Regel für künftige Läufe: Auspacken NUR nach `%TEMP%`, nie mit dem Repo als
+   Arbeitsverzeichnis.** Derselbe Grundsatz, aus dem der Rest dieser Proben ohnehin besteht.
+2. **Ein Nullbefund aus einem falschen Namen.** Die erste Fassung suchte `.down, .up`. Die
+   Klassen heißen seit der #101-Reparatur `pos`/`neg` (`U.signCls`, `app-shell.js:26`).
+   Ergebnis: „0 von 0 falsch" — eine Null, die nur aussagte, dass ich den falschen Namen
+   gesucht hatte.
+3. **Ein Prüfer mit stillem blindem Fleck.** Die Sichtbarkeitsprüfung stand auf
+   `el.offsetParent`, und der ist bei `position: fixed` **immer** null — jedes feste Element
+   wurde stillschweigend übersprungen. Aufgefallen ist es nur, weil der Köder der
+   Positivkontrolle selbst `fixed` war und *nicht gefunden* wurde. **Ohne die
+   Positivkontrolle hätte ich „0 Kontrastprobleme" gemeldet, während der Prüfer einen Teil
+   der Seite gar nicht ansah.**
+
+*Zusammen mit dem `window.Q`-Fehlgriff der Nacht sind das vier Nullbefunde in einem Lauf,
+die ohne Gegenprobe als Ergebnis durchgegangen wären. Die Regel „ein Nullbefund braucht eine
+Positivkontrolle" hat sich hier viermal selbst bezahlt.*
+
+## N5. Zwei Funde außerhalb meiner Rolle, weitergegeben
+
+1. **Die installierte App ist nicht `v8.34.0`.** `Programs/markt-dashboard/resources/app.asar`
+   ist vom 26.08. 17:14 und meldet **`8.33.5`**. Gebaut und getaggt ist 8.34.0, installiert
+   ist es nicht — am Bildschirm des Anwenders sind die Reparaturen also noch nicht
+   angekommen.
+2. **`dist/bau-stand.json` fehlt.** Nach `tools/release.js:154` bricht `--hoch` ohne diese
+   Datei ab. Sache der Release-Wache.
