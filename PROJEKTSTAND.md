@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 15:35 (Windows-Uhr)
+letzter-bericht: 2026-08-27 15:45 (Windows-Uhr)
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -154,7 +154,27 @@ Lagen — Marktseitenwechsel nötig).* **`kostenStreuung()` bleibt unverändert 
 > Stress-Arm 1,70 Pp bei 48 Tagen). **„Die Machbarkeits-Rechnung hätte vor die Registrierung
 > gehört."***
 
-> ### ❓ ZURÜCK AN WILHELM — **seine Absicht ist mit keinem der zwei Wege erfüllbar**
+> ### ⭐ ENTSCHIEDEN 15:4x — WILHELM: **„NEUE MESSUNG BEAUFTRAGEN."**
+> **Frage: „Trennt die Spanne INNERHALB des Stress-Regimes?" — Basis liq + Regime, das Tor bleibt
+> drin.** *Vergeben an `c4`.*
+>
+> ### 🔴 **DIE MACHBARKEITSRECHNUNG IST EINE SPERRE, KEIN VORWORT**
+> **delta80 und die nötigen Bestätigungstage ZUERST. Liegt die Zahl über dem, was die vorhandenen
+> Daten hergeben: NICHT registrieren, NICHT messen — stattdessen die Zahl melden.**
+>
+> *Begründung: **Ein zweiter unterpowerter Lauf wäre schlimmer als keiner — er verbraucht die
+> Frage, ohne sie zu beantworten, und das Ergebnis liest sich später wie ein Nein.*** *Wilhelm
+> hat „neue Messung" gewählt, nicht „noch ein Versuch um jeden Preis"; dass es wieder ein Nein
+> geben kann, stand in seiner Option.*
+>
+> **Weitere Auflagen:** *Regime-Tor bleibt in der Basis (genau der Fehler von eben) · beide
+> Placebos · Signalanteil vor dem Lauf zählen · Vorregistrierung sofort auf die Platte ·
+> vorher sagen, welches Ergebnis überraschen würde.*
+>
+> **Bis dahin bleibt die Schwelle binär-streng, `06` baut nichts.** *Die Analytiker-Grundrate für
+> die Join-Tabelle hat Vorrang, wenn sie vorher kommt.*
+
+> ### ~~❓ ZURÜCK AN WILHELM~~ — *(entschieden, siehe oben)*
 > *Er wählte „feinere Lagen", **damit die Schwelle in Wochen statt Monaten erreichbar wird**.*
 > **Es bleiben:** *(a) die vorhandene **binäre** EMA200-Achse behalten → das ist „so lassen und
 > warten", die Option, die er **nicht** gewählt hatte · (b) **neue Registrierung** mit der anderen
