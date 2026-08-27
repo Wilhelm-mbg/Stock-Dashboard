@@ -5891,6 +5891,35 @@ mit #93/#94 zusammen runder.
 *Eine Zeile, vom Strategie-Tüftler selbst gepflegt. Übergabe läuft über
 `studien/tueftler/WARTESCHLANGE.md`, nicht über diese Tafel.*
 
+- **27.08.2026, 04:50 — Nacht-Typ B (Datenbestand).** Warteschlange bei Beginn **2**, kein
+  Stau; kein neuer Entwurf, weil beide offenen hinter Datenqualität *und* Strang A stehen
+  und die Arbeit dieser Nacht selbst Datenqualität ist. Abgearbeitet wurde die
+  Hausaufgabe, die ich mir am 26.08. selbst gestellt hatte — reichen zwei Jahre für **Weg 3**
+  der Überlebenslücke? Protokoll:
+  `studien/tueftler/2026-08-27-nacht4-eroeffnungskurse-und-ruecknahme.md`.
+  **(1) Ja, und zwar um Faktor 24:** 496 Handelstage vorhanden, **21 nötig** für 0,04 Pp
+  (`delta80` 0,0081 Pp) — weil die Frage gepaart ist und der Marktfaktor sich wegkürzt
+  (σ 0,0586 statt 0,880 Pp). *Der Mittelwert der Differenzreihe wurde nie gebildet.*
+  **(2) Aber nur Schluss-zu-Schluss: den 1.164 beschafften Reihen fehlt der
+  Eröffnungskurs** — 305.908 von 305.908 Kerzen, `[t,c,v,h,l]`. Die Quelle führt `o`
+  (Sonde: `c h l n o t v vw`), `tools/massive-tagesdaten.js:130` wirft es weg. Damit ist die
+  Lücke fürs **Übernachtfenster** — das der beiden Entwürfe — nicht prüfbar. **Und es läuft
+  eine Uhr:** das Quellfenster rollt mit 730 Tagen, **1.894 Symbol-Tage sind schon draußen,
+  ~3.917 je Woche kommen dazu, nach 90 Tagen 20,6 % — dauerhaft.** Nachholen: 1.164 Abrufe
+  ≈ 4,2 h. → **Auftragsvorschlag D** in der Warteschlange, der einzige eilige Punkt.
+  **(3) Rücknahme eigener Arbeit:** von meinen drei „belegt falsch delisteten" bleibt
+  **einer**. Ich hatte am 26.08. **Kerzen gezählt statt Umsatz** — AVB handelt wirklich
+  (24.08., 6,2 Mio Stück), **EQR (letzter Umsatz 17.08.) und WBS (19.08.) sind zurück-
+  genommen**, ihre Listeneinträge stimmen. Auch mein Warnsatz war zu groß: von 6.921
+  aktienartigen Listeneinträgen stehen **genau 5** überhaupt im Kursarchiv.
+  **(4) Zwei Katalogeinträge:** *Kerzen zählen ist kein Handelsnachweis — Umsatz zählen ist
+  einer* (die Quelle kennt drei Zustände: `v>0`, `v===0` Stempel, `v===null` keine Daten);
+  und *ein Bestand mit bekanntem Rückstand taugt nicht als Zeuge dafür, ob etwas läuft* —
+  mein erster Detektor wollte `archiv1d` fragen, und genau die fünf Streitreihen sind die
+  vom Wachhund als rückständig geführten. Dazu eine Sperrklinke, die ihren eigenen Fall
+  wegschnitt: der #85-Schnitt machte LBRDA/LBRDK unsichtbar, der erste Lauf meldete 3 statt
+  5 — und die fehlenden zwei waren die, die das Kriterium widerlegt hätten.
+
 - **26.08.2026, 18:20 — Nacht-Typ B (Datenbestand).** Warteschlange bei Beginn 2, formal
   kein Stau — **bewusst kein dritter Entwurf**: beide offenen messen dasselbe Fenster
   (Familien-Testzahl schon 4) und warten auf dieselbe ungebaute Vorbedingung.

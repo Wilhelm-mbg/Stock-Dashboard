@@ -43,11 +43,21 @@ Spannen-Rückprall hatte dieselbe Aussage schon verworfen.
 Prozentpunkten, die Schwelle zählt **Handelstage**. „delta80 0,0396 liegt unter 1.000"
 vergleicht zwei verschiedene Größen; die tragende Zahl ist die oben gerechnete.
 
-**Offen: 2 Entwürfe, 1 Auftragsvorschlag** (Vorschlag **C**, neu am 26.08. 18:20; die
-beiden älteren Vorschläge sind am 26.08. 09:00 von Wilhelm freigegeben und stehen jetzt
-auf der Tafel unter „Aufträge").
+**Offen: 2 Entwürfe, 2 Auftragsvorschläge** (Vorschlag **C** vom 26.08. 18:20 — dazu jetzt
+die gerechnete Antwort weiter unten — und Vorschlag **D**, neu am 27.08. 04:50; die beiden
+älteren Vorschläge sind am 26.08. 09:00 von Wilhelm freigegeben und stehen auf der Tafel
+unter „Aufträge").
 (Bei 3 oder mehr offenen Entwürfen arbeitet der Tüftler nachts am Datenbestand
 statt zu entwerfen. Beim nächsten Lauf ist der Stand **2** — noch kein Stau, aber knapp.)
+
+**⚠ Neu am 27.08. 04:50 — Vorschlag D eilt als einziger.** Den 1.164 beschafften Reihen der
+Verschwundenen fehlt der **Eröffnungskurs** (305.908 von 305.908 Kerzen). Die Quelle führt
+ihn, die Ablage hat ihn weggeworfen. Nachholen geht nur im rollenden 730-Tage-Fenster:
+**1.894 Symbol-Tage sind schon draußen, rund 3.917 je Woche kommen dazu, nach 90 Tagen sind
+es 20,6 % — dauerhaft.** Ohne Eröffnungskurse lässt sich die Überlebenslücke für das
+**Übernachtfenster** nicht prüfen — also genau für den Vorbehalt, der in beiden Entwürfen
+unten steht. Einzelheiten:
+`studien/tueftler/2026-08-27-nacht4-eroeffnungskurse-und-ruecknahme.md`.
 
 **⚠ Neu am 26.08. 18:20 — eine Einschränkung, die BEIDE Entwürfe unten betrifft.**
 Das große Archiv enthält ausschließlich Werte, die es heute noch gibt. Gezählt im dritten
@@ -228,9 +238,123 @@ bleibt offen; beides ist vertretbar, aber es sollte bewusst entschieden werden.
 Nutzen ungemessen ist. Zwei Jahre sind ein kurzes Fenster; ob sie für ein Urteil reichen,
 gehört vor dem Lauf ausgerechnet, nicht danach.
 
+#### ✅ 27.08. 04:50 — die Rechnung liegt vor. Weg 3 reicht, und zwar deutlich.
+
+*Gerechnet, nicht gemessen (`werkzeug/zaehle-lueckenfenster.js`): gepaart, Tag für Tag der
+Querschnitt der Überlebenden gegen den der Verschwundenen, Konventionen wie in beiden
+Vorregistrierungen. **Der Mittelwert der Differenzreihe wurde nie gebildet** — die Streuung
+kommt aus den ersten Differenzen und ist mittelwertfrei.*
+
+| Größe | Wert |
+|---|---|
+| Handelstage mit beiden Seiten | **496** (2024-08-23 … 2026-08-24) |
+| Anteil der Verschwundenen am Querschnitt | 7,73 % Median (max. 12,44 %) |
+| Breite je Tag: Überlebende / Verschwundene | 2.133 / 177 |
+| σ der Differenzreihe | **0,0586 Pp** (gewöhnlich gerechnet 0,0693) |
+| `delta80` bei 2 Tests | **0,0081 Pp** |
+| **nötige Handelstage für 0,04 Pp** | **21** — vorhanden 496, **Faktor 24** |
+| nötige Handelstage für 0,10 Pp | 4 |
+
+**Warum so scharf:** die Frage ist gepaart. Der Marktfaktor, der die Niveaureihe auf
+σ = 0,88 Pp aufbläht, hebt sich in der Differenz weg — Faktor 15 schmaler.
+
+**Drei Grenzen, ausdrücklich, damit die Zahl nicht zu groß gelesen wird:**
+1. Es ist das **Schluss-zu-Schluss**-Fenster. Für **Übernacht** fehlt der Eröffnungskurs
+   (→ Vorschlag D). Ob sich die Richtung überträgt, ist offen und **nicht vom Tüftler
+   beantwortet**.
+2. Es ist **2024-08 bis 2026-08**, nicht das Bestätigungsfenster 2008–2026 — gemessen würde
+   die Verzerrung im jüngsten Regime.
+3. Es sind 1.023 nach Filter von 1.164 beschafften Reihen; die Liste führt 6.921
+   aktienartige. Die Rechnung beziffert die Auflösung **dieser Stichprobe**, nicht die
+   Vollständigkeit der Lücke.
+
+**→ Die Empfehlung „3 vor 1" wird dadurch stärker, nicht schwächer:** Weg 3 ist nicht
+knapp, sondern um den Faktor 24 über der Schwelle. Über Geld (Weg 1) sollte erst danach
+entschieden werden. **Aber Weg 3 in der für die Entwürfe relevanten Übernacht-Form braucht
+zuerst Vorschlag D** — und der hat eine Uhr.
+
+### D. Eröffnungskurse der Verschwundenen nachholen — **eilt, mit gezählter Uhr** *(neu 27.08. 04:50)*
+
+**Bauauftrag, klein, und der einzige Punkt, bei dem Warten etwas kostet, das sich später
+nicht mehr kaufen lässt.**
+
+**Lage, gezählt:** Alle **305.908** Kerzen der 1.164 beschafften Reihen tragen fünf Felder,
+`[t, c, v, h, l]` — **kein `o`**. Die Quelle führt es: eine einzige Sonde
+(`werkzeug/probe-eroeffnung.js`, ein Abruf) liefert die Feldnamen `c h l n o t v vw`.
+Verloren geht es erst bei der Ablage, in `tools/massive-tagesdaten.js:130`:
+
+    var bars = (j.results || []).map(function (b) { return [b.t, b.c, b.v || 0, b.h, b.l]; });
+
+**Warum es zählt:** Jede Übernacht-Frage braucht `Eröffnung(i+1)`. Beide Entwürfe oben
+leben dort, und über Nacht ist die Auflösungswand überhaupt nur zu unterbieten. Ohne
+Eröffnungskurse der Verschwundenen lässt sich für das Übernachtfenster **nicht** prüfen,
+ob die Überlebenslücke das Vorzeichen dreht — also genau der Vorbehalt nicht ausräumen,
+der in beiden Vorregistrierungen als benannte Einschränkung steht.
+
+**Die Uhr** (`werkzeug/zaehle-randverlust.js`; das Fenster der Quelle rollt mit 730 Tagen,
+was hinten herausfällt, ist dauerhaft weg):
+
+| Verzögerung | Symbol-Tage ohne Eröffnungskurs | Anteil |
+|---|---|---|
+| **heute** | **1.894** | 0,62 % |
+| 7 Tage | 5.811 | 1,90 % |
+| 30 Tage | 22.637 | 7,40 % |
+| 90 Tage | **62.948** | **20,58 %** |
+
+Rund **3.917 Symbol-Tage je Woche**, etwa 980 je Handelstag.
+
+**Was zu tun wäre:** `o` (und sinnvollerweise `vw`, `n`) in der Ablage mitschreiben und die
+1.164 Reihen erneut holen — **1.164 Abrufe × 13 s ≈ 4,2 Stunden** Wartezeit an der
+5-je-Minute-Grenze, sonst nichts. Die vorhandenen Dateien bleiben brauchbar: Schluss, Hoch,
+Tief und Umsatz sind da, es kommt eine Spalte dazu. *Zwei Fallen, die dabei zu beachten
+sind: die Quelle kürzt am Fensterrand **stillschweigend** statt mit 403 (siehe Hinweis
+unten zu `massive-tagesdaten.js:29`), und die letzte Kerze eines Abrufs kann eine
+Stempelkerze mit Umsatz 0 sein (#85).*
+
+*Der Code der Werkzeuge liegt außerhalb meiner Rolle — dies ist ein Vorschlag für eine
+Bausitzung, keine Änderung.*
+
 ---
 
 ## Hinweise an andere Rollen (keine Aufträge)
+
+- **🔴 Neu, 27.08. 04:50 — RÜCKNAHME einer eigenen Meldung vom 26.08.:** Ich hatte **AVB,
+  EQR und WBS** als „belegt falsch delistet" gemeldet, mit der Begründung „8 von 8 Kerzen
+  im Fenster 17.–26.08.". **Ich habe Kerzen gezählt statt Umsatz.** Nachgezählt am 27.08.
+  bei derselben Quelle, mit drei getrennten Zuständen (`werkzeug/probe-yahoo-lebend.js`):
+
+  | Symbol | gehandelt | Stempel (v=0) | leer (v=null) | letzter Umsatz | Listeneintrag | Urteil |
+  |---|---|---|---|---|---|---|
+  | **AVB** | 21 | 0 | 2 | **24.08.**, 6,2 Mio Stück | 18.08. | **falsch — bestätigt** |
+  | **EQR** | 7 | 4 | 8 | **17.08.** | 18.08. | **stimmig — zurückgenommen** |
+  | **WBS** | 9 | 1 | 9 | **19.08.** | 20.08. | **stimmig — zurückgenommen** |
+  | LBRDA / LBRDK | **0** | 1 | 3 | — | 21.08. | stimmig (gestrige Rücknahme war richtig) |
+  | *AAPL (Positivkontrolle)* | **23** | 0 | 0 | 26.08. | — | lebt |
+
+  **Von drei belegt falschen bleibt einer.** Und mein Warnsatz war zu groß: gezählt
+  (`werkzeug/pruefe-delisting-liste.js`) stehen **von 6.921 aktienartigen Einträgen der
+  Liste genau 5 überhaupt im Kursarchiv** — der Schaden einer Verwendung als Ausschluss-
+  liste ist auf **eine** belegt lebende Reihe begrenzt (AVB), nicht auf zwei Schwergewichte.
+  Die Regel „Delistings der letzten ~30 Tage sind unbestätigt und gehören gegengeprüft"
+  bleibt richtig — **die Gegenprobe muss nach Umsatz fragen, nicht nach Kerzen.**
+
+- **Neu, 27.08. 04:50 — Fehlerkatalog, zwei Einträge:**
+  *(a) Beschaffungsfehler:* **Kerzen zählen ist kein Handelsnachweis — Umsatz zählen ist
+  einer.** Die Quelle kennt **drei** Zustände: `v > 0` gehandelt, `v === 0` Stempelkerze,
+  `v === null` keine Daten. Wer „hat Kerzen" prüft, vermengt alle drei.
+  *(b) Werkzeugfehler:* **Ein Bestand mit bekanntem Rückstand taugt nicht als Zeuge für die
+  Frage, ob etwas noch läuft** — er ist im selben Zustand wie der zu prüfende Fall, und von
+  außen sehen beide gleich aus. Mein erster Detektor wollte `archiv1d` als Zeugen nehmen;
+  genau die fünf Streitreihen sind die, die der Wachhund als rückständig führt (AVB sechs
+  aufeinanderfolgende Tage mit demselben Schluss bis auf die 15. Stelle, EQR fünf).
+  Zeuge muss eine Quelle sein, die vom vermuteten Fehler nicht betroffen ist.
+
+- **Neu, 27.08. 04:50 — und eine Sperrklinke, die ihren eigenen Fall wegschnitt:** Der
+  #85-Schnitt („letzte Kerze weg") ist richtig und machte in derselben Prüfung genau die
+  Reihen unsichtbar, deren einzige junge Kerze die letzte ist — LBRDA und LBRDK fielen
+  heraus, obwohl sie zur Streitmenge gehören. Der erste Lauf meldete **3 statt 5** Fälle,
+  und die fehlenden zwei waren die, die das Kriterium widerlegt hätten. *Wer eine
+  Randbereinigung in eine Prüfung einbaut, sollte prüfen, ob sie den Prüffall trifft.*
 
 - **Neu, 26.08. 18:20 — `massive-tagesdaten.js` holt neun Monate weniger, als es glaubt.**
   Das Werkzeug fragt fest ab `2023-11-13` an (`tools/massive-tagesdaten.js:29`), die
@@ -239,7 +363,9 @@ gehört vor dem Lauf ausgerechnet, nicht danach.
   sondern mit stillschweigend abgeschnittenen Daten — ohne Warnung, ohne Vermerk in der
   Datei. Wer die 1.164 Dateien liest, hält sie für länger, als sie sind. *(Liegt außerhalb
   meiner Rolle: Code der Werkzeuge ändere ich nicht.)*
-- **Neu, 26.08. 18:20, präzisiert 18:40 — die Verschwundenen-Liste hat falsche Positive am
+- **⛔ ÜBERHOLT durch die Rücknahme vom 27.08. 04:50 (siehe oben) — von den drei genannten
+  Fällen bleibt nur AVB. Der Absatz steht als Beleg für den Fehlerweg, nicht als Befund.**
+  **Neu, 26.08. 18:20, präzisiert 18:40 — die Verschwundenen-Liste hat falsche Positive am
   jüngsten Rand.** `AVB`, `EQR`, `WBS` stehen mit Delisting-Datum 18.–21.08.2026 in
   `massive/verschwundene.json` und handeln **lückenlos bis heute** an ihrer Heimatbörse
   (Gegenprobe bei Yahoo, 26.08.: EQUITY, NYSE, 8 von 8 Kerzen im Fenster 17.–26.08.).

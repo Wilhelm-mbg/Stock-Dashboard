@@ -1,0 +1,84 @@
+{
+ "erzeugt": "2026-08-27T02:36:37.187Z",
+ "frage": "Reichen die beschafften Verschwundenen, um die RICHTUNG der Ueberlebensverzerrung zu entscheiden?",
+ "hinweis": "Zaehlung und Streuung, keine Messung. Der Mittelwert der Differenzreihe wird nicht ausgegeben.",
+ "fenster": {
+  "randTagHeute": "2024-08-27",
+  "rollendeTage": 730
+ },
+ "archiv": {
+  "pfad": "E:/Markt-Dashboard-Archiv/archiv1d",
+  "reihenGenutzt": 2213,
+  "reihenVerworfen": 36
+ },
+ "verschwundene": {
+  "dateien": 1164,
+  "kerzenGesamt": 305908,
+  "kerzenSchonAusDemFenster": 1894,
+  "reihenGenutzt": 1023,
+  "reihenVerworfen": 141,
+  "ohneArtEintrag": 0,
+  "falschPositivAnzahl": 3,
+  "falschPositiv": [
+   {
+    "sym": "AVB",
+    "delistetLaut": "2026-08-18",
+    "archivBis": "2026-08-20"
+   },
+   {
+    "sym": "EQR",
+    "delistetLaut": "2026-08-18",
+    "archivBis": "2026-08-20"
+   },
+   {
+    "sym": "WBS",
+    "delistetLaut": "2026-08-20",
+    "archivBis": "2026-08-19"
+   }
+  ]
+ },
+ "querschnitt": {
+  "handelstageMitBeidenSeiten": 496,
+  "tageOhneVerschwundene": 6,
+  "anteilVerschwundeneMedian_Prozent": 7.73,
+  "anteilVerschwundeneMax_Prozent": 12.44,
+  "breiteUeberlebendeMedian": 2133,
+  "breiteVerschwundeneMedian": 177
+ },
+ "aufloesung_schlussZuSchluss": {
+  "sigmaDifferenzreihe_Pp_ersteDifferenz": 0.05858,
+  "sigmaDifferenzreihe_Pp_gewoehnlich": 0.06929,
+  "se_Pp": 0.00263,
+  "delta80_Pp": 0.00811,
+  "vorhandeneHandelstage": 496,
+  "noetigeHandelstage_fuer_0_04Pp": 21,
+  "noetigeHandelstage_fuer_0_10Pp": 4
+ },
+ "monatsbelegung": {
+  "2025-04": 4057,
+  "2025-06": 4004,
+  "2025-08": 3810,
+  "2025-10": 3844,
+  "2026-08": 84,
+  "2024-08": 1095,
+  "2024-09": 4751,
+  "2024-10": 4959,
+  "2024-11": 4733,
+  "2025-01": 4277,
+  "2025-02": 3999,
+  "2025-03": 4322,
+  "2025-05": 3964,
+  "2025-07": 4105,
+  "2025-09": 3611,
+  "2024-12": 4720,
+  "2025-12": 2863,
+  "2026-01": 2417,
+  "2025-11": 2881,
+  "2026-02": 1884,
+  "2026-03": 1881,
+  "2026-05": 1101,
+  "2026-04": 1552,
+  "2026-07": 435,
+  "2026-06": 873
+ }
+}

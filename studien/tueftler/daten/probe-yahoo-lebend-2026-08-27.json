@@ -1,0 +1,270 @@
+{
+ "erzeugt": "2026-08-27T02:41:20.083Z",
+ "frage": "Handeln die fuenf Streitreihen bei der zweiten Quelle noch - gemessen am Umsatz, nicht an der Kerzenzahl?",
+ "quelle": "yahoo v8 chart, range=1mo interval=1d",
+ "ergebnisse": [
+  {
+   "sym": "AVB",
+   "typ": "EQUITY",
+   "boerse": "NYSE",
+   "waehrung": "USD",
+   "kerzen": 23,
+   "kerzenGehandelt": 21,
+   "kerzenStempel": 0,
+   "kerzenLeer": 2,
+   "letzteMitUmsatz": "2026-08-24",
+   "letzteUeberhaupt": "2026-08-26",
+   "letzteFuenf": [
+    {
+     "t": "2026-08-20",
+     "c": 65.13999938964844,
+     "v": 4329600
+    },
+    {
+     "t": "2026-08-21",
+     "c": 66.79000091552734,
+     "v": 7163093
+    },
+    {
+     "t": "2026-08-24",
+     "c": 68.13999938964844,
+     "v": 6201087
+    },
+    {
+     "t": "2026-08-25",
+     "c": null,
+     "v": null
+    },
+    {
+     "t": "2026-08-26",
+     "c": null,
+     "v": null
+    }
+   ]
+  },
+  {
+   "sym": "EQR",
+   "typ": "EQUITY",
+   "boerse": "NYSE",
+   "waehrung": "USD",
+   "kerzen": 19,
+   "kerzenGehandelt": 7,
+   "kerzenStempel": 4,
+   "kerzenLeer": 8,
+   "letzteMitUmsatz": "2026-08-17",
+   "letzteUeberhaupt": "2026-08-26",
+   "letzteFuenf": [
+    {
+     "t": "2026-08-20",
+     "c": 63.65999984741211,
+     "v": 0
+    },
+    {
+     "t": "2026-08-21",
+     "c": 63.65999984741211,
+     "v": 0
+    },
+    {
+     "t": "2026-08-24",
+     "c": null,
+     "v": null
+    },
+    {
+     "t": "2026-08-25",
+     "c": null,
+     "v": null
+    },
+    {
+     "t": "2026-08-26",
+     "c": null,
+     "v": null
+    }
+   ]
+  },
+  {
+   "sym": "WBS",
+   "typ": "EQUITY",
+   "boerse": "NYSE",
+   "waehrung": "USD",
+   "kerzen": 19,
+   "kerzenGehandelt": 9,
+   "kerzenStempel": 1,
+   "kerzenLeer": 9,
+   "letzteMitUmsatz": "2026-08-19",
+   "letzteUeberhaupt": "2026-08-26",
+   "letzteFuenf": [
+    {
+     "t": "2026-08-20",
+     "c": 77.56999969482422,
+     "v": 0
+    },
+    {
+     "t": "2026-08-21",
+     "c": null,
+     "v": null
+    },
+    {
+     "t": "2026-08-24",
+     "c": null,
+     "v": null
+    },
+    {
+     "t": "2026-08-25",
+     "c": null,
+     "v": null
+    },
+    {
+     "t": "2026-08-26",
+     "c": null,
+     "v": null
+    }
+   ]
+  },
+  {
+   "sym": "LBRDA",
+   "typ": "EQUITY",
+   "boerse": "NasdaqGS",
+   "waehrung": "USD",
+   "kerzen": 4,
+   "kerzenGehandelt": 0,
+   "kerzenStempel": 1,
+   "kerzenLeer": 3,
+   "letzteMitUmsatz": null,
+   "letzteUeberhaupt": "2026-08-26",
+   "letzteFuenf": [
+    {
+     "t": "2026-08-21",
+     "c": 35.9900016784668,
+     "v": 0
+    },
+    {
+     "t": "2026-08-24",
+     "c": null,
+     "v": null
+    },
+    {
+     "t": "2026-08-25",
+     "c": null,
+     "v": null
+    },
+    {
+     "t": "2026-08-26",
+     "c": null,
+     "v": null
+    }
+   ]
+  },
+  {
+   "sym": "LBRDK",
+   "typ": "EQUITY",
+   "boerse": "NasdaqGS",
+   "waehrung": "USD",
+   "kerzen": 4,
+   "kerzenGehandelt": 0,
+   "kerzenStempel": 1,
+   "kerzenLeer": 3,
+   "letzteMitUmsatz": null,
+   "letzteUeberhaupt": "2026-08-26",
+   "letzteFuenf": [
+    {
+     "t": "2026-08-21",
+     "c": 36.02000045776367,
+     "v": 0
+    },
+    {
+     "t": "2026-08-24",
+     "c": null,
+     "v": null
+    },
+    {
+     "t": "2026-08-25",
+     "c": null,
+     "v": null
+    },
+    {
+     "t": "2026-08-26",
+     "c": null,
+     "v": null
+    }
+   ]
+  },
+  {
+   "sym": "TWO",
+   "typ": "EQUITY",
+   "boerse": "NYSE",
+   "waehrung": "USD",
+   "kerzen": 23,
+   "kerzenGehandelt": 21,
+   "kerzenStempel": 0,
+   "kerzenLeer": 2,
+   "letzteMitUmsatz": "2026-08-24",
+   "letzteUeberhaupt": "2026-08-26",
+   "letzteFuenf": [
+    {
+     "t": "2026-08-20",
+     "c": 12.039999961853027,
+     "v": 2141700
+    },
+    {
+     "t": "2026-08-21",
+     "c": 12.050000190734863,
+     "v": 3591200
+    },
+    {
+     "t": "2026-08-24",
+     "c": 12.180000305175781,
+     "v": 19390300
+    },
+    {
+     "t": "2026-08-25",
+     "c": null,
+     "v": null
+    },
+    {
+     "t": "2026-08-26",
+     "c": null,
+     "v": null
+    }
+   ]
+  },
+  {
+   "sym": "AAPL",
+   "typ": "EQUITY",
+   "boerse": "NasdaqGS",
+   "waehrung": "USD",
+   "kerzen": 23,
+   "kerzenGehandelt": 23,
+   "kerzenStempel": 0,
+   "kerzenLeer": 0,
+   "letzteMitUmsatz": "2026-08-26",
+   "letzteUeberhaupt": "2026-08-26",
+   "letzteFuenf": [
+    {
+     "t": "2026-08-20",
+     "c": 311.29998779296875,
+     "v": 40959200
+    },
+    {
+     "t": "2026-08-21",
+     "c": 309.3500061035156,
+     "v": 46876800
+    },
+    {
+     "t": "2026-08-24",
+     "c": 310.3399963378906,
+     "v": 34673600
+    },
+    {
+     "t": "2026-08-25",
+     "c": 309.8999938964844,
+     "v": 25869800
+    },
+    {
+     "t": "2026-08-26",
+     "c": 313.45001220703125,
+     "v": 33571543
+    }
+   ]
+  }
+ ]
+}

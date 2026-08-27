@@ -1,0 +1,145 @@
+{
+ "erzeugt": "2026-08-27T02:38:52.787Z",
+ "frage": "Wie viele der als delistet gefuehrten Aktien haben im Ueberlebensarchiv eine LEBENDIGE Reihe?",
+ "kriterium": "letzte Kerze >= 2026-08-14 UND >=3 verschiedene Schluesse UND >=3 Kerzen mit Umsatz in den letzten 10",
+ "korrekturHinweis": "Ersetzt das Kriterium vom 26.08. (\"hat frische Kerzen\"), das Stempel-Kerzen fuer Handel hielt.",
+ "listenstand": "2026-08-23T17:13:33.203Z",
+ "aktienartigInDerListe": 6921,
+ "zaehlung": {
+  "gepruef": 5,
+  "nichtImArchiv": 6916,
+  "still": 0,
+  "gestempelt": 0,
+  "lebendig": 5
+ },
+ "lebendige": [
+  {
+   "sym": "AVB",
+   "letzteArchivkerze": "2026-08-21",
+   "kerzen": 8166,
+   "verschiedeneSchluesseInLetzten10": 5,
+   "kerzenMitUmsatzInLetzten10": 5,
+   "lage": "lebendig",
+   "delistetLaut": "2026-08-18"
+  },
+  {
+   "sym": "EQR",
+   "letzteArchivkerze": "2026-08-21",
+   "kerzen": 8302,
+   "verschiedeneSchluesseInLetzten10": 5,
+   "kerzenMitUmsatzInLetzten10": 6,
+   "lage": "lebendig",
+   "delistetLaut": "2026-08-18"
+  },
+  {
+   "sym": "LBRDA",
+   "letzteArchivkerze": "2026-08-21",
+   "kerzen": 2942,
+   "verschiedeneSchluesseInLetzten10": 10,
+   "kerzenMitUmsatzInLetzten10": 9,
+   "lage": "lebendig",
+   "delistetLaut": "2026-08-21"
+  },
+  {
+   "sym": "LBRDK",
+   "letzteArchivkerze": "2026-08-21",
+   "kerzen": 2942,
+   "verschiedeneSchluesseInLetzten10": 10,
+   "kerzenMitUmsatzInLetzten10": 9,
+   "lage": "lebendig",
+   "delistetLaut": "2026-08-21"
+  },
+  {
+   "sym": "WBS",
+   "letzteArchivkerze": "2026-08-20",
+   "kerzen": 9986,
+   "verschiedeneSchluesseInLetzten10": 9,
+   "kerzenMitUmsatzInLetzten10": 9,
+   "lage": "lebendig",
+   "delistetLaut": "2026-08-20"
+  }
+ ],
+ "gestempelte": [],
+ "positivkontrolle": [
+  {
+   "sym": "A",
+   "letzteArchivkerze": "2026-08-26",
+   "kerzen": 6732,
+   "verschiedeneSchluesseInLetzten10": 10,
+   "kerzenMitUmsatzInLetzten10": 10,
+   "lage": "lebendig"
+  },
+  {
+   "sym": "AA",
+   "letzteArchivkerze": "2026-08-26",
+   "kerzen": 10078,
+   "verschiedeneSchluesseInLetzten10": 10,
+   "kerzenMitUmsatzInLetzten10": 10,
+   "lage": "lebendig"
+  },
+  {
+   "sym": "AAL",
+   "letzteArchivkerze": "2026-08-26",
+   "kerzen": 5261,
+   "verschiedeneSchluesseInLetzten10": 10,
+   "kerzenMitUmsatzInLetzten10": 10,
+   "lage": "lebendig"
+  },
+  {
+   "sym": "AAOI",
+   "letzteArchivkerze": "2026-08-26",
+   "kerzen": 3248,
+   "verschiedeneSchluesseInLetzten10": 10,
+   "kerzenMitUmsatzInLetzten10": 10,
+   "lage": "lebendig"
+  },
+  {
+   "sym": "AAON",
+   "letzteArchivkerze": "2026-08-26",
+   "kerzen": 8481,
+   "verschiedeneSchluesseInLetzten10": 10,
+   "kerzenMitUmsatzInLetzten10": 10,
+   "lage": "lebendig"
+  },
+  {
+   "sym": "AAP",
+   "letzteArchivkerze": "2026-08-26",
+   "kerzen": 6224,
+   "verschiedeneSchluesseInLetzten10": 10,
+   "kerzenMitUmsatzInLetzten10": 10,
+   "lage": "lebendig"
+  },
+  {
+   "sym": "AAPL",
+   "letzteArchivkerze": "2026-08-26",
+   "kerzen": 10078,
+   "verschiedeneSchluesseInLetzten10": 10,
+   "kerzenMitUmsatzInLetzten10": 10,
+   "lage": "lebendig"
+  },
+  {
+   "sym": "AAT",
+   "letzteArchivkerze": "2026-08-26",
+   "kerzen": 3927,
+   "verschiedeneSchluesseInLetzten10": 9,
+   "kerzenMitUmsatzInLetzten10": 10,
+   "lage": "lebendig"
+  },
+  {
+   "sym": "AB",
+   "letzteArchivkerze": "2026-08-26",
+   "kerzen": 9664,
+   "verschiedeneSchluesseInLetzten10": 10,
+   "kerzenMitUmsatzInLetzten10": 10,
+   "lage": "lebendig"
+  },
+  {
+   "sym": "ABBV",
+   "letzteArchivkerze": "2026-08-26",
+   "kerzen": 3433,
+   "verschiedeneSchluesseInLetzten10": 10,
+   "kerzenMitUmsatzInLetzten10": 10,
+   "lage": "lebendig"
+  }
+ ]
+}

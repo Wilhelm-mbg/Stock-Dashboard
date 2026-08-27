@@ -1,0 +1,90 @@
+{
+ "erzeugt": "2026-08-27T02:37:22.038Z",
+ "frage": "Wie viele Symbol-Tage der Verschwundenen fallen je Woche Verzoegerung dauerhaft aus dem 730-Tage-Fenster?",
+ "hinweis": "Betrifft NUR die Eroeffnungskurse. Schluss/Hoch/Tief/Umsatz dieser Tage liegen bereits auf der Platte und bleiben.",
+ "kerzenGesamt": 305908,
+ "reihen": 1164,
+ "ersteKerzeImBestand": "2024-08-23",
+ "letzteKerzeImBestand": "2026-08-24",
+ "verlustuhr": [
+  {
+   "verzoegerungTage": 0,
+   "fensterrand": "2024-08-27",
+   "kerzenAusserhalb": 1894,
+   "anteilProzent": 0.62
+  },
+  {
+   "verzoegerungTage": 7,
+   "fensterrand": "2024-09-03",
+   "kerzenAusserhalb": 5811,
+   "anteilProzent": 1.9
+  },
+  {
+   "verzoegerungTage": 14,
+   "fensterrand": "2024-09-10",
+   "kerzenAusserhalb": 10760,
+   "anteilProzent": 3.52
+  },
+  {
+   "verzoegerungTage": 30,
+   "fensterrand": "2024-09-26",
+   "kerzenAusserhalb": 22637,
+   "anteilProzent": 7.4
+  },
+  {
+   "verzoegerungTage": 60,
+   "fensterrand": "2024-10-26",
+   "kerzenAusserhalb": 43965,
+   "anteilProzent": 14.37
+  },
+  {
+   "verzoegerungTage": 90,
+   "fensterrand": "2024-11-25",
+   "kerzenAusserhalb": 62948,
+   "anteilProzent": 20.58
+  }
+ ],
+ "verlustJeWocheAbHeute": 3917,
+ "belegungJeTagAmRand": {
+  "2024-08-23": "889 (schon draussen)",
+  "2024-08-26": "1005 (schon draussen)",
+  "2024-08-27": "982",
+  "2024-08-28": "984",
+  "2024-08-29": "980",
+  "2024-08-30": "971",
+  "2024-09-03": "1002",
+  "2024-09-04": "990",
+  "2024-09-05": "996",
+  "2024-09-06": "971",
+  "2024-09-09": "990",
+  "2024-09-10": "994",
+  "2024-09-11": "992",
+  "2024-09-12": "999",
+  "2024-09-13": "984",
+  "2024-09-16": "980",
+  "2024-09-17": "989",
+  "2024-09-18": "992",
+  "2024-09-19": "988",
+  "2024-09-20": "986",
+  "2024-09-23": "992",
+  "2024-09-24": "994",
+  "2024-09-25": "987",
+  "2024-09-26": "985",
+  "2024-09-27": "968",
+  "2024-09-30": "990",
+  "2024-10-01": "990",
+  "2024-10-02": "961",
+  "2024-10-03": "961",
+  "2024-10-04": "979",
+  "2024-10-07": "991",
+  "2024-10-08": "915",
+  "2024-10-09": "986",
+  "2024-10-10": "972",
+  "2024-10-11": "982",
+  "2024-10-14": "978",
+  "2024-10-15": "967",
+  "2024-10-16": "975",
+  "2024-10-17": "976",
+  "2024-10-18": "950"
+ }
+}
