@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 14:15 (Windows-Uhr)
+letzter-bericht: 2026-08-27 14:25 (Windows-Uhr)
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -124,6 +124,57 @@ Nicht-Krypto, **alle am 25.08., null erfasste Marktlagen** → **nicht erfüllt,
 > *Nebenbemerkung von `06`, der Vollständigkeit halber: der 30-Minuten-Zwischenspeicher bedeutet,
 > dass eine Runde bei einem Seitenwechsel innerhalb einer halben Stunde noch die alte Lage trüge
 > — **für eine Schwelle über Tage belanglos**, aber gesagt.*
+
+---
+
+## ⛔ 27.08. 14:2x — **WHLR HEUTE NICHT ANFASSEN. Der Versatz repariert sich heute Nacht selbst**
+
+> ### ***„Der Rand-Versatz verschwindet voraussichtlich heute Nacht von selbst — wer ihn heute repariert, zerstört morgen."***
+
+**Der ×4-Versatz am aktuellen Rand ist ein ANPASSUNGS-VERZUG, kein Schaden.** *Der Split ×4 wurde
+**erst heute** ausgeführt; das 60m-Archiv ist konsistent-roh und zieht beim nächsten Nachladen
+nach.* **Eine Reparatur heute würde eine Skala erzwingen, die der Nachtlauf morgen ohnehin
+korrekt setzt — und dann stünde sie doppelt.**
+
+---
+
+## 🧮 27.08. 14:2x — **DER §2-JOIN IST GEBAUT, GEEICHT (9/9) UND GELAUFEN** *(`ba8d99d`)*
+
+**Meine drei Prüffragen, gemessen beantwortet:**
+
+**1. Die Lücke war real, aber woanders als vermutet:** *`I2` war **in der Messung** schon
+segmentweise (Median + Spannweite je Segment) — **aber reihenweise im ETIKETT**.* **Der Join hat
+sie geschlossen: Urteile fallen je Sprung/Segment mit Datum, die Reihen-Zeile ist nur
+Zusammenfassung.** *Eine korrekt segmentierte Messung mit einem Reihen-Etikett darüber — genau
+die Form, in der ein Fehler nicht auffällt, weil die Zahlen darunter stimmen.*
+
+**2. Das `GEGENLÄUFIG`-Flag existiert, und `WHLR` trägt es** — *die Klasse „**beide** Archive
+haben an dieser Reihe gearbeitet".*
+
+**3. Der sechste Eichfall hat die Segment-Fähigkeit geprüft und bestanden.** **`WHLR` bekommt
+vier datierte Einzel-Urteile:**
+- **F-Altfall 2017** (×8 nicht geglättet, `1d`)
+- **Echo 2024/2025**
+- **F-Naht 26.08.** — *roher Randbalken in ×4-Historie, q 0,272.* **Der Analytiker hatte den
+  rohen Balken vorhergesagt, der Join fand ihn im Archiv** — *beide Archive enden am 26.08.
+  identisch roh auf 0,399.* **Eine Vorhersage, die vor der Messung stand und zutraf.**
+- **Rand-Versatz ×4 = Anpassungs-VERZUG, kein Schaden** *(siehe Warnung oben)*
+
+> ### ⚖ RICHTIGSTELLUNG GEGEN DEN PM — **ARWR / BYRN / ASTH sind UNENTSCHEIDBAR**
+> **Ich hatte geboardet, sie seien „nach der neuen Regel wieder Kandidaten".** *Gemessen:
+> **Massive führt dort 0–1 Splits, keiner passt nach Datum oder Faktor** (ARWR: **60 Sprünge, 1
+> geführter Split**).*
+>
+> ***„Weder ‚harmlos' noch ‚Anpassungsfehler' — unentscheidbar. Die PM-Sorge und das alte
+> QS-Urteil waren beide Vermutungen über denselben ungemessenen Punkt."***
+>
+> **Zwei entgegengesetzte Deutungen derselben Lücke — und keine von beiden war eine Messung.**
+> *Das ist die Form, in der ein Streit entsteht, den niemand gewinnen kann, weil die Frage nie
+> gestellt wurde.*
+
+*Eine Eich-Iteration war nötig und ist als Nachtrag 5 dokumentiert: **heute ausgeführte Splits
+liegen jenseits des Tagesrasters**, das Rand-Fenster brauchte +5 Tage Toleranz. Die F-Quoten-
+Endfassung wartet auf die Analytiker-Grundrate.*
 
 ---
 
