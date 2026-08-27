@@ -82,3 +82,36 @@ unter Vorbehalt (DFEN-Fall) · Microcap-Abdeckung der 1990er unbelegt (ARWR-
 Vorbehalt der Rolle Berechnungen, geteilt) · F? mischt Teil-Anpassungen mit
 echten Bewegungen an Split-Tagen (UCO) — die Klasse ist bewusst eine
 „hier stimmt etwas nicht"-Liste, kein Urteil.
+
+---
+
+## NACHTRAG ~17:15 — RGR-Einzelabruf: die Bauform existiert, und sie dreht den RGR-Fall erneut
+
+Auf PM-Anregung ein einzelner Yahoo-Abruf (chart-API, events=div,splits):
+**Yahoo führt für RGR ein Split-Ereignis 374:1000 am 24.10.2025 — exakt der
+gemessene Versatzfaktor 0,3740.** Massive kennt für RGR in der gesamten
+Firmengeschichte keinen Split und um den Termin nur 0,04 $ Dividende.
+
+**Damit ist RGR kein „unerklärter Skalenfehler" mehr, sondern ein
+EREIGNIS-DISSENS zwischen den Quellen:** Yahoo behandelt den 24.10.2025 als
+anpassungspflichtig (großes Ereignis als synthetischer Split kodiert — so
+kodiert Yahoo mitunter Sonderausschüttungen) und liefert heute die
+÷2,674-angepasste Historie (44–46 $ vor dem Stichtag — genau das, was unser
+1d-Archiv trägt). Massive führt kein solches Ereignis und passt ohnehin keine
+Ausschüttungen an. **Welche Darstellung „stimmt", hängt daran, ob das Ereignis
+real ist — das entscheidet EDGAR (8-K/Ausschüttungsunterlagen um den
+24.10.2025), nicht einer der beiden Vendoren.**
+
+**Konsequenz für mein Morgen-Urteil:** „RGR: 1d stimmt, 60m vor dem 24.10.2025
+um 2,674 zu hoch" gilt ab jetzt UNTER VORBEHALT — die 60m-Historie war womöglich
+schlicht die unangepasste Rohansicht (IESC-Muster), nicht „kaputt". Zusammen mit
+IESC (Quelle kennt den Split, passt aber nicht an; 24.08.-Kerze fehlt sogar im
+1mo-Fenster der Quelle) sind das ZWEI Varianten derselben Bauform:
+**Selbstheilung durch Nachladen ist nicht garantiert — sie hängt an Ereignis-
+Führung UND Anpassungs-Praxis der Quelle, und beide sind je Reihe verschieden.**
+
+**Übergabe an den nächsten Lauf (PM-geboardet):** RGR/SITC/B/BYND systematisch
+auf das Muster prüfen (Yahoo events vs. Massive events), mit AAPL/NVDA als
+Gegenkontrolle (dort MUSS Yahoo events führen UND angepasst haben), Grundmenge
+zählen, NICHTS ändern — das events-Feld ist ein Kennzeichnungs-, kein
+Reparaturwerkzeug.
