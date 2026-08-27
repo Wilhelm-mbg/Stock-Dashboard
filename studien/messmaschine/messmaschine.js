@@ -74,6 +74,12 @@ var VERFAHREN = {
    *   Archiv, sondern verweigert; und E1 traegt den Zustand klassifizierungDa ab
    *   jetzt IMMER - ein Protokoll ohne das Feld ist vor dieser Version entstanden.
    *   Kein Messwert aendert sich; neu ist ein Feld und eine Verweigerung.
+   * 1.6.1 (27.08.2026): NUR der E1-Begruendungstext. Die Ueberlebensverzerrung ist
+   *   jetzt gemessen und hat zwei Gesichter mit entgegengesetztem Vorzeichen
+   *   (unbedingt untertreibt das Archiv, bedingt auf Dips beschoenigt es) - der alte
+   *   Satz "jede positive Rohrendite ist nach oben verzerrt; Groesse nicht gemessen"
+   *   war beidfach ueberholt und haette sich als halbe Wahrheit weitergetragen.
+   *   Kein Verfahren, kein Feld, keine Zahl geaendert.
    * Zur 1.2.0 gab es eine ANDERE Meinung, und sie war vertretbar: die Messung selbst
    * aendert sich nicht, kein Urteil kippt, es ist 'nur' eine Planungszahl - also
    * koennte 1.1.0 stehenbleiben. Dagegen steht, was diese Nummer LEISTEN soll: zwei
@@ -82,7 +88,7 @@ var VERFAHREN = {
    * Zahlen nebeneinanderlegt, haette keinen Anhaltspunkt. Deshalb neue Stelle.
    * Genau diese Frage soll die Sperrklinke in test-v6.js erzwingen - sie deshalb
    * durchzuwinken waere ihr erster Ausfall gewesen. */
-  version: '1.6.0',
+  version: '1.6.1',
   /* codeStand beantwortet 'war das dieselbe Datei?' und rechnet sich selbst aus. */
   codeStand: codeStand(),
   mindestKerzenVorlauf: 261,        // EMA100 + Kanal 200, wie die Detektoren es brauchen
@@ -783,8 +789,12 @@ function messe(strategie, archivPfad, optionen) {
   P.entscheide('E1 Universum', { archiv: archivPfad, zeitrahmen: S.zeitrahmen || '60m', filter: S.universum || 'aktien' },
     { werte: syms.length, klassifizierungDa: klassifizierung },
     'Das Universum ist "alles, was heute im Archiv liegt". Das sind Ueberlebende: Werte, die aus der Beobachtung ' +
-    'geflogen sind, fehlen. Die Renditen laufen ueber Zeitraeume, in denen das noch nicht bekannt war. ' +
-    'Jede positive Rohrendite ist dadurch nach oben verzerrt; die Groesse der Verzerrung ist hier NICHT gemessen.');
+    'geflogen sind, fehlen. Die dadurch entstehende Verzerrung wurde am 26./27.08.2026 gemessen und hat ZWEI ' +
+    'GESICHTER mit entgegengesetztem Vorzeichen: (1) UNBEDINGT untertreibt ein Ueberlebenden-Archiv die ' +
+    'Querschnittsrendite, weil die Uebernahme-Praemien der Verschwundenen fehlen (+0,057 Pp je Handelstag ' +
+    'gewichtet, t 21; Fenster 2024-2026, umsatzstarke Tage). (2) BEDINGT auf Absturz-Signalen beschoenigt es ' +
+    'Dip-Kauf-Ergebnisse, weil die Sterbepfade fehlen (-3,78 Pp je Signaltag, t -6,19). Wer nur ein Vorzeichen ' +
+    'zitiert, zitiert die halbe Wahrheit. Fuer Zeitraeume vor 2024 ist die Groesse weiterhin ungemessen.');
   if (syms.length < 10) return { verweigert: true, grund: 'Weniger als 10 Werte im Universum.' };
 
   /* --- Zeitachse und Schnitt (B5) --- */

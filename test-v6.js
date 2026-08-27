@@ -3954,8 +3954,8 @@ console.log('\n44) Messmaschine, Scoreboard und Strategie-Eingabe (23.08.2026)')
    * bleibt version, und nur der Stand wird nachgezogen). Genau diese Frage ist sieben
    * Mal nicht gestellt worden. Die Reibung IST der Zweck: sie kostet zwei Zeilen und
    * verhindert, dass Protokolle stillschweigend unvergleichbar werden. */
-  var MM_VERSION = '1.6.0';        // 27.08. PM-Auftrag: Integritaetsschranke Klassifizierung + E1-Feld
-  var MM_STAND = 'ebd414ead1c6';   // sha256 ueber messmaschine.js, erste 12 Zeichen
+  var MM_VERSION = '1.6.1';        // 27.08. nur E1-Text: Verzerrung hat zwei Gesichter (gemessen)
+  var MM_STAND = '9cb0eb714ec2';   // sha256 ueber messmaschine.js, erste 12 Zeichen
   var mmV = require(__dirname + '/studien/messmaschine/messmaschine.js').VERFAHREN;
   ok(mmV.version === MM_VERSION && mmV.codeStand === MM_STAND,
      'Messmaschine: Version und Codestand stehen zusammen fest - eine Aenderung ohne Entscheid faellt auf',
@@ -10167,11 +10167,36 @@ console.log('\nAnzeigefehler aus dem Auditor-Lauf 27.08. (#106, #107, #108)');
   ok(/U\.dez\(e\.abstandMs/.test(ak),
      'Die Kursarchiv-Karte ebenso (#108)');
 
-  /* #105 ist NICHT repariert - er wartet auf Wilhelms Entscheid (feste Referenz
-   * oder Live-Huerde). Er ist aber so freigelegt, dass ein Umschalten EINE Zeile
-   * ist. Diese Zusicherung verlangt die Durchleitung, nicht die Entscheidung. */
-  ok(/function huerdePp\(\)/.test(mb) && /huerdePp\(\) \+ /.test(mb),
-     'Die Kostenhuerde des Messbands geht durch EINE Funktion - #105 bleibt in beide Richtungen billig');
+  /* #105 ist ENTSCHIEDEN (Wilhelm, 27.08., Formular): das Messband rechnet wie
+   * das Scoreboard mit der Huerde des tatsaechlich gehandelten Produkts.
+   * Zugesichert wird die GEMEINSAME QUELLE, funktional: beide Module holen die
+   * Huerde aus derselben Schnittstelle und liefern fuer dieselbe Einstellung
+   * dieselbe Zahl. Eine Verabredung ("beide sollen ...") wuerde beim naechsten
+   * Umbau wieder auseinanderdriften, und in der Voreinstellung fiele es wieder
+   * zufaellig nicht auf (0,100 gegen 0,0665, Auditor 27.08.). */
+  var sb = ohneKommentare(fs.readFileSync(__dirname + '/scoreboard.js', 'utf8'));
+  function huerdeFnAus(quelle) {
+    var a = quelle.indexOf('function liveHuerde()');
+    var e = quelle.indexOf('\n  }', a);
+    ok(a !== -1 && e > a, 'liveHuerde laesst sich herausloesen');
+    return new Function('window', quelle.slice(a, e + 4) + '; return liveHuerde;');
+  }
+  var produktStub = { DepotAPI: { kostenHuerde: function () {
+    return { pp: 0.0665, produkt: 'Faktor-Zertifikat', hebel: 5, einsatz: 1000,
+      haltenMin: 180, angenommen: false, instrument: 'x' };
+  } } };
+  var mbH = huerdeFnAus(mb)(produktStub)();
+  var sbH = huerdeFnAus(sb)(produktStub)();
+  ok(mbH && sbH && mbH.pp === sbH.pp && mbH.pp === 0.0665,
+     'Messband und Scoreboard holen die Kostenhuerde aus DERSELBEN Quelle und lesen dieselbe Zahl (#105)',
+     (mbH && mbH.pp) + ' / ' + (sbH && sbH.pp));
+  ok(huerdeFnAus(mb)({})() === null,
+     'Ohne hochgefahrenes Depot gibt es keine Produkthuerde - der Rueckfall ist ein erklaerter Zustand, keine zweite Wahrheit');
+  ok(/k\.jeSignalPp - huerde\b/.test(mb) && /k\.delta80Pp > huerde\b/.test(mb),
+     'Netto UND Aufloesungs-Vergleich rechnen mit der Produkthuerde, nicht mit der festen Zahl (#105)');
+  ok(!/HUERDE_PP\.toFixed/.test(mb) && (mb.match(/\.toFixed\(/g) || []).length === 2,
+     'Der Rest von #108: englisch formatiert wird nur noch im Vorspann ohne U - jede neue nackte Stelle macht das rot',
+     String((mb.match(/\.toFixed\(/g) || []).length));
 })();
 
 console.log('\nDie App sammelt selbst: Kursarchiv (26.08.2026)');
