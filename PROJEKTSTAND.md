@@ -185,6 +185,48 @@ Nicht-Krypto, **alle am 25.08., null erfasste Marktlagen** → **nicht erfüllt,
 
 ---
 
+## 🛡 27.08. nachmittags — **EINE SPERRE HAT ZWEI VOLLE KURSHISTORIEN GERETTET, und niemand wusste davon**
+
+> ### ⚖ RICHTIGSTELLUNG: **`AVB` ist KEIN Nachladefall** *(ich hatte es so geboardet)*
+> **Der Nachtlauf HAT AVB geholt. Er hat die Antwort verworfen — mit Recht.**
+>
+>     Die Quelle liefert fuer AVB nur noch 30 Kerzen, ersteHandelszeit 2026-07-17.
+>     Name und Boerse stimmen, die HISTORIE ist weg. Unser Archiv hat 8.166 Kerzen.
+>     Die mindestKerzen-Sperre (403 bei 1d) hat sich geweigert, 8.166 gute Kerzen
+>     durch einen 30-Kerzen-Stummel zu ersetzen.
+>
+> **`EQR` ist derselbe Fall**, ebenfalls 30 Kerzen ab 2026-07-17. *Positivkontrolle im selben
+> Aufruf: **SPY liefert 8.452 Kerzen ab 1993** — die kurze Antwort ist eine **Eigenschaft dieser
+> Symbole**, kein kaputter Abruf.*
+
+> ### 🎯 **DIE FREUNDLICHE VERSION DER KRANKHEIT DIESES TAGES**
+> ***„Eine Prüfung, die genau richtig lag — aber so leise, dass ihr Fund nicht ankam."***
+> *Sichtbar war nur **„nur 27 Kerzen"** in einem Lauf-Log.*
+>
+> **→ PM-Zusatz: Eine stille Sperre ist in BEIDEN Richtungen unprüfbar.** *Rettet sie korrekt,
+> erfährt es niemand — **verweigert sie einmal zu Unrecht, erfährt es ebenfalls niemand.***
+> **Die Sperre bleibt unverändert richtig; was fehlt, ist die Sichtbarkeit ihrer Entscheidungen.**
+> *Kein Auftrag heute — notiert.*
+
+> ### 🔴 UND DER BEUNRUHIGENDE TEIL: **die Quelle hat Historie GELÖSCHT**
+> *Für AVB und EQR reicht sie nur noch bis 17.07.2026 zurück.* **Damit ist unser Archiv für diese
+> Reihen die einzige verbliebene Kopie von 8.166 bzw. vergleichbar vielen Kerzen.**
+> **Die „löscht nie"-Eigenschaft von `zusammenfuehren()` ist damit kein Komfort mehr, sondern
+> tragend** — *heute schon zum zweiten Mal (die IESC-Kerze vom 24.08. fehlt im Quellfenster
+> ebenfalls, unser Archiv hat sie).*
+
+**Klassengröße, damit niemand einen Flächenbrand daraus macht:** *Über alle **2.965** Tagesreihen
+gegangen — **2.955 aktuell, 10 hängen zurück**, und das sind **exakt die zehn**, die `06`s
+Werkzeug unabhängig führt.* **Zwei getrennte Methoden, dieselbe Menge.** *Positivkontrolle
+mitgelaufen: 1.084 Reihen haben Umsatz-0-Tage **nur im Inneren** (echte handelslose Tage) und
+werden korrekt **nicht** markiert.*
+
+**⚠ AUSDRÜCKLICH NICHT GEMESSEN:** *wie viele Reihen die Quelle **sonst noch** zurückgesetzt hat.
+Das zu beziffern hieße **2.965 Abrufe**, und das Netz gehört gerade dem Vollauf.* **Die 10
+Zurückhänger sind die Obergrenze für alles, was sich SCHON auswirkt — mehr sagt die Zahl nicht.**
+
+---
+
 ## 🧱 27.08. nachmittags — **DIE CBSH-BLINDSTELLE IST LEER — und die Grenze ist der FAKTOR, nicht die Datenmenge**
 
 **Ergebnis: `F = 0` gegen Nullwert 0,13.** *25 Kandidaten-Ereignisse mit Faktor zwischen 0,5 und
@@ -698,6 +740,20 @@ Beweis.**
 
 *Werkzeug: `qs-audit-2026-08-26/werkzeuge/konventions-zensus.js`, nur lesend, prüft beide
 Sperren, ~4 Minuten.*
+
+> **🔎 Nachtrag: die 60 Tage Differenz zur unabhängigen Reproduktion sind zu zwei Dritteln
+> geklärt.** *Die **Reihenmenge stimmt exakt** (2.885 − 7 ohne 1d-Gegenstück = **2.878**, die
+> QS-Zahl). Der **Archivstand ist als Ursache gemessen widerlegt** — in den drei Stunden dazwischen
+> wurde in keinem der beiden Archive eine Datei geschrieben.* **Bleibt: die Zählregeln.**
+>
+> **⚠ Und warum es dabei bleibt, ist selbst eine Notiz wert:** *`konventions-zensus.js` liegt im
+> **Datenordner, nicht im Repo** — **die Zählregel, aus der eine Zahl auf dieser Tafel stammt, ist
+> für andere Sitzungen nicht lesbar.*** *Kein Vorwurf: es war eine QS-Prüfung, kein Werkzeug fürs
+> Projekt. Aber wer die Zahl später nachrechnen will, kann es nicht.*
+>
+> **Protokollzeile, so vereinbart:** *„Differenz 60 Tage (0,003 %) bei identischer Reihenmenge und
+> identischem Archivstand; Ursache in den Zählregeln, **nicht abschließend geklärt**, ohne Belang
+> für das Ergebnis."*
 
 **Hausregel ergänzt, auf ihren Vorschlag:** *Ein Archiv-Urteil braucht Zeitraum und
 Konventions-Angabe — **und die Konvention ist am Bestand selbst ablesbar, man muss sie nicht
