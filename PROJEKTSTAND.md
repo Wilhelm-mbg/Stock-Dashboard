@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 03:45 (abgelesen)
+letzter-bericht: 2026-08-27 03:50 (abgelesen)
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -144,6 +144,44 @@ Zahl hereingefallen war): ***Die Falle verschwindet nicht durch einmaliges Erken
 
 *Alles unterhalb dieser Zeile ist Beleg zur Bilanz oben. Wer nur wissen will, was zu
 entscheiden ist, hat es bereits gelesen.*
+
+### 🔢 27.08. ~03:50 — F1-ZÄHLUNG: die Ränder-Prämisse trägt nicht, und BRK.A fliegt per Bauart raus
+
+*(Archiv-Wache, `f1-ergebnis.txt`, rein lesend, nichts verändert. Drei Überraschungen — zwei
+davon widerlegen die Fragestellung des PM.)*
+
+**1. Es sind 58 kaputte Reihen archivweit, nicht 36 — und die Abweichung ist selbst ein Fund.**
+Entweder anderer Archivstand (diese Zählung lief **nach** dem Nachtlauf) oder andere
+Grundmenge (die Mess-Sitzung zählte vermutlich auf ihrem Messfenster, hier archivweit über
+2.965 Reihen). **Aufschlüsselung: 25 mit genau einem Sprung, 7 mit mehreren, 23 nur wegen
+Kurs > 100.000 $.**
+
+**2. Im frischen Zeitraum: nur EIN Fall — aber ein wilder.** **BYND** mit **sieben** Sprüngen
+im Juli 2026 (+2920 %, −97 %, +2954 % im Wechsel) — *sieht nach inkonsistent bereinigtem
+Reverse-Split aus.* **→ Damit ist die PM-Frage „produziert der Nachlader solche Ränder?"
+beantwortet: kein Serienproblem des Laufs, ein einzelner Quell-Chaos-Fall.**
+
+**3. ⚠ DIE RÄNDER-PRÄMISSE DES PM TRÄGT NICHT.** Ich hatte gefragt, wie viele durch
+**Rand-Bereinigung** zu retten wären. **56 von 58 Reihen haben ihre Sprünge MITTEN in der
+Reihe** — Rand-Bereinigung rettet **genau eine** (SEZL, Sprung in Kerze 1). Die Fälle sind
+überwiegend **uralte Einzelsprünge**, unbereinigte Splits: NVR +2633 % (1993), SU +3520 %
+(1993), WT +3650 % (2004), CHRD +25733 % (2020).
+
+> **→ Was RETTEN würde, ist eine andere Reparaturform als die gefragte: ein Schnitt am letzten
+> Sprung**, die Reihe danach behalten — *bei CHRD wären das ~1.446 saubere Kerzen.* **Gehört
+> als Option in Wilhelms Vorlage, nicht in das Urteil der Wache.**
+
+**🔴 ZWEI EINZELFUNDE, und der erste ist ein Universums-Problem:**
+
+- **(a) Die Klasse „Kurs > 100.000 $" enthält BRK.A.** **Berkshire Hathaway A notiert
+  tatsächlich über 100.000 $.** *Der Filter wirft eine legitime, prominente Reihe **per
+  Bauart** aus.* Die übrigen 22 sind gehebelte ETFs mit Rücksplit-Monsterkursen — dort
+  vermutlich korrekt. **Eine Preisschwelle als Plausibilitätsfilter trifft genau die Werte, die
+  echt teuer sind.**
+- **(b) ELME −84 % (08.01.2026) und MLTX −90 % (29.09.2025)** liegen knapp **außerhalb** des
+  Frisch-Fensters, das die Wache mit „seit Juni" operationalisiert hat. *Der PM hatte „frischer
+  Zeitraum" gesagt, ohne ihn zu definieren — **bei einem weiteren Fenster sind es 3 frische
+  Fälle statt 1.*** **Die Schwelle war also eine stille Setzung, und sie ändert das Ergebnis.**
 
 ### 🏁 27.08. ~03:15 — DER DOCHT-LAUF IST DURCH: der Effekt HEBT SICH AUF, bei allen dreien
 
