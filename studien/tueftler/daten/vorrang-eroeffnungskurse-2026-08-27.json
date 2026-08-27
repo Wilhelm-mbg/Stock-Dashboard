@@ -1,0 +1,1941 @@
+{
+ "hinweis": "Vorrangliste fuer den Eroeffnungskurs-Nachlauf. Reihen OHNE Eroeffnungskurs, sortiert nach verbleibender Luft bis zur Quellwand (2024-08-23). Erreicht die Wand den letzten Handelstag, verschwindet die Reihe VOLLSTAENDIG aus der Quelle.",
+ "erhoben": "2026-08-27 abends, Strategie-Tueftler, Stufe 1 - NULL Netzabrufe",
+ "wand": "2024-08-23",
+ "warnung": "Die Wand hat sich in 3,8 Tagen NICHT bewegt (0 von 876 Reihen verloren einen Vordertag). Die Luft-Angaben unterstellen 1 Tag je Tag und sind damit der KONSERVATIVE Fall, nicht der gemessene.",
+ "anzahl": 276,
+ "reihen": [
+  {
+   "sym": "BFI",
+   "letzterHandel": "2024-09-20",
+   "luftTage": 28,
+   "kerzen": 20,
+   "delistet": "2024-09-23"
+  },
+  {
+   "sym": "SGE",
+   "letzterHandel": "2024-09-27",
+   "luftTage": 35,
+   "kerzen": 24,
+   "delistet": "2024-10-01"
+  },
+  {
+   "sym": "SWN",
+   "letzterHandel": "2024-09-30",
+   "luftTage": 38,
+   "kerzen": 26,
+   "delistet": "2024-10-02"
+  },
+  {
+   "sym": "VGR",
+   "letzterHandel": "2024-10-04",
+   "luftTage": 42,
+   "kerzen": 30,
+   "delistet": "2024-10-08"
+  },
+  {
+   "sym": "VTNR",
+   "letzterHandel": "2024-10-07",
+   "luftTage": 45,
+   "kerzen": 30,
+   "delistet": "2024-10-08"
+  },
+  {
+   "sym": "TELL",
+   "letzterHandel": "2024-10-08",
+   "luftTage": 46,
+   "kerzen": 31,
+   "delistet": "2024-10-09"
+  },
+  {
+   "sym": "VIRI",
+   "letzterHandel": "2024-10-08",
+   "luftTage": 46,
+   "kerzen": 31,
+   "delistet": "2024-10-09"
+  },
+  {
+   "sym": "ADRT",
+   "letzterHandel": "2024-10-10",
+   "luftTage": 48,
+   "kerzen": 31,
+   "delistet": "2024-10-11"
+  },
+  {
+   "sym": "SQSP",
+   "letzterHandel": "2024-10-16",
+   "luftTage": 54,
+   "kerzen": 38,
+   "delistet": "2024-10-18"
+  },
+  {
+   "sym": "TCJH",
+   "letzterHandel": "2024-10-18",
+   "luftTage": 56,
+   "kerzen": 40,
+   "delistet": "2024-10-21"
+  },
+  {
+   "sym": "PHYT",
+   "letzterHandel": "2024-10-25",
+   "luftTage": 63,
+   "kerzen": 20,
+   "delistet": "2024-10-30"
+  },
+  {
+   "sym": "VSAC",
+   "letzterHandel": "2024-10-25",
+   "luftTage": 63,
+   "kerzen": 21,
+   "delistet": "2024-10-28"
+  },
+  {
+   "sym": "STER",
+   "letzterHandel": "2024-10-30",
+   "luftTage": 68,
+   "kerzen": 48,
+   "delistet": "2024-11-01"
+  },
+  {
+   "sym": "VEV",
+   "letzterHandel": "2024-10-30",
+   "luftTage": 68,
+   "kerzen": 48,
+   "delistet": "2024-10-31"
+  },
+  {
+   "sym": "SRCL",
+   "letzterHandel": "2024-11-01",
+   "luftTage": 70,
+   "kerzen": 50,
+   "delistet": "2024-11-05"
+  },
+  {
+   "sym": "TWKS",
+   "letzterHandel": "2024-11-12",
+   "luftTage": 81,
+   "kerzen": 57,
+   "delistet": "2024-11-14"
+  },
+  {
+   "sym": "TMTC",
+   "letzterHandel": "2024-11-21",
+   "luftTage": 90,
+   "kerzen": 48,
+   "delistet": "2024-11-22"
+  },
+  {
+   "sym": "VSTO",
+   "letzterHandel": "2024-11-26",
+   "luftTage": 95,
+   "kerzen": 66,
+   "delistet": "2024-11-29"
+  },
+  {
+   "sym": "TCON",
+   "letzterHandel": "2024-12-02",
+   "luftTage": 101,
+   "kerzen": 68,
+   "delistet": "2024-06-28"
+  },
+  {
+   "sym": "VZIO",
+   "letzterHandel": "2024-12-02",
+   "luftTage": 101,
+   "kerzen": 69,
+   "delistet": "2024-12-04"
+  },
+  {
+   "sym": "TLGY",
+   "letzterHandel": "2024-12-06",
+   "luftTage": 105,
+   "kerzen": 28,
+   "delistet": "2024-12-09"
+  },
+  {
+   "sym": "TCS",
+   "letzterHandel": "2024-12-09",
+   "luftTage": 108,
+   "kerzen": 75,
+   "delistet": "2024-12-10"
+  },
+  {
+   "sym": "YTEN",
+   "letzterHandel": "2024-12-09",
+   "luftTage": 108,
+   "kerzen": 63,
+   "delistet": "2024-05-16"
+  },
+  {
+   "sym": "THCP",
+   "letzterHandel": "2024-12-10",
+   "luftTage": 109,
+   "kerzen": 44,
+   "delistet": "2024-12-11"
+  },
+  {
+   "sym": "EVE",
+   "letzterHandel": "2024-12-11",
+   "luftTage": 110,
+   "kerzen": 59,
+   "delistet": "2024-12-17"
+  },
+  {
+   "sym": "TFFP",
+   "letzterHandel": "2024-12-12",
+   "luftTage": 111,
+   "kerzen": 78,
+   "delistet": "2024-12-13"
+  },
+  {
+   "sym": "WEL",
+   "letzterHandel": "2024-12-13",
+   "luftTage": 112,
+   "kerzen": 53,
+   "delistet": "2024-12-16"
+  },
+  {
+   "sym": "ZIONL",
+   "letzterHandel": "2024-12-16",
+   "luftTage": 115,
+   "kerzen": 79,
+   "delistet": "2024-12-17"
+  },
+  {
+   "sym": "STCN",
+   "letzterHandel": "2025-01-02",
+   "luftTage": 132,
+   "kerzen": 91,
+   "delistet": "2025-01-03"
+  },
+  {
+   "sym": "SPI",
+   "letzterHandel": "2025-01-14",
+   "luftTage": 144,
+   "kerzen": 98,
+   "delistet": "2025-01-15"
+  },
+  {
+   "sym": "TRINL",
+   "letzterHandel": "2025-01-16",
+   "luftTage": 146,
+   "kerzen": 97,
+   "delistet": "2025-01-21"
+  },
+  {
+   "sym": "SMAR",
+   "letzterHandel": "2025-01-21",
+   "luftTage": 151,
+   "kerzen": 102,
+   "delistet": "2025-01-23"
+  },
+  {
+   "sym": "SVMH",
+   "letzterHandel": "2025-01-21",
+   "luftTage": 151,
+   "kerzen": 102,
+   "delistet": "2025-01-22"
+  },
+  {
+   "sym": "TETE",
+   "letzterHandel": "2025-01-22",
+   "luftTage": 152,
+   "kerzen": 83,
+   "delistet": "2025-01-23"
+  },
+  {
+   "sym": "USAP",
+   "letzterHandel": "2025-01-22",
+   "luftTage": 152,
+   "kerzen": 103,
+   "delistet": "2025-01-24"
+  },
+  {
+   "sym": "BMTX",
+   "letzterHandel": "2025-01-31",
+   "luftTage": 161,
+   "kerzen": 109,
+   "delistet": "2025-02-03"
+  },
+  {
+   "sym": "RHE",
+   "letzterHandel": "2025-02-03",
+   "luftTage": 164,
+   "kerzen": 109,
+   "delistet": "2025-02-05"
+  },
+  {
+   "sym": "AE",
+   "letzterHandel": "2025-02-04",
+   "luftTage": 165,
+   "kerzen": 111,
+   "delistet": "2025-02-05"
+  },
+  {
+   "sym": "SUM",
+   "letzterHandel": "2025-02-10",
+   "luftTage": 171,
+   "kerzen": 116,
+   "delistet": "2025-02-11"
+  },
+  {
+   "sym": "STAF",
+   "letzterHandel": "2025-02-12",
+   "luftTage": 173,
+   "kerzen": 118,
+   "delistet": "2025-02-13"
+  },
+  {
+   "sym": "SILV",
+   "letzterHandel": "2025-02-13",
+   "luftTage": 174,
+   "kerzen": 118,
+   "delistet": "2025-02-18"
+  },
+  {
+   "sym": "ZUO",
+   "letzterHandel": "2025-02-13",
+   "luftTage": 174,
+   "kerzen": 118,
+   "delistet": "2025-02-18"
+  },
+  {
+   "sym": "ZOM",
+   "letzterHandel": "2025-03-04",
+   "luftTage": 193,
+   "kerzen": 130,
+   "delistet": "2025-03-05"
+  },
+  {
+   "sym": "VMCA",
+   "letzterHandel": "2025-03-10",
+   "luftTage": 199,
+   "kerzen": 83,
+   "delistet": "2025-03-11"
+  },
+  {
+   "sym": "SPGC",
+   "letzterHandel": "2025-03-14",
+   "luftTage": 203,
+   "kerzen": 138,
+   "delistet": "2025-03-17"
+  },
+  {
+   "sym": "TCBP",
+   "letzterHandel": "2025-03-21",
+   "luftTage": 210,
+   "kerzen": 144,
+   "delistet": "2025-03-24"
+  },
+  {
+   "sym": "VINE",
+   "letzterHandel": "2025-03-21",
+   "luftTage": 210,
+   "kerzen": 143,
+   "delistet": "2025-03-24"
+  },
+  {
+   "sym": "VOXX",
+   "letzterHandel": "2025-03-31",
+   "luftTage": 220,
+   "kerzen": 149,
+   "delistet": "2025-04-02"
+  },
+  {
+   "sym": "TBNK",
+   "letzterHandel": "2025-04-01",
+   "luftTage": 221,
+   "kerzen": 151,
+   "delistet": "2025-04-03"
+  },
+  {
+   "sym": "EFSH",
+   "letzterHandel": "2025-04-03",
+   "luftTage": 223,
+   "kerzen": 152,
+   "delistet": "2025-04-04"
+  },
+  {
+   "sym": "SWI",
+   "letzterHandel": "2025-04-15",
+   "luftTage": 235,
+   "kerzen": 161,
+   "delistet": "2025-04-17"
+  },
+  {
+   "sym": "VCSA",
+   "letzterHandel": "2025-04-30",
+   "luftTage": 250,
+   "kerzen": 171,
+   "delistet": "2025-05-02"
+  },
+  {
+   "sym": "WMPN",
+   "letzterHandel": "2025-04-30",
+   "luftTage": 250,
+   "kerzen": 170,
+   "delistet": "2025-05-01"
+  },
+  {
+   "sym": "EVBN",
+   "letzterHandel": "2025-05-02",
+   "luftTage": 252,
+   "kerzen": 172,
+   "delistet": "2025-05-05"
+  },
+  {
+   "sym": "STBX",
+   "letzterHandel": "2025-05-02",
+   "luftTage": 252,
+   "kerzen": 173,
+   "delistet": "2025-05-05"
+  },
+  {
+   "sym": "VRN",
+   "letzterHandel": "2025-05-09",
+   "luftTage": 259,
+   "kerzen": 177,
+   "delistet": "2025-05-13"
+  },
+  {
+   "sym": "TSVT",
+   "letzterHandel": "2025-05-12",
+   "luftTage": 262,
+   "kerzen": 179,
+   "delistet": "2025-05-14"
+  },
+  {
+   "sym": "GRFX",
+   "letzterHandel": "2025-05-14",
+   "luftTage": 264,
+   "kerzen": 180,
+   "delistet": "2025-05-15"
+  },
+  {
+   "sym": "ZAPP",
+   "letzterHandel": "2025-05-19",
+   "luftTage": 269,
+   "kerzen": 183,
+   "delistet": "2025-05-20"
+  },
+  {
+   "sym": "SLRN",
+   "letzterHandel": "2025-05-20",
+   "luftTage": 270,
+   "kerzen": 185,
+   "delistet": "2025-05-22"
+  },
+  {
+   "sym": "VSTE",
+   "letzterHandel": "2025-05-27",
+   "luftTage": 277,
+   "kerzen": 188,
+   "delistet": "2025-05-27"
+  },
+  {
+   "sym": "SYT",
+   "letzterHandel": "2025-05-28",
+   "luftTage": 278,
+   "kerzen": 190,
+   "delistet": "2025-05-29"
+  },
+  {
+   "sym": "DSAQ",
+   "letzterHandel": "2025-06-02",
+   "luftTage": 283,
+   "kerzen": 20,
+   "delistet": "2024-04-30"
+  },
+  {
+   "sym": "SUAC",
+   "letzterHandel": "2025-06-20",
+   "luftTage": 301,
+   "kerzen": 43,
+   "delistet": "2023-12-05"
+  },
+  {
+   "sym": "SSBK",
+   "letzterHandel": "2025-06-30",
+   "luftTage": 311,
+   "kerzen": 212,
+   "delistet": "2025-07-02"
+  },
+  {
+   "sym": "SVT",
+   "letzterHandel": "2025-06-30",
+   "luftTage": 311,
+   "kerzen": 173,
+   "delistet": "2025-07-02"
+  },
+  {
+   "sym": "SWTX",
+   "letzterHandel": "2025-06-30",
+   "luftTage": 311,
+   "kerzen": 212,
+   "delistet": "2025-07-02"
+  },
+  {
+   "sym": "CHRO",
+   "letzterHandel": "2025-07-01",
+   "luftTage": 312,
+   "kerzen": 212,
+   "delistet": "2025-07-02"
+  },
+  {
+   "sym": "SATX",
+   "letzterHandel": "2025-07-01",
+   "luftTage": 312,
+   "kerzen": 212,
+   "delistet": "2025-07-03"
+  },
+  {
+   "sym": "WINV",
+   "letzterHandel": "2025-07-03",
+   "luftTage": 314,
+   "kerzen": 76,
+   "delistet": "2025-03-21"
+  },
+  {
+   "sym": "UBX",
+   "letzterHandel": "2025-07-08",
+   "luftTage": 319,
+   "kerzen": 217,
+   "delistet": "2025-07-09"
+  },
+  {
+   "sym": "SRM",
+   "letzterHandel": "2025-07-16",
+   "luftTage": 327,
+   "kerzen": 223,
+   "delistet": "2025-07-17"
+  },
+  {
+   "sym": "VIRX",
+   "letzterHandel": "2025-07-16",
+   "luftTage": 327,
+   "kerzen": 222,
+   "delistet": "2025-02-04"
+  },
+  {
+   "sym": "TGI",
+   "letzterHandel": "2025-07-24",
+   "luftTage": 335,
+   "kerzen": 229,
+   "delistet": "2025-07-25"
+  },
+  {
+   "sym": "VERV",
+   "letzterHandel": "2025-07-24",
+   "luftTage": 335,
+   "kerzen": 229,
+   "delistet": "2025-07-28"
+  },
+  {
+   "sym": "THRD",
+   "letzterHandel": "2025-07-30",
+   "luftTage": 341,
+   "kerzen": 233,
+   "delistet": "2025-07-31"
+  },
+  {
+   "sym": "VLCN",
+   "letzterHandel": "2025-07-30",
+   "luftTage": 341,
+   "kerzen": 232,
+   "delistet": "2025-07-31"
+  },
+  {
+   "sym": "VIGL",
+   "letzterHandel": "2025-08-04",
+   "luftTage": 346,
+   "kerzen": 235,
+   "delistet": "2025-08-06"
+  },
+  {
+   "sym": "VAPE",
+   "letzterHandel": "2025-08-05",
+   "luftTage": 347,
+   "kerzen": 34,
+   "delistet": "2025-08-06"
+  },
+  {
+   "sym": "CHEB",
+   "letzterHandel": "2025-08-07",
+   "luftTage": 349,
+   "kerzen": 190,
+   "delistet": "2025-08-08"
+  },
+  {
+   "sym": "TSBX",
+   "letzterHandel": "2025-08-08",
+   "luftTage": 350,
+   "kerzen": 240,
+   "delistet": "2025-08-12"
+  },
+  {
+   "sym": "STRM",
+   "letzterHandel": "2025-08-11",
+   "luftTage": 353,
+   "kerzen": 241,
+   "delistet": "2025-08-13"
+  },
+  {
+   "sym": "USM",
+   "letzterHandel": "2025-08-11",
+   "luftTage": 353,
+   "kerzen": 241,
+   "delistet": "2025-08-12"
+  },
+  {
+   "sym": "KNW",
+   "letzterHandel": "2025-08-14",
+   "luftTage": 356,
+   "kerzen": 220,
+   "delistet": "2025-08-15"
+  },
+  {
+   "sym": "SSY",
+   "letzterHandel": "2025-08-14",
+   "luftTage": 356,
+   "kerzen": 243,
+   "delistet": "2025-08-15"
+  },
+  {
+   "sym": "SNRE",
+   "letzterHandel": "2025-08-15",
+   "luftTage": 357,
+   "kerzen": 188,
+   "delistet": "2025-08-18"
+  },
+  {
+   "sym": "STR",
+   "letzterHandel": "2025-08-18",
+   "luftTage": 360,
+   "kerzen": 246,
+   "delistet": "2025-08-19"
+  },
+  {
+   "sym": "TPIC",
+   "letzterHandel": "2025-08-18",
+   "luftTage": 360,
+   "kerzen": 246,
+   "delistet": "2025-08-19"
+  },
+  {
+   "sym": "XYLO",
+   "letzterHandel": "2025-08-21",
+   "luftTage": 363,
+   "kerzen": 240,
+   "delistet": "2025-08-25"
+  },
+  {
+   "sym": "WLGS",
+   "letzterHandel": "2025-08-25",
+   "luftTage": 367,
+   "kerzen": 250,
+   "delistet": "2025-08-26"
+  },
+  {
+   "sym": "WBA",
+   "letzterHandel": "2025-08-27",
+   "luftTage": 369,
+   "kerzen": 252,
+   "delistet": "2025-08-29"
+  },
+  {
+   "sym": "FLYY",
+   "letzterHandel": "2025-08-29",
+   "luftTage": 371,
+   "kerzen": 86,
+   "delistet": "2025-09-03"
+  },
+  {
+   "sym": "VERB",
+   "letzterHandel": "2025-08-29",
+   "luftTage": 371,
+   "kerzen": 255,
+   "delistet": "2025-09-02"
+  },
+  {
+   "sym": "YOSH",
+   "letzterHandel": "2025-09-02",
+   "luftTage": 375,
+   "kerzen": 255,
+   "delistet": "2025-09-03"
+  },
+  {
+   "sym": "MAG",
+   "letzterHandel": "2025-09-03",
+   "luftTage": 376,
+   "kerzen": 256,
+   "delistet": "2025-09-05"
+  },
+  {
+   "sym": "XIN",
+   "letzterHandel": "2025-09-03",
+   "luftTage": 376,
+   "kerzen": 253,
+   "delistet": "2025-09-04"
+  },
+  {
+   "sym": "YORK",
+   "letzterHandel": "2025-09-05",
+   "luftTage": 378,
+   "kerzen": 30,
+   "delistet": "2025-09-08"
+  },
+  {
+   "sym": "SKX",
+   "letzterHandel": "2025-09-11",
+   "luftTage": 384,
+   "kerzen": 263,
+   "delistet": "2025-09-15"
+  },
+  {
+   "sym": "TURN",
+   "letzterHandel": "2025-09-12",
+   "luftTage": 385,
+   "kerzen": 264,
+   "delistet": "2025-09-15"
+  },
+  {
+   "sym": "YMAB",
+   "letzterHandel": "2025-09-15",
+   "luftTage": 388,
+   "kerzen": 264,
+   "delistet": "2025-09-17"
+  },
+  {
+   "sym": "SPTN",
+   "letzterHandel": "2025-09-19",
+   "luftTage": 392,
+   "kerzen": 269,
+   "delistet": "2025-09-23"
+  },
+  {
+   "sym": "TNFA",
+   "letzterHandel": "2025-09-24",
+   "luftTage": 397,
+   "kerzen": 272,
+   "delistet": "2025-09-25"
+  },
+  {
+   "sym": "THTX",
+   "letzterHandel": "2025-09-25",
+   "luftTage": 398,
+   "kerzen": 273,
+   "delistet": "2025-09-26"
+  },
+  {
+   "sym": "TTNP",
+   "letzterHandel": "2025-10-01",
+   "luftTage": 404,
+   "kerzen": 277,
+   "delistet": "2025-10-02"
+  },
+  {
+   "sym": "SYTA",
+   "letzterHandel": "2025-10-06",
+   "luftTage": 409,
+   "kerzen": 280,
+   "delistet": "2025-10-07"
+  },
+  {
+   "sym": "VRNA",
+   "letzterHandel": "2025-10-06",
+   "luftTage": 409,
+   "kerzen": 279,
+   "delistet": "2025-10-08"
+  },
+  {
+   "sym": "SWIN",
+   "letzterHandel": "2025-10-09",
+   "luftTage": 412,
+   "kerzen": 283,
+   "delistet": "2025-10-10"
+  },
+  {
+   "sym": "LPTV",
+   "letzterHandel": "2025-10-10",
+   "luftTage": 413,
+   "kerzen": 280,
+   "delistet": "2024-08-09"
+  },
+  {
+   "sym": "WNS",
+   "letzterHandel": "2025-10-16",
+   "luftTage": 419,
+   "kerzen": 287,
+   "delistet": "2025-10-20"
+  },
+  {
+   "sym": "VBTX",
+   "letzterHandel": "2025-10-17",
+   "luftTage": 420,
+   "kerzen": 289,
+   "delistet": "2025-10-21"
+  },
+  {
+   "sym": "ZIMV",
+   "letzterHandel": "2025-10-17",
+   "luftTage": 420,
+   "kerzen": 288,
+   "delistet": "2025-10-21"
+  },
+  {
+   "sym": "SVII",
+   "letzterHandel": "2025-10-20",
+   "luftTage": 423,
+   "kerzen": 204,
+   "delistet": "2025-10-21"
+  },
+  {
+   "sym": "TRML",
+   "letzterHandel": "2025-10-27",
+   "luftTage": 430,
+   "kerzen": 295,
+   "delistet": "2025-10-29"
+  },
+  {
+   "sym": "AMBI",
+   "letzterHandel": "2025-10-28",
+   "luftTage": 431,
+   "kerzen": 278,
+   "delistet": "2025-10-29"
+  },
+  {
+   "sym": "TIXT",
+   "letzterHandel": "2025-10-30",
+   "luftTage": 433,
+   "kerzen": 298,
+   "delistet": "2025-11-03"
+  },
+  {
+   "sym": "EMX",
+   "letzterHandel": "2025-11-12",
+   "luftTage": 446,
+   "kerzen": 306,
+   "delistet": "2025-11-14"
+  },
+  {
+   "sym": "SRDX",
+   "letzterHandel": "2025-11-18",
+   "luftTage": 452,
+   "kerzen": 311,
+   "delistet": "2025-11-20"
+  },
+  {
+   "sym": "SOND",
+   "letzterHandel": "2025-11-21",
+   "luftTage": 455,
+   "kerzen": 314,
+   "delistet": "2025-11-24"
+  },
+  {
+   "sym": "VMEO",
+   "letzterHandel": "2025-11-21",
+   "luftTage": 455,
+   "kerzen": 313,
+   "delistet": "2025-11-25"
+  },
+  {
+   "sym": "VRNT",
+   "letzterHandel": "2025-11-25",
+   "luftTage": 459,
+   "kerzen": 315,
+   "delistet": "2025-11-28"
+  },
+  {
+   "sym": "TCBC",
+   "letzterHandel": "2025-12-01",
+   "luftTage": 465,
+   "kerzen": 262,
+   "delistet": "2024-08-02"
+  },
+  {
+   "sym": "SONN",
+   "letzterHandel": "2025-12-02",
+   "luftTage": 466,
+   "kerzen": 320,
+   "delistet": "2025-12-03"
+  },
+  {
+   "sym": "HUSA",
+   "letzterHandel": "2025-12-05",
+   "luftTage": 469,
+   "kerzen": 322,
+   "delistet": "2025-12-08"
+  },
+  {
+   "sym": "SPR",
+   "letzterHandel": "2025-12-05",
+   "luftTage": 469,
+   "kerzen": 323,
+   "delistet": "2025-12-09"
+  },
+  {
+   "sym": "YGMZ",
+   "letzterHandel": "2025-12-11",
+   "luftTage": 475,
+   "kerzen": 326,
+   "delistet": "2025-12-12"
+  },
+  {
+   "sym": "SOL",
+   "letzterHandel": "2025-12-12",
+   "luftTage": 476,
+   "kerzen": 328,
+   "delistet": "2025-12-15"
+  },
+  {
+   "sym": "VTLE",
+   "letzterHandel": "2025-12-12",
+   "luftTage": 476,
+   "kerzen": 327,
+   "delistet": "2025-12-16"
+  },
+  {
+   "sym": "TZUP",
+   "letzterHandel": "2025-12-15",
+   "luftTage": 479,
+   "kerzen": 328,
+   "delistet": "2025-12-16"
+  },
+  {
+   "sym": "SPNS",
+   "letzterHandel": "2025-12-16",
+   "luftTage": 480,
+   "kerzen": 330,
+   "delistet": "2025-12-18"
+  },
+  {
+   "sym": "TLIS",
+   "letzterHandel": "2025-12-18",
+   "luftTage": 482,
+   "kerzen": 164,
+   "delistet": "2024-09-03"
+  },
+  {
+   "sym": "ZK",
+   "letzterHandel": "2025-12-19",
+   "luftTage": 483,
+   "kerzen": 332,
+   "delistet": "2025-12-23"
+  },
+  {
+   "sym": "STEC",
+   "letzterHandel": "2025-12-23",
+   "luftTage": 487,
+   "kerzen": 335,
+   "delistet": "2025-12-24"
+  },
+  {
+   "sym": "ZYXI",
+   "letzterHandel": "2025-12-23",
+   "luftTage": 487,
+   "kerzen": 334,
+   "delistet": "2025-12-24"
+  },
+  {
+   "sym": "WOW",
+   "letzterHandel": "2025-12-30",
+   "luftTage": 494,
+   "kerzen": 338,
+   "delistet": "2026-01-02"
+  },
+  {
+   "sym": "SNV",
+   "letzterHandel": "2025-12-31",
+   "luftTage": 495,
+   "kerzen": 340,
+   "delistet": "2026-01-02"
+  },
+  {
+   "sym": "CYBN",
+   "letzterHandel": "2026-01-02",
+   "luftTage": 497,
+   "kerzen": 340,
+   "delistet": "2026-01-05"
+  },
+  {
+   "sym": "WTMA",
+   "letzterHandel": "2026-01-05",
+   "luftTage": 500,
+   "kerzen": 171,
+   "delistet": "2025-01-07"
+  },
+  {
+   "sym": "SLRX",
+   "letzterHandel": "2026-01-07",
+   "luftTage": 502,
+   "kerzen": 344,
+   "delistet": "2026-01-08"
+  },
+  {
+   "sym": "JMG",
+   "letzterHandel": "2026-01-14",
+   "luftTage": 509,
+   "kerzen": 24,
+   "delistet": "2026-06-15"
+  },
+  {
+   "sym": "SMLR",
+   "letzterHandel": "2026-01-15",
+   "luftTage": 510,
+   "kerzen": 350,
+   "delistet": "2026-01-20"
+  },
+  {
+   "sym": "SPLP",
+   "letzterHandel": "2026-01-16",
+   "luftTage": 511,
+   "kerzen": 273,
+   "delistet": "2025-05-02"
+  },
+  {
+   "sym": "TEF",
+   "letzterHandel": "2026-01-16",
+   "luftTage": 511,
+   "kerzen": 351,
+   "delistet": "2026-01-20"
+  },
+  {
+   "sym": "TRUE",
+   "letzterHandel": "2026-01-21",
+   "luftTage": 516,
+   "kerzen": 353,
+   "delistet": "2026-01-22"
+  },
+  {
+   "sym": "VSTA",
+   "letzterHandel": "2026-01-28",
+   "luftTage": 523,
+   "kerzen": 357,
+   "delistet": "2026-01-29"
+  },
+  {
+   "sym": "TCGL",
+   "letzterHandel": "2026-01-30",
+   "luftTage": 525,
+   "kerzen": 74,
+   "delistet": "2026-06-15"
+  },
+  {
+   "sym": "TWNP",
+   "letzterHandel": "2026-02-03",
+   "luftTage": 529,
+   "kerzen": 254,
+   "delistet": "2026-02-04"
+  },
+  {
+   "sym": "THS",
+   "letzterHandel": "2026-02-10",
+   "luftTage": 536,
+   "kerzen": 367,
+   "delistet": "2026-02-12"
+  },
+  {
+   "sym": "SNCR",
+   "letzterHandel": "2026-02-12",
+   "luftTage": 538,
+   "kerzen": 369,
+   "delistet": "2026-02-17"
+  },
+  {
+   "sym": "SOHO",
+   "letzterHandel": "2026-02-12",
+   "luftTage": 538,
+   "kerzen": 369,
+   "delistet": "2026-02-13"
+  },
+  {
+   "sym": "ZEUS",
+   "letzterHandel": "2026-02-12",
+   "luftTage": 538,
+   "kerzen": 368,
+   "delistet": "2026-02-17"
+  },
+  {
+   "sym": "THAR",
+   "letzterHandel": "2026-02-17",
+   "luftTage": 543,
+   "kerzen": 371,
+   "delistet": "2026-02-18"
+  },
+  {
+   "sym": "ARMN",
+   "letzterHandel": "2026-02-18",
+   "luftTage": 544,
+   "kerzen": 371,
+   "delistet": "2026-02-19"
+  },
+  {
+   "sym": "VRAR",
+   "letzterHandel": "2026-02-18",
+   "luftTage": 544,
+   "kerzen": 371,
+   "delistet": "2026-02-19"
+  },
+  {
+   "sym": "TSE",
+   "letzterHandel": "2026-02-27",
+   "luftTage": 553,
+   "kerzen": 379,
+   "delistet": "2026-03-03"
+  },
+  {
+   "sym": "VTYX",
+   "letzterHandel": "2026-03-03",
+   "luftTage": 557,
+   "kerzen": 380,
+   "delistet": "2026-03-05"
+  },
+  {
+   "sym": "TIRX",
+   "letzterHandel": "2026-03-04",
+   "luftTage": 558,
+   "kerzen": 382,
+   "delistet": "2026-03-05"
+  },
+  {
+   "sym": "VVPR",
+   "letzterHandel": "2026-03-13",
+   "luftTage": 567,
+   "kerzen": 388,
+   "delistet": "2026-03-16"
+  },
+  {
+   "sym": "SGN",
+   "letzterHandel": "2026-03-16",
+   "luftTage": 570,
+   "kerzen": 389,
+   "delistet": "2026-03-18"
+  },
+  {
+   "sym": "ULY",
+   "letzterHandel": "2026-03-17",
+   "luftTage": 571,
+   "kerzen": 391,
+   "delistet": "2026-03-18"
+  },
+  {
+   "sym": "ZENV",
+   "letzterHandel": "2026-03-18",
+   "luftTage": 572,
+   "kerzen": 391,
+   "delistet": "2026-03-19"
+  },
+  {
+   "sym": "DMYY",
+   "letzterHandel": "2026-03-19",
+   "luftTage": 573,
+   "kerzen": 318,
+   "delistet": "2025-09-30"
+  },
+  {
+   "sym": "NGD",
+   "letzterHandel": "2026-03-19",
+   "luftTage": 573,
+   "kerzen": 392,
+   "delistet": "2026-03-23"
+  },
+  {
+   "sym": "TGNA",
+   "letzterHandel": "2026-03-19",
+   "luftTage": 573,
+   "kerzen": 393,
+   "delistet": "2026-03-23"
+  },
+  {
+   "sym": "UOKA",
+   "letzterHandel": "2026-03-19",
+   "luftTage": 573,
+   "kerzen": 322,
+   "delistet": "2026-03-20"
+  },
+  {
+   "sym": "DVS",
+   "letzterHandel": "2026-03-26",
+   "luftTage": 580,
+   "kerzen": 235,
+   "delistet": "2026-03-27"
+  },
+  {
+   "sym": "TBMC",
+   "letzterHandel": "2026-03-26",
+   "luftTage": 580,
+   "kerzen": 291,
+   "delistet": "2026-03-30"
+  },
+  {
+   "sym": "UBFO",
+   "letzterHandel": "2026-03-31",
+   "luftTage": 585,
+   "kerzen": 401,
+   "delistet": "2026-04-02"
+  },
+  {
+   "sym": "VCIC",
+   "letzterHandel": "2026-03-31",
+   "luftTage": 585,
+   "kerzen": 290,
+   "delistet": "2026-04-01"
+  },
+  {
+   "sym": "TBHC",
+   "letzterHandel": "2026-04-01",
+   "luftTage": 586,
+   "kerzen": 171,
+   "delistet": "2026-04-06"
+  },
+  {
+   "sym": "XTKG",
+   "letzterHandel": "2026-04-01",
+   "luftTage": 586,
+   "kerzen": 401,
+   "delistet": "2026-04-02"
+  },
+  {
+   "sym": "NBY",
+   "letzterHandel": "2026-04-02",
+   "luftTage": 587,
+   "kerzen": 402,
+   "delistet": "2026-04-06"
+  },
+  {
+   "sym": "SWKH",
+   "letzterHandel": "2026-04-02",
+   "luftTage": 587,
+   "kerzen": 403,
+   "delistet": "2026-04-07"
+  },
+  {
+   "sym": "VERO",
+   "letzterHandel": "2026-04-06",
+   "luftTage": 591,
+   "kerzen": 404,
+   "delistet": "2026-02-09"
+  },
+  {
+   "sym": "ZGM",
+   "letzterHandel": "2026-04-13",
+   "luftTage": 598,
+   "kerzen": 149,
+   "delistet": "2026-04-14"
+  },
+  {
+   "sym": "TIVC",
+   "letzterHandel": "2026-04-27",
+   "luftTage": 612,
+   "kerzen": 419,
+   "delistet": "2026-04-28"
+  },
+  {
+   "sym": "VBIX",
+   "letzterHandel": "2026-04-29",
+   "luftTage": 614,
+   "kerzen": 351,
+   "delistet": "2026-04-30"
+  },
+  {
+   "sym": "STKL",
+   "letzterHandel": "2026-05-01",
+   "luftTage": 616,
+   "kerzen": 423,
+   "delistet": "2026-05-04"
+  },
+  {
+   "sym": "UHG",
+   "letzterHandel": "2026-05-01",
+   "luftTage": 616,
+   "kerzen": 423,
+   "delistet": "2026-05-05"
+  },
+  {
+   "sym": "TERN",
+   "letzterHandel": "2026-05-04",
+   "luftTage": 619,
+   "kerzen": 424,
+   "delistet": "2026-05-06"
+  },
+  {
+   "sym": "ATEK",
+   "letzterHandel": "2026-05-06",
+   "luftTage": 621,
+   "kerzen": 64,
+   "delistet": "2024-12-11"
+  },
+  {
+   "sym": "AMPE",
+   "letzterHandel": "2026-05-08",
+   "luftTage": 623,
+   "kerzen": 174,
+   "delistet": "2024-04-15"
+  },
+  {
+   "sym": "UDMY",
+   "letzterHandel": "2026-05-08",
+   "luftTage": 623,
+   "kerzen": 428,
+   "delistet": "2026-05-12"
+  },
+  {
+   "sym": "WLAC",
+   "letzterHandel": "2026-05-08",
+   "luftTage": 623,
+   "kerzen": 292,
+   "delistet": "2026-05-11"
+  },
+  {
+   "sym": "SNCY",
+   "letzterHandel": "2026-05-12",
+   "luftTage": 627,
+   "kerzen": 430,
+   "delistet": "2026-05-14"
+  },
+  {
+   "sym": "TPH",
+   "letzterHandel": "2026-05-13",
+   "luftTage": 628,
+   "kerzen": 431,
+   "delistet": "2026-05-15"
+  },
+  {
+   "sym": "SLNO",
+   "letzterHandel": "2026-05-15",
+   "luftTage": 630,
+   "kerzen": 433,
+   "delistet": "2026-05-19"
+  },
+  {
+   "sym": "WHLM",
+   "letzterHandel": "2026-05-15",
+   "luftTage": 630,
+   "kerzen": 224,
+   "delistet": "2024-12-30"
+  },
+  {
+   "sym": "XWIN",
+   "letzterHandel": "2026-05-15",
+   "luftTage": 630,
+   "kerzen": 129,
+   "delistet": "2026-05-18"
+  },
+  {
+   "sym": "ZBAI",
+   "letzterHandel": "2026-05-15",
+   "luftTage": 630,
+   "kerzen": 340,
+   "delistet": "2026-05-18"
+  },
+  {
+   "sym": "SOPA",
+   "letzterHandel": "2026-05-20",
+   "luftTage": 635,
+   "kerzen": 436,
+   "delistet": "2026-05-21"
+  },
+  {
+   "sym": "VRE",
+   "letzterHandel": "2026-05-26",
+   "luftTage": 641,
+   "kerzen": 438,
+   "delistet": "2026-05-28"
+  },
+  {
+   "sym": "STSS",
+   "letzterHandel": "2026-05-27",
+   "luftTage": 642,
+   "kerzen": 440,
+   "delistet": "2026-05-28"
+  },
+  {
+   "sym": "OTH",
+   "letzterHandel": "2026-05-28",
+   "luftTage": 643,
+   "kerzen": 134,
+   "delistet": "2026-05-29"
+  },
+  {
+   "sym": "THR",
+   "letzterHandel": "2026-05-29",
+   "luftTage": 644,
+   "kerzen": 442,
+   "delistet": "2026-06-02"
+  },
+  {
+   "sym": "VSCO",
+   "letzterHandel": "2026-06-01",
+   "luftTage": 647,
+   "kerzen": 442,
+   "delistet": "2026-06-02"
+  },
+  {
+   "sym": "SUUN",
+   "letzterHandel": "2026-06-02",
+   "luftTage": 648,
+   "kerzen": 444,
+   "delistet": "2026-06-03"
+  },
+  {
+   "sym": "USEG",
+   "letzterHandel": "2026-06-05",
+   "luftTage": 651,
+   "kerzen": 447,
+   "delistet": "2026-06-08"
+  },
+  {
+   "sym": "LEGT",
+   "letzterHandel": "2026-06-09",
+   "luftTage": 655,
+   "kerzen": 390,
+   "delistet": "2026-06-10"
+  },
+  {
+   "sym": "VACH",
+   "letzterHandel": "2026-06-10",
+   "luftTage": 656,
+   "kerzen": 392,
+   "delistet": "2026-06-11"
+  },
+  {
+   "sym": "SNSE",
+   "letzterHandel": "2026-06-15",
+   "luftTage": 661,
+   "kerzen": 452,
+   "delistet": "2026-06-16"
+  },
+  {
+   "sym": "UGRO",
+   "letzterHandel": "2026-06-15",
+   "luftTage": 661,
+   "kerzen": 453,
+   "delistet": "2026-06-16"
+  },
+  {
+   "sym": "SNBR",
+   "letzterHandel": "2026-06-22",
+   "luftTage": 668,
+   "kerzen": 457,
+   "delistet": "2026-06-23"
+  },
+  {
+   "sym": "VINO",
+   "letzterHandel": "2026-06-22",
+   "luftTage": 668,
+   "kerzen": 107,
+   "delistet": "2024-11-22"
+  },
+  {
+   "sym": "SSSS",
+   "letzterHandel": "2026-06-30",
+   "luftTage": 676,
+   "kerzen": 463,
+   "delistet": "2026-07-01"
+  },
+  {
+   "sym": "SSSSL",
+   "letzterHandel": "2026-06-30",
+   "luftTage": 676,
+   "kerzen": 348,
+   "delistet": "2026-07-01"
+  },
+  {
+   "sym": "STEL",
+   "letzterHandel": "2026-06-30",
+   "luftTage": 676,
+   "kerzen": 463,
+   "delistet": "2026-07-01"
+  },
+  {
+   "sym": "TBH",
+   "letzterHandel": "2026-06-30",
+   "luftTage": 676,
+   "kerzen": 331,
+   "delistet": "2026-07-02"
+  },
+  {
+   "sym": "WTO",
+   "letzterHandel": "2026-07-01",
+   "luftTage": 677,
+   "kerzen": 463,
+   "delistet": "2026-07-02"
+  },
+  {
+   "sym": "TBLT",
+   "letzterHandel": "2026-07-07",
+   "luftTage": 683,
+   "kerzen": 224,
+   "delistet": "2024-08-09"
+  },
+  {
+   "sym": "TBRG",
+   "letzterHandel": "2026-07-08",
+   "luftTage": 684,
+   "kerzen": 468,
+   "delistet": "2026-07-10"
+  },
+  {
+   "sym": "SVAC",
+   "letzterHandel": "2026-07-10",
+   "luftTage": 686,
+   "kerzen": 190,
+   "delistet": "2026-07-13"
+  },
+  {
+   "sym": "WSR",
+   "letzterHandel": "2026-07-13",
+   "luftTage": 689,
+   "kerzen": 470,
+   "delistet": "2026-07-15"
+  },
+  {
+   "sym": "XOMA",
+   "letzterHandel": "2026-07-13",
+   "luftTage": 689,
+   "kerzen": 470,
+   "delistet": "2026-07-15"
+  },
+  {
+   "sym": "XOMAO",
+   "letzterHandel": "2026-07-13",
+   "luftTage": 689,
+   "kerzen": 462,
+   "delistet": "2026-07-15"
+  },
+  {
+   "sym": "YOTA",
+   "letzterHandel": "2026-07-14",
+   "luftTage": 690,
+   "kerzen": 64,
+   "delistet": "2025-04-28"
+  },
+  {
+   "sym": "WAI",
+   "letzterHandel": "2026-07-15",
+   "luftTage": 691,
+   "kerzen": 431,
+   "delistet": "2026-07-16"
+  },
+  {
+   "sym": "SLAI",
+   "letzterHandel": "2026-07-16",
+   "luftTage": 692,
+   "kerzen": 185,
+   "delistet": "2026-07-17"
+  },
+  {
+   "sym": "UBXG",
+   "letzterHandel": "2026-07-17",
+   "luftTage": 693,
+   "kerzen": 474,
+   "delistet": "2026-07-20"
+  },
+  {
+   "sym": "YOOV",
+   "letzterHandel": "2026-07-20",
+   "luftTage": 696,
+   "kerzen": 68,
+   "delistet": "2026-07-21"
+  },
+  {
+   "sym": "WGRX",
+   "letzterHandel": "2026-07-21",
+   "luftTage": 697,
+   "kerzen": 354,
+   "delistet": "2026-07-22"
+  },
+  {
+   "sym": "TMHC",
+   "letzterHandel": "2026-07-23",
+   "luftTage": 699,
+   "kerzen": 479,
+   "delistet": "2026-07-27"
+  },
+  {
+   "sym": "GRAF",
+   "letzterHandel": "2026-07-24",
+   "luftTage": 700,
+   "kerzen": 401,
+   "delistet": "2026-07-27"
+  },
+  {
+   "sym": "TRINI",
+   "letzterHandel": "2026-07-24",
+   "luftTage": 700,
+   "kerzen": 480,
+   "delistet": "2026-07-27"
+  },
+  {
+   "sym": "TRINZ",
+   "letzterHandel": "2026-07-24",
+   "luftTage": 700,
+   "kerzen": 480,
+   "delistet": "2026-07-27"
+  },
+  {
+   "sym": "VYNE",
+   "letzterHandel": "2026-07-27",
+   "luftTage": 703,
+   "kerzen": 480,
+   "delistet": "2026-07-28"
+  },
+  {
+   "sym": "ORLA",
+   "letzterHandel": "2026-07-30",
+   "luftTage": 706,
+   "kerzen": 483,
+   "delistet": "2026-07-31"
+  },
+  {
+   "sym": "SKYT",
+   "letzterHandel": "2026-07-30",
+   "luftTage": 706,
+   "kerzen": 484,
+   "delistet": "2026-08-03"
+  },
+  {
+   "sym": "TOI",
+   "letzterHandel": "2026-08-03",
+   "luftTage": 710,
+   "kerzen": 486,
+   "delistet": "2026-08-04"
+  },
+  {
+   "sym": "WORX",
+   "letzterHandel": "2026-08-03",
+   "luftTage": 710,
+   "kerzen": 479,
+   "delistet": "2026-04-14"
+  },
+  {
+   "sym": "THMO",
+   "letzterHandel": "2026-08-04",
+   "luftTage": 711,
+   "kerzen": 139,
+   "delistet": "2024-06-17"
+  },
+  {
+   "sym": "SOFO",
+   "letzterHandel": "2026-08-05",
+   "luftTage": 712,
+   "kerzen": 75,
+   "delistet": "2023-12-05"
+  },
+  {
+   "sym": "CNDA",
+   "letzterHandel": "2026-08-07",
+   "luftTage": 714,
+   "kerzen": 40,
+   "delistet": "2024-09-04"
+  },
+  {
+   "sym": "SONX",
+   "letzterHandel": "2026-08-14",
+   "luftTage": 721,
+   "kerzen": 206,
+   "delistet": "2023-11-22"
+  },
+  {
+   "sym": "TALK",
+   "letzterHandel": "2026-08-14",
+   "luftTage": 721,
+   "kerzen": 495,
+   "delistet": "2026-08-18"
+  },
+  {
+   "sym": "SMFL",
+   "letzterHandel": "2026-08-17",
+   "luftTage": 724,
+   "kerzen": 354,
+   "delistet": "2024-09-19"
+  },
+  {
+   "sym": "TRVN",
+   "letzterHandel": "2026-08-17",
+   "luftTage": 724,
+   "kerzen": 297,
+   "delistet": "2024-10-08"
+  },
+  {
+   "sym": "VHAI",
+   "letzterHandel": "2026-08-18",
+   "luftTage": 725,
+   "kerzen": 484,
+   "delistet": "2024-09-11"
+  },
+  {
+   "sym": "TBIO",
+   "letzterHandel": "2026-08-19",
+   "luftTage": 726,
+   "kerzen": 232,
+   "delistet": "2024-09-30"
+  },
+  {
+   "sym": "UTRS",
+   "letzterHandel": "2026-08-19",
+   "luftTage": 726,
+   "kerzen": 44,
+   "delistet": "2023-12-29"
+  },
+  {
+   "sym": "VINC",
+   "letzterHandel": "2026-08-19",
+   "luftTage": 726,
+   "kerzen": 441,
+   "delistet": "2025-04-23"
+  },
+  {
+   "sym": "WBS",
+   "letzterHandel": "2026-08-19",
+   "luftTage": 726,
+   "kerzen": 497,
+   "delistet": "2026-08-20"
+  },
+  {
+   "sym": "SNAX",
+   "letzterHandel": "2026-08-20",
+   "luftTage": 727,
+   "kerzen": 350,
+   "delistet": "2025-02-06"
+  },
+  {
+   "sym": "SPEC",
+   "letzterHandel": "2026-08-20",
+   "luftTage": 727,
+   "kerzen": 222,
+   "delistet": "2024-08-07"
+  },
+  {
+   "sym": "VCNX",
+   "letzterHandel": "2026-08-20",
+   "luftTage": 727,
+   "kerzen": 409,
+   "delistet": "2024-12-18"
+  },
+  {
+   "sym": "ENSV",
+   "letzterHandel": "2026-08-21",
+   "luftTage": 728,
+   "kerzen": 427,
+   "delistet": "2024-11-04"
+  },
+  {
+   "sym": "SSKN",
+   "letzterHandel": "2026-08-21",
+   "luftTage": 728,
+   "kerzen": 478,
+   "delistet": "2026-02-19"
+  },
+  {
+   "sym": "STAI",
+   "letzterHandel": "2026-08-21",
+   "luftTage": 728,
+   "kerzen": 404,
+   "delistet": "2026-02-10"
+  },
+  {
+   "sym": "STRS",
+   "letzterHandel": "2026-08-21",
+   "luftTage": 728,
+   "kerzen": 500,
+   "delistet": "2026-08-10"
+  },
+  {
+   "sym": "SYBX",
+   "letzterHandel": "2026-08-21",
+   "luftTage": 728,
+   "kerzen": 476,
+   "delistet": "2026-01-21"
+  },
+  {
+   "sym": "SYRA",
+   "letzterHandel": "2026-08-21",
+   "luftTage": 728,
+   "kerzen": 488,
+   "delistet": "2025-04-21"
+  },
+  {
+   "sym": "SYRS",
+   "letzterHandel": "2026-08-21",
+   "luftTage": 728,
+   "kerzen": 498,
+   "delistet": "2025-03-20"
+  },
+  {
+   "sym": "TAIT",
+   "letzterHandel": "2026-08-21",
+   "luftTage": 728,
+   "kerzen": 495,
+   "delistet": "2025-12-04"
+  },
+  {
+   "sym": "TTOO",
+   "letzterHandel": "2026-08-21",
+   "luftTage": 728,
+   "kerzen": 464,
+   "delistet": "2025-02-12"
+  },
+  {
+   "sym": "TTSH",
+   "letzterHandel": "2026-08-21",
+   "luftTage": 728,
+   "kerzen": 492,
+   "delistet": "2025-12-29"
+  },
+  {
+   "sym": "USDP",
+   "letzterHandel": "2026-08-21",
+   "luftTage": 728,
+   "kerzen": 432,
+   "delistet": "2023-11-16"
+  },
+  {
+   "sym": "VAXX",
+   "letzterHandel": "2026-08-21",
+   "luftTage": 728,
+   "kerzen": 443,
+   "delistet": "2024-05-09"
+  },
+  {
+   "sym": "VRPX",
+   "letzterHandel": "2026-08-21",
+   "luftTage": 728,
+   "kerzen": 362,
+   "delistet": "2025-04-04"
+  },
+  {
+   "sym": "XAGE",
+   "letzterHandel": "2026-08-21",
+   "luftTage": 728,
+   "kerzen": 311,
+   "delistet": "2025-09-12"
+  },
+  {
+   "sym": "XELA",
+   "letzterHandel": "2026-08-21",
+   "luftTage": 728,
+   "kerzen": 440,
+   "delistet": "2024-11-08"
+  },
+  {
+   "sym": "AUMN",
+   "letzterHandel": "2026-08-24",
+   "luftTage": 731,
+   "kerzen": 500,
+   "delistet": "2024-12-16"
+  },
+  {
+   "sym": "BURU",
+   "letzterHandel": "2026-08-24",
+   "luftTage": 731,
+   "kerzen": 491,
+   "delistet": "2026-07-20"
+  },
+  {
+   "sym": "FOXO",
+   "letzterHandel": "2026-08-24",
+   "luftTage": 731,
+   "kerzen": 473,
+   "delistet": "2025-08-13"
+  },
+  {
+   "sym": "PMNT",
+   "letzterHandel": "2026-08-24",
+   "luftTage": 731,
+   "kerzen": 500,
+   "delistet": "2026-06-18"
+  },
+  {
+   "sym": "SCPX",
+   "letzterHandel": "2026-08-24",
+   "luftTage": 731,
+   "kerzen": 420,
+   "delistet": "2025-04-22"
+  },
+  {
+   "sym": "TPHS",
+   "letzterHandel": "2026-08-24",
+   "luftTage": 731,
+   "kerzen": 449,
+   "delistet": "2024-07-31"
+  },
+  {
+   "sym": "VISL",
+   "letzterHandel": "2026-08-24",
+   "luftTage": 731,
+   "kerzen": 479,
+   "delistet": "2025-02-10"
+  },
+  {
+   "sym": "VSEE",
+   "letzterHandel": "2026-08-24",
+   "luftTage": 731,
+   "kerzen": 500,
+   "delistet": "2026-08-06"
+  },
+  {
+   "sym": "VSTD",
+   "letzterHandel": "2026-08-24",
+   "luftTage": 731,
+   "kerzen": 243,
+   "delistet": "2026-07-27"
+  },
+  {
+   "sym": "VXRT",
+   "letzterHandel": "2026-08-24",
+   "luftTage": 731,
+   "kerzen": 500,
+   "delistet": "2025-07-08"
+  },
+  {
+   "sym": "WINT",
+   "letzterHandel": "2026-08-24",
+   "luftTage": 731,
+   "kerzen": 496,
+   "delistet": "2025-08-21"
+  },
+  {
+   "sym": "WTER",
+   "letzterHandel": "2026-08-24",
+   "luftTage": 731,
+   "kerzen": 478,
+   "delistet": "2024-02-06"
+  },
+  {
+   "sym": "ZCAR",
+   "letzterHandel": "2026-08-24",
+   "luftTage": 731,
+   "kerzen": 486,
+   "delistet": "2025-05-08"
+  },
+  {
+   "sym": "ZIVO",
+   "letzterHandel": "2026-08-24",
+   "luftTage": 731,
+   "kerzen": 356,
+   "delistet": "2023-11-27"
+  },
+  {
+   "sym": "ZPTA",
+   "letzterHandel": "2026-08-24",
+   "luftTage": 731,
+   "kerzen": 496,
+   "delistet": "2024-10-28"
+  },
+  {
+   "sym": "ZSPC",
+   "letzterHandel": "2026-08-24",
+   "luftTage": 731,
+   "kerzen": 429,
+   "delistet": "2026-04-28"
+  },
+  {
+   "sym": "ZVSA",
+   "letzterHandel": "2026-08-24",
+   "luftTage": 731,
+   "kerzen": 498,
+   "delistet": "2025-07-17"
+  }
+ ]
+}

@@ -1,0 +1,34 @@
+{
+  "hinweis": "Stufe 1: NULL Netzabrufe. Nur Anzahlen und Zeitspannen. Kein Kurs- oder Ertragsmittelwert.",
+  "frage": "Entsorgt die Quelle Historie abgemeldeter Firmen schneller, als ihr rollendes Fenster es erklaert?",
+  "zeuge": "DIESELBE Quelle zu zwei Zeitpunkten (Sicherung 23.08. gegen Abruf 27.08.) - keine zweite Quelle, keine Konventionsfrage.",
+  "abrufAbstandTage": 3.8,
+  "schwelleTage": 6,
+  "bestand": {
+    "gesamt": 1164,
+    "fehltNeu": 0,
+    "nichtErneuert": 288,
+    "erneuert": 876,
+    "leerAlt": 0,
+    "leerNeu": 0
+  },
+  "einteilung": {
+    "gewachsen": 0,
+    "unveraendert": 876,
+    "fensterRollt": 0,
+    "entsorgt": 0
+  },
+  "positivkontrolle": {
+    "hinterkanteGewachsen": 84,
+    "vorderkanteGewachsen": 0,
+    "erwartung": "Waere BEIDES null, faende der Vergleich grundsaetzlich keine Veraenderung und der Nullbefund kaeme aus dem Werkzeug, nicht aus der Welt."
+  },
+  "wanderungVorderkante_Tage": {
+    "median": 0,
+    "min": 0,
+    "max": 0
+  },
+  "entsorgte_top30": [],
+  "entsorgte_gesamt": 0,
+  "verloreneKerzenSumme": 0
+}
