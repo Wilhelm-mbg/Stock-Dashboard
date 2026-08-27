@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 13:55 (Windows-Uhr)
+letzter-bericht: 2026-08-27 14:05 (Windows-Uhr)
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -290,7 +290,28 @@ schon da.**
 > - **B:** Trennfall mit Datum — `ticker_change` Barrick **09.05.2025**; ab ~18.06.2025
 >   identisch; **kein Skalen-Urteil sinnvoll.**
 >
-> > **🔴 UND DAS TRIFFT DAS 10:9 ZURÜCK — Zahl steht bis auf Weiteres IN PRÜFUNG.**
+> > ### ✅ 14:0x — **GEPRÜFT UND FREIGEGEBEN: `WHLR` war der EINZELFALL.** *(Sperre aufgehoben)*
+> > **Beantwortet mit EINEM Abruf, vollständig statt stichprobenhaft — und die Beweisführung ist
+> > das Bemerkenswerte:** *Statt zu prüfen, welche zwanzig Symbole es waren, wurde die
+> > **vollständige Marktliste** der Splits mit Ausführung 26.–28.08.2026 geholt: **15 Einträge,
+> > davon existiert genau EINER in unseren Archiven — WHLR.*** Die übrigen 14 sind
+> > OTC-/Kleinstwerte (SGIPF, CYCU, YMT, NVX, LGVN …), die in keinem Archiv geführt werden.
+> >
+> > ***„Egal welche 20 es waren, nur WHLR KONNTE betroffen sein."*** *Die Symbol-Liste, die
+> > nicht vorlag, wurde damit **unnötig** statt beschafft.*
+> >
+> > **Und der Mechanismus ist geschlossen, nicht nur die Stichprobe:** *Der Artefakt entsteht nur,
+> > wenn `adjusted=true` zwischen Datentag und Abfragetag eine Rückanpassung einbaut. **Massive
+> > passt ausschließlich Splits an** — Dividenden ausdrücklich nicht („we do not currently
+> > support adjustment for dividends"), Spin-offs nicht, und **Ticker-Wechsel skalieren keine
+> > Kurse**. Splits im Fenster sind der EINZIGE Mechanismus.*
+> >
+> > **→ Das 10:9 wird zu `10:8 plus 1 Konventions-Artefakt`.** *Unverändert bestehen: **„kein
+> > Archiv ist systematisch im Recht"**, die **Asymmetrie** (Tief 4,71 % > Hoch 2,04 %) und die
+> > **8/8-Einigkeits-Kontrolle** — die betrafen andere Reihen.* **Die ~3,2-%-Zerlegung verschiebt
+> > sich um den einen Fall und bleibt, was sie war: eine Schätzung, jetzt aus 19 Fällen.**
+>
+> > ~~**🔴 DAS TRIFFT DAS 10:9 ZURÜCK — Zahl steht bis auf Weiteres IN PRÜFUNG.**~~ *(erledigt)*
 > > **`WHLR` war einer der zwanzig Fälle und wurde als „`1d` richtig, `60m` falsch" gezählt** —
 > > *nach dieser Auflösung ein **Konventions-Artefakt**, kein Archivfehler.* **Mindestens einer
 > > der zwanzig ist falsch klassiert.**
