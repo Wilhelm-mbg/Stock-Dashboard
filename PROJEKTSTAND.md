@@ -1614,9 +1614,18 @@ kein Anbieter ist.**
 
 ## ✅ 27.08. 16:0x — **DER EINZELSPRUNG-LAUF IST DURCH: 98,5 % SAUBER, fünf benennbare Versager**
 
-> ### **98,5 % der 534 Einzelsprünge haben positiv belegt KEINEN Split — die Rückanpassung des Tagesarchivs funktioniert fast immer.**
+> ### **98,5 % der 534 Einzelsprünge haben positiv belegt KEINEN Split — die Rückanpassung des Tagesarchivs funktioniert bei SPLIT-GROSSEN Ereignissen fast immer.**
 > *Nach einem Tag, an dem das Archiv von allen Seiten beschossen wurde, ist das die Zahl, die die
 > Verhältnisse zurechtrückt: **fünf benennbare Versager, nicht fünfhundert.***
+>
+> **⚠ REICHWEITE NACHGETRAGEN 27.08. 19:2x — kein Widerruf, eine Grenze.** *Der Detektor sammelt nur
+> Sprünge **ab Faktor 2 bzw. bis 0,5**. Gemessen ist damit: **534 geprüfte Sprünge ab Faktor 2, fünf
+> Versager** — Splits sind typisch 2:1, 4:1, 10:1 und liegen im sichtbaren Bereich.* **Für Ereignisse
+> mit Kursfaktor nahe 1 sagt diese Messung NICHTS — und genau dort liegen 9 der 17 bekannten
+> Skalenfälle** *(GBTC 0,903 · ETHE 0,890 · CBSH 0,952 · SCCO 1,012 · QGEN 1,032 · CLM 0,984 ·
+> LBRDA/LBRDK 0,937 · DOC 1,509).* **Der frühere Wortlaut klang wie eine Aussage über ALLE
+> Anpassungen und beruhigte in genau die Richtung, in der die halbe bekannte Fallmenge liegt.**
+> *Die Zahlen selbst bleiben unverändert richtig.*
 
     GRUNDRATE  534 Einzelspruenge, 275 Reihen, 0 nicht pruefbar
                F = 5      F? = 3      U = 526
