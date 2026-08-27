@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 16:10 (Windows-Uhr)
+letzter-bericht: 2026-08-27 16:20 (Windows-Uhr)
 gesehener-tag: v8.33.5
 pm-adresse: markt-dashboard-f5 [5204c6]
 -->
@@ -178,8 +178,26 @@ unten) · **WY 20.07.2010** (Aktien-Sonderausschüttung, Faktor 0,409) · **EXPE
 > WHLR-Beruhigung von heute Nachmittag wäre zu optimistisch formuliert gewesen.**
 > **⚠ Trotzdem: nichts von Hand reparieren, auch IESC nicht** — *eine Handreparatur würde genau
 > die Frage zerstören, die IESC beantworten kann.*
-> *Offene Trennfrage: **führt Massive `IESC` schon auf der neuen Skala?** Wenn ja, liegt es an
-> unserem Nachladen; wenn nein, an der Quelle — zwei völlig verschiedene Befunde.*
+> ### ✅ 16:2x — **GEMESSEN: Massive steht auf der neuen Skala, unser Archiv EXAKT auf der Roh-Ansicht**
+>
+>     Massive adjusted=true    19.-21.08.:  ~348 / 342 / 343
+>     Massive adjusted=false   19.-21.08.:  697,38 / 683,27 / 685,04
+>     UNSER archiv1d           19.-21.08.:  697,38 / 683,27 / 685,04   <- exakt die Roh-Ansicht
+>
+> **Der Vendor-Seite fehlt NICHTS** — das Ereignis ist realisiert und rückangepasst verfügbar.
+> *Ab 24.08. sind alle drei Ansichten identisch; die Vorher-Sicherung von `06` am lebenden Archiv
+> (685,04 → 325,01, ~×0,47) passt auf den Punkt.*
+>
+> ### 🎯 **DER TEST IST AUF EINEN ABRUF REDUZIERT: ein direkter Yahoo-Abruf der IESC-Historie**
+> | Yahoo liefert … | Diagnose |
+> |---|---|
+> | die **alte, unangepasste** Historie | **Quellen-Verzug — korrektes Verhalten.** *`zusammenfuehren()` löscht nie, also bleibt Altes stehen, wenn die Quelle nichts Neues schickt.* |
+> | die **angepasste** Historie, Archiv bleibt trotzdem alt | **🔴 MISCH-FEHLER, eigener Fund** — *dann kommt Richtiges an und wird nicht übernommen, und das träfe **jede** Reihe.* |
+>
+> **⚠ MEINE WHLR-BERUHIGUNG VON HEUTE NACHMITTAG TRÄGT BIS DAHIN EIN FRAGEZEICHEN.** *Ich hatte
+> „der Nachtlauf holt es" geschrieben, **bevor IESC bekannt war** — und IESC ist der Fall, in dem
+> der Nachtlauf es **drei Nächte lang nicht geholt hat**.* **Die Beruhigung bleibt plausibel, aber
+> sie ist unbelegt.**
 
 *Betriebsvorfall ausgewiesen: ~90 min DNS-Ausfall mitten im Lauf, Prozess überlebte, zweiter
 Durchgang schloss alle 26 Lücken — **Endstand 275/275, 0 Fehler**.*
