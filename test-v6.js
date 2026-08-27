@@ -4448,6 +4448,45 @@ console.log('\n44) Messmaschine, Scoreboard und Strategie-Eingabe (23.08.2026)')
     ok(/lebtPid\(alt\.pid\)/.test(rl),
        'Riegel 1: Verwaisungs-Pruefung ueber die PID - ein toter Bau sperrt niemanden aus');
   })();
+
+  /* ---- Der Rueckfall im Wertpapierart-Modul ist LAUT (27.08.) ----
+   * Gemessen von der Mess-Sitzung: die Sichtbarkeits-Funktion des Moduls rief
+   * keiner der ~24 Abnehmer auf - faellt die Referenzkarte aus, lief jedes
+   * Universum still ungefiltert; fehlt nur ein Eintrag, fiel das Symbol still
+   * heraus (die Bauform des ZVZZT-Scheinbefunds). Beide Ausfallformen werden
+   * hier FUNKTIONAL durchgespielt: Funktionsauszug mit gestellter Karte und
+   * gestelltem Fehlerkanal, das Archiv bleibt unberuehrt. Zugesichert wird
+   * auch, dass sich das VERHALTEN nicht geaendert hat - nur die Sichtbarkeit. */
+  (function () {
+    var wq = fs.readFileSync(__dirname + '/studien/messmaschine/strategien/wertpapierart.js', 'utf8');
+    ok(wq.indexOf('process.stderr.write') !== -1 && wq.indexOf('console.log') === -1,
+       'Der Ruf geht auf den Fehlerkanal - stdout bleibt den Werkzeug-Ergebnissen');
+    function schneideW(name) {
+      var a = wq.indexOf('function ' + name);
+      var e = wq.indexOf('\n}', a) + 2;
+      ok(a !== -1 && e > a, 'wertpapierart: ' + name + ' laesst sich herausloesen');
+      return wq.slice(a, e);
+    }
+    var rufe = [];
+    var kanal = { stderr: { write: function (s) { rufe.push(String(s)); } } };
+    var bau = new Function('laden', 'process', 'TESTKUERZEL', 'AKTIENARTEN', 'GERUFEN',
+      schneideW('warneEinmal') + '\n' + schneideW('istAktie') + '\nreturn istAktie;');
+    // Ausfallform 1: Karte fehlt/unlesbar/zu klein
+    var ohneKarte = bau(function () { return false; }, kanal, {}, { CS: 1, ADRC: 1 }, {});
+    ok(ohneKarte('AAPL') === true, 'Ausfallform 1: alles gilt weiter als Aktie (kein Verhaltenswechsel)');
+    ohneKarte('MSFT'); ohneKarte('XOM');
+    ok(rufe.length === 1 && /UNGEFILTERT/.test(rufe[0]),
+       'Ausfallform 1 ruft genau EINMAL je Prozess, nicht je Aufruf', String(rufe.length));
+    // Ausfallform 2 (die leisere): Karte gesund, Eintrag fehlt
+    rufe = [];
+    var mitKarte = bau(function () { return { AAPL: 'CS', SPY: 'ETF' }; }, kanal, {}, { CS: 1, ADRC: 1 }, {});
+    ok(mitKarte('AAPL') === true && mitKarte('SPY') === false && rufe.length === 0,
+       'Gesunder Weg bleibt stumm - bekannte Eintraege loesen keinen Ruf aus');
+    ok(mitKarte('QQXYZQ') === false, 'Ausfallform 2: fehlender Eintrag faellt weiter heraus (kein Verhaltenswechsel)');
+    mitKarte('QQABCQ');
+    ok(rufe.length === 1 && /STILL/.test(rufe[0]) && /QQXYZQ/.test(rufe[0]),
+       'Ausfallform 2 ruft genau EINMAL und nennt den ersten Fall', String(rufe.length));
+  })();
   /* Eigenschafts-Pruefung gegen ein ECHTES Protokoll: aendert die Messmaschine die
    * Ablage der Aussicht, wird die Anzeige still leer - das soll hier laut werden.
    * kapitulation 26.08.: Varianten 1551/2330/224, kleinste 224 (Tafel-Tabelle). */

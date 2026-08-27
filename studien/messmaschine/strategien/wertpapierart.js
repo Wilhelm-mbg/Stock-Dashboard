@@ -44,6 +44,20 @@ var os = require('os');
 var AKTIENARTEN = { CS: 1, ADRC: 1 };
 var TESTKUERZEL = { ZVZZT: 1, ZWZZT: 1, ZXZZT: 1, ZJZZT: 1 };
 var KARTE = null;
+var GERUFEN = {};
+
+/* Ein Ruf je Grund und Prozess, auf dem Fehlerkanal. Je Aufruf waere die Meldung
+ * bei grossen Universen dreissigtausendfach da - und damit genauso unsichtbar
+ * wie gar keine. stdout gehoert den Ergebnissen der Werkzeuge; eine Meldung
+ * dort wuerde jede weiterverarbeitete Ausgabe verunreinigen. (27.08.2026: die
+ * Sichtbarkeits-Funktion unten wurde von keinem der ~24 Abnehmer aufgerufen -
+ * die Vorsorge lag an einer Stelle, die niemanden erreichte. Dieser Ruf traegt
+ * sie dorthin, wo ohnehin jeder hinsieht: ins Log des laufenden Werkzeugs.) */
+function warneEinmal(grund, text) {
+  if (GERUFEN[grund]) return;
+  GERUFEN[grund] = true;
+  process.stderr.write('\n!!! WERTPAPIERART: ' + text + '\n\n');
+}
 
 function laden() {
   if (KARTE !== null) return KARTE;
@@ -62,11 +76,22 @@ function istAktie(sym) {
   if (sym.indexOf('-USD') !== -1) return false;      // Krypto
   if (TESTKUERZEL[sym]) return false;                // vor der Karte UND vor dem Rueckfall
   var k = laden();
-  if (!k) return true;
+  if (!k) {
+    warneEinmal('karteFehlt', 'Referenzkarte fehlt, ist unlesbar oder zu klein - ' +
+      'JEDES Symbol gilt jetzt als Aktie, das Universum laeuft UNGEFILTERT ' +
+      '(ETFs, Hebelprodukte und Fonds eingeschlossen). ' +
+      'Abhilfe: node tools/wertpapierarten-holen.js');
+    return true;
+  }
   /* Yahoo schreibt Aktienklassen mit Bindestrich (BRK-B), die Schnittstelle mit
    * Punkt (BRK.B). Beide Schreibweisen nachschlagen. */
   var a = k[sym] || k[sym.replace(/-/g, '.')];
-  if (!a) return false;                               // unbekannt = nicht belegt = raus
+  if (!a) {
+    warneEinmal('eintragFehlt', 'Referenzkarte vorhanden, aber ohne Eintrag fuer ' + sym +
+      ' (erster Fall dieses Laufs; weitere werden nicht gemeldet) - ' +
+      'solche Symbole fallen STILL aus dem Universum heraus.');
+    return false;                                     // unbekannt = nicht belegt = raus
+  }
   return !!AKTIENARTEN[a];
 }
 
