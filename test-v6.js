@@ -10136,14 +10136,25 @@ console.log('\nWachhund: steht das Kursarchiv still?');
     fs.writeFileSync(pathT.join(tmpS, 'bars_60m_' + sym + '.json'),
       JSON.stringify({ series: [[Date.parse(tag + 'T13:30:00Z'), 100, 1, 101, 99]] }));
   }
-  for (var si = 0; si < 10; si++) legeS('S' + si, '2026-08-25');
-  var JETZT = new Date('2026-08-26T09:00:00Z');
+  /* EINE UHR FUER DIESEN GANZEN ABSCHNITT - und sie darf keine Konstante sein.
+   * Bis zum 31.08.2026 lagen die Kunstkerzen auf einem festen Tag, die Sperrstempel
+   * kamen aber aus der laufenden Uhr und ein Teil der Pruefungen auch. Der Block hat
+   * damit ein Verfallsdatum getragen: seit dem 28.08. verweigerte der Wachhund das
+   * Urteil, weil das KUNSTARCHIV rueckstaendig war - nicht wegen der Sperren, die hier
+   * gemessen werden sollen. Zwei Zusicherungen wurden rot, ohne dass sich am Werkzeug
+   * etwas geaendert hatte. Deshalb: die Kerzen liegen auf dem letzten abgeschlossenen
+   * Handelstag DIESER Uhr, und jede Pruefung hier bekommt genau dieselbe Uhr. Damit
+   * ist der Rueckstand des Kunstarchivs immer null und der Abschnitt misst wieder nur
+   * das, wonach er gefragt ist. Ein festes Datum darf hier nie wieder stehen. */
+  var JETZT = new Date();
+  var SOLL = W.letzterAbgeschlossenerHandelstag(JETZT);
+  for (var si = 0; si < 10; si++) legeS('S' + si, SOLL);
   ok(W.pruefe(tmpS, { jetzt: JETZT }).ok === true, 'Ohne Sperre gibt es ein Urteil');
 
   /* Frische Sperre: KEIN Urteil. Ein Rueckstand waere hier eine Aussage ueber den
    * Zeitpunkt der Frage, nicht ueber das Archiv. */
   W.sperreSetzen(tmpS, 'Testlauf');
-  var bGes = W.pruefe(tmpS, { jetzt: new Date() });
+  var bGes = W.pruefe(tmpS, { jetzt: JETZT });
   ok(bGes.gesperrt === true && bGes.ok === false,
      'Mit frischer Sperre gibt der Wachhund KEIN Urteil ab');
   ok(/WIRD GERADE GESCHRIEBEN/.test(W.textZu(bGes)), 'und sagt im Klartext, warum');
@@ -10153,8 +10164,8 @@ console.log('\nWachhund: steht das Kursarchiv still?');
    * hat seinen Signal-Handler nicht ausgefuehrt und die Sperre liegengelassen. Die
    * Frist ist deshalb nicht der Notnagel, sondern die eigentliche Sicherung. */
   fs.writeFileSync(pathT.join(tmpS, '_laeuft.json'),
-    JSON.stringify({ start: new Date(Date.now() - 7 * 3600000).toISOString(), was: 'abgestuerzt' }));
-  var bVer = W.pruefe(tmpS, { jetzt: new Date() });
+    JSON.stringify({ start: new Date(JETZT.getTime() - 7 * 3600000).toISOString(), was: 'abgestuerzt' }));
+  var bVer = W.pruefe(tmpS, { jetzt: JETZT });
   ok(bVer.gesperrt !== true && bVer.ok === true,
      'Eine verwaiste Sperre blockiert das Urteil NICHT mehr - sonst schwiege der Wachhund fuer immer');
   ok(bVer.verwaisteSperre && /VERWAISTE SPERRE/.test(W.textZu(bVer)),
@@ -10162,13 +10173,13 @@ console.log('\nWachhund: steht das Kursarchiv still?');
      bVer.verwaisteSperre);
   /* Knapp unter der Frist gilt sie noch. */
   fs.writeFileSync(pathT.join(tmpS, '_laeuft.json'),
-    JSON.stringify({ start: new Date(Date.now() - (W.VERWAIST_STUNDEN - 0.5) * 3600000).toISOString() }));
-  ok(W.pruefe(tmpS, { jetzt: new Date() }).gesperrt === true,
+    JSON.stringify({ start: new Date(JETZT.getTime() - (W.VERWAIST_STUNDEN - 0.5) * 3600000).toISOString() }));
+  ok(W.pruefe(tmpS, { jetzt: JETZT }).gesperrt === true,
      'Eine halbe Stunde vor der Frist gilt sie noch als aktiv');
   /* Eine kaputte Sperrdatei darf nicht als "aktiv" durchgehen - sonst legt ein
    * einziger Schreibfehler die Messung fuer immer still. */
   fs.writeFileSync(pathT.join(tmpS, '_laeuft.json'), 'kein JSON');
-  var bKaputt = W.pruefe(tmpS, { jetzt: new Date() });
+  var bKaputt = W.pruefe(tmpS, { jetzt: JETZT });
   ok(bKaputt.gesperrt !== true && bKaputt.verwaisteSperre === true,
      'Eine unlesbare Sperrdatei gilt als verwaist, nicht als aktiv');
   W.sperreLoesen(tmpS);
@@ -10194,8 +10205,8 @@ console.log('\nWachhund: steht das Kursarchiv still?');
 
   /* Der Fall von heute Abend: FRISCHE Sperre, toter Schreiber. */
   fs.writeFileSync(pathT.join(tmpS, '_laeuft.json'), JSON.stringify(
-    { start: new Date().toISOString(), was: 'gestorben', pid: totePid, rechner: osT.hostname() }));
-  var bTot = W.pruefe(tmpS, { jetzt: new Date() });
+    { start: JETZT.toISOString(), was: 'gestorben', pid: totePid, rechner: osT.hostname() }));
+  var bTot = W.pruefe(tmpS, { jetzt: JETZT });
   ok(bTot.gesperrt !== true && bTot.ok === true,
      'Eine frische Sperre eines TOTEN Laufs blockiert das Urteil nicht - die Frist haette sechs Stunden geschwiegen');
   ok(bTot.verwaisteSperre === true && /laeuft nicht mehr/.test(W.textZu(bTot)),
@@ -10209,19 +10220,19 @@ console.log('\nWachhund: steht das Kursarchiv still?');
   /* Die Gegenrichtung, und sie ist die gefaehrlichere: ein LEBENDER Lauf darf nie
    * fuer tot erklaert werden. Dann liefe eine Messung auf wanderndem Grund. */
   fs.writeFileSync(pathT.join(tmpS, '_laeuft.json'), JSON.stringify(
-    { start: new Date().toISOString(), was: 'laeuft wirklich', pid: process.pid, rechner: osT.hostname() }));
-  ok(W.pruefe(tmpS, { jetzt: new Date() }).gesperrt === true,
+    { start: JETZT.toISOString(), was: 'laeuft wirklich', pid: process.pid, rechner: osT.hostname() }));
+  ok(W.pruefe(tmpS, { jetzt: JETZT }).gesperrt === true,
      'Ein lebender Schreiber sperrt weiter - das ist die Richtung, die wehtut');
 
   /* Eine Sperre von einem ANDEREN Rechner wird nicht an der hiesigen Prozesstabelle
    * gemessen: dort ist ihre Nummer eine beliebige Zahl. Dann entscheidet die Frist. */
   fs.writeFileSync(pathT.join(tmpS, '_laeuft.json'), JSON.stringify(
-    { start: new Date().toISOString(), was: 'fremd', pid: totePid, rechner: 'ein-anderer-rechner' }));
-  ok(W.pruefe(tmpS, { jetzt: new Date() }).gesperrt === true,
+    { start: JETZT.toISOString(), was: 'fremd', pid: totePid, rechner: 'ein-anderer-rechner' }));
+  ok(W.pruefe(tmpS, { jetzt: JETZT }).gesperrt === true,
      'Eine fremde Prozessnummer wird nicht befragt - sonst raeumte ein Rechner die Sperre des anderen weg');
   fs.writeFileSync(pathT.join(tmpS, '_laeuft.json'), JSON.stringify(
-    { start: new Date(Date.now() - 7 * 3600000).toISOString(), pid: totePid, rechner: 'ein-anderer-rechner' }));
-  ok(W.pruefe(tmpS, { jetzt: new Date() }).gesperrt !== true,
+    { start: new Date(JETZT.getTime() - 7 * 3600000).toISOString(), pid: totePid, rechner: 'ein-anderer-rechner' }));
+  ok(W.pruefe(tmpS, { jetzt: JETZT }).gesperrt !== true,
      'aber die Frist greift auch dort - sonst blockierte eine fremde Sperre fuer immer');
   W.sperreLoesen(tmpS);
 
