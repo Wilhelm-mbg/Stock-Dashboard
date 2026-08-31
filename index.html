@@ -551,6 +551,13 @@
      Experten-Rasters: "Standard (99 gemessene Werte)" wurde sonst im eigenen
      Auswahlfeld abgeschnitten. */
   .belegt-box .params { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+  /* B5 (01.09.2026): Abschnittskoepfe der zusammengelegten Einstellungs-Pille -
+     sichtbare Binnenstruktur einer langen Seite, Ziel der Sprungleiste oben. */
+  .bereichs-kopf {
+    margin: 22px 0 8px; padding-top: 12px; border-top: 2px solid var(--border);
+    font-size: var(--fs-gross); scroll-margin-top: 8px;
+  }
+  #abIntraday.bereichs-kopf { margin-top: 4px; padding-top: 0; border-top: none; }
   .strat-foot { margin-top: 12px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; font-size: var(--fs-neben); color: var(--muted); }
 
   .switch { position: relative; display: inline-block; width: 42px; height: 23px; flex-shrink: 0; margin-left: auto; }
@@ -1052,6 +1059,17 @@
     </details>
   </div>
   <div class="sub" id="sub-einstellungen">
+  <!-- B5 (01.09.2026): Die Pille buendelt drei fruehere Unterreiter auf einer
+       ~2.500-px-Seite. Drei Abschnittskoepfe plus eine Sprungleiste machen die
+       Binnenstruktur sichtbar; die Anker springen ohne Scroll-Animation
+       (Standardverhalten - prefers-reduced-motion ist bei Wilhelm aktiv). -->
+  <div style="display:flex; gap:6px 14px; flex-wrap:wrap; align-items:baseline; margin:2px 0 10px; font-size:var(--fs-neben); color:var(--muted);">
+    <span style="text-transform:uppercase; letter-spacing:.04em; font-weight:600; font-size:var(--fs-klein);">Direkt zu</span>
+    <a href="#abIntraday" style="color:var(--ink-2);">Intraday &amp; Risiko</a>
+    <a href="#abMittelfrist" style="color:var(--ink-2);">Mittelfrist</a>
+    <a href="#abAutopilot" style="color:var(--ink-2);">Autopilot &amp; Datensammlung</a>
+  </div>
+  <h3 id="abIntraday" class="bereichs-kopf">Intraday &amp; Risiko</h3>
   <div id="sub-strategien">
     <!-- B8 (01.09.2026): von der Antwort-Pille hierher - der Knopf stellt um und
          gehoert zu den Einstellungen. Kennungen unveraendert. -->
@@ -1288,6 +1306,7 @@
     </div>
   </div>
 
+  <h3 id="abMittelfrist" class="bereichs-kopf">Mittelfrist – Momentum &amp; Ergebnis-Drift</h3>
   <!-- ============ MITTELFRIST (Steuerung; Bestand steht in Vermögen → Bücher) ============ -->
   <div id="sub-mittelfrist">
   <div class="panel">
@@ -1415,6 +1434,7 @@
   </div>
   </div><!-- /sub-mittelfrist -->
 
+  <h3 id="abAutopilot" class="bereichs-kopf">Autopilot &amp; Datensammlung</h3>
   <div id="sub-auswertung">
 
     <!-- 1 · Was die App von allein tut -->
@@ -1475,83 +1495,6 @@
   </div><!-- /sub-einstellungen -->
 
   <div class="sub" id="sub-werkzeug">
-  <div id="sub-regelbuch">
-    <div class="panel" id="regelKarte" style="margin-top:12px; border-top:3px solid var(--series3);">
-      <h3 style="display:flex; align-items:center; gap:8px;">Die Regel, die handelt
-        <button class="info" type="button" data-info="regeln.handelt" aria-expanded="false"
-                aria-label="Erklärung: Die Regel, die handelt">i</button></h3>
-      <div style="font-size:var(--fs-text); color:var(--ink-2); line-height:1.6; max-width:68ch;">
-        Was gerade eingestellt ist – mit Chart, Bedingungen und Bilanz an einem Ort.
-      </div>
-      <div id="regelKopf" style="margin-top:10px;"></div>
-    </div>
-
-    <div class="panel" id="regelnKarte" style="margin-top:12px;">
-      <h3 style="display:flex; align-items:center; gap:8px;">Regeln, die nur messen
-        <button class="info" type="button" data-info="regeln.messen" aria-expanded="false"
-                aria-label="Erklärung: Regeln, die nur messen">i</button></h3>
-      <div style="font-size:var(--fs-text); color:var(--ink-2); line-height:1.6; max-width:68ch;">
-        Eine Regel <b>festschreiben</b> und mitlaufen lassen, ohne dass Geld bewegt wird –
-        geprüft auf denselben Kerzen wie die gehandelte Regel, mit eigener Bilanz.
-        <b>Bewusst ohne Handelsknopf.</b>
-      </div>
-      <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-top:10px;">
-        <input type="text" id="regelName" maxlength="40" placeholder="Name, z. B. „Felix: Winkel 1m“" style="flex:1 1 240px;">
-        <button class="btn ghost" id="regelNeuBtn" type="button" title="Schreibt die AKTUELLEN Einstellungen unter diesem Namen fest. Ab dem nächsten Scan läuft sie mit – ohne Geld.">Aktuelle Einstellungen festschreiben</button>
-        <span id="regelStatus" style="color:var(--muted); font-size:var(--fs-neben);"></span>
-      </div>
-      <div id="regelnListe" style="margin-top:10px;"></div>
-    </div>
-
-    <div class="panel" id="regelBilanz" style="margin-top:12px;">
-      <h3>Bilanz dieser Regel</h3>
-      <div style="font-size:var(--fs-text); color:var(--ink-2); line-height:1.6; margin-bottom:10px;">
-        Was die Regel getan hat, was sie <i>nicht</i> getan hat, und wie sie gegen einfaches
-        Halten steht. Der Vergleich gegen Buy&nbsp;&amp;&nbsp;Hold ist dabei die wichtigste
-        Spalte: Eine Regel, die den Markt nicht schlägt, hat keinen Vorsprung – sie war
-        nur dabei.
-      </div>
-
-    <!-- Innerhalb von "Bilanz dieser Regel" sind das Unterabschnitte, keine gleichrangigen
-         Karten - h4 statt h3, damit die Gliederung stimmt (Regeln-Ausduennung 31.08.2026). -->
-    <div class="panel" style="margin-bottom:12px;">
-      <h4 style="margin:0 0 6px;">Was hat gewirkt?</h4>
-      <div style="color:var(--muted); font-size:var(--fs-neben); margin-bottom:8px;">
-        Jede automatische Änderung mit gemessener Wirkung: Ø Gewinn je Intraday-Trade davor gegen danach, sortiert nach
-        Wirkung, jede einzeln zurücknehmbar – bei den von Hand übernommenen Voreinstellungen sogar Feld für Feld.
-      </div>
-      <div id="tuneLog"></div>
-
-      <div style="margin-top:14px; padding-top:12px; border-top:1px solid var(--line);">
-        <h4 style="margin:0 0 6px;">Bringen die Filter etwas?</h4>
-        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-          <button class="btn ghost" id="filterBtn">Mit vs. ohne Filter rechnen</button>
-          <span id="filterStatus" style="color:var(--muted); font-size:var(--fs-neben);"></span>
-        </div>
-        <div style="color:var(--muted); font-size:var(--fs-neben); margin-top:6px;">
-          Rechnet denselben Zeitraum zweimal – einmal mit deinen Filtern, einmal ohne. Zeigt, ob die Zurückhaltung
-          Geld spart oder Rendite kostet.
-        </div>
-        <div id="filterResult" style="margin-top:12px;"></div>
-      </div>
-    </div>
-      <div class="panel">
-        <h4 style="margin:0 0 6px;">Wann die Strategie nichts getan hat</h4>
-        <div style="color:var(--muted); font-size:var(--fs-neben); margin-bottom:8px;">
-          Wie oft die Filter ein Signal bewusst verworfen haben – und warum. Der häufigste Grund ist der stärkste Hebel:
-          „Wer nicht weiß, was er tut, muss wissen, wann er nichts tut.“ (Kostolany)
-        </div>
-        <div id="patience"><div class="loading">Noch keine verworfenen Signale erfasst – entsteht, sobald der Intraday-Scanner läuft.</div></div>
-      </div>
-      <div class="panel">
-        <h4 style="margin:0 0 6px;">Depot gegen Buy &amp; Hold</h4>
-        <div id="benchInfo" style="font-size:var(--fs-neben); color:var(--muted); margin-bottom:6px;">Wird beim Öffnen dieses Bereichs geladen …</div>
-        <svg id="benchChart" style="width:100%; height:150px; display:block;"></svg>
-        <div id="benchLegend" style="font-size:var(--fs-neben); color:var(--ink-2); margin-top:4px;"></div>
-        <div id="hitrates" style="margin-top:10px;"></div>
-      </div>
-    </div>
-  </div>
   <div id="sub-stratchart">
   <div class="panel" id="stratChartPanel" style="margin-top:12px;">
     <h3 style="display:flex; align-items:center; gap:8px;">Strategie-Chart – Signal und Bedingungen nachvollziehen
@@ -1646,6 +1589,84 @@
         <div id="btResult" style="margin-top:12px;"></div>
       </div>
     </details>
+
+  <div id="sub-regelbuch">
+    <div class="panel" id="regelKarte" style="margin-top:12px; border-top:3px solid var(--series3);">
+      <h3 style="display:flex; align-items:center; gap:8px;">Die Regel, die handelt
+        <button class="info" type="button" data-info="regeln.handelt" aria-expanded="false"
+                aria-label="Erklärung: Die Regel, die handelt">i</button></h3>
+      <div style="font-size:var(--fs-text); color:var(--ink-2); line-height:1.6; max-width:68ch;">
+        Was gerade eingestellt ist – mit Chart, Bedingungen und Bilanz an einem Ort.
+      </div>
+      <div id="regelKopf" style="margin-top:10px;"></div>
+    </div>
+
+    <div class="panel" id="regelnKarte" style="margin-top:12px;">
+      <h3 style="display:flex; align-items:center; gap:8px;">Regeln, die nur messen
+        <button class="info" type="button" data-info="regeln.messen" aria-expanded="false"
+                aria-label="Erklärung: Regeln, die nur messen">i</button></h3>
+      <div style="font-size:var(--fs-text); color:var(--ink-2); line-height:1.6; max-width:68ch;">
+        Eine Regel <b>festschreiben</b> und mitlaufen lassen, ohne dass Geld bewegt wird –
+        geprüft auf denselben Kerzen wie die gehandelte Regel, mit eigener Bilanz.
+        <b>Bewusst ohne Handelsknopf.</b>
+      </div>
+      <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-top:10px;">
+        <input type="text" id="regelName" maxlength="40" placeholder="Name, z. B. „Felix: Winkel 1m“" style="flex:1 1 240px;">
+        <button class="btn ghost" id="regelNeuBtn" type="button" title="Schreibt die AKTUELLEN Einstellungen unter diesem Namen fest. Ab dem nächsten Scan läuft sie mit – ohne Geld.">Aktuelle Einstellungen festschreiben</button>
+        <span id="regelStatus" style="color:var(--muted); font-size:var(--fs-neben);"></span>
+      </div>
+      <div id="regelnListe" style="margin-top:10px;"></div>
+    </div>
+
+    <div class="panel" id="regelBilanz" style="margin-top:12px;">
+      <h3>Bilanz dieser Regel</h3>
+      <div style="font-size:var(--fs-text); color:var(--ink-2); line-height:1.6; margin-bottom:10px;">
+        Was die Regel getan hat, was sie <i>nicht</i> getan hat, und wie sie gegen einfaches
+        Halten steht. Der Vergleich gegen Buy&nbsp;&amp;&nbsp;Hold ist dabei die wichtigste
+        Spalte: Eine Regel, die den Markt nicht schlägt, hat keinen Vorsprung – sie war
+        nur dabei.
+      </div>
+
+    <!-- Innerhalb von "Bilanz dieser Regel" sind das Unterabschnitte, keine gleichrangigen
+         Karten - h4 statt h3, damit die Gliederung stimmt (Regeln-Ausduennung 31.08.2026). -->
+    <div class="panel" style="margin-bottom:12px;">
+      <h4 style="margin:0 0 6px;">Was hat gewirkt?</h4>
+      <div style="color:var(--muted); font-size:var(--fs-neben); margin-bottom:8px;">
+        Jede automatische Änderung mit gemessener Wirkung: Ø Gewinn je Intraday-Trade davor gegen danach, sortiert nach
+        Wirkung, jede einzeln zurücknehmbar – bei den von Hand übernommenen Voreinstellungen sogar Feld für Feld.
+      </div>
+      <div id="tuneLog"></div>
+
+      <div style="margin-top:14px; padding-top:12px; border-top:1px solid var(--line);">
+        <h4 style="margin:0 0 6px;">Bringen die Filter etwas?</h4>
+        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+          <button class="btn ghost" id="filterBtn">Mit vs. ohne Filter rechnen</button>
+          <span id="filterStatus" style="color:var(--muted); font-size:var(--fs-neben);"></span>
+        </div>
+        <div style="color:var(--muted); font-size:var(--fs-neben); margin-top:6px;">
+          Rechnet denselben Zeitraum zweimal – einmal mit deinen Filtern, einmal ohne. Zeigt, ob die Zurückhaltung
+          Geld spart oder Rendite kostet.
+        </div>
+        <div id="filterResult" style="margin-top:12px;"></div>
+      </div>
+    </div>
+      <div class="panel">
+        <h4 style="margin:0 0 6px;">Wann die Strategie nichts getan hat</h4>
+        <div style="color:var(--muted); font-size:var(--fs-neben); margin-bottom:8px;">
+          Wie oft die Filter ein Signal bewusst verworfen haben – und warum. Der häufigste Grund ist der stärkste Hebel:
+          „Wer nicht weiß, was er tut, muss wissen, wann er nichts tut.“ (Kostolany)
+        </div>
+        <div id="patience"><div class="loading">Noch keine verworfenen Signale erfasst – entsteht, sobald der Intraday-Scanner läuft.</div></div>
+      </div>
+      <div class="panel">
+        <h4 style="margin:0 0 6px;">Depot gegen Buy &amp; Hold</h4>
+        <div id="benchInfo" style="font-size:var(--fs-neben); color:var(--muted); margin-bottom:6px;">Wird beim Öffnen dieses Bereichs geladen …</div>
+        <svg id="benchChart" style="width:100%; height:150px; display:block;"></svg>
+        <div id="benchLegend" style="font-size:var(--fs-neben); color:var(--ink-2); margin-top:4px;"></div>
+        <div id="hitrates" style="margin-top:10px;"></div>
+      </div>
+    </div>
+  </div>
 
   </div><!-- /sub-werkzeug -->
   <!-- ============ MITTELFRISTIG (war ein eigener Reiter) ============ -->

@@ -5995,12 +5995,15 @@ console.log('\n41) Zustaende: was die App sagt, wenn etwas fehlt oder klemmt');
      pos9('id="sub-mittelfrist"') < pos9('id="sub-auswertung"') &&
      pos9('id="sub-auswertung"') < pos9('<!-- /sub-einstellungen -->'),
      'Risiko & Einstellungen buendelt Intraday, Mittelfrist-Steuerung und Autopilot');
+  /* 01.09.2026 (B9): Reihenfolge im Werkzeug gedreht - wer "Werkzeug" klickt,
+   * erwartet Chart und Backtest zuerst; das Regelbuch (Bilanz) folgt. Die
+   * geschuetzte Eigenschaft bleibt: alle drei Bereiche liegen im Werkzeug-Panel. */
   ok(pos9('<!-- /sub-einstellungen -->') < pos9('id="sub-werkzeug"') &&
-     pos9('id="sub-werkzeug"') < pos9('id="sub-regelbuch"') &&
-     pos9('id="sub-regelbuch"') < pos9('id="sub-stratchart"') &&
+     pos9('id="sub-werkzeug"') < pos9('id="sub-stratchart"') &&
      pos9('id="sub-stratchart"') < pos9('Berichte &amp; Werkzeuge') &&
-     pos9('Berichte &amp; Werkzeuge') < pos9('<!-- /sub-werkzeug -->'),
-     'Werkzeug buendelt Regelbuch, Chart und die Berichte-Klappe samt Backtest');
+     pos9('Berichte &amp; Werkzeuge') < pos9('id="sub-regelbuch"') &&
+     pos9('id="sub-regelbuch"') < pos9('<!-- /sub-werkzeug -->'),
+     'Werkzeug buendelt Chart, Berichte/Backtest und Regelbuch - Chart zuerst');
   ok(/sub === 'auswertung' \|\| sub === 'einstellungen' \|\| sub === 'werkzeug'/.test(dep) &&
      /sub === 'strategien' \|\| sub === 'einstellungen'/.test(dep),
      'Die Nachlade-Sonderfaelle kennen die neuen Pillen (und die alten Kennungen aus gespeicherten Zustaenden)');
