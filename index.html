@@ -980,7 +980,67 @@
       <button class="btn" id="stratEmpfohlenBtn" type="button" title="Stellt alles auf die gemessenen Ergebnisse um: Intraday-Modus RSI(2) im Seitwärtskanal auf dem Basiswert (nur Beobachtung, Schattenbuch zeichnet auf), Momentum- und Drift-Buch handeln virtuell, maximale Risikostufe 3. Jede Änderung steht weiter unten unter „Was hat gewirkt?“ – dort lässt sich jedes Feld einzeln zurückstellen.">Gemessene Voreinstellungen übernehmen</button>
       <span id="stratEmpfohlenStatus" style="font-size:var(--fs-neben); color:var(--muted); margin-left:8px;"></span>
     </div>
+    <!-- Stufe 3 des Regeln-Neubaus (31.08.2026): stratListe zeichnet die Gruppen
+         "Belegt oder aktiv gehandelt" und "In Messung"; darunter steht die dritte
+         Gruppe "Gemessen und verworfen" - Zeilen gerendert (verworfenListe, Quelle:
+         Protokolle + studienurteile.js), der Stunden-Strategie-Archivblock statisch
+         hierher umgezogen (IDs und Verdrahtung unveraendert). Jede Strategie genau
+         EINMAL: der aktive Ausloeser steckt in der Intraday-Karte, die Stunden-
+         Strategie nur noch hier. -->
     <div id="stratListe" style="margin-top:12px;"></div>
+    <div style="margin-top:14px;">
+      <h3 style="margin:0 0 4px;">Gemessen und verworfen</h3>
+      <div style="font-size:var(--fs-neben); color:var(--muted); max-width:68ch;">
+        Bleibt sichtbar, damit es nicht irgendwann als neue Idee wieder aufschlägt.
+        Wählbar bleibt es auch – aber nie unbenannt.
+      </div>
+    </div>
+    <div id="verworfenListe" style="margin-top:8px;"></div>
+    <!-- Widerlegtes verschwindet nicht, es tritt zurück: eingeklappt, mit dem
+         Messergebnis als erster sichtbarer Zeile. -->
+    <details class="how archiv" id="archivWiderlegt" style="margin-top:10px;">
+      <summary>Archiv: gemessen und widerlegt – Stunden-Strategie</summary>
+      <div class="strat-card" style="border-top-color: var(--down); margin-top:10px;">
+        <div class="head">
+          <h3>Stunden-Strategie</h3>
+          <span class="state off" id="hourlyState">aus</span>
+          <label class="switch"><input type="checkbox" id="hourlyEnabled"><span class="knob"></span></label>
+        </div>
+        <div class="verdikt">
+          <b>Widerlegt am 21.08.2026:</b> Der Technik-Score ist ein Kontraindikator – nach einem Einstiegssignal läuft
+          der Kurs im Schnitt 0,74 Prozentpunkte schlechter als seine übliche Drift (20 Handelstage, t = −11,6 aus
+          24.727 Signalen). <b>Empfehlung: aus lassen.</b>
+        </div>
+        <details class="how"><summary>Wie sie funktioniert hat und was genau gemessen wurde</summary>
+        <div class="desc">
+          Lief stündlich über die 15 Standard-Werte plus alles, was in der eigenen Watchlist steht:
+          <b>News-Sentiment</b> mit Ereignistyp (Quartalszahlen, Übernahme, Prognose …),
+          <b>Technik</b> (Trend, RSI, Momentum, MACD) und <b>Elliott-Wellen</b> – gewichtet kombiniert.
+          Kaufte Call/Put (5 % aus dem Geld, 60 Tage Laufzeit) ab Gesamtscore ±0,35.
+          Ausstiege: Stop −40 % · Ziel +80 % · Zeit-Ausstieg · Gegensignal.
+          <br><br><b style="color:var(--down);">Messung vom 21.08.2026 (24.727 Signale, 189 Werte, 8 Jahre):</b>
+          Der Technik-Score ist ein <b>Kontraindikator</b> – nach einem Einstiegssignal läuft der Kurs im Schnitt
+          −0,74 Prozentpunkte schlechter als seine übliche Drift (20 Handelstage, t=−11,6, nur 32 von 189 Werten positiv,
+          beide Zeithälften negativ). Mit Elliott-Beimischung −1,0 Pp. Das News-Sentiment war nie messbar.
+          Dazu kommen Schein-Spanne und Zeitwertverfall über Tage. <b>Empfehlung: aus lassen.</b> Wer sie bewusst
+          einschaltet, handelt gegen die Messung – das KI-Veto bremst dann wenigstens die schlechtesten Einstiege.
+          <br><br>Die Quellen gehen fest gewichtet in den Gesamtscore ein: <b>News 0 %</b> · Technik 65 % ·
+          Elliott 35 %. Das <b>News-Sentiment steuert seit dem 31.08.2026 nichts mehr</b> – die erste Messung
+          konnte die Frage nicht beantworten (35 Beobachtungen an 10 Zeitpunkten, nötig wären rund 2.600).
+          Unbelegt ist nicht widerlegt: Score, Ereignistypen und auffälligste Schlagzeile werden weiter
+          berechnet und angezeigt, nur eben als Anzeige. Technik und Elliott behalten dabei ihr Verhältnis
+          zueinander (55 : 30), sie werden nur auf die verbleibende Summe hochskaliert – so rechnet der
+          Backtest ohnehin seit jeher, weil es keine historischen Schlagzeilen gibt.
+          Regler dafür gibt es bewusst nicht mehr: Keine der Quellen hat einen bestätigten Vorsprung,
+          der Technik-Score ist sogar gegenläufig – an solchen Zahlen zu drehen erzeugt nur den Eindruck von Kontrolle.
+        </div>
+        </details>
+        <div class="strat-foot">
+          <button class="btn ghost" id="runJobBtn" title="Bei ausgeschalteter Strategie werden keine neuen Positionen mehr eröffnet – der Lauf prüft nur noch Stop, Ziel und Zeit-Ausstieg des Altbestands und pflegt das Nachrichten-Archiv.">Bestand jetzt prüfen</button>
+          <span id="jobStatus"></span>
+        </div>
+      </div>
+    </details>
   </div>
   <div class="sub" id="sub-strategien">
     <div class="strategy-grid">
@@ -1198,55 +1258,9 @@
       </div>
     </div>
 
-    <!-- Widerlegtes verschwindet nicht, es tritt zurück: eingeklappt, unter den
-         laufenden Strategien, mit dem Messergebnis als erster sichtbarer Zeile.
-         Aufgeklappt wird automatisch, wenn jemand die Strategie eingeschaltet hat. -->
-
-    <!-- Bleibt sichtbar, bis Stufe 4 die Belege buendelt: Widerlegtes darf nicht
-         verschwinden, sonst schlaegt es irgendwann als neue Idee wieder auf. -->
-    <details class="how archiv" id="archivWiderlegt" style="margin-top:14px;">
-      <summary>Archiv: gemessen und widerlegt – Stunden-Strategie</summary>
-      <div class="strat-card" style="border-top-color: var(--down); margin-top:10px;">
-        <div class="head">
-          <h3>Stunden-Strategie</h3>
-          <span class="state off" id="hourlyState">aus</span>
-          <label class="switch"><input type="checkbox" id="hourlyEnabled"><span class="knob"></span></label>
-        </div>
-        <div class="verdikt">
-          <b>Widerlegt am 21.08.2026:</b> Der Technik-Score ist ein Kontraindikator – nach einem Einstiegssignal läuft
-          der Kurs im Schnitt 0,74 Prozentpunkte schlechter als seine übliche Drift (20 Handelstage, t = −11,6 aus
-          24.727 Signalen). <b>Empfehlung: aus lassen.</b>
-        </div>
-        <details class="how"><summary>Wie sie funktioniert hat und was genau gemessen wurde</summary>
-        <div class="desc">
-          Lief stündlich über die 15 Standard-Werte plus alles, was in der eigenen Watchlist steht:
-          <b>News-Sentiment</b> mit Ereignistyp (Quartalszahlen, Übernahme, Prognose …),
-          <b>Technik</b> (Trend, RSI, Momentum, MACD) und <b>Elliott-Wellen</b> – gewichtet kombiniert.
-          Kaufte Call/Put (5 % aus dem Geld, 60 Tage Laufzeit) ab Gesamtscore ±0,35.
-          Ausstiege: Stop −40 % · Ziel +80 % · Zeit-Ausstieg · Gegensignal.
-          <br><br><b style="color:var(--down);">Messung vom 21.08.2026 (24.727 Signale, 189 Werte, 8 Jahre):</b>
-          Der Technik-Score ist ein <b>Kontraindikator</b> – nach einem Einstiegssignal läuft der Kurs im Schnitt
-          −0,74 Prozentpunkte schlechter als seine übliche Drift (20 Handelstage, t=−11,6, nur 32 von 189 Werten positiv,
-          beide Zeithälften negativ). Mit Elliott-Beimischung −1,0 Pp. Das News-Sentiment war nie messbar.
-          Dazu kommen Schein-Spanne und Zeitwertverfall über Tage. <b>Empfehlung: aus lassen.</b> Wer sie bewusst
-          einschaltet, handelt gegen die Messung – das KI-Veto bremst dann wenigstens die schlechtesten Einstiege.
-          <br><br>Die Quellen gehen fest gewichtet in den Gesamtscore ein: <b>News 0 %</b> · Technik 65 % ·
-          Elliott 35 %. Das <b>News-Sentiment steuert seit dem 31.08.2026 nichts mehr</b> – die erste Messung
-          konnte die Frage nicht beantworten (35 Beobachtungen an 10 Zeitpunkten, nötig wären rund 2.600).
-          Unbelegt ist nicht widerlegt: Score, Ereignistypen und auffälligste Schlagzeile werden weiter
-          berechnet und angezeigt, nur eben als Anzeige. Technik und Elliott behalten dabei ihr Verhältnis
-          zueinander (55 : 30), sie werden nur auf die verbleibende Summe hochskaliert – so rechnet der
-          Backtest ohnehin seit jeher, weil es keine historischen Schlagzeilen gibt.
-          Regler dafür gibt es bewusst nicht mehr: Keine der Quellen hat einen bestätigten Vorsprung,
-          der Technik-Score ist sogar gegenläufig – an solchen Zahlen zu drehen erzeugt nur den Eindruck von Kontrolle.
-        </div>
-        </details>
-        <div class="strat-foot">
-          <button class="btn ghost" id="runJobBtn" title="Bei ausgeschalteter Strategie werden keine neuen Positionen mehr eröffnet – der Lauf prüft nur noch Stop, Ziel und Zeit-Ausstieg des Altbestands und pflegt das Nachrichten-Archiv.">Bestand jetzt prüfen</button>
-          <span id="jobStatus"></span>
-        </div>
-      </div>
-    </details>
+    <!-- Der Stunden-Strategie-Archivblock ist mit Stufe 3 des Regeln-Neubaus
+         (31.08.2026) in die Belegstand-Gruppe "Gemessen und verworfen" auf der
+         ersten Pille umgezogen - eine Strategie, ein Ort. -->
 
     <div class="panel" style="margin-bottom:12px;">
       <h3>Live-Signal-Monitor</h3>

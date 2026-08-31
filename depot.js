@@ -4270,9 +4270,12 @@
         if (D.dayStartEq > 0 && eq != null) tagPct = Math.round((eq / D.dayStartEq - 1) * 1000) / 10;
       } catch (e) { /* Depot noch nicht hochgefahren */ }
       var a = autoOptCfg();
+      var aktiverTrigger = null;
+      try { if (D.intraday) aktiverTrigger = setupFromMode(D.intraday.mode).trigger; } catch (e) { /* s. o. */ }
       return {
         handlung: handlung,
         modusName: modusName,
+        aktiverTrigger: aktiverTrigger,
         instrument: D.intraday ? D.intraday.instrument : null,
         positionen: (D.positions || []).length,
         maxPos: D.risk ? D.risk.maxPos : null,
@@ -4285,6 +4288,21 @@
           txt: String(D.regime.txt || '').slice(0, 160) } : null,
         pruefStand: D.pruefStand && D.pruefStand.buecher ? D.pruefStand.buecher : null
       };
+    },
+
+    /* Alle waehlbaren Intraday-Einstiege aus SETUPS - dem einen Datenvertrag, an dem
+     * auch Ausloeser-Auswahl und Handel haengen. Fuer die Belegstand-Gruppen der
+     * ersten Pille (Stufe 3): KEINE zweite Liste, nur eine Kopie der einen. */
+    einstiege: function () {
+      var alle = [];
+      try {
+        Object.keys(SETUPS).forEach(function (sk) {
+          Object.keys(SETUPS[sk].trigger).forEach(function (tk) {
+            alle.push({ key: tk, name: SETUPS[sk].trigger[tk], setup: sk, setupName: SETUPS[sk].name });
+          });
+        });
+      } catch (e) { /* vor init: leer, die Anzeige zeigt dann nur die Karten */ }
+      return alle;
     }
   };
 

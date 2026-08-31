@@ -46,6 +46,12 @@
     },
     {
       key: 'stunden',
+      /* imArchiv (Stufe 3, 31.08.2026): die Stunden-Strategie hat ihren EINEN Ort im
+       * Archivblock der Gruppe "Gemessen und verworfen" (index.html, #archivWiderlegt)
+       * - dort mit Schalter, Verdikt und Belegen. Eine zweite Karte hier waere genau
+       * das "zichmal dieselbe Strategie", das der Neubau abschafft. Der Eintrag
+       * bleibt fuer setzen()/anZustand() und die Belege bestehen. */
+      imArchiv: true,
       name: 'Kurzfristig · Stunden-Strategie',
       horizont: 'stündliche Prüfung, rund 20 Handelstage je Signal',
       instrument: 'Optionsscheine: Call oder Put 5 % aus dem Geld, 60 Tage Laufzeit',
@@ -290,10 +296,12 @@
       var pk = api && api.protokollKante ? api.protokollKante(kette[i]) : null;
       if (pk) {
         var farbe = pk.urteil === 'bestaetigt' ? 'up' : pk.urteil === 'widerlegt' ? 'down' : 'warn';
-        return { txt: U.urteilText(pk.urteil), farbe: farbe, quelle: 'Messprotokoll ' + kette[i] + ' vom ' + pk.datum };
+        return { txt: U.urteilText(pk.urteil), farbe: farbe, urteil: pk.urteil,
+          quelle: 'Messprotokoll ' + kette[i] + ' vom ' + pk.datum };
       }
       var su = window.StudienUrteile && window.StudienUrteile.verworfen(kette[i]);
-      if (su) return { txt: 'gemessen und verworfen', farbe: 'down', quelle: su.quelle };
+      if (su) return { txt: 'gemessen und verworfen', farbe: 'down', urteil: 'verworfen',
+        quelle: su.quelle, befund: su.befund };
     }
     return null;
   }
@@ -356,17 +364,54 @@
   }
   if (typeof window !== 'undefined') window.__antwortRender = renderAntwort;
 
+  /* ===== Belegstand-Gruppen (Regeln-Neubau Stufe 3, 31.08.2026) =====
+   * Jede Strategie GENAU EINMAL, einsortiert nach dem echten Belegstand:
+   * "Belegt oder aktiv gehandelt" - "In Messung" - "Gemessen und verworfen".
+   * Das Urteil kommt aus der antwortChip-Kette (Protokoll -> Studienregister),
+   * die Einstiegs-Liste aus DepotAPI.einstiege() (SETUPS, der eine Datenvertrag).
+   * Ausgelassen werden nur Doppelvertretungen: der aktive Ausloeser steckt in der
+   * Intraday-Karte, die messKeys der Karten in den Karten selbst, die
+   * Stunden-Strategie im statischen Archivblock (imArchiv). */
+  function kartenGruppe(s) {
+    if (anZustand(s.key)) return 'aktiv';
+    var c = antwortChip(s.messKeys || []);
+    if (c && c.urteil === 'bestaetigt') return 'aktiv';
+    if (c && (c.urteil === 'widerlegt' || c.urteil === 'verworfen')) return 'verworfen';
+    return 'messung';
+  }
+  function gruppenKopf(titel, satz) {
+    return '<div style="margin:2px 0 8px;"><h3 style="margin:0 0 2px;">' + U.esc(titel) + '</h3>' +
+      (satz ? '<div style="font-size:var(--fs-neben); color:var(--muted); max-width:68ch;">' + U.esc(satz) + '</div>' : '') +
+      '</div>';
+  }
+  function einstiegZeile(e, c) {
+    var chip = c || { txt: 'nicht gemessen – die Nachtmessung prüft weiter', farbe: 'muted' };
+    return '<div style="display:flex; align-items:baseline; gap:8px; flex-wrap:wrap; padding:5px 2px; border-bottom:1px solid var(--grid); font-size:var(--fs-text);">' +
+      '<span>' + U.esc(e.name) + '</span>' +
+      '<span style="color:var(--muted); font-size:var(--fs-neben);">' + U.esc(e.setupName) + '-Setup</span>' +
+      chipHtml(chip) +
+      (chip.befund ? '<span style="color:var(--muted); font-size:var(--fs-neben); flex-basis:100%;">' + U.esc(chip.befund) + '</span>' : '') +
+      '<span style="color:var(--muted); font-size:var(--fs-neben); margin-left:auto;">wählbar als Auslöser: Unterreiter Intraday</span>' +
+      '</div>';
+  }
+  function regelZeile(r) {
+    return '<div style="display:flex; align-items:baseline; gap:8px; flex-wrap:wrap; padding:5px 2px; border-bottom:1px solid var(--grid); font-size:var(--fs-text);">' +
+      '<span>' + U.esc(r.name) + '</span>' +
+      '<span style="color:var(--muted); font-size:var(--fs-neben);">eigene Mess-Regel' + (r.modus ? ' · ' + U.esc(r.modus) : '') + ' · läuft ohne Geld mit</span>' +
+      '<span style="color:var(--muted); font-size:var(--fs-neben); margin-left:auto;">Bilanz: Unterreiter Regelbuch</span>' +
+      '</div>';
+  }
   function render() {
     var el = document.getElementById('stratListe');
     if (!el) return;
     belegeAnmelden();
     renderAntwort();
-    var karten = STRATEGIEN.filter(function (s) { return !s.fussnote; });
+    var karten = STRATEGIEN.filter(function (s) { return !s.fussnote && !s.imArchiv; });
     /* Die Fussnote MUSS hier mitgebaut werden: el.innerHTML ersetzt bei jedem
      * Reiterwechsel den gesamten Inhalt, ein separat angehaengtes Element waere
      * beim naechsten render() weg. */
     var noten = STRATEGIEN.filter(function (s) { return !!s.fussnote; });
-    el.innerHTML = karten.map(function (s) {
+    function karteHtml(s) {
       var an = anZustand(s.key);
       var schaltbar = !!s.schalter;
       return '<div class="panel" style="margin-bottom:12px;">' +
@@ -393,19 +438,60 @@
           ' hinter dem i</span></div>' +
         protokollZeile(s) +
       '</div>';
-    }).join('') +
-    (noten.length
-      ? '<div style="font-size:var(--fs-neben); color:var(--muted); margin:2px 2px 10px; line-height:1.6;">' +
-          noten.map(function (s) {
-            return U.esc(s.name) + ' (' + U.esc(s.stand) + '): ' + U.esc(s.was) +
-              (s.beleg && s.beleg.length ? ' ' + U.esc(s.beleg[0]) : '');
-          }).join('<br>') +
-        '</div>'
-      : '');
-    el.querySelectorAll('[data-strat]').forEach(function (b) {
-      b.addEventListener('click', function () {
-        var k = b.getAttribute('data-strat');
-        setzen(k, !anZustand(k));
+    }
+    var gr = { aktiv: [], messung: [], verworfen: [] };
+    karten.forEach(function (s) { gr[kartenGruppe(s)].push(s); });
+    /* Doppelvertretungen ausschliessen: messKeys der Karten und der aktive Ausloeser
+     * sind schon vertreten - jede Strategie erscheint genau EINMAL. */
+    var vertreten = {};
+    STRATEGIEN.forEach(function (s) { (s.messKeys || []).forEach(function (k) { vertreten[k] = 1; }); });
+    var api = window.DepotAPI;
+    var a = api && api.antwort ? api.antwort() : null;
+    var st = api && api.regelStatus ? api.regelStatus() : null;
+    var zeilen = { messung: [], verworfen: [] };
+    (api && api.einstiege ? api.einstiege() : []).forEach(function (e2) {
+      if (vertreten[e2.key]) return;
+      if (a && e2.key === a.aktiverTrigger) return;
+      var c = antwortChip([e2.key]);
+      var ziel = c && (c.urteil === 'widerlegt' || c.urteil === 'verworfen') ? 'verworfen' : 'messung';
+      zeilen[ziel].push(einstiegZeile(e2, c));
+    });
+    ((st && st.messRegeln) || []).forEach(function (r) { zeilen.messung.push(regelZeile(r)); });
+    /* "Belegt" darf hier nie still behauptet werden: der Zusatz wird aus den Daten
+     * GERECHNET - sagt ein Protokoll eines Tages "bestaetigt", verschwindet er. */
+    var belegtDa = gr.aktiv.some(function (s) {
+      var c = antwortChip(s.messKeys || []); return c && c.urteil === 'bestaetigt';
+    });
+    el.innerHTML =
+      gruppenKopf('Belegt oder aktiv gehandelt',
+        belegtDa ? '' : 'Kein Protokoll sagt derzeit „bestätigt“ – hier steht, was aktiv (mit virtuellem Kapital) läuft.') +
+      (gr.aktiv.length ? gr.aktiv.map(karteHtml).join('')
+        : '<div style="color:var(--muted); font-size:var(--fs-neben); margin-bottom:10px;">Es läuft gerade nichts.</div>') +
+      gruppenKopf('In Messung',
+        'Gemessen ohne Entscheid oder noch ungemessen – die Nachtmessung und das Schattenbuch sammeln weiter.') +
+      gr.messung.map(karteHtml).join('') +
+      (zeilen.messung.length ? '<div class="panel" style="margin-bottom:12px;">' + zeilen.messung.join('') + '</div>' : '') +
+      (noten.length
+        ? '<div style="font-size:var(--fs-neben); color:var(--muted); margin:2px 2px 10px; line-height:1.6;">' +
+            noten.map(function (s) {
+              return U.esc(s.name) + ' (' + U.esc(s.stand) + '): ' + U.esc(s.was) +
+                (s.beleg && s.beleg.length ? ' ' + U.esc(s.beleg[0]) : '');
+            }).join('<br>') +
+          '</div>'
+        : '');
+    /* Die dritte Gruppe wohnt unter der statischen Ueberschrift in index.html;
+     * der Stunden-Archivblock (#archivWiderlegt) steht dort direkt darunter. */
+    var vw = document.getElementById('verworfenListe');
+    if (vw) vw.innerHTML =
+      gr.verworfen.map(karteHtml).join('') +
+      (zeilen.verworfen.length ? '<div class="panel" style="margin-bottom:0;">' + zeilen.verworfen.join('') + '</div>' : '');
+    [el, vw].forEach(function (wurzel) {
+      if (!wurzel) return;
+      wurzel.querySelectorAll('[data-strat]').forEach(function (b) {
+        b.addEventListener('click', function () {
+          var k = b.getAttribute('data-strat');
+          setzen(k, !anZustand(k));
+        });
       });
     });
   }

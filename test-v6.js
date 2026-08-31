@@ -811,8 +811,15 @@ console.log('\n17b) Oberflaeche: Altlasten und Verdrahtung');
   ok(/D\.hourlyEnabled !== false && Math\.abs\(S\) >= OPEN_THR/.test(d),
      'Manueller Lauf eroeffnet nichts mehr, solange die Strategie aus ist');
   ok(/id="archivWiderlegt"/.test(h), 'Widerlegtes liegt im aufklappbaren Archiv');
-  var iIntra = h.indexOf('strat-card intraday'), iArchiv = h.indexOf('id="archivWiderlegt"');
-  ok(iIntra > 0 && iArchiv > iIntra, 'Die belegte Strategie steht VOR dem Archiv');
+  /* 31.08.2026, Regeln-Neubau Stufe 3: der Archivblock ist von der Intraday-Pille in
+   * die Belegstand-Gruppe "Gemessen und verworfen" der ersten Pille umgezogen. Die
+   * geschuetzte EIGENSCHAFT ist dieselbe geblieben und wird weiter geprueft: das
+   * Widerlegte steht HINTER dem Laufenden und Gemessenen (stratListe mit den Gruppen
+   * "Belegt oder aktiv"/"In Messung"), unter der Verworfen-Ueberschrift - nie davor. */
+  var iListe = h.indexOf('id="stratListe"'), iArchiv = h.indexOf('id="archivWiderlegt"');
+  var iVerwKopf = h.indexOf('>Gemessen und verworfen<');
+  ok(iListe > 0 && iVerwKopf > iListe && iArchiv > iVerwKopf,
+     'Das Archiv steht in der Verworfen-Gruppe HINTER den laufenden und gemessenen Strategien');
   /* Nicht nur "kommt vor": Das Urteil muss VOR der inneren Erklaerungs-Klappe stehen,
    * sonst muesste man die widerlegte Strategie erst aufklappen, um von der
    * Widerlegung zu erfahren. */
@@ -5936,6 +5943,26 @@ console.log('\n41) Zustaende: was die App sagt, wenn etwas fehlt oder klemmt');
   ok(/'regeln\.antwort': \{/.test(shell),
      'Antwort-Seite: der Erklaertext ist im Register angemeldet');
 
+  /* --- Belegstand-Gruppen (Regeln-Neubau Stufe 3, 31.08.2026) ---
+   * Jede Strategie genau EINMAL, sortiert nach dem echten Belegstand. Die Gruppe
+   * kommt aus der Urteils-Kette (Protokoll -> Studienregister), die Einstiegs-
+   * Population aus SETUPS via DepotAPI - nie aus einer zweiten Liste. */
+  ok(/function kartenGruppe/.test(strat) &&
+     /c\.urteil === 'widerlegt' \|\| c\.urteil === 'verworfen'/.test(strat),
+     'Gruppen: die Einordnung liest die Urteils-Kette, keine Code-Liste');
+  ok(/einstiege: function \(\)/.test(dep) && /SETUPS\[sk\]\.trigger\[tk\]/.test(dep),
+     'Gruppen: die Einstiegs-Population kommt aus SETUPS (dem einen Datenvertrag)');
+  ok(/if \(vertreten\[e2\.key\]\) return;/.test(strat) &&
+     /e2\.key === a\.aktiverTrigger\) return;/.test(strat),
+     'Gruppen: schon vertretene Einstiege (Karten-messKeys, aktiver Ausloeser) erscheinen NICHT doppelt');
+  ok(/imArchiv: true/.test(strat) && /!s\.fussnote && !s\.imArchiv/.test(strat),
+     'Gruppen: die Stunden-Strategie hat EINEN Ort - den Archivblock, keine zweite Karte');
+  ok(/id="verworfenListe"/.test(html) &&
+     html.indexOf('id="verworfenListe"') < html.indexOf('id="archivWiderlegt"'),
+     'Gruppen: die Verworfen-Zeilen stehen vor dem Archivblock in derselben Gruppe');
+  ok(/belegtDa \? '' : 'Kein Protokoll sagt derzeit/.test(strat),
+     'Gruppen: "belegt" wird aus den Daten gerechnet, nie still behauptet');
+
   /* --- Glossar --- */
   var gl = /'glossar\.begriffe':\s*\{[\s\S]*?\n    \}/.exec(shell);
   ok(!!gl, 'Glossar: es ist angemeldet');
@@ -9513,9 +9540,13 @@ console.log('\n51) Der Edge-Waechter loest nicht mehr im Rauschen aus');
      'Der Reset legt weiterhin eine Sicherung an, BEVOR er loescht');
 
   /* Die rechte Rasterspalte war als Stapel gebaut, trug aber nur die Risiko-Karte;
-   * daneben stand Leere ueber die Hoehe der Intraday-Karte (P3). */
+   * daneben stand Leere ueber die Hoehe der Intraday-Karte (P3).
+   * 31.08.2026: Endmarke von archivWiderlegt auf sigMonitor umgehaengt - der
+   * Archivblock ist in die Verworfen-Gruppe der ersten Pille umgezogen, der
+   * Signal-Monitor ist jetzt der naechste stabile Anker HINTER dem Raster.
+   * Die geschuetzte Eigenschaft (Watchlist wohnt IM Raster) ist unveraendert. */
   var grid = html.slice(html.indexOf('<div class="strategy-grid">'),
-                        html.indexOf('id="archivWiderlegt"'));
+                        html.indexOf('id="sigMonitor"'));
   ok(grid.indexOf('id="watchChips"') > -1,
      'Die rechte Spalte von "Schalter & Einstellungen" traegt mehr als die Risiko-Karte');
   /* Der wahrscheinlichste Fehler beim Verschieben von Hand ist eine Kopie - und
