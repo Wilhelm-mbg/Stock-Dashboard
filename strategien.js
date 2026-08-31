@@ -391,14 +391,14 @@
       '<span style="color:var(--muted); font-size:var(--fs-neben);">' + U.esc(e.setupName) + '-Setup</span>' +
       chipHtml(chip) +
       (chip.befund ? '<span style="color:var(--muted); font-size:var(--fs-neben); flex-basis:100%;">' + U.esc(chip.befund) + '</span>' : '') +
-      '<span style="color:var(--muted); font-size:var(--fs-neben); margin-left:auto;">wählbar als Auslöser: Unterreiter Intraday</span>' +
+      '<span style="color:var(--muted); font-size:var(--fs-neben); margin-left:auto;">wählbar als Auslöser: Pille „Risiko &amp; Einstellungen“</span>' +
       '</div>';
   }
   function regelZeile(r) {
     return '<div style="display:flex; align-items:baseline; gap:8px; flex-wrap:wrap; padding:5px 2px; border-bottom:1px solid var(--grid); font-size:var(--fs-text);">' +
       '<span>' + U.esc(r.name) + '</span>' +
       '<span style="color:var(--muted); font-size:var(--fs-neben);">eigene Mess-Regel' + (r.modus ? ' · ' + U.esc(r.modus) : '') + ' · läuft ohne Geld mit</span>' +
-      '<span style="color:var(--muted); font-size:var(--fs-neben); margin-left:auto;">Bilanz: Unterreiter Regelbuch</span>' +
+      '<span style="color:var(--muted); font-size:var(--fs-neben); margin-left:auto;">Bilanz: Pille „Werkzeug“</span>' +
       '</div>';
   }
   function render() {

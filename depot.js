@@ -592,7 +592,7 @@
     var liste = regelnListe();
     if (!liste.length) {
       el.innerHTML = '<div style="font-size:var(--fs-neben); color:var(--muted);">Noch keine festgeschriebene Regel. ' +
-        'Stell oben eine Konfiguration ein, gib ihr hier einen Namen und schreib sie fest.</div>';
+        'Stell unter „Risiko &amp; Einstellungen“ eine Konfiguration ein, gib ihr hier einen Namen und schreib sie fest.</div>';
       return;
     }
     var st = D.schattenStat || {};
@@ -3576,8 +3576,8 @@
     } else {
       ph = '<div class="empty"><span class="ico"></span>Keine offenen Positionen. ' +
         (D.intraday && D.intraday.enabled
-          ? 'Die Intraday-Strategie läuft und wartet auf ein Signal – wann sie zuletzt nichts getan hat und warum, steht unter „Regeln → Autopilot“.'
-          : 'Die Intraday-Strategie ist aus – einschalten unter „Regeln → Intraday“.') + '</div>';
+          ? 'Die Intraday-Strategie läuft und wartet auf ein Signal – wann sie zuletzt nichts getan hat und warum, steht unter „Regeln → Werkzeug“.'
+          : 'Die Intraday-Strategie ist aus – einschalten unter „Regeln → Risiko & Einstellungen“.') + '</div>';
     }
     if (D.repairNote && Date.now() - D.repairNote.at < 7 * 86400000) {
       var rn = D.repairNote;

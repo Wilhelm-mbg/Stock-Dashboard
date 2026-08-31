@@ -5888,6 +5888,16 @@ console.log('\n41) Zustaende: was die App sagt, wenn etwas fehlt oder klemmt');
       if (teile.every(function (t) { return echt.indexOf(t) >= 0; })) continue;
       falsch.push(f + ': „' + name + '“');
     }
+    /* 01.09.2026: Nach dem 6->3-Umbau ueberlebten vier tote Wegweiser, weil sie
+     * OHNE das Wort "Reiter" formuliert waren („Regeln → Intraday“). Deshalb prueft
+     * die Klinke jetzt auch nackte Pfeil-Pfade in Anfuehrungszeichen - jeder Teil
+     * muss ein echter Reiter- oder Pillen-Name sein. */
+    var reP = /„([^“]{2,40}\s→\s[^“]{2,40})“/g, mp;
+    while ((mp = reP.exec(q))) {
+      var teileP = mp[1].replace(/&amp;/g, '&').split(/\s*→\s*/).map(function (t) { return t.trim(); });
+      if (teileP.every(function (t) { return echt.indexOf(t) >= 0; })) continue;
+      falsch.push(f + ': „' + mp[1] + '“ (Pfeil-Pfad)');
+    }
   });
   ok(falsch.length === 0, 'Wegweiser: kein Verweis auf einen Reiter, den es nicht gibt' +
      (falsch.length ? ' – ' + falsch.join(' | ') : ''));
