@@ -1,6 +1,6 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-31 20:55 (Windows-Uhr)
-gesehener-tag: v8.34.2 (installiert 17:00)
+letzter-bericht: 2026-08-31 21:35 (Windows-Uhr)
+gesehener-tag: v8.35.0 (gebaut 21:26, bei Wilhelm noch nicht installiert)
 pm-adresse: markt-dashboard-c0 [4877bc]   <- HIERHIN melden (Bruecke 19:3x neu gestartet, alte Kuerzel tot)
 -->
 
@@ -30,6 +30,25 @@ und den Sitzungen: hier steht, was entschieden ist, was gerade läuft und was al
 ansteht. Lies sie beim Start; trag dich unter „Läuft gerade" ein, wenn du Dateien belegst.
 
 Wenn du hier etwas änderst, dann nur deine eigene Zeile unter „Läuft gerade".
+
+---
+
+## 📰 31.08. 21:3x — **v8.35.0 IST DRAUSSEN · News-Sentiment: NICHT MESSBAR, und das Archiv ist TOT**
+
+**Release v8.35.0** (Wache 21:04–21:26, QS-geprüft, 62 Commits): *automatische Kostenmessung,
+Gruppe „Gemessen und verworfen", Regeln-Reiter ausgedünnt, In-Regel-Prüfung, Abmeldelogik in der
+Wurzel.* **Davor:** *Wachhund-Tests auf eine Uhr gestellt (`0f32a35`) — der Kalenderverfall ist raus,
+die Prüfaussagen unverändert.*
+
+**News-Sentiment, erste Messung (`a7557c1`, Vorregistrierung + Placebo + Look-ahead-Prüfung):**
+> ### **NICHT MESSBAR — es fehlt Faktor 75.** *35 Beobachtungen an 10 Zeitpunkten, nötig wären
+> ~2.600 unabhängige Symbol-Tage. Der Score bleibt weder belegt noch widerlegt und trägt weiter
+> sein Gewicht.* **Kein Nein — eine Blindheitsfeststellung mit sauberen Kontrollen.**
+
+**🔴 Der eigentliche Fund steht daneben: die App archiviert seit dem 21.08. KEINE News mehr**
+*(Stand-Feld aller 17 Store-Dateien; 232 von 337 Meldungen tragen den 21.08. — Abrufverhalten,
+nicht Nachrichtenlage).* **Ohne laufendes Archiv wird diese Messung NIE möglich** — *die Basis
+wächst nicht nach. Ursache ungeklärt, Reparatur offen.*
 
 ---
 
