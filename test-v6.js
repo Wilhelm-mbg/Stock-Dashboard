@@ -5904,6 +5904,16 @@ console.log('\n41) Zustaende: was die App sagt, wenn etwas fehlt oder klemmt');
       falsch.push(f + ': „' + mp[1] + '“ (Pfeil-Pfad)');
     }
   });
+  /* --- C15 (01.09.2026): gefuehrter Erststart, drei Karten, einmalig --- */
+  ok(/id="erststartModalBg"/.test(html) && /data-close="erststartModalBg"/.test(html),
+     'Erststart: das Fenster nutzt das Dialog-Muster der Shell (Fokusfalle, Escape, Randklick)');
+  var erst9 = fs.readFileSync(__dirname + '/erststart.js', 'utf8');
+  ok(/storeGet\(MERKER\)/.test(erst9) && /storeSet\(MERKER, 1\)/.test(erst9),
+     'Erststart: einmalig - Merker wird gelesen und beim Oeffnen gesetzt');
+  ok(/diagOffen\(\)/.test(erst9),
+     'Erststart: wartet die Diagnose-Frage ab - nie zwei Dialoge uebereinander');
+  ok(/<script src="erststart\.js">/.test(html), 'Erststart: das Modul ist eingebunden');
+
   ok(falsch.length === 0, 'Wegweiser: kein Verweis auf einen Reiter, den es nicht gibt' +
      (falsch.length ? ' – ' + falsch.join(' | ') : ''));
   ok(!/Strategien &(amp;)? Belege|Kurzfrist-Depot/.test(html + dep + strat + exp + shell),

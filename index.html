@@ -2080,6 +2080,44 @@
 <!-- Was ist neu (Struktur-Audit Punkt 8): Die Release-Notizen werden je Vorhaben fuer
      Anwender geschrieben, kamen aber nie bei ihnen an - nach einem Auto-Update zeigte
      nichts, was sich geaendert hat. Gefuellt und geoeffnet von wasneu.js. -->
+<!-- C15 (01.09.2026): gefuehrter Erststart - drei Karten, einmalig nach der
+     Diagnose-Frage (erststart.js zeigt und merkt sich das). Texte stehen HIER,
+     damit die Wegweiser-Sperrklinke jede Ortsangabe mitprueft. -->
+<div class="modal-bg" id="erststartModalBg">
+  <div class="modal" style="max-width:640px;" role="dialog" aria-modal="true" aria-labelledby="erststartTitle">
+    <button class="btn ghost close" data-close="erststartModalBg">Schließen ×</button>
+    <h2 id="erststartTitle">Kurz gesagt</h2>
+    <div style="display:grid; gap:10px; margin-top:8px;">
+      <div class="panel" style="margin:0;">
+        <h4 style="margin:0 0 4px;">Was diese App ist</h4>
+        <div style="font-size:var(--fs-text); color:var(--ink-2); line-height:1.5;">
+          Ein Mess- und Simulationswerkzeug für Handelsregeln. Sie sammelt Kurse in ein eigenes Archiv,
+          misst Strategien nachts dagegen und zeigt ehrlich, was belegt ist und was nicht.
+          Keine Anlageberatung.
+        </div>
+      </div>
+      <div class="panel" style="margin:0;">
+        <h4 style="margin:0 0 4px;">Was simuliert wird</h4>
+        <div style="font-size:var(--fs-text); color:var(--ink-2); line-height:1.5;">
+          Alles. Das Depot (100.000&thinsp;$) und die Bücher handeln nur virtuell – echtes Geld wird
+          nie bewegt. Was gemessen und verworfen wurde, bleibt sichtbar, statt zu verschwinden.
+        </div>
+      </div>
+      <div class="panel" style="margin:0;">
+        <h4 style="margin:0 0 4px;">Wo deine Papiere hinkommen</h4>
+        <div style="font-size:var(--fs-text); color:var(--ink-2); line-height:1.5;">
+          Echte Depotbestände trägst du unter <b>Vermögen → Meine Papiere</b> ein (per ISIN).
+          Sie werden nicht gehandelt – die App zeigt nur, was ihre Regeln zu ihnen sehen.
+        </div>
+      </div>
+    </div>
+    <div style="display:flex; align-items:center; gap:10px; margin-top:12px;">
+      <button class="btn" id="erststartOk" type="button" data-close="erststartModalBg">Verstanden – los</button>
+      <span style="font-size:var(--fs-neben); color:var(--muted);">Der Überblick wohnt im Reiter <b>Heute</b>, die Strategien im Reiter <b>Regeln</b>.</span>
+    </div>
+  </div>
+</div>
+
 <div class="modal-bg" id="wasNeuModalBg">
   <div class="modal" style="max-width:620px;" role="dialog" aria-modal="true" aria-labelledby="wasNeuTitle">
     <button class="btn ghost close" data-close="wasNeuModalBg">Schließen ×</button>
@@ -2335,6 +2373,7 @@
 <script src="driftui.js"></script>
 <script src="bugs.js"></script>
 <script src="wasneu.js"></script>
+<script src="erststart.js"></script>
 <script src="diagnose.js"></script>
 <script src="wkn.js"></script>
 <script src="marktkarte.js"></script>
