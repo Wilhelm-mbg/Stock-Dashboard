@@ -620,9 +620,9 @@
           '" style="padding:2px 8px; font-size:var(--fs-klein);">löschen</button></td></tr>';
     }).join('');
     el.innerHTML = '<table class="tbl" style="font-size:var(--fs-text);">' +
-      '<tr><th>Regel</th><th style="text-align:right;">geschlossen</th><th style="text-align:right;">offen</th>' +
-      '<th style="text-align:right;">Ø je Trade</th><th style="text-align:right;">Kontrolle</th>' +
-      '<th style="text-align:right;">Überschuss</th><th></th></tr>' + rows + '</table>' +
+      '<tr><th scope="col">Regel</th><th scope="col" style="text-align:right;">geschlossen</th><th scope="col" style="text-align:right;">offen</th>' +
+      '<th scope="col" style="text-align:right;">Ø je Trade</th><th scope="col" style="text-align:right;">Kontrolle</th>' +
+      '<th scope="col" style="text-align:right;">Überschuss</th><th scope="col"><span class="sr-only">Aktion</span></th></tr>' + rows + '</table>' +
       '<div style="font-size:var(--fs-neben); color:var(--muted); margin-top:6px;">' +
       '<b>Kontrolle</b> ist derselbe Wert, dieselbe Tagesstunde, dieselbe Haltedauer – nur an ' +
       'einem beliebigen anderen Tag, gemittelt über alle. Sie sagt, was schlichtes Halten ' +
@@ -1435,7 +1435,9 @@
       return;
     }
     syms.sort(function (a2, b2) { return (SIG[b2].score || 0) - (SIG[a2].score || 0); });
-    var kopf = '<tr><th>Wert</th><th>Kurs</th><th>Wellen-Score</th><th>z</th><th>Kanal</th><th>Status</th><th>Geprüft</th></tr>';
+    /* scope="col" (C13, 01.09.2026): sagt der Vorlesehilfe, dass diese Zellen
+     * Spalten beschriften - Rest von Audit #59 Stufe 3. */
+    var kopf = '<tr><th scope="col">Wert</th><th scope="col">Kurs</th><th scope="col">Wellen-Score</th><th scope="col">z</th><th scope="col">Kanal</th><th scope="col">Status</th><th scope="col">Geprüft</th></tr>';
     var html = '<table class="tbl">' + kopf;
     /* Der Monitor zeigte an ruhigen Tagen dreissig Zeilen mit demselben Grund (Befund
      * B2). Die Zeilen entstehen unveraendert - sie gehen nur durch U.wandBuendeln, das

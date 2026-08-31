@@ -460,12 +460,15 @@
    * es wird nichts fuer die Anzeige nachgebaut. Was hier zu sehen ist, ist exakt das,
    * worauf die Automatik reagieren wuerde. */
   var SIGNALE = {
-    cross:     { name: 'EMA-Kreuzung', farbe: '#4a9eff', fn: function (b) { var r = Q.signalCross(b, 'ema', 20, 15); return r.crossed ? (r.crossed === 'up' ? 'call' : 'put') : null; } },
-    reversion: { name: 'Umkehr',       farbe: '#c084fc', fn: function (b) { return Q.reversionSignal(b, 'ema', 20, 1.5).signal; } },
-    pullback:  { name: 'Rücksetzer',   farbe: '#fbbf24', fn: function (b) { return Q.pullbackSignal(b, 'ema', 20, 15).signal; } },
-    rsi2:      { name: 'RSI(2)',       farbe: '#34d399', fn: function (b) { return Q.rsiExtremSignal(b).signal; } },
-    donchian:  { name: 'Donchian',     farbe: '#fb7185', fn: function (b) { return Q.donchianSignal(b, 20, 15).signal; } },
-    squeeze:   { name: 'Squeeze',      farbe: '#f472b6', fn: function (b) { return Q.squeezeSignal(b, 20).signal; } }
+    /* C14 (01.09.2026): Farben aus der Token-Palette statt roher Hex-Werte - die
+     * Kontraste sind dort je Thema GERECHNET; feste Hex-Toene galten nur fuer eines.
+     * var() in SVG-Attributen traegt (dasselbe Muster wie die Kerzenfarben unten). */
+    cross:     { name: 'EMA-Kreuzung', farbe: 'var(--series)',  fn: function (b) { var r = Q.signalCross(b, 'ema', 20, 15); return r.crossed ? (r.crossed === 'up' ? 'call' : 'put') : null; } },
+    reversion: { name: 'Umkehr',       farbe: 'var(--series4)', fn: function (b) { return Q.reversionSignal(b, 'ema', 20, 1.5).signal; } },
+    pullback:  { name: 'Rücksetzer',   farbe: 'var(--warn)',    fn: function (b) { return Q.pullbackSignal(b, 'ema', 20, 15).signal; } },
+    rsi2:      { name: 'RSI(2)',       farbe: 'var(--series3)', fn: function (b) { return Q.rsiExtremSignal(b).signal; } },
+    donchian:  { name: 'Donchian',     farbe: 'var(--series2)', fn: function (b) { return Q.donchianSignal(b, 20, 15).signal; } },
+    squeeze:   { name: 'Squeeze',      farbe: 'var(--series5)', fn: function (b) { return Q.squeezeSignal(b, 20).signal; } }
   };
   var sigAn = {};
   var LETZTE_PUNKTE = [];     // Signale des aktuellen Charts - fuer Liste und Auswahl
@@ -576,8 +579,8 @@
         if (cI.length >= 210) s200 = smaReihe(cI, 200);
       }
       if (indAn.ma) {
-        if (s50) indiPfad += pfadAus(s50, '#4a9eff', 1.3);
-        if (s200) indiPfad += pfadAus(s200, '#f59e0b', 1.6);
+        if (s50) indiPfad += pfadAus(s50, 'var(--series)', 1.3);
+        if (s200) indiPfad += pfadAus(s200, 'var(--warn)', 1.6);
       }
       if ((indAn.ma || indAn.cross50200) && (!s50 || !s200)) {
         indiPfad += '<text x="' + (pad + 4) + '" y="' + (pad + 12) + '" fill="var(--muted)" font-size="10">' +
@@ -617,7 +620,7 @@
           var mS1 = sg.achse, mS2 = sg.achse + sg.steigung * (sg.n - 1);
           var oS1 = mS1 + (sg.oben - sg.mitteJetzt), oS2 = sg.oben;
           var uS1 = mS1 + (sg.unten - sg.mitteJetzt), uS2 = sg.unten;
-          var fS = sg.trend === 'auf' ? 'var(--up)' : sg.trend === 'ab' ? 'var(--down)' : '#7c9cf5';
+          var fS = sg.trend === 'auf' ? 'var(--up)' : sg.trend === 'ab' ? 'var(--down)' : 'var(--acc)';
           /* #80 (Wilhelms Weg 2): angezeigt und gewichtet wird das PERZENTIL gegen
            * Rauschen, nicht die Roh-Guete - deren Nullpunkt liegt bei ~75-94, je
            * Fensterlaenge (Eichung studien/kanal-guete-2026-08-26). Die Auswahl,
@@ -643,13 +646,13 @@
         var sichtB = [];
         for (var sv = 0; sv < barsI.length; sv++) if (barsI[sv][0] >= x0 && barsI[sv][0] <= x1) sichtB.push(barsI[sv]);
         var kListe = (sichtB.length >= 40 && Q.kanaele) ? Q.kanaele(sichtB) : [];
-        var FARBEN = { kurz: '#a78bfa', mittel: '#7c9cf5', lang: '#5eead4', 'ab Wendepunkt': '#fbbf24' };
+        var FARBEN = { kurz: 'var(--series4)', mittel: 'var(--acc)', lang: 'var(--series3)', 'ab Wendepunkt': 'var(--warn)' };
         kListe.forEach(function (kk, ki) {
           var t1 = sichtB[kk.von][0], t2 = sichtB[kk.bis][0];
           var mit1 = kk.achse, mit2 = kk.achse + kk.steigung * (kk.n - 1);
           var oben1 = mit1 + (kk.oben - kk.mitteJetzt), oben2 = kk.oben;
           var unt1 = mit1 + (kk.unten - kk.mitteJetzt), unt2 = kk.unten;
-          var farbe = FARBEN[kk.name] || '#a78bfa';
+          var farbe = FARBEN[kk.name] || 'var(--series4)';
           // Schwache Kanaele blasser zeichnen - die Ordnung soll man SEHEN, nicht lesen
           // muessen. Seit #80 speist das Perzentil die Deckkraft: zufallsnahe Kanaele
           // werden blass, obwohl ihre Roh-Guete hoch aussieht (Rauschen-Median 75-94).
@@ -717,7 +720,7 @@
         // Unterstuetzung und Widerstand als Hoch/Tief der letzten 20 und 60 Kerzen.
         // Das ist dieselbe Groesse, die der Donchian-Detektor benutzt - was man sieht,
         // ist also genau das, worauf die Automatik reagieren wuerde.
-        [[20, '#94a3b8'], [60, '#64748b']].forEach(function (paar) {
+        [[20, 'var(--baseline)'], [60, 'var(--muted)']].forEach(function (paar) {
           var nn = paar[0];
           if (barsI.length < nn + 2) return;
           var hoch = -Infinity, tief = Infinity;

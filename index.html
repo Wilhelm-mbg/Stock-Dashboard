@@ -47,6 +47,10 @@
     --panel:       #f1f1ee;
     --warn:        #915b00;
     --acc:         #1d63b8;
+    /* C14 (01.09.2026): fuenfte Reihenfarbe fuer den Explorer (sechs Signal-Marker
+       brauchen sechs unterscheidbare Toene). Gerechnet: 5,51 auf --surface,
+       5,00 auf --panel - Soll fuer Grafik ist 3,0. */
+    --series5:     #a83d8c;
     --series4:     #6257c9;   /* KI-Karte - muss in BEIDEN Themen stehen, sonst faellt
                                  var() auf die Erbfarbe zurueck und der Balken wird tintig */
     /* Knopfflaechen getrennt von --series/--down: Weiss auf --series schaffte nur
@@ -148,6 +152,8 @@
     --warn:        #e0a63f;
     --acc:         #4a9eff;
     --series4:     #9085e9;
+    /* C14: gerechnet 6,59 auf --surface, 6,03 auf --panel (Soll 3,0). */
+    --series5:     #e07ec4;
     --btn:         #1f6dc4;
     --btn-danger:  #a81f1f;
     --btn-ink:     #ffffff;
@@ -558,6 +564,12 @@
     font-size: var(--fs-gross); scroll-margin-top: 8px;
   }
   #abIntraday.bereichs-kopf { margin-top: 4px; padding-top: 0; border-top: none; }
+  /* C13 (01.09.2026): Text nur fuer die Vorlesehilfe - z. B. die Beschriftung einer
+     Aktions-Spalte, deren Kopfzelle sichtbar leer bleibt. Uebliches Muster. */
+  .sr-only {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+  }
   .strat-foot { margin-top: 12px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; font-size: var(--fs-neben); color: var(--muted); }
 
   .switch { position: relative; display: inline-block; width: 42px; height: 23px; flex-shrink: 0; margin-left: auto; }
