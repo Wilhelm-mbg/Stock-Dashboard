@@ -133,7 +133,14 @@
           var getanD;
           if (d.driftAn || manuell === 'drift') {
             getanD = MH.driftAbgleich(d.driftBuch, heute, daten.preise, now, {});
-            if (getanD.geschlossen || getanD.eroeffnet || getanD.verworfen.length) {
+            /* NUR HANDLUNGEN ins Journal (Wilhelms Entscheid 31.08.2026): "42 verworfen"
+             * ist das Ergebnis einer Pruefung, keine Handlung. Der alte Zustand schrieb
+             * bei jedem Halbstunden-Takt eine Zeile "0 eroeffnet, 0 geschlossen, 42
+             * verworfen" und begrub darunter die echten Aenderungen. Ein Lauf ohne
+             * Eroeffnung/Schliessung setzt jetzt nur den Pruef-Stempel (unten); die
+             * Verworfenen stehen weiter live in der Drift-Karte und - wenn wirklich
+             * gehandelt wurde - im txt des Handlungs-Eintrags. */
+            if (getanD.geschlossen || getanD.eroeffnet) {
               if (!d.tuneLog) d.tuneLog = [];
               d.tuneLog.unshift({ id: 'driftab-' + now, at: now, quelle: manuell === 'drift' ? 'hand' : 'automatik',
                 applied: ['Drift-Abgleich: ' + getanD.eroeffnet + ' eröffnet, ' + getanD.geschlossen + ' geschlossen' +
@@ -170,6 +177,13 @@
         speichern();
       }
 
+      /* Pruef-Stempel: jeder durchgelaufene Takt haelt fest, DASS geprueft wurde -
+       * als Feld im Store, nicht als Journalzeile. Das Journal baut daraus die eine
+       * Statuszeile "zuletzt geprueft ... / keine Aenderung seit ...". Der Stempel
+       * wird mit dem naechsten ohnehin faelligen speichern() persistent; ein eigener
+       * Schreibvorgang je Takt waere dafuer zu teuer. */
+      if (!d.pruefStand) d.pruefStand = {};
+      d.pruefStand.buecher = now;
       zeige({ ziel: ziel, plan: plan, faellig: faellig, bewertung: bwM }, driftInfo && d.driftBuch
         ? { info: driftInfo, bewertung: bwD } : null, daten, null);
     } catch (e) {

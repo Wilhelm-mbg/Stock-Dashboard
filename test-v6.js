@@ -5138,6 +5138,22 @@ console.log('\n38) Audit 23.08.2026 – die fuenf Fehler duerfen nicht zurueckko
   ok(stand(92000, 100000) === -8, 'B1: 92.000 $ von 100.000 $ sind -8,0 %  [' + stand(92000, 100000) + ']');
   ok(/100\.000-\$-B(ü|ue)cher/.test(html), 'B1: der Tooltip nennt dieselbe Groesse wie der Rest der Oberflaeche');
 
+  /* --- Journal traegt nur noch Handlungen (Wilhelms Entscheid 31.08.2026) ---
+   * Der Drift-Takt schrieb halbstuendlich "0 eroeffnet, 0 geschlossen, 42 verworfen"
+   * - zwoelf Zeilen am Tag ohne eine einzige Handlung, die echten Aenderungen
+   * darunter begraben. Jetzt: Journalzeile nur bei Eroeffnung/Schliessung; DASS
+   * geprueft wurde, sagt der Pruef-Stempel und daraus EINE Statuszeile. */
+  ok(/if \(getanD\.geschlossen \|\| getanD\.eroeffnet\) \{/.test(mfd),
+     'Journal: der Drift-Takt schreibt nur bei einer HANDLUNG');
+  ok(!/getanD\.geschlossen \|\| getanD\.eroeffnet \|\| getanD\.verworfen\.length/.test(mfd),
+     'Journal: blosses Verwerfen ist keine Handlung mehr (die alte Bedingung ist weg)');
+  ok(/d\.pruefStand\.buecher = now;/.test(mfd),
+     'Journal: jeder durchgelaufene Takt setzt den Pruef-Stempel');
+  ok(/function tuneStandZeile/.test(dep) && /Zuletzt geprüft: /.test(dep) && /keine Änderung seit /.test(dep),
+     'Journal: die Statuszeile nennt Pruefzeit und letzte Aenderung');
+  ok((dep.match(/tuneStandZeile\(\)/g) || []).length >= 3,
+     'Journal: die Statuszeile steht in BEIDEN Zweigen der Anzeige (leer und gefuellt)');
+
   /* --- B2: Klassenkollision blendete die Tagesbewegung aus ---
    * renderer.js schrieb den Prozentwert als class="sub"; die Reiter-Regel
    * .sub{display:none} verdeckte ihn auf allen sechs Kopfkacheln. */

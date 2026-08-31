@@ -1568,15 +1568,32 @@
     render();
   }
 
+  /* EINE Statuszeile statt zwoelf Prueflauf-Eintraege (Wilhelms Entscheid 31.08.2026):
+   * Das Journal traegt nur noch Handlungen; DASS gerade geprueft wird, sagt diese
+   * Zeile aus dem Pruef-Stempel (D.pruefStand, gesetzt von jedem Buecher-Takt).
+   * "Keine Aenderung seit" ist der juengste Journal-Eintrag - statischer Text,
+   * keine Animation (prefers-reduced-motion ist bei Wilhelm aktiv). */
+  function tuneStandZeile() {
+    var ps = D.pruefStand && D.pruefStand.buecher;
+    var letzte = (D.tuneLog && D.tuneLog.length) ? D.tuneLog[0].at : null;
+    if (!ps && !letzte) return '';
+    var t = [];
+    if (ps) t.push('Zuletzt geprüft: ' + U.dt(ps));
+    t.push(letzte ? 'keine Änderung seit ' + U.dt(letzte) : 'noch keine Änderung');
+    return '<div id="tuneStand" style="color:var(--muted); font-size:var(--fs-neben); margin-bottom:6px;">' +
+      U.esc(t.join(' · ')) + '</div>';
+  }
   function renderTuneLog() {
     var el = document.getElementById('tuneLog');
     if (!el) return;
     var rows = tuneRanking();
     if (!rows.length) {
-      el.innerHTML = '<div class="empty"><span class="ico"></span>Noch keine automatischen Anpassungen – sie erscheinen hier, sobald die Automatik eine robuste Verbesserung findet.</div>';
+      el.innerHTML = tuneStandZeile() +
+        '<div class="empty"><span class="ico"></span>Noch keine automatischen Anpassungen – sie erscheinen hier, sobald die Automatik eine robuste Verbesserung findet.</div>';
       return;
     }
-    var html = '<table class="tbl"><tr><th>Rang</th><th>Wann</th><th>Änderung</th><th>Ø P/L je Trade davor → danach</th><th>Trades danach</th><th>Wirkung</th><th></th></tr>';
+    var html = tuneStandZeile() +
+      '<table class="tbl"><tr><th>Rang</th><th>Wann</th><th>Änderung</th><th>Ø P/L je Trade davor → danach</th><th>Trades danach</th><th>Wirkung</th><th></th></tr>';
     rows.forEach(function (r) {
       var e = r.e;
       html += '<tr' + (r.laufend ? ' style="font-weight:600;"' : '') + '>' +
