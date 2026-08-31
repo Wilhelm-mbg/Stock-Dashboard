@@ -1678,7 +1678,7 @@
 <div id="tab-depot" class="tab" role="tabpanel" aria-labelledby="reiter-depot">
   <div class="simnote"><b>Simulation mit virtuellem Kapital – keine Anlageberatung.</b> Gehandelt wird <span id="depotInstrumentHinweis">der Basiswert (Aktie 1×, ohne Hebel)</span>. Optionsscheine werden synthetisch bepreist (Black-Scholes): Hebel, Zeitwertverfall, Volatilitäts-Smile und der Vola-Einbruch nach Ergebnisterminen sind abgebildet, echte Emittenten-Preise nicht. Läuft, solange die App geöffnet ist. <button class="info" type="button" data-info="modell.schein" aria-expanded="false" aria-label="Erklärung: Wie ein Optionsschein hier bepreist wird">i</button></div>
 
-  <div class="simnote" style="margin-bottom:6px;">Hier steht, was das Depot hält und was es getan hat. Wonach gehandelt wird – Schalter, Mittelfrist-Steuerung, Regelbuch, Chart und Autopilot – steht im Reiter <b>Regeln</b>.</div>
+  <div class="simnote" style="margin-bottom:6px;">Hier steht, was das Depot hält und was es getan hat. Wonach gehandelt wird – Strategien, Einstellungen und Werkzeuge – steht im Reiter <b>Regeln</b>.</div>
   <div class="pills" id="depotPills">
     <button data-sub="depot" class="active">Depot</button>
     <button data-sub="mittel">Bücher</button>
@@ -1712,12 +1712,14 @@
   <!-- ============ BÜCHER (Bestand; gesteuert wird unter Regeln → Risiko & Einstellungen) ============ -->
   <div class="sub" id="sub-mittel">
   <div class="panel">
-    <h3>Mittelfrist-Depot · Momentum und Ergebnis-Drift handeln</h3>
-    <div style="font-size:var(--fs-text); color:var(--ink-2); line-height:1.55; margin-bottom:8px;">
-      Zwei getrennte virtuelle Bücher à 100.000 $, die die beiden Strategien <b>tatsächlich führen</b> – beide halten über die volle Historie, aber nicht auf den zurückgehaltenen Jahren ab 2005 (Momentum t = 1,62; Ergebnis-Drift nach Zeitzonen-Korrektur 8,44 statt 14,07 % p.a.). Stand 23.08.2026, Details im Reiter Messung –
-      bis hierher waren Momentum und Ergebnis-Drift Rechenblätter ohne Depot. Die Schalter im Reiter
-      „Regeln“ entscheiden: <b>an</b> heißt selbsttätig handeln, <b>aus</b> heißt nur rechnen und
-      erinnern („Rebalancing fällig“ mit Handlungsliste). Alles Simulation, keine Anlageberatung.
+    <h3 style="display:flex; align-items:center; gap:8px;">Mittelfrist-Depot · Momentum und Ergebnis-Drift handeln
+      <button class="info" type="button" data-info="vermoegen.buecher" aria-expanded="false"
+              aria-label="Erklärung: Mittelfrist-Depot">i</button></h3>
+    <!-- B11 (01.09.2026): der Fuenf-Zeilen-Absatz steht wortgleich im Info-Register
+         (vermoegen.buecher). Sichtbar bleibt die Zusicherung. -->
+    <div style="font-size:var(--fs-text); color:var(--ink-2); line-height:1.55; margin-bottom:8px; max-width:68ch;">
+      Zwei getrennte virtuelle Bücher à 100.000 $, die die beiden Strategien <b>tatsächlich führen</b>.
+      Alles Simulation, keine Anlageberatung.
     </div>
     <h3 style="margin-top:12px; font-size:var(--fs-gross);">Momentum-Buch <span style="font-weight:400; color:var(--muted);">· stärkstes Zehntel, alle 63 Handelstage, 20 Bp je Seite</span></h3>
     <div id="mfdMomentum" style="margin-top:6px;"><div class="empty"><span>Noch nichts gerechnet – der Takt läuft nach dem Start von allein. Sofort prüfen: Reiter <b>Regeln → Risiko &amp; Einstellungen</b>.</span></div></div>

@@ -746,21 +746,41 @@ ipcMain.handle('mess-strategien', async () => {
         .filter((f) => /^[a-z0-9][a-z0-9-]{1,40}\.js$/.test(f))
         .map((f) => {
           const st = fs.statSync(path.join(ordner, f));
-          return { key: f.slice(0, -3), datei: f, groesse: st.size, stand: st.mtimeMs, herkunft: herkunft };
+          /* 01.09.2026 (B10): Im Strategien-Ordner der Maschine liegen auch
+           * Hilfsdateien (wertpapierart, tageshilfen ...). Der Unterscheider ist
+           * der VERTRAG, nicht eine Namensliste: eine Strategie exportiert
+           * key: '...' (messmaschine.js verlangt es), eine Hilfsdatei nicht.
+           * Aus demselben Kopf kommt der erste grund-Halbsatz als lesbare
+           * Kurzbeschreibung neben der Kennung. */
+          let kopf = '';
+          try { kopf = fs.readFileSync(path.join(ordner, f), 'utf8').slice(0, 8000); } catch (e) { /* dann ohne */ }
+          const istKandidat = /(^|\n)\s{0,4}key:\s*'/.test(kopf);
+          // String.match statt der RegExp-Methode: die Shell-Sperrklinke dieser
+          // Datei verbietet deren Namen in jeder Form, Kommentare eingeschlossen.
+          const grundM = kopf.match(/\bgrund:\s*'([^']{5,300})'/);
+          return { key: f.slice(0, -3), datei: f, groesse: st.size, stand: st.mtimeMs, herkunft: herkunft,
+            istKandidat: istKandidat, grundKurz: grundM ? grundM[1] : null };
         });
     };
     const beide = {};
-    lies(dir, 'lokal').forEach((x) => { beide[x.key] = x; });
-    lies(quelle, 'quelle').forEach((x) => {
+    const hilfen = [];
+    const nurKandidaten = (arr) => arr.filter((x) => {
+      if (x.istKandidat) return true;
+      if (!hilfen.some((h) => h.key === x.key)) hilfen.push({ key: x.key, herkunft: x.herkunft });
+      return false;
+    });
+    nurKandidaten(lies(dir, 'lokal')).forEach((x) => { beide[x.key] = x; });
+    nurKandidaten(lies(quelle, 'quelle')).forEach((x) => {
       const da = beide[x.key];
       if (!da) { beide[x.key] = x; return; }
       /* Dieselbe Kennung an beiden Orten ist kein Fehler, aber eine Auskunft:
        * gezeigt wird der neuere Stand, genannt werden beide Orte. */
       beide[x.key] = { key: x.key, datei: x.datei, herkunft: 'beides',
-        groesse: Math.max(da.groesse, x.groesse), stand: Math.max(da.stand, x.stand) };
+        groesse: Math.max(da.groesse, x.groesse), stand: Math.max(da.stand, x.stand),
+        grundKurz: x.grundKurz || da.grundKurz || null };
     });
     const liste = Object.keys(beide).map((k) => beide[k]).sort((a, b) => b.stand - a.stand);
-    return { ok: true, liste: liste, ordner: dir, quelle: quelle,
+    return { ok: true, liste: liste, ordner: dir, quelle: quelle, hilfen: hilfen,
              maschine: fs.existsSync(messmaschinePfad()) };
   } catch (e) { return { ok: false, grund: String(e && e.message || e) }; }
 });

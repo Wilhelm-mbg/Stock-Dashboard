@@ -7941,9 +7941,16 @@ console.log('\n44) Oberflaeche nach Themen sortiert (Felix, Issue #68)');
      /data-sub="einstellungen">Risiko &amp; Einstellungen</.test(regeln),
      'Die Pillen heissen, was sie zeigen: Buecher (Bestand), Steuerung unter Risiko & Einstellungen');
   /* Der Erklaerabsatz mit den Messzahlen wurde nicht geteilt - er beschreibt, WAS die
-   * beiden Buecher sind, und bleibt deshalb ungeteilt bei ihnen (Leitplanke 1). */
-  ok(/t = 1,62/.test(vermoegen) && /8,44 statt 14,07/.test(vermoegen),
-     'Die Messzahlen der beiden Buecher stehen ungeteilt bei den Buechern');
+   * beiden Buecher sind, und bleibt deshalb ungeteilt bei ihnen (Leitplanke 1).
+   * 01.09.2026 (B11): "bei ihnen" heisst jetzt: wortgleich im Info-Register
+   * vermoegen.buecher, erreichbar ueber den i-Knopf DERSELBEN Karte - das
+   * Stufe-2-Muster (Ort wechselt, Wortlaut nie). Geprueft werden beide Haelften:
+   * der Knopf haengt an der Karte, und die Zahlen stehen UNGETEILT im Eintrag. */
+  var shellB11 = fs.readFileSync(__dirname + '/app-shell.js', 'utf8');
+  var eintragB11 = (shellB11.split("'vermoegen.buecher': {")[1] || '').split('\n    },')[0];
+  ok(/data-info="vermoegen\.buecher"/.test(vermoegen) &&
+     /t = 1,62/.test(eintragB11) && /8,44 statt 14,07/.test(eintragB11),
+     'Die Messzahlen der beiden Buecher haengen ungeteilt an der Buecher-Karte (i-Knopf)');
 
   /* --- Kein Wegweiser zeigt mehr auf einen Ort, den es nicht mehr gibt --- */
   var quellen = ['index.html', 'depot.js', 'explorer.js', 'renderer.js', 'app-shell.js',

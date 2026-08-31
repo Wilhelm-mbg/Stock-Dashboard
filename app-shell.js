@@ -644,6 +644,16 @@
      * "Was du dabei wissen musst", Drift-Intro samt Messblock). Der Wortlaut ist
      * UNVERAENDERT hierher uebernommen (Regeln-Ausduennung 31.08.2026); sichtbar
      * geblieben sind die entscheidungsrelevanten Zahlen in je einem Satz. */
+    /* B11 (01.09.2026): stand als Dauer-Absatz ueber den Buch-Anzeigen; Wortlaut
+     * unveraendert uebernommen, nur der Ort hat sich geaendert. */
+    'vermoegen.buecher': {
+      titel: 'Mittelfrist-Depot · die zwei Bücher',
+      punkte: [
+        'Zwei getrennte virtuelle Bücher à 100.000 $, die die beiden Strategien <b>tatsächlich führen</b> – beide halten über die volle Historie, aber nicht auf den zurückgehaltenen Jahren ab 2005 (Momentum t = 1,62; Ergebnis-Drift nach Zeitzonen-Korrektur 8,44 statt 14,07 % p.a.). Stand 23.08.2026, Details im Reiter Messung.',
+        'Bis hierher waren Momentum und Ergebnis-Drift Rechenblätter ohne Depot. Die Schalter im Reiter „Regeln“ entscheiden: <b>an</b> heißt selbsttätig handeln, <b>aus</b> heißt nur rechnen und erinnern („Rebalancing fällig“ mit Handlungsliste).'
+      ],
+      fuss: 'Alles Simulation, keine Anlageberatung.'
+    },
     'regeln.antwort': {
       titel: 'Was die App gerade tut',
       punkte: [

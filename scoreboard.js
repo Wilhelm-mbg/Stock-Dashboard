@@ -936,8 +936,12 @@
 
     var zeilen = (s.liste || []).map(function (st) {
       var pr = jeKey[st.key] || [];
+      /* B10 (01.09.2026): neben der rohen Kennung eine lesbare Kurzbeschreibung -
+       * der erste grund-Halbsatz aus dem Protokoll (bevorzugt) oder der Datei.
+       * Kein neues Namensregister: der grund IST der Vertragstext der Strategie. */
+      var grund = (pr.length && pr[0].protokoll.strategie && pr[0].protokoll.strategie.grund) || st.grundKurz || null;
       return { key: st.key, herkunft: st.herkunft || 'lokal', laeufe: pr.length,
-        zuletzt: pr.length ? pr[0].mtime : 0,
+        zuletzt: pr.length ? pr[0].mtime : 0, grund: grund,
         urteil: pr.length ? pr[0].protokoll.bestesUrteil : null, hatDatei: true };
     });
     /* Ein Protokoll ohne auffindbare Datei ist der unangenehme Fall: das Ergebnis steht,
@@ -1005,12 +1009,16 @@
     zeilen.forEach(function (z) { z.betrieb = betriebVon(z.key); });
     var betriebSpalte = zeilen.some(function (z) { return !!z.betrieb; });
 
+    /* B10 (01.09.2026): Vor der ersten Messung wiederholten Laeufe/Zuletzt in jeder
+     * Zeile nur Striche - dasselbe Muster wie die Ort-Spalte: eine Spalte ohne einen
+     * einzigen Wert erscheint nicht, ein Satz darunter sagt warum. */
+    var laufSpalte = zeilen.some(function (z) { return z.laeufe > 0; });
     var html = '<table style="width:100%; border-collapse:collapse; font-size:var(--fs-neben);">' +
       '<thead><tr style="text-align:left; color:var(--muted);">' +
       '<th scope="col" style="padding:4px 8px 4px 0;">Strategie</th>' +
       (ortSpalte ? '<th scope="col" style="padding:4px 8px;">Ort</th>' : '') +
-      '<th scope="col" style="padding:4px 8px; text-align:right;">Läufe</th>' +
-      '<th scope="col" style="padding:4px 8px;">Zuletzt</th>' +
+      (laufSpalte ? '<th scope="col" style="padding:4px 8px; text-align:right;">Läufe</th>' +
+        '<th scope="col" style="padding:4px 8px;">Zuletzt</th>' : '') +
       '<th scope="col" style="padding:4px 0;">Urteil</th>' +
       (betriebSpalte ? '<th scope="col" style="padding:4px 0 4px 8px;">Im Betrieb</th>' : '') +
       '</tr></thead><tbody>';
@@ -1022,17 +1030,26 @@
        * gehoert hierher, den kennt label() nicht. */
       var urteil = !z.laeufe ? '<span style="color:var(--muted);">nie gemessen</span>'
         : U.esc(z.urteil ? label(z.urteil) : 'ohne Urteil');
+      var grundKurz = z.grund ? String(z.grund).slice(0, 110) + (String(z.grund).length > 110 ? ' …' : '') : '';
       html += '<tr style="border-top:1px solid var(--grid);">' +
-        '<td style="padding:5px 8px 5px 0;"><code>' + U.esc(z.key) + '</code></td>' +
+        '<td style="padding:5px 8px 5px 0; max-width:340px;"><code>' + U.esc(z.key) + '</code>' +
+        (grundKurz ? '<div style="color:var(--muted); font-size:var(--fs-klein); font-family:inherit; line-height:1.4;">' + U.esc(grundKurz) + '</div>' : '') +
+        '</td>' +
         (ortSpalte ? '<td style="padding:5px 8px;">' + ort + '</td>' : '') +
-        '<td style="padding:5px 8px; text-align:right;">' + (z.laeufe || '–') + '</td>' +
-        '<td style="padding:5px 8px;">' + tagKurz(z.zuletzt) + '</td>' +
+        (laufSpalte ? '<td style="padding:5px 8px; text-align:right;">' + (z.laeufe || '–') + '</td>' +
+          '<td style="padding:5px 8px;">' + tagKurz(z.zuletzt) + '</td>' : '') +
         '<td style="padding:5px 0;">' + urteil + '</td>' +
         (betriebSpalte ? '<td style="padding:5px 0 5px 8px;">' +
           (z.betrieb ? U.esc(z.betrieb) : '<span style="color:var(--muted);">–</span>') + '</td>' : '') +
         '</tr>';
     });
     el.innerHTML = html + '</tbody></table>' +
+      (laufSpalte ? '' : '<div style="color:var(--muted); font-size:var(--fs-klein); margin-top:6px;">' +
+        'Noch kein Messprotokoll – die Spalten Läufe und Zuletzt erscheinen nach der ersten Messung.</div>') +
+      ((s.hilfen && s.hilfen.length) ? '<div style="color:var(--muted); font-size:var(--fs-klein); margin-top:6px;">' +
+        'Nicht gelistet: ' + s.hilfen.length + ' Hilfsdatei(en) der Maschine (' +
+        s.hilfen.map(function (h) { return U.esc(h.key); }).join(', ') +
+        ') – sie exportieren keinen Messkandidaten.</div>' : '') +
       (ortSpalte ? '' : '<div style="color:var(--muted); font-size:var(--fs-klein); margin-top:6px;">' +
         'Ort aller ' + zeilen.length + ' Strategien: ' + U.esc(orte[0] || '?') + '.</div>') +
       (betriebSpalte ? '<div style="color:var(--muted); font-size:var(--fs-klein); margin-top:6px;">' +
