@@ -1,6 +1,6 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-31 21:45 (Windows-Uhr)
-gesehener-tag: v8.35.0 (gebaut 21:26, bei Wilhelm noch nicht installiert)
+letzter-bericht: 2026-08-31 23:58 (Windows-Uhr)
+gesehener-tag: v8.36.0 (gebaut 23:51, bei Wilhelm noch nicht installiert)
 pm-adresse: markt-dashboard-c0 [4877bc]   <- HIERHIN melden (Bruecke 19:3x neu gestartet, alte Kuerzel tot)
 -->
 
@@ -30,6 +30,33 @@ und den Sitzungen: hier steht, was entschieden ist, was gerade läuft und was al
 ansteht. Lies sie beim Start; trag dich unter „Läuft gerade" ein, wenn du Dateien belegst.
 
 Wenn du hier etwas änderst, dann nur deine eigene Zeile unter „Läuft gerade".
+
+---
+
+## 🏗 31.08. 23:5x — **v8.36.0: REGELN-NEUBAU KOMPLETT · SENTIMENT AUF NULL · NEWS-ARCHIV LEBT WIEDER**
+
+**Release v8.36.0** (Wache 23:30–23:51, QS-geprüft; `--hoch` stürzte NACH vollständigem
+Tag/Push/Assets an der Netz-Gegenprobe ab — kein Schaden, Retry-Härtung als Vorschlag notiert).
+
+**Regeln-Neubau, alle vier Stufen** (`69ffc35`…`5c526be`, Wilhelms Zielbild vom Formular):
+*Journal trägt nur noch Handlungen (eine Statuszeile statt 12 Takt-Zeilen) · Antwort-Seite vorne,
+null Bedienelemente · Strategien nach Belegstand, jede genau EINMAL, „belegt" wird gerechnet, nie
+behauptet · 3 Pillen statt 6.* **Abnahme isoliert selbst geprüft, neun Testmarken datiert auf
+Eigenschaft umgebaut.**
+
+**Sentiment auf 0** (`5cc713e`): *in Vorgabe UND per Migration für gespeicherte Stände — ohne die
+Migration wäre der Entscheid wirkungslos gewesen (`depot.js` rechnet mit gespeichertem
+`D.weights`).* **Neunormierung offen dokumentiert** *(Technik/Elliott 0,647/0,353, Verhältnis
+unverändert — Live wird damit GLEICH der Messung, RECHENSTAND bewusst nicht hochgezählt).*
+*Anzeige bleibt, gekennzeichnet „unbelegt – steuert nichts".*
+
+> ### 📌 **DIE URSACHE DES NEWS-ARCHIV-STILLSTANDS, gemessen in vier Schritten:**
+> ***Das Archiv ritt auf der Strategie mit, die es belegen sollte.*** *`getSymbolNews()` lief nur
+> in `runJob()`, und `runJob()` nur bei `hourlyEnabled` — die Sicherung schaltete das am 21.08. ab
+> (Stunden-Strategie widerlegt, t = −11,6). **Am selben Tag angelegt und stromlos gemacht; zehn
+> Tage unsichtbar, weil ein stillstehendes Archiv aussieht wie eines ohne Neuigkeiten.***
+> *Repariert: eigener Takt ohne `hourlyEnabled`-Bedingung, Fehlschläge werden festgehalten statt
+> geschluckt; belegt per isolierter Probe (3 Schlüssel nach 35 s).*
 
 ---
 
