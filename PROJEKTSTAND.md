@@ -33,6 +33,40 @@ Wenn du hier etwas änderst, dann nur deine eigene Zeile unter „Läuft gerade"
 
 ---
 
+## 🛑 27.08. 19:35 — **WILHELM HAT ALLES ANGEHALTEN** (Token-Verbrauch)
+
+**Entscheid:** *Weckruf ganz aus · Sitzungen zusammenstreichen · erst mal alles anhalten.*
+
+**Die drei Treiber, in dieser Reihenfolge:**
+1. **Elf Sitzungen gleichzeitig**, mehrere seit 18 Stunden — fünf davon (`c2`, `49`, `84`, `6a`,
+   `87`) standen nicht im Auftragsregister. **Der PM wusste nicht, dass sie laufen.**
+2. **PM-Weckruf alle 5 Minuten** — jeder Tick liest den ganzen Kontext neu.
+3. **Zu lange Nachrichten zwischen den Sitzungen** — jede zählt doppelt (schreiben + lesen).
+
+**Der teuerste Posten ist Nummer 1.** *Elf Sitzungen sind kein Team, das ist ein Kontext-Leck.*
+
+**Ab sofort:** *kein Hintergrund-Weckruf mehr — das hebt die Anordnung vom 27.08. abends auf.
+Nachrichten an Sitzungen knapp, ohne Formatierungswand.* **Morgen entscheidet Wilhelm neu, wie groß
+gefahren wird.**
+
+> **⚠ 19:3x: DIE BRÜCKE IST NEU GESTARTET, ALLE KÜRZEL HABEN DEN BESITZER GEWECHSELT.**
+> *`1d`, `c4`, `06`, `ab`, `c2`, `49`, `84`, `6a`, `87` sind weg; der PM heißt jetzt
+> `markt-dashboard-c0`.* **Eine Nachricht an eine `Remote Control · offline`-Zeile meldet
+> `success` und kommt nirgends an.**
+
+**Offen geblieben (nichts hängt in der Luft, alles committet):**
+- **Weg-3-Kohortenlauf** — vorregistriert, gebaut, alle vier Wächter grün, **nicht gestartet**;
+  wartete auf den Vollauf. Kann jederzeit laufen, das Werkzeug prüft den Datenstand selbst.
+- **Vollauf Eröffnungskurse** — Stand zuletzt ~83 %, Schlusszahlen nie gemeldet.
+- **Punkt-in-Zeit-Universum** — Auflage 1 (woher kam die Datei) und 2 (erreicht die App die Quelle)
+  ungeprüft; **Auflage 2 kann Wilhelms Entscheid umwerfen.**
+- **`triggerBelegstand`** — vier Auslöser stehen als „Nicht gemessen", obwohl drei gemessen-verworfen
+  und `kanaltrend` als schädlich gemessen ist. *Wirkt heute, nicht behoben.*
+- **Verfallsdatum:** *die Minutensammlung ruht; der 27.08. bleibt bei der Quelle nur bis ~3.9.
+  abrufbar.*
+
+---
+
 ## 🔬 27.08. 19:1x — **DER EREIGNIS-KATALOG IST AN ZWEI STELLEN ZU ENG** (`c229f21`, Berechnungen)
 
 **Der EDGAR-Zeuge steht:** *Grayscale hat bei GBTC und ETHE je **10 % der Bestände** in einen Mini
