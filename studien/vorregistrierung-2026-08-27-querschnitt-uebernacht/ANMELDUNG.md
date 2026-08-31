@@ -219,16 +219,49 @@ vorzuziehen: sie ist einfacher und kann nicht als Güte gelesen werden.**)*
 | `glockendruck-nacht` | 0,2251 | **1,195** |
 | `nachtstoss-umkehr` | 0,2708 | **1,438** |
 
-### 7.4 ⚠ Und diese Rangfolge darf NICHT zitiert werden, bevor ihre Unsicherheit vorliegt
+### 7.4 Die Unsicherheit des Maßes — gemessen, und sie ist klein
 
-**Auflage des PM, und sie ist richtig:** die Zahlen stehen auf **einem** Placebo-Durchlauf.
-Streut das Placebo-Maß selbst schon um 10 %, ist `abgabedruck-nacht` mit 1,101 von „gar kein
-Stil" **nicht unterscheidbar** und die Rangfolge hat oben kein Ende.
+**Auflage des PM: die Rangfolge darf nicht zitiert werden, bevor ihre Streuung vorliegt.**
+Fünf Placebo-Ziehungen, gleiche Bauart, **nur andere Startzahl**, derselbe 1.200er-Lauf:
 
-**→ Fünf Placebo-Ziehungen mit verschiedenen Startzahlen laufen** (`P` bis `P5` im Werkzeug,
-gleiche Bauart, nur andere Startzahl). *Erste Sicht auf kleiner Stichprobe: σ_gepaart streut
-zwischen 0,5213 und 0,5599 — rund 7 %. Das ist nicht vernachlässigbar.*
+| Ziehung | σ gepaart |
+|---|---|
+| P | 0,1892 |
+| P2 | 0,1904 |
+| P3 | 0,1906 |
+| P4 | 0,1867 |
+| P5 | 0,1881 |
 
-> **Bis die Streuung des Maßes vorliegt, ist die Rangfolge eine Beobachtung und keine
-> Ordnung.** *Bei `nachtstoss-umkehr` (1,438) ist das Vorzeichen vermutlich belastbar; bei
-> den anderen beiden ausdrücklich nicht.*
+**Mittel 0,18900 · sd 0,00163 · Band 0,1867–0,1906 = 2,1 % · Variationskoeffizient 0,86 %.**
+
+> ### 🔻 Damit nehme ich meine eigene Vorsichtsaussage zurück
+> Ich hatte „rund 7 % Streuung, also ist `abgabedruck` von *gar kein Stil* nicht
+> unterscheidbar" geschrieben. **Die 7 % stammten aus einem 60-Symbol-Vorlauf
+> (σ_gepaart 0,52–0,56), die Verhältnisse aus dem 1.200er-Lauf (σ_gepaart 0,19–0,21) —
+> zwei verschiedene Läufe, Faktor 2,7 auseinander.** *Der PM hat den Bruch gesehen und
+> vorhergesagt, dass die Streuung im großen Lauf kleiner ist. Sie ist es: **2,1 % statt 7 %.***
+>
+> ***Eine falsche Vorsicht tötet einen echten Kandidaten genauso zuverlässig, wie eine
+> falsche Zuversicht einen falschen freigibt.***
+
+**Alle drei Kandidaten liegen klar außerhalb des Placebo-Bandes:**
+
+| Bauform | σ gepaart | über dem **höchsten** Placebo | Stilanteil |
+|---|---|---|---|
+| *Placebo-Band (5 Ziehungen)* | *0,1867 – 0,1906* | — | *1,000* |
+| `abgabedruck-nacht` | 0,2074 | **+8,8 %** | **1,097** |
+| `glockendruck-nacht` | 0,2251 | **+18,1 %** | **1,191** |
+| `nachtstoss-umkehr` | 0,2708 | **+42,1 %** | **1,433** |
+
+**Der kleinste Abstand (8,8 %) ist das Vierfache des gesamten Placebo-Bandes (2,1 %).**
+→ **Die Rangfolge ist eine Ordnung, nicht bloß eine Beobachtung.** Alle drei Auswahlen
+tragen messbar mehr gepaarte Streuung als eine Auswahl ohne jede Information.
+
+**Was diese Unsicherheitsrechnung NICHT abdeckt — und das bleibt eine echte Lücke:**
+Die fünf Ziehungen unterscheiden sich **nur in der Symbolwahl**, sie rechnen auf **denselben
+Tagen**. Das Band misst also allein den Symbol-Ziehungsanteil. *Der Tagesanteil
+(rel. Standardfehler einer Streuung bei N = 4.995 Bestätigungstagen ≈ **1,0 %**) steckt in
+Kandidat und Placebo gleichermaßen und kürzt sich im Verhältnis weitgehend weg — aber die
+Kandidatenseite lässt sich nicht neu ziehen, weil sie deterministisch ist.* **Eine
+Restunsicherheit der Kandidaten-σ bleibt daher unbeziffert.** Bei 8,8 % Abstand ändert das
+am Schluss nichts; bei einem künftigen Kandidaten mit 2–3 % Abstand wäre es entscheidend.
