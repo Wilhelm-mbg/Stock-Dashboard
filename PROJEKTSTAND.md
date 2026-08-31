@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 19:35 (Windows-Uhr)
+letzter-bericht: 2026-08-31 20:15 (Windows-Uhr)
 gesehener-tag: v8.34.2 (installiert 17:00)
 pm-adresse: markt-dashboard-c0 [4877bc]   <- HIERHIN melden (Bruecke 19:3x neu gestartet, alte Kuerzel tot)
 -->
@@ -30,6 +30,37 @@ und den Sitzungen: hier steht, was entschieden ist, was gerade läuft und was al
 ansteht. Lies sie beim Start; trag dich unter „Läuft gerade" ein, wenn du Dateien belegst.
 
 Wenn du hier etwas änderst, dann nur deine eigene Zeile unter „Läuft gerade".
+
+---
+
+## 📌 31.08. 20:1x — **NEUER BETRIEB, DREI EINZELAUFTRÄGE DURCH, ZWEI ENTSCHEIDE** (PM)
+
+**Seit 31.08. gilt: wenige Chats mit selbsttragenden Einzelaufträgen, Koordination über
+`uebergabe/` und Commits, keine Weckrufe, keine Sitzungsnachrichten.** *Grund: Token-Verbrauch.*
+
+**Geliefert (Details in den drei `uebergabe/*-2026-08-31.md`):**
+- **Oberfläche:** vierte Gruppe „Gemessen und verworfen" + `studienurteile.js` (kann nur
+  verwerfen, nie belegen; Protokoll gewinnt); Regeln-Reiter ausgedünnt. Ungepusht, Version macht
+  die Wache.
+- **Archiv-Rest:** alle 1.162 Reihen führen sechs Felder; In-Regel-Prüfung `vertraeglich()` läuft
+  bei jedem Schreibvorgang und sperrte sofort zu Recht 2 Reihen (AUMN/BURU: Quelle rundet
+  Sub-Cent neu — bewusst KEINE Toleranz). 48 XASE-Reihen per `--alle --erneuern` miterledigt.
+- **Weg 3: NICHT gelaufen, Wachhund rot** — archiv1d hängt 2 Handelstage zurück (alle 2.965
+  Reihen), Abmeldeliste 94 h alt. Das Werkzeug hat die eigene PM-Angabe „Datenstand trägt"
+  korrekt zurückgewiesen. Nachziehen, dann neuer Lauf.
+
+**⏰ ENTSCHEID Wilhelm 31.08.: das Punkt-in-Zeit-Universum ist EINGEFROREN.** *Der Stichtag
+2024-09-02 fällt am 03.09.2026 aus dem Free-Tier — danach wäre die Datei nie wieder erzeugbar.*
+**Sie ist ab jetzt unveränderliche Messgrundlage:** Original im Datenordner schreibgeschützt,
+Kopie `E:/Markt-Dashboard-Archiv/universum-2024-09-02-EINGEFROREN.json` (schreibgeschützt).
+**Kein Nachbau, kein neuer Stichtag, kein App-Erzeuger** *(hieße Schlüssel in die App — schließt
+`massive.js` aus; Herkunft belegt: `tools/universum-punkt-in-zeit.js`, Verfahren im Dateikopf).*
+
+**ENTSCHEID Wilhelm 31.08.: die unfertige `abmeldungen.js`-Arbeit (quelleGeprueftAm) ist
+beiseitegelegt** — `git stash` auf main, Arbeitsbaum sauber, die 5 roten Zusicherungen dadurch
+weg. *Wer sie fertig bauen will, holt den Stash; der committete Stand `5f3015d` funktioniert.*
+**Offen laut Oberflächen-Übergabe: 2 Wachhund-Fehlschläge auch auf sauberem HEAD** — vermutlich
+dieselbe archiv1d-Rückständigkeit, klärt sich mit dem Nachziehen.
 
 ---
 
