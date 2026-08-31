@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-31 21:35 (Windows-Uhr)
+letzter-bericht: 2026-08-31 21:45 (Windows-Uhr)
 gesehener-tag: v8.35.0 (gebaut 21:26, bei Wilhelm noch nicht installiert)
 pm-adresse: markt-dashboard-c0 [4877bc]   <- HIERHIN melden (Bruecke 19:3x neu gestartet, alte Kuerzel tot)
 -->
@@ -30,6 +30,15 @@ und den Sitzungen: hier steht, was entschieden ist, was gerade läuft und was al
 ansteht. Lies sie beim Start; trag dich unter „Läuft gerade" ein, wenn du Dateien belegst.
 
 Wenn du hier etwas änderst, dann nur deine eigene Zeile unter „Läuft gerade".
+
+---
+
+## ⚖ 31.08. 21:4x — **ENTSCHEID WILHELM: SENTIMENT-GEWICHT AUF NULL** (per Formular)
+
+**„Was nie gemessen wurde, steuert nichts."** *Der Sentiment-Score verliert sein Gewicht im
+Handels-Score vollständig; die Anzeige bleibt, gekennzeichnet als unbelegt.* **Wiedererhöhung nur
+gegen eine belegte Messung — und die braucht das reparierte News-Archiv** *(zweiter Entscheid:
+Archivierungs-Stillstand seit 21.08. wird repariert; Auftrag ist ausgegeben).*
 
 ---
 
