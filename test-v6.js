@@ -5312,6 +5312,27 @@ console.log('\n39) Erklaertexte hinter dem i – ein Register, ein Fenster, ein 
   ok(/punkte: s\.beleg \|\| \[\]/.test(strat),
      'die Belege gehen VOLLSTAENDIG ins Register - gekuerzt wird nichts, es sind Messaussagen');
 
+  /* --- Regeln-Ausduennung 31.08.2026 (Wilhelms Auftrag: "viel zu viel") ---
+   * Die Absatz-Waende der Mittelfrist- und Autopilot-Pille stehen jetzt im
+   * Register; sichtbar bleibt je ein Satz mit den entscheidungsrelevanten Zahlen.
+   * Messaussagen sind VERSCHOBEN, nie geloescht - beide Richtungen werden geprueft. */
+  ['regeln.mf.momentum', 'regeln.mf.drift', 'regeln.autopilot'].forEach(function (k) {
+    ok(new RegExp("^    '" + k.replace(/\./g, '\\.') + "': \\{$", 'm').test(shell),
+       'Regeln-Ausduennung: Registereintrag ' + k + ' existiert');
+  });
+  ok(/Der größte Rückschlag lag bei 52 Prozent/.test(shell) && !/Der größte Rückschlag lag bei 52 Prozent/.test(html),
+     'Momentum-Warnabsatz: ins Register verschoben, nicht geloescht');
+  ok(html.indexOf('größter Rückschlag 52') !== -1,
+     'aber die 52-Prozent-Zahl bleibt auf der Pille sichtbar (wer sie nicht liest, entscheidet falsch)');
+  ok(/20\.356 Ergebnistermine/.test(shell) && !/20\.356 Ergebnistermine/.test(html),
+     'Drift-Messblock: ins Register verschoben, nicht geloescht');
+  ok(html.indexOf('+10,44') !== -1,
+     'aber die Drift-Messzahl bleibt auf der Pille sichtbar');
+  ok(/Scheinsieger produziert/.test(shell) && !/Scheinsieger produziert/.test(html),
+     'Autopilot-Absatz: ins Register verschoben, nicht geloescht');
+  ok(/data-sub="strategien">Intraday</.test(html),
+     'Die Pille heisst Intraday - die Kennung "strategien" bleibt (Schnittstelle)');
+
   /* --- Was eine Zusicherung ist, bleibt sichtbar ---
    * Faustregel des Umbaus: Wer es nicht liest, entscheidet falsch -> bleibt stehen.
    * Wer es nicht liest, versteht nur weniger -> darf hinter das i. */
@@ -11002,6 +11023,75 @@ console.log('\nmassive-tagesdaten: Vereinigen und Entdoppeln (27.08.2026)');
   ]);
   ok(reuse.verdaechtig.length === 1 && reuse.verdaechtig[0] === 'ZZ',
      'Getrennte Zeitraeume unter einem Kuerzel = zwei Firmen: das Werkzeug schlaegt Alarm, statt sie zu mischen');
+
+  /* --- In-Regel-Pruefung: nur mischen, wenn kein gespeicherter Kurs sich aendert
+   * (freigegeben 31.08.2026) ---
+   *
+   * WARUM ALS AUFRUF UND NICHT ALS TEXTSUCHE. Eine Zusicherung, die im Quelltext nach
+   * einem Bezeichner sucht, wird von jeder Umbenennung rot und von jedem erklaerenden
+   * Kommentar gruen - sie prueft die Schreibweise, nicht das Verhalten. Hier wird die
+   * EIGENSCHAFT geprueft: aendert sich ein gespeicherter Wert, sagt die Funktion Nein.
+   *
+   * Die Regel machte drei Reihen wieder erreichbar, die der Lauf bis dahin verwarf,
+   * weil die Quelle weniger als 20 Kerzen lieferte (BFI, DSAQ, PHYT). */
+  ok(typeof MT.vertraeglich === 'function',
+     'Die Pruefung ist herausgeloest und ohne Netz aufrufbar');
+
+  /* Positivkontrolle zuerst - eine Funktion, die immer Ja sagt, sagt auch im
+   * Ernstfall Ja. Alter Bestand ohne Eroeffnung, frischer Abruf mit: die vier
+   * gefuehrten Felder stimmen ueberein, also ist das Ergaenzen erlaubt. */
+  var jaBestand = [[100, 10, 5, 11, 9], [200, 20, 6, 21, 19]];
+  var jaFrisch = [[100, 10, 5, 11, 9, 9.5], [200, 20, 6, 21, 19, 19.5], [300, 30, 7, 31, 29, 29.5]];
+  var ja = MT.vertraeglich(jaBestand, jaFrisch);
+  ok(ja.vertraeglich === true && ja.geprueft === 2,
+     'Stimmen alle gefuehrten Felder ueberein, ist das Nachtragen der Eroeffnung erlaubt', ja.geprueft);
+
+  /* Der Kern der Regel: EIN geaenderter Schlusskurs genuegt fuer ein Nein. */
+  var neinC = MT.vertraeglich(jaBestand, [[200, 20.01, 6, 21, 19, 19.5]]);
+  ok(neinC.vertraeglich === false && neinC.anzahl === 1,
+     'Ein einziger geaenderter Schlusskurs verbietet das Mischen', neinC.anzahl);
+  ok(neinC.abweichungen[0].zeit === 200 && neinC.abweichungen[0].bestand === 20 &&
+     neinC.abweichungen[0].frisch === 20.01,
+     'Die Meldung nennt Zeitpunkt, alten und neuen Wert - sonst kann sie niemand nachpruefen');
+
+  /* Jedes gefuehrte Feld zaehlt, nicht nur der Schluss. Sonst waere eine
+   * Split-Anpassung an Hoch und Tief unsichtbar. */
+  [[2, 'Umsatz'], [3, 'Hoch'], [4, 'Tief']].forEach(function (p) {
+    var k = [200, 20, 6, 21, 19, 19.5];
+    k[p[0]] = k[p[0]] + 1;
+    ok(MT.vertraeglich(jaBestand, [k]).vertraeglich === false,
+       'Auch eine Abweichung im Feld ' + p[1] + ' verbietet das Mischen');
+  });
+
+  /* Die andere Richtung, die leicht durchrutscht: der Bestand FUEHRT eine Eroeffnung,
+   * der frische Abruf hat dort null. Mischen loeschte einen gespeicherten Kurs. */
+  var loeschen = MT.vertraeglich([[200, 20, 6, 21, 19, 19.5]], [[200, 20, 6, 21, 19, null]]);
+  ok(loeschen.vertraeglich === false,
+     'Eine frische Kerze mit null wuerde eine gespeicherte Eroeffnung loeschen - auch das ist eine Aenderung');
+
+  /* Umgekehrt: fehlt die Eroeffnung im Bestand, kann sie nicht widersprochen werden.
+   * Genau darauf beruht die Erlaubnis - ohne diese Zusicherung koennte die Pruefung
+   * auf "immer Nein" kippen und der Lauf saehe trotzdem gruen aus. */
+  var ergaenzen = MT.vertraeglich([[200, 20, 6, 21, 19, null]], [[200, 20, 6, 21, 19, 19.5]]);
+  ok(ergaenzen.vertraeglich === true,
+     'Ein Feld, das der Bestand nicht fuehrt, darf gefuellt werden - das ist der Zweck des Laufs');
+
+  /* Kein Bestand und keine Ueberlappung sind kein Hindernis: dort gibt es nichts,
+   * was sich aendern koennte. geprueft weist aus, dass wirklich nichts verglichen
+   * wurde - eine Ja-Antwort ohne Vergleich soll als solche erkennbar sein. */
+  var ohne = MT.vertraeglich(null, jaFrisch);
+  ok(ohne.vertraeglich === true && ohne.geprueft === 0,
+     'Ohne Bestand gibt es nichts zu verlieren, und die Pruefung sagt, dass sie nichts verglichen hat', ohne.geprueft);
+
+  /* Der Zusammenhang, auf den es am Ende ankommt: sagt die Pruefung Ja, dann laesst
+   * vereinigen() tatsaechlich keinen gespeicherten Wert fallen. Beide Funktionen
+   * einzeln richtig, aber aneinander vorbei - das waere der stille Fehler. */
+  var zus = MT.vereinigen(jaBestand, jaFrisch);
+  jaBestand.forEach(function (a) {
+    var n = zus.reihe.filter(function (k) { return k[0] === a[0]; })[0];
+    ok(n && n[1] === a[1] && n[2] === a[2] && n[3] === a[3] && n[4] === a[4],
+       'Nach einem erlaubten Mischen steht jeder gespeicherte Wert unveraendert da', a[0]);
+  });
 })();
 
 

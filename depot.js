@@ -3505,7 +3505,7 @@
       ph = '<div class="empty"><span class="ico"></span>Keine offenen Positionen. ' +
         (D.intraday && D.intraday.enabled
           ? 'Die Intraday-Strategie läuft und wartet auf ein Signal – wann sie zuletzt nichts getan hat und warum, steht unter „Regeln → Autopilot“.'
-          : 'Die Intraday-Strategie ist aus – einschalten unter „Regeln → Schalter &amp; Einstellungen“.') + '</div>';
+          : 'Die Intraday-Strategie ist aus – einschalten unter „Regeln → Intraday“.') + '</div>';
     }
     if (D.repairNote && Date.now() - D.repairNote.at < 7 * 86400000) {
       var rn = D.repairNote;

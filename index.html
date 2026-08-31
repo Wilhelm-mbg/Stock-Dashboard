@@ -938,7 +938,11 @@
 <div id="tab-strategien" class="tab" role="tabpanel" aria-labelledby="reiter-strategien">
   <div class="pills" id="regelPills">
     <button data-sub="regeln" class="active">Übersicht</button>
-    <button data-sub="strategien">Schalter &amp; Einstellungen</button>
+    <!-- Label "Intraday" statt "Schalter & Einstellungen" (Regeln-Ausduennung 31.08.2026):
+         die Pille traegt genau die Intraday-Strategie samt Risiko und Archiv, und neben
+         "Mittelfrist" ist der Zeithorizont die ehrlichere Sortierung. data-sub bleibt
+         "strategien" - Kennungen sind Schnittstellen (Tests, Navigation, Store). -->
+    <button data-sub="strategien">Intraday</button>
     <button data-sub="mittelfrist">Mittelfrist</button>
     <button data-sub="regelbuch">Regelbuch</button>
     <button data-sub="stratchart">Chart</button>
@@ -1236,12 +1240,16 @@
   <!-- ============ MITTELFRIST (Steuerung; Bestand steht in Vermögen → Bücher) ============ -->
   <div class="sub" id="sub-mittelfrist">
   <div class="panel">
-    <h3>Momentum im Querschnitt · Aktien, keine Hebelscheine</h3>
-    <div id="mfErklaerung" style="font-size:var(--fs-text); color:var(--ink-2); line-height:1.55;">
-      Diese Strategie vergleicht alle Werte des Universums <b>miteinander</b> und hält das stärkste Zehntel.
-      Kein Chartmuster, kein Ein- und Ausstiegssignal – nur eine Rangfolge, die alle drei Monate neu gebildet wird.
-      Gekauft werden <b>Aktien</b>; mit Hebelscheinen auf 21 Tage ist eine Haltedauer von drei Monaten nicht
-      darstellbar, der Zeitwertverfall frisst sie auf.
+    <h3 style="display:flex; align-items:center; gap:8px;">Momentum im Querschnitt · Aktien, keine Hebelscheine
+      <button class="info" type="button" data-info="regeln.mf.momentum" aria-expanded="false"
+              aria-label="Erklärung: Momentum im Querschnitt">i</button></h3>
+    <!-- Der lange Erklaer- und Warntext (samt der frueheren Karte "Was du dabei wissen
+         musst") steht wortgleich im Info-Register (regeln.mf.momentum). Sichtbar bleibt,
+         was eine Entscheidung aendert: Rueckschlag, Marktvergleich, Simulation. -->
+    <div id="mfErklaerung" style="font-size:var(--fs-text); color:var(--ink-2); line-height:1.55; max-width:68ch;">
+      Vergleicht alle Werte des Universums <b>miteinander</b> und hält das stärkste Zehntel – kein Chartmuster,
+      nur eine Rangfolge alle drei Monate. <b>Kein ruhiges Investment:</b> größter Rückschlag 52 % (2008),
+      in 8 von 22 Jahren schlechter als der Markt. Alles hier ist Simulation.
     </div>
     <div class="chartleiste" style="margin-top:10px;">
       <label title="Über wie viele Handelstage die Stärke gemessen wird. 231 Tage sind rund elf Monate.">Rückblick
@@ -1284,20 +1292,6 @@
     </div>
   </div>
 
-  <div class="panel" style="margin-top:12px;">
-    <h3>Was du dabei wissen musst</h3>
-    <div style="font-size:var(--fs-text); color:var(--ink-2); line-height:1.6;">
-      <p style="margin:0 0 8px;"><b>Der größte Rückschlag lag bei 52 Prozent</b> (2008). Das ist kein ruhiges Investment.
-      Wer bei so einem Einbruch aussteigt, hat den Effekt nicht – er entsteht gerade dadurch, dass man dabeibleibt.</p>
-      <p style="margin:0 0 8px;"><b>In 8 von 22 Jahren war das Depot schlechter als der Markt.</b> 2024 lag es bei
-      −0,1 % gegen +7,4 %. Momentum verliert typischerweise genau dann, wenn der Markt scharf dreht.</p>
-      <p style="margin:0 0 8px;"><b>Das Universum enthält nur Firmen, die es heute noch gibt.</b> Pleiten und
-      Übernahmen fehlen in den Daten. Der Vergleich läuft gegen den Durchschnitt derselben Werte, was das dämpft,
-      aber nicht aufhebt. Der gemessene Vorsprung ist eher eine Obergrenze.</p>
-      <p style="margin:0;"><b>Alles hier ist Simulation.</b> Es wird nichts gekauft und nichts verkauft.</p>
-    </div>
-  </div>
-
   <div class="panel">
     <h3>Mittelfrist-Bücher steuern</h3>
     <div class="chartleiste">
@@ -1310,17 +1304,16 @@
   </div>
 
   <div class="panel">
-    <h3>Ergebnis-Drift · Aktien, keine Hebelscheine</h3>
-    <div style="font-size:var(--fs-text); color:var(--ink-2); line-height:1.55;">
+    <h3 style="display:flex; align-items:center; gap:8px;">Ergebnis-Drift · Aktien, keine Hebelscheine
+      <button class="info" type="button" data-info="regeln.mf.drift" aria-expanded="false"
+              aria-label="Erklärung: Ergebnis-Drift">i</button></h3>
+    <!-- Erklaer- und Messtext wortgleich im Info-Register (regeln.mf.drift); sichtbar
+         bleibt die Regel in einem Satz plus die Instrument-Zusicherung. -->
+    <div style="font-size:var(--fs-text); color:var(--ink-2); line-height:1.55; max-width:68ch;">
       Nach einer Quartalsmeldung läuft der Kurs noch Wochen in Richtung der Überraschung weiter.
-      Gekauft wird das <b>oberste Fünftel</b> der Überraschungen, verkauft das <b>unterste</b> – gleich viele,
-      aus demselben Topf. Anders als das Momentum darüber ist das <b>kein Chartsignal</b>: Die Information
-      kommt aus den Zahlen, nicht aus dem Kursverlauf. Deshalb bleibt neben dem Momentum messbar etwas übrig
-      (Korrelation der Monatserträge nur 0,41, Alpha +6,90 % p. a. bei t = 2,20).
-      <br><br>
-      <b>Nicht mit Hebelscheinen handelbar.</b> Am 21.08.2026 durchgerechnet: Der Basiswert müsste 5,5 bis 11 %
-      laufen, damit ein Schein nach Zeitwertverfall und Spanne bei null herauskommt – der Drift liefert rund
-      1,3 % je Position. Faktor 4 bis 8 zu wenig. Gerechnet wird deshalb im Basiswert.
+      Gekauft wird das <b>oberste Fünftel</b> der Überraschungen, verkauft das <b>unterste</b> –
+      im <b>Basiswert</b>, nicht mit Hebelscheinen: Der Drift liefert nur ein Viertel bis ein Achtel
+      der Schein-Kostenhürde. Alles hier ist Simulation.
     </div>
     <div class="chartleiste" style="margin-top:10px;">
       <label title="Wie lange eine Position gehalten wird. Auf 20 Tagen ist der Effekt seit 2015 tot (t = 0,77) – erst ab rund 60 Tagen trägt er.">Halten
@@ -1364,15 +1357,9 @@
     <div id="drHeute" style="margin-top:6px;"></div>
 
     <div style="margin-top:14px; font-size:var(--fs-neben); color:var(--ink-2); line-height:1.55; border-top:1px solid var(--grid); padding-top:10px;">
-      <p style="margin:0 0 6px;"><b>Was gemessen ist.</b> 20.356 Ergebnistermine aus 197 Werten, 1993–2026.
-      Marktneutral, 60 Handelstage, Rang nur gegen bereits veröffentlichte Zahlen:
-      ab 2015 <b>+10,44 % p. a. bei t = 3,04</b> und 67 % positiven Monaten, positiv in allen sieben Teilzeiträumen.
-      Zufällige Zuordnung ergibt −1,74 % (t = −0,88) – der Aufbau selbst erzeugt nichts.</p>
-      <p style="margin:0 0 6px;"><b>Was offen bleibt.</b> Die Überlebensverzerrung ist nur teilweise ausgeräumt:
-      In der über zehn Jahre schwachen Hälfte der Werte bleiben nur +1,72 % (t = 0,58), in der starken +8,61 %.
-      Ein guter Teil sitzt weiter in den Gewinnern von heute. Und es braucht <b>beide Beine</b> –
-      long allein ist überwiegend Marktbeta.</p>
-      <p style="margin:0;"><b>Alles hier ist Simulation.</b> Es wird nichts gekauft und nichts verkauft.</p>
+      Gemessen ab 2015: <b>+10,44 % p. a. bei t = 3,04</b> – aber die Überlebensverzerrung ist nur teilweise
+      ausgeräumt (schwache Hälfte der Werte: +1,72 % bei t = 0,58). Die vollständige Messung steht hinter dem
+      i-Knopf oben.
     </div>
   </div>
   </div>
@@ -1414,8 +1401,10 @@
         nur dabei.
       </div>
 
+    <!-- Innerhalb von "Bilanz dieser Regel" sind das Unterabschnitte, keine gleichrangigen
+         Karten - h4 statt h3, damit die Gliederung stimmt (Regeln-Ausduennung 31.08.2026). -->
     <div class="panel" style="margin-bottom:12px;">
-      <h3>Was hat gewirkt?</h3>
+      <h4 style="margin:0 0 6px;">Was hat gewirkt?</h4>
       <div style="color:var(--muted); font-size:var(--fs-neben); margin-bottom:8px;">
         Jede automatische Änderung mit gemessener Wirkung: Ø Gewinn je Intraday-Trade davor gegen danach, sortiert nach
         Wirkung, jede einzeln zurücknehmbar – bei den von Hand übernommenen Voreinstellungen sogar Feld für Feld.
@@ -1436,7 +1425,7 @@
       </div>
     </div>
       <div class="panel">
-        <h3>Wann die Strategie nichts getan hat</h3>
+        <h4 style="margin:0 0 6px;">Wann die Strategie nichts getan hat</h4>
         <div style="color:var(--muted); font-size:var(--fs-neben); margin-bottom:8px;">
           Wie oft die Filter ein Signal bewusst verworfen haben – und warum. Der häufigste Grund ist der stärkste Hebel:
           „Wer nicht weiß, was er tut, muss wissen, wann er nichts tut.“ (Kostolany)
@@ -1444,7 +1433,7 @@
         <div id="patience"><div class="loading">Noch keine verworfenen Signale erfasst – entsteht, sobald der Intraday-Scanner läuft.</div></div>
       </div>
       <div class="panel">
-        <h3>Depot gegen Buy &amp; Hold</h3>
+        <h4 style="margin:0 0 6px;">Depot gegen Buy &amp; Hold</h4>
         <div id="benchInfo" style="font-size:var(--fs-neben); color:var(--muted); margin-bottom:6px;">Wird beim Öffnen dieses Bereichs geladen …</div>
         <svg id="benchChart" style="width:100%; height:150px; display:block;"></svg>
         <div id="benchLegend" style="font-size:var(--fs-neben); color:var(--ink-2); margin-top:4px;"></div>
@@ -1516,17 +1505,16 @@
 
     <!-- 1 · Was die App von allein tut -->
     <div class="panel" style="margin-bottom:12px; border-top:3px solid var(--series);">
-      <h3>Autopilot – die App verbessert sich selbst</h3>
-      <div style="color:var(--muted); font-size:var(--fs-neben); margin-bottom:10px;">
-        Das <b>Kursarchiv</b> sammelt jede geladene Kursreihe dauerhaft – die Messbasis wächst mit jedem Handelstag,
-        statt an Yahoos kurzem Rückblick zu kleben. Was die Nacht misst, hängt von deiner Strategie ab:
-        Fährst du eine der <b>gemessenen Strategien</b> (RSI2 im Seitwärtskanal / Kapitulations-Dip), arbeitet die Nacht als
-        <b>Edge-Wächter</b> – sie prüft auf dem vollen Handels-Universum, ob der gemessene Vorsprung im frischen Fenster
-        noch trägt (Überschuss gegen die Drift, t über Symbole), und vergleicht nur noch die wenigen gemessenen
-        Stellschrauben (Haltedauer-Varianten). Das alte Setup-Rennen über die widerlegten Signale läuft dort bewusst
-        nicht mehr – es hat Scheinsieger produziert. Fährst du ein anderes Setup, misst die Nacht wie bisher alle
-        Kandidaten per Walk-Forward; übernommen wird nur, was sich in <b>zwei Nächten hintereinander</b> bestätigt,
-        angewendet morgens vor Handelsbeginn. Von Hand gesetzte Felder bleiben unangetastet.
+      <h3 style="display:flex; align-items:center; gap:8px;">Autopilot – die App verbessert sich selbst
+        <button class="info" type="button" data-info="regeln.autopilot" aria-expanded="false"
+                aria-label="Erklärung: Autopilot">i</button></h3>
+      <!-- Der Absatz, wie die Nachtmessung im Detail arbeitet (Edge-Waechter vs.
+           Walk-Forward, Scheinsieger-Begruendung), steht wortgleich im Info-Register
+           (regeln.autopilot). Sichtbar bleibt die Zusicherung, was uebernommen wird. -->
+      <div style="color:var(--muted); font-size:var(--fs-neben); margin-bottom:10px; max-width:68ch;">
+        Die Nacht misst auf dem <b>Kursarchiv</b> – als Edge-Wächter auf den gemessenen Kanten, sonst per
+        Walk-Forward über alle Kandidaten. Übernommen wird nur, was sich in <b>zwei Nächten hintereinander</b>
+        bestätigt; von Hand gesetzte Felder bleiben unangetastet.
       </div>
 
       <div class="auto-row">
@@ -1548,11 +1536,10 @@
           <button class="btn ghost tiny" id="massenStopBtn">anhalten</button>
         </div>
         <div id="massenStatus" class="auto-status" style="white-space:pre-wrap;"></div>
-        <div class="hinweis" style="margin-top:4px;">
-          Rund 200 Werte × drei Zeitrahmen bis 90 Tage zurück. Das sind je nach Lücke einige tausend Abrufe –
-          <b>mit Absicht gedrosselt</b> (0,3 s Pause, Rückzug bei Fehlern), weil ein zu schneller Lauf von Capital.com
-          gebremst oder zeitweise gesperrt wird. Rechne mit <b>30–90 Minuten</b> und einigen hundert MB im Datenordner.
-          Der Fortschritt ist jederzeit anhaltbar und wird gespeichert – ein neuer Lauf setzt dort an, wo der letzte aufhörte.
+        <div class="hinweis" style="margin-top:4px; max-width:68ch;">
+          Einige tausend Abrufe (rund 200 Werte × drei Zeitrahmen), <b>mit Absicht gedrosselt</b>, weil Capital.com
+          zu schnelle Läufe sperrt. Rechne mit <b>30–90 Minuten</b> und einigen hundert MB im Datenordner;
+          jederzeit anhaltbar, ein neuer Lauf setzt am letzten Stand an.
         </div>
       </div>
 
@@ -1640,7 +1627,7 @@
            App-Einstellungen, nicht als einsame Checkbox neben einer Überschrift. -->
       <span style="font-size:var(--fs-neben); color:var(--muted); margin-left:auto;">Benachrichtigungen: in den App-Einstellungen</span>
     </div>
-    <div class="panel" id="positionsPanel"><div class="loading">Noch keine Positionen – schalte unter „Regeln → Schalter &amp; Einstellungen“ die Intraday-Strategie ein.</div></div>
+    <div class="panel" id="positionsPanel"><div class="loading">Noch keine Positionen – schalte unter „Regeln → Intraday“ die Intraday-Strategie ein.</div></div>
   </div>
 
   <!-- ============ BÜCHER (Bestand; gesteuert wird unter Regeln → Mittelfrist) ============ -->

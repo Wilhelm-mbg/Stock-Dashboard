@@ -640,6 +640,41 @@
       ],
       fuss: 'Der Wechsel auf „handelt“ ist eine Entscheidung in den Einstellungen, kein Knopf hier.'
     },
+    /* Die Mittelfrist-Pille trug drei Absatz-Waende als Dauertext (Momentum-Intro,
+     * "Was du dabei wissen musst", Drift-Intro samt Messblock). Der Wortlaut ist
+     * UNVERAENDERT hierher uebernommen (Regeln-Ausduennung 31.08.2026); sichtbar
+     * geblieben sind die entscheidungsrelevanten Zahlen in je einem Satz. */
+    'regeln.autopilot': {
+      titel: 'Was die Nacht misst',
+      punkte: [
+        'Das <b>Kursarchiv</b> sammelt jede geladene Kursreihe dauerhaft – die Messbasis wächst mit jedem Handelstag, statt an Yahoos kurzem Rückblick zu kleben.',
+        'Was die Nacht misst, hängt von deiner Strategie ab: Fährst du eine der <b>gemessenen Strategien</b> (RSI2 im Seitwärtskanal / Kapitulations-Dip), arbeitet die Nacht als <b>Edge-Wächter</b> – sie prüft auf dem vollen Handels-Universum, ob der gemessene Vorsprung im frischen Fenster noch trägt (Überschuss gegen die Drift, t über Symbole), und vergleicht nur noch die wenigen gemessenen Stellschrauben (Haltedauer-Varianten).',
+        'Das alte Setup-Rennen über die widerlegten Signale läuft dort bewusst nicht mehr – es hat Scheinsieger produziert.',
+        'Fährst du ein anderes Setup, misst die Nacht wie bisher alle Kandidaten per Walk-Forward; übernommen wird nur, was sich in <b>zwei Nächten hintereinander</b> bestätigt, angewendet morgens vor Handelsbeginn. Von Hand gesetzte Felder bleiben unangetastet.'
+      ]
+    },
+    'regeln.mf.momentum': {
+      titel: 'Momentum im Querschnitt',
+      punkte: [
+        'Diese Strategie vergleicht alle Werte des Universums <b>miteinander</b> und hält das stärkste Zehntel. Kein Chartmuster, kein Ein- und Ausstiegssignal – nur eine Rangfolge, die alle drei Monate neu gebildet wird.',
+        'Gekauft werden <b>Aktien</b>; mit Hebelscheinen auf 21 Tage ist eine Haltedauer von drei Monaten nicht darstellbar, der Zeitwertverfall frisst sie auf.',
+        '<b>Der größte Rückschlag lag bei 52 Prozent</b> (2008). Das ist kein ruhiges Investment. Wer bei so einem Einbruch aussteigt, hat den Effekt nicht – er entsteht gerade dadurch, dass man dabeibleibt.',
+        '<b>In 8 von 22 Jahren war das Depot schlechter als der Markt.</b> 2024 lag es bei −0,1 % gegen +7,4 %. Momentum verliert typischerweise genau dann, wenn der Markt scharf dreht.',
+        '<b>Das Universum enthält nur Firmen, die es heute noch gibt.</b> Pleiten und Übernahmen fehlen in den Daten. Der Vergleich läuft gegen den Durchschnitt derselben Werte, was das dämpft, aber nicht aufhebt. Der gemessene Vorsprung ist eher eine Obergrenze.'
+      ],
+      fuss: 'Alles hier ist Simulation. Es wird nichts gekauft und nichts verkauft.'
+    },
+    'regeln.mf.drift': {
+      titel: 'Ergebnis-Drift',
+      punkte: [
+        'Nach einer Quartalsmeldung läuft der Kurs noch Wochen in Richtung der Überraschung weiter. Gekauft wird das <b>oberste Fünftel</b> der Überraschungen, verkauft das <b>unterste</b> – gleich viele, aus demselben Topf.',
+        'Anders als das Momentum ist das <b>kein Chartsignal</b>: Die Information kommt aus den Zahlen, nicht aus dem Kursverlauf. Deshalb bleibt neben dem Momentum messbar etwas übrig (Korrelation der Monatserträge nur 0,41, Alpha +6,90 % p. a. bei t = 2,20).',
+        '<b>Nicht mit Hebelscheinen handelbar.</b> Am 21.08.2026 durchgerechnet: Der Basiswert müsste 5,5 bis 11 % laufen, damit ein Schein nach Zeitwertverfall und Spanne bei null herauskommt – der Drift liefert rund 1,3 % je Position. Faktor 4 bis 8 zu wenig. Gerechnet wird deshalb im Basiswert.',
+        '<b>Was gemessen ist.</b> 20.356 Ergebnistermine aus 197 Werten, 1993–2026. Marktneutral, 60 Handelstage, Rang nur gegen bereits veröffentlichte Zahlen: ab 2015 <b>+10,44 % p. a. bei t = 3,04</b> und 67 % positiven Monaten, positiv in allen sieben Teilzeiträumen. Zufällige Zuordnung ergibt −1,74 % (t = −0,88) – der Aufbau selbst erzeugt nichts.',
+        '<b>Was offen bleibt.</b> Die Überlebensverzerrung ist nur teilweise ausgeräumt: In der über zehn Jahre schwachen Hälfte der Werte bleiben nur +1,72 % (t = 0,58), in der starken +8,61 %. Ein guter Teil sitzt weiter in den Gewinnern von heute. Und es braucht <b>beide Beine</b> – long allein ist überwiegend Marktbeta.'
+      ],
+      fuss: 'Alles hier ist Simulation. Es wird nichts gekauft und nichts verkauft.'
+    },
     /* Die Experten-Einstellungen (#idParams) erklaerten sich bis 8.31 ausschliesslich
      * ueber 18 title-Tooltips - weder per Tastatur noch auf einem Tastbildschirm
      * erreichbar, und sieben Bedienelemente hatten gar keine Erklaerung. Die Tooltips

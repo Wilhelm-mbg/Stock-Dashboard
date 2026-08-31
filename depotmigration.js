@@ -128,7 +128,7 @@
           txt: 'Die Stunden-Strategie wurde vermessen (24.727 Signale, 189 Werte, 8 Jahre): Ihr Technik-Score ist ein ' +
             'Kontraindikator (−0,74 Pp auf 20 Tage, t=−11,6) – dazu Schein-Kosten über Tage. Sie wurde einmalig ' +
             'abgeschaltet. Einschalten bleibt jederzeit möglich (Reiter „Regeln → ' +
-            'Schalter & Einstellungen“, im Archiv) und wird danach nie wieder automatisch geändert.' });
+            'Intraday“, im Archiv) und wird danach nie wieder automatisch geändert.' });
       }
     }
     /* Einmalig: Wer die gemessene Kante ueber die Auslöser-Liste gewaehlt hatte, sass
