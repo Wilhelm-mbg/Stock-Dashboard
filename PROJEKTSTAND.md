@@ -57,7 +57,11 @@ gefahren wird.**
 **Offen geblieben (nichts hängt in der Luft, alles committet):**
 - **Weg-3-Kohortenlauf** — vorregistriert, gebaut, alle vier Wächter grün, **nicht gestartet**;
   wartete auf den Vollauf. Kann jederzeit laufen, das Werkzeug prüft den Datenstand selbst.
-- **Vollauf Eröffnungskurse** — Stand zuletzt ~83 %, Schlusszahlen nie gemeldet.
+- **Vollauf Eröffnungskurse — FERTIG (19:4x gemeldet):** 1.113 Reihen erneuert, 0 Kerzen verloren,
+  1.847 aus dem Bestand gerettet, 99,2 % mit Eröffnung; 14 Abweichungen sind Rundung der Quelle
+  selbst. Offen: 51 Reihen im alten Format, die In-Regel-Prüfung (freigegeben, nicht gebaut,
+  Vorarbeit BFI/PHYT 18/18 und 19/19), 48 XASE-Reihen außerhalb des Kandidatenfilters.
+  **Damit ist das Weg-3-Gatter DATENSEITIG offen** — der Lauf selbst wartet auf Wilhelms Freigabe.
 - **Punkt-in-Zeit-Universum** — Auflage 1 (woher kam die Datei) und 2 (erreicht die App die Quelle)
   ungeprüft; **Auflage 2 kann Wilhelms Entscheid umwerfen.**
 - **`triggerBelegstand`** — vier Auslöser stehen als „Nicht gemessen", obwohl drei gemessen-verworfen
