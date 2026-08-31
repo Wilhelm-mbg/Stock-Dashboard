@@ -6371,10 +6371,22 @@
      * Eine Kante, die nur in einer Liste lebt, ist keine.
      * Die Einteilung kommt deshalb aus PROTOKOLL_KANTE - derselben Quelle, aus der die
      * Kanten-Anzeige seit dem 23.08. ihre Farbe bezieht. */
+    /* Seit dem QS-Fund vom 27.08.2026 ("Widerlegte Schalter") gibt es VIER Zustände,
+     * nicht drei: 'widerlegt' existierte im Datenmodell und wurde überall als eigener
+     * Zustand behandelt (app-shell, messband, scoreboard) - nur die Auswahl, die
+     * entscheidet, welche Strategie läuft, faltete es auf 'gemessen'. Und Studien
+     * AUSSERHALB der Messmaschine (Signalstudie, Abschnittskanäle) legen keine
+     * Protokolle ab - ihre Verwerfungen standen deshalb als "Nicht gemessen", der
+     * einladendsten der Beschriftungen. Die zweite Quelle ist studienurteile.js;
+     * sie kann nur verwerfen, nie belegen (Regel D2), und das Protokoll gewinnt. */
     function triggerBelegstand(k) {
       var p = PROTOKOLL_KANTE[k];
-      if (!p) return 'ungemessen';
-      return p.urteil === 'bestaetigt' ? 'belegt' : 'gemessen';
+      if (p) {
+        if (p.urteil === 'widerlegt') return 'verworfen';
+        return p.urteil === 'bestaetigt' ? 'belegt' : 'gemessen';
+      }
+      if (window.StudienUrteile && window.StudienUrteile.verworfen(k)) return 'verworfen';
+      return 'ungemessen';
     }
     /** Standard-Ausloeser je Setup. Im Umkehr-Setup rsi2seit - NICHT weil es belegt waere
      *  (das Protokoll sagt "nicht entscheidbar"), sondern weil es die am besten gemessene
@@ -6391,11 +6403,15 @@
       /* Zwei Gruppen, nicht drei: Auch der rohe RSI(2) IST gemessen - er kam als
        * Muenzwurf heraus (+0,017 Pp) und traegt erst mit der Seitwaerts-Erlaubnis.
        * Ihn als "noch nicht gemessen" zu fuehren waere eine neue Unwahrheit. */
-      /* Drei Gruppen statt zwei, weil es drei Zustaende gibt und das Zusammenwerfen von
-       * "gemessen, nicht belegt" und "nie gemessen" beides falsch darstellt. */
+      /* Vier Gruppen, weil es vier Zustaende gibt: das Zusammenwerfen von "gemessen,
+       * nicht belegt" und "nie gemessen" stellt beides falsch dar - und das Zusammenwerfen
+       * von "verworfen" mit einem der beiden ebenso (QS-Fund 27.08.2026). "Verworfen"
+       * steht VOR "Nicht gemessen": wer die Liste von oben liest, sieht das bekannte
+       * Nein, bevor er beim Unbekannten ankommt. */
       var gruppen = [
         { titel: 'Belegt (Protokoll sagt bestätigt)', test: function (k) { return triggerBelegstand(k) === 'belegt'; } },
         { titel: 'Gemessen, aber nicht belegt', test: function (k) { return triggerBelegstand(k) === 'gemessen'; } },
+        { titel: 'Gemessen und verworfen', test: function (k) { return triggerBelegstand(k) === 'verworfen'; } },
         { titel: 'Nicht gemessen', test: function (k) { return triggerBelegstand(k) === 'ungemessen'; } }
       ];
       gruppen.forEach(function (g) {
@@ -6403,7 +6419,16 @@
         if (!keys.length) return;
         var og = document.createElement('optgroup'); og.label = g.titel;
         keys.forEach(function (k) {
-          var o = document.createElement('option'); o.value = k; o.textContent = tr[k]; og.appendChild(o);
+          var o = document.createElement('option'); o.value = k; o.textContent = tr[k];
+          /* Bei Verworfenen sagt der Titel-Text WOHER das Nein kommt - Studie und Zahl. */
+          if (triggerBelegstand(k) === 'verworfen') {
+            var su = window.StudienUrteile && window.StudienUrteile.verworfen(k);
+            var pk9 = PROTOKOLL_KANTE[k];
+            o.title = pk9 && pk9.urteil === 'widerlegt'
+              ? 'Messprotokoll vom ' + pk9.datum + ': widerlegt'
+              : (su ? su.befund + ' (' + su.quelle + ')' : '');
+          }
+          og.appendChild(o);
         });
         idTg.appendChild(og);
       });

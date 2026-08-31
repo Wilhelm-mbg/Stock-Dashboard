@@ -4152,6 +4152,35 @@ console.log('\n44) Messmaschine, Scoreboard und Strategie-Eingabe (23.08.2026)')
   ok(dep2.indexOf('kante.jeSignalPp') !== -1,
      'Verglichen wird der Ueberschuss JE SIGNAL mit der Huerde je Umlauf - nicht das Tagesmittel');
 
+  /* ---- Vier Zustaende in der Ausloeser-Auswahl (QS-Fund 27.08.2026) ----
+   * 'widerlegt' existierte im Datenmodell und war ueberall ein eigener Zustand -
+   * nur die Auswahl, die entscheidet, welche Strategie laeuft, faltete es auf
+   * 'gemessen'. Und Verwerfungen von Studien ausserhalb der Messmaschine standen
+   * als "Nicht gemessen", weil dort kein Protokoll liegt. */
+  ok(dep2.indexOf("titel: 'Gemessen und verworfen'") !== -1,
+     'Die Ausloeser-Auswahl hat eine eigene Gruppe fuer Gemessen-und-verworfen');
+  ok(/urteil === 'widerlegt'\) return 'verworfen';/.test(dep2),
+     'Ein widerlegtes Protokoll landet in der Verworfen-Gruppe, nicht bei "gemessen"');
+  ok(dep2.indexOf('window.StudienUrteile.verworfen(k)') !== -1,
+     'Verwerfungen von Studien ausserhalb der Messmaschine erreichen die Auswahl');
+  var su9 = fs.readFileSync(__dirname + '/studienurteile.js', 'utf8');
+  ['donchian', 'squeeze', 'ruecksetzer', 'kanaltrend'].forEach(function (k9) {
+    ok(new RegExp('^    ' + k9 + ': \\{', 'm').test(su9),
+       'studienurteile.js traegt die dokumentierte Verwerfung: ' + k9);
+  });
+  ok(su9.indexOf("'belegt'") === -1 && su9.indexOf('"belegt"') === -1,
+     'Das Studien-Register kann nur verwerfen, nie belegen (D2: Beleg nur aus dem Protokoll)');
+  ok(/quelle: '/.test(su9),
+     'Jede eingetragene Verwerfung nennt ihre Quelle');
+  var h9 = fs.readFileSync(__dirname + '/index.html', 'utf8');
+  ok(h9.indexOf('<script src="studienurteile.js">') !== -1 &&
+     h9.indexOf('studienurteile.js') < h9.indexOf('<script src="depot.js">'),
+     'studienurteile.js wird geladen, und zwar bevor depot.js es liest');
+  var btOpt9 = (h9.match(/<option value="daily">[^<]*/) || [''])[0];
+  ok(/widerlegt/.test(btOpt9),
+     'Die Backtest-Voreinstellung (#btMode daily) traegt ihr Urteil im Text, wie #stcMode es vormacht',
+     btOpt9);
+
   /* ---- Welche Variante spricht fuer das Protokoll? (26.08.2026) ----
    * Bis dahin nahm depot.js die Variante mit dem staerksten Bestaetigungs-t, das
    * Scoreboard dagegen bestesUrteil samt der Variante, die es traegt. Zwei Stellen
