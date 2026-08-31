@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-31 20:15 (Windows-Uhr)
+letzter-bericht: 2026-08-31 20:55 (Windows-Uhr)
 gesehener-tag: v8.34.2 (installiert 17:00)
 pm-adresse: markt-dashboard-c0 [4877bc]   <- HIERHIN melden (Bruecke 19:3x neu gestartet, alte Kuerzel tot)
 -->
@@ -30,6 +30,21 @@ und den Sitzungen: hier steht, was entschieden ist, was gerade läuft und was al
 ansteht. Lies sie beim Start; trag dich unter „Läuft gerade" ein, wenn du Dateien belegst.
 
 Wenn du hier etwas änderst, dann nur deine eigene Zeile unter „Läuft gerade".
+
+---
+
+## 🐕 31.08. 20:5x — **RELEASE BLOCKIERT: der Wachhund-TEST ist verrottet, nicht der Wachhund** (PM-Gegenprüfung)
+
+**Die Release-Wache hat korrekt verweigert** (2 rote Tests, kein Tag, nichts hochgeladen) und eine
+unabhängige Gegenprüfung verlangt. **Erledigt, die Eigenaussage der Oberflächen-Sitzung stimmt:**
+rot auch auf sauberem HEAD, nicht deren Werk.
+
+**Gemessene Ursache:** *Der Testblock baut Kunstkerzen mit festem Datum (25.08.), fragt aber mit der
+echten Uhr — seit ~28.08. verweigert der Wachhund im Test wegen RÜCKSTÄNDIGKEIT des Kunstarchivs,
+nicht wegen der Sperren.* **Die Sperrenlogik selbst arbeitet richtig (verwaisteSperre=true kommt).**
+*Ein Test mit eingebautem Verfallsdatum — die bekannte Form: rot aus dem falschen Grund.*
+**Reparatur-Auftrag ist an Wilhelm ausgegeben; danach kann die Wache erneut bauen (60 Commits
+warten, 4 Release-Notizen liegen).**
 
 ---
 
