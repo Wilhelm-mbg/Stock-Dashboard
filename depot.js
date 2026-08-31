@@ -22,7 +22,13 @@
       patience: {},
       // News auf 0,15 gesenkt (21.08.2026): das Sentiment ist unbelegt, weil es keine
       // historischen Schlagzeilen gibt. Steigt wieder, sobald das Archiv einen Beleg gibt.
-      weights: { news: 0.15, tech: 0.55, elliott: 0.30 },
+      // News auf 0 (Entscheid Wilhelm, 31.08.2026): das Archiv hat einen Beleg NICHT
+      // hergeben koennen - die erste Messung ergab "nicht messbar", es fehlt der Faktor 75
+      // (studien/vorregistrierung-2026-08-31-news-sentiment/ERGEBNIS.md). Technik und
+      // Elliott werden von combine() dadurch auf 0,647 / 0,353 hochskaliert; ihr
+      // Verhaeltnis 0,55 : 0,30 bleibt unveraendert. Begruendung in quant.js bei
+      // DEFAULT_WEIGHTS. Wiedererhoehung nur mit belegter Messung.
+      weights: { news: 0, tech: 0.55, elliott: 0.30 },
       /* Voreinstellungen zeigen dahin, wo die EVIDENZ ist. Die erste externe Diagnose
          (Issue #1, 21.08.2026) zeigte einen Tester, der am ersten Tag den alten Standard
          'breakout' auf Scheinen handelte - die Muenzwurf-Konfiguration -, waehrend die
@@ -1683,6 +1689,55 @@
    *  Gespeichert wird nur, was die Auswertung braucht: Titel und Zeitpunkt. Keine
    *  URLs, keine Texte. Ein Schluessel je Symbol, gedeckelt auf 400 Eintraege -
    *  das sind bei vier Abrufen am Tag rund drei Jahre. */
+  /* ===== DAS ARCHIV LAEUFT EIGENSTAENDIG (31.08.2026) =====
+   * DER BEFUND, der das noetig machte: Seit dem 21.08.2026 kam im Archiv nichts mehr an -
+   * alle 17 Store-Schluessel trugen denselben Stand. Die Quelle war es nicht: der
+   * RSS-Endpunkt antwortet gemessen am 31.08. mit HTTP 200 und 18-20 Meldungen je Symbol.
+   * Die Ursache war der AUFRUFPFAD. getSymbolNews() wurde an genau EINER Stelle gerufen,
+   * naemlich mitten im Handelslauf runJob(); runJob() startet von selbst nur unter
+   * "D.hourlyEnabled !== false". Und genau am 21.08. hat die Sicherung die
+   * Stunden-Strategie abgeschaltet, weil sie widerlegt wurde (Technik-Score als
+   * Kontraindikator, t=-11,6) - seither laeuft runJob nur noch auf Knopfdruck.
+   *
+   * DAS ARCHIV RITT ALSO AUF DER STRATEGIE MIT, DIE ES BELEGEN SOLLTE. Am selben Tag,
+   * an dem es angelegt wurde, um das Sentiment messbar zu machen, wurde ihm die
+   * Stromquelle abgedreht - unbemerkt, weil ein nicht laufendes Archiv von aussen
+   * genauso aussieht wie ein Archiv ohne Neuigkeiten. Zehn Tage spaeter fiel es nur
+   * als Nebenbefund der ersten Sentiment-Messung auf.
+   *
+   * DIE LEHRE, nicht nur der Fix: Eine Datensammlung darf nicht am Verbraucher haengen,
+   * dessen Frage sie beantworten soll. Sie bekommt hier deshalb einen eigenen Takt, der
+   * nichts von hourlyEnabled weiss. Er HANDELT NICHT und rechnet keinen Score - er holt
+   * Schlagzeilen und schreibt sie weg. Das Sentiment-Gewicht steht seit dem 31.08. auf 0
+   * (siehe quant.js); gesammelt wird trotzdem weiter, denn genau das ist die Bedingung
+   * dafuer, dass die Frage irgendwann beantwortbar wird. */
+  var newsArchivLaeuft = false;
+  async function newsArchivLauf() {
+    if (newsArchivLaeuft || !D) return;
+    newsArchivLaeuft = true;
+    var n = 0;
+    try {
+      var syms = universe();
+      for (var i = 0; i < syms.length; i++) {
+        /* getSymbolNews archiviert selbst - EIN Weg zur Quelle, nicht zwei.
+         * Ein zweiter Abrufpfad waere die naechste Stelle, an der zwei Fassungen
+         * derselben Regel auseinanderlaufen. */
+        var items = await getSymbolNews(syms[i]);
+        if (items && items.length) n++;
+        await new Promise(function (r) { setTimeout(r, 1200); });   // schonend zur Quelle
+      }
+      D.newsArchivStand = { at: Date.now(), symbole: syms.length, mitMeldungen: n };
+      save();
+    } catch (e) {
+      /* Anders als im stillen catch von archiviereNews wird ein Fehlschlag hier
+       * FESTGEHALTEN. Ein Archiv, das schweigend nichts tut, ist der Fehler, den
+       * dieser ganze Block behebt. */
+      D.newsArchivStand = { at: Date.now(), fehler: String((e && e.message) || e) };
+      save();
+    }
+    newsArchivLaeuft = false;
+  }
+
   async function archiviereNews(sym, items) {
     if (!items || !items.length) return;
     try {
@@ -2048,7 +2103,7 @@
           var vol = Q.histVol(closes, 30);
           var evTxt = sent.events.length ? ' [' + sent.events.join(', ') + ']' : '';
           var reason = 'Gesamtscore ' + S.toFixed(2) + ' → ' + (dir === 'call' ? 'CALL' : 'PUT') +
-            ' | News ' + sent.score.toFixed(2) + evTxt +
+            ' | News ' + sent.score.toFixed(2) + ' (' + Q.NEWS_HINWEIS + ')' + evTxt +
             (sent.top ? ' – „' + sent.top.title.slice(0, 110) + '“' : ' – keine markante Schlagzeile') +
             ' | Technik ' + tech.score.toFixed(2) +
             ' | Elliott ' + ell.score.toFixed(2) + ' (' + ell.label + ', Konf. ' + ell.conf + ')';
@@ -6739,6 +6794,15 @@
     }, 5 * 60000);
     // Beim Start: nachholen, wenn der letzte Lauf >1 h her ist
     if (D.hourlyEnabled !== false && Date.now() - D.lastRun >= 3600000) setTimeout(function () { runJob(false); }, 20000);
+
+    /* News-Archiv: EIGENER Takt, bewusst ohne hourlyEnabled-Bedingung. Bis zum
+     * 31.08.2026 hing das Archiv am Stunden-Scheduler darueber und stand deshalb
+     * seit dem 21.08. still - Begruendung bei newsArchivLauf(). Stuendlich, wie der
+     * alte Pfad; der Deckel von 400 Eintraegen je Symbol traegt das ueber Jahre. */
+    setInterval(function () {
+      if (Date.now() - ((D.newsArchivStand && D.newsArchivStand.at) || 0) >= 3600000) newsArchivLauf();
+    }, 5 * 60000);
+    if (Date.now() - ((D.newsArchivStand && D.newsArchivStand.at) || 0) >= 3600000) setTimeout(newsArchivLauf, 30000);
 
     // Herzschlag: solange gemessen wird, Kopfzeile alle 5 s auffrischen (seit/letzte Aktivität)
     setInterval(function () { if (pilotRunning) renderPilot(); }, 5000);

@@ -837,6 +837,80 @@ console.log('\n17b) Oberflaeche: Altlasten und Verdrahtung');
   ok(/getElementById\('weightsPanel'\);\s*\n\s*if \(!el\) return;/.test(d),
      'renderWeights vertraegt das fehlende Panel');
 
+  /* ---- DAS NEWS-SENTIMENT STEUERT NICHTS (Entscheid Wilhelm, 31.08.2026) ----
+   * Geprueft wird die EIGENSCHAFT, nicht ein Text: aendert man allein den News-Score
+   * und laesst alles andere stehen, darf sich der Entscheidungs-Score NICHT bewegen.
+   * Eine Textprobe auf "news: 0" waere wertlos - sie bliebe gruen, wenn jemand die
+   * Gewichte woanders wieder einmischt (D.weights aus dem Store, ein zweites
+   * combine(), eine Normierung). Genau dieser Weg ist hier schon viermal
+   * auseinandergelaufen: Code sagte das eine, der Live-Pfad tat das andere.
+   *
+   * WIEDERERHOEHUNG BRAUCHT EINE BELEGTE MESSUNG, nicht eine Meinung. Die erste
+   * Messung (31.08.2026, studien/vorregistrierung-2026-08-31-news-sentiment)
+   * ergab "nicht messbar": 35 Beobachtungen an 10 Zeitpunkten, noetig waeren rund
+   * 2.600 unabhaengige Symbol-Tage. Wer diese Zusicherung rot werden laesst, muss
+   * eine vorregistrierte Studie mit ausreichender Aufloesung vorlegen - nicht den
+   * Test anpassen. */
+  var basis = { news: 0, tech: 0.42, elliott: -0.18 };
+  var sRef = Q.combine(basis, Q.DEFAULT_WEIGHTS);
+  [-1, -0.5, 0.37, 1].forEach(function (n) {
+    var s = Q.combine({ news: n, tech: basis.tech, elliott: basis.elliott }, Q.DEFAULT_WEIGHTS);
+    ok(Math.abs(s - sRef) < 1e-12,
+       'News-Score ' + n + ' aendert den Entscheidungs-Score nicht (Beitrag ist 0)', s.toFixed(6));
+  });
+  /* Dieselbe Probe mit den GESPEICHERTEN Gewichten der App - der Pfad, den
+   * depot.js:2017 wirklich geht (Q.combine(scores, D.weights)). */
+  var dWeights = JSON.parse(/weights: (\{ news: [^}]*\})/.exec(d)[1]
+    .replace(/(\w+):/g, '"$1":'));
+  ok(dWeights.news === 0, 'depot.js: Vorgabe-Gewicht fuer News ist 0', JSON.stringify(dWeights));
+  var sRefD = Q.combine(basis, dWeights);
+  ok(Math.abs(Q.combine({ news: 1, tech: basis.tech, elliott: basis.elliott }, dWeights) - sRefD) < 1e-12,
+     'auch mit den App-Gewichten traegt das Sentiment nichts bei');
+  /* Das Verhaeltnis der verbleibenden Quellen bleibt unangetastet - die
+   * Hochskalierung durch combine() darf keine Quelle bevorzugen. */
+  ok(Math.abs(Q.DEFAULT_WEIGHTS.tech / Q.DEFAULT_WEIGHTS.elliott - 0.40 / 0.25) < 1e-12,
+     'Technik : Elliott bleibt 0,40 : 0,25 - die Null normiert um, verschiebt aber nicht');
+  /* Die ANZEIGE bleibt: Score, Ereignistypen und Top-Meldung werden weiter gebildet. */
+  var sentProbe = Q.sentiment([{ title: 'Company beats guidance, raises outlook', t: Date.now() }], Date.now());
+  ok(sentProbe.score > 0 && sentProbe.events.length > 0 && sentProbe.top,
+     'sentiment() rechnet weiter - abgeschaltet ist das Gewicht, nicht die Anzeige', sentProbe.score.toFixed(2));
+  ok(/unbelegt/.test(Q.NEWS_HINWEIS) && /31\.08\.2026/.test(Q.NEWS_HINWEIS),
+     'Es gibt EINEN Hinweistext fuer alle Anzeigestellen', Q.NEWS_HINWEIS);
+  ok(d.indexOf('Q.NEWS_HINWEIS') !== -1, 'depot.js kennzeichnet den angezeigten News-Score');
+  var expl = fs.readFileSync(__dirname + '/explorer.js', 'utf8');
+  ok(expl.indexOf('Q.NEWS_HINWEIS') !== -1, 'explorer.js kennzeichnet den angezeigten News-Score');
+  /* Bestehende Staende: ohne Migration bliebe ein gespeichertes 0,15 wirksam. */
+  var mig = fs.readFileSync(__dirname + '/depotmigration.js', 'utf8');
+  ok(/D\.weights\.news = 0;/.test(mig) && /newsGewichtNull/.test(mig),
+     'depotmigration.js zieht bestehende Staende auf 0 nach - sonst haette der Entscheid nur fuer Neuinstallationen gegolten');
+
+  /* ---- DAS NEWS-ARCHIV HAENGT NICHT MEHR AM HANDELSLAUF (31.08.2026) ----
+   * Befund: Von 21.08. bis 31.08. kam nichts im Archiv an. Die Quelle war gesund
+   * (HTTP 200, 18-20 Meldungen je Symbol); getSymbolNews() wurde aber NUR aus
+   * runJob() gerufen, und runJob() startet von selbst nur bei hourlyEnabled - das
+   * die Sicherung am 21.08. abgeschaltet hat (Stunden-Strategie widerlegt). Die
+   * Datensammlung hing damit an genau der Strategie, die sie belegen sollte.
+   * Geprueft wird die EIGENSCHAFT: es gibt einen Aufrufweg zum Archiv, der ohne
+   * hourlyEnabled auskommt - nicht, dass irgendwo ein bestimmter Text steht. */
+  ok(/async function newsArchivLauf\(\)/.test(d),
+     'Es gibt einen eigenstaendigen Archiv-Lauf');
+  var taktBlock = (d.match(/setInterval\(function \(\) \{\s*\n\s*if \(Date\.now\(\) - \(\(D\.newsArchivStand[\s\S]{0,200}?\}, 5 \* 60000\);/) || [''])[0];
+  ok(taktBlock && taktBlock.indexOf('newsArchivLauf()') !== -1,
+     'und einen eigenen Takt, der ihn startet');
+  ok(taktBlock && taktBlock.indexOf('hourlyEnabled') === -1,
+     'dieser Takt fragt NICHT nach hourlyEnabled - sonst haenge das Archiv wieder an der widerlegten Strategie');
+  /* Der Lauf darf sammeln, aber nicht handeln: keine Order-Wege in seinem Rumpf. */
+  var rumpf = (d.match(/async function newsArchivLauf\(\)[\s\S]*?\n  \}\n/) || [''])[0];
+  ok(rumpf.length > 100, 'Rumpf von newsArchivLauf gefunden', rumpf.length);
+  ['openPos', 'canOpen', 'Q.combine', 'placeOrder', 'CapAPI'].forEach(function (verboten) {
+    ok(rumpf.indexOf(verboten) === -1,
+       'newsArchivLauf handelt nicht: kein ' + verboten + ' im Rumpf');
+  });
+  ok(rumpf.indexOf('getSymbolNews') !== -1,
+     'er geht ueber getSymbolNews - EIN Weg zur Quelle, nicht ein zweiter Nachbau');
+  ok(/newsArchivStand/.test(rumpf) && /fehler:/.test(rumpf),
+     'ein Fehlschlag wird festgehalten statt still geschluckt - ein schweigendes Archiv war der Fehler');
+
   // --- Die Schalter des heutigen Systems sind wirklich verkabelt ---
   var verkabelt = (d.match(/\.concat\(\[[\s\S]{0,400}?addEventListener\('change', idSave\)/) || [''])[0];
   ['idBlackout', 'idInstrument', 'idPool', 'idKapiZusatz', 'idRegime', 'idMaxStufe', 'idKryptoHandeln'].forEach(function (id) {

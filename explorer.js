@@ -954,13 +954,14 @@
     var lines = [];
     lines.push('## Kurzfazit (regelbasiert)');
     var S = Q.combine({ news: c.sent.score, tech: c.tech.score, elliott: c.ell.score }, Q.DEFAULT_WEIGHTS);
-    lines.push('Gesamtscore **' + S.toFixed(2) + '** (−1 bis +1) aus News (' + c.sent.score.toFixed(2) + '), Technik (' + c.tech.score.toFixed(2) + ') und Elliott (' + c.ell.score.toFixed(2) + '). ' +
+    lines.push('Gesamtscore **' + S.toFixed(2) + '** (−1 bis +1) aus Technik (' + c.tech.score.toFixed(2) + ') und Elliott (' + c.ell.score.toFixed(2) + '); News (' + c.sent.score.toFixed(2) + ') geht mit Gewicht 0 ein – ' + Q.NEWS_HINWEIS + '. ' +
       (S > 0.35 ? 'Das Gesamtbild ist **konstruktiv**.' : S < -0.35 ? 'Das Gesamtbild ist **belastet**.' : 'Das Gesamtbild ist **neutral/gemischt**.'));
     lines.push('## Technik');
     c.tech.parts.forEach(function (p) { lines.push('- ' + p.name + ': Score ' + p.score.toFixed(2)); });
     lines.push('- RSI(14): ' + (c.rsi != null ? Math.round(c.rsi) : '–') + ' · 30-Tage-Vola: ' + c.vol30 + ' %');
     lines.push('## News-Lage');
-    lines.push('- Sentiment-Score: ' + c.sent.score.toFixed(2) + (c.sent.events.length ? ' · Ereignistypen: ' + c.sent.events.join(', ') : ''));
+    lines.push('- Sentiment-Score: ' + c.sent.score.toFixed(2) + ' *(' + Q.NEWS_HINWEIS + ')*' +
+      (c.sent.events.length ? ' · Ereignistypen: ' + c.sent.events.join(', ') : ''));
     if (c.sent.top) lines.push('- Auffälligste Schlagzeile: „' + c.sent.top.title + '“');
     lines.push('## Elliott-Wellen-Einordnung');
     lines.push('- Präferierte Zählung: **' + c.ell.label + '** (Konfidenz ' + Math.round(c.ell.conf * 100) + ' %)');

@@ -194,6 +194,30 @@
           konfigVorher: null, konfigNachher: JSON.parse(JSON.stringify(D.intraday)) });
       }
     }
+    /* NEWS-GEWICHT AUF 0 (Entscheid Wilhelm, 31.08.2026) - auch fuer bestehende Staende.
+     * OHNE DIESEN SCHRITT WAERE DER ENTSCHEID WIRKUNGSLOS: D.weights liegt im Store, und
+     * depot.js:2017 rechnet mit dem GESPEICHERTEN Wert, nicht mit DEFAULT_WEIGHTS. Eine
+     * Installation, die 0,15 (oder 0,35) gespeichert hat, haette weiter danach gehandelt,
+     * waehrend Code und Notiz "0" sagen - genau die Form von Live-Messung-Drift, die in
+     * diesem Projekt schon viermal aufgelaufen ist.
+     * ANDERS ALS BEIM SCHRITT 0,35 -> 0,15 wird hier NICHT nur der alte Vorgabewert
+     * ersetzt: die Null gilt unabhaengig davon, was jemand von Hand eingestellt hat.
+     * Grund: es geht nicht um eine bessere Schaetzung des Gewichts, sondern darum, dass
+     * Unbelegtes gar nicht steuern soll. Regler dafuer gibt es ohnehin keine mehr. */
+    if (!D.newsGewichtNull && D.weights && D.weights.news !== 0) {
+      var altNews = D.weights.news;
+      D.weights.news = 0;
+      D.newsGewichtNull = 1;
+      if (!D.tuneLog) D.tuneLog = [];
+      D.tuneLog.unshift({ id: 'newsgewicht-null-' + Date.now(), at: Date.now(), quelle: 'messung',
+        applied: ['News-Gewicht ' + Math.round(altNews * 100) + ' % → 0 %'],
+        txt: 'Das News-Sentiment ist zum ersten Mal gemessen worden – und die Messung konnte ' +
+          'die Frage nicht beantworten: 35 Beobachtungen an 10 Zeitpunkten, nötig wären rund ' +
+          '2.600. Es fehlt der Faktor 75. Unbelegt ist nicht widerlegt; der Score wird weiter ' +
+          'berechnet und angezeigt, steuert aber keine Entscheidung mehr. Technik und Elliott ' +
+          'behalten ihr Verhältnis zueinander. Wiedererhöhung nur mit einer belegten Messung.',
+        konfigVorher: null, konfigNachher: null });
+    }
     // Kostenmodell v2 (Cent-Spread): fruehere Messwerte sind nicht mehr vergleichbar -
     // die Zwei-Naechte-Bestaetigung startet neu, damit kein alter Sieger mit neuen Zahlen
     // gemischt wird. Einmalig, sichtbar im Journal.

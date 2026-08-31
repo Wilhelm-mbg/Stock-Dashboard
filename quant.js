@@ -378,7 +378,35 @@
   }
 
   /* ================= Kombination & Entscheidung ================= */
-  var DEFAULT_WEIGHTS = { news: 0.35, tech: 0.40, elliott: 0.25 };
+  /* NEWS-GEWICHT 0 (Entscheid Wilhelm, 31.08.2026).
+   * Das Sentiment hatte 35 %, dann 15 % Gewicht in jeder Live-Entscheidung, ohne dass je
+   * gemessen wurde, ob es etwas vorhersagt. Die erste Messung
+   * (studien/vorregistrierung-2026-08-31-news-sentiment/ERGEBNIS.md) konnte die Frage
+   * nicht beantworten: 35 Beobachtungen an 10 Zeitpunkten, noetig waeren rund 2.600 -
+   * es fehlt der Faktor 75. UNBELEGT IST NICHT WIDERLEGT; die Null ist kein Urteil ueber
+   * das Sentiment, sondern die Weigerung, Unbelegtes steuern zu lassen.
+   *
+   * WAS MIT DEN ANDEREN GEWICHTEN PASSIERT - ausdruecklich, nicht stillschweigend:
+   * combine() teilt durch die Summe der TATSAECHLICH beigesteuerten Gewichte. Mit news 0
+   * ist diese Summe 0,65 statt 1,00, Technik und Elliott werden also auf 0,615 / 0,385
+   * hochskaliert. Ihr VERHAELTNIS bleibt unveraendert (0,40 : 0,25) - der Gesamtscore
+   * behaelt seine Skala, keine Quelle gewinnt gegenueber der anderen.
+   *
+   * Und diese Hochskalierung ist keine neue Erfindung: backtest() rechnet seit jeher
+   * NUR mit Technik+Elliott ("News nicht rueckwirkend verfuegbar", siehe unten). Live
+   * wich davon ab, die Messung nicht. Die Null macht Live gleich der Messung, statt sie
+   * zu verschieben - deshalb wird der RECHENSTAND hier bewusst NICHT hochgezaehlt: es
+   * gibt keinen alten Messwert, der dadurch unvergleichbar wuerde.
+   *
+   * WIEDERERHOEHUNG braucht eine belegte Messung, nicht eine Meinung: eine
+   * vorregistrierte Studie mit ausreichender Aufloesung (Groessenordnung 2.600
+   * unabhaengige Symbol-Tage), die einen Effekt ueber der Kostenhuerde zeigt.
+   * Die ANZEIGE bleibt vollstaendig - Score, Ereignistypen und Top-Meldung werden
+   * weiter berechnet und gezeigt, gekennzeichnet als unbelegt. */
+  var DEFAULT_WEIGHTS = { news: 0, tech: 0.40, elliott: 0.25 };
+  /* Ein Text fuer alle Stellen, die den Score anzeigen - damit die Kennzeichnung nicht
+   * an drei Orten auseinanderlaeuft. Muster wie bei den widerlegten Strategien. */
+  var NEWS_HINWEIS = 'unbelegt – steuert nichts (Entscheid 31.08.2026)';
   function combine(scores, weights) {
     weights = weights || DEFAULT_WEIGHTS;
     var wSum = 0, total = 0;
@@ -3091,7 +3119,7 @@
     SMILE: { skew: SMILE_SKEW, kruemmung: SMILE_KRUEMMUNG, min: SMILE_MIN, max: SMILE_MAX, mMax: SMILE_M_MAX },
     EVENT_IV: { aufschlag: EVENT_AUFSCHLAG, fenster: EVENT_FENSTER, crush: EVENT_CRUSH, erholung: EVENT_ERHOLUNG },
     zigzag: zigzag, elliott: elliott, technical: technical,
-    sentiment: sentiment, combine: combine, DEFAULT_WEIGHTS: DEFAULT_WEIGHTS,
+    sentiment: sentiment, combine: combine, DEFAULT_WEIGHTS: DEFAULT_WEIGHTS, NEWS_HINWEIS: NEWS_HINWEIS,
     makeWarrant: makeWarrant, warrantValue: warrantValue, warrantAsk: warrantAsk, warrantBid: warrantBid,
     warrantOmega: warrantOmega, warrantAufgeld: warrantAufgeld, PROFILES: PROFILES,
     underlyingAtTarget: underlyingAtTarget,
