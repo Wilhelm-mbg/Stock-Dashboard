@@ -1,7 +1,7 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-27 19:21 (Windows-Uhr)
+letzter-bericht: 2026-08-27 19:35 (Windows-Uhr)
 gesehener-tag: v8.34.2 (installiert 17:00)
-pm-adresse: markt-dashboard-f5 [5204c6]   <- HIERHIN melden, NICHT an "Projekt-Manager"
+pm-adresse: markt-dashboard-c0 [4877bc]   <- HIERHIN melden (Bruecke 19:3x neu gestartet, alte Kuerzel tot)
 -->
 
 # Projektstand
