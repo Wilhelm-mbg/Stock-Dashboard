@@ -91,6 +91,69 @@ function entdoppeln(kandidaten) {
   return { liste: raus, doppelt: doppelt, verdaechtig: verdaechtig };
 }
 
+/* DIE IN-REGEL-PRUEFUNG: nur mischen, wenn KEIN gespeicherter Kurs sich aendert.
+ *
+ * WOZU. Bis zum 31.08.2026 warf der Lauf jede Antwort mit weniger als 20 Kerzen weg
+ * und schrieb nichts. Das schuetzte die Datei - kostete aber genau bei den Reihen den
+ * Eroeffnungskurs, bei denen die Quelle die Historie schon abgeschnitten hat. Von 51
+ * Reihen im alten Format sind drei aus diesem Grund liegengeblieben (BFI, DSAQ, PHYT).
+ *
+ * Die Erlaubnis haengt nicht an der Zahl der Kerzen, sondern an einer EIGENSCHAFT:
+ * Wenn jede ueberlappende Kerze in allen Feldern, die der Bestand FUEHRT, denselben
+ * Wert traegt, kann das Mischen nichts zerstoeren - es kann nur die Eroeffnung
+ * hinzufuegen, die vorher fehlte. Aendert sich auch nur ein gespeicherter Wert, ist
+ * etwas anderes passiert (eine nachtraegliche Split-Anpassung, ein neu vergebener
+ * Ticker, eine kaputte Quelle) und es entstuende eine Reihe aus zwei Rechenwelten.
+ * Dann wird NICHT geschrieben, sondern laut gemeldet - dieselbe Behandlung wie bei
+ * einer unlesbaren Datei, aus demselben Grund: Ueberschreiben nimmt niemand zurueck.
+ *
+ * EIN FELD, DAS DER BESTAND NICHT FUEHRT, KANN NICHT WIDERSPROCHEN WERDEN. Fehlt die
+ * Eroeffnung (fuenf Felder) oder steht sie auf null, ist ihr Nachtragen keine
+ * Aenderung - das ist der ganze Zweck des Laufs. Umgekehrt IST es eine Aenderung,
+ * wenn der Bestand einen Wert hat und der frische Abruf dort null liefert: dann
+ * loeschte das Mischen einen gespeicherten Kurs.
+ *
+ * Verglichen wird exakt, ohne Toleranz.
+ *
+ * WAS DER ERSTE LAUF DAMIT FAND (31.08.2026, 51 Reihen): 49 wurden ergaenzt, ZWEI
+ * gesperrt - AUMN und BURU. Beide mit derselben Signatur: EINE einzige Kerze von
+ * 495 bzw. 486, beide am selben Tag 2026-08-24, beides Sub-Cent-Kurse, die die
+ * Quelle von fuenf auf vier Nachkommastellen neu gerundet hat
+ * (0,22175 -> 0,2218 und 0,04306 -> 0,0431).
+ * Das ist kein Split und kein neu vergebener Ticker - es ist die Quelle, die einen
+ * gespeicherten Wert nachtraeglich anders darstellt. Die Regel hat also genau das
+ * getan, was sie soll, aber der teuerste denkbare Grund war es nicht.
+ * BEWUSST NICHT AUFGEWEICHT: eine Toleranz einzubauen hiesse, die Schwelle zu
+ * raten, unter der eine Kursaenderung egal ist - und diese Schwelle entscheidet
+ * mit, wann eine Split-Anpassung noch durchrutscht. Zwei von 1.164 Reihen ohne
+ * Eroeffnungskurs sind der billigere Preis. Wer sie will, klaert die zwei von Hand.
+ *
+ * Eigene Funktion, damit test-v6 sie ohne Netz aufrufen kann. */
+function vertraeglich(vorhanden, frisch) {
+  var karte = Object.create(null);
+  (vorhanden || []).forEach(function (k) { karte[k[0]] = k; });
+  var geprueft = 0, abweichungen = [];
+  (frisch || []).forEach(function (n) {
+    var a = karte[n[0]];
+    if (!a) return;                       // ein Tag, den der Bestand nicht kennt
+    geprueft++;
+    for (var f = 1; f <= 5; f++) {
+      var av = f < a.length ? a[f] : null;
+      if (av === null || av === undefined) continue;   // nicht gefuehrt = nichts zu verlieren
+      var nv = f < n.length ? n[f] : null;
+      if (nv !== av) {
+        abweichungen.push({ zeit: n[0], feld: f, bestand: av, frisch: nv });
+      }
+    }
+  });
+  return {
+    vertraeglich: abweichungen.length === 0,
+    geprueft: geprueft,                   // wie viele Kerzen sich ueberlappen
+    anzahl: abweichungen.length,
+    abweichungen: abweichungen.slice(0, 5),
+  };
+}
+
 function vereinigen(vorhanden, frisch) {
   var karte = Object.create(null);
   (vorhanden || []).forEach(function (k) {
@@ -130,7 +193,7 @@ var BIS = new Date().toISOString().slice(0, 10);
 /* Der Lauf startet nur als Programm. Beim require aus test-v6 wird nur die
  * Funktion oben geholt - sonst zoege ein Testlauf ueber Stunden Daten.
  * Kein top-level return: node erlaubt ihn im CommonJS-Wrapper, der Linter nicht. */
-module.exports = { vereinigen: vereinigen, entdoppeln: entdoppeln };
+module.exports = { vereinigen: vereinigen, entdoppeln: entdoppeln, vertraeglich: vertraeglich };
 
 if (require.main === module) (async function () {
   var key;
@@ -245,6 +308,7 @@ if (require.main === module) (async function () {
 
   var geholt = 0, leer = 0, fehler = 0;
   var gekuerzt = 0, fruehesteGeliefert = null, ausserhalbBehalten = 0, unlesbarGesehen = [];
+  var unvertraeglichGesehen = [], duennErgaenzt = 0;
   for (var i = 0; i < nimm.length; i++) {
     var t = nimm[i];
     var pfad = '/v2/aggs/ticker/' + encodeURIComponent(t.sym) + '/range/1/day/' + VON + '/' + BIS +
@@ -274,83 +338,113 @@ if (require.main === module) (async function () {
         var o = (typeof b.o === 'number' && isFinite(b.o) && b.o > 0) ? b.o : null;
         return [b.t, b.c, b.v || 0, b.h, b.l, o];
       });
-      if (bars.length < 20) {
+      var datei = path.join(ordner, t.sym + '.json');
+      var vorhanden = null, unlesbar = false;
+      if (fs.existsSync(datei)) {
+        try { vorhanden = JSON.parse(fs.readFileSync(datei, 'utf8')).series || null; }
+        catch (e) { unlesbar = true; }
+      }
+      /* DIE ZWANZIG-KERZEN-SCHWELLE IST KEIN URTEIL UEBER DIE DATEI.
+       * Sie sagt nur, dass die QUELLE wenig geliefert hat - bei abgemeldeten Werten
+       * kappt sie die Historie schrittweise (BSCO/IBDP/IBTE lieferten am 27.08.2026
+       * noch EINE Kerze). Frueher fuehrte das zum Verwerfen der ganzen Antwort; die
+       * Datei behielt ihre Jahre, aber auch ihr fehlendes Feld. Ob ergaenzt werden
+       * darf, entscheidet ab jetzt die Vertraeglichkeit, nicht die Kerzenzahl. */
+      var duenn = bars.length < 20;
+      /* Die Pruefung laeuft bei JEDEM Schreibvorgang, nicht nur bei duennen Abrufen.
+       * Ein gespeicherter Kurs, der sich beim Erneuern aendert, ist in beiden Faellen
+       * dasselbe Warnzeichen - und im dicken Abruf faellt er ueber hunderte Kerzen
+       * sogar staerker ins Gewicht. */
+      var pr = unlesbar ? null : vertraeglich(vorhanden, bars);
+      /* EINE UNLESBARE DATEI WIRD NICHT UEBERSCHRIEBEN.
+       * Bis hierhin hiess "unlesbar" stillschweigend "die frische Reihe ersetzt sie".
+       * Solange ueberschrieben wurde, war das egal - seit dem Mischen ist es der
+       * EINZIGE Pfad, auf dem dieser Lauf noch Daten vernichten kann, und er trifft
+       * genau die Reihen, bei denen es am teuersten waere: die Quelle kappt die
+       * Historie abgemeldeter Werte schrittweise (gemessen 27.08.2026: AVB und EQR
+       * liefern noch 30 Kerzen, BSCO/IBDP/IBTE noch EINE). Bei so einem Wert stuende
+       * nach dem Ersetzen eine einzige Kerze da, wo Jahre lagen - und unser Archiv
+       * ist die letzte Kopie.
+       * Eine kaputte Datei ist ausserdem kein Grund zur Eile: sie liegt schon falsch
+       * da, und ein Mensch kann sie noch retten. Ein Ueberschreiben kann niemand
+       * mehr zuruecknehmen. Also: ueberspringen, laut melden, weiterlaufen.
+       * (Der laufende Vollauf ist davon nicht betroffen - alle 1.164 Dateien wurden
+       * vor dem Start als lesbar geprueft.) */
+      if (unlesbar) {
+        /* KEIN continue: das wuerde die Fortschritts-Sicherung am Schleifenende
+         * ueberspringen. Nur der Schreibvorgang faellt aus, der Rest laeuft weiter. */
+        unlesbarGesehen.push(t.sym);
+        console.log('  ' + String(i + 1).padStart(3) + '/' + nimm.length + '  ' + t.sym.padEnd(8) +
+          'BESTAND UNLESBAR - uebersprungen, NICHTS geschrieben. Von Hand ansehen: ' + datei);
+      } else if (duenn && (!bars.length || !(vorhanden && vorhanden.length))) {
+        /* Nichts zu ergaenzen: entweder liefert die Quelle gar nichts mehr, oder es
+         * gibt keinen Bestand, in den hinein ergaenzt werden koennte. Wie bisher
+         * vermerken, damit kein Abruf mehr dafuer draufgeht. Ein leerer Abruf darf
+         * hier auf keinen Fall weiterlaufen - unten wird bars[0] gelesen. */
         stand.ohneDaten[t.sym] = { grund: bars.length + ' Kerzen', am: new Date().toISOString().slice(0, 10) };
         leer++;
-        console.log('  ' + String(i + 1).padStart(3) + '/' + nimm.length + '  ' + t.sym.padEnd(8) + 'nur ' + bars.length + ' Kerzen - vermerkt, wird nicht erneut geholt');
+        console.log('  ' + String(i + 1).padStart(3) + '/' + nimm.length + '  ' + t.sym.padEnd(8) +
+          'nur ' + bars.length + ' Kerzen' + (vorhanden && vorhanden.length ? '' : ', kein Bestand') +
+          ' - vermerkt, wird nicht erneut geholt');
+      } else if (!pr.vertraeglich) {
+        /* HIER GREIFT DIE REGEL. Mindestens ein Wert, den die Datei schon fuehrt,
+         * kaeme aus diesem Abruf anders zurueck. Was auch immer der Grund ist - er
+         * gehoert vor Augen und nicht in eine gemischte Reihe. */
+        unvertraeglichGesehen.push(t.sym);
+        if (duenn) {
+          stand.ohneDaten[t.sym] = { grund: bars.length + ' Kerzen, unvertraeglich', am: new Date().toISOString().slice(0, 10) };
+          leer++;
+        }
+        var a0 = pr.abweichungen[0];
+        console.log('  ' + String(i + 1).padStart(3) + '/' + nimm.length + '  ' + t.sym.padEnd(8) +
+          'GESPEICHERTE KURSE WUERDEN SICH AENDERN (' + pr.anzahl + ' von ' + pr.geprueft +
+          ' ueberlappenden Kerzen) - NICHTS geschrieben. Beispiel ' +
+          new Date(a0.zeit).toISOString().slice(0, 10) + ' Feld ' + a0.feld +
+          ': ' + a0.bestand + ' -> ' + a0.frisch);
       } else {
-        /* WAS DIE QUELLE GELIEFERT HAT - festgehalten, BEVOR gemischt wird.
-         * Die Kuerzungswarnung unten ist die einzige Stelle, an der dieses Werkzeug
-         * ueberhaupt merkt, dass das Quellfenster rollt. Rechnete sie auf der
-         * gemischten Reihe, meldete sie ab dem zweiten Lauf "der angefragte Zeitraum
-         * kam vollstaendig an" - eine Entwarnung ausgerechnet ueber den Vorgang, der
-         * die Daten frisst. */
         var rohVon = new Date(bars[0][0]).toISOString().slice(0, 10);
-        var datei = path.join(ordner, t.sym + '.json');
-        var vorhanden = null, unlesbar = false;
-        if (fs.existsSync(datei)) {
-          try { vorhanden = JSON.parse(fs.readFileSync(datei, 'utf8')).series || null; }
-          catch (e) { unlesbar = true; }
-        }
-        /* EINE UNLESBARE DATEI WIRD NICHT UEBERSCHRIEBEN.
-         * Bis hierhin hiess "unlesbar" stillschweigend "die frische Reihe ersetzt sie".
-         * Solange ueberschrieben wurde, war das egal - seit dem Mischen ist es der
-         * EINZIGE Pfad, auf dem dieser Lauf noch Daten vernichten kann, und er trifft
-         * genau die Reihen, bei denen es am teuersten waere: die Quelle kappt die
-         * Historie abgemeldeter Werte schrittweise (gemessen 27.08.2026: AVB und EQR
-         * liefern noch 30 Kerzen, BSCO/IBDP/IBTE noch EINE). Bei so einem Wert stuende
-         * nach dem Ersetzen eine einzige Kerze da, wo Jahre lagen - und unser Archiv
-         * ist die letzte Kopie.
-         * Eine kaputte Datei ist ausserdem kein Grund zur Eile: sie liegt schon falsch
-         * da, und ein Mensch kann sie noch retten. Ein Ueberschreiben kann niemand
-         * mehr zuruecknehmen. Also: ueberspringen, laut melden, weiterlaufen.
-         * (Der laufende Vollauf ist davon nicht betroffen - alle 1.164 Dateien wurden
-         * vor dem Start als lesbar geprueft.) */
-        if (unlesbar) {
-          /* KEIN continue: das wuerde die Fortschritts-Sicherung am Schleifenende
-           * ueberspringen. Nur der Schreibvorgang faellt aus, der Rest laeuft weiter. */
-          unlesbarGesehen.push(t.sym);
-          console.log('  ' + String(i + 1).padStart(3) + '/' + nimm.length + '  ' + t.sym.padEnd(8) +
-            'BESTAND UNLESBAR - uebersprungen, NICHTS geschrieben. Von Hand ansehen: ' + datei);
-        } else {
-          var v = vereinigen(vorhanden, bars);
-          var reihe = v.reihe;
-          if (v.behalten > 0) ausserhalbBehalten += v.behalten;
-          fs.writeFileSync(datei, JSON.stringify({
-            sym: t.sym, name: t.name, boerse: t.boerse, delistet: t.bis,
-            quelle: 'massive /v2/aggs 1/day, adjusted', stand: new Date().toISOString(),
-            format: '[zeit, schluss, umsatz, hoch, tief, eroeffnung]',
-            angefragtVon: VON, angefragtBis: BIS,
-            /* Diese beiden Felder beschreiben die DATEI, nicht den Abruf: was der
-             * Verbraucher hier vorfindet. quellfensterVon nennt daneben den Rand des
-             * Abonnements bei diesem Lauf - daran ist spaeter ablesbar, welche Tage
-             * nur noch deshalb existieren, weil sie einmal gesichert wurden. */
-            geliefertVon: new Date(reihe[0][0]).toISOString().slice(0, 10),
-            geliefertBis: new Date(reihe[reihe.length - 1][0]).toISOString().slice(0, 10),
-            quellfensterVon: rohVon,
-            series: reihe,
-          }));
-          /* Was DIESE Reihe wirklich abdeckt - nicht, was angefragt war. Ohne diese
-           * beiden Felder muss jeder Verbraucher die Reihe selbst aufmachen, um zu
-           * erfahren, ob sie den gewuenschten Zeitraum ueberhaupt enthaelt. */
-          var abVon = new Date(reihe[0][0]).toISOString().slice(0, 10);
-          var bisBis = new Date(reihe[reihe.length - 1][0]).toISOString().slice(0, 10);
-          /* mitEroeffnung merkt sich, dass DIESE Reihe schon durch das reparierte
-           * Werkzeug gegangen ist. Ohne die Marke faengt --erneuern jedes Mal wieder
-           * beim ersten Wert an: der Lauf am 27.08.2026 brach nach 775 von 1.116
-           * Reihen ab (fuenf Netzfehler in Folge, Bremse hat gegriffen), und ein
-           * Neustart haette 775 Reihen noch einmal geholt - knapp drei Stunden fuer
-           * nichts. Bei rund vier Stunden Laufzeit und einem Netz, das gerade bewiesen
-           * hat, dass es wegbrechen kann, ist Wiederaufnahme keine Bequemlichkeit. */
-          stand.fertig[t.sym] = { kerzen: reihe.length, bis: t.bis, von: abVon, letzte: bisBis,
-            mitEroeffnung: true };
-          /* rohVon, nicht abVon: siehe oben. */
-          if (rohVon > VON) gekuerzt++;
-          if (!fruehesteGeliefert || rohVon < fruehesteGeliefert) fruehesteGeliefert = rohVon;
-          geholt++;
-          console.log('  ' + String(i + 1).padStart(3) + '/' + nimm.length + '  ' + t.sym.padEnd(8) +
-            String(bars.length).padStart(4) + ' Tage  bis ' + t.bis + '  ' + (t.name || '').slice(0, 34));
-        }
+        if (duenn) duennErgaenzt++;
+        /* Der Vermerk aus einem frueheren Lauf ist ueberholt, sobald die Reihe
+         * ergaenzt werden konnte - sonst stuende ein Wert gleichzeitig als
+         * "ohne Daten" und als "fertig" da. */
+        if (stand.ohneDaten[t.sym]) delete stand.ohneDaten[t.sym];
+        var v = vereinigen(vorhanden, bars);
+        var reihe = v.reihe;
+        if (v.behalten > 0) ausserhalbBehalten += v.behalten;
+        fs.writeFileSync(datei, JSON.stringify({
+          sym: t.sym, name: t.name, boerse: t.boerse, delistet: t.bis,
+          quelle: 'massive /v2/aggs 1/day, adjusted', stand: new Date().toISOString(),
+          format: '[zeit, schluss, umsatz, hoch, tief, eroeffnung]',
+          angefragtVon: VON, angefragtBis: BIS,
+          /* Diese beiden Felder beschreiben die DATEI, nicht den Abruf: was der
+           * Verbraucher hier vorfindet. quellfensterVon nennt daneben den Rand des
+           * Abonnements bei diesem Lauf - daran ist spaeter ablesbar, welche Tage
+           * nur noch deshalb existieren, weil sie einmal gesichert wurden. */
+          geliefertVon: new Date(reihe[0][0]).toISOString().slice(0, 10),
+          geliefertBis: new Date(reihe[reihe.length - 1][0]).toISOString().slice(0, 10),
+          quellfensterVon: rohVon,
+          series: reihe,
+        }));
+        /* Was DIESE Reihe wirklich abdeckt - nicht, was angefragt war. Ohne diese
+         * beiden Felder muss jeder Verbraucher die Reihe selbst aufmachen, um zu
+         * erfahren, ob sie den gewuenschten Zeitraum ueberhaupt enthaelt. */
+        var abVon = new Date(reihe[0][0]).toISOString().slice(0, 10);
+        var bisBis = new Date(reihe[reihe.length - 1][0]).toISOString().slice(0, 10);
+        /* mitEroeffnung merkt sich, dass DIESE Reihe schon durch das reparierte
+         * Werkzeug gegangen ist. Ohne die Marke faengt --erneuern jedes Mal wieder
+         * beim ersten Wert an: der Lauf am 27.08.2026 brach nach 775 von 1.116
+         * Reihen ab (fuenf Netzfehler in Folge, Bremse hat gegriffen), und ein
+         * Neustart haette 775 Reihen noch einmal geholt - knapp drei Stunden fuer
+         * nichts. Bei rund vier Stunden Laufzeit und einem Netz, das gerade bewiesen
+         * hat, dass es wegbrechen kann, ist Wiederaufnahme keine Bequemlichkeit. */
+        stand.fertig[t.sym] = { kerzen: reihe.length, bis: t.bis, von: abVon, letzte: bisBis,
+          mitEroeffnung: true };
+        /* rohVon, nicht abVon: siehe oben. */
+        if (rohVon > VON) gekuerzt++;
+        if (!fruehesteGeliefert || rohVon < fruehesteGeliefert) fruehesteGeliefert = rohVon;
+        geholt++;
+        console.log('  ' + String(i + 1).padStart(3) + '/' + nimm.length + '  ' + t.sym.padEnd(8) +
+          String(bars.length).padStart(4) + ' Tage  bis ' + t.bis + '  ' + (t.name || '').slice(0, 34));
       }
     } catch (e) {
       fehler++;
@@ -366,6 +460,22 @@ if (require.main === module) (async function () {
    * bei 40 davon ein Jahr weniger bekommt als angefragt, darf nicht so aussehen wie
    * einer, der bekommen hat, wonach er fragte. Genau diese Stille hat das Kursarchiv
    * zwei Tage unbemerkt stillstehen lassen. */
+  /* Ausserhalb von "if (geholt)": ein Lauf, der NUR unvertraegliche Reihen antraf,
+   * hat geholt === 0 - und muesste dann ausgerechnet schweigen. */
+  if (unvertraeglichGesehen.length) {
+    console.log('');
+    console.log('!! ' + unvertraeglichGesehen.length + ' REIHE(N) NICHT ERGAENZT - gespeicherte Kurse haetten sich geaendert:');
+    console.log('   ' + unvertraeglichGesehen.join(', '));
+    console.log('   Diese Dateien stehen unveraendert da. Eine Abweichung in einem Feld, das die');
+    console.log('   Datei schon fuehrt, ist keine Ergaenzung: sie bedeutet eine nachtraegliche');
+    console.log('   Anpassung der Quelle, einen neu vergebenen Ticker oder einen Fehler. Ein');
+    console.log('   Mischen legte zwei Rechenwelten in EINE Reihe. Von Hand klaeren.');
+    console.log('');
+  }
+  if (duennErgaenzt) {
+    console.log('Duenne Abrufe trotzdem ergaenzt: ' + duennErgaenzt +
+      ' - die Quelle lieferte weniger als 20 Kerzen, aber keine widersprach dem Bestand.');
+  }
   if (geholt) {
     if (unlesbarGesehen.length) {
       console.log("");
