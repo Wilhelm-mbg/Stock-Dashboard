@@ -30,6 +30,11 @@
 (function () {
   try {
     var t = window.api && window.api.startThema;
+    /* 'system' (C12, 01.09.2026): dem Betriebssystem folgen. Aufgeloest wird hier,
+     * einmalig und synchron; auf OS-Wechsel zur Laufzeit hoert renderer.js. */
+    if (t === 'system') {
+      t = (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) ? 'light' : 'dark';
+    }
     if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
   } catch (e) {
     /* Bewusst still: diese Datei laeuft vor allem anderen, auch vor jeder

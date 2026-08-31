@@ -8,7 +8,7 @@ const { contextBridge, ipcRenderer } = require('electron');
 function startThemaAusArgv() {
   try {
     for (var i = 0; i < process.argv.length; i++) {
-      var m = /^--startthema=(light|dark)$/.exec(process.argv[i]);
+      var m = /^--startthema=(light|dark|system)$/.exec(process.argv[i]);
       if (m) return m[1];
     }
   } catch (e) { /* ohne Argument bleibt es beim Thema aus dem <html>-Tag */ }

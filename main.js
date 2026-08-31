@@ -1167,7 +1167,9 @@ function startThema() {
     const f = path.join(storeDir(), safeName('theme') + '.json');
     if (!fs.existsSync(f)) return 'dark';
     const t = JSON.parse(fs.readFileSync(f, 'utf8'));
-    return (t === 'light' || t === 'dark') ? t : 'dark';
+    /* 'system' (C12, 01.09.2026) wird durchgereicht - AUFLOESEN kann nur der
+     * Renderer, denn nur dort gibt es prefers-color-scheme. */
+    return (t === 'light' || t === 'dark' || t === 'system') ? t : 'dark';
   } catch (e) { return 'dark'; }
 }
 

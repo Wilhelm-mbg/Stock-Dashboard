@@ -1053,14 +1053,40 @@
 
   /* ================= Steuerung ================= */
   /* Die Hell/Dunkel-Wahl wurde nirgends gespeichert - jeder Start begann wieder
-   * dunkel, und wer hell braucht, musste bei jedem Start denselben Knopf druecken. */
-  document.getElementById('themeBtn').addEventListener('click', function () {
-    var root = document.documentElement;
-    var neu = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-    root.setAttribute('data-theme', neu);
-    try { if (window.api && window.api.storeSet) window.api.storeSet('theme', neu); }
-    catch (e) { /* ohne Speicher bleibt es bei dieser Sitzung */ }
-  });
+   * dunkel, und wer hell braucht, musste bei jedem Start denselben Knopf druecken.
+   * C12 (01.09.2026): dritter Zustand 'system' - der Knopf laeuft Dunkel -> Hell ->
+   * System -> Dunkel. Bei 'system' folgt die Oberflaeche dem Betriebssystem, auch
+   * bei einem Wechsel zur Laufzeit. Gespeichert wird der ZUSTAND, das Attribut
+   * traegt immer den aufgeloesten Wert. */
+  (function () {
+    var btn = document.getElementById('themeBtn');
+    var mqHell = window.matchMedia ? window.matchMedia('(prefers-color-scheme: light)') : null;
+    var zustand = (window.api && window.api.startThema === 'system') ? 'system'
+      : (document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark');
+    function aufgeloest() {
+      if (zustand !== 'system') return zustand;
+      return (mqHell && mqHell.matches) ? 'light' : 'dark';
+    }
+    function anwenden(speichern) {
+      document.documentElement.setAttribute('data-theme', aufgeloest());
+      btn.textContent = zustand === 'system' ? 'Thema: System' : 'Hell/Dunkel';
+      btn.title = zustand === 'system'
+        ? 'Folgt der Hell/Dunkel-Einstellung des Betriebssystems. Klick: fest Dunkel.'
+        : 'Gerade fest ' + (zustand === 'dark' ? 'dunkel' : 'hell') + '. Klick wechselt; nach Hell kommt „System“ (folgt dem Betriebssystem).';
+      if (speichern) {
+        try { if (window.api && window.api.storeSet) window.api.storeSet('theme', zustand); }
+        catch (e) { /* ohne Speicher bleibt es bei dieser Sitzung */ }
+      }
+    }
+    btn.addEventListener('click', function () {
+      zustand = zustand === 'dark' ? 'light' : zustand === 'light' ? 'system' : 'dark';
+      anwenden(true);
+    });
+    if (mqHell && mqHell.addEventListener) {
+      mqHell.addEventListener('change', function () { if (zustand === 'system') anwenden(false); });
+    }
+    anwenden(false);
+  })();
   /* Seit dem 26.08.2026 steht das Thema normalerweise schon: thema.js setzt es im
    * <head> aus window.api.startThema, also bevor irgendetwas gezeichnet wird.
    * Dieser Weg hier bleibt als NETZ - fuer den Fall, dass das Startargument fehlt
@@ -1072,6 +1098,7 @@
   (function themaLaden() {
     if (!window.api || !window.api.storeGet) return;
     window.api.storeGet('theme').then(function (t) {
+      if (t === 'system') t = (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) ? 'light' : 'dark';
       if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
     }).catch(function () { /* nicht lesbar: es bleibt beim Vorgabethema */ });
   })();

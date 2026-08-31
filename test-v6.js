@@ -5577,7 +5577,9 @@ console.log('\n41) Zustaende: was die App sagt, wenn etwas fehlt oder klemmt');
      'Ablage: kein stilles return mehr, das den Platzhalter stehen laesst');
 
   /* --- Hell/Dunkel wurde nirgends gespeichert --- */
-  ok(/storeSet\('theme', neu\)/.test(ren), 'Thema: die Wahl wird gespeichert');
+  /* 01.09.2026 (C12): gespeichert wird jetzt der ZUSTAND (dark/light/system) -
+   * dieselbe Eigenschaft, neuer Variablenname. */
+  ok(/storeSet\('theme', zustand\)/.test(ren), 'Thema: die Wahl wird gespeichert');
   ok(/storeGet\('theme'\)/.test(ren), 'Thema: die Wahl wird beim Start gelesen');
   ok(/t === 'light' \|\| t === 'dark'/.test(ren),
      'Thema: nur bekannte Werte werden uebernommen');
@@ -5699,8 +5701,11 @@ console.log('\n41) Zustaende: was die App sagt, wenn etwas fehlt oder klemmt');
      'Auch die Fensterfarbe folgt dem gespeicherten Thema - sonst blitzt der Rahmen');
   /* 5) Was aus dem Startargument kommt, faerbt die ganze Oberflaeche und landet in einem
    *    Attribut. Es wird deshalb geprueft und nicht durchgereicht. */
-  ok(/\^--startthema=\(light\|dark\)\$/.test(pre),
-     'preload.js laesst nur "light" und "dark" durch - nichts wird ungeprueft weitergereicht');
+  /* 01.09.2026 (C12): 'system' kam als dritter erlaubter Wert dazu. Die
+   * Eigenschaft bleibt: eine geschlossene Positivliste, nichts wird ungeprueft
+   * weitergereicht (die Anhaengsel-Probe unten prueft das weiter aus). */
+  ok(/\^--startthema=\(light\|dark\|system\)\$/.test(pre),
+     'preload.js laesst nur "light", "dark" und "system" durch - nichts wird ungeprueft weitergereicht');
   var tA = pre.indexOf('function startThemaAusArgv() {');
   var tE = pre.indexOf('\n}\n', tA);
   ok(tA !== -1 && tE > tA, 'startThemaAusArgv laesst sich herausloesen');
