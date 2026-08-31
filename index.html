@@ -203,6 +203,14 @@
   @media (prefers-reduced-motion: reduce) {
     #newsTicker .tickSpur { animation: none; }
     #newsTicker { overflow-x: auto; overflow-y: hidden; -webkit-mask-image: none; }
+    /* 01.09.2026 (C16): Der Rollbalken allein sagte zu leise, dass rechts mehr
+       steht. Ein statischer Pfeil am rechten Rand macht es sichtbar - reiner
+       Hinweis, keine Bewegung. sticky statt absolute: er bleibt am Rahmen stehen,
+       waehrend der Inhalt darunter durchgeschoben wird. */
+    #newsTicker::after {
+      content: '»'; position: sticky; right: 0; display: inline-block;
+      padding: 0 8px; color: var(--muted); background: var(--panel); font-weight: 700;
+    }
   }
 
   /* Info-Fenster beim Draufzeigen (Tester-Wunsch #24) */
@@ -535,6 +543,14 @@
   @media (max-width: 560px) { .params { grid-template-columns: 1fr 1fr; } }
   .params label { display: flex; flex-direction: column; gap: 4px; font-size: var(--fs-klein); color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; }
   .params select { width: 100%; font-size: var(--fs-neben); padding: 6px 7px; }
+  /* 01.09.2026 (A4): Bei ungleich hohen Beschriftungen (ein- vs. zweizeilig) sassen
+     die Auswahlfelder einer Reihe auf verschiedenen Hoehen - das Feld haengt jetzt
+     am unteren Rand seiner Rasterzelle. */
+  .params label > select { margin-top: auto; }
+  /* Die drei gemessenen Stellschrauben brauchen mehr als die 108-px-Spalte des
+     Experten-Rasters: "Standard (99 gemessene Werte)" wurde sonst im eigenen
+     Auswahlfeld abgeschnitten. */
+  .belegt-box .params { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
   .strat-foot { margin-top: 12px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; font-size: var(--fs-neben); color: var(--muted); }
 
   .switch { position: relative; display: inline-block; width: 42px; height: 23px; flex-shrink: 0; margin-left: auto; }
@@ -962,22 +978,17 @@
     <div id="antwortZuletzt" style="margin-top:10px;"></div>
     <div id="antwortStatus" style="margin-top:10px; padding-top:8px; border-top:1px solid var(--grid);"></div>
   </div>
-  <div class="panel">
-    <!-- Kein Zahlwort in der Überschrift: die Liste darunter kommt aus STRATEGIEN in
-         strategien.js und ist gewachsen (vier Karten mit Schalter plus die
-         Langfrist-Fußnote). Eine Überschrift, die mitzählt, wird beim nächsten
-         Zuwachs still falsch, ohne dass ein Test das sehen kann. -->
-    <h3 style="display:flex; align-items:center; gap:8px;">Die Strategien im Überblick
-      <button class="info" type="button" data-info="regeln.uebersicht" aria-expanded="false"
-              aria-label="Erklärung: Die Strategien im Überblick">i</button></h3>
-    <div style="font-size:var(--fs-text); color:var(--ink-2); line-height:1.55; max-width:68ch;">
-      Jede Regel hat ihren eigenen Zeithorizont und lässt sich einzeln ein- und ausschalten.
-    </div>
+  <!-- Kein Zahlwort in der Überschrift: die Liste darunter kommt aus STRATEGIEN in
+       strategien.js und waechst. Eine Überschrift, die mitzählt, wird beim nächsten
+       Zuwachs still falsch. B7 (01.09.2026): das fruehere Panel trug nur noch einen
+       Allgemeinsatz - jetzt eine schlanke Zeile; der Satz steht im i. Der Knopf
+       "Gemessene Voreinstellungen" ist nach Risiko & Einstellungen gezogen (B8) -
+       er KONFIGURIERT und gehoert nicht auf die Antwort-Pille. -->
+  <div style="display:flex; align-items:center; gap:8px; margin:16px 0 2px;">
+    <h3 style="margin:0;">Die Strategien im Überblick</h3>
+    <button class="info" type="button" data-info="regeln.uebersicht" aria-expanded="false"
+            aria-label="Erklärung: Die Strategien im Überblick">i</button>
   </div>
-  <div style="margin:6px 0 12px;">
-      <button class="btn" id="stratEmpfohlenBtn" type="button" title="Stellt alles auf die gemessenen Ergebnisse um: Intraday-Modus RSI(2) im Seitwärtskanal auf dem Basiswert (nur Beobachtung, Schattenbuch zeichnet auf), Momentum- und Drift-Buch handeln virtuell, maximale Risikostufe 3. Jede Änderung steht weiter unten unter „Was hat gewirkt?“ – dort lässt sich jedes Feld einzeln zurückstellen.">Gemessene Voreinstellungen übernehmen</button>
-      <span id="stratEmpfohlenStatus" style="font-size:var(--fs-neben); color:var(--muted); margin-left:8px;"></span>
-    </div>
     <!-- Stufe 3 des Regeln-Neubaus (31.08.2026): stratListe zeichnet die Gruppen
          "Belegt oder aktiv gehandelt" und "In Messung"; darunter steht die dritte
          Gruppe "Gemessen und verworfen" - Zeilen gerendert (verworfenListe, Quelle:
@@ -1042,6 +1053,12 @@
   </div>
   <div class="sub" id="sub-einstellungen">
   <div id="sub-strategien">
+    <!-- B8 (01.09.2026): von der Antwort-Pille hierher - der Knopf stellt um und
+         gehoert zu den Einstellungen. Kennungen unveraendert. -->
+    <div style="margin:0 0 12px;">
+      <button class="btn" id="stratEmpfohlenBtn" type="button" title="Stellt alles auf die gemessenen Ergebnisse um: Intraday-Modus RSI(2) im Seitwärtskanal auf dem Basiswert (nur Beobachtung, Schattenbuch zeichnet auf), Momentum- und Drift-Buch handeln virtuell, maximale Risikostufe 3. Jede Änderung steht im Werkzeug unter „Was hat gewirkt?“ – dort lässt sich jedes Feld einzeln zurückstellen.">Gemessene Voreinstellungen übernehmen</button>
+      <span id="stratEmpfohlenStatus" style="font-size:var(--fs-neben); color:var(--muted); margin-left:8px;"></span>
+    </div>
     <div class="strategy-grid">
       <div class="strat-card intraday">
         <div class="head">

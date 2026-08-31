@@ -5925,7 +5925,11 @@ console.log('\n41) Zustaende: was die App sagt, wenn etwas fehlt oder klemmt');
    * Geprueft wird der SICHTBARE Text: HTML-Kommentare werden vorher entfernt. Sonst
    * machte jede kuenftige Begruendung neben der Ueberschrift den Test rot - die
    * Sperrklinke soll die Anzeige pruefen, nicht die Notiz daneben. */
-  var kopfRegeln = (/<div class="sub active" id="sub-regeln">([\s\S]*?)<div style="margin:6px 0 12px;">/.exec(html) || ['', ''])[1];
+  /* 01.09.2026 (B7/B8): der Endanker war der Voreinstellungs-Knopf, der jetzt unter
+   * Risiko & Einstellungen wohnt. Neuer Endanker ist die Strategie-Liste selbst -
+   * die geschuetzte Eigenschaft (kein Zahlwort im Kopf der Uebersicht) gilt fuer
+   * denselben Bereich wie zuvor. */
+  var kopfRegeln = (/<div class="sub active" id="sub-regeln">([\s\S]*?)<div id="stratListe"/.exec(html) || ['', ''])[1];
   ok(kopfRegeln.length > 100, 'Strategie-Uebersicht: der Kopf des Panels ist auffindbar');
   ok(!/\b(zwei|drei|vier|fünf|sechs)\b/i.test(kopfRegeln.replace(/<!--[\s\S]*?-->/g, '')),
      'Strategie-Uebersicht: der Kopf zaehlt die Karten nicht mehr mit');

@@ -55,6 +55,7 @@
       name: 'Kurzfristig · Stunden-Strategie',
       horizont: 'stündliche Prüfung, rund 20 Handelstage je Signal',
       instrument: 'Optionsscheine: Call oder Put 5 % aus dem Geld, 60 Tage Laufzeit',
+      tut: 'Prüft stündlich Technik + Elliott und kauft ab Gesamtscore ±0,35 – gegen die Messung.',
       was: 'Verrechnete jede Stunde Technik-Score und Nachrichtenlage zu einem Gesamtscore und kaufte ab ±0,35 einen Call oder Put. Seit Version 8.23.24 per Sicherung abgeschaltet — von Hand lässt sie sich wieder einschalten, dieser Hand-Entscheid wird bewusst respektiert.',
       stand: 'widerlegt – abgeschaltet',
       farbe: 'down',
@@ -70,6 +71,9 @@
       name: 'Mittelfristig · Momentum im Querschnitt',
       horizont: 'rund drei Monate je Umschichtung',
       instrument: 'Aktien, kein Hebel',
+      /* tut (01.09.2026, B6): der Satz der Antwort-Seite - beschreibt das TUN im
+       * Praesens und wiederholt nicht woertlich den Karten-Text darunter. */
+      tut: 'Hält das stärkste Zehntel des Universums und schichtet alle 63 Handelstage um.',
       was: 'Vergleicht alle Werte miteinander und hält das stärkste Zehntel. Keine Chartmuster, nur eine Rangfolge, die alle 63 Handelstage neu gebildet wird.',
       stand: 'gemessen – hält die volle Historie, nicht die zurückgehaltenen Jahre',
       farbe: 'warn',
@@ -87,6 +91,7 @@
       name: 'Mittelfristig · Ergebnis-Drift',
       horizont: '60 Handelstage je Position',
       instrument: 'Aktien, kein Hebel',
+      tut: 'Handelt Quartals-Überraschungen: oberstes Fünftel long, unterstes short, je 60 Handelstage.',
       was: 'Kauft nach einer Quartalsmeldung das oberste Fünftel der Überraschungen und verkauft das unterste – gleich viele, aus demselben Topf. Kein Chartsignal: Die Information kommt aus den Zahlen, nicht aus dem Kursverlauf.',
       stand: 'gemessen – Zeitzonen-Fehler gefunden, Neumessung offen',
       farbe: 'warn',
@@ -305,8 +310,11 @@
     }
     return null;
   }
+  /* inline-block (01.09.2026, A3): ein inline-Chip brach mitten im Text um und
+   * zeigte zwei offene Rahmenhaelften. Als Block wandert er GESCHLOSSEN in die
+   * naechste Zeile und darf innen umbrechen. */
   function chipHtml(c) {
-    return '<span style="font-size:var(--fs-klein); padding:1px 7px; border-radius:var(--r-gross); border:1px solid var(--' + c.farbe + '); color:var(--' + c.farbe + ');"' +
+    return '<span style="display:inline-block; font-size:var(--fs-klein); padding:1px 7px; border-radius:var(--r-gross); border:1px solid var(--' + c.farbe + '); color:var(--' + c.farbe + ');"' +
       (c.quelle ? ' title="' + U.esc(c.quelle) + '"' : '') + '>' + U.esc(c.txt) + '</span>';
   }
   function ersterSatz(txt) {
@@ -332,7 +340,7 @@
       if (!anZustand(s.key)) return;
       var c = antwortChip(s.messKeys || []) ||
         { txt: s.stand, farbe: s.farbe, quelle: 'Stand aus strategien.js (kein Messprotokoll im Datenordner)' };
-      zeilen.push('<div><b>' + U.esc(s.name) + '</b> · ' + U.esc(ersterSatz(s.was)) + ' ' + chipHtml(c) + '</div>');
+      zeilen.push('<div><b>' + U.esc(s.name) + '</b> · ' + U.esc(s.tut || ersterSatz(s.was)) + ' ' + chipHtml(c) + '</div>');
     });
     if (!zeilen.length) zeilen.push('<div>Es handelt gerade keine Strategie.</div>');
     if (!st.intradayAn && st.schatten) {
@@ -417,7 +425,7 @@
       return '<div class="panel" style="margin-bottom:12px;">' +
         '<div style="display:flex; align-items:baseline; gap:10px; flex-wrap:wrap;">' +
           '<span style="font-size:var(--fs-gross); font-weight:700;">' + U.esc(s.name) + '</span>' +
-          '<span style="font-size:var(--fs-klein); padding:2px 7px; border-radius:var(--r-gross); border:1px solid var(--' + s.farbe + '); color:var(--' + s.farbe + ');">' +
+          '<span style="display:inline-block; font-size:var(--fs-klein); padding:2px 7px; border-radius:var(--r-gross); border:1px solid var(--' + s.farbe + '); color:var(--' + s.farbe + ');">' +
             U.esc(s.stand) + '</span>' +
           '<span style="margin-left:auto; display:inline-flex; align-items:center; gap:8px;">' +
             (schaltbar
