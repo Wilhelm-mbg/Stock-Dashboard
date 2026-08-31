@@ -5427,8 +5427,12 @@ console.log('\n39) Erklaertexte hinter dem i – ein Register, ein Fenster, ein 
      'aber die Drift-Messzahl bleibt auf der Pille sichtbar');
   ok(/Scheinsieger produziert/.test(shell) && !/Scheinsieger produziert/.test(html),
      'Autopilot-Absatz: ins Register verschoben, nicht geloescht');
-  ok(/data-sub="strategien">Intraday</.test(html),
-     'Die Pille heisst Intraday - die Kennung "strategien" bleibt (Schnittstelle)');
+  /* 31.08.2026, Stufe 4: aus der Intraday-Pille wurde der immer sichtbare Abschnitt
+   * sub-strategien im Panel "Risiko & Einstellungen". Eigenschaft unveraendert:
+   * die Kennung "strategien" bleibt als Anker bestehen und wohnt im Regeln-Reiter. */
+  ok(/id="sub-strategien"/.test(html) &&
+     html.indexOf('id="sub-einstellungen"') < html.indexOf('id="sub-strategien"'),
+     'Der Intraday-Bereich lebt unter "Risiko & Einstellungen" - Kennung "strategien" bleibt');
 
   /* --- Was eine Zusicherung ist, bleibt sichtbar ---
    * Faustregel des Umbaus: Wer es nicht liest, entscheidet falsch -> bleibt stehen.
@@ -5962,6 +5966,30 @@ console.log('\n41) Zustaende: was die App sagt, wenn etwas fehlt oder klemmt');
      'Gruppen: die Verworfen-Zeilen stehen vor dem Archivblock in derselben Gruppe');
   ok(/belegtDa \? '' : 'Kein Protokoll sagt derzeit/.test(strat),
      'Gruppen: "belegt" wird aus den Daten gerechnet, nie still behauptet');
+
+  /* --- Unterreiter 6 -> 3 (Regeln-Neubau Stufe 4, 31.08.2026) ---
+   * Strategien (Antwort + Gruppen) / Risiko & Einstellungen / Werkzeug. Kein
+   * Feature entfaellt: die alten Bereiche leben als Abschnitte mit unveraenderten
+   * Kennungen in den neuen Panels. */
+  var rp = html.slice(html.indexOf('id="regelPills"'), html.indexOf('id="sub-regeln"'));
+  var rpPillen = (rp.match(/data-sub="([a-z]+)"/g) || []).join(' ');
+  ok(rpPillen === 'data-sub="regeln" data-sub="einstellungen" data-sub="werkzeug"',
+     'Regeln hat genau die Pillen Strategien / Risiko & Einstellungen / Werkzeug', rpPillen);
+  function pos9(m) { return html.indexOf(m); }
+  ok(pos9('id="sub-einstellungen"') < pos9('id="sub-strategien"') &&
+     pos9('id="sub-strategien"') < pos9('id="sub-mittelfrist"') &&
+     pos9('id="sub-mittelfrist"') < pos9('id="sub-auswertung"') &&
+     pos9('id="sub-auswertung"') < pos9('<!-- /sub-einstellungen -->'),
+     'Risiko & Einstellungen buendelt Intraday, Mittelfrist-Steuerung und Autopilot');
+  ok(pos9('<!-- /sub-einstellungen -->') < pos9('id="sub-werkzeug"') &&
+     pos9('id="sub-werkzeug"') < pos9('id="sub-regelbuch"') &&
+     pos9('id="sub-regelbuch"') < pos9('id="sub-stratchart"') &&
+     pos9('id="sub-stratchart"') < pos9('Berichte &amp; Werkzeuge') &&
+     pos9('Berichte &amp; Werkzeuge') < pos9('<!-- /sub-werkzeug -->'),
+     'Werkzeug buendelt Regelbuch, Chart und die Berichte-Klappe samt Backtest');
+  ok(/sub === 'auswertung' \|\| sub === 'einstellungen' \|\| sub === 'werkzeug'/.test(dep) &&
+     /sub === 'strategien' \|\| sub === 'einstellungen'/.test(dep),
+     'Die Nachlade-Sonderfaelle kennen die neuen Pillen (und die alten Kennungen aus gespeicherten Zustaenden)');
 
   /* --- Glossar --- */
   var gl = /'glossar\.begriffe':\s*\{[\s\S]*?\n    \}/.exec(shell);
@@ -7595,8 +7623,14 @@ console.log('\n44) Oberflaeche nach Themen sortiert (Felix, Issue #68)');
   /* --- Die Navigation muss aufgehen: jede Pille findet ihr Panel --- */
   var pillen = (html.match(/data-sub="([a-z]+)"/g) || [])
     .map(function (s) { return s.slice(10, -1); });
-  var panels = (html.match(/id="sub-([a-z]+)"/g) || [])
-    .map(function (s) { return s.slice(8, -1); });
+  /* 31.08.2026, Regeln-Neubau Stufe 4: PANEL ist nur, was class="sub" traegt - nur
+   * das blendet der Umschalter ein und aus. Die frueheren Regeln-Pillen leben als
+   * IMMER SICHTBARE Abschnitte (id="sub-..." ohne die Klasse) in den neuen Panels
+   * weiter; sie brauchen keine Pille, weil sie nie ausgeblendet sind. Die
+   * geschuetzte Eigenschaft - kein toter, unerreichbarer Bereich - gilt unveraendert
+   * und wird weiter geprueft. */
+  var panels = (html.match(/class="sub(?: active)?" id="sub-([a-z]+)"/g) || [])
+    .map(function (s) { return s.slice(s.indexOf('id="sub-') + 8, -1); });
   var ohnePanel = pillen.filter(function (p) { return panels.indexOf(p) === -1; });
   var ohnePille = panels.filter(function (p) { return pillen.indexOf(p) === -1; });
   ok(ohnePanel.length === 0,
@@ -7882,8 +7916,13 @@ console.log('\n44) Oberflaeche nach Themen sortiert (Felix, Issue #68)');
   ok(/id="mfdMomentum"[^>]*>\s*<div class="empty"/.test(vermoegen) &&
      /id="mfdDrift"[^>]*>\s*<div class="empty"/.test(vermoegen),
      'Beide Buch-Container haben einen Leerzustand fuer den Erststart');
-  ok(/data-sub="mittel">Bücher</.test(vermoegen) && /data-sub="mittelfrist">Mittelfrist</.test(regeln),
-     'Die Pillen heissen, was sie zeigen: Buecher (Bestand) und Mittelfrist (Steuerung)');
+  /* 31.08.2026, Stufe 4: die Mittelfrist-Steuerung ist keine eigene Pille mehr,
+   * sondern ein Abschnitt unter "Risiko & Einstellungen". Die geschuetzte
+   * Eigenschaft bleibt: Bestand heisst Buecher (Vermoegen), die Steuerung wohnt
+   * vollstaendig im Reiter Regeln (die 23 Kennungen prueft der Block darueber). */
+  ok(/data-sub="mittel">Bücher</.test(vermoegen) && /id="sub-mittelfrist"/.test(regeln) &&
+     /data-sub="einstellungen">Risiko &amp; Einstellungen</.test(regeln),
+     'Die Pillen heissen, was sie zeigen: Buecher (Bestand), Steuerung unter Risiko & Einstellungen');
   /* Der Erklaerabsatz mit den Messzahlen wurde nicht geteilt - er beschreibt, WAS die
    * beiden Buecher sind, und bleibt deshalb ungeteilt bei ihnen (Leitplanke 1). */
   ok(/t = 1,62/.test(vermoegen) && /8,44 statt 14,07/.test(vermoegen),
@@ -9717,7 +9756,10 @@ console.log('\n58) Wiederholungs-Waende: eine Sammelzeile statt dreissig gleiche
   var sco = fs.readFileSync(__dirname + '/scoreboard.js', 'utf8');
 
   // --- Strategie-Chart: Legende erst, wenn es Linien gibt ---
-  var stcBlock = html.slice(html.indexOf('id="stratChartPanel"'), html.indexOf('id="sub-auswertung"'));
+  /* 31.08.2026, Stufe 4: Endanker von sub-auswertung (jetzt VOR dem Chart, unter
+   * "Risiko & Einstellungen") auf die Berichte-Klappe umgehaengt, die im neuen
+   * Werkzeug-Panel direkt hinter dem Chart steht. Geprueft wird dasselbe. */
+  var stcBlock = html.slice(html.indexOf('id="stratChartPanel"'), html.indexOf('Berichte &amp; Werkzeuge'));
   ok(/id="stcLeer"[^>]*class="empty"/.test(stcBlock),
      'Strategie-Chart: der Leerzustand benutzt den .empty-Baustein');
   /* Nicht nur das SVG - auch die Legende. Sie war der eigentliche Befund: eine

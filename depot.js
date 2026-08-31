@@ -7054,8 +7054,12 @@
     if (!sub) return;
     if (!D) { subOffen = { sub: sub, wieder: wieder }; return; }
     render();
-    if (sub === 'auswertung') renderAnalytics();
-    if (sub === 'strategien') { renderPilot(); renderRegime(); }
+    /* Stufe 4 des Regeln-Neubaus (31.08.2026): 'einstellungen' buendelt die frueheren
+     * Pillen strategien/mittelfrist/auswertung, 'werkzeug' buendelt regelbuch/
+     * stratchart. Die alten Kennungen bleiben stehen, falls ein gespeicherter
+     * UI-Zustand sie noch nennt. */
+    if (sub === 'auswertung' || sub === 'einstellungen' || sub === 'werkzeug') renderAnalytics();
+    if (sub === 'strategien' || sub === 'einstellungen') { renderPilot(); renderRegime(); }
     /* Der Trendfinder holt Kurse fuer 15 Werte. Beim Klick ist das eine Bestellung des
      * Nutzers; beim blossen Wiederherstellen des letzten Orts waere es eine ungefragte
      * Abfrage bei jedem Programmstart. Wiederhergestellt zeigt der Reiter seinen

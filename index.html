@@ -937,16 +937,14 @@
 
 <div id="tab-strategien" class="tab" role="tabpanel" aria-labelledby="reiter-strategien">
   <div class="pills" id="regelPills">
-    <button data-sub="regeln" class="active">Übersicht</button>
-    <!-- Label "Intraday" statt "Schalter & Einstellungen" (Regeln-Ausduennung 31.08.2026):
-         die Pille traegt genau die Intraday-Strategie samt Risiko und Archiv, und neben
-         "Mittelfrist" ist der Zeithorizont die ehrlichere Sortierung. data-sub bleibt
-         "strategien" - Kennungen sind Schnittstellen (Tests, Navigation, Store). -->
-    <button data-sub="strategien">Intraday</button>
-    <button data-sub="mittelfrist">Mittelfrist</button>
-    <button data-sub="regelbuch">Regelbuch</button>
-    <button data-sub="stratchart">Chart</button>
-    <button data-sub="auswertung">Autopilot</button>
+    <!-- Regeln-Neubau Stufe 4 (31.08.2026, Wilhelms Zielbild): drei Pillen statt
+         sechs. Die alten Bereiche existieren als Abschnitte mit unveraenderten IDs
+         weiter (sub-strategien, sub-mittelfrist, sub-auswertung unter "Risiko &
+         Einstellungen"; sub-regelbuch, sub-stratchart unter "Werkzeug") - kein
+         Feature entfaellt, nur die Verteilung derselben Inhalte auf sechs Orte. -->
+    <button data-sub="regeln" class="active">Strategien</button>
+    <button data-sub="einstellungen">Risiko &amp; Einstellungen</button>
+    <button data-sub="werkzeug">Werkzeug</button>
   </div>
   <div class="sub active" id="sub-regeln">
   <!-- ===== ANTWORT-SEITE (Regeln-Neubau Stufe 2, Wilhelms Zielbild 31.08.2026) =====
@@ -1042,7 +1040,8 @@
       </div>
     </details>
   </div>
-  <div class="sub" id="sub-strategien">
+  <div class="sub" id="sub-einstellungen">
+  <div id="sub-strategien">
     <div class="strategy-grid">
       <div class="strat-card intraday">
         <div class="head">
@@ -1273,7 +1272,7 @@
   </div>
 
   <!-- ============ MITTELFRIST (Steuerung; Bestand steht in Vermögen → Bücher) ============ -->
-  <div class="sub" id="sub-mittelfrist">
+  <div id="sub-mittelfrist">
   <div class="panel">
     <h3 style="display:flex; align-items:center; gap:8px;">Momentum im Querschnitt · Aktien, keine Hebelscheine
       <button class="info" type="button" data-info="regeln.mf.momentum" aria-expanded="false"
@@ -1397,9 +1396,69 @@
       i-Knopf oben.
     </div>
   </div>
-  </div>
+  </div><!-- /sub-mittelfrist -->
 
-  <div class="sub" id="sub-regelbuch">
+  <div id="sub-auswertung">
+
+    <!-- 1 · Was die App von allein tut -->
+    <div class="panel" style="margin-bottom:12px; border-top:3px solid var(--series);">
+      <h3 style="display:flex; align-items:center; gap:8px;">Autopilot – die App verbessert sich selbst
+        <button class="info" type="button" data-info="regeln.autopilot" aria-expanded="false"
+                aria-label="Erklärung: Autopilot">i</button></h3>
+      <!-- Der Absatz, wie die Nachtmessung im Detail arbeitet (Edge-Waechter vs.
+           Walk-Forward, Scheinsieger-Begruendung), steht wortgleich im Info-Register
+           (regeln.autopilot). Sichtbar bleibt die Zusicherung, was uebernommen wird. -->
+      <div style="color:var(--muted); font-size:var(--fs-neben); margin-bottom:10px; max-width:68ch;">
+        Die Nacht misst auf dem <b>Kursarchiv</b> – als Edge-Wächter auf den gemessenen Kanten, sonst per
+        Walk-Forward über alle Kandidaten. Übernommen wird nur, was sich in <b>zwei Nächten hintereinander</b>
+        bestätigt; von Hand gesetzte Felder bleiben unangetastet.
+      </div>
+
+      <div class="auto-row">
+        <div class="auto-head">
+          <label title="Misst nachts auf dem Kursarchiv und wendet doppelt bestätigte, robuste Ergebnisse morgens an">Autopilot<span class="switch"><input type="checkbox" id="pilotOn" checked><span class="knob"></span></span></label>
+          <button class="btn ghost tiny" id="pilotBtn">jetzt messen (10–20 Min)</button>
+        </div>
+        <div id="pilotStatus" class="auto-status"></div>
+        <div id="pilotLog" class="plog" style="display:none;"></div>
+      </div>
+
+      <!-- Massen-Backfill: die Messbasis in einem Rutsch vertiefen, statt Wochen zu warten -->
+      <div class="auto-row">
+        <div class="auto-head">
+          <label title="Holt fehlende Kerzen für Handels-Universum, Nasdaq-100 und aktiven Pool über die Capital.com-Demo-API ins Archiv. Vor allem 1-Minuten-Historie: Yahoo gibt nur 7 Tage, mehrere offene Studien brauchen 60+.">Kursarchiv auffüllen (Capital.com)</label>
+          <button class="btn ghost tiny" id="quelleTestBtn" title="Prüft Schritt für Schritt, ob Anbindung, Anmeldung, Marktsuche und Kursabruf funktionieren – und misst, wie weit die Historie je Zeitrahmen wirklich zurückreicht. Dauert etwa eine Minute.">Datenquelle testen</button>
+          <button class="btn ghost tiny" id="massenBtn">jetzt auffüllen</button>
+          <button class="btn ghost tiny" id="massen1mBtn" title="Füllt AUSSCHLIESSLICH die 1-Minuten-Historie auf – der einzige Zeitrahmen mit einer echten Lücke (rund 8 statt 90 Tage) und die Voraussetzung für die offenen Trendwende-Studien.">nur 1-Minuten</button>
+          <button class="btn ghost tiny" id="massenStopBtn">anhalten</button>
+        </div>
+        <div id="massenStatus" class="auto-status" style="white-space:pre-wrap;"></div>
+        <div class="hinweis" style="margin-top:4px; max-width:68ch;">
+          Einige tausend Abrufe (rund 200 Werte × drei Zeitrahmen), <b>mit Absicht gedrosselt</b>, weil Capital.com
+          zu schnelle Läufe sperrt. Rechne mit <b>30–90 Minuten</b> und einigen hundert MB im Datenordner;
+          jederzeit anhaltbar, ein neuer Lauf setzt am letzten Stand an.
+        </div>
+      </div>
+
+      <div class="auto-row">
+        <div class="auto-head">
+          <label title="Misst stündlich die Marktlage und zeigt sie an. Sie stellt keine Strategie um – aber in erkennbar wirren Phasen kann sie neue Einstiege für rund eine Stunde aussetzen. Offene Positionen werden normal weiter betreut.">Marktlage messen<span class="switch"><input type="checkbox" id="aoRegime" checked><span class="knob"></span></span></label>
+          <button class="btn ghost tiny" id="regimeBtn">jetzt messen</button>
+        </div>
+        <div id="regimeStatus" class="auto-status"></div>
+      </div>
+
+      <details class="how" style="margin-top:10px;">
+        <summary>Letzte Messung im Detail (Ranking, Empfehlung, Datenbasis)</summary>
+        <div id="centralResult" style="margin-top:12px;"></div>
+      </details>
+    </div>
+
+  </div><!-- /sub-auswertung -->
+  </div><!-- /sub-einstellungen -->
+
+  <div class="sub" id="sub-werkzeug">
+  <div id="sub-regelbuch">
     <div class="panel" id="regelKarte" style="margin-top:12px; border-top:3px solid var(--series3);">
       <h3 style="display:flex; align-items:center; gap:8px;">Die Regel, die handelt
         <button class="info" type="button" data-info="regeln.handelt" aria-expanded="false"
@@ -1476,13 +1535,14 @@
       </div>
     </div>
   </div>
-  <div class="sub" id="sub-stratchart">
+  <div id="sub-stratchart">
   <div class="panel" id="stratChartPanel" style="margin-top:12px;">
     <h3 style="display:flex; align-items:center; gap:8px;">Strategie-Chart – Signal und Bedingungen nachvollziehen
       <button class="info" type="button" data-info="regeln.chart" aria-expanded="false"
               aria-label="Erklärung: Strategie-Chart">i</button></h3>
     <div style="font-size:var(--fs-neben); color:var(--ink-2); line-height:1.5; margin-bottom:6px; max-width:68ch;">
       Rechnet die gemessene Regel auf den Kerzen eines Werts nach. Jede Markierung ist ein Einstieg, den die Regel dort gegeben hätte.
+      Was jede Strategie taugt, steht an einem Ort: Pille <b>Strategien</b>, nach Belegstand sortiert.
     </div>
     <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
       <select id="stcMode">
@@ -1536,61 +1596,6 @@
     <div style="font-size:var(--fs-neben); color:var(--muted); margin-top:6px;">Simulation, keine Anlageberatung. Der Chart zeigt, was die Regel gesehen hätte – nicht, was sie verdient hätte; die Messung dazu steht in den Belegen oben.</div>
   </div>
   </div>
-  <div class="sub" id="sub-auswertung">
-
-    <!-- 1 · Was die App von allein tut -->
-    <div class="panel" style="margin-bottom:12px; border-top:3px solid var(--series);">
-      <h3 style="display:flex; align-items:center; gap:8px;">Autopilot – die App verbessert sich selbst
-        <button class="info" type="button" data-info="regeln.autopilot" aria-expanded="false"
-                aria-label="Erklärung: Autopilot">i</button></h3>
-      <!-- Der Absatz, wie die Nachtmessung im Detail arbeitet (Edge-Waechter vs.
-           Walk-Forward, Scheinsieger-Begruendung), steht wortgleich im Info-Register
-           (regeln.autopilot). Sichtbar bleibt die Zusicherung, was uebernommen wird. -->
-      <div style="color:var(--muted); font-size:var(--fs-neben); margin-bottom:10px; max-width:68ch;">
-        Die Nacht misst auf dem <b>Kursarchiv</b> – als Edge-Wächter auf den gemessenen Kanten, sonst per
-        Walk-Forward über alle Kandidaten. Übernommen wird nur, was sich in <b>zwei Nächten hintereinander</b>
-        bestätigt; von Hand gesetzte Felder bleiben unangetastet.
-      </div>
-
-      <div class="auto-row">
-        <div class="auto-head">
-          <label title="Misst nachts auf dem Kursarchiv und wendet doppelt bestätigte, robuste Ergebnisse morgens an">Autopilot<span class="switch"><input type="checkbox" id="pilotOn" checked><span class="knob"></span></span></label>
-          <button class="btn ghost tiny" id="pilotBtn">jetzt messen (10–20 Min)</button>
-        </div>
-        <div id="pilotStatus" class="auto-status"></div>
-        <div id="pilotLog" class="plog" style="display:none;"></div>
-      </div>
-
-      <!-- Massen-Backfill: die Messbasis in einem Rutsch vertiefen, statt Wochen zu warten -->
-      <div class="auto-row">
-        <div class="auto-head">
-          <label title="Holt fehlende Kerzen für Handels-Universum, Nasdaq-100 und aktiven Pool über die Capital.com-Demo-API ins Archiv. Vor allem 1-Minuten-Historie: Yahoo gibt nur 7 Tage, mehrere offene Studien brauchen 60+.">Kursarchiv auffüllen (Capital.com)</label>
-          <button class="btn ghost tiny" id="quelleTestBtn" title="Prüft Schritt für Schritt, ob Anbindung, Anmeldung, Marktsuche und Kursabruf funktionieren – und misst, wie weit die Historie je Zeitrahmen wirklich zurückreicht. Dauert etwa eine Minute.">Datenquelle testen</button>
-          <button class="btn ghost tiny" id="massenBtn">jetzt auffüllen</button>
-          <button class="btn ghost tiny" id="massen1mBtn" title="Füllt AUSSCHLIESSLICH die 1-Minuten-Historie auf – der einzige Zeitrahmen mit einer echten Lücke (rund 8 statt 90 Tage) und die Voraussetzung für die offenen Trendwende-Studien.">nur 1-Minuten</button>
-          <button class="btn ghost tiny" id="massenStopBtn">anhalten</button>
-        </div>
-        <div id="massenStatus" class="auto-status" style="white-space:pre-wrap;"></div>
-        <div class="hinweis" style="margin-top:4px; max-width:68ch;">
-          Einige tausend Abrufe (rund 200 Werte × drei Zeitrahmen), <b>mit Absicht gedrosselt</b>, weil Capital.com
-          zu schnelle Läufe sperrt. Rechne mit <b>30–90 Minuten</b> und einigen hundert MB im Datenordner;
-          jederzeit anhaltbar, ein neuer Lauf setzt am letzten Stand an.
-        </div>
-      </div>
-
-      <div class="auto-row">
-        <div class="auto-head">
-          <label title="Misst stündlich die Marktlage und zeigt sie an. Sie stellt keine Strategie um – aber in erkennbar wirren Phasen kann sie neue Einstiege für rund eine Stunde aussetzen. Offene Positionen werden normal weiter betreut.">Marktlage messen<span class="switch"><input type="checkbox" id="aoRegime" checked><span class="knob"></span></span></label>
-          <button class="btn ghost tiny" id="regimeBtn">jetzt messen</button>
-        </div>
-        <div id="regimeStatus" class="auto-status"></div>
-      </div>
-
-      <details class="how" style="margin-top:10px;">
-        <summary>Letzte Messung im Detail (Ranking, Empfehlung, Datenbasis)</summary>
-        <div id="centralResult" style="margin-top:12px;"></div>
-      </details>
-    </div>
 
     <!-- 2 · Selten gebraucht -->
     <details class="how" style="margin-bottom:12px;">
@@ -1619,12 +1624,13 @@
           Glattstellung am Abend. Für die beiden gemessenen Kanten passt das nicht – sie handeln den Basiswert,
           nur Long und über Nacht –, deshalb verweigert der Backtest dort die Auskunft; sie misst der Autopilot
           nachts auf dem Kursarchiv. Historische Nachrichten gibt es nicht, getestet wird der technische Kern.
+          Der Belegstand jeder Strategie steht auf der Pille <b>Strategien</b> – der Backtest ist ein Rechenwerkzeug, kein Urteil.
         </div>
         <div id="btResult" style="margin-top:12px;"></div>
       </div>
     </details>
 
-  </div><!-- /sub-auswertung -->
+  </div><!-- /sub-werkzeug -->
   <!-- ============ MITTELFRISTIG (war ein eigener Reiter) ============ -->
   <div class="panel">
     <div style="font-size:var(--fs-neben); color:var(--muted);">Alles hier ist Simulation. Es wird nichts gekauft und nichts verkauft.</div>
@@ -1665,7 +1671,7 @@
     <div class="panel" id="positionsPanel"><div class="loading">Noch keine Positionen – schalte unter „Regeln → Intraday“ die Intraday-Strategie ein.</div></div>
   </div>
 
-  <!-- ============ BÜCHER (Bestand; gesteuert wird unter Regeln → Mittelfrist) ============ -->
+  <!-- ============ BÜCHER (Bestand; gesteuert wird unter Regeln → Risiko & Einstellungen) ============ -->
   <div class="sub" id="sub-mittel">
   <div class="panel">
     <h3>Mittelfrist-Depot · Momentum und Ergebnis-Drift handeln</h3>
@@ -1676,9 +1682,9 @@
       erinnern („Rebalancing fällig“ mit Handlungsliste). Alles Simulation, keine Anlageberatung.
     </div>
     <h3 style="margin-top:12px; font-size:var(--fs-gross);">Momentum-Buch <span style="font-weight:400; color:var(--muted);">· stärkstes Zehntel, alle 63 Handelstage, 20 Bp je Seite</span></h3>
-    <div id="mfdMomentum" style="margin-top:6px;"><div class="empty"><span>Noch nichts gerechnet – der Takt läuft nach dem Start von allein. Sofort prüfen: Reiter <b>Regeln → Mittelfrist</b>.</span></div></div>
+    <div id="mfdMomentum" style="margin-top:6px;"><div class="empty"><span>Noch nichts gerechnet – der Takt läuft nach dem Start von allein. Sofort prüfen: Reiter <b>Regeln → Risiko &amp; Einstellungen</b>.</span></div></div>
     <h3 style="margin-top:14px; font-size:var(--fs-gross);">Ergebnis-Drift-Buch <span style="font-weight:400; color:var(--muted);">· 60 Handelstage je Position, long und short, 10 Bp je Seite</span></h3>
-    <div id="mfdDrift" style="margin-top:6px;"><div class="empty"><span>Noch nichts gerechnet – der Takt läuft nach dem Start von allein. Sofort prüfen: Reiter <b>Regeln → Mittelfrist</b>.</span></div></div>
+    <div id="mfdDrift" style="margin-top:6px;"><div class="empty"><span>Noch nichts gerechnet – der Takt läuft nach dem Start von allein. Sofort prüfen: Reiter <b>Regeln → Risiko &amp; Einstellungen</b>.</span></div></div>
   </div>
 
   </div>
