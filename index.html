@@ -949,6 +949,21 @@
     <button data-sub="auswertung">Autopilot</button>
   </div>
   <div class="sub active" id="sub-regeln">
+  <!-- ===== ANTWORT-SEITE (Regeln-Neubau Stufe 2, Wilhelms Zielbild 31.08.2026) =====
+       Wer den Reiter oeffnet, bekommt zuerst Antworten, keine Schalter: Was handelt
+       die App gerade (je Strategie ein Satz plus Beleg-Etikett), was hat sie zuletzt
+       GETAN (Handlung = Order, nie ein Prueflauf), wie stehen Autopilot, Marktlage
+       und Risiko. Bewusst OHNE Bedienelemente - alles Konfigurierbare liegt in den
+       Pillen dahinter. Gerendert von strategien.js aus DepotAPI.antwort();
+       statischer Text, keine Animation (prefers-reduced-motion ist bei Wilhelm aktiv). -->
+  <div class="panel" id="antwortSeite" style="border-top:3px solid var(--series);">
+    <h3 style="display:flex; align-items:center; gap:8px;">Was die App gerade tut
+      <button class="info" type="button" data-info="regeln.antwort" aria-expanded="false"
+              aria-label="Erklärung: Was die App gerade tut">i</button></h3>
+    <div id="antwortHandelt"><div class="loading">Lade Strategie-Stand …</div></div>
+    <div id="antwortZuletzt" style="margin-top:10px;"></div>
+    <div id="antwortStatus" style="margin-top:10px; padding-top:8px; border-top:1px solid var(--grid);"></div>
+  </div>
   <div class="panel">
     <!-- Kein Zahlwort in der Überschrift: die Liste darunter kommt aus STRATEGIEN in
          strategien.js und ist gewachsen (vier Karten mit Schalter plus die

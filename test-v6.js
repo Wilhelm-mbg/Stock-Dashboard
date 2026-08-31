@@ -5911,6 +5911,31 @@ console.log('\n41) Zustaende: was die App sagt, wenn etwas fehlt oder klemmt');
   var karten = (strat.match(/\n      key: '/g) || []).length;
   ok(karten >= 5, 'Strategie-Uebersicht: strategien.js fuehrt die Karten selbst', karten + ' Eintraege');
 
+  /* --- Antwort-Seite (Regeln-Neubau Stufe 2, Wilhelms Zielbild 31.08.2026) ---
+   * Wer den Reiter oeffnet, bekommt zuerst Antworten: was handelt gerade (Satz +
+   * Beleg-Etikett), was wurde zuletzt GETAN (Handlung, nie Prueflauf), Autopilot/
+   * Marktlage/Risiko. Und: KEINE Bedienelemente auf dieser Seite. */
+  ok(/id="antwortSeite"/.test(html) && /id="antwortHandelt"/.test(html) &&
+     /id="antwortZuletzt"/.test(html) && /id="antwortStatus"/.test(html),
+     'Antwort-Seite: die Bloecke fuer die Fragen existieren');
+  ok(html.indexOf('id="antwortSeite"') < html.indexOf('id="stratListe"'),
+     'Antwort-Seite: sie steht VOR der Strategie-Liste - Antworten zuerst');
+  var antwortMarkup = html.slice(html.indexOf('id="antwortSeite"'), html.indexOf('Die Strategien im Überblick'));
+  ok(antwortMarkup.length > 100 && !/<select|<input/.test(antwortMarkup) &&
+     (antwortMarkup.match(/<button/g) || []).length === 1 && /<button class="info"/.test(antwortMarkup),
+     'Antwort-Seite: keine Bedienelemente - nur der eine Erklaerknopf');
+  ok(/function renderAntwort/.test(strat) && /api\.antwort\(\)/.test(strat),
+     'Antwort-Seite: strategien.js zeichnet sie aus DepotAPI.antwort()');
+  /* Das Beleg-Etikett kommt aus derselben Kette wie die Ausloeser-Auswahl:
+   * Protokoll -> Studienregister -> "nicht gemessen". Nie nur aus einer Liste. */
+  ok(/api\.protokollKante\(kette\[i\]\)/.test(strat) && /StudienUrteile\.verworfen\(kette\[i\]\)/.test(strat),
+     'Antwort-Seite: das Etikett liest Protokoll und Studienregister, keine Code-Liste');
+  ok(/antwort: function \(\)/.test(dep) && /function merke\(at, txt\)/.test(dep) &&
+     /buchHandlung\(D\.mfBuch/.test(dep) && /buchHandlung\(D\.driftBuch/.test(dep),
+     'Antwort-Seite: "zuletzt getan" sucht ueber ALLE Buecher die juengste Handlung');
+  ok(/'regeln\.antwort': \{/.test(shell),
+     'Antwort-Seite: der Erklaertext ist im Register angemeldet');
+
   /* --- Glossar --- */
   var gl = /'glossar\.begriffe':\s*\{[\s\S]*?\n    \}/.exec(shell);
   ok(!!gl, 'Glossar: es ist angemeldet');

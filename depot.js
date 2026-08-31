@@ -4236,6 +4236,55 @@
           return { name: r.name, modus: r.cfg && r.cfg.mode };
         })
       };
+    },
+
+    /* ---- Antwort-Seite (Regeln-Neubau Stufe 2, Wilhelms Zielbild 31.08.2026) ----
+     * Eine Momentaufnahme fuer die drei Fragen der ersten Seite: Was handelt die App
+     * gerade, was hat sie zuletzt GETAN (Handlung = Order in einem der Buecher, nie
+     * ein Prueflauf), wie stehen Autopilot, Marktlage und Risiko. NUR Kopien - die
+     * Anzeige rechnet nichts nach und greift nirgends ein. */
+    antwort: function () {
+      if (!D) return null;
+      var handlung = null;
+      function merke(at, txt) { if (at && (!handlung || at > handlung.at)) handlung = { at: at, txt: txt }; }
+      (D.trades || []).forEach(function (t) {
+        var wo = t.strategy === 'hourly' ? 'Stunden-Strategie' : 'Intraday';
+        merke(t.openT, wo + ': ' + (t.dir === 'put' ? 'Put' : t.dir === 'call' ? 'Call' : 'Kauf') + ' ' + t.sym);
+        if (t.status === 'closed') merke(t.closeT, wo + ': ' + t.sym + ' geschlossen' + (t.pnl != null ? ' (' + (t.pnl >= 0 ? '+' : '') + Math.round(t.pnl * 100) / 100 + ' $)' : ''));
+      });
+      function buchHandlung(b, name) {
+        ((b && b.trades) || []).slice(-8).forEach(function (t) {
+          merke(t.t, name + ': ' + t.art + ' ' + t.sym);
+        });
+      }
+      buchHandlung(D.mfBuch, 'Momentum-Buch');
+      buchHandlung(D.driftBuch, 'Drift-Buch');
+      var modusName = null;
+      /* setupName ist der eine Klartext-Namensgeber (Protokoll, Ranking, Empfehlung) -
+       * keine zweite Namensliste fuer die Antwort-Seite. */
+      try { if (D.intraday) modusName = setupName(D.intraday.mode, D.intraday.channel !== false); }
+      catch (e) { /* dann eben der rohe Schluessel in der Anzeige */ }
+      var eq = null, tagPct = null;
+      try {
+        eq = equityNow();
+        if (D.dayStartEq > 0 && eq != null) tagPct = Math.round((eq / D.dayStartEq - 1) * 1000) / 10;
+      } catch (e) { /* Depot noch nicht hochgefahren */ }
+      var a = autoOptCfg();
+      return {
+        handlung: handlung,
+        modusName: modusName,
+        instrument: D.intraday ? D.intraday.instrument : null,
+        positionen: (D.positions || []).length,
+        maxPos: D.risk ? D.risk.maxPos : null,
+        tagPct: tagPct,
+        dayLossPct: D.risk ? D.risk.dayLossPct : null,
+        killSwitch: killSwitchAktiv(),
+        pilotAn: a.on !== false,
+        pilotZuletzt: a.lastMess || null,
+        regime: D.regime ? { at: D.regime.at, ok: !!D.regime.ok, pause: !!D.regime.pause,
+          txt: String(D.regime.txt || '').slice(0, 160) } : null,
+        pruefStand: D.pruefStand && D.pruefStand.buecher ? D.pruefStand.buecher : null
+      };
     }
   };
 

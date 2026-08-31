@@ -644,6 +644,16 @@
      * "Was du dabei wissen musst", Drift-Intro samt Messblock). Der Wortlaut ist
      * UNVERAENDERT hierher uebernommen (Regeln-Ausduennung 31.08.2026); sichtbar
      * geblieben sind die entscheidungsrelevanten Zahlen in je einem Satz. */
+    'regeln.antwort': {
+      titel: 'Was die App gerade tut',
+      punkte: [
+        'Oben steht, was gerade gehandelt wird: jede laufende Strategie in einem Satz, daneben ihr Beleg-Etikett aus dem Messprotokoll (oder der dokumentierten Verwerfung) – die App liest dieses Urteil, sie behauptet es nicht.',
+        '„Zuletzt getan“ ist die letzte echte Handlung: eine eröffnete oder geschlossene Position in einem der Bücher. Prüfläufe ohne Handlung zählen nicht als Tun – wann zuletzt geprüft wurde, steht in Klammern dahinter.',
+        'Darunter der Rahmen: Autopilot (misst nachts, wendet nur doppelt Bestätigtes an), die stündlich gemessene Marktlage und die Risiko-Zeile mit offenen Positionen und Tagesverlust-Limit.',
+        'Diese Seite stellt nichts ein. Schalter, Parameter und Werkzeuge liegen in den Pillen dahinter.'
+      ],
+      fuss: 'Alles hier ist Simulation mit virtuellem Kapital. Keine Anlageberatung.'
+    },
     'regeln.autopilot': {
       titel: 'Was die Nacht misst',
       punkte: [

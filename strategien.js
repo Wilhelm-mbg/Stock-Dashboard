@@ -278,10 +278,89 @@
       ' <span style="color:var(--muted);">– die App liest dieses Urteil, sie rechnet es nicht.</span></div>';
   }
 
+  /* ===== Antwort-Seite (Regeln-Neubau Stufe 2, Wilhelms Zielbild 31.08.2026) =====
+   * Drei Bloecke, keine Bedienelemente. Der Beleg-Chip je Zeile kommt aus derselben
+   * Kette wie die Ausloeser-Auswahl: Messprotokoll (DepotAPI.protokollKante), sonst
+   * dokumentierte Verwerfung (studienurteile.js), sonst ehrlich "nicht gemessen" -
+   * nie aus einer Liste im Code. Nur der Karten-Chip (s.stand) bleibt als
+   * gekennzeichneter Code-Rueckfall, wie bei den Karten darunter. */
+  function antwortChip(kette) {
+    var api = window.DepotAPI;
+    for (var i = 0; i < kette.length; i++) {
+      var pk = api && api.protokollKante ? api.protokollKante(kette[i]) : null;
+      if (pk) {
+        var farbe = pk.urteil === 'bestaetigt' ? 'up' : pk.urteil === 'widerlegt' ? 'down' : 'warn';
+        return { txt: U.urteilText(pk.urteil), farbe: farbe, quelle: 'Messprotokoll ' + kette[i] + ' vom ' + pk.datum };
+      }
+      var su = window.StudienUrteile && window.StudienUrteile.verworfen(kette[i]);
+      if (su) return { txt: 'gemessen und verworfen', farbe: 'down', quelle: su.quelle };
+    }
+    return null;
+  }
+  function chipHtml(c) {
+    return '<span style="font-size:var(--fs-klein); padding:1px 7px; border-radius:var(--r-gross); border:1px solid var(--' + c.farbe + '); color:var(--' + c.farbe + ');"' +
+      (c.quelle ? ' title="' + U.esc(c.quelle) + '"' : '') + '>' + U.esc(c.txt) + '</span>';
+  }
+  function ersterSatz(txt) {
+    var i = txt.indexOf('. ');
+    return i > 0 ? txt.slice(0, i + 1) : txt;
+  }
+  function renderAntwort() {
+    var elH = document.getElementById('antwortHandelt');
+    if (!elH) return;
+    var api = window.DepotAPI;
+    var a = api && api.antwort ? api.antwort() : null;
+    var st = api && api.regelStatus ? api.regelStatus() : null;
+    if (!a || !st) { elH.innerHTML = '<div class="loading">Lade Strategie-Stand …</div>'; return; }
+    var zeilen = [];
+    if (st.intradayAn) {
+      var cI = antwortChip([st.modus]) || { txt: 'nicht gemessen', farbe: 'muted' };
+      zeilen.push('<div><b>Intraday</b> · ' + U.esc(a.modusName || st.modus || '?') +
+        ' – handelt ' + (a.instrument === 'schein' ? 'Hebelscheine' : 'die Aktie selbst (1×)') +
+        (st.kapiZusatz ? ', Kapitulations-Dip zugeschaltet' : '') + ' ' + chipHtml(cI) + '</div>');
+    }
+    STRATEGIEN.forEach(function (s) {
+      if (s.key === 'kurz' || s.fussnote || !s.schalter) return;
+      if (!anZustand(s.key)) return;
+      var c = antwortChip(s.messKeys || []) ||
+        { txt: s.stand, farbe: s.farbe, quelle: 'Stand aus strategien.js (kein Messprotokoll im Datenordner)' };
+      zeilen.push('<div><b>' + U.esc(s.name) + '</b> · ' + U.esc(ersterSatz(s.was)) + ' ' + chipHtml(c) + '</div>');
+    });
+    if (!zeilen.length) zeilen.push('<div>Es handelt gerade keine Strategie.</div>');
+    if (!st.intradayAn && st.schatten) {
+      zeilen.push('<div style="color:var(--muted); font-size:var(--fs-neben);">Intraday ist aus – das Schattenbuch zeichnet jedes Signal weiter auf (Beweisaufnahme läuft).</div>');
+    }
+    elH.innerHTML = '<div style="display:grid; gap:6px; font-size:var(--fs-text); line-height:1.5;">' + zeilen.join('') + '</div>';
+    var elZ = document.getElementById('antwortZuletzt');
+    if (elZ) {
+      elZ.innerHTML = '<span style="color:var(--muted);">Zuletzt getan:</span> ' +
+        (a.handlung ? '<b>' + U.dt(a.handlung.at) + '</b> – ' + U.esc(a.handlung.txt)
+          : 'noch keine Handlung aufgezeichnet') +
+        (a.pruefStand ? ' <span style="color:var(--muted); font-size:var(--fs-neben);">(Bücher zuletzt geprüft ' + U.dt(a.pruefStand) + ')</span>' : '');
+    }
+    var elS = document.getElementById('antwortStatus');
+    if (elS) {
+      var teile = [];
+      teile.push('Autopilot: ' + (a.pilotAn ? 'an' : 'aus') +
+        (a.pilotZuletzt ? ' (letzte Nachtmessung ' + U.dt(a.pilotZuletzt) + ')' : ''));
+      teile.push('Marktlage: ' + (a.regime
+        ? U.esc(a.regime.txt) + (a.regime.pause ? ' – <b style="color:var(--down);">neue Einstiege ausgesetzt</b>' : '')
+        : 'noch keine Messung'));
+      teile.push('Risiko: ' + a.positionen + (a.maxPos ? ' von max. ' + a.maxPos : '') + ' Positionen offen' +
+        (a.tagPct != null ? ' · heute ' + (a.tagPct >= 0 ? '+' : '') + U.dez(a.tagPct, 1) + ' %' : '') +
+        (a.dayLossPct ? ' (Tageslimit −' + a.dayLossPct + ' %)' : '') +
+        (a.killSwitch ? ' · <b style="color:var(--down);">Kill-Switch: Handel bis Tagesende gesperrt</b>' : ''));
+      elS.innerHTML = '<div style="display:grid; gap:4px; font-size:var(--fs-neben); color:var(--ink-2);">' +
+        teile.map(function (t) { return '<div>' + t + '</div>'; }).join('') + '</div>';
+    }
+  }
+  if (typeof window !== 'undefined') window.__antwortRender = renderAntwort;
+
   function render() {
     var el = document.getElementById('stratListe');
     if (!el) return;
     belegeAnmelden();
+    renderAntwort();
     var karten = STRATEGIEN.filter(function (s) { return !s.fussnote; });
     /* Die Fussnote MUSS hier mitgebaut werden: el.innerHTML ersetzt bei jedem
      * Reiterwechsel den gesamten Inhalt, ein separat angehaengtes Element waere
