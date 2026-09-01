@@ -224,4 +224,43 @@ Version.
 
 ---
 
+## Nachtrag 1 (02.09.2026 ~00:23, nach dem Wächterlauf, VOR dem Urteilslauf) — ein Placebo-Kriterium war falsch gebaut
+
+**Was der Wächterlauf zeigte** (`waechter-2026-09-01-22-21.json`, UTC-Stempel; Werkzeug wie committet 9f797c0):
+W0 bestanden (+1,541 gegen +1,537 Pp, 79 Perioden, Abweichung 0,004), Positivkontrolle
+bestanden (Soll exakt +1,893, gefunden +1,893, Verhältnis 1,0000), Placebo-t 1,12 < 2,576.
+**Gefallen ist das Rauschboden-Kriterium:** sd der 200 Placebo-Mittel 0,181 Pp gegen se des
+Kandidaten 0,732 Pp → **Verhältnis 0,247**, registriert war [0,7; 1,4].
+
+**Warum das Kriterium falsch war, nicht die Streuungsrechnung:** Ich hatte unterstellt, ein
+zufälliger Korb gleicher Größe habe dieselbe Periodenstreuung wie der Momentum-Korb. Das ist
+falsch. Ein Zufallskorb aus ~220 Werten streut gegen den Markt nur mit dem **idiosynkratischen**
+Rest (≈ 1,8 Pp je Periode); der Momentum-Korb ist eine **systematische Neigung** und trägt die
+Zeitreihen-Streuung des Momentum-Faktors selbst (6,5 Pp je Periode — Momentum-Crashs sind
+genau das). Der Kandidaten-se **muss** deshalb größer sein als der Placebo-Rauschboden; das
+Verhältnis 0,247 ist kein Werkzeugfehler, sondern die Faktorstreuung — und sie ist der Grund,
+warum die Auflösungswand hier liegt, wo sie liegt. *Fehlerform „Abweichung ohne Nullerwartung
+deuten" (`wiki/fehlerformen.md`), diesmal in der Vorregistrierung selbst.*
+
+**Korrigiertes Kriterium — das prüft, was das alte prüfen sollte:** Die Streuungsrechnung ist
+richtig, wenn der **parametrische se der Placebo-Reihe** (aus ihren eigenen 79 Perioden) mit
+der **empirischen sd der 200 Placebo-Mittel** übereinstimmt: Verhältnis ∈ [0,7; 1,4]. Im
+Wächterlauf: 0,202 / 0,181 = **1,12** → bestanden. Dieselbe Rechnung, die dem Kandidaten seinen
+se gibt, trifft beim Placebo die Wahrheit.
+
+**Was unverändert bleibt:** Endpunkt, Hürden, Schwellen, Entscheidungsregeln, Placebo-t-Kriterium
+(|t| < 2,576), Positivkontrolle, W0. **Das gefallene Kriterium wird im Ergebnis weiter
+ausgewiesen**, mit diesem Nachtrag als Grund. Wer den Buchstaben der ursprünglichen Fassung
+anlegt, liest: *„Kontrolle verfehlt, kein Urteil"* — und die Zahlen als beschreibend. Beides
+steht dann nebeneinander.
+
+**Zusätzlich ausgewiesen (nachrichtlich):** 5 von 200 Placebo-Ziehungen erreichten |t| ≥ 2,576;
+bei 79 Perioden ist die exakte Erwartung (t-Verteilung, 78 Freiheitsgrade) ≈ 2,4. Das wird
+berichtet, ändert die registrierte Schwelle aber nicht.
+
+*Kein Urteilslauf wurde vor diesem Nachtrag gefahren; der Wächterlauf druckt im Modus
+`--waechter` keine Netto-Zahlen und kein Urteil. Der Brutto-Wert war aus der Eichung bekannt.*
+
+---
+
 *Simulation mit virtuellem Kapital. Keine Anlageberatung.*

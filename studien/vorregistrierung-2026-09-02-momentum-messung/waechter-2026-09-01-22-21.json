@@ -1,0 +1,54 @@
+{
+ "modus": "waechter",
+ "kontrollen": {
+  "w0": {
+   "ok": true,
+   "hier": 1.5409705140566468,
+   "n": 79,
+   "abweichung": 0.003970514056646834,
+   "delistingAusstiege": 0
+  },
+  "placebo": {
+   "ok": false,
+   "mittel": 0.22583561712383668,
+   "se": 0.2017414221734091,
+   "t": 1.1194310751399241,
+   "nettoCfd": -2.1443707119900877,
+   "rauschbodenSd": 0.18081293472508062,
+   "verhaeltnis": 0.24699247572315078,
+   "ueberSchwelle": 5,
+   "ziehungen": 200
+  },
+  "positiv": {
+   "ok": true,
+   "sollNaeherung": 1.799919073088442,
+   "sollExakt": 1.8928348379406974,
+   "gefunden": 1.8928348379406987,
+   "gefundenNetto": 1.8928348379406987,
+   "verhaeltnis": 1.0000000000000007
+  },
+  "wachhund": {
+   "exit": 0,
+   "rueckstand": 1,
+   "zeile": "archiv1d: juengste Kerze 2026-08-31, letzter abgeschlossener Handelstag 2026-09-01 -> Rueckstand 1 Handelstag(e)  [2965 von 2965 geprueft, 0,0 % auf Stand]"
+  },
+  "fingerabdruck": {
+   "dateien": 2965,
+   "bytes": 1378599356,
+   "juengsteSchreibzeit": 1788228445784.468
+  },
+  "klassifizierung": true
+ },
+ "zaehl": {
+  "dateien": 2965,
+  "keineAktie": 716,
+  "zuKurz": 0,
+  "kaputt": 36,
+  "genutzt": 2213
+ },
+ "zeitachse": {
+  "n": 10080,
+  "von": "1986-08-25",
+  "bis": "2026-08-28"
+ }
+}

@@ -307,11 +307,21 @@ var stPnet = statistik(plac.map(function (x, i) { return x - best[i].kostenCfd; 
 var rauschboden = [];
 for (var z = 1; z <= PLACEBO_ZIEHUNGEN; z++) { var s2 = statistik(placebo(best, SEED + z)); rauschboden.push({ mittel: s2.mittel, t: s2.t }); }
 var sdRB = statistik(rauschboden.map(function (r) { return r.mittel; })).sd;
+/* Registriertes Kriterium (§6): sd der Placebo-Mittel gegen se des KANDIDATEN. Im Waechterlauf
+ * gefallen (0,247) - und zwar, weil es falsch gebaut war: ein Zufallskorb traegt keine
+ * Faktor-Exposition, der Momentum-Korb schon (Nachtrag 1). Wird weiter ausgewiesen. */
 var verhRB = sdRB / stB.se;
+/* Korrigiertes Kriterium (Nachtrag 1): parametrischer se der Placebo-Reihe gegen empirische
+ * sd der Placebo-Mittel - dieselbe Rechnung, die dem Kandidaten seinen se gibt, muss beim
+ * Placebo die Wahrheit treffen. */
+var verhEigen = stP.se / sdRB;
 var rbUeber = rauschboden.filter(function (r) { return Math.abs(r.t) >= T_FAM; }).length;
-var placOk = Math.abs(stP.t) < T_FAM && verhRB >= 0.7 && verhRB <= 1.4;
-console.log('  Placebo brutto ' + pp(stP.mittel) + ' Pp   se ' + fx(stP.se, 3) + '   t ' + fx(stP.t) + '   (netto CFD ' + pp(stPnet.mittel) + ')');
-console.log('  Rauschboden: sd der ' + PLACEBO_ZIEHUNGEN + ' Placebo-Mittel ' + fx(sdRB, 3) + ' Pp  /  se Kandidat ' + fx(stB.se, 3) + '  = ' + fx(verhRB, 3) + '   |t| >= ' + T_FAM + ' in ' + rbUeber + ' von ' + PLACEBO_ZIEHUNGEN + '  -> ' + (placOk ? 'BESTANDEN' : 'VERFEHLT'));
+var placOkRegistriert = Math.abs(stP.t) < T_FAM && verhRB >= 0.7 && verhRB <= 1.4;
+var placOk = Math.abs(stP.t) < T_FAM && verhEigen >= 0.7 && verhEigen <= 1.4;
+console.log('  Placebo brutto ' + pp(stP.mittel) + ' Pp   se ' + fx(stP.se, 3) + '   t ' + fx(stP.t) + '   (netto CFD ' + pp(stPnet.mittel) + ')   Streuung je Periode ' + fx(stP.sd, 3) + ' gegen Kandidat ' + fx(stB.sd, 3) + ' Pp');
+console.log('  Rauschboden: sd der ' + PLACEBO_ZIEHUNGEN + ' Placebo-Mittel ' + fx(sdRB, 3) + ' Pp   |t| >= ' + T_FAM + ' in ' + rbUeber + ' von ' + PLACEBO_ZIEHUNGEN + ' (Erwartung bei 78 Freiheitsgraden ~2,4)');
+console.log('  Kriterium registriert (sd Placebo-Mittel / se Kandidat): ' + fx(verhRB, 3) + '  -> ' + (placOkRegistriert ? 'bestanden' : 'GEFALLEN - Nachtrag 1: Faktorstreuung, kein Werkzeugfehler'));
+console.log('  Kriterium korrigiert (se Placebo / sd Placebo-Mittel):   ' + fx(verhEigen, 3) + '  -> ' + (placOk ? 'BESTANDEN' : 'VERFEHLT'));
 
 /* ---------- Positivkontrolle ---------- */
 console.log('\n-- Positivkontrolle (Ausstiegskurs jedes Korbwerts x ' + (1 + IMPLANTAT) + ') --');
@@ -326,7 +336,8 @@ console.log('  Soll (registrierte Naeherung 2,000 x (1 - Korb/Alle)) ' + pp(soll
 console.log('  gefunden brutto ' + pp(gefunden) + ' Pp   netto ' + pp(gefundenNetto) + ' Pp   Verhaeltnis zu exakt ' + fx(posVerh, 4) + '  -> ' + (posOk ? 'BESTANDEN' : 'VERFEHLT'));
 
 var kontrollen = { w0: { ok: w0ok, hier: stB.mittel, n: stB.n, abweichung: w0abw, delistingAusstiege: fruehe },
-                   placebo: { ok: placOk, mittel: stP.mittel, se: stP.se, t: stP.t, nettoCfd: stPnet.mittel, rauschbodenSd: sdRB, verhaeltnis: verhRB, ueberSchwelle: rbUeber, ziehungen: PLACEBO_ZIEHUNGEN },
+                   placebo: { ok: placOk, okRegistriert: placOkRegistriert, mittel: stP.mittel, se: stP.se, sd: stP.sd, t: stP.t, nettoCfd: stPnet.mittel, rauschbodenSd: sdRB,
+                              verhaeltnisRegistriert: verhRB, verhaeltnisKorrigiert: verhEigen, ueberSchwelle: rbUeber, ziehungen: PLACEBO_ZIEHUNGEN },
                    positiv: { ok: posOk, sollNaeherung: sollN, sollExakt: sollE, gefunden: gefunden, gefundenNetto: gefundenNetto, verhaeltnis: posVerh },
                    wachhund: wh, fingerabdruck: fpVor, klassifizierung: true };
 var alleOk = w0ok && placOk && posOk;
