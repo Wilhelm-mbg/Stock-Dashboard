@@ -1,0 +1,75 @@
+{
+ "gemessenAm": "2026-09-01T06:41:18.534Z",
+ "seed": 20260827,
+ "waechter": {
+  "gemessenAm": "2026-09-01T06:41:16.769Z",
+  "seed": 20260827,
+  "ueberlebende": {
+   "genutzt": 2213,
+   "verworfen": 36
+  },
+  "W3W4_S": {
+   "kandidat": 1074815,
+   "gueltig": 1074815,
+   "ungueltig": 0,
+   "quote": 1
+  },
+  "W1": {
+   "soll": -0.004379784265292467,
+   "gemessen": -0.00477042986070061,
+   "verhaeltnis": 1.0891928852532322,
+   "t": -9.558383236172578,
+   "N": 505,
+   "bestanden": true
+  },
+  "W2b": {
+   "mittel": -0.0005472757877903434,
+   "sd": 0.005454805543348488,
+   "grenze": 0.004204291372535847,
+   "ziehungen": 200,
+   "bestanden": true
+  }
+ },
+ "W3": {
+  "qS": 1,
+  "qV": 0.9952480069119899
+ },
+ "verschwundene": {
+  "genutzt": 1108,
+  "verworfen": 56
+ },
+ "identitaet": {
+  "maxAbweichung": 8.881784197001252e-16,
+  "n": 1150841
+ },
+ "uebernacht": {
+  "mittel": 0.046199365742862805,
+  "mittelRoh": 0.6260759343364519,
+  "sdFD": 0.048094292824090994,
+  "sdGew": 0.06012068214466388,
+  "se": 0.002159497497108754,
+  "t": 21.393572256840717,
+  "N": 496,
+  "tageOhneV": 9,
+  "fMittel": 0.06635186107276328,
+  "delta80": 0.006657730783586289
+ },
+ "intradayNachrichtlich": {
+  "mittel": 0.013975295444869721,
+  "mittelRoh": 0.20961592244497165,
+  "sdFD": 0.03977056923174314,
+  "sdGew": 0.04090092188360198,
+  "se": 0.001785751274660997,
+  "t": 7.8260033427795035,
+  "N": 496,
+  "tageOhneV": 9,
+  "fMittel": 0.06635186107276328,
+  "delta80": 0.005505471179779854
+ },
+ "urteil": "Richtung belegt: POSITIV (Archiv untertreibt ueber Nacht)",
+ "familie": {
+  "name": "ueberlebensluecke-wege",
+  "tests": 2,
+  "schwelle": 2.2414
+ }
+}
