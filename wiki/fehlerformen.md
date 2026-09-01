@@ -17,6 +17,8 @@
 | **Behauptung statt Bestätigung** | `kanalUeber` verwarf nie — die „Bestätigung" konnte nicht ablehnen. **Bestätigung gehört außerhalb des Rechenfensters.** |
 | **Geteilter Kurs** | Teilt das Signal einen Kurs mit der Zielgröße, entsteht ein Scheineffekt in behaupteter Richtung. |
 | **Sperrklinke frisst ihren Kommentar** | Der erklärende Kommentar nennt den verbotenen Bezeichner → grün im Bauplan, rot im Repo. |
+| **Die Wand ist nicht das Fenster** | Der Nachrichten-Index reicht bis 2017 zurück — aber das sagt nur, wo die **älteste** Meldung liegt, nicht ab wann die Abdeckung trägt. Sie ist eine Stufe: 2021-03 **9,6 %** → 2021-05 **94,0 %**. *AAPL hatte 2017 **eine** Meldung und 2021 dann 4.296.* Nutzbar waren **1.338** statt 2.367 Tage. **Verallgemeinerung: Der Anfang eines Bestandes und der Anfang seiner Brauchbarkeit sind zwei verschiedene Daten — immer beide prüfen.** *Fundstelle: `studien/vorregistrierung-2026-09-01-news-sentiment-vollkorpus/ERGEBNIS.md`, Commit `d803a14`* |
+| **Planformel zu konservativ** | Die Vorab-Formel für geclusterte Standardfehler war um **Faktor 4,2** zu pessimistisch (geclusterter se nur 18 % über dem ungeclusterten). **Eine zu vorsichtige Machbarkeitsrechnung erklärt Fragen für unbeantwortbar, die es nicht sind** — dieselbe Gefahr wie zu optimistisch, nur andersherum. *Fundstelle: ebenda* |
 | **Zähler mit Schwelle** | `FAKTOR_MIN = 2` schnitt **53 %** der bekannten Skalenfälle weg, bevor die Logik anlief. Er meldete keine Null, sondern eine kleinere Zahl — **die aussah wie ein Ergebnis.** |
 
 ## Formen bei der Deutung

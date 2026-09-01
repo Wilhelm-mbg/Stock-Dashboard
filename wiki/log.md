@@ -22,6 +22,16 @@ Obergrenze des 90-%-Bandes liegt Faktor 8,5 unter der CFD-Hürde.
    pessimistisch. Als Regel in `aufloesungswand.md` festgehalten — samt der Pflicht, so einen
    Zugewinn als Zugewinn zu kennzeichnen und nicht als das, was vorregistriert war.
 
+## 01.09.2026 (Lint durch den PM) — zwei Fehlerformen nachgetragen
+
+Die Sentiment-Sitzung hat vier Seiten korrekt aktualisiert, aber ihre beiden **verallgemeinerbaren**
+Befunde standen nur im Ergebnisbericht: **„Die Wand ist nicht das Fenster"** und **„Planformel um
+Faktor 4,2 zu konservativ"**. Beide sind Fehler*formen*, keine Einzelbefunde — sie gehören nach
+`fehlerformen.md`, sonst findet sie niemand, der nicht ohnehin diese eine Studie liest.
+
+**Das ist die Lint-Aufgabe:** nicht Widersprüche glätten, sondern prüfen, ob ein Befund auf der
+Seite steht, auf der ihn jemand sucht.
+
 ## 01.09.2026 (später) — erste Aktualisierung, und sie widerlegt eine Wiki-Aussage von vorhin
 
 **Geändert:** `datenquellen.md` (Gratisstufe kann viel mehr als ihre Doku; Dichte gezählt statt
