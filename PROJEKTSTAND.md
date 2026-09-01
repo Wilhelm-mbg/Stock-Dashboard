@@ -33,6 +33,33 @@ Wenn du hier etwas änderst, dann nur deine eigene Zeile unter „Läuft gerade"
 
 ---
 
+## 💀 01.09. abends — **GLOCKENDRUCK IST TOT — und der Grund ist der lehrreichste des Projekts** (`6263f1b`)
+
+> ### **Der Effekt STIRBT in liquiden Werten** *(≥1 Mrd $ Tagesumsatz: H=1 nur +0,023 Pp, t 0,68;
+> ab H=2 gegen null bis negativ).* **Er lebt, wo er nicht handelbar ist.**
+
+*Kein H bringt die Kante über die Kosten: Grenzertrag ~+0,007 Pp je Zusatznacht gegen CFD-
+Finanzierung 0,0247/Nacht (Capital.com 4 % p.a. + Benchmark; auch ungehebelt reicht es nicht).
+H=3/5 wie vorab deklariert blind (delta80 0,15/0,27 > K=0,110). Familie 7, alle Placebos grün,
+Nachtrag vor jedem Ertragsblick eingearbeitet (`384cd10`).*
+
+**Damit ist die Übernacht-Familie KOMPLETT durchgemessen: vier von vier NEIN.** *Aktien-Broker-
+Spalte nachrichtlich: Punktschätzer ab H=2 über den ~0,06 Pp, Signifikanz fehlt.*
+
+**Kosten-Ist (Etikett: Freigabeschwelle UNERFÜLLT — 20 Runden, aber 16 aus EINER Minute, nur
+1 Marktlage):** *Median 0,0857 %, p75 0,1103 %; Messbasis ausnahmslos ≥1,6 Mrd $, während
+glockendrucks Auswahl bei 69 Mio $ Median liegt.* **0,10 % ist für die Mrd-Klasse passend und für
+das Kandidaten-Universum optimistisch.**
+
+**Datentarif (`954f035`): der Anbieter ist Polygon.io alias Massive — wir sind bereits Kunde auf
+der Gratisstufe.** *Starter $29 brächte 5 Jahre + Minutenbalken + Nachrichten-Index zurück bis
+22.06.2016 (2.569 Handelstage) — News/Sentiment ginge damit von „Faktor 75 fehlt" auf Faktor
+3,5–102 ÜBER der Schwelle.* **ENTSCHEID Wilhelm: erst die Gratisschnittstelle empirisch abtasten
+(Dichte zählen statt schätzen), dann über die Stufen entscheiden. Nächste Messung wartet auf diese
+Prüfung — keine halbe Arbeit parallel.**
+
+---
+
 ## 🗺 01.09. abends — **STRATEGIE-LANDKARTE LIEGT** (`2bb8cd5`, 18 Klassen, keine Erträge angesehen)
 
 **Kernbefund:** *Übernacht ist die EINZIGE Klasse klar unter der Auflösungswand (~735–872 nötige
