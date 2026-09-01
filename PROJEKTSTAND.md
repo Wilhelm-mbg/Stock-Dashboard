@@ -33,6 +33,23 @@ Wenn du hier etwas änderst, dann nur deine eigene Zeile unter „Läuft gerade"
 
 ---
 
+## 🗺 01.09. abends — **STRATEGIE-LANDKARTE LIEGT** (`2bb8cd5`, 18 Klassen, keine Erträge angesehen)
+
+**Kernbefund:** *Übernacht ist die EINZIGE Klasse klar unter der Auflösungswand (~735–872 nötige
+Tage bei 4.665 vorhandenen).* **Strukturell nicht messbar im heutigen Bestand:** *Optionen,
+Value/Quality (ein einziger Fundamentaldaten-Stand = Look-ahead), Index-Aufnahmen, Dividenden-
+termine, Saisonalität (Monatswende hätte 79.500 Tage gebraucht), Intraday (Fensterlage +
+Produkthürde), News-Sentiment (Faktor 75).* **Alle Urteile wörtlich mit Fundstelle;
+Gedächtnis-Quellen (Formationen, Krypto) ehrlich gekennzeichnet.**
+
+**Empfehlungskapitel (Vorlage, kein Entscheid):** *1. weitere Übernacht-Bauformen ·
+2. Monats-Momentum nicht überlappend (das mfdepot-Buch lief nie durch die volle Mühle) ·
+3. Insider-Käufe Form 4 (EDGAR-Infrastruktur vorhanden).* **Wilhelms Scope-Entscheid fällt nach
+dem Kosten-Angriff** *(glockendruck-Haltedauer rechnet noch: CFD-Finanzierung × H gegen Kante,
+Echt-Broker-Spalte nachrichtlich, Liquiditäts-Schnitt als Zusatzendpunkt).*
+
+---
+
 ## 🎯 01.09. ~18:xx — **ÜBERNACHT-FAMILIE GEMESSEN: DREIMAL NEIN — und die Frage dreht sich um** (`42b1079`)
 
 **Alle drei Kandidaten sauber gemessen** *(Familie JA=6/NEIN=12, alle Placebos grün, 0 Sprungpaare
