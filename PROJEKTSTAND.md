@@ -33,6 +33,17 @@ Wenn du hier etwas änderst, dann nur deine eigene Zeile unter „Läuft gerade"
 
 ---
 
+> # 📚 DIESE DATEI IST DAS ARCHIV — ZUM NACHSCHLAGEN GEHT ES INS WIKI
+> ### **→ [`wiki/index.md`](wiki/index.md)**
+>
+> *Diese Tafel ist ein chronologisches Log und auf **638 KB / rund 9.959 Zeilen** gewachsen —
+> grob **160.000 Token**. Sie wird **nicht gelöscht** (sie ist die Chronologie), aber sie ist
+> als Nachschlagewerk unbrauchbar.*
+>
+> **Das Wiki beantwortet dieselben Fragen auf ~29 KB, thematisch statt chronologisch, mit
+> Zitierpflicht.** *Neue Erkenntnisse gehören ins Wiki (Seite aktualisieren, Fundstelle
+> nennen); nur die Chronologie wird hier weiter angehängt.*
+
 ## 💀 01.09. abends — **GLOCKENDRUCK IST TOT — und der Grund ist der lehrreichste des Projekts** (`6263f1b`)
 
 > ### **Der Effekt STIRBT in liquiden Werten** *(≥1 Mrd $ Tagesumsatz: H=1 nur +0,023 Pp, t 0,68;

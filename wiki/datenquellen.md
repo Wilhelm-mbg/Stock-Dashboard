@@ -1,0 +1,52 @@
+# Datenquellen und Fenster
+
+**Die Fensterlage entscheidet, welche Frage überhaupt stellbar ist.** Eine gute Idee, deren
+Daten außerhalb des Fensters liegen, ist unmöglich — nicht schwierig.
+
+## Kursarchive (auf `E:/Markt-Dashboard-Archiv`, Pfad steht in `archiv1d-pfad.txt`)
+
+| Archiv | Umfang | Fenster | Bemerkung |
+|---|---|---|---|
+| **archiv1d** | 2.965 Werte | **bis 1986**, ~4.665 Handelstage | der Kernbestand, mit Eröffnungskursen |
+| **archiv60m** | 2.886 Werte | **730 Tage ROLLIEREND** | Quelle gibt nicht mehr her |
+| 1m | — | ~7 Tage | **Sammlung RUHT** (Entscheid, siehe [entscheide.md](entscheide.md)) |
+| 5m / 15m | — | ~60 Tage | sammelt seit 26.08.2026 |
+| **massive/** | 1.164 verschwundene Reihen | Messzeitraum | für [ueberlebensverzerrung.md](ueberlebensverzerrung.md) |
+
+**⚠ `massive/universum-2024-09-02.json` ist EINGEFROREN und schreibgeschützt** (Original +
+Kopie auf `E:`). Nie anfassen, nie neu erzeugen — sonst werden alle bisherigen
+Überlebensverzerrungs-Messungen unvergleichbar. *Entscheid 31.08.2026.*
+
+## Anbieter
+
+**Polygon.io, seit 10/2025 „Massive"** (`api.massive.com`). **Wir sind bereits Kunde auf der
+Gratisstufe.** *Fundstelle: `studien/datentarif-2026-09-01/EMPFEHLUNG.md`*
+
+| Stufe | Preis | Rate | Tiefe | Auflösung |
+|---|---|---|---|---|
+| **Basic (unsere)** | **$0** | 5/Min | **2 Jahre** | nur Tagesschluss |
+| Starter | $29 | unbegrenzt | 5 Jahre | + Minutenbalken |
+| Developer | $79 | unbegrenzt | 10 Jahre | + Trades |
+| Advanced | $199 | unbegrenzt | 20+ Jahre | + Quotes, Flat Files, Echtzeit |
+
+*Jahreszahlung −20 %. Monatlich kündbar. Preise abgerufen 01.09.2026.*
+
+**Was Starter aufschlösse:** Nachrichten-Index zurück bis **22.06.2016** (2.569 Handelstage) →
+News/Sentiment ginge von „Faktor 75 fehlt" auf **Faktor 3,5–102 über der Schwelle**.
+*Vorbehalt der Quelle selbst: die Dichte-Schätzung (20,6 %) stammt aus 12 Tagen, halb davon ein
+einziger — schwacher Schätzer, gehört gezählt statt geschätzt.*
+
+## Weitere Quellen
+
+- **Yahoo Finance** — Kurse der App, bis 15 Min verzögert. **Führt keine Scheine** (ISIN/WKN: 0
+  Treffer). Korrigiert fertige Kerzen ~18 Min rückwirkend.
+- **EDGAR** (frei) — Form 4, 8-K, DEF 14C. Bewährt: hat den GBTC/ETHE-Fall aufgeklärt.
+- **Fundamentaldaten: fast keine.** Nur `stammdaten.json` (Aktienzahl, Gewinn/Aktie, Stand
+  Juli 2026) — **ein einziger Stand = Look-ahead**, deshalb sind Value/Quality-Ansätze
+  strukturell unmessbar.
+- **Optionsdaten, Orderbuch, Tick: keine.**
+
+## Der Schlüssel
+
+`massive.key` im Datenordner. **Gehört in keine Ausgabe, kein Log, keinen Commit, keine URL,
+die irgendwo protokolliert wird.**
