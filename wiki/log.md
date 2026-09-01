@@ -40,6 +40,12 @@ unverändert, nur die Größenaussage dazu; neue Zeile `kapitulation`), `offene-
 aber dieselbe Variante hat ein Tagesmittel von +0,054 im selben Protokoll. Beide Skalen stehen
 jetzt nebeneinander, mit Fundstelle im Repo statt „im Datenordner" (die Ordner sind identisch).
 
+## 02.09.2026 (Lint durch den PM) — zwei Formen aus der Momentum-Messung
+
+Die messende Sitzung hat sieben Seiten korrekt aktualisiert. Nachgetragen in `fehlerformen.md`:
+**„Kontrollkriterium falsch gebaut"** (auch Kontrollen brauchen eine Positivkontrolle) und die
+gelungene Gegenprobe zur zu konservativen Planformel (geplant 2,05 = gemessen 2,051).
+
 ## 01.09.2026 (abends) — News-Sentiment gemessen: NEIN. Und die Wand war nicht das Fenster
 
 **Geändert:** `belegstand.md` (News-Sentiment von „messbar, Messung steht aus" nach
