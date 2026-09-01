@@ -1,6 +1,6 @@
 <!-- PM-STAND
-letzter-bericht: 2026-08-31 23:58 (Windows-Uhr)
-gesehener-tag: v8.36.0 (gebaut 23:51, bei Wilhelm noch nicht installiert)
+letzter-bericht: 2026-09-01 09:05 (Windows-Uhr)
+gesehener-tag: v8.37.0
 pm-adresse: markt-dashboard-c0 [4877bc]   <- HIERHIN melden (Bruecke 19:3x neu gestartet, alte Kuerzel tot)
 -->
 
@@ -30,6 +30,29 @@ und den Sitzungen: hier steht, was entschieden ist, was gerade läuft und was al
 ansteht. Lies sie beim Start; trag dich unter „Läuft gerade" ein, wenn du Dateien belegst.
 
 Wenn du hier etwas änderst, dann nur deine eigene Zeile unter „Läuft gerade".
+
+---
+
+## ⚖️ 01.09. ~09:0x — **WEG 3 KOMPLETT: das Archiv UNTERTREIBT über Nacht** · v8.37.0 draußen
+
+**Mitglied 2 (Übernacht-Kohorte) ist durch, alle Wächter grün** *(W4-Selbsttest 10/10 · Wachhund
+Exit 0 · W1-Kunstinjektion Verhältnis 1,089 · W2b-Maschinen-Null bestanden · Stabilität beider Arme
+unverändert · Zerlegungs-Identität 8,9e-16).* **Primärendpunkt:**
+
+> ### **c_gew +0,0462 Pp/Tag, t = 21,39 (496 Paartage) — Richtung belegt: POSITIV, das Archiv
+> untertreibt über Nacht.** *Intraday nachrichtlich: +0,0140, t 7,83. Sperrliste eingehalten:
+> kein Kanten-Urteil, keine Reparatur-Empfehlung.*
+
+**Beide Weg-3-Mitglieder zeigen dieselbe Richtung** *(Mitglied 1 Schluss: +0,0568, t 20,99).*
+**Folge für die Übernacht-Familie:** *ein JA auf Überlebenden-Daten ist konservativ gemessen; ein
+NEIN muss die Verzerrungsrichtung mitbedenken.* **Das Gatter vor glockendruck/nachtstoss/
+abgabedruck ist offen** — *ERGEBNIS.md wird per Einzelauftrag festgeschrieben, dann Messung.*
+
+*Betrieb: der Lauf starb zweimal mit dem jeweiligen Chat und lief im dritten Anlauf **abgekoppelt
+im Hintergrund des PM-Chats** durch — Messläufe gehören nicht an ein Chat-Leben gebunden. Beide
+Archive am 01.09. ~02:09 nachgeladen (der gelöschte Nachtlauf pflegte sie; seit 27.08. tat das
+niemand). **v8.36.0 und v8.37.0 veröffentlicht** (Regeln-Neubau, Sentiment-Null, News-Archiv-
+Reparatur, 16 Audit-Punkte).*
 
 ---
 
