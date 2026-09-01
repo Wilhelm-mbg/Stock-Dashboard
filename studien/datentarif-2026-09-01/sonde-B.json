@@ -1,0 +1,91 @@
+{
+ "stand": "2026-09-01T17:22:04.929Z",
+ "wandZwischen": [
+  "2017-04-09",
+  "2017-04-13"
+ ],
+ "schritte": [
+  {
+   "datum": "2016-01-01",
+   "status": 200,
+   "treffer": 0,
+   "fehler": null
+  },
+  {
+   "datum": "2026-08-31",
+   "status": 200,
+   "treffer": 1,
+   "fehler": null
+  },
+  {
+   "datum": "2021-05-02",
+   "status": 200,
+   "treffer": 1,
+   "fehler": null,
+   "aeltester": "2021-05-01T23:00:00Z"
+  },
+  {
+   "datum": "2018-09-01",
+   "status": 200,
+   "treffer": 1,
+   "fehler": null,
+   "aeltester": "2017-04-10T00:24:00Z"
+  },
+  {
+   "datum": "2017-05-02",
+   "status": 200,
+   "treffer": 1,
+   "fehler": null,
+   "aeltester": "2017-04-10T00:24:00Z"
+  },
+  {
+   "datum": "2016-08-31",
+   "status": 200,
+   "treffer": 0,
+   "fehler": null,
+   "aeltester": null
+  },
+  {
+   "datum": "2016-12-31",
+   "status": 200,
+   "treffer": 0,
+   "fehler": null,
+   "aeltester": null
+  },
+  {
+   "datum": "2017-03-02",
+   "status": 200,
+   "treffer": 0,
+   "fehler": null,
+   "aeltester": null
+  },
+  {
+   "datum": "2017-04-01",
+   "status": 200,
+   "treffer": 0,
+   "fehler": null,
+   "aeltester": null
+  },
+  {
+   "datum": "2017-04-16",
+   "status": 200,
+   "treffer": 1,
+   "fehler": null,
+   "aeltester": "2017-04-10T00:24:00Z"
+  },
+  {
+   "datum": "2017-04-09",
+   "status": 200,
+   "treffer": 0,
+   "fehler": null,
+   "aeltester": null
+  },
+  {
+   "datum": "2017-04-13",
+   "status": 200,
+   "treffer": 1,
+   "fehler": null,
+   "aeltester": "2017-04-10T00:24:00Z"
+  }
+ ]
+}

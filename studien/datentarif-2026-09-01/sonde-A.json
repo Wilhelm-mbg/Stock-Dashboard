@@ -1,0 +1,77 @@
+{
+ "stand": "2026-09-01T17:19:07.132Z",
+ "proben": [
+  {
+   "was": "Referenz active=false (nutzen wir bereits)",
+   "pfad": "/v3/reference/tickers?active=false&market=stocks&limit=1",
+   "status": 200,
+   "statusFeld": "OK",
+   "fehler": null,
+   "nachricht": null,
+   "treffer": 1,
+   "gesamt": 1,
+   "weiter": true,
+   "rumpf": "{\"results\":[{\"ticker\":\"AAB.WS\",\"name\":\"LEHMAN BROTHERS CURRENCY BASKET WTS EXP 2/13/2008\",\"market\":\"stocks\",\"locale\":\"us\",\"primary_exchange\":\"XASE\",\"active\":false,\"currency_name\":\"usd\",\"last_updated_utc\":\"2025-01-16T17:32:57.087334Z\",\"delisted_utc\":\"2008-02-11"
+  },
+  {
+   "was": "Nachrichten, ohne Zeitfilter",
+   "pfad": "/v2/reference/news?ticker=AAPL&limit=5",
+   "status": 200,
+   "statusFeld": "OK",
+   "fehler": null,
+   "nachricht": null,
+   "treffer": 5,
+   "gesamt": 5,
+   "weiter": true,
+   "rumpf": "{\"results\":[{\"id\":\"bab0fa0b4c7e44058e2c3435fba69f353da868456551a5f84380c14c31e27f15\",\"publisher\":{\"name\":\"The Motley Fool\",\"homepage_url\":\"https://www.fool.com/\",\"logo_url\":\"https://s3.massive.com/public/assets/news/logos/themotleyfool.svg\",\"favicon_url\":\"http"
+  },
+  {
+   "was": "Tages-Aggregate INNERHALB ~730 T",
+   "pfad": "/v2/aggs/ticker/AAPL/range/1/day/2024-10-01/2024-10-11?adjusted=true",
+   "status": 200,
+   "statusFeld": "OK",
+   "fehler": null,
+   "nachricht": null,
+   "treffer": 9,
+   "gesamt": 9,
+   "weiter": false,
+   "rumpf": "{\"ticker\":\"AAPL\",\"queryCount\":9,\"resultsCount\":9,\"adjusted\":true,\"results\":[{\"v\":6.3285048e+07,\"vw\":225.9755,\"o\":229.52,\"c\":226.21,\"h\":229.65,\"l\":223.74,\"t\":1727755200000,\"n\":832120},{\"v\":3.2880605e+07,\"vw\":226.0517,\"o\":225.89,\"c\":226.78,\"h\":227.37,\"l\":223.02,"
+  },
+  {
+   "was": "Tages-Aggregate AUSSERHALB ~730 T",
+   "pfad": "/v2/aggs/ticker/AAPL/range/1/day/2024-06-03/2024-06-13?adjusted=true",
+   "status": 403,
+   "statusFeld": "NOT_AUTHORIZED",
+   "fehler": null,
+   "nachricht": "Your plan doesn't include this data timeframe. Please upgrade your plan at https://polygon.io/pricing",
+   "treffer": null,
+   "gesamt": null,
+   "weiter": false,
+   "rumpf": "{\"status\":\"NOT_AUTHORIZED\",\"request_id\":\"c2f9bcad2e3123d6e7cf401d41fae43c\",\"message\":\"Your plan doesn't include this data timeframe. Please upgrade your plan at https://polygon.io/pricing\"}"
+  },
+  {
+   "was": "Minutenbalken, frisch (letzte Tage)",
+   "pfad": "/v2/aggs/ticker/AAPL/range/1/minute/2026-08-27/2026-08-29?adjusted=true&limit=5",
+   "status": 200,
+   "statusFeld": "OK",
+   "fehler": null,
+   "nachricht": null,
+   "treffer": 5,
+   "gesamt": 5,
+   "weiter": true,
+   "rumpf": "{\"ticker\":\"AAPL\",\"queryCount\":5,\"resultsCount\":5,\"adjusted\":true,\"results\":[{\"v\":30673.439794,\"vw\":310.8914,\"o\":311.39,\"c\":311.2,\"h\":311.5,\"l\":310.26,\"t\":1787817600000,\"n\":1115},{\"v\":77552.909513,\"vw\":310.6805,\"o\":311.15,\"c\":310.68,\"h\":311.34,\"l\":310.26,\"t\":17"
+  },
+  {
+   "was": "Minutenbalken, alt (~700 T zurueck)",
+   "pfad": "/v2/aggs/ticker/AAPL/range/1/minute/2024-10-01/2024-10-02?adjusted=true&limit=5",
+   "status": 200,
+   "statusFeld": "OK",
+   "fehler": null,
+   "nachricht": null,
+   "treffer": 5,
+   "gesamt": 5,
+   "weiter": true,
+   "rumpf": "{\"ticker\":\"AAPL\",\"queryCount\":5,\"resultsCount\":5,\"adjusted\":true,\"results\":[{\"v\":1870,\"vw\":233.3365,\"o\":233.33,\"c\":233.33,\"h\":233.33,\"l\":233.33,\"t\":1727769600000,\"n\":90},{\"v\":1268,\"vw\":233.3434,\"o\":233.37,\"c\":233.33,\"h\":233.37,\"l\":233.33,\"t\":1727769660000,\"n\":"
+  }
+ ]
+}

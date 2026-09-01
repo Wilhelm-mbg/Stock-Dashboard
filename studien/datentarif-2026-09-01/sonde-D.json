@@ -1,0 +1,71 @@
+{
+ "stand": "2026-09-01T17:23:44.153Z",
+ "proben": [
+  {
+   "was": "Minutenbalken AUSSERHALB ~730 T (Wand auch hier?)",
+   "pfad": "/v2/aggs/ticker/AAPL/range/1/minute/2024-06-03/2024-06-04?adjusted=true&limit=5",
+   "status": 403,
+   "statusFeld": "NOT_AUTHORIZED",
+   "fehler": null,
+   "nachricht": "Your plan doesn't include this data timeframe. Please upgrade your plan at https://polygon.io/pricing",
+   "treffer": null,
+   "weiter": false,
+   "rumpf": "{\"status\":\"NOT_AUTHORIZED\",\"request_id\":\"855cf06d63a6a5d5271fd6e9cd586028\",\"message\":\"Your plan doesn't include this data timeframe. Please upgrade your plan at https://polygon.io/pricing\"}"
+  },
+  {
+   "was": "Dividenden-Termine (Landkarte 2.12 verlangt sie)",
+   "pfad": "/v3/reference/dividends?ticker=AAPL&limit=5",
+   "status": 200,
+   "statusFeld": "OK",
+   "fehler": null,
+   "nachricht": null,
+   "treffer": 5,
+   "weiter": true,
+   "rumpf": "{\"results\":[{\"cash_amount\":0.27,\"currency\":\"USD\",\"declaration_date\":\"2026-07-30\",\"dividend_type\":\"CD\",\"ex_dividend_date\":\"2026-08-10\",\"frequency\":4,\"id\":\"E1e778b36bcedb4d1589a970be52c16294ad4bc89c8627d56a3b970f6cf2a6e10\",\"pay_date\":\"2026-08-13\",\"record_date\":\""
+  },
+  {
+   "was": "Tages-Aggregate UNADJUSTIERT (Landkarte 2.12 verlangt sie)",
+   "pfad": "/v2/aggs/ticker/AAPL/range/1/day/2026-07-03/2026-07-13?adjusted=false",
+   "status": 200,
+   "statusFeld": "OK",
+   "fehler": null,
+   "nachricht": null,
+   "treffer": 6,
+   "weiter": false,
+   "rumpf": "{\"ticker\":\"AAPL\",\"queryCount\":6,\"resultsCount\":6,\"adjusted\":false,\"results\":[{\"v\":5.3589977639994e+07,\"vw\":312.0838,\"o\":307.36,\"c\":312.66,\"h\":314.2,\"l\":307,\"t\":1783310400000,\"n\":967723},{\"v\":4.249000288419e+07,\"vw\":312.2982,\"o\":315.29,\"c\":310.66,\"h\":315.48,\"l\""
+  },
+  {
+   "was": "Seitengroesse: limit=1000 - wie viel kommt wirklich?",
+   "pfad": "/v2/reference/news?ticker=AAPL&limit=1000&order=desc&sort=published_utc",
+   "status": 200,
+   "statusFeld": "OK",
+   "fehler": null,
+   "nachricht": null,
+   "treffer": 1000,
+   "weiter": true,
+   "rumpf": "{\"results\":[{\"id\":\"bab0fa0b4c7e44058e2c3435fba69f353da868456551a5f84380c14c31e27f15\",\"publisher\":{\"name\":\"The Motley Fool\",\"homepage_url\":\"https://www.fool.com/\",\"logo_url\":\"https://s3.massive.com/public/assets/news/logos/themotleyfool.svg\",\"favicon_url\":\"http"
+  },
+  {
+   "was": "Nachrichten zu einem VERSCHWUNDENEN Wert (Ueberlebensverzerrung)",
+   "pfad": "/v2/reference/news?ticker=FRCB&limit=5&order=desc&sort=published_utc",
+   "status": 200,
+   "statusFeld": "OK",
+   "fehler": null,
+   "nachricht": null,
+   "treffer": 1,
+   "weiter": false,
+   "rumpf": "{\"results\":[{\"id\":\"37ed1e16fd60e23ea8f7b58aae8d542c1d0df9b8138196821cc780cc37636b01\",\"publisher\":{\"name\":\"GlobeNewswire Inc.\",\"homepage_url\":\"https://www.globenewswire.com\",\"logo_url\":\"https://s3.massive.com/public/assets/news/logos/globenewswire.svg\",\"favicon"
+  },
+  {
+   "was": "Splits (Kapitalmassnahmen, fuer Sprungpaar-Befunde)",
+   "pfad": "/v3/reference/splits?ticker=AAPL&limit=5",
+   "status": 200,
+   "statusFeld": "OK",
+   "fehler": null,
+   "nachricht": null,
+   "treffer": 5,
+   "weiter": false,
+   "rumpf": "{\"results\":[{\"execution_date\":\"2020-08-31\",\"id\":\"E36416cce743c3964c5da63e1ef1626c0aece30fb47302eea5a49c0055c04e8d0\",\"split_from\":1,\"split_to\":4,\"ticker\":\"AAPL\"},{\"execution_date\":\"2014-06-09\",\"id\":\"E91a6b74ca1a9dcbce26a1f34e24ae26ba2c6359822ccf901ecd827f419137"
+  }
+ ]
+}
