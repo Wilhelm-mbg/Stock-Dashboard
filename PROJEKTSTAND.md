@@ -1,5 +1,5 @@
 <!-- PM-STAND
-letzter-bericht: 2026-09-01 09:05 (Windows-Uhr)
+letzter-bericht: 2026-09-01 (abends, Windows-Uhr)
 gesehener-tag: v8.37.0
 pm-adresse: markt-dashboard-c0 [4877bc]   <- HIERHIN melden (Bruecke 19:3x neu gestartet, alte Kuerzel tot)
 -->
@@ -30,6 +30,27 @@ und den Sitzungen: hier steht, was entschieden ist, was gerade läuft und was al
 ansteht. Lies sie beim Start; trag dich unter „Läuft gerade" ein, wenn du Dateien belegst.
 
 Wenn du hier etwas änderst, dann nur deine eigene Zeile unter „Läuft gerade".
+
+---
+
+## 🎯 01.09. ~18:xx — **ÜBERNACHT-FAMILIE GEMESSEN: DREIMAL NEIN — und die Frage dreht sich um** (`42b1079`)
+
+**Alle drei Kandidaten sauber gemessen** *(Familie JA=6/NEIN=12, alle Placebos grün, 0 Sprungpaare
+auf 8,57 Mio Beobachtungen, Weg-3-Richtung in jedem Urteil):*
+- **glockendruck-nacht: NEIN an der CFD-Hürde — aber der Nacht-Überschuss ist REAL** *(+0,044 Pp,
+  t 3,71, sitzt im Nachtbein; rückprall-belastet, C8-obere Schranke; Vorrangregel: kein JA).*
+- **nachtstoss-umkehr: NEIN beidseitig, gepaart NEIN an der Aktienhürde** *(Gegenrichtung, −0,028,
+  t −7,66; vor 2021 t −2,34, ab 2021 nichts — die Boyarchenko-Rücknahme bestätigt sich auf unseren
+  Daten).*
+- **abgabedruck-nacht: NEIN** *(Zweig N tot, t 0,33 — der vorab benannte erwartete Ausgang).*
+
+> ### **Der wichtigste Satz: glockendruck scheitert nicht am Markt, sondern an den KOSTEN.**
+> *Kante ~0,044 Pp, Hürde 0,10. Die Frage ist nicht mehr „gibt es ein Signal?", sondern
+> „kriegen wir die Kosten unter die Kante?"*
+
+**ENTSCHEID Wilhelm 01.09. (Formular): KOSTEN ANGREIFEN.** *Auftrag: reale Rundenkosten breit
+messen (nicht nur Mega-Caps), Limit-Ausführung prüfen, längere Haltedauern rechnen. Kein neuer
+Kandidaten-Entwurf vorerst.*
 
 ---
 
