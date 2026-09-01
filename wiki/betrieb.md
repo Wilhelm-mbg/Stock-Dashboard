@@ -18,6 +18,8 @@
 - **Versionsreferenz ist git** (HEAD/Tag/`package.json`), **nie die installierte App**.
 - Aktueller Stand: **v8.37.0**.
 - Bei roten Tests wird **nicht** ausgeliefert und die Weigerung **nicht umgangen**.
+- **Nach jedem Release trägt die Wache die Version hier ein** (Zeile „Aktueller Stand") und
+  setzt eine Zeile in `log.md` — ihr einziger Schreibzugriff im Repo (Rolle aktualisiert 02.09.2026).
 
 ## Arbeitsbaum
 
