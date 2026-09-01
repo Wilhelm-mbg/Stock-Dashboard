@@ -41,5 +41,8 @@ Nur was **weitergilt**. Aufgehobenes steht mit Datum der Aufhebung.
 - **Reihenfolge umgestellt (01.09. abends):** erst Paper-Konto beim Aktienbroker (Wilhelms
   Handlung) und dort Kosten messen; dann Wiedervorlage klein; Momentum erst gegen gemessene
   Aktienkosten. *Grund: jede Gefäß-Rechnung ohne gemessene Aktienkosten bleibt Annahme.*
+  *Notiz 02.09.: Die **CFD-Messung** wurde per Auftrag vorgezogen (Ergebnis „nicht
+  entscheidbar", `studien/vorregistrierung-2026-09-02-momentum-messung/ERGEBNIS.md`); die
+  Kassa-Zeile steht dort ausdrücklich als **Annahme** — der Entscheid selbst steht.*
 - **Insider-Käufe (Form 4) weggelassen** (01.09.) — Landkarten-Empfehlung 3 nicht verfolgt.
 - **Server-Nutzung** (R620 als Webserver, R720xd als Storage) — vertagt.

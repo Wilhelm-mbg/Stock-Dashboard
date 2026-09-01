@@ -2,6 +2,28 @@
 
 *Nur was sich am Wiki ändert. Die Projekt-Chronologie steht im Archiv `PROJEKTSTAND.md`.*
 
+## 02.09.2026 (nachts) — Monats-Momentum gemessen: „nicht entscheidbar" am CFD, Obergrenze netto +0,6 Pp
+
+**Geändert:** `belegstand.md` (Momentum-Zeile: „vertagt" durchgestrichen, Messung eingetragen),
+`offene-auftraege.md` (Momentum-Messung erledigt; **„rechnerisch ein Nein" korrigiert** — das
+Urteil lautet wörtlich „nicht entscheidbar", der Punkt liegt unter der Hürde, die Obergrenze
+darüber; offen bleibt die liquide Fassung), `aufloesungswand.md` (zweiter Fall der zu
+konservativen Planformel; Momentum als Beispiel der Haltedauer-Falle),
+`ueberlebensverzerrung.md` (**Weg-3-Wert dreht mit dem Horizont** — nie über Horizonte
+übertragen), `kosten.md` (Monatshaltedauer ausgefüllt: F·H 2,26 Pp übersteigt die Kante;
+Liquiditätsprofil des Korbs), `entscheide.md` (Notiz: CFD-Messung per Auftrag vorgezogen).
+
+**Erste Messung von Momentum überhaupt** (bisher nur Eichung): brutto +1,541 Pp je Umlauf,
+se 0,732, t 2,10, 79 unabhängige Perioden; CFD netto −0,829, Obergrenze netto +0,605; Kassa
+(Annahme) netto +1,481, t 2,02 — kein Urteil. Placebo, Positivkontrolle, W0 grün.
+`studien/vorregistrierung-2026-09-02-momentum-messung/`
+
+**Zwei Lehren fürs Wiki:** (1) Die konservative Machbarkeitsformel hätte die CFD-Frage
+für blind erklärt, die geeichte traf auf drei Stellen. (2) **Ein registriertes
+Placebo-Kriterium war falsch gebaut** — es setzte für einen Zufallskorb dieselbe Streuung
+voraus wie für einen Faktor-Korb (Nachtrag 1, vor dem Urteilslauf; das gefallene Kriterium
+bleibt im Ergebnis sichtbar, beide Lesarten stehen nebeneinander).
+
 ## 02.09.2026 — Obergrenzen fertiggestellt (31 von 52 gegen CFD geschlossen), Depot-Kandidatenliste: NEIN
 
 **Geändert:** `belegstand.md` (neuer Abschnitt „Größen-Ausschlüsse" mit Kandidatenliste; Zeilen

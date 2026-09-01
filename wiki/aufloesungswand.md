@@ -40,6 +40,14 @@ ungeclusterten — die realisierte MDE war **4,2× schärfer** als die geplante 
 > vorregistriert war.**
 > *Fundstelle: `studien/vorregistrierung-2026-09-01-news-sentiment-vollkorpus/ERGEBNIS.md`*
 
+**Zweiter Fall (02.09.2026, Monats-Momentum, H = 63):** Die konservative Rechnung (überlappend
++ Newey-West, se 1,129) verlangte **142 Perioden** für eine Kante in CFD-Hürdengröße — bei 79
+vorhandenen wäre die Frage „nicht messbar" gewesen. Die **geeichte** Rechnung (nicht
+überlappend, se 0,732) verlangte **60** und sagte „messbar". Gemessen: delta80 **2,051 Pp** —
+die geeichte Planzahl (2,05) auf drei Stellen. **Regel bestätigt: beide Rechnungen ausweisen;
+die konservative darf abraten, aber nicht allein entscheiden.**
+*Fundstelle: `studien/vorregistrierung-2026-09-02-momentum-messung/ERGEBNIS.md`, „Machbarkeit: Plan gegen Ist"*
+
 ## Die Streuungs-Anker
 
 | Fenster | σ | Folge |
@@ -56,6 +64,11 @@ Bei 4.665 vorhandenen Handelstagen:
 
 - **Übernacht:** ~735–872 nötige Tage → **die EINZIGE Klasse klar unter der Wand**
 - **Monatswende:** hätte **79.500 Tage** gebraucht → strukturell unmöglich
+- **Monats-Momentum (H = 63, gemessen 02.09.2026):** die Haltedauer-Falle in Reinform — 4.975
+  Bestätigungstage sind **79 unabhängige Perioden**, Streuung je Periode **6,5 Pp** (ein
+  Zufallskorb: 1,8 — der Rest ist Faktorstreuung). delta80 2,05 Pp gegen CFD-Hürde 2,37:
+  messbar an der Kante, Ergebnis „nicht entscheidbar", **ein NEIN bräuchte 237 Perioden ≈ 60
+  Jahre.** *Fundstelle: `studien/vorregistrierung-2026-09-02-momentum-messung/ERGEBNIS.md`*
 - ~~**News-Sentiment (Stand 31.08.):** ~2.600 nötig, 35 vorhanden → **Faktor 75 fehlt**~~
   **ÜBERHOLT 01.09.2026:** auf dem Anbieter-Vollkorpus 33.307 Beobachtungen in 1.338
   Tages-Clustern → Wand genommen, **gemessen, Urteil NEIN**.

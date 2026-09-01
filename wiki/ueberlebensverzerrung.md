@@ -40,6 +40,15 @@ tagsüber.
 - **Kein einheitliches Vorzeichen über alle Strategieklassen.** Für die Dip-Familie beschönigt
   das Archiv um **−3,78 Pp** (`studien/verzerrungsrichtung-2026-08-26/ERGEBNIS.md`) — also
   andersherum. **Nie pauschal anwenden, immer je Klasse prüfen.**
+- **Und nie über den Horizont hinweg (gemessen 02.09.2026, Monats-Momentum H = 63):** Der
+  Weg-3-Wert gilt **über Nacht**. Auf **63 Tagen** liefen die Verschwundenen im Fenster 2024-08
+  bis 2026-08 unbedingt **deutlich schlechter** als Überlebende (−0,9 / −7,6 / −8,4 Pp je
+  Periode) — **das umgekehrte Vorzeichen**: auf Monatshaltedauer dominieren Sterbepfade, nicht
+  Übernahmeprämien. Bedingt landen Verschwundene **1,19× überproportional** im stärksten
+  Zehntel (13,1 % gegen 11,0 %); auf Korbebene (Korb − Markt) war das Vorzeichen in drei
+  Perioden **gemischt** (+0,12 / +0,59 / −0,49 Pp). **Kein Korrekturwert, kein Vorzeichen für
+  2006–2026**; 52 Verschwundenen-Reihen fielen dem F1-Filter (Sprünge am Delisting) zum Opfer.
+  *Fundstelle: `studien/vorregistrierung-2026-09-02-momentum-messung/ERGEBNIS.md`, §7*
 
 ## Klassen, die damit gar nicht messbar sind
 

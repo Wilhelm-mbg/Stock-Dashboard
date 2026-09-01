@@ -34,6 +34,16 @@ glockendruck-Auswahl liegt bei **69 Mio $ Median** — Faktor ~150 darunter.
 > **Also: 0,10 % ist für die Milliarden-Klasse passend und für unsere Kandidaten-Universen
 > optimistisch.** *Fundstelle: `uebergabe/kosten-angriff` bzw. Commit `6263f1b`.*
 
+## Monatshaltedauer, ausgefüllt am Momentum-Korb (gemessen 02.09.2026)
+
+63 Handelstage sind **91,5 Kalendernächte** (88–97): F·H = 0,0247 × 91,5 = **2,26 Pp je
+Umlauf** — **die Finanzierung allein übersteigt die gesamte gemessene Kante (+1,54 Pp)**.
+K (0,110) ist daneben Nebensache: 54 % des Korbs werden aus der Vorperiode gehalten, effektiv
+0,05 Pp. Und K gilt für Mega-Caps — vom Momentum-Korb liegen **2,6 % über 1 Mrd $**, 24,5 %
+über 100 Mio $, **18,2 % unter 5 Mio $** Tagesumsatz. Für die Kassa-Annahme (0,06,
+10.000-$-Positionen in liquiden Werten) gilt dasselbe: für ein Fünftel des Korbs sicher nicht.
+*Fundstelle: `studien/vorregistrierung-2026-09-02-momentum-messung/ERGEBNIS.md`*
+
 ## Der Befund, der daraus folgt
 
 Bei glockendruck: Grenzertrag **+0,007 Pp je Zusatznacht** gegen **0,0247 Pp** Finanzierung.
