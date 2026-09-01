@@ -44,5 +44,9 @@ Nur was **weitergilt**. Aufgehobenes steht mit Datum der Aufhebung.
   *Notiz 02.09.: Die **CFD-Messung** wurde per Auftrag vorgezogen (Ergebnis „nicht
   entscheidbar", `studien/vorregistrierung-2026-09-02-momentum-messung/ERGEBNIS.md`); die
   Kassa-Zeile steht dort ausdrücklich als **Annahme** — der Entscheid selbst steht.*
+- **Liquide Momentum-Fassung JETZT messen** (02.09.): Korb ≥ 100 Mio $ Tagesumsatz, neue
+  Vorregistrierung auf vorhandenen Daten (~350k). *Ausnahme von „keine halbe Arbeit parallel",
+  weil sie ohne Paper-Konto beantwortbar ist und dessen Kostenmessung für diesen Kandidaten
+  überflüssig machen kann.*
 - **Insider-Käufe (Form 4) weggelassen** (01.09.) — Landkarten-Empfehlung 3 nicht verfolgt.
 - **Server-Nutzung** (R620 als Webserver, R720xd als Storage) — vertagt.
