@@ -10,9 +10,10 @@ module.exports = {
   key: 'glockendruck-nacht-h' + H,
   testfamilie: {
     name: 'glockendruck-haltedauer-2026-09',
-    testsGesamt: 3,
-    begruendung: 'Drei Haltedauern (H=2,3,5) derselben Auswahl, vorregistriert am 01.09. ' +
-      'VOR dem ersten Ertragsblick - Kostenhebel: eine Runde, H Naechte.',
+    testsGesamt: 7,
+    begruendung: 'Drei Haltedauern breit (H=2,3,5) + vier liquide Laeufe (H=1,2,3,5) - ' +
+      'Nachtrag vom 01.09. (Liquiditaets-Zusatzendpunkt) hebt die Familie von 3 auf 7, ' +
+      'VOR jedem Ertragsblick.',
   },
   grund: N.grund + ' HALTEDAUER-FASSUNG: dieselbe Auswahl ueber ' + H + ' Naechte gehalten - ' +
     'Ein- und Ausstieg bleiben EINE Runde, die Kante je Runde darf wachsen.',
