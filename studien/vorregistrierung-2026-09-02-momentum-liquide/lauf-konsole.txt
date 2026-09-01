@@ -1,0 +1,81 @@
+== Monats-Momentum LIQUIDE messen ==  Modus lauf  Saat 20260902  Familie 6 Tests, |t| >= 2.6383
+Rueckblick 231 Luecke 21 Halten 63 Anteil 10 %  Schnitt 2006-08-14  Phase 0
+KORBFILTER: Median-Tagesumsatz (20 Balken bis t) >= 100.000.000 $
+Kosten: CFD gehebelt K 0.11 + F 0.0247 x Naechte | ungehebelt K | Kassa 0.06 (ANNAHME)
+
+[Wachhund archiv1d] Exit 0 - archiv1d: juengste Kerze 2026-08-31, letzter abgeschlossener Handelstag 2026-09-01 -> Rueckstand 1 Handelstag(e)  [2965 von 2965 geprueft, 0,0 % auf Stand]
+  Hinweis: 1 Handelstag Rueckstand - fuer 63-Tage-Perioden unerheblich, wird im Ergebnis vermerkt.
+
+Lade Ueberlebende (archiv1d) ...
+  {"dateien":2965,"keineAktie":716,"zuKurz":0,"kaputt":36,"genutzt":2213}  Fingerabdruck unveraendert (2965 Dateien)
+  Zeitachse 10080 Handelstage, 1986-08-25 bis 2026-08-28
+
+-- W0 Reproduktion des Vorbilds (Filter AUS, Bestaetigung, Phase 0, brutto) --
+  Vorbild +1.54097 Pp / 79 Perioden   hier +1.54097 Pp / 79 Perioden   Abweichung 0.00000  -> BESTANDEN
+  Groesste Abweichung je Periode gegen lauf-2026-09-01-22-25.json: 0.00e+0 Pp   (Perioden ohne Gegenstueck: 0)
+
+-- Liquider Korb (Bestaetigung, Phase 0): Groessen und Streuung - OHNE Mittelwert im Waechtermodus --
+  Perioden 79 (Vorbild breit 79)   an Mindestbreite 100 gescheitert: 0 (Bestaetigung) / 65 (gesamt)
+  Liquides Universum je Periode: min 152  Median 351  max 950   Korb: min 15  Median 35  max 95
+  Streuung je Periode sd 8.094 Pp   se 0.911 Pp   (breit: sd 6.507, se 0.732)   MDE 2se 1.821   delta80 2.551
+  Delisting-Ausstiege im liquiden Korb (Bestaetigung): 0
+
+-- Placebo (zufaelliger Korb, kein Kursbezug, Soll null) --
+  Placebo brutto +0.237 Pp   se 0.320   t 0.74   (netto CFD -2.134)   Streuung je Periode 2.840 gegen Kandidat 8.094 Pp
+  Rauschboden: sd der 200 Placebo-Mittel 0.263 Pp   |t| >= 2.6383 in 3 von 200 (Erwartung bei 78 Freiheitsgraden ~2,4)
+  Kriterium des Vorbilds, NUR NACHRICHTLICH (sd Placebo-Mittel / se Kandidat): 0.289  (misst Faktorstreuung, nicht registriert)
+  Kriterium REGISTRIERT (se Placebo / sd Placebo-Mittel, Nachtrag 1 Vorbild): 1.213  -> BESTANDEN
+
+-- Positivkontrolle (Ausstiegskurs jedes Korbwerts x 1.02) --
+  Soll (registrierte Naeherung 2,000 x (1 - Korb/Alle)) +1.800 Pp   Soll exakt fuer x1,02 +1.879 Pp
+  gefunden brutto +1.879 Pp   netto +1.879 Pp   Verhaeltnis zu exakt 1.0000  -> BESTANDEN
+
+KONTROLLEN: ALLE BESTANDEN
+
+================ URTEIL §5 - BRUTTO im liquiden Korb (Bestaetigung 2006-08-16 bis 2026-06-01, Phase 0, 79 unabhaengige Perioden) ================
+  brutto LIQUIDE +1.835 Pp je Umlauf   sd 8.094   se 0.911   t 2.02   delta80 2.551 (Familie 3.169)
+  95-%-Band brutto liquide [+0.050, +3.620]   Grenzen bei 2,638: [-0.567, +4.238]
+  brutto BREIT (W0, dieselben Perioden) +1.541 Pp   Bezug der Registrierung +1.541   die Haelfte +0.770   Punkt liquide / breit = 1.191
+  gepaartes Delta liquide - breit (79 Paare): +0.294 Pp   se 0.426   t 0.69   95-%-Band [-0.540, +1.128]
+  Regeln: LEBT = untere Grenze > 0 UND Punkt >= 0.77 | STIRBT = Obergrenze brutto < 0.77 ODER Obergrenze Delta < -0.77 | sonst nicht entscheidbar
+  >>> LEBT <<<
+  Placebo in derselben Zeile: brutto +0.237 Pp, se 0.320, t 0.74
+  Nachrichtlich: liquider Korb gegen BREITEN Markt +0.781 Pp (se 1.011, t 0.77) - Wahl der Vergleichsgruppe, kein Urteil
+
+-- §5b Gefaesse im liquiden Korb - NACHRICHTLICH, dieselben Regeln wie das Vorbild, Familie 2,638 --
+  Kalendernaechte je Periode: Mittel 91.5, min 88, max 97
+  CFD gehebelt   (nachrichtl.) : Huerde 2.370  netto -0.535 Pp  se 0.910  t_netto -0.59  Obergrenze brutto +3.620  Obergrenze netto +1.249  -> nicht messbar  [kein Urteil dieser Studie - Vorbild: nicht entscheidbar]
+  CFD ungehebelt (nachrichtl.) : Huerde 0.110  netto +1.725 Pp  se 0.911  t_netto 1.89  Obergrenze brutto +3.620  Obergrenze netto +3.510  -> nicht messbar  [kein Urteil]
+  Kassa-Aktie    (nachrichtl.) : Huerde 0.060  netto +1.775 Pp  se 0.911  t_netto 1.95  Obergrenze brutto +3.620  Obergrenze netto +3.560  -> nicht messbar  [ANNAHME 0,06 - nicht gemessen]
+  Placebo in derselben Zeile: brutto +0.237 Pp, t 0.74; netto CFD -2.134
+
+-- Nachrichtlich: Aeren, Phase 0 --
+  Entdeckung  : 11 Perioden  brutto +0.938 (se 2.059, t 0.46)  netto CFD -1.424 (t -0.69)  netto Kassa +0.878 (t 0.43)  Obergrenze brutto +4.974
+  Bestaetigung: 79 Perioden  brutto +1.835 (se 0.911, t 2.02)  netto CFD -0.535 (t -0.59)  netto Kassa +1.775 (t 1.95)  Obergrenze brutto +3.620
+  Gesamt      : 90 Perioden  brutto +1.726 (se 0.835, t 2.07)  netto CFD -0.644 (t -0.77)  netto Kassa +1.666 (t 1.99)  Obergrenze brutto +3.362
+  2000er       : 25 Perioden  brutto -0.598 (se 1.651, t -0.36)  netto CFD -2.966 (t -1.80)  netto Kassa -0.658 (t -0.40)  Obergrenze brutto +2.638
+  2010er       : 40 Perioden  brutto +1.168 (se 0.849, t 1.37)  netto CFD -1.201 (t -1.42)  netto Kassa +1.108 (t 1.30)  Obergrenze brutto +2.833
+  2020er       : 25 Perioden  brutto +4.941 (se 2.007, t 2.46)  netto CFD +2.570 (t 1.28)  netto Kassa +4.881 (t 2.43)  Obergrenze brutto +8.875
+
+-- Nachrichtlich: Umschlag, Korbgroesse und Liquiditaetsprofil des LIQUIDEN Korbs (Bestaetigung) --
+  Korb im Mittel 40 von 400 liquiden Werten (breit: 165 von 1650); gehalten aus der Vorperiode 48.8 %  -> effektives K bei Teil-Umschlag 0.056 Pp
+  Korbwerte mit Median-Tagesumsatz >= 1 Mrd $: 9.6 %   >= 100 Mio $: 100.0 % (per Bau)   < 5 Mio $: 0.0 % (per Bau 0)
+  Liquides Universum / Korb je Jahr (Mittel): 2006 155/16  2007 245/25  2008 264/27  2009 233/23  2010 264/27  2011 288/29  2012 258/26  2013 270/27  2014 319/32  2015 335/34  2016 358/36  2017 373/38  2018 438/44  2019 413/41  2020 449/45  2021 544/55  2022 579/58  2023 543/55  2024 633/63  2025 779/78  2026 950/95
+
+-- Nachrichtlich: alle 63 Rasterlagen (Bestaetigung, liquide) - Streubild, KEINE Tests --
+  brutto:      min +1.298  Median +1.696  max +2.077
+  t brutto:    min +1.36  Median +1.77  max +2.42
+  netto CFD:   min -1.072  Median -0.675  max -0.294
+  t netto CFD: min -1.27  Median -0.72  max -0.25   Lagen mit t_netto >= 2.6383: 0 von 63
+  Obergrenze brutto: min +2.960  Median +3.553  max +4.386
+  t netto Kassa (Annahme): min +1.30  Median +1.70  max +2.34   >= 2.6383: 0   >= 1,96: 12
+
+-- §7 Ueberlebensverzerrung: Ueberlebende allein gegen Vereinigung im Verschwundenen-Fenster (nachrichtlich) --
+  Verschwundene: {"dateien":1164,"keineAktie":0,"zuKurz":89,"kaputt":52,"genutzt":1023,"mitDelisting":1023}
+  2025-08-28..2025-11-26: Universum 794 (V 24 = 3.0 %)  Korb 79 (V 2 = 2.5 %)  delistet im Fenster 6  brutto S +2.496  U +2.547  Delta +0.051 Pp  Weg-3-Analogon 63 T (V-S) +3.661 Pp
+  2025-11-26..2026-03-02: Universum 872 (V 26 = 3.0 %)  Korb 87 (V 6 = 6.9 %)  delistet im Fenster 8  brutto S +5.448  U +5.354  Delta -0.094 Pp  Weg-3-Analogon 63 T (V-S) +1.222 Pp
+  2026-03-02..2026-06-01: Universum 971 (V 21 = 2.2 %)  Korb 97 (V 3 = 3.1 %)  delistet im Fenster 11  brutto S +16.968  U +16.140  Delta -0.828 Pp  Weg-3-Analogon 63 T (V-S) -5.668 Pp
+  Alle 63 Lagen, 190 Perioden mit Verschwundenen: Anteil im Universum 2.43 %  im Korb 3.69 %  (Verhaeltnis 1.52)
+
+Rohdaten: lauf-2026-09-01-22-52.json
+EXIT 0

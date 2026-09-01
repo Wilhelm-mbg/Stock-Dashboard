@@ -2,6 +2,20 @@
 
 *Nur was sich am Wiki ändert. Die Projekt-Chronologie steht im Archiv `PROJEKTSTAND.md`.*
 
+## 02.09.2026 (nachts, später) — Momentum liquide gemessen: „LEBT" nach Regel, In-Sample und am Rand
+
+**Geändert:** `belegstand.md` (Momentum-Zeile um die liquide Fassung ergänzt), `offene-auftraege.md`
+(liquide Fassung abgehakt), `kosten.md` (**„Der Effekt lebt, wo er nicht handelbar ist" von
+„allgemeine Lehre" auf die Übernacht-Familie eingegrenzt** — Momentum ist das Gegenbeispiel;
+„allgemeine" durchgestrichen, nicht gelöscht).
+
+**Befund:** Korb nur ≥ 100 Mio $ Median-Tagesumsatz (40 von 400 statt 165 von 1.650): brutto
++1,835 Pp je Umlauf, se 0,911, t 2,02, 79 Perioden, Band [+0,050, +3,620]; gepaart gegen breit
++0,29 (t 0,69). Registrierte Regel „LEBT" erfüllt — mit 0,05 Pp Abstand zur unteren Grenze,
+unter der Familienschwelle 2,638, in 18 von 63 Rasterlagen. Die registrierte Erwartung
+(„stirbt oder nicht entscheidbar") traf nicht ein und steht so im Ergebnis. W0 (Filter aus)
+reproduzierte das Vorbild exakt. `studien/vorregistrierung-2026-09-02-momentum-liquide/ERGEBNIS.md`
+
 ## 02.09.2026 (nachts) — Monats-Momentum gemessen: „nicht entscheidbar" am CFD, Obergrenze netto +0,6 Pp
 
 **Geändert:** `belegstand.md` (Momentum-Zeile: „vertagt" durchgestrichen, Messung eingetragen),

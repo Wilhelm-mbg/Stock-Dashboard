@@ -50,6 +50,12 @@ Bei glockendruck: Grenzertrag **+0,007 Pp je Zusatznacht** gegen **0,0247 Pp** F
 **Kein H bringt die Kante über die Kosten.** Und im liquiden Teil (≥1 Mrd $), wo die Kosten
 messbar und niedriger wären, **stirbt der Effekt** (t 0,68).
 
-> ### Die allgemeine Lehre: **Der Effekt lebt, wo er nicht handelbar ist.**
+> ### Die ~~allgemeine~~ Lehre **der Übernacht-Familie**: **Der Effekt lebt, wo er nicht handelbar ist.**
 > Das erklärt, warum Übernacht-Anomalien in der Literatur existieren und trotzdem niemand
 > davon lebt. **Als Filter in die Machbarkeitsprüfung übernommen.**
+>
+> **Eingegrenzt 02.09.2026:** Für **Monats-Momentum gilt sie nicht.** Der Korb nur aus Werten
+> ≥ 100 Mio $ Tagesumsatz (Punkt-in-Zeit) trägt **+1,835 Pp je Umlauf** gegen +1,541 breit,
+> gepaart +0,29 (t 0,69) — nicht schwächer, eher stärker. Die Lehre ist dort gemessen, wo
+> sie steht (glockendruck, ≥ 1 Mrd $, t 0,68), und darf nicht pauschal auf Monatshaltedauer
+> übertragen werden. *Fundstelle: `studien/vorregistrierung-2026-09-02-momentum-liquide/ERGEBNIS.md`*

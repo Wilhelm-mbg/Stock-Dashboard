@@ -1,0 +1,34 @@
+== Monats-Momentum LIQUIDE messen ==  Modus waechter  Saat 20260902  Familie 6 Tests, |t| >= 2.6383
+Rueckblick 231 Luecke 21 Halten 63 Anteil 10 %  Schnitt 2006-08-14  Phase 0
+KORBFILTER: Median-Tagesumsatz (20 Balken bis t) >= 100.000.000 $
+Kosten: CFD gehebelt K 0.11 + F 0.0247 x Naechte | ungehebelt K | Kassa 0.06 (ANNAHME)
+
+[Wachhund archiv1d] Exit 0 - archiv1d: juengste Kerze 2026-08-31, letzter abgeschlossener Handelstag 2026-09-01 -> Rueckstand 1 Handelstag(e)  [2965 von 2965 geprueft, 0,0 % auf Stand]
+  Hinweis: 1 Handelstag Rueckstand - fuer 63-Tage-Perioden unerheblich, wird im Ergebnis vermerkt.
+
+Lade Ueberlebende (archiv1d) ...
+  {"dateien":2965,"keineAktie":716,"zuKurz":0,"kaputt":36,"genutzt":2213}  Fingerabdruck unveraendert (2965 Dateien)
+  Zeitachse 10080 Handelstage, 1986-08-25 bis 2026-08-28
+
+-- W0 Reproduktion des Vorbilds (Filter AUS, Bestaetigung, Phase 0, brutto) --
+  Vorbild +1.54097 Pp / 79 Perioden   hier +1.54097 Pp / 79 Perioden   Abweichung 0.00000  -> BESTANDEN
+  Groesste Abweichung je Periode gegen lauf-2026-09-01-22-25.json: 0.00e+0 Pp   (Perioden ohne Gegenstueck: 0)
+
+-- Liquider Korb (Bestaetigung, Phase 0): Groessen und Streuung - OHNE Mittelwert im Waechtermodus --
+  Perioden 79 (Vorbild breit 79)   an Mindestbreite 100 gescheitert: 0 (Bestaetigung) / 65 (gesamt)
+  Liquides Universum je Periode: min 152  Median 351  max 950   Korb: min 15  Median 35  max 95
+  Streuung je Periode sd 8.094 Pp   se 0.911 Pp   (breit: sd 6.507, se 0.732)   MDE 2se 1.821   delta80 2.551
+  Delisting-Ausstiege im liquiden Korb (Bestaetigung): 0
+
+-- Placebo (zufaelliger Korb, kein Kursbezug, Soll null) --
+  Placebo brutto +0.237 Pp   se 0.320   t 0.74   (netto CFD -2.134)   Streuung je Periode 2.840 gegen Kandidat 8.094 Pp
+  Rauschboden: sd der 200 Placebo-Mittel 0.263 Pp   |t| >= 2.6383 in 3 von 200 (Erwartung bei 78 Freiheitsgraden ~2,4)
+  Kriterium des Vorbilds, NUR NACHRICHTLICH (sd Placebo-Mittel / se Kandidat): 0.289  (misst Faktorstreuung, nicht registriert)
+  Kriterium REGISTRIERT (se Placebo / sd Placebo-Mittel, Nachtrag 1 Vorbild): 1.213  -> BESTANDEN
+
+-- Positivkontrolle (Ausstiegskurs jedes Korbwerts x 1.02) --
+  Soll (registrierte Naeherung 2,000 x (1 - Korb/Alle)) +1.800 Pp   Soll exakt fuer x1,02 +1.879 Pp
+  gefunden brutto +1.879 Pp   netto +1.879 Pp   Verhaeltnis zu exakt 1.0000  -> BESTANDEN
+
+KONTROLLEN: ALLE BESTANDEN
+Waechter-Datei geschrieben. Kein Urteil in diesem Modus (Mittelwert des liquiden Korbs nicht gedruckt, nicht gespeichert).
