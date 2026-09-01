@@ -38,6 +38,8 @@ Nur was **weitergilt**. Aufgehobenes steht mit Datum der Aufhebung.
   **einmaliger Abzug** (Vollauf ohne Ratenbremse + 5 statt 2 Jahre, bleibt dauerhaft), **nicht
   als Abo**. Zwei Sperren vorher: Support zur Rückwirkung fragen, und die `dat[0]`-Falle beim
   eingefrorenen Universum schließen.*
-- **Broker-Paper-Konto** (Kostenmessung im zweiten Gefäß) — Kontoeröffnung ist Wilhelms
-  Handlung.
+- **Reihenfolge umgestellt (01.09. abends):** erst Paper-Konto beim Aktienbroker (Wilhelms
+  Handlung) und dort Kosten messen; dann Wiedervorlage klein; Momentum erst gegen gemessene
+  Aktienkosten. *Grund: jede Gefäß-Rechnung ohne gemessene Aktienkosten bleibt Annahme.*
+- **Insider-Käufe (Form 4) weggelassen** (01.09.) — Landkarten-Empfehlung 3 nicht verfolgt.
 - **Server-Nutzung** (R620 als Webserver, R720xd als Storage) — vertagt.

@@ -5,12 +5,17 @@ betroffene Wiki-Seite ein — mit Fundstelle.*
 
 ## Läuft / als Nächstes
 
+*Reihenfolge umgestellt 01.09. abends (Wilhelms Entscheid), Begründung in [entscheide.md](entscheide.md).*
+
 | Auftrag | Zustand |
 |---|---|
-| ~~Gratis-Prüfung der Datenschnittstelle~~ | ✅ **ERLEDIGT 01.09.** — `studien/datentarif-2026-09-01/GRATIS-PRUEFUNG.md`, Commit `04298ee`. Befund: der Kaufgrund ist entfallen, siehe [datenquellen.md](datenquellen.md) |
-| **News-Sentiment gratis messen** | **Der nächste Auftrag.** Die Klasse ist auf der Basisstufe messbar (Faktor 8,7). Universum muss aus **Großwerten** bestehen. Vorregistrierung nötig; die alte von 31.08. gilt für einen anderen Korpus und wird nicht umgedeutet |
-| Drei ungenutzte Endpunkte einsammeln | Dividenden, unadjustierte Kurse, Splits bis 1987 — alle gratis erreichbar, keiner wird heute genutzt |
-| `dat[0]`-Falle schließen | Sperre vor jedem künftigen Tarifwechsel, betrifft das eingefrorene Universum. *Fundstelle: `GRATIS-PRUEFUNG.md`* |
+| **Paper-Konto beim Aktienbroker** | **Voraussetzung für alles Weitere — Wilhelms Handlung.** Danach: Kostenmessung dort spiegeln (gleiches Protokollformat wie am Capital-Demo). Erst damit werden die ~0,06 Pp Aktienkosten aus einer Annahme ein Messwert |
+| **Wiedervorlage klein (~150k)** | Obergrenzen der restlichen ~20 Messungen (`tools/obergrenzen-bericht.js`) + Depot-Kandidatenliste: welche real-aber-kleinen Kanten lägen über Aktien- aber unter CFD-Kosten? Ergebnis nach `studien/wiedervorlage-<datum>/` |
+| Momentum-Messung | **VERTAGT** bis Aktienkosten gemessen sind. Auf CFD ist sie rechnerisch ein Nein (63 Tage ≈ 90 Nächte × 0,0247 Pp ≈ 2,2 Pp Finanzierung gegen ~1–1,5 Pp Literatur-Überschuss) — siehe [kosten.md](kosten.md) |
+| ~~Konservativitäts-Audit~~ | **GESTRICHEN**: die zu konservativen Formeln betreffen die Messgenauigkeit, unser Problem ist die Kantengröße — ein besserer Standardfehler macht +0,021 Pp nicht zu 0,10 % |
+| ~~News-Sentiment gratis messen~~ | ✅ **ERLEDIGT 01.09.** — NEIN, kein Blindbefund (`studien/vorregistrierung-2026-09-01-news-sentiment-vollkorpus/ERGEBNIS.md`) |
+| Drei ungenutzte Endpunkte einsammeln | Dividenden, unadjustierte Kurse, Splits bis 1987 — gratis erreichbar, ungenutzt |
+| `dat[0]`-Falle schließen | Sperre vor jedem Tarifwechsel, betrifft das eingefrorene Universum |
 
 ## Aus der Landkarte empfohlen (noch nicht beauftragt)
 

@@ -22,6 +22,14 @@ Obergrenze des 90-%-Bandes liegt Faktor 8,5 unter der CFD-Hürde.
    pessimistisch. Als Regel in `aufloesungswand.md` festgehalten — samt der Pflicht, so einen
    Zugewinn als Zugewinn zu kennzeichnen und nicht als das, was vorregistriert war.
 
+## 01.09.2026 (abends) — Reihenfolge umgestellt, ein Auftrag gestrichen
+
+`offene-auftraege.md` und `entscheide.md`: Paper-Konto wird Voraussetzung, Momentum vertagt,
+Konservativitäts-Audit gestrichen (Begründung dort). **Der PM hatte zwei Prompts mit ~1M Token
+vorgeschlagen und beim Nachrechnen selbst gefunden, dass einer ein absehbares Nein und der andere
+zur Hälfte am Problem vorbei war.** Wilhelm fragte „ist das wirklich sinnvoll?" — die Antwort war
+nein, und sie steht jetzt hier statt nur im Chat.
+
 ## 01.09.2026 (Lint durch den PM) — zwei Fehlerformen nachgetragen
 
 Die Sentiment-Sitzung hat vier Seiten korrekt aktualisiert, aber ihre beiden **verallgemeinerbaren**
