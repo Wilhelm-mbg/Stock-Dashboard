@@ -20,6 +20,25 @@ Kante kleiner wird.
 2. **Haltedauer-Falle:** Bei Haltedauer H sinkt die Zahl **unabhängiger** Beobachtungen um
    Faktor H. **Längere Horizonte sind statistisch TEURER, nicht billiger** — auch wenn die
    Kosten je Tag sinken.
+3. **Wand-ist-nicht-Fenster-Falle (NEU 01.09.2026):** Wie weit eine Quelle *zurückreicht* und
+   ab wann sie *dicht genug* ist, sind zwei Zahlen. Die Nachrichtenwand liegt bei 2017, die
+   brauchbare Abdeckung beginnt 2021 — wer die Wand einsetzt, rechnet mit 2.367 statt 1.338
+   Tagen und hält eine Frage für beantwortbar, die es nicht ist.
+   *Fundstelle: [datenquellen.md](datenquellen.md), Kasten „Die Wand ist nicht das Fenster".*
+
+## ⚠ Die Planformel ist konservativ — um wie viel, sagt erst der Lauf
+
+Für einen Querschnitts-Endpunkt setzt die Vorab-Rechnung `se ≈ σ/√G` (G = Cluster) an und
+unterstellt damit **volle Abhängigkeit innerhalb eines Tages**. Gemessen am 01.09.2026:
+nach der **Tagesbereinigung** lag der geclusterte Standardfehler nur **18 % über** dem
+ungeclusterten — die realisierte MDE war **4,2× schärfer** als die geplante (0,063 statt
+0,264 Pp/Punkt).
+
+> **Regel daraus:** Die Planformel darf eine Messung **abraten** (dann ist sie sicher blind),
+> aber ihr Ergebnis ist keine Obergrenze der erreichbaren Schärfe. **Wer nach dem Lauf enger
+> ist als geplant, darf das berichten — aber als Zugewinn kennzeichnen, nicht als das, was
+> vorregistriert war.**
+> *Fundstelle: `studien/vorregistrierung-2026-09-01-news-sentiment-vollkorpus/ERGEBNIS.md`*
 
 ## Die Streuungs-Anker
 
@@ -37,7 +56,10 @@ Bei 4.665 vorhandenen Handelstagen:
 
 - **Übernacht:** ~735–872 nötige Tage → **die EINZIGE Klasse klar unter der Wand**
 - **Monatswende:** hätte **79.500 Tage** gebraucht → strukturell unmöglich
-- **News-Sentiment (Stand 31.08.):** ~2.600 nötig, 35 vorhanden → **Faktor 75 fehlt**
+- ~~**News-Sentiment (Stand 31.08.):** ~2.600 nötig, 35 vorhanden → **Faktor 75 fehlt**~~
+  **ÜBERHOLT 01.09.2026:** auf dem Anbieter-Vollkorpus 33.307 Beobachtungen in 1.338
+  Tages-Clustern → Wand genommen, **gemessen, Urteil NEIN**.
+  *Fundstelle: `studien/vorregistrierung-2026-09-01-news-sentiment-vollkorpus/ERGEBNIS.md`*
 
 ## Die Regel daraus
 

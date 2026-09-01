@@ -1,0 +1,79 @@
+{
+ "saat": 20260901,
+ "fenster": [
+  "2021-05-01",
+  "2026-08-28"
+ ],
+ "universum": [
+  "AAPL",
+  "AMZN",
+  "META",
+  "BAC",
+  "MSFT",
+  "GOOGL",
+  "JPM",
+  "BABA",
+  "WFC",
+  "C",
+  "XOM",
+  "TSLA",
+  "GE",
+  "NFLX",
+  "T",
+  "PFE",
+  "JNJ",
+  "INTC",
+  "GILD",
+  "PG",
+  "DIS",
+  "CVX",
+  "VZ",
+  "NVDA",
+  "V",
+  "CSCO",
+  "BKNG",
+  "GS",
+  "CMCSA",
+  "HD"
+ ],
+ "n": 33307,
+ "cluster": 1338,
+ "sx": 0.33364216722487544,
+ "sdRest": 1.1496382539140986,
+ "kandidat": {
+  "b": 0.0070072572734343865,
+  "se": 0.022358379669756984,
+  "t": 0.3134063101590827,
+  "seRoh": 0.018880985374017938,
+  "tRoh": 0.3711277316636795,
+  "G": 1338,
+  "n": 33307
+ },
+ "placeboMittel": 0.00278605273833205,
+ "placeboSd": 0.01934845607339074,
+ "placeboBand": [
+  -0.02999588339149707,
+  0.031217842924866842
+ ],
+ "positivkontrolle": {
+  "soll": 0.5,
+  "rauschfrei": 0.5,
+  "einZug": 0.47363518730900667,
+  "mittel2000": 0.4996488528522483,
+  "sdEinzelzug": 0.018874034450991686
+ },
+ "mde": {
+  "geclustert": 0.26391012391972896,
+  "ungeclustert": 0.05289521038219227
+ },
+ "wirkungJeSd": 0.0023379165030109205,
+ "band90": [
+  -0.029769004016532197,
+  0.04378351856340097
+ ],
+ "lookahead": {
+  "geprueft": 481668,
+  "verstoesse": 0
+ },
+ "urteil": "NEIN (R2) - kein handelbarer Effekt im Fenster"
+}

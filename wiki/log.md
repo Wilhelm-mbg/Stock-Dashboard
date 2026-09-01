@@ -2,6 +2,26 @@
 
 *Nur was sich am Wiki ändert. Die Projekt-Chronologie steht im Archiv `PROJEKTSTAND.md`.*
 
+## 01.09.2026 (abends) — News-Sentiment gemessen: NEIN. Und die Wand war nicht das Fenster
+
+**Geändert:** `belegstand.md` (News-Sentiment von „messbar, Messung steht aus" nach
+**Widerlegt** — beide Vorgänger-Fassungen durchgestrichen stehen geblieben),
+`datenquellen.md` (neuer Kasten „Die Wand ist nicht das Fenster"), `aufloesungswand.md`
+(Faktor-75-Zeile als überholt markiert; dritte Falle und der Abschnitt zur Konservativität
+der Planformel ergänzt).
+
+**Urteil:** b = +0,0070 Pp/Score-Punkt, t = 0,31, mitten im Placebo-Band; selbst die
+Obergrenze des 90-%-Bandes liegt Faktor 8,5 unter der CFD-Hürde.
+*Fundstelle: `studien/vorregistrierung-2026-09-01-news-sentiment-vollkorpus/ERGEBNIS.md`*
+
+**Zwei Korrekturen an Aussagen von heute Nachmittag, beide aus dem eigenen Lauf:**
+1. Die „**2.367 Zeitpunkte**" in `belegstand.md` waren Handelstage, nicht Tage mit
+   Nachrichten. Nutzbar sind **1.338** — vor Mai 2021 liegt die Abdeckung unter 10 %.
+   Die Lücke war in `GRATIS-PRUEFUNG.md` §2 ausdrücklich als ungezählt markiert; jetzt gezählt.
+2. Die konservative Planformel für geclusterte Standardfehler war um **Faktor 4,2** zu
+   pessimistisch. Als Regel in `aufloesungswand.md` festgehalten — samt der Pflicht, so einen
+   Zugewinn als Zugewinn zu kennzeichnen und nicht als das, was vorregistriert war.
+
 ## 01.09.2026 (später) — erste Aktualisierung, und sie widerlegt eine Wiki-Aussage von vorhin
 
 **Geändert:** `datenquellen.md` (Gratisstufe kann viel mehr als ihre Doku; Dichte gezählt statt

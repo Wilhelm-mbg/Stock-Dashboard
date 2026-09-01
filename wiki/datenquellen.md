@@ -36,7 +36,7 @@ Gratisstufe.** *Fundstelle: `studien/datentarif-2026-09-01/EMPFEHLUNG.md`*
 >
 > | Endpunkt | Basic liefert tatsächlich |
 > |---|---|
-> | **Nachrichten** | **HTTP 200 bis 2017-04-10 = 9,4 Jahre** — kein 2-Jahres-Deckel |
+> | **Nachrichten** | **HTTP 200 bis 2017-04-10 = 9,4 Jahre** — kein 2-Jahres-Deckel. ⚠ **Die Wand ist nicht das Fenster**, siehe Kasten unten |
 > | **Minutenbalken** | **HTTP 200**, echte Balken bis ~730 Tage — entgegen „End of Day" auf der Preisseite |
 > | Dividenden, unadjustierte Kurse, Splits (bis **1987**) | alle HTTP 200, **alle heute ungenutzt** |
 >
@@ -55,6 +55,26 @@ Gratisstufe.** *Fundstelle: `studien/datentarif-2026-09-01/EMPFEHLUNG.md`*
 
 **Die früher geschätzten 20,6 % waren in BEIDE Richtungen falsch.** *Folge: Ein Sentiment-
 Universum muss aus **Großwerten** bestehen — der Zufallsquerschnitt reißt die Schwelle.*
+
+> ### ⚠ **DIE WAND IST NICHT DAS FENSTER — gezählt 01.09.2026**
+> *Fundstelle: `studien/vorregistrierung-2026-09-01-news-sentiment-vollkorpus/`, Nachtrag 1
+> und `abdeckung.json` (233.625 Meldungen, 30 Großwerte)*
+>
+> Eine Wand sagt, wo die **älteste** Meldung liegt — nicht, ob dahinter genug steht. Abdeckung
+> (Anteil Symbol-Tage mit einer Meldung ≤ 48 h vor Schluss):
+>
+> | 2017 | 2018 | 2019 | 2020 | **2021** | 2022 | 2023 | 2024 | 2025 | 2026 |
+> |---|---|---|---|---|---|---|---|---|---|
+> | 0,2 % | 3,7 % | 1,9 % | 7,4 % | **69,4 %** | 95,2 % | 96,6 % | 84,5 % | 72,5 % | 78,8 % |
+>
+> Der Übergang ist eine **Stufe**, kein Anstieg: 2021-03 **9,6 %** → 2021-04 **44,0 %** →
+> 2021-05 **94,0 %**. Das ist eine Bestandsaufnahme des Anbieters, kein Marktereignis.
+> AAPL — der meistbeschriebene Wert der Welt — hat **2017 genau EINE** Meldung und **2021
+> dann 4.296**.
+>
+> **→ Nutzbares Nachrichtenfenster: ab Mai 2021, rund 1.338 Handelstage** — nicht die 2.367,
+> die sich aus der Wand ergäben. **Wer eine Wand als Fenster nimmt, zählt Jahre mit, in denen
+> nichts zu messen ist.**
 
 ## Weitere Quellen
 
