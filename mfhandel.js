@@ -17,24 +17,52 @@
  */
 (function (root) {
 
+  /* Konfiguration des Buchs: Fenster aus momentum.js (STANDARD), Korbregel aus
+   * liquide.js (KORB). Beides sind Wurzelmodule, die das Buch WIRKLICH liest - und
+   * test-v6.js Block 34 haelt genau diese Zahlen gegen die Rohdaten der Studie
+   * (Live = Messung als Test-Invariante, wiki/messmethodik.md Punkt 11). */
+  var Mo = (typeof module !== 'undefined' && module.exports) ? require('./momentum.js') : root.Momentum;
+  var Li = (typeof module !== 'undefined' && module.exports) ? require('./liquide.js') : root.Liquide;
+
+  /** Die Konfiguration, mit der das Buch rechnet - als Kopie, damit Anzeige und
+   *  Journal dieselben Zahlen nennen wie die Rechnung. */
+  function buchKonfig() {
+    return { rueckblick: Mo.STANDARD.rueckblick, luecke: Mo.STANDARD.luecke, halten: Mo.STANDARD.halten,
+      anteil: Mo.STANDARD.anteil, mindestWerte: Li.KORB.mindestWerte,
+      umsatzMin: Li.KORB.umsatzMin, umsatzFenster: Li.KORB.fenster };
+  }
+
   /** 12-1-Momentum-Rangfolge auf ROHEN Serien — jede Serie mit ihren eigenen
    *  Handelstagen, bewusst ohne gemeinsame Zeitachse: Für ein Live-Ranking zählt der
    *  letzte Stand jedes Werts, nicht ein historischer Schnittpunkt.
-   *  rohMap: {SYM: [[t, kurs], …]}   opts: {rueckblick, luecke, anteil, minWerte, maxAlterMs, nowMs}
-   *  Rückgabe: {ziel: [sym…], rangfolge: [{sym, staerke}], uebersprungen: [sym…]} */
+   *  rohMap: {SYM: [[t, kurs, stueck], …]}   opts: {rueckblick, luecke, anteil, minWerte,
+   *  umsatzMin, umsatzFenster, maxAlterMs, nowMs} - ohne opts gilt die gemessene Konfiguration.
+   *  Korbfilter VOR der Rangbildung (Studie 02.09.2026, liquide Fassung): nur Werte mit
+   *  Median-Tagesumsatz >= umsatzMin ueber umsatzFenster Balken bis zum Stichtag ranken mit.
+   *  Rückgabe: {ziel: [sym…], rangfolge: [{sym, staerke, umsatz}], uebersprungen: [sym…],
+   *             verworfen: [{sym, grund}],
+   *             korb: {zulaessig, geprueft, ohneUmsatz, unterSchwelle, umsatzMin, fenster}} */
   function momentumZiel(rohMap, opts) {
     opts = opts || {};
-    var rueck = opts.rueckblick || 231, luecke = opts.luecke || 21;
-    var anteil = opts.anteil || 0.10, minWerte = opts.minWerte || 25;
+    var K = buchKonfig();
+    var rueck = opts.rueckblick || K.rueckblick, luecke = opts.luecke || K.luecke;
+    var anteil = opts.anteil || K.anteil, minWerte = opts.minWerte || K.mindestWerte;
+    var umsatzMin = opts.umsatzMin == null ? K.umsatzMin : opts.umsatzMin;
+    var fenster = opts.umsatzFenster || K.umsatzFenster;
     var maxAlter = opts.maxAlterMs || 7 * 86400000;
     var nowMs = opts.nowMs || Date.now();
     var punkte = [], uebersprungen = [], verworfen = [];
+    var korb = { zulaessig: 0, geprueft: 0, ohneUmsatz: 0, unterSchwelle: 0, umsatzMin: umsatzMin, fenster: fenster };
     /** Jeder Ausschluss wird mit Grund festgehalten, nicht nur gezählt — die Anzeige
      *  soll erklären können, warum ein Wert nicht mitrankt. */
     function raus(sym, grund) { uebersprungen.push(sym); verworfen.push({ sym: sym, grund: grund }); }
     Object.keys(rohMap).forEach(function (sym) {
       var r = rohMap[sym];
-      if (!r || r.length < rueck + luecke + 5) { raus(sym, 'zu kurze Kursreihe (' + ((r && r.length) || 0) + ' von ' + (rueck + luecke + 5) + ' Tagen)'); return; }
+      korb.geprueft++;
+      /* Mindestlaenge EXAKT wie periode() im Studienwerkzeug: von = i - (rueck + luecke)
+       * muss >= 0 sein. Vorher stand hier eine Zugabe von 5 Tagen - eine Reihe mit 253
+       * bis 256 Tagen rankte live nicht, in der Messung schon. */
+      if (!r || r.length < rueck + luecke + 1) { raus(sym, 'zu kurze Kursreihe (' + ((r && r.length) || 0) + ' von ' + (rueck + luecke + 1) + ' Tagen)'); return; }
       // Veraltete Serien fliegen raus, statt mit einem alten Kurs mitzuranken —
       // ein eingefrorener Wert sähe im fallenden Markt fälschlich „stark“ aus.
       if (nowMs - r[r.length - 1][0] > maxAlter) {
@@ -45,15 +73,25 @@
        * rueck Tage, endend luecke Tage vor heute = 231 Tage. Vorher stand hier
        * r[i - rueck], also nur rueck - luecke = 210 Tage - das Live-Buch handelte ein
        * anderes Momentum als das belegte (Audit 22.08.2026). */
-      var st = r[i - luecke][1] / r[i - luecke - rueck][1] - 1;
-      if (isFinite(st)) punkte.push({ sym: sym, staerke: st });
+      var a = r[i - luecke - rueck][1], m2 = r[i - luecke][1], p0 = r[i][1];
+      if (!(a > 0) || !(m2 > 0) || !(p0 > 0)) { raus(sym, 'Stärke nicht berechenbar (Kurslücke)'); return; }
+      /* Liquiditaet VOR der Rangbildung - dieselbe Rechenregel wie die Studie
+       * (liquide.js). Der Grund unterscheidet "unter der Schwelle" von "keine
+       * Stueckzahlen": Letzteres ist eine Luecke der Daten, kein Befund ueber den Wert. */
+      var z = Li.zulaessig(r, i, { umsatzMin: umsatzMin, fenster: fenster });
+      if (!z.ok) {
+        if (umsatzMin > 0 && !Li.hatUmsatz(r, i, fenster)) korb.ohneUmsatz++; else korb.unterSchwelle++;
+        raus(sym, z.grund); return;
+      }
+      var st = m2 / a - 1;
+      if (isFinite(st)) { korb.zulaessig++; punkte.push({ sym: sym, staerke: st, umsatz: z.umsatz }); }
       else raus(sym, 'Stärke nicht berechenbar (Kurslücke)');
     });
-    if (punkte.length < minWerte) return { ziel: [], rangfolge: [], uebersprungen: uebersprungen, verworfen: verworfen, zuWenig: true };
+    if (punkte.length < minWerte) return { ziel: [], rangfolge: [], uebersprungen: uebersprungen, verworfen: verworfen, korb: korb, zuWenig: true };
     punkte.sort(function (a, b) { return b.staerke - a.staerke; });
     var n = Math.max(5, Math.round(punkte.length * anteil));
     return { ziel: punkte.slice(0, n).map(function (p) { return p.sym; }), rangfolge: punkte,
-      uebersprungen: uebersprungen, verworfen: verworfen };
+      uebersprungen: uebersprungen, verworfen: verworfen, korb: korb };
   }
 
   /** Umschichtung planen: Soll-Ist-Abgleich. Gleichgewichtung über die Zielliste.
@@ -232,7 +270,7 @@
   }
 
   var MFHandel = {
-    momentumZiel: momentumZiel, planeUmschichtung: planeUmschichtung,
+    buchKonfig: buchKonfig, momentumZiel: momentumZiel, planeUmschichtung: planeUmschichtung,
     fuehreAus: fuehreAus, bewerte: bewerte, rebalanceFaellig: rebalanceFaellig,
     driftAbgleich: driftAbgleich, bewerteDrift: bewerteDrift
   };

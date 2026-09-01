@@ -677,6 +677,7 @@
       titel: 'Momentum im Querschnitt',
       punkte: [
         'Diese Strategie vergleicht alle Werte des Universums <b>miteinander</b> und hält das stärkste Zehntel. Kein Chartmuster, kein Ein- und Ausstiegssignal – nur eine Rangfolge, die alle drei Monate neu gebildet wird.',
+        'Seit 02.09.2026 handelt das Buch <b>exakt die gemessene liquide Konfiguration</b>: Rückblick 231 Handelstage, Lücke 21, Halten 63, stärkstes Zehntel, Korb nur Werte mit Median-Tagesumsatz ≥ 100 Mio $ (20 Balken bis zum Stichtag, vor der Rangbildung). Die Schwelle ist nominal und wird nicht angepasst – ihre Drift steht als Korbgröße je Umschichtung im Buch. Ab der ersten Umschichtung auf dem liquiden Korb ist jede weitere ein Out-of-Sample-Beleg.',
         'Gekauft werden <b>Aktien</b>; mit Hebelscheinen auf 21 Tage ist eine Haltedauer von drei Monaten nicht darstellbar, der Zeitwertverfall frisst sie auf.',
         '<b>Der größte Rückschlag lag bei 52 Prozent</b> (2008). Das ist kein ruhiges Investment. Wer bei so einem Einbruch aussteigt, hat den Effekt nicht – er entsteht gerade dadurch, dass man dabeibleibt.',
         '<b>In 8 von 22 Jahren war das Depot schlechter als der Markt.</b> 2024 lag es bei −0,1 % gegen +7,4 %. Momentum verliert typischerweise genau dann, wenn der Markt scharf dreht.',

@@ -1600,7 +1600,7 @@
       var e = r.e;
       html += '<tr' + (r.laufend ? ' style="font-weight:600;"' : '') + '>' +
         '<td>' + (r.rang ? '#' + r.rang : '–') + '</td>' +
-        '<td>' + U.dt(e.at) + '<br><span style="color:var(--muted); font-weight:400; font-size:var(--fs-klein);">' + ({ pilot: 'Autopilot', lokal: 'Selbst-Optimierung (alt)', manuell: 'manuell übernommen', hand: 'von Hand', regime: 'Regime (alt)', farm: 'Farm (alt)', sicherung: 'Sicherung' }[e.quelle] || 'Cloud-Analyse') + (r.laufend ? ' · läuft aktuell' : '') + '</span></td>' +
+        '<td>' + U.dt(e.at) + '<br><span style="color:var(--muted); font-weight:400; font-size:var(--fs-klein);">' + ({ pilot: 'Autopilot', lokal: 'Selbst-Optimierung (alt)', manuell: 'manuell übernommen', hand: 'von Hand', regime: 'Regime (alt)', farm: 'Farm (alt)', sicherung: 'Sicherung', automatik: 'Buch-Automatik', umstellung: 'Umstellung (Buch = Messung)' }[e.quelle] || 'Cloud-Analyse') + (r.laufend ? ' · läuft aktuell' : '') + '</span></td>' +
         '<td>' + (e.applied && e.applied.length ? U.esc(e.applied.join(' · ')) : '<span style="color:var(--muted);">keine Feldänderung</span>') +
           feldZeilen(e, r.idx) +
           (e.txt ? '<div style="color:var(--muted); font-size:var(--fs-klein); margin-top:2px;">' + U.esc(e.txt) + '</div>' : '') + '</td>' +
@@ -4234,6 +4234,18 @@
         momentumAn: !!D.momentumAn,
         driftAn: !!D.driftAn,
         stundenAn: D.hourlyEnabled !== false,
+        /* Momentum-Buch (02.09.2026, Buch = Messung): seit wann es mit der gemessenen
+         * Konfiguration rechnet (konfigSeit) und seit wann es auf dem liquiden Korb
+         * HANDELT (liquideSeit) - ab da ist jede Umschichtung Out-of-Sample. Nur Kopien;
+         * das Etikett auf der Antwort-Seite haengt dieses Datum an das Urteil aus dem
+         * Studienregister, es rechnet nichts. */
+        momentumBuch: D.mfBuch ? {
+          konfigSeit: D.mfBuch.konfigSeit || null,
+          liquideSeit: D.mfBuch.liquideSeit || null,
+          konfig: D.mfBuch.konfig ? Object.assign({}, D.mfBuch.konfig) : null,
+          korbZuletzt: D.mfBuch.korbVerlauf && D.mfBuch.korbVerlauf.length
+            ? Object.assign({}, D.mfBuch.korbVerlauf[D.mfBuch.korbVerlauf.length - 1]) : null
+        } : null,
         messRegeln: (Array.isArray(D.regeln) ? D.regeln : []).map(function (r) {
           return { name: r.name, modus: r.cfg && r.cfg.mode };
         })
@@ -5338,7 +5350,7 @@
       : st.setup === 'umkehr' ? '' : 'Ausstieg: laufen lassen bis zum Gegensignal, mit Not-Stop und Ziel.';
     // Wer hat das eingestellt? Letzter Journal-Eintrag mit echter Änderung
     var wer = '';
-    var QUELLE_NAME = { pilot: 'Autopilot', regime: 'Regime-Automatik (alt)', farm: 'Strategie-Farm (alt)', hand: 'von Hand (Formular)', manuell: 'Analyse-Zentrale', lokal: 'Selbst-Optimierung (alt)', sicherung: 'Sicherung', claude: 'Cloud-Empfehlung' };
+    var QUELLE_NAME = { pilot: 'Autopilot', regime: 'Regime-Automatik (alt)', farm: 'Strategie-Farm (alt)', hand: 'von Hand (Formular)', manuell: 'Analyse-Zentrale', lokal: 'Selbst-Optimierung (alt)', sicherung: 'Sicherung', claude: 'Cloud-Empfehlung', automatik: 'Buch-Automatik', umstellung: 'Umstellung (Buch = Messung)' };
     var tl = (D.tuneLog || []).filter(function (e) { return (e.applied || []).length && e.quelle !== 'sicherung'; })[0];
     if (tl) wer = 'Zuletzt eingestellt von ' + (QUELLE_NAME[tl.quelle] || tl.quelle || '?') + ' (' + U.dt(tl.at) + '): ' + tl.applied.slice(0, 3).join(' · ') + (tl.applied.length > 3 ? ' …' : '');
     var a = autoOptCfg();

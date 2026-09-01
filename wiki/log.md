@@ -2,6 +2,21 @@
 
 *Nur was sich am Wiki ändert. Die Projekt-Chronologie steht im Archiv `PROJEKTSTAND.md`.*
 
+## 02.09.2026 — Momentum-Buch handelt die gemessene liquide Konfiguration (Buch = Messung)
+
+**Geändert:** `belegstand.md` (Momentum-Zeile: „Buch seit 02.09.2026 auf liquidem Korb — ab hier
+Out-of-Sample", Sperrklinke und bekannte Abweichung Universum), `offene-auftraege.md` (Auftrag
+abgehakt).
+
+**Was im Code passiert ist (Wilhelms Entscheid 02.09.):** neues Wurzelmodul `liquide.js` mit
+der Korbregel der Studie (Median über 20 Balken von Schluss × Stück ≥ 100 Mio $, nominal);
+`mfhandel.js` liest Fenster und Korbregel aus `momentum.js` + `liquide.js` statt eigener Zahlen;
+`mittelfrist.js` speichert Stückzahlen mit und lädt Bestände ohne Stückzahl einmalig neu;
+`mfdepot.js` schreibt die Umstellung als Handlung ins Journal, datiert die erste Umschichtung
+auf dem Korb und weist die Korbgröße je Umschichtung aus; `studienurteile.js` trägt das
+Vorwärtstest-Etikett („lebt", In-Sample, am Rand), jede Zahl per Test an `lauf-*.json` gebunden.
+Die Studiendateien blieben unangetastet. **Kein Urteil wurde umformuliert.**
+
 ## 02.09.2026 (nachts, später) — Momentum liquide gemessen: „LEBT" nach Regel, In-Sample und am Rand
 
 **Geändert:** `belegstand.md` (Momentum-Zeile um die liquide Fassung ergänzt), `offene-auftraege.md`

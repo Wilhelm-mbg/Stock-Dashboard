@@ -73,12 +73,16 @@
       instrument: 'Aktien, kein Hebel',
       /* tut (01.09.2026, B6): der Satz der Antwort-Seite - beschreibt das TUN im
        * Praesens und wiederholt nicht woertlich den Karten-Text darunter. */
-      tut: 'Hält das stärkste Zehntel des Universums und schichtet alle 63 Handelstage um.',
-      was: 'Vergleicht alle Werte miteinander und hält das stärkste Zehntel. Keine Chartmuster, nur eine Rangfolge, die alle 63 Handelstage neu gebildet wird.',
+      tut: 'Hält das stärkste Zehntel der liquiden Werte (Median-Tagesumsatz ≥ 100 Mio $) und schichtet alle 63 Handelstage um.',
+      was: 'Vergleicht alle Werte miteinander und hält das stärkste Zehntel. Keine Chartmuster, nur eine Rangfolge, die alle 63 Handelstage neu gebildet wird. Seit 02.09.2026 nur Werte mit Median-Tagesumsatz ≥ 100 Mio $ (20 Balken bis zum Stichtag, vor der Rangbildung) – exakt die gemessene liquide Konfiguration.',
       stand: 'gemessen – hält die volle Historie, nicht die zurückgehaltenen Jahre',
       farbe: 'warn',
-      messKeys: ['momentum'],
+      /* Erster Schluessel: die Konfiguration, die das Buch WIRKLICH handelt (Etikett aus
+       * dem Studienregister, Vorwaertstest-Datum aus dem Buch). Zweiter: das
+       * Messmaschinen-Protokoll der breiten Fassung, fuer die Protokollzeile der Karte. */
+      messKeys: ['momentum-liquide', 'momentum'],
       beleg: [
+        'LIQUIDE FASSUNG 02.09.2026 (Korb nur Werte mit Median-Tagesumsatz ≥ 100 Mio $, Punkt-in-Zeit, vor der Rangbildung): „lebt" nach registrierter Regel – In-Sample und am Rand. Brutto +1,835 Pp je Umlauf (se 0,911, t 2,02, 79 Perioden), Band [+0,050, +3,620]; gepaart gegen den breiten Korb +0,29 (t 0,69). Kein „belegt". Das Buch handelt seither exakt diese Konfiguration – ab der ersten Umschichtung auf dem liquiden Korb ist jede weitere ein Out-of-Sample-Beleg. Die Schwelle bleibt nominal; ihre Drift steht als Korbgröße je Umschichtung im Buch.',
         'KONTROLLMESSUNG 23.08.2026: Der eingebaute Marktvergleich ist bereits die richtige Kontrolle (Erwartung einer Zufallsauswahl gleicher Größe, per 500-fach-Simulation bestätigt). Über die volle Historie +2,42 Pp je Umschichtung (t = 3,84) – aber ab 2005 allein +1,51 Pp bei Mindest-Effektgröße 1,86 (t = 1,62): nicht entscheidbar. Rund die Hälfte des Vorsprungs hängt an 30 von 189 Werten, deren Namen man erst 2026 kennt (Überlebensverzerrung). 64,8 % des Ertrags je Schritt sind schlichtes Halten.',
         'Parameter auf 1970–2004 gewählt, auf 2005–2026 ohne Anpassung geprüft: +20,3 % p. a. gegen +14,9 % des Marktdurchschnitts, Vorsprung +5,4 Pp.',
         'Schlug den Markt in 14 von 22 Jahren; 93 von 96 Parameterkombinationen schlugen ihn ebenfalls.',
@@ -307,6 +311,18 @@
       var su = window.StudienUrteile && window.StudienUrteile.verworfen(kette[i]);
       if (su) return { txt: 'gemessen und verworfen', farbe: 'down', urteil: 'verworfen',
         quelle: su.quelle, befund: su.befund };
+      /* Vorwaertstest-Etikett (02.09.2026): Urteil und Einschraenkung woertlich aus dem
+       * Studienregister, das Datum aus dem Buch - seit wann es auf dem liquiden Korb
+       * HANDELT. Vor der ersten Umschichtung sagt das Etikett das auch so. */
+      var vt = window.StudienUrteile && window.StudienUrteile.vorwaertstest && window.StudienUrteile.vorwaertstest(kette[i]);
+      if (vt) {
+        var rs = api && api.regelStatus ? api.regelStatus() : null;
+        var buch = rs && vt.buch ? rs[vt.buch] : null;
+        var seit = buch && buch.liquideSeit ? 'seit ' + new Date(buch.liquideSeit).toLocaleDateString('de-DE')
+          : 'ab der nächsten Umschichtung' + (buch && buch.konfigSeit ? ' (umgestellt ' + new Date(buch.konfigSeit).toLocaleDateString('de-DE') + ')' : '');
+        return { txt: vt.urteil + ' (' + vt.etikett + ') – Vorwärtstest ' + seit, farbe: 'warn', urteil: vt.urteil,
+          quelle: vt.quelle, befund: vt.befund };
+      }
     }
     return null;
   }

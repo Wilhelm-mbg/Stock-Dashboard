@@ -2165,7 +2165,9 @@ console.log('\nMittelfrist-Depot');
   var now = Date.UTC(2026, 7, 21);
   function serie(steig, tage) {
     var r = [];
-    for (var i = 0; i < (tage || 300); i++) r.push([now - ((tage || 300) - i) * 86400000, 100 * (1 + steig * i / 300)]);
+    /* Dritte Spalte Stueckzahl: seit 02.09.2026 filtert das Buch seinen Korb nach
+     * Median-Tagesumsatz (>= 100 Mio $). 5 Mio Stueck x ~100 $ liegen klar darueber. */
+    for (var i = 0; i < (tage || 300); i++) r.push([now - ((tage || 300) - i) * 86400000, 100 * (1 + steig * i / 300), 5e6]);
     return r;
   }
   var roh = { A: serie(0.6), B: serie(0.3), C: serie(-0.3), D: serie(0.1), E: serie(0.05), F: serie(0.02), G: serie(-0.1) };
@@ -3182,12 +3184,197 @@ console.log('\n34) Momentum: Live-Buch rechnet dasselbe Fenster wie die validier
   var Mo = require('./momentum.js'), Mh = require('./mfhandel.js');
   var reihe = []; for (var i = 0; i < 300; i++) reihe.push(100 * Math.exp(0.0007 * i + 0.01 * Math.sin(i / 7)));
   var n = reihe.length - 1, valid = Mo.staerke(reihe, n, 231, 21);
-  var roh = { X: reihe.map(function (k, j) { return [Date.now() - (299 - j) * 86400000, k]; }) };
+  var roh = { X: reihe.map(function (k, j) { return [Date.now() - (299 - j) * 86400000, k, 5e6]; }) };
   var z = Mh.momentumZiel(roh, { rueckblick: 231, luecke: 21, minWerte: 1, anteil: 1 });
   var live = z && z.rangfolge[0] ? z.rangfolge[0].staerke : null;
   ok(valid != null && live != null && Math.abs(valid - live) < 1e-9,
      'Live-Buch und validierte Staerke liefern auf derselben Reihe denselben Wert',
      (valid != null ? valid.toFixed(6) : 'n/a') + ' / ' + (live != null ? live.toFixed(6) : 'n/a'));
+
+  /* ---- Buch = Messung, liquide Fassung (Wilhelms Entscheid 02.09.2026) ----
+   * Die Zahlen, mit denen das Buch rechnet (mfhandel.buchKonfig: momentum.js STANDARD +
+   * liquide.js KORB), werden gegen die ROHDATEN der Studie gehalten - nicht gegen einen
+   * Text. Gegenprobe (02.09.2026): Schwelle in liquide.js testweise auf 50 Mio $ gesetzt,
+   * drei Zusicherungen rot (Zahl, Randfall 99,9 Mio $, Aequivalenz zum Studienwerkzeug). */
+  var STUDIE = __dirname + '/studien/vorregistrierung-2026-09-02-momentum-liquide/';
+  var lauf = JSON.parse(fs.readFileSync(STUDIE + 'lauf-2026-09-01-22-52.json', 'utf8'));
+  var Li = require('./liquide.js');
+  var K = Mh.buchKonfig();
+  var P = lauf.parameter;
+  ok(K.rueckblick === P.rueckblick && K.luecke === P.luecke && K.halten === P.halten && K.anteil === P.anteil,
+     'Fenster des Buchs = Fenster der Studie (Rueckblick/Luecke/Halten/Anteil aus lauf-*.json)',
+     JSON.stringify([K.rueckblick, K.luecke, K.halten, K.anteil]));
+  ok(K.umsatzMin === P.umsatzMin && K.mindestWerte === P.mindestWerte,
+     'Korbregel des Buchs = Korbregel der Studie (umsatzMin, mindestWerte aus lauf-*.json)',
+     K.umsatzMin + ' / ' + K.mindestWerte);
+  ok(lauf.umsatzMin === P.umsatzMin && lauf.urteil5 && lauf.urteil5.urteil === 'LEBT',
+     'die Rohdaten tragen das Urteil LEBT fuer genau diese Schwelle', lauf.urteil5 && lauf.urteil5.urteil);
+
+  /* Randfall als EIGENSCHAFT: 99,9 Mio $ fliegt, 100,0 Mio $ bleibt - OHNE opts, also mit
+   * der Konfiguration, die das Buch wirklich liest. Konstante Kurse (100 $) und ganze
+   * Stueckzahlen, damit der Umsatz exakt auf der Schwelle liegt. */
+  var now34 = Date.UTC(2026, 8, 1);
+  function reihe34(stueck, steig, tage) {
+    var r = []; tage = tage || 300;
+    for (var j = 0; j < tage; j++) r.push([now34 - (tage - 1 - j) * 86400000, 100 * (1 + (steig || 0) * j / tage), stueck]);
+    return r;
+  }
+  var roh34 = {};
+  for (var q = 0; q < 100; q++) roh34['L' + q] = reihe34(5e6, 0.01 * q);      // 100 liquide Werte = Mindestbreite
+  roh34.RAND_UNTER = reihe34(999000, 0);                                        // 99,9 Mio $
+  roh34.RAND_GENAU = reihe34(1000000, 0);                                       // 100,0 Mio $
+  roh34.OHNE = reihe34(5e6, 0.9).map(function (b) { return [b[0], b[1]]; });    // keine Stueckzahl
+  var z34 = Mh.momentumZiel(roh34, { nowMs: now34 });
+  var drin34 = {}; z34.rangfolge.forEach(function (p) { drin34[p.sym] = p.umsatz; });
+  var grund34 = {}; z34.verworfen.forEach(function (v) { grund34[v.sym] = v.grund; });
+  ok(!z34.zuWenig && z34.rangfolge.length === 101, 'Vorbedingung: Rangfolge aus 101 zulaessigen Werten gebildet', z34.zuWenig ? 'zuWenig' : z34.rangfolge.length + ' Werte');
+  ok(drin34.RAND_GENAU === 100e6 && grund34.RAND_GENAU == null,
+     'genau 100 Mio $ Median-Tagesumsatz ist zulaessig (>=, wie in der Studie)', drin34.RAND_GENAU);
+  ok(drin34.RAND_UNTER == null && /unter 100 Mio/.test(grund34.RAND_UNTER || ''),
+     '99,9 Mio $ fliegt VOR der Rangbildung mit Grund heraus', grund34.RAND_UNTER);
+  ok(drin34.OHNE == null && /keine Stückzahlen/.test(grund34.OHNE || '') && z34.korb.ohneUmsatz === 1,
+     'ohne Stueckzahlen: ausgeschlossen mit Grund "Daten", nicht als "illiquide" gezaehlt', grund34.OHNE);
+  ok(z34.korb.zulaessig === 101 && z34.korb.unterSchwelle === 1 && z34.korb.geprueft === 103,
+     'Korbzaehler: 101 zulaessig, 1 unter der Schwelle, 103 geprueft', JSON.stringify(z34.korb));
+  delete roh34.L99; delete roh34.L98;   // 99 zulaessige (L0..L97 + RAND_GENAU)
+  ok(Mh.momentumZiel(roh34, { nowMs: now34 }).zuWenig === true,
+     'unter ' + K.mindestWerte + ' zulaessigen Werten bildet das Buch keinen Korb (MINDEST_WERTE der Studie)');
+
+  /* ---- Aequivalenz-Klinke: Studienwerkzeug und Wurzelmodul auf DENSELBEN Daten ----
+   * messen.js laeuft beim Laden los (Wachhund, Archiv) und exportiert nichts. Deshalb
+   * werden median(), letzterIndexBis(), periode() und korbBilden() WOERTLICH aus dem
+   * Quelltext der Studie geschnitten und mit den Konstanten der Studie gebaut - die
+   * Studiendatei selbst bleibt unangetastet. Verglichen werden SYMBOLMENGEN
+   * (zulaessig und Korb), nicht Groessen. Das Studienwerkzeug bekommt die Schwelle aus
+   * lauf-*.json, das Wurzelmodul seine eigene - weichen sie ab, ist der Test rot. */
+  var mq = fs.readFileSync(STUDIE + 'messen.js', 'utf8');
+  function schnitt(name, bis) {
+    var a = mq.indexOf('function ' + name + '('), b = mq.indexOf(bis, a);
+    if (a < 0 || b < 0) throw new Error('Studienfunktion nicht gefunden: ' + name);
+    return mq.slice(a, b);
+  }
+  var quelle34 = schnitt('median', '\n/*') + '\n' + schnitt('letzterIndexBis', '\nfunction reiheKaputt') + '\n' +
+    schnitt('periode', '\nfunction korbBilden') + '\n' + schnitt('korbBilden', '\nfunction ueberschuss');
+  var Studie = new Function('MERKMAL_START', 'LUECKE', 'ANTEIL', quelle34 + '\nreturn { periode: periode, korbBilden: korbBilden };')(
+    P.rueckblick + P.luecke, P.luecke, P.anteil);
+  function tagVon34(ms) { return new Date(ms).toISOString().slice(0, 10); }
+  function bereite34(sym, b) {
+    var tage = new Array(b.length), idx = new Map();
+    for (var i2 = 0; i2 < b.length; i2++) { tage[i2] = tagVon34(b[i2][0]); idx.set(tage[i2], i2); }
+    return { sym: sym, b: b, tage: tage, idx: idx, quelle: 'test' };
+  }
+  function menge(a) { return a.slice().sort().join(' '); }
+  /** Beide Fassungen am Stichtag i (Index): Studie mit voller Reihe und Folgetag,
+   *  Buch mit bis i abgeschnittener Reihe (fuer ein Live-Ranking IST i der letzte Stand). */
+  function vergleiche(rohMap, i) {
+    var reihen = {}, syms = Object.keys(rohMap), kurz = {}, startTag = null, endTag = null;
+    syms.forEach(function (s) {
+      reihen[s] = bereite34(s, rohMap[s]);
+      kurz[s] = rohMap[s].slice(0, i + 1);
+      if (!startTag && rohMap[s].length > i + 1) { startTag = tagVon34(rohMap[s][i][0]); endTag = tagVon34(rohMap[s][i + 1][0]); }
+    });
+    var kand = Studie.periode(reihen, syms, startTag, endTag, P.umsatzMin);
+    var zulS = kand.map(function (k) { return k.sym; });
+    var korbS = Studie.korbBilden(kand).map(function (k) { return k.sym; });
+    var live = Mh.momentumZiel(kurz, { nowMs: rohMap[syms[0]][i][0] + 3600000 });
+    return { zulS: zulS, korbS: korbS, zulB: live.rangfolge.map(function (p) { return p.sym; }), korbB: live.ziel, n: kand.length };
+  }
+  /* Kunstdaten: 160 Werte, 320 Tage, Umsatz je Wert um die Schwelle gestreut, damit
+   * ein anderes Fenster, ein anderer Median oder eine andere Schwelle die Menge aendert. */
+  var rnd34 = lcg(20260902);
+  var kunst = {};
+  for (var s34 = 0; s34 < 160; s34++) {
+    /* Umsatzniveau so gestreut, dass rund vier Fuenftel ueber der Schwelle liegen (die
+     * Mindestbreite 100 muss erreichbar sein) und ein Fuenftel knapp darunter. */
+    var kurs = 50 + 100 * (rnd34() + 0.5), niveau = 1e8 * Math.exp(1.2 * rnd34() + 0.36), b34 = [];
+    for (var t34 = 0; t34 < 320; t34++) {
+      kurs *= 1 + 0.02 * rnd34();
+      var stueck = Math.round(niveau * Math.exp(0.8 * rnd34()) / kurs);
+      b34.push([Date.UTC(2025, 0, 1) + t34 * 86400000, Math.round(kurs * 100) / 100, stueck]);
+    }
+    kunst['K' + s34] = b34;
+  }
+  var v1 = vergleiche(kunst, 318);
+  ok(v1.n >= 100 && v1.zulS.length !== 160 && v1.zulS.length > 20,
+     'Kunstdaten: der Filter greift, ohne alles zu schlucken (Vorbedingung)', v1.zulS.length + ' von 160 zulaessig');
+  ok(menge(v1.zulS) === menge(v1.zulB),
+     'AEQUIVALENZ: Studienwerkzeug und Buch lassen DIESELBEN Werte in den Korb (Symbolmengen, nicht Groessen)',
+     v1.zulS.length + ' / ' + v1.zulB.length);
+  ok(menge(v1.korbS) === menge(v1.korbB) && v1.korbS.length > 0,
+     'AEQUIVALENZ: beide bilden DENSELBEN Korb (staerkstes Zehntel der Zulaessigen)', v1.korbS.length + ' / ' + v1.korbB.length);
+  var v2 = vergleiche(kunst, 300);
+  ok(menge(v2.zulS) === menge(v2.zulB) && menge(v2.korbS) === menge(v2.korbB),
+     'AEQUIVALENZ auch an einem zweiten Stichtag (Punkt-in-Zeit, 20 Balken bis dorthin)', v2.korbS.length);
+
+  /* Dieselbe Klinke auf ECHTEN Archivdaten am juengsten Stichtag der Studie (2026-03-02),
+   * fuer das Universum des Buchs. Nur wenn das Archiv erreichbar ist - sonst steht das
+   * hier ausdruecklich als Luecke und die Kunstdaten-Klinke oben traegt allein. */
+  var ARCHIV34 = process.env.MD_ARCHIV1D || 'E:/Markt-Dashboard-Archiv/archiv1d';
+  var letztePeriode = lauf.perioden[lauf.perioden.length - 1];
+  if (fs.existsSync(ARCHIV34)) {
+    var mfq = fs.readFileSync(__dirname + '/mittelfrist.js', 'utf8');
+    var uni = new Function('return (' + /var UNIVERSUM = \(([\s\S]*?)\)\.split/.exec(mfq)[1] + ')')().split(/\s+/).filter(Boolean);
+    var echt = {}, TIEFE34 = 300, folgeTag = null, fehlt34 = 0, lueckig34 = 0;
+    uni.forEach(function (sym) {
+      var j; try { j = JSON.parse(fs.readFileSync(ARCHIV34 + '/bars_1d_' + sym + '.json', 'utf8')); } catch (e) { fehlt34++; return; }
+      var b = (j.series || j.bars || []).slice(0, -1);   /* letzte Kerze weg, wie bereite() der Studie (#85) */
+      var ix = -1; for (var w = 0; w < b.length; w++) if (tagVon34(b[w][0]) === letztePeriode.tag) { ix = w; break; }
+      if (ix < TIEFE34 - 1 || ix + 1 >= b.length) { lueckig34++; return; }
+      if (!folgeTag) folgeTag = tagVon34(b[ix + 1][0]);
+      /* Alle Reihen auf dieselbe Tiefe bringen: der Stichtag traegt ueberall Index
+       * TIEFE34 - 1, der Folgetag ist ueberall derselbe - die Studie adressiert per Tag,
+       * das Buch per letztem Index; beide muessen denselben Tag meinen. Reihen mit einer
+       * Luecke am Folgetag bleiben draussen (die Studie wuerde sie anders behandeln als
+       * das Buch, das keinen Folgetag kennt - das ist kein Unterschied der Korbregel). */
+      if (tagVon34(b[ix + 1][0]) !== folgeTag) { lueckig34++; return; }
+      echt[sym] = b.slice(ix - (TIEFE34 - 1), ix + 2);
+    });
+    var v3 = vergleiche(echt, TIEFE34 - 1);
+    ok(v3.n >= 100 && Object.keys(echt).length >= 150,
+       'Archiv ' + letztePeriode.tag + ': ' + Object.keys(echt).length + ' Reihen des Buch-Universums geladen, ' + v3.n + ' zulaessig (fehlend ' + fehlt34 + ', lueckig ' + lueckig34 + ')');
+    ok(menge(v3.zulS) === menge(v3.zulB) && menge(v3.korbS) === menge(v3.korbB) && v3.korbS.length > 0,
+       'AEQUIVALENZ auf ECHTEN Archivdaten am Stichtag ' + letztePeriode.tag + ': gleiche Zulaessigen, gleicher Korb',
+       v3.zulS.length + ' zulaessig, Korb ' + v3.korbS.length);
+  } else {
+    console.log('  ⚠ Archiv ' + ARCHIV34 + ' nicht erreichbar – Aequivalenz nur auf Kunstdaten geprueft (schwaechere Pruefung).');
+  }
+
+  /* ---- Verdrahtung: das Buch liest die Konfiguration, es traegt keine eigene ---- */
+  var mfd34 = ohneKommentare(fs.readFileSync(__dirname + '/mfdepot.js', 'utf8'));
+  ok(/MH\.momentumZiel\(daten\.roh, \{ nowMs: daten\.juengster \|\| now \}\)/.test(mfd34),
+     'das Buch ruft die Rangfolge OHNE eigene Zahlen auf - Fenster und Korbregel kommen aus momentum.js + liquide.js');
+  ok(/MH\.rebalanceFaellig\(markt, d\.mfBuch\.letztesRebalanceT, KONFIG\.halten\)/.test(mfd34) && !/rebalanceFaellig\([^)]*, 63\)/.test(mfd34),
+     'Haltedauer aus derselben Konfiguration, keine 63 im Verdrahtungscode');
+  ok(/quelle: 'umstellung'/.test(mfd34) && /'mfkonfig-'/.test(mfd34) && /d\.mfBuch\.konfigSeit = now;/.test(mfd34),
+     'die Umstellung ist eine HANDLUNG: Journalzeile mit alter und neuer Konfiguration, Datum im Buch');
+  ok(/if \(!d\.mfBuch\.liquideSeit\) d\.mfBuch\.liquideSeit = now;/.test(mfd34) && /korbVerlauf\.push\(/.test(mfd34),
+     'erste Umschichtung auf dem liquiden Korb wird datiert, Korbgroesse je Umschichtung nachrichtlich festgehalten');
+  var mfsrc34 = ohneKommentare(fs.readFileSync(__dirname + '/mittelfrist.js', 'utf8'));
+  ok(/\[b\[0\], b\[1\], b\[2\]\]/.test(mfsrc34) && /hatStueck\(gespeichert\.roh\)/.test(mfsrc34),
+     'Tagesdaten tragen die Stueckzahl; gespeicherte Daten ohne Stueckzahl gelten nicht als frisch');
+  var html34 = fs.readFileSync(__dirname + '/index.html', 'utf8');
+  ok(html34.indexOf('<script src="liquide.js">') !== -1 && html34.indexOf('<script src="liquide.js">') < html34.indexOf('<script src="mfhandel.js">'),
+     'liquide.js wird geladen, bevor mfhandel.js es liest');
+  var dep34 = ohneKommentare(fs.readFileSync(__dirname + '/depot.js', 'utf8'));
+  ok((dep34.match(/umstellung: 'Umstellung \(Buch = Messung\)'/g) || []).length === 2 && /momentumBuch: D\.mfBuch \?/.test(dep34),
+     'das Journal kennt die Quelle "umstellung" in beiden Beschriftungen; regelStatus reicht das Buch-Datum weiter');
+
+  /* ---- Etikett auf der Antwort-Seite: aus dem Studienregister, jede Zahl aus den Rohdaten ---- */
+  var su34 = fs.readFileSync(__dirname + '/studienurteile.js', 'utf8');
+  var m34 = /'momentum-liquide': \{[\s\S]*?zahlen: (\{[^}]*\})/.exec(su34);
+  var zahlen34 = m34 ? new Function('return ' + m34[1])() : null;
+  var B34 = lauf.urteil5.bruttoLiquide;
+  function nah34(a, b, k) { return a != null && b != null && Math.abs(a - b) < k; }
+  ok(zahlen34 && nah34(zahlen34.bruttoPp, B34.mittel, 0.0005) && nah34(zahlen34.se, B34.se, 0.0005) && nah34(zahlen34.t, B34.t, 0.005) &&
+     zahlen34.perioden === B34.n && nah34(zahlen34.untereGrenze95, B34.untereGrenze95, 0.0005) && nah34(zahlen34.obereGrenze95, B34.obereGrenze95, 0.0005) &&
+     zahlen34.umsatzMin === P.umsatzMin && zahlen34.rueckblick === P.rueckblick && zahlen34.luecke === P.luecke && zahlen34.halten === P.halten,
+     'Studienregister: jede Zahl des Vorwaertstest-Etiketts steht so in den Rohdaten der Studie', JSON.stringify(zahlen34));
+  ok(/urteil: 'lebt'/.test(su34) && !/urteil: 'bestaetigt'/.test(su34) && !/urteil: 'belegt'/.test(su34),
+     'das Register sagt "lebt" - nie "bestaetigt", nie "belegt"');
+  var strat34 = ohneKommentare(fs.readFileSync(__dirname + '/strategien.js', 'utf8'));
+  ok(/messKeys: \['momentum-liquide', 'momentum'\]/.test(strat34) && /StudienUrteile\.vorwaertstest\(kette\[i\]\)/.test(strat34) &&
+     /vt\.urteil \+ ' \(' \+ vt\.etikett \+ '\) – Vorwärtstest ' \+ seit/.test(strat34),
+     'Antwort-Seite: "lebt (In-Sample, am Rand) – Vorwaertstest seit <Datum>" aus Register + Buch, nicht aus einem Text im Code');
 })();
 
 

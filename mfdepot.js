@@ -64,8 +64,49 @@
 
   /* ---------------- Bücher ---------------- */
   function buchInit(name) {
-    return { name: name, start: START_KAPITAL, cash: START_KAPITAL, positionen: [], trades: [],
+    var b = { name: name, start: START_KAPITAL, cash: START_KAPITAL, positionen: [], trades: [],
       angelegt: Date.now(), letztesRebalanceT: 0 };
+    /* Ein NEUES Momentum-Buch startet gleich mit der gemessenen Konfiguration - eine
+     * "Umstellung" gibt es nur fuer Buecher, die schon vorher liefen. */
+    if (name === 'momentum' && window.MFHandel && window.MFHandel.buchKonfig) {
+      b.konfig = window.MFHandel.buchKonfig(); b.konfigSeit = b.angelegt; b.liquideSeit = null; b.korbVerlauf = [];
+    }
+    return b;
+  }
+
+  /* ---- Buch = Messung (Wilhelms Entscheid 02.09.2026) ----
+   * Die Konfiguration des Momentum-Buchs kommt aus momentum.js + liquide.js
+   * (MFHandel.buchKonfig). Das Buch merkt sich, womit es rechnet; weicht die gemerkte
+   * Konfiguration von der gelesenen ab - beim ersten Takt nach dem Update fehlt sie
+   * ganz -, ist das eine HANDLUNG und bekommt eine Journalzeile mit alter und neuer
+   * Konfiguration. Gehandelt wird dabei NICHTS: die neue Regel greift bei der naechsten
+   * regulaeren Umschichtung; Positionen ausserhalb des liquiden Korbs werden dort
+   * verkauft, nicht sofort. */
+  var KONFIG_FELDER = ['rueckblick', 'luecke', 'halten', 'anteil', 'mindestWerte', 'umsatzMin', 'umsatzFenster'];
+  function konfigGleich(a, b) {
+    if (!a || !b) return false;
+    return KONFIG_FELDER.every(function (k) { return a[k] === b[k]; });
+  }
+  function konfigText(k) {
+    return 'Rückblick ' + k.rueckblick + ', Lücke ' + k.luecke + ', Halten ' + k.halten + ' Handelstage, stärkste ' +
+      Math.round(k.anteil * 100) + ' %, mindestens ' + k.mindestWerte + ' zulässige Werte, Korb nur Median-Tagesumsatz ≥ ' +
+      Math.round(k.umsatzMin / 1e6) + ' Mio $ (Schluss × Stück über ' + k.umsatzFenster + ' Balken bis zum Stichtag, Punkt-in-Zeit, vor der Rangbildung)';
+  }
+  function umstellungPruefen(d, KONFIG, now) {
+    if (konfigGleich(d.mfBuch.konfig, KONFIG)) return false;
+    var altTxt = d.mfBuch.konfig ? konfigText(d.mfBuch.konfig)
+      : 'Rückblick 231, Lücke 21, Halten 63 Handelstage, stärkste 10 %, mindestens 25 Werte, KEIN Umsatzfilter (breiter Korb, alle geladenen Werte)';
+    if (!d.tuneLog) d.tuneLog = [];
+    d.tuneLog.unshift({ id: 'mfkonfig-' + now, at: now, quelle: 'umstellung',
+      applied: ['Momentum-Buch: Konfiguration → gemessene liquide Fassung (Studie 02.09.2026)'],
+      txt: 'Alt: ' + altTxt + '. Neu: ' + konfigText(KONFIG) + '. Greift bei der nächsten regulären Umschichtung; ' +
+        'Positionen außerhalb des liquiden Korbs werden dort verkauft, nicht sofort. Ab der ersten Umschichtung auf dem ' +
+        'liquiden Korb ist jede weitere ein Out-of-Sample-Beleg. Simulation mit virtuellem Kapital, keine Anlageberatung.' });
+    d.mfBuch.konfig = KONFIG;
+    d.mfBuch.konfigSeit = now;
+    d.mfBuch.liquideSeit = null;
+    d.mfBuch.korbVerlauf = [];
+    return true;
   }
 
   async function takt(manuell) {
@@ -99,19 +140,38 @@
 
       /* ---- Momentum-Buch ---- */
       if (!d.mfBuch) d.mfBuch = buchInit('momentum');
-      var faellig = MH.rebalanceFaellig(markt, d.mfBuch.letztesRebalanceT, 63);
+      var KONFIG = MH.buchKonfig();
+      if (umstellungPruefen(d, KONFIG, now)) speichern();
+      var faellig = MH.rebalanceFaellig(markt, d.mfBuch.letztesRebalanceT, KONFIG.halten);
       var ziel = MH.momentumZiel(daten.roh, { nowMs: daten.juengster || now });
+      /* Gespeicherte Tagesdaten ohne Stueckzahlen (Bestand von vor dem Korbfilter): der
+       * Lader des Mittelfrist-Tabs erkennt das und laedt neu - er muss nur angestossen
+       * werden, hoechstens einmal je Stunde. Bis dahin bildet das Buch keinen Korb. */
+      if (ziel.korb && ziel.korb.ohneUmsatz > 0 && ziel.korb.ohneUmsatz * 2 >= ziel.korb.geprueft &&
+          window.MF && window.MF.ladeUniversum && Date.now() - ladeAngestossen > 3600000) {
+        ladeAngestossen = Date.now();
+        window.MF.ladeUniversum();
+      }
       var plan = ziel.zuWenig ? null : MH.planeUmschichtung(ziel.ziel, d.mfBuch, daten.preise);
       if (plan && (faellig || manuell === 'momentum')) {
         if (d.momentumAn || manuell === 'momentum') {
           var nM = MH.fuehreAus(d.mfBuch, plan, now, 20);
           d.mfBuch.letztesRebalanceT = now;
+          /* Erste Umschichtung auf dem liquiden Korb = Beginn des Vorwaertstests; die
+           * Korbgroesse je Umschichtung weist die Drift der nominalen Schwelle
+           * NACHRICHTLICH aus (wiki/fehlerformen.md) - behoben wird sie nicht. */
+          if (!d.mfBuch.liquideSeit) d.mfBuch.liquideSeit = now;
+          if (!d.mfBuch.korbVerlauf) d.mfBuch.korbVerlauf = [];
+          d.mfBuch.korbVerlauf.push({ t: now, zulaessig: ziel.korb.zulaessig, geprueft: ziel.korb.geprueft, ziel: ziel.ziel.length });
+          if (d.mfBuch.korbVerlauf.length > 120) d.mfBuch.korbVerlauf = d.mfBuch.korbVerlauf.slice(-120);
           if (!d.tuneLog) d.tuneLog = [];
           d.tuneLog.unshift({ id: 'mfrebal-' + now, at: now, quelle: manuell === 'momentum' ? 'hand' : 'automatik',
             applied: ['Momentum-Rebalancing: ' + nM + ' Orders'],
             txt: 'Momentum-Depot umgeschichtet: ' + plan.verkaufen.length + ' Verkäufe, ' + plan.kaufen.length +
               ' Käufe auf das stärkste Zehntel (' + ziel.ziel.length + ' Werte). Kosten 20 Bp je Seite.' +
-              (ziel.uebersprungen.length ? ' Ohne frische Kurse übersprungen: ' + ziel.uebersprungen.slice(0, 6).join(', ') + (ziel.uebersprungen.length > 6 ? ' …' : '') : '') +
+              ' Korb: ' + ziel.korb.zulaessig + ' von ' + ziel.korb.geprueft + ' Werten zulässig (Median-Tagesumsatz ≥ ' +
+              Math.round(ziel.korb.umsatzMin / 1e6) + ' Mio $ über ' + ziel.korb.fenster + ' Balken).' +
+              (ziel.uebersprungen.length ? ' Nicht im Korb oder ohne frische Kurse: ' + ziel.uebersprungen.slice(0, 6).join(', ') + (ziel.uebersprungen.length > 6 ? ' …' : '') : '') +
               (plan.fehltKurs.length ? ' Ohne Kurs nicht handelbar: ' + plan.fehltKurs.slice(0, 6).join(', ') + (plan.fehltKurs.length > 6 ? ' …' : '') : '') });
           speichern();
           plan = MH.planeUmschichtung(ziel.ziel, d.mfBuch, daten.preise);   // frisch für die Anzeige
@@ -270,6 +330,25 @@
         U.kachel('Positionen', b.positionen.length, { fs: 'var(--fs-zahl)' }) +
         U.kachel('Status', d.momentumAn ? 'handelt selbst' : 'nur rechnen', { fs: 'var(--fs-gross)' }) +
         '</div>';
+      /* Korb und Konfiguration, wie das Buch sie WIRKLICH liest (Zahlen aus mom.ziel.korb
+       * und b.konfig, nie aus einem Text hier). Die Korbgroesse je Umschichtung ist die
+       * nachrichtliche Ausweisung der Schwellen-Drift. */
+      var kb = mom.ziel.korb;
+      if (kb) {
+        html += '<div style="font-size:var(--fs-neben); color:var(--muted); margin:6px 0;">' +
+          'Korb: <b>' + kb.zulaessig + '</b> von ' + kb.geprueft + ' Werten zulässig (Median-Tagesumsatz ≥ ' +
+          Math.round(kb.umsatzMin / 1e6) + ' Mio $ über ' + kb.fenster + ' Balken bis zum Stichtag, vor der Rangbildung)' +
+          (kb.ohneUmsatz ? ' · ' + kb.ohneUmsatz + ' ohne Stückzahlen – Tagesdaten werden neu geladen' : '') +
+          (mom.ziel.zuWenig ? ' · <b>unter ' + (b.konfig ? b.konfig.mindestWerte : '?') + ' zulässigen Werten – kein Korb</b>' : '') +
+          '. Konfiguration wie gemessen (Studie 02.09.2026)' +
+          (b.konfigSeit ? ' seit ' + new Date(b.konfigSeit).toLocaleDateString('de-DE') : '') +
+          ' · Vorwärtstest ' + (b.liquideSeit ? 'seit ' + new Date(b.liquideSeit).toLocaleDateString('de-DE') : 'ab der nächsten Umschichtung') + '.' +
+          (b.korbVerlauf && b.korbVerlauf.length
+            ? '<br>Korbgröße je Umschichtung (nachrichtlich – die nominale Schwelle wandert mit dem Marktvolumen): ' +
+              b.korbVerlauf.slice(-12).map(function (k) { return new Date(k.t).toLocaleDateString('de-DE') + ' ' + k.zulaessig + '/' + k.geprueft; }).join(', ')
+            : '') +
+          '</div>';
+      }
       if (mom.faellig && mom.plan) {
         html += '<div style="font-size:var(--fs-text); margin:8px 0; padding:8px 10px; border-left:3px solid var(--warn);">' +
           '<b>Rebalancing fällig.</b> ' + (d.momentumAn ? 'Wird beim nächsten Takt ausgeführt.' :

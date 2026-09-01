@@ -19,7 +19,7 @@ import globals from 'globals';
 const fensterGlobals = {
   U: 'readonly', Quant: 'readonly', Q: 'readonly',
   Vormarkt: 'readonly', Archiv: 'readonly', CapAPI: 'readonly', Explorer: 'readonly',
-  Drift: 'readonly', MF: 'readonly', MH: 'readonly', Momentum: 'readonly',
+  Drift: 'readonly', MF: 'readonly', MH: 'readonly', Momentum: 'readonly', Liquide: 'readonly',
   Bugs: 'readonly', Diagnose: 'readonly', WKN: 'readonly', Scoreboard: 'readonly',
   Scheinfinder: 'readonly', MFHandel: 'readonly', MFDepot: 'readonly',
   Mittelfrist: 'readonly', DriftUI: 'readonly', Kalender: 'readonly',

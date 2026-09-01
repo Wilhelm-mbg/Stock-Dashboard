@@ -40,7 +40,11 @@
        * flaege aus dem staerksten Zehntel, obwohl gar nichts passiert ist. */
       var kd = await window.Kurse.hole(sym, { von: 0, bis: Date.now(), interval: '1d', bereinigt: true });
       if (!kd) return null;
-      var reihe = window.Kurse.reihe(kd.bars);
+      /* Zeit, Schluss UND Stueckzahl: Das Momentum-Buch filtert seinen Korb seit dem
+       * 02.09.2026 nach Median-Tagesumsatz (Schluss x Stueck, liquide.js) - ohne die
+       * dritte Spalte kann es die gemessene Regel nicht rechnen. Wer nur [0] und [1]
+       * liest (Rangfolge, Drift, Depot), merkt von der Spalte nichts. */
+      var reihe = kd.bars.map(function (b) { return [b[0], b[1], b[2]]; });
       return reihe.length > 500 ? reihe : null;
     } catch (e) { return null; }
   }
@@ -80,12 +84,27 @@
     return (g && g.roh) ? { at: g.at, roh: g.roh, weg: g.weg || [], quelle: 'alt' } : null;
   }
 
+  /** Tragen die gespeicherten Reihen Stueckzahlen (dritte Spalte)? Geprueft ueber
+   *  liquide.js, damit hier dieselbe Definition gilt wie im Korbfilter des Buchs. */
+  function hatStueck(roh) {
+    var L = window.Liquide;
+    if (!L || !roh) return false;
+    return Object.keys(roh).some(function (s) { return L.hatUmsatz(roh[s]); });
+  }
+
   /** Alle Werte holen und auf eine gemeinsame Zeitachse bringen.
    *  Ohne gemeinsame Achse vergleicht man Werte zu verschiedenen Zeitpunkten. */
   async function ladeUniversum() {
     var roh = {}, fertig = 0;
     var gespeichert = await tagesdatenLesen();
-    var frisch = gespeichert && (Date.now() - (gespeichert.at || 0) < 20 * 3600000);
+    /* Gespeicherte Tagesdaten aus der Zeit vor dem Korbfilter tragen keine Stueckzahl.
+     * Sie gelten nicht als frisch, sondern werden einmalig neu geladen - sonst staende
+     * das Momentum-Buch mit "keine Stueckzahlen" still, bis der Bestand von allein
+     * veraltet (20 Stunden), und niemand saehe, warum. */
+    var frisch = gespeichert && (Date.now() - (gespeichert.at || 0) < 20 * 3600000) && hatStueck(gespeichert.roh);
+    if (gespeichert && !frisch && gespeichert.roh && !hatStueck(gespeichert.roh)) {
+      stat('Gespeicherte Tageskurse ohne Stückzahlen – lade neu, damit der Momentum-Korb nach Umsatz gefiltert werden kann …');
+    }
     if (frisch) {
       roh = gespeichert.roh;
       stat('Gespeicherte Daten von ' + new Date(gespeichert.at).toLocaleString('de-DE') + ' verwendet.');
