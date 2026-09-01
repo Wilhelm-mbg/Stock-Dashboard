@@ -7,8 +7,10 @@ betroffene Wiki-Seite ein — mit Fundstelle.*
 
 | Auftrag | Zustand |
 |---|---|
-| **Gratis-Prüfung der Datenschnittstelle** | **Der einzige aktive Auftrag.** Empirisch abtasten, welche Endpunkte die Basisstufe liefert; Nachrichten-Dichte **zählen** statt schätzen; Bezahlstufen gegen `studien/landkarte-2026-09-01/LANDKARTE.md` halten. Ergebnis nach `studien/datentarif-2026-09-01/GRATIS-PRUEFUNG.md` |
-| **Alles andere ruht bewusst** | Wilhelms Entscheid: keine halbe Arbeit parallel, bis die Tarif-Frage geklärt ist |
+| ~~Gratis-Prüfung der Datenschnittstelle~~ | ✅ **ERLEDIGT 01.09.** — `studien/datentarif-2026-09-01/GRATIS-PRUEFUNG.md`, Commit `04298ee`. Befund: der Kaufgrund ist entfallen, siehe [datenquellen.md](datenquellen.md) |
+| **News-Sentiment gratis messen** | **Der nächste Auftrag.** Die Klasse ist auf der Basisstufe messbar (Faktor 8,7). Universum muss aus **Großwerten** bestehen. Vorregistrierung nötig; die alte von 31.08. gilt für einen anderen Korpus und wird nicht umgedeutet |
+| Drei ungenutzte Endpunkte einsammeln | Dividenden, unadjustierte Kurse, Splits bis 1987 — alle gratis erreichbar, keiner wird heute genutzt |
+| `dat[0]`-Falle schließen | Sperre vor jedem künftigen Tarifwechsel, betrifft das eingefrorene Universum. *Fundstelle: `GRATIS-PRUEFUNG.md`* |
 
 ## Aus der Landkarte empfohlen (noch nicht beauftragt)
 

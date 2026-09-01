@@ -24,17 +24,37 @@ Gratisstufe.** *Fundstelle: `studien/datentarif-2026-09-01/EMPFEHLUNG.md`*
 
 | Stufe | Preis | Rate | Tiefe | Auflösung |
 |---|---|---|---|---|
-| **Basic (unsere)** | **$0** | 5/Min | **2 Jahre** | nur Tagesschluss |
+| **Basic (unsere)** | **$0** | 5/Min | **2 Jahre (Aggregate)** | siehe Kasten |
 | Starter | $29 | unbegrenzt | 5 Jahre | + Minutenbalken |
 | Developer | $79 | unbegrenzt | 10 Jahre | + Trades |
 | Advanced | $199 | unbegrenzt | 20+ Jahre | + Quotes, Flat Files, Echtzeit |
 
 *Jahreszahlung −20 %. Monatlich kündbar. Preise abgerufen 01.09.2026.*
 
-**Was Starter aufschlösse:** Nachrichten-Index zurück bis **22.06.2016** (2.569 Handelstage) →
-News/Sentiment ginge von „Faktor 75 fehlt" auf **Faktor 3,5–102 über der Schwelle**.
-*Vorbehalt der Quelle selbst: die Dichte-Schätzung (20,6 %) stammt aus 12 Tagen, halb davon ein
-einziger — schwacher Schätzer, gehört gezählt statt geschätzt.*
+> ### ⭐ **DIE GRATISSTUFE KANN VIEL MEHR ALS IHRE DOKUMENTATION — empirisch getastet 01.09.2026**
+> *Fundstelle: `studien/datentarif-2026-09-01/GRATIS-PRUEFUNG.md`, Commit `04298ee`*
+>
+> | Endpunkt | Basic liefert tatsächlich |
+> |---|---|
+> | **Nachrichten** | **HTTP 200 bis 2017-04-10 = 9,4 Jahre** — kein 2-Jahres-Deckel |
+> | **Minutenbalken** | **HTTP 200**, echte Balken bis ~730 Tage — entgegen „End of Day" auf der Preisseite |
+> | Dividenden, unadjustierte Kurse, Splits (bis **1987**) | alle HTTP 200, **alle heute ungenutzt** |
+>
+> **Der 2-Jahres-Deckel gilt nur für Aggregate.** Alle 403 trugen `NOT_AUTHORIZED` mit dem
+> Wortlaut **„data timeframe"** — also Zeitraum, nie „Endpunkt nicht im Tarif". *Ein HTTP 200
+> mit 0 Treffern ist ein anderer Befund und wurde getrennt protokolliert.*
+>
+> **→ Der Hauptkaufgrund für Starter ist damit entfallen: wir haben ihn bereits für $0.**
+
+**Beobachtungsdichte — gezählt statt geschätzt** (Saat 20260901, 30 Symbole × 20 Handelstage):
+
+| Schicht | mit Meldung | Score ≠ 0 |
+|---|---|---|
+| Zufallszug aus 2.965 Archivnamen | 10,5 % | **3,0 %** |
+| Großwerte (unsere 17) | 91,8 % | **56,2 %** |
+
+**Die früher geschätzten 20,6 % waren in BEIDE Richtungen falsch.** *Folge: Ein Sentiment-
+Universum muss aus **Großwerten** bestehen — der Zufallsquerschnitt reißt die Schwelle.*
 
 ## Weitere Quellen
 

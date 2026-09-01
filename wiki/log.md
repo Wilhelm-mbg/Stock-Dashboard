@@ -2,6 +2,18 @@
 
 *Nur was sich am Wiki ändert. Die Projekt-Chronologie steht im Archiv `PROJEKTSTAND.md`.*
 
+## 01.09.2026 (später) — erste Aktualisierung, und sie widerlegt eine Wiki-Aussage von vorhin
+
+**Geändert:** `datenquellen.md` (Gratisstufe kann viel mehr als ihre Doku; Dichte gezählt statt
+geschätzt), `belegstand.md` (News-Sentiment von „nicht messbar" auf **messbar, Messung steht
+aus** — altes Urteil als überholt markiert, **nicht gelöscht**), `entscheide.md` und
+`offene-auftraege.md`.
+
+**Der Vorgang ist selbst ein Beleg fürs Muster:** Die Tarif-Empfehlung von Vormittag nannte die
+Nachrichten-Historie als Hauptkaufgrund. Die empirische Prüfung am Nachmittag fand sie **bereits
+in der Gratisstufe**. Im alten Log hätten beide Aussagen nebeneinander gestanden, die falsche
+zuerst. **Hier steht nur die geprüfte — mit der überholten sichtbar durchgestrichen daneben.**
+
 ## 01.09.2026 — angelegt
 
 Elf Seiten plus Index, vom PM erstellt auf Wilhelms Auftrag. **Anlass:** `PROJEKTSTAND.md` war

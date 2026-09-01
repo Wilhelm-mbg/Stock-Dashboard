@@ -32,8 +32,12 @@ Nur was **weitergilt**. Aufgehobenes steht mit Datum der Aufhebung.
 
 ## Offen zur Entscheidung
 
-- **Datentarif** — erst Gratisschnittstelle empirisch abtasten (Dichte **zählen**, nicht
-  schätzen), dann über die Stufen entscheiden. *Nächste Messung wartet darauf.*
+- **Datentarif — Vorlage liegt, Entscheid steht aus.** *Empfehlung der Prüfung vom 01.09.:
+  **jetzt nichts kaufen** — erst die Sentiment-Messung gratis fahren, dann die drei ungenutzten
+  Endpunkte (Dividenden, unadjustiert, Splits bis 1987) einsammeln. Danach Starter $29 als
+  **einmaliger Abzug** (Vollauf ohne Ratenbremse + 5 statt 2 Jahre, bleibt dauerhaft), **nicht
+  als Abo**. Zwei Sperren vorher: Support zur Rückwirkung fragen, und die `dat[0]`-Falle beim
+  eingefrorenen Universum schließen.*
 - **Broker-Paper-Konto** (Kostenmessung im zweiten Gefäß) — Kontoeröffnung ist Wilhelms
   Handlung.
 - **Server-Nutzung** (R620 als Webserver, R720xd als Storage) — vertagt.

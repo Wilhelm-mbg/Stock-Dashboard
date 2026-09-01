@@ -32,7 +32,7 @@
 
 | Sache | Grund | Fundstelle |
 |---|---|---|
-| News-Sentiment | **„NICHT MESSBAR — es fehlt Faktor 75"** (35 Beobachtungen an 10 Zeitpunkten, nötig ~2.600 Symbol-Tage) | `studien/vorregistrierung-2026-08-31-news-sentiment/ERGEBNIS.md` |
+| ~~News-Sentiment~~ | **⚠ ÜBERHOLT 01.09.2026** — das Urteil „es fehlt Faktor 75" galt für das App-Archiv (35 Beobachtungen an 10 Zeitpunkten). Auf der **Gratisstufe** des Anbieters stehen **2.367 Zeitpunkte** zur Verfügung → auf Großwerten ~22.600 Beobachtungen gegen nötige ~2.600 = **Faktor 8,7. Die Klasse ist messbar, die Messung steht aus.** | Urteil: `studien/vorregistrierung-2026-08-31-news-sentiment/ERGEBNIS.md` · Überholung: `studien/datentarif-2026-09-01/GRATIS-PRUEFUNG.md` |
 | Optionen, Value/Quality, Index-Aufnahmen, Dividendentermine, Saisonalität, Intraday | strukturell, siehe [datenquellen.md](datenquellen.md) | `studien/landkarte-2026-09-01/LANDKARTE.md` |
 
 ## Validierte BEDINGUNGEN (keine Strategien!)
