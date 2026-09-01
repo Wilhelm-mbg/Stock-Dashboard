@@ -2,6 +2,22 @@
 
 *Nur was sich am Wiki ändert. Die Projekt-Chronologie steht im Archiv `PROJEKTSTAND.md`.*
 
+## 02.09.2026 — Obergrenzen fertiggestellt (31 von 52 gegen CFD geschlossen), Depot-Kandidatenliste: NEIN
+
+**Geändert:** `belegstand.md` (neuer Abschnitt „Größen-Ausschlüsse" mit Kandidatenliste; Zeilen
+glockendruck, Übernacht-Familie, rsi2seit, Momentum, Winkel um Obergrenzen ergänzt — Urteile
+unverändert, nur die Größenaussage dazu; neue Zeile `kapitulation`), `offene-auftraege.md`
+(Wiedervorlage gestrichen, Anforderung an die Paper-Konto-Spiegelung ergänzt).
+
+**Keine neue Messung.** Grundlage: die vorhandenen Protokolle, gelesen mit
+`tools/obergrenzen-bericht.js`, dessen Hürden auf `kosten.md` gezogen wurden (0,06 Annahme /
+0,10 / 0,1247 / 0,23 statt 0,04 / 0,05 / 0,10 / 0,23). Bericht:
+`studien/wiedervorlage-2026-09-02/BERICHT.md`.
+
+**Lint-Fund nebenbei:** `belegstand.md` nannte für `rsi2seit` „+0,021 Pp je Signal" — richtig,
+aber dieselbe Variante hat ein Tagesmittel von +0,054 im selben Protokoll. Beide Skalen stehen
+jetzt nebeneinander, mit Fundstelle im Repo statt „im Datenordner" (die Ordner sind identisch).
+
 ## 01.09.2026 (abends) — News-Sentiment gemessen: NEIN. Und die Wand war nicht das Fenster
 
 **Geändert:** `belegstand.md` (News-Sentiment von „messbar, Messung steht aus" nach

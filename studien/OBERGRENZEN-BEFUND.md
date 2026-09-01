@@ -1,5 +1,7 @@
 # Was die 25 Messungen ausschließen — und wo wir blind sind
 
+> **Nachtrag 02.09.2026:** Die Zählung „5 von 25" ist überholt — inzwischen 52 Varianten, gegen die CFD-Hürde 0,1247 Pp (K + eine Nacht Finanzierung) **31 geschlossen**. Fortsetzung und Depot-Kandidatenliste: `studien/wiedervorlage-2026-09-02/BERICHT.md`. Dieser Text bleibt als Stand vom 25.08. stehen.
+
 25.08.2026. Erzeugt mit `node tools/obergrenzen-bericht.js`. Keine neue Messung: die
 obere Grenze ist `tagesmittel + 1,96 × se`, beides steht seit jeher im Protokoll.
 

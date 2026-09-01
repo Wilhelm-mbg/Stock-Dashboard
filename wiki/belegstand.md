@@ -1,7 +1,10 @@
 # Belegstand
 
 > ## **Belegte handelbare Kanten: NULL.**
-> Stand 01.09.2026. Das ist seit Wochen der Stand und er ist ehrlich.
+> Stand 02.09.2026. Das ist seit Wochen der Stand und er ist ehrlich.
+> **Neu seit 02.09.:** Für **31 von 52** gemessenen Varianten ist zusätzlich die **Größe
+> ausgeschlossen** — obere 95-%-Grenze unter der CFD-Hürde 0,1247 Pp. Siehe Abschnitt
+> „Größen-Ausschlüsse" unten.
 
 ## Widerlegt (gemessen tot)
 
@@ -9,7 +12,7 @@
 |---|---|---|
 | **News-Sentiment (Übernacht, Großwerte)** | **b = +0,0070 Pp/Score-Punkt, t = 0,31** — mitten im Placebo-Band. Selbst die Obergrenze des 90-%-Bandes liegt **Faktor 8,5 unter der CFD-Hürde** (und 4,1 unter der Aktienhürde). 33.307 Beobachtungen, 1.338 Tages-Cluster, 233.625 Meldungen. **Gilt für überlebende Großwerte über Nacht mit der Scorer-Funktion aus `quant.js` — nicht für Nebenwerte, andere Fenster oder andere Scorer.** | `studien/vorregistrierung-2026-09-01-news-sentiment-vollkorpus/ERGEBNIS.md` |
 | Stunden-Strategie (Technik-Score) | **t = −11,6** — Kontraindikator, nicht nur wirkungslos | Gedächtnisprotokoll + `#hourlyEnabled` steht in der App als „widerlegt – abgeschaltet" |
-| glockendruck-nacht | **Effekt stirbt in liquiden Werten** (≥1 Mrd $: H=1 +0,023 Pp, t 0,68) | `studien/vorregistrierung-2026-09-01-glockendruck-haltedauer/`, Commit `6263f1b` |
+| glockendruck-nacht | **Effekt stirbt in liquiden Werten** (≥1 Mrd $: H=1 +0,023 Pp, t 0,68). *Ergänzt 02.09.:* breit H=1 ist **real und gedeckelt** — Band [0,021, **0,068**] Pp, liegt vollständig unter der CFD-Hürde | `studien/vorregistrierung-2026-09-01-glockendruck-haltedauer/`, Commit `6263f1b` · Obergrenze: `studien/wiedervorlage-2026-09-02/BERICHT.md` §1.2 |
 | nachtstoss-umkehr | Gegenrichtung; Richtungssäule von den eigenen Autoren zurückgenommen | `studien/vorregistrierung-2026-08-26-nachtstoss-umkehr/ERGEBNIS.md` |
 | abgabedruck-nacht | — | `studien/vorregistrierung-2026-08-27-abgabedruck-nacht/ERGEBNIS.md` |
 | Supertrend-Regelwerk | EMA-/RSI-Filter tragen null, halbieren aber die Signale | `studien/63-supertrend/` |
@@ -18,16 +21,55 @@
 | Krypto-Dip-Modi, Bullenflagge | verlieren bzw. widerlegt | Gedächtnisprotokoll |
 | Große Signalstudie | **0 von 51 Detektoren bestätigt**, 3.372 Tests | `studien/signalstudie-2026-08/` |
 
-**Die Übernacht-Familie ist komplett durchgemessen: vier von vier NEIN.**
+**Die Übernacht-Familie ist komplett durchgemessen: vier von vier NEIN.** *Ergänzt 02.09.:* und
+**die Größe ist gedeckelt** — alle H=1-Varianten (abgabedruck, nachtstoss, glockendruck; breit,
+Zeitschnitte bis 2020 / ab 2021, liquide) haben obere Grenzen zwischen −0,010 und 0,091 Pp,
+also unter der CFD-Hürde; nur glockendruck H≥3 ist zu grob gemessen („nicht messbar").
+*Fundstelle: `studien/wiedervorlage-2026-09-02/BERICHT.md` §1.2*
 
 ## Nicht entscheidbar (ruht — weder belegt noch widerlegt)
 
 | Sache | Zahl | Fundstelle |
 |---|---|---|
-| `rsi2seit` (RSI2 im Seitwärtskanal) | Überschuss **+0,021 Pp je Signal**, real, unter jeder Beweisschwelle | Messprotokoll 2026-08-26 im Datenordner |
-| Momentum-Buch | t fiel von 4,74 auf **0,74** nach Korrektur | `studien/momentum-nichtueberlappend/`, `studien/OBERGRENZEN-BEFUND.md` |
+| `rsi2seit` (RSI2 im Seitwärtskanal) | Überschuss **+0,021 Pp je Signal**, real, unter jeder Beweisschwelle. *Ergänzt 02.09.:* dieselbe Variante hat ein **Tagesmittel +0,054** (se 0,065, Band [−0,073, 0,182]) — zwei Skalen aus einem Protokoll, nur das Tagesmittel hat einen Standardfehler. **Mit MCP-Stop (5 Varianten): alle obere Grenzen 0,083–0,118 Pp → gegen CFD geschlossen**, Punkte 0,039–0,059 unter der Kassa-Annahme | `studien/messmaschine/protokolle/rsi2seit-2026-08-26.json`, `rsi2seit-mcp-2026-08-26.json` · `studien/wiedervorlage-2026-09-02/BERICHT.md` §1.2/§1.4 |
+| Momentum-Buch | t fiel von 4,74 auf **0,74** nach Korrektur. *Ergänzt 02.09.:* obere Grenzen **2,0–4,3 Pp**, untere −0,9 bis −1,5 — das Band schließt **nichts** aus, weder 2 Pp noch null. Vertagt bis Aktienkosten gemessen (Entscheid 01.09.) | `studien/momentum-nichtueberlappend/`, `studien/OBERGRENZEN-BEFUND.md`, `studien/wiedervorlage-2026-09-02/BERICHT.md` §1.3a |
 | Ergebnis-Drift-Buch | t 1,7–2,0 nach Zeitzonen-Korrektur | Protokolle im Datenordner |
-| Trendwende-/Winkel-Detektor | Netto unentscheidbar | `studien/33-winkel-detektor/` |
+| Trendwende-/Winkel-Detektor | Netto unentscheidbar. *Ergänzt 02.09.:* in der Maschine (winkelbestaetigt/winkelgrad, je 5 Schwellen) **alle 10 Punktschätzer negativ**, 9 von 10 obere Grenzen unter 0,1247 Pp — die Long-Seite ist als Größe ausgeschlossen | `studien/33-winkel-detektor/` · `studien/wiedervorlage-2026-09-02/BERICHT.md` §1.2 |
+| `kapitulation` (Kapitulations-Dip, 60m, H=26) | V2 (≥50 Mio $ + Regime) **+1,107 Pp**, Band [0,094, 2,120], aber nur **98 Bestätigungstage**, t 2,14 unter Familienschwelle, Urteil „nicht bestätigt"; V0/V1 Bänder schließen null ein. **Dip-Familie wird vom Archiv um −3,78 Pp je Signaltag beschönigt** — der Punkt ist eher zu hoch | `studien/messmaschine/protokolle/kapitulation-2026-08-26.json`, `studien/verzerrungsrichtung-2026-08-26/ERGEBNIS.md` · `studien/wiedervorlage-2026-09-02/BERICHT.md` §1.3a |
+
+## Größen-Ausschlüsse (Obergrenzen, Stand 02.09.2026)
+
+„Nicht entscheidbar" ist eine Nicht-Aussage. Die obere 95-%-Grenze (`tagesmittel + 1,96 × se`,
+beides im Protokoll) macht daraus eine Größenaussage: **„dort liegt nichts über X."** Keine
+neue Messung — nur vorhandene Protokolle neu gelesen mit `tools/obergrenzen-bericht.js`.
+
+| Hürde | geschlossen von 52 Varianten |
+|---|---|
+| 0,06 Pp (Kassa-Aktie, **Annahme**) | 18 |
+| 0,10 Pp (CFD-Runde ohne Nacht) | 26 |
+| **0,1247 Pp (CFD gehebelt, 1 Nacht)** | **31** — 21 offen |
+| 0,23 Pp (Standard-Schein) | 40 |
+
+**Die 21 Offenen sind zwei Gruppen:** (a) 12 mit Punkt über der Hürde und Band bis unter null —
+momentum, kapitulation, quartalsschub, monatswende, monatsende: **ungemessen, nicht
+„vielversprechend"**; (b) 9 mit Punkt unter der Hürde, nur der Rand ragt darüber — glockendruck
+H≥2, rsi2seit Zeit-Ausstieg, t1/t2: **zu grob gemessen**, bei t1 V2 und t2 ist die je-Signal-Zahl
+sogar negativ (B2). *Fundstelle: `studien/wiedervorlage-2026-09-02/BERICHT.md` §1.3*
+
+### Depot-Kandidatenliste — Antwort: **NEIN**
+
+> ⚠ **Die ~0,06 Pp Kassa-Hürde ist eine ANNAHME** (kein Broker-Konto, Freigabeschwelle der
+> Kostenmessung unerfüllt, siehe [kosten.md](kosten.md)). **Diese Liste begründet kein JA.**
+
+Zwischen Kassa-Annahme (0,06) und CFD-Hürde (0,1247) liegt als Punktschätzer mit unterer Grenze
+über null **genau eine** Variante: glockendruck H=2 breit, **+0,0604 Pp** — 0,0004 über der
+Annahme, je Signal 0,054 darunter, **liquide −0,002** (t −0,04). glockendruck H=3/H=5 (+0,065 /
++0,071) sind „nicht messbar" (null im Band). Alles Reale (glockendruck H=1 +0,044, rsi2seit
++0,021 je Signal) liegt **unter** der Kassa-Annahme; alles potenziell Große ist ungemessen.
+**Es gibt derzeit keinen Kandidaten, für den sich ein echtes Kassa-Depot rechnerisch lohnen
+könnte.** Ein Kassa-Depot ändert die Arithmetik nur für die 63-Tage-Klasse (Finanzierung ~2,2 Pp
+entfällt) — das bestätigt die Reihenfolge des Entscheids vom 01.09., verschiebt sie nicht.
+*Fundstelle: `studien/wiedervorlage-2026-09-02/BERICHT.md` Teil 2*
 
 ## Nicht messbar (Werkzeug oder Daten reichen nicht)
 

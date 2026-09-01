@@ -1,0 +1,168 @@
+OBERGRENZEN — was jede Messung AUSSCHLIESST (52 Varianten aus 27 Protokollen)
+
+Strategie               V  gemessen      se jeSignal           95-%-Band   schliesst aus ab    Tage  Urteil
+winkelbestaetigt        4    -0.128   0.060   -0.124    [-0.247, -0.010]       > -0.010 Pp     360  nicht-bestaetigt
+nachtstoss-umkehr-n-reg 0    -0.034   0.014   -0.029    [-0.062, -0.006]       > -0.006 Pp    3620  nicht-bestaetigt
+nachtstoss-umkehr-n     0    -0.023   0.012   -0.015     [-0.047, 0.000]        > 0.000 Pp    5039  nicht-entscheidbar
+winkelbestaetigt        3    -0.088   0.055   -0.088     [-0.196, 0.020]        > 0.020 Pp     361  nicht-entscheidbar
+t3-stundendrift         0     0.001   0.010   -0.001     [-0.018, 0.021]        > 0.021 Pp     365  nicht-entscheidbar
+winkelbestaetigt        2    -0.087   0.056   -0.079     [-0.197, 0.023]        > 0.023 Pp     362  nicht-entscheidbar
+abgabedruck-nacht-t     0    -0.005   0.017   -0.001     [-0.038, 0.027]        > 0.027 Pp    5039  nicht-entscheidbar
+abgabedruck-nacht-n     0     0.004   0.012    0.000     [-0.019, 0.027]        > 0.027 Pp    5039  nicht-entscheidbar
+glockendruck-nacht-t    0    -0.003   0.017   -0.006     [-0.037, 0.032]        > 0.032 Pp    5039  nicht-entscheidbar
+t3-stundendrift         1     0.008   0.013    0.005     [-0.017, 0.033]        > 0.033 Pp     365  nicht-entscheidbar
+abgabedruck-nacht-n-reg 0     0.006   0.014    0.002     [-0.023, 0.034]        > 0.034 Pp    3620  nicht-entscheidbar
+abgabedruck-nacht-n-reg 1    -0.000   0.020   -0.001     [-0.040, 0.039]        > 0.039 Pp    1419  nicht-entscheidbar
+winkelgrad              4    -0.071   0.058   -0.044     [-0.186, 0.044]        > 0.044 Pp     364  nicht-entscheidbar
+nachtstoss-umkehr-n-reg 1     0.004   0.021    0.005     [-0.038, 0.045]        > 0.045 Pp    1419  nicht-entscheidbar
+winkelgrad              3    -0.063   0.057   -0.036     [-0.175, 0.049]        > 0.049 Pp     364  nicht-entscheidbar
+winkelgrad              2    -0.056   0.058   -0.026     [-0.169, 0.058]        > 0.058 Pp     364  nicht-entscheidbar
+winkelbestaetigt        1    -0.126   0.094   -0.075     [-0.309, 0.058]        > 0.058 Pp     364  nicht-entscheidbar
+nachtstoss-umkehr-t     0     0.028   0.016    0.021     [-0.004, 0.060]        > 0.060 Pp    5039  nicht-entscheidbar
+winkelbestaetigt        0    -0.063   0.064   -0.070     [-0.189, 0.063]        > 0.063 Pp     364  nicht-entscheidbar
+winkelgrad              1    -0.046   0.058   -0.021     [-0.160, 0.067]        > 0.067 Pp     364  nicht-entscheidbar
+glockendruck-nacht-n    0     0.044   0.012    0.042      [0.021, 0.068]        > 0.068 Pp    5039  bestaetigt
+winkelgrad              0    -0.038   0.059   -0.014     [-0.154, 0.077]        > 0.077 Pp     364  nicht-entscheidbar
+rsi2seit-mcp            0     0.039   0.022    0.041     [-0.005, 0.083]        > 0.083 Pp     364  nicht-entscheidbar
+rsi2seit-mcp            1     0.039   0.023    0.041     [-0.006, 0.084]        > 0.084 Pp     364  nicht-entscheidbar
+glockendruck-nacht-h1l  0     0.023   0.035    0.036     [-0.044, 0.091]        > 0.091 Pp    1975  nicht-entscheidbar
+rsi2seit-mcp            2     0.048   0.025    0.046     [-0.001, 0.097]        > 0.097 Pp     364  nicht-entscheidbar
+rsi2seit-mcp            3     0.055   0.028    0.053      [0.001, 0.110]        > 0.110 Pp     364  nicht-entscheidbar
+t1-zwangsglattstellung  0    -0.005   0.058   -0.172     [-0.119, 0.110]        > 0.110 Pp     361  nicht-entscheidbar
+glockendruck-nacht-h2   0     0.060   0.027    0.054      [0.007, 0.114]        > 0.114 Pp    5038  nicht-bestaetigt
+rsi2seit-mcp            4     0.059   0.030    0.053      [0.001, 0.118]        > 0.118 Pp     364  nicht-entscheidbar
+t1-zwangsglattstellung  1    -0.010   0.067   -0.345     [-0.141, 0.122]        > 0.122 Pp     361  nicht-entscheidbar
+glockendruck-nacht-h2l  0    -0.002   0.067    0.025     [-0.134, 0.129]        > 0.129 Pp    1974  nicht-entscheidbar
+t2-umsatzschock         0     0.018   0.062   -0.016     [-0.103, 0.140]        > 0.140 Pp     364  nicht-entscheidbar
+glockendruck-nacht-h3   0     0.065   0.044    0.058     [-0.021, 0.151]        > 0.151 Pp    5037  nicht-entscheidbar
+glockendruck-nacht-h3l  0    -0.037   0.097    0.005     [-0.228, 0.154]        > 0.154 Pp    1973  nicht-entscheidbar
+t1-zwangsglattstellung  2     0.027   0.076   -0.555     [-0.121, 0.175]        > 0.175 Pp     361  nicht-entscheidbar
+rsi2seit                0     0.054   0.065    0.021     [-0.073, 0.182]        > 0.182 Pp     364  nicht-entscheidbar
+glockendruck-nacht-h5l  0    -0.100   0.155   -0.014     [-0.404, 0.204]        > 0.204 Pp    1971  nicht-entscheidbar
+t2-umsatzschock         1     0.043   0.084   -0.059     [-0.121, 0.207]        > 0.207 Pp     364  nicht-entscheidbar
+glockendruck-nacht-h5   0     0.071   0.076    0.063     [-0.077, 0.220]        > 0.220 Pp    5035  nicht-entscheidbar
+monatswende-breit       0     0.150   0.181    0.147     [-0.206, 0.505]        > 0.505 Pp     241  nicht-entscheidbar
+monatsende-kauf         0     0.155   0.183    0.110     [-0.203, 0.513]        > 0.513 Pp      17  nicht-messbar
+monatswende-breit       1     0.155   0.184    0.143     [-0.206, 0.516]        > 0.516 Pp     241  nicht-entscheidbar
+quartalsschub-betrag    0     0.184   0.199    0.147     [-0.205, 0.574]        > 0.574 Pp    1198  nicht-entscheidbar
+quartalsschub-betrag    1     0.162   0.232    0.222     [-0.293, 0.617]        > 0.617 Pp     996  nicht-entscheidbar
+kapitulation            1     0.423   0.356    0.614     [-0.275, 1.120]        > 1.120 Pp     314  nicht-entscheidbar
+kapitulation            0     0.545   0.361    0.188     [-0.162, 1.253]        > 1.253 Pp     338  nicht-entscheidbar
+momentum                3     0.277   0.883    0.418     [-1.454, 2.008]        > 2.008 Pp    4975  nicht-entscheidbar
+kapitulation            2     1.107   0.517    1.071      [0.094, 2.120]        > 2.120 Pp      98  nicht-bestaetigt
+momentum                1     0.576   0.972    0.764     [-1.328, 2.480]        > 2.480 Pp    4975  nicht-entscheidbar
+momentum                0     1.160   1.129    1.411     [-1.053, 3.373]        > 3.373 Pp    4975  nicht-entscheidbar
+momentum                2     1.687   1.315    2.020     [-0.890, 4.264]        > 4.264 Pp    4975  nicht-entscheidbar
+
+WAS DAMIT ERLEDIGT IST — je Handelsklasse
+
+  Kassa-Aktie (ANNAHME) (Huerde 0.0600 Pp je Umlauf): 18 von 52 Varianten GESCHLOSSEN
+    abgabedruck-nacht-n (1), abgabedruck-nacht-n-regime (2), abgabedruck-nacht-t (1), glockendruck-nacht-t (1), nachtstoss-umkehr-n (1), nachtstoss-umkehr-n-regime (2), nachtstoss-umkehr-t (1), t3-stundendrift (2), winkelbestaetigt (4), winkelgrad (3)
+    Selbst der optimistischste mit den Daten vertraegliche Wert traegt die Kosten nicht.
+
+  CFD-Runde K ohne Nacht (Huerde 0.1000 Pp je Umlauf): 26 von 52 Varianten GESCHLOSSEN
+    abgabedruck-nacht-n (1), abgabedruck-nacht-n-regime (2), abgabedruck-nacht-t (1), glockendruck-nacht-h1l (1), glockendruck-nacht-n (1), glockendruck-nacht-t (1), nachtstoss-umkehr-n (1), nachtstoss-umkehr-n-regime (2), nachtstoss-umkehr-t (1), rsi2seit-mcp (3), t3-stundendrift (2), winkelbestaetigt (5), winkelgrad (5)
+    Selbst der optimistischste mit den Daten vertraegliche Wert traegt die Kosten nicht.
+
+  CFD gehebelt, 1 Nacht (K+F) (Huerde 0.1247 Pp je Umlauf): 31 von 52 Varianten GESCHLOSSEN
+    abgabedruck-nacht-n (1), abgabedruck-nacht-n-regime (2), abgabedruck-nacht-t (1), glockendruck-nacht-h1l (1), glockendruck-nacht-h2 (1), glockendruck-nacht-n (1), glockendruck-nacht-t (1), nachtstoss-umkehr-n (1), nachtstoss-umkehr-n-regime (2), nachtstoss-umkehr-t (1), rsi2seit-mcp (5), t1-zwangsglattstellung (2), t3-stundendrift (2), winkelbestaetigt (5), winkelgrad (5)
+    Selbst der optimistischste mit den Daten vertraegliche Wert traegt die Kosten nicht.
+
+  Standard-Schein (Huerde 0.2300 Pp je Umlauf): 40 von 52 Varianten GESCHLOSSEN
+    abgabedruck-nacht-n (1), abgabedruck-nacht-n-regime (2), abgabedruck-nacht-t (1), glockendruck-nacht-h1l (1), glockendruck-nacht-h2 (1), glockendruck-nacht-h2l (1), glockendruck-nacht-h3 (1), glockendruck-nacht-h3l (1), glockendruck-nacht-h5 (1), glockendruck-nacht-h5l (1), glockendruck-nacht-n (1), glockendruck-nacht-t (1), nachtstoss-umkehr-n (1), nachtstoss-umkehr-n-regime (2), nachtstoss-umkehr-t (1), rsi2seit (1), rsi2seit-mcp (5), t1-zwangsglattstellung (3), t2-umsatzschock (2), t3-stundendrift (2), winkelbestaetigt (5), winkelgrad (5)
+    Selbst der optimistischste mit den Daten vertraegliche Wert traegt die Kosten nicht.
+
+WAS OFFEN BLEIBT (gegen CFD gehebelt, 1 Nacht (K+F), 0.1247 Pp)
+  21 von 52 Varianten lassen eine CFD-handelbare Kante zu.
+  Bei ihnen ist "nicht entscheidbar" wirklich Unwissen und nicht Ausschluss:
+    momentum V2                 obere Grenze   4.264 Pp   (1d, H=63, 4975 Tage)
+    momentum V0                 obere Grenze   3.373 Pp   (1d, H=63, 4975 Tage)
+    momentum V1                 obere Grenze   2.480 Pp   (1d, H=63, 4975 Tage)
+    kapitulation V2             obere Grenze   2.120 Pp   (60m, H=26, 98 Tage)
+    momentum V3                 obere Grenze   2.008 Pp   (1d, H=63, 4975 Tage)
+    kapitulation V0             obere Grenze   1.253 Pp   (60m, H=26, 338 Tage)
+    kapitulation V1             obere Grenze   1.120 Pp   (60m, H=26, 314 Tage)
+    quartalsschub-betrag V1     obere Grenze   0.617 Pp   (1d, H=5, 996 Tage)
+    quartalsschub-betrag V0     obere Grenze   0.574 Pp   (1d, H=5, 1198 Tage)
+    monatswende-breit V1        obere Grenze   0.516 Pp   (1d, H=5, 241 Tage)
+    monatsende-kauf V0          obere Grenze   0.513 Pp   (60m, H=8, 17 Tage)
+    monatswende-breit V0        obere Grenze   0.505 Pp   (1d, H=5, 241 Tage)
+    glockendruck-nacht-h5 V0    obere Grenze   0.220 Pp   (1d, H=5, 5035 Tage)
+    t2-umsatzschock V1          obere Grenze   0.207 Pp   (60m, H=8, 364 Tage)
+    glockendruck-nacht-h5l V0   obere Grenze   0.204 Pp   (1d, H=5, 1971 Tage)
+    rsi2seit V0                 obere Grenze   0.182 Pp   (60m, H=8, 364 Tage)
+    t1-zwangsglattstellung V2   obere Grenze   0.175 Pp   (60m, H=1, 361 Tage)
+    glockendruck-nacht-h3l V0   obere Grenze   0.154 Pp   (1d, H=3, 1973 Tage)
+    glockendruck-nacht-h3 V0    obere Grenze   0.151 Pp   (1d, H=3, 5037 Tage)
+    t2-umsatzschock V0          obere Grenze   0.140 Pp   (60m, H=8, 364 Tage)
+    glockendruck-nacht-h2l V0   obere Grenze   0.129 Pp   (1d, H=2, 1974 Tage)
+
+ZWISCHENBAND — Punktschaetzer in [0.06, 0.1247) Pp je Umlauf
+    glockendruck-nacht-h5 V0    Punkt 0.0712  jeSignal 0.063  Band [-0.077, 0.220]  null im Band  nicht-entscheidbar
+    glockendruck-nacht-h3 V0    Punkt 0.0651  jeSignal 0.058  Band [-0.021, 0.151]  null im Band  nicht-entscheidbar
+    glockendruck-nacht-h2 V0    Punkt 0.0604  jeSignal 0.054  Band [0.007, 0.114]  untere Grenze > 0  nicht-bestaetigt
+  Knapp unter der unteren Huerde (ab 0.048):
+    rsi2seit-mcp V4             Punkt 0.0593  jeSignal 0.053  Band [0.001, 0.118]  nicht-entscheidbar
+    rsi2seit-mcp V3             Punkt 0.0552  jeSignal 0.053  Band [0.001, 0.110]  nicht-entscheidbar
+    rsi2seit V0                 Punkt 0.0543  jeSignal 0.021  Band [-0.073, 0.182]  nicht-entscheidbar
+
+HINWEIS ZUR LESART: Eine obere Grenze schliesst eine GROESSE aus, keine These.
+Sie sagt "hier liegt nichts ueber X", nicht "hier liegt nichts". Und sie gilt nur
+fuer das gemessene Universum, den gemessenen Zeitraum und die gemessene Haltedauer.
+
+
+<!-- MARKDOWN -->
+| Strategie | V | Zeitrahmen/H | Tage | gemessen (Tagesmittel) | je Signal | se | 95-%-Band | obere Grenze | Urteil der Maschine |
+|---|---|---|---|---|---|---|---|---|---|
+| `winkelbestaetigt` | 4 | 60m / 8 | 360 | -0,128 | -0,124 | 0,060 | [-0,247, -0,010] | **-0,010** | nicht-bestaetigt |
+| `nachtstoss-umkehr-n-regime` | 0 | 1d / 1 | 3620 | -0,034 | -0,029 | 0,014 | [-0,062, -0,006] | **-0,006** | nicht-bestaetigt |
+| `nachtstoss-umkehr-n` | 0 | 1d / 1 | 5039 | -0,023 | -0,015 | 0,012 | [-0,047, 0,000] | **0,000** | nicht-entscheidbar |
+| `winkelbestaetigt` | 3 | 60m / 8 | 361 | -0,088 | -0,088 | 0,055 | [-0,196, 0,020] | **0,020** | nicht-entscheidbar |
+| `t3-stundendrift` | 0 | 60m / 1 | 365 | 0,001 | -0,001 | 0,010 | [-0,018, 0,021] | **0,021** | nicht-entscheidbar |
+| `winkelbestaetigt` | 2 | 60m / 8 | 362 | -0,087 | -0,079 | 0,056 | [-0,197, 0,023] | **0,023** | nicht-entscheidbar |
+| `abgabedruck-nacht-t` | 0 | 1d / 1 | 5039 | -0,005 | -0,001 | 0,017 | [-0,038, 0,027] | **0,027** | nicht-entscheidbar |
+| `abgabedruck-nacht-n` | 0 | 1d / 1 | 5039 | 0,004 | 0,000 | 0,012 | [-0,019, 0,027] | **0,027** | nicht-entscheidbar |
+| `glockendruck-nacht-t` | 0 | 1d / 1 | 5039 | -0,003 | -0,006 | 0,017 | [-0,037, 0,032] | **0,032** | nicht-entscheidbar |
+| `t3-stundendrift` | 1 | 60m / 1 | 365 | 0,008 | 0,005 | 0,013 | [-0,017, 0,033] | **0,033** | nicht-entscheidbar |
+| `abgabedruck-nacht-n-regime` | 0 | 1d / 1 | 3620 | 0,006 | 0,002 | 0,014 | [-0,023, 0,034] | **0,034** | nicht-entscheidbar |
+| `abgabedruck-nacht-n-regime` | 1 | 1d / 1 | 1419 | -0,000 | -0,001 | 0,020 | [-0,040, 0,039] | **0,039** | nicht-entscheidbar |
+| `winkelgrad` | 4 | 60m / 8 | 364 | -0,071 | -0,044 | 0,058 | [-0,186, 0,044] | **0,044** | nicht-entscheidbar |
+| `nachtstoss-umkehr-n-regime` | 1 | 1d / 1 | 1419 | 0,004 | 0,005 | 0,021 | [-0,038, 0,045] | **0,045** | nicht-entscheidbar |
+| `winkelgrad` | 3 | 60m / 8 | 364 | -0,063 | -0,036 | 0,057 | [-0,175, 0,049] | **0,049** | nicht-entscheidbar |
+| `winkelgrad` | 2 | 60m / 8 | 364 | -0,056 | -0,026 | 0,058 | [-0,169, 0,058] | **0,058** | nicht-entscheidbar |
+| `winkelbestaetigt` | 1 | 60m / 8 | 364 | -0,126 | -0,075 | 0,094 | [-0,309, 0,058] | **0,058** | nicht-entscheidbar |
+| `nachtstoss-umkehr-t` | 0 | 1d / 1 | 5039 | 0,028 | 0,021 | 0,016 | [-0,004, 0,060] | **0,060** | nicht-entscheidbar |
+| `winkelbestaetigt` | 0 | 60m / 8 | 364 | -0,063 | -0,070 | 0,064 | [-0,189, 0,063] | **0,063** | nicht-entscheidbar |
+| `winkelgrad` | 1 | 60m / 8 | 364 | -0,046 | -0,021 | 0,058 | [-0,160, 0,067] | **0,067** | nicht-entscheidbar |
+| `glockendruck-nacht-n` | 0 | 1d / 1 | 5039 | 0,044 | 0,042 | 0,012 | [0,021, 0,068] | **0,068** | bestaetigt |
+| `winkelgrad` | 0 | 60m / 8 | 364 | -0,038 | -0,014 | 0,059 | [-0,154, 0,077] | **0,077** | nicht-entscheidbar |
+| `rsi2seit-mcp` | 0 | 60m / 8 | 364 | 0,039 | 0,041 | 0,022 | [-0,005, 0,083] | **0,083** | nicht-entscheidbar |
+| `rsi2seit-mcp` | 1 | 60m / 8 | 364 | 0,039 | 0,041 | 0,023 | [-0,006, 0,084] | **0,084** | nicht-entscheidbar |
+| `glockendruck-nacht-h1l` | 0 | 1d / 1 | 1975 | 0,023 | 0,036 | 0,035 | [-0,044, 0,091] | **0,091** | nicht-entscheidbar |
+| `rsi2seit-mcp` | 2 | 60m / 8 | 364 | 0,048 | 0,046 | 0,025 | [-0,001, 0,097] | **0,097** | nicht-entscheidbar |
+| `rsi2seit-mcp` | 3 | 60m / 8 | 364 | 0,055 | 0,053 | 0,028 | [0,001, 0,110] | **0,110** | nicht-entscheidbar |
+| `t1-zwangsglattstellung` | 0 | 60m / 1 | 361 | -0,005 | -0,172 | 0,058 | [-0,119, 0,110] | **0,110** | nicht-entscheidbar |
+| `glockendruck-nacht-h2` | 0 | 1d / 2 | 5038 | 0,060 | 0,054 | 0,027 | [0,007, 0,114] | **0,114** | nicht-bestaetigt |
+| `rsi2seit-mcp` | 4 | 60m / 8 | 364 | 0,059 | 0,053 | 0,030 | [0,001, 0,118] | **0,118** | nicht-entscheidbar |
+| `t1-zwangsglattstellung` | 1 | 60m / 1 | 361 | -0,010 | -0,345 | 0,067 | [-0,141, 0,122] | **0,122** | nicht-entscheidbar |
+| `glockendruck-nacht-h2l` | 0 | 1d / 2 | 1974 | -0,002 | 0,025 | 0,067 | [-0,134, 0,129] | **0,129** | nicht-entscheidbar |
+| `t2-umsatzschock` | 0 | 60m / 8 | 364 | 0,018 | -0,016 | 0,062 | [-0,103, 0,140] | **0,140** | nicht-entscheidbar |
+| `glockendruck-nacht-h3` | 0 | 1d / 3 | 5037 | 0,065 | 0,058 | 0,044 | [-0,021, 0,151] | **0,151** | nicht-entscheidbar |
+| `glockendruck-nacht-h3l` | 0 | 1d / 3 | 1973 | -0,037 | 0,005 | 0,097 | [-0,228, 0,154] | **0,154** | nicht-entscheidbar |
+| `t1-zwangsglattstellung` | 2 | 60m / 1 | 361 | 0,027 | -0,555 | 0,076 | [-0,121, 0,175] | **0,175** | nicht-entscheidbar |
+| `rsi2seit` | 0 | 60m / 8 | 364 | 0,054 | 0,021 | 0,065 | [-0,073, 0,182] | **0,182** | nicht-entscheidbar |
+| `glockendruck-nacht-h5l` | 0 | 1d / 5 | 1971 | -0,100 | -0,014 | 0,155 | [-0,404, 0,204] | **0,204** | nicht-entscheidbar |
+| `t2-umsatzschock` | 1 | 60m / 8 | 364 | 0,043 | -0,059 | 0,084 | [-0,121, 0,207] | **0,207** | nicht-entscheidbar |
+| `glockendruck-nacht-h5` | 0 | 1d / 5 | 5035 | 0,071 | 0,063 | 0,076 | [-0,077, 0,220] | **0,220** | nicht-entscheidbar |
+| `monatswende-breit` | 0 | 1d / 5 | 241 | 0,150 | 0,147 | 0,181 | [-0,206, 0,505] | **0,505** | nicht-entscheidbar |
+| `monatsende-kauf` | 0 | 60m / 8 | 17 | 0,155 | 0,110 | 0,183 | [-0,203, 0,513] | **0,513** | nicht-messbar |
+| `monatswende-breit` | 1 | 1d / 5 | 241 | 0,155 | 0,143 | 0,184 | [-0,206, 0,516] | **0,516** | nicht-entscheidbar |
+| `quartalsschub-betrag` | 0 | 1d / 5 | 1198 | 0,184 | 0,147 | 0,199 | [-0,205, 0,574] | **0,574** | nicht-entscheidbar |
+| `quartalsschub-betrag` | 1 | 1d / 5 | 996 | 0,162 | 0,222 | 0,232 | [-0,293, 0,617] | **0,617** | nicht-entscheidbar |
+| `kapitulation` | 1 | 60m / 26 | 314 | 0,423 | 0,614 | 0,356 | [-0,275, 1,120] | **1,120** | nicht-entscheidbar |
+| `kapitulation` | 0 | 60m / 26 | 338 | 0,545 | 0,188 | 0,361 | [-0,162, 1,253] | **1,253** | nicht-entscheidbar |
+| `momentum` | 3 | 1d / 63 | 4975 | 0,277 | 0,418 | 0,883 | [-1,454, 2,008] | **2,008** | nicht-entscheidbar |
+| `kapitulation` | 2 | 60m / 26 | 98 | 1,107 | 1,071 | 0,517 | [0,094, 2,120] | **2,120** | nicht-bestaetigt |
+| `momentum` | 1 | 1d / 63 | 4975 | 0,576 | 0,764 | 0,972 | [-1,328, 2,480] | **2,480** | nicht-entscheidbar |
+| `momentum` | 0 | 1d / 63 | 4975 | 1,160 | 1,411 | 1,129 | [-1,053, 3,373] | **3,373** | nicht-entscheidbar |
+| `momentum` | 2 | 1d / 63 | 4975 | 1,687 | 2,020 | 1,315 | [-0,890, 4,264] | **4,264** | nicht-entscheidbar |
