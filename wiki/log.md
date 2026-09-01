@@ -54,6 +54,10 @@ unverändert, nur die Größenaussage dazu; neue Zeile `kapitulation`), `offene-
 aber dieselbe Variante hat ein Tagesmittel von +0,054 im selben Protokoll. Beide Skalen stehen
 jetzt nebeneinander, mit Fundstelle im Repo statt „im Datenordner" (die Ordner sind identisch).
 
+## 02.09.2026 — Momentum-Buch wird auf den liquiden Korb umgestellt
+
+`entscheide.md`, `offene-auftraege.md`: Wilhelms Entscheid per Formular; Radar-Routine bleibt.
+
 ## 02.09.2026 (Lint durch den PM) — nominale Schwelle als Fehlerform
 
 Die liquide Momentum-Sitzung hat vier Seiten korrekt aktualisiert; nachgetragen in

@@ -48,5 +48,9 @@ Nur was **weitergilt**. Aufgehobenes steht mit Datum der Aufhebung.
   Vorregistrierung auf vorhandenen Daten (~350k). *Ausnahme von „keine halbe Arbeit parallel",
   weil sie ohne Paper-Konto beantwortbar ist und dessen Kostenmessung für diesen Kandidaten
   überflüssig machen kann.*
+- **Momentum-Buch auf den liquiden Korb umstellen** (02.09.): das Simulationsbuch übernimmt
+  exakt die gemessene Konfiguration (231/21/63, stärkste 10 %, ≥ 100 Mio $ Median-Tagesumsatz,
+  Punkt-in-Zeit). Jede künftige Periode ist Out-of-Sample-Beleg; Sperrklinke Buch = Messung.
+- **Spekulations-Radar-Routine NICHT aufs Wiki umgestellt** (02.09.) — reine Anzeige, bleibt wie sie ist.
 - **Insider-Käufe (Form 4) weggelassen** (01.09.) — Landkarten-Empfehlung 3 nicht verfolgt.
 - **Server-Nutzung** (R620 als Webserver, R720xd als Storage) — vertagt.
