@@ -12025,7 +12025,10 @@ console.log('\nAlpaca-Paper als zweites Kosten-Gefaess (02.09.2026)');
       AlpAPI: opts.alp || null, CapAPI: opts.cap || null
     };
     vm.runInNewContext(ks, sandboxKontext(win));
+    /* Wie eine echte Installation: das Depot kann noch Altrunden unter kostenMessung
+     * tragen (Wilhelms Store am 03.09.2026: drei Stueck). Ohne opts bleibt es wie bisher. */
     var D = { kostenVersuche: [] };
+    if (opts.depotMessung) D.kostenMessung = JSON.parse(JSON.stringify(opts.depotMessung));
     win.Kosten.verkabeln({
       depot: function () { return D; }, save: function () { }, melde: function () { },
       universe: function () { return ['AAPL']; }, istKrypto: function (s) { return /USD$/.test(String(s)); },
@@ -12160,6 +12163,68 @@ console.log('\nAlpaca-Paper als zweites Kosten-Gefaess (02.09.2026)');
        '(c) Die Aktienannahme 0,06 Pp steht benannt und wird nur gegen Alpaca-Runden gehalten');
     ok(/alpacaBilanz/.test(dep9) && /alpStatus/.test(dep9) && /id="alpStatus"/.test(h9),
        '(c) Die Anzeige hat eine eigene Statuszeile fuer das Aktien-Gefaess');
+  })());
+
+  /* ---------- (c2) Die Uebernahme aus dem Depot-Store feuert wirklich ----------
+   * kosten.js verspricht oben: "Mitgenommen wird beim ersten Laden nur, was der AKTIVE
+   * Depot-Store noch traegt, rein lesend und ohne Dubletten." Am 03.09.2026 fuehrte dieser
+   * Pfad ins Leere: messungHolen() las das Modul-D, das NUR mitFrischemD() fuellt -
+   * verkabeln() ruft messungHolen() aber davor, und messungLadenP verhindert jeden zweiten
+   * Lauf. depotAlt war damit immer leer, und der Pfad meldete das nicht: kein Fehler, keine
+   * Null, gar nichts ("Nullbefund vom toten Werkzeug", wiki/fehlerformen.md). In Wilhelms
+   * Store lagen drei Capital-Runden vom 25.-27.08. still im depot.json.
+   * Gemessen wird hier FUNKTIONAL, ueber genau den Weg, den die App geht: verkabeln() ->
+   * messungHolen() -> kostenRunden()/kostenBilanz(). Positivkontrolle: mit dem alten Stand
+   * (depotAlt aus dem Modul-D) steht n auf 1 statt 4 - der Block ist dann rot. */
+  probe((async function () {
+    var t0 = Date.UTC(2026, 7, 25, 18, 0);
+    /* Der aktive kostenmessung-Store: eine Runde. */
+    var imStore = { seit: t0, runden: [
+      { at: t0 + 5 * 86400000, sym: 'AAPL', runde: 0.00046, gefaess: 'capital', marktlage: 'trend-auf' }
+    ] };
+    /* Das Depot traegt Altrunden - zwei nur dort, eine davon auch im Store (Dublette). */
+    var imDepot = { seit: t0, runden: [
+      { at: t0, sym: 'AAPL', runde: 0.00042, marktlage: 'trend-auf' },                    // altes Format, ohne gefaess
+      { at: t0 + 2 * 86400000, sym: 'MSFT', runde: 0.000581, marktlage: 'trend-ab' },     // altes Format, ohne gefaess
+      { at: t0 + 5 * 86400000, sym: 'AAPL', runde: 0.00046, gefaess: 'capital' },         // liegt schon im Store
+      { at: t0 + 3 * 86400000, sym: 'XYZ', runde: 0.0008, gefaess: 'alpaca', uebernacht: false, umsatzKlasse: '5-50' }
+    ] };
+    var sb = kostenSandbox({ messung: imStore, depotMessung: imDepot });
+    await tick();
+
+    var runden = sb.win.Kosten.kostenRunden();
+    ok(runden.length === 4,
+       '(c2) FUNKTIONAL: die Altrunden aus dem Depot-Store erreichen die Messreihe (1 im Store + 3 neue aus dem Depot = 4)',
+       'kostenRunden(): ' + runden.length);
+    var schluessel = runden.map(function (r) { return r.at + '|' + r.sym; });
+    ok(new Set(schluessel).size === schluessel.length,
+       '(c2) ... und zwar ohne Dubletten: die Runde, die in beiden lag, steht genau einmal');
+    ok(schluessel.indexOf(t0 + '|AAPL') !== -1 && schluessel.indexOf((t0 + 2 * 86400000) + '|MSFT') !== -1,
+       '(c2) ... die beiden Runden, die NUR im Depot lagen, sind namentlich dabei');
+
+    /* Die Bilanzen sind die Stelle, an der Wilhelm die Zahl sieht - sie muessen sie zaehlen. */
+    var kb = sb.win.Kosten.kostenBilanz();
+    ok(kb && kb.n === 3 && kb.gefaess === 'capital',
+       '(c2) FUNKTIONAL: die CFD-Bilanz rechnet auf 3 Capital-Runden statt auf der einen aus dem Store',
+       kb && ('n=' + kb.n));
+    var ab = sb.win.Kosten.alpacaBilanz();
+    ok(ab && ab.n === 1, '(c2) ... und die Aktien-Bilanz auf der Alpaca-Runde aus dem Depot', ab && ('n=' + ab.n));
+
+    /* Rein lesend am Depot, aber dauerhaft im eigenen Store - sonst waere die Uebernahme
+     * beim naechsten Depot-Reset wieder weg, und genau davor schuetzt das Nebenlager. */
+    ok(sb.store.kostenmessung.runden.length === 4,
+       '(c2) Die uebernommenen Runden sind in den kostenmessung-Store zurueckgeschrieben');
+    ok(sb.store.kostenmessung.runden.every(function (r) { return r.gefaess === 'capital' || r.gefaess === 'alpaca'; }),
+       '(c2) ... und tragen dabei alle ein Gefaess (Migration greift auch fuer die Depot-Runden)');
+    ok(sb.D.kostenMessung.runden.length === 4,
+       '(c2) Rein lesend: das Depot behaelt seine Runden unveraendert');
+
+    /* Gegenprobe: ohne Altrunden im Depot bleibt es bei der einen - der Block misst die
+     * Uebernahme, nicht irgendeine Zahl, die immer stimmt. */
+    var leer = kostenSandbox({ messung: imStore });
+    await tick();
+    ok(leer.win.Kosten.kostenRunden().length === 1,
+       '(c2) Gegenprobe: ohne Altrunden im Depot bleibt die Reihe bei 1 - der Test misst wirklich die Uebernahme');
   })());
 
   /* ---------- (d) Klassengrenzen nominal, aus EINER Stelle ---------- */

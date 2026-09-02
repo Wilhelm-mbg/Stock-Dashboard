@@ -98,7 +98,17 @@
     }
     messungLadenP = window.api.storeGet('kostenmessung').then(function (v) {
       var frueh = MESSUNG ? MESSUNG.runden : [];
-      var depotAlt = (D && D.kostenMessung && Array.isArray(D.kostenMessung.runden)) ? D.kostenMessung.runden : [];
+      /* Das Depot kommt hier ueber holeDepot(), NICHT aus dem Modul-D. Das Modul-D fuellt
+       * allein mitFrischemD() an den oeffentlichen Einstiegen; verkabeln() ruft messungHolen()
+       * aber schon davor, und danach steht messungLadenP - der Lauf findet also nie wieder
+       * statt. Wer hier D liest, liest beim einzigen Lauf immer null: der Migrationspfad
+       * besteht, feuert nie und meldet dabei keine Null, sondern gar nichts ("Nullbefund vom
+       * toten Werkzeug", wiki/fehlerformen.md; gefunden 03.09.2026, drei echte Runden aus
+       * depot.json lagen still da). Geaendert ist damit allein die HERKUNFT des Depots, keine
+       * Rechenregel - was uebernommen wird, entscheidet unveraendert messungMischen(). */
+      var dJetzt = D;
+      try { if (holeDepot) dJetzt = holeDepot(); } catch (eD) { dJetzt = D; }
+      var depotAlt = (dJetzt && dJetzt.kostenMessung && Array.isArray(dJetzt.kostenMessung.runden)) ? dJetzt.kostenMessung.runden : [];
       MESSUNG = messungMischen(v, frueh, depotAlt);
       var nachgetragen = MESSUNG.nachgetragen || 0;
       delete MESSUNG.nachgetragen;
