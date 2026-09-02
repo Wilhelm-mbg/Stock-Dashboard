@@ -1,3 +1,0 @@
-## Momentum-Buch handelt nur noch liquide Werte – exakt wie gemessen
-
-Das virtuelle Momentum-Buch nimmt ab jetzt nur Werte in den Korb, deren Median-Tagesumsatz über die letzten 20 Handelstage mindestens 100 Mio $ beträgt – genau die Konfiguration, die die Studie vom 02.09.2026 gemessen hat (Rückblick 231 Tage, Lücke 21, Halten 63, stärkstes Zehntel). Die Umstellung greift bei der nächsten regulären Umschichtung, steht als Zeile im Experiment-Journal und wird im Buch samt Korbgröße je Umschichtung ausgewiesen; auf der Regeln-Seite trägt das Buch das Etikett „lebt (In-Sample, am Rand) – Vorwärtstest seit …". Alles ist Simulation mit virtuellem Kapital, keine Anlageberatung.
