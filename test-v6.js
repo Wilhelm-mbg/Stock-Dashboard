@@ -12071,6 +12071,124 @@ console.log('\nAlpaca-Paper als zweites Kosten-Gefaess (02.09.2026)');
      'Kandidaten: Momentum-Korb (D.mfBuch.positionen) und Intraday-Signalliste (scanUniverse) - hereingereicht, nicht nachgebaut');
 })();
 
+
+/* ================= Block 35: Spannen-Studie - der Zugang verlaesst die Studie nicht =======
+ *
+ * studien/vorregistrierung-2026-09-02-spannen-historisch/ ruft eine fremde Kurstafel mit
+ * Wilhelms Zugang auf. Der Zugang steht NUR in seiner Umgebung; kein Skript darf ihn
+ * ausgeben, in eine Datei schreiben oder an eine Adresse haengen.
+ *
+ * Geprueft wird auf ZWEI Ebenen, weil eine allein zu wenig ist:
+ *
+ *   (a) STRUKTUR - genau eine Datei der Studie liest die Umgebung. Die Suche laeuft ueber
+ *       ohneKommentare(), sonst risse sie an der Erklaerung, warum es die Regel gibt
+ *       (wiki/fehlerformen.md, "Sperrklinke frisst ihren Kommentar").
+ *
+ *   (b) VERHALTEN - der eigentliche Test. Ein Lauf mit ERFUNDENEN Zugangswerten gegen einen
+ *       Server, der die Kopfzeilen im Rumpf zurueckspiegelt (der schlimmste Fall, den ein
+ *       fremder Server anrichten kann), darf die Werte in keiner Ausgabe hinterlassen.
+ *       Diese Ebene faellt auch dann, wenn jemand die Struktur umgeht - und sie ist scharf:
+ *       mit ausgebauter Verdeckung wird sie rot, was hier gleich mitgeprueft wird.
+ */
+(function () {
+  console.log('\n35) Spannen-Studie: Zugang, Ausschlussregeln, Ringverteilung');
+  var SP = __dirname + '/studien/vorregistrierung-2026-09-02-spannen-historisch';
+
+  /* ---------- (a) Struktur ---------- */
+  var dateien = fs.readdirSync(SP).filter(function (f) { return f.slice(-3) === '.js'; });
+  ok(dateien.length >= 6, 'Die Studie hat ihre Skripte (schluessel, probe, probe2, stichprobe, kalender, korb, messen)', dateien.length);
+  var mitUmgebung = dateien.filter(function (f) {
+    var code = ohneKommentare(fs.readFileSync(SP + '/' + f, 'utf8'));
+    return /process\.env\.ALPACA/.test(code);
+  });
+  ok(mitUmgebung.length === 1 && mitUmgebung[0] === 'schluessel.js',
+     'Genau EINE Datei der Studie liest den Zugang aus der Umgebung: schluessel.js', mitUmgebung.join(','));
+
+  /* Die Gegenprobe zur Zeile darueber, und sie ist der eigentliche Zahn: Ein Alias
+   * (var E = process.env; ... E.ALPACA_KEY) liefe an einer Suche nach "process.env.ALPACA"
+   * vorbei - die erste Fassung von schluessel.js tat genau das. Deshalb wird zusaetzlich
+   * verlangt, dass ausserhalb von schluessel.js JEDE Umgebungslesung einen MD_-Namen traegt
+   * (die Pfadschalter der Studie) und dass niemand process.env als Ganzes bindet. */
+  var verstoesse = [];
+  dateien.forEach(function (f) {
+    if (f === 'schluessel.js') return;
+    var code = ohneKommentare(fs.readFileSync(SP + '/' + f, 'utf8'));
+    var m = code.match(/process\.env\.[A-Za-z_][A-Za-z0-9_]*/g) || [];
+    m.forEach(function (x) { if (x.indexOf('process.env.MD_') !== 0) verstoesse.push(f + ': ' + x); });
+    if (/process\.env(?!\s*\.)/.test(code)) verstoesse.push(f + ': bindet process.env als Ganzes');
+  });
+  ok(verstoesse.length === 0,
+     'Ausserhalb von schluessel.js liest niemand die Umgebung ausser den MD_-Pfadschaltern - auch nicht ueber einen Alias',
+     verstoesse.join(' | '));
+  ok(/process\.env\.ALPACA_KEY/.test(ohneKommentare(fs.readFileSync(SP + '/schluessel.js', 'utf8'))),
+     'schluessel.js liest DIREKT aus process.env, nicht ueber einen Alias (sonst prueft die Zeile darueber nichts)');
+
+  var sch = ohneKommentare(fs.readFileSync(SP + '/schluessel.js', 'utf8'));
+  ok(!/console\./.test(sch) && !/process\.stdout/.test(sch) && !/writeFileSync|appendFileSync|createWriteStream/.test(sch),
+     'schluessel.js gibt nichts aus und schreibt keine Datei');
+  ok(/function verdecken/.test(sch) && /split\(ZUGANG\.id\)/.test(sch) && /split\(ZUGANG\.geheim\)/.test(sch),
+     'schluessel.js hat verdecken() und ersetzt beide Werte');
+
+  /* Jede Ausgabe der Studie laeuft durch verdecken(). Geprueft an der Verwendung: die
+   * Ausgabefunktion sag() jeder Datei, die etwas ausgibt, ruft S.verdecken auf. */
+  ['probe.js', 'probe2.js', 'messen.js'].forEach(function (f) {
+    var code = ohneKommentare(fs.readFileSync(SP + '/' + f, 'utf8'));
+    ok(/function sag\s*\([^)]*\)\s*\{[^}]*S\.verdecken/.test(code),
+       f + ': die Ausgabefunktion laeuft durch verdecken()');
+  });
+
+  /* Nur der bezahlte Feed. iex lieferte auf eine 2018er Anfrage Quotes von 2020 - HTTP 200,
+   * keine Warnung (VORREGISTRIERUNG Paragraph 1.1). Die Studie darf ihn nicht benutzen. */
+  var mess = ohneKommentare(fs.readFileSync(SP + '/messen.js', 'utf8'));
+  ok(/feed=sip/.test(mess) && !/feed=iex/.test(mess), 'messen.js fragt ausschliesslich feed=sip ab');
+  ok(/sort=desc/.test(mess) && /limit=1/.test(mess),
+     'messen.js holt den LETZTEN Quote vor dem Zeitpunkt (sort=desc, limit=1)');
+  ok(/Date\.parse\(L\[0\]\.t\) <= Date\.parse\(T\)/.test(mess),
+     'Die Moduspruefung vergleicht Zeitpunkte numerisch, nicht als Zeichenketten');
+
+  /* ---------- (b) Verhalten: der Leck-Test ---------- */
+  probe((async function () {
+    var P1 = require(SP + '/probe.js');
+    var r = await P1.selbsttest();
+    ok(!r.leck, 'Leck-Test: erfundene Zugangswerte tauchen in KEINER Ausgabe auf, auch wenn der Server die Kopfzeilen zurueckspiegelt');
+    ok(/\[Zugang\]/.test(r.ausgabe) && /\[Geheimnis\]/.test(r.ausgabe),
+       'Der Leck-Test hat die Ausgabepfade wirklich durchlaufen (beide Platzhalter stehen drin)');
+  })());
+
+  /* ---------- Ausschlussregeln: nie auf die Zielgroesse ---------- */
+  var M = require(SP + '/messen.js');
+  ok(M.bewerten({ bp: 0, ap: 10 }).grund === 'nullkurs' && M.bewerten({ bp: 10, ap: 0 }).grund === 'nullkurs',
+     'bp=0 und ap=0 zaehlen als FEHLEND, nicht als Spanne');
+  ok(M.bewerten({ bp: 10, ap: 9.99 }).grund === 'gekreuzt', 'Gekreuzte Quotes zaehlen als fehlend');
+  ok(M.bewerten(null).grund === 'keinQuote', 'Kein Quote ist "kein Quote" - und NICHT Spanne 0');
+  ok(M.bewerten({ bp: 10, ap: 10 }).spanne === 0 && M.bewerten({ bp: 10, ap: 10 }).gesperrt === true,
+     'Gesperrter Markt (bp=ap) ist Spanne 0 und wird als gesperrt gezaehlt, nicht ausgeschlossen');
+  var gross = M.bewerten({ bp: 1, ap: 2 });
+  ok(gross.spanne > 60 && gross.grund === undefined,
+     'Eine riesige Spanne wird NICHT gekappt - kein Ausschluss auf die Zielgroesse', gross.spanne.toFixed(1));
+
+  /* ---------- Ringverteilung: ein Abbruch trifft alle Zellen gleich ---------- */
+  var zp = [];
+  ['a', 'b', 'c'].forEach(function (k) { for (var i = 0; i < 10; i++) zp.push({ klasse: k, jahr: 2016, fenster: 'mitte', sym: k + i }); });
+  var folge = M.ringfolge(zp);
+  var haelfte = {};
+  folge.slice(0, 15).forEach(function (x) { haelfte[x.klasse] = (haelfte[x.klasse] || 0) + 1; });
+  ok(haelfte.a === 5 && haelfte.b === 5 && haelfte.c === 5,
+     'Ringverteilung: ein Abbruch bei der Haelfte laesst alle Zellen halb gefuellt', JSON.stringify(haelfte));
+
+  /* ---------- Die Klassenregel ist die des Buchs, nicht eine zweite ---------- */
+  var stich = ohneKommentare(fs.readFileSync(SP + '/stichprobe.js', 'utf8'));
+  ok(/require\(path\.join\(__dirname, '\.\.', '\.\.', 'liquide\.js'\)\)/.test(stich) &&
+     /Liquide\.medianUmsatz/.test(stich) && /Liquide\.hatUmsatz/.test(stich),
+     'Die Umsatzklasse kommt aus liquide.js - dieselbe Regel wie im Momentum-Buch, kein Nachbau');
+  var St = require(SP + '/stichprobe.js');
+  ok(new Date(St.etZuUtc('2018-03-01', 9 * 60 + 35, 0)).toISOString() === '2018-03-01T14:35:00.000Z' &&
+     new Date(St.etZuUtc('2018-07-03', 12 * 60 + 30, 0)).toISOString() === '2018-07-03T16:30:00.000Z',
+     'ET nach UTC rechnet die Sommerzeit richtig (Winter -5, Sommer -4)');
+  ok(!/HALBTAGE\s*=\s*\{/.test(stich) && /Kalender\.lesen\(\)/.test(stich),
+     'Die Halbtage kommen aus dem Boersenkalender, nicht aus einer Liste im Code');
+})();
+
 Promise.all(offeneProben).then(function () {
   console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
   process.exit(fails ? 1 : 0);

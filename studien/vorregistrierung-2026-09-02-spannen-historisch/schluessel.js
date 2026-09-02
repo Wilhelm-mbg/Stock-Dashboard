@@ -21,9 +21,13 @@
  * Alles Simulation mit virtuellem Kapital. Keine Anlageberatung.
  */
 
-var E = process.env;
-var ZUGANG = { id: typeof E.ALPACA_KEY === 'string' ? E.ALPACA_KEY : '',
-               geheim: typeof E.ALPACA_SECRET === 'string' ? E.ALPACA_SECRET : '' };
+/* DIREKT lesen, nicht ueber einen Alias (`var E = process.env`). Der Alias war die erste
+ * Fassung, und Block 35 in test-v6.js hat ihn rot gemacht: die Klinke sucht nach
+ * process.env.ALPACA und faende sie durch einen Alias nicht - womit AUCH eine fremde Datei
+ * sich am gleichen Alias vorbeischmuggeln koennte. Die Schreibweise ist deshalb Teil der
+ * Zusicherung, nicht Geschmackssache. */
+var ZUGANG = { id: typeof process.env.ALPACA_KEY === 'string' ? process.env.ALPACA_KEY : '',
+               geheim: typeof process.env.ALPACA_SECRET === 'string' ? process.env.ALPACA_SECRET : '' };
 
 /** Sind beide Werte gesetzt? Sagt NUR ja/nein, nie was drinsteht. */
 function vorhanden() { return !!(ZUGANG.id && ZUGANG.geheim); }
