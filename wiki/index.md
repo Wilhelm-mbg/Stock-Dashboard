@@ -20,6 +20,7 @@ Sie bleibt als **Archiv** bestehen und wird nicht gelöscht.
 | [fehlerformen.md](fehlerformen.md) | Die Fehler, die uns wiederholt passiert sind |
 | [betrieb.md](betrieb.md) | Rollen, Release, Arbeitsbaum, Kostenbremse |
 | [offene-auftraege.md](offene-auftraege.md) | Was gerade ansteht |
+| [oberflaeche.md](oberflaeche.md) | Wie die App aussehen soll — Ist-Karte, Befund, Zielbild „drei Bildschirme", Stufen, Sperrklinken |
 | [entscheide.md](entscheide.md) | Wilhelms Entscheide, die weitergelten |
 | [log.md](log.md) | Wann dieses Wiki was geändert hat |
 
