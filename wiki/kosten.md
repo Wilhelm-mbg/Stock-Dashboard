@@ -17,7 +17,7 @@ fällt jede Nacht neu an.** Deshalb rettet kein H eine zu kleine Kante.
 |---|---|---|
 | **CFD gehebelt** | K + **0,0247 Pp je Nacht** (Capital.com 4 % p.a. + Benchmark) | `studien/vorregistrierung-2026-09-01-glockendruck-haltedauer/` |
 | CFD ungehebelt (1:1) | nur K — laut Quelle finanzierungsbefreit; **reicht trotzdem nicht** | dieselbe |
-| **Kassa-Aktie (echter Broker)** | ≈ **0,06 Pp konstant**, keine Übernachtfinanzierung — **Annahme, wird seit 02.09.2026 am Alpaca-Paper gemessen** (Abschnitt unten) | dieselbe, nachrichtliche Spalte |
+| **Kassa-Aktie (echter Broker)** | ≈ **0,06 Pp konstant**, keine Übernachtfinanzierung — **Annahme.** Zwei Messungen laufen: das Alpaca-Paper (Abschnitt unten) und die **historische Spannen-Studie** (Abschnitt „Kassa-Hürde je Umsatzklasse und Jahr") | dieselbe, nachrichtliche Spalte |
 | **Hebelschein** | **0,23 Pp je 3 Stunden** | `studien/signalstudie-2026-08/` — tötete alles Intraday |
 
 ## Die gemessene Runde (Stand 01.09.2026)
@@ -55,6 +55,37 @@ NUR an Alpaca-Runden — die Capital-Reihe (CFD, 0,10 %) bleibt getrennt (`koste
 Übergabe: `uebergabe/alpaca-kostenmessung-2026-09-02.md` (2.757 Zusicherungen grün, Gegenprobe je
 Klinke rot, UI-Probe grün). **Ein Urteil gibt es erst mit Runden über verschiedene Tage und
 Marktlagen und ≥ 10 je Klasse — bis dahin bleibt 0,06 eine Annahme.**
+
+## Kassa-Hürde je Umsatzklasse und Jahr — aus notierten Spannen, **Lauf seit 02.09.2026**
+
+**Schritt 0 ist bestanden:** die Alpaca-Gratisstufe führt die konsolidierte NBBO-Tafel
+(`feed=sip`) zurück bis mindestens Anfang 2016 — siehe [datenquellen.md](datenquellen.md).
+Gemessen wird die notierte Spanne `(ap − bp) / mid` in Pp **je Umlauf** an 55.455 gezogenen
+Zeitpunkten: 4 Umsatzklassen × 11 Jahre × 3 Tageszeitfenster.
+*Registrierung: `studien/vorregistrierung-2026-09-02-spannen-historisch/VORREGISTRIERUNG.md`
+(Commit `4f22b14`, vor dem Bau des Werkzeugs).*
+
+**Die Tabelle steht noch aus** — sie kommt aus `ERGEBNIS.md`, sobald der Lauf durch ist.
+**Bis dahin bleibt 0,06 eine Annahme und wird nicht durchgestrichen.**
+
+Was der Testlauf (20 Symbole, 2018, **kein Befund**) schon zeigt, und was die Tabelle
+mitbringen wird:
+
+> ### ⚠ Der Cent-Boden: „Hürde je Umsatzklasse" ist für liquide Werte eine PREISAUSSAGE
+>
+> Die kleinste zulässige Preisstufe ist **1 Cent**. Eine Spanne von 1 Cent ist bei Kurs K
+> genau `100/K × 0,01` Pp — bei 20 $ **0,050 Pp**, bei 200 $ **0,005 Pp**. Im Testlauf lagen
+> **64 % / 68 %** der Quotes der beiden liquiden Klassen auf diesem Boden; `ab1000` maß
+> deshalb *breiter* als `250-1000`, weil es zufällig die billigeren Aktien enthielt
+> (GE, T — Median 45,83 $ gegen 62,41 $).
+>
+> **Wer eine Strategie auf Werten unter 30 $ handelt, zahlt mehr als jemand, der dieselbe
+> Strategie auf Werten über 150 $ handelt — bei identischer Liquidität.**
+>
+> Das betrifft jede Kostenannahme dieses Projekts, auch die 0,06 und auch die Paper-Messung
+> unten, deren Symbolwahl heute **nur nach Umsatzklasse** schichtet und den Kurs nicht führt.
+> *Fundstelle: Registrierung §9a, Übergabe
+> `uebergabe/spannen-historisch-2026-09-02.md` §3.*
 
 ## Monatshaltedauer, ausgefüllt am Momentum-Korb (gemessen 02.09.2026)
 
