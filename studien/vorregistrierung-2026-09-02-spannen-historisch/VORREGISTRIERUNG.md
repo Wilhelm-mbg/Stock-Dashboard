@@ -346,6 +346,11 @@ sie in einer Zelle **über 20 %**, trägt die Zelle einen Warnvermerk.
 
 1. **Tabellen je Zelle:** n, Zeitpunkte, Symbole, Median, p75, Bootstrap-Band, Fehlanteil.
 2. **Die Kostenhürde je Klasse und Jahr:**
+   - **Maßgeblich ist das Fenster `mitte`** (10:00–15:30 ET). Begründung, vor dem Lauf
+     geschrieben: es sind 330 der 390 Handelsminuten, und es ist das Fenster, in dem die
+     Intraday-Strategien der App tatsächlich einsteigen. `eroeffnung` und `schluss` stehen
+     **daneben, nie statt dessen** — die Übernacht-Familie handelt im Schlussfenster und
+     bekommt dort ihre eigene Hürde.
    - *Alpaca:* Median-Spanne **+ 0** (keine Provision).
    - *IBKR, nachrichtlich:* + 2 × max(0,35 $; 0,0035 $/Stück) auf eine **10.000-$-Position**
      — die Bezugsgröße der bisherigen Annahme. Die Positionsgröße steht in der Tabellen-
