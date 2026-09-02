@@ -592,7 +592,7 @@
     var liste = regelnListe();
     if (!liste.length) {
       el.innerHTML = '<div style="font-size:var(--fs-neben); color:var(--muted);">Noch keine festgeschriebene Regel. ' +
-        'Stell unter „Risiko &amp; Einstellungen“ eine Konfiguration ein, gib ihr hier einen Namen und schreib sie fest.</div>';
+        'Stell unter „Regeln → Einstellungen“ eine Konfiguration ein, gib ihr hier einen Namen und schreib sie fest.</div>';
       return;
     }
     var st = D.schattenStat || {};
@@ -3578,8 +3578,8 @@
     } else {
       ph = '<div class="empty"><span class="ico"></span>Keine offenen Positionen. ' +
         (D.intraday && D.intraday.enabled
-          ? 'Die Intraday-Strategie läuft und wartet auf ein Signal – wann sie zuletzt nichts getan hat und warum, steht unter „Regeln → Werkzeug“.'
-          : 'Die Intraday-Strategie ist aus – einschalten unter „Regeln → Risiko & Einstellungen“.') + '</div>';
+          ? 'Die Intraday-Strategie läuft und wartet auf ein Signal – wann sie zuletzt nichts getan hat und warum, steht unter „Werkzeuge → Betrieb“.'
+          : 'Die Intraday-Strategie ist aus – einschalten unter „Regeln → Einstellungen“.') + '</div>';
     }
     if (D.repairNote && Date.now() - D.repairNote.at < 7 * 86400000) {
       var rn = D.repairNote;
@@ -7163,14 +7163,19 @@
      * verlangen und nicht auf einem scharf gebliebenen Knopf landen. */
     if (drFrei) { drFrei.checked = false; drBtn.disabled = true; }
   });
+  /* Seit Stufe 1 des Umzugs (02.09.2026) wohnt der Bestand - Buecher, Kacheln,
+   * Depotverlauf, offene Positionen, Protokoll - ganz oben unter Heute; den Reiter
+   * Vermoegen gibt es nicht mehr. Die beiden Ausloeser zeigen deshalb auf
+   * 'dashboard'. Zeigten sie weiter auf 'depot', wuerde nie wieder gezeichnet -
+   * und zwar still, weil getElementById dort schlicht null liefert. */
   document.addEventListener('quotes-updated', function () {
-    var tD = document.getElementById('tab-depot');
+    var tD = document.getElementById('tab-dashboard');
     if (D && tD && tD.classList.contains('active')) render();
   });
   document.addEventListener('tab-changed', function (e) {
     // Der Reiterwechsel heilt den Formularstand: Ein/Aus laesst sich auch im
     // Strategien-Tab umlegen, dann muessen die Schalter hier nachziehen.
-    if (e.detail === 'depot') { render(); try { syncStrategyUI(); } catch (e2) { /* UI-Sync optional */ } }
+    if (e.detail === 'dashboard') { render(); try { syncStrategyUI(); } catch (e2) { /* UI-Sync optional */ } }
   });
 
   /* Die Pillen schaltet die Shell; was je Unterseite zusaetzlich gezeichnet werden muss,
@@ -7186,9 +7191,19 @@
     /* Stufe 4 des Regeln-Neubaus (31.08.2026): 'einstellungen' buendelt die frueheren
      * Pillen strategien/mittelfrist/auswertung, 'werkzeug' buendelt regelbuch/
      * stratchart. Die alten Kennungen bleiben stehen, falls ein gespeicherter
-     * UI-Zustand sie noch nennt. */
-    if (sub === 'auswertung' || sub === 'einstellungen' || sub === 'werkzeug') renderAnalytics();
-    if (sub === 'strategien' || sub === 'einstellungen') { renderPilot(); renderRegime(); }
+     * UI-Zustand sie noch nennt.
+     * Stufe 1 des Umzugs (02.09.2026): Autopilot, Marktlage und das Regelbuch sind
+     * Klappen unter Werkzeuge -> Betrieb. Die Shell meldet das Aufklappen als
+     * 'sub-changed' mit dem Klappennamen - deshalb stehen 'auswertung' und
+     * 'regelbuch' hier weiter (und 'regelbuch' neu): OHNE sie zeigte das Regelbuch
+     * beim Aufklappen die Tabelle von vor der letzten Aenderung. */
+    if (sub === 'auswertung' || sub === 'einstellungen' || sub === 'werkzeug' ||
+        sub === 'regelbuch') renderAnalytics();
+    /* Autopilot- und Marktlage-Zeilen sind mit umgezogen: ohne 'auswertung' stuenden
+     * sie beim Aufklappen leer da, weil sie sonst nur der Reiter Regeln zeichnete. */
+    if (sub === 'strategien' || sub === 'einstellungen' || sub === 'auswertung') {
+      renderPilot(); renderRegime();
+    }
     /* Der Trendfinder holt Kurse fuer 15 Werte. Beim Klick ist das eine Bestellung des
      * Nutzers; beim blossen Wiederherstellen des letzten Orts waere es eine ungefragte
      * Abfrage bei jedem Programmstart. Wiederhergestellt zeigt der Reiter seinen

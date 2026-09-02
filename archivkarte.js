@@ -194,14 +194,21 @@
    * liest das Archiv von der Platte (bis zu 60 Dateien je Aufloesung); das gehoert
    * nicht in den Startvorgang, den Wilhelm jeden Morgen abwartet.
    * Der Fortschritt kommt ohnehin von selbst ueber onSammler. */
+  /* Seit Stufe 1 des Umzugs (02.09.2026) ist das Kursarchiv keine eigene Pille mehr,
+   * sondern die erste Klappe unter Werkzeuge -> Betrieb. Die Shell meldet das
+   * Aufklappen mit demselben Ereignis und demselben Namen 'archiv' - der Ausloeser
+   * hier bleibt deshalb Wort fuer Wort stehen. */
   document.addEventListener('sub-changed', function (ev) {
     if (ev && ev.detail && ev.detail.sub === 'archiv') laden();
   });
-  /* Und wenn die Unterseite beim Start schon offen ist, weil die App sich den Ort
-   * gemerkt hat: dann kommt kein sub-changed mehr, das diese Datei hoert. */
+  /* Und wenn die Klappe beim Start schon offen ist: dann kommt kein Ereignis mehr,
+   * das diese Datei hoert. Vor dem Umzug war das der gemerkte Pillen-Ort, heute
+   * waere es ein <details open> - beides wird hier gleich behandelt. */
   document.addEventListener('DOMContentLoaded', function () {
     var s = document.getElementById('sub-archiv');
-    if (s && s.classList.contains('active')) laden();
+    if (!s) return;
+    var kl = s.closest ? s.closest('details[data-klappe]') : null;
+    if ((kl && kl.open) || s.classList.contains('active')) laden();
   });
 
   root.Archivkarte = { laden: laden, zeichne: zeichne, letzter: function () { return LETZTER; } };

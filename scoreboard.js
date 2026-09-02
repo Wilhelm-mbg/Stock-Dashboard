@@ -1088,8 +1088,15 @@
   document.addEventListener('DOMContentLoaded', function () {
     eingabe();
     baukastenAufbauen();
-    document.addEventListener('tab-changed', function (ev) {
-      if (ev.detail === 'messung') { laden(); strategienLaden(); }
+    /* Bis Stufe 1 des Umzugs (02.09.2026) hing das Nachladen am Reiter "Messung".
+     * Den gibt es nicht mehr: Scoreboard, Strategieregister und Eingabe sind drei
+     * Klappen unter Werkzeuge -> Betrieb. Die Shell meldet jedes Aufklappen als
+     * 'sub-changed' mit dem Klappennamen - jede Klappe laedt genau das, was sie
+     * zeigt, statt beim Oeffnen einer beliebigen anderen mitzulaufen. */
+    document.addEventListener('sub-changed', function (ev) {
+      var sub = ev && ev.detail && ev.detail.sub;
+      if (sub === 'scoreboard') laden();
+      if (sub === 'strategieregister') strategienLaden();
     });
     setTimeout(function () { laden(); strategienLaden(); }, 4000);
   });

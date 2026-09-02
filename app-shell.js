@@ -274,6 +274,26 @@
     b.addEventListener('click', function () { pilleZeigen(b); });
   });
 
+  /* ---- Betrieb: die Klappen sind die Navigation des Maschinenraums ----
+   * Stufe 1 des Umzugs (02.09.2026) hat Kursarchiv, Autopilot, Trendfinder, den
+   * Signal-Monitor und die Messprotokolle aus eigenen Reitern und Pillen in
+   * <details>-Klappen unter Werkzeuge -> Betrieb gelegt. Die Nachlade-Ausloeser der
+   * Fachmodule hingen an 'sub-changed' und am Reiterwechsel - beides gibt es an
+   * diesen Stellen nicht mehr. Statt in vier Modulen einen zweiten Weg zu bauen,
+   * meldet die Shell das AUFklappen als dasselbe Ereignis: der Name in data-klappe
+   * tritt an die Stelle des frueheren data-sub.
+   * Zuklappen meldet nichts - Zuklappen bestellt nichts nach. Und 'wieder' ist hier
+   * immer false: eine Klappe geht nur auf, wenn jemand sie aufmacht; der
+   * wiederhergestellte Ort oeffnet keine (details ohne open-Attribut). Genau daran
+   * haengt, dass der Trendfinder beim Programmstart keine 15 Kurse abruft. */
+  document.querySelectorAll('#sub-betrieb details[data-klappe]').forEach(function (kl) {
+    kl.addEventListener('toggle', function () {
+      if (!kl.open) return;
+      document.dispatchEvent(new CustomEvent('sub-changed',
+        { detail: { tab: 'werkzeuge', sub: kl.getAttribute('data-klappe'), wieder: false } }));
+    });
+  });
+
   /* Den gemerkten Ort erst herstellen, wenn das DOM steht UND die Warteschlange einmal
    * durchgelaufen ist: mehrere Zuhoerer von 'tab-changed' melden sich erst in ihrem
    * EIGENEN DOMContentLoaded an (marktkarteui.js, scoreboard.js), und app-shell.js
@@ -302,6 +322,16 @@
     if (UI.tab && gueltig.test(UI.tab)) {
       var rb = document.querySelector('nav.tabs button[data-tab="' + UI.tab + '"]');
       if (rb && !rb.classList.contains('active')) reiterZeigen(rb, false);
+      /* Der gemerkte Ort kann einen Reiter nennen, den es NICHT MEHR GIBT: nach
+       * Stufe 1 des Umzugs (02.09.2026) steht in jedem gewachsenen Store noch
+       * "depot" oder "messung". Ohne diese Zeilen bliebe der tote Name im Merker
+       * stehen und wuerde bei jedem Speichern weitergereicht. Der Bildschirm ist
+       * dabei nie leer - es wird schlicht nicht umgeschaltet, also bleibt der
+       * Start-Reiter "Heute" stehen. */
+      if (!rb) {
+        var aktiv = document.querySelector('nav.tabs button[data-tab].active');
+        UI.tab = aktiv ? aktiv.getAttribute('data-tab') : null;
+      }
     }
     uiGeladen = true;
   }
@@ -531,7 +561,7 @@
         'Jede lässt sich einzeln ein- und ausschalten.',
         'Was auf jeder Karte hinter dem i steht, ist der ehrliche Belegstand – einschließlich der Punkte, die dagegen sprechen.'
       ],
-      fuss: 'Den Belegstatus jeder Regel mit vollständigem Entscheidungsweg zeigt der Reiter „Messung“.'
+      fuss: 'Den Belegstatus jeder Regel mit vollständigem Entscheidungsweg zeigen die Messprotokolle unter „Werkzeuge → Betrieb“.'
     },
     'regeln.chart': {
       titel: 'Strategie-Chart',
@@ -660,7 +690,7 @@
     'vermoegen.buecher': {
       titel: 'Mittelfrist-Depot · die zwei Bücher',
       punkte: [
-        'Zwei getrennte virtuelle Bücher à 100.000 $, die die beiden Strategien <b>tatsächlich führen</b> – beide halten über die volle Historie, aber nicht auf den zurückgehaltenen Jahren ab 2005 (Momentum t = 1,62; Ergebnis-Drift nach Zeitzonen-Korrektur 8,44 statt 14,07 % p.a.). Stand 23.08.2026, Details im Reiter Messung.',
+        'Zwei getrennte virtuelle Bücher à 100.000 $, die die beiden Strategien <b>tatsächlich führen</b> – beide halten über die volle Historie, aber nicht auf den zurückgehaltenen Jahren ab 2005 (Momentum t = 1,62; Ergebnis-Drift nach Zeitzonen-Korrektur 8,44 statt 14,07 % p.a.). Stand 23.08.2026, Details unter Werkzeuge → Betrieb, Messprotokolle.',
         'Bis hierher waren Momentum und Ergebnis-Drift Rechenblätter ohne Depot. Die Schalter im Reiter „Regeln“ entscheiden: <b>an</b> heißt selbsttätig handeln, <b>aus</b> heißt nur rechnen und erinnern („Rebalancing fällig“ mit Handlungsliste).'
       ],
       fuss: 'Alles Simulation, keine Anlageberatung.'
@@ -819,11 +849,12 @@
     return added;
   };
 
-  /* Felix, Issue #68: die Einstellungen sollten bei den Werkzeugen erreichbar sein.
-   * Die Pille dort loest denselben Knopf aus, statt den Dialog ein zweites Mal zu
-   * bauen - zwei Wege hinein, aber nur eine Wahrheit darueber, was er tut. */
-  var wzE = document.getElementById('wzEinstellungen');
-  if (wzE) wzE.addEventListener('click', function () { document.getElementById('settingsBtn').click(); });
+  /* Die zweite Einstellungs-Pille in der Werkzeug-Leiste ist mit Stufe 1 des Umzugs
+   * (02.09.2026) entfallen. Sie war eine AKTION in einer Navigationsleiste - das
+   * letzte Muster-Bruchstueck dort - und tat exakt dasselbe wie #settingsBtn in der
+   * Kopfzeile, der von jedem Reiter aus erreichbar ist. Zwei Wege hinein waren
+   * einer zu viel; die Wahrheit darueber, was der Dialog tut, stand ohnehin nur
+   * an einer Stelle. */
 
   document.getElementById('settingsBtn').addEventListener('click', function () {
     document.getElementById('setTray').checked = !!SETTINGS.tray;
