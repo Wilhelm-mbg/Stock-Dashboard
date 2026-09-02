@@ -3697,7 +3697,12 @@ console.log('\n36) Kostenhuerde des Produkts (Signalstudie 23.08.2026)');
    * und Widerlegtes bekommt keine Seite. Verschwiegen wird er nicht: der Name steht
    * WORTGENAU in der Klappe, samt Urteil. Die Zusicherung prueft weiter den Wortlaut,
    * nur an seinem neuen Ort. */
-  ok(hF.indexOf('<summary>Trendfinder — Detektor widerlegt</summary>') >= 0,
+  /* 03.09.2026 (Oberflaeche Stufe 2): Jeder Betrieb-Klappentitel traegt jetzt rechts
+   * eine Statuszeile. Der Wortlaut des Titels bleibt WORTGENAU geprueft; die Klinke
+   * wird dabei schaerfer, weil sie zusaetzlich verlangt, dass genau ein Stand-Span
+   * mit dem Namen der Klappe dahinter steht - und sonst nichts. */
+  ok(hF.indexOf('<summary>Trendfinder — Detektor widerlegt' +
+     '<span class="klappe-stand" id="kstand-wende"></span></summary>') >= 0,
      'Trendfinder: die Klappe heisst nach dem Trend und nennt sein Urteil');
   ok(wu3.indexOf('>Trend jetzt</th>') >= 0 && wu3.indexOf('>Güte</th>') >= 0 && wu3.indexOf('>Breite</th>') >= 0,
      'Trendfinder: die drei Eigenschaften des Trends stehen als eigene Spalten');
@@ -5372,10 +5377,17 @@ console.log('\n38) Audit 23.08.2026 – die fuenf Fehler duerfen nicht zurueckko
   /* --- B1: Cockpit rechnete gegen 10000, die Buecher laufen mit 100000 ---
    * Ein unberuehrtes Buch meldete dadurch +900,0 %, ein Buch mit 8 % Verlust +820,0 %.
    * Die Zahl steht ausserhalb aller Reiter und ist damit immer sichtbar. */
-  ok(!/lp\.momentum \/ 10000/.test(dep) && !/lp\.drift \/ 10000/.test(dep),
-     'B1: das Cockpit teilt nicht mehr durch eine fest verdrahtete 10000');
-  ok(/lp\.momentum \/ stM/.test(dep) && /lp\.drift \/ stD/.test(dep),
-     'B1: der Bezugswert kommt aus dem Buch, nicht aus einer Konstante');
+  /* 03.09.2026 (Oberflaeche Stufe 2): Das Cockpit nennt die Buecher in Worten, die
+   * Rechnung dafuer steht in buchKopfText(). Die Zusicherung zieht mit und wird dabei
+   * SCHAERFER: sie prueft nicht mehr zwei Schreibweisen, sondern schneidet die Funktion
+   * heraus und verbietet darin JEDE Division durch eine mehrstellige Zahl. Vorher
+   * waere ein anderer Variablenname - oder eine 100000 statt der 10000 - durchgegangen. */
+  var bkt = dep.slice(dep.indexOf('function buchKopfText'), dep.indexOf('function scanKopfText'));
+  ok(bkt.length > 200 && !/\/\s*\d\d+/.test(bkt),
+     'B1: das Cockpit teilt nicht mehr durch eine fest verdrahtete Zahl');
+  ok(/lp\.startM/.test(bkt) && /lp\.startD/.test(bkt) && /buch\.start/.test(bkt) &&
+     /lp\[feld\] \/ st/.test(bkt),
+     'B1: der Bezugswert kommt aus dem Verlaufspunkt, sonst aus dem Buch - nie aus einer Konstante');
   ok(/startM: d\.mfBuch/.test(mfd) && /startD: d\.driftBuch/.test(mfd),
      'B1: mfVerlauf schreibt das Startkapital mit, damit alte Punkte lesbar bleiben');
   // Die Rechnung selbst, an genau den Zahlen, die frueher +900 ergaben
@@ -10330,10 +10342,23 @@ console.log('\n61) Bausteinkasten: Kacheln');
      'Eine fertige Klasse hat Vorrang - die Hilfe dreht keine Anzeigeentscheidung um');
   /* Kein Modul baut die Kachel nochmal von Hand. depot.js darf: dort steht der
    * Aufrufer-seitige Rest (tile()), und der ruft die Hilfe. */
-  ['mfdepot.js', 'driftui.js'].forEach(function (f) {
-    var q = fs.readFileSync(__dirname + '/' + f, 'utf8');
-    ok(/U\.kachel\(/.test(q) && !/<div class="tile"><div class="name">/.test(q),
-       f + ': baut keine Kachel mehr von Hand');
+  /* 03.09.2026 (Oberflaeche Stufe 2): mfdepot.js zeigt GAR KEINE Kachel mehr - die
+   * Buecher-Karten sind eine eigene Form (.buch-fakten). Die Zusicherung faellt
+   * deshalb nicht weg, sie wird geteilt: das Verbot der handgebauten Kachel gilt
+   * jetzt fuer DREI Dateien (depot.js kam dazu), die Pflicht zur Hilfe fuer die
+   * zwei, die ueberhaupt Kacheln zeigen.
+   * NICHT WEGGERAEUMT, sondern gemeldet: eine kurz erprobte Fassung ueber ALLE
+   * Dateien der Wurzel wurde rot und nannte renderer.js und backtestui.js - zwei
+   * alte Fundstellen, die nicht zu dieser Stufe gehoeren. Sie stehen in der
+   * Uebergabe oberflaeche-stufe2, damit sie jemand aufraeumt, statt hier unter
+   * einer Ausnahmeliste zu verschwinden. */
+  ['mfdepot.js', 'driftui.js', 'depot.js'].forEach(function (f) {
+    ok(!/<div class="tile"><div class="name">/.test(fs.readFileSync(__dirname + '/' + f, 'utf8')),
+       f + ': baut keine Kachel von Hand');
+  });
+  ['driftui.js', 'depot.js'].forEach(function (f) {
+    ok(/U\.kachel\(/.test(fs.readFileSync(__dirname + '/' + f, 'utf8')),
+       f + ': zeigt seine Kacheln ueber die Hilfe');
   });
   var depK = fs.readFileSync(__dirname + '/depot.js', 'utf8');
   ok(/function tile\(name, val, sign, delta, deltaSign\)/.test(depK),

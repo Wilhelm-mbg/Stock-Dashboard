@@ -111,6 +111,12 @@
   }
 
   var STAND = [];
+  /* Wie viele Strategien im Register stehen. Gefuellt von strategienLaden(), also
+   * erst, wenn die Klappe einmal offen war - vorher ist die Zahl schlicht nicht da,
+   * und die Statuszeile im Klappentitel bleibt dann LEER statt zu raten. Das Register
+   * liest zwei Verzeichnisse ueber IPC; es von einer Statuszeile aus anzustossen
+   * hiesse, beim Programmstart zu laden, was der Alltag nicht braucht. */
+  var REGISTER_N = null;
   /* Der Codestand der Messmaschine, die gerade hier liegt (26.08.2026). Solange er
    * null ist - alte App, fehlende Datei -, kennzeichnet die Tafel GAR NICHTS. Eine
    * Warnung, die immer leuchtet, liest nach einer Woche niemand mehr. */
@@ -1006,6 +1012,7 @@
       });
       return t.length ? t.join(' · ') : null;
     }
+    REGISTER_N = zeilen.length;
     zeilen.forEach(function (z) { z.betrieb = betriebVon(z.key); });
     var betriebSpalte = zeilen.some(function (z) { return !!z.betrieb; });
 
@@ -1100,5 +1107,10 @@
     });
     setTimeout(function () { laden(); strategienLaden(); }, 4000);
   });
-  window.Scoreboard = { laden: laden, strategien: strategienLaden };
+  /* registerStand() ist eine reine Leseauskunft: null heisst "noch nicht geladen",
+   * eine Zahl heisst "so viele Strategien standen beim letzten Laden im Register".
+   * Die Statuszeile im Klappentitel unterscheidet beides - "0" und "noch nichts
+   * gelesen" sind von aussen sonst nicht zu trennen (wiki/fehlerformen.md). */
+  window.Scoreboard = { laden: laden, strategien: strategienLaden,
+    registerStand: function () { return REGISTER_N; } };
 })();

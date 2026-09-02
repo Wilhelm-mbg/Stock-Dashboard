@@ -304,87 +304,205 @@
       }).join('') + '</tbody></table>';
   }
 
+  /* ---- Die Buecher-Karten oben im Bestand (Oberflaeche Stufe 2, 03.09.2026) ----
+   *
+   * LETZTER BEWERTETER STAND je Buch. Die Karte hat genau EINEN Schreiber (diese
+   * Datei) und zwei Ausloeser: takt(), sobald eine Bewertung vorliegt, und
+   * depot.js render() bei jedem Zeichnen des Bestands. Ohne diesen Merker wuerde
+   * render() die frische Bewertung mit dem taeglichen Verlaufspunkt ueberschreiben -
+   * dieselbe Zahl an zwei Orten, verschieden alt.
+   * Hier wird NICHTS nachgerechnet: abgelegt wird nur, was takt() ohnehin gerechnet
+   * hat (MFHandel.bewerte / bewerteDrift). */
+  var STAND = { momentum: null, drift: null };
+
+  function letzterPunkt(d) {
+    var v = d && d.mfVerlauf;
+    return (v && v.length) ? v[v.length - 1] : null;
+  }
+
+  /** Alles, was auf einer Buch-Karte steht - aus Daten, nie aus Text.
+   *  quelle 'live'    = aus der Bewertung des letzten Takts,
+   *  quelle 'verlauf' = aus dem juengsten Punkt in d.mfVerlauf. Der wird nur EINMAL
+   *                     JE TAG geschrieben, deshalb steht sein Datum auf der Karte.
+   *  Fehlt beides, bleibt wert null - die Karte schreibt dann einen Strich samt Grund
+   *  und erfindet keine Zahl. */
+  function buchKarteDaten(name) {
+    var d = D();
+    if (!d) return null;
+    var buch = name === 'momentum' ? d.mfBuch : d.driftBuch;
+    var an = name === 'momentum' ? !!d.momentumAn : !!d.driftAn;
+    var s = STAND[name], lp = letzterPunkt(d);
+    var wert = null, start = null, quelle = null, standT = null;
+    if (s) { wert = s.wert; start = s.start; quelle = 'live'; standT = s.at; }
+    else if (lp && lp[name] != null) {
+      wert = lp[name];
+      /* Startkapital aus dem Punkt selbst, sonst aus dem Buch - nie eine feste Zahl.
+       * Genau hier stand im Cockpit einmal 10000, waehrend die Buecher mit 100000
+       * laufen: ein unberuehrtes Buch meldete dadurch +900 %. */
+      start = (name === 'momentum' ? lp.startM : lp.startD) || (buch && buch.start) || null;
+      quelle = 'verlauf'; standT = lp.t;
+    }
+    var trades = (buch && buch.trades) || [];
+    return {
+      name: name, an: an, buch: buch, wert: wert, start: start, quelle: quelle, standT: standT,
+      positionen: (buch && buch.positionen) ? buch.positionen.length : null,
+      faellig: s ? !!s.faellig : false,
+      letzte: trades.length ? trades[trades.length - 1] : null,
+      geprueft: (d.pruefStand && d.pruefStand.buecher) ? d.pruefStand.buecher : null
+    };
+  }
+
+  function fakten(zeilen) {
+    return '<dl class="buch-fakten">' + zeilen.map(function (z) {
+      return '<dt>' + U.esc(z[0]) + '</dt><dd>' + z[1] + '</dd>';
+    }).join('') + '</dl>';
+  }
+
+  /** Ein Strich MIT Grund. Eine Karte, die eine Zahl nicht hat, sagt warum; sie laesst
+   *  das Feld nicht leer und setzt keine Null an die Stelle einer fehlenden Messung. */
+  function ohne(grund) { return '–<span style="color:var(--muted);"> · ' + U.esc(grund) + '</span>'; }
+
+  function handlungText(t) {
+    if (!t) return ohne('noch keine Order');
+    return U.d(t.t) + ' · ' + U.esc(t.art) + ' ' + U.esc(t.sym);
+  }
+
+  /* Der naechste Takt kommt aus dem Buch, nicht aus einem Kalender: faellig ist, was
+   * MFHandel.rebalanceFaellig im letzten Durchlauf gesagt hat; sonst steht da, nach
+   * wie vielen Handelstagen es soweit ist (b.konfig.halten - die gemessene
+   * Konfiguration) und wann zuletzt umgeschichtet wurde. */
+  function taktTextMomentum(k) {
+    if (k.faellig) return 'Umschichtung fällig';
+    if (!k.buch || !k.buch.letztesRebalanceT) return 'erste Umschichtung steht aus';
+    var h = k.buch.konfig ? k.buch.konfig.halten : null;
+    return (h ? 'nach ' + h + ' Handelstagen · ' : '') + 'letzte Umschichtung ' + U.d(k.buch.letztesRebalanceT);
+  }
+  /* Das Drift-Buch hat keinen Umschichtungs-Rhythmus: es gleicht bei jedem Takt ab.
+   * Was es ueber die Zeit sagt, ist deshalb der Pruef-Stempel aus d.pruefStand. */
+  function taktTextDrift(k) {
+    return (k.an ? 'Abgleich bei jedem Takt' : 'Automatik aus – es wird nur gerechnet') +
+      (k.geprueft ? ' · zuletzt geprüft ' + U.dt(k.geprueft) : ' · noch nicht geprüft');
+  }
+
+  function karteHtml(k, taktTxt) {
+    if (!k) return '';
+    var pnl = (k.wert != null && k.start) ? k.wert - k.start : null;
+    /* cls statt U.signCls: das Buch zeigt ein Ergebnis von genau 0 $ gruen. Welche der
+     * beiden Anzeigen richtig ist, entscheidet nicht diese Karte - der Ausdruck ist
+     * derselbe wie in der Kachelreihe, die hier bis zum 03.09.2026 stand. */
+    var cls = pnl == null ? '' : (pnl >= 0 ? 'pos' : 'neg');
+    var kopf = k.wert == null
+      ? '<div class="buch-aus">' + (k.buch
+          ? 'Noch kein Stand – der Takt hat dieses Buch noch nicht bewertet.'
+          : 'Buch noch nicht angelegt – es entsteht beim ersten Takt.') + '</div>'
+      : '<div class="buch-wert ' + cls + '">' + U.money(k.wert) + '</div>' +
+        '<div class="buch-erg ' + cls + '">' + (pnl == null
+          ? ohne('kein Startkapital im Verlauf')
+          : U.signTxt(Math.round(pnl * 100) / 100, ' $') + ' · ' + U.pz1((k.wert / k.start - 1) * 100)) + '</div>' +
+        (k.quelle === 'verlauf'
+          ? '<div style="color:var(--muted); font-size:var(--fs-klein); margin-top:2px;">Stand vom ' +
+            U.d(k.standT) + ' – der Takt hat seither nicht neu bewertet.</div>'
+          : '');
+    return kopf + fakten([
+      ['Positionen', k.positionen == null ? ohne('Buch noch nicht angelegt') : String(k.positionen)],
+      ['Status', k.an ? 'handelt selbst' : 'nur rechnen'],
+      ['Nächster Takt', U.esc(taktTxt)],
+      ['Zuletzt getan', handlungText(k.letzte)]
+    ]);
+  }
+
+  /** Die zwei Buch-Karten oben im Bestand schreiben. depot.js render() ruft sie bei
+   *  jedem Zeichnen mit auf, damit die Karten stehen, bevor der erste Takt durch ist. */
+  function karten() {
+    var m = buchKarteDaten('momentum');
+    var dr = buchKarteDaten('drift');
+    var eM = el('buchMomentumKopf');
+    if (eM && m) eM.innerHTML = karteHtml(m, taktTextMomentum(m));
+    var eD = el('buchDriftKopf');
+    if (eD && dr) eD.innerHTML = karteHtml(dr, taktTextDrift(dr));
+  }
+
   function zeige(mom, drift, daten, fehler) {
     /* Ein Fehler ist hier kein Zwischenstand: er ersetzt die Kursangabe und beendet die
      * Anzeige. Deshalb 'fehler' als Zustand - die Zeile wird eingefaerbt und faellt
      * beim naechsten erfolgreichen Durchlauf von selbst wieder auf ihre Grundfarbe.
      * #mfdStatus traegt class="hinweis"; der Inline-Stil ist leer, die Hilfe merkt sich
-     * genau dieses '' und stellt es wieder her - die Klassenfarbe bleibt also. */
-    if (fehler) { U.statuszeile('mfdStatus', fehler, 'fehler'); return; }
+     * genau dieses '' und stellt es wieder her - die Klassenfarbe bleibt also.
+     * Die Karten werden trotzdem geschrieben: sie leben dann vom letzten Verlaufspunkt
+     * und sagen dazu, von wann er ist. */
+    if (fehler) { U.statuszeile('mfdStatus', fehler, 'fehler'); karten(); return; }
     var d = D();
     if (daten) {
       U.statuszeile('mfdStatus', 'Kurse vom ' + new Date(daten.juengster).toLocaleDateString('de-DE') +
         (Date.now() - daten.stand > 26 * 3600000 ? ' – veraltet, Nachladen angestoßen' : '') + '.');
     }
-    var eM = el('mfdMomentum');
-    if (eM && mom) {
+    /* Ab hier die KLAPPE "Positionen im Detail": Korb und Konfiguration, der
+     * Faelligkeits-Hinweis mit der Handlungsliste, die Positionstabelle und die
+     * verworfenen Signale - alles wortgleich wie vorher. Die vier Kennzahlen, die
+     * hier bis zum 03.09.2026 als Kachelreihe darueber standen, stehen jetzt auf der
+     * Karte; gerechnet werden sie an derselben Stelle wie vorher. */
+    if (mom) {
       var b = d.mfBuch, bw = mom.bewertung;
-      var pnl = bw.wert - b.start;
-      /* cls statt sign: das Buch zeigt ein Ergebnis von genau 0 $ gruen. U.signCls
-       * saehe es neutral. Welche der beiden Anzeigen richtig ist, entscheidet nicht
-       * diese Aufraeumarbeit - der Ausdruck bleibt deshalb, wie er war. */
-      var pnlCls = pnl >= 0 ? 'pos' : 'neg';
-      var html = '<div class="depot-stats">' +
-        U.kachel('Depotwert', U.money(bw.wert), { cls: pnlCls, fs: 'var(--fs-zahl)' }) +
-        U.kachel('Ergebnis', U.signTxt(Math.round(pnl * 100) / 100, ' $'), { cls: pnlCls, fs: 'var(--fs-zahl)' }) +
-        U.kachel('Positionen', b.positionen.length, { fs: 'var(--fs-zahl)' }) +
-        U.kachel('Status', d.momentumAn ? 'handelt selbst' : 'nur rechnen', { fs: 'var(--fs-gross)' }) +
-        '</div>';
-      /* Korb und Konfiguration, wie das Buch sie WIRKLICH liest (Zahlen aus mom.ziel.korb
-       * und b.konfig, nie aus einem Text hier). Die Korbgroesse je Umschichtung ist die
-       * nachrichtliche Ausweisung der Schwellen-Drift. */
-      var kb = mom.ziel.korb;
-      if (kb) {
-        html += '<div style="font-size:var(--fs-neben); color:var(--muted); margin:6px 0;">' +
-          'Korb: <b>' + kb.zulaessig + '</b> von ' + kb.geprueft + ' Werten zulässig (Median-Tagesumsatz ≥ ' +
-          Math.round(kb.umsatzMin / 1e6) + ' Mio $ über ' + kb.fenster + ' Balken bis zum Stichtag, vor der Rangbildung)' +
-          (kb.ohneUmsatz ? ' · ' + kb.ohneUmsatz + ' ohne Stückzahlen – Tagesdaten werden neu geladen' : '') +
-          (mom.ziel.zuWenig ? ' · <b>unter ' + (b.konfig ? b.konfig.mindestWerte : '?') + ' zulässigen Werten – kein Korb</b>' : '') +
-          '. Konfiguration wie gemessen (Studie 02.09.2026)' +
-          (b.konfigSeit ? ' seit ' + new Date(b.konfigSeit).toLocaleDateString('de-DE') : '') +
-          ' · Vorwärtstest ' + (b.liquideSeit ? 'seit ' + new Date(b.liquideSeit).toLocaleDateString('de-DE') : 'ab der nächsten Umschichtung') + '.' +
-          (b.korbVerlauf && b.korbVerlauf.length
-            ? '<br>Korbgröße je Umschichtung (nachrichtlich – die nominale Schwelle wandert mit dem Marktvolumen): ' +
-              b.korbVerlauf.slice(-12).map(function (k) { return new Date(k.t).toLocaleDateString('de-DE') + ' ' + k.zulaessig + '/' + k.geprueft; }).join(', ')
-            : '') +
-          '</div>';
+      STAND.momentum = { wert: bw.wert, start: b.start, faellig: !!mom.faellig, at: Date.now() };
+      var eM = el('mfdMomentum');
+      if (eM) {
+        /* Korb und Konfiguration, wie das Buch sie WIRKLICH liest (Zahlen aus mom.ziel.korb
+         * und b.konfig, nie aus einem Text hier). Die Korbgroesse je Umschichtung ist die
+         * nachrichtliche Ausweisung der Schwellen-Drift. */
+        var html = '';
+        var kb = mom.ziel.korb;
+        if (kb) {
+          html += '<div style="font-size:var(--fs-neben); color:var(--muted); margin:6px 0;">' +
+            'Korb: <b>' + kb.zulaessig + '</b> von ' + kb.geprueft + ' Werten zulässig (Median-Tagesumsatz ≥ ' +
+            Math.round(kb.umsatzMin / 1e6) + ' Mio $ über ' + kb.fenster + ' Balken bis zum Stichtag, vor der Rangbildung)' +
+            (kb.ohneUmsatz ? ' · ' + kb.ohneUmsatz + ' ohne Stückzahlen – Tagesdaten werden neu geladen' : '') +
+            (mom.ziel.zuWenig ? ' · <b>unter ' + (b.konfig ? b.konfig.mindestWerte : '?') + ' zulässigen Werten – kein Korb</b>' : '') +
+            '. Konfiguration wie gemessen (Studie 02.09.2026)' +
+            (b.konfigSeit ? ' seit ' + new Date(b.konfigSeit).toLocaleDateString('de-DE') : '') +
+            ' · Vorwärtstest ' + (b.liquideSeit ? 'seit ' + new Date(b.liquideSeit).toLocaleDateString('de-DE') : 'ab der nächsten Umschichtung') + '.' +
+            (b.korbVerlauf && b.korbVerlauf.length
+              ? '<br>Korbgröße je Umschichtung (nachrichtlich – die nominale Schwelle wandert mit dem Marktvolumen): ' +
+                b.korbVerlauf.slice(-12).map(function (k) { return new Date(k.t).toLocaleDateString('de-DE') + ' ' + k.zulaessig + '/' + k.geprueft; }).join(', ')
+              : '') +
+            '</div>';
+        }
+        if (mom.faellig && mom.plan) {
+          html += '<div style="font-size:var(--fs-text); margin:8px 0; padding:8px 10px; border-left:3px solid var(--warn);">' +
+            '<b>Rebalancing fällig.</b> ' + (d.momentumAn ? 'Wird beim nächsten Takt ausgeführt.' :
+            'Automatik ist aus – Handlungsliste: ' +
+            (mom.plan.verkaufen.length ? 'verkaufen ' + mom.plan.verkaufen.map(function (o) { return o.sym; }).join(', ') + '; ' : '') +
+            (mom.plan.kaufen.length ? 'kaufen ' + mom.plan.kaufen.map(function (o) { return o.sym; }).join(', ') : '')) + '</div>';
+        }
+        html += posTabelle(b, daten.preise, false);
+        if (bw.ohneKurs.length) html += '<div class="hinweis">Ohne frischen Kurs (zum Einstand bewertet): ' + bw.ohneKurs.join(', ') + '</div>';
+        // Erkannt, aber nicht ins Depot genommen: Rangfolge-Ausschlüsse und Ziele ohne Kurs
+        var vM = (mom.ziel.verworfen || []).slice();
+        ((mom.plan && mom.plan.fehltKurs) || []).forEach(function (sy) {
+          vM.push({ sym: sy, grund: 'im Ziel, aber ohne frischen Kurs – nicht handelbar' });
+        });
+        html += verworfenTabelle(vM, 'Erkannt, aber nicht ins Depot genommen', false);
+        eM.innerHTML = html;
       }
-      if (mom.faellig && mom.plan) {
-        html += '<div style="font-size:var(--fs-text); margin:8px 0; padding:8px 10px; border-left:3px solid var(--warn);">' +
-          '<b>Rebalancing fällig.</b> ' + (d.momentumAn ? 'Wird beim nächsten Takt ausgeführt.' :
-          'Automatik ist aus – Handlungsliste: ' +
-          (mom.plan.verkaufen.length ? 'verkaufen ' + mom.plan.verkaufen.map(function (o) { return o.sym; }).join(', ') + '; ' : '') +
-          (mom.plan.kaufen.length ? 'kaufen ' + mom.plan.kaufen.map(function (o) { return o.sym; }).join(', ') : '')) + '</div>';
-      }
-      html += posTabelle(b, daten.preise, false);
-      if (bw.ohneKurs.length) html += '<div class="hinweis">Ohne frischen Kurs (zum Einstand bewertet): ' + bw.ohneKurs.join(', ') + '</div>';
-      // Erkannt, aber nicht ins Depot genommen: Rangfolge-Ausschlüsse und Ziele ohne Kurs
-      var vM = (mom.ziel.verworfen || []).slice();
-      ((mom.plan && mom.plan.fehltKurs) || []).forEach(function (sy) {
-        vM.push({ sym: sy, grund: 'im Ziel, aber ohne frischen Kurs – nicht handelbar' });
-      });
-      html += verworfenTabelle(vM, 'Erkannt, aber nicht ins Depot genommen', false);
-      eM.innerHTML = html;
     }
     var eD = el('mfdDrift');
-    if (eD) {
-      if (!drift) {
-        eD.innerHTML = '<div class="empty" style="padding:6px 0;">Zu wenige Werte mit Ergebnisterminen – der Hintergrund-Abruf füllt das Archiv laufend auf.</div>';
-      } else {
-        var bD = d.driftBuch, bwD = drift.bewertung;
-        var pnlD = bwD.wert - bD.start;
-        var pnlDCls = pnlD >= 0 ? 'pos' : 'neg';
-        eD.innerHTML = '<div class="depot-stats">' +
-          U.kachel('Depotwert', U.money(bwD.wert), { cls: pnlDCls, fs: 'var(--fs-zahl)' }) +
-          U.kachel('Ergebnis', U.signTxt(Math.round(pnlD * 100) / 100, ' $'), { cls: pnlDCls, fs: 'var(--fs-zahl)' }) +
-          U.kachel('Positionen', bD.positionen.length, { fs: 'var(--fs-zahl)' }) +
-          U.kachel('Signale offen laut Modell', drift.info.heute.offen.length, { fs: 'var(--fs-zahl)' }) +
-          U.kachel('Status', d.driftAn ? 'handelt selbst' : 'nur rechnen', { fs: 'var(--fs-gross)' }) +
-          '</div>' +
+    if (drift) {
+      var bD = d.driftBuch, bwD = drift.bewertung;
+      STAND.drift = { wert: bwD.wert, start: bD.start, at: Date.now() };
+      if (eD) {
+        /* "Signale offen laut Modell" war bis zum 03.09.2026 eine Kachel. Sie gehoert
+         * nicht auf die Karte (dort stehen die vier Groessen, die jedes Buch hat),
+         * verschwindet aber nicht: sie steht hier ueber der Positionstabelle, neben
+         * der Zahl der Werte, die das Buch ueberhaupt im Blick hat. */
+        eD.innerHTML = '<div style="font-size:var(--fs-neben); color:var(--muted); margin:6px 0;">' +
+          'Signale offen laut Modell: <b>' + drift.info.heute.offen.length + '</b> · ' +
+          drift.info.werte + ' Werte mit Ergebnisterminen im Blick.</div>' +
           posTabelle(bD, daten.preise, true) +
           verworfenTabelle(drift.info.verworfen, 'Erkannt, aber nicht gehandelt', true);
       }
+    } else if (eD) {
+      eD.innerHTML = '<div class="empty" style="padding:6px 0;">Zu wenige Werte mit Ergebnisterminen – der Hintergrund-Abruf füllt das Archiv laufend auf.</div>';
     }
+    karten();
   }
 
   function bereit() {
@@ -420,5 +538,8 @@
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bereit);
   else bereit();
 
-  window.MFDepot = { takt: takt };
+  /* karten() ist bewusst mit exportiert: depot.js render() zeichnet den Bestand,
+   * und die zwei Buch-Karten gehoeren dazu. Der Schreiber bleibt trotzdem diese
+   * Datei - render() bestellt nur, es formuliert nicht. */
+  window.MFDepot = { takt: takt, karten: karten };
 })();

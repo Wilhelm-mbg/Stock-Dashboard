@@ -658,6 +658,39 @@
   @media (max-width: 800px) { .grid2 { grid-template-columns: 1fr; } }
 
   .depot-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 12px; }
+
+  /* ---- Buecher-Zeile im Bestand (Oberflaeche Stufe 2, 03.09.2026) ----
+     Eine Karte je Buch nebeneinander, bei schmalem Fenster untereinander. Die
+     Mindestbreite ist so gewaehlt, dass die laengste Faktenzeile ("nächste
+     Umschichtung nach 63 Handelstagen") nicht bei jedem Buch dreizeilig wird. */
+  .buecher { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 10px; margin-bottom: 14px; }
+  @media (max-width: 700px) { .buecher { grid-template-columns: 1fr; } }
+  .buecher-kopf { font-size: var(--fs-neben); color: var(--ink-2); font-weight: 600; margin-bottom: 8px; }
+  .buecher-kopf .buecher-zusicherung { font-weight: 400; color: var(--muted); }
+  .buch h3 { margin-bottom: 8px; }
+  .buch .buch-konfig { font-weight: 400; color: var(--muted); }
+  .buch-wert { font-size: var(--fs-titel); font-weight: 700; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; }
+  .buch-erg { font-size: var(--fs-text); font-weight: 600; margin-top: 2px; font-variant-numeric: tabular-nums; }
+  .buch-fakten { display: grid; grid-template-columns: auto 1fr; gap: 3px 12px; margin: 10px 0 0; font-size: var(--fs-neben); }
+  .buch-fakten dt { color: var(--muted); }
+  .buch-fakten dd { margin: 0; color: var(--ink-2); }
+  .buch-aus { font-size: var(--fs-text); color: var(--muted); padding: 10px 0 6px; line-height: 1.5; }
+  .buch-detail { margin: 10px 0 0; }
+  /* Zuletzt getan: Datum, Buch, Art, Wert - vier Spalten, tabellarisch ausgerichtet
+     ohne Tabelle (es ist eine Liste von Handlungen, kein Datensatz zum Vergleichen). */
+  .handlungen { display: grid; grid-template-columns: auto auto 1fr auto; gap: 4px 14px; font-size: var(--fs-text); align-items: baseline; }
+  .handlungen .hz-zeit { color: var(--muted); font-size: var(--fs-neben); font-variant-numeric: tabular-nums; }
+  .handlungen .hz-buch { color: var(--ink-2); font-weight: 600; }
+  .handlungen .hz-wert { text-align: right; font-variant-numeric: tabular-nums; }
+
+  /* ---- Statuszeile im Klappentitel des Maschinenraums (Stufe 2) ----
+     details.how summary ist inline-flex; der Stand klebte damit direkt am Titel.
+     Nur die Betrieb-Klappen werden deshalb zu Blockelementen, damit margin-left:auto
+     den Stand an den rechten Rand setzt. :empty blendet ihn ganz aus - eine leere
+     Statuszeile soll keinen Platz beanspruchen und keinen Zustand vortaeuschen. */
+  #sub-betrieb details[data-klappe] > summary { display: flex; }
+  .klappe-stand { margin-left: auto; color: var(--muted); font-weight: 400; text-align: right; font-variant-numeric: tabular-nums; }
+  .klappe-stand:empty { display: none; }
   .badge { display: inline-block; font-size: var(--fs-klein); font-weight: 700; border-radius: var(--r-normal); padding: 1px 6px; margin-right: 4px; }
   .badge.call { color: var(--up); background: var(--up-soft); }
   .badge.put  { color: var(--down); background: var(--down-soft); }
@@ -839,7 +872,7 @@
 <div class="subnote" id="subnote">Big Tech · Chip-Sektor · Marktüberblick – aktualisiert sich automatisch (1 Min während des US-Handels, sonst 5 Min). Charts: 1 Monat, Tagesschluss.</div>
 
 <div id="cockpit" role="status" aria-live="polite" aria-label="Kennzahlen">
-  <div class="ck"><span class="ckl">Simulation</span><b id="ckEquity">–</b></div>
+  <div class="ck"><span class="ckl">Intraday-Depot</span><b id="ckEquity">–</b></div>
   <div class="ck"><span class="ckl">Heute</span><b id="ckDay">–</b></div>
   <div class="ck"><span class="ckl">Offen</span><b id="ckOpen">–</b></div>
   <div class="ck"><span class="ckl">Bücher</span><b id="ckBooks" title="Momentum / Drift – virtuelle 100.000-$-Bücher, Stand gegen ihr eigenes Startkapital">–</b></div>
@@ -892,26 +925,69 @@
 <h2 style="margin-top:0;">Bestand</h2>
 <div class="simnote"><b>Simulation mit virtuellem Kapital – keine Anlageberatung.</b> Gehandelt wird <span id="depotInstrumentHinweis">der Basiswert (Aktie 1×, ohne Hebel)</span>. Optionsscheine werden synthetisch bepreist (Black-Scholes): Hebel, Zeitwertverfall, Volatilitäts-Smile und der Vola-Einbruch nach Ergebnisterminen sind abgebildet, echte Emittenten-Preise nicht. Läuft, solange die App geöffnet ist. <button class="info" type="button" data-info="modell.schein" aria-expanded="false" aria-label="Erklärung: Wie ein Optionsschein hier bepreist wird">i</button></div>
 <div class="simnote" style="margin-bottom:6px;">Hier steht, was das Depot hält und was es getan hat. Wonach gehandelt wird – Strategien, Einstellungen und Werkzeuge – steht im Reiter <b>Regeln</b>.</div>
-<!-- ============ BÜCHER (Bestand; gesteuert wird unter Regeln → Einstellungen) ============ -->
+<!-- ============ BÜCHER: eine Karte je Buch, nebeneinander ============ -->
 <div id="sub-mittel">
-<div class="panel">
-  <h3 style="display:flex; align-items:center; gap:8px;">Mittelfrist-Depot · Momentum und Ergebnis-Drift handeln
+  <!-- Der Kopf traegt WOERTLICH die Zusicherung, die bis Stufe 1 als eigener Absatz
+       ueber den Buechern stand (Leitplanke 1: verschoben, nie umformuliert). Der
+       i-Knopf ist derselbe; die fuenf Zeilen Messtext stehen wortgleich im
+       Erklaerregister unter vermoegen.buecher. -->
+  <div class="buecher-kopf">Mittelfrist-Depot · Momentum und Ergebnis-Drift handeln
     <button class="info" type="button" data-info="vermoegen.buecher" aria-expanded="false"
-            aria-label="Erklärung: Mittelfrist-Depot">i</button></h3>
-  <!-- B11 (01.09.2026): der Fuenf-Zeilen-Absatz steht wortgleich im Info-Register
-       (vermoegen.buecher). Sichtbar bleibt die Zusicherung. -->
-  <div style="font-size:var(--fs-text); color:var(--ink-2); line-height:1.55; margin-bottom:8px; max-width:68ch;">
-    Zwei getrennte virtuelle Bücher à 100.000 $, die die beiden Strategien <b>tatsächlich führen</b>.
-    Alles Simulation, keine Anlageberatung.
+            aria-label="Erklärung: Mittelfrist-Depot">i</button>
+    <span class="buecher-zusicherung">Zwei getrennte virtuelle Bücher à 100.000 $, die die beiden Strategien <b>tatsächlich führen</b>.
+      Alles Simulation, keine Anlageberatung.</span>
   </div>
-  <h3 style="margin-top:12px; font-size:var(--fs-gross);">Momentum-Buch <span style="font-weight:400; color:var(--muted);">· stärkstes Zehntel, alle 63 Handelstage, 20 Bp je Seite</span></h3>
-  <div id="mfdMomentum" style="margin-top:6px;"><div class="empty"><span>Noch nichts gerechnet – der Takt läuft nach dem Start von allein. Sofort prüfen: Reiter <b>Regeln → Einstellungen</b>.</span></div></div>
-  <h3 style="margin-top:14px; font-size:var(--fs-gross);">Ergebnis-Drift-Buch <span style="font-weight:400; color:var(--muted);">· 60 Handelstage je Position, long und short, 10 Bp je Seite</span></h3>
-  <div id="mfdDrift" style="margin-top:6px;"><div class="empty"><span>Noch nichts gerechnet – der Takt läuft nach dem Start von allein. Sofort prüfen: Reiter <b>Regeln → Einstellungen</b>.</span></div></div>
+  <!-- DREI KARTEN, DREI SCHREIBER, KEINE ZAHL IM MARKUP.
+       #buchMomentumKopf und #buchDriftKopf schreibt mfdepot.js (karten()), weil dort
+       die Bewertung entsteht; #buchIntradayKopf schreibt depot.js (render()), weil
+       dort das Intraday-Depot lebt. Genau EIN Schreiber je Element - zwei waeren die
+       naechste Stelle, an der zwei Zahlen fuer dasselbe stehen.
+       Die Leerzustaende hier tragen deshalb KEINE Zahl: was noch nicht gerechnet ist,
+       darf auch nicht als Zahl dastehen. -->
+  <div class="buecher" id="buecherZeile">
+    <div class="panel buch" id="buchMomentum">
+      <h3>Momentum-Buch <span class="buch-konfig">· stärkstes Zehntel, alle 63 Handelstage, 20 Bp je Seite</span></h3>
+      <div id="buchMomentumKopf"><div class="empty"><span>Noch nichts gerechnet – der Takt läuft nach dem Start von allein. Sofort prüfen: Reiter <b>Regeln → Einstellungen</b>.</span></div></div>
+      <details class="how buch-detail">
+        <summary>Positionen im Detail</summary>
+        <div id="mfdMomentum"><div class="empty"><span>Noch nichts gerechnet – der Takt läuft nach dem Start von allein. Sofort prüfen: Reiter <b>Regeln → Einstellungen</b>.</span></div></div>
+      </details>
+    </div>
+    <div class="panel buch" id="buchDrift">
+      <h3>Ergebnis-Drift-Buch <span class="buch-konfig">· 60 Handelstage je Position, long und short, 10 Bp je Seite</span></h3>
+      <div id="buchDriftKopf"><div class="empty"><span>Noch nichts gerechnet – der Takt läuft nach dem Start von allein. Sofort prüfen: Reiter <b>Regeln → Einstellungen</b>.</span></div></div>
+      <details class="how buch-detail">
+        <summary>Positionen im Detail — Ergebnis-Drift</summary>
+        <div id="mfdDrift"><div class="empty"><span>Noch nichts gerechnet – der Takt läuft nach dem Start von allein. Sofort prüfen: Reiter <b>Regeln → Einstellungen</b>.</span></div></div>
+      </details>
+    </div>
+    <div class="panel buch" id="buchIntraday">
+      <h3>Intraday-Depot <span class="buch-konfig">· die Kurzfrist-Regel, virtuelles Kapital</span></h3>
+      <div id="buchIntradayKopf"><div class="empty"><span>Noch nicht gezeichnet – das Depot fährt gerade hoch.</span></div></div>
+    </div>
+  </div>
 </div>
-
+<!-- ============ ZULETZT GETAN (nur Handlungen, nie Pruefläufe) ============ -->
+<div class="panel" style="margin-bottom:12px;">
+  <h3>Zuletzt getan – die jüngsten Handlungen aller Bücher</h3>
+  <div id="zuletztGetan"><div class="empty"><span>noch keine Handlung aufgezeichnet</span></div></div>
 </div>
-<!-- ============ DEPOT ============ -->
+<!-- ============ DEPOTVERLAUF ueber alle Buecher ============ -->
+<div class="panel" style="margin-bottom:14px;">
+  <h3>Depotverlauf – jedes Buch gegen sein eigenes Startkapital</h3>
+  <!-- Prozent statt Dollar, weil drei Buecher mit verschiedenem Startkapital in einem
+       Bild sonst nur ihre Groesse zeigen, nicht ihren Verlauf. Gezeichnet wird mit
+       demselben Zeichenwerk wie jeder andere Mehrserien-Chart (Chart.drawLines). -->
+  <div id="buecherLegende" style="font-size:var(--fs-neben); margin-bottom:4px;"></div>
+  <svg id="buecherChart" style="width:100%; height:170px; display:block;"></svg>
+</div>
+<!-- ============ INTRADAY-DEPOT (Kacheln, Messband, Verlauf, Positionen, Protokoll) ============ -->
+<div id="intradayBereich">
+<!-- Ist die Intraday-Strategie aus, wird dieser Behaelter per hidden AUSGEBLENDET -
+     nie entfernt. depot.js render() schreibt weiter in #depotStats, messband.js
+     haengt sein Band weiter als erstes Kind in #sub-depot. Wer hier etwas
+     herausnimmt, bricht beides still. -->
+<h2>Intraday-Depot</h2>
 <div id="sub-depot">
   <div class="depot-stats" id="depotStats"></div>
   <div id="messNote" style="color:var(--muted); font-size:var(--fs-neben); margin:8px 0 0;"></div>
@@ -947,6 +1023,7 @@
     <div class="panel" id="tradeLog"><div class="loading">Noch keine Trades.</div></div>
   </div>
 </details>
+</div><!-- /intradayBereich -->
 </div><!-- /bestandBlock -->
 
 <!-- Der title wird in renderTicker() gesetzt: bei "Bewegung reduzieren" laeuft nichts,
@@ -1696,7 +1773,7 @@
   <div class="simnote">Maschinenraum — was die Nachtjobs und Messungen brauchen. Für den Alltag nicht nötig.</div>
 
   <details class="how" data-klappe="archiv">
-    <summary>Kursarchiv</summary>
+    <summary>Kursarchiv<span class="klappe-stand" id="kstand-archiv"></span></summary>
   <div id="sub-archiv">
     <h2>Kursarchiv <span style="color:var(--muted); font-size:var(--fs-neben); font-weight:400; text-transform:none; letter-spacing:0;">– die App holt die feinen Kerzen selbst und legt sie ab.</span></h2>
     <div class="panel" id="archivKarte"><div class="loading">Sehe im Archiv nach …</div></div>
@@ -1704,7 +1781,7 @@
   </details>
 
   <details class="how" data-klappe="auswertung">
-    <summary>Autopilot, Marktlage &amp; Kursarchiv auffüllen</summary>
+    <summary>Autopilot, Marktlage &amp; Kursarchiv auffüllen<span class="klappe-stand" id="kstand-auswertung"></span></summary>
   <h3 id="abAutopilot" class="bereichs-kopf">Autopilot &amp; Datensammlung</h3>
   <div id="sub-auswertung">
 
@@ -1766,14 +1843,14 @@
   </details>
 
   <details class="how" data-klappe="kosten">
-    <summary>Kostenmessung Capital &amp; Alpaca</summary>
+    <summary>Kostenmessung Capital &amp; Alpaca<span class="klappe-stand" id="kstand-kosten"></span></summary>
   <div class="panel">
 <span id="capStatus"></span><span id="alpStatus"></span><div style="margin-top:6px; display:flex; align-items:center; gap:8px; flex-wrap:wrap;"><select id="kostenRundeSym" style="font-size:var(--fs-neben);" title="Welcher Wert in welchem Gefäß gemessen wird. Capital.com-Demo misst CFD (Krypto rund um die Uhr), Alpaca-Paper misst echte US-Aktien nach Umsatzklasse. Achtung: die Spanne auf BTC sagt nichts über die Spanne auf einer Aktie."><optgroup label="Capital.com-Demo (CFD)"><option value="">Aktien – der Reihe nach</option><option value="BTCUSD">BTCUSD – rund um die Uhr</option><option value="ETHUSD">ETHUSD – rund um die Uhr</option></optgroup><optgroup label="Alpaca-Paper (Aktie)"><option value="alpaca:">Aktien – der Reihe nach (Umsatzklasse mit den wenigsten Runden)</option></optgroup></select><button class="btn ghost" id="kostenRundeBtn" type="button" title="Öffnet im gewählten Gefäß eine kleine Position (Capital.com-DEMO: kleinstmöglich; Alpaca-PAPER: rund 200 $) und schließt sie sofort wieder. Gemessen wird, was ein Umlauf wirklich kostet – Spanne plus Schlupf. Setzt eine echte Order ab (Demo-/Papiergeld). Läuft auf Klick; der Messautomat misst zusätzlich eine Runde je Handelstag.">Kostenrunde messen</button><label style="display:inline-flex; align-items:center; gap:4px; font-size:var(--fs-neben); color:var(--muted);" title="Messautomat für das Alpaca-Paper-Konto: eine Aktien-Runde je US-Handelstag zu wechselnder Uhrzeit plus eine Übernacht-Runde (Schlussauktion → Folgeeröffnung). Aus = nur von Hand."><input type="checkbox" id="kostenAutomatAlpChk"> Automat Alpaca</label><span id="kostenRundeStatus" role="status" aria-live="polite" style="font-size:var(--fs-neben); color:var(--muted);"></span></div>
   </div>
   </details>
 
   <details class="how" data-klappe="monitor">
-    <summary>Live-Signal-Monitor</summary>
+    <summary>Live-Signal-Monitor<span class="klappe-stand" id="kstand-monitor"></span></summary>
     <div class="panel" style="margin-bottom:12px;">
       <h3>Live-Signal-Monitor</h3>
       <div id="sigMonitor"></div>
@@ -1786,7 +1863,7 @@
 
   <div id="sub-werkzeug">
   <details class="how" data-klappe="stratchart">
-    <summary>Strategie-Chart</summary>
+    <summary>Strategie-Chart<span class="klappe-stand" id="kstand-stratchart"></span></summary>
   <div id="sub-stratchart">
   <div class="panel" id="stratChartPanel" style="margin-top:12px;">
     <h3 style="display:flex; align-items:center; gap:8px;">Strategie-Chart – Signal und Bedingungen nachvollziehen
@@ -1851,7 +1928,7 @@
   </details>
 
   <details class="how" data-klappe="regelbuch">
-    <summary>Regelbuch – die Regel, die handelt · Regeln, die nur messen · Bilanz</summary>
+    <summary>Regelbuch – die Regel, die handelt · Regeln, die nur messen · Bilanz<span class="klappe-stand" id="kstand-regelbuch"></span></summary>
   <div id="sub-regelbuch">
     <div class="panel" id="regelKarte" style="margin-top:12px; border-top:3px solid var(--series3);">
       <h3 style="display:flex; align-items:center; gap:8px;">Die Regel, die handelt
@@ -1932,7 +2009,7 @@
   </details>
 
   <details class="how" data-klappe="berichte">
-    <summary>Berichte &amp; Backtest</summary>
+    <summary>Berichte &amp; Backtest<span class="klappe-stand" id="kstand-berichte"></span></summary>
     <!-- 2 · Selten gebraucht -->
     <details class="how" style="margin-bottom:12px;">
       <summary>Berichte &amp; Werkzeuge</summary>
@@ -1970,7 +2047,7 @@
   </div><!-- /sub-werkzeug -->
 
   <details class="how" data-klappe="scoreboard">
-    <summary>Messprotokolle (Scoreboard)</summary>
+    <summary>Messprotokolle (Scoreboard)<span class="klappe-stand" id="kstand-scoreboard"></span></summary>
 <h2>Scoreboard <span style="color:var(--muted); font-size:var(--fs-neben); font-weight:400; text-transform:none; letter-spacing:0;">– jede Strategie, die durch die Messmaschine gelaufen ist. Sortiert nach Belegstatus, nicht nach Rendite.</span>
   <button class="info" type="button" data-info="messung.scoreboard" aria-expanded="false" aria-label="Erklärung: Scoreboard">i</button></h2>
 <div class="panel" id="scoreboardKarte">
@@ -1988,7 +2065,7 @@
   </details>
 
   <details class="how" data-klappe="strategieregister">
-    <summary>Strategieregister</summary>
+    <summary>Strategieregister<span class="klappe-stand" id="kstand-strategieregister"></span></summary>
 <h2 style="margin-top:18px;">Strategien <span style="color:var(--muted); font-size:var(--fs-neben); font-weight:400; text-transform:none; letter-spacing:0;">– alle Regeln, die es gibt: wo sie liegen und was aus ihnen wurde.</span>
   <button class="info" type="button" data-info="messung.strategien" aria-expanded="false" aria-label="Erklärung: Strategien">i</button></h2>
 <div class="panel" id="strategienKarte">
@@ -1998,7 +2075,7 @@
   </details>
 
   <details class="how" data-klappe="strategieeingabe">
-    <summary>Neue Strategie ins Rennen schicken</summary>
+    <summary>Neue Strategie ins Rennen schicken<span class="klappe-stand" id="kstand-strategieeingabe"></span></summary>
 <h2 style="margin-top:18px;">Neue Strategie ins Rennen schicken
   <button class="info" type="button" data-info="messung.eingabe" aria-expanded="false" aria-label="Erklärung: Neue Strategie ins Rennen schicken">i</button></h2>
 <div class="panel" id="strategieEingabe">
@@ -2060,7 +2137,7 @@
   </details>
 
   <details class="how" data-klappe="wende">
-    <summary>Trendfinder — Detektor widerlegt</summary>
+    <summary>Trendfinder — Detektor widerlegt<span class="klappe-stand" id="kstand-wende"></span></summary>
   <div id="sub-wende">
     <div class="simnote"><b>Beobachtung, kein Handel.</b> Diese Seite zeigt zuerst den <b>laufenden Trend</b> und
       seine drei Eigenschaften – Richtung, Güte, Breite – genau die drei, die auch der Aktien-Explorer zu einem

@@ -3397,6 +3397,16 @@
       else eqSvg.innerHTML = '<text x="16" y="40" fill="var(--muted)" font-size="12">Die Kurve entsteht, sobald das Depot eine Weile läuft (1 Punkt alle 10 Minuten).</text>';
     }
 
+    /* ---- Bestand Stufe 2: Karten, Handlungen, ein Verlauf, Intraday-Bereich ----
+     * Reihenfolge wie im Markup. karten() gehoert mfdepot.js - dort entsteht die
+     * Bewertung der zwei Buecher; hier wird sie nur bestellt, damit die Karten auch
+     * dann stehen, wenn der erste Takt noch nicht durch ist. */
+    if (window.MFDepot && window.MFDepot.karten) window.MFDepot.karten();
+    renderIntradayKarte();
+    renderHandlungen();
+    renderBuecherVerlauf();
+    intradayBereichZeigen();
+
     // Status-Badges der Strategie-Karten
     renderStatusBadges();
     edgePauseAnzeigen();
@@ -3680,11 +3690,176 @@
     renderEquity();
   }
 
-  /** Prozent mit 1 Nachkommastelle (deutsches Komma); 0 als '±0,0 %'. */
-  function pz1(v) {
-    if (!isFinite(v)) return '–';
-    var r = Math.round(v * 10) / 10;
-    return (r > 0 ? '+' : r < 0 ? '-' : '±') + Math.abs(r).toFixed(1).replace('.', ',') + ' %';
+  /** Prozent mit 1 Nachkommastelle (deutsches Komma); 0 als '±0,0 %'.
+   *  Wohnt seit dem 03.09.2026 als U.pz1 in app-shell.js - die Buecher-Karten in
+   *  mfdepot.js brauchen dieselbe Schreibweise, und zwei Prozentformate fuer
+   *  dieselbe Groesse waeren die naechste Doppelzahl. Der Name bleibt, damit die
+   *  vier Aufrufstellen hier unveraendert lesen. */
+  var pz1 = U.pz1;
+
+  /* ---- Der Bestand oben auf "Heute" (Oberflaeche Stufe 2, 03.09.2026) ----
+   * Drei Karten, die juengsten Handlungen, ein Verlauf ueber alle Buecher, und der
+   * Intraday-Bereich nur dann, wenn die Strategie laeuft. Jede Zahl hat genau eine
+   * Quelle; gerechnet wird hier nichts, was nicht ohnehin gerechnet waere. */
+
+  /** Die Intraday-Karte oben im Bestand. Genau EIN Schreiber (diese Datei), genau
+   *  eine Quelle je Zahl: equityNow() fuer den Wert, START_CAPITAL fuer den Bezug,
+   *  D.positions fuer die Zahl der Positionen, D.trades fuer die letzte Handlung.
+   *  Die zwei Mittelfrist-Karten daneben schreibt mfdepot.js - dort entsteht ihre
+   *  Bewertung, und zwei Schreiber fuer eine Zahl waeren die naechste Stelle, an der
+   *  zwei Staende nebeneinander stehen.
+   *  Ist die Strategie AUS, steht hier eine Zeile und ein Weg dorthin: Kennzahlen
+   *  eines Buches, das gerade nicht handelt, sagen nichts ueber heute. */
+  function renderIntradayKarte() {
+    var el = document.getElementById('buchIntradayKopf');
+    if (!el) return;
+    if (!(D.intraday && D.intraday.enabled)) {
+      el.innerHTML = '<div class="buch-aus">Intraday-Strategie aus – einschalten unter <b>Regeln → Einstellungen</b>.</div>';
+      return;
+    }
+    var eq = equityNow();
+    var pnl = eq - START_CAPITAL;
+    var cls = pnl >= 0 ? 'pos' : 'neg';
+    var letzte = null;
+    (D.trades || []).forEach(function (t) {
+      var zu = t.status === 'closed' && t.closeT;
+      var at = zu ? t.closeT : t.openT;
+      if (at && (!letzte || at > letzte.at)) letzte = { at: at, txt: t.sym + (zu ? ' geschlossen' : ' eröffnet') };
+    });
+    el.innerHTML =
+      '<div class="buch-wert ' + cls + '">' + U.money(eq) + '</div>' +
+      '<div class="buch-erg ' + cls + '">' + U.signTxt(Math.round(pnl * 100) / 100, ' $') +
+        ' · ' + pz1(pnl / START_CAPITAL * 100) + '</div>' +
+      '<dl class="buch-fakten">' +
+        '<dt>Positionen</dt><dd>' + D.positions.length + '</dd>' +
+        '<dt>Status</dt><dd>handelt selbst</dd>' +
+        '<dt>Nächster Takt</dt><dd>wartet auf Signal</dd>' +
+        '<dt>Zuletzt getan</dt><dd>' +
+          (letzte ? U.d(letzte.at) + ' · ' + U.esc(letzte.txt)
+                  : '–<span style="color:var(--muted);"> · noch keine Order</span>') + '</dd>' +
+      '</dl>';
+  }
+
+  /** Die juengsten Handlungen aller Buecher: Datum, Buch, Art, Wert.
+   *  Quelle ist DepotAPI.handlungen() - dieselbe Auswahl, aus der auch die
+   *  Antwort-Seite ihre eine Zeile nimmt: ORDERS, nie Prueflaeufe. Ein Lauf, der
+   *  nichts getan hat, ist keine Handlung (Wilhelms Entscheid 31.08.2026).
+   *  Der Betrag kommt als ZAHL herein und wird erst hier geschrieben - die
+   *  Leseauskunft gibt Daten heraus, keine fertigen Saetze. */
+  function renderHandlungen() {
+    var el = document.getElementById('zuletztGetan');
+    if (!el) return;
+    var liste = window.DepotAPI.handlungen(5);
+    if (!liste.length) {
+      el.innerHTML = '<div class="empty"><span>noch keine Handlung aufgezeichnet</span></div>';
+      return;
+    }
+    el.innerHTML = '<div class="handlungen">' + liste.map(function (h) {
+      var wert = '–';
+      if (h.betrag != null && h.betragArt === 'ergebnis') {
+        wert = '<span class="' + (h.betrag >= 0 ? 'pos' : 'neg') + '">' +
+          U.signTxt(Math.round(h.betrag * 100) / 100, ' $') + '</span>';
+      } else if (h.betrag != null) {
+        wert = U.money(h.betrag);
+      }
+      return '<span class="hz-zeit">' + U.dt(h.at) + '</span>' +
+        '<span class="hz-buch">' + U.esc(h.buch) + '</span>' +
+        '<span>' + U.esc(h.art) + '</span>' +
+        '<span class="hz-wert">' + wert + '</span>';
+    }).join('') + '</div>';
+  }
+
+  /** EIN Verlauf fuer alle Buecher, jedes gegen SEIN eigenes Startkapital - deshalb
+   *  in Prozent. Drei Buecher mit verschiedenem Startkapital in einem Dollar-Bild
+   *  zeigen ihre Groesse, nicht ihren Verlauf.
+   *  Quellen: D.mfVerlauf (Momentum und Drift, ein Punkt je Tag, Bezugswert im Punkt
+   *  selbst) und D.equityHist (Intraday, ein Punkt alle 10 Minuten, Bezug
+   *  START_CAPITAL). Gezeichnet wird mit demselben Mehrserien-Werk wie ueberall
+   *  (Chart.drawLines) - kein zweiter Zeichner.
+   *  Ein abgeschaltetes Buch wird WEGGELASSEN und darunter benannt: eine Linie auf
+   *  einem stehenden Buch liefe waagerecht weiter und saehe aus wie ein Ergebnis. */
+  function renderBuecherVerlauf() {
+    var svg = document.getElementById('buecherChart');
+    var leg = document.getElementById('buecherLegende');
+    if (!svg) return;
+    var mv = D.mfVerlauf || [];
+    function reihe(feld, startFeld, buch) {
+      var pts = [];
+      mv.forEach(function (p) {
+        var st = p[startFeld] || (buch && buch.start) || null;
+        if (p[feld] == null || !st) return;
+        pts.push([p.t, (p[feld] / st - 1) * 100]);
+      });
+      return pts;
+    }
+    var serien = [], aus = [];
+    if (D.momentumAn) serien.push({ name: 'Momentum-Buch', short: 'Momentum', color: 'var(--series)', pts: reihe('momentum', 'startM', D.mfBuch) });
+    else aus.push('Momentum-Buch');
+    if (D.driftAn) serien.push({ name: 'Ergebnis-Drift-Buch', short: 'Drift', color: 'var(--series2)', pts: reihe('drift', 'startD', D.driftBuch) });
+    else aus.push('Ergebnis-Drift-Buch');
+    if (D.intraday && D.intraday.enabled) {
+      serien.push({ name: 'Intraday-Depot', short: 'Intraday', color: 'var(--series3)',
+        pts: (D.equityHist || []).map(function (p) { return [p[0], (p[1] / START_CAPITAL - 1) * 100]; }) });
+    } else aus.push('Intraday-Depot');
+    /* Eine Serie mit einem einzigen Punkt zeichnet drawLines nicht - sie wuerde als
+     * Legendeneintrag ohne Linie stehen bleiben und einen Verlauf behaupten. */
+    var gezeigt = serien.filter(function (s) { return s.pts.length >= 2; });
+    var zuKurz = serien.filter(function (s) { return s.pts.length < 2; }).map(function (s) { return s.name; });
+    drawLines(svg, gezeigt, leg, 0, { unit: ' %' });
+    if (leg) {
+      var hinweis = [];
+      if (aus.length) hinweis.push((aus.length === 1 ? 'Abgeschaltet und deshalb nicht gezeichnet: ' : 'Abgeschaltet und deshalb nicht gezeichnet: ') + aus.join(', ') + '.');
+      if (zuKurz.length) hinweis.push('Noch zu wenige Punkte für eine Linie: ' + zuKurz.join(', ') + '.');
+      if (hinweis.length) {
+        leg.innerHTML += '<div style="color:var(--muted); margin-top:2px;">' + U.esc(hinweis.join(' ')) + '</div>';
+      }
+    }
+  }
+
+  /** Der Intraday-Bereich wird AUSGEBLENDET, nie entfernt: render() schreibt weiter
+   *  in #depotStats (ohne Null-Pruefung), messband.js haengt sein Band weiter als
+   *  erstes Kind in #sub-depot, und der Depotverlauf zeichnet weiter. Wer hier
+   *  Elemente aus dem DOM naehme, braeche all das still. */
+  function intradayBereichZeigen() {
+    var el = document.getElementById('intradayBereich');
+    if (!el) return;
+    el.hidden = !(D.intraday && D.intraday.enabled);
+  }
+
+  /* Die Buecher im Kopf, in Worten (Oberflaeche Stufe 2, 03.09.2026).
+   * Bis dahin stand hier "M – · D –": zwei Buchstaben und zwei Striche, in denen DREI
+   * verschiedene Zustaende zusammenfielen - Buch abgeschaltet, kein Verlaufspunkt,
+   * kein Bezugswert. Wer den Strich sah, wusste nicht, welcher davon gemeint war.
+   * Jetzt nennt jede Haelfte ihr Buch und sagt, was los ist:
+   *   an, Punkt vorhanden  ->  "Momentum +1,2 %"
+   *   Buch abgeschaltet    ->  "Momentum aus"
+   *   kein Verlaufspunkt   ->  "Momentum noch kein Stand"
+   * Gerechnet wird wie vorher: Stand des Buches gegen SEIN Startkapital, und der
+   * Bezugswert kommt aus dem Verlaufspunkt selbst (startM/startD), sonst aus dem
+   * Buch - nie aus einer festen Zahl. Hier stand einmal 10000, waehrend die Buecher
+   * mit 100000 laufen; ein unberuehrtes Buch meldete dadurch +900,0 %. */
+  function buchKopfText(feld, label) {
+    var mv = D.mfVerlauf || [];
+    var lp = mv.length ? mv[mv.length - 1] : null;
+    if (!(feld === 'momentum' ? D.momentumAn : D.driftAn)) return label + ' aus';
+    var buch = feld === 'momentum' ? D.mfBuch : D.driftBuch;
+    var st = (lp && (feld === 'momentum' ? lp.startM : lp.startD)) || (buch && buch.start) || null;
+    if (!lp || lp[feld] == null || !st) return label + ' noch kein Stand';
+    return label + ' ' + pz1((lp[feld] / st - 1) * 100);
+  }
+
+  /* Der Scan im Kopf, in Worten statt als Strich.
+   * HEALTH.lastScanT ist ein SITZUNGSwert - er beginnt bei jedem Programmstart wieder
+   * bei 0. Ein Stempel von gestern (die App lief ueber Mitternacht) ist deshalb kein
+   * Scan von heute und wird auch nicht so genannt.
+   * Und: der Scan laeuft bei abgeschalteter Strategie WEITER, weil das Schattenbuch
+   * mitschreibt (intradayScan, nurSchatten). "Intraday aus" allein waere an dieser
+   * Stelle also unvollstaendig - die Uhrzeit steht dann als Schattenbuch dabei. */
+  function scanKopfText() {
+    var heute = HEALTH.lastScanT && new Date(HEALTH.lastScanT).toDateString() === new Date().toDateString();
+    var zeit = heute ? new Date(HEALTH.lastScanT).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }) : null;
+    if (!(D.intraday && D.intraday.enabled)) return 'Intraday aus' + (zeit ? ' · Schattenbuch ' + zeit : '');
+    return zeit ? 'letzter Scan ' + zeit : 'kein Scan heute';
   }
 
   /** Kopf-Cockpit füllen – reine Anzeige aus vorhandenem State, keine eigene Datenhaltung. */
@@ -3708,23 +3883,9 @@
     var co = document.getElementById('ckOpen');
     if (co) co.textContent = D.positions.length + (D.positions.length === 1 ? ' Position' : ' Positionen');
     var cb = document.getElementById('ckBooks');
-    if (cb) {
-      var mv = D.mfVerlauf || [];
-      var lp = mv.length ? mv[mv.length - 1] : null;
-      /* Bezugswert aus dem Buch, nicht aus einer festen Zahl: hier stand 10000, waehrend
-       * die Buecher mit 100000 laufen (mfdepot.js/START_KAPITAL) - ein unberuehrtes Buch
-       * meldete dadurch +900,0 %. mfVerlauf schreibt startM/startD seit 8.24.2 mit; fuer
-       * aeltere Punkte bleibt das Buch selbst die Quelle. */
-      var stM = (lp && lp.startM) || (D.mfBuch && D.mfBuch.start) || null;
-      var stD = (lp && lp.startD) || (D.driftBuch && D.driftBuch.start) || null;
-      var mTxt = (!D.momentumAn || !lp || lp.momentum == null || !stM) ? '–' : pz1((lp.momentum / stM - 1) * 100);
-      var dTxt = (!D.driftAn || !lp || lp.drift == null || !stD) ? '–' : pz1((lp.drift / stD - 1) * 100);
-      cb.textContent = 'M ' + mTxt + ' · D ' + dTxt;
-    }
+    if (cb) cb.textContent = buchKopfText('momentum', 'Momentum') + ' · ' + buchKopfText('drift', 'Drift');
     var cs = document.getElementById('ckScan');
-    if (cs) cs.textContent = HEALTH.lastScanT
-      ? new Date(HEALTH.lastScanT).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })
-      : '–';
+    if (cs) cs.textContent = scanKopfText();
   }
 
   /** Die drei Kennzahlen des Depotverlaufs: Gesamtrendite, Hoch, groesster Ruecksetzer.
@@ -4252,6 +4413,53 @@
       };
     },
 
+    /* ---- Die juengsten HANDLUNGEN aller Buecher (Bestand Stufe 2, 03.09.2026) ----
+     * Dieselbe Auswahl wie antwort().handlung, nur als Liste statt als eine Zeile:
+     * ORDERS, nie Prueflaeufe. Ein Lauf, der nichts getan hat, ist keine Handlung
+     * (Wilhelms Entscheid 31.08.2026) und steht deshalb nicht darin - genau deshalb
+     * liest diese Auskunft D.trades und b.trades und NICHT das Journal (tuneLog), in
+     * dem auch Umstellungen und Messungen stehen.
+     * NUR KOPIEN, wie signal(), protokollKante() und antwort(): jede Zeile ist ein
+     * frisches Objekt, der Betrag kommt als ZAHL heraus. Wer sie anzeigt, formatiert
+     * selbst - eine Leseauskunft gibt Daten heraus, keine fertigen Saetze. */
+    handlungen: function (n) {
+      if (!D) return [];
+      var alle = [];
+      function merke(at, buch, art, betrag, betragArt) {
+        if (!at) return;
+        alle.push({ at: at, buch: buch, art: art,
+          betrag: (betrag != null && isFinite(betrag)) ? betrag : null,
+          betragArt: (betrag != null && isFinite(betrag)) ? betragArt : null });
+      }
+      (D.trades || []).forEach(function (t) {
+        var wo = t.strategy === 'hourly' ? 'Stunden-Strategie' : 'Intraday';
+        merke(t.openT, wo, (t.dir === 'put' ? 'Put' : t.dir === 'call' ? 'Call' : 'Kauf') + ' ' + t.sym,
+          (t.entry > 0 && t.qty > 0) ? t.entry * t.qty : null, 'einsatz');
+        if (t.status === 'closed') merke(t.closeT, wo, t.sym + ' geschlossen', t.pnl, 'ergebnis');
+      });
+      function buchHandlung(b, name) {
+        ((b && b.trades) || []).forEach(function (t) {
+          /* Verkauf und Rueckkauf tragen ein Ergebnis, Kauf und Leerverkauf einen
+           * Einsatz. Beides sind Dollar, aber nicht dasselbe - deshalb steht die Art
+           * dabei, statt dass die Anzeige sie aus der Bezeichnung raet. */
+          if (t.pnl != null) merke(t.t, name, t.art + ' ' + t.sym, t.pnl, 'ergebnis');
+          else merke(t.t, name, t.art + ' ' + t.sym,
+            (t.stueck > 0 && t.kurs > 0) ? t.stueck * t.kurs : null, 'einsatz');
+        });
+      }
+      buchHandlung(D.mfBuch, 'Momentum-Buch');
+      buchHandlung(D.driftBuch, 'Drift-Buch');
+      alle.sort(function (a, b) { return b.at - a.at; });
+      return alle.slice(0, n > 0 ? n : 5);
+    },
+
+    /** Die Kennungen, zu denen ein Messprotokoll im Datenordner liegt - je Kennung
+     *  das juengste, so wie kantenAusProtokollen() sie gelesen hat. Nur eine KOPIE
+     *  der Namen; das Urteil holt sich protokollKante(). Gebraucht fuer die
+     *  Statuszeile der Klappe "Messprotokolle": sie soll die Zahl nennen, ohne die
+     *  Protokolle ein zweites Mal von der Platte zu lesen. */
+    protokollKennungen: function () { return Object.keys(PROTOKOLL_KANTE); },
+
     /* ---- Antwort-Seite (Regeln-Neubau Stufe 2, Wilhelms Zielbild 31.08.2026) ----
      * Eine Momentaufnahme fuer die drei Fragen der ersten Seite: Was handelt die App
      * gerade, was hat sie zuletzt GETAN (Handlung = Order in einem der Buecher, nie
@@ -4300,7 +4508,12 @@
         pilotZuletzt: a.lastMess || null,
         regime: D.regime ? { at: D.regime.at, ok: !!D.regime.ok, pause: !!D.regime.pause,
           txt: String(D.regime.txt || '').slice(0, 160) } : null,
-        pruefStand: D.pruefStand && D.pruefStand.buecher ? D.pruefStand.buecher : null
+        pruefStand: D.pruefStand && D.pruefStand.buecher ? D.pruefStand.buecher : null,
+        /* Wann der Intraday-Scanner zuletzt durchgelaufen ist. SITZUNGSwert aus
+         * HEALTH - nach einem Neustart wieder 0, und das ist die Wahrheit: die App
+         * weiss dann nicht, ob heute schon gescannt wurde. Fuer die Statuszeile der
+         * Klappe Live-Signal-Monitor, damit sie den Stand nicht selbst suchen muss. */
+        letzterScan: HEALTH.lastScanT || null
       };
     },
 

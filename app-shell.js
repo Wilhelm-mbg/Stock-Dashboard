@@ -41,6 +41,17 @@
       return T[u] || String(u == null ? '?' : u).replace(/-/g, ' ');
     },
     signTxt: function (v, unit) { return (v > 0 ? '+' : '') + U.nf2.format(v) + (unit || ''); },
+    /* Prozent mit EINER Nachkommastelle (deutsches Komma); genau 0 wird zu '±0,0 %'.
+     * Stand bis zum 03.09.2026 privat in depot.js. Beim Bau der Buecher-Karten
+     * (Oberflaeche Stufe 2) brauchte mfdepot.js dieselbe Schreibweise - und zwei
+     * Prozentformate nebeneinander sind genau die Sorte Doppelzahl, die hier schon
+     * einmal zu verschiedenen Angaben derselben Groesse gefuehrt hat. Eine Definition,
+     * alle Aufrufer: depot.js bindet sie unter ihrem alten Namen ein. */
+    pz1: function (v) {
+      if (!isFinite(v)) return '–';
+      var r = Math.round(v * 10) / 10;
+      return (r > 0 ? '+' : r < 0 ? '-' : '±') + Math.abs(r).toFixed(1).replace('.', ',') + ' %';
+    },
     /* Statuszeile setzen. ziel = Element oder Kennung, text = TEXT (nie HTML),
      * art = undefined | 'ok' | 'fehler'.
      *
@@ -293,6 +304,132 @@
         { detail: { tab: 'werkzeuge', sub: kl.getAttribute('data-klappe'), wieder: false } }));
     });
   });
+
+  /* ---- Statuszeile im Titel jeder Betrieb-Klappe (Oberflaeche Stufe 2, 03.09.2026) ----
+   *
+   * Der Maschinenraum besteht aus elf geschlossenen Klappen. Wer wissen wollte, ob das
+   * Kursarchiv laeuft oder wann zuletzt gemessen wurde, musste jede einzeln aufmachen -
+   * und das Aufklappen IST der Nachlade-Ausloeser (siehe oben). Die Statuszeile
+   * beantwortet die Frage, ohne etwas anzustossen.
+   *
+   * DREI REGELN, und sie sind der Grund, warum diese Tabelle so aussieht:
+   *  1. GUENSTIGE QUELLEN. Gelesen wird nur, was ohnehin im Speicher steht - der
+   *     Depot-Zustand ueber DepotAPI, die Status-Objekte der Fachmodule. Kein IPC,
+   *     kein Netz, kein Zugriff auf die Platte. Sonst laedt eine Anzeige, die sagen
+   *     soll was schon da ist, beim Programmstart genau das nach, was der Alltag
+   *     nicht braucht.
+   *  2. KEINE KONSTANTE. Jede Zeile hat eine benannte Quelle. Ist die Quelle nicht
+   *     ohne Laden erreichbar, gibt der Eintrag null zurueck und der Span bleibt LEER
+   *     (CSS blendet ihn dann ganz aus). Ein fester Text saehe aus wie ein Zustand
+   *     und waere keiner - genau die Fehlerform, gegen die dieses Projekt seine
+   *     Positivkontrollen hat.
+   *  3. WERKZEUGE OHNE ZUSTAND tragen null: Strategie-Chart, Berichte und die
+   *     Strategie-Eingabe rechnen auf Zuruf und haben nichts zu melden. Das ist keine
+   *     Luecke, sondern die richtige Antwort.
+   *
+   * Aktualisiert wird ueber Ereignisse, die es schon gibt (quotes-updated,
+   * kanten-geladen, sub-changed) - kein eigener Zeitgeber. Zwei Quellen fuellen sich
+   * erst, wenn ihre Klappe einmal offen war (Kursarchiv, Strategieregister); sie
+   * stehen mit dem naechsten dieser Ereignisse da. */
+  var KLAPPEN_STAND = {
+    /* archivkarte.js haelt den letzten Sammler-Stand - aus dem Fortschritts-Funk oder
+     * vom letzten Laden. Liegt keiner vor, bleibt die Zeile leer: "nichts gefunden"
+     * und "nichts durchsucht" sind von aussen nicht zu unterscheiden. */
+    archiv: function () {
+      var st = window.Archivkarte && window.Archivkarte.letzter && window.Archivkarte.letzter();
+      if (!st || !st.zeilen || !st.zeilen.length) return null;
+      var j = 0;
+      st.zeilen.forEach(function (z) { if (z.juengsteMs && z.juengsteMs > j) j = z.juengsteMs; });
+      return j ? 'jüngste Kerze ' + U.dt(j) : 'nichts da';
+    },
+    /* Autopilot, letzte Nachtmessung und Marktlage stehen als Kopien in
+     * DepotAPI.antwort() - dieselbe Auskunft, aus der die Antwort-Seite liest. */
+    auswertung: function () {
+      var a = window.DepotAPI && window.DepotAPI.antwort && window.DepotAPI.antwort();
+      if (!a) return null;
+      return 'Autopilot ' + (a.pilotAn ? 'an' : 'aus') +
+        ' · Nachtmessung ' + (a.pilotZuletzt ? U.d(a.pilotZuletzt) : 'noch keine') +
+        (a.regime ? ' · Marktlage ' + (a.regime.pause ? 'Pause'
+          : a.regime.ok ? U.d(a.regime.at) : 'zu wenig Kursdaten') : '');
+    },
+    /* Die gemessenen Runden liegen im Depot-Zustand; kosten.js laedt sein Nebenlager
+     * beim Verkabeln, hier wird nur gezaehlt. Capital und Alpaca sind ZWEI Gefaesse
+     * und werden getrennt gezaehlt - eine gemeinsame Zahl hat hier schon einmal
+     * Krypto-Runden als Aktien gefuehrt. */
+    kosten: function () {
+      var r = window.Kosten && window.Kosten.kostenRunden && window.Kosten.kostenRunden();
+      if (!r || !r.length) return null;
+      var cap = 0, alp = 0, letzte = 0;
+      r.forEach(function (x) {
+        if (x && x.gefaess === 'alpaca') alp++; else cap++;
+        if (x && x.at > letzte) letzte = x.at;
+      });
+      return 'Runden Capital ' + cap + ' · Alpaca ' + alp + (letzte ? ' · letzte ' + U.d(letzte) : '');
+    },
+    /* Der Zeitstempel des letzten Scans ist ein Sitzungswert aus HEALTH; DepotAPI
+     * gibt ihn als Kopie heraus (letzterScan). Vor dem ersten Scan: leer. */
+    monitor: function () {
+      var a = window.DepotAPI && window.DepotAPI.antwort && window.DepotAPI.antwort();
+      if (!a || !a.letzterScan) return null;
+      return 'letzter Scan ' + U.dt(a.letzterScan);
+    },
+    /* Ein Werkzeug, das auf Zuruf rechnet - es hat keinen Zustand zu melden. */
+    stratchart: null,
+    /* Der aktive Ausloeser kommt aus der Einstellung, das Urteil aus dem Protokoll -
+     * zwei Quellen, die nebeneinander stehen und nie vermischt werden. */
+    regelbuch: function () {
+      var A = window.DepotAPI;
+      if (!A || !A.antwort || !A.regelStatus) return null;
+      var a = A.antwort(), st = A.regelStatus();
+      if (!a || !st) return null;
+      var name = a.aktiverTrigger || a.modusName || st.modus;
+      if (!name) return null;
+      var k = st.modus && A.protokollKante ? A.protokollKante(st.modus) : null;
+      return name + ' · ' + (k ? U.urteilText(k.urteil) : 'kein Protokoll');
+    },
+    berichte: null,
+    /* Wie viele Kennungen ein Messprotokoll haben - aus derselben Sammlung, die
+     * depot.js beim Start einmal gelesen hat (kantenAusProtokollen). */
+    scoreboard: function () {
+      var k = window.DepotAPI && window.DepotAPI.protokollKennungen && window.DepotAPI.protokollKennungen();
+      if (!k || !k.length) return null;
+      return k.length + ' Strategien mit Protokoll';
+    },
+    /* Das Register liest zwei Verzeichnisse ueber IPC. Die Zahl steht deshalb erst,
+     * wenn die Klappe einmal offen war - vorher bleibt die Zeile leer. */
+    strategieregister: function () {
+      var n = window.Scoreboard && window.Scoreboard.registerStand ? window.Scoreboard.registerStand() : null;
+      return n == null ? null : n + ' Strategien im Register';
+    },
+    strategieeingabe: null,
+    /* Das Urteil zum Winkel-Detektor steht nicht in einem Messprotokoll, sondern in
+     * studienurteile.js - der Ablage fuer Studien AUSSERHALB der Messmaschine. Dort
+     * stehen ausschliesslich Verwerfungen (Regel D2), das Wort "widerlegt" haengt
+     * also an der Existenz des Eintrags und nicht an einer Konstante hier. */
+    wende: function () {
+      var v = window.StudienUrteile && window.StudienUrteile.verworfen && window.StudienUrteile.verworfen('kanaltrend');
+      if (!v || !v.datum) return null;
+      return 'widerlegt · Studie ' + String(v.datum).split('-').reverse().join('.');
+    }
+  };
+  /* /KLAPPEN_STAND */
+
+  /** Jede Statuszeile einmal schreiben. Wirft eine Quelle, bleibt DIESE Zeile leer -
+   *  eine kaputte Auskunft darf die zehn anderen nicht mitnehmen. */
+  function klappenStandSetzen() {
+    Object.keys(KLAPPEN_STAND).forEach(function (name) {
+      var el = document.getElementById('kstand-' + name);
+      if (!el) return;
+      var fn = KLAPPEN_STAND[name], txt = null;
+      try { txt = fn ? fn() : null; } catch (e) { txt = null; }
+      el.textContent = txt == null ? '' : String(txt);
+    });
+  }
+  ['quotes-updated', 'kanten-geladen', 'sub-changed', 'tab-changed'].forEach(function (ev) {
+    document.addEventListener(ev, klappenStandSetzen);
+  });
+  document.addEventListener('DOMContentLoaded', klappenStandSetzen);
+  klappenStandSetzen();
 
   /* Den gemerkten Ort erst herstellen, wenn das DOM steht UND die Warteschlange einmal
    * durchgelaufen ist: mehrere Zuhoerer von 'tab-changed' melden sich erst in ihrem
