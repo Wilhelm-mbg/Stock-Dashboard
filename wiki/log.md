@@ -161,3 +161,5 @@ bleibt vollständig als Archiv; oben steht jetzt ein Verweis hierher.
 Abschnittskanäle, Krypto-Dips, Monatswende, Bullenflagge) ist als **„Gedächtnisprotokoll, keine
 Fundstelle im Repo"** markiert — die zugehörigen Studienberichte liegen außerhalb des heutigen
 `studien/`-Bestands. **Wer sie findet, trägt die Fundstelle nach.**
+
+- 02.09.2026 (PM) — Broker-Recherche für die Aktien-Kostenmessung; Entscheid Wilhelm: **Alpaca-Paper**. Neu: Abschnitt „Broker-Schnittstellen" in datenquellen.md, Zeile in entscheide.md, Auftragszeile in offene-auftraege.md umgeschrieben (war: Paper-Konto beim Aktienbroker, offen).

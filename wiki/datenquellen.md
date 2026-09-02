@@ -90,3 +90,20 @@ Universum muss aus **Großwerten** bestehen — der Zufallsquerschnitt reißt di
 
 `massive.key` im Datenordner. **Gehört in keine Ausgabe, kein Log, keinen Commit, keine URL,
 die irgendwo protokolliert wird.**
+
+
+## Broker-Schnittstellen für die Aktien-Kostenmessung (Recherche 02.09.2026, PM)
+
+Gesucht war: echte Aktien (kein CFD, keine Nachtfinanzierung), US-Nebenwerte der 5–250-Mio-$-Klassen handelbar, Paper-Konto, REST-Anbindung aus Node/Electron, Zugang aus Deutschland.
+
+| | Alpaca | Interactive Brokers | Trading 212 |
+|---|---|---|---|
+| Paper-Konto | weltweit nur mit E-Mail, kein Depot | ja, braucht eröffnetes Konto | „Practice"-Modus im Invest-Konto |
+| Anbindung | REST + Schlüssel (Trading-API, Paper-Endpunkt getrennt) | Web-API mit OAuth 2.0 `private_key_jwt`-Registrierung, oder lokales Gateway | REST + Schlüssel aus den Einstellungen, Beta; Market/Limit/Stop live seit 2025/26 |
+| Füllung im Paper | am NBBO (Spanne wird gemessen); kein Impact, keine Tiefe; **Teilfüllungen zufällig bei ~10 %** | Spanne + Buchtiefe, realistischste Simulation; kein Zugriff auf tiefes Buch | am eigenen Kurs, Realismus nicht dokumentiert |
+| Provision | 0 (US-Kassa) | Tiered ~0,35 $ Minimum je Order, im Paper mitgerechnet | 0, aber 0,15 % Währungsumtausch |
+| Echtkonto aus DE | **unsicher** — Länderliste nennt Deutschland nicht, „Support fragen" | ja | ja |
+
+Ausgeschieden: Capital.com (nur CFD, 0,0247 Pp/Nacht, siehe [kosten.md](kosten.md)); lemon.markets (nur auf Einladung, deutsche Börsen); Saxo OpenAPI (Sandbox vorhanden, aber Vollkonto und Gebührenniveau, nicht geprüft); Trade Republic, Scalable, DEGIRO (keine Schnittstelle bzw. kein Paper).
+
+*Quellen:* docs.alpaca.markets/us/docs/paper-trading (Füllregeln, Teilfüllungen), alpaca.markets/support/countries-alpaca-is-available, interactivebrokers.com/docs/web-api/introduction (OAuth), interactivebrokers.com/docs/tws-api/doc/notes-limitations/limitations/paper-trading, docs.trading212.com/api, community.trading212.com „Trading 212 API Update". Stand der Abfragen: 02.09.2026.
