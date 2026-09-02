@@ -2,6 +2,9 @@
 
 *Nur was sich am Wiki ändert. Die Projekt-Chronologie steht im Archiv `PROJEKTSTAND.md`.*
 
+- 02.09.2026 Release v8.37.3 (Wache): Fehlerbehebung — die Alpaca-Statuszeile in den
+  Einstellungen wird jetzt auch dann aufgefrischt, wenn die Capital.com-Anbindung (CFD)
+  nicht aktiv ist.
 - 02.09.2026 Release v8.37.2 (Wache): Momentum-Buch handelt nur noch liquide Werte (≥100 Mio $
   Median-Tagesumsatz), exakt wie gemessen; zweites Kosten-Gefäß misst echte US-Aktien auf einem
   Alpaca-Paper-Konto neben dem Capital.com-Demo.

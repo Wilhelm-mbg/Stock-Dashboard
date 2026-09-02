@@ -16,7 +16,7 @@
   Notiz in `release-notizen/` ab — mehr nicht.
 - Werkzeug: `tools/release.js` (`--pruefen`, `--bauen --minor --wache`, `--hoch`).
 - **Versionsreferenz ist git** (HEAD/Tag/`package.json`), **nie die installierte App**.
-- Aktueller Stand: **v8.37.2**.
+- Aktueller Stand: **v8.37.3**.
 - Bei roten Tests wird **nicht** ausgeliefert und die Weigerung **nicht umgangen**.
 - **Nach jedem Release trägt die Wache die Version hier ein** (Zeile „Aktueller Stand") und
   setzt eine Zeile in `log.md` — ihr einziger Schreibzugriff im Repo (Rolle aktualisiert 02.09.2026).
