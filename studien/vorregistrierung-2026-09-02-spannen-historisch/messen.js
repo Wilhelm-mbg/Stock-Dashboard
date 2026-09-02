@@ -75,7 +75,10 @@ async function hole(pfad) {
     Z.aufrufe++;
     var res, text;
     try {
-      res = await fetch(BASIS + pfad, { headers: S.kopfzeilen() });
+      /* Zeitlimit je Abruf. Ohne es haelt eine haengende Verbindung einen der acht Arbeiter
+       * fuer immer an - in einem Lauf ueber fuenf Stunden ohne Aufsicht faellt das erst am
+       * Ende auf, und dann als "es dauert laenger als gedacht", nicht als Fehler. */
+      res = await fetch(BASIS + pfad, { headers: S.kopfzeilen(), signal: AbortSignal.timeout(30000) });
       text = await res.text();
     } catch (e) {
       fehlerZaehlen('netz');
@@ -307,7 +310,8 @@ async function zusatzA() {
   var Korb = require('./korb.js');
   sag('Zusatz A: Korb-Nachbau wird gegen das Lauf-JSON geprueft (dauert ein bis zwei Minuten) ...');
   var pr = Korb.pruefen(2016);
-  sag('  Perioden ab 2016: ' + pr.perioden.length + '   Abweichungen im korbN: ' + pr.abweichungen);
+  sag('  Perioden ab 2016: ' + pr.perioden.length + '   Abweichungen im korbN: ' + pr.abweichungenKorb +
+      '   in n (zulaessige Werte): ' + pr.abweichungenN);
   if (!pr.ok) {
     sag('  POSITIVKONTROLLE VERFEHLT - Zusatz A entfaellt (Registrierung §6).');
     fs.writeFileSync(path.join(ZIEL, 'zusatzA-entfallen.json'),
