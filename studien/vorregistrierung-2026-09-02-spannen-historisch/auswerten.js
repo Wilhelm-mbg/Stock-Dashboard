@@ -91,10 +91,22 @@ function zelle(rows, alle) {
   }
   var fehl = alle.length ? (alle.length - rows.length) / alle.length : 0;
   var gesperrt = rows.filter(function (r) { return r.spanne === 0; }).length;
+
+  /* Der CENT-BODEN (Nachtrag 9a der Registrierung). Die kleinste zulaessige Preisstufe ist
+   * 1 Cent; eine Spanne von 1 Cent ist bei Kurs K genau 100/K x 0,01 Pp. Steht ein Wert auf
+   * dem Boden, misst die Spanne in Pp nur noch seinen KURS, nicht seine Liquiditaet. Beide
+   * Zahlen werden BERICHTET, nicht verrechnet: kein Wert wird nach Kurs bereinigt,
+   * gewichtet oder ausgeschlossen. */
+  var kurse = rows.filter(function (r) { return r.bp > 0 && r.ap > 0; })
+                  .map(function (r) { return (r.bp + r.ap) / 2; });
+  var amBoden = rows.filter(function (r) {
+    return r.bp > 0 && r.ap > 0 && Math.abs((r.ap - r.bp) - 0.01) < 1e-9;
+  }).length;
+
   return { n: rows.length, symbole: syms.length, zeitpunkte: Object.keys(zeitpunkte).length,
            symMedian: median(symMedian), rohMedian: median(roh), p75: quantil(roh, 0.75),
            band: band, fehlanteil: fehl, gesperrt: gesperrt,
-           vollerhebung: false };
+           medianKurs: median(kurse), bodenAnteil: rows.length ? amBoden / rows.length : 0 };
 }
 
 /* ---------- Einlesen ---------- */
@@ -169,7 +181,11 @@ function main() {
     pk1Ersatz = g.filter(function (r) { return r.klasse === 'ab1000' && r.jahr === 2024 && r.fenster === 'mitte'; });
     aaplMed = pk1Ersatz.length ? median(pk1Ersatz.map(function (r) { return r.spanne; })) : NaN;
   }
-  var pk1 = isFinite(aaplMed) && aaplMed < 0.02;
+  /* Drei Zustaende, nicht zwei: bestanden / verfehlt / noch keine Daten. Ein Teillauf hat
+   * die Kontrollzelle vielleicht noch nicht erreicht - das ist kein Fehlschlag des
+   * Werkzeugs, und es als solchen zu melden waere eine falsche Auskunft. */
+  var pk1Daten = isFinite(aaplMed);
+  var pk1 = pk1Daten && aaplMed < 0.02;
 
   /* Positivkontrolle 2: Ordnung 5-50 > ab1000 in jedem Jahr */
   var ordnungVerfehlt = [];
@@ -195,7 +211,8 @@ function main() {
   s('| Kontrolle | Soll | Ist | |');
   s('|---|---|---|---|');
   s('| **Positivkontrolle** ' + (pk1Ersatz ? '(Ersatz: Klasse ab1000' : '(AAPL') + ', 2024, Fenster `mitte`) | < 0,02 Pp | **' +
-    fx(aaplMed) + ' Pp** (n ' + (pk1Ersatz ? pk1Ersatz.length : aapl.length) + ') | ' + (pk1 ? '**bestanden**' : '**VERFEHLT**') + ' |');
+    fx(aaplMed) + ' Pp** (n ' + (pk1Ersatz ? pk1Ersatz.length : aapl.length) + ') | ' +
+    (pk1 ? '**bestanden**' : (pk1Daten ? '**VERFEHLT**' : '*noch keine Daten in der Kontrollzelle*')) + ' |');
   s('| **Positivkontrolle 2** (Ordnung 5-50 > ab1000, jedes Jahr) | in allen 11 Jahren | ' +
     (ordnungVerfehlt.length ? 'verfehlt in ' + ordnungVerfehlt.join('; ') : 'in allen erfüllt') + ' | ' +
     (ordnungVerfehlt.length ? 'Auffälligkeit' : 'bestanden') + ' |');
@@ -205,11 +222,20 @@ function main() {
   s('| Placebo, davon „kein Quote" | — | ' + placeboKeinQuote + ' | *(vorbörslich fehlt öfter — erwartet)* |');
   s('');
   if (!pk1) {
-    s('> ## ⚠ POSITIVKONTROLLE VERFEHLT — es wird KEINE Zahl berichtet.');
-    s('> Das Werkzeug findet die bekannte Größe nicht wieder; jede Null und jede Zahl aus');
-    s('> diesem Lauf ist damit wertlos (`wiki/messmethodik.md` B5).');
+    if (pk1Daten) {
+      s('> ## ⚠ POSITIVKONTROLLE VERFEHLT — es wird KEINE Zahl berichtet.');
+      s('> Das Werkzeug findet die bekannte Größe nicht wieder; jede Null und jede Zahl aus');
+      s('> diesem Lauf ist damit wertlos (`wiki/messmethodik.md` B5).');
+    } else {
+      s('> ## ⏳ Die Kontrollzelle ist noch leer — es wird KEINE Zahl berichtet.');
+      s('> Kein Fehlschlag: der Lauf hat AAPL 2024 im Fenster `mitte` (bzw. die Klasse');
+      s('> `ab1000` 2024) noch nicht erreicht. **Erst weiterlaufen lassen, dann auswerten.**');
+      s('> Bis dahin steht keine Zahl in dieser Datei — bewusst, denn eine Zahl ohne bestandene');
+      s('> Positivkontrolle ist keine.');
+    }
     fs.writeFileSync(ZIEL, out.join('\n') + '\n');
-    process.stdout.write('POSITIVKONTROLLE VERFEHLT - ERGEBNIS.md enthaelt nur die Kontrollen.\n');
+    process.stdout.write((pk1Daten ? 'POSITIVKONTROLLE VERFEHLT' : 'KONTROLLZELLE NOCH LEER') +
+                         ' - es wird keine Zahl berichtet.\n');
     return;
   }
   if (!placeboOk) {
@@ -247,24 +273,55 @@ function main() {
   s('zwischen wenigen Werten, nicht Stichprobenfehler.');
   s('');
 
+  /* ---- Der Cent-Boden. Ohne diesen Abschnitt liest jemand die Tabelle oben als
+   *      Liquiditaetsaussage, und in den liquiden Klassen ist sie das nicht. ---- */
+  s('### 2.0 ⚠ Vor dem Lesen: der Cent-Boden');
+  s('');
+  s('Die kleinste zulässige Preisstufe ist **1 Cent**. Eine Spanne von 1 Cent ist bei Kurs K');
+  s('genau `100/K × 0,01` Pp — bei 20 $ sind das 0,050 Pp, bei 200 $ 0,005 Pp. **Sobald ein');
+  s('Wert am Cent-Boden steht, misst die Spanne in Pp nur noch seinen Kurs.**');
+  s('');
+  s('| Klasse | Median-Kurs | Anteil der Quotes am Cent-Boden (Fenster `mitte`) |');
+  s('|---|---|---|');
+  var bodenHoch = [];
+  KLASSEN.forEach(function (k) {
+    var Zg = haupt.filter(function (r) { return r.klasse === k && r.fenster === 'mitte' && gueltig(r); });
+    if (!Zg.length) { s('| ' + k + ' | – | – |'); return; }
+    var z = zelle(Zg, Zg);
+    if (z.bodenAnteil > 0.5) bodenHoch.push(k);
+    s('| ' + k + ' | ' + fx(z.medianKurs, 2) + ' $ | **' + fx(100 * z.bodenAnteil, 0) + ' %**' +
+      (z.bodenAnteil > 0.5 ? ' ⚠' : '') + ' |');
+  });
+  s('');
+  if (bodenHoch.length) {
+    s('> **Für ' + bodenHoch.join(' und ') + ' ist „die Hürde der Umsatzklasse" KEINE');
+    s('> Liquiditätsaussage.** Über die Hälfte der Quotes liegt dort auf dem Cent-Boden; die');
+    s('> Zahl in Pp folgt dem Aktienkurs. Wer eine Strategie auf Werten unter 30 $ handelt,');
+    s('> zahlt mehr als jemand, der dieselbe Strategie auf Werten über 150 $ handelt — bei');
+    s('> **identischer Liquidität**. Der Vorbehalt gilt für die Wiedervorlage in §5.');
+    s('');
+  }
+
   /* Volltabelle je Zelle */
   s('### 2.1 Alle 132 Zellen');
   s('');
-  s('| Klasse | Jahr | Fenster | n | Zeitpunkte | Symbole | **Symbol-Median** | roher Median | p75 | 95-%-Band (Bootstrap über Symbole) | fehlend | gesperrt |');
-  s('|---|---|---|---|---|---|---|---|---|---|---|---|');
+  s('| Klasse | Jahr | Fenster | n | Zeitpunkte | Symbole | **Symbol-Median** | roher Median | p75 | 95-%-Band (Bootstrap über Symbole) | fehlend | gesperrt | Median-Kurs | **am Cent-Boden** |');
+  s('|---|---|---|---|---|---|---|---|---|---|---|---|---|---|');
   KLASSEN.forEach(function (k) {
     JAHRE.forEach(function (j) {
       FENSTER.forEach(function (f) {
         var alleZ = haupt.filter(function (r) { return r.klasse === k && r.jahr === j && r.fenster === f; });
         if (!alleZ.length) return;
         var Zg = alleZ.filter(gueltig);
-        if (!Zg.length) { s('| ' + k + ' | ' + j + ' | ' + f + ' | 0 | – | – | – | – | – | – | 100 % | – |'); return; }
+        if (!Zg.length) { s('| ' + k + ' | ' + j + ' | ' + f + ' | 0 | – | – | – | – | – | – | 100 % | – | – | – |'); return; }
         var z = zelle(Zg, alleZ);
         s('| ' + k + ' | ' + j + ' | ' + f + ' | ' + z.n + ' | ' + z.zeitpunkte + ' | ' + z.symbole +
           ' | **' + fx(z.symMedian) + '** | ' + fx(z.rohMedian) + ' | ' + fx(z.p75) +
           ' | ' + (isFinite(z.band[0]) ? '[' + fx(z.band[0]) + ', ' + fx(z.band[1]) + ']' : '*zu dünn*') +
           ' | ' + fx(100 * z.fehlanteil, 1) + ' %' + (z.fehlanteil > 0.2 ? ' ⚠' : '') +
-          ' | ' + z.gesperrt + ' |');
+          ' | ' + z.gesperrt +
+          ' | ' + fx(z.medianKurs, 2) + ' $ | ' + fx(100 * z.bodenAnteil, 0) + ' %' +
+          (z.bodenAnteil > 0.5 ? ' ⚠' : '') + ' |');
       });
     });
   });

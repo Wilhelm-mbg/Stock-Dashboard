@@ -51,3 +51,21 @@
 - **Code im Repo ≠ Code im Paket.** `tools/` wird nicht ausgeliefert; ein Aufruf dort läuft in
   der App **still** ins Leere.
 - **Fest verdrahtete Pfade** (`E:/…`) funktionieren nur auf einer Maschine.
+- **Zeitstempel als ZEICHENKETTE vergleichen.** `'…T14:35:00Z' > '…T14:35:00.001Z'`, weil `.`
+  vor `Z` sortiert. Ein Prüfsatz meldete deshalb „VERFEHLT" an einer Schnittstelle, die genau
+  das Richtige tat. **Immer `Date.parse`.** *Fundstelle:
+  `studien/vorregistrierung-2026-09-02-spannen-historisch/VORREGISTRIERUNG.md` §1.1.*
+- **Der Alias, der an der Sperrklinke vorbeiführt.** Eine Klinke suchte `process.env.ALPACA`;
+  die geprüfte Datei las über `var E = process.env; E.ALPACA_KEY` — und wurde grün, weil sie
+  das Muster nicht enthielt. **Eine Klinke, die eine Schreibweise sucht, muss die Umgehung
+  dieser Schreibweise mitsuchen.** Gefunden hat es der eigene Test, nicht der Verdacht.
+- **Die Schnittstelle, die lieber irgendetwas antwortet als nichts.** `feed=iex` gab auf eine
+  2018er Anfrage Quotes von 2020, HTTP 200. Ein Abruf um 15:55 ET an einem Halbtag gab einen
+  nachbörslichen Quote statt einer Lücke. **Beide Male sieht die Antwort richtig aus.** Gegen
+  diese Form hilft nur, den gelieferten Zeitstempel gegen den angefragten zu halten — und
+  Handelszeiten aus dem Kalender der Börse zu nehmen, nicht aus einer Liste im Code.
+  *Fundstelle: [datenquellen.md](datenquellen.md), Kasten bei „Alpaca als Kursquelle".*
+- **Ein Trockenlauf, der aussieht wie ein Befund.** Ein Probelauf der Auswertung auf
+  erfundenen Daten hinterließ ein vollständig ausgefülltes `ERGEBNIS.md` im Studienordner.
+  **Werkzeuge, die Berichte schreiben, benennen die Datei nach der Herkunft der Zahlen** —
+  nicht nach der Absicht des Aufrufers.

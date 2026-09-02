@@ -391,6 +391,61 @@ sie in einer Zelle **über 20 %**, trägt die Zelle einen Warnvermerk.
 
 ---
 
+## 9a. NACHTRAG nach dem Testlauf — 02.09.2026, 18:45 UTC
+
+**Geschrieben nach dem Testlauf (20 Symbole, Jahr 2018, 300 Quotes), vor dem Vollauf.**
+Die Zahlen des Testlaufs sind damit **gesehen** und stehen hier vollständig. Der primäre
+Endpunkt (§3), die Zellen (§4), die Ziehung (§5) und die Entscheidungsregel (§8) sind
+**unverändert**; ergänzt wird eine Diagnose und zweimal Betriebsgröße.
+
+### Was der Testlauf gezeigt hat
+
+| Klasse | Symbole | Median-Kurs | Median `mitte` | **Anteil am Cent-Boden** |
+|---|---|---|---|---|
+| 5-50 | HPP, GLPI, KRC, CMPR, BBAR | 34,05 $ | 0,0984 | 27 % |
+| 50-250 | LBRDK, PBF, FMX, RJF, AAL | 82,82 $ | 0,0554 | 24 % |
+| 250-1000 | MRK, AMD, AIG, PEP, ELV | 62,41 $ | 0,0187 | **59 %** |
+| ab1000 | BABA, MU, GE, T, GOOGL | 45,94 $ | **0,0315** | **63 %** |
+
+Versatz angefragter zu geliefertem Zeitstempel: Median 1,0 s, p90 13,5 s, max 83,7 s,
+**kein einziger negativer** — `sort=desc` liefert also durchweg den letzten Quote *vor* dem
+Zeitpunkt. 300 von 301 gültig, 1 × „kein Quote" (der Placebo-Punkt, vorbörslich).
+
+### Der Befund, der eine Ergänzung erzwingt: **der Cent-Boden**
+
+`ab1000` liegt mittags **über** `250-1000` — die falsche Richtung. Der Grund ist keine
+Marktbeobachtung, sondern Arithmetik: die kleinste zulässige Preisstufe ist **1 Cent**, und
+eine Spanne von 1 Cent ist bei Kurs K genau `100/K × 0,01` Pp. Bei 20 $ sind das 0,050 Pp,
+bei 200 $ 0,005 Pp. **Sobald ein Wert am Cent-Boden steht, misst die Spanne in Pp nur noch
+seinen Kurs.** Im Testlauf trifft das auf 59 % bzw. 63 % der Quotes der beiden liquiden
+Klassen zu — und `ab1000` enthielt zufällig die billigeren Aktien (GE, T).
+
+> **Folge für die Lesart des Ergebnisses, hier vorab festgehalten:** Für die liquiden Klassen
+> ist „die Hürde der Umsatzklasse" **keine Liquiditätsaussage.** Wer eine Strategie auf
+> Werten unter 30 $ handelt, zahlt mehr als einer, der dieselbe Strategie auf Werten über
+> 150 $ handelt — bei identischer Liquidität. Das steht so im ERGEBNIS.md, und die
+> Wiedervorlage der 31 Varianten (§8) trägt den Vorbehalt.
+
+### Drei Änderungen, jede mit Grund
+
+1. **Neue Diagnosespalten je Zelle** (ändern keinen Endpunkt): **Median-Kurs** und **Anteil
+   der Quotes am Cent-Boden** (`ap − bp = 0,01 $`). Ohne sie ist eine Zellenzahl nicht
+   deutbar. Sie werden **berichtet, nicht verrechnet** — kein Wert wird nach Kurs bereinigt,
+   gewichtet oder ausgeschlossen.
+2. **Placebo von 1 % auf 4 %** der `mitte`-Zeitpunkte (jeder 25. statt jeder 100.). Grund:
+   der Testlauf hatte **einen** Placebo-Punkt, und der lieferte vorbörslich gar keinen Quote.
+   §7 verlangt n ≥ 20; bei 1 % wären es rund 185 Punkte, von denen ein großer Teil bei dünnen
+   Werten ausfällt. 4 % sind rund 740 Punkte und kosten 4 Minuten Laufzeit.
+3. **Acht Arbeiter statt vier.** Der Testlauf schaffte **102 Aufrufe/min**, nicht 180 — es
+   bremst die Antwortzeit (~2,4 s je Abruf), nicht die Ratenbremse. Der Vollauf hätte damit
+   **9,1 h statt 5,1 h** gebraucht. Die Bremse bleibt bei 180/min und ist weiterhin das
+   Limit; es ändert sich nur, wie viele Abrufe gleichzeitig darauf warten.
+
+**Was NICHT geändert wird:** Zielgröße, Zellen, Ziehung, Saat, Ausschlussregeln,
+Positivkontrollen, Placebo-Schwelle (Faktor 2), Zuordnungsregel der 31 Varianten.
+
+---
+
 ## 10. Sicherheit und Betrieb
 
 - Der Zugang steht **ausschließlich** in Wilhelms Umgebung (`process.env`). `schluessel.js`

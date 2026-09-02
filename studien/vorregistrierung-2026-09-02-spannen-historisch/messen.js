@@ -43,7 +43,9 @@ var PLANDATEI = path.join(ZIEL, 'plan.json');
 /* ---- Betriebsgroessen. Die Ratengrenze der Kopfzeile lag bei 200/min; 180 laesst Luft
  *      fuer die Wiederholungen nach 429. ---- */
 var RATE_JE_MIN = 180;
-var GLEICHZEITIG = 4;              /* Arbeiter. Die Bremse ist der Eimer, nicht die Zahl. */
+var GLEICHZEITIG = 8;              /* Arbeiter. Die Bremse ist der Eimer, nicht die Zahl - der Testlauf
+                                    * schaffte mit vieren nur 102/min, weil die Antwortzeit bremst
+                                    * (~2,4 s je Abruf), nicht die Ratengrenze. Nachtrag 9a. */
 var RUECKBLICK_MIN = 5;            /* Rueckblickfenster in Minuten (Registrierung §5.3) */
 var VERSUCHE = 5;
 
@@ -219,10 +221,12 @@ async function hauptlauf(opts) {
    * einen Zeitpunkt um 08:00 ET, vorboerslich. Er laeuft IM SELBEN Lauf, in derselben
    * Datei und mit demselben Werkzeug - eine Kontrolle, die anders gemessen wird als der
    * Kandidat, kontrolliert nichts. Erwartung: mindestens doppelt so breit wie `mitte`.
-   * Die Auswahl ist deterministisch (jeder 100. Mitteil-Zeitpunkt der Ringfolge). */
+   * Die Auswahl ist deterministisch (jeder 25. Mittagszeitpunkt). 4 % statt 1 %, weil der
+   * Testlauf zeigte, dass vorboerslich bei duennen Werten oft GAR KEIN Quote steht -
+   * bei 1 % blieben zu wenige verwertbare Paare uebrig (Nachtrag 9a). */
   var placebo = [];
   var mittags = zp.filter(function (z) { return z.fenster === 'mitte'; });
-  for (var pi = 0; pi < mittags.length; pi += 100) {
+  for (var pi = 0; pi < mittags.length; pi += 25) {
     var pz = mittags[pi];
     placebo.push({ sym: pz.sym, jahr: pz.jahr, klasse: pz.klasse, klasseTag: pz.klasseTag,
                    umsatzAnker: pz.umsatzAnker, umsatzTag: pz.umsatzTag,

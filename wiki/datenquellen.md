@@ -106,4 +106,40 @@ Gesucht war: echte Aktien (kein CFD, keine Nachtfinanzierung), US-Nebenwerte der
 
 Ausgeschieden: Capital.com (nur CFD, 0,0247 Pp/Nacht, siehe [kosten.md](kosten.md)); lemon.markets (nur auf Einladung, deutsche Börsen); Saxo OpenAPI (Sandbox vorhanden, aber Vollkonto und Gebührenniveau, nicht geprüft); Trade Republic, Scalable, DEGIRO (keine Schnittstelle bzw. kein Paper).
 
+### Alpaca als KURSQUELLE — historische NBBO-Tafel, gratis (**gemessen 02.09.2026**)
+
+Nicht nur ein Handelszugang: `data.alpaca.markets/v2/stocks/quotes` liefert auf der
+**Gratisstufe** die konsolidierte Spanne (`bp`/`ap`/`bs`/`as`/Börse) **zurück bis mindestens
+Anfang 2016** — mit `feed=sip`, ohne Tarifabweisung, ohne Verzögerung auf Historie.
+Das ist genau die Ware, für die Massive 199 $/Monat verlangt (Stufe Advanced).
+
+| Was | Stand 02.09.2026 |
+|---|---|
+| Endpunkt | `/v2/stocks/quotes`, `/v2/stocks/auctions`, `/v2/calendar` |
+| Fenster | **2016 bis heute**, geprüft an AAPL 05.01.2016 |
+| Feed | **nur `sip`** — siehe Kasten unten |
+| Ratengrenze | **200/min** (Kopfzeile `x-ratelimit-limit`) |
+| `sort=desc` | trägt — der zum Zeitpunkt gültige Quote ist der **letzte davor**, und den liefert nur `desc` |
+| `limit` | gilt **je Aufruf, nicht je Symbol** — ein Sammelabruf über mehrere Werte bringt nichts |
+| Auktionen | **251 Tage in einem Abruf**, Schluss und Eröffnung mit Preis und Stückzahl |
+
+*Fundstelle: `studien/vorregistrierung-2026-09-02-spannen-historisch/VORREGISTRIERUNG.md` §1
+(Proben 1 und 2, Rohausgabe im Registrierungs-Commit `4f22b14`).*
+
+> #### ⚠ `feed=iex` liefert ein FALSCHES JAHR, ohne es zu sagen
+> Ein Abruf mit `start=2018-03-01T14:35:00Z&feed=iex` kam mit Quotes vom **30.07.2020**
+> zurück — **HTTP 200, keine Warnung, keine leere Antwort.** Wer den gelieferten Zeitstempel
+> nicht prüft, misst 2020er Spannen und nennt sie 2018.
+>
+> Dieselbe Bauform hat sich am selben Tag ein zweites Mal gezeigt: ein Abruf um **15:55 ET an
+> einem Halbtag** (Handelsende 13:00) liefert keine Lücke, sondern einen plausiblen
+> **nachbörslichen** Quote — AAPL 23.11.2018: 0,0523 Pp, das Fünffache der Mittagsspanne.
+>
+> **Die Lehre ist nicht „iex ist schlecht", sondern: diese Schnittstelle antwortet lieber
+> irgendetwas als nichts.** Wer sie benutzt, prüft den gelieferten Zeitstempel gegen den
+> angefragten und die Handelszeiten gegen `/v2/calendar` — nicht gegen eine Liste im Kopf.
+> `alpaca.js` in der App fragt `feed=iex` für **Echtzeit**kurse ab; dort ist die Falle nicht
+> dieselbe (es gibt kein historisches Fenster), aber die Spanne ist die des IEX allein, nicht
+> die konsolidierte. Das steht so schon in [kosten.md](kosten.md), „Grenzen der Simulation".
+
 *Quellen:* docs.alpaca.markets/us/docs/paper-trading (Füllregeln, Teilfüllungen), alpaca.markets/support/countries-alpaca-is-available, interactivebrokers.com/docs/web-api/introduction (OAuth), interactivebrokers.com/docs/tws-api/doc/notes-limitations/limitations/paper-trading, docs.trading212.com/api, community.trading212.com „Trading 212 API Update". Stand der Abfragen: 02.09.2026.
