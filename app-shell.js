@@ -88,7 +88,11 @@
      *          Wer hier einen Vorgabewert einbaut, verkleinert sie stillschweigend.
      * opt.sub  Zusatzzeile unter dem Wert (Klasse kachel-sub; NICHT sub - die Klasse
      *          gehoert den Reiter-Unterseiten und ist dort auf display:none gesetzt).
-     * opt.delta / opt.deltaSign  die Veraenderungszeile der Depot-Kacheln. */
+     * opt.delta / opt.deltaSign  die Veraenderungszeile der Depot-Kacheln.
+     * opt.extra  fertiges HTML ganz am Ende der Kachel, ohne eigenen Kasten. Die
+     *          sechs Marktueberblick-Kacheln haengen dort ihre Sparkline hin; sie
+     *          steht im .tile, aber nicht in .val oder .kachel-sub. Ohne diesen
+     *          Platz haetten sie weiter von Hand gebaut werden muessen. */
     kachel: function (name, wert, opt) {
       opt = opt || {};
       var cls = opt.cls != null ? opt.cls : (opt.sign != null ? U.signCls(opt.sign) : '');
@@ -97,6 +101,7 @@
         (opt.fs ? ' style="font-size:' + opt.fs + ';"' : '') + '>' + wert + '</div>' +
         (opt.sub ? '<div class="kachel-sub">' + opt.sub + '</div>' : '') +
         (opt.delta ? '<div class="delta' + (opt.deltaSign ? ' ' + U.signCls(opt.deltaSign) : '') + '">' + opt.delta + '</div>' : '') +
+        (opt.extra || '') +
         '</div>';
     },
     // Mini-Markdown (Überschriften, Listen, fett) für die Analyse-Ausgabe

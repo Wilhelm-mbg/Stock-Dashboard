@@ -267,18 +267,20 @@
   function render() {
     SPARKS = [];
     // Kacheln
+    /* Beide Zweige gehen ueber U.kachel (03.09.2026). Sie standen hier als
+       Handarbeit, seit es die Hilfe gibt - die Klinke in test-v6 nannte damals nur
+       drei Dateien beim Namen und sah diese nicht.
+       Die Sparkline haengt an opt.extra: sie steht im .tile, aber weder in .val noch
+       in .kachel-sub. Die Zusatzzeile heisst kachel-sub und NICHT sub - .sub ist die
+       Klasse der Reiter-Unterseiten, deren Regel .sub{display:none} die Tagesbewegung
+       auf allen sechs Kacheln unsichtbar gemacht hat: der Wert wurde gerechnet und
+       dann verdeckt. U.kachel setzt kachel-sub, das bleibt also so. */
     var tiles = INDICES.map(function (ix) {
       var q = Q[ix.y];
-      if (!q) return '<div class="tile"><div class="name">' + U.esc(ix.name) + '</div><div class="val">–</div></div>';
-      return '<div class="tile">' +
-        '<div class="name">' + U.esc(ix.name) + '</div>' +
-        '<div class="val">' + fmt(q.price, ix.dec) + (ix.unit ? '&thinsp;' + ix.unit : '') + '</div>' +
-        /* NICHT class="sub": das ist die Klasse der Reiter-Unterseiten, und deren
-           Regel .sub{display:none} hat die Tagesbewegung auf allen sechs Kacheln
-           unsichtbar gemacht - der Wert wurde gerechnet und dann verdeckt. */
-        '<div class="kachel-sub">' + pctChip(q.pct) + '</div>' +
-        sparkSVG(q.series, 160, 34, ix.id) +
-        '</div>';
+      if (!q) return U.kachel(U.esc(ix.name), '–');
+      return U.kachel(U.esc(ix.name),
+        fmt(q.price, ix.dec) + (ix.unit ? '&thinsp;' + ix.unit : ''),
+        { sub: pctChip(q.pct), extra: sparkSVG(q.series, 160, 34, ix.id) });
     }).join('');
     setzeInhalt('tiles', tiles);
 

@@ -169,12 +169,18 @@
     var s = res.summary;
     lastBtTrades = res.trades || [];
     var html = '<div style="font-size:var(--fs-neben); color:var(--ink-2); margin-bottom:8px;">' + label + '</div>';
+    /* Die fuenf Kacheln kommen aus U.kachel (03.09.2026), wie die des Depots. Sie
+       standen hier als Handarbeit, seit es die Hilfe gibt - die Klinke in test-v6
+       nannte damals nur drei Dateien beim Namen und sah diese nicht.
+       Einziger Unterschied in der Ausgabe: bei einem Wert von GENAU 0 schrieb die
+       Handarbeit class="val " mit haengendem Leerzeichen, weil U.signCls dort ''
+       liefert; die Hilfe laesst die Klasse dann ganz weg. Gleiche Anzeige. */
     html += '<div class="depot-stats">' +
-      '<div class="tile"><div class="name">Endkapital</div><div class="val ' + U.signCls(s.end - s.start) + '" style="font-size:var(--fs-zahl);">' + U.money(s.end) + '</div></div>' +
-      '<div class="tile"><div class="name">Rendite</div><div class="val ' + U.signCls(s.retPct) + '" style="font-size:var(--fs-zahl);">' + U.signTxt(s.retPct, ' %') + '</div></div>' +
-      '<div class="tile"><div class="name">Trades / Trefferquote</div><div class="val" style="font-size:var(--fs-zahl);">' + s.nTrades + ' / ' + s.winRate + ' %</div></div>' +
-      '<div class="tile"><div class="name">Max. Drawdown</div><div class="val" style="font-size:var(--fs-zahl);">−' + s.maxDrawdownPct + ' %</div></div>' +
-      '<div class="tile"><div class="name">Sharpe (ann., ca.)</div><div class="val ' + U.signCls(s.sharpe) + '" style="font-size:var(--fs-zahl);">' + (s.sharpe != null ? s.sharpe.toFixed(2) : '–') + '</div></div>' +
+      U.kachel('Endkapital', U.money(s.end), { sign: s.end - s.start, fs: 'var(--fs-zahl)' }) +
+      U.kachel('Rendite', U.signTxt(s.retPct, ' %'), { sign: s.retPct, fs: 'var(--fs-zahl)' }) +
+      U.kachel('Trades / Trefferquote', s.nTrades + ' / ' + s.winRate + ' %', { fs: 'var(--fs-zahl)' }) +
+      U.kachel('Max. Drawdown', '−' + s.maxDrawdownPct + ' %', { fs: 'var(--fs-zahl)' }) +
+      U.kachel('Sharpe (ann., ca.)', (s.sharpe != null ? s.sharpe.toFixed(2) : '–'), { sign: s.sharpe, fs: 'var(--fs-zahl)' }) +
       '</div>';
     // Kennzahlen-Zeile 2
     html += '<div style="display:flex; gap:16px; flex-wrap:wrap; font-size:var(--fs-neben); color:var(--ink-2); margin-bottom:10px;">' +

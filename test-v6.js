@@ -5419,9 +5419,19 @@ console.log('\n38) Audit 23.08.2026 – die fuenf Fehler duerfen nicht zurueckko
 
   /* --- B2: Klassenkollision blendete die Tagesbewegung aus ---
    * renderer.js schrieb den Prozentwert als class="sub"; die Reiter-Regel
-   * .sub{display:none} verdeckte ihn auf allen sechs Kopfkacheln. */
-  ok(/class="kachel-sub"/.test(ren) && !/'<div class="sub">'/.test(ren),
-     'B2: die Kachel benutzt kachel-sub, nicht die Reiter-Klasse sub');
+   * .sub{display:none} verdeckte ihn auf allen sechs Kopfkacheln.
+   * 03.09.2026: renderer.js baut die Kachel nicht mehr selbst, es reicht den Wert
+   * als opt.sub an U.kachel durch - die Klasse faellt jetzt DORT. Die Zusicherung
+   * zieht mit an ihren neuen Ort, statt abgeschwaecht zu werden: geprueft wird die
+   * Hilfe (setzt kachel-sub) UND renderer.js (reicht durch, baut keinen sub-Kasten).
+   * Ohne den ersten Teil haette der Umzug die Zusicherung stumm gemacht - sie stand
+   * dann in einer Datei, in der die Klasse gar nicht mehr vorkommt. */
+  var shellB2 = fs.readFileSync(__dirname + '/app-shell.js', 'utf8');
+  ok(/'<div class="kachel-sub">' \+ opt\.sub/.test(shellB2) &&
+     !/'<div class="sub">'/.test(shellB2),
+     'B2: die Kachel-Hilfe setzt kachel-sub, nicht die Reiter-Klasse sub');
+  ok(/sub: pctChip\(q\.pct\)/.test(ren) && !/'<div class="sub">'/.test(ren),
+     'B2: renderer.js reicht die Tagesbewegung als opt.sub durch und baut keinen sub-Kasten');
   ok(/\.tile \.kachel-sub/.test(html) && !/\.tile \.sub\b/.test(html),
      'B2: das CSS gestaltet kachel-sub');
   // Gegenprobe: die Reiter-Regel gibt es noch, sie ist ja der Grund fuer die Umbenennung
@@ -10345,26 +10355,41 @@ console.log('\n61) Bausteinkasten: Kacheln');
    * umdrehen - deshalb reichen die Buecher cls durch, nicht sign. */
   ok(/opt\.cls != null \? opt\.cls :/.test(shell),
      'Eine fertige Klasse hat Vorrang - die Hilfe dreht keine Anzeigeentscheidung um');
-  /* Kein Modul baut die Kachel nochmal von Hand. depot.js darf: dort steht der
-   * Aufrufer-seitige Rest (tile()), und der ruft die Hilfe. */
-  /* 03.09.2026 (Oberflaeche Stufe 2): mfdepot.js zeigt GAR KEINE Kachel mehr - die
-   * Buecher-Karten sind eine eigene Form (.buch-fakten). Die Zusicherung faellt
-   * deshalb nicht weg, sie wird geteilt: das Verbot der handgebauten Kachel gilt
-   * jetzt fuer DREI Dateien (depot.js kam dazu), die Pflicht zur Hilfe fuer die
-   * zwei, die ueberhaupt Kacheln zeigen.
-   * NICHT WEGGERAEUMT, sondern gemeldet: eine kurz erprobte Fassung ueber ALLE
-   * Dateien der Wurzel wurde rot und nannte renderer.js und backtestui.js - zwei
-   * alte Fundstellen, die nicht zu dieser Stufe gehoeren. Sie stehen in der
-   * Uebergabe oberflaeche-stufe2, damit sie jemand aufraeumt, statt hier unter
-   * einer Ausnahmeliste zu verschwinden. */
-  ['mfdepot.js', 'driftui.js', 'depot.js'].forEach(function (f) {
-    ok(!/<div class="tile"><div class="name">/.test(fs.readFileSync(__dirname + '/' + f, 'utf8')),
-       f + ': baut keine Kachel von Hand');
+  /* DAS KACHEL-MARKUP WOHNT AN GENAU EINER STELLE.
+   * Geprueft ueber ALLE .js der Wurzel, ohne Ausnahmeliste. Die Klinke zaehlte
+   * bis zum 03.09.2026 drei Dateien namentlich auf und sah deshalb zwei alte
+   * Fundstellen nicht: renderer.js und backtestui.js bauten die Kachel weiter von
+   * Hand (Uebergabe oberflaeche-stufe2, Befund 3). Beide gehen jetzt ueber die
+   * Hilfe, und die Klinke ist umgedreht: statt 'diese Dateien duerfen nicht'
+   * heisst sie 'genau app-shell.js darf'. Ein Rueckfall wird damit beim NAMEN
+   * genannt statt unter einer Ausnahmeliste unsichtbar zu werden - und ein Umzug
+   * der Hilfe faellt genauso auf.
+   * Der Suchtext ist ZUSAMMENGESETZT: ausgeschrieben faende diese Datei sich
+   * selbst. Gesucht wird ohne Kommentare - ein Kommentar, der das verbotene
+   * Markup zitiert, um es zu erklaeren, hat schon einmal eine Klinke rot gemacht.
+   * Die erste Zusicherung ist die Positivkontrolle: ein leeres Verzeichnis wuerde
+   * die zweite sonst bestehen, ohne irgendetwas angesehen zu haben. */
+  var mHand = '<div class=' + '"tile"';
+  var wurzelJs = fs.readdirSync(__dirname).filter(function (n) { return /\.js$/.test(n); });
+  ok(wurzelJs.length > 40, 'Die Klinke sieht alle .js der Wurzel an', wurzelJs.length);
+  var bauenSelbst = wurzelJs.filter(function (n) {
+    return ohneKommentare(fs.readFileSync(__dirname + '/' + n, 'utf8')).indexOf(mHand) >= 0;
   });
-  ['driftui.js', 'depot.js'].forEach(function (f) {
+  ok(bauenSelbst.length === 1 && bauenSelbst[0] === 'app-shell.js',
+     'Das Kachel-Markup steht in genau einer Wurzeldatei: app-shell.js',
+     bauenSelbst.join(', ') || 'keine');
+  ['driftui.js', 'depot.js', 'renderer.js', 'backtestui.js'].forEach(function (f) {
     ok(/U\.kachel\(/.test(fs.readFileSync(__dirname + '/' + f, 'utf8')),
        f + ': zeigt seine Kacheln ueber die Hilfe');
   });
+  /* opt.extra ist der Platz, ohne den die sechs Marktueberblick-Kacheln haetten
+   * handgebaut bleiben muessen: die Sparkline steht im .tile, aber weder in .val
+   * noch in .kachel-sub. Roh angehaengt, ohne eigenen Kasten - sonst waere die
+   * Ausgabe eben nicht mehr dieselbe. */
+  ok(/\(opt\.extra \|\| ''\) \+/.test(shell),
+     'Die Kachel-Hilfe haengt opt.extra roh ans Ende der Kachel');
+  ok(/extra: sparkSVG\(/.test(fs.readFileSync(__dirname + '/renderer.js', 'utf8')),
+     'renderer.js: die Sparkline bleibt in der Kachel, sie haengt an opt.extra');
   var depK = fs.readFileSync(__dirname + '/depot.js', 'utf8');
   ok(/function tile\(name, val, sign, delta, deltaSign\)/.test(depK),
      'depot.js: die Signatur von tile() bleibt - eine Zusicherung benutzt sie als Endmarke');
