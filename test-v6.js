@@ -12337,9 +12337,24 @@ console.log('\n64) Bestand & Kopfzeile (Oberflaeche Stufe 2, 03.09.2026)');
   });
   /* Die Positionstabellen sind nicht verschwunden, sie stehen in je einer Klappe
    * unter ihrer Karte - und behalten ihren Leerzustand im Markup (K19). */
-  ok(/id="buchMomentum"[\s\S]{0,900}?<details class="how buch-detail">[\s\S]{0,200}?id="mfdMomentum"/.test(bestand),
+  /* NICHT ueber Naehe, sondern ueber ENTHALTENSEIN.
+   * Die erste Fassung suchte "Karte ... Klappe ... Inhalt" als Textfolge. Die
+   * Gegenprobe machte die Klappe direkt hinter dem Titel wieder zu - der Inhalt
+   * stand danach an derselben Stelle im Markup, aber AUSSERHALB der Klappe, und
+   * die Zusicherung blieb gruen. Geprueft wird deshalb: Klappe auf, Inhalt drin,
+   * und das erste </details> kommt erst DANACH.
+   * Gefunden hat es die Gegenprobe, nicht der Verdacht. */
+  function inKlappe(karte, inhalt) {
+    var i = bestand.indexOf('id="' + karte + '"');
+    if (i < 0) return false;
+    var auf = bestand.indexOf('<details class="how buch-detail">', i);
+    var drin = bestand.indexOf('id="' + inhalt + '"', i);
+    var zu = bestand.indexOf('</details>', auf);
+    return auf > i && drin > auf && zu > drin;
+  }
+  ok(inKlappe('buchMomentum', 'mfdMomentum'),
      'Die Momentum-Positionen liegen in einer Klappe UNTER ihrer Karte');
-  ok(/id="buchDrift"[\s\S]{0,900}?<details class="how buch-detail">[\s\S]{0,200}?id="mfdDrift"/.test(bestand),
+  ok(inKlappe('buchDrift', 'mfdDrift'),
      'Die Drift-Positionen liegen in einer Klappe UNTER ihrer Karte');
   /* Der Korb-Text ist eine Messaussage und wird WOERTLICH weitergereicht - er steht
    * jetzt in der Klappe statt unter den Kacheln, aber Wort fuer Wort gleich. */
@@ -12475,7 +12490,7 @@ console.log('\n64) Bestand & Kopfzeile (Oberflaeche Stufe 2, 03.09.2026)');
      'handlungen() liest NICHT das Journal - dort stehen auch Messungen und Umstellungen');
   ok(/alle\.push\(\{ at: at, buch: buch, art: art,/.test(hd),
      'handlungen() gibt jede Zeile als frisches Objekt heraus - nur Kopien');
-  ok(/betragArt/.test(hd),
+  ok(/betragArt:/.test(hd) && /'einsatz'/.test(hd) && /'ergebnis'/.test(hd),
      'handlungen() sagt dazu, ob der Betrag ein Einsatz oder ein Ergebnis ist');
   ok(/noch keine Handlung aufgezeichnet/.test(html) && /noch keine Handlung aufgezeichnet/.test(depO),
      'Der Leerzustand steht im Markup UND im Renderer - eine leere Liste bleibt nie stumm');
@@ -12505,11 +12520,26 @@ console.log('\n64) Bestand & Kopfzeile (Oberflaeche Stufe 2, 03.09.2026)');
    * Diese Klinke haelt fest, dass hinter dem Leck-Test kein Abschnitt mehr steht.
    * Gegenprobe: einen console.log-Aufruf dahinter setzen -> rot. */
   var eigen = fs.readFileSync(__dirname + '/test-v6.js', 'utf8');
-  var iLeck = eigen.indexOf('P1.selbsttest()');
-  var iEnde = eigen.indexOf('Promise.all(offeneProben)');
-  ok(iLeck > 0 && iEnde > iLeck, 'Der Leck-Test und das Dateiende sind auffindbar');
-  var danach = eigen.slice(eigen.indexOf(String.fromCharCode(125, 41, 41, 59), iLeck), iEnde);
-  ok(!/console\.log\(/.test(danach),
+  /* Die zwei Suchtexte werden ZUSAMMENGESETZT. Ausgeschrieben stuenden sie in
+   * dieser Datei ja selbst - und weil dieser Abschnitt VOR der Spannen-Studie
+   * liegt, faende indexOf die eigenen Quellzeilen zuerst. Genau das ist passiert:
+   * der Ausschnitt war eine Zeile lang, der Waechter bewachte nichts, und die
+   * Zusicherung 'auffindbar' blieb gruen, weil die zweite Zeile nun einmal hinter
+   * der ersten liegt. Zwei Zusicherungen gruen, null Aussage - die Gegenprobe hat
+   * es gezeigt, nicht der Verdacht. */
+  var mLeck = 'P1.' + 'selbsttest()';
+  var mEnde = 'Promise.all(' + 'offeneProben)';
+  var iLeck = eigen.indexOf(mLeck);
+  var iEnde = eigen.indexOf(mEnde);
+  ok(iLeck > 0 && iEnde > iLeck && (eigen.match(new RegExp(mEnde.replace(/[.()]/g, '\\$&'), 'g')) || []).length === 1,
+     'Der Leck-Test und das Dateiende sind auffindbar - und zwar genau einmal');
+  /* Ein neuer Abschnitt beginnt mit console.log am ZEILENANFANG; die Aufrufe INNERHALB
+   * der Spannen-Studie sind eingerueckt. Die erste Fassung schnitt stattdessen ab einer
+   * Klammerfolge - und traf sie an dieser Stelle gar nicht, womit der Waechter nichts
+   * bewachte: die Gegenprobe setzte einen Abschnitt dahinter und er blieb gruen.
+   * Gefunden hat es die Gegenprobe, nicht der Verdacht. */
+  var danach = eigen.slice(iLeck, iEnde);
+  ok(danach.indexOf(String.fromCharCode(10) + 'console.log(') < 0,
      'Hinter dem Leck-Test steht kein Abschnitt mehr - sein stdout-Haken verschluckt sonst jede Ausgabe');
 })();
 

@@ -2,6 +2,11 @@
 
 *Nur was sich am Wiki ändert. Die Projekt-Chronologie steht im Archiv `PROJEKTSTAND.md`.*
 
+- 03.09.2026 Oberfläche Stufe 2 geliefert (Bau): [oberflaeche.md](oberflaeche.md) §4 Stufe 2 auf
+  „geliefert“, §1 Cockpit-Nachtrag; [offene-auftraege.md](offene-auftraege.md) Zeile angelegt und
+  gestrichen. Heute zeigt oben drei Buch-Karten, „Zuletzt getan“ und einen Verlauf über alle
+  Bücher; die Kopfzeile spricht Deutsch; jede Betrieb-Klappe trägt eine Statuszeile aus einer
+  benannten Quelle. Belege: `uebergabe/oberflaeche-stufe2-2026-09-03.md`.
 - 02.09.2026 Release v8.37.3 (Wache): Fehlerbehebung — die Alpaca-Statuszeile in den
   Einstellungen wird jetzt auch dann aufgefrischt, wenn die Capital.com-Anbindung (CFD)
   nicht aktiv ist.

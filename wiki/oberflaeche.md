@@ -72,6 +72,8 @@ geprüft: `#sub-strategien`, `#sub-mittelfrist`, `#sub-auswertung` (alle in
 - **Kopfzeile:** `#cockpit` (`#ckEquity`, `#ckDay`, `#ckOpen`, `#ckBooks`, `#ckMarkt`,
   `#ckScan`) — depot.js `cockpitRender()`. **„M – · D –"** = Momentum-Buch / Drift-Buch in
   Prozent gegen das eigene Startkapital; „–" = Buch aus oder kein Verlaufspunkt.
+  *Seit Stufe 2 (03.09.2026) steht dort ausgeschrieben, welcher der drei Zustände gemeint
+  ist — „Momentum +1,2 %“, „Momentum aus“, „Momentum noch kein Stand“.*
 
 ## 2. Befund (PM, 02.09., alle 15 Seiten in isolierter Instanz gesehen)
 
@@ -137,7 +139,7 @@ Bedienoberfläche verschwindet, liegt in Betrieb in einer Klappe.
 | Stufe | Inhalt | Zustand |
 |---|---|---|
 | **1 Umzug** | 5 → 3 Reiter; Betrieb-Pille; Bestand nach Heute; Papiere/Protokoll nach Heute; Klinken K1–K26 (§5) umschreiben; keine Textänderung, keine Löschung | ✅ **geliefert 02.09.** (`uebergabe/oberflaeche-stufe1-2026-09-02.md`) — 3 Reiter / 9 Pillen, elf Betrieb-Klappen; 36 Klinken umgeschrieben oder neu, 37 Gegenproben rot; ui-probe + a11y-Sonde + `npm test` grün. **Ohne Statuszeile im `<summary>`** — die ist Gestaltung und liegt in Stufe 2. |
-| **2 Bestand & Kopfzeile** | Bestand-Block auf Heute gestalten (eine Bücher-Karte: Wert, Ergebnis, Positionen, letzte Handlung, nächste Umschichtung; Intraday-Depot nur wenn ein; Depotverlauf über alle Bücher); Cockpit in Worten statt „M – · D –"; **Statuszeile im `<summary>` jeder Betrieb-Klappe** (aus Stufe 1 hierher verschoben, Übergabe §6.1) | **beauftragt 02.09. (nachts)** |
+| **2 Bestand & Kopfzeile** | Bestand-Block auf Heute gestalten (eine Bücher-Karte: Wert, Ergebnis, Positionen, letzte Handlung, nächste Umschichtung; Intraday-Depot nur wenn ein; Depotverlauf über alle Bücher); Cockpit in Worten statt „M – · D –"; **Statuszeile im `<summary>` jeder Betrieb-Klappe** (aus Stufe 1 hierher verschoben, Übergabe §6.1) | ✅ **geliefert 03.09.** (`uebergabe/oberflaeche-stufe2-2026-09-03.md`) — drei Buch-Karten (Momentum · Ergebnis-Drift · Intraday) mit Wert, Ergebnis, Positionen, Status, nächstem Takt und letzter Handlung; „Zuletzt getan“ aus der neuen Leseauskunft `DepotAPI.handlungen(n)`; **ein** Verlauf mit drei Linien (je gegen das eigene Startkapital, gezeichnet von `Chart.drawLines`); Positionstabellen und Korb-Text wörtlich in je einer Klappe unter der Karte; Intraday-Bereich per `hidden` statt Entfernen; `#ckBooks` mit drei Zuständen (Prozent / aus / noch kein Stand), `#ckScan` in Worten, `#ckEquity` heißt Intraday-Depot. Elf Statuszeilen im `<summary>`, jede mit benannter Quelle, keine Konstante, kein Zeitgeber. |
 | **3 Schnitt** | Erklärtexte hinter i-Knöpfe, Fußzeile einmal; Stunden-Strategie-Reste ins Archiv (Balken „Depot gegen Buy & Hold", Backtest-Voreinstellung `daily`); Trendfinder als Archivzeile; Mittelfrist-Parameter als Text; Strategieregister: Beschreibungen ganz, Umlaute | offen |
 | **4 Archiv-Grafik, Werkzeug-Politur** | eine Grafik „wie vollständig ist das Archiv" statt Tabelle; Explorer/Schein-Finder auf Wilhelms Zuruf | offen |
 
