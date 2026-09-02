@@ -9,6 +9,11 @@ var fails = 0;
  * haben. Genau das ist beim Kurslader passiert - 16 Pruefungen, still uebersprungen. */
 var offeneProben = [];
 function probe(zusage) { offeneProben.push(zusage); return zusage; }
+/* Der Leck-Test der Spannen-Studie haengt process.stdout.write um. ZWEI Laeufe
+ * gleichzeitig wuerden sich verschachteln: der zweite bindet den Haken des ersten
+ * als "echtes" Schreiben, und wer zuletzt zuruecksetzt, laesst einen fremden Haken
+ * stehen. Abschnitt 64 traegt seine Zusage hier ein, Block 35 wartet darauf. */
+var leckDurchreiche = null;
 
 function ok(cond, name, extra) {
   console.log((cond ? '  ✅ ' : '  ❌ ') + name + (extra !== undefined ? '  [' + extra + ']' : ''));
@@ -12574,38 +12579,43 @@ console.log('\n64) Bestand & Kopfzeile (Oberflaeche Stufe 2, 03.09.2026)');
   ok(/Abgeschaltet und deshalb nicht gezeichnet/.test(bv),
      'Ein abgeschaltetes Buch verschwindet nicht stillschweigend, es wird benannt');
 
-  /* ---- Warum dieser Abschnitt VOR der Spannen-Studie steht --------------------
-   * Ihr Leck-Test haengt process.stdout.write um (probe.js selbsttest) und gibt es
-   * erst NACH einem await zurueck. In diesem Fenster laeuft der ganze uebrige
-   * Dateirumpf - und jede Zeile, die er ausgibt, landet im Sammelpuffer des
-   * Leck-Tests statt im Protokoll. Am 03.09.2026 hat das 100 gruene und EINE rote
-   * Zusicherung verschluckt; sichtbar blieb nur die Zahl am Ende. Das ist die
-   * Fehlerform "die Pruefung, die niemand ansieht" - eine Suite, die ihr Ergebnis
-   * nicht mehr zeigt, ist keine Suite mehr.
-   * Diese Klinke haelt fest, dass hinter dem Leck-Test kein Abschnitt mehr steht.
-   * Gegenprobe: einen console.log-Aufruf dahinter setzen -> rot. */
-  var eigen = fs.readFileSync(__dirname + '/test-v6.js', 'utf8');
-  /* Die zwei Suchtexte werden ZUSAMMENGESETZT. Ausgeschrieben stuenden sie in
-   * dieser Datei ja selbst - und weil dieser Abschnitt VOR der Spannen-Studie
-   * liegt, faende indexOf die eigenen Quellzeilen zuerst. Genau das ist passiert:
-   * der Ausschnitt war eine Zeile lang, der Waechter bewachte nichts, und die
-   * Zusicherung 'auffindbar' blieb gruen, weil die zweite Zeile nun einmal hinter
-   * der ersten liegt. Zwei Zusicherungen gruen, null Aussage - die Gegenprobe hat
-   * es gezeigt, nicht der Verdacht. */
-  var mLeck = 'P1.' + 'selbsttest()';
-  var mEnde = 'Promise.all(' + 'offeneProben)';
-  var iLeck = eigen.indexOf(mLeck);
-  var iEnde = eigen.indexOf(mEnde);
-  ok(iLeck > 0 && iEnde > iLeck && (eigen.match(new RegExp(mEnde.replace(/[.()]/g, '\\$&'), 'g')) || []).length === 1,
-     'Der Leck-Test und das Dateiende sind auffindbar - und zwar genau einmal');
-  /* Ein neuer Abschnitt beginnt mit console.log am ZEILENANFANG; die Aufrufe INNERHALB
-   * der Spannen-Studie sind eingerueckt. Die erste Fassung schnitt stattdessen ab einer
-   * Klammerfolge - und traf sie an dieser Stelle gar nicht, womit der Waechter nichts
-   * bewachte: die Gegenprobe setzte einen Abschnitt dahinter und er blieb gruen.
-   * Gefunden hat es die Gegenprobe, nicht der Verdacht. */
-  var danach = eigen.slice(iLeck, iEnde);
-  ok(danach.indexOf(String.fromCharCode(10) + 'console.log(') < 0,
-     'Hinter dem Leck-Test steht kein Abschnitt mehr - sein stdout-Haken verschluckt sonst jede Ausgabe');
+  /* ---- Der stdout-Haken des Leck-Tests reicht durch ---------------------------
+   * probe.js selbsttest() haengt process.stdout.write um und gibt den Haken erst
+   * NACH einem await zurueck. In diesem Fenster laeuft der uebrige Dateirumpf
+   * weiter. Solange der Haken schluckte, landete JEDE Zeile daraus im Sammelpuffer
+   * statt im Protokoll: am 03.09.2026 100 gruene und EINE rote Zusicherung,
+   * sichtbar blieb nur die Zahl am Ende. Fehlerform "die Pruefung, die niemand
+   * ansieht" - eine Suite, die ihr Ergebnis nicht mehr zeigt, ist keine Suite mehr.
+   * Die Zwischenloesung war eine Klinke auf die REIHENFOLGE der Abschnitte (hinter
+   * dem Leck-Test darf keiner stehen). Sie ist weg, weil die Ursache weg ist: der
+   * Haken gibt das echte Schreiben zurueck. Geprueft wird jetzt genau das, auf zwei
+   * Ebenen - der Quelltext allein zeigt nicht, dass die Weiterleitung wirkt, und
+   * das Verhalten allein nicht, ob sie noch da steht.
+   * Gegenprobe (beide einmal gefahren): 'return true;' statt der Weiterleitung
+   * macht beide Zusicherungen rot. */
+  var PROBEJS = '/studien/vorregistrierung-2026-09-02-spannen-historisch/probe.js';
+  var probeQ = fs.readFileSync(__dirname + PROBEJS, 'utf8');
+  /* Als Text, nicht als Muster: hier gaebe es sechs Sonderzeichen zu maskieren,
+   * und eine falsch maskierte Klammer macht die Klinke stumm statt rot. */
+  var mDurch = 'gesammelt += String(chunk); ' + 'return echtesSchreiben(chunk);';
+  ok(probeQ.indexOf(mDurch) >= 0,
+     'Der stdout-Haken des Leck-Tests gibt das echte Schreiben zurueck, statt es zu schlucken');
+  leckDurchreiche = probe((async function () {
+    var P1 = require(__dirname + PROBEJS);
+    /* Zusammengesetzt, damit die Textmarke oben nicht die eigene Quelle findet. */
+    var MARKE = 'ZZDURCHREICHE' + '9427';
+    var echt = process.stdout.write, durchgereicht = '';
+    process.stdout.write = function (chunk) {
+      durchgereicht += String(chunk);
+      return echt.apply(process.stdout, arguments);
+    };
+    var laeuft = P1.selbsttest();   /* haengt seinen Haken UEBER diese Schicht */
+    console.log(MARKE);             /* genau das Fenster, in dem frueher alles verschwand */
+    await laeuft;
+    process.stdout.write = echt;
+    ok(durchgereicht.indexOf(MARKE) >= 0,
+       'Eine Ausgabe waehrend des laufenden Leck-Tests erreicht die echte Ausgabe');
+  })());
 })();
 
 /* ================= Block 35: Spannen-Studie - der Zugang verlaesst die Studie nicht =======
@@ -12684,6 +12694,8 @@ console.log('\n64) Bestand & Kopfzeile (Oberflaeche Stufe 2, 03.09.2026)');
 
   /* ---------- (b) Verhalten: der Leck-Test ---------- */
   probe((async function () {
+    /* Nie zwei Leck-Tests gleichzeitig - sie haengen beide process.stdout.write um. */
+    await leckDurchreiche;
     var P1 = require(SP + '/probe.js');
     var r = await P1.selbsttest();
     ok(!r.leck, 'Leck-Test: erfundene Zugangswerte tauchen in KEINER Ausgabe auf, auch wenn der Server die Kopfzeilen zurueckspiegelt');

@@ -157,7 +157,13 @@ async function selbsttest() {
   S.testZugangSetzen(MARKE_ID, MARKE_GEHEIM);
   var gesammelt = '';
   var echtesSchreiben = process.stdout.write.bind(process.stdout);
-  process.stdout.write = function (chunk) { gesammelt += String(chunk); return true; };
+  /* DURCHREICHEN, nicht schlucken. Der Haken haengt, bis der Selbsttest nach seinem
+   * await zurueckkommt - und in diesem Fenster laeuft der Aufrufer weiter. Eine
+   * Fassung mit 'return true' hat am 03.09.2026 die Ausgabe der ganzen Pruefsuite
+   * verschluckt: 100 gruene und EINE rote Zusicherung verschwanden im Sammelpuffer,
+   * sichtbar blieb nur die Zahl am Ende. Der Leck-Test bleibt scharf - gesammelt
+   * bekommt weiterhin jede Zeile - er ist nur nicht mehr das einzige Ziel. */
+  process.stdout.write = function (chunk) { gesammelt += String(chunk); return echtesSchreiben(chunk); };
   /* Ein Server, der die Kopfzeilen im Rumpf zurueckspiegelt - der schlimmste Fall. */
   var boese = async function (url, opt) {
     var kopf = JSON.stringify((opt && opt.headers) || {});
