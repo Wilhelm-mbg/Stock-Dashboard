@@ -1,5 +1,5 @@
 'use strict';
-/* ================= Trendfinder (Werkzeuge → Trendfinder) =================
+/* ================= Trendfinder (Werkzeuge → Betrieb, Klappe Trendfinder) =================
  *
  * Stufe E des Struktur-Plans (studien/struktur-plan-2026-08-25/PLAN.md): erster der
  * sieben Bloecke, die aus depot.js herausgeloest sind. Der Inhalt ist WOERTLICH

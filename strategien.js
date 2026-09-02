@@ -247,7 +247,7 @@
       eintraege['strategie.' + s.key] = {
         titel: 'Belegstand · ' + s.name,
         punkte: s.beleg || [],
-        fuss: 'Vollständiges Protokoll mit Entscheidungsweg: Reiter „Messung“ → Scoreboard.'
+        fuss: 'Vollständiges Protokoll mit Entscheidungsweg: „Werkzeuge → Betrieb“, Messprotokolle.'
       };
     });
     window.Info.eintragen(eintraege);
@@ -415,7 +415,7 @@
       '<span style="color:var(--muted); font-size:var(--fs-neben);">' + U.esc(e.setupName) + '-Setup</span>' +
       chipHtml(chip) +
       (chip.befund ? '<span style="color:var(--muted); font-size:var(--fs-neben); flex-basis:100%;">' + U.esc(chip.befund) + '</span>' : '') +
-      '<span style="color:var(--muted); font-size:var(--fs-neben); margin-left:auto;">wählbar als Auslöser: Pille „Risiko &amp; Einstellungen“</span>' +
+      '<span style="color:var(--muted); font-size:var(--fs-neben); margin-left:auto;">wählbar als Auslöser: Pille „Einstellungen“</span>' +
       '</div>';
   }
   function regelZeile(r) {
