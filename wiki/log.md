@@ -163,3 +163,4 @@ Fundstelle im Repo"** markiert — die zugehörigen Studienberichte liegen auße
 `studien/`-Bestands. **Wer sie findet, trägt die Fundstelle nach.**
 
 - 02.09.2026 (PM) — Broker-Recherche für die Aktien-Kostenmessung; Entscheid Wilhelm: **Alpaca-Paper**. Neu: Abschnitt „Broker-Schnittstellen" in datenquellen.md, Zeile in entscheide.md, Auftragszeile in offene-auftraege.md umgeschrieben (war: Paper-Konto beim Aktienbroker, offen).
+- 02.09.2026 (Chat, abends) — Alpaca-Paper als zweites Kosten-Gefäß **gebaut** (`alpaca.js`, `kosten.js`, `depot.js`, `main.js`, UI, Sperrklinken a–e). Neu: Abschnitt „Aktien-Gefäß Alpaca, Messung läuft seit 02.09.2026" in kosten.md, Kassa-Zeile dort als „Annahme, wird gemessen" markiert; Auftragszeile in offene-auftraege.md gestrichen (offen bleibt Wilhelms Verbindungstest). Fundstelle `uebergabe/alpaca-kostenmessung-2026-09-02.md`.

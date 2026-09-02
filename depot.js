@@ -6379,7 +6379,76 @@
       }
       el.textContent = txt;
       spiegel();
+      updateAlpStatus();
     }
+    /* Das Aktien-Gefaess hat seine eigene Statuszeile - die Bilanz trennt die Gefaesse,
+     * also trennt sie auch die Anzeige. Gespiegelt in den Einstellungs-Dialog. */
+    async function updateAlpStatus() {
+      var el = document.getElementById('alpStatus');
+      if (!el) return;
+      function spiegel() {
+        var el2 = document.getElementById('setAlpStatusLive');
+        if (el2) el2.textContent = el.textContent || '– keine Anbindung eingerichtet.';
+      }
+      var chk = document.getElementById('kostenAutomatAlpChk');
+      if (chk) chk.checked = !(D && D.kostenAutomatAlpaca === false);
+      if (!(window.AlpAPI && window.AlpAPI.enabled())) {
+        var s9 = window.getSettings ? window.getSettings() : null;
+        el.textContent = (s9 && s9.alpKey && s9.alpSecret && !s9.alpEnabled)
+          ? 'Alpaca-Paper (Aktie): Zugangsdaten sind hinterlegt, die Messung ist aber AUS. Häkchen in den App-Einstellungen setzen.'
+          : '';
+        spiegel();
+        return;
+      }
+      el.textContent = 'Alpaca-Paper (Aktie): verbinde …';
+      var s0 = null;
+      try { s0 = await window.AlpAPI.status(); } catch (e0) { s0 = { ok: false, msg: 'Fehler: ' + (e0 && e0.message || e0) }; }
+      var txt = 'Alpaca-Paper (Aktie): ' + s0.msg;
+      var ab = (window.Kosten && window.Kosten.alpacaBilanz) ? window.Kosten.alpacaBilanz() : null;
+      if (ab && ab.n) {
+        var st9 = ab.streuung;
+        txt += ' · Gemessene Aktien-Umläufe aus ' + ab.n + ' Runden: Median ' + U.dez(ab.medianPct, 3) +
+          ' % je Umlauf (angenommen: ' + U.dez(ab.annahmePct, 2) + ' %)' +
+          ' · je Umsatzklasse (Mio $): ' + Object.keys(ab.jeKlasse).map(function (k) {
+            var e9 = ab.jeKlasse[k];
+            return k + ' ' + e9.n + '/' + ab.klasseMindest + (e9.medianPct != null ? ' (' + U.dez(e9.medianPct, 3) + ' %)' : '');
+          }).join(', ') +
+          (ab.ohneKlasse ? ' · ' + ab.ohneKlasse + ' ohne Klasse' : '') +
+          (st9 ? ' · ' + st9.tage + ' Tag(e), ' + st9.marktlagen + ' Marktlage(n)' : '');
+      } else {
+        txt += ' · noch keine Aktien-Runde gemessen.';
+      }
+      if (ab && ab.uebernachtN) {
+        txt += ' · Übernacht (Schlussauktion→Eröffnung): ' + ab.uebernachtN + ' Runde(n), davon ' + ab.uebernachtAuktionN +
+          ' per Auktion, Schlupf gegen Schluss/Eröffnung Median ' + U.dez(ab.uebernachtMedianPct, 3) + ' %' +
+          (ab.uebernachtOffen ? ' (' + ab.uebernachtOffen + ' ohne offizielle Kurse, wird nachgetragen)' : '');
+      }
+      if (ab && ab.verworfen) txt += ' · verworfen: ' + ab.verworfen + ' (Teilfüllungen ' + ab.teilfuellungen + ')';
+      var as9 = (window.Kosten && window.Kosten.alpacaStand) ? window.Kosten.alpacaStand() : null;
+      if (as9) {
+        txt += as9.fertig ? ' · Messautomat Alpaca: Ziel erreicht, jede Klasse trägt ' + as9.klasseMindest + ' Runden.'
+          : !as9.an ? ' · Messautomat Alpaca AUSGESCHALTET – es wird nur von Hand gemessen.'
+          : ' · Messautomat Alpaca läuft: eine Runde je US-Handelstag zu wechselnder Uhrzeit, dazu eine Übernacht-Runde.';
+        if (as9.uebernacht) txt += ' · Offene Übernacht-Position: ' + as9.uebernacht.sym + ' (' + as9.uebernacht.stueck + ' Stück, ' + as9.uebernacht.phase + ').';
+        if (as9.clsAbgelehnt || as9.opgAbgelehnt) txt += ' · Auktionsorders abgelehnt, Rückfall auf Marktorders 15:58/09:31 ET (auktion: false).';
+        if (as9.letzterGrund) txt += ' · Zuletzt: ' + as9.letzterGrund;
+      }
+      var kv = (D && D.kostenVersuche || []).filter(function (v) { return /Alpaca|Übernacht/.test(v.grund || ''); })[0];
+      if (kv) txt += ' · Letzte Alpaca-Runde (' + U.dt(kv.at) + (kv.sym ? ', ' + kv.sym : '') + '): ' + (kv.ok ? kv.grund : 'nicht gelaufen – ' + kv.grund);
+      el.textContent = txt;
+      spiegel();
+    }
+    (function () {
+      var chk = document.getElementById('kostenAutomatAlpChk');
+      if (!chk) return;
+      chk.checked = !(D && D.kostenAutomatAlpaca === false);
+      chk.addEventListener('change', function () {
+        if (!D) return;
+        D.kostenAutomatAlpaca = chk.checked ? true : false;
+        save();
+        updateAlpStatus();
+      });
+    })();
     /* Messrunde von Hand. Setzt echte Orders auf dem Demo-Konto ab - deshalb eine
      * Rueckfrage davor und ein Riegel gegen Doppelklicks. Die Symbole werden
      * durchgereicht, damit die Proben nicht alle an einem Wert haengen. */
@@ -6391,18 +6460,37 @@
       b.addEventListener('click', async function () {
         if (kostenRundeLaeuft) return;
         var wahl = document.getElementById('kostenRundeSym');
-        var sym = wahl && wahl.value ? wahl.value : null;
+        var wert = wahl && wahl.value ? wahl.value : '';
+        /* Auswahl: '' = Capital, Aktien der Reihe nach; BTCUSD/ETHUSD = Capital, Krypto;
+         * 'alpaca:' = Alpaca-Paper, Aktien der Reihe nach - die Umsatzklasse mit den
+         * wenigsten Runden zuerst (kosten.js/naechstesAlpacaSymbol). */
+        var gefaess = wert.indexOf('alpaca:') === 0 ? 'alpaca' : 'capital';
+        var sym = gefaess === 'alpaca' ? wert.slice(7) : wert;
+        var klasseTxt = '';
+        if (gefaess === 'alpaca' && !sym) {
+          if (!(window.AlpAPI && window.AlpAPI.enabled())) { st.textContent = 'Alpaca-Paper ist nicht verbunden (Einstellungen).'; return; }
+          st.textContent = 'Wähle einen Wert nach Umsatzklasse …';
+          var w9 = null;
+          try { w9 = await window.Kosten.naechstesAlpacaSymbol(); } catch (e9) { w9 = null; }
+          if (!w9) { st.textContent = 'Kein Kandidat mit Umsatzklasse gefunden (Tagesdaten des Mittelfrist-Tabs fehlen?).'; return; }
+          sym = w9.sym; klasseTxt = ' (Klasse ' + w9.klasse + ' Mio $, aus ' + w9.quelle + ')';
+        }
         if (!sym) {
           var syms = universe();
           if (!syms.length) { st.textContent = 'Kein Wert im Universum.'; return; }
           sym = syms[kostenRundeTakt % syms.length];
         }
-        if (!window.confirm('Auf dem Capital.com-DEMO-Konto wird jetzt die kleinstmögliche Position in ' +
+        var frage = gefaess === 'alpaca'
+          ? 'Auf dem Alpaca-PAPER-Konto werden jetzt rund 200 $ in ' + sym + klasseTxt +
+            ' zum Markt gekauft und sofort wieder verkauft. Das ist eine echte Order mit Papiergeld.\n\n' +
+            'Gemessen wird, was ein Aktien-Umlauf wirklich kostet. Fortfahren?'
+          : 'Auf dem Capital.com-DEMO-Konto wird jetzt die kleinstmögliche Position in ' +
             sym + ' geöffnet und sofort wieder geschlossen. Das ist eine echte Order mit Demo-Geld.\n\n' +
-            'Gemessen wird, was ein Umlauf wirklich kostet. Fortfahren?')) return;
+            'Gemessen wird, was ein Umlauf wirklich kostet. Fortfahren?';
+        if (!window.confirm(frage)) return;
         kostenRundeTakt++;
         kostenRundeLaeuft = true; b.disabled = true;
-        st.textContent = 'Messe ' + sym + ' …';
+        st.textContent = 'Messe ' + sym + (gefaess === 'alpaca' ? ' auf Alpaca-Paper' : ' auf Capital.com-Demo') + ' …';
         /* Die Marktlage wird VOR der Runde am validierten R-TREND-Anker
          * abgelesen und der Runde mitgegeben - Wilhelms Freigabeschwelle
          * zaehlt verschiedene Tage UND Marktlagen aus den Daten. */
@@ -6412,9 +6500,16 @@
           lage = spyAuf === true ? 'trend-auf' : spyAuf === false ? 'trend-ab' : null;
         } catch (e3) { lage = null; }
         var r = null;
-        try { r = await kostenRundeMessen(sym, lage); }
+        try { r = await kostenRundeMessen(sym, lage, gefaess); }
         catch (e) { r = { ok: false, grund: 'Fehler: ' + (e && e.message || e) }; }
-        if (r && r.ok) {
+        if (r && r.ok && gefaess === 'alpaca') {
+          var ab9 = (window.Kosten && window.Kosten.alpacaBilanz) ? window.Kosten.alpacaBilanz() : null;
+          st.textContent = 'Alpaca-Paper · ' + sym + ': Umlauf ' + r.rundePct.toFixed(3) + ' %' +
+            (r.notiertPct != null ? ' (notiert ' + r.notiertPct.toFixed(3) + ' %, Rest ist Schlupf)' : '') +
+            (r.umsatzKlasse ? ' · Klasse ' + r.umsatzKlasse + ' Mio $' : ' · ohne Umsatzklasse') +
+            (ab9 ? ' · ' + ab9.n + ' Aktienrunden, je Klasse ' + Object.keys(ab9.jeKlasse).map(function (k) {
+              return k + ': ' + ab9.jeKlasse[k].n + '/' + ab9.klasseMindest; }).join(', ') : '');
+        } else if (r && r.ok) {
           /* Die Runden kommen seit dem 27.08. aus dem reset-festen Nebenlager,
            * nicht mehr aus dem Depot-Store (Wilhelms Entscheid: Ursache beheben). */
           var s9 = (window.Kosten && window.Kosten.kostenStreuung && window.Kosten.kostenRunden)
@@ -6783,7 +6878,23 @@
       universe: universe, istKrypto: istKrypto, HEALTH: HEALTH,
       /* Der validierte Regime-Anker fuer den Marktlagen-Stempel - hereingereicht
        * statt nachgebaut, damit Automat und Knopf dieselbe Lage lesen. */
-      marktlage: spyTrendAuf
+      marktlage: spyTrendAuf,
+      /* Aktien-Gefaess (Alpaca-Paper, 02.09.2026): die Werte, die die App HEUTE handeln
+       * wuerde - der Momentum-Korb (D.mfBuch.positionen, gefuehrt von mfhandel.js/
+       * liquide.js) und die Intraday-Signalliste (scanUniverse: Basis + Screener-Picks +
+       * 60m-Pool). Dazu die Tagesdaten des Mittelfrist-Tabs (Schluss x Stueck) fuer die
+       * Umsatzklasse und der Kurslader fuer offizielle Schluss-/Eroeffnungskurse. */
+      kandidatenAlpaca: function () {
+        var mom = [], intra = [];
+        try { mom = ((D && D.mfBuch && D.mfBuch.positionen) || []).map(function (p) { return p.sym; }); } catch (e1) { mom = []; }
+        try { intra = (D && D.intraday) ? scanUniverse() : universe(); } catch (e2) { intra = []; }
+        return { momentum: mom, intraday: intra };
+      },
+      mfTagesdaten: async function () {
+        var g = (window.MF && window.MF.tagesdatenLesen) ? await window.MF.tagesdatenLesen() : null;
+        return g && g.roh ? g.roh : null;
+      },
+      kurse: function (sym, opt) { return window.Kurse.hole(sym, opt); }
     });
     /* Tiefensuche/Zucht (Stufe E): rein archivgestuetzt; ob eine Messung laeuft,
      * beantwortet das Handelsmodul als EINE Frage statt dreier Zustaende. */

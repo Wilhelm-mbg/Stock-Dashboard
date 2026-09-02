@@ -1073,14 +1073,18 @@ ipcMain.handle('open-external', async (_ev, url) => {
 
 // Die kostenpflichtige Anthropic-API wurde entfernt – es gibt keinen KI-Pfad mehr.
 
-// ---- Capital.com (NUR Demo-Host – Live-Handel ist bewusst nicht möglich) ----
+// ---- Broker-Anfragen: je Anbindung eine feste Host-Liste ----
+// Capital.com: NUR der Demo-Host – Live-Handel ist bewusst nicht möglich.
 const CAP_HOSTS = new Set(['demo-api-capital.backend-capital.com']);
-function capFetch(method, url, headers, bodyObj) {
+// Alpaca: NUR der Paper-Handelsendpunkt und der Datendienst. api.alpaca.markets (Live)
+// steht absichtlich nicht hier – ein Live-Handel aus dieser App heraus ist nicht möglich.
+const ALP_HOSTS = new Set(['paper-api.alpaca.markets', 'data.alpaca.markets']);
+function brokerFetch(method, url, headers, bodyObj, hosts, wer) {
   return new Promise((resolve) => {
     let u;
     try { u = new URL(url); } catch (e) { return resolve({ ok: false, status: 0, body: 'Ungültige URL', headers: {} }); }
-    if (u.protocol !== 'https:' || !CAP_HOSTS.has(u.hostname)) {
-      return resolve({ ok: false, status: 0, body: 'Host nicht erlaubt (nur Capital.com-DEMO): ' + u.hostname, headers: {} });
+    if (u.protocol !== 'https:' || !hosts.has(u.hostname)) {
+      return resolve({ ok: false, status: 0, body: 'Host nicht erlaubt (' + wer + '): ' + u.hostname, headers: {} });
     }
     const payload = bodyObj != null ? JSON.stringify(bodyObj) : null;
     const h = Object.assign({}, headers || {});
@@ -1101,7 +1105,26 @@ function capFetch(method, url, headers, bodyObj) {
     req.end();
   });
 }
+function capFetch(method, url, headers, bodyObj) { return brokerFetch(method, url, headers, bodyObj, CAP_HOSTS, 'nur Capital.com-DEMO'); }
+function alpFetch(method, url, headers, bodyObj) { return brokerFetch(method, url, headers, bodyObj, ALP_HOSTS, 'nur Alpaca-PAPER und -Daten'); }
 ipcMain.handle('cap-fetch', async (_ev, method, url, headers, bodyObj) => capFetch(method, url, headers, bodyObj));
+ipcMain.handle('alp-fetch', async (_ev, method, url, headers, bodyObj) => alpFetch(method, url, headers, bodyObj));
+
+/* Das eingefrorene Universum (Punkt-in-Zeit, 2024-09-02) - NUR LESEN, fester Pfad, kein
+ * Parameter. Die Kostenmessung ergänzt daraus Kandidaten für Umsatzklassen, die in der
+ * tatsächlichen Signalliste fehlen. Die Datei ist schreibgeschützt und bleibt es. */
+ipcMain.handle('universum-eingefroren', async () => {
+  try {
+    const p = path.join(app.getPath('downloads'), 'Markt-Dashboard-Daten', 'massive', 'universum-2024-09-02.json');
+    if (!fs.existsSync(p)) return { ok: false, grund: 'Datei fehlt' };
+    if (fs.statSync(p).size > 2 * 1024 * 1024) return { ok: false, grund: 'Datei zu groß' };
+    const j = JSON.parse(fs.readFileSync(p, 'utf8'));
+    const werte = Array.isArray(j.werte) ? j.werte
+      .filter((w) => w && typeof w.sym === 'string' && typeof w.umsatzMio === 'number')
+      .map((w) => ({ sym: w.sym, umsatzMio: w.umsatzMio })) : [];
+    return { ok: true, stichtag: j.stichtag || null, werte };
+  } catch (e) { return { ok: false, grund: String((e && e.message) || e) }; }
+});
 
 // ---- Gespeicherte Einstellungen (userData/store/settings.json) ----
 function gespeicherteSettings() {
@@ -1177,7 +1200,7 @@ function startThema() {
 // Windows-Anmeldedaten-Schutz (DPAPI): entschlüsseln kann nur derselbe Benutzer auf
 // demselben Rechner. Ist der Dienst nicht verfügbar, bleibt es beim alten Verhalten –
 // lieber unverschlüsselt speichern als die Einstellungen gar nicht sichern können.
-const GEHEIME_FELDER = ['capKey', 'capId', 'capPass'];
+const GEHEIME_FELDER = ['capKey', 'capId', 'capPass', 'alpKey', 'alpSecret'];
 function chiffrieren(v) {
   if (typeof v !== 'string' || !v) return v;
   try {

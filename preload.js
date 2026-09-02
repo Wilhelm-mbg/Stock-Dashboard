@@ -40,6 +40,8 @@ contextBridge.exposeInMainWorld('api', {
   onMessFortschritt: (cb) => ipcRenderer.on('mess-fortschritt', (_ev, d) => cb(d)),
   setTrayMode: (v) => ipcRenderer.send('tray-mode', !!v),
   capFetch: (method, url, headers, body) => ipcRenderer.invoke('cap-fetch', method, url, headers, body),
+  alpFetch: (method, url, headers, body) => ipcRenderer.invoke('alp-fetch', method, url, headers, body),
+  universumEingefroren: () => ipcRenderer.invoke('universum-eingefroren'),
   yahooQuotes: (syms) => ipcRenderer.invoke('yahoo-quotes', syms),
   appVersion: () => ipcRenderer.invoke('app-version'),
   exportAnalysis: (payload) => ipcRenderer.invoke('export-analysis', payload),

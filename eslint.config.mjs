@@ -18,7 +18,7 @@ import globals from 'globals';
  * genau das ist der Zweck: die Liste macht die unsichtbare Verdrahtung sichtbar. */
 const fensterGlobals = {
   U: 'readonly', Quant: 'readonly', Q: 'readonly',
-  Vormarkt: 'readonly', Archiv: 'readonly', CapAPI: 'readonly', Explorer: 'readonly',
+  Vormarkt: 'readonly', Archiv: 'readonly', CapAPI: 'readonly', AlpAPI: 'readonly', Explorer: 'readonly',
   Drift: 'readonly', MF: 'readonly', MH: 'readonly', Momentum: 'readonly', Liquide: 'readonly',
   Bugs: 'readonly', Diagnose: 'readonly', WKN: 'readonly', Scoreboard: 'readonly',
   Scheinfinder: 'readonly', MFHandel: 'readonly', MFDepot: 'readonly',

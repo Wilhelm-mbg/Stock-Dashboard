@@ -1260,7 +1260,7 @@
           </div>
         </div>
         </details>
-        <div class="strat-foot" style="flex-direction:column; align-items:flex-start; gap:4px;"><span id="idStatus"></span><span id="tuneStatus"></span><span id="regimeHint" style="color:var(--muted); font-size:var(--fs-neben);"></span><span id="capStatus"></span><div style="margin-top:6px; display:flex; align-items:center; gap:8px; flex-wrap:wrap;"><select id="kostenRundeSym" style="font-size:var(--fs-neben);" title="Welcher Wert gemessen wird. Krypto handelt rund um die Uhr – damit lässt sich auch bei geschlossener Börse messen. Achtung: die Spanne auf BTC sagt nichts über die Spanne auf einer Aktie."><option value="">Aktien – der Reihe nach</option><option value="BTCUSD">BTCUSD – rund um die Uhr</option><option value="ETHUSD">ETHUSD – rund um die Uhr</option></select><button class="btn ghost" id="kostenRundeBtn" type="button" title="Öffnet auf dem Capital.com-DEMO-Konto die kleinstmögliche Position und schließt sie sofort wieder. Gemessen wird, was ein Umlauf wirklich kostet – Spanne plus Schlupf. Setzt eine echte Order ab (Demo-Geld). Läuft nur auf Klick, nie von selbst.">Kostenrunde messen</button><span id="kostenRundeStatus" role="status" aria-live="polite" style="font-size:var(--fs-neben); color:var(--muted);"></span></div></div>
+        <div class="strat-foot" style="flex-direction:column; align-items:flex-start; gap:4px;"><span id="idStatus"></span><span id="tuneStatus"></span><span id="regimeHint" style="color:var(--muted); font-size:var(--fs-neben);"></span><span id="capStatus"></span><span id="alpStatus"></span><div style="margin-top:6px; display:flex; align-items:center; gap:8px; flex-wrap:wrap;"><select id="kostenRundeSym" style="font-size:var(--fs-neben);" title="Welcher Wert in welchem Gefäß gemessen wird. Capital.com-Demo misst CFD (Krypto rund um die Uhr), Alpaca-Paper misst echte US-Aktien nach Umsatzklasse. Achtung: die Spanne auf BTC sagt nichts über die Spanne auf einer Aktie."><optgroup label="Capital.com-Demo (CFD)"><option value="">Aktien – der Reihe nach</option><option value="BTCUSD">BTCUSD – rund um die Uhr</option><option value="ETHUSD">ETHUSD – rund um die Uhr</option></optgroup><optgroup label="Alpaca-Paper (Aktie)"><option value="alpaca:">Aktien – der Reihe nach (Umsatzklasse mit den wenigsten Runden)</option></optgroup></select><button class="btn ghost" id="kostenRundeBtn" type="button" title="Öffnet im gewählten Gefäß eine kleine Position (Capital.com-DEMO: kleinstmöglich; Alpaca-PAPER: rund 200 $) und schließt sie sofort wieder. Gemessen wird, was ein Umlauf wirklich kostet – Spanne plus Schlupf. Setzt eine echte Order ab (Demo-/Papiergeld). Läuft auf Klick; der Messautomat misst zusätzlich eine Runde je Handelstag.">Kostenrunde messen</button><label style="display:inline-flex; align-items:center; gap:4px; font-size:var(--fs-neben); color:var(--muted);" title="Messautomat für das Alpaca-Paper-Konto: eine Aktien-Runde je US-Handelstag zu wechselnder Uhrzeit plus eine Übernacht-Runde (Schlussauktion → Folgeeröffnung). Aus = nur von Hand."><input type="checkbox" id="kostenAutomatAlpChk"> Automat Alpaca</label><span id="kostenRundeStatus" role="status" aria-live="polite" style="font-size:var(--fs-neben); color:var(--muted);"></span></div></div>
       </div>
 
       <div style="display:grid; gap:12px; align-content:start;">
@@ -2201,6 +2201,29 @@
       </div>
     </div>
     <div style="margin:14px 0; border-top:1px solid var(--grid); padding-top:14px;">
+      <div style="font-weight:600; font-size:var(--fs-text); margin-bottom:8px;">Alpaca-Paper (echte US-Aktien, Papiergeld) <button class="info" type="button" data-info="einstellungen.alpaca" aria-expanded="false" aria-label="Erklärung: Alpaca-Paper">i</button></div>
+      <div class="feldliste">
+        <label class="feld" for="setAlpKey">
+          <span class="feld-name">Schlüssel-ID (API Key ID)</span>
+          <span class="feld-hilfe">Im Alpaca-Dashboard unter „Paper Trading“ → „API Keys“ erzeugen – Paper-Schlüssel, nicht Live</span>
+          <input type="password" id="setAlpKey" autocomplete="off" placeholder="z. B. PK…" style="width:100%;">
+        </label>
+        <label class="feld" for="setAlpSecret">
+          <span class="feld-name">Geheimnis (Secret Key)</span>
+          <span class="feld-hilfe">Wird nur beim Erzeugen einmal angezeigt</span>
+          <input type="password" id="setAlpSecret" autocomplete="off" placeholder="wird beim Erzeugen des Schlüssels angezeigt" style="width:100%;">
+        </label>
+        <label class="anschalter" style="display:flex; align-items:flex-start; gap:8px; font-size:var(--fs-text);"><input type="checkbox" id="setAlpEnabled" style="margin-top:3px;"><span><b>Messung aktivieren:</b> Kostenrunden mit echten Aktien auf dem <b>Paper-Konto</b> (rund 200 $ je Runde, Papiergeld). Ohne dieses Häkchen passiert nichts.</span></label>
+      </div>
+      <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-top:10px;">
+        <button class="btn ghost" id="alpTestBtn" type="button">Verbindung testen</button>
+        <span id="alpTestStatus" style="font-size:var(--fs-neben); color:var(--muted);"></span>
+      </div>
+      <div id="alpTestDetail" class="hinweis" style="margin-top:6px; display:none;"></div>
+      <div style="font-size:var(--fs-neben); color:var(--muted); margin-top:8px;"><b>Laufender Status:</b>
+        <span id="setAlpStatusLive">– noch nicht geprüft.</span></div>
+    </div>
+    <div style="margin:14px 0; border-top:1px solid var(--grid); padding-top:14px;">
       <div style="font-weight:600; font-size:var(--fs-text); margin-bottom:8px;">Benachrichtigungen</div>
       <label style="display:flex; align-items:center; gap:8px; font-size:var(--fs-text);"><input type="checkbox" id="notifyEnabled" checked> Benachrichtigung, wenn eine Strategie einen Trade eröffnet oder schließt</label>
     </div>
@@ -2360,6 +2383,7 @@
 <script src="chart.js"></script>
 <script src="messfenster.js"></script>
 <script src="capital.js"></script>
+<script src="alpaca.js"></script>
 <script src="calendar.js"></script>
 <script src="archiv.js"></script>
 <script src="bestand.js"></script>

@@ -5149,8 +5149,14 @@ console.log('\n45) Massive-Anbindung: Schluessel, Tempolimit, Aussengrenze');
    * kein Netzwerkpfad zu Schluessel-APIs IN der Anwendung. tools/ laeuft von Hand. */
   ok(pkg.build.files.indexOf('tools/**') === -1 && !pkg.build.files.some(function (f) { return /tools/.test(String(f)); }),
      'tools/ ist nicht im Paket - die Anbindung wird nie mit ausgeliefert');
-  ok(!/massive/i.test(mj) && !/massive/i.test(h),
-     'Weder Hauptprozess noch Oberflaeche kennen Massive');
+  /* Seit 02.09.2026 liest main.js die EINGEFRORENE Datei massive/universum-2024-09-02.json
+   * (nur lesen, fester Pfad, kein Netz) fuer die Umsatzklassen der Kostenmessung. Die Klinke
+   * zielt deshalb auf das, was sie schuetzt: kein Host und kein Schluessel der Anbindung in
+   * der App - nicht auf das Wort im Ordnernamen. */
+  ok(!/api\.massive\.com|MASSIVE_KEY|massive\.js/i.test(mj) && !/api\.massive\.com|MASSIVE_KEY|massive/i.test(h),
+     'Weder Hauptprozess noch Oberflaeche kennen die Massive-Anbindung (Host, Schluessel, Werkzeug)');
+  ok(/universum-2024-09-02\.json/.test(mj) && !/writeFileSync\([^)]*universum-2024/.test(mj),
+     'Das eingefrorene Universum wird vom Hauptprozess nur gelesen, nie geschrieben');
   ok(!/api\.massive\.com/.test(mj), 'api.massive.com steht NICHT in der Host-Freigabe der App');
 
   /* Der Schluessel kommt aus genau zwei Quellen und wird nie ausgegeben. */
@@ -8747,8 +8753,8 @@ console.log('\n46) Was die App dauerhaft aufzeichnet');
   ok(/window\.confirm\(/.test(draht), 'Vor der Order wird gefragt');
   ok(/DEMO/.test(draht), 'Und die Frage sagt ausdruecklich, dass es das Demo-Konto ist');
   ok(/kostenRundeLaeuft/.test(draht), 'Ein Doppelklick loest nicht zwei Runden aus');
-  ok(/RUNDE_LAEUFT/.test(ks7) && /try \{ return await kostenRundeKern\(sym, marktlage\); \}/.test(ks7),
-     'Knopf und Automat teilen EINE Laufsperre - zwei Wege duerfen nie gleichzeitig eine Order absetzen');
+  ok(/RUNDE_LAEUFT/.test(ks7) && /try \{ return await kostenRundeKern\(sym, marktlage, gefaess\); \}/.test(ks7),
+     'Knopf und Automat teilen EINE Laufsperre - zwei Wege und zwei Gefaesse duerfen nie gleichzeitig eine Order absetzen');
 
   /* --- Die zweiteilige Abschaltbedingung, FUNKTIONAL (Wilhelms Entscheid 27.08.) ---
    * Beide Teile werden einzeln geprueft. Die erfuellte Schwelle allein darf NICHT
@@ -8869,7 +8875,7 @@ console.log('\n46) Was die App dauerhaft aufzeichnet');
     var s5 = zr(klick.concat([runde9(1, null)]));
     ok(s5.tage === 2 && s5.marktlagen === 1 && s5.rundenOhneMarktlage === 1 && !s5.erfuellt,
        'Runden ohne erfasste Marktlage geben sich nicht als Marktlage aus');
-    ok(/kostenRundeMessen\(sym, lage\)/.test(dep) && dep.indexOf('von ~20 Runden') === -1,
+    ok(/kostenRundeMessen\(sym, lage, gefaess\)/.test(dep) && dep.indexOf('von ~20 Runden') === -1,
        'Der Knopf liest die Marktlage ab und gibt sie mit, und keine Anzeige nennt mehr eine Zielrundenzahl');
     ok(/marktlage: marktlage \|\| null/.test(ks7),
        'Jede neue Runde traegt die abgelesene Marktlage in den Daten');
@@ -11711,6 +11717,358 @@ console.log('\nmassive-tagesdaten: Vereinigen und Entdoppeln (27.08.2026)');
   })();
   ok(drinOhne === false,
      'Gegenprobe: ohne den zustaendigen Eintrag waere die Datei NICHT im Paket - der Test prueft also etwas');
+})();
+
+console.log('\nAlpaca-Paper als zweites Kosten-Gefaess (02.09.2026)');
+/* Wilhelms Entscheid 02.09.2026 (wiki/entscheide.md): das Alpaca-Paper-Konto misst echte
+ * US-Aktien neben dem Capital.com-Demo (CFD). Die Klinken hier zielen auf VERWENDUNG und
+ * EIGENSCHAFT, nicht auf Kommentare: (a) kein Schluessel verlaesst alpaca.js, (b) eine
+ * Teilfuellung verwirft die Runde, (c) die Bilanz trennt die Gefaesse, (d) die
+ * Klassengrenzen stehen nominal an EINER Stelle, (e) ohne Kurs keine Order und keine
+ * Ablage (Placebo). Die Runde wird dazu in einer Sandbox WIRKLICH gefahren - mit
+ * Attrappen fuer Broker, Boerse und Store. Gegenprobe je Klinke: absichtlich gebrochen,
+ * rot gesehen, zurueckgesetzt (Uebergabe alpaca-kostenmessung-2026-09-02.md). */
+(function () {
+  var vm = require('vm');
+  var ks = fs.readFileSync(__dirname + '/kosten.js', 'utf8');
+  var alp = fs.readFileSync(__dirname + '/alpaca.js', 'utf8');
+  var dep9 = fs.readFileSync(__dirname + '/depot.js', 'utf8');
+  var mj9 = fs.readFileSync(__dirname + '/main.js', 'utf8');
+  var pj9 = fs.readFileSync(__dirname + '/preload.js', 'utf8');
+  var as9 = fs.readFileSync(__dirname + '/app-shell.js', 'utf8');
+  var h9 = fs.readFileSync(__dirname + '/index.html', 'utf8');
+  var alpCode = ohneKommentare(alp), ksCode = ohneKommentare(ks);
+
+  function sandboxKontext(win) {
+    return { window: win, setTimeout: setTimeout, Date: Date, Math: Math, JSON: JSON, Promise: Promise,
+      Object: Object, Array: Array, Number: Number, String: String, isFinite: isFinite, isNaN: isNaN,
+      RegExp: RegExp, Infinity: Infinity, encodeURIComponent: encodeURIComponent, console: console };
+  }
+  function tick(ms) { return new Promise(function (r) { setTimeout(r, ms || 15); }); }
+
+  /* ---------- (a) Der Schluessel verlaesst alpaca.js nirgends ---------- */
+  ok(!/console\./.test(alpCode), '(a) alpaca.js schreibt nichts auf die Konsole');
+  var cfgA = alpCode.indexOf('function cfg()'), cfgE = alpCode.indexOf('\n  }', cfgA);
+  var cfgSchnitt = alpCode.slice(cfgA, cfgE);
+  ok(cfgA !== -1 && (alpCode.match(/alpSecret/g) || []).length === (cfgSchnitt.match(/alpSecret/g) || []).length &&
+     /secret: txt\(s\.alpSecret\)/.test(cfgSchnitt),
+     '(a) Das Geheimnis wird nur in cfg() gelesen, und dort als Text', String((alpCode.match(/alpSecret/g) || []).length));
+  ok(!/\+\s*c\.secret|c\.secret\s*\+|\+\s*c\.key\b|c\.key\s*\+/.test(alpCode),
+     '(a) Weder Schluessel noch Geheimnis werden je in einen Text verkettet');
+  ok(/'APCA-API-SECRET-KEY': c\.secret/.test(alpCode) && /'APCA-API-KEY-ID': c\.key/.test(alpCode),
+     '(a) Die Kennungen gehen ausschliesslich in die beiden Kopfzeilen');
+  ok(/on: !!\(s\.alpEnabled && txt\(s\.alpKey\) && txt\(s\.alpSecret\)\)/.test(alpCode),
+     '(a) Sentinel-Falle: die Verbindung gilt nur als eingerichtet, wenn beide Kennungen Text sind');
+  ok(/function ohneGeheimnis/.test(alpCode) && /function kurz\(body, n\) \{ return ohneGeheimnis\(/.test(alpCode) &&
+     /function fehlerText/.test(alpCode) && /kurz\(msg, 200\)/.test(fehlerText9()),
+     '(a) Jeder Fehlertext laeuft durch ohneGeheimnis()');
+  function fehlerText9() { var a = alpCode.indexOf('function fehlerText'); return alpCode.slice(a, alpCode.indexOf('\n  }', a)); }
+  ok(/ALP_HOSTS = new Set\(\['paper-api\.alpaca\.markets', 'data\.alpaca\.markets'\]\)/.test(mj9) &&
+     !/'api\.alpaca\.markets'/.test(mj9) && /'alp-fetch'/.test(mj9) && /'alp-fetch'/.test(pj9),
+     '(a) Der Hauptprozess laesst nur Paper- und Datenhost durch - der Live-Host steht nirgends');
+  ok(/GEHEIME_FELDER = \['capKey', 'capId', 'capPass', 'alpKey', 'alpSecret'\]/.test(mj9),
+     '(a) Beide Alpaca-Kennungen werden verschluesselt abgelegt (DPAPI wie bei Capital)');
+  ok(/var GEHEIM = \['capKey', 'capId', 'capPass', 'alpKey', 'alpSecret'\]/.test(as9),
+     '(a) Laden, Dialog, Speichern und Sentinel-Abbau kennen die Alpaca-Felder ueber EINE Liste');
+  ok(/type="password" id="setAlpKey"/.test(h9) && /type="password" id="setAlpSecret"/.test(h9),
+     '(a) Beide Felder im Dialog sind Passwortfelder');
+  /* Funktional: ein Server, der die Kopfzeilen zurueckspiegelt, darf sie nicht bis in eine
+   * Statuszeile, einen Fehlertext oder einen Rohrumpf bringen. */
+  probe((async function () {
+    var KEY = 'PKTESTKEY123456', SEC = 'GEHEIMNISTESTABC987';
+    var urls = [];
+    var win = {
+      getSettings: function () { return { alpKey: KEY, alpSecret: SEC, alpEnabled: true }; },
+      api: { alpFetch: async function (m, url, kopf) {
+        urls.push(url);
+        return { ok: false, status: 500, body: JSON.stringify({ message: 'echo ' + kopf['APCA-API-SECRET-KEY'] + ' ' + kopf['APCA-API-KEY-ID'] }), headers: {} };
+      } }
+    };
+    vm.runInNewContext(alp, sandboxKontext(win));
+    var A = win.AlpAPI;
+    var s = await A.status();
+    var q = await A.quote('XYZ');
+    var r = await A.roh('/account');
+    var o = await A.openPosition('XYZ', 'call', 2);
+    var alles = [s.msg, A.lastError(), A.lastPriceError(), r.body, o.msg, String(q)].join('|');
+    ok(alles.indexOf(SEC) === -1 && alles.indexOf(KEY) === -1,
+       '(a) FUNKTIONAL: spiegelt der Server die Kennungen, erreichen sie weder Status noch Fehlertext noch Rohrumpf');
+    ok(/echo \[Geheimnis\] \[Schlüssel\]/.test(s.msg), '(a) ... die Stellen sind durch Platzhalter ersetzt, nicht verschwiegen', s.msg);
+    ok(urls.every(function (u) { return u.indexOf(KEY) === -1 && u.indexOf(SEC) === -1; }) && urls.length > 0,
+       '(a) Keine Adresse traegt eine Kennung', urls.length + ' Aufrufe');
+    ok(urls.every(function (u) { return /^https:\/\/(paper-api|data)\.alpaca\.markets\//.test(u); }),
+       '(a) alpaca.js spricht nur den Paper- und den Datenhost an');
+    ok(A.enabled() === true, '(a) enabled() liest die Einstellungen');
+    win.getSettings = function () { return { alpKey: { __keep: true }, alpSecret: 'x', alpEnabled: true }; };
+    ok(A.enabled() === false, '(a) FUNKTIONAL: ein Sentinel-Objekt gilt nicht als Schluessel');
+  })());
+
+  /* ---------- Sandbox fuer kosten.js: Runde WIRKLICH fahren ---------- */
+  function kostenSandbox(opts) {
+    var store = { kostenmessung: opts.messung || { seit: 1, runden: [] } };
+    var schreib = [];
+    var win = {
+      api: {
+        storeGet: async function (k) { return store[k] ? JSON.parse(JSON.stringify(store[k])) : null; },
+        storeSet: async function (k, v) { schreib.push(k); store[k] = JSON.parse(JSON.stringify(v)); return true; },
+        universumEingefroren: async function () { return opts.universum || { ok: false }; }
+      },
+      Dash: { marketOpen: function () { return opts.offen !== false; } },
+      Quant: { minutenSeitOeffnung: function () { return opts.minute == null ? 120 : opts.minute; } },
+      Boerse: { sitzungsMinuten: function () { return 390; } },
+      Liquide: require('./liquide.js'),
+      AlpAPI: opts.alp || null, CapAPI: opts.cap || null
+    };
+    vm.runInNewContext(ks, sandboxKontext(win));
+    var D = { kostenVersuche: [] };
+    win.Kosten.verkabeln({
+      depot: function () { return D; }, save: function () { }, melde: function () { },
+      universe: function () { return ['AAPL']; }, istKrypto: function (s) { return /USD$/.test(String(s)); },
+      HEALTH: {}, marktlage: null,
+      kandidatenAlpaca: opts.kandidaten || null,
+      mfTagesdaten: opts.mfTagesdaten || null, kurse: opts.kurse || null
+    });
+    return { win: win, D: D, store: store, schreib: schreib };
+  }
+  function alpAttrappe(spez) {
+    var z = { open: 0, close: 0, quote: 0 };
+    return {
+      zaehler: z,
+      enabled: function () { return true; },
+      lastPriceError: function () { return 'kein Kurs (Attrappe)'; },
+      quote: async function () { z.quote++; return spez.quote === undefined ? { bid: 99.9, ask: 100.1, mid: 100, spreadPct: 0.002 } : spez.quote; },
+      openPosition: async function (sym, dir, stueck) { z.open++; z.stueck = stueck; return typeof spez.open === 'function' ? spez.open(stueck) : spez.open; },
+      closePosition: async function () { z.close++; return spez.close; }
+    };
+  }
+  function tagesdaten1e8() {
+    /* 25 Balken, Schluss 100 x 1 Mio Stueck = 100 Mio $ Median-Tagesumsatz -> Klasse 50-250 */
+    var bars = []; for (var i = 0; i < 25; i++) bars.push([Date.UTC(2026, 7, 1 + i), 100, 1000000]);
+    return async function () { return { XYZ: bars }; };
+  }
+
+  /* ---------- (b) Teilfuellung verwirft ---------- */
+  probe((async function () {
+    var teilKauf = alpAttrappe({ open: { ok: false, teilfuellung: true, gefuellt: 1, msg: 'Teilfüllung (1 von 2)', glatt: { ok: true } }, close: { ok: true, fill: 99.95 } });
+    var sb = kostenSandbox({ alp: teilKauf, mfTagesdaten: tagesdaten1e8() });
+    await tick();
+    var r1 = await sb.win.Kosten.kostenRundeMessen('XYZ', 'trend-auf', 'alpaca');
+    ok(r1 && r1.ok === false && r1.teilfuellung === true, '(b) FUNKTIONAL: Teilfuellung beim Kauf -> Runde verworfen', r1 && r1.grund);
+    ok(teilKauf.zaehler.close === 0, '(b) ... und es wird keine Gegenorder mehr abgesetzt (das Glattstellen macht alpaca.js)');
+    ok(sb.store.kostenmessung.runden.length === 0, '(b) ... nichts landet bei den Belegen');
+    var vw = sb.win.Kosten.verworfene();
+    ok(vw.length === 1 && vw[0].grund === 'Teilfüllung' && vw[0].gefaess === 'alpaca' && vw[0].seite === 'kauf' && vw[0].gefuellt === 1,
+       '(b) ... aber die Teilfuellung steht mit Grund, Seite und Stueckzahl im Protokoll der verworfenen Runden');
+    ok(/Teilfüllung/.test(sb.D.kostenVersuche[0].grund) && sb.D.kostenVersuche[0].ok === false,
+       '(b) ... und im Versuchs-Protokoll');
+    ok(teilKauf.zaehler.stueck === 2, '(b) Stueckzahl ganzzahlig: max(1, floor(200 $ / 100)) = 2', String(teilKauf.zaehler.stueck));
+
+    var teilVerkauf = alpAttrappe({ open: { ok: true, dealId: 'o1', fill: 100.05, stueck: 2 }, close: { ok: false, teilfuellung: true, gefuellt: 1, msg: 'Teilfüllung', glatt: { ok: true } } });
+    var sb2 = kostenSandbox({ alp: teilVerkauf, mfTagesdaten: tagesdaten1e8() });
+    await tick();
+    var r2 = await sb2.win.Kosten.kostenRundeMessen('XYZ', 'trend-auf', 'alpaca');
+    ok(r2.ok === false && r2.teilfuellung === true && sb2.store.kostenmessung.runden.length === 0 &&
+       sb2.win.Kosten.verworfene()[0].seite === 'verkauf',
+       '(b) FUNKTIONAL: Teilfuellung beim Verkauf -> ebenfalls verworfen, Seite vermerkt');
+
+    /* Positivkontrolle: dieselbe Runde ganz gefuellt wird abgelegt - mit allen neuen Feldern. */
+    var voll = alpAttrappe({ open: { ok: true, dealId: 'o1', fill: 100.05, stueck: 2 }, close: { ok: true, fill: 99.95 } });
+    var sb3 = kostenSandbox({ alp: voll, mfTagesdaten: tagesdaten1e8() });
+    await tick();
+    var r3 = await sb3.win.Kosten.kostenRundeMessen('XYZ', 'trend-ab', 'alpaca');
+    var e3 = sb3.store.kostenmessung.runden[0];
+    ok(r3.ok === true && sb3.store.kostenmessung.runden.length === 1, '(b) Positivkontrolle: volle Fuellung wird abgelegt');
+    ok(e3 && e3.gefaess === 'alpaca' && e3.stueck === 2 && e3.gegenwertUsd === 200 && e3.uebernacht === false,
+       '(b) Die Runde traegt gefaess, stueck, gegenwertUsd, uebernacht');
+    ok(e3 && e3.umsatzKlasse === '50-250' && e3.umsatzMedianUsd === 100000000 && Math.abs(e3.anteilUmsatz - 2e-6) < 1e-12,
+       '(b) ... und Umsatzklasse, Median-Tagesumsatz (liquide.js) und anteilUmsatz = Gegenwert / Median', e3 && (e3.umsatzKlasse + ' ' + e3.anteilUmsatz));
+    ok(Math.abs(e3.runde - 0.001) < 1e-9 && e3.notiert === 0.002 && e3.marktlage === 'trend-ab',
+       '(b) Umlauf = (Kauf/Mitte - 1) + (1 - Verkauf/Mitte) = 0,001; notierte Spanne und Marktlage dabei');
+  })());
+
+  /* ---------- (e) Placebo: ohne Kurs keine Order, keine Ablage ---------- */
+  probe((async function () {
+    var ohneKurs = alpAttrappe({ quote: null, open: { ok: true, dealId: 'o1', fill: 100, stueck: 2 }, close: { ok: true, fill: 100 } });
+    var sb = kostenSandbox({ alp: ohneKurs, mfTagesdaten: tagesdaten1e8() });
+    await tick();
+    var vorher = sb.schreib.filter(function (k) { return k === 'kostenmessung'; }).length;
+    var r = await sb.win.Kosten.kostenRundeMessen('XYZ', 'trend-auf', 'alpaca');
+    ok(r && r.ok === false && /Kein Kurs/.test(r.grund), '(e) PLACEBO Alpaca: ohne Kurs kein Ergebnis', r && r.grund);
+    ok(ohneKurs.zaehler.open === 0 && ohneKurs.zaehler.close === 0, '(e) ... keine Order abgesetzt');
+    ok(sb.store.kostenmessung.runden.length === 0 &&
+       sb.schreib.filter(function (k) { return k === 'kostenmessung'; }).length === vorher,
+       '(e) ... und keine Ablage im Nebenlager');
+    ok(/kein Kurs \(Attrappe\)/.test(r.grund), '(e) Der Grund aus alpaca.js wird mitgenommen, nicht verworfen');
+    /* Dasselbe fuer das Capital-Gefaess - beide Gefaesse muessen das Placebo bestehen. */
+    var capOhne = { enabled: function () { return true; }, quote: async function () { return null; },
+      lastPriceError: function () { return 'kein Markt'; }, openPosition: async function () { throw new Error('darf nicht'); },
+      closePosition: async function () { throw new Error('darf nicht'); } };
+    var sbC = kostenSandbox({ cap: capOhne });
+    await tick();
+    var rC = await sbC.win.Kosten.kostenRundeMessen('AAPL', 'trend-auf', 'capital');
+    ok(rC && rC.ok === false && /Kein Kurs/.test(rC.grund) && sbC.store.kostenmessung.runden.length === 0,
+       '(e) PLACEBO Capital: ohne Kurs kein Ergebnis, keine Order, keine Ablage');
+    /* Boerse zu: auch dann keine Order. */
+    var zu = alpAttrappe({ open: { ok: true, dealId: 'o1', fill: 100, stueck: 2 }, close: { ok: true, fill: 100 } });
+    var sbZ = kostenSandbox({ alp: zu, offen: false });
+    await tick();
+    var rZ = await sbZ.win.Kosten.kostenRundeMessen('XYZ', null, 'alpaca');
+    ok(rZ.ok === false && zu.zaehler.open === 0 && zu.zaehler.quote === 0, '(e) Bei geschlossener Boerse fragt Alpaca nicht einmal den Kurs ab');
+  })());
+
+  /* ---------- (c) Die Bilanz trennt die Gefaesse ---------- */
+  probe((async function () {
+    var t0 = Date.UTC(2026, 8, 1, 15, 0);
+    var messung = { seit: 1, runden: [
+      { at: t0, sym: 'AAPL', runde: 0.0010, marktlage: 'trend-auf' },                                   // Capital, altes Format (ohne gefaess)
+      { at: t0 + 86400000, sym: 'MSFT', runde: 0.0020, marktlage: 'trend-ab', gefaess: 'capital' },
+      { at: t0 + 1000, sym: 'BTCUSD', runde: 0.0100, krypto: true, gefaess: 'capital' },
+      { at: t0 + 2000, sym: 'XYZ', runde: 0.0005, gefaess: 'alpaca', uebernacht: false, umsatzKlasse: '5-50', marktlage: 'trend-auf' },
+      { at: t0 + 86400000 + 2000, sym: 'NVDA', runde: 0.0007, gefaess: 'alpaca', uebernacht: false, umsatzKlasse: 'ab1000', marktlage: 'trend-ab' },
+      { at: t0 + 3000, sym: 'XYZ', runde: 0.0030, gefaess: 'alpaca', uebernacht: true, auktion: true, umsatzKlasse: '5-50' }
+    ], verworfen: [{ at: t0, sym: 'XYZ', gefaess: 'alpaca', grund: 'Teilfüllung' }] };
+    var sb = kostenSandbox({ messung: messung });
+    await tick();
+    var kb = sb.win.Kosten.kostenBilanz();
+    ok(kb && kb.n === 2 && kb.gefaess === 'capital' && Math.abs(kb.medianPct - 0.2) < 1e-9,
+       '(c) FUNKTIONAL: die CFD-Bilanz zaehlt nur Capital-Runden (2), Median 0,2 % - keine Alpaca-Runde dabei', kb && (kb.n + ' / ' + kb.medianPct));
+    ok(kb.kryptoN === 1 && kb.streuung.runden === 2 && kb.streuung.tage === 2 && kb.streuung.marktlagen === 2,
+       '(c) Krypto weiter getrennt; Wilhelms Schwelle zaehlt nur Capital-Aktienrunden');
+    var ab = sb.win.Kosten.alpacaBilanz();
+    ok(ab && ab.gefaess === 'alpaca' && ab.n === 2 && Math.abs(ab.medianPct - 0.07) < 1e-9 && ab.annahmePct === 0.06,
+       '(c) FUNKTIONAL: die Aktien-Bilanz zaehlt nur Alpaca-Intraday-Runden (2), Median 0,07 %, gegen die Annahme 0,06', ab && (ab.n + ' / ' + ab.medianPct));
+    ok(ab.jeKlasse['5-50'].n === 1 && ab.jeKlasse['ab1000'].n === 1 && ab.jeKlasse['50-250'].n === 0 && ab.jeKlasse['250-1000'].n === 0 && ab.klasseMindest === 10,
+       '(c) ... je Umsatzklasse gezaehlt, Ziel 10 je Klasse ausgewiesen');
+    ok(ab.uebernachtN === 1 && ab.uebernachtAuktionN === 1 && Math.abs(ab.uebernachtMedianPct - 0.3) < 1e-9,
+       '(c) ... Uebernacht-Runden getrennt von Intraday-Runden (messen Verschiedenes)');
+    ok(ab.verworfen === 1 && ab.teilfuellungen === 1 && ab.streuung.runden === 2 && ab.streuung.tage === 2,
+       '(c) ... verworfene Runden und Streuung auf Alpaca-Runden');
+    var geschrieben = sb.store.kostenmessung.runden;
+    ok(geschrieben.every(function (r) { return r.gefaess === 'capital' || r.gefaess === 'alpaca'; }) &&
+       geschrieben.filter(function (r) { return r.sym === 'AAPL'; })[0].gefaess === 'capital',
+       '(c) Migration: Runden ohne Gefaess bekommen beim Laden gefaess: capital und werden zurueckgeschrieben');
+    /* Die Klinke prueft etwas: haette die CFD-Bilanz die Alpaca-Runden mitgezaehlt, stuende
+     * n auf 4 und der Median auf 0,085 - genau die Vermischung, die hier verboten ist. */
+    var alle = messung.runden.filter(function (r) { return !r.krypto && !r.uebernacht; }).map(function (r) { return r.runde; });
+    ok(alle.length === 4 && kb.n !== alle.length, '(c) Gegenprobe im Test: gemischt waeren es 4 Runden - die Bilanz sagt 2');
+    ok(/Aktienh|0,06|annahmePct: ALP_ANNAHME_PCT/.test(ksCode) && /var ALP_ANNAHME_PCT = 0\.06;/.test(ks),
+       '(c) Die Aktienannahme 0,06 Pp steht benannt und wird nur gegen Alpaca-Runden gehalten');
+    ok(/alpacaBilanz/.test(dep9) && /alpStatus/.test(dep9) && /id="alpStatus"/.test(h9),
+       '(c) Die Anzeige hat eine eigene Statuszeile fuer das Aktien-Gefaess');
+  })());
+
+  /* ---------- (d) Klassengrenzen nominal, aus EINER Stelle ---------- */
+  (function () {
+    var K = null;
+    var a = ks.indexOf('var UMSATZ_KLASSEN = ['), e = ks.indexOf('];', a);
+    ok(a !== -1 && e > a, '(d) Die Umsatzklassen stehen als benannte Liste in kosten.js');
+    try { K = new Function('Infinity', ks.slice(a, e + 2) + '\nreturn UMSATZ_KLASSEN;')(Infinity); } catch (eK) { K = null; }
+    ok(K && K.length === 4 && K[0].von === 5e6 && K[0].bis === 50e6 && K[1].von === 50e6 && K[1].bis === 250e6 &&
+       K[2].von === 250e6 && K[2].bis === 1e9 && K[3].von === 1e9 && K[3].bis === Infinity,
+       '(d) Grenzen nominal: 5-50 / 50-250 / 250-1000 / ab 1000 Mio $ (BERICHT §2.3)');
+    ok(K && K.map(function (k) { return k.name; }).join(',') === '5-50,50-250,250-1000,ab1000', '(d) Die Namen sind die Protokollwerte');
+    var ua = ks.indexOf('function umsatzKlasse'), ue = ks.indexOf('\n  }', ua);
+    var uk = new Function('UMSATZ_KLASSEN', ks.slice(ua, ue + 4) + '\nreturn umsatzKlasse;')(K);
+    ok(uk(4.99e6) === null && uk(5e6) === '5-50' && uk(49.99e6) === '5-50' && uk(50e6) === '50-250' &&
+       uk(250e6) === '250-1000' && uk(999.99e6) === '250-1000' && uk(1e9) === 'ab1000' && uk(1e12) === 'ab1000' &&
+       uk(null) === null && uk(NaN) === null,
+       '(d) FUNKTIONAL: Untergrenze einschliesslich, Obergrenze ausschliesslich, unter 5 Mio $ keine Klasse');
+    var literale = (ksCode.match(/'5-50'|'50-250'|'250-1000'|'ab1000'/g) || []).length;
+    ok(literale === 4 && !/'5-50'|'50-250'|'250-1000'|'ab1000'/.test(alp) && !/'5-50'|'50-250'|'250-1000'|'ab1000'/.test(dep9) &&
+       !/5-50|250-1000/.test(h9.replace(/<!--[\s\S]*?-->/g, '')),
+       '(d) EINE Stelle: die Klassennamen stehen nur in der Liste, nirgends sonst im Code', String(literale));
+    ok(!/5e6|50e6|250e6|1e9/.test(ksCode.replace(ks.slice(a, e + 2), '')),
+       '(d) Auch die Zahlen stehen nirgends ein zweites Mal in kosten.js');
+    ok(/window\.Liquide/.test(ksCode) && /Li\.medianUmsatz\(bars\)/.test(ksCode) && /Li\.hatUmsatz\(bars\)/.test(ksCode),
+       '(d) Der Median-Tagesumsatz kommt aus liquide.js - die Umsatzregel des Hauses, nicht neu erfunden');
+    ok(/umsatzKlasse\(m\)/.test(ksCode) && /klasse: umsatzKlasse\(median\)/.test(ksCode),
+       '(d) Symbolwahl und Runde fragen dieselbe Funktion');
+  })();
+
+  /* ---------- Symbolwahl: Klasse mit den wenigsten Runden, aus der Signalliste, Ergaenzung nur lesend ---------- */
+  probe((async function () {
+    function bars(preis, stueck) { var b = []; for (var i = 0; i < 25; i++) b.push([Date.UTC(2026, 7, 1 + i), preis, stueck]); return b; }
+    var roh = { KLEIN: bars(10, 1000000) /* 10 Mio */, MITTEL: bars(100, 1000000) /* 100 Mio */, GROSS: bars(500, 1000000) /* 500 Mio */, RIESE: bars(200, 10000000) /* 2 Mrd */ };
+    var universumAbfragen = 0;
+    var sb = kostenSandbox({
+      mfTagesdaten: async function () { return roh; },
+      kandidaten: function () { return { momentum: ['KLEIN', 'MITTEL'], intraday: ['GROSS', 'RIESE', 'BTC-USD'] }; },
+      universum: (function () { var u = { ok: true, werte: [{ sym: 'ALT', umsatzMio: 30 }] }; return u; })(),
+      messung: { seit: 1, runden: [
+        { at: 1, sym: 'GROSS', runde: 0.001, gefaess: 'alpaca', umsatzKlasse: '250-1000' },
+        { at: 2, sym: 'RIESE', runde: 0.001, gefaess: 'alpaca', umsatzKlasse: 'ab1000' },
+        { at: 3, sym: 'MITTEL', runde: 0.001, gefaess: 'alpaca', umsatzKlasse: '50-250' }
+      ] }
+    });
+    sb.win.api.universumEingefroren = async function () { universumAbfragen++; return { ok: true, werte: [{ sym: 'ALT', umsatzMio: 30 }] }; };
+    await tick();
+    var w1 = await sb.win.Kosten.naechstesAlpacaSymbol();
+    ok(w1 && w1.sym === 'KLEIN' && w1.klasse === '5-50' && w1.quelle === 'signalliste' && w1.runden === 0,
+       'Symbolwahl: die Klasse mit den wenigsten Runden (5-50: 0) kommt zuerst, aus der Signalliste', JSON.stringify(w1));
+    ok(universumAbfragen === 0, 'Das eingefrorene Universum wird nicht angefasst, solange die Signalliste die Klasse fuellt');
+    /* Fehlt eine Klasse in der Signalliste, wird sie aus dem Universum ergaenzt - aber nur,
+     * was HEUTE in der Klasse liegt. ALT ist laut Datei 30 Mio, aktuell aber ohne Daten. */
+    var sb2 = kostenSandbox({
+      mfTagesdaten: async function () { return { MITTEL: roh.MITTEL, ALT: bars(20, 1000000) }; },
+      kandidaten: function () { return { momentum: ['MITTEL'], intraday: [] }; },
+      messung: { seit: 1, runden: [] }
+    });
+    sb2.win.api.universumEingefroren = async function () { return { ok: true, werte: [{ sym: 'ALT', umsatzMio: 30 }, { sym: 'WEG', umsatzMio: 40 }] }; };
+    await tick();
+    var w2 = await sb2.win.Kosten.naechstesAlpacaSymbol();
+    ok(w2 && w2.sym === 'ALT' && w2.klasse === '5-50' && w2.quelle === 'universum-2024-09-02',
+       'Fehlt die Klasse in der Signalliste, kommt sie aus universum-2024-09-02.json (nur gelesen) - und nur, was heute in der Klasse liegt', JSON.stringify(w2));
+    ok(/universumEingefroren/.test(ksCode) && !/storeSet\([^)]*universum/.test(ksCode) && /'universum-eingefroren'/.test(mj9),
+       'Die Datei wird ueber einen festen, parameterlosen Lesepfad geholt - kein Schreibweg');
+  })());
+
+  /* ---------- Uebernacht-Runde, Automat, Vertrag ---------- */
+  ok(/time_in_force: tif === 'opg' \? 'opg' : 'cls'/.test(alpCode) && /auktionsOrder: async function/.test(alpCode),
+     'Uebernacht: Kauf per Schlussauktion (cls), Verkauf per Eroeffnungsauktion (opg)');
+  ok(/tifAbgelehnt/.test(alpCode) && /clsAbgelehnt/.test(ksCode) && /opgAbgelehnt/.test(ksCode) && /auktion: false/.test(ksCode),
+     'Lehnt der Endpunkt cls/opg ab, faellt die Runde auf Marktorders zurueck und traegt auktion: false');
+  ok(/u\.m >= 374 && u\.m <= 379/.test(ksCode) && /u\.m >= 388 && u\.m <= 389/.test(ksCode) && /u\.m >= -90 && u\.m <= -4/.test(ksCode),
+     'Fenster: Auktionsorder 15:44-15:49 ET, Markt-Rueckfall 15:58, Eroeffnungsorder 08:00-09:26 ET');
+  ok(/uebernacht: true, auktion: !!st\.auktion/.test(ksCode) && /schluss: off\.schluss, eroeffnung: off\.eroeffnung/.test(ksCode) &&
+     /schlupfSchluss/.test(ksCode) && /schlupfEroeffnung/.test(ksCode),
+     'Beide Fills werden gegen offiziellen Schluss und Eroeffnung aus den Tageskerzen protokolliert');
+  ok(/MESSUNG\.uebernacht = Object\.assign\(basis/.test(ksCode) && (ksCode.match(/MESSUNG\.uebernacht = Object\.assign\(basis/g) || []).length === 2 &&
+     /var u = uhr\(jetzt\), st = MESSUNG\.uebernacht;\n    if \(!st\) \{/.test(ks),
+     'Nie mehr als eine offene Uebernacht-Position: EIN Platz im Nebenlager, neu belegt nur wenn leer');
+  ok(/u\.sm !== 390/.test(ksCode), 'Uebernacht nur an vollen Handelstagen - nicht an Halbtagen');
+  ok(/async function automatAlpacaNachsehen/.test(ksCode) && /D\.kostenAutomatAlpaca === false/.test(ksCode) &&
+     /await automatAlpacaNachsehen\(\)/.test(ksCode) && /window\.Dash\.marketOpen\(\)\)\) return;/.test(ksCode),
+     'Automat: Alpaca faehrt im selben Takt wie Capital, nur waehrend der US-Sitzung, abschaltbar');
+  ok(/kostenRundeMessen\(wahl\.sym, lage, 'alpaca'\)/.test(ksCode) && /if \(RUNDE_LAEUFT\) return;/.test(ksCode),
+     'Beide Gefaesse laufen ueber dieselbe Sperre - nie gleichzeitig');
+  ok(/heuteSchonGemessen\(tag, 'alpaca'\)/.test(ksCode) && /if \(r\[i\]\.uebernacht\) continue;/.test(ksCode),
+     'Eine Alpaca-Runde je Handelstag, ueber Neustarts hinweg; die Uebernacht-Runde zaehlt nicht als Tagesrunde');
+  ok(/id="kostenAutomatAlpChk"/.test(h9) && /D\.kostenAutomatAlpaca = chk\.checked \? true : false/.test(dep9) &&
+     /Messautomat Alpaca AUSGESCHALTET/.test(dep9),
+     'Der Automat ist per Schalter abschaltbar und sagt sichtbar, dass er aus ist');
+  ok(/Math\.max\(1, Math\.floor\(ALP_ZIEL_USD \/ vor\.mid\)\)/.test(ksCode) && /var ALP_ZIEL_USD = 200;/.test(ks),
+     'Stueckzahl ganzzahlig max(1, floor(200 $ / mid))');
+  ok(/orderWarten\(o\.id, 20000\)/.test(alpCode) && /await stornieren\(o\.id\)/.test(alpCode) && /glattstellen\(sym\)/.test(alpCode),
+     'alpaca.js: 20 s Zeitlimit, dann Storno; nach Teilfuellung wird glattgestellt');
+  ok(/openPosition: async function \(sym, dir, stueck\)/.test(alpCode) && /closePosition: async function \(dealId, opts\)/.test(alpCode) &&
+     /quote: async function \(sym\)/.test(alpCode) && /status: async function/.test(alpCode) && /enabled: function/.test(alpCode),
+     'Gleicher Vertrag wie capital.js: enabled, status, quote, openPosition, closePosition');
+  ok(/'\/stocks\/' \+ encodeURIComponent\(sym\) \+ '\/quotes\/latest\?feed=' \+ FEED/.test(alpCode) && /var FEED = 'iex'/.test(alp),
+     'Kurse vom Gratis-Feed iex');
+
+  /* ---------- Auslieferung und Oberflaeche ---------- */
+  ok(/<script src="alpaca\.js"><\/script>/.test(h9) && fs.existsSync(__dirname + '/alpaca.js'),
+     'alpaca.js wird von index.html geladen und liegt im Quellordner (die Auslieferungs-Pruefung oben kennt es damit)');
+  ok(/id="setAlpKey"/.test(h9) && /id="setAlpSecret"/.test(h9) && /id="setAlpEnabled"/.test(h9) && /id="alpTestBtn"/.test(h9) &&
+     /alpTestBtn\.addEventListener/.test(as9) && /window\.api\.alpFetch\('GET', BASE \+ '\/account'/.test(as9),
+     'Einstellungsblock Alpaca-Paper mit drei Feldern und Verbindungstest (Muster capTestBtn)');
+  ok(/<optgroup label="Alpaca-Paper \(Aktie\)">/.test(h9) && /value="alpaca:"/.test(h9) && /wert\.indexOf\('alpaca:'\) === 0/.test(dep9),
+     'kostenRundeSym hat die Gruppe Alpaca-Paper (Aktie), der Knopf liest das Gefaess daraus');
+  ok(/data-info="einstellungen\.alpaca"/.test(h9) && /'einstellungen\.alpaca': \{/.test(as9),
+     'Erklaerung per Info-Knopf, keine Prosa im Block');
+  ok(/Alpaca-PAPER-Konto/.test(dep9) && /Papiergeld/.test(dep9), 'Die Rueckfrage vor der Order nennt das Paper-Konto');
+  ok(/naechstesAlpacaSymbol/.test(dep9) && /kandidatenAlpaca: function/.test(dep9) && /D\.mfBuch\.positionen/.test(dep9) && /scanUniverse\(\)/.test(dep9.slice(dep9.indexOf('kandidatenAlpaca: function'), dep9.indexOf('kandidatenAlpaca: function') + 600)),
+     'Kandidaten: Momentum-Korb (D.mfBuch.positionen) und Intraday-Signalliste (scanUniverse) - hereingereicht, nicht nachgebaut');
 })();
 
 Promise.all(offeneProben).then(function () {

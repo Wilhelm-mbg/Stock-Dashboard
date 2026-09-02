@@ -513,6 +513,17 @@
       ],
       fuss: 'Smile und Termin-Struktur sind Modellannahmen in der üblichen Größenordnung, NICHT an Emittentenkursen kalibriert – dafür fehlen der App echte Scheinpreise über mehrere Basispreise. Die Richtung ist belastbarer als die Höhe.'
     },
+    'einstellungen.alpaca': {
+      titel: 'Alpaca-Paper – das zweite Kosten-Gefäß',
+      punkte: [
+        'Capital.com-Demo misst CFD-Runden, Alpaca-Paper misst echte US-Aktien mit Papiergeld. Beide Reihen bleiben getrennt: die Aktienhürde (0,06 Prozentpunkte je Umlauf) wird nur an Alpaca-Runden geprüft, die CFD-Hürde (0,10 %) nur an Capital-Runden.',
+        'Eine Runde kauft rund 200 $ zum Markt und verkauft sofort wieder; gemessen werden beide Ausführungen gegen die Mitte davor. Das Paper-Konto füllt am besten Geld-/Briefkurs – gemessen wird also die Spanne, die unbekannte Größe.',
+        'Alpaca füllt im Paper rund jede zehnte Order absichtlich nur teilweise. Das ist ein Simulationsartefakt: der Rest wird storniert, die Position glattgestellt, die Runde verworfen und als „Teilfüllung“ protokolliert.',
+        'Gemessen wird nach Umsatzklasse (5–50, 50–250, 250–1.000, ab 1.000 Mio $ Median-Tagesumsatz über 20 Balken, die Umsatzregel des Momentum-Buchs), Ziel zehn Runden je Klasse, Werte aus Momentum-Korb und Intraday-Signalliste. Dazu eine Übernacht-Runde: Kauf in der Schlussauktion, Verkauf zur Folgeeröffnung, beide Fills gegen den offiziellen Schluss und die offizielle Eröffnung gehalten.',
+        'Der Schlüssel geht nur an paper-api.alpaca.markets und data.alpaca.markets, wird verschlüsselt gespeichert und erscheint in keiner Meldung. Ein Live-Handel ist aus dieser App nicht möglich.'
+      ],
+      fuss: 'Reine Simulation mit Papiergeld, keine Anlageberatung.'
+    },
     'regeln.uebersicht': {
       titel: 'Die Strategien im Überblick',
       punkte: [
@@ -759,14 +770,19 @@
   });
 
   // ---- Einstellungen ----
-  var SETTINGS = { tray: false, capKey: '', capId: '', capPass: '', capEnabled: false, kiVeto: false, kiRules: '', updateRepo: '' };
+  var SETTINGS = { tray: false, capKey: '', capId: '', capPass: '', capEnabled: false,
+                   alpKey: '', alpSecret: '', alpEnabled: false, kiVeto: false, kiRules: '', updateRepo: '' };
+  /* Die geheimen Felder beider Broker-Anbindungen - Capital.com-Demo und Alpaca-Paper.
+   * EINE Liste: Laden, Dialog, Speichern und Sentinel-Abbau laufen alle darueber. */
+  var GEHEIM = ['capKey', 'capId', 'capPass', 'alpKey', 'alpSecret'];
+  var GEHEIM_FELD = { capKey: 'setCapKey', capId: 'setCapId', capPass: 'setCapPass', alpKey: 'setAlpKey', alpSecret: 'setAlpSecret' };
   window.getSettings = function () { return SETTINGS; };
   var settingsGeladen = false; // Schreiben vor dem Laden würde die gespeicherten Werte überschreiben
   var geheimBehalten = {};     // Felder, deren gespeicherter Wert nicht entschlüsselbar war:
                                // im Dialog leer anzeigen, beim Speichern aber UNANGETASTET lassen
   window.api.storeGet('settings').then(function (s) {
     if (s) {
-      ['capKey', 'capId', 'capPass'].forEach(function (k) {
+      GEHEIM.forEach(function (k) {
         if (s[k] && typeof s[k] !== 'string') { geheimBehalten[k] = true; s[k] = ''; }
       });
       SETTINGS = Object.assign(SETTINGS, s);
@@ -811,13 +827,15 @@
 
   document.getElementById('settingsBtn').addEventListener('click', function () {
     document.getElementById('setTray').checked = !!SETTINGS.tray;
-    ['setCapKey', 'setCapId', 'setCapPass'].forEach(function (id, i3) {
-      var feld = ['capKey', 'capId', 'capPass'][i3];
-      var el3 = document.getElementById(id);
+    GEHEIM.forEach(function (feld) {
+      var el3 = document.getElementById(GEHEIM_FELD[feld]);
+      if (!el3) return;
       el3.value = SETTINGS[feld] || '';
       el3.placeholder = geheimBehalten[feld] ? 'gespeichert - leer lassen = unverändert' : '';
     });
     document.getElementById('setCapEnabled').checked = !!SETTINGS.capEnabled;
+    var alpEn = document.getElementById('setAlpEnabled');
+    if (alpEn) alpEn.checked = !!SETTINGS.alpEnabled;
     document.getElementById('setUpdateRepo').value = SETTINGS.updateRepo || 'Wilhelm-mbg/Stock-Dashboard';
     if (window.api.getAutostart) window.api.getAutostart().then(function (r) { document.getElementById('setAutostart').checked = !!(r && r.on); });
     document.getElementById('setUpdateStatus').textContent = '';
@@ -881,6 +899,54 @@
       st.textContent = 'Test fehlgeschlagen: ' + ((e && e.message) || e);
     } finally {
       capTestBtn.disabled = false;
+    }
+  });
+
+  /* Alpaca-Paper-Verbindung testen: Konto UND Boersenuhr abfragen, ohne zu speichern.
+   * Die Kennungen gehen nur an paper-api.alpaca.markets (Host-Liste in main.js). Kein
+   * Rumpf und keine Kennung landet in der Anzeige - nur Status, Guthaben, Uhr. */
+  var alpTestBtn = document.getElementById('alpTestBtn');
+  if (alpTestBtn) alpTestBtn.addEventListener('click', async function () {
+    var st = document.getElementById('alpTestStatus');
+    var det = document.getElementById('alpTestDetail');
+    var key = (document.getElementById('setAlpKey').value || '').trim();
+    var secret = (document.getElementById('setAlpSecret').value || '').trim();
+    if (!key && typeof SETTINGS.alpKey === 'string') key = SETTINGS.alpKey;
+    if (!secret && typeof SETTINGS.alpSecret === 'string') secret = SETTINGS.alpSecret;
+    det.style.display = 'none'; det.textContent = '';
+    var fehlt = [];
+    if (!key) fehlt.push('Schlüssel-ID');
+    if (!secret) fehlt.push('Geheimnis');
+    if (fehlt.length) { st.textContent = 'Es fehlt noch: ' + fehlt.join(', ') + '.'; return; }
+    alpTestBtn.disabled = true;
+    st.textContent = 'Frage das Paper-Konto ab …';
+    try {
+      var BASE = 'https://paper-api.alpaca.markets/v2';
+      var kopf = { 'APCA-API-KEY-ID': key, 'APCA-API-SECRET-KEY': secret };
+      var res = await window.api.alpFetch('GET', BASE + '/account', kopf, null);
+      if (!res.ok) {
+        st.textContent = 'Abfrage fehlgeschlagen (HTTP ' + res.status + ').';
+        det.style.display = '';
+        det.textContent = (res.status === 401 || res.status === 403)
+          ? 'Der Schlüssel wird abgelehnt. Prüfe, ob er unter „Paper Trading“ erzeugt wurde – Live- und Paper-Schlüssel sind verschieden – und ob Schlüssel-ID und Geheimnis zusammengehören.'
+          : (res.status === 0 ? 'Keine Verbindung: ' + String(res.body || '').slice(0, 120) : 'Der Server antwortet mit HTTP ' + res.status + '.');
+        return;
+      }
+      var a0 = JSON.parse(res.body);
+      var uhrTxt = '';
+      try {
+        var c0 = await window.api.alpFetch('GET', BASE + '/clock', kopf, null);
+        if (c0.ok) { var cj = JSON.parse(c0.body); uhrTxt = cj.is_open ? ' · Börse offen' : ' · Börse zu'; }
+      } catch (eC) { uhrTxt = ''; }
+      st.textContent = '✓ Verbunden · Paper-Konto ' + String(a0.status || '').slice(0, 20) + ' · Guthaben ' +
+        Math.round(Number(a0.equity) || 0) + ' ' + String(a0.currency || 'USD').slice(0, 5) + uhrTxt;
+      det.style.display = '';
+      det.textContent = 'Der Test hat nichts gespeichert. Zum dauerhaften Messen unten „Speichern" klicken und das Häkchen ' +
+        '„Messung aktivieren" setzen – dann misst der Automat eine Aktien-Runde je US-Handelstag und eine Übernacht-Runde.';
+    } catch (e) {
+      st.textContent = 'Test fehlgeschlagen: ' + ((e && e.message) || e);
+    } finally {
+      alpTestBtn.disabled = false;
     }
   });
 
@@ -973,14 +1039,18 @@
     }
     SETTINGS.tray = document.getElementById('setTray').checked;
     if (window.api.setTrayMode) window.api.setTrayMode(SETTINGS.tray);
-    ['capKey', 'capId', 'capPass'].forEach(function (feld, i4) {
-      var wert4 = document.getElementById(['setCapKey', 'setCapId', 'setCapPass'][i4]).value;
+    GEHEIM.forEach(function (feld) {
+      var el4 = document.getElementById(GEHEIM_FELD[feld]);
+      if (!el4) return;
+      var wert4 = el4.value;
       if (feld !== 'capPass') wert4 = wert4.trim();
       // Leeres Feld bei nicht entschlüsselbarem Bestand heißt "behalten", nicht "löschen"
       SETTINGS[feld] = (wert4 === '' && geheimBehalten[feld]) ? { __keep: true } : wert4;
       if (wert4 !== '') geheimBehalten[feld] = false;
     });
     SETTINGS.capEnabled = document.getElementById('setCapEnabled').checked;
+    var alpEn4 = document.getElementById('setAlpEnabled');
+    SETTINGS.alpEnabled = !!(alpEn4 && alpEn4.checked);
     // Gleiche Formatprüfung wie beim Prüf-Knopf – vorher landete hier auch Unsinn im Store.
     var repoNeu = document.getElementById('setUpdateRepo').value.trim().replace(/^https:\/\/github\.com\//i, '').replace(/\/+$/, '');
     if (repoNeu && !/^[\w.-]+\/[\w.-]+$/.test(repoNeu)) {
@@ -1014,7 +1084,7 @@
      * Verbindung. Nach dem Schreiben steht hier deshalb derselbe Zustand wie nach
      * einem Neustart - Feld leer, Merkung in geheimBehalten (vgl. Ladepfad oben). */
     var schreiben = window.api.storeSet('settings', SETTINGS);
-    ['capKey', 'capId', 'capPass'].forEach(function (k9) {
+    GEHEIM.forEach(function (k9) {
       if (SETTINGS[k9] && typeof SETTINGS[k9] !== 'string') { geheimBehalten[k9] = true; SETTINGS[k9] = ''; }
     });
     schreiben.then(function (res) {
