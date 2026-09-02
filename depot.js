@@ -6309,6 +6309,10 @@
           ? 'Capital.com: Zugangsdaten sind hinterlegt, die Spiegelung ist aber AUS. Häkchen in den App-Einstellungen setzen – erst dann werden Signale gespiegelt und die echten Handelskosten gemessen.'
           : '';
         spiegel();
+        /* Das Aktien-Gefaess haengt NICHT an Capital: seine Zeile wird auch dann aufgefrischt,
+         * wenn die CFD-Anbindung aus ist. Ohne diese Zeile stand nach dem Speichern der
+         * Alpaca-Schluessel 'keine Anbindung eingerichtet', obwohl der Test gruen war (02.09.). */
+        updateAlpStatus();
         return;
       }
       el.textContent = 'Capital.com Demo: verbinde …';
