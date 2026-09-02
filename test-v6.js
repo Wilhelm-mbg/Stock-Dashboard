@@ -8183,7 +8183,13 @@ console.log('\n44) Oberflaeche nach Themen sortiert (Felix, Issue #68)');
    * eigenen Ausschnitt. Diese Klinke prueft die STRUKTUR als Ganzes - sie ist der
    * Wachhund gegen das Zurueckrutschen: eine wiederauferstandene Pille, eine Klappe,
    * die aus dem Betrieb herausfaellt, ein Knopf, der wieder in den Alltag wandert. */
-  var leisteN = (html.match(/data-tab="([a-z]+)"/g) || []).map(function (z) { return z.slice(10, -1); });
+  /* Gelesen wird ABSICHTLICH data-tab="…" mit beliebigem Inhalt und nicht wie sonst
+   * /data-tab="[a-z]+"/. Die eigene Gegenprobe zu dieser Klinke hat den Unterschied
+   * gefunden: ein Reiter "werkzeugX" rutschte durch JEDE Reiter-Zusicherung im Haus
+   * hindurch, weil das Grossbuchstaben-Muster gar nicht erst zutraf - und der
+   * Umschalter der Shell haette ihn wegen /^[a-z]+$/ danach still ignoriert.
+   * Gefunden hat es die Gegenprobe, nicht der Verdacht (wiki/fehlerformen.md). */
+  var leisteN = (html.match(/data-tab="([^"]*)"/g) || []).map(function (z) { return z.slice(10, -1); });
   ok(leisteN.join(' ') === 'dashboard strategien werkzeuge',
      'Drei Bildschirme: genau die Reiter dashboard/strategien/werkzeuge, in dieser Reihenfolge',
      leisteN.join(' '));
