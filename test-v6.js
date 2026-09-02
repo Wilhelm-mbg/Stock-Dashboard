@@ -13074,6 +13074,25 @@ console.log('\n65) Schnitt: Dauertext hinter den i-Knopf, Hinweise einmal statt 
      'Trendfinder: das Urteil steht als LEERER Platz im Markup, nicht als Zahl');
   ok(/StudienUrteile\.verworfen\('kanaltrend'\)/.test(wui) && /el\.textContent = u \? u\.befund : '';/.test(wui),
      'Trendfinder: wendeui.js liest es aus studienurteile.js und zeigt sonst nichts');
+  /* Die zweite Wand des Trendfinders stand UNTER der Tabelle (wendeui.js) und mischte
+   * Erklaerung mit Messaussage. Die vier erklaerenden Absaetze sind woertlich ins
+   * Register gewandert; die vier gemessenen sind geblieben - was gemessen ist, bleibt
+   * Dauertext. Geprueft werden beide Haelften, sonst waere "verschoben" von
+   * "geloescht" nicht zu unterscheiden. */
+  var wt = (shell.split("'werkzeuge.trendfinder': {")[1] || '').split('\n    }')[0];
+  /* Auf den KOMMENTARFREIEN Quelltext: der Kommentar, der den Umzug erklaert, nennt
+   * die verschobenen Ueberschriften selbst - sonst frisst die Klinke ihre eigene
+   * Begruendung (wiki/fehlerformen.md, "Sperrklinke frisst ihren Kommentar"). */
+  var wuiO = ohneKommentare(wui);
+  ['Trend ohne Wendepunkt', 'Winkel = Steigung × Abschnittslänge ÷ Kanalbreite', 'Zum Ausstieg'].forEach(function (satz) {
+    ok(wt.indexOf(satz) >= 0 && wuiO.indexOf(satz) < 0,
+       'Trendfinder-Legende: „' + satz.slice(0, 28) + '…“ steht im Register, nicht mehr unter der Tabelle');
+  });
+  ['−0,17 Pp je Trade bei t = −4,1', 'Warum hier keine Ertragszahl steht',
+   'kann seine eigenen Signale nicht', 'Was aus der großen Messung bekannt ist'].forEach(function (satz) {
+    ok(wui.indexOf(satz) >= 0,
+       'Trendfinder-Legende: die Messaussage „' + satz.slice(0, 28) + '…“ bleibt sichtbar');
+  });
   /* studienurteile.js ist eine Browserdatei (window.StudienUrteile) und laesst sich
    * nicht require()n; geprueft wird deshalb die Quelle - dieselbe, die der Renderer
    * laedt. Ohne diese Zeile stuende oben eine Leseanweisung auf eine Ablage, in der

@@ -224,26 +224,18 @@
         posten.push({ status: (sig || kj) ? null : standTxt, html: zeileHtml });
       });
       h += U.wandBuendeln(posten, { spalten: 9, kopf: kopf, was: 'Werte' });
-      h += '</table><div class="hinweis" style="margin-top:8px;"><b>Trendfinder:</b> Zuerst steht der laufende ' +
-        'Trend mit seinen drei Eigenschaften – Richtung, Güte, Breite –, dieselben drei, die auch der ' +
-        'Aktien-Explorer zu einem Kanal nennt, aus derselben Rechnung. Der Trendwechsel ist der Sonderfall ' +
-        'rechts daneben: der Moment, in dem der junge Abschnitt gegen den Vortrend dreht (Wunsch #58).' +
-        '<br><b>Trend ohne Wendepunkt:</b> Die Wechsel-Erkennung braucht zwei bestätigte Wendepunkte. Wo die ' +
-        'fehlen, stand hier früher nur „zu wenig Historie“ – auch dann, wenn ein schnurgerader Trend lief. ' +
-        'Jetzt steht dort der Kanal über die letzten 120 Kerzen, als „Fenster“ gekennzeichnet. Ein ' +
-        'Wechsel-Urteil gibt es in solchen Zeilen weiterhin nicht – das wäre eine Zahl ohne Grundlage.' +
-        '<br><b>Die Güte löst nichts aus – und das ist gemessen, nicht vorsichtig:</b> Der Trendkanal als ' +
+      /* Stufe 3 (03.09.2026), Schnitt: Von dieser Legende sind die vier ERKLAERENDEN
+       * Absaetze woertlich ins Erklaerregister gewandert (werkzeuge.trendfinder) -
+       * "Zuerst steht der laufende Trend", "Trend ohne Wendepunkt", die Winkel-Formel
+       * und "Zum Ausstieg". Sichtbar geblieben ist, was gemessen ist: das Urteil zum
+       * Trendkanal, warum hier keine Ertragszahl steht, dass dieser Reiter seine
+       * eigenen Signale nicht bewerten kann, und die Aussage der grossen Messung.
+       * Nichts davon ist gekuerzt oder umformuliert - nur der Ort hat gewechselt. */
+      h += '</table><div class="hinweis" style="margin-top:8px;">' +
+        '<b>Die Güte löst nichts aus – und das ist gemessen, nicht vorsichtig:</b> Der Trendkanal als ' +
         'Handelsbedingung kostete −0,17 Pp je Trade bei t = −4,1 (Abschnittskanal-Studie). Er ist als Filter ' +
         'nicht neutral, sondern schädlich. Ein Trend mit Güte 90 ist deshalb ein gut beschriebener Trend – ' +
         'kein guter Einstieg.' +
-        '<br><br>Winkel = Steigung × Abschnittslänge ÷ Kanalbreite ' +
-        '(wie steil relativ zum eigenen Rauschen; Vorzeichen = Richtung). „Wechsel“ = junger Abschnitt ist steiler als die ' +
-        'Schwelle UND dreht gegen den Vortrend – die Studien-Bedingung. <b>Zeile anklicken</b> zeigt den Kursverlauf mit ' +
-        'Wendepunkt und beiden Abschnitten (Wunsch #38). Simulation, keine Anlageberatung.' +
-        '<br><br><b>Zum Ausstieg:</b> Der Detektor hat keine eigene Ausstiegsregel – er erkennt eine ' +
-        'Drehung und sagt nichts darüber, wann man wieder heraus soll. Die einzige Regel, die aus ihm ' +
-        'selbst folgt, ist die symmetrische: halten, bis der Winkel zurückdreht. Genau so ist die ' +
-        'Spalte „Bisher“ gerechnet – jede vergangene Drehung dieser Reihe bis zur Gegendrehung.' +
         '<br><b>Warum hier keine Ertragszahl steht:</b> Es war eine geplant – und sie ist beim ' +
         'Nachrechnen durchgefallen. Auf 4.000 Fünf-Minuten-Kerzen findet der Detektor rund <b>sechs</b> ' +
         'Drehungen. Bei sechs Fällen entscheidet ein einziger Trade das Mittel, und das Vorzeichen ' +
