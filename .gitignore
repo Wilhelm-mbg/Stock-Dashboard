@@ -11,3 +11,7 @@ telemetrie.json
 .claude/worktrees/
 .claude/settings.local.json
 release-baut.json
+
+# Obsidian-Tresor-Einstellungen (Wilhelm liest das Wiki in Obsidian) - maschinenlokal.
+.obsidian/
+wiki/.obsidian/
