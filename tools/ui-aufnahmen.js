@@ -89,6 +89,22 @@ async function aufnehmen(win, name) {
   return seiten;
 }
 
+/* ---- Textmenge je Panel (Oberflaeche Stufe 3, 03.09.2026) ----
+ * Gemessen wird innerText des Panels in GENAU dem Zustand, den auch die Aufnahme
+ * daneben zeigt: Klappen zu, nichts vorbereitet. innerText und nicht textContent -
+ * versteckte Knoten (hidden, display:none, zugeklappte details-Inhalte) zaehlen dann
+ * nicht mit, und genau darum geht es beim Schnitt: was der Leser vor sich hat.
+ * Die Zahl ist ein BELEG fuer die Uebergabe, kein Kriterium einer Sperrklinke -
+ * eine Klinke auf eine Zeichenzahl waere eine Schwelle ohne Messung dahinter. */
+const TEXTMENGE = [];
+async function textmenge(js, name, sel) {
+  const n = await js("(function () { var e = document.querySelector('" + sel + "');" +
+    "return e ? e.innerText.replace(/\\s+/g, ' ').trim().length : -1; })()");
+  TEXTMENGE.push({ seite: name, sel: sel, zeichen: n });
+  console.log('  Textmenge ' + name + ': ' + n + ' Zeichen (' + sel + ')');
+  return n;
+}
+
 async function lauf(win) {
   const wc = win.webContents;
   const js = (code) => wc.executeJavaScript(code, true);
@@ -122,6 +138,7 @@ async function lauf(win) {
     if (!subs || !subs.length) {
       nr++;
       console.log('Reiter ' + tab + ':');
+      await textmenge(js, tab, '#tab-' + tab);
       dateien += await aufnehmen(win, String(nr).padStart(2, '0') + '-' + tab);
       continue;
     }
@@ -130,6 +147,7 @@ async function lauf(win) {
       await schlaf(900);
       nr++;
       console.log('Reiter ' + tab + ' / Pille ' + sub + ':');
+      await textmenge(js, tab + '/' + sub, '#sub-' + sub);
       dateien += await aufnehmen(win, String(nr).padStart(2, '0') + '-' + tab + '-' + sub);
       /* Der Maschinenraum besteht aus geschlossenen Klappen - zugeklappt zeigt die
        * Aufnahme nur eine Liste von Ueberschriften und belegt gar nichts. Deshalb
@@ -144,6 +162,7 @@ async function lauf(win) {
         await schlaf(1500);
         nr++;
         console.log('Reiter ' + tab + ' / Pille ' + sub + ' (alle ' + klappen + ' Klappen offen):');
+        await textmenge(js, tab + '/' + sub + ' (Klappen offen)', '#sub-' + sub);
         dateien += await aufnehmen(win, String(nr).padStart(2, '0') + '-' + tab + '-' + sub + '-offen');
         await js("(function () {" +
           "var d = document.querySelectorAll('#sub-" + sub + " details[data-klappe]');" +
@@ -167,7 +186,13 @@ app.on('browser-window-created', (ev, win) => {
       /* Die Start-Renderings (Skeletons, erste Abrufe) abwarten - Rezept §6 nennt 7 s. */
       await schlaf(7000);
       const erg = await lauf(win);
+      /* Die Textmengen neben die Bilder legen - sie gehoeren zur selben Aufnahme
+       * und sollen ohne die Sitzung nachlesbar sein, in der sie entstanden sind. */
+      fs.writeFileSync(path.join(ZIEL, 'textmenge.json'),
+        JSON.stringify({ stand: new Date().toISOString(), kunstdaten: KUNSTDATEN, panels: TEXTMENGE }, null, 2));
       console.log('UI-Aufnahmen: ' + erg.seiten + ' Seiten, ' + erg.dateien + ' Dateien in ' + ZIEL);
+      console.log('Textmenge: ' + TEXTMENGE.length + ' Panels, Summe ' +
+        TEXTMENGE.reduce((s, x) => s + Math.max(0, x.zeichen), 0) + ' Zeichen (textmenge.json)');
       app.exit(0);
     } catch (e) {
       console.error('UI-Aufnahmen abgebrochen: ' + (e && e.message || e));

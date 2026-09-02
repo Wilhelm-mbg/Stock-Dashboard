@@ -1061,8 +1061,17 @@ console.log('\n17b) Oberflaeche: Altlasten und Verdrahtung');
   ok(/id="sub-wende"/.test(h) && /data-klappe="wende"/.test(h) && !/data-sub="wende"/.test(h),
      'Trendwechsel: eigene Klappe im Betrieb, keine Pille mehr');
   ok(/Beobachtung, kein Handel/.test(h), 'Trendwechsel: der Reiter sagt ehrlich, dass nicht gehandelt wird');
-  ok(/Sekunden-Kerzen \(1\/5\/10 s\) sind mit der Kursquelle nicht möglich/.test(h),
-     'Trendwechsel: die Sekunden-Grenze der Datenquelle steht dabei');
+  /* 03.09.2026 (Stufe 3, Schnitt): Der Satz steht nicht mehr als Absatz unter den
+   * Auswahlfeldern, sondern WOERTLICH im Erklaerregister; im Panel bleibt die
+   * Zusicherung "Beobachtung, kein Handel" plus i-Knopf. Die Zusicherung wandert mit
+   * und wird dabei staerker: geprueft wird jetzt BEIDES - dass der Satz im Register
+   * steht UND dass er dort nur einmal steht, nicht zusaetzlich im Markup. */
+  var shellW = fs.readFileSync(__dirname + '/app-shell.js', 'utf8');
+  ok(/Sekunden-Kerzen \(1\/5\/10 s\) sind mit der Kursquelle nicht möglich/.test(shellW) &&
+     !/Sekunden-Kerzen \(1\/5\/10 s\)/.test(h),
+     'Trendwechsel: die Sekunden-Grenze der Datenquelle steht im Erklaerregister (verschoben, nicht geloescht)');
+  ok(/data-info="werkzeuge\.trendfinder"/.test(h) && /id="wendeUrteil"/.test(h),
+     'Trendwechsel: die Klappe hat ihren i-Knopf und einen Platz fuer das Urteil');
   // Wunsch #38 (22.08.2026): die Wende muss im Chart nachvollziehbar sein
   ok(/bild: \{ wpVor: wVor, wpLetzt: wLetzt, kanalVor: kAlt \|\| null, kanalJung: null \}/.test(q2),
      'Trendwechsel-Chart: der Detektor gibt seine Stuetzstellen zum Zeichnen mit');
@@ -1551,7 +1560,13 @@ console.log('\n17b) Oberflaeche: Altlasten und Verdrahtung');
   ok((bf.match(/minutenSeitOeffnung/g) || []).length >= 2,
      'Backfill: nur Kerzen der regulaeren US-Sitzung (CFDs laufen fast rund um die Uhr)');
   ok(/massenBtn/.test(h) && /massenStopBtn/.test(h), 'Backfill: Knoepfe vorhanden');
-  ok(h.indexOf("mit Absicht gedrosselt") !== -1, 'Backfill: die Drosselung wird dem Nutzer erklaert');
+  /* 03.09.2026 (Stufe 3, Schnitt): Der Absatz steht woertlich im Erklaerregister
+   * (betrieb.backfill), im Panel haengt der i-Knopf an der Zeile. Erklaert wird die
+   * Drosselung damit weiter - die Zusicherung prueft jetzt beide Haelften, damit ein
+   * Eintrag ohne Knopf oder ein Knopf ohne Eintrag auffliegt. */
+  var shellBF = fs.readFileSync(__dirname + '/app-shell.js', 'utf8');
+  ok(shellBF.indexOf("mit Absicht gedrosselt") !== -1 && /data-info="betrieb\.backfill"/.test(h),
+     'Backfill: die Drosselung wird dem Nutzer erklaert (Registereintrag + i-Knopf an der Zeile)');
   // --- Simulations-Hinweis ueberlebt jeden Umbau ---
   var simH = (h.match(/keine Anlageberatung/gi) || []).length;
   var simD = (d.match(/keine Anlageberatung/gi) || []).length;
@@ -7814,8 +7829,15 @@ console.log('\n41) Zustaende: was die App sagt, wenn etwas fehlt oder klemmt');
   ok(!alleFelder.grund, 'Grund: der Baukasten liefert keinen - er ist die Vorregistrierung und bleibt beim Menschen');
   ok(B.MUSTER.every(function (m) { return m.warum && m.warum.length > 40; }),
      'Grund: jedes Muster nennt dafuer die SORTE Begruendung, die traegt');
-  ok(/Trägt nicht:/.test(sco) && /Beobachtung, keine These/.test(sco),
-     'Grund: und ausdruecklich, was nicht traegt');
+  /* 03.09.2026 (Stufe 3, Schnitt): Die Haelfte "Trägt nicht: ..." war auf JEDEM Muster
+   * derselbe Satz und stand als Dauertext neben dem Feld. Sie steht jetzt woertlich im
+   * Erklaerregister (messung.eingabe); sichtbar bleibt die Haelfte, die mit dem Muster
+   * wechselt. Geprueft wird der Umzug: im Register vorhanden, in scoreboard.js nicht
+   * mehr doppelt - und der Anstoss "Trägt:" steht weiter im Formular. */
+  var shellGr = fs.readFileSync(__dirname + '/app-shell.js', 'utf8');
+  ok(/Trägt nicht:/.test(shellGr) && /Beobachtung, keine These/.test(shellGr) &&
+     !/Beobachtung, keine These/.test(sco) && /'<b>Trägt:<\/b> '/.test(sco),
+     'Grund: und ausdruecklich, was nicht traegt (im Register, der Muster-Anstoss im Formular)');
 
   // ---------- Der Expertenmodus hat nichts eingebuesst ----------
   ok(/id="stExperte"/.test(html) && /id="stBaukasten"/.test(html), 'Zwei Wege: beide Bereiche stehen im Formular');
@@ -7847,8 +7869,13 @@ console.log('\n41) Zustaende: was die App sagt, wenn etwas fehlt oder klemmt');
    * Gegenteil - eine Zusicherung, die ihr eigenes Programm ueberholt hatte. */
   ok(!/Gemessen wird sie <b>nicht<\/b> von der App/.test(html),
      'Text: die ueberholte Behauptung „gemessen wird nicht von der App“ ist weg');
-  ok(/Jetzt messen<\/b>/.test(html) && /eigenen Prozess<\/b>/.test(html),
-     'Text: stattdessen steht da, wie es wirklich laeuft');
+  /* 03.09.2026 (Stufe 3, Schnitt): Der Absatz steht woertlich im Erklaerregister
+   * (messung.eingabe) hinter dem i-Knopf der Ueberschrift. Die Aussage bleibt
+   * pruefbar - nur die Datei, in der sie steht, hat gewechselt. */
+  var shellEg = fs.readFileSync(__dirname + '/app-shell.js', 'utf8');
+  ok(/Jetzt messen<\/b>/.test(shellEg) && /eigenen Prozess<\/b>/.test(shellEg) &&
+     /data-info="messung\.eingabe"/.test(html),
+     'Text: stattdessen steht da, wie es wirklich laeuft (im Register, i-Knopf am Block)');
 })();
 
 /* ================= 53. Wo die Daten liegen =================
@@ -12470,19 +12497,35 @@ console.log('\n64) Bestand & Kopfzeile (Oberflaeche Stufe 2, 03.09.2026)');
   ok(/buchKopfText\('momentum', 'Momentum'\)/.test(depO) && /buchKopfText\('drift', 'Drift'\)/.test(depO),
      'Kopfzeile: #ckBooks nennt beide Buecher beim Namen');
   var skt = depO.slice(depO.indexOf('function scanKopfText'), depO.indexOf('function cockpitRender'));
-  ok(/'Intraday aus'/.test(skt) && /'kein Scan heute'/.test(skt) && /'letzter Scan '/.test(skt),
-     'Kopfzeile: #ckScan kennt letzten Scan, "kein Scan heute" und "Intraday aus"');
+  /* 03.09.2026 (Stufe 3, Schnitt): Die Beschriftung im Cockpit heisst SCAN; der Wert
+   * schrieb "letzter Scan 14:32" und damit dasselbe Wort ein zweites Mal daneben. Der
+   * Wert ist jetzt die reine Uhrzeit. Die DREI Zustaende bleiben und werden einzeln
+   * geprueft - abgeschwaecht ist nichts, nur der doppelte Wortlaut ist weg. */
+  ok(/'Intraday aus'/.test(skt) && /'kein Scan heute'/.test(skt) && /return zeit \? zeit :/.test(skt),
+     'Kopfzeile: #ckScan kennt die Uhrzeit, "kein Scan heute" und "Intraday aus"');
+  ok(!/letzter Scan/.test(skt),
+     'Kopfzeile: das Wort Scan steht nicht mehr zweimal (Beschriftung SCAN plus Wert)');
   /* Der Scan laeuft bei abgeschalteter Strategie WEITER (Schattenbuch). "Intraday
    * aus" allein waere hier also unvollstaendig - die Uhrzeit gehoert dazu. */
-  ok(/Schattenbuch/.test(skt),
+  ok(/'Schattenbuch ' \+ zeit/.test(skt),
      'Kopfzeile: bei abgeschalteter Strategie nennt #ckScan trotzdem den Schattenbuch-Scan');
   ok(/<span class="ckl">Intraday-Depot<\/span><b id="ckEquity">/.test(html),
      'Kopfzeile: #ckEquity heisst nach der Strategie, die das Depot fuehrt');
   /* Das Wort Simulation darf nicht verschwinden - es soll nur nicht laenger der Name
-   * des Depots sein. */
+   * des Depots sein.
+   * 03.09.2026 (Stufe 3, Schnitt): Die Buecher-Zusicherung ("Zwei getrennte virtuelle
+   * Buecher ... Alles Simulation, keine Anlageberatung.") stand als zweite Zeile neben
+   * dem Buecher-Kopf; sie steht WOERTLICH im Register unter vermoegen.buecher, hinter
+   * dem i-Knopf DERSELBEN Karte. Die Zusicherung zieht mit und prueft jetzt drei
+   * Dinge statt zwei: der Simulationssatz bleibt sichtbar am Bestand, der Knopf haengt
+   * an der Karte, und der Wortlaut steht im Eintrag - verschoben, nicht geloescht. */
+  var shellSim = fs.readFileSync(__dirname + '/app-shell.js', 'utf8');
+  var eintragSim = (shellSim.split("'vermoegen.buecher': {")[1] || '').split('\n    },')[0];
   ok(/Simulation mit virtuellem Kapital – keine Anlageberatung/.test(bestand) &&
-     /Alles Simulation, keine Anlageberatung/.test(bestand),
-     'Das Wort Simulation steht weiter sichtbar am Bestand');
+     /data-info="vermoegen\.buecher"/.test(bestand) &&
+     /Zwei getrennte virtuelle Bücher à 100\.000 \$/.test(eintragSim) &&
+     /Alles Simulation, keine Anlageberatung/.test(eintragSim),
+     'Das Wort Simulation steht weiter sichtbar am Bestand, die Buecher-Zusicherung woertlich am i-Knopf');
 
   /* ---- (c) Eine Statuszeile je Betrieb-Klappe, jede mit benannter Quelle ------ */
   var betrieb = html.slice(html.indexOf('<div class="sub" id="sub-betrieb">'), html.indexOf('<!-- /sub-betrieb -->'));
@@ -12760,6 +12803,285 @@ console.log('\n64) Bestand & Kopfzeile (Oberflaeche Stufe 2, 03.09.2026)');
      'ET nach UTC rechnet die Sommerzeit richtig (Winter -5, Sommer -4)');
   ok(!/HALBTAGE\s*=\s*\{/.test(stich) && /Kalender\.lesen\(\)/.test(stich),
      'Die Halbtage kommen aus dem Boersenkalender, nicht aus einer Liste im Code');
+})();
+
+/* ================= 65) Schnitt (Oberflaeche Stufe 3, 03.09.2026) =================
+ *
+ * Befund §2.5 der Oberflaechen-Seite: "Jede Seite beginnt mit einem Absatz Erklaertext."
+ * Stufe 3 verschiebt diese Absaetze WOERTLICH ins Erklaerregister (window.Info) und
+ * laesst im Panel je einen Satz plus den i-Knopf stehen. Verschoben, nie gekuerzt -
+ * die Uebergabe belegt das Wort fuer Wort mit einer Tabelle, hier stehen die
+ * Eigenschaften, die eine Datei allein pruefen kann.
+ *
+ * Vier Gruppen:
+ *   (a) Dauertext-Grenze   - in keinem Panel steht noch eine Textwand
+ *   (b) Einmal statt ueberall - Fusszeile und Simulations-Hinweis
+ *   (c) Widerlegtes ins Archiv - Stunden-Balken und Backtest-Voreinstellung
+ *   (d) Live = Messung     - die Mittelfrist-Felder zeigen, sie stellen nicht ein
+ *   (e) Ganze Saetze       - Strategieregister und Trendfinder-Urteil
+ */
+console.log('\n65) Schnitt: Dauertext hinter den i-Knopf, Hinweise einmal statt ueberall');
+(function () {
+  var html = fs.readFileSync(__dirname + '/index.html', 'utf8');
+  var shell = fs.readFileSync(__dirname + '/app-shell.js', 'utf8');
+  var dep = fs.readFileSync(__dirname + '/depot.js', 'utf8');
+  var sco = fs.readFileSync(__dirname + '/scoreboard.js', 'utf8');
+  var mfd = fs.readFileSync(__dirname + '/mfdepot.js', 'utf8');
+  var mfr = fs.readFileSync(__dirname + '/mittelfrist.js', 'utf8');
+  var dru = fs.readFileSync(__dirname + '/driftui.js', 'utf8');
+  var bt = fs.readFileSync(__dirname + '/backtestui.js', 'utf8');
+  var wui = fs.readFileSync(__dirname + '/wendeui.js', 'utf8');
+
+  /* ---------------------------------------------------------------------------
+   * (a) Die Dauertext-Grenze
+   *
+   * Gemessen wird der Text, den ein Leser im Panel VOR SICH HAT: zusammenhaengende
+   * Textlaeufe zwischen Block-Elementen, im Markup der drei Reiter. Vier Dinge
+   * zaehlen ausdruecklich NICHT mit, jedes aus einem eigenen Grund:
+   *
+   *   1. Alles in einem <details> OHNE data-klappe. Eine Klappe innerhalb eines
+   *      Blocks ist eine Vertiefung, die man aufmacht - keine Wand, an der man
+   *      vorbeiscrollen muss. Die ELF Betrieb-Klappen (data-klappe) sind dagegen die
+   *      Gliederung des Panels selbst; sie zaehlen mit, sonst waere der Maschinenraum
+   *      - genau der Ort mit den laengsten Texten - vom Schnitt ausgenommen.
+   *   2. Alles unter einem hidden-Attribut. Was niemand sieht, ist kein Dauertext.
+   *   3. Beschriftungen von Knoepfen, Auswahlfeldern, Eingabefeldern und
+   *      Klappentiteln (<summary>). Das sind Bedienelemente, keine Absaetze.
+   *   4. Die Weissliste unten: Messaussagen, die ausdruecklich stehen bleiben.
+   *
+   * Die Zahl 240 ist eine Hausmarke, keine Messung: rund zwei Zeilen bei 68ch. Sie
+   * steht hier, damit "ein Satz plus i-Knopf" pruefbar wird - nicht, weil an ihr
+   * etwas gemessen waere. Die Textmengen je Panel stehen in der Uebergabe. */
+  var GRENZE = 240;
+  /* Weissliste - je Eintrag der Grund, warum er Dauertext BLEIBEN darf. Alle vier
+   * sind heute JS-gefuellte Behaelter und im Markup leer; die Liste gilt fuer den
+   * Tag, an dem jemand eine dieser Messaussagen fest ins Markup schreibt. Dass sie
+   * wirkt, prueft die Gegenprobe unten - eine Weissliste, die nie etwas durchlaesst,
+   * ist ein totes Kriterium und sagt nichts. */
+  var WEISS = [
+    'idKlartext',    /* Klartext: was die Intraday-Regel GERADE handelt (depot.js renderKlartext) */
+    'antwortSeite',  /* Antwort-Seite: laufende Strategien mit ihrem Belegstand (strategien.js) */
+    'kostenHuerde',  /* Kostenhuerde: die gerechnete Produkthuerde der eingestellten Kombination */
+    'mfErklaerung',  /* Momentum: groesster Rueckschlag 52 %, 8 von 22 Jahren - Messzahlen */
+    'wendeUrteil'    /* Trendfinder-Urteil aus studienurteile.js (-0,17 Pp, t = -4,1) */
+  ];
+
+  /* Der Leser. Bewusst ein eigener kleiner Abtaster statt eines Musters: ein Muster
+   * ueber verschachteltes Markup ist genau die Sorte Zusicherung, die gruen bleibt,
+   * weil sie nichts findet. */
+  function dauertexte(quelle, grenze, weiss) {
+    var s = quelle.replace(/<!--[\s\S]*?-->/g, ' ')
+                  .replace(/<style[\s\S]*?<\/style>/gi, ' ')
+                  .replace(/<script[\s\S]*?<\/script>/gi, ' ');
+    var BLOCK = /^(div|p|h1|h2|h3|h4|h5|li|ul|ol|section|details|summary|label|table|thead|tbody|tr|td|th|nav|header|footer|button|select|option|textarea|svg|dl|dt|dd|form)$/;
+    var STUMM = /^(button|select|option|textarea|svg|summary)$/;
+    var TAG = /<(\/?)([a-zA-Z0-9]+)((?:"[^"]*"|'[^']*'|[^>"'])*)(\/?)>/g;
+    var stapel = [], funde = [], puffer = '', ort = '', pos = 0, m, tab = null, tabTiefe = -1, skip = 0;
+    function fertig() {
+      var t = puffer.replace(/&nbsp;/g, ' ').replace(/&[a-zA-Z]+;|&#\d+;/g, 'x').replace(/\s+/g, ' ').trim();
+      if (tab && skip === 0 && t.length > grenze) funde.push({ tab: tab, ort: ort, len: t.length, txt: t });
+      puffer = '';
+    }
+    while ((m = TAG.exec(s))) {
+      puffer += s.slice(pos, m.index);
+      pos = TAG.lastIndex;
+      var zu = m[1] === '/', name = m[2].toLowerCase(), attr = m[3] || '', leer = m[4] === '/';
+      if (BLOCK.test(name)) fertig();
+      if (leer || /^(br|hr|img|input|meta|link)$/.test(name)) continue;
+      if (!zu) {
+        var id = (/\bid="([^"]+)"/.exec(attr) || [])[1] || null;
+        var stumm = (name === 'details' && attr.indexOf('data-klappe=') < 0) ||
+                    /\shidden(\s|=|$)/.test(attr) || STUMM.test(name) ||
+                    (id && weiss.indexOf(id) >= 0);
+        /* Die Reiter-Tiefe merken. Ohne sie zaehlten die Dialoge am Dateiende
+         * (App-Einstellungen, Diagnose) als Panel-Text mit - sie stehen AUSSERHALB
+         * der Reiter und sind kein Dauertext, den ein Panel zeigt. Genau das lieferte
+         * beim ersten Lauf sieben Fehlalarme. */
+        if (name === 'div' && /\bid="tab-/.test(attr)) {
+          tab = (/\bid="tab-([a-z]+)"/.exec(attr) || [])[1];
+          tabTiefe = stapel.length;
+        }
+        stapel.push({ name: name, stumm: stumm });
+        if (stumm) skip++;
+        if (id) ort = '#' + id;
+        else if (/\bclass="([^"]+)"/.test(attr)) ort = '.' + (/\bclass="([^"]+)"/.exec(attr))[1].split(' ')[0];
+      } else {
+        for (var i = stapel.length - 1; i >= 0; i--) {
+          if (stapel[i].name === name) {
+            for (var j = stapel.length - 1; j >= i; j--) if (stapel[j].stumm) skip--;
+            stapel.length = i;
+            break;
+          }
+        }
+        if (tab && stapel.length <= tabTiefe) { tab = null; tabTiefe = -1; }
+      }
+    }
+    return funde;
+  }
+
+  var wand = dauertexte(html, GRENZE, WEISS);
+  ok(wand.length === 0,
+     'Schnitt: kein Panel traegt noch einen Erklaerabsatz ueber ' + GRENZE + ' Zeichen',
+     wand.map(function (x) { return x.tab + ' ' + x.ort + ' (' + x.len + ')'; }).join(' | ') || 'keiner');
+
+  /* Positivkontrolle: derselbe Leser MUSS eine Wand finden, wenn eine da ist - und er
+   * muss sie in der Weissliste durchlassen. Ohne diese zwei Faelle steht oben eine
+   * Zusicherung, von der niemand weiss, ob sie ueberhaupt hinsieht. */
+  var LANG = new Array(30).join('Dies ist ein sehr langer Erklaerabsatz. ');
+  var probeHtml = '<div id="tab-dashboard" class="tab"><div class="sub"><div>' + LANG + '</div></div></div>';
+  ok(dauertexte(probeHtml, GRENZE, WEISS).length === 1,
+     'Positivkontrolle: ein eingebauter Erklaerabsatz wird gefunden');
+  ok(dauertexte('<div id="tab-dashboard" class="tab"><div id="idKlartext">' + LANG + '</div></div>', GRENZE, WEISS).length === 0,
+     'Positivkontrolle: derselbe Text unter einer Weisslisten-Kennung bleibt erlaubt (die Liste wirkt)');
+  ok(dauertexte('<div id="tab-dashboard" class="tab"><details class="how"><div>' + LANG + '</div></details></div>', GRENZE, WEISS).length === 0,
+     'Positivkontrolle: in einer gewoehnlichen Klappe ist derselbe Text erlaubt');
+  ok(dauertexte('<div id="tab-dashboard" class="tab"><details data-klappe="x"><div>' + LANG + '</div></details></div>', GRENZE, WEISS).length === 1,
+     'Positivkontrolle: in einer BETRIEB-Klappe zaehlt er mit - der Maschinenraum ist nicht ausgenommen');
+
+  /* Kein Info-Eintrag ist leer, und jedes Panel hat einen i-Knopf. Ein Eintrag ohne
+   * Punkte waere ein Knopf, der ein leeres Fenster oeffnet - der Text waere dann
+   * beim Verschieben verloren gegangen und niemand haette es gesehen. */
+  var eintraege = shell.split(/\n    '[\w.]+': \{\n/).slice(1);
+  var schluessel = (shell.match(/^    '([\w.]+)': \{$/gm) || []).map(function (m2) { return m2.trim().slice(1).split("'")[0]; });
+  var leer = [];
+  eintraege.forEach(function (blk, i) {
+    var e = blk.split('\n    },')[0];
+    var p = /punkte: \[([\s\S]*?)\n      \]/.exec(e);
+    if (!p || p[1].replace(/\s|\/\*[\s\S]*?\*\//g, '').length < 20) leer.push(schluessel[i] || ('#' + i));
+  });
+  ok(leer.length === 0, 'Schnitt: kein Eintrag im Erklaerregister ist leer', leer.join(', ') || 'keiner');
+  ok(schluessel.length >= 24, 'Schnitt: das Register ist gewachsen  [' + schluessel.length + ' Eintraege]');
+  ['heute.simulation', 'betrieb.kursarchiv', 'betrieb.backfill', 'betrieb.backtest',
+   'regeln.watchlist', 'werkzeuge.explorer'].forEach(function (k) {
+    ok(schluessel.indexOf(k) >= 0 && html.indexOf('data-info="' + k + '"') >= 0,
+       'Schnitt: neuer Eintrag ' + k + ' ist angemeldet UND hat seinen Knopf im Markup');
+  });
+  /* Jedes der neun Panels traegt mindestens einen Erklaerknopf - sonst waere ein
+   * Panel geschnitten, ohne den Text irgendwo erreichbar zu lassen. */
+  var ohneKnopf = [];
+  (html.match(/data-sub="([a-z]+)"/g) || []).map(function (m2) { return m2.slice(10, -1); })
+    .filter(function (s2, i, a) { return a.indexOf(s2) === i; })
+    .forEach(function (sub) {
+      var a2 = html.indexOf('id="sub-' + sub + '"');
+      if (a2 < 0) return;
+      var e2 = html.indexOf('<!-- /sub-' + sub, a2);
+      var stueck = html.slice(a2, e2 > a2 ? e2 : a2 + 60000);
+      if (stueck.indexOf('data-info="') < 0) ohneKnopf.push(sub);
+    });
+  ok(ohneKnopf.length === 0, 'Schnitt: jedes Panel hat einen Erklaerknopf', ohneKnopf.join(', ') || 'alle');
+
+  /* ---------------------------------------------------------------------------
+   * (b) Einmal statt ueberall */
+  ok((html.match(/<footer>/g) || []).length === 1 &&
+     html.indexOf('<footer>') > html.lastIndexOf('<!-- /tab-'),
+     'Schnitt: die Datenquellen-Fusszeile steht genau einmal - und ausserhalb der Reiter');
+  ok(/Datenquelle Kurse: Yahoo Finance/.test(html) && /Keine Anlageberatung/.test(html),
+     'Schnitt: die Fusszeile hat dabei kein Wort verloren');
+  var kopf = html.slice(html.indexOf('<header>'), html.indexOf('</header>'));
+  ok(/class="simkopf"/.test(kopf) && /Alles hier ist Simulation\. Es wird nichts gekauft und nichts verkauft\./.test(kopf),
+     'Schnitt: der Simulations-Hinweis steht woertlich in der Kopfzeile, neben dem Titel');
+  ok((html.match(/Alles hier ist Simulation\. Es wird nichts gekauft und nichts verkauft\./g) || []).length === 1,
+     'Schnitt: und genau einmal, nicht mehr je Reiter');
+  /* Das Wort Simulation muss sichtbar bleiben (Klinke aus Stufe 2) - es steht jetzt
+   * in der Kopfzeile und zusaetzlich am Bestand. */
+  ok(/Simulation/.test(kopf) && /Simulation mit virtuellem Kapital/.test(html),
+     'Schnitt: das Wort Simulation ist auf jedem Reiter sichtbar');
+
+  /* ---------------------------------------------------------------------------
+   * (c) Widerlegtes ins Archiv */
+  var arch = html.slice(html.indexOf('id="archivWiderlegt"'), html.indexOf('</details>', html.indexOf('id="hitrates"')));
+  ok(/id="hitrates"/.test(arch),
+     'Archiv: die Trefferquoten-Balken der Stunden-Strategie stehen in der Archiv-Klappe');
+  var bilanz = html.slice(html.indexOf('id="regelBilanz"'), html.indexOf('</details>', html.indexOf('id="regelBilanz"')));
+  ok(!/id="hitrates"/.test(bilanz) && /id="benchChart"/.test(bilanz),
+     'Archiv: aus der Bilanz der laufenden Regel sind sie weg, der Buy-&-Hold-Vergleich bleibt');
+  /* Geloescht wurde nichts: derselbe Schreiber fuellt sie weiter, mit denselben fuenf Namen. */
+  ok(/getElementById\('hitrates'\)\.innerHTML = hr;/.test(dep) &&
+     /News-Sentiment/.test(dep) && /Elliott-Wellen/.test(dep) && /KI-Prüfung/.test(dep),
+     'Archiv: derselbe Schreiber, dieselben fuenf Balken - nur der Ort ist neu');
+  ok((html.match(/id="hitrates"/g) || []).length === 1,
+     'Archiv: die Kennung steht genau einmal (zwei Behaelter waeren zwei Wahrheiten)');
+  /* Backtest: die Voreinstellung war die widerlegte Stunden-Strategie. */
+  var bm = html.slice(html.indexOf('<select id="btMode"'), html.indexOf('</select>', html.indexOf('<select id="btMode"')));
+  ok(/<option value="intraday" selected>/.test(bm),
+     'Backtest: voreingestellt ist die laufende Regel, nicht die widerlegte Stunden-Strategie');
+  ok(/Stunden-Strategie \(widerlegt – Archiv\)/.test(bm),
+     'Backtest: die Stunden-Option heisst, was sie ist - waehlbar bleibt sie');
+  ok(/value \|\| 'intraday'/.test(bt) && !/value \|\| 'daily'/.test(bt),
+     'Backtest: auch der Rueckfall im Code zeigt nicht mehr auf die widerlegte Strategie');
+
+  /* ---------------------------------------------------------------------------
+   * (d) Live = Messung: die Mittelfrist-Felder zeigen, sie stellen nicht ein */
+  var MF_FELDER = ['mfRueck', 'mfLuecke', 'mfHalten', 'mfAnteil', 'mfKosten'];
+  var DR_FELDER = ['drHalten', 'drAnteil', 'drFenster', 'drKosten'];
+  MF_FELDER.concat(DR_FELDER).forEach(function (id) {
+    ok(new RegExp('<select id="' + id + '" disabled>').test(html),
+       'Live=Messung: ' + id + ' steht im DOM und ist gesperrt');
+  });
+  ok(/id="mfKonfigZeile"[^>]*>Konfiguration wie gemessen \(Studie 02\.09\.2026\) – Änderungen nur über eine neue Messung\./.test(html) &&
+     /id="drKonfigZeile"[^>]*>Konfiguration wie gemessen \(Studie 02\.09\.2026\) – Änderungen nur über eine neue Messung\./.test(html),
+     'Live=Messung: ueber beiden Feldergruppen steht, woher die Werte kommen');
+  /* Gefuellt wird aus der Konfiguration, nicht aus dem Markup. Geprueft wird die
+   * QUELLE, nicht der Wert: ein fester Wert im Code waere dieselbe Zahl an einer
+   * zweiten Stelle - genau der Fehler, gegen den die Sperre gebaut ist. */
+  ok(/d\.mfBuch\.konfig/.test(mfr) && /MFHandel\.buchKonfig\(\)/.test(mfr) &&
+     /setzen\('mfRueck', k\.rueckblick\)/.test(mfr) && /setzen\('mfHalten', k\.halten\)/.test(mfr),
+     'Live=Messung: die Momentum-Felder kommen aus der Konfiguration des Buchs');
+  ok(!/setzen\('mf[A-Za-z]+', *[0-9]/.test(mfr) && !/setzen\('dr[A-Za-z]+', *[0-9]/.test(dru),
+     'Live=Messung: kein Feld wird mit einer Zahl aus dem Code gefuellt');
+  ok(/window\.Drift && window\.Drift\.STANDARD/.test(dru) && /setzen\('drHalten', S\.halten\)/.test(dru),
+     'Live=Messung: die Drift-Felder kommen aus Drift.STANDARD - derselben Konfiguration, mit der drift.js rechnet');
+  /* opts() liest weiter aus den Feldern - das war Bedingung, nicht Zufall. */
+  ok(/parseInt\(g\('mfRueck'\)\.value, 10\)/.test(mfr) && /parseInt\(g\('drHalten'\) \|\| '60', 10\)/.test(dru),
+     'Live=Messung: opts() liest unveraendert aus den Feldern');
+  /* Die Kosten je Seite stehen NICHT in der gemerkten Konfiguration, sondern als Zahl
+   * im Aufruf von MFHandel.fuehreAus (mfdepot.js takt(), Handelscode - in dieser Stufe
+   * nicht angefasst). Das Feld behaelt darum seinen Markup-Wert. Damit Anzeige und
+   * Ausfuehrung nicht still auseinanderlaufen, haelt diese Zusicherung beide Zahlen
+   * gegeneinander: wer die Handelskosten aendert, macht sie rot. */
+  var kbp = /MH\.fuehreAus\(d\.mfBuch, plan, now, (\d+)\)/.exec(mfd);
+  var mfk = html.slice(html.indexOf('<select id="mfKosten" disabled>'), html.indexOf('</select>', html.indexOf('<select id="mfKosten" disabled>')));
+  var gewaehlt = /<option value="(\d+)" selected>/.exec(mfk);
+  ok(!!kbp && !!gewaehlt && kbp[1] === gewaehlt[1],
+     'Live=Messung: das gesperrte Kosten-Feld zeigt genau die Bp, mit denen das Buch wirklich handelt',
+     (kbp ? kbp[1] : '?') + ' Bp im Buch, ' + (gewaehlt ? gewaehlt[1] : '?') + ' Bp im Feld');
+  /* Die Kennungen bleiben im Reiter Regeln (K18) - eine Sperre ist kein Ausbau. */
+  var regelnT = html.slice(html.indexOf('id="tab-strategien"'), html.indexOf('<!-- /tab-strategien -->'));
+  ok(MF_FELDER.concat(DR_FELDER).every(function (id) { return regelnT.indexOf('id="' + id + '"') >= 0; }),
+     'Live=Messung: alle neun Kennungen liegen weiter im Reiter Regeln');
+  /* Die vier Knoepfe bleiben bedienbar - gesperrt sind die Felder, nicht die Handlung. */
+  ['mfLadenBtn', 'mfdTaktBtn', 'mfdRebalanceBtn', 'mfdDriftBtn'].forEach(function (id) {
+    ok(new RegExp('id="' + id + '"[^>]*>').test(html) && !new RegExp('id="' + id + '"[^>]*disabled').test(html),
+       'Live=Messung: der Knopf ' + id + ' bleibt bedienbar');
+  });
+
+  /* ---------------------------------------------------------------------------
+   * (e) Ganze Saetze statt abgeschnittener */
+  ok(!/String\(z\.grund\)\.slice\(0, 110\)/.test(sco),
+     'Strategieregister: die Beschreibung wird nicht mehr mitten im Satz abgeschnitten');
+  ok(/String\(z\.grund\)\.split\(\/\\n\\s\*\\n\/\)\[0\]/.test(sco),
+     'Strategieregister: gezeigt wird der erste ABSATZ der Quelle');
+  /* Keine automatische Umlaut-Rueckwandlung: sie traefe auch "Steuer" und "Neuer".
+   * Die Quellen (Protokolle der Messmaschine) sind ASCII geschrieben - dann bleibt es
+   * ASCII, und die Uebergabe sagt das. */
+  ok(!/replace\(\/ue\//.test(sco) && !/\.replace\(\/ae\/g/.test(sco) && !/\.replace\(\/oe\/g/.test(sco),
+     'Strategieregister: keine automatische ue->ue-Ersetzung (sie traefe Steuer und Neuer mit)');
+  /* Das Trendfinder-Urteil ist eine Messaussage und steht deshalb NICHT als Text im
+   * Markup, sondern kommt aus studienurteile.js - der Ablage, in der ausschliesslich
+   * Verwerfungen stehen. Dieselbe Regel wie bei der Statuszeile der Klappe (Stufe 2). */
+  var wendeBlock = html.slice(html.indexOf('id="sub-wende"'), html.indexOf('<!-- /sub-betrieb -->'));
+  ok(/id="wendeUrteil"><\/span>/.test(wendeBlock) && !/0,17/.test(wendeBlock) && !/−4,1/.test(wendeBlock),
+     'Trendfinder: das Urteil steht als LEERER Platz im Markup, nicht als Zahl');
+  ok(/StudienUrteile\.verworfen\('kanaltrend'\)/.test(wui) && /el\.textContent = u \? u\.befund : '';/.test(wui),
+     'Trendfinder: wendeui.js liest es aus studienurteile.js und zeigt sonst nichts');
+  /* studienurteile.js ist eine Browserdatei (window.StudienUrteile) und laesst sich
+   * nicht require()n; geprueft wird deshalb die Quelle - dieselbe, die der Renderer
+   * laedt. Ohne diese Zeile stuende oben eine Leseanweisung auf eine Ablage, in der
+   * die Zahlen gar nicht mehr stehen muessten. */
+  var su = fs.readFileSync(__dirname + '/studienurteile.js', 'utf8');
+  var kt = su.slice(su.indexOf('kanaltrend: {'), su.indexOf('}', su.indexOf("datum: '2026-08-22'")));
+  ok(/−0,17 Pp, t = −4,1/.test(kt),
+     'Trendfinder: und die Ablage traegt die Zahlen des Urteils (-0,17 Pp, t = -4,1)');
 })();
 
 Promise.all(offeneProben).then(function () {
