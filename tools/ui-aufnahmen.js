@@ -46,7 +46,8 @@ BrowserWindow.prototype.loadFile = function (fp, opts) {
 
 const BREITE = 1280;
 const HOEHE = 820;
-const MAX_SEITEN = 8;   /* Deckel: eine sehr lange Seite soll die Probe nicht sprengen. */
+const MAX_SEITEN = 14;  /* Deckel: eine sehr lange Seite soll die Probe nicht sprengen.
+                         * 14 reicht fuer den aufgeklappten Maschinenraum. */
 
 const schlaf = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -109,6 +110,25 @@ async function lauf(win) {
       nr++;
       console.log('Reiter ' + tab + ' / Pille ' + sub + ':');
       dateien += await aufnehmen(win, String(nr).padStart(2, '0') + '-' + tab + '-' + sub);
+      /* Der Maschinenraum besteht aus geschlossenen Klappen - zugeklappt zeigt die
+       * Aufnahme nur eine Liste von Ueberschriften und belegt gar nichts. Deshalb
+       * ein zweiter Durchgang mit allen Klappen offen: erst DAS zeigt, ob jeder
+       * Block wirklich mitgekommen ist. Geklickt wird nichts, es wird nur
+       * aufgeklappt. */
+      const klappen = await js("(function () {" +
+        "var d = document.querySelectorAll('#sub-" + sub + " details[data-klappe]');" +
+        "Array.prototype.forEach.call(d, function (x) { x.open = true; });" +
+        "return d.length; })()");
+      if (klappen) {
+        await schlaf(1500);
+        nr++;
+        console.log('Reiter ' + tab + ' / Pille ' + sub + ' (alle ' + klappen + ' Klappen offen):');
+        dateien += await aufnehmen(win, String(nr).padStart(2, '0') + '-' + tab + '-' + sub + '-offen');
+        await js("(function () {" +
+          "var d = document.querySelectorAll('#sub-" + sub + " details[data-klappe]');" +
+          "Array.prototype.forEach.call(d, function (x) { x.open = false; });" +
+          "return 'zu'; })()");
+      }
     }
   }
   return { seiten: nr, dateien };
