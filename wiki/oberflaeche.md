@@ -5,7 +5,14 @@ umräumen. Fundstellen: Aufnahmen aller 15 Seiten in isolierter Instanz (Rezept 
 Code-Karte vom 02.09. (Explore-Agent, in diese Seite eingearbeitet),
 `studien/struktur-plan-2026-08-25/PLAN.md` (Leitplanken §5 gelten weiter).*
 
-## 1. Ist-Zustand (v8.37.3)
+> **Achtung, §1 und §5 sind seit dem 02.09. abends Geschichte, nicht Gegenwart.** Stufe 1
+> ist geliefert: die App hat drei Reiter, neun Pillen und den Maschinenraum
+> `#sub-betrieb` mit elf `<details>`-Klappen (`data-klappe`). Beides bleibt stehen, weil
+> es beschreibt, WOVON umgezogen wurde — der Ist-Zustand steht ab jetzt in §3 (Zielbild)
+> und in `uebergabe/oberflaeche-stufe1-2026-09-02.md`. Die Zeilennummern in §5 gelten
+> nicht mehr; die Klinken selbst tragen ihre Begründung im Code.
+
+## 1. Ist-Zustand vor Stufe 1 (v8.37.3)
 
 5 Reiter, 14 navigierende Pillen + 1 Aktions-Pille (`#wzEinstellungen`). Vertrag der
 Navigation: **Panel-ID = `sub-` + `data-sub`**, Umschalten über Klasse `active`, Logik in
@@ -129,7 +136,7 @@ Bedienoberfläche verschwindet, liegt in Betrieb in einer Klappe.
 
 | Stufe | Inhalt | Zustand |
 |---|---|---|
-| **1 Umzug** | 5 → 3 Reiter; Betrieb-Pille; Bestand nach Heute; Papiere/Protokoll nach Heute; Klinken K1–K26 (§5) umschreiben; keine Textänderung, keine Löschung | **beauftragt 02.09.** |
+| **1 Umzug** | 5 → 3 Reiter; Betrieb-Pille; Bestand nach Heute; Papiere/Protokoll nach Heute; Klinken K1–K26 (§5) umschreiben; keine Textänderung, keine Löschung | ✅ **geliefert 02.09.** (`uebergabe/oberflaeche-stufe1-2026-09-02.md`) — 3 Reiter / 9 Pillen, elf Betrieb-Klappen; 36 Klinken umgeschrieben oder neu, 37 Gegenproben rot; ui-probe + a11y-Sonde + `npm test` grün. **Ohne Statuszeile im `<summary>`** — die ist Gestaltung und liegt in Stufe 2. |
 | **2 Bestand & Kopfzeile** | Bestand-Block auf Heute gestalten (eine Bücher-Karte: Wert, Positionen, letzte Handlung, nächste Umschichtung; Intraday-Depot nur wenn ein; Depotkurve über alle Bücher); Cockpit in Worten statt „M – · D –" | offen |
 | **3 Schnitt** | Erklärtexte hinter i-Knöpfe, Fußzeile einmal; Stunden-Strategie-Reste ins Archiv (Balken „Depot gegen Buy & Hold", Backtest-Voreinstellung `daily`); Trendfinder als Archivzeile; Mittelfrist-Parameter als Text; Strategieregister: Beschreibungen ganz, Umlaute | offen |
 | **4 Archiv-Grafik, Werkzeug-Politur** | eine Grafik „wie vollständig ist das Archiv" statt Tabelle; Explorer/Schein-Finder auf Wilhelms Zuruf | offen |
