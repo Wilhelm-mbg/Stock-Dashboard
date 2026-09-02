@@ -831,11 +831,11 @@
         { weekday: 'short', hour: '2-digit', minute: '2-digit' }) + ' Uhr · ' : '') +
       'Schwellen: Lücke über ' + window.Vormarkt.MIN_LUECKE + ' %, Kurs über ' + window.Vormarkt.MIN_KURS +
       ' $, in mindestens ' + window.Vormarkt.MIN_KERZEN + ' der 5-Minuten-Kerzen gehandelt.' +
-      ' Eine Volumen-Schwelle steht bewusst nicht drin: Yahoo liefert vorbörslich kein Volumen (am 23.08.2026' +
-      ' an fünf liquiden Werten geprüft, jede Kerze 0). Gezählt wird deshalb, wie lange überhaupt gehandelt wurde.' +
-      ' Durchsucht werden die Yahoo-Listen (Tagesgewinner, Nebenwerte, umsatzstärkste) und die 15 Werte dieses Reiters' +
-      ' – nicht der ganze Markt: die Listen sortieren nach dem regulären Vortag, ein Wert, der erst heute Nacht springt,' +
-      ' kann darin fehlen.' +
+      /* Stufe 3 (03.09.2026): Die zwei Begruendungs-Saetze (keine Volumen-Schwelle,
+       * welche Listen durchsucht werden) stehen woertlich im Register unter
+       * heute.vorboerse - der i-Knopf sitzt in der Ueberschrift der Karte. Sichtbar
+       * bleiben die SCHWELLEN selbst (sie kommen aus window.Vormarkt und duerfen sich
+       * aendern) und die Zusicherung, dass hier nichts gemessen ist. */
       ' Was hier steht, ist beobachtet – nicht gemessen. Keine Anlageberatung.</div>';
     el.innerHTML = kopf + rumpf + fuss;
     var btn = document.getElementById('vormarktJetzt');

@@ -275,6 +275,10 @@
   .card .pp.up { color: var(--up); } .card .pp.down { color: var(--down); }
   header h1 { font-size: var(--fs-titel); font-weight: 700; letter-spacing: -0.02em; }
   .stamp { color: var(--ink-2); font-size: var(--fs-text); }
+  /* Der Simulations-Hinweis stand bis Stufe 3 (03.09.2026) als eigener Kasten unter
+     den Regeln - also nur dort, wo man gerade war. Er gilt fuer die ganze App und
+     steht deshalb EINMAL neben dem Titel, wo er auf jedem Reiter mitlaeuft. */
+  .simkopf { color: var(--muted); font-size: var(--fs-neben); }
   .stamp .dot { display:inline-block; width:7px; height:7px; border-radius:var(--r-kreis); margin-right:5px; vertical-align: 1px; }
   .dot.closed { background: var(--muted); }
   .dot.open   { background: var(--up); }
@@ -859,6 +863,7 @@
 
 <header>
   <h1>Markt-Dashboard</h1>
+  <span class="simkopf">Alles hier ist Simulation. Es wird nichts gekauft und nichts verkauft.</span>
   <span class="stamp" id="stamp" role="status" aria-live="polite"><span class="dot closed"></span>Lade Daten …</span>
   <span class="err" id="err" role="status" aria-live="polite"></span>
   <div class="hbtns">
@@ -923,19 +928,22 @@
 <!-- ============ BESTAND (war bis 02.09.2026 ein eigener Reiter) ============ -->
 <div id="bestandBlock">
 <h2 style="margin-top:0;">Bestand</h2>
-<div class="simnote"><b>Simulation mit virtuellem Kapital – keine Anlageberatung.</b> Gehandelt wird <span id="depotInstrumentHinweis">der Basiswert (Aktie 1×, ohne Hebel)</span>. Optionsscheine werden synthetisch bepreist (Black-Scholes): Hebel, Zeitwertverfall, Volatilitäts-Smile und der Vola-Einbruch nach Ergebnisterminen sind abgebildet, echte Emittenten-Preise nicht. Läuft, solange die App geöffnet ist. <button class="info" type="button" data-info="modell.schein" aria-expanded="false" aria-label="Erklärung: Wie ein Optionsschein hier bepreist wird">i</button></div>
-<div class="simnote" style="margin-bottom:6px;">Hier steht, was das Depot hält und was es getan hat. Wonach gehandelt wird – Strategien, Einstellungen und Werkzeuge – steht im Reiter <b>Regeln</b>.</div>
+<!-- Stufe 3 (03.09.2026), Schnitt: Aus zwei Absaetzen wurde EINE Zeile. Sichtbar bleibt
+     die Zusicherung und das Instrument, das das Depot gerade wirklich handelt
+     (#depotInstrumentHinweis, geschrieben von depot.js renderKlartext) - wer das nicht
+     liest, entscheidet falsch. Die drei Erklaersaetze stehen WOERTLICH im Register
+     unter heute.simulation. -->
+<div class="simnote" style="margin-bottom:6px;"><b>Simulation mit virtuellem Kapital – keine Anlageberatung.</b> Gehandelt wird <span id="depotInstrumentHinweis">der Basiswert (Aktie 1×, ohne Hebel)</span>. <button class="info" type="button" data-info="heute.simulation" aria-expanded="false" aria-label="Erklärung: Was hier simuliert wird">i</button></div>
 <!-- ============ BÜCHER: eine Karte je Buch, nebeneinander ============ -->
 <div id="sub-mittel">
-  <!-- Der Kopf traegt WOERTLICH die Zusicherung, die bis Stufe 1 als eigener Absatz
-       ueber den Buechern stand (Leitplanke 1: verschoben, nie umformuliert). Der
-       i-Knopf ist derselbe; die fuenf Zeilen Messtext stehen wortgleich im
-       Erklaerregister unter vermoegen.buecher. -->
+  <!-- Stufe 3 (03.09.2026), Schnitt: Die Zusicherung stand hier als Zeile neben dem
+       Kopf; sie steht WOERTLICH im Register unter vermoegen.buecher - der erste Punkt
+       beginnt mit genau diesem Satz, der Fuss traegt "Alles Simulation, keine
+       Anlageberatung." Der i-Knopf daneben ist derselbe geblieben, es ist also
+       derselbe Klick wie vorher der Blick. Geloescht ist nichts. -->
   <div class="buecher-kopf">Mittelfrist-Depot · Momentum und Ergebnis-Drift handeln
     <button class="info" type="button" data-info="vermoegen.buecher" aria-expanded="false"
             aria-label="Erklärung: Mittelfrist-Depot">i</button>
-    <span class="buecher-zusicherung">Zwei getrennte virtuelle Bücher à 100.000 $, die die beiden Strategien <b>tatsächlich führen</b>.
-      Alles Simulation, keine Anlageberatung.</span>
   </div>
   <!-- DREI KARTEN, DREI SCHREIBER, KEINE ZAHL IM MARKUP.
        #buchMomentumKopf und #buchDriftKopf schreibt mfdepot.js (karten()), weil dort
@@ -1231,6 +1239,15 @@
           der Technik-Score ist sogar gegenläufig – an solchen Zahlen zu drehen erzeugt nur den Eindruck von Kontrolle.
         </div>
         </details>
+        <!-- Die fuenf Trefferquoten-Balken der Stunden-Strategie. Sie standen bis Stufe 3
+             (03.09.2026) in der Bilanz der laufenden Regel unter "Depot gegen Buy & Hold"
+             und liessen dort die Quellen einer widerlegten Strategie wie einen Teil des
+             aktiven Regelwerks aussehen. Kennung und Schreiber sind unveraendert
+             (depot.js render() schreibt #hitrates), nur der Ort ist jetzt das Archiv. -->
+        <div style="margin-top:10px;">
+          <h4 style="margin:0 0 6px; font-size:var(--fs-neben); color:var(--muted);">Trefferquoten ihrer Quellen</h4>
+          <div id="hitrates"></div>
+        </div>
         <div class="strat-foot">
           <button class="btn ghost" id="runJobBtn" title="Bei ausgeschalteter Strategie werden keine neuen Positionen mehr eröffnet – der Lauf prüft nur noch Stop, Ziel und Zeit-Ausstieg des Altbestands und pflegt das Nachrichten-Archiv.">Bestand jetzt prüfen</button>
           <span id="jobStatus"></span>
@@ -1459,11 +1476,13 @@
            unten eine eigene vollbreite Zeile zu brauchen.
            Kein margin-top mehr: der Behaelter setzt den Abstand ueber gap:12px. -->
       <div class="panel">
-        <h3>Eigene Watchlist – wird bei jedem Scan mitgeprüft</h3>
+        <h3 style="display:flex; align-items:center; gap:8px;">Eigene Watchlist – wird bei jedem Scan mitgeprüft
+          <button class="info" type="button" data-info="regeln.watchlist" aria-expanded="false"
+                  aria-label="Erklärung: Was in jeder Runde geprüft wird">i</button></h3>
+        <!-- Stufe 3: der zweite Satz (Beobachtungs-Pool, Rotation) steht woertlich im
+             Register unter regeln.watchlist. -->
         <div style="color:var(--muted); font-size:var(--fs-neben); margin-bottom:8px;">
-          Diese Werte und die 15 Standard-Werte werden in jeder Runde geprüft. Die gemessenen 60-Minuten-Einstiege
-          schauen zusätzlich in den gewählten Beobachtungs-Pool (Vorgabe: 99 Werte) – daraus rotieren zwölf je Runde,
-          damit ein Scan nicht in Kursabrufe ausartet.
+          Diese Werte und die 15 Standard-Werte werden in jeder Runde geprüft.
         </div>
         <div id="watchChips" style="display:flex; gap:6px; flex-wrap:wrap;"></div>
         <div style="color:var(--muted); font-size:var(--fs-neben); margin-top:8px;">Hinzufügen: Wert im Aktien-Explorer suchen → „Zur Handels-Watchlist“.</div>
@@ -1486,16 +1505,22 @@
       <button class="info" type="button" data-info="regeln.mf.momentum" aria-expanded="false"
               aria-label="Erklärung: Momentum im Querschnitt">i</button></h3>
     <!-- Der lange Erklaer- und Warntext (samt der frueheren Karte "Was du dabei wissen
-         musst") steht wortgleich im Info-Register (regeln.mf.momentum). Sichtbar bleibt,
-         was eine Entscheidung aendert: Rueckschlag, Marktvergleich, Simulation. -->
+         musst") steht wortgleich im Info-Register (regeln.mf.momentum). Sichtbar bleibt
+         seit Stufe 3 nur noch die MESSAUSSAGE: Rueckschlag und Marktvergleich. Der
+         beschreibende erste Satz ist woertlich ins Register gewandert, der
+         Simulationssatz steht einmal in der Kopfzeile. -->
     <div id="mfErklaerung" style="font-size:var(--fs-text); color:var(--ink-2); line-height:1.55; max-width:68ch;">
-      Vergleicht alle Werte des Universums <b>miteinander</b> und hält das stärkste Zehntel – kein Chartmuster,
-      nur eine Rangfolge alle drei Monate. <b>Kein ruhiges Investment:</b> größter Rückschlag 52 % (2008),
-      in 8 von 22 Jahren schlechter als der Markt. Alles hier ist Simulation.
+      <b>Kein ruhiges Investment:</b> größter Rückschlag 52 % (2008),
+      in 8 von 22 Jahren schlechter als der Markt.
     </div>
+    <!-- Live = Messung (wiki/oberflaeche.md, Grundsaetze): Die fuenf Felder darunter
+         zeigen die Konfiguration, mit der das Buch WIRKLICH rechnet. Sie sind deshalb
+         gesperrt und werden von mittelfrist.js aus D.mfBuch.konfig gefuellt - eine
+         Auswahl, die von der Messung abweicht, waere eine stille Umstellung. -->
+    <div class="hinweis" style="margin-top:10px;" id="mfKonfigZeile">Konfiguration wie gemessen (Studie 02.09.2026) – Änderungen nur über eine neue Messung.</div>
     <div class="chartleiste" style="margin-top:10px;">
       <label title="Über wie viele Handelstage die Stärke gemessen wird. 231 Tage sind rund elf Monate.">Rückblick
-        <select id="mfRueck">
+        <select id="mfRueck" disabled>
           <option value="126">126 Tage (6 Mon.)</option>
           <option value="189">189 Tage (9 Mon.)</option>
           <option value="231" selected>231 Tage (11 Mon.)</option>
@@ -1503,20 +1528,20 @@
         </select>
       </label>
       <label title="Der jüngste Monat wird ausgelassen – dort liegt die kurzfristige Gegenbewegung, die den Effekt schwächt.">Lücke
-        <select id="mfLuecke"><option value="0">keine</option><option value="21" selected>21 Tage</option></select>
+        <select id="mfLuecke" disabled><option value="0">keine</option><option value="21" selected>21 Tage</option></select>
       </label>
       <label title="Wie lange gehalten wird, bevor die Rangfolge neu gebildet wird.">Halten
-        <select id="mfHalten">
+        <select id="mfHalten" disabled>
           <option value="42">42 Tage</option>
           <option value="63" selected>63 Tage (3 Mon.)</option>
           <option value="126">126 Tage (6 Mon.)</option>
         </select>
       </label>
       <label title="Wie groß der gehaltene Teil des Universums ist. Zehn Prozent schnitten durchweg besser ab als zwanzig.">Anteil
-        <select id="mfAnteil"><option value="0.10" selected>stärkste 10 %</option><option value="0.15">15 %</option><option value="0.20">20 %</option></select>
+        <select id="mfAnteil" disabled><option value="0.10" selected>stärkste 10 %</option><option value="0.15">15 %</option><option value="0.20">20 %</option></select>
       </label>
       <label title="Kosten je Kauf oder Verkauf. 20 Basispunkte sind für liquide Aktien realistisch.">Kosten
-        <select id="mfKosten"><option value="0">0 Bp</option><option value="10">10 Bp</option><option value="20" selected>20 Bp</option><option value="40">40 Bp</option></select>
+        <select id="mfKosten" disabled><option value="0">0 Bp</option><option value="10">10 Bp</option><option value="20" selected>20 Bp</option><option value="40">40 Bp</option></select>
       </label>
       <button class="btn" id="mfLadenBtn">Daten holen und rechnen</button>
       <span id="mfStatus" class="hinweis"></span>
@@ -1550,16 +1575,20 @@
       <button class="info" type="button" data-info="regeln.mf.drift" aria-expanded="false"
               aria-label="Erklärung: Ergebnis-Drift">i</button></h3>
     <!-- Erklaer- und Messtext wortgleich im Info-Register (regeln.mf.drift); sichtbar
-         bleibt die Regel in einem Satz plus die Instrument-Zusicherung. -->
+         bleibt seit Stufe 3 nur die Instrument-Zusicherung samt ihrer Messzahl. Der
+         beschreibende erste Satz steht woertlich im Register (erster Punkt), der
+         Simulationssatz einmal in der Kopfzeile. -->
     <div style="font-size:var(--fs-text); color:var(--ink-2); line-height:1.55; max-width:68ch;">
-      Nach einer Quartalsmeldung läuft der Kurs noch Wochen in Richtung der Überraschung weiter.
       Gekauft wird das <b>oberste Fünftel</b> der Überraschungen, verkauft das <b>unterste</b> –
       im <b>Basiswert</b>, nicht mit Hebelscheinen: Der Drift liefert nur ein Viertel bis ein Achtel
-      der Schein-Kostenhürde. Alles hier ist Simulation.
+      der Schein-Kostenhürde.
     </div>
+    <!-- Live = Messung: dieselbe Sperre wie beim Momentum-Buch. Gefuellt aus
+         Drift.STANDARD (driftui.js), nicht aus einer Zahl in diesem Markup. -->
+    <div class="hinweis" style="margin-top:10px;" id="drKonfigZeile">Konfiguration wie gemessen (Studie 02.09.2026) – Änderungen nur über eine neue Messung.</div>
     <div class="chartleiste" style="margin-top:10px;">
       <label title="Wie lange eine Position gehalten wird. Auf 20 Tagen ist der Effekt seit 2015 tot (t = 0,77) – erst ab rund 60 Tagen trägt er.">Halten
-        <select id="drHalten">
+        <select id="drHalten" disabled>
           <option value="20">20 Tage</option>
           <option value="40">40 Tage</option>
           <option value="60" selected>60 Tage (geprüft)</option>
@@ -1567,21 +1596,21 @@
         </select>
       </label>
       <label title="Wie groß die beiden Beine sind. 0,2 heißt: oberstes und unterstes Fünftel.">Anteil je Bein
-        <select id="drAnteil">
+        <select id="drAnteil" disabled>
           <option value="0.1">10 %</option>
           <option value="0.2" selected>20 % (geprüft)</option>
           <option value="0.33">33 %</option>
         </select>
       </label>
       <label title="Gegen wie viele Handelstage zurück eine Überraschung eingeordnet wird. Nur bereits veröffentlichte Zahlen zählen – kein Blick in die Zukunft.">Vergleichsfenster
-        <select id="drFenster">
+        <select id="drFenster" disabled>
           <option value="60">60 Tage</option>
           <option value="120" selected>120 Tage (geprüft)</option>
           <option value="250">250 Tage</option>
         </select>
       </label>
       <label title="Handelskosten je Seite. Bei 10 Basispunkten sinkt das Ergebnis um rund 1,8 Prozentpunkte im Jahr.">Kosten
-        <select id="drKosten">
+        <select id="drKosten" disabled>
           <option value="0">keine</option>
           <option value="10" selected>10 Basispunkte</option>
           <option value="20">20 Basispunkte</option>
@@ -1608,10 +1637,10 @@
 
   </div><!-- /sub-einstellungen -->
 
-  <!-- ============ MITTELFRISTIG (war ein eigener Reiter) ============ -->
-  <div class="panel">
-    <div style="font-size:var(--fs-neben); color:var(--muted);">Alles hier ist Simulation. Es wird nichts gekauft und nichts verkauft.</div>
-  </div>
+  <!-- Der Kasten "Alles hier ist Simulation ..." stand hier am Fuss des Reiters -
+       also nur auf DIESEM Reiter, obwohl der Satz fuer die ganze App gilt. Er steht
+       seit Stufe 3 (03.09.2026) einmal in der Kopfzeile neben dem Titel (.simkopf)
+       und laeuft damit auf jedem Reiter mit. Wortlaut unveraendert. -->
 </div><!-- /tab-strategien -->
 
 <div id="tab-werkzeuge" class="tab" role="tabpanel" aria-labelledby="reiter-werkzeuge">
@@ -1624,6 +1653,12 @@
   <div class="exp-search">
     <input type="text" id="expQuery" placeholder="Aktie, ETF oder Index suchen – Ticker oder Name (z. B. „Rheinmetall“, „SAP“, „PLTR“) …">
     <button class="btn" id="expSearchBtn">Suchen</button>
+    <!-- Stufe 3: der Hinweis, was die Detail-Ansicht kann, stand als zweite Zeile auf
+         der Startkarte (explorer.js renderStart) und verschwand, sobald man einen Wert
+         oeffnete - also genau dann nicht mehr da, wo er galt. Er steht woertlich im
+         Register; der Knopf sitzt hier und bleibt auf der ganzen Pille erreichbar. -->
+    <button class="info" type="button" data-info="werkzeuge.explorer" aria-expanded="false"
+            aria-label="Erklärung: Was der Aktien-Explorer zeigt">i</button>
   </div>
   <div class="exp-results" id="expResults"></div>
   <div id="expStart"></div>
@@ -1719,16 +1754,15 @@
   </div>
   <div class="sub" id="sub-scheine">
   <div class="panel">
-    <h3>Schein-Finder · Kennzahlen und Risikostufe</h3>
+    <h3 style="display:flex; align-items:center; gap:8px;">Schein-Finder · Kennzahlen und Risikostufe
+      <button class="info" type="button" data-info="modell.schein" aria-expanded="false"
+              aria-label="Erklärung: Wie ein Optionsschein hier bepreist wird">i</button></h3>
+    <!-- Stufe 3 (03.09.2026): Die Einleitung stand hier als Absatz; sie steht woertlich
+         im Register unter modell.schein - dort, wo ohnehin erklaert wird, wie ein Schein
+         bepreist wird. Sichtbar bleibt der Satz, der eine Entscheidung aendert: dass
+         diese Zeilen Modellpreise sind und keine Emittentenkurse. -->
     <div style="font-size:var(--fs-text); color:var(--ink-2); line-height:1.55; margin-bottom:10px;">
-      Rechnet das volle Raster möglicher Scheine zu einem Basiswert durch – mit <b>demselben Modell, mit dem
-      das Depot handelt</b> (Black-Scholes plus das an echten Emittentenkursen geeichte Spanne-Modell).
-      Jeder Schein hier verhält sich exakt so wie in der Simulation. Zu jeder Zeile lässt sich der
-      <b>echte Schein mit WKN</b> nachschlagen (Spalte „WKN“ oder Zeile anklicken) – Emittent, echte
-      Geld-/Brief-Kurse und der Abstand zur Modell-Zeile stehen dabei, denn Emittenten legen nur auf
-      feste Verfallstage auf.
-      Die <b>Risikostufe</b> (1 defensiv … 5 Lotterielos) begrenzt auf Wunsch auch den Handel – Einstellung
-      „maximale Risikostufe“ im Depot unter Risiko &amp; Kosten.
+      Jeder Schein hier verhält sich exakt so wie in der Simulation.
     </div>
     <div class="chartleiste">
       <label>Basiswert<select id="sfSymbol"></select></label>
@@ -1775,7 +1809,9 @@
   <details class="how" data-klappe="archiv">
     <summary>Kursarchiv<span class="klappe-stand" id="kstand-archiv"></span></summary>
   <div id="sub-archiv">
-    <h2>Kursarchiv <span style="color:var(--muted); font-size:var(--fs-neben); font-weight:400; text-transform:none; letter-spacing:0;">– die App holt die feinen Kerzen selbst und legt sie ab.</span></h2>
+    <h2>Kursarchiv <span style="color:var(--muted); font-size:var(--fs-neben); font-weight:400; text-transform:none; letter-spacing:0;">– die App holt die feinen Kerzen selbst und legt sie ab.</span>
+      <button class="info" type="button" data-info="betrieb.kursarchiv" aria-expanded="false"
+              aria-label="Erklärung: Wie das Kursarchiv entsteht">i</button></h2>
     <div class="panel" id="archivKarte"><div class="loading">Sehe im Archiv nach …</div></div>
   </div>
   </details>
@@ -1792,10 +1828,10 @@
                 aria-label="Erklärung: Autopilot">i</button></h3>
       <!-- Der Absatz, wie die Nachtmessung im Detail arbeitet (Edge-Waechter vs.
            Walk-Forward, Scheinsieger-Begruendung), steht wortgleich im Info-Register
-           (regeln.autopilot). Sichtbar bleibt die Zusicherung, was uebernommen wird. -->
+           (regeln.autopilot) - seit Stufe 3 (03.09.2026) auch dieser Absatz selbst.
+           Sichtbar bleibt die Zusicherung, was uebernommen wird. -->
       <div style="color:var(--muted); font-size:var(--fs-neben); margin-bottom:10px; max-width:68ch;">
-        Die Nacht misst auf dem <b>Kursarchiv</b> – als Edge-Wächter auf den gemessenen Kanten, sonst per
-        Walk-Forward über alle Kandidaten. Übernommen wird nur, was sich in <b>zwei Nächten hintereinander</b>
+        Übernommen wird nur, was sich in <b>zwei Nächten hintereinander</b>
         bestätigt; von Hand gesetzte Felder bleiben unangetastet.
       </div>
 
@@ -1812,17 +1848,16 @@
       <div class="auto-row">
         <div class="auto-head">
           <label title="Holt fehlende Kerzen für Handels-Universum, Nasdaq-100 und aktiven Pool über die Capital.com-Demo-API ins Archiv. Vor allem 1-Minuten-Historie: Yahoo gibt nur 7 Tage, mehrere offene Studien brauchen 60+.">Kursarchiv auffüllen (Capital.com)</label>
+          <button class="info" type="button" data-info="betrieb.backfill" aria-expanded="false"
+                  aria-label="Erklärung: Kursarchiv auffüllen">i</button>
           <button class="btn ghost tiny" id="quelleTestBtn" title="Prüft Schritt für Schritt, ob Anbindung, Anmeldung, Marktsuche und Kursabruf funktionieren – und misst, wie weit die Historie je Zeitrahmen wirklich zurückreicht. Dauert etwa eine Minute.">Datenquelle testen</button>
           <button class="btn ghost tiny" id="massenBtn">jetzt auffüllen</button>
           <button class="btn ghost tiny" id="massen1mBtn" title="Füllt AUSSCHLIESSLICH die 1-Minuten-Historie auf – der einzige Zeitrahmen mit einer echten Lücke (rund 8 statt 90 Tage) und die Voraussetzung für die offenen Trendwende-Studien.">nur 1-Minuten</button>
           <button class="btn ghost tiny" id="massenStopBtn">anhalten</button>
         </div>
         <div id="massenStatus" class="auto-status" style="white-space:pre-wrap;"></div>
-        <div class="hinweis" style="margin-top:4px; max-width:68ch;">
-          Einige tausend Abrufe (rund 200 Werte × drei Zeitrahmen), <b>mit Absicht gedrosselt</b>, weil Capital.com
-          zu schnelle Läufe sperrt. Rechne mit <b>30–90 Minuten</b> und einigen hundert MB im Datenordner;
-          jederzeit anhaltbar, ein neuer Lauf setzt am letzten Stand an.
-        </div>
+        <!-- Stufe 3: die zwei Saetze (Drosselung, Dauer) stehen woertlich im Register
+             unter betrieb.backfill - der Knopf dazu haengt oben an der Zeile. -->
       </div>
 
       <div class="auto-row">
@@ -2002,7 +2037,12 @@
         <div id="benchInfo" style="font-size:var(--fs-neben); color:var(--muted); margin-bottom:6px;">Wird beim Öffnen dieses Bereichs geladen …</div>
         <svg id="benchChart" style="width:100%; height:150px; display:block;"></svg>
         <div id="benchLegend" style="font-size:var(--fs-neben); color:var(--ink-2); margin-top:4px;"></div>
-        <div id="hitrates" style="margin-top:10px;"></div>
+        <!-- Stufe 3 (03.09.2026): #hitrates stand hier - fuenf Balken (News-Sentiment,
+             Technik, Elliott-Wellen, Intraday-MA, KI-Pruefung). Vier davon sind die
+             Quellen der WIDERLEGTEN Stunden-Strategie; sie standen damit in der Bilanz
+             der Regel, die gerade handelt. Der Behaelter ist unveraendert in die
+             Archiv-Klappe unter Regeln -> Strategien gezogen (gleiche Kennung, gleicher
+             Schreiber depot.js render()). Der Buy-&-Hold-Vergleich bleibt hier. -->
       </div>
     </div>
   </div>
@@ -2021,22 +2061,26 @@
         <span id="reportStatus" style="color:var(--muted); font-size:var(--fs-neben);"></span>
       </div>
       <div class="panel" style="margin:0;">
-        <h4 style="margin:0 0 8px;">Backtest (Handwerkzeug)</h4>
+        <h4 style="margin:0 0 8px;">Backtest (Handwerkzeug)
+          <button class="info" type="button" data-info="betrieb.backtest" aria-expanded="false"
+                  aria-label="Erklärung: Was der Backtest rechnet">i</button></h4>
+        <!-- Stufe 3 (03.09.2026): Die Voreinstellung war die WIDERLEGTE Stunden-Strategie -
+             wer den Backtest oeffnete und startete, rechnete als Erstes das, was gemessen
+             durchgefallen ist. Voreingestellt ist jetzt die laufende Regel; die
+             Stunden-Strategie bleibt waehlbar und heisst, was sie ist. -->
         <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
           <select id="btMode" title="Welche Strategie der Backtest durchrechnet">
-            <option value="daily">Stunden-Strategie (Technik + Elliott – widerlegt, t = −11,6)</option>
-            <option value="intraday">Intraday: eingestelltes Setup auf Optionsscheinen</option>
+            <option value="intraday" selected>Intraday: eingestelltes Setup auf Optionsscheinen</option>
             <option value="intradayCompare">Zeitrahmen-Vergleich: 5 vs. 15 vs. 60 Min</option>
+            <option value="daily">Stunden-Strategie (widerlegt – Archiv)</option>
           </select>
           <select id="btRange" title="Wie weit der Backtest zurückreicht"><option value="1y">1 Jahr</option><option value="2y">2 Jahre</option><option value="5y">5 Jahre</option></select>
           <button class="btn ghost" id="btRunBtn">Backtest starten</button>
           <span id="btStatus" style="color:var(--muted); font-size:var(--fs-neben);"></span>
         </div>
+        <!-- Stufe 3: die vier uebrigen Saetze stehen woertlich im Register unter
+             betrieb.backtest. Sichtbar bleibt der Satz, der eine Entscheidung aendert. -->
         <div style="color:var(--muted); font-size:var(--fs-neben); margin-top:6px;">
-          Rechnet das eingestellte Setup auf synthetischen <b>Optionsscheinen</b>, in beide Richtungen und mit
-          Glattstellung am Abend. Für die beiden gemessenen Kanten passt das nicht – sie handeln den Basiswert,
-          nur Long und über Nacht –, deshalb verweigert der Backtest dort die Auskunft; sie misst der Autopilot
-          nachts auf dem Kursarchiv. Historische Nachrichten gibt es nicht, getestet wird der technische Kern.
           Der Belegstand jeder Strategie steht auf der Pille <b>Strategien</b> – der Backtest ist ein Rechenwerkzeug, kein Urteil.
         </div>
         <div id="btResult" style="margin-top:12px;"></div>
@@ -2055,12 +2099,10 @@
     Die App rechnet hier <b>nichts</b>. Sie zeigt die Protokolle der Messmaschine aus dem Datenordner.
   </div>
   <div id="scoreboard"><div class="loading">Lade Protokolle …</div></div>
-  <div style="font-size:var(--fs-neben); color:var(--muted); margin-top:8px;">
-    <b>Bestätigt</b> = auf zurückgehaltenen Tagen über Mindest-Effektgröße und über der Bonferroni-Schwelle.
-    <b>Nicht entscheidbar</b> = unter der Mindest-Effektgröße; das heißt nicht „kein Effekt", sondern „diese Datenmenge kann die Frage nicht beantworten".
-    <b>Widerlegt</b> = auf zurückgehaltenen Tagen signifikant negativ.
-    Alle Zahlen in Prozentpunkten des Basiswerts, Überschuss gegen die Erwartung aller Kerzen desselben Werts zur selben Stunde.
-  </div>
+  <!-- Stufe 3 (03.09.2026): Die Legende der drei Urteile stand hier als Absatz UND
+       woertlich im Register (messung.scoreboard, Punkte 3-5 und Fuss). Zwei Orte fuer
+       denselben Satz sind eine Doppelpflege; geblieben ist der Ort mit dem i-Knopf
+       in der Ueberschrift darueber. Geloescht ist kein Wort. -->
 </div>
   </details>
 
@@ -2130,24 +2172,25 @@
     <span id="stStatus" role="status" aria-live="polite" style="font-size:var(--fs-neben); color:var(--muted);"></span>
   </div>
   <div id="stNaechster" hidden style="margin-top:10px; padding:10px 12px; border:1px solid var(--kante); border-radius:var(--r-gross); background:var(--surface-2);"></div>
-  <div style="font-size:var(--fs-neben); color:var(--muted); margin-top:8px;">
-    Die Datei landet unter <code>Markt-Dashboard-Daten/strategien/</code>. Danach erscheint hier der Knopf <b>Jetzt messen</b>. Die Messmaschine läuft dabei in einem <b>eigenen Prozess</b> neben der App – das Urteil kommt weiterhin aus ihr und nicht aus dem Programm, das die Strategie anzeigt. Wer lieber von Hand misst oder ein anderes Archiv prüfen will, findet daneben den fertigen Befehl. Das Protokoll erscheint anschließend oben im Scoreboard.
-  </div>
+  <!-- Stufe 3: der Fussabsatz (wo die Datei landet, eigener Prozess, Handbefehl) steht
+       woertlich im Register unter messung.eingabe - der i-Knopf sitzt in der
+       Ueberschrift dieses Blocks. -->
 </div>
   </details>
 
   <details class="how" data-klappe="wende">
     <summary>Trendfinder — Detektor widerlegt<span class="klappe-stand" id="kstand-wende"></span></summary>
   <div id="sub-wende">
-    <div class="simnote"><b>Beobachtung, kein Handel.</b> Diese Seite zeigt zuerst den <b>laufenden Trend</b> und
-      seine drei Eigenschaften – Richtung, Güte, Breite – genau die drei, die auch der Aktien-Explorer zu einem
-      Kanal nennt, aus derselben Rechnung. Der <b>Trendwechsel</b> steht daneben als das, was er ist: ein Sonderfall
-      des Trends, nämlich der Moment, in dem ein junger Abschnitt gegen den Vortrend dreht (Wunsch #58).
-      Dieser Detektor (dein Winkel-Vorschlag aus #33) war der
-      einzige Teilüberlebende der Trendwende-Studie – aber ein guter Teil seines Vorsprungs war Tageszeit-Effekt,
-      und die 1-Minuten-Basis war mit 7 Tagen zu kurz für ein Urteil. Die App sammelt seit 8.23.25 jede Nacht
-      1-Minuten-Kurse; <b>in 4–6 Wochen wird sauber nachgemessen</b>. Bis dahin zeigt diese Seite live, was der
-      Detektor sieht – zum Spielen und Beobachten, genau wie vorgeschlagen.</div>
+    <!-- Stufe 3 (03.09.2026): Die Textwand steht woertlich im Register
+         (werkzeuge.trendfinder, vier Punkte). Sichtbar bleiben zwei Dinge, die eine
+         Entscheidung aendern: die Zusicherung "Beobachtung, kein Handel" und das
+         URTEIL. Das Urteil steht NICHT hier als Text - wendeui.js liest es aus
+         studienurteile.js in #wendeUrteil, damit es genau einmal in der App gepflegt
+         wird (dieselbe Regel wie bei der Statuszeile der Klappe, Stufe 2). -->
+    <div class="simnote"><b>Beobachtung, kein Handel.</b>
+      <span id="wendeUrteil"></span>
+      <button class="info" type="button" data-info="werkzeuge.trendfinder" aria-expanded="false"
+              aria-label="Erklärung: Warum aus der Trend-Güte keine Order wird">i</button></div>
     <div class="panel" style="margin-bottom:12px;">
       <div style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
         <label class="wendeopt">Kerzen<select id="wendeIv">
@@ -2168,13 +2211,8 @@
         <button class="btn" id="wendeBtn">Jetzt prüfen</button>
         <span id="wendeStatus" style="color:var(--muted); font-size:var(--fs-neben);"></span>
       </div>
-      <div class="hinweis" style="margin-top:8px;">
-        Sekunden-Kerzen (1/5/10 s) sind mit der Kursquelle nicht möglich – Yahoo liefert feinstens 1 Minute,
-        und nur 7 Tage zurück. Geprüft werden die 15 Standard-Werte plus deine Watchlist; der Winkel zur
-        Horizontalen und die Drehung gegen den Vortrend entsprechen exakt der Studien-Rechnung.
-        <button class="info" type="button" data-info="werkzeuge.trendfinder" aria-expanded="false"
-                aria-label="Erklärung: Warum aus der Trend-Güte keine Order wird">i</button>
-      </div>
+      <!-- Stufe 3: der Sekunden-Kerzen-Absatz steht woertlich im Register
+           (werkzeuge.trendfinder); der i-Knopf dazu sitzt oben in der Kopfzeile. -->
     </div>
     <div class="panel">
       <div id="wendeTabelle"><div class="loading">Noch nicht geprüft – „Jetzt prüfen“ klicken.</div></div>

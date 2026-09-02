@@ -232,7 +232,37 @@
     rechne();
   }
 
+  /* ---- Live = Messung (Oberflaeche Stufe 3, 03.09.2026) ----
+   * Dieselbe Sperre wie beim Momentum-Buch: Die vier Felder bleiben im DOM (opts()
+   * liest sie weiter), sind aber gesperrt und werden aus Drift.STANDARD gefuellt -
+   * genau der Konfiguration, mit der drift.js rechnet und mit der gemessen wurde.
+   * Aus dem Markup kommt keine dieser Zahlen. Kennt eine Auswahlliste einen Wert
+   * nicht, wird er ergaenzt statt verschluckt. */
+  function konfigZeigen() {
+    var S = window.Drift && window.Drift.STANDARD;
+    if (!S) return;
+    setzen('drHalten', S.halten);
+    setzen('drAnteil', S.anteil);
+    setzen('drFenster', S.fenster);
+    setzen('drKosten', S.kostenBp);
+  }
+  /* Verglichen wird als ZAHL, nicht als Text ("0.20" gegen 0.2) - sonst bekaeme die
+   * Liste einen zweiten Eintrag fuer denselben Anteil. */
+  function setzen(id, wert) {
+    var e = document.getElementById(id);
+    if (!e || wert == null) return;
+    var treffer = Array.prototype.filter.call(e.options, function (o) {
+      return o.value === String(wert) || (o.value !== '' && Number(o.value) === Number(wert));
+    })[0];
+    if (treffer) { e.value = treffer.value; return; }
+    var o2 = document.createElement('option');
+    o2.value = String(wert); o2.textContent = String(wert) + ' (aus der gemessenen Konfiguration)';
+    e.appendChild(o2);
+    e.value = o2.value;
+  }
+
   function bereit() {
+    konfigZeigen();
     var b1 = document.getElementById('drLadeBtn');
     var b2 = document.getElementById('drLadeAlleBtn');
     var b3 = document.getElementById('drRechneBtn');

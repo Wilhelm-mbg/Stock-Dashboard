@@ -424,10 +424,23 @@
    *  verkabelt die Bedienelemente des Reiters. Der sub-changed-Sonderfall (Pille
    *  'wende' loest eine Pruefung aus) bleibt bewusst in depot.js - die Navigations-
    *  Sonderfaelle stehen dort an EINER Stelle. */
+  /* Das URTEIL ueber den Detektor - die einzige Zeile Dauertext, die auf dieser Seite
+   * geblieben ist (Oberflaeche Stufe 3, 03.09.2026). Sie steht NICHT im Markup: die
+   * Zahlen (-0,17 Pp, t = -4,1) sind eine Messaussage, und die wohnt in
+   * studienurteile.js - der Ablage, in der ausschliesslich Verwerfungen stehen.
+   * Faellt der Eintrag weg, bleibt die Zeile leer, statt eine Behauptung zu zeigen. */
+  function urteilZeigen() {
+    var el = document.getElementById('wendeUrteil');
+    if (!el) return;
+    var u = window.StudienUrteile && window.StudienUrteile.verworfen('kanaltrend');
+    el.textContent = u ? u.befund : '';
+  }
+
   function verkabeln(deps) {
     universe = deps.universe;
     fetchIntraday = deps.fetchIntraday;
     pmap = deps.pmap;
+    urteilZeigen();
     var wBtn = document.getElementById('wendeBtn');
     if (wBtn) wBtn.addEventListener('click', function () { wendePruefen(true); });
     ['wendeIv', 'wendeS', 'wendeF'].forEach(function (id) {

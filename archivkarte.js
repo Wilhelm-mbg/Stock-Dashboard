@@ -108,10 +108,12 @@
     var e = st.einstellungen || {};
     var h = '';
 
+    /* Stufe 3 (03.09.2026): Die drei Erklaersaetze stehen woertlich im Register unter
+     * betrieb.kursarchiv, der i-Knopf dazu in der Ueberschrift dieser Klappe. Sichtbar
+     * bleibt der Satz, der eine Entscheidung aendert: Was jetzt nicht geholt wird, ist
+     * fort. */
     h += '<div style="font-size:var(--fs-neben); color:var(--ink-2); line-height:1.5; margin-bottom:10px; max-width:72ch;">' +
-      'Die App holt die feinen Kerzen selbst und legt sie im Kursarchiv ab – dasselbe Format und dieselbe Ablage, ' +
-      'die auch das Abrufwerkzeug schreibt. <b>Yahoo hält Intraday-Kerzen nur begrenzt vor</b> ' +
-      '(1 Minute 7 Tage, 5 und 15 Minuten 60 Tage). Was in dieser Zeit nicht geholt wurde, ist nicht später nachzuholen, sondern fort.' +
+      'Was in dieser Zeit nicht geholt wurde, ist nicht später nachzuholen, sondern fort.' +
       '</div>';
 
     if (st.laeuft) {
@@ -153,10 +155,12 @@
       ' · 5 Minuten alle ' + e.intervalle['5m'] + ' · 15 Minuten alle ' + e.intervalle['15m'] +
       ' · ' + U.dez(e.abstandMs / 1000, 1) + ' s Abstand je Anfrage' +
       ' · frühestens ' + e.nachSchlussMinuten + ' Minuten nach Handelsschluss.' +
-      '<br>Warum nach Handelsschluss: Yahoo korrigiert fertige Kerzen noch rund 18 Minuten rückwirkend nach ' +
-      '(am 26.08.2026 über sechs Runden gemessen). Wer mitten in der Sitzung sammelt, schreibt vorläufige Zahlen.' +
+      /* Die zwei Begruendungs-Saetze (Warum nach Handelsschluss, keine Stunden-/
+       * Tageskerzen) stehen seit Stufe 3 woertlich im Register (betrieb.kursarchiv).
+       * Die Zeile "So ist es eingestellt" bleibt: sie nennt die tatsaechlichen Werte
+       * aus den Einstellungen, keine Erklaerung. Der Markt-offen-Zusatz bleibt auch -
+       * er sagt, warum GERADE nichts passiert. */
       (st.marktOffen ? ' <b>Der Markt ist gerade offen</b> – planmäßig wird deshalb nicht gesammelt.' : '') +
-      '<br>Stunden- und Tageskerzen holt die App <b>nicht</b>: die umfassen das ganze Universum und gehören zu den nächtlichen Werkzeugen.' +
       '</div>';
 
     k.innerHTML = h;

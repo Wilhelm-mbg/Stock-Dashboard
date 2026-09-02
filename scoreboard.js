@@ -734,11 +734,13 @@
   function grundHilfe(warum) {
     var el = document.getElementById('stGrundHilfe');
     if (!el) return;
+    /* Stufe 3 (03.09.2026): Die zweite Haelfte ("Trägt nicht: ...") war auf jedem Muster
+     * derselbe Satz - Dauertext neben einem Feld. Sie steht woertlich im Register unter
+     * messung.eingabe, erreichbar ueber den i-Knopf der Ueberschrift. Sichtbar bleibt
+     * die erste Haelfte: sie WECHSELT mit dem gewaehlten Muster und ist der Anstoss,
+     * um den es hier geht. */
     el.innerHTML =
-      '<b>Trägt:</b> ' + U.esc(warum || 'Jemand muss handeln – aus Vorschrift, Termin oder Zwang – und das ist vorher bekannt.') +
-      '<br><b>Trägt nicht:</b> „Der Kurs fällt montags oft“ oder „das sieht im Chart gut aus“. ' +
-      'Das ist eine Beobachtung, keine These – und die Maschine verweigert die Messung dann nicht, ' +
-      'sie zerlegt sie nur.';
+      '<b>Trägt:</b> ' + U.esc(warum || 'Jemand muss handeln – aus Vorschrift, Termin oder Zwang – und das ist vorher bekannt.');
   }
 
   /** Klartext unter den gemeinsamen Feldern. Kerzen, Basispunkte und „Long“ sind Fachsprache. */
@@ -1037,7 +1039,16 @@
        * gehoert hierher, den kennt label() nicht. */
       var urteil = !z.laeufe ? '<span style="color:var(--muted);">nie gemessen</span>'
         : U.esc(z.urteil ? label(z.urteil) : 'ohne Urteil');
-      var grundKurz = z.grund ? String(z.grund).slice(0, 110) + (String(z.grund).length > 110 ? ' …' : '') : '';
+      /* Stufe 3 (03.09.2026): Bis hierher schnitt die Zeile den Grund nach 110 Zeichen
+       * ab - mitten im Satz ("... auf und werden ueber"). Das ist der VERTRAGSTEXT der
+       * Strategie, also eine Vorregistrierung; ein halber Satz davon sagt nichts und
+       * sieht aus wie ein Anzeigefehler. Gezeigt wird jetzt der erste ABSATZ der Quelle,
+       * ungekuerzt. Getrennt wird an einer Leerzeile - hat der Text keine (das ist
+       * heute bei allen 27 Protokollen so), steht er ganz da.
+       * KEINE Umlaut-Ersetzung: die Quellen sind ASCII geschrieben ("Boersenschluss"),
+       * und ein automatisches ue->ue-Zurueckdrehen traefe auch "Steuer" und "Neuer".
+       * Der Text bleibt so, wie die Strategie ihn abgelegt hat. */
+      var grundKurz = z.grund ? String(z.grund).split(/\n\s*\n/)[0].trim() : '';
       html += '<tr style="border-top:1px solid var(--grid);">' +
         '<td style="padding:5px 8px 5px 0; max-width:340px;"><code>' + U.esc(z.key) + '</code>' +
         (grundKurz ? '<div style="color:var(--muted); font-size:var(--fs-klein); font-family:inherit; line-height:1.4;">' + U.esc(grundKurz) + '</div>' : '') +

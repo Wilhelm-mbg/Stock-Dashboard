@@ -237,15 +237,62 @@
     } finally { btn.disabled = false; }
   }
 
+  /* ---- Live = Messung (Oberflaeche Stufe 3, 03.09.2026) ----
+   * Die vier Fenster-Felder waren frei waehlbar. Wer eines verstellte, rechnete eine
+   * ANDERE Konfiguration als die, die das Momentum-Buch wirklich handelt - und sah das
+   * Ergebnis unter derselben Ueberschrift. Die Felder bleiben im DOM (opts() liest sie
+   * weiter, und die Kennungen sind Schnittstelle), sind aber gesperrt und werden hier
+   * aus der Konfiguration des Buchs gefuellt: erst das, was im Buch steht
+   * (D.mfBuch.konfig), sonst die gemessene Fassung aus MFHandel.buchKonfig(). Aus dem
+   * Markup kommt keine dieser Zahlen.
+   * AUSNAHME und bewusst so: die Kosten je Seite (#mfKosten). Sie stehen nicht in der
+   * gemerkten Konfiguration, sondern als Zahl im Aufruf von MFHandel.fuehreAus in
+   * mfdepot.js takt() - Handelscode, der in dieser Stufe nicht angefasst wird. Das Feld
+   * behaelt deshalb seinen Markup-Wert; eine Sperrklinke in test-v6.js haelt ihn gegen
+   * genau diese Zahl, damit die Anzeige nicht still von der Ausfuehrung abdriftet. */
+  function konfigZeigen() {
+    var k = null;
+    var d = window.__D ? window.__D() : null;
+    if (d && d.mfBuch && d.mfBuch.konfig) k = d.mfBuch.konfig;
+    else if (window.MFHandel && window.MFHandel.buchKonfig) k = window.MFHandel.buchKonfig();
+    if (!k) return;
+    setzen('mfRueck', k.rueckblick);
+    setzen('mfLuecke', k.luecke);
+    setzen('mfHalten', k.halten);
+    setzen('mfAnteil', k.anteil);
+  }
+  /* Ein Wert, den die Auswahlliste gar nicht kennt, wird NICHT stillschweigend
+   * verschluckt: dann bekaeme das Feld den ersten Eintrag und zeigte etwas anderes,
+   * als das Buch rechnet. Er wird als Eintrag ergaenzt und ausgewaehlt.
+   * Verglichen wird als ZAHL, nicht als Text: das Feld schreibt "0.10", die
+   * Konfiguration liefert 0.1 - als Text waeren das zwei verschiedene Werte, und die
+   * Liste bekaeme einen zweiten Eintrag fuer dasselbe Zehntel. */
+  function setzen(id, wert) {
+    var e = document.getElementById(id);
+    if (!e || wert == null) return;
+    var treffer = Array.prototype.filter.call(e.options, function (o) {
+      return o.value === String(wert) || (o.value !== '' && Number(o.value) === Number(wert));
+    })[0];
+    if (treffer) { e.value = treffer.value; return; }
+    var o2 = document.createElement('option');
+    o2.value = String(wert); o2.textContent = String(wert) + ' (aus der Konfiguration des Buchs)';
+    e.appendChild(o2);
+    e.value = o2.value;
+  }
+
   document.addEventListener('DOMContentLoaded', function () {
     var btn = document.getElementById('mfLadenBtn');
     if (btn) btn.addEventListener('click', rechnen);
+    konfigZeigen();
     ['mfRueck', 'mfLuecke', 'mfHalten', 'mfAnteil', 'mfKosten'].forEach(function (id) {
       var e = document.getElementById(id);
       // Nach dem ersten Laden reicht Neurechnen - die Kurse sind schon da
       if (e) e.addEventListener('change', function () { if (DATEN) { zeigeRang(); zeigeErgebnis(); } });
     });
   });
+  /* Beim Start ist das Depot noch nicht geladen; der Buch-Stand kommt erst danach.
+   * Dasselbe Ereignis, das die Bestand-Karten zeichnet, holt die Felder nach. */
+  document.addEventListener('tab-changed', konfigZeigen);
   if (typeof window !== 'undefined') window.__mfRechnen = rechnen;
   // Nach aussen: das Mittelfrist-Depot (mfdepot.js) stoesst hierueber den taeglichen
   // Kursabruf an, statt den Lader zu duplizieren - zwei Lader hiessen zwei Wahrheiten.

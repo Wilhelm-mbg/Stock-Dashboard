@@ -23,7 +23,11 @@
     var btn = document.getElementById('btRunBtn'), st = document.getElementById('btStatus');
     if (!btn || !st) return;
     btn.disabled = true;
-    var mode = (document.getElementById('btMode') || {}).value || 'daily';
+    /* Rueckfall auf 'intraday', nicht mehr auf 'daily' (Stufe 3, 03.09.2026): 'daily'
+     * ist die widerlegte Stunden-Strategie (t = -11,6). Fehlt das Auswahlfeld, soll
+     * das Werkzeug die LAUFENDE Regel rechnen und nicht stillschweigend die, die
+     * gemessen durchgefallen ist. Die Voreinstellung im Markup steht auf demselben Wert. */
+    var mode = (document.getElementById('btMode') || {}).value || 'intraday';
     /* Dieses Werkzeug rechnet fest die EMA-Kreuzung auf synthetischen Optionsscheinen -
      * beide Richtungen, Zwangsschluss am Abend. Für die gemessenen Kanten waere das
      * eine plausibel aussehende, aber systematisch falsche Zahl: falscher Einstieg,

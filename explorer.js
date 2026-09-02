@@ -90,7 +90,10 @@
       '<h3>Einen Wert öffnen</h3>' +
       '<div style="color:var(--muted); font-size:var(--fs-text);">Suche nach Ticker oder Name (auch deutsche Aktien, ETFs, Indizes, Krypto) – oder starte mit einem Klick:</div>' +
       '<div class="popchips">' + POPULAR.map(function (p, i) { return '<button type="button" data-pop="' + i + '">' + U.esc(p.sym) + ' · ' + U.esc(p.name) + '</button>'; }).join('') + '</div>' +
-      '<div style="color:var(--muted); font-size:var(--fs-neben); margin-top:10px;">In der Detail-Ansicht: Chart von 1 Tag bis Max., Kennzahlen, News, „Analyse anfordern“ und „Zur Handels-Watchlist“ (dann handeln die Strategien den Wert mit).</div>' +
+      /* Stufe 3 (03.09.2026): Der Hinweis, was die Detail-Ansicht kann, stand hier -
+       * und verschwand mit dieser Startkarte, sobald man einen Wert oeffnete, also
+       * genau dann, wenn er galt. Er steht woertlich im Register (werkzeuge.explorer);
+       * der i-Knopf sitzt in der Suchzeile und bleibt sichtbar. */
       '</div>';
     el.querySelectorAll('[data-pop]').forEach(function (b) {
       b.addEventListener('click', function () {

@@ -3862,8 +3862,12 @@
   function scanKopfText() {
     var heute = HEALTH.lastScanT && new Date(HEALTH.lastScanT).toDateString() === new Date().toDateString();
     var zeit = heute ? new Date(HEALTH.lastScanT).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }) : null;
-    if (!(D.intraday && D.intraday.enabled)) return 'Intraday aus' + (zeit ? ' · Schattenbuch ' + zeit : '');
-    return zeit ? 'letzter Scan ' + zeit : 'kein Scan heute';
+    /* Stufe 3 (03.09.2026): Die Beschriftung im Cockpit heisst SCAN - "letzter Scan
+     * 14:32" schrieb das Wort ein zweites Mal daneben. Die drei Zustaende bleiben
+     * unveraendert: laufender Scan (Uhrzeit), Strategie aus (dann nennt die Zeile den
+     * Schattenbuch-Scan, weil der WEITERLAEUFT), gar kein Scan heute. */
+    if (!(D.intraday && D.intraday.enabled)) return zeit ? 'Schattenbuch ' + zeit : 'Intraday aus';
+    return zeit ? zeit : 'kein Scan heute';
   }
 
   /** Kopf-Cockpit füllen – reine Anzeige aus vorhandenem State, keine eigene Datenhaltung. */

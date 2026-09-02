@@ -339,11 +339,13 @@
       ? '<b>Ohne Klassifizierung der Wertpapierarten</b> (' + esc(ARTEN_FEHLER) + '): Vorzugsserien, Fonds und Zertifikate sind NICHT herausgefiltert und erben die Größe ihres Emittenten. '
       : '';
     if (fuss) {
+      /* Stufe 3 (03.09.2026): Die zwei Legendensaetze zu Flaeche und Gruppierung stehen
+       * woertlich im Register (marktkarte), erreichbar ueber den i-Knopf in der
+       * Ueberschrift. Hier bleibt, was aus DIESEM Lauf kommt: der Farb-Deckel aus
+       * window.Marktkarte.DECKEL, die gezaehlten Werte und die Messaussage am Schluss. */
       fuss.innerHTML =
         artenHinweis +
-        '<b>Fläche</b> = Kurs × Aktienanzahl, bei jeder Aktualisierung neu gerechnet. ' +
-        '<b>Farbe</b> = Veränderung zum Vortagesschluss, gedeckelt bei ±' + window.Marktkarte.DECKEL + ' %. ' +
-        'Gruppiert nach Branche aus dem SIC-Code der SEC.<br>' +
+        '<b>Farbe</b> = Veränderung zum Vortagesschluss, gedeckelt bei ±' + window.Marktkarte.DECKEL + ' %.<br>' +
         'Gezeigt: ' + info.gezeichnet + ' von ' + info.gesamt + ' Werten mit Stammdaten' +
         (info.ausApp ? ' (' + info.ausApp + ' davon aus laufenden Kursen der App, ohne eigenen Abruf' +
           (info.ausSpeicher ? ', ' + info.ausSpeicher + ' aus dem Zwischenspeicher' : '') + ')'

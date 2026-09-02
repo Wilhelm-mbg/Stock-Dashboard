@@ -674,9 +674,28 @@
       ],
       fuss: 'Alle Zahlen der App sind Simulation und keine Anlageberatung.'
     },
+    /* Stufe 3 des Oberflaechen-Umbaus (03.09.2026), "Schnitt": Was hier steht, stand
+     * bis dahin als Dauertext im Bestand-Kopf. Der Wortlaut ist WOERTLICH uebernommen,
+     * nur der Ort hat sich geaendert. Sichtbar geblieben ist die Zusicherung
+     * ("Simulation mit virtuellem Kapital - keine Anlageberatung") samt dem Instrument,
+     * das das Depot gerade wirklich handelt: wer das nicht liest, entscheidet falsch. */
+    'heute.simulation': {
+      titel: 'Was hier simuliert wird',
+      punkte: [
+        'Optionsscheine werden synthetisch bepreist (Black-Scholes): Hebel, Zeitwertverfall, Volatilitäts-Smile und der Vola-Einbruch nach Ergebnisterminen sind abgebildet, echte Emittenten-Preise nicht.',
+        'Läuft, solange die App geöffnet ist.',
+        'Hier steht, was das Depot hält und was es getan hat. Wonach gehandelt wird – Strategien, Einstellungen und Werkzeuge – steht im Reiter <b>Regeln</b>.'
+      ],
+      fuss: 'Wie ein Schein im Einzelnen bepreist wird, steht beim Schein-Finder.'
+    },
     'modell.schein': {
       titel: 'Wie ein Optionsschein hier bepreist wird',
       punkte: [
+        /* Die vier Saetze der Schein-Finder-Einleitung, woertlich aus index.html
+         * hierher gezogen (Stufe 3). Sichtbar blieb dort ein Satz plus dieser Knopf. */
+        'Rechnet das volle Raster möglicher Scheine zu einem Basiswert durch – mit <b>demselben Modell, mit dem das Depot handelt</b> (Black-Scholes plus das an echten Emittentenkursen geeichte Spanne-Modell).',
+        'Jeder Schein hier verhält sich exakt so wie in der Simulation. Zu jeder Zeile lässt sich der <b>echte Schein mit WKN</b> nachschlagen (Spalte „WKN“ oder Zeile anklicken) – Emittent, echte Geld-/Brief-Kurse und der Abstand zur Modell-Zeile stehen dabei, denn Emittenten legen nur auf feste Verfallstage auf.',
+        'Die <b>Risikostufe</b> (1 defensiv … 5 Lotterielos) begrenzt auf Wunsch auch den Handel – Einstellung „maximale Risikostufe“ im Depot unter Risiko & Kosten.',
         'Black-Scholes mit der aus den Kursen geschätzten Volatilität – keine echten Emittenten-Preise. Die Spanne ist an echten Kursen geeicht (onvista), das Modell selbst nicht.',
         'Volatilitäts-Smile: Ein Schein abseits des Geldes bekommt nicht mehr dieselbe Vola wie einer am Geld. Puts sind auf der Seite teurer, Calls knapp über dem Kurs billiger – so herum, nicht anders. Bei den Abständen, die diese App handelt (0 bis 3 %), macht das zwischen 0,0 und 2,5 % Scheinpreis aus.',
         'Volatilität um einen Ergebnistermin: Sie steigt bis zu 25 % davor an und fällt danach unter das Normalniveau zurück („IV-Crush"). Gemessen am Beispiel: ein Schein am Geld mit 21 Tagen Restlaufzeit verliert über die Zahlen rund 29 % – bei UNVERÄNDERTEM Kurs.',
@@ -751,7 +770,13 @@
         'Die <b>Farbe</b> ist die Veränderung zum Vortagesschluss, gedeckelt bei ±3 %. Darüber wäre nichts mehr unterscheidbar, und ein einzelner Ausreißer würde die ganze Karte blass machen.',
         'Gruppiert wird nach dem SIC-Code der SEC. Der ist von 1987 und kennt kein „Technologie“ – die Zuordnung zu Sektoren ist eine Entscheidung des Projekts und steht offen in tools/stammdaten-holen.js.',
         'Ausländische Emittenten fehlen: Ihre gemeldete Stückzahl sind Stammaktien, gehandelt wird ein ADR aus mehreren davon. Das Verhältnis steht in den Daten nicht – lieber nicht zeigen als falsch zeigen.',
-        'Das ist eine <b>Übersicht, kein Signal</b>. An dieser Karte ist nichts gemessen. Sie sortiert nichts nach „bestem Sektor“ und hebt nichts hervor: Das sähe nach einem Befund aus und wäre keiner.'
+        'Das ist eine <b>Übersicht, kein Signal</b>. An dieser Karte ist nichts gemessen. Sie sortiert nichts nach „bestem Sektor“ und hebt nichts hervor: Das sähe nach einem Befund aus und wäre keiner.',
+        /* Stufe 3 (03.09.2026): diese zwei Legendensaetze standen woertlich so unter der
+         * Karte (marktkarteui.js). Sichtbar geblieben sind dort die gezaehlten Werte und
+         * der Farb-Deckel - beides kommt aus dem Lauf bzw. aus window.Marktkarte.DECKEL
+         * und darf nicht als fester Text hier einfrieren. */
+        '<b>Fläche</b> = Kurs × Aktienanzahl, bei jeder Aktualisierung neu gerechnet.',
+        'Gruppiert nach Branche aus dem SIC-Code der SEC.'
       ]
     },
     'messung.strategien': {
@@ -772,7 +797,13 @@
         'Eine Regel, wann gekauft wird. Im <b>Baukasten</b> wird sie zusammengeklickt und die App schreibt den Code; im <b>Expertenmodus</b> schreibt man ihn selbst.',
         'Der Baukasten deckt die häufigen Muster ab, nicht alles – eine beliebige Idee lässt sich nicht anklicken. Der erzeugte Code steht immer daneben und lässt sich in den Expertenmodus übernehmen.',
         'Eine Vorregistrierung: Haltedauer, Richtung, und welche Varianten geprüft werden. Jede Variante zählt als eigener Test und hebt die Schwelle – die Maschine verhindert das nicht, sie weist es aus.',
-        'Was die Regel sieht, endet bei der aktuellen Kerze. Die Bausteine halten sich streng daran; wer selbst schreibt, muss selbst darauf achten.'
+        'Was die Regel sieht, endet bei der aktuellen Kerze. Die Bausteine halten sich streng daran; wer selbst schreibt, muss selbst darauf achten.',
+        /* Stufe 3 (03.09.2026): woertlich aus dem Fussabsatz unter dem Ablegen-Knopf. */
+        'Die Datei landet unter <code>Markt-Dashboard-Daten/strategien/</code>. Danach erscheint hier der Knopf <b>Jetzt messen</b>. Die Messmaschine läuft dabei in einem <b>eigenen Prozess</b> neben der App – das Urteil kommt weiterhin aus ihr und nicht aus dem Programm, das die Strategie anzeigt. Wer lieber von Hand misst oder ein anderes Archiv prüfen will, findet daneben den fertigen Befehl. Das Protokoll erscheint anschließend oben im Scoreboard.',
+        /* Stufe 3: die zweite Haelfte des Denkanstosses unter dem Grund-Feld
+         * (scoreboard.js grundHilfe). Die erste Haelfte ("Trägt: …") bleibt sichtbar -
+         * sie wechselt mit dem gewaehlten Muster und ist dort der eigentliche Hinweis. */
+        '<b>Trägt nicht:</b> „Der Kurs fällt montags oft“ oder „das sieht im Chart gut aus“. Das ist eine Beobachtung, keine These – und die Maschine verweigert die Messung dann nicht, sie zerlegt sie nur.'
       ]
     },
     /* Die drei Beobachtungskarten auf "Heute". Der Satz "Ungemessen, reine Beobachtung
@@ -809,7 +840,12 @@
       titel: 'Vorbörsen-Lücken',
       punkte: [
         'Werte, die vor der US-Eröffnung deutlich anders stehen als beim gestrigen Schluss: Lücke über 5 %, Kurs über 3 $, vorbörslich durchgehend gehandelt.',
-        'Ungemessen, reine Beobachtung: „Gap and Go“ gehört zur Ausbruchsfamilie, und die ist hier in 3.372 Tests widerlegt worden.'
+        'Ungemessen, reine Beobachtung: „Gap and Go“ gehört zur Ausbruchsfamilie, und die ist hier in 3.372 Tests widerlegt worden.',
+        /* Stufe 3 (03.09.2026): woertlich aus der Fusszeile der Karte (renderer.js).
+         * Sichtbar blieben dort die SCHWELLEN selbst - die stehen nicht hier, weil
+         * sie aus window.Vormarkt kommen und sich mit der Quelle aendern duerfen. */
+        'Eine Volumen-Schwelle steht bewusst nicht drin: Yahoo liefert vorbörslich kein Volumen (am 23.08.2026 an fünf liquiden Werten geprüft, jede Kerze 0). Gezählt wird deshalb, wie lange überhaupt gehandelt wurde.',
+        'Durchsucht werden die Yahoo-Listen (Tagesgewinner, Nebenwerte, umsatzstärkste) und die 15 Werte dieses Reiters – nicht der ganze Markt: die Listen sortieren nach dem regulären Vortag, ein Wert, der erst heute Nacht springt, kann darin fehlen.'
       ],
       fuss: 'Gehandelt wird hiervon nichts. Keine Anlageberatung.'
     },
@@ -853,7 +889,49 @@
         'Das <b>Kursarchiv</b> sammelt jede geladene Kursreihe dauerhaft – die Messbasis wächst mit jedem Handelstag, statt an Yahoos kurzem Rückblick zu kleben.',
         'Was die Nacht misst, hängt von deiner Strategie ab: Fährst du eine der <b>gemessenen Strategien</b> (RSI2 im Seitwärtskanal / Kapitulations-Dip), arbeitet die Nacht als <b>Edge-Wächter</b> – sie prüft auf dem vollen Handels-Universum, ob der gemessene Vorsprung im frischen Fenster noch trägt (Überschuss gegen die Drift, t über Symbole), und vergleicht nur noch die wenigen gemessenen Stellschrauben (Haltedauer-Varianten).',
         'Das alte Setup-Rennen über die widerlegten Signale läuft dort bewusst nicht mehr – es hat Scheinsieger produziert.',
-        'Fährst du ein anderes Setup, misst die Nacht wie bisher alle Kandidaten per Walk-Forward; übernommen wird nur, was sich in <b>zwei Nächten hintereinander</b> bestätigt, angewendet morgens vor Handelsbeginn. Von Hand gesetzte Felder bleiben unangetastet.'
+        'Fährst du ein anderes Setup, misst die Nacht wie bisher alle Kandidaten per Walk-Forward; übernommen wird nur, was sich in <b>zwei Nächten hintereinander</b> bestätigt, angewendet morgens vor Handelsbeginn. Von Hand gesetzte Felder bleiben unangetastet.',
+        /* Stufe 3 (03.09.2026): stand woertlich als Absatz ueber dem Autopilot-Schalter. */
+        'Die Nacht misst auf dem <b>Kursarchiv</b> – als Edge-Wächter auf den gemessenen Kanten, sonst per Walk-Forward über alle Kandidaten. Übernommen wird nur, was sich in <b>zwei Nächten hintereinander</b> bestätigt; von Hand gesetzte Felder bleiben unangetastet.'
+      ]
+    },
+    /* --- Neu mit Stufe 3 (03.09.2026): die Erklaerabsaetze des Maschinenraums.
+     * Jeder Wortlaut ist unveraendert aus index.html bzw. archivkarte.js uebernommen;
+     * sichtbar geblieben ist je ein Satz und der i-Knopf. */
+    'betrieb.kursarchiv': {
+      titel: 'Wie das Kursarchiv entsteht',
+      punkte: [
+        'Die App holt die feinen Kerzen selbst und legt sie im Kursarchiv ab – dasselbe Format und dieselbe Ablage, die auch das Abrufwerkzeug schreibt.',
+        '<b>Yahoo hält Intraday-Kerzen nur begrenzt vor</b> (1 Minute 7 Tage, 5 und 15 Minuten 60 Tage). Was in dieser Zeit nicht geholt wurde, ist nicht später nachzuholen, sondern fort.',
+        'Warum nach Handelsschluss: Yahoo korrigiert fertige Kerzen noch rund 18 Minuten rückwirkend nach (am 26.08.2026 über sechs Runden gemessen). Wer mitten in der Sitzung sammelt, schreibt vorläufige Zahlen.',
+        'Stunden- und Tageskerzen holt die App <b>nicht</b>: die umfassen das ganze Universum und gehören zu den nächtlichen Werkzeugen.'
+      ]
+    },
+    'betrieb.backfill': {
+      titel: 'Kursarchiv auffüllen (Capital.com)',
+      punkte: [
+        'Einige tausend Abrufe (rund 200 Werte × drei Zeitrahmen), <b>mit Absicht gedrosselt</b>, weil Capital.com zu schnelle Läufe sperrt.',
+        'Rechne mit <b>30–90 Minuten</b> und einigen hundert MB im Datenordner; jederzeit anhaltbar, ein neuer Lauf setzt am letzten Stand an.'
+      ]
+    },
+    'betrieb.backtest': {
+      titel: 'Was der Backtest rechnet – und was nicht',
+      punkte: [
+        'Rechnet das eingestellte Setup auf synthetischen <b>Optionsscheinen</b>, in beide Richtungen und mit Glattstellung am Abend.',
+        'Für die beiden gemessenen Kanten passt das nicht – sie handeln den Basiswert, nur Long und über Nacht –, deshalb verweigert der Backtest dort die Auskunft; sie misst der Autopilot nachts auf dem Kursarchiv.',
+        'Historische Nachrichten gibt es nicht, getestet wird der technische Kern.',
+        'Der Belegstand jeder Strategie steht auf der Pille <b>Strategien</b> – der Backtest ist ein Rechenwerkzeug, kein Urteil.'
+      ]
+    },
+    'regeln.watchlist': {
+      titel: 'Was in jeder Runde geprüft wird',
+      punkte: [
+        'Die gemessenen 60-Minuten-Einstiege schauen zusätzlich in den gewählten Beobachtungs-Pool (Vorgabe: 99 Werte) – daraus rotieren zwölf je Runde, damit ein Scan nicht in Kursabrufe ausartet.'
+      ]
+    },
+    'werkzeuge.explorer': {
+      titel: 'Was der Aktien-Explorer zeigt',
+      punkte: [
+        'In der Detail-Ansicht: Chart von 1 Tag bis Max., Kennzahlen, News, „Analyse anfordern“ und „Zur Handels-Watchlist“ (dann handeln die Strategien den Wert mit).'
       ]
     },
     'regeln.mf.momentum': {
@@ -864,7 +942,10 @@
         'Gekauft werden <b>Aktien</b>; mit Hebelscheinen auf 21 Tage ist eine Haltedauer von drei Monaten nicht darstellbar, der Zeitwertverfall frisst sie auf.',
         '<b>Der größte Rückschlag lag bei 52 Prozent</b> (2008). Das ist kein ruhiges Investment. Wer bei so einem Einbruch aussteigt, hat den Effekt nicht – er entsteht gerade dadurch, dass man dabeibleibt.',
         '<b>In 8 von 22 Jahren war das Depot schlechter als der Markt.</b> 2024 lag es bei −0,1 % gegen +7,4 %. Momentum verliert typischerweise genau dann, wenn der Markt scharf dreht.',
-        '<b>Das Universum enthält nur Firmen, die es heute noch gibt.</b> Pleiten und Übernahmen fehlen in den Daten. Der Vergleich läuft gegen den Durchschnitt derselben Werte, was das dämpft, aber nicht aufhebt. Der gemessene Vorsprung ist eher eine Obergrenze.'
+        '<b>Das Universum enthält nur Firmen, die es heute noch gibt.</b> Pleiten und Übernahmen fehlen in den Daten. Der Vergleich läuft gegen den Durchschnitt derselben Werte, was das dämpft, aber nicht aufhebt. Der gemessene Vorsprung ist eher eine Obergrenze.',
+        /* Stufe 3 (03.09.2026): der erste Satz von #mfErklaerung, woertlich. Sichtbar
+         * geblieben ist dort der zweite - die Rueckschlag-Zahl ist eine Messaussage. */
+        'Vergleicht alle Werte des Universums <b>miteinander</b> und hält das stärkste Zehntel – kein Chartmuster, nur eine Rangfolge alle drei Monate.'
       ],
       fuss: 'Alles hier ist Simulation. Es wird nichts gekauft und nichts verkauft.'
     },
@@ -936,7 +1017,16 @@
       titel: 'Warum aus der Trend-Güte hier keine Order wird',
       punkte: [
         'Warum aus einer guten Trend-Güte hier keine Order wird (Wunsch #58): Genau das ist gemessen worden – und durchgefallen. Der Trendkanal als Handelsbedingung kostete −0,17 Prozentpunkte je Trade bei t = −4,1 (Abschnittskanal-Studie): Er ist nicht neutral, sondern schädlich. Deshalb steht die Güte hier als Beschreibung des Moments und nicht als Auslöser.',
-        'Und warum „zu wenig Historie“ stehen bleibt: Das ist keine Bequemlichkeit, sondern die Fallzahl. Für ein Urteil über eine Regel braucht es rund 30 Fälle je Wert; auf 5.000 Kerzen findet der Detektor etwa sechs. Bei sechs Fällen kippt das Vorzeichen des Mittels schon, wenn man nur die Abtastdichte ändert. Eine Order, die trotzdem ausgelöst wird, ist deshalb nicht mutiger als eine gemessene – sie ist nur ungemessen.'
+        'Und warum „zu wenig Historie“ stehen bleibt: Das ist keine Bequemlichkeit, sondern die Fallzahl. Für ein Urteil über eine Regel braucht es rund 30 Fälle je Wert; auf 5.000 Kerzen findet der Detektor etwa sechs. Bei sechs Fällen kippt das Vorzeichen des Mittels schon, wenn man nur die Abtastdichte ändert. Eine Order, die trotzdem ausgelöst wird, ist deshalb nicht mutiger als eine gemessene – sie ist nur ungemessen.',
+        /* Stufe 3 (03.09.2026): die Textwand ueber der Tabelle, woertlich. Sichtbar
+         * geblieben ist die Zusicherung "Beobachtung, kein Handel" und das URTEIL -
+         * das liest wendeui.js aus studienurteile.js, es steht nicht hier.
+         * Wie bei den zwei Punkten darueber sind nur die AUSZEICHNUNGEN weggefallen
+         * (kein Markup in diesem Eintrag - eine Zusicherung haelt das fest). */
+        'Diese Seite zeigt zuerst den laufenden Trend und seine drei Eigenschaften – Richtung, Güte, Breite – genau die drei, die auch der Aktien-Explorer zu einem Kanal nennt, aus derselben Rechnung.',
+        'Der Trendwechsel steht daneben als das, was er ist: ein Sonderfall des Trends, nämlich der Moment, in dem ein junger Abschnitt gegen den Vortrend dreht (Wunsch #58).',
+        'Dieser Detektor (dein Winkel-Vorschlag aus #33) war der einzige Teilüberlebende der Trendwende-Studie – aber ein guter Teil seines Vorsprungs war Tageszeit-Effekt, und die 1-Minuten-Basis war mit 7 Tagen zu kurz für ein Urteil. Die App sammelt seit 8.23.25 jede Nacht 1-Minuten-Kurse; in 4–6 Wochen wird sauber nachgemessen. Bis dahin zeigt diese Seite live, was der Detektor sieht – zum Spielen und Beobachten, genau wie vorgeschlagen.',
+        'Sekunden-Kerzen (1/5/10 s) sind mit der Kursquelle nicht möglich – Yahoo liefert feinstens 1 Minute, und nur 7 Tage zurück. Geprüft werden die 15 Standard-Werte plus deine Watchlist; der Winkel zur Horizontalen und die Drehung gegen den Vortrend entsprechen exakt der Studien-Rechnung.'
       ]
     }
   });
