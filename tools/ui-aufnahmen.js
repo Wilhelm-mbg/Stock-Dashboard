@@ -30,6 +30,27 @@ fs.mkdirSync(ZIEL, { recursive: true });
 const TESTROOT = fs.mkdtempSync(path.join(os.tmpdir(), 'md-ui-aufnahmen-'));
 app.setPath('userData', path.join(TESTROOT, 'userdata'));
 app.setPath('downloads', path.join(TESTROOT, 'downloads'));
+
+/* --kunstdaten: den Store der ISOLIERTEN Instanz vorab mit einem Depot fuellen, das
+ * zwei laufende Buecher, eine offene Intraday-Position und 20 Verlaufspunkte hat.
+ * Ohne das zeigt jede Aufnahme nur Leerzustaende - und eine Gestaltung, von der man
+ * nur den leeren Fall gesehen hat, ist unbelegt.
+ * Geschrieben wird ausschliesslich in das frische userData unter %TEMP%; der
+ * Datenordner und die installierte App werden nie beruehrt. Die Zahlen sind
+ * ERFUNDEN und als solche benannt (tools/kunstdepot.js). */
+const KUNSTDATEN = process.argv.indexOf('--kunstdaten') > -1;
+if (KUNSTDATEN) {
+  const sd = path.join(TESTROOT, 'userdata', 'store');
+  fs.mkdirSync(sd, { recursive: true });
+  const KD = require(path.join(__dirname, 'kunstdepot.js'));
+  const jetzt = Date.now();
+  fs.writeFileSync(path.join(sd, 'depot.json'), JSON.stringify(KD.bauen(jetzt)));
+  /* Die Kostenrunden wohnen in einem EIGENEN Store neben dem Depot. Sie in
+   * depot.json zu legen genuegt nicht: der dort vorgesehene Uebernahmeweg laeuft
+   * beim Start ins Leere (siehe Uebergabe oberflaeche-stufe2, Befund 2). */
+  fs.writeFileSync(path.join(sd, 'kostenmessung.json'), JSON.stringify(KD.kostenmessung(jetzt)));
+  console.log('Kunstdaten in den Test-Store geschrieben: ' + sd);
+}
 /* Ohne diese Schalter pausiert Chromium verdeckte Fenster - eine pausierte Seite
  * liefert leere Aufnahmen. */
 app.commandLine.appendSwitch('disable-features', 'CalculateNativeWinOcclusion');

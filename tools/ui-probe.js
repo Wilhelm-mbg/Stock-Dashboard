@@ -78,6 +78,36 @@ async function probe(win) {
       await new Promise((r) => setTimeout(r, 150));
     }
   }
+  /* ---- Verhaltenstest: der Intraday-Bereich (Oberflaeche Stufe 2) ----
+   * Ist die Intraday-Strategie aus, wird der Behaelter AUSGEBLENDET - und zwar per
+   * hidden, nicht durch Entfernen: depot.js render() schreibt ohne Null-Pruefung in
+   * #depotStats, messband.js haengt sein Band als erstes Kind in #sub-depot. Ein
+   * Umbau, der die Elemente herausnimmt, wuerde beides STILL brechen - kein
+   * Textmarken-Test im Quelltext kann das sehen.
+   * Geprueft wird der Zusammenhang, nicht ein fester Zustand: hidden genau dann,
+   * wenn die Strategie aus ist. In der frischen Instanz ist sie aus (Vorgabe), mit
+   * tools/ui-aufnahmen.js --kunstdaten an - dieselbe Zusicherung deckt beide Faelle
+   * ab und hat damit ihre eigene Positivkontrolle. */
+  const bereich = await js("(function () {" +
+    "var el = document.getElementById('intradayBereich');" +
+    "var rs = window.DepotAPI && window.DepotAPI.regelStatus ? window.DepotAPI.regelStatus() : null;" +
+    "return { da: !!el, hidden: el ? !!el.hidden : null, an: rs ? !!rs.intradayAn : null," +
+    " stats: !!document.getElementById('depotStats')," +
+    " messband: !!document.getElementById('sub-depot')," +
+    " karten: ['buchMomentumKopf', 'buchDriftKopf', 'buchIntradayKopf']" +
+    "   .filter(function (i) { return !!document.getElementById(i); }).length }; })()");
+  if (!bereich.da) probleme.push('#intradayBereich fehlt im DOM');
+  else if (bereich.an === null) probleme.push('DepotAPI.regelStatus() antwortet nicht - Zustand nicht pruefbar');
+  else if (bereich.hidden === bereich.an) {
+    probleme.push('Intraday-Bereich: hidden=' + bereich.hidden + ' bei intradayAn=' + bereich.an +
+      ' - er muss genau dann versteckt sein, wenn die Strategie aus ist');
+  }
+  if (!bereich.stats) probleme.push('#depotStats steht nicht mehr im DOM - render() schriebe ins Leere');
+  if (!bereich.messband) probleme.push('#sub-depot steht nicht mehr im DOM - messband.js faende seinen Anker nicht');
+  if (bereich.karten !== 3) probleme.push('Es stehen ' + bereich.karten + ' statt 3 Buecher-Karten im DOM');
+  console.log('  Intraday-Bereich: hidden=' + bereich.hidden + ', Strategie an=' + bereich.an +
+    ', Karten=' + bereich.karten);
+
   const seitenFehler = await js('window.__probe.fehler.slice(0, 20)');
   /* Ein abgebrochenes init() faengt depot.js selbst ab und meldet es NUR im
    * Warnband - die Schaltung funktioniert dann trotzdem, und genau so waere der

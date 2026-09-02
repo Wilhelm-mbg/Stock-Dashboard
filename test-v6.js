@@ -12277,6 +12277,242 @@ console.log('\nAlpaca-Paper als zweites Kosten-Gefaess (02.09.2026)');
 })();
 
 
+console.log('\n64) Bestand & Kopfzeile (Oberflaeche Stufe 2, 03.09.2026)');
+(function () {
+  var html = fs.readFileSync(__dirname + '/index.html', 'utf8');
+  var dep = fs.readFileSync(__dirname + '/depot.js', 'utf8');
+  var mfd = fs.readFileSync(__dirname + '/mfdepot.js', 'utf8');
+  var shell = fs.readFileSync(__dirname + '/app-shell.js', 'utf8');
+  /* Kommentare weg, bevor im Quelltext gesucht wird: die Erklaerungen zu dieser Stufe
+   * NENNEN das alte Muster "M – · D –", das sie verbieten. Genau daran ist hier schon
+   * einmal eine Klinke im Bauplan gruen und im Repo rot geworden
+   * (wiki/fehlerformen.md, "Sperrklinke frisst ihren Kommentar"). */
+  var depO = ohneKommentare(dep);
+  var mfdO = ohneKommentare(mfd);
+  var shellO = ohneKommentare(shell);
+  var bestand = html.slice(html.indexOf('<div id="bestandBlock">'), html.indexOf('<!-- /bestandBlock -->'));
+  function zaehle(id) { return (html.match(new RegExp('id="' + id + '"', 'g')) || []).length; }
+
+  /* ---- (a) Drei Karten, feste Kennungen, keine Zahl im Markup ----------------
+   * Der ganze Zweck der Zeile ist, in fuenf Sekunden zu zeigen, was die Buecher
+   * halten. Eine Zahl, die im Markup steht statt aus den Daten zu kommen, waere
+   * dabei die schlimmste Form von Fehler: sie sieht richtig aus und ist es nie
+   * wieder. */
+  ['buecherZeile', 'buchMomentum', 'buchDrift', 'buchIntraday',
+   'buchMomentumKopf', 'buchDriftKopf', 'buchIntradayKopf',
+   'zuletztGetan', 'buecherChart', 'buecherLegende', 'intradayBereich'].forEach(function (id) {
+    ok(zaehle(id) === 1, 'Kennung ' + id + ' steht genau einmal im Markup', zaehle(id));
+  });
+  ['buchMomentum', 'buchDrift', 'buchIntraday'].forEach(function (id) {
+    ok(bestand.indexOf('id="' + id + '"') > -1, 'Die Karte ' + id + ' steht im Bestand-Block');
+  });
+  /* Ein Schreiber je Karte. Zwei Schreiber auf einem Element sind die Stelle, an der
+   * zwei verschieden alte Staende derselben Zahl entstehen - dieselbe Form wie das
+   * Cockpit, das die Buecher gegen eine andere Konstante rechnete als die Buecher. */
+  ok(/buchMomentumKopf/.test(mfdO) && /buchDriftKopf/.test(mfdO) && !/buchIntradayKopf/.test(mfdO),
+     'mfdepot.js schreibt die zwei Mittelfrist-Karten - und nur sie');
+  ok(/buchIntradayKopf/.test(depO) && !/buchMomentumKopf/.test(depO) && !/buchDriftKopf/.test(depO),
+     'depot.js schreibt die Intraday-Karte - und nur sie');
+  ok(/window\.MFDepot && window\.MFDepot\.karten/.test(depO) && /karten: karten/.test(mfdO),
+     'depot.js BESTELLT die zwei Buch-Karten bei mfdepot.js, es formuliert sie nicht selbst');
+  /* Der Inhalt eines Karten-Kopfes im Markup ist der LEERZUSTAND. Er darf keine
+   * einzige Ziffer tragen: was noch nicht gerechnet ist, darf auch nicht als Zahl
+   * dastehen - und eine Ziffer hier waere der erste Schritt zur fest verdrahteten
+   * Kennzahl. Der Ausschnitt endet an der Detail-Klappe bzw. am naechsten
+   * Abschnitts-Kommentar, damit die Ueberschrift der NAECHSTEN Karte (mit ihrer
+   * gemessenen Konfiguration, also mit Ziffern) nicht mitgelesen wird. */
+  function kopfInhalt(id) {
+    var i = html.indexOf('id="' + id + '">');
+    if (i < 0) return null;
+    var rest = html.slice(i);
+    var e1 = rest.indexOf('<details'), e2 = rest.indexOf('<!-- ====');
+    var e = Math.min(e1 < 0 ? 1e9 : e1, e2 < 0 ? 1e9 : e2);
+    return rest.slice(0, e === 1e9 ? 400 : e);
+  }
+  ['buchMomentumKopf', 'buchDriftKopf', 'buchIntradayKopf'].forEach(function (id) {
+    var inh = kopfInhalt(id);
+    ok(inh && inh.length > 40 && !/\d/.test(inh),
+       'Der Leerzustand von ' + id + ' traegt keine einzige Ziffer',
+       inh ? (inh.match(/\d+/) || ['keine'])[0] : 'nicht gefunden');
+  });
+  /* Die Positionstabellen sind nicht verschwunden, sie stehen in je einer Klappe
+   * unter ihrer Karte - und behalten ihren Leerzustand im Markup (K19). */
+  ok(/id="buchMomentum"[\s\S]{0,900}?<details class="how buch-detail">[\s\S]{0,200}?id="mfdMomentum"/.test(bestand),
+     'Die Momentum-Positionen liegen in einer Klappe UNTER ihrer Karte');
+  ok(/id="buchDrift"[\s\S]{0,900}?<details class="how buch-detail">[\s\S]{0,200}?id="mfdDrift"/.test(bestand),
+     'Die Drift-Positionen liegen in einer Klappe UNTER ihrer Karte');
+  /* Der Korb-Text ist eine Messaussage und wird WOERTLICH weitergereicht - er steht
+   * jetzt in der Klappe statt unter den Kacheln, aber Wort fuer Wort gleich. */
+  ok(/Median-Tagesumsatz ≥ '/.test(mfd) && /Konfiguration wie gemessen \(Studie 02\.09\.2026\)/.test(mfd) &&
+     /Vorwärtstest '/.test(mfd),
+     'Der Korb-Text steht woertlich in der Detail-Klappe (Korb, Konfiguration, Vorwaertstest)');
+
+  /* ---- (b) Die Kopfzeile spricht Deutsch --------------------------------------
+   * "M – · D –" liess DREI Zustaende in einem Zeichen zusammenfallen: Buch aus,
+   * kein Verlaufspunkt, kein Bezugswert. Wer den Strich sah, wusste nichts. */
+  ok(!/M\s*–\s*·\s*D\s*–/.test(depO) && !/'M ' \+/.test(depO) && !/' · D ' \+/.test(depO),
+     'Kopfzeile: das Muster "M – · D –" steht nirgends mehr im Code');
+  var bkt = depO.slice(depO.indexOf('function buchKopfText'), depO.indexOf('function scanKopfText'));
+  ok(bkt.length > 200, 'Kopfzeile: buchKopfText() ist als Block auffindbar', bkt.length);
+  ok(/label \+ ' aus'/.test(bkt), 'cockpitRender kennt den Zustand "Buch aus"');
+  ok(/label \+ ' noch kein Stand'/.test(bkt), 'cockpitRender kennt den Zustand "noch kein Stand"');
+  ok(/label \+ ' ' \+ pz1\(/.test(bkt), 'cockpitRender kennt den Zustand "an" und nennt den Prozentstand');
+  ok(/buchKopfText\('momentum', 'Momentum'\)/.test(depO) && /buchKopfText\('drift', 'Drift'\)/.test(depO),
+     'Kopfzeile: #ckBooks nennt beide Buecher beim Namen');
+  var skt = depO.slice(depO.indexOf('function scanKopfText'), depO.indexOf('function cockpitRender'));
+  ok(/'Intraday aus'/.test(skt) && /'kein Scan heute'/.test(skt) && /'letzter Scan '/.test(skt),
+     'Kopfzeile: #ckScan kennt letzten Scan, "kein Scan heute" und "Intraday aus"');
+  /* Der Scan laeuft bei abgeschalteter Strategie WEITER (Schattenbuch). "Intraday
+   * aus" allein waere hier also unvollstaendig - die Uhrzeit gehoert dazu. */
+  ok(/Schattenbuch/.test(skt),
+     'Kopfzeile: bei abgeschalteter Strategie nennt #ckScan trotzdem den Schattenbuch-Scan');
+  ok(/<span class="ckl">Intraday-Depot<\/span><b id="ckEquity">/.test(html),
+     'Kopfzeile: #ckEquity heisst nach der Strategie, die das Depot fuehrt');
+  /* Das Wort Simulation darf nicht verschwinden - es soll nur nicht laenger der Name
+   * des Depots sein. */
+  ok(/Simulation mit virtuellem Kapital – keine Anlageberatung/.test(bestand) &&
+     /Alles Simulation, keine Anlageberatung/.test(bestand),
+     'Das Wort Simulation steht weiter sichtbar am Bestand');
+
+  /* ---- (c) Eine Statuszeile je Betrieb-Klappe, jede mit benannter Quelle ------ */
+  var betrieb = html.slice(html.indexOf('<div class="sub" id="sub-betrieb">'), html.indexOf('<!-- /sub-betrieb -->'));
+  var klappen = (betrieb.match(/data-klappe="[a-z]+"/g) || []).map(function (z) { return z.slice(13, -1); });
+  ok(klappen.length === 11, 'Der Maschinenraum hat elf Klappen', klappen.join(' '));
+  klappen.forEach(function (n) {
+    var re = new RegExp('<summary>[^<]+<span class="klappe-stand" id="kstand-' + n + '"><\\/span><\\/summary>');
+    ok(re.test(betrieb), 'Klappe ' + n + ': genau eine Statuszeile im Titel, hinter dem Titeltext');
+  });
+  ok((betrieb.match(/class="klappe-stand"/g) || []).length === klappen.length,
+     'Es gibt keine Statuszeile ohne Klappe und keine Klappe ohne Statuszeile',
+     (betrieb.match(/class="klappe-stand"/g) || []).length);
+  ok(/#sub-betrieb details\[data-klappe\] > summary \{ display: flex; \}/.test(html) &&
+     /\.klappe-stand:empty \{ display: none; \}/.test(html),
+     'Eine leere Statuszeile beansprucht keinen Platz und taeuscht keinen Zustand vor');
+
+  var tabelle = shell.slice(shell.indexOf('var KLAPPEN_STAND = {'), shell.indexOf('/* /KLAPPEN_STAND */'));
+  ok(tabelle.length > 500, 'KLAPPEN_STAND ist als Block auffindbar', tabelle.length);
+  var tabelleO = ohneKommentare(tabelle);
+  ok((tabelleO.match(/^ {4}[a-z]+:/gm) || []).length === klappen.length,
+     'KLAPPEN_STAND hat genau einen Eintrag je Klappe',
+     (tabelleO.match(/^ {4}[a-z]+:/gm) || []).length);
+  klappen.forEach(function (n) {
+    ok(new RegExp('\\n {4}' + n + ':').test(tabelleO), 'KLAPPEN_STAND kennt die Klappe ' + n);
+  });
+  /* DIE Regel dieser Stufe: keine Statuszeile wird mit einem festen Text
+   * beschrieben. Ein "return 'laeuft';" saehe aus wie ein Zustand und waere keiner.
+   * Erlaubt ist eine Beschriftung MIT einer gelesenen Zahl daneben. */
+  ok(!/return\s+'[^']*';/.test(tabelleO),
+     'Keine Statuszeile wird mit einem reinen String-Literal beschrieben');
+  function eintrag(quelle, name) {
+    var i = quelle.indexOf('\n    ' + name + ':');
+    if (i < 0) return '';
+    var rest = quelle.slice(i + 1);
+    var j = rest.slice(1).search(/\n {4}[a-z]+:|\n {2}\};/);
+    return j < 0 ? rest : rest.slice(0, j + 1);
+  }
+  ['archiv', 'auswertung', 'kosten', 'monitor', 'regelbuch', 'scoreboard',
+   'strategieregister', 'wende'].forEach(function (n) {
+    var e = eintrag(tabelleO, n);
+    ok(/window\.[A-Za-z]+/.test(e), 'Statuszeile ' + n + ': liest eine benannte Quelle', e.length);
+  });
+  ['stratchart', 'berichte', 'strategieeingabe'].forEach(function (n) {
+    ok(new RegExp('\\n {4}' + n + ': null,?\\n').test(tabelleO),
+       'Werkzeug ohne Zustand: ' + n + ' traegt ausdruecklich null');
+  });
+  /* Guenstige Quellen heisst: kein Nachladen. Weder IPC noch fetch duerfen in dieser
+   * Tabelle stehen - sonst laedt eine Anzeige, die zeigen soll was schon da ist,
+   * beim Programmstart genau das nach, was der Alltag nicht braucht. */
+  ok(!/window\.api|fetch\(|storeGet|readProtokolle|messStrategien/.test(tabelleO),
+     'Keine Statuszeile laedt nach - nur Quellen, die ohnehin im Speicher stehen');
+  /* Und aktualisiert wird ueber die Ereignisse, die es schon gibt. */
+  ok(/\['quotes-updated', 'kanten-geladen', 'sub-changed', 'tab-changed'\]/.test(shellO) &&
+     !/setInterval\([^)]*klappenStandSetzen/.test(shellO),
+     'Die Statuszeilen haengen an vorhandenen Ereignissen, nicht an einem eigenen Zeitgeber');
+  /* Die zwei Auskuenfte, die es fuer diese Zeilen neu gibt, sind LESEND. */
+  ok(/protokollKennungen: function \(\) \{ return Object\.keys\(PROTOKOLL_KANTE\); \}/.test(dep),
+     'DepotAPI.protokollKennungen gibt nur die Namen heraus, eine Kopie');
+  ok(/registerStand: function \(\) \{ return REGISTER_N; \}/.test(fs.readFileSync(__dirname + '/scoreboard.js', 'utf8')),
+     'Scoreboard.registerStand ist eine reine Leseauskunft');
+
+  /* ---- (d) Der Intraday-Behaelter wird ausgeblendet, nie entfernt ------------- */
+  ok(/function intradayBereichZeigen/.test(depO),
+     'Es gibt genau eine Stelle, die den Intraday-Behaelter ein- und ausblendet');
+  var ibz = depO.slice(depO.indexOf('function intradayBereichZeigen'),
+                       depO.indexOf('function intradayBereichZeigen') + 400);
+  ok(/el\.hidden = !\(D\.intraday && D\.intraday\.enabled\);/.test(ibz),
+     'Der Behaelter haengt an D.intraday.enabled - an nichts sonst');
+  ok(!/removeChild|\.remove\(\)|innerHTML\s*=\s*''/.test(ibz),
+     'Ausgeblendet heisst ausgeblendet: nichts wird aus dem DOM genommen');
+  ok(depO.indexOf('intradayBereichZeigen();') > depO.indexOf('function render()') &&
+     depO.indexOf('intradayBereichZeigen();') < depO.indexOf('function intradayBereichZeigen'),
+     'render() blendet den Behaelter bei jedem Zeichnen richtig');
+  /* Die vier Bloecke, die drin liegen muessen - und die Reihenfolge, in der sie
+   * stehen. #depotStats bleibt IM DOM, auch wenn der Behaelter versteckt ist:
+   * depot.js schreibt ohne Null-Pruefung hinein, messband.js haengt sein Band als
+   * erstes Kind in #sub-depot. */
+  var iVon = bestand.indexOf('id="intradayBereich"');
+  var iBis = bestand.indexOf('<!-- /intradayBereich -->');
+  ok(iVon > -1 && iBis > iVon, 'Der Intraday-Behaelter ist im Markup abgegrenzt');
+  var ib = bestand.slice(iVon, iBis);
+  ['sub-depot', 'depotStats', 'equityChart', 'positionsPanel', 'bestandProtokoll', 'sub-protokoll'].forEach(function (id) {
+    ok(ib.indexOf('id="' + id + '"') > -1, 'Der Intraday-Behaelter haelt ' + id);
+  });
+  ok(/getElementById\('sub-depot'\)/.test(fs.readFileSync(__dirname + '/messband.js', 'utf8')) &&
+     /<div id="sub-depot">/.test(ib),
+     'messband.js findet seinen Anker #sub-depot weiterhin - jetzt im Intraday-Behaelter');
+  /* Die Buecher stehen VOR dem Intraday-Behaelter: sie handeln, er kann aus sein. */
+  ok(bestand.indexOf('id="buecherZeile"') < bestand.indexOf('id="zuletztGetan"') &&
+     bestand.indexOf('id="zuletztGetan"') < bestand.indexOf('id="buecherChart"') &&
+     bestand.indexOf('id="buecherChart"') < iVon,
+     'Reihenfolge im Bestand: Buecher, Zuletzt getan, Verlauf, dann das Intraday-Depot');
+
+  /* ---- Zuletzt getan: Handlungen, keine Prueflaeufe --------------------------- */
+  var hd = depO.slice(depO.indexOf('handlungen: function (n)'), depO.indexOf('protokollKennungen:'));
+  ok(hd.length > 400, 'DepotAPI.handlungen ist als Block auffindbar', hd.length);
+  ok(/D\.trades/.test(hd) && /D\.mfBuch/.test(hd) && /D\.driftBuch/.test(hd),
+     'handlungen() liest die drei Buecher');
+  ok(!/tuneLog/.test(hd),
+     'handlungen() liest NICHT das Journal - dort stehen auch Messungen und Umstellungen');
+  ok(/alle\.push\(\{ at: at, buch: buch, art: art,/.test(hd),
+     'handlungen() gibt jede Zeile als frisches Objekt heraus - nur Kopien');
+  ok(/betragArt/.test(hd),
+     'handlungen() sagt dazu, ob der Betrag ein Einsatz oder ein Ergebnis ist');
+  ok(/noch keine Handlung aufgezeichnet/.test(html) && /noch keine Handlung aufgezeichnet/.test(depO),
+     'Der Leerzustand steht im Markup UND im Renderer - eine leere Liste bleibt nie stumm');
+
+  /* ---- Der Verlauf: ein Bild, drei Buecher, das vorhandene Zeichenwerk -------- */
+  var bv = depO.slice(depO.indexOf('function renderBuecherVerlauf'), depO.indexOf('function intradayBereichZeigen'));
+  ok(bv.length > 400, 'renderBuecherVerlauf ist als Block auffindbar', bv.length);
+  ok(/drawLines\(svg, gezeigt, leg, 0, \{ unit: ' %'/.test(bv) && !/svg\.innerHTML/.test(bv),
+     'Der Buecher-Verlauf nutzt das vorhandene Mehrserien-Zeichenwerk - kein zweiter Zeichner');
+  ok(/reihe\('momentum', 'startM'/.test(bv) && /reihe\('drift', 'startD'/.test(bv) &&
+     /p\[startFeld\] \|\| \(buch && buch\.start\)/.test(bv) && /START_CAPITAL/.test(bv) &&
+     !/\/\s*\d\d+/.test(bv),
+     'Jede Linie rechnet gegen ihr EIGENES Startkapital - nie gegen eine Zahl im Code');
+  ok(/pts\.length >= 2/.test(bv),
+     'Eine Serie mit einem einzigen Punkt wird nicht gezeichnet - sie behauptete sonst einen Verlauf');
+  ok(/Abgeschaltet und deshalb nicht gezeichnet/.test(bv),
+     'Ein abgeschaltetes Buch verschwindet nicht stillschweigend, es wird benannt');
+
+  /* ---- Warum dieser Abschnitt VOR der Spannen-Studie steht --------------------
+   * Ihr Leck-Test haengt process.stdout.write um (probe.js selbsttest) und gibt es
+   * erst NACH einem await zurueck. In diesem Fenster laeuft der ganze uebrige
+   * Dateirumpf - und jede Zeile, die er ausgibt, landet im Sammelpuffer des
+   * Leck-Tests statt im Protokoll. Am 03.09.2026 hat das 100 gruene und EINE rote
+   * Zusicherung verschluckt; sichtbar blieb nur die Zahl am Ende. Das ist die
+   * Fehlerform "die Pruefung, die niemand ansieht" - eine Suite, die ihr Ergebnis
+   * nicht mehr zeigt, ist keine Suite mehr.
+   * Diese Klinke haelt fest, dass hinter dem Leck-Test kein Abschnitt mehr steht.
+   * Gegenprobe: einen console.log-Aufruf dahinter setzen -> rot. */
+  var eigen = fs.readFileSync(__dirname + '/test-v6.js', 'utf8');
+  var iLeck = eigen.indexOf('P1.selbsttest()');
+  var iEnde = eigen.indexOf('Promise.all(offeneProben)');
+  ok(iLeck > 0 && iEnde > iLeck, 'Der Leck-Test und das Dateiende sind auffindbar');
+  var danach = eigen.slice(eigen.indexOf(String.fromCharCode(125, 41, 41, 59), iLeck), iEnde);
+  ok(!/console\.log\(/.test(danach),
+     'Hinter dem Leck-Test steht kein Abschnitt mehr - sein stdout-Haken verschluckt sonst jede Ausgabe');
+})();
+
 /* ================= Block 35: Spannen-Studie - der Zugang verlaesst die Studie nicht =======
  *
  * studien/vorregistrierung-2026-09-02-spannen-historisch/ ruft eine fremde Kurstafel mit

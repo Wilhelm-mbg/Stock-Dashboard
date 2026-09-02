@@ -3805,7 +3805,11 @@
      * Legendeneintrag ohne Linie stehen bleiben und einen Verlauf behaupten. */
     var gezeigt = serien.filter(function (s) { return s.pts.length >= 2; });
     var zuKurz = serien.filter(function (s) { return s.pts.length < 2; }).map(function (s) { return s.name; });
-    drawLines(svg, gezeigt, leg, 0, { unit: ' %' });
+    /* padR: die Endbeschriftung steht RECHTS neben dem letzten Punkt. Mit dem
+     * Vorgabewert 52 px passte 'Momentum' nicht hinein - auf der ersten Aufnahme
+     * stand dort 'Momentu'. Der Wert ist an der laengsten Beschriftung gemessen,
+     * nicht geraten. */
+    drawLines(svg, gezeigt, leg, 0, { unit: ' %', padR: 92 });
     if (leg) {
       var hinweis = [];
       if (aus.length) hinweis.push((aus.length === 1 ? 'Abgeschaltet und deshalb nicht gezeichnet: ' : 'Abgeschaltet und deshalb nicht gezeichnet: ') + aus.join(', ') + '.');
