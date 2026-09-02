@@ -12685,10 +12685,32 @@ console.log('\n64) Bestand & Kopfzeile (Oberflaeche Stufe 2, 03.09.2026)');
   /* ---------- (b) Verhalten: der Leck-Test ---------- */
   probe((async function () {
     var P1 = require(SP + '/probe.js');
-    var r = await P1.selbsttest();
+    /* Vor dem Selbsttest einen eigenen Horcher setzen. probe.js bindet beim Eintritt das
+     * JETZIGE process.stdout.write - also diesen hier - und ruft es aus seinem Haken
+     * heraus wieder auf. Reicht der Haken durch, kommt unten etwas an; schluckt er, bleibt
+     * der Horcher leer. Das ist der Zahn: der Haken steht ueber einem await, und in diesem
+     * Fenster laeuft der uebrige Dateirumpf weiter. Am 03.09.2026 gab ein Abschnitt hinter
+     * dieser Stelle 102 Zeilen aus, von denen KEINE im Protokoll erschien - sichtbar blieb
+     * nur die Zahl am Ende, ohne den Namen der roten Zusicherung (wiki/fehlerformen.md,
+     * "die Pruefung, die niemand ansieht"). */
+    var durchgereicht = '';
+    var vorher = process.stdout.write;
+    process.stdout.write = function (chunk, enc, cb) {
+      durchgereicht += String(chunk);
+      return vorher.call(process.stdout, chunk, enc, cb);
+    };
+    var r;
+    try { r = await P1.selbsttest(); } finally { process.stdout.write = vorher; }
     ok(!r.leck, 'Leck-Test: erfundene Zugangswerte tauchen in KEINER Ausgabe auf, auch wenn der Server die Kopfzeilen zurueckspiegelt');
     ok(/\[Zugang\]/.test(r.ausgabe) && /\[Geheimnis\]/.test(r.ausgabe),
        'Der Leck-Test hat die Ausgabepfade wirklich durchlaufen (beide Platzhalter stehen drin)');
+    /* Die Klinke gegen die verschluckte Suite. Gegenprobe: in probe.js selbsttest() den
+     * Aufruf von echtesSchreiben() streichen - dann wird genau diese Zeile rot, und zwar
+     * als einzige. Sie loest die Zwischenloesung ab, die verlangte, dass hinter dem
+     * Leck-Test ueberhaupt kein Abschnitt mehr steht. */
+    ok(durchgereicht.indexOf('Selbsttest-Rumpf:') > -1 && durchgereicht.indexOf('Selbsttest-Kopf:') > -1,
+       'Der stdout-Haken des Leck-Tests reicht die Ausgabe DURCH, statt sie zu schlucken - sonst verschwindet jeder Abschnitt, der waehrend seines await schreibt',
+       durchgereicht.length);
   })());
 
   /* ---------- Ausschlussregeln: nie auf die Zielgroesse ---------- */

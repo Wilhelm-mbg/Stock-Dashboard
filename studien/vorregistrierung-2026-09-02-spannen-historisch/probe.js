@@ -157,7 +157,18 @@ async function selbsttest() {
   S.testZugangSetzen(MARKE_ID, MARKE_GEHEIM);
   var gesammelt = '';
   var echtesSchreiben = process.stdout.write.bind(process.stdout);
-  process.stdout.write = function (chunk) { gesammelt += String(chunk); return true; };
+  /* Der Haken SAMMELT und REICHT DURCH. Nur zu sammeln waere kuerzer, verschluckt aber
+   * jede fremde Ausgabe, die waehrend des await weiter unten anfaellt: test-v6.js ruft
+   * selbsttest() aus einem async-IIFE, und der uebrige Dateirumpf laeuft in diesem
+   * Fenster weiter. Am 03.09.2026 landeten so 102 Zeilen eines nachfolgenden Abschnitts
+   * im Sammelpuffer statt im Protokoll - sichtbar blieb nur "1 TEST(S) FEHLGESCHLAGEN"
+   * ohne den Namen der roten Zusicherung (wiki/fehlerformen.md, "die Pruefung, die
+   * niemand ansieht"). Der Leck-Test bleibt davon unberuehrt scharf: `gesammelt`
+   * enthaelt weiter ALLES, was durch diesen Haken geht. */
+  process.stdout.write = function (chunk, enc, cb) {
+    gesammelt += String(chunk);
+    return echtesSchreiben(chunk, enc, cb);
+  };
   /* Ein Server, der die Kopfzeilen im Rumpf zurueckspiegelt - der schlimmste Fall. */
   var boese = async function (url, opt) {
     var kopf = JSON.stringify((opt && opt.headers) || {});
