@@ -137,7 +137,7 @@ Bedienoberfläche verschwindet, liegt in Betrieb in einer Klappe.
 | Stufe | Inhalt | Zustand |
 |---|---|---|
 | **1 Umzug** | 5 → 3 Reiter; Betrieb-Pille; Bestand nach Heute; Papiere/Protokoll nach Heute; Klinken K1–K26 (§5) umschreiben; keine Textänderung, keine Löschung | ✅ **geliefert 02.09.** (`uebergabe/oberflaeche-stufe1-2026-09-02.md`) — 3 Reiter / 9 Pillen, elf Betrieb-Klappen; 36 Klinken umgeschrieben oder neu, 37 Gegenproben rot; ui-probe + a11y-Sonde + `npm test` grün. **Ohne Statuszeile im `<summary>`** — die ist Gestaltung und liegt in Stufe 2. |
-| **2 Bestand & Kopfzeile** | Bestand-Block auf Heute gestalten (eine Bücher-Karte: Wert, Positionen, letzte Handlung, nächste Umschichtung; Intraday-Depot nur wenn ein; Depotkurve über alle Bücher); Cockpit in Worten statt „M – · D –" | offen |
+| **2 Bestand & Kopfzeile** | Bestand-Block auf Heute gestalten (eine Bücher-Karte: Wert, Ergebnis, Positionen, letzte Handlung, nächste Umschichtung; Intraday-Depot nur wenn ein; Depotverlauf über alle Bücher); Cockpit in Worten statt „M – · D –"; **Statuszeile im `<summary>` jeder Betrieb-Klappe** (aus Stufe 1 hierher verschoben, Übergabe §6.1) | **beauftragt 02.09. (nachts)** |
 | **3 Schnitt** | Erklärtexte hinter i-Knöpfe, Fußzeile einmal; Stunden-Strategie-Reste ins Archiv (Balken „Depot gegen Buy & Hold", Backtest-Voreinstellung `daily`); Trendfinder als Archivzeile; Mittelfrist-Parameter als Text; Strategieregister: Beschreibungen ganz, Umlaute | offen |
 | **4 Archiv-Grafik, Werkzeug-Politur** | eine Grafik „wie vollständig ist das Archiv" statt Tabelle; Explorer/Schein-Finder auf Wilhelms Zuruf | offen |
 
