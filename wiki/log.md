@@ -2,6 +2,10 @@
 
 *Nur was sich am Wiki ändert. Die Projekt-Chronologie steht im Archiv `PROJEKTSTAND.md`.*
 
+- 03.09.2026 Release v8.38.0 (Wache): Oberfläche auf drei Bildschirme umgebaut (Heute, Regeln,
+  Werkzeuge), „Heute" zeigt oben die drei Bücher mit Wert, Ergebnis und letzter Handlung, die
+  Kopfzeile spricht jetzt Deutsch, und drei im Depot-Store liegengebliebene Kostenrunden zählen
+  wieder in der CFD-Kostenmessung mit.
 - 03.09.2026 Oberfläche Stufe 2 geliefert (Bau): [oberflaeche.md](oberflaeche.md) §4 Stufe 2 auf
   „geliefert“, §1 Cockpit-Nachtrag; [offene-auftraege.md](offene-auftraege.md) Zeile angelegt und
   gestrichen. Heute zeigt oben drei Buch-Karten, „Zuletzt getan“ und einen Verlauf über alle
