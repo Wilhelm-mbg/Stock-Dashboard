@@ -1048,7 +1048,13 @@ console.log('\n17b) Oberflaeche: Altlasten und Verdrahtung');
   // 5) Trendwechsel-Beobachtung (Felix #33/#35)
   var q2 = fs.readFileSync(__dirname + '/quant.js', 'utf8');
   ok(/trendwechsel: trendwechsel/.test(q2), 'Trendwechsel: Detektor ist als reine Funktion exportiert');
-  ok(/id="sub-wende"/.test(h) && /data-sub="wende"/.test(h), 'Trendwechsel: eigener Unter-Reiter existiert');
+  /* 02.09.2026 (Stufe 1 des Umzugs): aus der Pille wurde die letzte Klappe im
+   * Betrieb - der Detektor ist widerlegt. Der Behaelter #sub-wende bleibt (wendeui.js
+   * zeichnet hinein), die Pille ist weg, und der Ausloeser heisst jetzt data-klappe
+   * statt data-sub. Geprueft wird beides, sonst wuerde ein Behaelter ohne Ausloeser
+   * still nie gefuellt. */
+  ok(/id="sub-wende"/.test(h) && /data-klappe="wende"/.test(h) && !/data-sub="wende"/.test(h),
+     'Trendwechsel: eigene Klappe im Betrieb, keine Pille mehr');
   ok(/Beobachtung, kein Handel/.test(h), 'Trendwechsel: der Reiter sagt ehrlich, dass nicht gehandelt wird');
   ok(/Sekunden-Kerzen \(1\/5\/10 s\) sind mit der Kursquelle nicht möglich/.test(h),
      'Trendwechsel: die Sekunden-Grenze der Datenquelle steht dabei');
@@ -1411,7 +1417,14 @@ console.log('\n17b) Oberflaeche: Altlasten und Verdrahtung');
     // Oberflaeche weg von der gemessenen Konfiguration (60m). Deshalb muss der
     // Wechsel sichtbar bleiben, nicht still passieren.
     var stcAlles = d3.slice(d3.indexOf('var stcState = null'), d3.indexOf('function drawStrategieChart'));
-    var panel = h3.slice(h3.indexOf('id="stratChartPanel"'), h3.indexOf('/tab-strategien'));
+    /* Der Strategie-Chart wohnt seit Stufe 1 des Umzugs (02.09.2026) als Klappe
+     * unter Werkzeuge -> Betrieb; die Endmarke des Reiters Regeln liegt jetzt DAVOR,
+     * ein slice dorthin waere leer und jede Pruefung darin still gruen. Der
+     * Ausschnitt endet deshalb an der naechsten Klappe. */
+    var stcVon = h3.indexOf('id="stratChartPanel"');
+    var stcBis = h3.indexOf('data-klappe="regelbuch"');
+    ok(stcVon > -1 && stcBis > stcVon, 'Strategie-Chart #52: das Panel ist im Markup abgegrenzt');
+    var panel = h3.slice(stcVon, stcBis);
     ok(/id="stcIv"/.test(panel) && /value="60m" selected/.test(panel),
        'Strategie-Chart #52: Kerzenlaenge waehlbar, 60m bleibt die Voreinstellung (so ist gemessen)');
     ok(/value="15m"[^>]*>[^<]*nur Ansicht/.test(panel) && /value="5m"[^>]*>[^<]*nur Ansicht/.test(panel),
@@ -3479,14 +3492,23 @@ console.log('\n36) Kostenhuerde des Produkts (Signalstudie 23.08.2026)');
      'Es gibt genau EINEN Strategie-Chart');
 
   /* Die drei Ergebnis-Ansichten lagen im Kurzfrist-Depot verstreut und beantworteten
-   * dieselbe Frage. Jetzt stehen sie als Bilanz bei der Regel, zu der sie gehoeren. */
+   * dieselbe Frage. Jetzt stehen sie als Bilanz bei der Regel, zu der sie gehoeren.
+   * Stufe 1 des Umzugs (02.09.2026): "bei der Regel" heisst seither Werkzeuge ->
+   * Betrieb, Klappe Regelbuch. Die geschuetzte Eigenschaft ist unveraendert und wird
+   * jetzt SCHAERFER geprueft - vorher konnte die Bilanz im Depot-Reiter nicht
+   * stehen, weil sie in Regeln stand; jetzt darf sie auch nicht in den Bestand-Block
+   * unter Heute rutschen, wo derselbe Denkfehler wiederkaeme. */
   var iBilanz = html.indexOf('id="regelBilanz"');
-  var regelnVon = html.indexOf('<div id="tab-strategien"'), regelnBis = html.indexOf('<!-- /tab-strategien -->');
-  var depotVon = html.indexOf('<div id="tab-depot"'), depotBis = html.indexOf('<!-- /tab-depot -->');
-  ok(iBilanz > regelnVon && iBilanz < regelnBis && !(iBilanz > depotVon && iBilanz < depotBis),
-     'Die Bilanz steht bei der Regel, nicht im Depot');
-  ok(html.indexOf('id="stcChart"') > regelnVon && html.indexOf('id="stcChart"') < regelnBis,
-     'Der Strategie-Chart steht ebenfalls im Reiter Regeln');
+  var betriebVon = html.indexOf('<div class="sub" id="sub-betrieb">');
+  var betriebBis = html.indexOf('<!-- /sub-betrieb -->');
+  var bestandVon = html.indexOf('<div id="bestandBlock">');
+  var bestandBis = html.indexOf('<!-- /bestandBlock -->');
+  ok(betriebVon > -1 && betriebBis > betriebVon && bestandVon > -1 && bestandBis > bestandVon,
+     'Betrieb-Panel und Bestand-Block sind im Markup abgegrenzt');
+  ok(iBilanz > betriebVon && iBilanz < betriebBis && !(iBilanz > bestandVon && iBilanz < bestandBis),
+     'Die Bilanz steht bei der Regel (Betrieb), nicht beim Bestand');
+  ok(html.indexOf('id="stcChart"') > betriebVon && html.indexOf('id="stcChart"') < betriebBis,
+     'Der Strategie-Chart steht ebenfalls im Betrieb, bei der Bilanz');
   ['tuneLog', 'patience', 'benchChart'].forEach(function (id) {
     ok(html.indexOf('id="' + id + '"') > iBilanz, 'Die Bilanz enthaelt ' + id);
   });
@@ -3547,18 +3569,31 @@ console.log('\n36) Kostenhuerde des Produkts (Signalstudie 23.08.2026)');
    * "Heute" (Struktur-Plan, Stufe C4) - ein eigener Reiter fuer EINE Ansicht war das
    * schwerste Ungleichgewicht der Leiste. Die Zahl ist der Wachhund; wer einen Reiter
    * ergaenzt ODER streicht, muss es hier benennen. */
+  /* Am 02.09.2026 gingen zwei weitere: Wilhelms Entscheid "drei Bildschirme"
+   * (wiki/oberflaeche.md §3). Vermoegen ist der Bestand-Block ganz oben unter Heute,
+   * Messung liegt in Werkzeuge -> Betrieb. Die Zusicherung ist NICHT abgeschwaecht:
+   * sie nennt weiter jeden erlaubten Reiter namentlich und verbietet weiter jeden
+   * anderen - nur sind es jetzt drei statt fuenf. */
   var reiter = (html.match(/data-tab="[a-z]+"/g) || []);
-  ok(reiter.length === 5 && reiter.indexOf('data-tab="messung"') !== -1 &&
+  ok(reiter.length === 3 && reiter.indexOf('data-tab="messung"') === -1 &&
+     reiter.indexOf('data-tab="depot"') === -1 &&
      reiter.indexOf('data-tab="marktkarte"') === -1,
-     'Fuenf Reiter: Heute · Regeln · Vermoegen · Werkzeuge · Messung', reiter.join(' '));
-  ['dashboard', 'strategien', 'depot', 'werkzeuge'].forEach(function (id) {
+     'Drei Reiter: Heute · Regeln · Werkzeuge', reiter.join(' '));
+  ['dashboard', 'strategien', 'werkzeuge'].forEach(function (id) {
     ok(html.indexOf('data-tab="' + id + '"') !== -1 && html.indexOf('id="tab-' + id + '"') !== -1,
        'Reiter ' + id + ' hat Knopf und Inhalt');
   });
   /* Kurzfrist und Mittelfrist sind beide das Vermoegen - wer wissen will, wie es
-   * steht, sollte nicht zwei Stellen addieren muessen. */
-  ok(/data-sub="mittel"/.test(html) && /id="sub-mittel"/.test(html),
-     'Mittelfristig ist ein Unter-Reiter von Vermoegen');
+   * steht, sollte nicht zwei Stellen addieren muessen. Seit dem Umzug stehen beide
+   * im selben Block: die Buecher (#sub-mittel) direkt ueber dem Depot (#sub-depot),
+   * beide im Bestand-Block ganz oben unter Heute. Die Pille "mittel" ist damit
+   * entfallen - die Kennung bleibt, weil messband.js und gespeicherte UI-Orte sie
+   * kennen. Geprueft wird die Nachbarschaft, denn genau sie war der Zweck. */
+  ok(/id="sub-mittel"/.test(html) && /id="sub-depot"/.test(html) &&
+     html.indexOf('id="bestandBlock"') < html.indexOf('id="sub-mittel"') &&
+     html.indexOf('id="sub-mittel"') < html.indexOf('id="sub-depot"') &&
+     html.indexOf('id="sub-depot"') < html.indexOf('<!-- /bestandBlock -->'),
+     'Buecher und Depot stehen zusammen im Bestand-Block - eine Stelle, nicht zwei');
   ok(/id="wzPills"/.test(html) && /id="sub-explorer"/.test(html) && /id="sub-scheine"/.test(html),
      'Werkzeuge fasst Explorer und Schein-Finder zusammen');
 
@@ -3657,8 +3692,13 @@ console.log('\n36) Kostenhuerde des Produkts (Signalstudie 23.08.2026)');
    * Genau das ist gemessen und widerlegt (-0,17 Pp, t = -4,1); der Reiter muss das
    * sagen, statt es zu verschweigen. */
   var hF = fs.readFileSync(__dirname + '/index.html', 'utf8');
-  ok(hF.indexOf('<button data-sub="wende">Trendfinder</button>') >= 0,
-     'Trendfinder: der Reiter heisst nach dem Trend, nicht nach seinem Sonderfall');
+  /* Bis 02.09.2026 war das eine eigene Pille unter Werkzeuge. Mit Stufe 1 des Umzugs
+   * ist der Trendfinder die letzte Klappe im Betrieb - der Detektor ist widerlegt,
+   * und Widerlegtes bekommt keine Seite. Verschwiegen wird er nicht: der Name steht
+   * WORTGENAU in der Klappe, samt Urteil. Die Zusicherung prueft weiter den Wortlaut,
+   * nur an seinem neuen Ort. */
+  ok(hF.indexOf('<summary>Trendfinder — Detektor widerlegt</summary>') >= 0,
+     'Trendfinder: die Klappe heisst nach dem Trend und nennt sein Urteil');
   ok(wu3.indexOf('>Trend jetzt</th>') >= 0 && wu3.indexOf('>Güte</th>') >= 0 && wu3.indexOf('>Breite</th>') >= 0,
      'Trendfinder: die drei Eigenschaften des Trends stehen als eigene Spalten');
   ok(wu3.indexOf('var kj = z.kt ? z.kt.k : null;') >= 0 &&
@@ -5057,8 +5097,14 @@ console.log('\n44) Messmaschine, Scoreboard und Strategie-Eingabe (23.08.2026)')
   ok(mm2.indexOf('B8 Testfamilie') !== -1,
      'B8: Bonferroni zaehlt die ganze Testfamilie, nicht nur die Varianten einer Datei');
 
-  ok(/data-tab="messung"/.test(h) && /id="scoreboard"/.test(h) && /id="stAblegen"/.test(h),
-     'Reiter Messung mit Scoreboard und Eingabe ist in der Oberflaeche');
+  /* 02.09.2026 (Stufe 1 des Umzugs): der Reiter Messung ist entfallen; Scoreboard,
+   * Strategieregister und Eingabe sind drei Klappen unter Werkzeuge -> Betrieb. Die
+   * geschuetzte Eigenschaft - die Messprotokolle sind in der Oberflaeche erreichbar,
+   * und zwar mit einem Ausloeser, der sie auch laedt - bleibt und wird jetzt
+   * VOLLSTAENDIGER geprueft: vorher stand nur da, dass die Kennungen existieren. */
+  ok(!/data-tab="messung"/.test(h) && /id="scoreboard"/.test(h) && /id="stAblegen"/.test(h) &&
+     /data-klappe="scoreboard"/.test(h) && /data-klappe="strategieeingabe"/.test(h),
+     'Scoreboard und Eingabe sind als Klappen im Betrieb erreichbar, nicht mehr als eigener Reiter');
 
   /* Ausstiegsregeln (C6/C7, 23.08.2026). Die Maschine darf sie NICHT der Regel
    * ueberlassen: Wer selbst entscheidet, wann und zu welchem Kurs verkauft wird,
@@ -5652,18 +5698,23 @@ console.log('\n40) Tastatur, Semantik und Kontrast – die Oberflaeche ohne Maus
    * Vorher waren es fuenf zusammenhanglose Knoepfe: kein tablist, keine Pfeiltasten,
    * und man musste sich durch alle fuenf tabben, um zum Inhalt zu kommen. */
   ok(/role="tablist"/.test(html), 'Reiter: die Leiste ist ein tablist');
-  /* Fuenf, seit die Marktkarte eine Pille unter "Heute" ist (Stufe C4). Die Pillen
-     tragen bewusst KEINE tab/tabpanel-Rollen - sie sind es bei keiner der anderen
-     Leisten (#depotPills, #wzPills, #regelPills, #heutePills) auch nicht. Wer das
-     aendern will, aendert es fuer alle vier Leisten oder fuer keine. */
-  ok((html.match(/role="tab"/g) || []).length === 5, 'Reiter: alle fuenf Knoepfe sind role="tab"');
-  ok((html.match(/role="tabpanel"/g) || []).length === 5, 'Reiter: alle fuenf Bereiche sind role="tabpanel"');
-  ok((html.match(/aria-controls="tab-/g) || []).length === 5, 'Reiter: jeder Knopf benennt seinen Bereich');
-  ok((html.match(/aria-labelledby="reiter-/g) || []).length === 5, 'Reiter: jeder Bereich benennt seinen Knopf');
+  /* Drei, seit Wilhelms Entscheid "drei Bildschirme" (02.09.2026, Stufe 1). Die
+     Pillen tragen bewusst KEINE tab/tabpanel-Rollen - sie sind es bei keiner der
+     anderen Leisten (#wzPills, #regelPills, #heutePills) auch nicht. Wer das aendern
+     will, aendert es fuer alle drei Leisten oder fuer keine.
+     Die geschuetzte Eigenschaft ist unveraendert: die Zahl der Knoepfe, der Bereiche
+     und der beiden aria-Verbindungen muss UEBEREINSTIMMEN - sonst zeigt ein Knopf
+     ins Leere oder ein Bereich hat keinen Namen. Deshalb steht sie hier als eine
+     Zahl an vier Stellen und nicht als vier freie Zahlen. */
+  var nReiter = (html.match(/role="tab"/g) || []).length;
+  ok(nReiter === 3, 'Reiter: alle drei Knoepfe sind role="tab"', nReiter);
+  ok((html.match(/role="tabpanel"/g) || []).length === nReiter, 'Reiter: alle drei Bereiche sind role="tabpanel"');
+  ok((html.match(/aria-controls="tab-/g) || []).length === nReiter, 'Reiter: jeder Knopf benennt seinen Bereich');
+  ok((html.match(/aria-labelledby="reiter-/g) || []).length === nReiter, 'Reiter: jeder Bereich benennt seinen Knopf');
   ok(/ArrowRight/.test(shell) && /ArrowLeft/.test(shell) && /'Home'/.test(shell) && /'End'/.test(shell),
      'Reiter: Pfeiltasten, Pos1 und Ende blaettern die Leiste');
-  // Roving tabindex: genau EIN Reiter ist tabbierbar, sonst kostet der Weg zum Inhalt vier Tabs
-  ok((html.match(/role="tab"[^>]*tabindex="-1"/g) || []).length === 4,
+  // Roving tabindex: genau EIN Reiter ist tabbierbar, sonst kostet der Weg zum Inhalt mehrere Tabs
+  ok((html.match(/role="tab"[^>]*tabindex="-1"/g) || []).length === nReiter - 1,
      'Reiter: nur der aktive Reiter ist tabbierbar (roving tabindex)');
   ok(/x\.tabIndex = an \? 0 : -1;/.test(shell), 'Reiter: der tabindex wandert beim Wechsel mit');
   ok(/aria-selected/.test(shell), 'Reiter: aria-selected wird beim Wechsel nachgezogen');
@@ -6064,9 +6115,16 @@ console.log('\n41) Zustaende: was die App sagt, wenn etwas fehlt oder klemmt');
     .map(function (z) { return z.slice(z.lastIndexOf('>') + 1, -1).trim(); });
   var pillen = (html.match(/data-sub="[a-z]+"[^>]*>([^<]+)</g) || [])
     .map(function (z) { return z.slice(z.lastIndexOf('>') + 1, -1).replace(/&amp;/g, '&').trim(); });
-  ok(reiter.length === 5, 'Wegweiser: fuenf Reiter gefunden (' + reiter.join(', ') + ')');
+  ok(reiter.length === 3, 'Wegweiser: drei Reiter gefunden (' + reiter.join(', ') + ')');
   ok(pillen.length >= 6, 'Wegweiser: die Unter-Pillen sind lesbar (' + pillen.length + ')');
-  var echt = reiter.concat(pillen);
+  /* 02.09.2026 (Stufe 1 des Umzugs): Ein Wegweiser darf seit dem Umzug auch auf eine
+   * KLAPPE im Betrieb zeigen ("Werkzeuge → Betrieb"). Die Klappen-Titel kommen
+   * deshalb in dieselbe Liste echter Ortsnamen wie Reiter und Pillen - sonst waere
+   * jeder Verweis auf den Maschinenraum ein Fehlalarm, und die Klinke wuerde
+   * abgeschaltet statt mitgezogen. */
+  var klappen = (html.match(/<summary>([^<]+)<\/summary>/g) || [])
+    .map(function (z) { return z.slice(9, -10).replace(/&amp;/g, '&').trim(); });
+  var echt = reiter.concat(pillen).concat(klappen);
   var quellen = ['index.html', 'depot.js', 'renderer.js', 'strategien.js', 'mfdepot.js',
                  'driftui.js', 'explorer.js', 'app-shell.js', 'scoreboard.js', 'mittelfrist.js',
                  'bestandui.js'];
@@ -6193,28 +6251,40 @@ console.log('\n41) Zustaende: was die App sagt, wenn etwas fehlt oder klemmt');
    * Strategien (Antwort + Gruppen) / Risiko & Einstellungen / Werkzeug. Kein
    * Feature entfaellt: die alten Bereiche leben als Abschnitte mit unveraenderten
    * Kennungen in den neuen Panels. */
+  /* 02.09.2026 (Stufe 1 des Umzugs): aus drei Pillen wurden zwei. Die Pille
+   * "Werkzeug" war der dritte Ort, der "Werkzeug" hiess; ihr Inhalt (Chart,
+   * Berichte/Backtest, Regelbuch) liegt seither als Klappen im Betrieb. Der
+   * Autopilot ist mitgegangen, weil er ein Nachtjob ist und kein Regelknopf.
+   * Was in Regeln BLEIBEN muss, ist damit die eigentliche Aussage - und genau das
+   * prueft der zweite Block: Intraday und Mittelfrist-Steuerung. */
   var rp = html.slice(html.indexOf('id="regelPills"'), html.indexOf('id="sub-regeln"'));
   var rpPillen = (rp.match(/data-sub="([a-z]+)"/g) || []).join(' ');
-  ok(rpPillen === 'data-sub="regeln" data-sub="einstellungen" data-sub="werkzeug"',
-     'Regeln hat genau die Pillen Strategien / Risiko & Einstellungen / Werkzeug', rpPillen);
+  ok(rpPillen === 'data-sub="regeln" data-sub="einstellungen"',
+     'Regeln hat genau die Pillen Strategien / Einstellungen', rpPillen);
   function pos9(m) { return html.indexOf(m); }
   ok(pos9('id="sub-einstellungen"') < pos9('id="sub-strategien"') &&
      pos9('id="sub-strategien"') < pos9('id="sub-mittelfrist"') &&
-     pos9('id="sub-mittelfrist"') < pos9('id="sub-auswertung"') &&
-     pos9('id="sub-auswertung"') < pos9('<!-- /sub-einstellungen -->'),
-     'Risiko & Einstellungen buendelt Intraday, Mittelfrist-Steuerung und Autopilot');
-  /* 01.09.2026 (B9): Reihenfolge im Werkzeug gedreht - wer "Werkzeug" klickt,
-   * erwartet Chart und Backtest zuerst; das Regelbuch (Bilanz) folgt. Die
-   * geschuetzte Eigenschaft bleibt: alle drei Bereiche liegen im Werkzeug-Panel. */
+     pos9('id="sub-mittelfrist"') < pos9('<!-- /sub-einstellungen -->'),
+     'Einstellungen buendelt Intraday-Karte und Mittelfrist-Steuerung');
+  /* Und der Autopilot ist dort NICHT mehr - sonst waere er zweimal da, einmal
+   * sichtbar und einmal vergessen. */
+  var einst9 = html.slice(pos9('id="sub-einstellungen"'), pos9('<!-- /sub-einstellungen -->'));
+  ok(einst9.indexOf('id="sub-auswertung"') === -1 && einst9.indexOf('id="sigMonitor"') === -1 &&
+     einst9.indexOf('id="kostenRundeBtn"') === -1,
+     'Autopilot, Signal-Monitor und Kostenrunde sind aus den Einstellungen heraus');
+  /* 01.09.2026 (B9): Reihenfolge gedreht - wer den Maschinenraum oeffnet, erwartet
+   * Chart und Backtest beieinander; das Regelbuch (Bilanz) steht dazwischen. Die
+   * geschuetzte Eigenschaft bleibt: alle drei Bereiche liegen zusammen, jetzt im
+   * Behaelter #sub-werkzeug innerhalb des Betriebs. */
   ok(pos9('<!-- /sub-einstellungen -->') < pos9('id="sub-werkzeug"') &&
      pos9('id="sub-werkzeug"') < pos9('id="sub-stratchart"') &&
-     pos9('id="sub-stratchart"') < pos9('Berichte &amp; Werkzeuge') &&
-     pos9('Berichte &amp; Werkzeuge') < pos9('id="sub-regelbuch"') &&
-     pos9('id="sub-regelbuch"') < pos9('<!-- /sub-werkzeug -->'),
-     'Werkzeug buendelt Chart, Berichte/Backtest und Regelbuch - Chart zuerst');
-  ok(/sub === 'auswertung' \|\| sub === 'einstellungen' \|\| sub === 'werkzeug'/.test(dep) &&
-     /sub === 'strategien' \|\| sub === 'einstellungen'/.test(dep),
-     'Die Nachlade-Sonderfaelle kennen die neuen Pillen (und die alten Kennungen aus gespeicherten Zustaenden)');
+     pos9('id="sub-stratchart"') < pos9('id="sub-regelbuch"') &&
+     pos9('id="sub-regelbuch"') < pos9('Berichte &amp; Werkzeuge') &&
+     pos9('Berichte &amp; Werkzeuge') < pos9('<!-- /sub-werkzeug -->'),
+     'Werkzeug buendelt Chart, Regelbuch und Berichte/Backtest - Chart zuerst');
+  ok(/sub === 'auswertung' \|\| sub === 'einstellungen' \|\| sub === 'werkzeug' \|\|\s*\n?\s*sub === 'regelbuch'/.test(dep) &&
+     /sub === 'strategien' \|\| sub === 'einstellungen' \|\| sub === 'auswertung'/.test(dep),
+     'Die Nachlade-Sonderfaelle kennen die Betrieb-Klappen (und die alten Kennungen aus gespeicherten Zustaenden)');
 
   /* --- Glossar --- */
   var gl = /'glossar\.begriffe':\s*\{[\s\S]*?\n    \}/.exec(shell);
@@ -7871,7 +7941,7 @@ console.log('\n44) Oberflaeche nach Themen sortiert (Felix, Issue #68)');
      genau eine aktive Pille. Zwei aktive Panels laegen uebereinander und niemand saehe,
      welches. Deshalb ist die Attributreihenfolge data-sub vor class im Markup
      Bedingung und nicht Geschmack. */
-  ['tab-dashboard', 'tab-depot', 'tab-werkzeuge', 'tab-strategien'].forEach(function (id) {
+  ['tab-dashboard', 'tab-werkzeuge', 'tab-strategien'].forEach(function (id) {
     var von = html.indexOf('<div id="' + id + '"');
     var bis = html.indexOf('<!-- /' + id + ' -->');
     ok(von > -1 && bis > von, 'Reiter ' + id + ' ist im Markup abgegrenzt');
@@ -7882,25 +7952,47 @@ console.log('\n44) Oberflaeche nach Themen sortiert (Felix, Issue #68)');
     ok(pillenAktiv === 1, 'Reiter ' + id + ' hat genau EINE aktive Pille', pillenAktiv);
   });
 
-  /* --- Die Aufteilung selbst, so wie sie im Issue vereinbart ist --- */
-  var vermoegen = html.slice(html.indexOf('<div id="tab-depot"'), html.indexOf('<!-- /tab-depot -->'));
+  /* --- Die Aufteilung selbst, so wie sie im Issue vereinbart ist ---
+   * 02.09.2026 (Stufe 1 des Umzugs): "Vermoegen" ist kein Reiter mehr, sondern der
+   * Bestand-Block ganz oben unter Heute. Die Zusicherungen ziehen mit - jede einzelne
+   * prueft dieselbe Eigenschaft wie vorher, nur am neuen Ort. Der Ausschnitt heisst
+   * weiter "bestand", damit im Code steht, wovon die Rede ist. */
+  var bestand = html.slice(html.indexOf('<div id="bestandBlock">'), html.indexOf('<!-- /bestandBlock -->'));
   var werkzeuge = html.slice(html.indexOf('<div id="tab-werkzeuge"'), html.indexOf('<!-- /tab-werkzeuge -->'));
+  var betrieb = html.slice(html.indexOf('<div class="sub" id="sub-betrieb">'), html.indexOf('<!-- /sub-betrieb -->'));
   var regeln = html.slice(html.indexOf('<div id="tab-strategien"'), html.indexOf('<!-- /tab-strategien -->'));
-  ok(/id="sub-depot"/.test(vermoegen) && /id="sub-protokoll"/.test(vermoegen) && /id="sub-mittel"/.test(vermoegen),
-     'Vermoegen haelt Depot, Protokoll und das Mittelfrist-Buch - alles drei sind Buecher, keine Werkzeuge');
+  ok(bestand.length > 100 && betrieb.length > 100, 'Bestand-Block und Betrieb-Panel sind abgegrenzt');
+  ok(/id="sub-depot"/.test(bestand) && /id="sub-protokoll"/.test(bestand) && /id="sub-mittel"/.test(bestand),
+     'Der Bestand haelt Depot, Protokoll und das Mittelfrist-Buch - alles drei sind Buecher, keine Werkzeuge');
+  /* Das Band von messband.js haengt sich zur Laufzeit als erstes Kind in #sub-depot.
+   * Verschwaende der Behaelter beim Umzug, faende es sein Ziel nicht und das Band
+   * bliebe still weg - keine Fehlermeldung, nur eine fehlende Zeile. */
+  ok(/getElementById\('sub-depot'\)/.test(fs.readFileSync(__dirname + '/messband.js', 'utf8')) &&
+     /<div id="sub-depot">/.test(bestand),
+     'messband.js findet seinen Anker #sub-depot - als einfacher Behaelter, ohne class="sub"');
 
   /* --- C2: die eigenen Papiere haben EIN Zuhause (Struktur-Plan Stufe C.2) ---
    * Vorher lagen Signalliste und Uebernahme-Formular auf "Heute", die Bestandstabelle
    * unter Vermoegen, und beide Seiten verwiesen wechselseitig aufeinander. */
   var heute = html.slice(html.indexOf('<div id="tab-dashboard"'), html.indexOf('<!-- /tab-dashboard -->'));
   ok(heute.length > 100, 'Reiter tab-dashboard ist im Markup abgegrenzt');
-  ok(/data-sub="papiere"/.test(vermoegen) && /id="sub-papiere"/.test(vermoegen),
-     'Vermoegen hat die Pille "Meine Papiere" mit ihrem Panel');
-  ok(/id="bestandText"/.test(vermoegen) && /id="bestandLesen"/.test(vermoegen) &&
-     /id="bestandTabelle"/.test(vermoegen),
-     'Uebernahme-Formular und Bestandstabelle stehen unter Vermoegen');
-  ok(!/id="bestandText"/.test(heute) && !/id="bestandLesen"/.test(heute),
-     'Auf "Heute" steht kein zweites Uebernahme-Formular mehr');
+  /* 02.09.2026 (Stufe 1 des Umzugs): "Meine Papiere" ist die zweite Pille unter
+   * Heute. Die geschuetzte Eigenschaft ist unveraendert und wird SCHAERFER geprueft
+   * als vorher: Frueher hiess sie "nicht zweimal an zwei Orten" und war ueber zwei
+   * Reiter-Ausschnitte formuliert; jetzt steht sie als Zaehlung ueber das GANZE
+   * Markup - genau einmal, sonst gar nicht. Ein zweites Formular faellt damit auch
+   * dann auf, wenn es an einem dritten Ort auftaucht, an den keiner gedacht hat. */
+  var papiere = html.slice(html.indexOf('<div class="sub" id="sub-papiere">'),
+                           html.indexOf('<div class="sub" id="sub-marktkarte">'));
+  ok(/data-sub="papiere"/.test(heute) && /id="sub-papiere"/.test(heute) && papiere.length > 100,
+     'Heute hat die Pille "Meine Papiere" mit ihrem Panel');
+  ['bestandText', 'bestandLesen', 'bestandTabelle'].forEach(function (id) {
+    ok((html.match(new RegExp('id="' + id + '"', 'g')) || []).length === 1 &&
+       papiere.indexOf('id="' + id + '"') > -1,
+       'Kennung ' + id + ' steht genau einmal - und zwar unter Heute -> Meine Papiere');
+  });
+  ok(!/id="bestandText"/.test(bestand) && !/id="bestandLesen"/.test(bestand),
+     'Im Bestand-Block steht kein zweites Uebernahme-Formular');
   /* GEDREHT am 26.08.2026, nicht abgeschwaecht: Wilhelm hat entschieden, dass der
    * Abschnitt "Meine Papiere" unter "Heute" ganz verschwindet (#89 vor #83). Der
    * Signalstand ist damit nicht gestrichen, sondern umgezogen - er steht als zwei
@@ -8061,21 +8153,73 @@ console.log('\n44) Oberflaeche nach Themen sortiert (Felix, Issue #68)');
    * und loescht sie auf "Heute": genau die Wohnungsteilung, die C2 abschafft. */
   ok(/el\('bestandTabelle'\)[\s\S]{0,500}addEventListener\('click'/.test(bu),
      'Entfernen geht auch dort, wo die Papiere wohnen');
-  ok(!/id="sub-strategien"/.test(vermoegen) && !/id="sub-wende"/.test(vermoegen) && !/id="sub-auswertung"/.test(vermoegen),
-     'Vermoegen haelt keine Schalter, kein Werkzeug und keinen Autopiloten mehr');
+  ok(!/id="sub-strategien"/.test(bestand) && !/id="sub-wende"/.test(bestand) && !/id="sub-auswertung"/.test(bestand),
+     'Der Bestand haelt keine Schalter, kein Werkzeug und keinen Autopiloten');
   ok(/id="sub-wende"/.test(werkzeuge) && /id="sub-explorer"/.test(werkzeuge) && /id="sub-scheine"/.test(werkzeuge),
      'Werkzeuge halten Explorer, Schein-Finder und Trendfinder');
-  ok(/id="wzEinstellungen"/.test(werkzeuge),
-     'Die Einstellungen sind von den Werkzeugen aus erreichbar (Felix, #68)');
-  /* Die Pille darf KEIN data-sub tragen: sie oeffnet einen Dialog, sie navigiert nicht.
-   * Mit data-sub wuerde der Umschalter alle Panels ausblenden und keines wieder ein. */
-  ok(!/id="wzEinstellungen"[^>]*data-sub/.test(werkzeuge),
-     'Die Einstellungs-Pille ist keine Navigation - sonst bliebe der Reiter leer zurueck');
-  ok(/wzEinstellungen/.test(fs.readFileSync(__dirname + '/app-shell.js', 'utf8')),
-     'und sie ist verdrahtet');
-  ok(/id="sub-strategien"/.test(regeln) && /id="sub-auswertung"/.test(regeln) &&
-     /id="sub-regelbuch"/.test(regeln) && /id="sub-stratchart"/.test(regeln),
-     'Regeln haelt alles Regelrelevante: Schalter, Autopilot, Regelbuch, Chart');
+  /* 02.09.2026 (Stufe 1 des Umzugs): Die zweite Einstellungs-Pille ist entfallen.
+   * Sie war eine AKTION in einer Navigationsleiste und tat exakt dasselbe wie der
+   * Knopf in der Kopfzeile. Die Eigenschaft, um die es Felix (#68) ging - die
+   * Einstellungen sind von ueberall erreichbar - bleibt und wird weiter geprueft:
+   * der Kopfzeilen-Knopf steht AUSSERHALB aller Reiter und ist damit von jedem
+   * Bildschirm aus da. Die Klinke ist nicht abgeschaltet, sie prueft den
+   * verbliebenen Weg - und dass der abgeschaffte wirklich weg ist, nicht nur
+   * unsichtbar. */
+  var shell5 = fs.readFileSync(__dirname + '/app-shell.js', 'utf8');
+  ok(!/id="wzEinstellungen"/.test(html) && !/wzEinstellungen/.test(shell5),
+     'Die doppelte Einstellungs-Pille ist samt Verdrahtung entfernt, nicht nur versteckt');
+  ok(/id="settingsBtn"/.test(html) && html.indexOf('id="settingsBtn"') < html.indexOf('<nav class="tabs"'),
+     'Die Einstellungen sind von jedem Bildschirm aus erreichbar: der Knopf steht ueber der Reiterleiste (Felix, #68)');
+  ok(/id="sub-strategien"/.test(regeln) && /id="sub-mittelfrist"/.test(regeln),
+     'Regeln haelt, was eine Regel einstellt: Intraday-Schalter und Mittelfrist');
+  ok(/id="sub-auswertung"/.test(betrieb) && /id="sub-regelbuch"/.test(betrieb) &&
+     /id="sub-stratchart"/.test(betrieb),
+     'Der Maschinenraum haelt Autopilot, Regelbuch und Chart');
+
+  /* ================= NEU 02.09.2026: die Drei-Bildschirm-Struktur selbst =========
+   * Wilhelms Entscheid nach der PM-Abnahme (wiki/oberflaeche.md §3): Heute · Regeln ·
+   * Werkzeuge, und alles Frueher-Sichtbare liegt im Maschinenraum. Die Zusicherungen
+   * darueber standen bisher verstreut in einem Dutzend Bloecke, jede nur ueber ihren
+   * eigenen Ausschnitt. Diese Klinke prueft die STRUKTUR als Ganzes - sie ist der
+   * Wachhund gegen das Zurueckrutschen: eine wiederauferstandene Pille, eine Klappe,
+   * die aus dem Betrieb herausfaellt, ein Knopf, der wieder in den Alltag wandert. */
+  var leisteN = (html.match(/data-tab="([a-z]+)"/g) || []).map(function (z) { return z.slice(10, -1); });
+  ok(leisteN.join(' ') === 'dashboard strategien werkzeuge',
+     'Drei Bildschirme: genau die Reiter dashboard/strategien/werkzeuge, in dieser Reihenfolge',
+     leisteN.join(' '));
+  /* Die elf Klappen des Maschinenraums, namentlich und in der Reihenfolge, in der
+   * sie gebraucht werden. Wer eine ergaenzt oder streicht, benennt sie hier - genau
+   * wie bei den Reitern. Ohne die Reihenfolge waere es eine blosse Mengenpruefung,
+   * und eine Klappe koennte still ans Ende rutschen. */
+  var klappenSoll = ['archiv', 'auswertung', 'kosten', 'monitor', 'stratchart', 'regelbuch',
+                     'berichte', 'scoreboard', 'strategieregister', 'strategieeingabe', 'wende'];
+  var klappenIst = (betrieb.match(/<details class="how" data-klappe="([a-z]+)">/g) || [])
+    .map(function (z) { return z.slice(z.indexOf('data-klappe="') + 13, -2); });
+  ok(klappenIst.join(' ') === klappenSoll.join(' '),
+     'Betrieb: die elf Klappen stehen vollstaendig und in der vorgesehenen Reihenfolge',
+     klappenIst.join(' '));
+  /* Und sie sind ZU. Eine offene Klappe waere die Textwand von vorher, nur mit einem
+   * Dreieck davor - und beim Trendfinder auch noch ein ungefragter Kursabruf. */
+  ok(!/<details class="how" data-klappe="[a-z]+" open/.test(betrieb),
+     'Betrieb: keine Klappe steht beim Start offen');
+  /* Der Kern des Umzugs, als eine Zeile pruefbar: Was der Maschinenraum aufgenommen
+   * hat, darf im Alltag NIRGENDS mehr auftauchen. Geprueft wird ueber das ganze
+   * Markup und nicht ueber einen Reiter-Ausschnitt - ein zweites Vorkommen faellt
+   * damit auch dann auf, wenn es an einem Ort steht, an den hier keiner gedacht hat. */
+  var nurBetrieb = ['scoreboard', 'stAblegen', 'archivKarte', 'wendeTabelle', 'pilotBtn',
+                    'kostenRundeBtn', 'sigMonitor', 'stratChartPanel', 'regelKarte', 'btRunBtn'];
+  var ausgebuext = nurBetrieb.filter(function (id) {
+    var n = (html.match(new RegExp('id="' + id + '"', 'g')) || []).length;
+    return n !== 1 || betrieb.indexOf('id="' + id + '"') === -1;
+  });
+  ok(ausgebuext.length === 0,
+     'Jede Maschinenraum-Kennung steht genau einmal - und zwar in #sub-betrieb',
+     ausgebuext.join(' ') || 'alle zehn');
+  /* Gegenprobe zur Zeile darueber: es GIBT diese Kennungen ueberhaupt. Waeren sie
+   * beim Umzug verlorengegangen, meldete die Pruefung oben "0 ausserhalb" und waere
+   * gruen - der Nullbefund vom toten Werkzeug (wiki/fehlerformen.md). */
+  ok(nurBetrieb.every(function (id) { return html.indexOf('id="' + id + '"') > -1; }),
+     'Gegenprobe: alle zehn Kennungen existieren noch - sonst pruefte die Zeile darueber nichts');
 
   /* --- Stufe C4: die Marktkarte ist eine Pille, kein Reiter --- */
   ok(!/data-tab="marktkarte"/.test(html) && /id="heutePills"/.test(html),
@@ -8121,11 +8265,11 @@ console.log('\n44) Oberflaeche nach Themen sortiert (Felix, Issue #68)');
   ok(/id="sub-mittelfrist"/.test(regeln) && nichtInRegeln.length === 0,
      'Regeln haelt die ganze Mittelfrist-Steuerung: Parameter, Lade- und Handelsknoepfe',
      nichtInRegeln.join(' ') || 'alle 23');
-  var schalterInVermoegen = mfSteuer.filter(function (id) { return vermoegen.indexOf('id="' + id + '"') > -1; });
-  ok(/id="mfdMomentum"/.test(vermoegen) && /id="mfdDrift"/.test(vermoegen) &&
-     schalterInVermoegen.length === 0,
-     'Vermoegen zeigt die zwei Buecher und keine einzige Stellschraube mehr',
-     schalterInVermoegen.join(' ') || 'keine');
+  var schalterInBestand = mfSteuer.filter(function (id) { return bestand.indexOf('id="' + id + '"') > -1; });
+  ok(/id="mfdMomentum"/.test(bestand) && /id="mfdDrift"/.test(bestand) &&
+     schalterInBestand.length === 0,
+     'Der Bestand zeigt die zwei Buecher und keine einzige Stellschraube',
+     schalterInBestand.join(' ') || 'keine');
   /* EINE Wahrheit: jede dieser Kennungen darf im Markup genau einmal vorkommen. Ein
    * zweiter Container mit derselben Kennung waere ein zweites Rendering desselben
    * Inhalts - und getElementById zeigte still auf das erste. */
@@ -8138,16 +8282,21 @@ console.log('\n44) Oberflaeche nach Themen sortiert (Felix, Issue #68)');
    * sie nur, wenn takt() durchlief - beim Erststart ohne Tagesdaten kehrt es vorher
    * um, und ohne diesen Text stuenden in Vermoegen zwei Ueberschriften ueber nichts.
    * Vor C1 fiel das nicht auf, weil #mfdStatus im selben Panel den Grund nannte. */
-  ok(/id="mfdMomentum"[^>]*>\s*<div class="empty"/.test(vermoegen) &&
-     /id="mfdDrift"[^>]*>\s*<div class="empty"/.test(vermoegen),
+  ok(/id="mfdMomentum"[^>]*>\s*<div class="empty"/.test(bestand) &&
+     /id="mfdDrift"[^>]*>\s*<div class="empty"/.test(bestand),
      'Beide Buch-Container haben einen Leerzustand fuer den Erststart');
   /* 31.08.2026, Stufe 4: die Mittelfrist-Steuerung ist keine eigene Pille mehr,
    * sondern ein Abschnitt unter "Risiko & Einstellungen". Die geschuetzte
    * Eigenschaft bleibt: Bestand heisst Buecher (Vermoegen), die Steuerung wohnt
    * vollstaendig im Reiter Regeln (die 23 Kennungen prueft der Block darueber). */
-  ok(/data-sub="mittel">Bücher</.test(vermoegen) && /id="sub-mittelfrist"/.test(regeln) &&
-     /data-sub="einstellungen">Risiko &amp; Einstellungen</.test(regeln),
-     'Die Pillen heissen, was sie zeigen: Buecher (Bestand), Steuerung unter Risiko & Einstellungen');
+  /* 02.09.2026 (Stufe 1 des Umzugs): Der Bestand ist keine Pille mehr, sondern der
+   * erste Block unter Heute; er traegt seinen Namen als Ueberschrift. Die Pille
+   * heisst nur noch "Einstellungen" - "Risiko &" fiel weg, weil Risiko einer von
+   * neun Themen darin war und im Namen zu viel versprach. Geprueft wird weiter
+   * WORTGENAU, denn genau der Wortlaut ist es, auf den die Wegweiser zeigen. */
+  ok(/<h2 style="margin-top:0;">Bestand<\/h2>/.test(bestand) && /id="sub-mittelfrist"/.test(regeln) &&
+     /data-sub="einstellungen">Einstellungen</.test(regeln),
+     'Die Orte heissen, was sie zeigen: Bestand (Buecher + Depot), Steuerung unter Einstellungen');
   /* Der Erklaerabsatz mit den Messzahlen wurde nicht geteilt - er beschreibt, WAS die
    * beiden Buecher sind, und bleibt deshalb ungeteilt bei ihnen (Leitplanke 1).
    * 01.09.2026 (B11): "bei ihnen" heisst jetzt: wortgleich im Info-Register
@@ -8156,7 +8305,7 @@ console.log('\n44) Oberflaeche nach Themen sortiert (Felix, Issue #68)');
    * der Knopf haengt an der Karte, und die Zahlen stehen UNGETEILT im Eintrag. */
   var shellB11 = fs.readFileSync(__dirname + '/app-shell.js', 'utf8');
   var eintragB11 = (shellB11.split("'vermoegen.buecher': {")[1] || '').split('\n    },')[0];
-  ok(/data-info="vermoegen\.buecher"/.test(vermoegen) &&
+  ok(/data-info="vermoegen\.buecher"/.test(bestand) &&
      /t = 1,62/.test(eintragB11) && /8,44 statt 14,07/.test(eintragB11),
      'Die Messzahlen der beiden Buecher haengen ungeteilt an der Buecher-Karte (i-Knopf)');
 
@@ -8171,9 +8320,24 @@ console.log('\n44) Oberflaeche nach Themen sortiert (Felix, Issue #68)');
      * Regeln -> Mittelfrist. Die drei Module sind mit aufgenommen, weil genau sie die
      * Meldungen tragen - vorher stand die Regel da und sah an ihnen vorbei. */
     if (/Vermögen (→|-&gt;) (Schalter|Auswertung|Trendfinder|Mittelfristig)/.test(s)) falsch.push(f);
+    /* 02.09.2026 (Stufe 1 des Umzugs), ERWEITERT statt abgeschwaecht: Vermoegen und
+     * Messung sind keine Reiter mehr, und "Risiko & Einstellungen" heisst nur noch
+     * "Einstellungen". Alle drei Namen sind damit tote Ortsangaben - egal, in welcher
+     * Schreibweise sie auftauchen. Die Wegweiser-Klinke oben faengt sie nur, wenn das
+     * Wort "Reiter"/"Tab" davorsteht oder ein Pfeil-Pfad in Anfuehrungszeichen steht;
+     * diese Zeile faengt sie ueberall. */
+    var tot = [
+      ['Vermögen (→|-&gt;)', 'Wegweiser auf den Reiter Vermoegen'],
+      ['(Reiter|Tab) (<b>)?Vermögen', 'Reiter Vermoegen'],
+      ['(Reiter|Tab) (<b>)?Messung', 'Reiter Messung'],
+      ['Risiko (&|&amp;) Einstellungen', 'alter Pillen-Name "Risiko & Einstellungen"']
+    ];
+    tot.forEach(function (t) {
+      if (new RegExp(t[0]).test(s)) falsch.push(f + ' (' + t[1] + ')');
+    });
   });
   ok(falsch.length === 0,
-     'Kein Text verweist mehr auf Vermoegen -> Schalter/Auswertung/Trendfinder',
+     'Kein Text verweist mehr auf Vermoegen/Messung oder "Risiko & Einstellungen"',
      falsch.join(' ') || 'keiner');
 
   /* --- Punkte 1 und 2: Kuerzel und Aufklappen in der Positionstabelle --- */
@@ -8623,8 +8787,12 @@ console.log('\n46) Was die App dauerhaft aufzeichnet');
   var sbSt = fs.readFileSync(__dirname + '/scoreboard.js', 'utf8');
   ok(/async function strategienLaden\(\)/.test(sbSt) && /window\.api\.messStrategien\(\)/.test(sbSt),
      'Die Bruecke messStrategien hat endlich einen Verbraucher');
-  ok(/if \(ev\.detail === 'messung'\) \{ laden\(\); strategienLaden\(\); \}/.test(sbSt),
-     'Die Liste wird beim Wechsel in den Reiter Messung geladen');
+  /* 02.09.2026 (Stufe 1 des Umzugs): kein Reiter Messung mehr - die Liste haengt an
+   * ihrer eigenen Klappe im Betrieb. Das ist SCHAERFER als vorher: frueher lud der
+   * Reiterwechsel beide Karten, jetzt laedt jede Klappe genau das, was sie zeigt. */
+  ok(/sub === 'strategieregister'\) strategienLaden\(\)/.test(sbSt) &&
+     /sub === 'scoreboard'\) laden\(\)/.test(sbSt),
+     'Jede Klappe laedt beim Aufklappen genau ihren eigenen Inhalt');
   /* Die drei Luecken muessen BENANNT werden. Eine Liste, die stillschweigend die
    * Haelfte weglaesst, ist schlimmer als gar keine - genau der Zustand vorher. */
   ok(/Protokoll\(e\) ohne Datei/.test(sbSt) && /nur im Datenordner/.test(sbSt) &&
@@ -11376,8 +11544,14 @@ console.log('\nDie App sammelt selbst: Kursarchiv (26.08.2026)');
   ok(/api\.sammlerStart\(/.test(karte) && /api\.sammlerStop\(/.test(karte) && /api\.sammlerStand\(/.test(karte),
      'und die Karte ruft sie auch auf - ein Knopf ohne Aufruf sieht aus wie einer, der geht');
   var htmlQ = fs.readFileSync(__dirname + '/index.html', 'utf8');
-  ok(/data-sub="archiv"/.test(htmlQ) && /id="sub-archiv"/.test(htmlQ) && /archivkarte\.js/.test(htmlQ),
-     'Pille, Unterseite und Skript sind eingehaengt');
+  /* 02.09.2026 (Stufe 1 des Umzugs): aus der Pille "Kursarchiv" wurde die erste
+   * Klappe im Betrieb. Der Name des Ausloesers ist DERSELBE geblieben ('archiv') -
+   * die Shell meldet das Aufklappen als 'sub-changed', archivkarte.js hoert
+   * unveraendert darauf. Geprueft wird die ganze Kette: Ausloeser, Behaelter, Skript
+   * UND dass der Zuhoerer den Namen wirklich nennt. */
+  ok(/data-klappe="archiv"/.test(htmlQ) && /id="sub-archiv"/.test(htmlQ) &&
+     /archivkarte\.js/.test(htmlQ) && /detail\.sub === 'archiv'/.test(karte),
+     'Klappe, Behaelter, Skript und Zuhoerer sind eingehaengt');
 
   /* ---- 10. Nachgeholt wird beim Start, nicht erst am naechsten Tag ----
    * Wilhelms Punkt 2: "Die App ist nicht immer an." */
