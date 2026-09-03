@@ -65,6 +65,16 @@
   diese Form hilft nur, den gelieferten Zeitstempel gegen den angefragten zu halten — und
   Handelszeiten aus dem Kalender der Börse zu nehmen, nicht aus einer Liste im Code.
   *Fundstelle: [datenquellen.md](datenquellen.md), Kasten bei „Alpaca als Kursquelle".*
+- **Drei Leck-Tests, die dieselbe Zusage abwarten, prüfen einander.** Jeder hängt
+  `process.stdout.write` um; laufen sie verschachtelt, reißt der erste, der zurücksetzt, die
+  Haken der anderen mit — deren „gesammelt" enthält dann nur die (verdeckte) Ausgabe des
+  **Nachbarn**, und der Test besteht mit fremden Zeilen. Gefunden von der Gegenprobe (Verdeckung
+  aus der Z1-Probe ausgebaut → blieb grün), nicht vom Verdacht. **Regel: Tests, die einen
+  globalen Haken setzen, laufen als Kette, nie auf eine gemeinsame Zusage.** *Fundstelle:
+  test-v6 Block 35 (b), `uebergabe/archiv-z1-2026-09-03.md` §7, 03.09.2026.*
+- **Die Klinke sucht das Wort, nicht die Stelle.** `quelleNeu: 'alpaca'` stand auch in der
+  Positivkontrolle des Werkzeugs; auf `'yahoo'` umgestellt am Schreibpfad blieb die Suche über
+  die ganze Datei grün. **Klinken auf Schreibpfade anchoren am Aufruf, der schreibt.** *Fundstelle: ebenda, Gegenprobe G17.*
 - **Ein Trockenlauf, der aussieht wie ein Befund.** Ein Probelauf der Auswertung auf
   erfundenen Daten hinterließ ein vollständig ausgefülltes `ERGEBNIS.md` im Studienordner.
   **Werkzeuge, die Berichte schreiben, benennen die Datei nach der Herkunft der Zahlen** —

@@ -1,0 +1,273 @@
+{
+ "erzeugt": "2026-09-03T12:28:02.322Z",
+ "modus": "aequivalenz",
+ "sicherung": "E:/Markt-Dashboard-Archiv/store-sicherung-2026-09-03",
+ "wurzel": "E:/Markt-Dashboard-Archiv",
+ "intervalle": {
+  "1m": {
+   "reihen": 200,
+   "mitDatei": 191,
+   "gemeinsam": 548474,
+   "nurStore": 3035753,
+   "felder": {
+    "schluss": {
+     "n": 548474,
+     "gleichRoh": 21679,
+     "gleichNachRundung": 485131,
+     "cap": 41419,
+     "ppm": 0,
+     "nachkorrektur": 245,
+     "maxNachkorrektur": 0.0014468922334558167
+    },
+    "umsatz": {
+     "n": 548474,
+     "gleichRoh": 481387,
+     "gleichNachRundung": 0,
+     "cap": 54347,
+     "ppm": 0,
+     "nachkorrektur": 12740,
+     "maxNachkorrektur": 1
+    },
+    "hoch": {
+     "n": 548474,
+     "gleichRoh": 23339,
+     "gleichNachRundung": 481671,
+     "cap": 42988,
+     "ppm": 2,
+     "nachkorrektur": 474,
+     "maxNachkorrektur": 0.008039202008928572
+    },
+    "tief": {
+     "n": 548474,
+     "gleichRoh": 23909,
+     "gleichNachRundung": 481396,
+     "cap": 42705,
+     "ppm": 5,
+     "nachkorrektur": 459,
+     "maxNachkorrektur": 0.005431822879845321
+    }
+   },
+   "schlimmste": [
+    [
+     "CL",
+     331
+    ],
+    [
+     "PGR",
+     280
+    ],
+    [
+     "EMR",
+     257
+    ],
+    [
+     "DUK",
+     256
+    ],
+    [
+     "BDX",
+     252
+    ]
+   ]
+  },
+  "5m": {
+   "reihen": 200,
+   "mitDatei": 188,
+   "gemeinsam": 812935,
+   "nurStore": 144108,
+   "felder": {
+    "schluss": {
+     "n": 812935,
+     "gleichRoh": 29338,
+     "gleichNachRundung": 674600,
+     "cap": 108856,
+     "ppm": 0,
+     "nachkorrektur": 141,
+     "maxNachkorrektur": 0.004832214765100727
+    },
+    "umsatz": {
+     "n": 812935,
+     "gleichRoh": 665486,
+     "gleichNachRundung": 0,
+     "cap": 131232,
+     "ppm": 4,
+     "nachkorrektur": 16213,
+     "maxNachkorrektur": 1
+    },
+    "hoch": {
+     "n": 812935,
+     "gleichRoh": 35448,
+     "gleichNachRundung": 663341,
+     "cap": 113830,
+     "ppm": 3,
+     "nachkorrektur": 313,
+     "maxNachkorrektur": 0.04753116809585259
+    },
+    "tief": {
+     "n": 812935,
+     "gleichRoh": 35882,
+     "gleichNachRundung": 663025,
+     "cap": 113750,
+     "ppm": 2,
+     "nachkorrektur": 276,
+     "maxNachkorrektur": 0.00775900596315049
+    }
+   },
+   "schlimmste": [
+    [
+     "CVX",
+     521
+    ],
+    [
+     "C",
+     488
+    ],
+    [
+     "EOG",
+     467
+    ],
+    [
+     "SCHW",
+     465
+    ],
+    [
+     "DAL",
+     434
+    ]
+   ]
+  },
+  "15m": {
+   "reihen": 200,
+   "mitDatei": 188,
+   "gemeinsam": 285889,
+   "nurStore": 32755,
+   "felder": {
+    "schluss": {
+     "n": 285889,
+     "gleichRoh": 10164,
+     "gleichNachRundung": 236137,
+     "cap": 39409,
+     "ppm": 0,
+     "nachkorrektur": 179,
+     "maxNachkorrektur": 0.0041855286968130925
+    },
+    "umsatz": {
+     "n": 285889,
+     "gleichRoh": 230290,
+     "gleichNachRundung": 0,
+     "cap": 47825,
+     "ppm": 37,
+     "nachkorrektur": 7737,
+     "maxNachkorrektur": 0.989170651744018
+    },
+    "hoch": {
+     "n": 285889,
+     "gleichRoh": 13273,
+     "gleichNachRundung": 231261,
+     "cap": 41176,
+     "ppm": 2,
+     "nachkorrektur": 177,
+     "maxNachkorrektur": 0.04753116809585259
+    },
+    "tief": {
+     "n": 285889,
+     "gleichRoh": 13441,
+     "gleichNachRundung": 231046,
+     "cap": 41238,
+     "ppm": 2,
+     "nachkorrektur": 162,
+     "maxNachkorrektur": 0.005015435027442085
+    }
+   },
+   "schlimmste": [
+    [
+     "C",
+     222
+    ],
+    [
+     "CVX",
+     190
+    ],
+    [
+     "CAT",
+     188
+    ],
+    [
+     "EOG",
+     185
+    ],
+    [
+     "SCHW",
+     183
+    ]
+   ]
+  },
+  "60m": {
+   "reihen": 199,
+   "mitDatei": 191,
+   "gemeinsam": 974923,
+   "nurStore": 3230,
+   "felder": {
+    "schluss": {
+     "n": 974923,
+     "gleichRoh": 39326,
+     "gleichNachRundung": 934093,
+     "cap": 0,
+     "ppm": 0,
+     "nachkorrektur": 1504,
+     "maxNachkorrektur": 0.011575680409844231
+    },
+    "umsatz": {
+     "n": 974923,
+     "gleichRoh": 968659,
+     "gleichNachRundung": 0,
+     "cap": 0,
+     "ppm": 62,
+     "nachkorrektur": 6202,
+     "maxNachkorrektur": 1
+    },
+    "hoch": {
+     "n": 974923,
+     "gleichRoh": 51842,
+     "gleichNachRundung": 920859,
+     "cap": 0,
+     "ppm": 12,
+     "nachkorrektur": 2210,
+     "maxNachkorrektur": 0.04753116809585259
+    },
+    "tief": {
+     "n": 974923,
+     "gleichRoh": 51315,
+     "gleichNachRundung": 921142,
+     "cap": 0,
+     "ppm": 12,
+     "nachkorrektur": 2454,
+     "maxNachkorrektur": 0.01755160613754281
+    }
+   },
+   "schlimmste": [
+    [
+     "COST",
+     346
+    ],
+    [
+     "ADSK",
+     321
+    ],
+    [
+     "HON",
+     309
+    ],
+    [
+     "CDNS",
+     305
+    ],
+    [
+     "MAR",
+     305
+    ]
+   ]
+  }
+ },
+ "kontrolle": "bestanden (A–H) vor dem Lauf"
+}

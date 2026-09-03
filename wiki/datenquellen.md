@@ -9,7 +9,7 @@ Daten außerhalb des Fensters liegen, ist unmöglich — nicht schwierig.
 |---|---|---|---|
 | **archiv1d** | 2.965 Werte | **bis 1986**, ~4.665 Handelstage | der Kernbestand, mit Eröffnungskursen |
 | **archiv60m** | 2.886 Werte | **730 Tage ROLLIEREND** | Quelle gibt nicht mehr her |
-| 1m | — | ~7 Tage | **Sammlung RUHT** (Entscheid, siehe [entscheide.md](entscheide.md)) |
+| 1m | 2.967 Werte | ~7 Tage | ~~Sammlung RUHT~~ **läuft** (Z0-Befund 03.09.: 1m-Lauf der App täglich, 531 Werte, `archiv1m/laeufe.log`); der Renderer-Store hält bis 70 Handelstage, siehe [archiv-zusammenfuehrung.md](archiv-zusammenfuehrung.md) |
 | 5m / 15m | — | ~60 Tage | sammelt seit 26.08.2026 |
 | **massive/** | 1.164 verschwundene Reihen | **ab 23.08.2024**, nicht früher | für [ueberlebensverzerrung.md](ueberlebensverzerrung.md) — **die Grenze ist hart**, siehe unten |
 
@@ -151,3 +151,25 @@ Das ist genau die Ware, für die Massive 199 $/Monat verlangt (Stufe Advanced).
 > die konsolidierte. Das steht so schon in [kosten.md](kosten.md), „Grenzen der Simulation".
 
 *Quellen:* docs.alpaca.markets/us/docs/paper-trading (Füllregeln, Teilfüllungen), alpaca.markets/support/countries-alpaca-is-available, interactivebrokers.com/docs/web-api/introduction (OAuth), interactivebrokers.com/docs/tws-api/doc/notes-limitations/limitations/paper-trading, docs.trading212.com/api, community.trading212.com „Trading 212 API Update". Stand der Abfragen: 02.09.2026.
+
+### Alpaca als BALKENQUELLE (Z1, 03.09.2026 — gebaut, Probe steht aus)
+
+`/v2/stocks/bars?symbols=…&timeframe=1Min|5Min|15Min&start=…&end=…&limit=10000&feed=sip&adjustment=raw`,
+Zeitstempel `t` = Balkenöffnung (RFC 3339), Felder `o h l c v n vw`. Vorgesehen als Ersatz für die
+verworfene CFD-Tiefe des Renderer-Stores (Entscheid 2 in [archiv-zusammenfuehrung.md](archiv-zusammenfuehrung.md) §6).
+**Ob die Gratisstufe Balken zurück bis 2016 liefert, ob `t` wirklich die Öffnung ist, ob Vor-/Nachbörse
+mitkommt und ob Schluss und Umsatz mit Yahoo übereinstimmen, ist NICHT gemessen** — die Probe
+`studien/archiv-zusammenfuehrung-2026-09/probe-alpaca-balken.js` prüft genau das (Kriterien im Code),
+und ihr Urteil auf der Platte ist die Freigabe für `tools/alpaca-balken-holen.js` (reguläre Sitzung
+laut `/v2/calendar`, iex-Wache: Balken außerhalb des angefragten Zeitraums werden verworfen, Datei gewinnt
+bei gemeinsamem Stempel, Quelle `alpaca` je Kerze, 180/min, fortsetzbar). Zugang ausschließlich über
+`schluessel.js` der Spannen-Studie — Klinke Block 35.
+
+### Format des Kursarchivs (Format 2, seit Z1)
+
+`{ sym, quelle, format: 2, felder, quellen: [{ von, bis, quelle: 'yahoo'|'alpaca'|'capital', abgeleitet? }],
+spannen?, waehrung, boerse, stand, series }` — Kerze `[zeit, schluss, umsatz, hoch, tief, eroeffnung]`,
+[5] nie eine Spanne. **Jede geschriebene Kerze braucht eine Quelle** (`kerzenquelle.js satz()`/
+`zusammenfuehren()` werfen sonst). Dateien ohne `quellen` (Format 1) werden weiter gelesen, ihr Bestand
+gilt als `yahoo` (Marke `abgeleitet: 'bestand'`). Krypto (`-USD`) liegt unter `archiv<iv>/krypto/`.
+*Fundstelle: `studien/archiv-zusammenfuehrung-2026-09/Z1-BEFUND.md` §2, test-v6 Block 63 „Format 2".*

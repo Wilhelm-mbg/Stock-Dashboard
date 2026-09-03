@@ -10654,7 +10654,7 @@ console.log('\n63) Nur fertige Kerzen kommen ins Archiv (Issue #85)');
    * von selbst weg - aber nur, solange die Reihe noch beliefert wird. Auf einer
    * Reihe, die aufhoert zu handeln, bleiben sie fuer immer. */
   var krummNeu = [[Date.parse('2026-08-26T15:12:00Z'), 1, 0, 1, 1, 1]];
-  ok(KQ.zusammenfuehren([], krummNeu, '60m').serie.length === 0,
+  ok(KQ.zusammenfuehren([], krummNeu, '60m', { quelleNeu: 'yahoo' }).serie.length === 0,
      'Eine NEU geholte krumme Kerze kommt nicht ins Archiv - nicht nur eine alte');
   var krummAlt = [[Date.parse('2026-08-26T16:54:00Z'), 1, 0, 1, 1, 1]];
   ok(KQ.zusammenfuehren(krummAlt, [], '60m').serie.length === 0,
@@ -10760,6 +10760,172 @@ console.log('\n63) Nur fertige Kerzen kommen ins Archiv (Issue #85)');
     ok(/--wirklich/.test(w) && /if \(!loeschen \|\| !WIRKLICH\) return;/.test(w),
        'Es zaehlt nur - geschrieben wird erst mit --wirklich');
   }
+
+  /* ================= FORMAT 2: DIE QUELLE JE KERZE (Z1, 03.09.2026) =================
+   * Die Zusammenfuehrung der zwei Archive (wiki/archiv-zusammenfuehrung.md) steht auf
+   * einer Eigenschaft: JEDE Kerze im Archiv kennt ihre Herkunft. Der Renderer-Store
+   * hatte dafuer capBereiche, und die Marke hiess "war einmal CFD" (8 von 12
+   * markierten Bereichen hielten Boersendaten). Deshalb hier vier Zusicherungen, die
+   * nicht am Text, sondern am VERHALTEN haengen:
+   *   1. Formatnummer - die Datei sagt, was sie ist.
+   *   2. Quellenpflicht - schreiben ohne Quelle ist ein FEHLER, keine Warnung.
+   *   3. [5] ist die Eroeffnung, nie eine Spanne (Risiko R1).
+   *   4. Rueckwaertslesen - alte Dateien ohne quellen bleiben lesbar, ihr Bestand
+   *      heisst 'yahoo' und traegt die Marke 'bestand'. */
+  var kqRein = ohneKommentare(kq);
+  ok(/^var FORMAT = 2;$/m.test(kq) && /format: FORMAT,/.test(kqRein),
+     'Format 2: die Nummer steht als Konstante da, und satz() schreibt sie in die Huelle');
+  ok(KQ.FORMAT === 2 && KQ.FELDER === '[zeit, schluss, umsatz, hoch, tief, eroeffnung]',
+     'Die Kerze bleibt bei sechs Feldern - die Feldliste ist Teil der Huelle, nicht mehr das Format');
+  var tZ = Date.parse('2026-08-26T14:30:00Z');
+  var altZ = [[tZ, 100, 10, 101, 99, 100], [tZ + 3600000, 101, 10, 102, 100, 100]];
+  var neuZ = [[tZ + 7200000, 102, 10, 103, 101, null]];
+  /* 2. Quellenpflicht - beide Schreiber, je an der Verwendung geprueft. */
+  var ohneQ = null;
+  try { KQ.zusammenfuehren(altZ, neuZ, '60m'); } catch (e) { ohneQ = e.message; }
+  ok(/ohne Quelle/.test(ohneQ || ''),
+     'zusammenfuehren() weist neue Kerzen ohne Quelle mit einem FEHLER ab', ohneQ);
+  var falschQ = null;
+  try { KQ.zusammenfuehren(altZ, neuZ, '60m', { quelleNeu: 'capitol' }); } catch (e) { falschQ = e.message; }
+  ok(/ohne Quelle/.test(falschQ || ''),
+     'und eine Quelle, die es nicht gibt, ist keine Quelle (zulaessig: yahoo, alpaca, capital)');
+  var vZ = KQ.zusammenfuehren(altZ, neuZ, '60m', { quelleNeu: 'alpaca' });
+  ok(vZ.serie.length === 3 && Array.isArray(vZ.quellen) && vZ.quellen.length === 2 &&
+     vZ.quellen[0].quelle === 'yahoo' && vZ.quellen[0].abgeleitet === 'bestand' &&
+     vZ.quellen[0].von === tZ && vZ.quellen[0].bis === tZ + 3600000 &&
+     vZ.quellen[1].quelle === 'alpaca' && vZ.quellen[1].von === tZ + 7200000 && vZ.quellen[1].bis === tZ + 7200000,
+     'Mit Quelle: das Vorhandene ohne quellen ist Bestand (yahoo, abgeleitet: bestand), das Neue traegt seine Quelle - verdichtet zu zwei Bereichen',
+     JSON.stringify(vZ.quellen));
+  /* Ein spaeter eingeschobener Balken einer anderen Quelle teilt den Bereich. */
+  var vZ2 = KQ.zusammenfuehren(vZ.serie, [[tZ + 3600000, 5, 5, 5, 5, 5]], '60m',
+    { quellenAlt: vZ.quellen, quelleNeu: 'capital' });
+  ok(vZ2.quellen.length === 3 && vZ2.quellen[1].quelle === 'capital' &&
+     vZ2.quellen[0].quelle === 'yahoo' && vZ2.quellen[2].quelle === 'alpaca',
+     'Ein Balken einer anderen Quelle MITTEN im Bereich teilt ihn - Bereiche sind ueber Stempel definiert, nicht ueber Zeitraeume',
+     JSON.stringify(vZ2.quellen.map(function (b) { return b.quelle; })));
+  ok(vZ2.serie[1][1] === 5, 'und bei gleichem Stempel gewinnt weiter die neue Kerze');
+  var satzOhne = null;
+  try { KQ.satz('X', '60m', vZ.serie, { waehrung: 'USD' }); } catch (e) { satzOhne = e.message; }
+  ok(/quellen fehlt/.test(satzOhne || ''), 'satz() ohne meta.quellen ist ein FEHLER', satzOhne);
+  var satzLueck = null;
+  try { KQ.satz('X', '60m', vZ.serie, { quellen: [vZ.quellen[0]] }); } catch (e) { satzLueck = e.message; }
+  ok(/1 von 3 Kerzen ohne Quelle/.test(satzLueck || ''),
+     'satz() mit Bereichen, die nicht jede Kerze abdecken, ist ein FEHLER - und er nennt die Zahl', satzLueck);
+  var hZ = KQ.satz('X', '60m', vZ.serie, { quellen: vZ.quellen, waehrung: 'USD' });
+  ok(hZ.format === 2 && hZ.felder === KQ.FELDER && hZ.quellen === vZ.quellen && hZ.series.length === 3,
+     'Mit vollstaendigen Quellen geht die Huelle durch: format 2, felder, quellen, series');
+  /* 3. [5] ist die Eroeffnung. Eine Kerze mit einem siebten Feld (dort schrieb
+   * capital.js die Spanne) und eine mit fuenf werden abgewiesen; die Spannen gehen
+   * als eigenes Huellenfeld durch und ruehren [5] nicht an. */
+  var sieben = null, fuenf = null;
+  try { KQ.satz('X', '60m', [[tZ, 1, 1, 1, 1, 1, 0.02]], { quellen: [{ von: tZ, bis: tZ, quelle: 'capital' }] }); } catch (e) { sieben = e.message; }
+  try { KQ.satz('X', '60m', [[tZ, 1, 1, 1, 1]], { quellen: [{ von: tZ, bis: tZ, quelle: 'yahoo' }] }); } catch (e) { fuenf = e.message; }
+  ok(/7 Felder/.test(sieben || '') && /5 Felder/.test(fuenf || ''),
+     'Eine Kerze mit sieben oder fuenf Feldern kommt nicht auf die Platte - sechs, und [5] ist die Eroeffnung',
+     (sieben || '?').slice(-12) + ' / ' + (fuenf || '?').slice(-12));
+  var spZ = { '2026-08-26': { n: 3, med: 0.02 } };
+  var hSp = KQ.satz('X', '60m', vZ.serie, { quellen: vZ.quellen, spannen: spZ });
+  ok(hSp.spannen === spZ && hSp.series[0][5] === 100 && hSp.series[2][5] === null,
+     'Die Capital-Spanne ist ein Huellenfeld `spannen` - [5] bleibt die Eroeffnung bzw. null');
+  ok(!/\[5\]\s*=[^=]/.test(kqRein),
+     'Nirgends in kerzenquelle.js wird Element [5] zugewiesen - die Eroeffnung kommt nur aus der Quelle');
+  /* 4. Rueckwaertslesen: eine Datei im alten Format (Textfeld statt Nummer, keine
+   * quellen) bleibt lesbar, ihr Bestand gilt als yahoo. Eine Format-2-Datei bringt
+   * ihre Bereiche mit. */
+  var tmpZ = fs.mkdtempSync(require('path').join(require('os').tmpdir(), 'format2-'));
+  var altDatei = require('path').join(tmpZ, 'bars_60m_X.json');
+  fs.writeFileSync(altDatei, JSON.stringify({ sym: 'X', quelle: 'yahoo v8 chart', format: KQ.FELDER,
+    waehrung: 'USD', stand: '2026-09-01T00:00:00Z', series: altZ }));
+  var hAlt = KQ.huelleLesen(altDatei);
+  ok(hAlt && hAlt.format === 1 && hAlt.quellen.length === 1 && hAlt.quellen[0].quelle === 'yahoo' &&
+     hAlt.quellen[0].abgeleitet === 'bestand' && hAlt.quellen[0].von === tZ && hAlt.quellen[0].bis === tZ + 3600000,
+     'Eine Format-1-Datei wird gelesen: format 1, Bestand = yahoo mit Marke bestand ueber alle Kerzen',
+     JSON.stringify(hAlt && hAlt.quellen));
+  var neuDatei = require('path').join(tmpZ, 'bars_60m_Y.json');
+  fs.writeFileSync(neuDatei, JSON.stringify(hSp));
+  var hNeu = KQ.huelleLesen(neuDatei);
+  ok(hNeu && hNeu.format === 2 && hNeu.quellen.length === 2 && hNeu.quellen[1].quelle === 'alpaca' &&
+     hNeu.spannen && hNeu.spannen['2026-08-26'].med === 0.02,
+     'Eine Format-2-Datei bringt quellen und spannen mit');
+  ok(KQ.ohneQuelle(hNeu.series, hNeu.quellen) === 0 && KQ.ohneQuelle(hNeu.series, hNeu.quellen.slice(1)) === 2,
+     'ohneQuelle() zaehlt die Kerzen, die kein Bereich deckt - 0 bei vollstaendigen Bereichen');
+  /* Der Sammler traegt die Quelle beim ersten Schreiben ein: er liest die ganze
+   * Huelle, reicht quellenAlt und quelleNeu durch und schreibt v.quellen. Geprueft
+   * am Code des Schreibpfads, weil ein Netzabruf in der Suite nichts zu suchen hat. */
+  ok(/huelleLesen\(datei\)/.test(kqRein) &&
+     /quellenAlt: huelle \? huelle\.quellen : \[\], quelleNeu: 'yahoo'/.test(kqRein) &&
+     /quellen: v\.quellen, spannen: huelle \? huelle\.spannen : undefined/.test(kqRein),
+     'sammle() liest die Huelle ganz, vereinigt mit Quelle yahoo und schreibt quellen und spannen zurueck');
+  /* Krypto: eigener Ordner, gleiches Format (Entscheid 4). */
+  ok(KQ.istKryptoSym('BTC-USD') && !KQ.istKryptoSym('BRK.B') && !KQ.istKryptoSym('USD'),
+     'Krypto wird am Namen erkannt (-USD am Ende)');
+  ok(/[\\/]krypto$/.test(KQ.ordnerFuer('ETH-USD', tmpZ)) && /[\\/]etf$/.test(KQ.ordnerFuer('SPY', tmpZ)) && KQ.ordnerFuer('AAPL', tmpZ) === tmpZ,
+     'Krypto liegt unter archiv<iv>/krypto/, ETFs weiter unter etf/, Aktien in der Wurzel');
+  fs.mkdirSync(require('path').join(tmpZ, 'krypto'));
+  fs.writeFileSync(KQ.dateiFuer('ETH-USD', '60m', tmpZ), JSON.stringify(hSp));
+  ok(KQ.archivDateien(tmpZ).some(function (p) { return /krypto[\\/]bars_60m_ETH-USD\.json$/.test(p); }),
+     'und der Ueberblick sieht den Krypto-Ordner - sonst zaehlte die Archiv-Grafik ihn nicht');
+  fs.rmSync(tmpZ, { recursive: true, force: true });
+
+  /* ================= Z1: MIGRATION UND NACHHOLER (03.09.2026) =================
+   * Zwei Werkzeuge schreiben in die Dateisammlung, und beide duerfen es NUR ueber
+   * zusammenfuehren()/satz(): tools/archiv-migration.js (Store-Sicherung -> Datei)
+   * und tools/alpaca-balken-holen.js (Alpaca-Balken -> Datei). Geprueft an der
+   * Verwendung und am Verhalten der reinen Bausteine; die Positivkontrollen beider
+   * Werkzeuge laufen hier mit (ein Werkzeug, das nie 'uebernehmen' sagt, bestuende
+   * jeden Trockenlauf). */
+  var MIG = require(__dirname + '/tools/archiv-migration.js');
+  var migQ = ohneKommentare(fs.readFileSync(__dirname + '/tools/archiv-migration.js', 'utf8'));
+  ok(MIG.kontrolle() === true, 'Migration: die Positivkontrollen A–H bestehen');
+  /* Schreiben nur ueber kerzenquelle.js: genau EIN writeFileSync, und das ist der
+   * atomare Schreiber (tmp + rename); der Inhalt kommt aus KQ.satz(). */
+  ok(!/writeFileSync\((ziel|pfad|a\.pfad|datei)/.test(migQ) && /function atomarSchreiben/.test(migQ) &&
+     /renameSync\(tmp, pfad\)/.test(migQ) && /atomarSchreiben\(ziel\.pfad, JSON\.stringify\(KQ\.satz\(/.test(migQ) &&
+     (migQ.match(/atomarSchreiben\(ziel\.pfad/g) || []).length === 1 && /KQ\.zusammenfuehren\(alt, neu, iv, \{/.test(migQ),
+     'Migration schreibt ausschliesslich KQ.satz() ueber zusammenfuehren(), atomar - nie an kerzenquelle.js vorbei');
+  ok(/quelleNeu: 'yahoo', abgeleitetNeu: 'vergleich-z0'/.test(migQ),
+     'Uebernommene Store-Kerzen tragen Quelle yahoo mit der Marke vergleich-z0');
+  /* Die vier Wachen vor --schreiben: R5, Sammelfenster, Sperre, lebender Store. */
+  ok(/if \(!r5Behoben\(\)\) \{ console\.error\([^)]*VERWEIGERT/.test(migQ) && /if \(imSammelfenster\(\)\) \{ console\.error\([^)]*VERWEIGERT/.test(migQ),
+     'Vor --schreiben: verweigert, solange R5 nicht behoben ist oder das Sammelfenster laeuft');
+  ok(/if \(sp\.aktiv\) \{ erg\.fehler\.push/.test(migQ) && /KQ\.sperreSetzen\(ordner, 'Z1-Migration/.test(migQ) && /KQ\.sperreLoesen\(ordner\)/.test(migQ),
+     'Sie setzt die Sammler-Sperre je Ordner und ruehrt einen gerade beschriebenen Ordner nicht an');
+  ok(/AppData\[\\\\\/\]Roaming/i.test(migQ) && /manifest\.json/.test(migQ),
+     'Der lebende Store ist verweigert - nur eine Sicherung mit manifest.json wird gelesen');
+  ok(MIG.r5Behoben === MIG.r5Behoben && typeof MIG.r5Behoben() === 'boolean',
+     'r5Behoben() fragt das Verhalten von kerzenquelle.js ab - Stand: ' + (MIG.r5Behoben() ? 'behoben' : 'NICHT behoben'));
+  /* Die Regel je Kerze am Verhalten: Datei gewinnt, cap wird verworfen, Quote am
+   * Schluss nicht uebernommen, Krypto ohne Kalenderregel. */
+  var tM = Date.parse('2026-08-26T14:00:00Z'), spaet = Date.parse('2027-01-01T00:00:00Z');
+  var eM = MIG.einordnen({ series: [[tM, 1, 1, 1, 1], [tM + 300000, 1, 1, 1, 1], [tM + 600000, 1, 1, 1, 1], [Date.parse('2026-08-26T20:00:00Z'), 1, 0, 1, 1]],
+    updatedAt: spaet, capBereiche: [[tM + 600000, tM + 600000]] }, (function () { var o = {}; o[tM] = 1; return o; })(), '5m', false);
+  ok(eM.zaehl.gemeinsam === 1 && eM.zaehl.uebernehmen === 1 && eM.zaehl.cap === 1 && eM.zaehl['quote-nach-schluss'] === 1 && eM.neu[0][0] === tM + 300000 && eM.neu[0][5] === null,
+     'Regel je Kerze: gemeinsam -> Datei gewinnt, cap -> verworfen, Quote am Schluss -> nicht, der Rest mit [5] = null uebernommen', eM.zaehl);
+  ok(MIG.sitzungsschluss(Date.parse('2026-01-15T15:00:00Z')) === Date.parse('2026-01-15T21:00:00Z') && MIG.sitzungsschluss(Date.parse('2025-11-28T15:00:00Z')) === Date.parse('2025-11-28T18:00:00Z'),
+     'Der Sitzungsschluss kommt aus dem Kalender: 21:00 UTC im Winter, 18:00 UTC am Halbtag - nicht "20:00"');
+
+  var NH = require(__dirname + '/tools/alpaca-balken-holen.js');
+  var nhQ = ohneKommentare(fs.readFileSync(__dirname + '/tools/alpaca-balken-holen.js', 'utf8'));
+  ok(NH.kontrolle() === true, 'Nachholer: die Positivkontrollen A–E bestehen');
+  /* Am SCHREIBPFAD geprueft, nicht irgendwo in der Datei: die Kontrolle D des Werkzeugs
+   * nennt 'alpaca' ebenfalls, und eine Suche ueber die ganze Datei blieb gruen, als der
+   * Schreibpfad auf 'yahoo' umgestellt war (Gegenprobe G17, 03.09.2026). */
+  ok(/t\.neu, a\.iv, \{ quellenAlt: huelle \? huelle\.quellen : \[\], quelleNeu: 'alpaca' \}\)/.test(nhQ) &&
+     (nhQ.match(/quelleNeu: '(?!alpaca')/g) || []).length === 0 &&
+     /KQ\.satz\(a\.dateiSym, a\.iv, v\.serie/.test(nhQ) && !/writeFileSync/.test(nhQ) && /M\.atomarSchreiben\(a\.pfad/.test(nhQ),
+     'Nachholer schreibt Kerzen nur mit Quelle alpaca (am Schreibpfad), nur ueber satz()/zusammenfuehren(), nur atomar');
+  ok(/if \(!fg\.bestanden\) \{ console\.error\([^)]*VERWEIGERT/.test(nhQ) && /if \(!M\.r5Behoben\(\)\) \{ console\.error\([^)]*VERWEIGERT/.test(nhQ) && /if \(M\.imSammelfenster\(\)\) \{ console\.error\([^)]*VERWEIGERT/.test(nhQ),
+     'Nachholer holt nur mit bestandener Probe (Freigabe auf der Platte), behobenem R5 und ausserhalb des Sammelfensters');
+  ok(/feed=sip/.test(nhQ) && !/feed=iex/.test(nhQ) && /adjustment=raw/.test(nhQ),
+     'Nachholer fragt ausschliesslich feed=sip und adjustment=raw ab - die iex-Falle ist ausgeschlossen');
+  ok(/function imZeitraum/.test(nhQ) && /imZeitraum\(kerzen, a\.von, a\.bis\)/.test(nhQ),
+     'und haelt jeden gelieferten Balken gegen den ANGEFRAGTEN Zeitraum (die Schnittstelle antwortet lieber irgendetwas als nichts)');
+  ok(/function trenne/.test(nhQ) && /trenne\(reg\.drin, huelle \? huelle\.series : \[\]\)/.test(nhQ),
+     'Datei gewinnt auch gegen Alpaca: gemeinsame Stempel werden verglichen, nicht ueberschrieben');
+  var kalN = { '2026-08-27': { open: '09:30', close: '16:00' } };
+  var rN = NH.regulaer([[Date.parse('2026-08-27T13:29:00Z'), 1, 1, 1, 1, 1], [Date.parse('2026-08-27T13:30:00Z'), 1, 1, 1, 1, 1], [Date.parse('2026-08-27T20:00:00Z'), 1, 1, 1, 1, 1]], kalN);
+  ok(rN.drin.length === 1 && rN.vor === 1 && rN.nach === 1, 'Regulaere Sitzung: [open, close) - 13:29 davor, 20:00 danach, 13:30 drin', [rN.drin.length, rN.vor, rN.nach]);
+  ok(NH.RATE_JE_MIN === 180, 'Ratenbremse 180/min (Kopfzeile sagt 200, der Rest ist Luft fuer Wiederholungen)');
 })();
 
 
@@ -11664,7 +11830,9 @@ console.log('\nDie App sammelt selbst: Kursarchiv (26.08.2026)');
    * in der Erklaerung, warum es sie NICHT anfasst. Ohne ohneKommentare() waere
    * diese Zusicherung an ihrem eigenen Erklaertext rot geworden. */
   var TABU = /intradayScan|autopilotRing|SETUPS|TRIG_BELEGT|modeParams|demoOrder|takt\(/;
-  ['kerzenquelle.js', 'sammelplan.js', 'archivkarte.js'].forEach(function (d) {
+  ['kerzenquelle.js', 'sammelplan.js', 'archivkarte.js',
+   /* Z1 (03.09.2026): die zwei Werkzeuge, die in die Dateisammlung schreiben, ebenso. */
+   'tools/archiv-migration.js', 'tools/alpaca-balken-holen.js'].forEach(function (d) {
     var rein = ohneKommentare(fs.readFileSync(__dirname + '/' + d, 'utf8'));
     ok(!TABU.test(rein), d + ' fasst die Handelslogik nicht an');
   });
@@ -12816,14 +12984,51 @@ console.log('\n64) Bestand & Kopfzeile (Oberflaeche Stufe 2, 03.09.2026)');
      'Die Moduspruefung vergleicht Zeitpunkte numerisch, nicht als Zeichenketten');
 
   /* ---------- (b) Verhalten: der Leck-Test ---------- */
-  probe((async function () {
-    /* Nie zwei Leck-Tests gleichzeitig - sie haengen beide process.stdout.write um. */
+  /* NIE ZWEI LECK-TESTS GLEICHZEITIG - sie haengen alle process.stdout.write um. Deshalb
+   * eine KETTE: dieser wartet auf Abschnitt 64, der Z1-Test (unten) auf diesen, der
+   * zusatzC-Test auf Z1. Bis zum 03.09.2026 warteten alle drei auf DIESELBE Zusage und
+   * liefen verschachtelt: der erste, der zuruecksetzte, riss die Haken der anderen mit,
+   * und deren "gesammelt" enthielt nur noch die (verdeckte) Ausgabe des NACHBARN - die
+   * Gegenprobe (verdecken() aus der Z1-Probe ausgebaut) blieb gruen. Die Form aus
+   * wiki/fehlerformen.md: eine Pruefung, die etwas anderes prueft. */
+  var leckSpannen = probe((async function () {
     await leckDurchreiche;
     var P1 = require(SP + '/probe.js');
     var r = await P1.selbsttest();
     ok(!r.leck, 'Leck-Test: erfundene Zugangswerte tauchen in KEINER Ausgabe auf, auch wenn der Server die Kopfzeilen zurueckspiegelt');
     ok(/\[Zugang\]/.test(r.ausgabe) && /\[Geheimnis\]/.test(r.ausgabe),
        'Der Leck-Test hat die Ausgabepfade wirklich durchlaufen (beide Platzhalter stehen drin)');
+  })());
+
+  /* ---------- (a') Der Zugang verlaesst auch Z1 nicht (03.09.2026) ----------
+   * Zwei weitere Dateien rufen die Alpaca-Tafel mit Wilhelms Zugang auf: die
+   * Balken-Probe der Archiv-Zusammenfuehrung und der Nachholer in tools/. Beide
+   * holen den Zugang NUR ueber schluessel.js dieser Studie (require) - keine eigene
+   * Umgebungslesung, kein Alias, jede Ausgabe durch verdecken(). Dieselben drei
+   * Pruefungen wie oben, auf dieselbe Weise geschaerft. */
+  var Z1 = [
+    __dirname + '/studien/archiv-zusammenfuehrung-2026-09/probe-alpaca-balken.js',
+    __dirname + '/tools/alpaca-balken-holen.js',
+  ];
+  Z1.forEach(function (p) {
+    var name = p.replace(/^.*[\\/]/, '');
+    var code = ohneKommentare(fs.readFileSync(p, 'utf8'));
+    ok(/require\('(\.\.\/)+(studien\/)?vorregistrierung-2026-09-02-spannen-historisch\/schluessel\.js'\)/.test(code),
+       name + ': holt den Zugang ueber schluessel.js der Spannen-Studie');
+    var v = [];
+    (code.match(/process\.env\.[A-Za-z_][A-Za-z0-9_]*/g) || []).forEach(function (x) { if (x.indexOf('process.env.MD_') !== 0) v.push(x); });
+    if (/process\.env(?!\s*\.)/.test(code)) v.push('bindet process.env als Ganzes');
+    ok(v.length === 0, name + ': liest die Umgebung nicht - ausser MD_-Pfadschaltern, auch nicht ueber einen Alias', v.join(' | '));
+    ok(/function sag\s*\([^)]*\)\s*\{[^}]*S\.verdecken/.test(code), name + ': die Ausgabefunktion laeuft durch verdecken()');
+    ok(/feed=sip/.test(code) && !/feed=iex/.test(code), name + ': fragt ausschliesslich feed=sip ab');
+  });
+  var leckZ1 = probe((async function () {
+    await leckSpannen;   /* Kette, siehe oben - nie parallel zu einem anderen Leck-Test */
+    var PB = require(Z1[0]);
+    var r = await PB.selbsttest();
+    ok(!r.leck, 'Leck-Test der Balken-Probe: erfundene Zugangswerte tauchen in KEINER Ausgabe auf, auch wenn der Server die Kopfzeilen zurueckspiegelt');
+    ok(/\[Zugang\]/.test(r.ausgabe) && /\[Geheimnis\]/.test(r.ausgabe),
+       'Der Leck-Test der Balken-Probe hat die Ausgabepfade wirklich durchlaufen');
   })());
 
   /* ---------- Ausschlussregeln: nie auf die Zielgroesse ---------- */
@@ -12905,7 +13110,7 @@ console.log('\n64) Bestand & Kopfzeile (Oberflaeche Stufe 2, 03.09.2026)');
        f + ': die Ausgabefunktion laeuft durch verdecken()');
   });
   probe((async function () {
-    await leckDurchreiche;
+    await leckZ1;   /* Kette, siehe (b) - nie parallel zu einem anderen Leck-Test */
     var ZC = require(SP + '/zusatzC.js');
     var r = await ZC.selbsttest();
     ok(!r.leck, 'Leck-Test zusatzC.js: erfundene Zugangswerte tauchen in KEINER Ausgabe auf, auch wenn der Server die Kopfzeilen zurueckspiegelt');

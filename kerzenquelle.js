@@ -35,6 +35,35 @@ var INTERVALLE = {
   '1m':  { range: '7d',   ordner: 'archiv1m',  etwa: 2577,  fensterTage: 7,    dauerMs: 60000 },
 };
 
+/* ---------- DAS FORMAT DER DATEI (Z1, 03.09.2026) ----------
+ * Format 1 (bis 03.09.2026): { sym, quelle, format: '[zeit, ...]', waehrung, boerse,
+ *   stand, series } - die Herkunft einer Kerze stand NIRGENDS. Genau daran ist das
+ *   zweite Archiv (der Renderer-Store) gescheitert: seine Marke `capBereiche` hiess
+ *   "war einmal CFD", nicht "ist CFD" (8 von 12 markierten Bereichen hielten
+ *   Boersendaten, BEFUND.md Z0 Paragraph 3.3).
+ * Format 2: dazu
+ *   quellen  [{ von, bis, quelle, abgeleitet? }]  - Bereiche ueber Stempel (ms, beide
+ *            einschliesslich), verdichtet: aufeinanderfolgende Kerzen derselben Quelle
+ *            bilden einen Bereich. quelle ist 'yahoo' | 'alpaca' | 'capital'.
+ *            abgeleitet sagt, WOHER die Zuordnung stammt, wenn sie nicht vom Schreiber
+ *            kam ('bestand' = Datei ohne quellen gelesen, 'vergleich-z0' = Migration).
+ *   spannen  { "YYYY-MM-DD": { n, med } }  - Geld-Brief-Spannen je Tag (Capital),
+ *            OPTIONAL. Die Spanne steht NIE in einer Kerze: capital.js schrieb sie
+ *            in Element [5], wo im Archiv die Eroeffnung liegt (Risiko R1).
+ *   format   die Nummer 2 (Format 1 trug an dieser Stelle die Feldliste als Text;
+ *            wer sie liest, findet sie jetzt unter `felder`).
+ * DIE KERZE BLEIBT: [zeit, schluss, umsatz, hoch, tief, eroeffnung] - sechs Felder,
+ * [5] ist die Eroeffnung oder null, nie etwas anderes.
+ * JEDE GESCHRIEBENE KERZE BRAUCHT EINE QUELLE. satz() und zusammenfuehren() weisen
+ * Schreiber ohne Quelle ab - mit einem Fehler, nicht mit einer Warnung, denn eine
+ * Warnung hat hier schon einmal niemand gelesen. Dateien ohne `quellen` werden
+ * weiter gelesen: ihr Bestand gilt als 'yahoo' (die einzige Quelle, die diese
+ * Datei je hatte) und wird beim ersten Schreiben so eingetragen. */
+var FORMAT = 2;
+var FELDER = '[zeit, schluss, umsatz, hoch, tief, eroeffnung]';
+var QUELLEN = ['yahoo', 'alpaca', 'capital'];
+var QUELLE_BESTAND = 'yahoo';
+
 /* SCHONEND: Yahoo bekommt hoechstens alle 1,2 Sekunden eine Anfrage. Die Zahl steht
  * hier und nicht bei den Aufrufern, damit nicht der eine hoeflich ist und der andere
  * nicht - gedrosselt wird die QUELLE, nicht der Aufrufer. */
@@ -457,17 +486,98 @@ function dochteReparieren(serie, intervall) {
  *  Das Vorhandene wird MITGEREINIGT: eine alte Teilkerze (16:57:27) hat einen anderen
  *  Stempel als die richtige Kerze derselben Stunde (16:30) und bliebe sonst ewig
  *  stehen, kuenftig mitten in der Reihe. */
-function zusammenfuehren(alt, neu, intervall) {
+/* ---------- DIE QUELLE JE KERZE (Format 2) ---------- */
+
+/** Die Quellenbereiche einer gelesenen Huelle. Fehlen sie (Format 1), gilt der
+ *  ganze Bestand als 'yahoo' - mit der Marke abgeleitet: 'bestand', damit man
+ *  spaeter noch sieht, dass das eine Annahme ueber alte Dateien war und keine
+ *  Angabe des Schreibers. */
+function quellenLesen(huelle) {
+  if (huelle && Array.isArray(huelle.quellen)) return huelle.quellen.slice();
+  var s = huelle && Array.isArray(huelle.series) ? huelle.series : [];
+  if (!s.length) return [];
+  return [{ von: s[0][0], bis: s[s.length - 1][0], quelle: QUELLE_BESTAND, abgeleitet: 'bestand' }];
+}
+function formatVon(huelle) {
+  return huelle && typeof huelle.format === 'number' && isFinite(huelle.format) ? huelle.format : 1;
+}
+/** Jeder Kerze ihre Quelle: ein Feld parallel zur Reihe, null wo kein Bereich
+ *  greift. Bereiche sind ueber Stempel definiert (von <= t <= bis). */
+function quelleJeKerze(serie, bereiche) {
+  var b = (bereiche || []).slice().sort(function (x, y) { return x.von - y.von; });
+  var j = 0;
+  return (serie || []).map(function (k) {
+    var t = k[0];
+    while (j < b.length && b[j].bis < t) j++;
+    /* Ein Bereich kann einen frueheren umschliessen; deshalb ab j alle ansehen,
+     * deren von noch vor t liegt. Bereiche sind kurz, die Schleife ist es auch. */
+    for (var i = j; i < b.length && b[i].von <= t; i++) {
+      if (t >= b[i].von && t <= b[i].bis) return { quelle: b[i].quelle, abgeleitet: b[i].abgeleitet || null };
+    }
+    return null;
+  });
+}
+/** Aus "jede Kerze hat eine Quelle" wieder Bereiche machen: aufeinanderfolgende
+ *  Kerzen mit gleicher Quelle UND gleicher Ableitung werden zu einem Bereich.
+ *  Wirft, wenn eine Kerze keine Quelle hat - das ist die Quellenpflicht. */
+function quellenVerdichten(serie, jeKerze) {
+  var aus = [];
+  for (var i = 0; i < serie.length; i++) {
+    var q = jeKerze[i];
+    if (!q || QUELLEN.indexOf(q.quelle) === -1) {
+      throw new Error('Kerze ohne zulaessige Quelle: Stempel ' + serie[i][0] +
+        (q ? ' (Quelle ' + JSON.stringify(q.quelle) + ')' : '') + ' - zulaessig sind ' + QUELLEN.join(', '));
+    }
+    var l = aus[aus.length - 1];
+    if (l && l.quelle === q.quelle && (l.abgeleitet || null) === (q.abgeleitet || null)) { l.bis = serie[i][0]; continue; }
+    var b = { von: serie[i][0], bis: serie[i][0], quelle: q.quelle };
+    if (q.abgeleitet) b.abgeleitet = q.abgeleitet;
+    aus.push(b);
+  }
+  return aus;
+}
+/** Sind alle Kerzen der Reihe durch die Bereiche abgedeckt? Gibt die Zahl der
+ *  Kerzen OHNE Quelle zurueck - 0 heisst vollstaendig. */
+function ohneQuelle(serie, bereiche) {
+  var n = 0;
+  quelleJeKerze(serie, bereiche).forEach(function (q) { if (!q) n++; });
+  return n;
+}
+
+/** Alte und neue Reihe vereinigen.
+ *  Was schon da ist, bleibt: Yahoo liefert nur ein Fenster, wer ueberschreibt verliert
+ *  bei jedem Lauf den aeltesten Rand. Bei gleichem Zeitstempel gewinnt die NEUE Kerze -
+ *  sie ist nachtraeglich bereinigt (Splits, Dividenden) und damit die richtigere.
+ *  Das Vorhandene wird MITGEREINIGT: eine alte Teilkerze (16:57:27) hat einen anderen
+ *  Stempel als die richtige Kerze derselben Stunde (16:30) und bliebe sonst ewig
+ *  stehen, kuenftig mitten in der Reihe.
+ *
+ *  QUELLEN (Format 2): opt.quelleNeu nennt die Quelle JEDER neuen Kerze - ohne sie
+ *  wird eine nichtleere neue Reihe abgewiesen. opt.quellenAlt sind die Bereiche der
+ *  gelesenen Datei; fehlen sie, gilt das Vorhandene als Bestand ('yahoo', siehe
+ *  quellenLesen). opt.abgeleitetNeu markiert eine abgeleitete Zuordnung (Migration).
+ *  Das Ergebnis traegt `quellen`, verdichtet ueber die VEREINIGTE Reihe - ein spaeter
+ *  eingeschobener Alpaca-Balken teilt einen Yahoo-Bereich also in zwei. */
+function zusammenfuehren(alt, neu, intervall, opt) {
   alt = Array.isArray(alt) ? alt : [];
+  neu = Array.isArray(neu) ? neu : [];
+  opt = opt || {};
+  if (neu.length && QUELLEN.indexOf(opt.quelleNeu) === -1) {
+    throw new Error('zusammenfuehren: ' + neu.length + ' neue Kerzen ohne Quelle (opt.quelleNeu fehlt oder ist ' +
+      JSON.stringify(opt.quelleNeu) + '; zulaessig: ' + QUELLEN.join(', ') + ')');
+  }
   var vorGereinigt = alt.length;
   /* Der Filter sass hier und traf nur das Vorhandene. Er steht jetzt hinter der
    * Vereinigung und trifft beide Seiten - siehe dort. */
   var gereinigt = 0;
   void vorGereinigt;
-  var karte = {};
-  alt.forEach(function (k) { karte[k[0]] = k; });
+  var karte = {}, herkunft = {};
+  var quellenAlt = opt.quellenAlt != null ? opt.quellenAlt : quellenLesen({ series: alt });
+  var altQ = quelleJeKerze(alt, quellenAlt);
+  alt.forEach(function (k, i) { karte[k[0]] = k; herkunft[k[0]] = altQ[i]; });
   var vorher = alt.length;
-  (neu || []).forEach(function (k) { karte[k[0]] = k; });
+  var neuQ = { quelle: opt.quelleNeu, abgeleitet: opt.abgeleitetNeu || null };
+  neu.forEach(function (k) { karte[k[0]] = k; herkunft[k[0]] = neuQ; });
   var serie = Object.keys(karte).map(Number).sort(function (a, b) { return a - b; })
     .map(function (ms) { return karte[ms]; });
   /* DAS RASTER GILT FUER BEIDE SEITEN - und das war es bis zum 27.08.2026 NICHT.
@@ -509,7 +619,11 @@ function zusammenfuehren(alt, neu, intervall) {
    * Das Merkmal bleibt gebaut und geprueft, nur seine Anwendung ruht. Wer sie
    * einschaltet, braucht den Tagesbalken als Gegenzeugen. */
   var ph = dochteReparieren(serie, intervall);
-  return { serie: serie, dazu: serie.length - vorher,
+  /* Die Quellen werden NACH dem Raster verdichtet - eine ausgesiebte Kerze hat
+   * keinen Bereich mehr noetig, und ein Bereich ueber Kerzen, die es nicht gibt,
+   * waere eine Behauptung. */
+  var quellen = quellenVerdichten(serie, serie.map(function (k) { return herkunft[k[0]]; }));
+  return { serie: serie, dazu: serie.length - vorher, quellen: quellen,
     gereinigt: gereinigt, dochte: 0, dochteErkannt: ph.repariert, klasseR: ph.klasseR };
 }
 
@@ -517,18 +631,56 @@ function zusammenfuehren(alt, neu, intervall) {
  *  quelle nennt den WIRKLICH abgefragten Bereich. Bis zum 26.08.2026 stand dort fest
  *  'range=730d interval=60m' - auch in jeder Datei des Tagesarchivs, das 40 Jahre
  *  Tageskerzen enthaelt. Das einzige Feld, das die Herkunft dokumentiert, log damit
- *  fuer jedes Archiv ausser 60m. */
+ *  fuer jedes Archiv ausser 60m.
+ *
+ *  FORMAT 2 (Z1): meta.quellen ist PFLICHT und muss jede Kerze abdecken; jede Kerze
+ *  hat genau sechs Felder mit einem Zahl-Stempel in [0]. Sonst fliegt ein Fehler -
+ *  eine Datei ohne Herkunft ist der Zustand, aus dem die Zusammenfuehrung erst
+ *  herausfuehren soll. meta.spannen (Capital, je Tag) ist optional und wird nur
+ *  durchgereicht; in [5] steht sie nie (Risiko R1). */
 function satz(sym, intervall, serie, meta) {
   var cfg = INTERVALLE[intervall] || {};
   meta = meta || {};
-  return {
+  serie = Array.isArray(serie) ? serie : [];
+  for (var i = 0; i < serie.length; i++) {
+    var k = serie[i];
+    if (!Array.isArray(k) || k.length !== 6 || typeof k[0] !== 'number' || !isFinite(k[0])) {
+      throw new Error('satz(' + sym + ', ' + intervall + '): Kerze ' + i + ' hat nicht die Form ' + FELDER +
+        ' (' + (Array.isArray(k) ? k.length + ' Felder' : typeof k) + ')');
+    }
+  }
+  if (!Array.isArray(meta.quellen)) {
+    throw new Error('satz(' + sym + ', ' + intervall + '): meta.quellen fehlt - jede geschriebene Kerze braucht eine Quelle');
+  }
+  var fehlt = ohneQuelle(serie, meta.quellen);
+  if (fehlt) throw new Error('satz(' + sym + ', ' + intervall + '): ' + fehlt + ' von ' + serie.length + ' Kerzen ohne Quelle');
+  var falsch = meta.quellen.filter(function (b) { return !b || QUELLEN.indexOf(b.quelle) === -1; });
+  if (falsch.length) throw new Error('satz(' + sym + ', ' + intervall + '): unzulaessige Quelle ' + JSON.stringify(falsch[0] && falsch[0].quelle));
+  var h = {
     sym: sym,
-    quelle: 'yahoo v8 chart, range=' + cfg.range + ' interval=' + intervall,
-    format: '[zeit, schluss, umsatz, hoch, tief, eroeffnung]',
+    quelle: meta.quelle || ('yahoo v8 chart, range=' + cfg.range + ' interval=' + intervall),
+    format: FORMAT,
+    felder: FELDER,
+    quellen: meta.quellen,
     waehrung: meta.waehrung, boerse: meta.boerse,
     stand: new Date().toISOString(),
     series: serie,
   };
+  if (meta.spannen && typeof meta.spannen === 'object') h.spannen = meta.spannen;
+  return h;
+}
+
+/** Eine Archivdatei lesen, wie sie auf der Platte liegt - Format 1 oder 2. Gibt
+ *  null zurueck, wenn sie fehlt oder unlesbar ist; sonst die Huelle mit
+ *  aufgeloesten `quellen` (Bestand = 'yahoo') und `format`. */
+function huelleLesen(datei) {
+  var j;
+  try { j = JSON.parse(fs.readFileSync(datei, 'utf8')); } catch (e) { return null; }
+  if (!j || typeof j !== 'object') return null;
+  if (!Array.isArray(j.series)) j.series = Array.isArray(j.bars) ? j.bars : [];
+  j.quellen = quellenLesen(j);
+  j.format = formatVon(j);
+  return j;
 }
 
 /* ================= WELCHE WERTE, UND WOHIN ================= */
@@ -547,7 +699,14 @@ function istEtfSym(s) { return !!ETF_SATZ[s]; }
  * Indexfonds. Laegen SPY und QQQ zwischen den Aktien, wuerde eine Aktienstrategie
  * sie mitmessen; bei SPY waere es schlimmer, denn es ist zugleich der Anker des
  * Regime-Tors - Messobjekt und Massstab in einem. */
-function ordnerFuer(sym, ziel) { return istEtfSym(sym) ? path.join(ziel, 'etf') : ziel; }
+/* Krypto (Yahoo-Schreibweise BTC-USD) bekommt seit Z1 einen eigenen Unterordner -
+ * Wilhelms Entscheid 03.09.2026 (archiv-zusammenfuehrung.md Paragraph 6, Punkt 4).
+ * Erkannt wird am Namen, wie es die Messmaschine seit je tut (indexOf('-USD')). */
+function istKryptoSym(s) { return /-USD$/.test(String(s || '')); }
+function ordnerFuer(sym, ziel) {
+  if (istKryptoSym(sym)) return path.join(ziel, 'krypto');
+  return istEtfSym(sym) ? path.join(ziel, 'etf') : ziel;
+}
 function dateiPraefix(intervall) { return 'bars_' + intervall + '_'; }
 function dateiFuer(sym, intervall, ziel) {
   return path.join(ordnerFuer(sym, ziel), dateiPraefix(intervall) + sym + '.json');
@@ -670,7 +829,7 @@ function juengsteKerzeVon(datei) {
 
 function archivDateien(ziel) {
   var aus = [];
-  ['', 'etf'].forEach(function (unter) {
+  ['', 'etf', 'krypto'].forEach(function (unter) {
     var o = unter ? path.join(ziel, unter) : ziel;
     var f = [];
     try { f = fs.readdirSync(o); } catch (e) { return; }
@@ -819,20 +978,21 @@ async function sammle(opt) {
         fs.mkdirSync(unter, { recursive: true });
         var datei = path.join(unter, praefix + sym + '.json');
         var dazu = 0;
-        if (fs.existsSync(datei)) {
-          try {
-            var alt = JSON.parse(fs.readFileSync(datei, 'utf8')).series || [];
-            var v = zusammenfuehren(alt, r.serie, intervall);
-            r.serie = v.serie; dazu = v.dazu; erg.gereinigt += v.gereinigt;
-            erg.dochte += v.dochte || 0; erg.klasseR += v.klasseR || 0;
-          } catch (e2) { /* unlesbar: die frische Reihe ersetzt sie */ }
-        }
+        /* Die Huelle wird GANZ gelesen, nicht nur series: die Quellenbereiche und
+         * die Spannen einer Format-2-Datei muessen den Lauf ueberleben. Eine Datei
+         * ohne quellen (Format 1) gilt als Bestand 'yahoo' - siehe quellenLesen. */
+        var huelle = fs.existsSync(datei) ? huelleLesen(datei) : null;
+        var v = zusammenfuehren(huelle ? huelle.series : [], r.serie, intervall,
+          { quellenAlt: huelle ? huelle.quellen : [], quelleNeu: 'yahoo' });
+        r.serie = v.serie; dazu = huelle ? v.dazu : 0; erg.gereinigt += v.gereinigt;
+        erg.dochte += v.dochte || 0; erg.klasseR += v.klasseR || 0;
         erg.abgeschnitten += r.abgeschnitten || 0;
         var ohneO = 0;
         r.serie.forEach(function (k) { if (k[5] == null) ohneO++; });
         erg.ohneEroeffnung += ohneO;
         fs.writeFileSync(datei, JSON.stringify(
-          satz(sym, intervall, r.serie, { waehrung: r.waehrung, boerse: r.boerse })));
+          satz(sym, intervall, r.serie, { waehrung: r.waehrung, boerse: r.boerse,
+            quellen: v.quellen, spannen: huelle ? huelle.spannen : undefined })));
         /* am = wann nachgesehen wurde, bisTag = was dabei herauskam. Beide, nicht
          * eines: am beantwortet "wann lief der Sammler zuletzt", bisTag beantwortet
          * "was steht drin" - und nur die zweite Frage darf ueber "auf Stand"
@@ -887,9 +1047,13 @@ async function sammle(opt) {
 
 module.exports = {
   INTERVALLE: INTERVALLE, ABSTAND_MS: ABSTAND_MS,
+  FORMAT: FORMAT, FELDER: FELDER, QUELLEN: QUELLEN, QUELLE_BESTAND: QUELLE_BESTAND,
   yahooName: yahooName, warte: warte, kursOk: kursOk, hole: hole,
   fertigeKerze: fertigeKerze, reiheHolen: reiheHolen,
-  zusammenfuehren: zusammenfuehren, satz: satz,
+  zusammenfuehren: zusammenfuehren, satz: satz, huelleLesen: huelleLesen,
+  quellenLesen: quellenLesen, formatVon: formatVon, quelleJeKerze: quelleJeKerze,
+  quellenVerdichten: quellenVerdichten, ohneQuelle: ohneQuelle,
+  istKryptoSym: istKryptoSym,
   aufGitter: aufGitter, rasterFilter: rasterFilter,
   dochteReparieren: dochteReparieren, dochtForm: dochtForm,
   PHANTOM_FORM: PHANTOM_FORM,

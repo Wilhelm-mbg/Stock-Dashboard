@@ -88,7 +88,8 @@ je Schritt). Nichts wird gelöscht, bevor es nicht an anderer Stelle nachweislic
 | Stufe | Inhalt | Zustand |
 |---|---|---|
 | **Z0 Sicherung & Vermessung** | Store vollständig nach E: sichern (259 MB, Prüfsumme); Überlappung Store ⋂ Datei stempelweise messen (12 Symbole je Intervall: gemeinsame Stempel, Abweichungen in schluss/umsatz/hoch/tief, getrennt für Reihen mit `capBereiche`, Abstand der letzten Kerze); Befund als `studien/archiv-zusammenfuehrung-2026-09/BEFUND.md`; Vorschlag der Vereinigungsregel je Feld. **Kein App-Code.** | **geliefert 03.09.** — Sicherung 799/799 (259,4 MB, SHA-256, `E:/Markt-Dashboard-Archiv/store-sicherung-2026-09-03/`), Befund und Vorschlag in `studien/archiv-zusammenfuehrung-2026-09/BEFUND.md`, Kernzahlen in §7, Übergabe `uebergabe/archiv-z0-2026-09-03.md` |
-| Z1 Zielformat & Fassade | Dateiformat um `quellen` erweitern (kerzenquelle.js, mit Migration der `capBereiche`); `window.Archiv` liest über IPC aus den Dateien, Rückfall Store; Äquivalenztest Datei = Store auf allen gemeinsamen Stempeln außer der laufenden Kerze | offen |
+| **Z1 Zielformat, Migrationswerkzeug, Nachholer** | Dateiformat 2 mit `quellen` je Kerze (kerzenquelle.js); `tools/archiv-migration.js` (Regel je Kerze nach §6, Trockenlauf, Äquivalenztest); Alpaca-Probe und `tools/alpaca-balken-holen.js` | **Format geliefert 03.09.**, Klinken grün (3.127); **Migration gezählt, nicht geschrieben** — Vorbedingung R5 nicht committet, das Werkzeug verweigert `--schreiben` selbst; **Probe gebaut, nicht gefahren** (Wilhelms Schlüssel); Nachholer gebaut, 1.679 Abrufe gezählt. Befund `studien/archiv-zusammenfuehrung-2026-09/Z1-BEFUND.md`, Übergabe `uebergabe/archiv-z1-2026-09-03.md`. **Neu: Krypto passt auch nach dem R5-Fix nicht durch das 60m-Raster** (§7) |
+| Z1b Fassade | `window.Archiv` liest über IPC aus den Dateien, Rückfall Store; Äquivalenztest je umgehängtem Leser | offen |
 | Z2 Leser umhängen | Reihenfolge: zucht → strategiechart → Abdeckung/Export → Edge-Wächter (60m) → loadLabData → **intradayScan zuletzt** (Einzelentscheid); je Schritt Vergleichslauf | offen |
 | Z3 Schreiber umhängen | kryptoSammeln → pilotMessen (1m) → loadLabData → backfill/capBackfill → intradayScan; Schreiben über den Hauptprozess, atomar, mit Sammler-Sperre | offen |
 | Z4 Store stilllegen | erst wenn 1m-Tiefe in den Dateien liegt und kein Leser mehr am Store hängt; `tools/sicherung.js` anpassen; `tools/`-Variablen `STORE` umbenennen | offen |
@@ -99,11 +100,13 @@ je Schritt). Nichts wird gelöscht, bevor es nicht an anderer Stelle nachweislic
 
 1. **Grundregel angenommen:** Datei gewinnt bei gemeinsamem Stempel in schluss/hoch/tief/umsatz; laufende Kerze und Quote-Kerzen nach Sitzungsschluss (Kalender, nicht „20:00") werden nicht übernommen; Quelle je Kerze aus dem Vergleich (`quellen`-Bereiche, verdichtet).
 2. **CFD-markierte Store-Kerzen: verwerfen und neu holen.** Die 1m-Tiefe (2,9 Mio cap-markierte Kerzen, Herkunft vor dem 18.08. nicht feststellbar) kommt nicht ins Archiv. Ersatz: **Alpaca-SIP-Minutenbalken** (`/v2/stocks/bars`, `timeframe=1Min`, `feed=sip`, gratis seit 2016 wie die Quotes) — Probe Schritt 0 in Z1; fällt sie durch, bleibt die 1m-Tiefe bei den 23 % Yahoo-Kerzen, und das steht dann hier.
+   *Nachtrag Z1 (03.09.):* Die Probe liegt als `studien/archiv-zusammenfuehrung-2026-09/probe-alpaca-balken.js` (AAPL, MU, ARM, ORCL, BRK.B × 2016/2020/2024/2026 × 1Min/5Min/1Hour; Kriterien im Code **vor** dem Lauf: kein Tarif-Nein, geliefertes = angefragtes Jahr, Stempel = Balkenöffnung auf 09:30 ET laut `/v2/calendar`, 380–390 Balken je Tag, gegen die Yahoo-Datei Schluss median ≤ 0,1 % und Umsatz-Faktor 0,8–1,25, ARM vor 09/2023 leer). **Noch nicht gefahren** — sie braucht Wilhelms Schlüssel. Ihr Urteil landet als `probe-alpaca-balken-ergebnis.json` und ist die maschinelle Freigabe für `tools/alpaca-balken-holen.js` (1.679 Abrufe gezählt, ~10 min). Das Ergebnis wird hier nachgetragen, sobald es eins gibt.
 3. **Capital-Spannen: eigenes Hüllenfeld `spannen`** (Tagesmediane, Form wie `archiv.js spannenJeTag()`).
 4. **Krypto: eigener Ordner `archiv<iv>/krypto/`**, gleiches Format, Quelle `yahoo`.
 5. **Offen bleibt der Einzelentscheid zur laufenden Kerze im Live-Scan** (Z2, Schritt 6): das Archiv hält nur fertige Kerzen, der Scan hängt seinen Abruf im Speicher an.
 
 **Vorbedingung vor Z1: Rasterfilter-Fix (R5) ist beauftragt** — sonst löscht der nächste Sammler-Lauf die übernommenen Kerzen wieder.
+*Stand 03.09. 14:30 (Z1):* **nicht committet** (`rasterFilter()` unverändert seit `f9462e4`). `tools/archiv-migration.js` prüft das am Verhalten (`r5Behoben()`) und verweigert `--schreiben`; der Trockenlauf beziffert den Schaden ohne Fix: 42.886 `:00`-Kerzen der 15m-**Datei** und 48.324 der 5m-Übernahme würden gelöscht (§7). **Zusatz:** ein Fix, der die Minute-0-Regel nur auf 60m beschränkt, rettet die Aktien, nicht die 60m-Krypto-Reihen (rund um die Uhr auf `:00`, 95,8 % würden fallen) — Entscheid 4 braucht eine Rasterregel, die Krypto kennt.
 
 ## 7. Vermessung (Z0, 03.09.2026)
 
@@ -153,3 +156,32 @@ lebenden Store. SPY fehlt im Store.*
   [5] = Eröffnung aus der Datei, sonst `null`; Capital-Spanne in ein eigenes Hüllenfeld
   `spannen` oder verwerfen. Reihenfolge: erst `rasterFilter()`, dann Migration, dann
   Äquivalenztest.
+
+## 8. Vermessung Z1 (03.09.2026) — Trockenlauf der Migration über alle 799 Reihen
+
+*Fundstelle: `studien/archiv-zusammenfuehrung-2026-09/Z1-BEFUND.md` (Rohdaten
+`migration-zaehlung.json`, `aequivalenz-vor-migration.json`), Werkzeug `tools/archiv-migration.js`
+(Kontrollen A–H vor jedem Lauf). Gegen die Store-Sicherung, nie den lebenden Store; nichts geschrieben.*
+
+| Intervall | gemeinsam (Datei gewinnt) | laufend | unvollständig | Quote am Schluss | cap (verworfen) | **übernehmen** (Aktien / Krypto) | Verlust Datei durch heutiges Raster | Verlust Übernahme durch heutiges Raster |
+|---|---|---|---|---|---|---|---|---|
+| 1m | 548.621 | 0 | 0 | 593 | 2.824.780 | 434.869 (210.424 / 224.445) | 40 | 13.962 |
+| 5m | 813.006 | 50 | 0 | 604 | 73.389 | 257.060 (90.156 / 166.904) | 0 | 62.236 |
+| 15m | 285.923 | 62 | 0 | 629 | 16.120 | 78.416 (22.760 / 55.656) | **42.886** | 19.163 |
+| 60m | 975.052 | 70 | 723 | 0 | 0 | 144.827 (2.507 / 142.320) | 0 | **136.376** (alles Krypto) |
+
+- **Regel je Kerze wörtlich nach §6**, Sitzungsschluss aus dem Kalender (`boerse.js`, Sommerzeit
+  über `America/New_York`): 21:00 UTC im Winter, 18:00 UTC am Halbtag, null am Feiertag. Alle
+  Quote-Kerzen liegen **am** Schluss, keine danach; eine 20:00-Kerze mit Umsatz wäre übernommen.
+- **unvollständig (723)** = die Drei-Feld-Kerzen von ARM/ORCL/QCOM ab 16.07. 23:00 UTC, Capitals
+  Randstunden, alle in `capBereiche`.
+- **R5 beziffert:** je 5m-Reihe 420 der 852 nur-Store-Kerzen (70 Tage × 6 volle Stunden); die
+  15m-Datei verlöre beim Schreiben 357 Kerzen je Reihe — deshalb verweigert das Werkzeug.
+- **Krypto:** 95,8 % der 60m-Krypto-Kerzen fallen durch die Minute-0-Regel des 60m-Rasters, auch
+  nach einem R5-Fix, der nur 1m/5m/15m freigibt. Braucht einen Entscheid (§6, Vorbedingung).
+- **Äquivalenz vor der Migration** (`signifikant(Datei, 7) === Store`, alle gemeinsamen Stempel
+  außer dem letzten): Schluss-Nachkorrekturen 245 / 141 / 179 / 1.504 von 548.474 / 812.935 /
+  285.889 / 974.923 (≤ 0,15 % der Stempel außerhalb cap, max. 1,16 %); Umsatz 1,5–2,7 %;
+  innerhalb cap getrennt gezählt, nicht beurteilt. Deckt sich mit Z0.
+- **Nachholer gezählt:** 1.507 Aufgaben, 1.679 Abrufe (1m 833, 5m 457, 15m 389), ~10 min bei
+  180/min — läuft nur mit bestandener Probe.
