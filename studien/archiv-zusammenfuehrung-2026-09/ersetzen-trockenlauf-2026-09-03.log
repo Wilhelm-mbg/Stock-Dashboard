@@ -1,0 +1,53 @@
+﻿Freigabe: Wilhelm 03.09.2026 (Probe nicht bestanden, Nachtrag §6)
+Kontrolle A: Balken -> Kerze
+  ok   A: [t, schluss, umsatz, hoch, tief, eroeffnung] - die Eroeffnung steht in [5]  →  [1787837400000,100.5,1234,101,99,100]
+  ok   A: Sekunden im Stempel oder Kurs 0 -> keine Kerze
+Kontrolle B: regulaere Sitzung laut Kalender, Sommer- und Winterzeit, Halbtag
+  ok   B: 5 drin (13:30, 19:59 EDT; 14:30, 20:59 EST; 17:59 Halbtag), 2 davor, 3 danach, 1 an Thanksgiving  →  [5,2,3,1]
+Kontrolle C: iex-Falle - nur der angefragte Zeitraum
+  ok   C: der 2020er Balken auf die 2018er Anfrage wird verworfen und gezaehlt  →  {"drin":[[1519914900000,1,1,1,1,1]],"draussen":1}
+Kontrolle D: Datei gewinnt, Vergleich auf gemeinsamen Stempeln
+  ok   D: nur der fremde Stempel ist neu; 2 gemeinsam, 1 ueber 0,1 %, Faktoren 1,1 und 500  →  [1,2,1,[1.1,500]]
+  ok   D: nach dem Vereinigen traegt die Reihe yahoo-Bestand und alpaca als getrennte Bereiche  →  ["yahoo","alpaca"]
+Kontrolle E: Abrufe zaehlen
+  ok   E: Seiten zu 10.000 Balken je Aufgabe, mindestens eine; eine Woche = 5 Handelstage  →  [3,62]
+Kontrolle G: Skalenpruefung - Positivkontrolle und Gegenprobe
+  ok   G: ein Kunstwert mit Faktor 0,5 ab dem 03.03. wird gefunden - mit Datum und Faktor, und der saubere Tag bleibt sauber  →  ["2026-03-03 0.5"]
+  ok   G: dieselbe Reihe ohne Halbierung wird nicht beanstandet - die Pruefung faerbt nicht alles rot  →  0
+  ok   G: die Kunstreihe wechselt bei fast jeder Kerze die Quelle - genau die Lage, in der Grenzpaare entstehen  →  [38,37]
+Kontrolle H: Eichung - Stufen, Erben, und das Nein bei einem Stufenwechsel
+  ok   H: zwei Stufen (Faktor 2 und 1); ein Umsatzfaktor von 1,0001 bleibt glatt 1 - Rauschen wird nicht mitgerechnet  →  ["2026-06-02..2026-06-03 2.00000/1","2026-06-05..2026-06-08 1.00000/1"]
+  ok   H: ein Tag vor der ersten Stufe erbt nach vorn, einer nach der letzten nach hinten
+  ok   H: ein Tag GENAU zwischen zwei verschiedenen Stufen ist unentscheidbar - dort wird nicht geraten, sondern abgebrochen
+  ok   H: aufSkala() teilt alle VIER Kursfelder und laesst Stempel und Umsatz in Ruhe; Faktor 1 gibt dieselbe Kerze zurueck  →  [1000,25,200,25.5,24.5,24.75]
+Kontrolle I: alpacaAus() - nur die Alpaca-Kerzen, und die Quellen des Rests stimmen
+  ok   I: vier Alpaca-Kerzen raus, sechs Yahoo-Kerzen unveraendert drin, der Bereich exakt getroffen, der Rest traegt nur noch yahoo  →  [4,6,["yahoo"]]
+  ok   I: die Yahoo-Kerzen gehen unveraendert durch - Wert fuer Wert dieselbe Kerze
+  ok   I: der Bereich ist beidseitig einschliesslich - genau die entfernten Stempel werden neu geholt
+Kontrolle F: Freigabe und Wachen
+  Freigabe der Probe: BESTANDEN ueber Nachtrag-Freigabe (2026-09-03T14:22:25.241Z)
+  R5: behoben
+
+Kontrolle bestanden (A–E, G–I).
+
+Ersetzen der Alpaca-Bereiche in E:/Markt-Dashboard-Archiv fuer MNST,SPGI  — Trockenlauf, es wird nichts geschrieben
+
+Eichung MNST (2026-05-26..2026-08-21, 5686 5Min-Balken raw, 57 verankerte Tage):
+    2026-06-02 .. 2026-08-10    48 Tage   Kursfaktor raw/Yahoo 2.000000   Umsatzfaktor 1.0000 (gemessen 0.9998)
+    2026-08-11 .. 2026-08-21     9 Tage   Kursfaktor raw/Yahoo 1.000000   Umsatzfaktor 1.0000 (gemessen 1.0007)
+Eichung SPGI (2026-05-26..2026-08-21, 5700 5Min-Balken raw, 57 verankerte Tage):
+    2026-06-02 .. 2026-06-30    20 Tage   Kursfaktor raw/Yahoo 1.057000   Umsatzfaktor 1.0000 (gemessen 0.9961)
+    2026-07-01 .. 2026-08-21    37 Tage   Kursfaktor raw/Yahoo 1.000000   Umsatzfaktor 1.0000 (gemessen 0.9979)
+
+Sicherung wuerde nach E:\Markt-Dashboard-Archiv\sicherung-vor-ersetzen-2026-09-03 gehen (6 Dateien) - im Trockenlauf nicht angelegt.
+  bars_1m_MNST.json     vorher  27225  entfernt  22617  neu  22617  nachher  27225  Vergleich  1536 Stempel (capBereiche), ueber 0,1 % 0 -> 0  geerbte Tage 5
+  bars_5m_MNST.json     vorher   5341  entfernt    732  neu    732  nachher   5341  Vergleich  4104 Stempel (capBereiche), ueber 0,1 % 3457 -> 7  geerbte Tage 5
+  bars_15m_MNST.json    vorher   1691  entfernt    130  neu    130  nachher   1691  Vergleich  1482 Stempel (capBereiche), ueber 0,1 % 1248 -> 2  geerbte Tage 5
+  bars_1m_SPGI.json     vorher  27214  entfernt  22614  neu  22614  nachher  27214  Vergleich  1532 Stempel (capBereiche), ueber 0,1 % 0 -> 0  geerbte Tage 5
+  bars_5m_SPGI.json     vorher   5347  entfernt    732  neu    732  nachher   5347  Vergleich  4104 Stempel (capBereiche), ueber 0,1 % 1440 -> 0  geerbte Tage 5
+  bars_15m_SPGI.json    vorher   1678  entfernt    130  neu    130  nachher   1678  Vergleich  1482 Stempel (capBereiche), ueber 0,1 % 520 -> 0  geerbte Tage 5
+
+Summe: 6 Dateien, entfernt 46955, neu 46955, Abrufe 24
+Bericht: studien/archiv-zusammenfuehrung-2026-09/ersetzen-trockenlauf-2026-09-03.json
+
+Nur gezaehlt, nichts geschrieben. Mit --schreiben wird ersetzt (Sicherung laeuft vorher).

@@ -1,0 +1,20 @@
+Freigabe: Wilhelm 03.09.2026 (Probe nicht bestanden, Nachtrag §6)
+Erledigte Aufgaben: 1507, Abrufe 24, Fehlschlaege 0
+Balken: gemeinsam mit Yahoo 469335, neu 2954500, geschrieben 2954499, ausserhalb des Zeitraums 0, vom Raster verworfen 0
+
+| Intervall | gemeinsame Stempel | Schluss median | Schluss max | ueber 0,1 % | Umsatz-Faktor median (n) | Urteil |
+|---|---|---|---|---|---|---|
+| 15m | 102232 | 0.0000 % | 100.033 % | 297 (roh 2063) | 1.000 (16073) | Quelle stimmt |
+| 1m | 98212 | 0.0000 % | 0.376 % | 238 (roh 238) | 1.000 (16486) | Quelle stimmt |
+| 5m | 283131 | 0.0000 % | 100.033 % | 929 (roh 5819) | 1.001 (14323) | Quelle stimmt |
+
+Zaehler "ueber 0,1 %" korrigiert um die ersetzten Werte (MNST+SPGI): 15m 2063 -> 297, 1m 238 -> 238, 5m 5819 -> 929. Die Spalten Schluss median/max stammen aus der gedeckelten Stichprobe und tragen fuer diese Werte noch die Zahlen von vor der Ersetzung.
+
+Alle Intervalle: Quelle stimmt (Schluss <= 0,1 %, Umsatz-Faktor 0,8–1,25).
+
+Skalenpruefung (aus den Archivdateien unter E:/Markt-Dashboard-Archiv, ohne Netz): 70 von 160 Werten mit Alpaca-Bereichen pruefbar, 3825 Wert-Tage gewertet (je Tag mindestens 4 Quellengrenzen).
+Keine Skalenabweichung: jeder gewertete Tag liegt im Band 0.999–1.001.
+Nicht pruefbar (keine Quellengrenze zwischen Alpaca und Yahoo): 90 Werte.
+
+Werte durchgefallen: 3 von 70 (Kriterium wie Probe: Median <= 0,1 % und <= 2 % der Kerzen ueber 0,1 %; dazu: jede Skalenabweichung): BIIB, IDXX, NXPI
+unter der Stoppregel (<= 10 % durchgefallen) - Vollsammlung darf starten.

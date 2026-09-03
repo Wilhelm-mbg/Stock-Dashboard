@@ -1,0 +1,33 @@
+Nachpruefung der Skalenreparatur (2026-09-03T17:52:09.490Z)
+Archiv:    E:/Markt-Dashboard-Archiv
+Sicherung: E:\Markt-Dashboard-Archiv\sicherung-vor-ersetzen-2026-09-03
+
+  ok   bars_1m_MNST.json: genau dieselben Stempel wie vorher   ->  {"vorher":27225,"nachher":27225,"fehlt":0,"dazu":0}
+  ok   bars_1m_MNST.json: 4608 Yahoo-Kerzen Feld fuer Feld unveraendert, keine Kerze hat die Quelle gewechselt   ->  {"ungleich":0,"quelleGewandert":0}
+  ok   bars_1m_MNST.json: alle 22617 Alpaca-Kerzen auf 2 Tagesfaktor(en) - 1.0000 an 9 Tagen (2026-08-11..2026-08-21), 2.0000 an 53 Tagen (2026-05-26..2026-08-10)
+  ok   bars_1m_MNST.json: kein Umsatz veraendert (Yahoo bereinigt Intraday die Kurse, nicht die Stueckzahl)   ->  0
+  ok   bars_5m_MNST.json: genau dieselben Stempel wie vorher   ->  {"vorher":5341,"nachher":5341,"fehlt":0,"dazu":0}
+  ok   bars_5m_MNST.json: 4609 Yahoo-Kerzen Feld fuer Feld unveraendert, keine Kerze hat die Quelle gewechselt   ->  {"ungleich":0,"quelleGewandert":0}
+  ok   bars_5m_MNST.json: alle 732 Alpaca-Kerzen auf 2 Tagesfaktor(en) - 1.0000 an 9 Tagen (2026-08-11..2026-08-21), 2.0000 an 53 Tagen (2026-05-26..2026-08-10)
+  ok   bars_5m_MNST.json: kein Umsatz veraendert (Yahoo bereinigt Intraday die Kurse, nicht die Stueckzahl)   ->  0
+  ok   bars_15m_MNST.json: genau dieselben Stempel wie vorher   ->  {"vorher":1691,"nachher":1691,"fehlt":0,"dazu":0}
+  ok   bars_15m_MNST.json: 1561 Yahoo-Kerzen Feld fuer Feld unveraendert, keine Kerze hat die Quelle gewechselt   ->  {"ungleich":0,"quelleGewandert":0}
+  ok   bars_15m_MNST.json: alle 130 Alpaca-Kerzen auf 1 Tagesfaktor(en) - 2.0000 an 5 Tagen (2026-05-26..2026-06-01)
+  ok   bars_15m_MNST.json: kein Umsatz veraendert (Yahoo bereinigt Intraday die Kurse, nicht die Stueckzahl)   ->  0
+  ok   bars_1m_SPGI.json: genau dieselben Stempel wie vorher   ->  {"vorher":27214,"nachher":27214,"fehlt":0,"dazu":0}
+  ok   bars_1m_SPGI.json: 4600 Yahoo-Kerzen Feld fuer Feld unveraendert, keine Kerze hat die Quelle gewechselt   ->  {"ungleich":0,"quelleGewandert":0}
+  ok   bars_1m_SPGI.json: alle 22614 Alpaca-Kerzen auf 2 Tagesfaktor(en) - 1.0000 an 37 Tagen (2026-07-01..2026-08-21), 1.0570 an 25 Tagen (2026-05-26..2026-06-30)
+  ok   bars_1m_SPGI.json: kein Umsatz veraendert (Yahoo bereinigt Intraday die Kurse, nicht die Stueckzahl)   ->  0
+  ok   bars_5m_SPGI.json: genau dieselben Stempel wie vorher   ->  {"vorher":5347,"nachher":5347,"fehlt":0,"dazu":0}
+  ok   bars_5m_SPGI.json: 4615 Yahoo-Kerzen Feld fuer Feld unveraendert, keine Kerze hat die Quelle gewechselt   ->  {"ungleich":0,"quelleGewandert":0}
+  ok   bars_5m_SPGI.json: alle 732 Alpaca-Kerzen auf 2 Tagesfaktor(en) - 1.0000 an 37 Tagen (2026-07-01..2026-08-21), 1.0570 an 25 Tagen (2026-05-26..2026-06-30)
+  ok   bars_5m_SPGI.json: kein Umsatz veraendert (Yahoo bereinigt Intraday die Kurse, nicht die Stueckzahl)   ->  0
+  ok   bars_15m_SPGI.json: genau dieselben Stempel wie vorher   ->  {"vorher":1678,"nachher":1678,"fehlt":0,"dazu":0}
+  ok   bars_15m_SPGI.json: 1548 Yahoo-Kerzen Feld fuer Feld unveraendert, keine Kerze hat die Quelle gewechselt   ->  {"ungleich":0,"quelleGewandert":0}
+  ok   bars_15m_SPGI.json: alle 130 Alpaca-Kerzen auf 1 Tagesfaktor(en) - 1.0570 an 5 Tagen (2026-05-26..2026-06-01)
+  ok   bars_15m_SPGI.json: kein Umsatz veraendert (Yahoo bereinigt Intraday die Kurse, nicht die Stueckzahl)   ->  0
+
+  ok   MNST 2026-08-06: alle 6 Alpaca-Schlusskurse liegen in der Tagesspanne des TAGESARCHIVS (46.40–47.60) - dritte Quelle, unabhaengig von Grenzpaaren   ->  {"drin":6,"von":6,"alpacaSpanne":["46.49","47.08"],"yahooSpanne":["46.42","47.34"]}
+  ok   SPGI 2026-06-25: alle 6 Alpaca-Schlusskurse liegen in der Tagesspanne des TAGESARCHIVS (373.70–390.73) - dritte Quelle, unabhaengig von Grenzpaaren   ->  {"drin":6,"von":6,"alpacaSpanne":["379.93","388.21"],"yahooSpanne":["374.01","390.08"]}
+
+Nachpruefung bestanden.

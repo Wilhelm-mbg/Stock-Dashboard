@@ -2,6 +2,21 @@
 
 *Nur was sich am Wiki ändert. Die Projekt-Chronologie steht im Archiv `PROJEKTSTAND.md`.*
 
+- 03.09.2026 Skalenreparatur MNST/SPGI geliefert (Bau): [archiv-zusammenfuehrung.md](archiv-zusammenfuehrung.md)
+  §5 (neue Zeile „Z1-Skalenreparatur") und §6 Punkt 8(a), [datenquellen.md](datenquellen.md) neuer
+  Abschnitt „Bereinigung: welche Alpaca-Einstellung entspricht Yahoo? **Keine.**" mit der Messtabelle.
+  Gemessen an vier Fällen × vier Einstellungen: `split` trifft den Split (1,00005), verfehlt die
+  Abspaltung (1,05700) und **halbiert den Umsatz** (0,5001) — **Yahoo bereinigt Intraday die Kurse,
+  aber nicht die Umsätze**; `dividend`/`all` verschieben auch den Kontrolltag nach der Maßnahme
+  (0,99776), Yahoo bereinigt Intraday nicht um Dividenden. Also `raw` holen und mit dem je Wert und
+  Tag geeichten Faktor rechnen (MNST 2,000000 bis 10.08., SPGI 1,057000 bis 30.06.). 46.955 Kerzen in
+  sechs Dateien ersetzt, Stempelmenge unverändert, Yahoo-Kerzen Feld für Feld gleich, kein Umsatz
+  geändert; Sicherung vorher mit SHA-256. **Skalenabweichungen 68 → 0**, durchgefallene Werte 5 → 3.
+  `--pruefen` fährt die Skalenprüfung jetzt mit (aus den Dateien, ohne Netz, kein Fehlalarm über
+  3.757 saubere Wert-Tage). [offene-auftraege.md](offene-auftraege.md): Reparatur eingetragen, zwei
+  neue Aufträge (Yahoos uneinheitliche Intraday-Datei nach einem Split trifft `dollarVolTag()`;
+  90 von 160 Werten sind mangels Quellengrenze nicht prüfbar). Kein App-Code, keine Version.
+  Übergabe `uebergabe/nachholer-reparatur-2026-09-03.md`.
 - 03.09.2026 Release v8.38.3 (Wache): Kursarchiv trägt jetzt die Quelle je Kerze
   (Yahoo/Alpaca/Capital, sichtbar ändert sich nichts) und verliert keine Sitzungsstunden
   mehr in den Minuten-Archiven (Rasterfilter-Fix R5 ausgeliefert).

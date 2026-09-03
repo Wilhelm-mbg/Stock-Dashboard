@@ -165,6 +165,48 @@ laut `/v2/calendar`, iex-Wache: Balken außerhalb des angefragten Zeitraums werd
 bei gemeinsamem Stempel, Quelle `alpaca` je Kerze, 180/min, fortsetzbar). Zugang ausschließlich über
 `schluessel.js` der Spannen-Studie — Klinke Block 35.
 
+#### Bereinigung: welche Alpaca-Einstellung entspricht Yahoo? **Keine.** (gemessen 03.09.2026)
+
+`adjustment=raw|split|dividend|all`. Gemessen an vier Fällen — MNST (Split 2:1, wirksam 11.08.2026)
+und SPGI (Abspaltung, wirksam 01.07.2026), je ein Tag **vor** und einer **nach** der Maßnahme, 5Min,
+72 gemeinsame Stempel je Fall, gegen die Yahoo-Kerzen derselben Stempel im Archiv
+(`studien/archiv-zusammenfuehrung-2026-09/skalen-probe-alpaca.js`, Kriterien im Code **vor** dem Lauf):
+
+| Einstellung | MNST vor | MNST nach | SPGI vor | SPGI nach | Umsatz Yahoo/Alpaca (MNST vor) |
+|---|---|---|---|---|---|
+| `raw` | 2,00000 | 1,00000 | 1,05700 | 1,00000 | **1,0001** |
+| `split` | **1,00005** | 1,00000 | 1,05700 | 1,00000 | **0,5001** |
+| `dividend` | 2,00000 | 1,00000 | 1,05463 | **0,99776** | 1,0001 |
+| `all` | 1,00005 | 1,00000 | 0,99753 | **0,99776** | 0,5001 |
+
+*(Median Alpaca/Yahoo je Tag; fett = das jeweils Entscheidende.)*
+
+**Drei Sätze, die daraus folgen:**
+1. **Yahoo bereinigt Intraday die KURSE, aber nicht die UMSÄTZE.** Vor dem MNST-Split steht Yahoos
+   Kurs auf der halbierten Skala, sein Umsatz aber auf der rohen (Faktor 1,0001 gegen `raw`, 0,5001
+   gegen `split`). Yahoos Intraday-Datei ist nach einem Split in sich uneinheitlich — Kurs × Umsatz
+   ist dort nicht mehr der gehandelte Gegenwert. Das betrifft `dollarVolTag()` und jede Rechnung,
+   die beides multipliziert, **unabhängig von Alpaca**.
+2. **Yahoo bereinigt Intraday NICHT um Dividenden.** `dividend` und `all` verschieben auch den
+   Kontrolltag *nach* der Maßnahme (0,99776) — sie rechnen etwas heraus, das Yahoo nie hineingerechnet
+   hat.
+3. **Die Abspaltung deckt keine Einstellung ab.** Yahoo rechnet sie (Faktor 1,057), `split` nicht,
+   `all` überschießt (0,99753, weil die Dividendenbereinigung mitläuft).
+
+**Konsequenz für die Yahoo-Mischdateien:** `raw` holen und mit dem **gemessenen** Faktor rechnen —
+je Wert und Tag geeicht, nicht aus dieser Tabelle übernommen (`tools/alpaca-balken-holen.js
+--ersetze-alpaca`, Eichung an gemeinsamen Stempeln der 5m-Datei). Für die Vollsammlung Z1c gilt
+Wilhelms Entscheid „beides" unverändert: roh sammeln, bereinigte Kopie lokal ableiten
+([entscheide.md](entscheide.md)).
+
+**Wie man einen Skalenfehler findet, ohne das Netz zu fragen:** an den Quellengrenzen der Datei
+selbst. Zwei benachbarte Kerzen desselben Gitters berühren sich (Eröffnung der späteren ≈ Schluss der
+früheren, ein Tick Unterschied statt einer Fünf-Minuten-Bewegung); wo dort die Quelle wechselt, misst
+das Verhältnis nur den Unterschied der Maßstäbe. Über 3.825 Wert-Tage: Median 0,0026 %, alle 3.757
+sauberen Tage unter 0,1 %, die 68 falschen bei 2,000 bzw. 1,057 — **kein Fehlalarm**. Das *Tagesarchiv*
+taugt als Vergleich nicht: es hat denselben Fehler (MNST 06.08. 47,08 gegen 07.08. 90,36).
+`--pruefen` fährt diese Prüfung bei jedem Aufruf mit.
+
 ### Format des Kursarchivs (Format 2, seit Z1)
 
 `{ sym, quelle, format: 2, felder, quellen: [{ von, bis, quelle: 'yahoo'|'alpaca'|'capital', abgeleitet? }],

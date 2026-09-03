@@ -1,0 +1,252 @@
+{
+ "erzeugt": "2026-09-03T17:49:55.384Z",
+ "modus": "schreiben",
+ "wurzel": "E:/Markt-Dashboard-Archiv",
+ "symbole": [
+  "MNST",
+  "SPGI"
+ ],
+ "bereinigung": "raw + gemessener Skalenfaktor (skalen-probe-alpaca.js, K4)",
+ "eichung": {
+  "MNST": {
+   "von": "2026-05-26",
+   "bis": "2026-08-21",
+   "balken": 5686,
+   "verankerteTage": 57,
+   "stufen": [
+    {
+     "von": "2026-06-02",
+     "bis": "2026-08-10",
+     "wert": 2.0000000069204917,
+     "tage": 48,
+     "kursFaktor": 1.9999999984458352,
+     "umsatzGemessen": 0.9998355387284927,
+     "umsatzFaktor": 1
+    },
+    {
+     "von": "2026-08-11",
+     "bis": "2026-08-21",
+     "wert": 1,
+     "tage": 9,
+     "kursFaktor": 1,
+     "umsatzGemessen": 1.0006677053193858,
+     "umsatzFaktor": 1
+    }
+   ]
+  },
+  "SPGI": {
+   "von": "2026-05-26",
+   "bis": "2026-08-21",
+   "balken": 5700,
+   "verankerteTage": 57,
+   "stufen": [
+    {
+     "von": "2026-06-02",
+     "bis": "2026-06-30",
+     "wert": 1.057000003916842,
+     "tage": 20,
+     "kursFaktor": 1.0569999997699369,
+     "umsatzGemessen": 0.9960780087681236,
+     "umsatzFaktor": 1
+    },
+    {
+     "von": "2026-07-01",
+     "bis": "2026-08-21",
+     "wert": 1,
+     "tage": 37,
+     "kursFaktor": 1,
+     "umsatzGemessen": 0.9979161193265038,
+     "umsatzFaktor": 1
+    }
+   ]
+  }
+ },
+ "dateien": [
+  {
+   "datei": "bars_1m_MNST.json",
+   "pfad": "E:\\Markt-Dashboard-Archiv\\archiv1m\\bars_1m_MNST.json",
+   "intervall": "1m",
+   "sym": "MNST",
+   "vorher": 27225,
+   "entfernt": 22617,
+   "bereiche": 25,
+   "geholt": 25284,
+   "imBereich": 23651,
+   "ausserSitzungImBereich": 1034,
+   "neu": 22617,
+   "geerbteTage": 5,
+   "zusaetzlicheStempel": 0,
+   "rasterVerlust": 0,
+   "nachher": 27225,
+   "gemeinsam": 1536,
+   "ueber01Alt": 0,
+   "ueber01Neu": 0,
+   "vergleichAusStore": true,
+   "medianAlt": 2.5682793130400467e-8,
+   "medianNeu": 2.5682793130400467e-8,
+   "seiten": 3
+  },
+  {
+   "datei": "bars_5m_MNST.json",
+   "pfad": "E:\\Markt-Dashboard-Archiv\\archiv5m\\bars_5m_MNST.json",
+   "intervall": "5m",
+   "sym": "MNST",
+   "vorher": 5341,
+   "entfernt": 732,
+   "bereiche": 343,
+   "geholt": 5697,
+   "imBereich": 771,
+   "ausserSitzungImBereich": 39,
+   "neu": 732,
+   "geerbteTage": 5,
+   "zusaetzlicheStempel": 0,
+   "rasterVerlust": 0,
+   "nachher": 5341,
+   "gemeinsam": 4104,
+   "ueber01Alt": 3457,
+   "ueber01Neu": 7,
+   "vergleichAusStore": true,
+   "medianAlt": 0.9999999807338525,
+   "medianNeu": 2.5710589933344462e-8,
+   "seiten": 3
+  },
+  {
+   "datei": "bars_15m_MNST.json",
+   "pfad": "E:\\Markt-Dashboard-Archiv\\archiv15m\\bars_15m_MNST.json",
+   "intervall": "15m",
+   "sym": "MNST",
+   "vorher": 1691,
+   "entfernt": 130,
+   "bereiche": 1,
+   "geholt": 2263,
+   "imBereich": 163,
+   "ausserSitzungImBereich": 33,
+   "neu": 130,
+   "geerbteTage": 5,
+   "zusaetzlicheStempel": 0,
+   "rasterVerlust": 0,
+   "nachher": 1691,
+   "gemeinsam": 1482,
+   "ueber01Alt": 1248,
+   "ueber01Neu": 2,
+   "vergleichAusStore": true,
+   "medianAlt": 0.9999999804186896,
+   "medianNeu": 2.535098046930168e-8,
+   "seiten": 3
+  },
+  {
+   "datei": "bars_1m_SPGI.json",
+   "pfad": "E:\\Markt-Dashboard-Archiv\\archiv1m\\bars_1m_SPGI.json",
+   "intervall": "1m",
+   "sym": "SPGI",
+   "vorher": 27214,
+   "entfernt": 22614,
+   "bereiche": 24,
+   "geholt": 25196,
+   "imBereich": 23587,
+   "ausserSitzungImBereich": 973,
+   "neu": 22614,
+   "geerbteTage": 5,
+   "zusaetzlicheStempel": 0,
+   "rasterVerlust": 0,
+   "nachher": 27214,
+   "gemeinsam": 1532,
+   "ueber01Alt": 0,
+   "ueber01Neu": 0,
+   "vergleichAusStore": true,
+   "medianAlt": 1.744671820003513e-8,
+   "medianNeu": 1.744671820003513e-8,
+   "seiten": 3
+  },
+  {
+   "datei": "bars_5m_SPGI.json",
+   "pfad": "E:\\Markt-Dashboard-Archiv\\archiv5m\\bars_5m_SPGI.json",
+   "intervall": "5m",
+   "sym": "SPGI",
+   "vorher": 5347,
+   "entfernt": 732,
+   "bereiche": 343,
+   "geholt": 5711,
+   "imBereich": 807,
+   "ausserSitzungImBereich": 75,
+   "neu": 732,
+   "geerbteTage": 5,
+   "zusaetzlicheStempel": 0,
+   "rasterVerlust": 0,
+   "nachher": 5347,
+   "gemeinsam": 4104,
+   "ueber01Alt": 1440,
+   "ueber01Neu": 0,
+   "vergleichAusStore": true,
+   "medianAlt": 2.7744087165030673e-8,
+   "medianNeu": 1.795328792209229e-8,
+   "seiten": 3
+  },
+  {
+   "datei": "bars_15m_SPGI.json",
+   "pfad": "E:\\Markt-Dashboard-Archiv\\archiv15m\\bars_15m_SPGI.json",
+   "intervall": "15m",
+   "sym": "SPGI",
+   "vorher": 1678,
+   "entfernt": 130,
+   "bereiche": 1,
+   "geholt": 2290,
+   "imBereich": 186,
+   "ausserSitzungImBereich": 56,
+   "neu": 130,
+   "geerbteTage": 5,
+   "zusaetzlicheStempel": 0,
+   "rasterVerlust": 0,
+   "nachher": 1678,
+   "gemeinsam": 1482,
+   "ueber01Alt": 520,
+   "ueber01Neu": 0,
+   "vergleichAusStore": true,
+   "medianAlt": 2.8359601107513775e-8,
+   "medianNeu": 1.9057345169679543e-8,
+   "seiten": 3
+  }
+ ],
+ "sicherung": {
+  "ordner": "E:\\Markt-Dashboard-Archiv\\sicherung-vor-ersetzen-2026-09-03",
+  "dateien": [
+   {
+    "name": "bars_1m_MNST.json",
+    "quelle": "E:\\Markt-Dashboard-Archiv\\archiv1m\\bars_1m_MNST.json",
+    "bytes": 1474032,
+    "sha256": "ed0805644093aabed3b0a5d4255f831f36c2a0c443d6f15971d114e47653248e"
+   },
+   {
+    "name": "bars_5m_MNST.json",
+    "quelle": "E:\\Markt-Dashboard-Archiv\\archiv5m\\bars_5m_MNST.json",
+    "bytes": 514001,
+    "sha256": "42c199c8aa867b8ffe344d76a904834fdef9fe014b86ea5d93c7915f5a6a87e2"
+   },
+   {
+    "name": "bars_15m_MNST.json",
+    "quelle": "E:\\Markt-Dashboard-Archiv\\archiv15m\\bars_15m_MNST.json",
+    "bytes": 153116,
+    "sha256": "d3f05f6d57130d33ae7610eb26a473687f39e51259ac1de0d762af8f88076890"
+   },
+   {
+    "name": "bars_1m_SPGI.json",
+    "quelle": "E:\\Markt-Dashboard-Archiv\\archiv1m\\bars_1m_SPGI.json",
+    "bytes": 1549986,
+    "sha256": "e986983f7519d5e2290ae87012a90d9af7da564f5a1c90c4eaa5edbf2da1fce6"
+   },
+   {
+    "name": "bars_5m_SPGI.json",
+    "quelle": "E:\\Markt-Dashboard-Archiv\\archiv5m\\bars_5m_SPGI.json",
+    "bytes": 513650,
+    "sha256": "6e677893e5ad2c9d694b4cdd54c8d9e7886ad9b25a84ff11d1cd95f80d33e899"
+   },
+   {
+    "name": "bars_15m_SPGI.json",
+    "quelle": "E:\\Markt-Dashboard-Archiv\\archiv15m\\bars_15m_SPGI.json",
+    "bytes": 150811,
+    "sha256": "16c4839807a529703209512ec04530bfff317c98f9ec4192a2678ad66faad13d"
+   }
+  ]
+ },
+ "fehler": []
+}
