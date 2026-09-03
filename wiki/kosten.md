@@ -284,12 +284,33 @@ ihn kaufen müsste** — das sagt nichts über sein Vorzeichen und belegt keine 
 - **Nicht die Kosten des CFD-Gefäßes.** Capital.com stellt eigene Spannen; die Reihe dort
   bleibt getrennt.
 - **Kein Ertragsbeleg für irgendeine Strategie.** Eine gesenkte Hürde belegt keine Kante.
-- **Für 2016–2024 misst Rahmen A Überlebende.** Zusatz C beziffert das, schließt es aber
-  nicht. **Zusatz C ist registriert, aber nicht gebaut** (1.164 verschwundene Werte in
-  `massive/tagesdaten/`); Richtung der Verzerrung: zu **enge** Spannen. Bis er läuft, tragen
-  die Tabellen oben diesen Vermerk.
+- **Für 2016–2024 misst Rahmen A Überlebende.** Richtung der Verzerrung: zu **enge** Spannen.
+  Die Tabellen oben tragen diesen Vermerk **dauerhaft** — siehe den Kasten direkt darunter.
 - **Der Vergleich mit dem Paper-Konto ist ein späterer Auftrag.** Er ist die Kontrolle dieser
   Studie, nicht ihr Bestandteil.
+
+> ### ⚠ **Die Überlebensverzerrung dieser Tabellen ist für 2016–2024 NICHT zu beziffern — gezählt 03.09.2026**
+> *Fundstelle: `studien/vorregistrierung-2026-09-02-spannen-historisch/VORREGISTRIERUNG.md` §9b.1*
+>
+> Zusatz C sollte den Vermerk „misst Überlebende" mit einer Zahl versehen. Er kann es nur für
+> **2025 und 2026**. Die 1.164 verschwundenen Reihen in `massive/tagesdaten/` haben ihren
+> **frühesten Tagesbalken am 23.08.2024** — das Aggregat-Fenster der Gratisstufe von Massive
+> reicht zwei Jahre zurück, mehr wurde nie geholt und ist heute nicht mehr zu holen.
+>
+> | Delisting-Jahr | aktienartige Kürzel in `verschwundene.json` | davon mit Tagesbalken |
+> |---|---|---|
+> | 2004–2022 | 3.690 | **0** |
+> | 2023 | 740 | 15 |
+> | 2024 | 609 | 225 |
+> | 2025 | 558 | 540 |
+> | 2026 | 438 | 406 |
+>
+> Ohne Balken gibt es weder eine Umsatzklasse (die Regel aus `liquide.js` braucht 20 Balken)
+> noch eine Lebenszeit. **Genau die Jahre, in denen die Tabellen oben am stärksten
+> Überlebende messen, sind die, für die es keine Vergleichsgruppe gibt.** Die Hürden für
+> 2016–2024 bleiben damit **eher zu günstig, um einen unbekannten Betrag** — und das ist
+> keine Formsache, sondern der Endzustand: eine spätere Messung kann die Lücke nicht
+> schließen, weil die Daten nicht existieren.
 
 ## Monatshaltedauer, ausgefüllt am Momentum-Korb (gemessen 02.09.2026)
 

@@ -50,6 +50,36 @@ tagsüber.
   2006–2026**; 52 Verschwundenen-Reihen fielen dem F1-Filter (Sprünge am Delisting) zum Opfer.
   *Fundstelle: `studien/vorregistrierung-2026-09-02-momentum-messung/ERGEBNIS.md`, §7*
 
+## ⚠ Wie weit die Gegenmaßnahme reicht — und wo sie aufhört (gezählt 03.09.2026)
+
+**Die 1.164 verschwundenen Reihen decken nur 2024-08-23 bis heute.** Der früheste Tagesbalken
+über alle Reihen ist der **23.08.2024**; sie stammen aus der Gratisstufe von Massive, deren
+Aggregat-Fenster zwei Jahre zurückreicht ([datenquellen.md](datenquellen.md)). `verschwundene.json`
+kennt 6.921 aktienartige Kürzel — Balken haben nur die zuletzt Verschwundenen:
+
+| Delisting-Jahr | aktienartige Kürzel | davon mit Tagesbalken |
+|---|---|---|
+| 2004–2022 | 3.690 | **0** |
+| 2023 | 740 | 15 (2 %) |
+| 2024 | 609 | 225 (37 %) |
+| 2025 | 558 | **540 (97 %)** |
+| 2026 | 438 | **406 (93 %)** |
+
+**Was das für jede Messung heißt, die die Verschwundenen als Vergleichsgruppe braucht:**
+sie ist auf **2025/2026** beschränkt. Für 2016–2024 gibt es keine Gegengruppe — nicht „noch
+nicht", sondern **gar nicht**, weil die Kursdaten nicht mehr zu beschaffen sind. Die
+Weg-3-Messungen oben (Schlusskurse, Übernacht) haben deshalb ihren Messzeitraum, und der
+Korrekturwert gilt nicht davor. *Fundstelle:
+`studien/vorregistrierung-2026-09-02-spannen-historisch/VORREGISTRIERUNG.md` §9b.1*
+
+**Zweiter Befund derselben Zählung: die Verschwundenen sind eine ANDERE Grundgesamtheit,
+nicht ein Ausschnitt derselben.** Von 1.164 Reihen liegen **823 (2025) bzw. 848 (2026) unter
+5 Mio $ Median-Tagesumsatz** und damit unterhalb jedes Universums, mit dem hier gemessen wird;
+**kein einziger** hatte je über 1.000 Mio $. Und wo beide Rahmen sich überschneiden, sind die
+Verschwundenen **billiger**: in der Klasse 5-50 Median-Kurs **17,76 $ gegen 29,00 $**. Wer
+Verschwundene gegen Überlebende hält, misst deshalb zuerst Kurs und Größe — und erst danach
+Sterblichkeit. Kurseffekte gehören in jede solche Rechnung als eigene Zeile.
+
 ## Klassen, die damit gar nicht messbar sind
 
 Strategien, deren Auswahl systematisch bei Verschwundenen landet (Pleitenähe,

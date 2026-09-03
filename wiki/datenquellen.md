@@ -11,11 +11,19 @@ Daten außerhalb des Fensters liegen, ist unmöglich — nicht schwierig.
 | **archiv60m** | 2.886 Werte | **730 Tage ROLLIEREND** | Quelle gibt nicht mehr her |
 | 1m | — | ~7 Tage | **Sammlung RUHT** (Entscheid, siehe [entscheide.md](entscheide.md)) |
 | 5m / 15m | — | ~60 Tage | sammelt seit 26.08.2026 |
-| **massive/** | 1.164 verschwundene Reihen | Messzeitraum | für [ueberlebensverzerrung.md](ueberlebensverzerrung.md) |
+| **massive/** | 1.164 verschwundene Reihen | **ab 23.08.2024**, nicht früher | für [ueberlebensverzerrung.md](ueberlebensverzerrung.md) — **die Grenze ist hart**, siehe unten |
 
 **⚠ `massive/universum-2024-09-02.json` ist EINGEFROREN und schreibgeschützt** (Original +
 Kopie auf `E:`). Nie anfassen, nie neu erzeugen — sonst werden alle bisherigen
 Überlebensverzerrungs-Messungen unvergleichbar. *Entscheid 31.08.2026.*
+
+**⚠ Die verschwundenen Reihen reichen nur bis 23.08.2024 zurück — und das ist der Endzustand.**
+Sie stammen aus dem Aggregat-Fenster der Gratisstufe (zwei Jahre); für die Delisting-Jahre
+**2004–2022 liegen 3.690 aktienartige Kürzel ohne einen einzigen Balken**. Jede Messung, die
+Verschwundene als Vergleichsgruppe braucht, ist damit auf **2025/2026** beschränkt — die
+frühen Jahre sind nicht „noch nicht" gemessen, sondern **nicht mehr messbar**. Details und
+Zählung: [ueberlebensverzerrung.md](ueberlebensverzerrung.md). *Gezählt 03.09.2026,
+Fundstelle `studien/vorregistrierung-2026-09-02-spannen-historisch/VORREGISTRIERUNG.md` §9b.1.*
 
 ## Anbieter
 

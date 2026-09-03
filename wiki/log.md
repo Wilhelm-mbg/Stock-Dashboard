@@ -2,6 +2,20 @@
 
 *Nur was sich am Wiki ändert. Die Projekt-Chronologie steht im Archiv `PROJEKTSTAND.md`.*
 
+- 03.09.2026 Zusatz C der Spannen-Studie, Probe und Bau (Berechnungen):
+  [ueberlebensverzerrung.md](ueberlebensverzerrung.md) bekommt einen Abschnitt zur
+  **Reichweite der Gegenmaßnahme** — die 1.164 verschwundenen Reihen decken erst ab
+  **23.08.2024**, für die Delisting-Jahre 2004–2022 liegen **3.690 aktienartige Kürzel ohne
+  einen einzigen Balken**; für 2016–2024 gibt es keine Vergleichsgruppe, und zwar dauerhaft.
+  Dazu der zweite Befund derselben Zählung: die Verschwundenen sind eine **andere**
+  Grundgesamtheit (823 bzw. 848 unter 5 Mio $, keiner je über 1.000 Mio $, Median-Kurs
+  17,76 $ gegen 29,00 $). [kosten.md](kosten.md) trägt dazu einen ⚠-Kasten und die
+  Haupttabellen behalten ihren Vermerk „misst Überlebende" **dauerhaft** statt „bis Zusatz C
+  läuft"; [datenquellen.md](datenquellen.md) nennt das Fenster von `massive/` jetzt genau
+  statt „Messzeitraum"; [offene-auftraege.md](offene-auftraege.md) Zusatz C auf
+  registriert/gebaut/Lauf offen mit Auflösung und Startbefehl. Beleg:
+  `studien/vorregistrierung-2026-09-02-spannen-historisch/VORREGISTRIERUNG.md` §9b,
+  `uebergabe/spannen-zusatz-c-2026-09-03.md`, Commits `30c5626`, `29f31a9`, `a872aec`, `cdf60b9`.
 - 03.09.2026 Release v8.38.2 (Wache): Kursarchiv zeigt sich jetzt als Grafik (Balken je
   Auflösung, Kästchen je Tag) statt als Tabelle; Mittelfrist-Analyse & Bücher-Steuerung von
   den Einstellungen in Werkzeuge → Betrieb gezogen.
