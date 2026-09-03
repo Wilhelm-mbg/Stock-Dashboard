@@ -1,0 +1,15 @@
+Freigabe: Wilhelm 03.09.2026 (Probe nicht bestanden, Nachtrag §6)
+Erledigte Aufgaben: 1507, Abrufe 1896, Fehlschlaege 0
+Balken: gemeinsam mit Yahoo 469335, neu 2954500, geschrieben 2954499, ausserhalb des Zeitraums 0, vom Raster verworfen 0
+
+| Intervall | gemeinsame Stempel | Schluss median | Schluss max | ueber 0,1 % | Umsatz-Faktor median (n) | Urteil |
+|---|---|---|---|---|---|---|
+| 15m | 99268 | 0.0000 % | 100.033 % | 2061 | 1.000 (13109) | ABWEICHUNG |
+| 1m | 95144 | 0.0000 % | 0.376 % | 238 | 1.000 (13418) | Quelle stimmt |
+| 5m | 274923 | 0.0000 % | 100.033 % | 5812 | 1.000 (18390) | ABWEICHUNG |
+
+MINDESTENS EIN INTERVALL WEICHT AB - Balken sind nicht dasselbe wie Yahoo.
+
+Werte durchgefallen: 5 von 70 (Kriterium wie Probe: Median <= 0,1 % und <= 2 % der Kerzen ueber 0,1 %)
+unter der Stoppregel (<= 10 % durchgefallen) - Vollsammlung darf starten.
+exit 1
