@@ -312,6 +312,20 @@ ihn kaufen müsste** — das sagt nichts über sein Vorzeichen und belegt keine 
 > keine Formsache, sondern der Endzustand: eine spätere Messung kann die Lücke nicht
 > schließen, weil die Daten nicht existieren.
 
+### Zusatz C gemessen (03.09.2026): für 2025/2026 ist die Verzerrung kleiner als das Instrument sehen kann
+
+*Fundstelle: `studien/vorregistrierung-2026-09-02-spannen-historisch/ERGEBNIS-ZUSATZ-C.md`; Rohdaten `E:/Markt-Dashboard-Archiv/spannen/zusatzC-*.jsonl` (3.615 Zeitpunkte, 99,6 % gültig). Getrennter Rahmen, **nie in die Tabellen oben gemischt**; keine neue Hürde.*
+
+| Primäre Zelle (mitte, 2025+2026) | Verschwundene | Überlebende | Differenz | 95-%-Band | Urteil |
+|---|---|---|---|---|---|
+| 5–50 Mio $ | 0,1699 | 0,1678 | +0,0021 | [−0,0324, +0,0412] | **nicht entscheidbar** (Auflösung 0,055 Pp) |
+| 50–250 Mio $ | 0,0685 | 0,1134 | −0,0449 | [−0,0871, −0,0123] | Verschwundene **enger** — gegen die Erwartung |
+
+- **Größenordnung für die Hürden** (Median der Mischung im Verhältnis des Anteils verschwundener Werte, 2025: 12,1 % in 5–50, 5,5 % in 50–250): Aufschlag **+0,0003 Pp** (5–50) bzw. **−0,0011 Pp** (50–250) — die Hürden für 2025/2026 ändern sich in der vierten Stelle nicht.
+- „Nicht entscheidbar" heißt: ein Unterschied unter 0,055 Pp ist mit 141 gegen 196 Symbolen nicht zu sehen. Die Kurs-Gegenprobe (nur 10–50 $) zeigt dasselbe Bild (−0,0019 / −0,0046, Null im Band).
+- Klasse ab 1 Mrd $ ist bei den Verschwundenen leer (kein Befund, keine Lücke); 250–1.000 zu dünn (4 und 6 Symbole). Placebo trug mit 19 Paaren nicht (Faktor 11,5 bei Soll ≥ 2).
+- **Für 2016–2024 gilt der Kasten oben unverändert:** nicht messbar.
+
 ## Monatshaltedauer, ausgefüllt am Momentum-Korb (gemessen 02.09.2026)
 
 63 Handelstage sind **91,5 Kalendernächte** (88–97): F·H = 0,0247 × 91,5 = **2,26 Pp je

@@ -85,3 +85,7 @@ Sterblichkeit. Kurseffekte gehören in jede solche Rechnung als eigene Zeile.
 Strategien, deren Auswahl systematisch bei Verschwundenen landet (Pleitenähe,
 Delisting-Arbitrage, Small-Cap-Reversal), sind mit dem Überlebenden-Archiv **nicht** messbar —
 die Verschwundenen-Reihen decken nur den Messzeitraum ab.
+
+## Gemessen 03.09.2026: Zusatz C der Spannen-Studie (nur 2025/2026)
+
+Die einzige Messung im Haus, die Verschwundene und Überlebende **an derselben Zielgröße** vergleicht (notierte Spanne, Alpaca-SIP-Tafel), mit derselben Auswertungsfunktion und Positivkontrolle (4 von 4 Mediane des Rahmens A exakt reproduziert). Ergebnis: in 5–50 Mio $ **nicht entscheidbar** (+0,0021 Pp, Band [−0,032, +0,041], Auflösung 0,055 Pp); in 50–250 handeln die Verschwundenen **enger** (−0,0449, Band schließt die Null aus) — die Erwartung „Verschwundene breiter" hat sich für diese Jahre nicht bestätigt. Auf die Hürden wirkt das in der vierten Stelle nicht. **Für 2016–2024 bleibt es beim Kasten oben: nicht messbar.** *Fundstelle: `studien/vorregistrierung-2026-09-02-spannen-historisch/ERGEBNIS-ZUSATZ-C.md`, Registrierung §9b (Commit `30c5626`, vor dem Bau).*
