@@ -4,6 +4,7 @@ Nur was **weitergilt**. Aufgehobenes steht mit Datum der Aufhebung.
 
 ## Daten und Messung
 
+- **Alpaca-Balken-Probe: freigegeben mit Nachtrag** (03.09.2026, Wilhelm, Formular). Die Probe fiel an einem von acht Kriterien (ARM: 9 statt höchstens 7 Minutenkerzen über 0,1 %, Maximum 0,18 %); alle Lagemaße praktisch null. Das gemessene Urteil bleibt `false`; die Freigabe ist eine eigene Datei mit Datum. Breite Gegenprobe über 133 Werte durch den Nachholer (`--pruefen`), Stoppregel > 10 % der Werte. Fundstelle [archiv-zusammenfuehrung.md](archiv-zusammenfuehrung.md) §6 Punkt 2.
 - **Alles sammeln, nicht nur das Nötige** (03.09.2026, Wilhelm): „Haben ist immer besser als brauchen —
   lieber alles sammeln als es dann später zu brauchen"; er will auf dem Datensatz vielleicht ein LLM
   trainieren. Folge: der Alpaca-Nachholer für die verworfenen CFD-Bereiche bleibt (~10 min), zusätzlich
