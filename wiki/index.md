@@ -21,6 +21,7 @@ Sie bleibt als **Archiv** bestehen und wird nicht gelöscht.
 | [betrieb.md](betrieb.md) | Rollen, Release, Arbeitsbaum, Kostenbremse |
 | [offene-auftraege.md](offene-auftraege.md) | Was gerade ansteht |
 | [oberflaeche.md](oberflaeche.md) | Wie die App aussehen soll — Ist-Karte, Befund, Zielbild „drei Bildschirme", Stufen, Sperrklinken |
+| [archiv-zusammenfuehrung.md](archiv-zusammenfuehrung.md) | Die zwei Kursarchive — Karte, Risiken, Stufen der Zusammenführung |
 | [entscheide.md](entscheide.md) | Wilhelms Entscheide, die weitergelten |
 | [log.md](log.md) | Wann dieses Wiki was geändert hat |
 
