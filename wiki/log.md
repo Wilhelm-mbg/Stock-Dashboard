@@ -2,6 +2,19 @@
 
 *Nur was sich am Wiki ändert. Die Projekt-Chronologie steht im Archiv `PROJEKTSTAND.md`.*
 
+- 03.09.2026 Alpaca-Vollsammlung Z1c gebaut (Bau): [datenquellen.md](datenquellen.md) neuer Abschnitt
+  „Alpaca-Minutenarchiv (roh + bereinigt, ohne Überlebensverzerrung ab 2016)",
+  [archiv-zusammenfuehrung.md](archiv-zusammenfuehrung.md) §5 Zeile Z1c und §6 Punkt 8(b)(c),
+  [ueberlebensverzerrung.md](ueberlebensverzerrung.md) (die Lücke wird auf Minutenbasis geschlossen),
+  [offene-auftraege.md](offene-auftraege.md) (drei Einträge). **Der Maßnahmen-Endpunkt trägt auf der
+  Gratisstufe und reicht bis 2016, aber er gibt für ABSPALTUNGEN keinen Kursfaktor heraus, sondern
+  nur ein Stückverhältnis** — an sieben Fällen geprüft, kein Sonderfall. Splits dagegen exakt:
+  MNST 1→2 ex 11.08.2026 = 2,000, dieselbe Zahl, die die Skalenreparatur am Vortag unabhängig aus
+  den Kursen gemessen hat. Werte mit Abspaltung bleiben deshalb aus der bereinigten Kopie und
+  werden gelistet. Dazu drei Windows-/Tarif-Fallen vor dem ersten geschriebenen Byte: `CON` ist ein
+  Gerätename, `HIW`/`HIw` kollidieren im Dateinamen, und der Gratis-Tarif verweigert bei zu jungem
+  `end` die **ganze** Anfrage (HTTP 403). Testlauf mit allen Kontrollen bestanden, 13 Gegenproben
+  13-mal rot. **Vollauf noch nicht gefahren.** Befund `studien/alpaca-vollsammlung-2026-09/BEFUND.md`
 - 03.09.2026 Skalenreparatur MNST/SPGI geliefert (Bau): [archiv-zusammenfuehrung.md](archiv-zusammenfuehrung.md)
   §5 (neue Zeile „Z1-Skalenreparatur") und §6 Punkt 8(a), [datenquellen.md](datenquellen.md) neuer
   Abschnitt „Bereinigung: welche Alpaca-Einstellung entspricht Yahoo? **Keine.**" mit der Messtabelle.

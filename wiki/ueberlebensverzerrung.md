@@ -13,6 +13,21 @@ Gegenmaßnahme im Haus: **1.164 Reihen verschwundener Werte** (`massive/`) plus 
 **eingefrorenes Punkt-in-Zeit-Universum** (Stichtag 2024-09-02) — siehe
 [datenquellen.md](datenquellen.md).
 
+**Seit 03.09.2026 wird die Lücke auf Minutenbasis geschlossen** (Stufe Z1c,
+`tools/alpaca-vollsammlung.js`): das Alpaca-Minutenarchiv sammelt **5.100 verschwundene Werte**
+neben den 3.263 des eingefrorenen Universums, zurück bis 2016 — nicht 1.164 Tagesreihen, sondern
+Minutenbalken. Zwei Dinge daran sind für die Verzerrung entscheidend und stehen ausführlich in
+[datenquellen.md](datenquellen.md): (1) die **Lebenszeit** jedes Werts kommt aus den Balken der
+Quelle selbst (erster/letzter Balken), nicht aus dem Listendatum — ein Wert, den die Liste zu früh
+für tot erklärt, verliert dadurch keine Kurse; (2) ein **wiederverwendetes Kürzel** wird als eigene
+Reihe `<KÜRZEL>~2` geführt, nie mit dem Vorgänger vermischt. Ohne (2) hätte die Sammlung ihre
+eigene Verzerrung erzeugt: der erloschene Träger bekäme die Kurse seines Nachfolgers angehängt und
+sähe damit aus, als habe er überlebt.
+
+Was das **nicht** leistet: die Lücke ist damit für den US-Aktienquerschnitt ab 2016 geschlossen,
+nicht davor und nicht für Werte, die auch Alpaca nicht führt. Wie groß der verbleibende Rest ist,
+sagt erst die Auszählung nach dem Vollauf.
+
 ## Weg 3 — die Messung, wie stark und in welche Richtung verzerrt wird
 
 Beide Mitglieder gemessen, **alle Wächter grün**:

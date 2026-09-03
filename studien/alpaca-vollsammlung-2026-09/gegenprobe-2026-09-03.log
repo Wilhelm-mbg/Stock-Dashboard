@@ -1,0 +1,26 @@
+Isolierte Kopie: /tmp/vollsammlung-gegenprobe-1591
+
+== Eingriffe am Werkzeug (gegen --kontrolle) ==
+  ROT   G1 Umsatz wird geteilt statt malgenommen (Gegenwert kippt)
+  ROT   G2 aus einer Abspaltung wird doch ein Faktor gemacht
+  ROT   G3 die Massnahme wirkt auf die Kerzen DANACH statt DAVOR
+  ROT   G4 Ringverteilung laeuft vom aeltesten Jahr aufwaerts
+  ROT   G5 der Ordnername ist wieder einfach das Kuerzel (CON, HIw)
+  ROT   G6 das Abruf-Ende wird nicht mehr gekappt (Tarif-Sperre)
+  ROT   G7 Jahresgrenze wieder auf UTC-Mitternacht (Silvester doppelt)
+  ROT   G8 die Luecken-Wache faellt weg (laufende Reihe wird zerschnitten)
+  ROT   G9 die 5m-Verdichtung summiert den Umsatz nicht mehr
+
+== Eingriffe, die nur test-v6 sieht (Block 35) ==
+  ROT   G10 der Yahoo-Vergleich nimmt ALLE Kerzen (Alpaca gegen Alpaca = Tautologie)
+            ❌ Vollsammlung: der Vergleich haelt sich an Kerzen mit Quelle YAHOO - Alpaca gegen Alpaca waere eine Tautologie, die immer besteht
+  ROT   G11 die Vollsammlung schreibt in das Yahoo-Archiv
+            ❌ Vollsammlung: KEIN Schreibaufruf nennt ein Yahoo-Archiv als Ziel - archiv1m/5m/15m werden nur GELESEN
+  ROT   G12 eine abgebrochene Aufgabe wird NICHT neu geholt
+            ❌ Vollsammlung: nach einem Abbruch werden GENAU die abgebrochene und die fehlende Aufgabe neu geholt - keine andere  [AAA|2024]
+  ROT   G13 verdecken() aus der Massnahmen-Probe ausgebaut
+            ✅ Leck-Test der Massnahmen-Probe: erfundene Zugangswerte tauchen in KEINER Ausgabe auf, auch wenn der Server die Kopfzeilen zurueckspiegelt
+            ✅ Der Leck-Test der Massnahmen-Probe hat die Ausgabepfade wirklich durchlaufen
+
+Gegenproben: 13 rot, 0 gruen (gruen = die Klinke greift nicht)
+Kopie bleibt zum Nachsehen: /tmp/vollsammlung-gegenprobe-1591

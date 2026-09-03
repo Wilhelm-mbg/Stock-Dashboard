@@ -207,6 +207,66 @@ sauberen Tage unter 0,1 %, die 68 falschen bei 2,000 bzw. 1,057 — **kein Fehla
 taugt als Vergleich nicht: es hat denselben Fehler (MNST 06.08. 47,08 gegen 07.08. 90,36).
 `--pruefen` fährt diese Prüfung bei jedem Aufruf mit.
 
+### Alpaca-Minutenarchiv (roh + bereinigt, ohne Überlebensverzerrung ab 2016)
+
+Stufe Z1c, `tools/alpaca-vollsammlung.js`. Ein **eigenes Archiv neben den Yahoo-Dateien**, das
+nicht nur enthält, was heute noch gehandelt wird. Wilhelms Entscheid „alles sammeln"
+([entscheide.md](entscheide.md)) und Skalenkonvention **„beides"**.
+
+| | |
+|---|---|
+| Endpunkt | `/v2/stocks/bars`, `timeframe=1Min`, `feed=sip`, `adjustment=raw`, `limit=10000` |
+| Reichweite | 2016 bis heute, **alle Handelsstunden** (Vorbörse ab 04:00 ET, Nachbörse bis 20:00 ET) |
+| Ablage roh | `E:/Markt-Dashboard-Archiv/alpaca1m/<ORDNER>/<JAHR>.json`, Format 2, `quellen` = `alpaca`, dazu `sitzungen` (Bereiche `regulaer`/`vor`/`nach`) und `jahr` — **append-only** |
+| Ablage Maßnahmen | `alpaca-massnahmen/<ORDNER>.json` aus `/v1/corporate-actions` |
+| Ablage bereinigt | `alpaca1m-bereinigt/<ORDNER>/<JAHR>.json`, **lokal abgeleitet**, kein zweiter Abruf |
+| Jahresgrenze | **ET-Mitternacht**, nicht UTC — sonst fielen die Nachbörsen-Balken des 31.12. in zwei Jahresdateien |
+| Ratenbremse | 170/min (die 200/min der Quelle gelten für den ganzen Zugang, `kosten.js` holt mit) |
+
+**Kapitalmaßnahmen: Splits ja, Abspaltungen nein** (gemessen 03.09.2026,
+`studien/alpaca-vollsammlung-2026-09/probe-massnahmen.js` und `probe-spinoff-form.js`,
+Kriterien im Code **vor** dem Lauf). Der Endpunkt trägt auf der **Gratisstufe** und reicht bis
+2016 zurück (AAPL-Split 31.08.2020, NVDA-Split 20.07.2021). Ein **Split** trägt `old_rate` und
+`new_rate`, und `new_rate/old_rate` **ist** der Kursfaktor — MNST `forward_split` ex 11.08.2026,
+1 → 2, Faktor **2,000**, exakt die Zahl, die die Skalenreparatur am Vortag unabhängig aus den
+Kursen gemessen hat. Eine **Abspaltung** trägt `source_rate` und `new_rate`, und das ist ein
+**Stückverhältnis, kein Kursfaktor**: GE→WAB 0,005371, GE→GEHC 0,33333, GE→GEV 0,25, MMM→SOLV
+0,25, T→WBD 0,24192, SPGI→MBGL 1,0. Der gemessene Kursfaktor bei SPGI war **1,057** — aus „ein
+Stück je Stück" nicht ausrechenbar, er hängt am Kurs des abgespaltenen Papiers am Wirkungstag.
+**Folge:** ein Wert mit Abspaltung bleibt aus der bereinigten Kopie **aus** und wird gelistet;
+sein Faktor wird nicht aus der Rohreihe erraten (ein Sprung von −5 % kann eine Abspaltung sein
+oder eine Gewinnwarnung).
+
+**Die Ableitung** ist eine reine Funktion: Kurse ÷ Faktor, **Umsatz × Faktor**, damit Kurs ×
+Umsatz der gehandelte Gegenwert bleibt. Das ist **bewusst stimmiger als Yahoo**, das Intraday die
+Kurse bereinigt und die Umsätze nicht (Abschnitt oben). Mehrere Maßnahmen multiplizieren sich;
+Kerzen am Wirkungstag bleiben unberührt. Dividenden werden **nicht** angewandt.
+
+> #### ⚠ Der Gratis-Tarif verweigert die JÜNGSTEN SIP-Daten — und zwar die ganze Anfrage
+> `HTTP 403 {"message":"subscription does not permit querying recent SIP data"}`. Nicht „die
+> letzten Balken fehlen", sondern: der Abruf liefert **nichts**. Ein `end` von heute macht eine
+> Anfrage über zehn Jahre wertlos. Der Nachholer lief nie hinein, weil er nur alte cap-Bereiche
+> anfragte. Jedes Abruf-Ende wird deshalb auf *jetzt minus 30 Minuten* gekappt (15 wären die
+> Sperre, die übrigen 15 decken die Nachkorrektur fertiger Balken ab). Das laufende Jahr gilt
+> darum nie als fertig und wird an einem späteren Tag neu geholt.
+
+**Drei Windows-Fallen, gefunden vor dem ersten geschriebenen Byte.** (1) **CON** steht im
+eingefrorenen Universum und ist ein Gerätename — `mkdir CON` schlägt fehl, egal wie tief der Pfad
+liegt (ebenso PRN, AUX, NUL, COM1‑9, LPT1‑9). (2) **HIW/HIw, KW/Kw, ADSW/ADSw** sind je zwei
+verschiedene Wertpapiere, deren Ordner auf einem Dateisystem ohne Groß-/Kleinschreibung
+zusammenfallen — zwei Unternehmen in einer Reihe, still. (3) Ein Kürzel, das auf einen Punkt
+endet, wäre unzulässig (es gibt keines). Regel: ein Kürzel, das nicht rein aus Großbuchstaben,
+Ziffern und Punkten besteht oder ein Gerätename ist, bekommt einen Kurzstempel seines **exakten**
+Namens angehängt (`CON` → `CON_7679a0`). Die vollständige Abbildung steht in
+`alpaca1m/_symbole.json`; die Wahrheit steht ohnehin als `sym` im Datei-Rumpf.
+
+**Kürzel-Wiederverwendung.** Ein Kürzel, das nach dem Erlöschen seines Trägers neu vergeben wird,
+liefert Balken **zweier verschiedener Unternehmen**. Die zweite Reihe wird als `<KÜRZEL>~2`
+abgelegt, nie vermischt. Geschnitten wird am letzten wirklich gehandelten Tag vor dem Anker
+(letzter Tagesbalken laut `massive/tagesdaten`, ersatzweise das Delisting-Datum der Liste) — und
+nur, wenn zusätzlich mindestens 20 Handelstage Stille dazwischenliegen. Ohne diese zweite
+Bedingung würde ein falsch geführtes Listendatum eine durchlaufende Reihe mitten entzweischneiden.
+
 ### Format des Kursarchivs (Format 2, seit Z1)
 
 `{ sym, quelle, format: 2, felder, quellen: [{ von, bis, quelle: 'yahoo'|'alpaca'|'capital', abgeleitet? }],

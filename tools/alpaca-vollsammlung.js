@@ -757,7 +757,13 @@ async function holen(opt) {
   var AB = symbolAbbildung(Object.keys(jeSymbol));
   if (AB.doppelt.length) throw new Error('Ordnernamen nicht eindeutig: ' + AB.doppelt.join(' | '));
   fs.mkdirSync(ROH, { recursive: true });
-  M.atomarSchreiben(SYMBOLE, JSON.stringify({ stand: new Date().toISOString(), gruppe: U.gruppe, ordner: AB.ab }));
+  /* ERGAENZEN, nicht ersetzen. Ein Lauf mit --symbole kennt nur seine Handvoll Werte;
+   * schriebe er die Abbildung neu, waeren nach einem Teillauf 8.000 Zuordnungen weg -
+   * und mit ihnen die einzige Stelle, an der "CON_7679a0" wieder zu CON wird. */
+  var symAlt = {}, gruppeAlt = {};
+  try { var sv = JSON.parse(fs.readFileSync(SYMBOLE, 'utf8')); symAlt = sv.ordner || {}; gruppeAlt = sv.gruppe || {}; } catch (e) { /* erste Fassung */ }
+  M.atomarSchreiben(SYMBOLE, JSON.stringify({ stand: new Date().toISOString(),
+    gruppe: Object.assign(gruppeAlt, U.gruppe || {}), ordner: Object.assign(symAlt, AB.ab) }));
 
   var kal = await kalenderHolen(AB_JAHR, bisJahr, opt.fetch);
   var F = fortschrittLesen();
@@ -826,17 +832,26 @@ function ableitenLauf(opt) {
   symbole.forEach(function (ord) {
     if (opt.ordner && opt.ordner.indexOf(ord) === -1) return;
     var mp = path.join(MASSNAHMEN, ord + '.json');
-    var faktoren = [], luecken = [];
+    var faktoren = [], luecken = [], symAusMass = null;
     if (fs.existsSync(mp)) {
       try {
         var m = JSON.parse(fs.readFileSync(mp, 'utf8'));
+        symAusMass = m.sym || null;
         var f = faktorenAus(m.saetze);
         faktoren = f.anwendbar; luecken = f.ohneFaktor;
       } catch (e) { fehler.push(ord + ': Massnahmen unlesbar'); return; }
     } else { ohneMassnahmen++; }
     /* Ein Wert mit einer Massnahme OHNE Kursfaktor (Abspaltung) bleibt AUS der
-     * bereinigten Kopie - der Auftrag ist ausdruecklich: nicht aus der Rohreihe erraten. */
-    if (luecken.length) { ausgelassen.push({ sym: ordnerZuSym[ord] || ord, grund: luecken[0].grund, art: luecken[0].art, datum: luecken[0].datum }); return; }
+     * bereinigten Kopie - der Auftrag ist ausdruecklich: nicht aus der Rohreihe erraten.
+     * Gemeldet wird er unter seinem KUERZEL, nicht unter dem Ordnernamen: "CON_7679a0
+     * ausgelassen" findet niemand wieder. Das Kuerzel steht in der Massnahmen-Datei
+     * selbst - die einzige Quelle, die hier sicher vorliegt, denn ausgelassen wird nur,
+     * wer Massnahmen hat. */
+    if (luecken.length) {
+      ausgelassen.push({ sym: symAusMass || ordnerZuSym[ord] || ord, ordner: ord,
+        grund: luecken[0].grund, art: luecken[0].art, datum: luecken[0].datum });
+      return;
+    }
 
     var jahre = fs.readdirSync(path.join(ROH, ord)).filter(function (n) { return /^\d{4}\.json$/.test(n); });
     jahre.forEach(function (jn) {
@@ -864,6 +879,25 @@ function ableitenLauf(opt) {
   var bericht = { rohOrdner: symbole.length, dateienGelesen: dateien, kopienGeschrieben: geschrieben,
     ohneMassnahmenNoetig: unveraendert, ohneMassnahmendatei: ohneMassnahmen,
     ausgelassen: ausgelassen, fehler: fehler };
+  /* DIE LESEREGEL, dort hingeschrieben, wo sie gebraucht wird. Die bereinigte Kopie
+   * existiert NUR fuer Symbol-Jahre, an denen sich wirklich etwas aendert - eine
+   * byteidentische Zweitschrift von 150 GB waere kein Gewinn, sondern ein zweites Ding,
+   * das auseinanderlaufen kann. Wer bereinigte Kurse will, liest also: erst hier, und
+   * wo nichts liegt, die Rohdatei. Diese Regel darf nicht nur in einer Uebergabe stehen,
+   * die in einem halben Jahr niemand mehr sucht. */
+  if (!opt.ordner) {
+    fs.mkdirSync(BEREINIGT, { recursive: true });
+    M.atomarSchreiben(path.join(BEREINIGT, '_regel.json'), JSON.stringify({
+      stand: new Date().toISOString(),
+      leseregel: 'Bereinigte Kurse = diese Datei, falls vorhanden; sonst die gleichnamige unter alpaca1m/. ' +
+        'Fehlt sie, weil sich fuer dieses Symbol-Jahr nichts aendert - die Rohdatei IST dann die bereinigte.',
+      angewandt: 'Splits (Faktor = new_rate/old_rate). Kurse geteilt, Umsatz malgenommen.',
+      nichtAngewandt: 'Dividenden (Yahoo bereinigt Intraday nicht um sie) und Abspaltungen ' +
+        '(die Quelle liefert dafuer nur ein Stueckverhaeltnis, keinen Kursfaktor).',
+      ohneKopieWeilAbspaltung: ausgelassen,
+      zahlen: bericht,
+    }, null, 1));
+  }
   protokoll('Ableiten: ' + geschrieben + ' Kopien, ' + ausgelassen.length + ' Werte ausgelassen (kein Kursfaktor)');
   return bericht;
 }
@@ -1328,9 +1362,16 @@ async function main() {
 
   /* Ab hier braucht es Netz und damit den Zugang. */
   if (!S.vorhanden()) { console.error('Kein Zugang in der Umgebung: ' + S.fehlend().join(', ') + ' fehlt.'); process.exit(2); }
-  if (M.imSammelfenster() && !hat('--trotz-sammelfenster')) {
-    console.error('VERWEIGERT: 21:30-23:00 UTC ist das Sammelfenster der App.'); process.exit(1);
-  }
+  /* KEINE Verweigerung im Sammelfenster der App - anders als beim Nachholer, und mit
+   * Grund. Der Nachholer schrieb IN die Yahoo-Dateien, die der App-Sammler zur selben
+   * Zeit anfasst; dort waere ein Zusammentreffen ein Datenschaden. Diese Sammlung
+   * schreibt in ein eigenes Archiv (alpaca1m/), das der Sammler nicht kennt - sie stoert
+   * ihn nicht und er sie nicht (Auftrag PM 03.09.2026, woertlich: "das stoert nicht,
+   * andere Ordner"). Eine Verweigerung waere hier sogar schaedlich: der Vollauf dauert
+   * ueber 30 Stunden, und ein Werkzeug, das jede Nacht um 23:30 Ortszeit von selbst
+   * stirbt, kaeme nie durch. Geteilt wird nur die RATENGRENZE des Zugangs, und dagegen
+   * hilft nicht Abwarten, sondern die auf 170/min gedrosselte Bremse. */
+  if (M.imSammelfenster()) sag('Hinweis: 21:30-23:00 UTC sammelt die App - anderer Ordner, kein Zusammenstoss. Die Ratengrenze teilen sich beide, die Bremse steht auf ' + RATE_JE_MIN + '/min.');
   var U = universumLesen();
   var bisJahr = Number(arg('--bis-jahr', 0)) || new Date().getUTCFullYear();
 

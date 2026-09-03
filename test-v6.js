@@ -13540,6 +13540,16 @@ console.log('\n64) Bestand & Kopfzeile (Oberflaeche Stufe 2, 03.09.2026)');
   ok(!VS.jahrAbgeschlossen(2026, jetztV) && VS.jahrAbgeschlossen(2025, jetztV),
      'Vollsammlung: das laufende Jahr gilt nicht als fertig - seine Datei wird an einem spaeteren Tag neu geholt');
 
+  /* (5b) Das Sammelfenster der App HAELT diese Sammlung NICHT an - anders als den
+   * Nachholer, und das ist ein Entscheid, kein Versehen. Der Nachholer schrieb in die
+   * Yahoo-Dateien, die der Sammler zur selben Zeit anfasst; die Vollsammlung schreibt in
+   * ein eigenes Archiv. Ein Vollauf dauert ueber 30 Stunden - ein Werkzeug, das jede
+   * Nacht um 23:30 Ortszeit von selbst stirbt, kaeme nie durch. Die Zusicherung steht
+   * hier, damit niemand die Wache aus Gewohnheit wieder einbaut und den Nachtlauf
+   * lahmlegt, ohne es zu merken. */
+  ok(!/imSammelfenster\(\)[^\n]*process\.exit/.test(vsQ) && /imSammelfenster\(\)\)\s*sag\(/.test(vsQ),
+     'Vollsammlung: das Sammelfenster der App wird gemeldet, bricht den Lauf aber NICHT ab (eigener Ordner, 30-Stunden-Lauf)');
+
   /* (6) Die eigene Kontrolle des Werkzeugs faehrt in der Suite mit - eine Positivkontrolle,
    * die rot wird, wenn jemand einen ihrer Bausteine aendert. */
   var kV = VS.kontrolle();
