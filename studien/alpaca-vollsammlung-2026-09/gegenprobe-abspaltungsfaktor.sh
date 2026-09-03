@@ -104,7 +104,14 @@ probe "H4 die Streuungsschranke ist ausgebaut (zwei Skalen ergeben einen Median)
 
 # Ohne Balken nach der Massnahme ist die Kontrolle nicht fahrbar. "Nicht pruefbar" darf
 # nicht als "bestanden" durchgehen - erloschene Werte sind hier die Mehrheit.
-node -e "var fs=require('fs'),p='$WM',s=fs.readFileSync(p,'utf8');s=s.replace('if (nach.length < MIND_NACH) {','if (0) { /*H5*/');fs.writeFileSync(p,s);"
+#
+# ZWEI Eingriffe, und das ist Absicht: die Zaehlschranke ALLEIN wegzunehmen bricht die
+# Eigenschaft gar nicht, sondern nur den Code - der Median eines leeren Feldes ist null,
+# und die Kontrolle darunter faellt daran ohnehin. Der erste Anlauf dieser Gegenprobe tat
+# genau das und meldete "gruen", also: die Klinke greift nicht. Sie greift; der Eingriff
+# stellte nur nie die gefaehrliche Lage her. Erst beides zusammen - Schranke weg UND ein
+# leeres Feld als bestanden gewertet - baut den Fehler nach, um den es geht.
+node -e "var fs=require('fs'),p='$WM',s=fs.readFileSync(p,'utf8');s=s.replace('if (nach.length < MIND_NACH) {','if (0) { /*H5*/').replace('erg.nachMedian = median(nach.map(function (x) { return x.v; }));','erg.nachMedian = nach.length ? median(nach.map(function (x) { return x.v; })) : 1;');fs.writeFileSync(p,s);"
 probe "H5 'nicht pruefbar' geht als bestanden durch (erloschener Wert)" \
       "tools/alpaca-abspaltungsfaktor.js" "if (0) { /*H5*/" \
       "node tools/alpaca-abspaltungsfaktor.js --kontrolle" "A9"
