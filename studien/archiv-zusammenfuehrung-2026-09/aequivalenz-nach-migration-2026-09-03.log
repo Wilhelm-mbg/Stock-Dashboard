@@ -1,0 +1,57 @@
+Kontrolle A: Store ⊂ Datei
+  ok   A: 400 gemeinsam, 0 uebernehmen  →  {"gemeinsam":400,"laufend":0,"unvollstaendig":0,"quote-nach-schluss":0,"cap":0,"ausserhalb-gitter":0,"uebernehmen":0,"defekt":0}
+Kontrolle B: sechs Kerzen nur im Store, ausserhalb cap, mit Umsatz, auf dem Gitter
+  ok   B: genau 6 uebernehmen, sechs Felder, [5] = null  →  [6,[1785766800000,112.3457,1010,112.9213,111.7978,null]]
+  ok   B: die Vereinigung bringt 6 dazu; das Raster nimmt der Datei 0 (R5 behoben)  →  [6,0,0]
+  ok   B: quellen = Bestand / vergleich-z0 / Bestand / vergleich-z0 / Bestand (5 Bereiche, verdichtet)  →  ["bestand","vergleich-z0","bestand","vergleich-z0","bestand"]
+  ok   B: die Huelle geht durch satz() - Format 2, jede Kerze mit Quelle
+Kontrolle C: dieselben sechs INNERHALB capBereiche
+  ok   C: 6 cap, 0 uebernehmen - Entscheid 2  →  {"gemeinsam":394,"laufend":0,"unvollstaendig":0,"quote-nach-schluss":0,"cap":6,"ausserhalb-gitter":0,"uebernehmen":0,"defekt":0}
+  ok   C ohne zweite Marke: 3 cap, 3 uebernehmen - die Trennung ist keine Tautologie  →  {"gemeinsam":394,"laufend":0,"unvollstaendig":0,"quote-nach-schluss":0,"cap":3,"ausserhalb-gitter":0,"uebernehmen":3,"defekt":0}
+Kontrolle D: laufende Kerze und unvollstaendige Kerze
+  ok   D: die Kerze, deren Eimer bei updatedAt noch offen war, wird nicht uebernommen  →  {"gemeinsam":400,"laufend":1,"unvollstaendig":0,"quote-nach-schluss":0,"cap":0,"ausserhalb-gitter":0,"uebernehmen":0,"defekt":0}
+  ok   D: eine Drei-Feld-Kerze (ohne Hoch/Tief) wird gezaehlt, nicht uebernommen  →  {"gemeinsam":400,"laufend":0,"unvollstaendig":1,"quote-nach-schluss":0,"cap":0,"ausserhalb-gitter":0,"uebernehmen":0,"defekt":0}
+Kontrolle E: Quote-Kerzen nach Sitzungsschluss laut Kalender
+  ok   E: 5 Quote-Kerzen (3 am Schluss, 2 danach), 4 uebernommen - Sommerzeit, Winterzeit, Halbtag, Wochenende  →  [{"gemeinsam":0,"laufend":0,"unvollstaendig":0,"quote-nach-schluss":5,"cap":0,"ausserhalb-gitter":0,"uebernehmen":4,"defekt":0},3,2]
+  ok   E: Sitzungsschluss 20:00 (EDT), 21:00 (EST), 18:00 (Halbtag EST), null am Feiertag 03.07.2026
+  ok   E: fuer Krypto gilt die Kalenderregel nicht (Samstag, flach -> uebernehmen)  →  {"gemeinsam":0,"laufend":0,"unvollstaendig":0,"quote-nach-schluss":0,"cap":0,"ausserhalb-gitter":0,"uebernehmen":1,"defekt":0}
+Kontrolle F: Gitter und Symbolnamen
+  ok   F: ein krummer Stempel wird gezaehlt, nicht uebernommen  →  {"gemeinsam":0,"laufend":0,"unvollstaendig":0,"quote-nach-schluss":0,"cap":0,"ausserhalb-gitter":1,"uebernehmen":0,"defekt":0}
+  ok   F: BRK-B findet genau eine Datei BRK.B und schreibt unter deren Namen  →  "ersetzt:BRK.B"
+  ok   F: mit zwei Treffern (Wurzel und etf/) ist es mehrdeutig - die Reihe bleibt liegen  →  "mehrdeutig:BRK.B|BRK.B"
+  ok   F: Krypto landet unter archiv5m/krypto/ als neue Datei  →  "C:\\Users\\Wilhe\\AppData\\Local\\Temp\\migration-kontrolle-V3RUhM\\archiv5m\\krypto\\bars_5m_BTC-USD.json"
+  ok   F: eine Reihe ohne Datei wird neu angelegt  →  "C:\\Users\\Wilhe\\AppData\\Local\\Temp\\migration-kontrolle-V3RUhM\\archiv5m\\bars_5m_EA.json"
+Kontrolle G: der R5-Fuehler unterscheidet beide Zustaende
+  ok   G: r5Behoben() sagt nein zur alten Regel, nein zum ausgebauten Raster, nein zum Fix ohne Krypto - und ja zur korrigierten  →  [false,true,false,false]
+  ok   G: eine 60m-Krypto-Uebernahme (24 Kerzen auf :00) geht ungekuerzt durch vereinige()  →  [24,0]
+  Stand von kerzenquelle.js: R5 behoben
+Kontrolle H: Aequivalenztest auf Kunstpaar
+  ok   H: 399 gemeinsam (der letzte Stempel ausgenommen), 1 Nachkorrektur, 1 cap, der Rest gleich - ueberwiegend erst nach Rundung (Zweig durchlaufen)  →  [399,{"n":399,"gleichRoh":1,"gleichNachRundung":397,"cap":0,"ppm":0,"nachkorrektur":1,"maxNachkorrektur":0.000010033907293511043},{"n":399,"gleichRoh":398,"gleichNachRundung":0,"cap":1,"ppm":0,"nachkorrektur":0,"maxNachkorrektur":0}]
+
+Kontrolle bestanden (A–H).
+
+Erzeugt 2026-09-03T15:42:18.537Z mit `node tools/archiv-migration.js`, Modus **aequivalenz**.
+
+| Intervall | Reihen | mit Datei | gemeinsame Stempel (ohne letzten) | nur Store | Feld | n | gleich roh | gleich nach Rundung | cap | ≤ 1 ppm | Nachkorrektur | max. Nachkorrektur |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 1m | 200 | 199 | 983334 | 2825330 | schluss | 983334 | 456539 | 485131 | 41419 | 0 | 245 | 0.145 % |
+|  |  |  |  |  | umsatz | 983334 | 916247 | 0 | 54347 | 0 | 12740 | 100.000 % |
+|  |  |  |  |  | hoch | 983334 | 458199 | 481671 | 42988 | 2 | 474 | 0.804 % |
+|  |  |  |  |  | tief | 983334 | 458769 | 481396 | 42705 | 5 | 459 | 0.543 % |
+| | | | | | *meiste Nachkorrekturen* | CL 331, PGR 280, EMR 257, DUK 256, BDX 252 | | | | | | |
+| 5m | 200 | 197 | 1069975 | 59429 | schluss | 1069975 | 286378 | 674600 | 108856 | 0 | 141 | 0.483 % |
+|  |  |  |  |  | umsatz | 1069975 | 922526 | 0 | 131232 | 4 | 16213 | 100.000 % |
+|  |  |  |  |  | hoch | 1069975 | 292488 | 663341 | 113830 | 3 | 313 | 4.753 % |
+|  |  |  |  |  | tief | 1069975 | 292922 | 663025 | 113750 | 2 | 276 | 0.776 % |
+| | | | | | *meiste Nachkorrekturen* | CVX 521, C 488, EOG 467, SCHW 465, DAL 434 | | | | | | |
+| 15m | 200 | 197 | 364247 | 11870 | schluss | 364247 | 88522 | 236137 | 39409 | 0 | 179 | 0.419 % |
+|  |  |  |  |  | umsatz | 364247 | 308648 | 0 | 47825 | 37 | 7737 | 98.917 % |
+|  |  |  |  |  | hoch | 364247 | 91631 | 231261 | 41176 | 2 | 177 | 4.753 % |
+|  |  |  |  |  | tief | 364247 | 91799 | 231046 | 41238 | 2 | 162 | 0.502 % |
+| | | | | | *meiste Nachkorrekturen* | C 222, CVX 190, CAT 188, EOG 185, SCHW 183 | | | | | | |
+| 60m | 199 | 199 | 1119750 | 723 | schluss | 1119750 | 184153 | 934093 | 0 | 0 | 1504 | 1.158 % |
+|  |  |  |  |  | umsatz | 1119750 | 1113486 | 0 | 0 | 62 | 6202 | 100.000 % |
+|  |  |  |  |  | hoch | 1119750 | 196669 | 920859 | 0 | 12 | 2210 | 4.753 % |
+|  |  |  |  |  | tief | 1119750 | 196142 | 921142 | 0 | 12 | 2454 | 1.755 % |
+| | | | | | *meiste Nachkorrekturen* | COST 346, ADSK 321, HON 309, CDNS 305, MAR 305 | | | | | | |
+exit 0

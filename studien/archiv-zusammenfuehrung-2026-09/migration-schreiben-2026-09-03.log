@@ -1,0 +1,43 @@
+Kontrolle A: Store ⊂ Datei
+  ok   A: 400 gemeinsam, 0 uebernehmen  →  {"gemeinsam":400,"laufend":0,"unvollstaendig":0,"quote-nach-schluss":0,"cap":0,"ausserhalb-gitter":0,"uebernehmen":0,"defekt":0}
+Kontrolle B: sechs Kerzen nur im Store, ausserhalb cap, mit Umsatz, auf dem Gitter
+  ok   B: genau 6 uebernehmen, sechs Felder, [5] = null  →  [6,[1785766800000,112.3457,1010,112.9213,111.7978,null]]
+  ok   B: die Vereinigung bringt 6 dazu; das Raster nimmt der Datei 0 (R5 behoben)  →  [6,0,0]
+  ok   B: quellen = Bestand / vergleich-z0 / Bestand / vergleich-z0 / Bestand (5 Bereiche, verdichtet)  →  ["bestand","vergleich-z0","bestand","vergleich-z0","bestand"]
+  ok   B: die Huelle geht durch satz() - Format 2, jede Kerze mit Quelle
+Kontrolle C: dieselben sechs INNERHALB capBereiche
+  ok   C: 6 cap, 0 uebernehmen - Entscheid 2  →  {"gemeinsam":394,"laufend":0,"unvollstaendig":0,"quote-nach-schluss":0,"cap":6,"ausserhalb-gitter":0,"uebernehmen":0,"defekt":0}
+  ok   C ohne zweite Marke: 3 cap, 3 uebernehmen - die Trennung ist keine Tautologie  →  {"gemeinsam":394,"laufend":0,"unvollstaendig":0,"quote-nach-schluss":0,"cap":3,"ausserhalb-gitter":0,"uebernehmen":3,"defekt":0}
+Kontrolle D: laufende Kerze und unvollstaendige Kerze
+  ok   D: die Kerze, deren Eimer bei updatedAt noch offen war, wird nicht uebernommen  →  {"gemeinsam":400,"laufend":1,"unvollstaendig":0,"quote-nach-schluss":0,"cap":0,"ausserhalb-gitter":0,"uebernehmen":0,"defekt":0}
+  ok   D: eine Drei-Feld-Kerze (ohne Hoch/Tief) wird gezaehlt, nicht uebernommen  →  {"gemeinsam":400,"laufend":0,"unvollstaendig":1,"quote-nach-schluss":0,"cap":0,"ausserhalb-gitter":0,"uebernehmen":0,"defekt":0}
+Kontrolle E: Quote-Kerzen nach Sitzungsschluss laut Kalender
+  ok   E: 5 Quote-Kerzen (3 am Schluss, 2 danach), 4 uebernommen - Sommerzeit, Winterzeit, Halbtag, Wochenende  →  [{"gemeinsam":0,"laufend":0,"unvollstaendig":0,"quote-nach-schluss":5,"cap":0,"ausserhalb-gitter":0,"uebernehmen":4,"defekt":0},3,2]
+  ok   E: Sitzungsschluss 20:00 (EDT), 21:00 (EST), 18:00 (Halbtag EST), null am Feiertag 03.07.2026
+  ok   E: fuer Krypto gilt die Kalenderregel nicht (Samstag, flach -> uebernehmen)  →  {"gemeinsam":0,"laufend":0,"unvollstaendig":0,"quote-nach-schluss":0,"cap":0,"ausserhalb-gitter":0,"uebernehmen":1,"defekt":0}
+Kontrolle F: Gitter und Symbolnamen
+  ok   F: ein krummer Stempel wird gezaehlt, nicht uebernommen  →  {"gemeinsam":0,"laufend":0,"unvollstaendig":0,"quote-nach-schluss":0,"cap":0,"ausserhalb-gitter":1,"uebernehmen":0,"defekt":0}
+  ok   F: BRK-B findet genau eine Datei BRK.B und schreibt unter deren Namen  →  "ersetzt:BRK.B"
+  ok   F: mit zwei Treffern (Wurzel und etf/) ist es mehrdeutig - die Reihe bleibt liegen  →  "mehrdeutig:BRK.B|BRK.B"
+  ok   F: Krypto landet unter archiv5m/krypto/ als neue Datei  →  "C:\\Users\\Wilhe\\AppData\\Local\\Temp\\migration-kontrolle-xl8lCG\\archiv5m\\krypto\\bars_5m_BTC-USD.json"
+  ok   F: eine Reihe ohne Datei wird neu angelegt  →  "C:\\Users\\Wilhe\\AppData\\Local\\Temp\\migration-kontrolle-xl8lCG\\archiv5m\\bars_5m_EA.json"
+Kontrolle G: der R5-Fuehler unterscheidet beide Zustaende
+  ok   G: r5Behoben() sagt nein zur alten Regel, nein zum ausgebauten Raster, nein zum Fix ohne Krypto - und ja zur korrigierten  →  [false,true,false,false]
+  ok   G: eine 60m-Krypto-Uebernahme (24 Kerzen auf :00) geht ungekuerzt durch vereinige()  →  [24,0]
+  Stand von kerzenquelle.js: R5 behoben
+Kontrolle H: Aequivalenztest auf Kunstpaar
+  ok   H: 399 gemeinsam (der letzte Stempel ausgenommen), 1 Nachkorrektur, 1 cap, der Rest gleich - ueberwiegend erst nach Rundung (Zweig durchlaufen)  →  [399,{"n":399,"gleichRoh":1,"gleichNachRundung":397,"cap":0,"ppm":0,"nachkorrektur":1,"maxNachkorrektur":0.000010033907293511043},{"n":399,"gleichRoh":398,"gleichNachRundung":0,"cap":1,"ppm":0,"nachkorrektur":0,"maxNachkorrektur":0}]
+
+Kontrolle bestanden (A–H).
+
+Erzeugt 2026-09-03T15:41:15.297Z mit `node tools/archiv-migration.js`, Modus **schreiben**, Rasterfilter R5 behoben.
+
+| Intervall | Reihen | uebersprungen | gemeinsam | laufend | unvollstaendig | quote-nach-schluss | cap | ausserhalb-gitter | uebernehmen | defekt | quote am Schluss / danach | neue Dateien | Krypto | dazu | Verlust Datei (Raster) | Verlust Uebernahme (Raster) | geschrieben | unveraendert |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 1m | 200 | 0 | 548621 | 0 | 0 | 593 | 2824780 | 0 | 434869 | 0 | 593 / 0 | 8 | 8 | 434869 | 0 | 0 | 163 | 37 |
+| 5m | 200 | 0 | 813006 | 50 | 0 | 604 | 73389 | 0 | 257060 | 0 | 604 / 0 | 9 | 8 | 257060 | 0 | 0 | 164 | 36 |
+| 15m | 200 | 0 | 285923 | 62 | 0 | 629 | 16120 | 0 | 78416 | 0 | 629 / 0 | 9 | 8 | 78413 | 3 | 0 | 129 | 71 |
+| 60m | 199 | 0 | 975052 | 70 | 723 | 0 | 0 | 0 | 144827 | 0 | 0 / 0 | 8 | 8 | 144827 | 0 | 0 | 197 | 2 |
+
+Neue Dateien (34): 1m ADA-USD (28056 Kerzen), 1m BNB-USD (28055 Kerzen), 1m BTC-USD (28055 Kerzen), 1m DOGE-USD (28056 Kerzen), 1m ETH-USD (28056 Kerzen), 1m LTC-USD (28056 Kerzen), 1m SOL-USD (28056 Kerzen), 1m XRP-USD (28055 Kerzen), 5m ADA-USD (20863 Kerzen), 5m BNB-USD (20863 Kerzen), 5m BTC-USD (20863 Kerzen), 5m DOGE-USD (20863 Kerzen), 5m ETH-USD (20863 Kerzen), 5m LTC-USD (20863 Kerzen), 5m NET (5460 Kerzen), 5m SOL-USD (20863 Kerzen), 5m XRP-USD (20863 Kerzen), 15m ADA-USD (6957 Kerzen), 15m BNB-USD (6957 Kerzen), 15m BTC-USD (6957 Kerzen), 15m DOGE-USD (6957 Kerzen), 15m ETH-USD (6957 Kerzen), 15m LTC-USD (6957 Kerzen), 15m NET (1820 Kerzen), 15m SOL-USD (6957 Kerzen), 15m XRP-USD (6957 Kerzen), 60m ADA-USD (17790 Kerzen), 60m BNB-USD (17790 Kerzen), 60m BTC-USD (17790 Kerzen), 60m DOGE-USD (17790 Kerzen), 60m ETH-USD (17790 Kerzen), 60m LTC-USD (17790 Kerzen), 60m SOL-USD (17790 Kerzen), 60m XRP-USD (17790 Kerzen)
+exit 0
