@@ -2,6 +2,10 @@
 
 *Nur was sich am Wiki ändert. Die Projekt-Chronologie steht im Archiv `PROJEKTSTAND.md`.*
 
+- 03.09.2026 Release v8.38.1 (Wache): Erklärtexte stehen jetzt hinter dem i-Knopf neben der
+  Überschrift statt als Dauertext auf jeder Seite, der Simulations-Hinweis läuft einmal in der
+  Kopfzeile statt als eigener Kasten mit, und die widerlegte Stunden-Strategie ist aus der
+  aktiven Bilanz ins Strategie-Archiv gezogen.
 - 03.09.2026 Release v8.38.0 (Wache): Oberfläche auf drei Bildschirme umgebaut (Heute, Regeln,
   Werkzeuge), „Heute" zeigt oben die drei Bücher mit Wert, Ergebnis und letzter Handlung, die
   Kopfzeile spricht jetzt Deutsch, und drei im Depot-Store liegengebliebene Kostenrunden zählen
