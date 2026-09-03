@@ -2,6 +2,15 @@
 
 *Nur was sich am Wiki ändert. Die Projekt-Chronologie steht im Archiv `PROJEKTSTAND.md`.*
 
+- 03.09.2026 Nachtrag zur Spannen-Studie (Berechnungen): [kosten.md](kosten.md) bekommt die
+  Schluss-Hürde je Klasse und Regime mit Cluster-Bootstrap-Band (ab 2021: 0,1025 / 0,0540 /
+  0,0409 / 0,0329 Pp) und die Gegenüberstellung Zusatz A gegen die Buch-Hürde (0,40 Pp je
+  Umlauf, Faktor 9,1 über dem gemessenen Median, 41 von 41 darunter); [belegstand.md](belegstand.md)
+  hält die 12 Übernacht-Zeilen gegen `schluss` (mitte-Urteil durchgestrichen; Summe aller 31
+  von 2 / 14 / 15 auf 3 / 11 / 17 offen / zu / unentschieden); [offene-auftraege.md](offene-auftraege.md)
+  zwei Punkte gestrichen, Zusatz C bleibt offen. Beleg:
+  `studien/vorregistrierung-2026-09-02-spannen-historisch/ERGEBNIS-NACHTRAG.md`,
+  `uebergabe/spannen-nachtrag-2026-09-03.md`.
 - 03.09.2026 Spannen-Studie ausgewertet (Berechnungen): [kosten.md](kosten.md) Abschnitt
   „Kassa-Hürde je Umsatzklasse und Jahr" trägt die gemessene Tabelle (K je Klasse × Jahr ×
   Fenster mit Cluster-Bootstrap-Band, Median-Kurs und Cent-Boden-Anteil daneben), die

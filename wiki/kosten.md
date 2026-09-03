@@ -112,6 +112,29 @@ Median-Kurs und Cent-Boden-Anteil stehen dort nur für das Fenster `mitte`.
 Schlussfenster ist das günstigste. Die vor dem Lauf hingeschriebene Erwartung war
 „2–4 × breiter" (Registrierung §0.1) — sie trifft am unteren Rand zu.
 
+### Die Schluss-Hürde je Klasse (15:30–16:00 ET) — mit Band, **NACHTRAG 03.09.2026**
+
+Registrierung §8: *„die Übernacht-Familie handelt im Schlussfenster und bekommt dort ihre
+eigene Hürde."* Symbol-Median in Pp je Umlauf, Band = 95-%-Perzentilband aus 1.000
+Cluster-Bootstrap-Ziehungen über Symbole — dieselbe Methode wie für `mitte`. Gerechnet von
+`nachtrag.js` (liest dieselben Rohdaten, `messen.js`/`auswerten.js` unverändert),
+Positivkontrolle: die vier `mitte`-Mediane ab 2021 wurden auf vier Stellen exakt
+reproduziert. *Fundstelle:
+`studien/vorregistrierung-2026-09-02-spannen-historisch/ERGEBNIS-NACHTRAG.md` §1.*
+
+| Klasse | **Schluss ab 2021 (maßgeblich)** | 95-%-Band | Symbole | Median-Kurs | am Cent-Boden | Schluss 2016–2020 (nachrichtlich) | Band 2016–2020 | `mitte` ab 2021 | Schluss/Mitte |
+|---|---|---|---|---|---|---|---|---|---|
+| **5-50** | **0,1025** | [0,0954, 0,1089] | 506 | 35,09 $ | 39 % | 0,0666 | [0,0626, 0,0712] | 0,1569 | 0,65 × |
+| **50-250** | **0,0540** | [0,0495, 0,0573] | 470 | 73,97 $ | 36 % | 0,0311 | [0,0293, 0,0336] | 0,0854 | 0,63 × |
+| **250-1000** | **0,0409** | [0,0364, 0,0455] | 314 | 130,95 $ | 32 % | 0,0220 | [0,0205, 0,0231] | 0,0647 | 0,63 × |
+| **ab1000** | **0,0329** | [0,0264, 0,0383] | 110 | 177,61 $ | 34 % | 0,0176 | [0,0138, 0,0221] | 0,0449 | 0,73 × |
+
+Das ist die Hürde, gegen die die Übernacht-Zeilen der Wiedervorlage in
+[belegstand.md](belegstand.md) seit dem Nachtrag gehalten werden. **Sie deckt nur den Kauf
+im Schlussfenster; der Verkauf in der Folgeeröffnung steht im teureren Eröffnungsfenster.**
+Der Cent-Boden-Vorbehalt (unten) gilt unverändert. **„Wieder offen" ist eine Größenaussage,
+kein Ertragsbeleg.**
+
 ### Die Hürde je Klasse und Jahr, Fenster `mitte` — mit Band und Diagnose
 
 **Maßgeblich ist `mitte`** (10:00–15:30 ET, 330 der 390 Handelsminuten, Registrierung §8).
@@ -214,14 +237,18 @@ exakt wie `lauf-2026-09-01-22-52.json`); ohne sie wäre Zusatz A entfallen.
 | Median der Perioden-Mediane | 0,0421 Pp |
 | p75 | 0,0835 Pp |
 | engste / breiteste Umschichtung | 0,0203 (2018-08-21) / 0,1074 (2021-02-23) Pp |
+| **Hürde, die das Momentum-Buch unterstellt** (Nachtrag 03.09.): `mfdepot.js` `takt()` ruft `MH.fuehreAus(d.mfBuch, plan, now, 20)` (Zeile 158) — **20 Bp je Seite**, `mfhandel.js` Zeile 128 rechnet sie auf jede Seite | **0,40 Pp je Umlauf** (Seite × 2, Bp → Pp mit Faktor 0,01) |
+| **Gegenüberstellung** (Nachtrag 03.09.): Buch-Hürde gegen gemessenen Median / p75 | **Faktor 9,1 / 4,8** — in **41 von 41** Umschichtungen liegt die Korbspanne (Median) **unter** der Buch-Hürde, 0 darüber |
 
 Der Trend läuft nach oben: 2016–2018 liegen die Perioden zwischen 0,0203 und 0,0421, ab 2024
 zwischen 0,0416 und 0,0856 — der Korb wächst dabei von 39 auf 95 Mitglieder.
 
-**`ERGEBNIS.md` stellt Zusatz A keiner Hürde gegenüber.** Die Registrierung §6 nennt als
-Endpunkt „Median-Spanne des Korbs je Umschichtung, **gegen die Hürde, die das Momentum-Buch
-heute unterstellt**"; dieser Vergleich fehlt in der Auswertung und wird hier nicht
-nachgerechnet.
+~~**`ERGEBNIS.md` stellt Zusatz A keiner Hürde gegenüber.**~~ **Nachgetragen 03.09.2026**
+(`ERGEBNIS-NACHTRAG.md` §3): die notierte Spanne ist die **Untergrenze** einer Marktorder —
+Schlupf, Marktimpact, Teilfüllung und der Abstand zwischen 15:55 ET und dem tatsächlichen
+Ausführungszeitpunkt des Buchs sind nicht enthalten. **Das ist eine Gegenüberstellung, keine
+Empfehlung; am Buch wird nichts geändert.** Ob 20 Bp je Seite zu viel sind, entscheidet die
+laufende Paper-Messung (`kosten.js`).
 
 ### Zusatz B — Auktionen: Schluss gegen Folgeeröffnung
 
@@ -232,8 +259,9 @@ Tagespaare**.
 > Größe, **gegen die** eine Übernacht-Runde (`cls` → `opg` in `kosten.js`) anläuft, also der
 > übliche Übernachtsprung, nicht sein Preis. **Eine gemessene Übernacht-Hürde liefert diese
 > Studie nicht.** Die Registrierung §8 gibt der Übernacht-Familie ihre Hürde im
-> **Schlussfenster** (Zeile `schluss` in der Tabelle oben) — dort allerdings nur über alle
-> Jahre gepoolt und ohne Band; ein Schlussfenster-Wert je Regime wird nicht ausgewiesen.
+> **Schlussfenster** — seit dem Nachtrag 03.09. je Regime mit Band, Abschnitt „Die
+> Schluss-Hürde je Klasse" oben (ab 2021: 5-50 0,1025 · 50-250 0,0540 · 250-1000 0,0409 ·
+> ab1000 0,0329 Pp).
 
 | Größe | Wert |
 |---|---|
@@ -241,9 +269,9 @@ Tagespaare**.
 | p75 | 0,989 Pp |
 | engstes / breitestes Jahr | 0,275 (2017) / 0,773 (2022) Pp |
 
-Zum Vergleich: die Kassa-Hürde im Schlussfenster liegt zwischen 0,0317 (ab1000) und 0,0868
-(5-50) Pp. **Der Übernachtsprung ist 6- bis 15-mal so groß wie die Spanne, an der man ihn
-kaufen müsste** — das sagt nichts über sein Vorzeichen und belegt keine Kante.
+Zum Vergleich: die Kassa-Hürde im Schlussfenster liegt ab 2021 zwischen 0,0329 (ab1000) und
+0,1025 (5-50) Pp. **Der Übernachtsprung ist 5- bis 15-mal so groß wie die Spanne, an der man
+ihn kaufen müsste** — das sagt nichts über sein Vorzeichen und belegt keine Kante.
 
 ### Was diese Zahlen NICHT sagen — Registrierung §9, wörtlich
 
