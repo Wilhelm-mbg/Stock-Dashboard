@@ -300,6 +300,20 @@
   .hbtns { margin-left: auto; display: flex; gap: 6px; }
   .subnote { color: var(--muted); font-size: var(--fs-neben); margin-bottom: 18px; }
   .err { color: var(--down); font-size: var(--fs-neben); margin-left: 8px; }
+  /* Ein leerer Fehlerplatz darf keine Breite kosten. #err steht immer im Markup und
+     traegt 8 Punkte Aussenabstand, auch wenn er nichts sagt - bei 1024 px war genau
+     das der Anstoss, der die Knopfzeile in die zweite Reihe drueckte. */
+  .err:empty { display: none; margin-left: 0; }
+
+  /* SCHMALES FENSTER: die Kopfzeile rueckt zusammen, statt umzubrechen. Der
+     Untertitel darf zweizeilig werden, die Knopfzeile nicht - sonst kostet sie auf
+     JEDEM Reiter rund 30 Punkte Hoehe (Abweichung 5 der Stufe-3-Uebergabe, in
+     Stufe 4 behoben). Belegt mit tools/ui-aufnahmen.js --breite 1024. */
+  @media (max-width: 1120px) {
+    header { gap: 8px 12px; }
+    .hbtns { gap: 5px; }
+    .hbtn { padding: 4px 8px; }
+  }
 
   h2 { font-size: var(--fs-text); font-weight: 600; color: var(--ink-2); text-transform: uppercase; letter-spacing: 0.06em; margin: 22px 0 10px; }
 
@@ -989,18 +1003,18 @@
   <div class="buecher" id="buecherZeile">
     <div class="panel buch" id="buchMomentum">
       <h3>Momentum-Buch <span class="buch-konfig">· stärkstes Zehntel, alle 63 Handelstage, 20 Bp je Seite</span></h3>
-      <div id="buchMomentumKopf"><div class="empty"><span>Noch nichts gerechnet – der Takt läuft nach dem Start von allein. Sofort prüfen: Reiter <b>Regeln → Einstellungen</b>.</span></div></div>
+      <div id="buchMomentumKopf"><div class="empty"><span>Noch nichts gerechnet – der Takt läuft nach dem Start von allein. Sofort prüfen: Reiter <b>Werkzeuge → Betrieb</b>, Klappe „Mittelfrist-Analyse &amp; Bücher steuern“.</span></div></div>
       <details class="how buch-detail">
         <summary>Positionen im Detail — Momentum</summary>
-        <div id="mfdMomentum"><div class="empty"><span>Noch nichts gerechnet – der Takt läuft nach dem Start von allein. Sofort prüfen: Reiter <b>Regeln → Einstellungen</b>.</span></div></div>
+        <div id="mfdMomentum"><div class="empty"><span>Noch nichts gerechnet – der Takt läuft nach dem Start von allein. Sofort prüfen: Reiter <b>Werkzeuge → Betrieb</b>, Klappe „Mittelfrist-Analyse &amp; Bücher steuern“.</span></div></div>
       </details>
     </div>
     <div class="panel buch" id="buchDrift">
       <h3>Ergebnis-Drift-Buch <span class="buch-konfig">· 60 Handelstage je Position, long und short, 10 Bp je Seite</span></h3>
-      <div id="buchDriftKopf"><div class="empty"><span>Noch nichts gerechnet – der Takt läuft nach dem Start von allein. Sofort prüfen: Reiter <b>Regeln → Einstellungen</b>.</span></div></div>
+      <div id="buchDriftKopf"><div class="empty"><span>Noch nichts gerechnet – der Takt läuft nach dem Start von allein. Sofort prüfen: Reiter <b>Werkzeuge → Betrieb</b>, Klappe „Mittelfrist-Analyse &amp; Bücher steuern“.</span></div></div>
       <details class="how buch-detail">
         <summary>Positionen im Detail — Ergebnis-Drift</summary>
-        <div id="mfdDrift"><div class="empty"><span>Noch nichts gerechnet – der Takt läuft nach dem Start von allein. Sofort prüfen: Reiter <b>Regeln → Einstellungen</b>.</span></div></div>
+        <div id="mfdDrift"><div class="empty"><span>Noch nichts gerechnet – der Takt läuft nach dem Start von allein. Sofort prüfen: Reiter <b>Werkzeuge → Betrieb</b>, Klappe „Mittelfrist-Analyse &amp; Bücher steuern“.</span></div></div>
       </details>
     </div>
     <div class="panel buch" id="buchIntraday">
@@ -1290,15 +1304,13 @@
     </details>
   </div>
   <div class="sub" id="sub-einstellungen">
-  <!-- B5 (01.09.2026): Die Pille buendelt drei fruehere Unterreiter auf einer
-       ~2.500-px-Seite. Drei Abschnittskoepfe plus eine Sprungleiste machen die
-       Binnenstruktur sichtbar; die Anker springen ohne Scroll-Animation
-       (Standardverhalten - prefers-reduced-motion ist bei Wilhelm aktiv). -->
-  <div style="display:flex; gap:6px 14px; flex-wrap:wrap; align-items:baseline; margin:2px 0 10px; font-size:var(--fs-neben); color:var(--muted);">
-    <span style="text-transform:uppercase; letter-spacing:.04em; font-weight:600; font-size:var(--fs-klein);">Direkt zu</span>
-    <a href="#abIntraday" style="color:var(--ink-2);">Intraday &amp; Risiko</a>
-    <a href="#abMittelfrist" style="color:var(--ink-2);">Mittelfrist</a>
-  </div>
+  <!-- B5 (01.09.2026) buendelte hier drei fruehere Unterreiter und stellte eine
+       Sprungleiste darueber, weil die Seite ~2.500 px lang war. Mit Stufe 4b
+       (03.09.2026) ist die Analyse in den Maschinenraum gezogen; uebrig bleiben
+       Voreinstellungen, Intraday, Risiko und Watchlist - EIN Abschnitt. Eine
+       Sprungleiste mit einem einzigen Ziel ist keine Orientierung, sondern eine
+       weitere Zeile zum Lesen; sie ist deshalb entfallen. Der Abschnittskopf
+       bleibt, er benennt, was hier steht. -->
   <h3 id="abIntraday" class="bereichs-kopf">Intraday &amp; Risiko</h3>
   <div id="sub-strategien">
     <!-- B8 (01.09.2026): von der Antwort-Pille hierher - der Knopf stellt um und
@@ -1536,143 +1548,6 @@
 
   </div>
 
-  <h3 id="abMittelfrist" class="bereichs-kopf">Mittelfrist – Momentum &amp; Ergebnis-Drift</h3>
-  <!-- ============ MITTELFRIST (Steuerung; Bestand steht in Heute → Überblick) ============ -->
-  <div id="sub-mittelfrist">
-  <div class="panel">
-    <h3 style="display:flex; align-items:center; gap:8px;">Momentum im Querschnitt · Aktien, keine Hebelscheine
-      <button class="info" type="button" data-info="regeln.mf.momentum" aria-expanded="false"
-              aria-label="Erklärung: Momentum im Querschnitt">i</button></h3>
-    <!-- Der lange Erklaer- und Warntext (samt der frueheren Karte "Was du dabei wissen
-         musst") steht wortgleich im Info-Register (regeln.mf.momentum). Sichtbar bleibt
-         seit Stufe 3 nur noch die MESSAUSSAGE: Rueckschlag und Marktvergleich. Der
-         beschreibende erste Satz ist woertlich ins Register gewandert, der
-         Simulationssatz steht einmal in der Kopfzeile. -->
-    <div id="mfErklaerung" style="font-size:var(--fs-text); color:var(--ink-2); line-height:1.55; max-width:68ch;">
-      <b>Kein ruhiges Investment:</b> größter Rückschlag 52 % (2008),
-      in 8 von 22 Jahren schlechter als der Markt.
-    </div>
-    <!-- Live = Messung (wiki/oberflaeche.md, Grundsaetze): Die fuenf Felder darunter
-         zeigen die Konfiguration, mit der das Buch WIRKLICH rechnet. Sie sind deshalb
-         gesperrt und werden von mittelfrist.js aus D.mfBuch.konfig gefuellt - eine
-         Auswahl, die von der Messung abweicht, waere eine stille Umstellung. -->
-    <div class="hinweis" style="margin-top:10px;" id="mfKonfigZeile">Konfiguration wie gemessen (Studie 02.09.2026) – Änderungen nur über eine neue Messung.</div>
-    <div class="chartleiste" style="margin-top:10px;">
-      <label title="Über wie viele Handelstage die Stärke gemessen wird. 231 Tage sind rund elf Monate.">Rückblick
-        <select id="mfRueck" disabled>
-          <option value="126">126 Tage (6 Mon.)</option>
-          <option value="189">189 Tage (9 Mon.)</option>
-          <option value="231" selected>231 Tage (11 Mon.)</option>
-          <option value="273">273 Tage (13 Mon.)</option>
-        </select>
-      </label>
-      <label title="Der jüngste Monat wird ausgelassen – dort liegt die kurzfristige Gegenbewegung, die den Effekt schwächt.">Lücke
-        <select id="mfLuecke" disabled><option value="0">keine</option><option value="21" selected>21 Tage</option></select>
-      </label>
-      <label title="Wie lange gehalten wird, bevor die Rangfolge neu gebildet wird.">Halten
-        <select id="mfHalten" disabled>
-          <option value="42">42 Tage</option>
-          <option value="63" selected>63 Tage (3 Mon.)</option>
-          <option value="126">126 Tage (6 Mon.)</option>
-        </select>
-      </label>
-      <label title="Wie groß der gehaltene Teil des Universums ist. Zehn Prozent schnitten durchweg besser ab als zwanzig.">Anteil
-        <select id="mfAnteil" disabled><option value="0.10" selected>stärkste 10 %</option><option value="0.15">15 %</option><option value="0.20">20 %</option></select>
-      </label>
-      <label title="Kosten je Kauf oder Verkauf. 20 Basispunkte sind für liquide Aktien realistisch.">Kosten
-        <select id="mfKosten" disabled><option value="0">0 Bp</option><option value="10">10 Bp</option><option value="20" selected>20 Bp</option><option value="40">40 Bp</option></select>
-      </label>
-      <button class="btn" id="mfLadenBtn">Daten holen und rechnen</button>
-      <span id="mfStatus" class="hinweis"></span>
-    </div>
-  </div>
-
-  <div class="grid2" style="margin-top:12px;">
-    <div class="panel">
-      <h3>Was jetzt zu halten wäre</h3>
-      <div id="mfRang"><div class="empty">Noch nicht gerechnet.</div></div>
-    </div>
-    <div class="panel">
-      <h3>Wie es sich geschlagen hat</h3>
-      <div id="mfErgebnis"><div class="empty">Noch nicht gerechnet.</div></div>
-    </div>
-  </div>
-
-  <div class="panel">
-    <h3>Mittelfrist-Bücher steuern</h3>
-    <div class="chartleiste">
-      <button id="mfdTaktBtn" class="btn ghost">Jetzt prüfen</button>
-      <button id="mfdRebalanceBtn" class="btn" title="Momentum-Rebalancing sofort ausführen, unabhängig vom 63-Tage-Rhythmus">Momentum jetzt umschichten</button>
-      <button id="mfdDriftBtn" class="btn" title="Drift-Buch sofort abgleichen: Fällige schließen, neue Signale eröffnen">Drift jetzt abgleichen</button>
-    </div>
-    <div id="mfdStatus" class="hinweis" style="margin-top:6px;"></div>
-    <div style="font-size:var(--fs-neben); color:var(--muted); margin-top:8px;">Was die beiden Bücher halten, steht im Reiter <b>Heute → Überblick</b>.</div>
-  </div>
-
-  <div class="panel">
-    <h3 style="display:flex; align-items:center; gap:8px;">Ergebnis-Drift · Aktien, keine Hebelscheine
-      <button class="info" type="button" data-info="regeln.mf.drift" aria-expanded="false"
-              aria-label="Erklärung: Ergebnis-Drift">i</button></h3>
-    <!-- Erklaer- und Messtext wortgleich im Info-Register (regeln.mf.drift); sichtbar
-         bleibt seit Stufe 3 nur die Instrument-Zusicherung samt ihrer Messzahl. Der
-         beschreibende erste Satz steht woertlich im Register (erster Punkt), der
-         Simulationssatz einmal in der Kopfzeile. -->
-    <div style="font-size:var(--fs-text); color:var(--ink-2); line-height:1.55; max-width:68ch;">
-      Gekauft wird das <b>oberste Fünftel</b> der Überraschungen, verkauft das <b>unterste</b> –
-      im <b>Basiswert</b>, nicht mit Hebelscheinen: Der Drift liefert nur ein Viertel bis ein Achtel
-      der Schein-Kostenhürde.
-    </div>
-    <!-- Live = Messung: dieselbe Sperre wie beim Momentum-Buch. Gefuellt aus
-         Drift.STANDARD (driftui.js), nicht aus einer Zahl in diesem Markup. -->
-    <div class="hinweis" style="margin-top:10px;" id="drKonfigZeile">Konfiguration wie gemessen (Studie 02.09.2026) – Änderungen nur über eine neue Messung.</div>
-    <div class="chartleiste" style="margin-top:10px;">
-      <label title="Wie lange eine Position gehalten wird. Auf 20 Tagen ist der Effekt seit 2015 tot (t = 0,77) – erst ab rund 60 Tagen trägt er.">Halten
-        <select id="drHalten" disabled>
-          <option value="20">20 Tage</option>
-          <option value="40">40 Tage</option>
-          <option value="60" selected>60 Tage (geprüft)</option>
-          <option value="90">90 Tage</option>
-        </select>
-      </label>
-      <label title="Wie groß die beiden Beine sind. 0,2 heißt: oberstes und unterstes Fünftel.">Anteil je Bein
-        <select id="drAnteil" disabled>
-          <option value="0.1">10 %</option>
-          <option value="0.2" selected>20 % (geprüft)</option>
-          <option value="0.33">33 %</option>
-        </select>
-      </label>
-      <label title="Gegen wie viele Handelstage zurück eine Überraschung eingeordnet wird. Nur bereits veröffentlichte Zahlen zählen – kein Blick in die Zukunft.">Vergleichsfenster
-        <select id="drFenster" disabled>
-          <option value="60">60 Tage</option>
-          <option value="120" selected>120 Tage (geprüft)</option>
-          <option value="250">250 Tage</option>
-        </select>
-      </label>
-      <label title="Handelskosten je Seite. Bei 10 Basispunkten sinkt das Ergebnis um rund 1,8 Prozentpunkte im Jahr.">Kosten
-        <select id="drKosten" disabled>
-          <option value="0">keine</option>
-          <option value="10" selected>10 Basispunkte</option>
-          <option value="20">20 Basispunkte</option>
-          <option value="40">40 Basispunkte</option>
-        </select>
-      </label>
-      <button id="drLadeBtn" class="btn" title="Holt die Termine für Werte, die noch keine haben, plus einen rollierenden Teil für frische Meldungen. Schonend für die Quelle.">Termine nachladen</button>
-      <button id="drLadeAlleBtn" class="btn" title="Holt die Termine für ALLE Werte. Dauert einige Minuten und kann von Yahoo gedrosselt werden.">Alle Termine laden</button>
-      <button id="drRechneBtn" class="btn">Neu rechnen</button>
-    </div>
-    <div id="drStatus" class="hinweis" style="margin-top:8px;"></div>
-    <div id="drErgebnis" style="margin-top:10px;"></div>
-
-    <h3 style="margin-top:16px;">Was wäre heute offen?</h3>
-    <div id="drHeute" style="margin-top:6px;"></div>
-
-    <div style="margin-top:14px; font-size:var(--fs-neben); color:var(--ink-2); line-height:1.55; border-top:1px solid var(--grid); padding-top:10px;">
-      Gemessen ab 2015: <b>+10,44 % p. a. bei t = 3,04</b> – aber die Überlebensverzerrung ist nur teilweise
-      ausgeräumt (schwache Hälfte der Werte: +1,72 % bei t = 0,58). Die vollständige Messung steht hinter dem
-      i-Knopf oben.
-    </div>
-  </div>
-  </div><!-- /sub-mittelfrist -->
 
   </div><!-- /sub-einstellungen -->
 
@@ -1922,6 +1797,158 @@
   <div class="panel">
 <span id="capStatus"></span><span id="alpStatus"></span><div style="margin-top:6px; display:flex; align-items:center; gap:8px; flex-wrap:wrap;"><select id="kostenRundeSym" style="font-size:var(--fs-neben);" title="Welcher Wert in welchem Gefäß gemessen wird. Capital.com-Demo misst CFD (Krypto rund um die Uhr), Alpaca-Paper misst echte US-Aktien nach Umsatzklasse. Achtung: die Spanne auf BTC sagt nichts über die Spanne auf einer Aktie."><optgroup label="Capital.com-Demo (CFD)"><option value="">Aktien – der Reihe nach</option><option value="BTCUSD">BTCUSD – rund um die Uhr</option><option value="ETHUSD">ETHUSD – rund um die Uhr</option></optgroup><optgroup label="Alpaca-Paper (Aktie)"><option value="alpaca:">Aktien – der Reihe nach (Umsatzklasse mit den wenigsten Runden)</option></optgroup></select><button class="btn ghost" id="kostenRundeBtn" type="button" title="Öffnet im gewählten Gefäß eine kleine Position (Capital.com-DEMO: kleinstmöglich; Alpaca-PAPER: rund 200 $) und schließt sie sofort wieder. Gemessen wird, was ein Umlauf wirklich kostet – Spanne plus Schlupf. Setzt eine echte Order ab (Demo-/Papiergeld). Läuft auf Klick; der Messautomat misst zusätzlich eine Runde je Handelstag.">Kostenrunde messen</button><label style="display:inline-flex; align-items:center; gap:4px; font-size:var(--fs-neben); color:var(--muted);" title="Messautomat für das Alpaca-Paper-Konto: eine Aktien-Runde je US-Handelstag zu wechselnder Uhrzeit plus eine Übernacht-Runde (Schlussauktion → Folgeeröffnung). Aus = nur von Hand."><input type="checkbox" id="kostenAutomatAlpChk"> Automat Alpaca</label><span id="kostenRundeStatus" role="status" aria-live="polite" style="font-size:var(--fs-neben); color:var(--muted);"></span></div>
   </div>
+  </details>
+
+  <details class="how" data-klappe="mittelfrist">
+    <summary>Mittelfrist-Analyse &amp; Bücher steuern<span class="klappe-stand" id="kstand-mittelfrist"></span></summary>
+  <!-- ============ MITTELFRIST-ANALYSE (Oberflaeche Stufe 4b, 03.09.2026) ============
+       Wilhelms Entscheid vom 03.09.: die Analyse-Knoepfe und -Felder dieses Bereichs
+       bringen ihm nichts, herumklicken soll es dort nicht mehr geben. Der Block ist
+       deshalb UNVERAENDERT aus "Regeln -> Einstellungen" hierher gezogen - dieselben
+       Kennungen, derselbe Wortlaut, dieselben Messaussagen, nur ein anderer Ort.
+       Gefahrlos ist der Umzug, weil der Takt der Buecher (mfdepot.js takt()) KEINES
+       dieser Felder liest: die Momentum-Konfiguration kommt aus D.mfBuch.konfig
+       (MFHandel.buchKonfig), die Drift-Konfiguration aus Drift.STANDARD, die Daten
+       ueber window.MF.ladeUniversum() und window.DriftUI.hintergrund() sowie den
+       Store-Schluessel drift_termine. Die Felder speisen nur die zwei Anzeigen
+       darunter (mittelfrist.js zeigeRang/zeigeErgebnis, driftui.js rechne). -->
+  <h3 id="abMittelfrist" class="bereichs-kopf">Mittelfrist – Momentum &amp; Ergebnis-Drift</h3>
+  <!-- ============ MITTELFRIST (Steuerung; Bestand steht in Heute → Überblick) ============ -->
+  <div id="sub-mittelfrist">
+  <div class="panel">
+    <h3 style="display:flex; align-items:center; gap:8px;">Momentum im Querschnitt · Aktien, keine Hebelscheine
+      <button class="info" type="button" data-info="regeln.mf.momentum" aria-expanded="false"
+              aria-label="Erklärung: Momentum im Querschnitt">i</button></h3>
+    <!-- Der lange Erklaer- und Warntext (samt der frueheren Karte "Was du dabei wissen
+         musst") steht wortgleich im Info-Register (regeln.mf.momentum). Sichtbar bleibt
+         seit Stufe 3 nur noch die MESSAUSSAGE: Rueckschlag und Marktvergleich. Der
+         beschreibende erste Satz ist woertlich ins Register gewandert, der
+         Simulationssatz steht einmal in der Kopfzeile. -->
+    <div id="mfErklaerung" style="font-size:var(--fs-text); color:var(--ink-2); line-height:1.55; max-width:68ch;">
+      <b>Kein ruhiges Investment:</b> größter Rückschlag 52 % (2008),
+      in 8 von 22 Jahren schlechter als der Markt.
+    </div>
+    <!-- Live = Messung (wiki/oberflaeche.md, Grundsaetze): Die fuenf Felder darunter
+         zeigen die Konfiguration, mit der das Buch WIRKLICH rechnet. Sie sind deshalb
+         gesperrt und werden von mittelfrist.js aus D.mfBuch.konfig gefuellt - eine
+         Auswahl, die von der Messung abweicht, waere eine stille Umstellung. -->
+    <div class="hinweis" style="margin-top:10px;" id="mfKonfigZeile">Konfiguration wie gemessen (Studie 02.09.2026) – Änderungen nur über eine neue Messung.</div>
+    <div class="chartleiste" style="margin-top:10px;">
+      <label title="Über wie viele Handelstage die Stärke gemessen wird. 231 Tage sind rund elf Monate.">Rückblick
+        <select id="mfRueck" disabled>
+          <option value="126">126 Tage (6 Mon.)</option>
+          <option value="189">189 Tage (9 Mon.)</option>
+          <option value="231" selected>231 Tage (11 Mon.)</option>
+          <option value="273">273 Tage (13 Mon.)</option>
+        </select>
+      </label>
+      <label title="Der jüngste Monat wird ausgelassen – dort liegt die kurzfristige Gegenbewegung, die den Effekt schwächt.">Lücke
+        <select id="mfLuecke" disabled><option value="0">keine</option><option value="21" selected>21 Tage</option></select>
+      </label>
+      <label title="Wie lange gehalten wird, bevor die Rangfolge neu gebildet wird.">Halten
+        <select id="mfHalten" disabled>
+          <option value="42">42 Tage</option>
+          <option value="63" selected>63 Tage (3 Mon.)</option>
+          <option value="126">126 Tage (6 Mon.)</option>
+        </select>
+      </label>
+      <label title="Wie groß der gehaltene Teil des Universums ist. Zehn Prozent schnitten durchweg besser ab als zwanzig.">Anteil
+        <select id="mfAnteil" disabled><option value="0.10" selected>stärkste 10 %</option><option value="0.15">15 %</option><option value="0.20">20 %</option></select>
+      </label>
+      <label title="Kosten je Kauf oder Verkauf. 20 Basispunkte sind für liquide Aktien realistisch.">Kosten
+        <select id="mfKosten" disabled><option value="0">0 Bp</option><option value="10">10 Bp</option><option value="20" selected>20 Bp</option><option value="40">40 Bp</option></select>
+      </label>
+      <button class="btn" id="mfLadenBtn">Daten holen und rechnen</button>
+      <span id="mfStatus" class="hinweis"></span>
+    </div>
+  </div>
+
+  <div class="grid2" style="margin-top:12px;">
+    <div class="panel">
+      <h3>Was jetzt zu halten wäre</h3>
+      <div id="mfRang"><div class="empty">Noch nicht gerechnet.</div></div>
+    </div>
+    <div class="panel">
+      <h3>Wie es sich geschlagen hat</h3>
+      <div id="mfErgebnis"><div class="empty">Noch nicht gerechnet.</div></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h3>Mittelfrist-Bücher steuern</h3>
+    <div class="chartleiste">
+      <button id="mfdTaktBtn" class="btn ghost">Jetzt prüfen</button>
+      <button id="mfdRebalanceBtn" class="btn" title="Momentum-Rebalancing sofort ausführen, unabhängig vom 63-Tage-Rhythmus">Momentum jetzt umschichten</button>
+      <button id="mfdDriftBtn" class="btn" title="Drift-Buch sofort abgleichen: Fällige schließen, neue Signale eröffnen">Drift jetzt abgleichen</button>
+    </div>
+    <div id="mfdStatus" class="hinweis" style="margin-top:6px;"></div>
+    <div style="font-size:var(--fs-neben); color:var(--muted); margin-top:8px;">Was die beiden Bücher halten, steht im Reiter <b>Heute → Überblick</b>.</div>
+  </div>
+
+  <div class="panel">
+    <h3 style="display:flex; align-items:center; gap:8px;">Ergebnis-Drift · Aktien, keine Hebelscheine
+      <button class="info" type="button" data-info="regeln.mf.drift" aria-expanded="false"
+              aria-label="Erklärung: Ergebnis-Drift">i</button></h3>
+    <!-- Erklaer- und Messtext wortgleich im Info-Register (regeln.mf.drift); sichtbar
+         bleibt seit Stufe 3 nur die Instrument-Zusicherung samt ihrer Messzahl. Der
+         beschreibende erste Satz steht woertlich im Register (erster Punkt), der
+         Simulationssatz einmal in der Kopfzeile. -->
+    <div style="font-size:var(--fs-text); color:var(--ink-2); line-height:1.55; max-width:68ch;">
+      Gekauft wird das <b>oberste Fünftel</b> der Überraschungen, verkauft das <b>unterste</b> –
+      im <b>Basiswert</b>, nicht mit Hebelscheinen: Der Drift liefert nur ein Viertel bis ein Achtel
+      der Schein-Kostenhürde.
+    </div>
+    <!-- Live = Messung: dieselbe Sperre wie beim Momentum-Buch. Gefuellt aus
+         Drift.STANDARD (driftui.js), nicht aus einer Zahl in diesem Markup. -->
+    <div class="hinweis" style="margin-top:10px;" id="drKonfigZeile">Konfiguration wie gemessen (Studie 02.09.2026) – Änderungen nur über eine neue Messung.</div>
+    <div class="chartleiste" style="margin-top:10px;">
+      <label title="Wie lange eine Position gehalten wird. Auf 20 Tagen ist der Effekt seit 2015 tot (t = 0,77) – erst ab rund 60 Tagen trägt er.">Halten
+        <select id="drHalten" disabled>
+          <option value="20">20 Tage</option>
+          <option value="40">40 Tage</option>
+          <option value="60" selected>60 Tage (geprüft)</option>
+          <option value="90">90 Tage</option>
+        </select>
+      </label>
+      <label title="Wie groß die beiden Beine sind. 0,2 heißt: oberstes und unterstes Fünftel.">Anteil je Bein
+        <select id="drAnteil" disabled>
+          <option value="0.1">10 %</option>
+          <option value="0.2" selected>20 % (geprüft)</option>
+          <option value="0.33">33 %</option>
+        </select>
+      </label>
+      <label title="Gegen wie viele Handelstage zurück eine Überraschung eingeordnet wird. Nur bereits veröffentlichte Zahlen zählen – kein Blick in die Zukunft.">Vergleichsfenster
+        <select id="drFenster" disabled>
+          <option value="60">60 Tage</option>
+          <option value="120" selected>120 Tage (geprüft)</option>
+          <option value="250">250 Tage</option>
+        </select>
+      </label>
+      <label title="Handelskosten je Seite. Bei 10 Basispunkten sinkt das Ergebnis um rund 1,8 Prozentpunkte im Jahr.">Kosten
+        <select id="drKosten" disabled>
+          <option value="0">keine</option>
+          <option value="10" selected>10 Basispunkte</option>
+          <option value="20">20 Basispunkte</option>
+          <option value="40">40 Basispunkte</option>
+        </select>
+      </label>
+      <button id="drLadeBtn" class="btn" title="Holt die Termine für Werte, die noch keine haben, plus einen rollierenden Teil für frische Meldungen. Schonend für die Quelle.">Termine nachladen</button>
+      <button id="drLadeAlleBtn" class="btn" title="Holt die Termine für ALLE Werte. Dauert einige Minuten und kann von Yahoo gedrosselt werden.">Alle Termine laden</button>
+      <button id="drRechneBtn" class="btn">Neu rechnen</button>
+    </div>
+    <div id="drStatus" class="hinweis" style="margin-top:8px;"></div>
+    <div id="drErgebnis" style="margin-top:10px;"></div>
+
+    <h3 style="margin-top:16px;">Was wäre heute offen?</h3>
+    <div id="drHeute" style="margin-top:6px;"></div>
+
+    <div style="margin-top:14px; font-size:var(--fs-neben); color:var(--ink-2); line-height:1.55; border-top:1px solid var(--grid); padding-top:10px;">
+      Gemessen ab 2015: <b>+10,44 % p. a. bei t = 3,04</b> – aber die Überlebensverzerrung ist nur teilweise
+      ausgeräumt (schwache Hälfte der Werte: +1,72 % bei t = 0,58). Die vollständige Messung steht hinter dem
+      i-Knopf oben.
+    </div>
+  </div>
+  </div><!-- /sub-mittelfrist -->
   </details>
 
   <details class="how" data-klappe="monitor">

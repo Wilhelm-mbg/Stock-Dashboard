@@ -371,6 +371,20 @@
       });
       return 'Runden Capital ' + cap + ' · Alpaca ' + alp + (letzte ? ' · letzte ' + U.d(letzte) : '');
     },
+    /* Die zwei Buecher und ihr Pruef-Stempel. Beide Schalter stehen in
+     * DepotAPI.regelStatus() (momentumAn/driftAn), der Stempel in
+     * DepotAPI.antwort() (pruefStand) - dieselben Kopien, aus denen die Buch-Karten
+     * auf Heute lesen. Nichts davon laedt: mfdepot.js takt() hat sie beim letzten
+     * Lauf hinterlegt. Ohne Depot-Zustand bleibt die Zeile leer. */
+    mittelfrist: function () {
+      var A = window.DepotAPI;
+      if (!A || !A.regelStatus || !A.antwort) return null;
+      var st = A.regelStatus(), a = A.antwort();
+      if (!st || !a) return null;
+      return 'Momentum ' + (st.momentumAn ? 'an' : 'aus') +
+        ' · Drift ' + (st.driftAn ? 'an' : 'aus') +
+        ' · zuletzt geprüft ' + (a.pruefStand ? U.d(a.pruefStand) : 'noch nie');
+    },
     /* Der Zeitstempel des letzten Scans ist ein Sitzungswert aus HEALTH; DepotAPI
      * gibt ihn als Kopie heraus (letzterScan). Vor dem ersten Scan: leer. */
     monitor: function () {

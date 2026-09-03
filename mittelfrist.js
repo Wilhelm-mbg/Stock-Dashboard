@@ -293,6 +293,15 @@
   /* Beim Start ist das Depot noch nicht geladen; der Buch-Stand kommt erst danach.
    * Dasselbe Ereignis, das die Bestand-Karten zeichnet, holt die Felder nach. */
   document.addEventListener('tab-changed', konfigZeigen);
+  /* Oberflaeche Stufe 4b (03.09.2026): Der Block wohnt jetzt als Klappe unter
+   * Werkzeuge -> Betrieb. Die Shell meldet das AUFklappen als 'sub-changed' mit dem
+   * Namen aus data-klappe (Muster aus Stufe 1) - dasselbe Ereignis, das frueher der
+   * Pillenwechsel schickte. Der Reiterwechsel allein traegt nicht: wer schon auf
+   * Werkzeuge steht und erst danach das Depot laedt, saehe sonst die Felder von vor
+   * dem Laden. Geholt wird nichts, gelesen wird nur der Buch-Zustand. */
+  document.addEventListener('sub-changed', function (ev) {
+    if (ev.detail && ev.detail.sub === 'mittelfrist') konfigZeigen();
+  });
   if (typeof window !== 'undefined') window.__mfRechnen = rechnen;
   // Nach aussen: das Mittelfrist-Depot (mfdepot.js) stoesst hierueber den taeglichen
   // Kursabruf an, statt den Lader zu duplizieren - zwei Lader hiessen zwei Wahrheiten.
