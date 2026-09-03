@@ -13616,6 +13616,14 @@ console.log('\n64) Bestand & Kopfzeile (Oberflaeche Stufe 2, 03.09.2026)');
    * ein Wiederholungssturm ginge zu Lasten des Vollaufs, nicht zu eigenen. Beides an der
    * VERWENDUNG geprueft, nicht am Kommentar. */
   ok(AF.RATE_JE_MIN <= 20, 'Abspaltungsfaktor: die Drossel steht bei hoechstens 20 Abrufen je Minute', String(AF.RATE_JE_MIN));
+  /* Die Bremse gilt dem geteilten Zugang, nicht dem Aufruf - eine eingespeiste Quelle
+   * beruehrt ihn nicht. Damit das keine Umgehung wird, ist der ECHTE Weg festgenagelt: das
+   * Kommandozeilen-Werkzeug reicht nirgends ein fetch hinein, also faehrt jeder wirkliche
+   * Lauf durch marke(). */
+  ok(/if \(f === globalThis\.fetch\) await marke\(\);/.test(afQ),
+     'Abspaltungsfaktor: jeder Abruf gegen die ECHTE Quelle laeuft durch die Bremse');
+  ok(!/messen\(\{[^}]*fetch:/.test(afQ.slice(afQ.indexOf('async function main'))),
+     'Abspaltungsfaktor: der Kommandozeilen-Weg reicht KEIN eigenes fetch hinein - er kann die Bremse nicht umgehen');
   ok(/if \(res\.status === 429\)[^}]*throw Ueberlastet\(/.test(afQ) &&
      !/if \(res\.status === 429\)[^}]*continue/.test(afQ),
      'Abspaltungsfaktor: ein 429 wirft ab und wird NIE wiederholt - der Vollauf laeuft parallel');
@@ -13673,9 +13681,25 @@ console.log('\n64) Bestand & Kopfzeile (Oberflaeche Stufe 2, 03.09.2026)');
   ok(AF.faktorMessen(afLeer.alle, afLeer.div, '2026-07-01').urteil === 'unklar',
      'Abspaltungsfaktor: ohne Balken NACH der Maszahme ist die Kontrolle nicht fahrbar - und nicht pruefbar ist nicht bestanden');
 
+  /* (4b) Die zweite Maszahme am WIRKUNGSTAG - der Fund vom ersten echten Lauf, an 5 von
+   * 201 Faellen und an keinem davon sichtbar. MHUA hat am 24.11.2025 eine Zusammenlegung
+   * 100:1 UND eine Abspaltung; das Verhaeltnis misst beide zusammen und ergab 0,010000 -
+   * den Faktor der Zusammenlegung. Als Abspaltungsfaktor geschrieben, haette die Ableitung
+   * ihn ein ZWEITES Mal angewandt, neben dem Split-Faktor der Quelle: hundertfach daneben,
+   * und in jeder Zusammenfassung unauffaellig. */
+  var afSaetze = [{ _art: 'spin_offs', ex_date: '2026-07-01', source_rate: 1, new_rate: 1 },
+                  { _art: 'reverse_splits', ex_date: '2026-07-01', old_rate: 100, new_rate: 1 },
+                  { _art: 'forward_splits', ex_date: '2020-01-02', old_rate: 1, new_rate: 4 }];
+  var afSt = AF.stoererAus(afSaetze, afSaetze[0], '2026-06-26', '2026-07-01');
+  ok(afSt.length === 1 && afSt[0].art === 'reverse_splits',
+     'Abspaltungsfaktor: eine zweite faktortragende Maszahme AM Wirkungstag wird gefunden - ein alter Split von 2020 nicht',
+     JSON.stringify(afSt));
+  ok(AF.stoererAus([afSaetze[0]], afSaetze[0], '2026-06-26', '2026-07-01').length === 0,
+     'Abspaltungsfaktor: der gemessene Satz zaehlt nie als sein eigener Stoerer');
+
   /* (5) Die eigene Kontrolle des Werkzeugs faehrt hier mit. */
   var afK = AF.kontrolle();
-  ok(afK.gefallen === 0 && afK.gut >= 14,
+  ok(afK.gefallen === 0 && afK.gut >= 18,
      'Abspaltungsfaktor: die eigene Kontrolle (' + afK.gut + ' Zusicherungen) laeuft hier mit und ist gruen', afK.schlecht.join(' | '));
 
   /* (6) VERHALTEN: ein echter Lauf in einen Wegwerf-Ordner, mit erfundener Quelle. Er faehrt
@@ -13701,8 +13725,9 @@ console.log('\n64) Bestand & Kopfzeile (Oberflaeche Stufe 2, 03.09.2026)');
        JSON.stringify([oA.placeboFaktor, oA.positivFaktor]));
     ok(oA.gutFaktor === 1.057 && oA.gutHerkunft === AF.HERKUNFT,
        'Abspaltungsfaktor: der gemessene Faktor steht mit seiner Herkunft in der Maszahmen-Datei', JSON.stringify([oA.gutFaktor, oA.gutHerkunft]));
-    ok(oA.boesHatFaktor === false && oA.unklar === 1,
-       'Abspaltungsfaktor: der Wert mit gefallener Kontrolle hat nach dem Lauf KEINEN Faktor in der Datei');
+    ok(oA.boesHatFaktor === false && oA.unklar === 2,
+       'Abspaltungsfaktor: die beiden Werte mit gefallener Pruefung (Kontrolle bzw. zweite Maszahme) haben nach dem Lauf KEINEN Faktor in der Datei',
+       String(oA.unklar));
     ok(oA.quellenlistenUnveraendert === true,
        'Abspaltungsfaktor: saetze, anwendbar und ohneFaktor ueberstehen den Lauf Byte fuer Byte - gemessen und geliefert bleiben unterscheidbar');
     ok(oA.ableitungNimmtGut === true && oA.ableitungLaesstBoes === true,
@@ -13715,6 +13740,12 @@ console.log('\n64) Bestand & Kopfzeile (Oberflaeche Stufe 2, 03.09.2026)');
     ok(oA.eichbruchAbgebrochen === true && oA.eichbruchNichtsGeschrieben === true,
        'Abspaltungsfaktor: faellt eine Eichung, bricht der Lauf ab und schreibt KEINEN einzigen Faktor',
        JSON.stringify([oA.eichbruchAbgebrochen, oA.eichbruchNichtsGeschrieben]));
+    ok(oA.doppelHatFaktor === false && oA.doppelAbleitungLuecke === true,
+       'Abspaltungsfaktor: Zusammenlegung UND Abspaltung am selben Tag - kein Faktor geschrieben, der Wert bleibt eine benannte Luecke');
+    /* Ein Nachmessen darf die Lage nicht schlechter machen: faellt es auf "unklar", muss
+     * der alte Faktor weg sein. Sonst ueberlebte genau der Eintrag, den es verwirft. */
+    ok(oA.nachmessenAusgetragen === true,
+       'Abspaltungsfaktor: ein Nachmessen mit Urteil "unklar" traegt den alten Faktor AUS, statt ihn stehenzulassen');
   }
   fs.rmSync(tmpA, { recursive: true, force: true });
 

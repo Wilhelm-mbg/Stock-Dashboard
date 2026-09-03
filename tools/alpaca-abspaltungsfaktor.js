@@ -137,7 +137,13 @@ function Ueberlastet(warteS) {
 async function hole(url, f) {
   f = f || globalThis.fetch;
   for (var v = 1; v <= VERSUCHE; v++) {
-    await marke();
+    /* Die Bremse gilt dem geteilten ZUGANG, nicht dem Aufruf: die 200/min der Quelle gelten
+     * fuer den Zugang, und der Vollauf der Balken haengt mit 170/min daran. Eine
+     * eingespeiste Quelle (der Schreib-Selbsttest) beruehrt diesen Zugang gar nicht - sie
+     * zu drosseln haette den Test um eine Minute verlaengert und nichts abgesichert. Der
+     * echte Weg hat keine Umgehung: das Kommandozeilen-Werkzeug reicht nirgends ein fetch
+     * hinein, und eine Klinke in test-v6 haelt das fest. */
+    if (f === globalThis.fetch) await marke();
     Z.abrufe++;
     var res, text;
     try {
@@ -192,6 +198,7 @@ function abspaltungenAus(m) {
     raus.push({ sym: m.sym, art: art, datum: String(d), neuSym: e.new_symbol || null,
       sourceRate: e.source_rate == null ? null : Number(e.source_rate),
       newRate: e.new_rate == null ? null : Number(e.new_rate),
+      satz: e, saetze: m.saetze,          /* fuer stoererAus(): der Satz selbst und seine Nachbarn */
       schonGemessen: !!schon[art + '|' + d] });
   });
   return raus;
@@ -252,6 +259,40 @@ function faktorMessen(alleTage, dividendTage, exDatum) {
   return erg;
 }
 
+/** ANDERE faktortragende Maszahmen, deren Faktor im gemessenen Verhaeltnis mit drinsteckt.
+ *
+ *  GEFUNDEN am ersten echten Lauf, an 5 von 201 Faellen - keiner davon waere aufgefallen:
+ *  MHUA hat am 24.11.2025 eine Zusammenlegung 100:1 UND eine Abspaltung. Das Verhaeltnis
+ *  dividend/all misst beide zusammen und ergab 0,010000 - den Faktor der Zusammenlegung.
+ *  Geschrieben als Abspaltungsfaktor haette die Ableitung ihn ein ZWEITES Mal angewandt,
+ *  neben dem Split-Faktor aus der Quelle: die Kurse davor waeren durch 0,0001 statt durch
+ *  0,01 geteilt worden. Hundertfach daneben, und in jeder Zusammenfassung unauffaellig.
+ *
+ *  Warum genau dieses Fenster: das Verhaeltnis an einer Kerze vom Tag d misst alles, was
+ *  NACH d wirkt. Weil die Kontrolle sicherstellt, dass nach dem Wirkungstag nichts mehr
+ *  kommt, und die Streuungsschranke, dass im Fenster davor nichts liegt, bleibt genau der
+ *  Spalt zwischen dem letzten gewerteten Tag und dem Wirkungstag - praktisch: der
+ *  Wirkungstag selbst.
+ *
+ *  Herausrechnen waere moeglich (0,010000 geteilt durch 0,01 ergibt 1,000), aber es waere
+ *  eine Rechnung ohne eigene Kontrolle: bei HON kaeme 1,908 heraus, und ob das die
+ *  Abspaltung ist oder eine Split-Angabe, die die Quelle anders anwendet als sie sie
+ *  meldet, sagt keine der beiden Zahlen. Also "unklar" - dieselbe Antwort wie ueberall
+ *  sonst, wo die Messung nicht traegt. */
+function stoererAus(saetze, selbst, bisTag, exDatum) {
+  var raus = [];
+  (saetze || []).forEach(function (e) {
+    if (e === selbst) return;
+    var art = String(e._art || '');
+    if (!/split|spin/.test(art)) return;
+    var d = e.ex_date || e.effective_date || e.process_date || null;
+    if (!d || !bisTag) return;
+    if (!(String(d) > String(bisTag) && String(d) <= String(exDatum))) return;
+    raus.push({ art: art, datum: String(d) });
+  });
+  return raus;
+}
+
 /** Der gemessene Faktor, wie er in der Maszahmen-Datei steht. Eigene Funktion, damit die
  *  Klinke sie ohne Netz fahren kann - und damit "unklar" nie versehentlich als Faktor
  *  durchgeht: diese Funktion gibt fuer jedes andere Urteil null zurueck. */
@@ -269,14 +310,25 @@ function satzAus(a, erg, jetzt) {
  *  Faktor eine ihrer Luecken schlieszt. Ein zweites Mal gemessen ersetzt den alten Satz,
  *  haengt ihn nicht daneben. */
 function eintragen(m, satz) {
-  var neu = { };
-  Object.keys(m).forEach(function (k) { neu[k] = m[k]; });
-  var liste = (m.gemesseneFaktoren || []).filter(function (g) {
-    return !(String(g.art) === String(satz.art) && String(g.datum) === String(satz.datum));
-  });
+  var neu = austragen(m, satz.art, satz.datum);
+  var liste = (neu.gemesseneFaktoren || []).slice();
   liste.push(satz);
   liste.sort(function (x, y) { return String(x.datum) < String(y.datum) ? -1 : 1; });
   neu.gemesseneFaktoren = liste;
+  return neu;
+}
+
+/** Die Gegenrichtung, und sie ist nicht symmetrisch zu haben: wird ein Fall NEU gemessen
+ *  und faellt diesmal auf "unklar", muss der alte Faktor WEG. Ohne das bliebe genau der
+ *  Eintrag stehen, den die neue Messung verwirft - und ein Nachmessen machte die Lage
+ *  schlechter statt besser, weil man glaubte, es sei geprueft. */
+function austragen(m, art, datum) {
+  var neu = { };
+  Object.keys(m).forEach(function (k) { neu[k] = m[k]; });
+  var liste = (m.gemesseneFaktoren || []).filter(function (g) {
+    return !(String(g.art) === String(art) && String(g.datum) === String(datum));
+  });
+  if (liste.length) neu.gemesseneFaktoren = liste; else delete neu.gemesseneFaktoren;
   return neu;
 }
 
@@ -347,7 +399,18 @@ async function fallMessen(a, f) {
   if (rA.fehler) return { urteil: 'unklar', grund: 'Abruf all: ' + rA.fehler, faktor: null, n: 0, streuung: null, nachN: 0, nachMedian: null };
   var rD = await balkenHolen(a.sym, ex - FENSTER_VOR_MS, ex + FENSTER_NACH_MS, 'dividend', f);
   if (rD.fehler) return { urteil: 'unklar', grund: 'Abruf dividend: ' + rD.fehler, faktor: null, n: 0, streuung: null, nachN: 0, nachMedian: null };
-  return faktorMessen(schlussJeTag(rA.balken), schlussJeTag(rD.balken), a.datum);
+  var erg = faktorMessen(schlussJeTag(rA.balken), schlussJeTag(rD.balken), a.datum);
+  if (erg.urteil === 'gemessen') {
+    var st = stoererAus(a.saetze, a.satz, erg.bisTag, a.datum);
+    if (st.length) {
+      erg.urteil = 'unklar';
+      erg.stoerer = st;
+      erg.grund = 'am Wirkungstag liegt eine zweite faktortragende Maszahme ('
+        + st.map(function (x) { return x.art + ' ' + x.datum; }).join(', ')
+        + ') - der gemessene Faktor enthaelt beide und wuerde neben dem Split-Faktor der Quelle ein zweites Mal angewandt';
+    }
+  }
+  return erg;
 }
 
 /** Die beiden Eichungen. Sie laufen VOR dem ersten geschriebenen Byte, und faellt eine,
@@ -375,7 +438,8 @@ async function messen(opt) {
     w.abspaltungen.forEach(function (a) {
       if (a.schonGemessen && !opt.neuMessen) return;
       if (opt.nurSym && opt.nurSym.indexOf(w.sym) === -1) return;
-      offen.push({ ordner: w.ordner, sym: a.sym || w.sym, art: a.art, datum: a.datum, neuSym: a.neuSym });
+      offen.push({ ordner: w.ordner, sym: a.sym || w.sym, art: a.art, datum: a.datum, neuSym: a.neuSym,
+        satz: a.satz, saetze: a.saetze });
     });
   });
   sag('Offen: ' + offen.length + ' Abspaltungen in ' + L.werte.length + ' Werten. '
@@ -393,7 +457,7 @@ async function messen(opt) {
   }
   protokoll('Eichung bestanden: ' + EICH_SYM + ' ' + eich.positiv.faktor.toFixed(6) + ', Placebo ' + eich.placebo.faktor.toFixed(6));
 
-  var gemessen = 0, unklar = 0, ergebnisse = [], ueberlastet = null;
+  var gemessen = 0, unklar = 0, ausgetragen = 0, ergebnisse = [], ueberlastet = null;
   for (var i = 0; i < offen.length; i++) {
     var a = offen[i], erg;
     try { erg = await fallMessen(a, opt.fetch); }
@@ -402,28 +466,33 @@ async function messen(opt) {
       throw e;
     }
     var satz = satzAus(a, erg);
-    if (satz) {
-      var p = path.join(MASSNAHMEN, a.ordner + '.json');
-      var m = JSON.parse(fs.readFileSync(p, 'utf8'));
-      M.atomarSchreiben(p, JSON.stringify(eintragen(m, satz)));
-      gemessen++;
-    } else { unklar++; }
+    var p = path.join(MASSNAHMEN, a.ordner + '.json');
+    var m = JSON.parse(fs.readFileSync(p, 'utf8'));
+    if (satz) { M.atomarSchreiben(p, JSON.stringify(eintragen(m, satz))); gemessen++; }
+    else {
+      /* "unklar" heisst NICHTS SCHREIBEN - und wo schon etwas steht, heisst es AUSTRAGEN.
+       * Sonst ueberlebte beim Nachmessen genau der Faktor, den die neue Messung verwirft. */
+      var ohne = austragen(m, a.art, a.datum);
+      if (JSON.stringify(ohne) !== JSON.stringify(m)) { M.atomarSchreiben(p, JSON.stringify(ohne)); ausgetragen++; }
+      unklar++;
+    }
     ergebnisse.push({ sym: a.sym, ordner: a.ordner, datum: a.datum, urteil: erg.urteil,
       kursfaktor: satz ? satz.kursfaktor : null, n: erg.n, streuung: erg.streuung,
-      nachN: erg.nachN, nachMedian: erg.nachMedian, grund: erg.grund });
+      nachN: erg.nachN, nachMedian: erg.nachMedian, stoerer: erg.stoerer || null, grund: erg.grund });
     if ((i + 1) % 20 === 0) sag('  ' + (i + 1) + '/' + offen.length + '  gemessen ' + gemessen + '  unklar ' + unklar + '  Abrufe ' + Z.abrufe);
   }
 
   var bericht = { stand: new Date().toISOString(), quelle: 'alpaca /v2/stocks/bars 1Day, adjustment=all gegen adjustment=dividend',
     regel: 'Faktor = Median all/dividend ueber die letzten ' + VOR_TAGE + ' Handelstage vor dem Wirkungstag. '
       + 'Kontrolle: Median ab dem Wirkungstag muss 1,000 sein (Band ' + BAND + '), sonst "unklar" und NICHTS geschrieben.',
-    eichung: eich, offen: offen.length, gemessen: gemessen, unklar: unklar,
+    eichung: eich, offen: offen.length, gemessen: gemessen, unklar: unklar, ausgetragen: ausgetragen,
     abrufe: Z.abrufe, wiederholt: Z.wiederholt, ueberlastet: ueberlastet, ergebnisse: ergebnisse };
   M.atomarSchreiben(BERICHT, JSON.stringify(bericht, null, 1));
-  protokoll('Messen: ' + offen.length + ' offen, ' + gemessen + ' gemessen, ' + unklar + ' unklar, ' + Z.abrufe + ' Abrufe'
+  protokoll('Messen: ' + offen.length + ' offen, ' + gemessen + ' gemessen, ' + unklar + ' unklar, '
+    + ausgetragen + ' ausgetragen, ' + Z.abrufe + ' Abrufe'
     + (ueberlastet ? ', ABGEBROCHEN bei ' + ueberlastet.bei + ' (429)' : ''));
-  return { eichung: eich, offen: offen.length, gemessen: gemessen, unklar: unklar, abrufe: Z.abrufe,
-    ueberlastet: ueberlastet, bericht: BERICHT };
+  return { eichung: eich, offen: offen.length, gemessen: gemessen, unklar: unklar, ausgetragen: ausgetragen,
+    abrufe: Z.abrufe, ueberlastet: ueberlastet, bericht: BERICHT };
 }
 
 /* ================= (5) Selbsttest der reinen Bausteine - kein Netz ================= */
@@ -505,6 +574,25 @@ function kontrolle() {
   ok(mZwei.gemesseneFaktoren.length === 1 && Math.abs(mZwei.gemesseneFaktoren[0].kursfaktor - 1) < 1e-12,
      'A12 zweimal gemessen ersetzt den Satz, haengt keinen zweiten daneben');
 
+  /* Die zweite Maszahme am WIRKUNGSTAG - der Fund vom ersten echten Lauf (MHUA: 100:1
+   * Zusammenlegung und Abspaltung am selben Tag, gemessen 0,010000). Der Faktor traegt
+   * dann beide, und die Ableitung wuerde den Split ein zweites Mal anwenden. */
+  var mitSplit = [{ _art: 'spin_offs', ex_date: '2026-07-01', source_rate: 1, new_rate: 1 },
+                  { _art: 'reverse_splits', ex_date: '2026-07-01', old_rate: 100, new_rate: 1 },
+                  { _art: 'forward_splits', ex_date: '2020-01-02', old_rate: 1, new_rate: 4 }];
+  var stoe = stoererAus(mitSplit, mitSplit[0], '2026-06-26', '2026-07-01');
+  ok(stoe.length === 1 && stoe[0].art === 'reverse_splits',
+     'A14 eine zweite faktortragende Maszahme AM Wirkungstag wird gefunden - ein alter Split von 2020 nicht');
+  ok(stoererAus(mitSplit, mitSplit[0], '2026-06-26', '2026-07-01').length === 1 &&
+     stoererAus([mitSplit[0]], mitSplit[0], '2026-06-26', '2026-07-01').length === 0,
+     'A15 der gemessene Satz selbst zaehlt nie als sein eigener Stoerer');
+
+  /* Austragen: ein Nachmessen, das auf "unklar" faellt, muss den alten Faktor WEGnehmen. */
+  var mMit = eintragen({ sym: 'X', saetze: [], ohneFaktor: [] }, satzAus({ art: 'spin_offs', datum: '2026-07-01' }, r));
+  var mOhne = austragen(mMit, 'spin_offs', '2026-07-01');
+  ok(mMit.gemesseneFaktoren.length === 1 && !('gemesseneFaktoren' in mOhne),
+     'A16 austragen() nimmt den alten Faktor weg - ein Nachmessen darf die Lage nicht schlechter machen');
+
   /* Gelesen wird die Quellenliste, und ein schon gemessener Fall wird erkannt. */
   var absp = abspaltungenAus({ sym: 'X', saetze: mAlt.saetze, gemesseneFaktoren: mNeu.gemesseneFaktoren });
   ok(absp.length === 1 && absp[0].schonGemessen === true && absp[0].newRate === 1,
@@ -544,6 +632,7 @@ async function selbsttestSchreiben() {
   var WELT = {
     SPGI: [100, 105.7, 90, 90], AAPL: [100, 100, 90, 90],
     GUT: [100, 105.7, 90, 90], BOES: [100, 105.7, 45, 90], EINS: [100, 100, 90, 90],
+    DOPPEL: [1, 100, 90, 90],                 /* 100:1 Zusammenlegung UND Abspaltung am selben Tag */
   };
   function kunstFetch(url) {
     var sym = decodeURIComponent((/[?&]symbols=([^&]+)/.exec(url) || [])[1] || '');
@@ -556,12 +645,17 @@ async function selbsttestSchreiben() {
   }
 
   fs.mkdirSync(MASSNAHMEN, { recursive: true });
+  var WERTE = ['GUT', 'BOES', 'EINS', 'DOPPEL'];
   var vorher = {};
-  ['GUT', 'BOES', 'EINS'].forEach(function (s) {
+  WERTE.forEach(function (s) {
+    var saetze = [{ _art: 'spin_offs', ex_date: EX, source_rate: 1, new_rate: 1, new_symbol: s + 'X' },
+                  { _art: 'cash_dividends', ex_date: '2026-05-01', rate: 0.5 }];
+    /* DOPPEL traegt zusaetzlich eine Zusammenlegung am SELBEN Tag - der Fund vom ersten
+     * echten Lauf. Sein gemessener Faktor waere 100, also der der Zusammenlegung, und die
+     * Ableitung wendete sie danach ein zweites Mal an. */
+    if (s === 'DOPPEL') saetze.push({ _art: 'reverse_splits', ex_date: EX, old_rate: 100, new_rate: 1 });
     var m = { sym: s, stand: '2026-09-03T00:00:00.000Z', quelle: 'alpaca v1 corporate-actions',
-      von: '2016-01-01', bis: '2026-12-31',
-      saetze: [{ _art: 'spin_offs', ex_date: EX, source_rate: 1, new_rate: 1, new_symbol: s + 'X' },
-               { _art: 'cash_dividends', ex_date: '2026-05-01', rate: 0.5 }],
+      von: '2016-01-01', bis: '2026-12-31', saetze: saetze,
       anwendbar: [], ohneFaktor: [{ art: 'spin_offs', datum: EX, grund: 'Abspaltung: Quelle liefert nur ein Stueckverhaeltnis, keinen Kursfaktor' }] };
     vorher[s] = JSON.stringify(m);
     M.atomarSchreiben(path.join(MASSNAHMEN, s + '.json'), vorher[s]);
@@ -570,7 +664,13 @@ async function selbsttestSchreiben() {
   var r = await messen({ fetch: kunstFetch });
 
   function lesen(s) { return JSON.parse(fs.readFileSync(path.join(MASSNAHMEN, s + '.json'), 'utf8')); }
-  var gut = lesen('GUT'), boes = lesen('BOES'), eins = lesen('EINS');
+  var gut = lesen('GUT'), boes = lesen('BOES'), eins = lesen('EINS'), doppel = lesen('DOPPEL');
+  /* Nachmessen, das auf "unklar" faellt, muss einen alten Faktor wieder AUSTRAGEN. Also
+   * einen erfundenen alten Eintrag in die BOES-Datei setzen und noch einmal messen. */
+  M.atomarSchreiben(path.join(MASSNAHMEN, 'BOES.json'), JSON.stringify(eintragen(boes,
+    { art: 'spin_offs', datum: EX, kursfaktor: 1.5, herkunft: 'alt' })));
+  var rNach = await messen({ fetch: kunstFetch, neuMessen: true, nurSym: ['BOES'] });
+  var boesNach = lesen('BOES');
   /* Jede geschriebene Datei unter der Wurzel einsammeln - rekursiv, damit ein Ausbruch in
    * einen Nachbarordner auffaellt und nicht nur ein anders benanntes Ziel. */
   var dateien = [];
@@ -585,10 +685,10 @@ async function selbsttestSchreiben() {
    * Positivkontrolle danebenliegt (SPGI misst 2,0 statt 1,057). Der Satz "faellt eine
    * Eichung, wird kein einziger Faktor geschrieben" ist damit gemessen und nicht behauptet -
    * sonst stuende er nur im Kommentar, und ein ausgebauter Abbruch fiele niemandem auf. */
-  ['GUT', 'BOES', 'EINS'].forEach(function (s) { M.atomarSchreiben(path.join(MASSNAHMEN, s + '.json'), vorher[s]); });
+  WERTE.forEach(function (s) { M.atomarSchreiben(path.join(MASSNAHMEN, s + '.json'), vorher[s]); });
   WELT.SPGI = [50, 100, 90, 90];                     /* Faktor 2,0 - die Eichung muss fallen */
   var r2 = await messen({ fetch: kunstFetch });
-  var nachEichbruch = ['GUT', 'BOES', 'EINS'].some(function (s) { return (lesen(s).gemesseneFaktoren || []).length > 0; });
+  var nachEichbruch = WERTE.some(function (s) { return (lesen(s).gemesseneFaktoren || []).length > 0; });
 
   var VSm = require('./alpaca-vollsammlung.js');
   return {
@@ -603,9 +703,14 @@ async function selbsttestSchreiben() {
     gutHerkunft: (gut.gemesseneFaktoren || []).length ? gut.gemesseneFaktoren[0].herkunft : null,
     boesHatFaktor: !!(boes.gemesseneFaktoren || []).length,
     einsFaktor: (eins.gemesseneFaktoren || []).length ? eins.gemesseneFaktoren[0].kursfaktor : null,
-    /* Die Quellenlisten muessen den Lauf Byte fuer Byte ueberstehen. */
-    quellenlistenUnveraendert: ['GUT', 'BOES', 'EINS'].every(function (s) {
-      var alt = JSON.parse(vorher[s]), neu = lesen(s);
+    doppelHatFaktor: !!(doppel.gemesseneFaktoren || []).length,
+    doppelAbleitungLuecke: VSm.faktorenAus(doppel.saetze, doppel.gemesseneFaktoren).ohneFaktor.length === 1,
+    nachmessenAusgetragen: !(boesNach.gemesseneFaktoren || []).length && rNach.ausgetragen === 1,
+    /* Die Quellenlisten muessen den ersten Lauf Byte fuer Byte ueberstehen. Verglichen wird
+     * gegen die Staende, die GLEICH NACH ihm gelesen wurden - die spaeteren Durchgaenge
+     * setzen die Dateien absichtlich zurueck, ein Vergleich am Ende maesse sie mit. */
+    quellenlistenUnveraendert: [['GUT', gut], ['BOES', boes], ['EINS', eins], ['DOPPEL', doppel]].every(function (x) {
+      var alt = JSON.parse(vorher[x[0]]), neu = x[1];
       return JSON.stringify(alt.saetze) === JSON.stringify(neu.saetze) &&
              JSON.stringify(alt.anwendbar) === JSON.stringify(neu.anwendbar) &&
              JSON.stringify(alt.ohneFaktor) === JSON.stringify(neu.ohneFaktor);
@@ -667,7 +772,8 @@ async function main() {
 
 module.exports = {
   abspaltungenAus: abspaltungenAus, schlussJeTag: schlussJeTag, faktorMessen: faktorMessen,
-  satzAus: satzAus, eintragen: eintragen, median: median, tagMs: tagMs, etTag: etTag,
+  satzAus: satzAus, eintragen: eintragen, austragen: austragen, stoererAus: stoererAus,
+  median: median, tagMs: tagMs, etTag: etTag,
   listen: listen, messen: messen, eichen: eichen, fallMessen: fallMessen, kontrolle: kontrolle,
   selbsttestSchreiben: selbsttestSchreiben,
   MASSNAHMEN: MASSNAHMEN, BERICHT: BERICHT, RATE_JE_MIN: RATE_JE_MIN, HERKUNFT: HERKUNFT,

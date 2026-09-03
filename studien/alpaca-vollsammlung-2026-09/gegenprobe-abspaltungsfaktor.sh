@@ -116,6 +116,21 @@ probe "H5 'nicht pruefbar' geht als bestanden durch (erloschener Wert)" \
       "tools/alpaca-abspaltungsfaktor.js" "if (0) { /*H5*/" \
       "node tools/alpaca-abspaltungsfaktor.js --kontrolle" "A9"
 
+# Die zweite faktortragende Massnahme am Wirkungstag wird nicht mehr gesucht. Der gemessene
+# Faktor traegt sie dann mit, und die Ableitung wendet den Split der Quelle ein zweites Mal
+# an - bei MHUA waere das der Faktor 0,0001 statt 0,01.
+node -e "var fs=require('fs'),p='$WM',s=fs.readFileSync(p,'utf8');s=s.replace('    if (e === selbst) return;','    if (e === selbst) return; if (1) return; /*H13*/');fs.writeFileSync(p,s);"
+probe "H13 die zweite Massnahme am Wirkungstag wird nicht mehr gesucht" \
+      "tools/alpaca-abspaltungsfaktor.js" "if (1) return; /*H13*/" \
+      "node tools/alpaca-abspaltungsfaktor.js --kontrolle" "A14"
+
+# Ein Nachmessen mit Urteil "unklar" laesst den alten Faktor stehen - dann ueberlebt genau
+# der Eintrag, den die neue Messung verwirft, und man haelt ihn fuer geprueft.
+node -e "var fs=require('fs'),p='$WM',s=fs.readFileSync(p,'utf8');s=s.replace('  if (liste.length) neu.gemesseneFaktoren = liste; else delete neu.gemesseneFaktoren;','  neu.gemesseneFaktoren = m.gemesseneFaktoren; /*H14*/');fs.writeFileSync(p,s);"
+probe "H14 austragen() laesst den alten Faktor stehen" \
+      "tools/alpaca-abspaltungsfaktor.js" "neu.gemesseneFaktoren = m.gemesseneFaktoren; /*H14*/" \
+      "node tools/alpaca-abspaltungsfaktor.js --kontrolle" "A16"
+
 echo ""
 echo "== Eingriffe, die nur test-v6 sieht (Block 35) =="
 
