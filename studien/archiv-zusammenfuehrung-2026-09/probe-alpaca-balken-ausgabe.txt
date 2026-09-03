@@ -1,0 +1,197 @@
+=== Probe: Alpaca-Balken gegen Yahoo-Kerzen (Z1, Schritt 0) - 2026-09-03T14:22:25.239Z ===
+
+Kalender 2016-06-01: {"open":"09:30","close":"16:00","openUtc":"2016-06-01T13:30:00.000Z","closeUtc":"2016-06-01T20:00:00.000Z"}
+Kalender 2020-06-03: {"open":"09:30","close":"16:00","openUtc":"2020-06-03T13:30:00.000Z","closeUtc":"2020-06-03T20:00:00.000Z"}
+Kalender 2024-06-05: {"open":"09:30","close":"16:00","openUtc":"2024-06-05T13:30:00.000Z","closeUtc":"2024-06-05T20:00:00.000Z"}
+Kalender 2026-08-27: {"open":"09:30","close":"16:00","openUtc":"2026-08-27T13:30:00.000Z","closeUtc":"2026-08-27T20:00:00.000Z"}
+
+AAPL 2016-06-01 1Min  HTTP 200 (Grenze 200/min)  Balken 619  erster 2016-06-01T08:00:00Z  letzter 2016-06-01T23:59:00Z  regulaer 390/390 (vor 117, nach 112)
+      Beispiel: {"c":99.88,"h":99.88,"l":99.88,"n":4,"o":99.88,"t":"2016-06-01T08:00:00Z","v":157,"vw":99.88}
+      Yahoo 1m: kein Vergleich (Datei hat den Tag nicht)
+AAPL 2016-06-01 5Min  HTTP 200 (Grenze 200/min)  Balken 170  erster 2016-06-01T08:00:00Z  letzter 2016-06-01T23:55:00Z  regulaer 78/78 (vor 48, nach 44)
+      Beispiel: {"c":99.98,"h":99.98,"l":99.88,"n":9,"o":99.88,"t":"2016-06-01T08:00:00Z","v":517,"vw":99.950588}
+      Yahoo 5m: kein Vergleich (Datei hat den Tag nicht)
+AAPL 2016-06-01 1Hour HTTP 200 (Grenze 200/min)  Balken 16  erster 2016-06-01T08:00:00Z  letzter 2016-06-01T23:00:00Z  regulaer 6/7 (vor 6, nach 4)  erster regulaerer Balken NICHT auf der Eroeffnung: 2016-06-01T14:00:00Z
+      Beispiel: {"c":99.5,"h":99.98,"l":99.3,"n":19,"o":99.88,"t":"2016-06-01T08:00:00Z","v":2007,"vw":99.594033}
+      Yahoo 60m: kein Vergleich (Datei hat den Tag nicht)
+AAPL 2020-06-03 1Min  HTTP 200 (Grenze 200/min)  Balken 649  erster 2020-06-03T08:00:00Z  letzter 2020-06-03T23:59:00Z  regulaer 390/390 (vor 180, nach 79)
+      Beispiel: {"c":324.3,"h":324.9,"l":324.3,"n":24,"o":324.5,"t":"2020-06-03T08:00:00Z","v":1141,"vw":324.526281}
+      Yahoo 1m: kein Vergleich (Datei hat den Tag nicht)
+AAPL 2020-06-03 5Min  HTTP 200 (Grenze 200/min)  Balken 171  erster 2020-06-03T08:00:00Z  letzter 2020-06-03T23:55:00Z  regulaer 78/78 (vor 56, nach 37)
+      Beispiel: {"c":324.99,"h":325,"l":324.3,"n":88,"o":324.5,"t":"2020-06-03T08:00:00Z","v":5189,"vw":324.749301}
+      Yahoo 5m: kein Vergleich (Datei hat den Tag nicht)
+AAPL 2020-06-03 1Hour HTTP 200 (Grenze 200/min)  Balken 16  erster 2020-06-03T08:00:00Z  letzter 2020-06-03T23:00:00Z  regulaer 6/7 (vor 6, nach 4)  erster regulaerer Balken NICHT auf der Eroeffnung: 2020-06-03T14:00:00Z
+      Beispiel: {"c":325.1,"h":325.65,"l":324.3,"n":212,"o":324.5,"t":"2020-06-03T08:00:00Z","v":13964,"vw":324.931056}
+      Yahoo 60m: kein Vergleich (Datei hat den Tag nicht)
+AAPL 2024-06-05 1Min  HTTP 200 (Grenze 200/min)  Balken 750  erster 2024-06-05T08:01:00Z  letzter 2024-06-05T23:59:00Z  regulaer 390/390 (vor 184, nach 176)
+      Beispiel: {"c":194.99,"h":194.99,"l":194.99,"n":29,"o":194.99,"t":"2024-06-05T08:01:00Z","v":374,"vw":194.99}
+      Yahoo 1m: kein Vergleich (Datei hat den Tag nicht)
+AAPL 2024-06-05 5Min  HTTP 200 (Grenze 200/min)  Balken 187  erster 2024-06-05T08:00:00Z  letzter 2024-06-05T23:55:00Z  regulaer 78/78 (vor 61, nach 48)
+      Beispiel: {"c":195,"h":195.1,"l":194.99,"n":125,"o":194.99,"t":"2024-06-05T08:00:00Z","v":3094,"vw":195.04148}
+      Yahoo 5m: kein Vergleich (Datei hat den Tag nicht)
+AAPL 2024-06-05 1Hour HTTP 200 (Grenze 200/min)  Balken 16  erster 2024-06-05T08:00:00Z  letzter 2024-06-05T23:00:00Z  regulaer 6/7 (vor 6, nach 4)  erster regulaerer Balken NICHT auf der Eroeffnung: 2024-06-05T14:00:00Z
+      Beispiel: {"c":194.81,"h":195.2,"l":194.7,"n":558,"o":194.99,"t":"2024-06-05T08:00:00Z","v":21011,"vw":194.956694}
+      Yahoo 60m: 7 Kerzen am Tag, gemeinsam 0 - KEIN gemeinsamer Stempel (anderes Gitter?)
+AAPL 2026-08-27 1Min  HTTP 200 (Grenze 200/min)  Balken 860  erster 2026-08-27T08:00:00Z  letzter 2026-08-27T23:59:00Z  regulaer 390/390 (vor 307, nach 163)
+      Beispiel: {"c":311.2,"h":311.5,"l":310.26,"n":1115,"o":311.39,"t":"2026-08-27T08:00:00Z","v":30929,"vw":310.853632}
+      Yahoo 1m: 384 Kerzen am Tag, gemeinsam 384, Schluss median 0.0000 % / max 0.018 %, ueber 0,1 %: 0, Umsatz-Faktor median 1.009 (n 384)
+AAPL 2026-08-27 5Min  HTTP 200 (Grenze 200/min)  Balken 191  erster 2026-08-27T08:00:00Z  letzter 2026-08-27T23:55:00Z  regulaer 78/78 (vor 66, nach 47)
+      Beispiel: {"c":310.72,"h":311.5,"l":310.26,"n":4944,"o":311.39,"t":"2026-08-27T08:00:00Z","v":112901,"vw":310.746884}
+      Yahoo 5m: 72 Kerzen am Tag, gemeinsam 72, Schluss median 0.0000 % / max 0.006 %, ueber 0,1 %: 0, Umsatz-Faktor median 1.009 (n 72)
+AAPL 2026-08-27 1Hour HTTP 200 (Grenze 200/min)  Balken 16  erster 2026-08-27T08:00:00Z  letzter 2026-08-27T23:00:00Z  regulaer 6/7 (vor 6, nach 4)  erster regulaerer Balken NICHT auf der Eroeffnung: 2026-08-27T14:00:00Z
+      Beispiel: {"c":310.2,"h":311.5,"l":310.15,"n":7230,"o":311.39,"t":"2026-08-27T08:00:00Z","v":171749,"vw":310.704193}
+      Yahoo 60m: 7 Kerzen am Tag, gemeinsam 0 - KEIN gemeinsamer Stempel (anderes Gitter?)
+MU 2016-06-01 1Min  HTTP 200 (Grenze 200/min)  Balken 446  erster 2016-06-01T08:43:00Z  letzter 2016-06-01T23:50:00Z  regulaer 390/390 (vor 28, nach 28)
+      Beispiel: {"c":12.74,"h":12.74,"l":12.74,"n":1,"o":12.74,"t":"2016-06-01T08:43:00Z","v":500,"vw":12.74}
+      Yahoo 1m: kein Vergleich (Datei hat den Tag nicht)
+MU 2016-06-01 5Min  HTTP 200 (Grenze 200/min)  Balken 114  erster 2016-06-01T08:40:00Z  letzter 2016-06-01T23:50:00Z  regulaer 78/78 (vor 16, nach 20)
+      Beispiel: {"c":12.74,"h":12.74,"l":12.74,"n":1,"o":12.74,"t":"2016-06-01T08:40:00Z","v":500,"vw":12.74}
+      Yahoo 5m: kein Vergleich (Datei hat den Tag nicht)
+MU 2016-06-01 1Hour HTTP 200 (Grenze 200/min)  Balken 14  erster 2016-06-01T08:00:00Z  letzter 2016-06-01T23:00:00Z  regulaer 6/7 (vor 4, nach 4)  erster regulaerer Balken NICHT auf der Eroeffnung: 2016-06-01T14:00:00Z
+      Beispiel: {"c":12.74,"h":12.74,"l":12.74,"n":1,"o":12.74,"t":"2016-06-01T08:00:00Z","v":500,"vw":12.74}
+      Yahoo 60m: kein Vergleich (Datei hat den Tag nicht)
+MU 2020-06-03 1Min  HTTP 200 (Grenze 200/min)  Balken 684  erster 2020-06-03T08:00:00Z  letzter 2020-06-03T23:59:00Z  regulaer 390/390 (vor 178, nach 116)
+      Beispiel: {"c":47.19,"h":47.19,"l":47.19,"n":1,"o":47.19,"t":"2020-06-03T08:00:00Z","v":161,"vw":47.19}
+      Yahoo 1m: kein Vergleich (Datei hat den Tag nicht)
+MU 2020-06-03 5Min  HTTP 200 (Grenze 200/min)  Balken 180  erster 2020-06-03T08:00:00Z  letzter 2020-06-03T23:55:00Z  regulaer 78/78 (vor 57, nach 45)
+      Beispiel: {"c":47.19,"h":47.19,"l":47.19,"n":2,"o":47.19,"t":"2020-06-03T08:00:00Z","v":261,"vw":47.19}
+      Yahoo 5m: kein Vergleich (Datei hat den Tag nicht)
+MU 2020-06-03 1Hour HTTP 200 (Grenze 200/min)  Balken 16  erster 2020-06-03T08:00:00Z  letzter 2020-06-03T23:00:00Z  regulaer 6/7 (vor 6, nach 4)  erster regulaerer Balken NICHT auf der Eroeffnung: 2020-06-03T14:00:00Z
+      Beispiel: {"c":48,"h":48,"l":47.18,"n":148,"o":47.19,"t":"2020-06-03T08:00:00Z","v":30178,"vw":47.610374}
+      Yahoo 60m: kein Vergleich (Datei hat den Tag nicht)
+MU 2024-06-05 1Min  HTTP 200 (Grenze 200/min)  Balken 650  erster 2024-06-05T08:00:00Z  letzter 2024-06-05T23:59:00Z  regulaer 390/390 (vor 156, nach 104)
+      Beispiel: {"c":127.98,"h":127.98,"l":127.51,"n":10,"o":127.51,"t":"2024-06-05T08:00:00Z","v":1061,"vw":127.614444}
+      Yahoo 1m: kein Vergleich (Datei hat den Tag nicht)
+MU 2024-06-05 5Min  HTTP 200 (Grenze 200/min)  Balken 177  erster 2024-06-05T08:00:00Z  letzter 2024-06-05T23:55:00Z  regulaer 78/78 (vor 57, nach 42)
+      Beispiel: {"c":127.63,"h":127.98,"l":127.51,"n":19,"o":127.51,"t":"2024-06-05T08:00:00Z","v":1391,"vw":127.616}
+      Yahoo 5m: kein Vergleich (Datei hat den Tag nicht)
+MU 2024-06-05 1Hour HTTP 200 (Grenze 200/min)  Balken 16  erster 2024-06-05T08:00:00Z  letzter 2024-06-05T23:00:00Z  regulaer 6/7 (vor 6, nach 4)  erster regulaerer Balken NICHT auf der Eroeffnung: 2024-06-05T14:00:00Z
+      Beispiel: {"c":128.1,"h":128.1,"l":127.16,"n":332,"o":127.51,"t":"2024-06-05T08:00:00Z","v":19692,"vw":127.732583}
+      Yahoo 60m: 7 Kerzen am Tag, gemeinsam 0 - KEIN gemeinsamer Stempel (anderes Gitter?)
+MU 2026-08-27 1Min  HTTP 200 (Grenze 200/min)  Balken 957  erster 2026-08-27T08:00:00Z  letzter 2026-08-27T23:59:00Z  regulaer 390/390 (vor 328, nach 239)
+      Beispiel: {"c":974.12,"h":974.6,"l":963.1605,"n":2577,"o":973,"t":"2026-08-27T08:00:00Z","v":42043,"vw":968.809492}
+      Yahoo 1m: 384 Kerzen am Tag, gemeinsam 384, Schluss median 0.0000 % / max 0.097 %, ueber 0,1 %: 0, Umsatz-Faktor median 1.003 (n 384)
+MU 2026-08-27 5Min  HTTP 200 (Grenze 200/min)  Balken 192  erster 2026-08-27T08:00:00Z  letzter 2026-08-27T23:55:00Z  regulaer 78/78 (vor 66, nach 48)
+      Beispiel: {"c":976.1464,"h":976.39,"l":963.1605,"n":12179,"o":973,"t":"2026-08-27T08:00:00Z","v":192836,"vw":970.299005}
+      Yahoo 5m: 72 Kerzen am Tag, gemeinsam 72, Schluss median 0.0000 % / max 0.097 %, ueber 0,1 %: 0, Umsatz-Faktor median 1.003 (n 72)
+MU 2026-08-27 1Hour HTTP 200 (Grenze 200/min)  Balken 16  erster 2026-08-27T08:00:00Z  letzter 2026-08-27T23:00:00Z  regulaer 6/7 (vor 6, nach 4)  erster regulaerer Balken NICHT auf der Eroeffnung: 2026-08-27T14:00:00Z
+      Beispiel: {"c":980.25,"h":983.91,"l":963.1605,"n":23300,"o":973,"t":"2026-08-27T08:00:00Z","v":397501,"vw":975.541111}
+      Yahoo 60m: 7 Kerzen am Tag, gemeinsam 0 - KEIN gemeinsamer Stempel (anderes Gitter?)
+ARM 2016-06-01 1Min  HTTP 200 (Grenze 200/min)  Balken 0  (erwartet: ARM erst seit 09/2023 notiert)
+ARM 2016-06-01 5Min  HTTP 200 (Grenze 200/min)  Balken 0  (erwartet: ARM erst seit 09/2023 notiert)
+ARM 2016-06-01 1Hour HTTP 200 (Grenze 200/min)  Balken 0  (erwartet: ARM erst seit 09/2023 notiert)
+ARM 2020-06-03 1Min  HTTP 200 (Grenze 200/min)  Balken 0  (erwartet: ARM erst seit 09/2023 notiert)
+ARM 2020-06-03 5Min  HTTP 200 (Grenze 200/min)  Balken 0  (erwartet: ARM erst seit 09/2023 notiert)
+ARM 2020-06-03 1Hour HTTP 200 (Grenze 200/min)  Balken 0  (erwartet: ARM erst seit 09/2023 notiert)
+ARM 2024-06-05 1Min  HTTP 200 (Grenze 200/min)  Balken 671  erster 2024-06-05T08:01:00Z  letzter 2024-06-05T23:59:00Z  regulaer 390/390 (vor 142, nach 139)
+      Beispiel: {"c":125.98,"h":125.98,"l":125.7,"n":42,"o":125.7,"t":"2024-06-05T08:01:00Z","v":1438,"vw":125.888197}
+      Yahoo 1m: kein Vergleich (Datei hat den Tag nicht)
+ARM 2024-06-05 5Min  HTTP 200 (Grenze 200/min)  Balken 178  erster 2024-06-05T08:00:00Z  letzter 2024-06-05T23:55:00Z  regulaer 78/78 (vor 55, nach 45)
+      Beispiel: {"c":126.16,"h":126.22,"l":125.7,"n":92,"o":125.7,"t":"2024-06-05T08:00:00Z","v":3646,"vw":125.994716}
+      Yahoo 5m: kein Vergleich (Datei hat den Tag nicht)
+ARM 2024-06-05 1Hour HTTP 200 (Grenze 200/min)  Balken 16  erster 2024-06-05T08:00:00Z  letzter 2024-06-05T23:00:00Z  regulaer 6/7 (vor 6, nach 4)  erster regulaerer Balken NICHT auf der Eroeffnung: 2024-06-05T14:00:00Z
+      Beispiel: {"c":127.1,"h":127.5,"l":125.7,"n":289,"o":125.7,"t":"2024-06-05T08:00:00Z","v":16377,"vw":126.457811}
+      Yahoo 60m: 7 Kerzen am Tag, gemeinsam 0 - KEIN gemeinsamer Stempel (anderes Gitter?)
+ARM 2026-08-27 1Min  HTTP 200 (Grenze 200/min)  Balken 573  erster 2026-08-27T08:00:00Z  letzter 2026-08-27T23:59:00Z  regulaer 390/390 (vor 130, nach 53)
+      Beispiel: {"c":259.7,"h":261.27,"l":259.5,"n":244,"o":261.09,"t":"2026-08-27T08:00:00Z","v":5580,"vw":260.352207}
+      Yahoo 1m: 383 Kerzen am Tag, gemeinsam 383, Schluss median 0.0000 % / max 0.182 %, ueber 0,1 %: 9, Umsatz-Faktor median 1.001 (n 383)
+ARM 2026-08-27 5Min  HTTP 200 (Grenze 200/min)  Balken 165  erster 2026-08-27T08:00:00Z  letzter 2026-08-27T23:55:00Z  regulaer 78/78 (vor 55, nach 32)
+      Beispiel: {"c":261.25,"h":261.49,"l":258.16,"n":1152,"o":261.09,"t":"2026-08-27T08:00:00Z","v":27356,"vw":260.369656}
+      Yahoo 5m: 72 Kerzen am Tag, gemeinsam 72, Schluss median 0.0000 % / max 0.135 %, ueber 0,1 %: 2, Umsatz-Faktor median 1.000 (n 72)
+ARM 2026-08-27 1Hour HTTP 200 (Grenze 200/min)  Balken 16  erster 2026-08-27T08:00:00Z  letzter 2026-08-27T23:00:00Z  regulaer 6/7 (vor 6, nach 4)  erster regulaerer Balken NICHT auf der Eroeffnung: 2026-08-27T14:00:00Z
+      Beispiel: {"c":263,"h":263.5,"l":258.16,"n":1689,"o":261.09,"t":"2026-08-27T08:00:00Z","v":50393,"vw":261.502888}
+      Yahoo 60m: 7 Kerzen am Tag, gemeinsam 0 - KEIN gemeinsamer Stempel (anderes Gitter?)
+ORCL 2016-06-01 1Min  HTTP 200 (Grenze 200/min)  Balken 423  erster 2016-06-01T13:30:00Z  letzter 2016-06-01T23:58:00Z  regulaer 390/390 (vor 0, nach 33)
+      Beispiel: {"c":39.89,"h":40.06,"l":39.87,"n":160,"o":40.06,"t":"2016-06-01T13:30:00Z","v":286564,"vw":40.051506}
+      Yahoo 1m: kein Vergleich (Datei hat den Tag nicht)
+ORCL 2016-06-01 5Min  HTTP 200 (Grenze 200/min)  Balken 100  erster 2016-06-01T13:30:00Z  letzter 2016-06-01T23:55:00Z  regulaer 78/78 (vor 0, nach 22)
+      Beispiel: {"c":39.93,"h":40.06,"l":39.87,"n":906,"o":40.06,"t":"2016-06-01T13:30:00Z","v":542511,"vw":39.990501}
+      Yahoo 5m: kein Vergleich (Datei hat den Tag nicht)
+ORCL 2016-06-01 1Hour HTTP 200 (Grenze 200/min)  Balken 11  erster 2016-06-01T13:00:00Z  letzter 2016-06-01T23:00:00Z  regulaer 6/7 (vor 1, nach 4)  erster regulaerer Balken NICHT auf der Eroeffnung: 2016-06-01T14:00:00Z
+      Beispiel: {"c":40.01,"h":40.08,"l":39.82,"n":6448,"o":40.06,"t":"2016-06-01T13:00:00Z","v":1614913,"vw":39.961766}
+      Yahoo 60m: kein Vergleich (Datei hat den Tag nicht)
+ORCL 2020-06-03 1Min  HTTP 200 (Grenze 200/min)  Balken 405  erster 2020-06-03T09:48:00Z  letzter 2020-06-03T20:35:00Z  regulaer 390/390 (vor 10, nach 5)
+      Beispiel: {"c":53.85,"h":53.85,"l":53.8,"n":4,"o":53.8,"t":"2020-06-03T09:48:00Z","v":345,"vw":53.833051}
+      Yahoo 1m: kein Vergleich (Datei hat den Tag nicht)
+ORCL 2020-06-03 5Min  HTTP 200 (Grenze 200/min)  Balken 91  erster 2020-06-03T09:45:00Z  letzter 2020-06-03T20:35:00Z  regulaer 78/78 (vor 8, nach 5)
+      Beispiel: {"c":53.85,"h":53.85,"l":53.8,"n":4,"o":53.8,"t":"2020-06-03T09:45:00Z","v":345,"vw":53.833051}
+      Yahoo 5m: kein Vergleich (Datei hat den Tag nicht)
+ORCL 2020-06-03 1Hour HTTP 200 (Grenze 200/min)  Balken 10  erster 2020-06-03T09:00:00Z  letzter 2020-06-03T20:00:00Z  regulaer 6/7 (vor 3, nach 1)  erster regulaerer Balken NICHT auf der Eroeffnung: 2020-06-03T14:00:00Z
+      Beispiel: {"c":53.85,"h":53.85,"l":53.8,"n":4,"o":53.8,"t":"2020-06-03T09:00:00Z","v":345,"vw":53.833051}
+      Yahoo 60m: kein Vergleich (Datei hat den Tag nicht)
+ORCL 2024-06-05 1Min  HTTP 200 (Grenze 200/min)  Balken 443  erster 2024-06-05T09:09:00Z  letzter 2024-06-05T23:55:00Z  regulaer 390/390 (vor 22, nach 31)
+      Beispiel: {"c":120.5,"h":120.5,"l":120.5,"n":11,"o":120.5,"t":"2024-06-05T09:09:00Z","v":291,"vw":120.5}
+      Yahoo 1m: kein Vergleich (Datei hat den Tag nicht)
+ORCL 2024-06-05 5Min  HTTP 200 (Grenze 200/min)  Balken 120  erster 2024-06-05T09:05:00Z  letzter 2024-06-05T23:55:00Z  regulaer 78/78 (vor 17, nach 25)
+      Beispiel: {"c":120.5,"h":120.5,"l":120.5,"n":11,"o":120.5,"t":"2024-06-05T09:05:00Z","v":291,"vw":120.5}
+      Yahoo 5m: kein Vergleich (Datei hat den Tag nicht)
+ORCL 2024-06-05 1Hour HTTP 200 (Grenze 200/min)  Balken 14  erster 2024-06-05T09:00:00Z  letzter 2024-06-05T23:00:00Z  regulaer 6/7 (vor 4, nach 4)  erster regulaerer Balken NICHT auf der Eroeffnung: 2024-06-05T14:00:00Z
+      Beispiel: {"c":120.5,"h":120.5,"l":120.5,"n":11,"o":120.5,"t":"2024-06-05T09:00:00Z","v":291,"vw":120.5}
+      Yahoo 60m: 7 Kerzen am Tag, gemeinsam 0 - KEIN gemeinsamer Stempel (anderes Gitter?)
+ORCL 2026-08-27 1Min  HTTP 200 (Grenze 200/min)  Balken 819  erster 2026-08-27T08:00:00Z  letzter 2026-08-27T23:59:00Z  regulaer 390/390 (vor 235, nach 194)
+      Beispiel: {"c":151.02,"h":151.5,"l":150.6431,"n":547,"o":150.98,"t":"2026-08-27T08:00:00Z","v":9480,"vw":151.077687}
+      Yahoo 1m: 384 Kerzen am Tag, gemeinsam 384, Schluss median 0.0000 % / max 0.000 %, ueber 0,1 %: 0, Umsatz-Faktor median 1.000 (n 384)
+ORCL 2026-08-27 5Min  HTTP 200 (Grenze 200/min)  Balken 191  erster 2026-08-27T08:00:00Z  letzter 2026-08-27T23:55:00Z  regulaer 78/78 (vor 65, nach 48)
+      Beispiel: {"c":151.8569,"h":151.87,"l":150.6431,"n":1909,"o":150.98,"t":"2026-08-27T08:00:00Z","v":36314,"vw":151.162623}
+      Yahoo 5m: 72 Kerzen am Tag, gemeinsam 72, Schluss median 0.0000 % / max 0.000 %, ueber 0,1 %: 0, Umsatz-Faktor median 1.000 (n 72)
+ORCL 2026-08-27 1Hour HTTP 200 (Grenze 200/min)  Balken 16  erster 2026-08-27T08:00:00Z  letzter 2026-08-27T23:00:00Z  regulaer 6/7 (vor 6, nach 4)  erster regulaerer Balken NICHT auf der Eroeffnung: 2026-08-27T14:00:00Z
+      Beispiel: {"c":152.23,"h":152.9,"l":150.6431,"n":3389,"o":150.98,"t":"2026-08-27T08:00:00Z","v":85949,"vw":152.037363}
+      Yahoo 60m: 7 Kerzen am Tag, gemeinsam 0 - KEIN gemeinsamer Stempel (anderes Gitter?)
+BRK.B 2016-06-01 1Min  HTTP 200 (Grenze 200/min)  Balken 414  erster 2016-06-01T09:02:00Z  letzter 2016-06-01T22:36:00Z  regulaer 390/390 (vor 22, nach 2)
+      Beispiel: {"c":140.93,"h":140.93,"l":140.93,"n":2,"o":140.93,"t":"2016-06-01T09:02:00Z","v":600,"vw":140.93}
+      Yahoo 1m: kein Vergleich (Datei hat den Tag nicht)
+BRK.B 2016-06-01 5Min  HTTP 200 (Grenze 200/min)  Balken 93  erster 2016-06-01T09:00:00Z  letzter 2016-06-01T22:35:00Z  regulaer 78/78 (vor 13, nach 2)
+      Beispiel: {"c":141,"h":141,"l":140.93,"n":3,"o":140.93,"t":"2016-06-01T09:00:00Z","v":700,"vw":140.94}
+      Yahoo 5m: kein Vergleich (Datei hat den Tag nicht)
+BRK.B 2016-06-01 1Hour HTTP 200 (Grenze 200/min)  Balken 13  erster 2016-06-01T09:00:00Z  letzter 2016-06-01T22:00:00Z  regulaer 6/7 (vor 5, nach 2)  erster regulaerer Balken NICHT auf der Eroeffnung: 2016-06-01T14:00:00Z
+      Beispiel: {"c":141,"h":141,"l":140.93,"n":3,"o":140.93,"t":"2016-06-01T09:00:00Z","v":700,"vw":140.94}
+      Yahoo 60m: kein Vergleich (Datei hat den Tag nicht)
+BRK.B 2020-06-03 1Min  HTTP 200 (Grenze 200/min)  Balken 455  erster 2020-06-03T10:24:00Z  letzter 2020-06-03T23:56:00Z  regulaer 390/390 (vor 39, nach 26)
+      Beispiel: {"c":186.2,"h":186.2,"l":186.2,"n":1,"o":186.2,"t":"2020-06-03T10:24:00Z","v":500,"vw":186.2}
+      Yahoo 1m: kein Vergleich (Datei hat den Tag nicht)
+BRK.B 2020-06-03 5Min  HTTP 200 (Grenze 200/min)  Balken 117  erster 2020-06-03T10:20:00Z  letzter 2020-06-03T23:55:00Z  regulaer 78/78 (vor 18, nach 21)
+      Beispiel: {"c":186.2,"h":186.2,"l":186.2,"n":1,"o":186.2,"t":"2020-06-03T10:20:00Z","v":500,"vw":186.2}
+      Yahoo 5m: kein Vergleich (Datei hat den Tag nicht)
+BRK.B 2020-06-03 1Hour HTTP 200 (Grenze 200/min)  Balken 14  erster 2020-06-03T10:00:00Z  letzter 2020-06-03T23:00:00Z  regulaer 6/7 (vor 4, nach 4)  erster regulaerer Balken NICHT auf der Eroeffnung: 2020-06-03T14:00:00Z
+      Beispiel: {"c":186.2,"h":186.2,"l":186.2,"n":1,"o":186.2,"t":"2020-06-03T10:00:00Z","v":500,"vw":186.2}
+      Yahoo 60m: kein Vergleich (Datei hat den Tag nicht)
+BRK.B 2024-06-05 1Min  HTTP 200 (Grenze 200/min)  Balken 427  erster 2024-06-05T11:21:00Z  letzter 2024-06-05T23:56:00Z  regulaer 389/390 (vor 14, nach 24)
+      Beispiel: {"c":409.6,"h":409.6,"l":409.6,"n":14,"o":409.6,"t":"2024-06-05T11:21:00Z","v":622,"vw":409.6}
+      Yahoo 1m: kein Vergleich (Datei hat den Tag nicht)
+BRK.B 2024-06-05 5Min  HTTP 200 (Grenze 200/min)  Balken 103  erster 2024-06-05T11:20:00Z  letzter 2024-06-05T23:55:00Z  regulaer 78/78 (vor 10, nach 15)
+      Beispiel: {"c":409.6,"h":409.6,"l":409.6,"n":17,"o":409.6,"t":"2024-06-05T11:20:00Z","v":986,"vw":409.6}
+      Yahoo 5m: kein Vergleich (Datei hat den Tag nicht)
+BRK.B 2024-06-05 1Hour HTTP 200 (Grenze 200/min)  Balken 12  erster 2024-06-05T11:00:00Z  letzter 2024-06-05T23:00:00Z  regulaer 6/7 (vor 3, nach 3)  erster regulaerer Balken NICHT auf der Eroeffnung: 2024-06-05T14:00:00Z
+      Beispiel: {"c":409.7,"h":409.7,"l":409.6,"n":23,"o":409.6,"t":"2024-06-05T11:00:00Z","v":1226,"vw":409.618431}
+      Yahoo 60m: 7 Kerzen am Tag, gemeinsam 0 - KEIN gemeinsamer Stempel (anderes Gitter?)
+BRK.B 2026-08-27 1Min  HTTP 200 (Grenze 200/min)  Balken 520  erster 2026-08-27T08:00:00Z  letzter 2026-08-27T23:54:00Z  regulaer 390/390 (vor 91, nach 39)
+      Beispiel: {"c":503.54,"h":503.74,"l":503.54,"n":80,"o":503.74,"t":"2026-08-27T08:00:00Z","v":345,"vw":503.659328}
+      Yahoo 1m: 384 Kerzen am Tag, gemeinsam 384, Schluss median 0.0000 % / max 0.052 %, ueber 0,1 %: 0, Umsatz-Faktor median 1.004 (n 384)
+BRK.B 2026-08-27 5Min  HTTP 200 (Grenze 200/min)  Balken 154  erster 2026-08-27T08:00:00Z  letzter 2026-08-27T23:50:00Z  regulaer 78/78 (vor 47, nach 29)
+      Beispiel: {"c":503.07,"h":503.75,"l":503.07,"n":259,"o":503.74,"t":"2026-08-27T08:00:00Z","v":2754,"vw":503.409031}
+      Yahoo 5m: 72 Kerzen am Tag, gemeinsam 72, Schluss median 0.0000 % / max 0.052 %, ueber 0,1 %: 0, Umsatz-Faktor median 1.005 (n 72)
+BRK.B 2026-08-27 1Hour HTTP 200 (Grenze 200/min)  Balken 16  erster 2026-08-27T08:00:00Z  letzter 2026-08-27T23:00:00Z  regulaer 6/7 (vor 6, nach 4)  erster regulaerer Balken NICHT auf der Eroeffnung: 2026-08-27T14:00:00Z
+      Beispiel: {"c":501.66,"h":503.75,"l":501.6,"n":380,"o":503.74,"t":"2026-08-27T08:00:00Z","v":5217,"vw":502.673837}
+      Yahoo 60m: 7 Kerzen am Tag, gemeinsam 0 - KEIN gemeinsamer Stempel (anderes Gitter?)
+
+BRK.B (Punkt): {"status":200,"n":520}   BRK-B (Strich): {"status":400,"n":0,"rumpf":"{\"message\":\"invalid symbol: BRK-B\"} "}
+
+=== Urteil der Probe ===
+{
+ "bestanden": false,
+ "tarifabweisungen": 0,
+ "netzfehler": 0,
+ "falschesJahr": 0,
+ "mitBalken": 54,
+ "leer": 6,
+ "vergleichbareAbrufe2026": 10,
+ "schlussOk": false,
+ "umsatzOk": true,
+ "oeffnungAlsStempel": true,
+ "tiefe2016bis2024": true,
+ "armVorNotierungLeer": true,
+ "balkenzahl1Min": true,
+ "vorNachboerseKommtMit": true,
+ "gitter60m": "2016-06-01T14:00:00Z"
+}
+NICHT BESTANDEN. Kein Nachholer; die 1m-Tiefe bleibt bei den Yahoo-Kerzen (Entscheid 2, zweiter Halbsatz).
