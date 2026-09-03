@@ -114,6 +114,37 @@ function differenz(rowsC, rowsA, schluessel) {
            duenn: !(mC.length >= 10 && mA.length >= 10) };
 }
 
+/* ---------- Was dieser Vergleich ueberhaupt aufloesen kann ----------
+ * wiki/fehlerformen.md, "Gegenpruefung rettete ein Studien-Nein": die kleinste erkennbare
+ * Wirkung gehoert VOR das Urteil, nicht dahinter. Sonst liest sich ein "nicht entscheidbar"
+ * wie ein "kein Unterschied", obwohl das Werkzeug den Unterschied gar nicht haette sehen
+ * koennen.
+ *
+ * Gerechnet wird auf RAHMEN A allein, also ohne eine einzige Zahl des Rahmens C: nC
+ * Symbole spielen die Verschwundenen, der Rest die Ueberlebenden. Erst die Nullkontrolle
+ * (beide Haelften sind derselbe Rahmen - das Band MUSS die Null enthalten), dann wird der
+ * einen Haelfte ein Aufschlag eingespritzt und der kleinste gesucht, bei dem das Band die
+ * Null gerade ausschliesst. Das ist die Aufloesung dieses Vergleichs bei DIESEN
+ * Stichprobengroessen. */
+function aufloesung(rowsA, nC, schluessel) {
+  var syms = Object.keys(rowsA.reduce(function (m, r) { m[r.sym] = 1; return m; }, {})).sort();
+  if (syms.length < 30 || nC < 10) return null;
+  var g = St.mischen(syms, St.wuerfel(St.saatAus('mde|' + schluessel, SAAT)));
+  var alsC = {};
+  g.slice(0, Math.min(nC, syms.length - 15)).forEach(function (s) { alsC[s] = 1; });
+  var rC = rowsA.filter(function (r) { return alsC[r.sym]; });
+  var rA = rowsA.filter(function (r) { return !alsC[r.sym]; });
+  var d0 = differenz(rC, rA, 'mde0|' + schluessel);
+  if (!d0 || d0.duenn) return null;
+  var mde = null;
+  for (var delta = 0.005; delta <= 0.40001; delta += 0.005) {
+    var rCplus = rC.map(function (r) { return { sym: r.sym, spanne: r.spanne + delta }; });
+    var d = differenz(rCplus, rA, 'mde|' + schluessel);
+    if (d && d.band[0] > 0) { mde = delta; break; }
+  }
+  return { nullPunkt: d0.punkt, nullBand: d0.band, mde: mde, nC: d0.nC, nA: d0.nA };
+}
+
 /** Schliesst das Band die Null aus? Nur dann traegt die Entscheidungsregel. */
 function bandUrteil(d) {
   if (!d) return 'keine Daten';
@@ -299,6 +330,39 @@ function main() {
   s('| | | ' + (paareP.length >= 20 && faktor >= 2 ? '**bestanden**'
       : paareP.length < 20 ? '**zu wenige Paare — die Kontrolle trägt nicht**'
       : '**verfehlt — alle Zahlen tragen den Vermerk**') + ' |');
+  s('');
+
+  /* --- Aufloesung: was der Vergleich sehen koennte, BEVOR gesagt wird, was er sah --- */
+  s('### 1.5 Was dieser Vergleich auflösen kann — vor dem Urteil, nicht danach');
+  s('');
+  s('Gerechnet **allein auf Rahmen A**, ohne eine Zahl des Rahmens C: `nC` Symbole spielen');
+  s('die Verschwundenen, der Rest die Überlebenden. Die **Nullkontrolle** muss die Null im');
+  s('Band haben (beide Hälften sind derselbe Rahmen). Die **kleinste erkennbare Wirkung**');
+  s('ist der kleinste eingespritzte Aufschlag, bei dem das Band die Null gerade ausschließt.');
+  s('');
+  s('| Klasse | Symbole C / A | Nullkontrolle | Band der Nullkontrolle | **kleinste erkennbare Wirkung** |');
+  s('|---|---|---|---|---|');
+  var aufl = {};
+  PRIMAER.forEach(function (k) {
+    var rA = hauptA.filter(function (r) { return r.klasse === k && r.fenster === 'mitte' && JAHRE_C.indexOf(r.jahr) >= 0 && gueltig(r); });
+    var rC = hauptC.filter(function (r) { return r.klasse === k && r.fenster === 'mitte' && gueltig(r); });
+    var nC = Object.keys(rC.reduce(function (m, r) { m[r.sym] = 1; return m; }, {})).length;
+    var a = aufloesung(rA, nC, k);
+    aufl[k] = a;
+    if (!a) { s('| ' + k + ' | ' + nC + ' / – | zu dünn | – | – |'); return; }
+    s('| **' + k + '** | ' + a.nC + ' / ' + a.nA + ' | ' + (a.nullPunkt >= 0 ? '+' : '') + fx(a.nullPunkt) +
+      ' | [' + (a.nullBand[0] >= 0 ? '+' : '') + fx(a.nullBand[0]) + ', ' +
+      (a.nullBand[1] >= 0 ? '+' : '') + fx(a.nullBand[1]) + ']' +
+      (a.nullBand[0] <= 0 && a.nullBand[1] >= 0 ? ' — Null drin ✓' : ' — **Null ausgeschlossen, Werkzeug verdächtig**') +
+      ' | **' + (a.mde == null ? '> 0,40' : fx(a.mde) + ' Pp') + '** |');
+  });
+  s('');
+  s('> **Wie das zu lesen ist:** ein „nicht entscheidbar" unten heißt **nicht** „kein');
+  s('> Unterschied". Es heißt: der Unterschied ist kleiner als die Zahl in der letzten');
+  s('> Spalte — oder es gibt ihn nicht, und der Vergleich kann die beiden Fälle nicht');
+  s('> trennen. *(Diese Zeile ist nach dem Commit von §9b entstanden und steht deshalb');
+  s('> nicht dort; sie ist gerechnet, bevor die erste Zahl des Rahmens C vorlag, und ändert');
+  s('> keine registrierte Regel — sie sagt nur, was die registrierte Regel sehen kann.)*');
   s('');
 
   /* ======== 2. Der Lauf in Zahlen ======== */
@@ -558,7 +622,7 @@ function main() {
   if (!ECHT) process.stdout.write('  ACHTUNG: Trockenlauf - die Quelle ist nicht das Archiv.\n');
 }
 
-module.exports = { lesenC: lesenC, differenz: differenz, symbolMediane: symbolMediane,
+module.exports = { lesenC: lesenC, differenz: differenz, symbolMediane: symbolMediane, aufloesung: aufloesung,
                    bodenspanne: bodenspanne, gewichteterMedian: gewichteterMedian, SOLL_A: SOLL_A };
 
 if (require.main === module) { main(); }
