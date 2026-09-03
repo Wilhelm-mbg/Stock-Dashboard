@@ -8,7 +8,11 @@
  *
  * Aufruf aus der Repo-Wurzel (ein Fenster erscheint fuer eine Weile - das ist normal):
  *
- *   .\node_modules\.bin\electron.cmd tools\ui-aufnahmen.js <Zielordner>
+ *   .\node_modules\.bin\electron.cmd tools\ui-aufnahmen.js <Zielordner> [--kunstdaten] [--breite 1024]
+ *
+ * --breite setzt die Fensterbreite (Vorgabe 1280). Sie ist seit Stufe 4 ein eigener
+ * Schalter, weil die Kopfzeile bei 1280 UND bei 1024 px einzeilig bleiben muss -
+ * eine Aussage, die man nur mit zwei Aufnahmen belegen kann.
  *
  * Der Zielordner wird angelegt. Er gehoert NICHT ins Repo - die Aufnahmen sind
  * Beleg fuer eine Uebergabe, kein Quellcode. Pro Reiter/Pille entsteht je
@@ -49,7 +53,18 @@ if (KUNSTDATEN) {
    * depot.json zu legen genuegt nicht: der dort vorgesehene Uebernahmeweg laeuft
    * beim Start ins Leere (siehe Uebergabe oberflaeche-stufe2, Befund 2). */
   fs.writeFileSync(path.join(sd, 'kostenmessung.json'), JSON.stringify(KD.kostenmessung(jetzt)));
+  /* Das Kunst-ARCHIV liegt nicht im Store, sondern im Datenordner - dort sucht
+   * kerzenquelle.js. In der isolierten Instanz ist das TESTROOT/downloads, also
+   * ebenfalls unter %TEMP%: der echte Datenordner wird nicht angefasst. Ohne diesen
+   * Bestand zeigt die Archiv-Grafik fuenf leere Balken und belegt nichts. */
+  const dd = path.join(TESTROOT, 'downloads', 'Markt-Dashboard-Daten');
+  KD.archiv(jetzt).forEach((f) => {
+    const ziel = path.join(dd, f.pfad.replace(/\//g, path.sep));
+    fs.mkdirSync(path.dirname(ziel), { recursive: true });
+    fs.writeFileSync(ziel, JSON.stringify(f.inhalt));
+  });
   console.log('Kunstdaten in den Test-Store geschrieben: ' + sd);
+  console.log('Kunst-Archiv in den Test-Datenordner geschrieben: ' + dd);
 }
 /* Ohne diese Schalter pausiert Chromium verdeckte Fenster - eine pausierte Seite
  * liefert leere Aufnahmen. */
@@ -65,7 +80,14 @@ BrowserWindow.prototype.loadFile = function (fp, opts) {
   return origLoadFile.call(this, fp, opts);
 };
 
-const BREITE = 1280;
+/* --breite <px>: die Fensterbreite. Vorgabe bleibt 1280 - jede aeltere Aufnahme ist
+ * damit entstanden, und zwei Saetze mit stillschweigend verschiedener Breite waeren
+ * nicht vergleichbar. */
+const BREITE = (function () {
+  const i = process.argv.indexOf('--breite');
+  const n = i > -1 ? parseInt(process.argv[i + 1], 10) : NaN;
+  return isFinite(n) && n >= 320 && n <= 3840 ? n : 1280;
+})();
 const HOEHE = 820;
 const MAX_SEITEN = 14;  /* Deckel: eine sehr lange Seite soll die Probe nicht sprengen.
                          * 14 reicht fuer den aufgeklappten Maschinenraum. */
@@ -105,6 +127,73 @@ async function textmenge(js, name, sel) {
   return n;
 }
 
+
+/* ---- Steht die Kopfzeile in EINER Zeile? (Oberflaeche Stufe 4, 03.09.2026) ----
+ * Der Simulations-Satz aus Stufe 3 drueckte die vier Knoepfe bei 1280 px in eine
+ * zweite Reihe. Die Marke soll das beheben - und "soll" ist keine Aussage, solange
+ * es niemand misst. Gemessen wird die EIGENSCHAFT, nicht das Aussehen: liegen alle
+ * sieben Teile der Kopfzeile in einem gemeinsamen waagerechten Band, dann ist es
+ * eine Zeile. Ein Vergleich der oberen Kanten allein taete es nicht - die Kopfzeile
+ * richtet an der Schriftgrundlinie aus, und ein h1 sitzt dabei hoeher als ein Knopf.
+ */
+let KOPFZEILE = null;
+async function kopfzeileMessen(js) {
+  KOPFZEILE = await js("(function () {" +
+    "var sel = ['header h1', 'header .simmarke', '#stamp', '#refreshBtn', '#glossarBtn', '#themeBtn', '#settingsBtn'];" +
+    "var teile = sel.map(function (s) {" +
+      "var e = document.querySelector(s);" +
+      "if (!e) return { sel: s, fehlt: true };" +
+      "var r = e.getBoundingClientRect();" +
+      "return { sel: s, oben: Math.round(r.top), unten: Math.round(r.bottom), links: Math.round(r.left), breite: Math.round(r.width) };" +
+    "});" +
+    "var da = teile.filter(function (t) { return !t.fehlt; });" +
+    "var kopf = document.querySelector('header').getBoundingClientRect();" +
+    "return { fensterBreite: window.innerWidth," +
+      "kopfHoehe: Math.round(kopf.height)," +
+      "einzeilig: Math.max.apply(null, da.map(function (t) { return t.oben; }))" +
+        "< Math.min.apply(null, da.map(function (t) { return t.unten; }))," +
+      "fehlend: teile.filter(function (t) { return t.fehlt; }).map(function (t) { return t.sel; })," +
+      "teile: teile }; })()");
+  console.log('Kopfzeile bei ' + KOPFZEILE.fensterBreite + ' px: ' +
+    (KOPFZEILE.einzeilig ? 'EINE Zeile' : 'MEHRZEILIG') + ', ' + KOPFZEILE.kopfHoehe + ' px hoch' +
+    (KOPFZEILE.fehlend.length ? ' - fehlt: ' + KOPFZEILE.fehlend.join(', ') : ''));
+}
+
+/* ---- Der laengste Dauertext-Lauf, GEMESSEN AM LAUFENDEN PANEL ----
+ * Die Sperrklinke in test-v6 (65) Schnitt) liest index.html. Sie kann deshalb nur
+ * finden, was IM MARKUP steht - ein Absatz, den erst der Renderer schreibt, ist fuer
+ * sie unsichtbar. Genau so ist der Marktlage-Absatz (297 Zeichen, depot.js
+ * renderRegime) durch Stufe 3 gekommen. Diese Messung schliesst die Luecke von der
+ * anderen Seite: sie liest den DOM in genau dem Zustand, den die Aufnahme daneben
+ * zeigt. Sie ist ein BELEG fuer die Uebergabe, keine Sperrklinke - der Ausschnitt
+ * eines Blattknotens ist eine Naeherung, und eine Klinke auf einer Naeherung waere
+ * eine, von der niemand weiss, was sie prueft. */
+const WEISS = ['idKlartext', 'antwortSeite', 'kostenHuerde', 'mfErklaerung', 'wendeUrteil'];
+const LAEUFE = [];
+async function laeufeMessen(js, name, sel) {
+  const f = await js("(function () {" +
+    "var weiss = " + JSON.stringify(WEISS) + ";" +
+    "var wurzel = document.querySelector('" + sel + "'); if (!wurzel) return [];" +
+    "var BLOCK = 'div,p,h1,h2,h3,h4,h5,li,ul,ol,section,details,summary,label,table,thead,tbody,tr,td,th,nav,header,footer,button,select,option,textarea,svg,dl,dt,dd,form';" +
+    "var out = [], alle = wurzel.querySelectorAll('*');" +
+    "for (var i = 0; i < alle.length; i++) {" +
+      "var e = alle[i];" +
+      "if (e.querySelector(BLOCK)) continue;" +
+      "if (e.closest('details:not([data-klappe])') || e.closest('[hidden]')) continue;" +
+      "if (e.closest('button, select, summary, label, svg')) continue;" +
+      "if (!e.offsetParent) continue;" +
+      "var p = e, drin = false;" +
+      "while (p) { if (p.id && weiss.indexOf(p.id) >= 0) { drin = true; break; } p = p.parentElement; }" +
+      "if (drin) continue;" +
+      "var t = (e.innerText || '').replace(/\\s+/g, ' ').trim();" +
+      "if (t.length > 240) out.push({ ort: e.id ? '#' + e.id : (e.className ? '.' + String(e.className).split(' ')[0] : e.tagName), len: t.length, txt: t.slice(0, 100) });" +
+    "}" +
+    "return out; })()");
+  LAEUFE.push({ seite: name, sel: sel, funde: f });
+  if (f.length) console.log('  Dauertext ueber 240: ' + f.map(function (x) { return x.ort + ' (' + x.len + ')'; }).join(', '));
+  return f;
+}
+
 async function lauf(win) {
   const wc = win.webContents;
   const js = (code) => wc.executeJavaScript(code, true);
@@ -127,6 +216,8 @@ async function lauf(win) {
   }
   await schlaf(800);
 
+  await kopfzeileMessen(js);
+
   const tabs = await js("Array.prototype.map.call(document.querySelectorAll('nav.tabs button[data-tab]'), function (b) { return b.getAttribute('data-tab'); })");
   if (!tabs || !tabs.length) throw new Error('keine Reiter gefunden');
   let nr = 0;
@@ -139,6 +230,7 @@ async function lauf(win) {
       nr++;
       console.log('Reiter ' + tab + ':');
       await textmenge(js, tab, '#tab-' + tab);
+      await laeufeMessen(js, tab, '#tab-' + tab);
       dateien += await aufnehmen(win, String(nr).padStart(2, '0') + '-' + tab);
       continue;
     }
@@ -148,6 +240,7 @@ async function lauf(win) {
       nr++;
       console.log('Reiter ' + tab + ' / Pille ' + sub + ':');
       await textmenge(js, tab + '/' + sub, '#sub-' + sub);
+      await laeufeMessen(js, tab + '/' + sub, '#sub-' + sub);
       dateien += await aufnehmen(win, String(nr).padStart(2, '0') + '-' + tab + '-' + sub);
       /* Der Maschinenraum besteht aus geschlossenen Klappen - zugeklappt zeigt die
        * Aufnahme nur eine Liste von Ueberschriften und belegt gar nichts. Deshalb
@@ -163,6 +256,7 @@ async function lauf(win) {
         nr++;
         console.log('Reiter ' + tab + ' / Pille ' + sub + ' (alle ' + klappen + ' Klappen offen):');
         await textmenge(js, tab + '/' + sub + ' (Klappen offen)', '#sub-' + sub);
+        await laeufeMessen(js, tab + '/' + sub + ' (Klappen offen)', '#sub-' + sub);
         dateien += await aufnehmen(win, String(nr).padStart(2, '0') + '-' + tab + '-' + sub + '-offen');
         await js("(function () {" +
           "var d = document.querySelectorAll('#sub-" + sub + " details[data-klappe]');" +
@@ -189,7 +283,8 @@ app.on('browser-window-created', (ev, win) => {
       /* Die Textmengen neben die Bilder legen - sie gehoeren zur selben Aufnahme
        * und sollen ohne die Sitzung nachlesbar sein, in der sie entstanden sind. */
       fs.writeFileSync(path.join(ZIEL, 'textmenge.json'),
-        JSON.stringify({ stand: new Date().toISOString(), kunstdaten: KUNSTDATEN, panels: TEXTMENGE }, null, 2));
+        JSON.stringify({ stand: new Date().toISOString(), kunstdaten: KUNSTDATEN, breite: BREITE,
+                         kopfzeile: KOPFZEILE, panels: TEXTMENGE, dauertext: LAEUFE }, null, 2));
       console.log('UI-Aufnahmen: ' + erg.seiten + ' Seiten, ' + erg.dateien + ' Dateien in ' + ZIEL);
       console.log('Textmenge: ' + TEXTMENGE.length + ' Panels, Summe ' +
         TEXTMENGE.reduce((s, x) => s + Math.max(0, x.zeichen), 0) + ' Zeichen (textmenge.json)');

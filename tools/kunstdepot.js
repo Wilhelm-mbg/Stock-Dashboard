@@ -200,7 +200,106 @@ function kostenmessung(jetzt) {
   };
 }
 
-module.exports = { bauen: bauen, kostenmessung: kostenmessung };
+/** ================= EIN KUNST-ARCHIV FUER DIE ARCHIV-GRAFIK =================
+ *
+ * Die Grafik in Werkzeuge -> Betrieb (Stufe 4) zeigt je Aufloesung eine Karte der
+ * letzten 60 Handelstage. In einer frischen Testinstanz ist jedes Archiv leer, und
+ * fuenf leere Balken belegen von der Gestaltung genau nichts - man saehe nicht, wie
+ * ein Fuellstand aussieht, und schon gar nicht, wie eine LUECKE aussieht.
+ *
+ * Deshalb hier ein winziger Bestand: sechs Werte, ein paar Tage je Aufloesung, und
+ * in jeder Aufloesung eine andere Lage:
+ *   1m   sechs Tage am rechten Rand         - so sieht das kurze Yahoo-Fenster aus
+ *   5m   40 Tage MIT einem Loch von 4 Tagen - die Kerbe, um die es geht
+ *   15m  25 Tage, die letzten fuenf nur bei zwei von sechs Werten - "lueckenhaft"
+ *   60m  60 Tage vollstaendig                - so sieht "gut" aus
+ *   1d   60 Tage mit zwei einzelnen Loechern - vereinzelte Ausfaelle
+ *
+ * DIE ZAHLEN SIND ERFUNDEN und heissen darum so. Sie werden in eine ISOLIERTE
+ * Instanz geschrieben (eigenes downloads unter %TEMP%), nie in den Datenordner -
+ * dieselbe Auflage wie beim Kunstdepot oben. Die Symbole tragen den Vorsatz KUNST,
+ * damit auch eine versehentlich liegengebliebene Datei ihre Herkunft nennt
+ * (wiki/fehlerformen.md: "Ein Trockenlauf, der aussieht wie ein Befund").
+ *
+ * Rueckgabe ist eine LISTE VON DATEIEN, kein Schreibvorgang: wohin sie gehoeren,
+ * weiss nur der Aufrufer (tools/ui-aufnahmen.js), und diese Datei soll keinen Pfad
+ * kennen, den sie nicht gesetzt hat.
+ */
+var Boerse = require('../boerse.js');
+var KUNST_SYMBOLE = ['KUNSTA', 'KUNSTB', 'KUNSTC', 'KUNSTD', 'KUNSTE', 'KUNSTF'];
+/* Aufloesung -> { ordner, barMin, tage, luecke, nurZweiAbTag } */
+var KUNST_LAGE = {
+  '1m':  { ordner: 'archiv1m',  barMin: 1,  tage: 6 },
+  '5m':  { ordner: 'archiv5m',  barMin: 5,  tage: 40, luecke: [15, 18] },
+  '15m': { ordner: 'archiv15m', barMin: 15, tage: 25, halbAb: 5 },
+  '60m': { ordner: 'archiv60m', barMin: 60, tage: 60 },
+  '1d':  { ordner: 'archiv1d',  barMin: 1440, tage: 60, luecke: [9, 9], luecke2: [31, 31] }
+};
+
+/** Die letzten n Handelstage als UTC-Tagesstempel, juengster zuerst. */
+function handelstage(jetzt, n) {
+  var aus = [], ms = jetzt;
+  for (var i = 0; i < n * 3 && aus.length < n; i++, ms -= 86400000) {
+    if (Boerse.istHandelstag(ms)) aus.push(new Date(ms).setUTCHours(0, 0, 0, 0));
+  }
+  return aus;
+}
+
+/** Ein Kunst-Archiv: Universum, Kursdateien und stand.json je Aufloesung.
+ *  Rueckgabe: [{ pfad: 'archiv5m/bars_5m_KUNSTA.json', inhalt: {...} }, ...] -
+ *  Pfade relativ zum Datenordner, mit Schraegstrich. */
+function archiv(jetzt) {
+  var now = jetzt || Date.now();
+  var aus = [];
+  /* Ohne Punkt-in-Zeit-Universum meldet der Sammelplan ein HINDERNIS statt eines
+   * Rueckstands - die Grafik zeigte dann fuenfmal "geht nicht" und nie einen
+   * Fuellstand. Es gehoert also dazu. */
+  aus.push({
+    pfad: 'massive/universum-2026-09-01.json',
+    inhalt: { stand: '2026-09-01', herkunft: 'Kunstdaten fuer eine Oberflaechen-Aufnahme - keine Messung',
+              werte: KUNST_SYMBOLE.map(function (s, i) { return { sym: s, umsatzMio: 900 - i * 40 }; }) }
+  });
+  Object.keys(KUNST_LAGE).forEach(function (iv) {
+    var L = KUNST_LAGE[iv];
+    var tage = handelstage(now, L.tage);
+    var stand = { fertig: {}, ohne: {} };
+    KUNST_SYMBOLE.forEach(function (sym, nr) {
+      var serie = [];
+      tage.slice().reverse().forEach(function (t0, idx) {
+        var alter = L.tage - 1 - idx;                     // 0 = juengster Tag
+        if (L.luecke && alter >= L.luecke[0] && alter <= L.luecke[1]) return;
+        if (L.luecke2 && alter >= L.luecke2[0] && alter <= L.luecke2[1]) return;
+        /* "lueckenhaft" heisst: den Tag hat nur ein TEIL der Reihen. Genau dafuer
+         * fallen hier vier von sechs Werten fuer die juengsten Tage aus. */
+        if (L.halbAb != null && alter < L.halbAb && nr >= 2) return;
+        /* Der Abstand der drei Kerzen darf den Tag nicht verlassen - bei Tageskerzen
+         * (barMin 1440) haette k * barMin die Reihe ueber 85 statt 60 Tage gestreckt
+         * und die Grafik mit erfundenen Wochenendtagen gefuellt. */
+        var schritt = Math.min(L.barMin, 60);
+        for (var k = 0; k < 3; k++) {
+          var t = t0 + (14 * 60 + 30 + k * schritt) * 60000;
+          var kurs = Math.round((100 + nr * 7 + idx * 0.4 + k * 0.15) * 100) / 100;
+          serie.push([t, kurs, 12000 + k * 300, kurs + 0.3, kurs - 0.3, kurs - 0.1]);
+        }
+      });
+      if (!serie.length) return;
+      aus.push({
+        pfad: L.ordner + '/bars_' + iv + '_' + sym + '.json',
+        inhalt: { sym: sym, quelle: 'Kunstdaten fuer eine Oberflaechen-Aufnahme - keine Messung',
+                  format: '[zeit, schluss, umsatz, hoch, tief, eroeffnung]',
+                  stand: new Date(now).toISOString(), series: serie }
+      });
+      stand.fertig[sym] = { kerzen: serie.length, ohneEroeffnung: 0,
+        am: new Date(now).toISOString().slice(0, 10),
+        bisTag: new Date(serie[serie.length - 1][0]).toISOString().slice(0, 10) };
+    });
+    aus.push({ pfad: L.ordner + '/stand.json', inhalt: stand });
+  });
+  return aus;
+}
+
+module.exports = { bauen: bauen, kostenmessung: kostenmessung, archiv: archiv,
+                   KUNST_SYMBOLE: KUNST_SYMBOLE };
 
 if (require.main === module) {
   process.stdout.write(JSON.stringify(bauen(Date.now()), null, 2) + '\n');
