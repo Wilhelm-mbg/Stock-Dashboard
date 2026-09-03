@@ -12959,14 +12959,28 @@ console.log('\n65) Schnitt: Dauertext hinter den i-Knopf, Hinweise einmal statt 
   /* Jedes der neun Panels traegt mindestens einen Erklaerknopf - sonst waere ein
    * Panel geschnitten, ohne den Text irgendwo erreichbar zu lassen. */
   var ohneKnopf = [];
+  /* Das Panel endet an seiner Endmarke, sonst am naechsten Panel, sonst am Reiterende.
+   * Ein fester Zuschlag von 60.000 Zeichen (erste Fassung) lief in die Nachbarpanels
+   * hinein: der Eingriff "dem Explorer den i-Knopf nehmen" blieb gruen, weil der
+   * Ausschnitt den Knopf des Schein-Finders mitlas. Gefunden hat das die Gegenprobe. */
+  /* Nur die Panels MIT Pille zaehlen als Nachbar: fuenf weitere #sub-Behaelter sind
+   * Alt-Kennungen INNERHALB von einstellungen und betrieb (sub-strategien,
+   * sub-mittelfrist, sub-auswertung, sub-stratchart, sub-regelbuch, sub-archiv).
+   * Sie tragen kein class="sub" - genau daran werden sie unterschieden. */
+  var GESCHW = /class="sub[ "]/g, geschw = [], mg;
+  while ((mg = GESCHW.exec(html))) geschw.push(mg.index);
   (html.match(/data-sub="([a-z]+)"/g) || []).map(function (m2) { return m2.slice(10, -1); })
     .filter(function (s2, i, a) { return a.indexOf(s2) === i; })
     .forEach(function (sub) {
       var a2 = html.indexOf('id="sub-' + sub + '"');
       if (a2 < 0) return;
-      var e2 = html.indexOf('<!-- /sub-' + sub, a2);
-      var stueck = html.slice(a2, e2 > a2 ? e2 : a2 + 60000);
-      if (stueck.indexOf('data-info="') < 0) ohneKnopf.push(sub);
+      var kandidaten = [html.indexOf('<!-- /sub-' + sub, a2)]
+        .concat(geschw.filter(function (p) { return p > a2; }))
+        .concat([html.indexOf('<!-- /tab-', a2)])
+        .filter(function (x) { return x > a2; });
+      var e2 = Math.min.apply(null, kandidaten);
+      var stueck = html.slice(a2, e2);
+      if (stueck.indexOf('data-info="') < 0) ohneKnopf.push(sub + ' [' + (e2 - a2) + ' Zeichen]');
     });
   ok(ohneKnopf.length === 0, 'Schnitt: jedes Panel hat einen Erklaerknopf', ohneKnopf.join(', ') || 'alle');
 
