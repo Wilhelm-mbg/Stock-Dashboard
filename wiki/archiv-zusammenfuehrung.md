@@ -95,12 +95,15 @@ je Schritt). Nichts wird gelöscht, bevor es nicht an anderer Stelle nachweislic
 
 ## 6. Entscheidungen, die Wilhelm gehören
 
-1. **Die laufende Kerze:** Heute hält der Store sie absichtlich für den Live-Scan. Im Zielbild hält
-   das Archiv nur fertige Kerzen, der Scan hängt seinen frischen Abruf im Speicher an. Das ändert
-   den Handelspfad um eine Zeile — Einzelentscheid vor Z2-Schritt 6.
-2. **Vereinigungsregel je Feld** (kommt aus Z0): Datei-Wert oder Store-Wert bei Abweichung?
-3. **Was mit den Capital-Spannen geschieht** (heute in [5] von `capital.js`, nie gespeichert): eigenes
-   Feld oder verwerfen.
+**Entschieden 03.09.2026 (Formular nach Z0):**
+
+1. **Grundregel angenommen:** Datei gewinnt bei gemeinsamem Stempel in schluss/hoch/tief/umsatz; laufende Kerze und Quote-Kerzen nach Sitzungsschluss (Kalender, nicht „20:00") werden nicht übernommen; Quelle je Kerze aus dem Vergleich (`quellen`-Bereiche, verdichtet).
+2. **CFD-markierte Store-Kerzen: verwerfen und neu holen.** Die 1m-Tiefe (2,9 Mio cap-markierte Kerzen, Herkunft vor dem 18.08. nicht feststellbar) kommt nicht ins Archiv. Ersatz: **Alpaca-SIP-Minutenbalken** (`/v2/stocks/bars`, `timeframe=1Min`, `feed=sip`, gratis seit 2016 wie die Quotes) — Probe Schritt 0 in Z1; fällt sie durch, bleibt die 1m-Tiefe bei den 23 % Yahoo-Kerzen, und das steht dann hier.
+3. **Capital-Spannen: eigenes Hüllenfeld `spannen`** (Tagesmediane, Form wie `archiv.js spannenJeTag()`).
+4. **Krypto: eigener Ordner `archiv<iv>/krypto/`**, gleiches Format, Quelle `yahoo`.
+5. **Offen bleibt der Einzelentscheid zur laufenden Kerze im Live-Scan** (Z2, Schritt 6): das Archiv hält nur fertige Kerzen, der Scan hängt seinen Abruf im Speicher an.
+
+**Vorbedingung vor Z1: Rasterfilter-Fix (R5) ist beauftragt** — sonst löscht der nächste Sammler-Lauf die übernommenen Kerzen wieder.
 
 ## 7. Vermessung (Z0, 03.09.2026)
 
