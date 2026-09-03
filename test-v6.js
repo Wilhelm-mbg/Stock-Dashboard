@@ -6164,8 +6164,14 @@ console.log('\n41) Zustaende: was die App sagt, wenn etwas fehlt oder klemmt');
    * deshalb in dieselbe Liste echter Ortsnamen wie Reiter und Pillen - sonst waere
    * jeder Verweis auf den Maschinenraum ein Fehlalarm, und die Klinke wuerde
    * abgeschaltet statt mitgezogen. */
-  var klappen = (html.match(/<summary>([^<]+)<\/summary>/g) || [])
-    .map(function (z) { return z.slice(9, -10).replace(/&amp;/g, '&').trim(); });
+  /* 03.09.2026 (Stufe 4b, Fund): Seit Stufe 2 traegt jedes <summary> eine
+   * Statuszeile (span class="klappe-stand"). Das alte Muster brach daran ab, weil es
+   * bis zum Ende-Tag las - die Liste der Klappen-Titel war seither LEER, und ein
+   * Wegweiser auf eine Klappe waere still durchgerutscht. Gelesen wird jetzt der
+   * Titel bis zum ersten Element dahinter. */
+  var klappen = (html.match(/<summary>([^<]*)</g) || [])
+    .map(function (z) { return z.slice(9, -1).replace(/&amp;/g, '&').trim(); })
+    .filter(function (z) { return z.length > 1; });
   var echt = reiter.concat(pillen).concat(klappen);
   var quellen = ['index.html', 'depot.js', 'renderer.js', 'strategien.js', 'mfdepot.js',
                  'driftui.js', 'explorer.js', 'app-shell.js', 'scoreboard.js', 'mittelfrist.js',
@@ -6304,16 +6310,23 @@ console.log('\n41) Zustaende: was die App sagt, wenn etwas fehlt oder klemmt');
   ok(rpPillen === 'data-sub="regeln" data-sub="einstellungen"',
      'Regeln hat genau die Pillen Strategien / Einstellungen', rpPillen);
   function pos9(m) { return html.indexOf(m); }
+  /* 03.09.2026 (Stufe 4b): Aus zwei Abschnitten wurde einer - die Mittelfrist-Analyse
+   * liegt im Maschinenraum. Was Einstellungen haelt, ist der Intraday-Abschnitt, und
+   * er beginnt hinter dem Panel-Anfang: die Reihenfolge bleibt geprueft, sie hat nur
+   * ein Glied weniger. */
   ok(pos9('id="sub-einstellungen"') < pos9('id="sub-strategien"') &&
-     pos9('id="sub-strategien"') < pos9('id="sub-mittelfrist"') &&
-     pos9('id="sub-mittelfrist"') < pos9('<!-- /sub-einstellungen -->'),
-     'Einstellungen buendelt Intraday-Karte und Mittelfrist-Steuerung');
+     pos9('id="sub-strategien"') < pos9('<!-- /sub-einstellungen -->') &&
+     pos9('<!-- /sub-einstellungen -->') < pos9('id="sub-mittelfrist"'),
+     'Einstellungen haelt die Intraday-Karte; die Mittelfrist-Analyse steht dahinter im Betrieb');
   /* Und der Autopilot ist dort NICHT mehr - sonst waere er zweimal da, einmal
-   * sichtbar und einmal vergessen. */
+   * sichtbar und einmal vergessen. Seit Stufe 4b gilt dasselbe fuer die drei
+   * Steuer-Knoepfe der Buecher: sie loesen Orders aus und gehoeren nicht auf den
+   * Alltagsweg. */
   var einst9 = html.slice(pos9('id="sub-einstellungen"'), pos9('<!-- /sub-einstellungen -->'));
   ok(einst9.indexOf('id="sub-auswertung"') === -1 && einst9.indexOf('id="sigMonitor"') === -1 &&
-     einst9.indexOf('id="kostenRundeBtn"') === -1,
-     'Autopilot, Signal-Monitor und Kostenrunde sind aus den Einstellungen heraus');
+     einst9.indexOf('id="kostenRundeBtn"') === -1 && einst9.indexOf('id="mfdTaktBtn"') === -1 &&
+     einst9.indexOf('id="mfdRebalanceBtn"') === -1 && einst9.indexOf('id="mfdDriftBtn"') === -1,
+     'Autopilot, Signal-Monitor, Kostenrunde und die drei Buch-Steuerknoepfe sind aus den Einstellungen heraus');
   /* 01.09.2026 (B9): Reihenfolge gedreht - wer den Maschinenraum oeffnet, erwartet
    * Chart und Backtest beieinander; das Regelbuch (Bilanz) steht dazwischen. Die
    * geschuetzte Eigenschaft bleibt: alle drei Bereiche liegen zusammen, jetzt im
@@ -8224,11 +8237,14 @@ console.log('\n44) Oberflaeche nach Themen sortiert (Felix, Issue #68)');
      'Die doppelte Einstellungs-Pille ist samt Verdrahtung entfernt, nicht nur versteckt');
   ok(/id="settingsBtn"/.test(html) && html.indexOf('id="settingsBtn"') < html.indexOf('<nav class="tabs"'),
      'Die Einstellungen sind von jedem Bildschirm aus erreichbar: der Knopf steht ueber der Reiterleiste (Felix, #68)');
-  ok(/id="sub-strategien"/.test(regeln) && /id="sub-mittelfrist"/.test(regeln),
-     'Regeln haelt, was eine Regel einstellt: Intraday-Schalter und Mittelfrist');
+  /* Stufe 4b (03.09.2026): Die Mittelfrist-Analyse ist mit in den Maschinenraum
+   * gezogen (Wilhelms Entscheid). Was Regeln haelt, ist damit der Intraday-Schalter -
+   * und #sub-mittelfrist steht auf der anderen Seite derselben Zusicherung. */
+  ok(/id="sub-strategien"/.test(regeln) && !/id="sub-mittelfrist"/.test(regeln),
+     'Regeln haelt, was eine Regel einstellt: den Intraday-Schalter - die Mittelfrist-Analyse nicht mehr');
   ok(/id="sub-auswertung"/.test(betrieb) && /id="sub-regelbuch"/.test(betrieb) &&
-     /id="sub-stratchart"/.test(betrieb),
-     'Der Maschinenraum haelt Autopilot, Regelbuch und Chart');
+     /id="sub-stratchart"/.test(betrieb) && /id="sub-mittelfrist"/.test(betrieb),
+     'Der Maschinenraum haelt Autopilot, Regelbuch, Chart und die Mittelfrist-Analyse');
 
   /* ================= NEU 02.09.2026: die Drei-Bildschirm-Struktur selbst =========
    * Wilhelms Entscheid nach der PM-Abnahme (wiki/oberflaeche.md §3): Heute · Regeln ·
@@ -8247,16 +8263,19 @@ console.log('\n44) Oberflaeche nach Themen sortiert (Felix, Issue #68)');
   ok(leisteN.join(' ') === 'dashboard strategien werkzeuge',
      'Drei Bildschirme: genau die Reiter dashboard/strategien/werkzeuge, in dieser Reihenfolge',
      leisteN.join(' '));
-  /* Die elf Klappen des Maschinenraums, namentlich und in der Reihenfolge, in der
+  /* Die zwoelf Klappen des Maschinenraums, namentlich und in der Reihenfolge, in der
    * sie gebraucht werden. Wer eine ergaenzt oder streicht, benennt sie hier - genau
    * wie bei den Reitern. Ohne die Reihenfolge waere es eine blosse Mengenpruefung,
-   * und eine Klappe koennte still ans Ende rutschen. */
-  var klappenSoll = ['archiv', 'auswertung', 'kosten', 'monitor', 'stratchart', 'regelbuch',
-                     'berichte', 'scoreboard', 'strategieregister', 'strategieeingabe', 'wende'];
+   * und eine Klappe koennte still ans Ende rutschen.
+   * 03.09.2026 (Stufe 4b): 'mittelfrist' kam dazu - nach der Kostenmessung, vor dem
+   * Signal-Monitor. */
+  var klappenSoll = ['archiv', 'auswertung', 'kosten', 'mittelfrist', 'monitor', 'stratchart',
+                     'regelbuch', 'berichte', 'scoreboard', 'strategieregister',
+                     'strategieeingabe', 'wende'];
   var klappenIst = (betrieb.match(/<details class="how" data-klappe="([a-z]+)">/g) || [])
     .map(function (z) { return z.slice(z.indexOf('data-klappe="') + 13, -2); });
   ok(klappenIst.join(' ') === klappenSoll.join(' '),
-     'Betrieb: die elf Klappen stehen vollstaendig und in der vorgesehenen Reihenfolge',
+     'Betrieb: die zwoelf Klappen stehen vollstaendig und in der vorgesehenen Reihenfolge',
      klappenIst.join(' '));
   /* Und sie sind ZU. Eine offene Klappe waere die Textwand von vorher, nur mit einem
    * Dreieck davor - und beim Trendfinder auch noch ein ungefragter Kursabruf. */
@@ -8321,10 +8340,24 @@ console.log('\n44) Oberflaeche nach Themen sortiert (Felix, Issue #68)');
                   'mfdDriftBtn', 'mfdStatus', 'drHalten', 'drAnteil', 'drFenster',
                   'drKosten', 'drLadeBtn', 'drLadeAlleBtn', 'drRechneBtn', 'drStatus',
                   'drErgebnis', 'drHeute'];
-  var nichtInRegeln = mfSteuer.filter(function (id) { return regeln.indexOf('id="' + id + '"') === -1; });
-  ok(/id="sub-mittelfrist"/.test(regeln) && nichtInRegeln.length === 0,
-     'Regeln haelt die ganze Mittelfrist-Steuerung: Parameter, Lade- und Handelsknoepfe',
-     nichtInRegeln.join(' ') || 'alle 23');
+  /* 03.09.2026 (Stufe 4b): Wilhelms Entscheid - die Analyse-Knoepfe und -Felder des
+   * Mittelfrist-Bereichs bringen ihm nichts, herumklicken soll es dort nicht mehr
+   * geben. Der Ort ist deshalb neu, die geschuetzte Eigenschaft dieselbe: die 23
+   * Kennungen liegen VOLLSTAENDIG an EINEM Ort, und dieser Ort ist nicht der
+   * Alltagsweg. Umgeschrieben, nicht abgeschwaecht - aus "im Reiter Regeln, keine in
+   * Vermoegen" wird "in #sub-betrieb in der Klappe mittelfrist, keine in Regeln,
+   * keine in Heute". */
+  var betriebMf = html.slice(html.indexOf('<div class="sub" id="sub-betrieb">'), html.indexOf('<!-- /sub-betrieb -->'));
+  var mfKlappe = betriebMf.slice(betriebMf.indexOf('<details class="how" data-klappe="mittelfrist">'),
+                                 betriebMf.indexOf('<details class="how" data-klappe="monitor">'));
+  var nichtInKlappe = mfSteuer.filter(function (id) { return mfKlappe.indexOf('id="' + id + '"') === -1; });
+  ok(mfKlappe.length > 5000 && nichtInKlappe.length === 0,
+     'Die Klappe mittelfrist haelt die ganze Mittelfrist-Analyse: Parameter, Lade- und Steuerknoepfe',
+     nichtInKlappe.join(' ') || 'alle 23');
+  var nochInRegeln = mfSteuer.filter(function (id) { return regeln.indexOf('id="' + id + '"') > -1; });
+  ok(!/id="sub-mittelfrist"/.test(regeln) && nochInRegeln.length === 0,
+     'Regeln -> Einstellungen haelt keine einzige dieser 23 Kennungen mehr',
+     nochInRegeln.join(' ') || 'keine');
   var schalterInBestand = mfSteuer.filter(function (id) { return bestand.indexOf('id="' + id + '"') > -1; });
   ok(/id="mfdMomentum"/.test(bestand) && /id="mfdDrift"/.test(bestand) &&
      schalterInBestand.length === 0,
@@ -8354,9 +8387,12 @@ console.log('\n44) Oberflaeche nach Themen sortiert (Felix, Issue #68)');
    * heisst nur noch "Einstellungen" - "Risiko &" fiel weg, weil Risiko einer von
    * neun Themen darin war und im Namen zu viel versprach. Geprueft wird weiter
    * WORTGENAU, denn genau der Wortlaut ist es, auf den die Wegweiser zeigen. */
-  ok(/<h2 style="margin-top:0;">Bestand<\/h2>/.test(bestand) && /id="sub-mittelfrist"/.test(regeln) &&
-     /data-sub="einstellungen">Einstellungen</.test(regeln),
-     'Die Orte heissen, was sie zeigen: Bestand (Buecher + Depot), Steuerung unter Einstellungen');
+  /* 03.09.2026 (Stufe 4b): Die Steuerung heisst jetzt Maschinenraum. Wortgenau bleibt
+   * geprueft, WEIL genau dieser Wortlaut in den Wegweisern steht. */
+  ok(/<h2 style="margin-top:0;">Bestand<\/h2>/.test(bestand) && /id="sub-mittelfrist"/.test(betriebMf) &&
+     /data-sub="einstellungen">Einstellungen</.test(regeln) &&
+     /data-sub="betrieb">Betrieb</.test(html),
+     'Die Orte heissen, was sie zeigen: Bestand (Buecher + Depot), Analyse unter Werkzeuge -> Betrieb');
   /* Der Erklaerabsatz mit den Messzahlen wurde nicht geteilt - er beschreibt, WAS die
    * beiden Buecher sind, und bleibt deshalb ungeteilt bei ihnen (Leitplanke 1).
    * 01.09.2026 (B11): "bei ihnen" heisst jetzt: wortgleich im Info-Register
@@ -12549,7 +12585,7 @@ console.log('\n64) Bestand & Kopfzeile (Oberflaeche Stufe 2, 03.09.2026)');
   /* ---- (c) Eine Statuszeile je Betrieb-Klappe, jede mit benannter Quelle ------ */
   var betrieb = html.slice(html.indexOf('<div class="sub" id="sub-betrieb">'), html.indexOf('<!-- /sub-betrieb -->'));
   var klappen = (betrieb.match(/data-klappe="[a-z]+"/g) || []).map(function (z) { return z.slice(13, -1); });
-  ok(klappen.length === 11, 'Der Maschinenraum hat elf Klappen', klappen.join(' '));
+  ok(klappen.length === 12, 'Der Maschinenraum hat zwoelf Klappen', klappen.join(' '));
   klappen.forEach(function (n) {
     var re = new RegExp('<summary>[^<]+<span class="klappe-stand" id="kstand-' + n + '"><\\/span><\\/summary>');
     ok(re.test(betrieb), 'Klappe ' + n + ': genau eine Statuszeile im Titel, hinter dem Titeltext');
@@ -13088,10 +13124,14 @@ console.log('\n65) Schnitt: Dauertext hinter den i-Knopf, Hinweise einmal statt 
   ok(!!kbp && !!gewaehlt && kbp[1] === gewaehlt[1],
      'Live=Messung: das gesperrte Kosten-Feld zeigt genau die Bp, mit denen das Buch wirklich handelt',
      (kbp ? kbp[1] : '?') + ' Bp im Buch, ' + (gewaehlt ? gewaehlt[1] : '?') + ' Bp im Feld');
-  /* Die Kennungen bleiben im Reiter Regeln (K18) - eine Sperre ist kein Ausbau. */
-  var regelnT = html.slice(html.indexOf('id="tab-strategien"'), html.indexOf('<!-- /tab-strategien -->'));
-  ok(MF_FELDER.concat(DR_FELDER).every(function (id) { return regelnT.indexOf('id="' + id + '"') >= 0; }),
-     'Live=Messung: alle neun Kennungen liegen weiter im Reiter Regeln');
+  /* Die Kennungen bleiben vollstaendig erhalten (K18) - eine Sperre ist kein Ausbau.
+   * 03.09.2026 (Stufe 4b): Der Ort ist die Klappe mittelfrist unter Werkzeuge ->
+   * Betrieb; die geschuetzte Eigenschaft (alle neun an EINEM Ort, keine verloren)
+   * ist dieselbe geblieben. */
+  var betriebT = html.slice(html.indexOf('<div class="sub" id="sub-betrieb">'), html.indexOf('<!-- /sub-betrieb -->'));
+  var klappeT = betriebT.slice(betriebT.indexOf('data-klappe="mittelfrist"'), betriebT.indexOf('data-klappe="monitor"'));
+  ok(MF_FELDER.concat(DR_FELDER).every(function (id) { return klappeT.indexOf('id="' + id + '"') >= 0; }),
+     'Live=Messung: alle neun Kennungen liegen in der Klappe Mittelfrist-Analyse');
   /* Die vier Knoepfe bleiben bedienbar - gesperrt sind die Felder, nicht die Handlung. */
   ['mfLadenBtn', 'mfdTaktBtn', 'mfdRebalanceBtn', 'mfdDriftBtn'].forEach(function (id) {
     ok(new RegExp('id="' + id + '"[^>]*>').test(html) && !new RegExp('id="' + id + '"[^>]*disabled').test(html),
@@ -13393,6 +13433,198 @@ console.log('\n66) Archiv-Grafik & Kopfzeile: eine Grafik statt einer Tabelle, e
 
   ok(html.indexOf('buecher-zusicherung') === -1 && dep.indexOf('buecher-zusicherung') === -1,
      'Tote Regel: .buecher-zusicherung ist weg - sie hatte seit Stufe 3 keinen Traeger mehr');
+})();
+
+/* ================= 67. Mittelfrist im Maschinenraum (Oberflaeche Stufe 4b) =========
+ * Wilhelms Entscheid vom 03.09.2026: die Analyse-Knoepfe und -Felder des
+ * Mittelfrist-Bereichs bringen ihm nichts, herumklicken soll es dort nicht mehr
+ * geben. Der ganze Bereich (Momentum-Karte, die zwei Ergebnis-Kaesten, "Buecher
+ * steuern", Drift-Karte samt Termin-Knoepfen und Messzahlen-Fussnote) liegt seither
+ * als EINE Klappe unter Werkzeuge -> Betrieb.
+ *
+ * Der Umzug war nur deshalb gefahrlos, weil der Takt der Buecher (mfdepot.js takt())
+ * KEIN Bedienfeld liest. Genau das steht hier als Zusicherung - nicht als Notiz in
+ * einer Uebergabe, sondern als etwas, das rot wird, wenn jemand es aendert. */
+(function () {
+  console.log('\n67) Mittelfrist im Maschinenraum');
+  var html = fs.readFileSync(__dirname + '/index.html', 'utf8');
+  var shell = fs.readFileSync(__dirname + '/app-shell.js', 'utf8');
+  var mfd = fs.readFileSync(__dirname + '/mfdepot.js', 'utf8');
+  var mfr = fs.readFileSync(__dirname + '/mittelfrist.js', 'utf8');
+  var dru = fs.readFileSync(__dirname + '/driftui.js', 'utf8');
+
+  var FELDER = ['mfRueck', 'mfLuecke', 'mfHalten', 'mfAnteil', 'mfKosten',
+                'drHalten', 'drAnteil', 'drFenster', 'drKosten'];
+  var KNOEPFE = ['mfdTaktBtn', 'mfdRebalanceBtn', 'mfdDriftBtn'];
+  var ALLE = ['mfRueck', 'mfLuecke', 'mfHalten', 'mfAnteil', 'mfKosten', 'mfLadenBtn',
+              'mfStatus', 'mfRang', 'mfErgebnis', 'mfdTaktBtn', 'mfdRebalanceBtn',
+              'mfdDriftBtn', 'mfdStatus', 'drHalten', 'drAnteil', 'drFenster',
+              'drKosten', 'drLadeBtn', 'drLadeAlleBtn', 'drRechneBtn', 'drStatus',
+              'drErgebnis', 'drHeute'];
+
+  /* ---------------------------------------------------------------------------
+   * (a) Die Abhaengigkeitspruefung als Zusicherung
+   *
+   * Der Vorspann des Auftrags behauptete: takt() liest die neun Felder nicht,
+   * sondern nimmt die Momentum-Konfiguration aus D.mfBuch.konfig (MFHandel.
+   * buchKonfig), die Drift-Konfiguration aus Drift.heute mit Standardwerten und die
+   * Daten ueber window.MF.ladeUniversum(), window.DriftUI.hintergrund() und den
+   * Store-Schluessel drift_termine. Nachgeprueft und hier festgenagelt: waere es
+   * anders, haette der Umzug die Buecher still auf eine andere Konfiguration
+   * gestellt - genau die Fehlerform "Live driftet von der Messung weg". */
+  var mfdO = ohneKommentare(mfd);
+  var stehenGeblieben = FELDER.filter(function (id) { return mfdO.indexOf(id) > -1; });
+  ok(stehenGeblieben.length === 0,
+     'Umzug gefahrlos: mfdepot.js nennt keines der neun Bedienfelder',
+     stehenGeblieben.join(' ') || 'keines');
+  ok(mfdO.indexOf('getElementById') === -1 || !/getElementById\('(mf[RLHAK]|dr[HAFK])/.test(mfdO),
+     'Umzug gefahrlos: mfdepot.js greift auf kein Mittelfrist-Eingabefeld zu');
+  ok(/MH\.buchKonfig\(\)/.test(mfdO) && /Dr\.heute\(kurseD, termD, markt\)/.test(mfdO),
+     'Der Takt nimmt Momentum aus der Buch-Konfiguration und Drift mit den Standardwerten');
+  ok(/window\.MF\.ladeUniversum/.test(mfdO) && /storeGet\('drift_termine'\)/.test(mfdO),
+     'Der Takt holt seine Daten ueber ladeUniversum() und den Store, nicht ueber die Oberflaeche');
+  /* Und die Felder speisen weiterhin GENAU die zwei Anzeigen, fuer die sie da sind. */
+  ok(/function opts\(\)/.test(mfr) && /function opts\(\)/.test(dru),
+     'Die Felder speisen weiter opts() in mittelfrist.js und driftui.js - eine Sperre ist kein Ausbau');
+
+  /* ---------------------------------------------------------------------------
+   * (b) Der neue Ort: genau einmal, mit Statuszeile, an der vorgesehenen Stelle */
+  var betrieb = html.slice(html.indexOf('<div class="sub" id="sub-betrieb">'), html.indexOf('<!-- /sub-betrieb -->'));
+  ok((html.match(/data-klappe="mittelfrist"/g) || []).length === 1,
+     'Die Klappe mittelfrist existiert genau einmal im Markup');
+  ok(/<details class="how" data-klappe="mittelfrist">\s*\n\s*<summary>Mittelfrist-Analyse &amp; Bücher steuern<span class="klappe-stand" id="kstand-mittelfrist"><\/span><\/summary>/.test(betrieb),
+     'Die Klappe traegt ihren Titel und genau eine Statuszeile dahinter');
+  var ordnung = ['data-klappe="kosten"', 'data-klappe="mittelfrist"', 'data-klappe="monitor"']
+    .map(function (m) { return betrieb.indexOf(m); });
+  ok(ordnung[0] > -1 && ordnung[0] < ordnung[1] && ordnung[1] < ordnung[2],
+     'Sie steht nach der Kostenmessung und vor dem Live-Signal-Monitor', ordnung.join(' < '));
+  /* Die Statuszeile hat eine benannte, guenstige Quelle - keine Konstante, kein IPC.
+   * Geprueft wird der Eintrag in KLAPPEN_STAND selbst (Regel aus Stufe 2). */
+  var tab67 = ohneKommentare(shell.slice(shell.indexOf('var KLAPPEN_STAND = {'), shell.indexOf('/* /KLAPPEN_STAND */')));
+  var eintrag = tab67.slice(tab67.indexOf('\n    mittelfrist:'), tab67.indexOf('\n    monitor:'));
+  ok(eintrag.length > 100, 'KLAPPEN_STAND hat einen Eintrag mittelfrist', eintrag.length);
+  ok(/regelStatus\(\)/.test(eintrag) && /antwort\(\)/.test(eintrag) &&
+     /st\.momentumAn/.test(eintrag) && /st\.driftAn/.test(eintrag) && /a\.pruefStand/.test(eintrag),
+     'Statuszeile: Momentum/Drift aus regelStatus(), der Pruefstand aus antwort() - drei benannte Quellen');
+  /* Geprueft wird die FEHLERFORM, nicht der Wortlaut: ein Rueckgabewert, der nur aus
+   * einer Zeichenkette besteht, waere ein fester Text und damit kein Zustand. Eine
+   * Beschriftung MIT einer gelesenen Zahl daneben ist erlaubt (Regel aus Stufe 2). */
+  ok(/return null;/.test(eintrag) && !/return '[^']*';/.test(eintrag),
+     'Statuszeile: ohne Depot-Zustand bleibt sie LEER - kein fester Text, der einen Zustand vortaeuscht');
+
+  /* ---------------------------------------------------------------------------
+   * (c) Der alte Ort: nichts davon ist zurueckgeblieben
+   *
+   * DAS ist die eigentliche Zusicherung dieser Stufe. Ein halber Umzug - Felder
+   * geblieben, Knoepfe gegangen - waere schlimmer als gar keiner: zwei Orte, die
+   * dasselbe zu tun scheinen. */
+  var einst = html.slice(html.indexOf('<div class="sub" id="sub-einstellungen">'), html.indexOf('<!-- /sub-einstellungen -->'));
+  ok(einst.length > 1000, 'Der Ausschnitt Regeln -> Einstellungen ist auffindbar', einst.length);
+  var rest = ALLE.filter(function (id) { return einst.indexOf('id="' + id + '"') > -1; });
+  ok(rest.length === 0,
+     'Regeln -> Einstellungen enthaelt keine der 23 Mittelfrist-Kennungen',
+     rest.join(' ') || 'keine');
+  var restKnoepfe = KNOEPFE.filter(function (id) { return einst.indexOf(id) > -1; });
+  ok(restKnoepfe.length === 0,
+     'Und keinen der drei Steuer-Knoepfe, die Orders ausloesen',
+     restKnoepfe.join(' ') || 'keinen');
+  /* Was BLEIBEN muss, bleibt: Voreinstellungen, Intraday, Risiko, Watchlist. */
+  ['stratEmpfohlenBtn', 'idEnabled', 'rkMaxPos', 'watchChips'].forEach(function (id) {
+    ok(einst.indexOf('id="' + id + '"') > -1,
+       'Einstellungen behaelt ' + id);
+  });
+  /* Der Bereichskopf bleibt als Ueberschrift; die Sprungleiste mit einem einzigen
+   * Ziel ist entfallen - und mit ihr der Anker, der ins Leere zeigte. */
+  ok(/<h3 id="abIntraday" class="bereichs-kopf">Intraday &amp; Risiko<\/h3>/.test(einst),
+     'Der Bereichskopf "Intraday & Risiko" steht weiter ueber dem Abschnitt');
+  ok(einst.indexOf('Direkt zu') === -1 && einst.indexOf('href="#abMittelfrist"') === -1,
+     'Die Sprungleiste ist weg - eine Leiste mit einem Ziel ist keine Orientierung');
+  ok(html.indexOf('href="#abMittelfrist"') === -1,
+     'Und es steht kein Sprunganker mehr im Markup, der auf den alten Ort zeigte');
+
+  /* ---------------------------------------------------------------------------
+   * (d) Auch nicht auf Heute - der dritte moegliche Ort */
+  var heute67 = html.slice(html.indexOf('<div id="tab-dashboard"'), html.indexOf('<!-- /tab-dashboard -->'));
+  var inHeute = ALLE.filter(function (id) { return heute67.indexOf('id="' + id + '"') > -1; });
+  ok(inHeute.length === 0,
+     'Heute zeigt die Buecher, aber keine einzige Stellschraube',
+     inHeute.join(' ') || 'keine');
+
+  /* ---------------------------------------------------------------------------
+   * (e) Wegweiser: was auf den neuen Ort zeigt, nennt ihn richtig
+   *
+   * Die vier Leerzustaende der Buch-Karten auf Heute schickten den Leser nach
+   * "Regeln -> Einstellungen" - dort steht seit heute nichts mehr davon. Ein
+   * Wegweiser, der ins Leere zeigt, ist schlimmer als keiner: er kostet die Zeit
+   * dessen, der ihm folgt. Geprueft wird gegen die ECHTEN Titel im Markup, nicht
+   * gegen eine Abschrift hier. */
+  var klappenTitel = (html.match(/<summary>([^<]*)</g) || [])
+    .map(function (z) { return z.slice(9, -1).replace(/&amp;/g, '&').trim(); })
+    .filter(function (z) { return z.length > 1; });
+  ok(klappenTitel.length >= 12,
+     'Die Klappen-Titel sind aus dem Markup lesbar', klappenTitel.length);
+  var quellen67 = ['index.html', 'depot.js', 'mfdepot.js', 'driftui.js', 'mittelfrist.js',
+                   'strategien.js', 'renderer.js'];
+  var falsch67 = [];
+  quellen67.forEach(function (f) {
+    var q = fs.readFileSync(__dirname + '/' + f, 'utf8');
+    var re = /Klappe „([^“]{2,60})“/g, m;
+    while ((m = re.exec(q))) {
+      var name = m[1].replace(/&amp;/g, '&').trim();
+      if (klappenTitel.indexOf(name) === -1) falsch67.push(f + ': „' + name + '“');
+    }
+  });
+  ok(falsch67.length === 0,
+     'Jeder Verweis auf eine Klappe nennt einen Titel, den es wirklich gibt',
+     falsch67.join(' | ') || 'alle Verweise gehen ins Ziel');
+  var leer = (html.match(/Sofort prüfen: Reiter <b>([^<]+)<\/b>/g) || []);
+  ok(leer.length === 4 && leer.every(function (z) { return /Werkzeuge → Betrieb/.test(z); }),
+     'Die vier Leerzustaende der Buch-Karten zeigen auf Werkzeuge → Betrieb', leer.length);
+  ok(html.indexOf('Was die beiden Bücher halten, steht im Reiter <b>Heute → Überblick</b>.') > -1,
+     'Der Wegweiser zurueck zum Bestand stimmt weiter - er wurde nicht mitverschoben');
+
+  /* ---------------------------------------------------------------------------
+   * (f) Der Nachlade-Ausloeser haengt am Ereignis, nicht an der Sichtbarkeit
+   *
+   * Die Felder wurden bisher beim Reiterwechsel gefuellt. Im Maschinenraum kann die
+   * Klappe aufgehen, ohne dass ein Reiter wechselt - dann stuenden dort die Werte
+   * von vor dem Laden des Depots. Die Shell meldet das Aufklappen als 'sub-changed'
+   * (Muster aus Stufe 1); mittelfrist.js hoert darauf. */
+  ok(/document\.addEventListener\('sub-changed', function \(ev\) \{\s*\n\s*if \(ev\.detail && ev\.detail\.sub === 'mittelfrist'\) konfigZeigen\(\);/.test(mfr),
+     'mittelfrist.js fuellt die Felder beim AUFklappen nach - dasselbe Ereignis wie in Stufe 1');
+  ok(/document\.addEventListener\('tab-changed', konfigZeigen\);/.test(mfr),
+     'Der Reiterwechsel bleibt der zweite Weg - ein Ausloeser mehr, keiner weniger');
+  /* Und niemand fragt nach Sichtbarkeit: ein Modul, das auf offsetParent oder
+   * classList.contains('active') prueft, stuende in einer geschlossenen Klappe still. */
+  var sicht = [['mittelfrist.js', mfr], ['driftui.js', dru], ['mfdepot.js', mfd]]
+    .filter(function (p) { return /offsetParent|getBoundingClientRect|\.hidden\b|classList\.contains\('active'\)/.test(ohneKommentare(p[1])); })
+    .map(function (p) { return p[0]; });
+  ok(sicht.length === 0,
+     'Keines der drei Module haengt an Sichtbarkeit - der Takt laeuft in der geschlossenen Klappe weiter',
+     sicht.join(' ') || 'keines');
+  /* Die Statuszeilen-Ziele existieren weiter - sonst schriebe U.statuszeile ins Nichts. */
+  ['mfStatus', 'drStatus', 'mfdStatus'].forEach(function (id) {
+    ok((html.match(new RegExp('id="' + id + '"', 'g')) || []).length === 1,
+       'Das Statusziel ' + id + ' steht genau einmal im Markup');
+  });
+
+  /* ---------------------------------------------------------------------------
+   * (g) Nichts geloescht, nichts umformuliert
+   *
+   * Der Auftrag lautete: DOM-Block verschieben, kein Text aendern. Die Messaussagen
+   * sind das Empfindlichste daran - sie stehen woertlich oder gar nicht. */
+  ok(/Gemessen ab 2015: <b>\+10,44 % p\. a\. bei t = 3,04<\/b>/.test(betrieb),
+     'Die Drift-Messzahl steht woertlich - im Maschinenraum, nicht in den Einstellungen');
+  ok(/<b>Kein ruhiges Investment:<\/b> größter Rückschlag 52 % \(2008\),/.test(betrieb),
+     'Die Momentum-Messaussage ebenso');
+  ok(einst.indexOf('+10,44 %') === -1 && einst.indexOf('Kein ruhiges Investment') === -1,
+     'Und beide stehen nur EINMAL - verschoben heisst nicht kopiert');
+  ok(/id="mfKonfigZeile"/.test(betrieb) && /id="drKonfigZeile"/.test(betrieb),
+     'Die zwei Zeilen "Konfiguration wie gemessen" sind mitgezogen (Stufe 3 bleibt gueltig)');
+  FELDER.forEach(function (id) {
+    ok(new RegExp('<select id="' + id + '" disabled>').test(betrieb),
+       'Live=Messung am neuen Ort: ' + id + ' ist weiter gesperrt');
+  });
 })();
 
 Promise.all(offeneProben).then(function () {
