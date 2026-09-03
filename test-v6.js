@@ -13208,9 +13208,20 @@ console.log('\n66) Archiv-Grafik & Kopfzeile: eine Grafik statt einer Tabelle, e
    * wuerde still falsch. */
   ok(/function zellenFarbe\(anteil, vollAb\)/.test(akO) && /zellenFarbe\(anteil, ab\.vollAb\)/.test(akO),
      'Grafik: die Schwelle fuer "gesammelt" kommt aus der Auskunft, nicht aus der Anzeige');
-  ok(/var\(--up\)/.test(akO) && /var\(--warn\)/.test(akO) && /var\(--grid\)/.test(akO) &&
-     akO.indexOf('if (anteil > 0)') < akO.indexOf("return 'var(--grid)'"),
-     'Grafik: drei Farben, und "nichts da" kommt erst nach "lueckenhaft" - sonst waere jede Luecke leer');
+  /* GESCHAERFT nach Gegenprobe 6: die erste Fassung verglich zwei indexOf-Ergebnisse
+   * ueber die ganze Datei. Nimmt man den mittleren Fall heraus, ist sein indexOf -1 -
+   * und -1 sortiert vor allem. Die Klinke blieb gruen, WEIL sie nichts fand; und
+   * "var(--warn)" stand ausserdem noch in der Legende. Gelesen wird jetzt der Rumpf
+   * der Funktion selbst, und jeder der drei Faelle muss DA SEIN, bevor die
+   * Reihenfolge ueberhaupt geprueft wird (wiki/fehlerformen.md). */
+  var zf = akO.slice(akO.indexOf('function zellenFarbe('), akO.indexOf('function balkenText('));
+  var iUp = zf.indexOf("return 'var(--up)'");
+  var iWarn = zf.indexOf("return 'var(--warn)'");
+  var iGrid = zf.indexOf("return 'var(--grid)'");
+  ok(zf.length > 120 && iUp >= 0 && iWarn >= 0 && iGrid >= 0 && iUp < iWarn && iWarn < iGrid &&
+     /if \(anteil >= vollAb\) return 'var\(--up\)'/.test(zf) && /if \(anteil > 0\) return 'var\(--warn\)'/.test(zf),
+     'Grafik: drei Farben, jede mit ihrer Bedingung - "nichts da" erst nach "lueckenhaft", sonst waere jede Luecke leer',
+     [iUp, iWarn, iGrid].join('/'));
   /* Der Balken ist reines SVG mit fester viewBox. Ohne preserveAspectRatio="none"
    * wuerde er beim Breiterziehen mitwachsen und die Zeilen auseinandertreiben. */
   ok(/<svg class="arch-balken" viewBox="0 0 ' \+ VB_BREITE/.test(akO) &&
@@ -13349,9 +13360,16 @@ console.log('\n66) Archiv-Grafik & Kopfzeile: eine Grafik statt einer Tabelle, e
    * Klasse einmal namentlich genannt und die Klinke damit rot gemacht. */
   ok(html.replace(/<!--[\s\S]*?-->/g, ' ').indexOf('simkopf') === -1,
      'Kopfzeile: die alte Klasse ist mitgezogen - weder Markup noch CSS-Regel bleiben liegen');
+  /* GESCHAERFT nach Gegenprobe 37 - dieselbe Form wie oben: nimmt man die Marke aus
+   * der Kopfzeile heraus, ist ihr indexOf -1 und steht damit "vor" dem Stempel. Die
+   * Klinke blieb gruen an genau dem Fall, gegen den sie gebaut ist. Jetzt muessen
+   * beide erst da sein. */
+  var iMarke = kopf.indexOf('class="simmarke"');
+  var iStamp = kopf.indexOf('id="stamp"');
   ok(/\.simmarke \{/.test(html) && (kopf.match(/class="hbtn"/g) || []).length === 4 &&
-     kopf.indexOf('class="simmarke"') < kopf.indexOf('id="stamp"'),
-     'Kopfzeile: Marke, Boersenstatus und die vier Knoepfe - in dieser Reihenfolge');
+     iMarke >= 0 && iStamp >= 0 && iMarke < iStamp,
+     'Kopfzeile: Marke, Boersenstatus und die vier Knoepfe - alle da, und in dieser Reihenfolge',
+     iMarke + '/' + iStamp);
   /* Der Knopf an der Marke muss auf einen Eintrag zeigen, den es gibt. Ein Knopf,
    * der ein leeres Fenster oeffnet, waere schlimmer als der ganze Satz. */
   ok(shell.indexOf("'heute.simulation': {") !== -1 &&
