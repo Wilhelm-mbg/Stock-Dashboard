@@ -352,17 +352,40 @@ function wirkungMs(datum) {
   if (p.length !== 3 || !isFinite(p[0])) return null;
   return M.nyNachUtc(p[0], p[1], p[2], 0, 0);
 }
-/** Aus der Massnahmen-Datei die anwendbaren Faktoren und die Luecken. */
-function faktorenAus(saetze) {
+/** Aus der Massnahmen-Datei die anwendbaren Faktoren und die Luecken.
+ *
+ *  Der zweite Beutel `gemessen` ist die Liste `gemesseneFaktoren` derselben Datei -
+ *  Abspaltungs-Kursfaktoren, die tools/alpaca-abspaltungsfaktor.js aus dem Verhaeltnis
+ *  adjustment=all zu adjustment=dividend GEMESSEN hat (Wilhelms Entscheid vom 03.09.2026,
+ *  der einzige erlaubte Zweitabruf). Sie stehen bewusst in einer eigenen Liste neben den
+ *  Saetzen der Quelle und nicht in ihnen: gemessen und geliefert bleiben unterscheidbar.
+ *  Fehlt der Beutel, verhaelt sich diese Funktion wie vorher - eine Abspaltung ohne
+ *  gemessenen Faktor ist weiterhin eine Luecke, und der Wert bleibt aus der Kopie. */
+function faktorenAus(saetze, gemessen) {
   var an = [], ohne = [];
+  var gm = {};
+  (gemessen || []).forEach(function (g) {
+    if (!g || !g.datum || !(Number(g.kursfaktor) > 0)) return;
+    gm[String(g.art) + '|' + String(g.datum)] = g;
+  });
   (saetze || []).forEach(function (e) {
     var d = datumAus(e), ms = d ? wirkungMs(d) : null;
     var art = String(e._art || '');
     if (/split/.test(art)) {
       var fk = faktorAus(e);
       if (fk === null || !ms || Math.abs(fk - 1) < 1e-9) { if (fk === null || !ms) ohne.push({ art: art, datum: d, grund: 'kein Faktor oder kein Datum' }); return; }
-      an.push({ art: art, datum: d, ms: ms, faktor: fk });
+      an.push({ art: art, datum: d, ms: ms, faktor: fk, herkunft: 'quelle new_rate/old_rate' });
     } else if (/spin/.test(art)) {
+      var g = gm[art + '|' + String(d)];
+      if (g && ms) {
+        var fg = Number(g.kursfaktor);
+        /* Ein gemessener Faktor von 1 ist eine Messung, keine Luecke: an dieser Reihe
+         * aendert die Abspaltung den Kurs nicht (typisch fuer den ABGESPALTENEN Wert, der
+         * den Satz mitgeliefert bekommt). Der Wert bekommt also seine Kopie - nur ohne
+         * Rechnung. Dieselbe Schwelle wie beim Split, damit es nicht zwei Regeln gibt. */
+        if (Math.abs(fg - 1) >= 1e-9) an.push({ art: art, datum: d, ms: ms, faktor: fg, herkunft: g.herkunft || 'gemessen' });
+        return;
+      }
       ohne.push({ art: art, datum: d, grund: 'Abspaltung: Quelle liefert nur ein Stueckverhaeltnis, keinen Kursfaktor' });
     }
   });
@@ -667,15 +690,24 @@ async function massnahmen(opt) {
     var sym = symbole[n]; i++;
     var ziel = path.join(MASSNAHMEN, AB.ab[sym] + '.json');
     if (fs.existsSync(ziel) && !opt.neuHolen) continue;
+    /* Ein erneuter Lauf (--neuHolen) holt die Saetze der Quelle neu - er darf aber die
+     * GEMESSENEN Abspaltungsfaktoren nicht mitnehmen. Sie kosten je einen Zweitabruf und
+     * stehen in keiner Antwort der Quelle; ueberschrieben waeren sie still weg, und die
+     * betroffenen Werte fielen wieder aus der bereinigten Kopie, ohne dass es jemandem
+     * auffiele. Also vorher lesen und unveraendert wieder hineinschreiben. */
+    var vorher = null;
+    if (fs.existsSync(ziel)) { try { vorher = JSON.parse(fs.readFileSync(ziel, 'utf8')); } catch (e) { vorher = null; } }
+    var gemessenAlt = (vorher && Array.isArray(vorher.gemesseneFaktoren) && vorher.gemesseneFaktoren.length) ? vorher.gemesseneFaktoren : null;
     var r = await massnahmenEines(sym.replace(/~2$/, ''), bisJahr, opt.fetch);
     if (r.fehler) { fehler++; continue; }
-    var f = faktorenAus(r.saetze);
+    var f = faktorenAus(r.saetze, gemessenAlt);
     if (f.anwendbar.length) mitSplit++;
     if (f.ohneFaktor.some(function (x) { return /spin/.test(x.art); })) mitSpin++;
     if (r.saetze.length) mit++; else ohne++;
     M.atomarSchreiben(ziel, JSON.stringify({ sym: sym, stand: new Date().toISOString(),
       quelle: 'alpaca v1 corporate-actions', von: AB_JAHR + '-01-01', bis: bisJahr + '-12-31',
-      saetze: r.saetze, anwendbar: f.anwendbar, ohneFaktor: f.ohneFaktor }));
+      saetze: r.saetze, anwendbar: f.anwendbar, ohneFaktor: f.ohneFaktor,
+      gemesseneFaktoren: gemessenAlt || undefined }));
     if (i % 200 === 0) sag('  ' + i + '/' + symbole.length + '  mit Massnahmen ' + mit + '  Splits ' + mitSplit + '  Abspaltungen ' + mitSpin + '  Abrufe ' + Z.abrufe);
   }
   protokoll('Massnahmen: ' + symbole.length + ' angefragt, ' + mit + ' mit Saetzen, ' + mitSplit + ' mit Split, ' + mitSpin + ' mit Abspaltung, ' + fehler + ' Fehler');
@@ -863,7 +895,7 @@ function ableitenLauf(opt) {
       try {
         var m = JSON.parse(fs.readFileSync(mp, 'utf8'));
         symAusMass = m.sym || null;
-        var f = faktorenAus(m.saetze);
+        var f = faktorenAus(m.saetze, m.gemesseneFaktoren);
         faktoren = f.anwendbar; luecken = f.ohneFaktor;
       } catch (e) { fehler.push(ord + ': Massnahmen unlesbar'); return; }
     } else { ohneMassnahmen++; }
@@ -897,7 +929,7 @@ function ableitenLauf(opt) {
       hb.abgeleitet = 'bereinigt';
       hb.jahr = h.jahr;
       hb.sitzungen = h.sitzungen;
-      hb.massnahmen = angewandt.map(function (x) { return { art: x.art, datum: x.datum, faktor: x.faktor }; });
+      hb.massnahmen = angewandt.map(function (x) { return { art: x.art, datum: x.datum, faktor: x.faktor, herkunft: x.herkunft || null }; });
       M.atomarSchreiben(path.join(zo, jn), JSON.stringify(hb));
       geschrieben++;
     });
@@ -911,19 +943,35 @@ function ableitenLauf(opt) {
    * das auseinanderlaufen kann. Wer bereinigte Kurse will, liest also: erst hier, und
    * wo nichts liegt, die Rohdatei. Diese Regel darf nicht nur in einer Uebergabe stehen,
    * die in einem halben Jahr niemand mehr sucht. */
-  if (!opt.ordner) {
-    fs.mkdirSync(BEREINIGT, { recursive: true });
-    M.atomarSchreiben(path.join(BEREINIGT, '_regel.json'), JSON.stringify({
-      stand: new Date().toISOString(),
-      leseregel: 'Bereinigte Kurse = diese Datei, falls vorhanden; sonst die gleichnamige unter alpaca1m/. ' +
-        'Fehlt sie, weil sich fuer dieses Symbol-Jahr nichts aendert - die Rohdatei IST dann die bereinigte.',
-      angewandt: 'Splits (Faktor = new_rate/old_rate). Kurse geteilt, Umsatz malgenommen.',
-      nichtAngewandt: 'Dividenden (Yahoo bereinigt Intraday nicht um sie) und Abspaltungen ' +
-        '(die Quelle liefert dafuer nur ein Stueckverhaeltnis, keinen Kursfaktor).',
-      ohneKopieWeilAbspaltung: ausgelassen,
-      zahlen: bericht,
-    }, null, 1));
+  /* Auch ein TEILLAUF pflegt die Regel - sonst behauptet sie weiter, ein Wert habe keine
+   * Kopie, dessen Faktor inzwischen gemessen und dessen Kopie geschrieben ist. Eine Liste,
+   * die nur der Vollauf richtigstellt, ist nach dem ersten Teillauf falsch und sieht
+   * genauso aus wie vorher. Gekuerzt wird genau um die Ordner, die IM Lauf waren; die
+   * uebrigen Eintraege bleiben stehen, denn ueber sie sagt dieser Lauf nichts. */
+  fs.mkdirSync(BEREINIGT, { recursive: true });
+  var alteRegel = null;
+  try { alteRegel = JSON.parse(fs.readFileSync(path.join(BEREINIGT, '_regel.json'), 'utf8')); } catch (e) { alteRegel = null; }
+  var ohneKopie = ausgelassen;
+  if (opt.ordner && alteRegel && Array.isArray(alteRegel.ohneKopieWeilAbspaltung)) {
+    var imLauf = {};
+    opt.ordner.forEach(function (o) { imLauf[o] = 1; });
+    ohneKopie = alteRegel.ohneKopieWeilAbspaltung.filter(function (x) { return !imLauf[x.ordner]; }).concat(ausgelassen);
   }
+  M.atomarSchreiben(path.join(BEREINIGT, '_regel.json'), JSON.stringify({
+    stand: new Date().toISOString(),
+    leseregel: 'Bereinigte Kurse = diese Datei, falls vorhanden; sonst die gleichnamige unter alpaca1m/. ' +
+      'Fehlt sie, weil sich fuer dieses Symbol-Jahr nichts aendert - die Rohdatei IST dann die bereinigte.',
+    angewandt: 'Splits (Faktor = new_rate/old_rate aus der Quelle) und Abspaltungen, deren Kursfaktor ' +
+      'GEMESSEN wurde (Median adjustment=dividend / adjustment=all ueber 20 Handelstage davor, ' +
+      'tools/alpaca-abspaltungsfaktor.js). Kurse geteilt, Umsatz malgenommen. Welcher Faktor woher ' +
+      'kommt, steht als "herkunft" in der Kopfzeile jeder Kopie.',
+    nichtAngewandt: 'Dividenden (Yahoo bereinigt Intraday nicht um sie) und Abspaltungen, deren Faktor ' +
+      '"unklar" blieb - die Quelle liefert dafuer nur ein Stueckverhaeltnis, und die Messung hat ihre ' +
+      'Kontrolle nicht bestanden.',
+    ohneKopieWeilAbspaltung: ohneKopie,
+    zahlenAus: opt.ordner ? 'Teillauf ueber ' + opt.ordner.length + ' Ordner' : 'Vollauf',
+    zahlen: bericht,
+  }, null, 1));
   protokoll('Ableiten: ' + geschrieben + ' Kopien, ' + ausgelassen.length + ' Werte ausgelassen (kein Kursfaktor)');
   return bericht;
 }

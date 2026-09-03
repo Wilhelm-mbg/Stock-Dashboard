@@ -13111,6 +13111,7 @@ console.log('\n64) Bestand & Kopfzeile (Oberflaeche Stufe 2, 03.09.2026)');
     __dirname + '/studien/archiv-zusammenfuehrung-2026-09/skalen-probe-alpaca.js',
     __dirname + '/tools/alpaca-balken-holen.js',
     __dirname + '/tools/alpaca-vollsammlung.js',
+    __dirname + '/tools/alpaca-abspaltungsfaktor.js',
     __dirname + '/studien/alpaca-vollsammlung-2026-09/probe-massnahmen.js',
     __dirname + '/studien/alpaca-vollsammlung-2026-09/probe-spinoff-form.js',
   ];
@@ -13593,6 +13594,141 @@ console.log('\n64) Bestand & Kopfzeile (Oberflaeche Stufe 2, 03.09.2026)');
        JSON.stringify(oV.ableiten.ausgelassen));
   }
   fs.rmSync(tmpV, { recursive: true, force: true });
+
+  /* ---------- (a'''''') Z1c Nachtrag: der gemessene Abspaltungs-Kursfaktor (03.09.2026) ----
+   *
+   * Phase M hat die Luecke beziffert: der Maszahmen-Endpunkt traegt bei einer Abspaltung nur
+   * ein STUECKVERHAELTNIS, keinen Kursfaktor - 177 Werte blieben deshalb aus der bereinigten
+   * Kopie. Wilhelms Entscheid vom 03.09. (wiki/entscheide.md, "Abspaltungs-Kursfaktor per
+   * Zweitabruf") erlaubt dafuer die EINZIGE Ausnahme von "kein zweiter Abruf": der Faktor
+   * wird je betroffenem Wert einmal gemessen, als Median von adjustment=dividend geteilt
+   * durch adjustment=all ueber 20 Handelstage vor dem Wirkungstag.
+   *
+   * Die vier Zusagen der Z1-Liste oben (Zugang ueber schluessel.js, keine eigene
+   * Umgebungslesung, Ausgabe durch verdecken(), nie feed=iex) gelten fuer das Werkzeug mit -
+   * es steht in derselben Liste. Hier kommt dazu, was nur diesen Nachtrag betrifft. */
+  var AF = require(__dirname + '/tools/alpaca-abspaltungsfaktor.js');
+  var afQ = ohneKommentare(fs.readFileSync(__dirname + '/tools/alpaca-abspaltungsfaktor.js', 'utf8'));
+
+  /* (1) Die Drossel. Der Vollauf der Balken laeuft parallel mit 170/min auf DEMSELBEN
+   * Zugang, und die 200/min der Quelle gelten fuer den Zugang, nicht je Werkzeug. Dieses
+   * hier nimmt sich ein Zehntel - und bei einem 429 bricht es ab, statt zu wiederholen:
+   * ein Wiederholungssturm ginge zu Lasten des Vollaufs, nicht zu eigenen. Beides an der
+   * VERWENDUNG geprueft, nicht am Kommentar. */
+  ok(AF.RATE_JE_MIN <= 20, 'Abspaltungsfaktor: die Drossel steht bei hoechstens 20 Abrufen je Minute', String(AF.RATE_JE_MIN));
+  ok(/if \(res\.status === 429\)[^}]*throw Ueberlastet\(/.test(afQ) &&
+     !/if \(res\.status === 429\)[^}]*continue/.test(afQ),
+     'Abspaltungsfaktor: ein 429 wirft ab und wird NIE wiederholt - der Vollauf laeuft parallel');
+  ok(/e\.ueberlastet/.test(afQ) && /warteS/.test(afQ),
+     'Abspaltungsfaktor: der Abbruch bei 429 nennt die Wartezeit, statt nur zu sterben');
+
+  /* (2) Schreibziele - STRUKTUR. Geschrieben wird ausschliesslich unter alpaca-massnahmen/.
+   * Die Rohdaten alpaca1m/ kommen im Code gar nicht vor; die bereinigte Kopie schreibt
+   * weiterhin alpaca-vollsammlung.js --ableiten, nicht dieses Werkzeug. */
+  var afZiele = (afQ.match(/(?:M\.atomarSchreiben|fs\.writeFileSync|fs\.appendFileSync)\(\s*([^,]+),/g) || [])
+    .map(function (x) { return x.replace(/^[^(]+\(\s*/, '').replace(/,$/, '').trim(); });
+  ok(afZiele.length >= 3, 'Abspaltungsfaktor: die Schreibaufrufe sind gefunden worden', String(afZiele.length));
+  var afFremd = afZiele.filter(function (z) { return !/^(BERICHT|PROTOKOLL|p|ziel)$/.test(z) && !/path\.join\(MASSNAHMEN\b/.test(z); });
+  ok(afFremd.length === 0, 'Abspaltungsfaktor: jeder Schreibaufruf zielt unter alpaca-massnahmen/', afFremd.join(' | '));
+  ok(!/alpaca1m(?!-bereinigt)/.test(afQ),
+     'Abspaltungsfaktor: die ROHDATEN alpaca1m/ kommen im Werkzeug nicht vor - weder lesend noch schreibend');
+  ok(!/(?:atomarSchreiben|writeFileSync|appendFileSync)\([^)]*archiv\d/.test(afQ),
+     'Abspaltungsfaktor: KEIN Schreibaufruf nennt ein Yahoo-Archiv als Ziel');
+
+  /* (3) Die Richtung. `all` ist VOR der Abspaltung kleiner als `dividend`; das rohe
+   * Verhaeltnis all/dividend ist also 0,9459 und der KURSFAKTOR sein Kehrwert, 1,0572 -
+   * dieselbe Richtung wie der Split-Faktor der Quelle und die, die ableiten() braucht
+   * (Kurse geteilt). Ein Richtungsfehler sieht in jeder Zusammenfassung richtig aus und
+   * verschoebe die bereinigte Reihe um 11 % (wiki/fehlerformen.md, "Skalenfehler zeigen
+   * Sprungpaare"). Deshalb an einer Kunstreihe festgenagelt. */
+  function afReihe(vorAll, vorDiv, nachAll, nachDiv, nachTage) {
+    var a = {}, d = {};
+    for (var i = 1; i <= 25; i++) { var t = '2026-06-' + String(i + 1).padStart(2, '0'); a[t] = vorAll; d[t] = vorDiv; }
+    for (var j = 1; j <= (nachTage == null ? 20 : nachTage); j++) { var t2 = '2026-07-' + String(j).padStart(2, '0'); a[t2] = nachAll; d[t2] = nachDiv; }
+    return { alle: a, div: d };
+  }
+  var afSpgi = afReihe(100, 105.7, 90, 90);
+  var afR = AF.faktorMessen(afSpgi.alle, afSpgi.div, '2026-07-01');
+  ok(afR.urteil === 'gemessen' && Math.abs(afR.faktor - 1.057) < 1e-9 && afR.faktor > 1,
+     'Abspaltungsfaktor: die SPGI-Form gibt 1,057 - und der Faktor ist GROESZER als 1 (Kurse davor werden geteilt)',
+     String(afR.faktor));
+  ok(Math.abs(afR.verhaeltnisAllDurchDividend - 100 / 105.7) < 1e-12,
+     'Abspaltungsfaktor: das rohe Verhaeltnis all/dividend (0,9459) steht neben dem Faktor - die Richtung ist nachpruefbar',
+     String(afR.verhaeltnisAllDurchDividend));
+  var kunstAb = VS.ableiten([[VS.wirkungMs('2026-07-01') - 86400000, 105.7, 1000, 105.7, 105.7, 105.7]],
+    [{ ms: VS.wirkungMs('2026-07-01'), faktor: afR.faktor }]);
+  ok(Math.abs(kunstAb[0][1] - 100) < 1e-9,
+     'Abspaltungsfaktor: der gemessene Faktor passt in ableiten() - 105,70 vor der Abspaltung wird zu 100,00');
+
+  /* (4) "unklar" wird NIE als Faktor geschrieben. Der Weg vom Urteil zur Datei fuehrt durch
+   * genau eine Funktion, und die gibt fuer jedes andere Urteil null zurueck. */
+  var afBoes = afReihe(100, 105.7, 45, 90);
+  var afRn = AF.faktorMessen(afBoes.alle, afBoes.div, '2026-07-01');
+  ok(afRn.urteil === 'unklar' && afRn.faktor !== null,
+     'Abspaltungsfaktor: Kontrolle nach der Maszahme 2,0 -> unklar, obwohl ein tadelloser Median davorsteht');
+  ok(AF.satzAus({ art: 'spin_offs', datum: '2026-07-01' }, afRn) === null &&
+     AF.satzAus({ art: 'spin_offs', datum: '2026-07-01' }, { urteil: 'gemessen', faktor: 0 }) === null,
+     'Abspaltungsfaktor: aus "unklar" wird NIE ein Faktor - und aus einem Faktor 0 auch nicht');
+  var afLeer = afReihe(100, 105.7, 90, 90, 0);
+  ok(AF.faktorMessen(afLeer.alle, afLeer.div, '2026-07-01').urteil === 'unklar',
+     'Abspaltungsfaktor: ohne Balken NACH der Maszahme ist die Kontrolle nicht fahrbar - und nicht pruefbar ist nicht bestanden');
+
+  /* (5) Die eigene Kontrolle des Werkzeugs faehrt hier mit. */
+  var afK = AF.kontrolle();
+  ok(afK.gefallen === 0 && afK.gut >= 14,
+     'Abspaltungsfaktor: die eigene Kontrolle (' + afK.gut + ' Zusicherungen) laeuft hier mit und ist gruen', afK.schlecht.join(' | '));
+
+  /* (6) VERHALTEN: ein echter Lauf in einen Wegwerf-Ordner, mit erfundener Quelle. Er faehrt
+   * messen(), die beiden Eichungen, eintragen() und atomarSchreiben() wirklich. Nur so laesst
+   * sich zusichern, WOHIN geschrieben wird, dass die Quellenlisten den Lauf unveraendert
+   * ueberstehen und dass das Placebo 1,000 ergibt. Kindprozess, weil die Archivwurzel beim
+   * Laden der Datei feststeht. */
+  var tmpA = fs.mkdtempSync(require('path').join(require('os').tmpdir(), 'abspaltung-kunst-'));
+  var resA = require('child_process').spawnSync(process.execPath,
+    [__dirname + '/tools/alpaca-abspaltungsfaktor.js', '--selbsttest-schreiben'],
+    { cwd: __dirname, encoding: 'utf8', timeout: 60000, env: Object.assign({}, process.env, { MD_ALPACA_WURZEL: tmpA }) });
+  var zeilenA = String(resA.stdout || '').trim().split('\n');
+  var oA = null;
+  try { oA = JSON.parse(zeilenA[zeilenA.length - 1]); } catch (e) { oA = null; }
+  ok(oA !== null, 'Abspaltungsfaktor: der Schreib-Selbsttest laeuft durch', String(resA.stderr || '').slice(0, 200));
+  if (oA) {
+    var afAusserhalb = oA.dateien.filter(function (d) { return !/^alpaca-massnahmen\//.test(d); });
+    ok(afAusserhalb.length === 0,
+       'Abspaltungsfaktor: der echte Lauf hat ' + oA.dateien.length + ' Dateien geschrieben - KEINE ausserhalb von alpaca-massnahmen/',
+       afAusserhalb.join(' | '));
+    ok(oA.eichungBestanden === true && oA.placeboFaktor === 1 && Math.abs(oA.positivFaktor - 1.057) < 1e-9,
+       'Abspaltungsfaktor: beide Eichungen laufen VOR dem ersten geschriebenen Byte - Placebo 1,000, Positivkontrolle 1,057',
+       JSON.stringify([oA.placeboFaktor, oA.positivFaktor]));
+    ok(oA.gutFaktor === 1.057 && oA.gutHerkunft === AF.HERKUNFT,
+       'Abspaltungsfaktor: der gemessene Faktor steht mit seiner Herkunft in der Maszahmen-Datei', JSON.stringify([oA.gutFaktor, oA.gutHerkunft]));
+    ok(oA.boesHatFaktor === false && oA.unklar === 1,
+       'Abspaltungsfaktor: der Wert mit gefallener Kontrolle hat nach dem Lauf KEINEN Faktor in der Datei');
+    ok(oA.quellenlistenUnveraendert === true,
+       'Abspaltungsfaktor: saetze, anwendbar und ohneFaktor ueberstehen den Lauf Byte fuer Byte - gemessen und geliefert bleiben unterscheidbar');
+    ok(oA.ableitungNimmtGut === true && oA.ableitungLaesstBoes === true,
+       'Abspaltungsfaktor: die Ableitung nimmt den gemessenen Faktor an - und laesst den unklaren Wert weiter aus der Kopie');
+    ok(oA.einsFaktor === 1 && oA.ableitungEinsKeineLuecke === true,
+       'Abspaltungsfaktor: ein gemessener Faktor 1 ist eine MESSUNG, keine Luecke - der Wert bekommt seine Kopie, nur ohne Rechnung');
+    /* Und der zweite Durchgang: eine Welt, in der die Positivkontrolle danebenliegt. Der
+     * Satz "faellt eine Eichung, wird kein einziger Faktor geschrieben" ist damit gemessen
+     * und nicht behauptet - ein ausgebauter Abbruch fiele sonst niemandem auf. */
+    ok(oA.eichbruchAbgebrochen === true && oA.eichbruchNichtsGeschrieben === true,
+       'Abspaltungsfaktor: faellt eine Eichung, bricht der Lauf ab und schreibt KEINEN einzigen Faktor',
+       JSON.stringify([oA.eichbruchAbgebrochen, oA.eichbruchNichtsGeschrieben]));
+  }
+  fs.rmSync(tmpA, { recursive: true, force: true });
+
+  /* (7) Und die Gegenrichtung in der Maszahmen-Phase: ein erneuter --massnahmen-Lauf holt
+   * die Saetze der Quelle neu und darf die GEMESSENEN Faktoren nicht mitnehmen. Sie kosten
+   * je einen Zweitabruf und stehen in keiner Antwort der Quelle - ueberschrieben waeren sie
+   * still weg, und die Werte fielen wieder aus der bereinigten Kopie. */
+  ok(/gemessenAlt = \(vorher && Array\.isArray\(vorher\.gemesseneFaktoren\)/.test(vsQ) &&
+     /gemesseneFaktoren: gemessenAlt \|\| undefined/.test(vsQ),
+     'Vollsammlung: ein erneuter Maszahmen-Lauf traegt die gemessenen Abspaltungsfaktoren weiter, statt sie still zu ueberschreiben');
+  /* Und die Leseregel wird auch von einem TEILLAUF gepflegt - sonst behauptet sie weiter,
+   * ein Wert habe keine Kopie, dessen Faktor inzwischen gemessen ist. */
+  ok(/ohneKopie = alteRegel\.ohneKopieWeilAbspaltung\.filter/.test(vsQ) && !/if \(!opt\.ordner\) \{\s*fs\.mkdirSync\(BEREINIGT/.test(vsQ),
+     'Vollsammlung: auch ein Teillauf kuerzt die Liste "ohne Kopie" in _regel.json - um genau die Ordner, die im Lauf waren');
 
   /* (8) Der Leck-Test der Massnahmen-Probe - am Ende der Kette (nie parallel). */
   probe((async function () {
