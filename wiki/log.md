@@ -2,6 +2,17 @@
 
 *Nur was sich am Wiki ändert. Die Projekt-Chronologie steht im Archiv `PROJEKTSTAND.md`.*
 
+- 03.09.2026 Spannen-Studie ausgewertet (Berechnungen): [kosten.md](kosten.md) Abschnitt
+  „Kassa-Hürde je Umsatzklasse und Jahr" trägt die gemessene Tabelle (K je Klasse × Jahr ×
+  Fenster mit Cluster-Bootstrap-Band, Median-Kurs und Cent-Boden-Anteil daneben), die
+  Kassa-Zeile in „Je Gefäß" ist durchgestrichen und durch **vier** Zahlen ersetzt, die
+  Kostenformel führt K je Klasse und F = 0; [belegstand.md](belegstand.md) bekommt den
+  Abschnitt „Wiedervorlage an der gemessenen Kassa-Hürde" (31 Varianten: 2 offen, 14 zu,
+  15 unentschieden mangels belegter Klasse) und zwei überholte Annahme-Hinweise gestrichen;
+  [offene-auftraege.md](offene-auftraege.md) Spannen-Studie gestrichen, drei kleine offene
+  Punkte angelegt (Zusatz C, Übernacht gegen Schlussfenster, Zusatz A ohne Gegenüberstellung).
+  Belege: `studien/vorregistrierung-2026-09-02-spannen-historisch/ERGEBNIS.md`,
+  `uebergabe/spannen-auswertung-2026-09-03.md`.
 - 03.09.2026 Release v8.38.1 (Wache): Erklärtexte stehen jetzt hinter dem i-Knopf neben der
   Überschrift statt als Dauertext auf jeder Seite, der Simulations-Hinweis läuft einmal in der
   Kopfzeile statt als eigener Kasten mit, und die widerlegte Stunden-Strategie ist aus der

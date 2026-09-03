@@ -1,10 +1,15 @@
 # Belegstand
 
 > ## **Belegte handelbare Kanten: NULL.**
-> Stand 02.09.2026. Das ist seit Wochen der Stand und er ist ehrlich.
+> Stand 03.09.2026. Das ist seit Wochen der Stand und er ist ehrlich.
 > **Neu seit 02.09.:** Für **31 von 52** gemessenen Varianten ist zusätzlich die **Größe
 > ausgeschlossen** — obere 95-%-Grenze unter der CFD-Hürde 0,1247 Pp. Siehe Abschnitt
 > „Größen-Ausschlüsse" unten.
+> **Neu am 03.09.:** Die Kassa-Hürde ist **gemessen** statt angenommen (55.455 Zeitpunkte,
+> [kosten.md](kosten.md)) — und sie ist **klassenspezifisch, Faktor 3,5 zwischen den
+> Klassen**. Von den 31 sind damit **2 wieder offen** (beide glockendruck, belegte Klasse),
+> 14 endgültig zu, 15 unentschieden mangels belegter Klasse. **„Wieder offen" ist eine
+> Größenaussage, kein Ertragsbeleg** — die Zahl der belegten Kanten bleibt **NULL**.
 
 ## Widerlegt (gemessen tot)
 
@@ -45,7 +50,7 @@ neue Messung — nur vorhandene Protokolle neu gelesen mit `tools/obergrenzen-be
 
 | Hürde | geschlossen von 52 Varianten |
 |---|---|
-| 0,06 Pp (Kassa-Aktie, **Annahme**) | 18 |
+| ~~0,06 Pp (Kassa-Aktie, **Annahme**)~~ | ~~18~~ — **überholt 03.09.**: die Kassa-Hürde ist gemessen und liegt je Klasse bei 0,0449 bis 0,1569 Pp, siehe [kosten.md](kosten.md) und den Abschnitt darunter |
 | 0,10 Pp (CFD-Runde ohne Nacht) | 26 |
 | **0,1247 Pp (CFD gehebelt, 1 Nacht)** | **31** — 21 offen |
 | 0,23 Pp (Standard-Schein) | 40 |
@@ -56,10 +61,98 @@ momentum, kapitulation, quartalsschub, monatswende, monatsende: **ungemessen, ni
 H≥2, rsi2seit Zeit-Ausstieg, t1/t2: **zu grob gemessen**, bei t1 V2 und t2 ist die je-Signal-Zahl
 sogar negativ (B2). *Fundstelle: `studien/wiedervorlage-2026-09-02/BERICHT.md` §1.3*
 
+### Wiedervorlage an der **gemessenen** Kassa-Hürde (03.09.2026)
+
+Die 31 gegen die CFD-Hürde 0,1247 Pp geschlossenen Varianten, gehalten gegen die am
+03.09.2026 gemessene Kassa-Hürde **ihrer Umsatzklasse** statt gegen eine Annahme.
+*Fundstelle: `studien/vorregistrierung-2026-09-02-spannen-historisch/ERGEBNIS.md` §5 ·
+Obergrenzen aus `studien/wiedervorlage-2026-09-02/BERICHT.md` §1.2 · Hürden in
+[kosten.md](kosten.md).*
+
+> **„Wieder offen" heißt: obere Grenze > Kassa-Hürde ihrer Klasse.** Das ist eine
+> **Größenaussage, kein Ertragsbeleg** — eine wieder offene Variante ist nicht besser
+> geworden, sie ist nur nicht mehr durch die Kosten erledigt. **Belegt ist keine davon.**
+
+**Zuordnung, Regel vor dem Lauf (Registrierung §8):** Die Protokolle führen die Liquidität
+ihres Universums nicht (geprüft an `glockendruck-nacht-n-2026-09-01.json`). Wo der Bericht
+sie ausdrücklich belegt, steht sie; sonst wird gegen **alle vier** Hürden ausgewiesen und das
+Universum als *unbekannt* markiert. **Es wird nicht geraten und nicht die günstigste Klasse
+gewählt.** Belegt sind nur zwei Fundstellen: glockendruck breit → Universum-Median 69 Mio $
+→ Klasse 50-250; die `*l`-Varianten → ausdrücklich „liquide ≥ 1 Mrd $" → Klasse ab1000.
+
+Verwendete Hürden (Fenster `mitte`, ab 2021): 5-50 = **0,1569** · 50-250 = **0,0854** ·
+250-1000 = **0,0647** · ab1000 = **0,0449** Pp.
+
+| Strategie | V | obere Grenze | Universum | offen gegen 5-50 | 50-250 | 250-1000 | ab1000 | Urteil |
+|---|---|---|---|---|---|---|---|---|
+| `t1-zwangsglattstellung` | 1 (k=2) | 0,1220 | *unbekannt* | nein | ja | ja | ja | hängt an der Klasse (3 von 4) |
+| `rsi2seit-mcp` | 4 (MCP 10 %) | 0,1180 | *unbekannt* | nein | ja | ja | ja | hängt an der Klasse (3 von 4) |
+| `glockendruck-nacht-h2` | 0 | 0,1140 | 50-250 | nein | ja | ja | ja | **wieder offen** (50-250) |
+| `rsi2seit-mcp` | 3 (MCP 25 %) | 0,1100 | *unbekannt* | nein | ja | ja | ja | hängt an der Klasse (3 von 4) |
+| `t1-zwangsglattstellung` | 0 (k=1,5) | 0,1100 | *unbekannt* | nein | ja | ja | ja | hängt an der Klasse (3 von 4) |
+| `rsi2seit-mcp` | 2 (MCP 50 %) | 0,0970 | *unbekannt* | nein | ja | ja | ja | hängt an der Klasse (3 von 4) |
+| `glockendruck-nacht-h1l` | 0 (liquide) | 0,0910 | ab1000 | nein | ja | ja | ja | **wieder offen** (ab1000) |
+| `rsi2seit-mcp` | 1 (MCP 75 %) | 0,0840 | *unbekannt* | nein | nein | ja | ja | hängt an der Klasse (2 von 4) |
+| `rsi2seit-mcp` | 0 (MCP 90 %) | 0,0830 | *unbekannt* | nein | nein | ja | ja | hängt an der Klasse (2 von 4) |
+| `winkelgrad` | 0 (S0) | 0,0770 | *unbekannt* | nein | nein | ja | ja | hängt an der Klasse (2 von 4) |
+| `glockendruck-nacht-n` | 0 | 0,0680 | 50-250 | nein | nein | ja | ja | **endgültig zu** (50-250) |
+| `winkelgrad` | 1 (S05) | 0,0670 | *unbekannt* | nein | nein | ja | ja | hängt an der Klasse (2 von 4) |
+| `winkelbestaetigt` | 0 (S0) | 0,0630 | *unbekannt* | nein | nein | nein | ja | hängt an der Klasse (1 von 4) |
+| `nachtstoss-umkehr-t` | 0 | 0,0599 | *unbekannt* | nein | nein | nein | ja | hängt an der Klasse (1 von 4) |
+| `winkelgrad` | 2 (S10) | 0,0580 | *unbekannt* | nein | nein | nein | ja | hängt an der Klasse (1 von 4) |
+| `winkelbestaetigt` | 1 (S05) | 0,0580 | *unbekannt* | nein | nein | nein | ja | hängt an der Klasse (1 von 4) |
+| `winkelgrad` | 3 (S15) | 0,0490 | *unbekannt* | nein | nein | nein | ja | hängt an der Klasse (1 von 4) |
+| `nachtstoss-umkehr-n-regime` | 1 (ab 2021) | 0,0450 | *unbekannt* | nein | nein | nein | ja | hängt an der Klasse (1 von 4) |
+| `winkelgrad` | 4 (S20) | 0,0440 | *unbekannt* | nein | nein | nein | nein | **endgültig zu**, in jeder Klasse |
+| `abgabedruck-nacht-n-regime` | 1 (ab 2021) | 0,0390 | *unbekannt* | nein | nein | nein | nein | **endgültig zu**, in jeder Klasse |
+| `abgabedruck-nacht-n-regime` | 0 (bis 2020) | 0,0340 | *unbekannt* | nein | nein | nein | nein | **endgültig zu**, in jeder Klasse |
+| `t3-stundendrift` | 1 (k=2) | 0,0330 | *unbekannt* | nein | nein | nein | nein | **endgültig zu**, in jeder Klasse |
+| `glockendruck-nacht-t` | 0 | 0,0320 | 50-250 | nein | nein | nein | nein | **endgültig zu** (50-250) |
+| `abgabedruck-nacht-t` | 0 | 0,0270 | *unbekannt* | nein | nein | nein | nein | **endgültig zu**, in jeder Klasse |
+| `abgabedruck-nacht-n` | 0 | 0,0270 | *unbekannt* | nein | nein | nein | nein | **endgültig zu**, in jeder Klasse |
+| `winkelbestaetigt` | 2 (S10) | 0,0230 | *unbekannt* | nein | nein | nein | nein | **endgültig zu**, in jeder Klasse |
+| `t3-stundendrift` | 0 (k=1) | 0,0210 | *unbekannt* | nein | nein | nein | nein | **endgültig zu**, in jeder Klasse |
+| `winkelbestaetigt` | 3 (S15) | 0,0200 | *unbekannt* | nein | nein | nein | nein | **endgültig zu**, in jeder Klasse |
+| `nachtstoss-umkehr-n` | 0 | 0,0000 | *unbekannt* | nein | nein | nein | nein | **endgültig zu**, in jeder Klasse |
+| `nachtstoss-umkehr-n-regime` | 0 (bis 2020) | -0,0060 | *unbekannt* | nein | nein | nein | nein | **endgültig zu**, in jeder Klasse |
+| `winkelbestaetigt` | 4 (S20) | -0,0100 | *unbekannt* | nein | nein | nein | nein | **endgültig zu**, in jeder Klasse |
+
+**Zählung (wörtlich aus `ERGEBNIS.md` §5):** von den **4 Varianten mit belegtem Universum**
+sind **2 wieder offen** (`glockendruck-nacht-h2`, 0,1140 gegen 0,0854 in 50-250;
+`glockendruck-nacht-h1l`, 0,0910 gegen 0,0449 in ab1000), **2 endgültig zu**
+(`glockendruck-nacht-n` 0,0680 und `glockendruck-nacht-t` 0,0320, beide 50-250).
+Von den **27 mit unbekanntem Universum** sind **12 in jeder Klasse zu** — das ist das robuste
+Teilergebnis —, **0 in jeder Klasse offen**, und **15 hängen daran, wo ihr Universum liegt**.
+
+**Also: 2 offen, 14 zu, 15 unentschieden, weil die Klasse unbekannt ist.** Keine der 15
+bekommt hier ein Urteil, und keine wird der günstigsten Klasse zugeschlagen.
+
+> **⚠ Der Cent-Boden-Vorbehalt gilt auch hier** (Registrierung §9a): für die liquiden Klassen
+> ist „die Hürde der Umsatzklasse" **keine Liquiditätsaussage**, sondern zu einem großen Teil
+> eine Aussage über den Aktienkurs. Eine Variante, die gegen `ab1000` wieder offen ist, ist es
+> auf teuren Aktien; auf billigen nicht. Siehe [kosten.md](kosten.md).
+
+> **⚠ Die Übernacht-Familie steht hier gegen die MITTAGS-Hürde.** `ERGEBNIS.md` §5 setzt für
+> alle 31 Varianten die `mitte`-Hürden ein, auch für die `*-nacht-*`- und
+> `nachtstoss-umkehr-*`-Zeilen. Registrierung §8 gibt der Übernacht-Familie ihre Hürde
+> dagegen im **Schlussfenster**. Zusatz B liefert dafür keinen Ersatz: der dort gemessene
+> Abstand Schlussauktion → Folgeeröffnung (Median **0,486 Pp**) ist nach `ERGEBNIS.md` §6
+> ausdrücklich **keine Kostengröße**, sondern die Größe des Übernachtsprungs. Die
+> Schlussfenster-Hürden sind gemessen (5-50 0,0868 · 50-250 0,0433 · 250-1000 0,0359 ·
+> ab1000 0,0317 Pp, alle Jahre gepoolt, ohne Band), aber `ERGEBNIS.md` weist sie **nicht je
+> Regime** aus und wendet sie nicht auf die Varianten an. **Die Übernacht-Zeilen der Tabelle
+> sind damit gegen die falsche Hürde gehalten; sie werden hier nicht nachgerechnet, sondern
+> als offener Punkt ausgewiesen** ([offene-auftraege.md](offene-auftraege.md)). Richtung:
+> das Schlussfenster ist in jeder Klasse **günstiger** als das Mittagsfenster, es würden also
+> eher mehr Varianten „wieder offen" als weniger.
+
 ### Depot-Kandidatenliste — Antwort: **NEIN**
 
-> ⚠ **Die ~0,06 Pp Kassa-Hürde ist eine ANNAHME** (kein Broker-Konto, Freigabeschwelle der
-> Kostenmessung unerfüllt, siehe [kosten.md](kosten.md)). **Diese Liste begründet kein JA.**
+> ⚠ ~~**Die ~0,06 Pp Kassa-Hürde ist eine ANNAHME**~~ **Überholt 03.09.2026: die Kassa-Hürde
+> ist gemessen** und klassenspezifisch (0,0449 bis 0,1569 Pp, [kosten.md](kosten.md)). Die
+> Rechnung dieses Abschnitts steht noch gegen die alte Annahme 0,06 und ist **nicht** gegen
+> die gemessenen Hürden neu aufgestellt worden — das wäre eine neue Auswertung, sie steht in
+> [offene-auftraege.md](offene-auftraege.md). **Diese Liste begründet kein JA.**
 
 Zwischen Kassa-Annahme (0,06) und CFD-Hürde (0,1247) liegt als Punktschätzer mit unterer Grenze
 über null **genau eine** Variante: glockendruck H=2 breit, **+0,0604 Pp** — 0,0004 über der
