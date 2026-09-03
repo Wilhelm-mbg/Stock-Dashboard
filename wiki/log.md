@@ -2,6 +2,9 @@
 
 *Nur was sich am Wiki ändert. Die Projekt-Chronologie steht im Archiv `PROJEKTSTAND.md`.*
 
+- 03.09.2026 Release v8.38.3 (Wache): Kursarchiv trägt jetzt die Quelle je Kerze
+  (Yahoo/Alpaca/Capital, sichtbar ändert sich nichts) und verliert keine Sitzungsstunden
+  mehr in den Minuten-Archiven (Rasterfilter-Fix R5 ausgeliefert).
 - 03.09.2026 Rasterfilter-Fix R5 geliefert (Bau): [archiv-zusammenfuehrung.md](archiv-zusammenfuehrung.md)
   §7/§8a — die Minute-0-Regel in `kerzenquelle.js rasterFilter()` gilt jetzt nur noch für
   60m-Nicht-Krypto statt für jedes Intervall außer 1d; sie kannte vorher weder das Intervall
