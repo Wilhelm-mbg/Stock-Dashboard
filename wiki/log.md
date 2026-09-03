@@ -2,6 +2,9 @@
 
 *Nur was sich am Wiki ändert. Die Projekt-Chronologie steht im Archiv `PROJEKTSTAND.md`.*
 
+- 03.09.2026 Release v8.38.2 (Wache): Kursarchiv zeigt sich jetzt als Grafik (Balken je
+  Auflösung, Kästchen je Tag) statt als Tabelle; Mittelfrist-Analyse & Bücher-Steuerung von
+  den Einstellungen in Werkzeuge → Betrieb gezogen.
 - 03.09.2026 Oberfläche Stufe 4b (Bau): [oberflaeche.md](oberflaeche.md) §3 Zielbild — Regeln
   ohne Mittelfrist, Betrieb mit zwölfter Klappe „Mittelfrist-Analyse & Bücher steuern"; §4 Stufe 4b
   als geliefert mit Fundstellen der Abhängigkeitsprüfung (`mfdepot.js:143`, `:184`, `:192`);
