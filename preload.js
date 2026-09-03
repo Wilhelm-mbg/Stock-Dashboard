@@ -60,6 +60,9 @@ contextBridge.exposeInMainWorld('api', {
   updateSetAuto: (on) => ipcRenderer.invoke('update-set-auto', on),
   onUpdate: (cb) => ipcRenderer.on('update-state', (_ev, st) => cb(st)),
   sammlerStand: () => ipcRenderer.invoke('sammler-stand'),
+  /* Reine Leseauskunft fuer die Archiv-Grafik: welche Handelstage liegen wirklich
+   * im Archiv. Loest kein Sammeln aus (Stufe 4, 03.09.2026). */
+  archivAbdeckung: () => ipcRenderer.invoke('archiv-abdeckung'),
   sammlerStart: (intervall) => ipcRenderer.invoke('sammler-start', intervall),
   sammlerStop: () => ipcRenderer.invoke('sammler-stop'),
   sammlerEinstellen: (e) => ipcRenderer.invoke('sammler-einstellen', e),

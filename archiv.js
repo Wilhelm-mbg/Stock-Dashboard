@@ -142,11 +142,69 @@
     return (bars || []).filter(function (b) { return b[0] >= cut; });
   }
 
-  /** Zahl der verschiedenen Handelstage (UTC) in einer Serie. */
-  function abdeckungTage(bars) {
+  /** Die verschiedenen Handelstage (UTC) einer Serie, aufsteigend sortiert.
+   *
+   *  LESEN, NICHT SAMMELN: diese Funktion holt nichts, schreibt nichts und kennt
+   *  weder Datei noch Netz. Sie bekommt Kerzen und gibt Tage zurueck.
+   *
+   *  Warum die Tage selbst und nicht nur ihre Zahl: eine Zahl kann nicht sagen, WO
+   *  die Luecke sitzt. "38 Tage im Archiv" sieht bei 38 zusammenhaengenden Tagen
+   *  genauso aus wie bei 38 Tagen mit einem toten Wochenblock mittendrin - und
+   *  genau dieser Unterschied ist die Frage, die die Archiv-Grafik beantwortet.
+   *  Kerzen ohne brauchbaren Zeitstempel werden uebersprungen statt zu einem
+   *  'Invalid Date' zu werden: eine kaputte Zeile darf die Auskunft nicht umbringen. */
+  function tageVon(bars) {
     var set = {};
-    (bars || []).forEach(function (b) { set[new Date(b[0]).toISOString().slice(0, 10)] = 1; });
-    return Object.keys(set).length;
+    (bars || []).forEach(function (b) {
+      if (!b || !b.length || !isFinite(b[0])) return;
+      set[new Date(b[0]).toISOString().slice(0, 10)] = 1;
+    });
+    return Object.keys(set).sort();
+  }
+
+  /** Zahl der verschiedenen Handelstage (UTC) in einer Serie. */
+  function abdeckungTage(bars) { return tageVon(bars).length; }
+
+  /** WIE VIELE DER ABGETASTETEN REIHEN TRAGEN WELCHEN TAG.
+   *  Eingabe: eine Liste von Tageslisten, je eine Reihe (so wie tageVon sie liefert).
+   *  Ausgabe: { reihen, jeTag: { 'YYYY-MM-DD': n } } - n ist die Zahl der REIHEN mit
+   *  diesem Tag, nicht die Zahl der Kerzen.
+   *
+   *  Getrennt vom Dateilesen, damit sich das Bild ohne Archiv pruefen laesst. Und
+   *  'reihen' steht ausdruecklich im Ergebnis: ein Tag, den keine Reihe hat, und
+   *  ein Tag, den niemand angesehen hat, sehen von aussen gleich aus (wiki/
+   *  fehlerformen.md, "0 gefunden vs. nichts zu durchsuchen"). */
+  function tagesBild(tageListen) {
+    var jeTag = {}, reihen = 0;
+    (tageListen || []).forEach(function (tage) {
+      if (!tage) return;
+      reihen++;
+      tage.forEach(function (t) { jeTag[t] = (jeTag[t] || 0) + 1; });
+    });
+    return { reihen: reihen, jeTag: jeTag };
+  }
+
+  /** DAS BILD FUER DIE ARCHIV-GRAFIK: je erwartetem Handelstag ein Anteil zwischen
+   *  0 und 1, dazu die Zahl der vollen und der lueckenhaften Tage.
+   *
+   *  tageListen  - je abgetasteter Reihe die Liste ihrer Tage (aus tageVon)
+   *  tage        - die Handelstage, die dort liegen SOLLTEN (Kalender des Aufrufers)
+   *  vollAb      - ab welchem Anteil ein Tag als gesammelt gilt
+   *
+   *  OHNE ANGESEHENE REIHE IST DER ANTEIL NULL, nicht eins: ein leeres Archiv darf
+   *  nicht aussehen wie ein volles. Und die Zahl der angesehenen Reihen geht mit
+   *  zurueck - "kein Wert hat diesen Tag" und "niemand hat nachgesehen" sind zwei
+   *  verschiedene Aussagen, und nur eine davon ist ein Befund. */
+  function abdeckungBild(tageListen, tage, vollAb) {
+    var b = tagesBild(tageListen);
+    var schwelle = vollAb > 0 ? vollAb : 1;
+    var voll = 0, teil = 0;
+    var anteile = (tage || []).map(function (t) {
+      var a = b.reihen ? (b.jeTag[t] || 0) / b.reihen : 0;
+      if (a >= schwelle) voll++; else if (a > 0) teil++;
+      return a;
+    });
+    return { reihen: b.reihen, anteile: anteile, vollTage: voll, teilTage: teil };
   }
 
   /** Bars fürs Speichern verschlanken: Preise auf 7 SIGNIFIKANTE Stellen, Volumen
@@ -351,7 +409,9 @@
   var Archiv = {
     MAX_TAGE: MAX_TAGE, TAGE_MAX: TAGE_MAX, fensterFuer: fensterFuer,
     mischeBars: mischeBars, kappeTage: kappeTage, ohneStempel: ohneStempel, rasterPhase: rasterPhase,
-    abdeckungTage: abdeckungTage, schlank: schlank, dollarVolTag: dollarVolTag,
+    abdeckungTage: abdeckungTage, tageVon: tageVon, tagesBild: tagesBild,
+    abdeckungBild: abdeckungBild,
+    schlank: schlank, dollarVolTag: dollarVolTag,
     spannenJeTag: spannenJeTag,
     baueArchiv: baueArchiv
   };

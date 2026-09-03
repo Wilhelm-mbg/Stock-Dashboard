@@ -5616,12 +5616,10 @@
   }
 
   function renderRegime(phase) {
-    var hint = document.getElementById('regimeHint');
-    if (hint && D) {
-      hint.textContent = autoOptCfg().regime !== false
-        ? 'Die Marktlage wird stündlich gemessen und hier angezeigt. Die Strategie stellt sie nicht um – das entscheidet der Autopilot nach der Nacht-Messung, oder du selbst. In erkennbar wirren Phasen setzt sie neue Einstiege für rund eine Stunde aus; offene Positionen laufen normal weiter.'
-        : '';
-    }
+    /* Der Erklärabsatz zur Marktlage stand bis Stufe 4 (03.09.2026) als Dauertext im
+     * Fuß der Intraday-Karte. Er steht jetzt wörtlich im Erklärregister unter
+     * regeln.intraday, der i-Knopf dazu am Kopf derselben Karte. Verschoben, nicht
+     * gekürzt. Der Live-Stand (#regimeStatus, unten) bleibt, wo er war. */
     var el = document.getElementById('regimeStatus');
     if (!el || !D) return;
     var a = autoOptCfg();
@@ -6242,21 +6240,19 @@
     huerdeAnzeigen();          // Kostenhuerde beim Start zeigen, nicht erst nach einer Aenderung
     regelKopfAnzeigen();   // dieselbe Quelle, derselbe Takt wie die Huerde
     regelnAnzeigen();
-    var deck = '';
+    /* Die Abdeckung wird weiter GERECHNET, aber nicht mehr hier gezeigt: seit
+     * Oberfläche Stufe 4 (03.09.2026) steht sie als Grafik in Werkzeuge → Betrieb,
+     * Klappe Kursarchiv – dort für alle fünf Auflösungen und mit den Lücken. Zwei
+     * Balken an zwei Orten wären zwei Wahrheiten über dasselbe Archiv.
+     * Der Wert bleibt im Analyse-Export (berichte.js liest EXPORT_ABDECKUNG). */
     if (window.Archiv) {
       try {
         var syms = universe();
         var d1 = await window.Archiv.abdeckung('1m', syms);
         var d5 = await window.Archiv.abdeckung('5m', syms);
         var ziel = MIN_OOS_TAGE * 5;   // 4 OOS-Scheiben + Training brauchen ~5× die Mindest-Tage
-        function balken(t) {
-          var pct = Math.min(100, Math.round(t / ziel * 100));
-          return '<span class="pbar" style="display:inline-block; width:90px; vertical-align:middle;"><span style="width:' + pct + '%;"></span></span> ' + t + '/' + ziel + ' Tage';
-        }
         EXPORT_ABDECKUNG = { at: Date.now(), min1: d1, min5: d5, zielTage: ziel };
-        deck = '<div style="margin-top:4px;">Kursarchiv (Ziel für volle Belastbarkeit: ' + ziel + ' Handelstage):' +
-          '<div>1-Min: ' + balken(d1.tageMedian) + ' · 5-Min: ' + balken(d5.tageMedian) + ' <span style="color:var(--muted);">(' + Math.max(d1.symbole, d5.symbole) + ' Werte, rollierend 90 Kalendertage)</span></div></div>';
-      } catch (e) { /* Anzeige ist optional */ }
+      } catch (e) { /* der Export ist optional */ }
     }
     var c = a.lastCheck;
     var txt = c
@@ -6269,7 +6265,7 @@
     var apl = a.lastApply ? '<div style="color:var(--muted); margin-top:3px;">Zuletzt übernommen: ' + U.dt(a.lastApply.at) + ' · ' + U.esc(a.lastApply.name || '') + '</div>' : '';
     var hinweis = a.on === false ? 'Autopilot ist aus – es wird gesammelt, aber nichts gemessen oder geändert.'
       : 'Misst jede Nacht nach US-Börsenschluss und wendet doppelt bestätigte Ergebnisse vor Handelsbeginn an. Von Hand gesetzte Felder bleiben unangetastet.';
-    el.innerHTML = txt + pend + apl + bfz + tfz + deck + '<div style="color:var(--muted); margin-top:3px;">' + hinweis + '</div>';
+    el.innerHTML = txt + pend + apl + bfz + tfz + '<div style="color:var(--muted); margin-top:3px;">' + hinweis + '</div>';
   }
 
   function renderCentral() {

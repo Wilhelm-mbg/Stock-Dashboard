@@ -682,6 +682,12 @@
     'heute.simulation': {
       titel: 'Was hier simuliert wird',
       punkte: [
+        /* Stufe 4 (03.09.2026): der Satz aus der Kopfzeile, WOERTLICH. Er stand dort
+         * seit Stufe 3 in voller Laenge und drueckte die vier Knoepfe in eine zweite
+         * Reihe; sichtbar geblieben ist die Marke "Simulation" mit dem Knopf, der
+         * diesen Eintrag oeffnet. Er steht bewusst an erster Stelle - er ist die
+         * Zusicherung, alles Weitere ist ihre Ausfuehrung. */
+        'Alles hier ist Simulation. Es wird nichts gekauft und nichts verkauft.',
         'Optionsscheine werden synthetisch bepreist (Black-Scholes): Hebel, Zeitwertverfall, Volatilitäts-Smile und der Vola-Einbruch nach Ergebnisterminen sind abgebildet, echte Emittenten-Preise nicht.',
         'Läuft, solange die App geöffnet ist.',
         'Hier steht, was das Depot hält und was es getan hat. Wonach gehandelt wird – Strategien, Einstellungen und Werkzeuge – steht im Reiter <b>Regeln</b>.'
@@ -920,6 +926,15 @@
         'Für die beiden gemessenen Kanten passt das nicht – sie handeln den Basiswert, nur Long und über Nacht –, deshalb verweigert der Backtest dort die Auskunft; sie misst der Autopilot nachts auf dem Kursarchiv.',
         'Historische Nachrichten gibt es nicht, getestet wird der technische Kern.',
         'Der Belegstand jeder Strategie steht auf der Pille <b>Strategien</b> – der Backtest ist ein Rechenwerkzeug, kein Urteil.'
+      ]
+    },
+    /* Stufe 4 (03.09.2026): der Absatz stand als Dauertext im Fuss der
+     * Intraday-Karte (#regimeHint, geschrieben von depot.js renderRegime). Wortlaut
+     * unveraendert; sichtbar geblieben ist dort der Live-Stand, nicht die Erklaerung. */
+    'regeln.intraday': {
+      titel: 'Die Marktlage in der Intraday-Karte',
+      punkte: [
+        'Die Marktlage wird stündlich gemessen und hier angezeigt. Die Strategie stellt sie nicht um – das entscheidet der Autopilot nach der Nacht-Messung, oder du selbst. In erkennbar wirren Phasen setzt sie neue Einstiege für rund eine Stunde aus; offene Positionen laufen normal weiter.'
       ]
     },
     'regeln.watchlist': {

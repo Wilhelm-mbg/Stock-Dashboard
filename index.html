@@ -277,8 +277,18 @@
   .stamp { color: var(--ink-2); font-size: var(--fs-text); }
   /* Der Simulations-Hinweis stand bis Stufe 3 (03.09.2026) als eigener Kasten unter
      den Regeln - also nur dort, wo man gerade war. Er gilt fuer die ganze App und
-     steht deshalb EINMAL neben dem Titel, wo er auf jedem Reiter mitlaeuft. */
-  .simkopf { color: var(--muted); font-size: var(--fs-neben); }
+     steht deshalb neben dem Titel, wo er auf jedem Reiter mitlaeuft.
+     SEIT STUFE 4 als kurze Marke statt als ganzer Satz: der Satz drueckte bei 1280 px
+     die vier Knoepfe in eine zweite Reihe und kostete auf JEDEM Reiter rund 30 px
+     Hoehe (Abweichung 5 der Stufe-3-Uebergabe). Er ist nicht gekuerzt, sondern
+     woertlich in den Registereintrag heute.simulation gewandert; der i-Knopf an der
+     Marke oeffnet ihn. Sichtbar bleibt das Wort, das die Zusicherung traegt. */
+  .simmarke {
+    display: inline-flex; align-items: center; gap: 5px;
+    color: var(--ink-2); font-size: var(--fs-klein); font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.06em;
+    border: 1px solid var(--border); border-radius: var(--r-pille); padding: 2px 8px;
+  }
   .stamp .dot { display:inline-block; width:7px; height:7px; border-radius:var(--r-kreis); margin-right:5px; vertical-align: 1px; }
   .dot.closed { background: var(--muted); }
   .dot.open   { background: var(--up); }
@@ -670,7 +680,6 @@
   .buecher { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 10px; margin-bottom: 14px; }
   @media (max-width: 700px) { .buecher { grid-template-columns: 1fr; } }
   .buecher-kopf { font-size: var(--fs-neben); color: var(--ink-2); font-weight: 600; margin-bottom: 8px; }
-  .buecher-kopf .buecher-zusicherung { font-weight: 400; color: var(--muted); }
   .buch h3 { margin-bottom: 8px; }
   .buch .buch-konfig { font-weight: 400; color: var(--muted); }
   .buch-wert { font-size: var(--fs-titel); font-weight: 700; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; }
@@ -693,6 +702,30 @@
      den Stand an den rechten Rand setzt. :empty blendet ihn ganz aus - eine leere
      Statuszeile soll keinen Platz beanspruchen und keinen Zustand vortaeuschen. */
   #sub-betrieb details[data-klappe] > summary { display: flex; }
+
+  /* ---- Archiv-Grafik (Oberflaeche Stufe 4, 03.09.2026) ----
+     Eine Zeile je Aufloesung: Name, Balken, Zahl. Der Balken ist ein SVG mit einer
+     Zelle je Handelstag; er darf sich in die Breite ziehen, seine Hoehe steht fest.
+     Die Tabelle, die hier bis Stufe 3 stand, hatte sechs Spalten - Wilhelms Vorgabe
+     vom 02.09. war "hoechstens EINE Grafik, wie vollstaendig das Archiv ist". */
+  .arch-grafik { margin: 2px 0 10px; }
+  .arch-zeile { display: grid; grid-template-columns: 92px 1fr 74px; gap: 10px; align-items: center; }
+  .arch-name { font-size: var(--fs-neben); color: var(--ink-2); }
+  .arch-balken { width: 100%; height: 13px; display: block; border-radius: var(--r-klein); }
+  .arch-zahl { font-size: var(--fs-neben); color: var(--ink-2); text-align: right; font-variant-numeric: tabular-nums; }
+  .arch-fuss { font-size: var(--fs-klein); color: var(--muted); margin: 1px 0 9px 102px; }
+  .arch-legende { font-size: var(--fs-klein); color: var(--muted); line-height: 1.6; max-width: 78ch; }
+  .arch-punkt { display: inline-block; width: 9px; height: 9px; border-radius: var(--r-klein); vertical-align: 0; }
+  /* Farbfleck und sein Wort duerfen nicht getrennt umbrechen - ein Punkt am
+     Zeilenende und "gesammelt" am naechsten Anfang ist keine Legende mehr. */
+  .arch-legende .arch-teil { white-space: nowrap; }
+  .arch-knoepfe { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; margin-bottom: 10px; }
+  .arch-knoepfe-was { font-size: var(--fs-neben); color: var(--muted); }
+  .arch-knoepfe .arch-hol { padding: 3px 9px; font-size: var(--fs-klein); }
+  @media (max-width: 620px) {
+    .arch-zeile { grid-template-columns: 78px 1fr 62px; }
+    .arch-fuss { margin-left: 0; }
+  }
   .klappe-stand { margin-left: auto; color: var(--muted); font-weight: 400; text-align: right; font-variant-numeric: tabular-nums; }
   .klappe-stand:empty { display: none; }
   .badge { display: inline-block; font-size: var(--fs-klein); font-weight: 700; border-radius: var(--r-normal); padding: 1px 6px; margin-right: 4px; }
@@ -863,7 +896,8 @@
 
 <header>
   <h1>Markt-Dashboard</h1>
-  <span class="simkopf">Alles hier ist Simulation. Es wird nichts gekauft und nichts verkauft.</span>
+  <span class="simmarke">Simulation<button class="info" type="button" data-info="heute.simulation"
+        aria-expanded="false" aria-label="Erklärung: Alles hier ist Simulation">i</button></span>
   <span class="stamp" id="stamp" role="status" aria-live="polite"><span class="dot closed"></span>Lade Daten …</span>
   <span class="err" id="err" role="status" aria-live="polite"></span>
   <div class="hbtns">
@@ -1277,6 +1311,8 @@
       <div class="strat-card intraday">
         <div class="head">
           <h3>Intraday-Strategie</h3>
+          <button class="info" type="button" data-info="regeln.intraday" aria-expanded="false"
+                  aria-label="Erklärung: Die Marktlage in der Intraday-Karte">i</button>
           <span class="state off" id="idState">aus</span>
           <label class="switch"><input type="checkbox" id="idEnabled"><span class="knob"></span></label>
         </div>
@@ -1444,7 +1480,10 @@
           </div>
         </div>
         </details>
-        <div class="strat-foot" style="flex-direction:column; align-items:flex-start; gap:4px;"><span id="idStatus"></span><span id="tuneStatus"></span><span id="regimeHint" style="color:var(--muted); font-size:var(--fs-neben);"></span></div>
+        <!-- #regimeHint stand hier und trug nur den Erklaerabsatz zur Marktlage. Der steht
+             seit Stufe 4 (03.09.2026) woertlich im Register (regeln.intraday), der Knopf
+             dazu oben am Kartenkopf. Was bleibt, ist Live-Stand: #idStatus und #tuneStatus. -->
+        <div class="strat-foot" style="flex-direction:column; align-items:flex-start; gap:4px;"><span id="idStatus"></span><span id="tuneStatus"></span></div>
       </div>
 
       <div style="display:grid; gap:12px; align-content:start;">
@@ -1638,9 +1677,10 @@
   </div><!-- /sub-einstellungen -->
 
   <!-- Der Kasten "Alles hier ist Simulation ..." stand hier am Fuss des Reiters -
-       also nur auf DIESEM Reiter, obwohl der Satz fuer die ganze App gilt. Er steht
-       seit Stufe 3 (03.09.2026) einmal in der Kopfzeile neben dem Titel (.simkopf)
-       und laeuft damit auf jedem Reiter mit. Wortlaut unveraendert. -->
+       also nur auf DIESEM Reiter, obwohl der Satz fuer die ganze App gilt. Er zog mit
+       Stufe 3 (03.09.2026) in die Kopfzeile und mit Stufe 4 einen Schritt weiter: die
+       Kopfzeile traegt seither die Marke, der Wortlaut steht unveraendert im
+       Erklaerregister (heute.simulation), das ihr i-Knopf oeffnet. -->
 </div><!-- /tab-strategien -->
 
 <div id="tab-werkzeuge" class="tab" role="tabpanel" aria-labelledby="reiter-werkzeuge">

@@ -9,13 +9,21 @@
  * aussen sah alles gesund aus. Eine Anzeige, die nur "laeuft" sagt, waere die
  * naechste Verkleidung derselben Stille.
  *
- * Deshalb stehen hier vier Zahlen je Aufloesung, und keine davon ist geschoent:
- *   - wie viele Werte im Archiv liegen (und wie viele davon angesehen wurden)
- *   - wie alt die juengste Kerze ist
- *   - wann zuletzt gesammelt wurde
- *   - wie viele Werte gerade offen sind
- * Dazu, wenn es soweit ist, der Satz, den niemand hoeren will: wie viele Tage
- * unwiederbringlich weg sind.
+ * SEIT STUFE 4 DES OBERFLAECHEN-UMBAUS (03.09.2026) ist es EINE GRAFIK statt einer
+ * Tabelle. Wilhelms Vorgabe vom 02.09.: Backtest und Kursarchiv "wenig bis gar
+ * nicht" sichtbar - hoechstens eine Grafik, wie das Archiv aussieht und wie
+ * vollstaendig es ist. Die sechs Spalten waren fuer die taegliche Nutzung zu viel;
+ * geblieben ist je Aufloesung ein Balken ueber die letzten 60 Handelstage.
+ *
+ * Der Balken ist kein Fuellstand, sondern eine KARTE: eine Zelle je Handelstag,
+ * links der aelteste, rechts der zuletzt abgeschlossene. Voll heisst gesammelt,
+ * halb heisst lueckenhaft, leer heisst nichts da - eine Kerbe mittendrin ist damit
+ * sichtbar, und genau die verschwindet in jeder Prozentzahl. Die Zahlen kommen aus
+ * archiv-abdeckung (main.js) und sammler-stand; keine einzige steht im Markup.
+ *
+ * Geschoent wird weiter nichts: wie viele Werte im Archiv liegen, wie viele davon
+ * angesehen wurden, wie alt die juengste Kerze ist - und, wenn es soweit ist, der
+ * Satz, den niemand hoeren will: wie viele Tage unwiederbringlich weg sind.
  *
  * Diese Datei zeigt und stoesst an. Sie misst nichts und handelt nicht.
  */
@@ -24,6 +32,10 @@
   var api = root.api;
 
   var LETZTER = null;
+  /* Die Abdeckung kommt aus einem EIGENEN Aufruf und wird gemerkt: waehrend eines
+   * Laufs funkt main.js alle zehn Werte einen Stand ans Fenster, und ein Dateilesen
+   * in diesem Takt waere eine Anzeige, die das Sammeln ausbremst. */
+  var LETZTE_ABDECKUNG = null;
   var laeuftAnfrage = false;
 
   function el(id) { return document.getElementById(id); }
@@ -51,56 +63,125 @@
   var NAME = { '1m': '1 Minute', '5m': '5 Minuten', '15m': '15 Minuten',
                '60m': '1 Stunde', '1d': '1 Tag' };
 
-  function zeileHtml(z, st) {
-    var laeuftHier = st.laeuft && st.laufIntervall === z.intervall;
-    var h = '';
-    h += '<tr>';
-    h += '<th scope="row">' + U.esc(NAME[z.intervall] || z.intervall) + '</th>';
-    h += '<td class="num">' + z.werte.toLocaleString('de-DE') + '</td>';
-    h += '<td>' + U.esc(z.juengsterTag ? alterText(z.juengsteMs) : 'nichts da') + '</td>';
-    h += '<td>' + U.esc(tagText(z.zuletztGesammelt)) + '</td>';
-    /* Abgeschaltet sieht anders aus als "nichts offen": eine Aufloesung mit Abstand 0
-     * ist nicht auf Stand, sie ist gar nicht vorgesehen. */
-    h += '<td class="num">' + (!z.abstandTage ? 'aus'
-      : (z.offeneWerte ? z.offeneWerte.toLocaleString('de-DE') + ' / ' + z.imUniversum.toLocaleString('de-DE') : '–')) + '</td>';
-    h += '<td>';
-    if (laeuftHier) {
-      h += '<span style="color:var(--series);">sammelt gerade</span>';
-    } else if (z.hindernis) {
-      /* Ein leeres Archiv ohne Universum ist NICHT "auf Stand". Genau so sieht die
-       * Stille aus, gegen die diese Karte gebaut ist. */
-      h += '<span style="color:var(--down);">geht nicht</span>';
-    } else if (z.verloren) {
-      h += '<span style="color:var(--down);">' + z.verloreneTage.toFixed(1) + ' Tage verloren</span>';
-    } else if (z.faellig) {
-      h += '<span style="color:var(--series);">dran</span>';
-    } else {
-      h += '<span style="color:var(--muted);">auf Stand</span>';
+  /* ================= DIE GRAFIK =================
+   * Eine Zeile je Aufloesung: Name, Balken, Zahl. Reines SVG - dieselbe Bauart wie
+   * die Kacheln, kein neuer Zeichner. drawLines() aus chart.js kann es nicht: es
+   * zeichnet Zeitreihen mit Achsen, hier geht es um sechzig Kaestchen.
+   *
+   * preserveAspectRatio="none" mit fester viewBox: der Balken zieht sich in die
+   * Breite, ohne dass die Zellen ihre Hoehe aendern. */
+  var VB_BREITE = 600, VB_HOEHE = 13;
+
+  function zellenFarbe(anteil, vollAb) {
+    if (anteil >= vollAb) return 'var(--up)';       // gesammelt
+    if (anteil > 0) return 'var(--warn)';           // lueckenhaft: nur ein Teil der Reihen
+    return 'var(--grid)';                           // nichts da - die Kerbe
+  }
+
+  /* Derselbe Satz fuer Auge und Vorlesehilfe. Zwei getrennte Formulierungen waeren
+   * zwei Wahrheiten - und die vorgelesene wuerde als erste falsch. */
+  function balkenText(r, ab) {
+    var name = NAME[r.intervall] || r.intervall;
+    if (r.grund) return name + ': ' + r.grund;
+    if (!r.angesehen) return name + ': keine Reihe angesehen';
+    return name + ': ' + r.vollTage + ' von ' + ab.tage.length + ' Handelstagen gesammelt, ' +
+      r.teilTage + ' lueckenhaft, ' + (ab.tage.length - r.vollTage - r.teilTage) + ' leer';
+  }
+
+  function balkenSvg(r, ab) {
+    var n = ab.tage.length || 1;
+    var breite = VB_BREITE / n;
+    var s = '<svg class="arch-balken" viewBox="0 0 ' + VB_BREITE + ' ' + VB_HOEHE + '"' +
+      ' preserveAspectRatio="none" role="img" aria-label="' + U.esc(balkenText(r, ab)) + '">';
+    /* Der Untergrund zuerst: ohne ihn saehe ein leeres Archiv aus wie gar keine
+     * Grafik - und "nichts gesammelt" ist eine Aussage, kein Fehlen. */
+    s += '<rect x="0" y="0" width="' + VB_BREITE + '" height="' + VB_HOEHE + '" fill="var(--grid)"></rect>';
+    (r.anteile || []).forEach(function (anteil, i) {
+      if (!anteil) return;
+      s += '<rect x="' + (i * breite).toFixed(2) + '" y="0" width="' + Math.max(1, breite - 0.8).toFixed(2) +
+        '" height="' + VB_HOEHE + '" fill="' + zellenFarbe(anteil, ab.vollAb) + '"></rect>';
+    });
+    return s + '</svg>';
+  }
+
+  /* Was in dieser Zeile schiefsteht - und nichts sonst. Eine Anzeige, die in jedem
+   * Zustand gleich viel Text macht, verliert genau den Fall, fuer den sie gebaut ist. */
+  function alarmHtml(z, st) {
+    if (st.laeuft && st.laufIntervall === z.intervall) {
+      return ' · <span style="color:var(--series);">sammelt gerade</span>';
     }
-    h += '</td>';
-    /* Der zugaengliche Name traegt die Aufloesung (#110): drei Knoepfe, die
-     * dasselbe Wort sagen, aber drei verschiedene Abrufe starten, kann die
-     * Tastatur nicht unterscheiden - die Zeilenueberschrift zaehlt fuer den
-     * Namen des Knopfs nicht mit. Der sichtbare Text bleibt kurz. */
-    h += '<td><button class="btn ghost arch-hol" type="button" data-iv="' + U.esc(z.intervall) + '"' +
-      ' aria-label="Jetzt holen: ' + U.esc(NAME[z.intervall] || z.intervall) + '"' +
-      (st.laeuft ? ' disabled' : '') + ' style="padding:3px 9px; font-size:var(--fs-klein);">Jetzt holen</button></td>';
-    h += '</tr>';
-    /* Die Begruendung steht unter der Zeile, nicht als Titel-Attribut: was nur beim
-     * Darueberfahren erscheint, liest niemand, wenn er es braeuchte. */
-    h += '<tr><td colspan="7" style="padding-top:0; border-top:none; font-size:var(--fs-klein); color:var(--muted);">' +
-      U.esc(z.grund || '') +
-      (z.sperre && z.sperre.verwaist
-        ? ' · <span style="color:var(--down);">Liegengebliebene Sperre: ' + U.esc(z.sperre.warum || 'unbekannt') + '</span>'
-        : '') +
-      '</td></tr>';
+    if (z.hindernis) return ' · <span style="color:var(--down);">geht nicht: ' + U.esc(z.hindernis) + '</span>';
+    if (z.verloren) return ' · <span style="color:var(--down);">' + z.verloreneTage.toFixed(1) + ' Tage unwiederbringlich weg</span>';
+    if (z.sperre && z.sperre.verwaist) {
+      return ' · <span style="color:var(--down);">liegengebliebene Sperre: ' + U.esc(z.sperre.warum || 'unbekannt') + '</span>';
+    }
+    if (!z.abstandTage) return ' · <span style="color:var(--muted);">nicht vorgesehen</span>';
+    return '';
+  }
+
+  function grafikHtml(st, ab) {
+    if (!ab || !ab.tage || !ab.tage.length) {
+      return '<div class="loading" id="archivGrafik">Sehe nach, welche Handelstage im Archiv liegen …</div>';
+    }
+    if (ab.fehler) {
+      return '<div class="loading" id="archivGrafik">Die Tageszählung ist nicht lesbar: ' + U.esc(ab.fehler) + '</div>';
+    }
+    var jeIv = {};
+    (ab.zeilen || []).forEach(function (r) { jeIv[r.intervall] = r; });
+    var h = '<div id="archivGrafik" class="arch-grafik">';
+    (st.zeilen || []).forEach(function (z) {
+      var r = jeIv[z.intervall] || { intervall: z.intervall, anteile: [], vollTage: 0,
+                                     teilTage: 0, angesehen: 0, grund: 'Keine Auskunft' };
+      h += '<div class="arch-zeile">' +
+        '<span class="arch-name">' + U.esc(NAME[z.intervall] || z.intervall) + '</span>' +
+        balkenSvg(r, ab) +
+        '<span class="arch-zahl">' + r.vollTage + ' / ' + ab.tage.length + '</span>' +
+        '</div>';
+      h += '<div class="arch-fuss">' +
+        z.werte.toLocaleString('de-DE') + ' Werte' +
+        (r.angesehen ? ' (' + r.angesehen + ' angesehen)' : '') +
+        ' · jüngste Kerze ' + U.esc(z.juengsterTag ? alterText(z.juengsteMs) : 'nichts da') +
+        alarmHtml(z, st) +
+        '</div>';
+    });
+    h += '</div>';
+    /* Die Legende sagt, was die Farben heissen UND wie gross die Stichprobe war.
+     * Eine Grafik ohne ihre Stichprobe ist die schoenere Form derselben Stille. */
+    function legendenTeil(farbe, wort) {
+      return '<span class="arch-teil"><span class="arch-punkt" style="background:' + farbe +
+        ';"></span> ' + wort + '</span>';
+    }
+    h += '<div class="arch-legende">' +
+      'Ein Kästchen je Handelstag, links der älteste der letzten ' + ab.tage.length +
+      ', rechts ' + U.esc(ab.bisTag) + '. ' +
+      legendenTeil('var(--up)', 'gesammelt') + ' · ' +
+      legendenTeil('var(--warn)', 'lückenhaft') + ' · ' +
+      legendenTeil('var(--grid)', 'nichts da') + '. ' +
+      'Gelesen aus höchstens ' + ab.probe + ' Reihen je Auflösung.' +
+      '</div>';
     return h;
   }
 
-  function zeichne(st) {
+  /* Die fuenf Knoepfe stehen seit Stufe 4 UNTER der Grafik statt in jeder
+   * Tabellenzeile - einer je Aufloesung, mit der Aufloesung im zugaenglichen Namen
+   * (#110): fuenf Knoepfe, die dasselbe Wort sagen, aber fuenf verschiedene Abrufe
+   * starten, kann die Tastatur sonst nicht unterscheiden. */
+  function knoepfeHtml(st) {
+    var h = '<div class="arch-knoepfe"><span class="arch-knoepfe-was">Jetzt holen:</span>';
+    (st.zeilen || []).forEach(function (z) {
+      var name = NAME[z.intervall] || z.intervall;
+      h += '<button class="btn ghost arch-hol" type="button" data-iv="' + U.esc(z.intervall) + '"' +
+        ' aria-label="Jetzt holen: ' + U.esc(name) + '"' + (st.laeuft ? ' disabled' : '') + '>' +
+        U.esc(name) + '</button>';
+    });
+    return h + '</div>';
+  }
+
+  function zeichne(st, ab) {
     var k = el('archivKarte');
     if (!k) return;
     LETZTER = st;
+    if (ab) LETZTE_ABDECKUNG = ab;
     if (st.fehler) {
       k.innerHTML = '<div class="loading">Das Archiv ist nicht lesbar: ' + U.esc(st.fehler) + '</div>';
       return;
@@ -141,11 +222,10 @@
         'Letzter Versuch schlug fehl: ' + U.esc(st.letzterFehler) + '</div>';
     }
 
-    h += '<div style="overflow-x:auto;"><table class="tbl" id="archivTabelle"><thead><tr>' +
-      '<th>Auflösung</th><th class="num">Werte</th><th>Jüngste Kerze</th><th>Zuletzt gesammelt</th>' +
-      '<th class="num">Offen</th><th>Stand</th><th></th></tr></thead><tbody>';
-    (st.zeilen || []).forEach(function (z) { h += zeileHtml(z, st); });
-    h += '</tbody></table></div>';
+    /* EINE Grafik statt der Tabelle (Stufe 4). Die fünf Knoepfe stehen darunter -
+     * sie bleiben verdrahtet, nur ihr Ort hat sich geändert. */
+    h += grafikHtml(st, LETZTE_ABDECKUNG);
+    h += knoepfeHtml(st);
 
     /* DIE ZAHLEN OFFEN HINLEGEN. Wilhelm soll sie drehen koennen, ohne dass jemand
      * ihm erklaeren muss, wo sie stehen. */
@@ -182,9 +262,15 @@
   function laden() {
     if (!api || !api.sammlerStand || laeuftAnfrage) return;
     laeuftAnfrage = true;
-    api.sammlerStand().then(function (st) {
+    /* Zwei Auskuenfte, ein Zeichnen. Die Tageszaehlung liest Dateien und ist die
+     * teurere von beiden; sie darf die Karte nicht aufhalten, wenn sie ausbleibt -
+     * ein Balken ohne Zahlen ist besser als eine Karte, die gar nicht kommt.
+     * Deshalb wird ihr Fehlschlag zu null und nicht zu einer Ausnahme. */
+    var abP = (api.archivAbdeckung ? api.archivAbdeckung() : Promise.resolve(null))
+      .catch(function (e) { return { fehler: String((e && e.message) || e) }; });
+    Promise.all([api.sammlerStand(), abP]).then(function (r) {
       laeuftAnfrage = false;
-      if (st) zeichne(st);
+      if (r[0]) zeichne(r[0], r[1]);
     }).catch(function (e) {
       laeuftAnfrage = false;
       var k = el('archivKarte');

@@ -1302,6 +1302,11 @@ ipcMain.handle('store-set', async (_ev, name, value) => {
  */
 const Kerzen = require('./kerzenquelle.js');
 const Plan = require('./sammelplan.js');
+/* Fuer die Archiv-Grafik (Oberflaeche Stufe 4): archiv.js liefert das TAGE-ZAEHLEN
+ * als reine Funktion, boerse.js den Handelskalender inklusive Feiertagen. Beide
+ * werden hier nur GELESEN - kein Sammeln, kein Schreiben. */
+const ArchivKern = require('./archiv.js');
+const Boerse = require('./boerse.js');
 /* Der Datenordner kommt von Electron, nicht aus einer Annahme ueber das
  * Benutzerverzeichnis: app.getPath('downloads') folgt einer Umleitung, os.homedir()
  * nicht. Und die isolierten Proben setzen ihn eigens um - ohne diese Zeile griffen
@@ -1428,6 +1433,89 @@ async function sammlerNachsehen(grundZeile) {
   });
   await sammelLauf(z.intervall, teil, false);
 }
+
+/* ================= WIE VOLLSTAENDIG IST DAS ARCHIV (Stufe 4, 03.09.2026) =========
+ *
+ * Wilhelms Vorgabe vom 02.09.2026: Backtest und Kursarchiv "wenig bis gar nicht"
+ * sichtbar - hoechstens EINE Grafik, wie das Archiv aussieht und wie vollstaendig
+ * es ist. Die Tabelle mit sechs Spalten je Aufloesung ist dafuer zu viel; ein
+ * Balken je Aufloesung ist es nicht, wenn er die LUECKEN zeigt.
+ *
+ * Dafuer braucht die Anzeige etwas, das sammlerStand() nicht hat: welche
+ * Handelstage wirklich im Archiv liegen. archivUeberblick() liest nur die JUENGSTE
+ * Kerze je Datei - damit laesst sich "wie weit zurueck" nicht beantworten und
+ * "wo fehlt was" schon gar nicht.
+ *
+ * DREI DINGE, DIE HIER NICHT PASSIEREN: es wird nicht gesammelt, nicht geschrieben
+ * und nicht geurteilt. Diese Funktion oeffnet Dateien, zaehlt Tage und gibt sie
+ * zurueck. Sie haengt bewusst NICHT an sammlerStand(): der Stand wird waehrend
+ * eines Laufs alle zehn Werte ans Fenster gefunkt, und ein Dateilesen in diesem
+ * Takt waere eine Anzeige, die das Sammeln ausbremst.
+ *
+ * DIE STICHPROBE STEHT IM ERGEBNIS. Angesehen werden hoechstens ABDECKUNG_PROBE
+ * Reihen je Aufloesung, gleichmaessig ueber den alphabetisch sortierten Bestand
+ * gegriffen (die ersten N waeren kein Querschnitt). Wer die Zahl nicht mitliest,
+ * verwechselt "kein Wert hat diesen Tag" mit "niemand hat nachgesehen" - genau die
+ * Verwechslung, die das Stundenarchiv zwei Tage stillstehen liess. */
+const ABDECKUNG_PROBE = 12;      // Reihen je Aufloesung; 1m-Dateien sind gross
+const ABDECKUNG_TAGE = 60;       // Belastbarkeitsziel in Handelstagen (depot.js: MIN_OOS_TAGE * 5)
+/* Ab welchem Anteil der abgetasteten Reihen ein Tag als "gesammelt" gilt. Hausmarke,
+ * keine Messung: eine einzelne delistete oder neu aufgenommene Reihe in der
+ * Stichprobe soll einen sonst vollstaendigen Tag nicht zur Luecke machen. */
+const ABDECKUNG_VOLL = 0.8;
+
+/* Die letzten n Handelstage, endend am zuletzt abgeschlossenen. Feiertage kommen
+ * aus boerse.js - ohne den Kalender waeren Thanksgiving und der 4. Juli Kerben im
+ * Balken, an denen niemand etwas versaeumt hat. */
+function handelstageBis(bisTag, n) {
+  const aus = [];
+  let ms = Date.parse(bisTag + 'T12:00:00Z');
+  for (let i = 0; i < n * 3 && aus.length < n; i++, ms -= 86400000) {
+    if (Boerse.istHandelstag(ms)) aus.push(new Date(ms).toISOString().slice(0, 10));
+  }
+  return aus.reverse();
+}
+
+function archivAbdeckung() {
+  const bisTag = Kerzen.letzterAbgeschlossenerHandelstag(Date.now());
+  const tage = handelstageBis(bisTag, ABDECKUNG_TAGE);
+  const zeilen = Plan.ERLAUBTE_INTERVALLE.map((iv) => {
+    const ordner = Kerzen.ordnerVon(iv);
+    let dateien = [];
+    try { dateien = Kerzen.archivDateien(ordner); } catch (e) { dateien = []; }
+    const schritt = Math.max(1, Math.ceil(dateien.length / ABDECKUNG_PROBE));
+    const listen = [];
+    let unlesbar = 0;
+    for (let i = 0; i < dateien.length; i += schritt) {
+      try {
+        const j = JSON.parse(fs.readFileSync(dateien[i], 'utf8'));
+        listen.push(ArchivKern.tageVon(j.series || j.bars || []));
+      } catch (e) { unlesbar++; }
+    }
+    /* Gerechnet wird in archiv.js - dort ist die Rechnung ohne Archiv pruefbar,
+     * hier waere sie nur ueber den Quelltext zu erreichen. */
+    const bild = ArchivKern.abdeckungBild(listen, tage, ABDECKUNG_VOLL);
+    return {
+      intervall: iv,
+      dateien: dateien.length,
+      angesehen: bild.reihen,
+      unlesbar: unlesbar,
+      anteile: bild.anteile,
+      vollTage: bild.vollTage,
+      teilTage: bild.teilTage,
+      /* Kein Bestand ist etwas anderes als ein Bestand ohne diese Tage. */
+      grund: dateien.length ? null : 'Noch nichts gesammelt',
+      fensterTage: (Kerzen.INTERVALLE[iv] || {}).fensterTage || null,
+    };
+  });
+  return { bisTag: bisTag, zielTage: ABDECKUNG_TAGE, vollAb: ABDECKUNG_VOLL,
+           probe: ABDECKUNG_PROBE, tage: tage, zeilen: zeilen };
+}
+
+ipcMain.handle('archiv-abdeckung', async () => {
+  try { return archivAbdeckung(); }
+  catch (e) { return { fehler: String((e && e.message) || e) }; }
+});
 
 ipcMain.handle('sammler-stand', async () => sammlerStand());
 
