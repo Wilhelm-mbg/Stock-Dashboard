@@ -2,6 +2,18 @@
 
 *Nur was sich am Wiki ändert. Die Projekt-Chronologie steht im Archiv `PROJEKTSTAND.md`.*
 
+- 03.09.2026 Rasterfilter-Fix R5 geliefert (Bau): [archiv-zusammenfuehrung.md](archiv-zusammenfuehrung.md)
+  §7/§8a — die Minute-0-Regel in `kerzenquelle.js rasterFilter()` gilt jetzt nur noch für
+  60m-Nicht-Krypto statt für jedes Intervall außer 1d; sie kannte vorher weder das Intervall
+  noch das Symbol und löschte seit `f9462e4` (27.08.) jede volle Stunde 14:00–19:00 UTC auf
+  1m/5m/15m und 95,8 % der 60m-Krypto-Kerzen. Trockenlauf danach: Verlust durch Raster auf
+  0/0/3/0 statt 40/0/42.886/0 (Datei) und 0/0/0/0 statt 13.962/62.236/19.163/136.376
+  (Übernahme) — §8a. `tools/archiv-migration.js r5Behoben()` prüft jetzt vier Fälle statt drei
+  und fällt auf einen Fix herein, der nur die Intervalle trennt und Krypto vergisst, nicht mehr
+  herein. [offene-auftraege.md](offene-auftraege.md) Schritt 1 auf erledigt.
+  [fehlerformen.md](fehlerformen.md) neue Form „Regel breiter angewandt als ihre Voraussetzung
+  reicht — und sie LÖSCHT". Nicht ausgeliefert (Release-Notiz liegt, keine Version, kein Build).
+  Übergabe `uebergabe/rasterfilter-fix-2026-09-03.md`.
 - 03.09.2026 Archiv-Zusammenführung Z0 geliefert (Berechnungen):
   [archiv-zusammenfuehrung.md](archiv-zusammenfuehrung.md) §5 Z0 auf „geliefert", neuer **§7 Vermessung**
   mit den Kernzahlen der Überlappung Store ⋂ Datei (Rundung erklärt 95–96 %; `capBereiche` heißt

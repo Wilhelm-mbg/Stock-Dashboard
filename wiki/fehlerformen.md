@@ -32,6 +32,18 @@
   Befunde und Gedächtnis, nachdem die Grundlage weg war. **Deshalb Zitierpflicht im Wiki.**
 - **Reichweite geht verloren.** *„Die Rückanpassung funktioniert fast immer"* — gemessen war
   nur der Bereich ab Faktor 2, und genau dort liegen Kapitalmaßnahmen NICHT.
+- **Regel breiter angewandt als ihre Voraussetzung reicht — und sie LÖSCHT.** `rasterFilter()`
+  ließ Minute 0 nur als späteste Kerze des Tages zu. Das trägt genau eine Voraussetzung: das
+  60m-Börsengitter liegt auf `:30`, dort ist Minute 0 entweder Schluss oder Abrufstempel.
+  Angewandt wurde sie auf **jedes** Intervall. Auf 1m/5m/15m liegt die volle Stunde AUF dem
+  Gitter, bei Krypto-60m liegt **alles** auf `:00` — die Regel löschte 6 echte Stunden je
+  5m-Tag und 95,8 % der Krypto-Kerzen. Zehn Tage lang, bei jedem Sammellauf, ohne eine Meldung.
+  *Der Unterschied zu „Reichweite geht verloren": dort wird eine Aussage überdehnt, hier eine
+  **löschende** Regel — der Schaden ist nicht ein falscher Satz, sondern fehlende Daten.*
+  **Regel: eine Regel, die Daten wegwirft, muss ihren Geltungsbereich im Code nennen (Intervall,
+  Wertpapierart), und die Klinke muss beide Seiten prüfen — dass sie greift, wo sie soll, UND
+  dass sie nicht greift, wo sie nicht soll.** *Fundstelle: R5,
+  [archiv-zusammenfuehrung.md](archiv-zusammenfuehrung.md) §7/§8a, `f9462e4` → 03.09.2026*
 - **Auswahl statt Zufall.** Die 16 Kostenrunden aus einer Minute waren **eine Klickfolge**, kein
   Pech der Marktlage. *Pech wiederholt sich vielleicht nicht, ein Verfahren schon.*
 - **Abweichung ohne Nullerwartung deuten.** Ein Modellfehler wurde als Signaleigenschaft

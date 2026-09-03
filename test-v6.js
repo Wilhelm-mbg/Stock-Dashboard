@@ -10622,8 +10622,12 @@ console.log('\n63) Nur fertige Kerzen kommen ins Archiv (Issue #85)');
   /* Der Filter sass bis zum 27.08. VOR der Vereinigung und traf nur das Vorhandene.
    * Er steht jetzt DAHINTER und trifft beide Seiten - der Pruefgegenstand ist
    * umgezogen, die Eigenschaft dieselbe. */
-  ok(kq.indexOf('serie = rasterFilter(serie, intervall);') !== -1,
-     'Das Raster wirkt auf die VEREINIGTE Reihe - also auf Vorhandenes UND frisch Geholtes');
+  /* Seit dem R5-Fix (03.09.2026) reicht der Aufruf das SYMBOL durch - ohne das kennt
+   * das Raster den Krypto-Fall nicht und filtert 60m-Krypto zu scharf. */
+  ok(kq.indexOf('serie = rasterFilter(serie, intervall, opt.sym);') !== -1,
+     'Das Raster wirkt auf die VEREINIGTE Reihe - also auf Vorhandenes UND frisch Geholtes - und kennt das Symbol');
+  ok(/\{ sym: sym, quellenAlt: huelle \? huelle\.quellen : \[\], quelleNeu: 'yahoo' \}/.test(kq),
+     'und der Sammler gibt das Symbol wirklich mit - sonst kaeme der Krypto-Zweig nie zum Zug');
 
   /* ---- DAS RASTER (27.08.2026) ----
    * Gemessen ueber alle vier Archive: 60m 151 Kerzen ausserhalb des Gitters, 15m 8,
@@ -10678,6 +10682,76 @@ console.log('\n63) Nur fertige Kerzen kommen ins Archiv (Issue #85)');
      'und die Schlusskerze bleibt - sie ist die spaeteste ihres Tages');
   ok(!nachRaster.some(function (k) { return k[0] === Date.parse('2026-08-26T15:00:00Z'); }),
      'waehrend dieselbe Minute 0 mitten am Tag als Stempel erkannt wird');
+
+  /* ================= R5: WO DIE MINUTE-0-REGEL GILT (03.09.2026) =================
+   * Die Regel oben galt seit f9462e4 (27.08.) fuer JEDES Intervall ausser 1d. Gedacht
+   * war sie fuer das 60m-Boersengitter (regulaer :30, Minute 0 nur am Schluss). Auf
+   * jedem anderen Raster ist ihre Voraussetzung falsch:
+   *   1m/5m/15m  die volle Stunde LIEGT auf dem Gitter - jeder Sammellauf loeschte
+   *              14:00-19:00 UTC. Trockenlauf Z1: 42.886 Kerzen der 15m-Datei,
+   *              48.324 der 5m-Uebernahme.
+   *   Krypto 60m Yahoo stempelt rund um die Uhr auf :00, es gibt keinen Sitzungs-
+   *              schluss - 136.376 von 142.320 Kerzen fielen.
+   * Entscheid PM (wiki/archiv-zusammenfuehrung.md Paragraph 6 Punkt 6): die Regel gilt
+   * NUR fuer 60m und NUR fuer Nicht-Krypto.
+   *
+   * DIESE KLINKEN MUESSEN IN BEIDE RICHTUNGEN HALTEN, denn der Fix kann auf zwei Arten
+   * danebengehen - zu scharf (die alte Regel: 5m/1m/15m/Krypto rot) und zu weit (Regel
+   * ganz ausgebaut: der 60m-Aktien-Fall rot). Beides ist am 03.09. in einer isolierten
+   * Kopie eingespielt und einmal rot gesehen worden. */
+  var r5Tag = [];
+  for (var iR = 0; iR < 78; iR++) r5Tag.push([Date.parse('2026-08-26T13:30:00Z') + iR * 300000, 1, 100, 1, 1, 1]);
+  r5Tag.push([Date.parse('2026-08-26T20:00:00Z'), 1, 0, 1, 1, 1]);        /* Schlusskerze */
+  var r5Nach = KQ.rasterFilter(r5Tag, '5m', 'AAPL');
+  var r5Stunden = r5Nach.filter(function (k) {
+    return new Date(k[0]).getUTCMinutes() === 0 && k[0] < Date.parse('2026-08-26T20:00:00Z');
+  }).length;
+  ok(r5Nach.length === 79 && r5Stunden === 6,
+     'Ein 5m-Kunsttag 13:30-20:00 behaelt ALLE sechs vollen Stunden (14:00-19:00) - sie liegen auf dem Gitter',
+     [r5Nach.length, r5Stunden]);
+  ok(KQ.rasterFilter([[Date.parse('2026-08-26T14:00:00Z'), 1, 1, 1, 1, 1],
+                      [Date.parse('2026-08-26T14:01:00Z'), 1, 1, 1, 1, 1]], '1m', 'AAPL').length === 2,
+     'und auf 1m bleiben 14:00 und 14:01 beide - bei einem Minutengitter ist jede Minute Gitter');
+  ok(KQ.rasterFilter([[Date.parse('2026-08-26T15:00:00Z'), 1, 1, 1, 1, 1],
+                      [Date.parse('2026-08-26T15:15:00Z'), 1, 1, 1, 1, 1]], '15m', 'AAPL').length === 2,
+     'und auf 15m 15:00 und 15:15 beide');
+  /* Auf 60m bleibt die Regel - das ist der Fall, gegen den sie gebaut wurde (NYT 15:00). */
+  ok(KQ.rasterFilter([[Date.parse('2026-08-26T14:30:00Z'), 1, 1, 1, 1, 1],
+                      [Date.parse('2026-08-26T15:00:00Z'), 1, 0, 1, 1, 1],
+                      [Date.parse('2026-08-26T15:30:00Z'), 1, 1, 1, 1, 1]], '60m', 'AAPL').length === 2,
+     'Auf 60m-Aktien faellt der Stempel 15:00 weiterhin heraus - dort ist Minute 0 nicht Gitter, sondern Abrufzeit');
+  /* Krypto: ein ganzer UTC-Tag auf :00, kein Sitzungsschluss. Die alte Regel liess
+   * GENAU EINE Kerze stehen (23:00) - 95,8 % Verlust. */
+  var r5Kry = [];
+  for (var hR = 0; hR < 24; hR++) r5Kry.push([Date.parse('2026-08-26T00:00:00Z') + hR * 3600000, 1, 1, 1, 1, 1]);
+  ok(KQ.rasterFilter(r5Kry, '60m', 'BTC-USD').length === 24,
+     'Ein 60m-Krypto-Tag behaelt alle 24 Stunden auf :00 - Krypto hat keinen Sitzungsschluss',
+     KQ.rasterFilter(r5Kry, '60m', 'BTC-USD').length);
+  ok(KQ.rasterFilter(r5Kry, '60m', 'AAPL').length === 1,
+     'dieselben 24 Kerzen als AKTIE gelesen behalten eine - so entstand der Krypto-Befund, und so bleibt er sichtbar');
+  /* 1d hatte immer schon seine Ausnahme; sie darf beim Umbau nicht verlorengehen. */
+  var r5Tage = [[Date.parse('2026-08-24T00:00:00Z'), 1, 1, 1, 1, 1],
+                [Date.parse('2026-08-25T00:00:00Z'), 1, 1, 1, 1, 1],
+                [Date.parse('2026-08-26T00:00:00Z'), 1, 1, 1, 1, 1]];
+  ok(KQ.rasterFilter(r5Tage, '1d', 'AAPL').length === 3 && KQ.rasterFilter(r5Tage, '1d').length === 3,
+     'Das Tagesarchiv bleibt unveraendert - drei Tagesbalken auf Mitternacht, drei bleiben');
+  /* Der Halbtag ist der Grund, warum die 60m-Regel "spaeteste des Tages" heisst und
+   * nicht "20:00": am 27.11.2026 schliesst die Boerse um 18:00 UTC (13:00 ET). */
+  var r5Halb = [[Date.parse('2026-11-27T14:30:00Z'), 1, 100, 1, 1, 1],
+                [Date.parse('2026-11-27T15:30:00Z'), 1, 100, 1, 1, 1],
+                [Date.parse('2026-11-27T16:30:00Z'), 1, 100, 1, 1, 1],
+                [Date.parse('2026-11-27T18:00:00Z'), 2, 0, 2, 2, 2]];   /* Schlussauktion Halbtag */
+  var r5NachHalb = KQ.rasterFilter(r5Halb, '60m', 'AAPL');
+  ok(r5NachHalb.length === 4 && r5NachHalb[3][0] === Date.parse('2026-11-27T18:00:00Z'),
+     'Die Schlusskerze eines HALBTAGS (18:00 UTC) bleibt auf 60m stehen - sie ist die spaeteste ihres Tages',
+     r5NachHalb.length);
+  /* Ohne Symbol gilt Nicht-Krypto: die Lage jedes Aufrufers vor Z1, unveraendert. */
+  var r5OhneSym = KQ.rasterFilter([[Date.parse('2026-08-26T14:30:00Z'), 1, 1, 1, 1, 1],
+                                   [Date.parse('2026-08-26T15:00:00Z'), 1, 0, 1, 1, 1],
+                                   [Date.parse('2026-08-26T15:30:00Z'), 1, 1, 1, 1, 1]], '60m');
+  ok(r5OhneSym.length === 2 && !r5OhneSym.some(function (k) { return k[0] === Date.parse('2026-08-26T15:00:00Z'); }),
+     'Ohne Symbol filtert das Raster wie fuer eine Aktie - kein Aufrufer verliert still seine Regel',
+     r5OhneSym.length);
 
   /* Gegen die echten Daten geprueft (nicht in der Suite, weil sie das Archiv
    * braucht): 152 von 152 Stempeln der QS gefangen, 0 von 25.915 legitimen
@@ -10894,6 +10968,20 @@ console.log('\n63) Nur fertige Kerzen kommen ins Archiv (Issue #85)');
      'Der lebende Store ist verweigert - nur eine Sicherung mit manifest.json wird gelesen');
   ok(MIG.r5Behoben === MIG.r5Behoben && typeof MIG.r5Behoben() === 'boolean',
      'r5Behoben() fragt das Verhalten von kerzenquelle.js ab - Stand: ' + (MIG.r5Behoben() ? 'behoben' : 'NICHT behoben'));
+  /* Seit 03.09.2026 fragt der Fuehler VIER Dinge, nicht drei: 1m/5m/15m frei, 60m-Aktie
+   * weiter gefiltert, UND 60m-Krypto frei. Ein Fix, der nur die Intervalle trennt, laesst
+   * 95,8 % der Krypto-Kerzen fallen und wuerde ohne diesen Fall als behoben durchgehen. */
+  ok(MIG.r5Behoben() === true,
+     'R5 ist am Verhalten von kerzenquelle.js belegt - der Trockenlauf darf schreiben, wenn Wilhelm es fahren will');
+  ok(MIG.r5Behoben(function (serie, iv) {
+    if (iv !== '60m') return serie.filter(function (k) { return KQ.aufGitter(k[0], iv); });
+    var sp = {}; serie.forEach(function (k) { var t = new Date(k[0]).toISOString().slice(0, 10); if (sp[t] == null || k[0] > sp[t]) sp[t] = k[0]; });
+    return serie.filter(function (k) { if (!KQ.aufGitter(k[0], iv)) return false; var d = new Date(k[0]); if (d.getUTCMinutes() !== 0) return true; return sp[d.toISOString().slice(0, 10)] === k[0]; });
+  }) === false,
+     'und er faellt auf einen Fix herein, der nur die Intervalle trennt und Krypto vergisst, NICHT');
+  ok(/var u = vereinige\(huelle, e\.neu, iv, ziel\.sym\);/.test(migQ) && /function vereinige\(huelle, neu, iv, sym\)/.test(migQ) &&
+     /sym: sym, quellenAlt: huelle \? huelle\.quellen : \[\]/.test(migQ),
+     'Die Migration reicht das Symbol bis ins Raster durch - sonst zaehlt der Trockenlauf einen Krypto-Verlust, den das Schreiben nicht haette');
   /* Die Regel je Kerze am Verhalten: Datei gewinnt, cap wird verworfen, Quote am
    * Schluss nicht uebernommen, Krypto ohne Kalenderregel. */
   var tM = Date.parse('2026-08-26T14:00:00Z'), spaet = Date.parse('2027-01-01T00:00:00Z');

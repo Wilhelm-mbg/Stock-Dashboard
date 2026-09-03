@@ -111,6 +111,7 @@ je Schritt). Nichts wird gelöscht, bevor es nicht an anderer Stelle nachweislic
 **Vorbedingung vor Z1: Rasterfilter-Fix (R5) ist beauftragt** — sonst löscht der nächste Sammler-Lauf die übernommenen Kerzen wieder.
 *Stand 03.09. 14:30 (Z1):* **nicht committet** (`rasterFilter()` unverändert seit `f9462e4`). `tools/archiv-migration.js` prüft das am Verhalten (`r5Behoben()`) und verweigert `--schreiben`; der Trockenlauf beziffert den Schaden ohne Fix: 42.886 `:00`-Kerzen der 15m-**Datei** und 48.324 der 5m-Übernahme würden gelöscht (§7). **Zusatz:** ein Fix, der die Minute-0-Regel nur auf 60m beschränkt, rettet die Aktien, nicht die 60m-Krypto-Reihen (rund um die Uhr auf `:00`, 95,8 % würden fallen) — Entscheid 4 braucht eine Rasterregel, die Krypto kennt.
 *Stand 03.09. (PM, Abnahme Z1):* die Fix-Sitzung war nie gestartet worden. **Neu beauftragt** mit Krypto-Regel (§6 Punkt 6): Fühler `r5Behoben()` in `tools/archiv-migration.js` um Krypto-60m erweitern, Trockenlauf danach wiederholen (Soll: Verlust Datei/Übernahme durch Raster ≈ 0, Krypto 60m übernehmbar).
+***ERLEDIGT 03.09.2026 (Bau).*** `rasterFilter(serie, intervall, sym)` kennt das Symbol; die Minute-0-Regel gilt nur für 60m-Nicht-Krypto, das Symbol kommt über `zusammenfuehren(…, {sym})` vom Sammler und von der Migration. `r5Behoben()` fragt jetzt **vier** Dinge (1m/5m/15m frei · 60m-Aktie weiter gefiltert · 60m-Krypto frei) und fällt auf einen Fix, der nur die Intervalle trennt, nicht mehr herein. Trockenlauf wiederholt, Soll erreicht — Zahlen in §8a. **Nicht ausgeliefert:** die installierte App sammelt bis zum nächsten Release mit dem alten Code weiter (Release-Notiz liegt).
 
 ## 7. Vermessung (Z0, 03.09.2026)
 
@@ -149,6 +150,17 @@ lebenden Store. SPY fehlt im Store.*
   15m-Datei hat ihre `:00` nur noch, weil sie seit 26.08. nicht geschrieben wurde. Der Store ist
   für diese Kerzen die einzige Quelle. **Muss vor Z1 korrigiert werden**, sonst löscht der
   nächste Lauf die übernommenen Kerzen wieder. App-Code, in Z0 nicht angefasst.
+  **BEHOBEN 03.09.2026** (Entscheid §6 Punkt 6): `rasterFilter(serie, intervall, sym)` wendet die
+  Minute-0-Regel nur noch auf **60m und nur auf Nicht-Krypto** an; überall sonst fängt allein
+  `aufGitter()` die Stempel. Das Symbol wird über `zusammenfuehren(…, {sym})` durchgereicht
+  (Sammler `sammle()`, `tools/archiv-migration.js vereinige()`). Restrisiko, benannt: ein
+  Abrufstempel, der exakt auf eine Gitterstelle fällt, bleibt stehen — bei 5m jeder 5., bei 1m
+  jeder, bei Krypto-60m jeder 60.; das ist die Lage vor `f9462e4`. Trockenlauf danach in §8.
+  Klinken: test-v6 Block 63, Abschnitt „R5" (13 Zusicherungen); beide Gegenproben (alte Regel für
+  alle Intervalle / Regel ganz ausgebaut) in isolierter Kopie einmal rot gesehen.
+  **Der lebende Sammler in der installierten App fährt bis zum nächsten Release den alten Code**
+  — Release-Notiz `release-notizen/2026-09-03-raster-loescht-keine-sitzungskerzen.md` liegt, keine
+  Version, kein Build.
 - **60m-Randstunden:** die 723 Store-Stempel im Fenster sind Capitals 08:00–12:00 und 23:00
   UTC (ORCL, ARM, QCOM, alle in `capBereiche`), auf dem `:00`-Gitter statt Yahoos `:30`.
 - **Symbolnamen:** kein Store-Name enthält `_`; Yahoo liefert `BRK-B`, `safeName()` lässt
@@ -183,6 +195,30 @@ lebenden Store. SPY fehlt im Store.*
   15m-Datei verlöre beim Schreiben 357 Kerzen je Reihe — deshalb verweigert das Werkzeug.
 - **Krypto:** 95,8 % der 60m-Krypto-Kerzen fallen durch die Minute-0-Regel des 60m-Rasters, auch
   nach einem R5-Fix, der nur 1m/5m/15m freigibt. Braucht einen Entscheid (§6, Vorbedingung).
+
+### 8a. Derselbe Trockenlauf NACH dem R5-Fix (03.09.2026)
+
+*Gleicher Aufruf, gleiche Sicherung, nichts geschrieben:
+`node tools/archiv-migration.js E:/…/store-sicherung-2026-09-03 E:/Markt-Dashboard-Archiv --zaehlen`.
+Bericht `studien/archiv-zusammenfuehrung-2026-09/migration-zaehlung-nach-r5.{json,md}` — die alten
+Zahlen oben bleiben stehen. `r5Behoben()` sagt jetzt „behoben"; Kontrollen A–H bestanden.*
+
+| Intervall | übernehmen (Aktien / Krypto) | Verlust Datei (Raster) **vorher → jetzt** | Verlust Übernahme (Raster) **vorher → jetzt** |
+|---|---|---|---|
+| 1m | 434.869 (210.424 / 224.445) | 40 → **0** | 13.962 → **0** |
+| 5m | 257.060 (90.156 / 166.904) | 0 → **0** | 62.236 → **0** |
+| 15m | 78.416 (22.760 / 55.656) | 42.886 → **3** | 19.163 → **0** |
+| 60m | 144.827 (2.507 / 142.320) | 0 → **0** | 136.376 → **0** |
+
+- **Alle anderen Spalten unverändert** (gemeinsam, laufend, unvollständig, Quote am Schluss, cap,
+  neue Dateien 34, Krypto 8 je Intervall) — der Fix ändert nur, was das Raster wegnimmt.
+- **Die drei 15m-Kerzen sind kein Rest der Minute-0-Regel**, sondern die Arbeit, für die das
+  Raster da ist: `EOG 2026-08-26T16:56`, `SMCI …T16:28`, `T …T16:54` — krumme Abrufstempel, alle
+  mit Umsatz 0, keiner auf dem Viertelstundengitter. Z0 hatte 8 solcher Stempel im 15m-Archiv
+  gezählt, davon 0 mit Umsatz.
+- **60m-Krypto ist damit übernehmbar:** 142.320 Kerzen in 8 neuen Dateien unter
+  `archiv60m/krypto/` (17.790 je Reihe), Verlust 0.
+- **Nach wie vor nichts geschrieben.** `--schreiben` fährt Wilhelm nach der Alpaca-Probe.
 - **Äquivalenz vor der Migration** (`signifikant(Datei, 7) === Store`, alle gemeinsamen Stempel
   außer dem letzten): Schluss-Nachkorrekturen 245 / 141 / 179 / 1.504 von 548.474 / 812.935 /
   285.889 / 974.923 (≤ 0,15 % der Stempel außerhalb cap, max. 1,16 %); Umsatz 1,5–2,7 %;

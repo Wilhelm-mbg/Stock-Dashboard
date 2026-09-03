@@ -408,17 +408,46 @@ function dochtForm(k) {
  * DIE GRENZE STEHT HIER, WEIL SIE JEMAND KENNEN MUSS: laege ein Stempel NACH dem
  * Sitzungsschluss, waere er der spaeteste und der echte Schluss davor der
  * verdaechtige. Alle 152 gemessenen liegen INNERHALB der Sitzung, der Fall tritt
- * also nicht auf - aber er ist denkbar, und dann irrt diese Regel. */
-function rasterFilter(serie, intervall) {
+ * also nicht auf - aber er ist denkbar, und dann irrt diese Regel.
+ *
+ * ---------- WO DIE MINUTE-0-REGEL GILT (R5, korrigiert 03.09.2026) ----------
+ * Sie galt seit f9462e4 (27.08.) fuer JEDES Intervall ausser 1d, gedacht war sie fuer
+ * das 60m-Gitter der Boerse: dort liegt regulaer alles auf :30, Minute 0 ist deshalb
+ * entweder der Sitzungsschluss oder ein Abrufstempel. Auf allen anderen Rastern ist
+ * die Voraussetzung falsch, und die Regel loescht echte Kerzen:
+ *   1m/5m/15m  jede volle Stunde LIEGT auf dem Gitter. Jeder Sammellauf entfernte
+ *              14:00-19:00 UTC - 6 von 78 Kerzen je 5m-Tag (7,7 %), 6 von 390 auf 1m,
+ *              fuer Bestand und Neuware. Trockenlauf Z1: 42.886 Kerzen der 15m-Datei,
+ *              48.324 der 5m-Uebernahme (wiki/archiv-zusammenfuehrung.md Paragraph 8).
+ *   Krypto 60m Yahoo stempelt rund um die Uhr auf :00, es gibt keinen Sitzungsschluss.
+ *              ALLES liegt auf Minute 0, eine Kerze je Tag ueberlebte - 136.376 von
+ *              142.320 fielen.
+ * Seit dem Entscheid des PM (Paragraph 6 Punkt 6, 03.09.2026) gilt sie deshalb NUR fuer
+ * 60m und NUR fuer Nicht-Krypto. Ueberall sonst faengt allein aufGitter() die Stempel.
+ *
+ * DAS RESTRISIKO, BEIM NAMEN GENANNT: ein Abrufstempel, der EXAKT auf eine Gitterstelle
+ * faellt, bleibt jetzt stehen - bei 5m jeder 5., bei 1m jeder, bei Krypto-60m jeder 60.
+ * Das ist genau die Lage, die vor f9462e4 fuer alle Intervalle galt; sie kostet eine
+ * Stempelkerze statt sechs echter Stunden je Tag. Wer sie enger fassen will, braucht
+ * einen zweiten Zeugen (Umsatz 0 UND hoch = tief = schluss ist es NICHT: die echte
+ * Schlusskerze sieht genauso aus, siehe die vier gescheiterten Loeschregeln oben).
+ *
+ * sym darf fehlen; dann gilt Nicht-Krypto - die Lage jedes Aufrufers vor Z1. Krypto
+ * wird am Namen erkannt (istKryptoSym, -USD), wie ueberall sonst im Projekt. */
+function rasterFilter(serie, intervall, sym) {
+  var minute0Regel = intervall === '60m' && !istKryptoSym(sym);
   var spaetesteJeTag = Object.create(null);
-  serie.forEach(function (k) {
-    var t = new Date(k[0]).toISOString().slice(0, 10);
-    if (spaetesteJeTag[t] == null || k[0] > spaetesteJeTag[t]) spaetesteJeTag[t] = k[0];
-  });
+  if (minute0Regel) {
+    serie.forEach(function (k) {
+      var t = new Date(k[0]).toISOString().slice(0, 10);
+      if (spaetesteJeTag[t] == null || k[0] > spaetesteJeTag[t]) spaetesteJeTag[t] = k[0];
+    });
+  }
   return serie.filter(function (k) {
     if (!aufGitter(k[0], intervall)) return false;
+    if (!minute0Regel) return true;
     var d = new Date(k[0]);
-    if (intervall === '1d' || d.getUTCMinutes() !== 0) return true;
+    if (d.getUTCMinutes() !== 0) return true;
     /* Minute 0: nur als spaeteste Kerze ihres Tages. */
     var t = d.toISOString().slice(0, 10);
     return spaetesteJeTag[t] === k[0];
@@ -557,7 +586,10 @@ function ohneQuelle(serie, bereiche) {
  *  gelesenen Datei; fehlen sie, gilt das Vorhandene als Bestand ('yahoo', siehe
  *  quellenLesen). opt.abgeleitetNeu markiert eine abgeleitete Zuordnung (Migration).
  *  Das Ergebnis traegt `quellen`, verdichtet ueber die VEREINIGTE Reihe - ein spaeter
- *  eingeschobener Alpaca-Balken teilt einen Yahoo-Bereich also in zwei. */
+ *  eingeschobener Alpaca-Balken teilt einen Yahoo-Bereich also in zwei.
+ *
+ *  opt.sym reicht das Symbol an das Raster durch (R5, 03.09.2026): die Minute-0-Regel
+ *  gilt nur fuer 60m-Aktien. Ohne sym filtert ein 60m-Krypto-Aufruf zu scharf. */
 function zusammenfuehren(alt, neu, intervall, opt) {
   alt = Array.isArray(alt) ? alt : [];
   neu = Array.isArray(neu) ? neu : [];
@@ -592,8 +624,10 @@ function zusammenfuehren(alt, neu, intervall, opt) {
    * einer Reihe, die aufhoert zu handeln, bleiben sie fuer immer stehen - dort
    * liegen sie seit zwanzig Monaten.
    * Die Schlusskerze auf Minute 0 gehoert zum Gitter und ist nicht betroffen. */
+  /* opt.sym: das Raster braucht seit dem R5-Fix (03.09.2026) das Symbol, weil die
+   * Minute-0-Regel fuer Krypto nicht gilt. Fehlt es, gilt Nicht-Krypto. */
   var vorRaster = serie.length;
-  serie = rasterFilter(serie, intervall);
+  serie = rasterFilter(serie, intervall, opt.sym);
   gereinigt += vorRaster - serie.length;
   /* DIE PHANTOME ERST NACH DER VEREINIGUNG - und damit auf BEIDEN Seiten. Nur das
    * Vorhandene zu reinigen genuegt nicht: die Quelle liefert dieselben Dochte beim
@@ -983,7 +1017,7 @@ async function sammle(opt) {
          * ohne quellen (Format 1) gilt als Bestand 'yahoo' - siehe quellenLesen. */
         var huelle = fs.existsSync(datei) ? huelleLesen(datei) : null;
         var v = zusammenfuehren(huelle ? huelle.series : [], r.serie, intervall,
-          { quellenAlt: huelle ? huelle.quellen : [], quelleNeu: 'yahoo' });
+          { sym: sym, quellenAlt: huelle ? huelle.quellen : [], quelleNeu: 'yahoo' });
         r.serie = v.serie; dazu = huelle ? v.dazu : 0; erg.gereinigt += v.gereinigt;
         erg.dochte += v.dochte || 0; erg.klasseR += v.klasseR || 0;
         erg.abgeschnitten += r.abgeschnitten || 0;

@@ -44,11 +44,12 @@
  * entfernen wuerde (verlustDatei) und was von der Uebernahme (verlustNeu). Beides ist
  * die Zahl, an der Befund R5 haengt.
  *
- * VORBEDINGUNG R5 (wiki/archiv-zusammenfuehrung.md Paragraph 6, letzter Absatz): der
- * Rasterfilter darf auf 1m/5m/15m die volle Stunde mitten am Tag nicht mehr loeschen.
- * --schreiben prueft das am VERHALTEN von kerzenquelle.js (r5Behoben) und verweigert
- * sonst - ohne die Korrektur wuerde der Lauf die uebernommenen Kerzen und die :00-Kerzen
- * der 15m-Datei loeschen, und der naechste Sammellauf taete es erneut.
+ * VORBEDINGUNG R5 (wiki/archiv-zusammenfuehrung.md Paragraph 6 Punkt 6): der Rasterfilter
+ * darf auf 1m/5m/15m die volle Stunde mitten am Tag nicht mehr loeschen und auf 60m-Krypto
+ * die Stunden auf :00 nicht - die Minute-0-Regel gilt nur fuer 60m-Aktien. --schreiben
+ * prueft alle drei am VERHALTEN von kerzenquelle.js (r5Behoben) und verweigert sonst - ohne
+ * die Korrektur wuerde der Lauf die uebernommenen Kerzen und die :00-Kerzen der 15m-Datei
+ * loeschen, und der naechste Sammellauf taete es erneut.
  *
  * POSITIVKONTROLLE (--kontrolle) laeuft vor jedem Zaehlen und Schreiben. Ein Werkzeug,
  * das nie 'uebernehmen' sagt, besteht jeden Trockenlauf (wiki/fehlerformen.md,
@@ -110,20 +111,29 @@ function inBereichen(ts, bereiche) {
 
 /* ---------------------------------------------------- R5: ist das Raster korrigiert? */
 /** Prueft am VERHALTEN, ob rasterFilter() die volle Stunde mitten am Tag auf 1m/5m/15m
- *  stehen laesst. Einspeisbar, damit die Kontrolle beide Antworten sehen kann. */
+ *  stehen laesst UND die Krypto-Stunden auf :00 durchlaesst - und ob es die Minute-0-Regel
+ *  auf 60m-Aktien trotzdem noch anwendet. Einspeisbar, damit die Kontrolle beide Antworten
+ *  sehen kann. Vier Fragen, weil ein Fix in beide Richtungen danebengehen kann: zu scharf
+ *  (die alte Regel, 1m/5m/15m/Krypto verlieren) oder zu weit (Regel ganz ausgebaut, dann
+ *  bleibt der 60m-Abrufstempel stehen). */
 function r5Behoben(filter) {
   filter = filter || KQ.rasterFilter;
   var t0 = Date.parse('2026-08-26T13:30:00Z');
   var tag = [];
   for (var i = 0; i < 78; i++) tag.push([t0 + i * 300000, 1, 100, 1, 1, 1]);   /* 13:30 .. 19:55 */
   tag.push([Date.parse('2026-08-26T20:00:00Z'), 1, 0, 1, 1, 1]);              /* Schluss */
-  var nach = filter(tag, '5m');
+  var nach = filter(tag, '5m', 'AAPL');
   var vollesStunden = nach.filter(function (k) { return new Date(k[0]).getUTCMinutes() === 0 && k[0] < Date.parse('2026-08-26T20:00:00Z'); }).length;
-  var min1 = filter([[Date.parse('2026-08-26T14:00:00Z'), 1, 1, 1, 1, 1], [Date.parse('2026-08-26T14:01:00Z'), 1, 1, 1, 1, 1]], '1m').length;
-  var min15 = filter([[Date.parse('2026-08-26T15:00:00Z'), 1, 1, 1, 1, 1], [Date.parse('2026-08-26T15:15:00Z'), 1, 1, 1, 1, 1]], '15m').length;
+  var min1 = filter([[Date.parse('2026-08-26T14:00:00Z'), 1, 1, 1, 1, 1], [Date.parse('2026-08-26T14:01:00Z'), 1, 1, 1, 1, 1]], '1m', 'AAPL').length;
+  var min15 = filter([[Date.parse('2026-08-26T15:00:00Z'), 1, 1, 1, 1, 1], [Date.parse('2026-08-26T15:15:00Z'), 1, 1, 1, 1, 1]], '15m', 'AAPL').length;
   /* Auf 60m bleibt die Regel: 15:00 mitten am Tag ist ein Stempel, nicht Gitter. */
-  var h60 = filter([[Date.parse('2026-08-26T14:30:00Z'), 1, 1, 1, 1, 1], [Date.parse('2026-08-26T15:00:00Z'), 1, 0, 1, 1, 1], [Date.parse('2026-08-26T15:30:00Z'), 1, 1, 1, 1, 1]], '60m').length;
-  return vollesStunden === 6 && min1 === 2 && min15 === 2 && h60 === 2;
+  var h60 = filter([[Date.parse('2026-08-26T14:30:00Z'), 1, 1, 1, 1, 1], [Date.parse('2026-08-26T15:00:00Z'), 1, 0, 1, 1, 1], [Date.parse('2026-08-26T15:30:00Z'), 1, 1, 1, 1, 1]], '60m', 'AAPL').length;
+  /* Krypto-60m: ein ganzer UTC-Tag liegt auf :00, es gibt keinen Sitzungsschluss. Die
+   * Minute-0-Regel liesse GENAU EINE Kerze stehen (Entscheid Paragraph 6 Punkt 6). */
+  var kry = [];
+  for (var h = 0; h < 24; h++) kry.push([Date.parse('2026-08-26T00:00:00Z') + h * 3600000, 1, 1, 1, 1, 1]);
+  var k60 = filter(kry, '60m', 'BTC-USD').length;
+  return vollesStunden === 6 && min1 === 2 && min15 === 2 && h60 === 2 && k60 === 24;
 }
 
 /* ------------------------------------------------------- die Regel je Kerze */
@@ -162,11 +172,14 @@ function einordnen(store, dateiStempel, iv, krypto) {
 }
 
 /** Die Vereinigung im Speicher - genau so, wie --schreiben sie auf die Platte bringt.
- *  Liefert das Ergebnis von zusammenfuehren() plus die Verluste durch das Raster. */
-function vereinige(huelle, neu, iv) {
+ *  Liefert das Ergebnis von zusammenfuehren() plus die Verluste durch das Raster.
+ *  sym MUSS mitgegeben werden: das Raster wendet die Minute-0-Regel nur auf 60m-Aktien
+ *  an (R5, 03.09.2026), und ohne Symbol faellt eine Krypto-Reihe in den Aktienzweig -
+ *  dann zaehlte der Trockenlauf einen Verlust, den das Schreiben gar nicht haette. */
+function vereinige(huelle, neu, iv, sym) {
   var alt = huelle ? huelle.series : [];
   var v = KQ.zusammenfuehren(alt, neu, iv, {
-    quellenAlt: huelle ? huelle.quellen : [], quelleNeu: 'yahoo', abgeleitetNeu: 'vergleich-z0',
+    sym: sym, quellenAlt: huelle ? huelle.quellen : [], quelleNeu: 'yahoo', abgeleitetNeu: 'vergleich-z0',
   });
   var drin = {};
   v.serie.forEach(function (k) { drin[k[0]] = 1; });
@@ -250,7 +263,9 @@ function lauf(sicherung, wurzel, opt) {
         var r = { sym: sym, ziel: ziel.sym, art: ziel.art, neuDatei: ziel.neu, store: st.series.length, datei: huelle ? huelle.series.length : 0,
           zaehl: e.zaehl, beispiele: e.beispiele };
         if (e.neu.length || (huelle && huelle.format === 1 && schreiben && opt.formatHeben)) {
-          var u = vereinige(huelle, e.neu, iv);
+          /* ziel.sym, nicht sym: das ist die Schreibweise der DATEI (BRK-B -> BRK.B) und
+           * damit dieselbe, die satz() unten schreibt. Fuer Krypto sind beide gleich. */
+          var u = vereinige(huelle, e.neu, iv, ziel.sym);
           r.verlustDatei = u.verlustDatei; r.verlustNeu = u.verlustNeu; r.dazu = u.dazu; r.quellen = u.v.quellen.length;
           I.verlustDatei += u.verlustDatei; I.verlustNeu += u.verlustNeu; I.dazu += u.dazu;
           if (ziel.neu) { I.neueDateien++; erg.neueDateien.push(iv + ' ' + ziel.sym + ' (' + e.neu.length + ' Kerzen)'); }
@@ -412,7 +427,7 @@ function kontrolle() {
   /* Eine Format-1-Datei: series ohne quellen - quellenLesen() macht daraus den Bestand. */
   var dateiB = { series: roh.filter(function (b) { return ohne[b[0]]; }), format: 1 };
   dateiB.quellen = KQ.quellenLesen(dateiB);
-  var uB = vereinige(dateiB, B.neu, '5m');
+  var uB = vereinige(dateiB, B.neu, '5m', 'X');
   /* Was das Raster von der Datei nimmt, haengt an R5: die alte Regel loescht jede volle
    * Stunde mitten am Tag (hier: alle :00 der Datei ausser dem Tagesletzten), die
    * korrigierte nichts. Die Kontrolle verlangt, dass das Werkzeug GENAU diese Zahl
@@ -493,12 +508,29 @@ function kontrolle() {
     var sp = {}; serie.forEach(function (k) { var t = new Date(k[0]).toISOString().slice(0, 10); if (sp[t] == null || k[0] > sp[t]) sp[t] = k[0]; });
     return serie.filter(function (k) { if (!KQ.aufGitter(k[0], iv)) return false; var d = new Date(k[0]); if (d.getUTCMinutes() !== 0) return true; return sp[d.toISOString().slice(0, 10)] === k[0]; });
   };
-  var heil = function (serie, iv) {
+  var heil = function (serie, iv, sym) {
+    if (iv !== '60m' || KQ.istKryptoSym(sym)) return serie.filter(function (k) { return KQ.aufGitter(k[0], iv); });
+    return kaputt(serie, iv);
+  };
+  /* Der dritte Zustand ist NEU (03.09.2026) und der Grund fuer den Krypto-Fall im Fuehler:
+   * ein Fix, der die Minute-0-Regel GANZ ausbaut, rettet 1m/5m/15m und Krypto - und laesst
+   * den 60m-Abrufstempel (NYT 15:00) stehen, gegen den die Regel gebaut wurde. */
+  var zuWeit = function (serie, iv) { return serie.filter(function (k) { return KQ.aufGitter(k[0], iv); }); };
+  /* Und der vierte: nur die Intervall-Grenze, ohne Krypto - der Fix, den Z1 beschrieben hat. */
+  var ohneKrypto = function (serie, iv) {
     if (iv !== '60m') return serie.filter(function (k) { return KQ.aufGitter(k[0], iv); });
     return kaputt(serie, iv);
   };
-  pruefe(r5Behoben(kaputt) === false && r5Behoben(heil) === true, 'G: r5Behoben() sagt nein zur alten Regel und ja zur korrigierten',
-    [r5Behoben(kaputt), r5Behoben(heil)]);
+  pruefe(r5Behoben(kaputt) === false && r5Behoben(heil) === true && r5Behoben(zuWeit) === false && r5Behoben(ohneKrypto) === false,
+    'G: r5Behoben() sagt nein zur alten Regel, nein zum ausgebauten Raster, nein zum Fix ohne Krypto - und ja zur korrigierten',
+    [r5Behoben(kaputt), r5Behoben(heil), r5Behoben(zuWeit), r5Behoben(ohneKrypto)]);
+  /* Und dass die Krypto-Freigabe wirklich durch die MIGRATION traegt, nicht nur durch den
+   * Fuehler: ein Krypto-Tag auf :00 durch vereinige() - mit Symbol bleibt er ganz. */
+  var kryTag = [];
+  for (var hK = 0; hK < 24; hK++) kryTag.push([Date.parse('2026-08-26T00:00:00Z') + hK * 3600000, 1, 1, 1, 1, null]);
+  var uK = vereinige(null, kryTag, '60m', 'BTC-USD');
+  pruefe(uK.v.serie.length === 24 && uK.verlustNeu === 0,
+    'G: eine 60m-Krypto-Uebernahme (24 Kerzen auf :00) geht ungekuerzt durch vereinige()', [uK.v.serie.length, uK.verlustNeu]);
   console.log('  Stand von kerzenquelle.js: R5 ' + (r5Behoben() ? 'behoben' : 'NICHT behoben - --schreiben wird verweigert'));
 
   console.log('Kontrolle H: Aequivalenztest auf Kunstpaar');
@@ -536,7 +568,7 @@ if (require.main === module) {
   if (!kontrolle()) { console.error('Ohne bestandene Kontrolle kein Lauf.'); process.exit(1); }
   var opt = { intervall: arg('--intervall', null), symbole: arg('--symbole', null) ? arg('--symbole', '').split(',') : null, schreiben: schreiben };
   if (schreiben) {
-    if (!r5Behoben()) { console.error('\nVERWEIGERT: rasterFilter() in kerzenquelle.js loescht auf 1m/5m/15m noch die volle Stunde mitten am Tag (Befund R5). Erst die Korrektur, dann --schreiben.'); process.exit(1); }
+    if (!r5Behoben()) { console.error('\nVERWEIGERT: rasterFilter() in kerzenquelle.js wendet die Minute-0-Regel noch falsch an - sie gehoert NUR auf 60m-Aktien (Befund R5, Paragraph 6 Punkt 6: 1m/5m/15m verlieren die volle Stunde, 60m-Krypto 95,8 % seiner Kerzen). Erst die Korrektur, dann --schreiben.'); process.exit(1); }
     if (imSammelfenster()) { console.error('\nVERWEIGERT: 21:30–23:00 UTC ist das Sammelfenster der App. Spaeter starten.'); process.exit(1); }
   }
   var erg = aeq ? aequivalenzLauf(sicherung, wurzel, opt) : lauf(sicherung, wurzel, opt);
