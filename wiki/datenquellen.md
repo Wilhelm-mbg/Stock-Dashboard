@@ -237,6 +237,67 @@ Stück je Stück" nicht ausrechenbar, er hängt am Kurs des abgespaltenen Papier
 sein Faktor wird nicht aus der Rohreihe erraten (ein Sprung von −5 % kann eine Abspaltung sein
 oder eine Gewinnwarnung).
 
+#### Der Abspaltungs-Kursfaktor wird GEMESSEN (04.09.2026, `tools/alpaca-abspaltungsfaktor.js`)
+
+Aus der Rohreihe ist er nicht zu erraten — aus der **Quelle** schon, nur nicht aus dem
+Maßnahmen-Endpunkt. Alpaca liefert dieselben Tagesbalken in vier Bereinigungen; `adjustment=all`
+rechnet Splits, Dividenden **und** Abspaltungen heraus, `adjustment=dividend` nur die Dividenden.
+Das Verhältnis an denselben Stempeln isoliert also genau das, was der Endpunkt verschweigt. Das
+kostet einen **zweiten Abruf**, den die Konvention „lokal ableiten" sonst ausschließt —
+**Wilhelms Entscheid 03.09.2026** ([entscheide.md](entscheide.md)), die einzige Ausnahme.
+
+**Die Richtung ist nachgerechnet, nicht übernommen.** `all` ist vor der Abspaltung **kleiner**
+als `dividend`; `all ÷ dividend` ist deshalb **0,9459**, und der **Kursfaktor ist sein Kehrwert,
+1,0572**. Nur so steht er in derselben Richtung wie der Split-Faktor der Quelle (MNST 1→2 gibt
+2,000, und die Ableitung teilt die Kurse davor durch 2). Der Z1c-Befund nennt 1,0572 verkürzt
+„das Verhältnis all ÷ dividend"; gemeint ist der Faktor, den es ergibt.
+
+| | |
+|---|---|
+| Endpunkt | `/v2/stocks/bars`, `timeframe=1Day` (nicht 1Min — die Bereinigung steckt im Tageskurs) |
+| Faktor | Median `dividend ÷ all` (Schluss) über die letzten **20 Handelstage vor** dem Wirkungstag |
+| Streuung | (max−min)/Median über dieselben Stempel; über 0,001 → **unklar** (zweite Maßnahme im Fenster oder zu grob gerundete Kurse) |
+| Kontrolle | Median **ab** dem Wirkungstag muss **1,000** sein (Band 0,999–1,001). Sonst liegt hinter der Abspaltung noch eine Maßnahme, die in den Faktor mit hineinliefe → **unklar**, es wird nichts geschrieben. Gibt es danach gar keine Balken (erloschener Wert), ist die Kontrolle nicht fahrbar — **nicht prüfbar ist nicht bestanden** |
+| Sperre | liegt **am Wirkungstag** noch eine faktortragende Maßnahme (Split oder zweite Abspaltung), trägt der gemessene Faktor sie mit → **unklar** |
+| Ablage | Feld `kursfaktor` in einer **neuen** Liste `gemesseneFaktoren` der Maßnahmen-Datei, mit `herkunft: "gemessen all/dividend"`, Messdatum, `n`, `streuung`. `saetze`, `anwendbar` und `ohneFaktor` bleiben unverändert — **gemessen und geliefert bleiben unterscheidbar** |
+| Drossel | 20/min, ein Zehntel der Grenze; ein 429 bricht ab und nennt die Wartezeit, statt zu wiederholen (der Vollauf hängt mit 170/min am selben Zugang) |
+
+**Zwei bindende Eichungen vor dem ersten geschriebenen Byte** — fällt eine, wird kein einziger
+Faktor geschrieben: **SPGI muss 1,057 ergeben** (gemessen **1,057244** — dieselbe Zahl, die die
+Skalenreparatur am Vortag unabhängig aus dem Verhältnis roher Alpaca-Kerzen zu **Yahoo**-Kerzen
+gemessen hat, zwei völlig verschiedene Rechnungen), und ein Wert **ohne** Abspaltung muss
+**1,000** ergeben (Placebo AAPL: exakt 1,000000, Streuung 0).
+
+**Ergebnis (04.09.2026, 406 Abrufe): 201 Abspaltungen in 177 Werten → 109 mit gemessenem
+Kursfaktor (108 Werte), 92 unklar.** Von den 109 sind **47 genau 1,000** — das ist der Normalfall
+beim *abgespaltenen* Papier, das den Satz mitgeliefert bekommt: an seiner Reihe ändert die
+Abspaltung den Kurs nicht. Gründe für „unklar": 37 zu wenige gemeinsame Handelstage davor,
+21 Kontrolle nach der Maßnahme ≠ 1, 14 keine Balken danach (erloschen), 5 Verhältnis davor nicht
+konstant, 9 zweite Maßnahme am Wirkungstag.
+
+> ⚠ **Der Fund, der die Sperre erzwungen hat.** MHUA hat am 24.11.2025 eine Zusammenlegung
+> **100:1 UND eine Abspaltung am selben Tag**. Das Verhältnis misst beide zusammen und ergab
+> 0,010000 — den Faktor der Zusammenlegung. Als Abspaltungsfaktor geschrieben, hätte die
+> Ableitung ihn ein **zweites** Mal angewandt, neben dem Split-Faktor der Quelle: die Kurse davor
+> wären durch 0,0001 statt durch 0,01 geteilt worden. **Hundertfach daneben, und in jeder
+> Zusammenfassung unauffällig.** Betroffen waren 9 von 201 Fällen (AGE, BATRK, CENTA, HON, MHUA,
+> OPEN, PRPH, SNRE, XRX). Herausrechnen wäre möglich, aber ohne eigene Kontrolle — bei HON käme
+> 1,908 heraus, und ob das die Abspaltung ist oder eine Split-Angabe, die die Quelle anders
+> anwendet als sie sie meldet, sagt keine der beiden Zahlen. Also „unklar".
+>
+> `--pruefen` fährt diese Prüfung **über alles schon Geschriebene**, ohne Abruf: vier der neun
+> standen bereits in den Dateien, bevor die Sperre gebaut war, und keine Messung hätte sie je
+> wieder angefasst. Sie schließt außerdem den zweiten Weg, auf dem ein Faktor nachträglich falsch
+> wird — reicht die Quelle später einen Split am selben Wirkungstag nach, trägt der alte Faktor
+> ihn mit. Der Stand steht als `alpaca-massnahmen/_abspaltungsfaktoren-stand.json`.
+
+**Die Kontrolle, die vorher nicht fahrbar war, besteht jetzt.** SPGI hatte keine bereinigte Kopie,
+also gab es nichts gegen Yahoo zu halten. Mit dem gemessenen Faktor, auf dem 5m-Gitter über 64 Tage:
+**roh/Yahoo 1,057000** an den 20 Tagen vor der Abspaltung (die Maßnahme ist real und sichtbar) —
+**bereinigt/Yahoo 0 von 64 Tagen außerhalb 0,999–1,001** (Spanne 0,999769–1,000000). Der Umsatz
+trägt den Faktor mit (bereinigt/roh 1,057244 an allen 123 Tagen davor), damit Kurs × Umsatz der
+gehandelte Gegenwert bleibt.
+
 **Die Ableitung** ist eine reine Funktion: Kurse ÷ Faktor, **Umsatz × Faktor**, damit Kurs ×
 Umsatz der gehandelte Gegenwert bleibt. Das ist **bewusst stimmiger als Yahoo**, das Intraday die
 Kurse bereinigt und die Umsätze nicht (Abschnitt oben). Mehrere Maßnahmen multiplizieren sich;

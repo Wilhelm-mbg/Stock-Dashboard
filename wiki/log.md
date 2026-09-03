@@ -2,6 +2,21 @@
 
 *Nur was sich am Wiki ändert. Die Projekt-Chronologie steht im Archiv `PROJEKTSTAND.md`.*
 
+- 04.09.2026 Abspaltungs-Kursfaktor gemessen (Bau): [datenquellen.md](datenquellen.md) neuer Unterabschnitt
+  „Der Abspaltungs-Kursfaktor wird GEMESSEN", [archiv-zusammenfuehrung.md](archiv-zusammenfuehrung.md)
+  §6 Punkt 8(d), [offene-auftraege.md](offene-auftraege.md) (einer erledigt, zwei neu).
+  Wilhelms Entscheid vom 03.09. erlaubte den Zweitabruf — die einzige Ausnahme von „kein zweiter
+  Abruf". **201 Abspaltungen in 177 Werten → 109 Kursfaktoren in 108 Werten, 92 unklar**, 406 Abrufe
+  bei 20/min. Eichungen bindend und bestanden: SPGI **1,057244** gegen die unabhängige Messung der
+  Skalenreparatur, Placebo AAPL **1,000000**. **Die Richtung war nachzurechnen:** `all ÷ dividend`
+  ist 0,9459, der Kursfaktor sein Kehrwert 1,0572 — der Z1c-Befund nannte das Verhältnis verkürzt
+  1,0572. **Ein Fund erzwang eine Sperre:** 9 von 201 Werten tragen am Wirkungstag eine ZWEITE
+  faktortragende Maßnahme (MHUA: Zusammenlegung 100:1 **und** Abspaltung am selben Tag); der
+  gemessene Faktor trägt dann beide, und die Ableitung hätte den Split ein zweites Mal angewandt —
+  hundertfach daneben, in jeder Zusammenfassung unauffällig. Neuer Modus `--pruefen` sucht das ohne
+  Abruf über alles Geschriebene (vier der neun standen dort schon, bevor die Sperre gebaut war).
+  **Die Yahoo-Kontrolle, die für SPGI vorher nicht fahrbar war, besteht jetzt:** bereinigt/Yahoo
+  0 von 64 Tagen außerhalb 0,999–1,001. 15 Gegenproben, 15-mal rot
 - 03.09.2026 Alpaca-Vollsammlung Z1c gebaut (Bau): [datenquellen.md](datenquellen.md) neuer Abschnitt
   „Alpaca-Minutenarchiv (roh + bereinigt, ohne Überlebensverzerrung ab 2016)",
   [archiv-zusammenfuehrung.md](archiv-zusammenfuehrung.md) §5 Zeile Z1c und §6 Punkt 8(b)(c),
