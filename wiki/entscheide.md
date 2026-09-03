@@ -4,6 +4,7 @@ Nur was **weitergilt**. Aufgehobenes steht mit Datum der Aufhebung.
 
 ## Daten und Messung
 
+- **Skalenkonvention des Alpaca-Archivs: BEIDES** (03.09.2026 abends, Wilhelm, Formular): Rohdaten (echte gehandelte Kurse, append-only, nie rückwirkend geändert) UND eine bereinigte Kopie in Yahoo-Konvention. Die Kopie wird **lokal aus Roh + Kapitalmaßnahmen-Tabelle abgeleitet**, nicht doppelt geholt; bei einer neuen Maßnahme wird nur die Kopie des betroffenen Werts neu abgeleitet. Alternativen „nur roh" und „nur bereinigt" verworfen. Anlass: MNST-Split und SPGI-Abspaltung im Nachholer-Fenster. Fundstelle [archiv-zusammenfuehrung.md](archiv-zusammenfuehrung.md) §6 Punkt 8.
 - **Alpaca-Balken-Probe: freigegeben mit Nachtrag** (03.09.2026, Wilhelm, Formular). Die Probe fiel an einem von acht Kriterien (ARM: 9 statt höchstens 7 Minutenkerzen über 0,1 %, Maximum 0,18 %); alle Lagemaße praktisch null. Das gemessene Urteil bleibt `false`; die Freigabe ist eine eigene Datei mit Datum. Breite Gegenprobe über 133 Werte durch den Nachholer (`--pruefen`), Stoppregel > 10 % der Werte. Fundstelle [archiv-zusammenfuehrung.md](archiv-zusammenfuehrung.md) §6 Punkt 2.
 - **Alles sammeln, nicht nur das Nötige** (03.09.2026, Wilhelm): „Haben ist immer besser als brauchen —
   lieber alles sammeln als es dann später zu brauchen"; er will auf dem Datensatz vielleicht ein LLM
