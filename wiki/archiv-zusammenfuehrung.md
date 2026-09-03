@@ -87,7 +87,7 @@ je Schritt). Nichts wird gelöscht, bevor es nicht an anderer Stelle nachweislic
 
 | Stufe | Inhalt | Zustand |
 |---|---|---|
-| **Z0 Sicherung & Vermessung** | Store vollständig nach E: sichern (259 MB, Prüfsumme); Überlappung Store ⋂ Datei stempelweise messen (12 Symbole je Intervall: gemeinsame Stempel, Abweichungen in schluss/umsatz/hoch/tief, getrennt für Reihen mit `capBereiche`, Abstand der letzten Kerze); Befund als `studien/archiv-zusammenfuehrung-2026-09/BEFUND.md`; Vorschlag der Vereinigungsregel je Feld. **Kein App-Code.** | **beauftragt 03.09.** |
+| **Z0 Sicherung & Vermessung** | Store vollständig nach E: sichern (259 MB, Prüfsumme); Überlappung Store ⋂ Datei stempelweise messen (12 Symbole je Intervall: gemeinsame Stempel, Abweichungen in schluss/umsatz/hoch/tief, getrennt für Reihen mit `capBereiche`, Abstand der letzten Kerze); Befund als `studien/archiv-zusammenfuehrung-2026-09/BEFUND.md`; Vorschlag der Vereinigungsregel je Feld. **Kein App-Code.** | **geliefert 03.09.** — Sicherung 799/799 (259,4 MB, SHA-256, `E:/Markt-Dashboard-Archiv/store-sicherung-2026-09-03/`), Befund und Vorschlag in `studien/archiv-zusammenfuehrung-2026-09/BEFUND.md`, Kernzahlen in §7, Übergabe `uebergabe/archiv-z0-2026-09-03.md` |
 | Z1 Zielformat & Fassade | Dateiformat um `quellen` erweitern (kerzenquelle.js, mit Migration der `capBereiche`); `window.Archiv` liest über IPC aus den Dateien, Rückfall Store; Äquivalenztest Datei = Store auf allen gemeinsamen Stempeln außer der laufenden Kerze | offen |
 | Z2 Leser umhängen | Reihenfolge: zucht → strategiechart → Abdeckung/Export → Edge-Wächter (60m) → loadLabData → **intradayScan zuletzt** (Einzelentscheid); je Schritt Vergleichslauf | offen |
 | Z3 Schreiber umhängen | kryptoSammeln → pilotMessen (1m) → loadLabData → backfill/capBackfill → intradayScan; Schreiben über den Hauptprozess, atomar, mit Sammler-Sperre | offen |
@@ -101,3 +101,52 @@ je Schritt). Nichts wird gelöscht, bevor es nicht an anderer Stelle nachweislic
 2. **Vereinigungsregel je Feld** (kommt aus Z0): Datei-Wert oder Store-Wert bei Abweichung?
 3. **Was mit den Capital-Spannen geschieht** (heute in [5] von `capital.js`, nie gespeichert): eigenes
    Feld oder verwerfen.
+
+## 7. Vermessung (Z0, 03.09.2026)
+
+*Fundstelle: `studien/archiv-zusammenfuehrung-2026-09/BEFUND.md` (Rohdaten `vergleich.json`),
+Werkzeuge `tools/store-sichern.js`, `tools/archiv-vergleich.js` (Positivkontrolle A–D vor jedem
+Lauf). Stichprobe 13 Paare je Intervall, Saat 20260903, gegen die Store-Sicherung, nie den
+lebenden Store. SPY fehlt im Store.*
+
+| Intervall | gemeinsame Stempel | davon in `capBereiche` | echte Abweichungen außerhalb cap (schluss/hoch/tief/umsatz) | echt innerhalb cap |
+|---|---|---|---|---|
+| 1m | 42.797 | 4.527 | 30 / 39 / 44 / 898 von 38.270 | 2.057 / 2.229 / 2.262 / 3.163 von 4.527 |
+| 5m | 57.751 | 4.104 | 6 / 27 / 22 / 998 von 53.647 | 0 |
+| 15m | 19.792 | 7.410 | 10 / 12 / 4 / 451 von 12.382 | 2.724 / 2.845 / 2.864 / 3.081 von 7.410 |
+| 60m | 51.100 | 678 | 34 / 40 / 43 / 123 von 50.422 | 0 |
+
+- **R4 bestätigt, und harmlos:** außerhalb der `capBereiche` sind 95–96 % aller
+  Preisunterschiede die 7-Stellen-Rundung des Stores; der Rest (≤ 0,1 % der Stempel) liegt
+  unter 0,8 % und ist Yahoos Nachkorrektur, beim Umsatz Faktor 1,00. `signifikant(Datei, 7)
+  === Store` trägt als Äquivalenztest.
+- **R2 ist anders als gedacht: `capBereiche` heißt „war einmal CFD".** Von 12 markierten
+  Paaren mit Überlappung halten **4** wirklich CFD-Daten (Umsatz-Faktor Datei/Store 250–1.300,
+  Preis median 0,01–0,04 %, max 3,4 % im Tief) und **8** Yahoo-identische — `mischeBars()`
+  überschreibt bei gleichem Stempel, `capBereiche` wird nie verkleinert. Eine bereichsweise
+  Migration nach `quellen` wäre in 8 von 12 Fällen falsch; die Quelle muss je Kerze aus dem
+  Vergleich abgeleitet werden.
+- **Die 1m-Tiefe ist zu 76,6 % cap-markiert** (2,92 von 3,81 Mio Kerzen in 200 Reihen; 167
+  Reihen tiefer als Yahoos 7 Tage; alle Bereiche enden 21.08.). Für die Zeit vor dem 18.08.
+  gibt es keine zweite Quelle — ob das CFD-Kerzen sind, ist dort nicht feststellbar.
+- **R3 bestätigt:** bei 7 von 13 (5m) und 7 von 10 (60m) Paaren lief die letzte Store-Kerze
+  bei `updatedAt` noch; dazu Quote-Kerzen (Umsatz 0, H = T = S) um 20:00 auf beiden Seiten
+  (Store 65/79/53/0, Datei 25/13/3/40).
+- **R5, neu — die Datei wirft Sitzungskerzen weg:** `kerzenquelle.js rasterFilter()` (Z. 383,
+  seit `f9462e4` 27.08.) lässt Minute 0 nur als späteste Kerze des UTC-Tages zu. Auf dem
+  60m-Gitter (`:30`) ist das richtig; **auf 5m und 1m löscht es jede volle Stunde 14:00–19:00**
+  — 6 von 78 Kerzen je Tag auf 5m (7,7 %), 6 von 390 auf 1m, für Bestand und Neuware. Die
+  15m-Datei hat ihre `:00` nur noch, weil sie seit 26.08. nicht geschrieben wurde. Der Store ist
+  für diese Kerzen die einzige Quelle. **Muss vor Z1 korrigiert werden**, sonst löscht der
+  nächste Lauf die übernommenen Kerzen wieder. App-Code, in Z0 nicht angefasst.
+- **60m-Randstunden:** die 723 Store-Stempel im Fenster sind Capitals 08:00–12:00 und 23:00
+  UTC (ORCL, ARM, QCOM, alle in `capBereiche`), auf dem `:00`-Gitter statt Yahoos `:30`.
+- **Symbolnamen:** kein Store-Name enthält `_`; Yahoo liefert `BRK-B`, `safeName()` lässt
+  den Bindestrich durch, die Datei führt `BRK.B` — Abbildung eindeutig. Ohne Datei: 8 Krypto-
+  Reihen (`-USD`) je Intervall, dazu EA (1m), CCEP/CSGP/FAST/NET (5m/15m).
+- **Vorschlag der Vereinigungsregel** (BEFUND §5, **Wilhelm entscheidet**): Datei gewinnt bei
+  jedem gemeinsamen Stempel in allen vier Feldern; Kerzen nur im Store kommen hinzu, innerhalb
+  `capBereiche` je Kerze als `capital` gekennzeichnet; laufende Kerze und Quote-Kerzen nicht;
+  [5] = Eröffnung aus der Datei, sonst `null`; Capital-Spanne in ein eigenes Hüllenfeld
+  `spannen` oder verwerfen. Reihenfolge: erst `rasterFilter()`, dann Migration, dann
+  Äquivalenztest.

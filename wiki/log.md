@@ -2,6 +2,13 @@
 
 *Nur was sich am Wiki ändert. Die Projekt-Chronologie steht im Archiv `PROJEKTSTAND.md`.*
 
+- 03.09.2026 Archiv-Zusammenführung Z0 geliefert (Berechnungen):
+  [archiv-zusammenfuehrung.md](archiv-zusammenfuehrung.md) §5 Z0 auf „geliefert", neuer **§7 Vermessung**
+  mit den Kernzahlen der Überlappung Store ⋂ Datei (Rundung erklärt 95–96 %; `capBereiche` heißt
+  „war einmal CFD": 4 von 12 Bereichen echt, 8 Yahoo-identisch; 1m-Tiefe zu 76,6 % cap-markiert)
+  und dem neuen Risiko **R5**: `rasterFilter()` löscht auf 5m/1m jede volle Sitzungsstunde
+  (7,7 % der 5m-Kerzen). [offene-auftraege.md](offene-auftraege.md) Zeile Z0 gestrichen.
+  Befund `studien/archiv-zusammenfuehrung-2026-09/BEFUND.md`, Übergabe `uebergabe/archiv-z0-2026-09-03.md`.
 - 03.09.2026 Zusatz C der Spannen-Studie, Probe und Bau (Berechnungen):
   [ueberlebensverzerrung.md](ueberlebensverzerrung.md) bekommt einen Abschnitt zur
   **Reichweite der Gegenmaßnahme** — die 1.164 verschwundenen Reihen decken erst ab
