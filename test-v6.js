@@ -13119,6 +13119,111 @@ console.log('\n64) Bestand & Kopfzeile (Oberflaeche Stufe 2, 03.09.2026)');
        'Der Leck-Test der Balken-Probe hat die Ausgabepfade wirklich durchlaufen');
   })());
 
+  /* ---------- (a'') Freigabe-Datei fuer den Nachtrag (03.09.2026) ----------
+   * wiki/archiv-zusammenfuehrung.md Paragraph 6 Punkt 2, Auflagen 1+2: Wilhelms Entscheid
+   * "Freigeben mit Nachtrag" aendert NICHT das Urteil der Probe (das bleibt false, wie
+   * gemessen), sondern laeuft ueber eine zweite, ausdrueckliche Datei daneben, gebunden an
+   * den erzeugt-Stempel der Ergebnisdatei. Eine neue Probe schreibt einen neuen Stempel und
+   * entwertet die alte Freigabe von selbst - das wird unten mit einem FREMDEN Stempel
+   * geprueft, nicht nur behauptet. */
+  var nhQ35 = ohneKommentare(fs.readFileSync(__dirname + '/tools/alpaca-balken-holen.js', 'utf8'));
+  ok(!/atomarSchreiben\(FREIGABE[,)]/.test(nhQ35) && !/writeFileSync\(FREIGABE[,)]/.test(nhQ35) &&
+     !/atomarSchreiben\(ergPfad/.test(nhQ35) && !/writeFileSync\(ergPfad/.test(nhQ35),
+     'Die Ergebnisdatei der Probe wird im Nachholer an KEINER Stelle beschrieben - nur gelesen (Auflage 2)');
+  ok(/vergleichMerken\(F, a\.iv, a\.sym, t\)/.test(nhQ35),
+     'aufgabe() sammelt die Vergleichszahlen je WERT beim Holen mit (a.sym wandert in vergleichMerken) - nicht nachtraeglich nachgebaut, nur gemeinsame Stempel Alpaca/Yahoo aus trenne()');
+
+  var NH35 = require(__dirname + '/tools/alpaca-balken-holen.js');
+  var tmpFg = fs.mkdtempSync(require('path').join(require('os').tmpdir(), 'freigabe-test-'));
+  var ergPfad35 = require('path').join(tmpFg, 'erg.json'), ntPfad35 = require('path').join(tmpFg, 'freigabe.json');
+  fs.writeFileSync(ergPfad35, JSON.stringify({ erzeugt: '2099-01-01T00:00:00.000Z', urteil: { bestanden: false } }));
+  var f1 = NH35.freigabe(ergPfad35, ntPfad35);
+  ok(f1.da === true && f1.bestanden === false && f1.nachtrag === null,
+     'Ohne Freigabe-Datei und mit bestanden:false verweigert der Nachholer weiterhin');
+
+  fs.writeFileSync(ntPfad35, JSON.stringify({ freigegeben: true, durch: 'Wilhelm', datum: '2026-09-03', probeErzeugt: '2099-01-01T00:00:00.000Z' }));
+  var f2 = NH35.freigabe(ergPfad35, ntPfad35);
+  ok(f2.bestanden === true && f2.nachtrag && f2.nachtrag.zeile === 'Freigabe: Wilhelm 03.09.2026 (Probe nicht bestanden, Nachtrag §6)',
+     'Mit Freigabe-Datei und PASSENDEM Stempel laeuft er - und traegt die vorgeschriebene Bannerzeile');
+  ok(JSON.parse(fs.readFileSync(ergPfad35, 'utf8')).urteil.bestanden === false,
+     'Die Freigabe AENDERT das Urteil der Ergebnisdatei nicht - es bleibt false, wie gemessen (Auflage 2)');
+
+  fs.writeFileSync(ntPfad35, JSON.stringify({ freigegeben: true, durch: 'Wilhelm', datum: '2026-09-03', probeErzeugt: 'EIN-FREMDER-STEMPEL' }));
+  var f3 = NH35.freigabe(ergPfad35, ntPfad35);
+  ok(f3.bestanden === false && f3.nachtrag === null,
+     'Mit Freigabe-Datei und FREMDEM Stempel verweigert er weiterhin - eine neue Probe entwertet die alte Freigabe (Auflage 1)');
+
+  fs.writeFileSync(ergPfad35, JSON.stringify({ erzeugt: '2099-01-01T00:00:00.000Z', urteil: { bestanden: true } }));
+  fs.writeFileSync(ntPfad35, JSON.stringify({ freigegeben: true, durch: 'Wilhelm', datum: '2026-09-03', probeErzeugt: '2099-01-01T00:00:00.000Z' }));
+  var f4 = NH35.freigabe(ergPfad35, ntPfad35);
+  ok(f4.bestanden === true && f4.nachtrag === null,
+     'Besteht die Probe selbst, bleibt die Bannerzeile stumm - "Probe nicht bestanden" waere dann falsch');
+  fs.rmSync(tmpFg, { recursive: true, force: true });
+
+  /* Die echte, ausgelieferte Freigabe-Datei: passt auf den echten Stempel der committeten
+   * Ergebnisdatei, traegt die vorgeschriebene Zeile, und ist danach byteidentisch mit dem,
+   * was vorher auf der Platte lag - der Beleg fuer Auflage 2 an echten Dateien, nicht nur
+   * an Testkopien. */
+  var ergEcht = __dirname + '/studien/archiv-zusammenfuehrung-2026-09/probe-alpaca-balken-ergebnis.json';
+  var ntEcht = NH35.FREIGABE_NACHTRAG;
+  var vorErg = fs.readFileSync(ergEcht), vorNt = fs.readFileSync(ntEcht);
+  var fEcht = NH35.freigabe();
+  ok(fEcht.bestanden === true && fEcht.urteil.bestanden === false,
+     'Die echte Freigabe-Datei greift auf den echten Stempel - das Urteil der Probe selbst bleibt false');
+  ok(fEcht.nachtrag && fEcht.nachtrag.zeile === 'Freigabe: Wilhelm 03.09.2026 (Probe nicht bestanden, Nachtrag §6)',
+     'und traegt genau die vorgeschriebene Bannerzeile (Auflage 3)');
+  NH35.kontrolle(); NH35.pruefen();
+  ok(Buffer.compare(fs.readFileSync(ergEcht), vorErg) === 0 && Buffer.compare(fs.readFileSync(ntEcht), vorNt) === 0,
+     'Ergebnis- und Freigabe-Datei sind nach kontrolle()/freigabe()/pruefen() byteidentisch mit vorher');
+
+  /* Die Bannerzeile steht wirklich in der Laufausgabe - bei --kontrolle wie bei --pruefen,
+   * nicht nur im zurueckgegebenen Objekt (Auflage 3: "bei jedem Start sichtbar"). Echter
+   * Kindprozess; --kontrolle/--pruefen holen nichts aus dem Netz. */
+  var resK35 = require('child_process').spawnSync(process.execPath, [__dirname + '/tools/alpaca-balken-holen.js', '--kontrolle'],
+    { cwd: __dirname, encoding: 'utf8', timeout: 30000 });
+  ok(/^Freigabe: Wilhelm 03\.09\.2026 \(Probe nicht bestanden, Nachtrag §6\)/m.test(String(resK35.stdout)),
+     '--kontrolle zeigt die Bannerzeile am Anfang der Ausgabe', String(resK35.stdout).split('\n')[0]);
+  var resP35 = require('child_process').spawnSync(process.execPath, [__dirname + '/tools/alpaca-balken-holen.js', '--pruefen'],
+    { cwd: __dirname, encoding: 'utf8', timeout: 30000 });
+  ok(/^Freigabe: Wilhelm 03\.09\.2026 \(Probe nicht bestanden, Nachtrag §6\)/m.test(String(resP35.stdout)),
+     '--pruefen zeigt dieselbe Bannerzeile', String(resP35.stdout).split('\n')[0]);
+
+  /* ---------- (a''') Stoppregel je Wert - Auflage 3 des Nachtrags ----------
+   * "faellt mehr als 10 % der Werte durch, stoppt die Vollsammlung" - JE WERT (Symbol),
+   * nicht je Intervall wie die bestehende Tabelle. Gepruefte Bausteine: vergleichMerken()
+   * fuellt tatsaechlich einen Eimer je Symbol (nicht nur je Intervall), und pruefen()
+   * urteilt daraus mit demselben Kriterium wie die Probe. */
+  var Fv35 = { vergleich: {}, erledigt: {}, fehlschlaege: {} };
+  NH35.vergleichMerken(Fv35, '1m', 'AAPL', { gemeinsam: 10, ueber01: 0, abw: [0.0001, 0.0002, 0.0001], faktoren: [1, 1, 1] });
+  NH35.vergleichMerken(Fv35, '5m', 'AAPL', { gemeinsam: 6, ueber01: 0, abw: [0.0001, 0.0002], faktoren: [1, 1] });
+  ok(Fv35.vergleich['1m'].gemeinsam === 10 && Fv35.vergleich['5m'].gemeinsam === 6,
+     'vergleichMerken() fuellt weiterhin den Eimer je INTERVALL (unveraendertes Verhalten)');
+  ok(Fv35.vergleichSym && Fv35.vergleichSym.AAPL && Fv35.vergleichSym.AAPL.gemeinsam === 16,
+     'und JETZT zusaetzlich einen Eimer je WERT, ueber alle Intervalle desselben Symbols summiert - die Zahlen fuer --pruefen fehlten vorher, sie werden jetzt beim Holen gesammelt');
+
+  function baueVergleichSym35(nDurch, nGesamt) {
+    var Fp = { vergleich: {}, vergleichSym: {}, erledigt: {}, fehlschlaege: {} };
+    for (var i = 0; i < nGesamt; i++) {
+      var schlecht = i < nDurch;
+      Fp.vergleichSym['SYM' + i] = { gemeinsam: 10, ueber01: schlecht ? 5 : 0,
+        abw: schlecht ? [0.005, 0.006, 0.005, 0.006, 0.005] : [0.0001, 0.0002, 0.0001, 0.0002, 0.0001], faktoren: [1, 1, 1, 1, 1] };
+    }
+    return Fp;
+  }
+  var pGrenze = NH35.pruefen(baueVergleichSym35(3, 30));
+  ok(/Werte durchgefallen: 3 von 30 \(Kriterium wie Probe: Median <= 0,1 % und <= 2 % der Kerzen ueber 0,1 %\)/.test(pGrenze.text),
+     '--pruefen traegt die vorgeschriebene Zeile "Werte durchgefallen: n von m (...)"', pGrenze.text.split('\n').slice(-2)[0]);
+  ok(/unter der Stoppregel/.test(pGrenze.text) && !/STOPP/.test(pGrenze.text),
+     'Genau 10 % durchgefallen ist NICHT "ueber 10 %" - die Vollsammlung darf starten (Grenzfall)');
+
+  var pStopp = NH35.pruefen(baueVergleichSym35(4, 30));
+  ok(/Werte durchgefallen: 4 von 30/.test(pStopp.text) && /STOPP: Vollsammlung nicht starten/.test(pStopp.text) && pStopp.ok === false,
+     'Ueber 10 % durchgefallene Werte: die Stoppregel aus Paragraph 6 greift woertlich - "STOPP: Vollsammlung nicht starten"');
+
+  var pNichts35 = NH35.pruefen({ vergleich: {}, vergleichSym: {}, erledigt: {}, fehlschlaege: {} });
+  ok(/Werte durchgefallen: 0 von 0/.test(pNichts35.text) && !/STOPP/.test(pNichts35.text),
+     'Noch kein Vergleich im Fortschritt: "0 von 0" behauptet keine Stoppregel-Entscheidung');
+
   /* ---------- Ausschlussregeln: nie auf die Zielgroesse ---------- */
   var M = require(SP + '/messen.js');
   ok(M.bewerten({ bp: 0, ap: 10 }).grund === 'nullkurs' && M.bewerten({ bp: 10, ap: 0 }).grund === 'nullkurs',

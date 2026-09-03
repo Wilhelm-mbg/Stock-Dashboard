@@ -21,8 +21,15 @@
  * kerzenquelle.js zusammenfuehren()/satz() mit Quelle 'alpaca'.
  *
  * FREIGABE: nur wenn die Probe (studien/archiv-zusammenfuehrung-2026-09/
- * probe-alpaca-balken.js) mit bestanden: true auf der Platte liegt. Ohne sie holt
- * dieses Werkzeug nichts - "nur wenn Schritt 0 bestanden" ist maschinell, nicht
+ * probe-alpaca-balken.js) mit bestanden: true auf der Platte liegt - ODER wenn daneben
+ * eine ausdrueckliche Freigabe-Datei liegt (probe-alpaca-balken-freigabe.json,
+ * { freigegeben: true, probeErzeugt: <erzeugt-Stempel der Ergebnisdatei>, ... }), deren
+ * probeErzeugt EXAKT zum erzeugt-Stempel der vorliegenden Ergebnisdatei passt. Wilhelms
+ * Entscheid vom 03.09.2026 (wiki/archiv-zusammenfuehrung.md Paragraph 6 Punkt 2: "Freigeben
+ * mit Nachtrag") laeuft ueber diesen zweiten Weg - das Urteil der Probe selbst bleibt
+ * false, wie gemessen; eine neue Probe schreibt einen neuen Stempel und entwertet die
+ * alte Freigabe von selbst. Ohne einen der beiden Wege holt dieses Werkzeug nichts -
+ * "nur wenn Schritt 0 bestanden (oder ausdruecklich freigegeben)" ist maschinell, nicht
  * vereinbart. Dazu dieselben zwei Wachen wie in der Migration: R5 behoben, nicht im
  * Sammelfenster 21:30-23:00 UTC. Und die Sammler-Sperre je Ordner.
  *
@@ -57,6 +64,7 @@ var SEITE = 10000;
 var RATE_JE_MIN = 180;
 var VERSUCHE = 5;
 var FREIGABE = path.join(__dirname, '..', 'studien', 'archiv-zusammenfuehrung-2026-09', 'probe-alpaca-balken-ergebnis.json');
+var FREIGABE_NACHTRAG = path.join(__dirname, '..', 'studien', 'archiv-zusammenfuehrung-2026-09', 'probe-alpaca-balken-freigabe.json');
 var FORTSCHRITT = process.env.MD_ALPACA_FORTSCHRITT || 'E:/Markt-Dashboard-Archiv/alpaca-balken-fortschritt.json';
 var KALENDER = FORTSCHRITT.replace(/[^\\/]+$/, 'alpaca-balken-kalender.json');
 
@@ -210,17 +218,27 @@ function fortschrittSchreiben(F) {
   fs.mkdirSync(path.dirname(FORTSCHRITT), { recursive: true });
   M.atomarSchreiben(FORTSCHRITT, JSON.stringify(F, null, 1));
 }
-function vergleichMerken(F, iv, t) {
-  var v = F.vergleich[iv] || (F.vergleich[iv] = { gemeinsam: 0, ueber01: 0, abw: [], faktoren: [] });
+/* Stichprobe deckeln, sonst waechst der Fortschritt ins Unlesbare: bis 'deckel' Werte je
+ * Eimer, gleichmaessig ausgeduennt. */
+function merkeGedeckelt(v, t, deckel) {
   v.gemeinsam += t.gemeinsam; v.ueber01 += t.ueber01;
-  /* Stichprobe deckeln, sonst waechst der Fortschritt ins Unlesbare: je Intervall
-   * bis 20.000 Werte, gleichmaessig ausgeduennt. */
   [['abw', t.abw], ['faktoren', t.faktoren]].forEach(function (p) {
     var ziel = v[p[0]], quelle = p[1];
-    var schritt = Math.max(1, Math.ceil((ziel.length + quelle.length) / 20000));
+    var schritt = Math.max(1, Math.ceil((ziel.length + quelle.length) / deckel));
     for (var i = 0; i < quelle.length; i += schritt) ziel.push(quelle[i]);
-    if (ziel.length > 20000) v[p[0]] = ziel.filter(function (_, i) { return i % 2 === 0; });
+    if (ziel.length > deckel) v[p[0]] = ziel.filter(function (_, i) { return i % 2 === 0; });
   });
+}
+/** Zahlen je Intervall UND je Wert (Symbol) - --pruefen braucht beides: die Intervall-Tabelle
+ *  und die Stoppregel aus §6 Punkt 2 ("faellt mehr als 10 % der Werte durch"), die ueber
+ *  Intervalle hinweg je Symbol urteilt. Nur gemeinsame Stempel Alpaca/Yahoo, wie am Kopf
+ *  der Datei beschrieben - es wird dafuer nichts zusaetzlich geholt. */
+function vergleichMerken(F, iv, sym, t) {
+  var v = F.vergleich[iv] || (F.vergleich[iv] = { gemeinsam: 0, ueber01: 0, abw: [], faktoren: [] });
+  merkeGedeckelt(v, t, 20000);
+  F.vergleichSym = F.vergleichSym || {};
+  var vs = F.vergleichSym[sym] || (F.vergleichSym[sym] = { gemeinsam: 0, ueber01: 0, abw: [], faktoren: [] });
+  merkeGedeckelt(vs, t, 4000);
 }
 
 /* ---------- Kalender der Quelle ---------- */
@@ -257,7 +275,7 @@ async function aufgabe(a, kal, F) {
   var huelle = a.neuDatei ? null : KQ.huelleLesen(a.pfad);
   if (!a.neuDatei && !huelle) return { ok: false, grund: 'Datei unlesbar: ' + a.pfad, seiten: seiten };
   var t = trenne(reg.drin, huelle ? huelle.series : []);
-  vergleichMerken(F, a.iv, t);
+  vergleichMerken(F, a.iv, a.sym, t);
   var geschrieben = 0, verlust = 0;
   if (t.neu.length) {
     var v = KQ.zusammenfuehren(huelle ? huelle.series : [], t.neu, a.iv, { quellenAlt: huelle ? huelle.quellen : [], quelleNeu: 'alpaca' });
@@ -331,8 +349,9 @@ async function holen(sicherung, wurzel, opt) {
 }
 
 /* ---------- Pruefen: Aequivalenz Alpaca gegen Yahoo aus dem Fortschritt ---------- */
-function pruefen() {
-  var F = fortschrittLesen();
+/** F optional (Test-Einspeisung); ohne Argument wird der echte Fortschritt gelesen. */
+function pruefen(F) {
+  F = F || fortschrittLesen();
   var zeilen = ['| Intervall | gemeinsame Stempel | Schluss median | Schluss max | ueber 0,1 % | Umsatz-Faktor median (n) | Urteil |', '|---|---|---|---|---|---|---|'];
   var alleOk = true, welche = 0;
   Object.keys(F.vergleich || {}).forEach(function (iv) {
@@ -347,18 +366,57 @@ function pruefen() {
   var erledigt = Object.keys(F.erledigt || {}).length;
   var summe = { geschrieben: 0, neu: 0, gemeinsam: 0, ausserhalb: 0, rasterVerlust: 0 };
   Object.keys(F.erledigt || {}).forEach(function (k) { var e = F.erledigt[k]; Object.keys(summe).forEach(function (f) { summe[f] += e[f] || 0; }); });
+  /* Stoppregel aus wiki/archiv-zusammenfuehrung.md Paragraph 6 Punkt 2, Auflage 3: dasselbe
+   * Kriterium wie die Probe (Median <= 0,1 %, <= 2 % der Kerzen ueber 0,1 %), aber je WERT
+   * (Symbol) geurteilt statt je Intervall - ein Wert zaehlt als durchgefallen, sobald er in
+   * IRGENDEINEM Intervall durchfaellt (alle seine gemeinsamen Stempel gepoolt). */
+  var symDurch = 0, symGesamt = 0;
+  Object.keys(F.vergleichSym || {}).forEach(function (sym) {
+    var v = F.vergleichSym[sym];
+    if (!v.gemeinsam) return;
+    symGesamt++;
+    var med = median(v.abw);
+    var okS = med != null && med <= 0.001 && v.ueber01 <= 0.02 * v.gemeinsam;
+    if (!okS) symDurch++;
+  });
+  var symQuote = symGesamt ? symDurch / symGesamt : 0;
+  var symZeile = 'Werte durchgefallen: ' + symDurch + ' von ' + symGesamt + ' (Kriterium wie Probe: Median <= 0,1 % und <= 2 % der Kerzen ueber 0,1 %)';
+  var stoppZeile = symGesamt === 0 ? 'Noch keine Werte verglichen.' :
+    (symQuote > 0.10 ? 'STOPP: Vollsammlung nicht starten' : 'unter der Stoppregel (<= 10 % durchgefallen) - Vollsammlung darf starten.');
   return { text: 'Erledigte Aufgaben: ' + erledigt + ', Abrufe ' + (F.abrufe || 0) + ', Fehlschlaege ' + Object.keys(F.fehlschlaege || {}).length + '\n' +
     'Balken: gemeinsam mit Yahoo ' + summe.gemeinsam + ', neu ' + summe.neu + ', geschrieben ' + summe.geschrieben + ', ausserhalb des Zeitraums ' + summe.ausserhalb + ', vom Raster verworfen ' + summe.rasterVerlust + '\n\n' + zeilen.join('\n') +
-    '\n\n' + (welche ? (alleOk ? 'Alle Intervalle: Quelle stimmt (Schluss <= 0,1 %, Umsatz-Faktor 0,8–1,25).' : 'MINDESTENS EIN INTERVALL WEICHT AB - Balken sind nicht dasselbe wie Yahoo.') : 'Noch kein Vergleich im Fortschritt.'),
-    ok: welche > 0 && alleOk };
+    '\n\n' + (welche ? (alleOk ? 'Alle Intervalle: Quelle stimmt (Schluss <= 0,1 %, Umsatz-Faktor 0,8–1,25).' : 'MINDESTENS EIN INTERVALL WEICHT AB - Balken sind nicht dasselbe wie Yahoo.') : 'Noch kein Vergleich im Fortschritt.') +
+    '\n\n' + symZeile + '\n' + stoppZeile,
+    ok: welche > 0 && alleOk && symQuote <= 0.10 };
 }
 
 /* ---------- Freigabe ---------- */
-function freigabe() {
-  try {
-    var j = JSON.parse(fs.readFileSync(FREIGABE, 'utf8'));
-    return { da: true, bestanden: !!(j.urteil && j.urteil.bestanden === true), erzeugt: j.erzeugt, urteil: j.urteil };
-  } catch (e) { return { da: false, bestanden: false }; }
+/** TT.MM.JJJJ aus einem 'JJJJ-MM-TT'-Datum - nur fuer die Banner-Zeile, keine Zeitrechnung. */
+function datumDe(iso) { var p = String(iso).split('-'); return p.length === 3 ? p[2] + '.' + p[1] + '.' + p[0] : String(iso); }
+
+/** ergPfad/nachtragPfad optional (Test-Einspeisung); ohne Argumente die echten Dateien.
+ *
+ *  Zwei Wege zu bestanden: true - (a) die Probe selbst hat bestanden: true geschrieben, oder
+ *  (b) die Probe hat NICHT bestanden, aber eine ausdrueckliche Freigabe-Datei liegt daneben:
+ *  { freigegeben: true, probeErzeugt: <erzeugt-Stempel dieser Ergebnisdatei>, ... }. Der
+ *  Stempel muss EXAKT uebereinstimmen (Regel 1, wiki/archiv-zusammenfuehrung.md Paragraph 6
+ *  Punkt 2) - eine neue Probe schreibt einen neuen erzeugt-Stempel und macht die alte
+ *  Freigabe damit von selbst ungueltig, ohne dass irgendwer sie loeschen muesste. Die
+ *  Ergebnisdatei selbst wird hier nur GELESEN, nie veraendert (Regel 2). */
+function freigabe(ergPfad, nachtragPfad) {
+  var erg;
+  try { erg = JSON.parse(fs.readFileSync(ergPfad || FREIGABE, 'utf8')); }
+  catch (e) { return { da: false, bestanden: false }; }
+  var bestanden = !!(erg.urteil && erg.urteil.bestanden === true);
+  var nachtrag = null;
+  try { nachtrag = JSON.parse(fs.readFileSync(nachtragPfad || FREIGABE_NACHTRAG, 'utf8')); } catch (e2) { nachtrag = null; }
+  var viaNachtrag = false;
+  if (!bestanden && nachtrag && nachtrag.freigegeben === true && nachtrag.probeErzeugt === erg.erzeugt) {
+    bestanden = true; viaNachtrag = true;
+  }
+  return { da: true, bestanden: bestanden, erzeugt: erg.erzeugt, urteil: erg.urteil,
+    nachtrag: viaNachtrag ? { durch: nachtrag.durch, datum: nachtrag.datum, grund: nachtrag.grund,
+      zeile: 'Freigabe: ' + nachtrag.durch + ' ' + datumDe(nachtrag.datum) + ' (Probe nicht bestanden, Nachtrag §6)' } : null };
 }
 
 /* ---------- Kontrolle ---------- */
@@ -399,7 +457,7 @@ function kontrolle() {
     [abrufeFuer('1m', Date.parse('2026-05-26T13:30:00Z'), Date.parse('2026-08-21T19:59:00Z')), handelstage(Date.parse('2026-05-26T13:30:00Z'), Date.parse('2026-08-21T19:59:00Z'))]);
   console.log('Kontrolle F: Freigabe und Wachen');
   var fg = freigabe();
-  console.log('  Freigabe der Probe: ' + (fg.da ? (fg.bestanden ? 'BESTANDEN (' + fg.erzeugt + ')' : 'da, aber NICHT bestanden') : 'liegt nicht vor - Wilhelm muss die Probe erst fahren'));
+  console.log('  Freigabe der Probe: ' + (fg.da ? (fg.bestanden ? (fg.nachtrag ? 'BESTANDEN ueber Nachtrag-Freigabe (' + fg.erzeugt + ')' : 'BESTANDEN (' + fg.erzeugt + ')') : 'da, aber NICHT bestanden') : 'liegt nicht vor - Wilhelm muss die Probe erst fahren'));
   console.log('  R5: ' + (M.r5Behoben() ? 'behoben' : 'NICHT behoben - --holen wird verweigert'));
   console.log(fehler.length ? '\nKONTROLLE NICHT BESTANDEN: ' + fehler.length + ' Fehler' : '\nKontrolle bestanden (A–E).');
   return fehler.length === 0;
@@ -408,6 +466,10 @@ function kontrolle() {
 /* ---------- main ---------- */
 function arg(name, std) { var i = process.argv.indexOf(name); return i >= 0 && process.argv[i + 1] != null ? process.argv[i + 1] : std; }
 if (require.main === module) {
+  /* Sichtbar bei jedem Start, nicht nur in Kontrolle F: wer eine Nachtrag-Freigabe faehrt,
+   * soll das auf jedem Bildschirm sehen, auch bei --pruefen oder --kontrolle allein. */
+  var fgStart = freigabe();
+  if (fgStart.nachtrag) sag(fgStart.nachtrag.zeile);
   if (process.argv.indexOf('--kontrolle') >= 0) { process.exit(kontrolle() ? 0 : 1); }
   if (process.argv.indexOf('--pruefen') >= 0) { var p = pruefen(); sag(p.text); process.exit(p.ok ? 0 : 1); }
   var sicherung = process.argv[2], wurzel = process.argv[3];
@@ -439,4 +501,5 @@ if (require.main === module) {
 }
 
 module.exports = { kerzeAus: kerzeAus, regulaer: regulaer, imZeitraum: imZeitraum, trenne: trenne, abrufeFuer: abrufeFuer, handelstage: handelstage,
-  plan: plan, pruefen: pruefen, freigabe: freigabe, kontrolle: kontrolle, hole: hole, FREIGABE: FREIGABE, RATE_JE_MIN: RATE_JE_MIN };
+  plan: plan, pruefen: pruefen, freigabe: freigabe, vergleichMerken: vergleichMerken, kontrolle: kontrolle, hole: hole,
+  FREIGABE: FREIGABE, FREIGABE_NACHTRAG: FREIGABE_NACHTRAG, RATE_JE_MIN: RATE_JE_MIN };
