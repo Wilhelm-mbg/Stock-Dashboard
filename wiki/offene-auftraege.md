@@ -40,7 +40,7 @@ betroffene Wiki-Seite ein — mit Fundstelle.*
 
 ## Bekannte Baustellen (klein, unbeauftragt)
 
-- **Zwei Archive heißen „Archiv"** — `archiv.js` führt den Renderer-Store `bars_<iv>_<sym>` (Scan/Backfill), die App-Sammlung liegt als Dateien im Datenordner (`kerzenquelle.js`/`sammelplan.js`); keine Spiegelung dazwischen. Die neue Archiv-Grafik zeigt die Dateien, die alten Autopilot-Balken zeigten den Store („0/60 Tage"). Konzeptfrage für den PM. *Fundstelle: `uebergabe/oberflaeche-stufe4-2026-09-03.md` §5.1*
+- **Zwei Archive heißen „Archiv" → ENTSCHIEDEN 03.09.: zusammenführen** (Wilhelm). Code-Karte in Arbeit, Auftrag in Stufen folgt; bis dahin gilt: neue Messungen nennen ausdrücklich, welches Archiv sie lesen. *Fundstelle: [entscheide.md](entscheide.md), `uebergabe/oberflaeche-stufe4-2026-09-03.md` §5.1*
 - **Ein Erklärabsatz zur Laufzeit** („Bewertet wird der durchschnittliche Gewinn je Intraday-Trade …", depot.js ~1614, 258 Zeichen) — vom Dauertext-Abtaster nicht sichtbar, weil ein Renderer ihn schreibt; Vorschlag: nach `regeln.wirkung` ins Register, Abtaster um Laufzeit-Zweig ergänzen. *Fundstelle: ebenda §5.5*
 - **K7 prüft Pfeil-Pfade nur bis 40 Zeichen** — längere Wegweiser rutschen ungeprüft durch. *Fundstelle: `uebergabe/oberflaeche-stufe4b-2026-09-03.md` §9*
 - **Klappen-Titel „Mittelfrist-Analyse & Bücher steuern" doppelt den Bereichskopf `#abMittelfrist`** im Inneren. Dreizeiler, eigener Entscheid. *Fundstelle: ebenda Abweichung 5*
