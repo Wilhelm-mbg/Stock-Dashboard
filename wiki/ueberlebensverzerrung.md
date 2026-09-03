@@ -14,7 +14,7 @@ Gegenmaßnahme im Haus: **1.164 Reihen verschwundener Werte** (`massive/`) plus 
 [datenquellen.md](datenquellen.md).
 
 **Seit 03.09.2026 wird die Lücke auf Minutenbasis geschlossen** (Stufe Z1c,
-`tools/alpaca-vollsammlung.js`): das Alpaca-Minutenarchiv sammelt **5.100 verschwundene Werte**
+`tools/alpaca-vollsammlung.js`): das Alpaca-Minutenarchiv sammelt **5.082 verschwundene Werte** (davon führt die Quelle 4.798)
 neben den 3.263 des eingefrorenen Universums, zurück bis 2016 — nicht 1.164 Tagesreihen, sondern
 Minutenbalken. Zwei Dinge daran sind für die Verzerrung entscheidend und stehen ausführlich in
 [datenquellen.md](datenquellen.md): (1) die **Lebenszeit** jedes Werts kommt aus den Balken der

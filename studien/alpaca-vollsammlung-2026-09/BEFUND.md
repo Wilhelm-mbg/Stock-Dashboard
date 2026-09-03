@@ -97,7 +97,7 @@ Regel gegen (1) und (2): ein Kürzel, das nicht rein aus Großbuchstaben, Ziffer
 besteht oder ein Gerätename ist, bekommt einen Kurzstempel seines **exakten** Namens angehängt
 (`CON` → `CON_7679a0`, `HIw` → `HIw_…`). Weil der Stempel über die genaue Schreibweise gebildet
 wird, bleibt die Abbildung auch bei reinen Schreibweise-Unterschieden eindeutig — maschinell über
-alle 8.363 Werte geprüft: **0 Kollisionen**. Die vollständige Abbildung steht in
+alle 8.345 Werte geprüft: **0 Kollisionen**. Die vollständige Abbildung steht in
 `alpaca1m/_symbole.json`; die Wahrheit steht ohnehin als `sym` im Datei-Rumpf.
 
 Gegen (3): jedes Abruf-Ende wird auf *jetzt minus 30 Minuten* gekappt (15 wären die Sperre, die
@@ -250,8 +250,8 @@ bevor sie ein Urteil fällt.
 |---|---|---|
 | (a) eingefrorenes Universum, Aktien | **3.232** | `massive/universum-2024-09-02.json` (nur gelesen) |
 | (c) die 31 ETFs | **31** | `kerzenquelle.js ETFS` |
-| (b) verschwundene, aktienartig, nicht vor 2016 erloschen | **5.100** | `massive/verschwundene.json` × `wertpapierarten.json` |
-| **gesamt** | **8.363** | |
+| (b) verschwundene, aktienartig, nicht vor 2016 erloschen, ohne Doppeleinträge | **5.082** | `massive/verschwundene.json` × `wertpapierarten.json` |
+| **gesamt** | **8.345** | |
 | (d) Krypto | **0** | eigene Quelle, eigener Ordner, bleibt Yahoo |
 
 **Drei Anmerkungen, die man den Zahlen nicht ansieht:**
@@ -273,17 +273,95 @@ bevor sie ein Urteil fällt.
 
 | Fall | Anzahl | Beispiel |
 |---|---|---|
-| Kürzel = Ordnername | 8.179 | `AAPL` → `AAPL` |
-| Punkt im Kürzel (unverändert) | 30 | `BRK.B` → `BRK.B` — **Alpaca schreibt `BRK.B`, Yahoo `BRK-B`**; die Massive-Listen und das Archiv nutzen bereits die Punkt-Schreibweise, die Abbildung ist hier also die Identität |
+| Kürzel = Ordnername | 8.160 | `AAPL` → `AAPL` |
+| davon mit Punkt (unverändert) | 28 | `BRK.B` → `BRK.B` — **Alpaca schreibt `BRK.B`, Yahoo `BRK-B`**; die Massive-Listen und das Archiv nutzen bereits die Punkt-Schreibweise, die Abbildung ist hier also die Identität. Die zwei übrigen Punkt-Kürzel tragen zusätzlich Kleinbuchstaben (`BBTpE.CL`) und fallen in die Zeile darunter |
 | Gerätename | 1 | `CON` → `CON_7679a0` |
 | Kleinbuchstaben (Kollisionsgefahr) | 184 | `HIw` → `HIw_…`, `NEEpS` → `NEEpS_f0f9c3` |
-| Kollisionen nach Abbildung | **0** | maschinell über alle 8.363 geprüft |
+| **Kollisionen nach Abbildung** | **0** | maschinell über alle 8.345 geprüft |
 
 ---
 
-## 6. Zählung und Schätzung
+## 6. Zählung — gezählt, nicht geschätzt
 
-*Ergänzt nach Phase L — siehe unten.*
+### 6.1 Phase L: die Lebenszeit kommt aus den Balken, nicht aus der Liste
+
+**8.345 Abrufe, 0 Fehler, ~50 Minuten.** Ein Tagesbalken-Abruf je Wert (11 Jahre × 252 Tage =
+2.772 Balken passen in eine Seite) sagt, ob die Quelle den Wert überhaupt führt, **in welchen
+Jahren** er Balken hat — nur die werden geholt — und wo große Lücken liegen. Der Abruf spart ein
+Vielfaches seiner selbst: ohne ihn würde jedes der elf Jahre jedes Werts angefragt, auch die
+leeren. Statt 8.345 × 11 = 91.795 Symbol-Jahren bleiben **52.892**.
+
+| Gruppe | angefragt | Quelle führt Balken | ohne Balken |
+|---|---|---|---|
+| (a) Universum, Aktien | 3.232 | **3.226** | 6 |
+| (c) ETFs | 31 | **31** | 0 |
+| (b) Verschwundene | 5.082 | **4.798** | 284 |
+| **gesamt** | **8.345** | **8.055** | **290** |
+| dazu zweite Reihen `~2` | | **3** | |
+
+**Von den 290 leeren sind 184 die Kürzel mit Kleinbuchstaben — restlos alle.** Die Vorhersage aus
+§5 ist damit gemessen: Alpaca führt Massives Schreibweise für Bezugsrechte (`AANw`) und Vorzüge
+(`NEEpS`) nicht. Die übrigen 106 sind Werte, die Alpaca schlicht nicht kennt.
+
+**Die 8.345 sind 18 weniger als die 8.363 aus der ersten Auszählung.** Die Verschwundenen-Liste
+führt **18 Kürzel doppelt** — nicht als Wiederverwendung, sondern denselben Namen zweimal mit dem
+Delisting-Datum um höchstens einen Tag versetzt (AC, ANSC, BACQ, BLDE, CUX, GRYP, HSON, LYRA …),
+eine Unsauberkeit der Quelle. Ohne Zusammenlegen wäre jede Zählung um 18 zu hoch und jeder dieser
+Werte zweimal geholt worden. Ob es doch echte Wiederverwendung ist, entscheidet der **Name**:
+maschinell geprüft, **0 von 18 Paaren tragen verschiedene Namen**.
+
+### 6.2 Kürzel-Wiederverwendung: drei Fälle, alle echt
+
+| Kürzel | Träger bis | Stille | neu ab | Jahre Träger | Jahre `~2` |
+|---|---|---|---|---|---|
+| **AAC** | 06.11.2023 | 731 Handelstage | 27.08.2026 | 2016–2023 | 2026 |
+| **CAPA** | 10.06.2021 | 1.358 Handelstage | 26.08.2026 | 2020–2021 | 2026 |
+| **JONE** | 26.11.2018 | 2.026 Handelstage | 03.09.2026 | 2016–2018 | 2026 |
+
+Alle drei sind Kürzel, die diesen August/September an ein **neues** Unternehmen vergeben wurden.
+Ohne die Trennung hätte eine 2018 erloschene Firma die Minutenbalken einer 2026 neu notierten
+Firma angehängt bekommen — und sähe damit aus, als hätte sie überlebt. Genau die Verzerrung, gegen
+die diese Sammlung gebaut ist. Der Schnitt sitzt jeweils auf dem **letzten wirklich gehandelten
+Tag**, nicht auf dem Listendatum (das liegt einen Tag später und trägt keinen Handel).
+
+### 6.3 Der Umfang — aus einer Stichprobe gemessen
+
+Die Zahl, an der alles hängt, kennt keine Liste: **Minutenbalken je Handelstag**. Sie schwankt um
+mehr als das Zehnfache — AAPL hat jeden Tag alle 390 regulären Minuten plus ~400 außerbörslich,
+ein erloschener Kleinwert vielleicht 30. Eine Hochrechnung aus den liquiden Werten des Testlaufs
+(790/Tag) wäre um mehr als das Dreifache zu hoch, denn 5.082 der 8.345 Werte sind verschwundene
+Kleinwerte.
+
+Deshalb **gezogen statt geraten**: 60 Symbol-Jahre gleichverteilt aus genau dem Plan, der später
+gefahren wird, feste Saat 20260903. Was dabei geholt wurde, ist echte Ware und bleibt liegen — die
+Stichprobe ist ein Stück der Sammlung, kein Vorlauf.
+
+| | |
+|---|---|
+| gezogen | 60 von 52.892 Symbol-Jahren |
+| Handelstage in der Stichprobe | 13.976 |
+| Kerzen in der Stichprobe | 3.390.228 |
+| **Balken je Handelstag** | **242,6** |
+| **Bytes je Kerze** | **46,3** |
+
+**Hochgerechnet auf 11.985.827 Handelstage:**
+
+| | |
+|---|---|
+| **Kerzen** | **2.907.461.813** (~2,9 Mrd) |
+| **Abrufe** | **343.639** (52.892 Symbol-Jahre + 290.747 Seiten zu 10.000) |
+| **Stunden bei 170/min** | **33,7** |
+| **Bytes** | **134,6 GB** |
+| Platz auf E: | 1,65 TB frei — reicht mit Faktor 12 |
+
+Dazu einmalig Phase L (8.345 Abrufe, 0,8 h — **gefahren**) und Phase M (8.345 Abrufe, 0,8 h).
+**Zusammen ~35 Stunden.** Bei 10 Stunden je Nacht sind das **vier Nächte**, bei 12 Stunden drei.
+
+*Die frühere Schätzung im Wiki (~3 Mrd Kerzen, 150–250 GB, ~300.000 Abrufe, 2–3 Nächte) war gut
+geraten — jetzt ist sie gemessen.*
+
+**Bereits gesammelt** (Testlauf + Stichprobe, echte Ware, bleibt liegen): 70 Symbol-Jahre,
+**4.480.266 Kerzen, 0,211 GB** — 0,13 % des Ziels.
 
 ---
 

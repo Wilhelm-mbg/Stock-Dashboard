@@ -461,14 +461,31 @@ function universumLesen() {
    * "Seit 2016 gehandelt" wird NICHT hier entschieden - das sagt Phase L aus den Balken
    * selbst. Was hier faellt, ist nur, was schon vor 2016 von der Liste war: dafuer kann
    * es keine Balken ab 2016 geben, und ein Abruf dafuer waere sicher leer. */
+  /* DIE LISTE FUEHRT 18 KUERZEL DOPPELT - gemessen 03.09.2026. Es ist keine
+   * Kuerzel-Wiederverwendung, sondern derselbe Name zweimal, das Delisting-Datum um
+   * hoechstens einen Tag versetzt (AC, ANSC, BACQ, BLDE, CUX, GRYP, HSON, LYRA, ...) -
+   * eine Unsauberkeit der Quelle. Ohne Zusammenlegen waere jede Zaehlung um 18 zu hoch
+   * und jeder dieser Werte zweimal geholt worden. Behalten wird der Eintrag mit dem
+   * SPAETEREN Ende: er laesst dem Traeger alle seine Balken. Faende sich je ein Paar mit
+   * verschiedenen NAMEN, waere es echte Wiederverwendung und gehoerte getrennt - deshalb
+   * wird das gezaehlt und ausgewiesen, nicht bloss stillschweigend zusammengelegt. */
   var verschwunden = [], vorherRaus = 0, nichtAktie = 0;
+  var jeSym = {}, doppelt = 0, doppeltFremderName = [];
   v.eintraege.forEach(function (e) {
     var art = arten[e.sym] || e.art;
     if (art !== 'CS' && art !== 'ADRC') { nichtAktie++; return; }
     if (e.bis && e.bis < '2016-01-01') { vorherRaus++; return; }
     if (imUniversum[e.sym]) return;      /* steht schon in (a) - dieselbe Reihe, nicht zweimal */
-    verschwunden.push(e);
+    var da = jeSym[e.sym];
+    if (da) {
+      doppelt++;
+      if (String(da.name) !== String(e.name)) doppeltFremderName.push(e.sym + ': ' + da.name + ' | ' + e.name);
+      if (!da.bis || (e.bis && e.bis > da.bis)) jeSym[e.sym] = e;
+      return;
+    }
+    jeSym[e.sym] = e;
   });
+  Object.keys(jeSym).sort().forEach(function (s) { verschwunden.push(jeSym[s]); });
 
   /* (c) die 31 ETFs - sie stehen SAEMTLICH schon im eingefrorenen Universum (geprueft,
    * 31 von 31). Die Gruppe ist also eine Kennzeichnung, keine zusaetzliche Menge. */
@@ -494,7 +511,7 @@ function universumLesen() {
 
   return { aktien: aktien, etfs: etfs, verschwunden: verschwunden, krypto: krypto,
     alle: alle, gruppe: gruppe, ueberschneidung: ueberschneidung,
-    ausgesiebt: { vorherRaus: vorherRaus, nichtAktie: nichtAktie },
+    ausgesiebt: { vorherRaus: vorherRaus, nichtAktie: nichtAktie, doppelteListeneintraege: doppelt, doppeltMitAnderemNamen: doppeltFremderName },
     stichtag: u.stichtag, verschwundenStand: v.stand };
 }
 
