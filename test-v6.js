@@ -11929,7 +11929,10 @@ console.log('\nDie App sammelt selbst: Kursarchiv (26.08.2026)');
   var TABU = /intradayScan|autopilotRing|SETUPS|TRIG_BELEGT|modeParams|demoOrder|takt\(/;
   ['kerzenquelle.js', 'sammelplan.js', 'archivkarte.js',
    /* Z1 (03.09.2026): die zwei Werkzeuge, die in die Dateisammlung schreiben, ebenso. */
-   'tools/archiv-migration.js', 'tools/alpaca-balken-holen.js'].forEach(function (d) {
+   'tools/archiv-migration.js', 'tools/alpaca-balken-holen.js',
+   /* Z1c (03.09.2026): die Vollsammlung schreibt in ein eigenes Archiv - und ebenso wenig
+    * in die Handelslogik. */
+   'tools/alpaca-vollsammlung.js'].forEach(function (d) {
     var rein = ohneKommentare(fs.readFileSync(__dirname + '/' + d, 'utf8'));
     ok(!TABU.test(rein), d + ' fasst die Handelslogik nicht an');
   });
@@ -13107,6 +13110,9 @@ console.log('\n64) Bestand & Kopfzeile (Oberflaeche Stufe 2, 03.09.2026)');
     __dirname + '/studien/archiv-zusammenfuehrung-2026-09/probe-alpaca-balken.js',
     __dirname + '/studien/archiv-zusammenfuehrung-2026-09/skalen-probe-alpaca.js',
     __dirname + '/tools/alpaca-balken-holen.js',
+    __dirname + '/tools/alpaca-vollsammlung.js',
+    __dirname + '/studien/alpaca-vollsammlung-2026-09/probe-massnahmen.js',
+    __dirname + '/studien/alpaca-vollsammlung-2026-09/probe-spinoff-form.js',
   ];
   Z1.forEach(function (p) {
     var name = p.replace(/^.*[\\/]/, '');
@@ -13118,7 +13124,16 @@ console.log('\n64) Bestand & Kopfzeile (Oberflaeche Stufe 2, 03.09.2026)');
     if (/process\.env(?!\s*\.)/.test(code)) v.push('bindet process.env als Ganzes');
     ok(v.length === 0, name + ': liest die Umgebung nicht - ausser MD_-Pfadschaltern, auch nicht ueber einen Alias', v.join(' | '));
     ok(/function sag\s*\([^)]*\)\s*\{[^}]*S\.verdecken/.test(code), name + ': die Ausgabefunktion laeuft durch verdecken()');
-    ok(/feed=sip/.test(code) && !/feed=iex/.test(code), name + ': fragt ausschliesslich feed=sip ab');
+    /* Wo ein Feed gewaehlt wird, ist es sip - und nie iex (die Schnittstelle, die auf eine
+     * 2018er Anfrage Quotes von 2020 liefert, HTTP 200, ohne Warnung). Eine Datei, die
+     * ueberhaupt keine Balken abfragt - die Massnahmen-Probe fragt /v1/corporate-actions,
+     * dort gibt es keinen Feed -, kann keinen sip verlangen; von ihr wird nur verlangt,
+     * dass sie nie auf iex ausweicht. Die alte Fassung verlangte pauschal feed=sip und
+     * wurde an genau dieser Datei rot: eine Klinke, die etwas anderes prueft als das,
+     * worum es geht (wiki/fehlerformen.md). */
+    var waehltFeed = /feed=/.test(code);
+    ok((!waehltFeed || /feed=sip/.test(code)) && !/feed=iex/.test(code),
+       name + ': waehlt einen Feed nur als sip, nie als iex' + (waehltFeed ? '' : ' (fragt keine Balken ab)'));
   });
   var leckZ1 = probe((async function () {
     await leckSpannen;   /* Kette, siehe oben - nie parallel zu einem anderen Leck-Test */
@@ -13441,13 +13456,135 @@ console.log('\n64) Bestand & Kopfzeile (Oberflaeche Stufe 2, 03.09.2026)');
     ok(/function sag\s*\([^)]*\)\s*\{[^}]*S\.verdecken/.test(code),
        f + ': die Ausgabefunktion laeuft durch verdecken()');
   });
-  probe((async function () {
+  var leckZusatzC = probe((async function () {
     await leckZ1;   /* Kette, siehe (b) - nie parallel zu einem anderen Leck-Test */
     var ZC = require(SP + '/zusatzC.js');
     var r = await ZC.selbsttest();
     ok(!r.leck, 'Leck-Test zusatzC.js: erfundene Zugangswerte tauchen in KEINER Ausgabe auf, auch wenn der Server die Kopfzeilen zurueckspiegelt');
     ok(/\[Zugang\]/.test(r.ausgabe) && /\[Geheimnis\]/.test(r.ausgabe),
        'Der Leck-Test von zusatzC.js hat die Ausgabepfade wirklich durchlaufen (beide Platzhalter stehen drin)');
+  })());
+
+  /* ---------- (a''''') Z1c Vollsammlung (03.09.2026) ----------
+   * tools/alpaca-vollsammlung.js sammelt Minutenbalken 2016-heute fuer 8.363 Werte in ein
+   * NEUES Archiv. Die vier Zusagen der Z1-Liste oben (Zugang ueber schluessel.js, keine
+   * eigene Umgebungslesung, Ausgabe durch verdecken(), nur feed=sip) gelten fuer es
+   * mit - es steht in derselben Liste. Hier kommt dazu, was nur dieses Werkzeug betrifft:
+   * WOHIN es schreibt, dass die Ableitung rechnet, was sie behauptet, und dass ein
+   * Abbruch keine halbe Reihe hinterlaesst. */
+  var VS = require(__dirname + '/tools/alpaca-vollsammlung.js');
+  var vsQ = ohneKommentare(fs.readFileSync(__dirname + '/tools/alpaca-vollsammlung.js', 'utf8'));
+
+  /* (1) Schreibziele - STRUKTUR. Jeder Schreibaufruf nennt einen Pfad, der aus ROH,
+   * BEREINIGT oder MASSNAHMEN gebaut ist. Die Yahoo-Archive kommen im Code vor, aber nur
+   * lesend (gegenYahoo); ein Schreibaufruf, der 'archiv' im Ziel traegt, ist verboten. */
+  var schreibZiele = (vsQ.match(/(?:M\.atomarSchreiben|fs\.writeFileSync|fs\.appendFileSync)\(\s*([^,]+),/g) || [])
+    .map(function (x) { return x.replace(/^[^(]+\(\s*/, '').replace(/,$/, '').trim(); });
+  ok(schreibZiele.length >= 6, 'Vollsammlung: die Schreibaufrufe sind gefunden worden', String(schreibZiele.length));
+  var fremdeZiele = schreibZiele.filter(function (z) {
+    return !/^(ziel|zp|ERGEBNIS|PROTOKOLL|FORTSCHRITT|LEBENSZEIT|SYMBOLE|KALENDER)$/.test(z) &&
+           !/path\.join\((ROH|BEREINIGT|MASSNAHMEN|zo|ordner|od)\b/.test(z) && !/^path\.join\(ROH/.test(z);
+  });
+  ok(fremdeZiele.length === 0,
+     'Vollsammlung: jeder Schreibaufruf zielt unter alpaca1m/, alpaca1m-bereinigt/ oder alpaca-massnahmen/', fremdeZiele.join(' | '));
+  ok(!/(?:atomarSchreiben|writeFileSync|appendFileSync)\([^)]*archiv\d/.test(vsQ),
+     'Vollsammlung: KEIN Schreibaufruf nennt ein Yahoo-Archiv als Ziel - archiv1m/5m/15m werden nur GELESEN');
+  ok(/function gegenYahoo/.test(vsQ) && /'archiv' \+ iv/.test(vsQ),
+     'Vollsammlung: die Yahoo-Archive kommen genau einmal vor, im Vergleich - und der liest nur');
+  ok(/nurQuelle\(yh, 'yahoo'\)/.test(vsQ),
+     'Vollsammlung: der Vergleich haelt sich an Kerzen mit Quelle YAHOO - Alpaca gegen Alpaca waere eine Tautologie, die immer besteht');
+
+  /* (2) Die Ableitung - die Klinke aus dem Auftrag, an einer Kunstreihe. */
+  var exS = VS.wirkungMs('2026-08-11');
+  var kunstV = [[exS - 86400000, 100, 1000, 110, 90, 95], [exS + 3600000, 50, 2000, 55, 45, 48]];
+  var abgV = VS.ableiten(kunstV, [{ ms: exS, faktor: 2 }]);
+  ok(abgV[0][1] === 50 && abgV[0][3] === 55 && abgV[0][4] === 45 && abgV[0][5] === 47.5 && abgV[0][2] === 2000,
+     'Vollsammlung: Split 2:1 halbiert die Kurse DAVOR und verdoppelt den Umsatz', JSON.stringify(abgV[0]));
+  ok(abgV[1][1] === 50 && abgV[1][2] === 2000, 'Vollsammlung: die Kerze am Wirkungstag bleibt unberuehrt');
+  var exSp = VS.wirkungMs('2026-07-01');
+  var abgSp = VS.ableiten([[exSp - 86400000, 105.7, 1000, 105.7, 105.7, 105.7]], [{ ms: exSp, faktor: 1.057 }]);
+  ok(Math.abs(abgSp[0][1] - 100) < 1e-9 && Math.abs(abgSp[0][2] - 1057) < 1e-9,
+     'Vollsammlung: Abspaltung mit Faktor 1,057 - Kurse geteilt, Umsatz mal 1,057');
+  /* Und der GEMESSENE Befund vom 03.09.2026 als Klinke: ein Abspaltungs-Satz der Quelle
+   * traegt ein Stueckverhaeltnis, KEINEN Kursfaktor. Wer daraus je einen Faktor macht,
+   * erfindet 1,057 aus 1,0 - genau das, was der Auftrag verbietet. */
+  ok(VS.faktorAus({ _art: 'spin_offs', source_rate: 1, new_rate: 1 }) === null &&
+     VS.faktorAus({ _art: 'spin_offs', source_rate: 1, new_rate: 0.33333 }) === null,
+     'Vollsammlung: aus einem Abspaltungs-Satz wird KEIN Kursfaktor gemacht (gemessen an 7 Faellen, GE/JNJ/T/IBM/MMM/SPGI)');
+  ok(VS.faktorAus({ _art: 'forward_splits', old_rate: 1, new_rate: 2 }) === 2 &&
+     VS.faktorAus({ _art: 'cash_dividends', rate: 0.97 }) === null,
+     'Vollsammlung: ein Split gibt seinen Faktor, eine Dividende nicht (Yahoo bereinigt Intraday nicht um Dividenden)');
+
+  /* (3) Ringverteilung und Jahresgrenzen. */
+  var ringV = VS.ringAufgaben({ AAA: { jahre: [2024, 2025, 2026] }, BBB: { jahre: [2025, 2026] } }, 2026);
+  ok(ringV.map(function (a) { return a.key; }).join(' ') === 'AAA|2026 BBB|2026 AAA|2025 BBB|2025 AAA|2024',
+     'Vollsammlung: Ringverteilung - erst ALLE Werte des juengsten Jahres, dann das naechste',
+     ringV.map(function (a) { return a.key; }).join(' '));
+  ok(VS.jahrGrenzen(2025).bis + 1 === VS.jahrGrenzen(2026).von,
+     'Vollsammlung: die Jahresgrenzen stossen aneinander - keine Kerze faellt in zwei Jahresdateien');
+
+  /* (4) Die Windows-Fallen, die vor dem ersten Byte gefunden wurden. */
+  ok(VS.ordnerName('CON') !== 'CON', 'Vollsammlung: CON ist im Universum UND ein Windows-Geraetename - der Ordner heisst anders', VS.ordnerName('CON'));
+  ok(VS.ordnerName('HIw').toUpperCase() !== VS.ordnerName('HIW').toUpperCase(),
+     'Vollsammlung: HIW und HIw sind zwei Wertpapiere und bekommen zwei Ordner - Windows unterscheidet die Schreibweise nicht',
+     VS.ordnerName('HIW') + ' / ' + VS.ordnerName('HIw'));
+  ok(VS.symbolAbbildung(['HIW', 'HIw', 'KW', 'Kw', 'ADSW', 'ADSw', 'CON', 'BRK.B']).doppelt.length === 0,
+     'Vollsammlung: die Ordner-Abbildung ueber alle bekannten Kollisionen ist eindeutig');
+
+  /* (5) Die Kappung des Gratis-Tarifs. Ohne sie antwortet die Quelle auf JEDE Anfrage,
+   * deren Ende zu jung ist, mit HTTP 403 - und zwar fuer die ganze Anfrage. Gemessen
+   * 03.09.2026: "subscription does not permit querying recent SIP data". */
+  var jetztV = Date.UTC(2026, 8, 3, 19, 0);
+  ok(VS.abrufEnde(Date.UTC(2026, 11, 31), jetztV) < jetztV && VS.abrufEnde(Date.UTC(2020, 5, 1), jetztV) === Date.UTC(2020, 5, 1),
+     'Vollsammlung: ein zu junges Abruf-Ende wird gekappt, ein altes nicht');
+  ok(!VS.jahrAbgeschlossen(2026, jetztV) && VS.jahrAbgeschlossen(2025, jetztV),
+     'Vollsammlung: das laufende Jahr gilt nicht als fertig - seine Datei wird an einem spaeteren Tag neu geholt');
+
+  /* (6) Die eigene Kontrolle des Werkzeugs faehrt in der Suite mit - eine Positivkontrolle,
+   * die rot wird, wenn jemand einen ihrer Bausteine aendert. */
+  var kV = VS.kontrolle();
+  ok(kV.gefallen === 0 && kV.zusicherungen >= 40,
+     'Vollsammlung: die eigene Kontrolle (' + kV.zusicherungen + ' Zusicherungen) laeuft hier mit und ist gruen', String(kV.gefallen));
+
+  /* (7) VERHALTEN: ein echter Lauf in einen Wegwerf-Ordner, mit erfundener Quelle. Er
+   * faehrt holen(), jahrHolen(), satz(), atomarSchreiben() und ableitenLauf() wirklich -
+   * nur das Netz ist eingespeist. Nur so laesst sich zusichern, WOHIN geschrieben wird
+   * und dass ein Abbruch genau die abgebrochene Aufgabe neu holt. Kindprozess, weil die
+   * Archivwurzel beim Laden der Datei feststeht. */
+  var tmpV = fs.mkdtempSync(require('path').join(require('os').tmpdir(), 'vollsammlung-kunst-'));
+  var resV = require('child_process').spawnSync(process.execPath,
+    [__dirname + '/tools/alpaca-vollsammlung.js', '--selbsttest-schreiben'],
+    { cwd: __dirname, encoding: 'utf8', timeout: 60000, env: Object.assign({}, process.env, { MD_ALPACA_WURZEL: tmpV }) });
+  var zeilenV = String(resV.stdout || '').trim().split('\n');
+  var oV = null;
+  try { oV = JSON.parse(zeilenV[zeilenV.length - 1]); } catch (e) { oV = null; }
+  ok(oV !== null, 'Vollsammlung: der Schreib-Selbsttest laeuft durch', String(resV.stderr || '').slice(0, 200));
+  if (oV) {
+    var ausserhalb = oV.dateien.filter(function (d) { return !/^(alpaca1m|alpaca1m-bereinigt|alpaca-massnahmen)\//.test(d); });
+    ok(ausserhalb.length === 0,
+       'Vollsammlung: der echte Lauf hat ' + oV.dateien.length + ' Dateien geschrieben - KEINE ausserhalb der drei erlaubten Ordner', ausserhalb.join(' | '));
+    ok(oV.reihenfolge1.join(' ') === 'AAA|2026 BBB|2026 AAA|2025 BBB|2025 AAA|2024',
+       'Vollsammlung: der echte Lauf fragt in Ringreihenfolge ab', oV.reihenfolge1.join(' '));
+    ok(oV.reihenfolge2.join(' ') === 'BBB|2025 AAA|2024',
+       'Vollsammlung: nach einem Abbruch werden GENAU die abgebrochene und die fehlende Aufgabe neu geholt - keine andere',
+       oV.reihenfolge2.join(' '));
+    ok(oV.rohSchluss2025 === 100 && oV.rohUmsatz2025 === 500 && oV.bereinigtSchluss2025 === 50 && oV.bereinigtUmsatz2025 === 1000,
+       'Vollsammlung: die ROHE Reihe bleibt roh, die abgeleitete Kopie traegt den Split - und Kurs x Umsatz ist in beiden dieselbe Zahl',
+       JSON.stringify([oV.rohSchluss2025, oV.rohUmsatz2025, oV.bereinigtSchluss2025, oV.bereinigtUmsatz2025]));
+    ok(oV.bereinigtBBB === false && oV.ableiten.ausgelassen.length === 1 && /Abspaltung/.test(oV.ableiten.ausgelassen[0].grund),
+       'Vollsammlung: ein Wert mit Abspaltung bekommt GAR KEINE bereinigte Kopie und wird gelistet - der Faktor wird nicht erraten',
+       JSON.stringify(oV.ableiten.ausgelassen));
+  }
+  fs.rmSync(tmpV, { recursive: true, force: true });
+
+  /* (8) Der Leck-Test der Massnahmen-Probe - am Ende der Kette (nie parallel). */
+  probe((async function () {
+    await leckZusatzC;
+    var PM = require(__dirname + '/studien/alpaca-vollsammlung-2026-09/probe-massnahmen.js');
+    var r = await PM.selbsttest();
+    ok(!r.leck, 'Leck-Test der Massnahmen-Probe: erfundene Zugangswerte tauchen in KEINER Ausgabe auf, auch wenn der Server die Kopfzeilen zurueckspiegelt');
+    ok(/\[Zugang\]/.test(r.ausgabe) && /\[Geheimnis\]/.test(r.ausgabe),
+       'Der Leck-Test der Massnahmen-Probe hat die Ausgabepfade wirklich durchlaufen');
   })());
 
   /* (e) Die Auswertung rechnet BEIDE Rahmen mit derselben Funktion. Eine zweite zelle()

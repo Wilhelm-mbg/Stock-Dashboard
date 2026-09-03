@@ -1,0 +1,139 @@
+{
+ "erzeugt": "2026-09-03T18:53:36.861Z",
+ "abrufe": [
+  {
+   "was": "MNST,SPGI 2026",
+   "status": 200,
+   "rumpf": null
+  },
+  {
+   "was": "AAPL,NVDA 2016-2021",
+   "status": 200,
+   "rumpf": null
+  }
+ ],
+ "kriterien": {
+  "K1": {
+   "erfuellt": true,
+   "status": 200
+  },
+  "K2": {
+   "erfuellt": true,
+   "gefunden": [
+    {
+     "art": "forward_splits",
+     "datum": "2026-08-11",
+     "faktor": 2
+    }
+   ]
+  },
+  "K3": {
+   "erfuellt": true,
+   "gefunden": [
+    {
+     "art": "cash_dividends",
+     "datum": "2026-02-25",
+     "faktor": 0.97,
+     "roh": {
+      "_art": "cash_dividends",
+      "cusip": "78409V104",
+      "ex_date": "2026-02-25",
+      "foreign": false,
+      "id": "cdf00393-5ec9-442a-96a4-e282febdcd0b",
+      "payable_date": "2026-03-11",
+      "process_date": "2026-03-11",
+      "rate": 0.97,
+      "record_date": "2026-02-25",
+      "special": false,
+      "symbol": "SPGI"
+     }
+    },
+    {
+     "art": "cash_dividends",
+     "datum": "2026-05-29",
+     "faktor": 0.97,
+     "roh": {
+      "_art": "cash_dividends",
+      "cusip": "78409V104",
+      "ex_date": "2026-05-29",
+      "foreign": false,
+      "id": "72f6ce0e-b94a-4310-8a81-7d3a39e0d112",
+      "payable_date": "2026-06-10",
+      "process_date": "2026-06-10",
+      "rate": 0.97,
+      "record_date": "2026-05-29",
+      "special": false,
+      "symbol": "SPGI"
+     }
+    },
+    {
+     "art": "spin_offs",
+     "datum": "2026-07-01",
+     "faktor": null,
+     "roh": {
+      "_art": "spin_offs",
+      "ex_date": "2026-07-01",
+      "id": "d4f8cb93-e10f-4ee9-8484-3ed67053b281",
+      "new_cusip": "60744M106",
+      "new_rate": 1,
+      "new_symbol": "MBGL",
+      "payable_date": "2026-07-01",
+      "process_date": "2026-07-01",
+      "record_date": "2026-06-15",
+      "source_cusip": "78409V104",
+      "source_rate": 1,
+      "source_symbol": "SPGI"
+     }
+    }
+   ]
+  },
+  "K4": {
+   "erfuellt": true,
+   "saetze": 2,
+   "gefunden": [
+    {
+     "sym": "AAPL",
+     "art": "forward_splits",
+     "datum": "2020-08-31",
+     "faktor": 4
+    },
+    {
+     "sym": "NVDA",
+     "art": "forward_splits",
+     "datum": "2021-07-20",
+     "faktor": 4
+    }
+   ]
+  },
+  "K5": {
+   "erfuellt": false,
+   "saetze": 4,
+   "ohneDatumOderFaktor": 1
+  }
+ },
+ "urteil": {
+  "bestanden": false,
+  "gefallen": [
+   "K5"
+  ]
+ },
+ "artenGeliefert": {
+  "cash_dividends": 50,
+  "forward_splits": 3,
+  "spin_offs": 1,
+  "cash_mergers": 1
+ },
+ "beispielSatz": {
+  "_art": "forward_splits",
+  "cusip": "61174X109",
+  "due_bill_redemption_date": "2026-08-11",
+  "ex_date": "2026-08-11",
+  "id": "e639b77a-af3f-411a-878b-fe2b40cff68a",
+  "new_rate": 2,
+  "old_rate": 1,
+  "payable_date": "2026-08-11",
+  "process_date": "2026-08-11",
+  "record_date": "2026-08-24",
+  "symbol": "MNST"
+ }
+}

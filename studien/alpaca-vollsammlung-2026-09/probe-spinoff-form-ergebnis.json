@@ -1,0 +1,102 @@
+{
+ "erzeugt": "2026-09-03T18:54:59.584Z",
+ "saetze": 6,
+ "felder": {
+  "_art": 6,
+  "ex_date": 6,
+  "id": 6,
+  "new_cusip": 6,
+  "new_rate": 6,
+  "new_symbol": 6,
+  "process_date": 6,
+  "source_cusip": 6,
+  "source_rate": 6,
+  "source_symbol": 6,
+  "due_bill_redemption_date": 2,
+  "payable_date": 3,
+  "record_date": 3
+ },
+ "mitKursfaktorUngleichEins": 0,
+ "beispiele": [
+  {
+   "_art": "spin_offs",
+   "ex_date": "2019-02-25",
+   "id": "15a5c363-f85e-467f-81be-1f818982e45e",
+   "new_cusip": "929740108",
+   "new_rate": 0.005371,
+   "new_symbol": "WAB",
+   "process_date": "2019-02-25",
+   "source_cusip": "369604301",
+   "source_rate": 1,
+   "source_symbol": "GE"
+  },
+  {
+   "_art": "spin_offs",
+   "due_bill_redemption_date": "2023-01-05",
+   "ex_date": "2023-01-04",
+   "id": "0b2e940e-e28d-4944-9e08-9e9761769d92",
+   "new_cusip": "36266G107",
+   "new_rate": 0.33333,
+   "new_symbol": "GEHC",
+   "payable_date": "2023-01-03",
+   "process_date": "2023-01-04",
+   "record_date": "2022-12-16",
+   "source_cusip": "369604301",
+   "source_rate": 1,
+   "source_symbol": "GE"
+  },
+  {
+   "_art": "spin_offs",
+   "ex_date": "2024-04-02",
+   "id": "27cadc74-26f2-43fe-b5ef-8cc7e5affc30",
+   "new_cusip": "36828A101",
+   "new_rate": 0.25,
+   "new_symbol": "GEV",
+   "process_date": "2024-04-02",
+   "source_cusip": "369604301",
+   "source_rate": 1,
+   "source_symbol": "GE"
+  },
+  {
+   "_art": "spin_offs",
+   "ex_date": "2024-04-01",
+   "id": "f292f8b1-426d-4756-9d69-cedf8c6cb9c3",
+   "new_cusip": "83444M101",
+   "new_rate": 0.25,
+   "new_symbol": "SOLV",
+   "process_date": "2024-04-01",
+   "source_cusip": "88579Y101",
+   "source_rate": 1,
+   "source_symbol": "MMM"
+  },
+  {
+   "_art": "spin_offs",
+   "ex_date": "2026-07-01",
+   "id": "d4f8cb93-e10f-4ee9-8484-3ed67053b281",
+   "new_cusip": "60744M106",
+   "new_rate": 1,
+   "new_symbol": "MBGL",
+   "payable_date": "2026-07-01",
+   "process_date": "2026-07-01",
+   "record_date": "2026-06-15",
+   "source_cusip": "78409V104",
+   "source_rate": 1,
+   "source_symbol": "SPGI"
+  },
+  {
+   "_art": "spin_offs",
+   "due_bill_redemption_date": "2022-04-12",
+   "ex_date": "2022-04-11",
+   "id": "667c35c8-32ec-4975-86a8-f54072938f11",
+   "new_cusip": "934423104",
+   "new_rate": 0.24192,
+   "new_symbol": "WBD",
+   "payable_date": "2022-04-08",
+   "process_date": "2025-07-18",
+   "record_date": "2022-04-05",
+   "source_cusip": "00206R102",
+   "source_rate": 1,
+   "source_symbol": "T"
+  }
+ ]
+}
