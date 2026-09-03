@@ -31,6 +31,10 @@ Nur was **weitergilt**. Aufgehobenes steht mit Datum der Aufhebung.
 - **Stopp-Regeln: mindestens 10 Beobachtungen je Marktlage.**
 - **Feinere Marktlagen zulassen.**
 
+## Oberfläche
+
+- **Reines Markt-Dashboard als vierter Reiter** (04.09.2026, Wilhelm, Formular nach TradingView-Sichtung): Reiter „Markt" nur für den Markt — Index-Kacheln, Sektor-Leiste, Heatmap, Hotlists, Earnings-Kalender, Vor-/Nachbörse, Schlagzeilen; Marktkarte und Radar ziehen dorthin, ebenso die Marktblöcke aus Heute→Überblick (Kacheln, Heatmap, News, Kalender); Heute behält Bestand und Meine Papiere. „Nicht so vermixt mit den Strategien." Aktien-Viewer nach TradingView-Muster ist Stufe 6 (verworfen: Viewer zuerst; beides in einer Stufe). Nicht übernommen: Analystenrating, Community-Ideen, Forecasts (Meinungen, keine Daten). Fundstelle [oberflaeche.md](oberflaeche.md) Stufe 5.
+
 ## Betrieb
 
 - **Kein PM-Weckruf mehr** (31.08.2026) — hebt die Anordnung vom 27.08. abends auf. Grund:
