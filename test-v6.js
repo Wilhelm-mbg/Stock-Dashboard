@@ -13581,6 +13581,13 @@ console.log('\n64) Bestand & Kopfzeile (Oberflaeche Stufe 2, 03.09.2026)');
     ok(oV.rohSchluss2025 === 100 && oV.rohUmsatz2025 === 500 && oV.bereinigtSchluss2025 === 50 && oV.bereinigtUmsatz2025 === 1000,
        'Vollsammlung: die ROHE Reihe bleibt roh, die abgeleitete Kopie traegt den Split - und Kurs x Umsatz ist in beiden dieselbe Zahl',
        JSON.stringify([oV.rohSchluss2025, oV.rohUmsatz2025, oV.bereinigtSchluss2025, oV.bereinigtUmsatz2025]));
+    /* Eine zweite Reihe (<KUERZEL>~2) hat keine eigene Massnahmen-Datei - Phase M kennt
+     * nur die Kuerzel des Universums. Ohne Rueckgriff auf die Datei des Traegers waere
+     * jede zweite Reihe still unbereinigt geblieben, und "keine Datei" sieht von aussen
+     * aus wie "keine Massnahmen". */
+    ok(oV.zweiteReiheBereinigt === 50,
+       'Vollsammlung: eine zweite Reihe (~2) wird mit den Massnahmen ihres Traegers bereinigt - sonst bliebe sie still unbereinigt',
+       String(oV.zweiteReiheBereinigt));
     ok(oV.bereinigtBBB === false && oV.ableiten.ausgelassen.length === 1 && /Abspaltung/.test(oV.ableiten.ausgelassen[0].grund),
        'Vollsammlung: ein Wert mit Abspaltung bekommt GAR KEINE bereinigte Kopie und wird gelistet - der Faktor wird nicht erraten',
        JSON.stringify(oV.ableiten.ausgelassen));

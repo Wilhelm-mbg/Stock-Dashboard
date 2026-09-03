@@ -1,0 +1,49 @@
+﻿  200/8345  mit Massnahmen 173  Splits 46  Abspaltungen 9  Abrufe 193
+  400/8345  mit Massnahmen 347  Splits 88  Abspaltungen 18  Abrufe 392
+  600/8345  mit Massnahmen 513  Splits 118  Abspaltungen 29  Abrufe 592
+  800/8345  mit Massnahmen 670  Splits 147  Abspaltungen 43  Abrufe 792
+  1000/8345  mit Massnahmen 835  Splits 177  Abspaltungen 52  Abrufe 992
+  1200/8345  mit Massnahmen 1000  Splits 215  Abspaltungen 54  Abrufe 1192
+  1400/8345  mit Massnahmen 1169  Splits 241  Abspaltungen 69  Abrufe 1392
+  1600/8345  mit Massnahmen 1336  Splits 266  Abspaltungen 78  Abrufe 1592
+  1800/8345  mit Massnahmen 1496  Splits 296  Abspaltungen 82  Abrufe 1792
+  2000/8345  mit Massnahmen 1663  Splits 327  Abspaltungen 84  Abrufe 1992
+  2200/8345  mit Massnahmen 1815  Splits 364  Abspaltungen 87  Abrufe 2192
+  2400/8345  mit Massnahmen 1968  Splits 400  Abspaltungen 92  Abrufe 2392
+  2600/8345  mit Massnahmen 2138  Splits 441  Abspaltungen 98  Abrufe 2592
+  2800/8345  mit Massnahmen 2299  Splits 465  Abspaltungen 105  Abrufe 2792
+  3000/8345  mit Massnahmen 2452  Splits 494  Abspaltungen 108  Abrufe 2992
+  3200/8345  mit Massnahmen 2619  Splits 516  Abspaltungen 113  Abrufe 3191
+  3400/8345  mit Massnahmen 2769  Splits 547  Abspaltungen 116  Abrufe 3390
+  3600/8345  mit Massnahmen 2918  Splits 591  Abspaltungen 118  Abrufe 3590
+  3800/8345  mit Massnahmen 3050  Splits 635  Abspaltungen 127  Abrufe 3790
+  4000/8345  mit Massnahmen 3199  Splits 677  Abspaltungen 131  Abrufe 3990
+  4200/8345  mit Massnahmen 3349  Splits 711  Abspaltungen 133  Abrufe 4190
+  4400/8345  mit Massnahmen 3490  Splits 744  Abspaltungen 135  Abrufe 4390
+  4600/8345  mit Massnahmen 3626  Splits 774  Abspaltungen 136  Abrufe 4590
+  4800/8345  mit Massnahmen 3762  Splits 815  Abspaltungen 139  Abrufe 4790
+  5000/8345  mit Massnahmen 3893  Splits 842  Abspaltungen 143  Abrufe 4990
+  5200/8345  mit Massnahmen 4035  Splits 870  Abspaltungen 143  Abrufe 5190
+  5400/8345  mit Massnahmen 4178  Splits 908  Abspaltungen 144  Abrufe 5390
+  5600/8345  mit Massnahmen 4320  Splits 944  Abspaltungen 146  Abrufe 5589
+  5800/8345  mit Massnahmen 4451  Splits 973  Abspaltungen 148  Abrufe 5789
+  6000/8345  mit Massnahmen 4580  Splits 1001  Abspaltungen 150  Abrufe 5989
+  6200/8345  mit Massnahmen 4728  Splits 1040  Abspaltungen 155  Abrufe 6189
+  6400/8345  mit Massnahmen 4882  Splits 1083  Abspaltungen 156  Abrufe 6389
+  6600/8345  mit Massnahmen 5036  Splits 1128  Abspaltungen 156  Abrufe 6589
+  6800/8345  mit Massnahmen 5183  Splits 1163  Abspaltungen 157  Abrufe 6789
+  7000/8345  mit Massnahmen 5325  Splits 1199  Abspaltungen 160  Abrufe 6989
+  7200/8345  mit Massnahmen 5470  Splits 1245  Abspaltungen 161  Abrufe 7189
+  7400/8345  mit Massnahmen 5607  Splits 1283  Abspaltungen 164  Abrufe 7389
+  7600/8345  mit Massnahmen 5761  Splits 1326  Abspaltungen 168  Abrufe 7589
+  7800/8345  mit Massnahmen 5899  Splits 1364  Abspaltungen 168  Abrufe 7789
+  8000/8345  mit Massnahmen 6053  Splits 1403  Abspaltungen 173  Abrufe 7989
+  8200/8345  mit Massnahmen 6185  Splits 1442  Abspaltungen 173  Abrufe 8189
+{
+ "angefragt": 8345,
+ "mitSaetzen": 6281,
+ "ohneSaetze": 2053,
+ "mitSplit": 1477,
+ "mitAbspaltung": 175,
+ "fehler": 0
+}

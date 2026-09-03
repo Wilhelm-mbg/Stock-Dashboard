@@ -5,9 +5,10 @@ Universum seit 2016, einschließlich der verschwundenen Werte, als dauerhaftes R
 abgeleiteter bereinigter Kopie. Vorgaben: „Haben ist besser als brauchen" und Skalenkonvention
 **„beides"** (`wiki/entscheide.md`).
 
-**Zustand: Werkzeug gebaut und geprüft, Testlauf gefahren und bestanden, Universum gezählt,
-Vollauf NICHT gefahren** (er läuft nachts in Wilhelms Terminal, Startbefehl unten). Alles lokal
-committet, nicht gepusht, keine Version, keine Release-Notiz — kein App-Code.
+**Zustand: Werkzeug gebaut und geprüft, Testlauf bestanden, Universum gezählt, Phase L (Lebenszeit)
+und Phase M (Kapitalmaßnahmen) über alle 8.345 Werte gefahren — die Balken-Vollsammlung (Phase B)
+ist NICHT gefahren**, sie läuft nachts; Startbefehl unten. Alles lokal committet, nicht gepusht,
+keine Version, keine Release-Notiz — kein App-Code.
 
 ---
 
@@ -62,6 +63,26 @@ Abspaltungen 2019–2026):
 | SPGI → MBGL | 01.07.2026 | 1 | 1,0 | nein |
 
 **Kein Sonderfall, sondern die Form.** Splits tragen einen Kursfaktor, Abspaltungen nie.
+
+### 1b. Phase M gefahren — wie groß die Lücke wirklich ist
+
+**8.345 Abrufe, 0 Fehler, ~50 Minuten. 111.523 Maßnahmensätze.**
+
+| | Werte | Sätze |
+|---|---|---|
+| mit mindestens einer Maßnahme | 6.290 | 111.523 |
+| **mit anwendbarem Split-Faktor** → bereinigte Kopie | **1.480** (17,7 %) | 2.116 |
+| **mit Abspaltung** → **keine** bereinigte Kopie, gelistet | **177** (**2,1 %**) | 201 |
+
+Arten: 103.931 Bardividenden (bewusst **nicht** angewandt — Yahoo bereinigt Intraday nicht um
+Dividenden), 1.684 Zusammenlegungen, 424 Splits, 333 Unit-Splits, 2.471 Umbenennungen, 201
+Abspaltungen, dazu Verschmelzungen und Rücknahmen.
+
+**Damit ist die Lücke beziffert statt benannt: 2,1 % der Werte bekommen keine bereinigte Kopie**
+(ABB, ADXS, AEZS, AGE, AGLE, AIV, ALKS, AMC, ANAB, APTV, ARMK, AULT …). Für die übrigen 97,9 %
+ist die Konvention vollständig erfüllt. Ein Wert mit **beidem** — Split und Abspaltung — bleibt
+ganz draußen: eine halb bereinigte Reihe wäre schlimmer als eine rohe, weil man ihr nicht ansieht,
+was fehlt.
 
 **Folge, wie im Auftrag vorgeschrieben:** ein Wert mit Abspaltung bleibt aus der bereinigten Kopie
 **aus** und wird gelistet. Sein Faktor wird **nicht** aus der Rohreihe geraten — ein Sprung von

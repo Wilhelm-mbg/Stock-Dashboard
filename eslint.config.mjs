@@ -51,7 +51,11 @@ const echteFehler = {
 };
 
 export default [
-  { ignores: ['node_modules/**', 'dist/**'] },
+  /* wiki/.obsidian/** ist Obsidians eigener Ordner - Plugins wie dataview liefern dort
+   * gebuendeltes Fremd-JavaScript mit TypeScript-Regelverweisen, die diese Konfiguration
+   * gar nicht kennt. Ohne diesen Ausschluss faellt `npm test` an einem Plugin, das jemand
+   * gerade im Wiki installiert hat, und nicht an unserem Code (03.09.2026). */
+  { ignores: ['node_modules/**', 'dist/**', 'wiki/.obsidian/**'] },
 
   // Oberflaeche: laeuft im Renderer, kein Node
   {

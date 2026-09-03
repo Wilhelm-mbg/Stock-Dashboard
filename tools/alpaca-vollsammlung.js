@@ -848,7 +848,16 @@ function ableitenLauf(opt) {
   var geschrieben = 0, unveraendert = 0, ohneMassnahmen = 0, ausgelassen = [], dateien = 0, fehler = [];
   symbole.forEach(function (ord) {
     if (opt.ordner && opt.ordner.indexOf(ord) === -1) return;
+    /* Eine zweite Reihe (<KUERZEL>~2) hat KEINE eigene Massnahmen-Datei: Phase M fragt die
+     * Kuerzel des Universums ab, und "AAC~2" ist keins - es ist unsere Bezeichnung fuer
+     * die zweite Belegung desselben Kuerzels. Die Quelle liefert die Massnahmen zu AAC
+     * ohnehin fuer BEIDE Aeren in einer Antwort, und die Ableitung waehlt nach dem
+     * Zeitstempel aus: ein Split der alten Firma von 2018 liegt VOR jeder ~2-Kerze und
+     * wirkt auf sie nicht. Also die Datei des Traegers lesen. Ohne diesen Rueckgriff waere
+     * jede zweite Reihe still unbereinigt geblieben - "keine Massnahmen-Datei" sieht von
+     * aussen genauso aus wie "keine Massnahmen". */
     var mp = path.join(MASSNAHMEN, ord + '.json');
+    if (!fs.existsSync(mp) && /~2$/.test(ord)) mp = path.join(MASSNAHMEN, ord.replace(/~2$/, '') + '.json');
     var faktoren = [], luecken = [], symAusMass = null;
     if (fs.existsSync(mp)) {
       try {
@@ -1329,7 +1338,12 @@ async function selbsttestSchreiben() {
     saetze: [{ _art: 'forward_splits', ex_date: '2026-01-01', old_rate: 1, new_rate: 2, symbol: 'AAA' }] }));
   M.atomarSchreiben(path.join(MASSNAHMEN, 'BBB.json'), JSON.stringify({ sym: 'BBB',
     saetze: [{ _art: 'spin_offs', ex_date: '2026-01-01', source_rate: 1, new_rate: 1, source_symbol: 'BBB' }] }));
+  /* Eine zweite Reihe ohne eigene Massnahmen-Datei: sie muss die des Traegers benutzen. */
+  fs.mkdirSync(path.join(ROH, 'AAA~2'), { recursive: true });
+  var zwei = KQ.huelleLesen(path.join(ROH, 'AAA', '2025.json'));
+  M.atomarSchreiben(path.join(ROH, 'AAA~2', '2025.json'), JSON.stringify(zwei));
   var r3 = ableitenLauf();
+  var zweiBer = KQ.huelleLesen(path.join(BEREINIGT, 'AAA~2', '2025.json'));
 
   var vorher = KQ.huelleLesen(path.join(ROH, 'AAA', '2025.json'));
   var nachher = KQ.huelleLesen(path.join(BEREINIGT, 'AAA', '2025.json'));
@@ -1340,7 +1354,8 @@ async function selbsttestSchreiben() {
     rohUmsatz2025: vorher ? vorher.series[0][2] : null,
     bereinigtSchluss2025: nachher ? nachher.series[0][1] : null,
     bereinigtUmsatz2025: nachher ? nachher.series[0][2] : null,
-    bereinigtBBB: fs.existsSync(path.join(BEREINIGT, 'BBB')) };
+    bereinigtBBB: fs.existsSync(path.join(BEREINIGT, 'BBB')),
+    zweiteReiheBereinigt: zweiBer ? zweiBer.series[0][1] : null };
 }
 
 /* ================= (13) Einsprung ================= */
