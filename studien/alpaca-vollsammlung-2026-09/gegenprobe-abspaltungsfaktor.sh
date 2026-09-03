@@ -177,6 +177,13 @@ node -e "var fs=require('fs'),p='$VM',s=fs.readFileSync(p,'utf8');s=s.replace('o
 probe_t6 "H12 ein Teillauf kuerzt die Liste 'ohne Kopie' nicht mehr" \
          "tools/alpaca-vollsammlung.js" "[].concat /*H12*/" "Teillauf kuerzt"
 
+# Die Nachkontrolle sieht nicht mehr hin. Sie ist der einzige Weg, auf dem ein Faktor
+# auffaellt, der VOR der Sperre geschrieben wurde oder unter dem die Quelle spaeter einen
+# Split nachreicht - keine Messung fasst ihn je wieder an.
+node -e "var fs=require('fs'),p='$WM',s=fs.readFileSync(p,'utf8');s=s.replace('      var st = stoererAus(m.saetze, selbst, g.bisTag, g.datum);','      var st = []; /*H15*/');fs.writeFileSync(p,s);"
+probe_t6 "H15 die Nachkontrolle --pruefen sieht keine Stoerer mehr" \
+         "tools/alpaca-abspaltungsfaktor.js" "var st = []; /*H15*/" "pruefen sieht einen nachtraeglich"
+
 echo ""
 echo "Gegenproben: $ROT rot, $GRUEN gruen (gruen = die Klinke greift nicht)"
 echo "Kopie bleibt zum Nachsehen: $KOPIE"

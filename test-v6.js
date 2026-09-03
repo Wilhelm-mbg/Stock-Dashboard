@@ -13746,6 +13746,12 @@ console.log('\n64) Bestand & Kopfzeile (Oberflaeche Stufe 2, 03.09.2026)');
      * der alte Faktor weg sein. Sonst ueberlebte genau der Eintrag, den es verwirft. */
     ok(oA.nachmessenAusgetragen === true,
        'Abspaltungsfaktor: ein Nachmessen mit Urteil "unklar" traegt den alten Faktor AUS, statt ihn stehenzulassen');
+    /* Die Nachkontrolle. Ein Faktor, der VOR der Stoerer-Sperre geschrieben wurde - oder
+     * einer, unter dem die Quelle spaeter einen Split nachreicht - wird von keiner Messung
+     * mehr angefasst. Genau so standen BATRK, OPEN, SNRE und XRX in den Dateien. */
+    ok(oA.pruefenSauber === true && oA.pruefenFindetStoerer === true && oA.pruefenFindetVerwaist === true,
+       'Abspaltungsfaktor: --pruefen sieht einen nachtraeglich dazugekommenen Split unter einem laengst geschriebenen Faktor - und einen Faktor ohne Satz',
+       JSON.stringify([oA.pruefenSauber, oA.pruefenFindetStoerer, oA.pruefenFindetVerwaist]));
   }
   fs.rmSync(tmpA, { recursive: true, force: true });
 

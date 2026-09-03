@@ -4,6 +4,7 @@
  *   node tools/alpaca-abspaltungsfaktor.js --listen      kein Netz: zaehlt und weist aus
  *   node tools/alpaca-abspaltungsfaktor.js --eichen      nur die beiden Eichungen, 4 Abrufe
  *   node tools/alpaca-abspaltungsfaktor.js --messen      misst und schreibt (2 Abrufe je Abspaltung)
+ *   node tools/alpaca-abspaltungsfaktor.js --pruefen     Nachkontrolle ueber alles Geschriebene, kein Netz
  *   node tools/alpaca-abspaltungsfaktor.js --kontrolle   Selbsttest der reinen Bausteine, kein Netz
  *
  * WARUM. Phase M hat gemessen, was der Maszahmen-Endpunkt liefert: ein SPLIT traegt seinen
@@ -370,6 +371,57 @@ function listen() {
     werteMitZusaetzlicherLuecke: andere, abrufeNoetig: offen * 2, zeilen: zeilen };
 }
 
+/** NACHKONTROLLE ueber alles, was schon geschrieben ist - ohne Netz.
+ *
+ *  stoererAus() laeuft bei jeder Messung mit, aber das hilft einem Faktor nichts, der VOR
+ *  ihr geschrieben wurde: die vier Faelle mit mehreren Abspaltungen am selben Tag (BATRK,
+ *  OPEN, SNRE, XRX) standen schon in den Dateien und haetten dort still weitergelebt. Und
+ *  es bleibt ein zweiter Weg offen, auf dem ein geschriebener Faktor nachtraeglich falsch
+ *  wird: holt --massnahmen die Saetze der Quelle neu und ist inzwischen ein Split am selben
+ *  Wirkungstag dazugekommen, dann traegt der alte Faktor ihn mit, ohne dass ihn jemand neu
+ *  gemessen haette. Diese Pruefung sieht beides und kostet keinen Abruf. */
+function pruefen() {
+  var namen;
+  try { namen = fs.readdirSync(MASSNAHMEN).filter(function (n) { return n.charAt(0) !== '_' && /\.json$/.test(n); }); }
+  catch (e) { return { fehler: 'Kein Maszahmen-Ordner: ' + MASSNAHMEN }; }
+  var faktoren = 0, werte = 0, verdaechtig = [], verwaist = [], unlesbar = [];
+  var abspaltungen = 0, werteMitAbspaltung = 0, ohneFaktor = 0, ohneWirkung = 0;
+  namen.forEach(function (n) {
+    var m;
+    try { m = JSON.parse(fs.readFileSync(path.join(MASSNAHMEN, n), 'utf8')); } catch (e) { unlesbar.push(n); return; }
+    var absp = abspaltungenAus(m);
+    if (absp.length) { werteMitAbspaltung++; abspaltungen += absp.length; }
+    ohneFaktor += absp.filter(function (a) { return !a.schonGemessen; }).length;
+    var liste = m.gemesseneFaktoren || [];
+    ohneWirkung += liste.filter(function (g) { return Math.abs(Number(g.kursfaktor) - 1) < 1e-9; }).length;
+    if (!liste.length) return;
+    werte++;
+    liste.forEach(function (g) {
+      faktoren++;
+      var selbst = (m.saetze || []).filter(function (e) {
+        return String(e._art) === String(g.art) && String(e.ex_date || e.effective_date || e.process_date) === String(g.datum);
+      })[0];
+      if (!selbst) { verwaist.push({ sym: m.sym, datum: g.datum, art: g.art }); return; }
+      var st = stoererAus(m.saetze, selbst, g.bisTag, g.datum);
+      if (st.length) verdaechtig.push({ sym: m.sym, ordner: n.replace(/\.json$/, ''), datum: g.datum, kursfaktor: g.kursfaktor, stoerer: st });
+    });
+  });
+  var stand = { stand: new Date().toISOString(),
+    quelle: 'gelesen aus alpaca-massnahmen/<SYM>.json, kein Abruf',
+    abspaltungen: abspaltungen, werteMitAbspaltung: werteMitAbspaltung,
+    mitKursfaktor: faktoren, werteMitKursfaktor: werte,
+    davonOhneKurswirkung: ohneWirkung, ohneKursfaktorWeilUnklar: ohneFaktor,
+    faktoren: faktoren, werte: werte, unlesbar: unlesbar,
+    verdaechtig: verdaechtig, verwaist: verwaist,
+    sauber: verdaechtig.length === 0 && verwaist.length === 0 && unlesbar.length === 0 };
+  /* Der Bericht eines LAUFS haelt fest, was dieser Lauf getan hat - nach einem Nachmessen
+   * einzelner Werte steht dort also eine Handvoll Zeilen und nicht die Lage. Diese Datei
+   * haelt die LAGE fest, aus den Dateien selbst gelesen. Wer wissen will, wie viele Faktoren
+   * es gibt, soll nicht die Laufgeschichte zusammenrechnen muessen. */
+  M.atomarSchreiben(path.join(MASSNAHMEN, '_abspaltungsfaktoren-stand.json'), JSON.stringify(stand, null, 1));
+  return stand;
+}
+
 /* ================= (4) Messen - mit Netz ================= */
 async function balkenHolen(sym, vonMs, bisMs, bereinigung, f) {
   var bis = Math.min(bisMs, Date.now() - SIP_ABSTAND_MS);
@@ -442,6 +494,16 @@ async function messen(opt) {
         satz: a.satz, saetze: a.saetze });
     });
   });
+  /* Ein verlangter Wert, zu dem kein Fall gefunden wird, ist ein Fehlgriff und kein
+   * Ergebnis - meist ein Kuerzel, das die Kommandozeile zerlegt hat (cmd.exe trennt am
+   * Komma). Ohne diese Meldung sieht ein Lauf, der 1 statt 5 Faelle anfasst, genauso aus
+   * wie einer, der alle anfasst. */
+  if (opt.nurSym) {
+    var getroffen = {};
+    offen.forEach(function (o) { getroffen[o.sym] = 1; });
+    var leer = opt.nurSym.filter(function (s) { return !getroffen[s]; });
+    if (leer.length) sag('ACHTUNG: zu ' + leer.length + ' verlangten Werten gibt es keinen offenen Fall: ' + leer.join(', '));
+  }
   sag('Offen: ' + offen.length + ' Abspaltungen in ' + L.werte.length + ' Werten. '
     + (offen.length * 2 + 4) + ' Abrufe bei ' + RATE_JE_MIN + '/min, rund '
     + Math.ceil((offen.length * 2 + 4) / RATE_JE_MIN) + ' Minuten.');
@@ -690,11 +752,32 @@ async function selbsttestSchreiben() {
   var r2 = await messen({ fetch: kunstFetch });
   var nachEichbruch = WERTE.some(function (s) { return (lesen(s).gemesseneFaktoren || []).length > 0; });
 
+  /* DRITTER DURCHGANG: die Nachkontrolle. Ein Faktor, der VOR der Stoerer-Sperre
+   * geschrieben wurde - oder einer, unter dem die Quelle spaeter einen Split nachreicht -
+   * wird von keiner Messung mehr angefasst. Genau so standen BATRK, OPEN, SNRE und XRX in
+   * den Dateien. Also: einen sauberen Faktor hinlegen, dann den Stoerer nachschieben, und
+   * pruefen() muss ihn finden. */
+  var mP = JSON.parse(vorher.GUT);
+  mP.gemesseneFaktoren = [{ art: 'spin_offs', datum: EX, kursfaktor: 1.057, herkunft: HERKUNFT, bisTag: '2026-06-30' }];
+  M.atomarSchreiben(path.join(MASSNAHMEN, 'GUT.json'), JSON.stringify(mP));
+  var prSauber = pruefen();
+  mP.saetze = mP.saetze.concat([{ _art: 'reverse_splits', ex_date: EX, old_rate: 10, new_rate: 1 }]);
+  M.atomarSchreiben(path.join(MASSNAHMEN, 'GUT.json'), JSON.stringify(mP));
+  var prStoerer = pruefen();
+  mP.saetze = JSON.parse(vorher.GUT).saetze;
+  mP.gemesseneFaktoren = [{ art: 'spin_offs', datum: '1999-01-01', kursfaktor: 2, herkunft: HERKUNFT, bisTag: '1998-12-30' }];
+  M.atomarSchreiben(path.join(MASSNAHMEN, 'GUT.json'), JSON.stringify(mP));
+  var prVerwaist = pruefen();
+
   var VSm = require('./alpaca-vollsammlung.js');
   return {
     dateien: dateien.sort(),
     eichbruchAbgebrochen: !!r2.abgebrochen,
     eichbruchNichtsGeschrieben: !nachEichbruch,
+    pruefenSauber: prSauber.sauber === true && prSauber.mitKursfaktor === 1,
+    pruefenFindetStoerer: prStoerer.sauber === false && prStoerer.verdaechtig.length === 1 &&
+      prStoerer.verdaechtig[0].stoerer[0].art === 'reverse_splits',
+    pruefenFindetVerwaist: prVerwaist.sauber === false && prVerwaist.verwaist.length === 1,
     eichungBestanden: r.eichung.bestanden,
     placeboFaktor: r.eichung.placebo.faktor,
     positivFaktor: r.eichung.positiv.faktor,
@@ -729,7 +812,24 @@ async function selbsttestSchreiben() {
 async function main() {
   var A = process.argv.slice(2);
   function hat(x) { return A.indexOf(x) !== -1; }
-  function arg(x, d) { var i = A.indexOf(x); return i >= 0 && A[i + 1] ? A[i + 1] : d; }
+  /** Alle Werte hinter einem Schalter, bis zum naechsten Schalter - und dann noch einmal an
+   *  Kommas geteilt.
+   *
+   *  WARUM NICHT EINFACH DAS NAECHSTE ARGUMENT: cmd.exe trennt Argumente auch am KOMMA. Aus
+   *  `--symbole AGE,CENTA,HON,MHUA,PRPH` werden fuenf Argumente, und wer nur das naechste
+   *  liest, misst einen Wert statt fuenf - ohne Fehlermeldung, mit einem Bericht, der
+   *  ordentlich aussieht. Genau das ist beim ersten Nachmessen passiert. Also beides
+   *  annehmen: durch Kommas getrennt (dann muss die Liste in Anfuehrungszeichen stehen)
+   *  und durch Leerzeichen getrennt (dann nicht). */
+  function liste(x) {
+    var i = A.indexOf(x);
+    if (i < 0) return null;
+    var raus = [];
+    for (var j = i + 1; j < A.length && String(A[j]).slice(0, 2) !== '--'; j++) {
+      String(A[j]).split(',').forEach(function (s) { if (s.trim()) raus.push(s.trim()); });
+    }
+    return raus.length ? raus : null;
+  }
 
   if (hat('--kontrolle')) {
     var k = kontrolle();
@@ -750,6 +850,11 @@ async function main() {
     return;
   }
   if (hat('--selbsttest-schreiben')) { sag(JSON.stringify(await selbsttestSchreiben())); return; }
+  if (hat('--pruefen')) {
+    var pr = pruefen();
+    sag(JSON.stringify(pr, null, 1));
+    process.exit(pr.sauber ? 0 : 1);
+  }
   if (hat('--eichen')) {
     if (!S.vorhanden()) { sag('Kein Zugang: es fehlt ' + S.fehlend().join(' und ') + '. Start ueber tools\\abspaltungsfaktor.cmd'); process.exit(2); }
     var ei = await eichen();
@@ -759,7 +864,7 @@ async function main() {
   if (hat('--messen')) {
     if (!S.vorhanden()) { sag('Kein Zugang: es fehlt ' + S.fehlend().join(' und ') + '. Start ueber tools\\abspaltungsfaktor.cmd'); process.exit(2); }
     var r;
-    try { r = await messen({ nurSym: arg('--symbole', null) ? arg('--symbole', '').split(',') : null, neuMessen: hat('--neu') }); }
+    try { r = await messen({ nurSym: liste('--symbole'), neuMessen: hat('--neu') }); }
     catch (e) {
       if (e && e.ueberlastet) { sag(String(e.message)); process.exit(3); }
       throw e;
@@ -774,7 +879,7 @@ module.exports = {
   abspaltungenAus: abspaltungenAus, schlussJeTag: schlussJeTag, faktorMessen: faktorMessen,
   satzAus: satzAus, eintragen: eintragen, austragen: austragen, stoererAus: stoererAus,
   median: median, tagMs: tagMs, etTag: etTag,
-  listen: listen, messen: messen, eichen: eichen, fallMessen: fallMessen, kontrolle: kontrolle,
+  listen: listen, messen: messen, eichen: eichen, fallMessen: fallMessen, kontrolle: kontrolle, pruefen: pruefen,
   selbsttestSchreiben: selbsttestSchreiben,
   MASSNAHMEN: MASSNAHMEN, BERICHT: BERICHT, RATE_JE_MIN: RATE_JE_MIN, HERKUNFT: HERKUNFT,
   VOR_TAGE: VOR_TAGE, BAND: BAND, EICH_SYM: EICH_SYM, EICH_SOLL: EICH_SOLL, PLACEBO_SYM: PLACEBO_SYM,

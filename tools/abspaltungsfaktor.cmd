@@ -35,8 +35,22 @@ if not defined ALPACA_KEY (
 
 set "MODUS=%~1"
 if "%MODUS%"=="" set "MODUS=listen"
+shift
+
+rem  Alle weiteren Argumente einsammeln, nicht nur vier. UND: cmd.exe trennt Argumente auch
+rem  am KOMMA - aus "--symbole AGE,CENTA,HON" werden vier Argumente. Beim ersten Nachmessen
+rem  hat das still einen Wert statt fuenf gemessen, mit einem Bericht, der ordentlich
+rem  aussah. Das Werkzeug nimmt darum eine Liste auch durch LEERZEICHEN getrennt an; hier
+rem  wird nur dafuer gesorgt, dass wirklich alles ankommt.
+set "REST="
+:sammeln
+if "%~1"=="" goto weiter
+set "REST=%REST% %1"
+shift
+goto sammeln
+:weiter
 
 echo Abspaltungsfaktor: Modus %MODUS%, Start %DATE% %TIME%
-node tools\alpaca-abspaltungsfaktor.js --%MODUS% %2 %3 %4 %5
+node tools\alpaca-abspaltungsfaktor.js --%MODUS%%REST%
 echo Ende %DATE% %TIME%  (Rueckgabewert %ERRORLEVEL%)
 endlocal
