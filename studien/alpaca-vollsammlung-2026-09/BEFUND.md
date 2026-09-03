@@ -195,6 +195,24 @@ exakt am Wirkungstag.
 | Kürzel-Wiederverwendung | AABA (delistet 07.10.2019) liefert **keine** Balken 2026 → keine `~2`-Reihe, richtig |
 | Windows-Fallen im echten Lauf | CON → `alpaca1m/CON_7679a0/`, HIw eigener Ordner, beide geschrieben |
 
+### 3.4 Dieselben Kontrollen über alles bisher Gesammelte
+
+Die Stichprobe (§6.3) hat 60 zufällige Symbol-Jahre über den ganzen Zeitraum 2016–2026
+hinzugefügt. `--pruefen` über den gesamten Bestand — **70 Dateien, 4.480.266 Kerzen** — verbreitert
+damit jede Kontrolle erheblich, statt sie nur an sieben liquiden Werten eines Jahres zu prüfen:
+
+| Kontrolle | Testlauf allein | **alles Gesammelte** |
+|---|---|---|
+| gewertete Wert-Tage | 1.352 | **15.463** |
+| Tage **über** der Sollzahl | 0 | **0** |
+| **Halbtage im Prüfbestand** | 3 | **101** — und **alle 101 innerhalb ihrer Sollzahl** |
+| Zeitstempel auf der vollen Minute | 801.442 / 0 Verstöße | **4.480.266 / 0 Verstöße** |
+| **Placebo: Feiertage** | 10 | **96**, davon **0** mit regulären Balken |
+| Balken außerhalb der Lebenszeit | 0 | **0** |
+| Balken an Tagen ohne Kalendereintrag | 0 | **0** |
+
+Die Halbtagsregel hat damit **101 echte Fälle** statt drei, und der Placebo **96** statt zehn.
+
 ---
 
 ## 4. Sperrklinken und Gegenproben
