@@ -11377,8 +11377,17 @@ console.log('\nAnzeigefehler aus dem Auditor-Lauf 27.08. (#106, #107, #108)');
   ok(/tabular-nums/.test(numRegel) && /text-align: right/.test(numRegel),
      'und sie fluchten und stehen rechts - gleich breite Ziffern, kein Umbruch');
   var ak = fs.readFileSync(__dirname + '/archivkarte.js', 'utf8');
-  ok(ak.indexOf('class="zahl"') === -1 && ak.indexOf('class="num"') !== -1,
-     'Die Kursarchiv-Karte benutzt DIESELBE Klasse wie das Scoreboard - eine, nicht zwei (#107)');
+  /* UMGESCHRIEBEN mit Stufe 4 (03.09.2026): die Karte hat keine Tabelle mehr, also
+   * auch keine Zahlenspalte, auf die "num" passen wuerde. Der BEFUND bleibt derselbe -
+   * zwei Schreibweisen fuer dieselbe Sache -, nur die Stelle ist neu: die Zahl der
+   * Grafik ("38 / 60") braucht genau EINE Regel, und die muss fluchten. Nicht
+   * abgeschwaecht: 'zahl' bleibt verboten, und eine zweite .arch-zahl-Regel macht
+   * die Zusicherung rot. */
+  ok(ak.indexOf('class="zahl"') === -1 && /class="arch-zahl"/.test(ak) &&
+     (idx.match(/\.arch-zahl \{/g) || []).length === 1 &&
+     /\.arch-zahl \{[^}]*tabular-nums/.test(idx),
+     'Die Kursarchiv-Grafik fuehrt keine zweite Schreibweise fuer Zahlen ein - eine Regel, und sie fluchtet (#107)',
+     String((idx.match(/\.arch-zahl \{/g) || []).length) + ' Regel(n)');
 
   /* #106: der rohe Schluessel ist keine Sprache. Dieselbe Protokollzahl stand in
    * der App an vier Stellen verschieden geschrieben, zwei davon in benachbarten
@@ -11449,8 +11458,18 @@ console.log('\nAnzeigefehler aus dem Auditor-Lauf 27.08. (#106, #107, #108)');
   /* #110: gleichnamige Knoepfe fuer verschiedene, nicht folgenlose Aktionen.
    * Der zugaengliche Name muss den Unterschied selbst tragen - die Zeilen-
    * oder Kartenueberschrift daneben zaehlt fuer ihn nicht mit. */
-  ok(ak.indexOf('aria-label="Jetzt holen: \' + U.esc(NAME[z.intervall]') !== -1,
-     'Kursarchiv: jeder Hol-Knopf traegt die Aufloesung im zugaenglichen Namen (#110)');
+  /* UMGESCHRIEBEN mit Stufe 4: die fuenf Knoepfe stehen nicht mehr in je einer
+   * Tabellenzeile, sondern unter der Grafik - und tragen die Aufloesung jetzt sogar
+   * SICHTBAR. Geprueft wird deshalb der Bauplatz selbst (knoepfeHtml), nicht mehr ein
+   * Textstueck irgendwo in der Datei: dass der Name aus NAME[z.intervall] kommt, dass
+   * er im aria-label steht UND dass er der sichtbare Text ist. */
+  var knHtml = ak.slice(ak.indexOf('function knoepfeHtml('), ak.indexOf('function zeichne('));
+  ok(knHtml.length > 200 &&
+     /var name = NAME\[z\.intervall\] \|\| z\.intervall;/.test(knHtml) &&
+     /aria-label="Jetzt holen: \' \+ U\.esc\(name\)/.test(knHtml) &&
+     /'>' \+\s*\n?\s*U\.esc\(name\)/.test(knHtml),
+     'Kursarchiv: jeder Hol-Knopf traegt die Aufloesung im zugaenglichen Namen UND sichtbar (#110)',
+     knHtml.length + ' Zeichen geprueft');
   ok(stg.indexOf('aria-label="\' + U.esc(s.name)') !== -1 &&
      stg.indexOf("(an ? ' läuft – ausschalten' : ' einschalten')") !== -1,
      'Regeln: jeder Schalter traegt die Strategie im zugaenglichen Namen, in beiden Zustaenden (#110)');
@@ -12992,10 +13011,20 @@ console.log('\n65) Schnitt: Dauertext hinter den i-Knopf, Hinweise einmal statt 
   ok(/Datenquelle Kurse: Yahoo Finance/.test(html) && /Keine Anlageberatung/.test(html),
      'Schnitt: die Fusszeile hat dabei kein Wort verloren');
   var kopf = html.slice(html.indexOf('<header>'), html.indexOf('</header>'));
-  ok(/class="simkopf"/.test(kopf) && /Alles hier ist Simulation\. Es wird nichts gekauft und nichts verkauft\./.test(kopf),
-     'Schnitt: der Simulations-Hinweis steht woertlich in der Kopfzeile, neben dem Titel');
-  ok((html.match(/Alles hier ist Simulation\. Es wird nichts gekauft und nichts verkauft\./g) || []).length === 1,
-     'Schnitt: und genau einmal, nicht mehr je Reiter');
+  /* UMGESCHRIEBEN mit Stufe 4 (03.09.2026). Stufe 3 verlangte den ganzen Satz in der
+   * Kopfzeile - der drueckte bei 1280 px die vier Knoepfe in eine zweite Reihe
+   * (Abweichung 5). Die Zusicherung wird nicht abgeschwaecht, sondern in ihre zwei
+   * Haelften geteilt: SICHTBAR auf jedem Reiter die Marke, WOERTLICH und genau einmal
+   * der Satz im Registereintrag, den ihr Knopf oeffnet. Und er darf nirgends mehr im
+   * Markup stehen - sonst waeren es wieder zwei Fassungen desselben Satzes. */
+  ok(/class="simmarke"/.test(kopf) && />Simulation</.test(kopf) &&
+     /data-info="heute\.simulation"/.test(kopf),
+     'Schnitt: die Marke "Simulation" steht neben dem Titel und traegt den Knopf zum vollen Satz');
+  var hsE = (shell.split("'heute.simulation': {")[1] || '').split('\n    },')[0];
+  ok((hsE.match(/Alles hier ist Simulation\. Es wird nichts gekauft und nichts verkauft\./g) || []).length === 1,
+     'Schnitt: der Satz steht woertlich und genau einmal im Eintrag heute.simulation');
+  ok(!/Alles hier ist Simulation\. Es wird nichts gekauft und nichts verkauft\./.test(html),
+     'Schnitt: und nicht mehr im Markup - eine Fassung, nicht zwei');
   /* Das Wort Simulation muss sichtbar bleiben (Klinke aus Stufe 2) - es steht jetzt
    * in der Kopfzeile und zusaetzlich am Bestand. */
   ok(/Simulation/.test(kopf) && /Simulation mit virtuellem Kapital/.test(html),
@@ -13115,6 +13144,237 @@ console.log('\n65) Schnitt: Dauertext hinter den i-Knopf, Hinweise einmal statt 
   var kt = su.slice(su.indexOf('kanaltrend: {'), su.indexOf('}', su.indexOf("datum: '2026-08-22'")));
   ok(/−0,17 Pp, t = −4,1/.test(kt),
      'Trendfinder: und die Ablage traegt die Zahlen des Urteils (-0,17 Pp, t = -4,1)');
+})();
+
+/* ================= 66) Archiv-Grafik & Kopfzeile (Stufe 4, 03.09.2026) ==========
+ *
+ * Wilhelms Vorgabe vom 02.09.2026: Backtest und Kursarchiv "wenig bis gar nicht"
+ * sichtbar - hoechstens EINE Grafik, wie das Archiv aussieht und wie vollstaendig
+ * es ist. Aus der Tabelle mit sechs Spalten wurde ein Balken je Aufloesung, aus dem
+ * Simulations-SATZ in der Kopfzeile eine Marke mit i-Knopf.
+ *
+ * Fuenf Gruppen:
+ *   (a) Die Grafik gibt es genau einmal - und sie kommt aus Daten, nicht aus Markup
+ *   (b) Nichts steht doppelt: die Tabelle und die Autopilot-Balken sind weg,
+ *       die Rechnung dahinter aber nicht
+ *   (c) Die Auskunft ist eine LESEauskunft - sie sammelt nicht und schreibt nicht
+ *   (d) Die Rechnung ist pruefbar: reine Funktionen mit Positivkontrollen
+ *   (e) Kopfzeile, Restwand und die tote CSS-Regel
+ */
+console.log('\n66) Archiv-Grafik & Kopfzeile: eine Grafik statt einer Tabelle, eine Zeile statt zwei');
+(function () {
+  var html = fs.readFileSync(__dirname + '/index.html', 'utf8');
+  var ak = fs.readFileSync(__dirname + '/archivkarte.js', 'utf8');
+  var akO = ohneKommentare(ak);
+  var dep = fs.readFileSync(__dirname + '/depot.js', 'utf8');
+  var depO = ohneKommentare(dep);
+  var shell = fs.readFileSync(__dirname + '/app-shell.js', 'utf8');
+  var mainQ = ohneKommentare(fs.readFileSync(__dirname + '/main.js', 'utf8'));
+  var pre = fs.readFileSync(__dirname + '/preload.js', 'utf8');
+  var ber = fs.readFileSync(__dirname + '/berichte.js', 'utf8');
+  var kd = fs.readFileSync(__dirname + '/tools/kunstdepot.js', 'utf8');
+  var auf = fs.readFileSync(__dirname + '/tools/ui-aufnahmen.js', 'utf8');
+  var A = require(__dirname + '/archiv.js');
+  var B = require(__dirname + '/boerse.js');
+
+  /* ---------------------------------------------------------------------------
+   * (a) EINE Grafik, und ihre Zahlen kommen aus der Auskunft */
+  /* Drei Bauplaetze und kein vierter: die Grafik selbst, das Warteschild und das
+   * Fehlerschild. Alle drei tragen dieselbe Kennung, weil an dieser Stelle immer
+   * genau eines von ihnen steht - zwei gleichzeitig waeren zwei Wahrheiten. */
+  ok((akO.match(/id="archivGrafik"/g) || []).length === 3,
+     'Grafik: die Kennung archivGrafik wird an genau drei Stellen gebaut - Grafik, Warteschild, Fehlerschild',
+     String((akO.match(/id="archivGrafik"/g) || []).length));
+  /* Geprueft wird der RUMPF ohne Kommentare: die CSS-Regeln der Grafik stehen im
+   * selben index.html und sind kein Behaelter - eine Klinke auf die ganze Datei
+   * wuerde an der eigenen Formatvorlage rot (wiki/fehlerformen.md, Testmarken-Falle). */
+  var rumpf = html.slice(html.indexOf('</style>')).replace(/<!--[\s\S]*?-->/g, ' ');
+  ok(rumpf.indexOf('archivGrafik') === -1 && rumpf.indexOf('arch-zeile') === -1 &&
+     rumpf.indexOf('arch-hol') === -1,
+     'Grafik: im Markup steht kein Behaelter dafuer - sie entsteht ausschliesslich aus Daten');
+  /* Der Behaelter im Markup traegt genau den Wartesatz und sonst nichts. Stuende
+   * dort eine Zahl, waere sie beim ersten Zeichnen still verschwunden - und beim
+   * Ausbleiben der Auskunft stehen geblieben, als waere sie gemessen. */
+  ok(/<div class="panel" id="archivKarte"><div class="loading">Sehe im Archiv nach …<\/div><\/div>/.test(html),
+     'Grafik: der Behaelter im Markup enthaelt nur den Wartesatz, keine Zahl');
+  var gh = akO.slice(akO.indexOf('function grafikHtml('), akO.indexOf('function knoepfeHtml('));
+  ok(gh.length > 400 && /r\.vollTage \+ ' \/ ' \+ ab\.tage\.length/.test(gh) &&
+     /z\.werte\.toLocaleString/.test(gh) && /r\.angesehen/.test(gh),
+     'Grafik: die drei Zahlen der Zeile stammen aus der Auskunft (volle Tage, Zieltage, Werte)');
+  ok(/ab\.probe/.test(gh) && /ab\.bisTag/.test(gh),
+     'Grafik: die Stichprobengroesse und der Stichtag stehen dabei - eine Grafik ohne ihre Stichprobe waere die schoenere Stille');
+  /* Die Schwelle "ab wann gilt ein Tag als gesammelt" kommt aus der Auskunft. Eine
+   * zweite Zahl in der Anzeige waere derselbe Wert an zwei Orten - und einer davon
+   * wuerde still falsch. */
+  ok(/function zellenFarbe\(anteil, vollAb\)/.test(akO) && /zellenFarbe\(anteil, ab\.vollAb\)/.test(akO),
+     'Grafik: die Schwelle fuer "gesammelt" kommt aus der Auskunft, nicht aus der Anzeige');
+  ok(/var\(--up\)/.test(akO) && /var\(--warn\)/.test(akO) && /var\(--grid\)/.test(akO) &&
+     akO.indexOf('if (anteil > 0)') < akO.indexOf("return 'var(--grid)'"),
+     'Grafik: drei Farben, und "nichts da" kommt erst nach "lueckenhaft" - sonst waere jede Luecke leer');
+  /* Der Balken ist reines SVG mit fester viewBox. Ohne preserveAspectRatio="none"
+   * wuerde er beim Breiterziehen mitwachsen und die Zeilen auseinandertreiben. */
+  ok(/<svg class="arch-balken" viewBox="0 0 ' \+ VB_BREITE/.test(akO) &&
+     /preserveAspectRatio="none" role="img" aria-label="/.test(akO),
+     'Grafik: reines SVG mit fester viewBox, und der Balken traegt seinen Namen fuer die Vorlesehilfe');
+  ok(/aria-label="' \+ U\.esc\(balkenText\(r, ab\)\)/.test(akO),
+     'Grafik: Auge und Vorlesehilfe bekommen DENSELBEN Satz - zwei Formulierungen waeren zwei Wahrheiten');
+
+  /* Die fuenf Knoepfe bleiben verdrahtet - einer je Aufloesung, unter der Grafik. */
+  var kn = akO.slice(akO.indexOf('function knoepfeHtml('), akO.indexOf('function zeichne('));
+  ok(/\(st\.zeilen \|\| \[\]\)\.forEach/.test(kn) && /data-iv="' \+ U\.esc\(z\.intervall\)/.test(kn),
+     'Knoepfe: einer je Aufloesung, aus denselben Zeilen wie die Grafik - keine feste Liste');
+  ok(/h \+= grafikHtml\(st, LETZTE_ABDECKUNG\);\n    h \+= knoepfeHtml\(st\);/.test(akO),
+     'Knoepfe: sie stehen unter der Grafik, nicht mehr in je einer Tabellenzeile');
+  ok(/api\.sammlerStart\(b\.getAttribute\('data-iv'\)\)/.test(akO) &&
+     /k\.querySelectorAll\('\.arch-hol'\)/.test(akO),
+     'Knoepfe: jeder ist verdrahtet - ein Knopf ohne Aufruf sieht aus wie einer, der geht');
+  /* Die Live-Zeile bleibt: sie nennt die eingestellten Werte, keine Erklaerung. */
+  ok(/<b>So ist es eingestellt:<\/b>/.test(ak) && /e\.intervalle\['1m'\]/.test(ak) &&
+     /U\.esc\(e\.universum \|\| '\?'\)/.test(ak),
+     'Grafik: die Zeile "So ist es eingestellt" bleibt und liest weiter aus den Einstellungen');
+
+  /* ---------------------------------------------------------------------------
+   * (b) Nichts steht doppelt */
+  ok(akO.indexOf('archivTabelle') === -1 && akO.indexOf('<table') === -1 &&
+     akO.indexOf('<th scope="row">') === -1,
+     'Doppel: die alte Tabelle ist weg - keine Kennung, kein table, kein Zeilenkopf');
+  ok(depO.indexOf('1-Min: ') === -1 && depO.indexOf('Ziel für volle Belastbarkeit') === -1 &&
+     !/function balken\(t\)/.test(depO),
+     'Doppel: die Autopilot-Balken "x/60 Tage" stehen nicht mehr neben der Grafik');
+  /* Aber die RECHNUNG bleibt: sie geht in den Analyse-Export. Eine Zahl aus dem
+   * Export zu entfernen war nicht der Auftrag - unsichtbar machen schon. */
+  ok(/EXPORT_ABDECKUNG = \{ at: Date\.now\(\), min1: d1, min5: d5, zielTage: ziel \}/.test(depO) &&
+     /archivAbdeckung: EXPORT_ABDECKUNG \|\| null/.test(ber),
+     'Doppel: die Abdeckung wird weiter gerechnet und geht in den Analyse-Export');
+
+  /* ---------------------------------------------------------------------------
+   * (c) Eine LESEauskunft, kein zweiter Sammler */
+  ok(pre.indexOf('archivAbdeckung:') !== -1 && /ipcRenderer\.invoke\('archiv-abdeckung'\)/.test(pre),
+     'Auskunft: preload reicht archivAbdeckung durch');
+  ok(mainQ.indexOf("ipcMain.handle('archiv-abdeckung'") !== -1,
+     'Auskunft: main.js beantwortet archiv-abdeckung');
+  ok(/api\.archivAbdeckung \? api\.archivAbdeckung\(\)/.test(akO),
+     'Auskunft: die Karte ruft sie auch auf');
+  /* Sie darf NICHT an sammlerStand haengen: der wird waehrend eines Laufs alle zehn
+   * Werte ans Fenster gefunkt, und ein Dateilesen in diesem Takt bremste das Sammeln. */
+  var standTeil = mainQ.slice(mainQ.indexOf('function sammlerStand()'), mainQ.indexOf('async function sammelLauf('));
+  ok(standTeil.length > 300 && standTeil.indexOf('archivAbdeckung') === -1 &&
+     standTeil.indexOf('readFileSync') === -1,
+     'Auskunft: sammlerStand() liest dafuer keine Dateien - der Fortschrittsfunk bleibt billig');
+  /* Und sie schreibt nichts. Der Nachweis ist der Ausschnitt selbst, nicht der Vorsatz. */
+  var ausk = mainQ.slice(mainQ.indexOf('function archivAbdeckung()'), mainQ.indexOf("ipcMain.handle('archiv-abdeckung'"));
+  ok(ausk.length > 400 &&
+     !/writeFileSync|schreibAtomar|standSchreiben|sperreSetzen|Kerzen\.sammle|sammelLauf/.test(ausk),
+     'Auskunft: sie schreibt nichts - kein writeFileSync, kein Stand, keine Sperre, kein Lauf',
+     ausk.length + ' Zeichen geprueft');
+  var TABU66 = /intradayScan|autopilotRing|SETUPS|TRIG_BELEGT|modeParams|demoOrder|takt\(/;
+  ok(!TABU66.test(ausk), 'Auskunft: und sie fasst die Handelslogik nicht an');
+  /* Der Feiertagskalender: ohne ihn waeren Thanksgiving und der 4. Juli Kerben im
+   * Balken, an denen niemand etwas versaeumt hat. */
+  ok(/function handelstageBis\(bisTag, n\)/.test(mainQ) && /Boerse\.istHandelstag\(ms\)/.test(mainQ),
+     'Auskunft: die erwarteten Tage kommen aus dem Boersenkalender, nicht aus "Wochentag"');
+  /* Positivkontrolle fuer den Kalender selbst - sonst stuende oben eine
+   * Leseanweisung auf eine Ablage, von der niemand weiss, ob sie etwas weiss. */
+  ok(B.istHandelstag(Date.parse('2026-07-03T12:00:00Z')) === false &&
+     B.istHandelstag(Date.parse('2026-11-26T12:00:00Z')) === false &&
+     B.istHandelstag(Date.parse('2026-11-27T12:00:00Z')) === true,
+     'Auskunft, Positivkontrolle: der Kalender kennt Unabhaengigkeitstag und Thanksgiving - und den Tag danach');
+
+  /* ---------------------------------------------------------------------------
+   * (d) Die Rechnung ist pruefbar: reine Funktionen, aufgerufen statt gelesen */
+  ok(typeof A.tageVon === 'function' && typeof A.tagesBild === 'function' &&
+     typeof A.abdeckungBild === 'function',
+     'Rechnung: die drei Leseauskuenfte in archiv.js lassen sich in Node aufrufen');
+  var s1 = [[Date.UTC(2026, 8, 1, 14), 1], [Date.UTC(2026, 8, 1, 15), 1], [Date.UTC(2026, 8, 3, 14), 1]];
+  ok(A.tageVon(s1).join(',') === '2026-09-01,2026-09-03',
+     'Rechnung: zwei Kerzen an einem Tag sind ein Tag, und die Tage kommen sortiert');
+  ok(A.tageVon([null, [], [NaN, 1]]).length === 0,
+     'Rechnung: eine kaputte Zeile bringt die Auskunft nicht um, sie faellt heraus');
+  ok(A.abdeckungTage(s1) === 2, 'Rechnung: abdeckungTage zaehlt dieselben Tage - eine Quelle, nicht zwei');
+  /* Das Bild: drei Reihen, ein Tag bei allen, einer bei zweien, einer bei keiner. */
+  var bild = A.abdeckungBild([['a', 'b'], ['a', 'b'], ['a']], ['a', 'b', 'c'], 0.8);
+  ok(bild.reihen === 3 && bild.vollTage === 1 && bild.teilTage === 1 &&
+     bild.anteile.length === 3 && bild.anteile[2] === 0,
+     'Rechnung: voll, lueckenhaft und leer werden auseinandergehalten',
+     JSON.stringify(bild.anteile));
+  /* DER WICHTIGSTE FALL: ohne angesehene Reihe ist der Anteil NULL. Waere er eins,
+   * saehe ein leeres Archiv aus wie ein volles - genau die Stille, gegen die die
+   * ganze Karte gebaut ist. */
+  var leer = A.abdeckungBild([], ['a', 'b'], 0.8);
+  ok(leer.reihen === 0 && leer.vollTage === 0 && leer.anteile.every(function (x) { return x === 0; }),
+     'Rechnung: ohne angesehene Reihe ist der Anteil null - ein leeres Archiv sieht nicht aus wie ein volles');
+  /* Und eine Gegenprobe an einem Bestand mit BEKANNTEM Loch: die Kunstdaten der
+   * Aufnahmen tragen in der 5-Minuten-Lage vier fehlende Tage. Findet die Rechnung
+   * sie nicht, ist die Kerbe im Balken eine Behauptung. */
+  var KD = require(__dirname + '/tools/kunstdepot.js');
+  var kunst = KD.archiv(Date.parse('2026-09-03T18:00:00Z'));
+  var f5 = kunst.filter(function (x) { return x.pfad.indexOf('bars_5m_') >= 0; });
+  var t5 = f5.map(function (x) { return A.tageVon(x.inhalt.series); });
+  var alle5 = Object.keys(A.tagesBild(t5).jeTag).sort();
+  var spanne = [];
+  for (var d = Date.parse(alle5[0] + 'T12:00:00Z'); d <= Date.parse(alle5[alle5.length - 1] + 'T12:00:00Z'); d += 86400000) {
+    if (B.istHandelstag(d)) spanne.push(new Date(d).toISOString().slice(0, 10));
+  }
+  var k5 = A.abdeckungBild(t5, spanne, 0.8);
+  ok(f5.length === 6 && spanne.length - k5.vollTage === 4 && k5.teilTage === 0,
+     'Rechnung, Gegenprobe am Kunstbestand: die vier absichtlich fehlenden 5-Minuten-Tage werden gefunden',
+     spanne.length + ' Handelstage in der Spanne, ' + k5.vollTage + ' voll');
+  /* Und die 15-Minuten-Lage traegt absichtlich TEILWEISE gefuellte Tage - sonst
+   * bliebe die mittlere Farbe eine Farbe, die nie jemand gesehen hat. */
+  var t15 = kunst.filter(function (x) { return x.pfad.indexOf('bars_15m_') >= 0; })
+    .map(function (x) { return A.tageVon(x.inhalt.series); });
+  var alle15 = Object.keys(A.tagesBild(t15).jeTag).sort();
+  var k15 = A.abdeckungBild(t15, alle15, 0.8);
+  ok(k15.teilTage === 5,
+     'Rechnung, Gegenprobe am Kunstbestand: fuenf lueckenhafte 15-Minuten-Tage - die mittlere Farbe kommt wirklich vor',
+     String(k15.teilTage));
+
+  /* Die Kunstdaten nennen ihre Herkunft und bleiben in der isolierten Instanz. */
+  ok(/KUNST_SYMBOLE = \['KUNSTA'/.test(kd) &&
+     kunst.every(function (f) { return /Kunstdaten|KUNST/.test(JSON.stringify(f.inhalt)); }),
+     'Kunstdaten: jede Datei nennt ihre Herkunft, die Symbole tragen sie im Namen');
+  ok(kunst.every(function (f) { return !/^([A-Za-z]:|\/|\.\.)/.test(f.pfad); }),
+     'Kunstdaten: kunstdepot.js liefert nur relative Pfade - wohin sie gehoeren, entscheidet der Aufrufer');
+  ok(/const dd = path\.join\(TESTROOT, 'downloads', 'Markt-Dashboard-Daten'\)/.test(auf),
+     'Kunstdaten: geschrieben wird ausschliesslich in den Testordner unter %TEMP%');
+  ok(/--breite/.test(auf) && /n >= 320 && n <= 3840 \? n : 1280/.test(auf),
+     'Aufnahmen: die Breite ist ein Schalter, die Vorgabe bleibt 1280 - sonst waeren zwei Saetze nicht vergleichbar');
+  ok(/einzeilig:/.test(auf) && /Math\.max\.apply\(null, da\.map/.test(auf),
+     'Aufnahmen: "eine Zeile" wird gemessen (gemeinsames Band), nicht angesehen');
+
+  /* ---------------------------------------------------------------------------
+   * (e) Kopfzeile, Restwand, tote Regel */
+  var kopf = html.slice(html.indexOf('<header>'), html.indexOf('</header>'));
+  /* Auch hier kommentarfrei: der Kommentar, der den Umzug erklaert, hat die alte
+   * Klasse einmal namentlich genannt und die Klinke damit rot gemacht. */
+  ok(html.replace(/<!--[\s\S]*?-->/g, ' ').indexOf('simkopf') === -1,
+     'Kopfzeile: die alte Klasse ist mitgezogen - weder Markup noch CSS-Regel bleiben liegen');
+  ok(/\.simmarke \{/.test(html) && (kopf.match(/class="hbtn"/g) || []).length === 4 &&
+     kopf.indexOf('class="simmarke"') < kopf.indexOf('id="stamp"'),
+     'Kopfzeile: Marke, Boersenstatus und die vier Knoepfe - in dieser Reihenfolge');
+  /* Der Knopf an der Marke muss auf einen Eintrag zeigen, den es gibt. Ein Knopf,
+   * der ein leeres Fenster oeffnet, waere schlimmer als der ganze Satz. */
+  ok(shell.indexOf("'heute.simulation': {") !== -1 &&
+     /aria-label="Erklärung: Alles hier ist Simulation"/.test(kopf),
+     'Kopfzeile: der Knopf zeigt auf einen angemeldeten Eintrag und sagt der Vorlesehilfe, was er oeffnet');
+
+  /* Die Restwand der Intraday-Karte: verschoben, nicht geloescht. Gelesen wird der
+   * KOMMENTARFREIE Quelltext - der Kommentar, der den Umzug erklaert, nennt die
+   * Karte selbst (wiki/fehlerformen.md, "Sperrklinke frisst ihren Kommentar"). */
+  var mark = 'Die Marktlage wird stündlich gemessen und hier angezeigt.';
+  ok(shell.indexOf("'regeln.intraday': {") !== -1 && shell.indexOf(mark) !== -1,
+     'Restwand: der Marktlage-Absatz steht woertlich im Register unter regeln.intraday');
+  ok(depO.indexOf(mark) === -1 && html.indexOf(mark) === -1,
+     'Restwand: und nicht mehr im Renderer oder im Markup - eine Fassung, nicht zwei');
+  ok(html.indexOf('data-info="regeln.intraday"') !== -1 && html.indexOf('id="regimeHint"') === -1,
+     'Restwand: der i-Knopf sitzt an der Intraday-Karte, der leere Behaelter ist mitgegangen');
+  /* Der LIVE-Stand bleibt, wo er war - er ist kein Erklaertext. */
+  ok(/getElementById\('regimeStatus'\)/.test(depO) && html.indexOf('id="regimeStatus"') !== -1 &&
+     html.indexOf('id="idStatus"') !== -1,
+     'Restwand: die Statuszeilen (#regimeStatus, #idStatus) sind unangetastet');
+
+  ok(html.indexOf('buecher-zusicherung') === -1 && dep.indexOf('buecher-zusicherung') === -1,
+     'Tote Regel: .buecher-zusicherung ist weg - sie hatte seit Stufe 3 keinen Traeger mehr');
 })();
 
 Promise.all(offeneProben).then(function () {
