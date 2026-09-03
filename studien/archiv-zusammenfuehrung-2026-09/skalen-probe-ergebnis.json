@@ -1,0 +1,424 @@
+{
+ "erzeugt": "2026-09-03T17:19:55.260Z",
+ "abrufe": 16,
+ "band": 0.001,
+ "mindStempel": 50,
+ "faelle": [
+  {
+   "sym": "MNST",
+   "tag": "2026-08-06",
+   "art": "vor",
+   "massnahme": "Split 2:1, wirksam 11.08.2026"
+  },
+  {
+   "sym": "MNST",
+   "tag": "2026-08-20",
+   "art": "nach",
+   "massnahme": "Split 2:1, wirksam 11.08.2026"
+  },
+  {
+   "sym": "SPGI",
+   "tag": "2026-06-25",
+   "art": "vor",
+   "massnahme": "Abspaltung, wirksam 01.07.2026"
+  },
+  {
+   "sym": "SPGI",
+   "tag": "2026-07-15",
+   "art": "nach",
+   "massnahme": "Abspaltung, wirksam 01.07.2026"
+  }
+ ],
+ "messungen": [
+  {
+   "sym": "MNST",
+   "tag": "2026-08-06",
+   "art": "vor",
+   "bereinigung": "raw",
+   "gemeinsam": 72,
+   "alpacaKerzen": 114,
+   "yahooKerzen": 72,
+   "median": 2.00000000326147,
+   "min": 1.9993581727516565,
+   "max": 2.0008525930023553,
+   "umsatzMedianYahooDurchAlpaca": 1.000121102245123,
+   "umsatzN": 72
+  },
+  {
+   "sym": "MNST",
+   "tag": "2026-08-06",
+   "art": "vor",
+   "bereinigung": "split",
+   "gemeinsam": 72,
+   "alpacaKerzen": 114,
+   "yahooKerzen": 72,
+   "median": 1.0000533963957263,
+   "min": 0.9997325708917115,
+   "max": 1.0004262965011776,
+   "umsatzMedianYahooDurchAlpaca": 0.5000605511225615,
+   "umsatzN": 72
+  },
+  {
+   "sym": "MNST",
+   "tag": "2026-08-06",
+   "art": "vor",
+   "bereinigung": "dividend",
+   "gemeinsam": 72,
+   "alpacaKerzen": 114,
+   "yahooKerzen": 72,
+   "median": 2.00000000326147,
+   "min": 1.9993581727516565,
+   "max": 2.0008525930023553,
+   "umsatzMedianYahooDurchAlpaca": 1.000121102245123,
+   "umsatzN": 72
+  },
+  {
+   "sym": "MNST",
+   "tag": "2026-08-06",
+   "art": "vor",
+   "bereinigung": "all",
+   "gemeinsam": 72,
+   "alpacaKerzen": 114,
+   "yahooKerzen": 72,
+   "median": 1.0000533963957263,
+   "min": 0.9997325708917115,
+   "max": 1.0004262965011776,
+   "umsatzMedianYahooDurchAlpaca": 0.5000605511225615,
+   "umsatzN": 72
+  },
+  {
+   "sym": "MNST",
+   "tag": "2026-08-20",
+   "art": "nach",
+   "bereinigung": "raw",
+   "gemeinsam": 72,
+   "alpacaKerzen": 87,
+   "yahooKerzen": 72,
+   "median": 0.9999999967936986,
+   "min": 0.9997893940174077,
+   "max": 1.0002106336431378,
+   "umsatzMedianYahooDurchAlpaca": 1.003967922758427,
+   "umsatzN": 72
+  },
+  {
+   "sym": "MNST",
+   "tag": "2026-08-20",
+   "art": "nach",
+   "bereinigung": "split",
+   "gemeinsam": 72,
+   "alpacaKerzen": 87,
+   "yahooKerzen": 72,
+   "median": 0.9999999967936986,
+   "min": 0.9997893940174077,
+   "max": 1.0002106336431378,
+   "umsatzMedianYahooDurchAlpaca": 1.003967922758427,
+   "umsatzN": 72
+  },
+  {
+   "sym": "MNST",
+   "tag": "2026-08-20",
+   "art": "nach",
+   "bereinigung": "dividend",
+   "gemeinsam": 72,
+   "alpacaKerzen": 87,
+   "yahooKerzen": 72,
+   "median": 0.9999999967936986,
+   "min": 0.9997893940174077,
+   "max": 1.0002106336431378,
+   "umsatzMedianYahooDurchAlpaca": 1.003967922758427,
+   "umsatzN": 72
+  },
+  {
+   "sym": "MNST",
+   "tag": "2026-08-20",
+   "art": "nach",
+   "bereinigung": "all",
+   "gemeinsam": 72,
+   "alpacaKerzen": 87,
+   "yahooKerzen": 72,
+   "median": 0.9999999967936986,
+   "min": 0.9997893940174077,
+   "max": 1.0002106336431378,
+   "umsatzMedianYahooDurchAlpaca": 1.003967922758427,
+   "umsatzN": 72
+  },
+  {
+   "sym": "SPGI",
+   "tag": "2026-06-25",
+   "art": "vor",
+   "bereinigung": "raw",
+   "gemeinsam": 72,
+   "alpacaKerzen": 93,
+   "yahooKerzen": 72,
+   "median": 1.0570000031596458,
+   "min": 1.056999957732712,
+   "max": 1.0571069496044423,
+   "umsatzMedianYahooDurchAlpaca": 0.9975458151428691,
+   "umsatzN": 72
+  },
+  {
+   "sym": "SPGI",
+   "tag": "2026-06-25",
+   "art": "vor",
+   "bereinigung": "split",
+   "gemeinsam": 72,
+   "alpacaKerzen": 93,
+   "yahooKerzen": 72,
+   "median": 1.0570000031596458,
+   "min": 1.056999957732712,
+   "max": 1.0571069496044423,
+   "umsatzMedianYahooDurchAlpaca": 0.9975458151428691,
+   "umsatzN": 72
+  },
+  {
+   "sym": "SPGI",
+   "tag": "2026-06-25",
+   "art": "vor",
+   "bereinigung": "dividend",
+   "gemeinsam": 72,
+   "alpacaKerzen": 93,
+   "yahooKerzen": 72,
+   "median": 1.0546288564594244,
+   "min": 1.0546197724261899,
+   "max": 1.0547273426915558,
+   "umsatzMedianYahooDurchAlpaca": 0.9975458151428691,
+   "umsatzN": 72
+  },
+  {
+   "sym": "SPGI",
+   "tag": "2026-06-25",
+   "art": "vor",
+   "bereinigung": "all",
+   "gemeinsam": 72,
+   "alpacaKerzen": 93,
+   "yahooKerzen": 72,
+   "median": 0.9975312301669834,
+   "min": 0.997520029523687,
+   "max": 0.9976435139386031,
+   "umsatzMedianYahooDurchAlpaca": 0.9975458151428691,
+   "umsatzN": 72
+  },
+  {
+   "sym": "SPGI",
+   "tag": "2026-07-15",
+   "art": "nach",
+   "bereinigung": "raw",
+   "gemeinsam": 72,
+   "alpacaKerzen": 84,
+   "yahooKerzen": 72,
+   "median": 0.9999999972589235,
+   "min": 0.9999999669626355,
+   "max": 1.000000032789994,
+   "umsatzMedianYahooDurchAlpaca": 0.9966371129189651,
+   "umsatzN": 72
+  },
+  {
+   "sym": "SPGI",
+   "tag": "2026-07-15",
+   "art": "nach",
+   "bereinigung": "split",
+   "gemeinsam": 72,
+   "alpacaKerzen": 84,
+   "yahooKerzen": 72,
+   "median": 0.9999999972589235,
+   "min": 0.9999999669626355,
+   "max": 1.000000032789994,
+   "umsatzMedianYahooDurchAlpaca": 0.9966371129189651,
+   "umsatzN": 72
+  },
+  {
+   "sym": "SPGI",
+   "tag": "2026-07-15",
+   "art": "nach",
+   "bereinigung": "dividend",
+   "gemeinsam": 72,
+   "alpacaKerzen": 84,
+   "yahooKerzen": 72,
+   "median": 0.9977626173214158,
+   "min": 0.9977491986637356,
+   "max": 0.9977708290461217,
+   "umsatzMedianYahooDurchAlpaca": 0.9966371129189651,
+   "umsatzN": 72
+  },
+  {
+   "sym": "SPGI",
+   "tag": "2026-07-15",
+   "art": "nach",
+   "bereinigung": "all",
+   "gemeinsam": 72,
+   "alpacaKerzen": 84,
+   "yahooKerzen": 72,
+   "median": 0.9977626173214158,
+   "min": 0.9977491986637356,
+   "max": 0.9977708290461217,
+   "umsatzMedianYahooDurchAlpaca": 0.9966371129189651,
+   "umsatzN": 72
+  }
+ ],
+ "jeBereinigung": {
+  "raw": {
+   "k1": true,
+   "k2": false,
+   "faelle": [
+    {
+     "sym": "MNST",
+     "tag": "2026-08-06",
+     "art": "vor",
+     "median": 2.00000000326147,
+     "gemeinsam": 72,
+     "fehler": null
+    },
+    {
+     "sym": "MNST",
+     "tag": "2026-08-20",
+     "art": "nach",
+     "median": 0.9999999967936986,
+     "gemeinsam": 72,
+     "fehler": null
+    },
+    {
+     "sym": "SPGI",
+     "tag": "2026-06-25",
+     "art": "vor",
+     "median": 1.0570000031596458,
+     "gemeinsam": 72,
+     "fehler": null
+    },
+    {
+     "sym": "SPGI",
+     "tag": "2026-07-15",
+     "art": "nach",
+     "median": 0.9999999972589235,
+     "gemeinsam": 72,
+     "fehler": null
+    }
+   ]
+  },
+  "split": {
+   "k1": true,
+   "k2": false,
+   "faelle": [
+    {
+     "sym": "MNST",
+     "tag": "2026-08-06",
+     "art": "vor",
+     "median": 1.0000533963957263,
+     "gemeinsam": 72,
+     "fehler": null
+    },
+    {
+     "sym": "MNST",
+     "tag": "2026-08-20",
+     "art": "nach",
+     "median": 0.9999999967936986,
+     "gemeinsam": 72,
+     "fehler": null
+    },
+    {
+     "sym": "SPGI",
+     "tag": "2026-06-25",
+     "art": "vor",
+     "median": 1.0570000031596458,
+     "gemeinsam": 72,
+     "fehler": null
+    },
+    {
+     "sym": "SPGI",
+     "tag": "2026-07-15",
+     "art": "nach",
+     "median": 0.9999999972589235,
+     "gemeinsam": 72,
+     "fehler": null
+    }
+   ]
+  },
+  "dividend": {
+   "k1": true,
+   "k2": false,
+   "faelle": [
+    {
+     "sym": "MNST",
+     "tag": "2026-08-06",
+     "art": "vor",
+     "median": 2.00000000326147,
+     "gemeinsam": 72,
+     "fehler": null
+    },
+    {
+     "sym": "MNST",
+     "tag": "2026-08-20",
+     "art": "nach",
+     "median": 0.9999999967936986,
+     "gemeinsam": 72,
+     "fehler": null
+    },
+    {
+     "sym": "SPGI",
+     "tag": "2026-06-25",
+     "art": "vor",
+     "median": 1.0546288564594244,
+     "gemeinsam": 72,
+     "fehler": null
+    },
+    {
+     "sym": "SPGI",
+     "tag": "2026-07-15",
+     "art": "nach",
+     "median": 0.9977626173214158,
+     "gemeinsam": 72,
+     "fehler": null
+    }
+   ]
+  },
+  "all": {
+   "k1": true,
+   "k2": false,
+   "faelle": [
+    {
+     "sym": "MNST",
+     "tag": "2026-08-06",
+     "art": "vor",
+     "median": 1.0000533963957263,
+     "gemeinsam": 72,
+     "fehler": null
+    },
+    {
+     "sym": "MNST",
+     "tag": "2026-08-20",
+     "art": "nach",
+     "median": 0.9999999967936986,
+     "gemeinsam": 72,
+     "fehler": null
+    },
+    {
+     "sym": "SPGI",
+     "tag": "2026-06-25",
+     "art": "vor",
+     "median": 0.9975312301669834,
+     "gemeinsam": 72,
+     "fehler": null
+    },
+    {
+     "sym": "SPGI",
+     "tag": "2026-07-15",
+     "art": "nach",
+     "median": 0.9977626173214158,
+     "gemeinsam": 72,
+     "fehler": null
+    }
+   ]
+  }
+ },
+ "urteil": {
+  "passend": [],
+  "gewaehlt": null,
+  "faktorenWennKeine": {
+   "MNST": 2.00000000326147,
+   "SPGI": 1.0570000031596458
+  },
+  "umsatzFaktorenWennKeine": {
+   "MNST": 1.000121102245123,
+   "SPGI": 0.9975458151428691
+  }
+ }
+}

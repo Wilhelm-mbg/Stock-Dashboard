@@ -1,0 +1,8 @@
+Gegenprobe: findet die Skalenpruefung den Kunst-Split (Faktor 0,5 ab dem 03.03.)?
+
+  wie erwartet   0-unveraendert.js           rein 1, aus der Datei 1, durchgefallen "KUNST"   -> Klinke waere GRUEN
+  wie erwartet   1-band-aufgeweitet.js       rein 0, aus der Datei 0, durchgefallen ""   -> Klinke waere ROT
+  wie erwartet   2-pruefung-ausgebaut.js     rein 0, aus der Datei 0, durchgefallen ""   -> Klinke waere ROT
+  wie erwartet   3-nicht-an-der-grenze.js    rein 0, aus der Datei 0, durchgefallen ""   -> Klinke waere ROT
+
+Alle drei Verstuemmelungen machen die Klinke ROT, die unveraenderte Fassung gruen - die Pruefung haengt wirklich an dem, was sie behauptet.

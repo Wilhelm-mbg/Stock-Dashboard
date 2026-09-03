@@ -1,0 +1,35 @@
+﻿Skalen-Probe: welche Alpaca-Bereinigung entspricht Yahoo?
+Kriterien (vor dem Lauf festgelegt): K1 >= 50 gemeinsame Stempel je Fall, K2 Tagesmedian in 0.999-1.001 in ALLEN vier Faellen, K3 die schwaechste passende gewinnt, K4 sonst Faktor ausweisen.
+
+MNST  2026-08-06  (vor der Massnahme: Split 2:1, wirksam 11.08.2026)  Yahoo-Kerzen im Archiv: 72
+    raw      gemeinsam  72   Median Alpaca/Yahoo 2.000000   Spanne 1.999358 .. 2.000853   Umsatz Yahoo/Alpaca 1.0001
+    split    gemeinsam  72   Median Alpaca/Yahoo 1.000053   Spanne 0.999733 .. 1.000426   Umsatz Yahoo/Alpaca 0.5001
+    dividend gemeinsam  72   Median Alpaca/Yahoo 2.000000   Spanne 1.999358 .. 2.000853   Umsatz Yahoo/Alpaca 1.0001
+    all      gemeinsam  72   Median Alpaca/Yahoo 1.000053   Spanne 0.999733 .. 1.000426   Umsatz Yahoo/Alpaca 0.5001
+
+MNST  2026-08-20  (nach der Massnahme: Split 2:1, wirksam 11.08.2026)  Yahoo-Kerzen im Archiv: 72
+    raw      gemeinsam  72   Median Alpaca/Yahoo 1.000000   Spanne 0.999789 .. 1.000211   Umsatz Yahoo/Alpaca 1.0040
+    split    gemeinsam  72   Median Alpaca/Yahoo 1.000000   Spanne 0.999789 .. 1.000211   Umsatz Yahoo/Alpaca 1.0040
+    dividend gemeinsam  72   Median Alpaca/Yahoo 1.000000   Spanne 0.999789 .. 1.000211   Umsatz Yahoo/Alpaca 1.0040
+    all      gemeinsam  72   Median Alpaca/Yahoo 1.000000   Spanne 0.999789 .. 1.000211   Umsatz Yahoo/Alpaca 1.0040
+
+SPGI  2026-06-25  (vor der Massnahme: Abspaltung, wirksam 01.07.2026)  Yahoo-Kerzen im Archiv: 72
+    raw      gemeinsam  72   Median Alpaca/Yahoo 1.057000   Spanne 1.057000 .. 1.057107   Umsatz Yahoo/Alpaca 0.9975
+    split    gemeinsam  72   Median Alpaca/Yahoo 1.057000   Spanne 1.057000 .. 1.057107   Umsatz Yahoo/Alpaca 0.9975
+    dividend gemeinsam  72   Median Alpaca/Yahoo 1.054629   Spanne 1.054620 .. 1.054727   Umsatz Yahoo/Alpaca 0.9975
+    all      gemeinsam  72   Median Alpaca/Yahoo 0.997531   Spanne 0.997520 .. 0.997644   Umsatz Yahoo/Alpaca 0.9975
+
+SPGI  2026-07-15  (nach der Massnahme: Abspaltung, wirksam 01.07.2026)  Yahoo-Kerzen im Archiv: 72
+    raw      gemeinsam  72   Median Alpaca/Yahoo 1.000000   Spanne 1.000000 .. 1.000000   Umsatz Yahoo/Alpaca 0.9966
+    split    gemeinsam  72   Median Alpaca/Yahoo 1.000000   Spanne 1.000000 .. 1.000000   Umsatz Yahoo/Alpaca 0.9966
+    dividend gemeinsam  72   Median Alpaca/Yahoo 0.997763   Spanne 0.997749 .. 0.997771   Umsatz Yahoo/Alpaca 0.9966
+    all      gemeinsam  72   Median Alpaca/Yahoo 0.997763   Spanne 0.997749 .. 0.997771   Umsatz Yahoo/Alpaca 0.9966
+
+Urteil:
+  raw      K1 ok  K2 FEHLT   Mediane: MNST vor 2.00000 | MNST nach 1.00000 | SPGI vor 1.05700 | SPGI nach 1.00000
+  split    K1 ok  K2 FEHLT   Mediane: MNST vor 1.00005 | MNST nach 1.00000 | SPGI vor 1.05700 | SPGI nach 1.00000
+  dividend K1 ok  K2 FEHLT   Mediane: MNST vor 2.00000 | MNST nach 1.00000 | SPGI vor 1.05463 | SPGI nach 0.99776
+  all      K1 ok  K2 FEHLT   Mediane: MNST vor 1.00005 | MNST nach 1.00000 | SPGI vor 0.99753 | SPGI nach 0.99776
+
+KEINE Bereinigung entspricht Yahoo. Gemessene Faktoren am Tag vor der Massnahme (K4) - Kurs raw/Yahoo, Umsatz Yahoo/raw: MNST Kurs 2.00000 / Umsatz 1.0001, SPGI Kurs 1.05700 / Umsatz 0.9975
+Ergebnis: C:\Users\Wilhe\Downloads\Stock-Dashboard\studien\archiv-zusammenfuehrung-2026-09\skalen-probe-ergebnis.json  (16 Abrufe)

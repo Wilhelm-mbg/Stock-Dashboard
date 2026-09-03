@@ -11002,6 +11002,15 @@ console.log('\n63) Nur fertige Kerzen kommen ins Archiv (Issue #85)');
      (nhQ.match(/quelleNeu: '(?!alpaca')/g) || []).length === 0 &&
      /KQ\.satz\(a\.dateiSym, a\.iv, v\.serie/.test(nhQ) && !/writeFileSync/.test(nhQ) && /M\.atomarSchreiben\(a\.pfad/.test(nhQ),
      'Nachholer schreibt Kerzen nur mit Quelle alpaca (am Schreibpfad), nur ueber satz()/zusammenfuehren(), nur atomar');
+  /* Dasselbe fuer den ZWEITEN Schreibpfad, den die Skalenreparatur dazugebaut hat
+   * (--ersetze-alpaca, 03.09.2026): auch er vereinigt ueber zusammenfuehren() mit
+   * quelleNeu 'alpaca', schreibt ueber satz() und atomar - und sichert vorher. Die
+   * Zeile darueber wuerde einen zweiten, nachlaessigeren Pfad nicht bemerken, weil
+   * sie auf den Wortlaut des ersten zeigt. */
+  ok(/KQ\.zusammenfuehren\(A\.rest, tNeu\.neu, a\.iv, \{ quellenAlt: A\.restQuellen, quelleNeu: 'alpaca', sym: a\.sym \}\)/.test(nhQ) &&
+     /KQ\.satz\(a\.alpacaSym, a\.iv, v\.serie/.test(nhQ) && /if \(schreiben\) \{\s*M\.atomarSchreiben\(a\.pfad/.test(nhQ) &&
+     /bericht\.sicherung = \{ ordner: sicherungsZiel, dateien: sichern\(/.test(nhQ),
+     'Ersetzen schreibt auf demselben Weg: zusammenfuehren() mit quelleNeu alpaca, satz(), atomar - und nur nach der Sicherung');
   ok(/if \(!fg\.bestanden\) \{ console\.error\([^)]*VERWEIGERT/.test(nhQ) && /if \(!M\.r5Behoben\(\)\) \{ console\.error\([^)]*VERWEIGERT/.test(nhQ) && /if \(M\.imSammelfenster\(\)\) \{ console\.error\([^)]*VERWEIGERT/.test(nhQ),
      'Nachholer holt nur mit bestandener Probe (Freigabe auf der Platte), behobenem R5 und ausserhalb des Sammelfensters');
   ok(/feed=sip/.test(nhQ) && !/feed=iex/.test(nhQ) && /adjustment=raw/.test(nhQ),
@@ -13096,6 +13105,7 @@ console.log('\n64) Bestand & Kopfzeile (Oberflaeche Stufe 2, 03.09.2026)');
    * Pruefungen wie oben, auf dieselbe Weise geschaerft. */
   var Z1 = [
     __dirname + '/studien/archiv-zusammenfuehrung-2026-09/probe-alpaca-balken.js',
+    __dirname + '/studien/archiv-zusammenfuehrung-2026-09/skalen-probe-alpaca.js',
     __dirname + '/tools/alpaca-balken-holen.js',
   ];
   Z1.forEach(function (p) {
@@ -13172,7 +13182,11 @@ console.log('\n64) Bestand & Kopfzeile (Oberflaeche Stufe 2, 03.09.2026)');
      'Die echte Freigabe-Datei greift auf den echten Stempel - das Urteil der Probe selbst bleibt false');
   ok(fEcht.nachtrag && fEcht.nachtrag.zeile === 'Freigabe: Wilhelm 03.09.2026 (Probe nicht bestanden, Nachtrag §6)',
      'und traegt genau die vorgeschriebene Bannerzeile (Auflage 3)');
-  NH35.kontrolle(); NH35.pruefen();
+  /* pruefen(undefined, null) = ohne die Skalenpruefung aus den Archivdateien: hier geht
+   * es allein darum, dass kontrolle()/freigabe()/pruefen() nichts SCHREIBEN. Der Lauf
+   * ueber das echte Archiv auf E: kostet zwoelf Sekunden und findet gleich darunter im
+   * Kindprozess statt - zweimal braucht ihn niemand. */
+  NH35.kontrolle(); NH35.pruefen(undefined, null);
   ok(Buffer.compare(fs.readFileSync(ergEcht), vorErg) === 0 && Buffer.compare(fs.readFileSync(ntEcht), vorNt) === 0,
      'Ergebnis- und Freigabe-Datei sind nach kontrolle()/freigabe()/pruefen() byteidentisch mit vorher');
 
@@ -13223,6 +13237,131 @@ console.log('\n64) Bestand & Kopfzeile (Oberflaeche Stufe 2, 03.09.2026)');
   var pNichts35 = NH35.pruefen({ vergleich: {}, vergleichSym: {}, erledigt: {}, fehlschlaege: {} });
   ok(/Werte durchgefallen: 0 von 0/.test(pNichts35.text) && !/STOPP/.test(pNichts35.text),
      'Noch kein Vergleich im Fortschritt: "0 von 0" behauptet keine Stoppregel-Entscheidung');
+
+  /* ---------- (a'''') Skalenreparatur: Ersetzen und Skalenpruefung (03.09.2026) ----------
+   * wiki/archiv-zusammenfuehrung.md Paragraph 6 Punkt 8. Der Nachholer hat bei MNST und
+   * SPGI Alpaca-Balken auf der falschen Skala geschrieben, weil Yahoo Intraday-KURSE nach
+   * einer Kapitalmassnahme rueckwirkend umrechnet und adjustment=raw nicht. Zwei Dinge
+   * werden hier zugesichert, und zwar an einem KUNSTARCHIV, nicht an E: - der Lauf soll
+   * auch auf einem Rechner ohne das Archiv gruen sein:
+   *   (1) --ersetze-alpaca nimmt GENAU die Alpaca-Kerzen heraus, laesst die Yahoo-Kerzen
+   *       Byte fuer Byte stehen, sichert vorher mit Pruefsumme und schreibt die neuen
+   *       Kerzen auf der Yahoo-Skala zurueck.
+   *   (2) Die Skalenpruefung findet einen Kunst-Split (Faktor 0,5 ab einem Datum) und
+   *       schweigt, wenn keiner da ist.
+   * Das Netz wird eingespeist (opt.fetch), nicht befragt - der Test faehrt den ECHTEN
+   * Pfad einschliesslich Sicherung, Eichung, Raster und satz(), nur die Quelle ist
+   * erfunden. Ohne diese Einspeisung liesse sich nur pruefen, was ohnehin schon
+   * gerechnet wurde. */
+  var kunstErsetzen = probe((async function () {
+    var pK = require('path'), osK = require('os');
+    var tmpK = fs.mkdtempSync(pK.join(osK.tmpdir(), 'ersetzen-kunst-'));
+    var wurzelK = pK.join(tmpK, 'archiv'), sichK = pK.join(tmpK, 'sicherung'), fortK = pK.join(tmpK, 'fortschritt.json');
+    fs.mkdirSync(pK.join(wurzelK, 'archiv5m'), { recursive: true });
+    var KQK = require(__dirname + '/kerzenquelle.js');
+
+    /* Zwei Handelstage im Maerz (Winterzeit: 09:30 ET = 14:30 UTC), 5-Minuten-Gitter.
+     * Jede fuenfte Kerze stammt von Alpaca - so entstehen Quellengrenzen. Am ERSTEN Tag
+     * stehen die Alpaca-Kerzen auf der doppelten Skala: genau der MNST-Fehler. */
+    var TAGE = ['2026-03-02', '2026-03-03'], DAUER5 = 300000;
+    var wahr = {}, serieK = [], jkK = [];
+    TAGE.forEach(function (tag, ti) {
+      var start = Date.parse(tag + 'T14:30:00Z');
+      for (var i = 0; i < 78; i++) {
+        var t = start + i * DAUER5, kurs = 100 + ti * 5 + i * 0.05;
+        var vor = i === 0 ? kurs : 100 + ti * 5 + (i - 1) * 0.05;
+        wahr[t] = [t, kurs, 1000 + i, kurs + 0.02, vor - 0.02, vor];      /* die Yahoo-Skala */
+        var alpaca = i % 5 === 4;
+        var f = (alpaca && ti === 0) ? 2 : 1;                             /* der Fehler */
+        serieK.push([t, kurs * f, 1000 + i, (kurs + 0.02) * f, (vor - 0.02) * f, vor * f]);
+        jkK.push({ quelle: alpaca ? 'alpaca' : 'yahoo', abgeleitet: null });
+      }
+    });
+    var pfadK = pK.join(wurzelK, 'archiv5m', 'bars_5m_KUNST.json');
+    fs.writeFileSync(pfadK, JSON.stringify(KQK.satz('KUNST', '5m', serieK, { quellen: KQK.quellenVerdichten(serieK, jkK), waehrung: 'USD' })));
+    var vorherRoh = fs.readFileSync(pfadK);
+
+    /* Die Skalenpruefung muss den Kunst-Split VORHER finden - sonst prueft der Rest
+     * dieses Blocks eine Reparatur, die nichts zu reparieren hatte. */
+    var sVor = NH35.skalenPruefungDateien(wurzelK);
+    ok(sVor.abweichungen.length === 1 && sVor.abweichungen[0].sym === 'KUNST' && sVor.abweichungen[0].datum === '2026-03-02' &&
+       Math.abs(sVor.abweichungen[0].faktor - 2) < 1e-6 && sVor.durchgefallen.join() === 'KUNST',
+       'Skalenpruefung findet den Kunst-Split VOR der Reparatur - mit Wert, Datum und Faktor',
+       sVor.abweichungen.map(function (a) { return a.sym + ' ' + a.datum + ' ' + a.faktor.toFixed(4); }));
+
+    /* Die eingespeiste Quelle liefert die ROHEN Balken: am ersten Tag doppelt (Alpaca
+     * hat den Split nicht nachgerechnet), am zweiten gleich. */
+    var netzK = 0;
+    function fetchK(url) {
+      netzK++;
+      var m = /start=([^&]+)&end=([^&]+)/.exec(url);
+      var von = Date.parse(decodeURIComponent(m[1])), bis = Date.parse(decodeURIComponent(m[2]));
+      var bars = Object.keys(wahr).map(Number).filter(function (t) { return t >= von && t <= bis; }).sort(function (x, y) { return x - y; })
+        .map(function (t) {
+          var k = wahr[t], f = new Date(t).toISOString().slice(0, 10) === '2026-03-02' ? 2 : 1;
+          return { t: new Date(t).toISOString(), o: k[5] * f, h: k[3] * f, l: k[4] * f, c: k[1] * f, v: k[2], n: 1, vw: k[1] * f };
+        });
+      var rumpf = JSON.stringify({ bars: { KUNST: bars }, next_page_token: null });
+      return Promise.resolve({ status: 200, headers: { get: function () { return null; } }, text: function () { return Promise.resolve(rumpf); } });
+    }
+    var kalK = { '2026-03-02': { open: '09:30', close: '16:00' }, '2026-03-03': { open: '09:30', close: '16:00' } };
+    var b = await NH35.ersetzeAlpaca(wurzelK, { symbole: ['KUNST'], intervall: '5m', schreiben: true, still: true,
+      sicherung: sichK, fortschritt: fortK, fetch: fetchK, kalender: kalK });
+
+    ok(netzK > 0 && b.dateien.length === 1 && b.dateien[0].entfernt === 30 && b.dateien[0].neu === 30 &&
+       b.dateien[0].vorher === 156 && b.dateien[0].nachher === 156 && b.dateien[0].zusaetzlicheStempel === 0,
+       'Ersetzen: 30 Alpaca-Kerzen raus, 30 zurueck, kein Stempel dazu und keiner weg',
+       [b.dateien[0].entfernt, b.dateien[0].neu, b.dateien[0].vorher, b.dateien[0].nachher]);
+    ok(b.eichung.KUNST.stufen.length === 2 && Math.abs(b.eichung.KUNST.stufen[0].kursFaktor - 2) < 1e-9 &&
+       b.eichung.KUNST.stufen[0].bis === '2026-03-02' && b.eichung.KUNST.stufen[1].kursFaktor === 1,
+       'Die Eichung findet zwei Stufen und den Tag, an dem die Skala umspringt - gemessen, nicht aus einer Meldung',
+       b.eichung.KUNST.stufen.map(function (s) { return s.von + '..' + s.bis + ' ' + s.kursFaktor; }));
+
+    /* Die Sicherung liegt, ist byteidentisch mit dem Zustand VOR dem Schreiben und
+     * traegt die Pruefsumme dazu - eine Sicherung, die man nicht zurueckliest, ist eine
+     * Behauptung. */
+    var sicherPfad = pK.join(sichK, 'bars_5m_KUNST.json');
+    var shaVor = require('crypto').createHash('sha256').update(vorherRoh).digest('hex');
+    ok(fs.existsSync(sicherPfad) && Buffer.compare(fs.readFileSync(sicherPfad), vorherRoh) === 0 &&
+       JSON.parse(fs.readFileSync(pK.join(sichK, 'manifest.json'), 'utf8')).dateien[0].sha256 === shaVor,
+       'Vor dem Schreiben liegt die Sicherung mit passender SHA-256 - und sie hat den ALTEN Stand, nicht den neuen');
+
+    /* Der eigentliche Punkt: Yahoo unangetastet, Alpaca auf der Yahoo-Skala. */
+    var nach = KQK.huelleLesen(pfadK), jkN = KQK.quelleJeKerze(nach.series, nach.quellen);
+    var yGleich = 0, aGeheilt = 0, aFalsch = 0, yFalsch = 0;
+    nach.series.forEach(function (k, i) {
+      var soll = wahr[k[0]];
+      var q = jkN[i] ? jkN[i].quelle : null;
+      if (q === 'yahoo') { if (JSON.stringify(k) === JSON.stringify(soll)) yGleich++; else yFalsch++; return; }
+      if (Math.abs(k[1] / soll[1] - 1) < 1e-9 && Math.abs(k[3] / soll[3] - 1) < 1e-9 &&
+          Math.abs(k[4] / soll[4] - 1) < 1e-9 && Math.abs(k[5] / soll[5] - 1) < 1e-9 && k[2] === soll[2]) aGeheilt++;
+      else aFalsch++;
+    });
+    ok(yGleich === 126 && yFalsch === 0, 'Die Yahoo-Kerzen sind unveraendert - Wert fuer Wert dieselben 126', [yGleich, yFalsch]);
+    ok(aGeheilt === 30 && aFalsch === 0, 'Alle 30 Alpaca-Kerzen liegen jetzt auf der Yahoo-Skala, Umsatz unangetastet', [aGeheilt, aFalsch]);
+
+    var sNach = NH35.skalenPruefungDateien(wurzelK);
+    ok(sNach.abweichungen.length === 0 && sNach.durchgefallen.length === 0 && sNach.geprueft === 1,
+       'Nach der Reparatur findet die Skalenpruefung nichts mehr - und sie hat wirklich geprueft (1 Wert)',
+       [sNach.abweichungen.length, sNach.geprueft]);
+
+    /* Und die Gegenprobe, damit die Zeile darueber nicht bloss "nichts gefunden" heisst:
+     * dieselbe Pruefung auf einer Datei, in der der Fehler noch steckt, wird rot. */
+    var nochFalsch = pK.join(tmpK, 'archiv2');
+    fs.mkdirSync(pK.join(nochFalsch, 'archiv5m'), { recursive: true });
+    fs.writeFileSync(pK.join(nochFalsch, 'archiv5m', 'bars_5m_KUNST.json'), vorherRoh);
+    ok(NH35.skalenPruefungDateien(nochFalsch).abweichungen.length === 1,
+       'Gegenprobe: dieselbe Pruefung auf der ungefixten Datei bleibt rot - sie ist nicht blind geworden');
+
+    /* Ohne --symbole wird nichts angefasst: ein Werkzeug, das im Zweifel das ganze
+     * Archiv neu holt, ist gefaehrlicher als der Fehler, den es behebt. */
+    var verweigert = false;
+    try { await NH35.ersetzeAlpaca(wurzelK, { schreiben: true, still: true, fetch: fetchK, kalender: kalK }); }
+    catch (e) { verweigert = /--symbole/.test(String(e && e.message)); }
+    ok(verweigert, 'Ohne --symbole verweigert --ersetze-alpaca den Dienst');
+
+    fs.rmSync(tmpK, { recursive: true, force: true });
+  })());
 
   /* ---------- Ausschlussregeln: nie auf die Zielgroesse ---------- */
   var M = require(SP + '/messen.js');
