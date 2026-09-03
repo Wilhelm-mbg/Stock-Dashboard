@@ -4,6 +4,14 @@ Nur was **weitergilt**. Aufgehobenes steht mit Datum der Aufhebung.
 
 ## Daten und Messung
 
+- **Alles sammeln, nicht nur das Nötige** (03.09.2026, Wilhelm): „Haben ist immer besser als brauchen —
+  lieber alles sammeln als es dann später zu brauchen"; er will auf dem Datensatz vielleicht ein LLM
+  trainieren. Folge: der Alpaca-Nachholer für die verworfenen CFD-Bereiche bleibt (~10 min), zusätzlich
+  kommt eine **Alpaca-Vollsammlung** — Minutenbalken für das ganze eingefrorene Universum plus die seit
+  2016 verschwundenen Werte, Vor- und Nachbörse mit (Sitzung markiert), eigener Ordner
+  `E:/Markt-Dashboard-Archiv/alpaca1m/`, ersetzt nichts, bis ein Leser in Z2 ausdrücklich umgehängt wird.
+  Erstes Kursarchiv des Projekts ohne Überlebensverzerrung (ab 2016). **Nicht** gesammelt: die vollständige
+  Quote-Tafel (Terabytes je Jahr); Krypto bleibt Yahoo. Plan in [archiv-zusammenfuehrung.md](archiv-zusammenfuehrung.md) §5 Z1c.
 - **Punkt-in-Zeit-Universum EINGEFROREN** (31.08.2026). `massive/universum-2024-09-02.json` ist
   schreibgeschützt, Kopie auf `E:` — **unveränderliche Messgrundlage**. Grund: der Stichtag
   fiel am 03.09.2026 aus dem Gratis-Fenster; danach nie wieder erzeugbar. **Kein Nachbau, kein
