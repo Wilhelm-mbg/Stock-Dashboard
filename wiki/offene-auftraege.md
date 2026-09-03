@@ -38,6 +38,10 @@ betroffene Wiki-Seite ein — mit Fundstelle.*
    (`studien/vorregistrierung-2026-09-02-momentum-messung/`)
 3. **Insider-Käufe (Form 4)** — EDGAR-Infrastruktur liegt fertig im Haus, kostet nichts
 
+## Später, auf Wilhelms Zuruf
+
+- **Signalstudie NEU auf Minutenbasis** (Wilhelm 03.09. abends: „merk es dir, machen wir später"). Frage: ist Intraday tot? Stand: unbelegt, nicht widerlegt — die große Signalstudie (51 Signale, 0 bestätigt) lief auf Stundenkerzen (strukturell blind), 1m reichte 69 Tage, alle Urteile mit CFD-Hürde. Auftrag nach der Alpaca-Vollsammlung: dieselben 51 Signale vorregistriert auf Minutenbasis, Kassa-Hürde je Umsatzklasse ([kosten.md](kosten.md)), Querschnitt über alle ~2.500 Tage, Placebo, MDE vor dem Urteil. PM-Erwartung vorab: die meisten null; 2–3 Kandidaten aus Dichte-/Kapitulations-Familie könnten unter Kassa-Kosten über die Hürde kommen.
+
 ## Bekannte Baustellen (klein, unbeauftragt)
 
 - **Zwei Archive heißen „Archiv" → ENTSCHIEDEN 03.09.: zusammenführen** (Wilhelm). Code-Karte in Arbeit, Auftrag in Stufen folgt; bis dahin gilt: neue Messungen nennen ausdrücklich, welches Archiv sie lesen. *Fundstelle: [entscheide.md](entscheide.md), `uebergabe/oberflaeche-stufe4-2026-09-03.md` §5.1*
