@@ -88,13 +88,16 @@ was fehlt.
 **aus** und wird gelistet. Sein Faktor wird **nicht** aus der Rohreihe geraten — ein Sprung von
 −5 % kann eine Abspaltung sein oder eine Gewinnwarnung, und die Rohreihe weiß es nicht.
 
-> **Offene Chance, nicht umgesetzt** (wäre über den Auftrag hinaus): der Faktor **ist** aus der
+> **Offene Chance, hier nicht umgesetzt — inzwischen entschieden:** der Faktor **ist** aus der
 > Quelle messbar, nur nicht aus dem Maßnahmen-Endpunkt. Die Skalenprobe vom 03.09. zeigt für SPGI
 > `all`/`Yahoo` = 0,99753 gegen `raw`/`Yahoo` = 1,05700 und `dividend`/`raw` = 0,99776 — das
 > Verhältnis `all` ÷ `dividend` isoliert Split **und** Abspaltung und ergibt 1,0572. Zwei
-> Zusatzabrufe je betroffenem Wert und Fenster würden die Lücke schließen. Das ist ein Entscheid,
-> kein Handgriff: er kostet einen zweiten Abruf, den Wilhelms Konvention ausdrücklich ausschließt.
-> Steht als eigener Auftrag in `wiki/offene-auftraege.md`.
+> Zusatzabrufe je betroffenem Wert und Fenster schließen die Lücke. Das war ein Entscheid, kein
+> Handgriff: er kostet einen zweiten Abruf, den Wilhelms Konvention „lokal ableiten" ausschließt.
+> **Wilhelm hat am 03.09. spät entschieden: JA** (`wiki/entscheide.md`, „Abspaltungs-Kursfaktor per
+> Zweitabruf") — der Faktor wird je betroffenem Wert einmal gemessen und mit Herkunft `gemessen` in
+> die Maßnahmen-Tabelle geschrieben; danach bekommen auch diese 177 Werte eine bereinigte Kopie.
+> **Eigener Auftrag, folgt nach Phase M** — hier nicht mitgebaut.
 
 ---
 
