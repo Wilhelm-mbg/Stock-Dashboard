@@ -12858,6 +12858,98 @@ console.log('\n64) Bestand & Kopfzeile (Oberflaeche Stufe 2, 03.09.2026)');
      'ET nach UTC rechnet die Sommerzeit richtig (Winter -5, Sommer -4)');
   ok(!/HALBTAGE\s*=\s*\{/.test(stich) && /Kalender\.lesen\(\)/.test(stich),
      'Die Halbtage kommen aus dem Boersenkalender, nicht aus einer Liste im Code');
+
+  /* ================= Zusatz C: ein ZWEITER Rahmen, getrennte Dateien =================
+   *
+   * Registrierung Paragraph 9b (Commit 30c5626, geschrieben vor dem Bau). Zusatz C misst
+   * die verschwundenen Werte mit DEMSELBEN Werkzeug wie Rahmen A - und genau deshalb ist
+   * die Gefahr, dass seine Zeilen in den Dateien des Rahmens A landen, keine theoretische.
+   * Vier Zusicherungen, jede an der VERWENDUNG geprueft, nicht an einer Zusage im
+   * Kommentar (wiki/fehlerformen.md, "Testmarken-Falle" und "Sperrklinke frisst ihren
+   * Kommentar" - deshalb laeuft alles hier durch ohneKommentare()).
+   */
+  var codeC = ohneKommentare(fs.readFileSync(SP + '/zusatzC.js', 'utf8'));
+
+  /* (a) GAR KEINE Umgebung - strenger als die MD_-Regel oben. Ein umstellbares Ziel waere
+   *     genau der Weg, auf dem eine Zeile des Rahmens C in einer Datei des Rahmens A
+   *     landet: ein gesetztes MD_SPANNEN, das woandershin zeigt, und die Trennung ist weg. */
+  ok(!/process\.env/.test(codeC),
+     'zusatzC.js liest die Umgebung GAR NICHT - das Ziel steht fest und ist nicht umstellbar');
+
+  /* (b) Jeder Dateiname traegt das Praefix. Zeilenweise geprueft, damit die Klinke auch
+   *     dann faellt, wenn jemand nur EINE Schreibstelle vergisst. Der Fortschritt des
+   *     Hauptlaufs ist ausdruecklich mitgemeint: fortschritt.json zu ueberschreiben
+   *     zerstoert die Betriebszaehlung des Rahmens A. */
+  var zeilenJsonl = (codeC.match(/^.*\.jsonl.*$/gm) || []);
+  ok(zeilenJsonl.length > 0 && zeilenJsonl.every(function (z) { return /zusatzC-/.test(z); }),
+     'zusatzC.js bildet KEINEN Dateinamen ohne das Praefix zusatzC- (nie in eine Jahresdatei des Rahmens A)',
+     zeilenJsonl.length + ' Stellen');
+  var zeilenFort = (codeC.match(/^.*fortschritt\.json.*$/gm) || []);
+  ok(zeilenFort.length > 0 && zeilenFort.every(function (z) { return /zusatzC-fortschritt/.test(z); }),
+     'zusatzC.js schreibt zusatzC-fortschritt.json und ruehrt fortschritt.json des Hauptlaufs nicht an',
+     zeilenFort.length + ' Stellen');
+
+  /* (c) Die Zielgroesse und der Abrufmodus kommen aus messen.js, nicht aus einem zweiten
+   *     Nachbau. Ein zweites Werkzeug fuer dieselbe Groesse misst zuverlaessig etwas
+   *     anderes - und die Differenz der beiden Rahmen waere dann Werkzeug, nicht Markt. */
+  ok(/require\('\.\/messen\.js'\)/.test(codeC) && /M\.bewerten\(/.test(codeC) && /M\.pfadQuote\(/.test(codeC) &&
+     !/function bewerten/.test(codeC) && !/function pfadQuote/.test(codeC),
+     'zusatzC.js benutzt bewerten() und pfadQuote() aus messen.js - kein zweiter Nachbau der Zielgroesse');
+  ok(!/feed=/.test(codeC),
+     'zusatzC.js baut keine eigene Abfrageadresse - der Feed kommt aus pfadQuote() (also sip)');
+
+  /* (d) Der Leck-Test, wie bei probe.js. */
+  ['probeC.js', 'zusatzC.js'].forEach(function (f) {
+    var code = ohneKommentare(fs.readFileSync(SP + '/' + f, 'utf8'));
+    ok(/function sag\s*\([^)]*\)\s*\{[^}]*S\.verdecken/.test(code),
+       f + ': die Ausgabefunktion laeuft durch verdecken()');
+  });
+  probe((async function () {
+    await leckDurchreiche;
+    var ZC = require(SP + '/zusatzC.js');
+    var r = await ZC.selbsttest();
+    ok(!r.leck, 'Leck-Test zusatzC.js: erfundene Zugangswerte tauchen in KEINER Ausgabe auf, auch wenn der Server die Kopfzeilen zurueckspiegelt');
+    ok(/\[Zugang\]/.test(r.ausgabe) && /\[Geheimnis\]/.test(r.ausgabe),
+       'Der Leck-Test von zusatzC.js hat die Ausgabepfade wirklich durchlaufen (beide Platzhalter stehen drin)');
+  })());
+
+  /* (e) Die Ziehung ist die REGISTRIERTE. Paragraph 9b.3 nennt die Zellenbesetzung vor dem
+   *     ersten Abruf; hier wird sie gegen den Plan gehalten, den das Werkzeug wirklich
+   *     baut. Das ist dieselbe Bauart wie Block 34: eine Zusage gegen ein Ergebnis, nicht
+   *     gegen sich selbst. Nur wenn die Archive erreichbar sind - sonst steht die Luecke da. */
+  var TAGESDATEN35 = require('path').join(require('os').homedir(), 'Downloads',
+                       'Markt-Dashboard-Daten', 'massive', 'tagesdaten');
+  var KAL35 = require(SP + '/kalender.js').lesen();
+  if (fs.existsSync(TAGESDATEN35) && KAL35 && KAL35.tage) {
+    var ZC35 = require(SP + '/zusatzC.js');
+    var P35 = ZC35.planC();
+    var SOLL35 = { '5-50|2025': [158, 100], '50-250|2025': [42, 42], '250-1000|2025': [4, 4], 'ab1000|2025': [0, 0],
+                   '5-50|2026': [66, 66], '50-250|2026': [23, 23], '250-1000|2026': [6, 6], 'ab1000|2026': [0, 0] };
+    var abw35 = [];
+    Object.keys(SOLL35).forEach(function (k) {
+      var z = P35.zellen[k] || { verfuegbar: -1, gezogen: -1 };
+      if (z.verfuegbar !== SOLL35[k][0] || z.gezogen !== SOLL35[k][1]) {
+        abw35.push(k + ': ' + z.verfuegbar + '/' + z.gezogen + ' statt ' + SOLL35[k].join('/'));
+      }
+    });
+    ok(abw35.length === 0, 'Der Plan des Rahmens C ist der in Paragraph 9b.3 registrierte (Zellenbesetzung)', abw35.join(' | '));
+    ok(P35.zeitpunkte.length === 3615, 'Rahmen C zieht die registrierten 3.615 Zeitpunkte', P35.zeitpunkte.length);
+    /* Die beiden Ergaenzungen aus Paragraph 9b.2, an den Zeitpunkten selbst nachgerechnet:
+     * kein Punkt liegt nach dem Lebensende, und keiner in den letzten 20 Handelstagen davor
+     * (Abwicklungsphase). Ohne diese Zeile waere die Regel nur eine Absichtserklaerung. */
+    var nachTod35 = P35.zeitpunkte.filter(function (z) { return z.tag > z.letzterHandelstag; }).length;
+    var zuNah35 = P35.zeitpunkte.filter(function (z) { return !(z.restTage >= 20); }).length;
+    ok(nachTod35 === 0 && zuNah35 === 0,
+       'Kein gezogener Zeitpunkt liegt nach dem letzten Handelstag oder in den 20 Handelstagen davor',
+       'nach dem Ende ' + nachTod35 + ', zu nah dran ' + zuNah35);
+    /* ab1000 ist leer - und das ist ein BEFUND (kein verschwundener Wert hatte je ueber
+     * 1.000 Mio $ Median-Tagesumsatz), kein Fehler. Faellt die Zeile eines Tages, hat sich
+     * der Rahmen geaendert und der Befund in ERGEBNIS-ZUSATZ-C.md ist veraltet. */
+    ok(P35.zellen['ab1000|2025'].verfuegbar === 0 && P35.zellen['ab1000|2026'].verfuegbar === 0,
+       'Die Klasse ab1000 ist in Rahmen C leer - der Befund aus Paragraph 9b.3 haelt');
+  } else {
+    console.log('  ⚠ ' + TAGESDATEN35 + ' oder der Boersenkalender nicht erreichbar – die Ziehung des Rahmens C ist NICHT gegen Paragraph 9b.3 geprueft (schwaechere Pruefung).');
+  }
 })();
 
 /* ================= 65) Schnitt (Oberflaeche Stufe 3, 03.09.2026) =================
