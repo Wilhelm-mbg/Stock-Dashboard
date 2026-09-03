@@ -12913,7 +12913,23 @@ console.log('\n64) Bestand & Kopfzeile (Oberflaeche Stufe 2, 03.09.2026)');
        'Der Leck-Test von zusatzC.js hat die Ausgabepfade wirklich durchlaufen (beide Platzhalter stehen drin)');
   })());
 
-  /* (e) Die Ziehung ist die REGISTRIERTE. Paragraph 9b.3 nennt die Zellenbesetzung vor dem
+  /* (e) Die Auswertung rechnet BEIDE Rahmen mit derselben Funktion. Eine zweite zelle()
+   *     waere der Weg, auf dem die Differenz der Rahmen zum Teil ein Unterschied der
+   *     Werkzeuge wird - und niemand koennte sagen, zu welchem Teil. Dazu der
+   *     Trockenlauf-Schutz: ein Bericht aus Kunstdaten darf nicht ERGEBNIS-ZUSATZ-C.md heissen. */
+  var codeAC = ohneKommentare(fs.readFileSync(SP + '/auswertenC.js', 'utf8'));
+  ok(/require\('\.\/auswerten\.js'\)/.test(codeAC) && /A\.zelle\(/.test(codeAC) &&
+     /A\.median\(/.test(codeAC) && /A\.quantil\(/.test(codeAC) &&
+     !/function zelle/.test(codeAC) && !/function median/.test(codeAC),
+     'auswertenC.js rechnet beide Rahmen mit zelle()/median()/quantil() aus auswerten.js - kein zweites Werkzeug');
+  ok(/SOLL_A\s*=\s*\{[^}]*0\.1569[^}]*0\.0854[^}]*0\.0647[^}]*0\.0449/.test(codeAC),
+     'auswertenC.js traegt die vier Mediane aus ERGEBNIS.md als Positivkontrolle');
+  ok(/ERGEBNIS-ZUSATZ-C-TROCKENLAUF\.md/.test(codeAC) && /markt-dashboard-archiv\/spannen/.test(codeAC),
+     'auswertenC.js hat den Trockenlauf-Schutz: aus Kunstdaten wird kein ERGEBNIS-ZUSATZ-C.md');
+  ok(/!kontrolleOk && ECHT/.test(codeAC),
+     'Verfehlte Positivkontrolle auf ECHTEN Daten bricht ab, statt einen Bericht zu schreiben');
+
+  /* (f) Die Ziehung ist die REGISTRIERTE. Paragraph 9b.3 nennt die Zellenbesetzung vor dem
    *     ersten Abruf; hier wird sie gegen den Plan gehalten, den das Werkzeug wirklich
    *     baut. Das ist dieselbe Bauart wie Block 34: eine Zusage gegen ein Ergebnis, nicht
    *     gegen sich selbst. Nur wenn die Archive erreichbar sind - sonst steht die Luecke da. */
