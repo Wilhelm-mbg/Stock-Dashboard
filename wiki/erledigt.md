@@ -11,6 +11,7 @@ ist nur das Register, damit [offene-auftraege.md](offene-auftraege.md) offen ble
 
 | Datum | Auftrag | Ergebnis in einem Satz | Fundstelle |
 |---|---|---|---|
+| 04.09. | Texte und Zählungen (QS-F3, F5, F9, F10, F11) | `#subnote` weg; Satz 8 → 5 in der App, Zusicherung an der App; zwei Textwände hinter i-Knöpfe; Dauertext-Abtaster an der Laufzeit; 47 Klinken, 4 Gegenproben rot, eine geschärft; 330–380k/150k | `uebergabe/texte-zaehlungen-2026-09-04.md` |
 | 04.09. | Prüfwerkzeuge schärfen (QS-F12, S1–S9) | `tools/ui-struktur.js` liest die laufende Instanz; a11y mit Kunstdaten; echte Tab-Wanderung mit bekannten Abweichungen; F6 anders reproduziert (Verschiebung statt Lage); 29 Gegenproben rot; 305k/150k | `uebergabe/pruefwerkzeuge-2026-09-04.md` |
 | 04.09. | Rumpf bei 1024 px (QS-F1) | Positionstabelle 9 Spalten + zweite Zeile + Scroll-Kasten; 1040 → 1014 px; Bildlauf-Klinke in ui-probe/ui-aufnahmen; 18 Gegenproben rot; 291k/100k | `uebergabe/rumpf-1024-2026-09-04.md` |
 | 04.09. | UI-QS v8.40.0 | 12 Funde (1 blockiert, 4 falsch, 7 unschön), 0 tote Bedienelemente von 294, Kontraste > 4,5 in beiden Themen; Urteil zur Struktur-Seite: Landkarte ja, Inventar nein | `uebergabe/ui-qs-2026-09-04.md`, `uebergabe/aufnahmen-qs-2026-09-04/` |
