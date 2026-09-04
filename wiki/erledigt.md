@@ -11,6 +11,8 @@ ist nur das Register, damit [offene-auftraege.md](offene-auftraege.md) offen ble
 
 | Datum | Auftrag | Ergebnis in einem Satz | Fundstelle |
 |---|---|---|---|
+| 04.09. | Prüfwerkzeuge schärfen (QS-F12, S1–S9) | `tools/ui-struktur.js` liest die laufende Instanz; a11y mit Kunstdaten; echte Tab-Wanderung mit bekannten Abweichungen; F6 anders reproduziert (Verschiebung statt Lage); 29 Gegenproben rot; 305k/150k | `uebergabe/pruefwerkzeuge-2026-09-04.md` |
+| 04.09. | Rumpf bei 1024 px (QS-F1) | Positionstabelle 9 Spalten + zweite Zeile + Scroll-Kasten; 1040 → 1014 px; Bildlauf-Klinke in ui-probe/ui-aufnahmen; 18 Gegenproben rot; 291k/100k | `uebergabe/rumpf-1024-2026-09-04.md` |
 | 04.09. | UI-QS v8.40.0 | 12 Funde (1 blockiert, 4 falsch, 7 unschön), 0 tote Bedienelemente von 294, Kontraste > 4,5 in beiden Themen; Urteil zur Struktur-Seite: Landkarte ja, Inventar nein | `uebergabe/ui-qs-2026-09-04.md`, `uebergabe/aufnahmen-qs-2026-09-04/` |
 | 04.09. | Universum mitliefern (#111) | Eingefrorene Liste im Paket, Erststart-Kopie schreibgeschützt, nie überschreiben; 22 Klinken, 21 Gegenproben rot (2 geschärft, 1 Absturz → 6 rote Zeilen); 180k statt 60k | `uebergabe/universum-mitliefern-2026-09-04.md` |
 | 04.09. | Sammler verhungert nicht mehr + Markt-Takt 1 Min + Grundmenge alle Stammdaten | Leerer Versuch als `versucht` gemerkt, `reihenfolge()` + neues Modul `sammelrunde.js` (alle fälligen Intervalle je Blick), Stillstandsbremse, Yahoo-Leerblöcke sichtbar; Grundmenge 1.653 (SEC-Stammdaten, nicht 3.263); 31 Gegenproben rot, drei Klinken geschärft; 395k statt 300k | `uebergabe/sammler-verhungern-2026-09-04.md`, [fehlerformen.md](fehlerformen.md) |

@@ -85,6 +85,10 @@ tags: [lehre]
   Kunstdaten und misst auf Markt → Überblick 68 Textstellen statt 3.960 Zeichen; „grün" über
   Leerzustände. *Fundstelle: `uebergabe/ui-qs-2026-09-04.md` F12.*
 
+- **Der Fund reproduziert sich anders, als er aufgeschrieben ist.** QS-Fund F6 hieß „Fokus liegt außerhalb des Fensters"; genau so gemessen war er grün — Chromium schiebt den beschnittenen Kasten zum Fokus. Der wahre Fund war die Verschiebung (440 px, kein Weg zurück). Eine Sonde, die nur die aufgeschriebene Form prüft, hätte „behoben" gemeldet. *Fundstelle: `uebergabe/pruefwerkzeuge-2026-09-04.md` §4b.*
+- **Die Wanderung, die im Dialog stand.** Eine Tab-Wanderung meldete „20 Schritte, 0 draußen" — und hatte zwischen `diagNein` und `diagJa` gependelt, beim zweiten Mal im Erststart-Kasten. Gefunden von der eingebauten Kontrolle „weniger als drei verschiedene Halte ist ein Befund über die Sonde". *Fundstelle: ebenda §4.*
+- **Drei Sitzungen, ein Arbeitsbaum.** Parallel gestartete Chats auf denselben Dateien: ein Modul doppelt gebaut, Zusicherungen unter der Hand rot, Gegenproben-Anker verschoben, kein Chat konnte committen — ein Drittel des Verbrauchs. Reihenfolge gehört in den Dreizeiler, nicht daneben. *Fundstelle: [betrieb.md](betrieb.md), Aufträge; Sammel-Commit 5cc84f3.*
+
 ## Werkzeug-eigene Fallen
 
 - **Windows-Pfade in `node -e`:** Backslashes überleben Bash-Quoting nicht — und der Fehler
