@@ -15569,27 +15569,42 @@ console.log('\n69) Sammler verhungert nicht');
    * muessen darin als faellig gelten, solange kein Merker steht. Fehlt das Archiv (auf
    * jedem anderen Rechner), sagt der Lauf das - eine Probe, die stillschweigend
    * ausfaellt, ist ein Nullbefund vom toten Werkzeug. */
+  /* PM 04.09.2026 (Abnahme): Die erste Fassung las das ECHTE stand.json und verlangte,
+   * dass dort dauerhaft faellige Werte stehen. Sobald der Fix lief, standen dort keine
+   * mehr - die Klinke wurde rot, obwohl alles richtig war: sie hing an der Wirklichkeit,
+   * nicht am Code, und haette jedes Release gesperrt. Der Stand des Fundes steht deshalb
+   * hier als FESTWERT (abgeschrieben aus archiv5m/stand.json vom 04.09.2026, vor dem Fix);
+   * das echte Archiv wird nur noch angesehen und genannt, nie zur Bedingung gemacht. */
+  var standFund = { fertig: {
+    EA:  { kerzen: 1014, ohneEroeffnung: 0, am: '2026-09-04', bisTag: '2026-08-04' },
+    AVB: { kerzen: 1636, ohneEroeffnung: 0, am: '2026-09-04', bisTag: '2026-08-14' },
+  } };
+  var sollFund = '2026-09-03';
+  var stumpfe = Object.keys(standFund.fertig).filter(function (sym) {
+    return SP69.istFaellig(standFund.fertig[sym], sollFund, 7, Date.parse('2026-09-04T09:00:00Z'));
+  });
+  ok(stumpfe.length === 2 && stumpfe.indexOf('EA') !== -1 && stumpfe.indexOf('AVB') !== -1,
+     'Stand des Fundes (04.09., vor dem Fix): EA und AVB gelten ohne Merker als dauerhaft faellig',
+     stumpfe.join(','));
+  var mitMerkern = stumpfe.filter(function (sym) {
+    var e = JSON.parse(JSON.stringify(standFund.fertig[sym]));
+    e.versucht = sollFund;
+    return SP69.istFaellig(e, sollFund, 7, Date.parse('2026-09-04T09:00:00Z'));
+  });
+  ok(mitMerkern.length === 0,
+     'und mit gesetztem Merker ist keiner von ihnen mehr faellig - die Schlange kaeme frei',
+     stumpfe.length + ' Werte geprueft');
   var echterStand = 'E:/Markt-Dashboard-Archiv/archiv5m/stand.json';
   if (fs.existsSync(echterStand)) {
-    var roh69 = JSON.parse(fs.readFileSync(echterStand, 'utf8'));
-    var sollEcht = KQ69.letzterAbgeschlossenerHandelstag(new Date());
-    var stumpfe = Object.keys(roh69.fertig || {}).filter(function (sym) {
-      return SP69.istFaellig(roh69.fertig[sym], sollEcht, 7, Date.now());
-    });
-    ok(stumpfe.length > 0,
-       'Echtes Archiv: es gibt dort wirklich Werte, die ohne Merker dauerhaft faellig blieben',
-       stumpfe.slice(0, 4).join(','));
-    var mitMerkern = stumpfe.filter(function (sym) {
-      var e = JSON.parse(JSON.stringify(roh69.fertig[sym]));
-      e.versucht = sollEcht;
-      return SP69.istFaellig(e, sollEcht, 7, Date.now());
-    });
-    ok(mitMerkern.length === 0,
-       'und mit gesetztem Merker ist keiner von ihnen mehr faellig - die Schlange kaeme frei',
-       stumpfe.length + ' Werte geprueft');
-  } else {
-    console.log('  (uebersprungen: das echte 5m-Archiv liegt auf diesem Rechner nicht - ' +
-                'die Zahlen des Fundes stehen als Festwerte in (a) und (b))');
+    try {
+      var roh69 = JSON.parse(fs.readFileSync(echterStand, 'utf8'));
+      var sollEcht = KQ69.letzterAbgeschlossenerHandelstag(new Date());
+      var echtStumpf = Object.keys(roh69.fertig || {}).filter(function (sym) {
+        return SP69.istFaellig(roh69.fertig[sym], sollEcht, 7, Date.now());
+      });
+      console.log('  (echtes 5m-Archiv angesehen, keine Bedingung: ' + echtStumpf.length +
+                  ' Werte ohne Merker faellig' + (echtStumpf.length ? ': ' + echtStumpf.slice(0, 4).join(',') : '') + ')');
+    } catch (e) { console.log('  (echtes 5m-Archiv nicht lesbar: ' + e.message + ')'); }
   }
 
 
