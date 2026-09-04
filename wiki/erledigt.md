@@ -11,6 +11,7 @@ ist nur das Register, damit [offene-auftraege.md](offene-auftraege.md) offen ble
 
 | Datum | Auftrag | Ergebnis in einem Satz | Fundstelle |
 |---|---|---|---|
+| 04.09. | Sammler verhungert nicht mehr + Markt-Takt 1 Min + Grundmenge alle Stammdaten | Leerer Versuch als `versucht` gemerkt, `reihenfolge()` + neues Modul `sammelrunde.js` (alle fälligen Intervalle je Blick), Stillstandsbremse, Yahoo-Leerblöcke sichtbar; Grundmenge 1.653 (SEC-Stammdaten, nicht 3.263); 31 Gegenproben rot, drei Klinken geschärft; 395k statt 300k | `uebergabe/sammler-verhungern-2026-09-04.md`, [fehlerformen.md](fehlerformen.md) |
 | 04.09. | Oberfläche Stufe 5 — Reiter „Markt" | Vierter Reiter, drei Pillen, reines Modul `markt/uebersicht.js`, zwei Leseauskünfte, 171 Zusicherungen; v8.39.0 | `uebergabe/oberflaeche-stufe5-2026-09-04.md`, [oberflaeche.md](oberflaeche.md) |
 | 04.09. | Kursfaktor für Abspaltungen (Zweitabruf) | 109 Kursfaktoren in 108 Werten, 92 unklar; SPGI 1,057244 gegen unabhängige Messung; Doppel-Maßnahmen am Wirkungstag gesperrt | `uebergabe/abspaltungsfaktoren-2026-09-04.md`, [datenquellen.md](datenquellen.md) |
 | 03.09. | Z1c Alpaca-Vollsammlung — Werkzeug | Gebaut, Testlauf bestanden, Phase L und M gefahren (8.055 Werte führt die Quelle, 177 ohne Kursfaktor); Vollauf läuft seit 03.09. 23:04 | `studien/alpaca-vollsammlung-2026-09/BEFUND.md`, [archiv-zusammenfuehrung.md](archiv-zusammenfuehrung.md) §5 |
