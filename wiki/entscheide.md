@@ -33,6 +33,7 @@ Nur was **weitergilt**. Aufgehobenes steht mit Datum der Aufhebung.
 
 ## Oberfläche
 
+- **Archiv LIVE nachführen, über Alpaca** (04.09., Wilhelm, Formular; Frage „geht das nicht live?"): das Minutenarchiv soll während der US-Sitzung nachgeführt werden — alle paar Minuten die FERTIGEN 1m-Balken (Gratisstufe: SIP mit 15 Min Verzögerung, zu verifizieren), daraus 5m/15m/60m ableiten. Alternativen verworfen: Yahoo-Live für top500 (Höflichkeitsgrenze, Stempel-Falle), nur der Viewer live, so lassen. **Vor dem Bau:** Nur-Lese-Probe am Konto während der Sitzung (Alter des jüngsten Balkens je Feed sip/iex/delayed_sip; Aufgabe „Markt-Dashboard Probe Live-Verzoegerung" 04.09. 16:05). Danach ein Bau-Chat. Auftrag in [offene-auftraege.md](offene-auftraege.md).
 - **Reines Markt-Dashboard als vierter Reiter** (04.09.2026, Wilhelm, Formular nach TradingView-Sichtung): Reiter „Markt" nur für den Markt — Index-Kacheln, Sektor-Leiste, Heatmap, Hotlists, Earnings-Kalender, Vor-/Nachbörse, Schlagzeilen; Marktkarte und Radar ziehen dorthin, ebenso die Marktblöcke aus Heute→Überblick (Kacheln, Heatmap, News, Kalender); Heute behält Bestand und Meine Papiere. „Nicht so vermixt mit den Strategien." Aktien-Viewer nach TradingView-Muster ist Stufe 6 (verworfen: Viewer zuerst; beides in einer Stufe). Nicht übernommen: Analystenrating, Community-Ideen, Forecasts (Meinungen, keine Daten). Fundstelle [oberflaeche.md](oberflaeche.md) Stufe 5.
 
 ## Betrieb
