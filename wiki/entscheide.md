@@ -53,6 +53,7 @@ Nur was **weitergilt**, jüngste zuerst. Aufgehobenes steht mit Datum der Aufheb
 
 ## Oberfläche
 
+- **Stufe 6: Vor- und Nachbörse im Chart JA, abgesetzt markiert** (04.09., Wilhelm, Formular): graues Band, Beschriftung, Umschalter „nur reguläre Sitzung"; Alternative „nur reguläre Sitzung, Kurs als Zahl" verworfen. **Alle drei QS-Kleinaufträge laufen** (04.09., Formular): Rumpf bei 1024, Texte und Zählungen, Prüfwerkzeuge schärfen — Reihenfolge 10 → 11 → 12 → Stufe 6. Aufträge in `uebergabe/auftrag-*-2026-09-04.md`.
 - **Kursabruf von Marktkarte und Überblick zusammenlegen, in Stufe 6** (04.09., Wilhelm, Formular): eine Antwort je Minute statt zwei; „eigener Chat" und „so lassen" verworfen. **„Daten holen" einmal drücken** (Wilhelm, nach dem Release): SEC-Stammdaten bis 4.000 Werte, ~17 Min einmalig.
 - **Eingefrorenes Universum mit der App ausliefern** (04.09., Wilhelm, Formular zu GitHub #111): fremde Installationen konnten nie sammeln, weil `massive/universum-*.json` nur in Wilhelms Datenordner liegt. Gewählt: Kopie der eingefrorenen Datei ins Paket, Erststart-Kopie in den Datenordner, nie überschreiben. Alternativen „Ersatzliste aus Yahoo" (keine Punkt-in-Zeit-Eigenschaft) und „nur antworten" verworfen. Auftrag `uebergabe/auftrag-universum-mitliefern-2026-09-04.md`, nach dem Sammler-Chat (beide fassen kerzenquelle.js und test-v6.js an).
 - **Markt-Reiter: alle ~3.200 Aktien statt 600, Takt 1 Minute** (04.09., Wilhelm, Formular; „warum nur 600?" / „so aktuell wie nur möglich"): die 600 waren eine Setzung vom 25.08. aus der Zeit der Einzelabrufe (600 Anfragen je Bild); seit dem Sammelabruf (800 Kürzel je Anfrage, 3,4 s) kostet das ganze Universum ~8 Anfragen je Runde. Alternativen 1.500 und 600 verworfen. Beides im Auftrag `uebergabe/auftrag-sammler-verhungern-2026-09-04.md` (Punkte 4 und 5); Drosselung durch Yahoo muss sichtbar werden, nicht still zurückfallen.
@@ -86,6 +87,5 @@ Nur was **weitergilt**, jüngste zuerst. Aufgehobenes steht mit Datum der Aufheb
   als Abo**. Zwei Sperren vorher: Support zur Rückwirkung fragen, und die `dat[0]`-Falle beim
   eingefrorenen Universum schließen.*
 - **Server-Nutzung** (R620 als Webserver, R720xd als Storage) — vertagt.
-- **Vor Stufe 6 (Aktien-Viewer): Vor- und Nachbörse im Chart?** — Formular folgt mit dem Auftrag.
 - **Vor Z2: Leser direkt ans Alpaca-Archiv oder ans Yahoo-Dateiarchiv?** — ändert die Messbasis; Formular nach der Vollsammlung.
 - **Zweiter Yahoo-Abruf für die 90 ungeprüften Alpaca-Bereiche?** ([offene-auftraege.md](offene-auftraege.md), Baustellen)
