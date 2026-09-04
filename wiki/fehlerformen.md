@@ -51,6 +51,14 @@
 - **Aggregator-Datum ist kein Beleg.** Ein zehn Wochen alter Deal erschien als Montagsmeldung.
   **Gegenprobe ist EDGAR.**
 
+- **Der Kopf der Schlange, der nie fertig wird.** Eine Warteschlange, die immer nur das
+  vorderste Element bedient, steht still, sobald dieses Element nie „erledigt" werden kann.
+  Der App-Sammler nahm je Blick auf die Uhr nur das erste fällige Intervall, und fällig blieb ein
+  Wert, solange seine jüngste Kerze alt war — bei zwei Werten, für die Yahoo nichts mehr liefert,
+  also für immer. 122 Läufe „5m, 2 Werte" in drei Tagen, während 3.263 Tagesreihen warteten;
+  jede Zeile im Log sah ordentlich aus. **Gegenprobe:** Läufe mit `neu=0` zählen, nicht Läufe.
+  *Fundstelle: `uebergabe/auftrag-sammler-verhungern-2026-09-04.md`.*
+
 ## Werkzeug-eigene Fallen
 
 - **Windows-Pfade in `node -e`:** Backslashes überleben Bash-Quoting nicht — und der Fehler
