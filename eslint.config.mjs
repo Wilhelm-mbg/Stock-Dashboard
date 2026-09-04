@@ -27,6 +27,10 @@ const fensterGlobals = {
      Leseauskunft der Marktkarte (Marktwerte), ueber die der Ueberblick dieselbe
      Grundmenge und dieselben Kurse benutzt wie die Karte. */
   MarktUebersicht: 'readonly', Marktwerte: 'readonly',
+  /* Die Dialog-Ordnung (QS-Fund B1, 04.09.2026): die Rechnung steht in
+     dialogstapel.js, damit test-v6 sie ohne Fenster durchspielen kann; app-shell.js
+     holt sie sich hierueber. */
+  Dialogstapel: 'readonly',
   openModal: 'readonly', getSettings: 'readonly', saveSettings: 'readonly'
 };
 

@@ -101,9 +101,8 @@ Werkzeuge (data-tab="werkzeuge")
    │    · Mittelfrist-Bücher steuern  [in #sub-mittelfrist]
    │    · Ergebnis-Drift · Aktien, keine Hebelscheine  [in #sub-mittelfrist]
    │    · Was wäre heute offen?  [in #sub-mittelfrist]
-   │  ▸ Klappe: Live-Signal-Monitor  — Statuszeile: „letzter Scan 04.09.26, 21:48 Uhr“
+   │  ▸ Klappe: Live-Signal-Monitor
    │    · Live-Signal-Monitor
-   │    ▸ Klappe: 30 Werte: Kursreihe zu kurz (161 < 261 Kerzen) – Signal wäre nicht das gemessene  [in #sigMonitor]
    │  ▸ Klappe: Strategie-Chart  [in #sub-werkzeug]
    │    · Strategie-Chart – Signal und Bedingungen nachvollziehen  [in #stratChartPanel]
    │  ▸ Klappe: Regelbuch – die Regel, die handelt · Regeln, die nur messen · Bilanz  [in #sub-werkzeug]  — Statuszeile: „rsi2seit · kein Protokoll“
@@ -128,7 +127,7 @@ Dialoge (gehören zu keinem Reiter)
 ├─ Analyse  [#aiModalBg]
 ├─ Trade nachbilden  [#ticketModalBg]
 ├─ App-Einstellungen  [#setModalBg]
-└─ Diagnosedaten teilen? Die App kann anonyme Diagnosedaten an die zentrale …  (gekürzt von 1240 Zeichen)  [#diagModalBg]
+└─ Diagnosedaten teilen?  [#diagModalBg]
 ```
 
 ## Heute
@@ -168,7 +167,7 @@ Dialoge (gehören zu keinem Reiter)
 
 ### Markt → Überblick
 
-`#sub-marktueberblick` · 15 Blöcke · 7543 Zeichen sichtbarer Text
+`#sub-marktueberblick` · 15 Blöcke · 8128 Zeichen sichtbarer Text
 
 - ▪ Marktüberblick
 - ▪ Sektoren – nach Marktkapitalisierung gewichtet, Branchen aus den SEC-Stammdaten.
@@ -233,7 +232,7 @@ Dialoge (gehören zu keinem Reiter)
 
 ### Regeln → Einstellungen
 
-`#sub-einstellungen` · 8 Blöcke · 8669 Zeichen sichtbarer Text
+`#sub-einstellungen` · 8 Blöcke · 8680 Zeichen sichtbarer Text
 
 - · Intraday & Risiko  [#abIntraday]
 - · Intraday-Strategie  [in #sub-strategien]
@@ -272,7 +271,7 @@ Dialoge (gehören zu keinem Reiter)
 
 ### Werkzeuge → Betrieb
 
-`#sub-betrieb` · 35 Blöcke · 21812 Zeichen sichtbarer Text
+`#sub-betrieb` · 34 Blöcke · 18716 Zeichen sichtbarer Text
 
 - ▸ Klappe: Kursarchiv  — Statuszeile: „jüngste Kerze 04.09.26, 22:00 Uhr“
   - ▪ Kursarchiv – die App holt die feinen Kerzen selbst und legt sie ab.  [in #sub-archiv]
@@ -289,9 +288,8 @@ Dialoge (gehören zu keinem Reiter)
   - · Mittelfrist-Bücher steuern  [in #sub-mittelfrist]
   - · Ergebnis-Drift · Aktien, keine Hebelscheine  [in #sub-mittelfrist]
   - · Was wäre heute offen?  [in #sub-mittelfrist]
-- ▸ Klappe: Live-Signal-Monitor  — Statuszeile: „letzter Scan 04.09.26, 21:48 Uhr“
+- ▸ Klappe: Live-Signal-Monitor
   - · Live-Signal-Monitor
-  - ▸ Klappe: 30 Werte: Kursreihe zu kurz (161 < 261 Kerzen) – Signal wäre nicht das gemessene  [in #sigMonitor]
 - ▸ Klappe: Strategie-Chart  [in #sub-werkzeug]
   - · Strategie-Chart – Signal und Bedingungen nachvollziehen  [in #stratChartPanel]
 - ▸ Klappe: Regelbuch – die Regel, die handelt · Regeln, die nur messen · Bilanz  [in #sub-werkzeug]  — Statuszeile: „rsi2seit · kein Protokoll“
@@ -331,4 +329,4 @@ Modaldialoge am Ende von `index.html`. Sie gehören zu **keinem** Reiter — die
 - **Analyse**  [#aiModalBg]  · Titel aus `#aiTitle`
 - **Trade nachbilden**  [#ticketModalBg]  · Titel aus `#ticketTitle`
 - **App-Einstellungen**  [#setModalBg]  · Titel aus `#setTitle`
-- **Diagnosedaten teilen? Die App kann anonyme Diagnosedaten an die zentrale …**  [#diagModalBg]  · Titel aus `#diagEinwText`  · hier gekürzt, im Dialog 1240 Zeichen
+- **Diagnosedaten teilen?**  [#diagModalBg]  · Titel aus `#diagTitle`

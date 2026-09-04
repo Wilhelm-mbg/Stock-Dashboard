@@ -319,8 +319,16 @@
     return { ok: true, browser: true };
   }
 
+  /* Die Frage steht seit dem QS-Fund U2 (04.09.2026) GETRENNT vom Text. Sie war die
+   * erste Zeile von EINWILLIGUNGSTEXT, und der Dialog liess aria-labelledby auf genau
+   * diesen Text zeigen: eine Vorlesehilfe las 1.273 Zeichen Einwilligung als NAMEN des
+   * Dialogs vor, bevor der Nutzer irgendetwas tun konnte. Getrennt ist die Frage die
+   * Ueberschrift (aria-labelledby) und der Rest die Beschreibung (aria-describedby) -
+   * und sie wird nicht mehr zweimal vorgelesen. Beides bleibt hier: eine Einwilligung
+   * hat genau eine Quelle, und ihre Frage gehoert dazu. */
+  var EINWILLIGUNGSTITEL = 'Diagnosedaten teilen?';
+
   var EINWILLIGUNGSTEXT =
-    'Diagnosedaten teilen?\n\n' +
     'Die App kann anonyme Diagnosedaten an die zentrale Auswertung des Projekts senden ' +
     '(als GitHub-Issue, öffentlich einsehbar). Das hilft, Fehler zu finden und zu sehen, ' +
     'ob die Strategien draußen so laufen wie in der Messung.\n\n' +
@@ -354,7 +362,9 @@
   function banner() {
     var box = document.getElementById('diagModalBg');
     var txt = document.getElementById('diagEinwText');
+    var titel = document.getElementById('diagTitle');
     if (!box || !txt) return;
+    if (titel) titel.textContent = EINWILLIGUNGSTITEL;
     txt.textContent = EINWILLIGUNGSTEXT;
     /* once: der alte Code baute den Knopf jedes Mal neu, ein zweiter Aufruf konnte
      * also keine doppelten Zuhoerer hinterlassen. Das leistet hier once. */

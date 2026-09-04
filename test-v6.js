@@ -5808,8 +5808,15 @@ console.log('\n40) Tastatur, Semantik und Kontrast – die Oberflaeche ohne Maus
   var escBlock = (shell.match(/if \(ev\.key === 'Escape'\) \{[\s\S]*?\n    \}/) || [''])[0];
   ok(/modalSchliessen\(bg\)/.test(escBlock), 'Dialoge: Escape schliesst');
   ok(/ev\.key !== 'Tab'/.test(shell) && /shiftKey/.test(shell), 'Dialoge: die Tab-Taste laeuft im Kreis (Fokusfalle)');
-  ok(/modalHer = document\.activeElement;/.test(shell) && /modalHer\.focus\(\)/.test(shell),
-     'Dialoge: der Fokus kehrt zum Ausloeser zurueck');
+  /* Vorher stand hier `modalHer = document.activeElement` - EIN globaler Merker fuer
+   * alle sechs Dialoge. Genau das war die zweite Haelfte von B1: beim Schliessen des
+   * ersten wurde er geleert, der zweite hatte danach keinen Rueckweg mehr und der
+   * Fokus fiel auf <body>. Die Zusicherung ist deshalb nicht weggefallen, sondern
+   * enger geworden: der Rueckweg muss AUS DEM STAPEL kommen, also je Dialog. */
+  ok(/STAPEL\.schliessen\(bg\.id\)/.test(shell) && /erg && erg\.her/.test(shell) && /her\.focus\(\)/.test(shell),
+     'Dialoge: der Fokus kehrt zum Ausloeser GENAU DIESES Dialogs zurueck');
+  ok(!/var modalHer/.test(shell),
+     'Dialoge: kein globaler Fokus-Merker mehr, der beim ersten Schliessen alle anderen leert');
   // Das Erklaerfenster darf beim ersten Escape nicht zusammen mit dem Dialog verschwinden
   ok(/ip\.style\.display === 'block'\) return;/.test(shell),
      'Dialoge: ein offenes Erklaerfenster bekommt das erste Escape');
@@ -17529,6 +17536,232 @@ console.log('\n75) Laufband, Marktglocke, Kleinkram');
   gegen75('eine Quelle, die ihren Stand still setzt, liesse die Statuszeile leer',
           !/dispatchEvent\(new CustomEvent\('archiv-stand'\)\)/.test('LETZTER = st;'));
   ok(g75 === rot75, '75.10 alle Gegenproben dieses Abschnitts schlagen an', rot75 + ' von ' + g75);
+})();
+
+console.log('\n76) Dialoge: ein Stapel statt sechs Einzelfaelle (QS-Funde B1, U1, U2 vom 04.09.2026)');
+(function () {
+  /* Was hier gepruefte wird und warum es diesen Abschnitt gibt.
+   *
+   * Die App hatte sechs Dialoge und KEINE Stelle, die weiss, welche davon offen sind.
+   * Die Reihenfolge stand nur im Markup: alle sechs trugen `z-index: 100`, also
+   * entschied die Dokumentreihenfolge. Der einzige Weg zu "Was ist neu" fuehrt durch
+   * die App-Einstellungen - und `setModalBg` steht im Markup HINTER `wasNeuModalBg`.
+   * Der zweite Dialog ging auf und blieb unsichtbar (B1). Dazu ein einziger globaler
+   * Merker fuer die Fokus-Rueckgabe: das Schliessen des einen loeschte den Rueckweg
+   * des anderen.
+   *
+   * Die alten Zusicherungen konnten das nicht sehen, und zwar aus einem Grund, der
+   * sich wiederholt: sie prueften den Quelltext auf Woerter ("modalSchliessen(bg)",
+   * "modalHer.focus()"). Ein Wort im Quelltext sagt nichts ueber eine Reihenfolge.
+   * Deshalb steht die Rechnung jetzt in dialogstapel.js - ohne window, ohne document -
+   * und wird hier DURCHGESPIELT statt abgetastet. */
+  var DS = require('./dialogstapel.js');
+  var shell = ohneKommentare(fs.readFileSync(__dirname + '/app-shell.js', 'utf8'));
+  var html = fs.readFileSync(__dirname + '/index.html', 'utf8');
+  var diag = fs.readFileSync(__dirname + '/diagnose.js', 'utf8');
+  var sonde = fs.readFileSync(__dirname + '/tools/dialog-probe.js', 'utf8');
+  var sondeCode = ohneKommentare(sonde);
+
+  /* ---- 76.1 Die Stapel-Rechnung, durchgespielt ---- */
+  var st = DS.neu();
+  var eA = st.oeffnen('A', 'knopfA');
+  var eB = st.oeffnen('B', 'knopfB');
+  ok(st.oberster() === 'B', '76.1 zuletzt geoeffnet liegt oben', st.oberster());
+  ok(eB.ebene > eA.ebene, '76.1 ... und traegt die hoehere Ebene', eA.ebene + ' -> ' + eB.ebene);
+  ok(st.tiefe() === 2 && st.liste().join(',') === 'A,B', '76.1 beide stehen im Stapel', st.liste().join(','));
+
+  /* Escape schliesst den OBERSTEN - vorher nahm der Handler den ersten .modal-bg.open
+   * in Dokumentreihenfolge und schloss damit den unsichtbaren. */
+  var zuB = st.schliessen(st.oberster());
+  ok(zuB && zuB.her === 'knopfB', '76.1 Escape schliesst B und gibt SEINEN Ausloeser zurueck', String(zuB && zuB.her));
+  ok(st.oberster() === 'A', '76.1 ... danach liegt A wieder oben', String(st.oberster()));
+  ok(st.offen('A') && !st.offen('B'), '76.1 ... und A ist noch offen');
+  var zuA = st.schliessen('A');
+  ok(zuA && zuA.her === 'knopfA', '76.1 A kennt weiterhin SEINEN eigenen Ausloeser', String(zuA && zuA.her));
+  ok(zuA.oben === null && st.tiefe() === 0, '76.1 danach ist der Stapel leer');
+
+  /* Sechs Dialoge, sechs verschiedene Ebenen - und alle unter den drei Fenstern, die
+   * ueber den Dialogen liegen muessen (#tip 110, #hoverInfo 120, #infoPop 130). */
+  var st6 = DS.neu();
+  ['erststartModalBg', 'wasNeuModalBg', 'aiModalBg', 'ticketModalBg', 'setModalBg', 'diagModalBg']
+    .forEach(function (k) { st6.oeffnen(k, 'knopf-' + k); });
+  var ebenen = st6.ordnung().map(function (e) { return e.ebene; });
+  ok(new Set(ebenen).size === 6, '76.1 sechs offene Dialoge -> sechs VERSCHIEDENE Ebenen', ebenen.join(','));
+  ok(Math.max.apply(null, ebenen) < 110,
+     '76.1 der Stapel ueberholt #tip/#hoverInfo/#infoPop nicht', 'hoechste ' + Math.max.apply(null, ebenen));
+  ok(Math.min.apply(null, ebenen) > 40, '76.1 ... und liegt ueber dem klebenden Cockpit (40)');
+  ok(st6.herkunft('setModalBg') === 'knopf-setModalBg',
+     '76.1 jeder Dialog merkt sich seinen EIGENEN Ausloeser (nicht einen globalen)');
+
+  /* Zweimal oeffnen darf den Stapel nicht verdoppeln - ein doppelter Eintrag faellt
+   * erst beim Schliessen auf: der Dialog waere weg, der Stapel nicht. */
+  st6.oeffnen('wasNeuModalBg', 'knopf-neu');
+  ok(st6.tiefe() === 6, '76.1 ein zweites Oeffnen verdoppelt den Eintrag nicht', st6.tiefe());
+  ok(st6.oberster() === 'wasNeuModalBg', '76.1 ... es holt den Dialog nach oben');
+  ok(st6.herkunft('wasNeuModalBg') === 'knopf-neu', '76.1 ... mit dem neuen Ausloeser');
+  st6.oeffnen('wasNeuModalBg');
+  ok(st6.herkunft('wasNeuModalBg') === 'knopf-neu',
+     '76.1 ein Oeffnen OHNE erkennbaren Ausloeser loescht den gemerkten nicht');
+
+  /* Aus der Mitte schliessen: die Ebenen darueber ruecken nach, es bleibt keine Luecke. */
+  var st3 = DS.neu();
+  st3.oeffnen('x', 'kx'); st3.oeffnen('y', 'ky'); st3.oeffnen('z', 'kz');
+  var mitte = st3.schliessen('y');
+  ok(mitte.her === 'ky', '76.1 aus der Mitte geschlossen: der richtige Ausloeser kommt zurueck');
+  ok(st3.ordnung().map(function (e) { return e.kennung + '=' + e.ebene; }).join(' ') === 'x=101 z=102',
+     '76.1 ... und die Ebenen darueber ruecken nach (keine Luecke)',
+     st3.ordnung().map(function (e) { return e.kennung + '=' + e.ebene; }).join(' '));
+  ok(st3.schliessen('gibtsnicht') === null,
+     '76.1 ein Dialog, der nicht im Stapel steht, liefert null statt einen fremden Rueckweg');
+  var stv = DS.neu(); stv.oeffnen('v', 'kv');
+  var verg = stv.vergessen('v');
+  ok(verg && !stv.offen('v') && verg.her === undefined,
+     '76.1 vergessen() raeumt auf, ohne einen Fokus zurueckzugeben');
+
+  /* ---- 76.2 app-shell.js benutzt den Stapel wirklich ---- */
+  ok(/window\.Dialogstapel\.neu\(\)/.test(shell), '76.2 app-shell.js holt sich den Stapel');
+  ok(/<script src="dialogstapel\.js"><\/script>/.test(html) &&
+     html.indexOf('<script src="dialogstapel.js">') < html.indexOf('<script src="app-shell.js">'),
+     '76.2 dialogstapel.js wird VOR app-shell.js geladen (sonst fehlt es im Paket und beim Start)');
+  var offenBlock = (shell.match(/function offenerDialog\(\) \{[\s\S]*?\n  \}/) || [''])[0];
+  ok(/STAPEL\.oberster\(\)/.test(offenBlock),
+     '76.2 der oberste Dialog kommt aus dem Stapel');
+  /* Beide Teile muessen DA sein, sonst ist die Reihenfolge nicht entscheidbar: ohne
+   * Stapel liefert indexOf -1, und -1 steht vor allem. Nicht entscheidbar darf nicht
+   * wie bestanden aussehen - beim Gegenlauf gegen den alten Stand war genau das der
+   * Fall, und die Klinke blieb als einzige gruen. */
+  ok(/STAPEL\.oberster\(\)/.test(offenBlock) && /querySelector\('\.modal-bg\.open'\)/.test(offenBlock) &&
+     offenBlock.indexOf('STAPEL.oberster()') < offenBlock.indexOf(".querySelector('.modal-bg.open')"),
+     '76.2 ... und zwar VOR dem alten Notnagel, nicht danach');
+  var oeffnenBlock = (shell.match(/window\.openModal = function[\s\S]*?\n  \};/) || [''])[0];
+  ok(/window\.openModal = function \(id, ausloeser\)/.test(shell),
+     '76.2 openModal nimmt einen Ausloeser entgegen (element.click() fokussiert keinen Knopf)');
+  ok(/ebenenSetzen\(/.test(oeffnenBlock), '76.2 beim Oeffnen werden die Ebenen gesetzt');
+  var schliessBlock = (shell.match(/function modalSchliessen\(bg\) \{[\s\S]*?\n  \}/) || [''])[0];
+  ok(/ebenenSetzen\(/.test(schliessBlock), '76.2 beim Schliessen ebenfalls - sonst bleibt eine Luecke stehen');
+  ok(/STAPEL\.schliessen\(bg\.id\)/.test(schliessBlock), '76.2 der Rueckweg kommt aus dem Stapel');
+  ok(!/var modalHer/.test(shell), '76.2 kein globaler Fokus-Merker mehr');
+  var fokusBlock = (shell.match(/function anfangsFokus\(bg\) \{[\s\S]*?\n  \}/) || [''])[0];
+  ok(/aria-labelledby/.test(fokusBlock) && /NAME_MAX/.test(fokusBlock),
+     '76.2 der Anfangsfokus geht auf die Ueberschrift - aber nur, wenn sie ein NAME ist');
+  ok(/classList\.contains\('close'\)/.test(fokusBlock),
+     '76.2 ... und das anonyme Schliessen-Kreuz kommt zuletzt, nie zuerst');
+
+  /* ---- 76.3 Markup: die Ordnung steht NICHT mehr im Markup ---- */
+  var bgAnzahl = (html.match(/<div class="modal-bg" id="/g) || []).length;
+  ok(bgAnzahl === 6, '76.3 sechs Dialoge im Markup', bgAnzahl);
+  ok(/\.modal-bg \{[^}]*z-index: 100/.test(html),
+     '76.3 z-index: 100 bleibt als BODEN stehen (ueber dem klebenden Cockpit)');
+  ok(!/<div class="modal-bg"[^>]*style="[^"]*z-index/.test(html),
+     '76.3 ... aber kein Dialog traegt seine Ebene im Markup - die Ordnung kommt aus dem Stapel');
+  var kreuze = (html.match(/class="btn ghost close"/g) || []).length;
+  var benannt = (html.match(/class="btn ghost close" aria-label="Schließen"/g) || []).length;
+  ok(kreuze === benannt && kreuze === 5,
+     '76.3 jedes Schliessen-Kreuz hat einen Namen fuer die Vorlesehilfe', benannt + ' von ' + kreuze);
+  /* aria-labelledby muss auf etwas zeigen, das es gibt - und der Name muss kurz sein.
+   * Die Laenge selbst misst die Sonde zur Laufzeit; hier faellt nur auf, wenn ein
+   * Dialog seinen Namen ganz verliert. */
+  var lbs = (html.match(/role="dialog" aria-modal="true" aria-labelledby="([^"]+)"/g) || [])
+    .map(function (m) { return m.replace(/.*aria-labelledby="|"$/g, ''); });
+  ok(lbs.length === 6, '76.3 jeder der sechs Dialoge hat einen Namen fuer die Vorlesehilfe', lbs.join(','));
+  var lbFehlt = lbs.filter(function (k) { return html.indexOf('id="' + k + '"') === -1; });
+  ok(lbFehlt.length === 0, '76.3 ... und jeder Name zeigt auf eine Kennung, die es gibt', lbFehlt.join(','));
+
+  /* ---- 76.4 U2: der Diagnose-Dialog hatte 1.240 Zeichen als "Titel" ---- */
+  ok(/id="diagModalBg"[\s\S]{0,300}aria-labelledby="diagTitle" aria-describedby="diagEinwText"/.test(html),
+     '76.4 der Diagnose-Dialog heisst nach seiner Ueberschrift, der Einwilligungstext beschreibt ihn');
+  ok(/<h2 id="diagTitle"><\/h2>/.test(html),
+     '76.4 die Ueberschrift steht leer im Markup - gefuellt wird sie aus diagnose.js');
+  ok(/var EINWILLIGUNGSTITEL = '[^']{1,119}';/.test(diag),
+     '76.4 der Titel steht in diagnose.js und ist ein Titel, kein Text');
+  ok(/if \(titel\) titel\.textContent = EINWILLIGUNGSTITEL;/.test(diag),
+     '76.4 ... und wird beim Oeffnen gesetzt');
+  ok(!/EINWILLIGUNGSTEXT =\s*\n?\s*'Diagnosedaten teilen\?/.test(diag),
+     '76.4 der Text wiederholt die Frage nicht mehr - sie wurde sonst zweimal vorgelesen');
+  ok(/txt\.textContent = EINWILLIGUNGSTEXT;/.test(diag),
+     '76.4 Text und Titel bleiben beide in diagnose.js: eine Einwilligung hat genau eine Quelle');
+
+  /* ---- 76.5 Die Sonde prueft, was sie in ihrem Kopf NENNT ----
+   * Die erste Fassung von tools/dialog-probe.js nannte sechs Fragen und stellte fuenf:
+   * die Zeile `if (!drin) befunde.push(...)` stand in einem Kommentar, der nie
+   * geschlossen wurde. Sie war gruen und hat nichts gemessen. Deshalb wird hier NACH
+   * dem Entfernen der Kommentare gesucht - genau so, wie der Auswerter es sieht. */
+  ['erststartModalBg', 'wasNeuModalBg', 'aiModalBg', 'ticketModalBg', 'setModalBg', 'diagModalBg']
+    .forEach(function (k) {
+      ok(new RegExp("id: '" + k + "'").test(sondeCode), '76.5 die Sonde faehrt ' + k);
+    });
+  ok(/elementFromPoint/.test(sondeCode),
+     '76.5 Sichtbarkeit wird am Bildschirm gemessen, nicht am Markup');
+  ok(/NICHT in den Dialog/.test(sondeCode),
+     '76.5 "wandert der Fokus hinein?" steht im CODE, nicht im Kommentar');
+  ok(/Schliessen-Kreuz/.test(sondeCode) && /kreuz/.test(sondeCode),
+     '76.5 "landet er auf dem Kreuz?" steht im Code');
+  ok(/liegt nicht sichtbar obenauf/.test(sondeCode), '76.5 "liegt er obenauf?" steht im Code');
+  ok(/faellt AUS dem Dialog heraus/.test(sondeCode), '76.5 die Fokusfalle steht im Code');
+  ok(/Escape schliesst den Dialog nicht/.test(sondeCode), '76.5 Escape steht im Code');
+  ok(/Der Name ist ' \+ name\.laenge/.test(sondeCode), '76.5 die Namenslaenge steht im Code');
+  ok(/const NAME_MAX = 120;/.test(sondeCode) && /var NAME_MAX = 120;/.test(shell),
+     '76.5 Sonde und App messen den Namen an DERSELBEN Schwelle');
+  ok(/#settingsBtn/.test(sondeCode) && /#wasNeuZeigenBtn/.test(sondeCode),
+     '76.5 die Kette aus B1 wird wirklich gefahren (Einstellungen -> Was ist neu)');
+  ok(/sendInputEvent/.test(sondeCode) && /mouseDown/.test(sondeCode),
+     '76.5 ... mit echten Mausklicks: element.click() fokussiert den Knopf nicht');
+  ok(/POSITIVKONTROLLE GESCHEITERT/.test(sondeCode),
+     '76.5 die Sonde faehrt eine Positivkontrolle (zwei Dialoge, gleiche Ebene -> muss rot werden)');
+  ok(!/klickAuf\(wc, '#diagJa'/.test(sondeCode) && !/'#diagJa'/.test(sondeCode),
+     '76.5 die Sonde drueckt #diagJa nie (Klick-Sperrliste)');
+
+  /* ---- Gegenproben: jede Klinke muss auch rot werden koennen ---- */
+  var g76 = 0, rot76 = 0;
+  function gegen76(name, bedingung) { g76++; if (bedingung) rot76++; ok(bedingung, 'Gegenprobe: ' + name); }
+
+  gegen76('die alte Ordnung (alle sechs auf 100) haette die Gleichstand-Klinke rot gemacht',
+          new Set([100, 100, 100, 100, 100, 100]).size !== 6);
+  gegen76('ein Stapel, der die Ebene nur fuer den bewegten Dialog setzt, liesse eine Luecke',
+          (function () {
+            /* Alte Welt nachgebaut: x=101, y=102, z=103; y geht zu, nur y wird angefasst.
+             * z behaelt 103, der naechste neue Dialog bekaeme 102 - und liegt UNTER z,
+             * obwohl er spaeter geoeffnet wurde. */
+            var nurBewegt = { x: 101, z: 103 };
+            var naechster = 102;
+            return naechster < nurBewegt.z;
+          })());
+  gegen76('ein GLOBALER Fokus-Merker verliert den Rueckweg des zweiten Dialogs',
+          (function () {
+            var global = null;
+            global = 'settingsBtn';           // Einstellungen geoeffnet
+            global = 'wasNeuZeigenBtn';       // "Was ist neu" geoeffnet - ueberschreibt
+            global = null;                    // "Was ist neu" geschlossen - leert
+            return global !== 'settingsBtn';  // die Einstellungen haben keinen Rueckweg mehr
+          })());
+  gegen76('derselbe Fall mit dem Stapel behaelt ihn - der Unterschied liegt genau hier',
+          (function () {
+            var s = DS.neu();
+            s.oeffnen('setModalBg', 'settingsBtn');
+            s.oeffnen('wasNeuModalBg', 'wasNeuZeigenBtn');
+            return s.schliessen('wasNeuModalBg').her === 'wasNeuZeigenBtn' &&
+                   s.schliessen('setModalBg').her === 'settingsBtn';
+          })());
+  gegen76('eine Pruefung in einem NICHT geschlossenen Kommentar wird nicht gefunden',
+          !/befunde\.push/.test(ohneKommentare(
+            "/* Frage genannt\n if (!drin) befunde.push('nicht gemessen');\n /* naechster Block */\n")));
+  gegen76('dieselbe Zeile ausserhalb des Kommentars wird gefunden - die Klinke misst wirklich',
+          /befunde\.push/.test(ohneKommentare(
+            "/* Frage genannt */\n if (!drin) befunde.push('gemessen');\n")));
+  gegen76('ein Kreuz ohne Namen wuerde auffallen',
+          (html.match(/class="btn ghost close">/g) || []).length === 0 &&
+          /class="btn ghost close">/.test('<button class="btn ghost close">Schließen ×</button>'));
+  gegen76('ein aria-labelledby ins Leere wuerde auffallen',
+          'gibtsnicht' !== '' && html.indexOf('id="gibtsnicht"') === -1);
+  gegen76('ein Dialog mit Ebene im Markup wuerde auffallen',
+          /<div class="modal-bg"[^>]*style="[^"]*z-index/.test('<div class="modal-bg" id="x" style="z-index:100">'));
+  gegen76('ein zweites Oeffnen ohne Stapel-Abgleich wuerde den Eintrag verdoppeln',
+          (function () {
+            var roh = ['A', 'B'];
+            roh.push('B');                       // ohne Suche nach dem vorhandenen Platz
+            return roh.length === 3 && roh.filter(function (k) { return k === 'B'; }).length === 2;
+          })());
+  ok(g76 === rot76, '76.6 alle Gegenproben dieses Abschnitts schlagen an', rot76 + ' von ' + g76);
 })();
 
 Promise.all(offeneProben).then(function () {

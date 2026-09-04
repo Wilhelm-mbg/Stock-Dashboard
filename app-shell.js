@@ -503,20 +503,119 @@
    * keine Fokusfalle, und der Hintergrund blieb durchtabbierbar - man konnte also
    * blind in die Oberflaeche dahinter tabben, waehrend der Dialog offen war.
    * Jetzt: Escape schliesst, die Tab-Taste laeuft im Dialog im Kreis, und der Fokus
-   * kehrt zu dem Element zurueck, das den Dialog geoeffnet hat. */
-  var modalHer = null;   // wohin der Fokus zurueckgeht
+   * kehrt zu dem Element zurueck, das den Dialog geoeffnet hat.
+   *
+   * Seit dem QS-Fund B1 (04.09.2026) gibt es dafuer EINEN Stapel statt sechs
+   * Einzelfaelle. Vorher war die Reihenfolge zweimal beantwortet und beide Antworten
+   * waren dieselbe: alle sechs Dialoge trugen `z-index: 100`, also entschied die
+   * Reihenfolge im Dokument. Wer aus den App-Einstellungen "Was ist neu" oeffnete,
+   * bekam einen Dialog, der aufging und unsichtbar blieb - `setModalBg` steht im
+   * Markup HINTER `wasNeuModalBg`. Und der Fokus-Merker war global: das Schliessen
+   * des einen loeschte den Rueckweg des anderen.
+   *
+   * Jetzt gilt: der zuletzt geoeffnete liegt oben (Ebene aus dem Stapel), Escape
+   * schliesst den OBERSTEN, und der Rueckweg ist je Dialog gemerkt. Die Rechnung
+   * dahinter steht in dialogstapel.js - dort ist sie ohne Fenster durchspielbar. */
+  var STAPEL = window.Dialogstapel.neu();
+  /* Laenge, ab der ein Name kein Name mehr ist. Der Diagnose-Dialog liess
+   * aria-labelledby auf 1.273 Zeichen Einwilligungstext zeigen (QS-Fund U2): eine
+   * Vorlesehilfe las den gesamten Text als TITEL vor, bevor der Nutzer irgendetwas
+   * tun konnte. Die uebrigen fuenf Titel liegen unter 35 Zeichen. */
+  var NAME_MAX = 120;
 
   function fokussierbare(el) {
     return [].slice.call(el.querySelectorAll(
       'a[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
     )).filter(function (e) { return e.offsetWidth || e.offsetHeight || e.getClientRects().length; });
   }
-  function offenerDialog() { return document.querySelector('.modal-bg.open'); }
+  function dialogKasten(bg) { return bg.querySelector('[role="dialog"]') || bg.querySelector('.modal') || bg; }
+
+  /* Die Ebenen setzen. Immer die GANZE Ordnung, nie nur den bewegten Dialog - sonst
+   * bleibt beim Schliessen aus der Mitte eine Luecke stehen, und die naechste
+   * Oeffnung landet auf Gleichstand. Gleichstand war B1. */
+  function ebenenSetzen(ordnung) {
+    (ordnung || []).forEach(function (e) {
+      var bg = document.getElementById(e.kennung);
+      if (bg) bg.style.zIndex = String(e.ebene);
+    });
+  }
+
+  /* Der Stapel kann veralten: die App macht Dialoge auch von selbst auf (die
+   * Diagnose-Frage beim ersten Start), und eine Sonde oder ein spaeterer Umbau kann
+   * `open` an dieser Verwaltung vorbei wegnehmen. Ein Eintrag, der dann stehen
+   * bliebe, wuerde als offen weitergezaehlt - der naechste Dialog bekaeme eine
+   * Ebene zu hoch, und bei sechs Dialogen unter drei Fenstern (110/120/130) ist der
+   * Abstand nicht beliebig gross. */
+  function stapelAbgleichen() {
+    STAPEL.liste().forEach(function (kennung) {
+      var bg = document.getElementById(kennung);
+      if (!bg || !bg.classList.contains('open')) {
+        if (bg) bg.style.zIndex = '';
+        ebenenSetzen((STAPEL.vergessen(kennung) || {}).ordnung);
+      }
+    });
+  }
+
+  /* Der oberste offene Dialog - und zwar der, den der Nutzer SIEHT.
+   *
+   * Vorher stand hier `document.querySelector('.modal-bg.open')`: der erste Treffer
+   * in Dokumentreihenfolge, also bei zwei offenen Dialogen der falsche. Escape
+   * schloss den unsichtbaren, die sichtbare Seite blieb stehen.
+   *
+   * Der Notnagel am Ende bleibt mit Absicht: fuer einen Dialog, der ausserhalb
+   * dieser Verwaltung geoeffnet wurde, ist der falsche Treffer immer noch besser
+   * als gar keiner - sonst waere er mit Escape ueberhaupt nicht zu schliessen. */
+  function offenerDialog() {
+    stapelAbgleichen();
+    var oben = STAPEL.oberster();
+    if (oben) return document.getElementById(oben);
+    return document.querySelector('.modal-bg.open');
+  }
+
+  /* Wohin der Fokus beim Oeffnen geht (QS-Fund U1: fuenf von sechs Dialogen
+   * fokussierten das Schliessen-Kreuz, weil es als erstes Kind im Markup steht).
+   * Wer einen Dialog oeffnet, will ihn benutzen, nicht schliessen.
+   *
+   * Erste Wahl ist die UEBERSCHRIFT, auf die aria-labelledby zeigt: eine Vorlesehilfe
+   * sagt dann den Namen des Dialogs an, und die Tab-Taste laeuft von dort in den
+   * Inhalt (das Kreuz steht davor und wird erst mit Umschalt+Tab erreicht). Nur wenn
+   * es keine brauchbare Ueberschrift gibt, wird das erste Bedienelement genommen -
+   * und auch dann das Kreuz zuletzt. */
+  function anfangsFokus(bg) {
+    var kasten = dialogKasten(bg);
+    var lb = kasten.getAttribute && kasten.getAttribute('aria-labelledby');
+    var titel = lb ? document.getElementById(lb) : null;
+    if (titel && bg.contains(titel) && (titel.textContent || '').trim().length <= NAME_MAX) {
+      /* tabindex="-1" macht die Ueberschrift programmatisch fokussierbar, ohne sie in
+       * die Tab-Reihenfolge zu haengen - fokussierbare() nimmt sie deshalb nicht auf. */
+      if (!titel.hasAttribute('tabindex')) titel.setAttribute('tabindex', '-1');
+      try { titel.focus(); if (document.activeElement === titel) return; } catch (e) { /* nicht fokussierbar */ }
+    }
+    var f = fokussierbare(bg);
+    var ohneKreuz = f.filter(function (e) { return !e.classList.contains('close'); });
+    var ziel = (ohneKreuz.length ? ohneKreuz : f)[0];
+    if (ziel) { try { ziel.focus(); } catch (e) { /* nicht fokussierbar */ } }
+  }
 
   function modalSchliessen(bg) {
     if (!bg) return;
     bg.classList.remove('open');
-    if (modalHer) { try { modalHer.focus(); } catch (e) { /* Ausloeser ist weg */ } modalHer = null; }
+    bg.style.zIndex = '';
+    var erg = STAPEL.schliessen(bg.id);
+    ebenenSetzen(erg && erg.ordnung);
+    /* Der Rueckweg gehoert DIESEM Dialog. Vorher gab es einen einzigen globalen
+     * Merker: beim Schliessen des ersten wurde er geleert, der zweite hatte danach
+     * kein Zurueck mehr und der Fokus fiel auf <body>. */
+    var her = erg && erg.her;
+    if (her && document.contains(her)) {
+      try { her.focus(); } catch (e) { /* Ausloeser ist nicht mehr fokussierbar */ }
+      if (document.activeElement === her) return;
+    }
+    /* Ausloeser weg (neu gezeichnete Zeile, geschlossene Klappe): dann wenigstens
+     * nicht ins Nichts. Liegt darunter noch ein Dialog, gehoert der Fokus dorthin -
+     * sonst tabbt man aus einem offenen Dialog heraus durch die ganze Seite. */
+    var unten = erg && erg.oben ? document.getElementById(erg.oben) : null;
+    if (unten && unten.classList.contains('open')) anfangsFokus(unten);
   }
 
   document.querySelectorAll('[data-close]').forEach(function (b) {
@@ -548,13 +647,29 @@
     }
   });
 
-  window.openModal = function (id) {
+  /** Einen Dialog oeffnen. Der zweite Parameter ist der Ausloeser, zu dem der Fokus
+   *  spaeter zurueckkehrt; ohne ihn wird das gerade fokussierte Element genommen.
+   *
+   *  Warum beides: ein echter Mausklick fokussiert den Knopf, `element.click()` aus
+   *  einem Skript NICHT - eine Sonde, die so misst, sieht eine Fokus-Rueckgabe, die
+   *  es fuer sie nie gab (so ist bei der QS am 04.09. beinahe ein Fehlbefund
+   *  entstanden). Wer den Ausloeser kennt, soll ihn nennen duerfen. */
+  window.openModal = function (id, ausloeser) {
     var bg = document.getElementById(id);
     if (!bg) return;
-    modalHer = document.activeElement;
+    var her = ausloeser || document.activeElement;
+    /* <body> ist kein Ausloeser, und ein Element IM Dialog selbst auch nicht - beides
+     * waere ein Rueckweg, der nirgendwohin fuehrt. */
+    if (!her || her === document.body || bg.contains(her)) her = null;
+    /* Erst abgleichen, dann stapeln: ein Dialog, dem jemand `open` von aussen
+     * weggenommen hat, wuerde sonst als offen weitergezaehlt, und der naechste
+     * bekaeme eine Ebene zu hoch. Bei sechs Dialogen und drei Fenstern darueber
+     * (110/120/130) ist das kein theoretischer Abstand. */
+    stapelAbgleichen();
+    var erg = STAPEL.oeffnen(id, her);
     bg.classList.add('open');
-    var f = fokussierbare(bg);
-    if (f.length) { try { f[0].focus(); } catch (e) { /* nicht fokussierbar */ } }
+    ebenenSetzen(erg && erg.ordnung);
+    anfangsFokus(bg);
   };
 
   /* ---- Erklaerungen: ein Register, ein Fenster, ein Knopf ----

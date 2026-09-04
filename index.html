@@ -902,6 +902,12 @@
      es fing im Ueberlappungsbereich sogar Klicks ab (Eingabefelder, Klick-zum-Schliessen).
      Reihenfolge jetzt: Cockpit 40 < Dialog 100 < Kurs-Tooltip 110 < Info-Fenster 120
      < Erklaerfenster 130 (es kann aus einem Dialog heraus geoeffnet werden). */
+  /* z-index: 100 ist der BODEN, nicht die Ordnung: er haelt jeden Dialog ueber dem
+     klebenden Cockpit (40). Wer oben liegt, entscheidet der Stapel in dialogstapel.js -
+     er setzt 101, 102, ... in der Reihenfolge des Oeffnens. Solange alle sechs
+     denselben Wert trugen, entschied die Reihenfolge im Markup, und der aus den
+     Einstellungen geoeffnete "Was ist neu"-Dialog blieb unsichtbar (QS-Fund B1).
+     Ueber den Dialogen bleiben #tip (110), #hoverInfo (120) und #infoPop (130). */
   .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.55); display: none; z-index: 100; }
   .modal-bg.open { display: flex; align-items: flex-start; justify-content: center; padding: 40px 16px; }
   .modal { background: var(--page); border: 1px solid var(--border); border-radius: var(--r-gross);
@@ -2548,7 +2554,7 @@
      damit die Wegweiser-Sperrklinke jede Ortsangabe mitprueft. -->
 <div class="modal-bg" id="erststartModalBg">
   <div class="modal" style="max-width:640px;" role="dialog" aria-modal="true" aria-labelledby="erststartTitle">
-    <button class="btn ghost close" data-close="erststartModalBg">Schließen ×</button>
+    <button class="btn ghost close" aria-label="Schließen" data-close="erststartModalBg">Schließen ×</button>
     <h2 id="erststartTitle">Kurz gesagt</h2>
     <div style="display:grid; gap:10px; margin-top:8px;">
       <div class="panel" style="margin:0;">
@@ -2586,7 +2592,7 @@
 
 <div class="modal-bg" id="wasNeuModalBg">
   <div class="modal" style="max-width:620px;" role="dialog" aria-modal="true" aria-labelledby="wasNeuTitle">
-    <button class="btn ghost close" data-close="wasNeuModalBg">Schließen ×</button>
+    <button class="btn ghost close" aria-label="Schließen" data-close="wasNeuModalBg">Schließen ×</button>
     <h2 id="wasNeuTitle">Was ist neu</h2>
     <div class="analysis" id="wasNeuBody"></div>
     <div style="font-size:var(--fs-neben); color:var(--muted); border-top:1px solid var(--grid); margin-top:12px; padding-top:8px;">
@@ -2598,7 +2604,7 @@
 <!-- Analyse-Modal -->
 <div class="modal-bg" id="aiModalBg">
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="aiTitle">
-    <button class="btn ghost close" data-close="aiModalBg">Schließen ×</button>
+    <button class="btn ghost close" aria-label="Schließen" data-close="aiModalBg">Schließen ×</button>
     <h2 id="aiTitle">Analyse</h2>
     <div class="analysis" id="aiBody"></div>
   </div>
@@ -2607,7 +2613,7 @@
 <!-- Order-Ticket-Modal (Trade nachbilden) -->
 <div class="modal-bg" id="ticketModalBg">
   <div class="modal" style="max-width:620px;" role="dialog" aria-modal="true" aria-labelledby="ticketTitle">
-    <button class="btn ghost close" data-close="ticketModalBg">Schließen ×</button>
+    <button class="btn ghost close" aria-label="Schließen" data-close="ticketModalBg">Schließen ×</button>
     <h2 id="ticketTitle">Trade nachbilden</h2>
     <div id="ticketBody" class="analysis"></div>
     <div style="display:flex; gap:8px; margin-top:14px; flex-wrap:wrap;">
@@ -2626,7 +2632,7 @@
 <!-- Einstellungen-Modal -->
 <div class="modal-bg" id="setModalBg">
   <div class="modal" style="max-width:560px;" role="dialog" aria-modal="true" aria-labelledby="setTitle">
-    <button class="btn ghost close" data-close="setModalBg">Schließen ×</button>
+    <button class="btn ghost close" aria-label="Schließen" data-close="setModalBg">Schließen ×</button>
     <h2 id="setTitle">App-Einstellungen</h2>
     <div style="margin:14px 0;">
       <label style="display:flex; align-items:center; gap:8px; font-size:var(--fs-text);"><input type="checkbox" id="setTray"> Beim Schließen im Hintergrund weiterlaufen (Tray-Symbol neben der Uhr) – Strategien handeln dann weiter</label>
@@ -2836,7 +2842,11 @@
      Der Text steht bewusst NICHT hier: er ist eine Einwilligungserklaerung und hat
      genau eine Quelle, naemlich diagnose.js. Er wird beim Oeffnen eingesetzt. -->
 <div class="modal-bg" id="diagModalBg">
-  <div class="modal" style="max-width:620px;" role="dialog" aria-modal="true" aria-labelledby="diagEinwText">
+  <div class="modal" style="max-width:620px;" role="dialog" aria-modal="true" aria-labelledby="diagTitle" aria-describedby="diagEinwText">
+    <!-- Ueberschrift und Text werden beide aus diagnose.js gesetzt: eine Einwilligung
+         hat genau eine Quelle, und das gilt auch fuer ihre Frage. Bis dahin bleibt die
+         Ueberschrift leer - sichtbar wird der Dialog ohnehin erst durch banner(). -->
+    <h2 id="diagTitle"></h2>
     <div id="diagEinwText" style="white-space:pre-wrap;"></div>
     <div style="display:flex; gap:8px; margin-top:10px; justify-content:flex-end;">
       <button class="btn ghost" id="diagNein" type="button" data-close="diagModalBg">Nein, nichts senden</button>
@@ -2857,6 +2867,7 @@
 <script src="boerse.js"></script>
 <script src="vormarkt.js"></script>
 <script src="renderer.js"></script>
+<script src="dialogstapel.js"></script>
 <script src="app-shell.js"></script>
 <script src="chart.js"></script>
 <script src="messfenster.js"></script>
