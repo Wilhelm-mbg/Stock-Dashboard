@@ -11,6 +11,8 @@ ist nur das Register, damit [offene-auftraege.md](offene-auftraege.md) offen ble
 
 | Datum | Auftrag | Ergebnis in einem Satz | Fundstelle |
 |---|---|---|---|
+| 04.09. | Vollständige UI-QS v8.40.2 (fünf Agenten) | 7 von 12 Altfunden behoben; neu 1 blockiert (Dialoge), 3 falsch (NaN-Ticket, „belegt", Kontrast), 7 unschön; 1,89 Mio Token gegen 600k | `uebergabe/ui-qs-voll-2026-09-04.md` |
+| 04.09. | Oberfläche Stufe 6 — Aktien-Viewer | Kerzenchart als reines Modul, Leseauskunft `archiv-kerzen`, Vor-/Nachbörse abgesetzt, Kursabruf zusammengelegt, F2/F4/F6/F7/F8 behoben; 151 Klinken, 28 Gegenproben; 445k/300k | `uebergabe/oberflaeche-stufe6-2026-09-04.md`, [oberflaeche.md](oberflaeche.md) |
 | 04.09. | Texte und Zählungen (QS-F3, F5, F9, F10, F11) | `#subnote` weg; Satz 8 → 5 in der App, Zusicherung an der App; zwei Textwände hinter i-Knöpfe; Dauertext-Abtaster an der Laufzeit; 47 Klinken, 4 Gegenproben rot, eine geschärft; 330–380k/150k | `uebergabe/texte-zaehlungen-2026-09-04.md` |
 | 04.09. | Prüfwerkzeuge schärfen (QS-F12, S1–S9) | `tools/ui-struktur.js` liest die laufende Instanz; a11y mit Kunstdaten; echte Tab-Wanderung mit bekannten Abweichungen; F6 anders reproduziert (Verschiebung statt Lage); 29 Gegenproben rot; 305k/150k | `uebergabe/pruefwerkzeuge-2026-09-04.md` |
 | 04.09. | Rumpf bei 1024 px (QS-F1) | Positionstabelle 9 Spalten + zweite Zeile + Scroll-Kasten; 1040 → 1014 px; Bildlauf-Klinke in ui-probe/ui-aufnahmen; 18 Gegenproben rot; 291k/100k | `uebergabe/rumpf-1024-2026-09-04.md` |

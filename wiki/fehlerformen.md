@@ -89,8 +89,14 @@ tags: [lehre]
 - **Die Wanderung, die im Dialog stand.** Eine Tab-Wanderung meldete „20 Schritte, 0 draußen" — und hatte zwischen `diagNein` und `diagJa` gependelt, beim zweiten Mal im Erststart-Kasten. Gefunden von der eingebauten Kontrolle „weniger als drei verschiedene Halte ist ein Befund über die Sonde". *Fundstelle: ebenda §4.*
 - **Drei Sitzungen, ein Arbeitsbaum.** Parallel gestartete Chats auf denselben Dateien: ein Modul doppelt gebaut, Zusicherungen unter der Hand rot, Gegenproben-Anker verschoben, kein Chat konnte committen — ein Drittel des Verbrauchs. Reihenfolge gehört in den Dreizeiler, nicht daneben. *Fundstelle: [betrieb.md](betrieb.md), Aufträge; Sammel-Commit 5cc84f3.*
 
+- **Der Fund wohnt in einem Zustand, den niemand betritt.** Die drei neuen Funde der Voll-QS (verschachtelte Dialoge, NaN-Ticket auf Basiswert-Positionen, „belegt" bei 5m/15m im Strategie-Chart) saßen alle abseits der Voreinstellung: zwei Dialoge zugleich, eine Position der handelnden Regel statt eines Scheins, eine Auswahl im Feld. Eine Aufteilung nach Reitern findet sie nicht. Regel: jede Auswahlliste einmal umstellen, oder ein eigener Bereich „Zustände abseits der Voreinstellung". *Fundstelle: `uebergabe/ui-qs-voll-2026-09-04.md` §9.*
+- **Der Nichtbefund über einen Zeitpunkt.** „Kein sichtbarer Widerspruch" zum Sitzungszustand, gemessen mittags — der Widerspruch lebt 04:00–09:30 und 16:00–20:00 ET, länger als die reguläre Sitzung. *Fundstelle: ebenda §3.1.*
+
 ## Werkzeug-eigene Fallen
 
+- **Electron-Pfad ohne Anführungszeichen in Bash:** `tools\ui-probe.js` wird zu `toolsui-probe.js`, Electron startet und **hängt ohne Fehlerzeile**. Schrägstrich oder Anführungszeichen. (Voll-QS 04.09., drei verlorene Läufe.)
+- **Windows unterscheidet keine Groß-/Kleinschreibung in Dateinamen:** ein Teilbericht `regeln.md` überschrieb die Steuerdatei `REGELN.md`, während vier Agenten liefen.
+- **`app.getVersion()` in einer Sonde ist Electrons Version**, nicht die der App (Start mit einer `.js`-Datei statt eines Verzeichnisses mit `package.json`).
 - **Windows-Pfade in `node -e`:** Backslashes überleben Bash-Quoting nicht — und der Fehler
   bestätigt sich selbst, weil das Kontroll-Lesen denselben Pfad nimmt.
 - **`@($null).Count` ist 1 in PowerShell** — ein falscher Feldname meldet nicht „fehlt",
