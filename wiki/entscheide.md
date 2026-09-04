@@ -68,7 +68,8 @@ Nur was **weitergilt**, jüngste zuerst. Aufgehobenes steht mit Datum der Aufheb
 - **Lange Läufe nur über die Windows-Aufgabenplanung** (04.09.2026, PM nach dem Abbruch 04:38; Wilhelm 03.09.: „starte du doch bitte einfach die cmd"): der PM startet Migrationen, Nachholer und Nachtläufe selbst, Schlüssel bleiben im Benutzerprofil. Hebt „im Hintergrund einer Sitzung" auf.
 - **Alpaca-Schlüssel im Benutzerprofil** (03.09.2026, Wilhelm): `setx`, nie in Code/Log/Commit/Chat; Prozesse bekommen sie durchgereicht.
 - **Kein PM-Weckruf mehr** (31.08.2026) — hebt die Anordnung vom 27.08. abends auf. Grund:
-  Token-Verbrauch.
+  Token-Verbrauch. *Präzisiert 04.09.: ein einmaliger Hintergrund-Weckruf, der auf einen laufenden
+  Lauf wartet, ist erlaubt; kein Dauerticken.*
 - **Wenige Chats, selbsttragende Prompts** (31.08.2026) — siehe [betrieb.md](betrieb.md).
 - **Entscheide werden IMMER doppelt verteilt:** an jede Sitzung **und** auf die Tafel bzw. ins
   Wiki. *Die Kanäle haben komplementäre Löcher.*
