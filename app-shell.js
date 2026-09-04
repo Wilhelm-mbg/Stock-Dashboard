@@ -826,6 +826,42 @@
         '<b>Trägt nicht:</b> „Der Kurs fällt montags oft“ oder „das sieht im Chart gut aus“. Das ist eine Beobachtung, keine These – und die Maschine verweigert die Messung dann nicht, sie zerlegt sie nur.'
       ]
     },
+    /* ---- Reiter Markt, Pille Ueberblick (Stufe 5, 04.09.2026) ----
+     * Drei neue Bloecke, drei Eintraege. Im Panel steht je EIN Satz; alles, was
+     * erklaert, WARUM eine Zahl so gerechnet ist, steht hier. Jeder dieser Punkte
+     * benennt eine Entscheidung, die man sonst der Anzeige nicht ansieht. */
+    'markt.sektoren': {
+      titel: 'Wie die Sektor-Balken gerechnet sind',
+      punkte: [
+        'Gewichtet nach <b>Marktkapitalisierung</b>, nicht als Mittel über die Werte. Der Unterschied ist keine Feinheit: „Technologie“ enthält Apple und dreihundert Kleinere – ein ungewichtetes Mittel könnte behaupten, der Sektor sei gefallen, während das darin angelegte Geld gestiegen ist.',
+        '<b>1 Tag</b> kommt aus den laufenden Kursen (Vortagesschluss bis jetzt). <b>1 Woche</b> und <b>1 Monat</b> kommen aus dem eigenen Tagesarchiv und bedeuten 5 bzw. 21 <i>Handelstage</i> – nicht Kalendertage, sonst wäre das Fenster über Feiertage still ein anderes.',
+        'Die Branche stammt aus dem SIC-Code der SEC. Der ist von 1987 und kennt kein „Technologie“ – die Zuordnung zu Sektoren ist eine Entscheidung des Projekts und steht offen in tools/stammdaten-holen.js.',
+        'Ein Wert ohne Kurs oder ohne Größe zählt gar nicht mit; er wird nicht als „0 %“ mitgemittelt. Ein Sektor unter drei Werten wird nicht gezeigt – ein Balken aus zwei Firmen ist kein Sektor, sondern zwei Firmen.',
+        'Die Länge der Balken ist relativ zum längsten des Tages. Eine feste Skala wäre an einem ruhigen Tag ein Bild ohne Balken und an einem wilden ein Bild voller Anschläge; der Maßstab steht deshalb als Zahl darunter.'
+      ],
+      fuss: 'Eine Übersicht, kein Signal – an diesen Zahlen ist nichts gemessen. Keine Anlageberatung.'
+    },
+    'markt.hotlists': {
+      titel: 'Die fünf Hotlists',
+      punkte: [
+        '<b>Grundgesamtheit</b> sind die 600 größten Werte mit Stammdaten, nicht „der Markt“. Die Zahl steht unter den Sektor-Balken – „größter Gewinner des Tages“ hieße sonst etwas anderes, als dort steht.',
+        '<b>Meist gehandelt</b> ist der Dollar-Umsatz (Kurs × Stück), nicht die Stückzahl. Nach Stück stünden dort dauerhaft die Pennystocks, und die Liste hätte jeden Tag denselben Inhalt.',
+        '<b>Ungewöhnliches Volumen</b> ist das heutige Volumen geteilt durch den <i>Median</i> der letzten 50 Handelstage aus dem eigenen Tagesarchiv. Nicht Yahoos averageVolume: dessen Fenster ist nicht dokumentiert, und es käme aus derselben Antwort wie der Zähler. Der Median statt des Mittels, weil ein einziger Verfallstag ein Mittel über Wochen anhebt. Unter 20 Tagen im Archiv steht der Wert gar nicht – unbekannt ist unbekannt, nicht 1,0.',
+        '<b>Am 52-Wochen-Hoch</b> heißt: der Kurs steht bei mindestens 99,5 % des Zwölfmonatshochs. Der Spielraum ist eine Setzung und keine Messung.',
+        'Alle fünf Listen sind <b>Anzeige, kein Signal</b>. Die große Signalstudie vom 23.08.2026 hat in 3.372 Tests keinen bestätigten Vorteil der Ausbruchsfamilie gefunden, und „heute stark gestiegen“ ist genau das. Wer daraus handeln will, misst es vorher.'
+      ],
+      fuss: 'Gehandelt wird hiervon nichts. Keine Anlageberatung.'
+    },
+    'markt.earnings': {
+      titel: 'Ergebnistermine heute und morgen',
+      punkte: [
+        'Quelle ist Yahoos Termintabelle für die US-Region, geholt über dieselbe Sitzung wie die Kurse – kein neuer Weg nach draußen.',
+        '„Vor Eröffnung“ und „nach Schluss“ kommen aus Yahoos eigenem Feld (BMO/AMC) und nicht aus der Uhrzeit: bei unbestätigten Terminen setzt Yahoo die Uhrzeit frei, und eine Uhrzeit sähe nach Genauigkeit aus, die es dort nicht gibt. Ist die Angabe unbestätigt, steht das da.',
+        'Die Liste ist eine <b>Warnung vor Bewegung</b>, keine Empfehlung: Was ein Unternehmen berichtet, steht hier nicht, und wie der Kurs darauf reagiert, ist hier nicht gemessen.',
+        'Geholt wird einmal am Tag. Der Zeitraum beginnt um Mitternacht UTC – ein Termin von heute früh gehört in die Liste, auch wenn er schon vorbei ist.'
+      ],
+      fuss: 'Gehandelt wird hiervon nichts. Keine Anlageberatung.'
+    },
     /* Die drei Beobachtungskarten auf "Heute". Der Satz "Ungemessen, reine Beobachtung
      * ... Keine Anlageberatung" stand dreimal fast woertlich in der Ueberschrift; er
      * steht jetzt einmal je Karte hier. Sichtbar BLEIBT "Gehandelt wird hiervon nichts" -

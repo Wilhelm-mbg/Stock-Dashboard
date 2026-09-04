@@ -549,6 +549,56 @@
   .spek-chip.cluster { color: var(--warn); border: 1px solid var(--warn); }
   .spek-chip.univ    { color: var(--acc); border: 1px dashed var(--acc); font-weight: 400; }
 
+  /* ---- Reiter Markt (Oberflaeche Stufe 5, 04.09.2026) ----
+     Bewusst OHNE Uebergang und ohne Animation: auf Wilhelms Rechner ist
+     "Bewegung reduzieren" eingeschaltet (Issue #90), eine abgeschaltete Animation
+     ist dort der Normalfall. Was nie animiert ist, muss auch nicht abgeschaltet
+     werden - das ist ein Sonderfall weniger. */
+  .marktkopf {
+    display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap;
+    font-size: var(--fs-neben); color: var(--ink-2); margin: 2px 0 10px;
+  }
+  .marktkopf .zustand { font-weight: 700; color: var(--ink); }
+  .marktkopf .zustand .mdot { margin-right: 5px; }
+  .marktkopf .quelle { color: var(--muted); }
+  /* Die Sektor-Leiste: Name, Balken, Zahl, Zahl der Werte. Der Balken waechst aus
+     der MITTE nach links oder rechts - eine Leiste, in der Plus und Minus beide von
+     links kommen, liest sich als Rangfolge und nicht als Richtung. */
+  .sekzeile { display: grid; grid-template-columns: 13em 1fr 5.5em 6em; gap: 8px; align-items: center; padding: 3px 0; }
+  .sekzeile .nm { font-size: var(--fs-neben); color: var(--ink-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .sekzeile .bahn { position: relative; height: 14px; background: var(--panel-2); border-radius: var(--r-klein); overflow: hidden; }
+  .sekzeile .bahn .mitte { position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: var(--kante); }
+  .sekzeile .bahn i { position: absolute; top: 2px; bottom: 2px; display: block; border-radius: var(--r-klein); }
+  .sekzeile .pz { font-size: var(--fs-neben); text-align: right; font-variant-numeric: tabular-nums; }
+  .sekzeile .pz.up { color: var(--up); } .sekzeile .pz.down { color: var(--down); }
+  .sekzeile .anz { font-size: var(--fs-klein); color: var(--muted); text-align: right; }
+  @media (max-width: 780px) {
+    .sekzeile { grid-template-columns: 9em 1fr 5em; }
+    .sekzeile .anz { display: none; }
+  }
+  /* Fuenf Hotlists nebeneinander, solange Platz ist - darunter umbrechend. Kein
+     festes Vierspaltenraster: bei 1024 px stuenden die Kuerzel sonst uebereinander. */
+  .hotlisten { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; margin-top: 8px; }
+  .hotlisten > .loading { grid-column: 1 / -1; }
+  .hotliste { border: 1px solid var(--kante); border-radius: var(--r-gross); background: var(--panel); padding: 9px 11px; }
+  .hotliste h3 { margin: 0 0 6px; font-size: var(--fs-neben); color: var(--muted); text-transform: none; letter-spacing: 0; }
+  .hotzeile {
+    display: flex; gap: 8px; align-items: baseline; padding: 4px 0;
+    border-top: 1px solid var(--grid); font-variant-numeric: tabular-nums; width: 100%;
+    background: none; border-left: 0; border-right: 0; border-bottom: 0; color: inherit;
+    font-family: inherit; font-size: var(--fs-neben); text-align: left; cursor: pointer;
+  }
+  .hotzeile:first-of-type { border-top: none; }
+  .hotzeile:hover .sym { text-decoration: underline; }
+  .hotzeile .sym { font-weight: 700; min-width: 4.2em; }
+  .hotzeile .wert { margin-left: auto; }
+  .hotzeile .wert.up { color: var(--up); } .hotzeile .wert.down { color: var(--down); }
+  .hotliste .leer { font-size: var(--fs-klein); color: var(--muted); padding: 4px 0; }
+  /* Ergebnistermine: dieselbe Zeilenform wie News und Kalender - es ist dieselbe
+     Sorte Inhalt (Termin, Quelle, Zeitangabe) und soll nicht anders aussehen. */
+  #marktEarnings .wann { color: var(--muted); }
+  #marktEarnings .art { font-size: var(--fs-klein); color: var(--ink-2); }
+
   /* Warnband unter dem Cockpit: eine Zeile je aktivem Warnzustand */
   #warnband { margin: 8px 0 4px; display: none; }
   #warnband .warnzeile {
@@ -946,6 +996,12 @@
      Tastaturbedienung (Pfeile, Pos1/Ende) haengt in app-shell.js daran. -->
 <nav class="tabs" role="tablist" aria-label="Hauptbereiche">
   <button data-tab="dashboard" class="active" role="tab" aria-selected="true"  aria-controls="tab-dashboard" id="reiter-dashboard">Heute</button>
+  <!-- Der vierte Reiter kam am 04.09.2026 dazu (Wilhelms Entscheid nach der
+       TradingView-Sichtung): "nicht so vermixt mit den Strategien". Der Markt hat
+       mit dem eigenen Depot nichts zu tun - er stand nur deshalb im selben Panel,
+       weil beides einmal zusammen gewachsen ist. Reihenfolge des Tages: erst was
+       mir gehoert, dann was der Markt tut, dann meine Regeln, dann die Werkzeuge. -->
+  <button data-tab="markt"                    role="tab" aria-selected="false" aria-controls="tab-markt"      id="reiter-markt"      tabindex="-1">Markt</button>
   <button data-tab="strategien"               role="tab" aria-selected="false" aria-controls="tab-strategien" id="reiter-strategien" tabindex="-1">Regeln</button>
   <button data-tab="werkzeuge"                role="tab" aria-selected="false" aria-controls="tab-werkzeuge"  id="reiter-werkzeuge"  tabindex="-1">Werkzeuge</button>
 </nav>
@@ -965,11 +1021,12 @@
        und test-v6.js liest die Pillen mit /data-sub="[a-z]+"/.
        Attributreihenfolge data-sub VOR class ist Bedingung, nicht Geschmack: die
        Zusicherung "genau eine aktive Pille" liest /data-sub="[a-z]+" class="active"/. -->
+  <!-- Zwei Pillen statt vier (Stufe 5, 04.09.2026): Marktkarte und Radar sind in
+       den Reiter "Markt" gezogen, ebenso die Marktbloecke aus dem Ueberblick. Was
+       hier bleibt, ist das eigene Geld - Buecher, Depot, Papiere. -->
   <div class="pills" id="heutePills">
     <button data-sub="ueberblick" class="active">Überblick</button>
     <button data-sub="papiere">Meine Papiere</button>
-    <button data-sub="marktkarte">Marktkarte</button>
-    <button data-sub="beobachtung">Radar &amp; Insider</button>
   </div>
 
   <div class="sub active" id="sub-ueberblick">
@@ -1081,39 +1138,6 @@
 </details>
 </div><!-- /intradayBereich -->
 </div><!-- /bestandBlock -->
-
-<!-- Der title wird in renderTicker() gesetzt: bei "Bewegung reduzieren" laeuft nichts,
-     und dann darf dort auch nicht stehen, dass es unter dem Mauszeiger anhaelt. -->
-<div id="newsTicker" style="display:none;"></div>
-<h2>Marktüberblick</h2>
-<div class="tiles" id="tiles"><div class="loading">Lade Kurse …</div></div>
-
-<h2 style="margin-top:18px;">Marktbild <span style="color:var(--muted); font-size:var(--fs-neben); font-weight:400;">– die 15 Werte dieses Reiters, sortiert vom stärksten Gewinner zum stärksten Verlierer. Farbe = heutige Bewegung, Klick öffnet den Explorer</span></h2>
-<div id="dashHeat" class="heat"><div class="loading">Lade Kurse …</div></div>
-
-
-<!-- Struktur-Audit Punkt 10: "Gewinner & Verlierer des Tages" stand hier als dritte
-     Anzeige derselben 15 Werte - dieselbe Information wie das Marktbild darueber,
-     nur anders sortiert. Zusammengelegt: das Marktbild sortiert jetzt vom staerksten
-     Gewinner zum staerksten Verlierer und traegt Kurs + ausserboerslichen Kurs. -->
-
-<!-- Dieselben 15 Werte standen dreimal untereinander: Heatmap, Gewinner/Verlierer,
-     Detailkarten. Die Karten liegen jetzt hinter einer Klappe - sie tragen echte
-     Zusatzinformation (Marktkapitalisierung, KGV, 52-Wochen-Spanne), aber nicht
-     jeden Tag und nicht ganz oben. -->
-<details class="how" id="dashDetail">
-  <summary>Einzelwerte im Detail – Kennzahlen, 52-Wochen-Spanne, Kursverlauf</summary>
-  <h2>Big Tech</h2>
-  <div class="cards" id="bigtech"></div>
-  <h2>Chip-Sektor</h2>
-  <div class="cards" id="chips"></div>
-</details>
-
-<h2>Wirtschaftskalender (marktbewegende Termine)</h2>
-<div class="news" id="calendar"><div class="loading">Lade Termine …</div></div>
-
-<h2>Markt-News</h2>
-<div class="news" id="news"><div class="loading">Lade News …</div></div>
   </div><!-- /sub-ueberblick -->
 
   <!-- ============ MEINE PAPIERE ============
@@ -1146,6 +1170,106 @@
       </details>
     </div>
   </div>
+</div><!-- /tab-dashboard -->
+
+<!-- ================= REITER MARKT (Oberflaeche Stufe 5, 04.09.2026) =================
+     Wilhelms Entscheid nach der TradingView-Sichtung: ein reines Markt-Dashboard,
+     "nicht so vermixt mit den Strategien". Was hier steht, beschreibt den MARKT und
+     nie das eigene Depot; was das eigene Depot betrifft, steht auf "Heute".
+
+     Die sieben Bloecke Ticker, Kacheln, Marktbild, Detailklappe, Kalender und News
+     sind aus Heute -> Ueberblick unveraendert hierher gezogen. Ihre Kennungen sind
+     die Schnittstelle zu renderer.js und calendar.js und bleiben, wie sie sind -
+     verschoben, nicht neu gebaut.
+
+     An nichts auf diesem Reiter ist etwas gemessen. Keine Liste hier ist ein Signal,
+     kein Knopf handelt daraus. Die grosse Signalstudie vom 23.08.2026 hat in 3.372
+     Tests keinen bestaetigten Vorteil der Ausbruchsfamilie gefunden, und "heute stark
+     gestiegen" ist genau das. -->
+<div id="tab-markt" class="tab" role="tabpanel" aria-labelledby="reiter-markt">
+  <div class="pills" id="marktPills">
+    <button data-sub="marktueberblick" class="active">Überblick</button>
+    <button data-sub="marktkarte">Marktkarte</button>
+    <button data-sub="beobachtung">Radar</button>
+  </div>
+
+  <div class="sub active" id="sub-marktueberblick">
+<!-- Der Zustand der Sitzung steht GANZ OBEN und in EINER Zeile: jeder Kurs auf
+     diesem Reiter bedeutet etwas anderes, je nachdem, ob gerade regulaer, duenn
+     oder gar nicht gehandelt wird. Geschrieben von marktui.js aus
+     MarktUebersicht.sitzungszustand() - keine Zahl und kein Zustand im Markup. -->
+<div id="marktSitzung" class="marktkopf" role="status" aria-live="polite"><span class="loading">Zustand der Sitzung wird ermittelt …</span></div>
+<!-- Der title wird in renderTicker() gesetzt: bei "Bewegung reduzieren" laeuft nichts,
+     und dann darf dort auch nicht stehen, dass es unter dem Mauszeiger anhaelt. -->
+<div id="newsTicker" style="display:none;"></div>
+<h2>Marktüberblick</h2>
+<div class="tiles" id="tiles"><div class="loading">Lade Kurse …</div></div>
+
+<!-- Die Sektor-Leiste. KAPITALGEWICHTET, und das ist keine Feinheit: "Technologie"
+     enthaelt Apple und dreihundert Kleinere - ein ungewichtetes Mittel behauptete,
+     der Sektor sei gefallen, waehrend das darin angelegte Geld gestiegen ist.
+     Gerechnet wird in markt/uebersicht.js (sektorLeiste), gezeichnet in marktui.js.
+     Die drei Zeitraeume kommen aus zwei verschiedenen Quellen, und das steht auch da:
+     1 Tag aus den laufenden Kursen, 1 Woche und 1 Monat aus dem eigenen Tagesarchiv. -->
+<h2 style="margin-top:18px;">Sektoren <span style="color:var(--muted); font-size:var(--fs-neben); font-weight:400; text-transform:none; letter-spacing:0;">– nach Marktkapitalisierung gewichtet, Branchen aus den SEC-Stammdaten.</span>
+  <button class="info" type="button" data-info="markt.sektoren" aria-expanded="false" aria-label="Erklärung: Die Sektor-Leiste">i</button></h2>
+<div class="panel">
+  <!-- Diese Knoepfe tragen ABSICHTLICH kein data-sub: sie schalten einen Zeitraum um,
+       keine Unterseite. Der Umschalter der Shell greift nur auf .pills button[data-sub]
+       zu - ohne diese Einschraenkung leerte hier ein Klick den ganzen Reiter. -->
+  <div class="pills small" id="marktSektorZeitraum" role="group" aria-label="Zeitraum der Sektor-Balken">
+    <button type="button" data-zeitraum="t1" class="active">1 Tag</button>
+    <button type="button" data-zeitraum="w1">1 Woche</button>
+    <button type="button" data-zeitraum="m1">1 Monat</button>
+  </div>
+  <div id="marktSektoren"><div class="loading">Noch keine Kurse geladen.</div></div>
+  <div id="marktSektorenFuss" style="font-size:var(--fs-klein); color:var(--muted); margin-top:8px; line-height:1.6; max-width:80ch;"></div>
+</div>
+
+<!-- Fuenf Hotlists nebeneinander. "Ungewoehnliches Volumen" ist die einzige, die
+     nicht direkt aus der Kursantwort kommt: sie teilt das heutige Volumen durch den
+     MEDIAN der letzten Handelstage aus dem eigenen Tagesarchiv. Yahoos averageVolume
+     waere die bequeme Zahl und die falsche - undokumentiertes Fenster, und aus
+     derselben Antwort wie der Zaehler. -->
+<h2 style="margin-top:18px;">Hotlists <span style="color:var(--muted); font-size:var(--fs-neben); font-weight:400; text-transform:none; letter-spacing:0;">– Anzeige, kein Signal: gemessen ist hieran nichts. Klick öffnet den Explorer.</span>
+  <button class="info" type="button" data-info="markt.hotlists" aria-expanded="false" aria-label="Erklärung: Die Hotlists">i</button></h2>
+<div id="marktHotlists" class="hotlisten"><div class="loading">Noch keine Kurse geladen.</div></div>
+
+<h2 style="margin-top:18px;">Marktbild <span style="color:var(--muted); font-size:var(--fs-neben); font-weight:400;">– die 15 Werte dieses Reiters, sortiert vom stärksten Gewinner zum stärksten Verlierer. Farbe = heutige Bewegung, Klick öffnet den Explorer</span></h2>
+<div id="dashHeat" class="heat"><div class="loading">Lade Kurse …</div></div>
+
+
+<!-- Struktur-Audit Punkt 10: "Gewinner & Verlierer des Tages" stand hier als dritte
+     Anzeige derselben 15 Werte - dieselbe Information wie das Marktbild darueber,
+     nur anders sortiert. Zusammengelegt: das Marktbild sortiert jetzt vom staerksten
+     Gewinner zum staerksten Verlierer und traegt Kurs + ausserboerslichen Kurs. -->
+
+<!-- Dieselben 15 Werte standen dreimal untereinander: Heatmap, Gewinner/Verlierer,
+     Detailkarten. Die Karten liegen jetzt hinter einer Klappe - sie tragen echte
+     Zusatzinformation (Marktkapitalisierung, KGV, 52-Wochen-Spanne), aber nicht
+     jeden Tag und nicht ganz oben. -->
+<details class="how" id="dashDetail">
+  <summary>Einzelwerte im Detail – Kennzahlen, 52-Wochen-Spanne, Kursverlauf</summary>
+  <h2>Big Tech</h2>
+  <div class="cards" id="bigtech"></div>
+  <h2>Chip-Sektor</h2>
+  <div class="cards" id="chips"></div>
+</details>
+
+<!-- Ergebnistermine heute und morgen. "vor Eroeffnung"/"nach Schluss" kommt aus
+     Yahoos startdatetimetype (BMO/AMC) und NICHT aus der Uhrzeit: bei unbestaetigten
+     Terminen setzt Yahoo die Uhrzeit frei, und eine Uhrzeit saehe nach Genauigkeit
+     aus, die es dort nicht gibt. Ist die Art unbekannt, steht das da. -->
+<h2 style="margin-top:18px;">Ergebnistermine <span style="color:var(--muted); font-size:var(--fs-neben); font-weight:400; text-transform:none; letter-spacing:0;">– wer heute und morgen berichtet.</span>
+  <button class="info" type="button" data-info="markt.earnings" aria-expanded="false" aria-label="Erklärung: Ergebnistermine">i</button></h2>
+<div class="news" id="marktEarnings"><div class="loading">Termine werden geholt …</div></div>
+
+<h2>Wirtschaftskalender (marktbewegende Termine)</h2>
+<div class="news" id="calendar"><div class="loading">Lade Termine …</div></div>
+
+<h2>Markt-News</h2>
+<div class="news" id="news"><div class="loading">Lade News …</div></div>
+  </div><!-- /sub-marktueberblick -->
 
   <!-- Aus dem eigenen Reiter in die zweite Pille unter "Heute" (Stufe C4). Der Block
        ist unveraendert umgezogen; die IDs mkAnzahl / mkBranche / mkStand / mkKarte /
@@ -1193,7 +1317,7 @@
 <h2>Vorbörsen-Lücken <span style="color:var(--muted); font-size:var(--fs-neben); font-weight:400; text-transform:none; letter-spacing:0;">– Werte, die vor der US-Eröffnung deutlich anders stehen als beim gestrigen Schluss. <b>Gehandelt wird hiervon nichts.</b></span> <button class="info" type="button" data-info="heute.vorboerse" aria-expanded="false" aria-label="Erklärung: Vorbörsen-Lücken">i</button></h2>
 <div class="panel" id="vormarktKarte"><div class="loading">Noch nicht gesucht.</div></div>
   </div><!-- /sub-beobachtung -->
-</div><!-- /tab-dashboard -->
+</div><!-- /tab-markt -->
 
 <div id="tab-strategien" class="tab" role="tabpanel" aria-labelledby="reiter-strategien">
   <div class="pills" id="regelPills">
@@ -2327,7 +2451,10 @@
     </div>
     <div style="display:flex; align-items:center; gap:10px; margin-top:12px;">
       <button class="btn" id="erststartOk" type="button" data-close="erststartModalBg">Verstanden – los</button>
-      <span style="font-size:var(--fs-neben); color:var(--muted);">Der Überblick wohnt im Reiter <b>Heute</b>, die Strategien im Reiter <b>Regeln</b>.</span>
+      <!-- Stufe 5 (04.09.2026): "Der Ueberblick wohnt im Reiter Heute" stimmte bis zum
+           Umzug. Der Marktueberblick wohnt jetzt im Reiter Markt, auf Heute steht das
+           eigene Geld - und genau das ist der Satz, den ein neuer Nutzer braucht. -->
+      <span style="font-size:var(--fs-neben); color:var(--muted);">Dein Depot wohnt im Reiter <b>Heute</b>, der Marktüberblick im Reiter <b>Markt</b>, die Strategien im Reiter <b>Regeln</b>.</span>
     </div>
   </div>
 </div>
@@ -2617,6 +2744,8 @@
 <script src="wkn.js"></script>
 <script src="marktkarte.js"></script>
 <script src="marktkarteui.js"></script>
+<script src="markt/uebersicht.js"></script>
+<script src="marktui.js"></script>
 <script src="strategiebaukasten.js"></script>
 <script src="scoreboard.js"></script>
 <script src="scheinfinder.js"></script>

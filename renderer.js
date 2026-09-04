@@ -1,12 +1,23 @@
 'use strict';
 (function () {
   /* ================= Konfiguration ================= */
+  /* Zehn Kacheln statt sechs (Reiter Markt, Stufe 5, 04.09.2026). Dazugekommen sind
+   * Dow, Gold, Öl und der Dollar-Index: ein Marktueberblick, der nur Aktien und
+   * Bitcoin zeigt, laesst genau die vier Zeilen weg, an denen man einen Tag als
+   * Rohstoff- oder Waehrungstag erkennt. Alle vier sind Yahoo-Kuerzel derselben
+   * Quelle, kosten also keinen neuen Weg nach draussen.
+   * Die Reihenfolge ist die Lesereihenfolge: erst die drei US-Indizes, dann DAX und
+   * Halbleiter, dann Volatilitaet, dann Rohstoffe und Waehrung, Bitcoin zuletzt. */
   var INDICES = [
     { y: '^GSPC',  id: 'spx',  name: 'S&P 500',            dec: 2 },
     { y: '^IXIC',  id: 'ixic', name: 'Nasdaq Composite',   dec: 2 },
+    { y: '^DJI',   id: 'dji',  name: 'Dow Jones',          dec: 2 },
     { y: '^GDAXI', id: 'dax',  name: 'DAX',                dec: 2 },
     { y: '^SOX',   id: 'sox',  name: 'PHLX Semiconductor', dec: 2 },
     { y: '^VIX',   id: 'vix',  name: 'VIX (Volatilität)',  dec: 2 },
+    { y: 'GC=F',   id: 'gold', name: 'Gold (Future)', unit: '$', dec: 2 },
+    { y: 'CL=F',   id: 'oel',  name: 'Öl WTI (Future)', unit: '$', dec: 2 },
+    { y: 'DX-Y.NYB', id: 'dxy', name: 'Dollar-Index',     dec: 2 },
     { y: 'BTC-USD', id: 'btc', name: 'Bitcoin', unit: '$', dec: 0 }
   ];
   // sharesB = Aktienanzahl in Mrd. (für MKap = Kurs × Anzahl), eps = Gewinn je Aktie (für KGV = Kurs / EPS). Stand: Juli 2026.
@@ -27,6 +38,7 @@
     { y: 'MU',    name: 'Micron',         group: 'chips',   sharesB: 1.129,  eps: 44.170 },
     { y: 'ARM',   name: 'Arm Holdings',   group: 'chips',   sharesB: 1.068,  eps: 0.847 }
   ];
+  var NEWS_MAX = 5;      // hoechstens fuenf Schlagzeilen im Kasten (Stufe 5)
   var NEWS_FEEDS = [
     'https://news.google.com/rss/search?q=Aktien%20B%C3%B6rse%20Tech%20when%3A2d&hl=de&gl=DE&ceid=DE:de',
     'https://news.google.com/rss/search?q=Halbleiter%20OR%20Nvidia%20OR%20Chips%20Aktien%20when%3A2d&hl=de&gl=DE&ceid=DE:de'
@@ -206,11 +218,17 @@
         }
       } catch (e) { /* Feed ignorieren */ }
     }
-    // Duplikate raus, neueste zuerst, 6 Stück
+    /* Duplikate raus, neueste zuerst, HOECHSTENS FUENF.
+     * Fuenf statt sechs seit dem Reiter Markt (Stufe 5, 04.09.2026): der Kasten
+     * steht dort unter Sektoren, Hotlists und Terminen, und Schlagzeilen sind das
+     * einzige auf diesem Reiter, an dem nichts gerechnet ist. Eine Zeile weniger
+     * ist die ehrlichere Gewichtung. Bewertet oder sortiert wird nichts - es gibt
+     * kein Sentiment auf diesem Reiter: die einzige Messung dazu (31.08.2026)
+     * konnte die Frage nicht beantworten, und das Gewicht steht seither auf null. */
     var seen = {};
     items = items.filter(function (it) { var k = it.title.toLowerCase().slice(0, 60); if (seen[k]) return false; seen[k] = 1; return true; });
     items.sort(function (a, b) { return b.t - a.t; });
-    if (items.length) { NEWS = items.slice(0, 6); renderNews(); }
+    if (items.length) { NEWS = items.slice(0, NEWS_MAX); renderNews(); }
     else if (!NEWS.length) {
       // Das Element heißt #news – unter der alten ID #newsList erschien die Meldung nie.
       var nl = document.getElementById('news');

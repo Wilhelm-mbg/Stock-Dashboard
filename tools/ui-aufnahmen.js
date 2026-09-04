@@ -57,14 +57,24 @@ if (KUNSTDATEN) {
    * kerzenquelle.js. In der isolierten Instanz ist das TESTROOT/downloads, also
    * ebenfalls unter %TEMP%: der echte Datenordner wird nicht angefasst. Ohne diesen
    * Bestand zeigt die Archiv-Grafik fuenf leere Balken und belegt nichts. */
+  /* Der Reiter Markt (Stufe 5) haengt an drei Quellen. Zwei davon sind Dateien und
+   * werden hier gelegt: die Stammdaten (Branche, Aktienanzahl) und Tagesreihen im
+   * Tagesarchiv. Die dritte sind LAUFENDE Kurse - die gibt es ohne Netz nicht, und
+   * eine Testinstanz soll auch keins bekommen. Deshalb kommt zusaetzlich der
+   * gemerkte Stand in den Store, denselben Schluessel, den marktui.js schreibt.
+   * Gerechnet ist er mit den echten Funktionen aus markt/uebersicht.js. */
+  fs.writeFileSync(path.join(sd, 'marktUeberblickStand.json'), JSON.stringify(KD.marktstand(jetzt)));
   const dd = path.join(TESTROOT, 'downloads', 'Markt-Dashboard-Daten');
-  KD.archiv(jetzt).forEach((f) => {
+  KD.archiv(jetzt).concat(KD.marktArchiv(jetzt)).forEach((f) => {
     const ziel = path.join(dd, f.pfad.replace(/\//g, path.sep));
     fs.mkdirSync(path.dirname(ziel), { recursive: true });
     fs.writeFileSync(ziel, JSON.stringify(f.inhalt));
   });
+  const md = path.join(dd, 'markt');
+  fs.mkdirSync(md, { recursive: true });
+  fs.writeFileSync(path.join(md, 'stammdaten.json'), JSON.stringify(KD.marktStammdaten(jetzt)));
   console.log('Kunstdaten in den Test-Store geschrieben: ' + sd);
-  console.log('Kunst-Archiv in den Test-Datenordner geschrieben: ' + dd);
+  console.log('Kunst-Archiv und Kunst-Stammdaten in den Test-Datenordner geschrieben: ' + dd);
 }
 /* Ohne diese Schalter pausiert Chromium verdeckte Fenster - eine pausierte Seite
  * liefert leere Aufnahmen. */

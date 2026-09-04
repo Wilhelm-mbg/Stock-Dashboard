@@ -233,7 +233,12 @@ var KUNST_LAGE = {
   '5m':  { ordner: 'archiv5m',  barMin: 5,  tage: 40, luecke: [15, 18] },
   '15m': { ordner: 'archiv15m', barMin: 15, tage: 25, halbAb: 5 },
   '60m': { ordner: 'archiv60m', barMin: 60, tage: 60 },
-  '1d':  { ordner: 'archiv1d',  barMin: 1440, tage: 60, luecke: [9, 9], luecke2: [31, 31] }
+  /* Tageskerzen: EINE je Tag. Bis zum 04.09.2026 schrieb die Schleife auch hier drei
+   * Kerzen je Tag (der Abstand wurde auf 60 Minuten gedeckelt, damit sie im Tag
+   * bleiben). Fuer die Archiv-Grafik war das egal - sie zaehlt Tage, nicht Kerzen.
+   * Fuer den Reiter Markt ist es nicht egal: dort ist eine Kerze ein TAG, und
+   * "der Median der letzten 50 Tage" waere aus 50 Dritteln von Tagen gerechnet. */
+  '1d':  { ordner: 'archiv1d',  barMin: 1440, tage: 60, luecke: [9, 9], luecke2: [31, 31], jeTag: 1 }
 };
 
 /** Die letzten n Handelstage als UTC-Tagesstempel, juengster zuerst. */
@@ -276,7 +281,7 @@ function archiv(jetzt) {
          * (barMin 1440) haette k * barMin die Reihe ueber 85 statt 60 Tage gestreckt
          * und die Grafik mit erfundenen Wochenendtagen gefuellt. */
         var schritt = Math.min(L.barMin, 60);
-        for (var k = 0; k < 3; k++) {
+        for (var k = 0; k < (L.jeTag || 3); k++) {
           var t = t0 + (14 * 60 + 30 + k * schritt) * 60000;
           var kurs = Math.round((100 + nr * 7 + idx * 0.4 + k * 0.15) * 100) / 100;
           serie.push([t, kurs, 12000 + k * 300, kurs + 0.3, kurs - 0.3, kurs - 0.1]);
@@ -298,8 +303,161 @@ function archiv(jetzt) {
   return aus;
 }
 
+/** ================= KUNSTDATEN FUER DEN REITER MARKT =================
+ *
+ * Der Ueberblick auf dem Reiter "Markt" (Stufe 5, 04.09.2026) haengt an drei
+ * Quellen, und ZWEI davon gibt es in einer isolierten Instanz nicht:
+ *   - markt/stammdaten.json (Branche und Aktienanzahl) - eine Datei, die hier
+ *     erzeugt werden KANN, also wird sie erzeugt;
+ *   - das Tagesarchiv - dito, siehe archiv() weiter oben;
+ *   - die LAUFENDEN KURSE aus dem Sammelabruf - die gibt es ohne Netz nicht, und
+ *     eine Testinstanz soll auch keins bekommen.
+ *
+ * Ohne den dritten Teil zeigt die Aufnahme drei Leerzustaende, und von der
+ * Gestaltung der Sektor-Balken und der fuenf Hotlists ist dann genau nichts belegt.
+ * Deshalb wird hier derselbe gemerkte Stand geschrieben, den marktui.js nach jedem
+ * Lauf ablegt (Store-Schluessel marktUeberblickStand) - so, wie ui-aufnahmen.js
+ * auch das Depot und die Kostenrunden vorab hinlegt.
+ *
+ * WICHTIG: Gerechnet wird mit den ECHTEN Funktionen aus markt/uebersicht.js. Ein
+ * von Hand geschriebener Stand waere ein Bild von einer Anzeige und kein Lauf der
+ * Anzeige - genau der Unterschied, den dieses Projekt "Trockenlauf, der aussieht
+ * wie ein Befund" nennt. Erfunden sind hier die EINGANGSDATEN, nicht die Rechnung.
+ */
+var MU = require('../markt/uebersicht.js');
+
+/* Zwanzig Werte in vier Sektoren. Vier, weil ein Sektor unter drei Werten gar nicht
+ * gezeigt wird und eine Leiste mit einem Balken keine Leiste ist. Die Namen tragen
+ * den Vorsatz KUNST, damit auch eine versehentlich liegengebliebene Datei ihre
+ * Herkunft nennt. */
+var KUNST_SEKTOREN = ['Technologie', 'Finanzen', 'Gesundheit', 'Energie'];
+function marktSymbole() {
+  var aus = [];
+  KUNST_SEKTOREN.forEach(function (sek, s) {
+    for (var i = 1; i <= 5; i++) {
+      aus.push({ sym: 'KUNSTM' + (s * 5 + i), name: 'Kunst-Firma ' + sek + ' ' + i, sektor: sek });
+    }
+  });
+  return aus;
+}
+
+/* Erfundene, aber in sich stimmige Eingangsdaten: Kurs, Tagesveraenderung, Volumen,
+ * Stueckzahl und 52-Wochen-Hoch. Die Streuung ist mit Absicht ungleich - ein Satz
+ * Zahlen, in dem alle Werte dasselbe tun, zeigt von einer Hotlist nichts. */
+function marktKurse(jetzt) {
+  var now = jetzt || Date.now();
+  return marktSymbole().map(function (w, i) {
+    var kurs = Math.round((18 + i * 13.7) * 100) / 100;
+    /* Bewusst gemischt: sechs deutlich im Plus, fuenf deutlich im Minus, der Rest
+     * dazwischen - sonst stuende in "Verlierer heute" fuenfmal eine Null. */
+    var pct = Math.round((((i * 37) % 11) - 5) * 0.63 * 100) / 100;
+    var aktien = 40000000 + ((i * 73) % 17) * 260000000;
+    /* ZWEI Volumen, und der Unterschied ist der Sinn der Liste "Ungewoehnliches
+     * Volumen": volBasis ist das uebliche Tagesvolumen und geht ins Kunst-Archiv,
+     * volumen ist das HEUTIGE und weicht davon ab. Waeren beide gleich, stuende in
+     * der Liste zwanzigmal "1,0x" - und die Aufnahme belegte, dass die Liste
+     * rechnet, nicht dass sie etwas zeigt. Der Wert Nummer 8 hat den Ausreisser. */
+    var volBasis = 900000 + ((i * 53) % 19) * 210000;
+    var volumen = Math.round(volBasis * (i === 7 ? 3.4 : 0.6 + ((i * 29) % 17) * 0.09));
+    return { sym: w.sym, name: w.name, sektor: w.sektor, aktien: aktien,
+             kurs: kurs, pct: pct, volumen: volumen, volBasis: volBasis,
+             mkap: Math.round(kurs * aktien),
+             /* Zwei Werte stehen genau am Hoch, die anderen darunter. */
+             hoch52: Math.round(kurs * (i % 9 === 0 ? 1.0 : 1.04 + (i % 5) * 0.03) * 100) / 100,
+             at: now };
+  });
+}
+
+/** Die Stammdaten-Datei, wie sie tools/stammdaten-holen.js sie ablegt. */
+function marktStammdaten(jetzt) {
+  var now = jetzt || Date.now();
+  var werte = {};
+  marktKurse(now).forEach(function (w, i) {
+    werte[w.sym] = { cik: 900000 + i, name: w.name, sic: 3571, sicText: 'Kunstdaten',
+                     sektor: w.sektor, boerse: 'Nasdaq', aktien: w.aktien,
+                     aktienStand: 'Kunstdaten', startKurs: w.kurs, startKursStand: new Date(now).toISOString().slice(0, 10) };
+  });
+  return { stand: new Date(now).toISOString(),
+           quelle: 'Kunstdaten fuer eine Oberflaechen-Aufnahme - keine Messung',
+           hinweis: 'Erfundene Werte. Sie belegen nichts und werden nirgends ausgewertet.',
+           aktienStand: 'Kunstdaten', werte: werte };
+}
+
+/** Tagesreihen der Kunst-Marktwerte: 60 Handelstage, EINE Kerze je Tag, mit Umsatz.
+ *  Rueckgabe wie archiv(): [{ pfad, inhalt }]. */
+function marktArchiv(jetzt) {
+  var now = jetzt || Date.now();
+  var tage = handelstage(now, 60).slice().reverse();
+  return marktKurse(now).map(function (w, i) {
+    var serie = tage.map(function (t0, idx) {
+      /* Ein leichter Trend plus eine Welle - so sind Wochen- und Monatsspanne
+       * verschieden, und die drei Zeitraeume der Sektor-Leiste zeigen nicht dasselbe. */
+      var kurs = Math.round((w.kurs * (0.88 + idx * 0.002 + Math.sin((idx + i) / 7) * 0.03)) * 100) / 100;
+      var umsatz = Math.round(w.volBasis * (0.7 + ((idx * 17 + i) % 13) * 0.05));
+      return [t0 + (20 * 60) * 60000, kurs, umsatz, kurs + 0.4, kurs - 0.4, kurs - 0.1];
+    });
+    return {
+      pfad: 'archiv1d/bars_1d_' + w.sym + '.json',
+      inhalt: { sym: w.sym, quelle: 'Kunstdaten fuer eine Oberflaechen-Aufnahme - keine Messung',
+                format: '[zeit, schluss, umsatz, hoch, tief, eroeffnung]',
+                stand: new Date(now).toISOString(), series: serie }
+    };
+  });
+}
+
+/** Der gemerkte Stand des Markt-Ueberblicks, gerechnet mit markt/uebersicht.js.
+ *  Dieselbe Form, die marktui.js nach jedem Lauf in den Store legt. */
+function marktstand(jetzt) {
+  var now = jetzt || Date.now();
+  var kurse = marktKurse(now);
+  var reihen = {};
+  marktArchiv(now).forEach(function (f) {
+    reihen[f.inhalt.sym] = f.inhalt.series.map(function (b) { return [b[0], b[1], b[2]]; });
+  });
+  var werte = kurse.map(function (w) {
+    var reihe = reihen[w.sym] || [];
+    var rel = MU.relativesVolumen(w.volumen, MU.volumenReihe(reihe));
+    return {
+      sym: w.sym, name: w.name, sektor: w.sektor, kurs: w.kurs, pct: w.pct,
+      kap: w.mkap, volumen: w.volumen, hoch52: w.hoch52,
+      relVol: rel ? rel.faktor : null, relTage: rel ? rel.tage : null,
+      woche: MU.spanne(reihe, 5), monat: MU.spanne(reihe, 21)
+    };
+  });
+  function leiste(feld) {
+    return MU.sektorLeiste(werte.map(function (w) { return { sektor: w.sektor, kap: w.kap, pct: w[feld] }; }));
+  }
+  var hot = MU.hotlists(werte);
+  function schlank(zeilen) {
+    return zeilen.map(function (w) {
+      return { sym: w.sym, name: w.name, kurs: w.kurs, pct: w.pct, volumen: w.volumen,
+               umsatz: w.umsatz != null ? w.umsatz : null, relVol: w.relVol, relTage: w.relTage,
+               hoch52: w.hoch52, naehe: w.naehe != null ? w.naehe : null };
+    });
+  }
+  var heute0 = new Date(new Date(now).toISOString().slice(0, 10) + 'T00:00:00Z').getTime();
+  return {
+    zeit: now, universum: werte.length, gezeigt: werte.length,
+    mitVolumen: werte.filter(function (w) { return w.relVol != null; }).length,
+    archivGrund: '',
+    sektoren: { t1: leiste('pct'), w1: leiste('woche'), m1: leiste('monat') },
+    hotlists: { gewinner: schlank(hot.gewinner), verlierer: schlank(hot.verlierer),
+                umsatz: schlank(hot.umsatz), volumen: schlank(hot.volumen), hoch52: schlank(hot.hoch52) },
+    naheAm: hot.naheAm,
+    earnings: [
+      { sym: 'KUNSTM3', name: 'Kunst-Firma Technologie 3', zeit: heute0 + 12 * 3600000, art: 'BMO' },
+      { sym: 'KUNSTM9', name: 'Kunst-Firma Finanzen 4', zeit: heute0 + 21 * 3600000, art: 'AMC' },
+      { sym: 'KUNSTM14', name: 'Kunst-Firma Gesundheit 4', zeit: heute0 + 86400000 + 12 * 3600000, art: 'BMO' },
+      { sym: 'KUNSTM18', name: 'Kunst-Firma Energie 3', zeit: heute0 + 86400000 + 21 * 3600000, art: 'TAS' }
+    ],
+    earningsGrund: ''
+  };
+}
+
 module.exports = { bauen: bauen, kostenmessung: kostenmessung, archiv: archiv,
-                   KUNST_SYMBOLE: KUNST_SYMBOLE };
+                   marktStammdaten: marktStammdaten, marktArchiv: marktArchiv,
+                   marktKurse: marktKurse, marktstand: marktstand,
+                   KUNST_SYMBOLE: KUNST_SYMBOLE, KUNST_SEKTOREN: KUNST_SEKTOREN };
 
 if (require.main === module) {
   process.stdout.write(JSON.stringify(bauen(Date.now()), null, 2) + '\n');

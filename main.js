@@ -925,10 +925,28 @@ ipcMain.handle('yahoo-quotes', async (_ev, symbole) => {
       const arr = (j && j.quoteResponse && j.quoteResponse.result) || [];
       arr.forEach((q) => {
         if (!q || !(q.regularMarketPrice > 0)) return;
+        /* WAS DIE QUELLE NICHT KENNT, IST null - nicht 0. Die Marktkarte hat den
+         * Unterschied schon einmal gekostet: eine unbekannte Veraenderung als
+         * "0 %" zu fuehren macht aus "wir wissen es nicht" ein Ergebnis.
+         *
+         * Die vier Felder ab `volumen` kamen mit dem Reiter Markt dazu (Stufe 5,
+         * 04.09.2026). Sie stehen in DERSELBEN Antwort, kosten also keine zweite
+         * Anfrage - und genau deshalb werden sie hier geholt und nicht einzeln:
+         * eine Hotlist ueber sechshundert Werte waere sonst sechshundert Abrufe.
+         * `hoch52` ist Yahoos Zwoelfmonatshoch EINSCHLIESSLICH des laufenden Tages;
+         * ein Wert, der heute ein neues Hoch macht, steht deshalb genau darauf. */
         kurse[q.symbol] = {
           kurs: q.regularMarketPrice,
           pct: typeof q.regularMarketChangePercent === 'number' ? q.regularMarketChangePercent : null,
-          vorher: q.regularMarketPreviousClose > 0 ? q.regularMarketPreviousClose : null
+          vorher: q.regularMarketPreviousClose > 0 ? q.regularMarketPreviousClose : null,
+          volumen: q.regularMarketVolume > 0 ? q.regularMarketVolume : null,
+          mkap: q.marketCap > 0 ? q.marketCap : null,
+          hoch52: q.fiftyTwoWeekHigh > 0 ? q.fiftyTwoWeekHigh : null,
+          /* Ausserboerslich: Yahoo fuellt je nach Tageszeit entweder pre oder post,
+           * nie beides. Zwei getrennte Felder statt eines gemeinsamen - sonst muesste
+           * der Leser raten, aus welcher Sitzung der Kurs stammt. */
+          vorboerse: q.preMarketPrice > 0 ? q.preMarketPrice : null,
+          nachboerse: q.postMarketPrice > 0 ? q.postMarketPrice : null
         };
       });
       /* Zwischen den Bloecken kurz Luft lassen. Mehrere Anfragen im Millisekundenabstand
@@ -1515,6 +1533,164 @@ function archivAbdeckung() {
 ipcMain.handle('archiv-abdeckung', async () => {
   try { return archivAbdeckung(); }
   catch (e) { return { fehler: String((e && e.message) || e) }; }
+});
+
+/* ---- Tagesreihen fuer den Reiter Markt (Oberflaeche Stufe 5, 04.09.2026) ----
+ *
+ * NUR LESEN. Diese Auskunft holt nichts nach, schreibt nichts und stoesst keinen
+ * Sammellauf an - sie sieht in das Tagesarchiv hinein, das ohnehin daliegt. Sie
+ * nimmt auch KEINE Sperre: der naechtliche Sammler schreibt in seinen eigenen
+ * Ordner, und eine halb geschriebene Datei kostet hier eine Reihe, nicht die
+ * Richtigkeit einer Messung. Gemessen wird an diesen Zahlen nichts.
+ *
+ * Wozu: der Reiter Markt braucht je Wert den Median des Tagesvolumens (fuer
+ * "ungewoehnliches Volumen") und die Schlusskurse der letzten Wochen (fuer die
+ * Sektor-Balken ueber 1 Woche und 1 Monat). Yahoos averageVolume waere dafuer die
+ * bequeme Zahl - und die falsche: undokumentiertes Fenster, aus derselben Antwort
+ * wie das heutige Volumen. Der Median kommt deshalb aus dem eigenen Archiv.
+ *
+ * WARUM NUR DER SCHWANZ DER DATEI: bars_1d_AAPL.json traegt 10.081 Kerzen auf 1 MB.
+ * Am 04.09.2026 gemessen: 120 Dateien vollstaendig zu lesen und zu parsen kostet
+ * 1,9 s - sechshundert Werte also rund zehn Sekunden, im Hauptprozess, also mit
+ * stehender Oberflaeche. Dieselben Zahlen aus den letzten 96 KB zu ziehen kostet
+ * 127 ms fuer 120 Dateien. Das Zerlegen selbst steht in markt/uebersicht.js und ist
+ * dort in Node pruefbar; die Gegenprobe in test-v6 haelt Schwanz gegen Volltext. */
+const MarktU = require('./markt/uebersicht.js');
+const TAGES_SCHWANZ = 96 * 1024;
+const TAGES_MAX_SYM = 1500;
+const TAGES_MAX_TAGE = 260;
+function schwanzLesen(pfad, bytes) {
+  const fd = fs.openSync(pfad, 'r');
+  try {
+    const groesse = fs.fstatSync(fd).size;
+    const len = Math.min(groesse, bytes);
+    const buf = Buffer.alloc(len);
+    fs.readSync(fd, buf, 0, len, groesse - len);
+    return buf.toString('utf8');
+  } finally { fs.closeSync(fd); }
+}
+ipcMain.handle('markt-tagesreihen', async (_ev, symbole, tage) => {
+  try {
+    const n = Math.max(2, Math.min(TAGES_MAX_TAGE, parseInt(tage, 10) || 60));
+    const ordner = Kerzen.ordnerVon('1d');
+    const gesehen = new Set();
+    const reihen = {};
+    let fehlend = 0, unlesbar = 0, angefragt = 0;
+    for (const roh of (Array.isArray(symbole) ? symbole : [])) {
+      /* Aus dem Kuerzel wird ein Dateiname. Alles, was kein Kuerzel ist, fliegt
+       * hier raus - ein Punkt-Punkt im Namen waere sonst ein Weg aus dem Ordner
+       * heraus, und der Renderer bestimmt diese Liste. */
+      const sym = String(roh || '').toUpperCase().replace(/[^A-Z0-9.^-]/g, '').slice(0, 12);
+      if (!sym || gesehen.has(sym)) continue;
+      gesehen.add(sym);
+      angefragt++;
+      if (angefragt > TAGES_MAX_SYM) break;
+      const pfad = Kerzen.dateiFuer(sym, '1d', ordner);
+      if (!fs.existsSync(pfad)) { fehlend++; continue; }
+      try {
+        const reihe = MarktU.tagesreiheAusText(schwanzLesen(pfad, TAGES_SCHWANZ), n);
+        if (reihe.length) reihen[sym] = reihe; else unlesbar++;
+      } catch (e) { unlesbar++; }
+    }
+    return { ok: true, reihen: reihen, angefragt: angefragt,
+             geholt: Object.keys(reihen).length, fehlend: fehlend, unlesbar: unlesbar,
+             ordner: ordner, tage: n };
+  } catch (e) { return { ok: false, grund: String((e && e.message) || e), reihen: {} }; }
+});
+
+/* ---- Ergebnistermine des Marktes: heute und morgen ----
+ *
+ * Derselbe Endpunkt und dieselbe Crumb-Sitzung wie holeTermine() weiter oben -
+ * KEINE neue Aussengrenze. Der Unterschied ist die Frage: holeTermine fragt nach
+ * EINEM Kuerzel ueber die Jahre, hier wird nach einem ZEITRAUM ueber alle Werte
+ * gefragt. Fuer eine Uebersicht "wer berichtet heute" waere die andere Form
+ * hunderte Anfragen.
+ *
+ * `startdatetimetype` ist das Feld, an dem "vor Eroeffnung" und "nach Schluss"
+ * haengen (BMO/AMC/TAS). Ohne es stuende neben jedem Termin eine Uhrzeit, die
+ * Yahoo bei unbestaetigten Terminen frei setzt - das saehe nach Genauigkeit aus
+ * und waere keine. */
+async function holeTerminFenster(vonMs, bisMs) {
+  const s = await holeSitz();
+  if (!s.crumb) { yahooSitz = { cookie: null, crumb: null, at: 0 }; return { ok: false, grund: 'Kein Zugang zum Kalender (Cookie/Crumb)' }; }
+  /* NUR EINE Bedingung auf startdatetime, das Ende wird hier geschnitten.
+   *
+   * Am 04.09.2026 gemessen: zwei Bereichs-Operanden auf DEMSELBEN Feld ("gte" und
+   * "lt" im selben and) liefern Status 200 und NULL Zeilen - keine Fehlermeldung,
+   * kein Hinweis. Dieselbe Anfrage mit nur "gte" liefert 90 Zeilen. Die zweite
+   * Bedingung waere also eine still leere Liste gewesen, jeden Tag, und der Kasten
+   * haette "heute berichtet keiner" gesagt und damit gelogen. Geschnitten wird
+   * deshalb nach dem Abruf, wo man sieht, was man wegwirft. */
+  const koerper = JSON.stringify({
+    sortType: 'ASC', entityIdType: 'earnings', sortField: 'startdatetime', size: 250, offset: 0,
+    includeFields: ['ticker', 'companyshortname', 'startdatetime', 'startdatetimetype', 'epsestimate'],
+    query: { operator: 'and', operands: [
+      { operator: 'gte', operands: ['startdatetime', new Date(vonMs).toISOString().slice(0, 10)] },
+      { operator: 'eq', operands: ['region', 'us'] }
+    ] }
+  });
+  return new Promise((resolve) => {
+    const req = https.request({
+      hostname: 'query1.finance.yahoo.com',
+      path: '/v1/finance/visualization?crumb=' + encodeURIComponent(s.crumb) + '&lang=en-US&region=US',
+      method: 'POST',
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36',
+        'Content-Type': 'application/json',
+        'Content-Length': Buffer.byteLength(koerper),
+        Cookie: s.cookie || ''
+      }
+    }, (res) => {
+      let roh = '';
+      res.on('data', (d) => { roh += d; });
+      res.on('end', () => {
+        try {
+          const j = JSON.parse(roh);
+          const doc = j.finance.result[0].documents[0];
+          const spalten = doc.columns.map((c) => c.id);
+          const iT = spalten.indexOf('ticker'), iN = spalten.indexOf('companyshortname');
+          const iZ = spalten.indexOf('startdatetime'), iA = spalten.indexOf('startdatetimetype');
+          const alle = (doc.rows || []).map((r) => ({
+            sym: iT >= 0 ? String(r[iT] || '') : '',
+            name: iN >= 0 ? String(r[iN] || '') : '',
+            zeit: iZ >= 0 ? Date.parse(r[iZ]) || 0 : 0,
+            art: iA >= 0 ? String(r[iA] || '') : ''
+          })).filter((t) => t.sym && t.zeit);
+          /* EIN UNTERNEHMEN, EINE ZEILE. Yahoo fuehrt jede Gattung einzeln: JPMorgan
+           * stand am 04.09.2026 mit JPM, JPM-PC, JPM-PD und weiteren Vorzuegen in der
+           * Antwort - dieselbe Meldung, dreimal untereinander. Behalten wird das
+           * kuerzeste Kuerzel, wie es die Marktkarte fuer ihre Kacheln auch tut. */
+          const jeFirma = new Map();
+          alle.forEach((t) => {
+            const schluessel = t.name || t.sym;
+            const da = jeFirma.get(schluessel);
+            if (!da || t.sym.length < da.sym.length) jeFirma.set(schluessel, t);
+          });
+          const eindeutig = Array.from(jeFirma.values()).sort((a, b) => a.zeit - b.zeit);
+          const imFenster = eindeutig.filter((t) => t.zeit >= vonMs && t.zeit < bisMs);
+          /* Der naechste Termin AUSSERHALB des Fensters: ohne ihn waere "heute und
+           * morgen berichtet keiner" nicht von "die Quelle hat nichts geliefert" zu
+           * unterscheiden. Mit ihm steht in der leeren Liste ein Datum, und das ist
+           * der Beleg, dass der Abruf durchgekommen ist. */
+          const spaeter = eindeutig.find((t) => t.zeit >= bisMs) || null;
+          resolve({ ok: true, termine: imFenster, geholt: eindeutig.length,
+                    naechster: spaeter ? { sym: spaeter.sym, name: spaeter.name, zeit: spaeter.zeit } : null });
+        } catch (e) { resolve({ ok: false, grund: 'Antwort nicht lesbar (' + res.statusCode + ')' }); }
+      });
+    });
+    req.on('error', (e) => resolve({ ok: false, grund: String(e.message || e) }));
+    req.setTimeout(15000, () => { req.destroy(); resolve({ ok: false, grund: 'Zeitüberschreitung' }); });
+    req.write(koerper);
+    req.end();
+  });
+}
+ipcMain.handle('earnings-kalender', async (_ev, tage) => {
+  /* Der Zeitraum beginnt HEUTE (UTC) - nicht "jetzt": ein Termin von heute frueh
+   * gehoert in die Liste, auch wenn er schon vorbei ist. Wer sonst um 16 Uhr
+   * nachsieht, haelt einen leeren Vormittag fuer einen leeren Tag. */
+  const n = Math.max(1, Math.min(7, parseInt(tage, 10) || 2));
+  const heute0 = new Date(new Date().toISOString().slice(0, 10) + 'T00:00:00Z').getTime();
+  return await holeTerminFenster(heute0, heute0 + n * 86400000);
 });
 
 ipcMain.handle('sammler-stand', async () => sammlerStand());

@@ -63,6 +63,12 @@ contextBridge.exposeInMainWorld('api', {
   /* Reine Leseauskunft fuer die Archiv-Grafik: welche Handelstage liegen wirklich
    * im Archiv. Loest kein Sammeln aus (Stufe 4, 03.09.2026). */
   archivAbdeckung: () => ipcRenderer.invoke('archiv-abdeckung'),
+  /* Reine Leseauskunft fuer den Reiter Markt (Stufe 5, 04.09.2026): Tagesreihen aus
+   * dem Tagesarchiv (Volumen-Median, Wochen- und Monatsspanne) und die
+   * Ergebnistermine des Marktes fuer heute und morgen. Beide holen nichts nach und
+   * schreiben nichts. */
+  marktTagesreihen: (syms, tage) => ipcRenderer.invoke('markt-tagesreihen', syms, tage),
+  earningsKalender: (tage) => ipcRenderer.invoke('earnings-kalender', tage),
   sammlerStart: (intervall) => ipcRenderer.invoke('sammler-start', intervall),
   sammlerStop: () => ipcRenderer.invoke('sammler-stop'),
   sammlerEinstellen: (e) => ipcRenderer.invoke('sammler-einstellen', e),

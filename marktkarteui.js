@@ -549,4 +549,27 @@
     taktenAn();
   });
   window.__marktkarteLaden = laden;
+
+  /* ---- Leseauskunft fuer den Reiter Markt (Stufe 5, 04.09.2026) ----
+   *
+   * Der Ueberblick auf demselben Reiter braucht dieselbe Grundmenge und dieselben
+   * Kurse wie die Karte. Baute er sich eine EIGENE Auswahl, stuenden zwei Antworten
+   * auf dieselbe Frage nebeneinander: welche Papiere sind "der Markt"? Die Regeln
+   * dafuer sind hier gewachsen (nur Unternehmensaktien, eine Kachel je Unternehmen,
+   * keine auslaendischen Emittenten) und stehen deshalb weiter nur hier.
+   *
+   * REINES LESEN: nichts hiervon holt, schreibt oder zeichnet. auswahl() baut bei
+   * jedem Aufruf frische Objekte - der Aufrufer kann sie also gefahrlos mit seinen
+   * eigenen Feldern fuellen, ohne den Zwischenspeicher der Karte zu beruehren. */
+  window.Marktwerte = {
+    stammLaden: stammLaden,
+    artenLaden: artenLaden,
+    auswahl: auswahl,
+    /** Der Kurs aus dem Zwischenspeicher der Karte - oder null, wenn er aelter als
+     *  fuenf Minuten ist. Kein Abruf, keine Wartezeit. */
+    kurs: function (sym) {
+      if (!kursFrisch(sym)) return null;
+      return { kurs: KURSE[sym].kurs, pct: KURSE[sym].pct };
+    }
+  };
 })();

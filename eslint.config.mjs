@@ -23,6 +23,10 @@ const fensterGlobals = {
   Bugs: 'readonly', Diagnose: 'readonly', WKN: 'readonly', Scoreboard: 'readonly',
   Scheinfinder: 'readonly', MFHandel: 'readonly', MFDepot: 'readonly',
   Mittelfrist: 'readonly', DriftUI: 'readonly', Kalender: 'readonly',
+  /* Reiter Markt (Stufe 5, 04.09.2026): die Rechnung (MarktUebersicht) und die
+     Leseauskunft der Marktkarte (Marktwerte), ueber die der Ueberblick dieselbe
+     Grundmenge und dieselben Kurse benutzt wie die Karte. */
+  MarktUebersicht: 'readonly', Marktwerte: 'readonly',
   openModal: 'readonly', getSettings: 'readonly', saveSettings: 'readonly'
 };
 
@@ -57,9 +61,15 @@ export default [
    * gerade im Wiki installiert hat, und nicht an unserem Code (03.09.2026). */
   { ignores: ['node_modules/**', 'dist/**', 'wiki/.obsidian/**'] },
 
-  // Oberflaeche: laeuft im Renderer, kein Node
+  /* Oberflaeche: laeuft im Renderer, kein Node.
+     markt/*.js steht mit in der Liste, weil `files: ['*.js']` NUR die Wurzel trifft.
+     Ohne diese Zeile liefe markt/uebersicht.js an jeder Regel vorbei und waere mit
+     null Regeln geprueft - genau der blinde Fleck, den die Linter-Konfiguration bei
+     sich selbst schon einmal hatte (Issue #76, Punkt 4). Die Datei ist ein
+     UMD-Modul: sie laeuft im Renderer UND wird von main.js per require geholt,
+     deshalb stehen module und require hier ebenfalls zur Verfuegung. */
   {
-    files: ['*.js'],
+    files: ['*.js', 'markt/*.js'],
     ignores: ['main.js', 'preload.js', 'kerzenquelle.js', 'sammelplan.js', 'test-*.js', 'bt-worker.js'],
     languageOptions: {
       ecmaVersion: 2022, sourceType: 'script',
