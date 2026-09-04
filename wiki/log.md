@@ -5,6 +5,9 @@ tags: [steuerung]
 
 *Nur was sich am Wiki ändert. Die Projekt-Chronologie steht im Archiv `PROJEKTSTAND.md`.*
 
+- 04.09.2026 Release v8.40.0 (Wache): Kursarchiv-Sammler verhungert nicht mehr an unbespielbaren
+  Werten (arbeitet alle fälligen Auflösungen ab statt nur der ersten, zeigt Stillstand an);
+  Reiter Markt zeigt jetzt alle Aktien statt der 600 größten und aktualisiert jede Minute.
 - 04.09.2026 Release v8.39.0 (Wache): neuer Reiter „Markt" mit Index-Kacheln, Sektor-Leiste,
   fünf Hotlists, Marktzeit-Anzeige; Heute zeigt jetzt nur noch das eigene Depot.
 - 04.09.2026 Oberfläche Stufe 5 geliefert (Bau): [oberflaeche.md](oberflaeche.md) §3 Zielbild
