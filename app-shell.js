@@ -850,7 +850,7 @@
         '<b>Am 52-Wochen-Hoch</b> heißt: der Kurs steht bei mindestens 99,5 % des Zwölfmonatshochs. Der Spielraum ist eine Setzung und keine Messung.',
         'Alle fünf Listen sind <b>Anzeige, kein Signal</b>. Die große Signalstudie vom 23.08.2026 hat in 3.372 Tests keinen bestätigten Vorteil der Ausbruchsfamilie gefunden, und „heute stark gestiegen“ ist genau das. Wer daraus handeln will, misst es vorher.'
       ],
-      fuss: 'Gehandelt wird hiervon nichts. Keine Anlageberatung.'
+      fuss: 'Keine Anlageberatung.'
     },
     'markt.earnings': {
       titel: 'Ergebnistermine heute und morgen',
@@ -860,19 +860,27 @@
         'Die Liste ist eine <b>Warnung vor Bewegung</b>, keine Empfehlung: Was ein Unternehmen berichtet, steht hier nicht, und wie der Kurs darauf reagiert, ist hier nicht gemessen.',
         'Geholt wird einmal am Tag. Der Zeitraum beginnt um Mitternacht UTC – ein Termin von heute früh gehört in die Liste, auch wenn er schon vorbei ist.'
       ],
-      fuss: 'Gehandelt wird hiervon nichts. Keine Anlageberatung.'
+      fuss: 'Keine Anlageberatung.'
     },
     /* Die drei Beobachtungskarten auf "Heute". Der Satz "Ungemessen, reine Beobachtung
      * ... Keine Anlageberatung" stand dreimal fast woertlich in der Ueberschrift; er
      * steht jetzt einmal je Karte hier. Sichtbar BLEIBT "Gehandelt wird hiervon nichts" -
-     * das ist eine Zusicherung, keine Erklaerung, und gehoert nicht hinter einen Klick. */
+     * das ist eine Zusicherung, keine Erklaerung, und gehoert nicht hinter einen Klick.
+     *
+     * 04.09.2026 (F5 der UI-QS): Genau dieser Satz stand hier trotzdem noch fuenfmal
+     * als Fusszeile - bei drei Karten damit DOPPELT (Ueberschrift und i-Knopf
+     * derselben Karte), in der App achtmal. Die Fusszeilen sagen jetzt nur noch
+     * "Keine Anlageberatung."; die Zusicherung steht ausschliesslich dort, wo man sie
+     * ohne Klick liest. Bei Hotlists und Ergebnisterminen stand sie umgekehrt NUR
+     * hier - sie ist deshalb in deren Ueberschrift gewandert, nicht geloescht
+     * worden. Ergebnis: fuenf Karten, fuenfmal sichtbar, null hinter einem Klick. */
     'heute.radar': {
       titel: 'Spekulations-Radar',
       punkte: [
         'Gerüchte und Spekulationen aus öffentlichen Quellen, dreimal täglich vor US-Eröffnung gesammelt.',
         'Ungemessen, reine Beobachtung: Gerüchte sind oft falsch.'
       ],
-      fuss: 'Gehandelt wird hiervon nichts. Keine Anlageberatung.'
+      fuss: 'Keine Anlageberatung.'
     },
     'heute.insider': {
       titel: 'Insider-Käufe',
@@ -880,7 +888,7 @@
         'Meldepflichtige Eigengeschäfte von Vorstand und Aufsichtsrat US-notierter Firmen (SEC Form 4), nur offene Marktkäufe.',
         'Ungemessen, reine Beobachtung: der Effekt ist in der Literatur ein langsamer Halte-Effekt über Monate, keine Intraday-Kante.'
       ],
-      fuss: 'Gehandelt wird hiervon nichts. Keine Anlageberatung.'
+      fuss: 'Keine Anlageberatung.'
     },
     'heute.bestand': {
       titel: 'Meine Papiere',
@@ -891,6 +899,21 @@
         'Uebernommen wird ueber die ISIN. Eine WKN allein reicht nicht: sie laesst sich bei keiner freien Quelle in ein Boersenkuerzel uebersetzen (am 25.08.2026 nachgemessen - ISIN US0378331005 findet AAPL, WKN 846900 findet nichts).'
       ],
       fuss: 'Simulation. Keine Anlageberatung.'
+    },
+    /* 04.09.2026 (F10 der UI-QS): woertlich aus der Fusszeile unter der
+     * Positionstabelle (depot.js). Vier Saetze, 439 Zeichen - eine Regelbeschreibung
+     * auf einem Reiter, der laut Zielbild nur das eigene Geld zeigt. Kein Wort und
+     * keine Zahl ist dabei weggefallen; sichtbar geblieben ist der Wegweiser nach
+     * "Regeln -> Einstellungen", wo diese Regel wirklich eingestellt wird. */
+    'heute.positionen': {
+      titel: 'Nach welchen Regeln diese Positionen laufen',
+      punkte: [
+        'Gemessene Intraday-Kanten: nur Not-Stop, Ausstieg über die Zeit (8 bzw. 26 Handelsstunden), Übernacht erlaubt.',
+        'Widerlegte Setups: Stop −25 % / Ziel +35 %, Glattstellung zum Tagesschluss.',
+        'Altbestand der Stunden-Strategie: Stop −40 % / Ziel +80 %, Zeit-Ausstieg 10 Tage vor Fälligkeit.',
+        'Bei Scheinen: Bezugsverhältnis 0,1 · Spanne 2 % · Ordergebühr je Kauf und Verkauf simuliert; Hebel = Omega (Maus über den Wert zeigt das aktuelle Aufgeld).'
+      ],
+      fuss: 'Simulation mit virtuellem Kapital. Keine Anlageberatung.'
     },
     'heute.vorboerse': {
       titel: 'Vorbörsen-Lücken',
@@ -903,7 +926,7 @@
         'Eine Volumen-Schwelle steht bewusst nicht drin: Yahoo liefert vorbörslich kein Volumen (am 23.08.2026 an fünf liquiden Werten geprüft, jede Kerze 0). Gezählt wird deshalb, wie lange überhaupt gehandelt wurde.',
         'Durchsucht werden die Yahoo-Listen (Tagesgewinner, Nebenwerte, umsatzstärkste) und die 15 Werte dieses Reiters – nicht der ganze Markt: die Listen sortieren nach dem regulären Vortag, ein Wert, der erst heute Nacht springt, kann darin fehlen.'
       ],
-      fuss: 'Gehandelt wird hiervon nichts. Keine Anlageberatung.'
+      fuss: 'Keine Anlageberatung.'
     },
     'regeln.messen': {
       titel: 'Regeln, die nur messen',
@@ -1097,7 +1120,14 @@
         'Trendfinder: Zuerst steht der laufende Trend mit seinen drei Eigenschaften – Richtung, Güte, Breite –, dieselben drei, die auch der Aktien-Explorer zu einem Kanal nennt, aus derselben Rechnung. Der Trendwechsel ist der Sonderfall rechts daneben: der Moment, in dem der junge Abschnitt gegen den Vortrend dreht (Wunsch #58).',
         'Trend ohne Wendepunkt: Die Wechsel-Erkennung braucht zwei bestätigte Wendepunkte. Wo die fehlen, stand hier früher nur „zu wenig Historie“ – auch dann, wenn ein schnurgerader Trend lief. Jetzt steht dort der Kanal über die letzten 120 Kerzen, als „Fenster“ gekennzeichnet. Ein Wechsel-Urteil gibt es in solchen Zeilen weiterhin nicht – das wäre eine Zahl ohne Grundlage.',
         'Winkel = Steigung × Abschnittslänge ÷ Kanalbreite (wie steil relativ zum eigenen Rauschen; Vorzeichen = Richtung). „Wechsel“ = junger Abschnitt ist steiler als die Schwelle UND dreht gegen den Vortrend – die Studien-Bedingung. Zeile anklicken zeigt den Kursverlauf mit Wendepunkt und beiden Abschnitten (Wunsch #38). Simulation, keine Anlageberatung.',
-        'Zum Ausstieg: Der Detektor hat keine eigene Ausstiegsregel – er erkennt eine Drehung und sagt nichts darüber, wann man wieder heraus soll. Die einzige Regel, die aus ihm selbst folgt, ist die symmetrische: halten, bis der Winkel zurückdreht. Genau so ist die Spalte „Bisher“ gerechnet – jede vergangene Drehung dieser Reihe bis zur Gegendrehung.'
+        'Zum Ausstieg: Der Detektor hat keine eigene Ausstiegsregel – er erkennt eine Drehung und sagt nichts darüber, wann man wieder heraus soll. Die einzige Regel, die aus ihm selbst folgt, ist die symmetrische: halten, bis der Winkel zurückdreht. Genau so ist die Spalte „Bisher“ gerechnet – jede vergangene Drehung dieser Reihe bis zur Gegendrehung.',
+        /* 04.09.2026 (F9 der UI-QS): die letzten zwei ERKLAERENDEN Absaetze der
+         * Legende, woertlich aus wendeui.js. Sichtbar geblieben sind dort die zwei
+         * MESSAUSSAGEN (-0,17 Pp / t = -4,1 und +0,25 Pp widerlegt) - sie stehen im
+         * Kasten mit data-mess. Wie oben sind auch hier nur die Auszeichnungen
+         * weggefallen; kein Wort und keine Zahl. */
+        'Warum hier keine Ertragszahl steht: Es war eine geplant – und sie ist beim Nachrechnen durchgefallen. Auf 4.000 Fünf-Minuten-Kerzen findet der Detektor rund sechs Drehungen. Bei sechs Fällen entscheidet ein einziger Trade das Mittel, und das Vorzeichen kippt, sobald man nur die Abtastdichte ändert (−0,028 / +0,166 / +0,230 % bei gleicher Fallzahl). Für eine belastbare Bewertung bräuchte es rund 30 Fälle je Wert, also etwa 20.000 Kerzen – das Archiv hat gut 5.000.',
+        'Das ist selbst ein Ergebnis: Dieser Reiter kann seine eigenen Signale nicht bewerten. Er zeigt die Marktstruktur, und dafür ist er gut. Ob eine Drehung etwas einbringt, ist damit nicht zu beantworten – und eine Zahl hinzuschreiben, die es zu beantworten scheint, wäre schlechter als keine.'
       ]
     }
   });

@@ -5638,7 +5638,26 @@ console.log('\n39) Erklaertexte hinter dem i – ein Register, ein Fenster, ein 
      'auch die aus JS erzeugten Knoepfe tragen aria-expanded');
 
   /* --- Kein Knopf ohne Text, kein Text ohne Knopf --- */
-  var verwendet = (html.match(/data-info="([^"]+)"/g) || []).map(function (m) { return m.slice(11, -1); });
+  /* 04.09.2026: Diese Zaehlung las nur index.html - und war damit genau die Klinke,
+   * die die DATEI prueft, wo die APP gemeint ist. Ein Knopf, den erst ein Modul
+   * schreibt (Info.knopf(...) in depot.js, strategien.js, ...), zaehlte nicht mit;
+   * sein Registereintrag galt als "verwaist", obwohl ihn jeder Nutzer sieht.
+   * Jetzt zaehlen beide Quellen: das Markup UND die Knoepfe, die Module erzeugen.
+   * Das ist eine Schaerfung - die Liste wird groesser, nie kleiner. */
+  var infoModule = ['depot.js', 'strategien.js', 'wendeui.js', 'marktui.js', 'marktkarteui.js',
+                    'scoreboard.js', 'driftui.js', 'mittelfrist.js', 'mfdepot.js', 'backtestui.js',
+                    'archivkarte.js', 'renderer.js', 'explorer.js', 'scheine.js']
+    .filter(function (d) { return fs.existsSync(__dirname + '/' + d); })
+    .map(function (d) { return fs.readFileSync(__dirname + '/' + d, 'utf8'); }).join('\n');
+  /* Nur FESTE Schluessel. strategien.js baut seinen aus 'strategie.' + s.key und
+   * meldet ihn im selben render() an; ein Muster, das die Haelfte davon einsammelt,
+   * meldete den Torso "strategie." als fehlenden Eintrag - eine Klinke, die einen
+   * Fehler erfindet, ist so schlecht wie eine, die keinen findet. Das Komma bzw.
+   * die Klammer hinter dem Hochkomma trennt beides sauber. */
+  var ausModulen = (infoModule.match(/Info\.knopf\('([\w.]+)'\s*[,)]/g) || [])
+    .map(function (m) { return m.slice(m.indexOf("'") + 1, m.lastIndexOf("'")); });
+  var verwendet = (html.match(/data-info="([^"]+)"/g) || []).map(function (m) { return m.slice(11, -1); })
+    .concat(ausModulen);
   var angemeldet = (shell.match(/^    '([\w.]+)': \{$/gm) || []).map(function (m) { return m.trim().slice(1).split("'")[0]; });
   var ohneText = verwendet.filter(function (k) { return angemeldet.indexOf(k) < 0; });
   ok(ohneText.length === 0,
@@ -5727,8 +5746,12 @@ console.log('\n39) Erklaertexte hinter dem i – ein Register, ein Fenster, ein 
    * Wer es nicht liest, versteht nur weniger -> darf hinter das i. */
   var simnoten = (html.match(/class="simnote"/g) || []).length;
   ok(simnoten >= 3, 'der Simulationshinweis steht weiter im Markup  [' + simnoten + ']');
-  ok((html.match(/Gehandelt wird hiervon nichts/g) || []).length === 3,
-     'die drei Beobachtungskarten sagen weiter sichtbar, dass davon nichts gehandelt wird');
+  /* 04.09.2026 (F5 der UI-QS): aus drei sind fuenf geworden - nicht, weil der Satz
+   * oefter dasteht, sondern weil er bei Hotlists und Ergebnisterminen aus dem
+   * i-Knopf in die sichtbare Ueberschrift gewandert ist. Die vollstaendige Zaehlung
+   * ueber die APP (Markup UND Erklaerregister) steht in Abschnitt 73. */
+  ok((html.match(/Gehandelt wird hiervon nichts/g) || []).length === 5,
+     'die fuenf Anzeigekarten sagen weiter sichtbar, dass davon nichts gehandelt wird');
   ok(/Simulation mit virtuellem Kapital – keine Anlageberatung/.test(html),
      'die Simulations-Zusicherung ist nicht hinter einen Klick gewandert');
 
@@ -8347,13 +8370,19 @@ console.log('\n44) Oberflaeche nach Themen sortiert (Felix, Issue #68)');
     ok(vonK > -1 && /Gehandelt wird hiervon nichts/.test(markt.slice(vonK, bisK)),
        'Beobachtung: ueber ' + kid + ' steht der Simulationssatz weiterhin');
   });
-  /* Und er steht genau dreimal - nicht zweimal (eine Karte haette ihn beim Umzug
-   * verloren) und nicht viermal (jemand haette ihn zusaetzlich in den Kommentar
-   * geschrieben). Die Zaehlung laeuft ueber das GANZE Markup, nicht ueber den
-   * Reiter-Ausschnitt: ein viertes Vorkommen an einem anderen Ort faellt damit
-   * auch dann auf, wenn hier niemand daran gedacht hat. */
-  ok((html.match(/Gehandelt wird hiervon nichts/g) || []).length === 3,
-     'Beobachtung: der Satz steht genau dreimal - einmal je Karte',
+  /* Und er steht genau FUENFMAL - einmal je Karte, die ihn braucht: die drei
+   * Beobachtungskarten hier plus Hotlists und Ergebnistermine auf Markt ->
+   * Ueberblick. Nicht viermal (eine Karte haette ihn beim Umzug verloren) und
+   * nicht sechsmal (jemand haette ihn zusaetzlich hingeschrieben). Die Zaehlung
+   * laeuft ueber das GANZE Markup, nicht ueber den Reiter-Ausschnitt: ein
+   * zusaetzliches Vorkommen an einem anderen Ort faellt damit auch dann auf, wenn
+   * hier niemand daran gedacht hat.
+   * 04.09.2026: bis 8.40.1 stand hier die Zahl 3 - richtig ueber index.html,
+   * falsch ueber die App, denn das Erklaerregister fuehrte den Satz noch fuenfmal
+   * als Fusszeile (F5 der UI-QS: in der App achtmal). Die App-Zaehlung steht
+   * jetzt in Abschnitt 73; hier bleibt die Datei-Zaehlung als schnelle Klinke. */
+  ok((html.match(/Gehandelt wird hiervon nichts/g) || []).length === 5,
+     'Beobachtung: der Satz steht genau fuenfmal - einmal je Karte',
      (html.match(/Gehandelt wird hiervon nichts/g) || []).length);
   /* hoverInfo ist ein position:fixed Ueberlagerungsfenster, kein Inhalt. Laege es in
      einer Pille, waere es weg, sobald eine andere gewaehlt ist - und der
@@ -15981,6 +16010,303 @@ console.log('\n70) Das Universum wird mitgeliefert (#111)');
      'Der Erststart schreibt eine Zeile in den bestehenden Logweg');
   ok(/if\s*\(erg\.kopiert\s*\|\|\s*!erg\.ok\)/.test(block70),
      'aber nur beim Erststart und beim Fehlschlag - nicht bei jedem Start dieselbe Zeile');
+})();
+
+/* ===========================================================================
+ * 73) Texte und Zaehlungen: was die App SAGT, nicht was die Datei enthaelt
+ *
+ * Auftrag uebergabe/auftrag-texte-zaehlungen-2026-09-04.md, Funde F3/F5/F9/F10/F11
+ * der UI-QS vom 04.09.2026. Alle fuenf Funde haben dieselbe Wurzel wie die
+ * Fehlerform in wiki/fehlerformen.md: "die Klinke prueft die Datei, nicht das
+ * Verhalten". Deshalb steht hier zweierlei nebeneinander:
+ *
+ *   (a) Klinken auf die QUELLEN, die bei jedem Testlauf greifen (schnell, aber
+ *       blind fuer alles, was erst der Renderer schreibt).
+ *   (b) Eine Klinke auf die abgelegte LAUFZEIT-Messung
+ *       (wiki/aufnahmen/laufzeit.json, geschrieben von
+ *       tools/ui-aufnahmen.js --kunstdaten --messung). Sie sieht, was ein Leser
+ *       vor sich hat - auch das, was aus depot.js oder wendeui.js kommt.
+ *
+ * Warum beides: (b) allein waere so frisch wie der letzte Probelauf, und niemand
+ * merkt, wenn er alt ist. (a) allein hat F5 achtmal uebersehen. Zusammen halten
+ * sie sich gegenseitig ehrlich - die Uebereinstimmungs-Pruefung unten wird rot,
+ * sobald jemand die Texte aendert, ohne die Probe neu laufen zu lassen.
+ * =========================================================================== */
+console.log('\n73) Texte und Zaehlungen: F3 Untertitel, F5 Zusicherung, F9/F10 Textwaende');
+(function () {
+  var html = fs.readFileSync(__dirname + '/index.html', 'utf8');
+  var shell = fs.readFileSync(__dirname + '/app-shell.js', 'utf8');
+  var wui = fs.readFileSync(__dirname + '/wendeui.js', 'utf8');
+  var dep = fs.readFileSync(__dirname + '/depot.js', 'utf8');
+  var ark = fs.readFileSync(__dirname + '/archivkarte.js', 'utf8');
+
+  /* --------------------------------------------------------------------------
+   * (F3) Der reiteruebergreifende Untertitel ist weg
+   *
+   * #subnote stand ueber dem Cockpit auf JEDEM Reiter und beschrieb Inhalte, die
+   * seit Stufe 5 nur noch auf Markt liegen, samt eines Taktes, den es so nicht
+   * mehr gibt. Geprueft wird die EIGENSCHAFT (kein solches Element, keine Regel
+   * dafuer, kein Modul, das es fuellt), nicht der Wortlaut. */
+  ok(!/id="subnote"/.test(html) && !/class="subnote"/.test(html),
+     'F3: der reiteruebergreifende Untertitel steht nicht mehr im Markup');
+  ok(!/\.subnote\s*\{/.test(html),
+     'F3: und seine Regel im Stylesheet ist mitgegangen - keine tote Klasse');
+  var alleModule = ['renderer.js', 'app-shell.js', 'marktui.js', 'marktkarteui.js', 'depot.js']
+    .map(function (d) { return fs.readFileSync(__dirname + '/' + d, 'utf8'); }).join('\n');
+  ok(!/getElementById\('subnote'\)|querySelector\('#subnote'\)/.test(alleModule),
+     'F3: kein Modul greift nach ihm - es haengt nichts daran');
+  /* Gegenprobe: die Pruefung MUSS anschlagen, wenn er zurueckkommt. */
+  ok(/id="subnote"/.test('<div class="x" id="subnote">irgendwas</div>'),
+     'F3 Gegenprobe: dasselbe Muster findet einen wieder eingebauten Untertitel');
+
+  /* --------------------------------------------------------------------------
+   * (F5) "Gehandelt wird hiervon nichts" - einmal je Karte, und zwar SICHTBAR
+   *
+   * Bis 8.40.1 stand der Satz dreimal im Markup und fuenfmal als Fusszeile im
+   * Erklaerregister - in der App also achtmal, bei den drei Beobachtungskarten
+   * doppelt (Ueberschrift UND i-Knopf derselben Karte).
+   *
+   * Entscheidung: Der Satz ist eine ZUSICHERUNG, keine Erklaerung. Er bleibt
+   * dort, wo man ihn ohne Klick liest - in der Ueberschrift. Bei Hotlists und
+   * Ergebnisterminen stand er umgekehrt nur hinter dem i-Knopf; er ist deshalb
+   * dorthin gewandert, wo er wirkt. Ergebnis: fuenf Karten, fuenfmal sichtbar,
+   * keinmal hinter einem Klick.
+   *
+   * Gezaehlt wird ueber die App: Markup PLUS Register. Der Registerteil laeuft
+   * durch ohneKommentare(), sonst zaehlte der Kommentar mit, der genau erklaert,
+   * warum der Satz dort NICHT mehr steht - die Sperrklinke fraesse ihren eigenen
+   * Kommentar (wiki/fehlerformen.md). */
+  var SATZ = /Gehandelt wird hiervon nichts/g;
+  var imMarkup = (html.match(SATZ) || []).length;
+  var imRegister = (ohneKommentare(shell).match(SATZ) || []).length;
+  ok(imMarkup === 5, 'F5: der Satz steht fuenfmal sichtbar im Markup - einmal je Karte', imMarkup);
+  ok(imRegister === 0,
+     'F5: und keinmal mehr hinter einem i-Knopf - eine Zusicherung gehoert nicht hinter einen Klick',
+     imRegister);
+  ok(imMarkup + imRegister === 5,
+     'F5: in der ganzen App steht er damit fuenfmal statt achtmal', imMarkup + imRegister);
+  /* Je Karte genau einmal, und ueber der Karte, zu der er gehoert. Die drei
+   * Beobachtungskarten pruefte Abschnitt 68 schon; hier kommen die zwei Karten
+   * dazu, die ihn neu tragen. */
+  [['marktHotlists', 'markt.hotlists'], ['marktEarnings', 'markt.earnings']].forEach(function (paar) {
+    var bis = html.indexOf('id="' + paar[0] + '"');
+    var von = html.lastIndexOf('<h2', bis);
+    var kopf = von > -1 ? html.slice(von, bis) : '';
+    ok(/Gehandelt wird hiervon nichts/.test(kopf) && kopf.indexOf('data-info="' + paar[1] + '"') > -1,
+       'F5: ueber ' + paar[0] + ' steht die Zusicherung sichtbar, der i-Knopf daneben');
+  });
+  /* Gegenprobe zur Kommentar-Falle: derselbe Zaehler MUSS einen Satz in einer
+   * Fusszeile finden und einen im Kommentar UEBERSEHEN. Ohne diese zwei Faelle
+   * waere oben eine Null, von der niemand weiss, ob sie etwas geprueft hat. */
+  ok((ohneKommentare("fuss: 'Gehandelt wird hiervon nichts. Keine Anlageberatung.'").match(SATZ) || []).length === 1,
+     'F5 Gegenprobe: eine echte Fusszeile wird gezaehlt');
+  ok((ohneKommentare("/* Sichtbar bleibt: Gehandelt wird hiervon nichts */").match(SATZ) || []).length === 0,
+     'F5 Gegenprobe: derselbe Satz im Kommentar wird NICHT gezaehlt');
+
+  /* --------------------------------------------------------------------------
+   * (F9) Trendfinder: Messaussagen sichtbar, Erklaertext hinter den i-Knopf
+   *
+   * Geprueft wird die Eigenschaft, nicht der Wortlaut: die zwei Messaussagen
+   * stehen in einem als solchen ausgewiesenen Kasten, und die zwei
+   * Erklaerabsaetze stehen im Register statt in der Legende. */
+  ok(/data-mess="[^"]{10,}"/.test(wui),
+     'F9: die Messaussagen der Trendfinder-Legende stehen in einem ausgewiesenen Kasten');
+  ok(/−0,17 Pp je Trade bei t = −4,1/.test(wui) && /0,074 Pp, t = 1,22/.test(wui),
+     'F9: beide Messaussagen sind wortgleich sichtbar geblieben');
+  ok(!/Warum hier keine Ertragszahl steht/.test(ohneKommentare(wui)) &&
+     /Warum hier keine Ertragszahl steht/.test(shell),
+     'F9: der Erklaerabsatz ist ins Register gewandert - verschoben, nicht geloescht');
+  ok(!/kann seine eigenen Signale nicht/.test(ohneKommentare(wui)) &&
+     /kann seine eigenen Signale nicht/.test(shell),
+     'F9: ebenso der Absatz "Dieser Reiter kann seine eigenen Signale nicht bewerten"');
+  /* Verschoben heisst WOERTLICH: die Zahlen aus dem Absatz muessen im Register
+   * alle wieder auftauchen. Faellt eine beim Umzug heraus, faellt es hier auf. */
+  ['4.000 Fünf-Minuten-Kerzen', '−0,028 / +0,166 / +0,230 %', '30 Fälle je Wert', '20.000 Kerzen']
+    .forEach(function (zahl) {
+      ok(shell.indexOf(zahl) > -1, 'F9: die Zahl "' + zahl + '" ist beim Umzug mitgekommen');
+    });
+
+  /* --------------------------------------------------------------------------
+   * (F10) Heute zeigt das eigene Geld, nicht das Regelbuch
+   *
+   * Unter der Positionstabelle standen 439 Zeichen Regelbeschreibung. Sie ist
+   * woertlich ins Register gewandert; sichtbar blieb ein Satz mit Wegweiser. */
+  ok(/Info\.knopf\('heute\.positionen'/.test(dep),
+     'F10: unter der Positionstabelle sitzt jetzt ein i-Knopf');
+  ok(/'heute\.positionen': \{/.test(shell),
+     'F10: und er findet einen Eintrag im Register');
+  ok(!/Gemessene Intraday-Kanten/.test(ohneKommentare(dep)) &&
+     /Gemessene Intraday-Kanten/.test(shell),
+     'F10: die Regelbeschreibung steht im Register, nicht mehr auf "Heute"');
+  ['Stop −25 % / Ziel +35 %', 'Stop −40 % / Ziel +80 %', 'Bezugsverhältnis 0,1', '8 bzw. 26 Handelsstunden']
+    .forEach(function (zahl) {
+      ok(shell.indexOf(zahl) > -1, 'F10: die Angabe "' + zahl + '" ist beim Umzug mitgekommen');
+    });
+  ok(/Regeln → Einstellungen/.test(dep),
+     'F10: der sichtbare Rest ist ein Wegweiser dorthin, wo die Regel eingestellt wird');
+
+  /* --------------------------------------------------------------------------
+   * (F11) Einzahl und Mehrzahl
+   *
+   * "juengste Kerze vor 1 Minuten" stand in allen fuenf Zeilen der Archivkarte.
+   * Geprueft wird die FUNKTION, nicht die Zeichenkette: sie wird hier wirklich
+   * aufgerufen. Dafuer wird sie aus der Datei geschnitten und ausgefuehrt - das
+   * ist die einzige Art, eine Formulierungsregel zu pruefen, ohne sie
+   * abzuschreiben. */
+  var mengeQuelle = /function menge\(zahl, einzahl, mehrzahl\) \{[\s\S]*?\n  \}/.exec(ark);
+  ok(!!mengeQuelle, 'F11: die Einzahl/Mehrzahl-Funktion ist auffindbar');
+  if (mengeQuelle) {
+    /* eslint-disable-next-line no-new-func */
+    var menge = new Function('return (' + mengeQuelle[0].replace(/^function/, 'function') + ');')();
+    ok(menge(1, 'Minute', 'Minuten') === '1 Minute', 'F11: 1 -> Einzahl', menge(1, 'Minute', 'Minuten'));
+    ok(menge(2, 'Minute', 'Minuten') === '2 Minuten', 'F11: 2 -> Mehrzahl', menge(2, 'Minute', 'Minuten'));
+    ok(menge(1.5, 'Stunde', 'Stunden') === '1,5 Stunden',
+       'F11: Nachkommastelle mit Komma, und Mehrzahl', menge(1.5, 'Stunde', 'Stunden'));
+    ok(menge(0, 'Minute', 'Minuten') === '0 Minuten', 'F11: 0 -> Mehrzahl (deutsch)', menge(0, 'Minute', 'Minuten'));
+  }
+  ok(/mengeText\(Math\.max\(1, Math\.round\(std \* 60\)\), 'Minute', 'Minuten'\)/.test(ark) &&
+     /menge\(e\.nachSchlussMinuten, 'Minute', 'Minuten'\)/.test(ark),
+     'F11: beide Stellen mit einer variablen Minutenzahl gehen durch die Funktion');
+
+  /* --------------------------------------------------------------------------
+   * (F9/F10, dauerhaft) Dauertext je Block - gelesen aus der Laufzeit-Messung
+   *
+   * Die Klinke aus Stufe 3 (Abschnitt 65) liest index.html. Sie hat F9 (1.304
+   * Zeichen aus wendeui.js) und F10 (439 aus depot.js) nicht sehen KOENNEN.
+   * Diese hier liest, was die Probe am laufenden Fenster gemessen hat.
+   *
+   * Was die Messung ausdruecklich NICHT zaehlt, steht in tools/ui-aufnahmen.js:
+   * Ueberschriften, Tabellen, Listen, Bedienelemente, Unsichtbares und
+   * Messaussagen-Kaesten ([data-mess]). Eine Messaussage darf nie gegen eine
+   * Zeichengrenze laufen - sonst kuerzt sie irgendwann jemand, um hier gruen zu
+   * werden. Deshalb steht in der Ausnahmeliste unten KEINE Messaussage: die
+   * braucht keine Ausnahme, sie ist schon draussen.
+   *
+   * Was stattdessen drinsteht, ist der GEMESSENE Bestand vom 04.09.2026 - jede
+   * Zeile mit dem Grund, warum sie heute noch ueber 240 liegt. Zwei Sorten:
+   *   - "Daten": der Block traegt Zahlen und Zeilen, die nur deshalb als Text
+   *     zaehlen, weil sie nicht in einer <table> oder <ul> stehen. Kein
+   *     Erklaertext, nichts zu kuerzen - hier waere das Markup zu aendern.
+   *   - "Schuld": echter Erklaertext, der nach demselben Muster wie F9 und F10
+   *     hinter einen i-Knopf gehoert. Er stand nicht in diesem Auftrag; die
+   *     Liste ist die Rechnung, die dafuer offen bleibt.
+   * Beides ehrlich benannt, damit niemand die Liste fuer ein Guetesiegel haelt.
+   *
+   * Die Liste ist eine Sperrklinke im Wortsinn: sie haelt den Stand, sie lobt
+   * ihn nicht. Ein NEUER Block ueber 240 wird rot, F9 und F10 werden rot, wenn
+   * sie zurueckkommen. */
+  var GRENZE73 = 240;
+  var AUSNAHMEN = [
+    { ort: 'Zuletzt getan · .panel', art: 'Daten',
+      grund: 'Die juengsten Handlungen aller Buecher: Zeitpunkt, Buch, Wert, Betrag. Eine Liste, die als div-Zeilen gebaut ist.' },
+    { ort: 'Sektoren – nach Marktkapitalisierung gewichtet, Branchen aus · .panel', art: 'Daten',
+      grund: 'Elf Sektorbalken mit Prozent und Anzahl, plus die Zeile, aus wie vielen Werten sie kommen.' },
+    { ort: 'Marktkarte · .panel', art: 'Daten',
+      grund: 'Stand, Legende und die Warnung, wenn die Wertpapierarten fehlen - Zustand der Karte, kein Erklaertext.' },
+    { ort: 'Insider-Käufe · #insiderKarte', art: 'Daten',
+      grund: 'Je Zeile Kuerzel, Name, Volumen, Zahl der Insider, Stueck und Kurs. Fremdinhalt als Liste, nicht als Absatz.' },
+    { ort: 'Vorbörsen-Lücken · #vormarktKarte', art: 'Daten',
+      grund: 'Je Zeile Kuerzel, Luecke, Kurs und Handelsdauer, dazu die Statuszeile der Karte.' },
+    { ort: 'In Messung · .panel', art: 'Daten',
+      grund: 'Belegstand-Gruppe der Regeln-Seite: je Strategie Name, Urteil und wo sie waehlbar ist.' },
+    { ort: 'Belegt oder aktiv gehandelt · .panel', art: 'Daten',
+      grund: 'Dieselbe Gruppe fuer die laufenden Regeln - je Zeile Urteil und Kurzbeschreibung.' },
+    { ort: 'Strategien · #strategienKarte', art: 'Daten',
+      grund: 'Das Strategieregister: je Regel Datei, Laeufe und Belegstatus. Eine Tabelle in div-Form.' },
+    { ort: 'Kursarchiv · #archivKarte', art: 'Daten',
+      grund: 'Je Aufloesung Abdeckung, Werte und Alter der juengsten Kerze - genau die Zeilen aus F11.' },
+    { ort: 'Was hat gewirkt? · .panel', art: 'Schuld',
+      grund: 'Erklaerabsatz zur Autopilot-Wirkung. Gehoert nach dem Muster von F9/F10 hinter einen i-Knopf; nicht Teil dieses Auftrags.' },
+    { ort: 'Neue Strategie ins Rennen schicken · #strategieEingabe', art: 'Schuld',
+      grund: 'Erklaerabsatz "Drei Dinge braucht eine Strategie". Dieselbe Rechnung, offen.' },
+    { ort: 'Ergebnis-Drift · Aktien, keine Hebelscheine · .panel', art: 'Schuld',
+      grund: 'Erklaerabsatz zur Drift-Regel. Enthaelt Messzahlen und muss deshalb sorgfaeltig getrennt werden - offen.' },
+    { ort: 'Autopilot · .panel', art: 'Schuld',
+      grund: 'Erklaerabsatz zur Uebernahme-Regel des Autopiloten. Offen.' },
+    { ort: 'Strategie-Chart · #stratChartPanel', art: 'Schuld',
+      grund: 'Erklaerabsatz, was das Chart nachrechnet. Offen.' },
+    { ort: 'Regeln, die nur messen · #regelnKarte', art: 'Schuld',
+      grund: 'Erklaerabsatz zur Rolle mitlaufender Regeln. Offen.' },
+    { ort: 'Wann die Strategie nichts getan hat · .panel', art: 'Schuld',
+      grund: 'Erklaerabsatz zu den Verwerfungsgruenden. Offen.' }
+  ];
+
+  function waende(messung, grenze, ausnahmen) {
+    var erlaubt = ausnahmen.map(function (a) { return a.ort; });
+    var funde = [], gesehen = {};
+    (messung.bloecke || []).forEach(function (seite) {
+      (seite.bloecke || []).forEach(function (b) {
+        if (b.len <= grenze || erlaubt.indexOf(b.ort) >= 0 || gesehen[b.ort]) return;
+        gesehen[b.ort] = 1;
+        funde.push(seite.seite + ' | ' + b.ort + ' (' + b.len + ')');
+      });
+    });
+    return funde;
+  }
+
+  var pfad = __dirname + '/wiki/aufnahmen/laufzeit.json';
+  var da = fs.existsSync(pfad);
+  ok(da, 'Laufzeit-Messung liegt im Repo (tools/ui-aufnahmen.js --kunstdaten --messung)');
+  if (da) {
+    var M = JSON.parse(fs.readFileSync(pfad, 'utf8'));
+    /* Eine Messung, die nichts gemessen hat, ist die gefaehrlichste Sorte gruen. */
+    ok(M.kunstdaten === true && M.breite === 1280 && !isNaN(Date.parse(M.stand)),
+       'Messung: mit Kunstdaten, bei 1280 px, mit Zeitstempel', M.stand);
+    ok((M.bloecke || []).length >= 11 && (M.saetze || []).length >= 10,
+       'Messung: alle Reiter und Pillen sind darin', (M.bloecke || []).length + ' Seiten');
+    var gemessen = (M.bloecke || []).reduce(function (s, x) { return s + x.bloecke.length; }, 0);
+    ok(gemessen >= 40, 'Messung: sie hat wirklich Bloecke gefunden', gemessen);
+
+    var w = waende(M, GRENZE73, AUSNAHMEN);
+    ok(w.length === 0,
+       'Dauertext: kein Block ueber ' + GRENZE73 + ' Zeichen ausserhalb der benannten Ausnahmen',
+       w.join(' | ') || 'keiner');
+
+    /* F9 und F10 namentlich - sie sind der Grund fuer diese Klinke. */
+    var alle = {};
+    (M.bloecke || []).forEach(function (s) { s.bloecke.forEach(function (b) {
+      alle[b.ort] = Math.max(alle[b.ort] || 0, b.len); }); });
+    ok((alle['Trendfinder · [wende]'] || 0) <= GRENZE73,
+       'F9 bleibt unten: die Trendfinder-Legende ist kein Dauertext mehr', alle['Trendfinder · [wende]']);
+    ok((alle['Offene Positionen · #positionsPanel'] || 0) <= GRENZE73,
+       'F10 bleibt unten: unter der Positionstabelle steht ein Satz',
+       alle['Offene Positionen · #positionsPanel']);
+
+    /* Keine tote Ausnahme: jeder Eintrag muss einen Block bezeichnen, den es
+     * wirklich gibt. Verschwindet oder heisst er anders, gehoert die Zeile raus -
+     * sonst waechst hier eine Liste, die alles erlaubt und nichts benennt. */
+    var tot = AUSNAHMEN.filter(function (a) { return alle[a.ort] === undefined; })
+      .map(function (a) { return a.ort; });
+    ok(tot.length === 0, 'Ausnahmeliste: kein Eintrag zeigt ins Leere', tot.join(' | ') || 'keiner');
+    ok(AUSNAHMEN.every(function (a) { return a.grund && a.grund.length > 30 && /^(Daten|Schuld)$/.test(a.art); }),
+       'Ausnahmeliste: jeder Eintrag nennt seine Art und seinen Grund');
+
+    /* Die Satzzaehlung aus derselben Messung - und der Abgleich mit den Quellen.
+     * Weichen sie ab, ist entweder der Text geaendert oder die Probe alt; beides
+     * gehoert gesehen, bevor jemand die Zahl weitererzaehlt. */
+    var sichtbar = 0, hinter = 0;
+    (M.saetze || []).forEach(function (s) {
+      var z = s.saetze && s.saetze['Gehandelt wird hiervon nichts'];
+      if (z) { sichtbar += z.sichtbar; hinter += z.hinterKnopf; }
+    });
+    ok(sichtbar === 5 && hinter === 0,
+       'F5 in der laufenden App: fuenfmal sichtbar, keinmal hinter einem i-Knopf',
+       sichtbar + ' / ' + hinter);
+    ok(sichtbar === imMarkup && hinter === imRegister,
+       'F5: Laufzeit-Messung und Quellen sagen dasselbe - die Messung ist nicht veraltet',
+       sichtbar + '/' + hinter + ' gegen ' + imMarkup + '/' + imRegister);
+  }
+
+  /* Gegenproben zur Block-Klinke. Ohne sie waere "kein Block ueber 240" eine
+   * Zusicherung, von der niemand weiss, ob sie ueberhaupt hinsieht. */
+  var probe = { bloecke: [{ seite: 'test', bloecke: [{ ort: 'Erfundener Block · .panel', len: 999 }] }] };
+  ok(waende(probe, GRENZE73, AUSNAHMEN).length === 1,
+     'Gegenprobe: eine eingebaute Wand wird gefunden');
+  ok(waende(probe, GRENZE73, AUSNAHMEN.concat([{ ort: 'Erfundener Block · .panel', art: 'Daten', grund: 'nur fuer die Gegenprobe' }])).length === 0,
+     'Gegenprobe: dieselbe Wand auf der Ausnahmeliste wird durchgelassen - die Liste wirkt');
+  ok(waende({ bloecke: [{ seite: 'test', bloecke: [{ ort: 'Knapp darunter · .panel', len: GRENZE73 }] }] },
+            GRENZE73, AUSNAHMEN).length === 0,
+     'Gegenprobe: genau auf der Grenze ist noch kein Fund');
 })();
 
 Promise.all(offeneProben).then(function () {

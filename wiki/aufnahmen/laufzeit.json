@@ -1,0 +1,520 @@
+{
+  "stand": "2026-09-04T12:16:01.948Z",
+  "kunstdaten": true,
+  "breite": 1280,
+  "werkzeug": "tools/ui-aufnahmen.js <ziel> --kunstdaten --messung",
+  "bloecke": [
+    {
+      "seite": "dashboard/ueberblick",
+      "sel": "#sub-ueberblick",
+      "bloecke": [
+        {
+          "ort": "Zuletzt getan · .panel",
+          "len": 242,
+          "anfang": "04.09.26, 09:15 UhrIntradayCall NVDA2.915,90 $02.09.26, 18:15 UhrIntradayTSM geschlossen+128,90 $02.09.26, 11:15 UhrIntr"
+        },
+        {
+          "ort": "Momentum-Buch · stärkstes Zehntel, alle 63 Handelstage, 20 B · #buchMomentum",
+          "len": 93,
+          "anfang": "103.574,19 $+3.574,19 $ · +3,6 %Stand vom 04.09.26 – der Takt hat seither nicht neu bewertet."
+        },
+        {
+          "ort": "Ergebnis-Drift-Buch · 60 Handelstage je Position, long und s · #buchDrift",
+          "len": 92,
+          "anfang": "98.528,23 $-1.471,77 $ · -1,5 %Stand vom 04.09.26 – der Takt hat seither nicht neu bewertet."
+        },
+        {
+          "ort": "Offene Positionen · #positionsPanel",
+          "len": 75,
+          "anfang": "Ein- und Ausstieg folgen der Intraday-Regel unter „Regeln → Einstellungen“."
+        },
+        {
+          "ort": "Depotverlauf (seit Start der Simulation) · .panel",
+          "len": 47,
+          "anfang": "Verlauf+0,9 %Hoch101.253 $Max. Rücksetzer-0,4 %"
+        },
+        {
+          "ort": "Depotverlauf · .panel",
+          "len": 46,
+          "anfang": "Momentum-BuchErgebnis-Drift-BuchIntraday-Depot"
+        },
+        {
+          "ort": "Intraday-Depot · die Kurzfrist-Regel, virtuelles Kapital · #buchIntraday",
+          "len": 30,
+          "anfang": "100.488,12 $+488,12 $ · +0,5 %"
+        }
+      ],
+      "ohneBlock": {
+        "len": 699,
+        "anfang": "Simulation mit virtuellem Kapital – keine Anlageberatung. Gehandelt wird der Basiswert (Aktie 1×, ohne Hebel). Mittelfrist-Depot · Momentum und Ergebnis-Drift handeln Was die Messmaschine zur laufende"
+      }
+    },
+    {
+      "seite": "dashboard/papiere",
+      "sel": "#sub-papiere",
+      "bloecke": [
+        {
+          "ort": "Meine Papiere · #bestandTabelle",
+          "len": 86,
+          "anfang": "Noch keine eigenen Papiere. Unten den Auszug der Depotbank einfügen – die ISIN genügt."
+        }
+      ],
+      "ohneBlock": {
+        "len": 0,
+        "anfang": ""
+      }
+    },
+    {
+      "seite": "markt/marktueberblick",
+      "sel": "#sub-marktueberblick",
+      "bloecke": [
+        {
+          "ort": "Sektoren – nach Marktkapitalisierung gewichtet, Branchen aus · .panel",
+          "len": 303,
+          "anfang": "Energie+1,95 %5 WerteGesundheit+0,49 %5 WerteFinanzen-0,03 %5 WerteTechnologie-0,85 %5 WerteEin Tag: aus den laufenden K"
+        }
+      ],
+      "ohneBlock": {
+        "len": 2247,
+        "anfang": "Vorbörslicher Handel – dünner Umsatz, Kurse können springenKurse: Stand 14:15 UhrKursabruf gescheitert: nur 1 von 21 Kursen angekommen – angezeigt ist der letzte vollständige StandNvidia-Aktie: Ein Kn"
+      }
+    },
+    {
+      "seite": "markt/marktkarte",
+      "sel": "#sub-marktkarte",
+      "bloecke": [
+        {
+          "ort": "Marktkarte · .panel",
+          "len": 527,
+          "anfang": "Stand: 14:15:41TechnologieOhne Klassifizierung der Wertpapierarten (Abruf fehlgeschlagen): Vorzugsserien, Fonds und Zert"
+        }
+      ],
+      "ohneBlock": {
+        "len": 0,
+        "anfang": ""
+      }
+    },
+    {
+      "seite": "markt/beobachtung",
+      "sel": "#sub-beobachtung",
+      "bloecke": [
+        {
+          "ort": "Insider-Käufe · #insiderKarte",
+          "len": 1851,
+          "anfang": "BABA Alibaba Group Holding15,27 Mio $2 INSIDERTsai Joseph C (Aufsichtsrat)und 1 weiterer – 1.070.000 Stück zu 14,27 $ · "
+        },
+        {
+          "ort": "Vorbörsen-Lücken · #vormarktKarte",
+          "len": 336,
+          "anfang": "Vorbörse läuft – die Karte sieht alle 10 Minuten von selbst nach.PL Planet Labs PBC+10,51 %20,28 $ vorbörslich · in 52 v"
+        },
+        {
+          "ort": "Spekulations-Radar · #spekRadar",
+          "len": 90,
+          "anfang": "Gerade keine nennenswerten Spekulationen im Radar (Stand 18:43 Uhr, Gemeinschafts-Ablage)."
+        }
+      ],
+      "ohneBlock": {
+        "len": 0,
+        "anfang": ""
+      }
+    },
+    {
+      "seite": "strategien/regeln",
+      "sel": "#sub-regeln",
+      "bloecke": [
+        {
+          "ort": "In Messung · .panel",
+          "len": 570,
+          "anfang": "EMA-KreuzungAusbruch-Setupnicht gemessen – die Nachtmessung prüft weiterwählbar als Auslöser: Pille „Einstellungen“Eröff"
+        },
+        {
+          "ort": "Belegt oder aktiv gehandelt · .panel",
+          "len": 558,
+          "anfang": "Kurzfristig · Intradaygemessen – gegen Kontrolle nicht entscheidbarKauft im laufenden Handel den RSI(2)-Rücklauf im Seit"
+        }
+      ],
+      "ohneBlock": {
+        "len": 2527,
+        "anfang": "Kein Protokoll sagt derzeit „bestätigt“ – hier steht, was aktiv (mit virtuellem Kapital) läuft.Mittelfristig · Momentum im Querschnittgemessen – hält die volle Historie, nicht die zurückgehaltenen Jah"
+      }
+    },
+    {
+      "seite": "strategien/einstellungen",
+      "sel": "#sub-einstellungen",
+      "bloecke": [
+        {
+          "ort": "Eigene Watchlist · .panel",
+          "len": 163,
+          "anfang": "Diese Werte und die 15 Standard-Werte werden in jeder Runde geprüft. Noch keine eigenen Werte.Hinzufügen: Wert im Aktien"
+        }
+      ],
+      "ohneBlock": {
+        "len": 137,
+        "anfang": "aktivGemessene StellschraubenAktiv – wartet auf US-Handelsbeginn (15:30 Uhr Berlin).okHeute: +0,18 % · In Scheinen: 3 % · Positionen: 1/8"
+      }
+    },
+    {
+      "seite": "werkzeuge/explorer",
+      "sel": "#sub-explorer",
+      "bloecke": [
+        {
+          "ort": "Einen Wert öffnen · .panel",
+          "len": 104,
+          "anfang": "Suche nach Ticker oder Name (auch deutsche Aktien, ETFs, Indizes, Krypto) – oder starte mit einem Klick:"
+        }
+      ],
+      "ohneBlock": {
+        "len": 0,
+        "anfang": ""
+      }
+    },
+    {
+      "seite": "werkzeuge/scheine",
+      "sel": "#sub-scheine",
+      "bloecke": [
+        {
+          "ort": "Schein-Finder · Kennzahlen und Risikostufe · .panel",
+          "len": 132,
+          "anfang": "Jeder Schein hier verhält sich exakt so wie in der Simulation. Noch nichts gerechnet. Oben Basiswert wählen, dann „Laden"
+        }
+      ],
+      "ohneBlock": {
+        "len": 0,
+        "anfang": ""
+      }
+    },
+    {
+      "seite": "werkzeuge/betrieb",
+      "sel": "#sub-betrieb",
+      "bloecke": [
+        {
+          "ort": "Strategien · #strategienKarte",
+          "len": 1004,
+          "anfang": "Noch kein Messprotokoll – die Spalten Läufe und Zuletzt erscheinen nach der ersten Messung.Nicht gelistet: 4 Hilfsdatei("
+        },
+        {
+          "ort": "Was hat gewirkt? · .panel",
+          "len": 691,
+          "anfang": "Jede automatische Änderung mit gemessener Wirkung: Ø Gewinn je Intraday-Trade davor gegen danach, sortiert nach Wirkung,"
+        },
+        {
+          "ort": "Neue Strategie ins Rennen schicken · #strategieEingabe",
+          "len": 494,
+          "anfang": "Drei Dinge braucht eine Strategie: einen Grund, eine Regel, wann gekauft wird, und die Festlegung vorher, was geprüft we"
+        },
+        {
+          "ort": "Ergebnis-Drift · Aktien, keine Hebelscheine · .panel",
+          "len": 490,
+          "anfang": "Gekauft wird das oberste Fünftel der Überraschungen, verkauft das unterste – im Basiswert, nicht mit Hebelscheinen: Der "
+        },
+        {
+          "ort": "Autopilot · .panel",
+          "len": 457,
+          "anfang": "Übernommen wird nur, was sich in zwei Nächten hintereinander bestätigt; von Hand gesetzte Felder bleiben unangetastet. N"
+        },
+        {
+          "ort": "Strategie-Chart · #stratChartPanel",
+          "len": 442,
+          "anfang": "Rechnet die gemessene Regel auf den Kerzen eines Werts nach. Jede Markierung ist ein Einstieg, den die Regel dort gegebe"
+        },
+        {
+          "ort": "Regeln, die nur messen · #regelnKarte",
+          "len": 319,
+          "anfang": "Eine Regel festschreiben und mitlaufen lassen, ohne dass Geld bewegt wird – geprüft auf denselben Kerzen wie die gehande"
+        },
+        {
+          "ort": "Wann die Strategie nichts getan hat · .panel",
+          "len": 271,
+          "anfang": "Wie oft die Filter ein Signal bewusst verworfen haben – und warum. Der häufigste Grund ist der stärkste Hebel: „Wer nich"
+        },
+        {
+          "ort": "Live-Signal-Monitor · .panel",
+          "len": 240,
+          "anfang": "Noch kein Scan gelaufen – der Monitor füllt sich, sobald die Intraday-Strategie aktiv ist und die US-Börse geöffnet hat."
+        },
+        {
+          "ort": "Scoreboard · #scoreboardKarte",
+          "len": 239,
+          "anfang": "Die App rechnet hier nichts. Sie zeigt die Protokolle der Messmaschine aus dem Datenordner. Noch kein Protokoll. Unten e"
+        },
+        {
+          "ort": "Bilanz dieser Regel · #regelBilanz",
+          "len": 238,
+          "anfang": "Was die Regel getan hat, was sie nicht getan hat, und wie sie gegen einfaches Halten steht. Der Vergleich gegen Buy & Ho"
+        },
+        {
+          "ort": "Mittelfrist-Bücher steuern · .panel",
+          "len": 148,
+          "anfang": "Erster Start: Tageskurse für 193 Werte werden geladen (einmalig, ein paar Minuten) …Was die beiden Bücher halten, steht "
+        },
+        {
+          "ort": "Momentum im Querschnitt · Aktien, keine Hebelscheine · .panel",
+          "len": 111,
+          "anfang": "Konfiguration wie gemessen (Studie 02.09.2026) – Änderungen nur über eine neue Messung.Lade Tageskurse … 40/193"
+        },
+        {
+          "ort": "Depot gegen Buy & Hold · .panel",
+          "len": 106,
+          "anfang": "Seit Depot-Start: Depot +0,89 % · S&P +0,03 % · NDQ -0,23 %KI-DepotS&P 500 (Buy & Hold)Nasdaq (Buy & Hold)"
+        },
+        {
+          "ort": "Die Regel, die handelt · #regelKarte",
+          "len": 76,
+          "anfang": "Was gerade eingestellt ist – mit Chart, Bedingungen und Bilanz an einem Ort."
+        },
+        {
+          "ort": "Trendfinder · [wende]",
+          "len": 69,
+          "anfang": "Beobachtung, kein Handel.Noch nicht geprüft – „Jetzt prüfen“ klicken."
+        },
+        {
+          "ort": "Kursarchiv · #archivKarte",
+          "len": 21,
+          "anfang": "Sehe im Archiv nach …"
+        },
+        {
+          "ort": "Was jetzt zu halten wäre · .panel",
+          "len": 21,
+          "anfang": "Noch nicht gerechnet."
+        },
+        {
+          "ort": "Wie es sich geschlagen hat · .panel",
+          "len": 21,
+          "anfang": "Noch nicht gerechnet."
+        }
+      ],
+      "ohneBlock": {
+        "len": 85,
+        "anfang": "Maschinenraum — was die Nachtjobs und Messungen brauchen. Für den Alltag nicht nötig."
+      }
+    },
+    {
+      "seite": "werkzeuge/betrieb (Klappen offen)",
+      "sel": "#sub-betrieb",
+      "bloecke": [
+        {
+          "ort": "Strategien · #strategienKarte",
+          "len": 1004,
+          "anfang": "Noch kein Messprotokoll – die Spalten Läufe und Zuletzt erscheinen nach der ersten Messung.Nicht gelistet: 4 Hilfsdatei("
+        },
+        {
+          "ort": "Kursarchiv · #archivKarte",
+          "len": 753,
+          "anfang": "Was in dieser Zeit nicht geholt wurde, ist nicht später nachzuholen, sondern fort.1 Minute5 / 606 Werte (6 angesehen) · "
+        },
+        {
+          "ort": "Was hat gewirkt? · .panel",
+          "len": 691,
+          "anfang": "Jede automatische Änderung mit gemessener Wirkung: Ø Gewinn je Intraday-Trade davor gegen danach, sortiert nach Wirkung,"
+        },
+        {
+          "ort": "Neue Strategie ins Rennen schicken · #strategieEingabe",
+          "len": 494,
+          "anfang": "Drei Dinge braucht eine Strategie: einen Grund, eine Regel, wann gekauft wird, und die Festlegung vorher, was geprüft we"
+        },
+        {
+          "ort": "Ergebnis-Drift · Aktien, keine Hebelscheine · .panel",
+          "len": 490,
+          "anfang": "Gekauft wird das oberste Fünftel der Überraschungen, verkauft das unterste – im Basiswert, nicht mit Hebelscheinen: Der "
+        },
+        {
+          "ort": "Autopilot · .panel",
+          "len": 457,
+          "anfang": "Übernommen wird nur, was sich in zwei Nächten hintereinander bestätigt; von Hand gesetzte Felder bleiben unangetastet. N"
+        },
+        {
+          "ort": "Strategie-Chart · #stratChartPanel",
+          "len": 442,
+          "anfang": "Rechnet die gemessene Regel auf den Kerzen eines Werts nach. Jede Markierung ist ein Einstieg, den die Regel dort gegebe"
+        },
+        {
+          "ort": "Regeln, die nur messen · #regelnKarte",
+          "len": 319,
+          "anfang": "Eine Regel festschreiben und mitlaufen lassen, ohne dass Geld bewegt wird – geprüft auf denselben Kerzen wie die gehande"
+        },
+        {
+          "ort": "Wann die Strategie nichts getan hat · .panel",
+          "len": 271,
+          "anfang": "Wie oft die Filter ein Signal bewusst verworfen haben – und warum. Der häufigste Grund ist der stärkste Hebel: „Wer nich"
+        },
+        {
+          "ort": "Live-Signal-Monitor · .panel",
+          "len": 240,
+          "anfang": "Noch kein Scan gelaufen – der Monitor füllt sich, sobald die Intraday-Strategie aktiv ist und die US-Börse geöffnet hat."
+        },
+        {
+          "ort": "Scoreboard · #scoreboardKarte",
+          "len": 239,
+          "anfang": "Die App rechnet hier nichts. Sie zeigt die Protokolle der Messmaschine aus dem Datenordner. Noch kein Protokoll. Unten e"
+        },
+        {
+          "ort": "Bilanz dieser Regel · #regelBilanz",
+          "len": 238,
+          "anfang": "Was die Regel getan hat, was sie nicht getan hat, und wie sie gegen einfaches Halten steht. Der Vergleich gegen Buy & Ho"
+        },
+        {
+          "ort": "Mittelfrist-Bücher steuern · .panel",
+          "len": 148,
+          "anfang": "Erster Start: Tageskurse für 193 Werte werden geladen (einmalig, ein paar Minuten) …Was die beiden Bücher halten, steht "
+        },
+        {
+          "ort": "Momentum im Querschnitt · Aktien, keine Hebelscheine · .panel",
+          "len": 111,
+          "anfang": "Konfiguration wie gemessen (Studie 02.09.2026) – Änderungen nur über eine neue Messung.Lade Tageskurse … 40/193"
+        },
+        {
+          "ort": "Depot gegen Buy & Hold · .panel",
+          "len": 106,
+          "anfang": "Seit Depot-Start: Depot +0,89 % · S&P +0,03 % · NDQ -0,23 %KI-DepotS&P 500 (Buy & Hold)Nasdaq (Buy & Hold)"
+        },
+        {
+          "ort": "Die Regel, die handelt · #regelKarte",
+          "len": 76,
+          "anfang": "Was gerade eingestellt ist – mit Chart, Bedingungen und Bilanz an einem Ort."
+        },
+        {
+          "ort": "Trendfinder · [wende]",
+          "len": 52,
+          "anfang": "Beobachtung, kein Handel.Stand 14:15 Uhr · 0 Wechsel"
+        },
+        {
+          "ort": "Was jetzt zu halten wäre · .panel",
+          "len": 21,
+          "anfang": "Noch nicht gerechnet."
+        },
+        {
+          "ort": "Wie es sich geschlagen hat · .panel",
+          "len": 21,
+          "anfang": "Noch nicht gerechnet."
+        }
+      ],
+      "ohneBlock": {
+        "len": 85,
+        "anfang": "Maschinenraum — was die Nachtjobs und Messungen brauchen. Für den Alltag nicht nötig."
+      }
+    }
+  ],
+  "saetze": [
+    {
+      "seite": "dashboard/ueberblick",
+      "sel": "#sub-ueberblick",
+      "iKnoepfe": 3,
+      "saetze": {
+        "Gehandelt wird hiervon nichts": {
+          "sichtbar": 0,
+          "hinterKnopf": 0,
+          "knoepfe": []
+        }
+      }
+    },
+    {
+      "seite": "dashboard/papiere",
+      "sel": "#sub-papiere",
+      "iKnoepfe": 1,
+      "saetze": {
+        "Gehandelt wird hiervon nichts": {
+          "sichtbar": 0,
+          "hinterKnopf": 0,
+          "knoepfe": []
+        }
+      }
+    },
+    {
+      "seite": "markt/marktueberblick",
+      "sel": "#sub-marktueberblick",
+      "iKnoepfe": 3,
+      "saetze": {
+        "Gehandelt wird hiervon nichts": {
+          "sichtbar": 2,
+          "hinterKnopf": 0,
+          "knoepfe": []
+        }
+      }
+    },
+    {
+      "seite": "markt/marktkarte",
+      "sel": "#sub-marktkarte",
+      "iKnoepfe": 1,
+      "saetze": {
+        "Gehandelt wird hiervon nichts": {
+          "sichtbar": 0,
+          "hinterKnopf": 0,
+          "knoepfe": []
+        }
+      }
+    },
+    {
+      "seite": "markt/beobachtung",
+      "sel": "#sub-beobachtung",
+      "iKnoepfe": 3,
+      "saetze": {
+        "Gehandelt wird hiervon nichts": {
+          "sichtbar": 3,
+          "hinterKnopf": 0,
+          "knoepfe": []
+        }
+      }
+    },
+    {
+      "seite": "strategien/regeln",
+      "sel": "#sub-regeln",
+      "iKnoepfe": 5,
+      "saetze": {
+        "Gehandelt wird hiervon nichts": {
+          "sichtbar": 0,
+          "hinterKnopf": 0,
+          "knoepfe": []
+        }
+      }
+    },
+    {
+      "seite": "strategien/einstellungen",
+      "sel": "#sub-einstellungen",
+      "iKnoepfe": 6,
+      "saetze": {
+        "Gehandelt wird hiervon nichts": {
+          "sichtbar": 0,
+          "hinterKnopf": 0,
+          "knoepfe": []
+        }
+      }
+    },
+    {
+      "seite": "werkzeuge/explorer",
+      "sel": "#sub-explorer",
+      "iKnoepfe": 1,
+      "saetze": {
+        "Gehandelt wird hiervon nichts": {
+          "sichtbar": 0,
+          "hinterKnopf": 0,
+          "knoepfe": []
+        }
+      }
+    },
+    {
+      "seite": "werkzeuge/scheine",
+      "sel": "#sub-scheine",
+      "iKnoepfe": 1,
+      "saetze": {
+        "Gehandelt wird hiervon nichts": {
+          "sichtbar": 0,
+          "hinterKnopf": 0,
+          "knoepfe": []
+        }
+      }
+    },
+    {
+      "seite": "werkzeuge/betrieb",
+      "sel": "#sub-betrieb",
+      "iKnoepfe": 14,
+      "saetze": {
+        "Gehandelt wird hiervon nichts": {
+          "sichtbar": 0,
+          "hinterKnopf": 0,
+          "knoepfe": []
+        }
+      }
+    }
+  ]
+}

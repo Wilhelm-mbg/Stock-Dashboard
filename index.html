@@ -298,7 +298,6 @@
     font: inherit; font-size: var(--fs-neben); cursor: pointer;
   }
   .hbtns { margin-left: auto; display: flex; gap: 6px; }
-  .subnote { color: var(--muted); font-size: var(--fs-neben); margin-bottom: 18px; }
   .err { color: var(--down); font-size: var(--fs-neben); margin-left: 8px; }
   /* Ein leerer Fehlerplatz darf keine Breite kosten. #err steht immer im Markup und
      traegt 8 Punkte Aussenabstand, auch wenn er nichts sagt - bei 1024 px war genau
@@ -697,6 +696,23 @@
   table.tbl tr:last-child th[scope="row"] { border-bottom: none; }
   table.tbl td { padding: 5px 8px; border-bottom: 1px solid var(--grid); vertical-align: top; }
   table.tbl tr:last-child td { border-bottom: none; }
+  /* ---- Ein Kasten, der SELBST scrollt (Rumpf bei 1024, 04.09.2026) ----
+     Eine Tabelle, die breiter ist als ihr Platz, schiebt sonst die ganze SEITE nach
+     rechts. Genau das war Fund F1 der UI-QS: bei 1024 px hatte "Heute → Überblick"
+     eine waagerechte Bildlaufleiste (scrollWidth 1040 bei clientWidth 1014), und der
+     Knopf "Schließen" der Positionstabelle endete bei x = 1032, also außerhalb des
+     Fensters. Mit dem Rahmen bleibt der Bildlauf IM Panel: die Seite steht still,
+     die Tabelle bringt ihre letzte Spalte mit.
+     Er ist der zweite von zwei Riegeln. Der erste ist, dass die Tabelle schmal genug
+     ist (depot.js: Schein-Kennzahlen als zweite Zeile). Beide, weil eine Tabelle mit
+     vielen Positionen und langen Kürzeln auch schmal wieder anwachsen kann - dann
+     soll sie scrollen und nicht die Seite. */
+  .tblrahmen { overflow-x: auto; }
+  /* Eine Position und ihre Schein-Kennzahlen sind EINE Sache: der Trennstrich liegt
+     unter der zweiten Zeile, nicht zwischen den beiden. */
+  #positionsPanel tr.poskopf > td { border-bottom: none; }
+  #positionsPanel tr.poskennz > td { padding-top: 0; padding-bottom: 8px;
+    color: var(--ink-2); font-size: var(--fs-neben); }
   /* Die eigenen Papiere auf "Heute" (Felix, #71): Gruppenzeile INNERHALB der Tabelle,
      damit die Spaltenbreiten ueber alle Gruppen gleich bleiben.
      td.up/td.muted setzt bestandui.js seit jeher - eine Regel dafuer gab es bis heute
@@ -972,7 +988,24 @@
     <button class="hbtn" id="settingsBtn" type="button">App-Einstellungen</button>
   </div>
 </header>
-<div class="subnote" id="subnote">Big Tech · Chip-Sektor · Marktüberblick – aktualisiert sich automatisch (1 Min während des US-Handels, sonst 5 Min). Charts: 1 Monat, Tagesschluss.</div>
+<!-- Hier stand bis 8.40.1 #subnote: "Big Tech · Chip-Sektor · Marktüberblick –
+     aktualisiert sich automatisch (1 Min während des US-Handels, sonst 5 Min).
+     Charts: 1 Monat, Tagesschluss." Die Zeile stand auf JEDEM Reiter (F3 der
+     UI-QS 04.09.2026) und war auf dreien davon falsch: Big Tech und Chip-Sektor
+     liegen seit Stufe 5 in einer Klappe auf dem Reiter Markt.
+     Ersatzlos gestrichen und nicht durch vier Reiter-Zeilen ersetzt, weil ein
+     Satz je Reiter denselben Fehler wieder machen wuerde: DER Takt existiert
+     nicht. Die Index-Kacheln takten 60 s / 300 s (renderer, scheduleLoop),
+     Sektor-Leiste, Hotlists und Marktkarte laufen IMMER im Minutentakt
+     (marktui FRISCH_MS, marktkarteui KURS_FRISCH_MS - die Dateinamen stehen hier
+     bewusst OHNE Endung: eine Sperrklinke vergleicht die Ladereihenfolge ueber
+     indexOf des Dateinamens, und ein Kommentar weiter oben im Dokument wuerde sie
+     rot faerben), Regeln und Werkzeuge takten gar nicht. Eine Zeile kann diese
+     vier Wahrheiten nicht tragen - genau
+     daran ist die alte gescheitert.
+     Wo der Stand zaehlt, steht er dort, wo er gilt: #stamp in der Kopfzeile,
+     "Kurse: Stand HH:MM" auf Markt, und je eine Statuszeile in jeder
+     Betrieb-Klappe. -->
 
 <div id="cockpit" role="status" aria-live="polite" aria-label="Kennzahlen">
   <div class="ck"><span class="ckl">Intraday-Depot</span><b id="ckEquity">–</b></div>
@@ -1231,7 +1264,7 @@
      MEDIAN der letzten Handelstage aus dem eigenen Tagesarchiv. Yahoos averageVolume
      waere die bequeme Zahl und die falsche - undokumentiertes Fenster, und aus
      derselben Antwort wie der Zaehler. -->
-<h2 style="margin-top:18px;">Hotlists <span style="color:var(--muted); font-size:var(--fs-neben); font-weight:400; text-transform:none; letter-spacing:0;">– Anzeige, kein Signal: gemessen ist hieran nichts. Klick öffnet den Explorer.</span>
+<h2 style="margin-top:18px;">Hotlists <span style="color:var(--muted); font-size:var(--fs-neben); font-weight:400; text-transform:none; letter-spacing:0;">– Anzeige, kein Signal: gemessen ist hieran nichts. <b>Gehandelt wird hiervon nichts.</b> Klick öffnet den Explorer.</span>
   <button class="info" type="button" data-info="markt.hotlists" aria-expanded="false" aria-label="Erklärung: Die Hotlists">i</button></h2>
 <div id="marktHotlists" class="hotlisten"><div class="loading">Noch keine Kurse geladen.</div></div>
 
@@ -1260,7 +1293,7 @@
      Yahoos startdatetimetype (BMO/AMC) und NICHT aus der Uhrzeit: bei unbestaetigten
      Terminen setzt Yahoo die Uhrzeit frei, und eine Uhrzeit saehe nach Genauigkeit
      aus, die es dort nicht gibt. Ist die Art unbekannt, steht das da. -->
-<h2 style="margin-top:18px;">Ergebnistermine <span style="color:var(--muted); font-size:var(--fs-neben); font-weight:400; text-transform:none; letter-spacing:0;">– wer heute und morgen berichtet.</span>
+<h2 style="margin-top:18px;">Ergebnistermine <span style="color:var(--muted); font-size:var(--fs-neben); font-weight:400; text-transform:none; letter-spacing:0;">– wer heute und morgen berichtet. <b>Gehandelt wird hiervon nichts.</b></span>
   <button class="info" type="button" data-info="markt.earnings" aria-expanded="false" aria-label="Erklärung: Ergebnistermine">i</button></h2>
 <div class="news" id="marktEarnings"><div class="loading">Termine werden geholt …</div></div>
 

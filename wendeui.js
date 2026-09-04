@@ -231,21 +231,28 @@
        * Trendkanal, warum hier keine Ertragszahl steht, dass dieser Reiter seine
        * eigenen Signale nicht bewerten kann, und die Aussage der grossen Messung.
        * Nichts davon ist gekuerzt oder umformuliert - nur der Ort hat gewechselt. */
-      h += '</table><div class="hinweis" style="margin-top:8px;">' +
+      /* 04.09.2026, F9 der UI-QS: Dieser Block war mit 1.304 Zeichen die laengste
+       * Textwand der ganzen App - das 5,4-fache der Hausmarke von 240. Von den vier
+       * Absaetzen sind ZWEI Messaussagen und zwei Erklaertext.
+       *
+       * Die zwei Messaussagen bleiben SICHTBAR und wortgleich; sie stehen jetzt in
+       * einem Kasten mit data-mess, weil ein Messergebnis nie gegen eine
+       * Zeichengrenze laufen darf - sonst kuerzt es irgendwann jemand, um eine
+       * Klinke gruen zu bekommen. Die Blockmessung (tools/ui-aufnahmen.js) laesst
+       * [data-mess] aus genau diesem Grund aus.
+       *
+       * Die zwei Erklaerabsaetze ("Warum hier keine Ertragszahl steht", "Dieser
+       * Reiter kann seine eigenen Signale nicht bewerten") sind WOERTLICH ins
+       * Erklaerregister gewandert (app-shell.js, werkzeuge.trendfinder) - dorthin,
+       * wo Stufe 3 schon die vier anderen Absaetze dieser Legende abgelegt hat.
+       * Verschoben, nicht gekuerzt: kein Satz und keine Zahl ist weggefallen.
+       * Ein zweiter i-Knopf war dafuer nicht noetig - der Knopf zu diesem Register
+       * sitzt seit Stufe 3 oben in der Kopfzeile der Klappe (index.html). */
+      h += '</table><div class="hinweis" data-mess="Abschnittskanal-Studie · Winkel-Detektor, 55 zurückgehaltene Handelstage" style="margin-top:8px;">' +
         '<b>Die Güte löst nichts aus – und das ist gemessen, nicht vorsichtig:</b> Der Trendkanal als ' +
         'Handelsbedingung kostete −0,17 Pp je Trade bei t = −4,1 (Abschnittskanal-Studie). Er ist als Filter ' +
         'nicht neutral, sondern schädlich. Ein Trend mit Güte 90 ist deshalb ein gut beschriebener Trend – ' +
         'kein guter Einstieg.' +
-        '<br><b>Warum hier keine Ertragszahl steht:</b> Es war eine geplant – und sie ist beim ' +
-        'Nachrechnen durchgefallen. Auf 4.000 Fünf-Minuten-Kerzen findet der Detektor rund <b>sechs</b> ' +
-        'Drehungen. Bei sechs Fällen entscheidet ein einziger Trade das Mittel, und das Vorzeichen ' +
-        'kippt, sobald man nur die Abtastdichte ändert (−0,028 / +0,166 / +0,230 % bei gleicher ' +
-        'Fallzahl). Für eine belastbare Bewertung bräuchte es rund 30 Fälle je Wert, also etwa ' +
-        '20.000 Kerzen – das Archiv hat gut 5.000.' +
-        '<br>Das ist selbst ein Ergebnis: <b>Dieser Reiter kann seine eigenen Signale nicht ' +
-        'bewerten.</b> Er zeigt die Marktstruktur, und dafür ist er gut. Ob eine Drehung etwas ' +
-        'einbringt, ist damit nicht zu beantworten – und eine Zahl hinzuschreiben, die es zu ' +
-        'beantworten scheint, wäre schlechter als keine.' +
         '<br><b>Was aus der großen Messung bekannt ist:</b> Der Winkel-Detektor wurde auf 55 ' +
         'zurückgehaltenen Handelstagen nachgemessen; die ursprünglich gefundenen +0,25 Pp sind ' +
         'widerlegt (0,074 Pp, t = 1,22). Das ist die belastbare Aussage zu diesem Detektor.</div>';

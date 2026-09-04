@@ -49,12 +49,22 @@
     return 'vor ' + d + ' Tagen (' + tag + ')';
   }
 
+  /* F11 der UI-QS (04.09.2026): Hier stand in JEDER der fuenf Zeilen "juengste Kerze
+   * vor 1 Minuten" - die haeufigste Anzeige ueberhaupt, denn eine frische Kerze ist
+   * unter einer Minute alt und Math.max(1, ...) macht daraus die 1. Deutsch braucht
+   * fuer 1 den Singular; und eine Nachkommastelle wird hier mit Komma geschrieben,
+   * nicht mit Punkt (1.5 Stunden war englische Schreibweise in deutschem Text). */
+  function menge(zahl, einzahl, mehrzahl) {
+    return String(zahl).replace('.', ',') + ' ' + (zahl === 1 ? einzahl : mehrzahl);
+  }
+  function mengeText(zahl, einzahl, mehrzahl) { return 'vor ' + menge(zahl, einzahl, mehrzahl); }
+
   function alterText(ms) {
     if (ms == null) return '–';
     var std = (Date.now() - ms) / 3600000;
-    if (std < 1) return 'vor ' + Math.max(1, Math.round(std * 60)) + ' Minuten';
-    if (std < 48) return 'vor ' + std.toFixed(1) + ' Stunden';
-    return 'vor ' + (std / 24).toFixed(1) + ' Tagen';
+    if (std < 1) return mengeText(Math.max(1, Math.round(std * 60)), 'Minute', 'Minuten');
+    if (std < 48) return mengeText(Number(std.toFixed(1)), 'Stunde', 'Stunden');
+    return mengeText(Number((std / 24).toFixed(1)), 'Tag', 'Tagen');
   }
 
   /* 60m und 1d kamen am 27.08. dazu: die App holt sie seither selbst, nachdem die
@@ -247,10 +257,12 @@
      * ihm erklaeren muss, wo sie stehen. */
     h += '<div style="font-size:var(--fs-neben); color:var(--muted); margin-top:10px; line-height:1.6;">' +
       '<b>So ist es eingestellt:</b> Universum <code>' + U.esc(e.universum || '?') + '</code>' +
-      ' · 1 Minute alle ' + e.intervalle['1m'] + ' Tag(e)' +
+      ' · 1 Minute alle ' + menge(e.intervalle['1m'], 'Tag', 'Tage') +
       ' · 5 Minuten alle ' + e.intervalle['5m'] + ' · 15 Minuten alle ' + e.intervalle['15m'] +
       ' · ' + U.dez(e.abstandMs / 1000, 1) + ' s Abstand je Anfrage' +
-      ' · frühestens ' + e.nachSchlussMinuten + ' Minuten nach Handelsschluss.' +
+      /* Die Zahl ist einstellbar (0-720, sammelplan.js) - bei 1 stand hier bis
+       * 8.40.1 "1 Minuten". Dieselbe Einzahl/Mehrzahl-Regel wie oben. */
+      ' · frühestens ' + menge(e.nachSchlussMinuten, 'Minute', 'Minuten') + ' nach Handelsschluss.' +
       /* Die zwei Begruendungs-Saetze (Warum nach Handelsschluss, keine Stunden-/
        * Tageskerzen) stehen seit Stufe 3 woertlich im Register (betrieb.kursarchiv).
        * Die Zeile "So ist es eingestellt" bleibt: sie nennt die tatsaechlichen Werte

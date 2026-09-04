@@ -3579,12 +3579,18 @@
         '<td style="font-weight:600;">' + U.nf2.format(sumEinsatz) + ' $</td>' +
         '<td style="font-weight:600;">' + U.nf2.format(sumWert) + ' $</td>' +
         '<td class="' + U.signCls(sumPl) + '" style="white-space:nowrap;">' + U.signTxt(Math.round(sumPl * 100) / 100, ' $') + '</td><td></td></tr>';
+      /* 04.09.2026, F10 der UI-QS: Hier standen 439 Zeichen Regelbeschreibung -
+       * gemessene Einstiege, widerlegte Setups, Altbestand, Schein-Annahmen. Das
+       * Zielbild sagt fuer "Heute" aber "nur das eigene Geld"; eine Regelbeschreibung
+       * ist kein Kontostand, und wer sie hier liest, kann hier auch nichts daran
+       * aendern. Der Text ist WOERTLICH ins Erklaerregister gewandert
+       * (app-shell.js, heute.positionen); sichtbar bleibt EIN Satz mit Wegweiser
+       * dorthin, wo die Regel wirklich eingestellt wird. Verschoben, nicht gekuerzt -
+       * keine Zahl ist weggefallen. */
       ph += '</table><div style="color:var(--muted); font-size:var(--fs-klein); margin-top:6px;">' +
-        'Gemessene Intraday-Kanten: nur Not-Stop, Ausstieg über die Zeit (8 bzw. 26 Handelsstunden), Übernacht erlaubt. ' +
-        'Widerlegte Setups: Stop −25 % / Ziel +35 %, Glattstellung zum Tagesschluss. ' +
-        'Altbestand der Stunden-Strategie: Stop −40 % / Ziel +80 %, Zeit-Ausstieg 10 Tage vor Fälligkeit. ' +
-        'Bei Scheinen: Bezugsverhältnis 0,1 · Spanne 2 % · Ordergebühr je Kauf und Verkauf simuliert; Hebel = Omega ' +
-        '(Maus über den Wert zeigt das aktuelle Aufgeld).</div>';
+        'Ein- und Ausstieg folgen der Intraday-Regel unter „Regeln → Einstellungen“. ' +
+        (window.Info ? window.Info.knopf('heute.positionen', 'Nach welchen Regeln diese Positionen laufen') : '') +
+        '</div>';
     } else {
       ph = '<div class="empty"><span class="ico"></span>Keine offenen Positionen. ' +
         (D.intraday && D.intraday.enabled
