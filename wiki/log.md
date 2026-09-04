@@ -5,6 +5,9 @@ tags: [steuerung]
 
 *Nur was sich am Wiki ändert. Die Projekt-Chronologie steht im Archiv `PROJEKTSTAND.md`.*
 
+- 04.09.2026 Release v8.41.0 (Wache): Aktien-Explorer ist jetzt ein Viewer mit
+  Kerzenchart (1m–1W, Fadenkreuz, gleitende Durchschnitte, Archiv-Kerzen zuerst),
+  Kursabruf läuft nur noch einmal statt zweimal je Minute.
 - 04.09.2026 Release v8.40.2 (Wache): Positionstabelle passt bei 1024 px wieder ins
   Fenster (Schein-Angaben als zweite Zeile statt eigener Spalten), veraltete
   Takt-Zeile über dem Cockpit entfernt, „Gehandelt wird hiervon nichts" einheitlich
