@@ -852,6 +852,38 @@ function letzterTagVon(serie) {
   return new Date(serie[serie.length - 1][0]).toISOString().slice(0, 10);
 }
 
+/* Liegt Tag a NACH Tag b? Beide sind 'JJJJ-MM-TT'. Ueber Date.parse und nicht als
+ * Zeichenkette: eine Reihenfolge, die zufaellig stimmt, solange das Format gleich
+ * bleibt, ist keine (wiki/fehlerformen.md). Fehlt eines der beiden, ist die Frage
+ * nicht beantwortbar - dann false, denn "unbekannt" darf hier nicht als Fortschritt
+ * durchgehen. */
+function tagIstNach(a, b) {
+  if (!a || !b) return false;
+  var ta = Date.parse(a + 'T00:00:00Z'), tb = Date.parse(b + 'T00:00:00Z');
+  if (!isFinite(ta) || !isFinite(tb)) return false;
+  return ta > tb;
+}
+
+/* WAS NACH EINEM ABRUF IM STAND STEHT - als reine Funktion, damit es geprueft werden
+ * kann, ohne dass ein Netzabruf laeuft. Genau diese Entscheidung war der Fehler vom
+ * 02.-04.09.2026: der Stand konnte nicht ausdruecken, dass ein Abruf STATTGEFUNDEN
+ * hat, ohne etwas zu bringen.
+ *
+ * Drei Zustaende, die vorher zwei waren:
+ *   - die Reihe ist weitergerueckt  -> bisTag neu, kein Merker
+ *   - die Reihe steht, wo sie stand -> bisTag bleibt WAHR, dazu versucht: <heute>
+ *   - es gab noch keinen Stand      -> kein Merker; ein erster Abruf ist nie "leer
+ *                                      versucht", er ist der erste
+ * bisTag wird nie vordatiert. Der bequeme Weg waere gewesen, es auf heute zu setzen -
+ * dann waere Ruhe, und aus einer Luecke waere ein Stand geworden. */
+function standEintrag(vorher, serie, ohneEroeffnung, heute) {
+  var neuBis = letzterTagVon(serie);
+  var e = { kerzen: (serie || []).length, ohneEroeffnung: ohneEroeffnung || 0,
+            am: heute, bisTag: neuBis };
+  if (vorher && vorher.bisTag && !tagIstNach(neuBis, vorher.bisTag)) e.versucht = heute;
+  return e;
+}
+
 function juengsteKerzeVon(datei) {
   try {
     var j = JSON.parse(fs.readFileSync(datei, 'utf8'));
@@ -985,6 +1017,9 @@ async function sammle(opt) {
   var erg = {
     intervall: intervall, ordner: ziel, geplant: symbole.length,
     verarbeitet: 0, ok: 0, leer: 0, kerzen: 0, dazu: 0, ohneEroeffnung: 0,
+    /* Wie viele Reihen kamen zurueck, ohne weiterzuruecken. Die Zahl, die dem
+     * Protokoll bis zum 04.09.2026 fehlte - 124 Laeufe sahen aus wie 124 Erfolge. */
+    leerVersucht: 0,
     abgeschnitten: 0, gereinigt: 0, dochte: 0, klasseR: 0, abgebrochen: false, grund: null,
     begonnen: new Date().toISOString(), beendet: null,
   };
@@ -1008,6 +1043,10 @@ async function sammle(opt) {
         melde({ art: 'wert', nr: i + 1, von: symbole.length, sym: sym, fehler: r.fehler });
       } else {
         inFolge = 0;
+        /* Der Stand VOR dem Schreiben - danach ist er fort. Er beantwortet die eine
+         * Frage, die dieser Lauf sonst nicht beantworten kann: ist die Reihe
+         * weitergekommen? */
+        var vorher = stand.fertig[sym];
         var unter = ordnerFuer(sym, ziel);
         fs.mkdirSync(unter, { recursive: true });
         var datei = path.join(unter, praefix + sym + '.json');
@@ -1032,12 +1071,31 @@ async function sammle(opt) {
          * "was steht drin" - und nur die zweite Frage darf ueber "auf Stand"
          * entscheiden. Bis zum 27.08.2026 gab es nur am, und der Plan las es als
          * Antwort auf die zweite Frage. */
-        stand.fertig[sym] = { kerzen: r.serie.length, ohneEroeffnung: ohneO,
-          am: heuteTag(), bisTag: letzterTagVon(r.serie) };
+        /* DER LEERE VERSUCH (04.09.2026). Ein Abruf, der zurueckkommt, ohne dass die
+         * juengste Kerze weiterrueckt, ist ETWAS ANDERES als ein Abruf, der es tut -
+         * und bis heute sah der Stand beide gleich. Der Wert blieb mit altem bisTag
+         * stehen, der Plan hielt ihn fuer faellig, und beim naechsten Blick auf die Uhr
+         * war er wieder der erste. So liefen 124 Laeufe in drei Tagen ueber dieselben
+         * zwei Werte (EA seit dem 04.08., AVB seit dem 14.08.), waehrend 3.263
+         * Tagesreihen warteten. Jede Zeile im Protokoll sah dabei ordentlich aus.
+         *
+         * WARUM NICHT `neu=0` ALS MASSSTAB: einer dieser Laeufe schrieb 126 neue
+         * Kerzen (03.09., 20:38) und war trotzdem Stillstand - die Kerzen fuellten
+         * Luecken INNERHALB der Reihe. Gemessen wird deshalb der juengste Tag, nicht
+         * die Menge.
+         *
+         * bisTag WIRD NICHT VORDATIERT. Es sagt weiter, was wirklich in der Reihe
+         * steht; der leere Versuch bekommt ein eigenes Feld. Wer bisTag hochsetzte,
+         * um Ruhe zu haben, machte aus einer Luecke einen Stand - genau die
+         * Verkleidung, gegen die es dieses Feld gibt. */
+        stand.fertig[sym] = standEintrag(vorher, r.serie, ohneO, heuteTag());
+        var leerVersuch = !!stand.fertig[sym].versucht;
+        if (leerVersuch) erg.leerVersucht++;
         erg.ok++; erg.kerzen += r.serie.length; erg.dazu += dazu;
         melde({
           art: 'wert', nr: i + 1, von: symbole.length, sym: sym,
           kerzen: r.serie.length, dazu: dazu, ohneEroeffnung: ohneO,
+          leerVersuch: leerVersuch,
         });
       }
       standSchreiben(ziel, stand);
@@ -1071,6 +1129,10 @@ async function sammle(opt) {
       erg.begonnen, erg.beendet, intervall,
       'geplant=' + erg.geplant, 'verarbeitet=' + erg.verarbeitet,
       'ok=' + erg.ok, 'ohne=' + erg.leer, 'kerzen=' + erg.kerzen, 'neu=' + erg.dazu,
+      /* Steht neben neu=, nicht statt dessen: neu= zaehlt Kerzen, leerversuch=
+       * zaehlt REIHEN, die nicht weiterkamen. Der Lauf vom 03.09. hatte neu=126
+       * und leerversuch=2 - beide Zahlen zusammen sagen erst, was los war. */
+      'leerversuch=' + erg.leerVersucht,
       'ende=' + (erg.abgebrochen ? 'ABGEBROCHEN: ' + (erg.grund || '?') : 'durch'),
       'wer=' + (opt.was || '?'), 'pid=' + process.pid, 'rechner=' + os.hostname(),
     ].join('  '));
@@ -1101,7 +1163,8 @@ module.exports = {
   universumWerte: universumWerte, listeBauen: listeBauen,
   juengsteKerzeVon: juengsteKerzeVon,
   letzterAbgeschlossenerHandelstag: letzterAbgeschlossenerHandelstag,
-  letzterTagVon: letzterTagVon, archivDateien: archivDateien,
+  letzterTagVon: letzterTagVon, tagIstNach: tagIstNach, standEintrag: standEintrag,
+  archivDateien: archivDateien,
   archivUeberblick: archivUeberblick, fensterLuecke: fensterLuecke, sammle: sammle,
   laufProtokoll: laufProtokoll,
   sperreLesen: sperreLesen, sperreSetzen: sperreSetzen, sperreLoesen: sperreLoesen,

@@ -38,7 +38,11 @@
    * das hunderte Abrufe fuer nichts, und die Bedienung war entsprechend traege.
    * Fuenf Minuten Frische: die Karte ist eine Uebersicht, kein Handelssignal. */
   var KURSE = {};
-  var KURS_FRISCH_MS = 5 * 60000;
+  /* Eine Minute (Wilhelm 04.09.2026: "so aktuell wie nur moeglich"). Es sind
+   * Sammelabrufe zu 400 Kuerzeln, keine Einzelabrufe - der schnellere Takt kostet
+   * Anfragen im einstelligen Bereich je Minute. Ausgesetzt wird weiter bei
+   * unsichtbarem Fenster. */
+  var KURS_FRISCH_MS = 60000;
   function kursFrisch(sym) {
     var c = KURSE[sym];
     return !!(c && c.kurs > 0 && Date.now() - c.at <= KURS_FRISCH_MS);
@@ -101,9 +105,21 @@
     return ARTEN;
   }
 
+  /* Wie viele Werte die SEC ueberhaupt mit Stueckzahl fuehrt, Groessenordnung. Der
+   * Deckel gilt fuer das NACHLADEN der Stammdaten, nicht fuer die Anzeige - er sagt,
+   * wie viele Firmen ein Druck auf "Daten holen" hoechstens anfasst. */
+  var DECKEL_STAMM = 4000;
+
+  /* 0 heisst "alle mit Stammdaten", nicht "keine". Die alte Fassung schrieb
+   * `parseInt(s.value, 10) || 300` - damit waere die Auswahl "alle" (Wert 0) still
+   * zu 300 geworden, und die Karte haette 300 Kaestchen gezeigt, wo der Nutzer alle
+   * gewaehlt hat. Der Unterschied zwischen "kein Deckel" und "kein Wert" ist genau
+   * die Sorte Stille, um die es hier geht. */
   function anzahlJetzt() {
     var s = document.getElementById('mkAnzahl');
-    return s ? parseInt(s.value, 10) || 300 : 300;
+    if (!s) return 0;
+    var n = parseInt(s.value, 10);
+    return (isFinite(n) && n > 0) ? n : 0;
   }
 
   /** Stammdaten lesen.
@@ -193,7 +209,13 @@
     }).filter(function (w) { return !w.verdraengt; });
 
     raus.sort(function (a, b) { return b.vorrang - a.vorrang; });
-    return { liste: raus.slice(0, n), gesamt: raus.length, ohneGroesse: ohneGroesse,
+    /* n = 0 (oder gar keine Zahl) heisst KEIN DECKEL, nicht "keine Werte". Der
+     * Ueberblick fragt seit dem 04.09.2026 so nach der ganzen Grundmenge; die Karte
+     * gibt weiter eine Zahl mit, weil ihre Kaestchen sonst zu klein zum Treffen
+     * waeren. Ohne diese Zeile lieferte slice(0, 0) eine leere Liste - und eine
+     * leere Karte sieht aus wie ein fehlendes Archiv, nicht wie ein Programmfehler. */
+    var deckel = (n > 0 && isFinite(n)) ? n : raus.length;
+    return { liste: raus.slice(0, deckel), gesamt: raus.length, ohneGroesse: ohneGroesse,
              adr: adr, keineAktie: keineAktie, doppelt: doppelt };
   }
 
@@ -383,9 +405,17 @@
       (kann
         ? '<div style="margin:12px 0;"><button class="btn" type="button" id="mkHolen">Jetzt holen</button> ' +
           '<span id="mkHolStatus" role="status" aria-live="polite" style="font-size:var(--fs-neben); color:var(--muted); margin-left:8px;"></span></div>' +
-          '<div style="color:var(--muted);">Das dauert einmalig ein bis zwei Minuten: erst drei Sammelabrufe, ' +
-          'dann die Kurse für die Rangfolge, dann die Branche für die Werte, die die Karte zeigt. ' +
-          'Danach nie wieder – die Datei bleibt liegen.</div>'
+          /* GEMESSEN, NICHT GERATEN (04.09.2026): zehn echte submissions-Abrufe bei der
+           * SEC, Median 124 ms, dazu die Pause von 130 ms aus stammdaten.js - macht
+           * 0,25 s je noch unbekanntem Wert. Der alte Satz "ein bis zwei Minuten" stammt
+           * aus der Zeit, als die Karte 600 Werte zeigte; seit sie alle zeigt, sind es
+           * bis zu 4.000 Werte und damit eine Viertelstunde. Eine Zahl, die um das
+           * Zehnfache danebenliegt, ist schlimmer als keine. */
+          '<div style="color:var(--muted);">Erst drei Sammelabrufe, dann die Kurse für die Rangfolge, ' +
+          'dann die Branche für jeden Wert einzeln. <b>Der letzte Schritt kostet die Zeit:</b> gemessen ' +
+          '0,25 s je noch unbekanntem Wert – für ein leeres Archiv mit 4.000 Werten also gut eine ' +
+          'Viertelstunde, für die üblichen Nachzügler ein bis zwei Minuten. Der Fortschritt steht ' +
+          'daneben. Danach nie wieder – die Datei bleibt liegen.</div>'
         : '<div style="color:var(--muted); margin:12px 0;">Diese Programmfassung kann es noch nicht selbst holen.</div>') +
       '<details class="how archiv" style="margin-top:10px;"><summary>Für Entwickler</summary>' +
       '<div style="color:var(--muted); margin-top:6px;">Für das ganze Archiv auf einmal ist das Werkzeug ' +
@@ -422,9 +452,11 @@
         .sort(function (a, c) { return c.groesse - a.groesse; });
       /* Der Deckel folgt der Auswahl. Vorher stand hier fest 900, und weil der
        * Abruf mit "die 100 groessten" lief, standen dauerhaft nur 200 Werte in der
-       * Datei - auch fuer jede spaetere, groessere Auswahl. Die 4.000 sind die
-       * Groessenordnung dessen, was die SEC ueberhaupt mit Stueckzahl fuehrt. */
-      var wieViele = Math.min(Math.max(anzahlJetzt(), 100) * 2, 4000);
+       * Datei - auch fuer jede spaetere, groessere Auswahl. DECKEL_STAMM ist die
+       * Groessenordnung dessen, was die SEC ueberhaupt mit Stueckzahl fuehrt.
+       * Bei "alle" (0) gilt er unmittelbar: das Doppelte von nichts waere nichts. */
+      var gewaehlt = anzahlJetzt();
+      var wieViele = gewaehlt ? Math.min(Math.max(gewaehlt, 100) * 2, DECKEL_STAMM) : DECKEL_STAMM;
       var top = mitKurs.slice(0, wieViele).map(function (w) { return w.sym; });
       if (!top.length) { sagH('Keine Kurse bekommen – Netz?'); if (k) k.disabled = false; return; }
 

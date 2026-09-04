@@ -8973,11 +8973,18 @@ console.log('\n46) Was die App dauerhaft aufzeichnet');
    * eine volle Karte als leer gemeldet. */
   ok(!/typeof K\.hole !== 'function'\) return 0;/.test(mkFix),
      'Ohne Kurslader wird die Zahl aus dem Zwischenspeicher gemeldet, nicht null');
-  /* Fuenf Minuten, wie in #79 gewuenscht - und dieselbe Spanne wie die Frische des
-   * Zwischenspeichers. Eine Minute waere doppelte Arbeit gewesen. */
-  ok(/KURS_FRISCH_MS = 5 \* 60000/.test(mkFix) &&
+  /* EINE Minute seit dem 04.09.2026 (Wilhelm: "so aktuell wie nur moeglich"). Vorher
+   * standen hier fuenf, und der Grund war richtig: bei Einzelabrufen waere ein
+   * Minutentakt sechshundert Anfragen je Minute gewesen. Mit dem Sammelabruf zu 400
+   * Kuerzeln sind es eine Handvoll. Umgeschrieben, nicht abgeschwaecht - was die
+   * Zusicherung festhaelt, ist unveraendert: der Takt haengt an DERSELBEN Spanne wie
+   * die Frische des Zwischenspeichers, sonst holte die Karte Kurse, die sie schon hat. */
+  ok(/KURS_FRISCH_MS = 60000/.test(mkFix) &&
      /Date\.now\(\) - letzterLauf >= KURS_FRISCH_MS/.test(mkFix),
-     'Getaktet wird in derselben Spanne, in der der Zwischenspeicher haelt: fuenf Minuten');
+     'Getaktet wird in derselben Spanne, in der der Zwischenspeicher haelt: eine Minute');
+  ok(/var UNIVERSUM = 0;/.test(fs.readFileSync(__dirname + '/marktui.js', 'utf8')) &&
+     /var FRISCH_MS = 60000;/.test(fs.readFileSync(__dirname + '/marktui.js', 'utf8')),
+     'und der Ueberblick taktet gleich schnell ueber die GANZE Grundmenge (0 = kein Deckel)');
   /* Das Projektverzeichnis wird gesucht, bevor jemand einen Zettel schreiben muss. */
   ok(/'Stock-Dashboard', \.\.\.teil/.test(mjSt),
      'Das Projektverzeichnis wird neben dem Datenordner selbst gesucht');
@@ -8990,9 +8997,19 @@ console.log('\n46) Was die App dauerhaft aufzeichnet');
    * oeffnet KEINE neue Aussengrenze. Genau das ist die Regel aus 7.17. */
   ok(/const sitz = await holeSitz\(\);/.test(mjSt) && /jsonGet\(pfad, sitz\.cookie\)/.test(mjSt),
      'Der Sammelabruf benutzt die vorhandene Yahoo-Sitzung, nicht einen eigenen Weg');
-  /* Eine Obergrenze, damit ein Aufrufer nicht versehentlich zehntausend Kuerzel schickt. */
-  ok(/QUOTE_MAX = 3000/.test(mjSt) && /if \(syms\.length >= QUOTE_MAX\) break;/.test(mjSt),
-     'Die Zahl der Kuerzel je Aufruf ist gedeckelt');
+  /* Eine Obergrenze, damit ein Aufrufer nicht versehentlich zehntausend Kuerzel schickt.
+   * Sie muss ABER ueber der Grundmenge liegen, seit der Reiter Markt das ganze
+   * Universum fragt (04.09.2026) - ein Deckel darunter schnitte still ab, und der
+   * Aufrufer saehe eine kuerzere Liste ohne Grund. Deshalb wird die Zahl hier nicht
+   * nur genannt, sondern GEGEN den Deckel der Grundmenge gehalten. */
+  var deckelStamm = Number((/var DECKEL_STAMM = (\d+);/.exec(
+    fs.readFileSync(__dirname + '/marktkarteui.js', 'utf8')) || [])[1]);
+  var quoteMax = Number((/QUOTE_MAX = (\d+);/.exec(mjSt) || [])[1]);
+  ok(quoteMax > 0 && /if \(syms\.length >= QUOTE_MAX\) break;/.test(mjSt),
+     'Die Zahl der Kuerzel je Aufruf ist gedeckelt', quoteMax);
+  ok(deckelStamm > 0 && quoteMax >= deckelStamm,
+     'und der Deckel liegt NICHT unter der Grundmenge - sonst schnitte er still ab',
+     quoteMax + ' >= ' + deckelStamm);
   var kuQ = fs.readFileSync(__dirname + '/kurse.js', 'utf8');
   ok(/holeViele: async function/.test(kuQ) && /return \{ ok: false, grund:/.test(kuQ),
      'Der Lader gibt den GRUND zurueck - sonst waere ein gescheiterter Abruf von einer leeren Antwort nicht zu unterscheiden');
@@ -11572,9 +11589,16 @@ console.log('\nSammelplan: faellig ist, wer inhaltlich zurueckhaengt (27.08.2026
     ok(SP.DECKEL_JE_LAUF > 0 && SP.DECKEL_JE_LAUF <= 600,
        'Es gibt einen Deckel je Lauf - ohne ihn belegt ein 3.200-Werte-Lauf die Sperre stundenlang',
        String(SP.DECKEL_JE_LAUF));
+    /* Der Automat wendet ihn an - seit dem 04.09.2026 in sammelrunde.js. Die Schleife
+     * ist dorthin gezogen, WEIL sie in main.js keine Zusicherung bekommen konnte;
+     * geprueft wird deshalb dort, wo sie jetzt steht, und zusaetzlich, dass main.js
+     * keine zweite Fassung davon behalten hat. */
     var mainQ = fs.readFileSync(__dirname + '/main.js', 'utf8');
-    ok(/offen\.dran\.slice\(0, Plan\.DECKEL_JE_LAUF\)/.test(mainQ),
+    var rundeQ = fs.readFileSync(__dirname + '/sammelrunde.js', 'utf8');
+    ok(/offen\.dran\.slice\(0, Plan\.DECKEL_JE_LAUF\)/.test(rundeQ),
        'und der Automat wendet ihn an');
+    ok(!/offen\.dran\.slice\(/.test(ohneKommentare(mainQ)),
+       'und zwar an genau EINER Stelle - main.js hat keine zweite Schleife behalten');
     ok(/Plan\.symboleFuer\(einst, intervall\)\.symbole/.test(mainQ),
        'Der Handlauf holt das Universum SEINES Intervalls - sonst faehrt ein 60m-Lauf die kleine Menge');
     ok(!/sammelLauf\(intervall, liste, true\)[\s\S]{0,200}DECKEL/.test(mainQ),
@@ -11627,8 +11651,16 @@ console.log('\nSammelplan: faellig ist, wer inhaltlich zurueckhaengt (27.08.2026
    * Ohne diese Zeile faellt der Plan dauerhaft auf die alte Rechnung zurueck und
    * niemand merkt es - der Fehler kaeme still zurueck. */
   var kqQuelle = ohneKommentare(fs.readFileSync(__dirname + '/kerzenquelle.js', 'utf8'));
-  ok(/stand\.fertig\[sym\] = \{[^}]*bisTag: letzterTagVon\(r\.serie\)/.test(kqQuelle),
+  ok(/bisTag: neuBis/.test(kqQuelle) &&
+     /var neuBis = letzterTagVon\(serie\);/.test(kqQuelle) &&
+     /stand\.fertig\[sym\] = standEintrag\(vorher, r\.serie, ohneO, heuteTag\(\)\)/.test(kqQuelle),
      'Der Sammler schreibt bisTag mit - sonst faellt der Plan lautlos auf das Abrufdatum zurueck');
+  /* UND ER DATIERT ES NICHT VOR. Der leere Versuch (04.09.2026) bekam ein eigenes Feld,
+   * gerade WEIL die bequeme Loesung gewesen waere, bisTag auf heute zu setzen und Ruhe
+   * zu haben - das haette aus einer Luecke einen Stand gemacht. Diese Klinke haelt die
+   * Entscheidung fest: bisTag kommt aus der REIHE, nie aus der Uhr. */
+  ok(!/bisTag: heuteTag\(\)/.test(kqQuelle) && /e\.versucht = heute;/.test(kqQuelle),
+     'Der leere Versuch bekommt ein eigenes Feld - bisTag wird nie vordatiert');
 })();
 
 
@@ -11925,7 +11957,10 @@ console.log('\nDie App sammelt selbst: Kursarchiv (26.08.2026)');
      * machen, sie laeuft ohnehin". Umformuliert, nicht geloescht - und was sie
      * jetzt festhaelt, ist die REIHENFOLGE: die drei Intraday-Aufloesungen
      * stehen vorn, damit ein draengendes 1m vor einem 3.200-Werte-Lauf drankommt
-     * (lage() haelt diese Reihenfolge, sammlerNachsehen nimmt die erste faellige). */
+     * (lage() haelt diese Reihenfolge, reihenfolge() gibt sie weiter). SEIT DEM
+     * 04.09.2026 nimmt die Runde nicht mehr nur die erste faellige, sondern alle -
+     * die alte Fassung liess sich von einem Intervall aufhalten, das nie fertig
+     * werden konnte. Abschnitt 69 haelt das fest. */
     ok(SP.ERLAUBTE_INTERVALLE.join(',') === '1m,5m,15m,60m,1d',
        'Die App holt alle fuenf Aufloesungen - Intraday zuerst, danach der Messbestand',
        SP.ERLAUBTE_INTERVALLE.join());
@@ -15029,8 +15064,18 @@ console.log('\n68) Reiter Markt');
      'markt-tagesreihen: Ordner und Dateiname kommen aus kerzenquelle.js - kein zweiter Pfadbau');
   ok(/MarktU\.tagesreiheAusText\(schwanzLesen\(pfad, TAGES_SCHWANZ\), n\)/.test(mj),
      'markt-tagesreihen: zerlegt wird mit der geprueften Funktion, nicht von Hand');
-  ok(/TAGES_MAX_SYM = 1500/.test(mj) && /angefragt > TAGES_MAX_SYM/.test(mj),
-     'markt-tagesreihen: die Zahl der Kuerzel je Aufruf ist gedeckelt');
+  /* Gedeckelt ja - aber nicht unterhalb der Grundmenge. Seit dem 04.09.2026 fragt der
+   * Ueberblick fuer ALLE Werte nach Tagesreihen; ein Deckel darunter liesse fuer die
+   * letzten Werte das relative Volumen und die Wochenspanne weg, ohne dass irgendwo
+   * ein Grund stuende. Geprueft wird deshalb der Vergleich, nicht die Zahl. */
+  var tagesMax = Number((/TAGES_MAX_SYM = (\d+);/.exec(mj) || [])[1]);
+  var deckelStamm2 = Number((/var DECKEL_STAMM = (\d+);/.exec(
+    fs.readFileSync(__dirname + '/marktkarteui.js', 'utf8')) || [])[1]);
+  ok(tagesMax > 0 && /angefragt > TAGES_MAX_SYM/.test(mj),
+     'markt-tagesreihen: die Zahl der Kuerzel je Aufruf ist gedeckelt', tagesMax);
+  ok(deckelStamm2 > 0 && tagesMax >= deckelStamm2,
+     'markt-tagesreihen: und der Deckel liegt nicht unter der Grundmenge',
+     tagesMax + ' >= ' + deckelStamm2);
   /* DER GEMESSENE FEHLGRIFF. Zwei Bereichs-Operanden auf startdatetime liefern
    * Status 200 und NULL Zeilen - ohne Fehlermeldung. Der Kasten haette jeden Tag
    * "heute berichtet keiner" gesagt und damit gelogen. Diese Klinke ist der Grund,
@@ -15163,6 +15208,531 @@ console.log('\n68) Reiter Markt');
   ok(mArch.length >= 20 && mMehrfach.length === 0 && mArch[0].inhalt.series.length >= 50,
      'Kunstdaten: auch die Markt-Reihen tragen eine Kerze je Tag, und genug Tage fuer einen Median',
      mArch.length + ' Reihen à ' + (mArch[0] ? mArch[0].inhalt.series.length : 0) + ' Kerzen');
+})();
+
+
+/* ================= 69) Sammler verhungert nicht (04.09.2026) =================
+ *
+ * DER FUND. Vom 02. bis zum 04.09.2026 lief der App-Sammler alle zwanzig Minuten ueber
+ * DIESELBEN ZWEI WERTE - EA (juengste 5m-Kerze vom 04.08.) und AVB (vom 14.08.) -,
+ * 124 Laeufe in drei Tagen, jeder mit neu=0. In derselben Zeit kam 15m (522 Werte),
+ * 60m (3.263) und 1d (3.263) KEIN EINZIGES MAL an die Reihe. Das Tagesarchiv stand
+ * drei Tage still, waehrend die Oberflaeche "Sammeln an" zeigte und jede Zeile im
+ * Protokoll ordentlich aussah.
+ *
+ * ZWEI URSACHEN, die zusammen erst den Stillstand ergeben:
+ *   1. Ein Wert gilt als faellig, solange seine juengste Kerze hinter dem letzten
+ *      abgeschlossenen Handelstag liegt. Fuer einen Wert, den die Quelle nicht mehr
+ *      fuehrt, ist das FUER IMMER - und der Stand konnte "versucht und leer" gar nicht
+ *      ausdruecken.
+ *   2. Der Blick auf die Uhr nahm nur das erste faellige Intervall (dran[0]). Ein Kopf
+ *      der Schlange, der nie fertig wird, haelt damit alles dahinter auf.
+ *
+ * Diese Zusicherungen halten beides fest, dazu die dritte Sicherung (Stillstand wird
+ * laut) und den Takt des Reiters Markt. Die Reihenfolge und die ganze Runde sind
+ * eigene Module, WEIL sie in main.js keine Zusicherung bekommen konnten.
+ */
+console.log('\n69) Sammler verhungert nicht');
+(function () {
+  var KQ69 = require(__dirname + '/kerzenquelle.js');
+  var SP69 = require(__dirname + '/sammelplan.js');
+  var RU69 = require(__dirname + '/sammelrunde.js');
+  var os69 = require('os'), p69 = require('path');
+
+  function serieBis(tag) {
+    return [[Date.parse(tag + 'T13:30:00Z'), 100, 1000, 101, 99, 100]];
+  }
+
+  /* ---------------------------------------------------------------------------
+   * (a) Der leere Versuch, als Rechnung
+   *
+   * standEintrag() ist eine reine Funktion, damit genau diese Entscheidung geprueft
+   * werden kann, ohne dass ein Netzabruf laeuft. Gerechnet wird mit den ECHTEN Daten
+   * des Fundes: EA stand am 04.09. auf bisTag 2026-08-04. */
+  var eaAlt = { kerzen: 1014, ohneEroeffnung: 0, am: '2026-09-03', bisTag: '2026-08-04' };
+  var eaNeu = KQ69.standEintrag(eaAlt, serieBis('2026-08-04'), 0, '2026-09-04');
+  ok(eaNeu.bisTag === '2026-08-04' && eaNeu.versucht === '2026-09-04',
+     'Leerer Versuch: bisTag bleibt stehen, der Versuch bekommt ein eigenes Feld',
+     JSON.stringify([eaNeu.bisTag, eaNeu.versucht]));
+  ok(eaNeu.bisTag !== '2026-09-04',
+     'und bisTag wird NICHT vordatiert - sonst waere aus einer Luecke ein Stand geworden');
+  var voran = KQ69.standEintrag(eaAlt, serieBis('2026-09-04'), 0, '2026-09-04');
+  ok(voran.bisTag === '2026-09-04' && voran.versucht === undefined,
+     'Kam die Reihe voran, gibt es keinen Merker - der Wert ist einfach auf Stand');
+  var erstmal = KQ69.standEintrag(null, serieBis('2026-08-04'), 0, '2026-09-04');
+  ok(erstmal.versucht === undefined,
+     'Ein ERSTER Abruf ist nie "leer versucht" - er hat keinen Vorgaenger, an dem man das misst');
+  /* Die Rueckwaerts-Falle: eine Quelle, die eine KUERZERE Reihe liefert, darf nicht
+   * als Fortschritt durchgehen. tagIstNach ist dafuer strikt. */
+  var rueckwaerts = KQ69.standEintrag({ bisTag: '2026-08-14' }, serieBis('2026-08-04'), 0, '2026-09-04');
+  ok(rueckwaerts.versucht === '2026-09-04',
+     'Eine Antwort, die HINTER dem Stand zurueckbleibt, ist auch ein leerer Versuch');
+  ok(KQ69.tagIstNach('2026-09-04', '2026-08-04') === true &&
+     KQ69.tagIstNach('2026-08-04', '2026-08-04') === false &&
+     KQ69.tagIstNach(null, '2026-08-04') === false,
+     'Der Tagesvergleich laeuft ueber Date.parse, nicht ueber Zeichenketten');
+
+
+  /* ---------------------------------------------------------------------------
+   * (b) Der Plan: ein leerer Versuch macht nicht faellig - aber nur so lange
+   *
+   * Der Bezugspunkt ist derselbe wie fuer bisTag: der letzte abgeschlossene
+   * Handelstag. Geprueft wird an den Zahlen des Fundes. */
+  var SOLL = '2026-09-04';
+  var jetzt69 = Date.parse('2026-09-05T02:00:00Z');
+  var stumpf = { kerzen: 1014, am: '2026-09-04', bisTag: '2026-08-04' };
+  ok(SP69.istFaellig(stumpf, SOLL, 7, jetzt69) === true,
+     'Ohne Merker ist ein Wert mit einem Monat Rueckstand faellig - so entstand der Stillstand');
+  var mitMerker = { kerzen: 1014, am: '2026-09-04', bisTag: '2026-08-04', versucht: '2026-09-04' };
+  ok(SP69.istFaellig(mitMerker, SOLL, 7, jetzt69) === false,
+     'Mit leerem Versuch am Bezugstag ist er NICHT faellig - der Kopf der Schlange gibt den Platz frei');
+  ok(SP69.istFaellig({ bisTag: '2026-08-04', versucht: '2026-08-26' }, SOLL, 7, jetzt69) === true,
+     'Nach abstandTage wird wieder gefragt - aufgegeben wird kein Wert');
+  ok(SP69.istFaellig({ bisTag: '2026-08-04', versucht: '2026-09-03' }, SOLL, 1, jetzt69) === true &&
+     SP69.istFaellig({ bisTag: '2026-08-04', versucht: '2026-09-04' }, SOLL, 1, jetzt69) === false,
+     'Bei taeglichem Abstand heisst das: genau einmal je Handelstag, nicht alle zwanzig Minuten');
+  /* Der Merker darf einen Wert NICHT zurueckhalten, dessen Inhalt aktuell ist -
+   * dann ist er sowieso nicht faellig, und zwar aus dem staerkeren Grund. */
+  ok(SP69.istFaellig({ bisTag: SOLL, versucht: SOLL }, SOLL, 1, jetzt69) === false,
+     'Ein Wert auf Stand bleibt auf Stand, Merker hin oder her');
+  /* Eintraege von vor der Aenderung (nur am, kein bisTag) fallen weiter auf die alte
+   * Rechnung zurueck - der Merker gilt dort genauso. */
+  ok(SP69.istFaellig({ am: '2026-08-04' }, SOLL, 7, jetzt69) === true &&
+     SP69.istFaellig({ am: '2026-08-04', versucht: '2026-09-04' }, SOLL, 7, jetzt69) === false,
+     'Auch ein alter Eintrag ohne bisTag kennt den leeren Versuch');
+
+
+  /* ---------------------------------------------------------------------------
+   * (c) Die Reihenfolge: ALLE faelligen, aufholen zuerst
+   *
+   * Die Regel steht als reine Funktion in sammelplan.js, WEIL sie in main.js keine
+   * Zusicherung bekommen konnte. Die alte Fassung (dran[0]) gaebe hier eine Liste
+   * mit einem Eintrag zurueck - genau daran stirbt der Regressionsfall unten. */
+  var lageProbe = [
+    { intervall: '1m', faellig: false },
+    { intervall: '5m', faellig: true, art: 'planmaessig' },
+    { intervall: '15m', faellig: true, art: 'planmaessig' },
+    { intervall: '60m', faellig: true, art: 'planmaessig' },
+    { intervall: '1d', faellig: true, art: 'aufholen' },
+  ];
+  var rf = SP69.reihenfolge(lageProbe).map(function (z) { return z.intervall; });
+  ok(rf.length === 4, 'Reihenfolge: alle vier faelligen kommen dran, nicht nur das erste', rf.length);
+  ok(rf[0] === '1d', 'aufholen steht vorn - ein zulaufendes Fenster ist unwiederbringlich', rf.join(','));
+  ok(rf.slice(1).join(',') === '5m,15m,60m',
+     'und innerhalb der Gruppe bleibt die Reihenfolge aus ERLAUBTE_INTERVALLE stehen', rf.join(','));
+  ok(SP69.reihenfolge([]).length === 0 && SP69.reihenfolge(null).length === 0,
+     'Ohne faellige Zeile kommt eine leere Liste zurueck - kein Lauf ins Blaue');
+  /* Der Kopf der Schlange BLOCKIERT NICHTS MEHR: steht das erste Intervall auf
+   * "nicht faellig", weil seine Werte leer versucht sind, rutscht der Rest vor. */
+  var kopfLeer = SP69.reihenfolge([
+    { intervall: '5m', faellig: false, grund: 'Alle 531 Werte sind auf Stand (2 davon nur leer versucht)' },
+    { intervall: '60m', faellig: true, art: 'planmaessig' },
+  ]).map(function (z) { return z.intervall; });
+  ok(kopfLeer.join(',') === '60m',
+     'Ein leer versuchter Kopf blockiert nichts - dahinter wird gearbeitet', kopfLeer.join(','));
+
+
+  /* ---------------------------------------------------------------------------
+   * (d) Der Verhaltenstest: 124 Blicke auf die Uhr an einer Sammle-Attrappe
+   *
+   * Hier laeuft die ECHTE Runde (sammelrunde.js) ueber ein echtes Temp-Archiv mit dem
+   * echten Plan. Nur der Netzabruf ist eine Attrappe: fuer zwei Werte liefert sie
+   * nichts Neues, fuer 300 andere schon. Den Stand schreibt sie mit der ECHTEN
+   * standEintrag() - eine nachgebaute Buchfuehrung im Test wuerde den Fehler, um den
+   * es geht, gerade nicht zeigen.
+   *
+   * DER REGRESSIONSFALL: mit der alten Fassung (dran[0]) laufen 124 Blicke, ohne dass
+   * 60m ein einziges Mal drankommt. Genau das stand im Protokoll. */
+  /* ZWEI SZENARIEN, NACHEINANDER. Beide setzen den Datenordner - eine globale
+   * Groesse. Nebeneinander gestartet wuerde das zweite dem ersten den Ordner unter
+   * den Fuessen wegziehen, und die Zusicherungen des ersten liefen auf dem Archiv
+   * des zweiten. Genau das ist beim Bauen passiert: der 60m-Lauf meldete 33 Werte
+   * statt 300, und die Zeile sah trotzdem gruen aus. */
+  async function szenarioAttrappe() {
+    var tmp69 = fs.mkdtempSync(p69.join(os69.tmpdir(), 'verhungern-'));
+    var alterOrdner69 = KQ69.datenOrdner();
+    var laeufe = [];
+    try {
+      KQ69.datenOrdnerSetzen(tmp69);
+      var SOLL69 = '2026-09-04';
+      var JETZT69 = Date.parse('2026-09-05T02:00:00Z');   // Samstag, Markt zu
+      /* Die Quelle fuehrt diese beiden nicht mehr - wie EA und AVB im echten Archiv. */
+      var TOT = { EA: 1, AVB: 1 };
+
+      var werte69 = [{ sym: 'EA', umsatzMio: 2000 }, { sym: 'AVB', umsatzMio: 1999 }];
+      for (var wi = 0; wi < 300; wi++) werte69.push({ sym: 'W' + wi, umsatzMio: 900 - wi });
+      fs.mkdirSync(p69.join(tmp69, 'massive'), { recursive: true });
+      fs.writeFileSync(p69.join(tmp69, 'massive', 'universum-2026-09-04.json'),
+                       JSON.stringify({ werte: werte69 }));
+
+      var einst69 = SP69.einstellungen({
+        universum: 'alle',
+        intervalle: { '1m': 0, '5m': 7, '15m': 0, '60m': 1, '1d': 0 },
+      });
+
+
+      /* Ausgangslage wie am 02.09.2026: im 5m-Archiv sind alle auf Stand ausser den
+       * zwei toten; das 60m-Archiv ist leer, also ist dort alles faellig. Die ETFs
+       * kommen ueber symboleFuer() IMMER mit und werden deshalb auf Stand gesetzt -
+       * sonst waere die "leere Menge" gar nicht zwei Werte gross. */
+      SP69.ERLAUBTE_INTERVALLE.forEach(function (iv) {
+        fs.mkdirSync(KQ69.ordnerVon(iv), { recursive: true });
+      });
+      var stand5 = { fertig: {}, ohne: {} };
+      werte69.concat(KQ69.ETFS.map(function (s) { return { sym: s }; })).forEach(function (w) {
+        stand5.fertig[w.sym] = TOT[w.sym]
+          ? { kerzen: 1000, am: '2026-09-01', bisTag: w.sym === 'EA' ? '2026-08-04' : '2026-08-14' }
+          : { kerzen: 1000, am: SOLL69, bisTag: SOLL69 };
+      });
+      KQ69.standSchreiben(KQ69.ordnerVon('5m'), stand5);
+
+      /* Die Attrappe. Sie holt nichts, sie schreibt den Stand - mit der echten
+       * Buchfuehrung, damit der leere Versuch wirklich entsteht. */
+      async function attrappe(intervall, symbole) {
+        var ziel = KQ69.ordnerVon(intervall);
+        var stand = KQ69.standLesen(ziel);
+        var verarbeitet = 0, leer = 0;
+        symbole.forEach(function (sym) {
+          var vorher = stand.fertig[sym];
+          var bis = TOT[sym] ? ((vorher && vorher.bisTag) || '2026-08-04') : SOLL69;
+          var e = KQ69.standEintrag(vorher, serieBis(bis), 0, '2026-09-05');
+          stand.fertig[sym] = e;
+          verarbeitet++;
+          if (e.versucht) leer++;
+        });
+        KQ69.standSchreiben(ziel, stand);
+        laeufe.push({ intervall: intervall, werte: symbole.length });
+        return { ok: true, ergebnis: { verarbeitet: verarbeitet, leerVersucht: leer, abgebrochen: false } };
+      }
+
+
+      var zustand69 = {};
+      function blick() {
+        return RU69.runde({
+          plan: SP69, kerzen: KQ69, einstellungen: einst69, stillstand: zustand69,
+          jetzt: function () { return JETZT69; }, lauf: attrappe,
+        });
+      }
+      /* Die Ausgangslage muss stimmen, sonst prueft der Rest nichts (Positivkontrolle:
+       * ohne diese Zeile koennte 60m schon "auf Stand" sein und der Test gruen bleiben,
+       * WEIL nichts zu tun war). */
+      var lage0 = SP69.lage(einst69, JETZT69);
+      var f5 = lage0.filter(function (z) { return z.intervall === '5m'; })[0];
+      var f60 = lage0.filter(function (z) { return z.intervall === '60m'; })[0];
+      ok(f5.faellig === true && f5.offeneWerte === 2,
+         'Ausgangslage: 5m ist mit GENAU zwei toten Werten faellig - wie am 02.09.2026',
+         f5.offeneWerte + ' offen');
+      ok(f60.faellig === true && f60.offeneWerte > 300,
+         'Ausgangslage: 60m wartet mit dem ganzen Universum', f60.offeneWerte + ' offen');
+      ok(SP69.reihenfolge(lage0)[0].intervall === '5m',
+         'Ausgangslage: 5m steht VORN - genau der Kopf der Schlange, um den es geht');
+
+      await blick();
+      ok(laeufe.filter(function (l) { return l.intervall === '60m'; }).length >= 1,
+         'Ein Blick auf die Uhr arbeitet BEIDE Intervalle ab - 60m kommt dran, obwohl 5m vorn stand',
+         JSON.stringify(laeufe));
+      await blick();
+      var lage2 = SP69.lage(einst69, JETZT69);
+      var f60n = lage2.filter(function (z) { return z.intervall === '60m'; })[0];
+      ok(f60n.offeneWerte === 0,
+         'Nach zwei Blicken ist 60m vollstaendig geholt - der Deckel je Lauf haelt, die Schlange laeuft',
+         f60n.offeneWerte + ' offen');
+
+
+      /* DER REGRESSIONSFALL AUS DEM PROTOKOLL: 124 Blicke, so viele wie zwischen dem
+       * 02. und dem 04.09.2026 wirklich gelaufen sind. Die leere Menge darf hoechstens
+       * zweimal angefasst werden - einmal, um sie zu erkennen, und im Zweifel ein
+       * zweites Mal, bevor die Stillstandsbremse greift. */
+      for (var b = 0; b < 122; b++) await blick();
+      var leerLaeufe = laeufe.filter(function (l) { return l.intervall === '5m' && l.werte === 2; });
+      ok(leerLaeufe.length <= 2,
+         '124 Blicke auf die Uhr: die leere Menge wurde hoechstens ZWEIMAL geholt (vorher: 124-mal)',
+         leerLaeufe.length + ' Laeufe');
+      ok(leerLaeufe.length >= 1,
+         'aber mindestens einmal - sonst pruefte die Zeile darueber einen Lauf, den es nie gab',
+         leerLaeufe.length + ' Laeufe');
+      /* DIE NACHFRAGE KURZ VOR DEM LAUF. Ein Lauf dauert Minuten; oeffnet der Markt
+       * dazwischen, waere die Lage von vorhin eine Behauptung. Hier laesst die Uhr
+       * genau das passieren: die ersten Abfragen liegen am Samstag, ab der vierten ist
+       * Mittwochmittag in New York. Das zweite Intervall darf dann NICHT mehr laufen. */
+      var standLaeufe = laeufe.length;
+      var uhrRufe = 0;
+      KQ69.standSchreiben(KQ69.ordnerVon('60m'), { fertig: {}, ohne: {} });   // 60m wieder faellig
+      await RU69.runde({
+        plan: SP69, kerzen: KQ69, einstellungen: einst69, stillstand: {},
+        lauf: attrappe,
+        /* Drei Abfragen der Uhr macht eine Runde mit EINEM faelligen Intervall: die
+         * Lage, die offenen Werte, und die Nachfrage kurz vor dem Lauf. Die dritte
+         * ist die, um die es hier geht - ab ihr steht die Uhr auf Mittwochmittag in
+         * New York, und dann darf nichts mehr anlaufen. */
+        jetzt: function () {
+          uhrRufe++;
+          return uhrRufe < 3 ? JETZT69 : Date.parse('2026-09-02T17:00:00Z');
+        },
+      });
+      var neueLaeufe = laeufe.slice(standLaeufe);
+      ok(neueLaeufe.length === 0,
+         'Oeffnet der Markt mitten in der Runde, laeuft das naechste Intervall NICHT mehr an',
+         JSON.stringify(neueLaeufe));
+
+      var stand5n = KQ69.standLesen(KQ69.ordnerVon('5m'));
+      ok(stand5n.fertig.EA.versucht === '2026-09-05' && stand5n.fertig.EA.bisTag === '2026-08-04',
+         'Im Archiv steht danach, was wirklich war: versucht am 05.09., Reihe bis zum 04.08.',
+         JSON.stringify(stand5n.fertig.EA));
+      var lageN = SP69.lage(einst69, JETZT69);
+      var f5n = lageN.filter(function (z) { return z.intervall === '5m'; })[0];
+      ok(f5n.faellig === false && f5n.leerVersucht === 2,
+         'und die Karte kann den Unterschied zeigen: nicht "auf Stand", sondern zwei leer versucht',
+         f5n.leerVersucht + ' leer versucht');
+      ok(/leer versucht/.test(f5n.grund),
+         'Der Grund sagt es auch in Worten - "alle auf Stand" waere eine Beschoenigung', f5n.grund);
+    } finally {
+      KQ69.datenOrdnerSetzen(alterOrdner69);
+      fs.rmSync(tmp69, { recursive: true, force: true });
+    }
+  }
+
+
+  /* ---------------------------------------------------------------------------
+   * (e) Die dritte Sicherung: Stillstand wird laut - auch wenn die erste ausfaellt
+   *
+   * Hier ist die Buchfuehrung ABSICHTLICH kaputt: die Attrappe merkt sich den leeren
+   * Versuch nicht (so, wie es bis zum 04.09.2026 war). Dann muss die Bremse greifen -
+   * sonst laeuft dieselbe Menge wieder in alle Ewigkeit. Ohne diese Probe waere die
+   * Bremse eine Vorrichtung, die nie ausloest und von der niemand weiss, ob sie geht. */
+  async function szenarioStillstand() {
+    var tmpS = fs.mkdtempSync(p69.join(os69.tmpdir(), 'stillstand-'));
+    var alterS = KQ69.datenOrdner();
+    var laeufeS = [], hinweise = [];
+    try {
+      KQ69.datenOrdnerSetzen(tmpS);
+      var JETZTS = Date.parse('2026-09-05T02:00:00Z');
+      fs.mkdirSync(p69.join(tmpS, 'massive'), { recursive: true });
+      fs.writeFileSync(p69.join(tmpS, 'massive', 'universum-2026-09-04.json'),
+                       JSON.stringify({ werte: [{ sym: 'EA', umsatzMio: 2000 }, { sym: 'AVB', umsatzMio: 1999 }] }));
+      var einstS = SP69.einstellungen({
+        universum: 'EA,AVB', intervalle: { '1m': 0, '5m': 7, '15m': 0, '60m': 0, '1d': 0 },
+      });
+      SP69.ERLAUBTE_INTERVALLE.forEach(function (iv) { fs.mkdirSync(KQ69.ordnerVon(iv), { recursive: true }); });
+      KQ69.standSchreiben(KQ69.ordnerVon('5m'), { fertig: {
+        EA: { kerzen: 1000, am: '2026-09-01', bisTag: '2026-08-04' },
+        AVB: { kerzen: 1000, am: '2026-09-01', bisTag: '2026-08-14' },
+      }, ohne: {} });
+      /* Vergisst den Merker - die Lage vor dem 04.09.2026. */
+      var letzteMenge = null;
+      async function vergesslich(intervall, symbole) {
+        letzteMenge = symbole.slice();
+        laeufeS.push({ intervall: intervall, werte: symbole.length });
+        return { ok: true, ergebnis: { verarbeitet: symbole.length, leerVersucht: symbole.length, abgebrochen: false } };
+      }
+
+
+      var zustandS = {};
+      for (var bs = 0; bs < 124; bs++) {
+        await RU69.runde({
+          plan: SP69, kerzen: KQ69, einstellungen: einstS, stillstand: zustandS,
+          jetzt: function () { return JETZTS; }, lauf: vergesslich,
+          funk: function (kanal, last) { hinweise.push(last); },
+        });
+      }
+      ok(laeufeS.length === 2,
+         'Faellt die Buchfuehrung aus, bremst der Stillstand nach dem ZWEITEN erfolglosen Lauf',
+         laeufeS.length + ' Laeufe statt 124');
+      var stst = hinweise.filter(function (h) { return h.art === 'stillstand'; });
+      ok(stst.length === 2 && /keine einzige Reihe kam voran/.test(stst[0].grund),
+         'und sie sagt es laut - GENAU ZWEIMAL, nicht bei jedem der 124 Blicke',
+         stst.length + ' Hinweise');
+      /* UND SIE BLOCKIERT NICHT AUF EWIG: aendert sich die Menge, wird wieder gefragt.
+       * Ohne diese Zeile waere die Bremse ein stiller dauerhafter Ausschluss - genau
+       * die Bauform, gegen die der ohne-Zweig im Plan schon einmal gebaut wurde. */
+      ok(RU69.stillstandGemeldet(zustandS, '5m', letzteMenge) === true &&
+         RU69.stillstandGemeldet(zustandS, '5m', letzteMenge.concat(['MSFT'])) === false,
+         'Kommt ein Wert dazu, ist es eine neue Frage an die Quelle - und die wird gestellt',
+         letzteMenge.length + ' Werte in der Menge');
+      ok(RU69.ohneFortschritt({ verarbeitet: 2, leerVersucht: 2 }) === true &&
+         RU69.ohneFortschritt({ verarbeitet: 2, leerVersucht: 1 }) === false &&
+         RU69.ohneFortschritt({ verarbeitet: 0, leerVersucht: 0 }) === false,
+         'Fortschritt wird an leer versuchten REIHEN gemessen, nicht an neu=0 Kerzen');
+    } finally {
+      KQ69.datenOrdnerSetzen(alterS);
+      fs.rmSync(tmpS, { recursive: true, force: true });
+    }
+  }
+  probe((async function () { await szenarioAttrappe(); await szenarioStillstand(); })());
+
+
+  /* ---------------------------------------------------------------------------
+   * (f) Positivkontrolle am ECHTEN Archiv - nur lesend, in einer Kopie
+   *
+   * Die Zahlen oben sind die des Fundes, aber von Hand hingeschrieben. Liegt das echte
+   * 5m-Archiv auf diesem Rechner, wird zusaetzlich SEIN Stand geprueft: EA und AVB
+   * muessen darin als faellig gelten, solange kein Merker steht. Fehlt das Archiv (auf
+   * jedem anderen Rechner), sagt der Lauf das - eine Probe, die stillschweigend
+   * ausfaellt, ist ein Nullbefund vom toten Werkzeug. */
+  var echterStand = 'E:/Markt-Dashboard-Archiv/archiv5m/stand.json';
+  if (fs.existsSync(echterStand)) {
+    var roh69 = JSON.parse(fs.readFileSync(echterStand, 'utf8'));
+    var sollEcht = KQ69.letzterAbgeschlossenerHandelstag(new Date());
+    var stumpfe = Object.keys(roh69.fertig || {}).filter(function (sym) {
+      return SP69.istFaellig(roh69.fertig[sym], sollEcht, 7, Date.now());
+    });
+    ok(stumpfe.length > 0,
+       'Echtes Archiv: es gibt dort wirklich Werte, die ohne Merker dauerhaft faellig blieben',
+       stumpfe.slice(0, 4).join(','));
+    var mitMerkern = stumpfe.filter(function (sym) {
+      var e = JSON.parse(JSON.stringify(roh69.fertig[sym]));
+      e.versucht = sollEcht;
+      return SP69.istFaellig(e, sollEcht, 7, Date.now());
+    });
+    ok(mitMerkern.length === 0,
+       'und mit gesetztem Merker ist keiner von ihnen mehr faellig - die Schlange kaeme frei',
+       stumpfe.length + ' Werte geprueft');
+  } else {
+    console.log('  (uebersprungen: das echte 5m-Archiv liegt auf diesem Rechner nicht - ' +
+                'die Zahlen des Fundes stehen als Festwerte in (a) und (b))');
+  }
+
+
+  /* ---------------------------------------------------------------------------
+   * (g) Die Verdrahtung: EINE Schleife, und main.js benutzt sie
+   *
+   * Ein Modul, das niemand aufruft, ist eine Datei. Geprueft wird die Kette bis zum
+   * Hauptprozess - und dass dort keine zweite Fassung stehengeblieben ist. */
+  var mainS = fs.readFileSync(__dirname + '/main.js', 'utf8');
+  var mainO = ohneKommentare(mainS);
+  ok(/require\('\.\/sammelrunde\.js'\)/.test(mainO) && /Runde\.runde\(\{/.test(mainO),
+     'main.js laedt die Runde und ruft sie auf');
+  ok(!/Plan\.reihenfolge\(/.test(mainO) && !/dran\[0\]/.test(mainO),
+     'und hat keine eigene Auswahl mehr - die alte dran[0]-Zeile ist fort, nicht nur ueberschrieben');
+  ok(/stillstand: STILLSTAND/.test(mainO) && /const STILLSTAND = \{\};/.test(mainO),
+     'Der Stillstands-Zustand lebt im Hauptprozess - sonst waere er nach jedem Blick leer');
+  ok(/lauf: \(intervall, symbole\) => sammelLauf\(intervall, symbole, false\)/.test(mainO),
+     'und der eingehaengte Lauf ist der echte Sammellauf, nicht ein zweiter Weg');
+  ok(/if \(SAMMLER\.laeuft \|\| NACHSEHEN_LAEUFT\) return;/.test(mainO),
+     'Zwei Runden koennen sich nicht verschraenken - der Abstand von 1,2 s gilt der Quelle');
+  /* Die Runde selbst fasst die Handelslogik nicht an - dieselbe Auflage wie fuer
+   * kerzenquelle.js und sammelplan.js. */
+  var rundeO = ohneKommentare(fs.readFileSync(__dirname + '/sammelrunde.js', 'utf8'));
+  ok(!/intradayScan|autopilotRing|SETUPS|modeParams|demoOrder/.test(rundeO),
+     'sammelrunde.js fasst die Handelslogik nicht an');
+  ok(!/require\(/.test(rundeO) && !/https?:/.test(rundeO),
+     'und sie holt nichts selbst - Plan, Archiv und Lauf kommen als Argumente herein');
+  /* Ausgeliefert wird sie auch: main.js laedt sie ueber require, nicht ueber ein
+   * <script>-Tag - die Auslieferungs-Pruefung weiter oben sieht deshalb nur die
+   * Renderer-Skripte. Am 21.08.2026 hat genau diese Luecke drei Module gekostet. */
+  var pkg69 = JSON.parse(fs.readFileSync(__dirname + '/package.json', 'utf8'));
+  ok(pkg69.build.files.indexOf('*.js') !== -1,
+     'sammelrunde.js wird mitgeliefert - das Muster schliesst alle Module im Wurzelordner ein');
+
+
+  /* ---------------------------------------------------------------------------
+   * (h) So aktuell wie moeglich: der Takt des Reiters Markt
+   *
+   * Wilhelms Vorgabe vom 04.09.2026: "ich will nichts mehr selber klicken muessen ...
+   * so aktuell wie nur moeglich". Geprueft wird die VERWENDUNG, nicht die Konstante:
+   * eine Zahl, die niemand liest, taktet nichts. */
+  var muiT = fs.readFileSync(__dirname + '/marktui.js', 'utf8');
+  var mkuiT = fs.readFileSync(__dirname + '/marktkarteui.js', 'utf8');
+  ok(/var FRISCH_MS = 60000;/.test(muiT) &&
+     (muiT.match(/Date\.now\(\) - letzterLauf >= FRISCH_MS/g) || []).length >= 2,
+     'Reiter Markt: eine Minute, und der Wert wird an jeder Ausloesestelle wirklich gelesen');
+  ok(/var KURS_FRISCH_MS = 60000;/.test(mkuiT) &&
+     /Date\.now\(\) - letzterLauf >= KURS_FRISCH_MS/.test(mkuiT) &&
+     /Date\.now\(\) - c\.at <= KURS_FRISCH_MS/.test(mkuiT),
+     'Marktkarte: dieselbe Minute, und sie gilt auch fuer die Frische des Zwischenspeichers');
+  ok(!/document\.hidden\) return;[\s\S]{0,80}5 \* 60000/.test(mkuiT),
+     'Getaktet wird weiter nur bei sichtbarem Fenster - der Takt ist schneller, nicht gieriger');
+  /* Nachrichten, Spekulationen und Kalender bleiben, wie sie waren - der Auftrag
+   * nennt nur die Kurse. Eine Zusicherung dafuer, dass NICHTS anderes mitgezogen ist. */
+  var renT = fs.readFileSync(__dirname + '/renderer.js', 'utf8');
+  ok(/\}, 30 \* 60000\)/.test(renT) || /30 \* 60000/.test(renT),
+     'Der Nachrichten-Takt (30 Minuten) ist unangetastet');
+
+
+  /* ---------------------------------------------------------------------------
+   * (i) Die Grundmenge: alle Aktien statt 600 - und kein stiller Deckel dahinter
+   *
+   * Wilhelms Entscheid vom 04.09.2026 (Formular). Die Gefahr dabei ist nicht die Zahl,
+   * sondern die Deckel, die weiter unten stehen: einer davon haette die Menge still
+   * abgeschnitten, und das saehe aus wie ein duenner Markt. */
+  ok(/var UNIVERSUM = 0;/.test(muiT) && /MW\.auswahl\(UNIVERSUM\)/.test(muiT),
+     'Ueberblick: die Grundmenge ist die ganze Auswahl der Marktkarte (0 = kein Deckel)');
+  ok(/var deckel = \(n > 0 && isFinite\(n\)\) \? n : raus\.length;/.test(mkuiT) &&
+     /raus\.slice\(0, deckel\)/.test(mkuiT),
+     'auswahl(0) gibt ALLE zurueck - slice(0, 0) haette eine leere Karte gezeichnet');
+  ok(/return \(isFinite\(n\) && n > 0\) \? n : 0;/.test(mkuiT),
+     'anzahlJetzt() macht aus "alle" keine 300 mehr - der alte ||-Rueckfall war die Falle');
+  var htmlT = fs.readFileSync(__dirname + '/index.html', 'utf8');
+  ok(/<option value="0" selected>alle mit Stammdaten<\/option>/.test(htmlT),
+     'und die Karte steht per Vorgabe auf "alle mit Stammdaten"');
+  ok((htmlT.match(/id="mkAnzahl"/g) || []).length === 1 &&
+     !/<option value="99999"/.test(htmlT),
+     'Die alte 99999-Krücke ist fort - zwei Schreibweisen fuer "alle" waeren zwei Wahrheiten');
+  /* DIE DREI DECKEL. Jeder von ihnen haette gereicht, um die Menge still zu kappen. */
+  var mjT = fs.readFileSync(__dirname + '/main.js', 'utf8');
+  var deckelStamm69 = Number((/var DECKEL_STAMM = (\d+);/.exec(mkuiT) || [])[1]);
+  [['QUOTE_MAX', /QUOTE_MAX = (\d+);/], ['TAGES_MAX_SYM', /TAGES_MAX_SYM = (\d+);/],
+   ['MAX_KANDIDATEN', /MAX_KANDIDATEN = (\d+);/]].forEach(function (paar) {
+    var wert = Number((paar[1].exec(mjT) || [])[1]);
+    ok(wert >= deckelStamm69,
+       'Deckel ' + paar[0] + ' liegt nicht unter der Grundmenge - sonst schnitte er still ab',
+       wert + ' >= ' + deckelStamm69);
+  });
+  /* GESCHAERFT nach Gegenprobe G23: die erste Fassung suchte slice(0, MAX_KANDIDATEN)
+   * im GANZEN main.js - und wurde von der Stelle in markt-sec-basis gruen gehalten,
+   * waehrend im Branchen-Nachladen wieder eine eigene 1500 stand. Eine Klinke, die
+   * irgendwo im Haus faellt, sagt nichts ueber die Tuer, die sie sichern soll. */
+  var branchenBlock = (/ipcMain\.handle\('markt-sec-branchen'[\s\S]*?\n\}\);/.exec(mjT) || [''])[0];
+  ok(branchenBlock.length > 200 && /slice\(0, MAX_KANDIDATEN\)/.test(branchenBlock) &&
+     !/slice\(0, \d+\)/.test(branchenBlock),
+     'und das Nachladen der Branchen benutzt denselben Deckel, nicht eine zweite Zahl');
+
+
+  /* ---------------------------------------------------------------------------
+   * (j) Drosselung wird ausgewiesen, nicht verschwiegen
+   *
+   * Der Minutentakt ueber das ganze Universum ist mehr Anfragen je Minute als vorher.
+   * Wenn Yahoo bremst, muss das dastehen - ein stiller Rueckfall auf weniger Werte
+   * saehe aus wie ein duenner Markt. */
+  ok(/if \(res\.statusCode === 429\) YAHOO_429\+\+;/.test(mjT) &&
+     /gedrosselt: YAHOO_429 - drossel0/.test(mjT),
+     'Der Hauptprozess zaehlt die Abweisungen und gibt sie mit der Antwort zurueck');
+  ok(/if \(!arr\.length\) leereBloecke\+\+;/.test(mjT),
+     'und ein Block, der 400 gueltige Kuerzel ohne eine einzige Antwort zurueckgibt, ist ein Befund');
+  var kurseT = fs.readFileSync(__dirname + '/kurse.js', 'utf8');
+  ok(/gedrosselt: r\.gedrosselt \|\| 0/.test(kurseT) && /leereBloecke: r\.leereBloecke \|\| 0/.test(kurseT),
+     'kurse.js reicht beide Zahlen durch - sonst kaemen sie nie an der Oberflaeche an');
+  ok(/Yahoo drosselt: /.test(muiT) && /r\.gedrosselt \|\| r\.leereBloecke/.test(muiT),
+     'und der Reiter Markt schreibt es in die Kopfzeile, wo auch ein gescheiterter Abruf steht');
+  /* DER HINWEISTEXT NENNT EINE GEMESSENE ZAHL, keine geratene. Der alte Satz sprach von
+   * "ein bis zwei Minuten" - richtig fuer 600 Werte, um das Zehnfache daneben fuer 4.000.
+   * Gemessen am 04.09.2026: 0,25 s je noch unbekanntem Wert bei der SEC. */
+  /* OHNE KOMMENTARE gesucht (Gegenprobe G31): die erste Fassung suchte "0,25 s je noch
+   * unbekanntem Wert" in der ganzen Datei - und fand den Kommentar, der erklaert, woher
+   * die Zahl kommt. Der Eingriff nahm die Zahl aus dem SICHTBAREN Text, und die Klinke
+   * blieb gruen. Die Sperrklinke, die ihren eigenen Kommentar frisst
+   * (wiki/fehlerformen.md), zum zweiten Mal an diesem Tag. */
+  var mkuiO = ohneKommentare(mkuiT);
+  ok(/0,25 s je noch unbekanntem Wert/.test(mkuiO) && /Viertelstunde/.test(mkuiO) &&
+     !/dauert einmalig ein bis zwei Minuten/.test(mkuiO),
+     'Der Hinweis zum Nachladen nennt die gemessene Dauer, nicht die von frueher');
+
+  /* ---------------------------------------------------------------------------
+   * (k) Die Karte kann den Unterschied zeigen
+   *
+   * Ohne diese Zeile waere die Rechnung richtig und der Bildschirm weiter stumm. */
+  var karteT = fs.readFileSync(__dirname + '/archivkarte.js', 'utf8');
+  /* GESCHAERFT nach Gegenprobe G28: die erste Fassung suchte nur den Namen z.leerVersucht
+   * irgendwo in der Datei. Der Eingriff hat die BEDINGUNG durch false ersetzt und den
+   * Namen im Rumpf stehen lassen - die Klinke blieb gruen, obwohl die Zeile nie mehr
+   * erscheint. Geprueft wird jetzt die Verwendung als Bedingung (Testmarken-Falle,
+   * wiki/fehlerformen.md). */
+  ok(/\(z\.leerVersucht\s*\n?\s*\?/.test(karteT) && /leer versucht<\/span>/.test(karteT),
+     'Kursarchiv-Karte: die Zahl der leer versuchten Werte steht in der Fusszeile der Aufloesung');
+  ok(/st\.stillstand \|\| \[\]/.test(karteT) && /steht still/.test(karteT),
+     'und ein Stillstand steht in derselben Zeile - vor jedem anderen Hinweis ausser dem laufenden Lauf');
+  ok(/stillstand: Object\.keys\(STILLSTAND\)/.test(mjT),
+     'Der Stand traegt ihn - ein Funkspruch allein waere fort, sobald jemand die Klappe zumacht');
 })();
 
 Promise.all(offeneProben).then(function () {

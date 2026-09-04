@@ -1280,12 +1280,16 @@
 <div class="panel">
   <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:10px;">
     <label style="font-size:var(--fs-neben);">Wie viele Werte
+      <!-- Vorgabe seit 04.09.2026 "alle mit Stammdaten" (Wilhelms Entscheid, Formular:
+           "warum nur 600?"). Der Wert 0 heißt "kein Deckel" - anzahlJetzt() liest ihn so,
+           auswahl() nimmt dann die ganze Liste. Die kleineren Zahlen bleiben wählbar:
+           auf einer Flächenkarte wird ein Kästchen irgendwann zu klein zum Treffen. -->
       <select id="mkAnzahl" style="margin-left:4px;">
         <option value="100">die 100 größten</option>
         <option value="300">die 300 größten</option>
         <option value="600">die 600 größten</option>
-        <option value="1200" selected>die 1200 größten</option>
-        <option value="99999">alle mit Stammdaten</option>
+        <option value="1200">die 1200 größten</option>
+        <option value="0" selected>alle mit Stammdaten</option>
       </select></label>
     <label style="font-size:var(--fs-neben);">Branche
       <select id="mkBranche" style="margin-left:4px;"><option value="">alle</option></select></label>

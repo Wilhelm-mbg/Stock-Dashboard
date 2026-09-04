@@ -844,7 +844,7 @@
     'markt.hotlists': {
       titel: 'Die fünf Hotlists',
       punkte: [
-        '<b>Grundgesamtheit</b> sind die 600 größten Werte mit Stammdaten, nicht „der Markt“. Die Zahl steht unter den Sektor-Balken – „größter Gewinner des Tages“ hieße sonst etwas anderes, als dort steht.',
+        '<b>Grundgesamtheit</b> sind seit dem 04.09.2026 <i>alle</i> Werte mit Stammdaten statt der 600 größten – nach Wilhelms Frage „warum nur 600?“. Es ist trotzdem nicht „der Markt“: es fehlt, was keine Branche oder keine Stückzahl bei der SEC hat, und ausländische Emittenten sind absichtlich draußen. Die tatsächliche Zahl steht unter den Sektor-Balken – „größter Gewinner des Tages“ hieße sonst etwas anderes, als dort steht.',
         '<b>Meist gehandelt</b> ist der Dollar-Umsatz (Kurs × Stück), nicht die Stückzahl. Nach Stück stünden dort dauerhaft die Pennystocks, und die Liste hätte jeden Tag denselben Inhalt.',
         '<b>Ungewöhnliches Volumen</b> ist das heutige Volumen geteilt durch den <i>Median</i> der letzten 50 Handelstage aus dem eigenen Tagesarchiv. Nicht Yahoos averageVolume: dessen Fenster ist nicht dokumentiert, und es käme aus derselben Antwort wie der Zähler. Der Median statt des Mittels, weil ein einziger Verfallstag ein Mittel über Wochen anhebt. Unter 20 Tagen im Archiv steht der Wert gar nicht – unbekannt ist unbekannt, nicht 1,0.',
         '<b>Am 52-Wochen-Hoch</b> heißt: der Kurs steht bei mindestens 99,5 % des Zwölfmonatshochs. Der Spielraum ist eine Setzung und keine Messung.',

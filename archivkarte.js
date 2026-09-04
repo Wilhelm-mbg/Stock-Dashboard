@@ -110,6 +110,14 @@
     if (st.laeuft && st.laufIntervall === z.intervall) {
       return ' · <span style="color:var(--series);">sammelt gerade</span>';
     }
+    /* STILLSTAND STEHT VOR ALLEM ANDEREN AUSSER DEM LAUFENDEN LAUF. Er ist der
+     * Zustand, den man dieser Zeile bis zum 04.09.2026 nicht ansehen konnte:
+     * dieselbe Wertemenge, Lauf um Lauf, ohne dass eine Reihe weiterrueckt. */
+    var stst = (st.stillstand || []).filter(function (s) { return s.intervall === z.intervall; })[0];
+    if (stst) {
+      return ' · <span style="color:var(--down);">steht still: ' + stst.werte + ' Werte, ' +
+        stst.male + '-mal ohne Fortschritt</span>';
+    }
     if (z.hindernis) return ' · <span style="color:var(--down);">geht nicht: ' + U.esc(z.hindernis) + '</span>';
     if (z.verloren) return ' · <span style="color:var(--down);">' + z.verloreneTage.toFixed(1) + ' Tage unwiederbringlich weg</span>';
     if (z.sperre && z.sperre.verwaist) {
@@ -141,6 +149,14 @@
         z.werte.toLocaleString('de-DE') + ' Werte' +
         (r.angesehen ? ' (' + r.angesehen + ' angesehen)' : '') +
         ' · jüngste Kerze ' + U.esc(z.juengsterTag ? alterText(z.juengsteMs) : 'nichts da') +
+        /* "AUF STAND" IST NICHT "LEER VERSUCHT". Eine Reihe, für die die Quelle
+         * nichts mehr liefert, zählt hier weder als offen noch als gesund - sie
+         * bekommt ihr eigenes Wort. Ohne dieses Wort sah der Zustand, der drei Tage
+         * lang das ganze Sammeln aufhielt, aus wie ein gepflegtes Archiv. */
+        (z.leerVersucht
+          ? ' · <span style="color:var(--muted);">' + z.leerVersucht.toLocaleString('de-DE') +
+            ' leer versucht</span>'
+          : '') +
         alarmHtml(z, st) +
         '</div>';
     });

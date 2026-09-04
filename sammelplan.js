@@ -212,14 +212,45 @@ function symboleFuer(einst, intervall) {
  * Eintraege ohne bisTag stammen von vor dieser Aenderung und fallen auf die alte
  * Rechnung zurueck. Das heilt sich beim naechsten Abruf von selbst, denn der schreibt
  * bisTag mit; ein Nachtragen von Hand haette 3.000 Dateien lesen muessen. */
+/* DER LEERE VERSUCH (04.09.2026, Wilhelms Auftrag "so aktuell wie nur moeglich").
+ *
+ * Ein Rueckstand im Inhalt sagt noch nicht, dass jemand ihn aufholen KANN. Findet die
+ * Quelle fuer einen Wert nichts Neues - delistet, Reihe eingestellt, dieses Intervall
+ * wird nicht mehr gefuehrt -, bleibt bisTag alt, und die Zeile darueber sagt bis in
+ * alle Ewigkeit "faellig". Der Wert steht damit bei jedem Blick auf die Uhr vorn, und
+ * alles hinter ihm kommt nie an die Reihe. Genau so lief es vom 02. bis zum 04.09.2026:
+ * 124 Laeufe ueber EA und AVB, waehrend 522 Viertelstunden- und 3.263 Tagesreihen
+ * warteten.
+ *
+ * kerzenquelle.js schreibt fuer diesen Fall `versucht: <heute>`. Hier wird daraus die
+ * Entscheidung: ein Wert mit Rueckstand, dessen leerer Versuch noch keinen Abstand her
+ * ist, ist NICHT faellig. Nach `abstandTage` fragt ihn der naechste Lauf wieder - genau
+ * wie einen Wert ohne Daten. AUFGEGEBEN WIRD KEINER: ein Papier kann nach Wochen
+ * wieder handelbar sein, und ein dauerhafter Ausschluss waere wieder ein stiller.
+ *
+ * DER BEZUGSPUNKT IST DERSELBE WIE OBEN, der letzte abgeschlossene Handelstag. Am
+ * Wochenende rueckt er nicht weiter - dann wird auch nicht nachgefragt, denn es kann
+ * nichts Neues geben. */
 function istFaellig(eintrag, sollTag, abstandTage, jetzt) {
   if (!eintrag) return true;
   if (eintrag.bisTag) {
     var rueck = tageSeit(eintrag.bisTag, Date.parse(sollTag + 'T00:00:00Z'));
-    return rueck == null || rueck >= abstandTage;
+    if (!(rueck == null || rueck >= abstandTage)) return false;
+    return !leerVersuchtFrisch(eintrag, sollTag, abstandTage);
   }
   var seit = tageSeit(eintrag.am, jetzt);
-  return seit == null || seit >= abstandTage;
+  if (!(seit == null || seit >= abstandTage)) return false;
+  return !leerVersuchtFrisch(eintrag, sollTag, abstandTage);
+}
+
+/* Hat dieser Wert einen leeren Versuch, der noch keinen Abstand her ist? Getrennte
+ * Funktion, weil zwei Stellen sie brauchen: istFaellig() haelt ihn zurueck, und
+ * offeneSymbole() zaehlt ihn - "auf Stand" und "leer versucht" sind zwei Zustaende
+ * und duerfen in der Anzeige nicht derselbe sein. */
+function leerVersuchtFrisch(eintrag, sollTag, abstandTage) {
+  if (!eintrag || !eintrag.versucht) return false;
+  var seitVersuch = tageSeit(eintrag.versucht, Date.parse(sollTag + 'T00:00:00Z'));
+  return seitVersuch != null && seitVersuch < abstandTage;
 }
 
 function offeneSymbole(intervall, einst, jetzt) {
@@ -234,10 +265,15 @@ function offeneSymbole(intervall, einst, jetzt) {
   var stand = Q.standLesen(Q.ordnerVon(intervall));
   var soll = Q.letzterAbgeschlossenerHandelstag(new Date(jetzt));
   var dran = [];
+  var leerVersucht = 0;
   b.symbole.forEach(function (sym) {
     var f = stand.fertig && stand.fertig[sym];
     if (f) {
       if (istFaellig(f, soll, abstandTage, jetzt)) dran.push(sym);
+      /* "Auf Stand" und "leer versucht" sind zwei verschiedene Gruende, nicht dran
+       * zu sein. Sie hier zusammenzuwerfen hiesse, dem Leser einen Rueckstand als
+       * Gesundheit zu verkaufen - dieselbe Stille, aus der dieser Fund kam. */
+      else if (leerVersuchtFrisch(f, soll, abstandTage)) leerVersucht++;
       return;
     }
     /* Werte ohne Daten (delistet, nie gelistet, an einem Tag mit Netzstoerung
@@ -249,7 +285,7 @@ function offeneSymbole(intervall, einst, jetzt) {
     if (o && seitOhne != null && seitOhne < abstandTage * 10) return;
     dran.push(sym);
   });
-  return { alle: b.symbole.length, dran: dran, quelle: b.quelle };
+  return { alle: b.symbole.length, dran: dran, leerVersucht: leerVersucht, quelle: b.quelle };
 }
 
 /* ================= IST ES SOWEIT ================= */
@@ -282,11 +318,16 @@ function faellig(intervall, ueberblick, einst, jetzt, offen) {
    * genug Vorlauf, um einen ausgeschalteten Rechner ueber ein Wochenende zu
    * ueberstehen, aber frueh genug, um nichts zu verlieren. */
   var eng = !!(cfg.fensterTage && luecke.tageAus != null && luecke.tageAus >= cfg.fensterTage * 0.75);
-  var lage0 = { offen: dran, alle: offen.alle, luecke: luecke, verloren: !!luecke.verloren };
+  var leerV = offen.leerVersucht || 0;
+  var lage0 = { offen: dran, alle: offen.alle, leerVersucht: leerV,
+                luecke: luecke, verloren: !!luecke.verloren };
 
   if (!dran) {
     lage0.faellig = false;
-    lage0.grund = 'Alle ' + offen.alle + ' Werte sind auf Stand';
+    /* "Alle Werte sind auf Stand" waere eine Beschoenigung, sobald welche darunter
+     * sind, fuer die die Quelle nichts mehr hat. Der Zusatz nennt sie beim Namen. */
+    lage0.grund = 'Alle ' + offen.alle + ' Werte sind auf Stand' +
+      (leerV ? ' (' + leerV + ' davon nur leer versucht - die Quelle liefert dafuer nichts Neues)' : '');
     return lage0;
   }
   if (eng || luecke.verloren) {
@@ -334,6 +375,10 @@ function lage(einst, jetzt) {
        * nicht gesammelt werden, und das darf nicht wie Gesundheit aussehen. */
       hindernis: offen.grund || null,
       offeneWerte: offen.dran ? offen.dran.length : 0,
+      /* Fuer die Karte: wie viele Werte NUR deshalb nicht dran sind, weil die
+       * Quelle sie leer beantwortet hat. Ohne diese Zahl saehe eine ausgelaufene
+       * Reihe genauso aus wie eine gepflegte. */
+      leerVersucht: offen.leerVersucht || 0,
       faellig: !!f.faellig,
       art: f.art || null,
       grund: f.grund,
@@ -344,6 +389,33 @@ function lage(einst, jetzt) {
   });
 }
 
+/* WELCHE INTERVALLE ARBEITET EIN BLICK AUF DIE UHR AB - UND IN WELCHER REIHENFOLGE?
+ *
+ * Bis zum 04.09.2026 stand diese Entscheidung in main.js und lautete `dran[0]`: EIN
+ * Intervall je Blick, und zwar das erste faellige. Sie war fuenf Tage lang gruen und
+ * trotzdem falsch, denn "das erste faellige" konnte ein Intervall sein, das NIE fertig
+ * wird - der Kopf der Schlange, der nicht bedient werden kann, und hinter ihm steht
+ * alles still (wiki/fehlerformen.md). 124 Laeufe ueber zwei Werte, drei Tage Stillstand
+ * im Tagesarchiv, und jede einzelne Protokollzeile sah gesund aus.
+ *
+ * Jetzt kommen ALLE faelligen dran, nacheinander. Zwei Dinge bleiben:
+ *   - 'aufholen' zuerst. Ein zulaufendes Quellfenster ist unwiederbringlich, ein
+ *     planmaessiger Lauf kann warten.
+ *   - die Reihenfolge aus ERLAUBTE_INTERVALLE innerhalb der beiden Gruppen: erst die
+ *     Intraday-Aufloesungen, dann der Messbestand.
+ * Aufgeteilt wird mit filter() und nicht mit sort(): filter haelt die Reihenfolge
+ * nachweislich, eine Vergleichsfunktion tut es nur, solange die Laufzeit stabil
+ * sortiert.
+ *
+ * REIN, damit sie ohne Electron pruefbar ist - das war der Grund, warum die alte
+ * Fassung nie eine Zusicherung hatte. */
+function reihenfolge(zeilen) {
+  var faellige = (zeilen || []).filter(function (z) { return z && z.faellig; });
+  var vorn = faellige.filter(function (z) { return z.art === 'aufholen'; });
+  var hinten = faellige.filter(function (z) { return z.art !== 'aufholen'; });
+  return vorn.concat(hinten);
+}
+
 function dauerSchaetzungMin(anzahl, abstandMs) {
   return Math.ceil(anzahl * abstandMs / 60000);
 }
@@ -352,7 +424,8 @@ module.exports = {
   VORGABE: VORGABE, ERLAUBTE_INTERVALLE: ERLAUBTE_INTERVALLE, DECKEL_JE_LAUF: DECKEL_JE_LAUF,
   einstellungen: einstellungen, newYork: newYork, marktOffen: marktOffen, ruhig: ruhig,
   symboleFuer: symboleFuer, offeneSymbole: offeneSymbole, istFaellig: istFaellig,
-  faellig: faellig, lage: lage,
+  faellig: faellig, lage: lage, reihenfolge: reihenfolge,
+  leerVersuchtFrisch: leerVersuchtFrisch,
   dauerSchaetzungMin: dauerSchaetzungMin, tageSeit: tageSeit,
   OEFFNET: OEFFNET, SCHLIESST: SCHLIESST,
 };

@@ -188,6 +188,13 @@ async function holeTermine(symbol, wiederholung) {
  * Messbasis – dieselbe Falle, die beim Kursabruf schon einmal zugeschlagen hat und
  * dort mit einer einzelnen Wiederholung behoben wurde. Hier wird zusätzlich
  * schrittweise länger gewartet, weil der Terminabruf über viele Symbole läuft. */
+/* WIE OFT HAT YAHOO GEDROSSELT? Seit dem 04.09.2026 taktet der Reiter Markt im
+ * Minutentakt ueber das ganze Universum - das sind ein paar Anfragen je Minute statt
+ * zweien alle fuenf. Ein Deckel der Quelle wuerde sich sonst als "heute kamen weniger
+ * Kurse" zeigen, und das sieht aus wie ein duenner Markt. Der Zaehler laeuft ueber die
+ * ganze Sitzung; die Auswerter nehmen die DIFFERENZ vor und nach ihrem Abruf. */
+let YAHOO_429 = 0;
+
 function jsonGet(pfad, cookie, versuch) {
   versuch = versuch || 0;
   return new Promise((resolve) => {
@@ -202,6 +209,7 @@ function jsonGet(pfad, cookie, versuch) {
       res.setEncoding('utf8');
       res.on('data', (c) => { d += c; if (d.length > 2 * 1024 * 1024) req.destroy(); });
       res.on('end', () => {
+        if (res.statusCode === 429) YAHOO_429++;
         if (res.statusCode === 429 && versuch < 2) {
           return setTimeout(() => resolve(jsonGet(pfad, cookie, versuch + 1)), 4000 * (versuch + 1));
         }
@@ -882,7 +890,11 @@ function stammdatenPfad() {
  * Zurueck gehen nur die Werte MIT Stueckzahl - alles andere kann die Karte nicht
  * zeichnen, und eine Liste von zehntausend Kuerzeln durch die Bruecke zu schieben,
  * von denen die Haelfte unbrauchbar ist, waere Verschwendung. */
-const MAX_KANDIDATEN = 2000;
+/* 04.09.2026 von 2.000 auf 4.000. Solange die Karte "die groessten 600" zeigte, war
+ * eine Vorauswahl von 2.000 grosszuegig; seit sie alle zeigt, waere sie eine stille
+ * Obergrenze fuer das GANZE Universum - und zwar eine, die man der fertigen Karte
+ * nicht ansieht. Derselbe Wert wie DECKEL_STAMM im Renderer. */
+const MAX_KANDIDATEN = 4000;
 /* SAMMELABRUF (25.08.2026). Bis dahin holte die Oberflaeche jeden Kurs EINZELN ueber
  * /v8/finance/chart/<sym>. Die Marktkarte steht per Vorgabe auf 600 Werten - das waren
  * 600 Anfragen fuer ein Bild. Deshalb durfte sie nicht im Hintergrund laufen, und jede
@@ -900,7 +912,12 @@ const MAX_KANDIDATEN = 2000;
  * Was die Quelle nicht kennt, FEHLT im Ergebnis - ein unbekannter Kurs ist unbekannt,
  * nicht null. Der Aufrufer sieht an "angefragt" gegen "geholt", wie viel ankam. */
 const QUOTE_BLOCK = 400;
-const QUOTE_MAX = 3000;
+/* 04.09.2026 von 3.000 auf 4.000 gehoben. Seit die Grundmenge des Reiters Markt das
+ * ganze Aktien-Universum ist statt der 600 groessten, wuerde ein Deckel unterhalb der
+ * Universumsgroesse den Rest STILL abschneiden - der Aufrufer saehe eine kuerzere
+ * Liste und keinen Grund. 4.000 ist dieselbe Groessenordnung wie DECKEL_STAMM in
+ * marktkarteui.js: was die SEC ueberhaupt mit Stueckzahl fuehrt. */
+const QUOTE_MAX = 4000;
 ipcMain.handle('yahoo-quotes', async (_ev, symbole) => {
   try {
     const roh = Array.isArray(symbole) ? symbole : [];
@@ -911,11 +928,15 @@ ipcMain.handle('yahoo-quotes', async (_ev, symbole) => {
       gesehen.add(k); syms.push(k);
       if (syms.length >= QUOTE_MAX) break;
     }
-    if (!syms.length) return { ok: true, kurse: {}, angefragt: 0, geholt: 0, bloecke: 0 };
+    if (!syms.length) return { ok: true, kurse: {}, angefragt: 0, geholt: 0, bloecke: 0,
+                               gedrosselt: 0, leereBloecke: 0 };
     const sitz = await holeSitz();
     if (!sitz.crumb) return { ok: false, grund: 'Kein Zugang zu den Kursen (Cookie/Crumb)' };
     const kurse = {};
     let bloecke = 0;
+    /* Vor dem ersten Block gemerkt: was danach dazukommt, gehoert zu DIESEM Abruf. */
+    const drossel0 = YAHOO_429;
+    let leereBloecke = 0;
     for (let i = 0; i < syms.length; i += QUOTE_BLOCK) {
       const teil = syms.slice(i, i + QUOTE_BLOCK);
       const pfad = '/v7/finance/quote?symbols=' + encodeURIComponent(teil.join(',')) +
@@ -923,6 +944,10 @@ ipcMain.handle('yahoo-quotes', async (_ev, symbole) => {
       const j = await jsonGet(pfad, sitz.cookie);
       bloecke++;
       const arr = (j && j.quoteResponse && j.quoteResponse.result) || [];
+      /* EIN LEERER BLOCK IST EIN BEFUND, kein Nichts. 400 gueltige Kuerzel, die
+       * nichts zurueckgeben, heissen Drosselung oder abgelaufene Sitzung - beides
+       * darf nicht als "der Markt ist heute duenn" durchgehen. */
+      if (!arr.length) leereBloecke++;
       arr.forEach((q) => {
         if (!q || !(q.regularMarketPrice > 0)) return;
         /* WAS DIE QUELLE NICHT KENNT, IST null - nicht 0. Die Marktkarte hat den
@@ -955,7 +980,8 @@ ipcMain.handle('yahoo-quotes', async (_ev, symbole) => {
       if (i + QUOTE_BLOCK < syms.length) await new Promise((f) => setTimeout(f, 300));
     }
     return { ok: true, kurse: kurse, angefragt: syms.length,
-             geholt: Object.keys(kurse).length, bloecke: bloecke };
+             geholt: Object.keys(kurse).length, bloecke: bloecke,
+             gedrosselt: YAHOO_429 - drossel0, leereBloecke: leereBloecke };
   } catch (e) { return { ok: false, grund: String((e && e.message) || e) }; }
 });
 ipcMain.handle('markt-sec-basis', async () => {
@@ -991,7 +1017,10 @@ async function secBasis() {
 ipcMain.handle('markt-sec-branchen', async (ev, syms) => {
   try {
     if (!Array.isArray(syms) || !syms.length) return { ok: false, grund: 'Keine Werte angefragt.' };
-    const liste = syms.filter((s) => /^[A-Za-z0-9.\-]{1,12}$/.test(String(s))).slice(0, 1500);
+    /* Derselbe Deckel wie MAX_KANDIDATEN: ein Nachladen, das mehr Werte bekommt, als
+     * es verarbeitet, liesse den Rest ohne Branche zurueck - und die faellt in
+     * auswahl() lautlos aus der Karte. */
+    const liste = syms.filter((s) => /^[A-Za-z0-9.\-]{1,12}$/.test(String(s))).slice(0, MAX_KANDIDATEN);
     const b = await secBasis();
     const p = stammdatenPfad();
     let bekannt = {};
@@ -1320,6 +1349,7 @@ ipcMain.handle('store-set', async (_ev, name, value) => {
  */
 const Kerzen = require('./kerzenquelle.js');
 const Plan = require('./sammelplan.js');
+const Runde = require('./sammelrunde.js');
 /* Fuer die Archiv-Grafik (Oberflaeche Stufe 4): archiv.js liefert das TAGE-ZAEHLEN
  * als reine Funktion, boerse.js den Handelskalender inklusive Feiertagen. Beide
  * werden hier nur GELESEN - kein Sammeln, kein Schreiben. */
@@ -1374,6 +1404,13 @@ function sammlerStand() {
       : null,
     letzter: SAMMLER.letzter,
     letzterFehler: SAMMLER.letzterFehler,
+    /* Der Stillstand steht IM STAND, nicht nur in einem Funkspruch. Ein Hinweis,
+     * der einmal durchs Fenster geht, ist fort, sobald jemand die Klappe zumacht -
+     * und dann sieht die Karte wieder gesund aus. */
+    stillstand: Object.keys(STILLSTAND).map(function (iv) {
+      return { intervall: iv, werte: STILLSTAND[iv].werte, male: STILLSTAND[iv].male,
+               seit: STILLSTAND[iv].seit };
+    }).filter(function (s) { return s.male >= 2; }),
     marktOffen: Plan.marktOffen(Date.now()),
   };
 }
@@ -1404,6 +1441,10 @@ async function sammelLauf(intervall, symbole, vonHand) {
     });
     SAMMLER.letzter = {
       intervall: intervall, ok: erg.ok, leer: erg.leer, kerzen: erg.kerzen, dazu: erg.dazu,
+      /* verarbeitet und leerVersucht gehen mit: erst die beiden zusammen sagen, ob
+       * der Lauf etwas bewegt hat. ok=2, kerzen=2650, neu=0 sah drei Tage lang aus
+       * wie ein geglueckter Lauf und war Stillstand. */
+      verarbeitet: erg.verarbeitet, leerVersucht: erg.leerVersucht,
       abgebrochen: erg.abgebrochen, grund: erg.grund, vonHand: !!vonHand,
       begonnen: erg.begonnen, beendet: erg.beendet,
     };
@@ -1417,39 +1458,35 @@ async function sammelLauf(intervall, symbole, vonHand) {
   }
 }
 
-/* Der Blick auf die Uhr. Er entscheidet NICHTS selbst - alles Urteil steht in
- * sammelplan.js, damit es sich ohne Electron pruefen laesst. */
+/* Der Blick auf die Uhr. Er entscheidet NICHTS selbst - die Reihenfolge steht in
+ * sammelplan.js, die Runde in sammelrunde.js, damit sich beides ohne Electron pruefen
+ * laesst. Hier bleiben nur die Dinge, die es ohne Electron nicht gibt: die
+ * Einstellungen aus dem Datenordner, der echte Sammellauf und der Funk ans Fenster.
+ *
+ * DER STILLSTANDS-ZUSTAND LEBT HIER, nicht in der Runde: er muss ueber die Blicke
+ * hinweg bestehen, und ein Modul, das ihn selbst haelt, waere zwischen zwei Proben
+ * nicht mehr leer.
+ *
+ * NACHEINANDER, NICHT PARALLEL: SAMMLER.laeuft bleibt "ein Lauf zur Zeit", der Abstand
+ * von 1,2 s gilt der QUELLE und nicht dem Aufrufer. NACHSEHEN_LAEUFT deckelt die Runde
+ * selbst - ohne diesen Merker koennte der 20-Minuten-Takt zwischen zwei Laeufen eine
+ * zweite Runde starten, und dann liefen zwei verschraenkt. */
+const STILLSTAND = {};
+let NACHSEHEN_LAEUFT = false;
+
 async function sammlerNachsehen(grundZeile) {
-  if (SAMMLER.laeuft) return;
+  if (SAMMLER.laeuft || NACHSEHEN_LAEUFT) return;
   const einst = sammlerEinstellungen();
   if (!einst.an) return;
-  let zeilen;
-  try { zeilen = Plan.lage(einst, Date.now()); }
-  catch (e) { SAMMLER.letzterFehler = String((e && e.message) || e); return; }
-  /* Was am ehesten verlorengeht, kommt zuerst: ein zugelaufenes Fenster ist
-   * unwiederbringlich, ein planmaessiger Lauf kann warten. */
-  const dran = zeilen.filter((z) => z.faellig)
-    .sort((a, b) => (a.art === 'aufholen' ? 0 : 1) - (b.art === 'aufholen' ? 0 : 1));
-  if (!dran.length) return;
-  const z = dran[0];
-  const offen = Plan.offeneSymbole(z.intervall, einst, Date.now());
-  if (!offen.dran || !offen.dran.length) return;
-  /* GEDECKELT, und nur hier: 60m und 1d umfassen das ganze Universum (rund 3.200
-   * Werte, gut anderthalb Stunden). Ohne Deckel haette der Automat die Archivsperre
-   * so lange belegt, dass ein draengendes Intervall nicht mehr dazwischenkaeme -
-   * 1m verliert nach sieben Tagen unwiederbringlich. Der Rest bleibt offen und
-   * wird beim naechsten Blick auf die Uhr geholt; die Buchfuehrung dafuer zaehlt
-   * je Wert und nicht je Archiv. Ein Lauf VON HAND (sammler-start) geht weiterhin
-   * ungedeckelt durch - wer den Knopf drueckt, will alles. */
-  const teil = offen.dran.slice(0, Plan.DECKEL_JE_LAUF);
-  const rest = offen.dran.length - teil.length;
-  sammlerFunk('sammler-hinweis', {
-    art: 'start', intervall: z.intervall, werte: teil.length, rest: rest,
-    grund: (grundZeile ? grundZeile + ': ' : '') + z.grund +
-      (rest ? ' (' + teil.length + ' in diesem Lauf, ' + rest + ' danach)' : ''),
-    verloren: z.verloren, verloreneTage: z.verloreneTage,
-  });
-  await sammelLauf(z.intervall, teil, false);
+  NACHSEHEN_LAEUFT = true;
+  try {
+    const erg = await Runde.runde({
+      plan: Plan, kerzen: Kerzen, einstellungen: einst,
+      stillstand: STILLSTAND, funk: sammlerFunk, grundZeile: grundZeile,
+      lauf: (intervall, symbole) => sammelLauf(intervall, symbole, false),
+    });
+    if (erg.fehler) SAMMLER.letzterFehler = erg.fehler;
+  } finally { NACHSEHEN_LAEUFT = false; }
 }
 
 /* ================= WIE VOLLSTAENDIG IST DAS ARCHIV (Stufe 4, 03.09.2026) =========
@@ -1557,7 +1594,11 @@ ipcMain.handle('archiv-abdeckung', async () => {
  * dort in Node pruefbar; die Gegenprobe in test-v6 haelt Schwanz gegen Volltext. */
 const MarktU = require('./markt/uebersicht.js');
 const TAGES_SCHWANZ = 96 * 1024;
-const TAGES_MAX_SYM = 1500;
+/* 04.09.2026 von 1.500 auf 4.000: die Grundmenge des Reiters Markt ist seither das
+ * ganze Aktien-Universum, und ein Deckel darunter haette die Tagesreihen der letzten
+ * Werte still weggelassen - relatives Volumen und Wochenspanne haetten fuer sie
+ * gefehlt, ohne dass irgendwo ein Grund stuende. Derselbe Wert wie QUOTE_MAX. */
+const TAGES_MAX_SYM = 4000;
 const TAGES_MAX_TAGE = 260;
 function schwanzLesen(pfad, bytes) {
   const fd = fs.openSync(pfad, 'r');

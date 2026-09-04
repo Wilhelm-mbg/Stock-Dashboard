@@ -29,12 +29,22 @@
   var nf1 = new Intl.NumberFormat('de-DE', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
   var nf0 = new Intl.NumberFormat('de-DE', { maximumFractionDigits: 0 });
 
-  /* Die Grundgesamtheit der Hotlists: die groessten Werte mit Stammdaten. Die Zahl
-   * ist eine SETZUNG und keine Messung - sie steht deshalb in der Fusszeile, damit
-   * niemand "der groesste Gewinner des Tages" liest, wo "der groesste Gewinner unter
-   * den 600 groessten Werten" steht. Sechshundert sind zwei Sammelabrufe. */
-  var UNIVERSUM = 600;
-  var FRISCH_MS = 5 * 60000;
+  /* Die Grundgesamtheit der Hotlists: ALLE Werte mit Stammdaten, nicht die groessten
+   * 600 (Wilhelms Entscheid 04.09.2026, Formular: "warum nur 600?").
+   *
+   * DIE 600 WAREN EINE SETZUNG AUS DER ZEIT DER EINZELABRUFE. Am 25.08.2026 kostete
+   * ein Bild sechshundert Anfragen, und da war jede Begrenzung eine Wohltat. Seit dem
+   * Sammelabruf (400 Kuerzel je Anfrage) kostet das ganze Universum eine Handvoll
+   * Anfragen je Runde - der Grund fuer die Zahl ist entfallen, die Zahl blieb stehen.
+   *
+   * 0 HEISST "KEIN DECKEL", nicht "keine Werte": auswahl() nimmt dann die ganze Liste.
+   * Wie viele das sind, sagt die Fusszeile aus der TATSAECHLICHEN Zahl - eine feste
+   * Zahl im Text waere wieder eine Setzung, die sich als Messung liest. */
+  var UNIVERSUM = 0;
+  /* Eine Minute (Wilhelm 04.09.: "so aktuell wie nur moeglich"). Das sind Sammelabrufe,
+   * keine Einzelabrufe - der Takt kostet ein paar Anfragen je Minute, nicht hunderte.
+   * Ausgesetzt wird weiter bei unsichtbarem Fenster. */
+  var FRISCH_MS = 60000;
   var TAGE_FENSTER = 60;         // Handelstage aus dem Tagesarchiv
   var WOCHE = 5, MONAT = 21;     // Handelstage, nicht Kalendertage
   var STAND_KEY = 'marktUeberblickStand';
@@ -119,7 +129,14 @@
       kursGrund = (r && r.grund) || 'unbekannt';
       return;
     }
-    kursGrund = '';
+    /* DIE DROSSELUNG WIRD GENANNT, NICHT VERSCHWIEGEN. Seit dem Minutentakt ueber das
+     * ganze Universum (04.09.2026) ist sie der wahrscheinlichste Grund fuer eine kurze
+     * Liste - und ein stiller Rueckfall auf weniger Werte saehe aus wie ein duenner
+     * Markt. Die Zeile steht in der Kopfzeile, wo auch ein gescheiterter Abruf steht. */
+    kursGrund = (r.gedrosselt || r.leereBloecke)
+      ? 'Yahoo drosselt: ' + (r.gedrosselt || 0) + '-mal abgewiesen, ' +
+        (r.leereBloecke || 0) + ' Bloecke ohne Antwort – angezeigt ist, was ankam'
+      : '';
     var nun = Date.now();
     offen.forEach(function (w) {
       var q = r.kurse[w.sym];
@@ -457,9 +474,11 @@
 
   function taktenAn() {
     if (taktung) return;
-    /* Fuenf Minuten, dieselbe Spanne wie die Frische des Zwischenspeichers und wie
+    /* EINE Minute, dieselbe Spanne wie die Frische des Zwischenspeichers und wie
      * die Marktkarte. Ausgesetzt wird nur bei unsichtbarem Fenster - dann sieht
-     * ohnehin niemand hin, und der gemerkte Stand haelt bis zum Aufwachen. */
+     * ohnehin niemand hin, und der gemerkte Stand haelt bis zum Aufwachen.
+     * Nachgesehen wird alle 20 Sekunden, geholt nur, wenn FRISCH_MS um ist - der
+     * Takt der Anzeige und der Takt des Abrufs sind zwei verschiedene Dinge. */
     taktung = setInterval(function () {
       sitzungZeichnen();
       if (document.hidden) return;
@@ -494,7 +513,7 @@
     }
     /* Beim Oeffnen der Pille neu zeichnen: solange sie nicht gewaehlt ist, hat der
      * Kasten keine Breite, und die Balken stuenden beim ersten Blick falsch. Geholt
-     * wird dabei nur, was aelter als fuenf Minuten ist. */
+     * wird dabei nur, was aelter als FRISCH_MS ist. */
     document.addEventListener('sub-changed', function (ev) {
       var d = ev.detail || {};
       if (d.sub !== 'marktueberblick') return;

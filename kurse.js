@@ -224,8 +224,12 @@
         try {
           var r = await api.yahooQuotes(syms || []);
           if (!r || !r.ok) return { ok: false, grund: (r && r.grund) || 'unbekannt', kurse: {} };
+          /* gedrosselt und leereBloecke gehen mit durch. Ohne sie saehe eine
+           * Drosselung der Quelle wie ein duenner Markt aus - die Anzeige haette
+           * weniger Werte und keinen Grund dafuer. */
           return { ok: true, kurse: r.kurse || {}, angefragt: r.angefragt || 0,
-                   geholt: r.geholt || 0, bloecke: r.bloecke || 0 };
+                   geholt: r.geholt || 0, bloecke: r.bloecke || 0,
+                   gedrosselt: r.gedrosselt || 0, leereBloecke: r.leereBloecke || 0 };
         } catch (e) { return { ok: false, grund: String((e && e.message) || e), kurse: {} }; }
       },
       holeRoh: async function (sym, opt) {
