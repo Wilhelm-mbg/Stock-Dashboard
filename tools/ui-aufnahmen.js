@@ -49,45 +49,16 @@ app.setPath('downloads', path.join(TESTROOT, 'downloads'));
  * nur den leeren Fall gesehen hat, ist unbelegt.
  * Geschrieben wird ausschliesslich in das frische userData unter %TEMP%; der
  * Datenordner und die installierte App werden nie beruehrt. Die Zahlen sind
- * ERFUNDEN und als solche benannt (tools/kunstdepot.js). */
+ * ERFUNDEN und als solche benannt (tools/kunstdepot.js).
+ * Das Saeen selbst steht in tools/kunstinstanz.js - dieselbe Instanz braucht auch
+ * tools/ui-struktur.js und tools/a11y-probe.js --kunstdaten, und zwei Kopien
+ * davon wuerden auseinanderlaufen, ohne dass es jemandem auffaellt. */
 const KUNSTDATEN = process.argv.indexOf('--kunstdaten') > -1;
 /* --messung: die Blockmessung und die Satzzaehlung zusaetzlich nach
  * wiki/aufnahmen/laufzeit.json legen. Dort liest sie die Sperrklinke in test-v6
  * (Abschnitt 73). Bewusst ein eigener Schalter - siehe Begruendung unten. */
 const MESSUNG_ABLEGEN = process.argv.indexOf('--messung') > -1;
-if (KUNSTDATEN) {
-  const sd = path.join(TESTROOT, 'userdata', 'store');
-  fs.mkdirSync(sd, { recursive: true });
-  const KD = require(path.join(__dirname, 'kunstdepot.js'));
-  const jetzt = Date.now();
-  fs.writeFileSync(path.join(sd, 'depot.json'), JSON.stringify(KD.bauen(jetzt)));
-  /* Die Kostenrunden wohnen in einem EIGENEN Store neben dem Depot. Sie in
-   * depot.json zu legen genuegt nicht: der dort vorgesehene Uebernahmeweg laeuft
-   * beim Start ins Leere (siehe Uebergabe oberflaeche-stufe2, Befund 2). */
-  fs.writeFileSync(path.join(sd, 'kostenmessung.json'), JSON.stringify(KD.kostenmessung(jetzt)));
-  /* Das Kunst-ARCHIV liegt nicht im Store, sondern im Datenordner - dort sucht
-   * kerzenquelle.js. In der isolierten Instanz ist das TESTROOT/downloads, also
-   * ebenfalls unter %TEMP%: der echte Datenordner wird nicht angefasst. Ohne diesen
-   * Bestand zeigt die Archiv-Grafik fuenf leere Balken und belegt nichts. */
-  /* Der Reiter Markt (Stufe 5) haengt an drei Quellen. Zwei davon sind Dateien und
-   * werden hier gelegt: die Stammdaten (Branche, Aktienanzahl) und Tagesreihen im
-   * Tagesarchiv. Die dritte sind LAUFENDE Kurse - die gibt es ohne Netz nicht, und
-   * eine Testinstanz soll auch keins bekommen. Deshalb kommt zusaetzlich der
-   * gemerkte Stand in den Store, denselben Schluessel, den marktui.js schreibt.
-   * Gerechnet ist er mit den echten Funktionen aus markt/uebersicht.js. */
-  fs.writeFileSync(path.join(sd, 'marktUeberblickStand.json'), JSON.stringify(KD.marktstand(jetzt)));
-  const dd = path.join(TESTROOT, 'downloads', 'Markt-Dashboard-Daten');
-  KD.archiv(jetzt).concat(KD.marktArchiv(jetzt)).forEach((f) => {
-    const ziel = path.join(dd, f.pfad.replace(/\//g, path.sep));
-    fs.mkdirSync(path.dirname(ziel), { recursive: true });
-    fs.writeFileSync(ziel, JSON.stringify(f.inhalt));
-  });
-  const md = path.join(dd, 'markt');
-  fs.mkdirSync(md, { recursive: true });
-  fs.writeFileSync(path.join(md, 'stammdaten.json'), JSON.stringify(KD.marktStammdaten(jetzt)));
-  console.log('Kunstdaten in den Test-Store geschrieben: ' + sd);
-  console.log('Kunst-Archiv und Kunst-Stammdaten in den Test-Datenordner geschrieben: ' + dd);
-}
+if (KUNSTDATEN) require(path.join(__dirname, 'kunstinstanz.js')).saeen(TESTROOT);
 /* Ohne diese Schalter pausiert Chromium verdeckte Fenster - eine pausierte Seite
  * liefert leere Aufnahmen. */
 app.commandLine.appendSwitch('disable-features', 'CalculateNativeWinOcclusion');

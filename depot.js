@@ -3470,7 +3470,11 @@
       '<svg data-posdetchart="' + id + '" style="width:100%; height:190px; display:block;"></svg>' +
       '<div data-posdetsig="' + id + '" style="font-size:var(--fs-neben); color:var(--ink-2); margin-top:6px;"></div>' +
       '</td>';
-    zeile.parentNode.insertBefore(tr, zeile.nextSibling);
+    /* Die Schein-Kennzahlen stehen seit dem 04.09.2026 als eigene Zeile direkt
+     * unter der Position. Der Chart gehoert UNTER beide - sonst schoebe er sich
+     * zwischen die zwei Zeilen, die zusammen EINE Position sind. */
+    var anker = document.querySelector('[data-poskennz="' + id + '"]') || zeile;
+    anker.parentNode.insertBefore(tr, anker.nextSibling);
     var mw = posModus(pos);
     var r;
     try { r = await window.StrategieChart.rechnen(pos.sym, mw.mode, '60m', 320); }
@@ -3525,7 +3529,36 @@
        * Positionen bekommen keine Schein-Kennzahlen mehr vorgerechnet (Basispreis/
        * Faellig/IV eines Pseudo-Scheins, den niemand haelt). */
       var sumEinsatz = 0, sumWert = 0;
-      ph = '<table class="tbl"><tr><th>Wert</th><th>Typ</th><th>Basispreis</th><th>Fällig</th><th title="Implizite Volatilität – jetzt, mit Smile und Termin-Struktur">IV</th><th title="Wertänderung der Position je Volatilitätspunkt, bei unverändertem Kurs">Vega</th><th>Hebel</th><th>Stück</th><th>Einstieg</th><th>Aktuell</th><th title="Kaufsumme inklusive Ordergebühr">Einsatz</th><th title="Stück × aktueller Verkaufskurs">Wert jetzt</th><th title="Wert jetzt minus Einsatz – vor der Ordergebühr des Verkaufs">P/L</th><th></th></tr>';
+      /* Die Schein-Kennzahlen (Basispreis, Faellig, IV, Vega, Hebel) stehen seit dem
+       * 04.09.2026 als ZWEITE ZEILE unter der Position, nicht mehr als fuenf eigene
+       * Spalten. Der Grund ist GEMESSEN, nicht geschaetzt (UI-QS 04.09.2026, Fund F1):
+       * bei 1024 px Fensterbreite war die Tabelle 1005 px breit in einem 946 px
+       * breiten Panel, das Dokument 1040 px bei 1014 px Fenster - der Knopf
+       * "Schliessen" endete bei x = 1032 und war ohne seitliches Scrollen nicht
+       * erreichbar. Die fuenf Spalten trugen 268 der 1005 px (83+56+28+48+53).
+       * Nach dem Umzug NACHGEMESSEN, gleiche Instanz, gleiche Breite: die Tabelle
+       * rendert mit 944 px in ihrem 946 px breiten Kasten, das Dokument mit
+       * scrollWidth 1014 = clientWidth 1014 - keine Bildlaufleiste mehr. Die
+       * Aktionsspalte endet bei x = 979 statt bei 1040.
+       * Warum diese fuenf und nicht drei: es sind genau die Zellen, die bei einer
+       * BASISWERT-Position ohnehin nur "-" zeigen. Sie gehoeren als Block zusammen -
+       * nur IV, Vega und Hebel umzuziehen haette fuer die Breite ebenfalls gereicht
+       * (876 px), aber zwei verwaiste Strich-Spalten stehen gelassen.
+       * Warum eine zweite Zeile und keine Klappe: in der Zeile stehen die Zahlen
+       * weiter da. Eine Klappe haette dieselbe Breite gebracht und die Zahlen hinter
+       * einen Klick gelegt.
+       * Der Rahmen mit overflow-x ist der ZWEITE Riegel (index.html, .tblrahmen):
+       * auch eine schmale Tabelle kann mit vielen Positionen und langen Kuerzeln
+       * wieder anwachsen - dann scrollt der Kasten, nie die Seite. */
+      ph = '<div class="tblrahmen"><table class="tbl"><tr><th>Wert</th><th>Typ</th><th>Stück</th><th>Einstieg</th><th>Aktuell</th><th title="Kaufsumme inklusive Ordergebühr">Einsatz</th><th title="Stück × aktueller Verkaufskurs">Wert jetzt</th><th title="Wert jetzt minus Einsatz – vor der Ordergebühr des Verkaufs">P/L</th><th></th></tr>';
+      /* Eine Kennzahl der zweiten Zeile: Beschriftung und Wert. Die Beschriftung
+       * steht jetzt IN der Zeile, weil ueber ihr keine Kopfspalte mehr steht, die
+       * sie benennt - die Erklaerung im title ist dieselbe wie vorher am Kopf oder
+       * an der Zelle. */
+      var kennz = function (name, wert, titel) {
+        return '<span style="white-space:nowrap;"' + (titel ? ' title="' + titel + '"' : '') + '>' +
+          '<span style="color:var(--muted);">' + name + '</span> ' + wert + '</span>';
+      };
       D.positions.forEach(function (p) {
         var spot = spotOf(p.sym) || p.entrySpot;
         /* Die Vola JETZT, nicht die vom Oeffnen. Sonst zeigt die Spalte einen anderen
@@ -3540,20 +3573,24 @@
         var plUsd = wertJetzt - einsatz;
         sumEinsatz += einsatz; sumWert += wertJetzt;
         var ret = bid / p.entry - 1;
-        var scheinZellen = p.basis
-          ? '<td>–</td><td>–</td><td>–</td><td title="Eine Aktie hat kein Vega – ihr Wert hängt nicht an der Volatilität">–</td><td title="Aktie ohne Hebel">1×</td>'
-          : '<td>' + U.nf2.format(p.strike) + '</td>' +
-            '<td>' + U.d(p.expiry) + '</td>' +
-            '<td title="Beim Öffnen: ' + Math.round(p.iv * 100) + ' %">' + Math.round(ivAnz * 100) + ' %' +
-              (Math.abs(ivAnz - p.iv) > 0.005 ? '<span style="color:var(--muted);"> (' + (ivAnz > p.iv ? '+' : '') + Math.round((ivAnz - p.iv) * 100) + ')</span>' : '') + '</td>' +
+        var scheinZeile = p.basis
+          ? kennz('Basispreis', '–') + ' · ' + kennz('Fällig', '–') + ' · ' + kennz('IV', '–') + ' · ' +
+            kennz('Vega', '–', 'Eine Aktie hat kein Vega – ihr Wert hängt nicht an der Volatilität') + ' · ' +
+            kennz('Hebel', '1×', 'Aktie ohne Hebel')
+          : kennz('Basispreis', U.nf2.format(p.strike)) + ' · ' +
+            kennz('Fällig', U.d(p.expiry)) + ' · ' +
+            kennz('IV', Math.round(ivAnz * 100) + ' %' +
+                (Math.abs(ivAnz - p.iv) > 0.005 ? '<span style="color:var(--muted);"> (' + (ivAnz > p.iv ? '+' : '') + Math.round((ivAnz - p.iv) * 100) + ')</span>' : ''),
+              'Implizite Volatilität – jetzt, mit Smile und Termin-Struktur. Beim Öffnen: ' + Math.round(p.iv * 100) + ' %') + ' · ' +
             /* Vega: was ein Vola-Punkt diese Position wert ist. Stand nirgends - und
              * genau daran haengt der groesste Teil der Bewegung um einen Termin. */
-            '<td title="Wertänderung je Volatilitätspunkt – bei unverändertem Kurs">' +
-              (p.vega > 0 ? U.nf2.format(p.vega * p.qty) + ' $' : '–') + '</td>' +
-            '<td title="Aufgeld aktuell: ' + Q.warrantAufgeld(p.dir, wobj, spot, now).toFixed(1) + ' %">' + Q.warrantOmega(p.dir, wobj, spot, now).toFixed(1) + 'x</td>';
+            kennz('Vega', (p.vega > 0 ? U.nf2.format(p.vega * p.qty) + ' $' : '–'),
+              'Wertänderung der Position je Volatilitätspunkt, bei unverändertem Kurs') + ' · ' +
+            kennz('Hebel', Q.warrantOmega(p.dir, wobj, spot, now).toFixed(1) + 'x',
+              'Aufgeld aktuell: ' + Q.warrantAufgeld(p.dir, wobj, spot, now).toFixed(1) + ' %');
         /* Das Kuerzel ist ein echter Knopf, keine unterstrichene Schrift: so kommt man
          * auch mit der Tastatur hin. Der Pfeil daneben klappt Chart und Signale auf. */
-        ph += '<tr data-poszeile="' + p.id + '"><td style="white-space:nowrap;">' +
+        ph += '<tr class="poskopf" data-poszeile="' + p.id + '"><td style="white-space:nowrap;">' +
           '<button type="button" data-posauf="' + p.id + '" aria-expanded="false" ' +
             'title="Chart und Signale zu dieser Position ein- und ausblenden" ' +
             'aria-label="Chart und Signale zu ' + U.esc(p.sym) + ' ein- und ausblenden" ' +
@@ -3563,7 +3600,6 @@
             U.esc(p.sym) + '</button>' +
           (p.strategy === 'intraday' ? ' <span title="Intraday-Strategie"></span>' : '') + '</td>' +
           '<td><span class="badge ' + p.dir + '">' + (p.dir === 'call' ? 'CALL' : 'PUT') + '</span></td>' +
-          scheinZellen +
           '<td>' + p.qty + '</td>' +
           '<td>' + U.nf2.format(p.entry) + ' $</td>' +
           '<td>' + U.nf2.format(bid) + ' $</td>' +
@@ -3572,10 +3608,11 @@
           '<td class="' + U.signCls(plUsd) + '" style="white-space:nowrap;">' + U.signTxt(Math.round(plUsd * 100) / 100, ' $') +
             ' <span style="color:var(--muted); font-weight:400;">(' + U.signTxt(Math.round(ret * 1000) / 10, ' %') + ')</span></td>' +
           '<td style="white-space:nowrap;"><button class="btn ghost" style="padding:2px 8px; font-size:var(--fs-klein);" data-ticket="' + p.id + '" title="Order-Daten zum Nachbilden">Nachbilden</button> ' +
-          '<button class="btn ghost" style="padding:2px 8px; font-size:var(--fs-klein);" data-closepos="' + p.id + '">Schließen</button></td></tr>';
+          '<button class="btn ghost" style="padding:2px 8px; font-size:var(--fs-klein);" data-closepos="' + p.id + '">Schließen</button></td></tr>' +
+          '<tr class="poskennz" data-poskennz="' + p.id + '"><td colspan="9">' + scheinZeile + '</td></tr>';
       });
       var sumPl = sumWert - sumEinsatz;
-      ph += '<tr><td colspan="10" style="text-align:right; color:var(--muted); font-weight:600;">Summe</td>' +
+      ph += '<tr><td colspan="5" style="text-align:right; color:var(--muted); font-weight:600;">Summe</td>' +
         '<td style="font-weight:600;">' + U.nf2.format(sumEinsatz) + ' $</td>' +
         '<td style="font-weight:600;">' + U.nf2.format(sumWert) + ' $</td>' +
         '<td class="' + U.signCls(sumPl) + '" style="white-space:nowrap;">' + U.signTxt(Math.round(sumPl * 100) / 100, ' $') + '</td><td></td></tr>';
@@ -3587,7 +3624,7 @@
        * (app-shell.js, heute.positionen); sichtbar bleibt EIN Satz mit Wegweiser
        * dorthin, wo die Regel wirklich eingestellt wird. Verschoben, nicht gekuerzt -
        * keine Zahl ist weggefallen. */
-      ph += '</table><div style="color:var(--muted); font-size:var(--fs-klein); margin-top:6px;">' +
+      ph += '</table></div><div style="color:var(--muted); font-size:var(--fs-klein); margin-top:6px;">' +
         'Ein- und Ausstieg folgen der Intraday-Regel unter „Regeln → Einstellungen“. ' +
         (window.Info ? window.Info.knopf('heute.positionen', 'Nach welchen Regeln diese Positionen laufen') : '') +
         '</div>';

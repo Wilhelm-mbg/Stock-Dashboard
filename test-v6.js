@@ -6995,18 +6995,31 @@ console.log('\n41) Zustaende: was die App sagt, wenn etwas fehlt oder klemmt');
   var kopfI = dep.indexOf('<th>Wert</th><th>Typ</th>');
   var kopf = dep.slice(kopfI, dep.indexOf('</tr>', kopfI));
   var nKopf = (kopf.match(/<th/g) || []).length;
-  var zwI = dep.indexOf('var scheinZellen = p.basis');
-  /* Die Marke endet vor dem >: seit Issue #68 traegt die Zeile ein data-poszeile.
+  /* Seit dem 04.09.2026 stehen die fuenf Schein-Kennzahlen als ZWEITE ZEILE unter
+   * der Position und nicht mehr als fuenf Spalten (QS-Fund F1, Rumpf bei 1024 px).
+   * Die geprueffte Eigenschaft bleibt dieselbe: beide Zweige muessen gleich viele
+   * Angaben liefern, sonst fehlt eine bei Basiswerten oder bei Scheinen, ohne dass
+   * etwas wirft. Gezaehlt werden jetzt die kennz()-Aufrufe statt der <td>.
+   * Die Marke endet vor dem >: seit Issue #68 traegt die Zeile ein data-poszeile.
    * Fand die alte Marke nichts, schnitt der Ausdruck bis zum Dateiende durch und
    * zaehlte <td> aus ganz depot.js - ein Fehlschlag ohne echten Defekt. */
+  var zwI = dep.indexOf('var scheinZeile = p.basis');
   var zweig = dep.slice(zwI, dep.indexOf("ph += '<tr", zwI));
-  var nBasis = (zweig.slice(zweig.indexOf('?'), zweig.indexOf(': ')).match(/<td/g) || []).length;
-  var nSchein = (zweig.slice(zweig.indexOf(': ')).match(/<td/g) || []).length;
-  ok(nBasis === nSchein, 'Tabelle: Basiswert- und Schein-Zweig liefern gleich viele Zellen  [' + nBasis + ' / ' + nSchein + ']');
-  var zeilI = dep.indexOf("ph += '<tr data-poszeile=");
+  var nBasis = (zweig.slice(zweig.indexOf('?'), zweig.indexOf(': ')).match(/kennz\(/g) || []).length;
+  var nSchein = (zweig.slice(zweig.indexOf(': ')).match(/kennz\(/g) || []).length;
+  ok(nBasis === 5 && nBasis === nSchein,
+     'Tabelle: Basiswert- und Schein-Zweig liefern gleich viele Kennzahlen  [' + nBasis + ' / ' + nSchein + ']');
+  var zeilI = dep.indexOf('ph += \'<tr class="poskopf" data-poszeile=');
   var nZeile = (dep.slice(zeilI, dep.indexOf('</tr>', zeilI)).match(/<td/g) || []).length;
-  ok(nZeile + nSchein === nKopf,
-     'Tabelle: Zeile und Kopf haben gleich viele Spalten  [' + (nZeile + nSchein) + ' / ' + nKopf + ']');
+  ok(nZeile === nKopf,
+     'Tabelle: Zeile und Kopf haben gleich viele Spalten  [' + nZeile + ' / ' + nKopf + ']');
+  /* Die zweite Zeile muss ueber die GANZE Tabelle gehen. Eine zu kleine Zahl zoege
+   * eine zusaetzliche, leere Spalte auf - und die Tabelle waere wieder breiter als
+   * das Fenster, ohne dass eine Spalte dazugekommen waere. */
+  var kzI = dep.indexOf('class="poskennz"');
+  var kzSpan = Number(/colspan="(\d+)"/.exec(dep.slice(kzI, kzI + 200))[1]);
+  ok(kzSpan === nKopf,
+     'Tabelle: die Kennzahlen-Zeile ueberspannt die ganze Tabelle  [' + kzSpan + ' / ' + nKopf + ']');
   var sumI = dep.indexOf('style="text-align:right; color:var(--muted); font-weight:600;">Summe');
   var colspan = Number(/colspan="(\d+)"/.exec(dep.slice(sumI - 60, sumI))[1]);
   ok(colspan === nKopf - 4,
@@ -14455,8 +14468,15 @@ console.log('\n66) Archiv-Grafik & Kopfzeile: eine Grafik statt einer Tabelle, e
      'Kunstdaten: jede Datei nennt ihre Herkunft, die Symbole tragen sie im Namen');
   ok(kunst.every(function (f) { return !/^([A-Za-z]:|\/|\.\.)/.test(f.pfad); }),
      'Kunstdaten: kunstdepot.js liefert nur relative Pfade - wohin sie gehoeren, entscheidet der Aufrufer');
-  ok(/const dd = path\.join\(TESTROOT, 'downloads', 'Markt-Dashboard-Daten'\)/.test(auf),
+  /* Das Saeen ist am 04.09.2026 aus ui-aufnahmen.js nach tools/kunstinstanz.js
+   * gezogen - drei Sonden brauchen dieselbe gefuellte Instanz. Die Zusicherung folgt
+   * dem Umzug und prueft zusaetzlich, dass die Aufnahmen das Modul auch AUFRUFEN:
+   * sonst haengt sie an einer Datei, die niemand mehr benutzt. */
+  var ki = fs.readFileSync(__dirname + '/tools/kunstinstanz.js', 'utf8');
+  ok(/const dd = path\.join\(testroot, 'downloads', 'Markt-Dashboard-Daten'\)/.test(ki),
      'Kunstdaten: geschrieben wird ausschliesslich in den Testordner unter %TEMP%');
+  ok(/require\(path\.join\(__dirname, 'kunstinstanz\.js'\)\)\.saeen\(TESTROOT\)/.test(auf),
+     'Kunstdaten: die Aufnahmen rufen das Saeen auch auf');
   ok(/--breite/.test(auf) && /n >= 320 && n <= 3840 \? n : 1280/.test(auf),
      'Aufnahmen: die Breite ist ein Schalter, die Vorgabe bleibt 1280 - sonst waeren zwei Saetze nicht vergleichbar');
   ok(/einzeilig:/.test(auf) && /Math\.max\.apply\(null, da\.map/.test(auf),
@@ -15185,9 +15205,9 @@ console.log('\n68) Reiter Markt');
      'Kunstdaten: Stammdaten, Tagesarchiv und gemerkter Stand fuer den Reiter Markt');
   ok(/var MU = require\('\.\.\/markt\/uebersicht\.js'\);/.test(kd),
      'Kunstdaten: der Stand wird mit den ECHTEN Funktionen gerechnet - erfunden sind die Eingangsdaten, nicht die Rechnung');
-  var ua = fs.readFileSync(__dirname + '/tools/ui-aufnahmen.js', 'utf8');
+  var ua = fs.readFileSync(__dirname + '/tools/kunstinstanz.js', 'utf8');
   ok(/marktUeberblickStand\.json/.test(ua) && /KD\.marktStammdaten\(jetzt\)/.test(ua),
-     'Kunstdaten: die Aufnahmen legen beides in die ISOLIERTE Instanz');
+     'Kunstdaten: das Saeen legt beides in die ISOLIERTE Instanz');
   /* Der Store-Schluessel muss auf beiden Seiten derselbe sein. Faellt er
    * auseinander, schreibt die Anzeige in den einen und liest aus dem anderen -
    * und die Aufnahme zeigt wieder Leerzustaende, ohne dass etwas kaputt ist. */
@@ -16011,6 +16031,227 @@ console.log('\n70) Das Universum wird mitgeliefert (#111)');
   ok(/if\s*\(erg\.kopiert\s*\|\|\s*!erg\.ok\)/.test(block70),
      'aber nur beim Erststart und beim Fehlschlag - nicht bei jedem Start dieselbe Zeile');
 })();
+
+/* ================= 71. Rumpf bei 1024 px: die Bildlauf-Messung =================
+ * QS-Fund F1 (04.09.2026): bei 1024 px Fensterbreite hatte "Heute -> Ueberblick"
+ * eine waagerechte Bildlaufleiste - scrollWidth 1040 bei clientWidth 1014. Die
+ * Tabelle "Offene Positionen" war mit ihren vierzehn Spalten 1005 px breit, der
+ * Knopf "Schliessen" endete bei x = 1032 und war ohne seitliches Scrollen nicht
+ * erreichbar. Die Luecke war alt: Stufe 4 hatte fuer 1024 px NUR die Kopfzeile
+ * gemessen, den Rumpf nie.
+ *
+ * Diese Datei kann die Breite einer Tabelle nicht messen - sie entsteht erst aus
+ * Schrift, Zahlen und Daten in einem laufenden Fenster. Was diese Datei pruefen
+ * kann, ist, dass die MESSUNG DA IST UND BENUTZT WIRD. Genau darauf zielen die
+ * Zusicherungen: nicht auf Text, sondern auf die Verwendung in beiden Werkzeugen -
+ * dass jede gemessene Flaeche auch auf Bildlauf gemessen wird, dass beide Breiten
+ * abgefahren werden, und dass ein Fund die Probe wirklich ROT macht statt nur eine
+ * Zeile ins Protokoll zu schreiben. Eine Messung, deren Ergebnis nirgends ankommt,
+ * ist keine Sperrklinke. */
+console.log('\n71) Rumpf bei 1024: die Bildlauf-Messung wird in beiden Werkzeugen benutzt');
+(function () {
+  var ua = fs.readFileSync(__dirname + '/tools/ui-aufnahmen.js', 'utf8');
+  var up = fs.readFileSync(__dirname + '/tools/ui-probe.js', 'utf8');
+
+  /* --- (a) Die Aufnahmen messen, und zwar die Eigenschaft --- */
+  ok(/var cw = de\.clientWidth, sw = de\.scrollWidth;/.test(ua),
+     'Aufnahmen: gemessen wird scrollWidth gegen clientWidth des Dokuments, nicht das Aussehen');
+  /* Jede Flaeche, die eine Textmenge bekommt, bekommt auch eine Bildlauf-Messung.
+   * Waere das nur an einer Stelle eingebaut, waere genau die Flaeche ungemessen,
+   * an der beim naechsten Mal etwas herausragt. */
+  var nText = (ua.match(/await textmenge\(js,/g) || []).length;
+  var nBild = (ua.match(/await bildlaufMessen\(js,/g) || []).length;
+  ok(nBild > 0 && nBild === nText,
+     'Aufnahmen: jede gemessene Flaeche wird auch auf Bildlauf gemessen  [' + nBild + ' / ' + nText + ']');
+  ok(/bildlauf: BILDLAUF/.test(ua),
+     'Aufnahmen: die Zahlen landen in textmenge.json - sonst waeren sie nach dem Lauf weg');
+
+  /* --- (b) Die Probe misst bei BEIDEN Breiten --- */
+  ok(/const BREITEN = \[1024, 1280\];/.test(up),
+     'Probe: gemessen wird bei 1024 UND 1280 px - fuer beide steht die Oberflaeche gerade');
+  ok(/for \(const breite of BREITEN\)/.test(up) && /bildlaufPruefen\(win, js, breite\)/.test(up),
+     'Probe: die Liste der Breiten wird auch abgefahren, nicht nur hingeschrieben');
+  ok(/win\.setContentSize\(breite, HOEHE\)/.test(up),
+     'Probe: das Fenster wird auf die Breite gestellt, bevor gemessen wird');
+
+  /* --- (c) Ein Fund macht die Probe ROT --- */
+  /* Das ist die eigentliche Klinke. Eine Messung, die ihren Fund nur in die Konsole
+   * schreibt, laesst die Probe gruen melden - und dann faellt der Fund beim naechsten
+   * Mal genauso durch wie F1. Geprueft wird der Weg: Fund -> probleme -> Exit-Code. */
+  var schleife = up.slice(up.indexOf('for (const breite of BREITEN)'),
+                          up.indexOf('const seitenFehler = await js'));
+  ok(schleife.length > 100 && /probleme\.push\(/.test(schleife),
+     'Probe: ein Bildlauf-Fund geht in dieselbe Liste wie jeder andere Befund');
+  ok(/const rot = erg\.probleme\.length \+ erg\.seitenFehler\.length;/.test(up) &&
+     /app\.exit\(rot \? 1 : 0\)/.test(up),
+     'Probe: diese Liste entscheidet ueber den Exit-Code - der Fund macht wirklich rot');
+
+  /* --- (d) Die Probe sieht ueberhaupt etwas: Kunstdaten sind die Vorgabe --- */
+  /* Der Fund war nur mit offener Intraday-Position zu sehen. Liefe die Probe wie
+   * frueher auf einem leeren Depot, waere sie an dieser Stelle blind und gruen. */
+  ok(/const KUNSTDATEN = process\.argv\.indexOf\('--leer'\) === -1;/.test(up),
+     'Probe: Kunstdaten sind die Vorgabe - ein leeres Depot zeigt die Tabelle gar nicht');
+  ok(/if \(KUNSTDATEN\) require\(path\.join\(__dirname, 'kunstinstanz\.js'\)\)\.saeen\(TESTROOT\);/.test(up),
+     'Probe: gesaet wird in die ISOLIERTE Instanz unter %TEMP%');
+  /* Beide Werkzeuge saeen aus DEMSELBEN Modul. Zwei Abschriften wuerden driften, und
+   * dann zeigte die Aufnahme einen anderen Zustand als die Messung daneben. */
+  ok(/kunstinstanz\.js/.test(ua) && /kunstinstanz\.js/.test(up) &&
+     !/depot\.json/.test(ua) && !/depot\.json/.test(up),
+     'Beide Werkzeuge saeen aus demselben Modul, keines legt sein Depot selbst');
+
+  /* --- (e) Und die App bringt die Tabelle von sich aus ins Fenster --- */
+  /* Zwei Riegel, und beide muessen dastehen: die Tabelle ist schmal genug (die fuenf
+   * Schein-Kennzahlen stehen als zweite Zeile, Abschnitt 47 zaehlt sie), und sie
+   * steckt in einem Kasten, der notfalls SELBST scrollt statt der Seite. */
+  var dep71 = fs.readFileSync(__dirname + '/depot.js', 'utf8');
+  var html71 = fs.readFileSync(__dirname + '/index.html', 'utf8');
+  ok(/ph = '<div class="tblrahmen"><table class="tbl">/.test(dep71) &&
+     /ph \+= '<\/table><\/div>/.test(dep71),
+     'Positionstabelle: sie steht in einem eigenen Kasten, und der wird auch wieder geschlossen');
+  ok(/\.tblrahmen \{ overflow-x: auto; \}/.test(html71),
+     'Positionstabelle: der Kasten scrollt selbst - die Seite bleibt stehen');
+})();
+
+
+console.log('\n72) Pruefwerkzeuge: Struktur-Inventar, eine Kunstdaten-Instanz, Fokus-Wanderung (04.09.2026)');
+(function () {
+  /* Die Struktur-Seite war bis zum 04.09.2026 aus index.html erzeugt. Die UI-QS hat
+   * daran neun Abweichungen gefunden (uebergabe/ui-qs-2026-09-04.md, Abschnitt 1,
+   * S1-S9); sechs hatten dieselbe Ursache - was erst der Renderer schreibt, steht
+   * nicht im Markup. Dieser Abschnitt haelt fest, dass das Werkzeug die LAUFENDE
+   * Oberflaeche liest, dass alle Sonden dieselbe Instanz sehen, und dass die
+   * erzeugte Seite genau die Bloecke traegt, die vorher fehlten. */
+  var stO = ohneKommentare(fs.readFileSync(__dirname + '/tools/ui-struktur.js', 'utf8'));
+  var ki = fs.readFileSync(__dirname + '/tools/kunstinstanz.js', 'utf8');
+  var a11 = ohneKommentare(fs.readFileSync(__dirname + '/tools/a11y-probe.js', 'utf8'));
+  var upO = ohneKommentare(fs.readFileSync(__dirname + '/tools/ui-probe.js', 'utf8'));
+  var uaO = ohneKommentare(fs.readFileSync(__dirname + '/tools/ui-aufnahmen.js', 'utf8'));
+  var ober = fs.readFileSync(__dirname + '/wiki/oberflaeche.md', 'utf8');
+  var seite = fs.readFileSync(__dirname + '/wiki/aufnahmen/struktur.md', 'utf8');
+
+  /* ---------------------------------------------------------------------------
+   * (a) Das Werkzeug liest die laufende Instanz, nicht das Markup */
+  ok(/require\(path\.join\(WURZEL, 'main\.js'\)\)/.test(stO) && /executeJavaScript/.test(stO),
+     'Struktur: ui-struktur.js startet die App und liest ihren DOM');
+  /* Geprueft wird das LESEN von index.html, nicht das Wort: die erzeugte Seite
+   * erwaehnt index.html im Fliesstext, und eine Klinke auf den blossen Namen waere
+   * an der eigenen Ausgabe rot geworden (Testmarken-Falle, wiki/fehlerformen.md). */
+  ok(!/readFileSync\([^)]*index\.html/.test(stO),
+     'Struktur: index.html wird nicht gelesen - genau daher kamen S1 bis S6');
+  ok(/path\.join\(WURZEL, 'wiki', 'aufnahmen'\)/.test(stO) && /schalter\('--ziel'/.test(stO),
+     'Struktur: das Ziel ist fest wiki/aufnahmen/, --ziel ist nur der Schalter fuer Proben');
+  /* Die Tiefe entsteht aus der Vorfahrenkette - S8 war eine flache Liste. */
+  ok(/if \(p\.tagName === 'DETAILS'\) tiefe\+\+/.test(stO) && /'  '\.repeat\(e\.tiefe\)/.test(stO),
+     'Struktur: die Einrueckung kommt aus der echten Verschachtelung der Klappen');
+
+  /* ---------------------------------------------------------------------------
+   * (b) EINE Instanz fuer alle Sonden
+   * Sobald zwei Sonden ihre eigene Abschrift des Saeens tragen, driften sie - und
+   * dann zeigt die Aufnahme einen anderen Zustand als die Messung daneben, ohne
+   * dass es jemandem auffaellt. */
+  ok(/module\.exports = \{ saeen \}/.test(ki) && /function saeen\(testroot, jetzt\)/.test(ki),
+     'Kunstdaten: das Saeen steht an genau einer Stelle (tools/kunstinstanz.js)');
+  [['ui-aufnahmen.js', uaO], ['ui-struktur.js', stO], ['a11y-probe.js', a11], ['ui-probe.js', upO]]
+    .forEach(function (x) {
+      ok(/require\(path\.join\(__dirname, 'kunstinstanz\.js'\)\)\.saeen\(TESTROOT\)/.test(x[1]),
+         'Kunstdaten: ' + x[0] + ' saet aus demselben Modul');
+    });
+
+  /* ---------------------------------------------------------------------------
+   * (c) Die a11y-Sonde kennt --kunstdaten - an der VERWENDUNG, nicht am Namen
+   * QS-Fund F12: die Sonde hat auf Markt -> Ueberblick 68 Textstellen geprueft, wo
+   * mit Inhalt 3.960 Zeichen stehen. Gruen ueber Leerzustaenden belegt nichts. */
+  ok(/const KUNSTDATEN = process\.argv\.indexOf\('--kunstdaten'\) !== -1;/.test(a11) &&
+     /if \(KUNSTDATEN\) require\(path\.join\(__dirname, 'kunstinstanz\.js'\)\)\.saeen\(TESTROOT\);/.test(a11) &&
+     /else saeen\(\);/.test(a11),
+     'a11y-Sonde: --kunstdaten saet die gefuellte Instanz, ohne ihn bleibt das alte Verhalten');
+  ok(/Textstellen insgesamt/.test(a11) && /kontrastGeprueft/.test(a11),
+     'a11y-Sonde: die Zahl der geprueften Textstellen steht im Protokoll - sonst sind die beiden Laeufe nicht gegenueberzustellen');
+
+  /* ---------------------------------------------------------------------------
+   * (d) Die Fokus-Wanderung drueckt Tasten
+   * Aus dem DOM ist die Reihenfolge nicht abzulesen: Chromium laesst Kinder
+   * geschlossener <details> ein Layout-Kaestchen behalten, eine DOM-Sicht meldete
+   * 78 anspringbare Elemente, wo es zwoelf sind. */
+  ok(/sendInputEvent\(\{ type: 'keyDown', keyCode: 'Tab' \}\)/.test(upO) &&
+     /sendInputEvent\(\{ type: 'keyUp', keyCode: 'Tab' \}\)/.test(upO),
+     'Fokus: gewandert wird mit echten Tab-Tasten');
+  ok(/if \(zahl < 3\)/.test(upO) && /die Wanderung ist nicht gewandert/.test(upO),
+     'Fokus: Positivkontrolle - eine Wanderung, die stehen bleibt, ist ein Befund ueber die SONDE');
+  /* Der Fund F6 ist nicht "liegt draussen", sondern "ein Kasten ohne Bildlaufleiste
+   * musste verschoben werden". Ohne diese zweite Frage meldet die Sonde gruen,
+   * obwohl das Laufband bis x=1632 reicht - gemessen am 04.09.2026. */
+  ok(/geschoben\(e\)/.test(upO) && /overflowX === 'hidden'/.test(upO) &&
+     /a\.draussen = a\.ausserhalb \|\| !!a\.geschoben/.test(upO),
+     'Fokus: gemessen wird auch die Verschiebung eines beschnittenen Kastens, nicht nur die Lage');
+
+  /* ---------------------------------------------------------------------------
+   * (e) Bekannte Abweichungen: mit Fundstelle, und nicht im Exit-Code
+   * Ein Eintrag ohne Quelle waere ein stiller Deckel. */
+  var funde = (upO.match(/fund: '/g) || []).length;
+  var quellen = (upO.match(/quelle: '/g) || []).length;
+  ok(funde >= 1 && funde === quellen,
+     'Fokus: jede bekannte Abweichung traegt eine Fundstelle', funde + ' Eintraege, ' + quellen + ' Quellen');
+  ok(/const rot = erg\.probleme\.length \+ erg\.seitenFehler\.length;/.test(upO) &&
+     /erg\.bekannteRot\.forEach/.test(upO) && /erg\.erledigt\.forEach/.test(upO),
+     'Fokus: bekannt rot steht im Protokoll, aber nicht im Exit-Code - und ein Eintrag, der nicht mehr auftritt, wird gemeldet');
+
+  /* ---------------------------------------------------------------------------
+   * (f) Die erzeugte Seite selbst - Kopf */
+  ok(/tools\/ui-struktur\.js/.test(seite) && /laufenden/.test(seite),
+     'Struktur-Seite: der Kopf nennt den Erzeuger und dass er die laufende Oberflaeche liest');
+  ok(/Version \*\*\d+\.\d+\.\d+\*\*/.test(seite) && /Erzeugt am \d{4}-\d{2}-\d{2}/.test(seite) &&
+     /px breit/.test(seite) && /Kunstdaten-Instanz/.test(seite),
+     'Struktur-Seite: der Kopf nennt Version, Datum, Instanz und Breite');
+  ok(/\*\*Grenze dieser Seite\.\*\*/.test(seite),
+     'Struktur-Seite: die Grenze der Sicht steht dabei - was sie NICHT zeigt');
+
+  /* (g) Die Bloecke, die vorher fehlten (S1, S2, S4, S5, S6) */
+  ok(seite.indexOf('Belegt oder aktiv gehandelt') > -1 && seite.indexOf('In Messung') > -1,
+     'Struktur-Seite: die drei Belegstand-Gruppen der Regeln-Seite stehen drin (S4) - die schreibt erst der Renderer');
+  ok(seite.indexOf('Gewinner heute') > -1 && seite.indexOf('Am 52-Wochen-Hoch') > -1,
+     'Struktur-Seite: die fuenf Hotlist-Ueberschriften stehen drin (S5)');
+  ok(seite.indexOf('Marktbild') > -1, 'Struktur-Seite: Marktbild steht drin (S1)');
+  ok(seite.indexOf('Spekulations-Radar') > -1 && seite.indexOf('Insider-Käufe') > -1 &&
+     seite.indexOf('Vorbörsen-Lücken') > -1,
+     'Struktur-Seite: der Radar hat eine Inhaltsliste (S2)');
+  ok(seite.indexOf('Einen Wert öffnen') > -1 &&
+     /Kennzahlen[^\n]*verborgen/.test(seite) && /News zu diesem Wert[^\n]*verborgen/.test(seite),
+     'Struktur-Seite: im Explorer steht die sichtbare Ueberschrift, die beiden anderen sind als verborgen ausgewiesen (S6)');
+
+  /* (h) Verschachtelung und Statuszeilen (S8, S9) */
+  ok(seite.indexOf('   │  ▸ Klappe: Kursarchiv') > -1 &&
+     seite.indexOf('   │    ▸ Klappe: Letzte Messung im Detail') > -1,
+     'Struktur-Seite: eine Klappe IN einer Klappe steht eingerueckt (S8)');
+  ok(/— Statuszeile: „/.test(seite),
+     'Struktur-Seite: die Statuszeilen aus den <summary> stehen dabei (S9)');
+
+  /* (i) Die Dialoge gehoeren keinem Reiter (S7) */
+  var iBetrieb = seite.indexOf('### Werkzeuge → Betrieb');
+  var iDialoge = seite.indexOf('## Dialoge');
+  ok(iBetrieb > -1 && iDialoge > iBetrieb, 'Struktur-Seite: Betrieb und danach ein eigener Abschnitt Dialoge');
+  var betrieb = seite.slice(iBetrieb, iDialoge);
+  ok(betrieb.length > 200 && betrieb.indexOf('Kurz gesagt') === -1 &&
+     betrieb.indexOf('Was ist neu') === -1 && betrieb.indexOf('Trade nachbilden') === -1,
+     'Struktur-Seite: die Modaldialoge stehen NICHT unter Werkzeuge -> Betrieb (S7)',
+     betrieb.length + ' Zeichen im Abschnitt');
+  ok(seite.slice(iDialoge).indexOf('Kurz gesagt') > -1 &&
+     seite.slice(iDialoge).indexOf('App-Einstellungen') > -1,
+     'Struktur-Seite: sie stehen im Abschnitt Dialoge');
+
+  /* (j) Die Bilder liegen je Reiter und stehen unter ihrer Pille */
+  ['heute/ueberblick-1.png', 'markt/marktueberblick-1.png',
+   'regeln/regeln-1.png', 'werkzeuge/betrieb-1.png', 'werkzeuge/betrieb-offen-1.png'].forEach(function (f) {
+    ok(fs.existsSync(__dirname + '/wiki/aufnahmen/' + f) && seite.indexOf('![[aufnahmen/' + f + ']]') > -1,
+       'Struktur-Seite: ' + f + ' liegt im Reiter-Ordner und steht in der Seite');
+  });
+
+  /* (k) Der Wegweiser zeigt auf das Werkzeug */
+  var p7 = ober.slice(ober.indexOf('## 7.'));
+  ok(p7.length > 100 && p7.indexOf('tools/ui-struktur.js') > -1 && p7.indexOf('struktur.md') > -1,
+     'Wegweiser: oberflaeche.md §7 nennt tools/ui-struktur.js als Erzeuger von struktur.md');
+})();
+
 
 /* ===========================================================================
  * 73) Texte und Zaehlungen: was die App SAGT, nicht was die Datei enthaelt
