@@ -5,6 +5,10 @@ tags: [steuerung]
 
 *Nur was sich am Wiki ändert. Die Projekt-Chronologie steht im Archiv `PROJEKTSTAND.md`.*
 
+- 04.09.2026 Release v8.40.2 (Wache): Positionstabelle passt bei 1024 px wieder ins
+  Fenster (Schein-Angaben als zweite Zeile statt eigener Spalten), veraltete
+  Takt-Zeile über dem Cockpit entfernt, „Gehandelt wird hiervon nichts" einheitlich
+  einmal je Karte.
 - 04.09.2026 Release v8.40.1 (Wache): das Kursarchiv-Universum wird jetzt mit der App
   ausgeliefert (`massive/universum-2024-09-02.json`) — Sammeln lief bisher nur auf dem
   Entwickler-Rechner, weil die Symbolliste dort nur lokal lag.

@@ -33,7 +33,7 @@ tags: [steuerung]
 
 - **Nur die Release-Wache vergibt Versionen und baut.** Werkzeug: `tools/release.js` (`--pruefen`, `--bauen --minor --wache`, `--hoch`).
 - **Versionsreferenz ist git** (HEAD/Tag/`package.json`), **nie die installierte App**.
-- Aktueller Stand: **v8.40.1** (04.09.2026).
+- Aktueller Stand: **v8.40.2** (04.09.2026).
 - Bei roten Tests wird **nicht** ausgeliefert und die Weigerung **nicht umgangen**.
 - **Nach jedem Release trägt die Wache die Version hier ein** und setzt eine Zeile in [log.md](log.md) — ihr einziger Schreibzugriff im Repo.
 
