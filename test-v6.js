@@ -15131,8 +15131,38 @@ console.log('\n68) Reiter Markt');
   ok(kstand.hotlists.volumen.length > 0 && kstand.hotlists.volumen[0].relVol > 1.5,
      'Kunstdaten: es gibt einen Volumen-Ausreisser - sonst zeigt die Liste zwanzigmal 1,0x',
      kstand.hotlists.volumen.length ? kstand.hotlists.volumen[0].relVol : 'leer');
-  ok(kstand.hotlists.gewinner[0].pct > 0 && kstand.hotlists.verlierer[0].pct < 0,
+  /* Die Laengenpruefung steht MIT in der Zeile, nicht daneben: die Gegenprobe G45
+   * (Kunst-Stand von Hand statt mit dem Modul gerechnet) brachte die ganze Suite um,
+   * statt sie rot zu machen - `gewinner[0].pct` auf einer leeren Liste wirft. Ein
+   * Eingriff, der den Testlauf toetet, ist kein Befund, sondern ein Ausfall. */
+  ok(kstand.hotlists.gewinner.length > 0 && kstand.hotlists.verlierer.length > 0 &&
+     kstand.hotlists.gewinner[0].pct > 0 && kstand.hotlists.verlierer[0].pct < 0,
      'Kunstdaten: es gibt Gewinner UND Verlierer - ein Satz Zahlen in eine Richtung zeigt nichts');
+  /* EINE KERZE JE TAG im Kunst-Tagesarchiv. Fuer die Archiv-Grafik ist das egal, sie
+   * zaehlt Tage; fuer den Reiter Markt ist eine Kerze ein TAG, und "der Median der
+   * letzten 50 Tage" waere sonst aus 50 Dritteln von Tagen gerechnet. Diese Zeile gibt
+   * es, WEIL die Gegenprobe G46 gruen blieb: der Eingriff stellte die alte Lage her,
+   * und keine einzige Zusicherung sah ihn. */
+  var kArch = KD.archiv(Date.UTC(2026, 8, 4, 12, 0))
+    .filter(function (f) { return /archiv1d\/bars_1d_/.test(f.pfad); });
+  ok(kArch.length > 0, 'Kunstdaten: das Kunst-Tagesarchiv wird ueberhaupt erzeugt', kArch.length + ' Reihen');
+  var mehrfach = kArch.filter(function (f) {
+    var tage = {};
+    f.inhalt.series.forEach(function (b) { var t = new Date(b[0]).toISOString().slice(0, 10); tage[t] = (tage[t] || 0) + 1; });
+    return Object.keys(tage).some(function (t) { return tage[t] !== 1; });
+  });
+  ok(mehrfach.length === 0,
+     'Kunstdaten: im Tagesarchiv steht GENAU EINE Kerze je Handelstag',
+     mehrfach.length ? mehrfach[0].pfad : 'alle ' + kArch.length);
+  var mArch = KD.marktArchiv(Date.UTC(2026, 8, 4, 12, 0));
+  var mMehrfach = mArch.filter(function (f) {
+    var tage = {};
+    f.inhalt.series.forEach(function (b) { var t = new Date(b[0]).toISOString().slice(0, 10); tage[t] = (tage[t] || 0) + 1; });
+    return Object.keys(tage).some(function (t) { return tage[t] !== 1; });
+  });
+  ok(mArch.length >= 20 && mMehrfach.length === 0 && mArch[0].inhalt.series.length >= 50,
+     'Kunstdaten: auch die Markt-Reihen tragen eine Kerze je Tag, und genug Tage fuer einen Median',
+     mArch.length + ' Reihen à ' + (mArch[0] ? mArch[0].inhalt.series.length : 0) + ' Kerzen');
 })();
 
 Promise.all(offeneProben).then(function () {
