@@ -1,0 +1,529 @@
+{
+ "erzeugt": "2026-09-04T14:20:08.983Z",
+ "messungen": [
+  {
+   "nr": 1,
+   "zeit": "2026-09-04T14:05:01.148Z",
+   "feeds": {
+    "sip": {
+     "status": 200,
+     "ms": 677,
+     "je": {
+      "AAPL": {
+       "n": 75,
+       "juengster": "2026-09-04T13:50:00Z",
+       "alterMin": 15.03
+      },
+      "MNST": {
+       "n": 25,
+       "juengster": "2026-09-04T13:50:00Z",
+       "alterMin": 15.03
+      },
+      "SPY": {
+       "n": 75,
+       "juengster": "2026-09-04T13:50:00Z",
+       "alterMin": 15.03
+      }
+     },
+     "fehler": null
+    },
+    "iex": {
+     "status": 200,
+     "ms": 520,
+     "je": {
+      "AAPL": {
+       "n": 39,
+       "juengster": "2026-09-04T14:04:00Z",
+       "alterMin": 1.04
+      },
+      "MNST": {
+       "n": 32,
+       "juengster": "2026-09-04T14:04:00Z",
+       "alterMin": 1.04
+      },
+      "SPY": {
+       "n": 35,
+       "juengster": "2026-09-04T14:04:00Z",
+       "alterMin": 1.04
+      }
+     },
+     "fehler": null
+    },
+    "delayed_sip": {
+     "status": 400,
+     "ms": 120,
+     "je": {},
+     "fehler": "{\"message\":\"invalid feed: delayed_sip\"}\n"
+    }
+   },
+   "latest": {
+    "sip": {
+     "status": 403,
+     "je": {},
+     "fehler": "{\"message\":\"subscription does not permit querying recent SIP data\"}\n"
+    },
+    "iex": {
+     "status": 200,
+     "je": {
+      "AAPL": {
+       "t": "2026-09-04T14:04:00Z",
+       "alterMin": 1.05
+      },
+      "SPY": {
+       "t": "2026-09-04T14:04:00Z",
+       "alterMin": 1.05
+      },
+      "MNST": {
+       "t": "2026-09-04T14:04:00Z",
+       "alterMin": 1.05
+      }
+     },
+     "fehler": null
+    },
+    "delayed_sip": {
+     "status": 200,
+     "je": {
+      "MNST": {
+       "t": "2026-09-04T13:49:00Z",
+       "alterMin": 16.05
+      },
+      "AAPL": {
+       "t": "2026-09-04T13:49:00Z",
+       "alterMin": 16.05
+      },
+      "SPY": {
+       "t": "2026-09-04T13:49:00Z",
+       "alterMin": 16.05
+      }
+     },
+     "fehler": null
+    }
+   },
+   "snapshot": {
+    "sip": {
+     "status": 403,
+     "minuteBar": null,
+     "latestTrade": null,
+     "fehler": "{\"message\":\"subscription does not permit querying recent SIP data\"}\n"
+    },
+    "iex": {
+     "status": 200,
+     "minuteBar": {
+      "t": "2026-09-04T14:04:00Z",
+      "alterMin": 1.05
+     },
+     "latestTrade": {
+      "t": "2026-09-04T14:04:52.797258673Z",
+      "alterMin": 0.17
+     },
+     "fehler": null
+    },
+    "delayed_sip": {
+     "status": 200,
+     "minuteBar": {
+      "t": "2026-09-04T13:49:00Z",
+      "alterMin": 16.06
+     },
+     "latestTrade": {
+      "t": "2026-09-04T13:50:03.549156896Z",
+      "alterMin": 15
+     },
+     "fehler": null
+    }
+   }
+  },
+  {
+   "nr": 2,
+   "zeit": "2026-09-04T14:10:03.435Z",
+   "feeds": {
+    "sip": {
+     "status": 200,
+     "ms": 610,
+     "je": {
+      "AAPL": {
+       "n": 75,
+       "juengster": "2026-09-04T13:55:00Z",
+       "alterMin": 15.07
+      },
+      "MNST": {
+       "n": 30,
+       "juengster": "2026-09-04T13:55:00Z",
+       "alterMin": 15.07
+      },
+      "SPY": {
+       "n": 75,
+       "juengster": "2026-09-04T13:55:00Z",
+       "alterMin": 15.07
+      }
+     },
+     "fehler": null
+    },
+    "iex": {
+     "status": 200,
+     "ms": 159,
+     "je": {
+      "AAPL": {
+       "n": 42,
+       "juengster": "2026-09-04T14:09:00Z",
+       "alterMin": 1.07
+      },
+      "MNST": {
+       "n": 36,
+       "juengster": "2026-09-04T14:09:00Z",
+       "alterMin": 1.07
+      },
+      "SPY": {
+       "n": 40,
+       "juengster": "2026-09-04T14:09:00Z",
+       "alterMin": 1.07
+      }
+     },
+     "fehler": null
+    },
+    "delayed_sip": {
+     "status": 400,
+     "ms": 140,
+     "je": {},
+     "fehler": "{\"message\":\"invalid feed: delayed_sip\"}\n"
+    }
+   },
+   "latest": {
+    "sip": {
+     "status": 403,
+     "je": {},
+     "fehler": "{\"message\":\"subscription does not permit querying recent SIP data\"}\n"
+    },
+    "iex": {
+     "status": 200,
+     "je": {
+      "MNST": {
+       "t": "2026-09-04T14:09:00Z",
+       "alterMin": 1.08
+      },
+      "AAPL": {
+       "t": "2026-09-04T14:09:00Z",
+       "alterMin": 1.08
+      },
+      "SPY": {
+       "t": "2026-09-04T14:09:00Z",
+       "alterMin": 1.08
+      }
+     },
+     "fehler": null
+    },
+    "delayed_sip": {
+     "status": 200,
+     "je": {
+      "MNST": {
+       "t": "2026-09-04T13:54:00Z",
+       "alterMin": 16.08
+      },
+      "AAPL": {
+       "t": "2026-09-04T13:54:00Z",
+       "alterMin": 16.08
+      },
+      "SPY": {
+       "t": "2026-09-04T13:54:00Z",
+       "alterMin": 16.08
+      }
+     },
+     "fehler": null
+    }
+   },
+   "snapshot": {
+    "sip": {
+     "status": 403,
+     "minuteBar": null,
+     "latestTrade": null,
+     "fehler": "{\"message\":\"subscription does not permit querying recent SIP data\"}\n"
+    },
+    "iex": {
+     "status": 200,
+     "minuteBar": {
+      "t": "2026-09-04T14:09:00Z",
+      "alterMin": 1.09
+     },
+     "latestTrade": {
+      "t": "2026-09-04T14:09:57.082569204Z",
+      "alterMin": 0.14
+     },
+     "fehler": null
+    },
+    "delayed_sip": {
+     "status": 200,
+     "minuteBar": {
+      "t": "2026-09-04T13:54:00Z",
+      "alterMin": 16.09
+     },
+     "latestTrade": {
+      "t": "2026-09-04T13:55:05.401341546Z",
+      "alterMin": 15
+     },
+     "fehler": null
+    }
+   }
+  },
+  {
+   "nr": 3,
+   "zeit": "2026-09-04T14:15:05.313Z",
+   "feeds": {
+    "sip": {
+     "status": 200,
+     "ms": 543,
+     "je": {
+      "AAPL": {
+       "n": 75,
+       "juengster": "2026-09-04T14:00:00Z",
+       "alterMin": 15.1
+      },
+      "MNST": {
+       "n": 35,
+       "juengster": "2026-09-04T14:00:00Z",
+       "alterMin": 15.1
+      },
+      "SPY": {
+       "n": 75,
+       "juengster": "2026-09-04T14:00:00Z",
+       "alterMin": 15.1
+      }
+     },
+     "fehler": null
+    },
+    "iex": {
+     "status": 200,
+     "ms": 278,
+     "je": {
+      "AAPL": {
+       "n": 47,
+       "juengster": "2026-09-04T14:14:00Z",
+       "alterMin": 1.1
+      },
+      "MNST": {
+       "n": 41,
+       "juengster": "2026-09-04T14:14:00Z",
+       "alterMin": 1.1
+      },
+      "SPY": {
+       "n": 45,
+       "juengster": "2026-09-04T14:14:00Z",
+       "alterMin": 1.1
+      }
+     },
+     "fehler": null
+    },
+    "delayed_sip": {
+     "status": 400,
+     "ms": 110,
+     "je": {},
+     "fehler": "{\"message\":\"invalid feed: delayed_sip\"}\n"
+    }
+   },
+   "latest": {
+    "sip": {
+     "status": 403,
+     "je": {},
+     "fehler": "{\"message\":\"subscription does not permit querying recent SIP data\"}\n"
+    },
+    "iex": {
+     "status": 200,
+     "je": {
+      "MNST": {
+       "t": "2026-09-04T14:14:00Z",
+       "alterMin": 1.11
+      },
+      "AAPL": {
+       "t": "2026-09-04T14:14:00Z",
+       "alterMin": 1.11
+      },
+      "SPY": {
+       "t": "2026-09-04T14:14:00Z",
+       "alterMin": 1.11
+      }
+     },
+     "fehler": null
+    },
+    "delayed_sip": {
+     "status": 200,
+     "je": {
+      "MNST": {
+       "t": "2026-09-04T13:59:00Z",
+       "alterMin": 16.12
+      },
+      "AAPL": {
+       "t": "2026-09-04T13:59:00Z",
+       "alterMin": 16.12
+      },
+      "SPY": {
+       "t": "2026-09-04T13:59:00Z",
+       "alterMin": 16.12
+      }
+     },
+     "fehler": null
+    }
+   },
+   "snapshot": {
+    "sip": {
+     "status": 403,
+     "minuteBar": null,
+     "latestTrade": null,
+     "fehler": "{\"message\":\"subscription does not permit querying recent SIP data\"}\n"
+    },
+    "iex": {
+     "status": 200,
+     "minuteBar": {
+      "t": "2026-09-04T14:14:00Z",
+      "alterMin": 1.12
+     },
+     "latestTrade": {
+      "t": "2026-09-04T14:15:00.098734255Z",
+      "alterMin": 0.12
+     },
+     "fehler": null
+    },
+    "delayed_sip": {
+     "status": 200,
+     "minuteBar": {
+      "t": "2026-09-04T13:59:00Z",
+      "alterMin": 16.12
+     },
+     "latestTrade": {
+      "t": "2026-09-04T14:00:07.417928035Z",
+      "alterMin": 15
+     },
+     "fehler": null
+    }
+   }
+  },
+  {
+   "nr": 4,
+   "zeit": "2026-09-04T14:20:07.278Z",
+   "feeds": {
+    "sip": {
+     "status": 200,
+     "ms": 471,
+     "je": {
+      "AAPL": {
+       "n": 75,
+       "juengster": "2026-09-04T14:05:00Z",
+       "alterMin": 15.13
+      },
+      "MNST": {
+       "n": 40,
+       "juengster": "2026-09-04T14:05:00Z",
+       "alterMin": 15.13
+      },
+      "SPY": {
+       "n": 75,
+       "juengster": "2026-09-04T14:05:00Z",
+       "alterMin": 15.13
+      }
+     },
+     "fehler": null
+    },
+    "iex": {
+     "status": 200,
+     "ms": 161,
+     "je": {
+      "SPY": {
+       "n": 50,
+       "juengster": "2026-09-04T14:19:00Z",
+       "alterMin": 1.13
+      },
+      "AAPL": {
+       "n": 52,
+       "juengster": "2026-09-04T14:19:00Z",
+       "alterMin": 1.13
+      },
+      "MNST": {
+       "n": 46,
+       "juengster": "2026-09-04T14:19:00Z",
+       "alterMin": 1.13
+      }
+     },
+     "fehler": null
+    },
+    "delayed_sip": {
+     "status": 400,
+     "ms": 115,
+     "je": {},
+     "fehler": "{\"message\":\"invalid feed: delayed_sip\"}\n"
+    }
+   },
+   "latest": {
+    "sip": {
+     "status": 403,
+     "je": {},
+     "fehler": "{\"message\":\"subscription does not permit querying recent SIP data\"}\n"
+    },
+    "iex": {
+     "status": 200,
+     "je": {
+      "SPY": {
+       "t": "2026-09-04T14:19:00Z",
+       "alterMin": 1.14
+      },
+      "MNST": {
+       "t": "2026-09-04T14:19:00Z",
+       "alterMin": 1.14
+      },
+      "AAPL": {
+       "t": "2026-09-04T14:19:00Z",
+       "alterMin": 1.14
+      }
+     },
+     "fehler": null
+    },
+    "delayed_sip": {
+     "status": 200,
+     "je": {
+      "AAPL": {
+       "t": "2026-09-04T14:04:00Z",
+       "alterMin": 16.14
+      },
+      "SPY": {
+       "t": "2026-09-04T14:04:00Z",
+       "alterMin": 16.14
+      },
+      "MNST": {
+       "t": "2026-09-04T14:04:00Z",
+       "alterMin": 16.14
+      }
+     },
+     "fehler": null
+    }
+   },
+   "snapshot": {
+    "sip": {
+     "status": 403,
+     "minuteBar": null,
+     "latestTrade": null,
+     "fehler": "{\"message\":\"subscription does not permit querying recent SIP data\"}\n"
+    },
+    "iex": {
+     "status": 200,
+     "minuteBar": {
+      "t": "2026-09-04T14:19:00Z",
+      "alterMin": 1.15
+     },
+     "latestTrade": {
+      "t": "2026-09-04T14:20:08.793819791Z",
+      "alterMin": 0
+     },
+     "fehler": null
+    },
+    "delayed_sip": {
+     "status": 200,
+     "minuteBar": {
+      "t": "2026-09-04T14:04:00Z",
+      "alterMin": 16.15
+     },
+     "latestTrade": {
+      "t": "2026-09-04T14:05:09.125326352Z",
+      "alterMin": 15
+     },
+     "fehler": null
+    }
+   }
+  }
+ ]
+}
