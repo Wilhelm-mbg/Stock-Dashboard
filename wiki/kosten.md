@@ -1,3 +1,6 @@
+---
+tags: [befund]
+---
 # Kostenstruktur
 
 **Kosten sind klassenspezifisch. Es gibt keine pauschale Zahl.**

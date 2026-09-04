@@ -1,3 +1,6 @@
+---
+tags: [befund]
+---
 # Überlebensverzerrung
 
 Unser Kursarchiv enthält nur Werte, **die es heute noch gibt**. Wer darauf misst, misst eine

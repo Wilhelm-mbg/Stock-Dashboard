@@ -1,3 +1,6 @@
+---
+tags: [lehre]
+---
 # Messmethodik
 
 **Das eigentliche Kapital des Projekts.** Teuer bezahlt mit dutzenden eigenen Fehlern.

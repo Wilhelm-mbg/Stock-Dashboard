@@ -1,3 +1,6 @@
+---
+tags: [befund]
+---
 # Die Auflösungswand
 
 **Der wichtigste Begriff des Projekts.** Sie erklärt, warum fast jede Frage unbeantwortbar ist —

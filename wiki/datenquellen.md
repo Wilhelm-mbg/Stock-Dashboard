@@ -1,3 +1,6 @@
+---
+tags: [bauplan]
+---
 # Datenquellen und Fenster
 
 **Die Fensterlage entscheidet, welche Frage überhaupt stellbar ist.** Eine gute Idee, deren
@@ -152,13 +155,12 @@ Das ist genau die Ware, für die Massive 199 $/Monat verlangt (Stufe Advanced).
 
 *Quellen:* docs.alpaca.markets/us/docs/paper-trading (Füllregeln, Teilfüllungen), alpaca.markets/support/countries-alpaca-is-available, interactivebrokers.com/docs/web-api/introduction (OAuth), interactivebrokers.com/docs/tws-api/doc/notes-limitations/limitations/paper-trading, docs.trading212.com/api, community.trading212.com „Trading 212 API Update". Stand der Abfragen: 02.09.2026.
 
-### Alpaca als BALKENQUELLE (Z1, 03.09.2026 — gebaut, Probe steht aus)
+### Alpaca als BALKENQUELLE (Z1, 03.09.2026 — Probe bestanden mit Nachtrag, Nachholer gefahren)
 
 `/v2/stocks/bars?symbols=…&timeframe=1Min|5Min|15Min&start=…&end=…&limit=10000&feed=sip&adjustment=raw`,
 Zeitstempel `t` = Balkenöffnung (RFC 3339), Felder `o h l c v n vw`. Vorgesehen als Ersatz für die
 verworfene CFD-Tiefe des Renderer-Stores (Entscheid 2 in [archiv-zusammenfuehrung.md](archiv-zusammenfuehrung.md) §6).
-**Ob die Gratisstufe Balken zurück bis 2016 liefert, ob `t` wirklich die Öffnung ist, ob Vor-/Nachbörse
-mitkommt und ob Schluss und Umsatz mit Yahoo übereinstimmen, ist NICHT gemessen** — die Probe
+**Gemessen 03.09.2026:** die Gratisstufe liefert 1Min-SIP-Balken zurück bis 2016, `t` ist die Öffnung, Vor- und Nachbörse kommen mit, Schluss und Umsatz decken sich mit Yahoo bis auf die Skala nach Kapitalmaßnahmen (siehe „Bereinigung"). Die Probe fiel an einem von acht Kriterien (ARM 9/383 Minutenkerzen über 0,1 %), Wilhelm gab sie mit Nachtrag frei ([entscheide.md](entscheide.md)). Die Probe
 `studien/archiv-zusammenfuehrung-2026-09/probe-alpaca-balken.js` prüft genau das (Kriterien im Code),
 und ihr Urteil auf der Platte ist die Freigabe für `tools/alpaca-balken-holen.js` (reguläre Sitzung
 laut `/v2/calendar`, iex-Wache: Balken außerhalb des angefragten Zeitraums werden verworfen, Datei gewinnt

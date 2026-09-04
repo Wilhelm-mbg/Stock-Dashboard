@@ -1,3 +1,6 @@
+---
+tags: [lehre]
+---
 # Bekannte Fehlerformen
 
 > ## **Die Krankheit des Tages: eine Prüfung, die grün wird, weil sie etwas anderes prüft,
@@ -23,6 +26,11 @@
 | **Zu konservative Formel — Gegenprobe gelungen** | Die Newey-West-Planformel hätte die Momentum-Frage für blind erklärt (142 Perioden nötig, 79 da). Die **geeichte** Formel sagte delta80 2,05 voraus, gemessen 2,051. *Beleg, dass die Form „zu vorsichtig gerechnet" nicht nur Kandidaten begräbt, sondern dass die Eichung sie zuverlässig behebt.* *Fundstelle: ebenda* |
 | **Nominale Schwelle über 20 Jahre** | Ein Liquiditätsfilter „≥ 100 Mio $ Tagesumsatz" ist 2006 ein anderer Filter als 2026: er ließ damals 16 von 155 Werten durch, heute 95 von 950 — **die Definition von „liquide" wandert mit dem Marktvolumen**, und die Entdeckungshälfte der Vorregistrierung war deshalb fast leer (65 Perioden < 100 Werte). *Regel: Schwellen über lange Historien relativ setzen (Quantil je Zeitpunkt) oder die Drift ausweisen.* *Fundstelle: `studien/vorregistrierung-2026-09-02-momentum-liquide/ERGEBNIS.md`* |
 | **Zähler mit Schwelle** | `FAKTOR_MIN = 2` schnitt **53 %** der bekannten Skalenfälle weg, bevor die Logik anlief. Er meldete keine Null, sondern eine kleinere Zahl — **die aussah wie ein Ergebnis.** |
+
+- **Skalenfehler zeigen Sprungpaare.** Zwei sich aufhebende Sprünge in einer Reihe sind kein Markt,
+  sondern eine falsche Anpassung an einer Quellengrenze (MNST/SPGI, 03.09.2026: Yahoo bereinigt, Alpaca roh).
+  Die Störung hat einen Ort; Schneiden ist falsch, der Ort wird repariert. *Fundstelle:
+  `uebergabe/skalenreparatur-2026-09-03.md`.*
 
 ## Formen bei der Deutung
 

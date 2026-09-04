@@ -1,3 +1,6 @@
+---
+tags: [befund]
+---
 # Belegstand
 
 > ## **Belegte handelbare Kanten: NULL.**
