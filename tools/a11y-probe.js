@@ -28,6 +28,11 @@
  *
  *   .\node_modules\.bin\electron.cmd tools\a11y-probe.js
  *   .\node_modules\.bin\electron.cmd tools\a11y-probe.js --hell
+ *   .\node_modules\.bin\electron.cmd tools\a11y-probe.js --kunstdaten
+ *
+ * --kunstdaten fuellt die Instanz mit demselben Kunstdepot, das die Aufnahmen
+ * fotografieren (tools/kunstinstanz.js). Ohne den Schalter misst die Sonde die
+ * Leerzustaende - ein echter Zustand der App, aber eben nur einer (QS-Fund F12).
  *
  * Exit 0: keine Befunde. Exit 1: Befunde (stehen im Protokoll). Exit 2: kam nicht durch.
  *
@@ -40,6 +45,9 @@ const os = require('os');
 
 const WURZEL = path.join(__dirname, '..');
 const HELL = process.argv.indexOf('--hell') !== -1;
+/* --kunstdaten: derselbe Schalter wie in tools/ui-aufnahmen.js, dieselbe Instanz
+ * (tools/kunstinstanz.js). Ohne ihn bleibt es beim alten Saeen unten. */
+const KUNSTDATEN = process.argv.indexOf('--kunstdaten') !== -1;
 const TESTROOT = fs.mkdtempSync(path.join(os.tmpdir(), 'md-a11y-'));
 app.setPath('userData', path.join(TESTROOT, 'userdata'));
 app.setPath('downloads', path.join(TESTROOT, 'downloads'));
@@ -79,7 +87,19 @@ function saeen() {
       .slice(0, 4).forEach(function (f) { fs.copyFileSync(path.join(pQuelle, f), path.join(pZiel, f)); });
   } catch (e) { console.error('(Protokolle nicht kopierbar: ' + (e && e.message) + ')'); }
 }
-saeen();
+/* ---- --kunstdaten (QS-Fund F12, uebergabe/ui-qs-2026-09-04.md) ----
+ * Das Saeen oben gibt der Sonde zwei Positionen, drei Papiere und vier Protokolle.
+ * Das reicht fuer Tabellen und Listen, aber nicht fuer den Reiter Markt: dort haengt
+ * alles an Stammdaten, Tagesarchiv und einem gemerkten Marktstand. Ohne die zeichnet
+ * die Seite Leerzustaende - gemessen wurden auf Markt -> Ueberblick 68 Textstellen,
+ * wo mit Inhalt 3.960 Zeichen stehen. Eine Sonde, die gruen ueber Leerzustaenden
+ * meldet, hat nichts belegt.
+ * Der Schalter legt statt dessen dieselbe Instanz an, die auch die Aufnahmen und das
+ * Struktur-Inventar sehen (tools/kunstinstanz.js). Ohne Schalter bleibt das alte
+ * Verhalten: die beiden Laeufe sind GEGENUEBERZUSTELLEN, nicht zu ersetzen - der
+ * leere Fall ist ein echter Zustand der App und darf nicht aus der Messung fallen. */
+if (KUNSTDATEN) require(path.join(__dirname, 'kunstinstanz.js')).saeen(TESTROOT);
+else saeen();
 
 app.commandLine.appendSwitch('disable-features', 'CalculateNativeWinOcclusion');
 app.commandLine.appendSwitch('disable-backgrounding-occluded-windows');
@@ -241,7 +261,8 @@ app.on('browser-window-created', (ev, win) => {
           alles.push(m);
         }
       }
-      console.log('Barrierefreiheits-Sonde, Thema ' + (HELL ? 'HELL' : 'DUNKEL') + ', 1280x800\n');
+      console.log('Barrierefreiheits-Sonde, Thema ' + (HELL ? 'HELL' : 'DUNKEL') + ', 1280x800, Instanz ' +
+        (KUNSTDATEN ? 'KUNSTDATEN (tools/kunstinstanz.js)' : 'leer (zwei Positionen, sonst Leerzustaende)') + '\n');
       let befunde = 0;
       alles.forEach((a) => {
         console.log('== ' + a.reiter + ' ==');
@@ -265,6 +286,9 @@ app.on('browser-window-created', (ev, win) => {
         if (a.kontrastSchwach.length > 8) { befunde += a.kontrastSchwach.length - 8; console.log('      (+' + (a.kontrastSchwach.length - 8) + ' weitere)'); }
         console.log('');
       });
+      var summe = alles.reduce(function (s2, a) { return s2 + a.kontrastGeprueft; }, 0);
+      console.log('Geprueft: ' + alles.length + ' Reiter/Pillen, ' + summe + ' Textstellen insgesamt' +
+        (KUNSTDATEN ? '' : ' - ohne --kunstdaten, also ueberwiegend Leerzustaende (QS-Fund F12)'));
       console.log(befunde ? 'SONDE ROT: ' + befunde + ' Befund(e).' : 'SONDE GRUEN: keine Befunde.');
       app.exit(befunde ? 1 : 0);
     } catch (e) {
