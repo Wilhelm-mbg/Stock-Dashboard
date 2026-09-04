@@ -1,0 +1,13062 @@
+{
+ "verfahren": "punkt-in-zeit/1.0.0",
+ "stichtag": "2024-09-02",
+ "handelstage": 20,
+ "schwelleMio": 5,
+ "hinweis": "Auswahl nach Median-Dollarumsatz IM Auswahlfenster, nicht nach heutiger Liquiditaet. Enthaelt Werte, die spaeter verschwunden sind - genau darum geht es.",
+ "erstellt": "2026-08-23T22:43:06.929Z",
+ "werte": [
+  {
+   "sym": "NVDA",
+   "umsatzMio": 34841.9
+  },
+  {
+   "sym": "SPY",
+   "umsatzMio": 27189.7
+  },
+  {
+   "sym": "TSLA",
+   "umsatzMio": 17771.8
+  },
+  {
+   "sym": "QQQ",
+   "umsatzMio": 14948.1
+  },
+  {
+   "sym": "AAPL",
+   "umsatzMio": 10310.3
+  },
+  {
+   "sym": "MSFT",
+   "umsatzMio": 7277.6
+  },
+  {
+   "sym": "AMZN",
+   "umsatzMio": 6713.6
+  },
+  {
+   "sym": "META",
+   "umsatzMio": 6286.8
+  },
+  {
+   "sym": "IWM",
+   "umsatzMio": 5367.2
+  },
+  {
+   "sym": "AVGO",
+   "umsatzMio": 5047.7
+  },
+  {
+   "sym": "AMD",
+   "umsatzMio": 4544
+  },
+  {
+   "sym": "GOOGL",
+   "umsatzMio": 3847.7
+  },
+  {
+   "sym": "TLT",
+   "umsatzMio": 3558.5
+  },
+  {
+   "sym": "LQD",
+   "umsatzMio": 3434.7
+  },
+  {
+   "sym": "TQQQ",
+   "umsatzMio": 3334.3
+  },
+  {
+   "sym": "IVV",
+   "umsatzMio": 3112
+  },
+  {
+   "sym": "SOXL",
+   "umsatzMio": 3067.6
+  },
+  {
+   "sym": "SMCI",
+   "umsatzMio": 2940.8
+  },
+  {
+   "sym": "VOO",
+   "umsatzMio": 2850.3
+  },
+  {
+   "sym": "GOOG",
+   "umsatzMio": 2806.1
+  },
+  {
+   "sym": "HYG",
+   "umsatzMio": 2579
+  },
+  {
+   "sym": "LLY",
+   "umsatzMio": 2293.6
+  },
+  {
+   "sym": "TSM",
+   "umsatzMio": 2180.8
+  },
+  {
+   "sym": "MU",
+   "umsatzMio": 2177.5
+  },
+  {
+   "sym": "INTC",
+   "umsatzMio": 2081.9
+  },
+  {
+   "sym": "PLTR",
+   "umsatzMio": 2052.1
+  },
+  {
+   "sym": "JPM",
+   "umsatzMio": 1808.7
+  },
+  {
+   "sym": "V",
+   "umsatzMio": 1793.8
+  },
+  {
+   "sym": "UNH",
+   "umsatzMio": 1741.5
+  },
+  {
+   "sym": "BRK.B",
+   "umsatzMio": 1738.2
+  },
+  {
+   "sym": "NFLX",
+   "umsatzMio": 1736.1
+  },
+  {
+   "sym": "XLF",
+   "umsatzMio": 1725.7
+  },
+  {
+   "sym": "SMH",
+   "umsatzMio": 1721.2
+  },
+  {
+   "sym": "ORCL",
+   "umsatzMio": 1715
+  },
+  {
+   "sym": "XOM",
+   "umsatzMio": 1678.4
+  },
+  {
+   "sym": "COST",
+   "umsatzMio": 1595.6
+  },
+  {
+   "sym": "ADBE",
+   "umsatzMio": 1563.2
+  },
+  {
+   "sym": "BAC",
+   "umsatzMio": 1516.8
+  },
+  {
+   "sym": "GLD",
+   "umsatzMio": 1467.3
+  },
+  {
+   "sym": "SOXS",
+   "umsatzMio": 1430.2
+  },
+  {
+   "sym": "CRM",
+   "umsatzMio": 1383.9
+  },
+  {
+   "sym": "BA",
+   "umsatzMio": 1364.9
+  },
+  {
+   "sym": "MSTR",
+   "umsatzMio": 1330.4
+  },
+  {
+   "sym": "XLE",
+   "umsatzMio": 1325.4
+  },
+  {
+   "sym": "SQQQ",
+   "umsatzMio": 1318.8
+  },
+  {
+   "sym": "WMT",
+   "umsatzMio": 1301.6
+  },
+  {
+   "sym": "DIA",
+   "umsatzMio": 1262.8
+  },
+  {
+   "sym": "QCOM",
+   "umsatzMio": 1242.1
+  },
+  {
+   "sym": "BRK.A",
+   "umsatzMio": 1162.6
+  },
+  {
+   "sym": "AMAT",
+   "umsatzMio": 1162.2
+  },
+  {
+   "sym": "CVX",
+   "umsatzMio": 1118.8
+  },
+  {
+   "sym": "PG",
+   "umsatzMio": 1113.1
+  },
+  {
+   "sym": "EEM",
+   "umsatzMio": 1112.5
+  },
+  {
+   "sym": "HD",
+   "umsatzMio": 1102.9
+  },
+  {
+   "sym": "ASML",
+   "umsatzMio": 1100.2
+  },
+  {
+   "sym": "MA",
+   "umsatzMio": 1099.2
+  },
+  {
+   "sym": "PDD",
+   "umsatzMio": 1077.1
+  },
+  {
+   "sym": "DELL",
+   "umsatzMio": 1076.4
+  },
+  {
+   "sym": "MRK",
+   "umsatzMio": 1071
+  },
+  {
+   "sym": "NVDL",
+   "umsatzMio": 1070.8
+  },
+  {
+   "sym": "COIN",
+   "umsatzMio": 1063.5
+  },
+  {
+   "sym": "XLK",
+   "umsatzMio": 1055.1
+  },
+  {
+   "sym": "RSP",
+   "umsatzMio": 1039.3
+  },
+  {
+   "sym": "XLV",
+   "umsatzMio": 1039
+  },
+  {
+   "sym": "XLI",
+   "umsatzMio": 1015.8
+  },
+  {
+   "sym": "JNJ",
+   "umsatzMio": 974.9
+  },
+  {
+   "sym": "UBER",
+   "umsatzMio": 972.5
+  },
+  {
+   "sym": "BABA",
+   "umsatzMio": 968.6
+  },
+  {
+   "sym": "SOXX",
+   "umsatzMio": 965.4
+  },
+  {
+   "sym": "TXN",
+   "umsatzMio": 959.8
+  },
+  {
+   "sym": "WFC",
+   "umsatzMio": 950
+  },
+  {
+   "sym": "LRCX",
+   "umsatzMio": 944.2
+  },
+  {
+   "sym": "VZ",
+   "umsatzMio": 934.8
+  },
+  {
+   "sym": "PEP",
+   "umsatzMio": 925.4
+  },
+  {
+   "sym": "CRWD",
+   "umsatzMio": 919.8
+  },
+  {
+   "sym": "XLP",
+   "umsatzMio": 918.7
+  },
+  {
+   "sym": "KO",
+   "umsatzMio": 905.3
+  },
+  {
+   "sym": "NOW",
+   "umsatzMio": 899.7
+  },
+  {
+   "sym": "CAT",
+   "umsatzMio": 881.1
+  },
+  {
+   "sym": "BKNG",
+   "umsatzMio": 868.5
+  },
+  {
+   "sym": "GE",
+   "umsatzMio": 849.7
+  },
+  {
+   "sym": "PYPL",
+   "umsatzMio": 848.2
+  },
+  {
+   "sym": "SBUX",
+   "umsatzMio": 844.5
+  },
+  {
+   "sym": "PFE",
+   "umsatzMio": 836.6
+  },
+  {
+   "sym": "EFA",
+   "umsatzMio": 834.1
+  },
+  {
+   "sym": "ARM",
+   "umsatzMio": 833.3
+  },
+  {
+   "sym": "ABBV",
+   "umsatzMio": 831.8
+  },
+  {
+   "sym": "GS",
+   "umsatzMio": 830.5
+  },
+  {
+   "sym": "CSCO",
+   "umsatzMio": 826.4
+  },
+  {
+   "sym": "GDX",
+   "umsatzMio": 824
+  },
+  {
+   "sym": "MRVL",
+   "umsatzMio": 819.3
+  },
+  {
+   "sym": "TMO",
+   "umsatzMio": 812.9
+  },
+  {
+   "sym": "PANW",
+   "umsatzMio": 812.8
+  },
+  {
+   "sym": "FXI",
+   "umsatzMio": 807.4
+  },
+  {
+   "sym": "XLU",
+   "umsatzMio": 795.3
+  },
+  {
+   "sym": "AGG",
+   "umsatzMio": 794.7
+  },
+  {
+   "sym": "NKE",
+   "umsatzMio": 791.5
+  },
+  {
+   "sym": "IEF",
+   "umsatzMio": 785.1
+  },
+  {
+   "sym": "IBM",
+   "umsatzMio": 781.7
+  },
+  {
+   "sym": "T",
+   "umsatzMio": 773.5
+  },
+  {
+   "sym": "GEV",
+   "umsatzMio": 768.9
+  },
+  {
+   "sym": "DIS",
+   "umsatzMio": 764.6
+  },
+  {
+   "sym": "ACN",
+   "umsatzMio": 753.4
+  },
+  {
+   "sym": "IBIT",
+   "umsatzMio": 753.4
+  },
+  {
+   "sym": "PM",
+   "umsatzMio": 742.1
+  },
+  {
+   "sym": "C",
+   "umsatzMio": 740.6
+  },
+  {
+   "sym": "VTI",
+   "umsatzMio": 731
+  },
+  {
+   "sym": "CMCSA",
+   "umsatzMio": 726.6
+  },
+  {
+   "sym": "INTU",
+   "umsatzMio": 726.3
+  },
+  {
+   "sym": "MCD",
+   "umsatzMio": 725.2
+  },
+  {
+   "sym": "TMUS",
+   "umsatzMio": 725.1
+  },
+  {
+   "sym": "XBI",
+   "umsatzMio": 703
+  },
+  {
+   "sym": "NEE",
+   "umsatzMio": 699.8
+  },
+  {
+   "sym": "COP",
+   "umsatzMio": 697.5
+  },
+  {
+   "sym": "LIN",
+   "umsatzMio": 685.5
+  },
+  {
+   "sym": "AXP",
+   "umsatzMio": 680.2
+  },
+  {
+   "sym": "GM",
+   "umsatzMio": 677.3
+  },
+  {
+   "sym": "BIL",
+   "umsatzMio": 658.8
+  },
+  {
+   "sym": "ETN",
+   "umsatzMio": 651.6
+  },
+  {
+   "sym": "SNOW",
+   "umsatzMio": 651.2
+  },
+  {
+   "sym": "KRE",
+   "umsatzMio": 650
+  },
+  {
+   "sym": "DHR",
+   "umsatzMio": 648.4
+  },
+  {
+   "sym": "REGN",
+   "umsatzMio": 646.7
+  },
+  {
+   "sym": "VRT",
+   "umsatzMio": 646.1
+  },
+  {
+   "sym": "RTX",
+   "umsatzMio": 644.9
+  },
+  {
+   "sym": "AMGN",
+   "umsatzMio": 637.6
+  },
+  {
+   "sym": "KLAC",
+   "umsatzMio": 634.2
+  },
+  {
+   "sym": "TNA",
+   "umsatzMio": 626
+  },
+  {
+   "sym": "OXY",
+   "umsatzMio": 610.9
+  },
+  {
+   "sym": "TSLL",
+   "umsatzMio": 603.1
+  },
+  {
+   "sym": "MELI",
+   "umsatzMio": 596.9
+  },
+  {
+   "sym": "PGR",
+   "umsatzMio": 592.7
+  },
+  {
+   "sym": "NXPI",
+   "umsatzMio": 591.6
+  },
+  {
+   "sym": "CEG",
+   "umsatzMio": 587.3
+  },
+  {
+   "sym": "UNP",
+   "umsatzMio": 585.3
+  },
+  {
+   "sym": "APP",
+   "umsatzMio": 584.1
+  },
+  {
+   "sym": "VST",
+   "umsatzMio": 583.1
+  },
+  {
+   "sym": "GILD",
+   "umsatzMio": 573.4
+  },
+  {
+   "sym": "ABT",
+   "umsatzMio": 572.1
+  },
+  {
+   "sym": "MCK",
+   "umsatzMio": 570
+  },
+  {
+   "sym": "SLV",
+   "umsatzMio": 568.1
+  },
+  {
+   "sym": "CMG",
+   "umsatzMio": 567.3
+  },
+  {
+   "sym": "MDT",
+   "umsatzMio": 566.9
+  },
+  {
+   "sym": "ADI",
+   "umsatzMio": 565.8
+  },
+  {
+   "sym": "SNPS",
+   "umsatzMio": 560.4
+  },
+  {
+   "sym": "ISRG",
+   "umsatzMio": 559.8
+  },
+  {
+   "sym": "IYR",
+   "umsatzMio": 551.3
+  },
+  {
+   "sym": "SPXL",
+   "umsatzMio": 548
+  },
+  {
+   "sym": "SLB",
+   "umsatzMio": 545.4
+  },
+  {
+   "sym": "F",
+   "umsatzMio": 544.6
+  },
+  {
+   "sym": "FCX",
+   "umsatzMio": 538.8
+  },
+  {
+   "sym": "TMF",
+   "umsatzMio": 538.3
+  },
+  {
+   "sym": "UPS",
+   "umsatzMio": 536.8
+  },
+  {
+   "sym": "SPGI",
+   "umsatzMio": 523.3
+  },
+  {
+   "sym": "LULU",
+   "umsatzMio": 521.1
+  },
+  {
+   "sym": "TGT",
+   "umsatzMio": 518.5
+  },
+  {
+   "sym": "LOW",
+   "umsatzMio": 518.4
+  },
+  {
+   "sym": "ANET",
+   "umsatzMio": 518.4
+  },
+  {
+   "sym": "MARA",
+   "umsatzMio": 514.4
+  },
+  {
+   "sym": "EMB",
+   "umsatzMio": 508.3
+  },
+  {
+   "sym": "AMT",
+   "umsatzMio": 507.3
+  },
+  {
+   "sym": "SCHW",
+   "umsatzMio": 503.1
+  },
+  {
+   "sym": "XLY",
+   "umsatzMio": 502.1
+  },
+  {
+   "sym": "MS",
+   "umsatzMio": 501.6
+  },
+  {
+   "sym": "EWZ",
+   "umsatzMio": 499.6
+  },
+  {
+   "sym": "IJH",
+   "umsatzMio": 490.1
+  },
+  {
+   "sym": "CCL",
+   "umsatzMio": 488.2
+  },
+  {
+   "sym": "FLUT",
+   "umsatzMio": 485.4
+  },
+  {
+   "sym": "HUM",
+   "umsatzMio": 480.6
+  },
+  {
+   "sym": "EW",
+   "umsatzMio": 480.5
+  },
+  {
+   "sym": "BX",
+   "umsatzMio": 479.3
+  },
+  {
+   "sym": "BMY",
+   "umsatzMio": 478.2
+  },
+  {
+   "sym": "DE",
+   "umsatzMio": 477.5
+  },
+  {
+   "sym": "PSX",
+   "umsatzMio": 473.8
+  },
+  {
+   "sym": "CVS",
+   "umsatzMio": 473.5
+  },
+  {
+   "sym": "LMT",
+   "umsatzMio": 472.7
+  },
+  {
+   "sym": "IWF",
+   "umsatzMio": 472.2
+  },
+  {
+   "sym": "ABNB",
+   "umsatzMio": 471.2
+  },
+  {
+   "sym": "EOG",
+   "umsatzMio": 470.5
+  },
+  {
+   "sym": "ELV",
+   "umsatzMio": 468.4
+  },
+  {
+   "sym": "IEFA",
+   "umsatzMio": 467.1
+  },
+  {
+   "sym": "HON",
+   "umsatzMio": 462
+  },
+  {
+   "sym": "CME",
+   "umsatzMio": 461.5
+  },
+  {
+   "sym": "CVNA",
+   "umsatzMio": 461.4
+  },
+  {
+   "sym": "VCIT",
+   "umsatzMio": 459.1
+  },
+  {
+   "sym": "IEMG",
+   "umsatzMio": 457.7
+  },
+  {
+   "sym": "QQQM",
+   "umsatzMio": 457.2
+  },
+  {
+   "sym": "ULTA",
+   "umsatzMio": 457
+  },
+  {
+   "sym": "XOP",
+   "umsatzMio": 455.9
+  },
+  {
+   "sym": "TJX",
+   "umsatzMio": 452.9
+  },
+  {
+   "sym": "MCHP",
+   "umsatzMio": 451.2
+  },
+  {
+   "sym": "SGOV",
+   "umsatzMio": 449.8
+  },
+  {
+   "sym": "ICE",
+   "umsatzMio": 449.8
+  },
+  {
+   "sym": "PLD",
+   "umsatzMio": 448.5
+  },
+  {
+   "sym": "SPOT",
+   "umsatzMio": 444.9
+  },
+  {
+   "sym": "CDNS",
+   "umsatzMio": 444.3
+  },
+  {
+   "sym": "CL",
+   "umsatzMio": 443.9
+  },
+  {
+   "sym": "CB",
+   "umsatzMio": 440.1
+  },
+  {
+   "sym": "NEM",
+   "umsatzMio": 439.6
+  },
+  {
+   "sym": "FSLR",
+   "umsatzMio": 439.5
+  },
+  {
+   "sym": "MMM",
+   "umsatzMio": 433.9
+  },
+  {
+   "sym": "MPC",
+   "umsatzMio": 433.6
+  },
+  {
+   "sym": "MO",
+   "umsatzMio": 432.8
+  },
+  {
+   "sym": "ADP",
+   "umsatzMio": 431.6
+  },
+  {
+   "sym": "SHW",
+   "umsatzMio": 424.1
+  },
+  {
+   "sym": "SHOP",
+   "umsatzMio": 422.5
+  },
+  {
+   "sym": "MPWR",
+   "umsatzMio": 421.5
+  },
+  {
+   "sym": "CHTR",
+   "umsatzMio": 417.8
+  },
+  {
+   "sym": "AFRM",
+   "umsatzMio": 416.7
+  },
+  {
+   "sym": "BND",
+   "umsatzMio": 416.6
+  },
+  {
+   "sym": "SPLG",
+   "umsatzMio": 416.5
+  },
+  {
+   "sym": "VRTX",
+   "umsatzMio": 414.6
+  },
+  {
+   "sym": "NU",
+   "umsatzMio": 414.3
+  },
+  {
+   "sym": "WDAY",
+   "umsatzMio": 412.9
+  },
+  {
+   "sym": "BSX",
+   "umsatzMio": 409.8
+  },
+  {
+   "sym": "ASTS",
+   "umsatzMio": 407.6
+  },
+  {
+   "sym": "FERG",
+   "umsatzMio": 406.6
+  },
+  {
+   "sym": "VEA",
+   "umsatzMio": 406.4
+  },
+  {
+   "sym": "PCG",
+   "umsatzMio": 404.1
+  },
+  {
+   "sym": "IJR",
+   "umsatzMio": 403.7
+  },
+  {
+   "sym": "VLO",
+   "umsatzMio": 396.2
+  },
+  {
+   "sym": "MDLZ",
+   "umsatzMio": 394.7
+  },
+  {
+   "sym": "ON",
+   "umsatzMio": 393.8
+  },
+  {
+   "sym": "VNQ",
+   "umsatzMio": 393.2
+  },
+  {
+   "sym": "MMC",
+   "umsatzMio": 392.9
+  },
+  {
+   "sym": "SH",
+   "umsatzMio": 392.6
+  },
+  {
+   "sym": "USHY",
+   "umsatzMio": 391.1
+  },
+  {
+   "sym": "ORLY",
+   "umsatzMio": 390.1
+  },
+  {
+   "sym": "FDX",
+   "umsatzMio": 383.7
+  },
+  {
+   "sym": "EQIX",
+   "umsatzMio": 380.3
+  },
+  {
+   "sym": "DG",
+   "umsatzMio": 380
+  },
+  {
+   "sym": "DAL",
+   "umsatzMio": 378.8
+  },
+  {
+   "sym": "BLK",
+   "umsatzMio": 378
+  },
+  {
+   "sym": "APH",
+   "umsatzMio": 377.4
+  },
+  {
+   "sym": "ADSK",
+   "umsatzMio": 377.1
+  },
+  {
+   "sym": "FI",
+   "umsatzMio": 377
+  },
+  {
+   "sym": "MDY",
+   "umsatzMio": 376.3
+  },
+  {
+   "sym": "NVO",
+   "umsatzMio": 374.3
+  },
+  {
+   "sym": "HCA",
+   "umsatzMio": 373.3
+  },
+  {
+   "sym": "AAL",
+   "umsatzMio": 369.8
+  },
+  {
+   "sym": "TZA",
+   "umsatzMio": 369
+  },
+  {
+   "sym": "AZO",
+   "umsatzMio": 367.7
+  },
+  {
+   "sym": "DASH",
+   "umsatzMio": 367.6
+  },
+  {
+   "sym": "NIO",
+   "umsatzMio": 365.5
+  },
+  {
+   "sym": "TT",
+   "umsatzMio": 364.7
+  },
+  {
+   "sym": "SQ",
+   "umsatzMio": 364.3
+  },
+  {
+   "sym": "SYK",
+   "umsatzMio": 361.1
+  },
+  {
+   "sym": "EWJ",
+   "umsatzMio": 358.8
+  },
+  {
+   "sym": "SO",
+   "umsatzMio": 357.1
+  },
+  {
+   "sym": "DHI",
+   "umsatzMio": 355.7
+  },
+  {
+   "sym": "ZTS",
+   "umsatzMio": 354.8
+  },
+  {
+   "sym": "UAL",
+   "umsatzMio": 354.4
+  },
+  {
+   "sym": "WELL",
+   "umsatzMio": 350.5
+  },
+  {
+   "sym": "GOLD",
+   "umsatzMio": 348.8
+  },
+  {
+   "sym": "HLT",
+   "umsatzMio": 348.3
+  },
+  {
+   "sym": "MCO",
+   "umsatzMio": 348.3
+  },
+  {
+   "sym": "MAR",
+   "umsatzMio": 347.9
+  },
+  {
+   "sym": "KKR",
+   "umsatzMio": 346.7
+  },
+  {
+   "sym": "COR",
+   "umsatzMio": 346.4
+  },
+  {
+   "sym": "EL",
+   "umsatzMio": 345.4
+  },
+  {
+   "sym": "DLTR",
+   "umsatzMio": 345.2
+  },
+  {
+   "sym": "CI",
+   "umsatzMio": 345.2
+  },
+  {
+   "sym": "HPE",
+   "umsatzMio": 343.5
+  },
+  {
+   "sym": "AZN",
+   "umsatzMio": 343.3
+  },
+  {
+   "sym": "JNK",
+   "umsatzMio": 342.7
+  },
+  {
+   "sym": "VWO",
+   "umsatzMio": 342.5
+  },
+  {
+   "sym": "XLB",
+   "umsatzMio": 340.9
+  },
+  {
+   "sym": "SHV",
+   "umsatzMio": 339.5
+  },
+  {
+   "sym": "XLC",
+   "umsatzMio": 338.4
+  },
+  {
+   "sym": "SPXS",
+   "umsatzMio": 337.4
+  },
+  {
+   "sym": "URI",
+   "umsatzMio": 336.2
+  },
+  {
+   "sym": "DUK",
+   "umsatzMio": 335.4
+  },
+  {
+   "sym": "SHY",
+   "umsatzMio": 334.7
+  },
+  {
+   "sym": "KWEB",
+   "umsatzMio": 334.3
+  },
+  {
+   "sym": "PH",
+   "umsatzMio": 333.7
+  },
+  {
+   "sym": "UVXY",
+   "umsatzMio": 332.6
+  },
+  {
+   "sym": "RIVN",
+   "umsatzMio": 331.9
+  },
+  {
+   "sym": "USB",
+   "umsatzMio": 331.6
+  },
+  {
+   "sym": "CSX",
+   "umsatzMio": 329.3
+  },
+  {
+   "sym": "DKNG",
+   "umsatzMio": 326.8
+  },
+  {
+   "sym": "BDX",
+   "umsatzMio": 326.2
+  },
+  {
+   "sym": "MRNA",
+   "umsatzMio": 326
+  },
+  {
+   "sym": "CRH",
+   "umsatzMio": 325.7
+  },
+  {
+   "sym": "SE",
+   "umsatzMio": 324.2
+  },
+  {
+   "sym": "UPRO",
+   "umsatzMio": 323.3
+  },
+  {
+   "sym": "KVUE",
+   "umsatzMio": 322
+  },
+  {
+   "sym": "FANG",
+   "umsatzMio": 320.5
+  },
+  {
+   "sym": "FTNT",
+   "umsatzMio": 317.9
+  },
+  {
+   "sym": "EBAY",
+   "umsatzMio": 316.3
+  },
+  {
+   "sym": "ZS",
+   "umsatzMio": 313.5
+  },
+  {
+   "sym": "MSI",
+   "umsatzMio": 312.6
+  },
+  {
+   "sym": "APD",
+   "umsatzMio": 312.5
+  },
+  {
+   "sym": "TFC",
+   "umsatzMio": 312.5
+  },
+  {
+   "sym": "DVN",
+   "umsatzMio": 310.7
+  },
+  {
+   "sym": "WM",
+   "umsatzMio": 310.6
+  },
+  {
+   "sym": "JD",
+   "umsatzMio": 309.7
+  },
+  {
+   "sym": "FNGU",
+   "umsatzMio": 309.2
+  },
+  {
+   "sym": "APO",
+   "umsatzMio": 308.6
+  },
+  {
+   "sym": "LEN",
+   "umsatzMio": 308.5
+  },
+  {
+   "sym": "CNC",
+   "umsatzMio": 306
+  },
+  {
+   "sym": "MUB",
+   "umsatzMio": 305.9
+  },
+  {
+   "sym": "GD",
+   "umsatzMio": 304
+  },
+  {
+   "sym": "VUG",
+   "umsatzMio": 303.5
+  },
+  {
+   "sym": "SOFI",
+   "umsatzMio": 303.4
+  },
+  {
+   "sym": "ROST",
+   "umsatzMio": 303.3
+  },
+  {
+   "sym": "X",
+   "umsatzMio": 303
+  },
+  {
+   "sym": "ELF",
+   "umsatzMio": 302.8
+  },
+  {
+   "sym": "RCL",
+   "umsatzMio": 302.3
+  },
+  {
+   "sym": "COF",
+   "umsatzMio": 300.6
+  },
+  {
+   "sym": "TRGP",
+   "umsatzMio": 299.3
+  },
+  {
+   "sym": "DDOG",
+   "umsatzMio": 298
+  },
+  {
+   "sym": "JCI",
+   "umsatzMio": 297.9
+  },
+  {
+   "sym": "EMR",
+   "umsatzMio": 295.9
+  },
+  {
+   "sym": "VALE",
+   "umsatzMio": 294.1
+  },
+  {
+   "sym": "PNC",
+   "umsatzMio": 292.9
+  },
+  {
+   "sym": "XRT",
+   "umsatzMio": 292.5
+  },
+  {
+   "sym": "HAL",
+   "umsatzMio": 288.7
+  },
+  {
+   "sym": "QLD",
+   "umsatzMio": 288.2
+  },
+  {
+   "sym": "CARR",
+   "umsatzMio": 287.8
+  },
+  {
+   "sym": "U",
+   "umsatzMio": 287.7
+  },
+  {
+   "sym": "MNST",
+   "umsatzMio": 287.6
+  },
+  {
+   "sym": "MDB",
+   "umsatzMio": 285.5
+  },
+  {
+   "sym": "CTAS",
+   "umsatzMio": 285
+  },
+  {
+   "sym": "TTD",
+   "umsatzMio": 284.5
+  },
+  {
+   "sym": "IQV",
+   "umsatzMio": 279.5
+  },
+  {
+   "sym": "RBLX",
+   "umsatzMio": 278.5
+  },
+  {
+   "sym": "NOC",
+   "umsatzMio": 278.2
+  },
+  {
+   "sym": "GEHC",
+   "umsatzMio": 278.2
+  },
+  {
+   "sym": "YUM",
+   "umsatzMio": 278.1
+  },
+  {
+   "sym": "O",
+   "umsatzMio": 275.8
+  },
+  {
+   "sym": "SHEL",
+   "umsatzMio": 275.4
+  },
+  {
+   "sym": "EXC",
+   "umsatzMio": 274
+  },
+  {
+   "sym": "AEP",
+   "umsatzMio": 273.5
+  },
+  {
+   "sym": "DXCM",
+   "umsatzMio": 273.3
+  },
+  {
+   "sym": "SYY",
+   "umsatzMio": 273
+  },
+  {
+   "sym": "WDC",
+   "umsatzMio": 272.6
+  },
+  {
+   "sym": "NSC",
+   "umsatzMio": 271.8
+  },
+  {
+   "sym": "BBY",
+   "umsatzMio": 271.3
+  },
+  {
+   "sym": "STZ",
+   "umsatzMio": 270.6
+  },
+  {
+   "sym": "CCI",
+   "umsatzMio": 269.9
+  },
+  {
+   "sym": "CAVA",
+   "umsatzMio": 268.8
+  },
+  {
+   "sym": "AIG",
+   "umsatzMio": 267.6
+  },
+  {
+   "sym": "BLDR",
+   "umsatzMio": 267.3
+  },
+  {
+   "sym": "GIS",
+   "umsatzMio": 266
+  },
+  {
+   "sym": "SNAP",
+   "umsatzMio": 265.2
+  },
+  {
+   "sym": "VTV",
+   "umsatzMio": 264.6
+  },
+  {
+   "sym": "BK",
+   "umsatzMio": 263.8
+  },
+  {
+   "sym": "KMB",
+   "umsatzMio": 263.5
+  },
+  {
+   "sym": "HPQ",
+   "umsatzMio": 261.3
+  },
+  {
+   "sym": "TRV",
+   "umsatzMio": 261.1
+  },
+  {
+   "sym": "EA",
+   "umsatzMio": 258.2
+  },
+  {
+   "sym": "BP",
+   "umsatzMio": 257.6
+  },
+  {
+   "sym": "IGV",
+   "umsatzMio": 257.6
+  },
+  {
+   "sym": "NCLH",
+   "umsatzMio": 257.4
+  },
+  {
+   "sym": "EFX",
+   "umsatzMio": 256.4
+  },
+  {
+   "sym": "AON",
+   "umsatzMio": 256
+  },
+  {
+   "sym": "ARKK",
+   "umsatzMio": 254.8
+  },
+  {
+   "sym": "ODFL",
+   "umsatzMio": 254.5
+  },
+  {
+   "sym": "DLR",
+   "umsatzMio": 253.9
+  },
+  {
+   "sym": "VCSH",
+   "umsatzMio": 253.1
+  },
+  {
+   "sym": "AFL",
+   "umsatzMio": 252.7
+  },
+  {
+   "sym": "SCHD",
+   "umsatzMio": 252
+  },
+  {
+   "sym": "LVS",
+   "umsatzMio": 251.3
+  },
+  {
+   "sym": "QID",
+   "umsatzMio": 250.7
+  },
+  {
+   "sym": "OKE",
+   "umsatzMio": 250.5
+  },
+  {
+   "sym": "TEAM",
+   "umsatzMio": 249
+  },
+  {
+   "sym": "IWB",
+   "umsatzMio": 248.8
+  },
+  {
+   "sym": "INDA",
+   "umsatzMio": 248.4
+  },
+  {
+   "sym": "GDXJ",
+   "umsatzMio": 247.9
+  },
+  {
+   "sym": "DECK",
+   "umsatzMio": 247.7
+  },
+  {
+   "sym": "PBR",
+   "umsatzMio": 246.9
+  },
+  {
+   "sym": "SPG",
+   "umsatzMio": 246.7
+  },
+  {
+   "sym": "KR",
+   "umsatzMio": 245.9
+  },
+  {
+   "sym": "ETR",
+   "umsatzMio": 245.8
+  },
+  {
+   "sym": "WBD",
+   "umsatzMio": 245.8
+  },
+  {
+   "sym": "KMI",
+   "umsatzMio": 244.6
+  },
+  {
+   "sym": "TEL",
+   "umsatzMio": 242.3
+  },
+  {
+   "sym": "RMD",
+   "umsatzMio": 242.1
+  },
+  {
+   "sym": "IWD",
+   "umsatzMio": 241.8
+  },
+  {
+   "sym": "PCAR",
+   "umsatzMio": 241.1
+  },
+  {
+   "sym": "FICO",
+   "umsatzMio": 240.5
+  },
+  {
+   "sym": "XEL",
+   "umsatzMio": 240.5
+  },
+  {
+   "sym": "PEG",
+   "umsatzMio": 240.2
+  },
+  {
+   "sym": "ENPH",
+   "umsatzMio": 239.9
+  },
+  {
+   "sym": "SPXU",
+   "umsatzMio": 239.8
+  },
+  {
+   "sym": "SDS",
+   "umsatzMio": 239.1
+  },
+  {
+   "sym": "PHM",
+   "umsatzMio": 238.2
+  },
+  {
+   "sym": "ALL",
+   "umsatzMio": 237.3
+  },
+  {
+   "sym": "FIS",
+   "umsatzMio": 237.2
+  },
+  {
+   "sym": "MET",
+   "umsatzMio": 237.2
+  },
+  {
+   "sym": "FBTC",
+   "umsatzMio": 237
+  },
+  {
+   "sym": "RDDT",
+   "umsatzMio": 236.8
+  },
+  {
+   "sym": "SDOW",
+   "umsatzMio": 236.8
+  },
+  {
+   "sym": "DPZ",
+   "umsatzMio": 235.9
+  },
+  {
+   "sym": "BKR",
+   "umsatzMio": 234.8
+  },
+  {
+   "sym": "LUV",
+   "umsatzMio": 233.9
+  },
+  {
+   "sym": "PINS",
+   "umsatzMio": 233.8
+  },
+  {
+   "sym": "ANF",
+   "umsatzMio": 231.6
+  },
+  {
+   "sym": "HOOD",
+   "umsatzMio": 231.5
+  },
+  {
+   "sym": "PSA",
+   "umsatzMio": 231
+  },
+  {
+   "sym": "USO",
+   "umsatzMio": 230.5
+  },
+  {
+   "sym": "MSCI",
+   "umsatzMio": 230.2
+  },
+  {
+   "sym": "VGT",
+   "umsatzMio": 228.5
+  },
+  {
+   "sym": "UPST",
+   "umsatzMio": 227.6
+  },
+  {
+   "sym": "MLM",
+   "umsatzMio": 224.8
+  },
+  {
+   "sym": "IEI",
+   "umsatzMio": 222.8
+  },
+  {
+   "sym": "VMC",
+   "umsatzMio": 222.8
+  },
+  {
+   "sym": "EQT",
+   "umsatzMio": 222
+  },
+  {
+   "sym": "APTV",
+   "umsatzMio": 221.8
+  },
+  {
+   "sym": "LNG",
+   "umsatzMio": 221.8
+  },
+  {
+   "sym": "ROKU",
+   "umsatzMio": 221.2
+  },
+  {
+   "sym": "BKLN",
+   "umsatzMio": 221.2
+  },
+  {
+   "sym": "VCLT",
+   "umsatzMio": 220.5
+  },
+  {
+   "sym": "IR",
+   "umsatzMio": 220.3
+  },
+  {
+   "sym": "CAH",
+   "umsatzMio": 220.1
+  },
+  {
+   "sym": "KHC",
+   "umsatzMio": 219.1
+  },
+  {
+   "sym": "XLRE",
+   "umsatzMio": 218.2
+  },
+  {
+   "sym": "CPRT",
+   "umsatzMio": 218.2
+  },
+  {
+   "sym": "WSM",
+   "umsatzMio": 218.2
+  },
+  {
+   "sym": "CELH",
+   "umsatzMio": 217
+  },
+  {
+   "sym": "ECL",
+   "umsatzMio": 216.9
+  },
+  {
+   "sym": "DOW",
+   "umsatzMio": 215.6
+  },
+  {
+   "sym": "DKS",
+   "umsatzMio": 214.4
+  },
+  {
+   "sym": "TDG",
+   "umsatzMio": 212.8
+  },
+  {
+   "sym": "AJG",
+   "umsatzMio": 212.4
+  },
+  {
+   "sym": "VXX",
+   "umsatzMio": 211.9
+  },
+  {
+   "sym": "VEEV",
+   "umsatzMio": 211.7
+  },
+  {
+   "sym": "USFR",
+   "umsatzMio": 210.8
+  },
+  {
+   "sym": "NUE",
+   "umsatzMio": 210.5
+  },
+  {
+   "sym": "JPST",
+   "umsatzMio": 209.9
+  },
+  {
+   "sym": "HES",
+   "umsatzMio": 209.7
+  },
+  {
+   "sym": "EWY",
+   "umsatzMio": 208.7
+  },
+  {
+   "sym": "TTWO",
+   "umsatzMio": 208.2
+  },
+  {
+   "sym": "ITW",
+   "umsatzMio": 208
+  },
+  {
+   "sym": "DJT",
+   "umsatzMio": 207.7
+  },
+  {
+   "sym": "D",
+   "umsatzMio": 207.5
+  },
+  {
+   "sym": "WMB",
+   "umsatzMio": 207.5
+  },
+  {
+   "sym": "HSY",
+   "umsatzMio": 207.1
+  },
+  {
+   "sym": "KDP",
+   "umsatzMio": 207
+  },
+  {
+   "sym": "BURL",
+   "umsatzMio": 206.6
+  },
+  {
+   "sym": "W",
+   "umsatzMio": 206.3
+  },
+  {
+   "sym": "IAU",
+   "umsatzMio": 206.2
+  },
+  {
+   "sym": "ONON",
+   "umsatzMio": 205.9
+  },
+  {
+   "sym": "SSO",
+   "umsatzMio": 205.6
+  },
+  {
+   "sym": "GPN",
+   "umsatzMio": 204.4
+  },
+  {
+   "sym": "TER",
+   "umsatzMio": 204
+  },
+  {
+   "sym": "GME",
+   "umsatzMio": 203
+  },
+  {
+   "sym": "PWR",
+   "umsatzMio": 202.5
+  },
+  {
+   "sym": "XHB",
+   "umsatzMio": 202.5
+  },
+  {
+   "sym": "HWM",
+   "umsatzMio": 201.9
+  },
+  {
+   "sym": "ENTG",
+   "umsatzMio": 201.7
+  },
+  {
+   "sym": "DRI",
+   "umsatzMio": 200.2
+  },
+  {
+   "sym": "TOL",
+   "umsatzMio": 200.2
+  },
+  {
+   "sym": "SW",
+   "umsatzMio": 200.1
+  },
+  {
+   "sym": "CTSH",
+   "umsatzMio": 200
+  },
+  {
+   "sym": "IOT",
+   "umsatzMio": 199.8
+  },
+  {
+   "sym": "GWW",
+   "umsatzMio": 199.6
+  },
+  {
+   "sym": "TSCO",
+   "umsatzMio": 199.4
+  },
+  {
+   "sym": "A",
+   "umsatzMio": 197.7
+  },
+  {
+   "sym": "LYB",
+   "umsatzMio": 197
+  },
+  {
+   "sym": "PAYX",
+   "umsatzMio": 197
+  },
+  {
+   "sym": "LYV",
+   "umsatzMio": 196.9
+  },
+  {
+   "sym": "SRE",
+   "umsatzMio": 196.6
+  },
+  {
+   "sym": "ROP",
+   "umsatzMio": 196.4
+  },
+  {
+   "sym": "NDAQ",
+   "umsatzMio": 196.3
+  },
+  {
+   "sym": "UDOW",
+   "umsatzMio": 196
+  },
+  {
+   "sym": "OTIS",
+   "umsatzMio": 195.9
+  },
+  {
+   "sym": "BTI",
+   "umsatzMio": 195.4
+  },
+  {
+   "sym": "MBB",
+   "umsatzMio": 195
+  },
+  {
+   "sym": "ITB",
+   "umsatzMio": 193.8
+  },
+  {
+   "sym": "SIRI",
+   "umsatzMio": 193.2
+  },
+  {
+   "sym": "CFG",
+   "umsatzMio": 192.3
+  },
+  {
+   "sym": "ACWI",
+   "umsatzMio": 191.9
+  },
+  {
+   "sym": "TIP",
+   "umsatzMio": 191.7
+  },
+  {
+   "sym": "VRSK",
+   "umsatzMio": 191.5
+  },
+  {
+   "sym": "RH",
+   "umsatzMio": 191.4
+  },
+  {
+   "sym": "NRG",
+   "umsatzMio": 190.9
+  },
+  {
+   "sym": "EWT",
+   "umsatzMio": 190.8
+  },
+  {
+   "sym": "VKTX",
+   "umsatzMio": 189.7
+  },
+  {
+   "sym": "CBRE",
+   "umsatzMio": 189.5
+  },
+  {
+   "sym": "ALB",
+   "umsatzMio": 189.3
+  },
+  {
+   "sym": "HUBS",
+   "umsatzMio": 188.9
+  },
+  {
+   "sym": "ETSY",
+   "umsatzMio": 188
+  },
+  {
+   "sym": "K",
+   "umsatzMio": 187.3
+  },
+  {
+   "sym": "CMI",
+   "umsatzMio": 187.3
+  },
+  {
+   "sym": "VTR",
+   "umsatzMio": 186.8
+  },
+  {
+   "sym": "WAB",
+   "umsatzMio": 186.7
+  },
+  {
+   "sym": "SWKS",
+   "umsatzMio": 186.5
+  },
+  {
+   "sym": "FTV",
+   "umsatzMio": 186.4
+  },
+  {
+   "sym": "ILMN",
+   "umsatzMio": 185.9
+  },
+  {
+   "sym": "SMMT",
+   "umsatzMio": 185.5
+  },
+  {
+   "sym": "AME",
+   "umsatzMio": 185.1
+  },
+  {
+   "sym": "ICLR",
+   "umsatzMio": 184.8
+  },
+  {
+   "sym": "DOV",
+   "umsatzMio": 184.6
+  },
+  {
+   "sym": "NTAP",
+   "umsatzMio": 184.4
+  },
+  {
+   "sym": "OIH",
+   "umsatzMio": 183.3
+  },
+  {
+   "sym": "STX",
+   "umsatzMio": 183
+  },
+  {
+   "sym": "AVB",
+   "umsatzMio": 183
+  },
+  {
+   "sym": "BIIB",
+   "umsatzMio": 183
+  },
+  {
+   "sym": "AXON",
+   "umsatzMio": 182.9
+  },
+  {
+   "sym": "BCS",
+   "umsatzMio": 182.6
+  },
+  {
+   "sym": "SBAC",
+   "umsatzMio": 182.4
+  },
+  {
+   "sym": "AEM",
+   "umsatzMio": 181.8
+  },
+  {
+   "sym": "KEY",
+   "umsatzMio": 181.7
+  },
+  {
+   "sym": "WEC",
+   "umsatzMio": 181.5
+  },
+  {
+   "sym": "Z",
+   "umsatzMio": 181.2
+  },
+  {
+   "sym": "NVR",
+   "umsatzMio": 180.7
+  },
+  {
+   "sym": "MGM",
+   "umsatzMio": 180.3
+  },
+  {
+   "sym": "IDXX",
+   "umsatzMio": 180.2
+  },
+  {
+   "sym": "CLX",
+   "umsatzMio": 180
+  },
+  {
+   "sym": "AA",
+   "umsatzMio": 179.7
+  },
+  {
+   "sym": "CCJ",
+   "umsatzMio": 179.5
+  },
+  {
+   "sym": "WBA",
+   "umsatzMio": 179.4
+  },
+  {
+   "sym": "LPLA",
+   "umsatzMio": 179.4
+  },
+  {
+   "sym": "ET",
+   "umsatzMio": 178.4
+  },
+  {
+   "sym": "TLN",
+   "umsatzMio": 178.1
+  },
+  {
+   "sym": "STT",
+   "umsatzMio": 177.8
+  },
+  {
+   "sym": "EXPE",
+   "umsatzMio": 176.9
+  },
+  {
+   "sym": "FIVE",
+   "umsatzMio": 176.5
+  },
+  {
+   "sym": "BHP",
+   "umsatzMio": 176.1
+  },
+  {
+   "sym": "GDDY",
+   "umsatzMio": 175.4
+  },
+  {
+   "sym": "RSG",
+   "umsatzMio": 174.8
+  },
+  {
+   "sym": "GLW",
+   "umsatzMio": 173.7
+  },
+  {
+   "sym": "CLSK",
+   "umsatzMio": 172.8
+  },
+  {
+   "sym": "CZR",
+   "umsatzMio": 172.8
+  },
+  {
+   "sym": "MTB",
+   "umsatzMio": 172.4
+  },
+  {
+   "sym": "IBB",
+   "umsatzMio": 171.8
+  },
+  {
+   "sym": "ZM",
+   "umsatzMio": 171.8
+  },
+  {
+   "sym": "HDB",
+   "umsatzMio": 171.1
+  },
+  {
+   "sym": "BITX",
+   "umsatzMio": 170.3
+  },
+  {
+   "sym": "BBWI",
+   "umsatzMio": 170.1
+  },
+  {
+   "sym": "COHR",
+   "umsatzMio": 170
+  },
+  {
+   "sym": "GLDM",
+   "umsatzMio": 169.6
+  },
+  {
+   "sym": "AMP",
+   "umsatzMio": 169.5
+  },
+  {
+   "sym": "JBL",
+   "umsatzMio": 169.5
+  },
+  {
+   "sym": "CNQ",
+   "umsatzMio": 169.4
+  },
+  {
+   "sym": "VXUS",
+   "umsatzMio": 169.2
+  },
+  {
+   "sym": "FCNCA",
+   "umsatzMio": 168.8
+  },
+  {
+   "sym": "CLF",
+   "umsatzMio": 168.7
+  },
+  {
+   "sym": "VICI",
+   "umsatzMio": 168.7
+  },
+  {
+   "sym": "HBAN",
+   "umsatzMio": 168.3
+  },
+  {
+   "sym": "ROK",
+   "umsatzMio": 168.1
+  },
+  {
+   "sym": "IP",
+   "umsatzMio": 167.9
+  },
+  {
+   "sym": "ALNY",
+   "umsatzMio": 167.6
+  },
+  {
+   "sym": "WYNN",
+   "umsatzMio": 167.2
+  },
+  {
+   "sym": "STLD",
+   "umsatzMio": 166.7
+  },
+  {
+   "sym": "PSQ",
+   "umsatzMio": 166.5
+  },
+  {
+   "sym": "EXR",
+   "umsatzMio": 165.4
+  },
+  {
+   "sym": "LHX",
+   "umsatzMio": 164.3
+  },
+  {
+   "sym": "FDS",
+   "umsatzMio": 164.3
+  },
+  {
+   "sym": "AGNC",
+   "umsatzMio": 163.8
+  },
+  {
+   "sym": "IWN",
+   "umsatzMio": 163.7
+  },
+  {
+   "sym": "HIG",
+   "umsatzMio": 162.9
+  },
+  {
+   "sym": "OKTA",
+   "umsatzMio": 162.5
+  },
+  {
+   "sym": "BIDU",
+   "umsatzMio": 161.9
+  },
+  {
+   "sym": "VTEB",
+   "umsatzMio": 161.1
+  },
+  {
+   "sym": "TCOM",
+   "umsatzMio": 160.8
+  },
+  {
+   "sym": "EMXC",
+   "umsatzMio": 160.8
+  },
+  {
+   "sym": "CP",
+   "umsatzMio": 160.5
+  },
+  {
+   "sym": "IBN",
+   "umsatzMio": 160.4
+  },
+  {
+   "sym": "PRU",
+   "umsatzMio": 160.4
+  },
+  {
+   "sym": "BRO",
+   "umsatzMio": 160.1
+  },
+  {
+   "sym": "IRM",
+   "umsatzMio": 160.1
+  },
+  {
+   "sym": "JEPI",
+   "umsatzMio": 160
+  },
+  {
+   "sym": "IVW",
+   "umsatzMio": 160
+  },
+  {
+   "sym": "CHWY",
+   "umsatzMio": 159.8
+  },
+  {
+   "sym": "EIX",
+   "umsatzMio": 159.7
+  },
+  {
+   "sym": "THC",
+   "umsatzMio": 159.7
+  },
+  {
+   "sym": "DFS",
+   "umsatzMio": 158.9
+  },
+  {
+   "sym": "WCN",
+   "umsatzMio": 158.8
+  },
+  {
+   "sym": "DD",
+   "umsatzMio": 158.5
+  },
+  {
+   "sym": "PPG",
+   "umsatzMio": 158.4
+  },
+  {
+   "sym": "APA",
+   "umsatzMio": 158.2
+  },
+  {
+   "sym": "SYF",
+   "umsatzMio": 158.2
+  },
+  {
+   "sym": "FITB",
+   "umsatzMio": 158.1
+  },
+  {
+   "sym": "VLTO",
+   "umsatzMio": 157.6
+  },
+  {
+   "sym": "CHK",
+   "umsatzMio": 157.4
+  },
+  {
+   "sym": "USMV",
+   "umsatzMio": 155.9
+  },
+  {
+   "sym": "PODD",
+   "umsatzMio": 155.4
+  },
+  {
+   "sym": "AES",
+   "umsatzMio": 155.2
+  },
+  {
+   "sym": "NET",
+   "umsatzMio": 154.8
+  },
+  {
+   "sym": "HUBB",
+   "umsatzMio": 154.7
+  },
+  {
+   "sym": "CMS",
+   "umsatzMio": 154.6
+  },
+  {
+   "sym": "CHD",
+   "umsatzMio": 153.6
+  },
+  {
+   "sym": "ADM",
+   "umsatzMio": 153.3
+  },
+  {
+   "sym": "ZBH",
+   "umsatzMio": 153.1
+  },
+  {
+   "sym": "ARGX",
+   "umsatzMio": 153
+  },
+  {
+   "sym": "FAST",
+   "umsatzMio": 152.8
+  },
+  {
+   "sym": "SUI",
+   "umsatzMio": 152.7
+  },
+  {
+   "sym": "RF",
+   "umsatzMio": 152.6
+  },
+  {
+   "sym": "INFY",
+   "umsatzMio": 152.6
+  },
+  {
+   "sym": "ED",
+   "umsatzMio": 152.4
+  },
+  {
+   "sym": "PPL",
+   "umsatzMio": 152.2
+  },
+  {
+   "sym": "JNPR",
+   "umsatzMio": 152.2
+  },
+  {
+   "sym": "ALLY",
+   "umsatzMio": 152
+  },
+  {
+   "sym": "TECK",
+   "umsatzMio": 151.7
+  },
+  {
+   "sym": "BNTX",
+   "umsatzMio": 151.6
+  },
+  {
+   "sym": "MRO",
+   "umsatzMio": 151.4
+  },
+  {
+   "sym": "VTWO",
+   "umsatzMio": 149.9
+  },
+  {
+   "sym": "GBTC",
+   "umsatzMio": 149.9
+  },
+  {
+   "sym": "CTRA",
+   "umsatzMio": 149.6
+  },
+  {
+   "sym": "GWRE",
+   "umsatzMio": 149.5
+  },
+  {
+   "sym": "CPNG",
+   "umsatzMio": 149.4
+  },
+  {
+   "sym": "EME",
+   "umsatzMio": 149.3
+  },
+  {
+   "sym": "WTW",
+   "umsatzMio": 149
+  },
+  {
+   "sym": "PSTG",
+   "umsatzMio": 149
+  },
+  {
+   "sym": "RIO",
+   "umsatzMio": 148.9
+  },
+  {
+   "sym": "GOVT",
+   "umsatzMio": 148.6
+  },
+  {
+   "sym": "STM",
+   "umsatzMio": 148.4
+  },
+  {
+   "sym": "BMRN",
+   "umsatzMio": 148
+  },
+  {
+   "sym": "TMDX",
+   "umsatzMio": 147.9
+  },
+  {
+   "sym": "LW",
+   "umsatzMio": 147.9
+  },
+  {
+   "sym": "MOH",
+   "umsatzMio": 147.6
+  },
+  {
+   "sym": "CTVA",
+   "umsatzMio": 147.6
+  },
+  {
+   "sym": "CSGP",
+   "umsatzMio": 147.3
+  },
+  {
+   "sym": "SMAR",
+   "umsatzMio": 146.9
+  },
+  {
+   "sym": "SPIB",
+   "umsatzMio": 146.7
+  },
+  {
+   "sym": "SPTL",
+   "umsatzMio": 146.2
+  },
+  {
+   "sym": "INVH",
+   "umsatzMio": 146.1
+  },
+  {
+   "sym": "BITO",
+   "umsatzMio": 145.8
+  },
+  {
+   "sym": "KMX",
+   "umsatzMio": 145.6
+  },
+  {
+   "sym": "QUAL",
+   "umsatzMio": 145.4
+  },
+  {
+   "sym": "CPT",
+   "umsatzMio": 145.3
+  },
+  {
+   "sym": "ALGN",
+   "umsatzMio": 145
+  },
+  {
+   "sym": "CVE",
+   "umsatzMio": 143
+  },
+  {
+   "sym": "SRLN",
+   "umsatzMio": 142.7
+  },
+  {
+   "sym": "SAP",
+   "umsatzMio": 142.6
+  },
+  {
+   "sym": "CNM",
+   "umsatzMio": 142.3
+  },
+  {
+   "sym": "SU",
+   "umsatzMio": 141.5
+  },
+  {
+   "sym": "GSK",
+   "umsatzMio": 141.1
+  },
+  {
+   "sym": "HST",
+   "umsatzMio": 140.8
+  },
+  {
+   "sym": "ACGL",
+   "umsatzMio": 140.1
+  },
+  {
+   "sym": "CDW",
+   "umsatzMio": 140
+  },
+  {
+   "sym": "DOCU",
+   "umsatzMio": 139.7
+  },
+  {
+   "sym": "MKC",
+   "umsatzMio": 139.5
+  },
+  {
+   "sym": "UTHR",
+   "umsatzMio": 138.4
+  },
+  {
+   "sym": "KSS",
+   "umsatzMio": 138.4
+  },
+  {
+   "sym": "VGIT",
+   "umsatzMio": 138.2
+  },
+  {
+   "sym": "NLY",
+   "umsatzMio": 138.1
+  },
+  {
+   "sym": "XPO",
+   "umsatzMio": 137.9
+  },
+  {
+   "sym": "XYL",
+   "umsatzMio": 137.3
+  },
+  {
+   "sym": "VGSH",
+   "umsatzMio": 137.2
+  },
+  {
+   "sym": "WY",
+   "umsatzMio": 136.8
+  },
+  {
+   "sym": "STLA",
+   "umsatzMio": 136.6
+  },
+  {
+   "sym": "SAIA",
+   "umsatzMio": 136.5
+  },
+  {
+   "sym": "FFIV",
+   "umsatzMio": 136.5
+  },
+  {
+   "sym": "IT",
+   "umsatzMio": 135.6
+  },
+  {
+   "sym": "UHS",
+   "umsatzMio": 135.1
+  },
+  {
+   "sym": "KGC",
+   "umsatzMio": 135
+  },
+  {
+   "sym": "RACE",
+   "umsatzMio": 134.5
+  },
+  {
+   "sym": "GRMN",
+   "umsatzMio": 134
+  },
+  {
+   "sym": "LYFT",
+   "umsatzMio": 133.4
+  },
+  {
+   "sym": "CROX",
+   "umsatzMio": 133.4
+  },
+  {
+   "sym": "JAAA",
+   "umsatzMio": 133
+  },
+  {
+   "sym": "AWK",
+   "umsatzMio": 132.8
+  },
+  {
+   "sym": "DUOL",
+   "umsatzMio": 132.4
+  },
+  {
+   "sym": "CNP",
+   "umsatzMio": 132.3
+  },
+  {
+   "sym": "ARES",
+   "umsatzMio": 131.2
+  },
+  {
+   "sym": "TOST",
+   "umsatzMio": 131.2
+  },
+  {
+   "sym": "SWN",
+   "umsatzMio": 131.1
+  },
+  {
+   "sym": "ALAB",
+   "umsatzMio": 131.1
+  },
+  {
+   "sym": "PR",
+   "umsatzMio": 130.5
+  },
+  {
+   "sym": "CBOE",
+   "umsatzMio": 130.5
+  },
+  {
+   "sym": "WING",
+   "umsatzMio": 130.2
+  },
+  {
+   "sym": "RL",
+   "umsatzMio": 130.2
+  },
+  {
+   "sym": "OVV",
+   "umsatzMio": 130.1
+  },
+  {
+   "sym": "LII",
+   "umsatzMio": 129.6
+  },
+  {
+   "sym": "CAG",
+   "umsatzMio": 129.4
+  },
+  {
+   "sym": "AVTR",
+   "umsatzMio": 129.4
+  },
+  {
+   "sym": "AKAM",
+   "umsatzMio": 129.3
+  },
+  {
+   "sym": "PTC",
+   "umsatzMio": 129.3
+  },
+  {
+   "sym": "EDU",
+   "umsatzMio": 128.9
+  },
+  {
+   "sym": "VGLT",
+   "umsatzMio": 128.6
+  },
+  {
+   "sym": "VB",
+   "umsatzMio": 128.6
+  },
+  {
+   "sym": "BAX",
+   "umsatzMio": 128.3
+  },
+  {
+   "sym": "TRP",
+   "umsatzMio": 127.8
+  },
+  {
+   "sym": "SCCO",
+   "umsatzMio": 127.6
+  },
+  {
+   "sym": "INSP",
+   "umsatzMio": 127.5
+  },
+  {
+   "sym": "MTCH",
+   "umsatzMio": 127.5
+  },
+  {
+   "sym": "DTE",
+   "umsatzMio": 127.3
+  },
+  {
+   "sym": "KEYS",
+   "umsatzMio": 127.1
+  },
+  {
+   "sym": "BSV",
+   "umsatzMio": 126.6
+  },
+  {
+   "sym": "VT",
+   "umsatzMio": 126.5
+  },
+  {
+   "sym": "LSCC",
+   "umsatzMio": 126.4
+  },
+  {
+   "sym": "NVS",
+   "umsatzMio": 126.2
+  },
+  {
+   "sym": "CE",
+   "umsatzMio": 126
+  },
+  {
+   "sym": "INCY",
+   "umsatzMio": 126
+  },
+  {
+   "sym": "SFM",
+   "umsatzMio": 125.7
+  },
+  {
+   "sym": "CNI",
+   "umsatzMio": 125.4
+  },
+  {
+   "sym": "SPYG",
+   "umsatzMio": 125.1
+  },
+  {
+   "sym": "BNDX",
+   "umsatzMio": 125.1
+  },
+  {
+   "sym": "JEPQ",
+   "umsatzMio": 125
+  },
+  {
+   "sym": "CNH",
+   "umsatzMio": 125
+  },
+  {
+   "sym": "TSN",
+   "umsatzMio": 124.9
+  },
+  {
+   "sym": "FYBR",
+   "umsatzMio": 124.6
+  },
+  {
+   "sym": "ARE",
+   "umsatzMio": 124.6
+  },
+  {
+   "sym": "QRVO",
+   "umsatzMio": 124.5
+  },
+  {
+   "sym": "TPR",
+   "umsatzMio": 124.3
+  },
+  {
+   "sym": "DT",
+   "umsatzMio": 124.1
+  },
+  {
+   "sym": "MAA",
+   "umsatzMio": 123.8
+  },
+  {
+   "sym": "MTD",
+   "umsatzMio": 123.3
+  },
+  {
+   "sym": "CPAY",
+   "umsatzMio": 123
+  },
+  {
+   "sym": "CRL",
+   "umsatzMio": 123
+  },
+  {
+   "sym": "ALK",
+   "umsatzMio": 122.7
+  },
+  {
+   "sym": "PATH",
+   "umsatzMio": 122.6
+  },
+  {
+   "sym": "TEVA",
+   "umsatzMio": 122.6
+  },
+  {
+   "sym": "NTRA",
+   "umsatzMio": 122.6
+  },
+  {
+   "sym": "XME",
+   "umsatzMio": 122.3
+  },
+  {
+   "sym": "ANSS",
+   "umsatzMio": 121.8
+  },
+  {
+   "sym": "SN",
+   "umsatzMio": 121.5
+  },
+  {
+   "sym": "ENB",
+   "umsatzMio": 121.1
+  },
+  {
+   "sym": "DVA",
+   "umsatzMio": 120.8
+  },
+  {
+   "sym": "CCEP",
+   "umsatzMio": 120.7
+  },
+  {
+   "sym": "BR",
+   "umsatzMio": 120.6
+  },
+  {
+   "sym": "FTAI",
+   "umsatzMio": 120.5
+  },
+  {
+   "sym": "CART",
+   "umsatzMio": 120.1
+  },
+  {
+   "sym": "EQR",
+   "umsatzMio": 119.7
+  },
+  {
+   "sym": "JBHT",
+   "umsatzMio": 119.6
+  },
+  {
+   "sym": "IGSB",
+   "umsatzMio": 119.4
+  },
+  {
+   "sym": "TROW",
+   "umsatzMio": 119.2
+  },
+  {
+   "sym": "ES",
+   "umsatzMio": 119.1
+  },
+  {
+   "sym": "EG",
+   "umsatzMio": 119.1
+  },
+  {
+   "sym": "FOXA",
+   "umsatzMio": 119
+  },
+  {
+   "sym": "CORZ",
+   "umsatzMio": 118.9
+  },
+  {
+   "sym": "HSIC",
+   "umsatzMio": 118.6
+  },
+  {
+   "sym": "LDOS",
+   "umsatzMio": 118.5
+  },
+  {
+   "sym": "EPAM",
+   "umsatzMio": 118.2
+  },
+  {
+   "sym": "CHRW",
+   "umsatzMio": 118.1
+  },
+  {
+   "sym": "FN",
+   "umsatzMio": 117.9
+  },
+  {
+   "sym": "SG",
+   "umsatzMio": 117.9
+  },
+  {
+   "sym": "CF",
+   "umsatzMio": 117.9
+  },
+  {
+   "sym": "AAP",
+   "umsatzMio": 117.6
+  },
+  {
+   "sym": "CHRD",
+   "umsatzMio": 117.1
+  },
+  {
+   "sym": "RUN",
+   "umsatzMio": 117.1
+  },
+  {
+   "sym": "SPLV",
+   "umsatzMio": 117.1
+  },
+  {
+   "sym": "UVIX",
+   "umsatzMio": 117
+  },
+  {
+   "sym": "FND",
+   "umsatzMio": 116.5
+  },
+  {
+   "sym": "VIG",
+   "umsatzMio": 116.5
+  },
+  {
+   "sym": "VO",
+   "umsatzMio": 116.5
+  },
+  {
+   "sym": "ESS",
+   "umsatzMio": 116.1
+  },
+  {
+   "sym": "ITOT",
+   "umsatzMio": 116
+  },
+  {
+   "sym": "OMC",
+   "umsatzMio": 116
+  },
+  {
+   "sym": "IFF",
+   "umsatzMio": 116
+  },
+  {
+   "sym": "LH",
+   "umsatzMio": 115.8
+  },
+  {
+   "sym": "IPG",
+   "umsatzMio": 115.6
+  },
+  {
+   "sym": "UL",
+   "umsatzMio": 115.4
+  },
+  {
+   "sym": "CPB",
+   "umsatzMio": 115.4
+  },
+  {
+   "sym": "DPST",
+   "umsatzMio": 115.3
+  },
+  {
+   "sym": "TXRH",
+   "umsatzMio": 115.3
+  },
+  {
+   "sym": "GAP",
+   "umsatzMio": 115.2
+  },
+  {
+   "sym": "WAT",
+   "umsatzMio": 114.8
+  },
+  {
+   "sym": "FLEX",
+   "umsatzMio": 114.7
+  },
+  {
+   "sym": "EXAS",
+   "umsatzMio": 114.5
+  },
+  {
+   "sym": "INSM",
+   "umsatzMio": 113.9
+  },
+  {
+   "sym": "NI",
+   "umsatzMio": 113.7
+  },
+  {
+   "sym": "PNR",
+   "umsatzMio": 113.6
+  },
+  {
+   "sym": "NVDX",
+   "umsatzMio": 113.6
+  },
+  {
+   "sym": "DOC",
+   "umsatzMio": 113.6
+  },
+  {
+   "sym": "UAA",
+   "umsatzMio": 113.4
+  },
+  {
+   "sym": "AER",
+   "umsatzMio": 113.3
+  },
+  {
+   "sym": "FE",
+   "umsatzMio": 112.7
+  },
+  {
+   "sym": "ERIC",
+   "umsatzMio": 112.2
+  },
+  {
+   "sym": "WST",
+   "umsatzMio": 112
+  },
+  {
+   "sym": "NBIX",
+   "umsatzMio": 111.9
+  },
+  {
+   "sym": "LUMN",
+   "umsatzMio": 111.9
+  },
+  {
+   "sym": "LABU",
+   "umsatzMio": 111.8
+  },
+  {
+   "sym": "MOS",
+   "umsatzMio": 111.6
+  },
+  {
+   "sym": "WCC",
+   "umsatzMio": 111.5
+  },
+  {
+   "sym": "CSL",
+   "umsatzMio": 110.9
+  },
+  {
+   "sym": "CYBR",
+   "umsatzMio": 110.9
+  },
+  {
+   "sym": "WAL",
+   "umsatzMio": 110.6
+  },
+  {
+   "sym": "MAS",
+   "umsatzMio": 110.5
+  },
+  {
+   "sym": "VRSN",
+   "umsatzMio": 110.3
+  },
+  {
+   "sym": "AEE",
+   "umsatzMio": 110.1
+  },
+  {
+   "sym": "TYL",
+   "umsatzMio": 110.1
+  },
+  {
+   "sym": "NTNX",
+   "umsatzMio": 110.1
+  },
+  {
+   "sym": "EXPD",
+   "umsatzMio": 109.6
+  },
+  {
+   "sym": "CIEN",
+   "umsatzMio": 109.5
+  },
+  {
+   "sym": "LUNR",
+   "umsatzMio": 109.5
+  },
+  {
+   "sym": "RIOT",
+   "umsatzMio": 109.2
+  },
+  {
+   "sym": "RJF",
+   "umsatzMio": 109.2
+  },
+  {
+   "sym": "OC",
+   "umsatzMio": 108.7
+  },
+  {
+   "sym": "IEX",
+   "umsatzMio": 108.5
+  },
+  {
+   "sym": "ITUB",
+   "umsatzMio": 108.4
+  },
+  {
+   "sym": "DGX",
+   "umsatzMio": 108.3
+  },
+  {
+   "sym": "LCID",
+   "umsatzMio": 108.2
+  },
+  {
+   "sym": "NTES",
+   "umsatzMio": 108.1
+  },
+  {
+   "sym": "BOIL",
+   "umsatzMio": 108.1
+  },
+  {
+   "sym": "VFC",
+   "umsatzMio": 107.9
+  },
+  {
+   "sym": "DINO",
+   "umsatzMio": 107.8
+  },
+  {
+   "sym": "MEDP",
+   "umsatzMio": 107.8
+  },
+  {
+   "sym": "XPEV",
+   "umsatzMio": 107.8
+  },
+  {
+   "sym": "USFD",
+   "umsatzMio": 107.7
+  },
+  {
+   "sym": "BJ",
+   "umsatzMio": 107.7
+  },
+  {
+   "sym": "COO",
+   "umsatzMio": 107.7
+  },
+  {
+   "sym": "PFF",
+   "umsatzMio": 107.5
+  },
+  {
+   "sym": "SKX",
+   "umsatzMio": 107.3
+  },
+  {
+   "sym": "LI",
+   "umsatzMio": 106.7
+  },
+  {
+   "sym": "IUSB",
+   "umsatzMio": 106.7
+  },
+  {
+   "sym": "MTUM",
+   "umsatzMio": 106.6
+  },
+  {
+   "sym": "GNRC",
+   "umsatzMio": 106.6
+  },
+  {
+   "sym": "UDR",
+   "umsatzMio": 106.6
+  },
+  {
+   "sym": "NE",
+   "umsatzMio": 106.5
+  },
+  {
+   "sym": "TRU",
+   "umsatzMio": 106.4
+  },
+  {
+   "sym": "ATO",
+   "umsatzMio": 106.3
+  },
+  {
+   "sym": "EWW",
+   "umsatzMio": 105.6
+  },
+  {
+   "sym": "SJM",
+   "umsatzMio": 105.6
+  },
+  {
+   "sym": "SWK",
+   "umsatzMio": 105.6
+  },
+  {
+   "sym": "NXT",
+   "umsatzMio": 105.6
+  },
+  {
+   "sym": "NVT",
+   "umsatzMio": 105.4
+  },
+  {
+   "sym": "PAYC",
+   "umsatzMio": 105.2
+  },
+  {
+   "sym": "GPC",
+   "umsatzMio": 104.8
+  },
+  {
+   "sym": "SPYV",
+   "umsatzMio": 104.6
+  },
+  {
+   "sym": "IBKR",
+   "umsatzMio": 104.5
+  },
+  {
+   "sym": "APLD",
+   "umsatzMio": 104.2
+  },
+  {
+   "sym": "BLD",
+   "umsatzMio": 103.7
+  },
+  {
+   "sym": "BG",
+   "umsatzMio": 103.6
+  },
+  {
+   "sym": "PCVX",
+   "umsatzMio": 103.2
+  },
+  {
+   "sym": "EFV",
+   "umsatzMio": 103.1
+  },
+  {
+   "sym": "MGK",
+   "umsatzMio": 103.1
+  },
+  {
+   "sym": "YUMC",
+   "umsatzMio": 102.8
+  },
+  {
+   "sym": "EDR",
+   "umsatzMio": 102.7
+  },
+  {
+   "sym": "HOLX",
+   "umsatzMio": 102.6
+  },
+  {
+   "sym": "UMC",
+   "umsatzMio": 102
+  },
+  {
+   "sym": "PKG",
+   "umsatzMio": 101.9
+  },
+  {
+   "sym": "FTI",
+   "umsatzMio": 101.4
+  },
+  {
+   "sym": "RGEN",
+   "umsatzMio": 101.2
+  },
+  {
+   "sym": "AVY",
+   "umsatzMio": 101.2
+  },
+  {
+   "sym": "J",
+   "umsatzMio": 101.1
+  },
+  {
+   "sym": "NTRS",
+   "umsatzMio": 101
+  },
+  {
+   "sym": "ADMA",
+   "umsatzMio": 100.9
+  },
+  {
+   "sym": "VYM",
+   "umsatzMio": 100.8
+  },
+  {
+   "sym": "IGIB",
+   "umsatzMio": 100.8
+  },
+  {
+   "sym": "RS",
+   "umsatzMio": 100.5
+  },
+  {
+   "sym": "ZBRA",
+   "umsatzMio": 100
+  },
+  {
+   "sym": "JEF",
+   "umsatzMio": 99.9
+  },
+  {
+   "sym": "BF.B",
+   "umsatzMio": 99.8
+  },
+  {
+   "sym": "AR",
+   "umsatzMio": 99.7
+  },
+  {
+   "sym": "SCHG",
+   "umsatzMio": 99.5
+  },
+  {
+   "sym": "NOK",
+   "umsatzMio": 99.5
+  },
+  {
+   "sym": "TWLO",
+   "umsatzMio": 99.5
+  },
+  {
+   "sym": "CASY",
+   "umsatzMio": 99.3
+  },
+  {
+   "sym": "DUST",
+   "umsatzMio": 98.8
+  },
+  {
+   "sym": "CMA",
+   "umsatzMio": 98.8
+  },
+  {
+   "sym": "MNDY",
+   "umsatzMio": 98.8
+  },
+  {
+   "sym": "RIG",
+   "umsatzMio": 98.7
+  },
+  {
+   "sym": "INFN",
+   "umsatzMio": 98.5
+  },
+  {
+   "sym": "IREN",
+   "umsatzMio": 98.3
+  },
+  {
+   "sym": "TECS",
+   "umsatzMio": 98.2
+  },
+  {
+   "sym": "SPDN",
+   "umsatzMio": 98.1
+  },
+  {
+   "sym": "KNX",
+   "umsatzMio": 98
+  },
+  {
+   "sym": "FUTU",
+   "umsatzMio": 97.9
+  },
+  {
+   "sym": "BBJP",
+   "umsatzMio": 97.7
+  },
+  {
+   "sym": "MANH",
+   "umsatzMio": 97.1
+  },
+  {
+   "sym": "VGK",
+   "umsatzMio": 96.8
+  },
+  {
+   "sym": "TD",
+   "umsatzMio": 96.8
+  },
+  {
+   "sym": "IYW",
+   "umsatzMio": 96.7
+  },
+  {
+   "sym": "VTRS",
+   "umsatzMio": 96.6
+  },
+  {
+   "sym": "PI",
+   "umsatzMio": 96.2
+  },
+  {
+   "sym": "HIMS",
+   "umsatzMio": 96.2
+  },
+  {
+   "sym": "CRBG",
+   "umsatzMio": 95.9
+  },
+  {
+   "sym": "EMN",
+   "umsatzMio": 95.8
+  },
+  {
+   "sym": "CTLT",
+   "umsatzMio": 95.7
+  },
+  {
+   "sym": "EVRG",
+   "umsatzMio": 95.7
+  },
+  {
+   "sym": "BN",
+   "umsatzMio": 95.4
+  },
+  {
+   "sym": "NVDQ",
+   "umsatzMio": 95.3
+  },
+  {
+   "sym": "ONTO",
+   "umsatzMio": 95
+  },
+  {
+   "sym": "XP",
+   "umsatzMio": 94.9
+  },
+  {
+   "sym": "DEO",
+   "umsatzMio": 94.9
+  },
+  {
+   "sym": "WSO",
+   "umsatzMio": 94.4
+  },
+  {
+   "sym": "NTR",
+   "umsatzMio": 94.3
+  },
+  {
+   "sym": "OLED",
+   "umsatzMio": 94.3
+  },
+  {
+   "sym": "POOL",
+   "umsatzMio": 94.1
+  },
+  {
+   "sym": "HII",
+   "umsatzMio": 93.7
+  },
+  {
+   "sym": "BBD",
+   "umsatzMio": 93.6
+  },
+  {
+   "sym": "STE",
+   "umsatzMio": 92.9
+  },
+  {
+   "sym": "ZIM",
+   "umsatzMio": 92.8
+  },
+  {
+   "sym": "TAP",
+   "umsatzMio": 92.8
+  },
+  {
+   "sym": "TME",
+   "umsatzMio": 92.7
+  },
+  {
+   "sym": "ASND",
+   "umsatzMio": 92.7
+  },
+  {
+   "sym": "RBRK",
+   "umsatzMio": 92.6
+  },
+  {
+   "sym": "HEI",
+   "umsatzMio": 92.5
+  },
+  {
+   "sym": "PFG",
+   "umsatzMio": 92.2
+  },
+  {
+   "sym": "KBE",
+   "umsatzMio": 92.1
+  },
+  {
+   "sym": "MINT",
+   "umsatzMio": 91.7
+  },
+  {
+   "sym": "GTLB",
+   "umsatzMio": 91.5
+  },
+  {
+   "sym": "QSR",
+   "umsatzMio": 91.2
+  },
+  {
+   "sym": "BROS",
+   "umsatzMio": 91.2
+  },
+  {
+   "sym": "EAT",
+   "umsatzMio": 91.2
+  },
+  {
+   "sym": "PNW",
+   "umsatzMio": 91
+  },
+  {
+   "sym": "TTE",
+   "umsatzMio": 90.7
+  },
+  {
+   "sym": "MUSA",
+   "umsatzMio": 90.6
+  },
+  {
+   "sym": "BWA",
+   "umsatzMio": 90.6
+  },
+  {
+   "sym": "ATI",
+   "umsatzMio": 90.5
+  },
+  {
+   "sym": "KIM",
+   "umsatzMio": 90.4
+  },
+  {
+   "sym": "OLLI",
+   "umsatzMio": 90.3
+  },
+  {
+   "sym": "IWO",
+   "umsatzMio": 90.1
+  },
+  {
+   "sym": "GTLS",
+   "umsatzMio": 90
+  },
+  {
+   "sym": "JBLU",
+   "umsatzMio": 90
+  },
+  {
+   "sym": "SOLV",
+   "umsatzMio": 89.8
+  },
+  {
+   "sym": "BALL",
+   "umsatzMio": 89.4
+  },
+  {
+   "sym": "MKTX",
+   "umsatzMio": 89.4
+  },
+  {
+   "sym": "COWZ",
+   "umsatzMio": 89.2
+  },
+  {
+   "sym": "S",
+   "umsatzMio": 89.1
+  },
+  {
+   "sym": "SIG",
+   "umsatzMio": 89
+  },
+  {
+   "sym": "SCHH",
+   "umsatzMio": 89
+  },
+  {
+   "sym": "FIX",
+   "umsatzMio": 88.4
+  },
+  {
+   "sym": "EXP",
+   "umsatzMio": 88.3
+  },
+  {
+   "sym": "PULS",
+   "umsatzMio": 88.2
+  },
+  {
+   "sym": "LABD",
+   "umsatzMio": 88.1
+  },
+  {
+   "sym": "CHKP",
+   "umsatzMio": 88
+  },
+  {
+   "sym": "WRB",
+   "umsatzMio": 88
+  },
+  {
+   "sym": "BIV",
+   "umsatzMio": 87.8
+  },
+  {
+   "sym": "BAH",
+   "umsatzMio": 87.7
+  },
+  {
+   "sym": "RWM",
+   "umsatzMio": 87.7
+  },
+  {
+   "sym": "TECL",
+   "umsatzMio": 87.6
+  },
+  {
+   "sym": "TKO",
+   "umsatzMio": 87
+  },
+  {
+   "sym": "SSNC",
+   "umsatzMio": 86.9
+  },
+  {
+   "sym": "ESTC",
+   "umsatzMio": 86.8
+  },
+  {
+   "sym": "SCHX",
+   "umsatzMio": 86.7
+  },
+  {
+   "sym": "FHN",
+   "umsatzMio": 86.7
+  },
+  {
+   "sym": "SNY",
+   "umsatzMio": 86.6
+  },
+  {
+   "sym": "NUGT",
+   "umsatzMio": 86.5
+  },
+  {
+   "sym": "LAD",
+   "umsatzMio": 86.5
+  },
+  {
+   "sym": "RKLB",
+   "umsatzMio": 86.4
+  },
+  {
+   "sym": "GL",
+   "umsatzMio": 86.2
+  },
+  {
+   "sym": "BEN",
+   "umsatzMio": 86.1
+  },
+  {
+   "sym": "WPM",
+   "umsatzMio": 86
+  },
+  {
+   "sym": "BILL",
+   "umsatzMio": 85.9
+  },
+  {
+   "sym": "RYAAY",
+   "umsatzMio": 85.7
+  },
+  {
+   "sym": "KBH",
+   "umsatzMio": 85.7
+  },
+  {
+   "sym": "PLNT",
+   "umsatzMio": 85.5
+  },
+  {
+   "sym": "IWR",
+   "umsatzMio": 85.4
+  },
+  {
+   "sym": "FL",
+   "umsatzMio": 85.1
+  },
+  {
+   "sym": "FRT",
+   "umsatzMio": 85.1
+  },
+  {
+   "sym": "EPD",
+   "umsatzMio": 84.9
+  },
+  {
+   "sym": "BXP",
+   "umsatzMio": 84.8
+  },
+  {
+   "sym": "ASO",
+   "umsatzMio": 84.7
+  },
+  {
+   "sym": "TPL",
+   "umsatzMio": 84.5
+  },
+  {
+   "sym": "PCOR",
+   "umsatzMio": 84
+  },
+  {
+   "sym": "BIRK",
+   "umsatzMio": 84
+  },
+  {
+   "sym": "SRPT",
+   "umsatzMio": 84
+  },
+  {
+   "sym": "TXT",
+   "umsatzMio": 83.8
+  },
+  {
+   "sym": "TFLO",
+   "umsatzMio": 83.7
+  },
+  {
+   "sym": "RPM",
+   "umsatzMio": 83.7
+  },
+  {
+   "sym": "MHK",
+   "umsatzMio": 83.6
+  },
+  {
+   "sym": "BEKE",
+   "umsatzMio": 83.5
+  },
+  {
+   "sym": "AMCR",
+   "umsatzMio": 83.4
+  },
+  {
+   "sym": "PSN",
+   "umsatzMio": 83.3
+  },
+  {
+   "sym": "LKQ",
+   "umsatzMio": 83.3
+  },
+  {
+   "sym": "IWP",
+   "umsatzMio": 83.3
+  },
+  {
+   "sym": "MKSI",
+   "umsatzMio": 83.3
+  },
+  {
+   "sym": "RDFN",
+   "umsatzMio": 83.2
+  },
+  {
+   "sym": "MTZ",
+   "umsatzMio": 83.1
+  },
+  {
+   "sym": "KOLD",
+   "umsatzMio": 83.1
+  },
+  {
+   "sym": "REXR",
+   "umsatzMio": 83.1
+  },
+  {
+   "sym": "ZETA",
+   "umsatzMio": 83
+  },
+  {
+   "sym": "UNG",
+   "umsatzMio": 82.9
+  },
+  {
+   "sym": "CCK",
+   "umsatzMio": 82.9
+  },
+  {
+   "sym": "AEO",
+   "umsatzMio": 82.8
+  },
+  {
+   "sym": "SCHF",
+   "umsatzMio": 82.5
+  },
+  {
+   "sym": "PBF",
+   "umsatzMio": 82.4
+  },
+  {
+   "sym": "QYLD",
+   "umsatzMio": 82.2
+  },
+  {
+   "sym": "HRB",
+   "umsatzMio": 82
+  },
+  {
+   "sym": "M",
+   "umsatzMio": 82
+  },
+  {
+   "sym": "HL",
+   "umsatzMio": 81.9
+  },
+  {
+   "sym": "EQNR",
+   "umsatzMio": 81.8
+  },
+  {
+   "sym": "WOLF",
+   "umsatzMio": 81.7
+  },
+  {
+   "sym": "BOX",
+   "umsatzMio": 81.7
+  },
+  {
+   "sym": "VEU",
+   "umsatzMio": 81.6
+  },
+  {
+   "sym": "ARMK",
+   "umsatzMio": 81.3
+  },
+  {
+   "sym": "LITE",
+   "umsatzMio": 81.3
+  },
+  {
+   "sym": "RMBS",
+   "umsatzMio": 81
+  },
+  {
+   "sym": "CSWI",
+   "umsatzMio": 80.5
+  },
+  {
+   "sym": "GRAB",
+   "umsatzMio": 80.5
+  },
+  {
+   "sym": "MBLY",
+   "umsatzMio": 80.4
+  },
+  {
+   "sym": "ELS",
+   "umsatzMio": 80.4
+  },
+  {
+   "sym": "ALLE",
+   "umsatzMio": 80.4
+  },
+  {
+   "sym": "CG",
+   "umsatzMio": 80.3
+  },
+  {
+   "sym": "OWL",
+   "umsatzMio": 80.2
+  },
+  {
+   "sym": "AI",
+   "umsatzMio": 80
+  },
+  {
+   "sym": "MTN",
+   "umsatzMio": 79.6
+  },
+  {
+   "sym": "TDY",
+   "umsatzMio": 79.6
+  },
+  {
+   "sym": "NVDU",
+   "umsatzMio": 79.6
+  },
+  {
+   "sym": "VNOM",
+   "umsatzMio": 79.5
+  },
+  {
+   "sym": "RVTY",
+   "umsatzMio": 79.5
+  },
+  {
+   "sym": "FOUR",
+   "umsatzMio": 79.4
+  },
+  {
+   "sym": "VBR",
+   "umsatzMio": 79.3
+  },
+  {
+   "sym": "ALV",
+   "umsatzMio": 79.3
+  },
+  {
+   "sym": "VAL",
+   "umsatzMio": 79.1
+  },
+  {
+   "sym": "TW",
+   "umsatzMio": 79
+  },
+  {
+   "sym": "HAS",
+   "umsatzMio": 79
+  },
+  {
+   "sym": "MTDR",
+   "umsatzMio": 78.9
+  },
+  {
+   "sym": "MOD",
+   "umsatzMio": 78.7
+  },
+  {
+   "sym": "AMH",
+   "umsatzMio": 78.5
+  },
+  {
+   "sym": "MIDD",
+   "umsatzMio": 78.4
+  },
+  {
+   "sym": "ASX",
+   "umsatzMio": 78.4
+  },
+  {
+   "sym": "WULF",
+   "umsatzMio": 78.1
+  },
+  {
+   "sym": "DXJ",
+   "umsatzMio": 77.8
+  },
+  {
+   "sym": "AXTA",
+   "umsatzMio": 77.8
+  },
+  {
+   "sym": "RY",
+   "umsatzMio": 77.8
+  },
+  {
+   "sym": "WFRD",
+   "umsatzMio": 76.9
+  },
+  {
+   "sym": "FBIN",
+   "umsatzMio": 76.8
+  },
+  {
+   "sym": "SEDG",
+   "umsatzMio": 76.8
+  },
+  {
+   "sym": "SGOL",
+   "umsatzMio": 76.7
+  },
+  {
+   "sym": "CONL",
+   "umsatzMio": 76.6
+  },
+  {
+   "sym": "IVE",
+   "umsatzMio": 76.5
+  },
+  {
+   "sym": "AGQ",
+   "umsatzMio": 76.5
+  },
+  {
+   "sym": "ARCC",
+   "umsatzMio": 76.4
+  },
+  {
+   "sym": "FWONK",
+   "umsatzMio": 76.3
+  },
+  {
+   "sym": "CRDO",
+   "umsatzMio": 76
+  },
+  {
+   "sym": "FAS",
+   "umsatzMio": 76
+  },
+  {
+   "sym": "FR",
+   "umsatzMio": 75.7
+  },
+  {
+   "sym": "TSLQ",
+   "umsatzMio": 75.6
+  },
+  {
+   "sym": "PARA",
+   "umsatzMio": 75.4
+  },
+  {
+   "sym": "FNV",
+   "umsatzMio": 75.4
+  },
+  {
+   "sym": "TLH",
+   "umsatzMio": 75.3
+  },
+  {
+   "sym": "CFLT",
+   "umsatzMio": 74.9
+  },
+  {
+   "sym": "ACM",
+   "umsatzMio": 74.7
+  },
+  {
+   "sym": "JKHY",
+   "umsatzMio": 74.7
+  },
+  {
+   "sym": "CLS",
+   "umsatzMio": 74.4
+  },
+  {
+   "sym": "SHAK",
+   "umsatzMio": 74.1
+  },
+  {
+   "sym": "PEN",
+   "umsatzMio": 73.9
+  },
+  {
+   "sym": "IONS",
+   "umsatzMio": 73.9
+  },
+  {
+   "sym": "SNA",
+   "umsatzMio": 73.8
+  },
+  {
+   "sym": "AZEK",
+   "umsatzMio": 73.7
+  },
+  {
+   "sym": "CW",
+   "umsatzMio": 73.6
+  },
+  {
+   "sym": "FBND",
+   "umsatzMio": 73.5
+  },
+  {
+   "sym": "MUR",
+   "umsatzMio": 73.5
+  },
+  {
+   "sym": "ROIV",
+   "umsatzMio": 73.5
+  },
+  {
+   "sym": "CNX",
+   "umsatzMio": 73.3
+  },
+  {
+   "sym": "TRMB",
+   "umsatzMio": 73.3
+  },
+  {
+   "sym": "PVH",
+   "umsatzMio": 73.3
+  },
+  {
+   "sym": "TTC",
+   "umsatzMio": 72.9
+  },
+  {
+   "sym": "LNW",
+   "umsatzMio": 72.9
+  },
+  {
+   "sym": "MSTX",
+   "umsatzMio": 72.8
+  },
+  {
+   "sym": "MCHI",
+   "umsatzMio": 72.7
+  },
+  {
+   "sym": "ACI",
+   "umsatzMio": 72.6
+  },
+  {
+   "sym": "DAY",
+   "umsatzMio": 72.6
+  },
+  {
+   "sym": "PAAS",
+   "umsatzMio": 72.4
+  },
+  {
+   "sym": "GEN",
+   "umsatzMio": 72.3
+  },
+  {
+   "sym": "H",
+   "umsatzMio": 72.2
+  },
+  {
+   "sym": "WEX",
+   "umsatzMio": 72.1
+  },
+  {
+   "sym": "TSLT",
+   "umsatzMio": 72
+  },
+  {
+   "sym": "RNR",
+   "umsatzMio": 71.9
+  },
+  {
+   "sym": "URBN",
+   "umsatzMio": 71.8
+  },
+  {
+   "sym": "BOOT",
+   "umsatzMio": 71.7
+  },
+  {
+   "sym": "BNS",
+   "umsatzMio": 71.6
+  },
+  {
+   "sym": "SRCL",
+   "umsatzMio": 71.3
+  },
+  {
+   "sym": "WLK",
+   "umsatzMio": 71.2
+  },
+  {
+   "sym": "TDW",
+   "umsatzMio": 71.1
+  },
+  {
+   "sym": "PLUG",
+   "umsatzMio": 71.1
+  },
+  {
+   "sym": "BCE",
+   "umsatzMio": 71
+  },
+  {
+   "sym": "CM",
+   "umsatzMio": 70.9
+  },
+  {
+   "sym": "URA",
+   "umsatzMio": 70.8
+  },
+  {
+   "sym": "AG",
+   "umsatzMio": 70.6
+  },
+  {
+   "sym": "NVAX",
+   "umsatzMio": 70.5
+  },
+  {
+   "sym": "HALO",
+   "umsatzMio": 70.4
+  },
+  {
+   "sym": "SVIX",
+   "umsatzMio": 70.2
+  },
+  {
+   "sym": "NVD",
+   "umsatzMio": 70.1
+  },
+  {
+   "sym": "CRUS",
+   "umsatzMio": 69.9
+  },
+  {
+   "sym": "REG",
+   "umsatzMio": 69.8
+  },
+  {
+   "sym": "TFX",
+   "umsatzMio": 69.7
+  },
+  {
+   "sym": "VNO",
+   "umsatzMio": 69.7
+  },
+  {
+   "sym": "SJNK",
+   "umsatzMio": 69.6
+  },
+  {
+   "sym": "URTY",
+   "umsatzMio": 69.6
+  },
+  {
+   "sym": "NICE",
+   "umsatzMio": 69.5
+  },
+  {
+   "sym": "FRPT",
+   "umsatzMio": 69.5
+  },
+  {
+   "sym": "ZION",
+   "umsatzMio": 69.4
+  },
+  {
+   "sym": "SPHY",
+   "umsatzMio": 69.4
+  },
+  {
+   "sym": "TGTX",
+   "umsatzMio": 69.2
+  },
+  {
+   "sym": "TWM",
+   "umsatzMio": 69.2
+  },
+  {
+   "sym": "TM",
+   "umsatzMio": 69.1
+  },
+  {
+   "sym": "YINN",
+   "umsatzMio": 69
+  },
+  {
+   "sym": "BIO",
+   "umsatzMio": 68.8
+  },
+  {
+   "sym": "FLR",
+   "umsatzMio": 68.7
+  },
+  {
+   "sym": "BILI",
+   "umsatzMio": 68.6
+  },
+  {
+   "sym": "DBX",
+   "umsatzMio": 68.4
+  },
+  {
+   "sym": "EGP",
+   "umsatzMio": 68.3
+  },
+  {
+   "sym": "RRX",
+   "umsatzMio": 68.3
+  },
+  {
+   "sym": "EQH",
+   "umsatzMio": 68.2
+  },
+  {
+   "sym": "AOS",
+   "umsatzMio": 68.1
+  },
+  {
+   "sym": "EWC",
+   "umsatzMio": 67.9
+  },
+  {
+   "sym": "TSLZ",
+   "umsatzMio": 67.8
+  },
+  {
+   "sym": "LINE",
+   "umsatzMio": 67.7
+  },
+  {
+   "sym": "DGRO",
+   "umsatzMio": 67.6
+  },
+  {
+   "sym": "NAIL",
+   "umsatzMio": 67.5
+  },
+  {
+   "sym": "COKE",
+   "umsatzMio": 67.5
+  },
+  {
+   "sym": "MTH",
+   "umsatzMio": 67.5
+  },
+  {
+   "sym": "WMS",
+   "umsatzMio": 67.4
+  },
+  {
+   "sym": "ETHE",
+   "umsatzMio": 67.2
+  },
+  {
+   "sym": "SM",
+   "umsatzMio": 67.1
+  },
+  {
+   "sym": "LEA",
+   "umsatzMio": 67
+  },
+  {
+   "sym": "AIZ",
+   "umsatzMio": 67
+  },
+  {
+   "sym": "GLOB",
+   "umsatzMio": 66.7
+  },
+  {
+   "sym": "PPC",
+   "umsatzMio": 66.6
+  },
+  {
+   "sym": "ROL",
+   "umsatzMio": 66.6
+  },
+  {
+   "sym": "OPEN",
+   "umsatzMio": 66.2
+  },
+  {
+   "sym": "COPX",
+   "umsatzMio": 66.2
+  },
+  {
+   "sym": "HRL",
+   "umsatzMio": 66.1
+  },
+  {
+   "sym": "LNT",
+   "umsatzMio": 66.1
+  },
+  {
+   "sym": "LNTH",
+   "umsatzMio": 66
+  },
+  {
+   "sym": "JLL",
+   "umsatzMio": 66
+  },
+  {
+   "sym": "MASI",
+   "umsatzMio": 65.8
+  },
+  {
+   "sym": "OEF",
+   "umsatzMio": 65.7
+  },
+  {
+   "sym": "WHR",
+   "umsatzMio": 65.6
+  },
+  {
+   "sym": "UNM",
+   "umsatzMio": 65.6
+  },
+  {
+   "sym": "ADC",
+   "umsatzMio": 65.4
+  },
+  {
+   "sym": "SPHQ",
+   "umsatzMio": 65.3
+  },
+  {
+   "sym": "DAR",
+   "umsatzMio": 65.2
+  },
+  {
+   "sym": "CRS",
+   "umsatzMio": 65.2
+  },
+  {
+   "sym": "NVDS",
+   "umsatzMio": 65.1
+  },
+  {
+   "sym": "CIVI",
+   "umsatzMio": 65
+  },
+  {
+   "sym": "GKOS",
+   "umsatzMio": 65
+  },
+  {
+   "sym": "QGEN",
+   "umsatzMio": 64.9
+  },
+  {
+   "sym": "CYTK",
+   "umsatzMio": 64.7
+  },
+  {
+   "sym": "ERIE",
+   "umsatzMio": 64.7
+  },
+  {
+   "sym": "VRNS",
+   "umsatzMio": 64.6
+  },
+  {
+   "sym": "VONG",
+   "umsatzMio": 64.5
+  },
+  {
+   "sym": "PBR.A",
+   "umsatzMio": 64.1
+  },
+  {
+   "sym": "BOXX",
+   "umsatzMio": 64
+  },
+  {
+   "sym": "CPRI",
+   "umsatzMio": 64
+  },
+  {
+   "sym": "EZU",
+   "umsatzMio": 63.6
+  },
+  {
+   "sym": "UCO",
+   "umsatzMio": 63.5
+  },
+  {
+   "sym": "AVUV",
+   "umsatzMio": 63.5
+  },
+  {
+   "sym": "JAZZ",
+   "umsatzMio": 63.5
+  },
+  {
+   "sym": "WWD",
+   "umsatzMio": 63.4
+  },
+  {
+   "sym": "MOAT",
+   "umsatzMio": 62.9
+  },
+  {
+   "sym": "HR",
+   "umsatzMio": 62.7
+  },
+  {
+   "sym": "SPSB",
+   "umsatzMio": 62.7
+  },
+  {
+   "sym": "NYCB",
+   "umsatzMio": 62.6
+  },
+  {
+   "sym": "WSC",
+   "umsatzMio": 62.5
+  },
+  {
+   "sym": "HOG",
+   "umsatzMio": 62.4
+  },
+  {
+   "sym": "PENN",
+   "umsatzMio": 62.4
+  },
+  {
+   "sym": "AVAV",
+   "umsatzMio": 62.3
+  },
+  {
+   "sym": "TPX",
+   "umsatzMio": 62.3
+  },
+  {
+   "sym": "ELAN",
+   "umsatzMio": 62.2
+  },
+  {
+   "sym": "BMO",
+   "umsatzMio": 62.1
+  },
+  {
+   "sym": "BRKR",
+   "umsatzMio": 62
+  },
+  {
+   "sym": "CRI",
+   "umsatzMio": 62
+  },
+  {
+   "sym": "TREX",
+   "umsatzMio": 61.9
+  },
+  {
+   "sym": "ALC",
+   "umsatzMio": 61.9
+  },
+  {
+   "sym": "CINF",
+   "umsatzMio": 61.7
+  },
+  {
+   "sym": "SCI",
+   "umsatzMio": 61.7
+  },
+  {
+   "sym": "VOYA",
+   "umsatzMio": 61.5
+  },
+  {
+   "sym": "RHI",
+   "umsatzMio": 61.5
+  },
+  {
+   "sym": "PFGC",
+   "umsatzMio": 61.3
+  },
+  {
+   "sym": "VXF",
+   "umsatzMio": 61.3
+  },
+  {
+   "sym": "BZ",
+   "umsatzMio": 61.3
+  },
+  {
+   "sym": "CX",
+   "umsatzMio": 61.3
+  },
+  {
+   "sym": "BITB",
+   "umsatzMio": 61.3
+  },
+  {
+   "sym": "SVXY",
+   "umsatzMio": 61.1
+  },
+  {
+   "sym": "AGCO",
+   "umsatzMio": 61.1
+  },
+  {
+   "sym": "NWSA",
+   "umsatzMio": 61.1
+  },
+  {
+   "sym": "NOV",
+   "umsatzMio": 61.1
+  },
+  {
+   "sym": "GGG",
+   "umsatzMio": 61
+  },
+  {
+   "sym": "RKT",
+   "umsatzMio": 61
+  },
+  {
+   "sym": "ARKB",
+   "umsatzMio": 60.9
+  },
+  {
+   "sym": "APLS",
+   "umsatzMio": 60.8
+  },
+  {
+   "sym": "CUBE",
+   "umsatzMio": 60.8
+  },
+  {
+   "sym": "VSCO",
+   "umsatzMio": 60.7
+  },
+  {
+   "sym": "VIXY",
+   "umsatzMio": 60.6
+  },
+  {
+   "sym": "RNA",
+   "umsatzMio": 60.6
+  },
+  {
+   "sym": "GLPI",
+   "umsatzMio": 60.6
+  },
+  {
+   "sym": "BUD",
+   "umsatzMio": 60.6
+  },
+  {
+   "sym": "IWY",
+   "umsatzMio": 60.4
+  },
+  {
+   "sym": "KIE",
+   "umsatzMio": 60.4
+  },
+  {
+   "sym": "SMTC",
+   "umsatzMio": 60.3
+  },
+  {
+   "sym": "VIK",
+   "umsatzMio": 60.2
+  },
+  {
+   "sym": "FMX",
+   "umsatzMio": 60
+  },
+  {
+   "sym": "MPW",
+   "umsatzMio": 60
+  },
+  {
+   "sym": "SDRL",
+   "umsatzMio": 60
+  },
+  {
+   "sym": "OMF",
+   "umsatzMio": 59.9
+  },
+  {
+   "sym": "AU",
+   "umsatzMio": 59.7
+  },
+  {
+   "sym": "SPMD",
+   "umsatzMio": 59.7
+  },
+  {
+   "sym": "FIVN",
+   "umsatzMio": 59.6
+  },
+  {
+   "sym": "ABEV",
+   "umsatzMio": 59.5
+  },
+  {
+   "sym": "KBR",
+   "umsatzMio": 59.5
+  },
+  {
+   "sym": "SPTS",
+   "umsatzMio": 59.4
+  },
+  {
+   "sym": "AN",
+   "umsatzMio": 59.4
+  },
+  {
+   "sym": "CNK",
+   "umsatzMio": 59.3
+  },
+  {
+   "sym": "RBA",
+   "umsatzMio": 59.3
+  },
+  {
+   "sym": "ZTO",
+   "umsatzMio": 59.2
+  },
+  {
+   "sym": "HLNE",
+   "umsatzMio": 59.1
+  },
+  {
+   "sym": "BFH",
+   "umsatzMio": 58.9
+  },
+  {
+   "sym": "DOCS",
+   "umsatzMio": 58.8
+  },
+  {
+   "sym": "ASHR",
+   "umsatzMio": 58.8
+  },
+  {
+   "sym": "IXUS",
+   "umsatzMio": 58.7
+  },
+  {
+   "sym": "EVR",
+   "umsatzMio": 58.7
+  },
+  {
+   "sym": "FUN",
+   "umsatzMio": 58.4
+  },
+  {
+   "sym": "ERJ",
+   "umsatzMio": 58.2
+  },
+  {
+   "sym": "HCP",
+   "umsatzMio": 58.1
+  },
+  {
+   "sym": "ENSG",
+   "umsatzMio": 57.9
+  },
+  {
+   "sym": "THO",
+   "umsatzMio": 57.8
+  },
+  {
+   "sym": "MGA",
+   "umsatzMio": 57.7
+  },
+  {
+   "sym": "LAMR",
+   "umsatzMio": 57.6
+  },
+  {
+   "sym": "POWL",
+   "umsatzMio": 57.5
+  },
+  {
+   "sym": "BINC",
+   "umsatzMio": 57.5
+  },
+  {
+   "sym": "MMYT",
+   "umsatzMio": 57.4
+  },
+  {
+   "sym": "FLS",
+   "umsatzMio": 57.4
+  },
+  {
+   "sym": "BPMC",
+   "umsatzMio": 57.3
+  },
+  {
+   "sym": "PSLV",
+   "umsatzMio": 57.3
+  },
+  {
+   "sym": "TECH",
+   "umsatzMio": 57.3
+  },
+  {
+   "sym": "TBIL",
+   "umsatzMio": 57.3
+  },
+  {
+   "sym": "OSK",
+   "umsatzMio": 57.2
+  },
+  {
+   "sym": "HUN",
+   "umsatzMio": 57.1
+  },
+  {
+   "sym": "OHI",
+   "umsatzMio": 57.1
+  },
+  {
+   "sym": "KNSL",
+   "umsatzMio": 57.1
+  },
+  {
+   "sym": "FAZ",
+   "umsatzMio": 57
+  },
+  {
+   "sym": "BTU",
+   "umsatzMio": 56.9
+  },
+  {
+   "sym": "SNX",
+   "umsatzMio": 56.7
+  },
+  {
+   "sym": "BBIO",
+   "umsatzMio": 56.7
+  },
+  {
+   "sym": "MSOS",
+   "umsatzMio": 56.7
+  },
+  {
+   "sym": "DY",
+   "umsatzMio": 56.6
+  },
+  {
+   "sym": "HP",
+   "umsatzMio": 56.3
+  },
+  {
+   "sym": "CAR",
+   "umsatzMio": 56.1
+  },
+  {
+   "sym": "OSCR",
+   "umsatzMio": 55.8
+  },
+  {
+   "sym": "RPRX",
+   "umsatzMio": 55.7
+  },
+  {
+   "sym": "USD",
+   "umsatzMio": 55.6
+  },
+  {
+   "sym": "SNV",
+   "umsatzMio": 55.5
+  },
+  {
+   "sym": "SPSM",
+   "umsatzMio": 55.4
+  },
+  {
+   "sym": "ACLS",
+   "umsatzMio": 55.3
+  },
+  {
+   "sym": "SEE",
+   "umsatzMio": 55.2
+  },
+  {
+   "sym": "CHDN",
+   "umsatzMio": 55.2
+  },
+  {
+   "sym": "CDE",
+   "umsatzMio": 55.1
+  },
+  {
+   "sym": "GH",
+   "umsatzMio": 55
+  },
+  {
+   "sym": "IVZ",
+   "umsatzMio": 55
+  },
+  {
+   "sym": "YETI",
+   "umsatzMio": 55
+  },
+  {
+   "sym": "VBK",
+   "umsatzMio": 54.8
+  },
+  {
+   "sym": "IBP",
+   "umsatzMio": 54.8
+  },
+  {
+   "sym": "AAAU",
+   "umsatzMio": 54.7
+  },
+  {
+   "sym": "YANG",
+   "umsatzMio": 54.7
+  },
+  {
+   "sym": "TMHC",
+   "umsatzMio": 54.7
+  },
+  {
+   "sym": "CGDV",
+   "umsatzMio": 54.6
+  },
+  {
+   "sym": "AMR",
+   "umsatzMio": 54.6
+  },
+  {
+   "sym": "RRC",
+   "umsatzMio": 54.5
+  },
+  {
+   "sym": "DDS",
+   "umsatzMio": 54.2
+  },
+  {
+   "sym": "SOUN",
+   "umsatzMio": 54.2
+  },
+  {
+   "sym": "ACHC",
+   "umsatzMio": 54.1
+  },
+  {
+   "sym": "WTRG",
+   "umsatzMio": 54.1
+  },
+  {
+   "sym": "FNF",
+   "umsatzMio": 54.1
+  },
+  {
+   "sym": "POST",
+   "umsatzMio": 54
+  },
+  {
+   "sym": "NUVL",
+   "umsatzMio": 54
+  },
+  {
+   "sym": "HSBC",
+   "umsatzMio": 53.9
+  },
+  {
+   "sym": "BRX",
+   "umsatzMio": 53.9
+  },
+  {
+   "sym": "EDV",
+   "umsatzMio": 53.8
+  },
+  {
+   "sym": "WIX",
+   "umsatzMio": 53.6
+  },
+  {
+   "sym": "DYNF",
+   "umsatzMio": 53.6
+  },
+  {
+   "sym": "XLG",
+   "umsatzMio": 53.5
+  },
+  {
+   "sym": "BWXT",
+   "umsatzMio": 53.3
+  },
+  {
+   "sym": "BAM",
+   "umsatzMio": 53.2
+  },
+  {
+   "sym": "L",
+   "umsatzMio": 53.2
+  },
+  {
+   "sym": "XRAY",
+   "umsatzMio": 53.2
+  },
+  {
+   "sym": "GPI",
+   "umsatzMio": 53.1
+  },
+  {
+   "sym": "STWD",
+   "umsatzMio": 52.9
+  },
+  {
+   "sym": "ZI",
+   "umsatzMio": 52.8
+  },
+  {
+   "sym": "ATKR",
+   "umsatzMio": 52.8
+  },
+  {
+   "sym": "GBIL",
+   "umsatzMio": 52.8
+  },
+  {
+   "sym": "SPAB",
+   "umsatzMio": 52.7
+  },
+  {
+   "sym": "PBA",
+   "umsatzMio": 52.7
+  },
+  {
+   "sym": "WPC",
+   "umsatzMio": 52.6
+  },
+  {
+   "sym": "AHR",
+   "umsatzMio": 52.5
+  },
+  {
+   "sym": "ABG",
+   "umsatzMio": 52.5
+  },
+  {
+   "sym": "BITI",
+   "umsatzMio": 52.5
+  },
+  {
+   "sym": "TEM",
+   "umsatzMio": 52.4
+  },
+  {
+   "sym": "AZPN",
+   "umsatzMio": 52.2
+  },
+  {
+   "sym": "SPDW",
+   "umsatzMio": 52.2
+  },
+  {
+   "sym": "MHO",
+   "umsatzMio": 52.1
+  },
+  {
+   "sym": "PCTY",
+   "umsatzMio": 52.1
+  },
+  {
+   "sym": "YMM",
+   "umsatzMio": 51.9
+  },
+  {
+   "sym": "FLOT",
+   "umsatzMio": 51.9
+  },
+  {
+   "sym": "SPYD",
+   "umsatzMio": 51.9
+  },
+  {
+   "sym": "AYI",
+   "umsatzMio": 51.8
+  },
+  {
+   "sym": "GPK",
+   "umsatzMio": 51.8
+  },
+  {
+   "sym": "DFAC",
+   "umsatzMio": 51.6
+  },
+  {
+   "sym": "KEX",
+   "umsatzMio": 51.6
+  },
+  {
+   "sym": "VLY",
+   "umsatzMio": 51.4
+  },
+  {
+   "sym": "UGI",
+   "umsatzMio": 51.2
+  },
+  {
+   "sym": "GFS",
+   "umsatzMio": 51.2
+  },
+  {
+   "sym": "YOU",
+   "umsatzMio": 51.1
+  },
+  {
+   "sym": "OLN",
+   "umsatzMio": 51
+  },
+  {
+   "sym": "PAGS",
+   "umsatzMio": 51
+  },
+  {
+   "sym": "AGI",
+   "umsatzMio": 50.9
+  },
+  {
+   "sym": "IGLB",
+   "umsatzMio": 50.9
+  },
+  {
+   "sym": "VMBS",
+   "umsatzMio": 50.9
+  },
+  {
+   "sym": "LPX",
+   "umsatzMio": 50.9
+  },
+  {
+   "sym": "FMC",
+   "umsatzMio": 50.9
+  },
+  {
+   "sym": "ALGM",
+   "umsatzMio": 50.8
+  },
+  {
+   "sym": "NOG",
+   "umsatzMio": 50.7
+  },
+  {
+   "sym": "TS",
+   "umsatzMio": 50.6
+  },
+  {
+   "sym": "PTON",
+   "umsatzMio": 50.5
+  },
+  {
+   "sym": "DOCN",
+   "umsatzMio": 50.3
+  },
+  {
+   "sym": "BYD",
+   "umsatzMio": 50.1
+  },
+  {
+   "sym": "ARCH",
+   "umsatzMio": 50.1
+  },
+  {
+   "sym": "BRZE",
+   "umsatzMio": 50.1
+  },
+  {
+   "sym": "JXN",
+   "umsatzMio": 50.1
+  },
+  {
+   "sym": "MPLX",
+   "umsatzMio": 50
+  },
+  {
+   "sym": "CALF",
+   "umsatzMio": 49.9
+  },
+  {
+   "sym": "RGA",
+   "umsatzMio": 49.8
+  },
+  {
+   "sym": "MDGL",
+   "umsatzMio": 49.7
+  },
+  {
+   "sym": "DOX",
+   "umsatzMio": 49.6
+  },
+  {
+   "sym": "WBS",
+   "umsatzMio": 49.5
+  },
+  {
+   "sym": "SCHO",
+   "umsatzMio": 49.5
+  },
+  {
+   "sym": "LRN",
+   "umsatzMio": 49.5
+  },
+  {
+   "sym": "MKL",
+   "umsatzMio": 49.4
+  },
+  {
+   "sym": "SONY",
+   "umsatzMio": 49.4
+  },
+  {
+   "sym": "PTEN",
+   "umsatzMio": 49.4
+  },
+  {
+   "sym": "GFL",
+   "umsatzMio": 49.3
+  },
+  {
+   "sym": "BECN",
+   "umsatzMio": 49.2
+  },
+  {
+   "sym": "VOOG",
+   "umsatzMio": 49.2
+  },
+  {
+   "sym": "SQSP",
+   "umsatzMio": 49.1
+  },
+  {
+   "sym": "CTRE",
+   "umsatzMio": 49.1
+  },
+  {
+   "sym": "AMLP",
+   "umsatzMio": 49.1
+  },
+  {
+   "sym": "WMG",
+   "umsatzMio": 49.1
+  },
+  {
+   "sym": "MSM",
+   "umsatzMio": 49
+  },
+  {
+   "sym": "FAF",
+   "umsatzMio": 48.8
+  },
+  {
+   "sym": "SPR",
+   "umsatzMio": 48.7
+  },
+  {
+   "sym": "JWN",
+   "umsatzMio": 48.5
+  },
+  {
+   "sym": "WEN",
+   "umsatzMio": 48.5
+  },
+  {
+   "sym": "BTG",
+   "umsatzMio": 48.4
+  },
+  {
+   "sym": "HUT",
+   "umsatzMio": 48.4
+  },
+  {
+   "sym": "ZWS",
+   "umsatzMio": 48.3
+  },
+  {
+   "sym": "ITRI",
+   "umsatzMio": 48
+  },
+  {
+   "sym": "EHC",
+   "umsatzMio": 47.9
+  },
+  {
+   "sym": "HAE",
+   "umsatzMio": 47.8
+  },
+  {
+   "sym": "ESGU",
+   "umsatzMio": 47.8
+  },
+  {
+   "sym": "BE",
+   "umsatzMio": 47.4
+  },
+  {
+   "sym": "BSY",
+   "umsatzMio": 47.3
+  },
+  {
+   "sym": "SCHR",
+   "umsatzMio": 47.3
+  },
+  {
+   "sym": "LECO",
+   "umsatzMio": 47.2
+  },
+  {
+   "sym": "IAUM",
+   "umsatzMio": 47.1
+  },
+  {
+   "sym": "VOD",
+   "umsatzMio": 47.1
+  },
+  {
+   "sym": "MLI",
+   "umsatzMio": 47.1
+  },
+  {
+   "sym": "GNTX",
+   "umsatzMio": 47
+  },
+  {
+   "sym": "ALSN",
+   "umsatzMio": 46.9
+  },
+  {
+   "sym": "VDE",
+   "umsatzMio": 46.9
+  },
+  {
+   "sym": "EWBC",
+   "umsatzMio": 46.9
+  },
+  {
+   "sym": "STNE",
+   "umsatzMio": 46.8
+  },
+  {
+   "sym": "BERY",
+   "umsatzMio": 46.7
+  },
+  {
+   "sym": "FTSM",
+   "umsatzMio": 46.6
+  },
+  {
+   "sym": "ITT",
+   "umsatzMio": 46.5
+  },
+  {
+   "sym": "LEGN",
+   "umsatzMio": 46.4
+  },
+  {
+   "sym": "MP",
+   "umsatzMio": 46.4
+  },
+  {
+   "sym": "LNC",
+   "umsatzMio": 46.3
+  },
+  {
+   "sym": "MMSI",
+   "umsatzMio": 46.1
+  },
+  {
+   "sym": "DV",
+   "umsatzMio": 45.9
+  },
+  {
+   "sym": "ARKG",
+   "umsatzMio": 45.9
+  },
+  {
+   "sym": "STNG",
+   "umsatzMio": 45.8
+  },
+  {
+   "sym": "SAVA",
+   "umsatzMio": 45.8
+  },
+  {
+   "sym": "HBI",
+   "umsatzMio": 45.8
+  },
+  {
+   "sym": "CAMT",
+   "umsatzMio": 45.8
+  },
+  {
+   "sym": "NNN",
+   "umsatzMio": 45.8
+  },
+  {
+   "sym": "RHP",
+   "umsatzMio": 45.8
+  },
+  {
+   "sym": "MTSI",
+   "umsatzMio": 45.7
+  },
+  {
+   "sym": "SPTI",
+   "umsatzMio": 45.7
+  },
+  {
+   "sym": "LBRDK",
+   "umsatzMio": 45.5
+  },
+  {
+   "sym": "ARW",
+   "umsatzMio": 45.5
+  },
+  {
+   "sym": "COLD",
+   "umsatzMio": 45.3
+  },
+  {
+   "sym": "G",
+   "umsatzMio": 45.2
+  },
+  {
+   "sym": "MC",
+   "umsatzMio": 45.2
+  },
+  {
+   "sym": "CLH",
+   "umsatzMio": 45.1
+  },
+  {
+   "sym": "VVV",
+   "umsatzMio": 45
+  },
+  {
+   "sym": "BLV",
+   "umsatzMio": 44.9
+  },
+  {
+   "sym": "GFI",
+   "umsatzMio": 44.9
+  },
+  {
+   "sym": "RDNT",
+   "umsatzMio": 44.8
+  },
+  {
+   "sym": "TPG",
+   "umsatzMio": 44.7
+  },
+  {
+   "sym": "OZK",
+   "umsatzMio": 44.7
+  },
+  {
+   "sym": "NOVA",
+   "umsatzMio": 44.6
+  },
+  {
+   "sym": "EPRT",
+   "umsatzMio": 44.6
+  },
+  {
+   "sym": "INGR",
+   "umsatzMio": 44.6
+  },
+  {
+   "sym": "MGY",
+   "umsatzMio": 44.6
+  },
+  {
+   "sym": "PNFP",
+   "umsatzMio": 44.5
+  },
+  {
+   "sym": "RXO",
+   "umsatzMio": 44.5
+  },
+  {
+   "sym": "HCC",
+   "umsatzMio": 44.5
+  },
+  {
+   "sym": "TTEK",
+   "umsatzMio": 44.4
+  },
+  {
+   "sym": "TNDM",
+   "umsatzMio": 44.4
+  },
+  {
+   "sym": "SSB",
+   "umsatzMio": 44.4
+  },
+  {
+   "sym": "BITU",
+   "umsatzMio": 44.3
+  },
+  {
+   "sym": "BRBR",
+   "umsatzMio": 44.2
+  },
+  {
+   "sym": "HQY",
+   "umsatzMio": 44.2
+  },
+  {
+   "sym": "MATX",
+   "umsatzMio": 44.1
+  },
+  {
+   "sym": "CRSP",
+   "umsatzMio": 44.1
+  },
+  {
+   "sym": "PLAY",
+   "umsatzMio": 44
+  },
+  {
+   "sym": "NWL",
+   "umsatzMio": 44
+  },
+  {
+   "sym": "SMG",
+   "umsatzMio": 43.9
+  },
+  {
+   "sym": "EVH",
+   "umsatzMio": 43.9
+  },
+  {
+   "sym": "BC",
+   "umsatzMio": 43.9
+  },
+  {
+   "sym": "HTHT",
+   "umsatzMio": 43.8
+  },
+  {
+   "sym": "RGLD",
+   "umsatzMio": 43.8
+  },
+  {
+   "sym": "DYN",
+   "umsatzMio": 43.8
+  },
+  {
+   "sym": "IUSV",
+   "umsatzMio": 43.7
+  },
+  {
+   "sym": "IOVA",
+   "umsatzMio": 43.7
+  },
+  {
+   "sym": "SBRA",
+   "umsatzMio": 43.7
+  },
+  {
+   "sym": "VV",
+   "umsatzMio": 43.6
+  },
+  {
+   "sym": "AIT",
+   "umsatzMio": 43.6
+  },
+  {
+   "sym": "TEX",
+   "umsatzMio": 43.5
+  },
+  {
+   "sym": "TDOC",
+   "umsatzMio": 43.5
+  },
+  {
+   "sym": "VIPS",
+   "umsatzMio": 43
+  },
+  {
+   "sym": "FNGD",
+   "umsatzMio": 43
+  },
+  {
+   "sym": "PK",
+   "umsatzMio": 42.8
+  },
+  {
+   "sym": "GGAL",
+   "umsatzMio": 42.8
+  },
+  {
+   "sym": "NYT",
+   "umsatzMio": 42.7
+  },
+  {
+   "sym": "IDCC",
+   "umsatzMio": 42.7
+  },
+  {
+   "sym": "IUSG",
+   "umsatzMio": 42.7
+  },
+  {
+   "sym": "PZZA",
+   "umsatzMio": 42.7
+  },
+  {
+   "sym": "ULS",
+   "umsatzMio": 42.7
+  },
+  {
+   "sym": "GDXU",
+   "umsatzMio": 42.6
+  },
+  {
+   "sym": "ICUI",
+   "umsatzMio": 42.6
+  },
+  {
+   "sym": "SBLK",
+   "umsatzMio": 42.4
+  },
+  {
+   "sym": "ENVX",
+   "umsatzMio": 42.3
+  },
+  {
+   "sym": "WU",
+   "umsatzMio": 42.3
+  },
+  {
+   "sym": "PRKS",
+   "umsatzMio": 42.1
+  },
+  {
+   "sym": "SYM",
+   "umsatzMio": 41.9
+  },
+  {
+   "sym": "KBWB",
+   "umsatzMio": 41.8
+  },
+  {
+   "sym": "PDBC",
+   "umsatzMio": 41.7
+  },
+  {
+   "sym": "UBS",
+   "umsatzMio": 41.7
+  },
+  {
+   "sym": "DVY",
+   "umsatzMio": 41.6
+  },
+  {
+   "sym": "WH",
+   "umsatzMio": 41.6
+  },
+  {
+   "sym": "DTM",
+   "umsatzMio": 41.5
+  },
+  {
+   "sym": "PRCT",
+   "umsatzMio": 41.5
+  },
+  {
+   "sym": "CACI",
+   "umsatzMio": 41.5
+  },
+  {
+   "sym": "DOG",
+   "umsatzMio": 41.5
+  },
+  {
+   "sym": "TMV",
+   "umsatzMio": 41.5
+  },
+  {
+   "sym": "BGNE",
+   "umsatzMio": 41.2
+  },
+  {
+   "sym": "FRO",
+   "umsatzMio": 41.2
+  },
+  {
+   "sym": "CFR",
+   "umsatzMio": 41.1
+  },
+  {
+   "sym": "COLB",
+   "umsatzMio": 41.1
+  },
+  {
+   "sym": "VTIP",
+   "umsatzMio": 41.1
+  },
+  {
+   "sym": "ALKS",
+   "umsatzMio": 40.9
+  },
+  {
+   "sym": "CADE",
+   "umsatzMio": 40.8
+  },
+  {
+   "sym": "FDN",
+   "umsatzMio": 40.7
+  },
+  {
+   "sym": "URTH",
+   "umsatzMio": 40.7
+  },
+  {
+   "sym": "NOBL",
+   "umsatzMio": 40.6
+  },
+  {
+   "sym": "JETS",
+   "umsatzMio": 40.6
+  },
+  {
+   "sym": "R",
+   "umsatzMio": 40.6
+  },
+  {
+   "sym": "CVLT",
+   "umsatzMio": 40.5
+  },
+  {
+   "sym": "AMC",
+   "umsatzMio": 40.5
+  },
+  {
+   "sym": "KRYS",
+   "umsatzMio": 40.4
+  },
+  {
+   "sym": "ITA",
+   "umsatzMio": 40.3
+  },
+  {
+   "sym": "LBRT",
+   "umsatzMio": 40.3
+  },
+  {
+   "sym": "SLG",
+   "umsatzMio": 40.3
+  },
+  {
+   "sym": "FEZ",
+   "umsatzMio": 40.3
+  },
+  {
+   "sym": "AXS",
+   "umsatzMio": 40.1
+  },
+  {
+   "sym": "NXST",
+   "umsatzMio": 40.1
+  },
+  {
+   "sym": "MFC",
+   "umsatzMio": 40
+  },
+  {
+   "sym": "TRNO",
+   "umsatzMio": 40
+  },
+  {
+   "sym": "CHX",
+   "umsatzMio": 40
+  },
+  {
+   "sym": "SITC",
+   "umsatzMio": 39.9
+  },
+  {
+   "sym": "EXEL",
+   "umsatzMio": 39.8
+  },
+  {
+   "sym": "SCHB",
+   "umsatzMio": 39.8
+  },
+  {
+   "sym": "IAG",
+   "umsatzMio": 39.7
+  },
+  {
+   "sym": "NDSN",
+   "umsatzMio": 39.6
+  },
+  {
+   "sym": "TAL",
+   "umsatzMio": 39.5
+  },
+  {
+   "sym": "TKR",
+   "umsatzMio": 39.5
+  },
+  {
+   "sym": "JNUG",
+   "umsatzMio": 39.5
+  },
+  {
+   "sym": "HMY",
+   "umsatzMio": 39.4
+  },
+  {
+   "sym": "HE",
+   "umsatzMio": 39.4
+  },
+  {
+   "sym": "PHYS",
+   "umsatzMio": 39.2
+  },
+  {
+   "sym": "ATR",
+   "umsatzMio": 39.2
+  },
+  {
+   "sym": "SPMO",
+   "umsatzMio": 39.1
+  },
+  {
+   "sym": "PII",
+   "umsatzMio": 39.1
+  },
+  {
+   "sym": "ENV",
+   "umsatzMio": 39.1
+  },
+  {
+   "sym": "HDV",
+   "umsatzMio": 39
+  },
+  {
+   "sym": "NVST",
+   "umsatzMio": 39
+  },
+  {
+   "sym": "SCHA",
+   "umsatzMio": 38.9
+  },
+  {
+   "sym": "ORI",
+   "umsatzMio": 38.8
+  },
+  {
+   "sym": "VTLE",
+   "umsatzMio": 38.8
+  },
+  {
+   "sym": "DGRW",
+   "umsatzMio": 38.7
+  },
+  {
+   "sym": "CLDX",
+   "umsatzMio": 38.7
+  },
+  {
+   "sym": "HLN",
+   "umsatzMio": 38.6
+  },
+  {
+   "sym": "ICSH",
+   "umsatzMio": 38.6
+  },
+  {
+   "sym": "ASH",
+   "umsatzMio": 38.5
+  },
+  {
+   "sym": "APG",
+   "umsatzMio": 38.4
+  },
+  {
+   "sym": "VIST",
+   "umsatzMio": 38.4
+  },
+  {
+   "sym": "IDEV",
+   "umsatzMio": 38.3
+  },
+  {
+   "sym": "GLNG",
+   "umsatzMio": 38.2
+  },
+  {
+   "sym": "VOE",
+   "umsatzMio": 38.2
+  },
+  {
+   "sym": "SATS",
+   "umsatzMio": 38.1
+  },
+  {
+   "sym": "KSPI",
+   "umsatzMio": 38.1
+  },
+  {
+   "sym": "CGGR",
+   "umsatzMio": 38.1
+  },
+  {
+   "sym": "BHVN",
+   "umsatzMio": 38
+  },
+  {
+   "sym": "IRT",
+   "umsatzMio": 37.9
+  },
+  {
+   "sym": "USIG",
+   "umsatzMio": 37.8
+  },
+  {
+   "sym": "BPOP",
+   "umsatzMio": 37.8
+  },
+  {
+   "sym": "PGNY",
+   "umsatzMio": 37.8
+  },
+  {
+   "sym": "KRC",
+   "umsatzMio": 37.8
+  },
+  {
+   "sym": "QLYS",
+   "umsatzMio": 37.8
+  },
+  {
+   "sym": "BCC",
+   "umsatzMio": 37.7
+  },
+  {
+   "sym": "BFAM",
+   "umsatzMio": 37.7
+  },
+  {
+   "sym": "SITE",
+   "umsatzMio": 37.7
+  },
+  {
+   "sym": "RDVY",
+   "umsatzMio": 37.7
+  },
+  {
+   "sym": "HXL",
+   "umsatzMio": 37.6
+  },
+  {
+   "sym": "MAT",
+   "umsatzMio": 37.6
+  },
+  {
+   "sym": "ASPN",
+   "umsatzMio": 37.5
+  },
+  {
+   "sym": "RVMD",
+   "umsatzMio": 37.4
+  },
+  {
+   "sym": "NNE",
+   "umsatzMio": 37.4
+  },
+  {
+   "sym": "RYAN",
+   "umsatzMio": 37.3
+  },
+  {
+   "sym": "SDVY",
+   "umsatzMio": 37.3
+  },
+  {
+   "sym": "EFG",
+   "umsatzMio": 37.3
+  },
+  {
+   "sym": "AMKR",
+   "umsatzMio": 37.2
+  },
+  {
+   "sym": "HLI",
+   "umsatzMio": 37.2
+  },
+  {
+   "sym": "GMED",
+   "umsatzMio": 37.1
+  },
+  {
+   "sym": "GMS",
+   "umsatzMio": 37.1
+  },
+  {
+   "sym": "CGNX",
+   "umsatzMio": 36.9
+  },
+  {
+   "sym": "POR",
+   "umsatzMio": 36.8
+  },
+  {
+   "sym": "SAM",
+   "umsatzMio": 36.8
+  },
+  {
+   "sym": "WTFC",
+   "umsatzMio": 36.7
+  },
+  {
+   "sym": "GT",
+   "umsatzMio": 36.7
+  },
+  {
+   "sym": "STAG",
+   "umsatzMio": 36.7
+  },
+  {
+   "sym": "NEEpS",
+   "umsatzMio": 36.7
+  },
+  {
+   "sym": "PAVE",
+   "umsatzMio": 36.7
+  },
+  {
+   "sym": "CRC",
+   "umsatzMio": 36.7
+  },
+  {
+   "sym": "MT",
+   "umsatzMio": 36.5
+  },
+  {
+   "sym": "TRI",
+   "umsatzMio": 36.4
+  },
+  {
+   "sym": "CMC",
+   "umsatzMio": 36.4
+  },
+  {
+   "sym": "SILK",
+   "umsatzMio": 36.4
+  },
+  {
+   "sym": "RNG",
+   "umsatzMio": 36.4
+  },
+  {
+   "sym": "QFIN",
+   "umsatzMio": 36.4
+  },
+  {
+   "sym": "SKY",
+   "umsatzMio": 36.4
+  },
+  {
+   "sym": "SPEM",
+   "umsatzMio": 36.3
+  },
+  {
+   "sym": "ABR",
+   "umsatzMio": 36.3
+  },
+  {
+   "sym": "AXSM",
+   "umsatzMio": 36.3
+  },
+  {
+   "sym": "NARI",
+   "umsatzMio": 36.3
+  },
+  {
+   "sym": "PGX",
+   "umsatzMio": 36.2
+  },
+  {
+   "sym": "NSIT",
+   "umsatzMio": 36.2
+  },
+  {
+   "sym": "OGE",
+   "umsatzMio": 36.1
+  },
+  {
+   "sym": "NFE",
+   "umsatzMio": 36
+  },
+  {
+   "sym": "ACHR",
+   "umsatzMio": 36
+  },
+  {
+   "sym": "ACLX",
+   "umsatzMio": 36
+  },
+  {
+   "sym": "CALM",
+   "umsatzMio": 36
+  },
+  {
+   "sym": "WHD",
+   "umsatzMio": 35.9
+  },
+  {
+   "sym": "FOX",
+   "umsatzMio": 35.9
+  },
+  {
+   "sym": "MODG",
+   "umsatzMio": 35.8
+  },
+  {
+   "sym": "SCZ",
+   "umsatzMio": 35.8
+  },
+  {
+   "sym": "OPCH",
+   "umsatzMio": 35.7
+  },
+  {
+   "sym": "BAP",
+   "umsatzMio": 35.6
+  },
+  {
+   "sym": "AFG",
+   "umsatzMio": 35.5
+  },
+  {
+   "sym": "TFII",
+   "umsatzMio": 35.5
+  },
+  {
+   "sym": "PDI",
+   "umsatzMio": 35.4
+  },
+  {
+   "sym": "MMS",
+   "umsatzMio": 35.4
+  },
+  {
+   "sym": "FROG",
+   "umsatzMio": 35.3
+  },
+  {
+   "sym": "ST",
+   "umsatzMio": 35.3
+  },
+  {
+   "sym": "UMBF",
+   "umsatzMio": 35.3
+  },
+  {
+   "sym": "SQM",
+   "umsatzMio": 35.2
+  },
+  {
+   "sym": "YPF",
+   "umsatzMio": 35.2
+  },
+  {
+   "sym": "INFA",
+   "umsatzMio": 35.1
+  },
+  {
+   "sym": "LBTYA",
+   "umsatzMio": 35.1
+  },
+  {
+   "sym": "TELL",
+   "umsatzMio": 34.9
+  },
+  {
+   "sym": "PB",
+   "umsatzMio": 34.9
+  },
+  {
+   "sym": "CNXC",
+   "umsatzMio": 34.9
+  },
+  {
+   "sym": "SAIC",
+   "umsatzMio": 34.9
+  },
+  {
+   "sym": "SCHP",
+   "umsatzMio": 34.9
+  },
+  {
+   "sym": "VSTS",
+   "umsatzMio": 34.9
+  },
+  {
+   "sym": "VUSB",
+   "umsatzMio": 34.9
+  },
+  {
+   "sym": "CEIX",
+   "umsatzMio": 34.8
+  },
+  {
+   "sym": "AX",
+   "umsatzMio": 34.8
+  },
+  {
+   "sym": "GERN",
+   "umsatzMio": 34.8
+  },
+  {
+   "sym": "FSM",
+   "umsatzMio": 34.7
+  },
+  {
+   "sym": "RITM",
+   "umsatzMio": 34.7
+  },
+  {
+   "sym": "MNSO",
+   "umsatzMio": 34.7
+  },
+  {
+   "sym": "PEGA",
+   "umsatzMio": 34.7
+  },
+  {
+   "sym": "DBRG",
+   "umsatzMio": 34.6
+  },
+  {
+   "sym": "TLRY",
+   "umsatzMio": 34.6
+  },
+  {
+   "sym": "AAOI",
+   "umsatzMio": 34.6
+  },
+  {
+   "sym": "RBC",
+   "umsatzMio": 34.5
+  },
+  {
+   "sym": "VHT",
+   "umsatzMio": 34.5
+  },
+  {
+   "sym": "COMP",
+   "umsatzMio": 34.4
+  },
+  {
+   "sym": "CHH",
+   "umsatzMio": 34.4
+  },
+  {
+   "sym": "GTES",
+   "umsatzMio": 34.3
+  },
+  {
+   "sym": "EPI",
+   "umsatzMio": 34.3
+  },
+  {
+   "sym": "QXO",
+   "umsatzMio": 34.2
+  },
+  {
+   "sym": "SUM",
+   "umsatzMio": 34.2
+  },
+  {
+   "sym": "UEC",
+   "umsatzMio": 34.2
+  },
+  {
+   "sym": "IONQ",
+   "umsatzMio": 34.2
+  },
+  {
+   "sym": "AM",
+   "umsatzMio": 34.2
+  },
+  {
+   "sym": "KNF",
+   "umsatzMio": 34.2
+  },
+  {
+   "sym": "COOP",
+   "umsatzMio": 34.2
+  },
+  {
+   "sym": "TNL",
+   "umsatzMio": 34.1
+  },
+  {
+   "sym": "LSTR",
+   "umsatzMio": 34.1
+  },
+  {
+   "sym": "TU",
+   "umsatzMio": 34.1
+  },
+  {
+   "sym": "STRL",
+   "umsatzMio": 34.1
+  },
+  {
+   "sym": "NVMI",
+   "umsatzMio": 34
+  },
+  {
+   "sym": "GXO",
+   "umsatzMio": 33.9
+  },
+  {
+   "sym": "PAA",
+   "umsatzMio": 33.8
+  },
+  {
+   "sym": "DCI",
+   "umsatzMio": 33.8
+  },
+  {
+   "sym": "CAKE",
+   "umsatzMio": 33.8
+  },
+  {
+   "sym": "ACIW",
+   "umsatzMio": 33.7
+  },
+  {
+   "sym": "HGV",
+   "umsatzMio": 33.7
+  },
+  {
+   "sym": "NSA",
+   "umsatzMio": 33.7
+  },
+  {
+   "sym": "ETHA",
+   "umsatzMio": 33.6
+  },
+  {
+   "sym": "TAN",
+   "umsatzMio": 33.6
+  },
+  {
+   "sym": "NGD",
+   "umsatzMio": 33.6
+  },
+  {
+   "sym": "TWST",
+   "umsatzMio": 33.5
+  },
+  {
+   "sym": "ARRY",
+   "umsatzMio": 33.5
+  },
+  {
+   "sym": "EWA",
+   "umsatzMio": 33.5
+  },
+  {
+   "sym": "EWH",
+   "umsatzMio": 33.4
+  },
+  {
+   "sym": "PWSC",
+   "umsatzMio": 33.4
+  },
+  {
+   "sym": "SON",
+   "umsatzMio": 33.3
+  },
+  {
+   "sym": "STIP",
+   "umsatzMio": 33.3
+  },
+  {
+   "sym": "HEFA",
+   "umsatzMio": 33.3
+  },
+  {
+   "sym": "SPXC",
+   "umsatzMio": 33.3
+  },
+  {
+   "sym": "MTG",
+   "umsatzMio": 33.2
+  },
+  {
+   "sym": "LTH",
+   "umsatzMio": 33.2
+  },
+  {
+   "sym": "BILS",
+   "umsatzMio": 33.2
+  },
+  {
+   "sym": "BTC",
+   "umsatzMio": 33.2
+  },
+  {
+   "sym": "AMED",
+   "umsatzMio": 33.1
+  },
+  {
+   "sym": "WES",
+   "umsatzMio": 33.1
+  },
+  {
+   "sym": "AQN",
+   "umsatzMio": 33
+  },
+  {
+   "sym": "APPF",
+   "umsatzMio": 33
+  },
+  {
+   "sym": "TGNA",
+   "umsatzMio": 32.9
+  },
+  {
+   "sym": "FLNC",
+   "umsatzMio": 32.7
+  },
+  {
+   "sym": "GPOR",
+   "umsatzMio": 32.7
+  },
+  {
+   "sym": "OXM",
+   "umsatzMio": 32.6
+  },
+  {
+   "sym": "AUR",
+   "umsatzMio": 32.6
+  },
+  {
+   "sym": "RCM",
+   "umsatzMio": 32.6
+  },
+  {
+   "sym": "CHE",
+   "umsatzMio": 32.5
+  },
+  {
+   "sym": "LYG",
+   "umsatzMio": 32.5
+  },
+  {
+   "sym": "IWS",
+   "umsatzMio": 32.4
+  },
+  {
+   "sym": "AGO",
+   "umsatzMio": 32.4
+  },
+  {
+   "sym": "AMN",
+   "umsatzMio": 32.3
+  },
+  {
+   "sym": "RARE",
+   "umsatzMio": 32.3
+  },
+  {
+   "sym": "ABM",
+   "umsatzMio": 32.1
+  },
+  {
+   "sym": "IHI",
+   "umsatzMio": 32.1
+  },
+  {
+   "sym": "BANC",
+   "umsatzMio": 32
+  },
+  {
+   "sym": "PLCE",
+   "umsatzMio": 32
+  },
+  {
+   "sym": "VGR",
+   "umsatzMio": 32
+  },
+  {
+   "sym": "MDU",
+   "umsatzMio": 32
+  },
+  {
+   "sym": "SPHD",
+   "umsatzMio": 32
+  },
+  {
+   "sym": "VRDN",
+   "umsatzMio": 31.9
+  },
+  {
+   "sym": "VPU",
+   "umsatzMio": 31.7
+  },
+  {
+   "sym": "PRMW",
+   "umsatzMio": 31.6
+  },
+  {
+   "sym": "VITL",
+   "umsatzMio": 31.5
+  },
+  {
+   "sym": "FIXD",
+   "umsatzMio": 31.5
+  },
+  {
+   "sym": "SEIC",
+   "umsatzMio": 31.5
+  },
+  {
+   "sym": "GDS",
+   "umsatzMio": 31.4
+  },
+  {
+   "sym": "ITCI",
+   "umsatzMio": 31.4
+  },
+  {
+   "sym": "HASI",
+   "umsatzMio": 31.3
+  },
+  {
+   "sym": "CBRL",
+   "umsatzMio": 31.3
+  },
+  {
+   "sym": "SPHR",
+   "umsatzMio": 31.3
+  },
+  {
+   "sym": "BTE",
+   "umsatzMio": 31.3
+  },
+  {
+   "sym": "AZTA",
+   "umsatzMio": 31.3
+  },
+  {
+   "sym": "ARCB",
+   "umsatzMio": 31.3
+  },
+  {
+   "sym": "SPYU",
+   "umsatzMio": 31.3
+  },
+  {
+   "sym": "VNT",
+   "umsatzMio": 31.2
+  },
+  {
+   "sym": "CWB",
+   "umsatzMio": 31.2
+  },
+  {
+   "sym": "VRN",
+   "umsatzMio": 31.1
+  },
+  {
+   "sym": "SSD",
+   "umsatzMio": 31.1
+  },
+  {
+   "sym": "UA",
+   "umsatzMio": 31.1
+  },
+  {
+   "sym": "GPCR",
+   "umsatzMio": 31.1
+  },
+  {
+   "sym": "IRTC",
+   "umsatzMio": 31
+  },
+  {
+   "sym": "JDST",
+   "umsatzMio": 31
+  },
+  {
+   "sym": "SWTX",
+   "umsatzMio": 31
+  },
+  {
+   "sym": "VIRT",
+   "umsatzMio": 30.9
+  },
+  {
+   "sym": "SIGI",
+   "umsatzMio": 30.9
+  },
+  {
+   "sym": "BDC",
+   "umsatzMio": 30.9
+  },
+  {
+   "sym": "KFY",
+   "umsatzMio": 30.9
+  },
+  {
+   "sym": "ITGR",
+   "umsatzMio": 30.9
+  },
+  {
+   "sym": "EMLC",
+   "umsatzMio": 30.9
+  },
+  {
+   "sym": "GO",
+   "umsatzMio": 30.8
+  },
+  {
+   "sym": "PRI",
+   "umsatzMio": 30.8
+  },
+  {
+   "sym": "LOGI",
+   "umsatzMio": 30.8
+  },
+  {
+   "sym": "ESGR",
+   "umsatzMio": 30.8
+  },
+  {
+   "sym": "ATAT",
+   "umsatzMio": 30.8
+  },
+  {
+   "sym": "SMR",
+   "umsatzMio": 30.7
+  },
+  {
+   "sym": "SF",
+   "umsatzMio": 30.7
+  },
+  {
+   "sym": "STEP",
+   "umsatzMio": 30.7
+  },
+  {
+   "sym": "SPSC",
+   "umsatzMio": 30.5
+  },
+  {
+   "sym": "CUZ",
+   "umsatzMio": 30.4
+  },
+  {
+   "sym": "BITF",
+   "umsatzMio": 30.4
+  },
+  {
+   "sym": "ESI",
+   "umsatzMio": 30.3
+  },
+  {
+   "sym": "QTWO",
+   "umsatzMio": 30.3
+  },
+  {
+   "sym": "CUK",
+   "umsatzMio": 30.3
+  },
+  {
+   "sym": "FSS",
+   "umsatzMio": 30.2
+  },
+  {
+   "sym": "DB",
+   "umsatzMio": 30.2
+  },
+  {
+   "sym": "FTRE",
+   "umsatzMio": 30.2
+  },
+  {
+   "sym": "COTY",
+   "umsatzMio": 30.1
+  },
+  {
+   "sym": "KRG",
+   "umsatzMio": 30.1
+  },
+  {
+   "sym": "GVA",
+   "umsatzMio": 30.1
+  },
+  {
+   "sym": "CBT",
+   "umsatzMio": 30
+  },
+  {
+   "sym": "GCT",
+   "umsatzMio": 30
+  },
+  {
+   "sym": "SCO",
+   "umsatzMio": 30
+  },
+  {
+   "sym": "CORT",
+   "umsatzMio": 29.9
+  },
+  {
+   "sym": "SRTY",
+   "umsatzMio": 29.9
+  },
+  {
+   "sym": "HBM",
+   "umsatzMio": 29.9
+  },
+  {
+   "sym": "SHYG",
+   "umsatzMio": 29.9
+  },
+  {
+   "sym": "FRSH",
+   "umsatzMio": 29.9
+  },
+  {
+   "sym": "FTEC",
+   "umsatzMio": 29.8
+  },
+  {
+   "sym": "JCPB",
+   "umsatzMio": 29.8
+  },
+  {
+   "sym": "HELE",
+   "umsatzMio": 29.8
+  },
+  {
+   "sym": "IMO",
+   "umsatzMio": 29.8
+  },
+  {
+   "sym": "ACVA",
+   "umsatzMio": 29.7
+  },
+  {
+   "sym": "WK",
+   "umsatzMio": 29.7
+  },
+  {
+   "sym": "EXLS",
+   "umsatzMio": 29.7
+  },
+  {
+   "sym": "UFPI",
+   "umsatzMio": 29.6
+  },
+  {
+   "sym": "AMX",
+   "umsatzMio": 29.6
+  },
+  {
+   "sym": "INSW",
+   "umsatzMio": 29.6
+  },
+  {
+   "sym": "FWRD",
+   "umsatzMio": 29.6
+  },
+  {
+   "sym": "VOT",
+   "umsatzMio": 29.5
+  },
+  {
+   "sym": "AL",
+   "umsatzMio": 29.5
+  },
+  {
+   "sym": "SLM",
+   "umsatzMio": 29.4
+  },
+  {
+   "sym": "BCO",
+   "umsatzMio": 29.3
+  },
+  {
+   "sym": "MORN",
+   "umsatzMio": 29.3
+  },
+  {
+   "sym": "PFSI",
+   "umsatzMio": 29.3
+  },
+  {
+   "sym": "MAGS",
+   "umsatzMio": 29.2
+  },
+  {
+   "sym": "GRBK",
+   "umsatzMio": 29.2
+  },
+  {
+   "sym": "SUB",
+   "umsatzMio": 29.2
+  },
+  {
+   "sym": "QDEL",
+   "umsatzMio": 29.1
+  },
+  {
+   "sym": "INTA",
+   "umsatzMio": 29
+  },
+  {
+   "sym": "ALIT",
+   "umsatzMio": 29
+  },
+  {
+   "sym": "HEI.A",
+   "umsatzMio": 29
+  },
+  {
+   "sym": "AAON",
+   "umsatzMio": 28.9
+  },
+  {
+   "sym": "NGG",
+   "umsatzMio": 28.9
+  },
+  {
+   "sym": "JHG",
+   "umsatzMio": 28.9
+  },
+  {
+   "sym": "CVI",
+   "umsatzMio": 28.9
+  },
+  {
+   "sym": "NCNO",
+   "umsatzMio": 28.9
+  },
+  {
+   "sym": "KOS",
+   "umsatzMio": 28.8
+  },
+  {
+   "sym": "ONB",
+   "umsatzMio": 28.8
+  },
+  {
+   "sym": "SHLS",
+   "umsatzMio": 28.7
+  },
+  {
+   "sym": "SMPL",
+   "umsatzMio": 28.7
+  },
+  {
+   "sym": "IMVT",
+   "umsatzMio": 28.6
+  },
+  {
+   "sym": "EEFT",
+   "umsatzMio": 28.6
+  },
+  {
+   "sym": "ZROZ",
+   "umsatzMio": 28.6
+  },
+  {
+   "sym": "TBBK",
+   "umsatzMio": 28.6
+  },
+  {
+   "sym": "CBSH",
+   "umsatzMio": 28.6
+  },
+  {
+   "sym": "CR",
+   "umsatzMio": 28.5
+  },
+  {
+   "sym": "GBCI",
+   "umsatzMio": 28.5
+  },
+  {
+   "sym": "ATMU",
+   "umsatzMio": 28.5
+  },
+  {
+   "sym": "CIFR",
+   "umsatzMio": 28.5
+  },
+  {
+   "sym": "PRGO",
+   "umsatzMio": 28.5
+  },
+  {
+   "sym": "BXSL",
+   "umsatzMio": 28.5
+  },
+  {
+   "sym": "CRNX",
+   "umsatzMio": 28.5
+  },
+  {
+   "sym": "ADNT",
+   "umsatzMio": 28.4
+  },
+  {
+   "sym": "CWST",
+   "umsatzMio": 28.4
+  },
+  {
+   "sym": "VSH",
+   "umsatzMio": 28.4
+  },
+  {
+   "sym": "TSLS",
+   "umsatzMio": 28.2
+  },
+  {
+   "sym": "TPH",
+   "umsatzMio": 28.2
+  },
+  {
+   "sym": "CIBR",
+   "umsatzMio": 28.2
+  },
+  {
+   "sym": "ICLN",
+   "umsatzMio": 28.2
+  },
+  {
+   "sym": "NEEpR",
+   "umsatzMio": 28.1
+  },
+  {
+   "sym": "RDN",
+   "umsatzMio": 28
+  },
+  {
+   "sym": "CCOI",
+   "umsatzMio": 28
+  },
+  {
+   "sym": "PHIN",
+   "umsatzMio": 28
+  },
+  {
+   "sym": "XMHQ",
+   "umsatzMio": 28
+  },
+  {
+   "sym": "GLBE",
+   "umsatzMio": 27.8
+  },
+  {
+   "sym": "BMI",
+   "umsatzMio": 27.8
+  },
+  {
+   "sym": "NFG",
+   "umsatzMio": 27.8
+  },
+  {
+   "sym": "OUT",
+   "umsatzMio": 27.8
+  },
+  {
+   "sym": "VAC",
+   "umsatzMio": 27.8
+  },
+  {
+   "sym": "DFCF",
+   "umsatzMio": 27.7
+  },
+  {
+   "sym": "KD",
+   "umsatzMio": 27.7
+  },
+  {
+   "sym": "OGN",
+   "umsatzMio": 27.6
+  },
+  {
+   "sym": "PACS",
+   "umsatzMio": 27.6
+  },
+  {
+   "sym": "RELX",
+   "umsatzMio": 27.5
+  },
+  {
+   "sym": "SHOO",
+   "umsatzMio": 27.5
+  },
+  {
+   "sym": "SILJ",
+   "umsatzMio": 27.5
+  },
+  {
+   "sym": "PTGX",
+   "umsatzMio": 27.5
+  },
+  {
+   "sym": "IWV",
+   "umsatzMio": 27.4
+  },
+  {
+   "sym": "IRDM",
+   "umsatzMio": 27.4
+  },
+  {
+   "sym": "MAC",
+   "umsatzMio": 27.4
+  },
+  {
+   "sym": "CC",
+   "umsatzMio": 27.3
+  },
+  {
+   "sym": "PRIM",
+   "umsatzMio": 27.3
+  },
+  {
+   "sym": "TVTX",
+   "umsatzMio": 27.3
+  },
+  {
+   "sym": "APLE",
+   "umsatzMio": 27.3
+  },
+  {
+   "sym": "POWI",
+   "umsatzMio": 27.2
+  },
+  {
+   "sym": "COMM",
+   "umsatzMio": 27.2
+  },
+  {
+   "sym": "NTLA",
+   "umsatzMio": 27.2
+  },
+  {
+   "sym": "CGCP",
+   "umsatzMio": 27.2
+  },
+  {
+   "sym": "AMG",
+   "umsatzMio": 27.1
+  },
+  {
+   "sym": "DLB",
+   "umsatzMio": 27
+  },
+  {
+   "sym": "NXE",
+   "umsatzMio": 27
+  },
+  {
+   "sym": "UWM",
+   "umsatzMio": 27
+  },
+  {
+   "sym": "WGO",
+   "umsatzMio": 27
+  },
+  {
+   "sym": "DRIP",
+   "umsatzMio": 27
+  },
+  {
+   "sym": "RCI",
+   "umsatzMio": 27
+  },
+  {
+   "sym": "TENB",
+   "umsatzMio": 26.9
+  },
+  {
+   "sym": "TCBI",
+   "umsatzMio": 26.9
+  },
+  {
+   "sym": "FTDR",
+   "umsatzMio": 26.8
+  },
+  {
+   "sym": "CWAN",
+   "umsatzMio": 26.8
+  },
+  {
+   "sym": "TXG",
+   "umsatzMio": 26.8
+  },
+  {
+   "sym": "BL",
+   "umsatzMio": 26.8
+  },
+  {
+   "sym": "ASAN",
+   "umsatzMio": 26.7
+  },
+  {
+   "sym": "FNB",
+   "umsatzMio": 26.7
+  },
+  {
+   "sym": "BEPC",
+   "umsatzMio": 26.7
+  },
+  {
+   "sym": "HRI",
+   "umsatzMio": 26.7
+  },
+  {
+   "sym": "GFF",
+   "umsatzMio": 26.6
+  },
+  {
+   "sym": "SERV",
+   "umsatzMio": 26.6
+  },
+  {
+   "sym": "NVDY",
+   "umsatzMio": 26.5
+  },
+  {
+   "sym": "DNN",
+   "umsatzMio": 26.5
+  },
+  {
+   "sym": "BTBT",
+   "umsatzMio": 26.5
+  },
+  {
+   "sym": "CGON",
+   "umsatzMio": 26.5
+  },
+  {
+   "sym": "HYLB",
+   "umsatzMio": 26.4
+  },
+  {
+   "sym": "VMI",
+   "umsatzMio": 26.4
+  },
+  {
+   "sym": "PHG",
+   "umsatzMio": 26.4
+  },
+  {
+   "sym": "ETH",
+   "umsatzMio": 26.4
+  },
+  {
+   "sym": "DNLI",
+   "umsatzMio": 26.3
+  },
+  {
+   "sym": "SKYW",
+   "umsatzMio": 26.3
+  },
+  {
+   "sym": "CNO",
+   "umsatzMio": 26.2
+  },
+  {
+   "sym": "CABO",
+   "umsatzMio": 26.2
+  },
+  {
+   "sym": "ZG",
+   "umsatzMio": 26.2
+  },
+  {
+   "sym": "COLM",
+   "umsatzMio": 26.1
+  },
+  {
+   "sym": "VERA",
+   "umsatzMio": 26.1
+  },
+  {
+   "sym": "CRGY",
+   "umsatzMio": 26.1
+  },
+  {
+   "sym": "HAYW",
+   "umsatzMio": 26.1
+  },
+  {
+   "sym": "VRNT",
+   "umsatzMio": 26.1
+  },
+  {
+   "sym": "ADT",
+   "umsatzMio": 26
+  },
+  {
+   "sym": "THG",
+   "umsatzMio": 26
+  },
+  {
+   "sym": "MRUS",
+   "umsatzMio": 26
+  },
+  {
+   "sym": "QS",
+   "umsatzMio": 26
+  },
+  {
+   "sym": "ING",
+   "umsatzMio": 25.9
+  },
+  {
+   "sym": "BOND",
+   "umsatzMio": 25.9
+  },
+  {
+   "sym": "NVDD",
+   "umsatzMio": 25.9
+  },
+  {
+   "sym": "SYNA",
+   "umsatzMio": 25.8
+  },
+  {
+   "sym": "ENOV",
+   "umsatzMio": 25.8
+  },
+  {
+   "sym": "EFAV",
+   "umsatzMio": 25.8
+  },
+  {
+   "sym": "QTEC",
+   "umsatzMio": 25.8
+  },
+  {
+   "sym": "KVYO",
+   "umsatzMio": 25.7
+  },
+  {
+   "sym": "BGC",
+   "umsatzMio": 25.6
+  },
+  {
+   "sym": "VSAT",
+   "umsatzMio": 25.5
+  },
+  {
+   "sym": "CNMD",
+   "umsatzMio": 25.5
+  },
+  {
+   "sym": "LAZ",
+   "umsatzMio": 25.5
+  },
+  {
+   "sym": "VYMI",
+   "umsatzMio": 25.4
+  },
+  {
+   "sym": "BXMT",
+   "umsatzMio": 25.4
+  },
+  {
+   "sym": "TALO",
+   "umsatzMio": 25.4
+  },
+  {
+   "sym": "LAZR",
+   "umsatzMio": 25.3
+  },
+  {
+   "sym": "SCHE",
+   "umsatzMio": 25.3
+  },
+  {
+   "sym": "IEUR",
+   "umsatzMio": 25.3
+  },
+  {
+   "sym": "FCN",
+   "umsatzMio": 25.2
+  },
+  {
+   "sym": "SCHZ",
+   "umsatzMio": 25.2
+  },
+  {
+   "sym": "PUK",
+   "umsatzMio": 25.2
+  },
+  {
+   "sym": "VSTO",
+   "umsatzMio": 25.2
+  },
+  {
+   "sym": "JACK",
+   "umsatzMio": 25.2
+  },
+  {
+   "sym": "VLUE",
+   "umsatzMio": 25.2
+  },
+  {
+   "sym": "ASB",
+   "umsatzMio": 25.1
+  },
+  {
+   "sym": "ALRM",
+   "umsatzMio": 25.1
+  },
+  {
+   "sym": "IJK",
+   "umsatzMio": 25.1
+  },
+  {
+   "sym": "SPYI",
+   "umsatzMio": 25
+  },
+  {
+   "sym": "LEVI",
+   "umsatzMio": 25
+  },
+  {
+   "sym": "NBR",
+   "umsatzMio": 25
+  },
+  {
+   "sym": "SPB",
+   "umsatzMio": 25
+  },
+  {
+   "sym": "RXRX",
+   "umsatzMio": 25
+  },
+  {
+   "sym": "LMBS",
+   "umsatzMio": 25
+  },
+  {
+   "sym": "AVT",
+   "umsatzMio": 24.9
+  },
+  {
+   "sym": "NSSC",
+   "umsatzMio": 24.9
+  },
+  {
+   "sym": "ATGE",
+   "umsatzMio": 24.8
+  },
+  {
+   "sym": "DEI",
+   "umsatzMio": 24.8
+  },
+  {
+   "sym": "IDA",
+   "umsatzMio": 24.7
+  },
+  {
+   "sym": "BTSG",
+   "umsatzMio": 24.7
+  },
+  {
+   "sym": "ANIP",
+   "umsatzMio": 24.7
+  },
+  {
+   "sym": "ESNT",
+   "umsatzMio": 24.7
+  },
+  {
+   "sym": "FTS",
+   "umsatzMio": 24.7
+  },
+  {
+   "sym": "OBDC",
+   "umsatzMio": 24.7
+  },
+  {
+   "sym": "AMBA",
+   "umsatzMio": 24.7
+  },
+  {
+   "sym": "JOBY",
+   "umsatzMio": 24.7
+  },
+  {
+   "sym": "ZD",
+   "umsatzMio": 24.6
+  },
+  {
+   "sym": "FXN",
+   "umsatzMio": 24.6
+  },
+  {
+   "sym": "SLAB",
+   "umsatzMio": 24.6
+  },
+  {
+   "sym": "ALTM",
+   "umsatzMio": 24.6
+  },
+  {
+   "sym": "STAA",
+   "umsatzMio": 24.6
+  },
+  {
+   "sym": "LBTYK",
+   "umsatzMio": 24.5
+  },
+  {
+   "sym": "WERN",
+   "umsatzMio": 24.5
+  },
+  {
+   "sym": "AAPU",
+   "umsatzMio": 24.5
+  },
+  {
+   "sym": "SONO",
+   "umsatzMio": 24.5
+  },
+  {
+   "sym": "IESC",
+   "umsatzMio": 24.5
+  },
+  {
+   "sym": "EPR",
+   "umsatzMio": 24.5
+  },
+  {
+   "sym": "ALTR",
+   "umsatzMio": 24.4
+  },
+  {
+   "sym": "EWU",
+   "umsatzMio": 24.4
+  },
+  {
+   "sym": "SPHB",
+   "umsatzMio": 24.4
+  },
+  {
+   "sym": "HWC",
+   "umsatzMio": 24.4
+  },
+  {
+   "sym": "DBI",
+   "umsatzMio": 24.4
+  },
+  {
+   "sym": "PECO",
+   "umsatzMio": 24.4
+  },
+  {
+   "sym": "ENS",
+   "umsatzMio": 24.4
+  },
+  {
+   "sym": "SLF",
+   "umsatzMio": 24.4
+  },
+  {
+   "sym": "IAC",
+   "umsatzMio": 24.3
+  },
+  {
+   "sym": "JANX",
+   "umsatzMio": 24.3
+  },
+  {
+   "sym": "VCYT",
+   "umsatzMio": 24.2
+  },
+  {
+   "sym": "PAG",
+   "umsatzMio": 24.2
+  },
+  {
+   "sym": "SBIT",
+   "umsatzMio": 24.2
+  },
+  {
+   "sym": "AXNX",
+   "umsatzMio": 24.2
+  },
+  {
+   "sym": "AWI",
+   "umsatzMio": 24.2
+  },
+  {
+   "sym": "TRIP",
+   "umsatzMio": 24.2
+  },
+  {
+   "sym": "CCS",
+   "umsatzMio": 24.2
+  },
+  {
+   "sym": "YELP",
+   "umsatzMio": 24.2
+  },
+  {
+   "sym": "VECO",
+   "umsatzMio": 24.1
+  },
+  {
+   "sym": "AROC",
+   "umsatzMio": 24.1
+  },
+  {
+   "sym": "BUFR",
+   "umsatzMio": 24.1
+  },
+  {
+   "sym": "CRK",
+   "umsatzMio": 24.1
+  },
+  {
+   "sym": "MAN",
+   "umsatzMio": 24
+  },
+  {
+   "sym": "JBT",
+   "umsatzMio": 24
+  },
+  {
+   "sym": "AMSC",
+   "umsatzMio": 23.9
+  },
+  {
+   "sym": "SWX",
+   "umsatzMio": 23.9
+  },
+  {
+   "sym": "NEP",
+   "umsatzMio": 23.9
+  },
+  {
+   "sym": "IGM",
+   "umsatzMio": 23.9
+  },
+  {
+   "sym": "URNM",
+   "umsatzMio": 23.9
+  },
+  {
+   "sym": "RPD",
+   "umsatzMio": 23.9
+  },
+  {
+   "sym": "IYT",
+   "umsatzMio": 23.8
+  },
+  {
+   "sym": "WKC",
+   "umsatzMio": 23.8
+  },
+  {
+   "sym": "MSA",
+   "umsatzMio": 23.8
+  },
+  {
+   "sym": "VRNA",
+   "umsatzMio": 23.8
+  },
+  {
+   "sym": "VFH",
+   "umsatzMio": 23.8
+  },
+  {
+   "sym": "BLBD",
+   "umsatzMio": 23.7
+  },
+  {
+   "sym": "OGS",
+   "umsatzMio": 23.7
+  },
+  {
+   "sym": "FVD",
+   "umsatzMio": 23.7
+  },
+  {
+   "sym": "SITM",
+   "umsatzMio": 23.6
+  },
+  {
+   "sym": "PATK",
+   "umsatzMio": 23.6
+  },
+  {
+   "sym": "WTS",
+   "umsatzMio": 23.6
+  },
+  {
+   "sym": "EGO",
+   "umsatzMio": 23.5
+  },
+  {
+   "sym": "CAL",
+   "umsatzMio": 23.5
+  },
+  {
+   "sym": "DXD",
+   "umsatzMio": 23.5
+  },
+  {
+   "sym": "FNDF",
+   "umsatzMio": 23.5
+  },
+  {
+   "sym": "RRR",
+   "umsatzMio": 23.4
+  },
+  {
+   "sym": "TAK",
+   "umsatzMio": 23.4
+  },
+  {
+   "sym": "RVLV",
+   "umsatzMio": 23.3
+  },
+  {
+   "sym": "SPTM",
+   "umsatzMio": 23.3
+  },
+  {
+   "sym": "SLGN",
+   "umsatzMio": 23.3
+  },
+  {
+   "sym": "CVCO",
+   "umsatzMio": 23.3
+  },
+  {
+   "sym": "SBSW",
+   "umsatzMio": 23.3
+  },
+  {
+   "sym": "FNDX",
+   "umsatzMio": 23.3
+  },
+  {
+   "sym": "APGE",
+   "umsatzMio": 23.2
+  },
+  {
+   "sym": "CWK",
+   "umsatzMio": 23.2
+  },
+  {
+   "sym": "ZSL",
+   "umsatzMio": 23.1
+  },
+  {
+   "sym": "SDY",
+   "umsatzMio": 23.1
+  },
+  {
+   "sym": "ACWX",
+   "umsatzMio": 23.1
+  },
+  {
+   "sym": "IGF",
+   "umsatzMio": 23
+  },
+  {
+   "sym": "GUNR",
+   "umsatzMio": 23
+  },
+  {
+   "sym": "SIVR",
+   "umsatzMio": 23
+  },
+  {
+   "sym": "BKU",
+   "umsatzMio": 23
+  },
+  {
+   "sym": "VONV",
+   "umsatzMio": 23
+  },
+  {
+   "sym": "ERX",
+   "umsatzMio": 23
+  },
+  {
+   "sym": "SANM",
+   "umsatzMio": 23
+  },
+  {
+   "sym": "RTO",
+   "umsatzMio": 23
+  },
+  {
+   "sym": "KTB",
+   "umsatzMio": 23
+  },
+  {
+   "sym": "NEOG",
+   "umsatzMio": 22.9
+  },
+  {
+   "sym": "HESM",
+   "umsatzMio": 22.9
+  },
+  {
+   "sym": "CXT",
+   "umsatzMio": 22.9
+  },
+  {
+   "sym": "DFAI",
+   "umsatzMio": 22.9
+  },
+  {
+   "sym": "TXNM",
+   "umsatzMio": 22.7
+  },
+  {
+   "sym": "FSK",
+   "umsatzMio": 22.7
+  },
+  {
+   "sym": "ENLC",
+   "umsatzMio": 22.7
+  },
+  {
+   "sym": "RVNC",
+   "umsatzMio": 22.7
+  },
+  {
+   "sym": "XPRO",
+   "umsatzMio": 22.7
+  },
+  {
+   "sym": "VRRM",
+   "umsatzMio": 22.7
+  },
+  {
+   "sym": "AAXJ",
+   "umsatzMio": 22.6
+  },
+  {
+   "sym": "CDP",
+   "umsatzMio": 22.6
+  },
+  {
+   "sym": "PIPR",
+   "umsatzMio": 22.6
+  },
+  {
+   "sym": "HMC",
+   "umsatzMio": 22.6
+  },
+  {
+   "sym": "DX",
+   "umsatzMio": 22.6
+  },
+  {
+   "sym": "CLVT",
+   "umsatzMio": 22.4
+  },
+  {
+   "sym": "GSY",
+   "umsatzMio": 22.4
+  },
+  {
+   "sym": "DNB",
+   "umsatzMio": 22.3
+  },
+  {
+   "sym": "FCFS",
+   "umsatzMio": 22.2
+  },
+  {
+   "sym": "IQLT",
+   "umsatzMio": 22.2
+  },
+  {
+   "sym": "AGX",
+   "umsatzMio": 22.2
+  },
+  {
+   "sym": "PEB",
+   "umsatzMio": 22.2
+  },
+  {
+   "sym": "FLO",
+   "umsatzMio": 22.1
+  },
+  {
+   "sym": "KAI",
+   "umsatzMio": 22.1
+  },
+  {
+   "sym": "IJS",
+   "umsatzMio": 22.1
+  },
+  {
+   "sym": "PCT",
+   "umsatzMio": 22
+  },
+  {
+   "sym": "FORM",
+   "umsatzMio": 22
+  },
+  {
+   "sym": "ASGN",
+   "umsatzMio": 22
+  },
+  {
+   "sym": "WRBY",
+   "umsatzMio": 21.9
+  },
+  {
+   "sym": "TLTW",
+   "umsatzMio": 21.9
+  },
+  {
+   "sym": "LFUS",
+   "umsatzMio": 21.9
+  },
+  {
+   "sym": "FULT",
+   "umsatzMio": 21.9
+  },
+  {
+   "sym": "SR",
+   "umsatzMio": 21.9
+  },
+  {
+   "sym": "GGB",
+   "umsatzMio": 21.8
+  },
+  {
+   "sym": "IYF",
+   "umsatzMio": 21.8
+  },
+  {
+   "sym": "MGV",
+   "umsatzMio": 21.8
+  },
+  {
+   "sym": "DRN",
+   "umsatzMio": 21.8
+  },
+  {
+   "sym": "FOLD",
+   "umsatzMio": 21.8
+  },
+  {
+   "sym": "ESAB",
+   "umsatzMio": 21.8
+  },
+  {
+   "sym": "ORA",
+   "umsatzMio": 21.8
+  },
+  {
+   "sym": "MGNI",
+   "umsatzMio": 21.8
+  },
+  {
+   "sym": "FPE",
+   "umsatzMio": 21.7
+  },
+  {
+   "sym": "BKH",
+   "umsatzMio": 21.7
+  },
+  {
+   "sym": "SGRY",
+   "umsatzMio": 21.7
+  },
+  {
+   "sym": "VSS",
+   "umsatzMio": 21.7
+  },
+  {
+   "sym": "FUL",
+   "umsatzMio": 21.6
+  },
+  {
+   "sym": "SPLB",
+   "umsatzMio": 21.6
+  },
+  {
+   "sym": "AVEM",
+   "umsatzMio": 21.6
+  },
+  {
+   "sym": "MWA",
+   "umsatzMio": 21.5
+  },
+  {
+   "sym": "MGRC",
+   "umsatzMio": 21.5
+  },
+  {
+   "sym": "TRMD",
+   "umsatzMio": 21.5
+  },
+  {
+   "sym": "OUNZ",
+   "umsatzMio": 21.4
+  },
+  {
+   "sym": "FTCS",
+   "umsatzMio": 21.4
+  },
+  {
+   "sym": "AGR",
+   "umsatzMio": 21.4
+  },
+  {
+   "sym": "VERX",
+   "umsatzMio": 21.4
+  },
+  {
+   "sym": "SPGP",
+   "umsatzMio": 21.3
+  },
+  {
+   "sym": "LCII",
+   "umsatzMio": 21.3
+  },
+  {
+   "sym": "LEG",
+   "umsatzMio": 21.3
+  },
+  {
+   "sym": "ABCB",
+   "umsatzMio": 21.2
+  },
+  {
+   "sym": "DFIC",
+   "umsatzMio": 21.2
+  },
+  {
+   "sym": "VC",
+   "umsatzMio": 21.2
+  },
+  {
+   "sym": "GIL",
+   "umsatzMio": 21.2
+  },
+  {
+   "sym": "CWH",
+   "umsatzMio": 21.1
+  },
+  {
+   "sym": "FBP",
+   "umsatzMio": 21.1
+  },
+  {
+   "sym": "NJR",
+   "umsatzMio": 21.1
+  },
+  {
+   "sym": "MUFG",
+   "umsatzMio": 21.1
+  },
+  {
+   "sym": "OMCL",
+   "umsatzMio": 21.1
+  },
+  {
+   "sym": "BAR",
+   "umsatzMio": 21
+  },
+  {
+   "sym": "AIR",
+   "umsatzMio": 21
+  },
+  {
+   "sym": "LZB",
+   "umsatzMio": 21
+  },
+  {
+   "sym": "ARWR",
+   "umsatzMio": 21
+  },
+  {
+   "sym": "NOVT",
+   "umsatzMio": 21
+  },
+  {
+   "sym": "KLIC",
+   "umsatzMio": 20.9
+  },
+  {
+   "sym": "GBDC",
+   "umsatzMio": 20.9
+  },
+  {
+   "sym": "TDS",
+   "umsatzMio": 20.9
+  },
+  {
+   "sym": "PRGS",
+   "umsatzMio": 20.9
+  },
+  {
+   "sym": "XSMO",
+   "umsatzMio": 20.9
+  },
+  {
+   "sym": "OMFL",
+   "umsatzMio": 20.8
+  },
+  {
+   "sym": "DXC",
+   "umsatzMio": 20.8
+  },
+  {
+   "sym": "ENR",
+   "umsatzMio": 20.8
+  },
+  {
+   "sym": "DK",
+   "umsatzMio": 20.8
+  },
+  {
+   "sym": "SKT",
+   "umsatzMio": 20.8
+  },
+  {
+   "sym": "SLNO",
+   "umsatzMio": 20.8
+  },
+  {
+   "sym": "RXST",
+   "umsatzMio": 20.7
+  },
+  {
+   "sym": "CPA",
+   "umsatzMio": 20.7
+  },
+  {
+   "sym": "AVUS",
+   "umsatzMio": 20.7
+  },
+  {
+   "sym": "PRFT",
+   "umsatzMio": 20.7
+  },
+  {
+   "sym": "EXK",
+   "umsatzMio": 20.6
+  },
+  {
+   "sym": "LIVN",
+   "umsatzMio": 20.6
+  },
+  {
+   "sym": "SVOL",
+   "umsatzMio": 20.5
+  },
+  {
+   "sym": "REVG",
+   "umsatzMio": 20.5
+  },
+  {
+   "sym": "ARR",
+   "umsatzMio": 20.5
+  },
+  {
+   "sym": "REYN",
+   "umsatzMio": 20.5
+  },
+  {
+   "sym": "AY",
+   "umsatzMio": 20.5
+  },
+  {
+   "sym": "TARS",
+   "umsatzMio": 20.5
+  },
+  {
+   "sym": "NMRK",
+   "umsatzMio": 20.5
+  },
+  {
+   "sym": "VZIO",
+   "umsatzMio": 20.4
+  },
+  {
+   "sym": "VPL",
+   "umsatzMio": 20.4
+  },
+  {
+   "sym": "DVAX",
+   "umsatzMio": 20.4
+  },
+  {
+   "sym": "XMMO",
+   "umsatzMio": 20.3
+  },
+  {
+   "sym": "HOMB",
+   "umsatzMio": 20.3
+  },
+  {
+   "sym": "CONY",
+   "umsatzMio": 20.3
+  },
+  {
+   "sym": "ROAD",
+   "umsatzMio": 20.3
+  },
+  {
+   "sym": "BWIN",
+   "umsatzMio": 20.3
+  },
+  {
+   "sym": "CCCS",
+   "umsatzMio": 20.3
+  },
+  {
+   "sym": "PARR",
+   "umsatzMio": 20.2
+  },
+  {
+   "sym": "GEO",
+   "umsatzMio": 20.2
+  },
+  {
+   "sym": "PAGP",
+   "umsatzMio": 20.2
+  },
+  {
+   "sym": "KROS",
+   "umsatzMio": 20.1
+  },
+  {
+   "sym": "DHT",
+   "umsatzMio": 20.1
+  },
+  {
+   "sym": "EQC",
+   "umsatzMio": 20.1
+  },
+  {
+   "sym": "PINC",
+   "umsatzMio": 20
+  },
+  {
+   "sym": "SILA",
+   "umsatzMio": 20
+  },
+  {
+   "sym": "NWG",
+   "umsatzMio": 20
+  },
+  {
+   "sym": "AVNT",
+   "umsatzMio": 20
+  },
+  {
+   "sym": "PTCT",
+   "umsatzMio": 19.9
+  },
+  {
+   "sym": "SCHV",
+   "umsatzMio": 19.9
+  },
+  {
+   "sym": "EXPO",
+   "umsatzMio": 19.9
+  },
+  {
+   "sym": "LXP",
+   "umsatzMio": 19.8
+  },
+  {
+   "sym": "JMST",
+   "umsatzMio": 19.8
+  },
+  {
+   "sym": "DIOD",
+   "umsatzMio": 19.8
+  },
+  {
+   "sym": "TBBB",
+   "umsatzMio": 19.8
+  },
+  {
+   "sym": "NMIH",
+   "umsatzMio": 19.8
+  },
+  {
+   "sym": "JQUA",
+   "umsatzMio": 19.8
+  },
+  {
+   "sym": "NWS",
+   "umsatzMio": 19.7
+  },
+  {
+   "sym": "DFAE",
+   "umsatzMio": 19.7
+  },
+  {
+   "sym": "SIL",
+   "umsatzMio": 19.7
+  },
+  {
+   "sym": "HUBG",
+   "umsatzMio": 19.7
+  },
+  {
+   "sym": "IIPR",
+   "umsatzMio": 19.6
+  },
+  {
+   "sym": "EWTX",
+   "umsatzMio": 19.6
+  },
+  {
+   "sym": "NSP",
+   "umsatzMio": 19.6
+  },
+  {
+   "sym": "WAY",
+   "umsatzMio": 19.6
+  },
+  {
+   "sym": "ACA",
+   "umsatzMio": 19.6
+  },
+  {
+   "sym": "ILF",
+   "umsatzMio": 19.6
+  },
+  {
+   "sym": "CWEN",
+   "umsatzMio": 19.5
+  },
+  {
+   "sym": "OTTR",
+   "umsatzMio": 19.5
+  },
+  {
+   "sym": "LANC",
+   "umsatzMio": 19.5
+  },
+  {
+   "sym": "SOC",
+   "umsatzMio": 19.5
+  },
+  {
+   "sym": "DUHP",
+   "umsatzMio": 19.5
+  },
+  {
+   "sym": "SHO",
+   "umsatzMio": 19.5
+  },
+  {
+   "sym": "CACC",
+   "umsatzMio": 19.4
+  },
+  {
+   "sym": "IHG",
+   "umsatzMio": 19.4
+  },
+  {
+   "sym": "WTM",
+   "umsatzMio": 19.3
+  },
+  {
+   "sym": "KNTK",
+   "umsatzMio": 19.3
+  },
+  {
+   "sym": "PHAT",
+   "umsatzMio": 19.2
+  },
+  {
+   "sym": "CBZ",
+   "umsatzMio": 19.2
+  },
+  {
+   "sym": "RYTM",
+   "umsatzMio": 19
+  },
+  {
+   "sym": "FDVV",
+   "umsatzMio": 19
+  },
+  {
+   "sym": "UPBD",
+   "umsatzMio": 19
+  },
+  {
+   "sym": "FOXF",
+   "umsatzMio": 19
+  },
+  {
+   "sym": "PJT",
+   "umsatzMio": 19
+  },
+  {
+   "sym": "AEG",
+   "umsatzMio": 18.9
+  },
+  {
+   "sym": "SHC",
+   "umsatzMio": 18.9
+  },
+  {
+   "sym": "JBI",
+   "umsatzMio": 18.9
+  },
+  {
+   "sym": "DBC",
+   "umsatzMio": 18.9
+  },
+  {
+   "sym": "MOG.A",
+   "umsatzMio": 18.9
+  },
+  {
+   "sym": "WD",
+   "umsatzMio": 18.9
+  },
+  {
+   "sym": "ANGL",
+   "umsatzMio": 18.9
+  },
+  {
+   "sym": "CDNA",
+   "umsatzMio": 18.9
+  },
+  {
+   "sym": "TRUP",
+   "umsatzMio": 18.8
+  },
+  {
+   "sym": "DIN",
+   "umsatzMio": 18.8
+  },
+  {
+   "sym": "BMA",
+   "umsatzMio": 18.8
+  },
+  {
+   "sym": "IQ",
+   "umsatzMio": 18.8
+  },
+  {
+   "sym": "BLMN",
+   "umsatzMio": 18.8
+  },
+  {
+   "sym": "LOPE",
+   "umsatzMio": 18.8
+  },
+  {
+   "sym": "IPGP",
+   "umsatzMio": 18.8
+  },
+  {
+   "sym": "KMT",
+   "umsatzMio": 18.7
+  },
+  {
+   "sym": "WNS",
+   "umsatzMio": 18.7
+  },
+  {
+   "sym": "SCHM",
+   "umsatzMio": 18.7
+  },
+  {
+   "sym": "AS",
+   "umsatzMio": 18.7
+  },
+  {
+   "sym": "DFIV",
+   "umsatzMio": 18.7
+  },
+  {
+   "sym": "GATO",
+   "umsatzMio": 18.6
+  },
+  {
+   "sym": "UGL",
+   "umsatzMio": 18.6
+  },
+  {
+   "sym": "XRX",
+   "umsatzMio": 18.5
+  },
+  {
+   "sym": "KGS",
+   "umsatzMio": 18.5
+  },
+  {
+   "sym": "FIGS",
+   "umsatzMio": 18.5
+  },
+  {
+   "sym": "MCY",
+   "umsatzMio": 18.5
+  },
+  {
+   "sym": "IDYA",
+   "umsatzMio": 18.5
+  },
+  {
+   "sym": "MSTY",
+   "umsatzMio": 18.5
+  },
+  {
+   "sym": "CSTM",
+   "umsatzMio": 18.5
+  },
+  {
+   "sym": "FLJP",
+   "umsatzMio": 18.5
+  },
+  {
+   "sym": "OII",
+   "umsatzMio": 18.5
+  },
+  {
+   "sym": "GATX",
+   "umsatzMio": 18.5
+  },
+  {
+   "sym": "OS",
+   "umsatzMio": 18.4
+  },
+  {
+   "sym": "KOF",
+   "umsatzMio": 18.4
+  },
+  {
+   "sym": "ESGE",
+   "umsatzMio": 18.4
+  },
+  {
+   "sym": "PCH",
+   "umsatzMio": 18.4
+  },
+  {
+   "sym": "MYGN",
+   "umsatzMio": 18.4
+  },
+  {
+   "sym": "GSLC",
+   "umsatzMio": 18.4
+  },
+  {
+   "sym": "AGYS",
+   "umsatzMio": 18.4
+  },
+  {
+   "sym": "WWW",
+   "umsatzMio": 18.4
+  },
+  {
+   "sym": "ACAD",
+   "umsatzMio": 18.4
+  },
+  {
+   "sym": "DDM",
+   "umsatzMio": 18.3
+  },
+  {
+   "sym": "TBT",
+   "umsatzMio": 18.3
+  },
+  {
+   "sym": "KTOS",
+   "umsatzMio": 18.3
+  },
+  {
+   "sym": "GUSH",
+   "umsatzMio": 18.3
+  },
+  {
+   "sym": "BSCQ",
+   "umsatzMio": 18.3
+  },
+  {
+   "sym": "CSIQ",
+   "umsatzMio": 18.2
+  },
+  {
+   "sym": "BRC",
+   "umsatzMio": 18.2
+  },
+  {
+   "sym": "TDC",
+   "umsatzMio": 18.2
+  },
+  {
+   "sym": "BCPC",
+   "umsatzMio": 18.2
+  },
+  {
+   "sym": "OTEX",
+   "umsatzMio": 18.2
+  },
+  {
+   "sym": "FELE",
+   "umsatzMio": 18.2
+  },
+  {
+   "sym": "NWE",
+   "umsatzMio": 18.2
+  },
+  {
+   "sym": "SGH",
+   "umsatzMio": 18.2
+  },
+  {
+   "sym": "AEIS",
+   "umsatzMio": 18.2
+  },
+  {
+   "sym": "WAFD",
+   "umsatzMio": 18
+  },
+  {
+   "sym": "LPG",
+   "umsatzMio": 18
+  },
+  {
+   "sym": "OSIS",
+   "umsatzMio": 18
+  },
+  {
+   "sym": "GDXD",
+   "umsatzMio": 18
+  },
+  {
+   "sym": "CARG",
+   "umsatzMio": 18
+  },
+  {
+   "sym": "PYLD",
+   "umsatzMio": 17.9
+  },
+  {
+   "sym": "SCHI",
+   "umsatzMio": 17.9
+  },
+  {
+   "sym": "AVA",
+   "umsatzMio": 17.9
+  },
+  {
+   "sym": "BNL",
+   "umsatzMio": 17.9
+  },
+  {
+   "sym": "WLY",
+   "umsatzMio": 17.9
+  },
+  {
+   "sym": "FFIE",
+   "umsatzMio": 17.8
+  },
+  {
+   "sym": "DFEM",
+   "umsatzMio": 17.8
+  },
+  {
+   "sym": "SMFG",
+   "umsatzMio": 17.8
+  },
+  {
+   "sym": "DFSV",
+   "umsatzMio": 17.8
+  },
+  {
+   "sym": "TNET",
+   "umsatzMio": 17.7
+  },
+  {
+   "sym": "EYE",
+   "umsatzMio": 17.7
+  },
+  {
+   "sym": "EQX",
+   "umsatzMio": 17.7
+  },
+  {
+   "sym": "HIW",
+   "umsatzMio": 17.7
+  },
+  {
+   "sym": "ODP",
+   "umsatzMio": 17.7
+  },
+  {
+   "sym": "SNDX",
+   "umsatzMio": 17.6
+  },
+  {
+   "sym": "FENY",
+   "umsatzMio": 17.6
+  },
+  {
+   "sym": "SPMB",
+   "umsatzMio": 17.6
+  },
+  {
+   "sym": "QDTE",
+   "umsatzMio": 17.6
+  },
+  {
+   "sym": "HTZ",
+   "umsatzMio": 17.6
+  },
+  {
+   "sym": "ORC",
+   "umsatzMio": 17.5
+  },
+  {
+   "sym": "FXY",
+   "umsatzMio": 17.4
+  },
+  {
+   "sym": "PLXS",
+   "umsatzMio": 17.4
+  },
+  {
+   "sym": "BTAL",
+   "umsatzMio": 17.4
+  },
+  {
+   "sym": "BYON",
+   "umsatzMio": 17.4
+  },
+  {
+   "sym": "TFI",
+   "umsatzMio": 17.4
+  },
+  {
+   "sym": "AMZU",
+   "umsatzMio": 17.4
+  },
+  {
+   "sym": "BMBL",
+   "umsatzMio": 17.3
+  },
+  {
+   "sym": "AKR",
+   "umsatzMio": 17.3
+  },
+  {
+   "sym": "MLCO",
+   "umsatzMio": 17.3
+  },
+  {
+   "sym": "NHI",
+   "umsatzMio": 17.3
+  },
+  {
+   "sym": "TBLL",
+   "umsatzMio": 17.3
+  },
+  {
+   "sym": "EC",
+   "umsatzMio": 17.2
+  },
+  {
+   "sym": "GIII",
+   "umsatzMio": 17.2
+  },
+  {
+   "sym": "NEAR",
+   "umsatzMio": 17.2
+  },
+  {
+   "sym": "IPAR",
+   "umsatzMio": 17.2
+  },
+  {
+   "sym": "AVDV",
+   "umsatzMio": 17.1
+  },
+  {
+   "sym": "SARK",
+   "umsatzMio": 17.1
+  },
+  {
+   "sym": "BIPC",
+   "umsatzMio": 17.1
+  },
+  {
+   "sym": "OXLC",
+   "umsatzMio": 17.1
+  },
+  {
+   "sym": "LMND",
+   "umsatzMio": 17.1
+  },
+  {
+   "sym": "UNIT",
+   "umsatzMio": 17.1
+  },
+  {
+   "sym": "AGL",
+   "umsatzMio": 17.1
+  },
+  {
+   "sym": "MAIN",
+   "umsatzMio": 17.1
+  },
+  {
+   "sym": "PRG",
+   "umsatzMio": 17.1
+  },
+  {
+   "sym": "CGMS",
+   "umsatzMio": 17
+  },
+  {
+   "sym": "LGIH",
+   "umsatzMio": 17
+  },
+  {
+   "sym": "GSHD",
+   "umsatzMio": 17
+  },
+  {
+   "sym": "FCPT",
+   "umsatzMio": 17
+  },
+  {
+   "sym": "KMPR",
+   "umsatzMio": 17
+  },
+  {
+   "sym": "BSCP",
+   "umsatzMio": 16.9
+  },
+  {
+   "sym": "ACMR",
+   "umsatzMio": 16.9
+  },
+  {
+   "sym": "CLOV",
+   "umsatzMio": 16.9
+  },
+  {
+   "sym": "KWR",
+   "umsatzMio": 16.9
+  },
+  {
+   "sym": "PPA",
+   "umsatzMio": 16.9
+  },
+  {
+   "sym": "FLRN",
+   "umsatzMio": 16.9
+  },
+  {
+   "sym": "SNN",
+   "umsatzMio": 16.8
+  },
+  {
+   "sym": "SBH",
+   "umsatzMio": 16.8
+  },
+  {
+   "sym": "AMWD",
+   "umsatzMio": 16.8
+  },
+  {
+   "sym": "GNW",
+   "umsatzMio": 16.8
+  },
+  {
+   "sym": "PAR",
+   "umsatzMio": 16.8
+  },
+  {
+   "sym": "VWOB",
+   "umsatzMio": 16.7
+  },
+  {
+   "sym": "DRH",
+   "umsatzMio": 16.7
+  },
+  {
+   "sym": "CGGO",
+   "umsatzMio": 16.7
+  },
+  {
+   "sym": "BOH",
+   "umsatzMio": 16.6
+  },
+  {
+   "sym": "SLVM",
+   "umsatzMio": 16.6
+  },
+  {
+   "sym": "FFIN",
+   "umsatzMio": 16.6
+  },
+  {
+   "sym": "UPWK",
+   "umsatzMio": 16.6
+  },
+  {
+   "sym": "WDFC",
+   "umsatzMio": 16.6
+  },
+  {
+   "sym": "RYN",
+   "umsatzMio": 16.6
+  },
+  {
+   "sym": "BEAM",
+   "umsatzMio": 16.5
+  },
+  {
+   "sym": "FHI",
+   "umsatzMio": 16.5
+  },
+  {
+   "sym": "SEM",
+   "umsatzMio": 16.5
+  },
+  {
+   "sym": "MGPI",
+   "umsatzMio": 16.5
+  },
+  {
+   "sym": "NX",
+   "umsatzMio": 16.5
+  },
+  {
+   "sym": "FELC",
+   "umsatzMio": 16.4
+  },
+  {
+   "sym": "MYRG",
+   "umsatzMio": 16.4
+  },
+  {
+   "sym": "GGLL",
+   "umsatzMio": 16.4
+  },
+  {
+   "sym": "CPRX",
+   "umsatzMio": 16.4
+  },
+  {
+   "sym": "VNLA",
+   "umsatzMio": 16.4
+  },
+  {
+   "sym": "HLX",
+   "umsatzMio": 16.4
+  },
+  {
+   "sym": "OI",
+   "umsatzMio": 16.4
+  },
+  {
+   "sym": "HYS",
+   "umsatzMio": 16.4
+  },
+  {
+   "sym": "ARQT",
+   "umsatzMio": 16.4
+  },
+  {
+   "sym": "RLI",
+   "umsatzMio": 16.4
+  },
+  {
+   "sym": "CHPT",
+   "umsatzMio": 16.4
+  },
+  {
+   "sym": "VIGI",
+   "umsatzMio": 16.4
+  },
+  {
+   "sym": "CUBI",
+   "umsatzMio": 16.4
+  },
+  {
+   "sym": "ALT",
+   "umsatzMio": 16.3
+  },
+  {
+   "sym": "DORM",
+   "umsatzMio": 16.3
+  },
+  {
+   "sym": "BBHY",
+   "umsatzMio": 16.3
+  },
+  {
+   "sym": "VDC",
+   "umsatzMio": 16.3
+  },
+  {
+   "sym": "VCEL",
+   "umsatzMio": 16.3
+  },
+  {
+   "sym": "SOXQ",
+   "umsatzMio": 16.3
+  },
+  {
+   "sym": "ONEQ",
+   "umsatzMio": 16.2
+  },
+  {
+   "sym": "WDS",
+   "umsatzMio": 16.2
+  },
+  {
+   "sym": "UBSI",
+   "umsatzMio": 16.2
+  },
+  {
+   "sym": "TOTL",
+   "umsatzMio": 16.2
+  },
+  {
+   "sym": "EEMV",
+   "umsatzMio": 16.2
+  },
+  {
+   "sym": "CALX",
+   "umsatzMio": 16.1
+  },
+  {
+   "sym": "UE",
+   "umsatzMio": 16.1
+  },
+  {
+   "sym": "ODD",
+   "umsatzMio": 16.1
+  },
+  {
+   "sym": "ATHM",
+   "umsatzMio": 16.1
+  },
+  {
+   "sym": "KYMR",
+   "umsatzMio": 16.1
+  },
+  {
+   "sym": "LASE",
+   "umsatzMio": 16.1
+  },
+  {
+   "sym": "VYX",
+   "umsatzMio": 16
+  },
+  {
+   "sym": "JGRO",
+   "umsatzMio": 16
+  },
+  {
+   "sym": "DFSD",
+   "umsatzMio": 16
+  },
+  {
+   "sym": "APAM",
+   "umsatzMio": 16
+  },
+  {
+   "sym": "LBPH",
+   "umsatzMio": 16
+  },
+  {
+   "sym": "MSGS",
+   "umsatzMio": 15.9
+  },
+  {
+   "sym": "PZA",
+   "umsatzMio": 15.9
+  },
+  {
+   "sym": "UUUU",
+   "umsatzMio": 15.9
+  },
+  {
+   "sym": "PSEC",
+   "umsatzMio": 15.9
+  },
+  {
+   "sym": "CERT",
+   "umsatzMio": 15.9
+  },
+  {
+   "sym": "TRN",
+   "umsatzMio": 15.8
+  },
+  {
+   "sym": "UCON",
+   "umsatzMio": 15.8
+  },
+  {
+   "sym": "DBEF",
+   "umsatzMio": 15.8
+  },
+  {
+   "sym": "CLMT",
+   "umsatzMio": 15.8
+  },
+  {
+   "sym": "INMD",
+   "umsatzMio": 15.8
+  },
+  {
+   "sym": "FSEC",
+   "umsatzMio": 15.7
+  },
+  {
+   "sym": "AVLV",
+   "umsatzMio": 15.7
+  },
+  {
+   "sym": "THS",
+   "umsatzMio": 15.7
+  },
+  {
+   "sym": "MLTX",
+   "umsatzMio": 15.7
+  },
+  {
+   "sym": "IART",
+   "umsatzMio": 15.7
+  },
+  {
+   "sym": "TERN",
+   "umsatzMio": 15.7
+  },
+  {
+   "sym": "HYMB",
+   "umsatzMio": 15.7
+  },
+  {
+   "sym": "IEP",
+   "umsatzMio": 15.7
+  },
+  {
+   "sym": "FBL",
+   "umsatzMio": 15.7
+  },
+  {
+   "sym": "MLKN",
+   "umsatzMio": 15.7
+  },
+  {
+   "sym": "GOGL",
+   "umsatzMio": 15.7
+  },
+  {
+   "sym": "WOOF",
+   "umsatzMio": 15.7
+  },
+  {
+   "sym": "RCKT",
+   "umsatzMio": 15.7
+  },
+  {
+   "sym": "FBCG",
+   "umsatzMio": 15.6
+  },
+  {
+   "sym": "GOLF",
+   "umsatzMio": 15.6
+  },
+  {
+   "sym": "DAVA",
+   "umsatzMio": 15.6
+  },
+  {
+   "sym": "SAND",
+   "umsatzMio": 15.6
+  },
+  {
+   "sym": "ARDX",
+   "umsatzMio": 15.6
+  },
+  {
+   "sym": "MBC",
+   "umsatzMio": 15.6
+  },
+  {
+   "sym": "UFPT",
+   "umsatzMio": 15.5
+  },
+  {
+   "sym": "FUBO",
+   "umsatzMio": 15.5
+  },
+  {
+   "sym": "CGUS",
+   "umsatzMio": 15.5
+  },
+  {
+   "sym": "CRTO",
+   "umsatzMio": 15.5
+  },
+  {
+   "sym": "RWR",
+   "umsatzMio": 15.5
+  },
+  {
+   "sym": "AMRK",
+   "umsatzMio": 15.5
+  },
+  {
+   "sym": "JMBS",
+   "umsatzMio": 15.5
+  },
+  {
+   "sym": "GENI",
+   "umsatzMio": 15.5
+  },
+  {
+   "sym": "BNO",
+   "umsatzMio": 15.4
+  },
+  {
+   "sym": "HA",
+   "umsatzMio": 15.4
+  },
+  {
+   "sym": "EXTR",
+   "umsatzMio": 15.4
+  },
+  {
+   "sym": "LOAR",
+   "umsatzMio": 15.4
+  },
+  {
+   "sym": "PPLT",
+   "umsatzMio": 15.4
+  },
+  {
+   "sym": "ATRC",
+   "umsatzMio": 15.4
+  },
+  {
+   "sym": "HI",
+   "umsatzMio": 15.3
+  },
+  {
+   "sym": "ESGD",
+   "umsatzMio": 15.3
+  },
+  {
+   "sym": "PRAX",
+   "umsatzMio": 15.3
+  },
+  {
+   "sym": "TTMI",
+   "umsatzMio": 15.3
+  },
+  {
+   "sym": "UWMC",
+   "umsatzMio": 15.3
+  },
+  {
+   "sym": "BHF",
+   "umsatzMio": 15.2
+  },
+  {
+   "sym": "BB",
+   "umsatzMio": 15.2
+  },
+  {
+   "sym": "IJT",
+   "umsatzMio": 15.2
+  },
+  {
+   "sym": "PAYO",
+   "umsatzMio": 15.2
+  },
+  {
+   "sym": "AWR",
+   "umsatzMio": 15.1
+  },
+  {
+   "sym": "PD",
+   "umsatzMio": 15.1
+  },
+  {
+   "sym": "APOpA",
+   "umsatzMio": 15.1
+  },
+  {
+   "sym": "HRMY",
+   "umsatzMio": 15.1
+  },
+  {
+   "sym": "SNDR",
+   "umsatzMio": 15.1
+  },
+  {
+   "sym": "DFAU",
+   "umsatzMio": 15.1
+  },
+  {
+   "sym": "CNA",
+   "umsatzMio": 15.1
+  },
+  {
+   "sym": "SUN",
+   "umsatzMio": 15.1
+  },
+  {
+   "sym": "IAGG",
+   "umsatzMio": 15
+  },
+  {
+   "sym": "SCVL",
+   "umsatzMio": 15
+  },
+  {
+   "sym": "PETQ",
+   "umsatzMio": 15
+  },
+  {
+   "sym": "GES",
+   "umsatzMio": 15
+  },
+  {
+   "sym": "REZI",
+   "umsatzMio": 15
+  },
+  {
+   "sym": "TROX",
+   "umsatzMio": 14.9
+  },
+  {
+   "sym": "PAM",
+   "umsatzMio": 14.9
+  },
+  {
+   "sym": "BHC",
+   "umsatzMio": 14.9
+  },
+  {
+   "sym": "CGCB",
+   "umsatzMio": 14.9
+  },
+  {
+   "sym": "BKE",
+   "umsatzMio": 14.8
+  },
+  {
+   "sym": "RELY",
+   "umsatzMio": 14.8
+  },
+  {
+   "sym": "AMDL",
+   "umsatzMio": 14.8
+  },
+  {
+   "sym": "AVDX",
+   "umsatzMio": 14.7
+  },
+  {
+   "sym": "CRBP",
+   "umsatzMio": 14.7
+  },
+  {
+   "sym": "ACWV",
+   "umsatzMio": 14.7
+  },
+  {
+   "sym": "CIGI",
+   "umsatzMio": 14.7
+  },
+  {
+   "sym": "EPC",
+   "umsatzMio": 14.7
+  },
+  {
+   "sym": "HOV",
+   "umsatzMio": 14.7
+  },
+  {
+   "sym": "KLG",
+   "umsatzMio": 14.6
+  },
+  {
+   "sym": "PAC",
+   "umsatzMio": 14.6
+  },
+  {
+   "sym": "RLJ",
+   "umsatzMio": 14.6
+  },
+  {
+   "sym": "PBH",
+   "umsatzMio": 14.6
+  },
+  {
+   "sym": "EWL",
+   "umsatzMio": 14.6
+  },
+  {
+   "sym": "ALGT",
+   "umsatzMio": 14.6
+  },
+  {
+   "sym": "PSNY",
+   "umsatzMio": 14.6
+  },
+  {
+   "sym": "FDL",
+   "umsatzMio": 14.5
+  },
+  {
+   "sym": "RNST",
+   "umsatzMio": 14.5
+  },
+  {
+   "sym": "EOSE",
+   "umsatzMio": 14.5
+  },
+  {
+   "sym": "EWG",
+   "umsatzMio": 14.5
+  },
+  {
+   "sym": "HELO",
+   "umsatzMio": 14.5
+  },
+  {
+   "sym": "SBS",
+   "umsatzMio": 14.5
+  },
+  {
+   "sym": "TSLY",
+   "umsatzMio": 14.5
+  },
+  {
+   "sym": "DFUS",
+   "umsatzMio": 14.5
+  },
+  {
+   "sym": "BULZ",
+   "umsatzMio": 14.5
+  },
+  {
+   "sym": "ADUS",
+   "umsatzMio": 14.4
+  },
+  {
+   "sym": "HLIT",
+   "umsatzMio": 14.4
+  },
+  {
+   "sym": "PGY",
+   "umsatzMio": 14.4
+  },
+  {
+   "sym": "FLYW",
+   "umsatzMio": 14.4
+  },
+  {
+   "sym": "DNUT",
+   "umsatzMio": 14.4
+  },
+  {
+   "sym": "PACB",
+   "umsatzMio": 14.3
+  },
+  {
+   "sym": "IBTE",
+   "umsatzMio": 14.3
+  },
+  {
+   "sym": "EBC",
+   "umsatzMio": 14.3
+  },
+  {
+   "sym": "TGLS",
+   "umsatzMio": 14.3
+  },
+  {
+   "sym": "HYD",
+   "umsatzMio": 14.3
+  },
+  {
+   "sym": "VONE",
+   "umsatzMio": 14.3
+  },
+  {
+   "sym": "ENVA",
+   "umsatzMio": 14.3
+  },
+  {
+   "sym": "NVEI",
+   "umsatzMio": 14.2
+  },
+  {
+   "sym": "AESI",
+   "umsatzMio": 14.2
+  },
+  {
+   "sym": "SIMO",
+   "umsatzMio": 14.2
+  },
+  {
+   "sym": "FSLY",
+   "umsatzMio": 14.2
+  },
+  {
+   "sym": "ALE",
+   "umsatzMio": 14.2
+  },
+  {
+   "sym": "MEG",
+   "umsatzMio": 14.2
+  },
+  {
+   "sym": "HLF",
+   "umsatzMio": 14.2
+  },
+  {
+   "sym": "ROIC",
+   "umsatzMio": 14.2
+  },
+  {
+   "sym": "UCTT",
+   "umsatzMio": 14.2
+  },
+  {
+   "sym": "NEU",
+   "umsatzMio": 14.2
+  },
+  {
+   "sym": "IYH",
+   "umsatzMio": 14.2
+  },
+  {
+   "sym": "VCTR",
+   "umsatzMio": 14.2
+  },
+  {
+   "sym": "PRVA",
+   "umsatzMio": 14.2
+  },
+  {
+   "sym": "AGIO",
+   "umsatzMio": 14.1
+  },
+  {
+   "sym": "PDCO",
+   "umsatzMio": 14.1
+  },
+  {
+   "sym": "SPT",
+   "umsatzMio": 14.1
+  },
+  {
+   "sym": "VOOV",
+   "umsatzMio": 14
+  },
+  {
+   "sym": "PCRX",
+   "umsatzMio": 14
+  },
+  {
+   "sym": "CXM",
+   "umsatzMio": 14
+  },
+  {
+   "sym": "PPH",
+   "umsatzMio": 14
+  },
+  {
+   "sym": "CWT",
+   "umsatzMio": 14
+  },
+  {
+   "sym": "GRPN",
+   "umsatzMio": 13.9
+  },
+  {
+   "sym": "COCO",
+   "umsatzMio": 13.9
+  },
+  {
+   "sym": "PPBI",
+   "umsatzMio": 13.9
+  },
+  {
+   "sym": "BBVA",
+   "umsatzMio": 13.9
+  },
+  {
+   "sym": "HG",
+   "umsatzMio": 13.8
+  },
+  {
+   "sym": "FNDE",
+   "umsatzMio": 13.8
+  },
+  {
+   "sym": "TIL",
+   "umsatzMio": 13.8
+  },
+  {
+   "sym": "SSTK",
+   "umsatzMio": 13.8
+  },
+  {
+   "sym": "SFBS",
+   "umsatzMio": 13.8
+  },
+  {
+   "sym": "MQ",
+   "umsatzMio": 13.7
+  },
+  {
+   "sym": "CMPR",
+   "umsatzMio": 13.7
+  },
+  {
+   "sym": "KNG",
+   "umsatzMio": 13.7
+  },
+  {
+   "sym": "TNK",
+   "umsatzMio": 13.7
+  },
+  {
+   "sym": "CENX",
+   "umsatzMio": 13.7
+  },
+  {
+   "sym": "SYRE",
+   "umsatzMio": 13.7
+  },
+  {
+   "sym": "MRCY",
+   "umsatzMio": 13.7
+  },
+  {
+   "sym": "IYE",
+   "umsatzMio": 13.6
+  },
+  {
+   "sym": "MNKD",
+   "umsatzMio": 13.6
+  },
+  {
+   "sym": "FIBK",
+   "umsatzMio": 13.6
+  },
+  {
+   "sym": "EIDO",
+   "umsatzMio": 13.6
+  },
+  {
+   "sym": "RC",
+   "umsatzMio": 13.6
+  },
+  {
+   "sym": "AVDL",
+   "umsatzMio": 13.6
+  },
+  {
+   "sym": "IMAX",
+   "umsatzMio": 13.6
+  },
+  {
+   "sym": "RSI",
+   "umsatzMio": 13.5
+  },
+  {
+   "sym": "SVM",
+   "umsatzMio": 13.5
+  },
+  {
+   "sym": "AMPH",
+   "umsatzMio": 13.5
+  },
+  {
+   "sym": "STRA",
+   "umsatzMio": 13.5
+  },
+  {
+   "sym": "XYLD",
+   "umsatzMio": 13.5
+  },
+  {
+   "sym": "BTDR",
+   "umsatzMio": 13.5
+  },
+  {
+   "sym": "MNRO",
+   "umsatzMio": 13.5
+  },
+  {
+   "sym": "KSA",
+   "umsatzMio": 13.4
+  },
+  {
+   "sym": "CLBT",
+   "umsatzMio": 13.4
+  },
+  {
+   "sym": "QQQE",
+   "umsatzMio": 13.4
+  },
+  {
+   "sym": "IGT",
+   "umsatzMio": 13.4
+  },
+  {
+   "sym": "CGC",
+   "umsatzMio": 13.4
+  },
+  {
+   "sym": "SILV",
+   "umsatzMio": 13.4
+  },
+  {
+   "sym": "UCB",
+   "umsatzMio": 13.3
+  },
+  {
+   "sym": "ALHC",
+   "umsatzMio": 13.3
+  },
+  {
+   "sym": "BBCA",
+   "umsatzMio": 13.3
+  },
+  {
+   "sym": "AIRR",
+   "umsatzMio": 13.3
+  },
+  {
+   "sym": "RDY",
+   "umsatzMio": 13.3
+  },
+  {
+   "sym": "JPIE",
+   "umsatzMio": 13.2
+  },
+  {
+   "sym": "NMM",
+   "umsatzMio": 13.2
+  },
+  {
+   "sym": "BCRX",
+   "umsatzMio": 13.2
+  },
+  {
+   "sym": "PLUS",
+   "umsatzMio": 13.2
+  },
+  {
+   "sym": "NTST",
+   "umsatzMio": 13.2
+  },
+  {
+   "sym": "CNS",
+   "umsatzMio": 13.2
+  },
+  {
+   "sym": "ESGV",
+   "umsatzMio": 13.2
+  },
+  {
+   "sym": "RLAY",
+   "umsatzMio": 13.1
+  },
+  {
+   "sym": "MXL",
+   "umsatzMio": 13.1
+  },
+  {
+   "sym": "MIRM",
+   "umsatzMio": 13.1
+  },
+  {
+   "sym": "TWKS",
+   "umsatzMio": 13.1
+  },
+  {
+   "sym": "FNDA",
+   "umsatzMio": 13.1
+  },
+  {
+   "sym": "IAT",
+   "umsatzMio": 13.1
+  },
+  {
+   "sym": "GIB",
+   "umsatzMio": 13.1
+  },
+  {
+   "sym": "MRVI",
+   "umsatzMio": 13.1
+  },
+  {
+   "sym": "CHEF",
+   "umsatzMio": 13
+  },
+  {
+   "sym": "USRT",
+   "umsatzMio": 13
+  },
+  {
+   "sym": "ICFI",
+   "umsatzMio": 13
+  },
+  {
+   "sym": "EVTC",
+   "umsatzMio": 13
+  },
+  {
+   "sym": "MEOH",
+   "umsatzMio": 13
+  },
+  {
+   "sym": "NVCR",
+   "umsatzMio": 13
+  },
+  {
+   "sym": "ETHU",
+   "umsatzMio": 13
+  },
+  {
+   "sym": "VIS",
+   "umsatzMio": 13
+  },
+  {
+   "sym": "HROW",
+   "umsatzMio": 12.9
+  },
+  {
+   "sym": "VOX",
+   "umsatzMio": 12.9
+  },
+  {
+   "sym": "WGS",
+   "umsatzMio": 12.9
+  },
+  {
+   "sym": "STR",
+   "umsatzMio": 12.9
+  },
+  {
+   "sym": "DFAS",
+   "umsatzMio": 12.9
+  },
+  {
+   "sym": "TSLR",
+   "umsatzMio": 12.8
+  },
+  {
+   "sym": "IXC",
+   "umsatzMio": 12.8
+  },
+  {
+   "sym": "CBU",
+   "umsatzMio": 12.8
+  },
+  {
+   "sym": "LESL",
+   "umsatzMio": 12.8
+  },
+  {
+   "sym": "DFH",
+   "umsatzMio": 12.7
+  },
+  {
+   "sym": "IBDR",
+   "umsatzMio": 12.7
+  },
+  {
+   "sym": "HHH",
+   "umsatzMio": 12.7
+  },
+  {
+   "sym": "VCRB",
+   "umsatzMio": 12.7
+  },
+  {
+   "sym": "TWO",
+   "umsatzMio": 12.7
+  },
+  {
+   "sym": "CEF",
+   "umsatzMio": 12.7
+  },
+  {
+   "sym": "DAWN",
+   "umsatzMio": 12.7
+  },
+  {
+   "sym": "DSGX",
+   "umsatzMio": 12.7
+  },
+  {
+   "sym": "HWKN",
+   "umsatzMio": 12.7
+  },
+  {
+   "sym": "GPRE",
+   "umsatzMio": 12.7
+  },
+  {
+   "sym": "SKWD",
+   "umsatzMio": 12.7
+  },
+  {
+   "sym": "REET",
+   "umsatzMio": 12.6
+  },
+  {
+   "sym": "BVN",
+   "umsatzMio": 12.6
+  },
+  {
+   "sym": "SLYV",
+   "umsatzMio": 12.6
+  },
+  {
+   "sym": "TSEM",
+   "umsatzMio": 12.6
+  },
+  {
+   "sym": "IXN",
+   "umsatzMio": 12.6
+  },
+  {
+   "sym": "GRAL",
+   "umsatzMio": 12.6
+  },
+  {
+   "sym": "ASTH",
+   "umsatzMio": 12.6
+  },
+  {
+   "sym": "PFFD",
+   "umsatzMio": 12.6
+  },
+  {
+   "sym": "ESRT",
+   "umsatzMio": 12.6
+  },
+  {
+   "sym": "NKLA",
+   "umsatzMio": 12.5
+  },
+  {
+   "sym": "RAMP",
+   "umsatzMio": 12.5
+  },
+  {
+   "sym": "OMI",
+   "umsatzMio": 12.5
+  },
+  {
+   "sym": "MGC",
+   "umsatzMio": 12.5
+  },
+  {
+   "sym": "REM",
+   "umsatzMio": 12.5
+  },
+  {
+   "sym": "FLTR",
+   "umsatzMio": 12.5
+  },
+  {
+   "sym": "AUB",
+   "umsatzMio": 12.4
+  },
+  {
+   "sym": "CVBF",
+   "umsatzMio": 12.4
+  },
+  {
+   "sym": "AKRO",
+   "umsatzMio": 12.4
+  },
+  {
+   "sym": "DGS",
+   "umsatzMio": 12.3
+  },
+  {
+   "sym": "DAN",
+   "umsatzMio": 12.3
+  },
+  {
+   "sym": "RUSHA",
+   "umsatzMio": 12.3
+  },
+  {
+   "sym": "CMPO",
+   "umsatzMio": 12.3
+  },
+  {
+   "sym": "JIRE",
+   "umsatzMio": 12.3
+  },
+  {
+   "sym": "SEZL",
+   "umsatzMio": 12.3
+  },
+  {
+   "sym": "YY",
+   "umsatzMio": 12.3
+  },
+  {
+   "sym": "LC",
+   "umsatzMio": 12.3
+  },
+  {
+   "sym": "BJRI",
+   "umsatzMio": 12.3
+  },
+  {
+   "sym": "AVDE",
+   "umsatzMio": 12.3
+  },
+  {
+   "sym": "IBDQ",
+   "umsatzMio": 12.2
+  },
+  {
+   "sym": "TCAF",
+   "umsatzMio": 12.2
+  },
+  {
+   "sym": "BOTZ",
+   "umsatzMio": 12.2
+  },
+  {
+   "sym": "BATRK",
+   "umsatzMio": 12.2
+  },
+  {
+   "sym": "NEA",
+   "umsatzMio": 12.1
+  },
+  {
+   "sym": "IMCR",
+   "umsatzMio": 12.1
+  },
+  {
+   "sym": "SCHQ",
+   "umsatzMio": 12.1
+  },
+  {
+   "sym": "EBS",
+   "umsatzMio": 12.1
+  },
+  {
+   "sym": "BBEU",
+   "umsatzMio": 12.1
+  },
+  {
+   "sym": "LIT",
+   "umsatzMio": 12.1
+  },
+  {
+   "sym": "PFS",
+   "umsatzMio": 12.1
+  },
+  {
+   "sym": "VIAV",
+   "umsatzMio": 12
+  },
+  {
+   "sym": "ATEX",
+   "umsatzMio": 12
+  },
+  {
+   "sym": "CATY",
+   "umsatzMio": 12
+  },
+  {
+   "sym": "INDB",
+   "umsatzMio": 12
+  },
+  {
+   "sym": "HEES",
+   "umsatzMio": 12
+  },
+  {
+   "sym": "GMAB",
+   "umsatzMio": 11.9
+  },
+  {
+   "sym": "BANR",
+   "umsatzMio": 11.9
+  },
+  {
+   "sym": "PLMR",
+   "umsatzMio": 11.9
+  },
+  {
+   "sym": "SRDX",
+   "umsatzMio": 11.9
+  },
+  {
+   "sym": "PRO",
+   "umsatzMio": 11.9
+  },
+  {
+   "sym": "KT",
+   "umsatzMio": 11.8
+  },
+  {
+   "sym": "ZLAB",
+   "umsatzMio": 11.8
+  },
+  {
+   "sym": "BZH",
+   "umsatzMio": 11.8
+  },
+  {
+   "sym": "UNF",
+   "umsatzMio": 11.7
+  },
+  {
+   "sym": "TSDD",
+   "umsatzMio": 11.7
+  },
+  {
+   "sym": "FHB",
+   "umsatzMio": 11.7
+  },
+  {
+   "sym": "ALKT",
+   "umsatzMio": 11.6
+  },
+  {
+   "sym": "WSFS",
+   "umsatzMio": 11.6
+  },
+  {
+   "sym": "AMCX",
+   "umsatzMio": 11.6
+  },
+  {
+   "sym": "IBTA",
+   "umsatzMio": 11.6
+  },
+  {
+   "sym": "SPBO",
+   "umsatzMio": 11.6
+  },
+  {
+   "sym": "JBBB",
+   "umsatzMio": 11.6
+  },
+  {
+   "sym": "XSD",
+   "umsatzMio": 11.6
+  },
+  {
+   "sym": "FSV",
+   "umsatzMio": 11.6
+  },
+  {
+   "sym": "WT",
+   "umsatzMio": 11.6
+  },
+  {
+   "sym": "IBDP",
+   "umsatzMio": 11.6
+  },
+  {
+   "sym": "AIN",
+   "umsatzMio": 11.5
+  },
+  {
+   "sym": "UUP",
+   "umsatzMio": 11.5
+  },
+  {
+   "sym": "MSFU",
+   "umsatzMio": 11.5
+  },
+  {
+   "sym": "OKLO",
+   "umsatzMio": 11.5
+  },
+  {
+   "sym": "EXPI",
+   "umsatzMio": 11.4
+  },
+  {
+   "sym": "DOLE",
+   "umsatzMio": 11.4
+  },
+  {
+   "sym": "IJJ",
+   "umsatzMio": 11.4
+  },
+  {
+   "sym": "SPRY",
+   "umsatzMio": 11.4
+  },
+  {
+   "sym": "BEP",
+   "umsatzMio": 11.4
+  },
+  {
+   "sym": "ROG",
+   "umsatzMio": 11.3
+  },
+  {
+   "sym": "FWONA",
+   "umsatzMio": 11.3
+  },
+  {
+   "sym": "CMP",
+   "umsatzMio": 11.3
+  },
+  {
+   "sym": "SKYY",
+   "umsatzMio": 11.3
+  },
+  {
+   "sym": "XENE",
+   "umsatzMio": 11.3
+  },
+  {
+   "sym": "HTGC",
+   "umsatzMio": 11.3
+  },
+  {
+   "sym": "BKD",
+   "umsatzMio": 11.3
+  },
+  {
+   "sym": "GVI",
+   "umsatzMio": 11.3
+  },
+  {
+   "sym": "CLIP",
+   "umsatzMio": 11.3
+  },
+  {
+   "sym": "HNI",
+   "umsatzMio": 11.2
+  },
+  {
+   "sym": "IXJ",
+   "umsatzMio": 11.2
+  },
+  {
+   "sym": "B",
+   "umsatzMio": 11.2
+  },
+  {
+   "sym": "KB",
+   "umsatzMio": 11.2
+  },
+  {
+   "sym": "AHCO",
+   "umsatzMio": 11.2
+  },
+  {
+   "sym": "HUMA",
+   "umsatzMio": 11.2
+  },
+  {
+   "sym": "DNA",
+   "umsatzMio": 11.2
+  },
+  {
+   "sym": "AAN",
+   "umsatzMio": 11.1
+  },
+  {
+   "sym": "CAE",
+   "umsatzMio": 11.1
+  },
+  {
+   "sym": "UI",
+   "umsatzMio": 11.1
+  },
+  {
+   "sym": "GBX",
+   "umsatzMio": 11.1
+  },
+  {
+   "sym": "BLKB",
+   "umsatzMio": 11.1
+  },
+  {
+   "sym": "RES",
+   "umsatzMio": 11.1
+  },
+  {
+   "sym": "PFFA",
+   "umsatzMio": 11.1
+  },
+  {
+   "sym": "SUZ",
+   "umsatzMio": 11
+  },
+  {
+   "sym": "ESE",
+   "umsatzMio": 11
+  },
+  {
+   "sym": "FALN",
+   "umsatzMio": 11
+  },
+  {
+   "sym": "NPO",
+   "umsatzMio": 11
+  },
+  {
+   "sym": "ARHS",
+   "umsatzMio": 11
+  },
+  {
+   "sym": "APPN",
+   "umsatzMio": 11
+  },
+  {
+   "sym": "GHC",
+   "umsatzMio": 11
+  },
+  {
+   "sym": "UTZ",
+   "umsatzMio": 11
+  },
+  {
+   "sym": "HCI",
+   "umsatzMio": 11
+  },
+  {
+   "sym": "GRID",
+   "umsatzMio": 11
+  },
+  {
+   "sym": "BYND",
+   "umsatzMio": 11
+  },
+  {
+   "sym": "DEM",
+   "umsatzMio": 11
+  },
+  {
+   "sym": "JJSF",
+   "umsatzMio": 11
+  },
+  {
+   "sym": "IOSP",
+   "umsatzMio": 11
+  },
+  {
+   "sym": "WOR",
+   "umsatzMio": 10.9
+  },
+  {
+   "sym": "EPAC",
+   "umsatzMio": 10.9
+  },
+  {
+   "sym": "BOKF",
+   "umsatzMio": 10.9
+  },
+  {
+   "sym": "NBTB",
+   "umsatzMio": 10.9
+  },
+  {
+   "sym": "SFNC",
+   "umsatzMio": 10.9
+  },
+  {
+   "sym": "NAD",
+   "umsatzMio": 10.9
+  },
+  {
+   "sym": "ALG",
+   "umsatzMio": 10.8
+  },
+  {
+   "sym": "CHUY",
+   "umsatzMio": 10.8
+  },
+  {
+   "sym": "COUR",
+   "umsatzMio": 10.8
+  },
+  {
+   "sym": "SAN",
+   "umsatzMio": 10.8
+  },
+  {
+   "sym": "CMF",
+   "umsatzMio": 10.8
+  },
+  {
+   "sym": "SDGR",
+   "umsatzMio": 10.8
+  },
+  {
+   "sym": "NRIX",
+   "umsatzMio": 10.8
+  },
+  {
+   "sym": "OCSL",
+   "umsatzMio": 10.8
+  },
+  {
+   "sym": "SHM",
+   "umsatzMio": 10.8
+  },
+  {
+   "sym": "DIHP",
+   "umsatzMio": 10.8
+  },
+  {
+   "sym": "DRS",
+   "umsatzMio": 10.8
+  },
+  {
+   "sym": "HPP",
+   "umsatzMio": 10.7
+  },
+  {
+   "sym": "ACT",
+   "umsatzMio": 10.7
+  },
+  {
+   "sym": "EWM",
+   "umsatzMio": 10.7
+  },
+  {
+   "sym": "UTG",
+   "umsatzMio": 10.7
+  },
+  {
+   "sym": "BANF",
+   "umsatzMio": 10.7
+  },
+  {
+   "sym": "AGRO",
+   "umsatzMio": 10.6
+  },
+  {
+   "sym": "ISTB",
+   "umsatzMio": 10.6
+  },
+  {
+   "sym": "FETH",
+   "umsatzMio": 10.6
+  },
+  {
+   "sym": "SCHC",
+   "umsatzMio": 10.6
+  },
+  {
+   "sym": "CATX",
+   "umsatzMio": 10.6
+  },
+  {
+   "sym": "MFA",
+   "umsatzMio": 10.6
+  },
+  {
+   "sym": "DQ",
+   "umsatzMio": 10.5
+  },
+  {
+   "sym": "HOLO",
+   "umsatzMio": 10.5
+  },
+  {
+   "sym": "KAR",
+   "umsatzMio": 10.5
+  },
+  {
+   "sym": "CNTA",
+   "umsatzMio": 10.5
+  },
+  {
+   "sym": "EWQ",
+   "umsatzMio": 10.5
+  },
+  {
+   "sym": "RSPT",
+   "umsatzMio": 10.5
+  },
+  {
+   "sym": "RYDE",
+   "umsatzMio": 10.5
+  },
+  {
+   "sym": "JKS",
+   "umsatzMio": 10.5
+  },
+  {
+   "sym": "ULCC",
+   "umsatzMio": 10.5
+  },
+  {
+   "sym": "CXW",
+   "umsatzMio": 10.5
+  },
+  {
+   "sym": "ROCK",
+   "umsatzMio": 10.5
+  },
+  {
+   "sym": "MSGE",
+   "umsatzMio": 10.4
+  },
+  {
+   "sym": "SBCF",
+   "umsatzMio": 10.4
+  },
+  {
+   "sym": "SAFE",
+   "umsatzMio": 10.4
+  },
+  {
+   "sym": "HODL",
+   "umsatzMio": 10.4
+  },
+  {
+   "sym": "HTLF",
+   "umsatzMio": 10.4
+  },
+  {
+   "sym": "FTSL",
+   "umsatzMio": 10.4
+  },
+  {
+   "sym": "DFAT",
+   "umsatzMio": 10.4
+  },
+  {
+   "sym": "CPK",
+   "umsatzMio": 10.4
+  },
+  {
+   "sym": "CWEB",
+   "umsatzMio": 10.4
+  },
+  {
+   "sym": "RILY",
+   "umsatzMio": 10.4
+  },
+  {
+   "sym": "NGVT",
+   "umsatzMio": 10.4
+  },
+  {
+   "sym": "WFCpL",
+   "umsatzMio": 10.4
+  },
+  {
+   "sym": "SSRM",
+   "umsatzMio": 10.4
+  },
+  {
+   "sym": "RYLD",
+   "umsatzMio": 10.4
+  },
+  {
+   "sym": "PTLO",
+   "umsatzMio": 10.3
+  },
+  {
+   "sym": "JBGS",
+   "umsatzMio": 10.3
+  },
+  {
+   "sym": "SFL",
+   "umsatzMio": 10.3
+  },
+  {
+   "sym": "PSMT",
+   "umsatzMio": 10.3
+  },
+  {
+   "sym": "VIOO",
+   "umsatzMio": 10.3
+  },
+  {
+   "sym": "QQQI",
+   "umsatzMio": 10.3
+  },
+  {
+   "sym": "IAK",
+   "umsatzMio": 10.3
+  },
+  {
+   "sym": "COLL",
+   "umsatzMio": 10.2
+  },
+  {
+   "sym": "SCSC",
+   "umsatzMio": 10.2
+  },
+  {
+   "sym": "BIP",
+   "umsatzMio": 10.2
+  },
+  {
+   "sym": "ASR",
+   "umsatzMio": 10.2
+  },
+  {
+   "sym": "CGMU",
+   "umsatzMio": 10.2
+  },
+  {
+   "sym": "PBI",
+   "umsatzMio": 10.2
+  },
+  {
+   "sym": "EFC",
+   "umsatzMio": 10.1
+  },
+  {
+   "sym": "SUPN",
+   "umsatzMio": 10.1
+  },
+  {
+   "sym": "FTGC",
+   "umsatzMio": 10.1
+  },
+  {
+   "sym": "BBUS",
+   "umsatzMio": 10.1
+  },
+  {
+   "sym": "GNL",
+   "umsatzMio": 10.1
+  },
+  {
+   "sym": "ARI",
+   "umsatzMio": 10.1
+  },
+  {
+   "sym": "KN",
+   "umsatzMio": 10.1
+  },
+  {
+   "sym": "DFAX",
+   "umsatzMio": 10.1
+  },
+  {
+   "sym": "AXL",
+   "umsatzMio": 10.1
+  },
+  {
+   "sym": "CGXU",
+   "umsatzMio": 10
+  },
+  {
+   "sym": "TNGX",
+   "umsatzMio": 10
+  },
+  {
+   "sym": "IDV",
+   "umsatzMio": 10
+  },
+  {
+   "sym": "BRFS",
+   "umsatzMio": 10
+  },
+  {
+   "sym": "SASR",
+   "umsatzMio": 10
+  },
+  {
+   "sym": "EVGO",
+   "umsatzMio": 10
+  },
+  {
+   "sym": "ICVT",
+   "umsatzMio": 10
+  },
+  {
+   "sym": "WIT",
+   "umsatzMio": 10
+  },
+  {
+   "sym": "CENTA",
+   "umsatzMio": 10
+  },
+  {
+   "sym": "OR",
+   "umsatzMio": 10
+  },
+  {
+   "sym": "IBOC",
+   "umsatzMio": 10
+  },
+  {
+   "sym": "LB",
+   "umsatzMio": 10
+  },
+  {
+   "sym": "GOF",
+   "umsatzMio": 10
+  },
+  {
+   "sym": "FIP",
+   "umsatzMio": 9.9
+  },
+  {
+   "sym": "MAG",
+   "umsatzMio": 9.9
+  },
+  {
+   "sym": "UHAL.B",
+   "umsatzMio": 9.9
+  },
+  {
+   "sym": "DIVO",
+   "umsatzMio": 9.9
+  },
+  {
+   "sym": "NTCT",
+   "umsatzMio": 9.9
+  },
+  {
+   "sym": "AMRC",
+   "umsatzMio": 9.9
+  },
+  {
+   "sym": "SMIN",
+   "umsatzMio": 9.9
+  },
+  {
+   "sym": "PRF",
+   "umsatzMio": 9.9
+  },
+  {
+   "sym": "EAGG",
+   "umsatzMio": 9.9
+  },
+  {
+   "sym": "NEO",
+   "umsatzMio": 9.9
+  },
+  {
+   "sym": "STC",
+   "umsatzMio": 9.9
+  },
+  {
+   "sym": "ATEC",
+   "umsatzMio": 9.9
+  },
+  {
+   "sym": "SAH",
+   "umsatzMio": 9.9
+  },
+  {
+   "sym": "BORR",
+   "umsatzMio": 9.8
+  },
+  {
+   "sym": "BLND",
+   "umsatzMio": 9.8
+  },
+  {
+   "sym": "TUA",
+   "umsatzMio": 9.8
+  },
+  {
+   "sym": "CASH",
+   "umsatzMio": 9.8
+  },
+  {
+   "sym": "WFG",
+   "umsatzMio": 9.8
+  },
+  {
+   "sym": "REZ",
+   "umsatzMio": 9.8
+  },
+  {
+   "sym": "RWL",
+   "umsatzMio": 9.8
+  },
+  {
+   "sym": "ETD",
+   "umsatzMio": 9.8
+  },
+  {
+   "sym": "IBRX",
+   "umsatzMio": 9.8
+  },
+  {
+   "sym": "INVA",
+   "umsatzMio": 9.8
+  },
+  {
+   "sym": "ETWO",
+   "umsatzMio": 9.7
+  },
+  {
+   "sym": "ZUO",
+   "umsatzMio": 9.7
+  },
+  {
+   "sym": "ARGT",
+   "umsatzMio": 9.7
+  },
+  {
+   "sym": "LBRDA",
+   "umsatzMio": 9.7
+  },
+  {
+   "sym": "IEV",
+   "umsatzMio": 9.7
+  },
+  {
+   "sym": "WHLR",
+   "umsatzMio": 9.7
+  },
+  {
+   "sym": "JMIA",
+   "umsatzMio": 9.7
+  },
+  {
+   "sym": "AEHR",
+   "umsatzMio": 9.7
+  },
+  {
+   "sym": "CSGS",
+   "umsatzMio": 9.7
+  },
+  {
+   "sym": "MIR",
+   "umsatzMio": 9.6
+  },
+  {
+   "sym": "INDI",
+   "umsatzMio": 9.6
+  },
+  {
+   "sym": "VBTX",
+   "umsatzMio": 9.6
+  },
+  {
+   "sym": "NOMD",
+   "umsatzMio": 9.6
+  },
+  {
+   "sym": "MULN",
+   "umsatzMio": 9.6
+  },
+  {
+   "sym": "SAVE",
+   "umsatzMio": 9.6
+  },
+  {
+   "sym": "CRVL",
+   "umsatzMio": 9.6
+  },
+  {
+   "sym": "WINA",
+   "umsatzMio": 9.6
+  },
+  {
+   "sym": "ARVN",
+   "umsatzMio": 9.6
+  },
+  {
+   "sym": "BSCO",
+   "umsatzMio": 9.6
+  },
+  {
+   "sym": "DEA",
+   "umsatzMio": 9.6
+  },
+  {
+   "sym": "NWN",
+   "umsatzMio": 9.6
+  },
+  {
+   "sym": "DFLV",
+   "umsatzMio": 9.5
+  },
+  {
+   "sym": "SLYG",
+   "umsatzMio": 9.5
+  },
+  {
+   "sym": "DFUV",
+   "umsatzMio": 9.5
+  },
+  {
+   "sym": "ITOS",
+   "umsatzMio": 9.5
+  },
+  {
+   "sym": "WSBC",
+   "umsatzMio": 9.5
+  },
+  {
+   "sym": "IVR",
+   "umsatzMio": 9.5
+  },
+  {
+   "sym": "AZUL",
+   "umsatzMio": 9.4
+  },
+  {
+   "sym": "EWI",
+   "umsatzMio": 9.4
+  },
+  {
+   "sym": "EVRI",
+   "umsatzMio": 9.4
+  },
+  {
+   "sym": "AVPT",
+   "umsatzMio": 9.4
+  },
+  {
+   "sym": "JOE",
+   "umsatzMio": 9.4
+  },
+  {
+   "sym": "NATL",
+   "umsatzMio": 9.4
+  },
+  {
+   "sym": "FVRR",
+   "umsatzMio": 9.4
+  },
+  {
+   "sym": "CGEM",
+   "umsatzMio": 9.4
+  },
+  {
+   "sym": "GBTG",
+   "umsatzMio": 9.4
+  },
+  {
+   "sym": "CVGW",
+   "umsatzMio": 9.3
+  },
+  {
+   "sym": "XHLF",
+   "umsatzMio": 9.3
+  },
+  {
+   "sym": "MTBA",
+   "umsatzMio": 9.3
+  },
+  {
+   "sym": "SABR",
+   "umsatzMio": 9.3
+  },
+  {
+   "sym": "GOVZ",
+   "umsatzMio": 9.3
+  },
+  {
+   "sym": "VNQI",
+   "umsatzMio": 9.3
+  },
+  {
+   "sym": "FFBC",
+   "umsatzMio": 9.3
+  },
+  {
+   "sym": "AIQ",
+   "umsatzMio": 9.3
+  },
+  {
+   "sym": "IHDG",
+   "umsatzMio": 9.3
+  },
+  {
+   "sym": "ELME",
+   "umsatzMio": 9.3
+  },
+  {
+   "sym": "BSCR",
+   "umsatzMio": 9.3
+  },
+  {
+   "sym": "BBW",
+   "umsatzMio": 9.2
+  },
+  {
+   "sym": "GTHX",
+   "umsatzMio": 9.2
+  },
+  {
+   "sym": "UMH",
+   "umsatzMio": 9.2
+  },
+  {
+   "sym": "XHR",
+   "umsatzMio": 9.2
+  },
+  {
+   "sym": "LMB",
+   "umsatzMio": 9.2
+  },
+  {
+   "sym": "KNSA",
+   "umsatzMio": 9.2
+  },
+  {
+   "sym": "FCEL",
+   "umsatzMio": 9.2
+  },
+  {
+   "sym": "VSEC",
+   "umsatzMio": 9.2
+  },
+  {
+   "sym": "CLM",
+   "umsatzMio": 9.2
+  },
+  {
+   "sym": "BYRN",
+   "umsatzMio": 9.2
+  },
+  {
+   "sym": "PAAA",
+   "umsatzMio": 9.2
+  },
+  {
+   "sym": "PHR",
+   "umsatzMio": 9.1
+  },
+  {
+   "sym": "NAVI",
+   "umsatzMio": 9.1
+  },
+  {
+   "sym": "BCYC",
+   "umsatzMio": 9.1
+  },
+  {
+   "sym": "SUPV",
+   "umsatzMio": 9.1
+  },
+  {
+   "sym": "NZF",
+   "umsatzMio": 9.1
+  },
+  {
+   "sym": "JMUB",
+   "umsatzMio": 9.1
+  },
+  {
+   "sym": "PFXF",
+   "umsatzMio": 9.1
+  },
+  {
+   "sym": "TGI",
+   "umsatzMio": 9.1
+  },
+  {
+   "sym": "VET",
+   "umsatzMio": 9.1
+  },
+  {
+   "sym": "AZZ",
+   "umsatzMio": 9.1
+  },
+  {
+   "sym": "CARS",
+   "umsatzMio": 9.1
+  },
+  {
+   "sym": "BHE",
+   "umsatzMio": 9
+  },
+  {
+   "sym": "LQDA",
+   "umsatzMio": 9
+  },
+  {
+   "sym": "VCR",
+   "umsatzMio": 9
+  },
+  {
+   "sym": "VREX",
+   "umsatzMio": 9
+  },
+  {
+   "sym": "KRNT",
+   "umsatzMio": 9
+  },
+  {
+   "sym": "HAFN",
+   "umsatzMio": 9
+  },
+  {
+   "sym": "HLMN",
+   "umsatzMio": 9
+  },
+  {
+   "sym": "HIVE",
+   "umsatzMio": 9
+  },
+  {
+   "sym": "EVTR",
+   "umsatzMio": 9
+  },
+  {
+   "sym": "ERY",
+   "umsatzMio": 8.9
+  },
+  {
+   "sym": "AMRX",
+   "umsatzMio": 8.9
+  },
+  {
+   "sym": "EZA",
+   "umsatzMio": 8.9
+  },
+  {
+   "sym": "PYCR",
+   "umsatzMio": 8.9
+  },
+  {
+   "sym": "PLAB",
+   "umsatzMio": 8.9
+  },
+  {
+   "sym": "IBDS",
+   "umsatzMio": 8.9
+  },
+  {
+   "sym": "USM",
+   "umsatzMio": 8.9
+  },
+  {
+   "sym": "STN",
+   "umsatzMio": 8.9
+  },
+  {
+   "sym": "CSTL",
+   "umsatzMio": 8.9
+  },
+  {
+   "sym": "CIB",
+   "umsatzMio": 8.9
+  },
+  {
+   "sym": "ANAB",
+   "umsatzMio": 8.9
+  },
+  {
+   "sym": "RPV",
+   "umsatzMio": 8.9
+  },
+  {
+   "sym": "CDMO",
+   "umsatzMio": 8.9
+  },
+  {
+   "sym": "IWX",
+   "umsatzMio": 8.8
+  },
+  {
+   "sym": "IBDU",
+   "umsatzMio": 8.8
+  },
+  {
+   "sym": "IBDT",
+   "umsatzMio": 8.8
+  },
+  {
+   "sym": "IAI",
+   "umsatzMio": 8.8
+  },
+  {
+   "sym": "BILZ",
+   "umsatzMio": 8.8
+  },
+  {
+   "sym": "IVT",
+   "umsatzMio": 8.8
+  },
+  {
+   "sym": "AOSL",
+   "umsatzMio": 8.8
+  },
+  {
+   "sym": "PICK",
+   "umsatzMio": 8.8
+  },
+  {
+   "sym": "XNCR",
+   "umsatzMio": 8.7
+  },
+  {
+   "sym": "MTRN",
+   "umsatzMio": 8.7
+  },
+  {
+   "sym": "IMNM",
+   "umsatzMio": 8.7
+  },
+  {
+   "sym": "LMAT",
+   "umsatzMio": 8.7
+  },
+  {
+   "sym": "LOVE",
+   "umsatzMio": 8.7
+  },
+  {
+   "sym": "HMN",
+   "umsatzMio": 8.7
+  },
+  {
+   "sym": "BASE",
+   "umsatzMio": 8.7
+  },
+  {
+   "sym": "BIZD",
+   "umsatzMio": 8.7
+  },
+  {
+   "sym": "OFG",
+   "umsatzMio": 8.7
+  },
+  {
+   "sym": "ZUMZ",
+   "umsatzMio": 8.7
+  },
+  {
+   "sym": "IOO",
+   "umsatzMio": 8.7
+  },
+  {
+   "sym": "BBAR",
+   "umsatzMio": 8.7
+  },
+  {
+   "sym": "LFST",
+   "umsatzMio": 8.7
+  },
+  {
+   "sym": "KRUS",
+   "umsatzMio": 8.6
+  },
+  {
+   "sym": "MTX",
+   "umsatzMio": 8.6
+  },
+  {
+   "sym": "XAR",
+   "umsatzMio": 8.6
+  },
+  {
+   "sym": "LLYVK",
+   "umsatzMio": 8.6
+  },
+  {
+   "sym": "LAUR",
+   "umsatzMio": 8.6
+  },
+  {
+   "sym": "TILE",
+   "umsatzMio": 8.6
+  },
+  {
+   "sym": "TFIN",
+   "umsatzMio": 8.6
+  },
+  {
+   "sym": "TNC",
+   "umsatzMio": 8.6
+  },
+  {
+   "sym": "LGND",
+   "umsatzMio": 8.6
+  },
+  {
+   "sym": "MOMO",
+   "umsatzMio": 8.6
+  },
+  {
+   "sym": "ZYME",
+   "umsatzMio": 8.6
+  },
+  {
+   "sym": "NMRA",
+   "umsatzMio": 8.6
+  },
+  {
+   "sym": "TPC",
+   "umsatzMio": 8.6
+  },
+  {
+   "sym": "CHCT",
+   "umsatzMio": 8.6
+  },
+  {
+   "sym": "DNOW",
+   "umsatzMio": 8.6
+  },
+  {
+   "sym": "BACpL",
+   "umsatzMio": 8.5
+  },
+  {
+   "sym": "INTR",
+   "umsatzMio": 8.5
+  },
+  {
+   "sym": "DESP",
+   "umsatzMio": 8.5
+  },
+  {
+   "sym": "EPP",
+   "umsatzMio": 8.5
+  },
+  {
+   "sym": "DRVN",
+   "umsatzMio": 8.5
+  },
+  {
+   "sym": "HAIN",
+   "umsatzMio": 8.5
+  },
+  {
+   "sym": "CGBL",
+   "umsatzMio": 8.5
+  },
+  {
+   "sym": "LIF",
+   "umsatzMio": 8.5
+  },
+  {
+   "sym": "DSI",
+   "umsatzMio": 8.4
+  },
+  {
+   "sym": "EOLS",
+   "umsatzMio": 8.4
+  },
+  {
+   "sym": "FDMT",
+   "umsatzMio": 8.4
+  },
+  {
+   "sym": "OEC",
+   "umsatzMio": 8.4
+  },
+  {
+   "sym": "PUMP",
+   "umsatzMio": 8.4
+  },
+  {
+   "sym": "BSCS",
+   "umsatzMio": 8.4
+  },
+  {
+   "sym": "IYZ",
+   "umsatzMio": 8.4
+  },
+  {
+   "sym": "CMCO",
+   "umsatzMio": 8.4
+  },
+  {
+   "sym": "DDD",
+   "umsatzMio": 8.4
+  },
+  {
+   "sym": "MUNI",
+   "umsatzMio": 8.4
+  },
+  {
+   "sym": "CLW",
+   "umsatzMio": 8.4
+  },
+  {
+   "sym": "RCUS",
+   "umsatzMio": 8.4
+  },
+  {
+   "sym": "IYK",
+   "umsatzMio": 8.4
+  },
+  {
+   "sym": "WS",
+   "umsatzMio": 8.3
+  },
+  {
+   "sym": "DAC",
+   "umsatzMio": 8.3
+  },
+  {
+   "sym": "ARCO",
+   "umsatzMio": 8.3
+  },
+  {
+   "sym": "ROOT",
+   "umsatzMio": 8.3
+  },
+  {
+   "sym": "ICHR",
+   "umsatzMio": 8.3
+  },
+  {
+   "sym": "GCI",
+   "umsatzMio": 8.3
+  },
+  {
+   "sym": "SXC",
+   "umsatzMio": 8.3
+  },
+  {
+   "sym": "TRS",
+   "umsatzMio": 8.3
+  },
+  {
+   "sym": "PRDO",
+   "umsatzMio": 8.2
+  },
+  {
+   "sym": "NVEE",
+   "umsatzMio": 8.2
+  },
+  {
+   "sym": "UNFI",
+   "umsatzMio": 8.2
+  },
+  {
+   "sym": "STVN",
+   "umsatzMio": 8.2
+  },
+  {
+   "sym": "PTY",
+   "umsatzMio": 8.2
+  },
+  {
+   "sym": "ZVZZT",
+   "umsatzMio": 8.2
+  },
+  {
+   "sym": "PMT",
+   "umsatzMio": 8.2
+  },
+  {
+   "sym": "WB",
+   "umsatzMio": 8.2
+  },
+  {
+   "sym": "GTO",
+   "umsatzMio": 8.2
+  },
+  {
+   "sym": "IBTG",
+   "umsatzMio": 8.1
+  },
+  {
+   "sym": "BDN",
+   "umsatzMio": 8.1
+  },
+  {
+   "sym": "GSL",
+   "umsatzMio": 8.1
+  },
+  {
+   "sym": "WNC",
+   "umsatzMio": 8.1
+  },
+  {
+   "sym": "STOK",
+   "umsatzMio": 8.1
+  },
+  {
+   "sym": "IDU",
+   "umsatzMio": 8.1
+  },
+  {
+   "sym": "EVER",
+   "umsatzMio": 8.1
+  },
+  {
+   "sym": "SGML",
+   "umsatzMio": 8.1
+  },
+  {
+   "sym": "ARKW",
+   "umsatzMio": 8.1
+  },
+  {
+   "sym": "LOB",
+   "umsatzMio": 8.1
+  },
+  {
+   "sym": "COGT",
+   "umsatzMio": 8.1
+  },
+  {
+   "sym": "MBUU",
+   "umsatzMio": 8.1
+  },
+  {
+   "sym": "KURA",
+   "umsatzMio": 8.1
+  },
+  {
+   "sym": "NUS",
+   "umsatzMio": 8
+  },
+  {
+   "sym": "TRNS",
+   "umsatzMio": 8
+  },
+  {
+   "sym": "ZEUS",
+   "umsatzMio": 8
+  },
+  {
+   "sym": "LSPD",
+   "umsatzMio": 8
+  },
+  {
+   "sym": "TRMK",
+   "umsatzMio": 8
+  },
+  {
+   "sym": "THRM",
+   "umsatzMio": 8
+  },
+  {
+   "sym": "GEF",
+   "umsatzMio": 8
+  },
+  {
+   "sym": "SVCO",
+   "umsatzMio": 8
+  },
+  {
+   "sym": "XDTE",
+   "umsatzMio": 8
+  },
+  {
+   "sym": "DLO",
+   "umsatzMio": 8
+  },
+  {
+   "sym": "MGEE",
+   "umsatzMio": 7.9
+  },
+  {
+   "sym": "MCRI",
+   "umsatzMio": 7.9
+  },
+  {
+   "sym": "GEVO",
+   "umsatzMio": 7.9
+  },
+  {
+   "sym": "JPC",
+   "umsatzMio": 7.9
+  },
+  {
+   "sym": "FIZZ",
+   "umsatzMio": 7.9
+  },
+  {
+   "sym": "TREE",
+   "umsatzMio": 7.9
+  },
+  {
+   "sym": "CTO",
+   "umsatzMio": 7.9
+  },
+  {
+   "sym": "HVT",
+   "umsatzMio": 7.9
+  },
+  {
+   "sym": "BLCO",
+   "umsatzMio": 7.9
+  },
+  {
+   "sym": "EH",
+   "umsatzMio": 7.9
+  },
+  {
+   "sym": "SCHK",
+   "umsatzMio": 7.8
+  },
+  {
+   "sym": "PDO",
+   "umsatzMio": 7.8
+  },
+  {
+   "sym": "AIV",
+   "umsatzMio": 7.8
+  },
+  {
+   "sym": "DFIN",
+   "umsatzMio": 7.8
+  },
+  {
+   "sym": "PVAL",
+   "umsatzMio": 7.8
+  },
+  {
+   "sym": "NEXT",
+   "umsatzMio": 7.8
+  },
+  {
+   "sym": "LADR",
+   "umsatzMio": 7.8
+  },
+  {
+   "sym": "LZ",
+   "umsatzMio": 7.8
+  },
+  {
+   "sym": "VRE",
+   "umsatzMio": 7.8
+  },
+  {
+   "sym": "DBO",
+   "umsatzMio": 7.8
+  },
+  {
+   "sym": "BHLB",
+   "umsatzMio": 7.7
+  },
+  {
+   "sym": "SNEX",
+   "umsatzMio": 7.7
+  },
+  {
+   "sym": "IBTX",
+   "umsatzMio": 7.7
+  },
+  {
+   "sym": "NHC",
+   "umsatzMio": 7.7
+  },
+  {
+   "sym": "LTC",
+   "umsatzMio": 7.7
+  },
+  {
+   "sym": "FUTY",
+   "umsatzMio": 7.7
+  },
+  {
+   "sym": "PALL",
+   "umsatzMio": 7.7
+  },
+  {
+   "sym": "ALBpA",
+   "umsatzMio": 7.7
+  },
+  {
+   "sym": "BV",
+   "umsatzMio": 7.7
+  },
+  {
+   "sym": "YEAR",
+   "umsatzMio": 7.7
+  },
+  {
+   "sym": "FCF",
+   "umsatzMio": 7.7
+  },
+  {
+   "sym": "VVX",
+   "umsatzMio": 7.7
+  },
+  {
+   "sym": "ARLO",
+   "umsatzMio": 7.6
+  },
+  {
+   "sym": "DOOO",
+   "umsatzMio": 7.6
+  },
+  {
+   "sym": "NBHC",
+   "umsatzMio": 7.6
+  },
+  {
+   "sym": "JHMM",
+   "umsatzMio": 7.6
+  },
+  {
+   "sym": "APLT",
+   "umsatzMio": 7.6
+  },
+  {
+   "sym": "LEU",
+   "umsatzMio": 7.6
+  },
+  {
+   "sym": "RPG",
+   "umsatzMio": 7.6
+  },
+  {
+   "sym": "SCS",
+   "umsatzMio": 7.6
+  },
+  {
+   "sym": "SXT",
+   "umsatzMio": 7.5
+  },
+  {
+   "sym": "JBSS",
+   "umsatzMio": 7.5
+  },
+  {
+   "sym": "PAX",
+   "umsatzMio": 7.5
+  },
+  {
+   "sym": "ARCT",
+   "umsatzMio": 7.5
+  },
+  {
+   "sym": "IGEB",
+   "umsatzMio": 7.5
+  },
+  {
+   "sym": "DJCO",
+   "umsatzMio": 7.5
+  },
+  {
+   "sym": "MOV",
+   "umsatzMio": 7.5
+  },
+  {
+   "sym": "BSCT",
+   "umsatzMio": 7.5
+  },
+  {
+   "sym": "COHU",
+   "umsatzMio": 7.5
+  },
+  {
+   "sym": "PKX",
+   "umsatzMio": 7.5
+  },
+  {
+   "sym": "NAT",
+   "umsatzMio": 7.5
+  },
+  {
+   "sym": "SJW",
+   "umsatzMio": 7.5
+  },
+  {
+   "sym": "IMRX",
+   "umsatzMio": 7.5
+  },
+  {
+   "sym": "FDP",
+   "umsatzMio": 7.4
+  },
+  {
+   "sym": "E",
+   "umsatzMio": 7.4
+  },
+  {
+   "sym": "FRME",
+   "umsatzMio": 7.4
+  },
+  {
+   "sym": "FIHL",
+   "umsatzMio": 7.4
+  },
+  {
+   "sym": "UTSL",
+   "umsatzMio": 7.4
+  },
+  {
+   "sym": "AGM",
+   "umsatzMio": 7.4
+  },
+  {
+   "sym": "GNK",
+   "umsatzMio": 7.4
+  },
+  {
+   "sym": "FMB",
+   "umsatzMio": 7.4
+  },
+  {
+   "sym": "GOOS",
+   "umsatzMio": 7.4
+  },
+  {
+   "sym": "KALU",
+   "umsatzMio": 7.4
+  },
+  {
+   "sym": "AUPH",
+   "umsatzMio": 7.4
+  },
+  {
+   "sym": "BOWL",
+   "umsatzMio": 7.4
+  },
+  {
+   "sym": "PCY",
+   "umsatzMio": 7.4
+  },
+  {
+   "sym": "REPL",
+   "umsatzMio": 7.4
+  },
+  {
+   "sym": "IBTF",
+   "umsatzMio": 7.4
+  },
+  {
+   "sym": "JAVA",
+   "umsatzMio": 7.4
+  },
+  {
+   "sym": "ZK",
+   "umsatzMio": 7.4
+  },
+  {
+   "sym": "KFRC",
+   "umsatzMio": 7.4
+  },
+  {
+   "sym": "WTTR",
+   "umsatzMio": 7.4
+  },
+  {
+   "sym": "GSBD",
+   "umsatzMio": 7.3
+  },
+  {
+   "sym": "SPUS",
+   "umsatzMio": 7.3
+  },
+  {
+   "sym": "CIM",
+   "umsatzMio": 7.3
+  },
+  {
+   "sym": "MLPX",
+   "umsatzMio": 7.3
+  },
+  {
+   "sym": "BTCO",
+   "umsatzMio": 7.3
+  },
+  {
+   "sym": "CSR",
+   "umsatzMio": 7.2
+  },
+  {
+   "sym": "PRK",
+   "umsatzMio": 7.2
+  },
+  {
+   "sym": "HOPE",
+   "umsatzMio": 7.2
+  },
+  {
+   "sym": "SLQD",
+   "umsatzMio": 7.2
+  },
+  {
+   "sym": "XPEL",
+   "umsatzMio": 7.2
+  },
+  {
+   "sym": "ATEN",
+   "umsatzMio": 7.2
+  },
+  {
+   "sym": "ANNX",
+   "umsatzMio": 7.2
+  },
+  {
+   "sym": "ECC",
+   "umsatzMio": 7.2
+  },
+  {
+   "sym": "GSIE",
+   "umsatzMio": 7.2
+  },
+  {
+   "sym": "ASC",
+   "umsatzMio": 7.1
+  },
+  {
+   "sym": "INDV",
+   "umsatzMio": 7.1
+  },
+  {
+   "sym": "ULTY",
+   "umsatzMio": 7.1
+  },
+  {
+   "sym": "IMMR",
+   "umsatzMio": 7.1
+  },
+  {
+   "sym": "FLIN",
+   "umsatzMio": 7.1
+  },
+  {
+   "sym": "NAC",
+   "umsatzMio": 7.1
+  },
+  {
+   "sym": "INST",
+   "umsatzMio": 7.1
+  },
+  {
+   "sym": "NRDS",
+   "umsatzMio": 7.1
+  },
+  {
+   "sym": "IRON",
+   "umsatzMio": 7.1
+  },
+  {
+   "sym": "ATUS",
+   "umsatzMio": 7.1
+  },
+  {
+   "sym": "FA",
+   "umsatzMio": 7.1
+  },
+  {
+   "sym": "JBND",
+   "umsatzMio": 7.1
+  },
+  {
+   "sym": "DAKT",
+   "umsatzMio": 7
+  },
+  {
+   "sym": "USPH",
+   "umsatzMio": 7
+  },
+  {
+   "sym": "AAPD",
+   "umsatzMio": 7
+  },
+  {
+   "sym": "NWBI",
+   "umsatzMio": 7
+  },
+  {
+   "sym": "LAC",
+   "umsatzMio": 7
+  },
+  {
+   "sym": "HURN",
+   "umsatzMio": 7
+  },
+  {
+   "sym": "PNTG",
+   "umsatzMio": 7
+  },
+  {
+   "sym": "JELD",
+   "umsatzMio": 7
+  },
+  {
+   "sym": "CCRN",
+   "umsatzMio": 7
+  },
+  {
+   "sym": "NVG",
+   "umsatzMio": 6.9
+  },
+  {
+   "sym": "HTH",
+   "umsatzMio": 6.9
+  },
+  {
+   "sym": "IE",
+   "umsatzMio": 6.9
+  },
+  {
+   "sym": "BGS",
+   "umsatzMio": 6.9
+  },
+  {
+   "sym": "DLN",
+   "umsatzMio": 6.9
+  },
+  {
+   "sym": "TRIN",
+   "umsatzMio": 6.9
+  },
+  {
+   "sym": "OMAB",
+   "umsatzMio": 6.9
+  },
+  {
+   "sym": "CGAU",
+   "umsatzMio": 6.9
+  },
+  {
+   "sym": "SNPE",
+   "umsatzMio": 6.9
+  },
+  {
+   "sym": "ESTA",
+   "umsatzMio": 6.9
+  },
+  {
+   "sym": "TIMB",
+   "umsatzMio": 6.9
+  },
+  {
+   "sym": "SPCE",
+   "umsatzMio": 6.9
+  },
+  {
+   "sym": "DBA",
+   "umsatzMio": 6.9
+  },
+  {
+   "sym": "BBAX",
+   "umsatzMio": 6.8
+  },
+  {
+   "sym": "IFRA",
+   "umsatzMio": 6.8
+  },
+  {
+   "sym": "VFLO",
+   "umsatzMio": 6.8
+  },
+  {
+   "sym": "APOG",
+   "umsatzMio": 6.8
+  },
+  {
+   "sym": "INOD",
+   "umsatzMio": 6.8
+  },
+  {
+   "sym": "JAMF",
+   "umsatzMio": 6.8
+  },
+  {
+   "sym": "SCL",
+   "umsatzMio": 6.8
+  },
+  {
+   "sym": "VRP",
+   "umsatzMio": 6.8
+  },
+  {
+   "sym": "MDYG",
+   "umsatzMio": 6.7
+  },
+  {
+   "sym": "AVBP",
+   "umsatzMio": 6.7
+  },
+  {
+   "sym": "BCAX",
+   "umsatzMio": 6.7
+  },
+  {
+   "sym": "ICF",
+   "umsatzMio": 6.7
+  },
+  {
+   "sym": "PRTA",
+   "umsatzMio": 6.7
+  },
+  {
+   "sym": "IRWD",
+   "umsatzMio": 6.7
+  },
+  {
+   "sym": "KW",
+   "umsatzMio": 6.7
+  },
+  {
+   "sym": "FWRG",
+   "umsatzMio": 6.7
+  },
+  {
+   "sym": "ML",
+   "umsatzMio": 6.7
+  },
+  {
+   "sym": "CCCC",
+   "umsatzMio": 6.7
+  },
+  {
+   "sym": "PSI",
+   "umsatzMio": 6.7
+  },
+  {
+   "sym": "QNST",
+   "umsatzMio": 6.7
+  },
+  {
+   "sym": "PRM",
+   "umsatzMio": 6.7
+  },
+  {
+   "sym": "MCW",
+   "umsatzMio": 6.6
+  },
+  {
+   "sym": "SANA",
+   "umsatzMio": 6.6
+  },
+  {
+   "sym": "FLNG",
+   "umsatzMio": 6.6
+  },
+  {
+   "sym": "TGB",
+   "umsatzMio": 6.6
+  },
+  {
+   "sym": "TDIV",
+   "umsatzMio": 6.6
+  },
+  {
+   "sym": "GDRX",
+   "umsatzMio": 6.6
+  },
+  {
+   "sym": "DAVE",
+   "umsatzMio": 6.6
+  },
+  {
+   "sym": "TLK",
+   "umsatzMio": 6.6
+  },
+  {
+   "sym": "EWS",
+   "umsatzMio": 6.6
+  },
+  {
+   "sym": "CHGG",
+   "umsatzMio": 6.6
+  },
+  {
+   "sym": "NAPA",
+   "umsatzMio": 6.6
+  },
+  {
+   "sym": "MTTR",
+   "umsatzMio": 6.6
+  },
+  {
+   "sym": "NVTS",
+   "umsatzMio": 6.5
+  },
+  {
+   "sym": "ANDE",
+   "umsatzMio": 6.5
+  },
+  {
+   "sym": "APPS",
+   "umsatzMio": 6.5
+  },
+  {
+   "sym": "OCUL",
+   "umsatzMio": 6.5
+  },
+  {
+   "sym": "IEO",
+   "umsatzMio": 6.5
+  },
+  {
+   "sym": "VSGX",
+   "umsatzMio": 6.5
+  },
+  {
+   "sym": "PRLB",
+   "umsatzMio": 6.5
+  },
+  {
+   "sym": "IBDV",
+   "umsatzMio": 6.5
+  },
+  {
+   "sym": "TOWN",
+   "umsatzMio": 6.5
+  },
+  {
+   "sym": "BRY",
+   "umsatzMio": 6.5
+  },
+  {
+   "sym": "IRBT",
+   "umsatzMio": 6.4
+  },
+  {
+   "sym": "SNCY",
+   "umsatzMio": 6.4
+  },
+  {
+   "sym": "AOR",
+   "umsatzMio": 6.4
+  },
+  {
+   "sym": "ACIO",
+   "umsatzMio": 6.4
+  },
+  {
+   "sym": "CNXN",
+   "umsatzMio": 6.4
+  },
+  {
+   "sym": "SFIX",
+   "umsatzMio": 6.4
+  },
+  {
+   "sym": "VERV",
+   "umsatzMio": 6.4
+  },
+  {
+   "sym": "LNN",
+   "umsatzMio": 6.4
+  },
+  {
+   "sym": "TX",
+   "umsatzMio": 6.4
+  },
+  {
+   "sym": "FTLS",
+   "umsatzMio": 6.4
+  },
+  {
+   "sym": "BUR",
+   "umsatzMio": 6.4
+  },
+  {
+   "sym": "DRSK",
+   "umsatzMio": 6.4
+  },
+  {
+   "sym": "XMTR",
+   "umsatzMio": 6.4
+  },
+  {
+   "sym": "EDIT",
+   "umsatzMio": 6.4
+  },
+  {
+   "sym": "CRMD",
+   "umsatzMio": 6.4
+  },
+  {
+   "sym": "FELG",
+   "umsatzMio": 6.4
+  },
+  {
+   "sym": "ARDT",
+   "umsatzMio": 6.3
+  },
+  {
+   "sym": "VIV",
+   "umsatzMio": 6.3
+  },
+  {
+   "sym": "RWT",
+   "umsatzMio": 6.3
+  },
+  {
+   "sym": "MDYV",
+   "umsatzMio": 6.3
+  },
+  {
+   "sym": "LVHI",
+   "umsatzMio": 6.3
+  },
+  {
+   "sym": "FULC",
+   "umsatzMio": 6.3
+  },
+  {
+   "sym": "EFSC",
+   "umsatzMio": 6.3
+  },
+  {
+   "sym": "FBNC",
+   "umsatzMio": 6.3
+  },
+  {
+   "sym": "BUSE",
+   "umsatzMio": 6.3
+  },
+  {
+   "sym": "AB",
+   "umsatzMio": 6.3
+  },
+  {
+   "sym": "BCAT",
+   "umsatzMio": 6.3
+  },
+  {
+   "sym": "JGLO",
+   "umsatzMio": 6.3
+  },
+  {
+   "sym": "DBMF",
+   "umsatzMio": 6.3
+  },
+  {
+   "sym": "IMKTA",
+   "umsatzMio": 6.2
+  },
+  {
+   "sym": "CSHI",
+   "umsatzMio": 6.2
+  },
+  {
+   "sym": "GRFS",
+   "umsatzMio": 6.2
+  },
+  {
+   "sym": "GCOW",
+   "umsatzMio": 6.2
+  },
+  {
+   "sym": "HZO",
+   "umsatzMio": 6.2
+  },
+  {
+   "sym": "MRX",
+   "umsatzMio": 6.2
+  },
+  {
+   "sym": "BLFS",
+   "umsatzMio": 6.2
+  },
+  {
+   "sym": "ICOW",
+   "umsatzMio": 6.2
+  },
+  {
+   "sym": "HRTG",
+   "umsatzMio": 6.2
+  },
+  {
+   "sym": "JILL",
+   "umsatzMio": 6.2
+  },
+  {
+   "sym": "ASTL",
+   "umsatzMio": 6.2
+  },
+  {
+   "sym": "AAT",
+   "umsatzMio": 6.2
+  },
+  {
+   "sym": "EMBC",
+   "umsatzMio": 6.2
+  },
+  {
+   "sym": "NTGR",
+   "umsatzMio": 6.2
+  },
+  {
+   "sym": "PDM",
+   "umsatzMio": 6.1
+  },
+  {
+   "sym": "HYLS",
+   "umsatzMio": 6.1
+  },
+  {
+   "sym": "GTY",
+   "umsatzMio": 6.1
+  },
+  {
+   "sym": "ATSG",
+   "umsatzMio": 6.1
+  },
+  {
+   "sym": "INVX",
+   "umsatzMio": 6.1
+  },
+  {
+   "sym": "ECPG",
+   "umsatzMio": 6.1
+  },
+  {
+   "sym": "CPF",
+   "umsatzMio": 6.1
+  },
+  {
+   "sym": "LGF.A",
+   "umsatzMio": 6.1
+  },
+  {
+   "sym": "GNR",
+   "umsatzMio": 6.1
+  },
+  {
+   "sym": "UVV",
+   "umsatzMio": 6.1
+  },
+  {
+   "sym": "LEN.B",
+   "umsatzMio": 6.1
+  },
+  {
+   "sym": "CON",
+   "umsatzMio": 6.1
+  },
+  {
+   "sym": "TV",
+   "umsatzMio": 6.1
+  },
+  {
+   "sym": "DFGR",
+   "umsatzMio": 6.1
+  },
+  {
+   "sym": "GRND",
+   "umsatzMio": 6.1
+  },
+  {
+   "sym": "OLPX",
+   "umsatzMio": 6.1
+  },
+  {
+   "sym": "QAI",
+   "umsatzMio": 6.1
+  },
+  {
+   "sym": "UITB",
+   "umsatzMio": 6.1
+  },
+  {
+   "sym": "SNBR",
+   "umsatzMio": 6.1
+  },
+  {
+   "sym": "FPEI",
+   "umsatzMio": 6.1
+  },
+  {
+   "sym": "SKM",
+   "umsatzMio": 6.1
+  },
+  {
+   "sym": "NNI",
+   "umsatzMio": 6.1
+  },
+  {
+   "sym": "ZVRA",
+   "umsatzMio": 6.1
+  },
+  {
+   "sym": "GDEN",
+   "umsatzMio": 6.1
+  },
+  {
+   "sym": "HTRB",
+   "umsatzMio": 6.1
+  },
+  {
+   "sym": "MAX",
+   "umsatzMio": 6.1
+  },
+  {
+   "sym": "EUFN",
+   "umsatzMio": 6
+  },
+  {
+   "sym": "RECS",
+   "umsatzMio": 6
+  },
+  {
+   "sym": "CRGX",
+   "umsatzMio": 6
+  },
+  {
+   "sym": "SXI",
+   "umsatzMio": 6
+  },
+  {
+   "sym": "BLNK",
+   "umsatzMio": 6
+  },
+  {
+   "sym": "OUST",
+   "umsatzMio": 6
+  },
+  {
+   "sym": "PLYA",
+   "umsatzMio": 6
+  },
+  {
+   "sym": "BIGC",
+   "umsatzMio": 6
+  },
+  {
+   "sym": "CYH",
+   "umsatzMio": 6
+  },
+  {
+   "sym": "LGF.B",
+   "umsatzMio": 6
+  },
+  {
+   "sym": "SMCX",
+   "umsatzMio": 6
+  },
+  {
+   "sym": "HLIO",
+   "umsatzMio": 6
+  },
+  {
+   "sym": "PWP",
+   "umsatzMio": 6
+  },
+  {
+   "sym": "VNET",
+   "umsatzMio": 6
+  },
+  {
+   "sym": "RGNX",
+   "umsatzMio": 5.9
+  },
+  {
+   "sym": "SRAD",
+   "umsatzMio": 5.9
+  },
+  {
+   "sym": "RDVI",
+   "umsatzMio": 5.9
+  },
+  {
+   "sym": "SA",
+   "umsatzMio": 5.9
+  },
+  {
+   "sym": "SCYB",
+   "umsatzMio": 5.9
+  },
+  {
+   "sym": "XBIL",
+   "umsatzMio": 5.9
+  },
+  {
+   "sym": "ARKF",
+   "umsatzMio": 5.9
+  },
+  {
+   "sym": "EIG",
+   "umsatzMio": 5.9
+  },
+  {
+   "sym": "TCPC",
+   "umsatzMio": 5.8
+  },
+  {
+   "sym": "RYI",
+   "umsatzMio": 5.8
+  },
+  {
+   "sym": "METC",
+   "umsatzMio": 5.8
+  },
+  {
+   "sym": "CRMT",
+   "umsatzMio": 5.8
+  },
+  {
+   "sym": "BXC",
+   "umsatzMio": 5.8
+  },
+  {
+   "sym": "LU",
+   "umsatzMio": 5.8
+  },
+  {
+   "sym": "ALEX",
+   "umsatzMio": 5.8
+  },
+  {
+   "sym": "BAK",
+   "umsatzMio": 5.8
+  },
+  {
+   "sym": "TSLX",
+   "umsatzMio": 5.8
+  },
+  {
+   "sym": "ITM",
+   "umsatzMio": 5.8
+  },
+  {
+   "sym": "EBR",
+   "umsatzMio": 5.7
+  },
+  {
+   "sym": "IMCG",
+   "umsatzMio": 5.7
+  },
+  {
+   "sym": "IMTM",
+   "umsatzMio": 5.7
+  },
+  {
+   "sym": "SRRK",
+   "umsatzMio": 5.7
+  },
+  {
+   "sym": "PLYM",
+   "umsatzMio": 5.7
+  },
+  {
+   "sym": "EZBC",
+   "umsatzMio": 5.7
+  },
+  {
+   "sym": "WPP",
+   "umsatzMio": 5.7
+  },
+  {
+   "sym": "MFIC",
+   "umsatzMio": 5.7
+  },
+  {
+   "sym": "BKLC",
+   "umsatzMio": 5.7
+  },
+  {
+   "sym": "KREF",
+   "umsatzMio": 5.7
+  },
+  {
+   "sym": "MODV",
+   "umsatzMio": 5.7
+  },
+  {
+   "sym": "PSEP",
+   "umsatzMio": 5.7
+  },
+  {
+   "sym": "CGSD",
+   "umsatzMio": 5.7
+  },
+  {
+   "sym": "PFBC",
+   "umsatzMio": 5.6
+  },
+  {
+   "sym": "PTLC",
+   "umsatzMio": 5.6
+  },
+  {
+   "sym": "CSWC",
+   "umsatzMio": 5.6
+  },
+  {
+   "sym": "DFEN",
+   "umsatzMio": 5.6
+  },
+  {
+   "sym": "ABUS",
+   "umsatzMio": 5.6
+  },
+  {
+   "sym": "PLTK",
+   "umsatzMio": 5.6
+  },
+  {
+   "sym": "LKFN",
+   "umsatzMio": 5.6
+  },
+  {
+   "sym": "FSIG",
+   "umsatzMio": 5.6
+  },
+  {
+   "sym": "GOGO",
+   "umsatzMio": 5.6
+  },
+  {
+   "sym": "FMS",
+   "umsatzMio": 5.6
+  },
+  {
+   "sym": "SBGI",
+   "umsatzMio": 5.6
+  },
+  {
+   "sym": "EMLP",
+   "umsatzMio": 5.6
+  },
+  {
+   "sym": "QQEW",
+   "umsatzMio": 5.6
+  },
+  {
+   "sym": "STBA",
+   "umsatzMio": 5.6
+  },
+  {
+   "sym": "FHLC",
+   "umsatzMio": 5.6
+  },
+  {
+   "sym": "HYGV",
+   "umsatzMio": 5.6
+  },
+  {
+   "sym": "FNGS",
+   "umsatzMio": 5.6
+  },
+  {
+   "sym": "QTTB",
+   "umsatzMio": 5.6
+  },
+  {
+   "sym": "TRTX",
+   "umsatzMio": 5.5
+  },
+  {
+   "sym": "OSW",
+   "umsatzMio": 5.5
+  },
+  {
+   "sym": "TAC",
+   "umsatzMio": 5.5
+  },
+  {
+   "sym": "CFB",
+   "umsatzMio": 5.5
+  },
+  {
+   "sym": "BRKL",
+   "umsatzMio": 5.5
+  },
+  {
+   "sym": "AQST",
+   "umsatzMio": 5.5
+  },
+  {
+   "sym": "DISV",
+   "umsatzMio": 5.5
+  },
+  {
+   "sym": "VIR",
+   "umsatzMio": 5.5
+  },
+  {
+   "sym": "DCOM",
+   "umsatzMio": 5.5
+  },
+  {
+   "sym": "SWBI",
+   "umsatzMio": 5.5
+  },
+  {
+   "sym": "GSG",
+   "umsatzMio": 5.5
+  },
+  {
+   "sym": "LILAK",
+   "umsatzMio": 5.5
+  },
+  {
+   "sym": "ERAS",
+   "umsatzMio": 5.5
+  },
+  {
+   "sym": "TK",
+   "umsatzMio": 5.5
+  },
+  {
+   "sym": "RPAY",
+   "umsatzMio": 5.4
+  },
+  {
+   "sym": "HOUS",
+   "umsatzMio": 5.4
+  },
+  {
+   "sym": "VAW",
+   "umsatzMio": 5.4
+  },
+  {
+   "sym": "TR",
+   "umsatzMio": 5.4
+  },
+  {
+   "sym": "YMAX",
+   "umsatzMio": 5.4
+  },
+  {
+   "sym": "EHAB",
+   "umsatzMio": 5.4
+  },
+  {
+   "sym": "FLQM",
+   "umsatzMio": 5.4
+  },
+  {
+   "sym": "AMBC",
+   "umsatzMio": 5.4
+  },
+  {
+   "sym": "BTSGU",
+   "umsatzMio": 5.4
+  },
+  {
+   "sym": "HPK",
+   "umsatzMio": 5.4
+  },
+  {
+   "sym": "BSJP",
+   "umsatzMio": 5.4
+  },
+  {
+   "sym": "TEN",
+   "umsatzMio": 5.4
+  },
+  {
+   "sym": "FBK",
+   "umsatzMio": 5.4
+  },
+  {
+   "sym": "XT",
+   "umsatzMio": 5.4
+  },
+  {
+   "sym": "DFGP",
+   "umsatzMio": 5.4
+  },
+  {
+   "sym": "BALY",
+   "umsatzMio": 5.3
+  },
+  {
+   "sym": "GTX",
+   "umsatzMio": 5.3
+  },
+  {
+   "sym": "NR",
+   "umsatzMio": 5.3
+  },
+  {
+   "sym": "MLNK",
+   "umsatzMio": 5.3
+  },
+  {
+   "sym": "KRP",
+   "umsatzMio": 5.3
+  },
+  {
+   "sym": "DNP",
+   "umsatzMio": 5.3
+  },
+  {
+   "sym": "MUX",
+   "umsatzMio": 5.3
+  },
+  {
+   "sym": "OPK",
+   "umsatzMio": 5.3
+  },
+  {
+   "sym": "PFLT",
+   "umsatzMio": 5.3
+  },
+  {
+   "sym": "SMP",
+   "umsatzMio": 5.3
+  },
+  {
+   "sym": "URNJ",
+   "umsatzMio": 5.3
+  },
+  {
+   "sym": "MBIN",
+   "umsatzMio": 5.3
+  },
+  {
+   "sym": "BSCU",
+   "umsatzMio": 5.3
+  },
+  {
+   "sym": "CNNE",
+   "umsatzMio": 5.3
+  },
+  {
+   "sym": "CLB",
+   "umsatzMio": 5.3
+  },
+  {
+   "sym": "SSL",
+   "umsatzMio": 5.3
+  },
+  {
+   "sym": "RING",
+   "umsatzMio": 5.3
+  },
+  {
+   "sym": "GSAT",
+   "umsatzMio": 5.3
+  },
+  {
+   "sym": "HYT",
+   "umsatzMio": 5.3
+  },
+  {
+   "sym": "SUSA",
+   "umsatzMio": 5.3
+  },
+  {
+   "sym": "FEPI",
+   "umsatzMio": 5.2
+  },
+  {
+   "sym": "MSEX",
+   "umsatzMio": 5.2
+  },
+  {
+   "sym": "FRHC",
+   "umsatzMio": 5.2
+  },
+  {
+   "sym": "MCS",
+   "umsatzMio": 5.2
+  },
+  {
+   "sym": "EWP",
+   "umsatzMio": 5.2
+  },
+  {
+   "sym": "IVOO",
+   "umsatzMio": 5.2
+  },
+  {
+   "sym": "VTWG",
+   "umsatzMio": 5.2
+  },
+  {
+   "sym": "GCO",
+   "umsatzMio": 5.2
+  },
+  {
+   "sym": "OLMA",
+   "umsatzMio": 5.2
+  },
+  {
+   "sym": "CHCO",
+   "umsatzMio": 5.2
+  },
+  {
+   "sym": "ZIP",
+   "umsatzMio": 5.2
+  },
+  {
+   "sym": "MATV",
+   "umsatzMio": 5.2
+  },
+  {
+   "sym": "EGY",
+   "umsatzMio": 5.2
+  },
+  {
+   "sym": "HIGH",
+   "umsatzMio": 5.2
+  },
+  {
+   "sym": "RR",
+   "umsatzMio": 5.2
+  },
+  {
+   "sym": "UDMY",
+   "umsatzMio": 5.2
+  },
+  {
+   "sym": "CDRE",
+   "umsatzMio": 5.2
+  },
+  {
+   "sym": "SEB",
+   "umsatzMio": 5.2
+  },
+  {
+   "sym": "CECO",
+   "umsatzMio": 5.2
+  },
+  {
+   "sym": "AVNS",
+   "umsatzMio": 5.2
+  },
+  {
+   "sym": "YEXT",
+   "umsatzMio": 5.1
+  },
+  {
+   "sym": "IAS",
+   "umsatzMio": 5.1
+  },
+  {
+   "sym": "SPNT",
+   "umsatzMio": 5.1
+  },
+  {
+   "sym": "IWL",
+   "umsatzMio": 5.1
+  },
+  {
+   "sym": "BWLP",
+   "umsatzMio": 5.1
+  },
+  {
+   "sym": "NXRT",
+   "umsatzMio": 5.1
+  },
+  {
+   "sym": "NN",
+   "umsatzMio": 5.1
+  },
+  {
+   "sym": "GSM",
+   "umsatzMio": 5.1
+  },
+  {
+   "sym": "HAYN",
+   "umsatzMio": 5.1
+  },
+  {
+   "sym": "ECVT",
+   "umsatzMio": 5.1
+  },
+  {
+   "sym": "MTUS",
+   "umsatzMio": 5.1
+  },
+  {
+   "sym": "FBMS",
+   "umsatzMio": 5.1
+  },
+  {
+   "sym": "BKAG",
+   "umsatzMio": 5.1
+  },
+  {
+   "sym": "CSAN",
+   "umsatzMio": 5.1
+  },
+  {
+   "sym": "ERO",
+   "umsatzMio": 5.1
+  },
+  {
+   "sym": "GTN",
+   "umsatzMio": 5.1
+  },
+  {
+   "sym": "ACDC",
+   "umsatzMio": 5
+  },
+  {
+   "sym": "BBIN",
+   "umsatzMio": 5
+  },
+  {
+   "sym": "AXGN",
+   "umsatzMio": 5
+  },
+  {
+   "sym": "DBD",
+   "umsatzMio": 5
+  },
+  {
+   "sym": "SPIP",
+   "umsatzMio": 5
+  },
+  {
+   "sym": "RGR",
+   "umsatzMio": 5
+  },
+  {
+   "sym": "AOA",
+   "umsatzMio": 5
+  },
+  {
+   "sym": "REAL",
+   "umsatzMio": 5
+  },
+  {
+   "sym": "OCFC",
+   "umsatzMio": 5
+  },
+  {
+   "sym": "HYDB",
+   "umsatzMio": 5
+  },
+  {
+   "sym": "WEBL",
+   "umsatzMio": 5
+  }
+ ]
+}

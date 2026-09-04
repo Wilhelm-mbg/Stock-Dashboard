@@ -15735,6 +15735,239 @@ console.log('\n69) Sammler verhungert nicht');
      'Der Stand traegt ihn - ein Funkspruch allein waere fort, sobald jemand die Klappe zumacht');
 })();
 
+/* ================= 70) Das Universum wird mitgeliefert (04.09.2026) =================
+ *
+ * DER FUND (GitHub #111, Felix, 27.08.2026, mit Screenshot). Auf JEDER fremden
+ * Installation meldete das Kursarchiv "Sammeln nicht moeglich: Kein
+ * Punkt-in-Zeit-Universum im Datenordner (massive/universum-*.json)". Kein
+ * Bedienfehler und keine kaputte Quelle: universumWerte() las die Symbolliste
+ * ausschliesslich aus dem Datenordner, dort lag sie nur bei Wilhelm, und die App
+ * lieferte sie nicht mit - `git ls-files massive` war leer, build.files kannte
+ * keinen daten-Ordner. Sammeln war fuer alle ausser einem unmoeglich.
+ *
+ * Die Liste ist kein Geheimnis (Kuerzel und Umsatz zum Stichtag, kein Kurs, kein
+ * Schluessel), also wandert sie ins Paket und beim ersten Start in den Datenordner.
+ *
+ * DIE GEFAHR DABEI ist die umgekehrte: eine Paketkopie, die Wilhelms Datei
+ * ueberschreibt, waere ein stiller Austausch der Grundgesamtheit - alle Messungen
+ * haengen an genau diesem Stichtag. Deshalb sind hier zwei Richtungen zugesichert:
+ * es kommt eine hin, wenn keine da ist, und es passiert NICHTS, wenn eine da ist.
+ */
+console.log('\n70) Das Universum wird mitgeliefert (#111)');
+(function () {
+  var KQ70 = require(__dirname + '/kerzenquelle.js');
+  var os70 = require('os'), p70 = require('path'), kr70 = require('crypto');
+  /* Der Hash einer Datei, die es nicht gibt, ist null - und null ist nie gleich
+   * irgendetwas (gleich70). Erste Fassung las ungeschuetzt: Gegenprobe G8 ("es wird
+   * gar nicht kopiert") liess den Lauf mit ENOENT sterben, statt eine rote Zeile zu
+   * schreiben. Ein Absturz ist auch ein Befund, aber der schlechtere: er nimmt alle
+   * dahinterliegenden Zusicherungen mit. */
+  function hash70(p) {
+    try { return kr70.createHash('sha256').update(fs.readFileSync(p)).digest('hex'); }
+    catch (e70h) { return null; }
+  }
+  function gleich70(a, b) { return a !== null && b !== null && a === b; }
+
+  /* ---------------------------------------------------------------------------
+   * (a) Die Paketdatei liegt wirklich im Repo - und ist das richtige Universum */
+  var paket70 = p70.join(__dirname, 'daten', 'universum-2024-09-02.json');
+  ok(fs.existsSync(paket70), 'Die Paketdatei daten/universum-2024-09-02.json liegt im Repo');
+  var U70 = null;
+  try { U70 = JSON.parse(fs.readFileSync(paket70, 'utf8')); } catch (e70) { /* bleibt null */ }
+  ok(!!U70 && U70.verfahren === 'punkt-in-zeit/1.0.0' && U70.stichtag === '2024-09-02' &&
+     (U70.werte || []).length > 2000,
+     'und sie ist das Punkt-in-Zeit-Universum vom Stichtag, nicht irgendeine Symbolliste',
+     U70 ? U70.stichtag + ' / ' + (U70.werte || []).length + ' Werte' : 'nicht lesbar');
+  /* KEIN GEHEIMNIS DARF MITFAHREN. Nicht der Text wird durchsucht (ein Schluessel
+   * heisst nicht zwangslaeufig "key"), sondern die FORM: jeder Eintrag traegt genau
+   * zwei Felder. Was mehr mitbraechte, faellt hier auf, bevor es committet ist. */
+  var fremdeFelder = (U70 && U70.werte || []).filter(function (x) {
+    var k = Object.keys(x).sort().join(',');
+    return k !== 'sym,umsatzMio';
+  });
+  ok(fremdeFelder.length === 0,
+     'Jeder Eintrag traegt nur Kuerzel und Umsatz - kein Kurs, kein Schluessel, nichts sonst',
+     fremdeFelder.length + ' Ausreisser');
+
+  /* Die eingefrorene Datei im Datenordner ist die Referenz. Liegt sie auf diesem
+   * Rechner, muss die Paketkopie BYTE-IDENTISCH sein - eine "fast gleiche" Liste
+   * waere eine zweite Grundgesamtheit unter demselben Namen. Auf jedem anderen
+   * Rechner gibt es nichts zu vergleichen; das wird gesagt und nicht als gruen
+   * verbucht (ein uebersprungener Vergleich, der "bestanden" meldet, ist die
+   * Pruefung, die niemand ansieht). */
+  /* DER ORDNER WIRD SELBST GERECHNET, nicht bei KQ70.datenOrdner() erfragt. Erste
+   * Fassung tat das - und der Vergleich fiel still aus: Abschnitt 69 startet seine
+   * asynchronen Proben sofort, setzt dabei den Datenordner auf einen Temp-Pfad und
+   * stellt ihn erst nach seinen Wartepunkten zurueck. Der Zeiger war also auf einen
+   * leeren Testordner gerichtet, waehrend dieser Abschnitt lief. Die Klinke meldete
+   * brav "uebersprungen" und pruefte nie - die Pruefung, die niemand ansieht
+   * (wiki/fehlerformen.md). Dieselbe Reihenfolge wie in kerzenquelle.js. */
+  var referenz70 = p70.join(process.env.MD_DATEN || p70.join(os70.homedir(), 'Downloads', 'Markt-Dashboard-Daten'),
+                            'massive', 'universum-2024-09-02.json');
+  if (fs.existsSync(referenz70)) {
+    ok(gleich70(hash70(paket70), hash70(referenz70)),
+       'Die Paketkopie ist byte-identisch zur eingefrorenen Datei im Datenordner',
+       hash70(paket70).slice(0, 12));
+  } else {
+    console.log('  (uebersprungen: die eingefrorene Datei liegt auf diesem Rechner nicht unter ' +
+                referenz70 + ' - der Hash-Vergleich braucht sie)');
+  }
+
+  /* ---------------------------------------------------------------------------
+   * (b) Sie geht auch WIRKLICH ins Paket
+   *
+   * Eine Datei im Repo, die build.files nicht nennt, ist im Installer nicht da -
+   * genau der Fehler vom 21.08.2026 (momentum.js). Geprueft wird nicht, ob
+   * irgendwo "daten" steht, sondern ob ein Muster die Datei TRIFFT. */
+  var pkg70 = JSON.parse(fs.readFileSync(__dirname + '/package.json', 'utf8'));
+  function trifft70(muster, datei) {
+    if (muster.charAt(0) === '!') return false;
+    var re = new RegExp('^' + String(muster).replace(/[.+^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '[^/]*') + '$');
+    return re.test(datei);
+  }
+  ok((pkg70.build.files || []).some(function (m) { return trifft70(m, 'daten/universum-2024-09-02.json'); }),
+     'build.files nennt ein Muster, das die Paketdatei trifft');
+  /* Und die Release-Wache muss sie anhalten: waere sie nicht committet, fehlte sie
+   * still im Release, weil aus HEAD gebaut wird. Die Einstufung in tools/release.js
+   * folgt build.files - hier ist der Ort, an dem das auffaellt. */
+  var rel70 = fs.readFileSync(__dirname + '/tools/release.js', 'utf8');
+  var von70 = rel70.indexOf('function gehoertInsPaket(');
+  var gip70 = new Function(rel70.slice(von70, rel70.indexOf('function baumZustand(')) +
+                           '\nreturn gehoertInsPaket;')();
+  ok(gip70('daten/universum-2024-09-02.json') === true,
+     'und die Release-Wache haelt einen Release an, solange sie nicht committet ist');
+
+  /* ---------------------------------------------------------------------------
+   * (c) Die Kopierlogik, in einem Temp-Ordner durchgespielt
+   *
+   * universumBereitstellen() haengt an nichts: Datenordner und Quelle kommen
+   * herein. Deshalb laesst sich hier BEIDES pruefen, ohne die Installation des
+   * Nutzers zu beruehren - und ohne die eingefrorene Datei anzufassen. */
+  var tmp70 = fs.mkdtempSync(p70.join(os70.tmpdir(), 'universum-'));
+  var tmpLeer = fs.mkdtempSync(p70.join(os70.tmpdir(), 'universum-leer-'));
+  var alterOrdner70 = KQ70.datenOrdner();
+  try {
+    ok(KQ70.paketUniversum() === paket70,
+       'paketUniversum() findet die mitgelieferte Datei ohne geratenen Pfad',
+       String(KQ70.paketUniversum()));
+
+    /* Leerer Datenordner: es wird kopiert UND schreibgeschuetzt. */
+    var erst = KQ70.universumBereitstellen(tmp70, KQ70.paketUniversum());
+    ok(erst.ok === true && erst.kopiert === true && fs.existsSync(erst.ziel),
+       'Leerer Datenordner: die Paketdatei wird nach massive/ kopiert',
+       JSON.stringify([erst.ok, erst.kopiert]));
+    /* Alles Weitere setzt voraus, dass ueberhaupt etwas angekommen ist. Ohne diesen
+     * Zeiger stirbt der Lauf, sobald die Kopie ausbleibt (Gegenprobe G8). */
+    var kopie70 = erst.ziel && fs.existsSync(erst.ziel) ? erst.ziel : null;
+    ok(gleich70(hash70(kopie70), hash70(paket70)),
+       'und sie kommt unveraendert an - dieselbe Datei, nicht eine neu erzeugte');
+    /* Der Schreibschutz wird an der WIRKUNG geprueft, nicht am Rueckgabewert:
+     * schutz:true und eine trotzdem beschreibbare Datei waere eine Behauptung. */
+    var schreibenWarf = false;
+    try { fs.writeFileSync(kopie70 || p70.join(tmp70, 'gibt-es-nicht', 'x'), 'x'); }
+    catch (eS70) { schreibenWarf = true; }
+    ok(kopie70 !== null && schreibenWarf === true && erst.schutz === true,
+       'und sie ist schreibgeschuetzt - ein Stichtag ist kein Arbeitsstand',
+       kopie70 ? (fs.statSync(kopie70).mode & 0o777).toString(8) : 'keine Kopie da');
+
+    /* Der wichtigere Fall: da liegt schon eine. */
+    var vorher70 = hash70(kopie70);
+    var mtimeVorher = kopie70 ? fs.statSync(kopie70).mtimeMs : null;
+    var zweit = KQ70.universumBereitstellen(tmp70, KQ70.paketUniversum());
+    ok(zweit.ok === true && zweit.kopiert === false,
+       'Vorhandenes Universum: es wird NICHT kopiert - Wilhelms Datei ist die Referenz',
+       JSON.stringify([zweit.ok, zweit.kopiert]));
+    ok(gleich70(hash70(kopie70), vorher70) &&
+       mtimeVorher !== null && fs.statSync(kopie70).mtimeMs === mtimeVorher,
+       'und die vorhandene Datei bleibt unangetastet: gleicher Hash, gleiche Uhrzeit');
+
+    /* Eine FREMD benannte Datei zaehlt genauso. Die erste Fassung dieser Logik
+     * haette auf den Dateinamen aus dem Paket gesehen und eine
+     * universum-2026-01-01.json des Nutzers gnadenlos daneben gelegt - zwei
+     * Universen im selben Ordner, und universumWerte() nimmt das erste. */
+    var fremd = p70.join(tmpLeer, 'massive');
+    fs.mkdirSync(fremd, { recursive: true });
+    fs.writeFileSync(p70.join(fremd, 'universum-2099-12-31.json'), '{"werte":[]}');
+    var drittes = KQ70.universumBereitstellen(tmpLeer, KQ70.paketUniversum());
+    ok(drittes.kopiert === false && fs.readdirSync(fremd).length === 1,
+       'Auch eine ANDERS benannte Datei haelt die Kopie auf - sonst laegen zwei Universen da',
+       fs.readdirSync(fremd).join(','));
+
+    /* Fehlt die Paketdatei, wird das gesagt und nicht verschwiegen. */
+    var ohne = KQ70.universumBereitstellen(fs.mkdtempSync(p70.join(os70.tmpdir(), 'universum-ohne-')), null);
+    ok(ohne.ok === false && /Paketdatei fehlt/.test(ohne.grund || ''),
+       'Fehlt die Paketdatei, kommt ein Grund zurueck und keine stille Null',
+       String(ohne.grund));
+
+    /* -------------------------------------------------------------------------
+     * (d) Nach der Kopie kann die App sammeln - das ist der Sinn der Uebung */
+    KQ70.datenOrdnerSetzen(tmp70);
+    var top500 = KQ70.listeBauen('top500');
+    ok(top500.symbole.length === 500 && !top500.grund,
+       'listeBauen("top500") liefert nach der Kopie 500 Symbole - ohne grund',
+       top500.symbole.length + ' / grund=' + String(top500.grund));
+    /* GESCHAERFT nach Gegenprobe G15: die erste Fassung sah nur auf symbole[0]. Der
+     * Eingriff nahm den ETF-Filter aus universumWerte() heraus - und blieb GRUEN,
+     * weil an erster Stelle NVDA steht und SPY erst an zweiter. Eine Klinke, die
+     * eine Menge behauptet und ein Element prueft, prueft nichts. */
+    var etfsDrin = top500.symbole.filter(function (s) { return KQ70.istEtfSym(s); });
+    ok(top500.symbole.every(function (s) { return typeof s === 'string' && s.length > 0; }) &&
+       etfsDrin.length === 0,
+       'und KEINES der 500 ist ein ETF - die kommen ueber die eigene Liste',
+       etfsDrin.length ? etfsDrin.slice(0, 4).join(',') : top500.symbole.slice(0, 3).join(','));
+
+    /* -------------------------------------------------------------------------
+     * (e) Meldung, nicht Stille
+     *
+     * Schlaegt die Kopie fehl, bleibt die alte Meldung stehen und bekommt den Grund
+     * dazu. Der Nutzer soll nicht in einen Ordner schauen muessen, von dem er nicht
+     * weiss, warum er leer ist. */
+    KQ70.datenOrdnerSetzen(tmpLeer + '-gibt-es-nicht');
+    KQ70.kopierBefundMerken(null);
+    var stumm = KQ70.listeBauen('top500');
+    ok(stumm.symbole.length === 0 && /Kein Punkt-in-Zeit-Universum/.test(stumm.grund || ''),
+       'Ohne Universum bleibt die bisherige Meldung stehen', String(stumm.grund));
+    KQ70.kopierBefundMerken({ ok: false, kopiert: false, grund: 'Kopie fehlgeschlagen: EACCES' });
+    var laut = KQ70.listeBauen('top500');
+    ok(/Kein Punkt-in-Zeit-Universum/.test(laut.grund || '') && /Kopie fehlgeschlagen: EACCES/.test(laut.grund || ''),
+       'und der gescheiterte Kopierversuch steht daneben - mit seinem Grund',
+       String(laut.grund));
+  } finally {
+    /* Der Merker ist Modulzustand: bliebe er stehen, traege ihn jeder spaetere
+     * Aufruf in dieser Suite weiter. */
+    KQ70.kopierBefundMerken(null);
+    KQ70.datenOrdnerSetzen(alterOrdner70);
+    fs.rmSync(tmp70, { recursive: true, force: true });
+    fs.rmSync(tmpLeer, { recursive: true, force: true });
+  }
+
+  /* ---------------------------------------------------------------------------
+   * (f) main.js stoesst es an - und zwar rechtzeitig
+   *
+   * Eine Funktion, die niemand aufruft, ist eine Datei (Abschnitt 69, (g)).
+   * Geprueft wird die Kette bis zum Hauptprozess und die REIHENFOLGE: der Anstoss
+   * muss vor dem ersten sammlerNachsehen stehen, sonst sieht der erste Blick der
+   * App noch die alte Meldung. */
+  var mj70 = ohneKommentare(fs.readFileSync(__dirname + '/main.js', 'utf8'));
+  ok(/Kerzen\.universumBereitstellen\(\s*ordner\s*,\s*Kerzen\.paketUniversum\(\)\s*\)/.test(mj70) &&
+     /Kerzen\.kopierBefundMerken\(erg\)/.test(mj70),
+     'main.js stoesst die Kopie an und merkt sich den Befund fuer die Meldung');
+  var wo70 = mj70.indexOf('universumBereitstellen');
+  var woSammler = mj70.indexOf("sammlerNachsehen('nach dem Start')");
+  ok(wo70 > -1 && woSammler > wo70,
+     'und der Anstoss steht VOR dem ersten sammlerNachsehen', wo70 + ' < ' + woSammler);
+  /* Das Protokoll geht in den bestehenden Logweg (laufProtokoll), nicht in eine
+   * zweite Datei. Geprueft wird die VERWENDUNG mitsamt dem Text - die Klinke haengt
+   * sonst an einem Namen, den ein Eingriff stehenlaesst, waehrend nichts mehr
+   * geschrieben wird (Testmarken-Falle, wiki/fehlerformen.md). */
+  var block70 = mj70.slice(wo70, wo70 + 1400);
+  ok(/Kerzen\.laufProtokoll\(\s*ordner\s*,/.test(block70) &&
+     /Universum aus dem Paket uebernommen/.test(block70),
+     'Der Erststart schreibt eine Zeile in den bestehenden Logweg');
+  ok(/if\s*\(erg\.kopiert\s*\|\|\s*!erg\.ok\)/.test(block70),
+     'aber nur beim Erststart und beim Fehlschlag - nicht bei jedem Start dieselbe Zeile');
+})();
+
 Promise.all(offeneProben).then(function () {
   console.log(fails === 0 ? '\nALLE TESTS BESTANDEN' : '\n' + fails + ' TEST(S) FEHLGESCHLAGEN');
   process.exit(fails ? 1 : 0);

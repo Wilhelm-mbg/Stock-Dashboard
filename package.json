@@ -28,6 +28,7 @@
       "icon.png",
       "icon.ico",
       "telemetrie.json",
+      "daten/universum-*.json",
       "studien/messmaschine/messmaschine.js",
       "studien/messmaschine/messen.js",
       "studien/messmaschine/strategien/wertpapierart.js"

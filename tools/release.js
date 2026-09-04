@@ -88,6 +88,10 @@ function gehoertInsPaket(datei) {
    * kommen im App-Pfad aus dem Datenordner. Die Zeile folgt build.files - ohne sie
    * fiele die Datei still aus der Release-Pruefung. */
   if (datei === 'studien/messmaschine/strategien/wertpapierart.js') return true;
+  /* Das mitgelieferte Punkt-in-Zeit-Universum (#111). Es geht ins Paket, also haelt
+   * es den Release an - dieselbe Zeile, aus demselben Grund wie die darueber: sie
+   * folgt build.files, und ohne sie fiele die Datei still aus der Pruefung. */
+  if (/^daten\/universum-[^/]+\.json$/.test(datei)) return true;
   /* Nur JS-Dateien im Wurzelverzeichnis, ohne die Tests. */
   return /^[^/]+\.js$/.test(datei) && !/^test-/.test(datei) && datei !== 'eslint.config.mjs';
 }

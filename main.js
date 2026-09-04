@@ -1361,6 +1361,43 @@ const Boerse = require('./boerse.js');
  * sie am Testordner vorbei in das echte Archiv. */
 Kerzen.datenOrdnerSetzen(path.join(app.getPath('downloads'), 'Markt-Dashboard-Daten'));
 
+/* DAS UNIVERSUM BEIM ERSTEN START (Issue #111).
+ *
+ * Felix' Screenshot vom 27.08.2026: "Sammeln nicht moeglich: Kein
+ * Punkt-in-Zeit-Universum im Datenordner". Das galt auf JEDER Installation ausser
+ * Wilhelms - die Symbolliste lag nur in dessen Datenordner und war weder im Repo
+ * noch im Paket. Kein fremder Nutzer konnte je Kurse sammeln.
+ *
+ * Hier steht nur der Anstoss: entscheiden, kopieren und schuetzen macht
+ * kerzenquelle.js, weil das dort geprueft werden kann. Und es passiert VOR dem
+ * ersten sammlerNachsehen (60 s nach dem Start) und vor der ersten Frage der
+ * Oberflaeche - sonst haette der erste Blick noch die alte Meldung gezeigt.
+ *
+ * NIE UEBERSCHREIBEN: liegt schon eine Datei da, bleibt sie unberuehrt. */
+(function () {
+  const ordner = path.join(app.getPath('downloads'), 'Markt-Dashboard-Daten');
+  let erg;
+  try {
+    erg = Kerzen.universumBereitstellen(ordner, Kerzen.paketUniversum());
+  } catch (e) {
+    erg = { ok: false, kopiert: false, schutz: null, ziel: null,
+      grund: 'Kopie fehlgeschlagen: ' + ((e && e.message) || e) };
+  }
+  Kerzen.kopierBefundMerken(erg);
+  /* Nur der Erststart schreibt eine Zeile - im bestehenden Logweg (laufProtokoll,
+   * angehaengt, nie ueberschrieben). Der Normalfall "lag schon da" schweigt: ein
+   * Protokoll, das bei jedem Start dasselbe meldet, liest bald niemand mehr. */
+  if (erg.kopiert || !erg.ok) {
+    Kerzen.laufProtokoll(ordner, [
+      new Date().toISOString(),
+      erg.kopiert ? 'Universum aus dem Paket uebernommen' : 'Universum NICHT uebernommen',
+      'ziel=' + (erg.ziel || '-'),
+      'schreibgeschuetzt=' + (erg.schutz === null ? '-' : erg.schutz ? 'ja' : 'nein'),
+      'grund=' + (erg.grund || '-'),
+    ].join('  '));
+  }
+})();
+
 function sammlerDatei() {
   return path.join(app.getPath('downloads'), 'Markt-Dashboard-Daten', 'sammler.json');
 }

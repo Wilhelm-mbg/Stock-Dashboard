@@ -776,6 +776,87 @@ function universumWerte() {
   } catch (e) { return null; }
 }
 
+/* ---------- DAS UNIVERSUM KOMMT AUS DEM PAKET (Issue #111) ----------
+ *
+ * Bis zum 04.09.2026 las universumWerte() die Liste ausschliesslich aus dem
+ * Datenordner. Auf Wilhelms Rechner liegt sie dort - auf JEDER anderen
+ * Installation nicht, und das Kursarchiv meldete dort seit je "Kein
+ * Punkt-in-Zeit-Universum im Datenordner". Kein Nutzer konnte je sammeln, und von
+ * aussen sah es aus wie ein Bedienfehler (Felix, #111, 27.08.).
+ *
+ * Die Liste ist kein Geheimnis: Kuerzel und Umsatz zum Stichtag, kein Kurs, kein
+ * Schluessel, 155 KB. Sie wandert deshalb ins Paket und beim ERSTEN Start in den
+ * Datenordner. */
+
+/* Der Ordner mit der mitgelieferten Kopie. Im fertigen Paket liegt er im
+ * asar-Archiv, aus dem Electron wie aus einem Ordner liest. Mehrere Kandidaten aus
+ * demselben Grund wie bei telemetrie.json in main.js: __dirname zeigt je nach
+ * Verpackung woandershin, und ein einziger geratener Pfad war dort schon einmal
+ * der Grund fuer ein stilles Fehlen. */
+function paketUniversum() {
+  var orte = [path.join(__dirname, 'daten')];
+  try { if (process.resourcesPath) orte.push(path.join(process.resourcesPath, 'app.asar', 'daten')); } catch (e) { /* kein Electron */ }
+  for (var i = 0; i < orte.length; i++) {
+    try {
+      var dat = fs.readdirSync(orte[i]).filter(function (f) {
+        return f.indexOf('universum-') === 0 && /\.json$/.test(f);
+      }).sort();
+      if (dat.length) return path.join(orte[i], dat[0]);
+    } catch (e2) { /* Ordner nicht da - naechster Kandidat */ }
+  }
+  return null;
+}
+
+/* DIE ERSTSTART-KOPIE.
+ *
+ * Liegt im Datenordner schon ein Universum, wird NICHTS angefasst - auch dann
+ * nicht, wenn es anders heisst oder aelter ist. Wilhelms Datei ist die Referenz,
+ * an ihr haengen alle Messungen; eine Paketkopie darueber waere ein stiller
+ * Austausch der Grundgesamtheit und damit der schlimmste Fall von allen.
+ * Sonst wird kopiert und schreibgeschuetzt: die Liste ist ein Stichtag, kein
+ * Arbeitsstand, und was niemand aus Versehen aendern kann, driftet auch nicht.
+ *
+ * HAENGT AN NICHTS: Datenordner und Quelle kommen herein, das Ergebnis kommt
+ * heraus. Nicht gemerkt, nicht geloggt, kein Electron - beides macht der Aufrufer.
+ * Nur so laesst sich der Fall "da liegt schon eine" in einem Temp-Ordner pruefen,
+ * ohne die Installation des Nutzers zu beruehren. */
+function universumBereitstellen(daten, quelle) {
+  var mv = path.join(daten, 'massive');
+  var da = [];
+  try {
+    da = fs.readdirSync(mv).filter(function (f) {
+      return f.indexOf('universum-') === 0 && /\.json$/.test(f);
+    }).sort();
+  } catch (e) { da = []; }
+  if (da.length) return { ok: true, kopiert: false, schutz: null, ziel: path.join(mv, da[0]), grund: null };
+  if (!quelle) {
+    return { ok: false, kopiert: false, schutz: null, ziel: null,
+      grund: 'Paketdatei fehlt: daten/universum-*.json war nicht im Paket.' };
+  }
+  var ziel = path.join(mv, path.basename(quelle));
+  try {
+    fs.mkdirSync(mv, { recursive: true });
+    fs.copyFileSync(quelle, ziel);
+  } catch (e3) {
+    return { ok: false, kopiert: false, schutz: null, ziel: null,
+      grund: 'Kopie fehlgeschlagen: ' + ((e3 && e3.message) || e3) };
+  }
+  /* Der Schreibschutz ist die Kuer, die Datei die Pflicht: schlaegt chmod fehl
+   * (fremdes Dateisystem, Netzlaufwerk), ist das Universum trotzdem da. Es wird
+   * mitgeteilt statt verschwiegen, sonst waere es wieder eine stille Halbheit. */
+  var schutz = true;
+  try { fs.chmodSync(ziel, 0o444); } catch (e4) { schutz = false; }
+  return { ok: true, kopiert: true, schutz: schutz, ziel: ziel, grund: null };
+}
+
+/* Was der Erststart-Versuch ergeben hat. Steht als Merker hier, damit die Meldung
+ * im Kursarchiv sagen kann, WARUM kein Universum da ist. "Kein Universum" allein
+ * war genau die Stille, ueber die Felix gestolpert ist - der Satz nannte einen
+ * Ordner, in den zu schauen dem Nutzer gar nichts gesagt haette. */
+var UNIVERSUM_BEFUND = null;
+function kopierBefundMerken(erg) { UNIVERSUM_BEFUND = erg || null; return UNIVERSUM_BEFUND; }
+function kopierBefund() { return UNIVERSUM_BEFUND; }
+
 /* wahl: 'etf' | 'topN' | 'alle' | 'SYM,SYM,...'
  * Gibt { symbole, quelle, grund } zurueck, nie nur eine Liste: eine leere Liste
  * ohne Grund waere genau die Stille, gegen die hier ueberall gebaut wird. */
@@ -790,10 +871,13 @@ function listeBauen(wahl) {
   if (wahl === 'etf') return { symbole: ETFS.slice(), quelle: 'ETF-Liste' };
   var w = universumWerte();
   if (!w) {
-    return {
-      symbole: [], quelle: null,
-      grund: 'Kein Punkt-in-Zeit-Universum im Datenordner (massive/universum-*.json).',
-    };
+    /* Die alte Meldung bleibt stehen - sie beschreibt richtig, was fehlt. Neu ist
+     * der zweite Satz: seit die App die Liste mitliefert, ist ein fehlendes
+     * Universum kein Normalfall mehr, sondern ein gescheiterter Kopierversuch, und
+     * dann will man dessen Grund lesen und nicht raten. */
+    var g = 'Kein Punkt-in-Zeit-Universum im Datenordner (massive/universum-*.json).';
+    if (UNIVERSUM_BEFUND && UNIVERSUM_BEFUND.grund) g += ' ' + UNIVERSUM_BEFUND.grund;
+    return { symbole: [], quelle: null, grund: g };
   }
   var m = /^top(\d+)$/.exec(wahl);
   if (m) {
@@ -1161,6 +1245,8 @@ module.exports = {
   dateiPraefix: dateiPraefix, dateiFuer: dateiFuer,
   standPfad: standPfad, standLesen: standLesen, standSchreiben: standSchreiben,
   universumWerte: universumWerte, listeBauen: listeBauen,
+  paketUniversum: paketUniversum, universumBereitstellen: universumBereitstellen,
+  kopierBefundMerken: kopierBefundMerken, kopierBefund: kopierBefund,
   juengsteKerzeVon: juengsteKerzeVon,
   letzterAbgeschlossenerHandelstag: letzterAbgeschlossenerHandelstag,
   letzterTagVon: letzterTagVon, tagIstNach: tagIstNach, standEintrag: standEintrag,
