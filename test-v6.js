@@ -3594,12 +3594,19 @@ console.log('\n36) Kostenhuerde des Produkts (Signalstudie 23.08.2026)');
    * Messung liegt in Werkzeuge -> Betrieb. Die Zusicherung ist NICHT abgeschwaecht:
    * sie nennt weiter jeden erlaubten Reiter namentlich und verbietet weiter jeden
    * anderen - nur sind es jetzt drei statt fuenf. */
+  /* Am 04.09.2026 kam einer dazu: "Markt" (Wilhelms Entscheid nach der
+   * TradingView-Sichtung, "nicht so vermixt mit den Strategien"). Das ist KEINE
+   * Rueckkehr des alten Marktkarten-Reiters - der zeigte EINE Ansicht, dieser
+   * buendelt alles, was den Markt betrifft, und nimmt es aus "Heute" heraus.
+   * Die Zusicherung ist unveraendert scharf: sie nennt jeden erlaubten Reiter
+   * namentlich und verbietet jeden anderen - nur sind es jetzt vier statt drei.
+   * `marktkarte` bleibt ausdruecklich verboten: die Karte ist eine PILLE. */
   var reiter = (html.match(/data-tab="[a-z]+"/g) || []);
-  ok(reiter.length === 3 && reiter.indexOf('data-tab="messung"') === -1 &&
+  ok(reiter.length === 4 && reiter.indexOf('data-tab="messung"') === -1 &&
      reiter.indexOf('data-tab="depot"') === -1 &&
      reiter.indexOf('data-tab="marktkarte"') === -1,
-     'Drei Reiter: Heute · Regeln · Werkzeuge', reiter.join(' '));
-  ['dashboard', 'strategien', 'werkzeuge'].forEach(function (id) {
+     'Vier Reiter: Heute · Markt · Regeln · Werkzeuge', reiter.join(' '));
+  ['dashboard', 'markt', 'strategien', 'werkzeuge'].forEach(function (id) {
     ok(html.indexOf('data-tab="' + id + '"') !== -1 && html.indexOf('id="tab-' + id + '"') !== -1,
        'Reiter ' + id + ' hat Knopf und Inhalt');
   });
@@ -5740,7 +5747,7 @@ console.log('\n40) Tastatur, Semantik und Kontrast – die Oberflaeche ohne Maus
    * Vorher waren es fuenf zusammenhanglose Knoepfe: kein tablist, keine Pfeiltasten,
    * und man musste sich durch alle fuenf tabben, um zum Inhalt zu kommen. */
   ok(/role="tablist"/.test(html), 'Reiter: die Leiste ist ein tablist');
-  /* Drei, seit Wilhelms Entscheid "drei Bildschirme" (02.09.2026, Stufe 1). Die
+  /* Vier, seit dem Reiter "Markt" (04.09.2026, Stufe 5) - vorher drei. Die
      Pillen tragen bewusst KEINE tab/tabpanel-Rollen - sie sind es bei keiner der
      anderen Leisten (#wzPills, #regelPills, #heutePills) auch nicht. Wer das aendern
      will, aendert es fuer alle drei Leisten oder fuer keine.
@@ -5749,8 +5756,8 @@ console.log('\n40) Tastatur, Semantik und Kontrast – die Oberflaeche ohne Maus
      ins Leere oder ein Bereich hat keinen Namen. Deshalb steht sie hier als eine
      Zahl an vier Stellen und nicht als vier freie Zahlen. */
   var nReiter = (html.match(/role="tab"/g) || []).length;
-  ok(nReiter === 3, 'Reiter: alle drei Knoepfe sind role="tab"', nReiter);
-  ok((html.match(/role="tabpanel"/g) || []).length === nReiter, 'Reiter: alle drei Bereiche sind role="tabpanel"');
+  ok(nReiter === 4, 'Reiter: alle vier Knoepfe sind role="tab"', nReiter);
+  ok((html.match(/role="tabpanel"/g) || []).length === nReiter, 'Reiter: alle vier Bereiche sind role="tabpanel"');
   ok((html.match(/aria-controls="tab-/g) || []).length === nReiter, 'Reiter: jeder Knopf benennt seinen Bereich');
   ok((html.match(/aria-labelledby="reiter-/g) || []).length === nReiter, 'Reiter: jeder Bereich benennt seinen Knopf');
   ok(/ArrowRight/.test(shell) && /ArrowLeft/.test(shell) && /'Home'/.test(shell) && /'End'/.test(shell),
@@ -6157,7 +6164,10 @@ console.log('\n41) Zustaende: was die App sagt, wenn etwas fehlt oder klemmt');
     .map(function (z) { return z.slice(z.lastIndexOf('>') + 1, -1).trim(); });
   var pillen = (html.match(/data-sub="[a-z]+"[^>]*>([^<]+)</g) || [])
     .map(function (z) { return z.slice(z.lastIndexOf('>') + 1, -1).replace(/&amp;/g, '&').trim(); });
-  ok(reiter.length === 3, 'Wegweiser: drei Reiter gefunden (' + reiter.join(', ') + ')');
+  /* 04.09.2026 (Stufe 5): vier statt drei - "Markt" ist dazugekommen. Die Zahl ist
+   * der Wachhund dieser Klinke: liest sie die Leiste falsch, findet sie danach jeden
+   * Wegweiser gut, weil ihre Liste echter Ortsnamen unvollstaendig ist. */
+  ok(reiter.length === 4, 'Wegweiser: vier Reiter gefunden (' + reiter.join(', ') + ')');
   ok(pillen.length >= 6, 'Wegweiser: die Unter-Pillen sind lesbar (' + pillen.length + ')');
   /* 02.09.2026 (Stufe 1 des Umzugs): Ein Wegweiser darf seit dem Umzug auch auf eine
    * KLAPPE im Betrieb zeigen ("Werkzeuge → Betrieb"). Die Klappen-Titel kommen
@@ -8008,7 +8018,11 @@ console.log('\n44) Oberflaeche nach Themen sortiert (Felix, Issue #68)');
      genau eine aktive Pille. Zwei aktive Panels laegen uebereinander und niemand saehe,
      welches. Deshalb ist die Attributreihenfolge data-sub vor class im Markup
      Bedingung und nicht Geschmack. */
-  ['tab-dashboard', 'tab-werkzeuge', 'tab-strategien'].forEach(function (id) {
+  /* tab-markt kam am 04.09.2026 dazu (Stufe 5) und faellt unter dieselbe Regel:
+     genau ein aktives Panel, genau eine aktive Pille, Attributreihenfolge data-sub
+     vor class. Ein Reiter, der hier NICHT genannt waere, koennte zwei aktive Panels
+     uebereinander legen, ohne dass es jemand merkt. */
+  ['tab-dashboard', 'tab-markt', 'tab-werkzeuge', 'tab-strategien'].forEach(function (id) {
     var von = html.indexOf('<div id="' + id + '"');
     var bis = html.indexOf('<!-- /' + id + ' -->');
     ok(von > -1 && bis > von, 'Reiter ' + id + ' ist im Markup abgegrenzt');
@@ -8259,9 +8273,13 @@ console.log('\n44) Oberflaeche nach Themen sortiert (Felix, Issue #68)');
    * hindurch, weil das Grossbuchstaben-Muster gar nicht erst zutraf - und der
    * Umschalter der Shell haette ihn wegen /^[a-z]+$/ danach still ignoriert.
    * Gefunden hat es die Gegenprobe, nicht der Verdacht (wiki/fehlerformen.md). */
+  /* 04.09.2026 (Stufe 5): der Reiter "Markt" steht zwischen Heute und Regeln, und
+   * zwar an dieser Stelle mit Absicht - die Leiste ist die Reihenfolge des Tages:
+   * erst was mir gehoert, dann was der Markt tut, dann meine Regeln, dann die
+   * Werkzeuge. Wer ihn ans Ende schoebe, machte daraus wieder eine Kiste. */
   var leisteN = (html.match(/data-tab="([^"]*)"/g) || []).map(function (z) { return z.slice(10, -1); });
-  ok(leisteN.join(' ') === 'dashboard strategien werkzeuge',
-     'Drei Bildschirme: genau die Reiter dashboard/strategien/werkzeuge, in dieser Reihenfolge',
+  ok(leisteN.join(' ') === 'dashboard markt strategien werkzeuge',
+     'Vier Bildschirme: genau die Reiter dashboard/markt/strategien/werkzeuge, in dieser Reihenfolge',
      leisteN.join(' '));
   /* Die zwoelf Klappen des Maschinenraums, namentlich und in der Reihenfolge, in der
    * sie gebraucht werden. Wer eine ergaenzt oder streicht, benennt sie hier - genau
@@ -8300,14 +8318,21 @@ console.log('\n44) Oberflaeche nach Themen sortiert (Felix, Issue #68)');
   ok(nurBetrieb.every(function (id) { return html.indexOf('id="' + id + '"') > -1; }),
      'Gegenprobe: alle zehn Kennungen existieren noch - sonst pruefte die Zeile darueber nichts');
 
-  /* --- Stufe C4: die Marktkarte ist eine Pille, kein Reiter --- */
-  ok(!/data-tab="marktkarte"/.test(html) && /id="heutePills"/.test(html),
-     'Die Marktkarte ist kein eigener Reiter mehr, "Heute" hat eine Pillenleiste');
-  ok(/id="sub-marktkarte"/.test(heute) && /id="mkKarte"/.test(heute) && /id="mkFuss"/.test(heute),
-     'Der Marktkarten-Block liegt vollstaendig unter Heute - als Block umgezogen, nicht neu gebaut');
-  ok(/id="spekRadar"/.test(heute) && /id="insiderKarte"/.test(heute) && /id="vormarktKarte"/.test(heute) &&
-     /id="sub-beobachtung"/.test(heute),
-     'Radar, Insider und Vorboersen-Luecken stehen zusammen in der dritten Pille');
+  /* --- Stufe C4: die Marktkarte ist eine Pille, kein Reiter ---
+   * 04.09.2026 (Stufe 5): der Ort ist neu, die geschuetzte Eigenschaft dieselbe.
+   * Die Karte ist weiterhin KEIN Reiter - sie ist die zweite Pille, nur eben im
+   * Reiter "Markt" statt in "Heute". Dass sie vollstaendig und als Block umgezogen
+   * ist (nicht neu gebaut), wird weiter an denselben drei Kennungen geprueft. */
+  var markt = html.slice(html.indexOf('<div id="tab-markt"'), html.indexOf('<!-- /tab-markt -->'));
+  ok(markt.length > 100, 'Reiter tab-markt ist im Markup abgegrenzt');
+  ok(!/data-tab="marktkarte"/.test(html) && /id="heutePills"/.test(html) && /id="marktPills"/.test(html),
+     'Die Marktkarte ist kein eigener Reiter mehr, "Markt" hat eine Pillenleiste');
+  ok(/id="sub-marktkarte"/.test(markt) && /id="mkKarte"/.test(markt) && /id="mkFuss"/.test(markt) &&
+     !/id="sub-marktkarte"/.test(heute),
+     'Der Marktkarten-Block liegt vollstaendig unter Markt - als Block umgezogen, nicht neu gebaut');
+  ok(/id="spekRadar"/.test(markt) && /id="insiderKarte"/.test(markt) && /id="vormarktKarte"/.test(markt) &&
+     /id="sub-beobachtung"/.test(markt) && !/id="sub-beobachtung"/.test(heute),
+     'Radar, Insider und Vorboersen-Luecken stehen zusammen in der dritten Pille des Reiters Markt');
   /* Keine verwaiste Reiter-Kennung: eine Endmarke oder ein aria-labelledby fuer einen
      Reiter, den es nicht mehr gibt, ist genau die Sorte toter Verweis, die dieser
      Umbau abschafft. */
@@ -8317,11 +8342,19 @@ console.log('\n44) Oberflaeche nach Themen sortiert (Felix, Issue #68)');
      Zusicherung, dass an diesen drei Karten nichts gemessen ist. Zieht die Ueberschrift
      nicht mit um, faellt er zwischen die Stuehle und niemand merkt es. */
   ['spekRadar', 'insiderKarte', 'vormarktKarte'].forEach(function (kid) {
-    var bisK = heute.indexOf('id="' + kid + '"');
-    var vonK = heute.lastIndexOf('<h2>', bisK);
-    ok(vonK > -1 && /Gehandelt wird hiervon nichts/.test(heute.slice(vonK, bisK)),
+    var bisK = markt.indexOf('id="' + kid + '"');
+    var vonK = markt.lastIndexOf('<h2>', bisK);
+    ok(vonK > -1 && /Gehandelt wird hiervon nichts/.test(markt.slice(vonK, bisK)),
        'Beobachtung: ueber ' + kid + ' steht der Simulationssatz weiterhin');
   });
+  /* Und er steht genau dreimal - nicht zweimal (eine Karte haette ihn beim Umzug
+   * verloren) und nicht viermal (jemand haette ihn zusaetzlich in den Kommentar
+   * geschrieben). Die Zaehlung laeuft ueber das GANZE Markup, nicht ueber den
+   * Reiter-Ausschnitt: ein viertes Vorkommen an einem anderen Ort faellt damit
+   * auch dann auf, wenn hier niemand daran gedacht hat. */
+  ok((html.match(/Gehandelt wird hiervon nichts/g) || []).length === 3,
+     'Beobachtung: der Satz steht genau dreimal - einmal je Karte',
+     (html.match(/Gehandelt wird hiervon nichts/g) || []).length);
   /* hoverInfo ist ein position:fixed Ueberlagerungsfenster, kein Inhalt. Laege es in
      einer Pille, waere es weg, sobald eine andere gewaehlt ist - und der
      Zeigefinger-Hinweis der Heatmap ginge mit. */
@@ -14597,6 +14630,509 @@ console.log('\n66) Archiv-Grafik & Kopfzeile: eine Grafik statt einer Tabelle, e
     ok(new RegExp('<select id="' + id + '" disabled>').test(betrieb),
        'Live=Messung am neuen Ort: ' + id + ' ist weiter gesperrt');
   });
+})();
+
+
+/* ================= 68) Reiter Markt (Oberflaeche Stufe 5, 04.09.2026) ============
+ *
+ * Wilhelms Entscheid nach der TradingView-Sichtung: ein reines Markt-Dashboard als
+ * vierter Reiter, "nicht so vermixt mit den Strategien". Der Umzug betrifft sieben
+ * DOM-Bloecke und zwei ganze Panels; dazu kommen vier neue Bloecke, zwei neue
+ * Leseauskuenfte im Hauptprozess und ein neues reines Rechenmodul.
+ *
+ * Diese Zusicherungen halten drei Dinge fest:
+ *   1. DEN ORT - was umgezogen ist, steht am neuen Ort und NICHT mehr am alten.
+ *      Beides, denn eine Kopie waere schlimmer als ein Umzug: zwei Kaesten mit
+ *      derselben Kennung, und getElementById zeigte still auf den ersten.
+ *   2. DIE RECHNUNG - sektorLeiste, hotlists, relativesVolumen und sitzungszustand
+ *      werden hier wirklich AUSGEFUEHRT, nicht im Quelltext gesucht. Ein Muster
+ *      sagt, dass eine Funktion dasteht; es sagt nicht, was herauskommt.
+ *   3. DIE GRENZE - auf diesem Reiter wird nichts gehandelt und nichts gemessen.
+ *      Kein Handelspfad, kein Schreibzugriff, keine Zahl im Markup.
+ */
+console.log('\n68) Reiter Markt');
+(function () {
+  var html = fs.readFileSync(__dirname + '/index.html', 'utf8');
+  var shell = fs.readFileSync(__dirname + '/app-shell.js', 'utf8');
+  var mui = fs.readFileSync(__dirname + '/marktui.js', 'utf8');
+  var mkui = fs.readFileSync(__dirname + '/marktkarteui.js', 'utf8');
+  var ren = fs.readFileSync(__dirname + '/renderer.js', 'utf8');
+  var mj = fs.readFileSync(__dirname + '/main.js', 'utf8');
+  var pre = fs.readFileSync(__dirname + '/preload.js', 'utf8');
+  var pur = fs.readFileSync(__dirname + '/markt/uebersicht.js', 'utf8');
+  var MU = require('./markt/uebersicht.js');
+
+  var markt = html.slice(html.indexOf('<div id="tab-markt"'), html.indexOf('<!-- /tab-markt -->'));
+  var heute = html.slice(html.indexOf('<div id="tab-dashboard"'), html.indexOf('<!-- /tab-dashboard -->'));
+  var ueberblick = html.slice(html.indexOf('<div class="sub active" id="sub-marktueberblick">'),
+                              html.indexOf('<!-- /sub-marktueberblick -->'));
+
+  /* ---------------------------------------------------------------------------
+   * (a) Der Reiter selbst
+   *
+   * Die Reiterzahl steht schon in Abschnitt 44 (dort als Wachhund gegen jeden
+   * ungenannten Reiter). Hier geht es um die vier Eigenschaften, an denen dieser
+   * Reiter haengt: er hat eine Endmarke (sonst kann ihn niemand verschieben), er
+   * hat GENAU drei Pillen, jede Pille findet ihr Panel, und die Attributreihenfolge
+   * stimmt - die Klinke "genau eine aktive Pille" liest /data-sub="[a-z]+" class="active"/. */
+  ok(markt.length > 1000 && html.indexOf('<!-- /tab-markt -->') > html.indexOf('<div id="tab-markt"'),
+     'Markt: der Reiter ist als Block abgegrenzt - mit Endmarke, wie jeder andere');
+  ok(/<button data-tab="markt"[^>]*aria-controls="tab-markt"[^>]*id="reiter-markt"/.test(html),
+     'Markt: der Knopf benennt sein Panel und seinen eigenen Anker');
+  var mPillen = (markt.match(/data-sub="([a-z]+)"/g) || []).map(function (z) { return z.slice(10, -1); });
+  ok(mPillen.join(' ') === 'marktueberblick marktkarte beobachtung',
+     'Markt: genau drei Pillen - Ueberblick, Marktkarte, Radar, in dieser Reihenfolge',
+     mPillen.join(' '));
+  mPillen.forEach(function (p) {
+    ok(new RegExp('class="sub(?: active)?" id="sub-' + p + '"').test(markt),
+       'Markt: die Pille ' + p + ' findet ein Panel mit class="sub"');
+  });
+  ok(/<button data-sub="marktueberblick" class="active">/.test(markt),
+     'Markt: die erste Pille ist aktiv, und data-sub steht VOR class');
+  ok((markt.match(/class="sub active"/g) || []).length === 1,
+     'Markt: genau EIN Panel ist beim Start aktiv');
+  ok(/id="marktPills"/.test(markt) && (html.match(/id="marktPills"/g) || []).length === 1,
+     'Markt: die Pillenleiste heisst marktPills und steht genau einmal');
+
+  /* ---------------------------------------------------------------------------
+   * (b) Was umgezogen ist - und dass es NUR dort steht
+   *
+   * Die sieben Kennungen sind die Schnittstelle zu renderer.js und calendar.js.
+   * Sie muessen im neuen Reiter liegen, im alten NICHT mehr, und JE EINMAL im
+   * ganzen Markup: ein zweiter Behaelter mit derselben Kennung waere ein zweites
+   * Rendering desselben Inhalts, und getElementById zeigte still auf das erste. */
+  var UMGEZOGEN = ['newsTicker', 'tiles', 'dashHeat', 'dashDetail', 'bigtech', 'chips',
+                   'calendar', 'news'];
+  UMGEZOGEN.forEach(function (id) {
+    var n = (html.match(new RegExp('id="' + id + '"', 'g')) || []).length;
+    ok(n === 1 && markt.indexOf('id="' + id + '"') > -1 && heute.indexOf('id="' + id + '"') === -1,
+       'Umzug: ' + id + ' steht genau einmal - im Reiter Markt, nicht mehr auf Heute',
+       n + ' Vorkommen');
+  });
+  /* Gegenprobe zur Zeile darueber: es GIBT diese Kennungen ueberhaupt noch. Waeren
+   * sie beim Schneiden verlorengegangen, meldete die Pruefung "0 auf Heute" und
+   * waere gruen - der Nullbefund vom toten Werkzeug (wiki/fehlerformen.md). */
+  ok(UMGEZOGEN.every(function (id) { return html.indexOf('id="' + id + '"') > -1; }),
+     'Gegenprobe: alle acht Kennungen existieren noch - sonst pruefte die Zeile darueber nichts');
+  /* Und ihre SCHREIBER zeigen weiter auf sie. Ein Umzug, der die Kennung behaelt,
+   * aber den Schreiber verliert, ist ein leerer Kasten ohne Fehlermeldung. */
+  ok(/setzeInhalt\('tiles'/.test(ren) && /getElementById\('dashHeat'\)/.test(ren) &&
+     /setzeInhalt\('bigtech'/.test(ren) && /setzeInhalt\('chips'/.test(ren) &&
+     /setzeInhalt\('news'/.test(ren) && /getElementById\('newsTicker'\)/.test(ren),
+     'Umzug: renderer.js schreibt weiter in dieselben sechs Kennungen');
+  ok(/getElementById\('calendar'\)/.test(fs.readFileSync(__dirname + '/calendar.js', 'utf8')),
+     'Umzug: calendar.js findet seinen Kalender am neuen Ort - die Kennung ist die Schnittstelle');
+  /* Die zwei ganzen Panels sind vollstaendig mitgekommen, samt ihrer Endmarken. */
+  ['mkAnzahl', 'mkBranche', 'mkStand', 'mkKarte', 'mkFuss'].forEach(function (id) {
+    ok(markt.indexOf('id="' + id + '"') > -1 && heute.indexOf('id="' + id + '"') === -1,
+       'Umzug: die Marktkarten-Kennung ' + id + ' liegt im Reiter Markt');
+  });
+  ['spekRadar', 'insiderKarte', 'vormarktKarte'].forEach(function (id) {
+    ok(markt.indexOf('id="' + id + '"') > -1 && heute.indexOf('id="' + id + '"') === -1,
+       'Umzug: die Beobachtungs-Kennung ' + id + ' liegt im Reiter Markt');
+  });
+  ok(/<!-- \/sub-marktkarte -->/.test(markt) && /<!-- \/sub-beobachtung -->/.test(markt) &&
+     /<!-- \/sub-marktueberblick -->/.test(markt),
+     'Umzug: alle drei Panels des Reiters tragen ihre Endmarke');
+  /* Der Nachlade-Haken der Karte haengt am Namen der PILLE, nicht am Reiter - er
+   * zieht deshalb ohne Aenderung mit. Geprueft wird, dass er noch da ist: ohne ihn
+   * saehe man beim Oeffnen bis zum naechsten Takt einen leeren Streifen. */
+  ok(/if \(d\.sub !== 'marktkarte'\) return;/.test(mkui),
+     'Umzug: der Nachlade-Haken der Marktkarte haengt weiter am Pillennamen');
+  /* Kein Text ist beim Umzug verlorengegangen. Drei Stichproben, jede aus einem
+   * anderen der drei Panels - und die Marktbild-Zeile nennt weiter "dieses Reiters",
+   * was am neuen Ort genauer stimmt als vorher. */
+  ok(/Marktbild <span[^>]*>– die 15 Werte dieses Reiters/.test(markt),
+     'Umzug: die Marktbild-Zeile steht woertlich weiter da');
+  ok(/– Fläche ist Größe, Farbe ist der Tag\./.test(markt),
+     'Umzug: die Legendenzeile der Marktkarte ist mitgekommen');
+  ok(/Wirtschaftskalender \(marktbewegende Termine\)/.test(markt),
+     'Umzug: der Kalender heisst weiter, wie er heisst');
+
+  /* ---------------------------------------------------------------------------
+   * (c) Was Heute behalten hat
+   *
+   * Der Kern von Wilhelms Entscheid: auf "Heute" steht das eigene Geld, sonst
+   * nichts. Zwei Pillen, der ganze Bestand-Block, und KEIN Marktblock. */
+  var hPillen = (heute.match(/data-sub="([a-z]+)"/g) || []).map(function (z) { return z.slice(10, -1); });
+  ok(hPillen.join(' ') === 'ueberblick papiere',
+     'Heute: nur noch zwei Pillen - Ueberblick (Bestand) und Meine Papiere',
+     hPillen.join(' '));
+  ['bestandBlock', 'sub-mittel', 'sub-depot', 'sub-protokoll', 'buecherChart', 'zuletztGetan',
+   'intradayBereich', 'sub-papiere'].forEach(function (id) {
+    ok(heute.indexOf('id="' + id + '"') > -1,
+       'Heute: der Bestand ist vollstaendig geblieben - ' + id);
+  });
+  ok(/<h2 style="margin-top:0;">Bestand<\/h2>/.test(heute),
+     'Heute: der Ueberblick beginnt weiter mit dem Bestand');
+  /* Die Umkehrung, als EINE Zeile: nichts Marktartiges mehr im Alltagsreiter. */
+  var marktKennungen = UMGEZOGEN.concat(['sub-marktkarte', 'sub-beobachtung', 'mkKarte',
+                                         'marktSitzung', 'marktSektoren', 'marktHotlists', 'marktEarnings']);
+  var reste = marktKennungen.filter(function (id) { return heute.indexOf('id="' + id + '"') > -1; });
+  ok(reste.length === 0,
+     'Heute: kein einziger Markt-Block ist zurueckgeblieben', reste.join(' ') || 'keiner');
+
+  /* ---------------------------------------------------------------------------
+   * (d) Die vier neuen Bloecke
+   *
+   * Jeder genau einmal, jeder mit einem Schreiber, keiner mit einer Zahl im Markup.
+   * Der Zeitraum-Umschalter traegt ABSICHTLICH kein data-sub: er schaltet einen
+   * Zeitraum um, keine Unterseite - mit data-sub leerte ein Klick den Reiter. */
+  ['marktSitzung', 'marktSektoren', 'marktSektorenFuss', 'marktHotlists', 'marktEarnings',
+   'marktSektorZeitraum'].forEach(function (id) {
+    var n = (html.match(new RegExp('id="' + id + '"', 'g')) || []).length;
+    ok(n === 1 && ueberblick.indexOf('id="' + id + '"') > -1,
+       'Markt-Ueberblick: ' + id + ' steht genau einmal, im Ueberblick-Panel', n);
+  });
+  var zrLeiste = (/<div class="pills small" id="marktSektorZeitraum"[\s\S]*?<\/div>/.exec(html) || [''])[0];
+  var zrKnoepfe = (zrLeiste.match(/data-zeitraum="([a-z0-9]+)"/g) || []).map(function (z) { return z.slice(15, -1); });
+  ok(zrKnoepfe.join(' ') === 't1 w1 m1',
+     'Markt-Ueberblick: drei Zeitraeume - 1 Tag, 1 Woche, 1 Monat', zrKnoepfe.join(' '));
+  ok(zrLeiste.indexOf('data-sub') === -1,
+     'Markt-Ueberblick: die Zeitraum-Knoepfe tragen KEIN data-sub - sonst leert ein Klick den Reiter');
+  /* Gegenprobe: es gibt sie ueberhaupt, und der Umschalter der Shell fasst sie
+   * wirklich nicht an (die Einschraenkung auf [data-sub] steht in Abschnitt 44). */
+  ok(zrKnoepfe.length === 3 && /data-zeitraum/.test(mui),
+     'Gegenprobe: die drei Knoepfe existieren und marktui.js hoert auf sie');
+  /* KEINE ZAHL IM MARKUP: alles, was im Ueberblick eine Zahl waere, schreibt
+   * marktui.js. Im Markup stehen nur Leerzustaende. Geprueft an den vier
+   * Behaeltern - ein Prozentzeichen oder eine Ziffernfolge darin waere eine
+   * eingefrorene Zahl, die sich nie wieder aendert. */
+  ['marktSitzung', 'marktSektoren', 'marktHotlists', 'marktEarnings'].forEach(function (id) {
+    var a = ueberblick.indexOf('id="' + id + '"');
+    var stueck = ueberblick.slice(a, ueberblick.indexOf('</div>', a) + 6);
+    ok(!/\d+[,.]\d+|\d+\s*%/.test(stueck),
+       'Markt-Ueberblick: im Behaelter ' + id + ' steht keine Zahl - die schreibt das Modul');
+  });
+  /* Jeder neue Block hat seinen Erklaerknopf, und jeder Knopf einen Eintrag mit
+   * Punkten. Ein Knopf ohne Eintrag oeffnet ein leeres Fenster. */
+  ['markt.sektoren', 'markt.hotlists', 'markt.earnings'].forEach(function (k) {
+    ok(ueberblick.indexOf('data-info="' + k + '"') > -1 && shell.indexOf("'" + k + "': {") > -1,
+       'Markt-Ueberblick: der Erklaerknopf ' + k + ' steht im Panel UND im Register');
+    var e = (shell.split("'" + k + "': {")[1] || '').split('\n    },')[0];
+    ok(/punkte: \[/.test(e) && e.length > 300,
+       'Markt-Ueberblick: der Eintrag ' + k + ' ist nicht leer', e.length + ' Zeichen');
+  });
+  /* Der Registereintrag zu den Hotlists muss die drei Setzungen benennen, die man
+   * der Anzeige NICHT ansieht: Grundgesamtheit, Dollar-Umsatz statt Stueckzahl und
+   * die Naehe zum 52-Wochen-Hoch. Ohne sie liest jemand "der groesste Gewinner des
+   * Tages", wo "der groesste unter 600 Werten" steht. */
+  var eHot = (shell.split("'markt.hotlists': {")[1] || '').split('\n    },')[0];
+  ok(/600/.test(eHot) && /Dollar-Umsatz/.test(eHot) && /99,5 %/.test(eHot) && /Median/.test(eHot),
+     'Markt-Ueberblick: der Hotlist-Eintrag benennt Grundgesamtheit, Umsatzbegriff, Hoch-Schwelle und Median');
+
+  /* ---------------------------------------------------------------------------
+   * (e) Die Grenze: kein Handel, keine Messung, kein Schreiben
+   *
+   * Das Rechenmodul ist REIN. Es kennt kein Fenster, kein Dokument, keine Bruecke
+   * und keinen Speicher - sonst waere es in Node nicht pruefbar, und genau dafuer
+   * gibt es es. Gesucht wird im Quelltext OHNE Kommentare: die Datei erklaert im
+   * Kopf, dass sie nichts davon tut, und eine Klinke, die ihren eigenen Kommentar
+   * findet, prueft nichts (wiki/fehlerformen.md, Sperrklinke frisst ihren Kommentar). */
+  var purO = ohneKommentare(pur);
+  ['document.', 'window.api', 'storeSet', 'storeGet', 'fetch(', 'XMLHttpRequest',
+   'setInterval', 'setTimeout', 'innerHTML'].forEach(function (w) {
+    ok(purO.indexOf(w) === -1,
+       'markt/uebersicht.js ist rein: kein ' + w);
+  });
+  ok(/if \(typeof module !== 'undefined' && module\.exports\)/.test(pur),
+     'markt/uebersicht.js ist in Node ladbar - sonst gaebe es diese Pruefungen nicht');
+  /* Kein Handelspfad, nirgends auf diesem Reiter. Die Namen sind dieselben, die
+   * wiki/oberflaeche.md als tabu fuehrt. */
+  var muiO = ohneKommentare(mui);
+  ['intradayScan', 'SETUPS', 'order', 'kaufe', 'verkaufe', 'CapAPI', 'AlpAPI'].forEach(function (w) {
+    ok(muiO.indexOf(w) === -1 && purO.indexOf(w) === -1,
+       'Reiter Markt: kein Handelscode - ' + w + ' kommt nicht vor');
+  });
+  /* marktui.js schreibt GENAU EINEN Store-Schluessel, und zwar den gemerkten Stand
+   * der Anzeige - so, wie es der Vorboersen-Kasten seit je tut. Ein zweiter
+   * Schreibzugriff waere ein zweites Archiv desselben Tages. */
+  var schreibt = (muiO.match(/storeSet\(/g) || []);
+  ok(schreibt.length === 1 && /storeSet\(STAND_KEY, STAND\)/.test(muiO) &&
+     (muiO.match(/STAND_KEY = '[^']+'/g) || []).length === 1,
+     'Reiter Markt: marktui.js schreibt genau einen Schluessel - den gemerkten Stand',
+     schreibt.length + ' Schreibzugriffe');
+  /* Und der gemerkte Stand darf einen laufenden NIE ueberschreiben, wenn der Abruf
+   * nicht durchkam: aus einer Stoerung wuerde sonst ein leerer Markt. Dieselbe
+   * Schwelle wie in renderer.js (mehr als die Haelfte gescheitert). */
+  ok(/neu\.gezeigt >= Math\.max\(1, Math\.floor\(neu\.universum \/ 2\)\)/.test(mui) &&
+     /angezeigt ist der letzte vollständige Stand/.test(mui),
+     'Reiter Markt: ein halber Lauf loescht den gemerkten Stand nicht - und sagt warum');
+  /* EINE Grundmenge, nicht zwei. Der Ueberblick fragt die Marktkarte nach ihrer
+   * Auswahl und ihren Kursen, statt sich eine eigene zu bauen - sonst stuenden auf
+   * demselben Reiter zwei Antworten auf die Frage, was "der Markt" ist. */
+  ok(/window\.Marktwerte = \{/.test(mkui) && /auswahl: auswahl,/.test(mkui),
+     'Reiter Markt: die Marktkarte gibt ihre Auswahl als Leseauskunft heraus');
+  ok(/window\.Marktwerte && window\.Marktwerte\.kurs/.test(mui) && /MW\.auswahl\(UNIVERSUM\)/.test(mui),
+     'Reiter Markt: der Ueberblick benutzt sie - eine Grundmenge, ein Kurs je Wert');
+  ok(!/marktStammdaten\(\)/.test(muiO),
+     'Reiter Markt: der Ueberblick liest die Stammdaten NICHT selbst - das taete eine zweite Auswahl');
+
+  /* ---------------------------------------------------------------------------
+   * (f) Die Rechnung, AUSGEFUEHRT
+   *
+   * Alles hier laeuft wirklich. Ein Muster im Quelltext sagt, dass eine Funktion
+   * dasteht - nicht, was herauskommt. */
+  ok(MU.sitzungszustand(10, 390).zustand === 'regulaer', 'sitzungszustand: mitten in der Sitzung = regulaer');
+  ok(MU.sitzungszustand(-100, 390).zustand === 'vorboerslich', 'sitzungszustand: 100 Minuten vor der Eroeffnung = vorboerslich');
+  ok(MU.sitzungszustand(-400, 390).zustand === 'geschlossen', 'sitzungszustand: 400 Minuten davor ist noch keine Vorboerse');
+  ok(MU.sitzungszustand(500, 390).zustand === 'nachboerslich', 'sitzungszustand: 110 Minuten nach dem Schluss = nachboerslich');
+  ok(MU.sitzungszustand(700, 390).zustand === 'geschlossen', 'sitzungszustand: danach ist zu');
+  /* DER FEIERTAG. Ohne die Sitzungslaenge als Argument stuende an Thanksgiving den
+   * ganzen Tag "regulaerer Handel" ueber einem geschlossenen Markt - genau der
+   * Fehler, den boerse.js an anderer Stelle schon einmal geheilt hat. */
+  ok(MU.sitzungszustand(10, 0).zustand === 'geschlossen',
+     'sitzungszustand: an einem Tag ohne Sitzung ist zu, auch mitten am Vormittag');
+  /* Der Halbtag: um 14:30 Ortszeit ist an einem 210-Minuten-Tag laengst Schluss. */
+  ok(MU.sitzungszustand(300, 210).zustand === 'nachboerslich',
+     'sitzungszustand: am Halbtag endet die Sitzung frueher - die Laenge zaehlt, nicht die Uhrzeit');
+  ok(MU.sitzungszustand(null, 390) === null && MU.sitzungszustand(NaN, 390) === null,
+     'sitzungszustand: ohne Uhrzeit gibt es keinen Zustand - unbekannt ist unbekannt');
+
+  /* relativesVolumen: der MEDIAN, nicht das Mittel. Die Probe ist so gebaut, dass
+   * sich beide unterscheiden - sonst pruefte sie die Wahl gar nicht. */
+  var reiheV = [];
+  for (var iv = 0; iv < 49; iv++) reiheV.push(100);
+  reiheV.push(5000);                       // ein Verfallstag
+  var rv = MU.relativesVolumen(200, reiheV);
+  ok(rv && rv.median === 100 && Math.abs(rv.faktor - 2) < 1e-9,
+     'relativesVolumen: ein einzelner Ausreisser verschiebt den Median nicht',
+     rv && rv.median);
+  var mittel = reiheV.reduce(function (a, b) { return a + b; }, 0) / reiheV.length;
+  ok(Math.abs(mittel - 100) > 1,
+     'Gegenprobe: das MITTEL derselben Reihe waere deutlich anders - die Wahl wird wirklich geprueft',
+     mittel);
+  ok(MU.relativesVolumen(200, [100, 100, 100]) === null,
+     'relativesVolumen: unter 20 Tagen gibt es kein Urteil - nicht 1,0, sondern null');
+  ok(MU.relativesVolumen(null, reiheV) === null && MU.relativesVolumen(0, reiheV) === null,
+     'relativesVolumen: ohne heutiges Volumen gibt es keinen Faktor');
+  ok(MU.relativesVolumen(200, reiheV.map(function () { return 0; })) === null,
+     'relativesVolumen: eine Reihe aus lauter Nullen ist keine Reihe');
+  ok(MU.relativesVolumen(200, reiheV, { fenster: 10, minTage: 5 }).tage === 10,
+     'relativesVolumen: das Fenster ist einstellbar und wird eingehalten');
+
+  /* sektorLeiste: die Gewichtung ist der Sinn. Der grosse Wert zieht das Ergebnis
+   * zu sich - ein ungewichtetes Mittel derselben drei Werte kaeme auf +0,33 %. */
+  var sl = MU.sektorLeiste([
+    { sektor: 'T', kap: 900, pct: -1 }, { sektor: 'T', kap: 100, pct: 2 }, { sektor: 'T', kap: 10, pct: 0 },
+    { sektor: 'F', kap: 500, pct: 3 }, { sektor: 'F', kap: 500, pct: 1 }
+  ]);
+  ok(sl.length === 1 && sl[0].sektor === 'T' && Math.abs(sl[0].pct - (-700 / 1010 * 1)) < 1e-9,
+     'sektorLeiste: kapitalgewichtet - der grosse Wert bestimmt den Balken',
+     sl.length ? sl[0].pct : 'leer');
+  ok(sl.length === 1,
+     'sektorLeiste: ein Sektor mit zwei Werten wird nicht gezeigt - das sind zwei Firmen, kein Sektor');
+  var sl2 = MU.sektorLeiste([
+    { sektor: 'A', kap: 1, pct: 1 }, { sektor: 'A', kap: 1, pct: 1 }, { sektor: 'A', kap: 1, pct: 1 },
+    { sektor: 'B', kap: 1, pct: 5 }, { sektor: 'B', kap: 1, pct: 5 }, { sektor: 'B', kap: 1, pct: 5 }
+  ]);
+  ok(sl2.length === 2 && sl2[0].sektor === 'B' && sl2[1].sektor === 'A',
+     'sektorLeiste: sortiert vom staerksten zum schwaechsten');
+  var sl3 = MU.sektorLeiste([
+    { sektor: 'A', kap: 100, pct: 2 }, { sektor: 'A', kap: 100, pct: null }, { sektor: 'A', kap: 100, pct: 2 },
+    { sektor: 'A', kap: null, pct: 2 }, { sektor: 'A', kap: 100, pct: 2 }
+  ]);
+  ok(sl3.length === 1 && sl3[0].n === 3 && Math.abs(sl3[0].pct - 2) < 1e-9,
+     'sektorLeiste: ein Wert ohne Kurs oder ohne Groesse zaehlt gar nicht - er wird nicht als 0 % gemittelt',
+     sl3.length ? sl3[0].n : 'leer');
+
+  /* hotlists: die fuenf Listen, jede an ihrer eigenen Zahl. */
+  var werteH = [
+    { sym: 'A', kurs: 10, pct: 5, volumen: 100, hoch52: 10, relVol: 1.2 },
+    { sym: 'B', kurs: 1000, pct: -3, volumen: 100, hoch52: 2000, relVol: 4.0 },
+    { sym: 'C', kurs: 5, pct: 1, volumen: 100000, hoch52: 20, relVol: null },
+    { sym: 'D', kurs: 50, pct: null, volumen: null, hoch52: null, relVol: 0.2 }
+  ];
+  var H = MU.hotlists(werteH, { zeilen: 3 });
+  ok(H.gewinner[0].sym === 'A' && H.verlierer[0].sym === 'B',
+     'hotlists: Gewinner und Verlierer stehen an ihren Enden derselben Sortierung');
+  ok(H.gewinner.length === 3 && H.verlierer.length === 3,
+     'hotlists: der Wert ohne Tagesveraenderung steht in keiner der beiden Listen');
+  ok(H.umsatz[0].sym === 'C' && H.umsatz[0].umsatz === 500000,
+     'hotlists: meist gehandelt ist der DOLLAR-Umsatz - nach Stueckzahl stuenden dort die Pennystocks',
+     H.umsatz[0].sym);
+  /* Gegenprobe: nach Stueckzahl waere C zwar auch vorn, B aber vor A - nach Umsatz
+   * ist es umgekehrt. Ohne diese Zeile pruefte die Zeile darueber nur die Reihenfolge
+   * eines Beispiels, in dem beide Begriffe dasselbe ergeben. */
+  ok(H.umsatz[1].sym === 'B' && werteH[0].volumen === werteH[1].volumen,
+     'Gegenprobe: bei gleicher Stueckzahl entscheidet der Kurs - der Umsatzbegriff wirkt wirklich');
+  ok(H.volumen[0].sym === 'B' && H.volumen.length === 3,
+     'hotlists: ungewoehnliches Volumen sortiert nach dem Faktor, ohne Faktor keine Zeile');
+  ok(H.hoch52.length === 1 && H.hoch52[0].sym === 'A' && Math.abs(H.hoch52[0].naehe - 1) < 1e-9,
+     'hotlists: am 52-Wochen-Hoch steht nur, wer wirklich dort steht', H.hoch52.length);
+  ok(H.grundgesamtheit === 4 && H.naheAm === 0.995,
+     'hotlists: Grundgesamtheit und Hoch-Schwelle stehen im Ergebnis - sie gehoeren in die Fusszeile');
+  var HL = MU.hotlists(werteH);
+  ok(HL.gewinner.length === 4 - 1 && MU.hotlists([]).gewinner.length === 0,
+     'hotlists: ohne Werte gibt es leere Listen und keinen Fehler');
+
+  /* spanne: Handelstage, nicht Kalendertage - und nicht mehr Balken, als da sind. */
+  var reiheS = [];
+  for (var is = 0; is < 30; is++) reiheS.push([1000 + is, 100 + is, 10]);
+  ok(Math.abs(MU.spanne(reiheS, 5) - ((129 / 124 - 1) * 100)) < 1e-9,
+     'spanne: fuenf Balken zurueck sind fuenf HANDELSTAGE');
+  ok(MU.spanne(reiheS, 40) === null,
+     'spanne: kuerzer als das Fenster gibt es kein Ergebnis - nicht das aelteste, das da ist');
+  ok(MU.spanne([[1, 0, 1], [2, 5, 1]], 1) === null,
+     'spanne: ein Kurs von null ergibt keine Prozentzahl');
+
+  /* Der Schwanz-Leser gegen den Volltext. DAS ist die Gegenprobe zu dem Trick, aus
+   * dem der Volumen-Median lebt: 96 KB vom Dateiende statt 1 MB Datei. Gebaut wird
+   * die Datei hier, damit die Pruefung ohne das echte Archiv laeuft. */
+  var kerzen = [];
+  for (var ik = 0; ik < 400; ik++) kerzen.push([1700000000000 + ik * 86400000, 100 + ik * 0.5, 1000 + ik]);
+  var datei = JSON.stringify({ sym: 'TEST', quelle: 'Probe', format: '[zeit, schluss, umsatz]', series: kerzen });
+  var schwanz = MU.tagesreiheAusText(datei.slice(-4000), 50);
+  var soll = kerzen.slice(-50);
+  ok(JSON.stringify(schwanz) === JSON.stringify(soll),
+     'Schwanz-Leser: aus dem Dateiende kommen dieselben Kerzen wie aus dem Volltext',
+     schwanz.length + ' Kerzen');
+  /* Positivkontrolle: er liest wirklich aus dem ABGESCHNITTENEN Text. Bekaeme er
+   * die ganze Datei, waere die Zeile oben trivial gruen. */
+  ok(MU.tagesreiheAusText(datei, 0).length === 400 &&
+     MU.tagesreiheAusText(datei.slice(-4000), 0).length < 400,
+     'Gegenprobe: der Ausschnitt traegt WENIGER Kerzen als die Datei - sonst pruefte die Zeile darueber nichts',
+     MU.tagesreiheAusText(datei.slice(-4000), 0).length + ' von 400');
+  /* Eine mitten in einer Kerze abgeschnittene Zahl darf NICHT als Kerze durchgehen. */
+  var halb = MU.tagesreiheAusText('99999,[1700000000000,100,1000],[17000000864', 0);
+  ok(halb.length === 1 && halb[0][0] === 1700000000000,
+     'Schwanz-Leser: die angeschnittene Kerze am Ende zaehlt nicht mit', halb.length);
+  ok(MU.tagesreiheAusText('[1700086400000,1,1],[1700000000000,2,2]', 0).length === 0,
+     'Schwanz-Leser: laufen die Zeitstempel nicht aufwaerts, ist der Ausschnitt nichts wert - leer statt falsch');
+  ok(MU.tagesreiheAusText('', 5).length === 0 && MU.tagesreiheAusText(null, 5).length === 0,
+     'Schwanz-Leser: leerer Text ergibt eine leere Reihe, keinen Fehler');
+  ok(MU.volumenReihe([[1, 2, 300], [2, 3, null], [3, 4, 0], [4, 5, 700]]).join(',') === '300,700',
+     'volumenReihe: Tage ohne Umsatz zaehlen nicht mit - null ist kein Volumen von null');
+
+  /* ---------------------------------------------------------------------------
+   * (g) Die Datenwege im Hauptprozess
+   *
+   * Drei Erweiterungen, und jede hat eine Falle, die gemessen wurde. */
+  var qBlock = (/arr\.forEach\(\(q\) => \{[\s\S]*?\}\);/.exec(mj) || [''])[0];
+  ['regularMarketVolume', 'marketCap', 'fiftyTwoWeekHigh', 'preMarketPrice', 'postMarketPrice']
+    .forEach(function (f) {
+      ok(qBlock.indexOf(f) > -1,
+         'yahoo-quotes: das Feld ' + f + ' kommt mit - in DERSELBEN Antwort, ohne zweite Anfrage');
+    });
+  ok(/volumen: q\.regularMarketVolume > 0 \? q\.regularMarketVolume : null/.test(qBlock) &&
+     /mkap: q\.marketCap > 0 \? q\.marketCap : null/.test(qBlock),
+     'yahoo-quotes: was die Quelle nicht kennt, ist null - nicht 0');
+  ok(/QUOTE_BLOCK = 400/.test(mj), 'yahoo-quotes: die Bloecke zu 400 bleiben');
+  /* Die Tagesreihen: nur lesen, nichts nachholen, kein Pfad aus dem Ordner heraus. */
+  var tr = (/ipcMain\.handle\('markt-tagesreihen'[\s\S]*?\n\}\);/.exec(mj) || [''])[0];
+  ok(tr.length > 200, 'markt-tagesreihen: die Leseauskunft steht im Hauptprozess');
+  ok(/replace\(\/\[\^A-Z0-9\.\^-\]\/g, ''\)/.test(tr),
+     'markt-tagesreihen: aus dem Kuerzel wird ein Dateiname - alles andere fliegt raus');
+  ok(!/writeFile|mkdir|sammelLauf|holeKerzen/.test(tr),
+     'markt-tagesreihen: schreibt nichts und holt nichts nach');
+  ok(/Kerzen\.dateiFuer\(sym, '1d', ordner\)/.test(tr) && /Kerzen\.ordnerVon\('1d'\)/.test(tr),
+     'markt-tagesreihen: Ordner und Dateiname kommen aus kerzenquelle.js - kein zweiter Pfadbau');
+  ok(/MarktU\.tagesreiheAusText\(schwanzLesen\(pfad, TAGES_SCHWANZ\), n\)/.test(mj),
+     'markt-tagesreihen: zerlegt wird mit der geprueften Funktion, nicht von Hand');
+  ok(/TAGES_MAX_SYM = 1500/.test(mj) && /angefragt > TAGES_MAX_SYM/.test(mj),
+     'markt-tagesreihen: die Zahl der Kuerzel je Aufruf ist gedeckelt');
+  /* DER GEMESSENE FEHLGRIFF. Zwei Bereichs-Operanden auf startdatetime liefern
+   * Status 200 und NULL Zeilen - ohne Fehlermeldung. Der Kasten haette jeden Tag
+   * "heute berichtet keiner" gesagt und damit gelogen. Diese Klinke ist der Grund,
+   * warum das nicht zurueckkommt. */
+  var ef = (/async function holeTerminFenster[\s\S]*?\n\}/.exec(mj) || [''])[0];
+  var opStart = (ef.match(/operands: \['startdatetime'/g) || []).length;
+  ok(opStart === 1,
+     'earnings-kalender: GENAU EINE Bedingung auf startdatetime - zwei liefern still null Zeilen',
+     opStart);
+  ok(/t\.zeit >= vonMs && t\.zeit < bisMs/.test(ef),
+     'earnings-kalender: das Ende des Fensters wird nach dem Abruf geschnitten, wo man es sieht');
+  ok(/naechster: spaeter/.test(ef) && /eindeutig\.find\(\(t\) => t\.zeit >= bisMs\)/.test(ef),
+     'earnings-kalender: der naechste Termin ausserhalb kommt mit - sonst waere "keiner" von "nichts geliefert" nicht zu unterscheiden');
+  ok(/if \(!da \|\| t\.sym\.length < da\.sym\.length\)/.test(ef),
+     'earnings-kalender: ein Unternehmen, eine Zeile - Yahoo fuehrt jede Vorzugsgattung einzeln');
+  ok(/startdatetimetype/.test(ef) && /BMO: 'vor Eröffnung', AMC: 'nach Schluss'/.test(mui),
+     'earnings-kalender: vor/nach kommt aus Yahoos eigenem Feld, nicht aus der Uhrzeit');
+  ok(/marktTagesreihen: \(syms, tage\)/.test(pre) && /earningsKalender: \(tage\)/.test(pre),
+     'Bruecke: beide Leseauskuenfte stehen in preload.js');
+
+  /* ---------------------------------------------------------------------------
+   * (h) Auslieferung und Linter
+   *
+   * markt/uebersicht.js liegt in einem UNTERORDNER. Beide Muster der Wurzel
+   * ("*.js" in package.json, files: ['*.js'] im Linter) treffen nur die Wurzel -
+   * ohne einen eigenen Eintrag fehlte die Datei im Paket und liefe am Linter
+   * vorbei. Genau so hat am 21.08.2026 momentum.js im Build gefehlt. */
+  var pkgM = JSON.parse(fs.readFileSync(__dirname + '/package.json', 'utf8'));
+  ok(pkgM.build.files.indexOf('markt/*.js') > -1,
+     'Auslieferung: markt/*.js steht im Verpackungsmuster');
+  ok(/<script src="markt\/uebersicht\.js"><\/script>/.test(html) &&
+     /<script src="marktui\.js"><\/script>/.test(html),
+     'Auslieferung: beide Module werden von index.html geladen');
+  ok(html.indexOf('<script src="markt/uebersicht.js">') < html.indexOf('<script src="marktui.js">'),
+     'Auslieferung: die Rechnung steht VOR ihrer Anzeige - sonst ist MarktUebersicht beim Verkabeln undefiniert');
+  var lint = fs.readFileSync(__dirname + '/eslint.config.mjs', 'utf8');
+  ok(/files: \['\*\.js', 'markt\/\*\.js'\]/.test(lint),
+     'Linter: markt/*.js wird wirklich geprueft - files:[*.js] trifft nur die Wurzel');
+  ok(/MarktUebersicht: 'readonly', Marktwerte: 'readonly'/.test(lint),
+     'Linter: die zwei neuen Fenster-Globals sind eingetragen');
+
+  /* ---------------------------------------------------------------------------
+   * (i) Die Kachelreihe und die Schlagzeilen
+   *
+   * Vier neue Kacheln (Dow, Gold, Oel, Dollar) und ein Deckel von fuenf
+   * Schlagzeilen. Beides sind Zahlen, die im Quelltext stehen - also stehen sie
+   * hier auch. */
+  var idx = [], reIdx = /\{ y: '([^']+)'/g, mIdx;
+  while ((mIdx = reIdx.exec(ren))) idx.push(mIdx[1]);
+  ['^DJI', 'GC=F', 'CL=F', 'DX-Y.NYB'].forEach(function (s) {
+    ok(idx.indexOf(s) > -1, 'Kachelreihe: ' + s + ' ist dazugekommen');
+  });
+  var indBlock = (/var INDICES = \[[\s\S]*?\n  \];/.exec(ren) || [''])[0];
+  var nInd = (indBlock.match(/\{ y: '/g) || []).length;
+  ok(nInd === 10, 'Kachelreihe: zehn Kacheln - sechs alte, vier neue', nInd);
+  ok(/var NEWS_MAX = 5;/.test(ren) && /NEWS = items\.slice\(0, NEWS_MAX\)/.test(ren),
+     'Schlagzeilen: hoechstens fuenf, und der Deckel steht an EINER Stelle');
+  /* Keine Bewertung, kein Sentiment auf diesem Reiter: das Gewicht steht seit dem
+   * 31.08.2026 auf null, weil die Messung die Frage nicht beantworten konnte. */
+  ok(!/sentiment|Stimmung/i.test(ueberblick),
+     'Schlagzeilen: im Markt-Ueberblick steht keine Bewertung und kein Sentiment');
+
+  /* ---------------------------------------------------------------------------
+   * (j) Wegweiser
+   *
+   * Der Erststart-Kasten sagte "Der Ueberblick wohnt im Reiter Heute". Das stimmte
+   * bis zum Umzug. K7 haette es nie gefunden - der Satz nennt einen Reiter, den es
+   * gibt, nur den falschen. Solche Saetze faengt keine Musterpruefung; diese Zeile
+   * nagelt den einen fest, der jetzt richtig ist. */
+  ok(/Dein Depot wohnt im Reiter <b>Heute<\/b>, der Marktüberblick im Reiter <b>Markt<\/b>/.test(html),
+     'Wegweiser: der Erststart schickt den Marktueberblick in den Reiter Markt');
+  ok(/Was die beiden Bücher halten, steht im Reiter <b>Heute → Überblick<\/b>/.test(html),
+     'Wegweiser: die Buecher stehen weiter auf Heute - dieser Satz stimmt unveraendert');
+  /* Und die Kunstdaten koennen den Reiter ueberhaupt fuellen: ohne Stammdaten und
+   * ohne gemerkten Stand zeigt jede Aufnahme drei Leerzustaende. */
+  var kd = fs.readFileSync(__dirname + '/tools/kunstdepot.js', 'utf8');
+  ok(/function marktStammdaten/.test(kd) && /function marktstand/.test(kd) && /function marktArchiv/.test(kd),
+     'Kunstdaten: Stammdaten, Tagesarchiv und gemerkter Stand fuer den Reiter Markt');
+  ok(/var MU = require\('\.\.\/markt\/uebersicht\.js'\);/.test(kd),
+     'Kunstdaten: der Stand wird mit den ECHTEN Funktionen gerechnet - erfunden sind die Eingangsdaten, nicht die Rechnung');
+  var ua = fs.readFileSync(__dirname + '/tools/ui-aufnahmen.js', 'utf8');
+  ok(/marktUeberblickStand\.json/.test(ua) && /KD\.marktStammdaten\(jetzt\)/.test(ua),
+     'Kunstdaten: die Aufnahmen legen beides in die ISOLIERTE Instanz');
+  /* Der Store-Schluessel muss auf beiden Seiten derselbe sein. Faellt er
+   * auseinander, schreibt die Anzeige in den einen und liest aus dem anderen -
+   * und die Aufnahme zeigt wieder Leerzustaende, ohne dass etwas kaputt ist. */
+  ok(/STAND_KEY = 'marktUeberblickStand'/.test(mui),
+     'Kunstdaten: Anzeige und Aufnahme benutzen denselben Store-Schluessel');
+  /* Und die Felder, die die Anzeige liest, stehen im Kunst-Stand wirklich drin. */
+  var KD = require('./tools/kunstdepot.js');
+  var kstand = KD.marktstand(Date.UTC(2026, 8, 4, 12, 0));
+  ['zeit', 'universum', 'gezeigt', 'sektoren', 'hotlists', 'naheAm', 'earnings'].forEach(function (f) {
+    ok(Object.prototype.hasOwnProperty.call(kstand, f),
+       'Kunstdaten: der gemerkte Stand traegt das Feld ' + f);
+  });
+  ok(kstand.sektoren.t1.length >= 3 && kstand.sektoren.w1.length >= 3 && kstand.sektoren.m1.length >= 3,
+     'Kunstdaten: alle drei Zeitraeume haben Balken - sonst belegt die Aufnahme nur einen');
+  ok(kstand.hotlists.volumen.length > 0 && kstand.hotlists.volumen[0].relVol > 1.5,
+     'Kunstdaten: es gibt einen Volumen-Ausreisser - sonst zeigt die Liste zwanzigmal 1,0x',
+     kstand.hotlists.volumen.length ? kstand.hotlists.volumen[0].relVol : 'leer');
+  ok(kstand.hotlists.gewinner[0].pct > 0 && kstand.hotlists.verlierer[0].pct < 0,
+     'Kunstdaten: es gibt Gewinner UND Verlierer - ein Satz Zahlen in eine Richtung zeigt nichts');
 })();
 
 Promise.all(offeneProben).then(function () {
