@@ -868,7 +868,9 @@
         'Rechnet die gemessene Regel auf den Kerzen eines Werts nach – mit exakt derselben Funktion, die auch Studie, Backtest und Live-Scan benutzen (einstiegSignal).',
         'Jede Markierung ist ein Einstieg, den die Regel dort gegeben hätte.',
         'Jedes Signal in der Liste unter dem Chart lässt sich anklicken und zeigt dann, welche Bedingung genau in jener Kerze erfüllt war und welche nicht.',
-        'Momentum und Ergebnis-Drift sind Rangfolgen über alle Werte, keine Chartsignale – dafür gibt es hier nichts zu zeichnen.'
+        'Momentum und Ergebnis-Drift sind Rangfolgen über alle Werte, keine Chartsignale – dafür gibt es hier nichts zu zeichnen.',
+        /* U5 (04.09.2026): woertlich aus dem Absatz ueber den Bedienfeldern des Charts. */
+        'Was jede Strategie taugt, steht an einem Ort: Pille <b>Strategien</b>, nach Belegstand sortiert.'
       ],
       fuss: 'Simulation, keine Anlageberatung. Der Chart zeigt, was die Regel gesehen hätte – nicht, was sie verdient hätte.'
     },
@@ -931,6 +933,8 @@
     'messung.eingabe': {
       titel: 'Drei Dinge braucht eine Strategie',
       punkte: [
+        /* U5 (04.09.2026): woertlich aus dem Einleitungsabsatz ueber dem Formular. */
+        'Drei Dinge braucht eine Strategie: einen <b>Grund</b>, eine <b>Regel, wann gekauft wird</b>, und die Festlegung <b>vorher</b>, was geprüft werden soll.',
         'Ein Grund: warum sollte der Effekt existieren – nicht „der RSI war unter 10“, sondern „Indexfonds müssen am Quartalsende kaufen“. Den schreibt kein Baukasten; er ist die Vorregistrierung.',
         'Eine Regel, wann gekauft wird. Im <b>Baukasten</b> wird sie zusammengeklickt und die App schreibt den Code; im <b>Expertenmodus</b> schreibt man ihn selbst.',
         'Der Baukasten deckt die häufigen Muster ab, nicht alles – eine beliebige Idee lässt sich nicht anklicken. Der erzeugte Code steht immer daneben und lässt sich in den Expertenmodus übernehmen.',
@@ -1049,6 +1053,8 @@
     'regeln.messen': {
       titel: 'Regeln, die nur messen',
       punkte: [
+        /* U5 (04.09.2026): woertlich aus dem Absatz unter der Ueberschrift. */
+        'Eine Regel <b>festschreiben</b> und mitlaufen lassen, ohne dass Geld bewegt wird – geprüft auf denselben Kerzen wie die gehandelte Regel, mit eigener Bilanz.',
         'Sie wird bei jedem Scan auf denselben Kerzen geprüft wie die gehandelte Regel und führt eine eigene Bilanz.',
         'Der Sinn ist nicht, sie später zu handeln, sondern dass die Regel VOR der Messung feststeht und man hinterher nicht mehr an ihr drehen kann.',
         'Genau daran sind in diesem Projekt schon mehrere gute Ideen gescheitert – nicht am Markt, sondern daran, dass die Regel erst nach dem Ergebnis endgültig war.',
@@ -1094,6 +1100,25 @@
     /* --- Neu mit Stufe 3 (03.09.2026): die Erklaerabsaetze des Maschinenraums.
      * Jeder Wortlaut ist unveraendert aus index.html bzw. archivkarte.js uebernommen;
      * sichtbar geblieben ist je ein Satz und der i-Knopf. */
+    /* --- U5 (04.09.2026): die beiden letzten Erklaerabsaetze der Klappe "Regelbuch".
+     * Wortlaut unveraendert aus index.html bzw. depot.js uebernommen; sichtbar
+     * geblieben sind die Tabelle, die Standzeile und die Liste. */
+    'betrieb.wirkung': {
+      titel: 'Was hat gewirkt?',
+      punkte: [
+        'Jede automatische Änderung mit gemessener Wirkung: Ø Gewinn je Intraday-Trade davor gegen danach, sortiert nach Wirkung, jede einzeln zurücknehmbar – bei den von Hand übernommenen Voreinstellungen sogar Feld für Feld.',
+        'Bewertet wird der durchschnittliche Gewinn je Intraday-Trade im Zeitraum <b>nach</b> der Änderung gegen den Zeitraum davor. Der Rang sortiert nach Wirkung – so siehst du, welche Anpassungen wirklich etwas gebracht haben.',
+        '<b>Unter 5 Trades ist keine Aussage möglich.</b> Die Zeile steht dann trotzdem da, nur ohne Urteil – eine Änderung, die zweimal gewirkt hat, hat nichts bewiesen.'
+      ],
+      fuss: 'Alles hier ist Simulation. Es wird nichts gekauft und nichts verkauft.'
+    },
+    'betrieb.geduld': {
+      titel: 'Wann die Strategie nichts getan hat',
+      punkte: [
+        'Wie oft die Filter ein Signal bewusst verworfen haben – und warum.',
+        'Der häufigste Grund ist der stärkste Hebel: „Wer nicht weiß, was er tut, muss wissen, wann er nichts tut.“ (Kostolany)'
+      ]
+    },
     'betrieb.kursarchiv': {
       titel: 'Wie das Kursarchiv entsteht',
       punkte: [
@@ -1168,6 +1193,9 @@
     'regeln.mf.drift': {
       titel: 'Ergebnis-Drift',
       punkte: [
+        /* U5 (04.09.2026): woertlich aus dem Absatz unter der Ueberschrift. Er sagte
+         * dasselbe wie die beiden Punkte darunter, nur kuerzer. */
+        'Gekauft wird das <b>oberste Fünftel</b> der Überraschungen, verkauft das <b>unterste</b> – im <b>Basiswert</b>, nicht mit Hebelscheinen: Der Drift liefert nur ein Viertel bis ein Achtel der Schein-Kostenhürde.',
         'Nach einer Quartalsmeldung läuft der Kurs noch Wochen in Richtung der Überraschung weiter. Gekauft wird das <b>oberste Fünftel</b> der Überraschungen, verkauft das <b>unterste</b> – gleich viele, aus demselben Topf.',
         'Anders als das Momentum ist das <b>kein Chartsignal</b>: Die Information kommt aus den Zahlen, nicht aus dem Kursverlauf. Deshalb bleibt neben dem Momentum messbar etwas übrig (Korrelation der Monatserträge nur 0,41, Alpha +6,90 % p. a. bei t = 2,20).',
         '<b>Nicht mit Hebelscheinen handelbar.</b> Am 21.08.2026 durchgerechnet: Der Basiswert müsste 5,5 bis 11 % laufen, damit ein Schein nach Zeitwertverfall und Spanne bei null herauskommt – der Drift liefert rund 1,3 % je Position. Faktor 4 bis 8 zu wenig. Gerechnet wird deshalb im Basiswert.',

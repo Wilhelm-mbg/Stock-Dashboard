@@ -409,6 +409,20 @@ async function satzMessen(js, name, sel) {
   return eintrag;
 }
 
+/* ---- Welche Erklaerknoepfe hat die laufende App wirklich? (U6, 04.09.2026) ----
+ * Die Sperrklinke "kein Registereintrag ist verwaist" las bisher index.html plus die
+ * Info.knopf-Aufrufe in vierzehn Modulen. Beides sind Dateien. Ein Eintrag, den ein
+ * Modul aus einem berechneten Schluessel anmeldet ('strategie.' + s.key), stand in
+ * keiner der beiden Quellen - und genau so ist strategie.stunden monatelang
+ * angemeldet und unerreichbar geblieben. Gezaehlt wird deshalb hier: nach jeder
+ * Pille, was im Dokument steht. Am Ende dazu, was das Register kennt. */
+const IKNOEPFE = {};
+async function infoKnoepfeMessen(js) {
+  const gefunden = await js("Array.prototype.map.call(document.querySelectorAll('[data-info]')," +
+    "function (b) { return b.getAttribute('data-info'); })");
+  (gefunden || []).forEach((k) => { if (k) IKNOEPFE[k] = (IKNOEPFE[k] || 0) + 1; });
+}
+
 async function lauf(win) {
   const wc = win.webContents;
   const js = (code) => wc.executeJavaScript(code, true);
@@ -449,6 +463,7 @@ async function lauf(win) {
       await bloeckeMessen(js, tab, '#tab-' + tab);
       await bildlaufMessen(js, tab, '#tab-' + tab);
       await satzMessen(js, tab, '#tab-' + tab);
+      await infoKnoepfeMessen(js);
       dateien += await aufnehmen(win, String(nr).padStart(2, '0') + '-' + tab);
       continue;
     }
@@ -484,12 +499,14 @@ async function lauf(win) {
          * Zustand: sonst fehlte, was in einer Klappe steht - oder es waere doppelt
          * gezaehlt, weil dieselbe Pille zweimal aufgenommen wird. */
         await satzMessen(js, tab + '/' + sub, '#sub-' + sub);
+        await infoKnoepfeMessen(js);
         await js("(function () {" +
           "var d = document.querySelectorAll('#sub-" + sub + " details[data-klappe]');" +
           "Array.prototype.forEach.call(d, function (x) { x.open = false; });" +
           "return 'zu'; })()");
       } else {
         await satzMessen(js, tab + '/' + sub, '#sub-' + sub);
+        await infoKnoepfeMessen(js);
       }
     }
   }
@@ -508,11 +525,23 @@ app.on('browser-window-created', (ev, win) => {
       /* Die Start-Renderings (Skeletons, erste Abrufe) abwarten - Rezept §6 nennt 7 s. */
       await schlaf(7000);
       const erg = await lauf(win);
+      /* Was das Erklaerregister kennt - erst NACH dem Rundgang, damit jedes Modul
+       * seine Eintraege angemeldet hat. Zusammen mit IKNOEPFE ergibt das die Frage,
+       * die U6 gestellt hat: gibt es zu jedem Eintrag einen Knopf in der App? */
+      const angemeldet = await win.webContents.executeJavaScript(
+        "(window.Info && window.Info.schluessel) ? window.Info.schluessel() : []", true);
+      const REGISTER = {
+        angemeldet: (angemeldet || []).slice().sort(),
+        knoepfe: Object.keys(IKNOEPFE).sort()
+      };
+      const verwaist = REGISTER.angemeldet.filter((k) => REGISTER.knoepfe.indexOf(k) < 0);
+      console.log('Erklaerregister: ' + REGISTER.angemeldet.length + ' Eintraege, ' +
+        REGISTER.knoepfe.length + ' Knoepfe in der App, verwaist: ' + (verwaist.join(', ') || 'keiner'));
       /* Die Textmengen neben die Bilder legen - sie gehoeren zur selben Aufnahme
        * und sollen ohne die Sitzung nachlesbar sein, in der sie entstanden sind. */
       const messung = { stand: new Date().toISOString(), kunstdaten: KUNSTDATEN, breite: BREITE,
                         kopfzeile: KOPFZEILE, panels: TEXTMENGE, dauertext: LAEUFE,
-                        bildlauf: BILDLAUF, bloecke: BLOECKE, saetze: SATZFUNDE };
+                        bildlauf: BILDLAUF, bloecke: BLOECKE, saetze: SATZFUNDE, register: REGISTER };
       fs.writeFileSync(path.join(ZIEL, 'textmenge.json'), JSON.stringify(messung, null, 2));
       /* --messung: dieselbe Messung zusaetzlich ins Repo, wo die Sperrklinke sie
        * liest (test-v6, Abschnitt 73). OHNE den Schalter schreibt die Probe nichts
@@ -524,7 +553,7 @@ app.on('browser-window-created', (ev, win) => {
         fs.writeFileSync(ablage, JSON.stringify({
           stand: messung.stand, kunstdaten: KUNSTDATEN, breite: BREITE,
           werkzeug: 'tools/ui-aufnahmen.js <ziel> --kunstdaten --messung',
-          bloecke: BLOECKE, saetze: SATZFUNDE
+          bloecke: BLOECKE, saetze: SATZFUNDE, register: REGISTER
         }, null, 2) + '\n');
         console.log('Messung abgelegt: ' + ablage);
       }

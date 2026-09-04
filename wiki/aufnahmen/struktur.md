@@ -134,7 +134,7 @@ Dialoge (gehören zu keinem Reiter)
 
 ### Heute → Überblick
 
-`#sub-ueberblick` · 13 Blöcke · 4389 Zeichen sichtbarer Text
+`#sub-ueberblick` · 13 Blöcke · 4378 Zeichen sichtbarer Text
 
 - ▪ Bestand  [in #bestandBlock]
 - · Momentum-Buch · stärkstes Zehntel, alle 63 Handelstage, 20 Bp je Seite  [in #buchMomentum]
@@ -167,7 +167,7 @@ Dialoge (gehören zu keinem Reiter)
 
 ### Markt → Überblick
 
-`#sub-marktueberblick` · 15 Blöcke · 8128 Zeichen sichtbarer Text
+`#sub-marktueberblick` · 15 Blöcke · 7386 Zeichen sichtbarer Text
 
 - ▪ Marktüberblick
 - ▪ Sektoren – nach Marktkapitalisierung gewichtet, Branchen aus den SEC-Stammdaten.
@@ -215,7 +215,7 @@ Dialoge (gehören zu keinem Reiter)
 
 ### Regeln → Strategien
 
-`#sub-regeln` · 8 Blöcke · 7160 Zeichen sichtbarer Text
+`#sub-regeln` · 8 Blöcke · 7162 Zeichen sichtbarer Text
 
 - · Was die App gerade tut  [in #antwortSeite]
 - · Die Strategien im Überblick
@@ -271,7 +271,7 @@ Dialoge (gehören zu keinem Reiter)
 
 ### Werkzeuge → Betrieb
 
-`#sub-betrieb` · 34 Blöcke · 18716 Zeichen sichtbarer Text
+`#sub-betrieb` · 34 Blöcke · 17083 Zeichen sichtbarer Text
 
 - ▸ Klappe: Kursarchiv  — Statuszeile: „jüngste Kerze 04.09.26, 22:00 Uhr“
   - ▪ Kursarchiv – die App holt die feinen Kerzen selbst und legt sie ab.  [in #sub-archiv]
@@ -318,7 +318,6 @@ Dialoge (gehören zu keinem Reiter)
 ![[aufnahmen/werkzeuge/betrieb-offen-7.png]]
 ![[aufnahmen/werkzeuge/betrieb-offen-8.png]]
 ![[aufnahmen/werkzeuge/betrieb-offen-9.png]]
-![[aufnahmen/werkzeuge/betrieb-offen-10.png]]
 
 ## Dialoge
 

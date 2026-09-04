@@ -719,7 +719,11 @@
       return;
     }
     var halten = parseInt((document.getElementById('stHalten') || {}).value, 10) || 8;
-    satzEl.innerHTML = '<b>Gemessen wird:</b> ' + U.esc(r.satz) +
+    /* h4 statt <b>: "Gemessen wird" WAR schon die Ueberschrift dieses Kastens, nur
+     * als Fettschrift geschrieben. Als Ueberschrift ausgezeichnet, gehoert der Satz
+     * zu seinem eigenen Abschnitt statt zum Dauertext des Formulars (U5, 04.09.2026).
+     * Der Wortlaut aendert sich nicht - das hier ist eine Vorregistrierung. */
+    satzEl.innerHTML = '<h4 style="margin:0 0 4px; font-size:var(--fs-neben);">Gemessen wird</h4>' + U.esc(r.satz) +
       ' Danach ' + halten + ' Stunde(n) halten, dann verkaufen.' +
       (r.tests > 1
         ? '<br><span class="neg">' + r.tests + ' Varianten = ' + r.tests + ' Messungen.</span> ' +
@@ -739,8 +743,11 @@
      * messung.eingabe, erreichbar ueber den i-Knopf der Ueberschrift. Sichtbar bleibt
      * die erste Haelfte: sie WECHSELT mit dem gewaehlten Muster und ist der Anstoss,
      * um den es hier geht. */
+    /* h4 statt <b>, aus demselben Grund wie oben bei #stSatz: der Anstoss ist ein
+     * eigener Abschnitt, kein Absatz im Formular (U5, 04.09.2026). */
     el.innerHTML =
-      '<b>Trägt:</b> ' + U.esc(warum || 'Jemand muss handeln – aus Vorschrift, Termin oder Zwang – und das ist vorher bekannt.');
+      '<h4 style="margin:0 0 3px; font-size:var(--fs-klein); color:var(--ink-2);">Trägt</h4>' +
+      U.esc(warum || 'Jemand muss handeln – aus Vorschrift, Termin oder Zwang – und das ist vorher bekannt.');
   }
 
   /** Klartext unter den gemeinsamen Feldern. Kerzen, Basispunkte und „Long“ sind Fachsprache. */

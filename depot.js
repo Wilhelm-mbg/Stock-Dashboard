@@ -976,15 +976,34 @@
       '• Typ: ' + (t.dir === 'call' ? 'CALL' : 'PUT') + ' auf ' + t.sym + '\n' +
       '• Basispreis (Strike): ca. ' + U.nf2.format(t.strike) + ' $ (±2 %)\n' +
       '• Laufzeit: mindestens bis ' + U.d(t.expiry) + ' (gern etwas länger)\n' +
-      '• Zielhebel (Omega): ~' + (t.omega || Math.round(Q.warrantOmega(t.dir, { strike: t.strike, expiry: t.expiry, iv: t.iv, ratio: t.ratio || Q.RATIO }, t.entrySpot, t.openT) * 10) / 10) + 'x · Bezugsverhältnis ' + String(t.ratio || Q.RATIO).replace('.', ',') + '\n' +
+      '• Zielhebel (Omega): ~' + String(t.omega || Math.round(Q.warrantOmega(t.dir, { strike: t.strike, expiry: t.expiry, iv: t.iv, ratio: t.ratio || Q.RATIO }, t.entrySpot, t.openT) * 10) / 10).replace('.', ',') + 'x · Bezugsverhältnis ' + String(t.ratio || Q.RATIO).replace('.', ',') + '\n' +
       '• Sim-Einsatz: ' + U.nf2.format(t.entry * t.qty) + ' $ (' + t.qty + ' Stk à ' + U.nf2.format(t.entry) + ' $) – real nur mit Spielgeld-Betrag!\n' +
       '• Exit auf den BASISWERT bezogen: Stop-Loss ' + slTxt + ' · Take-Profit ' + tpTxt + '\n' +
       '• Zusätzlich schließen bei App-Meldung (Gegensignal' + (t.strategy === 'intraday' ? ' / Tagesschluss' : ' / Zeit-Exit') + ')';
   }
 
+  /* Kein Dialog, sondern ein Satz: fuer eine Aktie gibt es keinen vergleichbaren
+   * Schein zu suchen. Die Zeile steht unter der Positionstabelle und raeumt sich
+   * selbst wieder ab - ein Hinweis, der stehen bleibt, wird zur Tapete. */
+  var ticketHinweisTimer = null;
+  function ticketHinweis(t) {
+    var el = document.getElementById('ticketHinweis');
+    if (!el) return;
+    el.textContent = t.sym + ' ist der Basiswert selbst (Aktie, Hebel 1×) – dafür ist kein ' +
+      'Optionsschein nachzubilden. Nachbilden heißt hier: dieselbe Aktie zum genannten Kurs kaufen.';
+    clearTimeout(ticketHinweisTimer);
+    ticketHinweisTimer = setTimeout(function () { el.textContent = ''; }, 12000);
+  }
+
   function openTicket(id) {
     var t = findTrade(id);
     if (!t) return;
+    /* Zweiter Riegel zu FA1 (04.09.2026): der Knopf erscheint auf Basiswert-
+     * Positionen nicht mehr, aber ein Aufruf ueber einen anderen Weg wuerde
+     * denselben Dialog mit NaN zeigen. Ein Riegel an der FUNKTION haelt auch dann,
+     * wenn die Bedingung am Markup einmal verlorengeht - und genau diese Sorte
+     * Fehler war es: von zwei Stellen war eine gepflegt. */
+    if (t.basis) { ticketHinweis(t); return; }
     var now = Date.now();
     var w = { strike: t.strike, expiry: t.expiry, iv: t.iv, ratio: t.ratio || Q.RATIO };
     var spot = spotOf(t.sym) || t.entrySpot;
@@ -1002,7 +1021,12 @@
       '<li><b>Typ:</b> ' + (t.dir === 'call' ? 'Call' : 'Put') + ' auf <b>' + U.esc(t.sym) + '</b></li>' +
       '<li><b>Basispreis:</b> ca. <b>' + U.nf2.format(t.strike) + ' $</b> (±2 % ist okay)</li>' +
       '<li><b>Laufzeit:</b> mindestens bis <b>' + U.d(t.expiry) + '</b> – lieber etwas länger als kürzer (weniger Zeitwert-Stress)</li>' +
-      '<li><b>Zielhebel:</b> ~' + omega + 'x (Omega) · Aufgeld aktuell ~' + aufgeld.toFixed(1) + ' % · Bezugsverhältnis 0,1</li>' +
+      /* Deutsche Schreibweise, dieselbe Regel wie bei F11 in archivkarte.js: "6.4x"
+       * und "0.2 %" waren englisch gesetzt. Sichtbar wurde das erst am 04.09.2026 -
+       * bis dahin zeigte dieser Dialog auf der einzigen vorhandenen Positionsart
+       * ohnehin nur NaN, und hinter einem NaN sieht niemand ein Komma. */
+      '<li><b>Zielhebel:</b> ~' + String(omega).replace('.', ',') + 'x (Omega) · Aufgeld aktuell ~' +
+        aufgeld.toFixed(1).replace('.', ',') + ' % · Bezugsverhältnis 0,1</li>' +
       '<li><b>Größe:</b> Sim nutzt ' + U.nf2.format(t.entry * t.qty) + ' $ – nimm real einen Betrag, dessen <b>Totalverlust</b> okay wäre</li>' +
       '</ul>' +
       '<h4>Exits (auf den ' + U.esc(t.sym) + '-Kurs umgerechnet)</h4>' +
@@ -1615,7 +1639,12 @@
         '<td>' + (e.konfigVorher || (e.felder && e.felder.some(function (f) { return !f.zurueck; }))
           ? '<button class="btn ghost" style="padding:2px 8px; font-size:var(--fs-klein);" data-undo="' + r.idx + '">Rückgängig</button>' : '') + '</td></tr>';
     });
-    html += '</table><div style="color:var(--muted); font-size:var(--fs-neben); margin-top:8px;">Bewertet wird der durchschnittliche Gewinn je Intraday-Trade im Zeitraum <b>nach</b> der Änderung gegen den Zeitraum davor. Unter 5 Trades ist keine Aussage möglich (). Der Rang sortiert nach Wirkung – so siehst du, welche Anpassungen wirklich etwas gebracht haben.</div>';
+    /* U5 (04.09.2026): Diese Fusszeile war Erklaertext unter einer Tabelle; sie steht
+     * jetzt hinter dem i-Knopf der Ueberschrift (betrieb.wirkung). Nebenbei
+     * mitgenommen: sie zeigte "keine Aussage moeglich ()" - ein leeres Klammerpaar,
+     * aus dem irgendwann sein Inhalt herausgefallen war und das seither so ausgeliefert
+     * wurde. Im Register steht der Satz ohne die leere Klammer. */
+    html += '</table>';
     el.innerHTML = html;
     el.querySelectorAll('[data-feld]').forEach(function (b3) {
       b3.addEventListener('click', function () {
@@ -3611,7 +3640,18 @@
           '<td>' + U.nf2.format(wertJetzt) + ' $</td>' +
           '<td class="' + U.signCls(plUsd) + '" style="white-space:nowrap;">' + U.signTxt(Math.round(plUsd * 100) / 100, ' $') +
             ' <span style="color:var(--muted); font-weight:400;">(' + U.signTxt(Math.round(ret * 1000) / 10, ' %') + ')</span></td>' +
-          '<td style="white-space:nowrap;"><button class="btn ghost" style="padding:2px 8px; font-size:var(--fs-klein);" data-ticket="' + p.id + '" title="Order-Daten zum Nachbilden">Nachbilden</button> ' +
+          /* FA1 der UI-QS (04.09.2026), Entscheid Wilhelm: auf einer Basiswert-
+           * Position gibt es nichts nachzubilden. Der Dialog dahinter erklaert, wie
+           * man einen vergleichbaren OPTIONSSCHEIN findet, und las dafuer strike,
+           * expiry, iv und omega - Felder, die eine Aktie nicht hat. Sichtbar wurde
+           * das als "ca. NaN $" und "mindestens bis Invalid Date", und zwar auf genau
+           * den Positionen, die die gemessene Intraday-Regel serienmaessig eroeffnet
+           * (sie traegt nur auf dem Basiswert, nicht auf dem Schein). Die
+           * Kennzeichnungszeile 30 Zeilen weiter oben fragte p.basis schon richtig
+           * ab - von zwei Stellen war eine gepflegt. */
+          '<td style="white-space:nowrap;">' +
+          (p.basis ? ''
+            : '<button class="btn ghost" style="padding:2px 8px; font-size:var(--fs-klein);" data-ticket="' + p.id + '" title="Order-Daten zum Nachbilden">Nachbilden</button> ') +
           '<button class="btn ghost" style="padding:2px 8px; font-size:var(--fs-klein);" data-closepos="' + p.id + '">Schließen</button></td></tr>' +
           '<tr class="poskennz" data-poskennz="' + p.id + '"><td colspan="9">' + scheinZeile + '</td></tr>';
       });
@@ -6334,9 +6374,14 @@
     var tfz = a.tiefensuche ? '<div style="color:var(--muted); margin-top:3px;">Tiefensuche: ' + a.tiefensuche.geprueft + ' Kombinationen (' + U.dt(a.tiefensuche.at) + ')' + (a.entdeckt ? ' · Fund: ' + U.esc(a.entdeckt.name) : ' · kein Fund') + '</div>' : '';
     var bfz = a.lastBackfill ? '<div style="color:var(--muted); margin-top:3px;">Capital-Backfill: ' + a.lastBackfill.bars + ' Kerzen nachgeladen (' + U.dt(a.lastBackfill.at) + ')</div>' : '';
     var apl = a.lastApply ? '<div style="color:var(--muted); margin-top:3px;">Zuletzt übernommen: ' + U.dt(a.lastApply.at) + ' · ' + U.esc(a.lastApply.name || '') + '</div>' : '';
-    var hinweis = a.on === false ? 'Autopilot ist aus – es wird gesammelt, aber nichts gemessen oder geändert.'
-      : 'Misst jede Nacht nach US-Börsenschluss und wendet doppelt bestätigte Ergebnisse vor Handelsbeginn an. Von Hand gesetzte Felder bleiben unangetastet.';
-    el.innerHTML = txt + pend + apl + bfz + tfz + '<div style="color:var(--muted); margin-top:3px;">' + hinweis + '</div>';
+    /* U5 (04.09.2026): Der "an"-Zweig sagte wortgleich, was zwei Zeilen darueber im
+     * Markup stand und ein drittes Mal hinter dem i-Knopf - drei Fassungen desselben
+     * Satzes in einer Klappe. Uebrig bleibt der Fall, den kein anderer Ort nennt:
+     * dass der Autopilot AUS ist. Dieser Satz wird NICHT gekuerzt, um unter einer
+     * Zeichengrenze zu bleiben; er sagt, was er sagen muss. */
+    var hinweis = a.on === false ? 'Autopilot ist aus – es wird gesammelt, aber nichts gemessen oder geändert.' : '';
+    el.innerHTML = txt + pend + apl + bfz + tfz +
+      (hinweis ? '<div style="color:var(--muted); margin-top:3px;">' + hinweis + '</div>' : '');
   }
 
   function renderCentral() {

@@ -251,6 +251,20 @@
       };
     });
     window.Info.eintragen(eintraege);
+    /* U6 der UI-QS (04.09.2026): Angemeldet waren alle vier Nicht-Fussnoten, einen
+     * Knopf bekamen nur die Karten - und die Stunden-Strategie hat keine Karte, sie
+     * wohnt im statischen Archivblock. Ihr Eintrag war damit angemeldet und
+     * unerreichbar: drei Belege, die niemand oeffnen konnte. Live gemessen war das
+     * sichtbar (Info.schluessel() kannte den Schluessel, [data-info] gab es
+     * nirgends), am Markup nicht - deshalb wird der Knopf hier nachgetragen und
+     * nicht in index.html verdrahtet. */
+    var archivZiel = document.getElementById('stundenInfo');
+    if (archivZiel && !archivZiel.querySelector('[data-info]')) {
+      var imArchiv = STRATEGIEN.filter(function (s) { return s.imArchiv && eintraege['strategie.' + s.key]; });
+      if (imArchiv.length === 1) {
+        archivZiel.innerHTML = window.Info.knopf('strategie.' + imArchiv[0].key, imArchiv[0].name);
+      }
+    }
   }
 
   /** Struktur-Audit Punkt 3: das Messurteil aus dem Protokoll als eigene Zeile -

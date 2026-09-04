@@ -7922,8 +7922,12 @@ console.log('\n41) Zustaende: was die App sagt, wenn etwas fehlt oder klemmt');
    * wechselt. Geprueft wird der Umzug: im Register vorhanden, in scoreboard.js nicht
    * mehr doppelt - und der Anstoss "Trägt:" steht weiter im Formular. */
   var shellGr = fs.readFileSync(__dirname + '/app-shell.js', 'utf8');
+  /* 04.09.2026 (U5): Der Anstoss steht unveraendert im Formular, nur nicht mehr als
+   * <b>Trägt:</b>, sondern als Ueberschrift seines eigenen Abschnitts - sonst zaehlte
+   * sein Text zum Dauertext des Formulars ringsum. Geprueft wird weiter dieselbe
+   * Eigenschaft (der Anstoss ist da), nur an der Auszeichnung, die es jetzt gibt. */
   ok(/Trägt nicht:/.test(shellGr) && /Beobachtung, keine These/.test(shellGr) &&
-     !/Beobachtung, keine These/.test(sco) && /'<b>Trägt:<\/b> '/.test(sco),
+     !/Beobachtung, keine These/.test(sco) && />Trägt<\/h4>/.test(sco),
      'Grund: und ausdruecklich, was nicht traegt (im Register, der Muster-Anstoss im Formular)');
 
   // ---------- Der Expertenmodus hat nichts eingebuesst ----------
@@ -16529,22 +16533,16 @@ console.log('\n73) Texte und Zaehlungen: F3 Untertitel, F5 Zusicherung, F9/F10 T
     { ort: 'Strategien · #strategienKarte', art: 'Daten',
       grund: 'Das Strategieregister: je Regel Datei, Laeufe und Belegstatus. Eine Tabelle in div-Form.' },
     { ort: 'Kursarchiv · #archivKarte', art: 'Daten',
-      grund: 'Je Aufloesung Abdeckung, Werte und Alter der juengsten Kerze - genau die Zeilen aus F11.' },
-    { ort: 'Was hat gewirkt? · .panel', art: 'Schuld',
-      grund: 'Erklaerabsatz zur Autopilot-Wirkung. Gehoert nach dem Muster von F9/F10 hinter einen i-Knopf; nicht Teil dieses Auftrags.' },
-    { ort: 'Neue Strategie ins Rennen schicken · #strategieEingabe', art: 'Schuld',
-      grund: 'Erklaerabsatz "Drei Dinge braucht eine Strategie". Dieselbe Rechnung, offen.' },
-    { ort: 'Ergebnis-Drift · Aktien, keine Hebelscheine · .panel', art: 'Schuld',
-      grund: 'Erklaerabsatz zur Drift-Regel. Enthaelt Messzahlen und muss deshalb sorgfaeltig getrennt werden - offen.' },
-    { ort: 'Autopilot · .panel', art: 'Schuld',
-      grund: 'Erklaerabsatz zur Uebernahme-Regel des Autopiloten. Offen.' },
-    { ort: 'Strategie-Chart · #stratChartPanel', art: 'Schuld',
-      grund: 'Erklaerabsatz, was das Chart nachrechnet. Offen.' },
-    { ort: 'Regeln, die nur messen · #regelnKarte', art: 'Schuld',
-      grund: 'Erklaerabsatz zur Rolle mitlaufender Regeln. Offen.' },
-    { ort: 'Wann die Strategie nichts getan hat · .panel', art: 'Schuld',
-      grund: 'Erklaerabsatz zu den Verwerfungsgruenden. Offen.' }
+      grund: 'Je Aufloesung Abdeckung, Werte und Alter der juengsten Kerze - genau die Zeilen aus F11.' }
   ];
+  /* Die sieben "Schuld"-Zeilen sind am 04.09.2026 abgetragen (U5): "Was hat gewirkt?"
+   * (691), "Neue Strategie ins Rennen schicken" (494), "Ergebnis-Drift" (490),
+   * "Autopilot" (457), "Strategie-Chart" (442), "Regeln, die nur messen" (319),
+   * "Wann die Strategie nichts getan hat" (271). Der Wortlaut steht unveraendert im
+   * Erklaerregister, sichtbar geblieben sind Tabellen, Standzeilen und Leerzustaende.
+   * Deshalb laesst die Pruefung unten jetzt NUR noch die Art "Daten" zu: waere
+   * "Schuld" weiter erlaubt, koennte der naechste Absatz sich hier einfach wieder
+   * eintragen - eine Ausnahmeliste, die Erklaertext erlaubt, ist keine Sperre. */
 
   function waende(messung, grenze, ausnahmen) {
     var erlaubt = ausnahmen.map(function (a) { return a.ort; });
@@ -16593,8 +16591,8 @@ console.log('\n73) Texte und Zaehlungen: F3 Untertitel, F5 Zusicherung, F9/F10 T
     var tot = AUSNAHMEN.filter(function (a) { return alle[a.ort] === undefined; })
       .map(function (a) { return a.ort; });
     ok(tot.length === 0, 'Ausnahmeliste: kein Eintrag zeigt ins Leere', tot.join(' | ') || 'keiner');
-    ok(AUSNAHMEN.every(function (a) { return a.grund && a.grund.length > 30 && /^(Daten|Schuld)$/.test(a.art); }),
-       'Ausnahmeliste: jeder Eintrag nennt seine Art und seinen Grund');
+    ok(AUSNAHMEN.every(function (a) { return a.grund && a.grund.length > 30 && /^Daten$/.test(a.art); }),
+       'Ausnahmeliste: jeder Eintrag nennt seinen Grund - und ist Daten, kein Erklaertext');
 
     /* Die Satzzaehlung aus derselben Messung - und der Abgleich mit den Quellen.
      * Weichen sie ab, ist entweder der Text geaendert oder die Probe alt; beides
@@ -16610,6 +16608,26 @@ console.log('\n73) Texte und Zaehlungen: F3 Untertitel, F5 Zusicherung, F9/F10 T
     ok(sichtbar === imMarkup && hinter === imRegister,
        'F5: Laufzeit-Messung und Quellen sagen dasselbe - die Messung ist nicht veraltet',
        sichtbar + '/' + hinter + ' gegen ' + imMarkup + '/' + imRegister);
+
+    /* --- U6 (04.09.2026): kein Registereintrag ist verwaist - AN DER APP gemessen ---
+     * Die aeltere Fassung dieser Frage (Abschnitt 32) haelt index.html und die
+     * Info.knopf-Aufrufe der Module gegeneinander. Beides sind Dateien, und beide
+     * kennen nur FESTE Schluessel. strategien.js meldet seine aus 'strategie.' + key
+     * an; strategie.stunden war deshalb in keiner der beiden Quellen sichtbar und
+     * blieb monatelang angemeldet und unerreichbar - drei Belege hinter einem Knopf,
+     * den es nicht gab. Diese Zaehlung kommt aus dem Rundgang durch die laufende App:
+     * jeder Reiter, jede Pille, alle Klappen offen. */
+    var reg = M.register || {};
+    ok((reg.angemeldet || []).length >= 40 && (reg.knoepfe || []).length >= 40,
+       'Messung: das Erklaerregister der laufenden App ist gezaehlt',
+       (reg.angemeldet || []).length + ' Eintraege / ' + (reg.knoepfe || []).length + ' Knoepfe');
+    var verwaistLive = (reg.angemeldet || []).filter(function (k) { return (reg.knoepfe || []).indexOf(k) < 0; });
+    ok(verwaistLive.length === 0,
+       'Kein Eintrag im Erklaerregister ist verwaist - in der laufenden App, nicht im Markup',
+       verwaistLive.join(', ') || 'keiner');
+    ok((reg.angemeldet || []).indexOf('strategie.stunden') >= 0 &&
+       (reg.knoepfe || []).indexOf('strategie.stunden') >= 0,
+       'U6 namentlich: die Stunden-Strategie im Archivblock hat ihren i-Knopf');
   }
 
   /* Gegenproben zur Block-Klinke. Ohne sie waere "kein Block ueber 240" eine
@@ -16622,6 +16640,18 @@ console.log('\n73) Texte und Zaehlungen: F3 Untertitel, F5 Zusicherung, F9/F10 T
   ok(waende({ bloecke: [{ seite: 'test', bloecke: [{ ort: 'Knapp darunter · .panel', len: GRENZE73 }] }] },
             GRENZE73, AUSNAHMEN).length === 0,
      'Gegenprobe: genau auf der Grenze ist noch kein Fund');
+
+  /* Gegenproben zur Register-Zaehlung: ohne sie waere "keiner verwaist" eine
+   * Zusicherung, von der niemand weiss, ob sie hinsieht. */
+  function verwaisteAus(reg) {
+    return (reg.angemeldet || []).filter(function (k) { return (reg.knoepfe || []).indexOf(k) < 0; });
+  }
+  ok(verwaisteAus({ angemeldet: ['a.b', 'strategie.stunden'], knoepfe: ['a.b'] }).length === 1,
+     'Gegenprobe: ein Eintrag ohne Knopf in der App wird gefunden');
+  ok(verwaisteAus({ angemeldet: ['a.b', 'strategie.stunden'], knoepfe: ['a.b', 'strategie.stunden'] }).length === 0,
+     'Gegenprobe: mit Knopf bleibt sie still - die Zaehlung misst wirklich den Knopf');
+  ok(verwaisteAus({}).length === 0 && verwaisteAus({ angemeldet: ['x'], knoepfe: [] }).length === 1,
+     'Gegenprobe: eine leere Messung erfindet keinen Fund, eine halbe schon');
 })();
 
 
@@ -17762,6 +17792,232 @@ console.log('\n76) Dialoge: ein Stapel statt sechs Einzelfaelle (QS-Funde B1, U1
             return roh.length === 3 && roh.filter(function (k) { return k === 'B'; }).length === 2;
           })());
   ok(g76 === rot76, '76.6 alle Gegenproben dieses Abschnitts schlagen an', rot76 + ' von ' + g76);
+})();
+
+
+/* ================= 77) Das Belegwort im Laufzeit-Text (QS-Fund FA2, 04.09.2026) =====
+ *
+ * Der Strategie-Chart sagte woertlich, beide Regeln seien auf 60-Minuten-Kerzen
+ * b-e-l-e-g-t worden (das Wort steht hier getrennt, sonst frisst diese Klinke ihren
+ * eigenen Kommentar). Der Belegstand nennt NULL handelbare Kanten, und beide Regeln
+ * stehen dort unter "nicht entscheidbar". Zwei Saetze weiter widersprach sich der
+ * Absatz selbst: "kein Beleg".
+ *
+ * Warum ihn Abschnitt 44 nicht gefunden hat: die dortige Klinke sucht die
+ * ADJEKTIV-Form ("belegte Kante", "belegte Regel"). Hier stand die VERB-Form -
+ * Subjekt vorn, Aussage hinten. Dieselbe Behauptung, andere Wortstellung, und die
+ * Sperre greift daneben. Diese hier sucht deshalb das Muster statt die Wendung:
+ * ein Satzglied, in dem eine Regel (Kante, Modus, Strategie, Auslöser ...) und das
+ * Belegwort zusammenstehen, ohne Verneinung.
+ *
+ * Warum ihn keiner der fuenf QS-Bereiche gefunden hat: #stcIvWarn steht auf
+ * display:none, solange 60m gewaehlt ist - die Vorgabe. Der Satz existierte nur in
+ * einem Zustand, den niemand betreten hat. Ein Text, der erst nach einer Auswahl
+ * erscheint, gehoert keinem Bereich; er gehoert dieser Klinke.
+ *
+ * Geprueft werden ALLE Renderer-Module - und zwar die, die index.html wirklich laedt,
+ * nicht eine Aufzaehlung, die beim naechsten neuen Modul veraltet. Kommentare bleiben
+ * aussen vor (ohneKommentare): sie tragen Geschichte, und diese Klinke redet vom
+ * Text, den ein Nutzer liest. Zerlegt wird in Satzglieder, nicht in Saetze - die
+ * Ursprungsfassung endete auf "... fand keine tragfaehige Kante", und ein einziges
+ * "keine" am Satzende haette die ganze Behauptung davor entschuldigt. */
+(function () {
+  console.log('\n77) Belegwort: kein Laufzeit-Text behauptet einen Belegstand ueber eine Regel');
+
+  function ohneKommentare77(t) {
+    t = t.replace(/\/\*[\s\S]*?\*\//g, function (m) { return m.replace(/[^\n]/g, ' '); });
+    t = t.replace(/<!--[\s\S]*?-->/g, function (m) { return m.replace(/[^\n]/g, ' '); });
+    return t.split('\n').map(function (z) { return z.replace(/(^|[^:])\/\/.*$/, '$1'); }).join('\n');
+  }
+  /* Wovon die Rede ist: eine Regel und ihre Verwandten. "Vorsprung" gehoert dazu,
+   * weil er in diesem Projekt dasselbe behauptet. */
+  var SUBJEKT77 = /(Regel|Regeln|Kante|Kanten|Modus|Modi|Strategie|Strategien|Standbein|Auslöser|Setup|Ansatz|Vorsprung|Voreinstellung)/;
+  var WORT77 = /(?:^|[^A-Za-zÄÖÜäöüß-])(belegt|belegte[nrs]?|best(?:ä|ae)tigt|best(?:ä|ae)tigte[nrs]?)(?![A-Za-zÄÖÜäöüß])/;
+  /* Verneintes darf stehen bleiben - "nicht bestaetigt", "kein Protokoll sagt
+   * bestaetigt", "unbelegt" sind genau die Saetze, die dieses Projekt braucht. */
+  var VERNEINT77 = /(kein|nicht|nie\b|ohne|unbe|weder|statt)/i;
+  /* Satzglied-Grenzen. Anfuehrungszeichen zaehlen mit: eine Zeichenkette, die an
+   * einer Verkettung endet, ist ein eigenes Stueck Text. */
+  var TEIL77 = /[.;,()"'`]|<br>|<\/div>|<\/p>|<\/span>|[–—]|„|“/;
+
+  /* Ausnahmen: AUSSCHLIESSLICH woertliche Zitate aus einem Messprotokoll - dort darf
+   * "bestaetigt" stehen, weil es abgelesen und nicht behauptet ist. Jeder Eintrag
+   * nennt Ort, Protokoll und Grund; ein Eintrag, der nichts mehr trifft, macht diesen
+   * Abschnitt rot (sonst waechst hier eine Liste, die alles erlaubt). Heute leer -
+   * und das ist die ehrlichere Fassung als eine Liste "fuer alle Faelle". */
+  var ZITATE77 = [];
+
+  function belegzeilen(text) {
+    var funde = [];
+    ohneKommentare77(text).split('\n').forEach(function (z, i) {
+      z.split(TEIL77).forEach(function (teil) {
+        if (!WORT77.test(teil) || !SUBJEKT77.test(teil) || VERNEINT77.test(teil)) return;
+        funde.push({ zeile: i + 1, teil: teil.trim() });
+      });
+    });
+    return funde;
+  }
+  function belegfunde(dateien, ausnahmen) {
+    var erlaubt = (ausnahmen || []).map(function (a) { return a.ort; });
+    var funde = [];
+    dateien.forEach(function (f) {
+      var p = __dirname + '/' + f;
+      if (!fs.existsSync(p)) return;
+      belegzeilen(fs.readFileSync(p, 'utf8')).forEach(function (t) {
+        var ort = f + ':' + t.zeile;
+        if (erlaubt.indexOf(ort) >= 0) return;
+        funde.push(ort + '  [' + t.teil.slice(0, 90) + ']');
+      });
+    });
+    return funde;
+  }
+
+  // --- Die Modulliste kommt aus dem Markup, damit sie nicht veraltet ---
+  var html77 = fs.readFileSync(__dirname + '/index.html', 'utf8');
+  var module77 = (html77.match(/<script src="[^"]+"/g) || [])
+    .map(function (m) { return m.slice('<script src="'.length, -1); });
+  ok(module77.length >= 40,
+     '77.0 die geprueften Module stehen in index.html, nicht in einer Aufzaehlung hier', module77.length);
+  ok(module77.indexOf('strategiechart.js') >= 0 && module77.indexOf('depot.js') >= 0,
+     '77.0 und die Liste enthaelt wirklich die Module, um die es geht');
+
+  var alle77 = ['index.html'].concat(module77);
+  var funde77 = belegfunde(alle77, ZITATE77);
+  ok(funde77.length === 0,
+     '77.1 kein sichtbarer Text sagt ueber eine Regel, sie sei belegt oder bestaetigt',
+     funde77.join(' | ') || 'keiner');
+
+  // --- Die Ausnahmeliste darf nicht ins Leere zeigen und muss sich begruenden ---
+  var ohneListe77 = belegfunde(alle77, []);
+  var tot77 = ZITATE77.filter(function (a) {
+    return !ohneListe77.some(function (f) { return f.indexOf(a.ort + ' ') === 0; });
+  }).map(function (a) { return a.ort; });
+  ok(tot77.length === 0, '77.2 Ausnahmeliste: kein Eintrag zeigt ins Leere', tot77.join(' | ') || 'keiner');
+  ok(ZITATE77.every(function (a) { return a.protokoll && a.grund && a.grund.length > 30; }),
+     '77.2 Ausnahmeliste: jeder Eintrag nennt sein Protokoll und seinen Grund');
+
+  // --- Gegenproben: einmal wirklich rot, und einmal wirklich still ---
+  var g77 = 0, rot77 = 0;
+  function gegen77(was, bedingung) { g77++; if (bedingung) rot77++; ok(bedingung, '77.3 Gegenprobe: ' + was); }
+
+  /* Die Ursprungsfassung von FA2, Wort fuer Wort - inklusive des "keine tragfaehige
+   * Kante" am Satzende, an dem eine satzweise Zerlegung gescheitert waere. */
+  var fa2 = "        warnEl.textContent = 'Achtung: 15 Minuten sind NICHT die gemessene Konfiguration. " +
+            "Beide Regeln wurden auf 60-Minuten-Kerzen belegt, und die grosse Signalstudie vom 23.08.2026 " +
+            "fand auf anderen Zeitrahmen keine tragfaehige Kante.';";
+  gegen77('die Ursprungsfassung von FA2 wird gefunden', belegzeilen(fa2).length === 1);
+  gegen77('"Diese Regel ist belegt." wird gefunden',
+          belegzeilen("h += 'Diese Regel ist belegt.';").length === 1);
+  gegen77('auch die ae-Schreibweise wird gefunden',
+          belegzeilen("st.textContent = 'Der Modus wurde in zwei Naechten bestaetigt';").length === 1);
+  gegen77('und die Umschreibung "gilt als belegt"',
+          belegzeilen("var t = 'Die Strategie gilt als belegt';").length === 1);
+
+  gegen77('eine Verneinung bleibt still',
+          belegzeilen("h += 'Diese Regel ist nicht belegt.';").length === 0);
+  gegen77('"Kein Protokoll sagt bestaetigt" bleibt still',
+          belegzeilen("h += 'Kein Protokoll sagt derzeit bestätigt';").length === 0);
+  gegen77('der Vergleich auf den Rohschluessel bleibt still - er liest ab, statt zu behaupten',
+          belegzeilen("var belegt = kante.urteil === 'bestaetigt';").length === 0);
+  gegen77('ein bestaetigter Wendepunkt ist keine Regel und bleibt still',
+          belegzeilen("h += 'Der Wendepunkt gilt erst 5 Kerzen später als bestätigt';").length === 0);
+  gegen77('im Kommentar bleibt sie still - Geschichte wird nicht umgeschrieben',
+          belegzeilen("/* Beide Regeln wurden damals belegt genannt */\nvar x = 1;").length === 0);
+  gegen77('und dieselbe Zeile ohne Kommentarzeichen wird gefunden - die Klinke ist nicht blind',
+          belegzeilen("var t = 'Beide Regeln wurden belegt';").length === 1);
+
+  /* Positivkontrolle der Ausnahmeliste: sie muss wirklich etwas durchlassen, sonst
+   * ist "die Liste ist leer" eine Aussage ueber nichts. */
+  var probeDatei = 'strategiechart.js';
+  gegen77('die Ausnahmeliste laesst einen Fund wirklich durch',
+          belegfunde([probeDatei], [{ ort: probeDatei + ':1', protokoll: 'nur fuer die Gegenprobe',
+                                      grund: 'steht hier ausschliesslich, um die Wirkung der Liste zu zeigen' }]).length
+          === belegfunde([probeDatei], []).length);
+  ok(g77 === rot77, '77.3 alle Gegenproben dieses Abschnitts schlagen an', rot77 + ' von ' + g77);
+
+  // --- Und der Fund selbst: der Hinweis sagt jetzt, was das Protokoll deckt ---
+  var stc77 = fs.readFileSync(__dirname + '/strategiechart.js', 'utf8');
+  ok(/Beide Regeln sind auf 60-Minuten-Kerzen gemessen/.test(stc77),
+     '77.4 der Hinweis im Strategie-Chart sagt "gemessen" - das Wort, das der Belegstand deckt');
+  ok(/function stcIvWarnung/.test(stc77) && /addEventListener\('change', stcIvWarnung\)/.test(stc77),
+     '77.4 und er haengt an der AUSWAHL der Kerzenlaenge, nicht am Zeichnen - sonst sieht ihn keine Probe ohne Kursabruf');
+})();
+
+
+/* ================= 78) Nachbilden und Taktzahlen (QS-Funde FA1, U4) ================
+ *
+ * FA1: "Trade nachbilden" zeigte auf einer gewoehnlichen Aktien-Position "ca. NaN $"
+ * und "mindestens bis Invalid Date" - openTicket() las strike, expiry, iv und omega,
+ * Felder, die eine Aktie nicht hat. Die Kennzeichnungszeile 30 Zeilen darueber fragte
+ * p.basis richtig ab: von zwei Stellen war eine gepflegt. Und es waren nicht nur die
+ * Zahlen: der ganze Dialog erklaert, wie man einen vergleichbaren OPTIONSSCHEIN
+ * findet - fuer eine Aktienposition ist er als Ganzes falsch. Getroffen hat es genau
+ * die Positionen, die die gemessene Intraday-Regel serienmaessig eroeffnet.
+ * Entscheid Wilhelm (04.09.2026): Knopf ausblenden. Dazu ein zweiter Riegel in der
+ * Funktion selbst - eine Bedingung am Markup geht irgendwann verloren.
+ *
+ * U4: "1 Minute alle 1 Tag · 5 Minuten alle 7 · 15 Minuten alle 7" - eine Zahl mit
+ * Einheit, zwei ohne. Alle drei sind Tage. */
+(function () {
+  console.log('\n78) Nachbilden nur auf Scheinen, Taktzahlen mit Einheit');
+  var dp78 = fs.readFileSync(__dirname + '/depot.js', 'utf8');
+  var html78 = fs.readFileSync(__dirname + '/index.html', 'utf8');
+
+  // --- Riegel 1: der Knopf entsteht nur ohne Basiswert ---
+  var zeilenTicket = dp78.split('\n').filter(function (z) {
+    return z.indexOf('data-ticket="') >= 0 && z.indexOf('Nachbilden') >= 0;
+  });
+  ok(zeilenTicket.length === 1,
+     '78.1 der Nachbilden-Knopf wird an genau EINER Stelle gebaut', zeilenTicket.length);
+  var vorDemKnopf = dp78.slice(Math.max(0, dp78.indexOf(zeilenTicket[0]) - 260), dp78.indexOf(zeilenTicket[0]));
+  ok(/p\.basis \?/.test(vorDemKnopf),
+     '78.1 ... und nur dann, wenn die Position KEIN Basiswert ist');
+
+  // --- Riegel 2: die Funktion kehrt um, bevor sie Schein-Felder liest ---
+  var start78 = dp78.indexOf('function openTicket(id)');
+  var rumpf78 = dp78.slice(start78, start78 + 1600);
+  var riegel78 = rumpf78.indexOf('if (t.basis)');
+  var strike78 = rumpf78.indexOf('t.strike');
+  ok(start78 > 0 && riegel78 > 0 && strike78 > 0 && riegel78 < strike78,
+     '78.1 openTicket() kehrt bei einem Basiswert um, BEVOR es t.strike liest',
+     'Riegel bei ' + riegel78 + ', erster Zugriff bei ' + strike78);
+  ok(/id="ticketHinweis"/.test(html78) && /getElementById\('ticketHinweis'\)/.test(dp78),
+     '78.1 statt eines Dialogs erscheint ein Satz - und der hat einen Ort im Markup');
+  /* Der Hinweis steht ABSICHTLICH ausserhalb von #positionsPanel: dessen innerHTML
+   * wird bei jedem Takt neu geschrieben, ein Kind waere nach einer Sekunde weg. */
+  ok(html78.indexOf('id="ticketHinweis"') > html78.indexOf('id="positionsPanel"') &&
+     html78.slice(html78.indexOf('id="positionsPanel"'), html78.indexOf('id="ticketHinweis"')).indexOf('</div>') > 0,
+     '78.1 ... und zwar neben der Tabelle, nicht darin - sonst ueberschreibt ihn der naechste Takt');
+
+  // --- Gegenproben zu FA1 ---
+  var g78 = 0, rot78 = 0;
+  function gegen78(was, bedingung) { g78++; if (bedingung) rot78++; ok(bedingung, '78.3 Gegenprobe: ' + was); }
+  gegen78('die alte, bedingungslose Fassung des Knopfs wuerde auffallen',
+          !/p\.basis \?/.test("'<td style=\"white-space:nowrap;\"><button data-ticket=\"' + p.id + '\">Nachbilden</button>'"));
+  gegen78('ein Riegel NACH dem ersten Feldzugriff wuerde auffallen',
+          (function () {
+            var falsch = "function openTicket(id) { var t = findTrade(id); var w = { strike: t.strike };" +
+                         " if (t.basis) return; }";
+            return falsch.indexOf('if (t.basis)') > falsch.indexOf('t.strike');
+          })());
+
+  // --- U4: drei Taktzahlen, eine Einheiten-Funktion ---
+  var ak78 = fs.readFileSync(__dirname + '/archivkarte.js', 'utf8');
+  var mitEinheit = (ak78.match(/menge\(e\.intervalle\['(1m|5m|15m)'\], 'Tag', 'Tage'\)/g) || []);
+  ok(mitEinheit.length === 3,
+     '78.2 alle drei Taktzahlen gehen durch dieselbe Einheiten-Funktion', mitEinheit.length);
+  ok(!/alle ' \+ e\.intervalle\['/.test(ak78),
+     '78.2 keine nackte Taktzahl mehr in der Zeile "So ist es eingestellt"');
+  gegen78('die alte, nackte Fassung wuerde gefunden',
+          /alle ' \+ e\.intervalle\['/.test("' · 5 Minuten alle ' + e.intervalle['5m'] + ' · '"));
+
+  /* Nebenbefund derselben Sonde (04.09.2026): Der Dialog schrieb "~6.4x (Omega)" und
+   * "~0.2 %" - englische Schreibweise in deutschem Text, dieselbe Fehlerform wie F11.
+   * Gesehen hat sie vorher niemand: auf der einzigen Positionsart, die es in den
+   * Kunstdaten gab, stand an dieser Stelle NaN. */
+  ok(/String\(omega\)\.replace\('\.', ','\)/.test(dp78) && /aufgeld\.toFixed\(1\)\.replace\('\.', ','\)/.test(dp78),
+     '78.2 Hebel und Aufgeld im Nachbilden-Dialog stehen mit Komma, nicht mit Punkt');
+  ok(g78 === rot78, '78.3 alle Gegenproben dieses Abschnitts schlagen an', rot78 + ' von ' + g78);
 })();
 
 Promise.all(offeneProben).then(function () {

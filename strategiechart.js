@@ -201,6 +201,36 @@
     return { ok: true, S: S, indSerie: indSerie, bed: bed, ivCfg: ivCfg };
   }
 
+  /* Ehrlichkeit vor Bequemlichkeit: GEMESSEN sind beide Regeln auf 60m. Andere
+   * Kerzenlaengen darf man sich ansehen, aber sie sind kein Beleg - genau dieser
+   * stille Wechsel weg von der gemessenen Konfiguration hat hier schon einmal Live
+   * und Messung auseinanderlaufen lassen.
+   *
+   * Zwei Aenderungen am 04.09.2026 (UI-QS, Fund FA2):
+   *   1. Der Satz behauptete, beide Regeln seien auf 60-Minuten-Kerzen "b-e-l-e-g-t"
+   *      worden (das Wort steht hier bewusst getrennt, sonst wird die Sperrklinke
+   *      aus Abschnitt 76 an ihrem eigenen Kommentar rot). Der Belegstand nennt
+   *      NULL handelbare Kanten; rsi2seit und kapitulation stehen dort beide unter
+   *      "nicht entscheidbar". Richtig ist "gemessen" - und der Absatz widersprach
+   *      sich zwei Saetze weiter ohnehin selbst ("kein Beleg").
+   *   2. Die Zeile entstand erst BEIM Zeichnen. Wer 15m waehlte, sah bis zum Klick
+   *      nichts, und kein Test kam ohne echten Kursabruf an den Zustand heran -
+   *      genau deshalb hat ihn keiner der fuenf QS-Bereiche gefunden. Jetzt haengt
+   *      sie an der Auswahl: der Hinweis kommt, wenn die Entscheidung faellt.
+   * Gibt den Wortlaut zurueck, damit eine Probe ihn lesen kann, ohne zu zeichnen. */
+  function stcIvWarnung() {
+    var ivEl = document.getElementById('stcIv'), warnEl = document.getElementById('stcIvWarn');
+    if (!warnEl) return '';
+    var iv = ivEl && STC_IV[ivEl.value] ? ivEl.value : '60m';
+    if (iv === '60m') { warnEl.style.display = 'none'; warnEl.textContent = ''; return ''; }
+    warnEl.style.display = '';
+    warnEl.textContent = 'Achtung: ' + STC_IV[iv].txt + ' sind NICHT die gemessene Konfiguration. ' +
+      'Beide Regeln sind auf 60-Minuten-Kerzen gemessen, und die grosse Signalstudie vom 23.08.2026 ' +
+      'fand auf anderen Zeitrahmen keine tragfaehige Kante. Was hier steht, ist eine Ansicht zum ' +
+      'Nachvollziehen der Mechanik - kein Beleg. Gehandelt wird weiterhin nur, was auf 60m gemessen ist.';
+    return warnEl.textContent;
+  }
+
   async function runStrategieChart() {
     if (stcRunning) return;
     stcRunning = true;
@@ -216,17 +246,7 @@
       var ivCfg = STC_IV[iv];
       var spanne = spEl ? parseInt(spEl.value, 10) : 320;
       if (!(spanne > 0)) spanne = 320;
-      // Ehrlichkeit vor Bequemlichkeit: gemessen sind beide Regeln auf 60m. Andere
-      // Kerzenlaengen darf man sich ansehen, aber sie sind KEIN Beleg - genau dieser
-      // stille Wechsel weg von der gemessenen Konfiguration hat hier schon einmal
-      // Live und Messung auseinanderlaufen lassen.
-      if (warnEl) {
-        if (iv === '60m') { warnEl.style.display = 'none'; warnEl.textContent = ''; }
-        else {
-          warnEl.style.display = '';
-          warnEl.textContent = 'Achtung: ' + ivCfg.txt + ' sind NICHT die gemessene Konfiguration. Beide Regeln wurden auf 60-Minuten-Kerzen belegt, und die grosse Signalstudie vom 23.08.2026 fand auf anderen Zeitrahmen keine tragfaehige Kante. Was hier steht, ist eine Ansicht zum Nachvollziehen der Mechanik - kein Beleg. Gehandelt wird weiterhin nur, was auf 60m gemessen ist.';
-        }
-      }
+      if (warnEl) stcIvWarnung();
       st.textContent = 'Lade ' + sym + ' (' + ivCfg.txt + ') …';
       var r = await stcRechnen(sym, mode, iv, spanne);
       if (!r.ok) { st.textContent = r.grund; return; }
@@ -477,6 +497,10 @@
     if (sb && ss) {
       universe().forEach(function (s2) { var o = document.createElement('option'); o.value = s2; o.textContent = s2; ss.appendChild(o); });
       sb.addEventListener('click', mitFrischemD(runStrategieChart));
+      // Der Hinweis zur Kerzenlaenge gehoert an die AUSWAHL, nicht ans Zeichnen
+      // (UI-QS 04.09.2026, Fund FA2). Kostet nichts: reine Textzeile, kein Abruf.
+      var ivEl2 = document.getElementById('stcIv');
+      if (ivEl2) ivEl2.addEventListener('change', stcIvWarnung);
       var kb = document.getElementById('stcKontext');
       // Neu zeichnen genuegt - die Reihe liegt schon im Zustand, ein Neuladen waere
       // ein Netzabruf fuer eine reine Anzeigefrage.

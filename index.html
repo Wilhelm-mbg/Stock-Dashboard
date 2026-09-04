@@ -1206,6 +1206,12 @@
     <span style="font-size:var(--fs-neben); color:var(--muted); margin-left:auto;">Benachrichtigungen: in den App-Einstellungen</span>
   </div>
   <div class="panel" id="positionsPanel"><div class="loading">Noch keine Positionen – schalte unter „Regeln → Einstellungen“ die Intraday-Strategie ein.</div></div>
+  <!-- Antwort des Riegels aus FA1 (04.09.2026): "Nachbilden" auf einer Aktien-Position
+       oeffnet keinen Schein-Dialog mehr, sondern schreibt einen Satz hierher. Steht
+       ausserhalb von #positionsPanel, weil dessen innerHTML bei jedem Takt neu
+       geschrieben wird - der Hinweis waere sonst nach einer Sekunde weg. -->
+  <div id="ticketHinweis" role="status" aria-live="polite"
+       style="font-size:var(--fs-neben); color:var(--ink-2); margin-top:6px;"></div>
 </div>
 <details class="how" id="bestandProtokoll">
   <summary>Protokoll – jede Handlung des Depots, mit CSV-Ausgabe</summary>
@@ -1471,6 +1477,11 @@
       <div class="strat-card" style="border-top-color: var(--down); margin-top:10px;">
         <div class="head">
           <h3>Stunden-Strategie</h3>
+          <!-- U6 der UI-QS (04.09.2026): Platz fuer den i-Knopf zum Registereintrag
+               strategie.stunden. Er wird von strategien.js eingesetzt, nicht hier
+               fest verdrahtet - die Belege stehen dort, und zwei Orte fuer denselben
+               Schluessel laufen frueher oder spaeter auseinander. -->
+          <span id="stundenInfo"></span>
           <span class="state off" id="hourlyState">aus</span>
           <label class="switch"><input type="checkbox" id="hourlyEnabled"><span class="knob"></span></label>
         </div>
@@ -2000,10 +2011,10 @@
            Walk-Forward, Scheinsieger-Begruendung), steht wortgleich im Info-Register
            (regeln.autopilot) - seit Stufe 3 (03.09.2026) auch dieser Absatz selbst.
            Sichtbar bleibt die Zusicherung, was uebernommen wird. -->
-      <div style="color:var(--muted); font-size:var(--fs-neben); margin-bottom:10px; max-width:68ch;">
-        Übernommen wird nur, was sich in <b>zwei Nächten hintereinander</b>
-        bestätigt; von Hand gesetzte Felder bleiben unangetastet.
-      </div>
+      <!-- U5 (04.09.2026): Dieser Satz stand DREIMAL in derselben Klappe - hier, im
+           Register unter regeln.autopilot und noch einmal als Statuszeile aus
+           depot.js. Sichtbar bleibt die Statuszeile (sie kennt auch den Fall "aus"),
+           der Wortlaut steht unveraendert hinter dem i-Knopf der Ueberschrift. -->
 
       <div class="auto-row">
         <div class="auto-head">
@@ -2148,11 +2159,9 @@
          bleibt seit Stufe 3 nur die Instrument-Zusicherung samt ihrer Messzahl. Der
          beschreibende erste Satz steht woertlich im Register (erster Punkt), der
          Simulationssatz einmal in der Kopfzeile. -->
-    <div style="font-size:var(--fs-text); color:var(--ink-2); line-height:1.55; max-width:68ch;">
-      Gekauft wird das <b>oberste Fünftel</b> der Überraschungen, verkauft das <b>unterste</b> –
-      im <b>Basiswert</b>, nicht mit Hebelscheinen: Der Drift liefert nur ein Viertel bis ein Achtel
-      der Schein-Kostenhürde.
-    </div>
+    <!-- U5 (04.09.2026): Der beschreibende Absatz stand hier und (in laengerer Form)
+         im Register unter regeln.mf.drift. Sichtbar bleibt die Zusicherung darunter,
+         dass die Konfiguration die gemessene ist. -->
     <!-- Live = Messung: dieselbe Sperre wie beim Momentum-Buch. Gefuellt aus
          Drift.STANDARD (driftui.js), nicht aus einer Zahl in diesem Markup. -->
     <div class="hinweis" style="margin-top:10px;" id="drKonfigZeile">Konfiguration wie gemessen (Studie 02.09.2026) – Änderungen nur über eine neue Messung.</div>
@@ -2197,7 +2206,15 @@
     <h3 style="margin-top:16px;">Was wäre heute offen?</h3>
     <div id="drHeute" style="margin-top:6px;"></div>
 
-    <div style="margin-top:14px; font-size:var(--fs-neben); color:var(--ink-2); line-height:1.55; border-top:1px solid var(--grid); padding-top:10px;">
+    <!-- Messaussage, kein Erklaertext: sie traegt Zahl, Zeitraum und den offenen
+         Vorbehalt. Der data-mess-Kasten nimmt sie aus der Dauertext-Messung heraus -
+         eine Messaussage darf nie gegen eine Zeichengrenze laufen, sonst kuerzt sie
+         irgendwann jemand, um gruen zu werden (Abschnitt 73). -->
+    <!-- Die Quelle wird benannt, aber NICHT nacherzaehlt: der Messblock selbst
+         ("20.356 …") gehoert laut Sperrklinke ins Register und darf hier nicht wieder
+         auftauchen. Sie ist beim ersten Versuch prompt rot geworden. -->
+    <div data-mess="Ergebnis-Drift-Studie 02.09.2026 · Quartalszahlen 1993–2026, 197 Werte"
+         style="margin-top:14px; font-size:var(--fs-neben); color:var(--ink-2); line-height:1.55; border-top:1px solid var(--grid); padding-top:10px;">
       Gemessen ab 2015: <b>+10,44 % p. a. bei t = 3,04</b> – aber die Überlebensverzerrung ist nur teilweise
       ausgeräumt (schwache Hälfte der Werte: +1,72 % bei t = 0,58). Die vollständige Messung steht hinter dem
       i-Knopf oben.
@@ -2226,10 +2243,9 @@
     <h3 style="display:flex; align-items:center; gap:8px;">Strategie-Chart – Signal und Bedingungen nachvollziehen
       <button class="info" type="button" data-info="regeln.chart" aria-expanded="false"
               aria-label="Erklärung: Strategie-Chart">i</button></h3>
-    <div style="font-size:var(--fs-neben); color:var(--ink-2); line-height:1.5; margin-bottom:6px; max-width:68ch;">
-      Rechnet die gemessene Regel auf den Kerzen eines Werts nach. Jede Markierung ist ein Einstieg, den die Regel dort gegeben hätte.
-      Was jede Strategie taugt, steht an einem Ort: Pille <b>Strategien</b>, nach Belegstand sortiert.
-    </div>
+    <!-- U5 (04.09.2026): Der Erklaerabsatz stand woertlich hier UND fast woertlich im
+         Register unter regeln.chart. Sichtbar ist jetzt nur noch der i-Knopf oben;
+         der Wortlaut ist unveraendert ins Register gewandert (Muster Stufe 3). -->
     <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
       <select id="stcMode">
         <option value="rsi2seit">RSI(2) im Seitwärtskanal (gemessen, nicht bestätigt)</option>
@@ -2253,7 +2269,7 @@
       <span id="stcStatus" style="color:var(--muted); font-size:var(--fs-neben);"></span>
     </div>
     <div id="stcIvWarn" style="display:none; font-size:var(--fs-neben); margin-top:6px; padding:6px 8px; border-left:3px solid var(--down); color:var(--ink-2); line-height:1.5;"></div>
-    <div id="stcInfo" style="font-size:var(--fs-neben); color:var(--ink-2); margin-top:8px;"></div>
+    <div id="stcInfo" style="font-size:var(--fs-neben); color:var(--ink-2); margin-top:8px; max-width:68ch;"></div>
     <!-- Vor dem ersten Laden ist hier nichts zu beschriften: die Legende benannte
          Linien, die es noch nicht gab, ueber einer schwarzen Flaeche. Chart, Indikator
          und Legende liegen deshalb in #stcAusgabe und werden erst sichtbar, wenn
@@ -2301,11 +2317,8 @@
       <h3 style="display:flex; align-items:center; gap:8px;">Regeln, die nur messen
         <button class="info" type="button" data-info="regeln.messen" aria-expanded="false"
                 aria-label="Erklärung: Regeln, die nur messen">i</button></h3>
-      <div style="font-size:var(--fs-text); color:var(--ink-2); line-height:1.6; max-width:68ch;">
-        Eine Regel <b>festschreiben</b> und mitlaufen lassen, ohne dass Geld bewegt wird –
-        geprüft auf denselben Kerzen wie die gehandelte Regel, mit eigener Bilanz.
-        <b>Bewusst ohne Handelsknopf.</b>
-      </div>
+      <!-- U5 (04.09.2026): Erklaerabsatz hinter den i-Knopf oben (regeln.messen), wo
+           dieselbe Aussage schon in vier Punkten stand. -->
       <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-top:10px;">
         <input type="text" id="regelName" maxlength="40" placeholder="Name, z. B. „Felix: Winkel 1m“" style="flex:1 1 240px;">
         <button class="btn ghost" id="regelNeuBtn" type="button" title="Schreibt die AKTUELLEN Einstellungen unter diesem Namen fest. Ab dem nächsten Scan läuft sie mit – ohne Geld.">Aktuelle Einstellungen festschreiben</button>
@@ -2326,14 +2339,19 @@
     <!-- Innerhalb von "Bilanz dieser Regel" sind das Unterabschnitte, keine gleichrangigen
          Karten - h4 statt h3, damit die Gliederung stimmt (Regeln-Ausduennung 31.08.2026). -->
     <div class="panel" style="margin-bottom:12px;">
-      <h4 style="margin:0 0 6px;">Was hat gewirkt?</h4>
-      <div style="color:var(--muted); font-size:var(--fs-neben); margin-bottom:8px;">
-        Jede automatische Änderung mit gemessener Wirkung: Ø Gewinn je Intraday-Trade davor gegen danach, sortiert nach
-        Wirkung, jede einzeln zurücknehmbar – bei den von Hand übernommenen Voreinstellungen sogar Feld für Feld.
-      </div>
+      <h4 style="margin:0 0 6px; display:flex; align-items:center; gap:8px;">Was hat gewirkt?
+        <button class="info" type="button" data-info="betrieb.wirkung" aria-expanded="false"
+                aria-label="Erklärung: Was hat gewirkt?">i</button></h4>
+      <!-- U5 (04.09.2026): Zwei Erklaerabsaetze - dieser und die Fusszeile, die
+           depot.js unter die Tabelle schreibt - hinter den i-Knopf (betrieb.wirkung).
+           Sichtbar bleibt die Standzeile und die Tabelle selbst. -->
       <div id="tuneLog"></div>
 
-      <div style="margin-top:14px; padding-top:12px; border-top:1px solid var(--line);">
+      <!-- section statt div: "Bringen die Filter etwas?" hat eine eigene Ueberschrift,
+           einen eigenen Knopf und ein eigenes Ergebnis - es ist ein eigener Abschnitt
+           und wird jetzt auch als solcher gemessen, statt seinen Text der Tabelle
+           darueber zuzuschlagen. -->
+      <section style="margin-top:14px; padding-top:12px; border-top:1px solid var(--line);">
         <h4 style="margin:0 0 6px;">Bringen die Filter etwas?</h4>
         <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
           <button class="btn ghost" id="filterBtn">Mit vs. ohne Filter rechnen</button>
@@ -2344,14 +2362,14 @@
           Geld spart oder Rendite kostet.
         </div>
         <div id="filterResult" style="margin-top:12px;"></div>
-      </div>
+      </section>
     </div>
       <div class="panel">
-        <h4 style="margin:0 0 6px;">Wann die Strategie nichts getan hat</h4>
-        <div style="color:var(--muted); font-size:var(--fs-neben); margin-bottom:8px;">
-          Wie oft die Filter ein Signal bewusst verworfen haben – und warum. Der häufigste Grund ist der stärkste Hebel:
-          „Wer nicht weiß, was er tut, muss wissen, wann er nichts tut.“ (Kostolany)
-        </div>
+        <h4 style="margin:0 0 6px; display:flex; align-items:center; gap:8px;">Wann die Strategie nichts getan hat
+          <button class="info" type="button" data-info="betrieb.geduld" aria-expanded="false"
+                  aria-label="Erklärung: Wann die Strategie nichts getan hat">i</button></h4>
+        <!-- U5 (04.09.2026): Erklaerabsatz samt Kostolany-Zitat hinter den i-Knopf
+             (betrieb.geduld); sichtbar bleibt die Liste der Verwerfungsgruende. -->
         <div id="patience"><div class="loading">Noch keine verworfenen Signale erfasst – entsteht, sobald der Intraday-Scanner läuft.</div></div>
       </div>
       <div class="panel">
@@ -2443,10 +2461,10 @@
 <h2 style="margin-top:18px;">Neue Strategie ins Rennen schicken
   <button class="info" type="button" data-info="messung.eingabe" aria-expanded="false" aria-label="Erklärung: Neue Strategie ins Rennen schicken">i</button></h2>
 <div class="panel" id="strategieEingabe">
-  <div style="font-size:var(--fs-neben); color:var(--ink-2); line-height:1.5; margin-bottom:10px; max-width:68ch;">
-    Drei Dinge braucht eine Strategie: einen <b>Grund</b>, eine <b>Regel, wann gekauft wird</b>, und die
-    Festlegung <b>vorher</b>, was geprüft werden soll.
-  </div>
+  <!-- U5 (04.09.2026): "Drei Dinge braucht eine Strategie" steht jetzt hinter dem
+       i-Knopf der Ueberschrift (messung.eingabe), wo die Begruendung dazu schon
+       stand. Was hier sichtbar bleibt, ist kein Dauertext, sondern das, was sich mit
+       der Auswahl aendert: der Modus, der gemessene Satz und der Denkanstoss. -->
   <div role="radiogroup" aria-label="Art der Eingabe" style="display:flex; gap:6px; margin-bottom:12px; flex-wrap:wrap;">
     <button class="btn" type="button" id="stModusBau" role="radio" aria-checked="true">Baukasten</button>
     <button class="btn ghost" type="button" id="stModusExperte" role="radio" aria-checked="false">Expertenmodus</button>
@@ -2479,7 +2497,10 @@
   </div>
   <label style="font-size:var(--fs-neben); display:block; margin-bottom:4px;">Warum sollte das funktionieren? <span id="stGrundZaehler" style="color:var(--muted);"></span>
     <textarea id="stGrund" rows="3" style="width:100%; font-family:inherit;" placeholder="Wer MUSS hier handeln, und warum? Nicht: was der Kurs Ihrer Meinung nach tut."></textarea></label>
-  <div id="stGrundHilfe" style="font-size:var(--fs-klein); color:var(--muted); line-height:1.55; margin-bottom:10px; max-width:78ch;"></div>
+  <!-- section statt div: der Denkanstoss ist ein eigener Abschnitt mit eigener
+       Ueberschrift ("Trägt"), er wechselt mit dem gewaehlten Muster und gehoert nicht
+       zum Dauertext des Formulars darum herum (U5, 04.09.2026). -->
+  <section id="stGrundHilfe" style="font-size:var(--fs-klein); color:var(--muted); line-height:1.55; margin-bottom:10px; max-width:78ch;"></section>
   <div id="stExperte" hidden>
   <label style="font-size:var(--fs-neben); display:block; margin-bottom:8px;">Signalfunktion <code>signal(bars, i, params)</code> – darf nur <code>bars[0..i]</code> lesen, gibt <code>{dir: 1}</code>, <code>{dir: -1}</code> oder <code>null</code> zurück. <code>Q</code> ist quant.js.
     <textarea id="stSignal" rows="8" style="width:100%; font-family:var(--mono, monospace); font-size:var(--fs-neben);" placeholder="function signal(bars, i, params) {&#10;  // Beispiel: erste Kerze eines neuen Monats. Verglichen wird gegen die VORIGE&#10;  // Kerze. Die naechste anzufassen waere ein Blick in die Zukunft - auch dann,&#10;  // wenn man nur ihren Zeitstempel liest.&#10;  if (i &lt; 1) return null;&#10;  var d = new Date(bars[i][0]), v = new Date(bars[i-1][0]);&#10;  return d.getUTCMonth() !== v.getUTCMonth() ? { dir: 1 } : null;&#10;}"></textarea></label>

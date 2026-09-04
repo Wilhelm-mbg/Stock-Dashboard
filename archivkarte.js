@@ -265,7 +265,12 @@
     h += '<div style="font-size:var(--fs-neben); color:var(--muted); margin-top:10px; line-height:1.6;">' +
       '<b>So ist es eingestellt:</b> Universum <code>' + U.esc(e.universum || '?') + '</code>' +
       ' · 1 Minute alle ' + menge(e.intervalle['1m'], 'Tag', 'Tage') +
-      ' · 5 Minuten alle ' + e.intervalle['5m'] + ' · 15 Minuten alle ' + e.intervalle['15m'] +
+      /* U4 der UI-QS (04.09.2026): hier stand "5 Minuten alle 7 · 15 Minuten alle 7"
+       * - zwei nackte Zahlen neben einer dritten, die ihre Einheit bekam. Alle drei
+       * sind Tage (sammelplan.js: abstandTage) und gehen jetzt durch dieselbe
+       * Funktion, damit auch die Einzahl stimmt. */
+      ' · 5 Minuten alle ' + menge(e.intervalle['5m'], 'Tag', 'Tage') +
+      ' · 15 Minuten alle ' + menge(e.intervalle['15m'], 'Tag', 'Tage') +
       ' · ' + U.dez(e.abstandMs / 1000, 1) + ' s Abstand je Anfrage' +
       /* Die Zahl ist einstellbar (0-720, sammelplan.js) - bei 1 stand hier bis
        * 8.40.1 "1 Minuten". Dieselbe Einzahl/Mehrzahl-Regel wie oben. */

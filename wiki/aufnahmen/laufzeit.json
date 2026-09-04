@@ -1,5 +1,5 @@
 {
-  "stand": "2026-09-04T12:16:01.948Z",
+  "stand": "2026-09-04T21:05:31.588Z",
   "kunstdaten": true,
   "breite": 1280,
   "werkzeug": "tools/ui-aufnahmen.js <ziel> --kunstdaten --messung",
@@ -11,7 +11,7 @@
         {
           "ort": "Zuletzt getan · .panel",
           "len": 242,
-          "anfang": "04.09.26, 09:15 UhrIntradayCall NVDA2.915,90 $02.09.26, 18:15 UhrIntradayTSM geschlossen+128,90 $02.09.26, 11:15 UhrIntr"
+          "anfang": "04.09.26, 18:04 UhrIntradayCall NVDA2.915,90 $03.09.26, 03:04 UhrIntradayTSM geschlossen+128,90 $02.09.26, 20:04 UhrIntr"
         },
         {
           "ort": "Momentum-Buch · stärkstes Zehntel, alle 63 Handelstage, 20 B · #buchMomentum",
@@ -41,11 +41,11 @@
         {
           "ort": "Intraday-Depot · die Kurzfrist-Regel, virtuelles Kapital · #buchIntraday",
           "len": 30,
-          "anfang": "100.488,12 $+488,12 $ · +0,5 %"
+          "anfang": "100.512,93 $+512,93 $ · +0,5 %"
         }
       ],
       "ohneBlock": {
-        "len": 699,
+        "len": 612,
         "anfang": "Simulation mit virtuellem Kapital – keine Anlageberatung. Gehandelt wird der Basiswert (Aktie 1×, ohne Hebel). Mittelfrist-Depot · Momentum und Ergebnis-Drift handeln Was die Messmaschine zur laufende"
       }
     },
@@ -75,8 +75,8 @@
         }
       ],
       "ohneBlock": {
-        "len": 2247,
-        "anfang": "Vorbörslicher Handel – dünner Umsatz, Kurse können springenKurse: Stand 14:15 UhrKursabruf gescheitert: nur 1 von 21 Kursen angekommen – angezeigt ist der letzte vollständige StandNvidia-Aktie: Ein Kn"
+        "len": 4918,
+        "anfang": "Nachbörslicher Handeldünner Umsatz, Kurse können springenKurse: Stand 23:04 UhrKursabruf gescheitert: nur 1 von 21 Kursen angekommen – angezeigt ist der letzte vollständige Stand (Yahoo drosselt: 0-ma"
       }
     },
     {
@@ -85,8 +85,8 @@
       "bloecke": [
         {
           "ort": "Marktkarte · .panel",
-          "len": 527,
-          "anfang": "Stand: 14:15:41TechnologieOhne Klassifizierung der Wertpapierarten (Abruf fehlgeschlagen): Vorzugsserien, Fonds und Zert"
+          "len": 635,
+          "anfang": "Stand: 23:05:11 · Kursabruf gescheitert: Yahoo drosselt: 0-mal abgewiesen, 1 Blöcke ohne Antwort – angezeigt ist, was an"
         }
       ],
       "ohneBlock": {
@@ -105,8 +105,8 @@
         },
         {
           "ort": "Vorbörsen-Lücken · #vormarktKarte",
-          "len": 336,
-          "anfang": "Vorbörse läuft – die Karte sieht alle 10 Minuten von selbst nach.PL Planet Labs PBC+10,51 %20,28 $ vorbörslich · in 52 v"
+          "len": 265,
+          "anfang": "Ausserhalb der US-Vorbörse (10:00–15:30 unserer Zeit) gibt es keine Vorbörsen-Kerzen.Noch nicht gesucht.Schwellen: Lücke"
         },
         {
           "ort": "Spekulations-Radar · #spekRadar",
@@ -151,7 +151,7 @@
       ],
       "ohneBlock": {
         "len": 137,
-        "anfang": "aktivGemessene StellschraubenAktiv – wartet auf US-Handelsbeginn (15:30 Uhr Berlin).okHeute: +0,18 % · In Scheinen: 3 % · Positionen: 1/8"
+        "anfang": "aktivGemessene StellschraubenAktiv – wartet auf US-Handelsbeginn (15:30 Uhr Berlin).okHeute: +0,21 % · In Scheinen: 3 % · Positionen: 1/8"
       }
     },
     {
@@ -194,41 +194,6 @@
           "anfang": "Noch kein Messprotokoll – die Spalten Läufe und Zuletzt erscheinen nach der ersten Messung.Nicht gelistet: 4 Hilfsdatei("
         },
         {
-          "ort": "Was hat gewirkt? · .panel",
-          "len": 691,
-          "anfang": "Jede automatische Änderung mit gemessener Wirkung: Ø Gewinn je Intraday-Trade davor gegen danach, sortiert nach Wirkung,"
-        },
-        {
-          "ort": "Neue Strategie ins Rennen schicken · #strategieEingabe",
-          "len": 494,
-          "anfang": "Drei Dinge braucht eine Strategie: einen Grund, eine Regel, wann gekauft wird, und die Festlegung vorher, was geprüft we"
-        },
-        {
-          "ort": "Ergebnis-Drift · Aktien, keine Hebelscheine · .panel",
-          "len": 490,
-          "anfang": "Gekauft wird das oberste Fünftel der Überraschungen, verkauft das unterste – im Basiswert, nicht mit Hebelscheinen: Der "
-        },
-        {
-          "ort": "Autopilot · .panel",
-          "len": 457,
-          "anfang": "Übernommen wird nur, was sich in zwei Nächten hintereinander bestätigt; von Hand gesetzte Felder bleiben unangetastet. N"
-        },
-        {
-          "ort": "Strategie-Chart · #stratChartPanel",
-          "len": 442,
-          "anfang": "Rechnet die gemessene Regel auf den Kerzen eines Werts nach. Jede Markierung ist ein Einstieg, den die Regel dort gegebe"
-        },
-        {
-          "ort": "Regeln, die nur messen · #regelnKarte",
-          "len": 319,
-          "anfang": "Eine Regel festschreiben und mitlaufen lassen, ohne dass Geld bewegt wird – geprüft auf denselben Kerzen wie die gehande"
-        },
-        {
-          "ort": "Wann die Strategie nichts getan hat · .panel",
-          "len": 271,
-          "anfang": "Wie oft die Filter ein Signal bewusst verworfen haben – und warum. Der häufigste Grund ist der stärkste Hebel: „Wer nich"
-        },
-        {
           "ort": "Live-Signal-Monitor · .panel",
           "len": 240,
           "anfang": "Noch kein Scan gelaufen – der Monitor füllt sich, sobald die Intraday-Strategie aktiv ist und die US-Börse geöffnet hat."
@@ -244,9 +209,34 @@
           "anfang": "Was die Regel getan hat, was sie nicht getan hat, und wie sie gegen einfaches Halten steht. Der Vergleich gegen Buy & Ho"
         },
         {
+          "ort": "Strategie-Chart · #stratChartPanel",
+          "len": 223,
+          "anfang": "Noch nichts geladen. Oben Regel und Wert wählen, dann „Chart laden“.Simulation, keine Anlageberatung. Der Chart zeigt, w"
+        },
+        {
+          "ort": "Trägt · #stGrundHilfe",
+          "len": 199,
+          "anfang": "wenn Indexfonds und Pensionskassen zum Monatsende ihre Gewichte wieder herstellen müssen – ein Zufluss mit Termin, kein "
+        },
+        {
+          "ort": "Autopilot · .panel",
+          "len": 190,
+          "anfang": "Noch keine Messung – die erste läuft in der nächsten Nacht nach US-Börsenschluss.04.09.26, 22:24 Uhr · Quelle: RegelRSI("
+        },
+        {
           "ort": "Mittelfrist-Bücher steuern · .panel",
           "len": 148,
           "anfang": "Erster Start: Tageskurse für 193 Werte werden geladen (einmalig, ein paar Minuten) …Was die beiden Bücher halten, steht "
+        },
+        {
+          "ort": "Regeln, die nur messen · #regelnKarte",
+          "len": 142,
+          "anfang": "Noch keine festgeschriebene Regel. Stell unter „Regeln → Einstellungen“ eine Konfiguration ein, gib ihr hier einen Namen"
+        },
+        {
+          "ort": "Bringen die Filter etwas? · section",
+          "len": 136,
+          "anfang": "Rechnet denselben Zeitraum zweimal – einmal mit deinen Filtern, einmal ohne. Zeigt, ob die Zurückhaltung Geld spart oder"
         },
         {
           "ort": "Momentum im Querschnitt · Aktien, keine Hebelscheine · .panel",
@@ -256,7 +246,27 @@
         {
           "ort": "Depot gegen Buy & Hold · .panel",
           "len": 106,
-          "anfang": "Seit Depot-Start: Depot +0,89 % · S&P +0,03 % · NDQ -0,23 %KI-DepotS&P 500 (Buy & Hold)Nasdaq (Buy & Hold)"
+          "anfang": "Seit Depot-Start: Depot +0,89 % · S&P -0,34 % · NDQ -0,52 %KI-DepotS&P 500 (Buy & Hold)Nasdaq (Buy & Hold)"
+        },
+        {
+          "ort": "Gemessen wird · #stSatz",
+          "len": 98,
+          "anfang": "Am letzten Werktag des Monats, gleich zum Handelsstart. Danach 8 Stunde(n) halten, dann verkaufen."
+        },
+        {
+          "ort": "Ergebnis-Drift · Aktien, keine Hebelscheine · .panel",
+          "len": 87,
+          "anfang": "Konfiguration wie gemessen (Studie 02.09.2026) – Änderungen nur über eine neue Messung."
+        },
+        {
+          "ort": "Wann die Strategie nichts getan hat · .panel",
+          "len": 85,
+          "anfang": "Noch keine verworfenen Signale erfasst – entsteht, sobald der Intraday-Scanner läuft."
+        },
+        {
+          "ort": "Was hat gewirkt? · .panel",
+          "len": 78,
+          "anfang": "Zuletzt geprüft: 04.09.26, 22:46 Uhr · keine Änderung seit 04.09.26, 23:04 Uhr"
         },
         {
           "ort": "Die Regel, die handelt · #regelKarte",
@@ -267,6 +277,11 @@
           "ort": "Trendfinder · [wende]",
           "len": 69,
           "anfang": "Beobachtung, kein Handel.Noch nicht geprüft – „Jetzt prüfen“ klicken."
+        },
+        {
+          "ort": "Neue Strategie ins Rennen schicken · #strategieEingabe",
+          "len": 44,
+          "anfang": "Zusammenklicken – die App schreibt den Code."
         },
         {
           "ort": "Kursarchiv · #archivKarte",
@@ -300,43 +315,8 @@
         },
         {
           "ort": "Kursarchiv · #archivKarte",
-          "len": 753,
-          "anfang": "Was in dieser Zeit nicht geholt wurde, ist nicht später nachzuholen, sondern fort.1 Minute5 / 606 Werte (6 angesehen) · "
-        },
-        {
-          "ort": "Was hat gewirkt? · .panel",
-          "len": 691,
-          "anfang": "Jede automatische Änderung mit gemessener Wirkung: Ø Gewinn je Intraday-Trade davor gegen danach, sortiert nach Wirkung,"
-        },
-        {
-          "ort": "Neue Strategie ins Rennen schicken · #strategieEingabe",
-          "len": 494,
-          "anfang": "Drei Dinge braucht eine Strategie: einen Grund, eine Regel, wann gekauft wird, und die Festlegung vorher, was geprüft we"
-        },
-        {
-          "ort": "Ergebnis-Drift · Aktien, keine Hebelscheine · .panel",
-          "len": 490,
-          "anfang": "Gekauft wird das oberste Fünftel der Überraschungen, verkauft das unterste – im Basiswert, nicht mit Hebelscheinen: Der "
-        },
-        {
-          "ort": "Autopilot · .panel",
-          "len": 457,
-          "anfang": "Übernommen wird nur, was sich in zwei Nächten hintereinander bestätigt; von Hand gesetzte Felder bleiben unangetastet. N"
-        },
-        {
-          "ort": "Strategie-Chart · #stratChartPanel",
-          "len": 442,
-          "anfang": "Rechnet die gemessene Regel auf den Kerzen eines Werts nach. Jede Markierung ist ein Einstieg, den die Regel dort gegebe"
-        },
-        {
-          "ort": "Regeln, die nur messen · #regelnKarte",
-          "len": 319,
-          "anfang": "Eine Regel festschreiben und mitlaufen lassen, ohne dass Geld bewegt wird – geprüft auf denselben Kerzen wie die gehande"
-        },
-        {
-          "ort": "Wann die Strategie nichts getan hat · .panel",
-          "len": 271,
-          "anfang": "Wie oft die Filter ein Signal bewusst verworfen haben – und warum. Der häufigste Grund ist der stärkste Hebel: „Wer nich"
+          "len": 778,
+          "anfang": "Was in dieser Zeit nicht geholt wurde, ist nicht später nachzuholen, sondern fort.1 Minute6 / 606 Werte (6 angesehen) · "
         },
         {
           "ort": "Live-Signal-Monitor · .panel",
@@ -354,19 +334,64 @@
           "anfang": "Was die Regel getan hat, was sie nicht getan hat, und wie sie gegen einfaches Halten steht. Der Vergleich gegen Buy & Ho"
         },
         {
+          "ort": "Strategie-Chart · #stratChartPanel",
+          "len": 223,
+          "anfang": "Noch nichts geladen. Oben Regel und Wert wählen, dann „Chart laden“.Simulation, keine Anlageberatung. Der Chart zeigt, w"
+        },
+        {
+          "ort": "Trägt · #stGrundHilfe",
+          "len": 199,
+          "anfang": "wenn Indexfonds und Pensionskassen zum Monatsende ihre Gewichte wieder herstellen müssen – ein Zufluss mit Termin, kein "
+        },
+        {
+          "ort": "Autopilot · .panel",
+          "len": 190,
+          "anfang": "Noch keine Messung – die erste läuft in der nächsten Nacht nach US-Börsenschluss.04.09.26, 22:24 Uhr · Quelle: RegelRSI("
+        },
+        {
           "ort": "Mittelfrist-Bücher steuern · .panel",
           "len": 148,
           "anfang": "Erster Start: Tageskurse für 193 Werte werden geladen (einmalig, ein paar Minuten) …Was die beiden Bücher halten, steht "
         },
         {
+          "ort": "Regeln, die nur messen · #regelnKarte",
+          "len": 142,
+          "anfang": "Noch keine festgeschriebene Regel. Stell unter „Regeln → Einstellungen“ eine Konfiguration ein, gib ihr hier einen Namen"
+        },
+        {
+          "ort": "Bringen die Filter etwas? · section",
+          "len": 136,
+          "anfang": "Rechnet denselben Zeitraum zweimal – einmal mit deinen Filtern, einmal ohne. Zeigt, ob die Zurückhaltung Geld spart oder"
+        },
+        {
           "ort": "Momentum im Querschnitt · Aktien, keine Hebelscheine · .panel",
           "len": 111,
-          "anfang": "Konfiguration wie gemessen (Studie 02.09.2026) – Änderungen nur über eine neue Messung.Lade Tageskurse … 40/193"
+          "anfang": "Konfiguration wie gemessen (Studie 02.09.2026) – Änderungen nur über eine neue Messung.Lade Tageskurse … 50/193"
         },
         {
           "ort": "Depot gegen Buy & Hold · .panel",
           "len": 106,
-          "anfang": "Seit Depot-Start: Depot +0,89 % · S&P +0,03 % · NDQ -0,23 %KI-DepotS&P 500 (Buy & Hold)Nasdaq (Buy & Hold)"
+          "anfang": "Seit Depot-Start: Depot +0,89 % · S&P -0,34 % · NDQ -0,52 %KI-DepotS&P 500 (Buy & Hold)Nasdaq (Buy & Hold)"
+        },
+        {
+          "ort": "Gemessen wird · #stSatz",
+          "len": 98,
+          "anfang": "Am letzten Werktag des Monats, gleich zum Handelsstart. Danach 8 Stunde(n) halten, dann verkaufen."
+        },
+        {
+          "ort": "Ergebnis-Drift · Aktien, keine Hebelscheine · .panel",
+          "len": 87,
+          "anfang": "Konfiguration wie gemessen (Studie 02.09.2026) – Änderungen nur über eine neue Messung."
+        },
+        {
+          "ort": "Wann die Strategie nichts getan hat · .panel",
+          "len": 85,
+          "anfang": "Noch keine verworfenen Signale erfasst – entsteht, sobald der Intraday-Scanner läuft."
+        },
+        {
+          "ort": "Was hat gewirkt? · .panel",
+          "len": 78,
+          "anfang": "Zuletzt geprüft: 04.09.26, 22:46 Uhr · keine Änderung seit 04.09.26, 23:04 Uhr"
         },
         {
           "ort": "Die Regel, die handelt · #regelKarte",
@@ -376,7 +401,12 @@
         {
           "ort": "Trendfinder · [wende]",
           "len": 52,
-          "anfang": "Beobachtung, kein Handel.Stand 14:15 Uhr · 0 Wechsel"
+          "anfang": "Beobachtung, kein Handel.Stand 23:05 Uhr · 0 Wechsel"
+        },
+        {
+          "ort": "Neue Strategie ins Rennen schicken · #strategieEingabe",
+          "len": 44,
+          "anfang": "Zusammenklicken – die App schreibt den Code."
         },
         {
           "ort": "Was jetzt zu halten wäre · .panel",
@@ -459,7 +489,7 @@
     {
       "seite": "strategien/regeln",
       "sel": "#sub-regeln",
-      "iKnoepfe": 5,
+      "iKnoepfe": 6,
       "saetze": {
         "Gehandelt wird hiervon nichts": {
           "sichtbar": 0,
@@ -483,7 +513,7 @@
     {
       "seite": "werkzeuge/explorer",
       "sel": "#sub-explorer",
-      "iKnoepfe": 1,
+      "iKnoepfe": 2,
       "saetze": {
         "Gehandelt wird hiervon nichts": {
           "sichtbar": 0,
@@ -507,7 +537,7 @@
     {
       "seite": "werkzeuge/betrieb",
       "sel": "#sub-betrieb",
-      "iKnoepfe": 14,
+      "iKnoepfe": 16,
       "saetze": {
         "Gehandelt wird hiervon nichts": {
           "sichtbar": 0,
@@ -516,5 +546,99 @@
         }
       }
     }
-  ]
+  ],
+  "register": {
+    "angemeldet": [
+      "betrieb.backfill",
+      "betrieb.backtest",
+      "betrieb.geduld",
+      "betrieb.kursarchiv",
+      "betrieb.wirkung",
+      "einstellungen.alpaca",
+      "glossar.begriffe",
+      "heute.bestand",
+      "heute.insider",
+      "heute.positionen",
+      "heute.radar",
+      "heute.simulation",
+      "heute.vorboerse",
+      "markt.earnings",
+      "markt.hotlists",
+      "markt.sektoren",
+      "marktkarte",
+      "messung.eingabe",
+      "messung.scoreboard",
+      "messung.strategien",
+      "modell.schein",
+      "regeln.antwort",
+      "regeln.autopilot",
+      "regeln.chart",
+      "regeln.handelt",
+      "regeln.intraday",
+      "regeln.legende",
+      "regeln.messen",
+      "regeln.mf.drift",
+      "regeln.mf.momentum",
+      "regeln.param.filter",
+      "regeln.param.haltedauer",
+      "regeln.param.risiko",
+      "regeln.param.signal",
+      "regeln.uebersicht",
+      "regeln.watchlist",
+      "strategie.drift",
+      "strategie.kurz",
+      "strategie.mittel",
+      "strategie.stunden",
+      "vermoegen.buecher",
+      "werkzeuge.explorer",
+      "werkzeuge.trendfinder",
+      "werkzeuge.viewer"
+    ],
+    "knoepfe": [
+      "betrieb.backfill",
+      "betrieb.backtest",
+      "betrieb.geduld",
+      "betrieb.kursarchiv",
+      "betrieb.wirkung",
+      "einstellungen.alpaca",
+      "glossar.begriffe",
+      "heute.bestand",
+      "heute.insider",
+      "heute.positionen",
+      "heute.radar",
+      "heute.simulation",
+      "heute.vorboerse",
+      "markt.earnings",
+      "markt.hotlists",
+      "markt.sektoren",
+      "marktkarte",
+      "messung.eingabe",
+      "messung.scoreboard",
+      "messung.strategien",
+      "modell.schein",
+      "regeln.antwort",
+      "regeln.autopilot",
+      "regeln.chart",
+      "regeln.handelt",
+      "regeln.intraday",
+      "regeln.legende",
+      "regeln.messen",
+      "regeln.mf.drift",
+      "regeln.mf.momentum",
+      "regeln.param.filter",
+      "regeln.param.haltedauer",
+      "regeln.param.risiko",
+      "regeln.param.signal",
+      "regeln.uebersicht",
+      "regeln.watchlist",
+      "strategie.drift",
+      "strategie.kurz",
+      "strategie.mittel",
+      "strategie.stunden",
+      "vermoegen.buecher",
+      "werkzeuge.explorer",
+      "werkzeuge.trendfinder",
+      "werkzeuge.viewer"
+    ]
+  }
 }
