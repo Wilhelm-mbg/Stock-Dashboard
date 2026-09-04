@@ -24,7 +24,7 @@ tags: [steuerung]
 ## Aufträge und Budgets (Stand 04.09.2026)
 
 - **Jeder Auftrag ist eine Datei** mit allen Pfaden, Regeln, Zahlen und Entscheiden — der Chat liest weder Tafel noch Wiki und stellt keine Rückfragen.
-- **Budgets knapp, Nachschlag erlaubt** (Wilhelm 04.09.): Faustzahlen kleiner Fix ~80k, Fix über mehrere Dateien mit Gegenproben ~150k, Oberflächen-Stufe ~250k. Der Auftrag erlaubt Überziehen mit Begründung, aber nie ohne Übergabe. **Tatsächlicher Verbrauch ist Pflichtzeile der Übergabe**; nach einigen Übergaben werden die Faustzahlen nachgezogen.
+- **Budgets knapp, Nachschlag erlaubt** (Wilhelm 04.09.): Faustzahlen am Sitzungs-Zählerstand (nach drei Messpunkten 04.09.: 395k/300k, 180k/60k, 265k/120k): Kleinstauftrag ohne Gegenproben ~80k; alles mit „Gegenprobe je Klinke" ≥ 150k (+~7k je Gegenprobe); QS mit eigenen Sonden ~250k; Oberflächen-Stufe ~300k. Der Auftrag erlaubt Überziehen mit Begründung, aber nie ohne Übergabe. **Tatsächlicher Verbrauch ist Pflichtzeile der Übergabe**; nach einigen Übergaben werden die Faustzahlen nachgezogen.
 - **Zwei Chats parallel nur auf disjunkten Dateien.** `test-v6.js` teilen sich fast alle → in der Regel nacheinander.
 - **Oberflächen-Aufträge erneuern `wiki/aufnahmen/`** (Wilhelm 04.09.): Aufnahmen der isolierten Kunstdaten-Instanz je Reiter einsortieren und `aufnahmen/struktur.md` neu erzeugen — steht als Pflicht in jedem UI-Auftrag.
 - **Entscheide kommen als Formular**, nie als Fließtext, und werden doppelt verteilt: in [entscheide.md](entscheide.md) und auf die betroffene Seite.

@@ -67,6 +67,24 @@ tags: [lehre]
   jede Zeile im Log sah ordentlich aus. **Gegenprobe:** Läufe mit `neu=0` zählen, nicht Läufe.
   *Fundstelle: `uebergabe/auftrag-sammler-verhungern-2026-09-04.md`.*
 
+- **Eine Klinke, die eine Menge behauptet und ein Element prüft, prüft nichts.** „Es sind keine
+  ETFs" prüfte `symbole[0]`; ohne ETF-Filter stand NVDA weiter vorn und SPY an zweiter Stelle —
+  grün mit vier ETFs in der Menge. *Fundstelle: `uebergabe/universum-mitliefern-2026-09-04.md` §5, G15.*
+- **Die Klinke prüft die Datei, nicht die App.** „Gehandelt wird hiervon nichts genau dreimal" ist
+  wahr über `index.html` und falsch über das Erlebte (achtmal, fünf davon aus dem Erklärregister).
+  Ebenso der Dauertext-Abtaster, der nur `index.html` liest und die 1.304-Zeichen-Wand des
+  Renderers nicht sieht. *Fundstelle: `uebergabe/ui-qs-2026-09-04.md` F5, F9.*
+- **Die Positivkontrolle, die an der Wirklichkeit hängt.** Eine Klinke las das echte `stand.json`
+  und verlangte dauerhaft fällige Werte; sobald der Fix lief, gab es keine mehr — rot bei
+  richtigem Code, und jedes Release wäre gesperrt gewesen. Der Stand eines Fundes gehört als
+  Festwert in den Test, das echte Archiv wird höchstens genannt. *Fundstelle: Commit 9e6ecfb.*
+- **Zwei Testabschnitte teilen einen Zeiger.** Abschnitt 69 setzte den Datenordner auf Temp und
+  stellte ihn erst nach seinen Wartepunkten zurück; Abschnitt 70 las währenddessen einen leeren
+  Ordner und meldete brav „übersprungen". *Fundstelle: `uebergabe/universum-mitliefern-2026-09-04.md` §5.*
+- **Das Prüfwerkzeug, das den leeren Fall für den Normalfall hält.** Die a11y-Sonde startet ohne
+  Kunstdaten und misst auf Markt → Überblick 68 Textstellen statt 3.960 Zeichen; „grün" über
+  Leerzustände. *Fundstelle: `uebergabe/ui-qs-2026-09-04.md` F12.*
+
 ## Werkzeug-eigene Fallen
 
 - **Windows-Pfade in `node -e`:** Backslashes überleben Bash-Quoting nicht — und der Fehler

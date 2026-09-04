@@ -5,6 +5,8 @@ tags: [bauplan]
 
 *Erzeugt am 2026-09-04 aus `index.html` (Reiter, Pillen, Überschriften, Klappen) und den Aufnahmen einer ISOLIERTEN Kunstdaten-Instanz (`tools/ui-aufnahmen.js --kunstdaten`, 1280 px; Zahlen darin sind erfunden). Wer die Oberfläche umbaut, erneuert nach dem Umbau diesen Ordner: Aufnahmen neu fotografieren, diese Seite neu erzeugen. Die Aufnahmen liegen je Reiter in einem Unterordner, damit die Struktur auch im Datei-Baum sichtbar ist.*
 
+**Grenze dieser Seite (QS-Befund 04.09.):** Sie ist eine MARKUP-Sicht. Alles, was erst der Renderer schreibt (Belegstand-Gruppen der Regeln-Seite, die fünf Hotlist-Überschriften, Statuszeilen in den Klappen), fehlt hier systematisch; die Verschachtelung der Klappen ist nicht abgebildet. Ein Werkzeug, das die LAUFENDE Instanz liest, ist beauftragt (`tools/ui-struktur.js`). Bis dahin: Landkarte ja, Inventar nein.
+
 ## Baum
 
 ```
@@ -96,11 +98,6 @@ Werkzeuge (data-tab="werkzeuge")
       Neue Strategie ins Rennen schicken i
       ▸ Klappe: Was die App daraus gemacht hat (Code ansehen)
       ▸ Klappe: Trendfinder — Detektor widerlegt
-      Kurz gesagt
-      Was ist neu
-      Analyse
-      Trade nachbilden
-      App-Einstellungen
 
 ```
 
@@ -240,11 +237,6 @@ Werkzeuge (data-tab="werkzeuge")
 - Neue Strategie ins Rennen schicken i
 - ▸ Klappe: Was die App daraus gemacht hat (Code ansehen)
 - ▸ Klappe: Trendfinder — Detektor widerlegt
-- Kurz gesagt
-- Was ist neu
-- Analyse
-- Trade nachbilden
-- App-Einstellungen
 
 ![[aufnahmen/werkzeuge/betrieb-1.png]]
 ![[aufnahmen/werkzeuge/betrieb-offen-1.png]]
