@@ -213,3 +213,9 @@ Electron-Wrapper: `app.setPath('userData', TEMP)`, `app.setPath('downloads', TEM
 in Fensterhöhen, `webContents.capturePage()` → PNG. Vorbild: `tools/ui-probe.js`. Die
 Aufnahmen vom 02.09. (v8.37.3) liegen beim PM; Stufe 1 legt das Skript als
 `tools/ui-aufnahmen.js` ab.
+
+## 7. Aktuelle Aufnahmen und Struktur (seit 04.09.2026)
+
+**[aufnahmen/struktur.md](aufnahmen/struktur.md)** zeigt die Oberfläche der ausgelieferten Fassung als Baum (Reiter → Pille → Blöcke und Klappen, mit den Kennungen aus `index.html`) und darunter je Pille die Aufnahmen. Die Bilder liegen je Reiter in einem Unterordner (`aufnahmen/heute/`, `markt/`, `regeln/`, `werkzeuge/`), damit die Struktur auch im Datei-Baum von Obsidian sichtbar ist.
+
+**Regel (Wilhelm 04.09.):** Jeder Auftrag, der die Oberfläche umbaut, erneuert diesen Ordner nach dem Umbau — `tools/ui-aufnahmen.js <ziel> --kunstdaten` fotografieren, Bilder je Reiter einsortieren, `struktur.md` neu erzeugen — damit das nächste Modell die Struktur sieht, bevor es baut. Die Aufnahmen stammen aus einer ISOLIERTEN Kunstdaten-Instanz (Zahlen erfunden, Marktkarte zeigt dort nur die wenigen Kunst-Werte); die Struktur ist die echte. Der Erzeuger von `struktur.md` liegt noch im PM-Scratchpad und wird mit Stufe 6 als `tools/ui-struktur.js` ins Repo übernommen.

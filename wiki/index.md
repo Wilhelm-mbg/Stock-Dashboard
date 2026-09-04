@@ -17,7 +17,7 @@ Jede Aussage trägt ihre Fundstelle. Im Streitfall gilt die Fundstelle, nicht di
 | **Steuerung** | rot | Was steht an, was ist entschieden, wie arbeiten wir? | [offene-auftraege.md](offene-auftraege.md) · [erledigt.md](erledigt.md) · [entscheide.md](entscheide.md) · [betrieb.md](betrieb.md) · [log.md](log.md) · dieser Index |
 | **Befund** | grün | Was wissen wir, gemessen? | [belegstand.md](belegstand.md) · [kosten.md](kosten.md) · [ueberlebensverzerrung.md](ueberlebensverzerrung.md) · [aufloesungswand.md](aufloesungswand.md) |
 | **Lehre** | gelb | Wie messen wir, und woran sind wir gescheitert? | [messmethodik.md](messmethodik.md) · [fehlerformen.md](fehlerformen.md) |
-| **Bauplan** | blau | Wie sind Daten und App gebaut, wohin gehen sie? | [datenquellen.md](datenquellen.md) · [archiv-zusammenfuehrung.md](archiv-zusammenfuehrung.md) · [oberflaeche.md](oberflaeche.md) |
+| **Bauplan** | blau | Wie sind Daten und App gebaut, wohin gehen sie? | [datenquellen.md](datenquellen.md) · [archiv-zusammenfuehrung.md](archiv-zusammenfuehrung.md) · [oberflaeche.md](oberflaeche.md) · [aufnahmen/struktur.md](aufnahmen/struktur.md) |
 
 Die Gruppe steht als `tags:` im Kopf jeder Seite; die Farbgruppen des Obsidian-Graphen fragen
 `tag:#steuerung` usw. ab (Einstellung in `.obsidian/graph.json`, nicht im Repo).
@@ -37,6 +37,7 @@ Die Gruppe steht als `tags:` im Kopf jeder Seite; die Farbgruppen des Obsidian-G
 | [datenquellen.md](datenquellen.md) | Welche Daten wir haben, welche Fenster, welcher Anbieter, welches Format |
 | [archiv-zusammenfuehrung.md](archiv-zusammenfuehrung.md) | Die zwei Kursarchive — Karte, Risiken, Stufen Z0–Z4, Vermessungen |
 | [oberflaeche.md](oberflaeche.md) | Wie die App aussehen soll — Ist, Befund, Zielbild „vier Bildschirme", Stufen |
+| [aufnahmen/struktur.md](aufnahmen/struktur.md) | Wie die App JETZT aussieht — Baum aller Reiter, Pillen, Blöcke mit Aufnahmen (je Reiter ein Ordner) |
 | [messmethodik.md](messmethodik.md) | Wie wir messen, damit das Ergebnis etwas wert ist |
 | [fehlerformen.md](fehlerformen.md) | Die Fehler, die uns wiederholt passiert sind |
 | [log.md](log.md) | Wann dieses Wiki was geändert hat |
