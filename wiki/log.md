@@ -2,6 +2,8 @@
 
 *Nur was sich am Wiki ändert. Die Projekt-Chronologie steht im Archiv `PROJEKTSTAND.md`.*
 
+- 04.09.2026 Release v8.39.0 (Wache): neuer Reiter „Markt" mit Index-Kacheln, Sektor-Leiste,
+  fünf Hotlists, Marktzeit-Anzeige; Heute zeigt jetzt nur noch das eigene Depot.
 - 04.09.2026 Oberfläche Stufe 5 geliefert (Bau): [oberflaeche.md](oberflaeche.md) §3 Zielbild
   auf **vier Bildschirme** (Heute · **Markt** · Regeln · Werkzeuge), Stufe-5-Zeile auf geliefert,
   §5 um eine Spalte „Stufe 5" für K1, K7, K9, K10, K14, K16 ergänzt, neuer Grundsatz „Eine
