@@ -53,6 +53,11 @@ betroffene Wiki-Seite ein — mit Fundstelle.*
 
 ## Bekannte Baustellen (klein, unbeauftragt)
 
+- **Vollsammlung: Neustart an einem späteren Tag holt das laufende Jahr komplett neu** (PM 04.09.): `tools/alpaca-vollsammlung.js` gilt 2026-Aufgaben nur am selben Tag als fertig — nach dem Neustart 07:50 wurden 3.461 Aufgaben (~2,3 h) wiederholt. Besser: laufendes Jahr ab letztem Stempel nachholen. Dazu: `vollsammlung-nacht.cmd` trägt die cmd.exe-Komma-Falle (Abspaltungs-Chat), beides nach dem Vollauf fixen.
+- **Lange Läufe nur über die Windows-Aufgabenplanung starten** (PM 04.09., Lehre aus dem Abbruch 04:38): ein aus der Claude-Sitzung losgelöster Prozess stirbt mit der Sitzung. Der Nachtlauf läuft seit 07:50 als Aufgabe „Markt-Dashboard Vollsammlung" (Wrapper im Scratchpad). In den Nachtlauf-Abschnitt des Wikis übernehmen.
+- **App-Tagessammler lief in der Nacht 03./04.09. NICHT** (weder 00:15 UTC noch später; 5m-Lauf 05:38 UTC lief). Ursache offen — Stopp-Knopf am 03.09. 21:28 (`sammler-stop`) als Auslöser prüfen; Yahoo-Tagesarchiv steht auf 31.08.
+
+
 - **Vollsammlung: kein Manifest mit Prüfsummen** (PM 04.09.): der Z1c-Auftrag verlangte `alpaca1m/_manifest.json` mit Prüfsumme je Datei; das Werkzeug kennt kein Manifest. Nach dem Nachtlauf als eigener Durchgang nachholen (Prüfsummen über alle Symbol-Jahr-Dateien, danach Klinke: jede Datei hat einen Eintrag).
 - **Minutenbalken fehlen, wo Tagesbalken existieren** (PM-Stichprobe 04.09., 314 Symbol-Jahre): 0,84 % der Soll-Handelstage (Kalender × Lebenszeit aus Tagesbalken) ohne regulären Minutenbalken, konzentriert auf wenige illiquide Werte (BSLK 167/168 Tage 2026, GOGL 120/169, IPOD 47/99). Direkt an der Schnittstelle geprüft: die QUELLE liefert dort keine Minutenbalken (BSLK ab 03.01.2026: 0). Kein Sammelfehler; aber die Lebenszeit aus Tagesbalken überschätzt die Minuten-Verfügbarkeit. Auftrag später: je Wert „Tage mit Tagesbalken ohne Minutenbalken" zählen und in `_lebenszeit.json` ausweisen, damit Studien die Lücke kennen.
 - **App-Tagessammler am 03.09. 21:28 angehalten** (`sammler-stop`, 28 von 3.263 Werten): Yahoo-Tagesarchiv endet für die meisten Werte am 31.08. Prüfen, ob der Nachtlauf der App (00:15 UTC) das nachholt; sonst von Hand nachsammeln lassen.
