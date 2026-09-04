@@ -9004,12 +9004,21 @@ console.log('\n46) Was die App dauerhaft aufzeichnet');
   /* Seit dem Sammelabruf gibt es keine Schleife mehr, aus der man aussteigen koennte:
    * gefragt wird nur noch nach dem, was WEDER im Zwischenspeicher NOCH in der App liegt.
    * Dieselbe Eigenschaft, andere Bauart. */
+  /* Seit Stufe 6 (04.09.2026) steht der Sammelabruf in quotesHolen() - der EINZIGEN
+   * Runde im Programm. Die Eigenschaft ist dieselbe und wird jetzt an zwei Stellen
+   * gehalten: kurseHolen fragt nur nach dem Offenen, und quotesHolen holt nur, was
+   * nicht frisch ist. Das ist strenger als vorher, nicht schwaecher. */
   ok(/var offen = liste\.filter\(function \(w\) \{ return !w\.ausSpeicher && !w\.ausApp; \}\);/.test(mkFix) &&
-     /K\.holeViele\(offen\.map/.test(mkFix),
+     /await quotesHolen\(offen\.map/.test(mkFix) &&
+     /var offen = liste\.filter\(function \(s\) \{ return !kursFrisch\(s\); \}\);/.test(mkFix) &&
+     /var zusage = K\.holeViele\(offen\);/.test(mkFix),
      'Gefragt wird nur nach dem, was weder im Zwischenspeicher noch in der App liegt');
   ok(/if \(!offen\.length\) return/.test(mkFix),
      'Ist nichts offen, unterbleibt der Abruf ganz - das ist der Fall nach jeder Filteraenderung');
-  ok((mkFix.match(/KURSE\[w\.sym\] = \{ kurs:/g) || []).length >= 2,
+  /* Zwei Wege fuellen den Zwischenspeicher: was die App ohnehin fuehrt (KURSE[w.sym])
+   * und die Sammelrunde (KURSE[sym] in quotesHolen). Beide muessen es tun - faellt
+   * einer weg, fuellt er sich fuer die halbe Liste nie. */
+  ok(/KURSE\[w\.sym\] = \{ kurs: k\.kurs/.test(mkFix) && /KURSE\[sym\] = \{\n\s*kurs: q\.kurs,/.test(mkFix),
      'Geholte Kurse wandern in den Zwischenspeicher - sonst fuellt er sich nie');
   /* Der frueher hier stehende `return 0` haette den Zwischenspeicher unterschlagen und
    * eine volle Karte als leer gemeldet. */
@@ -9876,7 +9885,9 @@ console.log('\n47) Anzeige der Messmaschine: unbekannte Urteile und die Selbstpr
   ok(/q\.regularMarketPrice/.test(mjQ) && /q\.regularMarketPreviousClose/.test(mjQ) &&
      /q\.regularMarketChangePercent/.test(mjQ),
      'Kurs, Vortagesschluss und Veraenderung kommen aus demselben einen Antwortobjekt');
-  ok(/w\.pct = q\.pct != null \? q\.pct : \(q\.vorher > 0/.test(ui),
+  /* Seit Stufe 6 steht die Rechnung in quotesHolen, wo die Antwort ankommt - die
+   * Karte liest sie danach aus dem Zwischenspeicher. Dasselbe q, eine Stelle. */
+  ok(/pct: q\.pct != null \? q\.pct : \(q\.vorher > 0/.test(ui),
      'und die Karte nimmt beide aus demselben q - nie aus zwei Abrufen');
   ok(!/sec\.gov|data\.sec/.test(ui) && !/sec\.gov/.test(fs.readFileSync(__dirname + '/marktkarte.js', 'utf8')),
      'Die App fragt nie selbst bei der SEC an - das macht das Werkzeug daneben');
@@ -14947,7 +14958,12 @@ console.log('\n68) Reiter Markt');
    * demselben Reiter zwei Antworten auf die Frage, was "der Markt" ist. */
   ok(/window\.Marktwerte = \{/.test(mkui) && /auswahl: auswahl,/.test(mkui),
      'Reiter Markt: die Marktkarte gibt ihre Auswahl als Leseauskunft heraus');
-  ok(/window\.Marktwerte && window\.Marktwerte\.kurs/.test(mui) && /MW\.auswahl\(UNIVERSUM\)/.test(mui),
+  /* Stufe 6: der Ueberblick holt gar nichts mehr selbst. Er fragt dieselbe Auswahl
+   * UND laesst die Marktkarte die Kurse holen (quotesHolen) - eine Sammelrunde je
+   * Minute statt zwei. Geprueft wird beides, und dass hier kein eigener holeViele
+   * mehr steht. */
+  ok(/MW && MW\.quote \? MW\.quote\(sym\)/.test(mui) && /MW\.auswahl\(UNIVERSUM\)/.test(mui) &&
+     /await MW\.quotesHolen\(/.test(mui) && !/holeViele/.test(ohneKommentare(mui)),
      'Reiter Markt: der Ueberblick benutzt sie - eine Grundmenge, ein Kurs je Wert');
   ok(!/marktStammdaten\(\)/.test(muiO),
      'Reiter Markt: der Ueberblick liest die Stammdaten NICHT selbst - das taete eine zweite Auswahl');
@@ -15766,7 +15782,12 @@ console.log('\n69) Sammler verhungert nicht');
   var kurseT = fs.readFileSync(__dirname + '/kurse.js', 'utf8');
   ok(/gedrosselt: r\.gedrosselt \|\| 0/.test(kurseT) && /leereBloecke: r\.leereBloecke \|\| 0/.test(kurseT),
      'kurse.js reicht beide Zahlen durch - sonst kaemen sie nie an der Oberflaeche an');
-  ok(/Yahoo drosselt: /.test(muiT) && /r\.gedrosselt \|\| r\.leereBloecke/.test(muiT),
+  /* Stufe 6: der Satz steht dort, wo die Runde faehrt (marktkarteui.js), und wandert
+   * als `grund` in die Kopfzeile des Reiters Markt. Beide Haelften werden geprueft -
+   * ohne die zweite kaeme die Meldung nie an. */
+  var mkuiT = fs.readFileSync(__dirname + '/marktkarteui.js', 'utf8');
+  ok(/Yahoo drosselt: /.test(mkuiT) && /r\.gedrosselt \|\| r\.leereBloecke/.test(mkuiT) &&
+     /kursGrund = \(r && r\.ok\) \? \(r\.grund \|\| ''\)/.test(muiT),
      'und der Reiter Markt schreibt es in die Kopfzeile, wo auch ein gescheiterter Abruf steht');
   /* DER HINWEISTEXT NENNT EINE GEMESSENE ZAHL, keine geratene. Der alte Satz sprach von
    * "ein bis zwei Minuten" - richtig fuer 600 Werte, um das Zehnfache daneben fuer 4.000.
@@ -16190,8 +16211,25 @@ console.log('\n72) Pruefwerkzeuge: Struktur-Inventar, eine Kunstdaten-Instanz, F
    * Ein Eintrag ohne Quelle waere ein stiller Deckel. */
   var funde = (upO.match(/fund: '/g) || []).length;
   var quellen = (upO.match(/quelle: '/g) || []).length;
-  ok(funde >= 1 && funde === quellen,
-     'Fokus: jede bekannte Abweichung traegt eine Fundstelle', funde + ' Eintraege, ' + quellen + ' Quellen');
+  /* Umgeschrieben am 04.09.2026 (Stufe 6): die Zusicherung forderte MINDESTENS EINEN
+   * Eintrag. Das war die falsche Groesse - sie machte aus "jeder Deckel nennt seine
+   * Quelle" ein "es muss immer einen Deckel geben", und sie wurde genau in dem
+   * Augenblick rot, in dem die letzten zwei bekannten Abweichungen (F6, F7) BEHOBEN
+   * waren. Eine Zusicherung, die bei korrektem Verhalten rot wird, misst die falsche
+   * Groesse (CLAUDE.md, Tests). Geprueft wird jetzt die Bijektion: so viele Quellen
+   * wie Funde - bei null Funden null Quellen. */
+  ok(funde === quellen,
+     'Fokus: jede bekannte Abweichung traegt eine Fundstelle',
+     funde + ' Eintraege, ' + quellen + ' Quellen' + (funde ? '' : ' (Liste leer - nichts bekannt Rotes)'));
+  /* Gegenprobe: ein Eintrag OHNE Quelle wuerde gefunden - sonst waere die Bijektion
+   * bei leerer Liste eine Zusicherung ueber nichts. */
+  var erfunden = upO + "\n  { fund: 'FX', reiter: '*', ort: 'X', was: 'ohne Quelle' }";
+  ok((erfunden.match(/fund: '/g) || []).length !== (erfunden.match(/quelle: '/g) || []).length,
+     'Gegenprobe: ein Deckel ohne Fundstelle wuerde auffallen');
+  /* Und die Liste selbst muss es weiter geben - waere sie geloescht statt geleert,
+   * haette der naechste offene Fund keinen Ort mehr, an den er gehoert. */
+  ok(/const BEKANNTE_ABWEICHUNGEN = \[/.test(upO),
+     'Fokus: die Liste der bekannten Abweichungen steht weiter da - leer, nicht weg');
   ok(/const rot = erg\.probleme\.length \+ erg\.seitenFehler\.length;/.test(upO) &&
      /erg\.bekannteRot\.forEach/.test(upO) && /erg\.erledigt\.forEach/.test(upO),
      'Fokus: bekannt rot steht im Protokoll, aber nicht im Exit-Code - und ein Eintrag, der nicht mehr auftritt, wird gemeldet');
@@ -16548,6 +16586,546 @@ console.log('\n73) Texte und Zaehlungen: F3 Untertitel, F5 Zusicherung, F9/F10 T
   ok(waende({ bloecke: [{ seite: 'test', bloecke: [{ ort: 'Knapp darunter · .panel', len: GRENZE73 }] }] },
             GRENZE73, AUSNAHMEN).length === 0,
      'Gegenprobe: genau auf der Grenze ist noch kein Fund');
+})();
+
+
+/* ================= 74) Aktien-Viewer (Oberflaeche Stufe 6, 04.09.2026) =============
+ *
+ * Der Explorer bekommt einen Kerzenchart nach TradingView-Muster. Geprueft wird hier,
+ * was in Node pruefbar ist: das reine Modul markt/kerzenchart.js mit einer Attrappe
+ * als Zeichenkontext, die Leseauskunft `archiv-kerzen` als Text (sie schreibt nichts),
+ * die Verdrahtung im Markup und die Zusammenlegung der Kursabrufe an einer Attrappe,
+ * die die Sammelrunden zaehlt.
+ *
+ * Was hier NICHT geprueft werden kann und deshalb in tools/ui-probe.js steht: dass die
+ * drei Orte des Sitzungszustands in der laufenden App dasselbe Wort zeigen (F2) und
+ * dass der Fokus ein Neuschreiben der Hotlists ueberlebt (F7). Beides braucht ein
+ * Fenster; eine Textmarke waere dort die falsche Messung. */
+console.log('\n74) Aktien-Viewer: Kerzenchart, Archiv-Leseauskunft, eine Sammelrunde');
+(function () {
+  var KC = require('./markt/kerzenchart.js');
+  var expQ = fs.readFileSync(__dirname + '/explorer.js', 'utf8');
+  var expO = ohneKommentare(expQ);
+  var htmlQ = fs.readFileSync(__dirname + '/index.html', 'utf8');
+  var mainQ = fs.readFileSync(__dirname + '/main.js', 'utf8');
+  var mkQ = fs.readFileSync(__dirname + '/marktkarteui.js', 'utf8');
+
+  /* ---- 74.1 Das reine Modul ist rein ---- */
+  var kcQ = fs.readFileSync(__dirname + '/markt/kerzenchart.js', 'utf8');
+  var kcO = ohneKommentare(kcQ);
+  ok(!/\bdocument\.|window\.[a-zA-Z]|fetch\(|XMLHttpRequest|require\(/.test(kcO),
+     'kerzenchart.js hat kein document, kein window, kein Netz und keine Abhaengigkeit',
+     (kcO.match(/\bdocument\.|window\.[a-zA-Z]|fetch\(|require\(/g) || []).join(' ') || 'nichts davon');
+  ok(!/localStorage|storeSet|writeFileSync|appendFileSync/.test(kcO),
+     'und es schreibt nichts - weder Platte noch Speicher');
+  ok(!/\.sma\s*=|function sma\(/.test(kcO) && /typeof sma !== 'function'/.test(kcO),
+     'die gleitenden Durchschnitte kommen von aussen (window.Quant.sma) - keine zweite SMA im Programm');
+
+  /* ---- 74.2 Kerzen aus dem Schwanz: Schwanz gegen Volltext ----
+   * Ohne diese Gegenprobe waere der Tail-Leser geraten. Gebaut wird die Datei hier,
+   * damit die Pruefung ohne das Kursarchiv auf E: laeuft. */
+  var reihe74 = [];
+  var t74 = Date.UTC(2026, 8, 1, 13, 30);
+  for (var i74 = 0; i74 < 5000; i74++) {
+    reihe74.push([t74 + i74 * 60000, 100 + (i74 % 37) * 0.11, 1000 + i74,
+                  101 + (i74 % 37) * 0.11, 99 + (i74 % 37) * 0.11, 100 + (i74 % 37) * 0.11]);
+  }
+  var huelle74 = JSON.stringify({ sym: 'PROBE', quelle: 'probe', format: 2,
+    felder: '[zeit, schluss, umsatz, hoch, tief, eroeffnung]',
+    quellen: [{ von: reihe74[0][0], bis: reihe74[4999][0], quelle: 'alpaca' }],
+    waehrung: 'USD', stand: '2026-09-04T00:00:00.000Z', series: reihe74,
+    sitzungen: [{ von: reihe74[0][0], bis: reihe74[100][0], sitzung: 'vor' },
+                { von: reihe74[101][0], bis: reihe74[4999][0], sitzung: 'regulaer' }],
+    jahr: 2026 });
+  var ausSchwanz = KC.kerzenAusText(huelle74.slice(-120 * 1024), 390);
+  ok(JSON.stringify(ausSchwanz) === JSON.stringify(reihe74.slice(-390)),
+     'Schwanz-Leser: die letzten 390 Kerzen sind Zeichen fuer Zeichen die des Volltexts',
+     ausSchwanz.length + ' Kerzen');
+  ok(KC.kerzenAusText(huelle74, 0).length === 5000,
+     'ohne Deckel kommt die ganze Reihe', KC.kerzenAusText(huelle74, 0).length);
+  /* Ein Ausschnitt mit RUECKSPRUNG ist keiner - lieber leer als falsch. */
+  ok(KC.kerzenAusText('[1767344400000,1,1,1,1,1],[1767344300000,1,1,1,1,1]', 0).length === 0,
+     'eine Reihe, deren Stempel nicht aufsteigen, gilt als nicht lesbar - nicht als Reihe');
+  var sitz74 = KC.sitzungenAusText(huelle74);
+  ok(sitz74.length === 2 && sitz74[0].sitzung === 'vor',
+     'die Sitzungsbereiche stehen im selben Schwanz und werden mitgelesen', sitz74.length);
+  var quell74 = KC.quellenAusText(huelle74.slice(0, 4096));
+  ok(quell74.length === 1 && quell74[0].quelle === 'alpaca',
+     'die Quellenbereiche stehen im KOPF und werden von dort gelesen');
+  ok(KC.quellenIm(quell74, reihe74[0][0], reihe74[100][0]).join() === 'alpaca' &&
+     KC.quellenIm(quell74, 1, 2).join() === 'unbekannt',
+     'was kein Bereich deckt, heisst unbekannt - nicht yahoo');
+
+  /* ---- 74.3 Sitzungen und Baender ---- */
+  var jeK = KC.sitzungJeKerze(reihe74.slice(0, 200), sitz74, null);
+  ok(jeK[0] === 'vor' && jeK[150] === 'regulaer',
+     'Sitzung je Kerze kommt aus den Bereichen der Datei, wenn es welche gibt');
+  ok(KC.sitzungJeKerze([[1, 0, 0, 0, 0, 0]], [], null)[0] === 'unbekannt',
+     'ohne Bereich und ohne Uhr heisst die Sitzung unbekannt - nicht regulaer');
+  ok(KC.sitzungJeKerze([[1, 0, 0, 0, 0, 0]], [], function () { return 'nach'; })[0] === 'nach',
+     'der Rueckfall ueber die Uhr wird benutzt, wenn kein Bereich passt');
+  var band74 = KC.baender(jeK);
+  ok(band74.length === 1 && band74[0].von === 0 && band74[0].bis === 100 && band74[0].art === 'vor',
+     'aus gleichen Sitzungen wird EIN Band, nicht hundert', JSON.stringify(band74));
+  ok(KC.baender(['regulaer', 'regulaer']).length === 0,
+     'das regulaere Fenster bekommt kein Band - sonst waere das ganze Bild grau');
+  ok(KC.baender(['vor', 'regulaer', 'vor']).length === 2,
+     'zwei getrennte Abschnitte bleiben zwei Baender');
+  ok(KC.bandText('vor') === 'vorbörslich' && KC.bandText('nach') === 'nachbörslich',
+     'die Baender tragen ihre Beschriftung - ein grauer Fleck ohne Wort ist ein grauer Fleck');
+  /* Die Grenzen sind DIESELBEN wie auf dem Reiter Markt - zwei Begriffe von
+   * "vorboerslich" waeren zwei Wahrheiten ueber denselben Kurs. */
+  var MUx = require('./markt/uebersicht.js');
+  ok(KC.VOR_MIN === MUx.VOR_MIN && KC.NACH_MIN === MUx.NACH_MIN,
+     'Chart und Reiter Markt benutzen dieselben Sitzungsgrenzen', KC.VOR_MIN + '/' + KC.NACH_MIN);
+  ok(KC.sitzungAusMinuten(-10, 390) === 'vor' && KC.sitzungAusMinuten(10, 390) === 'regulaer' &&
+     KC.sitzungAusMinuten(400, 390) === 'nach' && KC.sitzungAusMinuten(10, 0) === 'ausserhalb',
+     'vier Zustaende aus Minuten und Sitzungslaenge, Feiertag inbegriffen');
+  ok(KC.sitzungAusMinuten(100, 210) === 'regulaer' && KC.sitzungAusMinuten(250, 210) === 'nach',
+     'an einem Halbtag (210 Minuten) endet die Sitzung frueher - die Laenge ist ein Argument');
+  var nur74 = KC.nurRegulaer(reihe74.slice(0, 200), jeK);
+  ok(nur74.kerzen.length === 99 && nur74.sitzungen.length === 99,
+     'Nur reguläre Sitzung wirft Kerzen UND Sitzungen zusammen weg - sonst verschieben sich die Baender',
+     nur74.kerzen.length + '/' + nur74.sitzungen.length);
+
+  /* ---- 74.4 Die Naht: keine Kerze doppelt, das Archiv gewinnt ---- */
+  var arch74 = [[1000, 10, 5, 11, 9, 10], [2000, 11, 5, 12, 10, 11]];
+  var live74 = [[2000, 99, 5, 99, 99, 99], [3000, 12, 5, 13, 11, 12]];
+  var naht74 = KC.zusammenfuehren(arch74, live74);
+  ok(naht74.kerzen.length === 3, 'Naht: drei Stempel, drei Kerzen - keine doppelt', naht74.kerzen.length);
+  ok(naht74.kerzen[1][1] === 11,
+     'an der Naht gewinnt das Archiv: die Live-Kerze desselben Stempels wird verworfen',
+     naht74.kerzen[1][1]);
+  ok(naht74.doppelt === 1 && naht74.ausArchiv === 2 && naht74.ausLive === 1,
+     'und die Naht sagt, wie viel sie verworfen hat - stumm waere sie eine Behauptung',
+     JSON.stringify({ d: naht74.doppelt, a: naht74.ausArchiv, l: naht74.ausLive }));
+  ok(KC.zusammenfuehren([[3000, 1, 1, 1, 1, 1]], [[1000, 1, 1, 1, 1, 1]]).kerzen[0][0] === 1000,
+     'die zusammengefuehrte Reihe ist sortiert - eine Zacke aus falscher Reihenfolge gaebe es nie');
+  ok(KC.zusammenfuehren([], live74).kerzen.length === 2 && KC.zusammenfuehren(arch74, []).kerzen.length === 2,
+     'fehlt eine der beiden Quellen, bleibt die andere ganz');
+
+  /* ---- 74.5 Die laufende Kerze: gestrichelt, und NIE im Archiv ----
+   * Verhaltenstest an einer Attrappe der Leseauskunft: sie liefert Archivkerzen,
+   * der Viewer haengt eine laufende an - und was danach archivfaehig waere, ist
+   * genau das, was aus der Attrappe kam. */
+  var minute = 60000;
+  var basis74 = [[Math.floor(1767344400000 / minute) * minute, 100, 9, 101, 99, 100]];
+  var lauf74 = KC.laufendeKerze(basis74[0], 105, basis74[0][0] + 30000, minute);
+  ok(lauf74 && lauf74[0] === basis74[0][0] && lauf74[1] === 105 && lauf74[3] === 105,
+     'in derselben Periode wird die Kerze fortgeschrieben, das Hoch waechst mit',
+     lauf74 && JSON.stringify(lauf74));
+  ok(lauf74[5] === 100, 'und die Eroeffnung bleibt stehen - sie ist Vergangenheit', lauf74[5]);
+  var neu74 = KC.laufendeKerze(basis74[0], 107, basis74[0][0] + minute + 5000, minute);
+  ok(neu74[0] === basis74[0][0] + minute && neu74[5] === 100,
+     'in der naechsten Periode entsteht eine neue Kerze, die beim letzten Schluss beginnt');
+  ok(KC.laufendeKerze(basis74[0], 0, Date.now(), minute) === null &&
+     KC.laufendeKerze(basis74[0], 105, basis74[0][0] - 5 * minute, minute) === null,
+     'ohne Kurs und mit einem Quote, der aelter ist als das Archiv, entsteht keine Kerze');
+  ok(KC.istLaufend(lauf74) === true && KC.istLaufend(basis74[0]) === false,
+     'die laufende Kerze traegt eine Marke, die abgeschlossene nicht');
+  var attrappe74 = { gelesen: 0, geschrieben: 0,
+    archivKerzen: function () { attrappe74.gelesen++; return { ok: true, kerzen: basis74.slice(), sitzungen: [] }; } };
+  var ausAttrappe = attrappe74.archivKerzen().kerzen;
+  var zumZeichnen = ausAttrappe.concat([lauf74]);
+  ok(zumZeichnen.length === 2 && KC.archivFaehig(zumZeichnen).length === 1,
+     'Verhalten: gezeichnet werden zwei Kerzen, archivfaehig ist eine - die laufende faellt heraus');
+  ok(JSON.stringify(KC.archivFaehig(zumZeichnen)) === JSON.stringify(ausAttrappe),
+     'und was uebrigbleibt, ist genau das, was aus der Leseauskunft kam',
+     attrappe74.geschrieben + ' Schreibaufrufe an der Attrappe');
+  ok(attrappe74.geschrieben === 0, 'die Attrappe hat keinen einzigen Schreibaufruf gesehen');
+  /* Und im Quelltext: der Viewer ruft ueberhaupt keine schreibende Auskunft. */
+  var vwBlock = expO.slice(expO.indexOf('function KC()'), expO.indexOf('function zeigeExplorer'));
+  ok(vwBlock.length > 2000, 'der Viewer-Block laesst sich herausloesen', vwBlock.length);
+  ok(!/archivSchreiben|kerzenSchreiben|api\.[a-zA-Z]*[Ss]chreib/.test(vwBlock),
+     'im Viewer steht kein Weg, der Kerzen schreibt');
+
+  /* ---- 74.6 Die Skala ---- */
+  var sk74 = KC.skala(reihe74.slice(0, 100), { breite: 900, hoehe: 420 });
+  ok(sk74 && sk74.n === 100, 'die Skala kennt die Zahl der Kerzen', sk74 && sk74.n);
+  ok(sk74.hoch >= 101 && sk74.tief <= 99,
+     'die Spanne kommt aus HOCH und TIEF, nicht aus den Schlusskursen - sonst ragten die Dochte heraus',
+     sk74.hoch.toFixed(2) + '/' + sk74.tief.toFixed(2));
+  ok(Math.abs(sk74.y(sk74.hoch) - sk74.oben) < 0.001 && sk74.y(sk74.tief) > sk74.y(sk74.hoch),
+     'oben ist der hoechste Kurs, unten der tiefste');
+  ok(Math.abs(sk74.kurs(sk74.y(100.5)) - 100.5) < 0.001,
+     'Kurs und Bildpunkt lassen sich hin und zurueck rechnen - das Fadenkreuz braucht beides');
+  ok(sk74.index(sk74.x(42)) === 42, 'und der Bildpunkt findet seine Kerze wieder');
+  ok(sk74.index(-500) === 0 && sk74.index(99999) === 99,
+     'ausserhalb des Bildes wird auf die Raender geklemmt, nicht daneben gegriffen');
+  ok(sk74.volY(sk74.volMax) < sk74.volY(0),
+     'der Umsatzbalken waechst von unten nach oben');
+  ok(KC.skala([], { breite: 900, hoehe: 420 }) === null,
+     'ohne Kerzen gibt es keine Skala - null, nicht eine leere');
+  var flach = KC.skala([[1, 5, 1, 5, 5, 5], [2, 5, 1, 5, 5, 5]], { breite: 100, hoehe: 100 });
+  ok(flach && flach.hoch > flach.tief,
+     'eine flache Reihe bekommt einen kuenstlichen Rand - sonst waere die Hoehe null');
+
+  /* ---- 74.7 Gleitende Durchschnitte: keine heimliche Verkuerzung ---- */
+  var Qsma = require('./quant.js').sma;
+  var ma74 = KC.maReihe(reihe74.slice(0, 60), 20, Qsma);
+  ok(ma74.length === 60 && ma74[18] === null && ma74[19] != null,
+     'die SMA20 beginnt bei der 20. Kerze - nie frueher aus weniger Kerzen',
+     ma74[18] + '/' + (ma74[19] != null));
+  ok(KC.maReihe(reihe74.slice(0, 5), 20, Qsma).every(function (v) { return v === null; }),
+     'reichen die Kerzen nicht, bleibt die Linie leer statt kurz');
+  ok(KC.maReihe(reihe74.slice(0, 60), 20, null).length === 0,
+     'ohne die Rechenfunktion von aussen entsteht keine Linie - kerzenchart rechnet sie nicht selbst');
+
+  /* ---- 74.8 Fenster: blaettern und zoomen sind dieselbe Rechnung ---- */
+  var f74 = KC.fenster(1000, 999, 260);
+  ok(f74.von === 740 && f74.bis === 999, 'ganz rechts zeigt das Fenster die letzten 260',
+     f74.von + '..' + f74.bis);
+  ok(KC.fenster(1000, 100, 260).von === 0 && KC.fenster(1000, 100, 260).bis === 259,
+     'am linken Rand rutscht das Fenster nicht aus der Reihe heraus');
+  ok(KC.fenster(100, 99, 5000).anzahl === 100,
+     'mehr Kerzen als vorhanden gibt es nicht - der Zoom klemmt an der Reihe');
+  ok(KC.fenster(100, 99, 1).anzahl === 20,
+     'und unter zwanzig Kerzen hoert das Hineinzoomen auf');
+
+  /* ---- 74.9 Zeichnen an einer Attrappe: Zeit fuer 390 Kerzen ----
+   * Die Attrappe nimmt dieselben Verben an wie ein Canvas-Kontext und schreibt mit.
+   * Ohne sie waere "der Chart zeichnet Kerzen" eine Behauptung ueber eine Funktion,
+   * die niemand je hat laufen sehen. */
+  function attrappeCtx() {
+    var a = { rufe: {}, dash: 0 };
+    ['clearRect', 'fillRect', 'strokeRect', 'beginPath', 'moveTo', 'lineTo', 'stroke',
+     'save', 'restore', 'fillText', 'measureText', 'setLineDash'].forEach(function (n) {
+      a[n] = function () { a.rufe[n] = (a.rufe[n] || 0) + 1; if (n === 'setLineDash') a.dash++; return { width: 10 }; };
+    });
+    return a;
+  }
+  var k390 = reihe74.slice(0, 390);
+  var jeK390 = KC.sitzungJeKerze(k390, sitz74, null);
+  var sk390 = KC.skala(k390, { breite: 1200, hoehe: 420 });
+  var ctx390 = attrappeCtx();
+  var tZ0 = process.hrtime.bigint();
+  var erg390 = KC.zeichnen(ctx390, k390, sk390, {
+    baender: KC.baender(jeK390),
+    linien: [{ werte: KC.maReihe(k390, 20, Qsma), farbe: '#000' }],
+    kreuz: { index: 10, y: 100 }
+  });
+  var msZ = Number(process.hrtime.bigint() - tZ0) / 1e6;
+  ok(erg390.kerzen === 390, '390 Kerzen werden gezeichnet', erg390.kerzen);
+  ok(erg390.baender === 1 && ctx390.rufe.fillRect >= 390,
+     'Band und Umsatzbalken kommen als Rechtecke, die Dochte als Linien',
+     ctx390.rufe.fillRect + ' fillRect / ' + ctx390.rufe.stroke + ' stroke');
+  ok(erg390.linien === 1 && erg390.mitUmsatz === 390,
+     'eine Durchschnittslinie und 390 Umsatzbalken');
+  ok(msZ < 200, 'Zeichenzeit fuer 390 Kerzen bleibt weit unter einer Zehntelsekunde',
+     msZ.toFixed(1) + ' ms');
+  var ctxL = attrappeCtx();
+  KC.zeichnen(ctxL, k390.slice(0, 5).concat([lauf74]), KC.skala(k390.slice(0, 6), { breite: 300, hoehe: 200 }), {});
+  ok(ctxL.dash >= 1 && ctxL.rufe.strokeRect >= 1,
+     'die laufende Kerze wird gestrichelt und als Umriss gezeichnet, nicht gefuellt',
+     ctxL.dash + ' setLineDash / ' + ctxL.rufe.strokeRect + ' strokeRect');
+  ok(KC.zeichnen(null, k390, sk390, {}).kerzen === 0 &&
+     KC.zeichnen(attrappeCtx(), [], sk390, {}).kerzen === 0,
+     'ohne Kontext oder ohne Kerzen wird nichts gezeichnet - und nichts geworfen');
+
+  /* ---- 74.10 Die Leseauskunft `archiv-kerzen` LIEST NUR ----
+   * Der Handler-Block wird herausgeschnitten und auf jedes Schreibverb abgetastet.
+   * Der Ausschnitt haengt an zwei Marken; faende die erste nichts, schnitte indexOf
+   * bei -1 bis zum Dateianfang - deshalb wird der Schnitt selbst geprueft. */
+  var hVon = mainQ.indexOf("ipcMain.handle('archiv-kerzen'");
+  ok(hVon > 0, 'die Leseauskunft archiv-kerzen gibt es', hVon);
+  var hBis = mainQ.indexOf("ipcMain.handle(", hVon + 20);
+  ok(hBis > hVon, 'und ihr Block laesst sich bis zur naechsten Auskunft schneiden', hBis - hVon);
+  var handler = mainQ.slice(hVon, hBis);
+  ok(!/writeFileSync|appendFileSync|mkdirSync|rmSync|unlinkSync|renameSync|createWriteStream/.test(handler),
+     'im Handler-Block steht kein einziges Schreibverb - die Auskunft liest',
+     (handler.match(/writeFileSync|appendFileSync|mkdirSync/g) || []).join(' ') || 'keines');
+  ok(!/sperreSetzen|sperreLoesen|standSchreiben/.test(handler),
+     'und sie nimmt keine Archivsperre - ein Leser haelt niemanden auf');
+  ok(/schwanzLesen\(/.test(handler) && !/readFileSync\(\s*datei/.test(handler),
+     'gelesen wird der Schwanz, nicht die ganze Datei');
+  /* WIE VIEL Schwanz haengt an der Zahl der verlangten Kerzen. Ein fester halber
+   * Megabyte war am 04.09.2026 gemessen die falsche Wahl: bei einer 0,47-MB-
+   * Stundenreihe war der Ausschnitt groesser als die Datei, und das Zerlegen kostete
+   * MEHR als JSON.parse (Faktor 0,6). Mit der Staffelung: 9,5-fach / 4,2-fach /
+   * 1,7-fach schneller als der Volltext. */
+  ok(/function kerzenSchwanz\(n\)/.test(mainQ) &&
+     /Math\.min\(512 \* 1024, 64 \* 1024 \+ Math\.max\(0, n\) \* 120\)/.test(mainQ),
+     'der Ausschnitt richtet sich nach der Zahl der verlangten Kerzen, plus Polster fuer die Sitzungsbereiche');
+  ok(/kerzenSchwanz\(n\)/.test(handler) && !/KERZEN_SCHWANZ/.test(mainQ),
+     'und der Handler benutzt sie - die feste Zahl gibt es nicht mehr');
+  ok(/alpaca1m-bereinigt/.test(handler) && /alpaca1m/.test(handler),
+     'fuer Minutenkerzen zuerst das bereinigte Alpaca-Archiv, dann die Rohdaten');
+  ok(/Kerzen\.ordnerVon\(/.test(handler) && /Kerzen\.dateiFuer\(/.test(handler),
+     'die Pfade kommen aus kerzenquelle.js - der Handler kennt keinen eigenen Ort');
+  ok(!/E:\//.test(handler) && /path\.dirname\(Kerzen\.ordnerVon/.test(handler),
+     'kein fester Laufwerksbuchstabe: die Alpaca-Wurzel wird aus dem Archivzeiger abgeleitet');
+  ok(/replace\(\/\[\^A-Z0-9\.\^-\]\/g/.test(handler),
+     'das Kuerzel wird gefiltert, bevor daraus ein Dateiname wird - der Renderer bestimmt diese Liste');
+  var pre74 = fs.readFileSync(__dirname + '/preload.js', 'utf8');
+  ok(/archivKerzen: \(sym, zeitrahmen, anzahl\) => ipcRenderer\.invoke\('archiv-kerzen'/.test(pre74),
+     'preload.js reicht sie durch - und nichts, was schriebe');
+
+  /* ---- 74.11 Zeitrahmen-Knoepfe und Fusszeile ---- */
+  ok(/id="vwZeitrahmen"/.test(htmlQ) && /id="vwChart"/.test(htmlQ) && /id="vwQuelle"/.test(htmlQ),
+     'der Viewer hat Zeitrahmen-Leiste, Zeichenflaeche und Fusszeile');
+  /* Die Linien-Ansicht mit Signalen und Kanaelen ist NICHT geloescht - sie liegt in
+   * einer Klappe unter dem Kerzenchart. drawBig kann keine Kerzen und bleibt fuer
+   * sie unangetastet; K5/K13 (Sprungziele) gelten unveraendert weiter. */
+  ok(/<details class="vwAlt" id="vwAlt">/.test(htmlQ) && /id="expRanges"/.test(htmlQ) &&
+     /id="bigchart"/.test(htmlQ) && /id="expSignalLeiste"/.test(htmlQ),
+     'die alte Linien-Ansicht steht vollstaendig in einer Klappe - nichts geloescht');
+  ok(/id="vwAltStatus"/.test(htmlQ) && /altStatus\.textContent = beschriftung/.test(expQ),
+     'und ihre Klappe traegt eine Statuszeile aus Daten - kein Versteck, keine Zahl im Markup');
+  ok(/alt\.addEventListener\('toggle'/.test(expQ),
+     'beim Aufklappen wird neu gezeichnet - zugeklappt hat das SVG keine Breite');
+  ok(expQ.indexOf('function drawBig(svg, series, rangeKey)') > 0,
+     'drawBig selbst ist unberuehrt geblieben - der Kerzenchart ist ein eigener Zeichner');
+  ok(!/data-zeitrahmen="/.test(htmlQ),
+     'KEINE Zahl im Markup: die Zeitrahmen stehen im Modul, nicht als sechs feste Knoepfe');
+  ok(/data-zeitrahmen="' \+ z \+ '"/.test(expQ) && /KC\(\)\.ZEITRAHMEN\.map/.test(expQ),
+     'die Knoepfe werden aus KerzenChart.ZEITRAHMEN gebaut');
+  ok(/closest\('button\[data-zeitrahmen\]'\)/.test(expQ) && /VW\.zeitrahmen = b\.getAttribute\('data-zeitrahmen'\)/.test(expQ),
+     'und sie sind verdrahtet: ein Klick setzt den Zeitrahmen und laedt');
+  ok(KC.ZEITRAHMEN.join(' ') === '1m 5m 15m 1h 1T 1W',
+     'sechs Zeitrahmen, so wie im Auftrag', KC.ZEITRAHMEN.join(' '));
+  ok(Object.keys(KC.ARCHIV_INTERVALL).length === KC.ZEITRAHMEN.length &&
+     Object.keys(KC.YAHOO_INTERVALL).length === KC.ZEITRAHMEN.length,
+     'jeder Zeitrahmen weiss, wie er im Archiv und bei Yahoo heisst');
+  ok(KC.ARCHIV_INTERVALL['1W'] === null && KC.YAHOO_INTERVALL['1W'] === '1wk',
+     'Wochenkerzen fuehrt das Archiv nicht - dort ist Yahoo die einzige Quelle, und das steht so da');
+  /* DIE FUSSZEILE IST NIE STUMM: auch ohne Kerzen und ohne Archiv steht ein Grund. */
+  ok(/teile\.push\('Archiv: ' \+ \(\(r && r\.grund\)/.test(expQ),
+     'scheitert das Archiv, nennt die Fusszeile den Grund - statt zu schweigen');
+  ok(/var teile = \[VW\.quelleText \|\| 'Quelle unbekannt'\]/.test(expQ),
+     'und ohne jede Quelle steht dort "Quelle unbekannt" - nie eine leere Zeile');
+  ok(/doppelte Kerzen an der Naht verworfen \(Archiv gewinnt\)/.test(expQ),
+     'die Fusszeile sagt auch, wenn an der Naht etwas verworfen wurde');
+  ok(/wird nicht ins Archiv geschrieben/.test(expQ),
+     'und sie sagt, dass die laufende Kerze nicht ins Archiv geht');
+
+  /* ---- 74.12 Vor- und Nachboerse: abgesetzt, gemerkt ---- */
+  ok(/id="vwNurRegulaer"/.test(htmlQ) && /checked/.test(htmlQ.slice(htmlQ.indexOf('id="vwNurRegulaer"') - 60, htmlQ.indexOf('id="vwNurRegulaer"') + 40)),
+     'der Umschalter "Nur reguläre Sitzung" steht da und ist vorgewaehlt');
+  ok(/storeSet\(VW_STORE, VW\.nurRegulaer\)/.test(expQ) && /storeGet\(VW_STORE\)/.test(expQ),
+     'seine Stellung wird gemerkt und beim Start wieder gelesen');
+  ok(/window\.Quant\.minutenSeitOeffnung/.test(expQ) && /window\.Boerse\.sitzungsMinuten/.test(expQ),
+     'die Umrechnung kommt aus den vorhandenen Modulen - keine zweite Zeitzonenrechnung');
+  ok(/timeZone: 'America\/New_York'/.test(expQ),
+     'die Achse steht in New Yorker Zeit - dort wird der Wert gehandelt');
+
+  /* ---- 74.13 EINE Sammelrunde je Minute: Attrappe mit Zaehler ----
+   * Die Funktion wird aus dem AUSGELIEFERTEN Quelltext herausgeloest und mit einer
+   * Attrappe von window.Kurse gefahren. Eine Textmarke haette hier nichts gemessen:
+   * die Frage ist, wie oft holeViele WIRKLICH gerufen wird, wenn zwei Aufrufer im
+   * selben Takt dasselbe wollen. */
+  var qVon = mkQ.indexOf('  async function quotesHolen(syms) {');
+  var qBis = mkQ.indexOf('  async function kurseHolen(liste, melde) {');
+  ok(qVon > 0 && qBis > qVon, 'quotesHolen laesst sich herausloesen', qBis - qVon);
+  var quelle74 = mkQ.slice(qVon, qBis);
+  var bau74 = new Function('window', 'KURSE', 'kursFrisch',
+    'var RUNDEN = 0; var laufendeRunde = null;\n' + quelle74 +
+    '\nreturn { quotesHolen: quotesHolen, runden: function () { return RUNDEN; } };');
+  probe((async function () {
+    var zaehler = { holeViele: 0, kuerzel: 0 };
+    var KURSE74 = {};
+    var fensterA = { Kurse: { holeViele: async function (syms) {
+      zaehler.holeViele++; zaehler.kuerzel += syms.length;
+      await new Promise(function (r) { setTimeout(r, 20); });
+      var kurse = {};
+      syms.forEach(function (s) { kurse[s] = { kurs: 10, pct: 1, vorher: 9, volumen: 100, mkap: 5, hoch52: 12 }; });
+      return { ok: true, kurse: kurse, angefragt: syms.length, geholt: syms.length, bloecke: 1 };
+    } } };
+    function frisch74(sym) {
+      var c = KURSE74[sym];
+      return !!(c && c.kurs > 0 && Date.now() - c.at <= 60000);
+    }
+    var M74 = bau74(fensterA, KURSE74, frisch74);
+    var syms74 = ['AAA', 'BBB', 'CCC'];
+    /* Zwei Aufrufer im selben Takt - genau der Zustand, den die App hatte. */
+    var r1 = M74.quotesHolen(syms74);
+    var r2 = M74.quotesHolen(syms74);
+    await Promise.all([r1, r2]);
+    ok(zaehler.holeViele === 1,
+       'Zwei Aufrufer im selben Takt fahren EINE Sammelrunde - nicht zwei',
+       zaehler.holeViele + ' Runden, ' + zaehler.kuerzel + ' Kuerzel');
+    ok(M74.runden() === 1, 'und der Zaehler der Runde sagt dasselbe', M74.runden());
+    /* Ein dritter Aufruf gleich danach holt gar nichts: alles ist frisch. */
+    await M74.quotesHolen(syms74);
+    ok(zaehler.holeViele === 1, 'ein dritter Aufruf im selben Takt holt nichts mehr', zaehler.holeViele);
+    ok(KURSE74.AAA && KURSE74.AAA.volumen === 100 && KURSE74.AAA.hoch52 === 12,
+       'die GANZE Antwort landet im Zwischenspeicher - Volumen und 52-Wochen-Hoch inbegriffen');
+    /* Ein neues Kuerzel faehrt eine zweite Runde, die alten fahren nicht mit. */
+    await M74.quotesHolen(syms74.concat(['DDD']));
+    ok(zaehler.holeViele === 2 && zaehler.kuerzel === 4,
+       'ein neues Kuerzel kostet eine Runde ueber genau dieses eine',
+       zaehler.holeViele + ' Runden / ' + zaehler.kuerzel + ' Kuerzel');
+    /* GEGENPROBE zur Attrappe selbst: ohne Mitfahren waeren es zwei Runden. */
+    var zaehlerG = { holeViele: 0 };
+    var KURSEG = {};
+    var ohneMitfahren = quelle74.replace(/if \(laufendeRunde\) \{[\s\S]*?\n    \}\n/, '');
+    ok(ohneMitfahren.length < quelle74.length, 'Gegenprobe: das Mitfahren laesst sich herausschneiden');
+    var bauG = new Function('window', 'KURSE', 'kursFrisch',
+      'var RUNDEN = 0; var laufendeRunde = null;\n' + ohneMitfahren +
+      '\nreturn { quotesHolen: quotesHolen };');
+    var MG = bauG({ Kurse: { holeViele: async function (syms) {
+      zaehlerG.holeViele++;
+      await new Promise(function (r) { setTimeout(r, 20); });
+      var kurse = {};
+      syms.forEach(function (s) { kurse[s] = { kurs: 10, pct: 1 }; });
+      return { ok: true, kurse: kurse };
+    } } }, KURSEG, function (sym) {
+      var c = KURSEG[sym];
+      return !!(c && c.kurs > 0 && Date.now() - c.at <= 60000);
+    });
+    await Promise.all([MG.quotesHolen(syms74), MG.quotesHolen(syms74)]);
+    ok(zaehlerG.holeViele === 2,
+       'Gegenprobe: ohne das Mitfahren sind es wieder zwei Runden - die Klinke misst das Richtige',
+       zaehlerG.holeViele);
+  })());
+  /* Und im Quelltext: es gibt genau EINEN holeViele-Aufruf in den drei Dateien, die
+   * sich die Kurse teilen. Zwei waeren wieder zwei Runden. */
+  var muiQ = ohneKommentare(fs.readFileSync(__dirname + '/marktui.js', 'utf8'));
+  var rufe74 = (ohneKommentare(mkQ).match(/K\.holeViele\(/g) || []).length +
+               (muiQ.match(/holeViele\(/g) || []).length +
+               (expO.match(/holeViele\(/g) || []).length;
+  ok(rufe74 === 1, 'Marktkarte, Markt-Ueberblick und Viewer teilen sich EINEN Sammelabruf', rufe74);
+  ok(/quotesHolen: quotesHolen,/.test(mkQ) && /runden: function \(\) \{ return RUNDEN; \}/.test(mkQ),
+     'die Runde und ihr Zaehler stehen als Leseauskunft heraus - sonst waere sie nicht messbar');
+  ok(/quote: function \(sym\)/.test(mkQ) && /vorboerse: c\.vorboerse/.test(mkQ),
+     'window.Marktwerte.quote gibt die ganze Antwort heraus, samt vor- und nachboerslichem Kurs');
+  ok(/await MW\.quotesHolen\(\[sym\]\)/.test(expQ),
+     'auch der Viewer faehrt in derselben Runde mit - keine dritte');
+
+  /* ---- 74.14 QS-Funde F2, F4, F6, F7, F8 im Quelltext ----
+   * Was sich am laufenden Fenster zeigen muss (F2 wortgleich, F7 Fokus), prueft
+   * tools/ui-probe.js. Hier steht, was der Quelltext dazu zusichern kann. */
+  var renQ = fs.readFileSync(__dirname + '/renderer.js', 'utf8');
+  var renO = ohneKommentare(renQ);
+  var uebQ = fs.readFileSync(__dirname + '/markt/uebersicht.js', 'utf8');
+  /* F2: EINE Funktion, vier Zustaende, und die Worte kommen aus ihr. */
+  ok(/kurz: kurz, hinweis: hinweis/.test(uebQ) && /text: kurz \+ \(hinweis/.test(uebQ),
+     'F2: sitzungszustand liefert den wortgleichen Teil (kurz) getrennt vom Hinweis');
+  var z74 = MUx.sitzungszustand(-10, 390);
+  ok(z74.kurz === 'Vorbörslicher Handel' && z74.hinweis && z74.text.indexOf(z74.kurz) === 0,
+     'F2: der lange Text beginnt mit demselben Wort wie der kurze', z74.text);
+  ok(['regulaer', 'vorboerslich', 'nachboerslich', 'geschlossen'].every(function (zz) {
+    return [MUx.sitzungszustand(10, 390), MUx.sitzungszustand(-10, 390),
+            MUx.sitzungszustand(400, 390), MUx.sitzungszustand(10, 0)]
+      .some(function (x) { return x.zustand === zz && x.kurz; });
+  }), 'F2: alle vier Zustaende haben ein Wort');
+  ok(/function sitzungJetzt\(\)/.test(renQ) && /window\.MarktUebersicht\.sitzungszustand/.test(renQ),
+     'F2: die Kopfzeile fragt dieselbe Funktion wie der Reiter Markt');
+  ok(/var stampTxt = z \? z\.kurz :/.test(renQ) && /U\.esc\(z \? z\.kurz :/.test(renQ),
+     'F2: Kopfzeile UND Cockpit setzen denselben kurzen Text ein');
+  ok(/esc\(z\.kurz\)/.test(muiQ),
+     'F2: und der Reiter Markt ebenfalls - drei Orte, ein Wort');
+  /* usMarketOpen bleibt Handelslogik - die haette hier nichts zu suchen. */
+  ok(/function usMarketOpen\(\)/.test(renQ) && /var open = usMarketOpen\(\);/.test(renQ),
+     'F2: usMarketOpen bleibt - an ihm haengen Glattstellung und Einstiegssperre, nicht die Anzeige');
+  /* F4: Kasten und Laufband zeigen NICHT dieselben Meldungen. */
+  ok(/var rest = NEWS_ALLE\.slice\(NEWS_MAX, 20\);/.test(renQ),
+     'F4: das Laufband zeigt die Meldungen, die im Kasten NICHT stehen');
+  ok(!/var stueck = NEWS\.slice\(0, 20\)/.test(renO),
+     'F4: und nicht mehr dieselben fuenf wie der Kasten');
+  ok(/NEWS = items\.slice\(0, NEWS_MAX\)/.test(renQ) && /NEWS_ALLE = items\.slice\(0, 25\)/.test(renQ),
+     'F4: der Deckel von fuenf im Kasten bleibt, die Gesamtliste steht daneben');
+  /* F6: der Fokus im Laufband bleibt sichtbar. */
+  /* Umgeschrieben am 04.09.2026 nach zwei GEMESSENEN Fehlversuchen (siehe Uebergabe
+   * Stufe 6, Abweichung 3): weder das Nachrollen noch die Bildlaufleiste allein
+   * halten einen Link sichtbar, der breiter sein kann als das Band. */
+  ok(/rel="noopener" tabindex="-1"/.test(renQ),
+     'F6: im Laufband gibt es keinen Tabulator-Halt mehr');
+  ok(/id="newsTicker"[^>]*tabindex="0"/.test(htmlQ) && /role="region"/.test(htmlQ),
+     'F6: dafuer ist das Band selbst anspringbar und mit den Pfeiltasten rollbar');
+  ok(/#newsTicker \{\n\s*overflow-x: auto; overflow-y: visible;/.test(htmlQ),
+     'F6: und es hat eine Bildlaufleiste - ein Kasten, der geschoben werden darf, braucht eine');
+  /* F7: der Fokus ueberlebt ein Neuschreiben. */
+  ok(/function fokusMerken\(e\)/.test(muiQ) && /function fokusSetzen\(e, sym\)/.test(muiQ),
+     'F7: der Fokus wird vor dem Neuschreiben gemerkt und danach gesetzt');
+  ok(/var fokusWar = fokusMerken\(e\);/.test(muiQ) && /fokusSetzen\(e, fokusWar\);/.test(muiQ),
+     'F7: und zwar in hotlistsZeichnen, das den Kasten per innerHTML neu baut');
+  ok(/getAttribute\('data-marktsym'\)/.test(muiQ),
+     'F7: gemerkt wird das Kuerzel, nicht die Stelle - die Reihenfolge aendert sich mit jedem Takt');
+  /* F8: die Stoerungsmeldung bekommt eine eigene Zeile. */
+  ok(/class="sitzungStoerung quelle"/.test(muiQ) && /#marktSitzung \.sitzungStoerung \{ display: block;/.test(htmlQ),
+     'F8: die Stoerungsmeldung steht in einer eigenen Zeile unter dem Zustand');
+  ok(/#marktSitzung \.sitzungZeile \{ display: flex;/.test(htmlQ) &&
+     /#marktSitzung \{ flex-direction: column;/.test(htmlQ),
+     'F8: und der Zustand selbst bleibt eine Zeile - der Kasten ist eine Spalte, sonst stuenden beide nebeneinander');
+  /* Die Stillstandsbremse des Sammlers kommt an. */
+  ok(/api\.onSammlerHinweis\(function \(d\)/.test(renQ),
+     'die Stillstandsbremse des Sammlers hat endlich einen Zuhoerer');
+  ok(/hinweisSetzen\('sammler',/.test(renQ) && /d\.art !== 'stillstand'/.test(renQ),
+     'und sie meldet nur den Stillstand - ein Lauf, der anfaengt, ist kein Fehler');
+  ok(/function hinweisSetzen\(name, text\)/.test(renQ) && /HINWEISE\[name\] = String\(text\)/.test(renQ),
+     '#err ist eine benannte Kette statt zweier Schreiber, die einander loeschen');
+  ok((renO.match(/getElementById\('err'\)\.textContent =/g) || []).length === 0,
+     'niemand schreibt mehr direkt in #err - sonst waere die Kette wieder eine Ueberschreibung',
+     (renO.match(/getElementById\('err'\)\.textContent =/g) || []).length);
+  ok(/hinweisSetzen\('kurse',/.test(renQ) && /hinweisSetzen\('aktualisierung',/.test(renQ),
+     'die beiden alten Meldungen haengen jetzt in derselben Kette');
+
+  /* ---- 74.15 Gegenproben zu den Klinken dieses Abschnitts ----
+   * Jede prueft, dass die Zusicherung darueber bei einem eingebauten Fehler ROT wird.
+   * Ohne sie waere sie eine Zeile, von der niemand weiss, ob sie hinsieht. */
+  var g74 = 0, gRot = 0;
+  function gegen(name, bedingung) {
+    g74++;
+    if (bedingung) gRot++;
+    ok(bedingung, 'Gegenprobe: ' + name);
+  }
+  gegen('eine Live-Kerze, die das Archiv ueberschreibt, faellt auf',
+        KC.zusammenfuehren(arch74, live74).kerzen[1][1] !== 99);
+  gegen('eine doppelte Kerze wuerde die Zahl aendern',
+        KC.zusammenfuehren(arch74, arch74).kerzen.length === 2);
+  gegen('eine laufende Kerze in der Archivliste wuerde auffallen',
+        KC.archivFaehig([basis74[0], lauf74]).length !== 2);
+  gegen('ein Band ueber die regulaere Sitzung wuerde auffallen',
+        KC.baender(['regulaer', 'regulaer', 'regulaer']).length === 0);
+  gegen('eine SMA, die zu frueh beginnt, wuerde auffallen',
+        KC.maReihe(reihe74.slice(0, 30), 20, Qsma)[5] === null);
+  gegen('eine Skala aus Schlusskursen statt Hoch/Tief wuerde auffallen',
+        KC.skala([[1, 100, 1, 200, 50, 100]], { breite: 100, hoehe: 100 }).hoch === 200);
+  gegen('ein Schwanz-Leser, der Muell durchlaesst, wuerde auffallen',
+        KC.kerzenAusText('[123,1,1,1,1,1]', 0).length === 0);
+  gegen('ein Schreibverb im Handler wuerde gefunden',
+        /writeFileSync/.test('const x = fs.writeFileSync(1);'));
+  gegen('ein zweiter holeViele-Aufruf wuerde gefunden',
+        ((mkQ + 'K.holeViele(').match(/K\.holeViele\(/g) || []).length === 2);
+  gegen('ein leerer Fusszeilentext wuerde auffallen',
+        /Quelle unbekannt/.test(expQ));
+  gegen('ein data-zeitrahmen im Markup wuerde gefunden',
+        /data-zeitrahmen="1m"/.test('<button data-zeitrahmen="1m">'));
+  gegen('ein direkter Schreiber an #err wuerde gefunden',
+        /getElementById\('err'\)\.textContent =/.test("document.getElementById('err').textContent = 'x';"));
+  /* Die Klinken auf QS-Funde und Modul-Eigenschaften bekommen ihre eigene
+   * Gegenprobe: jede bekommt den Zustand VOR dem Eingriff vorgesetzt und muss ihn
+   * erkennen. Ohne das waere "F4 ist behoben" eine Zeile ueber eine Datei, die
+   * sich zufaellig geaendert hat. */
+  gegen('der alte F4-Zustand (dieselben fuenf im Band) wuerde gefunden',
+        /var stueck = NEWS\.slice\(0, 20\)/.test('    var stueck = NEWS.slice(0, 20).map(function (n) {'));
+  gegen('ein Laufband mit Tabulator-Halten (F6) wuerde gefunden',
+        !/rel="noopener" tabindex="-1"/.test('<a href="x" rel="noopener">Titel</a>'));
+  gegen('hotlistsZeichnen ohne Fokus-Merker (F7) wuerde gefunden',
+        !/fokusSetzen\(e, fokusWar\);/.test('function hotlistsZeichnen() { e.innerHTML = x; }'));
+  gegen('der alte F2-Text (US-Boerse geoeffnet als feste Zeichenkette) wuerde gefunden',
+        !/var stampTxt = z \? z\.kurz :/.test("var stampTxt = open ? 'US-Boerse geoeffnet' : 'zu';"));
+  gegen('eine Stoerungsmeldung ohne eigene Zeile (F8) wuerde gefunden',
+        !/class="sitzungStoerung quelle"/.test("'<span class=\"quelle\">Kursabruf gescheitert'"));
+  gegen('ein document-Zugriff im reinen Modul wuerde gefunden',
+        /\bdocument\./.test('var e = document.getElementById(1);'));
+  gegen('eine zweite SMA im reinen Modul wuerde gefunden',
+        /function sma\(/.test('function sma(a, n) { return 1; }'));
+  gegen('eine Archivsperre im Handler wuerde gefunden',
+        /sperreSetzen/.test('Kerzen.sperreSetzen(ordner);'));
+  gegen('ein fester Laufwerksbuchstabe im Handler wuerde gefunden',
+        /E:\//.test("const w = 'E:/Markt-Dashboard-Archiv';"));
+  gegen('ein ungefiltertes Kuerzel im Handler wuerde gefunden',
+        !/replace\(\/\[\^A-Z0-9\.\^-\]\/g/.test('const sym = String(symbol).toUpperCase();'));
+  gegen('eine SMA-Reihe ohne Luecken am Anfang wuerde die Klinke roeten',
+        KC.maReihe(reihe74.slice(0, 60), 20, function () { return 42; })[0] === null);
+  gegen('ein Fenster, das ueber den rechten Rand laeuft, wuerde auffallen',
+        KC.fenster(1000, 5000, 260).bis === 999);
+  gegen('eine Naht, die nicht sortiert, wuerde auffallen',
+        KC.zusammenfuehren([[9000, 1, 1, 1, 1, 1]], [[1000, 1, 1, 1, 1, 1]]).kerzen[1][0] === 9000);
+  gegen('eine laufende Kerze ohne Marke wuerde durch archivFaehig rutschen',
+        KC.archivFaehig([[1, 2, 3, 4, 5, 6]]).length === 1);
+  ok(g74 === gRot, 'alle Gegenproben dieses Abschnitts schlagen an', gRot + ' von ' + g74);
 })();
 
 Promise.all(offeneProben).then(function () {

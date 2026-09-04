@@ -50,21 +50,39 @@
    * drei Stunden lang "regulaerer Handel" ueber einem Markt, der zu ist. */
   var VOR_MIN = 330;
   var NACH_MIN = 240;
+  /* DREI ORTE, EIN ZUSTAND (QS-Fund F2, 04.09.2026). Die Kopfzeile (#stamp), das
+   * Cockpit (#ckMarkt) und der Reiter Markt (#marktSitzung) sagten dasselbe mit
+   * zwei verschiedenen Begriffen: die ersten beiden ueber usMarketOpen() (offen/zu),
+   * der dritte ueber diese Funktion (vier Zustaende). Auf einem Bildschirm stand
+   * dann "US-Börse geschlossen" zwei Zeilen ueber "Vorbörslicher Handel". Beide
+   * waren fuer sich richtig; der Leser sah einen Widerspruch.
+   *
+   * Seither liefert diese Funktion die Worte, und alle drei setzen sie ein:
+   *   kurz     der Zustand in einem Halbsatz - das ist der WORTGLEICHE Teil
+   *   hinweis  was man ueber ihn wissen muss (duenner Umsatz, kein Handelstag)
+   *   text     beides zusammen, wie es der Reiter Markt seit Stufe 5 zeigt
+   * usMarketOpen() bleibt unangetastet: daran haengen Glattstellung und
+   * Einstiegssperre, und das ist HANDELSLOGIK, keine Anzeige. */
+  function zustandBauen(zustand, kurz, hinweis) {
+    return { zustand: zustand, kurz: kurz, hinweis: hinweis,
+             text: kurz + (hinweis ? ' – ' + hinweis : '') };
+  }
+  var DUENN = 'dünner Umsatz, Kurse können springen';
   function sitzungszustand(minuten, laenge) {
     if (!zahl(minuten)) return null;
     if (!zahl(laenge) || laenge <= 0) {
-      return { zustand: 'geschlossen', text: 'Börse geschlossen – kein Handelstag' };
+      return zustandBauen('geschlossen', 'Börse geschlossen', 'kein Handelstag');
     }
     if (minuten >= 0 && minuten < laenge) {
-      return { zustand: 'regulaer', text: 'Regulärer Handel' };
+      return zustandBauen('regulaer', 'Regulärer Handel', '');
     }
     if (minuten < 0 && minuten >= -VOR_MIN) {
-      return { zustand: 'vorboerslich', text: 'Vorbörslicher Handel – dünner Umsatz, Kurse können springen' };
+      return zustandBauen('vorboerslich', 'Vorbörslicher Handel', DUENN);
     }
     if (minuten >= laenge && minuten < laenge + NACH_MIN) {
-      return { zustand: 'nachboerslich', text: 'Nachbörslicher Handel – dünner Umsatz, Kurse können springen' };
+      return zustandBauen('nachboerslich', 'Nachbörslicher Handel', DUENN);
     }
-    return { zustand: 'geschlossen', text: 'Börse geschlossen' };
+    return zustandBauen('geschlossen', 'Börse geschlossen', '');
   }
 
   /* ---------------------------------------------------------------------------

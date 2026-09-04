@@ -3,7 +3,7 @@ tags: [bauplan]
 ---
 # Struktur der Oberfläche — mit Aufnahmen
 
-*Erzeugt am 2026-09-04 von `tools/ui-struktur.js` aus der **laufenden** Oberfläche der Version **8.40.1** — nicht aus `index.html`. Instanz: isolierte Kunstdaten-Instanz (`tools/kunstinstanz.js`), 1280 px breit, ohne Netz; die Zahlen darin sind erfunden, die Struktur ist die echte. Wer die Oberfläche umbaut, fährt das Werkzeug danach einmal — ein Aufruf erneuert Bilder und Seite: `.\node_modules\.bin\electron.cmd tools\ui-struktur.js`.*
+*Erzeugt am 2026-09-04 von `tools/ui-struktur.js` aus der **laufenden** Oberfläche der Version **8.40.2** — nicht aus `index.html`. Instanz: isolierte Kunstdaten-Instanz (`tools/kunstinstanz.js`), 1280 px breit, ohne Netz; die Zahlen darin sind erfunden, die Struktur ist die echte. Wer die Oberfläche umbaut, fährt das Werkzeug danach einmal — ein Aufruf erneuert Bilder und Seite: `.\node_modules\.bin\electron.cmd tools\ui-struktur.js`.*
 
 **Was hier steht:** ▪ = Überschrift `h2`, · = Überschrift `h3`, ▸ = Klappe (`<details>`). Die Einrückung ist die echte Verschachtelung: eine Klappe **in** einer Klappe steht eine Stufe weiter rechts. `[#kennung]` ist die `id` des Blocks. „verborgen“ heißt: der Block steht in der Seite, ist aber ausgeblendet, bis etwas passiert (z. B. Explorer → „Kennzahlen“ erst nach dem Öffnen eines Werts).
 
@@ -78,6 +78,9 @@ Regeln (data-tab="strategien")
 Werkzeuge (data-tab="werkzeuge")
 ├─ Aktien-Explorer (data-sub="explorer", #sub-explorer)
    │  · Einen Wert öffnen  [in #expStart]
+   │  · Termine  [in #expDetail]  (verborgen: ausgeblendet)
+   │  · Im Archiv  [in #expDetail]  (verborgen: ausgeblendet)
+   │  ▸ Klappe: Linien-Ansicht mit Signalen und Kanälen  [#vwAlt]  (verborgen: ausgeblendet)
    │  · Kennzahlen  [in #expDetail]  (verborgen: ausgeblendet)
    │  · News zu diesem Wert  [in #expDetail]  (verborgen: ausgeblendet)
 ├─ Schein-Finder (data-sub="scheine", #sub-scheine)
@@ -98,8 +101,9 @@ Werkzeuge (data-tab="werkzeuge")
    │    · Mittelfrist-Bücher steuern  [in #sub-mittelfrist]
    │    · Ergebnis-Drift · Aktien, keine Hebelscheine  [in #sub-mittelfrist]
    │    · Was wäre heute offen?  [in #sub-mittelfrist]
-   │  ▸ Klappe: Live-Signal-Monitor
+   │  ▸ Klappe: Live-Signal-Monitor  — Statuszeile: „letzter Scan 04.09.26, 19:08 Uhr“
    │    · Live-Signal-Monitor
+   │    ▸ Klappe: 30 Werte: Kursreihe zu kurz (161 < 261 Kerzen) – Signal wäre nicht das gemessene  [in #sigMonitor]
    │  ▸ Klappe: Strategie-Chart  [in #sub-werkzeug]
    │    · Strategie-Chart – Signal und Bedingungen nachvollziehen  [in #stratChartPanel]
    │  ▸ Klappe: Regelbuch – die Regel, die handelt · Regeln, die nur messen · Bilanz  [in #sub-werkzeug]  — Statuszeile: „rsi2seit · kein Protokoll“
@@ -131,7 +135,7 @@ Dialoge (gehören zu keinem Reiter)
 
 ### Heute → Überblick
 
-`#sub-ueberblick` · 13 Blöcke · 4477 Zeichen sichtbarer Text
+`#sub-ueberblick` · 13 Blöcke · 4389 Zeichen sichtbarer Text
 
 - ▪ Bestand  [in #bestandBlock]
 - · Momentum-Buch · stärkstes Zehntel, alle 63 Handelstage, 20 Bp je Seite  [in #buchMomentum]
@@ -164,7 +168,7 @@ Dialoge (gehören zu keinem Reiter)
 
 ### Markt → Überblick
 
-`#sub-marktueberblick` · 15 Blöcke · 5439 Zeichen sichtbarer Text
+`#sub-marktueberblick` · 15 Blöcke · 6664 Zeichen sichtbarer Text
 
 - ▪ Marktüberblick
 - ▪ Sektoren – nach Marktkapitalisierung gewichtet, Branchen aus den SEC-Stammdaten.
@@ -189,7 +193,7 @@ Dialoge (gehören zu keinem Reiter)
 
 ### Markt → Marktkarte
 
-`#sub-marktkarte` · 1 Blöcke · 773 Zeichen sichtbarer Text
+`#sub-marktkarte` · 1 Blöcke · 881 Zeichen sichtbarer Text
 
 - ▪ Marktkarte – Fläche ist Größe, Farbe ist der Tag.
 
@@ -198,7 +202,7 @@ Dialoge (gehören zu keinem Reiter)
 
 ### Markt → Radar
 
-`#sub-beobachtung` · 3 Blöcke · 2745 Zeichen sichtbarer Text
+`#sub-beobachtung` · 3 Blöcke · 2674 Zeichen sichtbarer Text
 
 - ▪ Spekulations-Radar – Gerüchte aus öffentlichen Quellen, dreimal täglich vor US-Eröffnung gesammelt. Gehandelt wird hiervon nichts.
 - ▪ Insider-Käufe – meldepflichtige Eigengeschäfte von Vorstand und Aufsichtsrat (SEC Form 4). Gehandelt wird hiervon nichts.
@@ -229,7 +233,7 @@ Dialoge (gehören zu keinem Reiter)
 
 ### Regeln → Einstellungen
 
-`#sub-einstellungen` · 8 Blöcke · 8680 Zeichen sichtbarer Text
+`#sub-einstellungen` · 8 Blöcke · 8669 Zeichen sichtbarer Text
 
 - · Intraday & Risiko  [#abIntraday]
 - · Intraday-Strategie  [in #sub-strategien]
@@ -247,9 +251,12 @@ Dialoge (gehören zu keinem Reiter)
 
 ### Werkzeuge → Aktien-Explorer
 
-`#sub-explorer` · 3 Blöcke · 268 Zeichen sichtbarer Text
+`#sub-explorer` · 6 Blöcke · 268 Zeichen sichtbarer Text
 
 - · Einen Wert öffnen  [in #expStart]
+- · Termine  [in #expDetail]  (verborgen: ausgeblendet)
+- · Im Archiv  [in #expDetail]  (verborgen: ausgeblendet)
+- ▸ Klappe: Linien-Ansicht mit Signalen und Kanälen  [#vwAlt]  (verborgen: ausgeblendet)
 - · Kennzahlen  [in #expDetail]  (verborgen: ausgeblendet)
 - · News zu diesem Wert  [in #expDetail]  (verborgen: ausgeblendet)
 
@@ -265,7 +272,7 @@ Dialoge (gehören zu keinem Reiter)
 
 ### Werkzeuge → Betrieb
 
-`#sub-betrieb` · 34 Blöcke · 18709 Zeichen sichtbarer Text
+`#sub-betrieb` · 35 Blöcke · 21808 Zeichen sichtbarer Text
 
 - ▸ Klappe: Kursarchiv
   - ▪ Kursarchiv – die App holt die feinen Kerzen selbst und legt sie ab.  [in #sub-archiv]
@@ -282,8 +289,9 @@ Dialoge (gehören zu keinem Reiter)
   - · Mittelfrist-Bücher steuern  [in #sub-mittelfrist]
   - · Ergebnis-Drift · Aktien, keine Hebelscheine  [in #sub-mittelfrist]
   - · Was wäre heute offen?  [in #sub-mittelfrist]
-- ▸ Klappe: Live-Signal-Monitor
+- ▸ Klappe: Live-Signal-Monitor  — Statuszeile: „letzter Scan 04.09.26, 19:08 Uhr“
   - · Live-Signal-Monitor
+  - ▸ Klappe: 30 Werte: Kursreihe zu kurz (161 < 261 Kerzen) – Signal wäre nicht das gemessene  [in #sigMonitor]
 - ▸ Klappe: Strategie-Chart  [in #sub-werkzeug]
   - · Strategie-Chart – Signal und Bedingungen nachvollziehen  [in #stratChartPanel]
 - ▸ Klappe: Regelbuch – die Regel, die handelt · Regeln, die nur messen · Bilanz  [in #sub-werkzeug]  — Statuszeile: „rsi2seit · kein Protokoll“

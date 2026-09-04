@@ -182,13 +182,21 @@
   header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 16px; margin-bottom: 6px; }
 
   /* News-Laufband im Dashboard (Tester-Wunsch #20) */
+  /* overflow-x: auto STATT hidden (QS-F6, 04.09.2026). Vorher war das Band
+     beschnitten und hatte keine Bildlaufleiste: wer mit der Tabulatortaste
+     hineinlief, schob es unbemerkt um bis zu 4.800 px weg und kam nicht zurueck.
+     overflow-y bleibt sichtbar - mit "hidden" waere der Kasten weiterhin ein
+     beschnittener, und genau das misst die Fokus-Wanderung der UI-Probe. */
   #newsTicker {
-    overflow: hidden; white-space: nowrap; border: 1px solid var(--border);
+    overflow-x: auto; overflow-y: visible; white-space: nowrap; border: 1px solid var(--border);
     background: var(--panel); border-radius: var(--r-normal); padding: 6px 0; margin-bottom: 10px;
     font-size: var(--fs-text); -webkit-mask-image: linear-gradient(90deg, transparent, #000 3%, #000 97%, transparent);
   }
   #newsTicker .tickSpur { display: inline-block; animation: tickLauf linear infinite; will-change: transform; }
   #newsTicker:hover .tickSpur { animation-play-state: paused; }
+  /* Solange der Fokus im Band steht, laeuft es nicht - sonst schoebe die Animation
+     genau die Meldung wieder weg, die man gerade angesprungen hat (QS-F6). */
+  #newsTicker:focus-within .tickSpur { animation-play-state: paused; }
   #newsTicker a { color: var(--ink-2); }
   #newsTicker a:hover { color: var(--ink); }
   #newsTicker .tickTrenn { color: var(--muted); margin: 0 14px; }
@@ -208,7 +216,7 @@
      nur ausbleichen. */
   @media (prefers-reduced-motion: reduce) {
     #newsTicker .tickSpur { animation: none; }
-    #newsTicker { overflow-x: auto; overflow-y: hidden; -webkit-mask-image: none; }
+    #newsTicker { overflow-x: auto; overflow-y: visible; -webkit-mask-image: none; }
     /* 01.09.2026 (C16): Der Rollbalken allein sagte zu leise, dass rechts mehr
        steht. Ein statischer Pfeil am rechten Rand macht es sichtbar - reiner
        Hinweis, keine Bewegung. sticky statt absolute: er bleibt am Rahmen stehen,
@@ -845,6 +853,30 @@
   /* .hinweis war nur INNERHALB der Chartleiste gestylt - ausserhalb rutschte jeder
      so ausgezeichnete Text auf 14 px Fliesstextfarbe und sah aus wie eine Aussage. */
   .hinweis { color: var(--muted); font-size: var(--fs-neben); line-height: 1.5; }
+  /* ---- Aktien-Viewer (Stufe 6, 04.09.2026) ---- */
+  .vwKopf { display: flex; flex-wrap: wrap; gap: 6px 20px; align-items: baseline; margin: 8px 0 10px; }
+  .vwKopf .vwFeld { display: flex; gap: 6px; align-items: baseline; font-size: var(--fs-neben); color: var(--muted); }
+  .vwKopf .vwFeld b { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+  /* Das 52-Wochen-Band: eine Bahn mit einem Zeiger auf der heutigen Lage. Eine Zahl
+     "127,40 bis 260,10" sagt nicht, WO man steht - das Band sagt es auf einen Blick. */
+  .vwBand { position: relative; width: 150px; height: 6px; border-radius: var(--r-klein); background: var(--border); }
+  .vwBand i { position: absolute; top: -3px; width: 2px; height: 12px; background: var(--ink); }
+  .vwWrap { position: relative; margin-top: 6px; }
+  #vwChart { width: 100%; height: 420px; display: block; cursor: crosshair; }
+  #vwChart:focus-visible { outline: 2px solid var(--btn); outline-offset: 2px; }
+  .vwKreuz { position: absolute; top: 4px; left: 8px; pointer-events: none; font-size: var(--fs-neben);
+             color: var(--muted); font-variant-numeric: tabular-nums; }
+  .vwQuelle { margin-top: 4px; }
+  .vwAlt { margin-top: 12px; border-top: 1px solid var(--border); padding-top: 8px; }
+  .vwAlt > summary { cursor: pointer; font-weight: 600; display: flex; gap: 10px; align-items: baseline; }
+  @media (max-width: 1100px) { .vwBand { width: 90px; } #vwChart { height: 340px; } }
+  /* QS-F8 (04.09.2026): Der Sitzungszustand ist eine Zeile, die Störungsmeldung
+     eine zweite darunter. Bei 1024 px lief die Meldung sonst in dieselbe Zeile und
+     brach sie auf drei um; abschneiden wäre falsch (die Meldung muss lesbar
+     bleiben), eine eigene Zeile ist die richtige Antwort. */
+  #marktSitzung { flex-direction: column; align-items: stretch; gap: 0; }
+  #marktSitzung .sitzungZeile { display: flex; flex-wrap: wrap; gap: 4px 16px; align-items: baseline; }
+  #marktSitzung .sitzungStoerung { display: block; margin-top: 2px; }
   .sigbox { cursor:pointer; user-select:none; }
   .sigbox input { margin:0 3px 0 0; vertical-align:-1px; }
   .kv { display: grid; grid-template-columns: auto 1fr; gap: 3px 14px; font-size: var(--fs-text); }
@@ -1234,7 +1266,8 @@
 <div id="marktSitzung" class="marktkopf" role="status" aria-live="polite"><span class="loading">Zustand der Sitzung wird ermittelt …</span></div>
 <!-- Der title wird in renderTicker() gesetzt: bei "Bewegung reduzieren" laeuft nichts,
      und dann darf dort auch nicht stehen, dass es unter dem Mauszeiger anhaelt. -->
-<div id="newsTicker" style="display:none;"></div>
+<div id="newsTicker" style="display:none;" tabindex="0" role="region"
+     aria-label="Weitere Schlagzeilen – mit den Pfeiltasten seitwärts rollen"></div>
 <h2>Marktüberblick</h2>
 <div class="tiles" id="tiles"><div class="loading">Lade Kurse …</div></div>
 
@@ -1745,6 +1778,44 @@
       <span style="font-size:var(--fs-titel); font-weight:700; margin-left:auto;" id="expPrice"></span>
       <span id="expChg"></span>
     </div>
+    <!-- ===== Aktien-Viewer (Oberflaeche Stufe 6, 04.09.2026) =====
+         KEINE ZAHL IM MARKUP. Jedes Feld hier ist leer und wird von explorer.js
+         aus Daten gefuellt - Kopfzahlen aus den Quotes ueber window.Marktwerte,
+         Kerzen aus dem eigenen Archiv (archiv-kerzen) mit Yahoo als Rueckfall.
+         Gehandelt wird aus dem Viewer nichts. -->
+    <div class="vwKopf" id="vwKopf"></div>
+    <div class="panel">
+      <div class="rangebtns" id="vwZeitrahmen"></div>
+      <div class="chartleiste" id="vwLeiste">
+        <span style="color:var(--muted); font-size:var(--fs-neben);">Durchschnitte:</span>
+        <label class="sigbox"><input type="checkbox" data-ma="20"> 20</label>
+        <label class="sigbox"><input type="checkbox" data-ma="50"> 50</label>
+        <label class="sigbox"><input type="checkbox" data-ma="200"> 200</label>
+        <label class="sigbox"><input type="checkbox" id="vwNurRegulaer" checked> Nur reguläre Sitzung</label>
+        <button class="info" type="button" data-info="werkzeuge.viewer" aria-expanded="false"
+                aria-label="Erklärung: Wie der Viewer zu seinen Kerzen kommt">i</button>
+        <span id="vwHinweis" class="hinweis"></span>
+      </div>
+      <div class="vwWrap">
+        <canvas id="vwChart" tabindex="0" role="img"
+                aria-label="Kerzenchart des gewählten Werts – Pfeiltasten blättern, Plus und Minus zoomen"></canvas>
+        <div id="vwKreuz" class="vwKreuz"></div>
+      </div>
+      <div id="vwQuelle" class="hinweis vwQuelle"></div>
+    </div>
+    <div class="grid2" style="margin-top:12px;">
+      <div class="panel">
+        <h3>Termine</h3>
+        <div id="vwTermine"><div class="loading">–</div></div>
+      </div>
+      <div class="panel">
+        <h3>Im Archiv</h3>
+        <div id="vwArchiv"><div class="loading">–</div></div>
+      </div>
+    </div>
+    <div id="vwBelegstand" class="hinweis" style="margin-top:10px;"></div>
+    <details class="vwAlt" id="vwAlt">
+      <summary>Linien-Ansicht mit Signalen und Kanälen <span class="klappe-stand" id="vwAltStatus"></span></summary>
     <div class="panel">
       <div class="rangebtns" id="expRanges"></div>
       <div class="chartleiste">
@@ -1811,6 +1882,7 @@
       <div id="expSigDetail" class="panel" style="display:none; margin-top:10px; padding:10px 12px;"></div>
       <div id="expSigListe" style="margin-top:10px;"></div>
     </div>
+    </details>
     <div class="grid2" style="margin-top:12px;">
       <div class="panel">
         <h3>Kennzahlen</h3>
@@ -2782,6 +2854,7 @@
 <script src="marktkarte.js"></script>
 <script src="marktkarteui.js"></script>
 <script src="markt/uebersicht.js"></script>
+<script src="markt/kerzenchart.js"></script>
 <script src="marktui.js"></script>
 <script src="strategiebaukasten.js"></script>
 <script src="scoreboard.js"></script>

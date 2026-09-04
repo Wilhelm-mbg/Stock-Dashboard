@@ -144,6 +144,7 @@
     document.getElementById('aiStatus').textContent = '';
     buildRangeButtons();
     buildChartLeiste();
+    vwOeffnen();
 
     // Tagesdaten (2 Jahre) für Kennzahlen/Analyse + aktueller Range-Chart + News parallel
     var daily = await fetchRange(hit.sym, '2y', '1d');
@@ -275,6 +276,14 @@
     }, { passive: false });
   })();
 
+  /* Aufklappen heisst neu zeichnen - zugeklappt hat das SVG keine Breite. */
+  (function () {
+    var alt = document.getElementById('vwAlt');
+    if (!alt || alt.__bereit) return;
+    alt.__bereit = true;
+    alt.addEventListener('toggle', function () { if (alt.open && CUR) drawAktuell(); });
+  })();
+
   function buildRangeButtons() {
     var el = document.getElementById('expRanges');
     el.innerHTML = RANGES.map(function (r) {
@@ -357,6 +366,11 @@
     CURDATA.rangeBars = data ? data.bars : null;
     CURDATA.kerze = kerze;
     letzteBeschriftung = beschriftung;
+    var altStatus = document.getElementById('vwAltStatus');
+    if (altStatus) {
+      altStatus.textContent = beschriftung +
+        (data && data.series ? ' · ' + data.series.length + ' Kerzen' : ' · keine Daten');
+    }
     zoomFenster = null;   // neue Daten = neuer Massstab, der alte Ausschnitt gilt nicht mehr
     drawBig(document.getElementById('bigchart'), data ? data.series : [], beschriftung);
   }
@@ -1006,6 +1020,578 @@
       : 'Konnte nicht hinzugefügt werden.';
     setTimeout(function () { st.textContent = ''; }, 5000);
   });
+
+
+  /* ================= Aktien-Viewer (Oberflaeche Stufe 6, 04.09.2026) =================
+   *
+   * Der Explorer bekommt einen Kerzenchart nach TradingView-Muster. Die RECHNUNG
+   * steht in markt/kerzenchart.js und ist dort in Node pruefbar; hier steht nur, was
+   * sie mit dem Bildschirm zu tun hat.
+   *
+   * DATENQUELLEN IN FESTER REIHENFOLGE, und die Fusszeile nennt sie:
+   *   1. das eigene Archiv ueber die Leseauskunft `archiv-kerzen` (nur lesend). Fuer
+   *      Minutenkerzen ist das das Alpaca-Minutenarchiv mit seinen Sitzungsbereichen,
+   *      sonst archiv1d/60m/15m/5m/1m im Format 2.
+   *   2. Yahoo als RUECKFALL, wenn das Archiv den Wert oder den Zeitrahmen nicht
+   *      fuehrt - und fuer den Rest des laufenden Tages, den das Archiv noch nicht hat.
+   * AN DER NAHT GEWINNT DAS ARCHIV (wiki/archiv-zusammenfuehrung.md Paragraph 6).
+   * Keine Kerze steht zweimal; das rechnet KerzenChart.zusammenfuehren.
+   *
+   * DIE LAUFENDE KERZE kommt aus den Quotes und wird gestrichelt gezeichnet. Sie
+   * geht NIE ins Archiv: der Viewer ruft keine schreibende Auskunft auf, und die
+   * Kerze traegt zusaetzlich eine Marke, die archivFaehig() herauswirft.
+   *
+   * GEHANDELT WIRD AUS DEM VIEWER NICHTS. */
+  function KC() { return window.KerzenChart; }
+  function MU2() { return window.MarktUebersicht; }
+  var VW = {
+    zeitrahmen: '1T',
+    kerzen: [],            // was gezeichnet wird (Archiv + Live + laufende Kerze)
+    fest: [],              // dasselbe ohne die laufende Kerze
+    sitzungen: [],         // Sitzung je Kerze der festen Reihe
+    quelleText: '',
+    ma: { 20: false, 50: false, 200: true },
+    nurRegulaer: true,
+    fensterBis: null,      // Index der rechten Kerze, null = ganz rechts
+    fensterN: 260,         // wie viele Kerzen sichtbar
+    kreuz: null,
+    takt: null,
+    laeuft: false,
+    letzterLauf: 0,
+    tages: null            // Tagesreihe aus dem eigenen Archiv (Volumen-Median)
+  };
+  var VW_STORE = 'viewerNurRegulaer';
+  var VW_TAKT_MS = 60000;
+
+  /* ---- Zeitrahmen-Knoepfe. Kein Text im Markup, die Liste steht im Modul. ---- */
+  function vwZeitrahmenBauen() {
+    var el = document.getElementById('vwZeitrahmen');
+    if (!el || el.__bereit || !KC()) return;
+    el.__bereit = true;
+    el.innerHTML = KC().ZEITRAHMEN.map(function (z) {
+      return '<button type="button" data-zeitrahmen="' + z + '" class="' + (z === VW.zeitrahmen ? 'active' : '') + '">' + z + '</button>';
+    }).join('');
+    el.addEventListener('click', function (ev) {
+      var b = ev.target && ev.target.closest ? ev.target.closest('button[data-zeitrahmen]') : null;
+      if (!b) return;
+      VW.zeitrahmen = b.getAttribute('data-zeitrahmen');
+      [].slice.call(el.querySelectorAll('button[data-zeitrahmen]')).forEach(function (x) {
+        x.classList.toggle('active', x === b);
+      });
+      VW.fensterBis = null;
+      vwLaden();
+    });
+  }
+
+  /* ---- Wie viele Kerzen holt ein Zeitrahmen? Ein Tag Minutenkerzen sind 960 (mit
+   * Vor- und Nachboerse), ein Jahr Tageskerzen 252. Die Zahl steht hier, damit sie
+   * an EINER Stelle steht - nicht einmal beim Archiv und einmal bei Yahoo. */
+  var VW_ANZAHL = { '1m': 1400, '5m': 900, '15m': 700, '1h': 700, '1T': 500, '1W': 400 };
+  var VW_YAHOO_BEREICH = { '1m': '5d', '5m': '1mo', '15m': '1mo', '1h': '3mo', '1T': '2y', '1W': '5y' };
+
+  /* ---- Sitzung je Kerze: Bereiche aus der Datei, sonst die Uhr ---- */
+  function vwSitzungAusZeit(tsMs) {
+    if (!window.Quant || !window.Boerse || !KC()) return null;
+    var laenge = window.Boerse.sitzungsMinuten(tsMs);
+    return KC().sitzungAusMinuten(window.Quant.minutenSeitOeffnung(tsMs), laenge);
+  }
+
+  /* ---- Laden: Archiv zuerst, Yahoo als Rueckfall ---- */
+  async function vwLaden() {
+    if (!CUR || !KC()) return;
+    var seq = openSeq;
+    VW.laeuft = true;
+    var zr = VW.zeitrahmen;
+    var n = VW_ANZAHL[zr] || 500;
+    var teile = [];
+    var archiv = [], sitzungsBereiche = [], archivBis = null;
+
+    var r = null;
+    if (window.api && typeof window.api.archivKerzen === 'function') {
+      try { r = await window.api.archivKerzen(CUR.sym, zr, n); } catch (e) { r = { ok: false, grund: String(e && e.message || e) }; }
+    } else {
+      r = { ok: false, grund: 'Leseauskunft in dieser Fassung nicht vorhanden' };
+    }
+    if (seq !== openSeq) return;
+    if (r && r.ok && r.kerzen && r.kerzen.length) {
+      archiv = r.kerzen;
+      sitzungsBereiche = r.sitzungen || [];
+      archivBis = r.bis;
+      /* Format 1 fuehrt keine Herkunft je Kerze - das ist kein Fehler, sondern der
+       * Bestand vor Z1 (03.09.2026). "unbekannt" saehe wie eine Stoerung aus. */
+      var qn = (r.quellen || ['unbekannt']).map(function (q) {
+        return q === 'unbekannt' ? 'Herkunft nicht vermerkt' : q;
+      });
+      var quellName = r.quelle === 'alpaca'
+        ? 'Alpaca-Minutenarchiv'
+        : 'Archiv (' + qn.join(', ') + ')';
+      teile.push(quellName + ', bis ' + vwZeitpunkt(r.bis));
+    } else {
+      teile.push('Archiv: ' + ((r && r.grund) || 'nichts gefunden'));
+    }
+
+    /* Rueckfall und Ergaenzung: Yahoo. Er wird IMMER gefragt, wenn das Archiv den
+     * laufenden Tag nicht hat - sonst endete der Chart am Vortagsschluss, ohne dass
+     * jemand saehe, warum. Was Yahoo doppelt liefert, wirft die Naht weg. */
+    var live = [];
+    var brauchtLive = !archiv.length || vwArchivVeraltet(archivBis, zr);
+    if (brauchtLive) {
+      try {
+        var iv = KC().YAHOO_INTERVALL[zr];
+        var kd = await window.Kurse.hole(CUR.sym, { range: VW_YAHOO_BEREICH[zr] || '1mo', interval: iv, bereinigt: false });
+        if (seq !== openSeq) return;
+        live = (kd && kd.bars) ? kd.bars : [];
+        teile.push(live.length ? 'Yahoo live' : 'Yahoo live: keine Kerzen');
+      } catch (e) { teile.push('Yahoo live: ' + String(e && e.message || e)); }
+    }
+
+    var z = KC().zusammenfuehren(archiv, live);
+    VW.fest = z.kerzen;
+    VW.sitzungen = KC().sitzungJeKerze(VW.fest, sitzungsBereiche, vwSitzungAusZeit);
+    VW.quelleText = teile.join(' · ') +
+      (z.doppelt ? ' · ' + z.doppelt + ' doppelte Kerzen an der Naht verworfen (Archiv gewinnt)' : '');
+    VW.laeuft = false;
+    VW.letzterLauf = Date.now();
+    vwZeichnen();
+    vwArchivKarte();
+  }
+
+  /* Ist das Archiv fuer diesen Zeitrahmen nicht mehr aktuell? Eine Kerzendauer
+   * Nachlauf, damit nicht jede gerade laufende Periode als Luecke gilt. */
+  function vwArchivVeraltet(bisMs, zr) {
+    if (!bisMs || !KC()) return true;
+    var d = KC().INTERVALL_MS[zr] || 86400000;
+    return (Date.now() - bisMs) > d * 2;
+  }
+  function vwZeitpunkt(ms) {
+    if (!ms) return '–';
+    var d = new Date(ms);
+    return d.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' }) + ' ' +
+      d.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit', timeZone: 'America/New_York' }) + ' ET';
+  }
+
+  /* ---- Zeichnen ---- */
+  function vwFarben() {
+    var s = getComputedStyle(document.documentElement);
+    function v(name, ersatz) { var x = s.getPropertyValue(name); return (x && x.trim()) || ersatz; }
+    return {
+      auf: v('--up', '#16a34a'), ab: v('--down', '#dc2626'),
+      band: 'rgba(148,163,184,0.13)', umsatz: 'rgba(148,163,184,0.5)',
+      ma20: v('--series', '#2563eb'), ma50: v('--warn', '#f59e0b'), ma200: v('--series3', '#a855f7'),
+      kreuz: v('--muted', '#94a3b8')
+    };
+  }
+  var VW_MA_FARBE = { 20: 'ma20', 50: 'ma50', 200: 'ma200' };
+  function vwSichtbar() {
+    var basis = VW.fest, sitz = VW.sitzungen;
+    if (VW.nurRegulaer && KC()) {
+      var g = KC().nurRegulaer(basis, sitz);
+      basis = g.kerzen; sitz = g.sitzungen;
+    }
+    /* Die laufende Kerze haengt hinten an - und NUR hier, in der Zeichenliste. */
+    var lauf = vwLaufendeKerze(basis);
+    var alle = lauf ? basis.concat([lauf]) : basis;
+    var sitzAlle = lauf ? sitz.concat([vwSitzungAusZeit(lauf[0]) || 'unbekannt']) : sitz;
+    var f = KC().fenster(alle.length, VW.fensterBis == null ? alle.length - 1 : VW.fensterBis, VW.fensterN);
+    return {
+      kerzen: alle.slice(f.von, f.bis + 1),
+      sitzungen: sitzAlle.slice(f.von, f.bis + 1),
+      gesamt: alle.length, fenster: f, laufend: !!lauf
+    };
+  }
+  /* Die laufende Kerze aus dem Quote - nur bei sichtbarem Fenster und nur, wenn ein
+   * Kurs da ist. Sie wird nie gespeichert und nie geschrieben. */
+  function vwLaufendeKerze(basis) {
+    if (document.hidden || !basis.length || !KC()) return null;
+    var q = vwQuote();
+    if (!q || !(q.kurs > 0)) return null;
+    var d = KC().INTERVALL_MS[VW.zeitrahmen];
+    if (!d) return null;
+    return KC().laufendeKerze(basis[basis.length - 1], q.kurs, Date.now(), d);
+  }
+  function vwQuote() {
+    var MW = window.Marktwerte;
+    if (MW && typeof MW.quote === 'function') {
+      var q = MW.quote(CUR ? CUR.sym : '');
+      if (q && q.kurs > 0) return q;
+    }
+    return null;
+  }
+
+  function vwZeichnen() {
+    var c = document.getElementById('vwChart');
+    if (!c || !KC()) return;
+    var breite = Math.max(320, c.clientWidth || 900);
+    var hoehe = Math.max(200, c.clientHeight || 420);
+    var dpr = window.devicePixelRatio || 1;
+    if (c.width !== Math.round(breite * dpr) || c.height !== Math.round(hoehe * dpr)) {
+      c.width = Math.round(breite * dpr); c.height = Math.round(hoehe * dpr);
+    }
+    var ctx = c.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    var s = vwSichtbar();
+    var hin = document.getElementById('vwHinweis');
+    if (!s.kerzen.length) {
+      ctx.clearRect(0, 0, breite, hoehe);
+      if (hin) hin.textContent = 'Für diesen Zeitrahmen liegen keine Kerzen vor.';
+      vwQuelleZeichnen(s);
+      return;
+    }
+    if (hin) hin.textContent = '';
+    var sk = KC().skala(s.kerzen, { breite: breite, hoehe: hoehe });
+    if (!sk) return;
+    VW.skala = sk;
+    VW.sichtbar = s;
+    var f = vwFarben();
+    var linien = [];
+    Object.keys(VW.ma).forEach(function (n) {
+      if (!VW.ma[n] || !window.Quant) return;
+      var werte = KC().maReihe(s.kerzen, Number(n), window.Quant.sma);
+      if (werte.some(function (v) { return v != null; })) {
+        linien.push({ werte: werte, farbe: f[VW_MA_FARBE[n]], breite: 1.3 });
+      }
+    });
+    var bs = KC().baender(s.sitzungen);
+    KC().zeichnen(ctx, s.kerzen, sk, { farben: f, baender: bs, linien: linien, kreuz: VW.kreuz });
+    vwBandBeschriften(ctx, sk, bs, f);
+    vwAchsen(ctx, sk, s.kerzen, f);
+    vwQuelleZeichnen(s, bs);
+  }
+
+  /* Ein graues Band ohne Wort ist ein grauer Fleck. Beschriftet wird nur, was breit
+   * genug ist - sonst stuenden auf einem Jahreschart hunderte Woerter uebereinander. */
+  function vwBandBeschriften(ctx, sk, bs, f) {
+    ctx.save();
+    ctx.fillStyle = f.kreuz;
+    ctx.font = '10px system-ui, sans-serif';
+    bs.forEach(function (b) {
+      var x0 = sk.links + b.von * sk.dx, x1 = sk.links + (b.bis + 1) * sk.dx;
+      var txt = KC().bandText(b.art);
+      if (x1 - x0 < ctx.measureText(txt).width + 8) return;
+      ctx.fillText(txt, x0 + 3, sk.oben + 11);
+    });
+    ctx.restore();
+  }
+  /* Kurs- und Zeitachse. Die Zeit steht in New Yorker Zeit - der Wert wird dort
+   * gehandelt, und eine deutsche Uhrzeit auf einer US-Sitzung waere eine
+   * Umrechnung, die niemand im Kopf hat. */
+  function vwAchsen(ctx, sk, kerzen, f) {
+    ctx.save();
+    ctx.fillStyle = f.kreuz;
+    ctx.font = '10px system-ui, sans-serif';
+    ctx.textAlign = 'left';
+    for (var i = 0; i <= 4; i++) {
+      var v = sk.tief + (sk.hoch - sk.tief) * i / 4;
+      ctx.fillText(U.nf2.format(v), sk.breite - sk.rechts + 4, sk.y(v) + 3);
+    }
+    var schritt = Math.max(1, Math.floor(kerzen.length / 6));
+    for (var j = 0; j < kerzen.length; j += schritt) {
+      ctx.fillText(vwAchsenZeit(kerzen[j][0]), sk.x(j) - 18, sk.hoehe - 6);
+    }
+    ctx.restore();
+  }
+  function vwAchsenZeit(ms) {
+    var d = new Date(ms);
+    var fein = (KC().INTERVALL_MS[VW.zeitrahmen] || 86400000) < 86400000;
+    return fein
+      ? d.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit', timeZone: 'America/New_York' })
+      : d.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: '2-digit', timeZone: 'America/New_York' });
+  }
+
+  /* DIE FUSSZEILE IST NIE STUMM. Sie sagt, woher die Kerzen kommen, wie viele
+   * gezeigt werden und ob eine laufende dabei ist. */
+  function vwQuelleZeichnen(s, bs) {
+    var e = document.getElementById('vwQuelle');
+    if (!e) return;
+    var teile = [VW.quelleText || 'Quelle unbekannt'];
+    if (s && s.kerzen.length) {
+      teile.push(s.kerzen.length + ' von ' + s.gesamt + ' Kerzen im Bild');
+    }
+    if (s && s.laufend) teile.push('letzte Kerze läuft noch (gestrichelt) – sie wird nicht ins Archiv geschrieben');
+    if (bs && bs.length) teile.push(bs.length + ' außerbörsliche Abschnitte grau hinterlegt');
+    if (VW.nurRegulaer) teile.push('nur reguläre Sitzung');
+    e.textContent = teile.join(' · ');
+  }
+
+  /* ---- Fadenkreuz ---- */
+  function vwKreuzAn(ev) {
+    var c = document.getElementById('vwChart');
+    if (!c || !VW.skala || !VW.sichtbar) return;
+    var r = c.getBoundingClientRect();
+    var x = ev.clientX - r.left, y = ev.clientY - r.top;
+    var i = VW.skala.index(x);
+    var k = VW.sichtbar.kerzen[i];
+    if (!k) return;
+    VW.kreuz = { index: i, y: y };
+    var ro = document.getElementById('vwKreuz');
+    if (ro) {
+      var sitz = VW.sichtbar.sitzungen[i];
+      ro.textContent = vwZeitpunkt(k[0]) + ' · ' + U.nf2.format(k[1]) +
+        (window.KerzenChart.istLaufend(k) ? ' (läuft)' : '') +
+        (sitz === 'vor' || sitz === 'nach' ? ' · ' + KC().bandText(sitz) : '') +
+        ' · Fadenkreuz ' + U.nf2.format(VW.skala.kurs(y));
+    }
+    vwZeichnen();
+  }
+  function vwKreuzAus() {
+    VW.kreuz = null;
+    var ro = document.getElementById('vwKreuz');
+    if (ro) ro.textContent = '';
+    vwZeichnen();
+  }
+
+  /* ---- Tastatur: blaettern und zoomen ---- */
+  function vwTaste(ev) {
+    var s = VW.sichtbar;
+    if (!s) return;
+    var schritt = Math.max(1, Math.round(VW.fensterN / 10));
+    var bis = VW.fensterBis == null ? s.gesamt - 1 : VW.fensterBis;
+    if (ev.key === 'ArrowLeft') { VW.fensterBis = Math.max(VW.fensterN - 1, bis - schritt); }
+    else if (ev.key === 'ArrowRight') { VW.fensterBis = Math.min(s.gesamt - 1, bis + schritt); }
+    else if (ev.key === '+' || ev.key === '=') { VW.fensterN = Math.max(20, Math.round(VW.fensterN * 0.75)); }
+    else if (ev.key === '-' || ev.key === '_') { VW.fensterN = Math.min(s.gesamt, Math.round(VW.fensterN / 0.75)); }
+    else return;
+    ev.preventDefault();
+    vwZeichnen();
+  }
+
+  /* ---- Der Kopf des Viewers ---- */
+  function vwKopfZeichnen() {
+    var e = document.getElementById('vwKopf');
+    if (!e || !CUR) return;
+    var q = vwQuote() || {};
+    var st = vwStamm(CUR.sym);
+    var felder = [];
+    function feld(name, wert, roh) {
+      felder.push('<span class="vwFeld">' + U.esc(name) + ' <b>' + (roh ? wert : U.esc(wert)) + '</b></span>');
+    }
+    feld('Börse', (CURDATA.meta && CURDATA.meta.fullExchangeName) || CUR.exch || '–');
+    if (st && st.sektor) feld('Branche', st.sektor);
+    if (q.mkap > 0) feld('Marktkapitalisierung', vwGeld(q.mkap));
+    /* Vor- und Nachboerse mit Kennzeichnung: Yahoo fuellt je nach Tageszeit nur
+     * eines von beiden. Ohne das Wort daneben waere der Kurs nicht einzuordnen. */
+    if (q.vorboerse > 0) feld('Vorbörslich', U.nf2.format(q.vorboerse));
+    if (q.nachboerse > 0) feld('Nachbörslich', U.nf2.format(q.nachboerse));
+    var tag = vwTagesspanne();
+    if (tag) feld('Tagesspanne', U.nf2.format(tag.tief) + ' – ' + U.nf2.format(tag.hoch));
+    if (q.hoch52 > 0 && q.kurs > 0) {
+      var tief52 = (CURDATA.meta && CURDATA.meta.fiftyTwoWeekLow > 0) ? CURDATA.meta.fiftyTwoWeekLow : null;
+      if (tief52 && q.hoch52 > tief52) {
+        var anteil = Math.max(0, Math.min(1, (q.kurs - tief52) / (q.hoch52 - tief52)));
+        feld('52 Wochen', '<span class="vwBand" title="' + U.esc(U.nf2.format(tief52) + ' bis ' + U.nf2.format(q.hoch52)) +
+          '"><i style="left:' + (anteil * 100).toFixed(1) + '%"></i></span>', true);
+      }
+    }
+    var rel = vwRelVolumen(q.volumen);
+    if (rel) feld('Umsatz gegen 20-Tage-Median', U.nf2.format(rel.faktor) + '×');
+    e.innerHTML = felder.join('');
+  }
+  function vwGeld(v) {
+    if (!(v > 0)) return '–';
+    if (v >= 1e12) return U.nf2.format(v / 1e12) + ' Bio. $';
+    if (v >= 1e9) return U.nf2.format(v / 1e9) + ' Mrd. $';
+    return Math.round(v / 1e6) + ' Mio. $';
+  }
+  function vwStamm(sym) {
+    var MW = window.Marktwerte;
+    if (!MW || typeof MW.stammEintrag !== 'function') return null;
+    return MW.stammEintrag(sym);
+  }
+  /* Die Tagesspanne aus den geladenen Kerzen des laufenden Tages - nicht aus einer
+   * zweiten Abfrage. Ohne Kerzen von heute steht dort nichts, statt einer Spanne
+   * von gestern, die wie heute aussaehe. */
+  function vwTagesspanne() {
+    var heute = new Date().toISOString().slice(0, 10);
+    var hi = -Infinity, lo = Infinity;
+    (VW.fest || []).forEach(function (k) {
+      if (new Date(k[0]).toISOString().slice(0, 10) !== heute) return;
+      var h = k[3] != null ? k[3] : k[1], t = k[4] != null ? k[4] : k[1];
+      if (h > hi) hi = h;
+      if (t < lo) lo = t;
+    });
+    return isFinite(hi) && isFinite(lo) ? { hoch: hi, tief: lo } : null;
+  }
+  function vwRelVolumen(heute) {
+    if (!MU2() || !VW.tages || !VW.tages.length) return null;
+    var vol = MU2().volumenReihe(VW.tages.slice(0, -1));
+    return MU2().relativesVolumen(heute, vol, { fenster: 20, minTage: 20 });
+  }
+
+  /* ---- Karte "Im Archiv": welcher Zeitrahmen reicht wie weit zurueck ----
+   * Die Zahlen kommen aus derselben Leseauskunft wie die Kerzen; eine zweite Quelle
+   * fuer dieselbe Frage waere eine zweite Wahrheit. */
+  async function vwArchivKarte() {
+    var e = document.getElementById('vwArchiv');
+    if (!e || !CUR || !KC()) return;
+    if (!window.api || typeof window.api.archivKerzen !== 'function') {
+      e.innerHTML = '<div class="loading">Leseauskunft in dieser Fassung nicht vorhanden.</div>';
+      return;
+    }
+    if (vwArchivKarte.fuer === CUR.sym) return;   // je Wert einmal
+    vwArchivKarte.fuer = CUR.sym;
+    var sym = CUR.sym;
+    var zeilen = [];
+    for (var i = 0; i < KC().ZEITRAHMEN.length; i++) {
+      var zr = KC().ZEITRAHMEN[i];
+      var r = null;
+      try { r = await window.api.archivKerzen(sym, zr, 20); } catch (e2) { r = null; }
+      if (vwArchivKarte.fuer !== sym) return;     // inzwischen anderer Wert
+      zeilen.push({ zr: zr, ok: !!(r && r.ok), von: r && r.von, bis: r && r.bis,
+                    grund: (r && r.grund) || '', quelle: (r && r.quelle) || '' });
+    }
+    e.innerHTML = '<dl class="kv">' + zeilen.map(function (z) {
+      var wert = z.ok
+        ? (z.quelle === 'alpaca' ? 'Alpaca' : 'Archiv') + ' bis ' + U.esc(vwZeitpunkt(z.bis))
+        : U.esc(z.grund || 'nichts da');
+      return '<dt>' + U.esc(z.zr) + '</dt><dd>' + wert + '</dd>';
+    }).join('') + '</dl>';
+  }
+
+  /* ---- Karte "Termine": der naechste Ergebnistermin ---- */
+  async function vwTermine() {
+    var e = document.getElementById('vwTermine');
+    if (!e || !CUR) return;
+    var sym = CUR.sym;
+    e.innerHTML = '<div class="loading">–</div>';
+    var text = '';
+    try {
+      var r = window.api && window.api.earningsKalender ? await window.api.earningsKalender(7) : null;
+      if (r && r.ok) {
+        var eigen = (r.termine || []).filter(function (t) { return t.sym === sym; })[0];
+        if (eigen) {
+          text = 'Ergebnistermin: <b>' + U.esc(new Date(eigen.zeit).toLocaleDateString('de-DE')) + '</b>' +
+            (eigen.art ? ' (' + U.esc(eigen.art) + ')' : '');
+        }
+      }
+      if (!text) {
+        /* Ausserhalb des Sieben-Tage-Fensters fragt der Viewer den Wert selbst -
+         * derselbe Endpunkt, den das Termin-Archiv der Ergebnis-Drift benutzt. */
+        var a = window.api && window.api.earningsFetch ? await window.api.earningsFetch(sym) : null;
+        if (sym !== (CUR && CUR.sym)) return;
+        if (a && a.ok && a.aktuell && a.aktuell.termin) {
+          text = 'Nächster Ergebnistermin: <b>' + U.esc(new Date(a.aktuell.termin).toLocaleDateString('de-DE')) + '</b>';
+        } else {
+          text = 'Kein Ergebnistermin gefunden' + (a && a.aktuellGrund ? ' (' + U.esc(a.aktuellGrund) + ')' : '') + '.';
+        }
+      }
+    } catch (e3) { text = 'Termine nicht erreichbar: ' + U.esc(String(e3 && e3.message || e3)); }
+    if (sym !== (CUR && CUR.sym)) return;
+    e.innerHTML = '<div>' + text + '</div>';
+  }
+
+  /* ---- Wegweiser zum Belegstand. KEIN Urteil im Viewer.
+   * Was ein Protokoll sagt, steht im Studienregister und wird von dort GELESEN -
+   * ein fester Satz koennte es nur behaupten, und genau so hat sich im Projekt
+   * schon einmal eine ueberholte Formel monatelang weitergetragen (Regel D2). */
+  function vwBelegstand() {
+    var e = document.getElementById('vwBelegstand');
+    if (!e) return;
+    var SU = window.StudienUrteile;
+    var vt = SU && SU.vorwaertstest ? SU.vorwaertstest('momentum-liquide') : null;
+    var belegt = !!(vt && vt.urteil === 'bestaetigt');
+    e.innerHTML = 'Signale zu diesem Wert: <b>' +
+      (belegt ? 'ein Protokoll sagt bestätigt' : 'kein Protokoll sagt bestätigt') +
+      '</b>. Der Viewer bewertet nichts und handelt nichts; den Belegstand aller Regeln zeigt ' +
+      '<b>Regeln → Strategien</b>.';
+  }
+
+  /* ---- Tagesreihe fuer den Volumen-Median (eigenes Tagesarchiv) ---- */
+  async function vwTagesreihe() {
+    VW.tages = null;
+    if (!window.api || typeof window.api.marktTagesreihen !== 'function' || !CUR) return;
+    var sym = CUR.sym;
+    try {
+      var r = await window.api.marktTagesreihen([sym], 60);
+      if (sym !== (CUR && CUR.sym)) return;
+      if (r && r.ok && r.reihen && r.reihen[sym]) VW.tages = r.reihen[sym];
+    } catch (e) { /* ohne Tagesarchiv bleibt das relative Volumen unbekannt */ }
+  }
+
+  /* ---- Verdrahtung, einmal ---- */
+  function vwBauen() {
+    vwZeitrahmenBauen();
+    var leiste = document.getElementById('vwLeiste');
+    if (leiste && !leiste.__bereit) {
+      leiste.__bereit = true;
+      leiste.querySelectorAll('input[data-ma]').forEach(function (cb) {
+        cb.checked = !!VW.ma[cb.getAttribute('data-ma')];
+        cb.addEventListener('change', function () {
+          VW.ma[cb.getAttribute('data-ma')] = cb.checked;
+          vwZeichnen();
+        });
+      });
+      var nr = document.getElementById('vwNurRegulaer');
+      if (nr) {
+        nr.addEventListener('change', function () {
+          VW.nurRegulaer = nr.checked;
+          try { window.api.storeSet(VW_STORE, VW.nurRegulaer); } catch (e) { /* ohne Speicher geht es auch */ }
+          vwZeichnen();
+        });
+      }
+    }
+    var c = document.getElementById('vwChart');
+    if (c && !c.__bereit) {
+      c.__bereit = true;
+      c.addEventListener('mousemove', vwKreuzAn);
+      c.addEventListener('mouseleave', vwKreuzAus);
+      c.addEventListener('keydown', vwTaste);
+      window.addEventListener('resize', function () { if (CUR) vwZeichnen(); });
+    }
+    if (!VW.takt) {
+      /* Nur bei sichtbarem Fenster, Muster marktui.js. Die laufende Kerze ist eine
+       * ANZEIGE - schlaeft das Fenster, sieht niemand hin, und der Takt kostet
+       * nichts. */
+      VW.takt = setInterval(function () {
+        if (document.hidden || !CUR) return;
+        vwQuoteHolen();
+        vwKopfZeichnen();
+        vwZeichnen();
+        if (Date.now() - VW.letzterLauf >= VW_TAKT_MS * 5) vwLaden();
+      }, VW_TAKT_MS);
+    }
+  }
+  /* Der gemerkte Zustand des Umschalters. Vorgabe: an. */
+  (function () {
+    if (!window.api || typeof window.api.storeGet !== 'function') return;
+    window.api.storeGet(VW_STORE).then(function (v) {
+      if (v === false) VW.nurRegulaer = false;
+      var nr = document.getElementById('vwNurRegulaer');
+      if (nr) nr.checked = VW.nurRegulaer;
+    }).catch(function () { /* ohne Speicher bleibt es bei der Vorgabe */ });
+  })();
+
+  /* Der Kurs fuer Kopf und laufende Kerze kommt aus DERSELBEN Sammelrunde wie die
+   * Marktkarte (window.Marktwerte.quotesHolen). Ein eigener Abruf je geoeffnetem Wert
+   * waere eine dritte Runde neben den beiden, die dieser Auftrag gerade zu einer
+   * zusammenlegt. Ist der Wert nicht in der Grundmenge der Karte, faehrt die Runde
+   * ihn mit - ein Kuerzel mehr in einem Block von 400 kostet keine Anfrage. */
+  async function vwQuoteHolen() {
+    var MW = window.Marktwerte;
+    if (!MW || typeof MW.quotesHolen !== "function" || !CUR) return;
+    var sym = CUR.sym;
+    try { await MW.quotesHolen([sym]); } catch (e) { return; }
+    if (sym !== (CUR && CUR.sym)) return;
+    vwKopfZeichnen();
+    vwZeichnen();
+  }
+
+  /** Alles, was der Viewer beim Oeffnen eines Werts tut. Wird von openDetail
+   *  aufgerufen; die Reihenfolge ist Absicht: erst zeichnen, was ohne Netz geht. */
+  function vwOeffnen() {
+    vwBauen();
+    vwArchivKarte.fuer = null;
+    VW.fensterBis = null;
+    VW.tages = null;
+    vwBelegstand();
+    vwKopfZeichnen();
+    vwLaden();
+    vwQuoteHolen();
+    vwTagesreihe().then(vwKopfZeichnen);
+    vwTermine();
+  }
+  /* Nur fuer Proben und die Selbstpruefung - kein Bedienweg. */
+  window.__viewer = VW;
+  window.__viewerLaden = vwLaden;
 
   // Oeffentliche Oeffnen-API: andere Module (z. B. die Dashboard-Heatmap) springen
   // damit direkt in die Detail-Ansicht, ohne die interne openDetail zu kennen.

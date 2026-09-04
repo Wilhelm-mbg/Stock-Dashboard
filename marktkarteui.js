@@ -221,6 +221,78 @@
 
   /** Kurs und Tagesveraenderung. Ein Abruf je Wert liefert beides: Der Chart-Kopf
    *  traegt den aktuellen Kurs UND den Schluss des Vortages. */
+  /* ---- EINE Sammelrunde je Minute (Stufe 6, Wilhelms Entscheid 04.09.2026) ----
+   *
+   * Bis hierher holten ZWEI Stellen im Minutentakt dieselben Kurse: die Marktkarte
+   * (hier) und der Markt-Ueberblick (marktui.js). Beide fragten dasselbe Universum,
+   * beide in Bloecken zu 400 - das waren rund zehn Anfragen je Minute fuer fuenf
+   * Antworten. Seit dem 04.09.2026 gibt es nur noch DIESE Runde; der Ueberblick und
+   * der Aktien-Viewer lesen ihr Ergebnis ueber window.Marktwerte.quote().
+   *
+   * GESPEICHERT WIRD DIE GANZE ANTWORT, nicht nur Kurs und Prozent. Volumen,
+   * Marktkapitalisierung, 52-Wochen-Hoch und der vor-/nachboersliche Kurs stehen in
+   * DERSELBEN Antwort - sie wegzuwerfen und spaeter erneut zu holen war der eine
+   * Grund, warum es zwei Runden gab.
+   *
+   * MITFAHREN STATT ZWEIMAL FAHREN: laeuft schon eine Runde, wartet der zweite
+   * Aufrufer sie ab und sieht danach nach, was noch fehlt. Ohne das startete jeder
+   * Takt, der eine Millisekunde spaeter kommt, eine eigene Runde - genau der
+   * Zustand, den dieser Umbau beseitigt. */
+  var RUNDEN = 0;              // wie viele Sammelrunden diese Sitzung gefahren hat
+  var laufendeRunde = null;
+  async function quotesHolen(syms) {
+    var liste = (syms || []).filter(function (s) { return !!s; });
+    var offen = liste.filter(function (s) { return !kursFrisch(s); });
+    if (!offen.length) return { ok: true, geholt: 0, runde: false, grund: '' };
+    if (laufendeRunde) {
+      try { await laufendeRunde; } catch (e) { /* der Fehler gehoert dem, der fuhr */ }
+      offen = liste.filter(function (s) { return !kursFrisch(s); });
+      if (!offen.length) return { ok: true, geholt: 0, runde: false, mitgefahren: true, grund: '' };
+    }
+    var K = window.Kurse;
+    if (!K || typeof K.holeViele !== 'function') {
+      return { ok: false, geholt: 0, runde: false, grund: 'Sammelabruf in dieser Fassung nicht vorhanden' };
+    }
+    /* /v7/finance/quote nimmt viele Kuerzel auf einmal; der Hauptprozess blockt bei 400.
+     * Nachgemessen am 25.08.2026: 800 Kuerzel in EINER Anfrage, 3,4 s. */
+    RUNDEN++;
+    var zusage = K.holeViele(offen);
+    laufendeRunde = zusage;
+    var r;
+    try { r = await zusage; } finally { if (laufendeRunde === zusage) laufendeRunde = null; }
+    if (!r || !r.ok) {
+      return { ok: false, geholt: 0, runde: true, grund: (r && r.grund) || 'unbekannt' };
+    }
+    var nun = Date.now(), geholt = 0;
+    offen.forEach(function (sym) {
+      var q = r.kurse[sym];
+      if (!q || !(q.kurs > 0)) return;
+      geholt++;
+      KURSE[sym] = {
+        kurs: q.kurs,
+        /* Yahoo liefert die Prozentzahl mit; nur wenn sie fehlt, wird sie aus dem
+         * Vortagesschluss gerechnet. Fehlt auch der, bleibt sie null - eine
+         * unbekannte Veraenderung ist unbekannt, nicht null Prozent. */
+        pct: q.pct != null ? q.pct : (q.vorher > 0 ? (q.kurs / q.vorher - 1) * 100 : null),
+        vorher: q.vorher != null ? q.vorher : null,
+        volumen: q.volumen != null ? q.volumen : null,
+        mkap: q.mkap != null ? q.mkap : null,
+        hoch52: q.hoch52 != null ? q.hoch52 : null,
+        vorboerse: q.vorboerse != null ? q.vorboerse : null,
+        nachboerse: q.nachboerse != null ? q.nachboerse : null,
+        at: nun
+      };
+    });
+    /* DIE DROSSELUNG WIRD GENANNT, NICHT VERSCHWIEGEN - ein stiller Rueckfall auf
+     * weniger Werte saehe aus wie ein duenner Markt. */
+    var grund = (r.gedrosselt || r.leereBloecke)
+      ? 'Yahoo drosselt: ' + (r.gedrosselt || 0) + '-mal abgewiesen, ' +
+        (r.leereBloecke || 0) + ' Blöcke ohne Antwort – angezeigt ist, was ankam'
+      : '';
+    return { ok: true, geholt: geholt, angefragt: offen.length, runde: true, grund: grund,
+             gedrosselt: r.gedrosselt || 0, leereBloecke: r.leereBloecke || 0 };
+  }
+
   async function kurseHolen(liste, melde) {
     /* Erst abschoepfen, was die App schon weiss. Bei 300 Werten sind das die rund
      * hundert, die Kachelreihe und Intraday-Scanner ohnehin fuehren - hundert Abrufe
@@ -246,46 +318,31 @@
       w.kurs = k.kurs; w.pct = k.pct;
       w.groesse = k.kurs * w.aktien;
       w.ausApp = true;
-      KURSE[w.sym] = { kurs: k.kurs, pct: k.pct, at: jetzt };
+      /* Der Kurs aus der App traegt Volumen, MKap und 52-Wochen-Hoch NICHT - die
+       * stehen nur im Sammelabruf. Sie hier auf 0 zu setzen machte aus "wir wissen
+       * es nicht" ein Ergebnis; deshalb null. */
+      KURSE[w.sym] = { kurs: k.kurs, pct: k.pct, vorher: null, volumen: null, mkap: null,
+                       hoch52: null, vorboerse: null, nachboerse: null, at: jetzt };
       ausDerApp++;
     });
     var fertig = ausSpeicher + ausDerApp;
     if (fertig && melde) melde(fertig, liste.length);
-    var K = window.Kurse;
-    /* Frueher stand hier `return 0` - das haette den Zwischenspeicher unterschlagen
-     * und die Karte als leer gemeldet, obwohl sie voll ist. */
-    if (!K || typeof K.holeViele !== 'function') return liste.filter(function (w) { return w.groesse > 0; }).length;
-
-    /* SAMMELABRUF statt Einzelabrufen (25.08.2026). Hier lief eine Schleife ueber sechs
-     * Bahnen mit EINEM Netzabruf JE WERT. Bei der Vorgabe von 600 Werten waren das
-     * sechshundert Anfragen fuer ein Bild - der Grund, warum die Karte traege war und
-     * nicht im Hintergrund laufen durfte.
-     *
-     * /v7/finance/quote nimmt viele Kuerzel auf einmal; der Hauptprozess blockt bei 400.
-     * Nachgemessen am 25.08.2026: 800 Kuerzel in EINER Anfrage, 3,4 s. 600 Werte kosten
-     * damit zwei Anfragen statt sechshundert. */
+    /* DIE SAMMELRUNDE steht seit dem 04.09.2026 in quotesHolen() und ist die EINZIGE
+     * im Programm. Hier stand bis dahin ein eigener holeViele-Aufruf; der zweite lief
+     * eine Etage weiter in marktui.js, mit denselben Kuerzeln im selben Takt. Wer die
+     * Anfragen zaehlte, sah zehn je Minute und fuenf Antworten. */
     var offen = liste.filter(function (w) { return !w.ausSpeicher && !w.ausApp; });
     if (!offen.length) return liste.filter(function (w) { return w.groesse > 0; }).length;
-    var r = await K.holeViele(offen.map(function (w) { return w.sym; }));
-    if (!r || !r.ok) {
-      /* Ein gescheiterter Sammelabruf darf nicht wie eine leere Karte aussehen. Was aus
-       * Zwischenspeicher und App kam, bleibt stehen; der Grund wandert nach oben, statt
-       * in einer stillen Null zu verschwinden. */
-      kurseHolen.letzterGrund = (r && r.grund) || 'unbekannt';
-      return liste.filter(function (w) { return w.groesse > 0; }).length;
-    }
-    kurseHolen.letzterGrund = '';
-    var nun = Date.now();
+    var r = await quotesHolen(offen.map(function (w) { return w.sym; }));
+    /* Ein gescheiterter Sammelabruf darf nicht wie eine leere Karte aussehen. Was aus
+     * Zwischenspeicher und App kam, bleibt stehen; der Grund wandert nach oben, statt
+     * in einer stillen Null zu verschwinden. */
+    kurseHolen.letzterGrund = r.ok ? (r.grund || '') : (r.grund || 'unbekannt');
     offen.forEach(function (w) {
-      var q = r.kurse[w.sym];
+      var q = KURSE[w.sym];
       if (!q || !(q.kurs > 0)) return;
-      w.kurs = q.kurs;
-      /* Yahoo liefert die Prozentzahl mit; nur wenn sie fehlt, wird sie aus dem
-       * Vortagesschluss gerechnet. Fehlt auch der, bleibt sie null - eine unbekannte
-       * Veraenderung ist unbekannt, nicht null Prozent. */
-      w.pct = q.pct != null ? q.pct : (q.vorher > 0 ? (q.kurs / q.vorher - 1) * 100 : null);
+      w.kurs = q.kurs; w.pct = q.pct;
       w.groesse = q.kurs * w.aktien;
-      KURSE[w.sym] = { kurs: w.kurs, pct: w.pct, at: nun };
     });
     if (melde) melde(liste.length, liste.length);
     return liste.filter(function (w) { return w.groesse > 0; }).length;
@@ -597,6 +654,39 @@
     stammLaden: stammLaden,
     artenLaden: artenLaden,
     auswahl: auswahl,
+    /** Die GANZE Quote-Antwort aus dem Zwischenspeicher der Karte - oder null, wenn
+     *  sie aelter als eine Minute ist. Kein Abruf, keine Wartezeit.
+     *
+     *  Seit Stufe 6 (04.09.2026) steht hier alles, was die Antwort hergab: Volumen,
+     *  Marktkapitalisierung, 52-Wochen-Hoch und der vor-/nachboersliche Kurs. Vorher
+     *  gab diese Auskunft nur Kurs und Prozent heraus - und weil der Ueberblick die
+     *  uebrigen Felder brauchte, holte er sie ein zweites Mal. Das war der ganze
+     *  Grund fuer die zweite Sammelrunde je Minute. */
+    quote: function (sym) {
+      if (!kursFrisch(sym)) return null;
+      var c = KURSE[sym];
+      return { kurs: c.kurs, pct: c.pct, vorher: c.vorher != null ? c.vorher : null,
+               volumen: c.volumen != null ? c.volumen : null,
+               mkap: c.mkap != null ? c.mkap : null,
+               hoch52: c.hoch52 != null ? c.hoch52 : null,
+               vorboerse: c.vorboerse != null ? c.vorboerse : null,
+               nachboerse: c.nachboerse != null ? c.nachboerse : null,
+               at: c.at };
+    },
+    /** Die eine Sammelrunde. Wer Kurse braucht, ruft sie - sie holt nur, was nicht
+     *  frisch ist, und faehrt nie zwei Runden gleichzeitig. */
+    quotesHolen: quotesHolen,
+    /** Wie viele Sammelrunden diese Sitzung gefahren hat. Fuer die Messung "eine
+     *  Runde je Minute" und fuer die Selbstpruefung - kein Bedienweg. */
+    runden: function () { return RUNDEN; },
+    /** Stammdaten zu EINEM Kuerzel (Branche, Stueckzahl, Name). Der Viewer braucht
+     *  die Branche; sich dafuer die ganze Auswahl bauen zu lassen waere ein Umweg
+     *  ueber zweitausend Werte fuer ein Wort. */
+    stammEintrag: function (sym) {
+      var e = stamm && stamm.werte ? stamm.werte[sym] : null;
+      if (!e) return null;
+      return { name: e.name || sym, sektor: e.sektor || null, aktien: e.aktien || null, cik: e.cik || null };
+    },
     /** Der Kurs aus dem Zwischenspeicher der Karte - oder null, wenn er aelter als
      *  fuenf Minuten ist. Kein Abruf, keine Wartezeit. */
     kurs: function (sym) {

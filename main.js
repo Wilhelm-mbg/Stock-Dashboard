@@ -1676,6 +1676,136 @@ ipcMain.handle('markt-tagesreihen', async (_ev, symbole, tage) => {
   } catch (e) { return { ok: false, grund: String((e && e.message) || e), reihen: {} }; }
 });
 
+/* ---- Kerzen aus dem eigenen Archiv fuer den Aktien-Viewer (Stufe 6, 04.09.2026) ----
+ *
+ * NUR LESEN. Diese Auskunft holt nichts nach, schreibt nichts, nimmt keine Sperre und
+ * stoesst keinen Sammellauf an - sie sieht in Archive hinein, die ohnehin daliegen.
+ * Der Viewer zeigt eine LAUFENDE Kerze aus den Quotes; die geht durch diese Auskunft
+ * nie zurueck auf die Platte, weil es hier keinen Schreibweg gibt.
+ *
+ * ZWEI ABLAGEN, in fester Reihenfolge:
+ *   (a) 1m: das Alpaca-Minutenarchiv alpaca1m-bereinigt/<ORD>/<JAHR>.json, sonst
+ *       alpaca1m/<ORD>/<JAHR>.json. Es traegt seine `sitzungen`-Bereiche mit - aus dem
+ *       Kalender der Quelle, also samt Halbtagen. Ohne sie muesste der Chart raten,
+ *       was vorboerslich war.
+ *   (b) sonst das App-Archiv (archiv1d/60m/15m/5m/1m) im Format 2, ueber
+ *       kerzenquelle.js - die kennt Pfade, Unterordner (etf/, krypto/) und Format.
+ *
+ * WARUM NUR DER SCHWANZ DER DATEI: alpaca1m/AAPL/2026.json traegt 133.770 Kerzen auf
+ * 6,7 MB; der Viewer zeigt ein paar hundert. Am 04.09.2026 gemessen (siehe Uebergabe
+ * Stufe 6): die Datei vollstaendig zu lesen und zu zerlegen kostet im Hauptprozess
+ * rund 110 ms - bei JEDEM Zeitrahmen-Wechsel, mit stehender Oberflaeche. Aus dem
+ * Schwanz kostet dasselbe Ergebnis einen Bruchteil davon. Das Zerlegen selbst steht
+ * in markt/kerzenchart.js und ist dort in Node pruefbar; die Gegenprobe in test-v6
+ * haelt Schwanz gegen Volltext.
+ *
+ * Die Herkunft je Kerze steht im KOPF der Datei (meta.quellen, Format 2). Der Kopf
+ * wird deshalb getrennt gelesen - ein paar Kilobyte - und die Bereiche, die den
+ * gezeigten Ausschnitt beruehren, wandern in die Antwort. Die Fusszeile des Viewers
+ * nennt daraus die Quelle; stumm bleibt sie nie. */
+const KChart = require('./markt/kerzenchart.js');
+/* WIE VIEL SCHWANZ: so viel, wie die verlangten Kerzen brauchen, plus ein festes
+ * Polster fuer die Sitzungsbereiche (die stehen HINTER der Reihe, ein Jahr sind rund
+ * 45 KB). Eine feste halbe Megabyte war am 04.09.2026 gemessen die falsche Wahl: bei
+ * der grossen Alpaca-Datei sparte sie 6,4-fach, bei einer 0,47-MB-Stundenreihe kostete
+ * sie mehr, als die ganze Datei zu zerlegen - der Ausschnitt war groesser als die
+ * Datei, und das Muster lief ueber alles. Rund 120 Byte je Kerze sind grosszuegig
+ * gemessen (eine 1m-Kerze wiegt etwa 50).
+ */
+function kerzenSchwanz(n) {
+  return Math.min(512 * 1024, 64 * 1024 + Math.max(0, n) * 120);
+}
+const KERZEN_KOPF = 32 * 1024;
+const KERZEN_MAX = 5000;
+function kopfLesen(pfad, bytes) {
+  const fd = fs.openSync(pfad, 'r');
+  try {
+    const len = Math.min(fs.fstatSync(fd).size, bytes);
+    const buf = Buffer.alloc(len);
+    fs.readSync(fd, buf, 0, len, 0);
+    return buf.toString('utf8');
+  } finally { fs.closeSync(fd); }
+}
+/* Das Zerlegen der Datei steht vollstaendig in markt/kerzenchart.js: Kerzen,
+ * Sitzungsbereiche und Quellenbereiche. Hier wird gelesen, dort gerechnet - so ist
+ * jede dieser Regeln in Node pruefbar, und der Hauptprozess bleibt ein Leser. */
+/* Der Ordnername im Alpaca-Archiv ist nicht immer das Kuerzel (Geraetenamen wie CON,
+ * Gross-/Kleinschreibung). Die vollstaendige Abbildung fuehrt _symbole.json; ohne sie
+ * gilt das Kuerzel selbst. */
+let alpacaAb = null;
+function alpacaOrdnerName(wurzel, sym) {
+  if (alpacaAb === null) {
+    try { alpacaAb = (JSON.parse(fs.readFileSync(path.join(wurzel, '_symbole.json'), 'utf8')).ab) || {}; }
+    catch (e) { alpacaAb = {}; }
+  }
+  return alpacaAb[sym] || sym;
+}
+ipcMain.handle('archiv-kerzen', async (_ev, symbol, zeitrahmen, anzahl) => {
+  try {
+    const t0 = Date.now();
+    const sym = String(symbol || '').toUpperCase().replace(/[^A-Z0-9.^-]/g, '').slice(0, 12);
+    if (!sym) return { ok: false, grund: 'Kein Kürzel' };
+    const zr = String(zeitrahmen || '');
+    if (KChart.ZEITRAHMEN.indexOf(zr) === -1) return { ok: false, grund: 'Zeitrahmen ' + zr + ' gibt es nicht' };
+    const n = Math.max(10, Math.min(KERZEN_MAX, parseInt(anzahl, 10) || 400));
+    const iv = KChart.ARCHIV_INTERVALL[zr];
+    if (!iv) return { ok: false, grund: 'Für ' + zr + ' führt das Archiv keine Kerzen', quelle: null };
+
+    /* (a) Minutenkerzen: erst das Alpaca-Archiv. Es reicht Jahre zurueck, wo das
+     *     App-Archiv sieben Tage fuehrt (rollendes Fenster der Quelle). */
+    if (iv === '1m') {
+      const wurzel = path.dirname(Kerzen.ordnerVon('60m'));
+      const ord = alpacaOrdnerName(path.join(wurzel, 'alpaca1m'), sym);
+      const jahr = new Date().getUTCFullYear();
+      let kerzen = [], sitzungen = [], dateien = [], gelesen = 0, ablage = '';
+      for (let j = jahr; j >= jahr - 1 && kerzen.length < n; j--) {
+        let datei = path.join(wurzel, 'alpaca1m-bereinigt', ord, j + '.json');
+        let art = 'alpaca-bereinigt';
+        if (!fs.existsSync(datei)) { datei = path.join(wurzel, 'alpaca1m', ord, j + '.json'); art = 'alpaca-roh'; }
+        if (!fs.existsSync(datei)) continue;
+        const text = schwanzLesen(datei, kerzenSchwanz(n));
+        gelesen += Math.min(fs.statSync(datei).size, kerzenSchwanz(n));
+        const teil = KChart.kerzenAusText(text, n);
+        if (!teil.length) continue;
+        kerzen = teil.concat(kerzen);
+        sitzungen = KChart.sitzungenAusText(text).concat(sitzungen);
+        dateien.push(path.basename(path.dirname(datei)) + '/' + path.basename(datei));
+        ablage = art;
+      }
+      if (kerzen.length) {
+        kerzen = kerzen.slice(-n);
+        return { ok: true, sym: sym, zeitrahmen: zr, kerzen: kerzen, sitzungen: sitzungen,
+                 quelle: 'alpaca', ablage: ablage, dateien: dateien,
+                 von: kerzen[0][0], bis: kerzen[kerzen.length - 1][0],
+                 gelesen: gelesen, ms: Date.now() - t0 };
+      }
+      /* Kein Alpaca-Jahr da - weiter zum App-Archiv, das 1m ebenfalls fuehrt. */
+    }
+
+    /* (b) Das App-Archiv, Format 2. */
+    const ordner = Kerzen.ordnerVon(iv);
+    const datei = Kerzen.dateiFuer(sym, iv, ordner);
+    if (!fs.existsSync(datei)) {
+      return { ok: false, grund: 'Im Archiv liegt für ' + sym + ' keine ' + iv + '-Reihe',
+               quelle: null, datei: datei };
+    }
+    const text = schwanzLesen(datei, kerzenSchwanz(n));
+    const kerzen = KChart.kerzenAusText(text, n);
+    if (!kerzen.length) {
+      return { ok: false, grund: 'Die Archivdatei ließ sich am Ende nicht lesen', quelle: null, datei: datei };
+    }
+    const kopf = kopfLesen(datei, KERZEN_KOPF);
+    const bereiche = KChart.quellenAusText(kopf);
+    const von = kerzen[0][0], bis = kerzen[kerzen.length - 1][0];
+    return { ok: true, sym: sym, zeitrahmen: zr, kerzen: kerzen, sitzungen: [],
+             quelle: 'archiv', quellen: KChart.quellenIm(bereiche, von, bis),
+             dateien: [path.basename(datei)], intervall: iv,
+             von: von, bis: bis,
+             gelesen: Math.min(fs.statSync(datei).size, kerzenSchwanz(n)) + kopf.length,
+             ms: Date.now() - t0 };
+  } catch (e) { return { ok: false, grund: String((e && e.message) || e) }; }
+});
+
 /* ---- Ergebnistermine des Marktes: heute und morgen ----
  *
  * Derselbe Endpunkt und dieselbe Crumb-Sitzung wie holeTermine() weiter oben -

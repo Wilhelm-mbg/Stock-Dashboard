@@ -49,7 +49,6 @@
   var WOCHE = 5, MONAT = 21;     // Handelstage, nicht Kalendertage
   var STAND_KEY = 'marktUeberblickStand';
 
-  var KURSE = {};                // sym -> { kurs, pct, volumen, mkap, hoch52, at }
   var TAGES = null;              // sym -> [[t, schluss, umsatz], ...]
   var TAGES_TAG = '';            // fuer welchen Kalendertag die Reihen geholt wurden
   var TAGES_GRUND = '';
@@ -83,76 +82,59 @@
     var stand = (STAND && STAND.zeit)
       ? 'Kurse: Stand ' + new Date(STAND.zeit).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }) + ' Uhr'
       : 'Kurse: noch keine geholt';
+    /* F2: DIESELBEN WORTE wie Kopfzeile und Cockpit - `kurz` ist der wortgleiche
+     * Teil, der Hinweis steht daneben.
+     * F8: DIE STOERUNGSMELDUNG BEKOMMT IHRE EIGENE ZEILE. Bei 1024 px brach die
+     * Zeile sonst auf drei um, weil der dritte Teil mit hineinlief. Umbrechen war
+     * richtig - eine eigene Zeile ist es mehr. */
     e.innerHTML =
-      '<span class="zustand"><span class="mdot ' + (offen ? 'open' : 'closed') + '"></span>' + esc(z.text) + '</span>' +
-      '<span class="quelle">' + esc(stand) + '</span>' +
-      (kursGrund ? '<span class="quelle">Kursabruf gescheitert: ' + esc(kursGrund) + '</span>' : '');
+      '<div class="sitzungZeile">' +
+      '<span class="zustand"><span class="mdot ' + (offen ? 'open' : 'closed') + '"></span>' + esc(z.kurz) + '</span>' +
+      (z.hinweis ? '<span class="quelle">' + esc(z.hinweis) + '</span>' : '') +
+      '<span class="quelle">' + esc(stand) + '</span></div>' +
+      (kursGrund ? '<div class="sitzungStoerung quelle">Kursabruf gescheitert: ' + esc(kursGrund) + '</div>' : '');
   }
 
   /* ---------------------------------------------------------------------------
-   * Kurse: erst nehmen, was die App schon hat
+   * Kurse: EINE Sammelrunde, und sie gehoert der Marktkarte
    *
-   * Die Marktkarte fuehrt denselben Kreis von Werten und haelt ihre Kurse fuenf
-   * Minuten. Sie hier abzuschoepfen ist nicht nur billiger - es ist die einzige
-   * Art, dieselbe Tagesveraenderung an beiden Orten stehen zu haben. Zwei eigene
-   * Abrufe im Minutenabstand zeigten sonst zwei Zahlen fuer denselben Tag. */
-  function ausDerApp(sym) {
-    var m = window.Marktwerte && window.Marktwerte.kurs ? window.Marktwerte.kurs(sym) : null;
-    if (m && m.kurs > 0) return m;
-    var q = window.Dash && window.Dash.quote ? window.Dash.quote(sym) : null;
-    if (q && q.price != null && q.pct != null) return { kurs: q.price, pct: q.pct };
-    return null;
-  }
-  function kursFrisch(sym) {
-    var c = KURSE[sym];
-    return !!(c && c.kurs > 0 && Date.now() - c.at <= FRISCH_MS);
-  }
-
+   * Bis zum 04.09.2026 holte dieser Reiter seine Kurse selbst - dieselben Kuerzel,
+   * derselbe Minutentakt, dieselben Bloecke zu 400 wie die Marktkarte eine Etage
+   * weiter. Das waren rund zehn Anfragen je Minute fuer fuenf Antworten. Seit
+   * Wilhelms Entscheid vom 04.09. gibt es nur noch die Runde der Marktkarte
+   * (window.Marktwerte.quotesHolen); hier wird ihr Ergebnis GELESEN.
+   *
+   * Das ist nicht nur billiger - es ist die einzige Art, dieselbe Tagesveraenderung
+   * an beiden Orten stehen zu haben. Zwei eigene Abrufe im Minutenabstand zeigten
+   * sonst zwei Zahlen fuer denselben Tag. */
   async function kurseHolen(liste) {
-    var jetzt = Date.now();
-    var offen = liste.filter(function (w) { return !kursFrisch(w.sym); });
-    /* Volumen, Marktkapitalisierung und das 52-Wochen-Hoch stehen NUR im
-     * Sammelabruf. Der Kurs aus der Karte reicht fuer die Gewinner-Liste, nicht fuer
-     * "ungewoehnliches Volumen" - deshalb wird er hier nur als Zwischenstand
-     * eingesetzt und der Abruf trotzdem gemacht. */
-    offen.forEach(function (w) {
-      var k = ausDerApp(w.sym);
-      if (k) KURSE[w.sym] = { kurs: k.kurs, pct: k.pct, volumen: null, mkap: null, hoch52: null, at: jetzt, ausApp: true };
-    });
-    var K = window.Kurse;
-    if (!K || typeof K.holeViele !== 'function') { kursGrund = 'Sammelabruf in dieser Fassung nicht vorhanden'; return; }
-    if (!offen.length) { kursGrund = ''; return; }
-    var r = await K.holeViele(offen.map(function (w) { return w.sym; }));
-    if (!r || !r.ok) {
-      /* Ein gescheiterter Abruf darf nicht wie ein leerer Markt aussehen. Was schon
-       * im Speicher steht, bleibt stehen; der Grund wandert in die Kopfzeile. */
-      kursGrund = (r && r.grund) || 'unbekannt';
+    var MW = window.Marktwerte;
+    if (!MW || typeof MW.quotesHolen !== 'function') {
+      kursGrund = 'Sammelabruf in dieser Fassung nicht vorhanden';
       return;
     }
-    /* DIE DROSSELUNG WIRD GENANNT, NICHT VERSCHWIEGEN. Seit dem Minutentakt ueber das
-     * ganze Universum (04.09.2026) ist sie der wahrscheinlichste Grund fuer eine kurze
-     * Liste - und ein stiller Rueckfall auf weniger Werte saehe aus wie ein duenner
-     * Markt. Die Zeile steht in der Kopfzeile, wo auch ein gescheiterter Abruf steht. */
-    kursGrund = (r.gedrosselt || r.leereBloecke)
-      ? 'Yahoo drosselt: ' + (r.gedrosselt || 0) + '-mal abgewiesen, ' +
-        (r.leereBloecke || 0) + ' Bloecke ohne Antwort – angezeigt ist, was ankam'
-      : '';
-    var nun = Date.now();
-    offen.forEach(function (w) {
-      var q = r.kurse[w.sym];
-      if (!q || !(q.kurs > 0)) return;
-      KURSE[w.sym] = {
-        kurs: q.kurs,
-        /* Yahoo liefert die Prozentzahl mit; nur wenn sie fehlt, wird sie aus dem
-         * Vortagesschluss gerechnet. Fehlt auch der, bleibt sie null - eine
-         * unbekannte Veraenderung ist unbekannt, nicht null Prozent. */
-        pct: q.pct != null ? q.pct : (q.vorher > 0 ? (q.kurs / q.vorher - 1) * 100 : null),
-        volumen: q.volumen != null ? q.volumen : null,
-        mkap: q.mkap != null ? q.mkap : null,
-        hoch52: q.hoch52 != null ? q.hoch52 : null,
-        at: nun
-      };
-    });
+    var r = await MW.quotesHolen(liste.map(function (w) { return w.sym; }));
+    /* DIE DROSSELUNG WIRD GENANNT, NICHT VERSCHWIEGEN. Sie ist der wahrscheinlichste
+     * Grund fuer eine kurze Liste - und ein stiller Rueckfall auf weniger Werte saehe
+     * aus wie ein duenner Markt. */
+    kursGrund = (r && r.ok) ? (r.grund || '') : ((r && r.grund) || 'unbekannt');
+  }
+
+  /** Der Kurs zu einem Kuerzel. Erst die gemeinsame Runde, dann das, was die App
+   *  ohnehin fuehrt (Kachelreihe, Intraday-Scanner) - beides ohne Netz.
+   *
+   *  Der Rueckfall traegt Volumen, Marktkapitalisierung und 52-Wochen-Hoch NICHT:
+   *  die stehen nur im Sammelabruf. Sie hier auf 0 zu setzen machte aus "wir wissen
+   *  es nicht" ein Ergebnis - deshalb null. */
+  function kursVon(sym) {
+    var MW = window.Marktwerte;
+    var q = MW && MW.quote ? MW.quote(sym) : null;
+    if (q && q.kurs > 0) return q;
+    var d = window.Dash && window.Dash.quote ? window.Dash.quote(sym) : null;
+    if (d && d.price != null && d.pct != null) {
+      return { kurs: d.price, pct: d.pct, volumen: null, mkap: null, hoch52: null };
+    }
+    return null;
   }
 
   /* ---------------------------------------------------------------------------
@@ -207,7 +189,7 @@
     var M = MU();
     var werte = [], mitVolumen = 0;
     a.liste.forEach(function (w) {
-      var k = KURSE[w.sym];
+      var k = kursVon(w.sym);
       if (!k || !(k.kurs > 0)) return;
       var reihe = TAGES ? TAGES[w.sym] : null;
       /* Der HEUTIGE Tag darf nicht im Nenner stehen. Das Archiv endet beim letzten
@@ -345,9 +327,26 @@
       : '<div class="leer">' + esc(leerText) + '</div>';
     return '<div class="hotliste"><h3>' + esc(titel) + '</h3>' + inhalt + '</div>';
   }
+  /* F7: DAS NEUSCHREIBEN DARF DEN FOKUS NICHT VERLIEREN (QS-Fund, 04.09.2026).
+   * Der Kasten wird im Minutentakt komplett ueber innerHTML neu gebaut; wer beim
+   * Takt in ihm stand, wurde auf document.body zurueckgeworfen und musste sich von
+   * vorn durchtabben - jede Minute. Gemerkt wird das Kuerzel der fokussierten
+   * Zeile, nicht ihre Stelle: die Reihenfolge der Liste aendert sich mit jedem
+   * Takt, und ein Index zeigte danach auf einen anderen Wert. */
+  function fokusMerken(e) {
+    var a = document.activeElement;
+    if (!a || !e.contains(a)) return null;
+    return a.getAttribute ? a.getAttribute('data-marktsym') : null;
+  }
+  function fokusSetzen(e, sym) {
+    if (!sym) return;
+    var b = e.querySelector('[data-marktsym="' + sym.replace(/"/g, '') + '"]');
+    if (b && typeof b.focus === 'function') b.focus();
+  }
   function hotlistsZeichnen() {
     var e = el('marktHotlists');
     if (!e) return;
+    var fokusWar = fokusMerken(e);
     if (!STAND || !STAND.hotlists) { e.innerHTML = '<div class="loading">Noch keine Kurse geladen.</div>'; return; }
     var H = STAND.hotlists;
     function pctZeile(w) {
@@ -370,6 +369,8 @@
         return hotZeile(w, '<span class="wert ' + cls(w.pct) + '">' + pz(w.pct) + '</span>',
           (w.name || w.sym) + ' · Hoch ' + nf2.format(w.hoch52) + ' $, jetzt ' + nf2.format(w.kurs) + ' $');
       }, 'keiner am Hoch');
+    /* F7: der Fokus zurueck auf DIESELBE Zeile - nicht auf dieselbe Stelle. */
+    fokusSetzen(e, fokusWar);
   }
 
   /* Vor Eroeffnung / nach Schluss kommt aus Yahoos startdatetimetype und nicht aus

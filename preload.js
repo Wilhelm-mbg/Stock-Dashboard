@@ -69,6 +69,9 @@ contextBridge.exposeInMainWorld('api', {
    * schreiben nichts. */
   marktTagesreihen: (syms, tage) => ipcRenderer.invoke('markt-tagesreihen', syms, tage),
   earningsKalender: (tage) => ipcRenderer.invoke('earnings-kalender', tage),
+  /* Kerzen aus dem eigenen Archiv fuer den Aktien-Viewer (Stufe 6). NUR LESEN -
+   * es gibt keine Gegenauskunft, die schriebe. */
+  archivKerzen: (sym, zeitrahmen, anzahl) => ipcRenderer.invoke('archiv-kerzen', sym, zeitrahmen, anzahl),
   sammlerStart: (intervall) => ipcRenderer.invoke('sammler-start', intervall),
   sammlerStop: () => ipcRenderer.invoke('sammler-stop'),
   sammlerEinstellen: (e) => ipcRenderer.invoke('sammler-einstellen', e),

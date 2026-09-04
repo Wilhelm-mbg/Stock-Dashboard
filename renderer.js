@@ -46,6 +46,9 @@
 
   var Q = {};        // Yahoo-Symbol -> Quote {price, pct, series, lo52, hi52}
   var NEWS = [];
+  /* Alle geholten Schlagzeilen, nicht nur die fuenf des Kastens. Das Laufband zeigt
+   * daraus die AELTEREN - so steht keine Meldung zweimal auf dem Reiter (QS-F4). */
+  var NEWS_ALLE = [];
   var lastOk = null; // Date des letzten erfolgreichen Updates
   var fetchErrors = 0;
 
@@ -228,12 +231,47 @@
     var seen = {};
     items = items.filter(function (it) { var k = it.title.toLowerCase().slice(0, 60); if (seen[k]) return false; seen[k] = 1; return true; });
     items.sort(function (a, b) { return b.t - a.t; });
-    if (items.length) { NEWS = items.slice(0, NEWS_MAX); renderNews(); }
+    if (items.length) { NEWS_ALLE = items.slice(0, 25); NEWS = items.slice(0, NEWS_MAX); renderNews(); }
     else if (!NEWS.length) {
       // Das Element heißt #news – unter der alten ID #newsList erschien die Meldung nie.
       var nl = document.getElementById('news');
       if (nl) nl.innerHTML = '<div class="loading">News derzeit nicht erreichbar – nächster Versuch in 30 Minuten.</div>';
     }
+  }
+
+  /* Der Sitzungszustand in Worten - dieselbe Rechnung wie auf dem Reiter Markt
+   * (markt/uebersicht.js, vier Zustaende). Gibt null zurueck, wenn eines der zwei
+   * Fachmodule fehlt; dann bleibt es bei offen/zu. */
+  function sitzungJetzt() {
+    if (!window.MarktUebersicht || !window.Quant) return null;
+    var jetzt = Date.now();
+    var laenge = window.Boerse ? window.Boerse.sitzungsMinuten(jetzt) : 390;
+    return window.MarktUebersicht.sitzungszustand(window.Quant.minutenSeitOeffnung(jetzt), laenge);
+  }
+
+  /* ---- Die Hinweis-Kette an #err ----
+   * Ein Platz, mehrere Absender. Vorher schrieben zwei Stellen mit textContent
+   * hinein und loeschten einander: wer zuletzt kam, gewann, und die andere Meldung
+   * war weg, ohne dass ihr Zustand sich geaendert haette. */
+  var HINWEISE = {};
+  function hinweisSetzen(name, text) {
+    if (text) HINWEISE[name] = String(text); else delete HINWEISE[name];
+    var e = document.getElementById('err');
+    if (!e) return;
+    var namen = Object.keys(HINWEISE);
+    e.innerHTML = namen.map(function (n) {
+      return '<div data-hinweis="' + U.esc(n) + '">' + U.esc(HINWEISE[n]) + '</div>';
+    }).join('');
+  }
+  /* Die Stillstandsbremse des Sammlers (sammelrunde.js) meldet sich hier. Sie sagt
+   * es EINMAL je Stillstand, nicht bei jedem Blick - der Funkspruch traegt seine
+   * eigene Bremse mit. Der Start-Hinweis wird bewusst NICHT gezeigt: ein Lauf, der
+   * anfaengt, ist kein Fehler, und die Kopfzeile ist kein Protokoll. */
+  if (window.api && typeof window.api.onSammlerHinweis === 'function') {
+    window.api.onSammlerHinweis(function (d) {
+      if (!d || d.art !== 'stillstand') return;
+      hinweisSetzen('sammler', 'Kursarchiv ' + (d.intervall || '') + ': ' + (d.grund || 'Stillstand'));
+    });
   }
 
   /* ================= Markt offen? ================= */
@@ -384,17 +422,22 @@
     setzeInhalt('bigtech', STOCKS.filter(function (s) { return s.group === 'bigtech'; }).map(card).join(''));
     setzeInhalt('chips', STOCKS.filter(function (s) { return s.group === 'chips'; }).map(card).join(''));
 
-    // Statuszeile
+    /* Statuszeile. EIN ZUSTAND, DREI ORTE (QS-Fund F2, 04.09.2026): Kopfzeile,
+     * Cockpit und der Reiter Markt sagen seither dasselbe Wort, weil sie dieselbe
+     * Funktion fragen. usMarketOpen() bleibt fuer die HANDELSLOGIK (Glattstellung,
+     * Einstiegssperre) - nur die Anzeige zieht um. */
     var open = usMarketOpen();
-    var stampTxt = open ? 'US-Börse geöffnet' : 'US-Börse geschlossen';
+    var z = sitzungJetzt();
+    var stampTxt = z ? z.kurz : (open ? 'US-Börse geöffnet' : 'US-Börse geschlossen');
     if (lastOk) {
       stampTxt += ' · Stand: ' + lastOk.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + ' Uhr';
     }
     document.getElementById('stamp').innerHTML = '<span class="dot ' + (open ? 'open' : 'closed') + '"></span>' + U.esc(stampTxt);
     // Cockpit-Marktstatus – die übrigen Cockpit-Felder füllt depot.js
     var ckM = document.getElementById('ckMarkt');
-    if (ckM) ckM.innerHTML = open ? '<span class="mdot open"></span>offen' : '<span class="mdot closed"></span>geschlossen';
-    document.getElementById('err').textContent = fetchErrors > 0 ? '' + fetchErrors + ' Wert(e) konnten nicht geladen werden' : '';
+    if (ckM) ckM.innerHTML = '<span class="mdot ' + (open ? 'open' : 'closed') + '"></span>' +
+      U.esc(z ? z.kurz : (open ? 'offen' : 'geschlossen'));
+    hinweisSetzen('kurse', fetchErrors > 0 ? '' + fetchErrors + ' Wert(e) konnten nicht geladen werden' : '');
     /* Das Warnband ist fuer genau solche Zustaende gebaut und auf JEDEM Reiter sichtbar -
      * bei gestoerter Kursquelle blieb es trotzdem stumm, und die Meldung stand nur klein
      * in der Kopfzeile. Schwelle: mehr als die Haelfte gescheitert. Bei einzelnen
@@ -896,14 +939,22 @@
   function renderTicker() {
     var el = document.getElementById('newsTicker');
     if (!el) return;
-    if (!NEWS.length) { el.style.display = 'none'; return; }
-    var stueck = NEWS.slice(0, 20).map(function (n) {
-      return '<a href="' + U.esc(safeUrl(n.url)) + '" target="_blank" rel="noopener">' + U.esc(n.title) + '</a>' +
-        '<span class="tickTrenn">•</span>';
+    /* NUR WAS IM KASTEN NICHT STEHT (QS-F4, 04.09.2026). Vorher zeigten Band und
+     * Kasten dieselben fuenf Meldungen - zeichengleich, 2.200 px auseinander. */
+    var rest = NEWS_ALLE.slice(NEWS_MAX, 20);
+    if (!rest.length) { el.style.display = 'none'; return; }
+    var stueck = rest.map(function (n) {
+      /* tabindex="-1" (QS-F6, 04.09.2026): Ein Tabulator-Halt IM Band laesst sich
+       * nicht sichtbar halten - das Band ist schmaler als seine Links, und ein
+       * angesprungener Link ragt heraus, egal ob das Band nachrollt oder nicht.
+       * Anspringbar ist deshalb das BAND (tabindex="0" im Markup), rollbar mit den
+       * Pfeiltasten; die Links bleiben mit der Maus erreichbar. */
+      return '<a href="' + U.esc(safeUrl(n.url)) + '" target="_blank" rel="noopener" tabindex="-1">' +
+        U.esc(n.title) + '</a><span class="tickTrenn">•</span>';
     }).join('');
     el.style.display = 'block';
     // Laufzeit an die Textmenge koppeln, sonst rast ein kurzes Band und kriecht ein langes
-    var dauer = Math.max(30, Math.min(240, NEWS.slice(0, 20).reduce(function (a, n) { return a + n.title.length; }, 0) / 6));
+    var dauer = Math.max(30, Math.min(240, rest.reduce(function (a, n) { return a + n.title.length; }, 0) / 6));
     var ruhig = reduzierteBewegung();
     el.title = ruhig
       ? 'Markt-News. Seitwärts schieben zeigt die übrigen Meldungen – das Band läuft nicht, weil auf diesem Rechner „Bewegung reduzieren“ eingeschaltet ist. Klick öffnet die Meldung.'
@@ -1131,7 +1182,7 @@
     // Ein Fehler im Abruf oder im Rendern darf den Takt nicht killen: vorher stoppte eine
     // einzige Ausnahme die Kursaktualisierung dauerhaft bis zum Neustart der App.
     try { await refreshQuotes(); }
-    catch (e) { document.getElementById('err').textContent = 'Aktualisierung fehlgeschlagen: ' + (e && e.message ? e.message : e); }
+    catch (e) { hinweisSetzen('aktualisierung', 'Aktualisierung fehlgeschlagen: ' + (e && e.message ? e.message : e)); }
     finally {
       refreshing = false;
       document.getElementById('refreshBtn').disabled = false;

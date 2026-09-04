@@ -1016,6 +1016,16 @@
         'Die gemessenen 60-Minuten-Einstiege schauen zusätzlich in den gewählten Beobachtungs-Pool (Vorgabe: 99 Werte) – daraus rotieren zwölf je Runde, damit ein Scan nicht in Kursabrufe ausartet.'
       ]
     },
+    'werkzeuge.viewer': {
+      titel: 'Woher die Kerzen kommen',
+      punkte: [
+        'Der Chart nimmt seine Kerzen in fester Reihenfolge: <b>erst das eigene Archiv</b> (für Minutenkerzen das Alpaca-Minutenarchiv, sonst die selbst gesammelten Reihen), <b>dann Yahoo</b> für den Rest des laufenden Tages und für alles, was im Archiv fehlt. Die Fußzeile unter dem Chart nennt immer beide Teile.',
+        'An der Naht gewinnt das Archiv: liefern beide Quellen dieselbe Kerze, bleibt die aus dem Archiv stehen. Die Live-Antwort trägt die noch laufende Periode mit, das Archiv nur abgeschlossene Kerzen — gewönne das Live, ersetzte eine halbe Kerze eine ganze.',
+        'Die <b>laufende Kerze</b> ist gestrichelt. Sie wird aus dem Kurs fortgeschrieben, solange das Fenster sichtbar ist, und <b>nie ins Archiv geschrieben</b>.',
+        'Kerzen außerhalb von 09:30–16:00 New Yorker Zeit stehen auf grauem Grund und heißen „vorbörslich“ bzw. „nachbörslich“. Der Umschalter „Nur reguläre Sitzung“ blendet sie aus; die Wahl wird gemerkt. Die Sitzungsgrenzen kommen aus dem Kalender der Quelle, an Halbtagen also früher.',
+        'Tastatur: ← und → blättern, + und − zoomen. Gehandelt wird aus dem Viewer nichts.'
+      ]
+    },
     'werkzeuge.explorer': {
       titel: 'Was der Aktien-Explorer zeigt',
       punkte: [

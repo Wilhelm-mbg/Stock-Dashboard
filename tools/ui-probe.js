@@ -84,17 +84,14 @@ const konsoleFehler = [];
  * Eintrag NICHT mehr auftritt - dann ist er behoben und der Eintrag gehoert
  * gestrichen. Behoben zu sein macht die Sonde NICHT rot: eine Reparatur darf keine
  * Pruefung umwerfen, sie soll nur nicht unbemerkt bleiben. */
-const BEKANNTE_ABWEICHUNGEN = [
-  { fund: 'F6', quelle: 'uebergabe/ui-qs-2026-09-04.md', reiter: 'markt', ort: 'newsTicker',
-    was: 'Das Laufband ist breiter als das Fenster (fuenfter Eintrag bis x=1632 bei ' +
-         '1280 px). Beim Tabben schiebt Chromium den beschnittenen Kasten zum Fokus - ' +
-         'ohne Bildlaufleiste kommt der Nutzer nicht zurueck, und mit laufender ' +
-         'Animation schiebt die es sofort wieder weg. Behebung: Oberflaeche Stufe 6.' },
-  { fund: 'F7', quelle: 'uebergabe/ui-qs-2026-09-04.md', reiter: 'markt', ort: 'BODY',
-    sporadisch: true,
-    was: 'Der Minutentakt schreibt #marktHotlists per innerHTML neu; wer darin steht, ' +
-         'verliert den Fokus an body. Belegt 1 von 1 Durchlauf. Behebung: Stufe 6.' }
-];
+/* LEER seit Oberflaeche Stufe 6 (04.09.2026): F6 und F7 standen hier und sind
+ * behoben. F6 - das Laufband zeigt seither nur die Meldungen, die im Kasten NICHT
+ * stehen, und schiebt den Fokus ins Bild. F7 - hotlistsZeichnen merkt sich das
+ * Kuerzel der fokussierten Zeile und setzt den Fokus danach zurueck. Beide werden
+ * weiter gemessen (Fokus-Wanderung oben, viewerPruefen unten), jetzt aber OHNE
+ * Deckel: ein Rueckfall ist ab sofort rot. Die Liste bleibt stehen, weil der
+ * naechste offene Fund wieder hier hineingehoert - mit Fundstelle. */
+const BEKANNTE_ABWEICHUNGEN = [];
 function bekannteAbweichung(reiter, ort) {
   return BEKANNTE_ABWEICHUNGEN.filter(function (a) {
     return (a.reiter === '*' || a.reiter === reiter) && a.ort === ort;
@@ -290,6 +287,156 @@ function fokusAuswerten(reiter, weg, probleme, bekannteRot, gesehen) {
   });
 }
 
+/* ---- Der Aktien-Viewer, F2 und F7 am laufenden Fenster (Stufe 6, 04.09.2026) ----
+ *
+ * Drei Dinge lassen sich nur hier messen, nicht als Textmarke:
+ *   VIEWER  zeichnet der Kerzenchart ueberhaupt? Mit Kunstdaten und OHNE Netz - die
+ *           Kerzen kommen aus dem Kunst-Archiv im Temp-Datenordner ueber dieselbe
+ *           Leseauskunft wie im Betrieb.
+ *   F2      stehen an den DREI Orten des Sitzungszustands dieselben Worte? Der Fund
+ *           war ja gerade, dass beide Seiten fuer sich richtig waren.
+ *   F7      ueberlebt der Fokus ein Neuschreiben der Hotlists? Der Fund haengt am
+ *           Minutentakt; ausgeloest wird er hier von Hand ueber sub-changed, damit
+ *           die Probe nicht eine Minute wartet und dabei doch nichts belegt.
+ */
+async function viewerPruefen(win, js) {
+  const funde = [];
+  await js("(function () { var b = document.querySelector('nav.tabs [data-tab=\"werkzeuge\"]'); if (b) b.click(); " +
+           "var p = document.querySelector('#wzPills [data-sub=\"explorer\"]'); if (p) p.click(); return 'ok'; })()");
+  await new Promise((r) => setTimeout(r, 400));
+  /* Geoeffnet wird ueber DIESELBE Schnittstelle, die Hotlists und Marktkarte
+   * benutzen - eine eigene waere ein zweiter Weg in denselben Bildschirm. */
+  const sym = await js("(function () { var K = window.KunstProbe; return 'KUNSTA'; })()");
+  await js("(function () { window.Explorer.oeffne('" + sym + "', 'Kunst A'); return 'ok'; })()");
+  await new Promise((r) => setTimeout(r, 3500));
+
+  const z = await js("(function () {" +
+    " var kn = document.querySelectorAll('#vwZeitrahmen button[data-zeitrahmen]');" +
+    " var c = document.getElementById('vwChart');" +
+    " var V = window.__viewer || {};" +
+    " return { knoepfe: Array.prototype.map.call(kn, function (b) { return b.getAttribute('data-zeitrahmen'); })," +
+    "   aktiv: (document.querySelector('#vwZeitrahmen button.active') || {}).textContent || ''," +
+    "   quelle: (document.getElementById('vwQuelle') || {}).textContent || ''," +
+    "   kopf: (document.getElementById('vwKopf') || {}).textContent || ''," +
+    "   belegstand: (document.getElementById('vwBelegstand') || {}).textContent || ''," +
+    "   canvasBreite: c ? c.width : 0, canvasHoehe: c ? c.height : 0," +
+    "   fest: (V.fest || []).length, sichtbar: V.sichtbar ? V.sichtbar.kerzen.length : 0," +
+    "   nurRegulaer: !!V.nurRegulaer }; })()");
+  console.log('    Viewer: ' + z.knoepfe.length + ' Zeitrahmen (' + z.knoepfe.join(' ') + '), aktiv ' + z.aktiv +
+    ', ' + z.fest + ' Kerzen geladen, ' + z.sichtbar + ' im Bild, Canvas ' + z.canvasBreite + 'x' + z.canvasHoehe);
+  console.log('    Fusszeile: ' + String(z.quelle).slice(0, 160));
+  if (z.knoepfe.length !== 6) funde.push('Viewer: ' + z.knoepfe.length + ' Zeitrahmen-Knoepfe statt sechs');
+  if (!z.canvasBreite) funde.push('Viewer: die Zeichenflaeche hat keine Breite - es wurde nichts gezeichnet');
+  if (!z.fest) funde.push('Viewer: keine Kerze geladen, obwohl das Kunst-Archiv eine Reihe fuer ' + sym + ' fuehrt');
+  if (!String(z.quelle).trim()) funde.push('Viewer: die Fusszeile ist stumm - sie muss immer sagen, woher die Kerzen kommen');
+  if (String(z.quelle).indexOf('Archiv') === -1 && String(z.quelle).indexOf('Alpaca') === -1) {
+    funde.push('Viewer: die Fusszeile nennt das Archiv nicht: ' + String(z.quelle).slice(0, 80));
+  }
+  if (!String(z.belegstand).trim()) funde.push('Viewer: der Wegweiser zum Belegstand fehlt');
+
+  /* Zeitrahmen wechseln: die Knoepfe muessen wirklich etwas tun. */
+  await js("(function () { var b = document.querySelector('#vwZeitrahmen [data-zeitrahmen=\"1h\"]'); if (b) b.click(); return 'ok'; })()");
+  await new Promise((r) => setTimeout(r, 2500));
+  const nach = await js("(function () { var V = window.__viewer || {};" +
+    " return { zr: V.zeitrahmen, quelle: (document.getElementById('vwQuelle') || {}).textContent || ''," +
+    "   fest: (V.fest || []).length }; })()");
+  console.log('    Nach Klick auf 1h: ' + nach.zr + ', ' + nach.fest + ' Kerzen · ' + String(nach.quelle).slice(0, 120));
+  if (nach.zr !== '1h') funde.push('Viewer: der Zeitrahmen-Knopf 1h hat den Zustand nicht umgestellt (' + nach.zr + ')');
+  if (!String(nach.quelle).trim()) funde.push('Viewer: nach dem Wechsel ist die Fusszeile stumm');
+
+  /* ---- F2: ein Zustand, drei Orte, dieselben Worte ---- */
+  await js("(function () { var b = document.querySelector('nav.tabs [data-tab=\"markt\"]'); if (b) b.click(); " +
+           "var p = document.querySelector('#tab-markt .pills [data-sub=\"marktueberblick\"]'); if (p) p.click(); return 'ok'; })()");
+  await new Promise((r) => setTimeout(r, 1200));
+  const w = await js("(function () {" +
+    " function txt(id) { var e = document.getElementById(id); return e ? (e.textContent || '').replace(/\\s+/g, ' ').trim() : null; }" +
+    " var Z = null;" +
+    " if (window.MarktUebersicht && window.Quant) {" +
+    "   var l = window.Boerse ? window.Boerse.sitzungsMinuten(Date.now()) : 390;" +
+    "   Z = window.MarktUebersicht.sitzungszustand(window.Quant.minutenSeitOeffnung(Date.now()), l);" +
+    " }" +
+    " return { wort: Z ? Z.kurz : null, stamp: txt('stamp'), ck: txt('ckMarkt'), markt: txt('marktSitzung') }; })()");
+  console.log('    F2: Wort "' + w.wort + '" | Kopf: ' + w.stamp + ' | Cockpit: ' + w.ck + ' | Markt: ' + String(w.markt).slice(0, 90));
+  if (!w.wort) {
+    funde.push('F2: der Sitzungszustand liess sich nicht rechnen - die Probe belegt nichts');
+  } else {
+    [['Kopfzeile #stamp', w.stamp], ['Cockpit #ckMarkt', w.ck], ['Reiter Markt #marktSitzung', w.markt]]
+      .forEach(function (o) {
+        if (o[1] === null) { funde.push('F2: ' + o[0] + ' gibt es nicht'); return; }
+        if (o[1].indexOf(w.wort) === -1) {
+          funde.push('F2: ' + o[0] + ' sagt "' + o[1].slice(0, 60) + '" statt "' + w.wort + '"');
+        }
+      });
+  }
+  /* Die alte Formel darf nirgends mehr stehen - sie war der zweite Begriff. */
+  const alt = [w.stamp, w.ck, w.markt].filter(function (s) { return s && /US-Börse (geöffnet|geschlossen)/.test(s); });
+  if (alt.length) funde.push('F2: der alte Zweitbegriff steht noch da: ' + alt.join(' | '));
+
+  /* ---- F7: der Fokus ueberlebt ein Neuschreiben der Hotlists ----
+   * Ausgeloest wird das Neuschreiben ueber sub-changed - denselben Weg, den auch
+   * der Pillen-Wechsel nimmt. Ein echtes Warten auf den Minutentakt haette die
+   * Probe um eine Minute verlaengert und dasselbe belegt. */
+  const f7 = await js("(function () {" +
+    " var e = document.getElementById('marktHotlists');" +
+    " var b = e && e.querySelector('[data-marktsym]');" +
+    " if (!b) return { moeglich: false };" +
+    " var vorher = b.getAttribute('data-marktsym');" +
+    " b.focus();" +
+    " var stand1 = document.activeElement === b;" +
+    " document.dispatchEvent(new CustomEvent('sub-changed', { detail: { sub: 'marktueberblick' } }));" +
+    " var a = document.activeElement;" +
+    " var nachher = a && a.getAttribute ? a.getAttribute('data-marktsym') : null;" +
+    " return { moeglich: true, vorher: vorher, nachher: nachher, stand1: stand1," +
+    "   marke: a ? (a.tagName + (nachher ? '[' + nachher + ']' : '')) : 'nichts'," +
+    "   zeilen: e.querySelectorAll('[data-marktsym]').length }; })()");
+  if (!f7.moeglich) {
+    console.log('    F7: keine Hotlist-Zeile da - nicht gemessen (Kunstdaten ohne gemerkten Stand)');
+  } else {
+    console.log('    F7: Fokus vor dem Neuschreiben ' + f7.vorher + ', danach ' + f7.marke +
+      ' (' + f7.zeilen + ' Zeilen)');
+    if (!f7.stand1) funde.push('F7: der Fokus liess sich gar nicht erst setzen - die Probe belegt nichts');
+    else if (f7.nachher !== f7.vorher) {
+      funde.push('F7: der Fokus ist beim Neuschreiben von ' + f7.vorher + ' nach ' + f7.marke + ' gefallen');
+    }
+  }
+  /* ---- F8: die Sitzungszeile bei 1024 px ----
+   * Der Fund war, dass sie dort auf DREI Zeilen umbricht, sobald die Stoerungs-
+   * meldung dazukommt. Gemessen wird deshalb an beiden Breiten und MIT Meldung -
+   * ohne sie war die Zeile schon vorher einzeilig, und die Messung belegte nichts. */
+  const zeilenhoehe = async function (breite) {
+    win.setContentSize(breite, 820);
+    await new Promise((r) => setTimeout(r, 700));
+    return js("(function () {" +
+      " var e = document.getElementById('marktSitzung'); if (!e) return null;" +
+      " var z = e.querySelector('.sitzungZeile'), s = e.querySelector('.sitzungStoerung');" +
+      " var rz = z ? z.getBoundingClientRect() : null, rs = s ? s.getBoundingClientRect() : null;" +
+      " return { ganz: Math.round(e.getBoundingClientRect().height)," +
+      "   zeile: rz ? Math.round(rz.height) : null," +
+      "   stoerung: rs ? Math.round(rs.height) : null," +
+      "   hatStoerung: !!s, breite: window.innerWidth }; })()");
+  };
+  const m1280 = await zeilenhoehe(1280);
+  const m1024 = await zeilenhoehe(1024);
+  win.setContentSize(1280, 820);
+  await new Promise((r) => setTimeout(r, 400));
+  console.log('    F8: #marktSitzung 1280 px -> ' + JSON.stringify(m1280));
+  console.log('    F8: #marktSitzung 1024 px -> ' + JSON.stringify(m1024));
+  [[1280, m1280], [1024, m1024]].forEach(function (x) {
+    var m = x[1];
+    if (!m) { funde.push('F8: #marktSitzung gibt es bei ' + x[0] + ' px nicht'); return; }
+    /* Der ZUSTAND ist eine Zeile. Die Stoerungsmeldung darf umbrechen - sie ist ein
+     * Satz, kein Etikett -, aber sie steht darunter und nicht IN der Zeile. */
+    if (m.zeile === null) { funde.push('F8: bei ' + x[0] + ' px fehlt die Zustandszeile'); return; }
+    if (m.zeile > 26) {
+      funde.push('F8: bei ' + x[0] + ' px ist der Sitzungszustand ' + m.zeile + ' px hoch - er bricht um');
+    }
+    if (m.hatStoerung && m.stoerung === null) {
+      funde.push('F8: bei ' + x[0] + ' px steht die Stoerungsmeldung nicht in ihrer eigenen Zeile');
+    }
+  });
+  return funde;
+}
+
 async function probe(win) {
   const wc = win.webContents;
   const js = (code) => wc.executeJavaScript(code, true);
@@ -398,6 +545,10 @@ async function probe(win) {
   const erledigt = BEKANNTE_ABWEICHUNGEN
     .filter(function (a) { return !a.sporadisch && !gesehen[a.fund]; })
     .map(function (a) { return a.fund + ' (' + a.quelle + ') tritt nicht mehr auf - Eintrag in BEKANNTE_ABWEICHUNGEN streichen'; });
+
+  /* Der Aktien-Viewer, F2 und F7 - alles drei nur am laufenden Fenster messbar. */
+  const vwFunde = await viewerPruefen(win, js);
+  vwFunde.forEach(function (f) { probleme.push(f); });
 
   const seitenFehler = await js('window.__probe.fehler.slice(0, 20)');
   /* Ein abgebrochenes init() faengt depot.js selbst ab und meldet es NUR im
