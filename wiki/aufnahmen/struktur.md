@@ -167,7 +167,7 @@ Dialoge (gehören zu keinem Reiter)
 
 ### Markt → Überblick
 
-`#sub-marktueberblick` · 15 Blöcke · 7386 Zeichen sichtbarer Text
+`#sub-marktueberblick` · 15 Blöcke · 8133 Zeichen sichtbarer Text
 
 - ▪ Marktüberblick
 - ▪ Sektoren – nach Marktkapitalisierung gewichtet, Branchen aus den SEC-Stammdaten.
@@ -263,7 +263,7 @@ Dialoge (gehören zu keinem Reiter)
 
 ### Werkzeuge → Schein-Finder
 
-`#sub-scheine` · 1 Blöcke · 648 Zeichen sichtbarer Text
+`#sub-scheine` · 1 Blöcke · 1119 Zeichen sichtbarer Text
 
 - · Schein-Finder · Kennzahlen und Risikostufe
 

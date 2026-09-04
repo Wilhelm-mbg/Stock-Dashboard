@@ -1,5 +1,5 @@
 {
-  "stand": "2026-09-04T21:05:31.588Z",
+  "stand": "2026-09-04T21:41:08.740Z",
   "kunstdaten": true,
   "breite": 1280,
   "werkzeug": "tools/ui-aufnahmen.js <ziel> --kunstdaten --messung",
@@ -11,7 +11,7 @@
         {
           "ort": "Zuletzt getan · .panel",
           "len": 242,
-          "anfang": "04.09.26, 18:04 UhrIntradayCall NVDA2.915,90 $03.09.26, 03:04 UhrIntradayTSM geschlossen+128,90 $02.09.26, 20:04 UhrIntr"
+          "anfang": "04.09.26, 18:40 UhrIntradayCall NVDA2.915,90 $03.09.26, 03:40 UhrIntradayTSM geschlossen+128,90 $02.09.26, 20:40 UhrIntr"
         },
         {
           "ort": "Momentum-Buch · stärkstes Zehntel, alle 63 Handelstage, 20 B · #buchMomentum",
@@ -75,8 +75,8 @@
         }
       ],
       "ohneBlock": {
-        "len": 4918,
-        "anfang": "Nachbörslicher Handeldünner Umsatz, Kurse können springenKurse: Stand 23:04 UhrKursabruf gescheitert: nur 1 von 21 Kursen angekommen – angezeigt ist der letzte vollständige Stand (Yahoo drosselt: 0-ma"
+        "len": 1680,
+        "anfang": "Nachbörslicher Handeldünner Umsatz, Kurse können springenKurse: Stand 23:40 UhrKursabruf gescheitert: nur 1 von 21 Kursen angekommen – angezeigt ist der letzte vollständige Stand (Yahoo drosselt: 0-ma"
       }
     },
     {
@@ -86,7 +86,7 @@
         {
           "ort": "Marktkarte · .panel",
           "len": 635,
-          "anfang": "Stand: 23:05:11 · Kursabruf gescheitert: Yahoo drosselt: 0-mal abgewiesen, 1 Blöcke ohne Antwort – angezeigt ist, was an"
+          "anfang": "Stand: 23:40:45 · Kursabruf gescheitert: Yahoo drosselt: 0-mal abgewiesen, 1 Blöcke ohne Antwort – angezeigt ist, was an"
         }
       ],
       "ohneBlock": {
@@ -175,8 +175,18 @@
       "bloecke": [
         {
           "ort": "Schein-Finder · Kennzahlen und Risikostufe · .panel",
-          "len": 132,
-          "anfang": "Jeder Schein hier verhält sich exakt so wie in der Simulation. Noch nichts gerechnet. Oben Basiswert wählen, dann „Laden"
+          "len": 151,
+          "anfang": "Jeder Schein hier verhält sich exakt so wie in der Simulation. Sortiert nach: Risikostufe (defensiv zuerst) · Zeile ankl"
+        },
+        {
+          "ort": "Basiswert · #sfKarteBasis",
+          "len": 144,
+          "anfang": "Vola 32 % (geschätzt aus einem Jahr Kursen)KUNSTS: Kurs 115,52 $, Vola 32 % → 495 Scheine im Raster (Modell – echte WKN "
+        },
+        {
+          "ort": "Was für ein Schein · #sfKarteWahl",
+          "len": 105,
+          "anfang": "Jede Änderung filtert sofort – geladen wird nur mit dem Knopf darüber. Voreinstellung:59 von 495 Scheinen"
         }
       ],
       "ohneBlock": {
@@ -221,7 +231,7 @@
         {
           "ort": "Autopilot · .panel",
           "len": 190,
-          "anfang": "Noch keine Messung – die erste läuft in der nächsten Nacht nach US-Börsenschluss.04.09.26, 22:24 Uhr · Quelle: RegelRSI("
+          "anfang": "Noch keine Messung – die erste läuft in der nächsten Nacht nach US-Börsenschluss.04.09.26, 23:00 Uhr · Quelle: RegelRSI("
         },
         {
           "ort": "Mittelfrist-Bücher steuern · .panel",
@@ -241,7 +251,7 @@
         {
           "ort": "Momentum im Querschnitt · Aktien, keine Hebelscheine · .panel",
           "len": 111,
-          "anfang": "Konfiguration wie gemessen (Studie 02.09.2026) – Änderungen nur über eine neue Messung.Lade Tageskurse … 40/193"
+          "anfang": "Konfiguration wie gemessen (Studie 02.09.2026) – Änderungen nur über eine neue Messung.Lade Tageskurse … 80/193"
         },
         {
           "ort": "Depot gegen Buy & Hold · .panel",
@@ -266,7 +276,7 @@
         {
           "ort": "Was hat gewirkt? · .panel",
           "len": 78,
-          "anfang": "Zuletzt geprüft: 04.09.26, 22:46 Uhr · keine Änderung seit 04.09.26, 23:04 Uhr"
+          "anfang": "Zuletzt geprüft: 04.09.26, 23:22 Uhr · keine Änderung seit 04.09.26, 23:40 Uhr"
         },
         {
           "ort": "Die Regel, die handelt · #regelKarte",
@@ -315,7 +325,7 @@
         },
         {
           "ort": "Kursarchiv · #archivKarte",
-          "len": 778,
+          "len": 776,
           "anfang": "Was in dieser Zeit nicht geholt wurde, ist nicht später nachzuholen, sondern fort.1 Minute6 / 606 Werte (6 angesehen) · "
         },
         {
@@ -346,7 +356,7 @@
         {
           "ort": "Autopilot · .panel",
           "len": 190,
-          "anfang": "Noch keine Messung – die erste läuft in der nächsten Nacht nach US-Börsenschluss.04.09.26, 22:24 Uhr · Quelle: RegelRSI("
+          "anfang": "Noch keine Messung – die erste läuft in der nächsten Nacht nach US-Börsenschluss.04.09.26, 23:00 Uhr · Quelle: RegelRSI("
         },
         {
           "ort": "Mittelfrist-Bücher steuern · .panel",
@@ -365,8 +375,8 @@
         },
         {
           "ort": "Momentum im Querschnitt · Aktien, keine Hebelscheine · .panel",
-          "len": 111,
-          "anfang": "Konfiguration wie gemessen (Studie 02.09.2026) – Änderungen nur über eine neue Messung.Lade Tageskurse … 50/193"
+          "len": 112,
+          "anfang": "Konfiguration wie gemessen (Studie 02.09.2026) – Änderungen nur über eine neue Messung.Lade Tageskurse … 100/193"
         },
         {
           "ort": "Depot gegen Buy & Hold · .panel",
@@ -391,7 +401,7 @@
         {
           "ort": "Was hat gewirkt? · .panel",
           "len": 78,
-          "anfang": "Zuletzt geprüft: 04.09.26, 22:46 Uhr · keine Änderung seit 04.09.26, 23:04 Uhr"
+          "anfang": "Zuletzt geprüft: 04.09.26, 23:22 Uhr · keine Änderung seit 04.09.26, 23:40 Uhr"
         },
         {
           "ort": "Die Regel, die handelt · #regelKarte",
@@ -401,7 +411,7 @@
         {
           "ort": "Trendfinder · [wende]",
           "len": 52,
-          "anfang": "Beobachtung, kein Handel.Stand 23:05 Uhr · 0 Wechsel"
+          "anfang": "Beobachtung, kein Handel.Stand 23:41 Uhr · 0 Wechsel"
         },
         {
           "ort": "Neue Strategie ins Rennen schicken · #strategieEingabe",
@@ -525,7 +535,7 @@
     {
       "seite": "werkzeuge/scheine",
       "sel": "#sub-scheine",
-      "iKnoepfe": 1,
+      "iKnoepfe": 3,
       "saetze": {
         "Gehandelt wird hiervon nichts": {
           "sichtbar": 0,
@@ -591,6 +601,8 @@
       "strategie.stunden",
       "vermoegen.buecher",
       "werkzeuge.explorer",
+      "werkzeuge.scheinfinder",
+      "werkzeuge.scheinwahl",
       "werkzeuge.trendfinder",
       "werkzeuge.viewer"
     ],
@@ -637,6 +649,8 @@
       "strategie.stunden",
       "vermoegen.buecher",
       "werkzeuge.explorer",
+      "werkzeuge.scheinfinder",
+      "werkzeuge.scheinwahl",
       "werkzeuge.trendfinder",
       "werkzeuge.viewer"
     ]

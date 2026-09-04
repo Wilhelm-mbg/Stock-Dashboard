@@ -488,10 +488,63 @@ function newsstand(jetzt) {
   return { zeit: jetzt, items: items };
 }
 
+/** ================= EIN KUNST-KURSVERLAUF FUER DEN SCHEIN-FINDER =================
+ *
+ * Wozu (Oberflaeche Stufe 7, 04.09.2026): Der Schein-Finder rechnet sein Raster aus
+ * einem Jahr Tageskursen. Ohne Kurse bleibt seine Tabelle leer - jede Aufnahme
+ * zeigte dann eine Karte mit Listen und darunter nichts, und die Sonde koennte das
+ * Live-Filtern gar nicht pruefen.
+ *
+ * "Laden & rechnen" steht auf der KLICK-SPERRLISTE (wiki/betrieb.md), weil der Knopf
+ * einen echten Kursabruf ausloest. Deshalb liefert diese Funktion den ANTWORTTEXT,
+ * den Yahoo liefern wuerde: die Sonde haengt ihn als Attrappe vor
+ * window.api.fetchText, klickt den Knopf, und es geht keine Anfrage hinaus.
+ *
+ * Die Zahlen sind ERFUNDEN. Der Verlauf ist bewusst schwankungsarm gebaut
+ * (Jahresvola 32 %, gemessen), damit das Raster ueber alle fuenf Risikostufen streut -
+ * bei sehr hoher Vola faellt die defensive Seite weg, bei sehr niedriger die
+ * spekulative, und die Aufnahme zeigte dann nur einen Ausschnitt.
+ */
+function scheinKurse(jetzt) {
+  var tage = 260;                       // ein Handelsjahr
+  var tag0 = Math.floor((jetzt || Date.now()) / 86400000) * 86400000 - tage * 86400000;
+  var ts = [], close = [], open = [], high = [], low = [], volume = [];
+  var kurs = 100;
+  /* Fester Zufall: dieselbe Aufnahme soll zweimal gleich aussehen. Ein echtes
+     Math.random() haette die Vergleichbarkeit vorher/nachher zerstoert. */
+  var saat = 20260904;
+  function wuerfel() { saat = (saat * 1103515245 + 12345) % 2147483648; return saat / 2147483648; }
+  for (var i = 0; i < tage; i++) {
+    var schritt = (wuerfel() - 0.5) * 7.5;          // gibt 32 % Jahresvola: alle fuenf Stufen besetzt
+    kurs = Math.max(20, kurs * (1 + schritt / 100));
+    var o = kurs * (1 + (wuerfel() - 0.5) / 200);
+    ts.push(Math.round((tag0 + i * 86400000) / 1000));
+    open.push(Math.round(o * 100) / 100);
+    close.push(Math.round(kurs * 100) / 100);
+    high.push(Math.round(Math.max(o, kurs) * 1.004 * 100) / 100);
+    low.push(Math.round(Math.min(o, kurs) * 0.996 * 100) / 100);
+    volume.push(1200000 + Math.round(wuerfel() * 800000));
+  }
+  return JSON.stringify({
+    chart: {
+      result: [{
+        meta: { symbol: KUNST_SCHEIN_SYMBOL, currency: 'USD' },
+        timestamp: ts,
+        indicators: { quote: [{ open: open, close: close, high: high, low: low, volume: volume }] }
+      }],
+      error: null
+    }
+  });
+}
+/* Der Basiswert, unter dem der Kunst-Verlauf laeuft. Vorsatz KUNST wie ueberall
+   hier: eine versehentlich liegengebliebene Datei nennt ihre Herkunft selbst. */
+var KUNST_SCHEIN_SYMBOL = 'KUNSTS';
+
 module.exports = { bauen: bauen, kostenmessung: kostenmessung, archiv: archiv,
                    newsstand: newsstand,
                    marktStammdaten: marktStammdaten, marktArchiv: marktArchiv,
                    marktKurse: marktKurse, marktstand: marktstand,
+                   scheinKurse: scheinKurse, KUNST_SCHEIN_SYMBOL: KUNST_SCHEIN_SYMBOL,
                    KUNST_SYMBOLE: KUNST_SYMBOLE, KUNST_SEKTOREN: KUNST_SEKTOREN };
 
 if (require.main === module) {

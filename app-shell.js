@@ -1175,6 +1175,29 @@
         'In der Detail-Ansicht: Chart von 1 Tag bis Max., Kennzahlen, News, „Analyse anfordern“ und „Zur Handels-Watchlist“ (dann handeln die Strategien den Wert mit).'
       ]
     },
+    /* Stufe 7 (04.09.2026): Der Kopfkommentar von scheinfinder.js stand nur im
+     * Quelltext - also genau dort, wo ihn niemand liest, der die Oberflaeche
+     * bedient. Er steht jetzt woertlich hier. */
+    'werkzeuge.scheinfinder': {
+      titel: 'Was der Schein-Finder ist und was nicht',
+      punkte: [
+        'Filtert das Raster möglicher Optionsscheine zu einem Basiswert nach den üblichen Kennzahlen und nach Risikostufe. Die Rechnung steht in <b>quant.js</b>, die Auswahllisten und die Voreinstellungen in <b>scheinwahl.js</b> – beide rein und getestet; der Finder selbst lädt, filtert und zeigt nur.',
+        'Gerechnet wird ein <b>Modell-Raster</b> mit exakt dem Modell, mit dem auch das Depot handelt (Black-Scholes plus das an echten Emittentenkursen geeichte Cent-Spread-Modell). Ein Schein aus dem Finder verhält sich in der Simulation genauso wie im Handel – das ist der Sinn: aussuchen, was man versteht, und genau das handelt die App dann auch.',
+        'Zu jeder Zeile lässt sich der <b>echte aufgelegte Schein</b> nachschlagen – WKN, ISIN, Emittent, gestellte Kurse. Die Preise bleiben Modellpreise; die echten Angaben stehen daneben, nicht an ihrer Stelle.',
+        'Die Volatilität wird aus einem Jahr Kursen geschätzt (historische Vola × 1,1 als Näherung der impliziten). Wer sie besser weiß, setzt sie im Feld daneben selbst.'
+      ],
+      fuss: 'Der Knopf „Laden & rechnen“ ist der einzige Weg ins Netz. Alles Weitere filtert das schon geladene Raster im Speicher.'
+    },
+    'werkzeuge.scheinwahl': {
+      titel: 'Wonach der Finder auswählt',
+      punkte: [
+        'Die Listen bieten <b>Bereiche statt freier Zahlen</b>. Vorher standen dort neun leere Felder – man musste wissen, welche Zahlen sinnvoll sind, bevor man überhaupt etwas sah.',
+        'Die angebotenen Grenzen sind <b>die Schwellen des Modells selbst</b>: Totalverlust über 25 % kostet eine Risikostufe Aufschlag, über 50 % zwei; eine Spanne über 2 % je Seite ebenfalls eine; unter 14 Tagen Restlaufzeit noch eine. Deshalb heißen die Listen 25/50/75, 0,5/1/2 – und der kürzeste Laufzeit-Bereich beginnt bei 14 Tagen.',
+        '<b>defensiv · ausgewogen · offensiv</b> setzen alle Listen auf einmal. „ausgewogen“ schreibt die bisherige Vorgabe fort (Stufe 3, Spanne 1 %, Totalverlust 50 %).',
+        'Der Schalter <b>„alle Kennzahlen“</b> blendet die acht Spalten ein, die erklären, warum eine Zeile ihre Stufe hat. Sie stehen ohnehin in der aufgeklappten Zeile – ein Klick auf die Zeile zeigt die Begründung.'
+      ],
+      fuss: 'Die Wahl wird gemerkt und steht beim nächsten Öffnen wieder da.'
+    },
     'regeln.mf.momentum': {
       titel: 'Momentum im Querschnitt',
       punkte: [

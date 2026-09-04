@@ -64,4 +64,59 @@ function saeen(testroot, jetzt) {
   return { store: sd, daten: dd };
 }
 
-module.exports = { saeen };
+/* ================= Attrappe fuer den Schein-Finder =================
+ *
+ * "Laden & rechnen" steht auf der Klick-Sperrliste (wiki/betrieb.md): der Knopf
+ * loest einen echten Kursabruf aus. Eine Sonde darf ihn trotzdem druecken, wenn
+ * vorher der Lader ersetzt ist - dann geht keine Anfrage hinaus.
+ *
+ * NICHT ueber window.api.fetchText, obwohl das der naheliegende Weg waere:
+ * window.api kommt aus contextBridge.exposeInMainWorld (preload.js) und ist im
+ * Renderer SCHREIBGESCHUETZT. Die Zuweisung wirft nicht, sie verpufft - die Sonde
+ * klickte, der echte Abruf lief, und der Zaehler blieb bei null. Erst der Zaehler
+ * hat es gezeigt (04.09.2026): ohne ihn haette die Attrappe stillschweigend nichts
+ * getan und die Probe waere an "keine Kursdaten" haengengeblieben, ohne den Grund
+ * zu nennen.
+ *
+ * Ersetzt wird deshalb der LADER, ueber die Naht, die kurse.js dafuer schon
+ * exportiert: KurseKern.baueLader(api, warte). Sie bekommt dasselbe Objekt wie im
+ * Betrieb, nur mit einer anderen fetchText - der ganze Weg dahinter (URL-Bau,
+ * zerlege, 429-Behandlung) bleibt der echte.
+ *
+ * Die Attrappe beantwortet NUR den Kursabruf. Die Produktsuche von onvista, die der
+ * Finder nach dem Zeichnen fragt, wird stillgelegt statt erfunden: eine Aufnahme
+ * soll keine Wertpapierkennung zeigen, die es nicht gibt.
+ */
+function scheinAttrappeCode(jetzt) {
+  const KD = require(path.join(__dirname, 'kunstdepot.js'));
+  const antwort = KD.scheinKurse(jetzt || Date.now());
+  return '(function () {' +
+    '  window.__kunstAbrufe = [];' +
+    '  var kurse = ' + JSON.stringify(antwort) + ';' +
+    '  var attrappe = { fetchText: function (u) {' +
+    '    window.__kunstAbrufe.push(String(u));' +
+    '    if (String(u).indexOf("/v8/finance/chart/") >= 0) return Promise.resolve({ ok: true, status: 200, body: kurse });' +
+    '    return Promise.resolve({ ok: false, status: 404, body: "" });' +
+    '  } };' +
+    '  if (!window.KurseKern || !window.KurseKern.baueLader) return "kein Lader zum Ersetzen";' +
+    '  window.Kurse = window.KurseKern.baueLader(attrappe, function (ms) {' +
+    '    return new Promise(function (f) { setTimeout(f, ms); });' +
+    '  });' +
+    '  window.Kurse.zerlege = window.KurseKern.zerlege;' +
+    '  window.Kurse.reihe = window.KurseKern.reihe;' +
+    '  window.Kurse.kursOk = window.KurseKern.kursOk;' +
+    /* Die Produktsuche stilllegen - sonst ginge nach dem Zeichnen doch noch eine
+       echte Anfrage an onvista hinaus. */
+    '  if (window.WKN) {' +
+    '    window.WKN.basiswertId = function () { return Promise.resolve(null); };' +
+    '    window.WKN.echteScheine = function () { return Promise.resolve({ ok: false, grund: "in der Probe nicht abgefragt" }); };' +
+    '  }' +
+    '  return "attrappe";' +
+    '})()';
+}
+/** Unter welchem Kuerzel der Kunst-Kursverlauf laeuft. */
+function scheinSymbol() {
+  return require(path.join(__dirname, 'kunstdepot.js')).KUNST_SCHEIN_SYMBOL;
+}
+
+module.exports = { saeen, scheinAttrappeCode, scheinSymbol };

@@ -82,6 +82,21 @@
        den ~30 anderen Stellen unveraendert bleiben. */
     --chip-up:     #006300;
     --chip-down:   #c22b2b;
+    /* --- 04.09.2026, Oberflaeche Stufe 7: Fuellfarben der Risikostufen-Pille ---
+       Getrennt von --up/--warn/--down aus demselben Grund wie --btn (siehe dort):
+       jene sind ZEICHENfarben und kippen zwischen den Themen (--warn ist hell
+       #915b00, dunkel #e0a63f). Als Flaeche mit weisser Schrift faellt die dunkle
+       Fassung durch - #e0a63f schafft gegen Weiss nur 1,9.
+       Diese fuenf stehen deshalb in BEIDEN Themen und sind dort GLEICH: die Pille
+       traegt ihre eigene Flaeche, also darf ihr Kontrast nicht am Thema haengen.
+       Gerechnet gegen --btn-ink (#ffffff): 5,02 / 6,70 / 4,92 / 5,18 / 6,47.
+       Die Flaeche selbst schafft auf --panel hell 4,43 bis 5,92, dunkel aber nur
+       2,38 (Stufe 2) - darum die Kante in --kante (3,75 hell, 3,36 dunkel). */
+    --stufe1:      #15803d;
+    --stufe2:      #1d4ed8;
+    --stufe3:      #a16207;
+    --stufe4:      #c2410c;
+    --stufe5:      #b91c1c;
 
     /* ===== Schriftleiter =====
        Gezaehlt am 24.08.2026 ueber index.html und alle acht Renderer-Dateien:
@@ -170,6 +185,14 @@
     --kante:       #75736d;   /* 3,67 auf --surface, 3,36 auf --panel */
     --chip-up:     #16b516;   /* 5,19 auf dem eigenen Weichton (vorher 4,25) */
     --chip-down:   #ea7a7a;   /* 5,49 (vorher 4,29) */
+    /* Absichtlich DIESELBEN fuenf Werte wie im hellen Thema - siehe dort. Sie
+       muessen trotzdem hier stehen: ein var() ohne Definition im aktiven Thema
+       faellt auf die Erbfarbe zurueck (derselbe Grund wie bei --series4). */
+    --stufe1:      #15803d;
+    --stufe2:      #1d4ed8;
+    --stufe3:      #a16207;
+    --stufe4:      #c2410c;
+    --stufe5:      #b91c1c;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
@@ -864,6 +887,29 @@
   .chartleiste { display:flex; gap:14px; align-items:center; flex-wrap:wrap; margin:8px 0 6px; font-size:var(--fs-neben); color:var(--ink-2); }
   .chartleiste label { display:flex; gap:5px; align-items:center; }
   .chartleiste select { font-size:var(--fs-neben); padding:2px 4px; }
+  /* --- Schein-Finder (Oberflaeche Stufe 7, 04.09.2026) --- */
+  /* Die Risikostufe als Pille. Weiss auf eigener Flaeche, in beiden Themen gleich -
+     die gerechneten Kontraste stehen bei den --stufe*-Variablen. */
+  .sf-stufe {
+    display:inline-block; min-width:1.5em; padding:1px 6px; border-radius:var(--r-klein);
+    text-align:center; font-weight:600; font-size:var(--fs-klein);
+    color:var(--btn-ink); border:1px solid var(--kante);
+  }
+  .sf-stufe1 { background:var(--stufe1); }
+  .sf-stufe2 { background:var(--stufe2); }
+  .sf-stufe3 { background:var(--stufe3); }
+  .sf-stufe4 { background:var(--stufe4); }
+  .sf-stufe5 { background:var(--stufe5); }
+  /* Die Trefferzahl steht neben den Listen, nicht in der Tabelle - dort, wo gedreht wird. */
+  .sf-treffer { font-weight:600; color:var(--ink-2); white-space:nowrap; }
+  /* Die zwei Karten. Sie sind Gliederung, kein eigenes Panel im Sinne der
+     Dauertext-Klinke - deshalb ein eigener, leichterer Baustein statt .panel. */
+  .sf-karte { border:1px solid var(--line); border-radius:var(--r-gross); padding:10px 12px; margin-top:10px; }
+  .sf-karte > h4 {
+    font-size:var(--fs-neben); text-transform:uppercase; letter-spacing:.04em;
+    color:var(--muted); font-weight:600; margin-bottom:4px;
+    display:flex; align-items:center; gap:8px;
+  }
   /* .hinweis war nur INNERHALB der Chartleiste gestylt - ausserhalb rutschte jeder
      so ausgezeichnete Text auf 14 px Fliesstextfarbe und sah aus wie eine Aussage. */
   .hinweis { color: var(--muted); font-size: var(--fs-neben); line-height: 1.5; }
@@ -1945,38 +1991,42 @@
     <div style="font-size:var(--fs-text); color:var(--ink-2); line-height:1.55; margin-bottom:10px;">
       Jeder Schein hier verhält sich exakt so wie in der Simulation.
     </div>
-    <div class="chartleiste">
-      <label>Basiswert<select id="sfSymbol"></select></label>
-      <label title="Leer lassen für die Schätzung aus der historischen Volatilität (× 1,1)">Vola %<input id="sfIv" type="number" min="5" max="150" style="width:70px;"></label>
-      <button id="sfLadenBtn" class="btn">Laden &amp; rechnen</button>
-    </div>
-    <div id="sfStatus" class="hinweis" style="margin-top:6px;"></div>
-    <div class="chartleiste" style="margin-top:8px;">
-      <label>Typ<select id="sfTyp"><option value="alle">alle</option><option value="call">Call</option><option value="put">Put</option></select></label>
-      <label title="Nur Scheine bis zu dieser Risikostufe anzeigen">max. Stufe<select id="sfStufe"><option>1</option><option>2</option><option selected>3</option><option>4</option><option>5</option></select></label>
-      <label>Hebel von<input id="sfHebelMin" type="number" value="3" style="width:60px;"></label>
-      <label>bis<input id="sfHebelMax" type="number" value="20" style="width:60px;"></label>
-      <label>Laufzeit von<input id="sfLzMin" type="number" value="14" style="width:60px;"> Tagen</label>
-      <label>bis<input id="sfLzMax" type="number" value="180" style="width:60px;"></label>
-      <label title="Geld-Brief-Spanne je Seite">max. Spanne %<input id="sfSpreadMax" type="number" value="1" step="0.1" style="width:60px;"></label>
-      <label title="Modell-Wahrscheinlichkeit eines wertlosen Verfalls">max. Totalverlust %<input id="sfTvMax" type="number" value="50" style="width:60px;"></label>
-      <label title="Filtert das Raster auf Basispreise in einem Band um den aktuellen Kurs des Basiswerts („ums Geld“). Die Bandbreite ist frei wählbar.">Basispreis<select id="sfBand">
-        <option value="999" selected>alle</option>
-        <option value="2.5">±2,5 % ums Geld</option>
-        <option value="5">±5 % ums Geld</option>
-        <option value="10">±10 % ums Geld</option>
-        <option value="20">±20 % ums Geld</option>
-      </select></label>
-      <label>Sortierung<select id="sfSort">
-        <option value="stufe" selected>Risikostufe (defensiv zuerst)</option>
-        <option value="huerde" title="Nur die Spanne, ohne Zeitwertverlust und ohne Ordergebühr. Der Zeitwert steht als eigene Spalte daneben – bei Bezugsverhältnis 1,0 ist er der größere Posten.">kleinste Spannen-Hürde (ohne Zeitwert)</option>
-        <option value="spread">kleinste Spanne</option>
-        <option value="theta">wenigster Zeitwertverlust</option>
-        <option value="tv">kleinste Totalverlust-Gefahr</option>
-        <option value="omega">größter Hebel</option>
-        <option value="omegaAuf">kleinster Hebel</option>
-      </select></label>
-    </div>
+    <!-- Stufe 7 (04.09.2026): Zwei Karten statt einer Wand. Karte 1 holt das Raster,
+         Karte 2 waehlt daraus aus - ohne neu zu laden.
+         KEINE ZAHL IN DIESEM MARKUP: die Auswahllisten baut scheinfinder.js aus der
+         Tabelle in scheinwahl.js. Stuenden die Vorgaben hier, stuenden sie doppelt -
+         hier und in der Voreinstellungs-Tabelle, die dieselben Werte setzt. -->
+    <section class="sf-karte" id="sfKarteBasis">
+      <h4>Basiswert
+        <button class="info" type="button" data-info="werkzeuge.scheinfinder" aria-expanded="false"
+                aria-label="Erklärung: Was der Schein-Finder ist und was nicht">i</button></h4>
+      <div class="chartleiste">
+        <label>Wert<input id="sfSymbol" list="sfSymbolListe" type="text" size="10"
+               placeholder="z. B. AMD" autocomplete="off"
+               title="Tippen oder aus der Liste wählen – zuletzt geladene Werte stehen oben, dann die Watchlist, dann das Universum"></label>
+        <datalist id="sfSymbolListe"></datalist>
+        <span id="sfVola" class="sf-treffer"></span>
+        <label title="Leer lassen für die Schätzung aus einem Jahr Kursen (historische Volatilität × 1,1)">selbst setzen<input id="sfIv" type="number" min="5" max="150" style="width:64px;"> %</label>
+        <button id="sfLadenBtn" class="btn">Laden &amp; rechnen</button>
+      </div>
+      <div id="sfStatus" class="hinweis" style="margin-top:6px;"></div>
+    </section>
+    <section class="sf-karte" id="sfKarteWahl">
+      <h4>Was für ein Schein
+        <button class="info" type="button" data-info="werkzeuge.scheinwahl" aria-expanded="false"
+                aria-label="Erklärung: Wonach der Finder auswählt">i</button></h4>
+      <div style="font-size:var(--fs-text); color:var(--ink-2); line-height:1.55; margin-bottom:6px;">
+        Jede Änderung filtert sofort – geladen wird nur mit dem Knopf darüber.
+      </div>
+      <div class="chartleiste" id="sfVoreinstellungen">
+        <span style="color:var(--muted);">Voreinstellung:</span>
+        <button type="button" class="btn" data-sfvor="defensiv">defensiv</button>
+        <button type="button" class="btn" data-sfvor="ausgewogen">ausgewogen</button>
+        <button type="button" class="btn" data-sfvor="offensiv">offensiv</button>
+      </div>
+      <!-- Von scheinfinder.js gefuellt (siehe Kommentar oben). -->
+      <div class="chartleiste" id="sfListen"></div>
+    </section>
     <div id="sfDetail" class="panel" style="display:none; margin-top:10px; padding:10px 12px; font-size:var(--fs-text); line-height:1.6;"></div>
     <!-- Der Startzustand steht im Markup, nicht im Skript: scheinfinder.js zeige()
          kehrt ohne Raster sofort um und laesst genau diesen Text stehen. -->
@@ -2918,6 +2968,7 @@
 <script src="marktui.js"></script>
 <script src="strategiebaukasten.js"></script>
 <script src="scoreboard.js"></script>
+<script src="scheinwahl.js"></script>
 <script src="scheinfinder.js"></script>
 <script src="mfhandel.js"></script>
 <script src="mfdepot.js"></script>

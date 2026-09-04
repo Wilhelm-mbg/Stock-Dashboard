@@ -256,8 +256,29 @@ app.on('browser-window-created', (ev, win) => {
         for (const p of pillen) {
           await js("(function(){var b=(document.querySelector('.tab.active')||document).querySelector('.pills button[data-sub=\"" + p + "\"]'); if(b) b.click(); return 'ok';})()");
           await new Promise((r) => setTimeout(r, 700));
+          /* Der Schein-Finder zeigt ohne Kurse eine leere Tabelle - und dann misst
+           * die Sonde die Risikostufen-Pillen gar nicht, also genau die Farben, die
+           * in beiden Themen ueber 4,5 liegen muessen (Stufe 7, 04.09.2026).
+           * Dieselbe Attrappe wie in ui-probe und ui-aufnahmen, aus kunstinstanz.js:
+           * "Laden & rechnen" laeuft seinen echten Weg, es geht nichts ins Netz. */
+          if (KUNSTDATEN && p === 'scheine') {
+            const KI = require(path.join(__dirname, 'kunstinstanz.js'));
+            const gesetzt = await js(KI.scheinAttrappeCode(Date.now()));
+            if (gesetzt !== 'attrappe') {
+              console.log('   Schein-Finder: Attrappe nicht gesetzt (' + gesetzt + ') - die Stufen-Pillen bleiben ungemessen');
+            } else {
+              await js("(function () { var e = document.getElementById('sfSymbol'); if (e) e.value = '" +
+                KI.scheinSymbol() + "'; var b = document.getElementById('sfLadenBtn'); if (b) b.click(); return 'ok'; })()");
+              await new Promise((r) => setTimeout(r, 1400));
+            }
+          }
           const m = JSON.parse(await js(MESSCODE));
           m.reiter = t + " / " + p;
+          /* Die Pillen ausdruecklich zaehlen: "0 unter der Schwelle" bei 0 Pillen
+           * waere gruen und belegte nichts. */
+          if (p === 'scheine') {
+            m.stufenPillen = await js("document.querySelectorAll('#sfTabelle .sf-stufe').length");
+          }
           alles.push(m);
         }
       }
@@ -278,6 +299,9 @@ app.on('browser-window-created', (ev, win) => {
         if (a.positiveTabindex.length) { befunde += a.positiveTabindex.length; console.log('   POSITIVE tabindex: ' + a.positiveTabindex.join(', ')); }
         if (a.namenlos.length) { befunde += a.namenlos.length; console.log('   OHNE NAMEN anspringbar: ' + a.namenlos.slice(0, 6).join(', ') + (a.namenlos.length > 6 ? ' (+' + (a.namenlos.length - 6) + ')' : '')); }
         console.log('   Kontrast: ' + a.kontrastGeprueft + ' Textstellen geprueft, ' + a.kontrastSchwach.length + ' unter der Schwelle');
+        if (a.stufenPillen !== undefined) {
+          console.log('   Risikostufen-Pillen im Bild: ' + a.stufenPillen + (a.stufenPillen ? '' : ' - ihr Kontrast wurde NICHT gemessen'));
+        }
         a.kontrastSchwach.slice(0, 8).forEach((k) => {
           befunde++;
           console.log('      ' + k.verhaeltnis + ' : 1  (soll ' + k.soll + ')  ' + k.px + 'px' + (k.fett ? ' fett' : '') +

@@ -4077,7 +4077,19 @@ console.log('\n41) Echte WKN zum Modell-Schein (Tickets #9/#11/#17)');
   ok(/'api\.onvista\.de'/.test(mainQ), 'api.onvista.de steht in der Host-Freigabe – ohne sie blockt die Bridge jeden Abruf');
   ok(html.indexOf('Keine echten WKNs') < 0 && sf.indexOf('Modell-Kennung statt WKN: Echte WKN-Listen') < 0,
      'Die alte Auskunft „echte WKNs gibt es nur gegen Bezahlung" steht nirgends mehr');
-  ok(/colspan="15"/.test(sf), 'Die aufgeklappte Zeile spannt über alle 15 Spalten (WKN kam dazu)');
+  /* Bis Stufe 7 stand hier colspan="15" als feste Zahl - das ging, solange die
+   * Tabelle immer alle Spalten zeigte. Seit dem Schalter "alle Kennzahlen" sind es
+   * sieben ODER fuenfzehn, also darf die Zahl nicht mehr im Quelltext stehen; sie
+   * muss aus der Zahl der SICHTBAREN Spalten kommen. Geprueft wird deshalb
+   * schaerfer als vorher: keine feste Zahl, und die gerechnete stammt aus genau
+   * der Liste, aus der auch die Koepfe und die Zellen gebaut werden. */
+  ok(!/colspan="\d+"/.test(sf),
+     'Die aufgeklappte Zeile traegt KEINE feste Spaltenzahl mehr - mit sieben Spalten waere 15 falsch');
+  ok(/colspan="' \+ spalten\.length \+ '"/.test(sf),
+     'Die aufgeklappte Zeile spannt über alle sichtbaren Spalten - gerechnet aus der Spaltenliste');
+  var sfSpaltenQuelle = sf.slice(sf.indexOf('var spalten = W.spalten('), sf.indexOf('var koepfe = spalten.map'));
+  ok(sfSpaltenQuelle.indexOf('spalten.map(function (c) { return zelle(k, c.schl, idx); })') > 0,
+     'Dieselbe Spaltenliste baut auch die Zellen - Kopf, Zelle und colspan koennen nicht auseinanderlaufen');
   ok(sf.indexOf('window.WKN.kern.onvistaKennung') > 0,
      'Der Schein-Finder baut die Kennung mit der Syntax der Quelle - nicht mehr mit der Hausform');
   ok(sf.indexOf('onvista-Name') > 0 && sf.indexOf("U.esc(s.name || '") > 0,
@@ -16210,13 +16222,34 @@ console.log('\n72) Pruefwerkzeuge: Struktur-Inventar, eine Kunstdaten-Instanz, F
    * Sobald zwei Sonden ihre eigene Abschrift des Saeens tragen, driften sie - und
    * dann zeigt die Aufnahme einen anderen Zustand als die Messung daneben, ohne
    * dass es jemandem auffaellt. */
-  ok(/module\.exports = \{ saeen \}/.test(ki) && /function saeen\(testroot, jetzt\)/.test(ki),
+  /* Die Klinke stand bis Stufe 7 auf der woertlichen Zeile "module.exports = { saeen }".
+   * Das war zu eng: sie ging rot, als ein ZWEITES geteiltes Stueck dazukam (die
+   * Kurs-Attrappe des Schein-Finders), obwohl das genau ihre Absicht erfuellt.
+   * Geprueft wird jetzt die Absicht selbst - saeen wird hier definiert UND
+   * exportiert -, und zwar fuer jedes geteilte Stueck einzeln. */
+  ok(/function saeen\(testroot, jetzt\)/.test(ki) && /module\.exports = \{[^}]*\bsaeen\b/.test(ki),
      'Kunstdaten: das Saeen steht an genau einer Stelle (tools/kunstinstanz.js)');
   [['ui-aufnahmen.js', uaO], ['ui-struktur.js', stO], ['a11y-probe.js', a11], ['ui-probe.js', upO]]
     .forEach(function (x) {
       ok(/require\(path\.join\(__dirname, 'kunstinstanz\.js'\)\)\.saeen\(TESTROOT\)/.test(x[1]),
          'Kunstdaten: ' + x[0] + ' saet aus demselben Modul');
     });
+  /* Dasselbe Argument fuer die Kurs-Attrappe des Schein-Finders (Stufe 7): sie
+   * fuellt die Tabelle in der Aufnahme UND in der Verhaltensprobe. Zwei Kopien
+   * wuerden driften, und dann zeigte das Bild ein anderes Raster als die Messung. */
+  ok(/function scheinAttrappeCode\(jetzt\)/.test(ki) && /module\.exports = \{[^}]*\bscheinAttrappeCode\b/.test(ki),
+     'Kunstdaten: die Schein-Attrappe steht ebenfalls nur in kunstinstanz.js');
+  [['ui-aufnahmen.js', uaO], ['ui-probe.js', upO]].forEach(function (x) {
+    ok(/KI\.scheinAttrappeCode\(/.test(x[1]) && !/v8\/finance\/chart/.test(x[1]),
+       'Kunstdaten: ' + x[0] + ' nimmt die Attrappe von dort und baut sich keine eigene');
+  });
+  /* Und der Grund, warum sie den LADER ersetzt und nicht window.api.fetchText:
+   * window.api kommt aus contextBridge und ist im Renderer schreibgeschuetzt - die
+   * Zuweisung verpufft still. Gefunden am 04.09.2026, weil die Attrappe mitzaehlt. */
+  ok(/window\.KurseKern\.baueLader\(attrappe/.test(ki) && !/window\.api\.fetchText =/.test(ki),
+     'Kunstdaten: die Attrappe ersetzt den Lader, nicht das schreibgeschuetzte window.api');
+  ok(/window\.__kunstAbrufe/.test(ki),
+     'Kunstdaten: die Attrappe zaehlt ihre Abrufe - ohne den Zaehler waere "sie wurde nie gerufen" unsichtbar');
 
   /* ---------------------------------------------------------------------------
    * (c) Die a11y-Sonde kennt --kunstdaten - an der VERWENDUNG, nicht am Namen
@@ -18018,6 +18051,257 @@ console.log('\n76) Dialoge: ein Stapel statt sechs Einzelfaelle (QS-Funde B1, U1
   ok(/String\(omega\)\.replace\('\.', ','\)/.test(dp78) && /aufgeld\.toFixed\(1\)\.replace\('\.', ','\)/.test(dp78),
      '78.2 Hebel und Aufgeld im Nachbilden-Dialog stehen mit Komma, nicht mit Punkt');
   ok(g78 === rot78, '78.3 alle Gegenproben dieses Abschnitts schlagen an', rot78 + ' von ' + g78);
+})();
+
+/* ================= 79) Schein-Finder: Bedienung (Oberflaeche Stufe 7) ================
+ * Wilhelms Wunsch vom 04.09.2026: "leichter zu bedienen, ggf. mit Dropdown-Menues".
+ * Vorher standen im Finder neun freie Zahlenfelder - man musste wissen, welche
+ * Zahlen sinnvoll sind, bevor man ueberhaupt etwas sah.
+ *
+ * Geprueft wird hier vor allem das, was ein Textabtaster NICHT sieht:
+ *   - dass die Vorgaben an EINER Stelle stehen und alle Listen daraus kommen,
+ *   - dass die Bereiche GENAUSO filtern wie frueher die Felder (Aequivalenz),
+ *   - dass keine der drei Voreinstellungen leer ist - an dieser Zaehlung sind beim
+ *     Entwurf zwei Varianten gescheitert (siehe Kopf von scheinwahl.js). */
+console.log('\n79) Schein-Finder: Auswahllisten statt freier Zahlen');
+(function () {
+  var SW = require('./scheinwahl.js');
+  var sf = fs.readFileSync(__dirname + '/scheinfinder.js', 'utf8');
+  var html79 = fs.readFileSync(__dirname + '/index.html', 'utf8');
+  var shell79 = fs.readFileSync(__dirname + '/app-shell.js', 'utf8');
+  var g79 = 0, rot79 = 0;
+  function gegen79(was, ergebnis) { g79++; if (ergebnis) rot79++; ok(ergebnis, '   Gegenprobe: ' + was); }
+
+  /* --- 79.1 Die Vorgaben stehen an EINER Stelle --- */
+  var sfBlock79 = html79.slice(html79.indexOf('id="sub-scheine"'), html79.indexOf('id="sub-betrieb"'));
+  /* Der Kern der Aufgabe: keine Zahl im Markup. Frueher standen dort value="3",
+   * value="20", value="14", value="180", value="1", value="50" - sechs Vorgaben,
+   * die die Voreinstellungs-Tabelle ein zweites Mal haette wiederholen muessen. */
+  ok(!/<input[^>]*\bvalue="[0-9]/.test(sfBlock79),
+     '79.1 kein Eingabefeld im Schein-Finder traegt eine Zahl als Vorgabe');
+  ok(!/<option[^>]*value="[0-9]/.test(sfBlock79),
+     '79.1 keine Auswahlliste im Markup - die Vorgaben stehen in scheinwahl.js');
+  gegen79('die alte Fassung mit value="3" wuerde gefunden',
+          /<input[^>]*\bvalue="[0-9]/.test('<label>Hebel von<input id="sfHebelMin" type="number" value="3"></label>'));
+  gegen79('eine eingeschmuggelte Options-Zahl wuerde gefunden',
+          /<option[^>]*value="[0-9]/.test('<select id="sfTv"><option value="25">25 %</option></select>'));
+  /* Und die Gegenrichtung: die Listen muessen wirklich aus der Tabelle gebaut werden.
+   * Ohne diese Zeile waere "keine Zahl im Markup" auch dann gruen, wenn es gar
+   * keine Listen mehr gaebe. */
+  ok(sf.indexOf('listeBauen(\'sfTyp\', W.TYP') > 0 && sf.indexOf('listeBauen(\'sfHebel\', W.HEBEL') > 0 &&
+     sf.indexOf('listeBauen(\'sfLaufzeit\', W.LAUFZEIT') > 0 && sf.indexOf('listeBauen(\'sfSpanne\', W.SPANNE') > 0 &&
+     sf.indexOf('listeBauen(\'sfTv\', W.TOTALVERLUST') > 0 && sf.indexOf('listeBauen(\'sfStufe\', W.STUFE') > 0 &&
+     sf.indexOf('listeBauen(\'sfBand\', W.BAND') > 0 && sf.indexOf('listeBauen(\'sfSort\', W.SORT') > 0,
+     '79.1 alle acht Listen werden aus den Tabellen in scheinwahl.js gebaut');
+  ok(/<div class="chartleiste" id="sfListen"><\/div>/.test(sfBlock79),
+     '79.1 der Behaelter fuer die Listen ist im Markup leer - er wird gefuellt, nicht beschrieben');
+  ok(/<script src="scheinwahl\.js"><\/script>/.test(html79) &&
+     html79.indexOf('src="scheinwahl.js"') < html79.indexOf('src="scheinfinder.js"'),
+     '79.1 scheinwahl.js wird VOR scheinfinder.js geladen - sonst waere W beim Start undefiniert');
+
+  /* --- 79.2 voreinstellung(name): reine Funktion, in Node pruefbar --- */
+  ['defensiv', 'ausgewogen', 'offensiv'].forEach(function (n) {
+    var v = SW.voreinstellung(n);
+    ok(v && v.typ && v.stufeMax && v.hebel && v.laufzeit && v.spanne && v.tv && v.band && v.sort,
+       '79.2 "' + n + '" setzt alle acht Listen auf einmal', JSON.stringify(v));
+    /* Jeder gesetzte Wert muss in seiner Liste auch vorkommen - eine Voreinstellung,
+     * die einen Wert setzt, den die Liste nicht kennt, faellt beim Anzeigen still
+     * auf den ersten Eintrag zurueck. */
+    var da = function (tab, w) { return tab.some(function (o) { return o.wert === w; }); };
+    ok(da(SW.TYP, v.typ) && da(SW.STUFE, v.stufeMax) && da(SW.HEBEL, v.hebel) &&
+       da(SW.LAUFZEIT, v.laufzeit) && da(SW.SPANNE, v.spanne) && da(SW.TOTALVERLUST, v.tv) &&
+       da(SW.BAND, v.band) && da(SW.SORT, v.sort),
+       '79.2 "' + n + '" setzt nur Werte, die es in den Listen wirklich gibt');
+  });
+  ok(SW.voreinstellung('gibtsnicht') === null, '79.2 ein unbekannter Name gibt null, nicht ein halbes Objekt');
+  /* Frische Kopie: die erste Bedienung darf die Vorlage fuer alle weiteren nicht
+   * veraendern. Das ist keine Theorie - WAHL wird im Finder direkt beschrieben. */
+  var k1 = SW.voreinstellung('defensiv');
+  k1.hebel = 'ueber20';
+  ok(SW.voreinstellung('defensiv').hebel !== 'ueber20',
+     '79.2 voreinstellung() gibt eine Kopie - Bedienen veraendert die Tabelle nicht');
+  gegen79('haette sie die Tabelle selbst gegeben, waere der Wert jetzt geaendert',
+          SW.VOREINSTELLUNGEN.defensiv.hebel === '2-5');
+  ok(SW.VOREINSTELLUNGEN.ausgewogen.stufeMax === '3' && SW.VOREINSTELLUNGEN.ausgewogen.spanne === '1' &&
+     SW.VOREINSTELLUNGEN.ausgewogen.tv === '50',
+     '79.2 "ausgewogen" schreibt die bisherige Markup-Vorgabe fort (Stufe 3, Spanne 1 %, Totalverlust 50 %)');
+
+  /* --- 79.3 Aequivalenz: Bereich filtert wie die alten Felder --- */
+  var jetzt79 = Date.UTC(2026, 8, 4, 14, 0);
+  var raster79 = Q.scheinRaster(100, 0.35, jetzt79);
+  ok(raster79.length > 300, '79.3 Referenzraster steht', raster79.length + ' Zeilen');
+  /* Der wortwoertliche Auftrag: Bereich "5-10" filtert wie die Felder 5 und 10. */
+  var ausBereich = SW.auswahl(raster79, { hebel: '5-10', laufzeit: '1-3m', spanne: '1', tv: '50', stufeMax: '5' }, 100);
+  var ausFelder = SW.auswahl(raster79, { hebel: 'eigen', hebelVon: 5, hebelBis: 10,
+                                         laufzeit: 'eigen', lzVon: 30, lzBis: 90,
+                                         spanne: '1', tv: '50', stufeMax: '5' }, 100);
+  ok(ausBereich.length === ausFelder.length && ausBereich.length > 0 &&
+     ausBereich.every(function (k, i) { return k === ausFelder[i]; }),
+     '79.3 Bereich "5-10"/"1-3m" filtert Zeile fuer Zeile wie die Felder 5/10 und 30/90',
+     ausBereich.length + ' = ' + ausFelder.length + ' Zeilen');
+  gegen79('ein um eins verschobener Bereich liefert NICHT dasselbe',
+          SW.auswahl(raster79, { hebel: 'eigen', hebelVon: 6, hebelBis: 10, laufzeit: 'eigen', lzVon: 30, lzBis: 90,
+                                 spanne: '1', tv: '50', stufeMax: '5' }, 100).length !== ausBereich.length);
+  /* Jeder angebotene Bereich muss auf genau seine zwei Zahlen abbilden. */
+  SW.HEBEL.filter(function (h) { return !h.eigen; }).forEach(function (h) {
+    var f = SW.felder({ hebel: h.wert });
+    ok(f.hebelMin === h.min && f.hebelMax === h.max,
+       '79.3 Hebel-Bereich "' + h.wert + '" wird zu ' + h.min + '/' + h.max);
+  });
+  SW.LAUFZEIT.filter(function (l) { return !l.eigen; }).forEach(function (l) {
+    var f = SW.felder({ laufzeit: l.wert });
+    ok(f.lzMin === l.min && f.lzMax === l.max,
+       '79.3 Laufzeit-Bereich "' + l.wert + '" wird zu ' + l.min + '/' + l.max + ' Tagen');
+  });
+  /* Leere eigene Felder heissen "keine Grenze" - dieselben Ersatzwerte wie frueher. */
+  var offen79 = SW.felder({ hebel: 'eigen', laufzeit: 'eigen' });
+  ok(offen79.hebelMin === 0 && offen79.hebelMax === 999 && offen79.lzMin === 0 && offen79.lzMax === 9999,
+     '79.3 leere eigene Felder filtern nichts weg - dieselben Ersatzwerte wie in der alten Fassung');
+  ok(SW.auswahl(raster79, { hebel: 'eigen', laufzeit: 'eigen', spanne: '100', tv: '100', stufeMax: '5' }, 100).length === raster79.length,
+     '79.3 ... und lassen dann wirklich das ganze Raster stehen');
+
+  /* Die Grenzen der Bereiche sind Rasterpunkte von scheinRaster - ein Bereich
+   * zwischen zwei Rasterpunkten waere leer, und niemand wuesste warum. */
+  var lzImRaster = {};
+  raster79.forEach(function (k) { lzImRaster[k.restTage] = 1; });
+  SW.LAUFZEIT.filter(function (l) { return !l.eigen; }).forEach(function (l) {
+    ok(lzImRaster[l.min], '79.3 Laufzeit-Grenze ' + l.min + ' ist ein Rasterpunkt - der Bereich kann nicht leer sein');
+  });
+
+  /* --- 79.4 Keine Voreinstellung ist leer (die Zaehlung, die zwei Entwuerfe kippte) --- */
+  var FAELLE79 = [[477, 0.79], [600, 0.18], [100, 0.35], [20, 0.55]];
+  FAELLE79.forEach(function (c) {
+    var r = Q.scheinRaster(c[0], c[1], jetzt79);
+    var mittel = {};
+    ['defensiv', 'ausgewogen', 'offensiv'].forEach(function (n) {
+      var l = SW.auswahl(r, SW.voreinstellung(n), c[0]);
+      ok(l.length > 0, '79.4 "' + n + '" findet bei ' + c[0] + ' $ / ' + Math.round(c[1] * 100) + ' % etwas',
+         l.length + ' Zeilen');
+      mittel[n] = l.reduce(function (a, k) { return a + k.stufe; }, 0) / (l.length || 1);
+    });
+    /* Und sie sind der Reihe nach riskanter - sonst waeren die drei Knoepfe nur
+     * drei Namen fuer dasselbe. */
+    ok(mittel.defensiv < mittel.ausgewogen && mittel.ausgewogen < mittel.offensiv,
+       '79.4 ... und die drei sind bei ' + c[0] + ' $ der Reihe nach riskanter',
+       mittel.defensiv.toFixed(1) + ' < ' + mittel.ausgewogen.toFixed(1) + ' < ' + mittel.offensiv.toFixed(1));
+  });
+  /* Die zwei Entwuerfe, die an genau dieser Zaehlung gescheitert sind - als
+   * Positivkontrolle, dass die Pruefung ueberhaupt etwas ablehnen KANN. */
+  var amd79 = Q.scheinRaster(477, 0.79, jetzt79);
+  gegen79('"defensiv" mit 3-6 Monaten waere bei 79 % Vola leer - die Pruefung wuerde es sehen',
+          SW.auswahl(amd79, { stufeMax: '2', hebel: '2-5', laufzeit: '3-6m', spanne: '1', tv: '25' }, 477).length === 0);
+  gegen79('"offensiv" mit Hebel ueber 20 waere dort ebenfalls leer',
+          SW.auswahl(amd79, { stufeMax: '5', hebel: 'ueber20', laufzeit: '2-4w', spanne: '2', tv: '100' }, 477).length === 0);
+
+  /* --- 79.5 Sieben Spalten, Schalter zeigt alle --- */
+  ok(SW.spalten(false).length === 7, '79.5 Vorgabe sind sieben Spalten', SW.spalten(false).map(function (c) { return c.t; }).join(' · '));
+  ok(SW.spalten(true).length === 15, '79.5 der Schalter blendet alle fuenfzehn ein', SW.spalten(true).length);
+  ok(SW.spalten(false).every(function (c) { return SW.SPALTEN.indexOf(c) >= 0; }),
+     '79.5 die sieben sind eine Teilmenge der fuenfzehn, keine zweite Liste');
+  var grundSchl = SW.spalten(false).map(function (c) { return c.schl; });
+  ok(grundSchl.indexOf('wkn') >= 0 && grundSchl.indexOf('kennung') >= 0 && grundSchl.indexOf('stufe') >= 0 &&
+     grundSchl.indexOf('typ') >= 0 && grundSchl.indexOf('strike') >= 0 && grundSchl.indexOf('omega') >= 0 &&
+     grundSchl.indexOf('tv') >= 0,
+     '79.5 die sieben sind WKN, Kennung, Stufe, Typ, Basispreis, Hebel, Totalverlust');
+  ok(/id="sfAlleSpalten" type="checkbox"/.test(sf), '79.5 der Schalter "alle Kennzahlen" steht im Modul');
+  /* Jede Spalte muss eine Zelle bekommen - eine Spalte ohne Zellenzweig ergaebe
+   * einen Kopf ueber einem Gedankenstrich. */
+  var fehlendeZelle = SW.SPALTEN.filter(function (c) { return sf.indexOf("schl === '" + c.schl + "'") < 0; });
+  ok(fehlendeZelle.length === 0, '79.5 jede der fuenfzehn Spalten hat einen Zellen-Zweig',
+     fehlendeZelle.map(function (c) { return c.schl; }).join(', '));
+
+  /* --- 79.6 Live filtern, ohne neu zu laden --- */
+  /* Der Netzweg ist ALLEIN der Knopf. Stuende ein lade() an einer Liste, holte
+   * jede Drehung an einem Auswahlfeld neue Kurse. */
+  var verkabelt = sf.slice(sf.indexOf('[\'sfTyp\', \'sfStufe\', \'sfHebel\''), sf.indexOf('var so = el(\'sfSort\')'));
+  ok(verkabelt.indexOf('zeige()') > 0 && verkabelt.indexOf('lade(') < 0,
+     '79.6 die Listen rufen zeige(), nicht lade() - Filtern holt keine Kurse');
+  ok((sf.match(/addEventListener\('click', lade\)/g) || []).length === 1,
+     '79.6 genau ein Element loest den Kursabruf aus: der Knopf "Laden & rechnen"');
+  ok(/id="sfLadenBtn"/.test(sfBlock79), '79.6 und er heisst weiter sfLadenBtn (Klick-Sperrliste, Klinken)');
+  ok(/Kurse\.hole\(/.test(sf) && sf.indexOf('Kurse.hole(') > sf.indexOf('async function lade'),
+     '79.6 der einzige Kursabruf steht in lade()');
+  ok(/id="sfTreffer"/.test(sf) && sf.indexOf('von \' + RASTER.length + \' Scheinen') > 0,
+     '79.6 die Trefferzahl steht als "N von M Scheinen" neben den Listen');
+  /* trefferZeigen() muss VOR dem Leerzustand-Ausstieg laufen - sonst bliebe bei
+   * null Treffern die letzte Zahl stehen und behauptete Treffer, die es nicht gibt. */
+  var zeigeRumpf = sf.slice(sf.indexOf('function zeige()'), sf.indexOf('function trefferZeigen'));
+  ok(zeigeRumpf.indexOf('trefferZeigen(liste.length)') > 0 &&
+     zeigeRumpf.indexOf('trefferZeigen(liste.length)') < zeigeRumpf.indexOf('if (!liste.length)'),
+     '79.6 die Trefferzahl wird VOR dem Leerzustand gesetzt - sonst logen null Treffer');
+  gegen79('stuende sie danach, faellt die Pruefung',
+          'trefferZeigen(x); if (!liste.length) return;'.indexOf('trefferZeigen') <
+          'trefferZeigen(x); if (!liste.length) return;'.indexOf('if (!liste.length)'));
+
+  /* --- 79.7 Die Wahl wird gemerkt --- */
+  ok(/var STORE = 'scheinfinderEinstellungen'/.test(sf), '79.7 die Einstellungen liegen unter scheinfinderEinstellungen');
+  ok(/storeGet\(STORE\)/.test(sf) && /storeSet\(STORE, aus\)/.test(sf), '79.7 gelesen und geschrieben wird derselbe Schluessel');
+  /* Der Reihenfolge-Fehler, der hier teuer waere: schreiben, bevor gelesen wurde -
+   * dann ueberschreibt der Startzustand die gemerkte Wahl, bevor sie ankommt. */
+  ok(/function wahlSchreiben\(\) \{\s*if \(!GELESEN\) return;/.test(sf),
+     '79.7 vor dem ersten Lesen wird nichts geschrieben - sonst loeschte der Start die gemerkte Wahl');
+  ok(/await wahlLesen\(\);\s*listenAufbauen\(\);/.test(sf),
+     '79.7 die Listen werden erst gebaut, nachdem die gemerkte Wahl da ist');
+  ok(sf.indexOf('WAHL = W.voreinstellung(\'ausgewogen\')') > 0, '79.7 ohne gemerkte Wahl gilt "ausgewogen"');
+
+  /* --- 79.8 Die Stufe als Pille, mit gerechnetem Kontrast --- */
+  ok(/class="sf-stufe sf-stufe' \+ k\.stufe/.test(sf), '79.8 die Stufe steht als Pille, nicht als eingefaerbte Ziffer');
+  ok(!/STUFENFARBE/.test(sf), '79.8 die alte Farbtabelle im Modul ist weg - die Farben stehen im Stylesheet');
+  [1, 2, 3, 4, 5].forEach(function (n) {
+    ok(new RegExp('\\.sf-stufe' + n + ' \\{ background:var\\(--stufe' + n + '\\); \\}').test(html79),
+       '79.8 Stufe ' + n + ' hat ihre eigene Fuellfarbe');
+    /* Beide Themen - ein var() ohne Definition im aktiven Thema faellt auf die
+     * Erbfarbe zurueck (der Fehler, den --series4 einmal hatte). */
+    ok((html79.match(new RegExp('--stufe' + n + ':', 'g')) || []).length === 2,
+       '79.8 --stufe' + n + ' ist in BEIDEN Themen definiert');
+  });
+  /* Und der Kontrast selbst - gerechnet, nicht behauptet. */
+  function leuchte(h) {
+    var v = [1, 3, 5].map(function (i) {
+      var c = parseInt(h.substr(i, 2), 16) / 255;
+      return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+    });
+    return 0.2126 * v[0] + 0.7152 * v[1] + 0.0722 * v[2];
+  }
+  function kontrast(a, b) {
+    var l1 = leuchte(a), l2 = leuchte(b);
+    return (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
+  }
+  var stufenFarben = {};
+  [1, 2, 3, 4, 5].forEach(function (n) {
+    var m = html79.match(new RegExp('--stufe' + n + ':\\s*(#[0-9a-f]{6})', 'i'));
+    stufenFarben[n] = m ? m[1] : null;
+  });
+  [1, 2, 3, 4, 5].forEach(function (n) {
+    var k = stufenFarben[n] ? kontrast(stufenFarben[n], '#ffffff') : 0;
+    ok(k >= 4.5, '79.8 Stufe ' + n + ' auf weisser Schrift: Kontrast ' + k.toFixed(2) + ' (Soll 4,5)');
+  });
+  /* Der Grund, warum die Farben in beiden Themen GLEICH sind: die Pille traegt ihre
+   * eigene Flaeche. Waeren sie verschieden, muesste jede Fassung einzeln gerechnet
+   * werden - und genau das ist bei --warn schiefgegangen (#e0a63f auf Weiss: 1,9). */
+  gegen79('die Semantikfarbe des Dunkelthemas wuerde als Fuellung durchfallen',
+          kontrast('#e0a63f', '#ffffff') < 4.5);
+  ok(/color:var\(--btn-ink\); border:1px solid var\(--kante\);/.test(html79),
+     '79.8 die Pille hat weisse Schrift und eine Kante - die Flaeche allein schafft im Dunkelthema nur 2,38 auf --panel');
+
+  /* --- 79.9 Zwei Karten, ein Satz Dauertext, Erklaerungen hinter i --- */
+  ok(/id="sfKarteBasis"/.test(sfBlock79) && /id="sfKarteWahl"/.test(sfBlock79),
+     '79.9 der Finder hat zwei Karten statt einer Wand');
+  ok(/data-info="werkzeuge\.scheinfinder"/.test(sfBlock79) && /data-info="werkzeuge\.scheinwahl"/.test(sfBlock79),
+     '79.9 jede Karte hat ihren i-Knopf');
+  ok(/'werkzeuge\.scheinfinder': \{/.test(shell79) && /'werkzeuge\.scheinwahl': \{/.test(shell79),
+     '79.9 beide Eintraege stehen im Erklaerregister - kein verwaister Knopf');
+  /* Der Kopfkommentar des Moduls WOERTLICH im Register (Auftrag Stufe 7). */
+  ok(shell79.indexOf('Ein Schein aus dem Finder verhält sich in der Simulation genauso wie im Handel') > 0,
+     '79.9 der Kopfkommentar des Moduls steht woertlich im Register, nicht nur im Quelltext');
+  ok(sfBlock79.indexOf('Jeder Schein hier verhält sich exakt so wie in der Simulation.') > 0,
+     '79.9 der Satz der Karte 1 bleibt woertlich stehen');
+
+  /* --- 79.10 Der Leerzustand haengt weiter an derselben Zeile --- */
+  ok(/if \(!t \|\| !RASTER\) return;/.test(sf),
+     '79.10 ohne Raster schreibt zeige() nicht - daran haengt der Leerzustand (Abschnitt 57)');
+
+  ok(g79 === rot79, '79.11 alle Gegenproben dieses Abschnitts schlagen an', rot79 + ' von ' + g79);
 })();
 
 Promise.all(offeneProben).then(function () {

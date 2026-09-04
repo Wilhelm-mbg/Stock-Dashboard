@@ -470,6 +470,24 @@ async function lauf(win) {
     for (const sub of subs) {
       await js("(function () { var b = document.querySelector('#tab-" + tab + " .pills [data-sub=\"" + sub + "\"]'); if (b) b.click(); return 'ok'; })()");
       await schlaf(900);
+      /* Der Schein-Finder rechnet sein Raster aus Kursen - ohne sie zeigt die
+       * Aufnahme zwei Karten und darunter nichts. "Laden & rechnen" steht auf der
+       * Klick-Sperrliste, also kommt zuerst die Attrappe aus kunstinstanz.js: der
+       * Knopf laeuft seinen echten Weg, es geht aber nichts ins Netz.
+       * Nur mit --kunstdaten: eine leere Instanz soll leer bleiben. */
+      if (KUNSTDATEN && sub === 'scheine') {
+        const KI = require(path.join(__dirname, 'kunstinstanz.js'));
+        const gesetzt = await js(KI.scheinAttrappeCode(Date.now()));
+        if (gesetzt !== 'attrappe') {
+          console.log('  Schein-Finder: Attrappe nicht gesetzt (' + gesetzt + ') - Tabelle bleibt leer');
+        } else {
+          await js("(function () { var e = document.getElementById('sfSymbol'); if (e) e.value = '" +
+            KI.scheinSymbol() + "'; var b = document.getElementById('sfLadenBtn'); if (b) b.click(); return 'ok'; })()");
+          await schlaf(1400);
+          const zeilen = await js("document.querySelectorAll('#sfTabelle tbody tr[data-sfi]').length");
+          console.log('  Schein-Finder: ' + zeilen + ' Zeilen im Bild');
+        }
+      }
       nr++;
       console.log('Reiter ' + tab + ' / Pille ' + sub + ':');
       await textmenge(js, tab + '/' + sub, '#sub-' + sub);

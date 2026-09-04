@@ -557,6 +557,174 @@ async function archivZeilePruefen(win, js) {
   return { funde };
 }
 
+/* ================= Schein-Finder: filtert er wirklich ohne Neuladen? =================
+ *
+ * Der Kern der Stufe 7 laesst sich im Quelltext nicht pruefen: dass eine Drehung an
+ * einer Auswahlliste die Tabelle SOFORT aendert und dabei KEINEN Kursabruf ausloest.
+ * Ein Textabtaster sieht nur, dass zeige() verdrahtet ist - nicht, ob es wirkt.
+ *
+ * "Laden & rechnen" steht auf der Klick-Sperrliste. Deshalb wird vorher
+ * window.api.fetchText durch die Attrappe aus tools/kunstinstanz.js ersetzt: der
+ * Knopf laeuft seinen echten Weg, aber es geht nichts ins Netz. Die Attrappe zaehlt
+ * jeden Abruf mit - daran haengt der eigentliche Nachweis.
+ */
+async function scheinFinderPruefen(win, js) {
+  const funde = [];
+  await js("(function () { var b = document.querySelector('nav.tabs [data-tab=\"werkzeuge\"]'); if (b) b.click(); " +
+           "var p = document.querySelector('#wzPills [data-sub=\"scheine\"]'); if (p) p.click(); return 'ok'; })()");
+  await new Promise((r) => setTimeout(r, 300));
+
+  /* Die Listen muessen schon dastehen, BEVOR etwas geladen wurde - sie kommen aus
+   * der Tabelle, nicht aus dem Raster. */
+  const vorher = await js("(function () {" +
+    " var ids = ['sfTyp','sfStufe','sfHebel','sfLaufzeit','sfSpanne','sfTv','sfBand','sfSort'];" +
+    " var da = ids.filter(function (i) { return !!document.getElementById(i); });" +
+    " var opt = {}; da.forEach(function (i) { opt[i] = document.getElementById(i).options.length; });" +
+    " return { listen: da.length, optionen: opt," +
+    "   knoepfe: document.querySelectorAll('#sfVoreinstellungen [data-sfvor]').length," +
+    "   schalter: !!document.getElementById('sfAlleSpalten')," +
+    "   leerzustand: !!document.querySelector('#sfTabelle .empty') }; })()");
+  console.log('    Schein-Finder: ' + vorher.listen + ' Listen, ' + vorher.knoepfe + ' Voreinstellungs-Knoepfe' +
+    ', Schalter ' + (vorher.schalter ? 'da' : 'FEHLT') + ', Leerzustand ' + (vorher.leerzustand ? 'da' : 'FEHLT'));
+  if (vorher.listen !== 8) funde.push('Schein-Finder: ' + vorher.listen + ' von 8 Auswahllisten im DOM');
+  if (vorher.knoepfe !== 3) funde.push('Schein-Finder: ' + vorher.knoepfe + ' statt drei Voreinstellungs-Knoepfe');
+  if (!vorher.schalter) funde.push('Schein-Finder: der Schalter "alle Kennzahlen" fehlt');
+  if (!vorher.leerzustand) funde.push('Schein-Finder: ohne Raster steht kein Leerzustand unter den Listen');
+  Object.keys(vorher.optionen || {}).forEach(function (i) {
+    if (!vorher.optionen[i]) funde.push('Schein-Finder: die Liste ' + i + ' ist leer - sie wird nicht aus scheinwahl.js gefuellt');
+  });
+
+  /* Jetzt die Attrappe, dann der Knopf. */
+  const KI = require(path.join(__dirname, 'kunstinstanz.js'));
+  const attrappe = await js(KI.scheinAttrappeCode(Date.now()));
+  if (attrappe !== 'attrappe') funde.push('Schein-Finder: die Kurs-Attrappe liess sich nicht setzen (' + attrappe + ') - der Knopf haette echt geladen');
+  await js("(function () { var e = document.getElementById('sfSymbol'); if (e) e.value = '" + KI.scheinSymbol() + "'; return 'ok'; })()");
+  await js("(function () { var b = document.getElementById('sfLadenBtn'); if (b) b.click(); return 'ok'; })()");
+  await new Promise((r) => setTimeout(r, 1200));
+
+  const geladen = await js("(function () {" +
+    " var t = document.getElementById('sfTabelle');" +
+    " return { zeilen: t ? t.querySelectorAll('tbody tr[data-sfi]').length : 0," +
+    "   spalten: t ? t.querySelectorAll('thead th').length : 0," +
+    "   pillen: t ? t.querySelectorAll('.sf-stufe').length : 0," +
+    "   treffer: (document.getElementById('sfTreffer') || {}).textContent || ''," +
+    "   status: (document.getElementById('sfStatus') || {}).textContent || ''," +
+    "   abrufe: (window.__kunstAbrufe || []).length }; })()");
+  console.log('    Schein-Finder geladen: ' + geladen.zeilen + ' Zeilen, ' + geladen.spalten + ' Spalten, ' +
+    geladen.pillen + ' Stufen-Pillen, "' + String(geladen.treffer).trim() + '", ' + geladen.abrufe + ' Abrufe');
+  console.log('    Statuszeile: ' + String(geladen.status).slice(0, 140));
+  if (!geladen.zeilen) {
+    funde.push('Schein-Finder: nach "Laden & rechnen" steht keine Zeile in der Tabelle - Status: ' +
+      String(geladen.status).slice(0, 120));
+    return { funde };   // ohne Raster sind die weiteren Pruefungen sinnlos
+  }
+  if (geladen.spalten !== 7) funde.push('Schein-Finder: ' + geladen.spalten + ' statt sieben Spalten in der Vorgabe');
+  if (geladen.pillen !== geladen.zeilen) {
+    funde.push('Schein-Finder: ' + geladen.pillen + ' Stufen-Pillen bei ' + geladen.zeilen + ' Zeilen - jede Zeile braucht ihre Stufe');
+  }
+  if (!/von \d+ Scheinen/.test(geladen.treffer)) {
+    funde.push('Schein-Finder: die Trefferzahl sagt nicht "N von M Scheinen": "' + geladen.treffer + '"');
+  }
+
+  /* ---- DER EIGENTLICHE PUNKT: filtern ohne neu zu laden ---- */
+  const abrufeVorher = geladen.abrufe;
+  /* Gewaehlt wird die SPANNE und nicht der Totalverlust, obwohl der naheliegender
+   * klingt: In diesem Kunst-Raster liegt der Totalverlust der Vorgabe-Auswahl
+   * ohnehin bei hoechstens 20,9 % - die Stufengrenze schneidet alles darueber schon
+   * weg, und "hoechstens 25 %" aenderte nichts. Die erste Fassung dieser Sonde hat
+   * daraus einen Befund gemacht und dem Code etwas vorgeworfen, was an ihrer
+   * eigenen Erwartung lag (04.09.2026). Die Spanne beisst nachweislich: 59 -> 35.
+   * Geprueft wird in BEIDE Richtungen - eine Tabelle, die einfach stehenbleibt,
+   * bestuende sonst die Haelfte der Pruefung. */
+  const nachFilter = await js("(function () {" +
+    " var e = document.getElementById('sfSpanne');" +
+    " e.value = '0.5'; e.dispatchEvent(new Event('change'));" +
+    " var t = document.getElementById('sfTabelle');" +
+    " return { zeilen: t ? t.querySelectorAll('tbody tr[data-sfi]').length : 0," +
+    "   treffer: (document.getElementById('sfTreffer') || {}).textContent || ''," +
+    "   abrufe: (window.__kunstAbrufe || []).length }; })()");
+  console.log('    Enger (Spanne hoechstens 0,5 %): ' + nachFilter.zeilen + ' Zeilen, "' +
+    String(nachFilter.treffer).trim() + '", Abrufe ' + abrufeVorher + ' -> ' + nachFilter.abrufe);
+  if (nachFilter.abrufe !== abrufeVorher) {
+    funde.push('Schein-Finder: das Umstellen einer Liste hat ' + (nachFilter.abrufe - abrufeVorher) +
+      ' Abruf(e) ausgeloest - gefiltert wird im Speicher, geladen nur mit dem Knopf');
+  }
+  if (nachFilter.zeilen >= geladen.zeilen) {
+    funde.push('Schein-Finder: der strengere Filter hat die Liste nicht verkleinert (' +
+      geladen.zeilen + ' -> ' + nachFilter.zeilen + ') - die Liste wirkt nicht');
+  }
+  /* Und wieder auf: die Zahl muss zurueckkommen. Sonst kann eine Sonde nicht
+   * unterscheiden, ob die Liste filtert oder die Tabelle nur einmal kleiner wurde. */
+  const wiederAuf = await js("(function () {" +
+    " var e = document.getElementById('sfSpanne');" +
+    " e.value = '100'; e.dispatchEvent(new Event('change'));" +
+    " var t = document.getElementById('sfTabelle');" +
+    " return { zeilen: t ? t.querySelectorAll('tbody tr[data-sfi]').length : 0," +
+    "   abrufe: (window.__kunstAbrufe || []).length }; })()");
+  console.log('    Wieder auf (Spanne egal): ' + wiederAuf.zeilen + ' Zeilen');
+  if (wiederAuf.zeilen <= nachFilter.zeilen) {
+    funde.push('Schein-Finder: das Lockern des Filters bringt keine Zeilen zurueck (' +
+      nachFilter.zeilen + ' -> ' + wiederAuf.zeilen + ')');
+  }
+  if (wiederAuf.abrufe !== abrufeVorher) {
+    funde.push('Schein-Finder: das Lockern des Filters hat einen Kursabruf ausgeloest');
+  }
+
+  /* ---- Der Schalter zeigt alle Kennzahlen ---- */
+  const nachSchalter = await js("(function () {" +
+    " var e = document.getElementById('sfAlleSpalten');" +
+    " e.checked = true; e.dispatchEvent(new Event('change'));" +
+    " var t = document.getElementById('sfTabelle');" +
+    " return { spalten: t ? t.querySelectorAll('thead th').length : 0," +
+    "   abrufe: (window.__kunstAbrufe || []).length }; })()");
+  console.log('    Schalter "alle Kennzahlen": ' + nachSchalter.spalten + ' Spalten');
+  if (nachSchalter.spalten !== 15) {
+    funde.push('Schein-Finder: der Schalter zeigt ' + nachSchalter.spalten + ' statt fuenfzehn Spalten');
+  }
+  if (nachSchalter.abrufe !== abrufeVorher) {
+    funde.push('Schein-Finder: der Spalten-Schalter hat einen Kursabruf ausgeloest');
+  }
+
+  /* ---- Die drei Voreinstellungen setzen wirklich alle Listen ---- */
+  const vor = await js("(function () {" +
+    " var lies = function () { return ['sfTyp','sfStufe','sfHebel','sfLaufzeit','sfSpanne','sfTv','sfSort']" +
+    "   .map(function (i) { return document.getElementById(i).value; }).join('|'); };" +
+    " var aus = {};" +
+    " ['defensiv','ausgewogen','offensiv'].forEach(function (n) {" +
+    "   document.querySelector('#sfVoreinstellungen [data-sfvor=\"' + n + '\"]').click();" +
+    "   var t = document.getElementById('sfTabelle');" +
+    "   aus[n] = { wahl: lies(), zeilen: t.querySelectorAll('tbody tr[data-sfi]').length };" +
+    " });" +
+    " aus.abrufe = (window.__kunstAbrufe || []).length;" +
+    " return aus; })()");
+  ['defensiv', 'ausgewogen', 'offensiv'].forEach(function (n) {
+    console.log('    Voreinstellung ' + n.padEnd(11) + vor[n].wahl + '  -> ' + vor[n].zeilen + ' Zeilen');
+    if (!vor[n].zeilen) funde.push('Schein-Finder: Voreinstellung "' + n + '" zeigt keine einzige Zeile');
+  });
+  if (vor.defensiv.wahl === vor.offensiv.wahl) {
+    funde.push('Schein-Finder: "defensiv" und "offensiv" setzen dieselben Werte - die Knoepfe tun nichts');
+  }
+  if (vor.abrufe !== abrufeVorher) {
+    funde.push('Schein-Finder: ein Voreinstellungs-Knopf hat einen Kursabruf ausgeloest');
+  }
+
+  /* ---- Die Begruendung klappt unter der Zeile auf ---- */
+  const auf = await js("(function () {" +
+    " var tr = document.querySelector('#sfTabelle tbody tr[data-sfi]'); if (!tr) return { da: false };" +
+    " tr.click();" +
+    " var n = tr.nextElementSibling;" +
+    " return { da: !!(n && n.className === 'sf-inline')," +
+    "   spannt: n ? parseInt(n.querySelector('td').getAttribute('colspan'), 10) : 0," +
+    "   text: n ? (n.textContent || '').slice(0, 90) : '' }; })()");
+  console.log('    Zeile aufgeklappt: ' + (auf.da ? 'ja, colspan=' + auf.spannt : 'NEIN') + ' – ' + auf.text);
+  if (!auf.da) funde.push('Schein-Finder: ein Klick auf die Zeile klappt die Risiko-Begruendung nicht auf');
+  else if (auf.spannt !== nachSchalter.spalten) {
+    funde.push('Schein-Finder: die aufgeklappte Zeile spannt ueber ' + auf.spannt + ' von ' +
+      nachSchalter.spalten + ' Spalten');
+  }
+  return { funde };
+}
+
 async function probe(win) {
   const wc = win.webContents;
   const js = (code) => wc.executeJavaScript(code, true);
@@ -674,6 +842,8 @@ async function probe(win) {
    * Textmarke im Quelltext nicht sehen kann (04.09.2026). */
   (await laufbandPruefen(win, js)).funde.forEach(function (f) { probleme.push(f); });
   (await archivZeilePruefen(win, js)).funde.forEach(function (f) { probleme.push(f); });
+  /* Der Schein-Finder: Live-Filter, Spalten, Voreinstellungen (Stufe 7, 04.09.2026). */
+  (await scheinFinderPruefen(win, js)).funde.forEach(function (f) { probleme.push(f); });
 
   const seitenFehler = await js('window.__probe.fehler.slice(0, 20)');
   /* Ein abgebrochenes init() faengt depot.js selbst ab und meldet es NUR im
