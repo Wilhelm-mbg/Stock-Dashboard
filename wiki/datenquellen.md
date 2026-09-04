@@ -167,6 +167,18 @@ laut `/v2/calendar`, iex-Wache: Balken außerhalb des angefragten Zeitraums werd
 bei gemeinsamem Stempel, Quelle `alpaca` je Kerze, 180/min, fortsetzbar). Zugang ausschließlich über
 `schluessel.js` der Spannen-Studie — Klinke Block 35.
 
+#### Verzögerung während der Sitzung, je Feed — **gemessen 04.09.2026, 16:05–16:20 MESZ** (Gratisstufe)
+
+Nur-Lese-Probe als Windows-Aufgabe, vier Messungen im Abstand von fünf Minuten, Werte SPY/AAPL/MNST (`studien/alpaca-vollsammlung-2026-09/probe-live-verzoegerung.json`):
+
+| Feed | `/v2/stocks/bars` 1Min | `bars/latest` | `snapshots` | Vollständigkeit |
+|---|---|---|---|---|
+| `sip` | **200, jüngster Balken exakt 15 min alt** (15,03 · 15,07 · 15,10 · 15,13 min) | 403 „subscription does not permit querying recent SIP data" | 403 | 75 von 75 möglichen Balken je 90-min-Fenster — konsolidiert, dieselbe Quelle wie das Archiv |
+| `iex` | 200, jüngster Balken **1 min** alt | 200, 1 min | 200, Minutenbalken 1 min, letzter Handel < 10 s | **lückenhaft:** 35–52 statt 75 Balken (nur Minuten mit IEX-Umsatz), Umsatz nur IEX |
+| `delayed_sip` | **400 „invalid feed"** | 200, 16 min | 200, 16 min | — |
+
+**Folgerung für den Live-Sammler (Auftrag Nr. 4):** Ins Archiv kommen **nur SIP-Balken**, also alles, was 15 Minuten alt ist — ein Umlauf je Minute holt `start = letzter Stempel + 1 min`, bekommt alle Balken bis „jetzt − 15 min" und hängt sie an. Das Archiv läuft der Börse damit **15 Minuten** hinterher, aber vollständig und in derselben Skala wie die Vollsammlung. **IEX taugt nur für die laufende Anzeige** (Viewer: laufende Kerze, Kurs der letzten Minute), nie für das Archiv: die Lücken und der IEX-Umsatz würden Messungen verseuchen. Ob Alpaca SIP-Balken nach 15 Minuten noch nachträglich ändert (späte Meldungen), ist **nicht gemessen** — der Sammler soll die letzten 30 Minuten jedes Umlaufs erneut abfragen und Abweichungen zählen, bevor die Regel „append-only ab 15 min" als sicher gilt.
+
 #### Bereinigung: welche Alpaca-Einstellung entspricht Yahoo? **Keine.** (gemessen 03.09.2026)
 
 `adjustment=raw|split|dividend|all`. Gemessen an vier Fällen — MNST (Split 2:1, wirksam 11.08.2026)
