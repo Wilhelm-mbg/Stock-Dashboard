@@ -3,7 +3,7 @@ tags: [bauplan]
 ---
 # Struktur der Oberfläche — mit Aufnahmen
 
-*Erzeugt am 2026-09-04 von `tools/ui-struktur.js` aus der **laufenden** Oberfläche der Version **8.40.2** — nicht aus `index.html`. Instanz: isolierte Kunstdaten-Instanz (`tools/kunstinstanz.js`), 1280 px breit, ohne Netz; die Zahlen darin sind erfunden, die Struktur ist die echte. Wer die Oberfläche umbaut, fährt das Werkzeug danach einmal — ein Aufruf erneuert Bilder und Seite: `.\node_modules\.bin\electron.cmd tools\ui-struktur.js`.*
+*Erzeugt am 2026-09-04 von `tools/ui-struktur.js` aus der **laufenden** Oberfläche der Version **8.41.0** — nicht aus `index.html`. Instanz: isolierte Kunstdaten-Instanz (`tools/kunstinstanz.js`), 1280 px breit, ohne Netz; die Zahlen darin sind erfunden, die Struktur ist die echte. Wer die Oberfläche umbaut, fährt das Werkzeug danach einmal — ein Aufruf erneuert Bilder und Seite: `.\node_modules\.bin\electron.cmd tools\ui-struktur.js`.*
 
 **Was hier steht:** ▪ = Überschrift `h2`, · = Überschrift `h3`, ▸ = Klappe (`<details>`). Die Einrückung ist die echte Verschachtelung: eine Klappe **in** einer Klappe steht eine Stufe weiter rechts. `[#kennung]` ist die `id` des Blocks. „verborgen“ heißt: der Block steht in der Seite, ist aber ausgeblendet, bis etwas passiert (z. B. Explorer → „Kennzahlen“ erst nach dem Öffnen eines Werts).
 
@@ -86,7 +86,7 @@ Werkzeuge (data-tab="werkzeuge")
 ├─ Schein-Finder (data-sub="scheine", #sub-scheine)
    │  · Schein-Finder · Kennzahlen und Risikostufe
 └─ Betrieb (data-sub="betrieb", #sub-betrieb)
-   │  ▸ Klappe: Kursarchiv
+   │  ▸ Klappe: Kursarchiv  — Statuszeile: „jüngste Kerze 04.09.26, 22:00 Uhr“
    │    ▪ Kursarchiv – die App holt die feinen Kerzen selbst und legt sie ab.  [in #sub-archiv]
    │  ▸ Klappe: Autopilot, Marktlage & Kursarchiv auffüllen  — Statuszeile: „Autopilot an · Nachtmessung 04.09.26 · Marktlage 04.09.26“
    │    · Autopilot & Datensammlung  [#abAutopilot]
@@ -101,7 +101,7 @@ Werkzeuge (data-tab="werkzeuge")
    │    · Mittelfrist-Bücher steuern  [in #sub-mittelfrist]
    │    · Ergebnis-Drift · Aktien, keine Hebelscheine  [in #sub-mittelfrist]
    │    · Was wäre heute offen?  [in #sub-mittelfrist]
-   │  ▸ Klappe: Live-Signal-Monitor  — Statuszeile: „letzter Scan 04.09.26, 19:08 Uhr“
+   │  ▸ Klappe: Live-Signal-Monitor  — Statuszeile: „letzter Scan 04.09.26, 21:48 Uhr“
    │    · Live-Signal-Monitor
    │    ▸ Klappe: 30 Werte: Kursreihe zu kurz (161 < 261 Kerzen) – Signal wäre nicht das gemessene  [in #sigMonitor]
    │  ▸ Klappe: Strategie-Chart  [in #sub-werkzeug]
@@ -168,7 +168,7 @@ Dialoge (gehören zu keinem Reiter)
 
 ### Markt → Überblick
 
-`#sub-marktueberblick` · 15 Blöcke · 6664 Zeichen sichtbarer Text
+`#sub-marktueberblick` · 15 Blöcke · 7543 Zeichen sichtbarer Text
 
 - ▪ Marktüberblick
 - ▪ Sektoren – nach Marktkapitalisierung gewichtet, Branchen aus den SEC-Stammdaten.
@@ -272,9 +272,9 @@ Dialoge (gehören zu keinem Reiter)
 
 ### Werkzeuge → Betrieb
 
-`#sub-betrieb` · 35 Blöcke · 21808 Zeichen sichtbarer Text
+`#sub-betrieb` · 35 Blöcke · 21812 Zeichen sichtbarer Text
 
-- ▸ Klappe: Kursarchiv
+- ▸ Klappe: Kursarchiv  — Statuszeile: „jüngste Kerze 04.09.26, 22:00 Uhr“
   - ▪ Kursarchiv – die App holt die feinen Kerzen selbst und legt sie ab.  [in #sub-archiv]
 - ▸ Klappe: Autopilot, Marktlage & Kursarchiv auffüllen  — Statuszeile: „Autopilot an · Nachtmessung 04.09.26 · Marktlage 04.09.26“
   - · Autopilot & Datensammlung  [#abAutopilot]
@@ -289,7 +289,7 @@ Dialoge (gehören zu keinem Reiter)
   - · Mittelfrist-Bücher steuern  [in #sub-mittelfrist]
   - · Ergebnis-Drift · Aktien, keine Hebelscheine  [in #sub-mittelfrist]
   - · Was wäre heute offen?  [in #sub-mittelfrist]
-- ▸ Klappe: Live-Signal-Monitor  — Statuszeile: „letzter Scan 04.09.26, 19:08 Uhr“
+- ▸ Klappe: Live-Signal-Monitor  — Statuszeile: „letzter Scan 04.09.26, 21:48 Uhr“
   - · Live-Signal-Monitor
   - ▸ Klappe: 30 Werte: Kursreihe zu kurz (161 < 261 Kerzen) – Signal wäre nicht das gemessene  [in #sigMonitor]
 - ▸ Klappe: Strategie-Chart  [in #sub-werkzeug]

@@ -43,6 +43,10 @@
       // Die Stunden-Strategie startet AUS: gemessen widerlegt (Technik-Score t=-11,6).
       // Von Hand einschaltbar bleibt sie - dieser Entscheid wird respektiert.
       notify: true, hourlyEnabled: false, equityHist: [],
+      /* Darstellung und Toene (Wilhelm, 04.09.2026). Beide Vorgaben: AN. Ein
+       * bestehender Store hat den Schluessel nicht - deshalb liest anzeigeStand()
+       * ueberall mit '!== false' und braucht keine Migration. */
+      anzeige: { laufband: true, glocke: true },
       risk: { maxPos: 8, dayLossPct: 3, exposurePct: 40 },
       dayKey: '', dayStartEq: 0,
       lastRun: 0, nextId: 1
@@ -4348,7 +4352,31 @@
       });
     });
   }
+  /* ---- Darstellung & Toene: Stand lesen und anwenden ----
+   * '!== false' und nicht '=== true': ein Store, der vor dem 04.09.2026 geschrieben
+   * wurde, kennt den Schluessel nicht, und "nicht gesetzt" heisst hier "an". So
+   * braucht der Schalter keine Migration und kein Nachtragen beim Laden. */
+  function anzeigeStand() {
+    var a = (D && D.anzeige) || {};
+    return { laufband: a.laufband !== false, glocke: a.glocke !== false };
+  }
+  /* Ein Attribut am Wurzelelement, aus dem CSS und Renderer lesen. Das Ereignis
+   * danach ist fuer alles, was sich nicht per CSS erledigt (der Hinweistext des
+   * Bandes und sein Tempo). */
+  function anzeigeAnwenden() {
+    var st = anzeigeStand();
+    var w = document.documentElement;
+    w.setAttribute('data-laufband', st.laufband ? 'an' : 'aus');
+    w.setAttribute('data-glocke', st.glocke ? 'an' : 'aus');
+    try { document.dispatchEvent(new CustomEvent('anzeige-geaendert')); }
+    catch (e) { /* ohne Ereignis bleibt es beim Stand des naechsten Aufbaus */ }
+  }
+
   window.DepotAPI = {
+    /** Darstellung und Toene, nur lesend und nur als Kopie - wie signal().
+     *  Die Oberflaeche liest den Zustand sonst aus den data-Attributen; diese
+     *  Auskunft ist fuer Proben, die ihn gegen den Store halten wollen. */
+    anzeige: function () { return anzeigeStand(); },
     /** Die Kostenhuerde der LAUFENDEN Einstellung, in Prozentpunkten des Basiswerts.
      *  Nur eine KOPIE und nur lesend - wie signal() und protokollKante().
      *  Wilhelms Entscheid 27.08.: das Scoreboard trennt seine Aufloesungswand an
@@ -7241,6 +7269,52 @@
       nE.checked = D.notify !== false;
       nE.addEventListener('change', function () { D.notify = nE.checked; save(); });
     }
+
+    /* ---- Darstellung & Toene (Wilhelm, 04.09.2026) ----
+     * Zwei Schalter, ein Weg: der Zustand steht im Store, wird als data-Attribut ans
+     * Wurzelelement geschrieben und von dort aus GELESEN - vom CSS (Band laeuft oder
+     * steht) und von renderer.js (Hinweistext, Glocke). Ein Attribut, eine Wahrheit;
+     * haetten CSS und Renderer je eine eigene Quelle, koennten Aussehen und Text
+     * auseinanderlaufen.
+     * Der Laufband-Schalter tritt an die Stelle der Windows-Einstellung "Bewegung
+     * reduzieren": die steht auf Wilhelms Rechner dauerhaft an, das Band lief deshalb
+     * nie (#90), und genau das hat er zurueckgefordert. */
+    var lB = document.getElementById('setLaufband');
+    if (lB) {
+      lB.checked = anzeigeStand().laufband;
+      lB.addEventListener('change', function () {
+        if (!D.anzeige) D.anzeige = {};
+        D.anzeige.laufband = lB.checked;
+        save();
+        anzeigeAnwenden();
+      });
+    }
+    var gB = document.getElementById('setGlocke');
+    if (gB) {
+      gB.checked = anzeigeStand().glocke;
+      gB.addEventListener('change', function () {
+        if (!D.anzeige) D.anzeige = {};
+        D.anzeige.glocke = gB.checked;
+        save();
+        anzeigeAnwenden();
+      });
+    }
+    /* Die Probe spielt den Ton IMMER - auch bei ausgeschalteter Glocke. Sie ist eine
+     * Hoerprobe, keine Vorschau des Schalters: wer wissen will, wie es klingt, bevor
+     * er ihn anmacht, kaeme sonst nie dazu. Gespielt wird derselbe Ton wie im
+     * Betrieb (window.Dash.glockeProbe), nicht ein zweiter. */
+    var gP = document.getElementById('glockeProbeBtn');
+    if (gP) {
+      gP.addEventListener('click', function () {
+        var st = document.getElementById('glockeProbeStatus');
+        var ok = !!(window.Dash && window.Dash.glockeProbe && window.Dash.glockeProbe());
+        if (st) {
+          st.textContent = ok ? 'Ton gespielt.' : 'Der Ton lässt sich auf diesem Rechner nicht erzeugen.';
+          setTimeout(function () { st.textContent = ''; }, 5000);
+        }
+      });
+    }
+    anzeigeAnwenden();
     if (D.intraday.enabled) {
       document.getElementById('idStatus').textContent = window.Dash.marketOpen() ? 'Aktiv.' : 'Aktiv – wartet auf US-Handelsbeginn (15:30 Uhr Berlin).';
     } else if (D.intraday.schattenImmer !== false) {

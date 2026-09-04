@@ -136,7 +136,13 @@
     if (startEl) startEl.style.display = 'none';
     document.getElementById('expDetail').style.display = 'block';
     document.getElementById('expName').textContent = hit.name;
-    document.getElementById('expMeta').textContent = hit.sym + ' · ' + hit.type + (hit.exch ? ' · ' + hit.exch : '');
+    /* U7 (QS 04.09.2026): stand hier fest 'sym · type' + optional Boerse, hing der
+     * erste Trenner auch dann dran, wenn type leer war - und leer ist er bei JEDEM
+     * Sprung aus dem Reiter Markt (Hotlist und Marktkarte uebergeben exch:'', type:'').
+     * Auf dem Bildschirm stand 'KUNSTM9 · '. Jetzt werden die Teile gesammelt und
+     * die leeren fallen weg - der Trenner steht zwischen zwei Angaben oder gar nicht. */
+    document.getElementById('expMeta').textContent = [hit.sym, hit.type, hit.exch]
+      .filter(function (t) { return t != null && String(t).trim() !== ''; }).join(' · ');
     document.getElementById('expPrice').textContent = '…';
     document.getElementById('expChg').innerHTML = '';
     document.getElementById('expStats').innerHTML = '';
@@ -1284,18 +1290,17 @@
       var v = sk.tief + (sk.hoch - sk.tief) * i / 4;
       ctx.fillText(U.nf2.format(v), sk.breite - sk.rechts + 4, sk.y(v) + 3);
     }
-    var schritt = Math.max(1, Math.floor(kerzen.length / 6));
-    for (var j = 0; j < kerzen.length; j += schritt) {
-      ctx.fillText(vwAchsenZeit(kerzen[j][0]), sk.x(j) - 18, sk.hoehe - 6);
-    }
+    /* Die Halte rechnet markt/kerzenchart.js - dort ist die Regel in Node pruefbar
+     * und haengt an nichts, was auf dem Bildschirm steht (PM-Fund 04.09.2026:
+     * sechsmal "10:30" ueber drei Tage). */
+    var kc = KC();
+    var marken = kc && kc.achsenBeschriftung
+      ? kc.achsenBeschriftung(kerzen, { intervallMs: kc.INTERVALL_MS[VW.zeitrahmen], zone: 'America/New_York' })
+      : [];
+    marken.forEach(function (m) {
+      ctx.fillText(m.text, sk.x(m.i) - 18, sk.hoehe - 6);
+    });
     ctx.restore();
-  }
-  function vwAchsenZeit(ms) {
-    var d = new Date(ms);
-    var fein = (KC().INTERVALL_MS[VW.zeitrahmen] || 86400000) < 86400000;
-    return fein
-      ? d.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit', timeZone: 'America/New_York' })
-      : d.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: '2-digit', timeZone: 'America/New_York' });
   }
 
   /* DIE FUSSZEILE IST NIE STUMM. Sie sagt, woher die Kerzen kommen, wie viele
@@ -1471,10 +1476,24 @@
         if (a && a.ok && a.aktuell && a.aktuell.termin) {
           text = 'Nächster Ergebnistermin: <b>' + U.esc(new Date(a.aktuell.termin).toLocaleDateString('de-DE')) + '</b>';
         } else {
-          text = 'Kein Ergebnistermin gefunden' + (a && a.aktuellGrund ? ' (' + U.esc(a.aktuellGrund) + ')' : '') + '.';
+          /* PM-Fund am Viewer-Foto (04.09.2026): ohne Netz stand hier
+           * "Kein Ergebnistermin gefunden (Cannot read properties of null (reading
+           * 'quoteSummary'))". Das ist die Innenseite eines Abrufs, kein Satz fuer
+           * den Leser - und es behauptet ausserdem etwas Falsches: nicht "es gibt
+           * keinen Termin", sondern "wir konnten nicht nachsehen". Der Grund geht
+           * ins Log, damit er beim Suchen weiter da ist. */
+          if (a && a.aktuellGrund) {
+            text = 'Termine derzeit nicht abrufbar.';
+            console.log('[Explorer] Termine ' + sym + ' nicht abrufbar: ' + a.aktuellGrund);
+          } else {
+            text = 'Kein Ergebnistermin gefunden.';
+          }
         }
       }
-    } catch (e3) { text = 'Termine nicht erreichbar: ' + U.esc(String(e3 && e3.message || e3)); }
+    } catch (e3) {
+      text = 'Termine derzeit nicht abrufbar.';
+      console.log('[Explorer] Termine ' + sym + ' warfen: ' + String(e3 && e3.message || e3));
+    }
     if (sym !== (CUR && CUR.sym)) return;
     e.innerHTML = '<div>' + text + '</div>';
   }

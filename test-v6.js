@@ -6043,53 +6043,74 @@ console.log('\n41) Zustaende: was die App sagt, wenn etwas fehlt oder klemmt');
   ok(!/document\.(write|body)|innerHTML|addEventListener\(|fetch\(|storeGet\(/.test(tOhneJsKomm(tThema)),
      'und fasst nichts an ausser data-theme');
 
-  /* ---- #90: Bewegung wegnehmen heisst nicht Inhalt wegnehmen (26.08.2026) ----
-   * Bei "Bewegung reduzieren" stand im Laufband nur "animation: none". Die Spur fror auf
-   * translateX(0) ein, obwohl sie 4,4-mal breiter ist als ihr Rahmen: drei von sechs
-   * Schlagzeilen waren DAUERHAFT unerreichbar. Auf Wilhelms Rechner ist die Einstellung
-   * dauerhaft aktiv - das war der Normalfall, nicht ein Sonderfall.
-   * Gemessen nach der Reparatur (studien/auditor/2026-08-26/probe-reduzierte-bewegung.js
-   * plus eine Erreichbarkeitsmessung): 6 von 6 Schlagzeilen lassen sich hereinschieben,
-   * die letzte eingeschlossen; ohne reduzierte Bewegung laeuft alles wie vorher. */
-  var nCss = html.slice(html.indexOf('@media (prefers-reduced-motion: reduce)'));
-  nCss = nCss.slice(0, nCss.indexOf('\n  }\n') + 5);
-  ok(/#newsTicker \.tickSpur \{ animation: none; \}/.test(nCss),
-     'Bei reduzierter Bewegung laeuft das Band nicht - das war und bleibt richtig');
-  ok(/#newsTicker \{[^}]*overflow-x: auto/.test(nCss),
-     'aber der Rahmen wird schiebbar - sonst ist der Inhalt weg statt nur still');
-  ok(!/#newsTicker[^}]*overflow: hidden;[^}]*\}/.test(nCss),
+  /* ---- #90 / Laufband: Bewegung wegnehmen heisst nicht Inhalt wegnehmen ----
+   * 26.08.2026: Bei "Bewegung reduzieren" stand im Laufband nur "animation: none".
+   * Die Spur fror auf translateX(0) ein, obwohl sie 4,4-mal breiter ist als ihr
+   * Rahmen - drei von sechs Schlagzeilen waren DAUERHAFT unerreichbar.
+   * 04.09.2026: Der SCHALTER hat gewechselt, die Zusicherung nicht. Wilhelm hat die
+   * Windows-Einstellung dauerhaft an und will das Band trotzdem laufen sehen; an
+   * ihre Stelle tritt die App-Einstellung "Laufband bewegen" (data-laufband am
+   * Wurzelelement). Was bleibt: steht das Band, muss der Inhalt erreichbar sein -
+   * Rollbalken statt abgeschnittenem Kasten, keine doppelte Spur, ein Hinweistext,
+   * der nichts verspricht, was nicht passiert. */
+  var htmlBand = html.slice(html.indexOf('/* News-Laufband im Dashboard'),
+                            html.indexOf('/* Info-Fenster beim Draufzeigen'));
+  ok(htmlBand.length > 400, 'der Laufband-Abschnitt im CSS laesst sich herausloesen');
+  /* DIE VERWENDUNG, nicht das Wort: gesucht wird eine Regel, die das Band an die
+   * OS-Einstellung haengt. Der erklaerende Kommentar darueber nennt sie namentlich -
+   * eine Klinke auf den blossen Bezeichner waere an ihrem eigenen Kommentar rot. */
+  function medienBloecke(quelle, bedingung) {
+    var raus = [], i = 0;
+    for (;;) {
+      var a = quelle.indexOf('@media (' + bedingung, i);
+      if (a < 0) break;
+      var auf = quelle.indexOf('{', a), tiefe = 0, j = auf;
+      for (; j < quelle.length; j++) {
+        if (quelle[j] === '{') tiefe++;
+        else if (quelle[j] === '}') { tiefe--; if (!tiefe) break; }
+      }
+      raus.push(quelle.slice(auf, j + 1));
+      i = j + 1;
+    }
+    return raus;
+  }
+  var redMotion = medienBloecke(html, 'prefers-reduced-motion');
+  ok(!redMotion.some(function (b) { return /newsTicker|tickSpur/.test(b); }),
+     'Das Band haengt NICHT mehr an der OS-Einstellung "Bewegung reduzieren" (#90, Wilhelm 04.09.2026)',
+     redMotion.length + ' solcher Bloecke im Blatt');
+  ok(/:root\[data-laufband="aus"\] #newsTicker \.tickSpur \{ animation: none; \}/.test(htmlBand),
+     'sondern am App-Schalter - steht der auf aus, laeuft das Band nicht');
+  ok(/:root\[data-laufband="aus"\] #newsTicker \.tickKopie \{ display: none; \}/.test(htmlBand),
+     'und dann faellt die zweite Spurhaelfte weg - sonst schoebe man alles zweimal durch');
+  ok(/#newsTicker \{[\s\S]*?overflow-x: auto/.test(htmlBand),
+     'der Rahmen ist schiebbar - sonst ist der Inhalt weg statt nur still');
+  ok(!/#newsTicker[^}]*overflow: hidden;[^}]*\}/.test(htmlBand),
      'und nicht gleichzeitig wieder abgeschnitten');
-  /* Die Verdopplung dient allein der nahtlosen Schleife. Steht das Band, schoebe man
-   * dieselben Schlagzeilen zweimal durch - gemessen 12 statt 6 Anker. */
+  ok(/:root\[data-laufband="aus"\] #newsTicker::after \{/.test(htmlBand),
+     'bei stehendem Band sagt ein Pfeil am rechten Rand, dass dort mehr steht (C16)');
   var nRend = fs.readFileSync(__dirname + '/renderer.js', 'utf8');
-  ok(/function reduzierteBewegung\(\)/.test(nRend) && /prefers-reduced-motion: reduce/.test(nRend),
-     'renderer.js fragt die Einstellung');
-  ok(/stueck \+ \(ruhig \? '' : stueck\)/.test(nRend),
-     'und verdoppelt den Inhalt NUR, wenn das Band wirklich laeuft');
+  ok(/return document\.documentElement\.getAttribute\('data-laufband'\) !== 'aus';/.test(nRend),
+     'renderer.js liest denselben Schalter wie das CSS - ein Attribut, eine Wahrheit');
   /* Ein title, der etwas verspricht, das nicht passiert, ist schlimmer als keiner:
    * "haelt unter dem Mauszeiger an" lief ins Leere, weil nie etwas lief. */
   ok(!/id="newsTicker"[^>]*title=/.test(html),
-     'Das Markup verspricht nichts mehr - der Hinweis kommt aus dem Renderer');
-  ok(/el\.title = ruhig/.test(nRend) && /Bewegung reduzieren/.test(nRend),
-     'und sagt bei stehendem Band, dass man seitwaerts schieben kann');
-  /* Die Einstellung kann sich im Betrieb aendern. Ohne Nachziehen bliebe entweder
-   * doppelter Text stehen oder ein Band, das nicht mehr laeuft. */
-  ok(/addEventListener\('change', function \(\) \{ renderTicker\(\); \}\)/.test(nRend),
-     'Ein Umschalten waehrend des Betriebs baut das Band neu auf');
-  /* Und die Abfrage selbst wird AUSGEFUEHRT. Der interessante Fall ist der dritte:
-   * wirft matchMedia, muss es beim bisherigen Verhalten bleiben und nicht abstuerzen -
-   * die Funktion laeuft bei jedem Aufbau des Bandes. */
-  var rbA = nRend.indexOf('function reduzierteBewegung() {');
-  var rbE = nRend.indexOf('\n  }\n', rbA);
-  ok(rbA !== -1 && rbE > rbA, 'reduzierteBewegung laesst sich herausloesen');
-  var rbFn = new Function('window', nRend.slice(rbA, rbE + 4) + '\nreturn reduzierteBewegung;');
-  ok(rbFn({ matchMedia: function () { return { matches: true }; } })() === true,
-     'Reduzierte Bewegung wird erkannt');
-  ok(rbFn({ matchMedia: function () { return { matches: false }; } })() === false,
-     'und normale Bewegung ebenso');
-  ok(rbFn({})() === false, 'Ohne matchMedia bleibt es beim Laufband - kein Absturz');
-  ok(rbFn({ matchMedia: function () { throw new Error('nein'); } })() === false,
-     'Und wenn die Abfrage wirft, laeuft das Band weiter statt die Seite mitzureissen');
+     'Das Markup verspricht nichts - der Hinweis kommt aus dem Renderer');
+  ok(/function bandTitel\(\)/.test(nRend) && /Das Band steht \(App-Einstellung/.test(nRend),
+     'und sagt bei stehendem Band, dass es steht und warum');
+  /* Der Schalter kann sich im Betrieb aendern. Der Hinweistext muss mit. */
+  ok(/document\.addEventListener\('anzeige-geaendert'/.test(nRend),
+     'Ein Umschalten waehrend des Betriebs zieht Hinweistext und Tempo nach');
+  /* Und der Schalter wird AUSGEFUEHRT - die Funktion selbst, mit einer Attrappe des
+   * Wurzelelements. Der interessante Fall ist der dritte: fehlt das Attribut noch
+   * (vor dem Laden des Depot-Zustands), muss das Band laufen, nicht stehen. */
+  var blA = nRend.indexOf('function bandLaeuft() {');
+  var blE = nRend.indexOf('\n  }\n', blA);
+  ok(blA !== -1 && blE > blA, 'bandLaeuft laesst sich herausloesen');
+  var blFn = new Function('document', nRend.slice(blA, blE + 4) + '\nreturn bandLaeuft;');
+  function wurzel(wert) { return { documentElement: { getAttribute: function () { return wert; } } }; }
+  ok(blFn(wurzel('an'))() === true, 'data-laufband="an": das Band laeuft');
+  ok(blFn(wurzel('aus'))() === false, 'data-laufband="aus": es steht');
+  ok(blFn(wurzel(null))() === true, 'ohne Attribut laeuft es - das ist die Vorgabe');
 
   // --- Kein eval in irgendeiner ausgelieferten Datei ---
   var paket = fs.readdirSync(__dirname).filter(function (f) {
@@ -13022,9 +13043,17 @@ console.log('\n64) Bestand & Kopfzeile (Oberflaeche Stufe 2, 03.09.2026)');
   ok(!/window\.api|fetch\(|storeGet|readProtokolle|messStrategien/.test(tabelleO),
      'Keine Statuszeile laedt nach - nur Quellen, die ohnehin im Speicher stehen');
   /* Und aktualisiert wird ueber die Ereignisse, die es schon gibt. */
-  ok(/\['quotes-updated', 'kanten-geladen', 'sub-changed', 'tab-changed'\]/.test(shellO) &&
+  ok(/\['quotes-updated', 'kanten-geladen', 'archiv-stand', 'sub-changed', 'tab-changed'\]/.test(shellO) &&
      !/setInterval\([^)]*klappenStandSetzen/.test(shellO),
      'Die Statuszeilen haengen an vorhandenen Ereignissen, nicht an einem eigenen Zeitgeber');
+  /* 'archiv-stand' kam am 04.09.2026 dazu (QS-Fund U3). Es ist KEIN Zeitgeber: die
+   * Quelle meldet sich, wenn sie eine Antwort hat - sonst blieb die Zeile beim
+   * ersten Aufklappen leer, weil 'sub-changed' synchron feuert und danach nichts
+   * mehr auslöste. */
+  var archK = fs.readFileSync(__dirname + '/archivkarte.js', 'utf8');
+  ok(/document\.dispatchEvent\(new CustomEvent\('archiv-stand'\)\)/.test(archK) &&
+     archK.indexOf("dispatchEvent(new CustomEvent('archiv-stand'))") > archK.indexOf('LETZTER = st;'),
+     'U3: die Archiv-Auskunft meldet sich, NACHDEM sie ihren Stand gesetzt hat');
   /* Die zwei Auskuenfte, die es fuer diese Zeilen neu gibt, sind LESEND. */
   ok(/protokollKennungen: function \(\) \{ return Object\.keys\(PROTOKOLL_KANTE\); \}/.test(dep),
      'DepotAPI.protokollKennungen gibt nur die Namen heraus, eine Kopie');
@@ -17017,13 +17046,26 @@ console.log('\n74) Aktien-Viewer: Kerzenchart, Archiv-Leseauskunft, eine Sammelr
   /* usMarketOpen bleibt Handelslogik - die haette hier nichts zu suchen. */
   ok(/function usMarketOpen\(\)/.test(renQ) && /var open = usMarketOpen\(\);/.test(renQ),
      'F2: usMarketOpen bleibt - an ihm haengen Glattstellung und Einstiegssperre, nicht die Anzeige');
-  /* F4: Kasten und Laufband zeigen NICHT dieselben Meldungen. */
-  ok(/var rest = NEWS_ALLE\.slice\(NEWS_MAX, 20\);/.test(renQ),
-     'F4: das Laufband zeigt die Meldungen, die im Kasten NICHT stehen');
-  ok(!/var stueck = NEWS\.slice\(0, 20\)/.test(renO),
-     'F4: und nicht mehr dieselben fuenf wie der Kasten');
+  /* F4: Kasten und Laufband - ENTSCHIEDEN, nicht offen (Wilhelm, 04.09.2026).
+   * Bis heute galt "jede Schlagzeile steht genau einmal": der Kasten zeigte die
+   * fuenf juengsten, das Band den Rest. Wilhelm hat das Band als BREAKING NEWS
+   * zurueckgefordert - es zeigt jetzt die juengsten Meldungen, und der Kasten ist
+   * absichtlich eine Teilmenge davon. Die Klinke wird deshalb umgestellt, nicht
+   * abgeschwaecht: sie prueft ab jetzt die Beziehung, die gelten SOLL. */
+  ok(/var zeigen = NEWS_ALLE\.slice\(0, TICK_MAX\);/.test(renQ),
+     'F4: das Laufband zeigt die JUENGSTEN Meldungen, nicht den Rest');
+  ok(!/NEWS_ALLE\.slice\(NEWS_MAX,/.test(renO),
+     'F4: und nicht mehr das, was im Kasten fehlt');
   ok(/NEWS = items\.slice\(0, NEWS_MAX\)/.test(renQ) && /NEWS_ALLE = items\.slice\(0, 25\)/.test(renQ),
      'F4: der Deckel von fuenf im Kasten bleibt, die Gesamtliste steht daneben');
+  ok(/items\.sort\(function \(a, b\) \{ return b\.t - a\.t; \}\)/.test(renQ),
+     'F4: beide Listen sind nach Zeit sortiert, juengste zuerst - der Kasten ist damit der Kopf des Bandes');
+  /* Und das RECHNERISCH: mit NEWS_MAX = 5 und TICK_MAX = 20 aus derselben Datei ist
+   * der Kasten eine echte Teilmenge des Bandes. Eine Zahl, die das kippt, faellt auf. */
+  var nMax = Number((renQ.match(/var NEWS_MAX = (\d+);/) || [])[1]);
+  var tMax = Number((renQ.match(/var TICK_MAX = (\d+);/) || [])[1]);
+  ok(nMax > 0 && tMax >= nMax,
+     'F4: Kasten (' + nMax + ') liegt im Band (' + tMax + ') - Teilmenge, keine zweite Auswahl');
   /* F6: der Fokus im Laufband bleibt sichtbar. */
   /* Umgeschrieben am 04.09.2026 nach zwei GEMESSENEN Fehlversuchen (siehe Uebergabe
    * Stufe 6, Abweichung 3): weder das Nachrollen noch die Bildlaufleiste allein
@@ -17034,6 +17076,18 @@ console.log('\n74) Aktien-Viewer: Kerzenchart, Archiv-Leseauskunft, eine Sammelr
      'F6: dafuer ist das Band selbst anspringbar und mit den Pfeiltasten rollbar');
   ok(/#newsTicker \{\n\s*overflow-x: auto; overflow-y: visible;/.test(htmlQ),
      'F6: und es hat eine Bildlaufleiste - ein Kasten, der geschoben werden darf, braucht eine');
+  /* Der Preis aus Stufe 6 §4.3 ist bezahlt (Wilhelm, 04.09.2026): das Band merkt
+   * sich eine aktuelle Meldung, die Pfeiltasten bewegen sie, Enter oeffnet sie.
+   * Vorher waren die Meldungen, die nur im Band standen, mit der Tastatur gar nicht
+   * zu erreichen - die Links duerfen keine Tabulator-Halte sein (zweimal gemessen). */
+  ok(/function bandZeigen\(n\)/.test(renQ) && /classList\.add\('tickAktiv'\)/.test(renQ),
+     'F6: das Band merkt sich eine aktuelle Meldung und markiert sie');
+  ok(/k === 'ArrowRight' \|\| k === 'ArrowDown'/.test(renQ) && /k === 'ArrowLeft' \|\| k === 'ArrowUp'/.test(renQ),
+     'F6: die Pfeiltasten bewegen sie');
+  ok(/k === 'Enter'/.test(renQ) && /links\[bandAktiv\]\.click\(\);/.test(renQ),
+     'F6: und die Eingabetaste oeffnet die gewaehlte Meldung - die Tastatur erreicht jetzt jede');
+  ok(/#newsTicker a\.tickAktiv \{ outline:/.test(htmlQ),
+     'F6: die aktuelle Meldung ist auch zu SEHEN - ohne Rahmen waere die Wahl unsichtbar');
   /* F7: der Fokus ueberlebt ein Neuschreiben. */
   ok(/function fokusMerken\(e\)/.test(muiQ) && /function fokusSetzen\(e, sym\)/.test(muiQ),
      'F7: der Fokus wird vor dem Neuschreiben gemerkt und danach gesetzt');
@@ -17126,6 +17180,355 @@ console.log('\n74) Aktien-Viewer: Kerzenchart, Archiv-Leseauskunft, eine Sammelr
   gegen('eine laufende Kerze ohne Marke wuerde durch archivFaehig rutschen',
         KC.archivFaehig([[1, 2, 3, 4, 5, 6]]).length === 1);
   ok(g74 === gRot, 'alle Gegenproben dieses Abschnitts schlagen an', gRot + ' von ' + g74);
+})();
+
+
+/* ================= 75) Laufband, Marktglocke, Kleinkram (04.09.2026) ==============
+ *
+ * Wilhelms Entscheid vom 04.09.2026, im Wortlaut: "Laufband aktuell halten (Breaking
+ * News) und vor allem soll es wieder so von rechts nach links durchs Bild laufen.
+ * Zudem bitte bei Markt-Start und Markt-Schluss die Bell laeuten lassen als nettes
+ * Feature." Dazu die drei offenen QS-Funde FA3 (Kontrast), U3 (Statuszeile) und U7
+ * (Trennpunkt ohne Inhalt) und zwei Funde des PM am Viewer-Foto.
+ *
+ * Geprueft wird hier, was in Node pruefbar ist: die reinen Funktionen (welcher Wechsel
+ * laeutet, wie die Zeitachse beschriftet wird, wie alt eine Meldung heisst), die
+ * Verdrahtung im Markup und die Kontrastrechnung an den Farbtoken.
+ * Was ein Fenster braucht - laeuft das Band wirklich, ist die Statuszeile nach dem
+ * ersten Aufklappen gefuellt, klingt der Ton -, steht in tools/ui-probe.js und
+ * tools/a11y-probe.js. Eine Textmarke waere dort die falsche Messung.
+ *
+ * DIE GLOCKE WIRD MIT EINER ATTRAPPE DER UHR GEFAHREN, nicht mit einer Attrappe des
+ * Zustands: die Zeitstempel laufen durch quant.js und boerse.js in die echte
+ * sitzungszustand() - dieselbe Kette wie im Betrieb. Ein Stub haette genau die Frage
+ * nicht beantwortet, um die es geht (rechnet die Kette am Feiertag richtig?). */
+console.log('\n75) Laufband, Marktglocke, Kleinkram');
+(function () {
+  var MU = require('./markt/uebersicht.js');
+  var KC75 = require('./markt/kerzenchart.js');
+  var Q75 = require('./quant.js');
+  var B75 = require('./boerse.js');
+  var ren = fs.readFileSync(__dirname + '/renderer.js', 'utf8');
+  var htm = fs.readFileSync(__dirname + '/index.html', 'utf8');
+  var dep75 = fs.readFileSync(__dirname + '/depot.js', 'utf8');
+  var exp75 = fs.readFileSync(__dirname + '/explorer.js', 'utf8');
+
+  /* ---- 75.1 Die Glocke: genau einmal je Wechsel ----
+   * Die Attrappe ist die Uhr, nicht der Zustand. Jeder Zeitstempel geht durch
+   * quant.js (Minuten seit Eroeffnung, mit US-Sommerzeit) und boerse.js
+   * (Sitzungslaenge, mit Feiertagen und Halbtagen) in sitzungszustand(). */
+  function zustandUm(ms) {
+    var z = MU.sitzungszustand(Q75.minutenSeitOeffnung(ms), B75.sitzungsMinuten(ms));
+    return z ? z.zustand : null;
+  }
+  /* Der Betrieb in klein: ein Merker fuer den zuletzt gesehenen Zustand, sonst nichts.
+   * Genau das macht glockeTakt() in renderer.js. */
+  function laeuten(stempel, startZustand) {
+    var merker = startZustand === undefined ? null : startZustand;
+    var toene = [];
+    stempel.forEach(function (ms) {
+      var jetzt = zustandUm(ms);
+      var e = MU.glockenEreignis(merker, jetzt);
+      merker = jetzt;
+      if (e) toene.push(e);
+    });
+    return toene;
+  }
+  /* 04.09.2026 ist ein Freitag, US-Sommerzeit: 09:30 ET = 13:30 UTC. */
+  function et(std, min, tag, monat) {
+    return Date.UTC(2026, monat === undefined ? 8 : monat, tag === undefined ? 4 : tag, std + 4, min);
+  }
+  ok(zustandUm(et(9, 29)) === 'vorboerslich' && zustandUm(et(9, 30)) === 'regulaer' &&
+     zustandUm(et(16, 0)) === 'nachboerslich',
+     '75.1 Die Uhr-Attrappe trifft die Sitzung: 09:29 vorboerslich, 09:30 regulaer, 16:00 nachboerslich');
+  var eroeffnung = laeuten([et(9, 28), et(9, 29), et(9, 30), et(9, 31), et(9, 45)]);
+  ok(eroeffnung.length === 1 && eroeffnung[0] === 'oeffnung',
+     '75.1 Von 09:28 bis 09:45 laeutet es GENAU EINMAL, und zwar zur Eroeffnung',
+     eroeffnung.join(',') || 'gar nicht');
+  var schluss = laeuten([et(15, 58), et(15, 59), et(16, 0), et(16, 1), et(16, 30)]);
+  ok(schluss.length === 1 && schluss[0] === 'schluss',
+     '75.1 und zum Schluss genauso', schluss.join(',') || 'gar nicht');
+  var ganzerTag = laeuten([et(8, 0), et(9, 29), et(9, 30), et(12, 0), et(15, 59), et(16, 0), et(18, 0)]);
+  ok(ganzerTag.length === 2 && ganzerTag[0] === 'oeffnung' && ganzerTag[1] === 'schluss',
+     '75.1 ein ganzer Handelstag ergibt zwei Toene, nicht mehr', ganzerTag.join(','));
+  /* Der Neustart um 09:31: die App kommt hoch, sieht 'regulaer' und hat keinen
+   * vorigen Zustand. Sie darf NICHT nachlaeuten - der Wechsel liegt hinter ihr. */
+  var neustart = laeuten([et(9, 31), et(9, 32), et(10, 0)]);
+  ok(neustart.length === 0,
+     '75.1 Ein Neustart um 09:31 laeutet NICHT nach - der erste Blick merkt sich nur',
+     neustart.join(',') || 'still');
+  /* Der 3. Juli 2026 ist der verschobene Unabhaengigkeitstag (der 4. faellt auf einen
+   * Samstag). An ihm gibt es kein 'regulaer' - und damit keinen der beiden Wechsel. */
+  ok(!!B75.feiertagAn(Date.UTC(2026, 6, 3, 16, 0)),
+     '75.1 der 03.07.2026 ist in boerse.js ein Feiertag',
+     String(B75.feiertagAn(Date.UTC(2026, 6, 3, 16, 0))));
+  var feiertag = laeuten([et(8, 0, 3, 6), et(9, 29, 3, 6), et(9, 30, 3, 6), et(12, 0, 3, 6), et(16, 0, 3, 6), et(18, 0, 3, 6)]);
+  ok(feiertag.length === 0,
+     '75.1 Am Feiertag bleibt es still - ohne "regulaer" gibt es keinen Wechsel',
+     feiertag.join(',') || 'still');
+  var samstag = laeuten([et(9, 29, 5), et(9, 30, 5), et(16, 0, 5)]);
+  ok(samstag.length === 0, '75.1 am Wochenende ebenso', samstag.join(',') || 'still');
+
+  /* ---- 75.2 Die Glocke haengt am Sitzungszustand, nicht an einer eigenen Uhr ---- */
+  ok(/window\.MarktUebersicht\.glockenEreignis\(glockeZustand, z\.zustand\)/.test(ren),
+     '75.2 renderer.js fragt die reine Funktion, statt selbst zu rechnen');
+  var taktA = ren.indexOf('function glockeTakt() {');
+  var taktQ = ren.slice(taktA, ren.indexOf('\n  }\n', taktA));
+  ok(taktA !== -1 && !/09:30|16:00|getHours|America\/New_York/.test(taktQ),
+     '75.2 und im Takt selbst steht keine Uhrzeit - keine zweite Zeitrechnung');
+  ok(/glockeTakt\(\);\n  setInterval\(glockeTakt, 15000\);/.test(ren),
+     '75.2 der erste Blick laeuft vor dem Takt - er setzt die Marke, ohne zu laeuten');
+  ok(/hinweisSetzen\('glocke', ereignis === 'oeffnung' \? '/.test(ren),
+     '75.2 jedes Ereignis wird auch SICHTBAR - in der Hinweis-Kette an #err');
+  ok(/if \(glockeAn\(\)\) glockeTon\(\);/.test(ren) &&
+     ren.indexOf("hinweisSetzen('glocke'") < ren.indexOf('if (glockeAn()) glockeTon();'),
+     '75.2 der Hinweis kommt auch bei ausgeschalteter Glocke - er haengt nicht am Ton');
+  ok(!/glockeTakt|glockeTon/.test(dep75.replace(/glockeProbe/g, '')),
+     '75.2 der Handel kennt die Glocke nicht - sie loest nichts aus und nichts loest sie aus');
+
+  /* ---- 75.3 Der Ton wird erzeugt, nicht abgespielt ---- */
+  ok(/window\.AudioContext \|\| window\.webkitAudioContext/.test(ren) && /createOscillator\(\)/.test(ren),
+     '75.3 Web Audio, kein <audio> und keine Datei');
+  var dateien75 = fs.readdirSync(__dirname).filter(function (f) { return /\.(mp3|wav|ogg|m4a|aac|flac)$/i.test(f); });
+  ok(dateien75.length === 0, '75.3 im Paket liegt keine Audiodatei', dateien75.join(', ') || 'keine');
+  var teile75 = (ren.match(/\{ f: [\d.]+, a: [\d.]+, t: [\d.]+ \}/g) || []);
+  ok(teile75.length >= 2 && teile75.length <= 3,
+     '75.3 zwei bis drei abklingende Teiltoene', teile75.length + ' Teiltoene');
+  var laengste = Math.max.apply(null, (ren.match(/t: ([\d.]+) \}/g) || [])
+    .map(function (x) { return Number(x.match(/[\d.]+/)[0]); }));
+  ok(laengste > 0.8 && laengste <= 1.5, '75.3 und er ist rund 1,2 s lang', laengste + ' s');
+  ok(/huelle\.gain\.setValueAtTime\(0\.0001, t0\)/.test(ren),
+     '75.3 die Huellkurve startet nicht bei 0 - von 0 kommt eine exponentielle Rampe nie weg');
+  ok(/catch \(e\) \{ return false; \}/.test(ren.slice(ren.indexOf('function glockeTon()'), ren.indexOf('function glockeAn()'))),
+     '75.3 und ein fehlgeschlagener Ton reisst keinen Bildschirm mit');
+
+  /* ---- 75.4 Die beiden Schalter und der Probe-Knopf sind verdrahtet ---- */
+  ok(/id="setLaufband"/.test(htm) && /id="setGlocke"/.test(htm) && /id="glockeProbeBtn"/.test(htm),
+     '75.4 die zwei Schalter und der Probe-Knopf stehen im Einstellungs-Dialog');
+  ok(/anzeige: \{ laufband: true, glocke: true \}/.test(dep75), '75.4 Vorgabe fuer beide: AN');
+  ok(/return \{ laufband: a\.laufband !== false, glocke: a\.glocke !== false \};/.test(dep75),
+     '75.4 und ein Store ohne den Schluessel liest ebenfalls AN - keine Migration noetig');
+  ['setLaufband', 'setGlocke'].forEach(function (id) {
+    var stelle = dep75.indexOf("getElementById('" + id + "')");
+    var blk = stelle < 0 ? '' : dep75.slice(stelle, stelle + 420);
+    ok(stelle > 0 && /addEventListener\('change'/.test(blk) && /save\(\);/.test(blk) && /anzeigeAnwenden\(\);/.test(blk),
+       '75.4 ' + id + ' liest den Store, schreibt ihn und wendet ihn an');
+  });
+  ok(/w\.setAttribute\('data-laufband', st\.laufband \? 'an' : 'aus'\);/.test(dep75) &&
+     /w\.setAttribute\('data-glocke', st\.glocke \? 'an' : 'aus'\);/.test(dep75),
+     '75.4 angewandt wird als Attribut am Wurzelelement - eine Quelle fuer CSS und Renderer');
+  var probeStelle = dep75.indexOf("getElementById('glockeProbeBtn')");
+  var probeBlk = dep75.slice(probeStelle, probeStelle + 700);
+  ok(probeStelle > 0 && /window\.Dash\.glockeProbe\(\)/.test(probeBlk),
+     '75.4 der Probe-Knopf spielt DENSELBEN Ton wie der Betrieb, keinen zweiten');
+  ok(!/anzeigeStand\(\)\.glocke|data-glocke/.test(probeBlk),
+     '75.4 und er spielt ihn auch bei ausgeschalteter Glocke - sonst hoerte man sie nie vorher');
+  ok(/glockeProbe: function \(\) \{ return glockeTon\(\); \}/.test(ren),
+     '75.4 renderer.js gibt den Ton als Griff heraus');
+
+  /* ---- 75.5 Das Band: laeuft, pausiert bei Hover und Fokus, Tempo aus der Breite ---- */
+  ok(/#newsTicker:hover \.tickSpur \{ animation-play-state: paused; \}/.test(htm),
+     '75.5 unter dem Mauszeiger haelt das Band an - per animation-play-state, nicht per Neuaufbau');
+  ok(/#newsTicker:focus-within \.tickSpur \{ animation-play-state: paused; \}/.test(htm),
+     '75.5 und solange der Fokus darin steht ebenso');
+  ok(!/newsTicker'\)[\s\S]{0,300}addEventListener\('mouse/.test(ren),
+     '75.5 kein Zuhoerer haengt am Beruehren - das Anhalten ist reines CSS');
+  ok(/@keyframes tickLauf \{ from \{ transform: translateX\(0\); \} to \{ transform: translateX\(-50%\); \} \}/.test(htm),
+     '75.5 die Spur laeuft von rechts nach links, um genau eine Haelfte');
+  ok(/<span class="tickTeil">' \+ stueck \+ '<\/span>/.test(ren) &&
+     /<span class="tickTeil tickKopie" aria-hidden="true">' \+ stueck \+ '<\/span>/.test(ren),
+     '75.5 die Spur liegt doppelt (keine Luecke) und die Kopie ist fuer Vorlesehilfen unsichtbar');
+  /* Tempo aus der gemessenen Breite, nicht aus der Zeichenzahl - und keine Zahl im
+   * Markup. Frueher stand dort style="animation-duration:NNs". */
+  ok(!/animation-duration:/.test(ren),
+     '75.5 der Renderer baut keine Laufzeit ins Markup');
+  ok(/var breite = teil\.offsetWidth;/.test(ren) && /var dauer = Math\.max\(10, breite \/ TICK_PXS\);/.test(ren),
+     '75.5 die Dauer kommt aus der GEMESSENEN Spurbreite - gleiche Pixel je Sekunde, egal wie viele Meldungen');
+  ok(/if \(!\(breite > 0\)\) return null;/.test(ren),
+     '75.5 auf einem verborgenen Reiter (Breite 0) wird nichts gesetzt - sonst raste das Band beim Hinschalten');
+  ok(/document\.addEventListener\(ev, function \(\) \{ bandTempo\(\); \}\);/.test(ren),
+     '75.5 und beim Wechsel dorthin wird nachgemessen');
+
+  /* Das Alter der Meldungen - die reine Rechnung, ausgefuehrt. */
+  var naA = ren.indexOf('function newsAlter(tMs, jetztMs) {');
+  var naE = ren.indexOf('\n  }\n', naA);
+  ok(naA !== -1 && naE > naA, '75.5 newsAlter laesst sich herausloesen');
+  var naFn = new Function(ren.slice(naA, naE + 4) + '\nreturn newsAlter;')();
+  var j0 = 1000000000000;
+  ok(naFn(j0 - 12 * 60000, j0) === 'vor 12 Min', '75.5 zwoelf Minuten heissen "vor 12 Min"', naFn(j0 - 12 * 60000, j0));
+  ok(naFn(j0 - 30000, j0) === 'gerade eben', '75.5 unter einer Minute: "gerade eben"', naFn(j0 - 30000, j0));
+  ok(naFn(j0 - 3 * 3600000, j0) === 'vor 3 Std', '75.5 drei Stunden: "vor 3 Std"', naFn(j0 - 3 * 3600000, j0));
+  ok(naFn(j0 - 26 * 3600000, j0) === 'vor 1 Tag', '75.5 gut ein Tag: "vor 1 Tag"', naFn(j0 - 26 * 3600000, j0));
+  ok(naFn(0, j0) === '' && naFn(null, j0) === '',
+     '75.5 ohne brauchbaren Stempel steht nichts da - eine erfundene Altersangabe waere schlimmer als keine');
+  ok(/newsAlter\(n\.t, jetzt\)/.test(ren) && /class="tickZeit"/.test(ren),
+     '75.5 und das Band setzt sie ein');
+
+  /* ---- 75.6 Der Kontrast, gerechnet aus den Farbtoken selbst ----
+   * FA3: --down kam im hellen Thema auf 4,25 gegen --panel bei 12 px. Gerechnet wird
+   * hier nach WCAG aus dem Blatt - dieselbe Formel wie in tools/a11y-probe.js, aber
+   * ohne Fenster. Die Sonde misst die WIRKLICH gerenderte Farbe; diese Klinke haelt
+   * die Token, aus denen sie entsteht.
+   * IM DUNKELN werden --surface und --panel gehalten, nicht --panel-2: dort steht
+   * --down als Text auf beiden ersten (die Sonde fand im Dunkeln 0 Befunde), auf
+   * --panel-2 gemessen kommt es auf 4,17 - eine Zahl ohne gefundene Fundstelle.
+   * Sie zur Klinke zu machen hiesse, das Dunkel-Thema auf Verdacht umzufaerben. */
+  function leuchte(hex) {
+    var c = [1, 3, 5].map(function (i) {
+      var v = parseInt(hex.substr(i, 2), 16) / 255;
+      return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+    });
+    return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+  }
+  function kontrast(a, b) {
+    var l1 = leuchte(a), l2 = leuchte(b);
+    return (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
+  }
+  var themaSchnitt = htm.indexOf('--surface:     #1a1a19');
+  ok(themaSchnitt > 0, '75.6 die zwei Themenbloecke lassen sich trennen');
+  function token(quelle, name) {
+    var m = quelle.match(new RegExp('--' + name + ':\\s*(#[0-9a-fA-F]{6})'));
+    return m ? m[1] : null;
+  }
+  var hell = htm.slice(0, themaSchnitt), dunkel = htm.slice(themaSchnitt);
+  [['hell', hell, ['surface', 'panel', 'panel-2']],
+   ['dunkel', dunkel, ['surface', 'panel']]].forEach(function (x) {
+    var farbe = token(x[1], 'down');
+    ok(!!farbe, '75.6 --down ist im ' + x[0] + 'en Thema gesetzt', String(farbe));
+    x[2].forEach(function (g) {
+      var grund = token(x[1], g);
+      var k = kontrast(farbe, grund);
+      ok(k >= 4.5, '75.6 --down auf --' + g + ' (' + x[0] + '): ' + k.toFixed(2) + ' >= 4,5',
+         farbe + ' auf ' + grund);
+    });
+  });
+
+  /* ---- 75.7 U7: der Trennpunkt steht zwischen zwei Angaben oder gar nicht ---- */
+  var meta7 = exp75.indexOf("getElementById('expMeta').textContent");
+  var meta7Q = exp75.slice(meta7, meta7 + 260);
+  ok(meta7 > 0 && /\[hit\.sym, hit\.type, hit\.exch\]/.test(meta7Q) && /\.filter\(/.test(meta7Q) && /\.join\(' · '\)/.test(meta7Q),
+     '75.7 U7: die Teile werden gesammelt, die leeren fallen weg');
+  function meta(hit) {
+    return [hit.sym, hit.type, hit.exch]
+      .filter(function (t) { return t != null && String(t).trim() !== ''; }).join(' · ');
+  }
+  ok(meta({ sym: 'KUNSTM9', type: '', exch: '' }) === 'KUNSTM9',
+     '75.7 U7: aus dem Reiter Markt steht nur das Kuerzel da - kein "KUNSTM9 · "');
+  ok(meta({ sym: 'AAPL', type: 'EQUITY', exch: 'NMS' }) === 'AAPL · EQUITY · NMS',
+     '75.7 U7: mit allen Angaben stehen alle drei da');
+  ok(meta({ sym: 'AAPL', type: '', exch: 'NMS' }) === 'AAPL · NMS',
+     '75.7 U7: und eine Luecke in der Mitte erzeugt keinen doppelten Trenner');
+
+  /* ---- 75.8 Die Termine-Karte sagt einen Satz, das Log den Grund ---- */
+  ok(/text = 'Termine derzeit nicht abrufbar\.';/.test(exp75), '75.8 der Leser bekommt einen Satz');
+  ok(/console\.log\('\[Explorer\] Termine ' \+ sym \+ ' nicht abrufbar: ' \+ a\.aktuellGrund\)/.test(exp75),
+     '75.8 und der technische Grund steht im Log, nicht auf der Karte');
+  ok(!/Kein Ergebnistermin gefunden' \+ \(a && a\.aktuellGrund/.test(exp75),
+     '75.8 der alte Text mit der Innenseite des Abrufs ist weg');
+  ok(!/'Termine nicht erreichbar: ' \+ U\.esc\(String\(e3/.test(exp75),
+     '75.8 auch im Wurf-Zweig - dort stand derselbe Fehler');
+
+  /* ---- 75.9 Die Zeitachse: Datum an jedem Tageswechsel ----
+   * Der Fund: bei 1h ueber mehrere Tage stand an jedem Halt "10:30" - jeder
+   * Handelstag beginnt zur selben Zeit, und die Halte lagen gleichmaessig verteilt.
+   * Gerechnet wird in der BOERSENZEITZONE, sonst saesse der Tageswechsel mitten in
+   * der Sitzung. */
+  function stunden(tage) {
+    var k = [];
+    for (var d = 0; d < tage; d++) {
+      for (var h = 9; h <= 15; h++) k.push([Date.UTC(2026, 8, 2 + d, h + 4, 30), 100 + h]);
+    }
+    return k;
+  }
+  function uhrET(ms) {
+    return new Date(ms).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit', timeZone: 'America/New_York' });
+  }
+  var drei = KC75.achsenBeschriftung(stunden(3), { intervallMs: 3600000 });
+  var daten = drei.filter(function (m) { return m.tag; });
+  ok(daten.map(function (m) { return m.text; }).join(' ') === '02.09. 03.09. 04.09.',
+     '75.9 drei Handelstage ergeben drei Datums-Halte, und zwar die richtigen',
+     daten.map(function (m) { return m.text; }).join(' '));
+  ok(daten.map(function (m) { return m.i; }).join(',') === '0,7,14',
+     '75.9 genau an den Kerzen, an denen der Tag wechselt', daten.map(function (m) { return m.i; }).join(','));
+  ok(drei.filter(function (m) { return !m.tag; }).length > 0,
+     '75.9 dazwischen stehen weiter Uhrzeiten - das Datum ERSETZT sie nur am Wechsel');
+  ok(new Set(drei.map(function (m) { return m.text; })).size === drei.length,
+     '75.9 keine zwei Halte tragen denselben Text - genau das war der Fund',
+     drei.map(function (m) { return m.text; }).join(' '));
+  var eng = drei.slice(1).map(function (m, i) { return m.i - drei[i].i; });
+  ok(Math.min.apply(null, eng) >= 2, '75.9 zwei Halte liegen nie direkt nebeneinander',
+     Math.min.apply(null, eng) + ' Kerzen');
+  var viele = KC75.achsenBeschriftung(stunden(60), { intervallMs: 3600000 });
+  ok(viele.length <= 14 && viele.length >= 6,
+     '75.9 ueber sechzig Tage bleiben es eine Handvoll Halte, nicht sechzig', viele.length + ' Halte');
+  ok(viele.every(function (m) { return m.tag; }),
+     '75.9 und dort sind es Datumsangaben - eine Uhrzeit sagt auf drei Monaten nichts');
+  var tagK = [];
+  for (var t75 = 0; t75 < 40; t75++) tagK.push([Date.UTC(2026, 0, 5 + t75, 16, 0), 1]);
+  var tagM = KC75.achsenBeschriftung(tagK, { intervallMs: 86400000 });
+  ok(tagM.length > 0 && tagM.every(function (m) { return /^\d{2}\.\d{2}\.\d{2}$/.test(m.text); }),
+     '75.9 bei Tagesbalken steht das Datum mit Jahr, wie vorher', tagM.map(function (m) { return m.text; }).join(' '));
+  ok(KC75.achsenBeschriftung([], { intervallMs: 3600000 }).length === 0,
+     '75.9 ohne Kerzen keine Beschriftung');
+  ok(/kc\.achsenBeschriftung\(kerzen, \{ intervallMs: kc\.INTERVALL_MS\[VW\.zeitrahmen\]/.test(exp75),
+     '75.9 und der Viewer benutzt sie');
+
+  /* ---- 75.10 Gegenproben ----
+   * Jede prueft, dass die Zusicherung darueber bei einem eingebauten Fehler ROT wird. */
+  function medienBloecke75(quelle, bedingung) {
+    var raus = [], i = 0;
+    for (;;) {
+      var a = quelle.indexOf('@media (' + bedingung, i);
+      if (a < 0) break;
+      var auf = quelle.indexOf('{', a), tiefe = 0, j = auf;
+      for (; j < quelle.length; j++) {
+        if (quelle[j] === '{') tiefe++;
+        else if (quelle[j] === '}') { tiefe--; if (!tiefe) break; }
+      }
+      raus.push(quelle.slice(auf, j + 1));
+      i = j + 1;
+    }
+    return raus;
+  }
+  var g75 = 0, rot75 = 0;
+  function gegen75(name, bedingung) {
+    g75++;
+    if (bedingung) rot75++;
+    ok(bedingung, 'Gegenprobe: ' + name);
+  }
+  gegen75('ohne Merker laeutete es bei jedem Blick - der Merker ist der Unterschied',
+          laeuten([et(9, 30), et(9, 31), et(9, 32)], 'geschlossen').length === 1 &&
+          MU.glockenEreignis('geschlossen', 'regulaer') === 'oeffnung');
+  gegen75('ein Nachlaeuten beim Neustart wuerde auffallen',
+          MU.glockenEreignis(null, 'regulaer') === null);
+  gegen75('ein Wechsel vorboerslich -> nachboerslich laeutet nicht',
+          MU.glockenEreignis('vorboerslich', 'nachboerslich') === null);
+  gegen75('ein Feiertag, der doch "regulaer" liefert, wuerde die Klinke roeten',
+          zustandUm(et(12, 0, 3, 6)) !== 'regulaer');
+  gegen75('ein Kontrast unter der Schwelle wuerde gefunden', kontrast('#d03b3b', '#f1f1ee') < 4.5);
+  gegen75('und die Rechnung trifft die Zahl der QS-Messung (4,25)',
+          Math.abs(kontrast('#d03b3b', '#f1f1ee') - 4.25) < 0.03);
+  gegen75('ein leerer Typ haengte ohne Filter einen Trennpunkt an',
+          ['KUNSTM9', '', ''].join(' · ') === 'KUNSTM9 ·  · ');
+  gegen75('die alte Achse zeigte ueber sechs Tage sechsmal dieselbe Uhrzeit',
+          new Set(stunden(6).filter(function (k, i) { return i % 7 === 0; }).map(function (k) { return uhrET(k[0]); })).size === 1);
+  gegen75('und die neue tut es nicht',
+          new Set(KC75.achsenBeschriftung(stunden(6), { intervallMs: 3600000 }).map(function (m) { return m.text; })).size === 6);
+  gegen75('eine Beschriftung in fremder Zeitzone verschoebe den Tageswechsel',
+          KC75.achsenBeschriftung(stunden(3), { intervallMs: 3600000, zone: 'Asia/Tokyo' })
+            .filter(function (m) { return m.tag; }).length !== 3);
+  gegen75('ein Stempel aus der Zukunft ergibt kein negatives Alter',
+          naFn(j0 + 5 * 60000, j0) === 'gerade eben');
+  gegen75('eine Spur ohne Kopie liesse eine Luecke - die Klinke sieht die Kopie',
+          !/tickKopie/.test('<div class="tickSpur"><span class="tickTeil">x</span></div>'));
+  gegen75('eine Laufzeit im Markup wuerde gefunden',
+          /animation-duration:/.test('<div class="tickSpur" style="animation-duration:60s;">'));
+  gegen75('eine Media-Abfrage, die das Band anhaelt, wuerde gefunden',
+          medienBloecke75('@media (prefers-reduced-motion: reduce) { #newsTicker .tickSpur { animation: none; } }',
+                          'prefers-reduced-motion').some(function (b) { return /newsTicker/.test(b); }));
+  gegen75('eine Quelle, die ihren Stand still setzt, liesse die Statuszeile leer',
+          !/dispatchEvent\(new CustomEvent\('archiv-stand'\)\)/.test('LETZTER = st;'));
+  ok(g75 === rot75, '75.10 alle Gegenproben dieses Abschnitts schlagen an', rot75 + ' von ' + g75);
 })();
 
 Promise.all(offeneProben).then(function () {

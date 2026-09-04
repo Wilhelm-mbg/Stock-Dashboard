@@ -437,6 +437,126 @@ async function viewerPruefen(win, js) {
   return funde;
 }
 
+/* ================= Das Laufband: laeuft es wirklich? =================
+ * Textmarken sehen ein "animation: tickLauf", nicht eine Spur, die sich bewegt.
+ * Gemessen wird deshalb am laufenden Fenster:
+ *   - die Spur liegt doppelt (sonst reisst die Schleife),
+ *   - die gerechnete Dauer passt zur gemessenen Breite (gleiche Pixel je Sekunde),
+ *   - die Verschiebung waechst zwischen zwei Blicken,
+ *   - unter dem Mauszeiger und bei Fokus steht sie still.
+ * POSITIVKONTROLLE: bewegt sich in der Vergleichsspanne gar nichts, ist das ein
+ * Befund ueber die SONDE (kein Band, keine Animation) und nicht ein Beleg.
+ * Ohne Schlagzeilen ist das Band ausgeblendet - dann sagt die Probe das und misst
+ * nichts; mit --leer ist genau das der Normalfall. */
+async function laufbandPruefen(win, js) {
+  const funde = [];
+  await js("(function () { var b = document.querySelector('nav.tabs [data-tab=\"markt\"]'); if (b) b.click();" +
+    " var s = document.querySelector('#tab-markt .pills [data-sub=\"marktueberblick\"]'); if (s) s.click(); })()");
+  await new Promise((r) => setTimeout(r, 400));
+  const da = await js("(function () { var e = document.getElementById('newsTicker');" +
+    " return { da: !!e, sichtbar: !!(e && e.offsetWidth > 0 && e.style.display !== 'none')," +
+    " teile: e ? e.querySelectorAll('.tickTeil').length : 0," +
+    " kopie: e ? e.querySelectorAll('.tickKopie').length : 0," +
+    " meldungen: e && e.querySelector('.tickTeil') ? e.querySelector('.tickTeil').querySelectorAll('a').length : 0," +
+    " schalter: document.documentElement.getAttribute('data-laufband') }; })()");
+  if (!da.da) { funde.push('Laufband: #newsTicker steht nicht im DOM'); return { funde }; }
+  if (!da.sichtbar) {
+    console.log('  Laufband: ausgeblendet (keine Schlagzeilen) - nicht messbar, kein Befund');
+    return { funde };
+  }
+  if (da.teile !== 2 || da.kopie !== 1) {
+    funde.push('Laufband: ' + da.teile + ' Spurhaelften und ' + da.kopie + ' Kopie(n) - fuer die nahtlose Schleife braucht es genau zwei und eine');
+  }
+  const tempo = await js("(function () { var t = window.Dash && window.Dash.bandTempo ? window.Dash.bandTempo() : null;" +
+    " var e = document.getElementById('newsTicker');" +
+    " var sp = e && e.querySelector('.tickSpur');" +
+    " var st = sp ? getComputedStyle(sp) : null;" +
+    " return { t: t, rahmen: e ? e.clientWidth : 0, dauer: st ? st.animationDuration : null," +
+    " lauf: st ? st.animationPlayState : null, name: st ? st.animationName : null }; })()");
+  if (!tempo.t) funde.push('Laufband: window.Dash.bandTempo() misst nichts - die Spur hat keine Breite');
+  else {
+    const pxs = tempo.t.pxs;
+    console.log('  Laufband: ' + da.meldungen + ' Meldungen, Spurhaelfte ' + Math.round(tempo.t.breite) +
+      ' px, Rahmen ' + tempo.rahmen + ' px, Dauer ' + tempo.t.dauer.toFixed(1) + ' s = ' +
+      pxs.toFixed(1) + ' px/s (CSS sagt ' + tempo.dauer + ', Animation ' + tempo.name + ')');
+    if (!(pxs > 40 && pxs < 90)) funde.push('Laufband: ' + pxs.toFixed(1) + ' px/s liegt ausserhalb des erwarteten Tempos (40-90)');
+    if (tempo.name !== 'tickLauf') funde.push('Laufband: die Spur traegt die Animation "' + tempo.name + '" statt tickLauf');
+  }
+  /* Bewegt sie sich? Zwei Blicke auf die Matrix der Spur, 700 ms auseinander. */
+  const versatz = () => js("(function () { var sp = document.querySelector('#newsTicker .tickSpur');" +
+    " if (!sp) return null; var m = getComputedStyle(sp).transform;" +
+    " if (!m || m === 'none') return 0;" +
+    " try { return new DOMMatrix(m).m41; } catch (e) { return 0; } })()");
+  const v1 = await versatz();
+  await new Promise((r) => setTimeout(r, 700));
+  const v2 = await versatz();
+  const gewandert = Math.abs((v2 || 0) - (v1 || 0));
+  console.log('  Laufband: Verschiebung in 700 ms = ' + gewandert.toFixed(1) + ' px (' + v1 + ' -> ' + v2 + ')');
+  if (da.schalter !== 'aus' && !(gewandert > 5)) {
+    funde.push('Laufband: die Spur hat sich in 700 ms um ' + gewandert.toFixed(1) +
+      ' px bewegt - bei eingeschaltetem Band muss sie laufen (data-laufband=' + da.schalter + ')');
+  }
+  /* Und sie steht still, solange der Fokus im Band ist (dasselbe CSS wie bei Hover). */
+  await js("(function () { var e = document.getElementById('newsTicker'); if (e) e.focus(); })()");
+  await new Promise((r) => setTimeout(r, 200));
+  const f1 = await versatz();
+  await new Promise((r) => setTimeout(r, 600));
+  const f2 = await versatz();
+  const beiFokus = Math.abs((f2 || 0) - (f1 || 0));
+  console.log('  Laufband: Verschiebung bei Fokus = ' + beiFokus.toFixed(1) + ' px (soll 0)');
+  if (beiFokus > 2) funde.push('Laufband: es laeuft weiter, obwohl der Fokus darin steht (' + beiFokus.toFixed(1) + ' px) - die gewaehlte Meldung wandert weg');
+  /* Die aktuelle Meldung und die Tastatur. */
+  const taste = await js("(function () { var e = document.getElementById('newsTicker');" +
+    " function evt(k) { e.dispatchEvent(new KeyboardEvent('keydown', { key: k, bubbles: true })); }" +
+    " var vorher = e.querySelectorAll('a.tickAktiv').length;" +
+    " evt('ArrowRight'); evt('ArrowRight');" +
+    " var akt = e.querySelector('a.tickAktiv');" +
+    " var erste = e.querySelector('.tickTeil');" +
+    " var alle = erste ? Array.prototype.slice.call(erste.querySelectorAll('a')) : [];" +
+    " return { vorher: vorher, markiert: e.querySelectorAll('a.tickAktiv').length," +
+    " stelle: akt ? alle.indexOf(akt) : -1 }; })()");
+  console.log('  Laufband: nach zwei Pfeiltasten ist Meldung ' + taste.stelle + ' markiert (' + taste.markiert + ' Markierung)');
+  if (taste.markiert !== 1) funde.push('Laufband: ' + taste.markiert + ' Meldungen sind markiert - es muss genau eine sein');
+  if (taste.stelle !== 2) funde.push('Laufband: nach zwei Pfeiltasten steht die Marke auf Meldung ' + taste.stelle + ' statt 2');
+  await js("document.activeElement && document.activeElement.blur && document.activeElement.blur(), 'ok'");
+  return { funde };
+}
+
+/* ================= U3: die Statuszeile der Klappe "Kursarchiv" =================
+ * Der Fund (QS 04.09.2026): 'sub-changed' feuert SYNCHRON beim Aufklappen, die
+ * Archiv-Auskunft steht aber erst eine Runde spaeter - danach loeste nichts mehr
+ * aus, und wer nur das Kursarchiv ansah, sah die Zeile nie.
+ * Gemessen wird der Zusammenhang, nicht ein fester Text: hat Archivkarte.letzter()
+ * Zeilen, muss die Statuszeile etwas sagen. Hat sie keine, ist der Fall nicht
+ * pruefbar - und DAS wird gesagt, statt gruen zu melden. */
+async function archivZeilePruefen(win, js) {
+  const funde = [];
+  await js("(function () { var b = document.querySelector('nav.tabs [data-tab=\"werkzeuge\"]'); if (b) b.click();" +
+    " var s = document.querySelector('#tab-werkzeuge .pills [data-sub=\"betrieb\"]'); if (s) s.click(); })()");
+  await new Promise((r) => setTimeout(r, 300));
+  /* Erst schliessen, dann oeffnen - sonst misst die Probe eine Klappe, die schon
+   * einmal offen war, und der Fund lag genau im ERSTEN Oeffnen. */
+  await js("(function () { var d = document.querySelector('#sub-betrieb details[data-klappe=\"archiv\"]');" +
+    " if (d) { d.open = false; } var e = document.getElementById('kstand-archiv'); if (e) e.textContent = ''; })()");
+  const sofort = await js("(function () { var d = document.querySelector('#sub-betrieb details[data-klappe=\"archiv\"]');" +
+    " if (!d) return null; d.open = true;" +
+    " var e = document.getElementById('kstand-archiv');" +
+    " return { zeile: e ? e.textContent : null }; })()");
+  if (!sofort) { funde.push('U3: die Klappe "Kursarchiv" steht nicht mehr im Maschinenraum'); return { funde }; }
+  await new Promise((r) => setTimeout(r, 2500));
+  const danach = await js("(function () { var e = document.getElementById('kstand-archiv');" +
+    " var st = window.Archivkarte && window.Archivkarte.letzter ? window.Archivkarte.letzter() : null;" +
+    " return { zeile: e ? e.textContent : null, zeilen: st && st.zeilen ? st.zeilen.length : 0 }; })()");
+  console.log('  U3 Kursarchiv-Statuszeile: beim Aufklappen "' + (sofort.zeile || '') +
+    '", 2,5 s spaeter "' + (danach.zeile || '') + '" (Auskunft hat ' + danach.zeilen + ' Zeilen)');
+  if (!danach.zeilen) {
+    console.log('    (Die Auskunft liefert keine Zeilen - der Fall ist in dieser Instanz nicht pruefbar, kein Beleg.)');
+  } else if (!String(danach.zeile || '').trim()) {
+    funde.push('U3: die Auskunft hat ' + danach.zeilen + ' Zeilen, die Statuszeile bleibt leer');
+  }
+  return { funde };
+}
+
 async function probe(win) {
   const wc = win.webContents;
   const js = (code) => wc.executeJavaScript(code, true);
@@ -549,6 +669,11 @@ async function probe(win) {
   /* Der Aktien-Viewer, F2 und F7 - alles drei nur am laufenden Fenster messbar. */
   const vwFunde = await viewerPruefen(win, js);
   vwFunde.forEach(function (f) { probleme.push(f); });
+
+  /* Das Laufband und die Statuszeile des Kursarchivs - beides Verhalten, das eine
+   * Textmarke im Quelltext nicht sehen kann (04.09.2026). */
+  (await laufbandPruefen(win, js)).funde.forEach(function (f) { probleme.push(f); });
+  (await archivZeilePruefen(win, js)).funde.forEach(function (f) { probleme.push(f); });
 
   const seitenFehler = await js('window.__probe.fehler.slice(0, 20)');
   /* Ein abgebrochenes init() faengt depot.js selbst ab und meldet es NUR im

@@ -198,9 +198,36 @@
     fetchErrors = all.length - okCount;
     if (okCount > 0) lastOk = new Date();
     render();
+    /* Das Band aktuell halten: jede Kursrunde stoesst an, die Drossel in
+     * refreshNews() entscheidet (hoechstens alle fuenf Minuten). Bewusst OHNE await -
+     * die Kurse sollen nicht auf zwei RSS-Feeds warten. */
+    refreshNews().catch(function () { /* ein gescheiterter Feed haelt die Kurse nicht auf */ });
   }
 
+  /* WIE OFT DARF DAS BAND NACHLADEN? (Wilhelm 04.09.2026: "Laufband aktuell halten")
+   * Bis heute: alle 30 Minuten, also 2 Runden je Stunde zu je zwei Feeds = 4 Anfragen.
+   * Ein Ticker, der eine halbe Stunde alt sein darf, ist keiner.
+   * Die Kursrunde laeuft waehrend der Sitzung jede Minute; sie einfach mitzunehmen
+   * hiesse 120 Anfragen je Stunde an einen oeffentlichen Google-News-Feed - das ist
+   * keine Hoeflichkeit mehr, und die Quelle gibt es auch gar nicht her: ihr Inhalt
+   * wird oben zwischengespeichert und aendert sich nicht im Minutentakt.
+   * Gewaehlt: die Kursrunde STOESST AN, eine Drossel von fuenf Minuten entscheidet.
+   * Damit hoechstens 12 Runden = 24 Anfragen je Stunde, und zwar nur, solange die
+   * App laeuft und Kurse holt. Der 30-Minuten-Zeitgeber bleibt als Netz fuer den
+   * Fall, dass die Kursrunde selbst haengt. */
+  var NEWS_MIN_MS = 5 * 60000;
+  var newsZuletzt = 0;
+  var newsLaeuft = false;
+
   async function refreshNews() {
+    if (newsLaeuft) return;
+    if (Date.now() - newsZuletzt < NEWS_MIN_MS) return;
+    newsZuletzt = Date.now();   // auch bei Fehlschlag: sonst haemmert die Drossel ins Leere
+    newsLaeuft = true;
+    try { await newsRunde(); } finally { newsLaeuft = false; }
+  }
+
+  async function newsRunde() {
     var items = [];
     for (var f = 0; f < NEWS_FEEDS.length; f++) {
       var res = await window.api.fetchText(NEWS_FEEDS[f]);
@@ -231,7 +258,17 @@
     var seen = {};
     items = items.filter(function (it) { var k = it.title.toLowerCase().slice(0, 60); if (seen[k]) return false; seen[k] = 1; return true; });
     items.sort(function (a, b) { return b.t - a.t; });
-    if (items.length) { NEWS_ALLE = items.slice(0, 25); NEWS = items.slice(0, NEWS_MAX); renderNews(); }
+    if (items.length) {
+      NEWS_ALLE = items.slice(0, 25);
+      NEWS = items.slice(0, NEWS_MAX);
+      renderNews();
+      /* Den Stand merken - dasselbe Muster wie beim Vorboersen-Stand und beim
+       * Marktueberblick. Ohne ihn steht nach jedem Start eine halbe Minute lang
+       * "News derzeit nicht erreichbar" da, und ohne Netz gar nichts. Der Stand ist
+       * nicht "aktuell" und behauptet es auch nicht: jede Meldung traegt ihr Alter. */
+      try { window.api.storeSet('newsStand', { zeit: Date.now(), items: NEWS_ALLE }); }
+      catch (e) { /* ohne Speicher laeuft alles weiter, nur der naechste Start ist leer */ }
+    }
     else if (!NEWS.length) {
       // Das Element heißt #news – unter der alten ID #newsList erschien die Meldung nie.
       var nl = document.getElementById('news');
@@ -916,52 +953,241 @@
   setTimeout(vormarktStart, 8000);
   setInterval(function () { if (boersenPhase() === 'vorboerslich') vormarktSuchen(); }, 10 * 60000);
 
-  /* Laufband oben im Dashboard (Tester-Wunsch #20): dieselben Schlagzeilen wie im
-     News-Kasten, als endlos durchlaufendes Band. Der Inhalt wird verdoppelt, damit
-     die CSS-Schleife (-50 %) nahtlos wieder am Anfang ankommt. Unter dem Mauszeiger
-     pausiert es (CSS).
-     Bei "Bewegung reduzieren" laeuft nichts, und dann waere die Verdopplung schaedlich:
-     man schoebe dieselben sechs Schlagzeilen zweimal durch. Sie faellt deshalb weg -
-     das ist der einzige Grund, warum der Renderer die Einstellung ueberhaupt kennen
-     muss; das Aussehen regelt weiter CSS (#90). */
-  /* Die Einstellung kann sich waehrend des Betriebs aendern (Windows-Schalter,
-     Fernwartung). Sie wird deshalb bei jedem Aufbau gefragt statt einmal gemerkt, und
-     eine Aenderung baut das Band neu auf - sonst schoebe man nach dem Umschalten
-     weiter doppelten Text oder saehe ein Band, das nicht mehr laeuft. */
-  function reduzierteBewegung() {
-    try { return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches); }
-    catch (e) { return false; }   // ohne Antwort lieber wie bisher
+  /* ================= Das Laufband =================
+   *
+   * ES LAEUFT WIEDER (Wilhelm, 04.09.2026): von rechts nach links, durchgehend,
+   * Meldung an Meldung. Vier Dinge macht diese Funktion; alles am Aussehen ist CSS.
+   *
+   * 1. INHALT: DIE JUENGSTEN. Juengste zuerst, hoechstens zwanzig - und ausdruecklich
+   *    ALLE, auch die fuenf, die im Kasten stehen. Bis heute zeigte das Band "den
+   *    Rest" (NEWS_ALLE.slice(NEWS_MAX, 20)), damit keine Schlagzeile zweimal auf dem
+   *    Reiter steht (QS-F4). Das war eine ehrliche Antwort auf eine Frage, die
+   *    Wilhelm inzwischen anders ENTSCHIEDEN hat: das Band ist der Ticker (was
+   *    gerade passiert), der Kasten die Liste (was man in Ruhe liest). Der Kasten ist
+   *    seither absichtlich eine TEILMENGE des Bandes. F4 ist damit entschieden, nicht
+   *    offen - und die Sperrklinke dazu prueft genau das: Kasten im Band, juengste
+   *    zuerst.
+   * 2. ALTER. Jede Meldung traegt, wie alt sie ist. Ein Ticker ohne Alter behauptet
+   *    Aktualitaet, die er nicht belegen kann - die Feeds liefern auch Stunden Altes.
+   * 3. TEMPO. Aus der GEMESSENEN Breite einer Spurhaelfte, nicht aus der Zahl der
+   *    Zeichen: gleiche Pixel je Sekunde, egal ob acht oder zwanzig Meldungen laufen.
+   *    Im Markup steht dazu keine Zahl; die Dauer setzt bandTempo() nach dem
+   *    Einhaengen - und nur, wenn es etwas zu messen gibt (auf einem verborgenen
+   *    Reiter ist jede Breite 0).
+   * 4. DIE DOPPELTE SPUR. Zwei gleiche Haelften, die Animation schiebt um -50 %,
+   *    also um genau eine Haelfte: in dem Moment steht die Kopie da, wo das Original
+   *    angefangen hat, und es entsteht keine Luecke. Die Kopie traegt aria-hidden -
+   *    fuer eine Vorlesehilfe steht jede Meldung einmal da.
+   *
+   * DER SCHALTER IST NICHT MEHR "BEWEGUNG REDUZIEREN". Auf Wilhelms Rechner steht
+   * die Windows-Einstellung dauerhaft an (#90), und er will das Band laufen sehen.
+   * An ihre Stelle tritt die App-Einstellung "Laufband bewegen" (Vorgabe an), die
+   * depot.js als data-laufband an das Wurzelelement schreibt. Der Renderer liest
+   * dieses eine Attribut - dieselbe Quelle, aus der auch das CSS liest, damit Text
+   * und Verhalten nicht auseinanderlaufen koennen. */
+  var TICK_PXS = 60;          // Laufgeschwindigkeit in Pixeln je Sekunde
+  var TICK_MAX = 20;          // hoechstens so viele Meldungen im Band
+
+  function bandLaeuft() {
+    return document.documentElement.getAttribute('data-laufband') !== 'aus';
   }
-  try {
-    var mqBewegung = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)');
-    if (mqBewegung && mqBewegung.addEventListener) mqBewegung.addEventListener('change', function () { renderTicker(); });
-  } catch (e) { /* ohne Beobachter bleibt es beim Stand des letzten Aufbaus */ }
+
+  /* Wie alt ist eine Meldung? Reine Rechnung, damit sie sich pruefen laesst.
+   * Ohne brauchbaren Stempel gibt sie den leeren Text zurueck - eine erfundene
+   * Altersangabe waere schlimmer als keine. */
+  function newsAlter(tMs, jetztMs) {
+    if (!tMs || !(tMs > 0)) return '';
+    var min = Math.floor((jetztMs - tMs) / 60000);
+    if (min < 1) return 'gerade eben';
+    if (min < 60) return 'vor ' + min + ' Min';
+    var std = Math.floor(min / 60);
+    if (std < 24) return std === 1 ? 'vor 1 Std' : 'vor ' + std + ' Std';
+    var tage = Math.floor(std / 24);
+    return tage === 1 ? 'vor 1 Tag' : 'vor ' + tage + ' Tagen';
+  }
+
+  /* Das Tempo. Gemessen wird die ERSTE Haelfte: sie ist auch dann da, wenn die Kopie
+   * bei stehendem Band ausgeblendet ist - sonst haette ein Umschalten das Tempo
+   * verdoppelt. Gibt null zurueck, solange nichts zu messen ist. */
+  function bandTempo() {
+    var el = document.getElementById('newsTicker');
+    if (!el) return null;
+    var spur = el.querySelector('.tickSpur');
+    var teil = el.querySelector('.tickTeil');
+    if (!spur || !teil) return null;
+    var breite = teil.offsetWidth;
+    if (!(breite > 0)) return null;
+    var dauer = Math.max(10, breite / TICK_PXS);
+    spur.style.animationDuration = dauer.toFixed(1) + 's';
+    return { breite: breite, dauer: dauer, pxs: breite / dauer };
+  }
+  /* Auf einem verborgenen Reiter ist jede Breite 0. Beim Wechsel dorthin wird
+   * nachgemessen - einmal, und nur wenn es dann etwas zu messen gibt. */
+  ['tab-changed', 'sub-changed'].forEach(function (ev) {
+    document.addEventListener(ev, function () { bandTempo(); });
+  });
+
+  /* ---- Tastatur im Band (der Preis aus Stufe 6 4.3 wird hier bezahlt) ----
+   * Die Links sind KEINE Tabulator-Halte (tabindex="-1"): ein angesprungener Link
+   * kann breiter sein als das Band, und dann steht er halb draussen - zweimal
+   * gemessen (Uebergabe Stufe 6, Abweichung 3). Anspringbar ist das BAND; es merkt
+   * sich eine "aktuelle" Meldung, die Pfeiltasten bewegen sie, Enter oeffnet sie.
+   * Solange der Fokus im Band steht, laeuft es nicht (CSS :focus-within) - sonst
+   * schoebe die Animation genau die Meldung weg, die man gerade gewaehlt hat. */
+  var bandAktiv = 0;
+  function bandLinks() {
+    var el = document.getElementById('newsTicker');
+    var teil = el && el.querySelector('.tickTeil');
+    return teil ? Array.prototype.slice.call(teil.querySelectorAll('a')) : [];
+  }
+  function bandZeigen(n) {
+    var links = bandLinks();
+    if (!links.length) return null;
+    bandAktiv = Math.max(0, Math.min(links.length - 1, n));
+    links.forEach(function (a, i) {
+      if (i === bandAktiv) a.classList.add('tickAktiv'); else a.classList.remove('tickAktiv');
+    });
+    var a = links[bandAktiv];
+    if (a && a.scrollIntoView) a.scrollIntoView({ block: 'nearest', inline: 'center' });
+    return a;
+  }
+  (function bandTastatur() {
+    var el = document.getElementById('newsTicker');
+    if (!el) return;
+    el.addEventListener('focus', function () {
+      if (!el.querySelector('.tickAktiv')) bandZeigen(bandAktiv);
+    });
+    el.addEventListener('keydown', function (ev) {
+      var k = ev.key;
+      if (k === 'ArrowRight' || k === 'ArrowDown') { bandZeigen(bandAktiv + 1); ev.preventDefault(); }
+      else if (k === 'ArrowLeft' || k === 'ArrowUp') { bandZeigen(bandAktiv - 1); ev.preventDefault(); }
+      else if (k === 'Home') { bandZeigen(0); ev.preventDefault(); }
+      else if (k === 'Enter') {
+        var links = bandLinks();
+        if (links[bandAktiv]) { links[bandAktiv].click(); ev.preventDefault(); }
+      }
+    });
+  })();
+
+  function bandTitel() {
+    return bandLaeuft()
+      ? 'Markt-News als Laufband – unter dem Mauszeiger hält es an. Klick öffnet die Meldung.'
+      : 'Markt-News. Das Band steht (App-Einstellung „Laufband bewegen“) – seitwärts schieben zeigt die übrigen Meldungen. Klick öffnet die Meldung.';
+  }
+
   function renderTicker() {
     var el = document.getElementById('newsTicker');
     if (!el) return;
-    /* NUR WAS IM KASTEN NICHT STEHT (QS-F4, 04.09.2026). Vorher zeigten Band und
-     * Kasten dieselben fuenf Meldungen - zeichengleich, 2.200 px auseinander. */
-    var rest = NEWS_ALLE.slice(NEWS_MAX, 20);
-    if (!rest.length) { el.style.display = 'none'; return; }
-    var stueck = rest.map(function (n) {
-      /* tabindex="-1" (QS-F6, 04.09.2026): Ein Tabulator-Halt IM Band laesst sich
-       * nicht sichtbar halten - das Band ist schmaler als seine Links, und ein
-       * angesprungener Link ragt heraus, egal ob das Band nachrollt oder nicht.
-       * Anspringbar ist deshalb das BAND (tabindex="0" im Markup), rollbar mit den
-       * Pfeiltasten; die Links bleiben mit der Maus erreichbar. */
+    /* DIE JUENGSTEN, juengste zuerst. NEWS_ALLE ist bereits nach Zeit sortiert
+     * (refreshNews), der Schnitt nimmt also den Kopf der Liste. */
+    var zeigen = NEWS_ALLE.slice(0, TICK_MAX);
+    if (!zeigen.length) { el.style.display = 'none'; return; }
+    var jetzt = Date.now();
+    var stueck = zeigen.map(function (n) {
+      var alter = newsAlter(n.t, jetzt);
       return '<a href="' + U.esc(safeUrl(n.url)) + '" target="_blank" rel="noopener" tabindex="-1">' +
-        U.esc(n.title) + '</a><span class="tickTrenn">•</span>';
+        U.esc(n.title) + '</a>' +
+        (alter ? '<span class="tickZeit">' + U.esc(alter) + '</span>' : '') +
+        '<span class="tickTrenn">•</span>';
     }).join('');
     el.style.display = 'block';
-    // Laufzeit an die Textmenge koppeln, sonst rast ein kurzes Band und kriecht ein langes
-    var dauer = Math.max(30, Math.min(240, rest.reduce(function (a, n) { return a + n.title.length; }, 0) / 6));
-    var ruhig = reduzierteBewegung();
-    el.title = ruhig
-      ? 'Markt-News. Seitwärts schieben zeigt die übrigen Meldungen – das Band läuft nicht, weil auf diesem Rechner „Bewegung reduzieren“ eingeschaltet ist. Klick öffnet die Meldung.'
-      : 'Markt-News als Laufband – unter dem Mauszeiger hält es an. Klick öffnet die Meldung.';
-    el.innerHTML = '<div class="tickSpur" style="animation-duration:' + Math.round(dauer) + 's;">' +
-      stueck + (ruhig ? '' : stueck) + '</div>';
+    el.title = bandTitel();
+    el.innerHTML = '<div class="tickSpur">' +
+      '<span class="tickTeil">' + stueck + '</span>' +
+      '<span class="tickTeil tickKopie" aria-hidden="true">' + stueck + '</span></div>';
+    bandAktiv = 0;
+    bandTempo();
   }
+  /* Ein Umschalten im Betrieb aendert den Hinweistext und - bei ausgeschaltetem Band -
+   * die Breite dessen, was zu sehen ist. Das Band selbst wird NICHT neu gebaut: das
+   * Anhalten macht CSS, und ein Neuaufbau risse den Leser aus der Meldung, die
+   * gerade vor ihm steht. */
+  document.addEventListener('anzeige-geaendert', function () {
+    var el = document.getElementById('newsTicker');
+    if (!el || el.style.display === 'none') return;
+    el.title = bandTitel();
+    bandTempo();
+  });
+
+  /* ================= Die Marktglocke (Wilhelm, 04.09.2026) =================
+   *
+   * Zur Eroeffnung und zum Schluss ein kurzer Glockenton. NICHTS DAVON HAENGT AM
+   * HANDEL: die Glocke laeutet auch, wenn keine Regel aktiv ist, und sie loest
+   * nichts aus.
+   *
+   * DER AUSLOESER IST DER SITZUNGSZUSTAND, nicht die Uhr. Welcher Wechsel laeutet,
+   * entscheidet MarktUebersicht.glockenEreignis() - eine reine Funktion, die nur
+   * zwei Zustaende vergleicht. Eine eigene Zeitrechnung auf 09:30 New Yorker Zeit
+   * haette Zeitzone, Sommerzeit und Feiertage ein zweites Mal gerechnet; so kommen
+   * Feiertage und Halbtage ohne eine einzige zusaetzliche Zeile mit (an ihnen gibt
+   * es kein 'regulaer'). Der Takt hier ist nur ein Blick auf diese Rechnung, keine
+   * eigene: alle 15 Sekunden nachsehen, ob sich der Zustand geaendert hat.
+   *
+   * GENAU EINMAL JE EREIGNIS: gemerkt wird der zuletzt gesehene Zustand, und der
+   * erste Blick laeutet nie (glockenEreignis gibt gegen null immer null zurueck) -
+   * ein Neustart um 09:31 laeutet also nicht nach. Die Marke lebt nur in der
+   * Sitzung; sie gehoert nicht in den Store, weil sie nichts ueber das Depot sagt. */
+  var GLOCKE_TEILE = [
+    { f: 587.33, a: 0.50, t: 1.20 },    // Grundton (d5) - er traegt den Ton
+    { f: 1174.66, a: 0.20, t: 0.70 },   // Oktave darueber, verklingt schneller
+    { f: 1760.00, a: 0.10, t: 0.35 }    // kurzer heller Teilton: das Anschlagen
+  ];
+  var glockeCtx = null;
+  var glockeZustand = null;
+
+  /* Der Ton wird ERZEUGT, nicht abgespielt: keine Audiodatei im Paket, keine
+   * Lizenzfrage, und drei Sinus-Teiltoene mit abklingender Huellkurve sind das,
+   * woraus eine Glocke besteht. Wirft irgendetwas davon, bleibt es still - ein
+   * fehlgeschlagener Ton darf keinen Bildschirm mitnehmen. */
+  function glockeTon() {
+    try {
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return false;
+      if (!glockeCtx) glockeCtx = new AC();
+      if (glockeCtx.state === 'suspended' && glockeCtx.resume) glockeCtx.resume();
+      var t0 = glockeCtx.currentTime + 0.02;
+      GLOCKE_TEILE.forEach(function (teil) {
+        var osz = glockeCtx.createOscillator();
+        var huelle = glockeCtx.createGain();
+        osz.type = 'sine';
+        osz.frequency.setValueAtTime(teil.f, t0);
+        /* Exponentiell, weil ein Ton so verklingt - linear klaenge wie ein Abwuergen.
+         * Der Startwert darf nicht 0 sein: von 0 kommt eine exponentielle Rampe nie weg. */
+        huelle.gain.setValueAtTime(0.0001, t0);
+        huelle.gain.exponentialRampToValueAtTime(teil.a, t0 + 0.012);
+        huelle.gain.exponentialRampToValueAtTime(0.0001, t0 + teil.t);
+        osz.connect(huelle);
+        huelle.connect(glockeCtx.destination);
+        osz.start(t0);
+        osz.stop(t0 + teil.t + 0.05);
+      });
+      return true;
+    } catch (e) { return false; }
+  }
+
+  function glockeAn() {
+    return document.documentElement.getAttribute('data-glocke') !== 'aus';
+  }
+
+  /* Ein Blick. Gibt das Ereignis zurueck, damit die Probe es sehen kann. */
+  function glockeTakt() {
+    var z = sitzungJetzt();
+    if (!z || !window.MarktUebersicht || !window.MarktUebersicht.glockenEreignis) return null;
+    var ereignis = window.MarktUebersicht.glockenEreignis(glockeZustand, z.zustand);
+    glockeZustand = z.zustand;
+    if (!ereignis) return null;
+    /* Sichtbar wird es auch ohne Ton: wer den Schalter aus hat oder keine Boxen
+     * angeschlossen hat, soll trotzdem sehen, dass gerade etwas passiert ist.
+     * Die Meldung geht nach einer Minute von selbst wieder weg - sie ist ein
+     * Ereignis, kein Zustand, und die Hinweis-Kette traegt sonst Zustaende. */
+    hinweisSetzen('glocke', ereignis === 'oeffnung' ? 'Börse geöffnet' : 'Börse geschlossen');
+    setTimeout(function () { hinweisSetzen('glocke', null); }, 60000);
+    if (glockeAn()) glockeTon();
+    return ereignis;
+  }
+  /* Der erste Aufruf laeutet nie - er merkt sich nur, wo die App hereingekommen ist. */
+  glockeTakt();
+  setInterval(glockeTakt, 15000);
 
   /* ================= Info-Fenster beim Draufzeigen (Tester-Wunsch #24) =========
    * Zeigt je Wert die wichtigsten Kennzahlen aus den SCHON GELADENEN Daten
@@ -1199,7 +1425,11 @@
   window.Dash = {
     STOCKS: STOCKS,
     quote: function (ySym) { return Q[ySym]; },
-    marketOpen: usMarketOpen
+    marketOpen: usMarketOpen,
+    /* Der Probe-Knopf in den App-Einstellungen und die UI-Probe greifen hier an:
+     * derselbe Ton und dieselbe Messung, die im Betrieb laufen - keine zweite. */
+    glockeProbe: function () { return glockeTon(); },
+    bandTempo: bandTempo
   };
 
   // Lade-Skeletons, bis die ersten Kurse da sind
@@ -1222,8 +1452,30 @@
   }
   skeletons();
 
+  /* Der gemerkte Schlagzeilen-Stand, bevor der erste Abruf zurueck ist. Eine
+   * beschaedigte Datei darf den Start nicht aufhalten; im Zweifel bleibt es leer. */
+  async function newsStandLaden() {
+    try {
+      var g = await window.api.storeGet('newsStand');
+      if (!g || !Array.isArray(g.items) || !g.items.length) return;
+      var sauber = g.items.filter(function (n) {
+        return n && typeof n.title === 'string' && typeof n.url === 'string';
+      }).map(function (n) {
+        return { title: n.title, url: n.url, source: String(n.source || ''), t: Number(n.t) || 0 };
+      });
+      if (!sauber.length) return;
+      /* Nur, wenn noch nichts da ist. Der Kursabruf laeuft parallel und stoesst
+       * refreshNews() an - kaeme der gemerkte Stand danach an, ueberschriebe er
+       * frisch geholte Schlagzeilen mit aelteren. */
+      if (NEWS_ALLE.length) return;
+      NEWS_ALLE = sauber.slice(0, 25);
+      NEWS = NEWS_ALLE.slice(0, NEWS_MAX);
+      renderNews();
+    } catch (e) { /* ohne Speicher startet die Liste eben leer */ }
+  }
+
   // Start – der Takt startet auch dann, wenn der erste Abruf scheitert
   doRefresh().then(scheduleLoop, scheduleLoop);
-  refreshNews();
+  newsStandLaden().then(refreshNews, refreshNews);
   setInterval(refreshNews, 30 * 60000);
 })();

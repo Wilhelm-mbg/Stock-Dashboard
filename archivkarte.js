@@ -208,6 +208,13 @@
     if (!k) return;
     LETZTER = st;
     if (ab) LETZTE_ABDECKUNG = ab;
+    /* U3 (QS 04.09.2026): Die Statuszeile der Klappe fragt Archivkarte.letzter().
+     * 'sub-changed' feuert SYNCHRON beim Aufklappen - also bevor laden() sein
+     * Versprechen aufgeloest hat -, und danach loeste nichts mehr aus: wer nur das
+     * Kursarchiv ansah, sah die Zeile nie. Statt in app-shell.js auf ein Versprechen
+     * zu warten, das dort niemand kennt, sagt die Quelle jetzt Bescheid, sobald sie
+     * eine Antwort HAT - einmal je Zeichnen, auch beim Fortschritts-Funk. */
+    try { document.dispatchEvent(new CustomEvent('archiv-stand')); } catch (e) { /* ohne Ereignis bleibt es beim naechsten Takt */ }
     if (st.fehler) {
       k.innerHTML = '<div class="loading">Das Archiv ist nicht lesbar: ' + U.esc(st.fehler) + '</div>';
       return;

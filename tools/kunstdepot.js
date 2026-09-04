@@ -454,7 +454,42 @@ function marktstand(jetzt) {
   };
 }
 
+/* ---- Schlagzeilen fuer das Laufband ----
+ * Ohne Netz gibt es keine News, und ohne News ist das Laufband ausgeblendet - dann
+ * kann keine Aufnahme es zeigen und keine Sonde es messen. Diese Meldungen sind
+ * ERFUNDEN und sagen es selbst: die Quelle heisst "Kunstquelle", die Werte sind die
+ * KUNST-Kuerzel, und die Ueberschriften nennen keine echte Firma. Die Zeitstempel
+ * sind gestaffelt, damit die Altersangabe ("vor N Min") etwas zu zeigen hat.
+ * Geschrieben wird in denselben Store-Schluessel, den renderer.js beim Abruf fuellt
+ * (newsStand) - kein Sonderweg, den es nur im Test gibt. */
+function newsstand(jetzt) {
+  const ZEILEN = [
+    'Kunstmarkt schliesst fester - Halbleiter fuehren die Erholung an',
+    'KUNSTA1 hebt Jahresprognose an, Aktie im Kunsthandel deutlich im Plus',
+    'Notenbank der Kunstwelt laesst den Leitzins unveraendert',
+    'KUNSTB2 kuendigt Aktienrueckkauf ueber zwei Milliarden Kunst-Dollar an',
+    'Rohstoffe: Kunstoel gibt nach, Kunstgold haelt sich ueber der Marke',
+    'KUNSTC3 verschiebt den Produktionsstart des neuen Werks um ein Quartal',
+    'Kunstindex erreicht den hoechsten Stand seit vier Kunstmonaten',
+    'KUNSTD4 und KUNSTE5 pruefen einen Zusammenschluss, sagen Kunstkreise',
+    'Anleihen: Kunstrenditen fallen nach schwaecheren Kunst-Arbeitsmarktdaten',
+    'KUNSTF6 meldet Rekordumsatz, warnt aber vor hoeheren Kunstkosten',
+    'Kunstaufsicht prueft die Uebernahme im Kunst-Energiesektor',
+    'KUNSTG7 verliert nach der Herabstufung durch ein Kunsthaus'
+  ];
+  /* Von juengster zu aeltester, in Abstaenden von je acht Minuten - damit steht am
+   * Kopf des Bandes "vor 3 Min" und am Ende "vor 1 Std 27". */
+  const items = ZEILEN.map((t, i) => ({
+    title: t,
+    url: 'https://example.invalid/kunst-nachricht-' + (i + 1),
+    source: 'Kunstquelle',
+    t: jetzt - (3 + i * 8) * 60000
+  }));
+  return { zeit: jetzt, items: items };
+}
+
 module.exports = { bauen: bauen, kostenmessung: kostenmessung, archiv: archiv,
+                   newsstand: newsstand,
                    marktStammdaten: marktStammdaten, marktArchiv: marktArchiv,
                    marktKurse: marktKurse, marktstand: marktstand,
                    KUNST_SYMBOLE: KUNST_SYMBOLE, KUNST_SEKTOREN: KUNST_SEKTOREN };

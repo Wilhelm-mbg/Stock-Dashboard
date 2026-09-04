@@ -444,7 +444,10 @@
       el.textContent = txt == null ? '' : String(txt);
     });
   }
-  ['quotes-updated', 'kanten-geladen', 'sub-changed', 'tab-changed'].forEach(function (ev) {
+  /* 'archiv-stand' kam am 04.09.2026 dazu (QS-Fund U3): 'sub-changed' feuert beim
+   * Aufklappen, die Archiv-Auskunft steht aber erst eine Runde spaeter. Die Quelle
+   * meldet sich seither selbst - dieselbe Bauart wie 'kanten-geladen'. */
+  ['quotes-updated', 'kanten-geladen', 'archiv-stand', 'sub-changed', 'tab-changed'].forEach(function (ev) {
     document.addEventListener(ev, klappenStandSetzen);
   });
   document.addEventListener('DOMContentLoaded', klappenStandSetzen);

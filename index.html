@@ -40,7 +40,13 @@
     --series3:     #12855c;   /* war #1baf7a: 2,74 */
     --up:          #006300;
     --up-soft:     rgba(12,163,12,0.12);
-    --down:        #d03b3b;
+    /* War #d03b3b. Am 04.09.2026 von der a11y-Sonde im hellen Thema mit Kunstdaten
+       nachgemessen (FA3): 4,25 gegen --panel (#f1f1ee) bei 12 px, an acht Textstellen
+       - Index-Kacheln und Hotlist-Zeilen mit negativer Tagesaenderung. Soll ist 4,5.
+       Gerechnet fuer diesen Ton: 5,49 auf --surface, 4,98 auf --panel, 4,63 auf
+       --panel-2 - der schlechteste Untergrund traegt jetzt. Das Dunkel-Thema hat
+       seinen eigenen Wert (#e05e5e) und bleibt unberuehrt; es hatte 0 Befunde. */
+    --down:        #c42b2b;
     --down-soft:   rgba(208,59,59,0.10);
     /* Diese drei wurden ueberall benutzt, waren aber nie definiert - die Stellen
        fielen still auf Erbfarbe bzw. transparent zurueck (UI-Audit 21.08.2026). */
@@ -182,49 +188,57 @@
   header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 16px; margin-bottom: 6px; }
 
   /* News-Laufband im Dashboard (Tester-Wunsch #20) */
-  /* overflow-x: auto STATT hidden (QS-F6, 04.09.2026). Vorher war das Band
-     beschnitten und hatte keine Bildlaufleiste: wer mit der Tabulatortaste
-     hineinlief, schob es unbemerkt um bis zu 4.800 px weg und kam nicht zurueck.
-     overflow-y bleibt sichtbar - mit "hidden" waere der Kasten weiterhin ein
-     beschnittener, und genau das misst die Fokus-Wanderung der UI-Probe. */
+  /* ES LAEUFT WIEDER, von rechts nach links, Meldung an Meldung (Wilhelm, 04.09.2026).
+     Die Spur liegt doppelt; die Animation schiebt sie um genau ihre halbe Breite, und
+     in dem Moment steht die Kopie da, wo das Original angefangen hat - deshalb ist
+     keine Luecke zu sehen. Die Dauer setzt renderer.js aus der gemessenen Breite EINER
+     Haelfte: gleiche Pixel je Sekunde, egal wie viele Meldungen laufen. Hier steht
+     deshalb keine Zeit.
+
+     DER SCHALTER IST NICHT MEHR DIE WINDOWS-EINSTELLUNG "Bewegung reduzieren".
+     Bis zum 04.09.2026 hing die Animation an prefers-reduced-motion. Auf Wilhelms
+     Rechner ist die Einstellung dauerhaft aktiv (#90) - das Band lief also NIE, und
+     genau das hat er zurueckgefordert. An ihre Stelle tritt die App-Einstellung
+     "Laufband bewegen" (Vorgabe an), die depot.js als data-laufband an das
+     Wurzelelement schreibt. Fehlt das Attribut - in der Zehntelsekunde vor dem
+     Laden des Depot-Zustands -, laeuft das Band: das ist die Vorgabe, und ein Band,
+     das erst nachtraeglich losfaehrt, saehe kaputt aus.
+     Bewegung wegzunehmen bleibt trotzdem ein Recht des Lesers; es liegt jetzt nur an
+     einem anderen Schalter, einem, den Wilhelm selbst umlegen kann. */
   #newsTicker {
     overflow-x: auto; overflow-y: visible; white-space: nowrap; border: 1px solid var(--border);
     background: var(--panel); border-radius: var(--r-normal); padding: 6px 0; margin-bottom: 10px;
     font-size: var(--fs-text); -webkit-mask-image: linear-gradient(90deg, transparent, #000 3%, #000 97%, transparent);
   }
   #newsTicker .tickSpur { display: inline-block; animation: tickLauf linear infinite; will-change: transform; }
+  #newsTicker .tickTeil { display: inline-block; }
+  /* Anhalten heisst anhalten, nicht neu aufbauen: animation-play-state friert die Spur
+     an Ort und Stelle ein. Wer die Meldung lesen will, auf der der Zeiger steht,
+     bekommt genau sie - und nicht den Anfang des Bandes. Dasselbe bei Fokus: sonst
+     schoebe die Animation die Meldung weg, die man gerade mit den Pfeiltasten
+     gewaehlt hat (QS-F6). */
   #newsTicker:hover .tickSpur { animation-play-state: paused; }
-  /* Solange der Fokus im Band steht, laeuft es nicht - sonst schoebe die Animation
-     genau die Meldung wieder weg, die man gerade angesprungen hat (QS-F6). */
   #newsTicker:focus-within .tickSpur { animation-play-state: paused; }
   #newsTicker a { color: var(--ink-2); }
   #newsTicker a:hover { color: var(--ink); }
+  /* Die "aktuelle" Meldung des Bandes - sie ersetzt den Fokusrahmen, den die Links
+     selbst nicht mehr bekommen koennen (sie sind keine Tabulator-Halte). */
+  #newsTicker a.tickAktiv { outline: 2px solid var(--acc); outline-offset: 2px; color: var(--ink); }
+  #newsTicker .tickZeit { color: var(--muted); margin-left: 6px; font-size: var(--fs-klein); }
   #newsTicker .tickTrenn { color: var(--muted); margin: 0 14px; }
   @keyframes tickLauf { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-  /* Bei "Bewegung reduzieren" stand hier nur "animation: none" - und damit fror die
-     Spur auf translateX(0) ein, obwohl sie 4,4-mal breiter ist als ihr Rahmen. Drei von
-     sechs Schlagzeilen waren dauerhaft unerreichbar: kein Rollbalken, kein Umbruch, und
-     das versprochene "haelt unter dem Mauszeiger an" lief ins Leere, weil nie etwas lief
-     (#90). Auf Wilhelms Rechner ist die Einstellung dauerhaft aktiv - das war also der
-     Normalfall, nicht ein konstruierter Sonderfall.
-     Bewegung wegzunehmen ist richtig; den Inhalt wegzunehmen war es nicht. Statt zu
-     laufen laesst sich das Band jetzt schieben: derselbe schmale Streifen, aber alles
-     ist erreichbar - mit der Maus, mit dem Rad und mit der Tabulatortaste, weil die
-     Links selbst anspringbar sind und der Rahmen sie hereinrollt.
-     Die Verlaufsmaske faellt hier weg: sie soll andeuten, dass etwas hereinlaeuft.
-     Steht das Band, ist der Rollbalken der ehrlichere Hinweis, und die Maske wuerde ihn
-     nur ausbleichen. */
-  @media (prefers-reduced-motion: reduce) {
-    #newsTicker .tickSpur { animation: none; }
-    #newsTicker { overflow-x: auto; overflow-y: visible; -webkit-mask-image: none; }
-    /* 01.09.2026 (C16): Der Rollbalken allein sagte zu leise, dass rechts mehr
-       steht. Ein statischer Pfeil am rechten Rand macht es sichtbar - reiner
-       Hinweis, keine Bewegung. sticky statt absolute: er bleibt am Rahmen stehen,
-       waehrend der Inhalt darunter durchgeschoben wird. */
-    #newsTicker::after {
-      content: '»'; position: sticky; right: 0; display: inline-block;
-      padding: 0 8px; color: var(--muted); background: var(--panel); font-weight: 700;
-    }
+  /* Steht das Band, faellt die Kopie weg - sonst schoebe man dieselben Meldungen
+     zweimal durch (gemessen: 12 statt 6 Anker, #90). Die Verlaufsmaske faellt
+     ebenfalls weg: sie deutet an, dass etwas hereinlaeuft, und bei stehendem Band
+     ist der Rollbalken der ehrlichere Hinweis. Der Pfeil am rechten Rand sagt
+     zusaetzlich, dass rechts mehr steht (C16, 01.09.2026); sticky statt absolute,
+     damit er am Rahmen stehen bleibt, waehrend der Inhalt durchgeschoben wird. */
+  :root[data-laufband="aus"] #newsTicker .tickSpur { animation: none; }
+  :root[data-laufband="aus"] #newsTicker .tickKopie { display: none; }
+  :root[data-laufband="aus"] #newsTicker { -webkit-mask-image: none; }
+  :root[data-laufband="aus"] #newsTicker::after {
+    content: '»'; position: sticky; right: 0; display: inline-block;
+    padding: 0 8px; color: var(--muted); background: var(--panel); font-weight: 700;
   }
 
   /* Info-Fenster beim Draufzeigen (Tester-Wunsch #24) */
@@ -1264,10 +1278,12 @@
      oder gar nicht gehandelt wird. Geschrieben von marktui.js aus
      MarktUebersicht.sitzungszustand() - keine Zahl und kein Zustand im Markup. -->
 <div id="marktSitzung" class="marktkopf" role="status" aria-live="polite"><span class="loading">Zustand der Sitzung wird ermittelt …</span></div>
-<!-- Der title wird in renderTicker() gesetzt: bei "Bewegung reduzieren" laeuft nichts,
-     und dann darf dort auch nicht stehen, dass es unter dem Mauszeiger anhaelt. -->
+<!-- Der title wird in renderTicker() gesetzt: steht das Band (App-Einstellung
+     "Laufband bewegen" aus), darf dort nicht stehen, dass es unter dem Mauszeiger
+     anhaelt. Die Links im Band sind keine Tabulator-Halte - anspringbar ist das Band
+     selbst, es merkt sich eine aktuelle Meldung (QS-F6, Stufe 6 4.3). -->
 <div id="newsTicker" style="display:none;" tabindex="0" role="region"
-     aria-label="Weitere Schlagzeilen – mit den Pfeiltasten seitwärts rollen"></div>
+     aria-label="Schlagzeilen – mit den Pfeiltasten wählen, Eingabetaste öffnet die Meldung"></div>
 <h2>Marktüberblick</h2>
 <div class="tiles" id="tiles"><div class="loading">Lade Kurse …</div></div>
 
@@ -2672,6 +2688,18 @@
       <div id="alpTestDetail" class="hinweis" style="margin-top:6px; display:none;"></div>
       <div style="font-size:var(--fs-neben); color:var(--muted); margin-top:8px;"><b>Laufender Status:</b>
         <span id="setAlpStatusLive">– noch nicht geprüft.</span></div>
+    </div>
+    <!-- Darstellung & Toene (Wilhelm, 04.09.2026). Der Laufband-Schalter tritt an die
+         Stelle der Windows-Einstellung "Bewegung reduzieren": die steht auf Wilhelms
+         Rechner dauerhaft an, und das Band lief deshalb nie (#90). -->
+    <div style="margin:14px 0; border-top:1px solid var(--grid); padding-top:14px;">
+      <div style="font-weight:600; font-size:var(--fs-text); margin-bottom:8px;">Darstellung &amp; Töne</div>
+      <label style="display:flex; align-items:flex-start; gap:8px; font-size:var(--fs-text);"><input type="checkbox" id="setLaufband" checked style="margin-top:3px;"><span><b>Laufband bewegen:</b> die Schlagzeilen oben im Reiter Markt laufen von rechts nach links. Aus: dieselben Meldungen stehen still und lassen sich seitwärts schieben.</span></label>
+      <label style="display:flex; align-items:flex-start; gap:8px; font-size:var(--fs-text); margin-top:10px;"><input type="checkbox" id="setGlocke" checked style="margin-top:3px;"><span><b>Glocke zu Öffnung und Schluss:</b> ein kurzer Ton, wenn die US-Börse aufmacht (15:30 Uhr Berlin) und wenn sie schließt (22:00 Uhr). An Feiertagen bleibt es still. Der Ton löst nichts aus – er sagt nur Bescheid.</span></label>
+      <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-top:8px;">
+        <button class="btn ghost" id="glockeProbeBtn" type="button">Probe</button>
+        <span id="glockeProbeStatus" style="font-size:var(--fs-neben); color:var(--muted);"></span>
+      </div>
     </div>
     <div style="margin:14px 0; border-top:1px solid var(--grid); padding-top:14px;">
       <div style="font-weight:600; font-size:var(--fs-text); margin-bottom:8px;">Benachrichtigungen</div>

@@ -42,6 +42,10 @@ function saeen(testroot, jetzt) {
    * gemerkte Stand in den Store, denselben Schluessel, den marktui.js schreibt.
    * Gerechnet ist er mit den echten Funktionen aus markt/uebersicht.js. */
   fs.writeFileSync(path.join(sd, 'marktUeberblickStand.json'), JSON.stringify(KD.marktstand(jetzt)));
+  /* Und die Schlagzeilen: ohne sie ist das Laufband ausgeblendet (renderTicker
+   * blendet ein leeres Band aus), und keine Aufnahme koennte es zeigen. Derselbe
+   * Schluessel, den renderer.js nach einem echten Abruf schreibt. */
+  fs.writeFileSync(path.join(sd, 'newsStand.json'), JSON.stringify(KD.newsstand(jetzt)));
   /* Das Kunst-ARCHIV liegt nicht im Store, sondern im Datenordner - dort sucht
    * kerzenquelle.js. In der isolierten Instanz ist das TESTROOT/downloads, also
    * ebenfalls unter %TEMP%: der echte Datenordner wird nicht angefasst. Ohne diesen

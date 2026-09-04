@@ -376,6 +376,86 @@
    * `opt.farben` traegt die Farbwerte herein (der Aufrufer holt sie aus den
    * CSS-Variablen des Themas) - eine feste Farbe hier waere im hellen Thema
    * unsichtbar. */
+  /* ---------------------------------------------------------------------------
+   * Die Beschriftung der Zeitachse
+   *
+   * PM-Fund am Viewer-Foto (04.09.2026): bei 1h ueber mehrere Tage stand an jedem
+   * Halt nur "10:30" - sechsmal dieselbe Uhrzeit, weil jeder US-Handelstag um
+   * dieselbe Zeit beginnt und die Halte gleichmaessig verteilt sind. Die Achse sagte
+   * damit nichts ueber die Zeitspanne, die sie zeigt.
+   *
+   * Die Regel:
+   *   - Grobes Intervall (>= 1 Tag): jeder Halt traegt sein Datum, wie bisher.
+   *   - Feines Intervall: die Halte tragen Uhrzeiten - AUSSER am Tageswechsel, dort
+   *     steht das Datum. Ein Tageswechsel ist eine Kerze, deren Kalendertag in der
+   *     BOERSENZEITZONE von dem der vorigen abweicht; die erste Kerze gilt immer als
+   *     Tagesanfang. Die Zeitzone ist nicht die des Rechners: eine 60m-Kerze von
+   *     16:00 ET liegt in Berlin schon am naechsten Tag, und der Tageswechsel saesse
+   *     dann mitten in der Sitzung.
+   *
+   * DUENNUNG NACH PLATZ, NICHT NACH INHALT. Ueber sechzig Handelstage gibt es
+   * sechzig Tageswechsel und Platz fuer eine Handvoll Beschriftungen. Ein Datum wird
+   * deshalb nur gesetzt, wenn es mindestens 'abstand' Kerzen vom zuletzt gesetzten
+   * entfernt ist, eine Uhrzeit nur, wenn sie denselben Abstand zu jedem Datum haelt.
+   * Der Abstand haengt allein an der Zahl der Kerzen - nie an ihren Kursen.
+   *
+   * Rein: keine Uhr, kein DOM, kein Zufall. Dieselben Kerzen geben dieselbe Liste. */
+  function tagSchluessel(ms, zone) {
+    try {
+      return new Date(ms).toLocaleDateString('de-DE',
+        { day: '2-digit', month: '2-digit', year: 'numeric', timeZone: zone });
+    } catch (e) { return String(Math.floor(ms / 86400000)); }
+  }
+  function achsenText(ms, zone, art) {
+    var d = new Date(ms);
+    try {
+      if (art === 'uhr') return d.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit', timeZone: zone });
+      if (art === 'tagKurz') return d.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', timeZone: zone });
+      return d.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: '2-digit', timeZone: zone });
+    } catch (e) { return ''; }
+  }
+  function achsenBeschriftung(kerzen, opt) {
+    var ks = kerzen || [];
+    if (!ks.length) return [];
+    var o = opt || {};
+    var zone = o.zone || 'America/New_York';
+    var ziel = o.ziel > 0 ? o.ziel : 6;
+    var schritt = Math.max(1, Math.floor(ks.length / ziel));
+    /* Zwei Kerzen ist der kleinste Abstand, bei dem zwei Beschriftungen nicht
+     * uebereinander liegen - ein Datum direkt neben einer Uhrzeit war genau das. */
+    var abstand = Math.max(2, Math.floor(schritt / 2));
+    var marken = [];
+    var i, j;
+    if (!((o.intervallMs || 86400000) < 86400000)) {
+      for (i = 0; i < ks.length; i += schritt) {
+        marken.push({ i: i, text: achsenText(ks[i][0], zone, 'tagJahr'), tag: true });
+      }
+      return marken;
+    }
+    /* Erst die Tageswechsel - sie haben Vorrang vor den gleichmaessigen Halten,
+     * denn sie sind die Information, die vorher fehlte. */
+    var vorher = tagSchluessel(ks[0][0], zone);
+    var wechsel = [0];
+    for (i = 1; i < ks.length; i++) {
+      var t = tagSchluessel(ks[i][0], zone);
+      if (t !== vorher) { wechsel.push(i); vorher = t; }
+    }
+    wechsel.forEach(function (w) {
+      if (marken.length && w - marken[marken.length - 1].i < abstand) return;
+      marken.push({ i: w, text: achsenText(ks[w][0], zone, 'tagKurz'), tag: true });
+    });
+    /* Danach die Uhrzeiten - aber nur, wo kein Datum steht. */
+    for (j = 0; j < ks.length; j += schritt) {
+      var belegt = false;
+      for (i = 0; i < marken.length; i++) {
+        if (Math.abs(marken[i].i - j) < abstand) { belegt = true; break; }
+      }
+      if (!belegt) marken.push({ i: j, text: achsenText(ks[j][0], zone, 'uhr'), tag: false });
+    }
+    marken.sort(function (a, b) { return a.i - b.i; });
+    return marken;
+  }
+
   var FARBEN = {
     auf: '#16a34a', ab: '#dc2626', docht: '#94a3b8',
     band: 'rgba(148,163,184,0.13)', gitter: 'rgba(148,163,184,0.22)',
@@ -508,6 +588,7 @@
     skala: skala,
     maReihe: maReihe,
     fenster: fenster,
+    achsenBeschriftung: achsenBeschriftung,
     zeichnen: zeichnen
   };
   if (typeof module !== 'undefined' && module.exports) { module.exports = KerzenChart; return; }

@@ -86,6 +86,40 @@
   }
 
   /* ---------------------------------------------------------------------------
+   * 1b) Die Marktglocke: welcher Wechsel laeutet?
+   *
+   * Wilhelms Wunsch vom 04.09.2026 - zur Eroeffnung und zum Schluss ein Glockenton.
+   * Die naheliegende Loesung waere ein Zeitgeber auf 09:30 New Yorker Zeit, und der
+   * waere eine ZWEITE Zeitrechnung neben sitzungszustand(): eigene Zeitzone, eigene
+   * Sommerzeit, eigene Feiertagsliste. Zwei Rechnungen zu derselben Frage laufen
+   * frueher oder spaeter auseinander - und dann laeutet es, waehrend die Kopfzeile
+   * zwei Zeilen weiter oben "Börse geschlossen" sagt. Genau diese Fehlerform war
+   * QS-Fund F2 (ein Zustand, drei Orte).
+   *
+   * Die Glocke kennt deshalb keine Uhr. Sie sieht zwei Zustaende - den vorigen und
+   * den jetzigen, beide aus sitzungszustand() - und sagt, ob dazwischen ein Ereignis
+   * liegt:
+   *   'oeffnung'  irgendetwas -> regulaer
+   *   'schluss'   regulaer -> irgendetwas
+   *   null        alles andere, insbesondere jeder Blick ohne Wechsel
+   *
+   * DER ERSTE BLICK LAEUTET NIE. vorher === null heisst "noch nichts gesehen": beim
+   * Start um 09:31 waere der erste Zustand 'regulaer', und ein Vergleich gegen
+   * "nichts" saehe darin einen Wechsel, der laengst vorbei ist. Ein Neustart mitten
+   * in der Sitzung merkt sich also nur, wo er hereingekommen ist.
+   *
+   * Feiertage kommen ohne eigene Zeile mit: an ihnen ist die Sitzungslaenge 0,
+   * sitzungszustand() gibt nie 'regulaer' zurueck - und ohne 'regulaer' gibt es
+   * keinen der beiden Wechsel. */
+  function glockenEreignis(vorher, jetzt) {
+    if (!vorher || !jetzt) return null;
+    if (vorher === jetzt) return null;
+    if (jetzt === 'regulaer') return 'oeffnung';
+    if (vorher === 'regulaer') return 'schluss';
+    return null;
+  }
+
+  /* ---------------------------------------------------------------------------
    * 2) Relatives Volumen
    *
    * Heutiges Volumen geteilt durch den Median der letzten Handelstage. Der Median
@@ -271,6 +305,7 @@
     VOR_MIN: VOR_MIN, NACH_MIN: NACH_MIN,
     median: median,
     sitzungszustand: sitzungszustand,
+    glockenEreignis: glockenEreignis,
     relativesVolumen: relativesVolumen,
     volumenReihe: volumenReihe,
     spanne: spanne,
