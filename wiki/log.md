@@ -5,6 +5,9 @@ tags: [steuerung]
 
 *Nur was sich am Wiki ändert. Die Projekt-Chronologie steht im Archiv `PROJEKTSTAND.md`.*
 
+- 05.09.2026 Release v8.42.0 (Wache): Laufband mit Schlagzeilen läuft im Reiter Markt
+  wieder (samt Glocke zur US-Börsenöffnung/-schließung), Schein-Finder fragt jetzt in
+  Auswahllisten statt in neun freien Zahlenfeldern.
 - 04.09.2026 Release v8.41.0 (Wache): Aktien-Explorer ist jetzt ein Viewer mit
   Kerzenchart (1m–1W, Fadenkreuz, gleitende Durchschnitte, Archiv-Kerzen zuerst),
   Kursabruf läuft nur noch einmal statt zweimal je Minute.
