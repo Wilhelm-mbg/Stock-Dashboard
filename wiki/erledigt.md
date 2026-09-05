@@ -11,6 +11,10 @@ ist nur das Register, damit [offene-auftraege.md](offene-auftraege.md) offen ble
 
 | Datum | Auftrag | Ergebnis in einem Satz | Fundstelle |
 |---|---|---|---|
+| 04.09. | Oberfläche Stufe 7 — Schein-Finder | Zwei Karten, acht Listen mit Bereichen, drei gemessene Voreinstellungen, Live-Filter, sieben Spalten + Schalter, Stufen-Pillen; reines Modul `scheinwahl.js`; 98 Klinken, 8 Gegenproben; 210k/250k | `uebergabe/scheinfinder-ui-2026-09-04.md` |
+| 04.09. | Belegwort, Einheiten, verwaister Eintrag, Nachbilden (FA2/U4/U5/U6/FA1) | „belegt" → „gemessen" + Belegwort-Sperrklinke über alle Module (0 Fehlalarme); Nachbilden-Knopf nur bei Scheinen; 16 → 9 Blöcke > 240; 13 Gegenproben; 370k/200k | `uebergabe/belegwort-nachbilden-2026-09-04.md` |
+| 04.09. | Dialoge in Ordnung (B1/U1/U2) | `dialogstapel.js`, Rückweg je Dialog, Titel 1.240 → 21; Dialog-Sonde repariert und mit Ketten + Positivkontrolle: 8 → 0 Befunde; 285k/250k | `uebergabe/dialoge-2026-09-04.md` |
+| 04.09. | Laufband, Marktglocke, Kleinkram (FA3/U3/U7 + 2 PM-Funde) | Band läuft 60 px/s trotz „Bewegung reduzieren" (App-Schalter), jüngste 20 mit Alter; Glocke 09:30/16:00 ET synthetisch mit Probe-Knopf; 14 Gegenproben; 350k/200k | `uebergabe/laufband-glocke-kleinkram-2026-09-04.md` |
 | 04.09. | Vollständige UI-QS v8.40.2 (fünf Agenten) | 7 von 12 Altfunden behoben; neu 1 blockiert (Dialoge), 3 falsch (NaN-Ticket, „belegt", Kontrast), 7 unschön; 1,89 Mio Token gegen 600k | `uebergabe/ui-qs-voll-2026-09-04.md` |
 | 04.09. | Oberfläche Stufe 6 — Aktien-Viewer | Kerzenchart als reines Modul, Leseauskunft `archiv-kerzen`, Vor-/Nachbörse abgesetzt, Kursabruf zusammengelegt, F2/F4/F6/F7/F8 behoben; 151 Klinken, 28 Gegenproben; 445k/300k | `uebergabe/oberflaeche-stufe6-2026-09-04.md`, [oberflaeche.md](oberflaeche.md) |
 | 04.09. | Texte und Zählungen (QS-F3, F5, F9, F10, F11) | `#subnote` weg; Satz 8 → 5 in der App, Zusicherung an der App; zwei Textwände hinter i-Knöpfe; Dauertext-Abtaster an der Laufzeit; 47 Klinken, 4 Gegenproben rot, eine geschärft; 330–380k/150k | `uebergabe/texte-zaehlungen-2026-09-04.md` |
